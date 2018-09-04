@@ -29,8 +29,7 @@
  *****************************************************************************/ 
 
 
-#ifndef TCLAP_ARGUMENT_H
-#define TCLAP_ARGUMENT_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -590,5 +589,4 @@ inline bool Arg::acceptsMultipleValues()
 
 } //namespace TCLAP
 
-#endif
 

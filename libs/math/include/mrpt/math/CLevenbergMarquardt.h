@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CLevenbergMarquardt_H
-#define CLevenbergMarquardt_H
+#pragma once
 
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/math/types_math.h>
@@ -258,6 +257,5 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 using CLevenbergMarquardt = CLevenbergMarquardtTempl<mrpt::math::CVectorDouble>;
 
 }
-#endif
 
 

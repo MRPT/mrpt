@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_gui_H
-#define _mrpt_gui_H
+#pragma once
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindow.h>
@@ -20,4 +19,3 @@
 //#include "gui/WxUtils.h"
 //#include "gui/CWxGLCanvasBase.h"
 
-#endif

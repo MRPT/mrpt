@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef mrpt_slam_H
-#define mrpt_slam_H
+#pragma once
 
 #ifndef MRPT_NO_WARN_BIG_HDR
 MRPT_WARNING(
@@ -45,4 +44,3 @@ MRPT_WARNING(
 #include <mrpt/slam/observations_overlap.h>
 #include <mrpt/slam/COccupancyGridMapFeatureExtractor.h>
 
-#endif

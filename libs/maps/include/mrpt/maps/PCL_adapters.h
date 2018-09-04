@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef mrpt_maps_PCL_adapters_H
-#define mrpt_maps_PCL_adapters_H
+#pragma once
 
 #include <mrpt/config.h>
 #include <mrpt/opengl/pointcloud_adapters.h>
@@ -393,6 +392,5 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA>>
 };  // end of mrpt::opengl::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA>
 // >
 }
-#endif
 
 

@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CPtuDPerception_H
-#define CPtuDPerception_H
+#pragma once
 
 #include <mrpt/comms/CSerialPort.h>
 #include <mrpt/hwdrivers/CPtuBase.h>
@@ -425,6 +424,5 @@ class CPtuDPerception : public CPtuBase
 };  // End of class
 
 }
-#endif
 
 

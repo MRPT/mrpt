@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CVISUALIZER_H
-#define CVISUALIZER_H
+#pragma once
 
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CSetOfLines.h>
@@ -87,6 +86,5 @@ class CVisualizer
 }
 #include <mrpt/graphs/CVisualizer_impl.h>
 
-#endif /* end of include guard: CVISUALIZER_H */
 
 

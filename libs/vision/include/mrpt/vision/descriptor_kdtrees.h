@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef mrpt_vision_descriptor_kdtrees_H
-#define mrpt_vision_descriptor_kdtrees_H
+#pragma once
 
 #include <mrpt/vision/types.h>
 #include <mrpt/vision/CFeature.h>
@@ -226,4 +225,3 @@ struct TSURFDesc2KDTree_Adaptor
 }  // namespace detail
 }  // namespace vision
 }  // namespace mrpt
-#endif

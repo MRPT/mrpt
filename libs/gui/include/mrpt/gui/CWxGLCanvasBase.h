@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CMyGLCanvas_H
-#define CMyGLCanvas_H
+#pragma once
 
 #include <mrpt/gui/CGlCanvasBase.h>
 
@@ -132,4 +131,3 @@ class CWxGLCanvasBase : public CGlCanvasBase,
 
 #endif  // wxUSE_GLCANVAS
 #endif  // MRPT_HAS_WXWIDGETS
-#endif  // CMyGLCanvas_H

@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef __glext_h_
-#define __glext_h_
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -8524,4 +8523,3 @@ typedef void(APIENTRYP PFNGLCLEARCOLORIUIEXTPROC)(
 }
 #endif
 
-#endif

@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CSwissRanger3DCamera_H
-#define CSwissRanger3DCamera_H
+#pragma once
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CObservationImage.h>
@@ -293,6 +292,5 @@ class CSwissRanger3DCamera : public mrpt::hwdrivers::CGenericSensor
 };  // End of class
 
 }
-#endif
 
 

@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CHeightGridMap2D_H
-#define CHeightGridMap2D_H
+#pragma once
 
 #include <mrpt/maps/CHeightGridMap2D_Base.h>
 #include <mrpt/maps/CMetricMap.h>
@@ -192,4 +191,3 @@ MRPT_FILL_ENUM_MEMBER(
 	maps::CHeightGridMap2D::TMapRepresentation, mrSimpleAverage);
 MRPT_ENUM_TYPE_END()
 
-#endif

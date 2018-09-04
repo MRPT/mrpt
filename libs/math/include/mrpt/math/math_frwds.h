@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef mrpt_math_forwddecls_H
-#define mrpt_math_forwddecls_H
+#pragma once
 
 #include <mrpt/config.h>
 #include <string>
@@ -180,4 +179,3 @@ T wrapTo2Pi(T a);
 }  // namespace math
 }  // namespace mrpt
 
-#endif

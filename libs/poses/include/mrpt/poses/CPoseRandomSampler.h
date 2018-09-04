@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPoseRandomSampler_H
-#define CPoseRandomSampler_H
+#pragma once
 
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
@@ -153,6 +152,5 @@ class CPoseRandomSampler
 
 };  // End of class def.
 }
-#endif
 
 

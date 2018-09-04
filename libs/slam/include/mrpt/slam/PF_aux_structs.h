@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef PF_aux_structs_H
-#define PF_aux_structs_H
+#pragma once
 
 #include <vector>
 #include <iostream>
@@ -96,6 +95,5 @@ struct TPoseBin3D
 };
 
 }
-#endif
 
 

@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef INCLUDED_SimpleIni_h
-#define INCLUDED_SimpleIni_h
+#pragma once
 
 // Disable these warnings in MSVC:
 //  4127 "conditional expression is constant" as the conversion classes trigger
@@ -2421,6 +2420,5 @@ using MRPT_CSimpleIni =
 #endif  // _UNICODE
 
 }
-#endif  // INCLUDED_SimpleIni_h
 
 

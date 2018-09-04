@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CROVIO_H
-#define CROVIO_H
+#pragma once
 
 #include <mrpt/img/TCamera.h>
 #include <mrpt/obs/CObservationImage.h>
@@ -207,6 +206,5 @@ class CRovio
 };  // End of class
 
 }
-#endif
 
 

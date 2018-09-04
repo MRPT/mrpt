@@ -12,8 +12,7 @@
 ////===----------------------------------------------------------------------===//
 
 
-#ifndef _MRPT_PROPAGATE_CONST
-#define _MRPT_PROPAGATE_CONST
+#pragma once
 
 #include <type_traits>
 #include <utility>
@@ -457,5 +456,4 @@ struct greater_equal<mrpt::propagate_const<_Tp>>
 
 }
 
-#endif
 

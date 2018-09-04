@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef THYPOTHESIS_IMPL_H
-#define THYPOTHESIS_IMPL_H
+#pragma once
 
 // implementation file for the THypothesis struct template
 
@@ -127,6 +126,5 @@ bool THypothesis<GRAPH_T>::operator<(const self_t& other) const
 }
 }  // namespace mrpt
 
-#endif /* end of include guard: THYPOTHESIS_IMPL_H */
 
 

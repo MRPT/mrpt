@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef MRPT_SE2_SE3_AVERAGE_H
-#define MRPT_SE2_SE3_AVERAGE_H
+#pragma once
 
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
@@ -188,6 +187,5 @@ class SE_average<3>
 /** @} */  // end of grouping
 
 }
-#endif
 
 

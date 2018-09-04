@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CHolonomicND_H
-#define CHolonomicND_H
+#pragma once
 
 #include "CAbstractHolonomicReactiveMethod.h"
 #include <mrpt/config/CLoadableOptions.h>
@@ -185,6 +184,5 @@ MRPT_FILL_ENUM_MEMBER(CHolonomicND, SITUATION_WIDE_GAP);
 MRPT_FILL_ENUM_MEMBER(CHolonomicND, SITUATION_NO_WAY_FOUND);
 MRPT_ENUM_TYPE_END()
 
-#endif
 
 

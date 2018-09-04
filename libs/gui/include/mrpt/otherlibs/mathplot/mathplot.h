@@ -18,8 +18,7 @@
 // Licence:         wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
 
-#ifndef _MP_MATHPLOT_H_
-#define _MP_MATHPLOT_H_
+#pragma once
 
 // JL: This is VERY ugly, but ask MS why we cannot export a DLL class with STL
 // members !!
@@ -2007,4 +2006,3 @@ class WXDLLIMPEXP_MATHPLOT mpBitmapLayer : public mpLayer
 #pragma warning(pop)
 #endif
 
-#endif  // _MP_MATHPLOT_H_

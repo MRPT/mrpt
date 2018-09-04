@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CWirelessPowerGridMap2D_H
-#define CWirelessPowerGridMap2D_H
+#pragma once
 
 #include <mrpt/maps/CRandomFieldGridMap2D.h>
 #include <mrpt/obs/CObservationWirelessPower.h>
@@ -91,6 +90,5 @@ class CWirelessPowerGridMap2D : public CRandomFieldGridMap2D
 };
 
 }
-#endif
 
 

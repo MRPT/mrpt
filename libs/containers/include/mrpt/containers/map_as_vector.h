@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef mrpt_map_as_vector_H
-#define mrpt_map_as_vector_H
+#pragma once
 
 #include <mrpt/core/aligned_std_vector.h>
 #include <map>
@@ -160,6 +159,5 @@ class map_as_vector
 };  // end class map_as_vector
 
 }
-#endif
 
 

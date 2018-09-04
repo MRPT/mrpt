@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CHeightGridMap2D_Base_H
-#define CHeightGridMap2D_Base_H
+#pragma once
 
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/math/lightweight_geom_data.h>
@@ -79,6 +78,5 @@ class CHeightGridMap2D_Base
 		const mrpt::poses::CPose3D* robotPose = nullptr);
 };
 }
-#endif
 
 

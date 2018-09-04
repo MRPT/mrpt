@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef COBSERVATION_H
-#define COBSERVATION_H
+#pragma once
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/datetime.h>
@@ -169,4 +168,3 @@ class CObservation : public mrpt::serialization::CSerializable
 }  // namespace obs
 }  // namespace mrpt
 
-#endif

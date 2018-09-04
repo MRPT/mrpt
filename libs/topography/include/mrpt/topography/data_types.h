@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef data_types_H
-#define data_types_H
+#pragma once
 
 #include <mrpt/math/lightweight_geom_data.h>
 
@@ -413,6 +412,5 @@ struct TDatumTransfInterpolation
 /** @} */  // end of grouping
 
 }
-#endif
 
 

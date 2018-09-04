@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CMonteCarloLocalization2D_H
-#define CMonteCarloLocalization2D_H
+#pragma once
 
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/slam/PF_implementations_data.h>
@@ -166,4 +165,3 @@ class CMonteCarloLocalization2D
 }  // End of namespace
 }  // End of namespace
 
-#endif

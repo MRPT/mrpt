@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CKalmanFilterCapable_H
-#define CKalmanFilterCapable_H
+#pragma once
 
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
@@ -685,6 +684,5 @@ MRPT_FILL_ENUM(kfIKF);
 MRPT_ENUM_TYPE_END()
 
 // Template implementation:
+#define CKalmanFilterCapable_H
 #include "CKalmanFilterCapable_impl.h"
-
-#endif

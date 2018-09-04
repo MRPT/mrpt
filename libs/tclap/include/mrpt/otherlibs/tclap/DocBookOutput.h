@@ -27,8 +27,7 @@
  *  
  *****************************************************************************/ 
 
-#ifndef TCLAP_DOCBOOKOUTPUT_H
-#define TCLAP_DOCBOOKOUTPUT_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -279,4 +278,3 @@ inline void DocBookOutput::printLongArg(Arg* a)
 }
 
 } //namespace TCLAP
-#endif 

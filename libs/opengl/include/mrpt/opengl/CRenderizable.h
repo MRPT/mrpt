@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef opengl_CRenderizable_H
-#define opengl_CRenderizable_H
+#pragma once
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/img/TColor.h>
@@ -337,6 +336,5 @@ CRenderizable::Ptr& operator<<(
 	CRenderizable::Ptr& r, const mrpt::poses::CPose3D& p);
 
 }
-#endif
 
 

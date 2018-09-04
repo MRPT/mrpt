@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef opengl_CPlanarLaserScan_H
-#define opengl_CPlanarLaserScan_H
+#pragma once
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 
@@ -150,4 +149,3 @@ class CPlanarLaserScan : public CRenderizableDisplayList
 
 }  // end namespace
 }  // End of namespace
-#endif

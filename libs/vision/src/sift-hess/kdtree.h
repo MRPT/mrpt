@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef KDTREE_H
-#define KDTREE_H
+#pragma once
 
 //#include "cxcore.h"
 // Universal include for all versions of OpenCV
@@ -89,4 +88,3 @@ De-allocates memory held by a kd tree
 */
 extern void kdtree_release(struct kd_node* kd_root);
 
-#endif

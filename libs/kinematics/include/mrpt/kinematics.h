@@ -7,11 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_kinematics_H
-#define _mrpt_kinematics_H
+#pragma once
 
 #include <mrpt/kinematics/CKinematicChain.h>
 #include <mrpt/kinematics/CVehicleSimul_DiffDriven.h>
 #include <mrpt/kinematics/CVehicleSimul_Holo.h>
 
-#endif

@@ -13,8 +13,7 @@
  * href="group__mrpt__pbmap__grp.html" >mrpt-pbmap</a>
  */
 
-#ifndef __PBMAPLOCALISER_H
-#define __PBMAPLOCALISER_H
+#pragma once
 
 #include <mrpt/config.h>
 
@@ -116,6 +115,5 @@ class PbMapLocaliser
 }
 #endif
 
-#endif
 
 

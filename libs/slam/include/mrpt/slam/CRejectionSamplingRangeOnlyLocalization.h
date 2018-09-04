@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CRejectionSamplingRangeOnlyLocalization_H
-#define CRejectionSamplingRangeOnlyLocalization_H
+#pragma once
 
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPoint3D.h>
@@ -118,4 +117,3 @@ class CRejectionSamplingRangeOnlyLocalization
 }  // End of namespace
 }  // End of namespace
 
-#endif

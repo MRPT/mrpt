@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CPhidgetInterfaceKitProximitySensors_H
-#define CPhidgetInterfaceKitProximitySensors_H
+#pragma once
 
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/poses/CPoint3D.h>
@@ -178,6 +177,5 @@ class CPhidgetInterfaceKitProximitySensors : public mrpt::system::COutputLogger,
 };  // end class
 
 }
-#endif
 
 

@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPosePDFGaussian_H
-#define CPosePDFGaussian_H
+#pragma once
 
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
@@ -219,4 +218,3 @@ poses::CPosePDFGaussian operator+(
 bool operator==(const CPosePDFGaussian& p1, const CPosePDFGaussian& p2);
 
 }  // namespace mrpt::poses
-#endif

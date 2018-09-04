@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CWeightedPointsMap_H
-#define CWeightedPointsMap_H
+#pragma once
 
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
@@ -205,4 +204,3 @@ class PointCloudAdapter<mrpt::maps::CWeightedPointsMap>
 }  // namespace opengl
 }  // namespace mrpt
 
-#endif

@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef  __GLUT_H__
-#define  __GLUT_H__
+#pragma once
 
 /*
  * glut.h
@@ -26,4 +25,3 @@
 
 /*** END OF FILE ***/
 
-#endif /* __GLUT_H__ */

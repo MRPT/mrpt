@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef MRPT_GUI_FWRDS_H
-#define MRPT_GUI_FWRDS_H
+#pragma once
 namespace mrpt::gui
 {
 class CDisplayWindow;
@@ -20,6 +19,5 @@ class C3DWindowDialog;
 class CMyGLCanvas_DisplayWindow3D;
 
 }
-#endif
 
 

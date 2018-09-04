@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPOINT_H
-#define CPOINT_H
+#pragma once
 
 #include <mrpt/poses/CPoseOrPoint.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
@@ -177,6 +176,5 @@ bool operator!=(const CPoint<DERIVEDCLASS>& p1, const CPoint<DERIVEDCLASS>& p2)
 }
 }  // namespace mrpt
 
-#endif
 
 

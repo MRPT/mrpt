@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPosePDFSOG_H
-#define CPosePDFSOG_H
+#pragma once
 
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
@@ -218,6 +217,5 @@ class CPosePDFSOG : public CPosePDF
 
 };  // End of class def.
 }
-#endif
 
 

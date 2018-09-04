@@ -54,8 +54,7 @@
 ** MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
 */
 
-#ifndef __glxew_h__
-#define __glxew_h__
+#pragma once
 #define __GLXEW_H__
 
 #ifdef __glxext_h_
@@ -1504,4 +1503,3 @@ extern GLboolean glxewGetExtension(const char* name);
 }
 #endif
 
-#endif /* __glxew_h__ */

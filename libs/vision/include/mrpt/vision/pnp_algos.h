@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef __pnp_algos_h
-#define __pnp_algos_h
+#pragma once
 
 #include <mrpt/config.h>
 
@@ -216,4 +215,3 @@ class CPnP
 }
 }
 
-#endif

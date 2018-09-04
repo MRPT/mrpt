@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef HMT_SLAM_common_H
-#define HMT_SLAM_common_H
+#pragma once
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/containers/list_searchable.h>
@@ -115,6 +114,5 @@ class TArcList : public mrpt::containers::list_searchable<
 };
 
 }
-#endif
 
 

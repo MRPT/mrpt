@@ -29,8 +29,7 @@
  *****************************************************************************/ 
 
 
-#ifndef TCLAP_SWITCH_ARG_H
-#define TCLAP_SWITCH_ARG_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -211,4 +210,3 @@ inline bool SwitchArg::processArg(int *i, std::vector<std::string>& args)
 
 } //namespace TCLAP
 
-#endif

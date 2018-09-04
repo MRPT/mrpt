@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPoses3DSequence_H
-#define CPoses3DSequence_H
+#pragma once
 
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CSerializable.h>
@@ -89,6 +88,5 @@ class CPoses3DSequence : public mrpt::serialization::CSerializable
 
 };  // End of class def.
 }
-#endif
 
 

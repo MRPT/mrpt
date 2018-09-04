@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CMultiMetricMap_H
-#define CMultiMetricMap_H
+#pragma once
 
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/COctoMap.h>
@@ -485,6 +484,5 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 };  // End of class def.
 
 }
-#endif
 
 

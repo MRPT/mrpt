@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CStereoGrabber_SVS_H
-#define CStereoGrabber_SVS_H
+#pragma once
 
 #include <mrpt/obs/CObservationStereoImages.h>
 
@@ -118,6 +117,5 @@ static_assert(
 		!std::is_copy_assignable_v<CStereoGrabber_SVS>,
 	"Copy Check");
 }
-#endif
 
 

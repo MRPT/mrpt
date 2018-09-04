@@ -14,8 +14,7 @@
 
 /* @(#) $Id: zutil.h 35458 2005-09-10 21:15:17Z MW $ */
 
-#ifndef ZUTIL_H
-#define ZUTIL_H
+#pragma once
 
 #define ZLIB_INTERNAL
 #include "zlib.h"
@@ -289,4 +288,3 @@ void zcfree OF((voidpf opaque, voidpf ptr));
 		if (p) ZFREE(s, p); \
 	}
 
-#endif /* ZUTIL_H */

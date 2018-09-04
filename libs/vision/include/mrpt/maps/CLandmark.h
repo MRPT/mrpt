@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CLandmark_H
-#define CLandmark_H
+#pragma once
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
@@ -128,6 +127,5 @@ class CLandmark : public mrpt::serialization::CSerializable
 };  // End of class definition
 
 }
-#endif
 
 

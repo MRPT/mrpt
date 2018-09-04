@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CVISUALIZER_IMPL_H
-#define CVISUALIZER_IMPL_H
+#pragma once
 
 namespace mrpt::graphs::detail
 {
@@ -317,6 +316,5 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 }
 }  // end of namespaces
 
-#endif /* end of include guard: CVISUALIZER_IMPL_H */
 
 

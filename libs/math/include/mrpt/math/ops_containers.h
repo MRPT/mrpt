@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef mrpt_math_container_ops_H
-#define mrpt_math_container_ops_H
+#pragma once
 
 #include <mrpt/math/types_math.h>
 
@@ -432,6 +431,5 @@ double ncc_vector(const CONT1& patch1, const CONT2& patch2)
 }
 /**  @} */  // end of grouping
 
-#endif
 
 

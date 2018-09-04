@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CHokuyoURG_H
-#define CHokuyoURG_H
+#pragma once
 
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
@@ -293,6 +292,5 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 };  // End of class
 
 }
-#endif
 
 

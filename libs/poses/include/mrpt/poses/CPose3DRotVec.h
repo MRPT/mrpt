@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPOSE3DROTVEC_H
-#define CPOSE3DROTVEC_H
+#pragma once
 
 #include <mrpt/poses/CPose.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
@@ -548,4 +547,3 @@ bool operator==(const CPose3DRotVec& p1, const CPose3DRotVec& p2);
 bool operator!=(const CPose3DRotVec& p1, const CPose3DRotVec& p2);
 
 }  // namespace mrpt::poses
-#endif

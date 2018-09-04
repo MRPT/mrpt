@@ -10,8 +10,7 @@
 // Copyright 2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifndef BASE_BIT_CAST_H_
-#define BASE_BIT_CAST_H_
+#pragma once
 #include <string.h>
 #include <type_traits>
 //#include "base/compiler_specific.h"  // mrpt
@@ -80,4 +79,3 @@ inline Dest bit_cast(const Source& source)
 	memcpy(&dest, &source, sizeof(dest));
 	return dest;
 }
-#endif  // BASE_BIT_CAST_H_

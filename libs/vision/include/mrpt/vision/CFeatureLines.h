@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#ifndef CFeatureLines_H
-#define CFeatureLines_H
+#pragma once
 
 #include <mrpt/config.h>
 
@@ -43,5 +42,4 @@ namespace mrpt
     } // end of namespace
 } // end of namespace
 
-#endif
 #endif

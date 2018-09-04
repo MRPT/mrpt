@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CObservation3DRangeScan_project3D_impl_H
-#define CObservation3DRangeScan_project3D_impl_H
+#pragma once
 
 #include <mrpt/core/round.h>  // round()
 
@@ -500,6 +499,5 @@ inline void do_project_3d_pointcloud_SSE2(
 #endif
 }
 }  // namespace mrpt
-#endif
 
 

@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CCamModel_H
-#define CCamModel_H
+#pragma once
 
 #include <mrpt/img/TCamera.h>
 #include <mrpt/system/os.h>
@@ -358,6 +357,5 @@ class CCamModel : public mrpt::config::CLoadableOptions
 };  // end class
 
 }
-#endif  //__CCamModel_H
 
 

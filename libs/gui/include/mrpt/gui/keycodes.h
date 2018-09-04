@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef MRPT_KEYCODES_H
-#define MRPT_KEYCODES_H
+#pragma once
 
 #include <mrpt/config.h>
 
@@ -171,6 +170,5 @@ enum mrptKeyModifier
 };
 
 }
-#endif
 
 

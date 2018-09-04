@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CRawlog_H
-#define CRawlog_H
+#pragma once
 
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -435,6 +434,5 @@ class CRawlog : public mrpt::serialization::CSerializable
 };  // End of class def.
 
 }
-#endif
 
 

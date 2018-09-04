@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CGRAPHPARTITIONER_H
-#define CGRAPHPARTITIONER_H
+#pragma once
 
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/math/CMatrix.h>
@@ -16,8 +15,8 @@
 namespace mrpt
 {
 /** Abstract graph and tree data structures, plus generic graph algorithms
-  * \ingroup  mrpt_graphs_grp
-  */
+ * \ingroup  mrpt_graphs_grp
+ */
 namespace graphs
 {
 /** Algorithms for finding the min-normalized-cut of a weighted undirected
@@ -145,10 +144,9 @@ class CGraphPartitioner : public mrpt::system::COutputLogger
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace graphs
+}  // namespace mrpt
 
 // Template implementation:
+#define CGRAPHPARTITIONER_H
 #include "CGraphPartitioner_impl.h"
-
-#endif

@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CVideoFileWriter_H
-#define CVideoFileWriter_H
+#pragma once
 
 #include <mrpt/vision/utils.h>
 #include <mrpt/img/CImage.h>
@@ -94,6 +93,5 @@ class CVideoFileWriter
 };  // end of class
 
 }
-#endif
 
 

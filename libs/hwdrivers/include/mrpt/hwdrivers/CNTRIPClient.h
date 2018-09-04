@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CNTRIPClient_H
-#define CNTRIPClient_H
+#pragma once
 
 #include <mrpt/containers/MT_buffer.h>
 
@@ -190,6 +189,5 @@ class CNTRIPClient
 };  // End of class
 
 }
-#endif
 
 

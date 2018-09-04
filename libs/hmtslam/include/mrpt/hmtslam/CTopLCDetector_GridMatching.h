@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef _CTopLCDetector_GridMatching_H
-#define _CTopLCDetector_GridMatching_H
+#pragma once
 
 #include <mrpt/hmtslam/CTopLCDetectorBase.h>
 #include <mrpt/slam/CGridMapAligner.h>
@@ -68,6 +67,5 @@ class CTopLCDetector_GridMatching : public CTopLCDetectorBase
 	};
 };  // end class
 }
-#endif
 
 

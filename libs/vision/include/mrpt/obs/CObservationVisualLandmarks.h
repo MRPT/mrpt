@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CObservationVisualLandmarks_H
-#define CObservationVisualLandmarks_H
+#pragma once
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/obs/CObservation.h>
@@ -70,6 +69,5 @@ class CObservationVisualLandmarks : public CObservation
 };  // End of class def.
 
 }
-#endif
 
 

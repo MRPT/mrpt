@@ -8,8 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 
-#ifndef TCLAP_VALUE_ARGUMENT_H
-#define TCLAP_VALUE_ARGUMENT_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -510,4 +509,3 @@ void ValueArg<T>::_extractValue( const std::string& val )
 
 } // namespace TCLAP
 
-#endif

@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef opengl_graph_tools_impl_H
-#define opengl_graph_tools_impl_H
+#pragma once
 
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPointCloud.h>
@@ -225,6 +224,5 @@ CSetOfObjects::Ptr graph_visualize(
 }
 }  // namespace mrpt
 
-#endif
 
 

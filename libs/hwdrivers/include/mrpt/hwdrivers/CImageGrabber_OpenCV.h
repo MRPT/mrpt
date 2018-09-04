@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CImageGrabber_OpenCV_H
-#define CImageGrabber_OpenCV_H
+#pragma once
 
 #include <mrpt/config.h>
 
@@ -124,6 +123,5 @@ MRPT_FILL_ENUM_MEMBER(mrpt::hwdrivers, CAMERA_CV_MIL);
 MRPT_FILL_ENUM_MEMBER(mrpt::hwdrivers, CAMERA_CV_DSHOW);
 MRPT_ENUM_TYPE_END()
 
-#endif
 
 

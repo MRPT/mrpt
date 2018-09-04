@@ -20,8 +20,7 @@
  * and the GNU Lesser General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef ba_internals_H
-#define ba_internals_H
+#pragma once
 
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/CArrayNumeric.h>
@@ -261,6 +260,5 @@ void ba_build_gradient_Hessians(
 	const size_t num_fix_frames, const size_t num_fix_points,
 	const vector<double>* kernel_1st_deriv);
 }
-#endif
 
 

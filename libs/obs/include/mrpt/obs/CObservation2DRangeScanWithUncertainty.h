@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CObservation2DRangeScanWithUncertainty_H
-#define CObservation2DRangeScanWithUncertainty_H
+#pragma once
 
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <vector>
@@ -53,6 +52,5 @@ class CObservation2DRangeScanWithUncertainty
 };
 
 }
-#endif
 
 

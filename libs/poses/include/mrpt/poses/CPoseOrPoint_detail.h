@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPOSEORPOINT_DETAIL_H
-#define CPOSEORPOINT_DETAIL_H
+#pragma once
 
 #include <mrpt/poses/poses_frwds.h>
 
@@ -105,4 +104,3 @@ struct pose_point_impl<DERIVEDCLASS, 0>
 }  // End of namespace
 }  // End of namespace
 
-#endif

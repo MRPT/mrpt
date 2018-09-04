@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CABOUTBOX_H
-#define CABOUTBOX_H
+#pragma once
 
 //(*Headers(CAboutBox)
 #include <wx/notebook.h>
@@ -66,4 +65,3 @@ class CAboutBox : public wxDialog, public CAboutBoxBase
 	DECLARE_EVENT_TABLE()
 };
 
-#endif

@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CPtuBase_H
-#define CPtuBase_H
+#pragma once
 
 #include <mrpt/comms/CSerialPort.h>
 
@@ -312,6 +311,5 @@ class CPtuBase
 };  // End of class
 
 }
-#endif
 
 

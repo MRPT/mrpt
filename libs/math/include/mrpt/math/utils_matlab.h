@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef mrpt_math_utils_matlab_H
-#define mrpt_math_utils_matlab_H
+#pragma once
 
 /** \file Provide helper functions for MEX/MATLAB.
   * This file can be safely included without checking MRPT_HAS_MATLAB
@@ -62,6 +61,5 @@ mxArray* convertVectorToMatlab(const CONTAINER& vec)
 /** @} */
 #endif
 }
-#endif
 
 

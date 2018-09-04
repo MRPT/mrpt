@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPOINT3D_H
-#define CPOINT3D_H
+#pragma once
 
 #include <mrpt/poses/CPoint.h>
 #include <mrpt/serialization/CSerializable.h>
@@ -123,4 +122,3 @@ class CPoint3D : public CPoint<CPoint3D>,
 };  // End of class def.
 
 }  // namespace mrpt::poses
-#endif

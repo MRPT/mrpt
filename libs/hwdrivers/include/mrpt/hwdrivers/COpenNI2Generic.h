@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef mrpt_COpenNI2Generic_H
-#define mrpt_COpenNI2Generic_H
+#pragma once
 
 #include <mrpt/obs/CObservation3DRangeScan.h>
 
@@ -161,4 +160,3 @@ class COpenNI2Generic
 	bool m_grab_image, m_grab_depth, m_grab_3D_points;
 };  // End of class
 }  // namespace mrpt::hwdrivers
-#endif

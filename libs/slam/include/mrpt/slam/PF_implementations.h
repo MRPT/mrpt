@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef PF_implementations_H
-#define PF_implementations_H
+#pragma once
 
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CParticleFilterData.h>
@@ -1170,6 +1169,5 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 }
 }  // end namespace
 
-#endif
 
 

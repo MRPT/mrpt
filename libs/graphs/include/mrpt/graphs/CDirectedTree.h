@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef MRPT_DIRECTED_TREE_H
-#define MRPT_DIRECTED_TREE_H
+#pragma once
 
 #include <list>
 #include <mrpt/graphs/TNodeID.h>
@@ -197,6 +196,5 @@ class CDirectedTree
 
 /** @} */
 }
-#endif
 
 

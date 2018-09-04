@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef C2DRangeFinderAbstract_H
-#define C2DRangeFinderAbstract_H
+#pragma once
 
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/COutputLogger.h>
@@ -160,6 +159,5 @@ class C2DRangeFinderAbstract : public mrpt::system::COutputLogger,
 
 };  // End of class
 }
-#endif
 
 

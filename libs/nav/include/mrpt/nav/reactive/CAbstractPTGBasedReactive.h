@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CAbstractPTGBasedReactive_H
-#define CAbstractPTGBasedReactive_H
+#pragma once
 
 #include <mrpt/nav/reactive/CWaypointsNavigator.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
@@ -473,6 +472,5 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 
 };  // end of CAbstractPTGBasedReactive
 }
-#endif
 
 

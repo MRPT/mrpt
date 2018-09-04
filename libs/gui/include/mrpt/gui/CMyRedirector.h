@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CMyRedirector_H
-#define CMyRedirector_H
+#pragma once
 
 #include <wx/string.h>
 #include <wx/textctrl.h>
@@ -173,4 +172,3 @@ class CMyRedirector : public std::streambuf
 	}
 };
 
-#endif

@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef mrpt_matrix_adaptors_H
-#define mrpt_matrix_adaptors_H
+#pragma once
 
 #include <mrpt/math/math_frwds.h>  // forward declarations
 
@@ -746,4 +745,3 @@ inline CConstMatrixColumnAccessorExtended<MAT> getColumnAccessor(
 }  // namespace math
 }  // namespace mrpt
 
-#endif

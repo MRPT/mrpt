@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef opengl_CGridPlaneXZ_H
-#define opengl_CGridPlaneXZ_H
+#pragma once
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 
@@ -109,6 +108,5 @@ class CGridPlaneXZ : public CRenderizableDisplayList
 };
 
 }
-#endif
 
 

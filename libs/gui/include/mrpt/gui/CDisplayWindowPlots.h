@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CDisplayWindowPlots_H
-#define CDisplayWindowPlots_H
+#pragma once
 
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
@@ -303,6 +302,5 @@ class CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
 
 };  // End of class def.
 }
-#endif
 
 

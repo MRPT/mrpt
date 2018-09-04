@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CBINARYRELATION_H_
-#define CBINARYRELATION_H_
+#pragma once
 
 #include <mrpt/math/CMatrixTemplate.h>
 #include <mrpt/math/matrix_adaptors.h>
@@ -580,4 +579,3 @@ inline void applyFunction(
 }  // namespace detail
 }  // namespace math
 }  // namespace mrpt
-#endif

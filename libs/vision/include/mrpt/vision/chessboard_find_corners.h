@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef mrpt_vision_find_chessboard_H
-#define mrpt_vision_find_chessboard_H
+#pragma once
 
 #include <mrpt/img/CImage.h>
 
@@ -103,6 +102,5 @@ void findMultipleChessboardsCorners(
 
 /** @} */
 }
-#endif
 
 

@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef MRPT_DIRECTEDGRAPH_H
-#define MRPT_DIRECTEDGRAPH_H
+#pragma once
 
 #include <mrpt/typemeta/TTypeName.h>
 #include <mrpt/core/aligned_allocator.h>
@@ -378,4 +377,3 @@ class CDirectedGraph
 /** @} */
 }  // namespace graphs
 }  // namespace mrpt
-#endif

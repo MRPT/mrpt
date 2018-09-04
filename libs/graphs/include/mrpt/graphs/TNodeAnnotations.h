@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef TNODEANNOTATIONS_H
-#define TNODEANNOTATIONS_H
+#pragma once
 
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/serialization/CSerializable.h>
@@ -81,6 +80,5 @@ struct TNodeAnnotationsEmpty : public TNodeAnnotations
 	DECLARE_TTYPENAME_CLASSNAME(mrpt::graphs::detail::TNodeAnnotationsEmpty)
 };
 }
-#endif /* end of include guard: TNODEANNOTATIONS_H */
 
 

@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CRandomFieldGridMap2D_H
-#define CRandomFieldGridMap2D_H
+#pragma once
 
 #include <mrpt/containers/CDynamicGrid.h>
 #include <mrpt/img/CImage.h>
@@ -657,6 +656,5 @@ MRPT_FILL_ENUM_MEMBER(
 	mrpt::maps::CRandomFieldGridMap2D::TMapRepresentation, mrGMRF_SD);
 MRPT_ENUM_TYPE_END()
 
-#endif
 
 

@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CBoardENoses_H
-#define CBoardENoses_H
+#pragma once
 
 #include <mrpt/comms/CInterfaceFTDI.h>
 #include <mrpt/comms/CSerialPort.h>
@@ -141,4 +140,3 @@ class CBoardENoses : public mrpt::hwdrivers::CGenericSensor
 	inline unsigned int getSerialPortBaud() const { return m_COM_baud; }
 };  // end of class
 }  // namespace mrpt::hwdrivers
-#endif

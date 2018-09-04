@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef MRPT_COctoMapBase_H
-#define MRPT_COctoMapBase_H
+#pragma once
 
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/config/CLoadableOptions.h>
@@ -390,6 +389,5 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 
 };  // End of class def.
 }
-#endif
 
 

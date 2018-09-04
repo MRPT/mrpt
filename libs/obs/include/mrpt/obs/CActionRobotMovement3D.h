@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CActionRobotMovement3D_H
-#define CActionRobotMovement3D_H
+#pragma once
 
 #include <mrpt/obs/CAction.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
@@ -118,6 +117,5 @@ class CActionRobotMovement3D : public CAction
 };  // End of class def.
 
 }
-#endif
 
 

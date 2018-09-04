@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef TMonteCarloLocalizationParams_H
-#define TMonteCarloLocalizationParams_H
+#pragma once
 
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/slam/TKLDParams.h>
@@ -49,6 +48,5 @@ struct TMonteCarloLocalizationParams
 };
 
 }
-#endif
 
 

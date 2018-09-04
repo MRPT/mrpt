@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+
    */
-#ifndef CFeatureExtraction_H
-#define CFeatureExtraction_H
+#pragma once
 
 #include <mrpt/img/CImage.h>
 #include <mrpt/system/CTicTac.h>
@@ -720,6 +719,5 @@ class CFeatureExtraction
 
 };  // end of class
 }
-#endif
 
 

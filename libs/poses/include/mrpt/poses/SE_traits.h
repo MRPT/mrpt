@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef MRPT_SE3_TRAITS_H
-#define MRPT_SE3_TRAITS_H
+#pragma once
 
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
@@ -153,4 +152,3 @@ struct SE_traits<2>
 /** @} */  // end of grouping
 
 }  // namespace mrpt::poses
-#endif

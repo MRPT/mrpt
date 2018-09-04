@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPOSEPDF_H
-#define CPOSEPDF_H
+#pragma once
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/poses/CPose2D.h>
@@ -133,6 +132,5 @@ class CPosePDF : public mrpt::serialization::CSerializable,
 };  // End of class def.
 
 }
-#endif
 
 

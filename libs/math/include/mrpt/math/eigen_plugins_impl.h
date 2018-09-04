@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef MRPT_EIGEN_PLUGINS_IMPL_H
-#define MRPT_EIGEN_PLUGINS_IMPL_H
+#pragma once
 
 // -------------------------------------------------------------------------
 //  This file implements some templates which had to be left only declared
@@ -462,4 +461,3 @@ void Eigen::MatrixBase<Derived>::loadFromTextFile(std::istream& f)
 			"loadFromTextFile: Error loading from text file");
 }
 
-#endif  // guard define

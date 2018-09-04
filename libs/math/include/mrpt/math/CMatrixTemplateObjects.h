@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CMatrixTemplateObjects_H
-#define CMatrixTemplateObjects_H
+#pragma once
 
 #include <mrpt/math/CMatrixTemplate.h>
 
@@ -127,6 +126,5 @@ class CMatrixTemplateObjects : public CMatrixTemplate<T*>
 };  // end of class definition
 
 }
-#endif
 
 

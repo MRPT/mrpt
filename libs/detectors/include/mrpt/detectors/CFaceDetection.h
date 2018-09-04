@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CFaceDetection_H
-#define CFaceDetection_H
+#pragma once
 
 #include <mrpt/detectors/CObjectDetection.h>
 #include <mrpt/detectors/CCascadeClassifierDetection.h>
@@ -206,4 +205,3 @@ class CFaceDetection : public CObjectDetection
 }
 }
 
-#endif

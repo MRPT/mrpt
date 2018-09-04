@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPose3DQuatPDFGaussianInf_H
-#define CPose3DQuatPDFGaussianInf_H
+#pragma once
 
 #include <mrpt/poses/CPose3DQuatPDF.h>
 #include <mrpt/poses/CPose3DPDF.h>
@@ -165,6 +164,5 @@ std::ostream& operator<<(
 	std::ostream& out, const CPose3DQuatPDFGaussianInf& obj);
 
 }
-#endif
 
 

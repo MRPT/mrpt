@@ -8,8 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 // Font header file
-#ifndef mono_FONT_HEADER
-#define mono_FONT_HEADER
+#pragma once
 
 Point mono_vertices[] = {
 
@@ -2651,4 +2650,3 @@ Font mono_font = {mono_vertices, mono_triangles, mono_lines, mono_chars,
 				  "37;?CGKOSW[_cgkosw{\"&*.26:>BFJNRVZ^bfjnrvz~\t!%)-159="
 				  "AEIMQUY]aeimquy}"};
 
-#endif

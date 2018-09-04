@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_opengl_H
-#define _mrpt_opengl_H
+#pragma once
 
 #include <mrpt/config.h>
 
@@ -62,4 +61,3 @@
 #include <mrpt/opengl/pose_pdfs.h>
 #include <mrpt/opengl/graph_tools.h>
 
-#endif

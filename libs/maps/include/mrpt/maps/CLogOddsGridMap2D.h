@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CLogOddsGridMap2D_H
-#define CLogOddsGridMap2D_H
+#pragma once
 
 #include <cstdint>
 #include <vector>
@@ -251,4 +250,3 @@ struct CLogOddsGridMapLUT : public detail::logoddscell_traits<TCELL>
 }  // End of namespace
 }  // End of namespace
 
-#endif

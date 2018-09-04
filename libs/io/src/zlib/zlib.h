@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef ZLIB_H
-#define ZLIB_H
+#pragma once
 
 #include "zconf.h"
 
@@ -1311,4 +1310,3 @@ ZEXTERN const uLongf* ZEXPORT get_crc_table OF((void));
 }
 #endif
 
-#endif /* ZLIB_H */

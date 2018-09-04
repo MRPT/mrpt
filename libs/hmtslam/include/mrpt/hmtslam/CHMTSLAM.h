@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CHMTSLAM_H
-#define CHMTSLAM_H
+#pragma once
 
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/containers/CThreadSafeQueue.h>
@@ -657,4 +656,3 @@ class CLSLAM_RBPF_2DLASER : public CLSLAMAlgorithmBase
 }  // End of namespace
 }  // End of namespace
 
-#endif

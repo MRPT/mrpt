@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CSimpleMap_H
-#define CSimpleMap_H
+#pragma once
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -206,6 +205,5 @@ class CSimpleMap : public mrpt::serialization::CSerializable
 };  // End of class def.
 
 }
-#endif
 
 

@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef  __FREEGLUT_H__
-#define  __FREEGLUT_H__
+#pragma once
 
 /*
  * freeglut.h
@@ -27,4 +26,3 @@
 
 /*** END OF FILE ***/
 
-#endif /* __FREEGLUT_H__ */

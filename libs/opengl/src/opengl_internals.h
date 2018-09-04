@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef opengl_internals_H
-#define opengl_internals_H
+#pragma once
 
 #define GL_GLEXT_PROTOTYPES 1
 #define GLEW_STATIC
@@ -60,4 +59,3 @@
 
 #endif  // MRPT_HAS_OPENGL_GLUT
 
-#endif

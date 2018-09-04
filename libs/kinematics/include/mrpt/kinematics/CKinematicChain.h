@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef mrpt_CKinematicChain_H
-#define mrpt_CKinematicChain_H
+#pragma once
 
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CSerializable.h>
@@ -203,4 +202,3 @@ MRPT_DECLARE_TTYPENAME_NAMESPACE(TKinematicLink, ::mrpt::kinematics)
 
 }  // namespace mrpt
 
-#endif

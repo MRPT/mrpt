@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef _CSICKTIM561ETH_2050101_H__
-#define _CSICKTIM561ETH_2050101_H__
+#pragma once
 
 #include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
 #include <mrpt/comms/CClientTCPSocket.h>
@@ -110,6 +109,5 @@ class CSICKTim561Eth : public C2DRangeFinderAbstract
 		const std::string& iniSection);
 };
 }
-#endif  // _CSICKTIM561ETH_2050101_H__
 
 

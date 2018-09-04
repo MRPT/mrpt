@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef opengl_CMesh_H
-#define opengl_CMesh_H
+#pragma once
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/CMatrix.h>
@@ -261,6 +260,5 @@ class CMesh : public CRenderizableDisplayList
 };
 
 }
-#endif
 
 

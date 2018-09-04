@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CTuMicos_H
-#define CTuMicos_H
+#pragma once
 
 #include <mrpt/comms/CSerialPort.h>
 #include <mrpt/hwdrivers/CPtuBase.h>
@@ -326,6 +325,5 @@ class CTuMicos : public CPtuBase, public mrpt::system::COutputLogger
 };  // End of class
 
 }
-#endif
 
 

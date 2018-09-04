@@ -22,8 +22,7 @@
 //
 // Author: David Arthur (darthur@gmail.com), 2009
 
-#ifndef KM_UTILS_H__
-#define KM_UTILS_H__
+#pragma once
 
 #include <mrpt/config.h>  // For HAVE_MALLOC_H
 
@@ -104,4 +103,3 @@ inline int GetRandom(int n)
 	return ((u % n) + n) % n;
 }
 
-#endif

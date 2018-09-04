@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef opengl_CSimpleLine_H
-#define opengl_CSimpleLine_H
+#pragma once
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 
@@ -89,6 +88,5 @@ class CSimpleLine : public CRenderizableDisplayList
 };
 
 }
-#endif
 
 

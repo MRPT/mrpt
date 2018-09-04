@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPose3DPDFGaussian_H
-#define CPose3DPDFGaussian_H
+#pragma once
 
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/poses/CPose3D.h>
@@ -254,4 +253,3 @@ bool USE_SUT_QUAT2EULER_CONVERSION();
 
 }  // End of namespace
 
-#endif

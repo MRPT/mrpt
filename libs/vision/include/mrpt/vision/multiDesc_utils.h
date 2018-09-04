@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef mrpt_multiDesc_utils_H
-#define mrpt_multiDesc_utils_H
+#pragma once
 
 #include <mrpt/vision/CFeature.h>
 #include <mrpt/img/CImage.h>
@@ -273,6 +272,5 @@ void computeMultiOrientations(
 
 /** @} */  // end of grouping
 }
-#endif
 
 

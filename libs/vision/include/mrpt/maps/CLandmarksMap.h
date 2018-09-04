@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CLandmarksMap_H
-#define CLandmarksMap_H
+#pragma once
 
 #include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/maps/CMetricMap.h>
@@ -718,4 +717,3 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 }  // End of namespace
 }  // End of namespace
 
-#endif

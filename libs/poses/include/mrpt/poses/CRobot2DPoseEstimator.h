@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CRobot2DPoseEstimator_H
-#define CRobot2DPoseEstimator_H
+#pragma once
 
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/core/Clock.h>
@@ -113,6 +112,5 @@ class CRobot2DPoseEstimator
 };  // end of class
 
 }
-#endif
 
 

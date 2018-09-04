@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CHolonomicVFF_H
-#define CHolonomicVFF_H
+#pragma once
 
 #include "CAbstractHolonomicReactiveMethod.h"
 #include "CHolonomicLogFileRecord.h"
@@ -94,6 +93,5 @@ class CHolonomicVFF : public CAbstractHolonomicReactiveMethod
 };
 /** @} */
 }
-#endif
 
 

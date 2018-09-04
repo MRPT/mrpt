@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef opengl_CPolyhedron_H
-#define opengl_CPolyhedron_H
+#pragma once
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/geometry.h>
@@ -987,4 +986,3 @@ MRPT_DECLARE_TTYPENAME_NAMESPACE(CPolyhedron::TPolyhedronEdge, mrpt::opengl)
 MRPT_DECLARE_TTYPENAME_NAMESPACE(CPolyhedron::TPolyhedronFace, mrpt::opengl)
 }  // namespace typemeta
 }  // namespace mrpt
-#endif

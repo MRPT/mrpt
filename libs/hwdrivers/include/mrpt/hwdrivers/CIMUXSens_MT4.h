@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CIMUXSens_MT4_H
-#define CIMUXSens_MT4_H
+#pragma once
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/poses/CPose3D.h>
@@ -98,6 +97,5 @@ class CIMUXSens_MT4 : public hwdrivers::CGenericSensor
 };  // end of class
 
 }
-#endif
 
 

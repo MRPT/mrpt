@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef opengl_CMesh3D_H
-#define opengl_CMesh3D_H
+#pragma once
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/img/color_maps.h>
@@ -173,6 +172,5 @@ class CMesh3D : public CRenderizableDisplayList
 };
 
 }
-#endif
 
 

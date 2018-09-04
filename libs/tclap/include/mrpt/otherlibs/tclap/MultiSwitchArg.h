@@ -30,8 +30,7 @@
 *****************************************************************************/
 
 
-#ifndef TCLAP_MULTI_SWITCH_ARG_H
-#define TCLAP_MULTI_SWITCH_ARG_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -214,4 +213,3 @@ std::string MultiSwitchArg<DUMMY>::longID(const std::string& val) const
 
 } //namespace TCLAP
 
-#endif

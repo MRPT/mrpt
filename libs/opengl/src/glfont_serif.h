@@ -8,8 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 // Font header file
-#ifndef serif_FONT_HEADER
-#define serif_FONT_HEADER
+#pragma once
 
 Point serif_vertices[] = {
 
@@ -3059,4 +3058,3 @@ Font serif_font = {serif_vertices, serif_triangles, serif_lines, serif_chars,
 				   "37;?CGKOSW[_cgkosw{\"&*.26:>BFJNRVZ^bfjnrvz~\t!%)-159="
 				   "AEIMQUY]aeimquy}"};
 
-#endif

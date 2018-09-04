@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef math_modelsearch_impl_h
-#define math_modelsearch_impl_h
+#pragma once
 
 #ifndef math_modelsearch_h
 #include "model_search.h"
@@ -224,6 +223,5 @@ bool ModelSearch::geneticSingleModel(
 }
 }  // namespace mrpt
 
-#endif  // math_modelsearch_h
 
 

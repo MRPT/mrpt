@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef opengl_CMeshFast_H
-#define opengl_CMeshFast_H
+#pragma once
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/CMatrix.h>
@@ -262,6 +261,5 @@ class CMeshFast : public CRenderizableDisplayList
 };
 
 }
-#endif
 
 

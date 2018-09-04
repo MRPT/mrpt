@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CIMUXSens_H
-#define CIMUXSens_H
+#pragma once
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/comms/CSerialPort.h>
@@ -102,6 +101,5 @@ class CIMUXSens : public hwdrivers::CGenericSensor
 };  // end of class
 
 }
-#endif
 
 

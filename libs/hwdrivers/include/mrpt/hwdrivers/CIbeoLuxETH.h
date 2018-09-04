@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CIbeoLuxETH_H
-#define CIbeoLuxETH_H
+#pragma once
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/poses/CPose3D.h>
@@ -106,6 +105,5 @@ class CIbeoLuxETH : public mrpt::hwdrivers::CGenericSensor
 		const std::string& iniSection);
 };
 }
-#endif
 
 

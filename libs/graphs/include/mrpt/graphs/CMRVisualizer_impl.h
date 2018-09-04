@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CMRVISUALIZER_IMPL_H
-#define CMRVISUALIZER_IMPL_H
+#pragma once
 
 #include <mrpt/img/TColorManager.h>
 
@@ -281,6 +280,5 @@ void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
 }
 }  // end of namespaces
 
-#endif /* end of include guard: CMRVISUALIZER_IMPL_H */
 
 

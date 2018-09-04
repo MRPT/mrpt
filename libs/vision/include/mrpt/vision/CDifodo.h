@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CDifodo_H
-#define CDifodo_H
+#pragma once
 
 #include <mrpt/math/types_math.h>  // Eigen
 #include <mrpt/math/CMatrixFixedNumeric.h>
@@ -308,6 +307,5 @@ class CDifodo
 	CDifodo();
 };
 }
-#endif
 
 

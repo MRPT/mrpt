@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef observations_overlap_H
-#define observations_overlap_H
+#pragma once
 
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -69,6 +68,5 @@ inline double observationsOverlap(
 /** @} */  // end grouping
 
 }
-#endif
 
 

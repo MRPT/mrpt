@@ -13,8 +13,7 @@
  * href="group__mrpt__pbmap__grp.html" >mrpt-pbmap</a>
  */
 
-#ifndef __PBMAP_PLANE_H
-#define __PBMAP_PLANE_H
+#pragma once
 
 #include <mrpt/config.h>
 
@@ -219,6 +218,5 @@ normal
 }
 #endif
 
-#endif
 
 

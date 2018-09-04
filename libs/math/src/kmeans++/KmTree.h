@@ -33,8 +33,7 @@
 //
 // Author: David Arthur (darthur@gmail.com), 2009
 
-#ifndef KM_TREE_H__
-#define KM_TREE_H__
+#pragma once
 
 // Includes
 #include "KmUtils.h"
@@ -104,4 +103,3 @@ class KmTree
 	int* point_indices_;
 };
 
-#endif

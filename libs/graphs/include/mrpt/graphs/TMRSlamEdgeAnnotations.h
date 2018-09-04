@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef TMRSLAMEDGEANNOTATIONS_H
-#define TMRSLAMEDGEANNOTATIONS_H
+#pragma once
 
 namespace mrpt::graphs::detail
 {
@@ -24,6 +23,5 @@ struct TMRSlamEdgeAnnotations
 	bool is_interconnecting_edge;
 };
 }
-#endif /* end of include guard: TMRSLAMEDGEANNOTATIONS_H */
 
 

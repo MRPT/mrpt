@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef opengl_CFBORender_H
-#define opengl_CFBORender_H
+#pragma once
 
 #include <mrpt/img/CImage.h>
 #include <mrpt/opengl/COpenGLScene.h>
@@ -88,6 +87,5 @@ class CFBORender : public mrpt::opengl::CTextMessageCapable
 	int isExtensionSupported(const char* extension);
 };
 }
-#endif
 
 

@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef IMGFEATURES_H
-#define IMGFEATURES_H
+#pragma once
 
 //#include "cxcore.h"
 // Universal include for all versions of OpenCV
@@ -122,4 +121,3 @@ extern double descr_dist_sq(struct feature* f1, struct feature* f2);
 }
 #endif
 
-#endif

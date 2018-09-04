@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef MRPT_FASTER_CORNER_PROTO_H
-#define MRPT_FASTER_CORNER_PROTO_H
+#pragma once
 
 #include <mrpt/vision/TSimpleFeature.h>
 // Universal include for all versions of OpenCV
@@ -35,4 +34,3 @@ void fast_corner_detect_12(
 
 #endif
 
-#endif

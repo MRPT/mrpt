@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CMultiMetricMapPDF_H
-#define CMultiMetricMapPDF_H
+#pragma once
 
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/CSimpleMap.h>
@@ -282,4 +281,3 @@ class CMultiMetricMapPDF
 }  // End of namespace
 }  // End of namespace
 
-#endif
