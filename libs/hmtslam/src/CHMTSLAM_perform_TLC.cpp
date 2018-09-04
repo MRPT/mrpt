@@ -104,10 +104,8 @@ void CHMTSLAM::perform_TLC(
 
 	// * Mark all poses in LMH \in Ai as being of "Ae":
 	// ----------------------------------------------------------------------------------------------
-	for (map<TPoseID, CHMHMapNode::TNodeID>::iterator it =
-			 LMH.m_nodeIDmemberships.begin();
-		 it != LMH.m_nodeIDmemberships.end(); ++it)
-		if (it->second == Ai) it->second = Ae;
+	for (auto & m_nodeIDmembership : LMH.m_nodeIDmemberships)
+		if (m_nodeIDmembership.second == Ai) m_nodeIDmembership.second = Ae;
 
 	// * Replace "Ai" by "Ae" in the list of neighbors areas:
 	// ----------------------------------------------------------------------------------------------
@@ -134,9 +132,8 @@ void CHMTSLAM::perform_TLC(
 	{
 		TArcList lstArcs;
 		m_map.getNodeByID(Ai)->getArcs(lstArcs);
-		for (TArcList::iterator arc = lstArcs.begin(); arc != lstArcs.end();
-			 ++arc)
-			arc->reset();  // The "delete" will automatically remove the entry
+		for (auto & lstArc : lstArcs)
+			lstArc.reset();  // The "delete" will automatically remove the entry
 		// in "m_map". Other smrtpnts will be cleared too.
 
 		m_map.getNodeByID(Ai).reset();  // The "delete" will automatically

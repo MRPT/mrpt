@@ -315,7 +315,7 @@ bool CRoboPeakLidar::checkCOMMs()
 			(unsigned int)devinfo.hardware_version,
 			(unsigned int)devinfo.model);
 
-		for (int i = 0; i < 16; i++) printf("%02X", devinfo.serialnum[i]);
+		for (unsigned char i : devinfo.serialnum) printf("%02X", i);
 		printf("\n");
 	}
 

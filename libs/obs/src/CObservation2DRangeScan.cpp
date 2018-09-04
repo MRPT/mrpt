@@ -309,11 +309,10 @@ void CObservation2DRangeScan::filterByExclusionAreas(
 		this->sensorPose.composePoint(Lx, Ly, 0, Gx, Gy, Gz);
 
 		// Filter by X,Y:
-		for (TListExclusionAreasWithRanges::const_iterator i = areas.begin();
-			 i != areas.end(); ++i)
+		for (const auto & area : areas)
 		{
-			if (i->first.PointIntoPolygon(Gx, Gy) &&
-				(Gz >= i->second.first && Gz <= i->second.second))
+			if (area.first.PointIntoPolygon(Gx, Gy) &&
+				(Gz >= area.second.first && Gz <= area.second.second))
 			{
 				*valid_it = false;
 				break;  // Go for next point
@@ -333,10 +332,10 @@ void CObservation2DRangeScan::filterByExclusionAreas(
 	if (areas.empty()) return;
 
 	TListExclusionAreasWithRanges lst;
-	for (size_t i = 0; i < areas.size(); i++)
+	for (const auto & area : areas)
 	{
 		TListExclusionAreasWithRanges::value_type dat;
-		dat.first = areas[i];
+		dat.first = area;
 		dat.second.first = -std::numeric_limits<double>::max();
 		dat.second.second = std::numeric_limits<double>::max();
 
@@ -374,12 +373,11 @@ void CObservation2DRangeScan::filterByExclusionAngles(
 	}
 
 	// For each forbiden angle range:
-	for (vector<pair<double, double>>::const_iterator itA = angles.begin();
-		 itA != angles.end(); ++itA)
+	for (const auto & angle : angles)
 	{
-		int ap_idx_ini = mrpt::math::wrapTo2Pi(itA->first - Ang) /
+		int ap_idx_ini = mrpt::math::wrapTo2Pi(angle.first - Ang) /
 						 dA;  // The signs are all right! ;-)
-		int ap_idx_end = mrpt::math::wrapTo2Pi(itA->second - Ang) / dA;
+		int ap_idx_end = mrpt::math::wrapTo2Pi(angle.second - Ang) / dA;
 
 		if (ap_idx_ini < 0) ap_idx_ini = 0;
 		if (ap_idx_end < 0) ap_idx_end = 0;

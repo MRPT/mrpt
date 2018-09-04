@@ -268,11 +268,9 @@ void MapBuilding_RBPF()
 
 		mapBuilder.initialize(dummySimpleMap, &startPose);
 
-		for (CMultiMetricMapPDF::CParticleList::iterator it =
-				 mapBuilder.mapPDF.m_particles.begin();
-			 it != mapBuilder.mapPDF.m_particles.end(); ++it)
+		for (auto & m_particle : mapBuilder.mapPDF.m_particles)
 		{
-			CRBPFParticleData* part_d = it->d.get();
+			CRBPFParticleData* part_d = m_particle.d.get();
 			CMultiMetricMap& mmap = part_d->mapTillNow;
 			mrpt::maps::COccupancyGridMap2D::Ptr it_grid =
 				mmap.getMapByClass<mrpt::maps::COccupancyGridMap2D>();
@@ -535,14 +533,14 @@ void MapBuilding_RBPF()
 						mapBuilder.mapPDF.getPath(i, path);
 
 						float x0 = 0, y0 = 0, z0 = 0;
-						for (size_t k = 0; k < path.size(); k++)
+						for (auto & k : path)
 						{
 							objLines->appendLine(
-								x0, y0, z0 + 0.001, path[k].x, path[k].y,
-								path[k].z + 0.001);
-							x0 = path[k].x;
-							y0 = path[k].y;
-							z0 = path[k].z;
+								x0, y0, z0 + 0.001, k.x, k.y,
+								k.z + 0.001);
+							x0 = k.x;
+							y0 = k.y;
+							z0 = k.z;
 						}
 					}
 					scene->insert(objLines);

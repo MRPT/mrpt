@@ -205,11 +205,9 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
 		// Save history of feature observations:
 		tracker->getProfiler().enter("Save history");
 
-		for (size_t i = 0; i < trackedFeats.size(); ++i)
+		for (auto & f : trackedFeats)
 		{
-			TSimpleFeature& f = trackedFeats[i];
-
-			const TPixelCoordf pxRaw(f.pt.x, f.pt.y);
+				const TPixelCoordf pxRaw(f.pt.x, f.pt.y);
 			TPixelCoordf pxUndist;
 			// mrpt::vision::pinhole::undistort_point(pxRaw,pxUndist,
 			// cameraParams);
@@ -273,10 +271,9 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
 
 			std::set<TFeatureID> observed_IDs;
 
-			for (size_t i = 0; i < trackedFeats.size(); ++i)
+			for (const auto & ft : trackedFeats)
 			{
-				const TSimpleFeature& ft = trackedFeats[i];
-				std::list<TPixelCoord>& seq = feat_tracks[ft.ID];
+					std::list<TPixelCoord>& seq = feat_tracks[ft.ID];
 
 				observed_IDs.insert(ft.ID);
 

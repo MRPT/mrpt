@@ -151,12 +151,9 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 	rawlog.loadFromRawLogFile(RAWLOG_FILE);
 	rawlogEntries = rawlog.size();
 
-	for (std::vector<int>::iterator itNum = particles_count.begin();
-		 itNum != particles_count.end(); ++itNum)
+	for (int PARTICLE_COUNT : particles_count)
 	{
-		int PARTICLE_COUNT = *itNum;
-
-		// Global stats for all the experiment loops:
+			// Global stats for all the experiment loops:
 		vector<double> covergenceErrors;
 		covergenceErrors.reserve(NUM_REPS);
 		// --------------------------------------------------------------------

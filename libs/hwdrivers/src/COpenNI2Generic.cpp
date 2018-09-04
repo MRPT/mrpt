@@ -205,11 +205,9 @@ int COpenNI2Generic::getConnectedDevices()
 		}
 	}
 	// Add new devices to device list(static member).
-	for (std::set<int>::const_iterator it = newDevices.begin(),
-									   it_end = newDevices.end();
-		 it != it_end; ++it)
+	for (int newDevice : newDevices)
 	{
-		const openni::DeviceInfo& info = oni2InfoArray[*it];
+		const openni::DeviceInfo& info = oni2InfoArray[newDevice];
 		CDevice::Ptr device = CDevice::create(
 			info, (openni::PixelFormat)m_rgb_format,
 			(openni::PixelFormat)m_depth_format, m_verbose);
@@ -219,7 +217,7 @@ int COpenNI2Generic::getConnectedDevices()
 			if (device->getSerialNumber(sn))
 			{
 				showLog(
-					mrpt::format("Device[%d]: serial number: `%u`\n", *it, sn));
+					mrpt::format("Device[%d]: serial number: `%u`\n", newDevice, sn));
 			}
 		}
 	}
@@ -665,13 +663,13 @@ bool COpenNI2Generic::CDevice::synchMirrorMode()
 {
 	m_mirror = false;
 	// Check whether both stream support mirroring.
-	for (int i = 0; i < STREAM_TYPE_SIZE; ++i)
+	for (auto & m_stream : m_streams)
 	{
-		if (!m_streams[i]) continue;
+		if (!m_stream) continue;
 		bool mirror_support;
 		try
 		{
-			mirror_support = m_streams[i]->isMirrorSupported();
+			mirror_support = m_stream->isMirrorSupported();
 		}
 		catch (std::logic_error& e)
 		{
@@ -681,7 +679,7 @@ bool COpenNI2Generic::CDevice::synchMirrorMode()
 		{
 			m_log << "[" << __FUNCTION__ << "]" << std::endl;
 			m_log << " openni::STREAM_PROPERTY_MIRRORING is not supported on "
-				  << m_streams[i]->getName() << "." << std::endl;
+				  << m_stream->getName() << "." << std::endl;
 			m_log << " We assume this is MS Kinect and taken images are "
 					 "inverted to right and left."
 				  << std::endl;
@@ -692,14 +690,14 @@ bool COpenNI2Generic::CDevice::synchMirrorMode()
 		}
 	}
 	// Set both stream to same mirror mode.
-	for (int i = 0; i < STREAM_TYPE_SIZE; ++i)
+	for (auto & m_stream : m_streams)
 	{
-		if (!m_streams[i]) continue;
-		if (m_streams[i]->isMirrorSupported() == false)
+		if (!m_stream) continue;
+		if (m_stream->isMirrorSupported() == false)
 		{
 			break;
 		}
-		if (m_streams[i]->setMirror(m_mirror) == false)
+		if (m_stream->setMirror(m_mirror) == false)
 		{
 			return false;
 		}
@@ -749,10 +747,10 @@ bool COpenNI2Generic::CDevice::isOpen() const
 
 void COpenNI2Generic::CDevice::close()
 {
-	for (int i = 0; i < STREAM_TYPE_SIZE; ++i)
+	for (auto & m_stream : m_streams)
 	{
-		if (!m_streams[i]) continue;
-		m_streams[i]->destroy();
+		if (!m_stream) continue;
+		m_stream->destroy();
 	}
 	m_device.close();
 }

@@ -325,15 +325,14 @@ void xRawLogViewerFrame::OnMenuRegenerateGPSTimestamps(wxCommandEvent& event)
 			{
 				CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
 
-				for (CSensoryFrame::iterator it = sf->begin(); it != sf->end();
-					 ++it)
+				for (auto & it : *sf)
 				{
-					if ((*it)->GetRuntimeClass() == CLASS_ID(CObservationGPS) &&
-						find_in_vector((*it)->sensorLabel, the_labels) !=
+					if (it->GetRuntimeClass() == CLASS_ID(CObservationGPS) &&
+						find_in_vector(it->sensorLabel, the_labels) !=
 							string::npos)
 					{
 						CObservationGPS::Ptr obs =
-							std::dynamic_pointer_cast<CObservationGPS>(*it);
+							std::dynamic_pointer_cast<CObservationGPS>(it);
 						fixGPStimestamp(obs, time_changes, DeltaTimes);
 					}
 				}
@@ -1133,10 +1132,9 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 
 		// The name of the file:
 		string joint_name;
-		for (set<string>::iterator it = lstAllGPSlabels.begin();
-			 it != lstAllGPSlabels.end(); ++it)
+		for (const auto & lstAllGPSlabel : lstAllGPSlabels)
 		{
-			joint_name += *it;
+			joint_name += lstAllGPSlabel;
 		}
 
 		MAT.saveToTextFile(

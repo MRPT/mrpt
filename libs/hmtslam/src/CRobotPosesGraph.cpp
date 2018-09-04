@@ -60,11 +60,10 @@ void CRobotPosesGraph::serializeFrom(
 void CRobotPosesGraph::insertIntoMetricMap(CMultiMetricMap& metricMap) const
 {
 	CPose3D meanPose;
-	for (std::map<TPoseID, TPoseInfo>::const_iterator it = begin(); it != end();
-		 ++it)
+	for (const auto & it : *this)
 	{
-		it->second.pdf.getMean(meanPose);
-		it->second.sf.insertObservationsInto(&metricMap, &meanPose);
+		it.second.pdf.getMean(meanPose);
+		it.second.sf.insertObservationsInto(&metricMap, &meanPose);
 	}
 }
 
@@ -74,7 +73,6 @@ void CRobotPosesGraph::insertIntoMetricMap(CMultiMetricMap& metricMap) const
 void CRobotPosesGraph::convertIntoSimplemap(CSimpleMap& out_simplemap) const
 {
 	out_simplemap.clear();
-	for (std::map<TPoseID, TPoseInfo>::const_iterator it = begin(); it != end();
-		 ++it)
-		out_simplemap.insert(&it->second.pdf, it->second.sf);
+	for (const auto & it : *this)
+		out_simplemap.insert(&it.second.pdf, it.second.sf);
 }

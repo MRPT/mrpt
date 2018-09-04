@@ -1556,10 +1556,9 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 	bool any_TPTarget_is_valid = false;
 	if (use_this_ptg)
 	{
-		for (size_t i = 0; i < relTargets.size(); i++)
+		for (const auto & trg : relTargets)
 		{
-			const auto& trg = relTargets[i];
-			PTGTarget ptg_target;
+				PTGTarget ptg_target;
 
 			ptg_target.valid_TP = ptg->inverseMap_WS2TP(
 				trg.x, trg.y, ptg_target.target_k, ptg_target.target_dist);

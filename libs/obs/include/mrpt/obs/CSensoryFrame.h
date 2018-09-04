@@ -213,10 +213,10 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
 		size_t foundCount = 0;
 		const mrpt::rtti::TRuntimeClassId* class_ID =
 			&T::GetRuntimeClassIdStatic();
-		for (const_iterator it = begin(); it != end(); ++it)
-			if ((*it)->GetRuntimeClass()->derivedFrom(class_ID))
+		for (const auto & it : *this)
+			if (it->GetRuntimeClass()->derivedFrom(class_ID))
 				if (foundCount++ == ith)
-					return std::dynamic_pointer_cast<T>(*it);
+					return std::dynamic_pointer_cast<T>(it);
 		return typename T::Ptr();  // Not found: return empty smart pointer
 		MRPT_END
 	}

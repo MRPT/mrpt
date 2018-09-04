@@ -52,11 +52,9 @@ void CEdgeCounter::getTotalNumOfEdges(int* total_num_edges) const
 	ASSERTDEB_(total_num_edges);
 	int sum = 0;
 
-	for (std::map<std::string, int>::const_iterator it =
-			 m_name_to_edges_num.begin();
-		 it != m_name_to_edges_num.end(); ++it)
+	for (const auto & it : m_name_to_edges_num)
 	{
-		sum += it->second;
+		sum += it.second;
 	}
 	*total_num_edges = sum;
 }
@@ -216,11 +214,9 @@ void CEdgeCounter::getAsString(std::string* str_out) const
 			  "same nodes): "
 		   << m_unique_edges << std::endl;
 
-	for (std::map<std::string, int>::const_iterator it =
-			 m_name_to_edges_num.begin();
-		 it != m_name_to_edges_num.end(); ++it)
+	for (const auto & it : m_name_to_edges_num)
 	{
-		ss_out << "\t" << it->first << " edges: " << it->second << std::endl;
+		ss_out << "\t" << it.first << " edges: " << it.second << std::endl;
 	}
 	ss_out << "\tLoop closure edges: " << this->getLoopClosureEdges()
 		   << std::endl;
@@ -249,11 +245,9 @@ void CEdgeCounter::setTextMessageParams(
 		"provided");
 	ASSERTDEB_EQUAL_(name_to_offset_y.size(), name_to_text_index.size());
 
-	for (std::map<std::string, double>::const_iterator it =
-			 name_to_offset_y.begin();
-		 it != name_to_offset_y.end(); ++it)
+	for (const auto & it : name_to_offset_y)
 	{
-		std::string name = it->first;
+		std::string name = it.first;
 
 		// check if name already exist, otherwise throw exception
 		std::map<std::string, int>::const_iterator search =
@@ -267,7 +261,7 @@ void CEdgeCounter::setTextMessageParams(
 		}
 		// name exists ...
 
-		double offset_y = it->second;
+		double offset_y = it.second;
 		int text_index = name_to_text_index.find(name)->second;
 
 		m_name_to_offset_y[name] = offset_y;
@@ -318,12 +312,10 @@ void CEdgeCounter::updateTextMessages() const
 	}
 
 	// add a textMessage for every stored edge type
-	for (std::map<std::string, double>::const_iterator it =
-			 m_name_to_offset_y.begin();
-		 it != m_name_to_offset_y.end(); ++it)
+	for (const auto & it : m_name_to_offset_y)
 	{
-		std::string name = it->first;
-		double offset_y = it->second;
+		std::string name = it.first;
+		double offset_y = it.second;
 		int text_index = m_name_to_text_index.find(name)->second;
 		int edges_num = m_name_to_edges_num.find(name)->second;
 

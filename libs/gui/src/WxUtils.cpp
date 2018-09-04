@@ -931,14 +931,14 @@ void CPanelCameraSelection::writeConfigFromVideoSourcePanel(
 				string(edCustomCamConfig->GetValue().mb_str()));
 			std::vector<std::string> allSects;
 			cfgIn.getAllSections(allSects);
-			for (size_t idxSect = 0; idxSect < allSects.size(); idxSect++)
+			for (const auto & allSect : allSects)
 			{
 				std::vector<std::string> keys;
-				cfgIn.getAllKeys(allSects[idxSect], keys);
-				for (size_t i = 0; i < keys.size(); i++)
+				cfgIn.getAllKeys(allSect, keys);
+				for (const auto & key : keys)
 					cfg->write(
-						allSects[idxSect], keys[i],
-						cfgIn.read_string(allSects[idxSect], keys[i], ""));
+						allSect, key,
+						cfgIn.read_string(allSect, key, ""));
 			}
 		}
 		break;

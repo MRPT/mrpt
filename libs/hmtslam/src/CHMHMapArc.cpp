@@ -135,12 +135,12 @@ void CHMHMapArc::serializeFrom(
 void TArcList::debugDump()
 {
 	printf("Dumping arcs list: %u elements\n", (unsigned int)size());
-	for (iterator i = begin(); i != end(); ++i)
+	for (auto & i : *this)
 	{
 		printf(
 			"\t'%s'\t-> '%s'\n",
-			(*i)->m_parent->getNodeByID((*i)->getNodeFrom())->m_label.c_str(),
-			(*i)->m_parent->getNodeByID((*i)->getNodeTo())->m_label.c_str());
+			i->m_parent->getNodeByID(i->getNodeFrom())->m_label.c_str(),
+			i->m_parent->getNodeByID(i->getNodeTo())->m_label.c_str());
 	}
 }
 
@@ -159,5 +159,5 @@ void TArcList::read(mrpt::serialization::CArchive& in)
 void TArcList::write(mrpt::serialization::CArchive& out) const
 {
 	out << static_cast<uint32_t>(this->size());
-	for (const_iterator i = begin(); i != end(); ++i) out << **i;
+	for (const auto & i : *this) out << *i;
 }

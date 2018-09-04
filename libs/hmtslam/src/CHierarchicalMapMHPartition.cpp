@@ -100,11 +100,10 @@ const CHMHMapNode::Ptr CHierarchicalMapMHPartition::getNodeByLabel(
 	MRPT_START
 
 	// Look for the ID:
-	for (TNodeList::const_iterator it = m_nodes.begin(); it != m_nodes.end();
-		 ++it)
-		if (it->second->m_hypotheses.has(hypothesisID))
-			if (!os::_strcmpi(it->second->m_label.c_str(), label.c_str()))
-				return it->second;
+	for (const auto & m_node : m_nodes)
+		if (m_node.second->m_hypotheses.has(hypothesisID))
+			if (!os::_strcmpi(m_node.second->m_label.c_str(), label.c_str()))
+				return m_node.second;
 
 	// Not found:
 	return CHMHMapNode::Ptr();
@@ -1343,16 +1342,15 @@ void CHierarchicalMapMHPartition::computeGloballyConsistentNodeCoordinates(
 	// in future version of HTML-SLAM!!)
 	graphs::CNetworkOfPoses3DInf pose_graph;
 
-	for (TArcList::const_iterator it_arc = m_arcs.begin();
-		 it_arc != m_arcs.end(); ++it_arc)
+	for (const auto & m_arc : m_arcs)
 	{
-		if (!(*it_arc)->m_hypotheses.has(hypothesisID)) continue;
+		if (!m_arc->m_hypotheses.has(hypothesisID)) continue;
 
-		const CHMHMapNode::TNodeID id_from = (*it_arc)->getNodeFrom();
-		const CHMHMapNode::TNodeID id_to = (*it_arc)->getNodeTo();
+		const CHMHMapNode::TNodeID id_from = m_arc->getNodeFrom();
+		const CHMHMapNode::TNodeID id_to = m_arc->getNodeTo();
 
 		CSerializable::Ptr anotation =
-			(*it_arc)->m_annotations.get(ARC_ANNOTATION_DELTA, hypothesisID);
+			m_arc->m_annotations.get(ARC_ANNOTATION_DELTA, hypothesisID);
 		if (!anotation) continue;
 
 		CPose3DPDFGaussianInf edge_rel_pose_pdf;  // Convert to gaussian
@@ -1410,15 +1408,14 @@ void CHierarchicalMapMHPartition::dumpAsText(std::vector<std::string>& st) const
 	st.push_back("LIST OF NODES");
 	st.push_back("================");
 
-	for (TNodeList::const_iterator it = m_nodes.begin(); it != m_nodes.end();
-		 ++it)
+	for (const auto & m_node : m_nodes)
 	{
 		std::string s;
 		s += format(
-			"NODE ID: %i\t LABEL:%s\tARCS: ", (int)it->second->getID(),
-			it->second->m_label.c_str());
+			"NODE ID: %i\t LABEL:%s\tARCS: ", (int)m_node.second->getID(),
+			m_node.second->m_label.c_str());
 		TArcList arcs;
-		it->second->getArcs(arcs);
+		m_node.second->getArcs(arcs);
 		for (TArcList::const_iterator a = arcs.begin(); a != arcs.end(); ++a)
 			s += format(
 				"%i-%i, ", (int)(*a)->getNodeFrom(), (int)(*a)->getNodeTo());
@@ -1426,8 +1423,8 @@ void CHierarchicalMapMHPartition::dumpAsText(std::vector<std::string>& st) const
 		st.push_back(s);
 
 		for (CMHPropertiesValuesList::const_iterator ann =
-				 it->second->m_annotations.begin();
-			 ann != it->second->m_annotations.end(); ++ann)
+				 m_node.second->m_annotations.begin();
+			 ann != m_node.second->m_annotations.end(); ++ann)
 		{
 			s = format(
 				"   [HYPO ID #%02i] Annotation '%s' Class: ", (int)ann->ID,
@@ -1442,14 +1439,14 @@ void CHierarchicalMapMHPartition::dumpAsText(std::vector<std::string>& st) const
 			if (ann->name == NODE_ANNOTATION_REF_POSEID)
 			{
 				TPoseID refID;
-				it->second->m_annotations.getElemental(
+				m_node.second->m_annotations.getElemental(
 					NODE_ANNOTATION_REF_POSEID, refID, ann->ID);
 				st.push_back(format("     VALUE: %i", (int)refID));
 			}
 			else if (ann->name == NODE_ANNOTATION_POSES_GRAPH)
 			{
 				CRobotPosesGraph::Ptr posesGraph =
-					it->second->m_annotations.getAs<CRobotPosesGraph>(
+					m_node.second->m_annotations.getAs<CRobotPosesGraph>(
 						NODE_ANNOTATION_POSES_GRAPH, ann->ID);
 				ASSERT_(posesGraph);
 
@@ -1478,20 +1475,20 @@ void CHierarchicalMapMHPartition::dumpAsText(std::vector<std::string>& st) const
 	st.push_back("LIST OF ARCS");
 	st.push_back("================");
 
-	for (TArcList::const_iterator it = m_arcs.begin(); it != m_arcs.end(); ++it)
+	for (const auto & m_arc : m_arcs)
 	{
 		std::string s;
 		s += format(
-			"ARC: %i -> %i\n", (int)(*it)->getNodeFrom(),
-			(int)(*it)->getNodeTo());
+			"ARC: %i -> %i\n", (int)m_arc->getNodeFrom(),
+			(int)m_arc->getNodeTo());
 
-		s += string("   Arc type: ") + (*it)->m_arcType;
+		s += string("   Arc type: ") + m_arc->m_arcType;
 
 		st.push_back(s);
 
 		for (CMHPropertiesValuesList::const_iterator ann =
-				 (*it)->m_annotations.begin();
-			 ann != (*it)->m_annotations.end(); ++ann)
+				 m_arc->m_annotations.begin();
+			 ann != m_arc->m_annotations.end(); ++ann)
 		{
 			s = format(
 				"   [HYPO ID #%02i] Annotation '%s' Class: ", (int)ann->ID,
@@ -1506,21 +1503,21 @@ void CHierarchicalMapMHPartition::dumpAsText(std::vector<std::string>& st) const
 			if (ann->name == ARC_ANNOTATION_DELTA_SRC_POSEID)
 			{
 				TPoseID refID;
-				(*it)->m_annotations.getElemental(
+				m_arc->m_annotations.getElemental(
 					ARC_ANNOTATION_DELTA_SRC_POSEID, refID, ann->ID);
 				st.push_back(format("     VALUE: %i", (int)refID));
 			}
 			else if (ann->name == ARC_ANNOTATION_DELTA_TRG_POSEID)
 			{
 				TPoseID refID;
-				(*it)->m_annotations.getElemental(
+				m_arc->m_annotations.getElemental(
 					ARC_ANNOTATION_DELTA_TRG_POSEID, refID, ann->ID);
 				st.push_back(format("     VALUE: %i", (int)refID));
 			}
 			else if (ann->name == ARC_ANNOTATION_DELTA)
 			{
 				CSerializable::Ptr o =
-					(*it)->m_annotations.get(ARC_ANNOTATION_DELTA, ann->ID);
+					m_arc->m_annotations.get(ARC_ANNOTATION_DELTA, ann->ID);
 				ASSERT_(o);
 
 				CPose3DPDFGaussian relativePoseAcordToArc;

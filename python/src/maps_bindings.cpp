@@ -259,7 +259,7 @@ list CMultiMetricMapPDF_getPath(CMultiMetricMapPDF& self, size_t i)
 	std::deque<mrpt::math::TPose3D> path;
 	list ret_val;
 	self.getPath(i, path);
-	for (size_t k = 0; k < path.size(); ++k) ret_val.append(path[k]);
+	for (const auto & k : path) ret_val.append(k);
 	return ret_val;
 }
 

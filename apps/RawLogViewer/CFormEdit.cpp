@@ -781,11 +781,9 @@ void filter_swapColors(
 {
 	if (SF)
 	{
-		for (CSensoryFrame::iterator it = SF->begin(); it != SF->end(); ++it)
+		for (auto obs : *SF)
 		{
-			CObservation::Ptr obs = *it;
-
-			if (IS_CLASS(obs, CObservationImage))
+				if (IS_CLASS(obs, CObservationImage))
 			{
 				CObservationImage* o = (CObservationImage*)obs.get();
 				if (o->image.isColor())

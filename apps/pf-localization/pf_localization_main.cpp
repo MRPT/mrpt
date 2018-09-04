@@ -352,12 +352,9 @@ void do_pf_localization(
 		}
 	}
 
-	for (std::vector<int>::iterator itNum = particles_count.begin();
-		 itNum != particles_count.end(); ++itNum)
+	for (int PARTICLE_COUNT : particles_count)
 	{
-		int PARTICLE_COUNT = *itNum;
-
-		printf(
+			printf(
 			"Initial PDF: %f particles/m2\n",
 			PARTICLE_COUNT / gridInfo.effectiveMappedArea);
 
@@ -912,16 +909,11 @@ void do_pf_localization(
 								static mrpt::gui::CDisplayWindowPlots win;
 
 								std::vector<float> ranges_mean, ranges_obs;
-								for (size_t i = 0;
-									 i < ssu_out.scanWithUncert.rangeScan.scan
-											 .size();
-									 i++)
+								for (float i : ssu_out.scanWithUncert.rangeScan.scan)
 									ranges_mean.push_back(
-										ssu_out.scanWithUncert.rangeScan
-											.scan[i]);
-								for (size_t i = 0; i < obs_scan->scan.size();
-									 i++)
-									ranges_obs.push_back(obs_scan->scan[i]);
+										i);
+								for (float i : obs_scan->scan)
+									ranges_obs.push_back(i);
 
 								win.plot(ranges_mean, "3k-", "mean");
 								win.plot(ranges_obs, "r-", "obs");

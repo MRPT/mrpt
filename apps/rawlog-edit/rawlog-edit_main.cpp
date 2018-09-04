@@ -439,12 +439,12 @@ int main(int argc, char** argv)
 		// Check the selected operation:
 		//  Only one of the ops should be selected:
 		string selected_op;
-		for (size_t i = 0; i < arg_ops.size(); i++)
-			if (arg_ops[i]->isSet())
+		for (auto & arg_op : arg_ops)
+			if (arg_op->isSet())
 			{
 				if (selected_op.empty())
 				{
-					selected_op = arg_ops[i]->getName();
+					selected_op = arg_op->getName();
 				}
 				else
 					throw std::runtime_error(
@@ -508,7 +508,7 @@ int main(int argc, char** argv)
 	}
 
 	// Free mem:
-	for (size_t i = 0; i < arg_ops.size(); i++) delete arg_ops[i];
+	for (auto & arg_op : arg_ops) delete arg_op;
 
 	// end:
 	return ret_val;
@@ -545,8 +545,8 @@ bool isFlagSet(TCLAP::CmdLine& cmdline, const std::string& arg_name)
 	using namespace TCLAP;
 
 	std::list<Arg*>& args = cmdline.getArgList();
-	for (std::list<Arg*>::iterator it = args.begin(); it != args.end(); ++it)
-		if ((*it)->getName() == arg_name) return (*it)->isSet();
+	for (auto & arg : args)
+		if (arg->getName() == arg_name) return arg->isSet();
 	return false;
 }
 
@@ -557,14 +557,14 @@ bool getArgValue(
 	using namespace TCLAP;
 
 	std::list<Arg*>& args = cmdline.getArgList();
-	for (std::list<Arg*>::iterator it = args.begin(); it != args.end(); ++it)
+	for (auto & it : args)
 	{
-		if ((*it)->getName() == arg_name)
+		if (it->getName() == arg_name)
 		{
 			// Is it set? Return the default value anyway:
-			TCLAP::ValueArg<T>* arg = static_cast<TCLAP::ValueArg<T>*>(*it);
+			TCLAP::ValueArg<T>* arg = static_cast<TCLAP::ValueArg<T>*>(it);
 			out_val = arg->getValue();
-			return (*it)->isSet();
+			return it->isSet();
 		}
 	}
 	return false;

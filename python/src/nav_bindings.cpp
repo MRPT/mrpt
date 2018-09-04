@@ -32,9 +32,9 @@ tuple PlannerSimple2D_computePath(
 	// convert to python compatible
 	boost::python::list ret_val;
 	boost::python::list py_path;
-	for (uint32_t i = 0; i < path.size(); ++i)
+	for (auto i : path)
 	{
-		py_path.append(path[i]);
+		py_path.append(i);
 	}
 	// setup return value
 	ret_val.append(py_path);

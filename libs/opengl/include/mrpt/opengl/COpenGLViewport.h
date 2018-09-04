@@ -449,9 +449,8 @@ inline COpenGLViewport::Ptr& operator<<(
 inline COpenGLViewport::Ptr& operator<<(
 	COpenGLViewport::Ptr& s, const std::vector<CRenderizable::Ptr>& v)
 {
-	for (std::vector<CRenderizable::Ptr>::const_iterator it = v.begin();
-		 it != v.end(); ++it)
-		s->insert(*it);
+	for (const auto & it : v)
+		s->insert(it);
 	return s;
 }
 

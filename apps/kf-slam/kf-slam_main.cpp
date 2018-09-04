@@ -650,11 +650,10 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 						init_pose = CPose3D(meanPath[0]).asTPose();
 
 					int path_decim = 0;
-					for (vector<TPose3D>::iterator it = meanPath.begin();
-						 it != meanPath.end(); ++it)
+					for (auto & it : meanPath)
 					{
-						linesPath->appendLine(init_pose, *it);
-						init_pose = *it;
+						linesPath->appendLine(init_pose, it);
+						init_pose = it;
 
 						if (++path_decim > 10)
 						{
@@ -662,7 +661,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 							mrpt::opengl::CSetOfObjects::Ptr xyz =
 								mrpt::opengl::stock_objects::CornerXYZSimple(
 									0.3f, 2.0f);
-							xyz->setPose(CPose3D(*it));
+							xyz->setPose(CPose3D(it));
 							scene3D->insert(xyz);
 						}
 					}

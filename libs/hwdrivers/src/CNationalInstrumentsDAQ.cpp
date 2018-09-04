@@ -191,9 +191,9 @@ void CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
 		t.taskLabel =
 			cfg.read_string(sect, sTask + string(".taskLabel"), sTask, false);
 
-		for (size_t j = 0; j < lstStrChanns.size(); j++)
+		for (auto & lstStrChann : lstStrChanns)
 		{
-			if (strCmpI(lstStrChanns[j], "ai"))
+			if (strCmpI(lstStrChann, "ai"))
 			{
 				t.has_ai = true;
 				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(
@@ -212,7 +212,7 @@ void CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
 					sTask + string(".ai.maxVal"), double, t.ai.maxVal, cfg,
 					sect)
 			}
-			else if (strCmpI(lstStrChanns[j], "ao"))
+			else if (strCmpI(lstStrChann, "ao"))
 			{
 				t.has_ao = true;
 				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(
@@ -228,19 +228,19 @@ void CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
 					sTask + string(".ao.maxVal"), double, t.ao.maxVal, cfg,
 					sect)
 			}
-			else if (strCmpI(lstStrChanns[j], "di"))
+			else if (strCmpI(lstStrChann, "di"))
 			{
 				t.has_di = true;
 				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(
 					sTask + string(".di.line"), string, t.di.line, cfg, sect)
 			}
-			else if (strCmpI(lstStrChanns[j], "do"))
+			else if (strCmpI(lstStrChann, "do"))
 			{
 				t.has_do = true;
 				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(
 					sTask + string(".do.line"), string, t.douts.line, cfg, sect)
 			}
-			else if (strCmpI(lstStrChanns[j], "ci_period"))
+			else if (strCmpI(lstStrChann, "ci_period"))
 			{
 				t.has_ci_period = true;
 				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(
@@ -265,7 +265,7 @@ void CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
 					sTask + string(".ci_period.divisor"), int,
 					t.ci_period.divisor, cfg, sect)
 			}
-			else if (strCmpI(lstStrChanns[j], "ci_count_edges"))
+			else if (strCmpI(lstStrChann, "ci_count_edges"))
 			{
 				t.has_ci_count_edges = true;
 				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(
@@ -281,7 +281,7 @@ void CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
 					sTask + string(".ci_count_edges.countDirection"), string,
 					t.ci_count_edges.countDirection, cfg, sect)
 			}
-			else if (strCmpI(lstStrChanns[j], "ci_pulse_width"))
+			else if (strCmpI(lstStrChann, "ci_pulse_width"))
 			{
 				t.has_ci_pulse_width = true;
 				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(
@@ -300,7 +300,7 @@ void CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
 					sTask + string(".ci_pulse_width.startingEdge"), string,
 					t.ci_pulse_width.startingEdge, cfg, sect)
 			}
-			else if (strCmpI(lstStrChanns[j], "ci_lin_encoder"))
+			else if (strCmpI(lstStrChann, "ci_lin_encoder"))
 			{
 				t.has_ci_lin_encoder = true;
 				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(
@@ -328,7 +328,7 @@ void CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
 					sTask + string(".ci_lin_encoder.initialPos"), double,
 					t.ci_lin_encoder.initialPos, cfg, sect)
 			}
-			else if (strCmpI(lstStrChanns[j], "ci_ang_encoder"))
+			else if (strCmpI(lstStrChann, "ci_ang_encoder"))
 			{
 				t.has_ci_ang_encoder = true;
 				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(
@@ -359,7 +359,7 @@ void CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
 					sTask + string(".ci_ang_encoder.decimate"), int,
 					t.ci_ang_encoder.decimate, cfg, sect)
 			}
-			else if (strCmpI(lstStrChanns[j], "co_pulses"))
+			else if (strCmpI(lstStrChann, "co_pulses"))
 			{
 				t.has_co_pulses = true;
 				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(
@@ -383,7 +383,7 @@ void CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
 				THROW_EXCEPTION_FMT(
 					"Unknown channel type '%s'! See the docs of "
 					"CNationalInstrumentsDAQ",
-					lstStrChanns[j].c_str())
+					lstStrChann.c_str())
 			}
 		}  // end for each "k" channel in channel "i"
 	}  // end for "i", each task
@@ -660,19 +660,17 @@ void CNationalInstrumentsDAQ::initialize()
 void CNationalInstrumentsDAQ::stop()
 {
 	// Stop all threads:
-	for (list<TInfoPerTask>::iterator it = m_running_tasks.begin();
-		 it != m_running_tasks.end(); ++it)
+	for (auto & m_running_task : m_running_tasks)
 	{
-		it->must_close = true;
+		m_running_task.must_close = true;
 	}
 	if (m_verbose)
 		cout << "[CNationalInstrumentsDAQ::stop] Waiting for grabbing threads "
 				"to end...\n";
-	for (list<TInfoPerTask>::iterator it = m_running_tasks.begin();
-		 it != m_running_tasks.end(); ++it)
+	for (auto & m_running_task : m_running_tasks)
 	{
 		// For some reason, join doesn't work...
-		if (it->hThread.joinable()) it->hThread.join();
+		if (m_running_task.hThread.joinable()) m_running_task.hThread.join();
 		// Polling:
 		// for (size_t tim=0;tim<250 && !it->is_closed;tim++) {
 		// std::this_thread::sleep_for(1ms); }
@@ -721,17 +719,16 @@ void CNationalInstrumentsDAQ::readFromDAQ(
 	// Read from the pipe:
 	m_state = ssWorking;
 
-	for (list<TInfoPerTask>::iterator it = m_running_tasks.begin();
-		 it != m_running_tasks.end(); ++it)
+	for (auto & m_running_task : m_running_tasks)
 	{
 		CObservationRawDAQ tmp_obs;
 		try
 		{
-			if (it->new_obs_available != 0)
+			if (m_running_task.new_obs_available != 0)
 			{
-				auto arch = mrpt::serialization::archiveFrom(*it->read_pipe);
+				auto arch = mrpt::serialization::archiveFrom(*m_running_task.read_pipe);
 				arch.ReadObject(&tmp_obs);
-				--(it->new_obs_available);
+				--(m_running_task.new_obs_available);
 
 				// Yes, valid block of samples was adquired:
 				outObservations.push_back(

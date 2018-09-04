@@ -25,7 +25,7 @@ CReactiveNavigationSystem3D::TPTGmultilevel::TPTGmultilevel() {}
 // Dtor: free PTG memory
 CReactiveNavigationSystem3D::TPTGmultilevel::~TPTGmultilevel()
 {
-	for (size_t i = 0; i < PTGs.size(); i++) delete PTGs[i];
+	for (auto & PTG : PTGs) delete PTG;
 	PTGs.clear();
 }
 
@@ -304,9 +304,9 @@ void CReactiveNavigationSystem3D::loggingGetWSObstaclesAndShape(
 	out_log.WS_Obstacles.clear();
 	// Include the points of all levels (this could be improved depending on
 	// STEP2)
-	for (unsigned int i = 0; i < m_WS_Obstacles_inlevels.size(); i++)
+	for (auto & m_WS_Obstacles_inlevel : m_WS_Obstacles_inlevels)
 		out_log.WS_Obstacles.insertAnotherMap(
-			&m_WS_Obstacles_inlevels[i], CPose3D(0, 0, 0));
+			&m_WS_Obstacles_inlevel, CPose3D(0, 0, 0));
 
 	// Polygons of each height level are drawn (but they are all shown
 	// connected...)

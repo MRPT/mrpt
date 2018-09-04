@@ -68,17 +68,17 @@ int run_build_tables(const std::string& PERF_DATA_DIR)
 	// make list of "perf-results-<SUFIX>" -> "whole path file"
 	vector<TPerfField> lstConfigurations;
 
-	for (size_t i = 0; i < fils.size(); i++)
+	for (auto & fil : fils)
 	{
-		if (!strStarts(fils[i].name, "perf-results")) continue;
-		size_t p = fils[i].name.find(".dat");
+		if (!strStarts(fil.name, "perf-results")) continue;
+		size_t p = fil.name.find(".dat");
 		if (p == string::npos) continue;
 
-		const string config_name = fils[i].name.substr(13, p - 13);
+		const string config_name = fil.name.substr(13, p - 13);
 
 		TPerfField dat;
 		dat.config_name = config_name;
-		dat.file_path = fils[i].wholePath;
+		dat.file_path = fil.wholePath;
 
 		CFileInputStream f(dat.file_path);
 		auto arch = mrpt::serialization::archiveFrom(f);
@@ -131,10 +131,9 @@ int run_build_tables(const std::string& PERF_DATA_DIR)
 		"<a href=\"#matrix\">comparison tables matrix</a>):<br>\n"
 		"<ul>\n");
 
-	for (size_t i = 0; i < lstConfigurations.size(); i++)
+	for (const auto & P : lstConfigurations)
 	{
-		const TPerfField& P = lstConfigurations[i];
-		fo.printf(
+			fo.printf(
 			"<li>"
 			"<a href=\"results_%s.html\">%s</a>"
 			"</li>\n",
@@ -181,10 +180,9 @@ int run_build_tables(const std::string& PERF_DATA_DIR)
 	// and the last row:
 	fo.printf(" <tr>\n");
 	fo.printf("  <td></td>\n");
-	for (size_t i = 0; i < lstConfigurations.size(); i++)
+	for (const auto & P1 : lstConfigurations)
 	{
-		const TPerfField& P1 = lstConfigurations[i];
-		// class=\"my_rotated\"
+			// class=\"my_rotated\"
 		fo.printf(
 			"<td align=\"center\" width=\"20em\"><b><div >%s</div></b></td>",
 			P1.config_name.c_str());
@@ -203,10 +201,9 @@ int run_build_tables(const std::string& PERF_DATA_DIR)
 	// ====================================================
 	//        results_<cfg>.html
 	// ====================================================
-	for (size_t i = 0; i < lstConfigurations.size(); i++)
+	for (const auto & P : lstConfigurations)
 	{
-		const TPerfField& P = lstConfigurations[i];
-		const string out_fil =
+			const string out_fil =
 			PERF_DATA_DIR +
 			format("/perf-html/results_%s.html", P.config_name.c_str());
 		cout << "Generating: " << out_fil << "...\n";
@@ -230,14 +227,13 @@ int run_build_tables(const std::string& PERF_DATA_DIR)
 			"<td align=\"center\"><b>Execution time</b></td>"
 			"<td align=\"center\"><b>Execution rate (Hz)</b></td> </tr>\n");
 
-		for (size_t j = 0; j < P.all_perf_data.size();
-			 j++)  // vector<pair<string,double> >
+		for (const auto & j : P.all_perf_data)  // vector<pair<string,double> >
 		{
-			const double t = P.all_perf_data[j].second;
+			const double t = j.second;
 			fo.printf(
 				"<tr> <td>%s</td> <td align=\"right\">%s</td> <td "
 				"align=\"right\">%sHz</td>  </tr>\n",
-				P.all_perf_data[j].first.c_str(),
+				j.first.c_str(),
 				mrpt::system::intervalFormat(t).c_str(),
 				mrpt::system::unitsFormat(1.0 / t).c_str());
 		}
@@ -278,8 +274,8 @@ int run_build_tables(const std::string& PERF_DATA_DIR)
 
 			// Convert P2 data into a std::map<> for search efficiency:
 			map<string, double> P2_dat;
-			for (size_t k = 0; k < P2.all_perf_data.size(); k++)
-				P2_dat[P2.all_perf_data[k].first] = P2.all_perf_data[k].second;
+			for (auto & k : P2.all_perf_data)
+				P2_dat[k.first] = k.second;
 
 			fo.close();
 			fo.open(out_fil);
@@ -308,11 +304,10 @@ int run_build_tables(const std::string& PERF_DATA_DIR)
 				"(Hz)</b></td> </tr>\n",
 				P1.config_name.c_str(), P2.config_name.c_str());
 
-			for (size_t k = 0; k < P1.all_perf_data.size();
-				 k++)  // vector<pair<string,double> >
+			for (auto & k : P1.all_perf_data)  // vector<pair<string,double> >
 			{
-				const double t1 = P1.all_perf_data[k].second;
-				const string test_name = P1.all_perf_data[k].first;
+				const double t1 = k.second;
+				const string test_name = k.first;
 
 				const bool P2_has_this_one =
 					P2_dat.find(test_name) != P2_dat.end();

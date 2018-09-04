@@ -2341,12 +2341,9 @@ bool mpWindow::UpdateBBox()
 {
 	bool first = TRUE;
 
-	for (wxLayerList::iterator li = m_layers.begin(); li != m_layers.end();
-		 ++li)
+	for (auto f : m_layers)
 	{
-		mpLayer* f = *li;
-
-		if (f->HasBBox())
+			if (f->HasBBox())
 		{
 			if (first)
 			{
@@ -2593,10 +2590,9 @@ unsigned int mpWindow::CountLayers()
 {
 	// wxNode *node = m_layers.GetFirst();
 	unsigned int layerNo = 0;
-	for (wxLayerList::iterator li = m_layers.begin(); li != m_layers.end();
-		 ++li)  // while(node)
+	for (auto & m_layer : m_layers)  // while(node)
 	{
-		if ((*li)->HasBBox()) layerNo++;
+		if (m_layer->HasBBox()) layerNo++;
 		// node = node->GetNext();
 	};
 	return layerNo;
@@ -2610,9 +2606,8 @@ mpLayer* mpWindow::GetLayer(int position)
 
 mpLayer* mpWindow::GetLayerByName(const wxString& name)
 {
-	for (wxLayerList::iterator it = m_layers.begin(); it != m_layers.end();
-		 ++it)
-		if (!(*it)->GetName().Cmp(name)) return *it;
+	for (auto & m_layer : m_layers)
+		if (!m_layer->GetName().Cmp(name)) return m_layer;
 	return nullptr;  // Not found
 }
 

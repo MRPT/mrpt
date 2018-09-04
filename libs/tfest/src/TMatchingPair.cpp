@@ -29,12 +29,12 @@ void TMatchingPairList::dumpToFile(const std::string& fileName) const
 {
 	std::ofstream f(fileName);
 	ASSERT_(f.is_open());
-	for (auto it = begin(); it != end(); ++it)
+	for (const auto & it : *this)
 	{
 		f << mrpt::format(
-			"%u %u %f %f %f %f %f %f %f\n", it->this_idx, it->other_idx,
-			it->this_x, it->this_y, it->this_z, it->other_x, it->other_y,
-			it->other_z, it->errorSquareAfterTransformation);
+			"%u %u %f %f %f %f %f %f %f\n", it.this_idx, it.other_idx,
+			it.this_x, it.this_y, it.this_z, it.other_x, it.other_y,
+			it.other_z, it.errorSquareAfterTransformation);
 	}
 }
 
@@ -52,16 +52,16 @@ void TMatchingPairList::saveAsMATLABScript(const std::string& filName) const
 	fprintf(f, "%% ----------------------------------------------------\n\n");
 
 	fprintf(f, "axis equal; hold on;\n");
-	for (const_iterator it = begin(); it != end(); ++it)
+	for (const auto & it : *this)
 	{
 		fprintf(
-			f, "line([%f %f],[%f %f],'Color',colorLines);\n", it->this_x,
-			it->other_x, it->this_y, it->other_y);
+			f, "line([%f %f],[%f %f],'Color',colorLines);\n", it.this_x,
+			it.other_x, it.this_y, it.other_y);
 		fprintf(
 			f,
 			"set(plot([%f %f],[%f "
 			"%f],'.'),'Color',colorLines,'MarkerSize',15);\n",
-			it->this_x, it->other_x, it->this_y, it->other_y);
+			it.this_x, it.other_x, it.this_y, it.other_y);
 	}
 	os::fclose(f);
 }
@@ -71,9 +71,9 @@ void TMatchingPairList::saveAsMATLABScript(const std::string& filName) const
   ---------------------------------------------------------------*/
 bool TMatchingPairList::indexOtherMapHasCorrespondence(size_t idx) const
 {
-	for (const_iterator it = begin(); it != end(); ++it)
+	for (const auto & it : *this)
 	{
-		if (it->other_idx == idx) return true;
+		if (it.other_idx == idx) return true;
 	}
 	return false;
 }
@@ -121,8 +121,8 @@ float TMatchingPairList::overallSquareErrorAndPoints(
   ---------------------------------------------------------------*/
 bool TMatchingPairList::contains(const TMatchingPair& p) const
 {
-	for (const_iterator corresp = begin(); corresp != end(); ++corresp)
-		if (*corresp == p) return true;
+	for (const auto & corresp : *this)
+		if (corresp == p) return true;
 	return false;
 }
 

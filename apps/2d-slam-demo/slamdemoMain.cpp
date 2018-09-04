@@ -1308,12 +1308,10 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 	if (alsoGTMap)
 	{
 		vector<float> xs, ys;
-		for (CLandmarksMap::TCustomSequenceLandmarks::iterator i =
-				 m_GT_map.landmarks.begin();
-			 i != m_GT_map.landmarks.end(); ++i)
+		for (auto & landmark : m_GT_map.landmarks)
 		{
-			xs.push_back(i->pose_mean.x);
-			ys.push_back(i->pose_mean.y);
+			xs.push_back(landmark.pose_mean.x);
+			ys.push_back(landmark.pose_mean.y);
 		}
 
 		lbGT->SetLabel(_U(format(
@@ -1343,8 +1341,8 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 						   (unsigned)m_lastObservation.sensedData.size())
 						   .c_str()));
 
-	for (size_t i = 0; i < m_lyObsLMs.size(); i++)
-		plotObs->DelLayer(m_lyObsLMs[i], true);
+	for (auto & m_lyObsLM : m_lyObsLMs)
+		plotObs->DelLayer(m_lyObsLM, true);
 	m_lyObsLMs.clear();
 
 	CMatrixDouble22 NOISE;
@@ -1352,20 +1350,20 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 	NOISE(1, 1) = square(m_SLAM.options.std_sensor_yaw);
 
 	// Create an ellipse for each observed landmark:
-	for (size_t i = 0; i < m_lastObservation.sensedData.size(); i++)
+	for (auto & i : m_lastObservation.sensedData)
 	{
 		mpCovarianceEllipse* cov = new mpCovarianceEllipse();
 		cov->SetPen(wxPen(wxColour(255, 0, 0), 2));
-		if (m_lastObservation.sensedData[i].landmarkID != INVALID_LANDMARK_ID)
+		if (i.landmarkID != INVALID_LANDMARK_ID)
 			cov->SetName(wxString::Format(
 				_("#%u"),
-				(unsigned)m_lastObservation.sensedData[i].landmarkID));
+				(unsigned)i.landmarkID));
 		else
 			cov->SetName(_("?"));
 
 		// Compute mean & cov:
-		const double hr = m_lastObservation.sensedData[i].range;
-		const double ha = m_lastObservation.sensedData[i].yaw;
+		const double hr = i.range;
+		const double ha = i.yaw;
 		const double cphi_0sa = cos(options.sensorOnTheRobot.phi() + ha);
 		const double sphi_0sa = sin(options.sensorOnTheRobot.phi() + ha);
 
@@ -1413,8 +1411,8 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 			estRobotPose.mean.phi());
 
 		// Delete old covs:
-		for (size_t i = 0; i < m_lyMapEllipses.size(); i++)
-			plotMap->DelLayer(m_lyMapEllipses[i], true);
+		for (auto & m_lyMapEllipse : m_lyMapEllipses)
+			plotMap->DelLayer(m_lyMapEllipse, true);
 		m_lyMapEllipses.clear();
 
 		// Robot ellipse:
@@ -1576,8 +1574,8 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 		m_lyICvisibleRange->setPoints(xs_area_RG, ys_area_RG);
 
 		// Delete old ellipses:
-		for (size_t i = 0; i < m_lyIC_LMs.size(); i++)
-			plotIndivCompat->DelLayer(m_lyIC_LMs[i], true);
+		for (auto & m_lyIC_LM : m_lyIC_LMs)
+			plotIndivCompat->DelLayer(m_lyIC_LM, true);
 		m_lyIC_LMs.clear();
 
 		// Create an ellipse for each observed landmark, in
@@ -2039,12 +2037,10 @@ void slamdemoFrame::executeOneStep()
 		const CRangeBearingKFSLAM2D::TDataAssocInfo& da =
 			m_SLAM.getLastDataAssociation();
 
-		for (std::map<size_t, size_t>::const_iterator it =
-				 da.newly_inserted_landmarks.begin();
-			 it != da.newly_inserted_landmarks.end(); ++it)
+		for (auto newly_inserted_landmark : da.newly_inserted_landmarks)
 		{
-			const size_t obs_idx = it->first;
-			const size_t est_map_idx = it->second;
+			const size_t obs_idx = newly_inserted_landmark.first;
+			const size_t est_map_idx = newly_inserted_landmark.second;
 			const size_t real_map_idx = m_lastObservation_GT_indices[obs_idx];
 
 			m_estimatedIDX2realIDX[est_map_idx] = real_map_idx;

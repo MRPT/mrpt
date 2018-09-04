@@ -31,8 +31,8 @@ size_t TMetricMapTypesRegistry::doRegister(
 {
 	std::vector<std::string> lstNames;
 	mrpt::system::tokenize(names, " \t\r\n,", lstNames);
-	for (size_t i = 0; i < lstNames.size(); i++)
-		m_registry[lstNames[i]] = std::make_pair(func1, func2);
+	for (const auto & lstName : lstNames)
+		m_registry[lstName] = std::make_pair(func1, func2);
 	return m_registry.size();
 }
 

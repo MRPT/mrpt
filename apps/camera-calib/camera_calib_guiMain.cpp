@@ -784,11 +784,10 @@ void camera_calib_guiDialog::refreshDisplayedImage()
 				imgSizes.x * zoomVal, imgSizes.y * zoomVal, IMG_INTERP_NN);
 
 			// Draw reprojected:
-			for (unsigned int k = 0;
-				 k < it->second.projectedPoints_undistorted.size(); k++)
+			for (auto & k : it->second.projectedPoints_undistorted)
 				imgRect.drawCircle(
-					zoomVal * it->second.projectedPoints_undistorted[k].x,
-					zoomVal * it->second.projectedPoints_undistorted[k].y, 4,
+					zoomVal * k.x,
+					zoomVal * k.y, 4,
 					TColor(0, 255, 64));
 
 			imgRect.drawCircle(10, 10, 4, TColor(0, 255, 64));
@@ -880,17 +879,16 @@ void camera_calib_guiDialog::show3Dview()
 			check_squares_length_X_meters);
 	scene->insert(grid);
 
-	for (TCalibrationImageList::iterator it = lst_images.begin();
-		 it != lst_images.end(); ++it)
+	for (auto & lst_image : lst_images)
 	{
-		if (!it->second.detected_corners.empty())
+		if (!lst_image.second.detected_corners.empty())
 		{
 			mrpt::opengl::CSetOfObjects::Ptr cor =
 				mrpt::opengl::stock_objects::CornerXYZ();
-			cor->setName(mrpt::system::extractFileName(it->first));
+			cor->setName(mrpt::system::extractFileName(lst_image.first));
 			cor->enableShowName(true);
 			cor->setScale(0.1f);
-			cor->setPose(it->second.reconstructed_camera_pose);
+			cor->setPose(lst_image.second.reconstructed_camera_pose);
 
 			scene->insert(cor);
 		}
@@ -1072,10 +1070,9 @@ void camera_calib_guiDialog::OnbtnSaveImagesClick(wxCommandEvent& event)
 		{
 			string dir = string(dlg.GetPath().mb_str());
 
-			for (TCalibrationImageList::iterator s = lst_images.begin();
-				 s != lst_images.end(); ++s)
-				s->second.img_original.saveToFile(
-					dir + string("/") + s->first + string(".png"));
+			for (auto & lst_image : lst_images)
+				lst_image.second.img_original.saveToFile(
+					dir + string("/") + lst_image.first + string(".png"));
 		}
 	}
 	catch (std::exception& e)

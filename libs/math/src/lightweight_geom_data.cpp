@@ -682,7 +682,7 @@ void TLine2D::getNormalVector(double (&vector)[2]) const
 void TLine2D::unitarize()
 {
 	double s = sqrt(coefs[0] * coefs[0] + coefs[1] * coefs[1]);
-	for (size_t i = 0; i < 3; i++) coefs[i] /= s;
+	for (double & coef : coefs) coef /= s;
 }
 void TLine2D::getDirectorVector(double (&vector)[2]) const
 {
@@ -774,7 +774,7 @@ double TLine3D::distance(const TPoint3D& point) const
 void TLine3D::unitarize()
 {
 	double s = sqrt(squareNorm<3, double>(director));
-	for (size_t i = 0; i < 3; i++) director[i] /= s;
+	for (double & i : director) i /= s;
 }
 TLine3D::TLine3D(const TPoint3D& p1, const TPoint3D& p2)
 {
@@ -846,7 +846,7 @@ void TPlane::getNormalVector(double (&vector)[3]) const
 void TPlane::unitarize()
 {
 	double s = sqrt(squareNorm<3, double>(coefs));
-	for (size_t i = 0; i < 4; i++) coefs[i] /= s;
+	for (double & coef : coefs) coef /= s;
 }
 
 // Returns a 6D pose such as its XY plane coincides with the plane
@@ -1277,164 +1277,146 @@ void TObject2D::generate3DObject(TObject3D& obj) const
 void TObject2D::getPoints(
 	const std::vector<TObject2D>& objs, std::vector<TPoint2D>& pnts)
 {
-	for (vector<TObject2D>::const_iterator it = objs.begin(); it != objs.end();
-		 ++it)
-		if (it->isPoint()) pnts.push_back(it->data.point);
+	for (const auto & obj : objs)
+		if (obj.isPoint()) pnts.push_back(obj.data.point);
 }
 void TObject2D::getSegments(
 	const std::vector<TObject2D>& objs, std::vector<TSegment2D>& sgms)
 {
-	for (vector<TObject2D>::const_iterator it = objs.begin(); it != objs.end();
-		 ++it)
-		if (it->isSegment()) sgms.push_back(it->data.segment);
+	for (const auto & obj : objs)
+		if (obj.isSegment()) sgms.push_back(obj.data.segment);
 }
 void TObject2D::getLines(
 	const std::vector<TObject2D>& objs, std::vector<TLine2D>& lins)
 {
-	for (vector<TObject2D>::const_iterator it = objs.begin(); it != objs.end();
-		 ++it)
-		if (it->isLine()) lins.push_back(it->data.line);
+	for (const auto & obj : objs)
+		if (obj.isLine()) lins.push_back(obj.data.line);
 }
 void TObject2D::getPolygons(
 	const std::vector<TObject2D>& objs, std::vector<TPolygon2D>& polys)
 {
-	for (vector<TObject2D>::const_iterator it = objs.begin(); it != objs.end();
-		 ++it)
-		if (it->isPolygon()) polys.push_back(*(it->data.polygon));
+	for (const auto & obj : objs)
+		if (obj.isPolygon()) polys.push_back(*(obj.data.polygon));
 }
 void TObject2D::getPoints(
 	const std::vector<TObject2D>& objs, std::vector<TPoint2D>& pnts,
 	std::vector<TObject2D>& remainder)
 {
-	for (vector<TObject2D>::const_iterator it = objs.begin(); it != objs.end();
-		 ++it)
-		if (it->isPoint())
-			pnts.push_back(it->data.point);
+	for (const auto & obj : objs)
+		if (obj.isPoint())
+			pnts.push_back(obj.data.point);
 		else
-			remainder.push_back(*it);
+			remainder.push_back(obj);
 }
 void TObject2D::getSegments(
 	const std::vector<TObject2D>& objs, std::vector<TSegment2D>& sgms,
 	std::vector<TObject2D>& remainder)
 {
-	for (vector<TObject2D>::const_iterator it = objs.begin(); it != objs.end();
-		 ++it)
-		if (it->isSegment())
-			sgms.push_back(it->data.segment);
+	for (const auto & obj : objs)
+		if (obj.isSegment())
+			sgms.push_back(obj.data.segment);
 		else
-			remainder.push_back(*it);
+			remainder.push_back(obj);
 }
 void TObject2D::getLines(
 	const std::vector<TObject2D>& objs, std::vector<TLine2D>& lins,
 	std::vector<TObject2D>& remainder)
 {
-	for (vector<TObject2D>::const_iterator it = objs.begin(); it != objs.end();
-		 ++it)
-		if (it->isLine())
-			lins.push_back(it->data.line);
+	for (const auto & obj : objs)
+		if (obj.isLine())
+			lins.push_back(obj.data.line);
 		else
-			remainder.push_back(*it);
+			remainder.push_back(obj);
 }
 void TObject2D::getPolygons(
 	const std::vector<TObject2D>& objs, std::vector<TPolygon2D>& polys,
 	vector<TObject2D>& remainder)
 {
-	for (vector<TObject2D>::const_iterator it = objs.begin(); it != objs.end();
-		 ++it)
-		if (it->isPolygon())
-			polys.push_back(*(it->data.polygon));
+	for (const auto & obj : objs)
+		if (obj.isPolygon())
+			polys.push_back(*(obj.data.polygon));
 		else
-			remainder.push_back(*it);
+			remainder.push_back(obj);
 }
 void TObject3D::getPoints(
 	const std::vector<TObject3D>& objs, std::vector<TPoint3D>& pnts)
 {
-	for (vector<TObject3D>::const_iterator it = objs.begin(); it != objs.end();
-		 ++it)
-		if (it->isPoint()) pnts.push_back(it->data.point);
+	for (const auto & obj : objs)
+		if (obj.isPoint()) pnts.push_back(obj.data.point);
 }
 void TObject3D::getSegments(
 	const std::vector<TObject3D>& objs, std::vector<TSegment3D>& sgms)
 {
-	for (vector<TObject3D>::const_iterator it = objs.begin(); it != objs.end();
-		 ++it)
-		if (it->isSegment()) sgms.push_back(it->data.segment);
+	for (const auto & obj : objs)
+		if (obj.isSegment()) sgms.push_back(obj.data.segment);
 }
 void TObject3D::getLines(
 	const std::vector<TObject3D>& objs, std::vector<TLine3D>& lins)
 {
-	for (vector<TObject3D>::const_iterator it = objs.begin(); it != objs.end();
-		 ++it)
-		if (it->isLine()) lins.push_back(it->data.line);
+	for (const auto & obj : objs)
+		if (obj.isLine()) lins.push_back(obj.data.line);
 }
 void TObject3D::getPlanes(
 	const std::vector<TObject3D>& objs, std::vector<TPlane>& plns)
 {
-	for (vector<TObject3D>::const_iterator it = objs.begin(); it != objs.end();
-		 ++it)
-		if (it->isPlane()) plns.push_back(it->data.plane);
+	for (const auto & obj : objs)
+		if (obj.isPlane()) plns.push_back(obj.data.plane);
 }
 void TObject3D::getPolygons(
 	const std::vector<TObject3D>& objs, std::vector<TPolygon3D>& polys)
 {
-	for (vector<TObject3D>::const_iterator it = objs.begin(); it != objs.end();
-		 ++it)
-		if (it->isPolygon()) polys.push_back(*(it->data.polygon));
+	for (const auto & obj : objs)
+		if (obj.isPolygon()) polys.push_back(*(obj.data.polygon));
 }
 void TObject3D::getPoints(
 	const std::vector<TObject3D>& objs, std::vector<TPoint3D>& pnts,
 	std::vector<TObject3D>& remainder)
 {
-	for (vector<TObject3D>::const_iterator it = objs.begin(); it != objs.end();
-		 ++it)
-		if (it->isPoint())
-			pnts.push_back(it->data.point);
+	for (const auto & obj : objs)
+		if (obj.isPoint())
+			pnts.push_back(obj.data.point);
 		else
-			remainder.push_back(*it);
+			remainder.push_back(obj);
 }
 void TObject3D::getSegments(
 	const std::vector<TObject3D>& objs, std::vector<TSegment3D>& sgms,
 	std::vector<TObject3D>& remainder)
 {
-	for (vector<TObject3D>::const_iterator it = objs.begin(); it != objs.end();
-		 ++it)
-		if (it->isSegment())
-			sgms.push_back(it->data.segment);
+	for (const auto & obj : objs)
+		if (obj.isSegment())
+			sgms.push_back(obj.data.segment);
 		else
-			remainder.push_back(*it);
+			remainder.push_back(obj);
 }
 void TObject3D::getLines(
 	const std::vector<TObject3D>& objs, std::vector<TLine3D>& lins,
 	std::vector<TObject3D>& remainder)
 {
-	for (vector<TObject3D>::const_iterator it = objs.begin(); it != objs.end();
-		 ++it)
-		if (it->isLine())
-			lins.push_back(it->data.line);
+	for (const auto & obj : objs)
+		if (obj.isLine())
+			lins.push_back(obj.data.line);
 		else
-			remainder.push_back(*it);
+			remainder.push_back(obj);
 }
 void TObject3D::getPlanes(
 	const std::vector<TObject3D>& objs, std::vector<TPlane>& plns,
 	std::vector<TObject3D>& remainder)
 {
-	for (vector<TObject3D>::const_iterator it = objs.begin(); it != objs.end();
-		 ++it)
-		if (it->isPlane())
-			plns.push_back(it->data.plane);
+	for (const auto & obj : objs)
+		if (obj.isPlane())
+			plns.push_back(obj.data.plane);
 		else
-			remainder.push_back(*it);
+			remainder.push_back(obj);
 }
 void TObject3D::getPolygons(
 	const std::vector<TObject3D>& objs, std::vector<TPolygon3D>& polys,
 	vector<TObject3D>& remainder)
 {
-	for (vector<TObject3D>::const_iterator it = objs.begin(); it != objs.end();
-		 ++it)
-		if (it->isPolygon())
-			polys.push_back(*(it->data.polygon));
+	for (const auto & obj : objs)
+		if (obj.isPolygon())
+			polys.push_back(*(obj.data.polygon));
 		else
-			remainder.push_back(*it);
+			remainder.push_back(obj);
 }
 
 CArchive& operator>>(CArchive& in, mrpt::math::TTwist2D& o)

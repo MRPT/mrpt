@@ -88,11 +88,10 @@ void CLandmarksMap::TMapDefinition::dumpToTextStream_map_specific(
 	out << mrpt::format("      ID         (X,Y,Z)\n");
 	out << mrpt::format(
 		"--------------------------------------------------------\n");
-	for (std::deque<TPairIdBeacon>::const_iterator p = initialBeacons.begin();
-		 p != initialBeacons.end(); ++p)
+	for (const auto & initialBeacon : initialBeacons)
 		out << mrpt::format(
-			"      %03u         (%8.03f,%8.03f,%8.03f)\n", p->second,
-			p->first.x, p->first.y, p->first.z);
+			"      %03u         (%8.03f,%8.03f,%8.03f)\n", initialBeacon.second,
+			initialBeacon.first.x, initialBeacon.first.y, initialBeacon.first.z);
 
 	this->insertionOpts.dumpToTextStream(out);
 	this->likelihoodOpts.dumpToTextStream(out);
@@ -105,20 +104,17 @@ mrpt::maps::CMetricMap* CLandmarksMap::internal_CreateFromMapDefinition(
 		*dynamic_cast<const CLandmarksMap::TMapDefinition*>(&_def);
 	CLandmarksMap* obj = new CLandmarksMap();
 
-	for (std::deque<
-			 CLandmarksMap::TMapDefinition::TPairIdBeacon>::const_iterator p =
-			 def.initialBeacons.begin();
-		 p != def.initialBeacons.end(); ++p)
+	for (const auto & initialBeacon : def.initialBeacons)
 	{
 		CLandmark lm;
 
 		lm.createOneFeature();
 		lm.features[0]->type = featBeacon;
 
-		lm.features[0]->ID = p->second;
-		lm.ID = p->second;
+		lm.features[0]->ID = initialBeacon.second;
+		lm.ID = initialBeacon.second;
 
-		lm.pose_mean = p->first;
+		lm.pose_mean = initialBeacon.first;
 
 		lm.pose_cov_11 = lm.pose_cov_22 = lm.pose_cov_33 = lm.pose_cov_12 =
 			lm.pose_cov_13 = lm.pose_cov_23 = square(0.01f);
@@ -180,9 +176,8 @@ void CLandmarksMap::serializeTo(mrpt::serialization::CArchive& out) const
 	out << n;
 
 	// Write all landmarks:
-	for (TSequenceLandmarks::const_iterator it = landmarks.begin();
-		 it != landmarks.end(); ++it)
-		out << (*it);
+	for (const auto & landmark : landmarks)
+		out << landmark;
 }
 
 void CLandmarksMap::serializeFrom(
@@ -1455,9 +1450,8 @@ bool CLandmarksMap::saveToTextFile(std::string file)
 		if (it->getType() == featSIFT)
 		{
 			ASSERT_(!it->features.empty() && it->features[0]);
-			for (unsigned int i = 0;
-				 i < it->features[0]->descriptors.SIFT.size(); i++)
-				os::fprintf(f, " %u ", it->features[0]->descriptors.SIFT[i]);
+			for (unsigned char i : it->features[0]->descriptors.SIFT)
+				os::fprintf(f, " %u ", i);
 		}
 		os::fprintf(f, " %i ", (int)it->ID);
 
@@ -1496,17 +1490,16 @@ bool CLandmarksMap::saveToMATLABScript3D(
 	// Main code:
 	os::fprintf(f, "hold on;\n\n");
 
-	for (TSequenceLandmarks::const_iterator it = landmarks.begin();
-		 it != landmarks.end(); ++it)
+	for (const auto & landmark : landmarks)
 	{
 		os::fprintf(
-			f, "m=[%.4f %.4f %.4f];", it->pose_mean.x, it->pose_mean.y,
-			it->pose_mean.z);
+			f, "m=[%.4f %.4f %.4f];", landmark.pose_mean.x, landmark.pose_mean.y,
+			landmark.pose_mean.z);
 		os::fprintf(
 			f, "c=[%.8f %.8f %.8f;%.8f %.8f %.8f;%.8f %.8f %.8f]; ",
-			it->pose_cov_11, it->pose_cov_12, it->pose_cov_13, it->pose_cov_12,
-			it->pose_cov_22, it->pose_cov_23, it->pose_cov_13, it->pose_cov_23,
-			it->pose_cov_33);
+			landmark.pose_cov_11, landmark.pose_cov_12, landmark.pose_cov_13, landmark.pose_cov_12,
+			landmark.pose_cov_22, landmark.pose_cov_23, landmark.pose_cov_13, landmark.pose_cov_23,
+			landmark.pose_cov_33);
 
 		os::fprintf(
 			f,
@@ -1566,13 +1559,12 @@ bool CLandmarksMap::saveToMATLABScript2D(
 	// Main code:
 	os::fprintf(f, "hold on;\n\n");
 
-	for (TSequenceLandmarks::iterator it = landmarks.begin();
-		 it != landmarks.end(); ++it)
+	for (auto & landmark : landmarks)
 	{
 		// Compute the eigen-vectors & values:
-		cov(0, 0) = it->pose_cov_11;
-		cov(1, 1) = it->pose_cov_22;
-		cov(0, 1) = cov(1, 0) = it->pose_cov_12;
+		cov(0, 0) = landmark.pose_cov_11;
+		cov(1, 1) = landmark.pose_cov_22;
+		cov(0, 1) = cov(1, 0) = landmark.pose_cov_12;
 
 		cov.eigenVectors(eigVec, eigVal);
 		eigVal = eigVal.array().sqrt().matrix();
@@ -1584,10 +1576,10 @@ bool CLandmarksMap::saveToMATLABScript2D(
 			 x != X.end(); x++, y++, Cos++, Sin++)
 		{
 			*x =
-				(it->pose_mean.x +
+				(landmark.pose_mean.x +
 				 stdCount * (*Cos * M(0, 0) + *Sin * M(1, 0)));
 			*y =
-				(it->pose_mean.y +
+				(landmark.pose_mean.y +
 				 stdCount * (*Cos * M(0, 1) + *Sin * M(1, 1)));
 		}
 
@@ -1775,10 +1767,9 @@ double CLandmarksMap::computeLikelihood_RSLC_2007(
 				corrs = grid->cellByIndex(cx, cy);
 				ASSERT_(corrs != nullptr);
 				if (!corrs->empty())
-					for (std::vector<int32_t>::iterator it = corrs->begin();
-						 it != corrs->end(); ++it)
+					for (int & it : *corrs)
 					{
-						lm = landmarks.get(*it);
+						lm = landmarks.get(it);
 
 						// Compute the "correspondence" in the range [0,1]:
 						// -------------------------------------------------------------
@@ -2000,10 +1991,10 @@ float CLandmarksMap::TCustomSequenceLandmarks::getLargestDistanceFromOrigin()
 	{
 		// NO: Update it:
 		float maxDistSq = 0, d;
-		for (const_iterator it = begin(); it != end(); ++it)
+		for (const auto & it : *this)
 		{
-			d = square(it->pose_mean.x) + square(it->pose_mean.y) +
-				square(it->pose_mean.z);
+			d = square(it.pose_mean.x) + square(it.pose_mean.y) +
+				square(it.pose_mean.z);
 			maxDistSq = max(d, maxDistSq);
 		}
 
@@ -2588,13 +2579,12 @@ void CLandmarksMap::getAs3DObject(
 
 	// Save 3D ellipsoids
 	CPointPDFGaussian pointGauss;
-	for (TCustomSequenceLandmarks::const_iterator it = landmarks.begin();
-		 it != landmarks.end(); ++it)
+	for (const auto & landmark : landmarks)
 	{
 		opengl::CEllipsoid::Ptr ellip =
 			mrpt::make_aligned_shared<opengl::CEllipsoid>();
 
-		it->getPose(pointGauss);
+		landmark.getPose(pointGauss);
 
 		ellip->setPose(pointGauss.mean);
 		ellip->setCovMatrix(pointGauss.cov);
@@ -2603,7 +2593,7 @@ void CLandmarksMap::getAs3DObject(
 		ellip->set3DsegmentsCount(10);
 		ellip->setColor(0, 0, 1);
 		ellip->setName(
-			mrpt::format("LM.ID=%u", static_cast<unsigned int>(it->ID)));
+			mrpt::format("LM.ID=%u", static_cast<unsigned int>(landmark.ID)));
 		ellip->enableShowName(true);
 
 		outObj->insert(ellip);
@@ -2619,9 +2609,9 @@ mrpt::maps::CLandmark::TLandmarkID CLandmarksMap::getMapMaxID()
 const CLandmark* CLandmarksMap::TCustomSequenceLandmarks::getByID(
 	CLandmark::TLandmarkID ID) const
 {
-	for (size_t indx = 0; indx < m_landmarks.size(); indx++)
+	for (const auto & m_landmark : m_landmarks)
 	{
-		if (m_landmarks[indx].ID == ID) return &m_landmarks[indx];
+		if (m_landmark.ID == ID) return &m_landmark;
 	}
 	return nullptr;
 }
@@ -2640,9 +2630,9 @@ const CLandmark* CLandmarksMap::TCustomSequenceLandmarks::getByID(
 const CLandmark* CLandmarksMap::TCustomSequenceLandmarks::getByBeaconID(
 	unsigned int ID) const
 {
-	for (size_t indx = 0; indx < m_landmarks.size(); indx++)
+	for (const auto & m_landmark : m_landmarks)
 	{
-		if (m_landmarks[indx].ID == ID) return &m_landmarks[indx];
+		if (m_landmark.ID == ID) return &m_landmark;
 	}
 	return nullptr;
 }

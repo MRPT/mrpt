@@ -2107,11 +2107,9 @@ void CRandomFieldGridMap2D::predictMeasurement(
 	};
 
 	// Run queries:
-	for (size_t i = 0; i < queries.size(); i++)
+	for (auto & q : queries)
 	{
-		TInterpQuery& q = queries[i];
-
-		const TRandomFieldCell* cell = cellByIndex(q.cx, q.cy);
+			const TRandomFieldCell* cell = cellByIndex(q.cx, q.cy);
 		switch (m_mapType)
 		{
 			case mrKernelDM:
@@ -2178,10 +2176,10 @@ void CRandomFieldGridMap2D::predictMeasurement(
 	// Sum coeffs:
 	out_predict_response = 0;
 	out_predict_response_variance = 0;
-	for (size_t i = 0; i < queries.size(); i++)
+	for (auto & querie : queries)
 	{
-		out_predict_response += queries[i].val * queries[i].coef;
-		out_predict_response_variance += queries[i].var * queries[i].coef;
+		out_predict_response += querie.val * querie.coef;
+		out_predict_response_variance += querie.var * querie.coef;
 	}
 
 	// Un-do the sensor normalization:

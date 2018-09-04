@@ -50,11 +50,9 @@ class NotConnectedGraph : public std::exception
 
 		// fil the given set
 		set_nodeIDs->clear();
-		for (std::set<mrpt::graphs::TNodeID>::iterator it =
-				 m_unconnected_nodeIDs.begin();
-			 it != m_unconnected_nodeIDs.end(); ++it)
+		for (unsigned long m_unconnected_nodeID : m_unconnected_nodeIDs)
 		{
-			set_nodeIDs->insert(*it);
+			set_nodeIDs->insert(m_unconnected_nodeID);
 		}
 	}
 
@@ -314,11 +312,9 @@ class CDijkstra
 			// For each arc from "u":
 			const std::set<TNodeID>& neighborsOfU =
 				m_allNeighbors[u];  // graph.getNeighborsOf(u,neighborsOfU);
-			for (std::set<TNodeID>::const_iterator itNei = neighborsOfU.begin();
-				 itNei != neighborsOfU.end(); ++itNei)
+			for (unsigned long i : neighborsOfU)
 			{
-				const TNodeID i = *itNei;
-				if (i == u) continue;  // ignore self-loops...
+					if (i == u) continue;  // ignore self-loops...
 
 				// the "edge_ui" may be searched here or a bit later, so the
 				// "bool" var will tell us.

@@ -231,13 +231,11 @@ void CMultiMetricMap::setListOfMaps(
 	if (initializers != nullptr)
 	{
 		// Process each entry in the "initializers" and create maps accordingly:
-		for (TSetOfMetricMapInitializers::const_iterator it =
-				 initializers->begin();
-			 it != initializers->end(); ++it)
+		for (const auto & initializer : *initializers)
 		{
 			// Create map from the list of all params:
 			mrpt::maps::CMetricMap* theMap =
-				mmr.factoryMapObjectFromDefinition(*it->get());
+				mmr.factoryMapObjectFromDefinition(*initializer.get());
 			ASSERT_(theMap);
 			// Add to the list of maps:
 			this->maps.push_back(mrpt::maps::CMetricMap::Ptr(theMap));
@@ -406,9 +404,9 @@ float CMultiMetricMap::compute3DMatchingRatio(
 
 	float accumResult = 0;
 
-	for (size_t idx = 0; idx < maps.size(); idx++)
+	for (const auto & map : maps)
 	{
-		const mrpt::maps::CMetricMap* m = maps[idx].get();
+		const mrpt::maps::CMetricMap* m = map.get();
 		ASSERT_(m);
 		accumResult +=
 			m->compute3DMatchingRatio(otherMap, otherMapPose, params);

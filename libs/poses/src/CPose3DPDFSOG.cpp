@@ -46,10 +46,10 @@ void CPose3DPDFSOG::getMean(CPose3D& p) const
 	{
 		// Calc average on SE(3)
 		mrpt::poses::SE_average<3> se_averager;
-		for (const_iterator it = m_modes.begin(); it != m_modes.end(); ++it)
+		for (const auto & m_mode : m_modes)
 		{
-			const double w = exp(it->log_w);
-			se_averager.append((it)->val.mean, w);
+			const double w = exp(m_mode.log_w);
+			se_averager.append(m_mode.->val.mean, w);
 		}
 		se_averager.get_average(p);
 	}
@@ -78,13 +78,13 @@ void CPose3DPDFSOG::getCovarianceAndMean(
 
 		mrpt::math::CMatrixDouble66 MMt;
 		mrpt::math::CMatrixDouble61 estMean_i;
-		for (const_iterator it = m_modes.begin(); it != m_modes.end(); ++it)
+		for (const auto & m_mode : m_modes)
 		{
 			double w;
-			sumW += w = exp((it)->log_w);
-			estMean_i = mrpt::math::CMatrixDouble61((it)->val.mean);
+			sumW += w = exp(m_mode.->log_w);
+			estMean_i = mrpt::math::CMatrixDouble61(m_mode.->val.mean);
 			MMt.multiply_AAt(estMean_i);
-			MMt += (it)->val.cov;
+			MMt += m_mode.->val.cov;
 			MMt *= w;
 			estCov += MMt;  // w * ( (it)->val.cov +
 			// ((estMean_i-estMean)*(~(estMean_i-estMean))) );
@@ -101,11 +101,11 @@ void CPose3DPDFSOG::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	uint32_t N = m_modes.size();
 	out << N;
-	for (const_iterator it = m_modes.begin(); it != m_modes.end(); ++it)
+	for (const auto & m_mode : m_modes)
 	{
-		out << (it)->log_w;
-		out << (it)->val.mean;
-		out << (it)->val.cov;
+		out << m_mode.->log_w;
+		out << m_mode.->val.mean;
+		out << m_mode.->val.cov;
 	}
 }
 void CPose3DPDFSOG::serializeFrom(
@@ -121,14 +121,14 @@ void CPose3DPDFSOG::serializeFrom(
 			in >> N;
 			this->resize(N);
 
-			for (iterator it = m_modes.begin(); it != m_modes.end(); ++it)
+			for (auto & m_mode : m_modes)
 			{
-				in >> (it)->log_w;
+				in >> m_mode.->log_w;
 
 				// In version 0, weights were linear!!
-				if (version == 0) (it)->log_w = log(max(1e-300, (it)->log_w));
+				if (version == 0) m_mode.->log_w = log(max(1e-300, m_mode.->log_w));
 
-				in >> (it)->val.mean;
+				in >> m_mode.->val.mean;
 
 				if (version == 1)  // were floats
 				{
@@ -136,7 +136,7 @@ void CPose3DPDFSOG::serializeFrom(
 				}
 				else
 				{
-					in >> (it)->val.cov;
+					in >> m_mode.->val.cov;
 				}
 			}
 		}
@@ -176,12 +176,12 @@ bool CPose3DPDFSOG::saveToTextFile(const std::string& file) const
 	FILE* f = os::fopen(file.c_str(), "wt");
 	if (!f) return false;
 
-	for (const_iterator it = m_modes.begin(); it != m_modes.end(); ++it)
+	for (const auto & m_mode : m_modes)
 		os::fprintf(
-			f, "%e %e %e %e %e %e %e %e %e %e\n", exp((it)->log_w),
-			(it)->val.mean.x(), (it)->val.mean.y(), (it)->val.mean.z(),
-			(it)->val.cov(0, 0), (it)->val.cov(1, 1), (it)->val.cov(2, 2),
-			(it)->val.cov(0, 1), (it)->val.cov(0, 2), (it)->val.cov(1, 2));
+			f, "%e %e %e %e %e %e %e %e %e %e\n", exp(m_mode.->log_w),
+			m_mode.->val.mean.x(), m_mode.->val.mean.y(), m_mode.->val.mean.z(),
+			m_mode.->val.cov(0, 0), m_mode.->val.cov(1, 1), m_mode.->val.cov(2, 2),
+			m_mode.->val.cov(0, 1), m_mode.->val.cov(0, 2), m_mode.->val.cov(1, 2));
 	os::fclose(f);
 	return true;
 }
@@ -191,8 +191,8 @@ bool CPose3DPDFSOG::saveToTextFile(const std::string& file) const
  ---------------------------------------------------------------*/
 void CPose3DPDFSOG::changeCoordinatesReference(const CPose3D& newReferenceBase)
 {
-	for (iterator it = m_modes.begin(); it != m_modes.end(); ++it)
-		(it)->val.changeCoordinatesReference(newReferenceBase);
+	for (auto & m_mode : m_modes)
+		m_mode.->val.changeCoordinatesReference(newReferenceBase);
 }
 
 /*---------------------------------------------------------------
@@ -284,11 +284,11 @@ void CPose3DPDFSOG::assureSymmetry()
 	MRPT_START
 	// Differences, when they exist, appear in the ~15'th significant
 	//  digit, so... just take one of them arbitrarily!
-	for (iterator it = m_modes.begin(); it != m_modes.end(); ++it)
+	for (auto & m_mode : m_modes)
 	{
 		for (size_t i = 0; i < 6; i++)
 			for (size_t j = i + 1; j < 6; j++)
-				(it)->val.cov.get_unsafe(i, j) = (it)->val.cov.get_unsafe(j, i);
+				m_mode.->val.cov.get_unsafe(i, j) = m_mode.->val.cov.get_unsafe(j, i);
 	}
 
 	MRPT_END
@@ -304,11 +304,11 @@ void CPose3DPDFSOG::normalizeWeights()
 	if (m_modes.empty()) return;
 
 	double maxW = m_modes[0].log_w;
-	for (iterator it = m_modes.begin(); it != m_modes.end(); ++it)
-		maxW = max(maxW, (it)->log_w);
+	for (auto & m_mode : m_modes)
+		maxW = max(maxW, m_mode.->log_w);
 
-	for (iterator it = m_modes.begin(); it != m_modes.end(); ++it)
-		(it)->log_w -= maxW;
+	for (auto & m_mode : m_modes)
+		m_mode.->log_w -= maxW;
 
 	MRPT_END
 }
@@ -369,8 +369,8 @@ void CPose3DPDFSOG::appendFrom(const CPose3DPDFSOG& o)
 	if (o.m_modes.empty()) return;
 
 	// Make copies:
-	for (const_iterator it = o.m_modes.begin(); it != o.m_modes.end(); ++it)
-		m_modes.push_back(*it);
+	for (const auto & m_mode : o.m_modes)
+		m_modes.push_back(m_mode);
 
 	normalizeWeights();
 	MRPT_END

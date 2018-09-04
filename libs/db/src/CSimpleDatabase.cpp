@@ -34,10 +34,10 @@ void CSimpleDatabase::serializeTo(mrpt::serialization::CArchive& out) const
 	uint32_t n = (uint32_t)m_tables.size();
 	out << n;
 
-	for (const_iterator i = m_tables.begin(); i != m_tables.end(); ++i)
+	for (const auto & m_table : m_tables)
 	{
-		out << i->first;  //.c_str();
-		out << *i->second;
+		out << m_table.first;  //.c_str();
+		out << *m_table.second;
 	}
 }
 void CSimpleDatabase::serializeFrom(
@@ -359,11 +359,11 @@ bool CSimpleDatabase::saveAsXML(const string& fileName) const
 			XMLNode::createXMLTopNode("CSimpleDatabase-MRPT-Object");
 
 		// For each table:
-		for (const_iterator it = m_tables.begin(); it != m_tables.end(); ++it)
+		for (const auto & m_table : m_tables)
 		{
-			CSimpleDatabaseTable::Ptr t = it->second;
+			CSimpleDatabaseTable::Ptr t = m_table.second;
 			XMLNode tabNod = rootXml.addChild("table");
-			tabNod.addAttribute("name", it->first.c_str());
+			tabNod.addAttribute("name", m_table.first.c_str());
 
 			// Add field descriptions:
 			// ------------------------

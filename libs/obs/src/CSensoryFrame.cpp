@@ -198,9 +198,9 @@ CObservation::Ptr CSensoryFrame::getObservationBySensorLabel(
 	MRPT_START
 
 	size_t foundCount = 0;
-	for (const_iterator it = begin(); it != end(); ++it)
-		if (!os::_strcmpi((*it)->sensorLabel.c_str(), label.c_str()))
-			if (foundCount++ == idx) return *it;
+	for (const auto & it : *this)
+		if (!os::_strcmpi(it->sensorLabel.c_str(), label.c_str()))
+			if (foundCount++ == idx) return it;
 
 	return CObservation::Ptr();
 
@@ -266,10 +266,10 @@ void CSensoryFrame::internal_buildAuxPointsMap(const void* options) const
 			"[CSensoryFrame::buildAuxPointsMap] ERROR: This function needs "
 			"linking against mrpt-maps.\n");
 
-	for (const_iterator it = begin(); it != end(); ++it)
-		if (IS_CLASS(*it, CObservation2DRangeScan))
+	for (const auto & it : *this)
+		if (IS_CLASS(it, CObservation2DRangeScan))
 			(*ptr_internal_build_points_map_from_scan2D)(
-				dynamic_cast<CObservation2DRangeScan&>(*it->get()), m_cachedMap,
+				dynamic_cast<CObservation2DRangeScan&>(*it.get()), m_cachedMap,
 				options);
 }
 
@@ -277,8 +277,8 @@ bool CSensoryFrame::insertObservationsInto(
 	mrpt::maps::CMetricMap* theMap, const CPose3D* robotPose) const
 {
 	bool anyone = false;
-	for (const_iterator it = begin(); it != end(); ++it)
-		anyone |= (*it)->insertObservationInto(theMap, robotPose);
+	for (const auto & it : *this)
+		anyone |= it->insertObservationInto(theMap, robotPose);
 	return anyone;
 }
 

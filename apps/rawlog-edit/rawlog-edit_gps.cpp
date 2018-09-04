@@ -164,11 +164,9 @@ DECLARE_OP_FUNCTION(op_export_gps_kml)
 				);
 				f.printf("%s", LineString_START.c_str());
 
-				for (map<TTimeStamp, TGPSDataPoint>::const_iterator itP =
-						 D.path.begin();
-					 itP != D.path.end(); ++itP)
+				for (const auto & itP : D.path)
 				{
-					const TGPSDataPoint& d = itP->second;
+					const TGPSDataPoint& d = itP.second;
 					// Format is: lon,lat[,alt]
 					if (save_altitude)
 						f.printf(" %.15f,%.15f,%.3f\n", d.lon, d.lat, d.alt);
@@ -203,11 +201,9 @@ DECLARE_OP_FUNCTION(op_export_gps_kml)
 					last_valid.lat = 0;
 					last_valid.lon = 0;
 
-					for (map<TTimeStamp, TGPSDataPoint>::const_iterator itP =
-							 D.path.begin();
-						 itP != D.path.end(); ++itP)
+					for (const auto & itP : D.path)
 					{
-						const TGPSDataPoint& d = itP->second;
+						const TGPSDataPoint& d = itP.second;
 						if (d.fix != 4) continue;  // Skip this one..
 
 						// There was a valid point?
@@ -333,9 +329,9 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 
 			// The name of the file:
 			string joint_name;
-			for (auto it = lstlabels.begin(); it != lstlabels.end(); ++it)
+			for (const auto & lstlabel : lstlabels)
 			{
-				joint_name += *it;
+				joint_name += lstlabel;
 			}
 
 			const string jointFilName = format(

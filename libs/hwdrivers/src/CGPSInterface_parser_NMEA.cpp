@@ -113,8 +113,8 @@ bool CGPSInterface::parse_NMEA(
 		s, "*,\t\r\n", lstTokens, false /* do not skip blank tokens */);
 	if (lstTokens.size() < 3) return false;
 
-	for (size_t i = 0; i < lstTokens.size(); i++)
-		lstTokens[i] = mrpt::system::trim(lstTokens[i]);  // Trim whitespaces
+	for (auto & lstToken : lstTokens)
+		lstToken = mrpt::system::trim(lstToken);  // Trim whitespaces
 
 	bool parsed_ok = false;
 	// Try to determine the kind of command:

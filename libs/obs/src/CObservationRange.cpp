@@ -118,10 +118,10 @@ void CObservationRange::getDescriptionAsText(std::ostream& o) const
 	// For each entry in this sequence:
 	o << "  SENSOR_ID    RANGE (m)    SENSOR POSE (on the robot)" << endl;
 	o << "-------------------------------------------------------" << endl;
-	for (size_t q = 0; q < sensedData.size(); q++)
+	for (const auto & q : sensedData)
 	{
-		o << format("     %7u", (unsigned int)sensedData[q].sensorID);
-		o << format("    %4.03f   ", sensedData[q].sensedDistance);
-		o << sensedData[q].sensorPose << endl;
+		o << format("     %7u", (unsigned int)q.sensorID);
+		o << format("    %4.03f   ", q.sensedDistance);
+		o << q.sensorPose << endl;
 	}
 }

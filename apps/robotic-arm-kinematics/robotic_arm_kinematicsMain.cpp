@@ -869,7 +869,7 @@ void robotic_arm_kinematicsFrame::UpdateListLinks()
 void robotic_arm_kinematicsFrame::RegenerateDOFPanels()
 {
 	// Clear:
-	for (size_t i = 0; i < m_dof_panels.size(); i++) delete m_dof_panels[i];
+	for (auto & m_dof_panel : m_dof_panels) delete m_dof_panel;
 	m_dof_panels.clear();
 
 	// Create:

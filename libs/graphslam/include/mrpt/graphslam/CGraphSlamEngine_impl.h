@@ -1879,21 +1879,19 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 	}
 
 	// for all the nodes in the previously populated set
-	for (std::set<mrpt::graphs::TNodeID>::const_iterator node_it =
-			 nodes_set.begin();
-		 node_it != nodes_set.end(); ++node_it)
+	for (unsigned long node_it : nodes_set)
 	{
 		// name of gui object
 		stringstream scan_name("");
 		scan_name << "laser_scan_";
-		scan_name << *node_it;
+		scan_name << node_it;
 
 		// get the node laser scan
 		CObservation2DRangeScan::Ptr scan_content;
 		std::map<
 			mrpt::graphs::TNodeID,
 			mrpt::obs::CObservation2DRangeScan::Ptr>::const_iterator search =
-			nodes_to_laser_scans2D.find(*node_it);
+			nodes_to_laser_scans2D.find(node_it);
 
 		// make sure that the laser scan exists and is valid
 		if (search != nodes_to_laser_scans2D.end() && search->second)
@@ -1921,7 +1919,7 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 				m.getAs3DObject(scan_obj);
 
 				scan_obj->setName(scan_name.str());
-				this->setObjectPropsFromNodeID(*node_it, scan_obj);
+				this->setObjectPropsFromNodeID(node_it, scan_obj);
 
 				// set the visibility of the object the same value as the
 				// visibility of
@@ -1930,7 +1928,7 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 				// whole map
 				{
 					stringstream prev_scan_name("");
-					prev_scan_name << "laser_scan_" << *node_it - 1;
+					prev_scan_name << "laser_scan_" << node_it - 1;
 					CRenderizable::Ptr prev_obj =
 						map_obj->getByName(prev_scan_name.str());
 					if (prev_obj)
@@ -1947,13 +1945,13 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 			}
 
 			// finally set the pose correctly - as computed by graphSLAM
-			const CPose3D& scan_pose = CPose3D(m_graph.nodes.at(*node_it));
+			const CPose3D& scan_pose = CPose3D(m_graph.nodes.at(node_it));
 			scan_obj->setPose(scan_pose);
 		}
 		else
 		{
 			MRPT_LOG_DEBUG_STREAM(
-				"Laser scans of NodeID " << *node_it << "are  empty/invalid");
+				"Laser scans of NodeID " << node_it << "are  empty/invalid");
 		}
 
 	}  // end for set of nodes
@@ -2253,11 +2251,9 @@ void CGraphSlamEngine<GRAPH_T>::updateEstimatedTrajectoryVisualization(
 			}
 		}
 		// append line for each node in the set
-		for (std::set<mrpt::graphs::TNodeID>::const_iterator it =
-				 nodes_set.begin();
-			 it != nodes_set.end(); ++it)
+		for (unsigned long it : nodes_set)
 		{
-			mrpt::poses::CPose3D p(m_graph.nodes.at(*it));
+			mrpt::poses::CPose3D p(m_graph.nodes.at(it));
 
 			estimated_traj_setoflines->appendLineStrip(p.x(), p.y(), p.z());
 		}

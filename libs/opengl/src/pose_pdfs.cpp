@@ -53,13 +53,13 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPosePDF& o)
 		lins->setColor(0, 0, 1, 0.6);
 		lins->setLineWidth(POSE_TAIL_WIDTH);
 
-		for (CPosePDFSOG::const_iterator it = p->begin(); it != p->end(); ++it)
+		for (const auto & it : *p)
 		{
 			opengl::CEllipsoid::Ptr ellip =
 				mrpt::make_aligned_shared<opengl::CEllipsoid>();
 
-			ellip->setPose(CPose3D((it)->mean.x(), (it)->mean.y(), 0));
-			ellip->setCovMatrix((it)->cov, 2 /* x y */);
+			ellip->setPose(CPose3D(it.->mean.x(), it.->mean.y(), 0));
+			ellip->setCovMatrix(it.->cov, 2 /* x y */);
 			ellip->setColor(POSE_COLOR, 0.6);
 			ellip->setQuantiles(3);
 			ellip->enableDrawSolid3D(false);
@@ -67,9 +67,9 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPosePDF& o)
 			outObj->insert(ellip);
 
 			lins->appendLine(
-				(it)->mean.x(), (it)->mean.y(), 0,
-				(it)->mean.x() + POSE_TAIL_LENGTH * cos((it)->mean.phi()),
-				(it)->mean.y() + POSE_TAIL_LENGTH * sin((it)->mean.phi()), 0);
+				it.->mean.x(), it.->mean.y(), 0,
+				it.->mean.x() + POSE_TAIL_LENGTH * cos(it.->mean.phi()),
+				it.->mean.y() + POSE_TAIL_LENGTH * sin(it.->mean.phi()), 0);
 		}
 		outObj->insert(lins);
 	}
@@ -143,14 +143,13 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPointPDF& o)
 		const CPointPDFSOG* p = static_cast<const CPointPDFSOG*>(&o);
 
 		// For each gaussian node
-		for (CPointPDFSOG::CListGaussianModes::const_iterator it = p->begin();
-			 it != p->end(); ++it)
+		for (const auto & it : *p)
 		{
 			opengl::CEllipsoid::Ptr obj =
 				mrpt::make_aligned_shared<opengl::CEllipsoid>();
 
-			obj->setPose(it->val.mean);
-			obj->setCovMatrix(it->val.cov, it->val.cov(2, 2) == 0 ? 2 : 3);
+			obj->setPose(it.val.mean);
+			obj->setCovMatrix(it.val.cov, it.val.cov(2, 2) == 0 ? 2 : 3);
 
 			obj->setQuantiles(3);
 			obj->enableDrawSolid3D(false);
@@ -204,15 +203,14 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPose3DPDF& o)
 		const CPose3DPDFSOG* p = static_cast<const CPose3DPDFSOG*>(&o);
 
 		// For each gaussian node
-		for (CPose3DPDFSOG::const_iterator it = p->begin(); it != p->end();
-			 ++it)
+		for (const auto & it : *p)
 		{
 			opengl::CEllipsoid::Ptr obj =
 				mrpt::make_aligned_shared<opengl::CEllipsoid>();
 
-			obj->setPose(it->val.mean);
+			obj->setPose(it.val.mean);
 			obj->setCovMatrix(
-				CMatrixDouble(it->val.cov), it->val.cov(2, 2) == 0 ? 2 : 3);
+				CMatrixDouble(it.val.cov), it.val.cov(2, 2) == 0 ? 2 : 3);
 
 			obj->setQuantiles(3);
 			obj->enableDrawSolid3D(false);
@@ -222,7 +220,7 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPose3DPDF& o)
 
 			opengl::CSetOfObjects::Ptr axes =
 				opengl::stock_objects::CornerXYZ();
-			axes->setPose(it->val.mean);
+			axes->setPose(it.val.mean);
 			axes->setScale(POSE_AXIS_SCALE);
 			outObj->insert(axes);
 		}  // end for each gaussian node

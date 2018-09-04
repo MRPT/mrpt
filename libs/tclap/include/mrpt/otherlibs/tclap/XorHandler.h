@@ -115,11 +115,9 @@ inline int XorHandler::check( const Arg* a )
 		if ( ait != _orList[i].end() )
 		{
 			// go through and set each arg that is not a
-			for ( ArgVectorIterator it = _orList[i].begin(); 
-				  it != _orList[i].end(); 
-				  it++ )	
-				if ( a != (*it) )
-					(*it)->xorSet();
+			for (auto & it : _orList[i])	
+				if ( a != it )
+					it->xorSet();
 
 			// return the number of required args that have now been set
 			if ( (*ait)->allowMore() )
@@ -138,10 +136,8 @@ inline int XorHandler::check( const Arg* a )
 inline bool XorHandler::contains( const Arg* a )
 {
 	for ( int i = 0; static_cast<unsigned int>(i) < _orList.size(); i++ )
-		for ( ArgVectorIterator it = _orList[i].begin(); 
-			  it != _orList[i].end(); 
-			  it++ )	
-			if ( a == (*it) )
+		for (auto & it : _orList[i])	
+			if ( a == it )
 				return true;
 
 	return false;

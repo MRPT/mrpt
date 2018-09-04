@@ -1070,9 +1070,9 @@ void CRangeBearingKFSLAM::getAs3DObject(
 					CObservationBearingRange::Ptr obs =
 						SF_i->getObservationByClass<CObservationBearingRange>();
 
-					for (size_t o = 0; o < obs->sensedData.size(); o++)
+					for (auto & o : obs->sensedData)
 					{
-						if (obs->sensedData[o].landmarkID == i_th_ID)
+						if (o.landmarkID == i_th_ID)
 						{
 							belongToPartition[p] = true;
 							break;
@@ -1168,9 +1168,9 @@ void CRangeBearingKFSLAM::getLastPartitionLandmarks(
 				CObservationBearingRange::Ptr obs =
 					SF_i->getObservationByClass<CObservationBearingRange>();
 
-				for (size_t o = 0; o < obs->sensedData.size(); o++)
+				for (auto & o : obs->sensedData)
 				{
-					if (obs->sensedData[o].landmarkID == i_th_ID)
+					if (o.landmarkID == i_th_ID)
 					{
 						belongToPartition[p] = true;
 						break;
@@ -1182,9 +1182,8 @@ void CRangeBearingKFSLAM::getLastPartitionLandmarks(
 		// Build membership list:
 		std::vector<uint32_t> membershipOfThisLM;
 
-		for (map<int, bool>::iterator it = belongToPartition.begin();
-			 it != belongToPartition.end(); ++it)
-			membershipOfThisLM.push_back(it->first);
+		for (auto & it : belongToPartition)
+			membershipOfThisLM.push_back(it.first);
 
 		landmarksMembership.push_back(membershipOfThisLM);
 	}  // end for i

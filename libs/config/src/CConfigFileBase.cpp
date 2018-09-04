@@ -206,9 +206,8 @@ bool CConfigFileBase::sectionExists(const std::string& section_name) const
 {
 	std::vector<std::string> sects;
 	getAllSections(sects);
-	for (std::vector<std::string>::iterator s = sects.begin(); s != sects.end();
-		 ++s)
-		if (!mrpt::system::os::_strcmpi(section_name.c_str(), s->c_str()))
+	for (auto & sect : sects)
+		if (!mrpt::system::os::_strcmpi(section_name.c_str(), sect.c_str()))
 			return true;
 	return false;
 }

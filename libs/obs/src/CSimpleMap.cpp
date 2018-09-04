@@ -259,9 +259,8 @@ void CSimpleMap::serializeFrom(
   ---------------------------------------------------------------*/
 void CSimpleMap::changeCoordinatesOrigin(const CPose3D& newOrigin)
 {
-	for (TPosePDFSensFramePairList::iterator it = m_posesObsPairs.begin();
-		 it != m_posesObsPairs.end(); ++it)
-		it->first->changeCoordinatesReference(newOrigin);
+	for (auto & m_posesObsPair : m_posesObsPairs)
+		m_posesObsPair.first->changeCoordinatesReference(newOrigin);
 }
 
 /** Save this object to a .simplemap binary file (compressed with gzip)

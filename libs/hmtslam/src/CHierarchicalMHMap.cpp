@@ -189,9 +189,9 @@ void CHierarchicalMHMap::loadFromXMLfile(std::string fileName)
 		std::deque<std::string> lista;
 		mrpt::system::tokenize(table->get(j, "annotation-list"), " ", lista);
 
-		for (size_t r = 0; r < lista.size(); r++)
+		for (auto & r : lista)
 			nodeanotmap.insert(
-				IDnodeanotPair((size_t)atoi(lista[r].c_str()), node->getID()));
+				IDnodeanotPair((size_t)atoi(r.c_str()), node->getID()));
 
 		// A map with key the id of annotations and value the id of nodes;
 	}
@@ -289,19 +289,18 @@ void CHierarchicalMHMap::dumpAsXMLfile(std::string fileName) const
 
 	// for nodes
 	printf("Generating nodes\n");
-	for (TNodeList::const_iterator it = m_nodes.begin(); it != m_nodes.end();
-		 ++it)
+	for (const auto & m_node : m_nodes)
 	{
 		i = tablenodes->appendRecord();
-		tablenodes->set(i, "nodename", it->second->m_label.c_str());
+		tablenodes->set(i, "nodename", m_node.second->m_label.c_str());
 		tablenodes->set(
-			i, "id", format("%i", static_cast<int>(it->second->getID())));
-		tablenodes->set(i, "nodetype", it->second->m_nodeType);
+			i, "id", format("%i", static_cast<int>(m_node.second->getID())));
+		tablenodes->set(i, "nodetype", m_node.second->m_nodeType);
 
 		tablenodes->set(i, "annotation-list", ".");
 		for (CMHPropertiesValuesList::const_iterator ann =
-				 it->second->m_annotations.begin();
-			 ann != it->second->m_annotations.end(); ++ann)
+				 m_node.second->m_annotations.begin();
+			 ann != m_node.second->m_annotations.end(); ++ann)
 		{
 			size_t j = tableannots->appendRecord();
 			tableannots->set(
@@ -338,23 +337,23 @@ void CHierarchicalMHMap::dumpAsXMLfile(std::string fileName) const
 	// for arcs
 	printf("Generating arcs (%u)\n", static_cast<unsigned int>(m_arcs.size()));
 
-	for (TArcList::const_iterator it = m_arcs.begin(); it != m_arcs.end(); ++it)
+	for (const auto & m_arc : m_arcs)
 	{
 		size_t fromid, toid;
 
-		fromid = (int)(*it)->getNodeFrom();
-		toid = (int)(*it)->getNodeTo();
+		fromid = (int)m_arc->getNodeFrom();
+		toid = (int)m_arc->getNodeTo();
 
 		i = tablearcs->appendRecord();
 		tablearcs->set(i, "id", format("%u", static_cast<unsigned int>(i)));
 		tablearcs->set(
 			i, "from", format("%u", static_cast<unsigned int>(fromid)));
 		tablearcs->set(i, "to", format("%u", static_cast<unsigned int>(toid)));
-		tablearcs->set(i, "arctype", (*it)->m_arcType);
+		tablearcs->set(i, "arctype", m_arc->m_arcType);
 
 		for (CMHPropertiesValuesList::const_iterator ann =
-				 (*it)->m_annotations.begin();
-			 ann != (*it)->m_annotations.end(); ++ann)
+				 m_arc->m_annotations.begin();
+			 ann != m_arc->m_annotations.end(); ++ann)
 		{
 			i = tableannots->appendRecord();
 			tableannots->set(

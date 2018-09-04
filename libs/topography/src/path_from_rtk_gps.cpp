@@ -339,11 +339,10 @@ void mrpt::topography::path_from_rtk_gps(
 				std::map<std::string, CObservationGPS::Ptr>& GPS = it->second;
 
 				// Check if any in "lstGPSLabels" is missing here:
-				for (set<string>::iterator l = lstGPSLabels.begin();
-					 l != lstGPSLabels.end(); ++l)
+				for (const auto & lstGPSLabel : lstGPSLabels)
 				{
 					// For each GPS in the current timestamp:
-					bool fnd = (GPS.find(*l) != GPS.end());
+					bool fnd = (GPS.find(lstGPSLabel) != GPS.end());
 
 					if (fnd) continue;  // this one is present.
 
@@ -356,11 +355,11 @@ void mrpt::topography::path_from_rtk_gps(
 
 					CObservationGPS::Ptr GPS_b1, GPS_a1;
 
-					if (i_b1->second.find(*l) != i_b1->second.end())
-						GPS_b1 = i_b1->second.find(*l)->second;
+					if (i_b1->second.find(lstGPSLabel) != i_b1->second.end())
+						GPS_b1 = i_b1->second.find(lstGPSLabel)->second;
 
-					if (i_a1->second.find(*l) != i_a1->second.end())
-						GPS_a1 = i_a1->second.find(*l)->second;
+					if (i_a1->second.find(lstGPSLabel) != i_a1->second.end())
+						GPS_a1 = i_a1->second.find(lstGPSLabel)->second;
 
 					if (!disableGPSInterp && GPS_a1 && GPS_b1)
 					{
@@ -369,7 +368,7 @@ void mrpt::topography::path_from_rtk_gps(
 						{
 							CObservationGPS::Ptr new_gps = CObservationGPS::Ptr(
 								new CObservationGPS(*GPS_a1));
-							new_gps->sensorLabel = *l;
+							new_gps->sensorLabel = lstGPSLabel;
 
 							// cout <<
 							// mrpt::system::timeLocalToString(GPS_b1->timestamp)
@@ -647,13 +646,12 @@ void mrpt::topography::path_from_rtk_gps(
 	{
 		string bestLabel;
 		size_t bestNum = 0;
-		for (map<string, size_t>::iterator i = GPS_RTK_reads.begin();
-			 i != GPS_RTK_reads.end(); ++i)
+		for (auto & GPS_RTK_read : GPS_RTK_reads)
 		{
-			if (i->second > bestNum)
+			if (GPS_RTK_read.second > bestNum)
 			{
-				bestNum = i->second;
-				bestLabel = i->first;
+				bestNum = GPS_RTK_read.second;
+				bestLabel = GPS_RTK_read.first;
 			}
 		}
 		outInfoTemp.best_gps_path = gps_paths[bestLabel];
@@ -667,12 +665,10 @@ void mrpt::topography::path_from_rtk_gps(
 
 		// map<TTimeStamp,TPoint3D> best_gps_path;		// time -> 3D local
 		// coords
-		for (map<Clock::time_point, TPoint3D>::iterator i =
-				 outInfoTemp.best_gps_path.begin();
-			 i != outInfoTemp.best_gps_path.end(); ++i)
+		for (auto & i : outInfoTemp.best_gps_path)
 		{
 			TPoint3D P;
-			TPoint3D& pl = i->second;
+			TPoint3D& pl = i.second;
 			mrpt::topography::geodeticToENU_WGS84(
 				TGeodeticCoords(
 					pl.x, pl.y, pl.z),  // i->second.x,i->second.y,i->second.z,

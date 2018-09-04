@@ -93,13 +93,13 @@ void CObservationCANBusJ1939::getDescriptionAsText(std::ostream& o) const
 	o << "Data length: " << format("0x%02X", m_data_length)
 	  << " [Dec: " << int(m_data_length) << "]" << endl;
 	o << "Data: ";
-	for (uint8_t k = 0; k < m_data.size(); ++k)
-		o << format("0x%02X", m_data[k]) << " ";
+	for (unsigned char k : m_data)
+		o << format("0x%02X", k) << " ";
 	o << " [Dec: ";
-	for (uint8_t k = 0; k < m_data.size(); ++k) o << int(m_data[k]) << " ";
+	for (unsigned char k : m_data) o << int(k) << " ";
 	o << "]" << endl;
 
 	o << "Raw frame: ";
-	for (uint8_t k = 0; k < m_raw_frame.size(); ++k) o << m_raw_frame[k];
+	for (char k : m_raw_frame) o << k;
 	o << endl;
 }

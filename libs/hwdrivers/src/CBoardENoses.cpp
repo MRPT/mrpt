@@ -331,10 +331,10 @@ bool CBoardENoses::getObservation(mrpt::obs::CObservationGasSensors& obs)
 			correct = false;
 		else
 		{
-			for (size_t ch = 0; ch < obs.m_readings.size(); ch++)
+			for (auto & m_reading : obs.m_readings)
 			{
-				if ((obs.m_readings[ch].sensorTypes.size() != 7) ||
-					(obs.m_readings[ch].readingsVoltage.size() != 7))
+				if ((m_reading.sensorTypes.size() != 7) ||
+					(m_reading.readingsVoltage.size() != 7))
 					correct = false;
 				else
 				{

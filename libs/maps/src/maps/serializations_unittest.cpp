@@ -58,7 +58,7 @@ TEST(SerializeTestMaps, WriteReadToMem)
 		CLASS_ID(COctoMap),
 		CLASS_ID(CColouredOctoMap)};
 
-	for (size_t i = 0; i < sizeof(lstClasses) / sizeof(lstClasses[0]); i++)
+	for (auto & lstClasse : lstClasses)
 	{
 		try
 		{
@@ -66,7 +66,7 @@ TEST(SerializeTestMaps, WriteReadToMem)
 			auto arch = mrpt::serialization::archiveFrom(buf);
 			{
 				CSerializable* o =
-					static_cast<CSerializable*>(lstClasses[i]->createObject());
+					static_cast<CSerializable*>(lstClasse->createObject());
 				arch << *o;
 				delete o;
 			}
@@ -78,7 +78,7 @@ TEST(SerializeTestMaps, WriteReadToMem)
 		catch (std::exception& e)
 		{
 			GTEST_FAIL() << "Exception during serialization test for class '"
-						 << lstClasses[i]->className << "':\n"
+						 << lstClasse->className << "':\n"
 						 << e.what() << endl;
 		}
 	}

@@ -39,20 +39,18 @@ void CTextMessageCapable::render_text_messages(const int w, const int h) const
 
 	glDisable(GL_DEPTH_TEST);
 
-	for (std::map<size_t, mrpt::opengl::T2DTextData>::const_iterator it =
-			 m_2D_texts.begin();
-		 it != m_2D_texts.end(); ++it)
+	for (const auto & m_2D_text : m_2D_texts)
 	{
 		// If (x,y) \in [0,1[, it's interpreted as a ratio, otherwise, as an
 		// actual coordinate in pixels
-		const int x = it->second.x >= 1
-						  ? int(it->second.x)
-						  : (it->second.x < 0 ? int(w + it->second.x)
-											  : int(it->second.x * w));
-		const int y = it->second.y >= 1
-						  ? int(it->second.y)
-						  : (it->second.y < 0 ? int(h + it->second.y)
-											  : int(it->second.y * h));
+		const int x = m_2D_text.second.x >= 1
+						  ? int(m_2D_text.second.x)
+						  : (m_2D_text.second.x < 0 ? int(w + m_2D_text.second.x)
+											  : int(m_2D_text.second.x * w));
+		const int y = m_2D_text.second.y >= 1
+						  ? int(m_2D_text.second.y)
+						  : (m_2D_text.second.y < 0 ? int(h + m_2D_text.second.y)
+											  : int(m_2D_text.second.y * h));
 
 		// Font size and family:
 		double font_size = 10;
@@ -61,7 +59,7 @@ void CTextMessageCapable::render_text_messages(const int w, const int h) const
 		double font_spacing = 1.5;
 		double font_kerning = 0.1;
 
-		switch (it->second.font)
+		switch (m_2D_text.second.font)
 		{
 			case MRPT_GLUT_BITMAP_TIMES_ROMAN_10:
 				font_size = 10;
@@ -87,11 +85,11 @@ void CTextMessageCapable::render_text_messages(const int w, const int h) const
 			// This means this is a vectorized font, so just copy the parameters
 			// set by the user:
 			case MRPT_GLUT_BITMAP_NONE:
-				font_size = it->second.vfont_scale;
-				font_name = it->second.vfont_name;
-				font_style = it->second.vfont_style;
-				font_spacing = it->second.vfont_spacing;
-				font_kerning = it->second.vfont_kerning;
+				font_size = m_2D_text.second.vfont_scale;
+				font_name = m_2D_text.second.vfont_name;
+				font_style = m_2D_text.second.vfont_style;
+				font_spacing = m_2D_text.second.vfont_spacing;
+				font_kerning = m_2D_text.second.vfont_kerning;
 				break;
 
 			default:
@@ -100,18 +98,18 @@ void CTextMessageCapable::render_text_messages(const int w, const int h) const
 				break;
 		};
 
-		if (it->second.draw_shadow)
+		if (m_2D_text.second.draw_shadow)
 		{
 			// Draw shadow:
 			glPushMatrix();
 
 			glTranslatef(x + 1, y - 1, 0.0);
 			glColor3f(
-				it->second.shadow_color.R, it->second.shadow_color.G,
-				it->second.shadow_color.B);
+				m_2D_text.second.shadow_color.R, m_2D_text.second.shadow_color.G,
+				m_2D_text.second.shadow_color.B);
 			mrpt::opengl::gl_utils::glSetFont(font_name);
 			mrpt::opengl::gl_utils::glDrawText(
-				it->second.text, font_size, font_style, font_spacing,
+				m_2D_text.second.text, font_size, font_style, font_spacing,
 				font_kerning);
 
 			glPopMatrix();
@@ -121,10 +119,10 @@ void CTextMessageCapable::render_text_messages(const int w, const int h) const
 		glPushMatrix();
 
 		glTranslatef(x, y, 0.0);
-		glColor3f(it->second.color.R, it->second.color.G, it->second.color.B);
+		glColor3f(m_2D_text.second.color.R, m_2D_text.second.color.G, m_2D_text.second.color.B);
 		mrpt::opengl::gl_utils::glSetFont(font_name);
 		mrpt::opengl::gl_utils::glDrawText(
-			it->second.text, font_size, font_style, font_spacing, font_kerning);
+			m_2D_text.second.text, font_size, font_style, font_spacing, font_kerning);
 
 		glPopMatrix();
 	}

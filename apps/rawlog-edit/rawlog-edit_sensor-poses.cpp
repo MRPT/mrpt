@@ -67,22 +67,21 @@ DECLARE_OP_FUNCTION(op_sensors_pose)
 			std::vector<std::string> sections;
 			cfg.getAllSections(sections);
 
-			for (std::vector<std::string>::iterator it = sections.begin();
-				 it != sections.end(); ++it)
+			for (auto & section : sections)
 			{
-				if (it->empty()) continue;
+				if (section.empty()) continue;
 
 				// Get sensor label:
-				string label = cfg.read_string(*it, "sensorLabel", "");
+				string label = cfg.read_string(section, "sensorLabel", "");
 				if (label.empty()) continue;
 
 				CPose3D the_pose(
-					cfg.read_double(*it, "pose_x", 0, true),
-					cfg.read_double(*it, "pose_y", 0, true),
-					cfg.read_double(*it, "pose_z", 0, true),
-					DEG2RAD(cfg.read_double(*it, "pose_yaw", 0)),
-					DEG2RAD(cfg.read_double(*it, "pose_pitch", 0)),
-					DEG2RAD(cfg.read_double(*it, "pose_roll", 0)));
+					cfg.read_double(section, "pose_x", 0, true),
+					cfg.read_double(section, "pose_y", 0, true),
+					cfg.read_double(section, "pose_z", 0, true),
+					DEG2RAD(cfg.read_double(section, "pose_yaw", 0)),
+					DEG2RAD(cfg.read_double(section, "pose_pitch", 0)),
+					DEG2RAD(cfg.read_double(section, "pose_roll", 0)));
 
 				// insert:
 				desiredSensorPoses[label] = the_pose;

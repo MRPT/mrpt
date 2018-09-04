@@ -135,14 +135,14 @@ class CMHPropertiesValuesList : public mrpt::serialization::CSerializable
 		basic_value.resize(sizeof(T));
 		::memcpy(&basic_value[0], &data, sizeof(T));
 
-		for (auto it = m_properties.begin(); it != m_properties.end(); ++it)
+		for (auto & m_propertie : m_properties)
 		{
-			if (it->ID == hypothesis_ID &&
-				mrpt::system::strCmpI(propertyName, it->name))
+			if (m_propertie.ID == hypothesis_ID &&
+				mrpt::system::strCmpI(propertyName, m_propertie.name))
 			{
 				// Delete current contents &
 				// Copy new value:
-				it->basic_value = basic_value;
+				m_propertie.basic_value = basic_value;
 				return;
 			}
 		}
@@ -169,14 +169,14 @@ class CMHPropertiesValuesList : public mrpt::serialization::CSerializable
 		bool raiseExceptionIfNotFound = false) const
 	{
 		MRPT_START
-		for (auto it = m_properties.begin(); it != m_properties.end(); ++it)
+		for (const auto & m_propertie : m_properties)
 		{
-			if (mrpt::system::strCmpI(propertyName, it->name) &&
-				it->ID == hypothesis_ID)
+			if (mrpt::system::strCmpI(propertyName, m_propertie.name) &&
+				m_propertie.ID == hypothesis_ID)
 			{
-				if (it->basic_value.size() != sizeof(out_data))
+				if (m_propertie.basic_value.size() != sizeof(out_data))
 					THROW_EXCEPTION("Data sizes do not match.");
-				out_data = *reinterpret_cast<const T*>(&it->basic_value[0]);
+				out_data = *reinterpret_cast<const T*>(&m_propertie.basic_value[0]);
 				return true;
 			}
 		}

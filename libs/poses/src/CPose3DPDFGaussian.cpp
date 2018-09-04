@@ -352,15 +352,14 @@ void CPose3DPDFGaussian::drawManySamples(
 
 	getRandomGenerator().drawGaussianMultivariateMany(outSamples, N, cov);
 
-	for (vector<CVectorDouble>::iterator it = outSamples.begin();
-		 it != outSamples.end(); ++it)
+	for (auto & outSample : outSamples)
 	{
-		(*it)[0] += mean.x();
-		(*it)[1] += mean.y();
-		(*it)[2] += mean.z();
-		(*it)[3] = math::wrapToPi((*it)[3] + mean.yaw());
-		(*it)[4] = math::wrapToPi((*it)[4] + mean.pitch());
-		(*it)[5] = math::wrapToPi((*it)[5] + mean.roll());
+		outSample[0] += mean.x();
+		outSample[1] += mean.y();
+		outSample[2] += mean.z();
+		outSample[3] = math::wrapToPi(outSample[3] + mean.yaw());
+		outSample[4] = math::wrapToPi(outSample[4] + mean.pitch());
+		outSample[5] = math::wrapToPi(outSample[5] + mean.roll());
 	}
 
 	MRPT_END

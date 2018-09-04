@@ -126,7 +126,7 @@ class COpenGLStandardObject : public CRenderizableDisplayList
 		const std::vector<_GLENUM>& en)
 		: type(t), vertices(v), chunkSize(cs), enabled(en)
 	{
-		for (size_t i = 0; i < 3; i++) normal[i] = 0.0;
+		for (float & i : normal) i = 0.0;
 	}
 	/**
 	  * Baic empty constructor, initializes to default.
@@ -137,7 +137,7 @@ class COpenGLStandardObject : public CRenderizableDisplayList
 		  chunkSize(0),
 		  enabled(std::vector<_GLENUM>())
 	{
-		for (size_t i = 0; i < 3; i++) normal[i] = 0.0;
+		for (float & i : normal) i = 0.0;
 	}
 	/**
 	  * Destructor.

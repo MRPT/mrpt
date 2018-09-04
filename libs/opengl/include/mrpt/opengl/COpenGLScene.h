@@ -164,10 +164,9 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 	typename T::Ptr getByClass(const size_t& ith = 0) const
 	{
 		MRPT_START
-		for (TListViewports::const_iterator it = m_viewports.begin();
-			 it != m_viewports.end(); ++it)
+		for (const auto & m_viewport : m_viewports)
 		{
-			typename T::Ptr o = (*it)->getByClass<T>(ith);
+			typename T::Ptr o = m_viewport->getByClass<T>(ith);
 			if (o) return o;
 		}
 		return typename T::Ptr();  // Not found: return empty smart pointer
@@ -223,10 +222,9 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 	void visitAllObjects(FUNCTOR functor) const
 	{
 		MRPT_START
-		for (TListViewports::const_iterator it = m_viewports.begin();
-			 it != m_viewports.end(); ++it)
-			for (COpenGLViewport::const_iterator itO = (*it)->begin();
-				 itO != (*it)->end(); ++itO)
+		for (const auto & m_viewport : m_viewports)
+			for (COpenGLViewport::const_iterator itO = m_viewport->begin();
+				 itO != m_viewport->end(); ++itO)
 				internal_visitAllObjects(functor, *itO);
 		MRPT_END
 	}

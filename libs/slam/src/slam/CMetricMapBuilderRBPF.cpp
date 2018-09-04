@@ -270,10 +270,8 @@ void CMetricMapBuilderRBPF::processActionObservation(
 	// Added 29/JUN/2007 JLBC: Tell all maps that they can now free aux.
 	// variables
 	//  (if any) since one PF cycle is over:
-	for (CMultiMetricMapPDF::CParticleList::iterator it =
-			 mapPDF.m_particles.begin();
-		 it != mapPDF.m_particles.end(); ++it)
-		it->d->mapTillNow.auxParticleFilterCleanUp();
+	for (auto & m_particle : mapPDF.m_particles)
+		m_particle.d->mapTillNow.auxParticleFilterCleanUp();
 
 	MRPT_END;
 }

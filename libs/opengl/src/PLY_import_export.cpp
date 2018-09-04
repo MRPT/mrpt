@@ -394,25 +394,25 @@ void ply_header_complete(PlyFile* plyfile)
 
 	/* write out the comments */
 
-	for (size_t i = 0; i < plyfile->comments.size(); i++)
-		fprintf(fp, "comment %s\n", plyfile->comments[i].c_str());
+	for (auto & comment : plyfile->comments)
+		fprintf(fp, "comment %s\n", comment.c_str());
 
 	/* write out object information */
 
-	for (size_t i = 0; i < plyfile->obj_info.size(); i++)
-		fprintf(fp, "obj_info %s\n", plyfile->obj_info[i].c_str());
+	for (auto & i : plyfile->obj_info)
+		fprintf(fp, "obj_info %s\n", i.c_str());
 
 	/* write out information about each element */
 
-	for (size_t i = 0; i < plyfile->elems.size(); i++)
+	for (auto & i : plyfile->elems)
 	{
-		const PlyElement* elem = &plyfile->elems[i];
+		const PlyElement* elem = &i;
 		fprintf(fp, "element %s %d\n", elem->name.c_str(), elem->num);
 
 		/* write out each property */
-		for (size_t j = 0; j < elem->props.size(); j++)
+		for (const auto & j : elem->props)
 		{
-			const PlyProperty* prop = &elem->props[j];
+			const PlyProperty* prop = &j;
 			if (prop->is_list)
 			{
 				fprintf(fp, "property list ");
@@ -674,9 +674,9 @@ PlyFile* ply_read(FILE* fp, vector<string>& elem_names)
 	/* create tags for each property of each element, to be used */
 	/* later to say whether or not to store each property for the user */
 
-	for (size_t i = 0; i < plyfile->elems.size(); i++)
+	for (auto & i : plyfile->elems)
 	{
-		PlyElement* elem = &plyfile->elems[i];
+		PlyElement* elem = &i;
 
 		elem->store_prop.assign(elem->props.size(), DONT_STORE_PROP);
 		elem->other_offset = NO_OTHER_PROPS; /* no "other" props by default */
@@ -684,8 +684,8 @@ PlyFile* ply_read(FILE* fp, vector<string>& elem_names)
 
 	/* set return values about the elements */
 	elem_names.clear();
-	for (size_t i = 0; i < plyfile->elems.size(); i++)
-		elem_names.push_back(plyfile->elems[i].name);
+	for (auto & elem : plyfile->elems)
+		elem_names.push_back(elem.name);
 
 	/* return a pointer to the file's information */
 
@@ -905,8 +905,8 @@ Exit:
 
 PlyElement* find_element(PlyFile* plyfile, const string& element)
 {
-	for (size_t i = 0; i < plyfile->elems.size(); i++)
-		if (element == plyfile->elems[i].name) return &plyfile->elems[i];
+	for (auto & elem : plyfile->elems)
+		if (element == elem.name) return &elem;
 
 	return (nullptr);
 }
@@ -1870,11 +1870,10 @@ bool PLY_Importer::loadFromPlyFile(
 		/* go through each kind of element that we learned is in the file */
 		/* and read them */
 
-		for (size_t i = 0; i < elist.size(); i++)
+		for (const auto & elem_name : elist)
 		{
 			/* get the description of the first element */
-			const string& elem_name = elist[i];
-			int num_elems = 0, nprops = 0;
+				int num_elems = 0, nprops = 0;
 
 			// vector<PlyProperty> plist =
 			ply_get_element_description(ply, elem_name, num_elems, nprops);
@@ -1886,9 +1885,8 @@ bool PLY_Importer::loadFromPlyFile(
 			if ("vertex" == elem_name)
 			{
 				/* set up for getting vertex elements */
-				for (size_t k = 0; k < sizeof(vert_props) / sizeof(PlyProperty);
-					 k++)
-					ply_get_property(ply, elem_name, &vert_props[k]);
+				for (const auto & vert_prop : vert_props)
+					ply_get_property(ply, elem_name, &vert_prop);
 
 				/* grab all the vertex elements */
 				this->PLY_import_set_vertex_count(num_elems);
@@ -2012,15 +2010,15 @@ bool PLY_Exporter::saveToPlyFile(
 		}
 
 		ply_element_count(ply, "face", nfaces);
-		for (size_t k = 0; k < sizeof(face_props) / sizeof(PlyProperty); k++)
-			ply_describe_property(ply, "face", &face_props[k]);
+		for (const auto & face_prop : face_props)
+			ply_describe_property(ply, "face", &face_prop);
 
 		/* write a comment and an object information field */
-		for (size_t k = 0; k < file_comments.size(); k++)
-			ply_put_comment(ply, file_comments[k].c_str());
+		for (const auto & file_comment : file_comments)
+			ply_put_comment(ply, file_comment.c_str());
 
-		for (size_t k = 0; k < file_obj_info.size(); k++)
-			ply_put_obj_info(ply, file_obj_info[k].c_str());
+		for (const auto & k : file_obj_info)
+			ply_put_obj_info(ply, k.c_str());
 
 		/* we have described exactly what we will put in the file, so */
 		/* we are now done with the header info */

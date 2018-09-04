@@ -39,16 +39,16 @@ void CNavigatorManualSequence::loadConfigFile(
 	std::vector<std::string> lstKeys;
 	c.getAllKeys(s, lstKeys);
 
-	for (size_t i = 0; i < lstKeys.size(); i++)
+	for (const auto & lstKey : lstKeys)
 	{
-		std::string str = c.read_string(s, lstKeys[i], "", true);
+		std::string str = c.read_string(s, lstKey, "", true);
 		std::vector<std::string> toks;
 		mrpt::system::tokenize(str, " \t\r\n", toks);
 		ASSERTMSG_(
 			toks.size() > 2,
 			std::string("Wrong format while parsing CNavigatorManualSequence "
 						"cfg file in entry: ") +
-				lstKeys[i]);
+				lstKey);
 
 		const double t = atof(toks[0].c_str());
 		TVelCmd krc;

@@ -390,11 +390,9 @@ void CCanvas::textOut(
 	uint32_t char_w = m_selectedFontBitmaps[0];
 	uint32_t char_h = m_selectedFontBitmaps[1];
 
-	for (size_t i = 0; i < uniStr.size(); i++)
+	for (unsigned short unichar : uniStr)
 	{
-		const uint16_t& unichar = uniStr[i];
-
-		// look for the character in the table:
+			// look for the character in the table:
 		const uint32_t* table_ptr = m_selectedFontBitmaps + 2;
 		uint32_t charset_ini = table_ptr[0];
 		uint32_t charset_end = table_ptr[1];

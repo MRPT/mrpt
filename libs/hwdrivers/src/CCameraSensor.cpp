@@ -418,8 +418,8 @@ void CCameraSensor::close()
 	if (!m_threadImagesSaver.empty())
 	{
 		m_threadImagesSaverShouldEnd = true;
-		for (size_t i = 0; i < m_threadImagesSaver.size(); i++)
-			m_threadImagesSaver[i].join();
+		for (auto & i : m_threadImagesSaver)
+			i.join();
 	}
 }
 
@@ -953,12 +953,9 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 				CSensoryFrame::Ptr sf =
 					std::dynamic_pointer_cast<CSensoryFrame>(newObs);
 
-				for (CSensoryFrame::iterator i = sf->begin(); i != sf->end();
-					 ++i)
+				for (auto & o : *sf)
 				{
-					CObservation::Ptr& o = *i;
-
-					if (!m_rawlog_camera_sensor_label.empty() &&
+						if (!m_rawlog_camera_sensor_label.empty() &&
 						m_rawlog_camera_sensor_label != o->sensorLabel)
 						continue;
 

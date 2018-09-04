@@ -52,21 +52,20 @@ bool getVerticesAndFaces(
 {
 	vertices.reserve(4 * polys.size());
 	faces.reserve(polys.size());
-	for (std::vector<math::TPolygon3D>::const_iterator it = polys.begin();
-		 it != polys.end(); ++it)
+	for (const auto & poly : polys)
 	{
-		size_t N = it->size();
+		size_t N = poly.size();
 		if (N < 3) return false;
 		CPolyhedron::TPolyhedronFace f;
 		f.vertices.resize(N);
 		for (size_t i = 0; i < N; i++)
 		{
 			vector<TPoint3D>::iterator it2 =
-				find(vertices.begin(), vertices.end(), (*it)[i]);
+				find(vertices.begin(), vertices.end(), poly[i]);
 			if (it2 == vertices.end())
 			{
 				f.vertices[i] = vertices.size();
-				vertices.push_back((*it)[i]);
+				vertices.push_back(poly[i]);
 			}
 			else
 				f.vertices[i] = it2 - vertices.begin();
@@ -295,8 +294,8 @@ void insertRotunda(
 		p2[i].z = baseHeight + (isUpwards ? R1 : -R1);
 	}
 	size_t newBase = verts.size();
-	for (size_t i = 0; i < 5; i++) verts.push_back(p1[i]);
-	for (size_t i = 0; i < 5; i++) verts.push_back(p2[i]);
+	for (const auto & i : p1) verts.push_back(i);
+	for (const auto & i : p2) verts.push_back(i);
 	CPolyhedron::TPolyhedronFace f, g;
 	f.vertices.resize(3);
 	g.vertices.resize(5);
@@ -344,9 +343,8 @@ inline bool faceContainsEdge(
 	const CPolyhedron::TPolyhedronEdge& e)
 {
 	char hm = 0;
-	for (vector<uint32_t>::const_iterator it = f.vertices.begin();
-		 it != f.vertices.end(); ++it)
-		if (*it == e.v1 || *it == e.v2) hm++;
+	for (unsigned int vertice : f.vertices)
+		if (vertice == e.v1 || vertice == e.v2) hm++;
 	return hm == 2;
 }
 
@@ -392,19 +390,17 @@ bool searchForFace(
 	const vector<CPolyhedron::TPolyhedronFace>& fs, uint32_t v1, uint32_t v2,
 	uint32_t v3)
 {
-	for (vector<CPolyhedron::TPolyhedronFace>::const_iterator it = fs.begin();
-		 it != fs.end(); ++it)
+	for (const auto & it : fs)
 	{
-		const vector<uint32_t>& f = it->vertices;
+		const vector<uint32_t>& f = it.vertices;
 		size_t hmf = 0;
-		for (vector<uint32_t>::const_iterator it2 = f.begin(); it2 != f.end();
-			 ++it2)
+		for (unsigned int it2 : f)
 		{
-			if (*it2 == v1)
+			if (it2 == v1)
 				hmf |= 1;
-			else if (*it2 == v2)
+			else if (it2 == v2)
 				hmf |= 2;
-			else if (*it2 == v3)
+			else if (it2 == v3)
 				hmf |= 4;
 		}
 		if (hmf == 7) return true;
@@ -435,11 +431,10 @@ bool searchForEdge(
 	{
 		const vector<uint32_t>& f = it->vertices;
 		char res = 0;
-		for (vector<uint32_t>::const_iterator it2 = f.begin(); it2 != f.end();
-			 ++it2)
-			if (*it2 == v1)
+		for (unsigned int it2 : f)
+			if (it2 == v1)
 				res |= 1;
-			else if (*it2 == v2)
+			else if (it2 == v2)
 				res |= 2;
 		if (res == 3) return true;
 	}
@@ -503,12 +498,11 @@ void CPolyhedron::TPolyhedronFace::getCenter(
 	const vector<TPoint3D>& vrts, TPoint3D& p) const
 {
 	p.x = p.y = p.z = 0.0;
-	for (vector<uint32_t>::const_iterator it = vertices.begin();
-		 it != vertices.end(); ++it)
+	for (unsigned int vertice : vertices)
 	{
-		p.x += vrts[*it].x;
-		p.y += vrts[*it].y;
-		p.z += vrts[*it].z;
+		p.x += vrts[vertice].x;
+		p.y += vrts[vertice].y;
+		p.z += vrts[vertice].z;
 	}
 	size_t N = vertices.size();
 	p.x /= N;
@@ -533,11 +527,10 @@ CPolyhedron::CPolyhedron(
 	const vector<TPoint3D>& vertices, const vector<vector<uint32_t>>& faces)
 {
 	vector<TPolyhedronFace> aux;
-	for (vector<vector<uint32_t>>::const_iterator it = faces.begin();
-		 it != faces.end(); ++it)
+	for (const auto & face : faces)
 	{
 		TPolyhedronFace f;
-		f.vertices = *it;
+		f.vertices = face;
 		aux.push_back(f);
 	}
 	InitFromVertAndFaces(vertices, aux);
@@ -572,9 +565,8 @@ CPolyhedron::Ptr CPolyhedron::CreatePyramid(
 	vector<TPoint3D> verts;
 	vector<TPolyhedronFace> faces;
 	verts.push_back(TPoint3D(0, 0, height));
-	for (vector<TPoint2D>::const_iterator it = baseVertices.begin();
-		 it != baseVertices.end(); ++it)
-		verts.push_back(TPoint3D(it->x, it->y, 0));
+	for (auto baseVertice : baseVertices)
+		verts.push_back(TPoint3D(baseVertice.x, baseVertice.y, 0));
 	TPolyhedronFace f, g;
 	f.vertices.push_back(0);
 	f.vertices.push_back(n);
@@ -602,9 +594,8 @@ CPolyhedron::Ptr CPolyhedron::CreateDoublePyramid(
 	vector<TPolyhedronFace> faces;
 	faces.reserve(N << 1);
 	verts.push_back(TPoint3D(0, 0, height1));
-	for (vector<TPoint2D>::const_iterator it = baseVertices.begin();
-		 it != baseVertices.end(); ++it)
-		verts.push_back(TPoint3D(it->x, it->y, 0));
+	for (auto baseVertice : baseVertices)
+		verts.push_back(TPoint3D(baseVertice.x, baseVertice.y, 0));
 	verts.push_back(TPoint3D(0, 0, -height2));
 	TPolyhedronFace f, g;
 	f.vertices.resize(3);
@@ -1066,12 +1057,11 @@ void CPolyhedron::render_dl() const
 		checkOpenGLError();
 		glColor4ub(m_color.R, m_color.G, m_color.B, m_color.A);
 		glBegin(GL_LINES);
-		for (vector<TPolyhedronEdge>::const_iterator it = mEdges.begin();
-			 it != mEdges.end(); ++it)
+		for (const auto & mEdge : mEdges)
 		{
-			TPoint3D p = mVertices[it->v1];
+			TPoint3D p = mVertices[mEdge.v1];
 			glVertex3f(p.x, p.y, p.z);
-			p = mVertices[it->v2];
+			p = mVertices[mEdge.v2];
 			glVertex3f(p.x, p.y, p.z);
 		}
 		glEnd();
@@ -1084,13 +1074,12 @@ void CPolyhedron::render_dl() const
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		glColor4ub(m_color.R, m_color.G, m_color.B, m_color.A);
-		for (vector<TPolyhedronFace>::const_iterator it = mFaces.begin();
-			 it != mFaces.end(); ++it)
+		for (const auto & mFace : mFaces)
 		{
 			glBegin(GL_POLYGON);
-			glNormal3f(it->normal[0], it->normal[1], it->normal[2]);
-			for (vector<uint32_t>::const_iterator it2 = it->vertices.begin();
-				 it2 != it->vertices.end(); ++it2)
+			glNormal3f(mFace.normal[0], mFace.normal[1], mFace.normal[2]);
+			for (vector<uint32_t>::const_iterator it2 = mFace.vertices.begin();
+				 it2 != mFace.vertices.end(); ++it2)
 			{
 				const TPoint3D& p = mVertices[*it2];
 				glVertex3f(p.x, p.y, p.z);
@@ -1184,12 +1173,11 @@ void CPolyhedron::makeConvexPolygons()
 	mEdges.clear();
 	mFaces.clear();
 	getVerticesAndFaces(polys2, mVertices, mFaces);
-	for (vector<TPolyhedronFace>::iterator it = mFaces.begin();
-		 it != mFaces.end(); ++it)
+	for (auto & mFace : mFaces)
 	{
-		if (!setNormal(*it, false))
+		if (!setNormal(mFace, false))
 			throw std::logic_error("Bad face specification");
-		addEdges(*it);
+		addEdges(mFace);
 	}
 }
 
@@ -1198,12 +1186,11 @@ void CPolyhedron::getCenter(TPoint3D& center) const
 	size_t N = mVertices.size();
 	if (N == 0) throw new std::logic_error("There are no vertices");
 	center.x = center.y = center.z = 0;
-	for (vector<TPoint3D>::const_iterator it = mVertices.begin();
-		 it != mVertices.end(); ++it)
+	for (const auto & mVertice : mVertices)
 	{
-		center.x += it->x;
-		center.y += it->y;
-		center.z += it->z;
+		center.x += mVertice.x;
+		center.y += mVertice.y;
+		center.z += mVertice.z;
 	}
 	center.x /= N;
 	center.y /= N;
@@ -1360,10 +1347,9 @@ CPolyhedron::Ptr CPolyhedron::getDual() const
 	for (size_t i = 0; i < NE; i++)
 		for (size_t j = 0; j < NV; j++)
 			arrayEF(i, j) = faceContainsEdge(mFaces[j], mEdges[i]);
-	for (vector<TPolyhedronFace>::iterator it = faces.begin();
-		 it != faces.end(); ++it)
+	for (auto & it : faces)
 	{
-		vector<uint32_t>& face = it->vertices;
+		vector<uint32_t>& face = it.vertices;
 		if (face.size() <= 3) continue;
 		size_t index = 0;
 		while (index < face.size() - 1)
@@ -1619,9 +1605,8 @@ CPolyhedron::Ptr CPolyhedron::augment(double height) const
 	vector<TPoint3D> vertices(NV + NF);
 	std::copy(mVertices.begin(), mVertices.end(), vertices.begin());
 	size_t tnf = 0;
-	for (vector<TPolyhedronFace>::const_iterator it = mFaces.begin();
-		 it != mFaces.end(); ++it)
-		tnf += it->vertices.size();
+	for (const auto & mFace : mFaces)
+		tnf += mFace.vertices.size();
 	vector<TPolyhedronFace> faces(tnf);
 	TPolygon3D tmp;
 	TPlane pTmp;
@@ -1665,9 +1650,8 @@ CPolyhedron::Ptr CPolyhedron::augment(double height, size_t numVertices) const
 	size_t NF = mFaces.size();
 	size_t tnf = 0;
 	size_t tnv = NV;
-	for (vector<TPolyhedronFace>::const_iterator it = mFaces.begin();
-		 it != mFaces.end(); ++it)
-		if (it->vertices.size() == numVertices)
+	for (const auto & mFace : mFaces)
+		if (mFace.vertices.size() == numVertices)
 		{
 			tnf += numVertices;
 			tnv++;
@@ -1728,9 +1712,8 @@ CPolyhedron::Ptr CPolyhedron::augment(bool direction) const
 	vector<TPoint3D> vertices(NV + NF);
 	std::copy(mVertices.begin(), mVertices.end(), vertices.begin());
 	size_t tnf = 0;
-	for (vector<TPolyhedronFace>::const_iterator it = mFaces.begin();
-		 it != mFaces.end(); ++it)
-		tnf += it->vertices.size();
+	for (const auto & mFace : mFaces)
+		tnf += mFace.vertices.size();
 	vector<TPolyhedronFace> faces(tnf);
 	TPolygon3D tmp;
 	TPlane pTmp;
@@ -1775,9 +1758,8 @@ CPolyhedron::Ptr CPolyhedron::augment(size_t numVertices, bool direction) const
 	size_t NF = mFaces.size();
 	size_t tnf = 0;
 	size_t tnv = NV;
-	for (vector<TPolyhedronFace>::const_iterator it = mFaces.begin();
-		 it != mFaces.end(); ++it)
-		if (it->vertices.size() == numVertices)
+	for (const auto & mFace : mFaces)
+		if (mFace.vertices.size() == numVertices)
 		{
 			tnf += numVertices;
 			tnv++;
@@ -1836,13 +1818,12 @@ CPolyhedron::Ptr CPolyhedron::rotate(double angle) const
 {
 	vector<TPoint3D> vertices(mVertices);
 	double c = cos(angle), s = sin(angle);
-	for (vector<TPoint3D>::iterator it = vertices.begin(); it != vertices.end();
-		 ++it)
+	for (auto & vertice : vertices)
 	{
-		double A = it->x;
-		double B = it->y;
-		it->x = A * c - B * s;
-		it->y = B * c + A * s;
+		double A = vertice.x;
+		double B = vertice.y;
+		vertice.x = A * c - B * s;
+		vertice.y = B * c + A * s;
 	}
 	return CreateNoCheck(vertices, mFaces);
 }
@@ -1852,11 +1833,10 @@ CPolyhedron::Ptr CPolyhedron::scale(double factor) const
 	vector<TPoint3D> vertices(mVertices);
 	if (factor <= 0)
 		throw std::logic_error("Factor must be a strictly positive number");
-	for (vector<TPoint3D>::iterator it = vertices.begin(); it != vertices.end();
-		 ++it)
+	for (auto & vertice : vertices)
 	{
-		it->x *= factor;
-		it->y *= factor;
+		vertice.x *= factor;
+		vertice.y *= factor;
 	}
 	return CreateNoCheck(vertices, mFaces);
 }
@@ -1932,7 +1912,7 @@ bool CPolyhedron::setNormal(TPolyhedronFace& f, bool doCheck)
 	TPoint3D c;
 	getCenter(c);
 	if (tmp.evaluatePoint(c) > 0)
-		for (size_t i = 0; i < 3; i++) f.normal[i] = -f.normal[i];
+		for (double & i : f.normal) i = -i;
 	return true;
 }
 
@@ -1965,13 +1945,11 @@ bool CPolyhedron::checkConsistence(
 			for (vector<TPoint3D>::const_iterator it2 = it + 1;
 				 it2 != vertices.end(); ++it2)
 				if (*it == *it2) return false;
-	for (vector<TPolyhedronFace>::const_iterator it = faces.begin();
-		 it != faces.end(); ++it)
+	for (const auto & face : faces)
 	{
-		const vector<uint32_t>& e = it->vertices;
-		for (vector<uint32_t>::const_iterator it2 = e.begin(); it2 != e.end();
-			 ++it2)
-			if (*it2 >= N) return false;
+		const vector<uint32_t>& e = face.vertices;
+		for (unsigned int it2 : e)
+			if (it2 >= N) return false;
 	}
 	return true;
 }
@@ -1979,19 +1957,17 @@ bool CPolyhedron::checkConsistence(
 size_t CPolyhedron::edgesInVertex(size_t vertex) const
 {
 	size_t res = 0;
-	for (vector<TPolyhedronEdge>::const_iterator it = mEdges.begin();
-		 it != mEdges.end(); ++it)
-		if (it->v1 == vertex || it->v2 == vertex) res++;
+	for (const auto & mEdge : mEdges)
+		if (mEdge.v1 == vertex || mEdge.v2 == vertex) res++;
 	return res;
 }
 
 size_t CPolyhedron::facesInVertex(size_t vertex) const
 {
 	size_t res = 0;
-	for (vector<TPolyhedronFace>::const_iterator it = mFaces.begin();
-		 it != mFaces.end(); ++it)
-		if (find(it->vertices.begin(), it->vertices.end(), vertex) !=
-			it->vertices.end())
+	for (const auto & mFace : mFaces)
+		if (find(mFace.vertices.begin(), mFace.vertices.end(), vertex) !=
+			mFace.vertices.end())
 			res++;
 	return res;
 }
@@ -2042,12 +2018,11 @@ void CPolyhedron::serializeFrom(
 			in >> mVertices >> mFaces >> mWireframe >> mLineWidth;
 			if (!checkConsistence(mVertices, mFaces))
 				throw std::logic_error("Inconsistent data read from stream");
-			for (vector<TPolyhedronFace>::iterator it = mFaces.begin();
-				 it != mFaces.end(); ++it)
+			for (auto & mFace : mFaces)
 			{
-				if (!setNormal(*it))
+				if (!setNormal(mFace))
 					throw std::logic_error("Bad face specification");
-				addEdges(*it);
+				addEdges(mFace);
 			}
 			break;
 		default:
@@ -2113,9 +2088,8 @@ CPolyhedron::Ptr CPolyhedron::CreateTetrahedron(double radius)
 {
 	CPolyhedron::Ptr tetra =
 		CreateJohnsonSolidWithConstantBase(3, radius * sqrt(8.0) / 3.0, "P+");
-	for (vector<TPoint3D>::iterator it = tetra->mVertices.begin();
-		 it != tetra->mVertices.end(); ++it)
-		it->z -= radius / 3;
+	for (auto & mVertice : tetra->mVertices)
+		mVertice.z -= radius / 3;
 	return tetra;
 }
 CPolyhedron::Ptr CPolyhedron::CreateHexahedron(double radius)

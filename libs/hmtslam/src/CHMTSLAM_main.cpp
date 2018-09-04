@@ -144,9 +144,8 @@ CHMTSLAM::~CHMTSLAM()
 		std::lock_guard<std::mutex> lock(m_topLCdets_cs);
 
 		// Clear old list:
-		for (std::deque<CTopLCDetectorBase*>::iterator it = m_topLCdets.begin();
-			 it != m_topLCdets.end(); ++it)
-			delete *it;
+		for (auto & m_topLCdet : m_topLCdets)
+			delete m_topLCdet;
 		m_topLCdets.clear();
 	}
 }
@@ -484,9 +483,8 @@ void CHMTSLAM::initializeEmptyMap()
 		std::lock_guard<std::mutex> lock(m_topLCdets_cs);
 
 		// Clear old list:
-		for (std::deque<CTopLCDetectorBase*>::iterator it = m_topLCdets.begin();
-			 it != m_topLCdets.end(); ++it)
-			delete *it;
+		for (auto & m_topLCdet : m_topLCdets)
+			delete m_topLCdet;
 		m_topLCdets.clear();
 
 		// Create new list:

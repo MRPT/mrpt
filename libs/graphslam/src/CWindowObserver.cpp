@@ -43,11 +43,9 @@ void CWindowObserver::returnEventsStruct(
 	// reset the code flags
 	if (reset_keypresses)
 	{
-		for (std::map<std::string, bool>::iterator map_it =
-				 m_key_codes_to_pressed.begin();
-			 map_it != m_key_codes_to_pressed.end(); ++map_it)
+		for (auto & map_it : m_key_codes_to_pressed)
 		{
-			map_it->second = false;
+			map_it.second = false;
 		}
 	}
 }

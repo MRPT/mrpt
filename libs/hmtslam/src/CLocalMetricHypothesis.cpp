@@ -88,10 +88,9 @@ void CLocalMetricHypothesis::getAs3DScene(
 	{
 		std::lock_guard<std::mutex> lock(m_parent->m_map_cs);
 
-		for (TNodeIDSet::const_iterator n = m_neighbors.begin();
-			 n != m_neighbors.end(); ++n)
+		for (unsigned long m_neighbor : m_neighbors)
 		{
-			const CHMHMapNode::Ptr node = m_parent->m_map.getNodeByID(*n);
+			const CHMHMapNode::Ptr node = m_parent->m_map.getNodeByID(m_neighbor);
 			ASSERT_(node);
 			TPoseID poseID_origin;
 			CPose3D originPose;
@@ -497,16 +496,15 @@ void CLocalMetricHypothesis::clearRobotPoses()
 {
 	clearParticles();
 	m_particles.resize(m_parent->m_options.pf_options.sampleSize);
-	for (CParticleList::iterator it = m_particles.begin();
-		 it != m_particles.end(); ++it)
+	for (auto & m_particle : m_particles)
 	{
 		// Create particle:
-		it->log_w = 0;
-		it->d.reset(new CLSLAMParticleData(
+		m_particle.log_w = 0;
+		m_particle.d.reset(new CLSLAMParticleData(
 			&m_parent->m_options.defaultMapsInitializers));
 
 		// Fill in:
-		it->d->robotPoses.clear();
+		m_particle.d->robotPoses.clear();
 	}
 }
 
@@ -631,14 +629,13 @@ void CLocalMetricHypothesis::changeCoordinateOrigin(const TPoseID& newOrigin)
  ---------------------------------------------------------------*/
 void CLocalMetricHypothesis::rebuildMetricMaps()
 {
-	for (CParticleList::iterator it = m_particles.begin();
-		 it != m_particles.end(); ++it)
+	for (auto & m_particle : m_particles)
 	{
-		it->d->metricMaps.clear();
+		m_particle.d->metricMaps.clear();
 
 		// Follow all robot poses:
-		TMapPoseID2Pose3D::iterator End = it->d->robotPoses.end();
-		for (TMapPoseID2Pose3D::iterator itP = it->d->robotPoses.begin();
+		TMapPoseID2Pose3D::iterator End = m_particle.d->robotPoses.end();
+		for (TMapPoseID2Pose3D::iterator itP = m_particle.d->robotPoses.begin();
 			 itP != End; ++itP)
 		{
 			if (itP->first !=
@@ -648,7 +645,7 @@ void CLocalMetricHypothesis::rebuildMetricMaps()
 					m_SFs.find(itP->first);
 				ASSERT_(SFit != m_SFs.end());
 				SFit->second.insertObservationsInto(
-					&it->d->metricMaps, &itP->second);
+					&m_particle.d->metricMaps, &itP->second);
 			}
 		}
 	}
@@ -679,10 +676,8 @@ void CLocalMetricHypothesis::removeAreaFromLMH(
 	// Build the list with the poses in the area to be removed from LMH:
 	// ----------------------------------------------------------------------
 	TNodeIDList lstPoseIDs;
-	for (map<TPoseID, CHMHMapNode::TNodeID>::iterator it =
-			 m_nodeIDmemberships.begin();
-		 it != m_nodeIDmemberships.end(); ++it)
-		if (it->second == areaID) lstPoseIDs.insert(it->first);
+	for (auto & m_nodeIDmembership : m_nodeIDmemberships)
+		if (m_nodeIDmembership.second == areaID) lstPoseIDs.insert(m_nodeIDmembership.first);
 
 	ASSERT_(!lstPoseIDs.empty());
 
@@ -697,9 +692,8 @@ void CLocalMetricHypothesis::removeAreaFromLMH(
 	// ----------------------------------------------------------------------
 	for (TNodeIDList::const_iterator it = lstPoseIDs.begin();
 		 it != lstPoseIDs.end(); ++it)
-		for (CParticleList::iterator p = m_particles.begin();
-			 p != m_particles.end(); ++p)
-			p->d->robotPoses.erase(p->d->robotPoses.find(*it));
+		for (auto & m_particle : m_particles)
+			m_particle.d->robotPoses.erase(m_particle.d->robotPoses.find(*it));
 
 	// - The weights of all particles are changed to remove the effects of the
 	// removed metric observations.
@@ -793,9 +787,8 @@ void CLocalMetricHypothesis::removeAreaFromLMH(
 unsigned int CLocalMetricHypothesis::TRobotPosesPartitioning::pose2idx(
 	const TPoseID& id) const
 {
-	for (std::map<uint32_t, TPoseID>::const_iterator it = idx2pose.begin();
-		 it != idx2pose.end(); ++it)
-		if (it->second == id) return it->first;
+	for (auto it : idx2pose)
+		if (it.second == id) return it.first;
 	THROW_EXCEPTION_FMT("PoseID=%i not found.", static_cast<int>(id));
 }
 
@@ -923,9 +916,8 @@ void CLocalMetricHypothesis::dumpAsText(std::vector<std::string>& st) const
 
 	string s;
 	s = "Neighbors: ";
-	for (TNodeIDSet::const_iterator it = m_neighbors.begin();
-		 it != m_neighbors.end(); ++it)
-		s += format("%i ", (int)*it);
+	for (unsigned long m_neighbor : m_neighbors)
+		s += format("%i ", (int)m_neighbor);
 	st.push_back(s);
 
 	TMapPoseID2Pose3D lst;

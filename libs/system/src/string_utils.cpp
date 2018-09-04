@@ -66,18 +66,18 @@ void mrpt::system::encodeUTF8(
 {
 	output = "";  // output.clear();  VC6...
 	output.reserve(input.size());
-	for (size_t i = 0; i < input.size(); i++)
+	for (unsigned short i : input)
 	{
 		// 0xxxxxxx
-		if (input[i] < 0x80)
+		if (i < 0x80)
 		{
-			output += (char)input[i];
+			output += (char)i;
 		}
 		// 110xxxxx 10xxxxxx
-		else if (input[i] < 0x800)
+		else if (i < 0x800)
 		{
-			output += (char)(MASK2BYTES | input[i] >> 6);
-			output += (char)(MASKBYTE | (input[i] & MASKBITS));
+			output += (char)(MASK2BYTES | i >> 6);
+			output += (char)(MASKBYTE | (i & MASKBITS));
 		}
 		// 1110xxxx 10xxxxxx 10xxxxxx
 		/*else if(input[i] < 0x10000)

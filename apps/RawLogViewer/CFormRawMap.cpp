@@ -491,11 +491,10 @@ void loadMapInto3DScene(COpenGLScene& scene)
 		double x0 = 0, y0 = 0, z0 = 0;
 		std::optional<mrpt::Clock::time_point> last_t;
 
-		for (CPose3DInterpolator::iterator it = robot_path.begin();
-			 it != robot_path.end(); ++it)
+		for (auto & it : robot_path)
 		{
-			auto& p = it->second;
-			auto this_t = it->first;
+			auto& p = it.second;
+			auto this_t = it.first;
 
 			if (distanceBetweenPoints(x0, y0, z0, p.x, p.y, p.z) < 5.5)
 			{

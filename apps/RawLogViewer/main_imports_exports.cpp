@@ -1015,28 +1015,26 @@ void xRawLogViewerFrame::OnMenuImportALOG(wxCommandEvent& event)
 				CDirectoryExplorer::filterByExtension(lstFiles, "jpg");
 				CDirectoryExplorer::sortByName(lstFiles);
 
-				for (CDirectoryExplorer::TFileInfoList::iterator it =
-						 lstFiles.begin();
-					 it != lstFiles.end(); ++it)
+				for (auto & lstFile : lstFiles)
 				{
 					// string strLine( it->wholePath );
 					TAlogRecord newRecord;
-					newRecord.imgFile = it->name;
+					newRecord.imgFile = lstFile.name;
 					newRecord.type = 3;
 
 					// Time:
-					size_t idx_time = it->name.rfind("_") + 1;
+					size_t idx_time = lstFile.name.rfind("_") + 1;
 					if (string::npos != idx_time)
 					{
-						double timestamp = atof(it->name.c_str() + idx_time);
+						double timestamp = atof(lstFile.name.c_str() + idx_time);
 
 						// Pan:
-						size_t idx_pan = it->name.find("Motion");
+						size_t idx_pan = lstFile.name.find("Motion");
 						if (idx_pan != string::npos)
 						{
 							newRecord.data.resize(1);
 							newRecord.data[0] =
-								DEG2RAD(atof(it->name.c_str() + idx_pan + 6));
+								DEG2RAD(atof(lstFile.name.c_str() + idx_pan + 6));
 
 							// DO NOT OVERWRITE OTHER RECORDS! SHIFT TIMESTAMP A
 							// LITTLE
@@ -1315,19 +1313,19 @@ void xRawLogViewerFrame::OnGenGasTxt(wxCommandEvent& event)
 				size_t lineCount = 0;
 
 				// run each Enose (if more than one)
-				for (size_t j = 0; j < obs->m_readings.size(); j++)
+				for (auto & m_reading : obs->m_readings)
 				{
 					// Temperature
-					if (obs->m_readings[j].hasTemperature == true)
+					if (m_reading.hasTemperature == true)
 					{
-						float temp = obs->m_readings[j].temperature;
+						float temp = m_reading.temperature;
 						::fprintf(f, "%f ", temp);
 					}
 
 					// Run each sensor on Enose
 					for (vector<float>::iterator it =
-							 obs->m_readings[j].readingsVoltage.begin();
-						 it != obs->m_readings[j].readingsVoltage.end(); ++it)
+							 m_reading.readingsVoltage.begin();
+						 it != m_reading.readingsVoltage.end(); ++it)
 					{
 						::fprintf(f, "%f ", *it);
 						lineCount++;
@@ -2121,14 +2119,14 @@ void xRawLogViewerFrame::OnGenerateTextFileRangeBearing(wxCommandEvent& event)
 				if (obs)
 				{
 					// For each entry in this sequence:
-					for (size_t q = 0; q < obs->sensedData.size(); q++)
+					for (auto & q : obs->sensedData)
 					{
 						M++;
 						::fprintf(
 							f, "%u %i %f %f %f\n", i,
-							obs->sensedData[q].landmarkID,
-							obs->sensedData[q].range, obs->sensedData[q].yaw,
-							obs->sensedData[q].pitch);
+							q.landmarkID,
+							q.range, q.yaw,
+							q.pitch);
 					}
 				}
 			}
@@ -2141,14 +2139,14 @@ void xRawLogViewerFrame::OnGenerateTextFileRangeBearing(wxCommandEvent& event)
 					CObservationBearingRange::Ptr obs =
 						std::dynamic_pointer_cast<CObservationBearingRange>(o);
 					// For each entry in this sequence:
-					for (size_t q = 0; q < obs->sensedData.size(); q++)
+					for (auto & q : obs->sensedData)
 					{
 						M++;
 						::fprintf(
 							f, "%u %i %f %f %f\n", i,
-							obs->sensedData[q].landmarkID,
-							obs->sensedData[q].range, obs->sensedData[q].yaw,
-							obs->sensedData[q].pitch);
+							q.landmarkID,
+							q.range, q.yaw,
+							q.pitch);
 					}
 				}
 			}

@@ -33,9 +33,9 @@ TEST(fresnel, fresnelc)
 
 	const unsigned int nTests = sizeof(test_values) / sizeof(test_values[0]);
 
-	for (unsigned int i = 0; i < nTests; i++)
+	for (auto test_value : test_values)
 	{
-		const double x = test_values[i][0], val_good = test_values[i][1];
+		const double x = test_value[0], val_good = test_value[1];
 		const double val = mrpt::math::fresnel_cos_integral(x);
 		EXPECT_NEAR(val, val_good, 1e-5)
 			<< " x: " << x << "\n val_good: " << val_good << "\n val: " << val
@@ -58,9 +58,9 @@ TEST(fresnel, fresnels)
 
 	const unsigned int nTests = sizeof(test_values) / sizeof(test_values[0]);
 
-	for (unsigned int i = 0; i < nTests; i++)
+	for (auto test_value : test_values)
 	{
-		const double x = test_values[i][0], val_good = test_values[i][1];
+		const double x = test_value[0], val_good = test_value[1];
 		const double val = mrpt::math::fresnel_sin_integral(x);
 		EXPECT_NEAR(val, val_good, 1e-5)
 			<< " x: " << x << "\n val_good: " << val_good << "\n val: " << val

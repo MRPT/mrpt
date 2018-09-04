@@ -854,15 +854,15 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 		// mrpt::nav::registerAllNavigationClasses();
 		const std::vector<const mrpt::rtti::TRuntimeClassId*>& lstClasses =
 			mrpt::rtti::getAllRegisteredClasses();
-		for (size_t i = 0; i < lstClasses.size(); i++)
+		for (auto lstClasse : lstClasses)
 		{
-			if (!lstClasses[i]->derivedFrom(
+			if (!lstClasse->derivedFrom(
 					"CParameterizedTrajectoryGenerator") ||
 				!mrpt::system::os::_strcmpi(
-					lstClasses[i]->className,
+					lstClasse->className,
 					"CParameterizedTrajectoryGenerator"))
 				continue;
-			cbPTGClass->AppendString(_U(lstClasses[i]->className));
+			cbPTGClass->AppendString(_U(lstClasse->className));
 		}
 		if (cbPTGClass->GetCount() > 0) cbPTGClass->SetSelection(0);
 	}
@@ -1313,15 +1313,15 @@ void ptgConfiguratorframe::loadPlugin()
 		cbPTGClass->Clear();
 		const std::vector<const mrpt::rtti::TRuntimeClassId*>& lstClasses =
 			mrpt::rtti::getAllRegisteredClasses();
-		for (size_t i = 0; i < lstClasses.size(); i++)
+		for (auto lstClasse : lstClasses)
 		{
-			if (!lstClasses[i]->derivedFrom(
+			if (!lstClasse->derivedFrom(
 					"CParameterizedTrajectoryGenerator") ||
 				!mrpt::system::os::_strcmpi(
-					lstClasses[i]->className,
+					lstClasse->className,
 					"CParameterizedTrajectoryGenerator"))
 				continue;
-			cbPTGClass->AppendString(_U(lstClasses[i]->className));
+			cbPTGClass->AppendString(_U(lstClasse->className));
 		}
 		if (cbPTGClass->GetCount() > 0) cbPTGClass->SetSelection(0);
 	}

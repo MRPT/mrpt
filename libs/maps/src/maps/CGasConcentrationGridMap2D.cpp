@@ -754,10 +754,10 @@ bool CGasConcentrationGridMap2D::simulateAdvection(
 				LUT_TABLE[phi_indx][r_indx];
 
 			// Generate Sparse Matrix with the wind weights "SA"
-			for (unsigned int ci = 0; ci < cells_to_update.size(); ci++)
+			for (auto & ci : cells_to_update)
 			{
-				int final_cx = cell_i_cx + cells_to_update[ci].cx;
-				int final_cy = cell_i_cy + cells_to_update[ci].cy;
+				int final_cx = cell_i_cx + ci.cx;
+				int final_cy = cell_i_cy + ci.cy;
 				// Check if affected cells is within the map
 				if ((final_cx >= 0) && (final_cx < (int)getSizeX()) &&
 					(final_cy >= 0) && (final_cy < (int)getSizeY()))
@@ -765,10 +765,10 @@ bool CGasConcentrationGridMap2D::simulateAdvection(
 					int final_idx = final_cx + final_cy * getSizeX();
 
 					// Add Value to SA Matrix
-					if (cells_to_update[ci].value != 0.0)
+					if (ci.value != 0.0)
 					{
-						A(final_idx, i) = cells_to_update[ci].value;
-						row_sum[final_idx] += cells_to_update[ci].value;
+						A(final_idx, i) = ci.value;
+						row_sum[final_idx] += ci.value;
 					}
 				}
 			}  // end-for ci

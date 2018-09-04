@@ -195,10 +195,9 @@ void TSlidingWindow::dumpToTextStream(std::ostream& out) const
 		"-----------[ %s: Sliding Window Properties ]-----------\n",
 		m_name.c_str());
 	out << mrpt::format("Measurements Vector: \n");
-	for (std::vector<double>::const_iterator it = m_measurements_vec.begin();
-		 it != m_measurements_vec.end(); ++it)
+	for (double it : m_measurements_vec)
 	{
-		out << mrpt::format("\t%.2f\n", *it);
+		out << mrpt::format("\t%.2f\n", it);
 	}
 	out << mrpt::format("\n");
 

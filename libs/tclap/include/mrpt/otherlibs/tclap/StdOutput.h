@@ -183,17 +183,16 @@ inline void StdOutput::_shortUsage( CmdLineInterface& _cmd,
 	for ( int i = 0; static_cast<unsigned int>(i) < xorList.size(); i++ )
 	{
 		s += " {";
-		for ( ArgVectorIterator it = xorList[i].begin(); 
-						it != xorList[i].end(); it++ )
-			s += (*it)->shortID() + "|";
+		for (auto & it : xorList[i])
+			s += it->shortID() + "|";
 
 		s[s.length()-1] = '}';
 	}
 
 	// then the rest
-	for (ArgListIterator it = argList.begin(); it != argList.end(); it++)
-		if ( !xorHandler.contains( (*it) ) )
-			s += " " + (*it)->shortID();
+	for (auto & it : argList)
+		if ( !xorHandler.contains( it ) )
+			s += " " + it->shortID();
 
 	// if the program name is too long, then adjust the second line offset 
 	int secondLineOffset = static_cast<int>(progName.length()) + 2;
@@ -228,11 +227,11 @@ inline void StdOutput::_longUsage( CmdLineInterface& _cmd,
 	}
 
 	// then the rest
-	for (ArgListIterator it = argList.begin(); it != argList.end(); it++)
-		if ( !xorHandler.contains( (*it) ) )
+	for (auto & it : argList)
+		if ( !xorHandler.contains( it ) )
 		{
-			spacePrint( os, (*it)->longID(), 75, 3, 3 ); 
-			spacePrint( os, (*it)->getDescription(), 75, 5, 0 ); 
+			spacePrint( os, it->longID(), 75, 3, 3 ); 
+			spacePrint( os, it->getDescription(), 75, 5, 0 ); 
 			os << std::endl;
 		}
 

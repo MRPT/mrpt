@@ -54,11 +54,10 @@ CMultiMetricMapPDF::CMultiMetricMapPDF(
 	  newInfoIndex(0)
 {
 	m_particles.resize(opts.sampleSize);
-	for (CParticleList::iterator it = m_particles.begin();
-		 it != m_particles.end(); ++it)
+	for (auto & m_particle : m_particles)
 	{
-		it->log_w = 0;
-		it->d.reset(new CRBPFParticleData(mapsInitializers));
+		m_particle.log_w = 0;
+		m_particle.d.reset(new CRBPFParticleData(mapsInitializers));
 	}
 
 	// Initialize:
@@ -582,18 +581,17 @@ void CMultiMetricMapPDF::saveCurrentPathEstimationToTextFile(
 	FILE* f = os::fopen(fil.c_str(), "wt");
 	if (!f) return;
 
-	for (CParticleList::iterator it = m_particles.begin();
-		 it != m_particles.end(); ++it)
+	for (auto & m_particle : m_particles)
 	{
-		for (size_t i = 0; i < it->d->robotPath.size(); i++)
+		for (size_t i = 0; i < m_particle.d->robotPath.size(); i++)
 		{
-			const mrpt::math::TPose3D& p = it->d->robotPath[i];
+			const mrpt::math::TPose3D& p = m_particle.d->robotPath[i];
 
 			os::fprintf(
 				f, "%.04f %.04f %.04f %.04f %.04f %.04f ", p.x, p.y, p.z, p.yaw,
 				p.pitch, p.roll);
 		}
-		os::fprintf(f, " %e\n", it->log_w);
+		os::fprintf(f, " %e\n", m_particle.log_w);
 	}
 
 	os::fclose(f);

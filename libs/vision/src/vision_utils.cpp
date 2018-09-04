@@ -975,10 +975,9 @@ void vision::addFeaturesToImage(
 	const CImage& inImg, const CFeatureList& theList, CImage& outImg)
 {
 	outImg = inImg;  // Create a copy of the input image
-	for (CFeatureList::const_iterator it = theList.begin(); it != theList.end();
-		 ++it)
+	for (const auto & it : theList)
 		outImg.rectangle(
-			(*it)->x - 5, (*it)->y - 5, (*it)->x + 5, (*it)->y + 5,
+			it->x - 5, it->y - 5, it->x + 5, it->y + 5,
 			TColor(255, 0, 0));
 }
 
@@ -991,17 +990,16 @@ void vision::projectMatchedFeatures(
 {
 	out_points.clear();
 	out_points.reserve(matches.size());
-	for (CMatchedFeatureList::const_iterator it = matches.begin();
-		 it != matches.end(); ++it)
+	for (const auto & matche : matches)
 	{
-		const double disp = it->first->x - it->second->x;
+		const double disp = matche.first->x - matche.second->x;
 		if (disp < 1) continue;
 
 		const double b_d = stereo_camera.rightCameraPose.x / disp;
 		out_points.push_back(
 			TPoint3D(
-				(it->first->x - stereo_camera.leftCamera.cx()) * b_d,
-				(it->first->y - stereo_camera.leftCamera.cy()) * b_d,
+				(matche.first->x - stereo_camera.leftCamera.cx()) * b_d,
+				(matche.first->y - stereo_camera.leftCamera.cy()) * b_d,
 				stereo_camera.leftCamera.fx() * b_d));
 	}  // end-for
 }
@@ -1876,13 +1874,12 @@ void vision::StereoObs2BRObs(
 	double sg_r2 = square(sg[1]);  // Sigma of the row variable
 	double sg_d2 = square(sg[2]);  // Sigma of the disparity
 
-	for (CMatchedFeatureList::const_iterator itMatchList = inMatches.begin();
-		 itMatchList != inMatches.end(); itMatchList++)
+	for (const auto & inMatche : inMatches)
 	{
-		double x = itMatchList->first->x;  // Column of the feature
-		double y = itMatchList->first->y;  // Row of the feature
+		double x = inMatche.first->x;  // Column of the feature
+		double y = inMatche.first->y;  // Row of the feature
 
-		double d = itMatchList->first->x - itMatchList->second->x;  // Disparity
+		double d = inMatche.first->x - inMatche.second->x;  // Disparity
 		double d2 = square(d);
 		double k = square(b / d);
 
@@ -1904,7 +1901,7 @@ void vision::StereoObs2BRObs(
 		m.range = sqrt(square(X) + square(Y) + square(Z));
 		m.yaw = atan2(Y, X);
 		m.pitch = -asin(Z / m.range);
-		m.landmarkID = itMatchList->first->ID;
+		m.landmarkID = inMatche.first->ID;
 
 		// Compute the covariance
 		// Formula: S_BR = JG * (JF * diag(sg_c^2, sg_r^2, sg_d^2) * JF') * JG'

@@ -33,7 +33,7 @@ const mrpt::rtti::TRuntimeClassId* lstClasses[] = {
 // bugs:
 TEST(NavTests, Serialization_WriteReadToMem)
 {
-	for (size_t i = 0; i < sizeof(lstClasses) / sizeof(lstClasses[0]); i++)
+	for (auto & lstClasse : lstClasses)
 	{
 		try
 		{
@@ -41,7 +41,7 @@ TEST(NavTests, Serialization_WriteReadToMem)
 			auto arch = archiveFrom(buf);
 			{
 				CSerializable* o =
-					static_cast<CSerializable*>(lstClasses[i]->createObject());
+					static_cast<CSerializable*>(lstClasse->createObject());
 				arch << *o;
 				delete o;
 			}
@@ -53,7 +53,7 @@ TEST(NavTests, Serialization_WriteReadToMem)
 		catch (std::exception& e)
 		{
 			GTEST_FAIL() << "Exception during serialization test for class '"
-						 << lstClasses[i]->className << "':\n"
+						 << lstClasse->className << "':\n"
 						 << e.what() << endl;
 		}
 	}
@@ -62,14 +62,14 @@ TEST(NavTests, Serialization_WriteReadToMem)
 // Also try to convert them to octect vectors:
 TEST(SerializeTestObs, WriteReadToOctectVectors)
 {
-	for (size_t i = 0; i < sizeof(lstClasses) / sizeof(lstClasses[0]); i++)
+	for (auto & lstClasse : lstClasses)
 	{
 		try
 		{
 			std::vector<uint8_t> buf;
 			{
 				CSerializable* o =
-					static_cast<CSerializable*>(lstClasses[i]->createObject());
+					static_cast<CSerializable*>(lstClasse->createObject());
 				mrpt::serialization::ObjectToOctetVector(o, buf);
 				delete o;
 			}
@@ -80,7 +80,7 @@ TEST(SerializeTestObs, WriteReadToOctectVectors)
 		catch (std::exception& e)
 		{
 			GTEST_FAIL() << "Exception during serialization test for class '"
-						 << lstClasses[i]->className << "':\n"
+						 << lstClasse->className << "':\n"
 						 << e.what() << endl;
 		}
 	}

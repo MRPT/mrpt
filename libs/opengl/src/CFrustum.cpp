@@ -69,8 +69,8 @@ void CFrustum::render_dl() const
 		glBegin(GL_LINE_STRIP);
 		glColor4ub(m_color.R, m_color.G, m_color.B, m_color.A);
 
-		for (size_t i = 0; i < sizeof(draw_path) / sizeof(draw_path[0]); i++)
-			glVertex3fv(&pts[draw_path[i]].x);
+		for (int i : draw_path)
+			glVertex3fv(&pts[i].x);
 
 		glEnd();
 
@@ -250,15 +250,15 @@ void CFrustum::getBoundingBox(
 		-std::numeric_limits<double>::max(),
 		-std::numeric_limits<double>::max(),
 		-std::numeric_limits<double>::max());
-	for (int i = 0; i < 8; i++)
+	for (auto & pt : pts)
 	{
-		keep_min(bb_min.x, pts[i].x);
-		keep_min(bb_min.y, pts[i].y);
-		keep_min(bb_min.z, pts[i].z);
+		keep_min(bb_min.x, pt.x);
+		keep_min(bb_min.y, pt.y);
+		keep_min(bb_min.z, pt.z);
 
-		keep_max(bb_max.x, pts[i].x);
-		keep_max(bb_max.y, pts[i].y);
-		keep_max(bb_max.z, pts[i].z);
+		keep_max(bb_max.x, pt.x);
+		keep_max(bb_max.y, pt.y);
+		keep_max(bb_max.z, pt.z);
 	}
 
 	// Convert to coordinates of my parent:

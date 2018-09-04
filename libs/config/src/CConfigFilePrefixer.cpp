@@ -57,8 +57,8 @@ void CConfigFilePrefixer::getAllSections(
 		m_bound_object,
 		"You must first bind CConfigFilePrefixer to an existing object!");
 	m_bound_object->getAllSections(sections);
-	for (size_t i = 0; i < sections.size(); i++)
-		sections[i] = m_prefix_sections + sections[i];
+	for (auto & section : sections)
+		section = m_prefix_sections + section;
 }
 
 void CConfigFilePrefixer::getAllKeys(
@@ -68,7 +68,7 @@ void CConfigFilePrefixer::getAllKeys(
 		m_bound_object,
 		"You must first bind CConfigFilePrefixer to an existing object!");
 	m_bound_object->getAllKeys(section, keys);
-	for (size_t i = 0; i < keys.size(); i++) keys[i] = m_prefix_keys + keys[i];
+	for (auto & key : keys) key = m_prefix_keys + key;
 }
 
 void CConfigFilePrefixer::writeString(
