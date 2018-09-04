@@ -16,7 +16,7 @@
 //*)
 #include <wx/log.h>
 
-#include <locale.h>
+#include <clocale>
 
 IMPLEMENT_APP(xRawLogViewerApp)
 

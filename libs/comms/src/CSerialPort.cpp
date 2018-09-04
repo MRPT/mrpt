@@ -17,17 +17,17 @@
 // Linux implementation: refer to
 //  http://www.easysw.com/~mike/serial/serial.html
 
-#include <stdio.h> /* Standard input/output definitions */
-#include <string.h> /* String function definitions */
+#include <cstdio> /* Standard input/output definitions */
+#include <cstring> /* String function definitions */
 #include <unistd.h> /* UNIX standard function definitions */
 #include <fcntl.h> /* File control definitions */
-#include <errno.h> /* Error number definitions */
+#include <cerrno> /* Error number definitions */
 #include <sys/time.h>  // gettimeofday
 
 #include <termios.h> /* POSIX terminal control definitions */
 
 #include <sys/ioctl.h>  // FIONREAD,...
-#include <signal.h>
+#include <csignal>
 
 #ifdef HAVE_LINUX_SERIAL_H
 #include <linux/serial.h>

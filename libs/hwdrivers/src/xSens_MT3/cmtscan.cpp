@@ -38,8 +38,8 @@
 #include <devguid.h>
 #include <regstr.h>
 #else
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 #include <dirent.h>
 #endif
 

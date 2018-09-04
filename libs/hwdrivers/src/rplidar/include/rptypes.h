@@ -51,7 +51,7 @@ typedef unsigned __int64 uint64_t;
 
 #else
 
-#include <stdint.h>
+#include <cstdint>
 
 #endif
 

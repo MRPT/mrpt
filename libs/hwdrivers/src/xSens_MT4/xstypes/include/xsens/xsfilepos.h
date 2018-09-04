@@ -26,7 +26,7 @@
 
 /*! @} */
 
-#include <stdio.h>
+#include <cstdio>
 #ifdef _WIN32
 #ifndef _PSTDINT_H_INCLUDED
 #include "pstdint.h"

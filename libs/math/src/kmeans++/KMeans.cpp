@@ -14,7 +14,7 @@
 #include "KMeans.h"
 #include "KmTree.h"
 #include <sstream>
-#include <time.h>
+#include <ctime>
 #include <vector>
 using namespace std;
 

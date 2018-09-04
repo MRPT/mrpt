@@ -20,10 +20,10 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <unistd.h>
-#include <time.h>
+#include <ctime>
 #include <utime.h>
 #include <unistd.h>
-#include <errno.h>
+#include <cerrno>
 #include <cstring>
 #endif
 

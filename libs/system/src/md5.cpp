@@ -52,7 +52,7 @@ using namespace std;
 #include <cstring>
 #include <iostream>
 #include <cstdint>
-#include <stdio.h>
+#include <cstdio>
 
 // a small class for calculating MD5 hashes of strings or byte arrays
 // it is not meant to be fast or secure

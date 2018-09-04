@@ -27,7 +27,7 @@ using namespace mrpt::img;
 #undef FAR
 #define XMD_H
 
-#include <stdio.h>
+#include <cstdio>
 
 #include <jpeglib.h>
 #define mrpt_jpeg_source_mgr jpeg_source_mgr

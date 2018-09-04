@@ -18,7 +18,7 @@
 #endif  // HAVE_TIMEGM
 
 #include <cstring>
-#include <float.h>
+#include <cfloat>
 #include <iostream>
 #include <algorithm>
 #include <cctype>
@@ -39,10 +39,10 @@
 #include <unistd.h>
 #include <sys/select.h>
 #include <sys/time.h>
-#include <time.h>
+#include <ctime>
 #include <unistd.h>
 #include <utime.h>
-#include <errno.h>
+#include <cerrno>
 //	#include <signal.h>
 #endif
 
@@ -143,7 +143,7 @@ time_t mrpt::system::os::timegm(struct tm* tm)
 					mrpt::system::MRPT_getCompilationDate
 ---------------------------------------------------------------*/
 #include <mrpt/version.h>
-#include <errno.h>
+#include <cerrno>
 #include <limits>
 #include <climits>
 #include <ctime>

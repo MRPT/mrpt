@@ -10,7 +10,7 @@
 #define XSMATRIX_H
 
 #include "xsmath.h"
-#include <stddef.h>
+#include <cstddef>
 
 struct XsMatrix;
 struct XsEuler;

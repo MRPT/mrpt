@@ -32,7 +32,7 @@
 */
 
 #include "cmt3.h"
-#include <math.h>
+#include <cmath>
 #include "xsens_janitors.h"
 
 #ifdef _LOG_CMT3

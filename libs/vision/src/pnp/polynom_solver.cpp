@@ -10,7 +10,7 @@
 #include "vision-precomp.h"  // Precompiled headers
 #include "polynom_solver.h"
 
-#include <math.h>
+#include <cmath>
 #include <iostream>
 
 #define CV_PI 3.14159265358979323846

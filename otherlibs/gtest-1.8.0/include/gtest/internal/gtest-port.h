@@ -261,11 +261,11 @@
 //   Int32FromGTestEnv()  - parses an Int32 environment variable.
 //   StringFromGTestEnv() - parses a string environment variable.
 
-#include <ctype.h>   // for isspace, etc
-#include <stddef.h>  // for ptrdiff_t
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include <cctype>   // for isspace, etc
+#include <cstddef>  // for ptrdiff_t
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
 #ifndef _WIN32_WCE
 # include <sys/types.h>
 # include <sys/stat.h>

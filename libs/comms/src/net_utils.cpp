@@ -20,14 +20,14 @@
 #include <thread>
 #include <future>
 #include <cstring>
-#include <stdio.h>
+#include <cstdio>
 
 #if defined(MRPT_OS_LINUX) || defined(__APPLE__)
 #define INVALID_SOCKET (-1)
 #include <sys/socket.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <errno.h>
+#include <cerrno>
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <netdb.h>

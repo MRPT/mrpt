@@ -10,15 +10,15 @@
 #include <xsens/xsportinfo.h>
 #include <xsens/xscontrolline.h>
 
-#include <errno.h>
+#include <cerrno>
 #ifndef _WIN32
 #include <unistd.h>  // close
 #include <sys/ioctl.h>  // ioctl
 #include <fcntl.h>  // open, O_RDWR
-#include <string.h>  // strcpy
+#include <cstring>  // strcpy
 #include <sys/param.h>
 #include <sys/file.h>
-#include <stdarg.h>
+#include <cstdarg>
 #else
 #include <winbase.h>
 #include <io.h>

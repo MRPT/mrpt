@@ -9,7 +9,7 @@
 #ifndef _CMT_FILE_DEF_H_2007_01_24
 #define _CMT_FILE_DEF_H_2007_01_24
 
-#include <stdio.h>
+#include <cstdio>
 #include <cstdint>
 
 #ifndef _WIN32

@@ -42,8 +42,8 @@
 	static void f(void)
 #endif
 #else
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #define MRPT_INITIALIZER(f)                                                 \
 	static void f(void) __attribute__((constructor)) __attribute__((used)); \
 	static void f(void)

@@ -13,7 +13,7 @@
 // Includes
 #include "KmTree.h"
 #include <iostream>
-#include <stdlib.h>
+#include <cstdlib>
 using namespace std;
 
 KmTree::KmTree(int n, int d, Scalar* points) : n_(n), d_(d), points_(points)

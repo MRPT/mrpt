@@ -50,7 +50,7 @@
 #endif
 
 #ifdef __GNUC__
-#include <limits.h>
+#include <climits>
 #if __WORDSIZE == 64
 #define XSENS_64BIT
 #else

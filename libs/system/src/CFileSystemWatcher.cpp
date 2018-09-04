@@ -23,8 +23,8 @@
 
 //	#include <time.h>
 #include <unistd.h>
-#include <errno.h>
-#include <stdio.h>
+#include <cerrno>
+#include <cstdio>
 #endif
 
 #include <cstring>  // for NULL, memcpy

@@ -10,8 +10,8 @@
 #define XSVECTOR_H
 
 #include "xsmath.h"
-#include <stddef.h>
-#include <string.h>  // memcpy
+#include <cstddef>
+#include <cstring>  // memcpy
 
 struct XsVector;
 struct XsQuaternion;
