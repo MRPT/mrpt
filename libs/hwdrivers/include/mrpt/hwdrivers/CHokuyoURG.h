@@ -158,7 +158,7 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	bool startScanningMode();
 
 	/** Turns the laser on */
-	void initialize();
+	void initialize() override;
 
 	/** Waits for a response from the device. Packet is stored in m_rcv_data,
 	  * and status codes in the reference parameters.
@@ -179,7 +179,7 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	CHokuyoURG();
 
 	/** Destructor: turns the laser off */
-	virtual ~CHokuyoURG();
+	~CHokuyoURG() override;
 
 	/** Specific laser scanner "software drivers" must process here new data
 	 * from the I/O stream, and, if a whole scan has arrived, return it.
@@ -189,20 +189,20 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	void doProcessSimple(
 		bool& outThereIsObservation,
 		mrpt::obs::CObservation2DRangeScan& outObservation,
-		bool& hardwareError);
+		bool& hardwareError) override;
 
 	/** Enables the scanning mode (which may depend on the specific laser
 	 * device); this must be called before asking for observations to assure
 	 * that the protocol has been initializated.
 	  * \return If everything works "true", or "false" if there is any error.
 	  */
-	bool turnOn();
+	bool turnOn() override;
 
 	/** Disables the scanning mode (this can be used to turn the device in low
 	 * energy mode, if available)
 	  * \return If everything works "true", or "false" if there is any error.
 	  */
-	bool turnOff();
+	bool turnOff() override;
 
 	/** Empties the RX buffers of the serial port */
 	void purgeBuffers();
@@ -287,7 +287,7 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
 		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection);
+		const std::string& iniSection) override;
 
 };  // End of class
 

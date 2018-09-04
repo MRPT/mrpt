@@ -95,7 +95,7 @@ class CIMUIntersense : public hwdrivers::CGenericSensor
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
 		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection);
+		const std::string& iniSection) override;
 
    public:
 	/** Constructor
@@ -104,17 +104,17 @@ class CIMUIntersense : public hwdrivers::CGenericSensor
 
 	/** Destructor
 	  */
-	virtual ~CIMUIntersense();
+	~CIMUIntersense() override;
 
 	/** This method will be invoked at a minimum rate of "process_rate" (Hz)
 	  *  \exception This method must throw an exception with a descriptive
 	 * message if some critical error is found.
 	  */
-	void doProcess();
+	void doProcess() override;
 
 	/** Turns on the iSense device and configure it for getting orientation data
 	 */
-	void initialize();
+	void initialize() override;
 
 };  // end of class
 

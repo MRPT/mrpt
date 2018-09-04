@@ -30,7 +30,7 @@ class CTopLCDetector_FabMap : public CTopLCDetectorBase
 	}
 
 	/** Destructor */
-	virtual ~CTopLCDetector_FabMap();
+	~CTopLCDetector_FabMap() override;
 
 	/** This method must compute the topological observation model.
 	  * \param out_log_lik The output, a log-likelihood.
@@ -39,13 +39,13 @@ class CTopLCDetector_FabMap : public CTopLCDetectorBase
 	  */
 	mrpt::poses::CPose3DPDF::Ptr computeTopologicalObservationModel(
 		const THypothesisID& hypID, const CHMHMapNode::Ptr& currentArea,
-		const CHMHMapNode::Ptr& refArea, double& out_log_lik);
+		const CHMHMapNode::Ptr& refArea, double& out_log_lik) override;
 
 	/** Hook method for being warned about the insertion of a new poses into the
 	 * maps.
 	  *  This should be independent of hypothesis IDs.
 	  */
-	void OnNewPose(const TPoseID& poseID, const mrpt::obs::CSensoryFrame* SF);
+	void OnNewPose(const TPoseID& poseID, const mrpt::obs::CSensoryFrame* SF) override;
 
 	/** Options for a TLC-detector of type FabMap, used from CHMTSLAM
 	  */

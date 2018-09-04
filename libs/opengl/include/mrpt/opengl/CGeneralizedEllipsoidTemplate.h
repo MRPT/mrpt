@@ -219,7 +219,7 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 
 	/** Evaluates the bounding box of this object (including possible children)
 	 * in the coordinate frame of the object parent. */
-	virtual void getBoundingBox(
+	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override
 	{
@@ -229,7 +229,7 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 
 	/** Ray tracing
 	 */
-	virtual bool traceRay(
+	bool traceRay(
 		const mrpt::poses::CPose3D& o, double& dist) const override
 	{
 		MRPT_UNUSED_PARAM(o);
@@ -297,7 +297,7 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 		  m_bb_max(0, 0, 0)
 	{
 	}
-	virtual ~CGeneralizedEllipsoidTemplate() {}
+	~CGeneralizedEllipsoidTemplate() override {}
 };
 
 }  // namespace opengl

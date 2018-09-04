@@ -24,8 +24,8 @@ template class mrpt::CTraitsTest<CPose3DRotVec>;
 class Pose3DRotVecTests : public ::testing::Test
 {
    protected:
-	virtual void SetUp() {}
-	virtual void TearDown() {}
+	void SetUp() override {}
+	void TearDown() override {}
 	void test_conversions()
 	{
 		// CPose3DRotVec -> CPose3D -> CPose3DRotVec

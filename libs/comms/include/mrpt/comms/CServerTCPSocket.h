@@ -42,7 +42,7 @@ class CServerTCPSocket : public mrpt::system::COutputLogger
 		int maxConnectionsWaiting = 50,
 		mrpt::system::VerbosityLevel verbosityLevel = mrpt::system::LVL_INFO);
 	/** Dtor */
-	virtual ~CServerTCPSocket();
+	~CServerTCPSocket() override;
 
 	/** Returns true if the socket was successfully open and it's bound to the
 	 * desired port. */

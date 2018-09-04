@@ -49,7 +49,7 @@ DECLARE_OP_FUNCTION(op_export_anemometer_txt)
 		}
 
 		// return false on any error.
-		bool processOneObservation(CObservation::Ptr& o)
+		bool processOneObservation(CObservation::Ptr& o) override
 		{
 			if (!IS_CLASS(o, CObservationWindSensor)) return true;
 

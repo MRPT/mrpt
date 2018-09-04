@@ -68,7 +68,7 @@ class CPipeBaseEndPoint : public mrpt::io::CStream
 	CPipeBaseEndPoint(const CPipeBaseEndPoint&) = delete;
 	CPipeBaseEndPoint& operator=(const CPipeBaseEndPoint&) = delete;
 
-	virtual ~CPipeBaseEndPoint();
+	~CPipeBaseEndPoint() override;
 
 	/** De-serializes one end-point description, for example, from a parent
 	 * process. */
@@ -102,16 +102,16 @@ class CPipeBaseEndPoint : public mrpt::io::CStream
 	int m_pipe_file;
 #endif
    public:
-	virtual size_t Read(void* Buffer, size_t Count) override;
-	virtual size_t Write(const void* Buffer, size_t Count) override;
+	size_t Read(void* Buffer, size_t Count) override;
+	size_t Write(const void* Buffer, size_t Count) override;
 
 	/** Without effect in this class */
-	virtual uint64_t Seek(
+	uint64_t Seek(
 		int64_t of, CStream::TSeekOrigin o = sFromBeginning) override;
 	/** Without effect in this class */
-	virtual uint64_t getTotalBytesCount() const override;
+	uint64_t getTotalBytesCount() const override;
 	/** Without effect in this class */
-	virtual uint64_t getPosition() const override;
+	uint64_t getPosition() const override;
 };  // end of CPipeBaseEndPoint
 static_assert(
 	!std::is_copy_constructible_v<CPipeBaseEndPoint> &&
@@ -133,7 +133,7 @@ class CPipeReadEndPoint : public CPipeBaseEndPoint
 	explicit CPipeReadEndPoint(const std::string& serialized);
 
 	/** Read-only pipe, don't call this method */
-	size_t Write(const void* Buffer, size_t Count)
+	size_t Write(const void* Buffer, size_t Count) override
 	{
 		throw std::runtime_error("CPipeReadEndPoint::Write() cant be called.");
 	}
@@ -156,7 +156,7 @@ class CPipeWriteEndPoint : public CPipeBaseEndPoint
 	explicit CPipeWriteEndPoint(const std::string& serialized);
 
 	/** Write-only pipe: read launches exception */
-	size_t Read(void* Buffer, size_t Count)
+	size_t Read(void* Buffer, size_t Count) override
 	{
 		throw std::runtime_error("CPipeWriteEndPoint::Read() cant be called.");
 	}

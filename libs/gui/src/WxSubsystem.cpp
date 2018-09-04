@@ -139,7 +139,7 @@ class CDialogAskUserForCamera : public wxDialog
 		// pressing ENTER.
 	}
 
-	virtual ~CDialogAskUserForCamera() {}
+	~CDialogAskUserForCamera() override {}
 	void OnBtnOk(wxCommandEvent& event) { EndModal(wxID_OK); }
 	void OnBtnCancel(wxCommandEvent& event) { EndModal(wxID_CANCEL); }
 };
@@ -864,8 +864,8 @@ wxBitmap WxSubsystem::getMRPTDefaultIcon()
 class CDisplayWindow_WXAPP : public wxApp
 {
    public:
-	virtual bool OnInit();
-	virtual int OnExit();
+	bool OnInit() override;
+	int OnExit() override;
 };
 
 bool CDisplayWindow_WXAPP::OnInit()

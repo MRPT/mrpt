@@ -32,10 +32,10 @@ class CPTG_DiffDrive_CC : public CPTG_DiffDrive_CollisionGridBased
 	{
 		loadFromConfigFile(cfg, sSection);
 	}
-	virtual void loadFromConfigFile(
+	void loadFromConfigFile(
 		const mrpt::config::CConfigFileBase& cfg,
 		const std::string& sSection) override;
-	virtual void saveToConfigFile(
+	void saveToConfigFile(
 		mrpt::config::CConfigFileBase& cfg,
 		const std::string& sSection) const override;
 

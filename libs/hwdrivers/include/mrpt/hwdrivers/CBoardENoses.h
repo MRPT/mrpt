@@ -88,7 +88,7 @@ class CBoardENoses : public mrpt::hwdrivers::CGenericSensor
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
 		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& section);
+		const std::string& section) override;
 
    public:
 	/** Constructor
@@ -120,14 +120,14 @@ class CBoardENoses : public mrpt::hwdrivers::CGenericSensor
 	bool getObservation(mrpt::obs::CObservationGasSensors& outObservation);
 
 	// See docs in parent class
-	void doProcess();
+	void doProcess() override;
 
 	/** Tries to open the camera, after setting all the parameters with a call
 	 * to loadConfig.
 	 *  \exception This method must throw an exception with a descriptive
 	 * message if some critical error is found.
 	 */
-	virtual void initialize();
+	void initialize() override;
 
 	/** If not an empty string, will open that serial port, otherwise will try
 	 * to open USB FTDI device "m_usbSerialNumber"

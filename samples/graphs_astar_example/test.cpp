@@ -79,16 +79,16 @@ class CAStarExample : public CAStarAlgorithm<CCoinDistribution>
 	/**
 	 * The following five methods must be implemented to use the algorithm:
 	 */
-	virtual bool isSolutionEnded(const CCoinDistribution& s)
+	bool isSolutionEnded(const CCoinDistribution& s) override
 	{  // True if the solution is complete.
 		return s.money() == N;
 	}
-	virtual bool isSolutionValid(const CCoinDistribution& s)
+	bool isSolutionValid(const CCoinDistribution& s) override
 	{  // True if the solution is valid.
 		return s.money() <= N;
 	}
-	virtual void generateChildren(
-		const CCoinDistribution& s, vector<CCoinDistribution>& sols)
+	void generateChildren(
+		const CCoinDistribution& s, vector<CCoinDistribution>& sols) override
 	{  // Get all the children of a solution.
 		// Complex classes might want to define a copy constructor (note how the
 		// vector in the following line is created by cloning this object four
@@ -99,13 +99,13 @@ class CAStarExample : public CAStarAlgorithm<CCoinDistribution>
 		sols[2].coins8++;  // Misma solución, más una moneda de 8...
 		sols[3].coins19++;  // Y misma solución, más una moneda de 19.
 	}
-	virtual double getHeuristic(const CCoinDistribution& s)
+	double getHeuristic(const CCoinDistribution& s) override
 	{  // Heuristic cost of the remaining part of the solution.
 		// Check the documentation of CAStarAlgorithm to know which
 		// characteristics does this function need to comply.
 		return static_cast<double>(N - s.money()) / 19.0;
 	}
-	virtual double getCost(const CCoinDistribution& s)
+	double getCost(const CCoinDistribution& s) override
 	{  // Known cost of the partial solution.
 		return s.coins2 + s.coins7 + s.coins8 + s.coins19;
 	}

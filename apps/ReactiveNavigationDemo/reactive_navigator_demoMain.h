@@ -63,7 +63,7 @@ class reactive_navigator_demoframe : public wxFrame
 {
    public:
 	reactive_navigator_demoframe(wxWindow* parent, wxWindowID id = -1);
-	virtual ~reactive_navigator_demoframe();
+	~reactive_navigator_demoframe() override;
 
    private:
 	//(*Handlers(reactive_navigator_demoframe)

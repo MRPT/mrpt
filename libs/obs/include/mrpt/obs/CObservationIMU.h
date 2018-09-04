@@ -118,7 +118,7 @@ class CObservationIMU : public CObservation
 
 	/** Destructor
 	  */
-	virtual ~CObservationIMU() {}
+	~CObservationIMU() override {}
 	/** The pose of the sensor on the robot. */
 	mrpt::poses::CPose3D sensorPose;
 

@@ -75,7 +75,7 @@ class CMyRedirector : public std::streambuf
 			std::cerr.rdbuf(this);
 		}
 	}
-	virtual ~CMyRedirector()
+	~CMyRedirector() override
 	{
 		sync();
 
@@ -137,7 +137,7 @@ class CMyRedirector : public std::streambuf
 	}
 
    private:
-	int overflow(int c)
+	int overflow(int c) override
 	{
 		sync();
 
@@ -157,7 +157,7 @@ class CMyRedirector : public std::streambuf
 		return 0;
 	}
 
-	int sync()
+	int sync() override
 	{
 		wxCriticalSectionLocker lock(m_cs);
 

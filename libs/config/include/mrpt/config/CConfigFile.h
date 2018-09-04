@@ -80,14 +80,14 @@ class CConfigFile : public CConfigFileBase
 	/** Returns the file currently open by this object. */
 	std::string getAssociatedFile() const { return m_file; }
 	/** Destructor */
-	virtual ~CConfigFile();
+	~CConfigFile() override;
 
 	/** Returns a list with all the section names. */
-	virtual void getAllSections(
+	void getAllSections(
 		std::vector<std::string>& sections) const override;
 
 	/** Returs a list with all the keys into a section. */
-	virtual void getAllKeys(
+	void getAllKeys(
 		const std::string& section,
 		std::vector<std::string>& keys) const override;
 

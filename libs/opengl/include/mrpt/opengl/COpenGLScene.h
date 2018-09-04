@@ -65,7 +65,7 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 
 	/** Destructor:
 	 */
-	virtual ~COpenGLScene();
+	~COpenGLScene() override;
 
 	/** Copy operator:
 	 */

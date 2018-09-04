@@ -36,7 +36,7 @@ class CTexturedObject : public CRenderizableDisplayList
 	 * passed by the user. */
 	mutable int m_pad_x_right{0}, m_pad_y_bottom{0};
 
-	virtual ~CTexturedObject();
+	~CTexturedObject() override;
 	void unloadTexture();
 
 	virtual void render_pre() const;
@@ -78,7 +78,7 @@ class CTexturedObject : public CRenderizableDisplayList
 	 */
 	void loadTextureInOpenGL() const;
 
-	virtual void render_dl() const override;
+	void render_dl() const override;
 };
 
 }

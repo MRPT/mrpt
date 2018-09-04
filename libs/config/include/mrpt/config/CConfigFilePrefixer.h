@@ -72,7 +72,7 @@ class CConfigFilePrefixer : public CConfigFileBase
 	/** Returns the currently-bounded config source, or nullptr if none. */
 	CConfigFileBase* getBoundConfigFileBase() const;
 
-	virtual ~CConfigFilePrefixer();
+	~CConfigFilePrefixer() override;
 
 	void getAllSections(std::vector<std::string>& sections)
 		const override;  // See base class docs

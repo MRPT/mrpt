@@ -81,7 +81,7 @@ class CDisk : public CRenderizableDisplayList
 	}
 
 	/** Private, virtual destructor: only can be deleted from smart pointers */
-	virtual ~CDisk() {}
+	~CDisk() override {}
 };
 
 }

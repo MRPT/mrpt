@@ -436,7 +436,7 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	bool isEmpty() const override;
 
 	// See docs in base class.
-	virtual void determineMatching2D(
+	void determineMatching2D(
 		const mrpt::maps::CMetricMap* otherMap,
 		const mrpt::poses::CPose2D& otherMapPose,
 		mrpt::tfest::TMatchingPairList& correspondences,
@@ -471,9 +471,9 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	 * contains EXACTLY one simple point map, return it.
 	 * Otherwise, return NULL
 	 */
-	virtual const mrpt::maps::CSimplePointsMap* getAsSimplePointsMap()
+	const mrpt::maps::CSimplePointsMap* getAsSimplePointsMap()
 		const override;
-	virtual mrpt::maps::CSimplePointsMap* getAsSimplePointsMap() override;
+	mrpt::maps::CSimplePointsMap* getAsSimplePointsMap() override;
 
 	/** An auxiliary variable that can be used freely by the users (this will be
 	 * copied to other maps using the copy constructor, copy operator,

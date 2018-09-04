@@ -22,7 +22,7 @@ class PanelDOF : public wxPanel
 {
    public:
 	PanelDOF(wxWindow* parent, wxWindowID id = wxID_ANY);
-	virtual ~PanelDOF();
+	~PanelDOF() override;
 
 	//(*Declarations(PanelDOF)
 	wxSimpleHtmlListBox* Label1;

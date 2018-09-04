@@ -15,8 +15,8 @@
 class hmtMapViewerApp : public wxApp
 {
    public:
-	virtual bool OnInit();
-	virtual int OnExit();
+	bool OnInit() override;
+	int OnExit() override;
 };
 
 #endif  // HMTMAPVIEWERAPP_H

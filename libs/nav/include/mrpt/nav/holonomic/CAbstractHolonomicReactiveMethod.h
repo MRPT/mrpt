@@ -84,7 +84,7 @@ class CAbstractHolonomicReactiveMethod
 	/** ctor */
 	CAbstractHolonomicReactiveMethod(const std::string& defaultCfgSectionName);
 	/** virtual dtor */
-	virtual ~CAbstractHolonomicReactiveMethod();
+	~CAbstractHolonomicReactiveMethod() override;
 
 	/** Initialize the parameters of the navigator, reading from the default
 	 * section name (see derived classes) or the one set via

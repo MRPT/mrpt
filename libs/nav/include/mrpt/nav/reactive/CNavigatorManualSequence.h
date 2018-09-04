@@ -22,13 +22,13 @@ class CNavigatorManualSequence : public mrpt::nav::CAbstractNavigator
 {
    public:
 	CNavigatorManualSequence(CRobot2NavInterface& react_iterf_impl);
-	virtual ~CNavigatorManualSequence();
+	~CNavigatorManualSequence() override;
 
 	/** @name Initialization API
 	  * @{ */
-	virtual void loadConfigFile(const mrpt::config::CConfigFileBase& c)
+	void loadConfigFile(const mrpt::config::CConfigFileBase& c)
 		override;  // See base class docs!
-	virtual void saveConfigFile(mrpt::config::CConfigFileBase& c)
+	void saveConfigFile(mrpt::config::CConfigFileBase& c)
 		const override;  // See base class docs!
 	/** Must be called for loading collision grids, etc. before invoking any
 	 * navigation command */
@@ -49,11 +49,11 @@ class CNavigatorManualSequence : public mrpt::nav::CAbstractNavigator
 	std::map<double, TVelCmd> programmed_orders;
 
    protected:
-	virtual void onStartNewNavigation() override {}
+	void onStartNewNavigation() override {}
    private:
 	// Not used in this class:
-	virtual void navigate(const TNavigationParams* params) override {}
-	virtual void performNavigationStep() override {}
+	void navigate(const TNavigationParams* params) override {}
+	void performNavigationStep() override {}
 };
 }
 

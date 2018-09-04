@@ -22,7 +22,7 @@ using namespace std;
 struct MyGlobalProfiler : public mrpt::system::CTimeLogger
 {
 	MyGlobalProfiler() : mrpt::system::CTimeLogger("MRPT_global_profiler") {}
-	~MyGlobalProfiler()
+	~MyGlobalProfiler() override
 	{
 		if (!m_data.empty())
 		{

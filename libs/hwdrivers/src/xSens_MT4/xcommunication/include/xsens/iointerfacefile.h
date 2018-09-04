@@ -55,35 +55,35 @@ class IoInterfaceFile : public IoInterface
 
    public:
 	IoInterfaceFile();
-	~IoInterfaceFile();
+	~IoInterfaceFile() override;
 
 	// Function overrides
-	XsResultValue close(void);
+	XsResultValue close(void) override;
 	XsResultValue closeFile(void);
-	XsResultValue flushData(void);
-	bool isOpen(void) const;
-	XsResultValue getLastResult(void) const;
-	XsResultValue writeData(const XsByteArray& data, XsSize* written = nullptr);
-	XsResultValue readData(XsSize maxLength, XsByteArray& data);
+	XsResultValue flushData(void) override;
+	bool isOpen(void) const override;
+	XsResultValue getLastResult(void) const override;
+	XsResultValue writeData(const XsByteArray& data, XsSize* written = nullptr) override;
+	XsResultValue readData(XsSize maxLength, XsByteArray& data) override;
 	XsResultValue readTerminatedData(
 		XsSize maxLength, unsigned char terminator, XsByteArray& bdata);
 
 	// Other functions
-	XsResultValue appendData(const XsByteArray& bdata);
-	XsResultValue closeAndDelete(void);
-	XsResultValue create(const XsString& filename);
-	XsResultValue deleteData(XsFilePos start, XsSize length);
-	XsResultValue find(const XsByteArray& data, XsFilePos& pos);
-	XsFilePos getFileSize(void) const;
+	XsResultValue appendData(const XsByteArray& bdata) override;
+	XsResultValue closeAndDelete(void) override;
+	XsResultValue create(const XsString& filename) override;
+	XsResultValue deleteData(XsFilePos start, XsSize length) override;
+	XsResultValue find(const XsByteArray& data, XsFilePos& pos) override;
+	XsFilePos getFileSize(void) const override;
 	XsTimeStamp getFileDate(void) const;
-	XsResultValue getName(XsString& filename) const;
-	XsFilePos getReadPosition(void) const;
-	XsFilePos getWritePosition(void) const;
-	XsResultValue insertData(XsFilePos start, const XsByteArray& data);
-	bool isReadOnly(void) const;
-	XsResultValue open(const XsString& filename, bool createNew, bool readOnly);
-	XsResultValue setReadPosition(XsFilePos pos);
-	XsResultValue setWritePosition(XsFilePos pos = -1);
+	XsResultValue getName(XsString& filename) const override;
+	XsFilePos getReadPosition(void) const override;
+	XsFilePos getWritePosition(void) const override;
+	XsResultValue insertData(XsFilePos start, const XsByteArray& data) override;
+	bool isReadOnly(void) const override;
+	XsResultValue open(const XsString& filename, bool createNew, bool readOnly) override;
+	XsResultValue setReadPosition(XsFilePos pos) override;
+	XsResultValue setWritePosition(XsFilePos pos = -1) override;
 };
 
 #endif  // file guard

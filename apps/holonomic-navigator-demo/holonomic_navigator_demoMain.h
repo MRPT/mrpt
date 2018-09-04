@@ -54,7 +54,7 @@ class holonomic_navigator_demoFrame : public wxFrame
 {
    public:
 	holonomic_navigator_demoFrame(wxWindow* parent, wxWindowID id = -1);
-	virtual ~holonomic_navigator_demoFrame();
+	~holonomic_navigator_demoFrame() override;
 
    private:
 	//(*Handlers(holonomic_navigator_demoFrame)

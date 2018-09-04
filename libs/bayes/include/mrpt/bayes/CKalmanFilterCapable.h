@@ -611,7 +611,7 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 		  m_user_didnt_implement_jacobian(true)
 	/** Default constructor */ {}
 	/** Destructor */
-	virtual ~CKalmanFilterCapable() {}
+	~CKalmanFilterCapable() override {}
 	mrpt::system::CTimeLogger& getProfiler() { return m_timLogger; }
 	/** Generic options for the Kalman Filter algorithm itself. */
 	TKF_options KF_options;

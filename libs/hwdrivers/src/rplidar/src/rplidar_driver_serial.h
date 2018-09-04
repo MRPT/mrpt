@@ -49,45 +49,45 @@ class RPlidarDriverSerialImpl : public RPlidarDriver
 	};
 
 	RPlidarDriverSerialImpl();
-	virtual ~RPlidarDriverSerialImpl();
+	~RPlidarDriverSerialImpl() override;
 
    public:
-	virtual u_result connect(const char* port_path, _u32 baudrate, _u32 flag);
-	virtual void disconnect();
-	virtual bool isConnected();
+	u_result connect(const char* port_path, _u32 baudrate, _u32 flag) override;
+	void disconnect() override;
+	bool isConnected() override;
 
-	virtual u_result reset(_u32 timeout = DEFAULT_TIMEOUT);
+	u_result reset(_u32 timeout = DEFAULT_TIMEOUT) override;
 
-	virtual u_result getHealth(
-		rplidar_response_device_health_t&, _u32 timeout = DEFAULT_TIMEOUT);
-	virtual u_result getDeviceInfo(
-		rplidar_response_device_info_t&, _u32 timeout = DEFAULT_TIMEOUT);
-	virtual u_result getSampleDuration_uS(
+	u_result getHealth(
+		rplidar_response_device_health_t&, _u32 timeout = DEFAULT_TIMEOUT) override;
+	u_result getDeviceInfo(
+		rplidar_response_device_info_t&, _u32 timeout = DEFAULT_TIMEOUT) override;
+	u_result getSampleDuration_uS(
 		rplidar_response_sample_rate_t& rateInfo,
-		_u32 timeout = DEFAULT_TIMEOUT);
+		_u32 timeout = DEFAULT_TIMEOUT) override;
 
-	virtual u_result setMotorPWM(_u16 pwm);
-	virtual u_result startMotor();
-	virtual u_result stopMotor();
-	virtual u_result checkMotorCtrlSupport(
-		bool& support, _u32 timeout = DEFAULT_TIMEOUT);
-	virtual u_result getFrequency(
-		bool inExpressMode, size_t count, float& frequency, bool& is4kmode);
+	u_result setMotorPWM(_u16 pwm) override;
+	u_result startMotor() override;
+	u_result stopMotor() override;
+	u_result checkMotorCtrlSupport(
+		bool& support, _u32 timeout = DEFAULT_TIMEOUT) override;
+	u_result getFrequency(
+		bool inExpressMode, size_t count, float& frequency, bool& is4kmode) override;
 
-	virtual u_result startScan(bool force = false, bool autoExpressMode = true);
-	virtual u_result startScanNormal(
-		bool force, _u32 timeout = DEFAULT_TIMEOUT);
-	virtual u_result startScanExpress(
-		bool fixedAngle, _u32 timeout = DEFAULT_TIMEOUT);
-	virtual u_result checkExpressScanSupported(
-		bool& support, _u32 timeout = DEFAULT_TIMEOUT);
+	u_result startScan(bool force = false, bool autoExpressMode = true) override;
+	u_result startScanNormal(
+		bool force, _u32 timeout = DEFAULT_TIMEOUT) override;
+	u_result startScanExpress(
+		bool fixedAngle, _u32 timeout = DEFAULT_TIMEOUT) override;
+	u_result checkExpressScanSupported(
+		bool& support, _u32 timeout = DEFAULT_TIMEOUT) override;
 
-	virtual u_result stop(_u32 timeout = DEFAULT_TIMEOUT);
-	virtual u_result grabScanData(
+	u_result stop(_u32 timeout = DEFAULT_TIMEOUT) override;
+	u_result grabScanData(
 		rplidar_response_measurement_node_t* nodebuffer, size_t& count,
-		_u32 timeout = DEFAULT_TIMEOUT);
-	virtual u_result ascendScanData(
-		rplidar_response_measurement_node_t* nodebuffer, size_t count);
+		_u32 timeout = DEFAULT_TIMEOUT) override;
+	u_result ascendScanData(
+		rplidar_response_measurement_node_t* nodebuffer, size_t count) override;
 
    protected:
 	u_result _waitNode(

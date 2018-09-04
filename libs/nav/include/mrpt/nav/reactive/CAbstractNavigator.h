@@ -60,7 +60,7 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 	/** ctor */
 	CAbstractNavigator(CRobot2NavInterface& robot_interface_impl);
 	/** dtor */
-	virtual ~CAbstractNavigator();
+	~CAbstractNavigator() override;
 
 	/** Individual target info in CAbstractNavigator::TNavigationParamsBase and
 	 * derived classes */
@@ -119,14 +119,14 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 		TargetInfo target;
 
 		/** Gets navigation params as a human-readable format */
-		virtual std::string getAsText() const override;
+		std::string getAsText() const override;
 		virtual std::unique_ptr<TNavigationParams> clone() const
 		{
 			return std::make_unique<TNavigationParams>(*this);
 		}
 
 	   protected:
-		virtual bool isEqual(const TNavigationParamsBase& o) const override;
+		bool isEqual(const TNavigationParamsBase& o) const override;
 	};
 
 	/** \name Navigation control API
@@ -207,10 +207,10 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 		 * dist_check_target_is_blocked be fulfilled to raise an event */
 		int hysteresis_check_target_is_blocked;
 
-		virtual void loadFromConfigFile(
+		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& c,
 			const std::string& s) override;
-		virtual void saveToConfigFile(
+		void saveToConfigFile(
 			mrpt::config::CConfigFileBase& c,
 			const std::string& s) const override;
 		TAbstractNavigatorParams();

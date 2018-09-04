@@ -102,16 +102,16 @@ class CSetOfObjects : public CRenderizable
 	/** Retrieves a list of all objects in text form  */
 	void dumpListOfObjects(std::vector<std::string>& lst);
 
-	virtual bool traceRay(
+	bool traceRay(
 		const mrpt::poses::CPose3D& o, double& dist) const override;
 
-	virtual CRenderizable& setColor_u8(const mrpt::img::TColor& c) override;
-	virtual CRenderizable& setColorR_u8(const uint8_t r) override;
-	virtual CRenderizable& setColorG_u8(const uint8_t g) override;
-	virtual CRenderizable& setColorB_u8(const uint8_t b) override;
-	virtual CRenderizable& setColorA_u8(const uint8_t a) override;
+	CRenderizable& setColor_u8(const mrpt::img::TColor& c) override;
+	CRenderizable& setColorR_u8(const uint8_t r) override;
+	CRenderizable& setColorG_u8(const uint8_t g) override;
+	CRenderizable& setColorB_u8(const uint8_t b) override;
+	CRenderizable& setColorA_u8(const uint8_t a) override;
 	bool contains(const CRenderizable::Ptr& obj) const;
-	virtual void getBoundingBox(
+	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
 
@@ -154,7 +154,7 @@ class CSetOfObjects : public CRenderizable
 	CSetOfObjects();
 
 	/** Private, virtual destructor: only can be deleted from smart pointers */
-	virtual ~CSetOfObjects();
+	~CSetOfObjects() override;
 };
 /** Inserts an object into the list. Allows call chaining.
  * \sa mrpt::opengl::CSetOfObjects::insert

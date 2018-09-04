@@ -27,8 +27,8 @@ template class mrpt::CTraitsTest<CPose3DQuatPDFGaussian>;
 class Pose3DQuatPDFGaussTests : public ::testing::Test
 {
    protected:
-	virtual void SetUp() {}
-	virtual void TearDown() {}
+	void SetUp() override {}
+	void TearDown() override {}
 	static CPose3DQuatPDFGaussian generateRandomPoseQuat3DPDF(
 		double x, double y, double z, double yaw, double pitch, double roll,
 		double std_scale)

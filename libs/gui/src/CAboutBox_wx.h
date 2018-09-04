@@ -26,7 +26,7 @@ class CAboutBox : public wxDialog, public CAboutBoxBase
 	CAboutBox(
 		wxWindow* parent, const std::string& appName,
 		const std::string& additionalInfo, const bool showStandardInfo);
-	virtual ~CAboutBox();
+	~CAboutBox() override;
 
 	//(*Identifiers(CAboutBox)
 	static const long ID_STATICTEXT1;

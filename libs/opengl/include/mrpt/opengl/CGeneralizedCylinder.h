@@ -431,7 +431,7 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 	/**
 	 * Destructor.
 	 */
-	virtual ~CGeneralizedCylinder(){};
+	~CGeneralizedCylinder() override{};
 };
 }
 

@@ -39,7 +39,7 @@ public:
 	using pose_t = typename GRAPH_t::constraint_t::type_value;
 
 	CGraphSlamOptimizer()=default;
-	~CGraphSlamOptimizer()=default;
+	~CGraphSlamOptimizer() override =default;
 	/**\brief Used by the caller to query for possible full graph optimization
 	 * on the latest optimizer run
 	 */

@@ -28,7 +28,7 @@ class CDlgLog : public wxDialog
 		wxWindow* parent, wxWindowID id = wxID_ANY,
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize);
-	virtual ~CDlgLog();
+	~CDlgLog() override;
 
 	//(*Declarations(CDlgLog)
 	wxButton* btnClear;

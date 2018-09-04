@@ -66,8 +66,8 @@
 class MyArtProvider : public wxArtProvider
 {
    protected:
-	virtual wxBitmap CreateBitmap(
-		const wxArtID& id, const wxArtClient& client, const wxSize& size);
+	wxBitmap CreateBitmap(
+		const wxArtID& id, const wxArtClient& client, const wxSize& size) override;
 };
 
 #define RETURN_BITMAP(artid, xpm)                                        \
@@ -161,13 +161,13 @@ class CMyGLCanvas : public CWxGLCanvasBase
 	{
 	}
 
-	virtual ~CMyGLCanvas() {}
-	void OnCharCustom(wxKeyEvent& event);
+	~CMyGLCanvas() override {}
+	void OnCharCustom(wxKeyEvent& event) override;
 
-	void OnPreRender();
-	void OnPostRender();
-	void OnPostRenderSwapBuffers(double At, wxPaintDC& dc);
-	void OnRenderError(const wxString& str);
+	void OnPreRender() override;
+	void OnPostRender() override;
+	void OnPostRenderSwapBuffers(double At, wxPaintDC& dc) override;
+	void OnRenderError(const wxString& str) override;
 };
 
 void CMyGLCanvas::OnRenderError(const wxString& str) {}

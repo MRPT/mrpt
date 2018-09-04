@@ -75,7 +75,7 @@ class CWxGLCanvasBase : public CGlCanvasBase,
 		const wxSize& size = wxDefaultSize, long style = 0,
 		const wxString& name = _T("CWxGLCanvasBase"));
 
-	virtual ~CWxGLCanvasBase();
+	~CWxGLCanvasBase() override;
 
 	void OnPaint(wxPaintEvent& event);
 	void OnSize(wxSizeEvent& event);
@@ -119,10 +119,10 @@ class CWxGLCanvasBase : public CGlCanvasBase,
 
 	// Used to create the gl context at startup.
 	void OnWindowCreation(wxWindowCreateEvent& ev);
-	virtual void swapBuffers() override;
-	virtual void preRender() override;
-	virtual void postRender() override;
-	virtual void renderError(const std::string& err_msg) override;
+	void swapBuffers() override;
+	void preRender() override;
+	void postRender() override;
+	void renderError(const std::string& err_msg) override;
 
 };  // end of class
 

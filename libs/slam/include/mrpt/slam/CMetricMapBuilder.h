@@ -42,7 +42,7 @@ class CMetricMapBuilder : public mrpt::system::COutputLogger
 	/** Constructor */
 	CMetricMapBuilder();
 	/** Destructor. */
-	virtual ~CMetricMapBuilder();
+	~CMetricMapBuilder() override;
 
 	// ---------------------------------------------------------------------
 	/** @name Pure virtual methods to implement in any particular SLAM algorithm

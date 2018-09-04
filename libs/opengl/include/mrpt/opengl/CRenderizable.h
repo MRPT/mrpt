@@ -263,7 +263,7 @@ class CRenderizable : public mrpt::serialization::CSerializable
 
 	/** Default constructor:  */
 	CRenderizable();
-	virtual ~CRenderizable();
+	~CRenderizable() override;
 
 	/** Implements the rendering of 3D objects in each class derived from
 	 * CRenderizable.

@@ -237,24 +237,24 @@ public:
 	/**\}*/
 
 	CLoopCloserERD();
-	virtual ~CLoopCloserERD();
+	~CLoopCloserERD() override;
 
-	virtual bool updateState(
+	bool updateState(
 		mrpt::obs::CActionCollection::Ptr action,
 		mrpt::obs::CSensoryFrame::Ptr observations,
-		mrpt::obs::CObservation::Ptr observation);
+		mrpt::obs::CObservation::Ptr observation) override;
 
-	void setWindowManagerPtr(mrpt::graphslam::CWindowManager* win_manager);
+	void setWindowManagerPtr(mrpt::graphslam::CWindowManager* win_manager) override;
 	void notifyOfWindowEvents(
-		const std::map<std::string, bool>& events_occurred);
-	void getEdgesStats(std::map<std::string, int>* edge_types_to_num) const;
+		const std::map<std::string, bool>& events_occurred) override;
+	void getEdgesStats(std::map<std::string, int>* edge_types_to_num) const override;
 
-	void initializeVisuals();
-	void updateVisuals();
-	void loadParams(const std::string& source_fname);
-	void printParams() const;
+	void initializeVisuals() override;
+	void updateVisuals() override;
+	void loadParams(const std::string& source_fname) override;
+	void printParams() const override;
 
-	void getDescriptiveReport(std::string* report_str) const;
+	void getDescriptiveReport(std::string* report_str) const override;
 	void getCurrentPartitions(partitions_t& partitions_out) const;
 	const partitions_t& getCurrentPartitions() const;
 	/**\brief Return the minimum number of nodes that should exist in the graph
@@ -406,12 +406,12 @@ public:
 	{
 	   public:
 		TLaserParams();
-		~TLaserParams();
+		~TLaserParams() override;
 
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
-			const std::string& section);
-		void dumpToTextStream(std::ostream& out) const;
+			const std::string& section) override;
+		void dumpToTextStream(std::ostream& out) const override;
 		mrpt::slam::CICP icp;
 		/**\brief How many nodes back to check ICP against?
 		 */
@@ -452,12 +452,12 @@ public:
 	{
 	   public:
 		TLoopClosureParams();
-		~TLoopClosureParams();
+		~TLoopClosureParams() override;
 
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
-			const std::string& section);
-		void dumpToTextStream(std::ostream& out) const;
+			const std::string& section) override;
+		void dumpToTextStream(std::ostream& out) const override;
 		/**\brief flag indicating whether to check only the partition of the
 		 * last
 		 * registered node for potential loop closures
@@ -521,7 +521,7 @@ public:
 	void registerHypothesis(const hypot_t& h);
 	void registerNewEdge(
 		const mrpt::graphs::TNodeID& from, const mrpt::graphs::TNodeID& to,
-		const constraint_t& rel_edge);
+		const constraint_t& rel_edge) override;
 	/**\brief Fetch a list of nodes with regards prior to the given nodeID for
 	 * which to try and add scan matching edges
 	 *

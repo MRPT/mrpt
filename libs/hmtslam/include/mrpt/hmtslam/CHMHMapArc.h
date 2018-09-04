@@ -72,7 +72,7 @@ class CHMHMapArc : public mrpt::serialization::CSerializable
 
 	/** Destructor
 	  */
-	virtual ~CHMHMapArc();
+	~CHMHMapArc() override;
 
 	/** Return the starting node of the arc:
 	  */

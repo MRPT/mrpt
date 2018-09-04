@@ -98,23 +98,23 @@ class CGyroKVHDSP3000 : public hwdrivers::CGenericSensor
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
 		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection);
+		const std::string& iniSection) override;
 
 	/** Destructor
 	  */
-	virtual ~CGyroKVHDSP3000();
+	~CGyroKVHDSP3000() override;
 
 	/** This method will be invoked at a minimum rate of "process_rate" (Hz)
 	  *  \exception This method must throw an exception with a descriptive
 	 * message if some critical error is found.
 	  */
-	void doProcess();
+	void doProcess() override;
 
 	/** Turns on the KVH DSP 3000 device and configure it for getting
 	 * orientation data. you must have called loadConfig_sensorSpecific before
 	  * calling this function.
 	  */
-	void initialize();
+	void initialize() override;
 	/** Send to the sensor the command 'Z' wich reset the integrated angle. (in
 	 * both rate mode and incremental, this function has no effect) */
 	void resetIncrementalAngle(void);

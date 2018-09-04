@@ -35,7 +35,7 @@ class robotic_arm_kinematicsFrame : public wxFrame
 {
    public:
 	robotic_arm_kinematicsFrame(wxWindow* parent, wxWindowID id = -1);
-	virtual ~robotic_arm_kinematicsFrame();
+	~robotic_arm_kinematicsFrame() override;
 
 	void OnSliderDOFScroll(wxScrollEvent& event);
 

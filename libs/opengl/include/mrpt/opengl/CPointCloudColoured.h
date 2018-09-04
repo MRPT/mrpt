@@ -89,14 +89,14 @@ class CPointCloudColoured : public CRenderizable,
 	{
 	}
 	/** Private, virtual destructor: only can be deleted from smart pointers */
-	virtual ~CPointCloudColoured() {}
+	~CPointCloudColoured() override {}
 	/** Do needed internal work if all points are new (octree rebuilt,...) */
 	void markAllPointsAsNew();
 
    public:
 	/** Evaluates the bounding box of this object (including possible children)
 	 * in the coordinate frame of the object parent. */
-	virtual void getBoundingBox(
+	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override
 	{
@@ -238,10 +238,10 @@ class CPointCloudColoured : public CRenderizable,
 		@{ */
 	/** In a base class, reserve memory to prepare subsequent calls to
 	 * PLY_import_set_vertex */
-	virtual void PLY_import_set_vertex_count(const size_t N) override;
+	void PLY_import_set_vertex_count(const size_t N) override;
 	/** In a base class, reserve memory to prepare subsequent calls to
 	 * PLY_import_set_face */
-	virtual void PLY_import_set_face_count(const size_t N) override
+	void PLY_import_set_face_count(const size_t N) override
 	{
 		MRPT_UNUSED_PARAM(N);
 	}
@@ -250,7 +250,7 @@ class CPointCloudColoured : public CRenderizable,
 	 *  \param pt_color Will be nullptr if the loaded file does not provide
 	 * color info.
 	 */
-	virtual void PLY_import_set_vertex(
+	void PLY_import_set_vertex(
 		const size_t idx, const mrpt::math::TPoint3Df& pt,
 		const mrpt::img::TColorf* pt_color = nullptr) override;
 	/** @} */

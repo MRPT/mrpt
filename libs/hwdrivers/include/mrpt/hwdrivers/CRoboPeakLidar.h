@@ -54,17 +54,17 @@ class CRoboPeakLidar : public C2DRangeFinderAbstract
 	/** Constructor */
 	CRoboPeakLidar();
 	/** Destructor: turns the laser off. */
-	virtual ~CRoboPeakLidar();
+	~CRoboPeakLidar() override;
 
 	/** Attempts to connect and turns the laser on. Raises an exception on
 	 * error. */
-	virtual void initialize();
+	void initialize() override;
 
 	// See base class docs
-	virtual void doProcessSimple(
+	void doProcessSimple(
 		bool& outThereIsObservation,
 		mrpt::obs::CObservation2DRangeScan& outObservation,
-		bool& hardwareError);
+		bool& hardwareError) override;
 
 	/** If set to non-empty, the serial port will be attempted to be opened
 	 * automatically when this class is first used to request data from the
@@ -73,9 +73,9 @@ class CRoboPeakLidar : public C2DRangeFinderAbstract
 	/** Returns the currently set serial port \sa setSerialPort */
 	const std::string getSerialPort() { return m_com_port; }
 	/** See base class docs */
-	virtual bool turnOn();
+	bool turnOn() override;
 	/** See base class docs */
-	virtual bool turnOff();
+	bool turnOff() override;
 
 	/** Returns true if the device is connected & operative */
 	bool getDeviceHealth() const;
@@ -101,7 +101,7 @@ class CRoboPeakLidar : public C2DRangeFinderAbstract
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
 		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection);
+		const std::string& iniSection) override;
 
 };  // End of class
 

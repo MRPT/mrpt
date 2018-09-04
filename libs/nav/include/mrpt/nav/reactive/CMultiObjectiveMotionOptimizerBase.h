@@ -78,10 +78,10 @@ class CMultiObjectiveMotionOptimizerBase : public mrpt::rtti::CObject
 		  * across all candidates, such that the maximum value is 1. */
 		std::vector<std::string> scores_to_normalize;
 
-		virtual void loadFromConfigFile(
+		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
-		virtual void saveToConfigFile(
+		void saveToConfigFile(
 			mrpt::config::CConfigFileBase& cfg,
 			const std::string& section) const override;  // See base docs
 	};

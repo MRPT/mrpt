@@ -31,7 +31,7 @@ class CDlgCamTracking : public wxDialog
 		_DSceneViewerFrame* parent, wxWindowID id = wxID_ANY,
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize);
-	virtual ~CDlgCamTracking();
+	~CDlgCamTracking() override;
 
 	//(*Declarations(CDlgCamTracking)
 	wxButton* btnStop;

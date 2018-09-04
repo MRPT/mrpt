@@ -230,13 +230,13 @@ class CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 		const mrpt::poses::CPosePDFGaussian& initialEstimationPDF,
 		float* runningTime = nullptr,
 
-		void* info = nullptr);
+		void* info = nullptr) override;
 
 	/** Not applicable in this class, will launch an exception. */
 	mrpt::poses::CPose3DPDF::Ptr Align3DPDF(
 		const mrpt::maps::CMetricMap* m1, const mrpt::maps::CMetricMap* m2,
 		const mrpt::poses::CPose3DPDFGaussian& initialEstimationPDF,
-		float* runningTime = nullptr, void* info = nullptr);
+		float* runningTime = nullptr, void* info = nullptr) override;
 };
 
 }

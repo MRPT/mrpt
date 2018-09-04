@@ -59,30 +59,30 @@ class CHeightGridMap2D_MRF : public CRandomFieldGridMap2D,
 	} insertionOptions;
 
 	/** Returns a 3D object representing the map */
-	virtual void getAs3DObject(
+	void getAs3DObject(
 		mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
 
 	/** Returns two 3D objects representing the mean and variance maps */
-	virtual void getAs3DObject(
+	void getAs3DObject(
 		mrpt::opengl::CSetOfObjects::Ptr& meanObj,
 		mrpt::opengl::CSetOfObjects::Ptr& varObj) const override;
 
-	virtual bool insertIndividualPoint(
+	bool insertIndividualPoint(
 		const double x, const double y, const double z,
 		const CHeightGridMap2D_Base::TPointInsertParams& params =
 			CHeightGridMap2D_Base::TPointInsertParams()) override;
-	virtual double dem_get_resolution() const override;
-	virtual size_t dem_get_size_x() const override;
-	virtual size_t dem_get_size_y() const override;
-	virtual bool dem_get_z_by_cell(
+	double dem_get_resolution() const override;
+	size_t dem_get_size_x() const override;
+	size_t dem_get_size_y() const override;
+	bool dem_get_z_by_cell(
 		const size_t cx, const size_t cy, double& z_out) const override;
-	virtual bool dem_get_z(
+	bool dem_get_z(
 		const double x, const double y, double& z_out) const override;
-	virtual void dem_update_map() override;
+	void dem_update_map() override;
 
 	/** Get the part of the options common to all CRandomFieldGridMap2D classes
 	 */
-	virtual CRandomFieldGridMap2D::TInsertionOptionsCommon*
+	CRandomFieldGridMap2D::TInsertionOptionsCommon*
 		getCommonInsertOptions() override
 	{
 		return &insertionOptions;

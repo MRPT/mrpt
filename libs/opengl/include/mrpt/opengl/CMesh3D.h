@@ -168,7 +168,7 @@ class CMesh3D : public CRenderizableDisplayList
 		bool enableShowEdges = true, bool enableShowFaces = true,
 		bool enableShowVertices = false);
 	/** Private, virtual destructor: only can be deleted from smart pointers  */
-	virtual ~CMesh3D();
+	~CMesh3D() override;
 };
 
 }

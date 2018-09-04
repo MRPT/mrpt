@@ -27,21 +27,21 @@ class CPtuDPerception : public CPtuBase
 
 	/** Destructor */
 
-	virtual ~CPtuDPerception() { close(); }
+	~CPtuDPerception() override { close(); }
 	/*************************** Commands ***************************/
 
    public:
 	/** Search limit forward */
 
-	virtual bool rangeMeasure();
+	bool rangeMeasure() override;
 
 	/** Specification of positions in absolute terms */
 
-	virtual bool moveToAbsPos(char axis, double nRad);
+	bool moveToAbsPos(char axis, double nRad) override;
 
 	/** Query position in absolute terms */
 
-	virtual bool absPosQ(char axis, double& nRad);
+	bool absPosQ(char axis, double& nRad) override;
 
 	/** Specify desired axis position as an offset from the current position. \n
 	*	This method recives the number of radians to move.
@@ -56,27 +56,27 @@ class CPtuDPerception : public CPtuBase
 	*	\endcode
 	*/
 
-	virtual bool moveToOffPos(char axis, double nRad);
+	bool moveToOffPos(char axis, double nRad) override;
 
 	/** Query position in relative terms */
 
-	virtual bool offPosQ(char axis, double& nRad);
+	bool offPosQ(char axis, double& nRad) override;
 
 	/** Query max movement limit of a axis in absolute terms */
 
-	virtual bool maxPosQ(char axis, double& nRad);
+	bool maxPosQ(char axis, double& nRad) override;
 
 	/** Query min movement limit of a axis in absolute terms */
 
-	virtual bool minPosQ(char axis, double& nRad);
+	bool minPosQ(char axis, double& nRad) override;
 
 	/** Query if exist movement limits */
 
-	virtual bool enableLimitsQ(bool& enable);  // Query if exist some limit
+	bool enableLimitsQ(bool& enable) override;  // Query if exist some limit
 
 	/** Enable/Disable movement limits */
 
-	virtual bool enableLimits(bool set);
+	bool enableLimits(bool set) override;
 
 	/** With I mode (default) instructs pan-tilt unit to immediately
 	*	execute positional commands. \n
@@ -97,101 +97,101 @@ class CPtuDPerception : public CPtuBase
 	*	\endcode
 	*/
 
-	virtual bool inmediateExecution(bool set);
+	bool inmediateExecution(bool set) override;
 
 	/** Wait the finish of the last position command to
 	*	continue accept commands
 	*/
 
-	virtual bool aWait(void);
+	bool aWait(void) override;
 
 	/** Inmediately stop all */
 
-	virtual bool haltAll();
+	bool haltAll() override;
 
 	/** Inmediately stop */
 
-	virtual bool halt(char axis);
+	bool halt(char axis) override;
 
 	/** Specification of turn speed */
 
-	virtual bool speed(char axis, double radSec);
+	bool speed(char axis, double radSec) override;
 
 	/** Query turn speed */
 
-	virtual bool speedQ(char axis, double& radSec);
+	bool speedQ(char axis, double& radSec) override;
 
 	/** Specification (de/a)celeration in turn */
 
-	virtual bool aceleration(char axis, double radSec2);
+	bool aceleration(char axis, double radSec2) override;
 
 	/** Query (de/a)celeration in turn */
 
-	virtual bool acelerationQ(char axis, double& radSec2);
+	bool acelerationQ(char axis, double& radSec2) override;
 
 	/** Specification of velocity to which start and finish
 	*	the (de/a)celeration
 	*/
 
-	virtual bool baseSpeed(char axis, double radSec);
+	bool baseSpeed(char axis, double radSec) override;
 
 	/** Query velocity to which start and finish
 	*	the (de/a)celeration
 	*/
 
-	virtual bool baseSpeedQ(char axis, double& radSec);
+	bool baseSpeedQ(char axis, double& radSec) override;
 
 	/** Specification of velocity upper limit */
 
-	virtual bool upperSpeed(char axis, double radSec);
+	bool upperSpeed(char axis, double radSec) override;
 
 	/** Query velocity upper limit */
 
-	virtual bool upperSpeedQ(char axis, double& radSec);
+	bool upperSpeedQ(char axis, double& radSec) override;
 
 	/** Specification of velocity lower limit */
 
-	virtual bool lowerSpeed(char axis, double radSec);
+	bool lowerSpeed(char axis, double radSec) override;
 
 	/** Query velocity lower limit */
 
-	virtual bool lowerSpeedQ(char axis, double& radSec);
+	bool lowerSpeedQ(char axis, double& radSec) override;
 
 	/** Reset PTU to initial state */
 
-	virtual bool reset(void);
+	bool reset(void) override;
 
 	/** Save or restart default values */
 
-	virtual bool save(void);
+	bool save(void) override;
 
 	/** Restore default values */
 
-	virtual bool restoreDefaults(void);
+	bool restoreDefaults(void) override;
 
 	/** Restore factory default values */
 
-	virtual bool restoreFactoryDefaults(void);
+	bool restoreFactoryDefaults(void) override;
 
 	/** Version and CopyRights */
 
-	virtual bool version(char* nVersion);
+	bool version(char* nVersion) override;
 
 	/** Number of version */
 
-	virtual void nversion(double& nVersion);
+	void nversion(double& nVersion) override;
 
 	/** Query power mode */
 
-	virtual bool powerModeQ(bool transit, char& mode);
+	bool powerModeQ(bool transit, char& mode) override;
 
 	/** Specification of power mode */
 
-	virtual bool powerMode(bool transit, char mode);
+	bool powerMode(bool transit, char mode) override;
 
 	/** Check if ptu is moving */
 
-	virtual double status(double& rad)
+	double status(double& rad) override
 	{
 		MRPT_UNUSED_PARAM(rad);
 		return 1;
@@ -199,11 +199,11 @@ class CPtuDPerception : public CPtuBase
 
 	/** Set limits of movement */
 
-	virtual bool setLimits(char axis, double& l, double& u);
+	bool setLimits(char axis, double& l, double& u) override;
 
 	/* Change motion direction */
 
-	virtual bool changeMotionDir();
+	bool changeMotionDir() override;
 
 	/**************************** State Queries ********************/
 
@@ -225,7 +225,7 @@ class CPtuDPerception : public CPtuBase
 	*   \endcode
 	**/
 
-	virtual int checkErrors();
+	int checkErrors() override;
 
 	inline bool noError() { return nError == 1; }
 	inline bool comError() { return (nError % CPtuDPerception::ComError) == 0; }
@@ -272,32 +272,32 @@ class CPtuDPerception : public CPtuBase
 
 	/** Clear errors **/
 
-	virtual void clearErrors() { nError = NoError; }
+	void clearErrors() override { nError = NoError; }
 	/*************************** Other member methods *****************/
 
    public:
 	/** PTU and serial port initialization */
 
-	virtual bool init(const std::string& port);
+	bool init(const std::string& port) override;
 
 	/** Close Connection with serial port */
 
-	virtual void close();
+	void close() override;
 
 	/** To obtains the mistake for use discrete values when the movement
 	*	is expressed in radians. Parameters are the absolute position in
 	*	radians and the axis desired
 	*/
 
-	virtual double radError(char axis, double nRadMoved);
+	double radError(char axis, double nRadMoved) override;
 
 	/**  To obtain the discrete value for a number of radians */
 
-	virtual long radToPos(char axis, double nRad);
+	long radToPos(char axis, double nRad) override;
 
 	/** To obtain the number of radians for a discrete value */
 
-	virtual double posToRad(char axis, long nPos);
+	double posToRad(char axis, long nPos) override;
 
 	/** Performs a scan in the axis indicated and whit the precision desired. \n
 	*		\param <axis> {Pan or Till} \n
@@ -307,12 +307,12 @@ class CPtuDPerception : public CPtuBase
 	*		\param <radPre> {radians precision for the scan}
 	*/
 
-	virtual bool scan(
-		char axis, int wait, float initial, float final, double radPre);
+	bool scan(
+		char axis, int wait, float initial, float final, double radPre) override;
 
 	/** Query verbose mode */
 
-	virtual bool verboseQ(bool& modo);
+	bool verboseQ(bool& modo) override;
 
 	/** Set verbose. \n
 	*	\conde
@@ -325,11 +325,11 @@ class CPtuDPerception : public CPtuBase
 	*	\endcode
 	*/
 
-	virtual bool verbose(bool set);
+	bool verbose(bool set) override;
 
 	/** Query echo mode */
 
-	virtual bool echoModeQ(bool& mode);
+	bool echoModeQ(bool& mode) override;
 
 	/** Enable/Disable echo response with command. \n
 	*	\code
@@ -340,32 +340,32 @@ class CPtuDPerception : public CPtuBase
 	*	\endcode
 	*/
 
-	virtual bool echoMode(bool mode);
+	bool echoMode(bool mode) override;
 
 	/** Query the pan and tilt resolution per position moved
 	*	and initialize local atributes
 	*/
 
-	virtual bool resolution(void);
+	bool resolution(void) override;
 
 	/*************************** Methods for internal use ****************/
 
    private:
 	/** To transmition commands to the PTU */
 
-	virtual bool transmit(const char* command);
+	bool transmit(const char* command) override;
 
 	/** To receive the responseof the PTU */
 
-	virtual bool receive(const char* command, char* response);
+	bool receive(const char* command, char* response) override;
 
 	/** Used to obtains a number of radians */
 
-	virtual bool radQuerry(char axis, char command, double& nRad);
+	bool radQuerry(char axis, char command, double& nRad) override;
 
 	/** Method used for asign a number of radians with a command */
 
-	virtual bool radAsign(char axis, char command, double nRad);
+	bool radAsign(char axis, char command, double nRad) override;
 
 	/** Convert string to double */
 

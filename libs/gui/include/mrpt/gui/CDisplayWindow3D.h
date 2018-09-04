@@ -163,7 +163,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 		unsigned int initialWindowHeight = 300);
 
 	/** Destructor */
-	virtual ~CDisplayWindow3D();
+	~CDisplayWindow3D() override;
 
 	/** Gets a reference to the smart shared pointer that holds the internal
 	 * scene (carefuly read introduction in gui::CDisplayWindow3D before use!)
@@ -239,10 +239,10 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	bool getLastMousePositionRay(mrpt::math::TLine3D& ray) const;
 	/** Gets the last x,y pixel coordinates of the mouse. \return False if the
 	 * window is closed. \sa getLastMousePositionRay */
-	virtual bool getLastMousePosition(int& x, int& y) const override;
+	bool getLastMousePosition(int& x, int& y) const override;
 	/** Set cursor style to default (cursorIsCross=false) or to a cross
 	 * (cursorIsCross=true) \sa getLastMousePositionRay */
-	virtual void setCursorCross(bool cursorIsCross) override;
+	void setCursorCross(bool cursorIsCross) override;
 
 	/** Start to save rendered images to disk.
 	  *  Images will be saved independently as png files, depending on
@@ -409,7 +409,7 @@ class mrptEvent3DWindowGrabImageFile : public mrpt::system::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */
-	virtual void do_nothing() override {}
+	void do_nothing() override {}
    public:
 	inline mrptEvent3DWindowGrabImageFile(
 		CDisplayWindow3D* obj, const std::string& _img_file)

@@ -114,7 +114,7 @@ class CPointsMap : public CMetricMap,
 	/** Ctor */
 	CPointsMap();
 	/** Virtual destructor. */
-	virtual ~CPointsMap();
+	~CPointsMap() override;
 
 	// --------------------------------------------
 	/** @name Pure virtual interfaces to be implemented by any class derived
@@ -188,7 +188,7 @@ class CPointsMap : public CMetricMap,
 	/** Returns the square distance from the 2D point (x0,y0) to the closest
 	 * correspondence in the map.
 	 */
-	virtual float squareDistanceToClosestCorrespondence(
+	float squareDistanceToClosestCorrespondence(
 		float x0, float y0) const override;
 
 	inline float squareDistanceToClosestCorrespondenceT(
@@ -265,7 +265,7 @@ class CPointsMap : public CMetricMap,
 		/** Initilization of default parameters
 		 */
 		TLikelihoodOptions();
-		virtual ~TLikelihoodOptions() {}
+		~TLikelihoodOptions() override {}
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
@@ -704,7 +704,7 @@ class CPointsMap : public CMetricMap,
 	void applyDeletionMask(const std::vector<bool>& mask);
 
 	// See docs in base class.
-	virtual void determineMatching2D(
+	void determineMatching2D(
 		const mrpt::maps::CMetricMap* otherMap,
 		const mrpt::poses::CPose2D& otherMapPose,
 		mrpt::tfest::TMatchingPairList& correspondences,
@@ -712,7 +712,7 @@ class CPointsMap : public CMetricMap,
 		TMatchingExtraResults& extraResults) const override;
 
 	// See docs in base class
-	virtual void determineMatching3D(
+	void determineMatching3D(
 		const mrpt::maps::CMetricMap* otherMap,
 		const mrpt::poses::CPose3D& otherMapPose,
 		mrpt::tfest::TMatchingPairList& correspondences,
@@ -848,26 +848,26 @@ class CPointsMap : public CMetricMap,
 
 	/** Returns true if the map is empty/no observation has been inserted.
 	 */
-	virtual bool isEmpty() const override;
+	bool isEmpty() const override;
 
 	/** STL-like method to check whether the map is empty: */
 	inline bool empty() const { return isEmpty(); }
 	/** Returns a 3D object representing the map.
 	 *  The color of the points is controlled by renderOptions
 	 */
-	virtual void getAs3DObject(
+	void getAs3DObject(
 		mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
 
 	/** If the map is a simple points map or it's a multi-metric map that
 	 * contains EXACTLY one simple points map, return it.
 	 * Otherwise, return NULL
 	 */
-	virtual const mrpt::maps::CSimplePointsMap* getAsSimplePointsMap()
+	const mrpt::maps::CSimplePointsMap* getAsSimplePointsMap()
 		const override
 	{
 		return nullptr;
 	}
-	virtual mrpt::maps::CSimplePointsMap* getAsSimplePointsMap() override
+	mrpt::maps::CSimplePointsMap* getAsSimplePointsMap() override
 	{
 		return nullptr;
 	}
@@ -958,7 +958,7 @@ class CPointsMap : public CMetricMap,
 	/** @} */
 
 	// See docs in base class
-	virtual double internal_computeObservationLikelihood(
+	double internal_computeObservationLikelihood(
 		const mrpt::obs::CObservation* obs,
 		const mrpt::poses::CPose3D& takenFrom) override;
 
@@ -1127,7 +1127,7 @@ class CPointsMap : public CMetricMap,
 		@{ */
 	/** In a base class, reserve memory to prepare subsequent calls to
 	 * PLY_import_set_face */
-	virtual void PLY_import_set_face_count(const size_t N) override
+	void PLY_import_set_face_count(const size_t N) override
 	{
 		MRPT_UNUSED_PARAM(N);
 	}
@@ -1137,7 +1137,7 @@ class CPointsMap : public CMetricMap,
 	 *  \param pt_color Will be nullptr if the loaded file does not provide
 	 * color info.
 	 */
-	virtual void PLY_import_set_vertex(
+	void PLY_import_set_vertex(
 		const size_t idx, const mrpt::math::TPoint3Df& pt,
 		const mrpt::img::TColorf* pt_color = nullptr) override;
 	/** @} */
@@ -1146,7 +1146,7 @@ class CPointsMap : public CMetricMap,
 		@{ */
 	size_t PLY_export_get_vertex_count() const override;
 	size_t PLY_export_get_face_count() const override { return 0; }
-	virtual void PLY_export_get_vertex(
+	void PLY_export_get_vertex(
 		const size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
 		mrpt::img::TColorf& pt_color) const override;
 	/** @} */

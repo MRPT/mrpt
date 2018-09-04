@@ -48,7 +48,7 @@ class COpenGLStandardObject : public CRenderizableDisplayList
 	  * Render.
 	  * \sa mrpt::opengl::CRenderizable
 	  */
-	virtual void render_dl() const override;
+	void render_dl() const override;
 	/** Evaluates the bounding box of this object (including possible children)
 	 * in the coordinate frame of the object parent. */
 	void getBoundingBox(
@@ -142,7 +142,7 @@ class COpenGLStandardObject : public CRenderizableDisplayList
 	/**
 	  * Destructor.
 	  */
-	virtual ~COpenGLStandardObject() {}
+	~COpenGLStandardObject() override {}
 };
 }
 

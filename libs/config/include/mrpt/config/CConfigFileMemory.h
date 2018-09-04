@@ -36,7 +36,7 @@ class CConfigFileMemory : public CConfigFileBase
 	/** Constructor and initialize from string with the whole "config file" */
 	CConfigFileMemory(const std::string& str);
 	/** dtor */
-	virtual ~CConfigFileMemory();
+	~CConfigFileMemory() override;
 
 	/** Changes the contents of the virtual "config file" */
 	void setContent(const std::vector<std::string>& stringList);

@@ -37,7 +37,7 @@ class CPosePDFGrid : public CPosePDF, public CPose2DGridTemplate<double>
 		double phiMax = M_PI);
 
 	/** Destructor */
-	virtual ~CPosePDFGrid();
+	~CPosePDFGrid() override;
 
 	/** Copy operator, translating if necesary (for example, between particles
 	 * and gaussian representations) */

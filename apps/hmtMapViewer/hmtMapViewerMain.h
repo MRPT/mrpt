@@ -36,7 +36,7 @@ class hmtMapViewerFrame : public wxFrame
 {
    public:
 	hmtMapViewerFrame(wxWindow* parent, wxWindowID id = -1);
-	virtual ~hmtMapViewerFrame();
+	~hmtMapViewerFrame() override;
 
 	bool AskForOpenHMTMap(std::string& fil);
 

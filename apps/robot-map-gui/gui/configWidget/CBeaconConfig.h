@@ -23,12 +23,12 @@ class CBeaconConfig : public CBaseConfig
 {
    public:
 	CBeaconConfig();
-	virtual ~CBeaconConfig() = default;
+	~CBeaconConfig() override = default;
 
-	virtual void updateConfiguration(
+	void updateConfiguration(
 		mrpt::maps::TMetricMapInitializer* options) override;
-	virtual const QString getName() override;
-	virtual TypeOfConfig type() const override;
+	const QString getName() override;
+	TypeOfConfig type() const override;
 
 	void setInsertOpt(
 		const mrpt::maps::CBeaconMap::TInsertionOptions& insertOpt =

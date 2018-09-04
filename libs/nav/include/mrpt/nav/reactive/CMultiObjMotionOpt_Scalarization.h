@@ -51,7 +51,7 @@ class CMultiObjMotionOpt_Scalarization
 
 	TParams parameters;
 
-	virtual void clear() override;
+	void clear() override;
 
    protected:
 	mrpt::expr::CRuntimeCompiledExpression m_expr_scalar_formula;

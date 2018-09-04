@@ -23,8 +23,8 @@ template <class POSE_TYPE>
 class SE_traits_tests : public ::testing::Test
 {
    protected:
-	virtual void SetUp() {}
-	virtual void TearDown() {}
+	void SetUp() override {}
+	void TearDown() override {}
 	using SE_TYPE = mrpt::poses::SE_traits<POSE_TYPE::rotation_dimensions>;
 
 	struct TParams

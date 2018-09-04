@@ -35,7 +35,7 @@ class slamdemoFrame : public wxFrame
 
    public:
 	slamdemoFrame(wxWindow* parent, wxWindowID id = -1);
-	virtual ~slamdemoFrame();
+	~slamdemoFrame() override;
 
    private:
 	//(*Handlers(slamdemoFrame)

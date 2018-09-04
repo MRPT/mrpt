@@ -17,13 +17,13 @@ class ProtocolHandler : public virtual IProtocolHandler
 {
    public:
 	ProtocolHandler();
-	virtual ~ProtocolHandler();
+	~ProtocolHandler() override;
 
-	virtual MessageLocation findMessage(
-		XsMessage& rcv, const XsByteArray& raw) const;
-	virtual int minimumMessageSize() const;
-	virtual int maximumMessageSize() const;
-	virtual int type() const;
+	MessageLocation findMessage(
+		XsMessage& rcv, const XsByteArray& raw) const override;
+	int minimumMessageSize() const override;
+	int maximumMessageSize() const override;
+	int type() const override;
 	static int composeMessage(XsByteArray& raw, const XsMessage& msg);
 
 	XSENS_DISABLE_COPY(ProtocolHandler)

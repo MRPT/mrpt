@@ -24,8 +24,8 @@ template class mrpt::CTraitsTest<CPose3D>;
 class Pose3DTests : public ::testing::Test
 {
    protected:
-	virtual void SetUp() {}
-	virtual void TearDown() {}
+	void SetUp() override {}
+	void TearDown() override {}
 	void test_inverse(
 		double x1, double y1, double z1, double yaw1, double pitch1,
 		double roll1)

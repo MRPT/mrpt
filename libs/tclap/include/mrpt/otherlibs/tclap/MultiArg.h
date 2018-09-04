@@ -287,7 +287,7 @@ class MultiArg : public Arg
 		 * \param i - Pointer the the current argument in the list.
 		 * \param args - Mutable list of strings. Passed from main().
 		 */
-		virtual bool processArg(int* i, std::vector<std::string>& args); 
+		bool processArg(int* i, std::vector<std::string>& args) override; 
 
 		/**
 		 * Returns a vector of type T containing the values parsed from
@@ -299,21 +299,21 @@ class MultiArg : public Arg
 		 * Returns the a short id string.  Used in the usage. 
 		 * \param val - value to be used.
 		 */
-		virtual std::string shortID(const std::string& val="val") const;
+		std::string shortID(const std::string& val="val") const override;
 
 		/**
 		 * Returns the a long id string.  Used in the usage. 
 		 * \param val - value to be used.
 		 */
-		virtual std::string longID(const std::string& val="val") const;
+		std::string longID(const std::string& val="val") const override;
 
 		/**
 		 * Once we've matched the first value, then the arg is no longer
 		 * required.
 		 */
-		virtual bool isRequired() const;
+		bool isRequired() const override;
 
-		virtual bool allowMore();
+		bool allowMore() override;
 
 };
 

@@ -325,13 +325,13 @@ struct CFeatureTracker_KL : public CGenericFeatureTracker
 	}
 
    protected:
-	virtual void trackFeatures_impl(
+	void trackFeatures_impl(
 		const mrpt::img::CImage& old_img, const mrpt::img::CImage& new_img,
 		vision::CFeatureList& inout_featureList) override;
-	virtual void trackFeatures_impl(
+	void trackFeatures_impl(
 		const mrpt::img::CImage& old_img, const mrpt::img::CImage& new_img,
 		TSimpleFeatureList& inout_featureList) override;
-	virtual void trackFeatures_impl(
+	void trackFeatures_impl(
 		const mrpt::img::CImage& old_img, const mrpt::img::CImage& new_img,
 		TSimpleFeaturefList& inout_featureList) override;
 

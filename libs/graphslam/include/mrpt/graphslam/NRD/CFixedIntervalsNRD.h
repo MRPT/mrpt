@@ -91,11 +91,11 @@ class CFixedIntervalsNRD
 	/**\}*/
 
 	CFixedIntervalsNRD();
-	~CFixedIntervalsNRD()=default;
+	~CFixedIntervalsNRD() override =default;
 
-	void loadParams(const std::string& source_fname);
-	void printParams() const;
-	void getDescriptiveReport(std::string* report_str) const;
+	void loadParams(const std::string& source_fname) override;
+	void printParams() const override;
+	void getDescriptiveReport(std::string* report_str) const override;
 
 	/**\brief Method makes use of the CActionCollection/CObservation to update
 	 * the
@@ -106,7 +106,7 @@ class CFixedIntervalsNRD
 	bool updateState(
 		mrpt::obs::CActionCollection::Ptr action,
 		mrpt::obs::CSensoryFrame::Ptr observations,
-		mrpt::obs::CObservation::Ptr observation);
+		mrpt::obs::CObservation::Ptr observation) override;
 
 	/**\brief Parameters structure for managing the relevant to the decider
 	 * variables in a compact manner
@@ -115,12 +115,12 @@ class CFixedIntervalsNRD
 	{
 	   public:
 		TParams()=default;
-		~TParams()=default;
+		~TParams() override =default;
 
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
-			const std::string& section);
-		void dumpToTextStream(std::ostream& out) const;
+			const std::string& section) override;
+		void dumpToTextStream(std::ostream& out) const override;
 		/**\brief Return a string with the configuration parameters
 		 */
 		void getAsString(std::string* params_out) const;
@@ -143,7 +143,7 @@ protected:
 	 * \return True on successful registration.
 	 */
 	/**\{ */
-	bool checkRegistrationCondition();
+	bool checkRegistrationCondition() override;
 	bool checkRegistrationCondition(
 		const mrpt::poses::CPose2D& p1, const mrpt::poses::CPose2D& p2) const;
 	bool checkRegistrationCondition(

@@ -117,7 +117,7 @@ class CLandmark : public mrpt::serialization::CSerializable
 
 	/** Virtual destructor
 	  */
-	virtual ~CLandmark();
+	~CLandmark() override;
 
    protected:
 	/** Auxiliary variable

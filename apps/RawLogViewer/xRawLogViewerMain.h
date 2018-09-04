@@ -90,7 +90,7 @@ class wxStaticBitmapPopup : public wxStaticBitmap
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize, int flags = 0,
 		const wxString& name = wxT(""));
-	~wxStaticBitmapPopup();
+	~wxStaticBitmapPopup() override;
 
 	void OnShowPopupMenu(wxMouseEvent& event);
 
@@ -111,8 +111,8 @@ class wxStaticBitmapPopup : public wxStaticBitmap
 class MyArtProvider : public wxArtProvider
 {
    protected:
-	virtual wxBitmap CreateBitmap(
-		const wxArtID& id, const wxArtClient& client, const wxSize& size);
+	wxBitmap CreateBitmap(
+		const wxArtID& id, const wxArtClient& client, const wxSize& size) override;
 };
 
 // The "custom class" mpWindow, from the wxMathPlot libray by David Schalig
@@ -135,7 +135,7 @@ class xRawLogViewerFrame : public wxFrame
 
    public:
 	xRawLogViewerFrame(wxWindow* parent, wxWindowID id = -1);
-	virtual ~xRawLogViewerFrame();
+	~xRawLogViewerFrame() override;
 
 	bool AskForOpenRawlog(std::string& fil);
 	bool AskForSaveRawlog(std::string& fil);

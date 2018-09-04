@@ -250,11 +250,11 @@ class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
 		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& section);
+		const std::string& section) override;
 
    public:
 	CVelodyneScanner();
-	virtual ~CVelodyneScanner();
+	~CVelodyneScanner() override;
 
 	/** @name Change configuration parameters; to be called BEFORE initialize();
 	 * see above for the list of parameters and their meaning
@@ -367,7 +367,7 @@ class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
 		mrpt::obs::CObservationGPS::Ptr& outGPS);
 
 	// See docs in parent class
-	void doProcess();
+	void doProcess() override;
 
 	/** Tries to initialize the sensor driver, after setting all the parameters
 	 * with a call to loadConfig.
@@ -376,7 +376,7 @@ class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
 	 *  \exception This method must throw an exception with a descriptive
 	 * message if some critical error is found.
 	 */
-	virtual void initialize();
+	void initialize() override;
 
 	/** Close the UDP sockets set-up in \a initialize(). This is called
 	 * automatically upon destruction */

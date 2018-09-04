@@ -126,7 +126,7 @@ class CBox : public CRenderizableDisplayList
 		float lineWidth = 1.0);
 
 	/** Destructor  */
-	virtual ~CBox() {}
+	~CBox() override {}
    private:
 };
 }

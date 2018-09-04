@@ -32,7 +32,7 @@ class gridmapSimulFrame : public wxFrame
 {
    public:
 	gridmapSimulFrame(wxWindow* parent, wxWindowID id = -1);
-	virtual ~gridmapSimulFrame();
+	~gridmapSimulFrame() override;
 
    private:
 	//(*Handlers(gridmapSimulFrame)

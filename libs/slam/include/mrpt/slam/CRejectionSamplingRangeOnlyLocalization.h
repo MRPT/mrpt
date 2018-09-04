@@ -42,7 +42,7 @@ class CRejectionSamplingRangeOnlyLocalization
 
 	/** Destructor
 	  */
-	virtual ~CRejectionSamplingRangeOnlyLocalization() {}
+	~CRejectionSamplingRangeOnlyLocalization() override {}
 	/** The parameters used in the generation of random samples:
 	  * \param beaconsMap The map containing the N beacons (indexed by their
 	 * "beacon ID"s). Only the mean 3D position of the beacons is used, the
@@ -70,13 +70,13 @@ class CRejectionSamplingRangeOnlyLocalization
    protected:
 	/** Generates one sample, drawing from some proposal distribution.
 	  */
-	void RS_drawFromProposal(mrpt::poses::CPose2D& outSample);
+	void RS_drawFromProposal(mrpt::poses::CPose2D& outSample) override;
 
 	/** Returns the NORMALIZED observation likelihood (linear, not
 	 * exponential!!!) at a given point of the state space (values in the range
 	 * [0,1]).
 	  */
-	double RS_observationLikelihood(const mrpt::poses::CPose2D& x);
+	double RS_observationLikelihood(const mrpt::poses::CPose2D& x) override;
 
 	/** Z coordinate of the robot.
 	  */

@@ -43,7 +43,7 @@ class CRegistrationDeciderOrOptimizer : public mrpt::system::COutputLogger
 
 public:
 	CRegistrationDeciderOrOptimizer()=default;
-	virtual ~CRegistrationDeciderOrOptimizer()=default;
+	~CRegistrationDeciderOrOptimizer() override =default;
 	/**\brief Generic method for fetching the incremental action-observations
 	 * (or
 	 * observation-only) measurements

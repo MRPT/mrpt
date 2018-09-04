@@ -36,7 +36,7 @@ class CFileInputStream : public CStream
 	CFileInputStream(const CFileInputStream&) = delete;
 	CFileInputStream& operator=(const CFileInputStream&) = delete;
 
-	virtual ~CFileInputStream();
+	~CFileInputStream() override;
 
 	/** Open a file for reading
 	 * \param fileName The file to be open in this stream

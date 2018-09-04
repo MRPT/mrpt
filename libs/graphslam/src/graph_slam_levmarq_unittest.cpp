@@ -42,8 +42,8 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
 					public ::testing::Test
 {
    protected:
-	virtual void SetUp() {}
-	virtual void TearDown() {}
+	void SetUp() override {}
+	void TearDown() override {}
 	void test_ring_path(const char* className)
 	{
 		// This is the initial input graph (make a copy for later use):

@@ -22,12 +22,12 @@ class CPointsConfig : public CBaseConfig
 {
    public:
 	CPointsConfig();
-	virtual ~CPointsConfig();
+	~CPointsConfig() override;
 
-	virtual const QString getName() override;
-	virtual void updateConfiguration(
+	const QString getName() override;
+	void updateConfiguration(
 		mrpt::maps::TMetricMapInitializer* options) override;
-	virtual TypeOfConfig type() const override;
+	TypeOfConfig type() const override;
 
 	void setInsertOpt(
 		const mrpt::maps::CSimplePointsMap::TInsertionOptions& insertOpt =

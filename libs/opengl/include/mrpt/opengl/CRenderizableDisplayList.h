@@ -69,7 +69,7 @@ class CRenderizableDisplayList : public mrpt::opengl::CRenderizable
 
    public:
 	CRenderizableDisplayList();
-	virtual ~CRenderizableDisplayList();
+	~CRenderizableDisplayList() override;
 
 	/** Render the object, regenerating the display list if needed, otherwise
 	 * just calling it. */

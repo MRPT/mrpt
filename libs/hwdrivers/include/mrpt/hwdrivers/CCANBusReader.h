@@ -107,14 +107,14 @@ class CCANBusReader : public mrpt::system::COutputLogger, public CGenericSensor
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
 		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection);
+		const std::string& iniSection) override;
 
    public:
 	/** Constructor  */
 	CCANBusReader();
 
 	/** Destructor  */
-	virtual ~CCANBusReader();
+	~CCANBusReader() override;
 
 	/** Changes the serial port to connect to (call prior to 'doProcess'), for
 	 * example "COM1" or "ttyS0".
@@ -164,9 +164,9 @@ class CCANBusReader : public mrpt::system::COutputLogger, public CGenericSensor
 	  *  In this class this method does nothing, since the communications are
 	 * setup at the first try from "doProcess" or "doProcessSimple".
 	  */
-	void initialize();
+	void initialize() override;
 
-	void doProcess();
+	void doProcess() override;
 
 };  // End of class
 

@@ -34,7 +34,7 @@ class CVehicleVelCmd_Holo : public CVehicleVelCmd
 	CVehicleVelCmd_Holo();
 	CVehicleVelCmd_Holo(
 		double vel, double dir_local, double ramp_time, double rot_speed);
-	virtual ~CVehicleVelCmd_Holo();
+	~CVehicleVelCmd_Holo() override;
 	size_t getVelCmdLength() const override;
 	std::string getVelCmdDescription(const int index) const override;
 	double getVelCmdElement(const int index) const override;

@@ -25,7 +25,7 @@ class CVehicleVelCmd_DiffDriven : public CVehicleVelCmd
 	/** Angular velocity (rad/s) */
 	double ang_vel{.0};
 
-	virtual ~CVehicleVelCmd_DiffDriven();
+	~CVehicleVelCmd_DiffDriven() override;
 	size_t getVelCmdLength() const override;
 	std::string getVelCmdDescription(const int index) const override;
 	double getVelCmdElement(const int index) const override;

@@ -45,13 +45,13 @@ class CMRVisualizer
 
 	CMRVisualizer(const GRAPH_T& graph_in);
 
-	~CMRVisualizer();
+	~CMRVisualizer() override;
 	void drawNodePoints(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::system::TParametersDouble* viz_params = NULL) const;
+		const mrpt::system::TParametersDouble* viz_params = NULL) const override;
 	void drawEdges(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::system::TParametersDouble* viz_params = NULL) const;
+		const mrpt::system::TParametersDouble* viz_params = NULL) const override;
 
    private:
 };

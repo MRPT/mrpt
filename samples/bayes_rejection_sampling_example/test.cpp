@@ -27,7 +27,7 @@ double SIGMA = 0.05;
 class CMyRejectionSampling : public CRejectionSamplingCapable<CPose2D>
 {
    protected:
-	void RS_drawFromProposal(CPose2D& outSample)
+	void RS_drawFromProposal(CPose2D& outSample) override
 	{
 		double ang = getRandomGenerator().drawUniform(-M_PI, M_PI);
 		double R = getRandomGenerator().drawGaussian1D(1.0, SIGMA);
@@ -39,7 +39,7 @@ class CMyRejectionSampling : public CRejectionSamplingCapable<CPose2D>
 	/** Returns the NORMALIZED observation likelihood at a given point of the
 	 * state space (values in the range [0,1]).
 	 */
-	double RS_observationLikelihood(const CPose2D& x)
+	double RS_observationLikelihood(const CPose2D& x) override
 	{
 		return exp(
 			-0.5 * square((x.distanceTo(CPoint2D(0, 0)) - 1.0f) / SIGMA));

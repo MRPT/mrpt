@@ -80,7 +80,7 @@ class CClientTCPSocket : public mrpt::io::CStream
 	CClientTCPSocket();
 
 	/** Destructor */
-	~CClientTCPSocket();
+	~CClientTCPSocket() override;
 
 	/** Establishes a connection with a remote part.
 	 * \param remotePartAddress This string can be a host name, like "server"

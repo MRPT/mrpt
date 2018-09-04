@@ -47,7 +47,7 @@ DECLARE_OP_FUNCTION(op_list_images)
 					"list-images: Cannot open output text file.");
 		}
 
-		bool processOneObservation(CObservation::Ptr& obs)
+		bool processOneObservation(CObservation::Ptr& obs) override
 		{
 			const string label_time = format(
 				"%s_%f", obs->sensorLabel.c_str(),

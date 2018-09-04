@@ -31,7 +31,7 @@ class CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
 
 	/** Destructor:
 	  */
-	virtual ~CMetricMapBuilderICP();
+	~CMetricMapBuilderICP() override;
 
 	/** Algorithm configuration params
 	  */

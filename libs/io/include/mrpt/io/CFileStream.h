@@ -58,7 +58,7 @@ class CFileStream : public CStream
 	CFileStream& operator=(const CFileStream&) = delete;
 
 	/** Destructor */
-	virtual ~CFileStream();
+	~CFileStream() override;
 
 	size_t Read(void* Buffer, size_t Count) override;
 	size_t Write(const void* Buffer, size_t Count) override;

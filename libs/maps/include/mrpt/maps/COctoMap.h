@@ -38,9 +38,9 @@ class COctoMap : public COctoMapBase<octomap::OcTree, octomap::OcTreeNode>
 
    public:
 	COctoMap(const double resolution = 0.10);  //!< Default constructor
-	virtual ~COctoMap();  //!< Destructor
+	~COctoMap() override;  //!< Destructor
 
-	virtual void getAsOctoMapVoxels(
+	void getAsOctoMapVoxels(
 		mrpt::opengl::COctoMapVoxels& gl_obj) const override;
 
 	MAP_DEFINITION_START(COctoMap)
@@ -53,7 +53,7 @@ class COctoMap : public COctoMapBase<octomap::OcTree, octomap::OcTreeNode>
 	MAP_DEFINITION_END(COctoMap)
 
 	/** Returns true if the map is empty/no observation has been inserted */
-	virtual bool isEmpty() const override { return size() == 1; }
+	bool isEmpty() const override { return size() == 1; }
 	/** @name Direct access to octomap library methods
 	@{ */
 

@@ -40,7 +40,7 @@ class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 		float y_min = -2, float y_max = 2, float resolution = 0.1);
 
 	/** Destructor */
-	virtual ~CGasConcentrationGridMap2D();
+	~CGasConcentrationGridMap2D() override;
 
 	/** Parameters related with inserting observations into the map:
 	  */
@@ -85,11 +85,11 @@ class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 	} insertionOptions;
 
 	/** Returns a 3D object representing the map */
-	virtual void getAs3DObject(
+	void getAs3DObject(
 		mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
 
 	/** Returns two 3D objects representing the mean and variance maps */
-	virtual void getAs3DObject(
+	void getAs3DObject(
 		mrpt::opengl::CSetOfObjects::Ptr& meanObj,
 		mrpt::opengl::CSetOfObjects::Ptr& varObj) const override;
 
@@ -135,7 +135,7 @@ class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
    protected:
 	/** Get the part of the options common to all CRandomFieldGridMap2D classes
 	 */
-	virtual CRandomFieldGridMap2D::TInsertionOptionsCommon*
+	CRandomFieldGridMap2D::TInsertionOptionsCommon*
 		getCommonInsertOptions() override
 	{
 		return &insertionOptions;

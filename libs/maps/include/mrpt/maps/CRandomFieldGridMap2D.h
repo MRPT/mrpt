@@ -201,13 +201,13 @@ class CRandomFieldGridMap2D
 		double resolution = 0.1);
 
 	/** Destructor */
-	virtual ~CRandomFieldGridMap2D();
+	~CRandomFieldGridMap2D() override;
 
 	/** Returns true if the map is empty/no observation has been inserted (in
 	 * this class it always return false,
 	 * unless redefined otherwise in base classes)
 	 */
-	virtual bool isEmpty() const override;
+	bool isEmpty() const override;
 
 	/** Save the current map as a graphical file (BMP,PNG,...).
 	 * The file format will be derived from the file extension (see
@@ -313,7 +313,7 @@ class CRandomFieldGridMap2D
 
 	/** Changes the size of the grid, maintaining previous contents. \sa setSize
 	 */
-	virtual void resize(
+	void resize(
 		double new_x_min, double new_x_max, double new_y_min, double new_y_max,
 		const TRandomFieldCell& defaultValueNewCells,
 		double additionalMarginMeters = 1.0f) override;
@@ -370,7 +370,7 @@ class CRandomFieldGridMap2D
 
 	/** The implementation in this class just calls all the corresponding method
 	 * of the contained metric maps */
-	virtual void saveMetricMapRepresentationToFile(
+	void saveMetricMapRepresentationToFile(
 		const std::string& filNamePrefix) const override;
 
 	/** Save a matlab ".m" file which represents as 3D surfaces the mean and a
@@ -385,7 +385,7 @@ class CRandomFieldGridMap2D
 	void getAsMatlab3DGraphScript(std::string& out_script) const;
 
 	/** Returns a 3D object representing the map (mean) */
-	virtual void getAs3DObject(
+	void getAs3DObject(
 		mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
 
 	/** Returns two 3D objects representing the mean and variance maps */
@@ -631,7 +631,7 @@ class CRandomFieldGridMap2D
 	void recoverMeanAndCov() const;
 
 	/** Erase all the contents of the map */
-	virtual void internal_clear() override;
+	void internal_clear() override;
 
 	/** Check if two cells of the gridmap (m_map) are connected, based on the
 	 * provided occupancy gridmap*/

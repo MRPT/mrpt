@@ -89,13 +89,13 @@ class CMyGLCanvas : public CWxGLCanvasBase
 	{
 	}
 
-	virtual ~CMyGLCanvas() {}
+	~CMyGLCanvas() override {}
 	// void OnKeyDownCustom( wxKeyEvent& event );
 
-	void OnPreRender();
-	void OnPostRender();
-	void OnPostRenderSwapBuffers(double At, wxPaintDC& dc);
-	void OnRenderError(const wxString& str);
+	void OnPreRender() override;
+	void OnPostRender() override;
+	void OnPostRenderSwapBuffers(double At, wxPaintDC& dc) override;
+	void OnRenderError(const wxString& str) override;
 };
 
 void CMyGLCanvas::OnRenderError(const wxString& str)

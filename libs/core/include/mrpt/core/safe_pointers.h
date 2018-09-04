@@ -74,7 +74,7 @@ struct safe_ptr : safe_ptr_basic<T>
 	safe_ptr() : safe_ptr_basic<T>() {}
 	safe_ptr(const safe_ptr<T>& o) : safe_ptr_basic<T>(o) {}
 	safe_ptr(const T* p) : safe_ptr_basic<T>(p) {}
-	virtual ~safe_ptr() {}
+	~safe_ptr() override {}
 	T& operator*()
 	{
 		ASSERT_(safe_ptr_basic<T>::ptr);

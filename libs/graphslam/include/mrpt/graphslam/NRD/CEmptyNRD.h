@@ -34,13 +34,13 @@ class CEmptyNRD
 	/**\}*/
    public:
 	CEmptyNRD()=default;
-	~CEmptyNRD()=default;
+	~CEmptyNRD() override =default;
 
 	bool updateState(
 		mrpt::obs::CActionCollection::Ptr action,
 		mrpt::obs::CSensoryFrame::Ptr observations,
-		mrpt::obs::CObservation::Ptr observation) { return false; }
-	global_pose_t getCurrentRobotPosEstimation() const { return typename GRAPH_T::global_pose_t(); };
+		mrpt::obs::CObservation::Ptr observation) override { return false; }
+	global_pose_t getCurrentRobotPosEstimation() const override { return typename GRAPH_T::global_pose_t(); };
 
    private:
 	void registerNewNode() { };

@@ -392,7 +392,7 @@ class CVectorField3D : public CRenderizableDisplayList
 		mrpt::math::CMatrixFloat z_vf_ini, mrpt::math::CMatrixFloat x_p_ini,
 		mrpt::math::CMatrixFloat y_p_ini, mrpt::math::CMatrixFloat z_p_ini);
 	/** Private, virtual destructor: only can be deleted from smart pointers. */
-	virtual ~CVectorField3D() {}
+	~CVectorField3D() override {}
 };
 
 }

@@ -27,7 +27,7 @@ class CDialogOptions : public wxDialog
 		wxWindow* parent, wxWindowID id = wxID_ANY,
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize);
-	virtual ~CDialogOptions();
+	~CDialogOptions() override;
 
 	//(*Declarations(CDialogOptions)
 	wxStaticText* StaticText10;

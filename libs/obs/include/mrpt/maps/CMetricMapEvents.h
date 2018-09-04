@@ -29,7 +29,7 @@ class mrptEventMetricMapClear : public mrpt::system::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */
-	virtual void do_nothing() override {}
+	void do_nothing() override {}
    public:
 	inline mrptEventMetricMapClear(const mrpt::maps::CMetricMap* smap)
 		: source_map(smap)
@@ -47,7 +47,7 @@ class mrptEventMetricMapInsert : public mrpt::system::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */
-	virtual void do_nothing() override {}
+	void do_nothing() override {}
    public:
 	inline mrptEventMetricMapInsert(
 		const mrpt::maps::CMetricMap* smap, const mrpt::obs::CObservation* obs,

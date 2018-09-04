@@ -52,15 +52,15 @@ class CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 
 	/** Destructor
 	 */
-	virtual ~CDisplayWindow();
+	~CDisplayWindow() override;
 
 	/** Gets the last x,y pixel coordinates of the mouse. \return False if the
 	 * window is closed. */
-	virtual bool getLastMousePosition(int& x, int& y) const override;
+	bool getLastMousePosition(int& x, int& y) const override;
 
 	/** Set cursor style to default (cursorIsCross=false) or to a cross
 	 * (cursorIsCross=true) */
-	virtual void setCursorCross(bool cursorIsCross) override;
+	void setCursorCross(bool cursorIsCross) override;
 
 	/** Show a given color or grayscale image on the window and print a set of
 	 * points on it.

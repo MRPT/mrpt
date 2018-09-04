@@ -68,7 +68,7 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 	 * exist.
 	 * See full docs in base class
 	 * CParameterizedTrajectoryGenerator::inverseMap_WS2TP() */
-	virtual bool inverseMap_WS2TP(
+	bool inverseMap_WS2TP(
 		double x, double y, int& out_k, double& out_d,
 		double tolerance_dist = 0.10) const override;
 
@@ -76,15 +76,15 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 	 * [1]: angular velocity (rad/s).
 	 * See more docs in
 	 * CParameterizedTrajectoryGenerator::directionToMotionCommand() */
-	virtual mrpt::kinematics::CVehicleVelCmd::Ptr directionToMotionCommand(
+	mrpt::kinematics::CVehicleVelCmd::Ptr directionToMotionCommand(
 		uint16_t k) const override;
-	virtual mrpt::kinematics::CVehicleVelCmd::Ptr
+	mrpt::kinematics::CVehicleVelCmd::Ptr
 		getSupportedKinematicVelocityCommand() const override;
 
 	/** Launches an exception in this class: it is not allowed in numerical
 	 * integration-based PTGs to change the reference distance
 	 * after initialization. */
-	virtual void setRefDistance(const double refDist) override;
+	void setRefDistance(const double refDist) override;
 
 	// Access to PTG paths (see docs in base class)
 	size_t getPathStepCount(uint16_t k) const override;
@@ -102,7 +102,7 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 		double ox, double oy, uint16_t k, double& tp_obstacle_k) const override;
 
 	/** This family of PTGs ignores the dynamic states */
-	virtual void onNewNavDynamicState() override
+	void onNewNavDynamicState() override
 	{
 		// Do nothing.
 	}
@@ -130,14 +130,14 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 	 *
 	 * See docs of derived classes for additional parameters in setParams()
 	 */
-	virtual void loadFromConfigFile(
+	void loadFromConfigFile(
 		const mrpt::config::CConfigFileBase& cfg,
 		const std::string& sSection) override;
-	virtual void saveToConfigFile(
+	void saveToConfigFile(
 		mrpt::config::CConfigFileBase& cfg,
 		const std::string& sSection) const override;
 
-	virtual void loadDefaultParams() override;
+	void loadDefaultParams() override;
 
 	double V_MAX, W_MAX;
 	double turningRadiusReference;
@@ -179,7 +179,7 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 			  m_parent(parent)
 		{
 		}
-		virtual ~CCollisionGrid() {}
+		~CCollisionGrid() override {}
 		/** Save to file, true = OK */
 		bool saveToFile(
 			mrpt::serialization::CArchive* fil,

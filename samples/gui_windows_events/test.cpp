@@ -26,7 +26,7 @@ string myExampleImage(
 class MyObserver : public mrpt::system::CObserver
 {
    protected:
-	void OnEvent(const mrptEvent& e)
+	void OnEvent(const mrptEvent& e) override
 	{
 		if (e.isOfType<mrptEventOnDestroy>())
 			cout << "[MyObserver] Event received: mrptEventOnDestroy\n";

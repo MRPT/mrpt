@@ -105,7 +105,7 @@ DECLARE_OP_FUNCTION(op_camera_params)
 						 << (is_stereo ? "stereo" : "monocular") << "\n";
 		}
 
-		bool processOneObservation(CObservation::Ptr& obs)
+		bool processOneObservation(CObservation::Ptr& obs) override
 		{
 			if (strCmpI(obs->sensorLabel, target_label))
 			{
@@ -130,10 +130,10 @@ DECLARE_OP_FUNCTION(op_camera_params)
 
 		// This method can be reimplemented to save the modified object to an
 		// output stream.
-		virtual void OnPostProcess(
+		void OnPostProcess(
 			mrpt::obs::CActionCollection::Ptr& actions,
 			mrpt::obs::CSensoryFrame::Ptr& SF,
-			mrpt::obs::CObservation::Ptr& obs)
+			mrpt::obs::CObservation::Ptr& obs) override
 		{
 			ASSERT_((actions && SF) || obs);
 			if (actions)

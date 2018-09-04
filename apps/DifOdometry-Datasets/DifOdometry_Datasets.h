@@ -50,7 +50,7 @@ class CDifodoDatasets : public mrpt::vision::CDifodo
 	void loadConfiguration(const mrpt::config::CConfigFileBase& ini);
 
 	/** Load the depth image and the corresponding groundtruth pose */
-	void loadFrame();
+	void loadFrame() override;
 
 	/** Create a file to save the trajectory estimates */
 	void CreateResultsFile();

@@ -101,7 +101,7 @@ class CRawlog : public mrpt::serialization::CSerializable
 	CRawlog();
 
 	/** Destructor: */
-	virtual ~CRawlog();
+	~CRawlog() override;
 
 	/** Clear the sequence of actions/observations. Smart pointers to objects
 	 * previously in the rawlog will remain being valid. */

@@ -81,7 +81,7 @@ class CConsoleRedirector : public std::streambuf
 		}
 	}
 
-	virtual ~CConsoleRedirector()
+	~CConsoleRedirector() override
 	{
 		sync();
 		// Restore normal output:

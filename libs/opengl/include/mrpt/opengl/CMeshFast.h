@@ -257,7 +257,7 @@ class CMeshFast : public CRenderizableDisplayList
 		m_color.B = 150;
 	}
 	/** Private, virtual destructor: only can be deleted from smart pointers */
-	virtual ~CMeshFast() {}
+	~CMeshFast() override {}
 };
 
 }

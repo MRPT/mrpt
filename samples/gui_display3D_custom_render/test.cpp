@@ -34,7 +34,7 @@ struct TMyExtraRenderingStuff : public mrpt::system::CObserver
 	mrpt::system::CTicTac tim_show_start, tim_show_end;
 
 	TMyExtraRenderingStuff() : showing_help(false), hiding_help(false) {}
-	virtual void OnEvent(const mrptEvent& e)
+	void OnEvent(const mrptEvent& e) override
 	{
 		if (e.isOfType<mrptEventGLPreRender>())
 		{

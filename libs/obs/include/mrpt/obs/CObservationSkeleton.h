@@ -51,7 +51,7 @@ class CObservationSkeleton : public CObservation
 
 	/** Destructor
 	*/
-	virtual ~CObservationSkeleton() {}
+	~CObservationSkeleton() override {}
 	/** The pose of the sensor on the robot. */
 	mrpt::poses::CPose3D sensorPose;
 

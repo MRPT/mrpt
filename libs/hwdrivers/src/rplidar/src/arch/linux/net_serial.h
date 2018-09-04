@@ -47,26 +47,26 @@ class raw_serial : public rp::hal::serial_rxtx
 	};
 
 	raw_serial();
-	virtual ~raw_serial();
-	virtual bool bind(
-		const char* portname, uint32_t baudrate, uint32_t flags = 0);
-	virtual bool open();
-	virtual void close();
-	virtual void flush(_u32 flags);
+	~raw_serial() override;
+	bool bind(
+		const char* portname, uint32_t baudrate, uint32_t flags = 0) override;
+	bool open() override;
+	void close() override;
+	void flush(_u32 flags) override;
 
-	virtual int waitfordata(
-		size_t data_count, _u32 timeout = -1, size_t* returned_size = nullptr);
+	int waitfordata(
+		size_t data_count, _u32 timeout = -1, size_t* returned_size = nullptr) override;
 
-	virtual int senddata(const unsigned char* data, size_t size);
-	virtual int recvdata(unsigned char* data, size_t size);
+	int senddata(const unsigned char* data, size_t size) override;
+	int recvdata(unsigned char* data, size_t size) override;
 
-	virtual int waitforsent(_u32 timeout = -1, size_t* returned_size = nullptr);
-	virtual int waitforrecv(_u32 timeout = -1, size_t* returned_size = nullptr);
+	int waitforsent(_u32 timeout = -1, size_t* returned_size = nullptr) override;
+	int waitforrecv(_u32 timeout = -1, size_t* returned_size = nullptr) override;
 
-	virtual size_t rxqueue_count();
+	size_t rxqueue_count() override;
 
-	virtual void setDTR();
-	virtual void clearDTR();
+	void setDTR() override;
+	void clearDTR() override;
 
 	_u32 getTermBaudBitmap(_u32 baud);
 

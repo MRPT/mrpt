@@ -29,7 +29,7 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
 	Q_OBJECT
    public:
 	CGlWidget(bool is2D, QWidget* parent = nullptr);
-	virtual ~CGlWidget();
+	~CGlWidget() override;
 
 	void fillMap(const mrpt::opengl::CSetOfObjects::Ptr& renderizableMap);
 	void setDocument(CDocument* doc);
@@ -43,10 +43,10 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
 	void setZoom(float zoom);
 	float getZoom() const;
 
-	virtual void setCameraParams(const CamaraParams& params) override;
+	void setCameraParams(const CamaraParams& params) override;
 
-	virtual void setAzimuthDegrees(float ang) override;
-	virtual void setElevationDegrees(float ang) override;
+	void setAzimuthDegrees(float ang) override;
+	void setElevationDegrees(float ang) override;
 
 	void setBackgroundColor(float r, float g, float b, float a);
 	void setGridColor(double r, double g, double b, double a);
@@ -75,16 +75,16 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
 	void showPoseDirection(size_t idx, double yaw, double pitch, double roll);
 
    protected:
-	virtual void resizeGL(int width, int height) override;
-	virtual void updateCamerasParams() override;
-	virtual void insertToMap(
+	void resizeGL(int width, int height) override;
+	void updateCamerasParams() override;
+	void insertToMap(
 		const mrpt::opengl::CRenderizable::Ptr& newObject) override;
-	virtual void removeFromMap(
+	void removeFromMap(
 		const mrpt::opengl::CRenderizable::Ptr& newObject) override;
-	virtual void mouseMoveEvent(QMouseEvent* event) override;
-	virtual void mousePressEvent(QMouseEvent* event) override;
-	virtual void mouseReleaseEvent(QMouseEvent* event) override;
-	virtual void keyPressEvent(QKeyEvent* event) override;
+	void mouseMoveEvent(QMouseEvent* event) override;
+	void mousePressEvent(QMouseEvent* event) override;
+	void mouseReleaseEvent(QMouseEvent* event) override;
+	void keyPressEvent(QKeyEvent* event) override;
 
    private:
 	mrpt::img::TColorf typeToColor(int type) const;

@@ -37,7 +37,7 @@ class CObservationCANBusJ1939 : public CObservation
 
 	/** Destructor
 	*/
-	virtual ~CObservationCANBusJ1939() {}
+	~CObservationCANBusJ1939() override {}
 	/** The Parameter Group Number within this frame */
 	uint16_t m_pgn;
 

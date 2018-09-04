@@ -56,7 +56,7 @@ class ptgConfiguratorframe : public wxFrame
 {
    public:
 	ptgConfiguratorframe(wxWindow* parent, wxWindowID id = -1);
-	virtual ~ptgConfiguratorframe();
+	~ptgConfiguratorframe() override;
 
    private:
 	//(*Handlers(ptgConfiguratorframe)

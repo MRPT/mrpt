@@ -24,8 +24,8 @@ template class mrpt::CTraitsTest<CPosePDFGaussian>;
 class PosePDFGaussTests : public ::testing::Test
 {
    protected:
-	virtual void SetUp() {}
-	virtual void TearDown() {}
+	void SetUp() override {}
+	void TearDown() override {}
 	static CPosePDFGaussian generateRandomPose2DPDF(
 		double x, double y, double phi, double std_scale)
 	{

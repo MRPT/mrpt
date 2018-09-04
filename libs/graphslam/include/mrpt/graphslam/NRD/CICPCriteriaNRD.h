@@ -108,11 +108,11 @@ class CICPCriteriaNRD
 	/**\}*/
 
 	CICPCriteriaNRD();
-	~CICPCriteriaNRD()=default;
+	~CICPCriteriaNRD() override =default;
 
-	void loadParams(const std::string& source_fname);
-	void printParams() const;
-	void getDescriptiveReport(std::string* report_str) const;
+	void loadParams(const std::string& source_fname) override;
+	void printParams() const override;
+	void getDescriptiveReport(std::string* report_str) const override;
 
 	/**\brief Update the decider state using the latest dataset measurements.
 	 *
@@ -130,7 +130,7 @@ class CICPCriteriaNRD
 	bool updateState(
 		mrpt::obs::CActionCollection::Ptr action,
 		mrpt::obs::CSensoryFrame::Ptr observations,
-		mrpt::obs::CObservation::Ptr observation);
+		mrpt::obs::CObservation::Ptr observation) override;
 	/**\brief Specialized updateState method used solely when dealing with
 	 * 2DRangeScan information.
 	 * \sa updateState3D
@@ -146,14 +146,14 @@ class CICPCriteriaNRD
 	{
 	public:
 		TParams(decider_t& d);
-		~TParams()=default;
+		~TParams() override =default;
 
 		decider_t& decider; /**< Reference to outer decider class */
 
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
-			const std::string& section);
-		void dumpToTextStream(std::ostream& out) const;
+			const std::string& section) override;
+		void dumpToTextStream(std::ostream& out) const override;
 		/** Maximum distance for new node registration */
 		double registration_max_distance;
  		/** Maximum angle difference for new node registration */
@@ -164,7 +164,7 @@ class CICPCriteriaNRD
 
 protected:
 
-	bool checkRegistrationCondition();
+	bool checkRegistrationCondition() override;
 	/**\brief Specialized checkRegistrationCondtion method used solely when
 	 * dealing with 2DRangeScan information
 	 * \sa checkRegistrationCondition3D

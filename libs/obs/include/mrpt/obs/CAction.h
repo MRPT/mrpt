@@ -30,7 +30,7 @@ class CAction : public mrpt::serialization::CSerializable
 
 	/** Default ctor */
 	CAction() {}
-	virtual ~CAction() {}
+	~CAction() override {}
 
 	/** The associated time-stamp.*/
 	mrpt::system::TTimeStamp timestamp{INVALID_TIMESTAMP};

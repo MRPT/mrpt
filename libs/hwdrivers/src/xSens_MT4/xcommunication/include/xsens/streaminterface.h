@@ -23,12 +23,12 @@ class StreamInterface : public IoInterface
    public:
 	/*! \brief Destroy the stream interface
 	*/
-	inline ~StreamInterface() {}
+	inline ~StreamInterface() override {}
 	/*! \brief Set the read/write timeout to \a ms
 		A timeout of 0 means non-blocking operation of writeData() and
 	   readData().
 	*/
-	virtual XsResultValue setTimeout(uint32_t ms) = 0;
+	XsResultValue setTimeout(uint32_t ms) override = 0;
 
 	/*! \brief The timeout used for read/write operations
 	*/

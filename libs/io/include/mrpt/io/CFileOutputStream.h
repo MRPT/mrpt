@@ -55,7 +55,7 @@ class CFileOutputStream : public CStream
 	void close();
 
 	/** Destructor */
-	virtual ~CFileOutputStream();
+	~CFileOutputStream() override;
 
 	/** Returns true if the file was open without errors. */
 	bool fileOpenCorrectly() const;

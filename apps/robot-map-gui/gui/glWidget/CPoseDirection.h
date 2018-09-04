@@ -19,7 +19,7 @@ class CPoseDirection : public QWidget
 	Q_OBJECT
    public:
 	CPoseDirection(QWidget* parent = nullptr);
-	virtual ~CPoseDirection();
+	~CPoseDirection() override;
 	void setDirection(double yaw, double pitch, double roll);
 	double getYaw() const;
 	double getPitch() const;

@@ -2612,7 +2612,7 @@ class CMyTips : public wxTipProvider
 {
    public:
 	CMyTips(size_t n) : wxTipProvider(n) {}
-	virtual wxString GetTip()
+	wxString GetTip() override
 	{
 		size_t idx = m_currentTip++;
 

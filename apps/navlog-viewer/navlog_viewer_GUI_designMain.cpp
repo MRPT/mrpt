@@ -118,8 +118,8 @@ END_EVENT_TABLE()
 class MyArtProvider : public wxArtProvider
 {
    protected:
-	virtual wxBitmap CreateBitmap(
-		const wxArtID& id, const wxArtClient& client, const wxSize& size)
+	wxBitmap CreateBitmap(
+		const wxArtID& id, const wxArtClient& client, const wxSize& size) override
 	{
 		if (id == wxART_MAKE_ART_ID(MAIN_ICON)) return wxBitmap(main_icon_xpm);
 		if (id == wxART_MAKE_ART_ID(IMG_MRPT_LOGO))

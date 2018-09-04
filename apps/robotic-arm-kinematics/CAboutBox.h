@@ -24,7 +24,7 @@ class CAboutBox : public wxDialog
 {
    public:
 	CAboutBox(wxWindow* parent, wxWindowID id = -1);
-	virtual ~CAboutBox();
+	~CAboutBox() override;
 
 	//(*Identifiers(CAboutBox)
 	static const long ID_STATICTEXT1;

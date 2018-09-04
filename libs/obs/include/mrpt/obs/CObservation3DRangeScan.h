@@ -243,7 +243,7 @@ class CObservation3DRangeScan : public CObservation
 	/** Default constructor */
 	CObservation3DRangeScan();
 	/** Destructor */
-	virtual ~CObservation3DRangeScan();
+	~CObservation3DRangeScan() override;
 
 	/** @name Delayed-load manual control methods.
 		@{ */
@@ -256,12 +256,12 @@ class CObservation3DRangeScan : public CObservation
 	 * stored data fields, calling this method has no effects.
 	 * \sa unload
 	 */
-	virtual void load() const override;
+	void load() const override;
 	/** Unload all images, for the case they being delayed-load images stored in
 	 * external files (othewise, has no effect).
 	 * \sa load
 	 */
-	virtual void unload() override;
+	void unload() override;
 	/** @} */
 
 	/** Project the RGB+D images into a 3D point cloud (with color if the target

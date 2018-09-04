@@ -79,7 +79,7 @@ class CLocalMetricHypothesis
 
 	/** Destructor
 	  */
-	~CLocalMetricHypothesis();
+	~CLocalMetricHypothesis() override;
 
 	MRPT_TODO(
 		"Separate the serializable class from this code, so we don't have to "

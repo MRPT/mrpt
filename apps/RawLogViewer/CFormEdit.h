@@ -33,7 +33,7 @@ class CFormEdit : public wxDialog
 {
    public:
 	CFormEdit(wxWindow* parent, wxWindowID id = -1);
-	virtual ~CFormEdit();
+	~CFormEdit() override;
 
 	/** Used in executeOperationOnRawlogFiles
 	 */

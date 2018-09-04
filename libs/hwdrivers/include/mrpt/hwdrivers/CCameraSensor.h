@@ -350,10 +350,10 @@ class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
 	CCameraSensor();
 
 	/** Destructor */
-	virtual ~CCameraSensor();
+	~CCameraSensor() override;
 
 	// See docs in parent class
-	void doProcess();
+	void doProcess() override;
 
 	/** Retrieves the next frame from the video source, raising an exception on
 	  *any error.
@@ -372,7 +372,7 @@ class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
 	  *  \exception This method must throw an exception with a descriptive
 	 * message if some critical error is found.
 	  */
-	virtual void initialize();
+	void initialize() override;
 
 	/** Close the camera (if open).
 	  *   This method is called automatically on destruction.
@@ -391,7 +391,7 @@ class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
 	  * \exception std::exception If the directory doesn't exists and cannot be
 	 * created.
 	  */
-	virtual void setPathForExternalImages(const std::string& directory);
+	void setPathForExternalImages(const std::string& directory) override;
 
 	/** This must be called before initialize() */
 	void enableLaunchOwnThreadForSavingImages(bool enable = true)
@@ -508,7 +508,7 @@ class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
 		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection);
+		const std::string& iniSection) override;
 
    private:
 	// Only one of these will be !=nullptr at a time ===========

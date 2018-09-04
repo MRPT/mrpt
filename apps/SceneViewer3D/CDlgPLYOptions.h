@@ -26,7 +26,7 @@ class CDlgPLYOptions : public wxDialog
 {
    public:
 	CDlgPLYOptions(wxWindow* parent, wxWindowID id = wxID_ANY);
-	virtual ~CDlgPLYOptions();
+	~CDlgPLYOptions() override;
 
 	//(*Declarations(CDlgPLYOptions)
 	wxCheckBox* cbXYZ;

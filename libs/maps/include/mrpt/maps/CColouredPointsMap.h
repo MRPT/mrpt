@@ -36,14 +36,14 @@ class CColouredPointsMap : public CPointsMap
 	   from CPointsMap
 		@{ */
 
-	virtual void reserve(size_t newLength) override;  // See base class docs
-	virtual void resize(size_t newLength) override;  // See base class docs
-	virtual void setSize(size_t newLength) override;  // See base class docs
+	void reserve(size_t newLength) override;  // See base class docs
+	void resize(size_t newLength) override;  // See base class docs
+	void setSize(size_t newLength) override;  // See base class docs
 
 	/** Changes the coordinates of the given point (0-based index), *without*
 	 * checking for out-of-bounds and *without* calling mark_as_modified()  \sa
 	 * setPoint */
-	virtual void setPointFast(size_t index, float x, float y, float z) override
+	void setPointFast(size_t index, float x, float y, float z) override
 	{
 		m_x[index] = x;
 		m_y[index] = y;
@@ -52,17 +52,17 @@ class CColouredPointsMap : public CPointsMap
 
 	/** The virtual method for \a insertPoint() *without* calling
 	 * mark_as_modified()   */
-	virtual void insertPointFast(float x, float y, float z = 0) override;
+	void insertPointFast(float x, float y, float z = 0) override;
 
 	/** Virtual assignment operator, to be implemented in derived classes  */
-	virtual void copyFrom(const CPointsMap& obj) override;
+	void copyFrom(const CPointsMap& obj) override;
 
 	/** Get all the data fields for one point as a vector: [X Y Z R G B]
 	 *  Unlike getPointAllFields(), this method does not check for index out of
 	 * bounds
 	 * \sa getPointAllFields, setPointAllFields, setPointAllFieldsFast
 	 */
-	virtual void getPointAllFieldsFast(
+	void getPointAllFieldsFast(
 		const size_t index, std::vector<float>& point_data) const override
 	{
 		point_data.resize(6);
@@ -79,7 +79,7 @@ class CColouredPointsMap : public CPointsMap
 	 * bounds
 	 * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
 	 */
-	virtual void setPointAllFieldsFast(
+	void setPointAllFieldsFast(
 		const size_t index, const std::vector<float>& point_data) override
 	{
 		ASSERTDEB_(point_data.size() == 6);
@@ -92,18 +92,18 @@ class CColouredPointsMap : public CPointsMap
 	}
 
 	/** See CPointsMap::loadFromRangeScan() */
-	virtual void loadFromRangeScan(
+	void loadFromRangeScan(
 		const mrpt::obs::CObservation2DRangeScan& rangeScan,
 		const mrpt::poses::CPose3D* robotPose = nullptr) override;
 	/** See CPointsMap::loadFromRangeScan() */
-	virtual void loadFromRangeScan(
+	void loadFromRangeScan(
 		const mrpt::obs::CObservation3DRangeScan& rangeScan,
 		const mrpt::poses::CPose3D* robotPose = nullptr) override;
 
    protected:
 	/** Auxiliary method called from within \a addFrom() automatically, to
 	 * finish the copying of class-specific data  */
-	virtual void addFrom_classSpecific(
+	void addFrom_classSpecific(
 		const CPointsMap& anotherMap, const size_t nPreviousPoints) override;
 
 	// Friend methods:
@@ -125,7 +125,7 @@ class CColouredPointsMap : public CPointsMap
 	/** Changes a given point from map. First index is 0.
 	 * \exception Throws std::exception on index out of bound.
 	 */
-	virtual void setPoint(
+	void setPoint(
 		size_t index, float x, float y, float z, float R, float G,
 		float B) override;
 
@@ -151,7 +151,7 @@ class CColouredPointsMap : public CPointsMap
 
 	/** Adds a new point given its coordinates and color (colors range is [0,1])
 	 */
-	virtual void insertPoint(
+	void insertPoint(
 		float x, float y, float z, float R, float G, float B) override;
 	// The following overloads must be repeated here (from CPointsMap) due to
 	// the shadowing of the above "insertPoint()"
@@ -183,7 +183,7 @@ class CColouredPointsMap : public CPointsMap
 
 	/** Retrieves a point and its color (colors range is [0,1])
 	 */
-	virtual void getPoint(
+	void getPoint(
 		size_t index, float& x, float& y, float& z, float& R, float& G,
 		float& B) const override;
 
@@ -203,11 +203,11 @@ class CColouredPointsMap : public CPointsMap
 	}
 
 	/** Returns true if the point map has a color field for each point */
-	virtual bool hasColorPoints() const override { return true; }
+	bool hasColorPoints() const override { return true; }
 	/** Override of the default 3D scene builder to account for the individual
 	 * points' color.
 	 */
-	virtual void getAs3DObject(
+	void getAs3DObject(
 		mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
 
 	/** Colour a set of points from a CObservationImage and the global pose of
@@ -262,7 +262,7 @@ class CColouredPointsMap : public CPointsMap
 
 	/** Save the point cloud as a PCL PCD file, in either ASCII or binary format
 	 * \return false on any error */
-	virtual bool savePCDFile(
+	bool savePCDFile(
 		const std::string& filename, bool save_as_binary) const override;
 
 	/** Loads a PCL point cloud (WITH RGB information) into this MRPT class (for
@@ -316,7 +316,7 @@ class CColouredPointsMap : public CPointsMap
 	// std::vector<float>	m_min_dist;
 
 	/** Clear the map, erasing all the points */
-	virtual void internal_clear() override;
+	void internal_clear() override;
 
 	/** @name Redefinition of PLY Import virtual methods from CPointsMap
 		@{ */
@@ -325,13 +325,13 @@ class CColouredPointsMap : public CPointsMap
 	 *  \param pt_color Will be nullptr if the loaded file does not provide
 	 * color info.
 	 */
-	virtual void PLY_import_set_vertex(
+	void PLY_import_set_vertex(
 		const size_t idx, const mrpt::math::TPoint3Df& pt,
 		const mrpt::img::TColorf* pt_color = nullptr) override;
 
 	/** In a base class, reserve memory to prepare subsequent calls to
 	 * PLY_import_set_vertex */
-	virtual void PLY_import_set_vertex_count(const size_t N) override;
+	void PLY_import_set_vertex_count(const size_t N) override;
 	/** @} */
 
 	/** @name Redefinition of PLY Export virtual methods from CPointsMap

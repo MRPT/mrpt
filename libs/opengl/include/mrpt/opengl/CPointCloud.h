@@ -72,11 +72,11 @@ class CPointCloud : public CRenderizable,
 		@{ */
 	/** In a base class, reserve memory to prepare subsequent calls to
 	 * PLY_import_set_vertex */
-	virtual void PLY_import_set_vertex_count(const size_t N) override;
+	void PLY_import_set_vertex_count(const size_t N) override;
 
 	/** In a base class, reserve memory to prepare subsequent calls to
 	 * PLY_import_set_face */
-	virtual void PLY_import_set_face_count(const size_t N) override
+	void PLY_import_set_face_count(const size_t N) override
 	{
 		MRPT_UNUSED_PARAM(N);
 	}
@@ -86,7 +86,7 @@ class CPointCloud : public CRenderizable,
 	 *  \param pt_color Will be nullptr if the loaded file does not provide
 	 * color info.
 	 */
-	virtual void PLY_import_set_vertex(
+	void PLY_import_set_vertex(
 		const size_t idx, const mrpt::math::TPoint3Df& pt,
 		const mrpt::img::TColorf* pt_color = nullptr) override;
 	/** @} */
@@ -103,7 +103,7 @@ class CPointCloud : public CRenderizable,
    public:
 	/** Evaluates the bounding box of this object (including possible children)
 	 * in the coordinate frame of the object parent. */
-	virtual void getBoundingBox(
+	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override
 	{
@@ -292,7 +292,7 @@ class CPointCloud : public CRenderizable,
 	CPointCloud();
 
 	/** Private, virtual destructor: only can be deleted from smart pointers */
-	virtual ~CPointCloud() {}
+	~CPointCloud() override {}
    private:
 	/** Buffer for min/max coords when m_colorFromDepth is true. */
 	mutable float m_min, m_max, m_max_m_min, m_max_m_min_inv;

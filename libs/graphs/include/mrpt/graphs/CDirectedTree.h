@@ -176,7 +176,7 @@ class CDirectedTree
 		{
 			std::stringstream& m_s;
 			CMyVisitor(std::stringstream& s) : m_s(s) {}
-			virtual void OnVisitNode(
+			void OnVisitNode(
 				const TNodeID parent,
 				const typename mrpt::graphs::CDirectedTree<
 					TYPE_EDGES>::Visitor::tree_t::TEdgeInfo& edge_to_child,

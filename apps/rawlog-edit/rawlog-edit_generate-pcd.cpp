@@ -50,7 +50,7 @@ DECLARE_OP_FUNCTION(op_generate_pcd)
 					m_outdir);
 		}
 
-		bool processOneObservation(CObservation::Ptr& obs)
+		bool processOneObservation(CObservation::Ptr& obs) override
 		{
 			const string label_time = format(
 				"%s/%06u_%s_%f.pcd", m_outdir.c_str(),

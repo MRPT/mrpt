@@ -19,7 +19,7 @@ class CRootNode : public CNode
 {
    public:
 	CRootNode(const mrpt::maps::CSimpleMap& simplemap);
-	~CRootNode() = default;
+	~CRootNode() override = default;
 
 	// INode interface
 	int childCount() const override;

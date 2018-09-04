@@ -69,7 +69,7 @@ class CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 
 	/** Destructor
 	 */
-	virtual ~CReactiveNavigationSystem();
+	~CReactiveNavigationSystem() override;
 
 	/** Defines the 2D polygonal robot shape, used for some PTGs for collision
 	 * checking. */
@@ -79,19 +79,19 @@ class CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 	void changeRobotCircularShapeRadius(const double R);
 
 	// See base class docs:
-	virtual size_t getPTG_count() const override { return PTGs.size(); }
-	virtual CParameterizedTrajectoryGenerator* getPTG(size_t i) override
+	size_t getPTG_count() const override { return PTGs.size(); }
+	CParameterizedTrajectoryGenerator* getPTG(size_t i) override
 	{
 		ASSERT_(i < PTGs.size());
 		return PTGs[i];
 	}
-	virtual const CParameterizedTrajectoryGenerator* getPTG(
+	const CParameterizedTrajectoryGenerator* getPTG(
 		size_t i) const override
 	{
 		ASSERT_(i < PTGs.size());
 		return PTGs[i];
 	}
-	virtual bool checkCollisionWithLatestObstacles(
+	bool checkCollisionWithLatestObstacles(
 		const mrpt::math::TPose2D& relative_robot_pose) const override;
 
 	struct TReactiveNavigatorParams : public mrpt::config::CLoadableOptions
@@ -100,10 +100,10 @@ class CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 			max_obstacles_height;  // The range of "z" coordinates for obstacles
 		// to be considered
 
-		virtual void loadFromConfigFile(
+		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& c,
 			const std::string& s) override;
-		virtual void saveToConfigFile(
+		void saveToConfigFile(
 			mrpt::config::CConfigFileBase& c,
 			const std::string& s) const override;
 		TReactiveNavigatorParams();
@@ -111,9 +111,9 @@ class CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 
 	TReactiveNavigatorParams params_reactive_nav;
 
-	virtual void loadConfigFile(const mrpt::config::CConfigFileBase& c)
+	void loadConfigFile(const mrpt::config::CConfigFileBase& c)
 		override;  // See base class docs!
-	virtual void saveConfigFile(mrpt::config::CConfigFileBase& c)
+	void saveConfigFile(mrpt::config::CConfigFileBase& c)
 		const override;  // See base class docs!
 
    private:
@@ -122,7 +122,7 @@ class CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 
 	// Steps for the reactive navigation sytem.
 	// ----------------------------------------------------------------------------
-	virtual void STEP1_InitPTGs() override;
+	void STEP1_InitPTGs() override;
 
 	// See docs in parent class
 	bool implementSenseObstacles(
@@ -139,7 +139,7 @@ class CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 
 	/** Generates a pointcloud of obstacles, and the robot shape, to be saved in
 	 * the logging record for the current timestep */
-	virtual void loggingGetWSObstaclesAndShape(
+	void loggingGetWSObstaclesAndShape(
 		CLogFileRecord& out_log) override;
 
 	/** The obstacle points, as seen from the local robot frame. */

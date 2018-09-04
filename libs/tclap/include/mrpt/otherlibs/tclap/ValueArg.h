@@ -324,7 +324,7 @@ class ValueArg : public Arg
          * \param args - Mutable list of strings. Passed 
          * in from main().
          */
-        virtual bool processArg(int* i, std::vector<std::string>& args); 
+        bool processArg(int* i, std::vector<std::string>& args) override; 
 
         /**
          * Returns the value of the argument.
@@ -335,13 +335,13 @@ class ValueArg : public Arg
          * Specialization of shortID.
          * \param val - value to be used.
          */
-        virtual std::string shortID(const std::string& val = "val") const;
+        std::string shortID(const std::string& val = "val") const override;
 
         /**
          * Specialization of longID.
          * \param val - value to be used.
          */
-        virtual std::string longID(const std::string& val = "val") const;
+        std::string longID(const std::string& val = "val") const override;
 
 };
 

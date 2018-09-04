@@ -84,7 +84,7 @@ class THypothesisIDSet : public mrpt::serialization::CSerializable,
 	/** Constructor with one initial element
 	 */
 	THypothesisIDSet(const THypothesisID& val) { insert(val); }
-	virtual ~THypothesisIDSet() {}
+	~THypothesisIDSet() override {}
 	/** Returns true if the hypothesis is into the set.
 	 */
 	bool has(const THypothesisID& val) const

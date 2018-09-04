@@ -91,27 +91,27 @@ class CReactiveNavigationSystem3D : public CAbstractPTGBasedReactive
 										std::string("./reactivenav.logs"));
 
 	/** Destructor */
-	virtual ~CReactiveNavigationSystem3D();
+	~CReactiveNavigationSystem3D() override;
 
 	/** Change the robot shape, which is taken into account for collision grid
 	 * building. */
 	void changeRobotShape(TRobotShape robotShape);
 
 	// See base class docs:
-	virtual bool checkCollisionWithLatestObstacles(
+	bool checkCollisionWithLatestObstacles(
 		const mrpt::math::TPose2D& relative_robot_pose) const override;
-	virtual size_t getPTG_count() const override
+	size_t getPTG_count() const override
 	{
 		ASSERT_(!m_ptgmultilevel.empty());
 		return m_ptgmultilevel.size();
 	}
-	virtual CParameterizedTrajectoryGenerator* getPTG(size_t i) override
+	CParameterizedTrajectoryGenerator* getPTG(size_t i) override
 	{
 		ASSERT_(!m_ptgmultilevel.empty() && !m_ptgmultilevel[i].PTGs.empty());
 		return m_ptgmultilevel[i].PTGs[0];  // Return for the 0'th level (ptgs
 		// are replicated at each level)
 	}
-	virtual const CParameterizedTrajectoryGenerator* getPTG(
+	const CParameterizedTrajectoryGenerator* getPTG(
 		size_t i) const override
 	{
 		ASSERT_(!m_ptgmultilevel.empty() && !m_ptgmultilevel[i].PTGs.empty());
@@ -119,9 +119,9 @@ class CReactiveNavigationSystem3D : public CAbstractPTGBasedReactive
 		// are replicated at each level)
 	}
 
-	virtual void loadConfigFile(const mrpt::config::CConfigFileBase& c)
+	void loadConfigFile(const mrpt::config::CConfigFileBase& c)
 		override;  // See base class docs!
-	virtual void saveConfigFile(mrpt::config::CConfigFileBase& c)
+	void saveConfigFile(mrpt::config::CConfigFileBase& c)
 		const override;  // See base class docs!
 
    private:
@@ -158,7 +158,7 @@ class CReactiveNavigationSystem3D : public CAbstractPTGBasedReactive
 
 	// Steps for the reactive navigation sytem.
 	// ----------------------------------------------------------------------------
-	virtual void STEP1_InitPTGs() override;
+	void STEP1_InitPTGs() override;
 
 	// See docs in parent class
 	bool implementSenseObstacles(
@@ -173,7 +173,7 @@ class CReactiveNavigationSystem3D : public CAbstractPTGBasedReactive
 
 	/** Generates a pointcloud of obstacles, and the robot shape, to be saved in
 	 * the logging record for the current timestep */
-	virtual void loggingGetWSObstaclesAndShape(
+	void loggingGetWSObstaclesAndShape(
 		CLogFileRecord& out_log) override;
 
 };  // end class

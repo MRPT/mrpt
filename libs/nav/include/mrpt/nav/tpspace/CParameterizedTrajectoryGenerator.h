@@ -82,7 +82,7 @@ class CParameterizedTrajectoryGenerator
 	/** Default ctor. Must call `loadFromConfigFile()` before initialization */
 	CParameterizedTrajectoryGenerator();
 	/**  Destructor  */
-	virtual ~CParameterizedTrajectoryGenerator() {}
+	~CParameterizedTrajectoryGenerator() override {}
 	/** The class factory for creating a PTG from a list of parameters in a
 	  *section of a given config file (physical file or in memory).
 	  *  Possible parameters are:
@@ -410,10 +410,10 @@ class CParameterizedTrajectoryGenerator
 	 * multiplying factor (default=1.0) for the scores for this PTG. Assign
 	 * values <1 to PTGs with low priority.
 	 */
-	virtual void loadFromConfigFile(
+	void loadFromConfigFile(
 		const mrpt::config::CConfigFileBase& cfg,
 		const std::string& sSection) override;
-	virtual void saveToConfigFile(
+	void saveToConfigFile(
 		mrpt::config::CConfigFileBase& cfg,
 		const std::string& sSection) const override;
 
@@ -506,7 +506,7 @@ class CPTG_RobotShape_Polygonal : public CParameterizedTrajectoryGenerator
 {
    public:
 	CPTG_RobotShape_Polygonal();
-	virtual ~CPTG_RobotShape_Polygonal();
+	~CPTG_RobotShape_Polygonal() override;
 
 	/** @name Robot shape
 	  * @{ **/
@@ -515,7 +515,7 @@ class CPTG_RobotShape_Polygonal : public CParameterizedTrajectoryGenerator
 	void setRobotShape(const mrpt::math::CPolygon& robotShape);
 	const mrpt::math::CPolygon& getRobotShape() const { return m_robotShape; }
 	double getMaxRobotRadius() const override;
-	virtual double evalClearanceToRobotShape(
+	double evalClearanceToRobotShape(
 		const double ox, const double oy) const override;
 	/** @} */
 	bool isPointInsideRobotShape(const double x, const double y) const override;
@@ -549,7 +549,7 @@ class CPTG_RobotShape_Circular : public CParameterizedTrajectoryGenerator
 {
    public:
 	CPTG_RobotShape_Circular();
-	virtual ~CPTG_RobotShape_Circular();
+	~CPTG_RobotShape_Circular() override;
 
 	/** @name Robot shape
 	  * @{ **/
@@ -558,7 +558,7 @@ class CPTG_RobotShape_Circular : public CParameterizedTrajectoryGenerator
 	void setRobotShapeRadius(const double robot_radius);
 	double getRobotShapeRadius() const { return m_robotRadius; }
 	double getMaxRobotRadius() const override;
-	virtual double evalClearanceToRobotShape(
+	double evalClearanceToRobotShape(
 		const double ox, const double oy) const override;
 	/** @} */
 	void add_robotShape_to_setOfLines(

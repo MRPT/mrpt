@@ -31,12 +31,12 @@ class CGeneralConfig : public CBaseConfig
 	Q_OBJECT
    public:
 	CGeneralConfig();
-	virtual ~CGeneralConfig() = default;
+	~CGeneralConfig() override = default;
 
-	virtual const QString getName() override;
-	virtual void updateConfiguration(
+	const QString getName() override;
+	void updateConfiguration(
 		mrpt::maps::TMetricMapInitializer* options) override;
-	virtual TypeOfConfig type() const override;
+	TypeOfConfig type() const override;
 	const SGeneralSetting& generalSetting();
 
    private slots:

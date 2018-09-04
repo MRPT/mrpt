@@ -71,7 +71,7 @@ class CHierarchicalMHMap : public mrpt::serialization::CSerializable,
 	/** Load a graph from a XML file */
 	void loadFromXMLfile(std::string fileName);
 
-	virtual ~CHierarchicalMHMap();
+	~CHierarchicalMHMap() override;
 
 	/** Erase all the contents of map (It delete all nodes/arcs objects)
 	  */

@@ -43,7 +43,7 @@ class CFileGZOutputStream : public CStream
 	CFileGZOutputStream& operator=(const CFileGZOutputStream&) = delete;
 
 	/** Destructor */
-	virtual ~CFileGZOutputStream();
+	~CFileGZOutputStream() override;
 
 	/** Open a file for write, choosing the compression level
 	 * \param fileName The file to be open in this stream

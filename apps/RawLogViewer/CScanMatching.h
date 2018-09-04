@@ -31,7 +31,7 @@ class CScanMatching : public wxDialog
 {
    public:
 	CScanMatching(wxWindow* parent, wxWindowID id = wxID_ANY);
-	virtual ~CScanMatching();
+	~CScanMatching() override;
 
 	//(*Declarations(CScanMatching)
 	wxTextCtrl* edOptRefGrid;

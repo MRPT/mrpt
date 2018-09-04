@@ -15,7 +15,7 @@
 class camera_calib_guiApp : public wxApp
 {
    public:
-	virtual bool OnInit();
+	bool OnInit() override;
 	// virtual bool Initialize( int& argc, wxChar **argv );
 };
 

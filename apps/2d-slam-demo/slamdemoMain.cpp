@@ -64,8 +64,8 @@ static const double RAD2DEGSQ = square(180 / M_PI);
 class MyArtProvider : public wxArtProvider
 {
    protected:
-	virtual wxBitmap CreateBitmap(
-		const wxArtID& id, const wxArtClient& client, const wxSize& size);
+	wxBitmap CreateBitmap(
+		const wxArtID& id, const wxArtClient& client, const wxSize& size) override;
 };
 wxBitmap MyArtProvider::CreateBitmap(
 	const wxArtID& id, const wxArtClient& client, const wxSize& size)

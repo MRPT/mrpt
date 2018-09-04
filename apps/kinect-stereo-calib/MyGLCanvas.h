@@ -38,12 +38,12 @@ class CMyGLCanvas : public CWxGLCanvasBase
 		const wxSize& size = wxDefaultSize, long style = 0,
 		const wxString& name = _T("CMyGLCanvas"));
 
-	virtual ~CMyGLCanvas();
+	~CMyGLCanvas() override;
 
-	void OnPreRender();
-	void OnPostRender();
-	void OnPostRenderSwapBuffers(double At, wxPaintDC& dc);
-	void OnRenderError(const wxString& str);
+	void OnPreRender() override;
+	void OnPostRender() override;
+	void OnPostRenderSwapBuffers(double At, wxPaintDC& dc) override;
+	void OnRenderError(const wxString& str) override;
 
 	mrpt::system::TTimeStamp last_timestamp;
 };

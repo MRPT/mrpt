@@ -2110,14 +2110,14 @@ struct MRPT_IniFileParser : public SI_ConvertA<char>
 		return *this;
 	}
 
-	virtual size_t SizeFromStore(
+	size_t SizeFromStore(
 		const char* a_pInputData, size_t a_uInputDataLen) override
 	{
 		SI_ASSERT(a_uInputDataLen != (size_t)-1);
 		return do_parse(a_pInputData, a_uInputDataLen, nullptr);
 	}
 
-	virtual bool ConvertFromStore(
+	bool ConvertFromStore(
 		const char* a_pInputData, size_t a_uInputDataLen, char* a_pOutputData,
 		size_t a_uOutputDataSize) override
 	{
