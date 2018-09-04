@@ -112,9 +112,7 @@ void thread_subscriber()
 		// Create a subscriber with std::bind:
 		using namespace std::placeholders;
 		auto sub4 = dir->getTopic("/robot/odom")
-						->createSubscriber<mrpt::poses::CPose3D>(std::bind(
-							onNewMsg2, 123 /*fixed 1st argument*/,
-							_1 /* 2nd arg is the subscribed data */));
+						->createSubscriber<mrpt::poses::CPose3D>([](auto && arg1) { return onNewMsg2(123, arg1); };);
 
 		// wait for messages to arrive.
 		// The nodelet is up and live until "sub" gets out of scope.
