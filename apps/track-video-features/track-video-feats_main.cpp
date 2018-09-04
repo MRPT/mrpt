@@ -205,9 +205,9 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
 		// Save history of feature observations:
 		tracker->getProfiler().enter("Save history");
 
-		for (auto & f : trackedFeats)
+		for (auto& f : trackedFeats)
 		{
-				const TPixelCoordf pxRaw(f.pt.x, f.pt.y);
+			const TPixelCoordf pxRaw(f.pt.x, f.pt.y);
 			TPixelCoordf pxUndist;
 			// mrpt::vision::pinhole::undistort_point(pxRaw,pxUndist,
 			// cameraParams);
@@ -271,9 +271,9 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
 
 			std::set<TFeatureID> observed_IDs;
 
-			for (const auto & ft : trackedFeats)
+			for (const auto& ft : trackedFeats)
 			{
-					std::list<TPixelCoord>& seq = feat_tracks[ft.ID];
+				std::list<TPixelCoord>& seq = feat_tracks[ft.ID];
 
 				observed_IDs.insert(ft.ID);
 
@@ -451,7 +451,7 @@ int main(int argc, char** argv)
 				// It's a rawlog:
 				cout << "Interpreting '" << fil << "' as a rawlog file...\n";
 
-				cam = CCameraSensor::Ptr(new CCameraSensor);
+				cam = CCameraSensor::Create();
 
 				CConfigFileMemory cfg;
 				cfg.write("CONFIG", "grabber_type", "rawlog");
@@ -468,7 +468,7 @@ int main(int argc, char** argv)
 				// Assume it's a video:
 				cout << "Interpreting '" << fil << "' as a video file...\n";
 
-				cam = CCameraSensor::Ptr(new CCameraSensor);
+				cam = CCameraSensor::Create();
 
 				CConfigFileMemory cfg;
 				cfg.write("CONFIG", "grabber_type", "ffmpeg");
@@ -524,13 +524,17 @@ void showUsage(char* cmd)
 		 << cmd
 		 << " [--save-video]                -> Ask the user for video source.\n"
 			"  "
-		 << cmd << " dataset.rawlog [--save-video]  -> Use a rawlog file.\n"
-				   "  "
-		 << cmd << " video.{avi,mpg}[--save-video]  -> Use a video file.\n"
-				   "  "
-		 << cmd << " --help          -> Show this information.\n"
-				   "  "
-		 << cmd << " If added --save-video, an video file will be created with "
-				   "results.\n"
-				   "\n";
+		 << cmd
+		 << " dataset.rawlog [--save-video]  -> Use a rawlog file.\n"
+			"  "
+		 << cmd
+		 << " video.{avi,mpg}[--save-video]  -> Use a video file.\n"
+			"  "
+		 << cmd
+		 << " --help          -> Show this information.\n"
+			"  "
+		 << cmd
+		 << " If added --save-video, an video file will be created with "
+			"results.\n"
+			"\n";
 }

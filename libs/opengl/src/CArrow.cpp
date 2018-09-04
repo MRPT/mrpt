@@ -15,6 +15,8 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
 
+#include <memory>
+
 #include "opengl_internals.h"
 
 using namespace mrpt;
@@ -31,9 +33,9 @@ CArrow::Ptr CArrow::Create(
 	float smallRadius, float largeRadius, float arrow_roll, float arrow_pitch,
 	float arrow_yaw)
 {
-	return CArrow::Ptr(new CArrow(
+	return std::make_shared<CArrow>(
 		x0, y0, z0, x1, y1, z1, headRatio, smallRadius, largeRadius, arrow_roll,
-		arrow_pitch, arrow_yaw));
+		arrow_pitch, arrow_yaw);
 }
 /*---------------------------------------------------------------
 							render

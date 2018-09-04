@@ -14,6 +14,8 @@
 #include <wx/string.h>
 #include <wx/intl.h>
 #include <wx/font.h>
+
+#include <memory>
 //*)
 
 //(*IdInit(CDlgLog)
@@ -89,10 +91,10 @@ CDlgLog::CDlgLog(
 		wxID_ANY, wxEVT_CLOSE_WINDOW, (wxObjectEventFunction)&CDlgLog::OnClose);
 	//*)
 
-	m_redirector.reset(
-		new CMyRedirector(
+	m_redirector = std::make_unique<CMyRedirector>(
+		
 			edLog, false, 0, true, /* thread_safe */ true,
-			/*Also dump to cout*/ true));
+			/*Also dump to cout*/ true);
 }
 
 CDlgLog::~CDlgLog()

@@ -92,7 +92,7 @@ void hmt_slam_guiFrame::thread_HMTSLAM()
 					}
 					else
 					{
-						fInRawlog.reset(new CFileGZInputStream(fil));
+						fInRawlog = std::make_unique<CFileGZInputStream>(fil);
 						m_hmtslam->logFmt(
 							mrpt::system::LVL_INFO, "RAWLOG FILE: \n%s\n",
 							fil.c_str());

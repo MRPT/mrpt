@@ -491,7 +491,7 @@ void loadMapInto3DScene(COpenGLScene& scene)
 		double x0 = 0, y0 = 0, z0 = 0;
 		std::optional<mrpt::Clock::time_point> last_t;
 
-		for (auto & it : robot_path)
+		for (auto& it : robot_path)
 		{
 			auto& p = it.second;
 			auto this_t = it.first;
@@ -1493,8 +1493,7 @@ void CFormRawMap::OnbtnView3DClick(wxCommandEvent&)
 
 	loadMapInto3DScene(scene);
 
-	win3Dmap =
-		CDisplayWindow3D::Ptr(new CDisplayWindow3D("Raw-map 3D preview"));
+	win3Dmap = CDisplayWindow3D::Create("Raw-map 3D preview");
 	COpenGLScene::Ptr the_scene = win3Dmap->get3DSceneAndLock();
 	*the_scene = scene;
 	win3Dmap->unlockAccess3DScene();

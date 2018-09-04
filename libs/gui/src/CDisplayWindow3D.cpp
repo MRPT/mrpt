@@ -93,7 +93,7 @@ class CMyGLCanvas_DisplayWindow3D : public mrpt::gui::CWxGLCanvasBase
 	static void display3D_processKeyEvent(
 		CDisplayWindow3D* m_win3D, wxKeyEvent& ev);
 };
-}
+}  // namespace mrpt::gui
 
 CMyGLCanvas_DisplayWindow3D::CMyGLCanvas_DisplayWindow3D(
 	CDisplayWindow3D* win3D, wxWindow* parent, wxWindowID id,
@@ -445,8 +445,8 @@ CDisplayWindow3D::Ptr CDisplayWindow3D::Create(
 	const std::string& windowCaption, unsigned int initialWindowWidth,
 	unsigned int initialWindowHeight)
 {
-	return CDisplayWindow3D::Ptr(new CDisplayWindow3D(
-		windowCaption, initialWindowWidth, initialWindowHeight));
+	return CDisplayWindow3D::Create(
+		windowCaption, initialWindowWidth, initialWindowHeight);
 }
 /*---------------------------------------------------------------
 					Destructor

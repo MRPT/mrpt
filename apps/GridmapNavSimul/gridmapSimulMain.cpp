@@ -67,7 +67,8 @@ class MyArtProvider : public wxArtProvider
 {
    protected:
 	wxBitmap CreateBitmap(
-		const wxArtID& id, const wxArtClient& client, const wxSize& size) override;
+		const wxArtID& id, const wxArtClient& client,
+		const wxSize& size) override;
 };
 
 #define RETURN_BITMAP(artid, xpm)                                        \
@@ -1030,8 +1031,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 					// Observation:
 					CSensoryFrame sf;
 					the_scan.timestamp = act.timestamp;
-					sf.insert(CObservation2DRangeScan::Ptr(
-						new CObservation2DRangeScan(the_scan)));
+					sf.insert(CObservation2DRangeScan::Create(the_scan));
 					archiveFrom(outs) << sf;
 				}
 				else

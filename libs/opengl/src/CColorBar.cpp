@@ -62,10 +62,9 @@ CColorBar::Ptr CColorBar::Create(
 	/** Label text font size */
 	double label_font_size)
 {
-	return CColorBar::Ptr(
-		new CColorBar(
-			colormap, width, height, min_col, max_col, min_value, max_value,
-			label_format, label_font_size));
+	return CColorBar::Create(
+		colormap, width, height, min_col, max_col, min_value, max_value,
+		label_format, label_font_size);
 }
 
 void CColorBar::setColormap(const mrpt::img::TColormap colormap)

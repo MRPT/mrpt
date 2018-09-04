@@ -57,6 +57,8 @@ wxBitmap MyArtProvider::CreateBitmap(
 #include <mrpt/opengl.h>
 #include <mrpt/system/filesystem.h>
 
+#include <memory>
+
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
@@ -724,10 +726,10 @@ void holonomic_navigator_demoFrame::reinitSimulator()
 	switch (rbHoloMethod->GetSelection())
 	{
 		case 0:
-			m_holonomicMethod.reset(new mrpt::nav::CHolonomicVFF);
+			m_holonomicMethod = std::make_unique<mrpt::nav::CHolonomicVFF>();
 			break;
 		case 1:
-			m_holonomicMethod.reset(new mrpt::nav::CHolonomicND);
+			m_holonomicMethod = std::make_unique<mrpt::nav::CHolonomicND>();
 			break;
 		default:
 			throw std::runtime_error("Invalid holonomic method selected!");

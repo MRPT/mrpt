@@ -118,9 +118,8 @@ CHMTSLAM::~CHMTSLAM()
 		}
 		catch (std::exception& e)
 		{
-			MRPT_LOG_WARN(
-				mrpt::format(
-					"Ignoring exception at ~CHMTSLAM():\n%s", e.what()));
+			MRPT_LOG_WARN(mrpt::format(
+				"Ignoring exception at ~CHMTSLAM():\n%s", e.what()));
 		}
 		catch (...)
 		{
@@ -144,8 +143,7 @@ CHMTSLAM::~CHMTSLAM()
 		std::lock_guard<std::mutex> lock(m_topLCdets_cs);
 
 		// Clear old list:
-		for (auto & m_topLCdet : m_topLCdets)
-			delete m_topLCdet;
+		for (auto& m_topLCdet : m_topLCdets) delete m_topLCdet;
 		m_topLCdets.clear();
 	}
 }
@@ -426,8 +424,8 @@ void CHMTSLAM::initializeEmptyMap()
 		firstAreaID = firstArea->getID();
 
 		firstArea->m_hypotheses = LMH_hyps;
-		CMultiMetricMap::Ptr emptyMap = CMultiMetricMap::Ptr(
-			new CMultiMetricMap(&m_options.defaultMapsInitializers));
+		CMultiMetricMap::Ptr emptyMap =
+			CMultiMetricMap::Create(&m_options.defaultMapsInitializers);
 
 		firstArea->m_nodeType = "Area";
 		firstArea->m_label = generateUniqueAreaLabel();
@@ -483,8 +481,7 @@ void CHMTSLAM::initializeEmptyMap()
 		std::lock_guard<std::mutex> lock(m_topLCdets_cs);
 
 		// Clear old list:
-		for (auto & m_topLCdet : m_topLCdets)
-			delete m_topLCdet;
+		for (auto& m_topLCdet : m_topLCdets) delete m_topLCdet;
 		m_topLCdets.clear();
 
 		// Create new list:

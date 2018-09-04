@@ -25,9 +25,8 @@ CGridPlaneXZ::Ptr CGridPlaneXZ::Create(
 	float xMin, float xMax, float zMin, float zMax, float y, float frequency,
 	float lineWidth, bool antiAliasing)
 {
-	return CGridPlaneXZ::Ptr(
-		new CGridPlaneXZ(
-			xMin, xMax, zMin, zMax, y, frequency, lineWidth, antiAliasing));
+	return CGridPlaneXZ::Create(
+		xMin, xMax, zMin, zMax, y, frequency, lineWidth, antiAliasing);
 }
 
 /** Constructor */

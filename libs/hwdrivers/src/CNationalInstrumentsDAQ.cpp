@@ -138,10 +138,9 @@ CNationalInstrumentsDAQ::CNationalInstrumentsDAQ()
 		}                                                            \
 		catch (std::exception&)                                      \
 		{                                                            \
-			THROW_EXCEPTION(                                         \
-				format(                                              \
-					"Value for '%s' not found in config file",       \
-					std::string(variableName).c_str()));             \
+			THROW_EXCEPTION(format(                                  \
+				"Value for '%s' not found in config file",           \
+				std::string(variableName).c_str()));                 \
 		}                                                            \
 	}
 
@@ -191,7 +190,7 @@ void CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
 		t.taskLabel =
 			cfg.read_string(sect, sTask + string(".taskLabel"), sTask, false);
 
-		for (auto & lstStrChann : lstStrChanns)
+		for (auto& lstStrChann : lstStrChanns)
 		{
 			if (strCmpI(lstStrChann, "ai"))
 			{
@@ -472,11 +471,10 @@ void CNationalInstrumentsDAQ::initialize()
 					"ai.physicalChannelCount is zero! Please, define it "
 					"correctly.")
 
-				MRPT_DAQmx_ErrChk(
-					MRPT_DAQmxCreateAIVoltageChan(
-						taskHandle, tf.ai.physicalChannel.c_str(), nullptr,
-						daqmx_defstr2num(tf.ai.terminalConfig), tf.ai.minVal,
-						tf.ai.maxVal, DAQmx_Val_Volts, nullptr));
+				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateAIVoltageChan(
+					taskHandle, tf.ai.physicalChannel.c_str(), nullptr,
+					daqmx_defstr2num(tf.ai.terminalConfig), tf.ai.minVal,
+					tf.ai.maxVal, DAQmx_Val_Volts, nullptr));
 			}
 			if (tf.has_ao)
 			{
@@ -485,87 +483,76 @@ void CNationalInstrumentsDAQ::initialize()
 					"ai.physicalChannelCount is zero! Please, define it "
 					"correctly.")
 
-				MRPT_DAQmx_ErrChk(
-					MRPT_DAQmxCreateAOVoltageChan(
-						taskHandle, tf.ao.physicalChannel.c_str(), nullptr,
-						tf.ao.minVal, tf.ao.maxVal, DAQmx_Val_Volts, nullptr));
+				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateAOVoltageChan(
+					taskHandle, tf.ao.physicalChannel.c_str(), nullptr,
+					tf.ao.minVal, tf.ao.maxVal, DAQmx_Val_Volts, nullptr));
 			}
 			if (tf.has_di)
 			{
-				MRPT_DAQmx_ErrChk(
-					MRPT_DAQmxCreateDIChan(
-						taskHandle, tf.di.line.c_str(), nullptr,
-						DAQmx_Val_ChanPerLine));
+				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateDIChan(
+					taskHandle, tf.di.line.c_str(), nullptr,
+					DAQmx_Val_ChanPerLine));
 			}
 			if (tf.has_do)
 			{
-				MRPT_DAQmx_ErrChk(
-					MRPT_DAQmxCreateDOChan(
-						taskHandle, tf.douts.line.c_str(), nullptr,
-						DAQmx_Val_ChanPerLine));
+				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateDOChan(
+					taskHandle, tf.douts.line.c_str(), nullptr,
+					DAQmx_Val_ChanPerLine));
 			}
 			if (tf.has_ci_period)
 			{
-				MRPT_DAQmx_ErrChk(
-					MRPT_DAQmxCreateCIPeriodChan(
-						taskHandle, tf.ci_period.counter.c_str(), nullptr,
-						tf.ci_period.minVal, tf.ci_period.maxVal,
-						daqmx_defstr2num(tf.ci_period.units),
-						daqmx_defstr2num(tf.ci_period.edge),
-						DAQmx_Val_LowFreq1Ctr, tf.ci_period.measTime,
-						tf.ci_period.divisor, nullptr));
+				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateCIPeriodChan(
+					taskHandle, tf.ci_period.counter.c_str(), nullptr,
+					tf.ci_period.minVal, tf.ci_period.maxVal,
+					daqmx_defstr2num(tf.ci_period.units),
+					daqmx_defstr2num(tf.ci_period.edge), DAQmx_Val_LowFreq1Ctr,
+					tf.ci_period.measTime, tf.ci_period.divisor, nullptr));
 			}
 			if (tf.has_ci_count_edges)
 			{
-				MRPT_DAQmx_ErrChk(
-					MRPT_DAQmxCreateCICountEdgesChan(
-						taskHandle, tf.ci_count_edges.counter.c_str(), nullptr,
-						daqmx_defstr2num(tf.ci_count_edges.edge),
-						tf.ci_count_edges.initialCount,
-						daqmx_defstr2num(tf.ci_count_edges.countDirection)));
+				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateCICountEdgesChan(
+					taskHandle, tf.ci_count_edges.counter.c_str(), nullptr,
+					daqmx_defstr2num(tf.ci_count_edges.edge),
+					tf.ci_count_edges.initialCount,
+					daqmx_defstr2num(tf.ci_count_edges.countDirection)));
 			}
 			if (tf.has_ci_pulse_width)
 			{
-				MRPT_DAQmx_ErrChk(
-					MRPT_DAQmxCreateCIPulseWidthChan(
-						taskHandle, tf.ci_pulse_width.counter.c_str(), nullptr,
-						tf.ci_pulse_width.minVal, tf.ci_pulse_width.maxVal,
-						daqmx_defstr2num(tf.ci_pulse_width.units),
-						daqmx_defstr2num(tf.ci_pulse_width.startingEdge),
-						nullptr));
+				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateCIPulseWidthChan(
+					taskHandle, tf.ci_pulse_width.counter.c_str(), nullptr,
+					tf.ci_pulse_width.minVal, tf.ci_pulse_width.maxVal,
+					daqmx_defstr2num(tf.ci_pulse_width.units),
+					daqmx_defstr2num(tf.ci_pulse_width.startingEdge), nullptr));
 			}
 			if (tf.has_ci_lin_encoder)
 			{
-				MRPT_DAQmx_ErrChk(
-					MRPT_DAQmxCreateCILinEncoderChan(
-						taskHandle, tf.ci_lin_encoder.counter.c_str(), nullptr,
-						daqmx_defstr2num(tf.ci_lin_encoder.decodingType),
-						tf.ci_lin_encoder.ZidxEnable, tf.ci_lin_encoder.ZidxVal,
-						daqmx_defstr2num(tf.ci_lin_encoder.ZidxPhase),
-						daqmx_defstr2num(tf.ci_lin_encoder.units),
-						tf.ci_lin_encoder.distPerPulse,
-						tf.ci_lin_encoder.initialPos, nullptr));
+				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateCILinEncoderChan(
+					taskHandle, tf.ci_lin_encoder.counter.c_str(), nullptr,
+					daqmx_defstr2num(tf.ci_lin_encoder.decodingType),
+					tf.ci_lin_encoder.ZidxEnable, tf.ci_lin_encoder.ZidxVal,
+					daqmx_defstr2num(tf.ci_lin_encoder.ZidxPhase),
+					daqmx_defstr2num(tf.ci_lin_encoder.units),
+					tf.ci_lin_encoder.distPerPulse,
+					tf.ci_lin_encoder.initialPos, nullptr));
 			}
 			if (tf.has_ci_ang_encoder)
 			{
-				MRPT_DAQmx_ErrChk(
-					MRPT_DAQmxCreateCIAngEncoderChan(
-						taskHandle, tf.ci_ang_encoder.counter.c_str(), nullptr,
-						daqmx_defstr2num(tf.ci_ang_encoder.decodingType),
-						tf.ci_ang_encoder.ZidxEnable, tf.ci_ang_encoder.ZidxVal,
-						daqmx_defstr2num(tf.ci_ang_encoder.ZidxPhase),
-						daqmx_defstr2num(tf.ci_ang_encoder.units),
-						tf.ci_ang_encoder.pulsesPerRev,
-						tf.ci_ang_encoder.initialAngle, nullptr));
+				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateCIAngEncoderChan(
+					taskHandle, tf.ci_ang_encoder.counter.c_str(), nullptr,
+					daqmx_defstr2num(tf.ci_ang_encoder.decodingType),
+					tf.ci_ang_encoder.ZidxEnable, tf.ci_ang_encoder.ZidxVal,
+					daqmx_defstr2num(tf.ci_ang_encoder.ZidxPhase),
+					daqmx_defstr2num(tf.ci_ang_encoder.units),
+					tf.ci_ang_encoder.pulsesPerRev,
+					tf.ci_ang_encoder.initialAngle, nullptr));
 			}
 			if (tf.has_co_pulses)
 			{
-				MRPT_DAQmx_ErrChk(
-					MRPT_DAQmxCreateCOPulseChanFreq(
-						taskHandle, tf.co_pulses.counter.c_str(), nullptr,
-						DAQmx_Val_Hz, daqmx_defstr2num(tf.co_pulses.idleState),
-						tf.co_pulses.initialDelay, tf.co_pulses.freq,
-						tf.co_pulses.dutyCycle));
+				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateCOPulseChanFreq(
+					taskHandle, tf.co_pulses.counter.c_str(), nullptr,
+					DAQmx_Val_Hz, daqmx_defstr2num(tf.co_pulses.idleState),
+					tf.co_pulses.initialDelay, tf.co_pulses.freq,
+					tf.co_pulses.dutyCycle));
 			}
 
 			// Seems to be needed to avoid an errors avoid like:
@@ -578,15 +565,13 @@ void CNationalInstrumentsDAQ::initialize()
 			{
 				// sample rate:
 				ASSERT_ABOVE_(tf.samplesPerSecond, 0)
-				MRPT_DAQmx_ErrChk(
-					MRPT_DAQmxCfgSampClkTiming(
-						taskHandle, tf.sampleClkSource.c_str(),
-						tf.samplesPerSecond, DAQmx_Val_Rising,
-						DAQmx_Val_ContSamps, tf.samplesPerChannelToRead));
+				MRPT_DAQmx_ErrChk(MRPT_DAQmxCfgSampClkTiming(
+					taskHandle, tf.sampleClkSource.c_str(), tf.samplesPerSecond,
+					DAQmx_Val_Rising, DAQmx_Val_ContSamps,
+					tf.samplesPerChannelToRead));
 
-				MRPT_DAQmx_ErrChk(
-					MRPT_DAQmxCfgInputBuffer(
-						taskHandle, tf.bufferSamplesPerChannel));
+				MRPT_DAQmx_ErrChk(MRPT_DAQmxCfgInputBuffer(
+					taskHandle, tf.bufferSamplesPerChannel));
 			}
 
 			if (tf.has_ao)
@@ -660,14 +645,14 @@ void CNationalInstrumentsDAQ::initialize()
 void CNationalInstrumentsDAQ::stop()
 {
 	// Stop all threads:
-	for (auto & m_running_task : m_running_tasks)
+	for (auto& m_running_task : m_running_tasks)
 	{
 		m_running_task.must_close = true;
 	}
 	if (m_verbose)
 		cout << "[CNationalInstrumentsDAQ::stop] Waiting for grabbing threads "
 				"to end...\n";
-	for (auto & m_running_task : m_running_tasks)
+	for (auto& m_running_task : m_running_tasks)
 	{
 		// For some reason, join doesn't work...
 		if (m_running_task.hThread.joinable()) m_running_task.hThread.join();
@@ -719,20 +704,20 @@ void CNationalInstrumentsDAQ::readFromDAQ(
 	// Read from the pipe:
 	m_state = ssWorking;
 
-	for (auto & m_running_task : m_running_tasks)
+	for (auto& m_running_task : m_running_tasks)
 	{
 		CObservationRawDAQ tmp_obs;
 		try
 		{
 			if (m_running_task.new_obs_available != 0)
 			{
-				auto arch = mrpt::serialization::archiveFrom(*m_running_task.read_pipe);
+				auto arch =
+					mrpt::serialization::archiveFrom(*m_running_task.read_pipe);
 				arch.ReadObject(&tmp_obs);
 				--(m_running_task.new_obs_available);
 
 				// Yes, valid block of samples was adquired:
-				outObservations.push_back(
-					CObservationRawDAQ::Ptr(new CObservationRawDAQ(tmp_obs)));
+				outObservations.push_back(CObservationRawDAQ::Create(tmp_obs));
 			}
 		}
 		catch (...)

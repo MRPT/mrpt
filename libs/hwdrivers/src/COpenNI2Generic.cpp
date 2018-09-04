@@ -216,8 +216,8 @@ int COpenNI2Generic::getConnectedDevices()
 			unsigned int sn;
 			if (device->getSerialNumber(sn))
 			{
-				showLog(
-					mrpt::format("Device[%d]: serial number: `%u`\n", newDevice, sn));
+				showLog(mrpt::format(
+					"Device[%d]: serial number: `%u`\n", newDevice, sn));
 			}
 		}
 	}
@@ -663,7 +663,7 @@ bool COpenNI2Generic::CDevice::synchMirrorMode()
 {
 	m_mirror = false;
 	// Check whether both stream support mirroring.
-	for (auto & m_stream : m_streams)
+	for (auto& m_stream : m_streams)
 	{
 		if (!m_stream) continue;
 		bool mirror_support;
@@ -690,7 +690,7 @@ bool COpenNI2Generic::CDevice::synchMirrorMode()
 		}
 	}
 	// Set both stream to same mirror mode.
-	for (auto & m_stream : m_streams)
+	for (auto& m_stream : m_streams)
 	{
 		if (!m_stream) continue;
 		if (m_stream->isMirrorSupported() == false)
@@ -747,7 +747,7 @@ bool COpenNI2Generic::CDevice::isOpen() const
 
 void COpenNI2Generic::CDevice::close()
 {
-	for (auto & m_stream : m_streams)
+	for (auto& m_stream : m_streams)
 	{
 		if (!m_stream) continue;
 		m_stream->destroy();
@@ -974,7 +974,7 @@ COpenNI2Generic::CDevice::Ptr COpenNI2Generic::CDevice::create(
 	const openni::DeviceInfo& info, openni::PixelFormat rgb,
 	openni::PixelFormat depth, bool verbose)
 {
-	return Ptr(new CDevice(info, rgb, depth, verbose));
+	return CDevice::Create(info, rgb, depth, verbose);
 }
 
 bool COpenNI2Generic::CDevice::getSerialNumber(std::string& sn)
@@ -1206,7 +1206,7 @@ COpenNI2Generic::CDevice::CStream::Ptr
 		openni::Device& device, openni::SensorType type,
 		openni::PixelFormat format, std::ostream& log, bool verbose)
 {
-	return Ptr(new CStream(device, type, format, log, verbose));
+	return CStream::Create(device, type, format, log, verbose);
 }
 
 bool COpenNI2Generic::CDevice::CStream::getFrame(

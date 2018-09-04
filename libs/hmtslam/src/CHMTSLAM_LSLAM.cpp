@@ -21,6 +21,7 @@
 #include <mrpt/poses/CPose3DPDFParticles.h>
 
 #include <limits>
+#include <memory>
 
 using namespace mrpt::slam;
 using namespace mrpt::hmtslam;
@@ -513,8 +514,8 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 			newArea->m_nodeType = "Area";
 			newArea->m_label = generateUniqueAreaLabel();
 
-			CMultiMetricMap::Ptr emptyMap = CMultiMetricMap::Ptr(
-				new CMultiMetricMap(&m_options.defaultMapsInitializers));
+			CMultiMetricMap::Ptr emptyMap = std::make_shared<CMultiMetricMap>(
+				&m_options.defaultMapsInitializers);
 			newArea->m_annotations.setMemoryReference(
 				NODE_ANNOTATION_METRIC_MAPS, emptyMap, LMH->m_ID);
 
@@ -884,8 +885,8 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 							{  // arc: b->c
 								newArc->m_annotations.set(
 									ARC_ANNOTATION_DELTA,
-									CPose3DPDFGaussian::Ptr(
-										new CPose3DPDFGaussian(Delta_b_c)),
+									std::make_shared<CPose3DPDFGaussian>(
+										Delta_b_c),
 									LMH->m_ID);
 								MRPT_LOG_DEBUG_STREAM(
 									"[LSLAM_proc_msg_AA] Setting arc "
@@ -914,8 +915,8 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 									<< endl);
 								newArc->m_annotations.set(
 									ARC_ANNOTATION_DELTA,
-									CPose3DPDFGaussian::Ptr(
-										new CPose3DPDFGaussian(Delta_b_c_inv)),
+									std::make_shared<CPose3DPDFGaussian>(
+										Delta_b_c_inv),
 									LMH->m_ID);
 								newArc->m_annotations.setElemental(
 									ARC_ANNOTATION_DELTA_SRC_POSEID,
@@ -1148,8 +1149,8 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 
 								theArc->m_annotations.set(
 									ARC_ANNOTATION_DELTA,
-									CPose3DPDFGaussian::Ptr(
-										new CPose3DPDFGaussian(newDelta)),
+									std::make_shared<CPose3DPDFGaussian>(
+										newDelta),
 									LMH->m_ID);
 								theArc->m_annotations.setElemental(
 									ARC_ANNOTATION_DELTA_SRC_POSEID, poseID_trg,
@@ -1198,8 +1199,8 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 
 								theArc->m_annotations.set(
 									ARC_ANNOTATION_DELTA,
-									CPose3DPDFGaussian::Ptr(
-										new CPose3DPDFGaussian(newDelta)),
+									std::make_shared<CPose3DPDFGaussian>(
+										newDelta),
 									LMH->m_ID);
 								theArc->m_annotations.setElemental(
 									ARC_ANNOTATION_DELTA_TRG_POSEID, poseID_trg,
@@ -1436,8 +1437,8 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 					<< " cov = " << relPoseGauss.cov.inMatlabFormat() << endl);
 				newArc->m_annotations.set(
 					ARC_ANNOTATION_DELTA,
-					CPose3DPDFGaussian::Ptr(
-						new CPose3DPDFGaussian(relPoseGauss)),
+					std::make_shared<CPose3DPDFGaussian>(
+						relPoseGauss),
 					LMH->m_ID);
 				newArc->m_annotations.setElemental(
 					ARC_ANNOTATION_DELTA_SRC_POSEID, area_a_poseID_src,
@@ -1458,7 +1459,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 					<< " cov = " << relPoseInv.cov.inMatlabFormat() << endl);
 				newArc->m_annotations.set(
 					ARC_ANNOTATION_DELTA,
-					CPose3DPDFGaussian::Ptr(new CPose3DPDFGaussian(relPoseInv)),
+					std::make_shared<CPose3DPDFGaussian>(relPoseInv),
 					LMH->m_ID);
 
 				newArc->m_annotations.setElemental(

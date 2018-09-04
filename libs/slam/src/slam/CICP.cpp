@@ -85,9 +85,8 @@ void CICP::TConfigParams::loadFromConfigFile(
 		section, "ICP_covariance_method", ICP_covariance_method);
 
 	MRPT_LOAD_CONFIG_VAR(thresholdDist, float, iniFile, section);
-	thresholdAng = DEG2RAD(
-		iniFile.read_float(
-			section.c_str(), "thresholdAng_DEG", RAD2DEG(thresholdAng)));
+	thresholdAng = DEG2RAD(iniFile.read_float(
+		section.c_str(), "thresholdAng_DEG", RAD2DEG(thresholdAng)));
 
 	MRPT_LOAD_CONFIG_VAR(ALFA, float, iniFile, section);
 	MRPT_LOAD_CONFIG_VAR(smallestThresholdDist, float, iniFile, section);
@@ -103,10 +102,9 @@ void CICP::TConfigParams::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR(normalizationStd, float, iniFile, section);
 	MRPT_LOAD_CONFIG_VAR(ransac_fuseByCorrsMatch, bool, iniFile, section);
 	MRPT_LOAD_CONFIG_VAR(ransac_fuseMaxDiffXY, float, iniFile, section);
-	ransac_fuseMaxDiffPhi = DEG2RAD(
-		iniFile.read_float(
-			section.c_str(), "ransac_fuseMaxDiffPhi_DEG",
-			RAD2DEG(ransac_fuseMaxDiffPhi)));
+	ransac_fuseMaxDiffPhi = DEG2RAD(iniFile.read_float(
+		section.c_str(), "ransac_fuseMaxDiffPhi_DEG",
+		RAD2DEG(ransac_fuseMaxDiffPhi)));
 
 	MRPT_LOAD_CONFIG_VAR(kernel_rho, float, iniFile, section);
 	MRPT_LOAD_CONFIG_VAR(use_kernel, bool, iniFile, section);
@@ -279,9 +277,8 @@ CPosePDF::Ptr CICP::ICP_Method_Classic(
 						  options.minAbsStep_trans ||
 					  fabs(lastMeanPose.y() - gaussPdf->mean.y()) >
 						  options.minAbsStep_trans ||
-					  fabs(
-						  math::wrapToPi(
-							  lastMeanPose.phi() - gaussPdf->mean.phi())) >
+					  fabs(math::wrapToPi(
+						  lastMeanPose.phi() - gaussPdf->mean.phi())) >
 						  options.minAbsStep_rot))
 				{
 					matchParams.maxDistForCorrespondence *= options.ALFA;
@@ -675,9 +672,9 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 					 i < nCorrespondences;
 					 ++i, ++it, ++other_x_trans, ++other_y_trans)
 				{
-// Jacobian: dJ_dx
-// --------------------------------------
-//#define ICP_DISTANCES_TO_LINE
+					// Jacobian: dJ_dx
+					// --------------------------------------
+					//#define ICP_DISTANCES_TO_LINE
 
 #ifndef ICP_DISTANCES_TO_LINE
 					w1 = *other_x_trans - Axy;
@@ -910,7 +907,7 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 
 	}  // end of "if m2 is not empty"
 
-	return CPosePDFGaussian::Ptr(new CPosePDFGaussian(q, C_inv.cast<double>()));
+	return CPosePDFGaussian::Create(q, C_inv.cast<double>());
 	MRPT_END
 }
 
@@ -1057,17 +1054,14 @@ CPose3DPDF::Ptr CICP::ICP3D_Method_Classic(
 						  options.minAbsStep_trans ||
 					  fabs(lastMeanPose.z() - gaussPdf->mean.z()) >
 						  options.minAbsStep_trans ||
-					  fabs(
-						  math::wrapToPi(
-							  lastMeanPose.yaw() - gaussPdf->mean.yaw())) >
+					  fabs(math::wrapToPi(
+						  lastMeanPose.yaw() - gaussPdf->mean.yaw())) >
 						  options.minAbsStep_rot ||
-					  fabs(
-						  math::wrapToPi(
-							  lastMeanPose.pitch() - gaussPdf->mean.pitch())) >
+					  fabs(math::wrapToPi(
+						  lastMeanPose.pitch() - gaussPdf->mean.pitch())) >
 						  options.minAbsStep_rot ||
-					  fabs(
-						  math::wrapToPi(
-							  lastMeanPose.roll() - gaussPdf->mean.roll())) >
+					  fabs(math::wrapToPi(
+						  lastMeanPose.roll() - gaussPdf->mean.roll())) >
 						  options.minAbsStep_rot))
 				{
 					matchParams.maxDistForCorrespondence *= options.ALFA;

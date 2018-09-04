@@ -543,12 +543,11 @@ bool CWirelessPower::getObservation(
 void CWirelessPower::doProcess()
 {
 	// Wrapper to getObservation
-	mrpt::obs::CObservationWirelessPower::Ptr outObservation =
-		mrpt::make_aligned_shared<mrpt::obs::CObservationWirelessPower>();
+	auto outObservation = mrpt::obs::CObservationWirelessPower::Create();
 	getObservation(*outObservation);
 
-	appendObservation(mrpt::obs::CObservationWirelessPower::Ptr(
-		new mrpt::obs::CObservationWirelessPower(*outObservation)));
+	appendObservation(std::make_shared<mrpt::obs::CObservationWirelessPower>(
+		*outObservation));
 }
 
 void CWirelessPower::loadConfig_sensorSpecific(

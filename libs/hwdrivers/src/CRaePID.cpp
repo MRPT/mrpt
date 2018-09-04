@@ -13,6 +13,7 @@
 
 #include <iostream>
 #include <iterator>
+#include <memory>
 #include <sstream>
 #include <thread>
 
@@ -144,8 +145,8 @@ void CRaePID::doProcess()
 	obsG.timestamp = mrpt::system::now();
 
 	appendObservation(
-		mrpt::obs::CObservationGasSensors::Ptr(
-			new mrpt::obs::CObservationGasSensors(obsG)));
+		std::make_shared<mrpt::obs::CObservationGasSensors>(
+			obsG));
 }
 
 std::string CRaePID::getFirmware()

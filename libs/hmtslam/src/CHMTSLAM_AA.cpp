@@ -40,8 +40,7 @@ CHMTSLAM::TMessageLSLAMfromAA::Ptr CHMTSLAM::areaAbstraction(
 	ASSERT_(obj);
 
 	// The output results:
-	TMessageLSLAMfromAA::Ptr resMsg =
-		TMessageLSLAMfromAA::Ptr(new TMessageLSLAMfromAA());
+	TMessageLSLAMfromAA::Ptr resMsg = TMessageLSLAMfromAA::Create();
 
 	// Process msg:
 	THypothesisID LMH_ID = LMH->m_ID;
@@ -81,8 +80,7 @@ CHMTSLAM::TMessageLSLAMfromAA::Ptr CHMTSLAM::areaAbstraction(
 				obj->m_options.AA_options;
 
 			unsigned int newIdx =
-				LMH->m_robotPosesGraph.partitioner.addMapFrame(
-					*sf, *posePDF);
+				LMH->m_robotPosesGraph.partitioner.addMapFrame(*sf, *posePDF);
 			LMH->m_robotPosesGraph.idx2pose[newIdx] = newPoseID;
 		}  // end of critical section lock on "m_robotPosesGraph.lock"
 	}  // end for each new ID
@@ -121,7 +119,7 @@ void CHMTSLAM::TMessageLSLAMfromAA::dumpToConsole() const
 		"Hypo ID: %i has %i partitions:\n", (int)hypothesisID,
 		(int)partitions.size());
 
-	for (const auto & partition : partitions)
+	for (const auto& partition : partitions)
 	{
 		mrpt::containers::printf_vector("%i", partition);
 		cout << endl;

@@ -54,7 +54,7 @@ CMultiMetricMapPDF::CMultiMetricMapPDF(
 	  newInfoIndex(0)
 {
 	m_particles.resize(opts.sampleSize);
-	for (auto & m_particle : m_particles)
+	for (auto& m_particle : m_particles)
 	{
 		m_particle.log_w = 0;
 		m_particle.d.reset(new CRBPFParticleData(mapsInitializers));
@@ -415,7 +415,7 @@ bool CMultiMetricMapPDF::insertObservation(CSensoryFrame& sf)
 
 	// Insert it into the SFs and the SF2robotPath list:
 	const uint32_t new_sf_id = SFs.size();
-	SFs.insert(posePDF, CSensoryFrame::Ptr(new CSensoryFrame(sf)));
+	SFs.insert(posePDF, CSensoryFrame::Create(sf));
 	SF2robotPath.resize(new_sf_id + 1);
 	SF2robotPath[new_sf_id] = m_particles[0].d->robotPath.size() - 1;
 
@@ -581,7 +581,7 @@ void CMultiMetricMapPDF::saveCurrentPathEstimationToTextFile(
 	FILE* f = os::fopen(fil.c_str(), "wt");
 	if (!f) return;
 
-	for (auto & m_particle : m_particles)
+	for (auto& m_particle : m_particles)
 	{
 		for (size_t i = 0; i < m_particle.d->robotPath.size(); i++)
 		{
