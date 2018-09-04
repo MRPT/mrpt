@@ -277,12 +277,10 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 			for (size_t l = 0; l < idxs1.size(); l++)
 				corrs_by_idx[idxs1[l]].insert(idxs2[l]);
 
-			for (std::map<size_t, std::set<size_t>>::iterator it =
-					 corrs_by_idx.begin();
-				 it != corrs_by_idx.end(); ++it)
+			for (auto & it : corrs_by_idx)
 			{
 				CMatrixFloat descriptor1;
-				lm1->landmarks.get(it->first)
+				lm1->landmarks.get(it.first)
 					->features[0]
 					->getFirstDescriptorAsMatrix(descriptor1);
 
@@ -290,7 +288,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 
 				const size_t FEAT_W = im1.getWidth();
 				const size_t FEAT_H = im1.getHeight();
-				const size_t nF = it->second.size();
+				const size_t nF = it.second.size();
 
 				CImage img_compose(FEAT_W * 2 + 15, 10 + (5 + FEAT_H) * nF);
 				img_compose.filledRectangle(
@@ -302,9 +300,9 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 				size_t j;
 				std::set<size_t>::iterator it_j;
 				string fil =
-					format("grid_feats/_FEAT_MATCH_%03i", (int)it->first);
+					format("grid_feats/_FEAT_MATCH_%03i", (int)it.first);
 
-				for (j = 0, it_j = it->second.begin(); j < nF; ++j, ++it_j)
+				for (j = 0, it_j = it.second.begin(); j < nF; ++j, ++it_j)
 				{
 					fil += format("_%u", static_cast<unsigned int>(*it_j));
 
@@ -560,16 +558,14 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 
 					// before proceeding with this hypothesis, is it an old one?
 					bool is_new_hyp = true;
-					for (TMapMatchingsToPoseMode::iterator itOldHyps =
-							 sog_modes.begin();
-						 itOldHyps != sog_modes.end(); ++itOldHyps)
+					for (auto & sog_mode : sog_modes)
 					{
-						if (itOldHyps->first.contains(all_corrs[idx1]) &&
-							itOldHyps->first.contains(all_corrs[idx2]))
+						if (sog_mode.first.contains(all_corrs[idx1]) &&
+							sog_mode.first.contains(all_corrs[idx2]))
 						{
 							// Increment weight:
-							itOldHyps->second.log_w = std::log(
-								std::exp(itOldHyps->second.log_w) + 1.0);
+							sog_mode.second.log_w = std::log(
+								std::exp(sog_mode.second.log_w) + 1.0);
 							is_new_hyp = false;
 							break;
 						}
@@ -677,9 +673,9 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 								N_KDTREE_SEARCHED, matches_idx, matches_dist);
 
 							// And for each one, compute the product-integral:
-							for (size_t u = 0; u < matches_idx.size(); u++)
+							for (unsigned long u : matches_idx)
 							{
-								if (used_landmarks1[matches_idx[u]]) continue;
+								if (used_landmarks1[u]) continue;
 
 								// Jacobian wrt transformation q
 								Hq.get_unsafe(0, 2) =
@@ -693,7 +689,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 									temptPose.cov, pdf_M1_i.cov, true);
 
 								float px, py;
-								lm1_pnts.getPoint(matches_idx[u], px, py);
+								lm1_pnts.getPoint(u, px, py);
 								pdf_M1_i.mean.x(px);
 								pdf_M1_i.mean.y(py);
 
@@ -723,7 +719,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 									// pdf_M1_i.productIntegralWith2D(pdf_M2_j);
 
 									best_pair_value = prod_ij;
-									best_pair_ij.first = matches_idx[u];
+									best_pair_ij.first = u;
 									best_pair_ij.second = j;
 
 									best_pair_d2 = square(

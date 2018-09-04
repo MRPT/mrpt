@@ -51,10 +51,10 @@ void CPosePDFSOG::getMean(CPose2D& p) const
 	if (!m_modes.empty())
 	{
 		mrpt::poses::SE_average<2> se_averager;
-		for (const_iterator it = m_modes.begin(); it != m_modes.end(); ++it)
+		for (const auto & m_mode : m_modes)
 		{
-			const double w = exp((it)->log_w);
-			se_averager.append((it)->mean, w);
+			const double w = exp(m_mode.->log_w);
+			se_averager.append(m_mode.->mean, w);
 		}
 		se_averager.get_average(p);
 	}
@@ -83,16 +83,16 @@ void CPosePDFSOG::getCovarianceAndMean(
 		CMatrixDouble33 temp;
 		CMatrixDouble31 estMean_i;
 
-		for (const_iterator it = m_modes.begin(); it != m_modes.end(); ++it)
+		for (const auto & m_mode : m_modes)
 		{
 			double w;
-			sumW += w = exp((it)->log_w);
+			sumW += w = exp(m_mode.->log_w);
 
-			estMean_i = CMatrixDouble31((it)->mean);
+			estMean_i = CMatrixDouble31(m_mode.->mean);
 			estMean_i -= estMeanMat;
 
 			temp.multiply_AAt(estMean_i);
-			temp += (it)->cov;
+			temp += m_mode.->cov;
 			temp *= w;
 
 			estCov += temp;
@@ -212,16 +212,16 @@ void CPosePDFSOG::changeCoordinatesReference(const CPose3D& newReferenceBase_)
 	M(2, 1) = 0;
 	M(2, 2) = 1;
 
-	for (iterator it = m_modes.begin(); it != m_modes.end(); ++it)
+	for (auto & m_mode : m_modes)
 	{
 		// The mean:
-		(it)->mean.composeFrom(newReferenceBase, (it)->mean);
+		m_mode.->mean.composeFrom(newReferenceBase, m_mode.->mean);
 
 		// The covariance:
 		// NOTE: The CMatrixDouble33() is NEEDED to create a temporary copy of
 		// (it)->cov
 		M.multiply_HCHt(
-			CMatrixDouble33((it)->cov), (it)->cov);  // * (it)->cov * (~M);
+			CMatrixDouble33(m_mode.->cov), m_mode.->cov);  // * (it)->cov * (~M);
 	}
 
 	assureSymmetry();
@@ -238,8 +238,8 @@ void CPosePDFSOG::rotateAllCovariances(const double& ang)
 	rot(1, 0) = sin(ang);
 	rot(2, 2) = 1;
 
-	for (iterator it = m_modes.begin(); it != m_modes.end(); ++it)
-		rot.multiply_HCHt(CMatrixDouble33((it)->cov), (it)->cov);
+	for (auto & m_mode : m_modes)
+		rot.multiply_HCHt(CMatrixDouble33(m_mode.->cov), m_mode.->cov);
 }
 
 /*---------------------------------------------------------------
@@ -305,10 +305,10 @@ void CPosePDFSOG::bayesianFusion(
 					   (eta.adjoint() * p2->cov * eta)(0, 0));
 
 	this->m_modes.clear();
-	for (const_iterator it = p1->m_modes.begin(); it != p1->m_modes.end(); ++it)
+	for (const auto & m_mode : p1->m_modes)
 	{
-		auxSOG_Kernel_i.mean = (it)->mean;
-		auxSOG_Kernel_i.cov = CMatrixDouble((it)->cov);
+		auxSOG_Kernel_i.mean = m_mode.->mean;
+		auxSOG_Kernel_i.cov = CMatrixDouble(m_mode.->cov);
 		auxGaussianProduct.bayesianFusion(auxSOG_Kernel_i, *p2);
 
 		// ----------------------------------------------------------------------
@@ -344,7 +344,7 @@ void CPosePDFSOG::bayesianFusion(
 					(new_eta_i.adjoint() * newKernel.cov * new_eta_i)(0, 0));
 
 		// newKernel.w	   = (it)->w * exp( a + a_i - new_a_i );
-		newKernel.log_w = (it)->log_w + a + a_i - new_a_i;
+		newKernel.log_w = m_mode.->log_w + a + a_i - new_a_i;
 
 		// Add to the results (in "this") the new kernel:
 		this->m_modes.push_back(newKernel);
@@ -384,8 +384,8 @@ void CPosePDFSOG::inverse(CPosePDF& o) const
  ---------------------------------------------------------------*/
 void CPosePDFSOG::operator+=(const CPose2D& Ap)
 {
-	for (iterator it = m_modes.begin(); it != m_modes.end(); ++it)
-		(it)->mean = (it)->mean + Ap;
+	for (auto & m_mode : m_modes)
+		m_mode.->mean = m_mode.->mean + Ap;
 
 	this->rotateAllCovariances(Ap.phi());
 }
@@ -402,10 +402,10 @@ double CPosePDFSOG::evaluatePDF(const CPose2D& x, bool sumOverAllPhis) const
 		CMatrixDouble31 MU;
 		double ret = 0;
 
-		for (const_iterator it = m_modes.begin(); it != m_modes.end(); ++it)
+		for (const auto & m_mode : m_modes)
 		{
-			MU = CMatrixDouble31((it)->mean);
-			ret += exp((it)->log_w) * math::normalPDF(X, MU, (it)->cov);
+			MU = CMatrixDouble31(m_mode.->mean);
+			ret += exp(m_mode.->log_w) * math::normalPDF(X, MU, m_mode.->cov);
 		}
 
 		return ret;
@@ -419,16 +419,16 @@ double CPosePDFSOG::evaluatePDF(const CPose2D& x, bool sumOverAllPhis) const
 		X(0, 0) = x.x();
 		X(1, 0) = x.y();
 
-		for (const_iterator it = m_modes.begin(); it != m_modes.end(); ++it)
+		for (const auto & m_mode : m_modes)
 		{
-			MU(0, 0) = (it)->mean.x();
-			MU(1, 0) = (it)->mean.y();
+			MU(0, 0) = m_mode.->mean.x();
+			MU(1, 0) = m_mode.->mean.y();
 
-			COV(0, 0) = (it)->cov(0, 0);
-			COV(1, 1) = (it)->cov(1, 1);
-			COV(0, 1) = COV(1, 0) = (it)->cov(0, 1);
+			COV(0, 0) = m_mode.->cov(0, 0);
+			COV(1, 1) = m_mode.->cov(1, 1);
+			COV(0, 1) = COV(1, 0) = m_mode.->cov(0, 1);
 
-			ret += exp((it)->log_w) * math::normalPDF(X, MU, COV);
+			ret += exp(m_mode.->log_w) * math::normalPDF(X, MU, COV);
 		}
 
 		return ret;
@@ -444,11 +444,11 @@ double CPosePDFSOG::evaluateNormalizedPDF(const CPose2D& x) const
 	CMatrixDouble31 MU;
 	double ret = 0;
 
-	for (const_iterator it = m_modes.begin(); it != m_modes.end(); ++it)
+	for (const auto & m_mode : m_modes)
 	{
-		MU = CMatrixDouble31((it)->mean);
-		ret += exp((it)->log_w) * math::normalPDF(X, MU, (it)->cov) /
-			   math::normalPDF(MU, MU, (it)->cov);
+		MU = CMatrixDouble31(m_mode.->mean);
+		ret += exp(m_mode.->log_w) * math::normalPDF(X, MU, m_mode.->cov) /
+			   math::normalPDF(MU, MU, m_mode.->cov);
 	}
 
 	return ret;
@@ -461,11 +461,11 @@ void CPosePDFSOG::assureSymmetry()
 {
 	// Differences, when they exist, appear in the ~15'th significant
 	//  digit, so... just take one of them arbitrarily!
-	for (iterator it = m_modes.begin(); it != m_modes.end(); ++it)
+	for (auto & m_mode : m_modes)
 	{
-		(it)->cov(0, 1) = (it)->cov(1, 0);
-		(it)->cov(0, 2) = (it)->cov(2, 0);
-		(it)->cov(1, 2) = (it)->cov(2, 1);
+		m_mode.->cov(0, 1) = m_mode.->cov(1, 0);
+		m_mode.->cov(0, 2) = m_mode.->cov(2, 0);
+		m_mode.->cov(1, 2) = m_mode.->cov(2, 1);
 	}
 }
 
@@ -479,11 +479,11 @@ void CPosePDFSOG::normalizeWeights()
 	if (!m_modes.size()) return;
 
 	double maxW = m_modes[0].log_w;
-	for (iterator it = m_modes.begin(); it != m_modes.end(); ++it)
-		maxW = max(maxW, (it)->log_w);
+	for (auto & m_mode : m_modes)
+		maxW = max(maxW, m_mode.->log_w);
 
-	for (iterator it = m_modes.begin(); it != m_modes.end(); ++it)
-		(it)->log_w -= maxW;
+	for (auto & m_mode : m_modes)
+		m_mode.->log_w -= maxW;
 
 	MRPT_END
 }

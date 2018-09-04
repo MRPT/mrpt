@@ -398,10 +398,9 @@ void COccupancyGridMap2D::computeEntropy(TEntropyInfo& info) const
 
 	info.H = info.I = 0;
 	info.effectiveMappedCells = 0;
-	for (std::vector<cellType>::const_iterator it = map.begin();
-		 it != map.end(); ++it)
+	for (signed char it : map)
 	{
-		cellTypeUnsigned ctu = static_cast<cellTypeUnsigned>(*it);
+		cellTypeUnsigned ctu = static_cast<cellTypeUnsigned>(it);
 		h = entropyTable[ctu];
 		info.H += h;
 		if (h < (MAX_H - 0.001f))

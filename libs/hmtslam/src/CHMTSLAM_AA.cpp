@@ -47,13 +47,12 @@ CHMTSLAM::TMessageLSLAMfromAA::Ptr CHMTSLAM::areaAbstraction(
 	THypothesisID LMH_ID = LMH->m_ID;
 	resMsg->hypothesisID = LMH_ID;
 
-	for (TPoseIDList::const_iterator newID = newPoseIDs.begin();
-		 newID != newPoseIDs.end(); ++newID)
+	for (unsigned long newPoseID : newPoseIDs)
 	{
 		// Add a new node to the graph:
 		obj->logFmt(
 			mrpt::system::LVL_DEBUG, "[thread_AA] Processing new pose ID: %u\n",
-			static_cast<unsigned>(*newID));
+			static_cast<unsigned>(newPoseID));
 
 		// Get SF & pose pdf for the new pose.
 		const CSensoryFrame* sf;
@@ -66,12 +65,12 @@ CHMTSLAM::TMessageLSLAMfromAA::Ptr CHMTSLAM::areaAbstraction(
 
 			// SF:
 			std::map<TPoseID, CSensoryFrame>::const_iterator itSFs =
-				LMH->m_SFs.find(*newID);
+				LMH->m_SFs.find(newPoseID);
 			ASSERT_(itSFs != LMH->m_SFs.end());
 			sf = &itSFs->second;
 
 			// Pose PDF:
-			LMH->getPoseParticles(*newID, *posePDF);
+			LMH->getPoseParticles(newPoseID, *posePDF);
 		}  // end of LMH's critical section lock
 
 		{
@@ -84,7 +83,7 @@ CHMTSLAM::TMessageLSLAMfromAA::Ptr CHMTSLAM::areaAbstraction(
 			unsigned int newIdx =
 				LMH->m_robotPosesGraph.partitioner.addMapFrame(
 					*sf, *posePDF);
-			LMH->m_robotPosesGraph.idx2pose[newIdx] = *newID;
+			LMH->m_robotPosesGraph.idx2pose[newIdx] = newPoseID;
 		}  // end of critical section lock on "m_robotPosesGraph.lock"
 	}  // end for each new ID
 
@@ -122,10 +121,9 @@ void CHMTSLAM::TMessageLSLAMfromAA::dumpToConsole() const
 		"Hypo ID: %i has %i partitions:\n", (int)hypothesisID,
 		(int)partitions.size());
 
-	for (std::vector<TPoseIDList>::const_iterator it = partitions.begin();
-		 it != partitions.end(); ++it)
+	for (const auto & partition : partitions)
 	{
-		mrpt::containers::printf_vector("%i", *it);
+		mrpt::containers::printf_vector("%i", partition);
 		cout << endl;
 	}
 }

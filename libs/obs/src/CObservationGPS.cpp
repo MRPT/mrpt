@@ -40,9 +40,8 @@ void CObservationGPS::serializeTo(mrpt::serialization::CArchive& out) const
 
 	const uint32_t nMsgs = messages.size();
 	out << nMsgs;
-	for (message_list_t::const_iterator it = messages.begin();
-		 it != messages.end(); ++it)
-		it->second->writeToStream(out);
+	for (const auto & message : messages)
+		message.second->writeToStream(out);
 }
 
 void CObservationGPS::serializeFrom(

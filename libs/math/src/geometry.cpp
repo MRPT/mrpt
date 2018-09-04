@@ -1651,10 +1651,9 @@ void getMinAndMaxBounds(
 	minP.reserve(N);
 	maxP.reserve(N);
 	TPoint3D p1, p2;
-	for (std::vector<TPolygon3D>::const_iterator it = v1.begin();
-		 it != v1.end(); ++it)
+	for (const auto & it : v1)
 	{
-		getPrismBounds(*it, p1, p2);
+		getPrismBounds(it, p1, p2);
 		minP.push_back(p1);
 		maxP.push_back(p2);
 	}
@@ -2217,18 +2216,16 @@ class FCreatePolygon
 		TPolygon3D res;
 		size_t N = vertices.size();
 		res.reserve(N);
-		for (std::vector<MatchingVertex>::const_iterator it = vertices.begin();
-			 it != vertices.end(); ++it)
-			res.push_back(segs[it->seg2][it->seg2Point ? 1 : 0]);
+		for (const auto & vertice : vertices)
+			res.push_back(segs[vertice.seg2][vertice.seg2Point ? 1 : 0]);
 		return res;
 	}
 };
 inline bool firstOrNonPresent(size_t i, const std::vector<MatchingVertex>& v)
 {
 	if (v.size() > 0 && v[0].seg1 == i) return true;
-	for (std::vector<MatchingVertex>::const_iterator it = v.begin();
-		 it != v.end(); ++it)
-		if (it->seg1 == i || it->seg2 == i) return false;
+	for (const auto & it : v)
+		if (it.seg1 == i || it.seg2 == i) return false;
 	return true;
 }
 bool depthFirstSearch(
@@ -2292,12 +2289,11 @@ void math::assemblePolygons(
 {
 	std::vector<TSegment3D> tmp;
 	tmp.reserve(segms.size());
-	for (std::vector<TSegment3D>::const_iterator it = segms.begin();
-		 it != segms.end(); ++it)
-		if (it->length() >= geometryEpsilon)
-			tmp.push_back(*it);
+	for (const auto & segm : segms)
+		if (segm.length() >= geometryEpsilon)
+			tmp.push_back(segm);
 		else
-			remainder.push_back(*it);
+			remainder.push_back(segm);
 	size_t N = tmp.size();
 	CSparseMatrixTemplate<unsigned char> matches(N, N);
 	for (size_t i = 0; i < N - 1; i++)
@@ -2596,9 +2592,8 @@ bool math::traceRay(
 	createFromPoseX(pose, lin);
 	lin.unitarize();
 	bool res = false;
-	for (vector<TPolygonWithPlane>::const_iterator it = vec.begin();
-		 it != vec.end(); ++it)
-		if (::intersect(*it, lin, nDist, dist))
+	for (const auto & it : vec)
+		if (::intersect(it, lin, nDist, dist))
 		{
 			res = true;
 			dist = nDist;

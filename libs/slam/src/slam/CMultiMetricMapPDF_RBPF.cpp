@@ -494,14 +494,13 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 			// -------------------------------------------
 			deque<TAuxRangeMeasInfo> lstObservedRanges;
 
-			for (CSensoryFrame::const_iterator itObs = sf->begin();
-				 itObs != sf->end(); ++itObs)
+			for (const auto & itObs : *sf)
 			{
-				if (IS_CLASS((*itObs), CObservationBeaconRanges))
+				if (IS_CLASS(itObs, CObservationBeaconRanges))
 				{
 					const CObservationBeaconRanges* obs =
 						static_cast<const CObservationBeaconRanges*>(
-							itObs->get());
+							itObs.get());
 					deque<CObservationBeaconRanges::TMeasurement>::
 						const_iterator itRanges;
 					for (itRanges = obs->sensedData.begin();
@@ -589,20 +588,18 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 				{
 					// for each observed beacon (by its ID), generate
 					// observation model:
-					for (deque<TAuxRangeMeasInfo>::iterator itObs =
-							 lstObservedRanges.begin();
-						 itObs != lstObservedRanges.end(); ++itObs)
+					for (auto & lstObservedRange : lstObservedRanges)
 					{
-						if ((itBeacs)->m_ID == itObs->beaconID)
+						if ((itBeacs)->m_ID == lstObservedRange.beaconID)
 						{
 							// Match:
-							float sensedRange = itObs->sensedDistance;
+							float sensedRange = lstObservedRange.sensedDistance;
 
 							CPointPDFSOG newObsModel;
 							(itBeacs)->generateObservationModelDistribution(
 								sensedRange, newObsModel,
 								beacMap.get(),  // The beacon map, for options
-								itObs->sensorLocationOnRobot,  // Sensor
+								lstObservedRange.sensorLocationOnRobot,  // Sensor
 								// location on
 								// robot
 								centerPositionPrior, centerPositionPriorRadius);
@@ -736,14 +733,12 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 					{
 						// for each observed beacon (by its ID), generate
 						// observation model:
-						for (deque<TAuxRangeMeasInfo>::iterator itObs =
-								 lstObservedRanges.begin();
-							 itObs != lstObservedRanges.end(); ++itObs)
+						for (auto & lstObservedRange : lstObservedRanges)
 						{
-							if ((itBeacs)->m_ID == itObs->beaconID)
+							if ((itBeacs)->m_ID == lstObservedRange.beaconID)
 							{
 								// Match:
-								float sensedRange = itObs->sensedDistance;
+								float sensedRange = lstObservedRange.sensedDistance;
 
 								/** /
 																CPointPDFSOG
@@ -795,11 +790,11 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 															sensedRange -
 															(it)->val.mean.distance2DTo(
 																grid_x +
-																	itObs
+																	lstObservedRange.
 																		->sensorLocationOnRobot
 																		.x(),
 																grid_y +
-																	itObs
+																	lstObservedRange.
 																		->sensorLocationOnRobot
 																		.y())) /
 														sensorSTD2);
@@ -1024,8 +1019,7 @@ double CMultiMetricMapPDF::PF_SLAM_computeObservationLikelihoodForParticle(
 	CMultiMetricMap* map = const_cast<CMultiMetricMap*>(
 		&m_particles[particleIndexForMap].d->mapTillNow);
 	double ret = 0;
-	for (CSensoryFrame::const_iterator it = observation.begin();
-		 it != observation.end(); ++it)
-		ret += map->computeObservationLikelihood((CObservation*)it->get(), x);
+	for (const auto & it : observation)
+		ret += map->computeObservationLikelihood((CObservation*)it.get(), x);
 	return ret;
 }

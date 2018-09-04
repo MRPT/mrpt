@@ -78,12 +78,11 @@ double mrpt::slam::observationsOverlap(
 	// Return the average value:
 	size_t N = 0;
 	double accum = 0;
-	for (CSensoryFrame::const_iterator i1 = sf1.begin(); i1 != sf1.end(); ++i1)
+	for (const auto & i1 : sf1)
 	{
-		for (CSensoryFrame::const_iterator i2 = sf2.begin(); i2 != sf2.end();
-			 ++i2)
+		for (const auto & i2 : sf2)
 		{
-			accum += observationsOverlap(*i1, *i2);
+			accum += observationsOverlap(i1, i2);
 			N++;
 		}
 	}

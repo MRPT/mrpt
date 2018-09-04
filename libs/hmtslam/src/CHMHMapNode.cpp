@@ -58,8 +58,8 @@ CHMHMapNode::~CHMHMapNode()
 	if (m_parent.get()) m_parent->onNodeDestruction(this);
 
 	// To the arcs:
-	for (TArcList::iterator it = m_arcs.begin(); it != m_arcs.end(); ++it)
-		(*it)->onNodeDestruction(this);
+	for (auto & m_arc : m_arcs)
+		m_arc->onNodeDestruction(this);
 }
 
 uint8_t CHMHMapNode::serializeGetVersion() const { return 0; }
@@ -169,8 +169,8 @@ unsigned int CHMHMapNode::getRelatedArcsCount()
 void CHMHMapNode::getArcs(TArcList& out, const THypothesisID& hyp_id) const
 {
 	out.clear();
-	for (TArcList::const_iterator it = m_arcs.begin(); it != m_arcs.end(); ++it)
-		if ((*it)->m_hypotheses.has(hyp_id)) out.push_back(*it);
+	for (const auto & m_arc : m_arcs)
+		if (m_arc->m_hypotheses.has(hyp_id)) out.push_back(m_arc);
 }
 
 /*---------------------------------------------------------------
@@ -191,9 +191,9 @@ void CHMHMapNode::getArcs(
 bool CHMHMapNode::isNeighbor(
 	const TNodeID& otherArea, const THypothesisID& hyp_id) const
 {
-	for (TArcList::const_iterator it = m_arcs.begin(); it != m_arcs.end(); ++it)
-		if ((*it)->m_hypotheses.has(hyp_id) &&
-			((*it)->m_nodeFrom == otherArea || (*it)->m_nodeTo == otherArea))
+	for (const auto & m_arc : m_arcs)
+		if (m_arc->m_hypotheses.has(hyp_id) &&
+			(m_arc->m_nodeFrom == otherArea || m_arc->m_nodeTo == otherArea))
 			return true;
 	return false;  // Nope
 }

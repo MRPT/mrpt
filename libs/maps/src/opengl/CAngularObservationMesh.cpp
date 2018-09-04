@@ -181,10 +181,9 @@ void CAngularObservationMesh::render_dl() const
 	glShadeModel(GL_SMOOTH);
 	if (!meshUpToDate) updateMesh();
 	if (!mWireframe) glBegin(GL_TRIANGLES);
-	for (size_t i = 0; i < triangles.size(); i++)
+	for (const auto & t : triangles)
 	{
-		const CSetOfTriangles::TTriangle& t = triangles[i];
-		float ax = t.x[1] - t.x[0];
+			float ax = t.x[1] - t.x[0];
 		float bx = t.x[2] - t.x[0];
 		float ay = t.y[1] - t.y[0];
 		float by = t.y[2] - t.y[0];
@@ -377,8 +376,8 @@ class FAddUntracedLines
 	void operator()(const CObservation2DRangeScan& obs)
 	{
 		size_t hm = obs.scan.size();
-		for (auto it = obs.validRange.begin(); it != obs.validRange.end(); ++it)
-			if (*it) hm--;
+		for (char it : obs.validRange)
+			if (it) hm--;
 		lins->reserve(hm);
 		for (size_t i = 0; i < obs.scan.size(); i++)
 			if (!obs.validRange[i])
@@ -441,11 +440,9 @@ void CAngularObservationMesh::getBoundingBox(
 		-std::numeric_limits<double>::max(),
 		-std::numeric_limits<double>::max());
 
-	for (size_t i = 0; i < triangles.size(); i++)
+	for (const auto & t : triangles)
 	{
-		const CSetOfTriangles::TTriangle& t = triangles[i];
-
-		keep_min(bb_min.x, t.x[0]);
+			keep_min(bb_min.x, t.x[0]);
 		keep_max(bb_max.x, t.x[0]);
 		keep_min(bb_min.y, t.y[0]);
 		keep_max(bb_max.y, t.y[0]);

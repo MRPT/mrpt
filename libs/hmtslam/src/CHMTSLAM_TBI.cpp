@@ -194,10 +194,7 @@ CHMTSLAM::TMessageLSLAMfromTBI::Ptr CHMTSLAM::TBI_main_method(
 				 obj->m_topLCdets.begin();
 			 it != obj->m_topLCdets.end(); ++it)
 		{
-			for (map<CHMHMapNode::TNodeID,
-					 TMessageLSLAMfromTBI::TBI_info>::iterator candidate =
-					 msg->loopClosureData.begin();
-				 candidate != msg->loopClosureData.end(); ++candidate)
+			for (auto & candidate : msg->loopClosureData)
 			{
 				// If the current log_lik of this area is reaaaally low, we
 				// could skip the computation with other LC detectors...
@@ -207,7 +204,7 @@ CHMTSLAM::TMessageLSLAMfromTBI::Ptr CHMTSLAM::TBI_main_method(
 				// Proceed:
 				// ----------------------------------------------------------------------------------------------------------------
 				const CHMHMapNode::Ptr refArea =
-					obj->m_map.getNodeByID(candidate->first);
+					obj->m_map.getNodeByID(candidate.first);
 				double this_log_lik;
 
 				// get the output from this LC detector:
@@ -215,7 +212,7 @@ CHMTSLAM::TMessageLSLAMfromTBI::Ptr CHMTSLAM::TBI_main_method(
 					LMH->m_ID, currentArea, refArea, this_log_lik);
 
 				// Add to the output:
-				candidate->second.log_lik += this_log_lik;
+				candidate.second.log_lik += this_log_lik;
 
 				// This is because not all LC detector MUST return a pose PDF
 				// (i.e. image-based detectors)
@@ -227,9 +224,9 @@ CHMTSLAM::TMessageLSLAMfromTBI::Ptr CHMTSLAM::TBI_main_method(
 
 					// Mix (append) the modes, if any:
 					if (SOG->size() > 0)
-						candidate->second.delta_new_cur.appendFrom(*SOG);
+						candidate.second.delta_new_cur.appendFrom(*SOG);
 					else
-						lstNodesToErase.insert(candidate->first);
+						lstNodesToErase.insert(candidate.first);
 				}
 			}  // end for each candidate area
 		}  // end for each LC detector
@@ -237,9 +234,8 @@ CHMTSLAM::TMessageLSLAMfromTBI::Ptr CHMTSLAM::TBI_main_method(
 	}  // end of m_topLCdets_cs lock
 
 	// Delete candidates which had no PDF when they should.
-	for (set<CHMHMapNode::TNodeID>::const_iterator it = lstNodesToErase.begin();
-		 it != lstNodesToErase.end(); ++it)
-		msg->loopClosureData.erase(*it);
+	for (unsigned long it : lstNodesToErase)
+		msg->loopClosureData.erase(it);
 
 	obj->logFmt(
 		mrpt::system::LVL_DEBUG, "[TBI_main] Done. %u candidates found.\n",

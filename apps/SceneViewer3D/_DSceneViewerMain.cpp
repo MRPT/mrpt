@@ -1995,9 +1995,9 @@ class OpenGlObjectsFilter_ByClass : public OpenGlObjectsFilterVirtual
    protected:
 	bool checkObj(const mrpt::opengl::CRenderizable::Ptr& obj) override
 	{
-		for (size_t i = 0; i < m_selected_classes.size(); i++)
+		for (auto m_selected_classe : m_selected_classes)
 		{
-			if (obj->GetRuntimeClass() == m_selected_classes[i]) return true;
+			if (obj->GetRuntimeClass() == m_selected_classe) return true;
 		}
 		return false;
 	}
@@ -2015,9 +2015,9 @@ void _DSceneViewerFrame::OnmnuSelectByClassSelected(wxCommandEvent& event)
 		init_list = false;
 		vector<const TRuntimeClassId*> all_mrpt_classes =
 			mrpt::rtti::getAllRegisteredClasses();
-		for (size_t i = 0; i < all_mrpt_classes.size(); i++)
-			if (all_mrpt_classes[i]->derivedFrom(CLASS_ID(CRenderizable)))
-				glClassNames.Add(_U(all_mrpt_classes[i]->className));
+		for (auto & all_mrpt_classe : all_mrpt_classes)
+			if (all_mrpt_classe->derivedFrom(CLASS_ID(CRenderizable)))
+				glClassNames.Add(_U(all_mrpt_classe->className));
 	}
 
 	wxArrayInt selections;
@@ -2055,8 +2055,8 @@ void _DSceneViewerFrame::OnmnuSelectByClassSelected(wxCommandEvent& event)
 // On selection: delete
 void _DSceneViewerFrame::OnmnuSelectionDeleteSelected(wxCommandEvent& event)
 {
-	for (size_t i = 0; i < m_selected_gl_objects.size(); i++)
-		m_selected_gl_objects[i].reset();
+	for (auto & m_selected_gl_object : m_selected_gl_objects)
+		m_selected_gl_object.reset();
 	Refresh(false);
 }
 
@@ -2069,13 +2069,13 @@ void _DSceneViewerFrame::OnmnuSelectionScaleSelected(wxCommandEvent& event)
 	std::string sScale = std::string(ssScale.mb_str());
 	const float s = atof(sScale.c_str());
 
-	for (size_t i = 0; i < m_selected_gl_objects.size(); i++)
-		if (m_selected_gl_objects[i])
+	for (auto & m_selected_gl_object : m_selected_gl_objects)
+		if (m_selected_gl_object)
 		{
-			const float sx = m_selected_gl_objects[i]->getScaleX();
-			const float sy = m_selected_gl_objects[i]->getScaleY();
-			const float sz = m_selected_gl_objects[i]->getScaleZ();
-			m_selected_gl_objects[i]->setScale(s * sx, s * sy, s * sz);
+			const float sx = m_selected_gl_object->getScaleX();
+			const float sy = m_selected_gl_object->getScaleY();
+			const float sz = m_selected_gl_object->getScaleZ();
+			m_selected_gl_object->setScale(s * sx, s * sy, s * sz);
 		}
 	Refresh(false);
 }

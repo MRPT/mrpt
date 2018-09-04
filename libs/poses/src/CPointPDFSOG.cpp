@@ -186,13 +186,12 @@ bool CPointPDFSOG::saveToTextFile(const std::string& file) const
 	FILE* f = os::fopen(file.c_str(), "wt");
 	if (!f) return false;
 
-	for (CListGaussianModes::const_iterator it = m_modes.begin();
-		 it != m_modes.end(); ++it)
+	for (const auto & m_mode : m_modes)
 		os::fprintf(
-			f, "%e %e %e %e %e %e %e %e %e %e\n", exp(it->log_w),
-			it->val.mean.x(), it->val.mean.y(), it->val.mean.z(),
-			it->val.cov(0, 0), it->val.cov(1, 1), it->val.cov(2, 2),
-			it->val.cov(0, 1), it->val.cov(0, 2), it->val.cov(1, 2));
+			f, "%e %e %e %e %e %e %e %e %e %e\n", exp(m_mode.log_w),
+			m_mode.val.mean.x(), m_mode.val.mean.y(), m_mode.val.mean.z(),
+			m_mode.val.cov(0, 0), m_mode.val.cov(1, 1), m_mode.val.cov(2, 2),
+			m_mode.val.cov(0, 1), m_mode.val.cov(0, 2), m_mode.val.cov(1, 2));
 	os::fclose(f);
 	return true;
 }
@@ -273,10 +272,9 @@ void CPointPDFSOG::bayesianFusion(
 	bool is2D =
 		false;  // to detect & avoid errors in 3x3 matrix inversions of range=2.
 
-	for (CListGaussianModes::const_iterator it1 = p1->m_modes.begin();
-		 it1 != p1->m_modes.end(); ++it1)
+	for (const auto & m_mode : p1->m_modes)
 	{
-		CMatrixDouble33 c = it1->val.cov;
+		CMatrixDouble33 c = m_mode.val.cov;
 
 		// Is a 2D covariance??
 		if (c.get_unsafe(2, 2) == 0)
@@ -290,7 +288,7 @@ void CPointPDFSOG::bayesianFusion(
 		CMatrixDouble33 covInv(UNINITIALIZED_MATRIX);
 		c.inv(covInv);
 
-		CMatrixDouble31 eta = covInv * CMatrixDouble31(it1->val.mean);
+		CMatrixDouble31 eta = covInv * CMatrixDouble31(m_mode.val.mean);
 
 		// Normal distribution canonical form constant:
 		// See: http://www-static.cc.gatech.edu/~wujx/paper/Gaussian.pdf
@@ -298,10 +296,9 @@ void CPointPDFSOG::bayesianFusion(
 						   eta.multiply_HtCH_scalar(
 							   c));  // (~eta * (*it1).val.cov * eta)(0,0) );
 
-		for (CListGaussianModes::const_iterator it2 = p2->m_modes.begin();
-			 it2 != p2->m_modes.end(); ++it2)
+		for (const auto & it2 : p2->m_modes)
 		{
-			auxSOG_Kernel_i = (*it2).val;
+			auxSOG_Kernel_i = it2.val;
 			if (auxSOG_Kernel_i.cov.get_unsafe(2, 2) == 0)
 			{
 				auxSOG_Kernel_i.cov.set_unsafe(2, 2, 1);
@@ -319,25 +316,25 @@ void CPointPDFSOG::bayesianFusion(
 
 				float stdX2 =
 					max(auxSOG_Kernel_i.cov.get_unsafe(0, 0),
-						(*it1).val.cov.get_unsafe(0, 0));
+						m_mode.val.cov.get_unsafe(0, 0));
 				mahaDist2 =
-					square(auxSOG_Kernel_i.mean.x() - (*it1).val.mean.x()) /
+					square(auxSOG_Kernel_i.mean.x() - m_mode.val.mean.x()) /
 					stdX2;
 
 				float stdY2 =
 					max(auxSOG_Kernel_i.cov.get_unsafe(1, 1),
-						(*it1).val.cov.get_unsafe(1, 1));
+						m_mode.val.cov.get_unsafe(1, 1));
 				mahaDist2 +=
-					square(auxSOG_Kernel_i.mean.y() - (*it1).val.mean.y()) /
+					square(auxSOG_Kernel_i.mean.y() - m_mode.val.mean.y()) /
 					stdY2;
 
 				if (!is2D)
 				{
 					float stdZ2 =
 						max(auxSOG_Kernel_i.cov.get_unsafe(2, 2),
-							(*it1).val.cov.get_unsafe(2, 2));
+							m_mode.val.cov.get_unsafe(2, 2));
 					mahaDist2 +=
-						square(auxSOG_Kernel_i.mean.z() - (*it1).val.mean.z()) /
+						square(auxSOG_Kernel_i.mean.z() - m_mode.val.mean.z()) /
 						stdZ2;
 				}
 
@@ -346,7 +343,7 @@ void CPointPDFSOG::bayesianFusion(
 
 			if (reallyComputeThisOne)
 			{
-				auxGaussianProduct.bayesianFusion(auxSOG_Kernel_i, (*it1).val);
+				auxGaussianProduct.bayesianFusion(auxSOG_Kernel_i, m_mode.val);
 
 				// ----------------------------------------------------------------------
 				// The new weight is given by:
@@ -379,7 +376,7 @@ void CPointPDFSOG::bayesianFusion(
 							 new_eta_i)(0, 0));
 
 				newKernel.log_w =
-					(it1)->log_w + (it2)->log_w + a + a_i - new_a_i;
+					m_mode.->log_w + it2.->log_w + a + a_i - new_a_i;
 
 				// Fix 2D case:
 				if (is2D) newKernel.val.cov(2, 2) = 0;
@@ -404,12 +401,11 @@ void CPointPDFSOG::assureSymmetry()
 	MRPT_START
 	// Differences, when they exist, appear in the ~15'th significant
 	//  digit, so... just take one of them arbitrarily!
-	for (CListGaussianModes::iterator it = m_modes.begin(); it != m_modes.end();
-		 ++it)
+	for (auto & m_mode : m_modes)
 	{
-		it->val.cov(0, 1) = it->val.cov(1, 0);
-		it->val.cov(0, 2) = it->val.cov(2, 0);
-		it->val.cov(1, 2) = it->val.cov(2, 1);
+		m_mode.val.cov(0, 1) = m_mode.val.cov(1, 0);
+		m_mode.val.cov(0, 2) = m_mode.val.cov(2, 0);
+		m_mode.val.cov(1, 2) = m_mode.val.cov(2, 1);
 	}
 
 	MRPT_END
@@ -502,11 +498,10 @@ double CPointPDFSOG::evaluatePDF(const CPoint3D& x, bool sumOverAllZs) const
 
 		CMatrixDouble31 MU;
 
-		for (CListGaussianModes::const_iterator it = m_modes.begin();
-			 it != m_modes.end(); ++it)
+		for (const auto & m_mode : m_modes)
 		{
-			MU = CMatrixDouble31(it->val.mean);
-			ret += exp(it->log_w) * math::normalPDF(X, MU, it->val.cov);
+			MU = CMatrixDouble31(m_mode.val.mean);
+			ret += exp(m_mode.log_w) * math::normalPDF(X, MU, m_mode.val.cov);
 		}
 
 		return ret;
@@ -520,17 +515,16 @@ double CPointPDFSOG::evaluatePDF(const CPoint3D& x, bool sumOverAllZs) const
 		X(0, 0) = x.x();
 		X(1, 0) = x.y();
 
-		for (CListGaussianModes::const_iterator it = m_modes.begin();
-			 it != m_modes.end(); ++it)
+		for (const auto & m_mode : m_modes)
 		{
-			MU(0, 0) = it->val.mean.x();
-			MU(1, 0) = it->val.mean.y();
+			MU(0, 0) = m_mode.val.mean.x();
+			MU(1, 0) = m_mode.val.mean.y();
 
-			COV(0, 0) = it->val.cov(0, 0);
-			COV(1, 1) = it->val.cov(1, 1);
-			COV(0, 1) = COV(1, 0) = it->val.cov(0, 1);
+			COV(0, 0) = m_mode.val.cov(0, 0);
+			COV(1, 1) = m_mode.val.cov(1, 1);
+			COV(0, 1) = COV(1, 0) = m_mode.val.cov(0, 1);
 
-			ret += exp(it->log_w) * math::normalPDF(X, MU, COV);
+			ret += exp(m_mode.log_w) * math::normalPDF(X, MU, COV);
 		}
 
 		return ret;

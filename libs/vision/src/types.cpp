@@ -40,9 +40,9 @@ void TSequenceFeatureObservations::saveToTextFile(
 		f << "% FRAME_ID  FEAT_ID   X         Y     \n"
 			 "%-------------------------------------\n";
 
-	for (BASE::const_iterator it = BASE::begin(); it != BASE::end(); ++it)
-		f << setw(7) << it->id_frame << setw(7) << it->id_feature << setw(13)
-		  << it->px.x << setw(11) << it->px.y << endl;
+	for (const auto & it : *this)
+		f << setw(7) << it.id_frame << setw(7) << it.id_feature << setw(13)
+		  << it.px.x << setw(11) << it.px.y << endl;
 
 	MRPT_END
 }
@@ -114,10 +114,8 @@ bool TSequenceFeatureObservations::saveAsSBAFiles(
 		const std::map<TCameraPoseID, TPixelCoordf>& m = it->second;
 		f << pts[it->first].x << " " << pts[it->first].y << " "
 		  << pts[it->first].z << " " << m.size() << " ";
-		for (std::map<TCameraPoseID, TPixelCoordf>::const_iterator itO =
-				 m.begin();
-			 itO != m.end(); ++itO)
-			f << itO->first << " " << itO->second.x << " " << itO->second.y
+		for (auto itO : m)
+			f << itO.first << " " << itO.second.x << " " << itO.second.y
 			  << " ";
 		f << endl;
 	}
@@ -125,10 +123,9 @@ bool TSequenceFeatureObservations::saveAsSBAFiles(
 	ofstream fc(cams_file.c_str());
 	if (!fc.is_open()) return false;
 
-	for (size_t i = 0; i < cams.size(); i++)
+	for (const auto & pos : cams)
 	{
-		const mrpt::poses::CPose3D& pos = cams[i];
-		const mrpt::poses::CPose3DQuat p(pos);
+			const mrpt::poses::CPose3DQuat p(pos);
 		fc << p.m_quat[0] << " " << p.m_quat[1] << " " << p.m_quat[2] << " "
 		   << p.m_quat[3] << " " << p.x() << " " << p.y() << " " << p.z()
 		   << endl;
@@ -149,8 +146,8 @@ size_t TSequenceFeatureObservations::removeFewObservedFeatures(
 
 	// 1st pass: Count total views
 	map<TLandmarkID, size_t> numViews;
-	for (BASE::iterator it = BASE::begin(); it != BASE::end(); ++it)
-		numViews[it->id_feature]++;
+	for (auto & it : *this)
+		numViews[it.id_feature]++;
 
 	// 2nd pass: Remove selected ones:
 	for (size_t idx = 0; idx < BASE::size();)

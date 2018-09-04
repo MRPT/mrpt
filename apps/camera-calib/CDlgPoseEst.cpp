@@ -350,7 +350,7 @@ void CDlgPoseEst::OnbtnStartClick(wxCommandEvent& event)
 	{
 		double arr[9];
 
-		for (int i = 0; i < 9; i++) file >> arr[i];
+		for (double & i : arr) file >> i;
 
 		for (int i = 0; i < 3; i++)
 			for (int j = 0; j < 3; j++) cam_intrinsic(i, j) = arr[3 * i + j];

@@ -129,11 +129,9 @@ CSerializable::Ptr CMHPropertiesValuesList::get(
 CSerializable::Ptr CMHPropertiesValuesList::getAnyHypothesis(
 	const char* propertyName) const
 {
-	for (std::vector<TPropertyValueIDTriplet>::const_iterator it =
-			 m_properties.begin();
-		 it != m_properties.end(); ++it)
+	for (const auto & m_propertie : m_properties)
 	{
-		if (!os::_strcmpi(propertyName, it->name.c_str())) return it->value;
+		if (!os::_strcmpi(propertyName, m_propertie.name.c_str())) return m_propertie.value;
 	}
 	// Not found:
 	return CSerializable::Ptr();
@@ -148,16 +146,14 @@ void CMHPropertiesValuesList::set(
 {
 	MRPT_START
 
-	for (std::vector<TPropertyValueIDTriplet>::iterator it =
-			 m_properties.begin();
-		 it != m_properties.end(); ++it)
+	for (auto & m_propertie : m_properties)
 	{
-		if (it->ID == hypothesis_ID &&
-			!os::_strcmpi(propertyName, it->name.c_str()))
+		if (m_propertie.ID == hypothesis_ID &&
+			!os::_strcmpi(propertyName, m_propertie.name.c_str()))
 		{
 			// Delete current contents:
 			// Copy new value:
-			it->value.reset(dynamic_cast<CSerializable*>(obj->clone()));
+			m_propertie.value.reset(dynamic_cast<CSerializable*>(obj->clone()));
 
 			// if (!obj)	it->value.clear();
 			// else		it->value = obj; //->clone();
@@ -185,15 +181,13 @@ void CMHPropertiesValuesList::setMemoryReference(
 {
 	MRPT_START
 
-	for (std::vector<TPropertyValueIDTriplet>::iterator it =
-			 m_properties.begin();
-		 it != m_properties.end(); ++it)
+	for (auto & m_propertie : m_properties)
 	{
-		if (it->ID == hypothesis_ID &&
-			!os::_strcmpi(propertyName, it->name.c_str()))
+		if (m_propertie.ID == hypothesis_ID &&
+			!os::_strcmpi(propertyName, m_propertie.name.c_str()))
 		{
 			// Delete current contents & set a copy of the same smart pointer:
-			it->value = obj;
+			m_propertie.value = obj;
 			return;
 		}
 	}
@@ -216,21 +210,18 @@ std::vector<std::string> CMHPropertiesValuesList::getPropertyNames() const
 {
 	std::vector<std::string> ret;
 
-	for (std::vector<TPropertyValueIDTriplet>::const_iterator it =
-			 m_properties.begin();
-		 it != m_properties.end(); ++it)
+	for (const auto & m_propertie : m_properties)
 	{
 		bool isNew = true;
-		for (std::vector<std::string>::iterator itS = ret.begin();
-			 itS != ret.end(); ++itS)
+		for (auto & itS : ret)
 		{
-			if ((*itS) == it->name)
+			if (itS == m_propertie.name)
 			{
 				isNew = false;
 				break;
 			}
 		}
-		if (isNew) ret.push_back(it->name);  // Yes, it is new:
+		if (isNew) ret.push_back(m_propertie.name);  // Yes, it is new:
 	}
 
 	return ret;
@@ -273,10 +264,8 @@ CMHPropertiesValuesList::CMHPropertiesValuesList(
 	const CMHPropertiesValuesList& o)
 	: m_properties(o.m_properties)
 {
-	for (std::vector<TPropertyValueIDTriplet>::iterator it =
-			 m_properties.begin();
-		 it != m_properties.end(); ++it)
-		it->value.reset(dynamic_cast<CSerializable*>(it->value->clone()));
+	for (auto & m_propertie : m_properties)
+		m_propertie.value.reset(dynamic_cast<CSerializable*>(m_propertie.value->clone()));
 }
 
 /*---------------------------------------------------------------
@@ -289,9 +278,7 @@ CMHPropertiesValuesList& CMHPropertiesValuesList::operator=(
 
 	m_properties = o.m_properties;
 
-	for (std::vector<TPropertyValueIDTriplet>::iterator it =
-			 m_properties.begin();
-		 it != m_properties.end(); ++it)
-		it->value.reset(dynamic_cast<CSerializable*>(it->value->clone()));
+	for (auto & m_propertie : m_properties)
+		m_propertie.value.reset(dynamic_cast<CSerializable*>(m_propertie.value->clone()));
 	return *this;
 }

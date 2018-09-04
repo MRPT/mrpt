@@ -328,10 +328,9 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 	// Sanity checks:
 	{
 		// All poses in the AA's partitions must exist in the current LMH
-		for (vector<TPoseIDList>::const_iterator it = myMsg.partitions.begin();
-			 it != myMsg.partitions.end(); ++it)
-			for (TPoseIDList::const_iterator itPose = it->begin();
-				 itPose != it->end(); ++itPose)
+		for (const auto & partition : myMsg.partitions)
+			for (TPoseIDList::const_iterator itPose = partition.begin();
+				 itPose != partition.end(); ++itPose)
 				if (LMH->m_SFs.find(*itPose) == LMH->m_SFs.end())
 					THROW_EXCEPTION_FMT(
 						"PoseID %i in AA's partition but not in LMH.\n",
@@ -350,9 +349,8 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 				for (vector<TPoseIDList>::const_iterator it =
 						 myMsg.partitions.begin();
 					 !found && it != myMsg.partitions.end(); ++it)
-					for (TPoseIDList::const_iterator itPose = it->begin();
-						 itPose != it->end(); ++itPose)
-						if (itA->first == *itPose)
+					for (unsigned long itPose : *it)
+						if (itA->first == itPose)
 						{
 							found = true;
 							break;
@@ -423,11 +421,10 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 	vector<TPoseIDList>::const_iterator it;
 	for (i = 0, it = myMsg.partitions.begin(); it != myMsg.partitions.end();
 		 ++it, i++)
-		for (TPoseIDList::const_iterator itPose = it->begin();
-			 itPose != it->end(); ++itPose)
+		for (unsigned long itPose : *it)
 		{
 			map<TPoseID, CHMHMapNode::TNodeID>::const_iterator itP =
-				LMH->m_nodeIDmemberships.find(*itPose);
+				LMH->m_nodeIDmemberships.find(itPose);
 			ASSERT_(itP != LMH->m_nodeIDmemberships.end());
 
 			votes[i][itP->second]++;
@@ -461,10 +458,8 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 	// To the winners, assign very high votes so the rest of votes do not
 	// interfere in what has been
 	//  already decided above:
-	for (map<CHMHMapNode::TNodeID, pair<size_t, unsigned int>>::iterator v =
-			 mostVotedFrom.begin();
-		 v != mostVotedFrom.end(); ++v)
-		v->second.second = std::numeric_limits<unsigned int>::max();
+	for (auto & v : mostVotedFrom)
+		v.second.second = std::numeric_limits<unsigned int>::max();
 
 	// 2) Assign each area ID to the partition that votes it most:
 
@@ -499,10 +494,8 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 	}
 
 	// Fill out "partIdx2Areas" from "mostVotedFrom":
-	for (map<CHMHMapNode::TNodeID, pair<size_t, unsigned int>>::iterator it =
-			 mostVotedFrom.begin();
-		 it != mostVotedFrom.end(); ++it)
-		partIdx2Areas[it->second.first] = it->first;
+	for (auto & it : mostVotedFrom)
+		partIdx2Areas[it.second.first] = it.first;
 
 	// Create new area IDs for new areas (ie, partIdx2Areas[] still unassigned):
 	for (i = 0; i < partIdx2Areas.size(); i++)
@@ -559,9 +552,8 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 		// if (LMH->m_neighbors.find(nodeId)==LMH->m_neighbors.end())
 		// LMH->m_neighbors.push_back(nodeId);
 
-		for (TPoseIDList::const_iterator it = myMsg.partitions[i].begin();
-			 it != myMsg.partitions[i].end(); ++it)
-			LMH->m_nodeIDmemberships[*it] =
+		for (unsigned long it : myMsg.partitions[i])
+			LMH->m_nodeIDmemberships[it] =
 				nodeId;  // Bind robot poses -> area IDs.
 	}  // end for i
 
@@ -621,18 +613,16 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 				logFmt(
 					mrpt::system::LVL_INFO,
 					"[LSLAM_proc_msg_AA] Old  neighbors: ");
-				for (TNodeIDSet::const_iterator it = neighbors_before.begin();
-					 it != neighbors_before.end(); ++it)
-					logFmt(mrpt::system::LVL_INFO, "%i ", (int)*it);
+				for (unsigned long it : neighbors_before)
+					logFmt(mrpt::system::LVL_INFO, "%i ", (int)it);
 				logFmt(mrpt::system::LVL_INFO, "\n");
 			}
 			{
 				logFmt(
 					mrpt::system::LVL_INFO,
 					"[LSLAM_proc_msg_AA] Cur. neighbors: ");
-				for (TNodeIDSet::const_iterator it = LMH->m_neighbors.begin();
-					 it != LMH->m_neighbors.end(); ++it)
-					logFmt(mrpt::system::LVL_INFO, "%i ", (int)*it);
+				for (unsigned long m_neighbor : LMH->m_neighbors)
+					logFmt(mrpt::system::LVL_INFO, "%i ", (int)m_neighbor);
 				logFmt(mrpt::system::LVL_INFO, "\n");
 			}
 #endif
@@ -733,11 +723,10 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 						//   arcs "a"<->"b" containing relative poses so they
 						//   refer to valid reference poses.
 						// --------------------------------------------------------------
-						for (TListNodesArcs::iterator na = lstWithinLMH.begin();
-							 na != lstWithinLMH.end(); ++na)
+						for (auto & na : lstWithinLMH)
 						{
-							CHMHMapNode::Ptr node_c = na->first;
-							const CHMHMapArc::Ptr arc_c_a = na->second;
+							CHMHMapNode::Ptr node_c = na.first;
+							const CHMHMapArc::Ptr arc_c_a = na.second;
 
 							// Now we have the arc "arc" from "node"<->"nodeB"
 							// in the direction "dirA2B", which will be deleted
@@ -953,9 +942,8 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 				{
 					TArcList arcs;
 					node->getArcs(arcs);
-					for (TArcList::iterator a = arcs.begin(); a != arcs.end();
-						 ++a)
-						a->reset();
+					for (auto & arc : arcs)
+						arc.reset();
 				}
 
 				node.reset();  // And finally, delete the node.
@@ -1242,16 +1230,14 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 				{
 					const CPose3D& pose_trg = lstPoses[*itP0];  // Get its pose
 
-					for (TPoseIDList::const_iterator itP =
-							 myMsg.partitions[idx_area_b].begin();
-						 itP != myMsg.partitions[idx_area_b].end(); ++itP)
+					for (unsigned long itP : myMsg.partitions[idx_area_b])
 					{
-						const CPose3D& otherPose = lstPoses[*itP];
+						const CPose3D& otherPose = lstPoses[itP];
 						double dst = otherPose.distanceTo(pose_trg);
 						if (dst < closestDistPoseSrc ||
 							poseID_closests == POSEID_INVALID)
 						{
-							poseID_closests = *itP;
+							poseID_closests = itP;
 							closestDistPoseSrc = dst;
 							// closestAreaID = partIdx2Areas[k];
 						}
@@ -1647,10 +1633,9 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 
 		TArcList arcsToCurArea;
 		currentArea->getArcs(arcsToCurArea, "RelativePose", LMH->m_ID);
-		for (TArcList::iterator a = arcsToCurArea.begin();
-			 a != arcsToCurArea.end(); ++a)
+		for (auto & a : arcsToCurArea)
 		{
-			const CHMHMapArc::Ptr arc = (*a);
+			const CHMHMapArc::Ptr arc = a;
 			const CHMHMapNode::TNodeID otherAreaID =
 				arc->getNodeFrom() == curAreaID ? arc->getNodeTo()
 												: arc->getNodeFrom();
@@ -1745,11 +1730,10 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 				// --------------------------------------------
 				TPoseIDList lstNewPoseIDs;
 				lstNewPoseIDs.reserve(pg->size());
-				for (CRobotPosesGraph::iterator p = pg->begin(); p != pg->end();
-					 ++p)
+				for (auto & p : *pg)
 				{
-					const TPoseID& poseID = p->first;
-					const TPoseInfo& poseInfo = p->second;
+					const TPoseID& poseID = p.first;
+					const TPoseInfo& poseInfo = p.second;
 
 					lstNewPoseIDs.push_back(poseID);
 
@@ -1867,16 +1851,14 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 		tictac.Tic();
 		// We haven't rebuilt the whole metric maps, so just insert the new
 		// observations as needed:
-		for (TNodeIDSet::iterator areaID =
-				 areasDelayedMetricMapsInsertion.begin();
-			 areaID != areasDelayedMetricMapsInsertion.end(); ++areaID)
+		for (unsigned long areaID : areasDelayedMetricMapsInsertion)
 		{
 			// For each posesID within this areaID:
 			for (map<TPoseID, CHMHMapNode::TNodeID>::const_iterator pn =
 					 LMH->m_nodeIDmemberships.begin();
 				 pn != LMH->m_nodeIDmemberships.end(); ++pn)
 			{
-				if (pn->second == *areaID)
+				if (pn->second == areaID)
 				{
 					// We must add this poseID:
 					const TPoseID& poseToAdd = pn->first;
@@ -2020,11 +2002,9 @@ void CHMTSLAM::LSLAM_process_message_from_TBI(const TMessageLSLAMfromTBI& myMsg)
 			lstModesAndCompats;  // first=log(e^-0.5*maha_dist)+log(likelihood);
 		// The list only contains those chi2 compatible
 
-		for (CPose3DPDFSOG::const_iterator itSOG =
-				 candidate->second.delta_new_cur.begin();
-			 itSOG != candidate->second.delta_new_cur.end(); ++itSOG)
+		for (const auto & itSOG : candidate->second.delta_new_cur)
 		{
-			const CPose3DPDFGaussian& pdfDelta = itSOG->val;
+			const CPose3DPDFGaussian& pdfDelta = itSOG.val;
 
 			cout << "[LSLAM_proc_msg_TBI]  TLC_delta=" << pdfDelta.mean
 				 << " std_x=" << sqrt(pdfDelta.cov(0, 0))
@@ -2039,8 +2019,8 @@ void CHMTSLAM::LSLAM_process_message_from_TBI(const TMessageLSLAMfromTBI& myMsg)
 
 			if (mahaDist2 < chi2_thres)
 			{
-				const double log_lik = itSOG->log_w - 0.5 * mahaDist2;
-				lstModesAndCompats[log_lik] = itSOG->val;
+				const double log_lik = itSOG.log_w - 0.5 * mahaDist2;
+				lstModesAndCompats[log_lik] = itSOG.val;
 				cout << "[LSLAM_proc_msg_TBI] Added to list of candidates: "
 						"log(overall_lik)= "
 					 << log_lik << endl;

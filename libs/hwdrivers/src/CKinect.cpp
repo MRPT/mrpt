@@ -728,8 +728,8 @@ void CKinect::getNextObservation(
 			out_obs_imu.timestamp = out_obs.timestamp;
 			out_obs_imu.sensorPose = out_obs.sensorPose;
 
-			for (size_t i = 0; i < out_obs_imu.dataIsPresent.size(); i++)
-				out_obs_imu.dataIsPresent[i] = false;
+			for (auto && i : out_obs_imu.dataIsPresent)
+				i = false;
 
 			out_obs_imu.dataIsPresent[IMU_X_ACC] = true;
 			out_obs_imu.dataIsPresent[IMU_Y_ACC] = true;

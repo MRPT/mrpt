@@ -139,10 +139,9 @@ template <>
 inline void trackFeatures_updatePatch<CFeatureList>(
 	CFeatureList& featureList, const CImage& cur_gray)
 {
-	for (CFeatureList::iterator itFeat = featureList.begin();
-		 itFeat != featureList.end(); ++itFeat)
+	for (auto & itFeat : featureList)
 	{
-		CFeature* ft = itFeat->get();
+		CFeature* ft = itFeat.get();
 		if (ft->track_status != status_TRACKED)
 			continue;  // Skip if it's not correctly tracked.
 

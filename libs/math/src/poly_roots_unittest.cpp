@@ -29,12 +29,12 @@ TEST(poly_roots, solve_poly2)
 
 	const unsigned int nTests = sizeof(coefs_roots) / sizeof(coefs_roots[0]);
 
-	for (unsigned int i = 0; i < nTests; i++)
+	for (auto & coefs_root : coefs_roots)
 	{
-		const double a = coefs_roots[i][0], b = coefs_roots[i][1],
-					 c = coefs_roots[i][2];
-		const int num_roots_good = static_cast<int>(coefs_roots[i][3]);
-		const double r1_good = coefs_roots[i][4], r2_good = coefs_roots[i][5];
+		const double a = coefs_root[0], b = coefs_root[1],
+					 c = coefs_root[2];
+		const int num_roots_good = static_cast<int>(coefs_root[3]);
+		const double r1_good = coefs_root[4], r2_good = coefs_root[5];
 
 		double r1, r2;
 		int num_roots = mrpt::math::solve_poly2(a, b, c, r1, r2);
@@ -65,13 +65,13 @@ TEST(poly_roots, solve_poly3)
 
 	const unsigned int nTests = sizeof(coefs_roots) / sizeof(coefs_roots[0]);
 
-	for (unsigned int i = 0; i < nTests; i++)
+	for (auto & coefs_root : coefs_roots)
 	{
-		const double a = coefs_roots[i][0], b = coefs_roots[i][1],
-					 c = coefs_roots[i][2];
-		const int num_roots_good = static_cast<int>(coefs_roots[i][3]);
-		const double roots_good[3] = {coefs_roots[i][4], coefs_roots[i][5],
-									  coefs_roots[i][6]};
+		const double a = coefs_root[0], b = coefs_root[1],
+					 c = coefs_root[2];
+		const int num_roots_good = static_cast<int>(coefs_root[3]);
+		const double roots_good[3] = {coefs_root[4], coefs_root[5],
+									  coefs_root[6]};
 
 		double roots[3];
 		int num_roots = mrpt::math::solve_poly3(roots, a, b, c);
@@ -101,13 +101,13 @@ TEST(poly_roots, solve_poly4)
 
 	const unsigned int nTests = sizeof(coefs_roots) / sizeof(coefs_roots[0]);
 
-	for (unsigned int i = 0; i < nTests; i++)
+	for (auto & coefs_root : coefs_roots)
 	{
-		const double a = coefs_roots[i][0], b = coefs_roots[i][1],
-					 c = coefs_roots[i][2], d = coefs_roots[i][3];
-		const int num_roots_good = static_cast<int>(coefs_roots[i][4]);
-		const double roots_good[4] = {coefs_roots[i][5], coefs_roots[i][6],
-									  coefs_roots[i][7], coefs_roots[i][8]};
+		const double a = coefs_root[0], b = coefs_root[1],
+					 c = coefs_root[2], d = coefs_root[3];
+		const int num_roots_good = static_cast<int>(coefs_root[4]);
+		const double roots_good[4] = {coefs_root[5], coefs_root[6],
+									  coefs_root[7], coefs_root[8]};
 
 		double roots[4];
 		int num_roots = mrpt::math::solve_poly4(roots, a, b, c, d);

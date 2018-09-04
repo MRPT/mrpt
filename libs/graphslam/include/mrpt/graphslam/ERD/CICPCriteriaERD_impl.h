@@ -178,9 +178,7 @@ void CICPCriteriaERD<GRAPH_T>::checkRegistrationCondition2D(
 	if (curr_laser_scan)
 	{
 		// try adding ICP constraints with each node in the previous set
-		for (std::set<mrpt::graphs::TNodeID>::const_iterator node_it =
-				 nodes_set.begin();
-			 node_it != nodes_set.end(); ++node_it)
+		for (unsigned long node_it : nodes_set)
 		{
 			// get the ICP edge between current and last node
 			constraint_t rel_edge;
@@ -188,14 +186,14 @@ void CICPCriteriaERD<GRAPH_T>::checkRegistrationCondition2D(
 			CObservation2DRangeScan::Ptr prev_laser_scan;
 
 			// search for prev_laser_scan
-			search = this->m_nodes_to_laser_scans2D.find(*node_it);
+			search = this->m_nodes_to_laser_scans2D.find(node_it);
 			if (search != this->m_nodes_to_laser_scans2D.end())
 			{
 				prev_laser_scan = search->second;
 
 				// make use of initial node position difference for the ICP edge
 				pose_t initial_pose = this->m_graph->nodes[curr_nodeID] -
-									  this->m_graph->nodes[*node_it];
+									  this->m_graph->nodes[node_it];
 
 				this->m_time_logger.enter("CICPCriteriaERD::getICPEdge");
 				this->getICPEdge(
@@ -209,7 +207,7 @@ void CICPCriteriaERD<GRAPH_T>::checkRegistrationCondition2D(
 					">>>>>>>>>");
 				MRPT_LOG_DEBUG_STREAM(
 					"ICP constraint between NON-successive nodes: "
-					<< *node_it << " => " << curr_nodeID << std::endl
+					<< node_it << " => " << curr_nodeID << std::endl
 					<< "\tnIterations = " << icp_info.nIterations
 					<< "\tgoodness = " << icp_info.goodness);
 				MRPT_LOG_DEBUG_STREAM(
@@ -221,10 +219,10 @@ void CICPCriteriaERD<GRAPH_T>::checkRegistrationCondition2D(
 				// criterion for registering a new node
 				if (icp_info.goodness > params.ICP_goodness_thresh)
 				{
-					this->registerNewEdge(*node_it, curr_nodeID, rel_edge);
+					this->registerNewEdge(node_it, curr_nodeID, rel_edge);
 					m_edge_types_to_nums["ICP2D"]++;
 					// in case of loop closure
-					if (absDiff(curr_nodeID, *node_it) >
+					if (absDiff(curr_nodeID, node_it) >
 						params.LC_min_nodeid_diff)
 					{
 						m_edge_types_to_nums["LC"]++;
@@ -261,9 +259,7 @@ void CICPCriteriaERD<GRAPH_T>::checkRegistrationCondition3D(
 	if (curr_laser_scan)
 	{
 		// try adding ICP constraints with each node in the previous set
-		for (set<mrpt::graphs::TNodeID>::const_iterator node_it =
-				 nodes_set.begin();
-			 node_it != nodes_set.end(); ++node_it)
+		for (unsigned long node_it : nodes_set)
 		{
 			// get the ICP edge between current and last node
 			constraint_t rel_edge;
@@ -271,7 +267,7 @@ void CICPCriteriaERD<GRAPH_T>::checkRegistrationCondition3D(
 			CObservation3DRangeScan::Ptr prev_laser_scan;
 
 			// search for prev_laser_scan
-			search = m_nodes_to_laser_scans3D.find(*node_it);
+			search = m_nodes_to_laser_scans3D.find(node_it);
 			if (search != m_nodes_to_laser_scans3D.end())
 			{
 				prev_laser_scan = search->second;
@@ -286,10 +282,10 @@ void CICPCriteriaERD<GRAPH_T>::checkRegistrationCondition3D(
 				// criterion for registering a new node
 				if (icp_info.goodness > params.ICP_goodness_thresh)
 				{
-					this->registerNewEdge(*node_it, curr_nodeID, rel_edge);
+					this->registerNewEdge(node_it, curr_nodeID, rel_edge);
 					m_edge_types_to_nums["ICP3D"]++;
 					// in case of loop closure
-					if (absDiff(curr_nodeID, *node_it) >
+					if (absDiff(curr_nodeID, node_it) >
 						params.LC_min_nodeid_diff)
 					{
 						m_edge_types_to_nums["LC"]++;

@@ -109,11 +109,10 @@ bool tfest::se2_l2_robust(
 #endif
 	// Find the max. index of "this" and "other:
 	unsigned int maxThis = 0, maxOther = 0;
-	for (TMatchingPairList::const_iterator matchIt = in_correspondences.begin();
-		 matchIt != in_correspondences.end(); ++matchIt)
+	for (const auto & in_correspondence : in_correspondences)
 	{
-		maxThis = max(maxThis, matchIt->this_idx);
-		maxOther = max(maxOther, matchIt->other_idx);
+		maxThis = max(maxThis, in_correspondence.this_idx);
+		maxOther = max(maxOther, in_correspondence.other_idx);
 	}
 #ifdef DO_PROFILING
 	timlog.leave("ransac.find_max*");
@@ -127,14 +126,13 @@ bool tfest::se2_l2_robust(
 	std::vector<bool> hasCorrThis(maxThis + 1, false);
 	std::vector<bool> hasCorrOther(maxOther + 1, false);
 	unsigned int howManyDifCorrs = 0;
-	for (TMatchingPairList::const_iterator matchIt = in_correspondences.begin();
-		 matchIt != in_correspondences.end(); ++matchIt)
+	for (const auto & in_correspondence : in_correspondences)
 	{
-		if (!hasCorrThis[matchIt->this_idx] &&
-			!hasCorrOther[matchIt->other_idx])
+		if (!hasCorrThis[in_correspondence.this_idx] &&
+			!hasCorrOther[in_correspondence.other_idx])
 		{
-			hasCorrThis[matchIt->this_idx] = true;
-			hasCorrOther[matchIt->other_idx] = true;
+			hasCorrThis[in_correspondence.this_idx] = true;
+			hasCorrOther[in_correspondence.other_idx] = true;
 			howManyDifCorrs++;
 		}
 	}

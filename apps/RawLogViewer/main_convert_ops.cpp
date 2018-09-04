@@ -240,14 +240,13 @@ void xRawLogViewerFrame::OnMenuLossLessDecimate(wxCommandEvent& event)
 					CPose3D inv_incrPose3D(
 						CPose3D(0, 0, 0) - CPose3D(incrPose));
 
-					for (CSensoryFrame::iterator it = accum_sf->begin();
-						 it != accum_sf->end(); ++it)
+					for (auto & it : *accum_sf)
 					{
 						CPose3D tmpPose;
 
-						(*it)->getSensorPose(tmpPose);
+						it->getSensorPose(tmpPose);
 						tmpPose = inv_incrPose3D + tmpPose;
-						(*it)->setSensorPose(tmpPose);
+						it->setSensorPose(tmpPose);
 					}
 				}
 
@@ -456,14 +455,13 @@ void xRawLogViewerFrame::OnMenuLossLessDecFILE(wxCommandEvent& event)
 						CPose3D inv_incrPose3D(
 							CPose3D(0, 0, 0) - CPose3D(incrPose));
 
-						for (CSensoryFrame::iterator it = accum_sf->begin();
-							 it != accum_sf->end(); ++it)
+						for (auto & it : *accum_sf)
 						{
 							CPose3D tmpPose;
 
-							(*it)->getSensorPose(tmpPose);
+							it->getSensorPose(tmpPose);
 							tmpPose = inv_incrPose3D + tmpPose;
-							(*it)->setSensorPose(tmpPose);
+							it->setSensorPose(tmpPose);
 						}
 					}
 
@@ -732,12 +730,11 @@ void xRawLogViewerFrame::OnMenuConvertObservationOnly(wxCommandEvent& event)
 			{
 				CSensoryFrame::Ptr SF(
 					std::dynamic_pointer_cast<CSensoryFrame>(newObj));
-				for (CSensoryFrame::iterator it = SF->begin(); it != SF->end();
-					 ++it)
+				for (auto & it : *SF)
 				{
 					time_ordered_list_observation.insert(
-						TTimeObservationPair((*it)->timestamp, (*it)));
-					lastValidObsTime = (*it)->timestamp;
+						TTimeObservationPair(it->timestamp, it));
+					lastValidObsTime = it->timestamp;
 				}
 			}
 			else if (newObj->GetRuntimeClass() == CLASS_ID(CActionCollection))
@@ -876,10 +873,9 @@ void xRawLogViewerFrame::OnMenuResortByTimestamp(wxCommandEvent& event)
 	CRawlog temp_rawlog;
 	temp_rawlog.setCommentText(rawlog.getCommentText());
 
-	for (std::multimap<TTimeStamp, size_t>::iterator it = ordered_times.begin();
-		 it != ordered_times.end(); ++it)
+	for (auto & ordered_time : ordered_times)
 	{
-		size_t idx = it->second;
+		size_t idx = ordered_time.second;
 		temp_rawlog.addObservationMemoryReference(rawlog.getAsObservation(idx));
 	}
 
@@ -933,12 +929,12 @@ void xRawLogViewerFrame::OnMenuShiftTimestampsByLabel(wxCommandEvent& event)
 			{
 				CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
 				CObservation::Ptr o;
-				for (size_t k = 0; k < the_labels.size(); k++)
+				for (const auto & the_label : the_labels)
 				{
 					size_t idx = 0;
 					while (
 						(o = sf->getObservationBySensorLabel(
-							 the_labels[k], idx++)))
+							 the_label, idx++)))
 					{
 						o->timestamp += DeltaTime;
 						nChanges++;
@@ -951,8 +947,8 @@ void xRawLogViewerFrame::OnMenuShiftTimestampsByLabel(wxCommandEvent& event)
 			{
 				CObservation::Ptr o = rawlog.getAsObservation(i);
 
-				for (size_t k = 0; k < the_labels.size(); k++)
-					if (o->sensorLabel == the_labels[k])
+				for (const auto & the_label : the_labels)
+					if (o->sensorLabel == the_label)
 					{
 						o->timestamp += DeltaTime;
 						nChanges++;

@@ -164,16 +164,15 @@ int main(int argc, char** argv)
 
 		vector<std::thread> lstThreads;
 
-		for (std::vector<std::string>::iterator it = sections.begin();
-			 it != sections.end(); ++it)
+		for (auto & section : sections)
 		{
-			if (*it == GLOBAL_SECTION_NAME || it->empty() ||
-				iniFile.read_bool(*it, "rawlog-grabber-ignore", false, false))
+			if (section == GLOBAL_SECTION_NAME || section.empty() ||
+				iniFile.read_bool(section, "rawlog-grabber-ignore", false, false))
 				continue;  // This is not a sensor:
 
 			TThreadParams threParms;
 			threParms.cfgFile = &iniFile;
-			threParms.sensor_label = *it;
+			threParms.sensor_label = section;
 
 			lstThreads.emplace_back(&SensorThread, threParms);
 			std::this_thread::sleep_for(
@@ -381,21 +380,19 @@ int main(int argc, char** argv)
 				// ---------------------------
 				CObservationIMU::Ptr imu;  // Default:nullptr
 
-				for (CGenericSensor::TListObservations::iterator it =
-						 copy_of_global_list_obs.begin();
-					 it != copy_of_global_list_obs.end(); ++it)
+				for (auto & copy_of_global_list_ob : copy_of_global_list_obs)
 				{
-					out_arch << *(it->second);
+					out_arch << *(copy_of_global_list_ob.second);
 
 					// Show GPS mode:
 					if (hwdrivers_verbose)
 					{
-						if ((it->second)->GetRuntimeClass() ==
+						if ((copy_of_global_list_ob.second)->GetRuntimeClass() ==
 							CLASS_ID(CObservationGPS))
 						{
 							CObservationGPS::Ptr gps =
 								std::dynamic_pointer_cast<CObservationGPS>(
-									it->second);
+									copy_of_global_list_ob.second);
 							if (gps->has_GGA_datum)
 								cout << "  GPS mode: "
 									 << (int)gps
@@ -407,11 +404,11 @@ int main(int argc, char** argv)
 							gps->getDescriptionAsText(cout);
 						}
 						else if (
-							(it->second)->GetRuntimeClass() ==
+							(copy_of_global_list_ob.second)->GetRuntimeClass() ==
 							CLASS_ID(CObservationIMU))
 						{
 							imu = std::dynamic_pointer_cast<CObservationIMU>(
-								it->second);
+								copy_of_global_list_ob.second);
 						}
 					}
 				}
@@ -457,9 +454,8 @@ int main(int argc, char** argv)
 		allThreadsMustExit = true;
 		std::this_thread::sleep_for(300ms);
 		cout << endl << "Waiting for all threads to close..." << endl;
-		for (vector<std::thread>::iterator th = lstThreads.begin();
-			 th != lstThreads.end(); ++th)
-			th->join();
+		for (auto & lstThread : lstThreads)
+			lstThread.join();
 
 		return 0;
 	}

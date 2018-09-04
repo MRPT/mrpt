@@ -294,8 +294,8 @@ bool CRawlog::saveToRawLogFile(const std::string& fileName) const
 		CFileGZOutputStream fo(fileName);
 		auto f = archiveFrom(fo);
 		if (!m_commentTexts.text.empty()) f << m_commentTexts;
-		for (size_t i = 0; i < m_seqOfActObs.size(); i++)
-			f << *m_seqOfActObs[i];
+		for (const auto & m_seqOfActOb : m_seqOfActObs)
+			f << *m_seqOfActOb;
 		return true;
 	}
 	catch (...)

@@ -292,10 +292,10 @@ void CFaceDetection::detectObjects_Impl(
 		}
 
 		// Convert 2d detected objects to 3d
-		for (unsigned int i = 0; i < localDetected.size(); i++)
+		for (const auto & i : localDetected)
 		{
 			CDetectable3D::Ptr object3d = CDetectable3D::Ptr(new CDetectable3D(
-				std::dynamic_pointer_cast<CDetectable2D>(localDetected[i])));
+				std::dynamic_pointer_cast<CDetectable2D>(i)));
 			detected.push_back(object3d);
 		}
 
@@ -700,8 +700,8 @@ bool CFaceDetection::checkIfFaceRegions(CObservation3DRangeScan* face)
 
 	if (regions2[0].size() > 0)
 	{
-		for (size_t i = 0; i < regions2[0].size(); i++)
-			oldPointsX1.push_back(regions2[0][i].x);
+		for (auto & i : regions2[0])
+			oldPointsX1.push_back(i.x);
 
 		middle1 = floor((double)oldPointsX1.size() / 2);
 		nth_element(
@@ -713,8 +713,8 @@ bool CFaceDetection::checkIfFaceRegions(CObservation3DRangeScan* face)
 
 	if (regions2[2].size() > 0)
 	{
-		for (size_t i = 0; i < regions2[2].size(); i++)
-			oldPointsX2.push_back(regions2[2][i].x);
+		for (auto & i : regions2[2])
+			oldPointsX2.push_back(i.x);
 
 		middle2 = floor((double)oldPointsX2.size() / 2);
 		nth_element(
@@ -1637,11 +1637,11 @@ void CFaceDetection::experimental_viewRegions(
 	vector<float> xs, ys, zs;
 
 	for (size_t i = 0; i < 9; i++)
-		for (unsigned int j = 0; j < regions[i].size(); j++)
+		for (const auto & j : regions[i])
 		{
-			xs.push_back(regions[i][j].x);
-			ys.push_back(regions[i][j].y);
-			zs.push_back(regions[i][j].z);
+			xs.push_back(j.x);
+			ys.push_back(j.y);
+			zs.push_back(j.z);
 		}
 
 	pntsMap.setAllPoints(xs, ys, zs);

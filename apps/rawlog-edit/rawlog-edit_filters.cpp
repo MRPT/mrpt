@@ -39,15 +39,15 @@ DECLARE_OP_FUNCTION(op_remove_label)
 			mrpt::system::tokenize(filter_label, " ,", m_filter_labels);
 			ASSERT_(!m_filter_labels.empty());
 			if (verbose)
-				for (size_t i = 0; i < m_filter_labels.size(); i++)
-					cout << "Removing label: '" << m_filter_labels[i] << "'\n";
+				for (const auto & m_filter_label : m_filter_labels)
+					cout << "Removing label: '" << m_filter_label << "'\n";
 		}
 
 		/** To be implemented by users: return false means the observation is */
 		bool tellIfThisObsPasses(mrpt::obs::CObservation::Ptr& obs) override
 		{
-			for (size_t i = 0; i < m_filter_labels.size(); i++)
-				if (obs->sensorLabel == m_filter_labels[i])
+			for (const auto & m_filter_label : m_filter_labels)
+				if (obs->sensorLabel == m_filter_label)
 				{
 					return false;
 				}
@@ -100,15 +100,15 @@ DECLARE_OP_FUNCTION(op_keep_label)
 			mrpt::system::tokenize(filter_label, " ,", m_filter_labels);
 			ASSERT_(!m_filter_labels.empty());
 			if (verbose)
-				for (size_t i = 0; i < m_filter_labels.size(); i++)
-					cout << "Keeping label: '" << m_filter_labels[i] << "'\n";
+				for (const auto & m_filter_label : m_filter_labels)
+					cout << "Keeping label: '" << m_filter_label << "'\n";
 		}
 
 		/** To be implemented by users: return false means the observation is */
 		bool tellIfThisObsPasses(mrpt::obs::CObservation::Ptr& obs) override
 		{
-			for (size_t i = 0; i < m_filter_labels.size(); i++)
-				if (obs->sensorLabel == m_filter_labels[i])
+			for (const auto & m_filter_label : m_filter_labels)
+				if (obs->sensorLabel == m_filter_label)
 				{
 					return true;
 				}

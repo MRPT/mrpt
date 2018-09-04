@@ -39,9 +39,9 @@ void CGeneralizedCylinder::TQuadrilateral::calculateNormal()
 	normal[1] = ax * bz - az * bx;
 	normal[2] = ay * bx - ax * by;
 	double s = 0;
-	for (size_t i = 0; i < 3; i++) s += normal[i] * normal[i];
+	for (double i : normal) s += i * i;
 	s = sqrt(s);
-	for (size_t i = 0; i < 3; i++) normal[i] /= s;
+	for (double & i : normal) i /= s;
 }
 
 #if MRPT_HAS_OPENGL_GLUT
@@ -54,8 +54,8 @@ class FQuadrilateralRenderer
 	void operator()(const CGeneralizedCylinder::TQuadrilateral& t) const
 	{
 		glNormal3d(t.normal[0], t.normal[1], t.normal[2]);
-		for (int i = 0; i < 4; i++)
-			glVertex3d(t.points[i].x, t.points[i].y, t.points[i].z);
+		for (const auto & point : t.points)
+			glVertex3d(point.x, point.y, point.z);
 	}
 	FQuadrilateralRenderer(const mrpt::img::TColor& c) : color(c) {}
 	~FQuadrilateralRenderer() {}

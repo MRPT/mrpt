@@ -59,10 +59,9 @@ void CGenericSensor::appendObservations(
 
 		std::lock_guard<std::mutex> lock(m_csObjList);
 
-		for (size_t i = 0; i < objs.size(); i++)
+		for (const auto & obj : objs)
 		{
-			const CSerializable::Ptr& obj = objs[i];
-			if (!obj) continue;
+				if (!obj) continue;
 
 			// It must be a CObservation or a CAction!
 			TTimeStamp timestamp;

@@ -151,11 +151,9 @@ void CSetOfTexturedTriangles::getBoundingBox(
 		-std::numeric_limits<double>::max(),
 		-std::numeric_limits<double>::max());
 
-	for (size_t i = 0; i < m_triangles.size(); i++)
+	for (const auto & t : m_triangles)
 	{
-		const TTriangle& t = m_triangles[i];
-
-		keep_min(bb_min.x, t.m_v1.m_x);
+			keep_min(bb_min.x, t.m_v1.m_x);
 		keep_max(bb_max.x, t.m_v1.m_x);
 		keep_min(bb_min.y, t.m_v1.m_y);
 		keep_max(bb_max.y, t.m_v1.m_y);

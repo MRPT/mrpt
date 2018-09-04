@@ -343,12 +343,12 @@ inline void CmdLine::xorAdd( std::vector<Arg*>& ors )
 {
 	_xorHandler.add( ors );
 
-	for (ArgVectorIterator it = ors.begin(); it != ors.end(); it++)
+	for (auto & it : ors)
 	{
-		(*it)->forceRequired();
-		(*it)->setRequireLabel( "OR required" );
+		it->forceRequired();
+		it->setRequireLabel( "OR required" );
 
-		add( *it );
+		add( it );
 	}
 }
 
@@ -367,8 +367,8 @@ inline void CmdLine::add( Arg& a )
 
 inline void CmdLine::add( Arg* a )
 {
-	for( ArgListIterator it = _argList.begin(); it != _argList.end(); it++ )
-		if ( *a == *(*it) )
+	for(auto & it : _argList)
+		if ( *a == *it )
 			throw( SpecificationException(
 			       	"Argument with same flag/name already exists!",
 					a->longID() ) );
@@ -395,11 +395,11 @@ inline bool CmdLine::parse(int argc, char** argv)
   	for (int i = 0; static_cast<unsigned int>(i) < args.size(); i++)
 	{
 		bool matched = false;
-		for (ArgListIterator it = _argList.begin(); it != _argList.end(); it++)
+		for (auto & it : _argList)
         {
-			if ( (*it)->processArg( &i, args ) )
+			if ( it->processArg( &i, args ) )
 			{
-				requiredCount += _xorHandler.check( *it );
+				requiredCount += _xorHandler.check( it );
 				matched = true;
 				break;
 			}

@@ -922,12 +922,11 @@ class CPolyhedron : public CRenderizableDisplayList
 	{
 		if (doCheck && !checkConsistence(vertices, faces))
 			throw std::logic_error("Face list accesses a vertex out of range");
-		for (std::vector<TPolyhedronFace>::iterator it = mFaces.begin();
-			 it != mFaces.end(); ++it)
+		for (auto & mFace : mFaces)
 		{
-			if (!setNormal(*it, doCheck))
+			if (!setNormal(mFace, doCheck))
 				throw std::logic_error("Bad face specification");
-			addEdges(*it);
+			addEdges(mFace);
 		}
 	}
 

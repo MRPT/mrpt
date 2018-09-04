@@ -140,19 +140,18 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 			{
 				CSensoryFrame::Ptr sf =
 					std::dynamic_pointer_cast<CSensoryFrame>(*it);
-				for (CSensoryFrame::iterator o = sf->begin(); o != sf->end();
-					 ++o)
+				for (auto & o : *sf)
 				{
 					m_tree_nodes.push_back(TNodeData());
 					TNodeData& d = m_tree_nodes.back();
 					d.level = 2;
-					d.data = (*o);
+					d.data = o;
 
-					if ((*o)->timestamp != INVALID_TIMESTAMP)
+					if (o->timestamp != INVALID_TIMESTAMP)
 					{
-						m_rawlog_last = (*o)->timestamp;
+						m_rawlog_last = o->timestamp;
 						if (m_rawlog_start == INVALID_TIMESTAMP)
-							m_rawlog_start = (*o)->timestamp;
+							m_rawlog_start = o->timestamp;
 					}
 				}
 			}
@@ -160,19 +159,18 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 			{
 				CActionCollection::Ptr acts =
 					std::dynamic_pointer_cast<CActionCollection>(*it);
-				for (CActionCollection::iterator a = acts->begin();
-					 a != acts->end(); ++a)
+				for (auto & a : *acts)
 				{
 					m_tree_nodes.push_back(TNodeData());
 					TNodeData& d = m_tree_nodes.back();
 					d.level = 2;
-					d.data = a->get_ptr();
+					d.data = a.get_ptr();
 
-					if ((*a)->timestamp != INVALID_TIMESTAMP)
+					if (a->timestamp != INVALID_TIMESTAMP)
 					{
-						m_rawlog_last = (*a)->timestamp;
+						m_rawlog_last = a->timestamp;
 						if (m_rawlog_start == INVALID_TIMESTAMP)
-							m_rawlog_start = (*a)->timestamp;
+							m_rawlog_start = a->timestamp;
 					}
 				}
 			}

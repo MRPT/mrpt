@@ -969,11 +969,9 @@ void exec_setPoseByLabel(
 {
 	if (SF)
 	{
-		for (CSensoryFrame::iterator it = SF->begin(); it != SF->end(); ++it)
+		for (auto obs : *SF)
 		{
-			CObservation::Ptr obs = *it;
-
-			if (obs->sensorLabel == labelToProcess)
+				if (obs->sensorLabel == labelToProcess)
 			{
 				if (changeOnlyXYZ)
 				{

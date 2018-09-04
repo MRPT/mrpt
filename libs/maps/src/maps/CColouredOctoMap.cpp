@@ -248,15 +248,13 @@ bool CColouredOctoMap::internal_insertObservation(
 				insertionOptions.maxrange);
 
 		// insert data into tree  -----------------------
-		for (octomap::KeySet::iterator it = free_cells.begin();
-			 it != free_cells.end(); ++it)
+		for (const auto & free_cell : free_cells)
 		{
-			m_impl->m_octomap.updateNode(*it, false, false);
+			m_impl->m_octomap.updateNode(free_cell, false, false);
 		}
-		for (octomap::KeySet::iterator it = occupied_cells.begin();
-			 it != occupied_cells.end(); ++it)
+		for (const auto & occupied_cell : occupied_cells)
 		{
-			m_impl->m_octomap.updateNode(*it, true, false);
+			m_impl->m_octomap.updateNode(occupied_cell, true, false);
 		}
 
 		// Update color -----------------------

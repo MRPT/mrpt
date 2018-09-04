@@ -81,11 +81,10 @@ void CSetOfLines::render_dl() const
 	glDisable(GL_LIGHTING);  // Disable lights when drawing lines
 	glBegin(GL_LINES);
 	glColor4ub(m_color.R, m_color.G, m_color.B, m_color.A);
-	for (std::vector<TSegment3D>::const_iterator it = mSegments.begin();
-		 it != mSegments.end(); ++it)
+	for (const auto & mSegment : mSegments)
 	{
-		glVertex3d(it->point1.x, it->point1.y, it->point1.z);
-		glVertex3d(it->point2.x, it->point2.y, it->point2.z);
+		glVertex3d(mSegment.point1.x, mSegment.point1.y, mSegment.point1.z);
+		glVertex3d(mSegment.point2.x, mSegment.point2.y, mSegment.point2.z);
 	}
 	glEnd();
 	checkOpenGLError();
@@ -194,10 +193,9 @@ void CSetOfLines::getBoundingBox(
 		-std::numeric_limits<double>::max(),
 		-std::numeric_limits<double>::max());
 
-	for (size_t i = 0; i < mSegments.size(); i++)
+	for (const auto & s : mSegments)
 	{
-		const TSegment3D& s = mSegments[i];
-		for (size_t p = 0; p < 2; p++)
+			for (size_t p = 0; p < 2; p++)
 		{
 			const TPoint3D& pt = s[p];
 			for (size_t j = 0; j < 3; j++)

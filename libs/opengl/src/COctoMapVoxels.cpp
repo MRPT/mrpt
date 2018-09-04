@@ -153,11 +153,11 @@ void COctoMapVoxels::render_dl() const
 		glBegin(GL_POINTS);
 	}
 
-	for (size_t i = 0; i < m_voxel_sets.size(); i++)
+	for (const auto & m_voxel_set : m_voxel_sets)
 	{
-		if (!m_voxel_sets[i].visible) continue;
+		if (!m_voxel_set.visible) continue;
 
-		const std::vector<TVoxel>& voxels = m_voxel_sets[i].voxels;
+		const std::vector<TVoxel>& voxels = m_voxel_set.voxels;
 		const size_t N = voxels.size();
 		for (size_t j = 0; j < N; j++)
 		{
@@ -316,10 +316,10 @@ bool sort_voxels_z(
 
 void COctoMapVoxels::sort_voxels_by_z()
 {
-	for (size_t i = 0; i < m_voxel_sets.size(); i++)
+	for (auto & m_voxel_set : m_voxel_sets)
 	{
 		std::sort(
-			m_voxel_sets[i].voxels.begin(), m_voxel_sets[i].voxels.end(),
+			m_voxel_set.voxels.begin(), m_voxel_set.voxels.end(),
 			&sort_voxels_z);
 	}
 }

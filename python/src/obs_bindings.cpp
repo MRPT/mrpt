@@ -223,9 +223,9 @@ object CObservation2DRangeScan_to_ROS_LaserScan_msg(
 	scan_msg.attr("angle_increment") = self.beamAperture;
 	// set ranges (no intensities given in mrpt)
 	list ranges;
-	for (uint32_t i = 0; i < self.scan.size(); ++i)
+	for (float i : self.scan)
 	{
-		ranges.append(self.scan[i]);
+		ranges.append(i);
 	}
 	scan_msg.attr("ranges") = ranges;
 	return scan_msg;

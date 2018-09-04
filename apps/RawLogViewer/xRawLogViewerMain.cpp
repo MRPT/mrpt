@@ -4995,8 +4995,8 @@ void xRawLogViewerFrame::OnRangeFinder1DGenTextFile(wxCommandEvent& event)
 						}
 
 						::fprintf(f, "%06u ", i);
-						for (size_t q = 0; q < rowOfRangesByID.size(); q++)
-							::fprintf(f, "%03.04f ", rowOfRangesByID[q]);
+						for (float q : rowOfRangesByID)
+							::fprintf(f, "%03.04f ", q);
 						::fprintf(f, "\n");
 						M++;
 					}
@@ -5021,8 +5021,8 @@ void xRawLogViewerFrame::OnRangeFinder1DGenTextFile(wxCommandEvent& event)
 					}
 
 					::fprintf(f, "%06u ", i);
-					for (size_t q = 0; q < rowOfRangesByID.size(); q++)
-						::fprintf(f, "%03.04f ", rowOfRangesByID[q]);
+					for (float q : rowOfRangesByID)
+						::fprintf(f, "%03.04f ", q);
 					::fprintf(f, "\n");
 					M++;
 				}
@@ -5280,30 +5280,29 @@ void xRawLogViewerFrame::OnMenuChangePosesBatch(wxCommandEvent& event)
 		std::vector<std::string> sections;
 		cfg.getAllSections(sections);
 
-		for (std::vector<std::string>::iterator it = sections.begin();
-			 it != sections.end(); ++it)
+		for (auto & section : sections)
 		{
-			if (it->empty()) continue;
+			if (section.empty()) continue;
 
 			// Get sensor label:
-			string label = cfg.read_string(*it, "sensorLabel", "");
+			string label = cfg.read_string(section, "sensorLabel", "");
 			if (label.empty()) continue;
 
 			CPose3D the_pose(
-				cfg.read_double(*it, "pose_x", 0, true),
-				cfg.read_double(*it, "pose_y", 0, true),
-				cfg.read_double(*it, "pose_z", 0, true),
-				DEG2RAD(cfg.read_double(*it, "pose_yaw", 0)),
-				DEG2RAD(cfg.read_double(*it, "pose_pitch", 0)),
-				DEG2RAD(cfg.read_double(*it, "pose_roll", 0)));
+				cfg.read_double(section, "pose_x", 0, true),
+				cfg.read_double(section, "pose_y", 0, true),
+				cfg.read_double(section, "pose_z", 0, true),
+				DEG2RAD(cfg.read_double(section, "pose_yaw", 0)),
+				DEG2RAD(cfg.read_double(section, "pose_pitch", 0)),
+				DEG2RAD(cfg.read_double(section, "pose_roll", 0)));
 
 			// insert:
 			desiredSensorPoses[label] = the_pose;
 
 			// Camera params?
 			CVectorDouble calib, distort;
-			cfg.read_vector(*it, "calib_params", CVectorDouble(), calib);
-			cfg.read_vector(*it, "distort_params", CVectorDouble(), distort);
+			cfg.read_vector(section, "calib_params", CVectorDouble(), calib);
+			cfg.read_vector(section, "distort_params", CVectorDouble(), distort);
 
 			if (calib.empty() || distort.empty()) continue;
 
@@ -5649,13 +5648,12 @@ void xRawLogViewerFrame::OnMenuBatchLaserExclusionZones(wxCommandEvent& event)
 
 		unsigned int nExclZones = 0;
 
-		for (std::vector<std::string>::iterator it = sections.begin();
-			 it != sections.end(); ++it)
+		for (auto & section : sections)
 		{
-			if (it->empty()) continue;
+			if (section.empty()) continue;
 
 			// Get sensor label:
-			string label = cfg.read_string(*it, "sensorLabel", "");
+			string label = cfg.read_string(section, "sensorLabel", "");
 			if (label.empty()) continue;
 
 			unsigned int N = 1;
@@ -5664,9 +5662,9 @@ void xRawLogViewerFrame::OnMenuBatchLaserExclusionZones(wxCommandEvent& event)
 			{
 				vector<double> x, y;
 				cfg.read_vector(
-					*it, format("exclusionZone%u_x", N), vector<double>(0), x);
+					section, format("exclusionZone%u_x", N), vector<double>(0), x);
 				cfg.read_vector(
-					*it, format("exclusionZone%u_y", N++), vector<double>(0),
+					section, format("exclusionZone%u_y", N++), vector<double>(0),
 					y);
 
 				if (!x.empty() && !y.empty())
@@ -5831,13 +5829,12 @@ void xRawLogViewerFrame::OnLaserFilterAngles(wxCommandEvent& event)
 
 		unsigned int nExclZones = 0;
 
-		for (std::vector<std::string>::iterator it = sections.begin();
-			 it != sections.end(); ++it)
+		for (auto & section : sections)
 		{
-			if (it->empty()) continue;
+			if (section.empty()) continue;
 
 			// Get sensor label:
-			string label = cfg.read_string(*it, "sensorLabel", "");
+			string label = cfg.read_string(section, "sensorLabel", "");
 			if (label.empty()) continue;
 
 			// Load forbiden angles;
@@ -5845,9 +5842,9 @@ void xRawLogViewerFrame::OnLaserFilterAngles(wxCommandEvent& event)
 			for (;;)
 			{
 				const double ini = DEG2RAD(cfg.read_double(
-					*it, format("exclusionAngles%u_ini", N), -1000));
+					section, format("exclusionAngles%u_ini", N), -1000));
 				const double end = DEG2RAD(cfg.read_double(
-					*it, format("exclusionAngles%u_end", N++), -1000));
+					section, format("exclusionAngles%u_end", N++), -1000));
 
 				if (ini > -M_PI && end > -M_PI)
 				{
@@ -6286,13 +6283,9 @@ void xRawLogViewerFrame::OnmnuCreateAVISelected(wxCommandEvent& event)
 			// If we have images in "imgsForVideo", save them to their video
 			// (AVI) files,
 			//  and create them upon first usage:
-			for (std::set<TImageToSaveData>::const_iterator itIm =
-					 imgsForVideo.begin();
-				 itIm != imgsForVideo.end(); ++itIm)
+			for (const auto & d : imgsForVideo)
 			{
-				const TImageToSaveData& d = *itIm;
-
-				size_t idx = mrpt::containers::find_in_vector(
+					size_t idx = mrpt::containers::find_in_vector(
 					d.channel_desc, outVideosIdx);
 				if (string::npos == idx)  // new?
 				{

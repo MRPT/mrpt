@@ -203,8 +203,8 @@ void TMultiResDescOptions::saveToConfigFile(
 		section, "computeHashCoeffs", computeHashCoeffs ? "true" : "false");
 
 	char buf[300];
-	for (unsigned int k = 0; k < scales.size(); ++k)
-		mrpt::system::os::sprintf(buf, 300, "%.2f ", scales[k]);
+	for (double scale : scales)
+		mrpt::system::os::sprintf(buf, 300, "%.2f ", scale);
 	cfg.write(section, "scales", buf);
 }  // end-saveToConfigFile
 
@@ -247,8 +247,8 @@ void TMultiResDescOptions::dumpToTextStream(std::ostream& out) const
 		out << mrpt::format("No\n");
 
 	out << mrpt::format("Scales:                         ");
-	for (unsigned int k = 0; k < scales.size(); ++k)
-		out << mrpt::format("%.2f ", scales[k]);
+	for (double scale : scales)
+		out << mrpt::format("%.2f ", scale);
 	out << mrpt::format("\n");
 	out << mrpt::format(
 		"-------------------------------------------------------- \n");
@@ -380,11 +380,9 @@ void CFeature::dumpToTextStream(std::ostream& out) const
 				out << mrpt::format(
 					" ·· Orientation %d: %.2f\n", m, multiOrientations[k][m]);
 				out << mrpt::format(" ·· [D] ");
-				for (int n = 0;
-					 n < (int)descriptors.multiSIFTDescriptors[k][m].size();
-					 ++n)
+				for (int n : descriptors.multiSIFTDescriptors[k][m])
 					out << mrpt::format(
-						"%d ", descriptors.multiSIFTDescriptors[k][m][n]);
+						"%d ", n);
 				out << mrpt::format("\n");
 				if (multiHashCoeffs.size() > 0)
 					out << mrpt::format(
@@ -957,16 +955,16 @@ void CFeature::saveToTextFile(const std::string& filename, bool APPEND)
 	if (this->descriptors.hasDescriptorSIFT())
 	{
 		f.printf("%4d ", int(this->descriptors.SIFT.size()));
-		for (unsigned int k = 0; k < this->descriptors.SIFT.size(); k++)
-			f.printf("%4d ", this->descriptors.SIFT[k]);
+		for (unsigned char k : this->descriptors.SIFT)
+			f.printf("%4d ", k);
 	}
 
 	f.printf("%2d ", int(this->descriptors.hasDescriptorSURF() ? 1 : 0));
 	if (this->descriptors.hasDescriptorSURF())
 	{
 		f.printf("%4d ", int(this->descriptors.SURF.size()));
-		for (unsigned int k = 0; k < this->descriptors.SURF.size(); k++)
-			f.printf("%8.5f ", this->descriptors.SURF[k]);
+		for (float k : this->descriptors.SURF)
+			f.printf("%8.5f ", k);
 	}
 
 	f.printf("%2d ", int(this->descriptors.hasDescriptorMultiSIFT() ? 1 : 0));
@@ -982,36 +980,34 @@ void CFeature::saveToTextFile(const std::string& filename, bool APPEND)
 				f.printf(
 					"%4d ",
 					int(this->descriptors.multiSIFTDescriptors[k][m].size()));
-				for (unsigned int n = 0;
-					 n < this->descriptors.multiSIFTDescriptors[k][m].size();
-					 ++n)
+				for (int n : this->descriptors.multiSIFTDescriptors[k][m])
 					f.printf(
 						"%4d ",
-						this->descriptors.multiSIFTDescriptors[k][m][n]);
+						n);
 			}
 		}  // end-for
 	}  // end-if
 
 	f.printf("%2d ", int(this->descriptors.hasDescriptorORB() ? 1 : 0));
 	if (this->descriptors.hasDescriptorORB())
-		for (size_t k = 0; k < this->descriptors.ORB.size(); ++k)
-			f.printf("%d ", this->descriptors.ORB[k]);
+		for (unsigned char k : this->descriptors.ORB)
+			f.printf("%d ", k);
 
 	// # ADDED by Raghavender Sahdev
 	f.printf("%2d ", int(this->descriptors.hasDescriptorBLD() ? 1 : 0));
 	if (this->descriptors.hasDescriptorBLD())
 	{
 		f.printf("%4d ", int(this->descriptors.BLD.size()));
-		for (unsigned int k = 0; k < this->descriptors.BLD.size(); k++)
-			f.printf("%4d ", this->descriptors.BLD[k]);
+		for (unsigned char k : this->descriptors.BLD)
+			f.printf("%4d ", k);
 	}
 
 	f.printf("%2d ", int(this->descriptors.hasDescriptorLATCH() ? 1 : 0));
 	if (this->descriptors.hasDescriptorLATCH())
 	{
 		f.printf("%4d ", int(this->descriptors.LATCH.size()));
-		for (unsigned int k = 0; k < this->descriptors.LATCH.size(); k++)
-			f.printf("%4d ", this->descriptors.LATCH[k]);
+		for (unsigned char k : this->descriptors.LATCH)
+			f.printf("%4d ", k);
 	}
 
 	f.printf("\n");
@@ -1063,44 +1059,44 @@ void CFeatureList::saveToTextFile(const std::string& filename, bool APPEND)
 		"%%--------------------------------------------------------------------"
 		"-----------------------\n");
 
-	for (CFeatureList::iterator it = this->begin(); it != this->end(); ++it)
+	for (auto & it : *this)
 	{
 		f.printf(
 			"%5u %2d %7.3f %7.3f %6.2f %6.2f %2d %6.3f ",
-			(unsigned int)(*it)->ID, (int)(*it)->get_type(), (*it)->x, (*it)->y,
-			(*it)->orientation, (*it)->scale, (int)(*it)->track_status,
-			(*it)->response);
+			(unsigned int)it->ID, (int)it->get_type(), it->x, it->y,
+			it->orientation, it->scale, (int)it->track_status,
+			it->response);
 
-		f.printf("%2d ", int((*it)->descriptors.hasDescriptorSIFT() ? 1 : 0));
-		if ((*it)->descriptors.hasDescriptorSIFT())
+		f.printf("%2d ", int(it->descriptors.hasDescriptorSIFT() ? 1 : 0));
+		if (it->descriptors.hasDescriptorSIFT())
 		{
-			f.printf("%4d ", int((*it)->descriptors.SIFT.size()));
-			for (unsigned int k = 0; k < (*it)->descriptors.SIFT.size(); k++)
-				f.printf("%4d ", (*it)->descriptors.SIFT[k]);
+			f.printf("%4d ", int(it->descriptors.SIFT.size()));
+			for (unsigned int k = 0; k < it->descriptors.SIFT.size(); k++)
+				f.printf("%4d ", it->descriptors.SIFT[k]);
 		}
 
-		f.printf("%2d ", int((*it)->descriptors.hasDescriptorSURF() ? 1 : 0));
-		if ((*it)->descriptors.hasDescriptorSURF())
+		f.printf("%2d ", int(it->descriptors.hasDescriptorSURF() ? 1 : 0));
+		if (it->descriptors.hasDescriptorSURF())
 		{
-			f.printf("%4d ", int((*it)->descriptors.SURF.size()));
-			for (unsigned int k = 0; k < (*it)->descriptors.SURF.size(); k++)
-				f.printf("%8.5f ", (*it)->descriptors.SURF[k]);
+			f.printf("%4d ", int(it->descriptors.SURF.size()));
+			for (unsigned int k = 0; k < it->descriptors.SURF.size(); k++)
+				f.printf("%8.5f ", it->descriptors.SURF[k]);
 		}
 		// # added by Raghavender Sahdev
-		f.printf("%2d ", int((*it)->descriptors.hasDescriptorBLD() ? 1 : 0));
-		if ((*it)->descriptors.hasDescriptorBLD())
+		f.printf("%2d ", int(it->descriptors.hasDescriptorBLD() ? 1 : 0));
+		if (it->descriptors.hasDescriptorBLD())
 		{
-			f.printf("%4d ", int((*it)->descriptors.BLD.size()));
-			for (unsigned int k = 0; k < (*it)->descriptors.BLD.size(); k++)
-				f.printf("%4d ", (*it)->descriptors.BLD[k]);
+			f.printf("%4d ", int(it->descriptors.BLD.size()));
+			for (unsigned int k = 0; k < it->descriptors.BLD.size(); k++)
+				f.printf("%4d ", it->descriptors.BLD[k]);
 		}
 
-		f.printf("%2d ", int((*it)->descriptors.hasDescriptorLATCH() ? 1 : 0));
-		if ((*it)->descriptors.hasDescriptorLATCH())
+		f.printf("%2d ", int(it->descriptors.hasDescriptorLATCH() ? 1 : 0));
+		if (it->descriptors.hasDescriptorLATCH())
 		{
-			f.printf("%4d ", int((*it)->descriptors.LATCH.size()));
-			for (unsigned int k = 0; k < (*it)->descriptors.LATCH.size(); k++)
-				f.printf("%4d ", (*it)->descriptors.LATCH[k]);
+			f.printf("%4d ", int(it->descriptors.LATCH.size()));
+			for (unsigned int k = 0; k < it->descriptors.LATCH.size(); k++)
+				f.printf("%4d ", it->descriptors.LATCH[k]);
 		}
 
 		f.printf("\n");
@@ -1254,8 +1250,8 @@ void CFeatureList::copyListFrom(const CFeatureList& otherList)
 // --------------------------------------------------
 CFeature::Ptr CFeatureList::getByID(const TFeatureID& ID) const
 {
-	for (CFeatureList::const_iterator it = begin(); it != end(); ++it)
-		if ((*it)->ID == ID) return (*it);
+	for (const auto & it : *this)
+		if (it->ID == ID) return it;
 
 	return CFeature::Ptr();
 }  // end getByID
@@ -1288,10 +1284,10 @@ void CFeatureList::getByMultiIDs(
 	out.reserve(IDs.size());
 	outIndex.reserve(IDs.size());
 
-	for (int k = 0; k < int(IDs.size()); ++k)
+	for (unsigned long ID : IDs)
 	{
 		int idx;
-		CFeature::Ptr f = getByID(IDs[k], idx);
+		CFeature::Ptr f = getByID(ID, idx);
 		out.push_back(f);
 		outIndex.push_back(idx);
 	}
@@ -1330,9 +1326,8 @@ TFeatureID CFeatureList::getMaxID() const
 	MRPT_START
 	ASSERT_(!empty());
 	vision::TFeatureID maxID = (*begin())->ID;
-	for (CFeatureList::const_iterator itList = begin(); itList != end();
-		 itList++)
-		mrpt::keep_max(maxID, (*itList)->ID);
+	for (const auto & itList : *this)
+		mrpt::keep_max(maxID, itList->ID);
 	return maxID;
 	MRPT_END
 

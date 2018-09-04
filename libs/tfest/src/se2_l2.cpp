@@ -84,8 +84,7 @@ bool tfest::se2_l2(
 	//    xa*xb  ya*yb   xa*yb  xb*ya
 	__m128 sum_ab_xyz = _mm_setzero_ps();  // All 4 zeros (0.0f)
 
-	for (TMatchingPairList::const_iterator corrIt = in_correspondences.begin();
-		 corrIt != in_correspondences.end(); corrIt++)
+	for (const auto & in_correspondence : in_correspondences)
 	{
 		// Get the pair of points in the correspondence:
 		//   a_xyyx = [   xa     ay   |   xa    ya ]
@@ -94,9 +93,9 @@ bool tfest::se2_l2(
 		//            [  xa*xb  ya*yb   xa*yb  xb*ya
 		//                LO0    LO1     HI2    HI3
 		// Note: _MM_SHUFFLE(hi3,hi2,lo1,lo0)
-		const __m128 a_xyz = _mm_loadu_ps(&corrIt->this_x);  // *Unaligned* load
+		const __m128 a_xyz = _mm_loadu_ps(&in_correspondence.this_x);  // *Unaligned* load
 		const __m128 b_xyz =
-			_mm_loadu_ps(&corrIt->other_x);  // *Unaligned* load
+			_mm_loadu_ps(&in_correspondence.other_x);  // *Unaligned* load
 
 		const __m128 a_xyxy =
 			_mm_shuffle_ps(a_xyz, a_xyz, _MM_SHUFFLE(1, 0, 1, 0));
@@ -214,14 +213,12 @@ bool tfest::se2_l2(
 
 		// 0) Precompute the unbiased variances estimations:
 		// ----------------------------------------------------
-		for (TMatchingPairList::const_iterator corrIt =
-				 in_correspondences.begin();
-			 corrIt != in_correspondences.end(); corrIt++)
+		for (const auto & in_correspondence : in_correspondences)
 		{
-			var_x_a += square(corrIt->this_x - mean_x_a);
-			var_y_a += square(corrIt->this_y - mean_y_a);
-			var_x_b += square(corrIt->other_x - mean_x_b);
-			var_y_b += square(corrIt->other_y - mean_y_b);
+			var_x_a += square(in_correspondence.this_x - mean_x_a);
+			var_y_a += square(in_correspondence.this_y - mean_y_a);
+			var_x_b += square(in_correspondence.other_x - mean_x_b);
+			var_y_b += square(in_correspondence.other_y - mean_y_b);
 		}
 		var_x_a *= N_1_inv;  //  /= (N-1)
 		var_y_a *= N_1_inv;

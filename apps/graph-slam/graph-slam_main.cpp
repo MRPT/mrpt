@@ -174,13 +174,13 @@ int main(int argc, char** argv)
 		// Check the selected operation:
 		//  Only one of the ops should be selected:
 		string selected_op;
-		for (size_t i = 0; i < arg_ops.size(); i++)
+		for (auto & arg_op : arg_ops)
 		{
-			if (arg_ops[i]->isSet())
+			if (arg_op->isSet())
 			{
 				if (selected_op.empty())
 				{
-					selected_op = arg_ops[i]->getName();
+					selected_op = arg_op->getName();
 				}
 				else
 					throw std::runtime_error(
@@ -230,7 +230,7 @@ int main(int argc, char** argv)
 	}
 
 	// Free mem:
-	for (size_t i = 0; i < arg_ops.size(); i++) delete arg_ops[i];
+	for (auto & arg_op : arg_ops) delete arg_op;
 
 	// end:
 	return ret_val;

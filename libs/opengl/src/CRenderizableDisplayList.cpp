@@ -95,8 +95,8 @@ void CRenderizableDisplayList::render() const
 		{
 			obj.dls_to_delete_cs.lock();
 #if MRPT_HAS_OPENGL_GLUT
-			for (size_t i = 0; i < obj.dls_to_delete.size(); i++)
-				glDeleteLists(obj.dls_to_delete[i], 1);
+			for (unsigned int i : obj.dls_to_delete)
+				glDeleteLists(i, 1);
 #endif
 			obj.dls_to_delete.clear();
 			obj.dls_to_delete_cs.unlock();

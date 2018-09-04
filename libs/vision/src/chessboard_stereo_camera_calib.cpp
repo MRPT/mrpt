@@ -480,8 +480,8 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		out.left_cam_poses = lm_stat.left_cam_poses;
 
 		out.image_pair_was_used.assign(images.size(), false);
-		for (size_t i = 0; i < valid_image_pair_indices.size(); i++)
-			out.image_pair_was_used[valid_image_pair_indices[i]] = true;
+		for (unsigned long valid_image_pair_indice : valid_image_pair_indices)
+			out.image_pair_was_used[valid_image_pair_indice] = true;
 
 		// Uncertainties ---------------------
 		// The order of inv. variances in the diagonal of the Hessian is:
@@ -502,7 +502,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		}
 
 		// Draw projected points
-		for (size_t i = 0; i < valid_image_pair_indices.size(); i++)
+		for (unsigned long idx : valid_image_pair_indices)
 		{
 			// mrpt::poses::CPose3D			reconstructed_camera_pose;   //!< At
 			// output, the reconstructed pose of the camera.
@@ -516,9 +516,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 			// At
 			// output, like projectedPoints_distorted but for the undistorted
 			// image.
-			const size_t idx = valid_image_pair_indices[i];
-
-			TImageCalibData& dat_l = images[idx].left;
+				TImageCalibData& dat_l = images[idx].left;
 			TImageCalibData& dat_r = images[idx].right;
 
 			// Rectify image.

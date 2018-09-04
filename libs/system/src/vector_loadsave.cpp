@@ -22,8 +22,8 @@ bool mrpt::system::vectorToTextFile(
 	FILE* f = os::fopen(fileName.c_str(), append ? "at" : "wt");
 	if (!f) return false;
 
-	for (vector<float>::const_iterator it = vec.begin(); it != vec.end(); ++it)
-		os::fprintf(f, byRows ? "%e " : "%e\n", *it);
+	for (float it : vec)
+		os::fprintf(f, byRows ? "%e " : "%e\n", it);
 
 	if (byRows) os::fprintf(f, "\n");
 
@@ -37,8 +37,8 @@ bool mrpt::system::vectorToTextFile(
 	FILE* f = os::fopen(fileName.c_str(), append ? "at" : "wt");
 	if (!f) return false;
 
-	for (vector<double>::const_iterator it = vec.begin(); it != vec.end(); ++it)
-		os::fprintf(f, byRows ? "%e " : "%e\n", *it);
+	for (double it : vec)
+		os::fprintf(f, byRows ? "%e " : "%e\n", it);
 
 	if (byRows) os::fprintf(f, "\n");
 
@@ -52,8 +52,8 @@ bool mrpt::system::vectorToTextFile(
 	FILE* f = os::fopen(fileName.c_str(), append ? "at" : "wt");
 	if (!f) return false;
 
-	for (vector<int>::const_iterator it = vec.begin(); it != vec.end(); ++it)
-		os::fprintf(f, byRows ? "%i " : "%i\n", *it);
+	for (int it : vec)
+		os::fprintf(f, byRows ? "%i " : "%i\n", it);
 
 	if (byRows) os::fprintf(f, "\n");
 
@@ -67,8 +67,8 @@ bool mrpt::system::vectorToTextFile(
 	FILE* f = os::fopen(fileName.c_str(), append ? "at" : "wt");
 	if (!f) return false;
 
-	for (vector<size_t>::const_iterator it = vec.begin(); it != vec.end(); ++it)
-		os::fprintf(f, byRows ? "%u " : "%u\n", static_cast<unsigned int>(*it));
+	for (unsigned long it : vec)
+		os::fprintf(f, byRows ? "%u " : "%u\n", static_cast<unsigned int>(it));
 
 	if (byRows) os::fprintf(f, "\n");
 

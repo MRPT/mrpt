@@ -687,8 +687,8 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 	// displayedImgs.resize(3);
 
 	// unload current imgs:
-	for (size_t i = 0; i < displayedImgs.size(); i++)
-		if (displayedImgs[i]) displayedImgs[i]->unload();
+	for (auto & displayedImg : displayedImgs)
+		if (displayedImg) displayedImg->unload();
 
 	CImage auxImgForSubSampling;
 

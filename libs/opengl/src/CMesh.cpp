@@ -195,10 +195,10 @@ void CMesh::updateTriangles() const
 						tri, tvi));
 
 				// For averaging normals:
-				for (int k = 0; k < 3; k++)
+				for (unsigned long k : tvi.vind)
 				{
-					vertex_normals[tvi.vind[k]].first += this_normal;
-					vertex_normals[tvi.vind[k]].second++;
+					vertex_normals[k].first += this_normal;
+					vertex_normals[k].second++;
 				}
 			}
 			// 2:
@@ -272,19 +272,19 @@ void CMesh::updateTriangles() const
 						tri, tvi));
 
 				// For averaging normals:
-				for (int k = 0; k < 3; k++)
+				for (unsigned long k : tvi.vind)
 				{
-					vertex_normals[tvi.vind[k]].first += this_normal;
-					vertex_normals[tvi.vind[k]].second++;
+					vertex_normals[k].first += this_normal;
+					vertex_normals[k].second++;
 				}
 			}
 		}
 
 	// Average normals:
-	for (size_t i = 0; i < vertex_normals.size(); i++)
+	for (auto & vertex_normal : vertex_normals)
 	{
-		const size_t N = vertex_normals[i].second;
-		if (N > 0) vertex_normals[i].first *= 1.0 / N;
+		const size_t N = vertex_normal.second;
+		if (N > 0) vertex_normal.first *= 1.0 / N;
 	}
 
 	trianglesUpToDate = true;
@@ -314,10 +314,10 @@ void CMesh::render_dl() const
 	glShadeModel(GL_SMOOTH);
 	if (!trianglesUpToDate) updateTriangles();
 	if (!m_isWireFrame) glBegin(GL_TRIANGLES);
-	for (size_t i = 0; i < actualMesh.size(); i++)
+	for (auto & i : actualMesh)
 	{
-		const CSetOfTriangles::TTriangle& t = actualMesh[i].first;
-		const TTriangleVertexIndices& tvi = actualMesh[i].second;
+		const CSetOfTriangles::TTriangle& t = i.first;
+		const TTriangleVertexIndices& tvi = i.second;
 
 		if (m_isWireFrame)
 		{

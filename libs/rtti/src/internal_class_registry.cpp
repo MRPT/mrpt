@@ -103,9 +103,8 @@ class CClassRegistry
 		std::unique_lock<std::mutex> lk(m_cs);
 
 		std::vector<const TRuntimeClassId*> ret;
-		for (TClassnameToRuntimeId::iterator it = registeredClasses.begin();
-			 it != registeredClasses.end(); ++it)
-			ret.push_back(it->second);
+		for (auto & registeredClasse : registeredClasses)
+			ret.push_back(registeredClasse.second);
 		return ret;
 	}
 

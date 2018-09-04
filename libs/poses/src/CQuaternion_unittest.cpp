@@ -170,11 +170,11 @@ TEST_F(QuaternionTests, LnAndExpMatches)
 
 	const size_t N = sizeof(list_test_YPR_angles_degrees) /
 					 sizeof(list_test_YPR_angles_degrees[0]);
-	for (size_t i = 0; i < N; i++)
+	for (const auto & list_test_YPR_angles_degree : list_test_YPR_angles_degrees)
 		test_lnAndExpMatches(
-			DEG2RAD(list_test_YPR_angles_degrees[i][0]),
-			DEG2RAD(list_test_YPR_angles_degrees[i][1]),
-			DEG2RAD(list_test_YPR_angles_degrees[i][2]));
+			DEG2RAD(list_test_YPR_angles_degree[0]),
+			DEG2RAD(list_test_YPR_angles_degree[1]),
+			DEG2RAD(list_test_YPR_angles_degree[2]));
 }
 
 TEST_F(QuaternionTests, ExpAndLnMatches)
@@ -189,7 +189,7 @@ TEST_F(QuaternionTests, ExpAndLnMatches)
 		{0.1, 0.2, 0.3}};
 
 	const size_t N = sizeof(list_test_XYZ) / sizeof(list_test_XYZ[0]);
-	for (size_t i = 0; i < N; i++)
+	for (const auto & i : list_test_XYZ)
 		test_ExpAndLnMatches(
-			list_test_XYZ[i][0], list_test_XYZ[i][1], list_test_XYZ[i][2]);
+			i[0], i[1], i[2]);
 }

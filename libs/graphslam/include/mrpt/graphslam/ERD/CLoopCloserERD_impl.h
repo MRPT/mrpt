@@ -186,18 +186,17 @@ void CLoopCloserERD<GRAPH_T>::addScanMatchingEdges(
 	this->fetchNodeIDsForScanMatching(curr_nodeID, &nodes_set);
 
 	// try adding ICP constraints with each node in the previous set
-	for (std::set<TNodeID>::const_iterator node_it = nodes_set.begin();
-		 node_it != nodes_set.end(); ++node_it)
+	for (unsigned long node_it : nodes_set)
 	{
 		constraint_t rel_edge;
 		mrpt::slam::CICP::TReturnInfo icp_info;
 
 		MRPT_LOG_DEBUG_STREAM(
-			"Fetching laser scan for nodes: " << *node_it << "==> "
+			"Fetching laser scan for nodes: " << node_it << "==> "
 											  << curr_nodeID);
 
 		bool found_edge =
-			this->getICPEdge(*node_it, curr_nodeID, &rel_edge, &icp_info);
+			this->getICPEdge(node_it, curr_nodeID, &rel_edge, &icp_info);
 		if (!found_edge) continue;
 
 		// keep track of the recorded goodness values
@@ -220,12 +219,12 @@ void CLoopCloserERD<GRAPH_T>::addScanMatchingEdges(
 		// make sure that the suggested edge makes sense with regards to current
 		// graph config - check against the current position difference
 		bool accept_mahal_distance = this->mahalanobisDistanceOdometryToICPEdge(
-			*node_it, curr_nodeID, rel_edge);
+			node_it, curr_nodeID, rel_edge);
 
 		// criterion for registering a new node
 		if (accept_goodness && accept_mahal_distance)
 		{
-			this->registerNewEdge(*node_it, curr_nodeID, rel_edge);
+			this->registerNewEdge(node_it, curr_nodeID, rel_edge);
 		}
 	}
 
@@ -536,12 +535,9 @@ void CLoopCloserERD<GRAPH_T>::evaluatePartitionsForLC(
 		this->header_sep.c_str());
 
 	// for each partition to be evaulated...
-	for (partitions_t::const_iterator p_it = partitions.begin();
-		 p_it != partitions.end(); ++p_it)
+	for (auto partition : partitions)
 	{
-		std::vector<uint32_t> partition(*p_it);
-
-		// split the partition to groups
+			// split the partition to groups
 		std::vector<uint32_t> groupA, groupB;
 		this->splitPartitionToGroups(
 			partition, &groupA, &groupB,
@@ -781,21 +777,17 @@ void CLoopCloserERD<GRAPH_T>::generateHypotsPool(
 	int invalid_hypots = 0;  // just for keeping track of them.
 	{
 		// iterate over all the nodes in both groups
-		for (std::vector<uint32_t>::const_iterator  // B - from
-			 b_it = groupB.begin();
-			 b_it != groupB.end(); ++b_it)
+		for (unsigned int b_it : groupB)
 		{
-			for (std::vector<uint32_t>::const_iterator  // A - to
-				 a_it = groupA.begin();
-				 a_it != groupA.end(); ++a_it)
+			for (unsigned int a_it : groupA)
 			{
 				// by default hypotheses will direct bi => ai; If the hypothesis
 				// is
 				// traversed the opposite way, take the opposite of the
 				// constraint
 				hypot_t* hypot = new hypot_t;
-				hypot->from = *b_it;
-				hypot->to = *a_it;
+				hypot->from = b_it;
+				hypot->to = a_it;
 				hypot->id = hypot_counter++;
 
 				// [from] *b_it ====[edge]===> [to]  *a_it
@@ -812,11 +804,11 @@ void CLoopCloserERD<GRAPH_T>::generateHypotsPool(
 					icp_ad_params = new TGetICPEdgeAdParams;
 					// from_success = fillNodePropsFromGroupParams(
 					fillNodePropsFromGroupParams(
-						*b_it, ad_params->groupB_params,
+						b_it, ad_params->groupB_params,
 						&icp_ad_params->from_params);
 					// to_success = fillNodePropsFromGroupParams(
 					fillNodePropsFromGroupParams(
-						*a_it, ad_params->groupA_params,
+						a_it, ad_params->groupA_params,
 						&icp_ad_params->to_params);
 
 					// MRPT_LOG_DEBUG_STREAM(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
@@ -838,7 +830,7 @@ void CLoopCloserERD<GRAPH_T>::generateHypotsPool(
 				mrpt::slam::CICP::TReturnInfo icp_info;
 				constraint_t edge;
 				bool found_edge = this->getICPEdge(
-					*b_it, *a_it, &edge, &icp_info, icp_ad_params);
+					b_it, a_it, &edge, &icp_info, icp_ad_params);
 
 				hypot->setEdge(edge);
 				hypot->goodness =
@@ -1374,13 +1366,11 @@ void CLoopCloserERD<GRAPH_T>::execDijkstraProjection(
 	std::set<path_t*> pool_of_paths;
 	// get the edge to each one of the neighboring nodes of the starting node
 	std::set<TNodeID> starting_node_neighbors(neighbors_of.at(starting_node));
-	for (std::set<TNodeID>::const_iterator n_it =
-			 starting_node_neighbors.begin();
-		 n_it != starting_node_neighbors.end(); ++n_it)
+	for (unsigned long starting_node_neighbor : starting_node_neighbors)
 	{
 		path_t* path_between_neighbors = new path_t();
 		this->getMinUncertaintyPath(
-			starting_node, *n_it, path_between_neighbors);
+			starting_node, starting_node_neighbor, path_between_neighbors);
 
 		pool_of_paths.insert(path_between_neighbors);
 	}
@@ -1484,15 +1474,14 @@ void CLoopCloserERD<GRAPH_T>::addToPaths(
 	// in
 	// the current_path
 	TNodeID second_to_last_node = current_path.nodes_traversed.rbegin()[1];
-	for (std::set<TNodeID>::const_iterator neigh_it = neighbors.begin();
-		 neigh_it != neighbors.end(); ++neigh_it)
+	for (unsigned long neighbor : neighbors)
 	{
-		if (*neigh_it == second_to_last_node) continue;
+		if (neighbor == second_to_last_node) continue;
 
 		// get the path between node_to_append_from, *node_it
 		path_t path_between_nodes;
 		this->getMinUncertaintyPath(
-			node_to_append_from, *neigh_it, &path_between_nodes);
+			node_to_append_from, neighbor, &path_between_nodes);
 
 		// format the path to append
 		path_t* path_to_append = new path_t();
@@ -2070,10 +2059,9 @@ void CLoopCloserERD<GRAPH_T>::computeCentroidOfNodesVector(
 	// and at their center
 	double centroid_x = 0;
 	double centroid_y = 0;
-	for (std::vector<uint32_t>::const_iterator node_it = nodes_list.begin();
-		 node_it != nodes_list.end(); ++node_it)
+	for (unsigned int node_it : nodes_list)
 	{
-		pose_t curr_node_pos = this->m_graph->nodes.at(*node_it);
+		pose_t curr_node_pos = this->m_graph->nodes.at(node_it);
 		centroid_x += curr_node_pos.x();
 		centroid_y += curr_node_pos.y();
 	}

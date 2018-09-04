@@ -181,10 +181,9 @@ void CHeightGridMap2D::serializeTo(mrpt::serialization::CArchive& out) const
 	// Save the map contents:
 	n = static_cast<uint32_t>(m_map.size());
 	out << n;
-	for (vector<THeightGridmapCell>::const_iterator it = m_map.begin();
-		 it != m_map.end(); ++it)
-		out << it->h
-			<< it->w;  // This was removed in version 1: << it->history_Zs;
+	for (const auto & it : m_map)
+		out << it.h
+			<< it.w;  // This was removed in version 1: << it->history_Zs;
 
 	// Save the insertion options:
 	out << uint8_t(m_mapType);
@@ -214,10 +213,9 @@ void CHeightGridMap2D::serializeFrom(
 			// Save the map contents:
 			in >> n;
 			m_map.resize(n);
-			for (vector<THeightGridmapCell>::iterator it = m_map.begin();
-				 it != m_map.end(); ++it)
+			for (auto & it : m_map)
 			{
-				in >> it->h >> it->w;
+				in >> it.h >> it.w;
 				// Data member in version 0:
 				if (version == 0)
 				{

@@ -85,13 +85,11 @@ std::string CVelodyneScanner::TModelPropertiesFactory::getListKnownModels()
 	const CVelodyneScanner::model_properties_list_t& lst =
 		CVelodyneScanner::TModelPropertiesFactory::get();
 	std::string s;
-	for (CVelodyneScanner::model_properties_list_t::const_iterator it =
-			 lst.begin();
-		 it != lst.end(); ++it)
+	for (auto it : lst)
 		s += mrpt::format(
 			"`%s`,",
 			mrpt::typemeta::TEnumType<CVelodyneScanner::model_t>::value2name(
-				it->first)
+				it.first)
 				.c_str());
 	return s;
 }

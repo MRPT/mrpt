@@ -346,14 +346,14 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 
 	// Preprocess: make sure 3D observations are ready:
 	std::vector<CObservation3DRangeScan::Ptr> obs3D_to_clear;
-	for (CSensoryFrame::iterator it = sf->begin(); it != sf->end(); ++it)
+	for (auto & it : *sf)
 	{
-		(*it)->load();
+		it->load();
 		// force generate 3D point clouds:
-		if (IS_CLASS(*it, CObservation3DRangeScan))
+		if (IS_CLASS(it, CObservation3DRangeScan))
 		{
 			CObservation3DRangeScan::Ptr o =
-				std::dynamic_pointer_cast<CObservation3DRangeScan>(*it);
+				std::dynamic_pointer_cast<CObservation3DRangeScan>(it);
 			if (o->hasRangeImage && !o->hasPoints3D)
 			{
 				mrpt::obs::T3DPointsProjectionParams pp;
@@ -368,10 +368,9 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 	if (!m_mixlasers)
 	{
 		// if not, just clear all old objects:
-		for (TListGlObjects::iterator it = m_gl_objects.begin();
-			 it != m_gl_objects.end(); ++it)
+		for (auto & m_gl_object : m_gl_objects)
 		{
-			TRenderObject& ro = it->second;
+			TRenderObject& ro = m_gl_object.second;
 			m_plot3D->getOpenGLSceneRef()->removeObject(
 				ro.obj);  // Remove from the opengl viewport
 		}
@@ -381,15 +380,15 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 	// Insert new scans:
 	mrpt::system::TTimeStamp tim_last = INVALID_TIMESTAMP;
 	bool wereScans = false;
-	for (CSensoryFrame::iterator it = sf->begin(); it != sf->end(); ++it)
+	for (auto & it : *sf)
 	{
 		const std::string sNameInMap =
-			std::string((*it)->GetRuntimeClass()->className) +
-			(*it)->sensorLabel;
-		if (IS_CLASS(*it, CObservation2DRangeScan))
+			std::string(it->GetRuntimeClass()->className) +
+			it->sensorLabel;
+		if (IS_CLASS(it, CObservation2DRangeScan))
 		{
 			CObservation2DRangeScan::Ptr obs =
-				std::dynamic_pointer_cast<CObservation2DRangeScan>(*it);
+				std::dynamic_pointer_cast<CObservation2DRangeScan>(it);
 			wereScans = true;
 			if (tim_last == INVALID_TIMESTAMP || tim_last < obs->timestamp)
 				tim_last = obs->timestamp;
@@ -418,10 +417,10 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 				m_plot3D->getOpenGLSceneRef()->insert(gl_obj);
 			}
 		}
-		else if (IS_CLASS(*it, CObservation3DRangeScan))
+		else if (IS_CLASS(it, CObservation3DRangeScan))
 		{
 			CObservation3DRangeScan::Ptr obs =
-				std::dynamic_pointer_cast<CObservation3DRangeScan>(*it);
+				std::dynamic_pointer_cast<CObservation3DRangeScan>(it);
 			wereScans = true;
 			if (tim_last == INVALID_TIMESTAMP || tim_last < obs->timestamp)
 				tim_last = obs->timestamp;
@@ -461,10 +460,10 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 			// Add to list:
 			//				m_lstScans[obs->sensorLabel] = obs;
 		}
-		else if (IS_CLASS(*it, CObservationVelodyneScan))
+		else if (IS_CLASS(it, CObservationVelodyneScan))
 		{
 			CObservationVelodyneScan::Ptr obs =
-				std::dynamic_pointer_cast<CObservationVelodyneScan>(*it);
+				std::dynamic_pointer_cast<CObservationVelodyneScan>(it);
 			wereScans = true;
 			if (tim_last == INVALID_TIMESTAMP || tim_last < obs->timestamp)
 				tim_last = obs->timestamp;
@@ -534,10 +533,10 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 
 	// Post-process: unload 3D observations.
 	for (auto& o : *sf) o->unload();
-	for (size_t i = 0; i < obs3D_to_clear.size(); i++)
+	for (auto & i : obs3D_to_clear)
 	{
-		obs3D_to_clear[i]->resizePoints3DVectors(0);
-		obs3D_to_clear[i]->hasPoints3D = false;
+		i->resizePoints3DVectors(0);
+		i->hasPoints3D = false;
 	}
 
 	WX_END_TRY

@@ -76,10 +76,8 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
 		CPose3D initPose(0, 0, 0);
 
 		ASSERT_(LMH->m_particles.size() > 0);
-		for (CLocalMetricHypothesis::CParticleList::iterator it =
-				 LMH->m_particles.begin();
-			 it != LMH->m_particles.end(); ++it)
-			it->d->robotPoses[currentPoseID] = initPose;
+		for (auto & m_particle : LMH->m_particles)
+			m_particle.d->robotPoses[currentPoseID] = initPose;
 
 		ASSERT_(m_parent->m_map.nodeCount() == 1);
 
@@ -116,15 +114,14 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
 			float minDistAng = 1e6f;
 
 			// printf("Poses in graph:\n");
-			for (TMapPoseID2Pose3D::iterator it = lstRobotPoses.begin();
-				 it != lstRobotPoses.end(); ++it)
+			for (auto & lstRobotPose : lstRobotPoses)
 			{
-				if (it->first != currentPoseID)
+				if (lstRobotPose.first != currentPoseID)
 				{
-					float linDist = it->second.distanceTo(*currentRobotPose);
+					float linDist = lstRobotPose.second.distanceTo(*currentRobotPose);
 					float angDist = fabs(
 						math::wrapToPi(
-							it->second.yaw() - currentRobotPose->yaw()));
+							lstRobotPose.second.yaw() - currentRobotPose->yaw()));
 
 					minDistLin = min(minDistLin, linDist);
 
@@ -175,13 +172,11 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
 		// one:
 		//     and insert the observations into the metric maps:
 		// ----------------------------------------------------------------------------
-		for (CLocalMetricHypothesis::CParticleList::iterator partIt =
-				 LMH->m_particles.begin();
-			 partIt != LMH->m_particles.end(); partIt++)
+		for (auto & m_particle : LMH->m_particles)
 		{
-			const CPose3D* curRobotPose = &partIt->d->robotPoses[currentPoseID];
-			partIt->d->robotPoses[newCurrentPoseID] = *curRobotPose;
-			sf->insertObservationsInto(&partIt->d->metricMaps, curRobotPose);
+			const CPose3D* curRobotPose = &m_particle.d->robotPoses[currentPoseID];
+			m_particle.d->robotPoses[newCurrentPoseID] = *curRobotPose;
+			sf->insertObservationsInto(&m_particle.d->metricMaps, curRobotPose);
 		}
 
 		// Add node membership: for now, a copy of the current pose:
@@ -212,10 +207,8 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
 		{
 			std::lock_guard<std::mutex> lock(m_parent->m_topLCdets_cs);
 
-			for (std::deque<CTopLCDetectorBase*>::iterator it =
-					 m_parent->m_topLCdets.begin();
-				 it != m_parent->m_topLCdets.end(); ++it)
-				(*it)->OnNewPose(newlyAddedPose, sf.get());
+			for (auto & m_topLCdet : m_parent->m_topLCdets)
+				m_topLCdet->OnNewPose(newlyAddedPose, sf.get());
 		}
 
 	}  // end of insertNewRobotPose
@@ -327,8 +320,8 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 			0.0f, ((float)size_movementDraws) - 0.01f));
 
 	robotMovement->prepareFastDrawSingleSamples();
-	for (size_t i = 0; i < LMH->m_movementDraws.size(); i++)
-		robotMovement->fastDrawSingleSample(LMH->m_movementDraws[i]);
+	for (auto & m_movementDraw : LMH->m_movementDraws)
+		robotMovement->fastDrawSingleSample(m_movementDraw);
 
 	LMH->m_pfAuxiliaryPFOptimal_estimatedProb.resize(M);
 	LMH->m_maxLikelihood.clear();

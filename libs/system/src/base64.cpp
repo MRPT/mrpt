@@ -36,10 +36,9 @@ void mrpt::system::encodeBase64(
 	int bits = 0;
 	int cols = 0;
 
-	for (size_t i = 0; i < inputData.size(); i++)
+	for (unsigned char c : inputData)
 	{
-		const uint8_t c = inputData[i];
-		bits += c;
+			bits += c;
 		char_count++;
 
 		if (char_count == 3)
@@ -113,11 +112,9 @@ bool mrpt::system::decodeBase64(
 	int bits = 0;
 	bool finish_flag_found = false;
 
-	for (size_t i = 0; i < inString.size(); i++)
+	for (unsigned char c : inString)
 	{
-		const unsigned char c = inString[i];
-
-		if (c == '=')
+			if (c == '=')
 		{
 			finish_flag_found = true;
 			break;

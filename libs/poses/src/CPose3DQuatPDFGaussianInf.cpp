@@ -198,9 +198,8 @@ void CPose3DQuatPDFGaussianInf::drawManySamples(
 
 	getRandomGenerator().drawGaussianMultivariateMany(outSamples, N, COV);
 
-	for (vector<CVectorDouble>::iterator it = outSamples.begin();
-		 it != outSamples.end(); ++it)
-		for (unsigned int k = 0; k < 7; k++) (*it)[k] += mean[k];
+	for (auto & outSample : outSamples)
+		for (unsigned int k = 0; k < 7; k++) outSample[k] += mean[k];
 
 	MRPT_END
 }

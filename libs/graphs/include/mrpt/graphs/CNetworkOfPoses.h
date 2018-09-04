@@ -477,15 +477,13 @@ class CNetworkOfPoses
 		}
 
 		// add all the nodes of the node_IDs_real set to sub_graph
-		for (std::set<TNodeID>::const_iterator node_IDs_it =
-				 node_IDs_real.begin();
-			 node_IDs_it != node_IDs_real.end(); ++node_IDs_it)
+		for (unsigned long node_IDs_it : node_IDs_real)
 		{
 			// assert that current node exists in *own* graph
 			typename global_poses_t::const_iterator own_it;
 			for (own_it = nodes.begin(); own_it != nodes.end(); ++own_it)
 			{
-				if (*node_IDs_it == own_it->first)
+				if (node_IDs_it == own_it->first)
 				{
 					break;  // I throw exception afterwards
 				}
@@ -494,10 +492,10 @@ class CNetworkOfPoses
 				own_it != nodes.end(),
 				format(
 					"NodeID [%lu] can't be found in the initial graph.",
-					static_cast<unsigned long>(*node_IDs_it)));
+					static_cast<unsigned long>(node_IDs_it)));
 
-			global_pose_t curr_node(nodes.at(*node_IDs_it));
-			sub_graph->nodes.insert(make_pair(*node_IDs_it, curr_node));
+			global_pose_t curr_node(nodes.at(node_IDs_it));
+			sub_graph->nodes.insert(make_pair(node_IDs_it, curr_node));
 		}
 		// cout << "Extracting subgraph for nodeIDs: " <<
 		// getSTLContainerAsString(node_IDs_real) << endl;
@@ -610,11 +608,9 @@ class CNetworkOfPoses
 						bool is_there = false;
 
 						// for all unconnected nodes
-						for (typename std::set<TNodeID>::const_iterator
-								 uncon_it = unconnected_nodeIDs.begin();
-							 uncon_it != unconnected_nodeIDs.end(); ++uncon_it)
+						for (unsigned long unconnected_nodeID : unconnected_nodeIDs)
 						{
-							if (n_it->first == *uncon_it)
+							if (n_it->first == unconnected_nodeID)
 							{
 								is_there = true;
 								break;

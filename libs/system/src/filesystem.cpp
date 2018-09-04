@@ -221,20 +221,19 @@ bool mrpt::system::deleteFilesInDirectory(
 	CDirectoryExplorer::explore(
 		path, FILE_ATTRIB_ARCHIVE | FILE_ATTRIB_DIRECTORY, lstFiles);
 
-	for (CDirectoryExplorer::TFileInfoList::iterator i = lstFiles.begin();
-		 i != lstFiles.end(); ++i)
+	for (auto & lstFile : lstFiles)
 	{
-		if (i->isDir)
+		if (lstFile.isDir)
 		{
-			if (i->name != "." && i->name != "..")
+			if (lstFile.name != "." && lstFile.name != "..")
 			{
-				if (!mrpt::system::deleteFilesInDirectory(i->wholePath, true))
+				if (!mrpt::system::deleteFilesInDirectory(lstFile.wholePath, true))
 					return false;
 			}
 		}
 		else
 		{
-			if (!mrpt::system::deleteFile(i->wholePath)) return false;
+			if (!mrpt::system::deleteFile(lstFile.wholePath)) return false;
 		}
 	}
 
@@ -332,14 +331,14 @@ std::string mrpt::system::fileNameStripInvalidChars(
 	const unsigned int nForbid = sizeof(forbid) / sizeof(forbid[0]);
 
 	string ret(filename);
-	for (string::iterator c = ret.begin(); c != ret.end(); ++c)
+	for (char & c : ret)
 	{
-		bool invalid = (*c < 32);
+		bool invalid = (c < 32);
 
 		for (unsigned int i = 0; !invalid && i < nForbid; i++)
-			if (*c == forbid[i]) invalid = true;
+			if (c == forbid[i]) invalid = true;
 
-		if (invalid) *c = '_';
+		if (invalid) c = '_';
 	}
 	return ret;
 }

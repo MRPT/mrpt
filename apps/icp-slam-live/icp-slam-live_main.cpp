@@ -501,13 +501,13 @@ void MapBuilding_ICP_Live(const string& INI_FILENAME)
 			// Draw laser scanners in 3D:
 			if (SHOW_LASER_SCANS_3D)
 			{
-				for (size_t i = 0; i < lst_current_laser_scans.size(); i++)
+				for (auto & lst_current_laser_scan : lst_current_laser_scans)
 				{
 					// Create opengl object and load scan data from the scan
 					// observation:
 					opengl::CPlanarLaserScan::Ptr obj =
 						mrpt::make_aligned_shared<opengl::CPlanarLaserScan>();
-					obj->setScan(*lst_current_laser_scans[i]);
+					obj->setScan(*lst_current_laser_scan);
 					obj->setPose(curRobotPose);
 					obj->setSurfaceColor(1.0f, 0.0f, 0.0f, 0.5f);
 					// inser into the scene:

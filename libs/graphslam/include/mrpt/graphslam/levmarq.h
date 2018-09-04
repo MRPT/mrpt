@@ -558,11 +558,10 @@ void optimize_graph_spa_levmarq(
 		profiler.enter("optimize_graph_spa_levmarq.x_norm");
 		double x_norm = 0;
 		{
-			for (set<TNodeID>::const_iterator it = nodes_to_optimize->begin();
-				 it != nodes_to_optimize->end(); ++it)
+			for (unsigned long it : *nodes_to_optimize)
 			{
 				typename gst::graph_t::global_poses_t::const_iterator itP =
-					graph.nodes.find(*it);
+					graph.nodes.find(it);
 				const typename gst::graph_t::constraint_t::type_value& P =
 					itP->second;
 				for (size_t i = 0; i < DIMS_POSE; i++) x_norm += square(P[i]);
@@ -597,9 +596,7 @@ void optimize_graph_spa_levmarq(
 				ASSERTDEB_(
 					delta.size() == int(nodes_to_optimize->size() * DIMS_POSE));
 				const double* delta_ptr = &delta[0];
-				for (set<TNodeID>::const_iterator it =
-						 nodes_to_optimize->begin();
-					 it != nodes_to_optimize->end(); ++it)
+				for (unsigned long it : *nodes_to_optimize)
 				{
 					typename gst::Array_O exp_delta;
 					for (size_t i = 0; i < DIMS_POSE; i++)
@@ -609,8 +606,8 @@ void optimize_graph_spa_levmarq(
 
 					// new_x_i =  exp_delta_i (+) old_x_i
 					typename gst::graph_t::global_poses_t::iterator
-						it_old_value = graph.nodes.find(*it);
-					old_poses_backup[*it] =
+						it_old_value = graph.nodes.find(it);
+					old_poses_backup[it] =
 						it_old_value->second;  // back up the old pose as a copy
 					detail::AuxPoseOPlus<typename gst::edge_t, gst>::sumIncr(
 						it_old_value->second, exp_delta);

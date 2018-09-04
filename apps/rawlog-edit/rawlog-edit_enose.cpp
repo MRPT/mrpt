@@ -114,18 +114,18 @@ DECLARE_OP_FUNCTION(op_export_enose_txt)
 			::fprintf(f_this, "%14.4f ", sampleTime);
 
 			// For each E-nose (if more than one)
-			for (size_t j = 0; j < obs->m_readings.size(); j++)
+			for (const auto & m_reading : obs->m_readings)
 			{
 				// Temperature
 				float temp = 0.0;
-				if (obs->m_readings[j].hasTemperature == true)
-					temp = obs->m_readings[j].temperature;
+				if (m_reading.hasTemperature == true)
+					temp = m_reading.temperature;
 				::fprintf(f_this, "%3.4f ", temp);
 
 				// For each sensor on the E-nose
 				for (std::vector<float>::const_iterator it =
-						 obs->m_readings[j].readingsVoltage.begin();
-					 it != obs->m_readings[j].readingsVoltage.end(); ++it)
+						 m_reading.readingsVoltage.begin();
+					 it != m_reading.readingsVoltage.end(); ++it)
 					::fprintf(f_this, "%5.5f ", *it);
 
 				// Separation between different e-noses in the observation

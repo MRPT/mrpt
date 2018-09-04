@@ -38,7 +38,7 @@ CReactiveNavigationSystem::~CReactiveNavigationSystem()
 	this->preDestructor();
 
 	// Free PTGs:
-	for (size_t i = 0; i < PTGs.size(); i++) delete PTGs[i];
+	for (auto & PTG : PTGs) delete PTG;
 	PTGs.clear();
 }
 
@@ -115,7 +115,7 @@ void CReactiveNavigationSystem::loadConfigFile(
 	// Load PTGs from file:
 	// ---------------------------------------------
 	// Free previous PTGs:
-	for (size_t i = 0; i < PTGs.size(); i++) delete PTGs[i];
+	for (auto & PTG : PTGs) delete PTG;
 	PTGs.assign(PTG_COUNT, nullptr);
 
 	for (unsigned int n = 0; n < PTG_COUNT; n++)

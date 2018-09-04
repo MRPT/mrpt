@@ -80,13 +80,11 @@ void TSetOfMetricMapInitializers::loadFromConfigFile(
 
 	const TMetricMapTypesRegistry::TListRegisteredMaps& allMapKinds =
 		mmr.getAllRegistered();
-	for (TMetricMapTypesRegistry::TListRegisteredMaps::const_iterator
-			 itMapKind = allMapKinds.begin();
-		 itMapKind != allMapKinds.end(); ++itMapKind)
+	for (const auto & allMapKind : allMapKinds)
 	{
 		//  ; Creation of maps:
 		//  occupancyGrid_count=<Number of mrpt::maps::COccupancyGridMap2D maps>
-		const std::string sMapName = itMapKind->first;
+		const std::string sMapName = allMapKind.first;
 
 		unsigned int n =
 			ini.read_uint64_t(sectionName, sMapName + string("_count"), 0);

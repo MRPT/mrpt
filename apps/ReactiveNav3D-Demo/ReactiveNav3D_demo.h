@@ -296,9 +296,9 @@ class CShortTermMemory
 			sqrt(square(incrx) + square(incry)) > 2.6 * obsgrids[0].getXMax())
 		// The displacement is too big so the grid is reset
 		{
-			for (unsigned int i = 0; i < obsgrids.size(); i++)
+			for (auto & obsgrid : obsgrids)
 			{
-				obsgrids[i].setSize(
+				obsgrid.setSize(
 					obsgrids[0].getXMin(), obsgrids[0].getXMax(),
 					obsgrids[0].getYMin(), obsgrids[0].getXMax(),
 					obsgrids[0].getResolution(), 0.5);
@@ -320,37 +320,37 @@ class CShortTermMemory
 			vector<float> cells_newval;
 
 			// For each of the "n" grids
-			for (unsigned int n = 0; n < obsgrids.size(); n++)
+			for (auto & obsgrid : obsgrids)
 			{
 				cells_newval.clear();
 
 				// Cell values are stored
-				for (unsigned int i = 0; i < obsgrids[n].getSizeX(); i++)
+				for (unsigned int i = 0; i < obsgrid.getSizeX(); i++)
 				{
-					for (unsigned int j = 0; j < obsgrids[n].getSizeY(); j++)
+					for (unsigned int j = 0; j < obsgrid.getSizeY(); j++)
 					{
-						xcel = obsgrids[n].idx2x(i) + despxmeters;
-						ycel = obsgrids[n].idx2y(j) + despymeters;
-						if ((abs(xcel) > obsgrids[n].getXMax()) ||
-							(abs(ycel) > obsgrids[n].getYMax()))
+						xcel = obsgrid.idx2x(i) + despxmeters;
+						ycel = obsgrid.idx2y(j) + despymeters;
+						if ((abs(xcel) > obsgrid.getXMax()) ||
+							(abs(ycel) > obsgrid.getYMax()))
 							cells_newval.push_back(-1);
 						else
 							cells_newval.push_back(
-								obsgrids[n].getCell(i + despx, j + despy));
+								obsgrid.getCell(i + despx, j + despy));
 					}
 				}
 
 				// Cell values are updated in their new "positions"
-				for (unsigned int i = 0; i < obsgrids[n].getSizeX(); i++)
+				for (unsigned int i = 0; i < obsgrid.getSizeX(); i++)
 				{
-					for (unsigned int j = 0; j < obsgrids[n].getSizeY(); j++)
+					for (unsigned int j = 0; j < obsgrid.getSizeY(); j++)
 					{
-						if (cells_newval[j + obsgrids[n].getSizeY() * i] == -1)
-							obsgrids[n].setCell(i, j, 0.5);
+						if (cells_newval[j + obsgrid.getSizeY() * i] == -1)
+							obsgrid.setCell(i, j, 0.5);
 						else
-							obsgrids[n].setCell(
+							obsgrid.setCell(
 								i, j,
-								cells_newval[j + obsgrids[n].getSizeY() * i]);
+								cells_newval[j + obsgrid.getSizeY() * i]);
 					}
 				}
 			}
@@ -524,27 +524,27 @@ class CMyReactInterface
 		obstacles.clear();
 
 		// Laser scans
-		for (unsigned int i = 0; i < lasers.size(); i++)
+		for (auto & laser : lasers)
 		{
-			maps[lasers[i].m_level - 1].laserScanSimulator(
-				lasers[i].m_scan, new_pose, 0.5f, lasers[i].m_segments,
-				lasers[i].m_scan.stdError, 1, 0);
+			maps[laser.m_level - 1].laserScanSimulator(
+				laser.m_scan, new_pose, 0.5f, laser.m_segments,
+				laser.m_scan.stdError, 1, 0);
 
-			obstacles.insertObservation(&lasers[i].m_scan);
+			obstacles.insertObservation(&laser.m_scan);
 		}
 		timestamp = mrpt::system::now();
 
 		// Depth scans
-		for (unsigned int i = 0; i < kinects.size(); i++)
+		for (auto & kinect : kinects)
 		{
-			kinectrelpose.x(kinects[i].m_xrel);
-			kinectrelpose.y(kinects[i].m_yrel);
-			kinectrelpose.z(kinects[i].m_zrel);
-			kinectrelpose.setYawPitchRoll(kinects[i].m_phi, 0, 0);
-			kinects[i].KinectScan(
+			kinectrelpose.x(kinect.m_xrel);
+			kinectrelpose.y(kinect.m_yrel);
+			kinectrelpose.z(kinect.m_zrel);
+			kinectrelpose.setYawPitchRoll(kinect.m_phi, 0, 0);
+			kinect.KinectScan(
 				maps, robotShape.getHeights(), robotpose3d, kinectrelpose);
 			obstacles.insertAnotherMap(
-				&kinects[i].m_points, CPose3D(0, 0, 0, 0, 0, 0));
+				&kinect.m_points, CPose3D(0, 0, 0, 0, 0, 0));
 		}
 
 		// Process depth scans in the STM
@@ -716,9 +716,9 @@ class CMyReactInterface
 			stm.robot_ingrid.x = 0;
 			stm.robot_ingrid.y = 0;
 			stm.obsgrids.resize(num_levels);
-			for (unsigned int i = 0; i < stm.obsgrids.size(); i++)
+			for (auto & obsgrid : stm.obsgrids)
 			{
-				stm.obsgrids[i].setSize(
+				obsgrid.setSize(
 					-grid_length, grid_length, -grid_length, grid_length,
 					grid_resolution, 0.5);
 			}
@@ -743,9 +743,9 @@ class CMyReactInterface
 		{
 			CSetOfObjects::Ptr gl_grid =
 				mrpt::make_aligned_shared<CSetOfObjects>();
-			for (unsigned int i = 0; i < maps.size(); i++)
+			for (auto & map : maps)
 			{
-				maps[i].getAs3DObject(gl_grid);
+				map.getAs3DObject(gl_grid);
 				scene->insert(gl_grid);
 			}
 		}

@@ -42,9 +42,8 @@ CPosePDFParticlesExtended::CPosePDFParticlesExtended(size_t M)
 {
 	m_particles.resize(M);
 
-	for (CParticleList::iterator it = m_particles.begin();
-		 it != m_particles.end(); ++it)
-		it->d.reset(new TExtendedCPose2D());
+	for (auto & m_particle : m_particles)
+		m_particle.d.reset(new TExtendedCPose2D());
 
 	static TExtendedCPose2D nullPose;
 	resetDeterministic(nullPose);
@@ -709,11 +708,11 @@ bool CPosePDFParticlesExtended::saveToTextFile(const std::string& file) const
 	FILE* f = os::fopen(file.c_str(), "wt");
 	if (!f) return false;
 
-	for (unsigned int i = 0; i < m_particles.size(); i++)
+	for (const auto & m_particle : m_particles)
 		os::fprintf(
-			f, "%f %f %f %e\n", m_particles[i].d->pose.x(),
-			m_particles[i].d->pose.y(), m_particles[i].d->pose.phi(),
-			m_particles[i].log_w);
+			f, "%f %f %f %e\n", m_particle.d->pose.x(),
+			m_particle.d->pose.y(), m_particle.d->pose.phi(),
+			m_particle.log_w);
 
 	os::fclose(f);
 	return true;
@@ -802,8 +801,8 @@ void CPosePDFParticlesExtended::inverse(CPosePDF& o) const
 	out->copyFrom(*this);
 	static CPose2D nullPose(0, 0, 0);
 
-	for (unsigned int i = 0; i < out->m_particles.size(); i++)
-		out->m_particles[i].d->pose = nullPose - out->m_particles[i].d->pose;
+	for (auto & m_particle : out->m_particles)
+		m_particle.d->pose = nullPose - m_particle.d->pose;
 }
 
 /*---------------------------------------------------------------
@@ -847,15 +846,14 @@ double CPosePDFParticlesExtended::evaluatePDF_parzen(
 {
 	double difPhi, ret = 0;
 
-	for (CParticleList::const_iterator it = m_particles.begin();
-		 it != m_particles.end(); ++it)
+	for (const auto & m_particle : m_particles)
 	{
-		difPhi = wrapToPi(phi - it->d->pose.phi());
+		difPhi = wrapToPi(phi - m_particle.d->pose.phi());
 
 		ret +=
-			exp(it->log_w) *
+			exp(m_particle.log_w) *
 			mrpt::math::normalPDF(
-				sqrt(square(x - it->d->pose.x()) + square(y - it->d->pose.y())),
+				sqrt(square(x - m_particle.d->pose.x()) + square(y - m_particle.d->pose.y())),
 				0, stdXY) *
 			mrpt::math::normalPDF(fabs(difPhi), 0, stdPhi);
 	}
@@ -929,10 +927,9 @@ double CPosePDFParticlesExtended::auxiliarComputeObservationLikelihood(
 	}
 
 	// For each observation:
-	for (CSensoryFrame::const_iterator it = observation->begin();
-		 it != observation->end(); ++it)
+	for (const auto & it : *observation)
 	{
-		const CObservation* obser = it->get();
+		const CObservation* obser = it.get();
 		CObservationBeaconRanges obserDumm;
 
 		// JLBC: 20/ABR/2007 -> UWB offset from extended state vector

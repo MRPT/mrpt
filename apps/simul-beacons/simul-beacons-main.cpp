@@ -213,16 +213,16 @@ int main(int argc, char** argv)
 			// Corrupt with ourliers:
 			float probability_corrupt =
 				i == 0 ? ratio_outliers_first_step : ratio_outliers;
-			for (size_t q = 0; q < obs->sensedData.size(); q++)
+			for (auto & q : obs->sensedData)
 			{
 				if (getRandomGenerator().drawUniform(0.0f, 1.0f) <
 					probability_corrupt)
 				{
-					obs->sensedData[q].sensedDistance +=
+					q.sensedDistance +=
 						getRandomGenerator().drawUniform(
 							outlier_uniform_min, outlier_uniform_max);
-					if (obs->sensedData[q].sensedDistance < 0)
-						obs->sensedData[q].sensedDistance = 0;
+					if (q.sensedDistance < 0)
+						q.sensedDistance = 0;
 				}
 			}
 

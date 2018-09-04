@@ -144,14 +144,14 @@ int main(int argc, char** argv)
 				CSensoryFrame::Ptr SF =
 					mrpt::make_aligned_shared<CSensoryFrame>();
 
-				for (size_t i = 0; i < importedObservations.size(); i++)
+				for (const auto & importedObservation : importedObservations)
 				{
 					if (!IS_CLASS(
-							importedObservations[i],
+							importedObservation,
 							CObservationOdometry))  // Odometry was already used
 					// as positioning...
 					{
-						SF->insert(importedObservations[i]);
+						SF->insert(importedObservation);
 					}
 				}
 

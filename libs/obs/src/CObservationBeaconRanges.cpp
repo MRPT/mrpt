@@ -138,9 +138,9 @@ void CObservationBeaconRanges::setSensorPose(const CPose3D& newSensorPose)
  ---------------------------------------------------------------*/
 float CObservationBeaconRanges::getSensedRangeByBeaconID(int32_t beaconID)
 {
-	for (size_t i = 0; i < sensedData.size(); i++)
-		if (sensedData[i].beaconID == beaconID)
-			return sensedData[i].sensedDistance;
+	for (auto & i : sensedData)
+		if (i.beaconID == beaconID)
+			return i.sensedDistance;
 	return 0;
 }
 
@@ -160,13 +160,11 @@ void CObservationBeaconRanges::getDescriptionAsText(std::ostream& o) const
 
 	o << "  BEACON   RANGE     SENSOR POSITION ON ROBOT \n";
 	o << "------------------------------------------------\n";
-	for (deque<CObservationBeaconRanges::TMeasurement>::const_iterator it =
-			 sensedData.begin();
-		 it != sensedData.end(); it++)
+	for (const auto & it : sensedData)
 	{
 		o << format(
-			"   %i      %.04f      (%.03f,%.03f,%.03f)\n", (int)it->beaconID,
-			it->sensedDistance, it->sensorLocationOnRobot.x(),
-			it->sensorLocationOnRobot.y(), it->sensorLocationOnRobot.z());
+			"   %i      %.04f      (%.03f,%.03f,%.03f)\n", (int)it.beaconID,
+			it.sensedDistance, it.sensorLocationOnRobot.x(),
+			it.sensorLocationOnRobot.y(), it.sensorLocationOnRobot.z());
 	}
 }

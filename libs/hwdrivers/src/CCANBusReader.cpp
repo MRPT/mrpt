@@ -393,7 +393,7 @@ bool CCANBusReader::waitContinuousSampleFrame(
 	unsigned char buf[40];
 
 	// clear buffer
-	for (uint8_t k = 0; k < 40; ++k) buf[k] = 0;
+	for (unsigned char & k : buf) k = 0;
 
 	uint8_t dlc = 0;
 	while (nFrameBytes < (lengthField = (10U + dlc + 1U)))
@@ -403,7 +403,7 @@ bool CCANBusReader::waitContinuousSampleFrame(
 		{
 			cout << "#" << int(dlc) << " ";
 			nFrameBytes = 0;  // No es cabecera de trama correcta
-			for (uint8_t k = 0; k < 40; ++k) buf[k] = 0;
+			for (unsigned char & k : buf) k = 0;
 			dlc = 0;
 		}
 
@@ -445,7 +445,7 @@ bool CCANBusReader::waitContinuousSampleFrame(
 		else
 		{
 			nFrameBytes = 0;  // No es cabecera de trama correcta
-			for (uint8_t k = 0; k < 40; ++k) buf[k] = 0;
+			for (unsigned char & k : buf) k = 0;
 		}
 	}  // end while
 

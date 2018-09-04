@@ -206,21 +206,21 @@ void CObservationBearingRange::getDescriptionAsText(std::ostream& o) const
 	o << "---------------------------------------------------------------------"
 		 "-----------------"
 	  << endl;
-	for (size_t q = 0; q < sensedData.size(); q++)
+	for (const auto & q : sensedData)
 	{
 		o << "      ";
-		if (sensedData[q].landmarkID == INVALID_LANDMARK_ID)
+		if (q.landmarkID == INVALID_LANDMARK_ID)
 			o << "(NO ID)";
 		else
-			o << format("%7u", sensedData[q].landmarkID);
+			o << format("%7u", q.landmarkID);
 
 		o << format(
-			"   %10.03f  %10.03f %10.03f        ", sensedData[q].range,
-			RAD2DEG(mrpt::math::wrapToPi(sensedData[q].yaw)),
-			RAD2DEG(mrpt::math::wrapToPi(sensedData[q].pitch)));
+			"   %10.03f  %10.03f %10.03f        ", q.range,
+			RAD2DEG(mrpt::math::wrapToPi(q.yaw)),
+			RAD2DEG(mrpt::math::wrapToPi(q.pitch)));
 
 		if (validCovariances)
-			o << sensedData[q].covariance.inMatlabFormat() << endl;
+			o << q.covariance.inMatlabFormat() << endl;
 		else
 			o << "  (N/A)\n";
 	}

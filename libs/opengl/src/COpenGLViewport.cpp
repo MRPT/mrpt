@@ -472,8 +472,8 @@ void COpenGLViewport::render(
 			glShadeModel(GL_SMOOTH);
 			glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 
-			for (size_t i = 0; i < m_lights.size(); i++)
-				m_lights[i].sendToOpenGL();
+			for (const auto & m_light : m_lights)
+				m_light.sendToOpenGL();
 
 			// Render all the objects:
 			// -------------------------------------------
@@ -554,9 +554,8 @@ void COpenGLViewport::serializeTo(mrpt::serialization::CArchive& out) const
 	uint32_t n;
 	n = (uint32_t)m_objects.size();
 	out << n;
-	for (CListOpenGLObjects::const_iterator it = m_objects.begin();
-		 it != m_objects.end(); ++it)
-		out << **it;
+	for (const auto & m_object : m_objects)
+		out << *m_object;
 
 	// Added in v2: Global OpenGL settings:
 	out << m_OpenGL_enablePolygonNicest;
@@ -633,17 +632,16 @@ void COpenGLViewport::serializeFrom(
   ---------------------------------------------------------------*/
 CRenderizable::Ptr COpenGLViewport::getByName(const string& str)
 {
-	for (CListOpenGLObjects::iterator it = m_objects.begin();
-		 it != m_objects.end(); ++it)
+	for (auto & m_object : m_objects)
 	{
-		if ((*it)->m_name == str)
-			return *it;
+		if (m_object->m_name == str)
+			return m_object;
 		else if (
-			(*it)->GetRuntimeClass() ==
+			m_object->GetRuntimeClass() ==
 			CLASS_ID_NAMESPACE(CSetOfObjects, opengl))
 		{
 			CRenderizable::Ptr ret =
-				std::dynamic_pointer_cast<CSetOfObjects>(*it)->getByName(str);
+				std::dynamic_pointer_cast<CSetOfObjects>(m_object)->getByName(str);
 			if (ret) return ret;
 		}
 	}
@@ -671,24 +669,23 @@ void COpenGLViewport::initializeAllTextures()
 
 void COpenGLViewport::dumpListOfObjects(std::vector<std::string>& lst)
 {
-	for (CListOpenGLObjects::iterator it = m_objects.begin();
-		 it != m_objects.end(); ++it)
+	for (auto & m_object : m_objects)
 	{
 		// Single obj:
-		string s((*it)->GetRuntimeClass()->className);
-		if ((*it)->m_name.size())
-			s += string(" (") + (*it)->m_name + string(")");
+		string s(m_object->GetRuntimeClass()->className);
+		if (m_object->m_name.size())
+			s += string(" (") + m_object->m_name + string(")");
 		lst.emplace_back(s);
 
-		if ((*it)->GetRuntimeClass() ==
+		if (m_object->GetRuntimeClass() ==
 			CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::opengl))
 		{
 			std::vector<std::string> auxLst;
 
-			dynamic_cast<CSetOfObjects*>(it->get())->dumpListOfObjects(auxLst);
+			dynamic_cast<CSetOfObjects*>(m_object.get())->dumpListOfObjects(auxLst);
 
-			for (size_t i = 0; i < auxLst.size(); i++)
-				lst.emplace_back(string(" ") + auxLst[i]);
+			for (const auto & i : auxLst)
+				lst.emplace_back(string(" ") + i);
 		}
 	}
 }
@@ -919,8 +916,7 @@ void COpenGLViewport::getBoundingBox(
 		-std::numeric_limits<double>::max(),
 		-std::numeric_limits<double>::max());
 
-	for (CListOpenGLObjects::const_iterator it = m_objects.begin();
-		 it != m_objects.end(); ++it)
+	for (const auto & m_object : m_objects)
 	{
 		TPoint3D child_bbmin(
 			std::numeric_limits<double>::max(),
@@ -930,7 +926,7 @@ void COpenGLViewport::getBoundingBox(
 			-std::numeric_limits<double>::max(),
 			-std::numeric_limits<double>::max(),
 			-std::numeric_limits<double>::max());
-		(*it)->getBoundingBox(child_bbmin, child_bbmax);
+		m_object->getBoundingBox(child_bbmin, child_bbmax);
 
 		keep_min(bb_min.x, child_bbmin.x);
 		keep_min(bb_min.y, child_bbmin.y);

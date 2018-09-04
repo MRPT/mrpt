@@ -476,30 +476,29 @@ void RPlidarDriverSerialImpl::_capsuleToNormal(
 
 		int angleInc_q16 = (diffAngle_q8 << 3);
 		int currentAngle_raw_q16 = (prevStartAngle_q8 << 8);
-		for (size_t pos = 0;
-			 pos < _countof(_cached_previous_capsuledata.cabins); ++pos)
+		for (auto & cabin : _cached_previous_capsuledata.cabins)
 		{
 			int dist_q2[2];
 			int angle_q6[2];
 			int syncBit[2];
 
 			dist_q2[0] =
-				(_cached_previous_capsuledata.cabins[pos].distance_angle_1 &
+				(cabin.distance_angle_1 &
 				 0xFFFC);
 			dist_q2[1] =
-				(_cached_previous_capsuledata.cabins[pos].distance_angle_2 &
+				(cabin.distance_angle_2 &
 				 0xFFFC);
 
 			int angle_offset1_q3 =
-				((_cached_previous_capsuledata.cabins[pos].offset_angles_q3 &
+				((cabin.offset_angles_q3 &
 				  0xF) |
-				 ((_cached_previous_capsuledata.cabins[pos].distance_angle_1 &
+				 ((cabin.distance_angle_1 &
 				   0x3)
 				  << 4));
 			int angle_offset2_q3 =
-				((_cached_previous_capsuledata.cabins[pos].offset_angles_q3 >>
+				((cabin.offset_angles_q3 >>
 				  4) |
-				 ((_cached_previous_capsuledata.cabins[pos].distance_angle_2 &
+				 ((cabin.distance_angle_2 &
 				   0x3)
 				  << 4));
 

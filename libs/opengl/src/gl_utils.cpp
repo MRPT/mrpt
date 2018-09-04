@@ -369,8 +369,8 @@ void CRenderizable::renderTextBitmap(
 	// Select font:
 	void* glut_font_sel = aux_mrptfont2glutfont(font);
 
-	for (size_t i = 0; i < str.size(); i++)
-		glutBitmapCharacter(glut_font_sel, str[i]);
+	for (char i : str)
+		glutBitmapCharacter(glut_font_sel, i);
 
 	glEnable(GL_DEPTH_TEST);
 #else

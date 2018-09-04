@@ -234,9 +234,9 @@ mrpt::obs::CObservationGasSensors CRaePID::getFullInfo()
 	mrpt::obs::CObservationGasSensors::TObservationENose obs;
 	mrpt::obs::CObservationGasSensors obsG;
 
-	for (size_t k = 0; k < measurements_text.size(); k++)
+	for (auto & k : measurements_text)
 	{
-		const float readnum = atof(measurements_text[k].c_str());
+		const float readnum = atof(k.c_str());
 		const float val_ppm = readnum / 1000.f;
 
 		// Fill the observation

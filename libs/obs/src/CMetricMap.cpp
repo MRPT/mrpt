@@ -68,8 +68,8 @@ double CMetricMap::computeObservationsLikelihood(
 	const CSensoryFrame& sf, const CPose2D& takenFrom)
 {
 	double lik = 0;
-	for (CSensoryFrame::const_iterator it = sf.begin(); it != sf.end(); ++it)
-		lik += computeObservationLikelihood(it->get(), takenFrom);
+	for (const auto & it : sf)
+		lik += computeObservationLikelihood(it.get(), takenFrom);
 
 	return lik;
 }

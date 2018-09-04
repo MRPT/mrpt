@@ -96,9 +96,8 @@ CPropertiesValuesList::~CPropertiesValuesList() { clear(); }
 CPropertiesValuesList::CPropertiesValuesList(const CPropertiesValuesList& o)
 	: m_properties(o.m_properties)
 {
-	for (std::vector<TPropertyValuePair>::iterator it = m_properties.begin();
-		 it != m_properties.end(); ++it)
-		it->value.reset(dynamic_cast<CSerializable*>(it->value->clone()));
+	for (auto & m_propertie : m_properties)
+		m_propertie.value.reset(dynamic_cast<CSerializable*>(m_propertie.value->clone()));
 }
 
 /*---------------------------------------------------------------
@@ -110,9 +109,8 @@ CPropertiesValuesList& CPropertiesValuesList::operator=(
 	if (this != &o) return *this;
 
 	m_properties = o.m_properties;
-	for (std::vector<TPropertyValuePair>::iterator it = m_properties.begin();
-		 it != m_properties.end(); ++it)
-		it->value.reset(dynamic_cast<CSerializable*>(it->value->clone()));
+	for (auto & m_propertie : m_properties)
+		m_propertie.value.reset(dynamic_cast<CSerializable*>(m_propertie.value->clone()));
 	return *this;
 }
 
@@ -132,12 +130,10 @@ void CPropertiesValuesList::clear()
 CSerializable::Ptr CPropertiesValuesList::get(
 	const std::string& propertyName) const
 {
-	for (std::vector<TPropertyValuePair>::const_iterator it =
-			 m_properties.begin();
-		 it != m_properties.end(); ++it)
+	for (const auto & m_propertie : m_properties)
 	{
-		if (!os::_strcmpi(propertyName.c_str(), it->name.c_str()))
-			return it->value;
+		if (!os::_strcmpi(propertyName.c_str(), m_propertie.name.c_str()))
+			return m_propertie.value;
 	}
 	// Not found:
 	return CSerializable::Ptr();
@@ -151,17 +147,16 @@ void CPropertiesValuesList::set(
 {
 	MRPT_START
 
-	for (std::vector<TPropertyValuePair>::iterator it = m_properties.begin();
-		 it != m_properties.end(); ++it)
+	for (auto & m_propertie : m_properties)
 	{
-		if (!os::_strcmpi(propertyName.c_str(), it->name.c_str()))
+		if (!os::_strcmpi(propertyName.c_str(), m_propertie.name.c_str()))
 		{
 			// Delete current contents:
 			// Copy new value:
 			if (!obj)
-				it->value.reset();
+				m_propertie.value.reset();
 			else
-				it->value = obj;  //->clone();
+				m_propertie.value = obj;  //->clone();
 			return;
 		}
 	}
@@ -188,10 +183,8 @@ std::vector<std::string> CPropertiesValuesList::getPropertyNames() const
 {
 	std::vector<std::string> ret;
 
-	for (std::vector<TPropertyValuePair>::const_iterator it =
-			 m_properties.begin();
-		 it != m_properties.end(); ++it)
-		ret.push_back(it->name);
+	for (const auto & m_propertie : m_properties)
+		ret.push_back(m_propertie.name);
 
 	return ret;
 }

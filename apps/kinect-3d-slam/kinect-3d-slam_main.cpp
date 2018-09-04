@@ -346,12 +346,11 @@ void Test_Kinect()
 			// Create list of 3D features in space, wrt current camera pose:
 			// --------------------------------------------------------------------
 			map<TFeatureID, TPoint3D> curVisibleFeats;
-			for (CFeatureList::iterator itFeat = trackedFeats.begin();
-				 itFeat != trackedFeats.end(); ++itFeat)
+			for (auto & trackedFeat : trackedFeats)
 			{
 				// Pixel coordinates in the intensity image:
-				const int int_x = (*itFeat)->x;
-				const int int_y = (*itFeat)->y;
+				const int int_x = trackedFeat->x;
+				const int int_y = trackedFeat->y;
 
 				// Convert to pixel coords in the range image:
 				//  APPROXIMATION: Assume coordinates are equal (that's not
@@ -369,7 +368,7 @@ void Test_Kinect()
 							last_obs->rangeImage.rows()) ==
 						last_obs->points3D_x.size());
 					const size_t nPt = last_obs->rangeImage.cols() * y + x;
-					curVisibleFeats[(*itFeat)->ID] = TPoint3D(
+					curVisibleFeats[trackedFeat->ID] = TPoint3D(
 						last_obs->points3D_x[nPt], last_obs->points3D_y[nPt],
 						last_obs->points3D_z[nPt]);
 				}
@@ -578,11 +577,11 @@ void Test_Kinect()
 			// camera_key_frames_path.size() << " frames.\n";
 			win3D.get3DSceneAndLock();
 			gl_keyframes->clear();
-			for (size_t i = 0; i < camera_key_frames_path.size(); i++)
+			for (const auto & i : camera_key_frames_path)
 			{
 				CSetOfObjects::Ptr obj =
 					mrpt::opengl::stock_objects::CornerXYZSimple(0.3f, 3);
-				obj->setPose(camera_key_frames_path[i]);
+				obj->setPose(i);
 				gl_keyframes->insert(obj);
 			}
 			win3D.unlockAccess3DScene();

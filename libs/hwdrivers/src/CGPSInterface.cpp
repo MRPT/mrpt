@@ -525,11 +525,9 @@ void CGPSInterface::parseBuffer()
 		do
 		{
 			bool all_parsers_want_to_skip = true;
-			for (std::list<CGPSInterface::ptr_parser_t>::const_iterator it =
-					 all_parsers.begin();
-				 it != all_parsers.end(); ++it)
+			for (auto all_parser : all_parsers)
 			{
-				parser_ptr = *it;
+				parser_ptr = all_parser;
 				size_t this_parser_min_bytes;
 				if ((*this.*parser_ptr)(this_parser_min_bytes))
 					all_parsers_want_to_skip = false;
@@ -609,13 +607,13 @@ bool CGPSInterface::OnConnectionShutdown()
 	if (stream_serial && !stream_serial->isOpen()) return false;
 
 	// Send commands:
-	for (size_t i = 0; i < m_shutdown_cmds.size(); i++)
+	for (const auto & m_shutdown_cmd : m_shutdown_cmds)
 	{
 		if (m_verbose)
 			cout << "[CGPSInterface] TX shutdown command: `"
-				 << m_shutdown_cmds[i] << "`\n";
+				 << m_shutdown_cmd << "`\n";
 
-		std::string sTx = m_shutdown_cmds[i];
+		std::string sTx = m_shutdown_cmd;
 		if (m_custom_cmds_append_CRLF) sTx += std::string("\r\n");
 		try
 		{
@@ -661,13 +659,13 @@ bool CGPSInterface::OnConnectionEstablished()
 	// file.
 
 	// Send commands:
-	for (size_t i = 0; i < m_setup_cmds.size(); i++)
+	for (const auto & m_setup_cmd : m_setup_cmds)
 	{
 		if (m_verbose)
-			cout << "[CGPSInterface] TX setup command: `" << m_setup_cmds[i]
+			cout << "[CGPSInterface] TX setup command: `" << m_setup_cmd
 				 << "`\n";
 
-		std::string sTx = m_setup_cmds[i];
+		std::string sTx = m_setup_cmd;
 		if (m_custom_cmds_append_CRLF) sTx += std::string("\r\n");
 
 		try

@@ -891,10 +891,10 @@ void CPTG_DiffDrive_CollisionGridBased::updateTPObstacle(
 	ASSERTMSG_(!m_trajectory.empty(), "PTG has not been initialized!");
 	const TCollisionCell& cell = m_collisionGrid.getTPObstacle(ox, oy);
 	// Keep the minimum distance:
-	for (TCollisionCell::const_iterator i = cell.begin(); i != cell.end(); ++i)
+	for (const auto & i : cell)
 	{
-		const double dist = i->second;
-		internal_TPObsDistancePostprocess(ox, oy, dist, tp_obstacles[i->first]);
+		const double dist = i.second;
+		internal_TPObsDistancePostprocess(ox, oy, dist, tp_obstacles[i.first]);
 	}
 }
 
@@ -904,10 +904,10 @@ void CPTG_DiffDrive_CollisionGridBased::updateTPObstacleSingle(
 	ASSERTMSG_(!m_trajectory.empty(), "PTG has not been initialized!");
 	const TCollisionCell& cell = m_collisionGrid.getTPObstacle(ox, oy);
 	// Keep the minimum distance:
-	for (TCollisionCell::const_iterator i = cell.begin(); i != cell.end(); ++i)
-		if (i->first == k)
+	for (const auto & i : cell)
+		if (i.first == k)
 		{
-			const double dist = i->second;
+			const double dist = i.second;
 			internal_TPObsDistancePostprocess(ox, oy, dist, tp_obstacle_k);
 		}
 }

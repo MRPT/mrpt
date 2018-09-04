@@ -685,15 +685,15 @@ observations->getObservationByClass( CLASS_ID(CObservation2DRangeScan));
 					if (metricMap.m_landmarksMap && dist &&
 						!dist->sensedData.empty())
 					{
-						for (size_t k = 0; k < dist->sensedData.size(); k++)
+						for (auto & k : dist->sensedData)
 						{
 							string beacon_name = format(
 								"ring%u",
-								unsigned(dist->sensedData[k].beaconID));
+								unsigned(k.beaconID));
 							const mrpt::maps::CLandmark* lm =
 								metricMap.m_landmarksMap->landmarks
 									.getByBeaconID(
-										dist->sensedData[k].beaconID);
+										k.beaconID);
 							if (lm)
 							{
 #ifdef SHOW_REAL_TIME_3D
@@ -723,9 +723,9 @@ observations->getObservationByClass( CLASS_ID(CObservation2DRangeScan));
 									lm->pose_mean.x, lm->pose_mean.y, 0.05);
 
 								float R =
-									square(dist->sensedData[k].sensedDistance) -
+									square(k.sensedDistance) -
 									square(
-										dist->sensedData[k]
+										k
 											.sensorLocationOnRobot.z() -
 										lm->pose_mean.z);
 

@@ -135,9 +135,8 @@ void CPointPDFParticles::serializeTo(mrpt::serialization::CArchive& out) const
 	uint32_t N = size();
 	out << N;
 
-	for (CParticleList::const_iterator it = m_particles.begin();
-		 it != m_particles.end(); ++it)
-		out << it->log_w << it->d->x << it->d->y << it->d->z;
+	for (const auto & m_particle : m_particles)
+		out << m_particle.log_w << m_particle.d->x << m_particle.d->y << m_particle.d->z;
 }
 
 void CPointPDFParticles::serializeFrom(
@@ -151,9 +150,8 @@ void CPointPDFParticles::serializeFrom(
 			in >> N;
 			setSize(N);
 
-			for (CParticleList::iterator it = m_particles.begin();
-				 it != m_particles.end(); ++it)
-				in >> it->log_w >> it->d->x >> it->d->y >> it->d->z;
+			for (auto & m_particle : m_particles)
+				in >> m_particle.log_w >> m_particle.d->x >> m_particle.d->y >> m_particle.d->z;
 		}
 		break;
 		default:
@@ -197,16 +195,15 @@ void CPointPDFParticles::changeCoordinatesReference(
 	const CPose3D& newReferenceBase)
 {
 	TPoint3D pt;
-	for (CParticleList::iterator it = m_particles.begin();
-		 it != m_particles.end(); ++it)
+	for (auto & m_particle : m_particles)
 	{
 		newReferenceBase.composePoint(
-			it->d->x, it->d->y, it->d->z,  // In
+			m_particle.d->x, m_particle.d->y, m_particle.d->z,  // In
 			pt.x, pt.y, pt.z  // Out
 			);
-		it->d->x = pt.x;
-		it->d->y = pt.y;
-		it->d->z = pt.z;
+		m_particle.d->x = pt.x;
+		m_particle.d->y = pt.y;
+		m_particle.d->z = pt.z;
 	}
 }
 
@@ -225,22 +222,20 @@ double CPointPDFParticles::computeKurtosis()
 	var.assign(3, .0);
 
 	// Means:
-	for (CParticleList::iterator it = m_particles.begin();
-		 it != m_particles.end(); ++it)
+	for (auto & m_particle : m_particles)
 	{
-		m[0] += it->d->x;
-		m[1] += it->d->y;
-		m[2] += it->d->z;
+		m[0] += m_particle.d->x;
+		m[1] += m_particle.d->y;
+		m[2] += m_particle.d->z;
 	}
 	m *= 1.0 / m_particles.size();
 
 	// variances:
-	for (CParticleList::iterator it = m_particles.begin();
-		 it != m_particles.end(); ++it)
+	for (auto & m_particle : m_particles)
 	{
-		var[0] += square(it->d->x - m[0]);
-		var[1] += square(it->d->y - m[1]);
-		var[2] += square(it->d->z - m[2]);
+		var[0] += square(m_particle.d->x - m[0]);
+		var[1] += square(m_particle.d->y - m[1]);
+		var[2] += square(m_particle.d->z - m[2]);
 	}
 	var *= 1.0 / m_particles.size();
 	var[0] = square(var[0]);
@@ -248,12 +243,11 @@ double CPointPDFParticles::computeKurtosis()
 	var[2] = square(var[2]);
 
 	// Moment:
-	for (CParticleList::iterator it = m_particles.begin();
-		 it != m_particles.end(); ++it)
+	for (auto & m_particle : m_particles)
 	{
-		mu4[0] += pow(it->d->x - m[0], 4.0);
-		mu4[1] += pow(it->d->y - m[1], 4.0);
-		mu4[2] += pow(it->d->z - m[2], 4.0);
+		mu4[0] += pow(m_particle.d->x - m[0], 4.0);
+		mu4[1] += pow(m_particle.d->y - m[1], 4.0);
+		mu4[2] += pow(m_particle.d->z - m[2], 4.0);
 	}
 	mu4 *= 1.0 / m_particles.size();
 

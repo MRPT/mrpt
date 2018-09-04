@@ -443,11 +443,11 @@ void CKalmanFilterCapable<
 		missing_predictions_to_add.clear();
 		if (FEAT_SIZE != 0)
 		{
-			for (size_t i = 0; i < data_association.size(); ++i)
+			for (int i : data_association)
 			{
-				if (data_association[i] < 0) continue;
+				if (i < 0) continue;
 				const size_t assoc_idx_in_map =
-					static_cast<size_t>(data_association[i]);
+					static_cast<size_t>(i);
 				const size_t assoc_idx_in_pred =
 					mrpt::containers::find_in_vector(
 						assoc_idx_in_map, predictLMidxs);

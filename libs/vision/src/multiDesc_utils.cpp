@@ -71,10 +71,10 @@ void vision::insertHashCoeffs(
 			{
 				// The entry for these keys already exists
 				// Check if the qTable already contain this ID and multiScale!
-				for (int n = 0; n < int(qTable[key1][key2][key3].size()); ++n)
+				for (auto & n : qTable[key1][key2][key3])
 				{
-					TFeatureID thisID = qTable[key1][key2][key3][n].first;
-					double thisScale = qTable[key1][key2][key3][n].second;
+					TFeatureID thisID = n.first;
+					double thisScale = n.second;
 					if (thisID == feat->ID && thisScale == feat->multiScales[k])
 						found = true;
 					//                            cout << "Inserting in: " <<
@@ -112,11 +112,11 @@ void vision::saveQTableToFile(
 			{
 				mrpt::system::os::fprintf(
 					f, "%d\t%d\t%d\t", it1->first, it2->first, it3->first);
-				for (int k = 0; k < int(it3->second.size()); ++k)
+				for (const auto & k : it3->second)
 					mrpt::system::os::fprintf(
 						f, "%lu\t%.2f\t",
-						static_cast<long unsigned int>(it3->second[k].first),
-						it3->second[k].second);
+						static_cast<long unsigned int>(k.first),
+						k.second);
 				mrpt::system::os::fprintf(f, "\n");
 			}  // end-for
 	mrpt::system::os::fclose(f);
@@ -160,8 +160,8 @@ TMultiResMatchingOutput vision::relocalizeMultiDesc(
 	{
 		if (PARAR && (*it)->ID == 193)
 		{
-			for (int i = 0; i < (int)(*it)->multiScales.size(); ++i)
-				cout << (*it)->multiScales[i] << endl;
+			for (double multiScale : (*it)->multiScales)
+				cout << multiScale << endl;
 		}
 		ASSERT_((*it)->multiHashCoeffs.size() == (*it)->multiScales.size());
 
@@ -278,10 +278,10 @@ TMultiResMatchingOutput vision::relocalizeMultiDesc(
 				for (int k1 = 0; k1 < int(baseFeat->multiScales.size()); ++k1)
 				{
 					// for each scale from the qTable
-					for (int k2 = 0; k2 < int(nit->second.size()); ++k2)
+					for (double k2 : nit->second)
 					{
 						if (baseFeat->multiScales[k1] ==
-							nit->second[k2])  // if this scale has been selected
+							k2)  // if this scale has been selected
 						{
 							// for each orientation of the feature 1
 							for (int k3 = 0;
@@ -666,11 +666,11 @@ bool vision::computeMainOrientations(
 		}  // end
 	// Search for the maximum
 	double mxori = 0.0;
-	for (unsigned int k = 0; k < oris.size(); ++k)
+	for (double ori : oris)
 	{
-		if (oris[k] > mxori)
+		if (ori > mxori)
 		{
-			mxori = oris[k];
+			mxori = ori;
 		}
 	}  // end-for
 
@@ -989,20 +989,20 @@ void vision::computeHistogramOfOrientations(
 	// Normalize
 	tlogger.enter("normalize");
 	double sum = 0.0;
-	for (unsigned int ii = 0; ii < oris.size(); ++ii)
-		sum += oris[ii] * oris[ii];
+	for (double ori : oris)
+		sum += ori * ori;
 	sum = 1 / sqrt(sum);
-	for (unsigned int ii = 0; ii < oris.size(); ++ii) oris[ii] *= sum;
+	for (double & ori : oris) ori *= sum;
 
 	// Crop to "crop_value"
-	for (unsigned int ii = 0; ii < oris.size(); ++ii)
-		oris[ii] = min(opts.cropValue, oris[ii]);
+	for (double & ori : oris)
+		ori = min(opts.cropValue, ori);
 
 	// Normalize again -> we have the descriptor!
-	for (unsigned int ii = 0; ii < oris.size(); ++ii)
-		sum += oris[ii] * oris[ii];
+	for (double ori : oris)
+		sum += ori * ori;
 	sum = 1 / sqrt(sum);
-	for (unsigned int ii = 0; ii < oris.size(); ++ii) oris[ii] *= sum;
+	for (double & ori : oris) ori *= sum;
 
 	// Convert it to std::vector<int>
 	descriptor.resize(oris.size());
@@ -1165,15 +1165,14 @@ TMultiResMatchingOutput vision::matchMultiResolutionFeatures(
 			for (int k1 = firstScale; k1 <= lastScale; ++k1)
 				for (int k2 = 0; k2 < (int)(*it1)->multiOrientations[k1].size();
 					 ++k2)
-					for (int k3 = 0; k3 < (int)thisOris.size();
-						 ++k3)  // FILTER 2: Orientation
+					for (double thisOri : thisOris)  // FILTER 2: Orientation
 						if (fabs(
 								(*it1)->multiOrientations[k1][k2] -
-								thisOris[k3]) < matchOpts.oriThreshold ||
+								thisOri) < matchOpts.oriThreshold ||
 							fabs(
 								M_2PI - fabs(
 											(*it1)->multiOrientations[k1][k2] -
-											thisOris[k3])) <
+											thisOri)) <
 								matchOpts.oriThreshold)
 						{
 							// Orientation check passed
@@ -1248,7 +1247,7 @@ TMultiResMatchingOutput vision::matchMultiResolutionFeatures(
 								 co < (int)(*it2)->multiOrientations[0].size();
 								 ++co)
 								if ((*it2)->multiOrientations[0][co] ==
-									thisOris[k3])
+									thisOri)
 								{
 									wh = co;
 									oriFound = true;
@@ -1270,12 +1269,12 @@ TMultiResMatchingOutput vision::matchMultiResolutionFeatures(
 								//                                    << endl;
 
 								(*it2)->multiOrientations[0].push_back(
-									thisOris[k3]);
+									thisOri);
 
 								vector<int32_t> thisDesc, thisHash;
 								computeHistogramOfOrientations(
 									rightImage, (*it2)->x, (*it2)->y, patchSize,
-									thisOris[k3], thisDesc, computeOpts,
+									thisOri, thisDesc, computeOpts,
 									thisHash);
 
 								/* DESCRIPTORS */

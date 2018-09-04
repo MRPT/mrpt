@@ -178,10 +178,9 @@ double
 
 	// For each observation:
 	double ret = 1;
-	for (CSensoryFrame::const_iterator it = observation.begin();
-		 it != observation.end(); ++it)
+	for (const auto & it : observation)
 		ret += map->computeObservationLikelihood(
-			it->get(), x);  // Compute the likelihood:
+			it.get(), x);  // Compute the likelihood:
 
 	// Done!
 	return ret;

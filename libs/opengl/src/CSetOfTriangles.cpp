@@ -285,14 +285,13 @@ CRenderizable& CSetOfTriangles::setColor_u8(const mrpt::img::TColor& c)
 	CRenderizableDisplayList::notifyChange();
 	m_color = c;
 	mrpt::img::TColorf col(c);
-	for (std::vector<TTriangle>::iterator it = m_triangles.begin();
-		 it != m_triangles.end(); ++it)
+	for (auto & m_triangle : m_triangles)
 		for (size_t i = 0; i < 3; i++)
 		{
-			it->r[i] = col.R;
-			it->g[i] = col.G;
-			it->b[i] = col.B;
-			it->a[i] = col.A;
+			m_triangle.r[i] = col.R;
+			m_triangle.g[i] = col.G;
+			m_triangle.b[i] = col.B;
+			m_triangle.a[i] = col.A;
 		}
 	return *this;
 }
@@ -302,9 +301,8 @@ CRenderizable& CSetOfTriangles::setColorR_u8(const uint8_t r)
 	CRenderizableDisplayList::notifyChange();
 	m_color.R = r;
 	const float col = r / 255.f;
-	for (std::vector<TTriangle>::iterator it = m_triangles.begin();
-		 it != m_triangles.end(); ++it)
-		for (size_t i = 0; i < 3; i++) it->r[i] = col;
+	for (auto & m_triangle : m_triangles)
+		for (size_t i = 0; i < 3; i++) m_triangle.r[i] = col;
 	return *this;
 }
 
@@ -313,9 +311,8 @@ CRenderizable& CSetOfTriangles::setColorG_u8(const uint8_t g)
 	CRenderizableDisplayList::notifyChange();
 	m_color.G = g;
 	const float col = g / 255.f;
-	for (std::vector<TTriangle>::iterator it = m_triangles.begin();
-		 it != m_triangles.end(); ++it)
-		for (size_t i = 0; i < 3; i++) it->g[i] = col;
+	for (auto & m_triangle : m_triangles)
+		for (size_t i = 0; i < 3; i++) m_triangle.g[i] = col;
 	return *this;
 }
 
@@ -324,9 +321,8 @@ CRenderizable& CSetOfTriangles::setColorB_u8(const uint8_t b)
 	CRenderizableDisplayList::notifyChange();
 	m_color.B = b;
 	const float col = b / 255.f;
-	for (std::vector<TTriangle>::iterator it = m_triangles.begin();
-		 it != m_triangles.end(); ++it)
-		for (size_t i = 0; i < 3; i++) it->b[i] = col;
+	for (auto & m_triangle : m_triangles)
+		for (size_t i = 0; i < 3; i++) m_triangle.b[i] = col;
 	return *this;
 }
 
@@ -335,9 +331,8 @@ CRenderizable& CSetOfTriangles::setColorA_u8(const uint8_t a)
 	CRenderizableDisplayList::notifyChange();
 	m_color.A = a;
 	const float col = a / 255.f;
-	for (std::vector<TTriangle>::iterator it = m_triangles.begin();
-		 it != m_triangles.end(); ++it)
-		for (size_t i = 0; i < 3; i++) it->a[i] = col;
+	for (auto & m_triangle : m_triangles)
+		for (size_t i = 0; i < 3; i++) m_triangle.a[i] = col;
 	return *this;
 }
 
@@ -378,11 +373,9 @@ void CSetOfTriangles::getBoundingBox(
 		-std::numeric_limits<double>::max(),
 		-std::numeric_limits<double>::max());
 
-	for (size_t i = 0; i < m_triangles.size(); i++)
+	for (const auto & t : m_triangles)
 	{
-		const TTriangle& t = m_triangles[i];
-
-		keep_min(bb_min.x, t.x[0]);
+			keep_min(bb_min.x, t.x[0]);
 		keep_max(bb_max.x, t.x[0]);
 		keep_min(bb_min.y, t.y[0]);
 		keep_max(bb_max.y, t.y[0]);

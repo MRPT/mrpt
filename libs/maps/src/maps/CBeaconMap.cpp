@@ -109,7 +109,7 @@ void CBeaconMap::serializeTo(mrpt::serialization::CArchive& out) const
 	const uint32_t n = m_beacons.size();
 	out << n;
 	// Write all landmarks:
-	for (const_iterator it = begin(); it != end(); ++it) out << (*it);
+	for (const auto & it : *this) out << it;
 }
 
 void CBeaconMap::serializeFrom(
@@ -390,13 +390,11 @@ bool CBeaconMap::internal_insertObservation(
 		const CObservationBeaconRanges* o =
 			static_cast<const CObservationBeaconRanges*>(obs);
 
-		for (deque<CObservationBeaconRanges::TMeasurement>::const_iterator it =
-				 o->sensedData.begin();
-			 it != o->sensedData.end(); ++it)
+		for (const auto & it : o->sensedData)
 		{
-			CPoint3D sensorPnt(robotPose3D + it->sensorLocationOnRobot);
-			float sensedRange = it->sensedDistance;
-			unsigned int sensedID = it->beaconID;
+			CPoint3D sensorPnt(robotPose3D + it.sensorLocationOnRobot);
+			float sensedRange = it.sensedDistance;
+			unsigned int sensedID = it.beaconID;
 
 			CBeacon* beac = getBeaconByID(sensedID);
 
@@ -428,10 +426,7 @@ bool CBeaconMap::internal_insertObservation(
 						double maxA =
 							DEG2RAD(insertionOptions.maxElevation_deg);
 						newBeac.m_locationMC.setSize(numParts);
-						for (CPointPDFParticles::CParticleList::iterator itP =
-								 newBeac.m_locationMC.m_particles.begin();
-							 itP != newBeac.m_locationMC.m_particles.end();
-							 ++itP)
+						for (auto & m_particle : newBeac.m_locationMC.m_particles)
 						{
 							double th =
 								getRandomGenerator().drawUniform(-M_PI, M_PI);
@@ -439,9 +434,9 @@ bool CBeaconMap::internal_insertObservation(
 								getRandomGenerator().drawUniform(minA, maxA);
 							double R = getRandomGenerator().drawGaussian1D(
 								sensedRange, likelihoodOptions.rangeStd);
-							itP->d->x = sensorPnt.x() + R * cos(th) * cos(el);
-							itP->d->y = sensorPnt.y() + R * sin(th) * cos(el);
-							itP->d->z = sensorPnt.z() + R * sin(el);
+							m_particle.d->x = sensorPnt.x() + R * cos(th) * cos(el);
+							m_particle.d->y = sensorPnt.y() + R * sin(th) * cos(el);
+							m_particle.d->z = sensorPnt.z() + R * sin(el);
 						}  // end for itP
 					}
 					else
@@ -823,8 +818,8 @@ void CBeaconMap::determineMatching2D(
 void CBeaconMap::changeCoordinatesReference(const CPose3D& newOrg)
 {
 	// Change the reference of each individual beacon:
-	for (iterator lm = m_beacons.begin(); lm != m_beacons.end(); ++lm)
-		lm->changeCoordinatesReference(newOrg);
+	for (auto & m_beacon : m_beacons)
+		m_beacon.changeCoordinatesReference(newOrg);
 }
 
 /*---------------------------------------------------------------
@@ -946,9 +941,9 @@ bool CBeaconMap::saveToMATLABScript3D(
 	std::vector<std::string> strs;
 	string s;
 
-	for (const_iterator it = m_beacons.begin(); it != m_beacons.end(); ++it)
+	for (const auto & m_beacon : m_beacons)
 	{
-		it->getAsMatlabDrawCommands(strs);
+		m_beacon.getAsMatlabDrawCommands(strs);
 		mrpt::system::stringListAsString(strs, s);
 		os::fprintf(f, "%s", s.c_str());
 	}
@@ -1127,16 +1122,15 @@ void CBeaconMap::saveMetricMapRepresentationToFile(
 		{
 			size_t nParts = 0, nGaussians = 0;
 
-			for (TSequenceBeacons::const_iterator it = m_beacons.begin();
-				 it != m_beacons.end(); ++it)
+			for (const auto & m_beacon : m_beacons)
 			{
-				switch (it->m_typePDF)
+				switch (m_beacon.m_typePDF)
 				{
 					case CBeacon::pdfMonteCarlo:
-						nParts += it->m_locationMC.size();
+						nParts += m_beacon.m_locationMC.size();
 						break;
 					case CBeacon::pdfSOG:
-						nGaussians += it->m_locationSOG.size();
+						nGaussians += m_beacon.m_locationSOG.size();
 						break;
 					case CBeacon::pdfGauss:
 						nGaussians++;
@@ -1169,8 +1163,8 @@ void CBeaconMap::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 	outObj->insert(opengl::stock_objects::CornerXYZ());
 
 	// Save 3D ellipsoids or whatever representation:
-	for (const_iterator it = m_beacons.begin(); it != m_beacons.end(); ++it)
-		it->getAs3DObject(outObj);
+	for (const auto & m_beacon : m_beacons)
+		m_beacon.getAs3DObject(outObj);
 
 	MRPT_END
 }
@@ -1228,8 +1222,8 @@ float CBeaconMap::compute3DMatchingRatio(
  ---------------------------------------------------------------*/
 const CBeacon* CBeaconMap::getBeaconByID(CBeacon::TBeaconID id) const
 {
-	for (const_iterator it = m_beacons.begin(); it != m_beacons.end(); ++it)
-		if (it->m_ID == id) return &(*it);
+	for (const auto & m_beacon : m_beacons)
+		if (m_beacon.m_ID == id) return &m_beacon;
 	return nullptr;
 }
 
@@ -1238,8 +1232,8 @@ const CBeacon* CBeaconMap::getBeaconByID(CBeacon::TBeaconID id) const
  ---------------------------------------------------------------*/
 CBeacon* CBeaconMap::getBeaconByID(CBeacon::TBeaconID id)
 {
-	for (iterator it = m_beacons.begin(); it != m_beacons.end(); ++it)
-		if (it->m_ID == id) return &(*it);
+	for (auto & m_beacon : m_beacons)
+		if (m_beacon.m_ID == id) return &m_beacon;
 	return nullptr;
 }
 
@@ -1258,15 +1252,15 @@ void CBeaconMap::saveToTextFile(const string& fil) const
 	CPoint3D p;
 	CMatrixDouble33 C;
 
-	for (const_iterator it = m_beacons.begin(); it != m_beacons.end(); ++it)
+	for (const auto & m_beacon : m_beacons)
 	{
-		it->getCovarianceAndMean(C, p);
+		m_beacon.getCovarianceAndMean(C, p);
 
 		float D3 = C.det();
 		float D2 = C(0, 0) * C(1, 1) - square(C(0, 1));
 		os::fprintf(
 			f, "%i %f %f %f %e %e %e %e %e %e %e %e\n",
-			static_cast<int>(it->m_ID), p.x(), p.y(), p.z(), C(0, 0), C(1, 1),
+			static_cast<int>(m_beacon.m_ID), p.x(), p.y(), p.z(), C(0, 0), C(1, 1),
 			C(2, 2), D2, D3, C(0, 1), C(1, 2), C(1, 2));
 	}
 

@@ -126,11 +126,11 @@ void CSkeletonTracker::processPreviewNone()
 			CSetOfObjects::Ptr body =
 				mrpt::make_aligned_shared<CSetOfObjects>();
 			body->setName("body");
-			for (int i = 0; i < NUM_JOINTS; ++i)
+			for (const auto & jointName : jointNames)
 			{
 				CSphere::Ptr sph = mrpt::make_aligned_shared<CSphere>(0.03f);
 				sph->setColor(0, 1, 0);
-				sph->setName(jointNames[i]);
+				sph->setName(jointName);
 				body->insert(sph);
 			}
 
@@ -327,11 +327,11 @@ void CSkeletonTracker::processPreview(
 			CSetOfObjects::Ptr body =
 				mrpt::make_aligned_shared<CSetOfObjects>();
 			body->setName("body");
-			for (int i = 0; i < NUM_JOINTS; ++i)
+			for (const auto & jointName : jointNames)
 			{
 				CSphere::Ptr sph = mrpt::make_aligned_shared<CSphere>(0.03f);
 				sph->setColor(0, 1, 0);
-				sph->setName(jointNames[i]);
+				sph->setName(jointName);
 				body->insert(sph);
 			}
 

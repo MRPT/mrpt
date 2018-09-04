@@ -116,8 +116,8 @@ void Test()
 			for (size_t j = 0; j < parts.size(); j++)
 			{
 				printf("  Part#%u=", (unsigned int)j);
-				for (size_t k = 0; k < parts[j].size(); k++)
-					printf(" %u", parts[j][k]);
+				for (unsigned int k : parts[j])
+					printf(" %u", k);
 				printf("\n");
 			}
 		}
@@ -135,10 +135,10 @@ void Test()
 			extractFileName(MAP_FILE).c_str())
 			.c_str(),
 		"wt");
-	for (size_t i = 0; i < parts.size(); i++)
+	for (auto & part : parts)
 	{
-		for (size_t j = 0; j < parts[i].size(); j++)
-			fprintf(f, "%u ", parts[i][j]);
+		for (size_t j = 0; j < part.size(); j++)
+			fprintf(f, "%u ", part[j]);
 
 		fprintf(f, "\n");
 	}
@@ -149,12 +149,12 @@ void Test()
 	for (size_t i = 0; i < parts.size(); i++)
 	{
 		out_map.clear();
-		for (size_t j = 0; j < parts[i].size(); j++)
+		for (unsigned int j : parts[i])
 		{
 			CSensoryFrame::Ptr sf;
 			CPose3DPDF::Ptr posePDF;
 
-			in_map.get(parts[i][j], posePDF, sf);
+			in_map.get(j, posePDF, sf);
 
 			out_map.insert(posePDF, sf);
 		}
@@ -183,13 +183,13 @@ void Test()
 	CMatrix B(A.rows(), A.cols());
 	std::vector<uint32_t> rearrIndexes;
 	std::vector<uint32_t> separations;
-	for (size_t i = 0; i < parts.size(); i++)
+	for (auto & part : parts)
 	{
 		uint32_t maxIdx = 0;
-		for (size_t j = 0; j < parts[i].size(); j++)
+		for (size_t j = 0; j < part.size(); j++)
 		{
-			maxIdx = max(maxIdx, parts[i][j]);
-			rearrIndexes.push_back(parts[i][j]);
+			maxIdx = max(maxIdx, part[j]);
+			rearrIndexes.push_back(part[j]);
 		}
 		separations.push_back((unsigned int)rearrIndexes.size());
 	}

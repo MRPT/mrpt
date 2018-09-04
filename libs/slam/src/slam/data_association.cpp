@@ -77,12 +77,10 @@ double joint_pdf_metric(
 
 	{
 		size_t i = 0;
-		for (map<size_t, size_t>::const_iterator it =
-				 info.currentAssociation.begin();
-			 it != info.currentAssociation.end(); ++it)
+		for (auto it : info.currentAssociation)
 		{
-			indices_obs[i] = it->first;
-			indices_pred[i] = it->second;
+			indices_obs[i] = it.first;
+			indices_pred[i] = it.second;
 			i++;
 		}
 	}
@@ -215,11 +213,9 @@ void JCBB_recursive(
 				{
 					// Only if predIdx is NOT already assigned:
 					bool already_asigned = false;
-					for (map<size_t, size_t>::const_iterator itS =
-							 info.currentAssociation.begin();
-						 itS != info.currentAssociation.end(); ++itS)
+					for (auto itS : info.currentAssociation)
 					{
-						if (itS->second == predIdx)
+						if (itS.second == predIdx)
 						{
 							already_asigned = true;
 							break;
@@ -520,16 +516,14 @@ void mrpt::slam::data_association_full_covariance(
 				const multimap<double, prediction_index_t>& lstCompats =
 					it->second.second;
 
-				for (multimap<double, prediction_index_t>::const_iterator itP =
-						 lstCompats.begin();
-					 itP != lstCompats.end(); ++itP)
+				for (auto lstCompat : lstCompats)
 				{
-					if (lst_already_taken_preds.find(itP->second) ==
+					if (lst_already_taken_preds.find(lstCompat.second) ==
 						lst_already_taken_preds.end())
 					{
 						// It's free: make the association:
-						results.associations[obs_id] = itP->second;
-						lst_already_taken_preds.insert(itP->second);
+						results.associations[obs_id] = lstCompat.second;
+						lst_already_taken_preds.insert(lstCompat.second);
 						break;
 					}
 				}
@@ -568,10 +562,8 @@ void mrpt::slam::data_association_full_covariance(
 	if (!predictions_IDs.empty())
 	{
 		ASSERT_(predictions_IDs.size() == nPredictions);
-		for (std::map<size_t, size_t>::iterator itAssoc =
-				 results.associations.begin();
-			 itAssoc != results.associations.end(); ++itAssoc)
-			itAssoc->second = predictions_IDs[itAssoc->second];
+		for (auto & association : results.associations)
+			association.second = predictions_IDs[association.second];
 	}
 
 	MRPT_END
