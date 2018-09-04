@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef  __FREEGLUT_STD_H__
-#define  __FREEGLUT_STD_H__
+#pragma once
 
 /*
  * freeglut_std.h
@@ -594,5 +593,4 @@ FGAPI void    FGAPIENTRY glutReportErrors( void );
 
 /*** END OF FILE ***/
 
-#endif /* __FREEGLUT_STD_H__ */
 

@@ -8,8 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 // Font header file
-#ifndef sans_FONT_HEADER
-#define sans_FONT_HEADER
+#pragma once
 
 Point sans_vertices[] = {
 
@@ -2589,4 +2588,3 @@ Font sans_font = {sans_vertices, sans_triangles, sans_lines, sans_chars,
 				  "37;?CGKOSW[_cgkosw{\"&*.26:>BFJNRVZ^bfjnrvz~\t!%)-159="
 				  "AEIMQUY]aeimquy}"};
 
-#endif

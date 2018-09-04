@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef mrpt_vision_tracking_H
-#define mrpt_vision_tracking_H
+#pragma once
 
 #include <mrpt/vision/types.h>
 
@@ -359,6 +358,5 @@ void filterBadCorrsByDistance(
 
 /**  @}  */  // end of grouping
 }
-#endif
 
 

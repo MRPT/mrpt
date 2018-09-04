@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef INTERNAL_CHECKERBOARD_INCL_H
-#define INTERNAL_CHECKERBOARD_INCL_H
+#pragma once
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
@@ -131,4 +130,3 @@ bool do_special_dilation(
 
 #endif  // MRPT_HAS_OPENCV
 
-#endif

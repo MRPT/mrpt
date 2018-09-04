@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPointPDF_H
-#define CPointPDF_H
+#pragma once
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/CProbabilityDensityFunction.h>
@@ -100,6 +99,5 @@ class CPointPDF : public mrpt::serialization::CSerializable,
 
 };  // End of class def.
 }
-#endif
 
 

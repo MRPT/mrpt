@@ -28,8 +28,7 @@
  *
  *****************************************************************************/
 
-#ifndef TCLAP_CMDLINE_H
-#define TCLAP_CMDLINE_H
+#pragma once
 
 #include <mrpt/otherlibs/tclap/SwitchArg.h>
 #include <mrpt/otherlibs/tclap/MultiSwitchArg.h>
@@ -511,4 +510,3 @@ inline bool CmdLine::hasHelpAndVersion()
 
 
 } //namespace TCLAP
-#endif

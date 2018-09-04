@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef pose_pdfs_H
-#define pose_pdfs_H
+#pragma once
 
 #include <mrpt/opengl/CSetOfObjects.h>
 
@@ -26,6 +25,5 @@ inline CSetOfObjects::Ptr posePDF2opengl(const POSE_PDF& o)
 
 /**  @}  */
 }
-#endif
 
 

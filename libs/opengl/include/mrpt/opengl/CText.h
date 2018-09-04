@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef opengl_CText_H
-#define opengl_CText_H
+#pragma once
 
 #include <mrpt/opengl/CRenderizable.h>
 
@@ -73,6 +72,5 @@ class CText : public CRenderizable
 };
 
 }
-#endif
 
 

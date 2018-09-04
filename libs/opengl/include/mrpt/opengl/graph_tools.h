@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef opengl_graph_tools_H
-#define opengl_graph_tools_H
+#pragma once
 
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/system/TParameters.h>
@@ -134,4 +133,3 @@ CSetOfObjects::Ptr graph_visualize(
 
 #include "graph_tools_impl.h"
 
-#endif

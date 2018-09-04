@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef TMRSLAMNODEANNOTATIONS_H
-#define TMRSLAMNODEANNOTATIONS_H
+#pragma once
 
 #include <mrpt/graphs/TNodeAnnotations.h>
 #include <cstdint>
@@ -103,6 +102,5 @@ struct TMRSlamNodeAnnotations : public TNodeAnnotations
 	mrpt::graphs::TNodeID nodeID_loc;
 };
 }
-#endif /* end of include guard: TMRSLAMNODEANNOTATIONS_H */
 
 

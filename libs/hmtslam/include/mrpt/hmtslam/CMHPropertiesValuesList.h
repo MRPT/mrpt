@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CMHPropertiesValuesList_H
-#define CMHPropertiesValuesList_H
+#pragma once
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/string_utils.h>
@@ -202,6 +201,5 @@ class CMHPropertiesValuesList : public mrpt::serialization::CSerializable
 	size_t size() const { return m_properties.size(); }
 };  // End of class def.
 }
-#endif
 
 

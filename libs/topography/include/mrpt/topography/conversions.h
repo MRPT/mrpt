@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef conversions_H
-#define conversions_H
+#pragma once
 
 #include <mrpt/math/lightweight_geom_data.h>
 
@@ -280,4 +279,3 @@ inline void ENU_axes_from_WGS84(
 
 }  // End of namespace
 
-#endif

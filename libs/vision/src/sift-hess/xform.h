@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef XFORM_H
-#define XFORM_H
+#pragma once
 
 //#include "cxcore.h"
 // Universal include for all versions of OpenCV
@@ -162,4 +161,3 @@ Note that affine transforms are a subset of perspective transforms.
 */
 extern CvPoint2D64f persp_xform_pt(CvPoint2D64f pt, CvMat* T);
 
-#endif

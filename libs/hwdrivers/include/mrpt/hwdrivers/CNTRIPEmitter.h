@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CNTRIPEmitter_H
-#define CNTRIPEmitter_H
+#pragma once
 
 #include <mrpt/hwdrivers/CNTRIPClient.h>
 #include <mrpt/comms/CSerialPort.h>
@@ -129,6 +128,5 @@ class CNTRIPEmitter : public CGenericSensor
 };  // End of class
 
 }
-#endif
 
 

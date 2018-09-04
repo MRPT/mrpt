@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_epnp
-#define _mrpt_epnp
+#pragma once
 #include <mrpt/otherlibs/do_opencv_includes.h>
 
 #if MRPT_HAS_OPENCV
@@ -269,7 +268,6 @@ class epnp
 
 /** @}  */  // end of grouping
 }
-#endif
 #endif
 
 

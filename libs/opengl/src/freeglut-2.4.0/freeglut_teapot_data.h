@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef FREEGLUT_TEAPOT_DATA_H
-#define FREEGLUT_TEAPOT_DATA_H
+#pragma once
 
 #if TARGET_HOST_WINCE
 /*
@@ -1383,4 +1382,3 @@ static double tex[2][2][2] = {{{0.0, 0.0}, {1.0, 0.0}},
 							  {{0.0, 1.0}, {1.0, 1.0}}};
 #endif /* TARGET_HOST_WINCE */
 
-#endif /* FREEGLUT_TEAPOT_DATA_H */

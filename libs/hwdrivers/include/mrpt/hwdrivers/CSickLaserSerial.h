@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CSickLaserSerial_H
-#define CSickLaserSerial_H
+#pragma once
 
 #include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
 #include <mrpt/comms/CSerialPort.h>
@@ -212,6 +211,5 @@ class CSickLaserSerial : public C2DRangeFinderAbstract
 };  // End of class
 
 }
-#endif
 
 

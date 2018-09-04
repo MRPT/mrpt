@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef THYPOTHESIS_H
-#define THYPOTHESIS_H
+#pragma once
 
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
@@ -127,6 +126,5 @@ struct THypothesis
 }
 #include "THypothesis_impl.h"
 
-#endif /* end of include guard: THYPOTHESIS_H */
 
 

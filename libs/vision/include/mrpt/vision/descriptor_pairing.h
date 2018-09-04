@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef mrpt_vision_descriptor_pairing_H
-#define mrpt_vision_descriptor_pairing_H
+#pragma once
 
 #include <mrpt/vision/types.h>
 
@@ -152,6 +151,5 @@ size_t find_descriptor_pairings(
 
 /** @} */
 }
-#endif
 
 

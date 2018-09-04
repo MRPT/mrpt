@@ -7,6 +7,8 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
+#pragma once
+
 #if !defined(CGRAPHPARTITIONER_H)
 #error "This file can't be included from outside of CGraphPartitioner.h"
 #endif
@@ -349,5 +351,4 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::exactBisection(
 	}
 }
 
-}
-
+}  // namespace mrpt::graphs

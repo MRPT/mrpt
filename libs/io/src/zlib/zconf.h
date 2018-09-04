@@ -9,8 +9,7 @@
 
 /* @(#) $Id: zconf.h 35458 2005-09-10 21:15:17Z MW $ */
 
-#ifndef ZCONF_H
-#define ZCONF_H
+#pragma once
 
 /*
  * If you *really* need a unique prefix for all types and library functions,
@@ -334,4 +333,3 @@ typedef Byte* voidp;
 #pragma map(inflate_copyright, "INCOPY")
 #endif
 
-#endif /* ZCONF_H */

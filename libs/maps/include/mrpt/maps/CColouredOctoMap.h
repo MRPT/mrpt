@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef MRPT_CColouredOctoMap_H
-#define MRPT_CColouredOctoMap_H
+#pragma once
 
 #include <mrpt/maps/COctoMapBase.h>
 #include <mrpt/obs/obs_frwds.h>
@@ -164,4 +163,3 @@ class CColouredOctoMap
 };  // End of class def.
 }  // End of namespace
 }  // End of namespace
-#endif

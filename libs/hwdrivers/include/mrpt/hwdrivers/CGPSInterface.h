@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CGPSInterface_H
-#define CGPSInterface_H
+#pragma once
 
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/poses/CPoint3D.h>
@@ -375,6 +374,5 @@ MRPT_FILL_ENUM_MEMBER(CGPSInterface, NMEA);
 MRPT_FILL_ENUM_MEMBER(CGPSInterface, NOVATEL_OEM6);
 MRPT_ENUM_TYPE_END()
 
-#endif
 
 

@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CDUO3DCamera_H
-#define CDUO3DCamera_H
+#pragma once
 
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/obs/CObservationIMU.h>
@@ -253,6 +252,5 @@ class CDUO3DCamera
 static_assert(!std::is_copy_constructible_v<CDUO3DCamera>, "Copy Check");
 static_assert(!std::is_copy_assignable_v<CDUO3DCamera>, "Assign Check");
 }
-#endif
 
 

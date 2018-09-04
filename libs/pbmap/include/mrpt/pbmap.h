@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_pbmap_H
-#define _mrpt_pbmap_H
+#pragma once
 
 #include <mrpt/config.h>
 
@@ -24,4 +23,3 @@
 #include <mrpt/pbmap/Subgraph.h>
 #include <mrpt/pbmap/SubgraphMatcher.h>
 
-#endif

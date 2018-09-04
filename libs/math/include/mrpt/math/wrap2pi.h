@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef MRPT_MATH_WRAP2PI_H
-#define MRPT_MATH_WRAP2PI_H
+#pragma once
 
 #include <cmath>
 #include <cstddef>  // size_t
@@ -108,6 +107,5 @@ inline T angDistance(T from, T to)
 /** @} */
 
 }
-#endif
 
 

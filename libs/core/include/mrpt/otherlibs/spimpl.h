@@ -23,8 +23,7 @@
         - Released
  */
 
-#ifndef SPIMPL_H_
-#define SPIMPL_H_
+#pragma once
 
 #include <memory>
 #include <type_traits>
@@ -450,4 +449,3 @@ namespace std {
     };
 }
 
-#endif // SPIMPL_H_

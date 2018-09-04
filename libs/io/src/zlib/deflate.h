@@ -14,8 +14,7 @@
 
 /* @(#) $Id: deflate.h 35458 2005-09-10 21:15:17Z MW $ */
 
-#ifndef DEFLATE_H
-#define DEFLATE_H
+#pragma once
 
 #include "zutil.h"
 
@@ -339,4 +338,3 @@ extern const uch _dist_code[];
 	flush = _tr_tally(s, distance, length)
 #endif
 
-#endif /* DEFLATE_H */

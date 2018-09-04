@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CRejectionSamplingCapable_H
-#define CRejectionSamplingCapable_H
+#pragma once
 
 #include <mrpt/bayes/CProbabilityParticle.h>
 #include <mrpt/random.h>
@@ -120,4 +119,3 @@ class CRejectionSamplingCapable
 }  // End of namespace
 }  // End of namespace
 
-#endif

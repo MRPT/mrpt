@@ -21,8 +21,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef mrpt_vision_ba_H
-#define mrpt_vision_ba_H
+#pragma once
 
 #include <mrpt/vision/types.h>
 #include <mrpt/img/TCamera.h>
@@ -214,6 +213,5 @@ void add_3d_deltas_to_points(
 
 /** @} */
 }
-#endif
 
 

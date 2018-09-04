@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CIMUIntersense_H
-#define CIMUIntersense_H
+#pragma once
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/comms/CSerialPort.h>
@@ -120,4 +119,3 @@ class CIMUIntersense : public hwdrivers::CGenericSensor
 };  // end of class
 
 }
-#endif

@@ -13,8 +13,7 @@
  *one
  *     and link against the library file "lib_hwdrivers.lib" / "lib_hwdrivers.a"
  */
-#ifndef HWDRIVERS_H
-#define HWDRIVERS_H
+#pragma once
 
 #ifndef MRPT_NO_WARN_BIG_HDR
 MRPT_WARNING(
@@ -77,4 +76,3 @@ MRPT_WARNING(
 
 #include <mrpt/hwdrivers/CSICKTim561Eth_2050101.h>
 
-#endif

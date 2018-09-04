@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef mrpt_obs_H
-#define mrpt_obs_H
+#pragma once
 
 #ifndef MRPT_NO_WARN_BIG_HDR
 MRPT_WARNING(
@@ -64,4 +63,3 @@ MRPT_WARNING(
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/maps/CSimpleMap.h>
 
-#endif

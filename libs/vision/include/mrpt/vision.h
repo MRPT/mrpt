@@ -8,8 +8,7 @@
    +---------------------------------------------------------------------------+
    */
 
-#ifndef __mrpt_vision_H
-#define __mrpt_vision_H
+#pragma once
 
 #ifndef MRPT_NO_WARN_BIG_HDR
 MRPT_WARNING(
@@ -43,4 +42,3 @@ MRPT_WARNING(
 // Obs:
 #include <mrpt/obs/CObservationVisualLandmarks.h>
 
-#endif

@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef DLS_H_
-#define DLS_H_
+#pragma once
 
 #include <mrpt/otherlibs/do_opencv_includes.h>
 
@@ -1058,6 +1057,5 @@ class EigenvalueDecomposition
 /** @}  */  // end of grouping
 }
 #endif  // OPENCV_Check
-#endif  // DLS_H
 
 

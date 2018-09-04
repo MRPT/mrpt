@@ -28,8 +28,7 @@
  *  
  *****************************************************************************/ 
 
-#ifndef TCLAP_XORHANDLER_H
-#define TCLAP_XORHANDLER_H
+#pragma once
 
 #include <mrpt/otherlibs/tclap/Arg.h>
 #include <string>
@@ -161,4 +160,3 @@ inline std::vector< std::vector<Arg*> >& XorHandler::getXorList()
 
 } //namespace TCLAP
 
-#endif 

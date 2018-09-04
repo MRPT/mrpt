@@ -7,10 +7,8 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_tfest_H
-#define _mrpt_tfest_H
+#pragma once
 
 #include <mrpt/tfest/se2.h>
 #include <mrpt/tfest/se3.h>
 
-#endif

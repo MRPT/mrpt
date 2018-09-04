@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CDisplayWindow_H
-#define CDisplayWindow_H
+#pragma once
 
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/img/CImage.h>
@@ -255,4 +254,3 @@ class CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 
 }  // End of namespace
 
-#endif

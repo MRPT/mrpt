@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CWirelessPower_H
-#define CWirelessPower_H
+#pragma once
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CObservationWirelessPower.h>
@@ -91,6 +90,5 @@ class CWirelessPower : public mrpt::hwdrivers::CGenericSensor
 };  // End of class def.
 
 }
-#endif
 
 

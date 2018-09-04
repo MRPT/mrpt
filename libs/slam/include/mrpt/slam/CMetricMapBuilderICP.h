@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CMetricMapBuilderICP_H
-#define CMetricMapBuilderICP_H
+#pragma once
 
 #include <mrpt/slam/CMetricMapBuilder.h>
 #include <mrpt/slam/CICP.h>
@@ -196,6 +195,5 @@ class CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
 };
 
 }
-#endif
 
 

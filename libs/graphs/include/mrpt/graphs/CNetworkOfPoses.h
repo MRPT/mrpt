@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CONSTRAINED_POSE_NETWORK_H
-#define CONSTRAINED_POSE_NETWORK_H
+#pragma once
 
 /** \file The main class in this file is mrpt::poses::CNetworkOfPoses<>, a
    generic
@@ -1047,4 +1046,3 @@ MRPT_DECLARE_TTYPENAME(mrpt::containers::map_traits_map_as_vector)
 #include <mrpt/graphs/CVisualizer.h>
 #include <mrpt/graphs/CMRVisualizer.h>
 
-#endif

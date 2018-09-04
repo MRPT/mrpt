@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_bayes_H
-#define _mrpt_bayes_H
+#pragma once
 
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CParticleFilterData.h>
@@ -17,4 +16,3 @@
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/bayes/CRejectionSamplingCapable.h>
 
-#endif

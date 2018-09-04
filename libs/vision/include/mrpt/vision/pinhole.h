@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef mrpt_vision_pinhole_H
-#define mrpt_vision_pinhole_H
+#pragma once
 
 #include <mrpt/img/TCamera.h>
 #include <mrpt/vision/utils.h>
@@ -199,4 +198,3 @@ void undistort_point(
 }  // namespace vision
 }  // namespace mrpt
 
-#endif

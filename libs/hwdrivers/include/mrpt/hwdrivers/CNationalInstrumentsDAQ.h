@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CNationalInstrumentsDAQ_H
-#define CNationalInstrumentsDAQ_H
+#pragma once
 
 #include <mrpt/obs/CObservationRawDAQ.h>
 #include <mrpt/system/COutputLogger.h>
@@ -485,6 +484,5 @@ class CNationalInstrumentsDAQ : public mrpt::system::COutputLogger,
 };  // end class
 
 }
-#endif
 
 

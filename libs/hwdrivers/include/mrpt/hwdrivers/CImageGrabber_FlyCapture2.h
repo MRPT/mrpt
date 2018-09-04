@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CImageGrabber_FlyCapture2_H
-#define CImageGrabber_FlyCapture2_H
+#pragma once
 
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
@@ -284,6 +283,5 @@ static_assert(
 		!std::is_copy_assignable_v<CImageGrabber_FlyCapture2>,
 	"Copy Check");
 }
-#endif
 
 

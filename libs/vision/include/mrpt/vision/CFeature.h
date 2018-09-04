@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+
    */
-#ifndef CFeature_H
-#define CFeature_H
+#pragma once
 
 #include <mrpt/img/CImage.h>
 #include <mrpt/math/CMatrix.h>
@@ -564,4 +563,3 @@ MRPT_DECLARE_TTYPENAME_PTR_NAMESPACE(CFeature, mrpt::vision)
 }  // namespace typemeta
 }  // namespace mrpt
 
-#endif

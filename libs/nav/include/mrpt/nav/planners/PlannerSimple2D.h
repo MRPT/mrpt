@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef PlannerSimple2D_H
-#define PlannerSimple2D_H
+#pragma once
 
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/poses/CPoint2D.h>
@@ -80,6 +79,5 @@ class PlannerSimple2D
 
 /** @} */
 }
-#endif
 
 

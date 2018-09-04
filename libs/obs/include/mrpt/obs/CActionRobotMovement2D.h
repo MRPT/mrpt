@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CActionRobotMovement2D_H
-#define CActionRobotMovement2D_H
+#pragma once
 
 #include <mrpt/obs/CAction.h>
 #include <mrpt/poses/CPose2D.h>
@@ -209,6 +208,5 @@ class CActionRobotMovement2D : public CAction
 };  // End of class def.
 
 }
-#endif
 
 

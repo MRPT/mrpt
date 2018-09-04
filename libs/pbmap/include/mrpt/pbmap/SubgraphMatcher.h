@@ -13,8 +13,7 @@
  * href="group__mrpt__pbmap__grp.html" >mrpt-pbmap</a>
  */
 
-#ifndef __SUBGRAPHMATCHER_H
-#define __SUBGRAPHMATCHER_H
+#pragma once
 
 #include <mrpt/config.h>
 #if MRPT_HAS_PCL
@@ -111,7 +110,6 @@ class SubgraphMatcher
 	float calcAreaUnmatched(std::set<unsigned>& unmatched_planes);
 };
 }
-#endif
 #endif
 
 

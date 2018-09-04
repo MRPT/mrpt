@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef opengl_CBox_H
-#define opengl_CBox_H
+#pragma once
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/lightweight_geom_data.h>
@@ -131,6 +130,5 @@ class CBox : public CRenderizableDisplayList
    private:
 };
 }
-#endif
 
 

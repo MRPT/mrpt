@@ -149,8 +149,7 @@
  *
  ****************************************************************************/
 
-#ifndef __INCLUDE_XML_NODE__
-#define __INCLUDE_XML_NODE__
+#pragma once
 
 #include <cstdlib>
 
@@ -1123,4 +1122,3 @@ typedef struct XMLDLLENTRY XMLParserBase64Tool
 
 #undef XMLDLLENTRY
 
-#endif

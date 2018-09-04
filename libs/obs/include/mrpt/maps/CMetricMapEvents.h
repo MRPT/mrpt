@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CMetricMapEvents_H
-#define CMetricMapEvents_H
+#pragma once
 
 #include <mrpt/system/mrptEvent.h>
 #include <mrpt/poses/poses_frwds.h>
@@ -65,4 +64,3 @@ class mrptEventMetricMapInsert : public mrpt::system::mrptEvent
 }  // End of namespace
 }  // End of namespace
 
-#endif

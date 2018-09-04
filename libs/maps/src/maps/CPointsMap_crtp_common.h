@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef cpointsmap_crtp_common_H
-#define cpointsmap_crtp_common_H
+#pragma once
 
 #include <mrpt/core/round.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
@@ -520,6 +519,5 @@ struct loadFromRangeImpl
 };
 
 }
-#endif
 
 

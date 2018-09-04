@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CICP_H
-#define CICP_H
+#pragma once
 
 #include <mrpt/slam/CMetricMapsAlignmentAlgorithm.h>
 #include <mrpt/config/CLoadableOptions.h>
@@ -275,6 +274,5 @@ MRPT_FILL_ENUM(icpCovLinealMSE);
 MRPT_FILL_ENUM(icpCovFiniteDifferences);
 MRPT_ENUM_TYPE_END()
 
-#endif
 
 

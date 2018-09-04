@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef mrpt_math_kmeans_H
-#define mrpt_math_kmeans_H
+#pragma once
 
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
@@ -170,4 +169,3 @@ inline double kmeanspp(
 
 }  // namespace math
 }  // namespace mrpt
-#endif

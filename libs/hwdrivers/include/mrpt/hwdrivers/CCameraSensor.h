@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CCameraSensor_H
-#define CCameraSensor_H
+#pragma once
 
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/obs/CObservation.h>
@@ -603,6 +602,5 @@ void readConfigIntoVideoSourcePanel(
 CCameraSensor::Ptr prepareVideoSourceFromUserSelection();
 
 }
-#endif
 
 

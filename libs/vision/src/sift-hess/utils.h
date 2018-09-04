@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef UTILS_H
-#define UTILS_H
+#pragma once
 
 //#include "cxcore.h"
 // Universal include for all versions of OpenCV
@@ -235,4 +234,3 @@ extern int win_closed(char* name);
 }
 #endif
 
-#endif

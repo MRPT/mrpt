@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CSinCosLookUpTableFor2DScans_H
-#define CSinCosLookUpTableFor2DScans_H
+#pragma once
 
 #include <mrpt/math/types_math.h>
 #include <mrpt/obs/T2DScanProperties.h>
@@ -57,6 +56,5 @@ class CSinCosLookUpTableFor2DScans
 };
 
 }
-#endif
 
 

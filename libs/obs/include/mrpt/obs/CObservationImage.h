@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CObservationImage_H
-#define CObservationImage_H
+#pragma once
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/img/CImage.h>
@@ -80,6 +79,5 @@ class CObservationImage : public CObservation
 // Add for declaration of mexplus::from template specialization
 DECLARE_MEXPLUS_FROM(mrpt::obs::CObservationImage)
 
-#endif
 
 

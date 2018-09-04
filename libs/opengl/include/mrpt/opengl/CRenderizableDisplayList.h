@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef opengl_CRenderizableDisplayList_H
-#define opengl_CRenderizableDisplayList_H
+#pragma once
 
 #include <mrpt/opengl/CRenderizable.h>
 
@@ -126,6 +125,5 @@ class CRenderizableDisplayList : public mrpt::opengl::CRenderizable
 };
 
 }
-#endif
 
 

@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef _MRPT_MONTE_CARLO_H_
-#define _MRPT_MONTE_CARLO_H_
+#pragma once
 
 #include <map>
 #include <vector>
@@ -152,6 +151,5 @@ class CMonteCarlo
 	}
 };
 }
-#endif
 
 

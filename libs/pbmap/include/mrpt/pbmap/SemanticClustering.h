@@ -13,8 +13,7 @@
  * href="group__mrpt__pbmap__grp.html" >mrpt-pbmap</a>
  */
 
-#ifndef __SemanticClustering_H
-#define __SemanticClustering_H
+#pragma once
 
 #include <mrpt/config.h>
 #if MRPT_HAS_PCL
@@ -473,7 +472,6 @@ class SemanticClustering
 	};
 };
 }
-#endif
 #endif
 
 

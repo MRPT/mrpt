@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CObservationOdometry_H
-#define CObservationOdometry_H
+#pragma once
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/obs/CObservation.h>
@@ -62,6 +61,5 @@ class CObservationOdometry : public CObservation
 };  // End of class def.
 
 }
-#endif
 
 

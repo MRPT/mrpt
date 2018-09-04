@@ -6,8 +6,8 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef TRangeImageFilter_H
-#define CObservation3DRangeScan_H
+
+#pragma once
 
 #include <mrpt/math/CMatrix.h>
 
@@ -17,21 +17,21 @@ namespace mrpt::obs
 struct TRangeImageFilterParams
 {
 	/** Only used if <b>both</b> rangeMask_min and rangeMask_max are present.
-	  * This switches which condition must fulfill a range `D` to be accepted as
+	 * This switches which condition must fulfill a range `D` to be accepted as
 	 * valid:
-	  *  - `rangeCheckBetween=true` : valid =  (D>=rangeMask_min &&
+	 *  - `rangeCheckBetween=true` : valid =  (D>=rangeMask_min &&
 	 * D<=rangeMask_max)
-	  *  - `rangeCheckBetween=false`: valid = !(D>=rangeMask_min &&
+	 *  - `rangeCheckBetween=false`: valid = !(D>=rangeMask_min &&
 	 * D<=rangeMask_max)
-	  *
-	  * \note Default value:true */
+	 *
+	 * \note Default value:true */
 	bool rangeCheckBetween;
 	/** (Default: nullptr) If provided, each data range will be tested to be
 	 * greater-than (rangeMask_min) or less-than (rangeMask_max) each element in
 	 * these matrices
-	  * for each direction (row,col). Values of 0.0f mean no filtering at those
+	 * for each direction (row,col). Values of 0.0f mean no filtering at those
 	 * directions.
-		* If both `rangeMask_min` and `rangeMask_max` are provided, the joint
+	 * If both `rangeMask_min` and `rangeMask_max` are provided, the joint
 	 * filtering operation is determined by `rangeCheckBetween` */
 	const mrpt::math::CMatrix *rangeMask_min, *rangeMask_max;
 	TRangeImageFilterParams()
@@ -90,8 +90,4 @@ bool TRangeImageFilter::do_range_filter(size_t r, size_t c, const float D) const
 	else
 		return pass_gt && pass_lt;
 }
-}  // End of namespaces
-
-#endif
-
-
+}  // namespace mrpt::obs

@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CBeaconMap_H
-#define CBeaconMap_H
+#pragma once
 
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/maps/CBeacon.h>
@@ -316,6 +315,5 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 };  // End of class def.
 
 }
-#endif
 
 

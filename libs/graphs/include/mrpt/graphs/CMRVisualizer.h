@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CMRVISUALIZER_H
-#define CMRVISUALIZER_H
+#pragma once
 
 #include <iostream>
 
@@ -90,6 +89,5 @@ class CMRVisualizer<
 }
 #include <mrpt/graphs/CMRVisualizer_impl.h>
 
-#endif /* end of include guard: CMRVISUALIZER_H */
 
 

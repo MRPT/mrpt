@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CAbstractHolonomicReactiveMethod_H
-#define CAbstractHolonomicReactiveMethod_H
+#pragma once
 
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/typemeta/TEnumType.h>
@@ -135,6 +134,5 @@ class CAbstractHolonomicReactiveMethod
 };
 /** @} */
 }
-#endif
 
 

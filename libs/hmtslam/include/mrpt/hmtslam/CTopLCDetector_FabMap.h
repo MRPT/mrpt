@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef _CTopLCDetector_FabMap_H
-#define _CTopLCDetector_FabMap_H
+#pragma once
 
 #include <mrpt/hmtslam/CTopLCDetectorBase.h>
 
@@ -68,6 +67,5 @@ class CTopLCDetector_FabMap : public CTopLCDetectorBase
 
 };  // end class
 }
-#endif
 
 

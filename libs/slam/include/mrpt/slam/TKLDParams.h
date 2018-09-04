@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef TKLDParams_H
-#define TKLDParams_H
+#pragma once
 
 #include <mrpt/config/CLoadableOptions.h>
 
@@ -44,6 +43,5 @@ class TKLDParams : public mrpt::config::CLoadableOptions
 };
 
 }
-#endif
 
 

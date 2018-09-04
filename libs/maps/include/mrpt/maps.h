@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_maps_H
-#define _mrpt_maps_H
+#pragma once
 
 #ifndef MRPT_NO_WARN_BIG_HDR
 MRPT_WARNING(
@@ -41,4 +40,3 @@ MRPT_WARNING(
 #include <mrpt/opengl/CAngularObservationMesh.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
 
-#endif

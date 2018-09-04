@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPointPDFSOG_H
-#define CPointPDFSOG_H
+#pragma once
 
 #include <mrpt/poses/CPointPDF.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
@@ -187,6 +186,5 @@ class CPointPDFSOG : public CPointPDF
 
 };  // End of class def.
 }
-#endif
 
 

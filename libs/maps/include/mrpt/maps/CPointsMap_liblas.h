@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPOINTSMAP_LIBLAS_H
-#define CPOINTSMAP_LIBLAS_H
+#pragma once
 
 /** \file Include this file in your user application only if you have libLAS
  * installed in your system */
@@ -200,4 +199,3 @@ bool loadLASFile(
 }
 }  // End of namespaces
 
-#endif

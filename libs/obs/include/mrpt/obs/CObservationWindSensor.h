@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CObservationWindSensor_H
-#define CObservationWindSensor_H
+#pragma once
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/obs/CObservation.h>
@@ -52,6 +51,5 @@ class CObservationWindSensor : public CObservation
 };  // End of class def.
 
 }
-#endif
 
 

@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef JPEGLIB_H
-#define JPEGLIB_H
+#pragma once
 
 /*
  * First we include the configuration files that record how this
@@ -1160,4 +1159,3 @@ struct jpeg_color_quantizer
 #include "jerror.h" /* fetch error codes too */
 #endif
 
-#endif /* JPEGLIB_H */

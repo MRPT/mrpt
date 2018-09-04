@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPOSE3D_H
-#define CPOSE3D_H
+#pragma once
 
 #include <mrpt/poses/CPose.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
@@ -779,4 +778,3 @@ bool operator==(const CPose3D& p1, const CPose3D& p2);
 bool operator!=(const CPose3D& p1, const CPose3D& p2);
 
 }  // namespace mrpt::poses
-#endif

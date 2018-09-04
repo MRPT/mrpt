@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef T2DScanProperties_H
-#define T2DScanProperties_H
+#pragma once
 
 namespace mrpt::obs
 {
@@ -30,6 +29,5 @@ struct T2DScanProperties
 bool operator<(const T2DScanProperties& a, const T2DScanProperties& b);
 
 }
-#endif
 
 

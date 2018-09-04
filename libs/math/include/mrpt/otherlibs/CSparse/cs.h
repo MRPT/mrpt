@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef _CS_H
-#define _CS_H
+#pragma once
 #include <stdlib.h>
 #include <limits.h>
 #include <math.h>
@@ -148,4 +147,3 @@ csn *cs_ndone (csn *N, cs *C, void *w, void *x, int ok) ;
 #define CS_MARK(w,j) { w [j] = CS_FLIP (w [j]) ; }
 #define CS_CSC(A) (A && (A->nz == -1))
 #define CS_TRIPLET(A) (A && (A->nz >= 0))
-#endif

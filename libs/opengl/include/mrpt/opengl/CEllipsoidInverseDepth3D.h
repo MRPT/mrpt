@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef opengl_CEllipsoidInverseDepth3D_H
-#define opengl_CEllipsoidInverseDepth3D_H
+#pragma once
 
 #include <mrpt/opengl/CGeneralizedEllipsoidTemplate.h>
 
@@ -79,6 +78,5 @@ class CEllipsoidInverseDepth3D : public CGeneralizedEllipsoidTemplate<3>
 };
 
 }
-#endif
 
 

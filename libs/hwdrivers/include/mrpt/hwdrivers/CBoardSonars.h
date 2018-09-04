@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CBoardSonars_H
-#define CBoardSonars_H
+#pragma once
 
 #include <mrpt/comms/CInterfaceFTDI.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
@@ -147,6 +146,5 @@ class CBoardSonars : public mrpt::comms::CInterfaceFTDI, public CGenericSensor
 
 };  // End of class
 }
-#endif
 
 

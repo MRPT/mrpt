@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef opengl_CCamera_H
-#define opengl_CCamera_H
+#pragma once
 
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/poses/CPoseOrPoint.h>
@@ -110,6 +109,5 @@ class CCamera : public CRenderizable
 };
 
 }
-#endif
 
 

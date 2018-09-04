@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef opengl_CTexturedObject_H
-#define opengl_CTexturedObject_H
+#pragma once
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/img/CImage.h>
@@ -83,6 +82,5 @@ class CTexturedObject : public CRenderizableDisplayList
 };
 
 }
-#endif
 
 

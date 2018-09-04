@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef MINPQ_H
-#define MINPQ_H
+#pragma once
 
 #include <stdlib.h>
 
@@ -81,4 +80,3 @@ De-allocates the memory held by a minimizing priorioty queue
 */
 extern void minpq_release(struct min_pq** min_pq);
 
-#endif

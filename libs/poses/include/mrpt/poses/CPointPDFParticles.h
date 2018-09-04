@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPointPDFParticles_H
-#define CPointPDFParticles_H
+#pragma once
 
 #include <mrpt/poses/CPointPDF.h>
 #include <mrpt/math/CMatrix.h>
@@ -92,6 +91,5 @@ class CPointPDFParticles
 
 };  // End of class def.
 }
-#endif
 
 

@@ -13,8 +13,7 @@
  * href="group__mrpt__pbmap__grp.html" >mrpt-pbmap</a>
  */
 
-#ifndef __CONSISTENCYTEST_H
-#define __CONSISTENCYTEST_H
+#pragma once
 
 #include <mrpt/config.h>
 #if MRPT_HAS_PCL
@@ -114,7 +113,6 @@ class ConsistencyTest
 	// void TestRANSAC();
 };
 }
-#endif
 #endif
 
 

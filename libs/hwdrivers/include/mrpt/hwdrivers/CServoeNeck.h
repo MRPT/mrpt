@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CServoeNeck_H
-#define CServoeNeck_H
+#pragma once
 
 #include <mrpt/comms/CInterfaceFTDI.h>
 #include <mrpt/core/exceptions.h>
@@ -159,6 +158,5 @@ class CServoeNeck : public mrpt::comms::CInterfaceFTDI
 };  // End of class
 
 }
-#endif
 
 

@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CGenericSensor_H
-#define CGenericSensor_H
+#pragma once
 
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/obs/CObservation.h>
@@ -344,4 +343,3 @@ static_assert(
 }  // namespace hwdrivers
 }  // namespace mrpt
 
-#endif

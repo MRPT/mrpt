@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef COccupancyGridMapFeatureExtractor_H
-#define COccupancyGridMapFeatureExtractor_H
+#pragma once
 
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CLandmarksMap.h>
@@ -74,6 +73,5 @@ class COccupancyGridMapFeatureExtractor : public mrpt::system::CObserver
 };  // End of class def.
 
 }
-#endif
 
 

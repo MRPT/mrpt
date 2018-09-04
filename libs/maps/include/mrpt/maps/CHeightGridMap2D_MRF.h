@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CHeightGridMap2D_MRF_MRF_H
-#define CHeightGridMap2D_MRF_MRF_H
+#pragma once
 
 #include <mrpt/maps/CRandomFieldGridMap2D.h>
 #include <mrpt/maps/CHeightGridMap2D_Base.h>
@@ -112,6 +111,5 @@ class CHeightGridMap2D_MRF : public CRandomFieldGridMap2D,
 };
 
 }
-#endif
 
 

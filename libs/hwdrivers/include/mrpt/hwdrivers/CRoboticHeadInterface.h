@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CRoboticHeadInterface_H
-#define CRoboticHeadInterface_H
+#pragma once
 
 #include <mrpt/comms/CInterfaceFTDI.h>
 #include <mrpt/serialization/CMessage.h>
@@ -119,6 +118,5 @@ class CRoboticHeadInterface : public mrpt::system::COutputLogger
 };  // End of class
 
 }
-#endif
 
 

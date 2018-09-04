@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef opengl_CGeneralizedCylinder_H
-#define opengl_CGeneralizedCylinder_H
+#pragma once
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/opengl/CPolyhedron.h>
@@ -435,6 +434,5 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 	virtual ~CGeneralizedCylinder(){};
 };
 }
-#endif
 
 

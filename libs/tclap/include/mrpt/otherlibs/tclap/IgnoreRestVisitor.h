@@ -28,8 +28,7 @@
  *****************************************************************************/ 
 
 
-#ifndef TCLAP_IGNORE_REST_VISITOR_H
-#define TCLAP_IGNORE_REST_VISITOR_H
+#pragma once
 
 #include <mrpt/otherlibs/tclap/Visitor.h>
 #include <mrpt/otherlibs/tclap/Arg.h>
@@ -57,4 +56,3 @@ class IgnoreRestVisitor: public Visitor
 
 }
 
-#endif

@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CCascadeClassifierDetection_H
-#define CCascadeClassifierDetection_H
+#pragma once
 
 #include <mrpt/detectors/CObjectDetection.h>
 
@@ -50,6 +49,5 @@ class CCascadeClassifierDetection : virtual public CObjectDetection
 
 };  // End of class
 }
-#endif
 
 

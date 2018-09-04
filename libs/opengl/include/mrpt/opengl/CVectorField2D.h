@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef opengl_CVectorField2D_H
-#define opengl_CVectorField2D_H
+#pragma once
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/lightweight_geom_data.h>
@@ -265,6 +264,5 @@ class CVectorField2D : public CRenderizableDisplayList
 };
 
 }
-#endif
 
 

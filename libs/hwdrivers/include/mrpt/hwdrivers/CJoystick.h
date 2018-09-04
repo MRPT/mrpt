@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CJOYSTICK_H
-#define CJOYSTICK_H
+#pragma once
 
 #include <vector>
 
@@ -101,6 +100,5 @@ class CJoystick
 };  // End of class def.
 
 }
-#endif
 
 

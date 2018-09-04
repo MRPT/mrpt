@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CCANBusReader_H
-#define CCANBusReader_H
+#pragma once
 
 #include <mrpt/obs/CObservationCANBusJ1939.h>
 #include <mrpt/system/COutputLogger.h>
@@ -172,6 +171,5 @@ class CCANBusReader : public mrpt::system::COutputLogger, public CGenericSensor
 };  // End of class
 
 }
-#endif
 
 

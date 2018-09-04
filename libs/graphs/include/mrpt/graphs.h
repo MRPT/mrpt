@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_graphs_H
-#define _mrpt_graphs_H
+#pragma once
 
 #include <mrpt/graphs/TNodeAnnotations.h>
 #include <mrpt/graphs/TMRSlamNodeAnnotations.h>
@@ -21,4 +20,3 @@
 #include <mrpt/graphs/THypothesis.h>
 #include <mrpt/graphs/CHypothesisNotFoundException.h>
 
-#endif

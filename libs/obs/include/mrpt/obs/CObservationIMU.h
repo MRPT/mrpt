@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CObservationIMU_H
-#define CObservationIMU_H
+#pragma once
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/CMatrixD.h>
@@ -149,6 +148,5 @@ class CObservationIMU : public CObservation
 };  // End of class def.
 
 }
-#endif
 
 

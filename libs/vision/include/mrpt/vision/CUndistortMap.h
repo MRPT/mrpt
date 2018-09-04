@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef mrpt_CUndistortMap_H
-#define mrpt_CUndistortMap_H
+#pragma once
 
 #include <mrpt/img/TCamera.h>
 #include <mrpt/img/CImage.h>
@@ -88,6 +87,5 @@ class CUndistortMap
 
 };  // end class
 }
-#endif
 
 

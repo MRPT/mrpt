@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef mrpt_CKinect_H
-#define mrpt_CKinect_H
+#pragma once
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
@@ -548,6 +547,5 @@ MRPT_FILL_ENUM_MEMBER(CKinect, VIDEO_CHANNEL_RGB);
 MRPT_FILL_ENUM_MEMBER(CKinect, VIDEO_CHANNEL_IR);
 MRPT_ENUM_TYPE_END()
 
-#endif
 
 

@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef opengl_CText3D_H
-#define opengl_CText3D_H
+#pragma once
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 
@@ -117,6 +116,5 @@ class CText3D : public CRenderizableDisplayList
 };
 
 }
-#endif
 
 

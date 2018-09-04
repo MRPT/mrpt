@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef ransac_optimizers_H
-#define ransac_optimizers_H
+#pragma once
 
 #include <mrpt/math/ransac.h>
 #include <mrpt/math/geometry.h>
@@ -78,6 +77,5 @@ inline void ransac_detect_3D_planes(
 /** @} */  // end of grouping
 
 }
-#endif
 
 

@@ -7,10 +7,8 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_topography_H
-#define _mrpt_topography_H
+#pragma once
 
 #include <mrpt/topography/conversions.h>
 #include <mrpt/topography/path_from_rtk_gps.h>
 
-#endif

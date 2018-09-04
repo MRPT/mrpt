@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CONSTRAINED_POSE_NETWORK_IMPL_H
-#define CONSTRAINED_POSE_NETWORK_IMPL_H
+#pragma once
 
 #include <mrpt/graphs/dijkstra.h>
 #include <mrpt/io/CTextFileLinesParser.h>
@@ -1030,4 +1029,3 @@ struct graph_ops
 };  // end of graph_ops<graph_t>
 
 }  // namespace mrpt::graphs::detail
-#endif

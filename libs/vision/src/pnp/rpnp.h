@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef rpnp_h
-#define rpnp_h
+#pragma once
 
 #include <mrpt/math/types_math.h>  // Eigen must be included first via MRPT to enable the plugin system
 
@@ -90,6 +89,5 @@ class rpnp
 
 /** @}  */  // end of grouping
 }
-#endif
 
 

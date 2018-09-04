@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CHMHMapArc_H
-#define CHMHMapArc_H
+#pragma once
 
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/hmtslam/CHMHMapNode.h>
@@ -106,6 +105,5 @@ class CHMHMapArc : public mrpt::serialization::CSerializable
 };  // End of class def.
 
 }
-#endif
 
 

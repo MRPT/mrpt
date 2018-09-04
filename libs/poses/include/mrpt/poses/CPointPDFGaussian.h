@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPointPDFGaussian_H
-#define CPointPDFGaussian_H
+#pragma once
 
 #include <mrpt/poses/CPointPDF.h>
 #include <mrpt/math/CMatrix.h>
@@ -156,4 +155,3 @@ class CPointPDFGaussian : public CPointPDF
 
 };  // End of class def.
 }  // namespace mrpt::poses
-#endif

@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPropertiesValuesList_H
-#define CPropertiesValuesList_H
+#pragma once
 
 #include <mrpt/serialization/CSerializable.h>
 
@@ -73,6 +72,5 @@ class CPropertiesValuesList : public mrpt::serialization::CSerializable
 
 };  // End of class def.
 }
-#endif
 
 

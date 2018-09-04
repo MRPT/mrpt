@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef mrpt_vision_chessboard_stereo_calib_H
-#define mrpt_vision_chessboard_stereo_calib_H
+#pragma once
 
 #include <mrpt/img/CImage.h>
 #include <mrpt/img/TStereoCamera.h>
@@ -165,6 +164,5 @@ bool checkerBoardStereoCalibration(
 
 /** @}  */  // end of grouping
 }
-#endif
 
 

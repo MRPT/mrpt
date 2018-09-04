@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef __mrpt_vision_image_pyramid_H
-#define __mrpt_vision_image_pyramid_H
+#pragma once
 
 #include <mrpt/img/CImage.h>
 
@@ -92,6 +91,5 @@ class CImagePyramid
 	std::vector<mrpt::img::CImage> images;
 };
 }
-#endif
 
 

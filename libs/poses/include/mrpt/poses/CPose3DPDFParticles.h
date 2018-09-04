@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPose3DPDFParticles_H
-#define CPose3DPDFParticles_H
+#pragma once
 
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
@@ -102,6 +101,5 @@ class CPose3DPDFParticles
 
 };  // End of class def.
 }
-#endif
 
 

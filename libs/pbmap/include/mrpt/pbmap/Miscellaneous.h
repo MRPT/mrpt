@@ -13,8 +13,7 @@
  * href="group__mrpt__pbmap__grp.html" >mrpt-pbmap</a>
  */
 
-#ifndef __MISCELLANEOUS_H
-#define __MISCELLANEOUS_H
+#pragma once
 
 #include <mrpt/config.h>
 #if MRPT_HAS_PCL
@@ -346,6 +345,5 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
 
 #endif
 
-#endif
 
 

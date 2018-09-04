@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef MRPT_DO_OPENCV_INCL_H
-#define MRPT_DO_OPENCV_INCL_H
+#pragma once
 
 // By including this file you make sure of #including all the relevant OpenCV
 // headers, from OpenCV 1.0 up to the latest version.
@@ -74,4 +73,3 @@ using CvPoint2D32fVector = std::vector<CvPoint2D32f>;
 #endif
 #endif  // MRPT_HAS_OPENCV
 
-#endif

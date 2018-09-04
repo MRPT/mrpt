@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CHMHMapNode_H
-#define CHMHMapNode_H
+#pragma once
 
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -145,6 +144,5 @@ using TNodeIDSet = std::set<CHMHMapNode::TNodeID>;
 using TPairNodeIDs = std::pair<CHMHMapNode::TNodeID, CHMHMapNode::TNodeID>;
 
 }
-#endif
 
 

@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CReactiveNavigationSystem_H
-#define CReactiveNavigationSystem_H
+#pragma once
 
 #include "CAbstractPTGBasedReactive.h"
 
@@ -156,6 +155,5 @@ class CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 
 };  // end class
 }
-#endif
 
 

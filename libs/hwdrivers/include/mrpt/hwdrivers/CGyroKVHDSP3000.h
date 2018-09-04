@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CGyroKVHDSP3000_H
-#define CGyroKVHDSP3000_H
+#pragma once
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/comms/CSerialPort.h>
@@ -124,6 +123,5 @@ class CGyroKVHDSP3000 : public hwdrivers::CGenericSensor
 };  // end of class
 
 }
-#endif
 
 

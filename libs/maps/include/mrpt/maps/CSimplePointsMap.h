@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CSimplePointsMap_H
-#define CSimplePointsMap_H
+#pragma once
 
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/serialization/CSerializable.h>
@@ -204,4 +203,3 @@ class PointCloudAdapter<mrpt::maps::CSimplePointsMap>
 
 }  // namespace mrpt
 
-#endif

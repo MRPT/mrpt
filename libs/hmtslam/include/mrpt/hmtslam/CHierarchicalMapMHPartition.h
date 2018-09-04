@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CHierarchicalMapMHPartition_H
-#define CHierarchicalMapMHPartition_H
+#pragma once
 
 #include <mrpt/hmtslam/CLocalMetricHypothesis.h>
 #include <mrpt/hmtslam/CHMHMapArc.h>
@@ -284,4 +283,3 @@ class CHierarchicalMapMHPartition : public mrpt::system::COutputLogger
 }
 }
 
-#endif

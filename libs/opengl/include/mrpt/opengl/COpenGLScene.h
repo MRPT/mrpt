@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef opengl_COpenGLScene_H
-#define opengl_COpenGLScene_H
+#pragma once
 
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/COpenGLViewport.h>
@@ -290,4 +289,3 @@ inline COpenGLScene::Ptr& operator<<(
 
 }  // namespace mrpt
 
-#endif

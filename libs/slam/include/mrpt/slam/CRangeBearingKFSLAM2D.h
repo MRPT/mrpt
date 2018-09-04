@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CRangeBearingKFSLAM2D_H
-#define CRangeBearingKFSLAM2D_H
+#pragma once
 
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/config/CConfigFileBase.h>
@@ -393,6 +392,5 @@ class CRangeBearingKFSLAM2D
 	TDataAssocInfo m_last_data_association;
 };  // end class
 }
-#endif
 
 

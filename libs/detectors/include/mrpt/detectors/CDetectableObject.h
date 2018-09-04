@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CDetectableObject_H
-#define CDetectableObject_H
+#pragma once
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/obs/CObservation.h>
@@ -90,6 +89,5 @@ class CDetectable3D : public CDetectable2D
 
 };  // End of class
 }
-#endif
 
 

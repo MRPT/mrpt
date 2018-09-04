@@ -13,8 +13,7 @@
  * href="group__mrpt__pbmap__grp.html" >mrpt-pbmap</a>
  */
 
-#ifndef __HEURISTICPARAMS_H
-#define __HEURISTICPARAMS_H
+#pragma once
 
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/system/filesystem.h>
@@ -154,6 +153,5 @@ struct config_heuristics
 	};
 };
 }
-#endif
 
 

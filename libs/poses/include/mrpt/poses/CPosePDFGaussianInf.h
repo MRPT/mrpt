@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPosePDFGaussianInf_H
-#define CPosePDFGaussianInf_H
+#pragma once
 
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
@@ -213,4 +212,3 @@ poses::CPosePDFGaussianInf operator+(
 std::ostream& operator<<(std::ostream& out, const CPosePDFGaussianInf& obj);
 
 }  // namespace mrpt::poses
-#endif

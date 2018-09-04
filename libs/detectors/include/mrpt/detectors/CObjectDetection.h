@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CObjectDetection_H
-#define CObjectDetection_H
+#pragma once
 
 #include <mrpt/detectors/CDetectableObject.h>
 #include <mrpt/config/CConfigFile.h>
@@ -57,6 +56,5 @@ class CObjectDetection
 
 };  // End of class
 }
-#endif
 
 

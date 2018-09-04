@@ -59,8 +59,7 @@
 * Contributed by Edgar Riba
 \****************************************************************************************/
 
-#ifndef OPENCV_CALIB3D_UPNP_H_
-#define OPENCV_CALIB3D_UPNP_H_
+#pragma once
 
 #include <mrpt/config.h>
 #include <mrpt/otherlibs/do_opencv_includes.h>
@@ -359,6 +358,5 @@ class upnp
 /** @}  */  // end of grouping
 }
 #endif  // Check for OPENCV_LIB
-#endif  // OPENCV_CALIB3D_UPNP_H_
 
 

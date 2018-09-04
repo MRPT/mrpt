@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CARMEN_LOG_TOOLS_H
-#define CARMEN_LOG_TOOLS_H
+#pragma once
 
 #include <mrpt/system/datetime.h>
 #include <mrpt/obs/CObservation.h>
@@ -65,6 +64,5 @@ bool carmen_log_parse_line(
 	const mrpt::system::TTimeStamp& time_start_log);
 
 }
-#endif
 
 

@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef PF_implementations_data_H
-#define PF_implementations_data_H
+#pragma once
 
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
@@ -326,6 +325,5 @@ class PF_implementation : public mrpt::system::COutputLogger
 
 };  // end PF_implementation
 }
-#endif
 
 

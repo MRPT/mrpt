@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CDisplayWindow3D_H
-#define CDisplayWindow3D_H
+#pragma once
 
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/opengl/COpenGLScene.h>
@@ -452,6 +451,5 @@ class CDisplayWindow3DLocker
 };
 
 }
-#endif
 
 

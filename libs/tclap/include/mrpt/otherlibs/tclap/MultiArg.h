@@ -8,8 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 
-#ifndef TCLAP_MULTIPLE_ARGUMENT_H
-#define TCLAP_MULTIPLE_ARGUMENT_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -513,4 +512,3 @@ bool MultiArg<T>::allowMore()
 
 } // namespace TCLAP
 
-#endif

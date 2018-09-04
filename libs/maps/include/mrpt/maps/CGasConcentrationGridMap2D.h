@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CGasConcentrationGridMap2D_H
-#define CGasConcentrationGridMap2D_H
+#pragma once
 
 #include <mrpt/maps/CRandomFieldGridMap2D.h>
 #include <mrpt/obs/CObservationGasSensors.h>
@@ -178,6 +177,5 @@ class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 };
 
 }
-#endif
 
 

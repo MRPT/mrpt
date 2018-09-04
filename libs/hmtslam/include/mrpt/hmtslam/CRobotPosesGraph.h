@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CRobotPosesGraph_H
-#define CRobotPosesGraph_H
+#pragma once
 
 #include <mrpt/serialization/CSerializable.h>
 
@@ -50,6 +49,5 @@ class CRobotPosesGraph : public mrpt::serialization::CSerializable,
 };  // end of class
 
 }
-#endif
 
 

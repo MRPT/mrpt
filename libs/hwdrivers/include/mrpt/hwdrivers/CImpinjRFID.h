@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CImpinjRFID_H
-#define CImpinjRFID_H
+#pragma once
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CObservationRFID.h>
@@ -103,6 +102,5 @@ class CImpinjRFID : public mrpt::hwdrivers::CGenericSensor
 };  // End of class def.
 
 }
-#endif
 
 

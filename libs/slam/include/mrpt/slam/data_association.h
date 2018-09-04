@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef data_association_H
-#define data_association_H
+#pragma once
 
 #include <mrpt/poses/CPoint2DPDFGaussian.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
@@ -237,6 +236,5 @@ MRPT_FILL_ENUM(metricMaha);
 MRPT_FILL_ENUM(metricML);
 MRPT_ENUM_TYPE_END()
 
-#endif
 
 

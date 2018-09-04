@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef OBS_UTILS_H
-#define OBS_UTILS_H
+#pragma once
 
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CObservation.h>
@@ -75,6 +74,5 @@ typename OBSERVATION_T::Ptr getObservation(
 }
 }  // end of namespaces
 
-#endif /* end of include guard: OBS_UTILS_H */
 
 

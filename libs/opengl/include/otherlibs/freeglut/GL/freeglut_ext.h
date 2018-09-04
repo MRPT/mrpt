@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef  __FREEGLUT_EXT_H__
-#define  __FREEGLUT_EXT_H__
+#pragma once
 
 /*
  * freeglut_ext.h
@@ -140,4 +139,3 @@ FGAPI GLUTproc FGAPIENTRY glutGetProcAddress( const char *procName );
 
 /*** END OF FILE ***/
 
-#endif /* __FREEGLUT_EXT_H__ */

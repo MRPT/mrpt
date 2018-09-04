@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef P3P_H
-#define P3P_H
+#pragma once
 
 #include <vector>
 #include <mrpt/math/types_math.h>  // Eigen must be included first via MRPT to enable the plugin system
@@ -215,6 +214,5 @@ class p3p
 
 /** @}  */  // end of grouping
 }
-#endif  // P3P_H
 
 

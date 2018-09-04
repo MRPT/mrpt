@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPOINT2D_H
-#define CPOINT2D_H
+#pragma once
 
 #include <mrpt/poses/CPoint.h>
 #include <mrpt/math/CArrayNumeric.h>
@@ -119,4 +118,3 @@ class CPoint2D : public CPoint<CPoint2D>,
 };  // End of class def.
 
 }  // namespace mrpt::poses
-#endif

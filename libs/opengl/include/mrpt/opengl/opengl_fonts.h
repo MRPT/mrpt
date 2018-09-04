@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef mrpt_opengl_fonts_H
-#define mrpt_opengl_fonts_H
+#pragma once
 
 #include <mrpt/img/TColor.h>
 #include <mrpt/core/common.h>  // disable warnings
@@ -96,6 +95,5 @@ struct T2DTextData : public TFontParams
 	double x, y;
 };
 }
-#endif
 
 

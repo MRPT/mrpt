@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef SERIALIZATION_ZMQ_H
-#define SERIALIZATION_ZMQ_H
+#pragma once
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/io/CMemoryStream.h>
@@ -222,4 +221,3 @@ bool mrpt_recv_from_zmq_into(
 /** @} */
 }  // End of namespace
 }  // End of namespace
-#endif

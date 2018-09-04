@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CObservationStereoImages_H
-#define CObservationStereoImages_H
+#pragma once
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/img/CImage.h>
@@ -139,6 +138,5 @@ class CObservationStereoImages : public mrpt::obs::CObservation
 // Add for declaration of mexplus::from template specialization
 DECLARE_MEXPLUS_FROM(mrpt::obs::CObservationStereoImages)
 
-#endif
 
 

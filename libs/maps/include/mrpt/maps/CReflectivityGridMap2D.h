@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CReflectivityGridMap2D_H
-#define CReflectivityGridMap2D_H
+#pragma once
 
 #include <mrpt/img/CImage.h>
 #include <mrpt/containers/CDynamicGrid.h>
@@ -120,6 +119,5 @@ class CReflectivityGridMap2D : public CMetricMap,
 };
 
 }
-#endif
 
 

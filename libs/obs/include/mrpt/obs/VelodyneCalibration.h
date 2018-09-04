@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef VelodyneCalibration_H
-#define VelodyneCalibration_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -72,6 +71,5 @@ struct VelodyneCalibration
 	bool internal_loadFromXMLNode(void* node);
 };
 }
-#endif
 
 

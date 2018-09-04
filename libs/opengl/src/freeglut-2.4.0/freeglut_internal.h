@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef FREEGLUT_INTERNAL_H
-#define FREEGLUT_INTERNAL_H
+#pragma once
 
 #if HAVE_CONFIG_H
 #include "config.h"
@@ -824,6 +823,5 @@ void fgListInsert(SFG_List* list, SFG_Node* next, SFG_Node* node);
 void fgError(const char* fmt, ...);
 void fgWarning(const char* fmt, ...);
 
-#endif /* FREEGLUT_INTERNAL_H */
 
 /*** END OF FILE ***/

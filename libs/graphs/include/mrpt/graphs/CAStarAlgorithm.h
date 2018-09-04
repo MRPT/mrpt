@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CASTARALGORITHM_H
-#define CASTARALGORITHM_H
+#pragma once
 #include <map>
 #include <vector>
 #include <cmath>
@@ -163,6 +162,5 @@ class CAStarAlgorithm
 	}
 };
 }
-#endif
 
 

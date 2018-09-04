@@ -28,8 +28,7 @@
  *****************************************************************************/
 
 
-#ifndef TCLAP_MULTIPLE_UNLABELED_ARGUMENT_H
-#define TCLAP_MULTIPLE_UNLABELED_ARGUMENT_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -308,4 +307,3 @@ void UnlabeledMultiArg<T>::addToList( std::list<Arg*>& argList ) const
 
 }
 
-#endif

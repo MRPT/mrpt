@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CObservationGasSensors_H
-#define CObservationGasSensors_H
+#pragma once
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/obs/CObservation.h>
@@ -176,6 +175,5 @@ class CObservationGasSensors : public CObservation
 };  // End of class def.
 
 }
-#endif
 
 

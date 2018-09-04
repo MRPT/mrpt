@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CDetectorDoorCrossing_H
-#define CDetectorDoorCrossing_H
+#pragma once
 
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/obs/CRawlog.h>
@@ -119,6 +118,5 @@ class CDetectorDoorCrossing : public mrpt::system::COutputLogger
 };
 
 }
-#endif
 
 

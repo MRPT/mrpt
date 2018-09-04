@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef opengl_CAssimpModel_H
-#define opengl_CAssimpModel_H
+#pragma once
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/opengl/COpenGLScene.h>
@@ -103,6 +102,5 @@ class CAssimpModel : public CRenderizableDisplayList
 };
 
 }
-#endif
 
 

@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef mrpt_COpenNI2Sensor_H
-#define mrpt_COpenNI2Sensor_H
+#pragma once
 
 #include <mrpt/hwdrivers/COpenNI2Generic.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
@@ -382,6 +381,5 @@ class COpenNI2Sensor : public mrpt::hwdrivers::CGenericSensor,
 
 };  // End of class
 }
-#endif
 
 

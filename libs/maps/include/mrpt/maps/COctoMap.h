@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef MRPT_COctoMap_H
-#define MRPT_COctoMap_H
+#pragma once
 
 #include <mrpt/maps/COctoMapBase.h>
 
@@ -127,4 +126,3 @@ class COctoMap : public COctoMapBase<octomap::OcTree, octomap::OcTreeNode>
 }  // End of namespace
 }  // End of namespace
 
-#endif

@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CPose3DQuatPDFGaussian_H
-#define CPose3DQuatPDFGaussian_H
+#pragma once
 
 #include <mrpt/poses/CPose3DQuatPDF.h>
 #include <mrpt/poses/CPose3DPDF.h>
@@ -192,4 +191,3 @@ bool USE_SUT_EULER2QUAT_CONVERSION();
 
 }  // End of namespace
 
-#endif

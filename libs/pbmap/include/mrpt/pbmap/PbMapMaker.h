@@ -13,8 +13,7 @@
  * href="group__mrpt__pbmap__grp.html" >mrpt-pbmap</a>
  */
 
-#ifndef __PBMAPMAKER_H
-#define __PBMAPMAKER_H
+#pragma once
 
 #include <mrpt/config.h>
 
@@ -171,6 +170,5 @@ class PbMapMaker
 }
 #endif
 
-#endif
 
 

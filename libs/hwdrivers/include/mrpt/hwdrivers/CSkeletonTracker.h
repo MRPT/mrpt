@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CSkeletonTracker_H
-#define CSkeletonTracker_H
+#pragma once
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/comms/CSerialPort.h>
@@ -132,6 +131,5 @@ class CSkeletonTracker : public hwdrivers::CGenericSensor
 };  // end of class
 
 }
-#endif
 
 

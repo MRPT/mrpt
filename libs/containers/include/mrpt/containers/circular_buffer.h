@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef circular_buffer_H
-#define circular_buffer_H
+#pragma once
 
 #include <vector>
 #include <stdexcept>
@@ -162,6 +161,5 @@ class circular_buffer
 };  // end class circular_buffer
 
 }
-#endif
 
 

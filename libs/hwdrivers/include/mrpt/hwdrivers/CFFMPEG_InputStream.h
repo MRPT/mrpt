@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CFFMPEG_InputStream_H
-#define CFFMPEG_InputStream_H
+#pragma once
 
 #include <mrpt/img/CImage.h>
 #include <mrpt/core/pimpl.h>
@@ -92,6 +91,5 @@ class CFFMPEG_InputStream
 	bool retrieveFrame(mrpt::img::CImage& out_img);
 };
 }
-#endif
 
 

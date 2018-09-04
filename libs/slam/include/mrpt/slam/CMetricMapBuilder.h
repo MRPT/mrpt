@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CMetricMapBuilder_H
-#define CMetricMapBuilder_H
+#pragma once
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/rtti/CListOfClasses.h>
@@ -145,6 +144,5 @@ class CMetricMapBuilder : public mrpt::system::COutputLogger
 };  // End of class def.
 
 }
-#endif
 
 

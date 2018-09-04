@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef mrpt_math_matrix_ops_H
-#define mrpt_math_matrix_ops_H
+#pragma once
 
 #include <mrpt/math/math_frwds.h>  // forward declarations
 #include <mrpt/math/eigen_frwds.h>  // forward declarations
@@ -233,4 +232,3 @@ void extractMatrix(
 }  // End of math namespace
 }  // End of mrpt namespace
 
-#endif

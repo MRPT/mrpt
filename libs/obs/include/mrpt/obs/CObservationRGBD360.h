@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CObservationRGBD360_H
-#define CObservationRGBD360_H
+#pragma once
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/img/CImage.h>
@@ -151,4 +150,3 @@ class CObservationRGBD360 : public CObservation
 
 }  // End of namespace
 
-#endif

@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef CVelodyneScanner_H
-#define CVelodyneScanner_H
+#pragma once
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
@@ -450,6 +449,5 @@ MRPT_FILL_ENUM_MEMBER(CVelodyneScanner, LAST);
 MRPT_FILL_ENUM_MEMBER(CVelodyneScanner, DUAL);
 MRPT_ENUM_TYPE_END()
 
-#endif
 
 

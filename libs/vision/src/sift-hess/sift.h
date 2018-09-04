@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef SIFT_H
-#define SIFT_H
+#pragma once
 
 //#include "cxcore.h"
 // Universal include for all versions of OpenCV
@@ -140,4 +139,3 @@ extern int _sift_features(
 }
 #endif
 
-#endif

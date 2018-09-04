@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CLogFileRecord_H
-#define CLogFileRecord_H
+#pragma once
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/maps/CSimplePointsMap.h>
@@ -131,6 +130,5 @@ class CLogFileRecord : public mrpt::serialization::CSerializable
 		ptg_last_navDynState;
 };
 }
-#endif
 
 

@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CMetricMapsAlignmentAlgorithm_H
-#define CMetricMapsAlignmentAlgorithm_H
+#pragma once
 
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/poses/poses_frwds.h>
@@ -169,6 +168,5 @@ class CMetricMapsAlignmentAlgorithm : public mrpt::system::COutputLogger
 };
 
 }
-#endif
 
 

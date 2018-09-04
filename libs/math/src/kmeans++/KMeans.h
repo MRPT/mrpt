@@ -14,8 +14,7 @@
 //
 // Author: David Arthur (darthur@gmail.com), 2009
 
-#ifndef KMEANS_H__
-#define KMEANS_H__
+#pragma once
 
 // Includes
 #include "KmUtils.h"
@@ -59,4 +58,3 @@ Scalar RunKMeansPlusPlus(
 	int n, int k, int d, Scalar* points, int attempts, Scalar* centers,
 	int* assignments);
 
-#endif

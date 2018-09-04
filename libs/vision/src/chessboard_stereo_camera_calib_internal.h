@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#ifndef MRPT_VISION_INTERNAL_STEREO_CALIB_H
-#define MRPT_VISION_INTERNAL_STEREO_CALIB_H
+#pragma once
 
 #include <mrpt/vision/chessboard_camera_calib.h>
 #include <mrpt/poses/CPose3D.h>
@@ -81,6 +80,5 @@ void add_lm_increment(
 	const Eigen::VectorXd& eps, const std::vector<size_t>& var_indxs,
 	lm_stat_t& new_lm_stat);
 }
-#endif  // MRPT_VISION_INTERNAL_STEREO_CALIB_H
 
 

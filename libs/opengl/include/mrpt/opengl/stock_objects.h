@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef opengl_StockObjects_H
-#define opengl_StockObjects_H
+#pragma once
 
 #include <mrpt/opengl/CSetOfObjects.h>
 
@@ -179,4 +178,3 @@ CSetOfObjects::Ptr Househam_Sprayer();
 
 }  // End of namespace
 
-#endif

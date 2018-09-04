@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CGridMapAligner_H
-#define CGridMapAligner_H
+#pragma once
 
 #include <mrpt/slam/CMetricMapsAlignmentAlgorithm.h>
 #include <mrpt/maps/CLandmarksMap.h>
@@ -248,6 +247,5 @@ MRPT_FILL_ENUM_MEMBER(CGridMapAligner, amCorrelation);
 MRPT_FILL_ENUM_MEMBER(CGridMapAligner, amModifiedRANSAC);
 MRPT_ENUM_TYPE_END()
 
-#endif
 
 

@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CMetricMapBuilderRBPF_H
-#define CMetricMapBuilderRBPF_H
+#pragma once
 
 #include <mrpt/slam/CMetricMapBuilder.h>
 #include <mrpt/maps/CMultiMetricMapPDF.h>
@@ -205,6 +204,5 @@ of type CMetricMapBuilderRBPF  */
 };  // End of class def.
 
 }
-#endif
 
 

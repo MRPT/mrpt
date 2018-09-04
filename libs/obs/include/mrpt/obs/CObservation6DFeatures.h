@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CObservation6DFeatures_H
-#define CObservation6DFeatures_H
+#pragma once
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/obs/CObservation.h>
@@ -66,6 +65,5 @@ class CObservation6DFeatures : public CObservation
 };  // End of class def.
 
 }
-#endif
 
 

@@ -6,8 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef opengl_COpenGLStandardObject_H
-#define opengl_COpenGLStandardObject_H
+#pragma once
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/geometry.h>
@@ -146,6 +145,5 @@ class COpenGLStandardObject : public CRenderizableDisplayList
 	virtual ~COpenGLStandardObject() {}
 };
 }
-#endif
 
 
