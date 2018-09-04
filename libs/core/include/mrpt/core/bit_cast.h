@@ -11,7 +11,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #pragma once
-#include <string.h>
+#include <cstring>
 #include <type_traits>
 //#include "base/compiler_specific.h"  // mrpt
 //#include "base/template_util.h"  // mrpt

@@ -11,7 +11,7 @@
 
 #include <cstdint>
 
-#include <time.h>
+#include <ctime>
 
 namespace xsens
 {

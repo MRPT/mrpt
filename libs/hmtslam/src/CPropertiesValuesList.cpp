@@ -12,7 +12,7 @@
 #include <mrpt/hmtslam/CPropertiesValuesList.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
-#include <stdio.h>
+#include <cstdio>
 #include <iostream>
 
 using namespace mrpt::system;

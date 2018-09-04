@@ -39,7 +39,7 @@ using socklen_t = int;
 #include <sys/socket.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <errno.h>
+#include <cerrno>
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <netdb.h>

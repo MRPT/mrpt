@@ -9,7 +9,7 @@
 #include <xsens/xsthread.h>
 #include <xsens/xsportinfo.h>
 #include "usbinterface.h"
-#include <errno.h>
+#include <cerrno>
 
 #ifdef USE_WINUSB
 #include "xswinusb.h"
@@ -18,7 +18,7 @@
 #endif
 
 #ifndef _WIN32
-#include <string.h>  // strcpy
+#include <cstring>  // strcpy
 #else
 #include <winbase.h>
 #include <io.h>

@@ -27,13 +27,13 @@
 #include <sys/ioctl.h>
 #include <sys/time.h>
 #include <sys/types.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <fcntl.h>
 #include <unistd.h>
-#include <stdio.h>
-#include <errno.h>
-#include <string.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cerrno>
+#include <cstring>
+#include <cstdlib>
 #include <cstdint>
 
 #if defined(MRPT_OS_LINUX) && defined(HAVE_LINUX_INPUT_H)

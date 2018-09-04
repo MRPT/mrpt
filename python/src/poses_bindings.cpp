@@ -21,7 +21,7 @@
 #include <mrpt/serialization/CArchive.h>
 
 /* STD */
-#include "math.h"
+#include <cmath>
 #include <cstdint>
 
 using namespace boost::python;

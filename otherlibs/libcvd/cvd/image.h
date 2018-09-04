@@ -13,7 +13,7 @@
 #ifndef CVD_IMAGE_H
 #define CVD_IMAGE_H
 
-#include <string.h>
+#include <cstring>
 #include <cvd/image_ref.h>
 #include <cvd/exceptions.h>
 #include <string>

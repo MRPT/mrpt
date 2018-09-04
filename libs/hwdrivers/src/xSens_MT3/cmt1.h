@@ -20,13 +20,13 @@
 #include <termios.h>
 // these are not required by level 1, but to keep the higher levels
 // platform-independent they are put here
-#include <stdlib.h>
-#include <string.h>
-#include <stddef.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstddef>
 #define _strnicmp strncasecmp
 #endif
 
-#include <stdio.h>
+#include <cstdio>
 
 //! The namespace of all Xsens software since 2006.
 namespace xsens

@@ -27,8 +27,8 @@
 # include <malloc.h>
 #endif
 
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 
 namespace xsens {
 

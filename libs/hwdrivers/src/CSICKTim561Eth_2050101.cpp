@@ -15,7 +15,7 @@
 
 #include <iostream>
 #include <sstream>
-#include <string.h>
+#include <cstring>
 
 #define APPERTURE 4.712385  // in radian <=> 270
 

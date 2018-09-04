@@ -22,12 +22,12 @@
 #include <unistd.h>
 #include <sys/select.h>
 #include <sys/time.h>
-#include <time.h>
+#include <ctime>
 #include <unistd.h>
 #include <utime.h>
-#include <errno.h>
-#include <signal.h>
-#include <string.h>  // strerror()
+#include <cerrno>
+#include <csignal>
+#include <cstring>  // strerror()
 #endif
 
 #include <sys/types.h>

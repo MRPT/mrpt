@@ -31,10 +31,10 @@
 
 #include "gtest/internal/gtest-port.h"
 
-#include <limits.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include <climits>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
 #include <fstream>
 
 #if GTEST_OS_WINDOWS

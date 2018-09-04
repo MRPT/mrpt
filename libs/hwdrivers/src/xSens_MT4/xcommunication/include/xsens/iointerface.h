@@ -17,7 +17,7 @@
 #include <xsens/xsbytearray.h>
 #include <xsens/xsresultvalue.h>
 
-#include <stdlib.h>
+#include <cstdlib>
 
 //! The default size of the serial read buffer in bytes
 #define XS_DEFAULT_READ_BUFFER_SIZE (XS_MAXMSGLEN * 8)

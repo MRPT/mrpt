@@ -20,9 +20,9 @@
 #else
 /// gcc / linux
 #include <termios.h>
-#include <string.h>
-#include <stddef.h>
-#include <stdio.h>
+#include <cstring>
+#include <cstddef>
+#include <cstdio>
 #include "pstdint.h"
 #define _strnicmp strncasecmp
 typedef int32_t XsIoHandle;

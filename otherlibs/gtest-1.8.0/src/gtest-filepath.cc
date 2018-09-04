@@ -29,7 +29,7 @@
 
 #include "gtest/internal/gtest-filepath.h"
 
-#include <stdlib.h>
+#include <cstdlib>
 #include "gtest/internal/gtest-port.h"
 #include "gtest/gtest-message.h"
 
@@ -42,7 +42,7 @@
 // Symbian OpenC has PATH_MAX in sys/syslimits.h
 # include <sys/syslimits.h>
 #else
-# include <limits.h>
+# include <climits>
 # include <climits>  // Some Linux distributions define PATH_MAX here.
 #endif  // GTEST_OS_WINDOWS_MOBILE
 

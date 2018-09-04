@@ -12,12 +12,12 @@
 
 #include <cstdint>
 #include <mrpt/core/exceptions.h>
-#include <time.h>
+#include <ctime>
 
 #ifdef _WIN32
 #else
 #include <termios.h>
-#include <string.h>
+#include <cstring>
 #ifndef B460800
 #undef B230400
 #define B230400 0010003

@@ -46,9 +46,9 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#include <string.h>
-#include <ctype.h>
-#include <stdio.h>
+#include <cstring>
+#include <cctype>
+#include <cstdio>
 
 #include "xsens_list.hpp"
 

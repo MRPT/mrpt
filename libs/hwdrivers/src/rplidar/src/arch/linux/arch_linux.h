@@ -34,14 +34,14 @@
 #pragma once
 
 // libc dep
-#include <stdio.h>
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <math.h>
-#include <time.h>
-#include <stdarg.h>
+#include <cstdio>
+#include <cstdint>
+#include <cstring>
+#include <cstdlib>
+#include <cassert>
+#include <cmath>
+#include <ctime>
+#include <cstdarg>
 
 // libc++ dep
 #include <iostream>
@@ -49,7 +49,7 @@
 
 // linux specific
 #include <unistd.h>
-#include <errno.h>
+#include <cerrno>
 #include <pthread.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -57,6 +57,6 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/select.h>
-#include <time.h>
+#include <ctime>
 
 #include "arch/linux/timer.h"

@@ -38,7 +38,7 @@
 
 #include "gtest/internal/gtest-internal.h"
 
-#include <stdio.h>
+#include <cstdio>
 
 namespace testing {
 namespace internal {

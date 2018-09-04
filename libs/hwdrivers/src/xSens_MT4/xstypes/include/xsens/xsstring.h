@@ -12,12 +12,12 @@
 #include "xstypesconfig.h"
 #include "xsarray.h"
 #ifndef XSENS_NO_WCHAR
-#include <wchar.h>
+#include <cwchar>
 #if !defined(XSENS_NO_STL) && defined(__cplusplus) && defined(WIN32)
 #include <Windows.h>  // required for MultiByteToWideChar
 #endif
 #endif  // XSENS_NO_WCHAR
-#include <string.h>
+#include <cstring>
 
 #ifdef __cplusplus
 #include <string>

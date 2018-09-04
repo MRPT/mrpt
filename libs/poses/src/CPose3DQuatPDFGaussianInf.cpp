@@ -11,7 +11,7 @@
 
 #include <mrpt/poses/CPose3DQuatPDFGaussianInf.h>
 #include <mrpt/math/types_math.h>  // for CMatrixF...
-#include <stdio.h>  // for size_t
+#include <cstdio>  // for size_t
 #include <algorithm>  // for move, max
 #include <exception>  // for exception
 #include <new>  // for operator...

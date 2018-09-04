@@ -18,7 +18,7 @@
 #include <cstring>
 #include <string>
 #include <vector>
-#include <stdio.h>
+#include <cstdio>
 #include <algorithm>
 
 #ifdef _WIN32
@@ -32,10 +32,10 @@
 #else
 #include <termios.h>
 #include <sys/time.h>
-#include <time.h>
+#include <ctime>
 #include <unistd.h>
 #include <utime.h>
-#include <errno.h>
+#include <cerrno>
 #endif
 
 #include <sys/types.h>

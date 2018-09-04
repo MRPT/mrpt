@@ -27,7 +27,7 @@
 #include <list>
 #include <algorithm>
 #include <functional>
-#include <stdio.h>
+#include <cstdio>
 #include <cstring>
 #include <mrpt/core/common.h>
 #include <mrpt/system/string_utils.h>

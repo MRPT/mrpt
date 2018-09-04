@@ -11,7 +11,7 @@
 
 #include <mrpt/hmtslam/CMHPropertiesValuesList.h>
 #include <mrpt/system/os.h>
-#include <stdio.h>
+#include <cstdio>
 
 using namespace mrpt::hmtslam;
 using namespace mrpt::system;
