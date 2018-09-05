@@ -71,7 +71,7 @@ void TextureSizes_test()
 	const double off_y_label = 4;
 	const double STEP_X = 15;
 
-	if (1)
+	if (true)
 	{
 		opengl::CTexturedPlane::Ptr obj =
 			mrpt::make_aligned_shared<opengl::CTexturedPlane>(-3, 3, -3, 3);
@@ -86,7 +86,7 @@ void TextureSizes_test()
 	}
 	off_x += STEP_X;
 
-	if (1)
+	if (true)
 	{
 		opengl::CTexturedPlane::Ptr obj =
 			mrpt::make_aligned_shared<opengl::CTexturedPlane>(-3, 3, -3, 3);
@@ -101,7 +101,7 @@ void TextureSizes_test()
 	}
 	off_x += STEP_X;
 
-	if (1)
+	if (true)
 	{
 		opengl::CTexturedPlane::Ptr obj =
 			mrpt::make_aligned_shared<opengl::CTexturedPlane>(-3, 3, -3, 3);
@@ -116,7 +116,7 @@ void TextureSizes_test()
 	}
 	off_x += STEP_X;
 
-	if (1)
+	if (true)
 	{
 		opengl::CTexturedPlane::Ptr obj =
 			mrpt::make_aligned_shared<opengl::CTexturedPlane>(-3, 3, -3, 3);
@@ -131,7 +131,7 @@ void TextureSizes_test()
 	}
 	off_x += STEP_X;
 
-	if (1)
+	if (true)
 	{
 		opengl::CTexturedPlane::Ptr obj =
 			mrpt::make_aligned_shared<opengl::CTexturedPlane>(-3, 3, -3, 3);
@@ -146,7 +146,7 @@ void TextureSizes_test()
 	}
 	off_x += STEP_X;
 
-	if (1)
+	if (true)
 	{
 		opengl::CTexturedPlane::Ptr obj =
 			mrpt::make_aligned_shared<opengl::CTexturedPlane>(-3, 3, -3, 3);
@@ -161,7 +161,7 @@ void TextureSizes_test()
 	}
 	off_x += STEP_X;
 
-	if (1)
+	if (true)
 	{
 		opengl::CTexturedPlane::Ptr obj =
 			mrpt::make_aligned_shared<opengl::CTexturedPlane>(-3, 3, -3, 3);
@@ -176,7 +176,7 @@ void TextureSizes_test()
 	}
 	off_x += STEP_X;
 
-	if (1)
+	if (true)
 	{
 		opengl::CTexturedPlane::Ptr obj =
 			mrpt::make_aligned_shared<opengl::CTexturedPlane>(-3, 3, -3, 3);

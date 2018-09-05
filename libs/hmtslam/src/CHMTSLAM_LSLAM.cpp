@@ -403,7 +403,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 		CMatrix A(3, 3);
 		DEBUG_STEP = DEBUG_STEP + 0;
 	}
-	if (0)
+	if (false)
 	{
 		std::lock_guard<std::mutex> lock(m_map_cs);
 		std::vector<std::string> s;
@@ -1543,7 +1543,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 		}  // end for each neighbor
 	}  // end lock m_map_cs
 
-	if (0)
+	if (false)
 	{
 		std::lock_guard<std::mutex> lock(m_map_cs);
 		std::vector<std::string> s;
@@ -1783,7 +1783,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 		}  // end for each arc
 	}  // end of lock on m_map_cs
 
-	if (0)
+	if (false)
 	{
 		std::vector<std::string> s;
 		LMH->dumpAsText(s);
@@ -1797,7 +1797,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 			mrpt::system::LVL_INFO,
 			"[LSLAM_proc_msg_AA] Saved HMAP_%05i_LMH_mid.txt\n", DEBUG_STEP);
 	}
-	if (0)
+	if (false)
 	{
 		COpenGLScene sceneLSLAM;
 		// Generate the metric maps 3D view...
@@ -1887,7 +1887,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 			tictac.Tac() * 1000);
 	}
 
-	if (0)
+	if (false)
 	{
 		std::lock_guard<std::mutex> lock(m_map_cs);
 		std::vector<std::string> s;
@@ -1902,7 +1902,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 			mrpt::system::LVL_INFO,
 			"[LSLAM_proc_msg_AA] Saved HMAP_%05i_after.txt\n", DEBUG_STEP);
 	}
-	if (0)
+	if (false)
 	{
 		std::vector<std::string> s;
 		LMH->dumpAsText(s);

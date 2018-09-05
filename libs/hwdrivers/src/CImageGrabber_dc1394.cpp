@@ -142,7 +142,7 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
 		options.color_coding == COLOR_CODING_##COLORMODEL) m_desired_mode = \
 		DC1394_VIDEO_MODE_##W##x##H##_##COLORMODEL;
 
-		if (0)
+		if (false)
 		{
 		}
 		TEST_MODE(160, 120, YUV444)

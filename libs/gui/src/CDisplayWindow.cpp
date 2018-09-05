@@ -493,7 +493,7 @@ void CDisplayWindow::plot(const CVectorFloat& x, const CVectorFloat& y)
 	// Suboptimal but...
 	CImage imgColor(1, 1, 3);
 
-	imgColor.resize(640, 480, 3, 0);
+	imgColor.resize(640, 480, 3, false);
 	// Draw axis:
 	imgColor.filledRectangle(0, 0, 640, 480, TColor(255, 255, 255));
 	imgColor.line(40, 40, 560, 40, TColor::black(), 3);
@@ -546,7 +546,7 @@ void CDisplayWindow::plot(const CVectorFloat& y)
 	// Suboptimal but...
 	CImage imgColor(1, 1, 3);
 
-	imgColor.resize(640, 480, 3, 0);
+	imgColor.resize(640, 480, 3, false);
 	// Draw axis:
 	imgColor.filledRectangle(0, 0, 640, 480, TColor::white());
 	imgColor.line(40, 40, 560, 40, TColor::black(), 3);

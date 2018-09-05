@@ -234,7 +234,7 @@ int main(int num_arg, char* argv[])
 	{
 		//						Read function arguments
 		//----------------------------------------------------------------------
-		bool use_config_file = 0, enable_logfile = 0;
+		bool use_config_file = false, enable_logfile = false;
 		string filename;
 
 		if (num_arg < 2)
@@ -272,11 +272,11 @@ int main(int num_arg, char* argv[])
 		{
 			for (int i = 1; i < num_arg; i++)
 			{
-				if (string(argv[i]) == "--save-logfile") enable_logfile = 1;
+				if (string(argv[i]) == "--save-logfile") enable_logfile = true;
 
 				if (string(argv[i]) == "--config")
 				{
-					use_config_file = 1;
+					use_config_file = true;
 					filename = argv[i + 1];
 				}
 			}
@@ -307,8 +307,8 @@ int main(int num_arg, char* argv[])
 		ReactInterface.initializeScene();
 		rn3d.initialize();
 
-		bool stop = 0;
-		bool moving_target = 0;
+		bool stop = false;
+		bool moving_target = false;
 		int pushed_key = 0;
 		TPoint3D last_Target_Pos(0, 0, 0);
 		CTicTac reactive_period;
@@ -316,7 +316,7 @@ int main(int num_arg, char* argv[])
 
 		MyObserver observer;
 		observer.observeBegin(ReactInterface.window);
-		observer.mouse_click = 0;
+		observer.mouse_click = false;
 
 		while (!stop)
 		{
@@ -339,25 +339,25 @@ int main(int num_arg, char* argv[])
 
 				case 'm':
 					// Move the target
-					moving_target = 1;
+					moving_target = true;
 					break;
 
 				case 'e':
 					// Exit program
-					stop = 1;
+					stop = true;
 					break;
 			}
 
 			// Set the target when the user clicks the mouse
 			if (observer.mouse_click == 1)
 			{
-				observer.mouse_click = 0;
+				observer.mouse_click = false;
 				if (moving_target == 1)
 				{
-					moving_target = 0;
+					moving_target = false;
 					const CAbstractNavigator::TNavigationParams nav_params =
 						ReactInterface.createNewTarget(
-							last_Target_Pos.x, last_Target_Pos.y, 0.3f, 0);
+							last_Target_Pos.x, last_Target_Pos.y, 0.3f, false);
 					rn3d.navigate(&nav_params);
 				}
 			}

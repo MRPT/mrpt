@@ -362,7 +362,7 @@ Scalar KmTree::SeedKMeansPlusPlus(int k, Scalar* centers) const
 	// Repeatedly choose more centers
 	for (int new_cluster = 1; new_cluster < k; new_cluster++)
 	{
-		while (1)
+		while (true)
 		{
 			Scalar cutoff = (rand() / Scalar(RAND_MAX)) * total_cost;
 			Scalar cur_cost = 0;

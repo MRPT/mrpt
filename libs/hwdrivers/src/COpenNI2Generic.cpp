@@ -831,7 +831,7 @@ bool COpenNI2Generic::CDevice::open(int w, int h, int fps)
 		m_log << "  Device doesn't do image registration!" << endl;
 	}
 
-	if (0)  // hasColor())
+	if (false)  // hasColor())
 	{  // printf("DBG: hasColor() returned TRUE\n");
 		m_streams[COLOR_STREAM]->disableAutoExposure();
 		printf("DBG: returned from disableAutoExposure()\n");

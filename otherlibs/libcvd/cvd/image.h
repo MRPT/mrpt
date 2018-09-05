@@ -176,7 +176,7 @@ template<class T> class BasicImageIterator
 			//It's illegal to iterate _past_ end(), so < is equivalent to !=
 			//for end iterators.
 			if(is_end && s.is_end)
-				return 0;
+				return false;
 			else if(is_end)
 				return s.end != NULL;
 			else if(s.is_end) 
@@ -193,7 +193,7 @@ template<class T> class BasicImageIterator
 		bool operator!=(const BasicImageIterator& s) const 
 		{ 
 			if(is_end && s.is_end)
-				return 0;
+				return false;
 			else if(is_end)
 				return s.end != NULL;
 			else if(s.is_end) 
@@ -211,14 +211,14 @@ template<class T> class BasicImageIterator
 		:ptr(start),
 		 row_end(start + image_width), 
 		 end(off_end), 
-		 is_end(0),
+		 is_end(false),
 		 row_increment(row_stride-image_width), 
 		 total_width(row_stride)
 		{ }
 
 		//Prevent automatic conversion from a pointer (ie Image::iterator)
 		explicit BasicImageIterator(T* end) 
-		:ptr(end),is_end(1),row_increment(0),total_width(0)
+		:ptr(end),is_end(true),row_increment(0),total_width(0)
 		{ }
 
 	protected:

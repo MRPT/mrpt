@@ -1716,7 +1716,7 @@ XsensResultValue Cmt3::readDataPacket(Packet* pack, bool acceptOther)
 
 	if (!m_readFromFile)
 	{
-		while (1)
+		while (true)
 		{
 			m_lastResult = m_serial.readMessage(&pack->m_msg);
 			if (m_lastResult != XRV_OK)
@@ -1764,7 +1764,7 @@ XsensResultValue Cmt3::readDataPacket(Packet* pack, bool acceptOther)
 	}
 	else
 	{
-		while (1)
+		while (true)
 		{
 			m_lastResult = m_logFile.readMessage(&pack->m_msg);
 			if (m_lastResult != XRV_OK)

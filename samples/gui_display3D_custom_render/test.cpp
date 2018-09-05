@@ -121,7 +121,7 @@ void TestDisplay3D()
 
 	theScene->insert(mrpt::opengl::stock_objects::CornerXYZ());
 
-	if (1)
+	if (true)
 	{
 		opengl::CAxis::Ptr obj = mrpt::make_aligned_shared<opengl::CAxis>();
 		obj->setFrequency(5);

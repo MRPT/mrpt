@@ -356,7 +356,7 @@ bool CPtuDPerception::init(const string& port)
 		else
 		{
 			cout << " Error opening serial port";
-			return 0;
+			return false;
 		}
 
 		cout << "OK" << endl;
@@ -392,7 +392,7 @@ bool CPtuDPerception::init(const string& port)
 	catch (exception& e)
 	{
 		cerr << e.what() << endl;
-		return 0;
+		return false;
 	}
 
 	return true;
