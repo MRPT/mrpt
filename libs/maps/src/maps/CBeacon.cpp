@@ -353,12 +353,12 @@ void CBeacon::getAsMatlabDrawCommands(std::vector<std::string>& out_Str) const
 			{
 				os::sprintf(
 					auxStr, sizeof(auxStr), "m=[%.3f %.3f];",
-					it.->val.mean.x(), it.->val.mean.y());
+					it.val.mean.x(), it.val.mean.y());
 				out_Str.emplace_back(auxStr);
 				os::sprintf(
 					auxStr, sizeof(auxStr), "C=[%e %e;%e %e];",
-					it.->val.cov(0, 0), it.->val.cov(0, 1),
-					it.->val.cov(1, 0), it.->val.cov(1, 1));
+					it.val.cov(0, 0), it.val.cov(0, 1),
+					it.val.cov(1, 0), it.val.cov(1, 1));
 				out_Str.emplace_back(auxStr);
 				out_Str.emplace_back(
 					"error_ellipse(C,m,'conf',0.997,'style','k');");
@@ -428,9 +428,9 @@ void CBeacon::generateObservationModelDistribution(
 	{
 		// The center of the ring to be generated
 		CPoint3D ringCenter(
-			beaconPo.->val.mean.x() - sensorPntOnRobot.x(),
-			beaconPo.->val.mean.y() - sensorPntOnRobot.y(),
-			beaconPo.->val.mean.z() - sensorPntOnRobot.z());
+			beaconPo.val.mean.x() - sensorPntOnRobot.x(),
+			beaconPo.val.mean.y() - sensorPntOnRobot.y(),
+			beaconPo.val.mean.z() - sensorPntOnRobot.z());
 
 		size_t startIdx = outPDF.size();
 
@@ -439,7 +439,7 @@ void CBeacon::generateObservationModelDistribution(
 			outPDF,  // The ouput (Append all !!)
 			myBeaconMap,  // For params
 			ringCenter,  // The center of the ring to be generated
-			&beaconPo.->val.cov,  // The covariance to ADD to each mode, due to the
+			&beaconPo.val.cov,  // The covariance to ADD to each mode, due to the
 			// composition of uncertainty
 			false,  // clearPreviousContentsOutPDF
 			centerPoint,
@@ -448,7 +448,7 @@ void CBeacon::generateObservationModelDistribution(
 
 		// Adjust the weights to the one of "this" mode:
 		for (size_t k = startIdx; k < outPDF.size(); k++)
-			outPDF.get(k).log_w = beaconPo.->log_w;
+			outPDF.get(k).log_w = beaconPo.log_w;
 	}
 
 	if (m_typePDF == pdfGauss) delete beaconPos;

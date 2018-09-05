@@ -58,8 +58,8 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPosePDF& o)
 			opengl::CEllipsoid::Ptr ellip =
 				mrpt::make_aligned_shared<opengl::CEllipsoid>();
 
-			ellip->setPose(CPose3D(it.->mean.x(), it.->mean.y(), 0));
-			ellip->setCovMatrix(it.->cov, 2 /* x y */);
+			ellip->setPose(CPose3D(it.mean.x(), it.mean.y(), 0));
+			ellip->setCovMatrix(it.cov, 2 /* x y */);
 			ellip->setColor(POSE_COLOR, 0.6);
 			ellip->setQuantiles(3);
 			ellip->enableDrawSolid3D(false);
@@ -67,9 +67,9 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPosePDF& o)
 			outObj->insert(ellip);
 
 			lins->appendLine(
-				it.->mean.x(), it.->mean.y(), 0,
-				it.->mean.x() + POSE_TAIL_LENGTH * cos(it.->mean.phi()),
-				it.->mean.y() + POSE_TAIL_LENGTH * sin(it.->mean.phi()), 0);
+				it.mean.x(), it.mean.y(), 0,
+				it.mean.x() + POSE_TAIL_LENGTH * cos(it.mean.phi()),
+				it.mean.y() + POSE_TAIL_LENGTH * sin(it.mean.phi()), 0);
 		}
 		outObj->insert(lins);
 	}
