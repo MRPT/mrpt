@@ -95,7 +95,7 @@ class Topic : public std::enable_shared_from_this<Topic>
 	template <typename CLEANUP>
 	static Ptr create(CLEANUP&& cleanup)
 	{
-		return std::make_shared<Topic>(std::forward<CLEANUP>(cleanup));
+		return Ptr(new Topic(std::forward<CLEANUP>(cleanup)));
 	}
 
    private:
