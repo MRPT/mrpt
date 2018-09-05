@@ -61,7 +61,7 @@
 #endif
 
 #ifdef __GNUC__
-#include <climits>
+#include <limits.h>
 #if __WORDSIZE == 64
 #define XSENS_64BIT
 #else
@@ -210,7 +210,7 @@ The common way to setup configuration-dependent defines:
 //
 #endif
 
-#include <cassert>
+#include <assert.h>
 
 // since this is (almost) always required and it does not conflict with pstdint,
 // include the file here

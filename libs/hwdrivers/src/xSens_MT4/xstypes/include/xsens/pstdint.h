@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 
 #ifndef _PSTDINT_H_INCLUDED
-#include <cstddef>
-#include <climits>
+#include <stddef.h>
+#include <limits.h>
 
 /*
  *  For gcc with _STDINT_H, fill in the PRINTF_INT*_MODIFIER macros, and
@@ -25,7 +25,7 @@
 	(defined(__ICCARM__) && __ICCARM__) ||                             \
 	(defined(_ADI_COMPILER) && _ADI_COMPILER) ||                       \
 	(defined(__ICC8051__) && __ICC8051__)
-#include <cstdint>
+#include <stdint.h>
 #endif
 
 #if (                                                                        \

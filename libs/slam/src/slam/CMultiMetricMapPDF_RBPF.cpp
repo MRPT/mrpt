@@ -40,7 +40,7 @@ namespace mrpt::slam
 {
 /** Fills out a "TPoseBin2D" variable, given a path hypotesis and (if not set to
  * nullptr) a new pose appended at the end, using the KLD params in "options".
-	*/
+ */
 template <>
 void KLF_loadBinFromParticle(
 	detail::TPoseBin2D& outBin, const TKLDParams& opts,
@@ -67,7 +67,7 @@ void KLF_loadBinFromParticle(
 
 /** Fills out a "TPathBin2D" variable, given a path hypotesis and (if not set to
  * nullptr) a new pose appended at the end, using the KLD params in "options".
-	*/
+ */
 template <>
 void KLF_loadBinFromParticle(
 	detail::TPathBin2D& outBin, const TKLDParams& opts,
@@ -105,7 +105,7 @@ void KLF_loadBinFromParticle(
 			round(newPoseToBeInserted->yaw / opts.KLD_binSize_PHI);
 	}
 }
-}
+}  // namespace mrpt::slam
 
 // Include this AFTER specializations:
 #include <mrpt/slam/PF_implementations.h>
@@ -375,21 +375,22 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 				icpEstimation.mean = CPose2D(initialPoseEstimation);
 			}
 
-// As a way to take into account the odometry / "prior", use
-//  a correcting factor in the likelihood from the mismatch
-//  prior<->icp_estimate:
-//			const double prior_dist_lin =
-// initialPoseEstimation.distanceTo(icpEstimation.mean);
-//			const double prior_dist_ang = std::abs( mrpt::math::wrapToPi(
-// initialPoseEstimation.yaw()-icpEstimation.mean.phi() ) );
-////			if (prior_dist_lin>0.10 || prior_dist_ang>DEG2RAD(3))
-////				printf(" >>>>>>>>>> %f
-///%f\n",prior_dist_lin,RAD2DEG(prior_dist_ang));
-//			extra_log_lik = -(prior_dist_lin/0.20) -
-//(prior_dist_ang/DEG2RAD(20));
+			// As a way to take into account the odometry / "prior", use
+			//  a correcting factor in the likelihood from the mismatch
+			//  prior<->icp_estimate:
+			//			const double prior_dist_lin =
+			// initialPoseEstimation.distanceTo(icpEstimation.mean);
+			//			const double prior_dist_ang = std::abs(
+			//mrpt::math::wrapToPi(
+			// initialPoseEstimation.yaw()-icpEstimation.mean.phi() ) );
+			////			if (prior_dist_lin>0.10 ||
+			///prior_dist_ang>DEG2RAD(3)) /				printf(" >>>>>>>>>> %f
+			///%f\n",prior_dist_lin,RAD2DEG(prior_dist_ang));
+			//			extra_log_lik = -(prior_dist_lin/0.20) -
+			//(prior_dist_ang/DEG2RAD(20));
 
-//				printf("gICP: %.02f%%,
-// Iters=%u\n",icpInfo.goodness,icpInfo.nIterations);
+			//				printf("gICP: %.02f%%,
+			// Iters=%u\n",icpInfo.goodness,icpInfo.nIterations);
 
 #if 0  // Use hacked ICP covariance:
 			CPose3D Ap = finalEstimatedPoseGauss.mean - ith_last_pose;
@@ -427,7 +428,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 			//  Described in paper...
 			// --------------------------------------------------------
 			/** \todo Add paper ref!
-			  */
+			 */
 			ASSERT_(partIt->d->mapTillNow.m_beaconMap);
 			CBeaconMap::Ptr beacMap = partIt->d->mapTillNow.m_beaconMap;
 
@@ -494,7 +495,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 			// -------------------------------------------
 			deque<TAuxRangeMeasInfo> lstObservedRanges;
 
-			for (const auto & itObs : *sf)
+			for (const auto& itObs : *sf)
 			{
 				if (IS_CLASS(itObs, CObservationBeaconRanges))
 				{
@@ -588,7 +589,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 				{
 					// for each observed beacon (by its ID), generate
 					// observation model:
-					for (auto & lstObservedRange : lstObservedRanges)
+					for (auto& lstObservedRange : lstObservedRanges)
 					{
 						if ((itBeacs)->m_ID == lstObservedRange.beaconID)
 						{
@@ -599,7 +600,8 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 							(itBeacs)->generateObservationModelDistribution(
 								sensedRange, newObsModel,
 								beacMap.get(),  // The beacon map, for options
-								lstObservedRange.sensorLocationOnRobot,  // Sensor
+								lstObservedRange
+									.sensorLocationOnRobot,  // Sensor
 								// location on
 								// robot
 								centerPositionPrior, centerPositionPriorRadius);
@@ -617,7 +619,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 								tempFused.bayesianFusion(
 									fusedObsModels, newObsModel,
 									3  // minMahalanobisDistToDrop
-									);
+								);
 								fusedObsModels = tempFused;
 							}
 
@@ -733,12 +735,13 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 					{
 						// for each observed beacon (by its ID), generate
 						// observation model:
-						for (auto & lstObservedRange : lstObservedRanges)
+						for (auto& lstObservedRange : lstObservedRanges)
 						{
 							if ((itBeacs)->m_ID == lstObservedRange.beaconID)
 							{
 								// Match:
-								float sensedRange = lstObservedRange.sensedDistance;
+								float sensedRange =
+									lstObservedRange.sensedDistance;
 
 								/** /
 																CPointPDFSOG
@@ -790,12 +793,12 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 															sensedRange -
 															(it)->val.mean.distance2DTo(
 																grid_x +
-																	lstObservedRange.
-																		->sensorLocationOnRobot
+																	lstObservedRange
+																		.sensorLocationOnRobot
 																		.x(),
 																grid_y +
-																	lstObservedRange.
-																		->sensorLocationOnRobot
+																	lstObservedRange
+																		.sensorLocationOnRobot
 																		.y())) /
 														sensorSTD2);
 												}
@@ -914,7 +917,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 					newDrawnPosition.z(), firstEstimateRobotHeading, 0, 0);
 			}
 			/** \todo If there are 2+ sensors on the robot, compute phi?
-			  */
+			 */
 
 			// 4. Update the weight:
 			//     In optimal sampling this is the expectation of the
@@ -1019,7 +1022,7 @@ double CMultiMetricMapPDF::PF_SLAM_computeObservationLikelihoodForParticle(
 	CMultiMetricMap* map = const_cast<CMultiMetricMap*>(
 		&m_particles[particleIndexForMap].d->mapTillNow);
 	double ret = 0;
-	for (const auto & it : observation)
+	for (const auto& it : observation)
 		ret += map->computeObservationLikelihood((CObservation*)it.get(), x);
 	return ret;
 }

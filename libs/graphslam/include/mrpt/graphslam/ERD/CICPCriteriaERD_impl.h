@@ -96,19 +96,17 @@ bool CICPCriteriaERD<GRAPH_T>::updateState(
 			{
 				this->m_nodes_to_laser_scans2D[this->m_graph->nodeCount() - 1] =
 					m_last_laser_scan2D;
-				MRPT_LOG_DEBUG(
-					mrpt::format(
-						"Added laser scans of nodeID: %u",
-						(unsigned)(this->m_graph->nodeCount() - 1)));
+				MRPT_LOG_DEBUG(mrpt::format(
+					"Added laser scans of nodeID: %u",
+					(unsigned)(this->m_graph->nodeCount() - 1)));
 			}
 			if (m_last_laser_scan3D)
 			{
 				m_nodes_to_laser_scans3D[this->m_graph->nodeCount() - 1] =
 					m_last_laser_scan3D;
-				MRPT_LOG_DEBUG(
-					mrpt::format(
-						"Added laser scans of nodeID: %u",
-						(unsigned)(this->m_graph->nodeCount() - 1)));
+				MRPT_LOG_DEBUG(mrpt::format(
+					"Added laser scans of nodeID: %u",
+					(unsigned)(this->m_graph->nodeCount() - 1)));
 			}
 		}
 	}
@@ -178,7 +176,7 @@ void CICPCriteriaERD<GRAPH_T>::checkRegistrationCondition2D(
 	if (curr_laser_scan)
 	{
 		// try adding ICP constraints with each node in the previous set
-		for (unsigned long node_it : nodes_set)
+		for (mrpt::graphs::TNodeID node_it : nodes_set)
 		{
 			// get the ICP edge between current and last node
 			constraint_t rel_edge;
@@ -246,8 +244,8 @@ void CICPCriteriaERD<GRAPH_T>::checkRegistrationCondition3D(
 
 	mrpt::graphs::TNodeID curr_nodeID = this->m_graph->nodeCount() - 1;
 	CObservation3DRangeScan::Ptr curr_laser_scan;
-	std::map<mrpt::graphs::TNodeID,
-			 mrpt::obs::CObservation3DRangeScan::Ptr>::const_iterator search;
+	std::map<mrpt::graphs::TNodeID, mrpt::obs::CObservation3DRangeScan::Ptr>::
+		const_iterator search;
 	// search for curr_laser_scan
 	search = m_nodes_to_laser_scans3D.find(curr_nodeID);
 	if (search != m_nodes_to_laser_scans3D.end())
@@ -259,7 +257,7 @@ void CICPCriteriaERD<GRAPH_T>::checkRegistrationCondition3D(
 	if (curr_laser_scan)
 	{
 		// try adding ICP constraints with each node in the previous set
-		for (unsigned long node_it : nodes_set)
+		for (mrpt::graphs::TNodeID node_it : nodes_set)
 		{
 			// get the ICP edge between current and last node
 			constraint_t rel_edge;
@@ -517,12 +515,11 @@ void CICPCriteriaERD<GRAPH_T>::updateVisuals()
 				this->m_graph->nodes[this->m_graph->nodeCount() - 1]);
 			// put the laser scan *underneath* the graph, so that you can still
 			// visualize the loop closures with the nodes ahead
-			laser_scan_viz->setPose(
-				CPose3D(
-					laser_scan_viz->getPoseX(), laser_scan_viz->getPoseY(),
-					-0.15, DEG2RAD(laser_scan_viz->getPoseYaw()),
-					DEG2RAD(laser_scan_viz->getPosePitch()),
-					DEG2RAD(laser_scan_viz->getPoseRoll())));
+			laser_scan_viz->setPose(CPose3D(
+				laser_scan_viz->getPoseX(), laser_scan_viz->getPoseY(), -0.15,
+				DEG2RAD(laser_scan_viz->getPoseYaw()),
+				DEG2RAD(laser_scan_viz->getPosePitch()),
+				DEG2RAD(laser_scan_viz->getPoseRoll())));
 		}
 
 		this->m_win->unlockAccess3DScene();
@@ -673,7 +670,4 @@ void CICPCriteriaERD<GRAPH_T>::TParams::loadFromConfigFile(
 
 	MRPT_END;
 }
-}  // end of namespaces
-
-
-
+}  // namespace mrpt::graphslam::deciders

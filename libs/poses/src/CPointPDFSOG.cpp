@@ -186,7 +186,7 @@ bool CPointPDFSOG::saveToTextFile(const std::string& file) const
 	FILE* f = os::fopen(file.c_str(), "wt");
 	if (!f) return false;
 
-	for (const auto & m_mode : m_modes)
+	for (const auto& m_mode : m_modes)
 		os::fprintf(
 			f, "%e %e %e %e %e %e %e %e %e %e\n", exp(m_mode.log_w),
 			m_mode.val.mean.x(), m_mode.val.mean.y(), m_mode.val.mean.z(),
@@ -226,7 +226,7 @@ void CPointPDFSOG::drawSingleSample(CPoint3D& outSample) const
 		CParticleFilter::prMultinomial,  // Resampling algorithm
 		logWeights,  // input: log weights
 		outIdxs  // output: indexes
-		);
+	);
 
 	// we need just one: take the first (arbitrary)
 	size_t selectedIdx = outIdxs[0];
@@ -272,9 +272,9 @@ void CPointPDFSOG::bayesianFusion(
 	bool is2D =
 		false;  // to detect & avoid errors in 3x3 matrix inversions of range=2.
 
-	for (const auto & m_mode : p1->m_modes)
+	for (const auto& m : p1->m_modes)
 	{
-		CMatrixDouble33 c = m_mode.val.cov;
+		CMatrixDouble33 c = m.val.cov;
 
 		// Is a 2D covariance??
 		if (c.get_unsafe(2, 2) == 0)
@@ -288,7 +288,7 @@ void CPointPDFSOG::bayesianFusion(
 		CMatrixDouble33 covInv(UNINITIALIZED_MATRIX);
 		c.inv(covInv);
 
-		CMatrixDouble31 eta = covInv * CMatrixDouble31(m_mode.val.mean);
+		CMatrixDouble31 eta = covInv * CMatrixDouble31(m.val.mean);
 
 		// Normal distribution canonical form constant:
 		// See: http://www-static.cc.gatech.edu/~wujx/paper/Gaussian.pdf
@@ -296,9 +296,9 @@ void CPointPDFSOG::bayesianFusion(
 						   eta.multiply_HtCH_scalar(
 							   c));  // (~eta * (*it1).val.cov * eta)(0,0) );
 
-		for (const auto & it2 : p2->m_modes)
+		for (const auto& m2 : p2->m_modes)
 		{
-			auxSOG_Kernel_i = it2.val;
+			auxSOG_Kernel_i = m2.val;
 			if (auxSOG_Kernel_i.cov.get_unsafe(2, 2) == 0)
 			{
 				auxSOG_Kernel_i.cov.set_unsafe(2, 2, 1);
@@ -316,25 +316,23 @@ void CPointPDFSOG::bayesianFusion(
 
 				float stdX2 =
 					max(auxSOG_Kernel_i.cov.get_unsafe(0, 0),
-						m_mode.val.cov.get_unsafe(0, 0));
+						m.val.cov.get_unsafe(0, 0));
 				mahaDist2 =
-					square(auxSOG_Kernel_i.mean.x() - m_mode.val.mean.x()) /
-					stdX2;
+					square(auxSOG_Kernel_i.mean.x() - m.val.mean.x()) / stdX2;
 
 				float stdY2 =
 					max(auxSOG_Kernel_i.cov.get_unsafe(1, 1),
-						m_mode.val.cov.get_unsafe(1, 1));
+						m.val.cov.get_unsafe(1, 1));
 				mahaDist2 +=
-					square(auxSOG_Kernel_i.mean.y() - m_mode.val.mean.y()) /
-					stdY2;
+					square(auxSOG_Kernel_i.mean.y() - m.val.mean.y()) / stdY2;
 
 				if (!is2D)
 				{
 					float stdZ2 =
 						max(auxSOG_Kernel_i.cov.get_unsafe(2, 2),
-							m_mode.val.cov.get_unsafe(2, 2));
+							m.val.cov.get_unsafe(2, 2));
 					mahaDist2 +=
-						square(auxSOG_Kernel_i.mean.z() - m_mode.val.mean.z()) /
+						square(auxSOG_Kernel_i.mean.z() - m.val.mean.z()) /
 						stdZ2;
 				}
 
@@ -343,7 +341,7 @@ void CPointPDFSOG::bayesianFusion(
 
 			if (reallyComputeThisOne)
 			{
-				auxGaussianProduct.bayesianFusion(auxSOG_Kernel_i, m_mode.val);
+				auxGaussianProduct.bayesianFusion(auxSOG_Kernel_i, m.val);
 
 				// ----------------------------------------------------------------------
 				// The new weight is given by:
@@ -375,8 +373,7 @@ void CPointPDFSOG::bayesianFusion(
 							(new_eta_i.adjoint() * newKernel.val.cov *
 							 new_eta_i)(0, 0));
 
-				newKernel.log_w =
-					m_mode.->log_w + it2.->log_w + a + a_i - new_a_i;
+				newKernel.log_w = m.log_w + m2.log_w + a + a_i - new_a_i;
 
 				// Fix 2D case:
 				if (is2D) newKernel.val.cov(2, 2) = 0;
@@ -401,7 +398,7 @@ void CPointPDFSOG::assureSymmetry()
 	MRPT_START
 	// Differences, when they exist, appear in the ~15'th significant
 	//  digit, so... just take one of them arbitrarily!
-	for (auto & m_mode : m_modes)
+	for (auto& m_mode : m_modes)
 	{
 		m_mode.val.cov(0, 1) = m_mode.val.cov(1, 0);
 		m_mode.val.cov(0, 2) = m_mode.val.cov(2, 0);
@@ -498,7 +495,7 @@ double CPointPDFSOG::evaluatePDF(const CPoint3D& x, bool sumOverAllZs) const
 
 		CMatrixDouble31 MU;
 
-		for (const auto & m_mode : m_modes)
+		for (const auto& m_mode : m_modes)
 		{
 			MU = CMatrixDouble31(m_mode.val.mean);
 			ret += exp(m_mode.log_w) * math::normalPDF(X, MU, m_mode.val.cov);
@@ -515,7 +512,7 @@ double CPointPDFSOG::evaluatePDF(const CPoint3D& x, bool sumOverAllZs) const
 		X(0, 0) = x.x();
 		X(1, 0) = x.y();
 
-		for (const auto & m_mode : m_modes)
+		for (const auto& m_mode : m_modes)
 		{
 			MU(0, 0) = m_mode.val.mean.x();
 			MU(1, 0) = m_mode.val.mean.y();

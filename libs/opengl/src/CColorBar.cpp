@@ -62,7 +62,7 @@ CColorBar::Ptr CColorBar::Create(
 	/** Label text font size */
 	double label_font_size)
 {
-	return CColorBar::Create(
+	return mrpt::make_aligned_shared<CColorBar>(
 		colormap, width, height, min_col, max_col, min_value, max_value,
 		label_format, label_font_size);
 }

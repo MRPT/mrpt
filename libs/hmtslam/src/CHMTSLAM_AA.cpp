@@ -40,7 +40,7 @@ CHMTSLAM::TMessageLSLAMfromAA::Ptr CHMTSLAM::areaAbstraction(
 	ASSERT_(obj);
 
 	// The output results:
-	TMessageLSLAMfromAA::Ptr resMsg = TMessageLSLAMfromAA::Create();
+	TMessageLSLAMfromAA::Ptr resMsg = mrpt::make_aligned_shared<TMessageLSLAMfromAA>();
 
 	// Process msg:
 	THypothesisID LMH_ID = LMH->m_ID;

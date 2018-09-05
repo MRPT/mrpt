@@ -12,17 +12,17 @@
 #include "xstypesconfig.h"
 #include "xsarray.h"
 #ifndef XSENS_NO_WCHAR
-#include <cwchar>
+#include <wchar.h>
 #if !defined(XSENS_NO_STL) && defined(__cplusplus) && defined(WIN32)
 #include <Windows.h>  // required for MultiByteToWideChar
 #endif
 #endif  // XSENS_NO_WCHAR
-#include <cstring>
+#include <string.h>
 
 #ifdef __cplusplus
 #include <string>
-#include <cstdlib>
-#include <cstdio>
+#include <stdlib.h>
+#include <stdio.h>
 extern "C" {
 #endif
 

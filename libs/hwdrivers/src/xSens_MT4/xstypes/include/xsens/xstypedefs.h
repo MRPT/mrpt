@@ -12,7 +12,7 @@
 #include "xstypesconfig.h"
 
 #ifndef XSENS_SINGLE_PRECISION
-#include <cstddef>
+#include <stddef.h>
 /** Defines the floating point type used by the Xsens libraries */
 typedef double XsReal;
 /** XsSize must be unsigned number! */

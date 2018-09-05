@@ -219,15 +219,15 @@ void CPointCloud::serializeTo(
 	SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
 	out["colorFromDepth"] = static_cast<int32_t>(m_colorFromDepth);
 	out["pointSize"] = m_pointSize;
-	for (uint i = 0; i < m_xs.size(); i++)
+	for (size_t i = 0; i < m_xs.size(); i++)
 	{
 		out["xs"][i] = m_xs[i];
 	}
-	for (uint i = 0; i < m_ys.size(); i++)
+	for (size_t i = 0; i < m_ys.size(); i++)
 	{
 		out["ys"][i] = m_ys[i];
 	}
-	for (uint i = 0; i < m_zs.size(); i++)
+	for (size_t i = 0; i < m_zs.size(); i++)
 	{
 		out["zs"][i] = m_zs[i];
 	}
@@ -253,15 +253,15 @@ void CPointCloud::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 			 */
 			// m_colorFromDepth = static_cast<float>(in["colorDepth"]);
 			m_pointSize = static_cast<float>(in["pointSize"]);
-			for (uint i = 0; i < m_xs.size(); i++)
+			for (size_t i = 0; i < m_xs.size(); i++)
 			{
 				m_xs[i] = static_cast<float>(in["xs"][i]);
 			}
-			for (uint i = 0; i < m_ys.size(); i++)
+			for (size_t i = 0; i < m_ys.size(); i++)
 			{
 				m_ys[i] = static_cast<float>(in["ys"][i]);
 			}
-			for (uint i = 0; i < m_zs.size(); i++)
+			for (size_t i = 0; i < m_zs.size(); i++)
 			{
 				m_zs[i] = static_cast<float>(in["zs"][i]);
 			}

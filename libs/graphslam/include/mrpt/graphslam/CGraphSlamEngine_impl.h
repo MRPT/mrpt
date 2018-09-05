@@ -1879,7 +1879,7 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 	}
 
 	// for all the nodes in the previously populated set
-	for (unsigned long node_it : nodes_set)
+	for (mrpt::graphs::TNodeID node_it : nodes_set)
 	{
 		// name of gui object
 		stringstream scan_name("");

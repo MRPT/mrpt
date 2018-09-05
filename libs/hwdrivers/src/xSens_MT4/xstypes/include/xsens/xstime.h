@@ -14,7 +14,7 @@
 #include <windows.h>
 #endif
 
-#include <ctime>
+#include <time.h>
 #include "pstdint.h"
 #include "xstimestamp.h"
 

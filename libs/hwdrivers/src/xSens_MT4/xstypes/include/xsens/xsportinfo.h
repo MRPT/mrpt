@@ -14,7 +14,7 @@
 #include "xsdeviceid.h"
 #include "xsbaud.h"
 #include "xsstring.h"
-#include <cstdio>
+#include <stdio.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -111,7 +111,7 @@ XSTYPES_DLL_API void xsNameThisThread(const char* threadName);
 #else
 #include <pthread.h>
 #include <semaphore.h>
-#include <cerrno>
+#include <errno.h>
 //#define XSENS_USE_POSIX_LOCKING 1
 
 /*!	\addtogroup enums Global enumerations
