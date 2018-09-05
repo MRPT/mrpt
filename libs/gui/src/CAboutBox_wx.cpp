@@ -77,7 +77,7 @@ CAboutBox::CAboutBox(
 		this, ID_STATICTEXT1, _("Title"), wxDefaultPosition, wxDefaultSize, 0,
 		_T("ID_STATICTEXT1"));
 	wxFont lbProgNameFont(
-		22, wxSWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false,
+		22, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false,
 		_T("Times New Roman"), wxFONTENCODING_DEFAULT);
 	lbProgName->SetFont(lbProgNameFont);
 	FlexGridSizer2->Add(
@@ -112,24 +112,24 @@ CAboutBox::CAboutBox(
 		wxSize(545, 250), wxTE_MULTILINE | wxTE_READONLY | wxTE_AUTO_URL,
 		wxDefaultValidator, _T("ID_TEXTCTRL1"));
 	wxFont lbInfoFont(
-		10, wxSWISS, wxFONTSTYLE_NORMAL, wxNORMAL, false, _T("Courier New"),
-		wxFONTENCODING_DEFAULT);
+		10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false,
+		_T("Courier New"), wxFONTENCODING_DEFAULT);
 	lbInfo->SetFont(lbInfoFont);
 	lbLicense = new wxTextCtrl(
 		Notebook1, ID_TEXTCTRL2, _(""), wxDefaultPosition, wxDefaultSize,
 		wxTE_MULTILINE | wxTE_READONLY | wxTE_AUTO_URL, wxDefaultValidator,
 		_T("ID_TEXTCTRL2"));
 	wxFont lbLicenseFont(
-		10, wxSWISS, wxFONTSTYLE_NORMAL, wxNORMAL, false, _T("Courier New"),
-		wxFONTENCODING_DEFAULT);
+		10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false,
+		_T("Courier New"), wxFONTENCODING_DEFAULT);
 	lbLicense->SetFont(lbLicenseFont);
 	TextCtrl1 = new wxTextCtrl(
 		Notebook1, ID_TEXTCTRL3, _U(tutorial().c_str()), wxPoint(4, 24),
 		wxSize(545, 222), wxTE_MULTILINE | wxTE_READONLY | wxTE_AUTO_URL,
 		wxDefaultValidator, _T("ID_TEXTCTRL3"));
 	wxFont TextCtrl1Font(
-		10, wxSWISS, wxFONTSTYLE_NORMAL, wxNORMAL, false, _T("Courier New"),
-		wxFONTENCODING_DEFAULT);
+		10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false,
+		_T("Courier New"), wxFONTENCODING_DEFAULT);
 	TextCtrl1->SetFont(TextCtrl1Font);
 	Notebook1->AddPage(lbInfo, _("Information"), false);
 	Notebook1->AddPage(lbLicense, _("License"), false);
