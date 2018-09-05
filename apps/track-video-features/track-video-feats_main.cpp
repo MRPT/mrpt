@@ -446,12 +446,11 @@ int main(int argc, char** argv)
 			const string ext = mrpt::system::lowerCase(
 				mrpt::system::extractFileExtension(fil, true));
 
+			cam = CCameraSensor::Ptr(new CCameraSensor);
 			if (ext == "rawlog")
 			{
 				// It's a rawlog:
 				cout << "Interpreting '" << fil << "' as a rawlog file...\n";
-
-				cam = CCameraSensor::Create();
 
 				CConfigFileMemory cfg;
 				cfg.write("CONFIG", "grabber_type", "rawlog");
@@ -467,8 +466,6 @@ int main(int argc, char** argv)
 			{
 				// Assume it's a video:
 				cout << "Interpreting '" << fil << "' as a video file...\n";
-
-				cam = CCameraSensor::Create();
 
 				CConfigFileMemory cfg;
 				cfg.write("CONFIG", "grabber_type", "ffmpeg");
