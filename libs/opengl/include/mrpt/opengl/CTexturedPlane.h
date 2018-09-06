@@ -26,7 +26,7 @@ class CTexturedPlane : public CTexturedObject
 	float m_xMin, m_xMax;
 	float m_yMin, m_yMax;
 
-	mutable bool polygonUpToDate;
+	mutable bool polygonUpToDate{false};
 	/** Used for ray-tracing */
 	mutable std::vector<mrpt::math::TPolygonWithPlane> tmpPoly;
 	void updatePoly() const;

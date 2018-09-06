@@ -149,7 +149,7 @@ void CLogFileRecord_VFF::serializeFrom(
 						TOptions
   ---------------------------------------------------------------*/
 CHolonomicVFF::TOptions::TOptions()
-	: TARGET_SLOW_APPROACHING_DISTANCE(0.10), TARGET_ATTRACTIVE_FORCE(20.0)
+	 
 {
 }
 

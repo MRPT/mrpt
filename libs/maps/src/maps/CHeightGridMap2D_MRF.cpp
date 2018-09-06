@@ -24,13 +24,8 @@ MAP_DEFINITION_REGISTER(
 	"CHeightGridMap2D_MRF,dem_mrf", mrpt::maps::CHeightGridMap2D_MRF)
 
 CHeightGridMap2D_MRF::TMapDefinition::TMapDefinition()
-	: run_map_estimation_at_ctor(true),
-	  min_x(-2),
-	  max_x(2),
-	  min_y(-2),
-	  max_y(2),
-	  resolution(0.10f),
-	  mapType(mrGMRF_SD)
+	
+	  
 {
 }
 

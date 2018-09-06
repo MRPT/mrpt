@@ -49,24 +49,22 @@ void CHolonomicFullEval::initialize(const mrpt::config::CConfigFileBase& c)
 
 struct TGap
 {
-	int k_from, k_to;
+	int k_from{-1}, k_to{-1};
 	double min_eval, max_eval;
-	bool contains_target_k;
+	bool contains_target_k{false};
 	/** Direction with the best evaluation inside the gap. */
-	int k_best_eval;
+	int k_best_eval{-1};
 
 	TGap()
-		: k_from(-1),
-		  k_to(-1),
+		: 
 		  min_eval(std::numeric_limits<double>::max()),
-		  max_eval(-std::numeric_limits<double>::max()),
-		  contains_target_k(false),
-		  k_best_eval(-1)
+		  max_eval(-std::numeric_limits<double>::max())
+		  
 	{
 	}
 };
 
-CHolonomicFullEval::EvalOutput::EvalOutput() : best_k(INVALID_K), best_eval(.0)
+CHolonomicFullEval::EvalOutput::EvalOutput() : best_k(INVALID_K) 
 {
 }
 
@@ -589,7 +587,7 @@ unsigned int CHolonomicFullEval::direction2sector(
 }
 
 CLogFileRecord_FullEval::CLogFileRecord_FullEval()
-	: selectedSector(0), evaluation(.0), dirs_scores(), selectedTarget(0)
+	:  dirs_scores() 
 {
 }
 
@@ -647,18 +645,12 @@ void CLogFileRecord_FullEval::serializeFrom(
 						TOptions
   ---------------------------------------------------------------*/
 CHolonomicFullEval::TOptions::TOptions()
-	:  // Default values:
-	  TOO_CLOSE_OBSTACLE(0.15),
-	  TARGET_SLOW_APPROACHING_DISTANCE(0.60),
-	  OBSTACLE_SLOW_DOWN_DISTANCE(0.15),
-	  HYSTERESIS_SECTOR_COUNT(5),
+	:  
 	  factorWeights{0.1, 0.5, 0.5, 0.01, 1},
 	  factorNormalizeOrNot{0, 0, 0, 0, 1},
 	  PHASE_FACTORS{{1, 2}, {4}, {0, 2}},
-	  PHASE_THRESHOLDS{0.5, 0.6, 0.7},
-	  LOG_SCORE_MATRIX(false),
-	  clearance_threshold_ratio(0.05),
-	  gap_width_ratio_threshold(0.25)
+	  PHASE_THRESHOLDS{0.5, 0.6, 0.7}
+	  
 {
 }
 

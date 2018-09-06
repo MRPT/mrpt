@@ -21,8 +21,8 @@
 namespace mrpt::nav
 {
 /** \addtogroup nav_planners Path planning
-* \ingroup mrpt_nav_grp
-* @{ */
+ * \ingroup mrpt_nav_grp
+ * @{ */
 
 template <typename node_pose_t, typename world_limits_t>
 struct TPlannerInputTempl
@@ -38,9 +38,9 @@ template <typename tree_t>
 struct TPlannerResultTempl
 {
 	/** Whether the target was reached or not */
-	bool success;
+	bool success{false};
 	/** Time spent (in secs) */
-	double computation_time;
+	double computation_time{0};
 	/** Distance from best found path to goal */
 	double goal_distance;
 	/** Total cost of the best found path (cost ~~ Euclidean distance) */
@@ -55,9 +55,7 @@ struct TPlannerResultTempl
 	tree_t move_tree;
 
 	TPlannerResultTempl()
-		: success(false),
-		  computation_time(0),
-		  goal_distance(std::numeric_limits<double>::max()),
+		: goal_distance(std::numeric_limits<double>::max()),
 		  path_cost(std::numeric_limits<double>::max()),
 		  best_goal_node_id(INVALID_NODEID)
 	{
@@ -69,68 +67,62 @@ struct RRTEndCriteria
 	/** Maximum distance from a pose to target to accept it as a valid solution
 	 * (meters). (Both acceptedDistToTarget & acceptedAngToTarget must be
 	 * satisfied) */
-	double acceptedDistToTarget;
+	double acceptedDistToTarget{0.1};
 	/** Maximum angle from a pose to target to accept it as a valid solution
 	 * (rad).  (Both acceptedDistToTarget & acceptedAngToTarget must be
 	 * satisfied) */
-	double acceptedAngToTarget;
+	double acceptedAngToTarget{mrpt::DEG2RAD(180.0)};
 
 	/** In seconds. 0 means no limit until a solution is found. */
-	double maxComputationTime;
+	double maxComputationTime{0.0};
 	/** In seconds. 0 means the first valid path will be returned. Otherwise,
 	 * the algorithm will try to refine and find a better one. */
-	double minComputationTime;
+	double minComputationTime{0.0};
 
-	RRTEndCriteria()
-		: acceptedDistToTarget(0.1),
-		  acceptedAngToTarget(mrpt::DEG2RAD(180)),
-		  maxComputationTime(0.0),
-		  minComputationTime(0.0)
-	{
-	}
+	RRTEndCriteria() = default;
 };
 
 struct RRTAlgorithmParams
 {
 	/** The robot shape used when computing collisions; it's loaded from the
-	*  config file/text as a single 2xN matrix in MATLAB format, first row are
-	* Xs, second are Ys, e.g:
-	*  \code
-	*   robot_shape = [-0.2 0.2 0.2 -0.2; -0.1 -0.1 0.1 0.1]
-	*  \endcode
-	* \note PTGs will use only one of either `robot_shape` or
-	* `robot_shape_circular_radius`
-	*/
+	 *  config file/text as a single 2xN matrix in MATLAB format, first row are
+	 * Xs, second are Ys, e.g:
+	 *  \code
+	 *   robot_shape = [-0.2 0.2 0.2 -0.2; -0.1 -0.1 0.1 0.1]
+	 *  \endcode
+	 * \note PTGs will use only one of either `robot_shape` or
+	 * `robot_shape_circular_radius`
+	 */
 	mrpt::math::TPolygon2D robot_shape;
 	/** The radius of a circular-shape-model of the robot shape.
-	* \note PTGs will use only one of either `robot_shape` or
-	* `robot_shape_circular_radius`
-	*/
-	double robot_shape_circular_radius;
+	 * \note PTGs will use only one of either `robot_shape` or
+	 * `robot_shape_circular_radius`
+	 */
+	double robot_shape_circular_radius{0.30};
 
 	/** (Default: ".") */
 	std::string ptg_cache_files_directory;
 
 	/** Probabily of picking the goal as random target (in [0,1], default=0.05)
 	 */
-	double goalBias;
+	double goalBias{0.05};
 	/** (Very sensitive parameter!) Max length of each edge path (in meters,
 	 * default=1.0) */
-	double maxLength;
+	double maxLength{1.0};
 	/** Minimum distance [meters] to nearest node to accept creating a new one
 	 * (default=0.10). (Any of minDistanceBetweenNewNodes and
 	 * minAngBetweenNewNodes must be satisfied) */
-	double minDistanceBetweenNewNodes;
+	double minDistanceBetweenNewNodes{0.10};
 	/** Minimum angle [rad] to nearest node to accept creating a new one
 	 * (default=15 deg) (Any of minDistanceBetweenNewNodes and
 	 * minAngBetweenNewNodes must be satisfied) */
 	double minAngBetweenNewNodes;
 	/** Display PTG construction info (default=true) */
-	bool ptg_verbose;
+	bool ptg_verbose{true};
 
 	/** Frequency (in iters) of saving tree state to debug log files viewable in
 	 * SceneViewer3D (default=0, disabled) */
-	size_t save_3d_log_freq;
+	size_t save_3d_log_freq{0};
 
 	RRTAlgorithmParams();
 };
@@ -156,7 +148,7 @@ class PlannerTPS_VirtualBase
 		mrpt::graphs::TNodeID highlight_path_to_node_id;
 		/** (Default=1) Draw one out of N vehicle shapes along the highlighted
 		 * path */
-		size_t draw_shape_decimation;
+		size_t draw_shape_decimation{1};
 
 		const mrpt::poses::CPose2D* x_rand_pose;
 		const mrpt::poses::CPose2D* x_nearest_pose;
@@ -165,11 +157,11 @@ class PlannerTPS_VirtualBase
 
 		/** A scale factor to all XYZ corners (default=0, means auto determien
 		 * from vehicle shape) */
-		double xyzcorners_scale;
+		double xyzcorners_scale{0};
 		/** (Default=false) */
-		bool highlight_last_added_edge;
+		bool highlight_last_added_edge{false};
 		/** (Default=10 meters) Set to 0 to disable */
-		double ground_xy_grid_frequency;
+		double ground_xy_grid_frequency{10.0};
 
 		/** Robot color  */
 		mrpt::img::TColor color_vehicle;
@@ -185,34 +177,30 @@ class PlannerTPS_VirtualBase
 		mrpt::img::TColor color_normal_edge;
 		mrpt::img::TColor color_last_edge;
 		mrpt::img::TColor color_optimal_edge;
-		float width_last_edge;
-		float width_normal_edge;
-		float width_optimal_edge;
-		int point_size_obstacles;
-		int point_size_local_obstacles;
+		float width_last_edge{3.f};
+		float width_normal_edge{1.f};
+		float width_optimal_edge{4.f};
+		int point_size_obstacles{5};
+		int point_size_local_obstacles{5};
 
 		/** (Default=0.01) Height (Z coordinate) for the vehicle shapes. Helps
 		 * making it in the "first plane" */
-		double vehicle_shape_z;
+		double vehicle_shape_z{0.01};
 		/** Robot line width for visualization - default 2.0 */
-		double vehicle_line_width;
+		double vehicle_line_width{2.0};
 		/** (Default=true) */
-		bool draw_obstacles;
+		bool draw_obstacles{true};
 
 		std::string log_msg;
 		mrpt::math::TPoint3D log_msg_position;
-		double log_msg_scale;
+		double log_msg_scale{0.2};
 
 		TRenderPlannedPathOptions()
 			: highlight_path_to_node_id(INVALID_NODEID),
-			  draw_shape_decimation(1),
 			  x_rand_pose(NULL),
 			  x_nearest_pose(NULL),
 			  local_obs_from_nearest_pose(NULL),
 			  new_state(NULL),
-			  xyzcorners_scale(0),
-			  highlight_last_added_edge(false),
-			  ground_xy_grid_frequency(10.0),
 			  color_vehicle(0xFF, 0x00, 0x00, 0xFF),
 			  color_obstacles(0x00, 0x00, 0xFF, 0x40),
 			  color_local_obstacles(0x00, 0x00, 0xFF),
@@ -222,16 +210,7 @@ class PlannerTPS_VirtualBase
 			  color_normal_edge(0x22, 0x22, 0x22, 0x40),
 			  color_last_edge(0xff, 0xff, 0x00),
 			  color_optimal_edge(0x00, 0x00, 0x00),
-			  width_last_edge(3.f),
-			  width_normal_edge(1.f),
-			  width_optimal_edge(4.f),
-			  point_size_obstacles(5),
-			  point_size_local_obstacles(5),
-			  vehicle_shape_z(0.01),
-			  vehicle_line_width(2.0),
-			  draw_obstacles(true),
-			  log_msg_position(0, 0, 0),
-			  log_msg_scale(0.2)
+			  log_msg_position(0, 0, 0)
 		{
 		}
 
@@ -247,7 +226,7 @@ class PlannerTPS_VirtualBase
 
    protected:
 	mrpt::system::CTimeLogger m_timelogger;
-	bool m_initialized_PTG;
+	bool m_initialized_PTG{false};
 	mrpt::nav::TListPTGPtr m_PTGs;
 	mrpt::maps::CSimplePointsMap m_local_obs;  // Temporary map. Defined as a
 	// member to save realloc time
@@ -279,7 +258,5 @@ class PlannerTPS_VirtualBase
 
 };  // end class PlannerTPS_VirtualBase
 /** @} */
-}
+}  // namespace mrpt::nav
 #include "impl_renderMoveTree.h"
-
-

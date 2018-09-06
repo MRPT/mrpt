@@ -19,7 +19,7 @@ using namespace mrpt::maps;
 using namespace std;
 
 CHeightGridMap2D_Base::TPointInsertParams::TPointInsertParams()
-	: pt_z_std(0.0), update_map_after_insertion(true)
+	 
 {
 }
 

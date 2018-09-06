@@ -27,7 +27,7 @@ IMPLEMENTS_SERIALIZABLE(CActionRobotMovement3D, CAction, mrpt::obs)
 CActionRobotMovement3D::CActionRobotMovement3D()
 	: poseChange(),
 	  rawOdometryIncrementReading(),
-	  estimationMethod(emOdometry),
+	  
 	  motionModelConfiguration(),
 	  hasVelocities(6, false),
 	  velocities(6)
@@ -89,7 +89,7 @@ void CActionRobotMovement3D::computeFromOdometry(
 						TMotionModelOptions
  ---------------------------------------------------------------*/
 CActionRobotMovement3D::TMotionModelOptions::TMotionModelOptions()
-	: modelSelection(mm6DOF), mm6DOFModel()
+	:  mm6DOFModel()
 {
 	mm6DOFModel.nParticlesCount = 300;
 	mm6DOFModel.a1 = 0.05f;

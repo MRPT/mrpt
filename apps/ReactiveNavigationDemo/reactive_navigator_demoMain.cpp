@@ -1931,15 +1931,6 @@ void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
 }
 
 // ==== reactive_navigator_demoframe::TOptions ======
-reactive_navigator_demoframe::TOptions::TOptions()
-	: MAX_SENSOR_RADIUS(10.0),
-	  SENSOR_FOV(M_PI * 2.0),
-	  SENSOR_NUM_RANGES(181),
-	  SENSOR_RANGE_NOISE_STD(0.02),
-	  SENSOR_RATE(10.0),
-	  NAVIGATION_RATE(4.0)
-{
-}
 void reactive_navigator_demoframe::TOptions::loadFromConfigFile(
 	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {

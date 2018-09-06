@@ -82,7 +82,7 @@ class KDTreeCapable
 	// ---------------------
 
 	/// Constructor
-	inline KDTreeCapable() : m_kdtree_is_uptodate(false) {}
+	inline KDTreeCapable() {}
 	/// CRTP helper method
 	inline const Derived& derived() const
 	{
@@ -92,9 +92,9 @@ class KDTreeCapable
 	inline Derived& derived() { return *static_cast<Derived*>(this); }
 	struct TKDTreeSearchParams
 	{
-		TKDTreeSearchParams() : leaf_max_size(10) {}
+		TKDTreeSearchParams() {}
 		/** Max points per leaf */
-		size_t leaf_max_size;
+		size_t leaf_max_size{10};
 	};
 
 	/** Parameters to tune the ANN searches */
@@ -770,7 +770,7 @@ class KDTreeCapable
 	mutable TKDTreeDataHolder<3> m_kdtree3d_data;
 	mutable TKDTreeDataHolder<> m_kdtreeNd_data;
 	/** whether the KD tree needs to be rebuilt or not. */
-	mutable bool m_kdtree_is_uptodate;
+	mutable bool m_kdtree_is_uptodate{false};
 
 	/// Rebuild, if needed the KD-tree for 2D (nDims=2), 3D (nDims=3), ...
 	/// asking the child class for the data points.
@@ -844,5 +844,4 @@ class KDTreeCapable
 
 /**  @} */  // end of grouping
 
-}
-
+}  // namespace mrpt::math

@@ -24,8 +24,7 @@ IMPLEMENTS_SERIALIZABLE(CLogFileRecord, CSerializable, mrpt::nav)
 					Constructor
   ---------------------------------------------------------------*/
 CLogFileRecord::CLogFileRecord()
-	: nPTGs(0),
-	  nSelectedPTG(-1),
+	: 
 	  robotPoseLocalization(0, 0, 0),
 	  robotPoseOdometry(0, 0, 0),
 	  relPoseSense(0, 0, 0),
@@ -33,9 +32,7 @@ CLogFileRecord::CLogFileRecord()
 	  WS_targets_relative(),
 	  cur_vel(0, 0, 0),
 	  cur_vel_local(0, 0, 0),
-	  robotShape_radius(.0),
-	  ptg_index_NOP(-1),
-	  ptg_last_k_NOP(0),
+	  
 	  rel_cur_pose_wrt_last_vel_cmd_NOP(0, 0, 0),
 	  rel_pose_PTG_origin_wrt_sense_NOP(0, 0, 0)
 {

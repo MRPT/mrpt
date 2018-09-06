@@ -29,12 +29,8 @@ MAP_DEFINITION_REGISTER(
 	"CWirelessPowerGridMap2D,wifiGrid", mrpt::maps::CWirelessPowerGridMap2D)
 
 CWirelessPowerGridMap2D::TMapDefinition::TMapDefinition()
-	: min_x(-2),
-	  max_x(2),
-	  min_y(-2),
-	  max_y(2),
-	  resolution(0.10f),
-	  mapType(CWirelessPowerGridMap2D::mrKernelDM)
+	
+	  
 {
 }
 

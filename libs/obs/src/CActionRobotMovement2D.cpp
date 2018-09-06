@@ -396,7 +396,7 @@ void CActionRobotMovement2D::computeFromOdometry(
 						TMotionModelOptions
  ---------------------------------------------------------------*/
 CActionRobotMovement2D::TMotionModelOptions::TMotionModelOptions()
-	: modelSelection(CActionRobotMovement2D::mmGaussian),
+	: 
 	  gaussianModel(),
 	  thrunModel()
 {

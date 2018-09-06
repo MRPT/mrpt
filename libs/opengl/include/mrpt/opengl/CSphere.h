@@ -13,18 +13,18 @@
 namespace mrpt::opengl
 {
 /** A solid or wire-frame sphere.
-  *  \sa opengl::COpenGLScene
-  *
-  *  <div align="center">
-  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
+ *  \sa opengl::COpenGLScene
+ *
+ *  <div align="center">
+ *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
  * border-style: solid;">
-  *   <tr> <td> mrpt::opengl::CSphere </td> <td> \image html preview_CSphere.png
+ *   <tr> <td> mrpt::opengl::CSphere </td> <td> \image html preview_CSphere.png
  * </td> </tr>
-  *  </table>
-  *  </div>
-  *
-  * \ingroup mrpt_opengl_grp
-  */
+ *  </table>
+ *  </div>
+ *
+ * \ingroup mrpt_opengl_grp
+ */
 class CSphere : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CSphere)
@@ -32,7 +32,7 @@ class CSphere : public CRenderizableDisplayList
    protected:
 	float m_radius;
 	int m_nDivsLongitude, m_nDivsLatitude;
-	bool m_keepRadiusIndependentEyeDistance;
+	bool m_keepRadiusIndependentEyeDistance{false};
 
    public:
 	void setRadius(float r)
@@ -77,17 +77,17 @@ class CSphere : public CRenderizableDisplayList
 		mrpt::math::TPoint3D& bb_max) const override;
 
 	/** Ray tracing
-	  */
+	 */
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 
 	/** Constructor
-	  */
+	 */
 	CSphere(
 		float radius = 1.0f, int nDivsLongitude = 20, int nDivsLatitude = 20)
 		: m_radius(radius),
 		  m_nDivsLongitude(nDivsLongitude),
-		  m_nDivsLatitude(nDivsLatitude),
-		  m_keepRadiusIndependentEyeDistance(false)
+		  m_nDivsLatitude(nDivsLatitude)
+
 	{
 	}
 
@@ -95,6 +95,4 @@ class CSphere : public CRenderizableDisplayList
 	~CSphere() override {}
 };
 
-}
-
-
+}  // namespace mrpt::opengl

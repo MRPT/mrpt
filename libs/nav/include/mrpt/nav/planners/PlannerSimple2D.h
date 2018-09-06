@@ -36,7 +36,7 @@ class PlannerSimple2D
 	virtual ~PlannerSimple2D() {}
 	/** The maximum occupancy probability to consider a cell as an obstacle,
 	 * default=0.5  */
-	float occupancyThreshold;
+	float occupancyThreshold{0.5f};
 
 	/** The minimum distance between points in the returned found path
 	 * (default=0.4); Notice
@@ -44,11 +44,11 @@ class PlannerSimple2D
 	 * to reduce the
 	  *  amount of redundant information to be returned.
 	  */
-	float minStepInReturnedPath;
+	float minStepInReturnedPath{0.4f};
 
 	/** The aproximate robot radius used in the planification. Default is 0.35m
 	 */
-	float robotRadius;
+	float robotRadius{0.35f};
 
 	/** This method compute the optimal path for a circular robot, in the given
 	  *   occupancy grid map, from the origin location to a target point.

@@ -607,9 +607,9 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
    public:
 	CKalmanFilterCapable()
 		: mrpt::system::COutputLogger("CKalmanFilterCapable"),
-		  KF_options(this->m_min_verbosity_level),
-		  m_user_didnt_implement_jacobian(true)
-	/** Default constructor */ {}
+		  KF_options(this->m_min_verbosity_level)
+	{
+	}
 	/** Destructor */
 	~CKalmanFilterCapable() override {}
 	mrpt::system::CTimeLogger& getProfiler() { return m_timLogger; }
@@ -644,7 +644,7 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	void runOneKalmanIteration();
 
    private:
-	mutable bool m_user_didnt_implement_jacobian;
+	mutable bool m_user_didnt_implement_jacobian{true};
 
 	/** Auxiliary functions for Jacobian numeric estimation */
 	static void KF_aux_estimate_trans_jacobian(

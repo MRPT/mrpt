@@ -181,7 +181,7 @@ void CSetOfTexturedTriangles::getBoundingBox(
 }
 
 CSetOfTexturedTriangles::TVertex::TVertex()
-	: m_x(0.0), m_y(0.0), m_z(0.0), m_u(0), m_v(0)
+	 
 {
 }
 

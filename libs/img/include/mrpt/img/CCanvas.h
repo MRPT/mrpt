@@ -44,7 +44,7 @@ class CCanvas
 	std::string m_selectedFont;
 
 	/** Direct access to character bitmaps. */
-	const uint32_t* m_selectedFontBitmaps;
+	const uint32_t* m_selectedFontBitmaps{nullptr};
 
    public:
 	CCanvas();

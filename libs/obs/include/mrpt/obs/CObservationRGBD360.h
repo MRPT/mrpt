@@ -86,12 +86,12 @@ class CObservationRGBD360 : public CObservation
 
    protected:
 	/** If set to true, m_points3D_external_file is valid. */
-	bool m_points3D_external_stored;
+	bool m_points3D_external_stored{false};
 	/** 3D points are in CImage::getImagesPathBase()+<this_file_name> */
 	std::string m_points3D_external_file;
 
 	/** If set to true, m_rangeImage_external_file is valid. */
-	bool m_rangeImage_external_stored;
+	bool m_rangeImage_external_stored{false};
 	/** rangeImage is in CImage::getImagesPathBase()+<this_file_name> */
 	std::string m_rangeImage_external_file;
 
@@ -106,7 +106,7 @@ class CObservationRGBD360 : public CObservation
 	mrpt::system::TTimeStamp timestamps[NUM_SENSORS];
 
 	/** true means the field rangeImage contains valid data */
-	bool hasRangeImage;
+	bool hasRangeImage{false};
 	/** If hasRangeImage=true, a matrix of floats with the range data as
 	 * captured by the camera (in meters) \sa range_is_depth */
 	mrpt::math::CMatrix rangeImages[NUM_SENSORS];
@@ -117,7 +117,7 @@ class CObservationRGBD360 : public CObservation
 		const int HEIGHT, const int WIDTH, const unsigned sensor_id);
 
 	/** true means the field intensityImage contains valid data */
-	bool hasIntensityImage;
+	bool hasIntensityImage{false};
 	/** If hasIntensityImage=true, a color or gray-level intensity image of the
 	 * same size than "rangeImage" */
 	mrpt::img::CImage intensityImages[NUM_SENSORS];
@@ -126,12 +126,12 @@ class CObservationRGBD360 : public CObservation
 
 	/** The maximum range allowed by the device, in meters (e.g. 8.0m, 5.0m,...)
 	 */
-	float maxRange;
+	float maxRange{10.0f};
 	/** The 6D pose of the sensor on the robot. */
 	mrpt::poses::CPose3D sensorPose;
 	/** The "sigma" error of the device in meters, used while inserting the scan
 	 * in an occupancy grid. */
-	float stdError;
+	float stdError{0.01f};
 
 	// See base class docs
 	void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override

@@ -19,8 +19,8 @@ template <class GRAPH_T>
 CICPCriteriaERD<GRAPH_T>::CICPCriteriaERD()
 	: params(*this),  // pass reference to self when initializing the parameters
 	  m_search_disk_color(142, 142, 56),
-	  m_laser_scans_color(0, 20, 255),
-	  m_is_using_3DScan(false)
+	  m_laser_scans_color(0, 20, 255)
+	  
 {
 	MRPT_START;
 

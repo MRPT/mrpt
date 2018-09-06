@@ -62,11 +62,8 @@ CPointsMap::CPointsMap()
 	  likelihoodOptions(),
 	  m_x(),
 	  m_y(),
-	  m_z(),
-	  m_largestDistanceFromOrigin(0),
-	  m_heightfilter_z_min(-10),
-	  m_heightfilter_z_max(10),
-	  m_heightfilter_enabled(false)
+	  m_z()
+	  
 {
 	mark_as_modified();
 }
@@ -620,15 +617,9 @@ bool CPointsMap::isEmpty() const { return m_x.empty(); }
 				TInsertionOptions
  ---------------------------------------------------------------*/
 CPointsMap::TInsertionOptions::TInsertionOptions()
-	: minDistBetweenLaserPoints(0.02f),
-	  addToExistingPointsMap(true),
-	  also_interpolate(false),
-	  disableDeletion(true),
-	  fuseWithExisting(false),
-	  isPlanarMap(false),
-	  horizontalTolerance(DEG2RAD(0.05)),
-	  maxDistForInterpolatePoints(2.0f),
-	  insertInvalidPoints(false)
+	: 
+	  horizontalTolerance(DEG2RAD(0.05))
+	  
 {
 }
 
@@ -666,7 +657,7 @@ void CPointsMap::TInsertionOptions::readFromStream(
 }
 
 CPointsMap::TLikelihoodOptions::TLikelihoodOptions()
-	: sigma_dist(0.0025), max_corr_distance(1.0), decimation(10)
+	 
 {
 }
 

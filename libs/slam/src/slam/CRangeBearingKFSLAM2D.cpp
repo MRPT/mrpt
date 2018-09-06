@@ -774,15 +774,9 @@ void CRangeBearingKFSLAM2D::TOptions::loadFromConfigFile(
   ---------------------------------------------------------------*/
 CRangeBearingKFSLAM2D::TOptions::TOptions()
 	: stds_Q_no_odo(3, 0),
-	  std_sensor_range(0.1f),
-	  std_sensor_yaw(DEG2RAD(0.5f)),
-	  quantiles_3D_representation(3),
-	  create_simplemap(false),
-	  data_assoc_method(assocNN),
-	  data_assoc_metric(metricMaha),
-	  data_assoc_IC_chi2_thres(0.99),
-	  data_assoc_IC_metric(metricMaha),
-	  data_assoc_IC_ml_threshold(0.0)
+	  
+	  std_sensor_yaw(DEG2RAD(0.5f))
+	  
 
 {
 	stds_Q_no_odo[0] = 0.10f;

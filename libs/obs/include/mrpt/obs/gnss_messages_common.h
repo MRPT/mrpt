@@ -84,7 +84,7 @@ struct gnss_message
 struct gnss_message_ptr
 {
    protected:
-	gnss_message* ptr;
+	gnss_message* ptr{nullptr};
 
    public:
 	/** Ctor (default: nullptr pointer) */
@@ -169,9 +169,9 @@ struct gnss_message_ptr
  * mrpt::obs::CObservationGPS */
 struct UTC_time
 {
-	uint8_t hour;
-	uint8_t minute;
-	double sec;
+	uint8_t hour{0};
+	uint8_t minute{0};
+	double sec{0};
 
 	UTC_time();
 	/** Build an MRPT timestamp with the hour/minute/sec of this structure and

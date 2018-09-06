@@ -28,9 +28,9 @@ class CJoystick
 
 #if defined(MRPT_OS_LINUX)
 	/** File FD for the joystick, or -1 if not open (Linux only) */
-	int m_joy_fd;
+	int m_joy_fd{-1};
 	/** The index of the joystick open in m_joy_fd (Linux only) */
-	int m_joy_index;
+	int m_joy_index{-1};
 	/** Using an event system we only have deltas, need to keep the whole
 	 * joystick state (Linux only) */
 	std::vector<bool> m_joystate_btns;

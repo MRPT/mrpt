@@ -40,13 +40,13 @@ class CVectorField2D : public CRenderizableDisplayList
 	mrpt::math::CMatrix ycomp;
 
 	/** Grid bounds */
-	float xMin, xMax, yMin, yMax;
+	float xMin{-1.0}, xMax{1.0}, yMin{-1.0}, yMax{1.0};
 	/** By default is 1.0 */
-	float m_LineWidth;
+	float m_LineWidth{1.0};
 	/** By default is 1.0 */
-	float m_pointSize;
+	float m_pointSize{1.0};
 	/** By default is true */
-	bool m_antiAliasing;
+	bool m_antiAliasing{true};
 
 	mrpt::img::TColor m_point_color;
 	mrpt::img::TColor m_field_color;

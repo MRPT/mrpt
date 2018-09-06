@@ -540,8 +540,8 @@ struct TPoint3D : public TPoseOrPoint
 struct TPointXYZIu8
 {
 	mrpt::math::TPoint3D pt;
-	uint8_t intensity;
-	TPointXYZIu8() : pt(), intensity(0) {}
+	uint8_t intensity{0};
+	TPointXYZIu8() : pt() {}
 	constexpr TPointXYZIu8(double x, double y, double z, uint8_t intensity_val)
 		: pt(x, y, z), intensity(intensity_val)
 	{
@@ -551,8 +551,8 @@ struct TPointXYZIu8
 struct TPointXYZRGBu8
 {
 	mrpt::math::TPoint3D pt;
-	uint8_t R, G, B;
-	TPointXYZRGBu8() : pt(), R(0), G(0), B(0) {}
+	uint8_t R{0}, G{0}, B{0};
+	TPointXYZRGBu8() = default;
 	constexpr TPointXYZRGBu8(
 		double x, double y, double z, uint8_t R_val, uint8_t G_val,
 		uint8_t B_val)
@@ -564,8 +564,8 @@ struct TPointXYZRGBu8
 struct TPointXYZfIu8
 {
 	mrpt::math::TPoint3Df pt;
-	uint8_t intensity;
-	TPointXYZfIu8() : pt(), intensity(0) {}
+	uint8_t intensity{0};
+	TPointXYZfIu8() = default;
 	constexpr TPointXYZfIu8(float x, float y, float z, uint8_t intensity_val)
 		: pt(x, y, z), intensity(intensity_val)
 	{
@@ -575,8 +575,8 @@ struct TPointXYZfIu8
 struct TPointXYZfRGBu8
 {
 	mrpt::math::TPoint3Df pt;
-	uint8_t R, G, B;
-	TPointXYZfRGBu8() : pt(), R(0), G(0), B(0) {}
+	uint8_t R{0}, G{0}, B{0};
+	TPointXYZfRGBu8() : pt() {}
 	constexpr TPointXYZfRGBu8(
 		float x, float y, float z, uint8_t R_val, uint8_t G_val, uint8_t B_val)
 		: pt(x, y, z), R(R_val), G(G_val), B(B_val)
@@ -1542,9 +1542,9 @@ struct TObject2D
 		TPoint2D point;
 		TSegment2D segment;
 		TLine2D line;
-		TPolygon2D* polygon;
+		TPolygon2D* polygon{nullptr};
 
-		tobject2d_data_t() : polygon(nullptr) {}
+		tobject2d_data_t() = default;
 	} data;
 	/**
 	 * Destroys the object, releasing the pointer to the content (if any).
@@ -1803,10 +1803,10 @@ struct TObject3D
 		TPoint3D point;
 		TSegment3D segment;
 		TLine3D line;
-		TPolygon3D* polygon;
+		TPolygon3D* polygon{nullptr};
 		TPlane plane;
 
-		tobject3d_data_t() : polygon(nullptr) {}
+		tobject3d_data_t() = default;
 	} data;
 	/**
 	 * Destroys the object and releases the pointer, if any.

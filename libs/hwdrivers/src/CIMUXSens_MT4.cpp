@@ -52,7 +52,7 @@ and is intended for use only by Xsens Technologies BV and
 class DeviceClass
 {
    public:
-	DeviceClass() : m_streamInterface(nullptr) {}
+	DeviceClass() {}
 	~DeviceClass()
 	{
 		if (m_streamInterface)
@@ -295,7 +295,7 @@ class DeviceClass
 	}
 
    private:
-	StreamInterface* m_streamInterface;
+	StreamInterface* m_streamInterface{nullptr};
 	XsByteArray m_dataBuffer;
 };
 #endif
@@ -324,15 +324,8 @@ using namespace std;
 /*-------------------------------------------------------------
 					CIMUXSens_MT4
 -------------------------------------------------------------*/
-CIMUXSens_MT4::CIMUXSens_MT4()
-	: m_port_bauds(0),
-	  m_portname(),
-	  m_sampleFreq(100),
-	  m_timeStartUI(),
-	  m_timeStartTT(),
-	  m_sensorPose(),
-	  m_dev_ptr(nullptr),
-	  m_devid_ptr(nullptr)
+CIMUXSens_MT4::CIMUXSens_MT4() : m_portname(), m_timeStartTT(), m_sensorPose()
+
 {
 	m_sensorLabel = "XSensMTi_MT4";
 

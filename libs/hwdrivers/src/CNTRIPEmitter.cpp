@@ -25,14 +25,7 @@ using namespace mrpt::hwdrivers;
 /*-------------------------------------------------------------
 						CNTRIPEmitter
 -------------------------------------------------------------*/
-CNTRIPEmitter::CNTRIPEmitter()
-	: m_client(),
-	  m_com_port(""),
-	  m_com_bauds(38400),
-	  m_transmit_to_server(true),
-	  m_rate_count(0)
-{
-}
+CNTRIPEmitter::CNTRIPEmitter() : m_client(), m_com_port("") {}
 
 /*-------------------------------------------------------------
 						~CNTRIPEmitter

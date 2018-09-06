@@ -189,34 +189,23 @@ class WxSubsystem
 	 */
 	struct TRequestToWxMainThread
 	{
-		TRequestToWxMainThread()
-			: source2D(nullptr),
-			  source3D(nullptr),
-			  sourcePlots(nullptr),
-			  sourceCameraSelectDialog(false),
-			  voidPtr(nullptr),
-			  voidPtr2(nullptr),
-			  x(400),
-			  y(400),
-			  boolVal(false)
-		{
-		}
+		TRequestToWxMainThread() = default;
 
 		/** Only one of source* can be non-nullptr, indicating the class that
 		 * generated the request. */
-		mrpt::gui::CDisplayWindow* source2D;
+		mrpt::gui::CDisplayWindow* source2D{nullptr};
 
 		/** Only one of source* can be non-nullptr, indicating the class that
 		 * generated the request. */
-		mrpt::gui::CDisplayWindow3D* source3D;
+		mrpt::gui::CDisplayWindow3D* source3D{nullptr};
 
 		/** Only one of source* can be non-nullptr, indicating the class that
 		 * generated the request. */
-		mrpt::gui::CDisplayWindowPlots* sourcePlots;
+		mrpt::gui::CDisplayWindowPlots* sourcePlots{nullptr};
 
 		/** Only one of source* can be non-nullptr, indicating the class that
 		 * generated the request. */
-		bool sourceCameraSelectDialog;
+		bool sourceCameraSelectDialog{false};
 
 		/** Parameters, depending on OPCODE.
 		 */
@@ -224,9 +213,9 @@ class WxSubsystem
 
 		/** Parameters, depending on OPCODE.
 		 */
-		void *voidPtr, *voidPtr2;
-		int x, y;
-		bool boolVal;
+		void *voidPtr{nullptr}, *voidPtr2{nullptr};
+		int x{400}, y{400};
+		bool boolVal{false};
 		mrpt::math::CVectorFloat vector_x, vector_y;
 		std::string plotName;
 
@@ -357,7 +346,9 @@ class CWindowDialog : public wxFrame
 		void OnMouseClick(wxMouseEvent& ev);
 		void OnChar(wxKeyEvent& ev);
 
-		void OnEraseBackground(wxEraseEvent& ev) { /* Do nothing */}
+		void OnEraseBackground(wxEraseEvent& ev)
+		{ /* Do nothing */
+		}
 	};
 
    public:
@@ -507,5 +498,4 @@ class CWindowDialogPlots : public wxFrame
 
 #endif
 
-}
-
+}  // namespace mrpt::gui

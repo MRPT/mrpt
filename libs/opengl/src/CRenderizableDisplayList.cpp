@@ -57,7 +57,7 @@ TAuxDLData* TAuxDLData::m_pInstance = nullptr;
 
 // Default constructor:
 CRenderizableDisplayList::CRenderizableDisplayList()
-	: m_dl(INVALID_DISPLAY_LIST_ID), m_dl_recreate(true)
+	: m_dl(INVALID_DISPLAY_LIST_ID) 
 {
 }
 

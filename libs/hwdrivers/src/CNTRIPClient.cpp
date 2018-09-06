@@ -28,13 +28,7 @@ using namespace std;
 /* --------------------------------------------------------
 					CNTRIPClient
    -------------------------------------------------------- */
-CNTRIPClient::CNTRIPClient()
-	: m_thread(),
-	  m_thread_exit(false),
-	  m_thread_do_process(false),
-	  m_waiting_answer_connection(false),
-	  m_answer_connection(connError),
-	  m_args()
+CNTRIPClient::CNTRIPClient() : m_thread(), m_args()
 {
 	m_thread = std::thread(&CNTRIPClient::private_ntrip_thread, this);
 }

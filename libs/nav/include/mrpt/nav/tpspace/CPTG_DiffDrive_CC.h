@@ -26,7 +26,7 @@ class CPTG_DiffDrive_CC : public CPTG_DiffDrive_CollisionGridBased
 {
 	DEFINE_SERIALIZABLE(CPTG_DiffDrive_CC)
    public:
-	CPTG_DiffDrive_CC() : R(0), K(0) {}
+	CPTG_DiffDrive_CC() {}
 	CPTG_DiffDrive_CC(
 		const mrpt::config::CConfigFileBase& cfg, const std::string& sSection)
 	{
@@ -47,7 +47,6 @@ class CPTG_DiffDrive_CC : public CPTG_DiffDrive_CollisionGridBased
 	void loadDefaultParams() override;
 
    protected:
-	double R, K;
+	double R{0}, K{0};
 };
-}
-
+}  // namespace mrpt::nav

@@ -23,25 +23,25 @@ class CPose2DGridTemplate
 {
    protected:
 	/** The limits and resolution of the grid:
-	  */
+	 */
 	double m_xMin, m_xMax, m_yMin, m_yMax, m_phiMin, m_phiMax, m_resolutionXY,
 		m_resolutionPhi;
 
 	/** The size of "m_data" is m_sizeX * m_sizeY * m_sizePhi
-	  */
+	 */
 	size_t m_sizeX, m_sizeY, m_sizePhi, m_sizeXY;
 
 	/** The indexes of the "left" borders:
-	  */
+	 */
 	int m_idxLeftX, m_idxLeftY, m_idxLeftPhi;
 
 	/** The data:
-	  */
+	 */
 	std::vector<T> m_data;
 
    public:
 	/** Returns "indexes" from coordinates:
-	  */
+	 */
 	size_t x2idx(double x) const
 	{
 		int idx = mrpt::round((x - m_xMin) / m_resolutionXY);
@@ -50,7 +50,7 @@ class CPose2DGridTemplate
 	}
 
 	/** Returns "indexes" from coordinates:
-	  */
+	 */
 	size_t y2idx(double y) const
 	{
 		int idx = mrpt::round((y - m_yMin) / m_resolutionXY);
@@ -59,7 +59,7 @@ class CPose2DGridTemplate
 	}
 
 	/** Returns "indexes" from coordinates:
-	  */
+	 */
 	size_t phi2idx(double phi) const
 	{
 		int idx = mrpt::round((phi - m_phiMin) / m_resolutionPhi);
@@ -68,7 +68,7 @@ class CPose2DGridTemplate
 	}
 
 	/** Returns coordinates from "indexes":
-	  */
+	 */
 	double idx2x(size_t x) const
 	{
 		ASSERT_(x < m_sizeX);
@@ -76,7 +76,7 @@ class CPose2DGridTemplate
 	}
 
 	/** Returns coordinates from "indexes":
-	  */
+	 */
 	double idx2y(size_t y) const
 	{
 		ASSERT_(y < m_sizeY);
@@ -84,7 +84,7 @@ class CPose2DGridTemplate
 	}
 
 	/** Returns coordinates from "indexes":
-	  */
+	 */
 	double idx2phi(size_t phi) const
 	{
 		ASSERT_(phi < m_sizePhi);
@@ -92,28 +92,13 @@ class CPose2DGridTemplate
 	}
 
 	/** Default constructor:
-	  */
+	 */
 	CPose2DGridTemplate(
 		double xMin = -1.0f, double xMax = 1.0f, double yMin = -1.0f,
 		double yMax = 1.0f, double resolutionXY = 0.5f,
 		double resolutionPhi = mrpt::DEG2RAD(180.0), double phiMin = -M_PI,
 		double phiMax = M_PI)
-		: m_xMin(),
-		  m_xMax(),
-		  m_yMin(),
-		  m_yMax(),
-		  m_phiMin(),
-		  m_phiMax(),
-		  m_resolutionXY(),
-		  m_resolutionPhi(),
-		  m_sizeX(),
-		  m_sizeY(),
-		  m_sizePhi(),
-		  m_sizeXY(),
-		  m_idxLeftX(),
-		  m_idxLeftY(),
-		  m_idxLeftPhi(),
-		  m_data()
+		: m_data()
 	{
 		setSize(
 			xMin, xMax, yMin, yMax, resolutionXY, resolutionPhi, phiMin,
@@ -122,7 +107,7 @@ class CPose2DGridTemplate
 
 	virtual ~CPose2DGridTemplate() {}
 	/** Changes the limits and size of the grid, erasing previous contents:
-	  */
+	 */
 	void setSize(
 		double xMin, double xMax, double yMin, double yMax, double resolutionXY,
 		double resolutionPhi, double phiMin = -M_PI, double phiMax = M_PI)
@@ -161,21 +146,21 @@ class CPose2DGridTemplate
 	}
 
 	/** Reads the contents of a cell
-	  */
+	 */
 	const T* getByPos(double x, double y, double phi) const
 	{
 		return getByIndex(x2idx(x), y2idx(y), phi2idx(phi));
 	}
 
 	/** Reads the contents of a cell
-	  */
+	 */
 	T* getByPos(double x, double y, double phi)
 	{
 		return getByIndex(x2idx(x), y2idx(y), phi2idx(phi));
 	}
 
 	/** Reads the contents of a cell
-	  */
+	 */
 	const T* getByIndex(size_t x, size_t y, size_t phi) const
 	{
 		ASSERT_(x < m_sizeX && y < m_sizeY && phi < m_sizePhi);
@@ -183,7 +168,7 @@ class CPose2DGridTemplate
 	}
 
 	/** Reads the contents of a cell
-	  */
+	 */
 	T* getByIndex(size_t x, size_t y, size_t phi)
 	{
 		ASSERT_(x < m_sizeX && y < m_sizeY && phi < m_sizePhi);
@@ -192,7 +177,7 @@ class CPose2DGridTemplate
 
 	/** Returns the whole grid as a matrix, for a given constant "phi" and where
 	 * each row contains values for a fixed "y".
-	  */
+	 */
 	template <class MATRIXLIKE>
 	void getAsMatrix(const double& phi, MATRIXLIKE& outMat)
 	{
@@ -207,7 +192,7 @@ class CPose2DGridTemplate
 	}
 
 	/** Get info about the grid:
-	  */
+	 */
 	double getXMin() const { return m_xMin; }
 	double getXMax() const { return m_xMax; }
 	double getYMin() const { return m_yMin; }
@@ -221,5 +206,4 @@ class CPose2DGridTemplate
 	size_t getSizePhi() const { return m_sizePhi; }
 };  // End of class def.
 
-}
-
+}  // namespace mrpt::poses

@@ -28,11 +28,7 @@ using namespace mrpt::nav;
  *   - v_max, w_max: Maximum robot speeds.
  */
 CPTG_DiffDrive_CollisionGridBased::CPTG_DiffDrive_CollisionGridBased()
-	: V_MAX(.0),
-	  W_MAX(.0),
-	  turningRadiusReference(.10),
-	  m_resolution(0.05),
-	  m_stepTimeDuration(0.01),
+	: 
 	  m_collisionGrid(-1, 1, -1, 1, 0.5, this)
 {
 }

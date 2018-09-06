@@ -46,10 +46,10 @@ using namespace std;
 //   and exploit multicore CPUs.
 struct TThreadParam
 {
-	TThreadParam() : quit(false), pushed_key(0), Hz(0) {}
-	volatile bool quit;
-	volatile int pushed_key;
-	volatile double Hz;
+	TThreadParam()  {}
+	volatile bool quit{false};
+	volatile int pushed_key{0};
+	volatile double Hz{0};
 
 	CObservation3DRangeScan::Ptr new_obs;  // RGB+D (+3D points)
 	CObservationIMU::Ptr new_obs_imu;  // Accelerometers

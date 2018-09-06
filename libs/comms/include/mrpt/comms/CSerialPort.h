@@ -55,59 +55,59 @@ class CSerialPort : public mrpt::io::CStream
 	/** Default constructor: it does not open any port - later you must call
 	 * "setSerialPortName" and then "open"
 	 */
-	CSerialPort();
+	CSerialPort() = default;
 
 	/** Destructor
-	*/
+	 */
 	~CSerialPort() override;
 
 	/** Sets the serial port to open (it is an error to try to change this while
 	 * open yet).
-	  * \sa open, close
-	  */
+	 * \sa open, close
+	 */
 	void setSerialPortName(const std::string& COM_name);
 
 	/** Open the port. If is already open results in no action.
-	* \exception std::exception On communication errors
-	*/
+	 * \exception std::exception On communication errors
+	 */
 	void open();
 
 	/** Open the given serial port. If it is already open and the name does not
-	* match, an exception is raised.
-	* \exception std::exception On communication errors or a different serial
-	* port already open.
-	*/
+	 * match, an exception is raised.
+	 * \exception std::exception On communication errors or a different serial
+	 * port already open.
+	 */
 	void open(const std::string& COM_name);
 
 	/** Close the port. If is already closed, results in no action.
-	*/
+	 */
 	void close();
 
 	/** Returns if port has been correctly open.
-	*/
+	 */
 	bool isOpen() const;
 
 	/** Purge tx and rx buffers.
-	   * \exception std::exception On communication errors
-	   */
+	 * \exception std::exception On communication errors
+	 */
 	void purgeBuffers();
 
 	/** Changes the configuration of the port.
-	*  \param parity  0:No parity, 1:Odd, 2:Even (WINDOWS ONLY: 3:Mark, 4:Space)
-	*  \param baudRate The desired baud rate Accepted values: 50 - 230400
-	*  \param bits Bits per word (typ. 8) Accepted values: 5,6,7,8.
-	*  \param nStopBits Stop bits (typ. 1) Accepted values: 1,2
-	*  \param enableFlowControl Whether to enable the hardware flow control
-	* (RTS/CTS) (default=no)
-	* \exception std::exception On communication errors
-	*/
+	 *  \param parity  0:No parity, 1:Odd, 2:Even (WINDOWS ONLY: 3:Mark,
+	 * 4:Space) \param baudRate The desired baud rate Accepted values: 50 -
+	 * 230400 \param bits Bits per word (typ. 8) Accepted values: 5,6,7,8.
+	 *  \param nStopBits Stop bits (typ. 1) Accepted values: 1,2
+	 *  \param enableFlowControl Whether to enable the hardware flow control
+	 * (RTS/CTS) (default=no)
+	 * \exception std::exception On communication errors
+	 */
 	void setConfig(
 		int baudRate, int parity = 0, int bits = 8, int nStopBits = 1,
 		bool enableFlowControl = false);
 
 	/** Changes the timeouts of the port, in milliseconds.
-	* \exception std::exception On communication errors
-	*/
+	 * \exception std::exception On communication errors
+	 */
 	void setTimeouts(
 		int ReadIntervalTimeout, int ReadTotalTimeoutMultiplier,
 		int ReadTotalTimeoutConstant, int WriteTotalTimeoutMultiplier,
@@ -117,22 +117,22 @@ class CSerialPort : public mrpt::io::CStream
 	 * Unlike CStream::ReadBuffer, this method will not raise an exception on
 	 * zero bytes read, as long as there is not any fatal error in the
 	 * communications.
-	  * \exception std::exception On communication errors
+	 * \exception std::exception On communication errors
 	 */
 	size_t Read(void* Buffer, size_t Count) override;
 
 	/** Reads one text line from the serial port in POSIX "canonical mode".
-	  *  This method reads from the serial port until one of the characters in
+	 *  This method reads from the serial port until one of the characters in
 	 * \a eol are found.
-	  * \param eol_chars A line reception is finished when one of these
+	 * \param eol_chars A line reception is finished when one of these
 	 * characters is found. Default: LF (10), CR (13).
-	  * \param total_timeout_ms If >0, the maximum number of milliseconds to
+	 * \param total_timeout_ms If >0, the maximum number of milliseconds to
 	 * wait.
-	  * \param out_timeout If provided, will hold true on return if a timeout
+	 * \param out_timeout If provided, will hold true on return if a timeout
 	 * ocurred, false on a valid read.
-	  * \return The read string, without the final
-	  * \exception std::exception On communication errors
-	  */
+	 * \return The read string, without the final
+	 * \exception std::exception On communication errors
+	 */
 	std::string ReadString(
 		const int total_timeout_ms = -1, bool* out_timeout = nullptr,
 		const char* eol_chars = "\r\n");
@@ -150,20 +150,19 @@ class CSerialPort : public mrpt::io::CStream
    protected:
 	/** The complete name of the serial port device (i.e.
 	 * "\\.\COM10","/dev/ttyS2",...)
-	  */
+	 */
 	std::string m_serialName;
-	int m_baudRate;
-	int m_totalTimeout_ms, m_interBytesTimeout_ms;
+	int m_baudRate{0};
+	int m_totalTimeout_ms{0}, m_interBytesTimeout_ms{0};
 	mrpt::system::CTicTac m_timer;
 #ifdef _WIN32
 	// WINDOWS
-	void* hCOM;
+	void* hCOM{nullptr};
 #else
 	// LINUX
 	/** The file handle (-1: Not open)
-	  */
-	int hCOM;
+	 */
+	int hCOM{-1};
 #endif
 };  // end of class
-}
-
+}  // namespace mrpt::comms

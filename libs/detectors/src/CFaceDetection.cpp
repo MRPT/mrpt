@@ -44,7 +44,7 @@ using namespace mrpt::obs;
 //------------------------------------------------------------------------
 //							CFaceDetection
 //------------------------------------------------------------------------
-CFaceDetection::CFaceDetection() : m_end_threads(false)
+CFaceDetection::CFaceDetection()  
 {
 	m_measure.numPossibleFacesDetected = 0;
 	m_measure.numRealFacesDetected = 0;

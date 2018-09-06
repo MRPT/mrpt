@@ -166,22 +166,15 @@ void mempool_donate_range_matrix(CObservation3DRangeScan& obs)
 							Constructor
  ---------------------------------------------------------------*/
 CObservation3DRangeScan::CObservation3DRangeScan()
-	: m_points3D_external_stored(false),
-	  m_rangeImage_external_stored(false),
-	  hasPoints3D(false),
-	  hasRangeImage(false),
-	  range_is_depth(true),
-	  hasIntensityImage(false),
-	  intensityImageChannel(CH_VISIBLE),
-	  hasConfidenceImage(false),
+	: 
 	  pixelLabels(),  // Start without label info
 	  cameraParams(),
 	  cameraParamsIntensity(),
 	  relativePoseIntensityWRTDepth(
 		  0, 0, 0, DEG2RAD(-90), DEG2RAD(0), DEG2RAD(-90)),
-	  maxRange(5.0f),
-	  sensorPose(),
-	  stdError(0.01f)
+	  
+	  sensorPose()
+	  
 {
 }
 
@@ -1304,8 +1297,7 @@ T3DPointsTo2DScanParams::T3DPointsTo2DScanParams()
 	: angle_sup(mrpt::DEG2RAD(5)),
 	  angle_inf(mrpt::DEG2RAD(5)),
 	  z_min(-std::numeric_limits<double>::max()),
-	  z_max(std::numeric_limits<double>::max()),
-	  oversampling_ratio(1.2),
-	  use_origin_sensor_pose(false)
+	  z_max(std::numeric_limits<double>::max())
+	  
 {
 }

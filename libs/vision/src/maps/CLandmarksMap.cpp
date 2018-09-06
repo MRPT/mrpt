@@ -1853,9 +1853,8 @@ double CLandmarksMap::computeLikelihood_RSLC_2007(
   ---------------------------------------------------------------*/
 CLandmarksMap::TCustomSequenceLandmarks::TCustomSequenceLandmarks()
 	: m_landmarks(),
-	  m_grid(-10.0f, 10.0f, -10.0f, 10.f, 0.20f),
-	  m_largestDistanceFromOrigin(),
-	  m_largestDistanceFromOriginIsUpdated(false)
+	  m_grid(-10.0f, 10.0f, -10.0f, 10.f, 0.20f)
+	  
 {
 }
 
@@ -2202,27 +2201,7 @@ double CLandmarksMap::computeLikelihood_SIFT_LandmarkMap(
 					TInsertionOptions
   ---------------------------------------------------------------*/
 CLandmarksMap::TInsertionOptions::TInsertionOptions()
-	: insert_SIFTs_from_monocular_images(true),
-	  insert_SIFTs_from_stereo_images(true),
-	  insert_Landmarks_from_range_scans(true),
-	  SiftCorrRatioThreshold(0.4f),
-	  SiftLikelihoodThreshold(0.5f),
-
-	  SiftEDDThreshold(200.0f),
-	  SIFTMatching3DMethod(0),
-	  SIFTLikelihoodMethod(0),
-
-	  SIFTsLoadDistanceOfTheMean(3.0f),
-	  SIFTsLoadEllipsoidWidth(0.05f),
-
-	  SIFTs_stdXY(2.0f),
-	  SIFTs_stdDisparity(1.0f),
-
-	  SIFTs_numberOfKLTKeypoints(60),
-	  SIFTs_stereo_maxDepth(15.0f),
-
-	  SIFTs_epipolar_TH(1.5f),
-	  PLOT_IMAGES(false),
+	: 
 
 	  SIFT_feat_options(vision::featSIFT)
 {
@@ -2339,29 +2318,17 @@ void CLandmarksMap::TInsertionOptions::loadFromConfigFile(
 					TLikelihoodOptions
   ---------------------------------------------------------------*/
 CLandmarksMap::TLikelihoodOptions::TLikelihoodOptions()
-	: rangeScan2D_decimation(20),
-	  SIFTs_sigma_euclidean_dist(0.30f),
-	  SIFTs_sigma_descriptor_dist(100.0f),
-	  SIFTs_mahaDist_std(4.0f),
-	  SIFTnullCorrespondenceDistance(4.0f),
-	  SIFTs_decimation(1),
+	: 
 	  SIFT_feat_options(vision::featSIFT),
-	  beaconRangesStd(0.08f),
-	  beaconRangesUseObservationStd(false),
-	  extRobotPoseStd(0.05f),
-	  GPSOrigin(),
-	  GPS_sigma(1.0f)
+	  
+	  GPSOrigin()
+	  
 {
 }
 
 CLandmarksMap::TLikelihoodOptions::TGPSOrigin::TGPSOrigin()
-	: longitude(-4.47763833333333),
-	  latitude(36.71559000000000),
-	  altitude(42.3),
-	  ang(0),
-	  x_shift(0),
-	  y_shift(0),
-	  min_sat(4)
+	
+	  
 {
 }
 
@@ -2477,7 +2444,7 @@ void CLandmarksMap::TLikelihoodOptions::loadFromConfigFile(
 					TFuseOptions
   ---------------------------------------------------------------*/
 CLandmarksMap::TFuseOptions::TFuseOptions()
-	: minTimesSeen(2), ellapsedTime(4.0f)
+	 
 {
 }
 

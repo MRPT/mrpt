@@ -223,14 +223,14 @@ class reactive_navigator_demoframe : public wxFrame
 	/* Vars: */
 	struct TOptions : public mrpt::config::CLoadableOptions
 	{
-		double MAX_SENSOR_RADIUS;
-		double SENSOR_FOV;
-		uint64_t SENSOR_NUM_RANGES;
-		double SENSOR_RANGE_NOISE_STD;
-		double SENSOR_RATE;
-		double NAVIGATION_RATE;
+		double MAX_SENSOR_RADIUS{10.0};
+		double SENSOR_FOV{M_PI * 2.0};
+		uint64_t SENSOR_NUM_RANGES{181};
+		double SENSOR_RANGE_NOISE_STD{0.02};
+		double SENSOR_RATE{10.0};
+		double NAVIGATION_RATE{4.0};
 
-		TOptions();
+		TOptions() = default;
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs

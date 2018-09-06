@@ -2569,12 +2569,11 @@ void CLoopCloserERD<GRAPH_T>::TLaserParams::loadFromConfigFile(
 template <class GRAPH_T>
 CLoopCloserERD<GRAPH_T>::TLoopClosureParams::TLoopClosureParams()
 	: keystroke_map_partitions("b"),
-	  balloon_elevation(3),
-	  balloon_radius(0.5),
+	  
 	  balloon_std_color(153, 0, 153),
 	  balloon_curr_color(62, 0, 80),
-	  connecting_lines_color(balloon_std_color),
-	  has_read_config(false)
+	  connecting_lines_color(balloon_std_color)
+	  
 {
 }
 

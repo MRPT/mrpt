@@ -28,7 +28,7 @@ struct TNodeAnnotations
 	using self_t = TNodeAnnotations;
 
 	/**\brief Constructor */
-	TNodeAnnotations() : is_node_annots_empty(false) {}
+	TNodeAnnotations() {}
 	/**\brief Destructor */
 	virtual ~TNodeAnnotations() {}
 	/**\brief Generic copy constructor */
@@ -64,7 +64,7 @@ struct TNodeAnnotations
 	/**\brief Indicates if this is a dummy TNodeAnnotations struct or if it does
 	 * contain meaningful data
 	 */
-	bool is_node_annots_empty;
+	bool is_node_annots_empty{false};
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -79,6 +79,4 @@ struct TNodeAnnotationsEmpty : public TNodeAnnotations
 	TNodeAnnotationsEmpty() { this->is_node_annots_empty = true; }
 	DECLARE_TTYPENAME_CLASSNAME(mrpt::graphs::detail::TNodeAnnotationsEmpty)
 };
-}
-
-
+}  // namespace mrpt::graphs::detail

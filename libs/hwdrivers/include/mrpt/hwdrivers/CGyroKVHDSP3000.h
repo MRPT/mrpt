@@ -74,7 +74,7 @@ class CGyroKVHDSP3000 : public hwdrivers::CGenericSensor
 	 * class is first used to request data from the device.
 	  * \sa comms::CSerialPort
 	  */
-	int m_COMbauds;
+	int m_COMbauds{38400};
 	std::string m_com_port;
 
 	mrpt::poses::CPose3D m_sensorPose;
@@ -85,8 +85,8 @@ class CGyroKVHDSP3000 : public hwdrivers::CGenericSensor
 
 	/** The serial port connection */
 	mrpt::comms::CSerialPort* m_serialPort;
-	GYRO_MODE m_mode;
-	bool m_firstInteration;
+	GYRO_MODE m_mode{RATE};
+	bool m_firstInteration{true};
 
 	mrpt::obs::CObservationIMU::Ptr m_observationGyro;
 

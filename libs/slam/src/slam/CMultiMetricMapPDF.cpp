@@ -47,11 +47,11 @@ CMultiMetricMapPDF::CMultiMetricMapPDF(
 	const mrpt::maps::TSetOfMetricMapInitializers* mapsInitializers,
 	const TPredictionParams* predictionOptions)
 	: averageMap(mapsInitializers),
-	  averageMapIsUpdated(false),
+	  
 	  SFs(),
 	  SF2robotPath(),
-	  options(),
-	  newInfoIndex(0)
+	  options()
+	  
 {
 	m_particles.resize(opts.sampleSize);
 	for (auto& m_particle : m_particles)
@@ -601,8 +601,7 @@ void CMultiMetricMapPDF::saveCurrentPathEstimationToTextFile(
 				TPredictionParams
   ---------------------------------------------------------------*/
 CMultiMetricMapPDF::TPredictionParams::TPredictionParams()
-	: pfOptimalProposal_mapSelection(0),
-	  ICPGlobalAlign_MinQuality(0.70f),
+	: 
 	  update_gridMapLikelihoodOptions(),
 	  KLD_params(),
 	  icp_params()

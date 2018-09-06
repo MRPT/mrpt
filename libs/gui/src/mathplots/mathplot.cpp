@@ -90,7 +90,7 @@ double mpWindow::zoomIncrementalFactor = 1.5;
 
 IMPLEMENT_ABSTRACT_CLASS(mpLayer, wxObject)
 
-mpLayer::mpLayer() : m_type(mpLAYER_UNDEF)
+mpLayer::mpLayer()  
 {
 	SetPen((wxPen&)*wxBLACK_PEN);
 	SetFont((wxFont&)*wxNORMAL_FONT);

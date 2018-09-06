@@ -53,16 +53,16 @@ using TSteroCalibCallbackFunctor =
 struct TStereoCalibParams
 {
 	/** The number of squares in the checkerboard in the "X" & "Y" direction. */
-	unsigned int check_size_x, check_size_y;
+	unsigned int check_size_x{7}, check_size_y{9};
 	/** The size of each square in the checkerboard, in meters, in the "X" & Y"
 	 * axes. */
-	double check_squares_length_X_meters, check_squares_length_Y_meters;
-	bool normalize_image;
-	bool skipDrawDetectedImgs;
+	double check_squares_length_X_meters{0.02}, check_squares_length_Y_meters{0.02};
+	bool normalize_image{true};
+	bool skipDrawDetectedImgs{false};
 	/** Show progress messages to std::cout console (default=true) */
-	bool verbose;
+	bool verbose{true};
 	/** Maximum number of iterations of the optimizer (default=300) */
-	size_t maxIters;
+	size_t maxIters{2000};
 
 	/** Select which distortion parameters (of both left/right cameras) will be
 	 * optimzed:
@@ -73,20 +73,20 @@ struct TStereoCalibParams
 	 * \note Default values are to only assume distortion via k1 and k2 (the
 	 * rest are zeros).
 	 */
-	bool optimize_k1, optimize_k2, optimize_k3, optimize_t1, optimize_t2;
+	bool optimize_k1{true}, optimize_k2{true}, optimize_k3{false}, optimize_t1{false}, optimize_t2{false};
 
 	/** Employ a Pseudo-Huber robustifier kernel (Default: false) */
-	bool use_robust_kernel;
+	bool use_robust_kernel{false};
 	/** The parameter of the robust kernel, in pixels (only if
 	 * use_robust_kernel=true) (Default=10) */
-	double robust_kernel_param;
+	double robust_kernel_param{10};
 
 	/** If set to !=NULL, this function will be called within each Lev-Marq.
 	 * iteration (don't do heavy stuff here since performance will degrade) */
-	TSteroCalibCallbackFunctor callback;
+	TSteroCalibCallbackFunctor callback{nullptr};
 	/** If using a callback function, you can use this to pass custom data to
 	 * your callback. */
-	void* callback_user_param;
+	void* callback_user_param{nullptr};
 
 	// Ctor: Set default values
 	TStereoCalibParams();
@@ -112,12 +112,12 @@ struct TStereoCalibResults
 	std::vector<bool> image_pair_was_used;
 
 	/** Final reprojection square Root Mean Square Error (in pixels). */
-	double final_rmse;
+	double final_rmse{0};
 	/** Final number of optimization iterations executed. */
-	size_t final_iters;
+	size_t final_iters{0};
 	/** Number of image pairs in which valid checkerboards were correctly
 	 * detected. */
-	size_t final_number_good_image_pairs;
+	size_t final_number_good_image_pairs{0};
 
 	/** The inverse variance (information/precision) of each of the 9 left/right
 	 * camera parameters [fx fy cx cy k1 k2 k3 t1 t2].

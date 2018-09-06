@@ -17,17 +17,8 @@ using namespace mrpt::obs::gnss;
 
 // ---------------------------------------
 Message_NMEA_GGA::content_t::content_t()
-	: UTCTime(),
-	  latitude_degrees(0),
-	  longitude_degrees(0),
-	  fix_quality(0),
-	  altitude_meters(0),
-	  geoidal_distance(),
-	  orthometric_altitude(),
-	  corrected_orthometric_altitude(),
-	  satellitesUsed(0),
-	  thereis_HDOP(false),
-	  HDOP(0)
+	: UTCTime()
+	  
 {
 }
 
@@ -94,7 +85,7 @@ bool Message_NMEA_GGA::getAllFieldValues(std::ostream& o) const
 
 // ---------------------------------------
 Message_NMEA_GLL::content_t::content_t()
-	: UTCTime(), latitude_degrees(0), longitude_degrees(0), validity_char('V')
+	: UTCTime() 
 {
 }
 
@@ -127,7 +118,7 @@ bool Message_NMEA_GLL::getAllFieldValues(std::ostream& o) const
 
 // ---------------------------------------
 Message_NMEA_VTG::content_t::content_t()
-	: true_track(), magnetic_track(), ground_speed_knots(), ground_speed_kmh()
+	 
 {
 }
 
@@ -157,17 +148,8 @@ bool Message_NMEA_VTG::getAllFieldValues(std::ostream& o) const
 
 // ---------------------------------------
 Message_NMEA_RMC::content_t::content_t()
-	: UTCTime(),
-	  validity_char('V'),
-	  latitude_degrees(0),
-	  longitude_degrees(0),
-	  speed_knots(0),
-	  direction_degrees(0),
-	  date_day(0),
-	  date_month(0),
-	  date_year(0),
-	  magnetic_dir(),
-	  positioning_mode('N')
+	: UTCTime()
+	  
 {
 }
 
@@ -236,7 +218,7 @@ bool Message_NMEA_RMC::getAllFieldValues(std::ostream& o) const
 
 // ---------------------------------------
 Message_NMEA_ZDA::content_t::content_t()
-	: UTCTime(), date_day(), date_month(), date_year()
+	: UTCTime() 
 {
 }
 

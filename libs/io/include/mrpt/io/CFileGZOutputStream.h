@@ -24,7 +24,7 @@ namespace mrpt::io
 class CFileGZOutputStream : public CStream
 {
    private:
-	void* m_f;
+	void* m_f{nullptr};
 
    public:
 	/** Constructor: opens an output file with compression level = 1 (minimum,

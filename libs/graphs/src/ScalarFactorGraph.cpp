@@ -23,7 +23,7 @@ using namespace std;
 
 ScalarFactorGraph::FactorBase::~FactorBase() {}
 ScalarFactorGraph::ScalarFactorGraph()
-	: COutputLogger("GMRF"), m_enable_profiler(false)
+	: COutputLogger("GMRF") 
 {
 }
 

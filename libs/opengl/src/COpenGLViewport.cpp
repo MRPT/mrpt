@@ -50,25 +50,15 @@ mrpt::system::CTimeLogger glv_timlog;
 COpenGLViewport::COpenGLViewport(COpenGLScene* parent, const string& name)
 	: m_camera(),
 	  m_parent(parent),
-	  m_isCloned(false),
-	  m_isClonedCamera(false),
+	  
 	  m_clonedViewport(),
 	  m_name(name),
-	  m_isTransparent(false),
-	  m_borderWidth(0),
-	  m_view_x(0),
-	  m_view_y(0),
-	  m_view_width(1),
-	  m_view_height(1),
-	  m_clip_min(0.1),
-	  m_clip_max(10000),
-	  m_custom_backgb_color(false),
+	  
 	  m_background_color(0.6f, 0.6f, 0.6f),
-	  m_isImageView(false),
+	  
 	  m_imageview_img(),
 	  m_objects(),
-	  // OpenGL settings:
-	  m_OpenGL_enablePolygonNicest(true),
+	  
 	  m_lights()
 {
 	// Default: one light from default direction

@@ -664,13 +664,7 @@ void CLogFileRecord_ND::serializeFrom(
 						TOptions
   ---------------------------------------------------------------*/
 CHolonomicND::TOptions::TOptions()
-	:  // Default values:
-	  TOO_CLOSE_OBSTACLE(0.15),
-	  WIDE_GAP_SIZE_PERCENT(0.25),
-	  RISK_EVALUATION_SECTORS_PERCENT(0.10),
-	  RISK_EVALUATION_DISTANCE(0.4),
-	  MAX_SECTOR_DIST_FOR_D2_PERCENT(0.25),
-	  TARGET_SLOW_APPROACHING_DISTANCE(0.60),
+	:  
 	  factorWeights{1.0, 0.5, 2.0, 0.4}
 {
 }

@@ -35,7 +35,7 @@ class CAxis : public CRenderizableDisplayList
 	float m_lineWidth;
 	/** draw marks for X,Y,Z */
 	bool m_marks[3];
-	float m_textScale;
+	float m_textScale{0.25f};
 	float m_textRot[3][3];  // {x,y,z},{yaw,pitch,roll}
 
    public:

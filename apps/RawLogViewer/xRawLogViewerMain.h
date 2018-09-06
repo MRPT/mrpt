@@ -65,14 +65,9 @@
 // rawlog.
 struct TInfoPerSensorLabel
 {
-	TInfoPerSensorLabel()
-		: max_ellapsed_tim_between_obs(.0),
-		  first(INVALID_TIMESTAMP),
-		  last(INVALID_TIMESTAMP)
-	{
-	}
+	TInfoPerSensorLabel() {}
 	std::vector<double> timOccurs;
-	double max_ellapsed_tim_between_obs;
+	double max_ellapsed_tim_between_obs{.0};
 	mrpt::system::TTimeStamp first, last;
 
 	size_t getOccurences() const;
@@ -112,7 +107,8 @@ class MyArtProvider : public wxArtProvider
 {
    protected:
 	wxBitmap CreateBitmap(
-		const wxArtID& id, const wxArtClient& client, const wxSize& size) override;
+		const wxArtID& id, const wxArtClient& client,
+		const wxSize& size) override;
 };
 
 // The "custom class" mpWindow, from the wxMathPlot libray by David Schalig
@@ -158,11 +154,11 @@ class xRawLogViewerFrame : public wxFrame
 
    private:
 	/** Loads the given file in memory, in the varibale "rawlog"
-	  */
+	 */
 	void loadRawlogFile(const std::string& str, int first = 0, int last = -1);
 
 	/** Rebuilds the tree view with the data in "rawlog".
-	  */
+	 */
 	void rebuildTreeView();
 
 	// Open most recent file

@@ -6137,12 +6137,12 @@ void xRawLogViewerFrame::OnMenuRegenerateTimestampBySF(wxCommandEvent& event)
 // Used below. Must be at global scope for usage within STL.
 struct TImageToSaveData
 {
-	TImageToSaveData() : img(nullptr) {}
+	TImageToSaveData()  {}
 	TImageToSaveData(mrpt::img::CImage* _img, const char* str)
 		: img(_img), channel_desc(str)
 	{
 	}
-	mrpt::img::CImage* img;
+	mrpt::img::CImage* img{nullptr};
 	std::string channel_desc;  // LEFT, RIGHT, etc...
 };
 

@@ -26,15 +26,15 @@ class CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
    public:
 	/** Default constructor - Upon construction, you can set the parameters in
 	 * ICP_options, then call "initialize".
-	  */
+	 */
 	CMetricMapBuilderICP();
 
 	/** Destructor:
-	  */
+	 */
 	~CMetricMapBuilderICP() override;
 
 	/** Algorithm configuration params
-	  */
+	 */
 	struct TConfigParams : public mrpt::config::CLoadableOptions
 	{
 		/** Initializer */
@@ -74,10 +74,10 @@ class CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
 
 		/** What maps to create (at least one points map and/or a grid map are
 		 * needed).
-		  *  For the expected format in the .ini file when loaded with
+		 *  For the expected format in the .ini file when loaded with
 		 * loadFromConfigFile(), see documentation of
 		 * TSetOfMetricMapInitializers.
-		  */
+		 */
 		mrpt::maps::TSetOfMetricMapInitializers mapInitializers;
 	};
 
@@ -88,22 +88,22 @@ class CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
 
 	/** Initialize the method, starting with a known location PDF "x0"(if
 	 * supplied, set to nullptr to left unmodified) and a given fixed, past map.
-	  *  This method MUST be called if using the default constructor, after
+	 *  This method MUST be called if using the default constructor, after
 	 * loading the configuration into ICP_options. In particular,
 	 * TConfigParams::mapInitializers
-	  */
+	 */
 	void initialize(
 		const mrpt::maps::CSimpleMap& initialMap = mrpt::maps::CSimpleMap(),
 		const mrpt::poses::CPosePDF* x0 = nullptr) override;
 
 	/** Returns a copy of the current best pose estimation as a pose PDF.
-	  */
+	 */
 	mrpt::poses::CPose3DPDF::Ptr getCurrentPoseEstimation() const override;
 
 	/** Sets the "current map file", thus that map will be loaded if it exists
 	 * or a new one will be created if it does not, and the updated map will be
 	 * save to that file when destroying the object.
-	  */
+	 */
 	void setCurrentMapFile(const char* mapFile);
 
 	/** Appends a new action and observations to update this map: See the
@@ -146,9 +146,9 @@ class CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
 
 	/** A useful method for debugging: the current map (and/or poses) estimation
 	 * is dumped to an image file.
-	  * \param file The output file name
-	  * \param formatEMF_BMP Output format = true:EMF, false:BMP
-	  */
+	 * \param file The output file name
+	 * \param formatEMF_BMP Output format = true:EMF, false:BMP
+	 */
 	void saveCurrentEstimationToImage(
 		const std::string& file, bool formatEMF_BMP = true) override;
 
@@ -169,16 +169,16 @@ class CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
 	mrpt::math::CMatrixDouble33 m_lastPoseEst_cov;
 
 	/** The estimated robot path:
-	  */
+	 */
 	std::deque<mrpt::math::TPose2D> m_estRobotPath;
 	mrpt::poses::CPose2D m_auxAccumOdometry;
 
 	/** Traveled distances from last map update / ICP-based localization. */
 	struct TDist
 	{
-		TDist() : lin(0), ang(0) {}
-		double lin;  // meters
-		double ang;  // degrees
+		TDist() = default;
+		double lin{0};  // meters
+		double ang{0};  // degrees
 		mrpt::poses::CPose2D last_update;
 
 		void updateDistances(const mrpt::poses::CPose2D& p);
@@ -194,6 +194,4 @@ class CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
 	void resetRobotDisplacementCounters(const mrpt::poses::CPose2D& new_pose);
 };
 
-}
-
-
+}  // namespace mrpt::slam

@@ -55,24 +55,16 @@
 //   and exploit multicore CPUs.
 struct TThreadParam
 {
-	TThreadParam()
-		: quit(false),
-		  terminated(false),
-		  tilt_ang_deg(0),
-		  Hz(0),
-		  select_IR_channel(false),
-		  flag_grab_depth(false)
-	{
-	}
+	TThreadParam() {}
 
-	volatile bool quit;
-	volatile bool terminated;
-	volatile double tilt_ang_deg;
-	volatile double Hz;
-	volatile bool select_IR_channel;
+	volatile bool quit{false};
+	volatile bool terminated{false};
+	volatile double tilt_ang_deg{0};
+	volatile double Hz{0};
+	volatile bool select_IR_channel{false};
 
 	/** Default: false = only grab intensity channel(s) */
-	bool flag_grab_depth;
+	bool flag_grab_depth{false};
 
 	mrpt::obs::CObservation3DRangeScan::Ptr new_obs;  // RGB+D (+3D points)
 };

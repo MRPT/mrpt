@@ -96,8 +96,8 @@ class CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 
 	struct TReactiveNavigatorParams : public mrpt::config::CLoadableOptions
 	{
-		double min_obstacles_height,
-			max_obstacles_height;  // The range of "z" coordinates for obstacles
+		double min_obstacles_height{0.0},
+			max_obstacles_height{10.0};  // The range of "z" coordinates for obstacles
 		// to be considered
 
 		void loadFromConfigFile(

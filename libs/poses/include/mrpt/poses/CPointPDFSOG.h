@@ -39,12 +39,12 @@ class CPointPDFSOG : public CPointPDF
 	 */
 	struct TGaussianMode
 	{
-		TGaussianMode() : val(), log_w(0) {}
+		TGaussianMode() : val() {}
 		CPointPDFGaussian val;
 
 		/** The log-weight
-		  */
-		double log_w;
+		 */
+		double log_w{0};
 	};
 
 	using CListGaussianModes = std::deque<TGaussianMode>;
@@ -54,7 +54,7 @@ class CPointPDFSOG : public CPointPDF
    protected:
 	/** Assures the symmetry of the covariance matrix (eventually certain
 	 * operations in the math-coprocessor lead to non-symmetric matrixes!)
-	  */
+	 */
 	void assureSymmetry();
 
 	/** The list of SOG modes */
@@ -62,8 +62,8 @@ class CPointPDFSOG : public CPointPDF
 
    public:
 	/** Default constructor
-	  * \param nModes The initial size of CPointPDFSOG::m_modes
-	  */
+	 * \param nModes The initial size of CPointPDFSOG::m_modes
+	 */
 	CPointPDFSOG(size_t nModes = 1);
 
 	/** Clear all the gaussian modes */
@@ -135,25 +135,25 @@ class CPointPDFSOG : public CPointPDF
 	void copyFrom(const CPointPDF& o) override;
 
 	/** Save the density to a text file, with the following format:
-	  *  There is one row per Gaussian "mode", and each row contains 10
+	 *  There is one row per Gaussian "mode", and each row contains 10
 	 * elements:
-	  *   - w (The weight)
-	  *   - x_mean (gaussian mean value)
-	  *   - y_mean (gaussian mean value)
-	  *   - x_mean (gaussian mean value)
-	  *   - C11 (Covariance elements)
-	  *   - C22 (Covariance elements)
-	  *   - C33 (Covariance elements)
-	  *   - C12 (Covariance elements)
-	  *   - C13 (Covariance elements)
-	  *   - C23 (Covariance elements)
-	  *
+	 *   - w (The weight)
+	 *   - x_mean (gaussian mean value)
+	 *   - y_mean (gaussian mean value)
+	 *   - x_mean (gaussian mean value)
+	 *   - C11 (Covariance elements)
+	 *   - C22 (Covariance elements)
+	 *   - C33 (Covariance elements)
+	 *   - C12 (Covariance elements)
+	 *   - C13 (Covariance elements)
+	 *   - C23 (Covariance elements)
+	 *
 	 */
 	bool saveToTextFile(const std::string& file) const override;
 
 	/** this = p (+) this. This can be used to convert a PDF from local
 	 * coordinates to global, providing the point (newReferenceBase) from which
-	  *   "to project" the current pdf. Result PDF substituted the currently
+	 *   "to project" the current pdf. Result PDF substituted the currently
 	 * stored one in the object. */
 	void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
 
@@ -164,19 +164,19 @@ class CPointPDFSOG : public CPointPDF
 	 * distributions->new distribution), then save the result in this object
 	 * (WARNING: See implementing classes to see classes that can and cannot be
 	 * mixtured!)
-	  * \param p1 The first distribution to fuse
-	  * \param p2 The second distribution to fuse
-	  * \param minMahalanobisDistToDrop If set to different of 0, the result of
+	 * \param p1 The first distribution to fuse
+	 * \param p2 The second distribution to fuse
+	 * \param minMahalanobisDistToDrop If set to different of 0, the result of
 	 * very separate Gaussian modes (that will result in negligible components)
 	 * in SOGs will be dropped to reduce the number of modes in the output.
-	  */
+	 */
 	void bayesianFusion(
 		const CPointPDF& p1, const CPointPDF& p2,
 		const double minMahalanobisDistToDrop = 0) override;
 
 	/** Evaluates the PDF within a rectangular grid and saves the result in a
 	 * matrix (each row contains values for a fixed y-coordinate value).
-	  */
+	 */
 	void evaluatePDFInArea(
 		float x_min, float x_max, float y_min, float y_max, float resolutionXY,
 		float z, mrpt::math::CMatrixD& outMatrix, bool sumOverAllZs = false);
@@ -185,6 +185,4 @@ class CPointPDFSOG : public CPointPDF
 	double evaluatePDF(const CPoint3D& x, bool sumOverAllZs) const;
 
 };  // End of class def.
-}
-
-
+}  // namespace mrpt::poses

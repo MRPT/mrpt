@@ -17,25 +17,14 @@ using namespace std;
 using namespace mrpt::obs::gnss;
 
 nv_oem6_header_t::nv_oem6_header_t()
-	: hdr_len(0),
-	  msg_id(0),
-	  msg_type(0),
-	  port_addr(0),
-	  msg_len(0),
-	  seq_number(0),
-	  idle_percent(0),
-	  time_status(0),
-	  week(0),
-	  ms_in_week(0),
-	  receiver_status(0),
-	  reserved(0),
-	  receiver_sw_version(0)
+	
+	  
 {
 	synch[0] = synch[1] = synch[2] = 0;
 }
 
 nv_oem6_short_header_t::nv_oem6_short_header_t()
-	: msg_len(), msg_id(), week(), ms_in_week()
+	 
 {
 	synch[0] = synch[1] = synch[2] = 0;
 }

@@ -269,10 +269,10 @@ class CGPSInterface : public mrpt::system::COutputLogger, public CGenericSensor
 
 	/** Typically a CSerialPort created by this class, but may be set
 	 * externally. */
-	mrpt::io::CStream* m_data_stream;
-	std::mutex* m_data_stream_cs;
+	mrpt::io::CStream* m_data_stream{nullptr};
+	std::mutex* m_data_stream_cs{nullptr};
 	std::mutex m_data_stream_mine_cs;
-	bool m_data_stream_is_external;
+	bool m_data_stream_is_external{false};
 
 	poses::CPose3D m_sensorPose;
 	std::string m_customInit;
@@ -312,16 +312,16 @@ class CGPSInterface : public mrpt::system::COutputLogger, public CGenericSensor
    private:
 	/** Auxiliary buffer for readings */
 	mrpt::containers::circular_buffer<uint8_t> m_rx_buffer;
-	PARSERS m_parser;
+	PARSERS m_parser{CGPSInterface::AUTO};
 	std::string m_raw_dump_file_prefix;
 	std::string m_COMname;
-	int m_COMbauds;
-	bool m_sensorLabelAppendMsgType;
-	bool m_GPS_comsWork;
+	int m_COMbauds{4800};
+	bool m_sensorLabelAppendMsgType{true};
+	bool m_GPS_comsWork{false};
 	mrpt::system::TTimeStamp m_last_timestamp;
 	mrpt::io::CFileOutputStream m_raw_output_file;
-	double m_custom_cmds_delay;
-	bool m_custom_cmds_append_CRLF;
+	double m_custom_cmds_delay{0.1};
+	bool m_custom_cmds_append_CRLF{true};
 	std::vector<std::string> m_setup_cmds;
 	std::vector<std::string> m_shutdown_cmds;
 
@@ -331,18 +331,18 @@ class CGPSInterface : public mrpt::system::COutputLogger, public CGenericSensor
 	 * "/dev/ser/b" */
 	std::string m_JAVAD_rtk_src_port;
 	/** Only used when "m_JAVAD_rtk_src_port" is not empty */
-	unsigned int m_JAVAD_rtk_src_baud;
+	unsigned int m_JAVAD_rtk_src_baud{0};
 	/** Only used when "m_JAVAD_rtk_src_port" is not empty: format of RTK
 	 * corrections: "cmr", "rtcm", "rtcm3", etc. */
 	std::string m_JAVAD_rtk_format;
 
 	/** Use this mode for receive RTK corrections from a external source through
 	 * the primary port */
-	bool m_topcon_useAIMMode;
+	bool m_topcon_useAIMMode{false};
 	/** Indicates if the AIM has been properly set up. */
-	bool m_topcon_AIMConfigured;
+	bool m_topcon_AIMConfigured{false};
 	/** The period in seconds which the data should be provided by the GPS */
-	double m_topcon_data_period;
+	double m_topcon_data_period{0.2};
 	/** Private auxiliary method. Raises exception on error. */
 	void JAVAD_sendMessage(const char* str, bool waitForAnswer = true);
 	/** @} */

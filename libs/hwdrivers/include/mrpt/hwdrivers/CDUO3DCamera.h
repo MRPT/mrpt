@@ -32,29 +32,29 @@ struct TCaptureOptions_DUO3D
 	/** @name Image settings
 	  * @{ */
 	/** (Default = 640) Width of the captured image. */
-	int m_img_width;
+	int m_img_width{640};
 	/** (Default = 480) Height of the captured image. */
-	int m_img_height;
+	int m_img_height{480};
 	/** (Default = 30) Frames per second <= 30. */
-	float m_fps;
+	float m_fps{30};
 	/** (Default = 50) Exposure value. */
-	float m_exposure;
+	float m_exposure{50};
 	/** (Default = 25) Led intensity (some device models). */
-	float m_led;
+	float m_led{25};
 	/** (Default = 10) Camera gain. */
-	float m_gain;
+	float m_gain{0};
 	/** @} */
 
 	/** @name Behaviour selection
 	  * @{ */
 	/** (Default = false) Capture IMU data. */
-	bool m_capture_imu;
+	bool m_capture_imu{false};
 	/** (Default = true) Rectify images. Rectification map must be provided \sa
 	 * m_rectify_map_filename. */
-	bool m_capture_rectified;
+	bool m_capture_rectified{false};
 	/** (Default = true) Get calibration information from files provided by
 	 * DUO3D Calibration App. */
-	bool m_calibration_from_file;
+	bool m_calibration_from_file{true};
 	/** @} */
 
 	/** @name Files specification
@@ -161,7 +161,7 @@ class CDUO3DCamera
 	mrpt::vision::CStereoRectifyMap m_rectify_map;
 
 	/** Opaque pointer to DUO's DUOInstance */
-	void* m_duo;
+	void* m_duo{nullptr};
 	/** Pointer, to be reinterpreted as "PDUOFrame" */
 	void* m_pframe_data;
 	/** DUO's HANDLE */

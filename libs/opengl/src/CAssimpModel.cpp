@@ -134,7 +134,7 @@ void CAssimpModel::serializeFrom(
 }
 
 CAssimpModel::CAssimpModel()
-	: m_bbox_min(0, 0, 0), m_bbox_max(0, 0, 0), m_textures_loaded(false)
+	: m_bbox_min(0, 0, 0), m_bbox_max(0, 0, 0) 
 {
 	m_assimp_scene = mrpt::make_aligned_shared<TImplAssimp>();
 }
@@ -212,7 +212,7 @@ void CAssimpModel::getBoundingBox(
 	m_pose.composePoint(bb_max, bb_max);
 }
 
-CAssimpModel::TImplAssimp::TImplAssimp() : scene(nullptr) {}
+CAssimpModel::TImplAssimp::TImplAssimp()  {}
 CAssimpModel::TImplAssimp::~TImplAssimp()
 {
 #if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP

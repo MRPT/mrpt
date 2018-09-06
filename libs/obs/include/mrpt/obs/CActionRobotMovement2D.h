@@ -80,7 +80,7 @@ class CActionRobotMovement2D : public CAction
 		TMotionModelOptions();
 
 		/** The model to be used. */
-		TDrawSampleMotionModel modelSelection;
+		TDrawSampleMotionModel modelSelection{CActionRobotMovement2D::mmGaussian};
 
 		/** Options for the gaussian model, which generates a CPosePDFGaussian
 		 * object in poseChange

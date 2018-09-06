@@ -71,7 +71,7 @@ class Cmt1s
 	   from the
 		connected COM port.
 	*/
-	CmtCallbackFunction m_onBytesReceived;
+	CmtCallbackFunction m_onBytesReceived{nullptr};
 	//! Custom, user supplied parameter for the OnBytesReceived callback
 	//! function, passed as the first argument
 	int32_t m_onBytesReceivedInstance;

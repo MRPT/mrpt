@@ -67,7 +67,4 @@ void CVehicleVelCmd::TVelCmdParams::saveToConfigFile(
 		"raise exception if needed and not set]");
 }
 
-CVehicleVelCmd::TVelCmdParams::TVelCmdParams()
-	: robotMax_V_mps(-1.), robotMax_W_radps(-1.), robotMinCurvRadius(-1.)
-{
-}
+CVehicleVelCmd::TVelCmdParams::TVelCmdParams() {}

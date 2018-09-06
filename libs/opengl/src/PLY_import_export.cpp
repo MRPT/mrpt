@@ -109,10 +109,10 @@ typedef struct PlyProperty
 
 typedef struct PlyElement
 { /* description of an element */
-	PlyElement() : num(0), size(0), other_offset(NO_OTHER_PROPS) {}
+	PlyElement() :  other_offset(NO_OTHER_PROPS) {}
 	string name; /* element name */
-	int num; /* number of elements in this object */
-	int size; /* size of element (bytes) or -1 if variable */
+	int num{0}; /* number of elements in this object */
+	int size{0}; /* size of element (bytes) or -1 if variable */
 	vector<PlyProperty> props; /* list of properties in the file */
 	vector<char> store_prop; /* flags: property wanted by user? */
 	int other_offset; /* offset to un-asked-for props, or -1 if none*/
@@ -122,17 +122,17 @@ typedef struct PlyElement
 struct PlyFile
 { /* description of PLY file */
 	PlyFile(FILE* _fp = nullptr)
-		: fp(_fp), file_type(0), version(0), which_elem(nullptr)
+		: fp(_fp) 
 	{
 	}
 
 	FILE* fp; /* file pointer */
-	int file_type; /* ascii or binary */
-	float version; /* version number of file */
+	int file_type{0}; /* ascii or binary */
+	float version{0}; /* version number of file */
 	vector<PlyElement> elems; /* list of elements */
 	vector<string> comments; /* list of comments */
 	vector<string> obj_info; /* list of object info items */
-	PlyElement* which_elem; /* which element we're currently writing */
+	PlyElement* which_elem{nullptr}; /* which element we're currently writing */
 };
 
 const std::string type_names[] = {

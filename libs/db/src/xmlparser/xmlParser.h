@@ -234,7 +234,8 @@
 #endif /* TRUE */
 
 /// Enumeration for XML parse errors.
-typedef enum XMLError {
+typedef enum XMLError
+{
 	eXMLErrorNone = 0,
 	eXMLErrorMissingEndTag,
 	eXMLErrorNoXMLTagFound,
@@ -261,7 +262,8 @@ typedef enum XMLError {
 
 /// Enumeration used to manage type of data. Use in conjunction with structure
 /// XMLNodeContents
-typedef enum XMLElementType {
+typedef enum XMLElementType
+{
 	eNodeChild = 0,
 	eNodeAttribute = 1,
 	eNodeText = 2,
@@ -516,7 +518,7 @@ typedef struct XMLDLLENTRY XMLNode
 	XMLNode(const XMLNode& A);  ///< to allow shallow/fast copy:
 	XMLNode& operator=(const XMLNode& A);  ///< to allow shallow/fast copy:
 
-	XMLNode() : d(nullptr){};
+	XMLNode(){};
 	static XMLNode emptyXMLNode;
 	static XMLClear emptyXMLClear;
 	static XMLAttribute emptyXMLAttribute;
@@ -773,7 +775,8 @@ typedef struct XMLDLLENTRY XMLNode
 	/** @} */
 
 	/// Enumeration for XML character encoding.
-	typedef enum XMLCharEncoding {
+	typedef enum XMLCharEncoding
+	{
 		char_encoding_error = 0,
 		char_encoding_UTF8 = 1,
 		char_encoding_legacy = 2,
@@ -912,7 +915,7 @@ typedef struct XMLDLLENTRY XMLNode
 		int* pOrder;  // order of the child_nodes,text_fields,clear_fields
 		int ref_count;  // for garbage collection (smart pointers)
 	} XMLNodeData;
-	XMLNodeData* d;
+	XMLNodeData* d{nullptr};
 
 	char parseClearTag(void* px, void* pa);
 	char maybeAddTxT(void* pa, XMLCSTR tokenPStr);
@@ -1009,9 +1012,10 @@ XMLDLLENTRY XMLCHAR
 typedef struct XMLDLLENTRY ToXMLStringTool
 {
    public:
-	ToXMLStringTool() : buf(nullptr), buflen(0) {}
+	ToXMLStringTool() : buf(nullptr) {}
 	~ToXMLStringTool();
-	void freeBuffer();  ///<call this function when you have finished using this
+	void freeBuffer();  ///< call this function when you have finished using
+						///< this
 	/// object to release memory used by the internal buffer.
 
 	XMLSTR toXML(XMLCSTR source);  ///< returns a pointer to an internal buffer
@@ -1029,7 +1033,7 @@ typedef struct XMLDLLENTRY ToXMLStringTool
 
    private:
 	XMLSTR buf;
-	int buflen;
+	int buflen{0};
 } ToXMLStringTool;
 /** @} */
 
@@ -1056,7 +1060,7 @@ typedef struct XMLDLLENTRY ToXMLStringTool
 typedef struct XMLDLLENTRY XMLParserBase64Tool
 {
    public:
-	XMLParserBase64Tool() : buf(nullptr), buflen(0) {}
+	XMLParserBase64Tool() {}
 	~XMLParserBase64Tool();
 	void freeBuffer();  ///< Call this function when you have finished using
 	/// this object to release memory used by the internal
@@ -1114,11 +1118,10 @@ typedef struct XMLDLLENTRY XMLParserBase64Tool
 		XMLError* xe = nullptr);  ///< deprecated.
 
    private:
-	void* buf;
-	int buflen;
+	void* buf{nullptr};
+	int buflen{0};
 	void alloc(int newsize);
 } XMLParserBase64Tool;
 /** @} */
 
 #undef XMLDLLENTRY
-

@@ -45,15 +45,10 @@ CRandomFieldGridMap2D::CRandomFieldGridMap2D(
 	double y_max, double resolution)
 	: CDynamicGrid<TRandomFieldCell>(x_min, x_max, y_min, y_max, resolution),
 	  COutputLogger("CRandomFieldGridMap2D"),
-	  m_rfgm_run_update_upon_clear(true),
-	  m_insertOptions_common(nullptr),
+	  
 	  m_mapType(mapType),
-	  m_cov(0, 0),
-	  m_hasToRecoverMeanAndCov(true),
-	  m_DM_lastCutOff(0),
-	  m_average_normreadings_mean(0),
-	  m_average_normreadings_var(0),
-	  m_average_normreadings_count(0)
+	  m_cov(0, 0)
+	  
 {
 	// We can't set "m_insertOptions_common" here via "getCommonInsertOptions()"
 	// since
@@ -676,37 +671,16 @@ void CRandomFieldGridMap2D::insertObservation_KernelDM_DMV(
 					TInsertionOptionsCommon
  ---------------------------------------------------------------*/
 CRandomFieldGridMap2D::TInsertionOptionsCommon::TInsertionOptionsCommon()
-	: sigma(0.15f),
+	: 
 	  cutoffRadius(sigma * 3.0),
-	  R_min(0),
-	  R_max(3),
-	  dm_sigma_omega(
-		  0.05),  // See IROS 2009 paper (a scale parameter for the confidence)
-
-	  KF_covSigma(0.35f),  // in meters
-	  KF_initialCellStd(1.0),  // std in normalized concentration units
-	  KF_observationModelNoise(0),  // in normalized concentration units
-	  KF_defaultCellMeanValue(0),
-	  KF_W_size(4),
-
-	  GMRF_lambdaPrior(0.01f),  // [GMRF model] The information (Lambda) of
-	  // fixed map constraints
-	  GMRF_lambdaObs(10.0f),  // [GMRF model] The initial information (Lambda)
-	  // of each observation (this information will
-	  // decrease with time)
-	  /** The loss of information of the observations with each iteration */
-	  GMRF_lambdaObsLoss(0.0f),
-
-	  GMRF_use_occupancy_information(false),
+	  
 	  GMRF_simplemap_file(""),
 	  GMRF_gridmap_image_file(""),
-	  GMRF_gridmap_image_res(0.01f),
-	  GMRF_gridmap_image_cx(0),
-	  GMRF_gridmap_image_cy(0),
+	  
 
 	  GMRF_saturate_min(-std::numeric_limits<double>::max()),
-	  GMRF_saturate_max(std::numeric_limits<double>::max()),
-	  GMRF_skip_variance(false)
+	  GMRF_saturate_max(std::numeric_limits<double>::max())
+	  
 {
 }
 

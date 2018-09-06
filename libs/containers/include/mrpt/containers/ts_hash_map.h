@@ -18,10 +18,10 @@ namespace mrpt::containers
 template <typename KEY, typename VALUE>
 struct ts_map_entry
 {
-	bool used;
+	bool used{false};
 	KEY first;
 	VALUE second;
-	ts_map_entry() : used(false), first(KEY()), second() {}
+	ts_map_entry() = default;
 };
 
 /** hash function used by ts_hash_map. Uses dbj2 method */
@@ -74,10 +74,7 @@ class ts_hash_map
 	struct const_iterator
 	{
 	   public:
-		const_iterator()
-			: m_vec(nullptr), m_parent(nullptr), m_idx_outer(0), m_idx_inner(0)
-		{
-		}
+		const_iterator() : m_vec(nullptr), m_parent(nullptr) {}
 		const_iterator(
 			const VECTOR_T& vec, const self_t& parent, int idx_outer,
 			int idx_inner)
@@ -123,7 +120,7 @@ class ts_hash_map
 	   protected:
 		VECTOR_T* m_vec;
 		self_t* m_parent;
-		int m_idx_outer, m_idx_inner;
+		int m_idx_outer{0}, m_idx_inner{0};
 		void incr()
 		{
 			// This loop ends with the first used entry in the nested arrays, or
@@ -175,13 +172,13 @@ class ts_hash_map
 	/** The actual container */
 	vec_t m_vec;
 	/** Number of elements accessed with write access so far */
-	size_t m_size;
+	size_t m_size{0};
 
    public:
 	/** @name Constructors, read/write access and other operations
 		@{ */
 	//!< Default constructor */
-	ts_hash_map() : m_size(0) {}
+	ts_hash_map() {}
 	/** Clear the contents of this container */
 	void clear()
 	{
@@ -251,5 +248,4 @@ class ts_hash_map
 
 };  // end class ts_hash_map
 
-}
-
+}  // namespace mrpt::containers

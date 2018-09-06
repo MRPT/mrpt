@@ -80,7 +80,7 @@ class CMatrixTemplate
 
    protected:
 	T** m_Val;
-	size_t m_Rows, m_Cols;
+	size_t m_Rows{0}, m_Cols{0};
 
 	/** Internal use only: It reallocs the memory for the 2D matrix, maintaining
 	 * the previous contents if posible.
@@ -175,8 +175,7 @@ class CMatrixTemplate
 		(*this) = m;
 	}
 
-	CMatrixTemplate(size_t row = 1, size_t col = 1)
-		: m_Val(nullptr), m_Rows(0), m_Cols(0)
+	CMatrixTemplate(size_t row = 1, size_t col = 1) : m_Val(nullptr)
 	{
 		realloc(row, col);
 	}
@@ -211,13 +210,12 @@ class CMatrixTemplate
 		MRPT_COMPILE_TIME_ASSERT(N != 0);
 		realloc(row, col);
 		if (m_Rows * m_Cols != N)
-			THROW_EXCEPTION(
-				format(
-					"Mismatch between matrix size %lu x %lu and array of "
-					"length %lu",
-					static_cast<long unsigned>(m_Rows),
-					static_cast<long unsigned>(m_Cols),
-					static_cast<long unsigned>(N)))
+			THROW_EXCEPTION(format(
+				"Mismatch between matrix size %lu x %lu and array of "
+				"length %lu",
+				static_cast<long unsigned>(m_Rows),
+				static_cast<long unsigned>(m_Cols),
+				static_cast<long unsigned>(N)))
 		size_t idx = 0;
 		for (size_t i = 0; i < m_Rows; i++)
 			for (size_t j = 0; j < m_Cols; j++)
@@ -235,13 +233,12 @@ class CMatrixTemplate
 		const size_t N = theVector.size();
 		realloc(row, col);
 		if (m_Rows * m_Cols != N)
-			THROW_EXCEPTION(
-				format(
-					"Mismatch between matrix size %lu x %lu and array of "
-					"length %lu",
-					static_cast<long unsigned>(m_Rows),
-					static_cast<long unsigned>(m_Cols),
-					static_cast<long unsigned>(N)))
+			THROW_EXCEPTION(format(
+				"Mismatch between matrix size %lu x %lu and array of "
+				"length %lu",
+				static_cast<long unsigned>(m_Rows),
+				static_cast<long unsigned>(m_Cols),
+				static_cast<long unsigned>(N)))
 		typename V::const_iterator it = theVector.begin();
 		for (size_t i = 0; i < m_Rows; i++)
 			for (size_t j = 0; j < m_Cols; j++)
@@ -277,11 +274,10 @@ class CMatrixTemplate
 		MRPT_COMPILE_TIME_ASSERT(N != 0);
 		if (m_Rows * m_Cols != N)
 		{
-			THROW_EXCEPTION(
-				format(
-					"Mismatch between matrix size %lu x %lu and array of "
-					"length %lu",
-					m_Rows, m_Cols, N))
+			THROW_EXCEPTION(format(
+				"Mismatch between matrix size %lu x %lu and array of "
+				"length %lu",
+				m_Rows, m_Cols, N))
 		}
 		size_t idx = 0;
 		for (size_t i = 0; i < m_Rows; i++)
@@ -327,13 +323,12 @@ class CMatrixTemplate
 	{
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 		if (row >= m_Rows || col >= m_Cols)
-			THROW_EXCEPTION(
-				format(
-					"Indexes (%lu,%lu) out of range. Matrix is %lux%lu",
-					static_cast<unsigned long>(row),
-					static_cast<unsigned long>(col),
-					static_cast<unsigned long>(m_Rows),
-					static_cast<unsigned long>(m_Cols)));
+			THROW_EXCEPTION(format(
+				"Indexes (%lu,%lu) out of range. Matrix is %lux%lu",
+				static_cast<unsigned long>(row),
+				static_cast<unsigned long>(col),
+				static_cast<unsigned long>(m_Rows),
+				static_cast<unsigned long>(m_Cols)));
 #endif
 		return m_Val[row][col];
 	}
@@ -344,13 +339,12 @@ class CMatrixTemplate
 	{
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 		if (row >= m_Rows || col >= m_Cols)
-			THROW_EXCEPTION(
-				format(
-					"Indexes (%lu,%lu) out of range. Matrix is %lux%lu",
-					static_cast<unsigned long>(row),
-					static_cast<unsigned long>(col),
-					static_cast<unsigned long>(m_Rows),
-					static_cast<unsigned long>(m_Cols)));
+			THROW_EXCEPTION(format(
+				"Indexes (%lu,%lu) out of range. Matrix is %lux%lu",
+				static_cast<unsigned long>(row),
+				static_cast<unsigned long>(col),
+				static_cast<unsigned long>(m_Rows),
+				static_cast<unsigned long>(m_Cols)));
 #endif
 		return m_Val[row][col];
 	}
@@ -423,13 +417,12 @@ class CMatrixTemplate
 	{
 #ifdef _DEBUG
 		if (row >= m_Rows || col >= m_Cols)
-			THROW_EXCEPTION(
-				format(
-					"Indexes (%lu,%lu) out of range. Matrix is %lux%lu",
-					static_cast<unsigned long>(row),
-					static_cast<unsigned long>(col),
-					static_cast<unsigned long>(m_Rows),
-					static_cast<unsigned long>(m_Cols)));
+			THROW_EXCEPTION(format(
+				"Indexes (%lu,%lu) out of range. Matrix is %lux%lu",
+				static_cast<unsigned long>(row),
+				static_cast<unsigned long>(col),
+				static_cast<unsigned long>(m_Rows),
+				static_cast<unsigned long>(m_Cols)));
 #endif
 		m_Val[row][col] = v;
 	}
@@ -440,13 +433,12 @@ class CMatrixTemplate
 	{
 #ifdef _DEBUG
 		if (row >= m_Rows || col >= m_Cols)
-			THROW_EXCEPTION(
-				format(
-					"Indexes (%lu,%lu) out of range. Matrix is %lux%lu",
-					static_cast<unsigned long>(row),
-					static_cast<unsigned long>(col),
-					static_cast<unsigned long>(m_Rows),
-					static_cast<unsigned long>(m_Cols)));
+			THROW_EXCEPTION(format(
+				"Indexes (%lu,%lu) out of range. Matrix is %lux%lu",
+				static_cast<unsigned long>(row),
+				static_cast<unsigned long>(col),
+				static_cast<unsigned long>(m_Rows),
+				static_cast<unsigned long>(m_Cols)));
 #endif
 		return m_Val[row][col];
 	}
@@ -457,13 +449,12 @@ class CMatrixTemplate
 	{
 #ifdef _DEBUG
 		if (row >= m_Rows || col >= m_Cols)
-			THROW_EXCEPTION(
-				format(
-					"Indexes (%lu,%lu) out of range. Matrix is %lux%lu",
-					static_cast<unsigned long>(row),
-					static_cast<unsigned long>(col),
-					static_cast<unsigned long>(m_Rows),
-					static_cast<unsigned long>(m_Cols)));
+			THROW_EXCEPTION(format(
+				"Indexes (%lu,%lu) out of range. Matrix is %lux%lu",
+				static_cast<unsigned long>(row),
+				static_cast<unsigned long>(col),
+				static_cast<unsigned long>(m_Rows),
+				static_cast<unsigned long>(m_Cols)));
 #endif
 		return m_Val[row][col];
 	}
@@ -475,12 +466,11 @@ class CMatrixTemplate
 	{
 #ifdef _DEBUG
 		if (row >= m_Rows)
-			THROW_EXCEPTION(
-				format(
-					"Row index %lu out of range. Matrix is %lux%lu",
-					static_cast<unsigned long>(row),
-					static_cast<unsigned long>(m_Rows),
-					static_cast<unsigned long>(m_Cols)));
+			THROW_EXCEPTION(format(
+				"Row index %lu out of range. Matrix is %lux%lu",
+				static_cast<unsigned long>(row),
+				static_cast<unsigned long>(m_Rows),
+				static_cast<unsigned long>(m_Cols)));
 #endif
 		return m_Val[row];
 	}
@@ -702,5 +692,4 @@ class CMatrixBool : public CMatrixTemplate<bool>
 	CMatrixBool& operator=(const CMatrixTemplate<bool>& m);
 };
 
-}
-
+}  // namespace mrpt::math

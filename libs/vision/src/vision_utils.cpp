@@ -2269,7 +2269,7 @@ void vision::computeStereoRectificationMaps(
 /*-------------------------------------------------------------
 					TROI Constructors
 -------------------------------------------------------------*/
-vision::TROI::TROI() : xMin(0), xMax(0), yMin(0), yMax(0), zMin(0), zMax(0) {}
+vision::TROI::TROI()  {}
 vision::TROI::TROI(float x1, float x2, float y1, float y2, float z1, float z2)
 	: xMin(x1), xMax(x2), yMin(y1), yMax(y2), zMin(z1), zMax(z2)
 {
@@ -2278,7 +2278,7 @@ vision::TROI::TROI(float x1, float x2, float y1, float y2, float z1, float z2)
 /*-------------------------------------------------------------
 					TImageROI Constructors
 -------------------------------------------------------------*/
-vision::TImageROI::TImageROI() : xMin(0), xMax(0), yMin(0), yMax(0) {}
+vision::TImageROI::TImageROI()  {}
 vision::TImageROI::TImageROI(float x1, float x2, float y1, float y2)
 	: xMin(x1), xMax(x2), yMin(y1), yMax(y2)
 {
@@ -2288,16 +2288,8 @@ vision::TImageROI::TImageROI(float x1, float x2, float y1, float y2)
 			TStereoSystemParams: constructor
 -------------------------------------------------------------*/
 TStereoSystemParams::TStereoSystemParams()
-	: uncPropagation(Prop_Linear),
-	  baseline(0.119f),  // Bumblebee
-	  stdPixel(1),
-	  stdDisp(1),
-	  maxZ(20.0f),  // Indoor
-	  minZ(0.5f),  // Indoor
-	  maxY(3.0f),  // Indoor
-	  factor_k(1.5f),
-	  factor_a(1e-3f),
-	  factor_b(2.0f)
+	
+	  
 {
 	K = defaultIntrinsicParamsMatrix(0, 640, 480);
 	F.zeros();
@@ -2396,48 +2388,8 @@ void TStereoSystemParams::dumpToTextStream(std::ostream& out) const
 			TMatchingOptions: constructor
 -------------------------------------------------------------*/
 TMatchingOptions::TMatchingOptions()
-	:  // General
-	  useEpipolarRestriction(true),  // Whether or not take into account the
-	  // epipolar restriction for finding
-	  // correspondences
-	  hasFundamentalMatrix(
-		  false),  // Whether or not there is a fundamental matrix
-	  parallelOpticalAxis(true),  // Whether or not take into account the
-	  // epipolar restriction for finding
-	  // correspondences
-	  useXRestriction(true),  // Whether or not employ the x-coord restriction
-	  // for finding correspondences (bumblebee camera,
-	  // for example)
-	  addMatches(false),
-	  useDisparityLimits(false),
-
-	  min_disp(1.0f),
-	  max_disp(1e4f),
-
-	  matching_method(mmCorrelation),  // Matching method
-	  epipolar_TH(1.5f),  // Epipolar constraint (rows of pixels)
-
-	  // SIFT
-	  maxEDD_TH(90.0f),  // Maximum Euclidean Distance Between SIFT Descriptors
-	  EDD_RATIO(0.6f),  // Boundary Ratio between the two lowest EDD
-
-	  // KLT
-	  minCC_TH(0.95f),  // Minimum Value of the Cross Correlation
-	  minDCC_TH(0.025f),  // Minimum Difference Between the Maximum Cross
-	  // Correlation Values
-	  rCC_TH(0.92f),  // Maximum Ratio Between the two highest CC values
-
-	  // SURF
-	  maxEDSD_TH(0.15f),  // Maximum Euclidean Distance Between SURF Descriptors
-	  EDSD_RATIO(0.6f),  // Boundary Ratio between the two lowest SURF EDSD
-
-	  // SAD
-	  maxSAD_TH(0.4),
-	  SAD_RATIO(0.5),
-
-	  // For estimating depth
-	  estimateDepth(false),
-	  maxDepthThreshold(15.0)
+	
+	  
 {
 }  // end constructor TMatchingOptions
 

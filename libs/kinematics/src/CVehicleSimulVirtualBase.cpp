@@ -15,10 +15,7 @@
 
 using namespace mrpt::kinematics;
 
-CVehicleSimulVirtualBase::CVehicleSimulVirtualBase()
-	: m_firmware_control_period(500e-6), m_use_odo_error(false)
-{
-}
+CVehicleSimulVirtualBase::CVehicleSimulVirtualBase() {}
 
 CVehicleSimulVirtualBase::~CVehicleSimulVirtualBase() {}
 void CVehicleSimulVirtualBase::setCurrentGTPose(const mrpt::math::TPose2D& pose)
@@ -55,17 +52,14 @@ void CVehicleSimulVirtualBase::simulateOneTimeStep(const double dt)
 		if (m_use_odo_error)
 		{
 			nextGT.x += m_Ax_err_bias +
-						m_Ax_err_std *
-							mrpt::random::getRandomGenerator()
-								.drawGaussian1D_normalized();
+						m_Ax_err_std * mrpt::random::getRandomGenerator()
+										   .drawGaussian1D_normalized();
 			nextGT.y += m_Ay_err_bias +
-						m_Ay_err_std *
-							mrpt::random::getRandomGenerator()
-								.drawGaussian1D_normalized();
+						m_Ay_err_std * mrpt::random::getRandomGenerator()
+										   .drawGaussian1D_normalized();
 			nextGT.phi += m_Aphi_err_bias +
-						  m_Aphi_err_std *
-							  mrpt::random::getRandomGenerator()
-								  .drawGaussian1D_normalized();
+						  m_Aphi_err_std * mrpt::random::getRandomGenerator()
+											   .drawGaussian1D_normalized();
 			mrpt::math::wrapToPiInPlace(nextGT.phi);
 		}
 

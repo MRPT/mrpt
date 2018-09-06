@@ -44,12 +44,12 @@ class CBox : public CRenderizableDisplayList
 	/** Corners coordinates */
 	mrpt::math::TPoint3D m_corner_min, m_corner_max;
 	/** true: wireframe, false: solid */
-	bool m_wireframe;
+	bool m_wireframe{false};
 	/** For wireframe only. */
-	float m_lineWidth;
+	float m_lineWidth{1};
 	/** Draw line borders to solid box with the given linewidth (default: true)
 	 */
-	bool m_draw_border;
+	bool m_draw_border{false};
 	/** Color of the solid box borders. */
 	mrpt::img::TColor m_solidborder_color;
 

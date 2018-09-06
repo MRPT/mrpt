@@ -58,9 +58,9 @@ class CIMUXSens : public hwdrivers::CGenericSensor
 	 * class is first used to request data from the device.
 	  * \sa comms::CSerialPort
 	  */
-	int m_COMbauds;
+	int m_COMbauds{0};
 	std::string m_com_port;
-	uint64_t m_timeStartUI;
+	uint64_t m_timeStartUI{};
 	mrpt::system::TTimeStamp m_timeStartTT;
 
 	mrpt::poses::CPose3D m_sensorPose;
@@ -69,10 +69,10 @@ class CIMUXSens : public hwdrivers::CGenericSensor
 	  */
 	bool searchPortAndConnect();
 
-	void* /*xsens::Cmt3 */ m_cmt3_ptr;
-	void* /*CmtDeviceId */ m_deviceId_ptr;
+	void* /*xsens::Cmt3 */ m_cmt3_ptr{nullptr};
+	void* /*CmtDeviceId */ m_deviceId_ptr{nullptr};
 	/** Timeout counter (for internal use only) */
-	unsigned int m_toutCounter;
+	unsigned int m_toutCounter{0};
 
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(

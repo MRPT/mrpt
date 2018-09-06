@@ -43,8 +43,8 @@ class CMeshFast : public CRenderizableDisplayList
 	mrpt::img::CImage m_textureImage;
 
 	bool m_enableTransparency;
-	bool m_colorFromZ;
-	bool m_isImage;
+	bool m_colorFromZ{false};
+	bool m_isImage{false};
 
 	/** X(x,y): X-coordinate of the point (x,y) */
 	mutable math::CMatrix X;
@@ -66,16 +66,16 @@ class CMeshFast : public CRenderizableDisplayList
 	mutable math::CMatrix C_b;
 
 	/** Used when m_colorFromZ is true */
-	mrpt::img::TColormap m_colorMap;
+	mrpt::img::TColormap m_colorMap{mrpt::img::cmJET};
 	/** By default is 1.0 */
 	float m_pointSize;
 	/** Default: false */
 	bool m_pointSmooth;
 
 	/** Whether C is not up-to-date wrt to Z */
-	mutable bool m_modified_Z;
+	mutable bool m_modified_Z{true};
 	/** Whether C is not up-to-date wrt to the texture image */
-	mutable bool m_modified_Image;
+	mutable bool m_modified_Image{false};
 
 	/** Called internally to assure C is updated. */
 	void updateColorsMatrix() const;
@@ -85,7 +85,7 @@ class CMeshFast : public CRenderizableDisplayList
 	float xMin, xMax, yMin, yMax;
 
 	/**Whether the coordinates of the points needs to be recalculated */
-	mutable bool pointsUpToDate;
+	mutable bool pointsUpToDate{false};
 
    public:
 	/** By default is 1.0 */
@@ -233,8 +233,6 @@ class CMeshFast : public CRenderizableDisplayList
 		float xMax_p = 1.0f, float yMin_p = -1.0f, float yMax_p = 1.0f)
 		: m_textureImage(0, 0),
 		  m_enableTransparency(enableTransparency),
-		  m_colorFromZ(false),
-		  m_isImage(false),
 		  X(0, 0),
 		  Y(0, 0),
 		  Z(0, 0),
@@ -242,14 +240,10 @@ class CMeshFast : public CRenderizableDisplayList
 		  C_r(0, 0),
 		  C_g(0, 0),
 		  C_b(0, 0),
-		  m_colorMap(mrpt::img::cmJET),
-		  m_modified_Z(true),
-		  m_modified_Image(false),
 		  xMin(xMin_p),
 		  xMax(xMax_p),
 		  yMin(yMin_p),
-		  yMax(yMax_p),
-		  pointsUpToDate(false)
+		  yMax(yMax_p)
 	{
 		m_color.A = 255;
 		m_color.R = 0;
@@ -260,6 +254,4 @@ class CMeshFast : public CRenderizableDisplayList
 	~CMeshFast() override {}
 };
 
-}
-
-
+}  // namespace mrpt::opengl

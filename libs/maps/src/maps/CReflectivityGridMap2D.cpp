@@ -33,11 +33,8 @@ MAP_DEFINITION_REGISTER(
 	mrpt::maps::CReflectivityGridMap2D)
 
 CReflectivityGridMap2D::TMapDefinition::TMapDefinition()
-	: min_x(-10.0f),
-	  max_x(10.0f),
-	  min_y(-10.0f),
-	  max_y(10.0f),
-	  resolution(0.10f)
+	
+	  
 {
 }
 
@@ -279,7 +276,7 @@ void CReflectivityGridMap2D::serializeFrom(
 /*---------------------------------------------------------------
 					TInsertionOptions
  ---------------------------------------------------------------*/
-CReflectivityGridMap2D::TInsertionOptions::TInsertionOptions() : channel(-1) {}
+CReflectivityGridMap2D::TInsertionOptions::TInsertionOptions()  {}
 void CReflectivityGridMap2D::TInsertionOptions::dumpToTextStream(
 	std::ostream& out) const
 {

@@ -57,34 +57,34 @@ class CFeature : public mrpt::serialization::CSerializable
 	DEFINE_SERIALIZABLE(CFeature)
 
    public:
-	float x, y;  //!< Coordinates in the image
-	TFeatureID ID;  //!< ID of the feature
+	float x{0.0f}, y{0.0f};  //!< Coordinates in the image
+	TFeatureID ID{0};  //!< ID of the feature
 	mrpt::img::CImage patch;  //!< A patch of the image surrounding the feature
-	uint16_t patchSize;  //!< Size of the patch (patchSize x patchSize) (it must
+	uint16_t patchSize{21};  //!< Size of the patch (patchSize x patchSize) (it must
 	//! be an odd number)
-	TFeatureType type;  //!< Type of the feature: featNotDefined, featSIFT,
+	TFeatureType type{featNotDefined};  //!< Type of the feature: featNotDefined, featSIFT,
 	//! featKLT,	featHarris, featSURF, featBeacon
-	TFeatureTrackStatus track_status;  //!< Status of the feature tracking
+	TFeatureTrackStatus track_status{status_IDLE};  //!< Status of the feature tracking
 	//! process (old name: KLT_status)
-	float response;  //!< A measure of the "goodness" of the feature (old name:
+	float response{0.0};  //!< A measure of the "goodness" of the feature (old name:
 	//! KLT_val)
-	float orientation;  //!< Main orientation of the feature
-	float scale;  //!< Feature scale into the scale space
-	uint8_t user_flags;  //!< A field for any other flags needed by the user
+	float orientation{0.0};  //!< Main orientation of the feature
+	float scale{0.0};  //!< Feature scale into the scale space
+	uint8_t user_flags{0};  //!< A field for any other flags needed by the user
 	//!(this has not a predefined meaning)
-	uint16_t nTimesSeen;  //!< Number of frames it has been seen in a sequence
+	uint16_t nTimesSeen{1};  //!< Number of frames it has been seen in a sequence
 	//! of images.
-	uint16_t nTimesNotSeen;  //!< Number of frames it has not been seen in a
+	uint16_t nTimesNotSeen{0};  //!< Number of frames it has not been seen in a
 	//! sequence of images.
-	uint16_t nTimesLastSeen;  //!< Number of frames since it was seen for the
+	uint16_t nTimesLastSeen{0};  //!< Number of frames since it was seen for the
 	//! last time.
 
 	// # added by Raghavender Sahdev
 	float x2[2], y2[2];  //!< Coordinates for a LSD Detector to represent a line
 
-	double depth;  //!< The estimated depth in 3D of this feature wrt the camera
+	double depth{0};  //!< The estimated depth in 3D of this feature wrt the camera
 	//! in the current frame
-	double initialDepth;  //!< The estimated depth in 3D of this feature wrt the
+	double initialDepth{0};  //!< The estimated depth in 3D of this feature wrt the
 	//! camera that took its image
 	mrpt::math::TPoint3D
 		p3D;  //!< The estimated 3D point of this feature wrt its camera
@@ -110,7 +110,7 @@ class CFeature : public mrpt::serialization::CSerializable
 		std::vector<uint8_t> SIFT;  //!< SIFT feature descriptor
 		std::vector<float> SURF;  //!< SURF feature descriptor
 		std::vector<float> SpinImg;  //!< The 2D histogram as a single row
-		uint16_t SpinImg_range_rows;  //!< The number of rows (corresponding to
+		uint16_t SpinImg_range_rows{0};  //!< The number of rows (corresponding to
 		//! range bins in the 2D histogram) of the
 		//! original matrix from which SpinImg was
 		//! extracted as a vector.
@@ -118,7 +118,7 @@ class CFeature : public mrpt::serialization::CSerializable
 			PolarImg;  //!< A polar image centered at the interest point
 		mrpt::math::CMatrix
 			LogPolarImg;  //!< A log-polar image centered at the interest point
-		bool polarImgsNoRotation;  //!< If set to true (manually, default=false)
+		bool polarImgsNoRotation{false};  //!< If set to true (manually, default=false)
 		//! the call to "descriptorDistanceTo" will
 		//! not consider all the rotations between
 		//! polar image descriptors (PolarImg,
@@ -549,7 +549,7 @@ class CMatchedFeatureList
 	virtual ~CMatchedFeatureList();
 
    protected:
-	TFeatureID m_leftMaxID, m_rightMaxID;
+	TFeatureID m_leftMaxID{0}, m_rightMaxID{0};
 };  // end of class
 
 /** @} */  // End of add to module: mrptvision_features

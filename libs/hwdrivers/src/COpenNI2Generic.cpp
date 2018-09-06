@@ -61,17 +61,8 @@ int COpenNI2Generic::getNumInstances()
 ctor
 -------------------------------------------------------------*/
 COpenNI2Generic::COpenNI2Generic()
-	: m_width(640),
-	  m_height(480),
-	  m_fps(30.0f),
-#if MRPT_HAS_OPENNI2
-	  m_rgb_format(openni::PIXEL_FORMAT_RGB888),
-	  m_depth_format(openni::PIXEL_FORMAT_DEPTH_1_MM),
-#endif  // MRPT_HAS_OPENNI2
-	  m_verbose(false),
-	  m_grab_image(true),
-	  m_grab_depth(true),
-	  m_grab_3D_points(true)
+	: m_rgb_format(openni::PIXEL_FORMAT_RGB888),
+	  m_depth_format(openni::PIXEL_FORMAT_DEPTH_1_MM)
 {
 	const char* sVerbose = getenv("MRPT_HWDRIVERS_VERBOSE");
 	m_verbose = (sVerbose != nullptr) && atoi(sVerbose) != 0;

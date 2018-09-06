@@ -67,7 +67,7 @@ class CSetOfTriangles : public CRenderizableDisplayList
 	/**
 	 * Mutable variable used to check whether polygons need to be recalculated.
 	 */
-	mutable bool polygonsUpToDate;
+	mutable bool polygonsUpToDate{false};
 	/**
 	 * Polygon cache.
 	 */
@@ -203,9 +203,8 @@ class CSetOfTriangles : public CRenderizableDisplayList
 	/** Constructor
 	 */
 	CSetOfTriangles(bool enableTransparency = false)
-		: m_triangles(),
-		  m_enableTransparency(enableTransparency),
-		  polygonsUpToDate(false)
+		: m_triangles(), m_enableTransparency(enableTransparency)
+
 	{
 	}
 
@@ -232,7 +231,4 @@ inline CSetOfTriangles::Ptr& operator<<(
 	s->insertTriangle(t);
 	return s;
 }
-}  // namespace mrpt
-
-
-
+}  // namespace mrpt::opengl

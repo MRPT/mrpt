@@ -277,11 +277,11 @@ class CStereoRectifyMap
 	/** @} */
 
    private:
-	double m_alpha;
-	bool m_resize_output;
-	bool m_enable_both_centers_coincide;
+	double m_alpha{-1};
+	bool m_resize_output{false};
+	bool m_enable_both_centers_coincide{false};
 	mrpt::img::TImageSize m_resize_output_value;
-	mrpt::img::TInterpolationMethod m_interpolation_method;
+	mrpt::img::TInterpolationMethod m_interpolation_method{mrpt::img::IMG_INTERP_LINEAR};
 
 	/** Memory caches for in-place rectification speed-up. */
 	mutable mrpt::img::CImage m_cache1, m_cache2;

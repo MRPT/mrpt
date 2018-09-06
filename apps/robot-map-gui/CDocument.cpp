@@ -22,15 +22,6 @@ using namespace mrpt::io;
 using namespace mrpt::config;
 using namespace mrpt::maps;
 
-CDocument::CDocument()
-	: m_simplemap(CSimpleMap()),
-	  m_metricmap(CMultiMetricMap()),
-	  m_changedFile(false),
-	  m_hasPointsMap(false)
-{
-}
-
-CDocument::~CDocument() {}
 bool CDocument::isFileChanged() const { return m_changedFile; }
 void CDocument::loadSimpleMap(const std::string& fileName)
 {

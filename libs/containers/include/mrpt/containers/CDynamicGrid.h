@@ -28,12 +28,12 @@ struct dynamic_grid_txt_saver
 	virtual unsigned int getSizeY() const = 0;
 	virtual float getCellAsFloat(unsigned int cx, unsigned int cy) const = 0;
 };
-}  // internal
+}  // namespace internal
 
 /** A 2D grid of dynamic size which stores any kind of data at each cell.
-	* \tparam T The type of each cell in the 2D grid.
-	* \ingroup mrpt_containers_grp
-	*/
+ * \tparam T The type of each cell in the 2D grid.
+ * \ingroup mrpt_containers_grp
+ */
 template <class T>
 class CDynamicGrid
 {
@@ -47,22 +47,14 @@ class CDynamicGrid
 		return const_cast<std::vector<T>&>(m_map);
 	}
 
-	double m_x_min, m_x_max, m_y_min, m_y_max, m_resolution;
-	size_t m_size_x, m_size_y;
+	double m_x_min{0}, m_x_max{0}, m_y_min{0}, m_y_max{0}, m_resolution{0};
+	size_t m_size_x{0}, m_size_y{0};
 
    public:
 	/** Constructor */
 	CDynamicGrid(
-		double x_min = -10.0, double x_max = 10.0, double y_min = -10.0f,
-		double y_max = 10.0f, double resolution = 0.10f)
-		: m_map(),
-		  m_x_min(),
-		  m_x_max(),
-		  m_y_min(),
-		  m_y_max(),
-		  m_resolution(),
-		  m_size_x(),
-		  m_size_y()
+		double x_min = -10., double x_max = 10., double y_min = -10.,
+		double y_max = 10., double resolution = 0.1)
 	{
 		setSize(x_min, x_max, y_min, y_max, resolution);
 	}
@@ -70,15 +62,15 @@ class CDynamicGrid
 	/** Destructor */
 	virtual ~CDynamicGrid() {}
 	/** Changes the size of the grid, ERASING all previous contents.
-	  * If \a fill_value is left as nullptr, the contents of cells may be
+	 * If \a fill_value is left as nullptr, the contents of cells may be
 	 * undefined (some will remain with
-	  *  their old values, the new ones will have the default cell value, but
+	 *  their old values, the new ones will have the default cell value, but
 	 * the location of old values
-	  *  may change wrt their old places).
-	  * If \a fill_value is not nullptr, it is assured that all cells will have
+	 *  may change wrt their old places).
+	 * If \a fill_value is not nullptr, it is assured that all cells will have
 	 * a copy of that value after resizing.
-	  * \sa resize, fill
-	  */
+	 * \sa resize, fill
+	 */
 	void setSize(
 		const double x_min, const double x_max, const double y_min,
 		const double y_max, const double resolution,
@@ -113,7 +105,7 @@ class CDynamicGrid
 	}
 
 	/** Fills all the cells with the same value
-		*/
+	 */
 	inline void fill(const T& value)
 	{
 		for (typename std::vector<T>::iterator it = m_map.begin();
@@ -122,8 +114,8 @@ class CDynamicGrid
 	}
 
 	/** Changes the size of the grid, maintaining previous contents.
-		* \sa setSize
-		*/
+	 * \sa setSize
+	 */
 	virtual void resize(
 		double new_x_min, double new_x_max, double new_y_min, double new_y_max,
 		const T& defaultValueNewCells, double additionalMarginMeters = 2.0)
@@ -207,7 +199,7 @@ class CDynamicGrid
 
 	/** Returns a pointer to the contents of a cell given by its coordinates, or
 	 * nullptr if it is out of the map extensions.
-		*/
+	 */
 	inline T* cellByPos(double x, double y)
 	{
 		const int cx = x2idx(x);
@@ -228,7 +220,7 @@ class CDynamicGrid
 
 	/** Returns a pointer to the contents of a cell given by its cell indexes,
 	 * or nullptr if it is out of the map extensions.
-		*/
+	 */
 	inline T* cellByIndex(unsigned int cx, unsigned int cy)
 	{
 		if (cx >= m_size_x || cy >= m_size_y)
@@ -239,7 +231,7 @@ class CDynamicGrid
 
 	/** Returns a pointer to the contents of a cell given by its cell indexes,
 	 * or nullptr if it is out of the map extensions.
-		*/
+	 */
 	inline const T* cellByIndex(unsigned int cx, unsigned int cy) const
 	{
 		if (cx >= m_size_x || cy >= m_size_y)
@@ -296,15 +288,15 @@ class CDynamicGrid
 	}
 
 	/** Get the entire grid as a matrix.
-		*  \tparam MAT The type of the matrix, typically a
+	 *  \tparam MAT The type of the matrix, typically a
 	 * mrpt::math::CMatrixDouble.
-		*  \param[out] m The output matrix; will be set automatically to the
+	 *  \param[out] m The output matrix; will be set automatically to the
 	 * correct size.
-		*  Entry (cy,cx) in the matrix contains the grid cell with indices
+	 *  Entry (cy,cx) in the matrix contains the grid cell with indices
 	 * (cx,cy).
-		* \note This method will compile only for cell types that can be
+	 * \note This method will compile only for cell types that can be
 	 * converted to the type of the matrix elements (e.g. double).
-		*/
+	 */
 	template <class MAT>
 	void getAsMatrix(MAT& m) const
 	{
@@ -327,7 +319,8 @@ class CDynamicGrid
 			aux_saver(const CDynamicGrid<T>& obj) : m_obj(obj) {}
 			unsigned int getSizeX() const override { return m_obj.getSizeX(); }
 			unsigned int getSizeY() const override { return m_obj.getSizeY(); }
-			float getCellAsFloat(unsigned int cx, unsigned int cy) const override
+			float getCellAsFloat(
+				unsigned int cx, unsigned int cy) const override
 			{
 				return m_obj.cell2float(
 					m_obj.m_map[cx + cy * m_obj.getSizeX()]);
@@ -374,5 +367,5 @@ class CDynamicGrid
 
 };  // end of CDynamicGrid<>
 
-}  // End of namespace
-}  // end of namespace
+}  // namespace containers
+}  // namespace mrpt

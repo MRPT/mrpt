@@ -71,11 +71,11 @@ CAbstractHolonomicReactiveMethod::Ptr CAbstractHolonomicReactiveMethod::Factory(
 }
 
 CAbstractHolonomicReactiveMethod::NavInput::NavInput()
-	: targets(), maxRobotSpeed(1.0), maxObstacleDist(1.0), clearance(nullptr)
+	: targets() 
 {
 }
 
 CAbstractHolonomicReactiveMethod::NavOutput::NavOutput()
-	: desiredDirection(0), desiredSpeed(0)
+	 
 {
 }

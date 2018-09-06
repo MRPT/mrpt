@@ -60,7 +60,7 @@ void RPlidarDriver::DisposeDriver(RPlidarDriver* drv) { delete drv; }
 // Serial Driver Impl
 
 RPlidarDriverSerialImpl::RPlidarDriverSerialImpl()
-	: _isConnected(false), _isScanning(false), _isSupportingMotorCtrl(false)
+	 
 {
 	_rxtx = rp::hal::serial_rxtx::CreateRxTx();
 	_cached_scan_node_count = 0;

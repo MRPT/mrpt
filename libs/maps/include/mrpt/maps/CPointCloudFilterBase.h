@@ -41,10 +41,10 @@ class CPointCloudFilterBase
 	{
 		/** If a pointer is provided to a user-given container, the list of
 		 * points to be deleted will be marked here with `true`. */
-		std::vector<bool>* out_deletion_mask;
+		std::vector<bool>* out_deletion_mask{nullptr};
 		/** (Default:false) If true, only `out_deletion_mask` is filled in, but
 		 * the filtered-out points will be not actually removed. */
-		bool do_not_delete;
+		bool do_not_delete{false};
 
 		TExtraFilterParams();
 	};

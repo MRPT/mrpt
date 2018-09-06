@@ -30,11 +30,8 @@ MAP_DEFINITION_REGISTER(
 	"COccupancyGridMap2D,occupancyGrid", mrpt::maps::COccupancyGridMap2D)
 
 COccupancyGridMap2D::TMapDefinition::TMapDefinition()
-	: min_x(-10.0f),
-	  max_x(10.0f),
-	  min_y(-10.0f),
-	  max_y(10.0f),
-	  resolution(0.10f)
+	
+	  
 {
 }
 
@@ -106,19 +103,12 @@ CLogOddsGridMapLUT<COccupancyGridMap2D::cellType>&
 COccupancyGridMap2D::COccupancyGridMap2D(
 	float min_x, float max_x, float min_y, float max_y, float res)
 	: map(),
-	  size_x(0),
-	  size_y(0),
-	  x_min(),
-	  x_max(),
-	  y_min(),
-	  y_max(),
-	  resolution(),
+	  
 	  precomputedLikelihood(),
-	  precomputedLikelihoodToBeRecomputed(true),
+	  
 	  m_basis_map(),
 	  m_voronoi_diagram(),
-	  m_is_empty(true),
-	  voroni_free_threshold(),
+	  
 	  updateInfoChangeOnly(),
 	  insertionOptions(),
 	  likelihoodOptions(),

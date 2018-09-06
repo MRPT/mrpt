@@ -428,15 +428,8 @@ CDisplayWindow3D::CDisplayWindow3D(
 	const std::string& windowCaption, unsigned int initialWindowWidth,
 	unsigned int initialWindowHeight)
 	: CBaseGUIWindow(static_cast<void*>(this), 300, 399, windowCaption),
-	  m_grab_imgs_prefix(),
-	  m_grab_imgs_idx(0),
-	  m_is_capturing_imgs(false),
-	  m_lastFullScreen(mrpt::system::now()),
-	  m_last_FPS(10)
+	  m_lastFullScreen(mrpt::system::now())
 {
-	//	static mrpt::utils::CStdOutStream oo;
-	//	m_csAccess3DScene.m_debugOut = &oo;
-
 	m_3Dscene = COpenGLScene::Create();
 	CBaseGUIWindow::createWxWindow(initialWindowWidth, initialWindowHeight);
 }

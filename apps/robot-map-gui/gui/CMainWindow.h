@@ -84,8 +84,8 @@ class CMainWindow : public QMainWindow
 
 	void updateSaveButtonState();
 
-	CDocument* m_document;
-	CObservationTreeModel* m_model;
+	CDocument* m_document{nullptr};
+	CObservationTreeModel* m_model{nullptr};
 
 	std::unique_ptr<Ui::CMainWindow> m_ui;
 

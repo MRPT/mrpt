@@ -16,7 +16,8 @@
 
 namespace mrpt::hwdrivers
 {
-typedef enum {
+typedef enum
+{
 	FRAMERATE_1_875 = 32,
 	FRAMERATE_3_75,
 	FRAMERATE_7_5,
@@ -27,7 +28,8 @@ typedef enum {
 	FRAMERATE_240
 } grabber_dc1394_framerate_t;
 
-typedef enum {
+typedef enum
+{
 	COLOR_CODING_MONO8 = 352,
 	COLOR_CODING_YUV411,
 	COLOR_CODING_YUV422,
@@ -37,126 +39,99 @@ typedef enum {
 } grabber_dc1394_color_coding_t;
 
 /** Options used when creating an dc1394 capture object
-  *   All but the frame size, framerate, and color_coding can be changed
+ *   All but the frame size, framerate, and color_coding can be changed
  * dynamically by CImageGrabber_dc1394::changeCaptureOptions
-  * \sa CImageGrabber_dc1394
-  * \ingroup mrpt_hwdrivers_grp
-  */
+ * \sa CImageGrabber_dc1394
+ * \ingroup mrpt_hwdrivers_grp
+ */
 struct TCaptureOptions_dc1394
 {
-	TCaptureOptions_dc1394()
-		: frame_width(640),
-		  frame_height(480),
-		  framerate(FRAMERATE_15),
-		  color_coding(COLOR_CODING_YUV422),
-		  mode7(-1),
-		  shutter(-1),
-		  gain(-1),
-		  gamma(-1),
-		  brightness(-1),
-		  exposure(-1),
-		  sharpness(-1),
-		  white_balance(-1),
-		  shutter_mode(-1),
-		  gain_mode(-1),
-		  gamma_mode(-1),
-		  brightness_mode(-1),
-		  exposure_mode(-1),
-		  sharpness_mode(-1),
-		  white_balance_mode(-1),
-		  deinterlace_stereo(false),
-		  trigger_power(-1),
-		  trigger_mode(-1),
-		  trigger_source(-1),
-		  trigger_polarity(-1),
-		  ring_buffer_size(15)
-	{
-	}
+	TCaptureOptions_dc1394() {}
 
 	/** Capture resolution (Default: 640x480) */
-	int frame_width, frame_height;
-	grabber_dc1394_framerate_t framerate;
-	grabber_dc1394_color_coding_t color_coding;
+	int frame_width{640}, frame_height{480};
+	grabber_dc1394_framerate_t framerate{FRAMERATE_15};
+	grabber_dc1394_color_coding_t color_coding{COLOR_CODING_YUV422};
 
 	/** -1: Normal mode, i>=0: use MODE7_i, then frame_width/height and
 	 * color_coding are ignored. */
-	int mode7;
+	int mode7{-1};
 
 	/** Shutter, -1=default:Do not change */
-	int shutter;
+	int shutter{-1};
 	/** Gain, -1=default:Do not change */
-	int gain;
+	int gain{-1};
 	/** Gamma, -1=default:Do not change */
-	int gamma;
+	int gamma{-1};
 	/** Brightness, -1=default:Do not change */
-	int brightness;
+	int brightness{-1};
 	/** Exposure, -1=default:Do not change */
-	int exposure;
+	int exposure{-1};
 	/** Sharpness, -1=default:Do not change */
-	int sharpness;
+	int sharpness{-1};
 	/** White balance, -1=default:Do not change */
-	int white_balance;
+	int white_balance{-1};
 	/** Shutter mode, -1=default:Do not change */
-	int shutter_mode;
+	int shutter_mode{-1};
 	/** Gain mode, -1=default:Do not change */
-	int gain_mode;
+	int gain_mode{-1};
 	/** Gamma mode, -1=default:Do not change */
-	int gamma_mode;
+	int gamma_mode{-1};
 	/** Brightness mode, -1=default:Do not change */
-	int brightness_mode;
+	int brightness_mode{-1};
 	/** Exposure mode, -1=default:Do not change */
-	int exposure_mode;
+	int exposure_mode{-1};
 	/** Sharpness mode, -1=default:Do not change */
-	int sharpness_mode;
+	int sharpness_mode{-1};
 	/** White balance mode, -1=default:Do not change */
-	int white_balance_mode;
+	int white_balance_mode{-1};
 	/** For stereo cameras (eg PR Bumblebee) */
-	bool deinterlace_stereo;
-	int trigger_power;
-	int trigger_mode;
-	int trigger_source;
-	int trigger_polarity;
+	bool deinterlace_stereo{false};
+	int trigger_power{-1};
+	int trigger_mode{-1};
+	int trigger_source{-1};
+	int trigger_polarity{-1};
 	/** Size of the libdc1394 ring buffer */
-	int ring_buffer_size;
+	int ring_buffer_size{15};
 };
 
 /** A class for grabing images from a IEEE1394 (Firewire) camera using the
  * libdc1394-2 library.
-  *   See the constructor for the options when opening the camera. Notice that
+ *   See the constructor for the options when opening the camera. Notice that
  * you may have
-  *    to carefully set the resolution, framerate and color_mode. See the
+ *    to carefully set the resolution, framerate and color_mode. See the
  * verbose parameter of
-  *    the constructor, which can display a list of supported modes in your
+ *    the constructor, which can display a list of supported modes in your
  * camera.
-  *
-  *  This class is able to manage any Firewire cameras, including Stereo or
+ *
+ *  This class is able to manage any Firewire cameras, including Stereo or
  * multi-cameras in general,
-  *    so this can be used to open the Bumblebee camera (not tested yet).
-  *
-  * A static method (CImageGrabber_dc1394::enumerateCameras) is provided to
+ *    so this can be used to open the Bumblebee camera (not tested yet).
+ *
+ * A static method (CImageGrabber_dc1394::enumerateCameras) is provided to
  * enumerate all existing cameras and their properties. It can be used
-  *  to find the GUID of the desired camera, then open it at the constructor.
-  *
-  * \note This class requires MRPT compiled with "libdc1394-2" (Only works under
+ *  to find the GUID of the desired camera, then open it at the constructor.
+ *
+ * \note This class requires MRPT compiled with "libdc1394-2" (Only works under
  * Linux for now) and "opencv".
-  * \note In Linux you may need to execute "chmod 666 /dev/video1394/ * " and
+ * \note In Linux you may need to execute "chmod 666 /dev/video1394/ * " and
  * "chmod 666 /dev/raw1394" for allowing any user R/W access to firewire
  * cameras.
-  * \note [New in MRPT 1.3.0] Length of ring buffer is now configurable via
+ * \note [New in MRPT 1.3.0] Length of ring buffer is now configurable via
  * TCaptureOptions_dc1394::ring_buffer_size
-  * \sa The most generic camera grabber in MRPT: mrpt::hwdrivers::CCameraSensor
-  * \ingroup mrpt_hwdrivers_grp
-  */
+ * \sa The most generic camera grabber in MRPT: mrpt::hwdrivers::CCameraSensor
+ * \ingroup mrpt_hwdrivers_grp
+ */
 class CImageGrabber_dc1394
 {
    protected:
 	/** Set to false if we could not initialize the camera.
-	  */
-	bool m_bInitialized;
+	 */
+	bool m_bInitialized{false};
 
 	/** Internal use: */
-	void /* dc1394_t * */* m_dc1394_lib_context;
-	void /* dc1394camera_t* */* m_dc1394camera;
+	void /* dc1394_t * */* m_dc1394_lib_context{nullptr};
+	void /* dc1394camera_t* */* m_dc1394camera{nullptr};
 	int m_desired_mode;
 
 	TCaptureOptions_dc1394 m_options;
@@ -179,16 +154,16 @@ class CImageGrabber_dc1394
 		bool verbose = false);
 
 	/** Destructor
-	*/
+	 */
 	virtual ~CImageGrabber_dc1394();
 
 	/** Check whether the camera has been open successfully. */
 	bool isOpen() const { return m_bInitialized; }
 	/** Changes the capture properties (brightness, gain, shutter, etc)
-	  * The frame size, framerate, and color_coding fields in options are
+	 * The frame size, framerate, and color_coding fields in options are
 	 * ignored since they can be only set at construction time.
-	  * \return false on error
-	  */
+	 * \return false on error
+	 */
 	bool changeCaptureOptions(const TCaptureOptions_dc1394& options);
 
 	/** Grab an image from the opened camera (for monocular cameras).
@@ -197,20 +172,20 @@ class CImageGrabber_dc1394
 	 * available yet. Ensure trigger before getObservation() or take into
 	 * account that this call may block.
 	 * \return false on any error, true if all go fine.
-	*/
+	 */
 	bool getObservation(mrpt::obs::CObservationImage& out_observation);
 
 	/** Grab an image from the opened camera (for stereo cameras).
 	 * \param out_observation The object to be filled with sensed data.
 	 *
 	 * \return false on any error, true if all go fine.
-	*/
+	 */
 	bool getObservation(mrpt::obs::CObservationStereoImages& out_observation);
 
 	/** Changes the boolean level associated to Software Trigger (ON/OFF)
-	  * Can be used to control camera triggering trough software
-	  * \return false on error
-	  */
+	 * Can be used to control camera triggering trough software
+	 * \return false on error
+	 */
 	bool setSoftwareTriggerLevel(bool level);
 
 	/** Used in enumerateCameras */
@@ -247,12 +222,10 @@ class CImageGrabber_dc1394
 
 	/** Generates a list with the information on all the existing (Firewire)
 	 * cameras in the system.
-	  * \exception std::runtime_error On any error calling libdc1394.
-	  */
+	 * \exception std::runtime_error On any error calling libdc1394.
+	 */
 	static void enumerateCameras(TCameraInfoList& out_list);
 
 };  // End of class
 
-}
-
-
+}  // namespace mrpt::hwdrivers

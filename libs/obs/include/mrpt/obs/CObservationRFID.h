@@ -37,10 +37,10 @@ class CObservationRFID : public CObservation
 	/** Each of the individual readings of a RFID tag */
 	struct TTagReading
 	{
-		TTagReading() : power(-1000) {}
+		TTagReading() = default;
 		/** The power or signal strength as sensed by the RFID receiver (in dBm)
 		 */
-		double power;
+		double power{-1000};
 		/** EPC code of the observed tag */
 		std::string epc;
 		/** Port of the antenna that did the reading */
@@ -55,14 +55,12 @@ class CObservationRFID : public CObservation
 
 	void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override;
 	/** A general method to change the sensor pose on the robot.
-	  *  It has no effects in this class
-	  * \sa getSensorPose  */
+	 *  It has no effects in this class
+	 * \sa getSensorPose  */
 	void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override;
 	// See base class docs
 	void getDescriptionAsText(std::ostream& o) const override;
 
 };  // End of class def.
 
-}
-
-
+}  // namespace mrpt::obs

@@ -139,10 +139,10 @@ class CRandomFieldGridMap3D
 		/** @name Gaussian Markov Random Fields method
 			@{ */
 		/** The information (Lambda) of fixed map constraints */
-		double GMRF_lambdaPrior;
+		double GMRF_lambdaPrior{0.01f};
 		/** (Default:false) Skip the computation of the variance, just compute
 		 * the mean */
-		bool GMRF_skip_variance;
+		bool GMRF_skip_variance{false};
 		/** @} */
 	};
 

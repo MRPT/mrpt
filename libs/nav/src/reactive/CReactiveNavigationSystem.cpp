@@ -300,7 +300,7 @@ void CReactiveNavigationSystem::TReactiveNavigatorParams::saveToConfigFile(
 }
 
 CReactiveNavigationSystem::TReactiveNavigatorParams::TReactiveNavigatorParams()
-	: min_obstacles_height(0.0), max_obstacles_height(10.0)
+	 
 {
 }
 

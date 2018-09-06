@@ -59,19 +59,19 @@ class CPlanarLaserScan : public CRenderizableDisplayList
    protected:
 	mrpt::obs::CObservation2DRangeScan m_scan;
 	mutable mrpt::maps::CSimplePointsMap m_cache_points;
-	mutable bool m_cache_valid;
+	mutable bool m_cache_valid{false};
 
-	float m_line_width;
-	float m_line_R, m_line_G, m_line_B, m_line_A;
+	float m_line_width{1};
+	float m_line_R{1.f}, m_line_G{0.f}, m_line_B{0.f}, m_line_A{0.5f};
 
-	float m_points_width;
-	float m_points_R, m_points_G, m_points_B, m_points_A;
+	float m_points_width{3};
+	float m_points_R{1.0f}, m_points_G{0.0f}, m_points_B{0.0f}, m_points_A{1.0f};
 
-	float m_plane_R, m_plane_G, m_plane_B, m_plane_A;
+	float m_plane_R{0.01f}, m_plane_G{0.01f}, m_plane_B{0.6f}, m_plane_A{0.6f};
 
-	bool m_enable_points;
-	bool m_enable_line;
-	bool m_enable_surface;
+	bool m_enable_points{true};
+	bool m_enable_line{true};
+	bool m_enable_surface{true};
 
    public:
 	/**< Clear the scan */

@@ -27,19 +27,19 @@ namespace maps
 struct THeightGridmapCell
 {
 	/** The current average height (in meters) */
-	float h;
+	float h{};
 	/** The current standard deviation of the height (in meters) */
-	float var;
+	float var{};
 	/** Auxiliary variable for storing the incremental mean value (in meters).
 	 */
-	float u;
+	float u{};
 	/** Auxiliary (in meters) */
-	float v;
+	float v{};
 	/** [For mrSimpleAverage model] The accumulated weight: initially zero if
 	 * un-observed, increased by one for each observation */
-	uint32_t w;
+	uint32_t w{};
 
-	THeightGridmapCell() : h(), var(), u(), v(), w() {}
+	THeightGridmapCell() = default;
 };
 
 /** Digital Elevation Model (DEM), a mesh or grid representation of a surface
@@ -107,12 +107,12 @@ class CHeightGridMap2D
 
 		/** Whether to perform filtering by z-coordinate (default=false):
 		 * coordinates are always RELATIVE to the robot for this filter.vvv */
-		bool filterByHeight;
+		bool filterByHeight{false};
 		/** Only when filterByHeight is true: coordinates are always RELATIVE to
 		 * the robot for this filter. */
-		float z_min, z_max;
+		float z_min{-0.5}, z_max{0.5};
 
-		mrpt::img::TColormap colorMap;
+		mrpt::img::TColormap colorMap{mrpt::img::cmJET};
 	} insertionOptions;
 
 	/** See docs in base class: in this class it always returns 0 */
@@ -164,10 +164,11 @@ class CHeightGridMap2D
 
 	MAP_DEFINITION_START(CHeightGridMap2D)
 	/** See CHeightGridMap2D::CHeightGridMap2D */
-	double min_x, max_x, min_y, max_y, resolution;
+	double min_x{-2}, max_x{2}, min_y{-2}, max_y{2}, resolution{0.10f};
 	/** The kind of map representation (see CHeightGridMap2D::CHeightGridMap2D)
 	 */
-	mrpt::maps::CHeightGridMap2D::TMapRepresentation mapType;
+	mrpt::maps::CHeightGridMap2D::TMapRepresentation mapType{
+		CHeightGridMap2D::mrSimpleAverage};
 	mrpt::maps::CHeightGridMap2D::TInsertionOptions insertionOpts;
 	MAP_DEFINITION_END(CHeightGridMap2D)
 };
@@ -190,4 +191,3 @@ MRPT_ENUM_TYPE_BEGIN(maps::CHeightGridMap2D::TMapRepresentation)
 MRPT_FILL_ENUM_MEMBER(
 	maps::CHeightGridMap2D::TMapRepresentation, mrSimpleAverage);
 MRPT_ENUM_TYPE_END()
-

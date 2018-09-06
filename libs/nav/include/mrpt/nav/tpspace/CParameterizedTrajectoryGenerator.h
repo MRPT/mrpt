@@ -171,7 +171,7 @@ class CParameterizedTrajectoryGenerator
 		/** Current relative target location */
 		mrpt::math::TPose2D relTarget;
 		/** Desired relative speed [0,1] at target. Default=0 */
-		double targetRelSpeed;
+		double targetRelSpeed{0};
 
 		TNavDynamicState();
 		bool operator==(const TNavDynamicState& o) const;
@@ -444,15 +444,15 @@ class CParameterizedTrajectoryGenerator
 		ClearanceDiagram& cd, const std::vector<double>& TP_obstacles) const;
 
    protected:
-	double refDistance;
+	double refDistance{.0};
 	/** The number of discrete values for "alpha" between -PI and +PI. */
-	uint16_t m_alphaValuesCount;
-	double m_score_priority;
+	uint16_t m_alphaValuesCount{0};
+	double m_score_priority{1.0};
 	/** Number of steps for the piecewise-constant approximation of clearance
 	 * from TPS distances [0,1] (Default=5) \sa updateClearance() */
-	uint16_t m_clearance_num_points;
+	uint16_t m_clearance_num_points{5};
 	/** Number of paths for the decimated paths analysis of clearance */
-	uint16_t m_clearance_decimated_paths;
+	uint16_t m_clearance_decimated_paths{15};
 	/** Updated before each nav step by  */
 	TNavDynamicState m_nav_dyn_state;
 	/** Update in updateNavDynamicState(), contains the path index (k) for the
@@ -461,7 +461,7 @@ class CParameterizedTrajectoryGenerator
 
 	static const uint16_t INVALID_PTG_PATH_INDEX = static_cast<uint16_t>(-1);
 
-	bool m_is_initialized;
+	bool m_is_initialized{false};
 
 	/** To be called by implementors of updateTPObstacle() and
 	 * updateTPObstacleSingle() to
@@ -528,7 +528,7 @@ class CPTG_RobotShape_Polygonal : public CParameterizedTrajectoryGenerator
 	/** Will be called whenever the robot shape is set / updated */
 	virtual void internal_processNewRobotShape() = 0;
 	mrpt::math::CPolygon m_robotShape;
-	double m_robotMaxRadius;
+	double m_robotMaxRadius{.01};
 	void loadShapeFromConfigFile(
 		const mrpt::config::CConfigFileBase& source,
 		const std::string& section);
@@ -570,7 +570,7 @@ class CPTG_RobotShape_Circular : public CParameterizedTrajectoryGenerator
    protected:
 	/** Will be called whenever the robot shape is set / updated */
 	virtual void internal_processNewRobotShape() = 0;
-	double m_robotRadius;
+	double m_robotRadius{.0};
 	void loadShapeFromConfigFile(
 		const mrpt::config::CConfigFileBase& source,
 		const std::string& section);

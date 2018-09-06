@@ -182,19 +182,8 @@ void COccupancyGridMap2D::simulateScanRay(
 
 COccupancyGridMap2D::TLaserSimulUncertaintyParams::
 	TLaserSimulUncertaintyParams()
-	: method(sumUnscented),
-	  UT_alpha(0.99),
-	  UT_kappa(.0),
-	  UT_beta(2.0),
-	  MC_samples(10),
-	  aperture(M_PIf),
-	  rightToLeft(true),
-	  maxRange(80.f),
-	  nRays(361),
-	  rangeNoiseStd(.0f),
-	  angleNoiseStd(.0f),
-	  decimation(1),
-	  threshold(.6f)
+	
+	  
 {
 }
 

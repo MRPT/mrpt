@@ -62,7 +62,7 @@ class CTopLCDetector_FabMap : public CTopLCDetectorBase
 			std::ostream& out) const override;  // See base docs
 
 		std::string vocab_path, vocabName;
-		double p_obs_given_exists, p_at_new_place, df_lik_smooth;
+		double p_obs_given_exists{0.39}, p_at_new_place{0.99}, df_lik_smooth{0.99};
 	};
 
 };  // end class

@@ -108,7 +108,7 @@ class ScalarFactorGraph : public mrpt::system::COutputLogger
 	std::deque<const BinaryFactorVirtualBase*> m_factors_binary;
 
 	mrpt::system::CTimeLogger m_timelogger;
-	bool m_enable_profiler;
+	bool m_enable_profiler{false};
 
 };  // End of class def.
 

@@ -31,8 +31,8 @@ using TypeConfig = std::map<TypeOfConfig, std::vector<MetricPolyPtr>>;
 class CDocument
 {
    public:
-	CDocument();
-	~CDocument();
+	CDocument() {}
+	~CDocument() {}
 
 	bool isFileChanged() const;
 
@@ -92,6 +92,6 @@ class CDocument
 	mrpt::maps::CMultiMetricMap m_metricmap;
 	TypeConfig m_typeConfigs;
 	std::string m_fileName;
-	bool m_changedFile;
-	bool m_hasPointsMap;
+	bool m_changedFile{false};
+	bool m_hasPointsMap{false};
 };

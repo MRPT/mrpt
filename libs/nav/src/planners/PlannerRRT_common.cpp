@@ -19,14 +19,11 @@ using namespace mrpt::poses;
 using namespace std;
 
 RRTAlgorithmParams::RRTAlgorithmParams()
-	: robot_shape_circular_radius(0.30),
+	: 
 	  ptg_cache_files_directory("."),
-	  goalBias(0.05),
-	  maxLength(1.0),
-	  minDistanceBetweenNewNodes(0.10),
-	  minAngBetweenNewNodes(mrpt::DEG2RAD(15)),
-	  ptg_verbose(true),
-	  save_3d_log_freq(0)
+	  
+	  minAngBetweenNewNodes(mrpt::DEG2RAD(15))
+	  
 {
 	robot_shape.push_back(mrpt::math::TPoint2D(-0.5, -0.5));
 	robot_shape.push_back(mrpt::math::TPoint2D(0.8, -0.4));
@@ -34,7 +31,7 @@ RRTAlgorithmParams::RRTAlgorithmParams()
 	robot_shape.push_back(mrpt::math::TPoint2D(-0.5, 0.5));
 }
 
-PlannerTPS_VirtualBase::PlannerTPS_VirtualBase() : m_initialized_PTG(false) {}
+PlannerTPS_VirtualBase::PlannerTPS_VirtualBase()  {}
 void PlannerTPS_VirtualBase::internal_initialize_PTG()
 {
 	ASSERTMSG_(

@@ -36,12 +36,12 @@ struct CvCBCorner;
 struct CvCBCorner
 {
 	using Ptr = std::shared_ptr<CvCBCorner>;
-	CvCBCorner() : row(-1000), column(-1000), count(0) {}
+	CvCBCorner() {}
 	CvPoint2D32f pt;  // X and y coordinates
-	int row;  // Row and column of the corner
-	int column;  // in the found pattern
+	int row{-1000};  // Row and column of the corner
+	int column{-1000};  // in the found pattern
 	bool needsNeighbor;  // Does the corner require a neighbor?
-	int count;  // number of corner neighbors
+	int count{0};  // number of corner neighbors
 	CvCBCorner::Ptr neighbors[4];  // pointer to all corner neighbors
 };
 
@@ -52,24 +52,16 @@ struct CvCBQuad;
 struct CvCBQuad
 {
 	using Ptr = std::shared_ptr<CvCBQuad>;
-	CvCBQuad()
-		: count(0),
-		  group_idx(0),
-		  edge_len(0),
-		  labeled(false),
-		  area(0.0),
-		  area_ratio(1.0)
-	{
-	}
+	CvCBQuad() {}
 
-	int count;  // Number of quad neihbors
-	int group_idx;  // Quad group ID
-	float edge_len;  // Smallest side length^2
+	int count{0};  // Number of quad neihbors
+	int group_idx{0};  // Quad group ID
+	float edge_len{0};  // Smallest side length^2
 	CvCBCorner::Ptr corners[4];  // CvCBCorner *corners[4];				//
 	// Coordinates of quad corners
 	CvCBQuad::Ptr neighbors[4];  // Pointers of quad neighbors
-	bool labeled;  // Has this corner been labeled?
-	double area, area_ratio;
+	bool labeled{false};  // Has this corner been labeled?
+	double area{0.0}, area_ratio{1.0};
 };
 
 //===========================================================================
@@ -129,4 +121,3 @@ bool do_special_dilation(
 	IplConvKernel* kernel_horz, IplConvKernel* kernel_vert);
 
 #endif  // MRPT_HAS_OPENCV
-

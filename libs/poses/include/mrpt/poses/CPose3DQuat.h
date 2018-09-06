@@ -406,9 +406,9 @@ class CPose3DQuat : public CPose<CPose3DQuat>,
 		using iterator_base =
 			std::iterator<std::random_access_iterator_tag, value_type>;
 		/** A reference to the source of this iterator */
-		CPose3DQuat* m_obj;
+		CPose3DQuat* m_obj{nullptr};
 		/** The iterator points to this element. */
-		size_t m_cur_idx;
+		size_t m_cur_idx{0};
 		/** The type of the matrix elements */
 		using T = value_type;
 
@@ -432,7 +432,7 @@ class CPose3DQuat : public CPose<CPose3DQuat>,
 		{
 			return m_cur_idx > it2.m_cur_idx;
 		}
-		inline iterator() : m_obj(nullptr), m_cur_idx(0) {}
+		inline iterator() {}
 		inline iterator(CPose3DQuat& obj, size_t start_idx)
 			: m_obj(&obj), m_cur_idx(start_idx)
 		{
@@ -516,9 +516,9 @@ class CPose3DQuat : public CPose<CPose3DQuat>,
 		using iterator_base =
 			std::iterator<std::random_access_iterator_tag, value_type>;
 		/** A reference to the source of this iterator */
-		const CPose3DQuat* m_obj;
+		const CPose3DQuat* m_obj{nullptr};
 		/** The iterator points to this element. */
-		size_t m_cur_idx;
+		size_t m_cur_idx{0};
 		/** The type of the matrix elements */
 		using T = value_type;
 
@@ -542,7 +542,7 @@ class CPose3DQuat : public CPose<CPose3DQuat>,
 		{
 			return m_cur_idx > it2.m_cur_idx;
 		}
-		inline const_iterator() : m_obj(nullptr), m_cur_idx(0) {}
+		inline const_iterator() {}
 		inline const_iterator(const CPose3DQuat& obj, size_t start_idx)
 			: m_obj(&obj), m_cur_idx(start_idx)
 		{

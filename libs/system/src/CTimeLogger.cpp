@@ -269,7 +269,7 @@ void CTimeLogger::registerUserMeasure(
 }
 
 CTimeLogger::TCallData::TCallData()
-	: n_calls(0), min_t(0), max_t(0), mean_t(0), last_t(0), has_time_units(true)
+	 
 {
 }
 

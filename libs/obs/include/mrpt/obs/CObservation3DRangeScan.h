@@ -33,31 +33,24 @@ struct T3DPointsProjectionParams
 	 * are generated. Otherwise, points are transformed with \a sensorPose.
 	 * Furthermore, if provided, those coordinates are transformed with \a
 	 * robotPoseInTheWorld */
-	bool takeIntoAccountSensorPoseOnRobot;
+	bool takeIntoAccountSensorPoseOnRobot{false};
 	/** (Default: nullptr) Read takeIntoAccountSensorPoseOnRobot */
-	const mrpt::poses::CPose3D* robotPoseInTheWorld;
+	const mrpt::poses::CPose3D* robotPoseInTheWorld{nullptr};
 	/** (Default:true) [Only used when `range_is_depth`=true] Whether to use a
 	 * Look-up-table (LUT) to speed up the conversion. It's thread safe in all
 	 * situations <b>except</b> when you call this method from different threads
 	 * <b>and</b> with different camera parameter matrices. In all other cases,
 	 * it is a good idea to left it enabled. */
-	bool PROJ3D_USE_LUT;
+	bool PROJ3D_USE_LUT{true};
 	/** (Default:true) If possible, use SSE2 optimized code. */
-	bool USE_SSE2;
-	/** (Default:true) set to false if your point cloud can contain undefined values */
-	bool MAKE_DENSE;
+	bool USE_SSE2{true};
+	/** (Default:true) set to false if your point cloud can contain undefined
+	 * values */
+	bool MAKE_DENSE{true};
 	/** (Default:false) set to true if you want an organized point cloud */
-	bool MAKE_ORGANIZED;
+	bool MAKE_ORGANIZED{false};
 
-	T3DPointsProjectionParams()
-		: takeIntoAccountSensorPoseOnRobot(false),
-		  robotPoseInTheWorld(nullptr),
-		  PROJ3D_USE_LUT(true),
-		  USE_SSE2(true),
-		  MAKE_DENSE(true),
-		  MAKE_ORGANIZED(false)
-	{
-	}
+	T3DPointsProjectionParams() = default;
 };
 /** Used in CObservation3DRangeScan::convertTo2DScan() */
 struct T3DPointsTo2DScanParams
@@ -73,7 +66,7 @@ struct T3DPointsTo2DScanParams
 	double z_min, z_max;
 	/** (Default=1.2=120%) How many more laser scans rays to create (read docs
 	 * for CObservation3DRangeScan::convertTo2DScan()). */
-	double oversampling_ratio;
+	double oversampling_ratio{1.2};
 
 	/** (Default:false) If `false`, the conversion will be such that the 2D
 	 * observation pose on the robot coincides with that in the original 3D
@@ -81,7 +74,7 @@ struct T3DPointsTo2DScanParams
 	 * If `true`, the sensed points will be "reprojected" as seen from a sensor
 	 * pose at the robot/vehicle frame origin  (and angle_sup, angle_inf will be
 	 * ignored) */
-	bool use_origin_sensor_pose;
+	bool use_origin_sensor_pose{false};
 
 	T3DPointsTo2DScanParams();
 };
@@ -230,12 +223,12 @@ class CObservation3DRangeScan : public CObservation
 
    protected:
 	/** If set to true, m_points3D_external_file is valid. */
-	bool m_points3D_external_stored;
+	bool m_points3D_external_stored{false};
 	/** 3D points are in CImage::getImagesPathBase()+<this_file_name> */
 	std::string m_points3D_external_file;
 
 	/** If set to true, m_rangeImage_external_file is valid. */
-	bool m_rangeImage_external_stored;
+	bool m_rangeImage_external_stored{false};
 	/** rangeImage is in CImage::getImagesPathBase()+<this_file_name> */
 	std::string m_rangeImage_external_file;
 
@@ -396,7 +389,7 @@ class CObservation3DRangeScan : public CObservation
 	/** \name Point cloud
 	 * @{ */
 	/** true means the field points3D contains valid data. */
-	bool hasPoints3D;
+	bool hasPoints3D{false};
 	/** If hasPoints3D=true, the (X,Y,Z) coordinates of the 3D point cloud
 	 * detected by the camera. \sa resizePoints3DVectors */
 	std::vector<float> points3D_x, points3D_y, points3D_z;
@@ -441,14 +434,14 @@ class CObservation3DRangeScan : public CObservation
 	/** \name Range (depth) image
 	 * @{ */
 	/** true means the field rangeImage contains valid data */
-	bool hasRangeImage;
+	bool hasRangeImage{false};
 	/** If hasRangeImage=true, a matrix of floats with the range data as
 	 * captured by the camera (in meters) \sa range_is_depth */
 	mrpt::math::CMatrix rangeImage;
 	/** true: Kinect-like ranges: entries of \a rangeImage are distances along
 	 * the +X axis; false: Ranges in \a rangeImage are actual distances in 3D.
 	 */
-	bool range_is_depth;
+	bool range_is_depth{true};
 
 	/** Similar to calling "rangeImage.setSize(H,W)" but this method provides
 	 * memory pooling to speed-up the memory allocation. */
@@ -499,19 +492,19 @@ class CObservation3DRangeScan : public CObservation
 	};
 
 	/** true means the field intensityImage contains valid data */
-	bool hasIntensityImage;
+	bool hasIntensityImage{false};
 	/** If hasIntensityImage=true, a color or gray-level intensity image of the
 	 * same size than "rangeImage" */
 	mrpt::img::CImage intensityImage;
 	/** The source of the intensityImage; typically the visible channel \sa
 	 * TIntensityChannelID */
-	TIntensityChannelID intensityImageChannel;
+	TIntensityChannelID intensityImageChannel{CH_VISIBLE};
 	/** @} */
 
 	/** \name Confidence "channel"
 	 * @{ */
 	/** true means the field confidenceImage contains valid data */
-	bool hasConfidenceImage;
+	bool hasConfidenceImage{false};
 	/** If hasConfidenceImage=true, an image with the "confidence" value [range
 	 * 0-255] as estimated by the capture drivers. */
 	mrpt::img::CImage confidenceImage;
@@ -741,12 +734,12 @@ class CObservation3DRangeScan : public CObservation
 
 	/** The maximum range allowed by the device, in meters (e.g. 8.0m, 5.0m,...)
 	 */
-	float maxRange;
+	float maxRange{5.0f};
 	/** The 6D pose of the sensor on the robot. */
 	mrpt::poses::CPose3D sensorPose;
 	/** The "sigma" error of the device in meters, used while inserting the scan
 	 * in an occupancy grid. */
-	float stdError;
+	float stdError{0.01f};
 
 	// See base class docs
 	void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override
@@ -832,10 +825,7 @@ class PointCloudAdapter<mrpt::obs::CObservation3DRangeScan>
 		m_obj.resizePoints3DVectors(N);
 	}
 	/** Does nothing as of now */
-	inline void setDimensions(const size_t& height, const size_t& width)
-	{
-	}
-
+	inline void setDimensions(const size_t& height, const size_t& width) {}
 
 	/** Get XYZ coordinates of i'th point */
 	template <typename T>

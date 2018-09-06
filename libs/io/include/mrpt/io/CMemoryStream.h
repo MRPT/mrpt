@@ -102,9 +102,9 @@ namespace internal
 {
 struct TFreeFnDataForZMQ
 {
-	CMemoryStream* buf;
-	bool do_free;
-	TFreeFnDataForZMQ() : buf(nullptr), do_free(true) {}
+	CMemoryStream* buf{nullptr};
+	bool do_free{true};
+	TFreeFnDataForZMQ() = default;
 };
 /** Used in mrpt_send_to_zmq(). `hint` points to a `TFreeFnDataForZMQ` struct,
  * to be freed here. */

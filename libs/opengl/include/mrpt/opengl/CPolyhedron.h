@@ -51,17 +51,13 @@ class CPolyhedron : public CRenderizableDisplayList
 	struct TPolyhedronEdge
 	{
 		/**
-		 * First vertex.
+		 * Vertices.
 		 */
-		uint32_t v1;
-		/**
-		 * Second vertex.
-		 */
-		uint32_t v2;
+		uint32_t v1, v2;
 		/**
 		 * Default constructor. Initializes to garbage.
 		 */
-		TPolyhedronEdge() : v1(), v2() {}
+		TPolyhedronEdge() = default;
 		/**
 		 * Comparison agains another edge. Simmetry is taken into account.
 		 */
@@ -120,12 +116,12 @@ class CPolyhedron : public CRenderizableDisplayList
 	 * This flag determines whether the polyhedron will be displayed as a solid
 	 * object or as a set of edges.
 	 */
-	bool mWireframe;
+	bool mWireframe{false};
 	/**
 	 * When displaying as wireframe object, this variable stores the width of
 	 * the edges.
 	 */
-	double mLineWidth;
+	double mLineWidth{1};
 	/**
 	 * Mutable list of actual polygons, maintained for speed.
 	 */
@@ -133,7 +129,7 @@ class CPolyhedron : public CRenderizableDisplayList
 	/**
 	 * Whether the set of actual polygons is up to date or not.
 	 */
-	mutable bool polygonsUpToDate;
+	mutable bool polygonsUpToDate{false};
 
    public:
 	/** Evaluates the bounding box of this object (including possible children)
@@ -891,15 +887,7 @@ class CPolyhedron : public CRenderizableDisplayList
 	/**
 	 * Basic empty constructor.
 	 */
-	inline CPolyhedron()
-		: mVertices(),
-		  mEdges(),
-		  mFaces(),
-		  mWireframe(false),
-		  mLineWidth(1),
-		  polygonsUpToDate(false)
-	{
-	}
+	inline CPolyhedron() : mVertices(), mEdges(), mFaces() {}
 	/**
 	 * Basic constructor with a list of vertices and another of faces, checking
 	 * for correctness.
@@ -922,7 +910,7 @@ class CPolyhedron : public CRenderizableDisplayList
 	{
 		if (doCheck && !checkConsistence(vertices, faces))
 			throw std::logic_error("Face list accesses a vertex out of range");
-		for (auto & mFace : mFaces)
+		for (auto& mFace : mFaces)
 		{
 			if (!setNormal(mFace, doCheck))
 				throw std::logic_error("Bad face specification");

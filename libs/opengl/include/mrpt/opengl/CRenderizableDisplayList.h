@@ -43,7 +43,7 @@ class CRenderizableDisplayList : public mrpt::opengl::CRenderizable
 	mutable unsigned int m_dl;
 	/** If using display lists, this is true when the list must be updated (the
 	 * object changes, it's the first rendering, etc...). */
-	mutable bool m_dl_recreate;
+	mutable bool m_dl_recreate{true};
 
    protected:
 	/** @name Methods accesible or implemented by derived classes

@@ -22,7 +22,7 @@ using namespace std;
 						Constructor
   ---------------------------------------------------------------*/
 PlannerSimple2D::PlannerSimple2D()
-	: occupancyThreshold(0.5f), minStepInReturnedPath(0.4f), robotRadius(0.35f)
+	 
 {
 }
 

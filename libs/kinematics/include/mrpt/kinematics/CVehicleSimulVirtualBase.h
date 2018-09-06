@@ -124,10 +124,10 @@ class CVehicleSimulVirtualBase
 	/** @} */
 	/** The period at which the low-level controller updates velocities
 	 * (Default: 0.5 ms) */
-	double m_firmware_control_period;
+	double m_firmware_control_period{500e-6};
 
 	/** Whether to corrupt odometry with noise */
-	bool m_use_odo_error;
+	bool m_use_odo_error{false};
 	double m_Ax_err_bias, m_Ax_err_std;
 	double m_Ay_err_bias, m_Ay_err_std;
 	double m_Aphi_err_bias, m_Aphi_err_std;

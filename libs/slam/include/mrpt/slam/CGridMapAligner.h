@@ -85,11 +85,12 @@ class CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 			std::ostream& out) const override;  // See base docs
 
 		/** The aligner method: */
-		TAlignerMethod methodSelection;
+		TAlignerMethod methodSelection{CGridMapAligner::amModifiedRANSAC};
 
 		/** The feature descriptor to use: 0=detector already has descriptor, 1=
 		 * SIFT, 2=SURF, 4=Spin images, 8=Polar images, 16=log-polar images */
-		mrpt::vision::TDescriptorType feature_descriptor;
+		mrpt::vision::TDescriptorType feature_descriptor{
+			mrpt::vision::descPolarImages};
 
 		/** All the parameters for the feature detector. */
 		mrpt::vision::CFeatureExtraction::TOptions feature_detector_options;
@@ -99,49 +100,49 @@ class CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 		 */
 		/** The ratio of landmarks that must be inliers to accepto an hypotheses
 		 * (typ: 0.20) */
-		float ransac_minSetSizeRatio;
+		float ransac_minSetSizeRatio{0.20f};
 		/** The square root of the uncertainty normalization variance var_m (see
 		 * papers...) */
-		float ransac_SOG_sigma_m;
+		float ransac_SOG_sigma_m{0.10f};
 
 		/** [amRobustMatch method only] RANSAC-step options:
 		 * \sa CICP::robustRigidTransformation
 		 */
-		float ransac_mahalanobisDistanceThreshold;
+		float ransac_mahalanobisDistanceThreshold{6.0f};
 
 		/** [amModifiedRANSAC method only] The quantile used for chi-square
 		 * thresholding (default=0.99) */
-		double ransac_chi2_quantile;
+		double ransac_chi2_quantile{0.99};
 
 		/** Probability of having a good inliers (def:0,9999), used for
 		 * automatic number of iterations */
-		double ransac_prob_good_inliers;
+		double ransac_prob_good_inliers{0.9999};
 		/** Features extraction from grid map: How many features to extract */
-		float featsPerSquareMeter;
+		float featsPerSquareMeter{0.015f};
 		/** Correspondences are considered if their distances are below this
 		 * threshold (in the range [0,1]) (default=0.15). */
-		float threshold_max;
+		float threshold_max{0.15f};
 		/** Correspondences are considered if their distances to the best match
 		 * are below this threshold (in the range [0,1]) (default=0.15). */
-		float threshold_delta;
+		float threshold_delta{0.10f};
 
 		/** The minimum goodness (0-1) of the post-matching ICP to accept a
 		 * hypothesis as good (default=0.30) */
-		float min_ICP_goodness;
+		float min_ICP_goodness{0.30f};
 		/** The maximum Mahalanobis distance between the initial and final poses
 		 * in the ICP not to discard the hypothesis (default=10) */
-		double max_ICP_mahadist;
+		double max_ICP_mahadist{10.0};
 		/** Maximum KL-divergence for merging modes of the SOG (default=0.9) */
-		double maxKLd_for_merge;
+		double maxKLd_for_merge{0.9};
 
 		/** DEBUG - Dump all feature correspondences in a directory "grid_feats"
 		 */
-		bool save_feat_coors;
+		bool save_feat_coors{false};
 		/** DEBUG - Show graphs with the details of each feature correspondences
 		 */
-		bool debug_show_corrs;
+		bool debug_show_corrs{false};
 		/** DEBUG - Save the pair of maps with all the pairings. */
-		bool debug_save_map_pairs;
+		bool debug_save_map_pairs{false};
 
 	} options;
 
@@ -149,11 +150,11 @@ class CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 	 */
 	struct TReturnInfo
 	{
-		TReturnInfo() : goodness(0), noRobustEstimation() {}
+		TReturnInfo() : noRobustEstimation() {}
 		/** A goodness measure for the alignment, it is a [0,1] range indicator
 		 * of percentage of correspondences.
 		 */
-		float goodness;
+		float goodness{0};
 
 		/** The "brute" estimation from using all the available correspondences,
 		 * provided just for comparison purposes (it is not the robust
@@ -239,13 +240,10 @@ class CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 		float* runningTime = nullptr, void* info = nullptr) override;
 };
 
-}
+}  // namespace mrpt::slam
 MRPT_ENUM_TYPE_BEGIN(mrpt::slam::CGridMapAligner::TAlignerMethod)
 using namespace mrpt::slam;
 MRPT_FILL_ENUM_MEMBER(CGridMapAligner, amRobustMatch);
 MRPT_FILL_ENUM_MEMBER(CGridMapAligner, amCorrelation);
 MRPT_FILL_ENUM_MEMBER(CGridMapAligner, amModifiedRANSAC);
 MRPT_ENUM_TYPE_END()
-
-
-

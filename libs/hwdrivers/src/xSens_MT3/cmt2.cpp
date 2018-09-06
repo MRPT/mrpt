@@ -105,7 +105,7 @@ int32_t findValidMessage(const uint8_t* buffer, const uint16_t bufferLength)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Default constructor, initializes all members to their default values.
-Cmt2s::Cmt2s() : m_onMessageReceived(nullptr), m_onMessageSent(nullptr)
+Cmt2s::Cmt2s()  
 {
 	m_lastResult = XRV_OK;
 	m_readBufferCount = 0;

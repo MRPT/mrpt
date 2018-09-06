@@ -139,11 +139,11 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 
 	void loadDefaultParams() override;
 
-	double V_MAX, W_MAX;
-	double turningRadiusReference;
+	double V_MAX{.0}, W_MAX{.0};
+	double turningRadiusReference{.10};
 	std::vector<TCPointVector> m_trajectory;
-	double m_resolution;
-	double m_stepTimeDuration;
+	double m_resolution{0.05};
+	double m_stepTimeDuration{0.01};
 
 	void internal_readFromStream(mrpt::serialization::CArchive& in) override;
 	void internal_writeToStream(

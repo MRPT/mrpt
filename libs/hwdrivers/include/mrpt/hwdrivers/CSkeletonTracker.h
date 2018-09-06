@@ -72,20 +72,20 @@ class CSkeletonTracker : public hwdrivers::CGenericSensor
 	DEFINE_GENERIC_SENSOR(CSkeletonTracker)
    protected:
 	/** Opaque pointers to specific NITE data */
-	void* /* nite::SkeletonState* */ m_skeletons_ptr;
-	void* /* nite::userTracker* */ m_userTracker_ptr;
+	void* /* nite::SkeletonState* */ m_skeletons_ptr{nullptr};
+	void* /* nite::userTracker* */ m_userTracker_ptr{nullptr};
 
 	/** Timestamp management */
-	uint32_t m_timeStartUI;
+	uint32_t m_timeStartUI{};
 	mrpt::system::TTimeStamp m_timeStartTT;
 
 	/** Sensor pose */
 	mrpt::poses::CPose3D m_sensorPose;
 	/** Number of detected users */
-	int m_nUsers;
+	int m_nUsers{0};
 
 	/** Preview window management */
-	bool m_showPreview;
+	bool m_showPreview{false};
 	mrpt::gui::CDisplayWindow3D::Ptr m_win;
 	/** Lines between joints */
 	std::vector<std::pair<JOINT, JOINT>> m_linesToPlot;
@@ -93,7 +93,7 @@ class CSkeletonTracker : public hwdrivers::CGenericSensor
 	std::vector<double> m_joint_theta;
 
 	/** Timeout counter (for internal use only) */
-	unsigned int m_toutCounter;
+	unsigned int m_toutCounter{0};
 
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(

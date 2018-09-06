@@ -46,16 +46,16 @@ class CRenderizable : public mrpt::serialization::CSerializable
 
    protected:
 	std::string m_name;
-	bool m_show_name;
+	bool m_show_name{false};
 	/** Color components in the range [0,255] */
 	mrpt::img::TColor m_color;
 	/** 6D pose wrt the parent coordinate reference. This class automatically
 	 * holds the cached 3x3 rotation matrix for quick load into opengl stack. */
 	mrpt::poses::CPose3D m_pose;
 	/** Scale components to apply to the object (default=1) */
-	float m_scale_x, m_scale_y, m_scale_z;
+	float m_scale_x{1}, m_scale_y{1}, m_scale_z{1};
 	/** Is the object visible? (default=true) */
-	bool m_visible;
+	bool m_visible{true};
 
    public:
 	/** @name Changes the appearance of the object to render

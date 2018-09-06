@@ -13,7 +13,7 @@
 namespace mrpt::graphs::detail
 {
 template <class GRAPH_T>
-THypothesis<GRAPH_T>::THypothesis() : is_valid(true), goodness(0)
+THypothesis<GRAPH_T>::THypothesis()  
 {
 }
 

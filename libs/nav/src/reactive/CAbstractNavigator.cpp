@@ -23,11 +23,8 @@ const double PREVIOUS_POSES_MAX_AGE = 20;  // seconds
 // Ctor: CAbstractNavigator::TargetInfo
 CAbstractNavigator::TargetInfo::TargetInfo()
 	: target_coords(0, 0, 0),
-	  target_frame_id("map"),
-	  targetAllowedDistance(0.5),
-	  targetIsRelative(false),
-	  targetDesiredRelSpeed(.05),
-	  targetIsIntermediaryWaypoint(false)
+	  target_frame_id("map")
+	  
 {
 }
 
@@ -423,10 +420,8 @@ bool CAbstractNavigator::stop(bool isEmergencyStop)
 }
 
 CAbstractNavigator::TAbstractNavigatorParams::TAbstractNavigatorParams()
-	: dist_to_target_for_sending_event(0),
-	  alarm_seems_not_approaching_target_timeout(30),
-	  dist_check_target_is_blocked(0.6),
-	  hysteresis_check_target_is_blocked(3)
+	
+	  
 {
 }
 void CAbstractNavigator::TAbstractNavigatorParams::loadFromConfigFile(

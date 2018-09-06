@@ -285,21 +285,15 @@ COctoMapBase<OCTREE, OCTREE_NODE>::TInsertionOptions::TInsertionOptions(
 
 template <class OCTREE, class OCTREE_NODE>
 COctoMapBase<OCTREE, OCTREE_NODE>::TInsertionOptions::TInsertionOptions()
-	: maxrange(-1.),
-	  pruning(true),
-	  m_parent(nullptr),
-	  // Default values from octomap:
-	  occupancyThres(0.5),
-	  probHit(0.7),
-	  probMiss(0.4),
-	  clampingThresMin(0.1192),
-	  clampingThresMax(0.971)
+	: 
+	  m_parent(nullptr)
+	  
 {
 }
 
 template <class OCTREE, class OCTREE_NODE>
 COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::TLikelihoodOptions()
-	: decimation(1)
+	 
 {
 }
 

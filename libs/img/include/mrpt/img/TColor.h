@@ -19,7 +19,7 @@ namespace mrpt::img
  * \ingroup mrpt_img_grp */
 struct TColor
 {
-	constexpr inline TColor() : R(0), G(0), B(0), A(255) {}
+	constexpr inline TColor() {}
 	constexpr inline TColor(
 		uint8_t r, uint8_t g, uint8_t b, uint8_t alpha = 255)
 		: R(r), G(g), B(b), A(alpha)
@@ -43,7 +43,7 @@ struct TColor
 	{
 	}
 
-	uint8_t R, G, B, A;
+	uint8_t R{0}, G{0}, B{0}, A{255};
 
 	/** Operator for implicit conversion into an int binary representation
 	 * 0xRRGGBB */
@@ -109,5 +109,4 @@ mrpt::serialization::CArchive& operator<<(
 mrpt::serialization::CArchive& operator>>(
 	mrpt::serialization::CArchive& i, TColorf& c);
 
-}
-
+}  // namespace mrpt::img

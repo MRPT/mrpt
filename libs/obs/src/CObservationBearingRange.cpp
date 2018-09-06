@@ -27,16 +27,12 @@ IMPLEMENTS_SERIALIZABLE(CObservationBearingRange, CObservation, mrpt::obs)
  Default constructor.
  ---------------------------------------------------------------*/
 CObservationBearingRange::CObservationBearingRange()
-	: minSensorDistance(0),
-	  maxSensorDistance(0),
+	: 
 	  fieldOfView_yaw(DEG2RAD(180)),
 	  fieldOfView_pitch(DEG2RAD(90)),
 	  sensorLocationOnRobot(),
-	  sensedData(),
-	  validCovariances(false),
-	  sensor_std_range(0),
-	  sensor_std_yaw(0),
-	  sensor_std_pitch(0)
+	  sensedData()
+	  
 {
 }
 

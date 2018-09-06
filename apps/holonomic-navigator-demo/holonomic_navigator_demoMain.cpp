@@ -37,7 +37,8 @@ class MyArtProvider : public wxArtProvider
 {
    protected:
 	wxBitmap CreateBitmap(
-		const wxArtID& id, const wxArtClient& client, const wxSize& size) override;
+		const wxArtID& id, const wxArtClient& client,
+		const wxSize& size) override;
 };
 
 // CreateBitmap function
@@ -425,12 +426,14 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 	//*)
 
 	m_plot3D->Connect(
-		wxEVT_MOTION, (wxObjectEventFunction)&holonomic_navigator_demoFrame::
-						  Onplot3DMouseMove,
+		wxEVT_MOTION,
+		(wxObjectEventFunction)&holonomic_navigator_demoFrame::
+			Onplot3DMouseMove,
 		0, this);
 	m_plot3D->Connect(
-		wxEVT_LEFT_DOWN, (wxObjectEventFunction)&holonomic_navigator_demoFrame::
-							 Onplot3DMouseClick,
+		wxEVT_LEFT_DOWN,
+		(wxObjectEventFunction)&holonomic_navigator_demoFrame::
+			Onplot3DMouseClick,
 		0, this);
 
 	mnuViewMaxRange->Check(true);
@@ -981,13 +984,6 @@ void holonomic_navigator_demoFrame::Onplot3DMouseClick(wxMouseEvent& event)
 }
 
 // ==== holonomic_navigator_demoFrame::TOptions ======
-holonomic_navigator_demoFrame::TOptions::TOptions()
-	: ROBOT_MAX_SPEED(4.0),
-	  MAX_SENSOR_RADIUS(5.0),
-	  SENSOR_NUM_RANGES(181),
-	  SENSOR_RANGE_NOISE_STD(0.02)
-{
-}
 void holonomic_navigator_demoFrame::TOptions::loadFromConfigFile(
 	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {

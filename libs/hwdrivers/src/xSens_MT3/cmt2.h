@@ -50,7 +50,7 @@ class Cmt2s
 	   read from the
 		connected COM port.
 	*/
-	CmtCallbackFunction m_onMessageReceived;
+	CmtCallbackFunction m_onMessageReceived{nullptr};
 	//! Custom, user supplied parameter for the OnMessageReceived callback
 	//! function, passed as the first argument
 	int32_t m_onMessageReceivedInstance;
@@ -64,7 +64,7 @@ class Cmt2s
 	   sent to the
 		connected COM port.
 	*/
-	CmtCallbackFunction m_onMessageSent;
+	CmtCallbackFunction m_onMessageSent{nullptr};
 	//! Custom, user supplied parameter for the OnMessageSent callback function,
 	//! passed as the first argument
 	int32_t m_onMessageSentInstance;

@@ -374,7 +374,7 @@ class WXDLLIMPEXP_MATHPLOT mpLayer : public wxObject
 	/** select if the layer should draw only inside margins or over all DC */
 	bool m_drawOutsideMargins;
 	/** Define layer type, which is assigned by constructor */
-	mpLayerType m_type;
+	mpLayerType m_type{mpLAYER_UNDEF};
 	/** Toggles layer visibility */
 	bool m_visible;
 	DECLARE_DYNAMIC_CLASS(mpLayer)
@@ -1688,15 +1688,7 @@ class WXDLLIMPEXP_MATHPLOT mpMovableObject : public mpLayer
    public:
 	/** Default constructor (sets location and rotation to (0,0,0))
 	 */
-	mpMovableObject()
-		: m_reference_x(0),
-		  m_reference_y(0),
-		  m_reference_phi(0),
-		  m_shape_xs(0),
-		  m_shape_ys(0)
-	{
-		m_type = mpLAYER_PLOT;
-	}
+	mpMovableObject() : m_shape_xs(0), m_shape_ys(0) { m_type = mpLAYER_PLOT; }
 
 	~mpMovableObject() override{};
 
@@ -1752,7 +1744,7 @@ class WXDLLIMPEXP_MATHPLOT mpMovableObject : public mpLayer
 
 	/** The coordinates of the object (orientation "phi" is in radians).
 	 */
-	double m_reference_x, m_reference_y, m_reference_phi;
+	double m_reference_x{0}, m_reference_y{0}, m_reference_phi{0};
 
 	/** A method for 2D translation and rotation, using the current
 	 * transformation stored in m_reference_x,m_reference_y,m_reference_phi.
@@ -2005,4 +1997,3 @@ class WXDLLIMPEXP_MATHPLOT mpBitmapLayer : public mpLayer
 #if defined(_MSC_VER)
 #pragma warning(pop)
 #endif
-

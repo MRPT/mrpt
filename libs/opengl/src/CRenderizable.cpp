@@ -34,14 +34,13 @@ struct TOpenGLNameBooker
 {
    private:
 	TOpenGLNameBooker()
-		: freeTextureNames(MAX_GL_TEXTURE_IDS, false),
-		  next_free_texture(1)  // 0 is a reserved number!!
+		: freeTextureNames(MAX_GL_TEXTURE_IDS, false)
 	{
 	}
 
    public:
 	std::vector<bool> freeTextureNames;
-	unsigned int next_free_texture;
+	unsigned int next_free_texture{1};
 	std::recursive_mutex cs;
 
 	static TOpenGLNameBooker& instance()
@@ -54,13 +53,10 @@ struct TOpenGLNameBooker
 // Default constructor:
 CRenderizable::CRenderizable()
 	: m_name(),
-	  m_show_name(false),
+	  
 	  m_color(255, 255, 255, 255),
-	  m_pose(),
-	  m_scale_x(1),
-	  m_scale_y(1),
-	  m_scale_z(1),
-	  m_visible(true)
+	  m_pose()
+	  
 {
 }
 

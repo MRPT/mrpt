@@ -15,10 +15,8 @@
 using namespace mrpt::obs;
 
 CObservation2DRangeScanWithUncertainty::TEvalParams::TEvalParams()
-	: prob_outliers(0.5),
-	  prob_lost_ray(0.3),
-	  max_prediction_std_dev(1.0),
-	  min_ray_log_lik(-20.0)
+	
+	  
 {
 }
 

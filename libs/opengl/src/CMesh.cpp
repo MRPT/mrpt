@@ -31,9 +31,7 @@ CMesh::CMesh(
 	float yMax_p)
 	: m_textureImage(0, 0),
 	  m_enableTransparency(enableTransparency),
-	  m_colorFromZ(false),
-	  m_isWireFrame(false),
-	  m_isImage(false),
+	  
 	  Z(0, 0),
 	  mask(0, 0),
 	  U(0, 0),
@@ -42,14 +40,12 @@ CMesh::CMesh(
 	  C_r(0, 0),
 	  C_g(0, 0),
 	  C_b(0, 0),
-	  m_colorMap(mrpt::img::cmHOT),
-	  m_modified_Z(true),
-	  m_modified_Image(false),
+	  
 	  xMin(xMin_p),
 	  xMax(xMax_p),
 	  yMin(yMin_p),
-	  yMax(yMax_p),
-	  trianglesUpToDate(false)
+	  yMax(yMax_p)
+	  
 {
 	m_color.A = 255;
 	m_color.R = 0;

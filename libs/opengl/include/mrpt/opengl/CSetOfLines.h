@@ -33,10 +33,10 @@ class CSetOfLines : public CRenderizableDisplayList
 	DEFINE_SERIALIZABLE(CSetOfLines)
    protected:
 	std::vector<mrpt::math::TSegment3D> mSegments;
-	float mLineWidth;
-	bool m_antiAliasing;
+	float mLineWidth{1.0};
+	bool m_antiAliasing{true};
 	/** 0: means hidden */
-	float m_verticesPointSize;
+	float m_verticesPointSize{.0f};
 
    public:
 	/**

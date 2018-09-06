@@ -365,8 +365,8 @@ CDisplayWindow::Ptr CDisplayWindow::Create(
 CDisplayWindow::CDisplayWindow(
 	const std::string& windowCaption, unsigned int initWidth,
 	unsigned int initHeight)
-	: CBaseGUIWindow(static_cast<void*>(this), 200, 299, windowCaption),
-	  m_enableCursorCoordinates(true)
+	: CBaseGUIWindow(static_cast<void*>(this), 200, 299, windowCaption)
+	  
 {
 	CBaseGUIWindow::createWxWindow(initWidth, initHeight);
 }

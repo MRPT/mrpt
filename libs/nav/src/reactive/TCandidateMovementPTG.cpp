@@ -14,10 +14,7 @@
 using namespace mrpt::nav;
 
 TCandidateMovementPTG::TCandidateMovementPTG()
-	: PTG(nullptr),
-	  direction(0),
-	  speed(0),
-	  starting_robot_dir(0),
-	  starting_robot_dist(0)
+	
+	  
 {
 }

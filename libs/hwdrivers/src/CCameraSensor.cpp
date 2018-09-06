@@ -46,54 +46,23 @@ CCameraSensor::CCameraSensor()
 	: mrpt::system::COutputLogger("CCameraSensor"),
 	  m_sensorPose(),
 	  m_grabber_type("opencv"),
-	  m_capture_grayscale(false),
-	  m_cv_camera_index(0),
+	  
 	  m_cv_camera_type("CAMERA_CV_AUTODETECT"),
 	  m_cv_options(),
-	  // ---
-	  m_dc1394_camera_guid(0),
-	  m_dc1394_camera_unit(0),
+	  
 	  m_dc1394_options(),
-	  m_preview_decimation(0),
-	  m_preview_reduction(1),
-	  // ---
-	  m_bumblebee_dc1394_camera_guid(0),
-	  m_bumblebee_dc1394_camera_unit(0),
-	  m_bumblebee_dc1394_framerate(15),
-	  // ---
-	  m_svs_camera_index(0),
+	  
 	  m_svs_options(),
-	  // ---
-	  m_sr_open_from_usb(true),
-	  m_sr_save_3d(true),
-	  m_sr_save_range_img(true),
-	  m_sr_save_intensity_img(true),
-	  m_sr_save_confidence(true),
-	  // ---
-	  m_kinect_save_3d(
-		  true),  // These options are also used for OpenNI2 grabber
-	  m_kinect_save_range_img(true),
-	  m_kinect_save_intensity_img(true),
-	  m_kinect_video_rgb(true),
-	  // ---
-	  m_fcs_start_synch_capture(false),
+	  
 	  // ---
 	  m_img_dir_url(""),
 	  m_img_dir_left_format("imL_%04d.jpg"),
 	  m_img_dir_right_format("imR_%04d.jpg"),
-	  m_img_dir_start_index(0),
-	  m_img_dir_end_index(100),
-	  m_img_dir_is_stereo(true),
-	  m_img_dir_counter(0),
-	  // ---
-	  m_external_images_own_thread(false),
-	  m_camera_grab_decimator(0),
-	  m_camera_grab_decimator_counter(0),
-	  m_preview_counter(0),
+	  
 	  m_external_image_saver_count(std::thread::hardware_concurrency()),
-	  m_threadImagesSaverShouldEnd(false),
-	  m_hook_pre_save(nullptr),
-	  m_hook_pre_save_param(nullptr)
+	  
+	  m_hook_pre_save(nullptr)
+	  
 {
 	m_sensorLabel = "CAMERA";
 	m_state = CGenericSensor::ssInitializing;

@@ -33,9 +33,7 @@ using namespace mrpt::hwdrivers;
 CImageGrabber_dc1394::CImageGrabber_dc1394(
 	uint64_t cameraGUID, uint16_t cameraUnit,
 	const TCaptureOptions_dc1394& options, bool verbose)
-	: m_bInitialized(false),
-	  m_dc1394_lib_context(nullptr),
-	  m_dc1394camera(nullptr),
+	: 
 	  m_options(options)
 {
 	MRPT_START

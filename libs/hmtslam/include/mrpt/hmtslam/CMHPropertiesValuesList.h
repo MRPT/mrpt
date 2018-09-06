@@ -18,10 +18,10 @@ namespace mrpt::hmtslam
 /** Internal triplet for each property in utils::CMHPropertiesValuesList */
 struct TPropertyValueIDTriplet
 {
-	TPropertyValueIDTriplet() : name(), value(nullptr), ID(0) {}
+	TPropertyValueIDTriplet() = default;
 	std::string name, basic_value;
 	mrpt::serialization::CSerializable::Ptr value;
-	int64_t ID;
+	int64_t ID{0};
 };
 
 /** An arbitrary list of "annotations", or named attributes, each being an
@@ -135,7 +135,7 @@ class CMHPropertiesValuesList : public mrpt::serialization::CSerializable
 		basic_value.resize(sizeof(T));
 		::memcpy(&basic_value[0], &data, sizeof(T));
 
-		for (auto & m_propertie : m_properties)
+		for (auto& m_propertie : m_properties)
 		{
 			if (m_propertie.ID == hypothesis_ID &&
 				mrpt::system::strCmpI(propertyName, m_propertie.name))
@@ -169,14 +169,15 @@ class CMHPropertiesValuesList : public mrpt::serialization::CSerializable
 		bool raiseExceptionIfNotFound = false) const
 	{
 		MRPT_START
-		for (const auto & m_propertie : m_properties)
+		for (const auto& m_propertie : m_properties)
 		{
 			if (mrpt::system::strCmpI(propertyName, m_propertie.name) &&
 				m_propertie.ID == hypothesis_ID)
 			{
 				if (m_propertie.basic_value.size() != sizeof(out_data))
 					THROW_EXCEPTION("Data sizes do not match.");
-				out_data = *reinterpret_cast<const T*>(&m_propertie.basic_value[0]);
+				out_data =
+					*reinterpret_cast<const T*>(&m_propertie.basic_value[0]);
 				return true;
 			}
 		}
@@ -200,6 +201,4 @@ class CMHPropertiesValuesList : public mrpt::serialization::CSerializable
 	const_iterator end() const { return m_properties.end(); }
 	size_t size() const { return m_properties.size(); }
 };  // End of class def.
-}
-
-
+}  // namespace mrpt::hmtslam

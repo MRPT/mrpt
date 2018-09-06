@@ -45,7 +45,7 @@ using namespace mrpt::math;
 MAP_DEFINITION_REGISTER(
 	"CColouredOctoMap,colourOctoMap,colorOctoMap", mrpt::maps::CColouredOctoMap)
 
-CColouredOctoMap::TMapDefinition::TMapDefinition() : resolution(0.10) {}
+CColouredOctoMap::TMapDefinition::TMapDefinition()  {}
 void CColouredOctoMap::TMapDefinition::loadFromConfigFile_map_specific(
 	const mrpt::config::CConfigFileBase& source,
 	const std::string& sectionNamePrefix)
@@ -85,8 +85,8 @@ mrpt::maps::CMetricMap* CColouredOctoMap::internal_CreateFromMapDefinition(
 IMPLEMENTS_SERIALIZABLE(CColouredOctoMap, CMetricMap, mrpt::maps)
 
 CColouredOctoMap::CColouredOctoMap(const double resolution) :
-	COctoMapBase<octomap::ColorOcTree, octomap::ColorOcTreeNode>(resolution),
-	m_colour_method(INTEGRATE)
+	COctoMapBase<octomap::ColorOcTree, octomap::ColorOcTreeNode>(resolution)
+	
 {
 }
 

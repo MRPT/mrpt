@@ -31,12 +31,8 @@ MAP_DEFINITION_REGISTER(
 	"CHeightGridMap2D,heightMap,dem", mrpt::maps::CHeightGridMap2D)
 
 CHeightGridMap2D::TMapDefinition::TMapDefinition()
-	: min_x(-2),
-	  max_x(2),
-	  min_y(-2),
-	  max_y(2),
-	  resolution(0.10f),
-	  mapType(CHeightGridMap2D::mrSimpleAverage)
+	
+	  
 {
 }
 
@@ -241,7 +237,7 @@ void CHeightGridMap2D::serializeFrom(
 }
 
 CHeightGridMap2D::TInsertionOptions::TInsertionOptions()
-	: filterByHeight(false), z_min(-0.5), z_max(0.5), colorMap(cmJET)
+	 
 {
 }
 

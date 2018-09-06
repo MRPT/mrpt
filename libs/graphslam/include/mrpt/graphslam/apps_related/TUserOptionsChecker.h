@@ -34,16 +34,8 @@ namespace mrpt::graphslam::apps
  */
 struct TRegistrationDeciderOrOptimizerProps
 {
-	TRegistrationDeciderOrOptimizerProps()
-		: name(""),
-		  description(""),
-		  is_mr_slam_class(false),
-		  is_slam_2d(
-			  true),  // by default the decider/optimizer is considered 2D
-		  is_slam_3d(false)
-	{
-	}
-	~TRegistrationDeciderOrOptimizerProps()=default;
+	TRegistrationDeciderOrOptimizerProps() = default;
+	~TRegistrationDeciderOrOptimizerProps() = default;
 	/**\brief Name of the decider or optimizer class
 	 */
 	std::string name;
@@ -53,9 +45,9 @@ struct TRegistrationDeciderOrOptimizerProps
 	 * used
 	 * in a multi-robot SLAM operation
 	 */
-	bool is_mr_slam_class;
-	bool is_slam_2d;
-	bool is_slam_3d;
+	bool is_mr_slam_class{false};
+	bool is_slam_2d{true};
+	bool is_slam_3d{false};
 };
 
 /**\brief Properties struct for the Registration Decider classes.
@@ -64,8 +56,8 @@ struct TRegistrationDeciderOrOptimizerProps
  */
 struct TRegistrationDeciderProps : public TRegistrationDeciderOrOptimizerProps
 {
-	TRegistrationDeciderProps() : type(""), rawlog_format("") {}
-	~TRegistrationDeciderProps()=default;
+	TRegistrationDeciderProps() = default;
+	~TRegistrationDeciderProps() = default;
 	/**\brief Type of decider.
 	 *
 	 * Available options are:
@@ -85,8 +77,8 @@ struct TRegistrationDeciderProps : public TRegistrationDeciderOrOptimizerProps
  */
 struct TOptimizerProps : public TRegistrationDeciderOrOptimizerProps
 {
-	TOptimizerProps()=default;
-	~TOptimizerProps()=default;
+	TOptimizerProps() = default;
+	~TOptimizerProps() = default;
 };
 
 /**\brief Class containing the declarations of supplementary methods that can
@@ -215,8 +207,5 @@ struct TUserOptionsChecker
 	const std::string sep_header;
 	const std::string sep_subheader;
 };
-}
+}  // namespace mrpt::graphslam::apps
 #include "TUserOptionsChecker_impl.h"
-
-
-

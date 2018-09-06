@@ -35,27 +35,27 @@ class CObservationRange : public CObservation
 
 	/** The data members
 	 */
-	float minSensorDistance;
-	float maxSensorDistance;
+	float minSensorDistance{0};
+	float maxSensorDistance{5};
 	/** Cone aperture of each ultrasonic beam, in radians. */
 	float sensorConeApperture;
 
 	struct TMeasurement
 	{
-		TMeasurement() : sensorID(0), sensorPose(), sensedDistance(0) {}
+		TMeasurement() : sensorPose() {}
 		/** Some kind of sensor ID which identifies it on the bus (if
 		 * applicable, 0 otherwise)
-		  */
-		uint16_t sensorID;
+		 */
+		uint16_t sensorID{0};
 
 		/** The 6D position of the sensor on the robot.
-		  */
+		 */
 		math::TPose3D sensorPose;
 
 		/** The measured range, in meters (or a value of 0 if there was no
 		 * detected echo).
-		  */
-		float sensedDistance;
+		 */
+		float sensedDistance{0};
 	};
 
 	using TMeasurementList = std::deque<TMeasurement>;
@@ -75,6 +75,4 @@ class CObservationRange : public CObservation
 	void getDescriptionAsText(std::ostream& o) const override;
 
 };  // End of class def.
-}
-
-
+}  // namespace mrpt::obs

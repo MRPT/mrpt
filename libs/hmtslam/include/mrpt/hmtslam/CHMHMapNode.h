@@ -51,7 +51,7 @@ class CHMHMapNode : public mrpt::serialization::CSerializable
 	/** An unique identifier for the node: it is randomly generated at
 	 * construction or read from stream when loaded.
 	  */
-	TNodeID m_ID;
+	TNodeID m_ID{};
 
 	/** The list of all arcs from/to this node:
 	  */

@@ -402,7 +402,7 @@ void CColouredPointsMap::getAs3DObject(
 TColourOptions
 ---------------------------------------------------------------*/
 CColouredPointsMap::TColourOptions::TColourOptions()
-	: scheme(cmFromHeightRelativeToSensor), z_min(-10), z_max(10), d_max(5)
+	 
 {
 }
 

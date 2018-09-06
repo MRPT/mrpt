@@ -23,44 +23,44 @@ struct Message_TOPCON_PZS : public gnss_message
 	};
 
 	/** The measured latitude, in degrees (North:+ , South:-) */
-	double latitude_degrees;
+	double latitude_degrees{0};
 	/** The measured longitude, in degrees (East:+ , West:-) */
-	double longitude_degrees;
+	double longitude_degrees{0};
 	/** ellipsoidal height from N-beam [m] perhaps weighted with regular gps */
-	double height_meters;
+	double height_meters{0};
 	/** ellipsoidal height [m] without N-beam correction */
-	double RTK_height_meters;
+	double RTK_height_meters{0};
 	/** position SEP [m] */
-	float PSigma;
+	float PSigma{0};
 	/** Vertical angle of N-beam */
-	double angle_transmitter;
+	double angle_transmitter{0};
 	/** ID of the transmitter [1-4], 0 if none. */
-	uint8_t nId;
+	uint8_t nId{0};
 	/** 1: GPS, 2: mmGPS */
-	uint8_t Fix;
+	uint8_t Fix{0};
 	/** battery level on transmitter */
-	uint8_t TXBattery;
+	uint8_t TXBattery{0};
 	/** battery level on receiver */
-	uint8_t RXBattery;
-	uint8_t error;  //! system error indicator
+	uint8_t RXBattery{0};
+	uint8_t error{0};  //! system error indicator
 
-	bool hasCartesianPosVel;
+	bool hasCartesianPosVel{false};
 	/** Only if hasCartesianPosVel is true */
-	double cartesian_x, cartesian_y, cartesian_z;
+	double cartesian_x{0}, cartesian_y{0}, cartesian_z{0};
 	/** Only if hasCartesianPosVel is true */
-	double cartesian_vx, cartesian_vy, cartesian_vz;
+	double cartesian_vx{0}, cartesian_vy{0}, cartesian_vz{0};
 
-	bool hasPosCov;
+	bool hasPosCov{false};
 	/** Only if hasPosCov is true */
 	mrpt::math::CMatrixFloat44 pos_covariance;
 
-	bool hasVelCov;
+	bool hasVelCov{false};
 	/** Only if hasPosCov is true */
 	mrpt::math::CMatrixFloat44 vel_covariance;
 
-	bool hasStats;
-	uint8_t stats_GPS_sats_used,
-		stats_GLONASS_sats_used;  //<! Only if hasStats is true
+	bool hasStats{false};
+	uint8_t stats_GPS_sats_used{0},
+		stats_GLONASS_sats_used{0};  //<! Only if hasStats is true
 	/** [0,100] %, only in modes other than RTK FIXED. */
 	uint8_t stats_rtk_fix_progress;
 

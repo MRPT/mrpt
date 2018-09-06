@@ -38,7 +38,7 @@ class CConfigFilePrefixer : public CConfigFileBase
 {
    private:
 	/** The object we are wrapping */
-	CConfigFileBase* m_bound_object;
+	CConfigFileBase* m_bound_object{nullptr};
 	std::string m_prefix_sections, m_prefix_keys;
 
    protected:

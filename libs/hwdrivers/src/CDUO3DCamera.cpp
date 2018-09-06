@@ -53,15 +53,7 @@ using namespace cv;
 #endif
 
 TCaptureOptions_DUO3D::TCaptureOptions_DUO3D()
-	: m_img_width(640),
-	  m_img_height(480),
-	  m_fps(30),
-	  m_exposure(50),
-	  m_led(25),
-	  m_gain(0),
-	  m_capture_imu(false),
-	  m_capture_rectified(false),
-	  m_calibration_from_file(true),
+	: 
 	  m_rectify_map_filename(""),
 	  m_intrinsic_filename(""),
 	  m_extrinsic_filename(""),
@@ -301,7 +293,7 @@ static void CALLBACK DUOCallback(const PDUOFrame pFrameData, void* pUserData)
 
 /** Default constructor. */
 CDUO3DCamera::CDUO3DCamera()
-	: m_options(TCaptureOptions_DUO3D()), m_duo(nullptr)
+	: m_options(TCaptureOptions_DUO3D()) 
 {
 #if MRPT_HAS_DUO3D
 	m_duo = new DUOInstance[1];

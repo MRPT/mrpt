@@ -54,15 +54,15 @@ class CVectorField3D : public CRenderizableDisplayList
 	mrpt::math::CMatrix z_p;
 
 	/** By default it is 1.0 */
-	float m_LineWidth;
+	float m_LineWidth{1.0};
 	/** By default it is 1.0 */
-	float m_pointSize;
+	float m_pointSize{1.0};
 	/** By default it is true */
-	bool m_antiAliasing;
+	bool m_antiAliasing{true};
 	/** By default it is false */
-	bool m_colorFromModule;
+	bool m_colorFromModule{false};
 	/** By default it is true */
-	bool m_showPoints;
+	bool m_showPoints{true};
 
 	mrpt::img::TColor m_point_color;
 	mrpt::img::TColor m_field_color;

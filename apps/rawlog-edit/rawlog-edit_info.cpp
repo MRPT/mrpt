@@ -18,15 +18,10 @@ using namespace mrpt::io;
 
 struct TInfoPerSensorLabel
 {
-	TInfoPerSensorLabel()
-		: occurrences(0),
-		  tim_first(INVALID_TIMESTAMP),
-		  tim_last(INVALID_TIMESTAMP)
-	{
-	}
+	TInfoPerSensorLabel() {}
 
 	string className;
-	size_t occurrences;
+	size_t occurrences{0};
 	TTimeStamp tim_first, tim_last;
 };
 

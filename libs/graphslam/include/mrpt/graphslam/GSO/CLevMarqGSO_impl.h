@@ -14,15 +14,9 @@ namespace mrpt::graphslam::optimizers
 
 template <class GRAPH_T>
 CLevMarqGSO<GRAPH_T>::CLevMarqGSO()
-	: m_first_time_call(false),
-	  m_has_read_config(false),
-	  m_autozoom_active(true),
-	  m_last_total_num_of_nodes(5),
-	  m_optimization_policy(OptimizationPolicy::UseLoopClosures),
-	  m_curr_used_consec_lcs(0),
-	  m_curr_ignored_consec_lcs(0),
-	  m_just_fully_optimized_graph(false),
-	  m_min_nodes_for_optimization(3)
+	: 
+	  m_optimization_policy(OptimizationPolicy::UseLoopClosures)
+	  
 {
 	this->initializeLoggers("CLevMarqGSO");
 }

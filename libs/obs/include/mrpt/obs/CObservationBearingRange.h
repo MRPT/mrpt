@@ -34,7 +34,7 @@ class CObservationBearingRange : public CObservation
 	 */
 	CObservationBearingRange();
 
-	float minSensorDistance, maxSensorDistance;  //! Information about the
+	float minSensorDistance{0}, maxSensorDistance{0};  //! Information about the
 	//! sensor: Ranges, in meters
 	//! (0: there is no limits)
 	/** Information about the sensor: The "field-of-view" of the sensor, in
@@ -81,7 +81,7 @@ class CObservationBearingRange : public CObservation
 	 * covariance matrices given by the values
 	 * sensor_std_range,sensor_std_yaw,sensor_std_pitch.
 	  */
-	bool validCovariances;
+	bool validCovariances{false};
 
 	/** Taken into account only if validCovariances=false: the standard
 	 * deviation of the sensor noise model for range,yaw and pitch (in meters
@@ -90,7 +90,7 @@ class CObservationBearingRange : public CObservation
 	 * 3x3 covariance matrices contain the actual uncertainties for each of the
 	 * detected landmarks.
 	  */
-	float sensor_std_range, sensor_std_yaw, sensor_std_pitch;
+	float sensor_std_range{0}, sensor_std_yaw{0}, sensor_std_pitch{0};
 
 	/** Prints out the contents of the object.
 	  */

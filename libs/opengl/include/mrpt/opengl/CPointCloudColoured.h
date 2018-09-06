@@ -71,23 +71,16 @@ class CPointCloudColoured : public CRenderizable,
 	inline iterator end() { return m_points.end(); }
 	inline const_iterator end() const { return m_points.end(); }
 	/** By default is 1.0 */
-	float m_pointSize;
+	float m_pointSize{1};
 	/** Default: false */
-	bool m_pointSmooth;
-	mutable volatile size_t m_last_rendered_count,
-		m_last_rendered_count_ongoing;
+	bool m_pointSmooth{false};
+	mutable volatile size_t m_last_rendered_count{0},
+		m_last_rendered_count_ongoing{0};
 
    public:
 	/** Constructor
 	 */
-	CPointCloudColoured()
-		: m_points(),
-		  m_pointSize(1),
-		  m_pointSmooth(false),
-		  m_last_rendered_count(0),
-		  m_last_rendered_count_ongoing(0)
-	{
-	}
+	CPointCloudColoured() : m_points() {}
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	~CPointCloudColoured() override {}
 	/** Do needed internal work if all points are new (octree rebuilt,...) */
@@ -300,9 +293,7 @@ class PointCloudAdapter<mrpt::opengl::CPointCloudColoured>
 	/** Set number of points (to uninitialized values) */
 	inline void resize(const size_t N) { m_obj.resize(N); }
 	/** Does nothing as of now */
-	inline void setDimensions(const size_t& height, const size_t& width)
-	{
-	}
+	inline void setDimensions(const size_t& height, const size_t& width) {}
 	/** Get XYZ coordinates of i'th point */
 	template <typename T>
 	inline void getPointXYZ(const size_t idx, T& x, T& y, T& z) const

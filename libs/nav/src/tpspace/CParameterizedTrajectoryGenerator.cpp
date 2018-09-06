@@ -36,14 +36,10 @@ IMPLEMENTS_VIRTUAL_SERIALIZABLE(
 	CParameterizedTrajectoryGenerator, CSerializable, mrpt::nav)
 
 CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator()
-	: refDistance(.0),
-	  m_alphaValuesCount(0),
-	  m_score_priority(1.0),
-	  m_clearance_num_points(5),
-	  m_clearance_decimated_paths(15),
+	: 
 	  m_nav_dyn_state(),
-	  m_nav_dyn_state_target_k(INVALID_PTG_PATH_INDEX),
-	  m_is_initialized(false)
+	  m_nav_dyn_state_target_k(INVALID_PTG_PATH_INDEX)
+	  
 {
 }
 
@@ -576,8 +572,8 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(
 
 CParameterizedTrajectoryGenerator::TNavDynamicState::TNavDynamicState()
 	: curVelLocal(0, 0, 0),
-	  relTarget(20.0, 0, 0),  // Default: assume a "distant" target ahead
-	  targetRelSpeed(0)
+	  relTarget(20.0, 0, 0)
+	  
 {
 }
 

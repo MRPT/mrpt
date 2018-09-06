@@ -14,7 +14,7 @@ using namespace mrpt::img;
 using namespace std;
 
 TColorManager::TColorManager(bool use_standard_colors_first_in /* = true */)
-	: color_thresh(255)
+	 
 {
 	this->reset();
 	this->use_standard_colors_first = use_standard_colors_first_in;

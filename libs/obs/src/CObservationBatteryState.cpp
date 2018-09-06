@@ -23,10 +23,7 @@ IMPLEMENTS_SERIALIZABLE(CObservationBatteryState, CObservation, mrpt::obs)
 /** Constructor
  */
 CObservationBatteryState::CObservationBatteryState()
-	: voltageMainRobotBattery(0),
-	  voltageMainRobotComputer(0),
-	  voltageMainRobotBatteryIsValid(false),
-	  voltageMainRobotComputerIsValid(false),
+	: 
 	  voltageOtherBatteries(),
 	  voltageOtherBatteriesValid()
 {

@@ -193,9 +193,8 @@ void CRandomFieldGridMap3D::internal_initialize(bool erase_prev_contents)
 					TInsertionOptions
  ---------------------------------------------------------------*/
 CRandomFieldGridMap3D::TInsertionOptions::TInsertionOptions()
-	: GMRF_lambdaPrior(0.01f),  // [GMRF model] The information (Lambda) of
-	  // fixed map constraints
-	  GMRF_skip_variance(false)
+	
+	  
 {
 }
 

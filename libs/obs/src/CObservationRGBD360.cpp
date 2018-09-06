@@ -28,17 +28,9 @@ IMPLEMENTS_SERIALIZABLE(CObservationRGBD360, CObservation, mrpt::obs)
 							Constructor
  ---------------------------------------------------------------*/
 CObservationRGBD360::CObservationRGBD360()
-	: m_points3D_external_stored(false),
-	  m_rangeImage_external_stored(false),
-	  //	hasPoints3D(false),
-	  hasRangeImage(false),
-	  //	range_is_depth(true),
-	  hasIntensityImage(false),
-	  //	hasConfidenceImage(false),
-	  //	cameraParams(),
-	  maxRange(10.0f),
-	  sensorPose(),
-	  stdError(0.01f)
+	: 
+	  sensorPose()
+	  
 {
 }
 

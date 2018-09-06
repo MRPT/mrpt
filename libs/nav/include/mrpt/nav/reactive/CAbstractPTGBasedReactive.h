@@ -125,8 +125,9 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 	 */
 	CAbstractPTGBasedReactive(
 		CRobot2NavInterface& react_iterf_impl, bool enableConsoleOutput = true,
-		bool enableLogFile = false, const std::string& logFileDirectory =
-										std::string("./reactivenav.logs"));
+		bool enableLogFile = false,
+		const std::string& logFileDirectory =
+			std::string("./reactivenav.logs"));
 
 	~CAbstractPTGBasedReactive() override;
 
@@ -182,10 +183,10 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 		std::string ptg_cache_files_directory;
 		/** Maximum distance up to obstacles will be considered (D_{max} in
 		 * papers). */
-		double ref_distance;
+		double ref_distance{4.0};
 		/** Time constant (in seconds) for the low-pass filter applied to
 		 * kinematic velocity commands (default=0: no filtering) */
-		double speedfilter_tau;
+		double speedfilter_tau{0.0};
 
 		/** In normalized distances, the start and end of a ramp function that
 		 * scales the velocity
@@ -204,24 +205,24 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 		 * \endcode
 		 *
 		 */
-		double secure_distance_start, secure_distance_end;
-		bool use_delays_model;
+		double secure_distance_start{0.05}, secure_distance_end{0.20};
+		bool use_delays_model{false};
 		/** Max distance [meters] to discard current PTG and issue a new vel cmd
 		 * (default= 0.05) */
-		double max_distance_predicted_actual_path;
+		double max_distance_predicted_actual_path{0.15};
 		/** Min normalized dist [0,1] after current pose in a PTG continuation
 		 * to allow it. */
-		double min_normalized_free_space_for_ptg_continuation;
+		double min_normalized_free_space_for_ptg_continuation{0.2};
 
 		/** Params related to speed limits. */
 		mrpt::kinematics::CVehicleVelCmd::TVelCmdParams
 			robot_absolute_speed_limits;
-		bool enable_obstacle_filtering;
+		bool enable_obstacle_filtering{true};
 		/** Default: false */
-		bool evaluate_clearance;
+		bool evaluate_clearance{false};
 		/** Max dist [meters] to use time-based path prediction for NOP
 		 * evaluation. */
-		double max_dist_for_timebased_path_prediction;
+		double max_dist_for_timebased_path_prediction{2.0};
 
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& c,
@@ -353,7 +354,7 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 	struct PTGTarget
 	{
 		/** For each PTG, whether target falls into the PTG domain. */
-		bool valid_TP;
+		bool valid_TP{false};
 		/** The Target, in TP-Space (x,y) */
 		mrpt::math::TPoint2D TP_Target;
 		/** TP-Target */
@@ -361,7 +362,7 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 		/** The discrete version of target_alpha */
 		int target_k;
 
-		PTGTarget() : valid_TP(false) {}
+		PTGTarget() = default;
 	};
 
 	/** Scores \a holonomicMovement */
@@ -471,6 +472,4 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 	std::unique_ptr<TNavigationParams> m_copy_prev_navParams;
 
 };  // end of CAbstractPTGBasedReactive
-}
-
-
+}  // namespace mrpt::nav

@@ -43,8 +43,8 @@ CColorBar::CColorBar(
 	  m_max_col(max_col),
 	  m_min_value(min_value),
 	  m_max_value(max_value),
-	  m_label_font_size(label_font_size),
-	  m_disable_depth_test(true)
+	  m_label_font_size(label_font_size)
+	  
 {
 }
 

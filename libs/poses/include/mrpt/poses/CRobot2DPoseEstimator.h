@@ -17,14 +17,14 @@
 namespace mrpt::poses
 {
 /** A simple filter to estimate and extrapolate the robot 2D (x,y,phi) pose from
-  *asynchronous odometry and localization/SLAM data.
-  *  The implemented model is a state vector:
-  *		- TPose2D (x,y,phi) + TTwist2D (vx,vy,omega)
-  *  The filter can be asked for an extrapolation for some arbitrary time `t'`,
-  *and it'll do a simple linear prediction.
-  *  **All methods are thread-safe**.
-  * \ingroup poses_grp poses_pdf_grp
-  */
+ *asynchronous odometry and localization/SLAM data.
+ *  The implemented model is a state vector:
+ *		- TPose2D (x,y,phi) + TTwist2D (vx,vy,omega)
+ *  The filter can be asked for an extrapolation for some arbitrary time `t'`,
+ *and it'll do a simple linear prediction.
+ *  **All methods are thread-safe**.
+ * \ingroup poses_grp poses_pdf_grp
+ */
 class CRobot2DPoseEstimator
 {
    public:
@@ -37,9 +37,9 @@ class CRobot2DPoseEstimator
 
 	/** Updates the filter with new global-coordinates localization data from a
 	 * localization or SLAM source.
-	  * \param tim The timestamp of the sensor readings used to evaluate
+	 * \param tim The timestamp of the sensor readings used to evaluate
 	 * localization / SLAM.
-	  */
+	 */
 	void processUpdateNewPoseLocalization(
 		const mrpt::math::TPose2D& newPose, mrpt::Clock::time_point tim);
 
@@ -50,25 +50,25 @@ class CRobot2DPoseEstimator
 		const mrpt::math::TTwist2D& newRobotVelLocal = mrpt::math::TTwist2D());
 
 	/** Get the estimate for a given timestamp (defaults to `now()`), obtained
-	* as:
-	*
-	*   last_loc (+) [ last_odo (-) odo_ref ] (+) extrapolation_from_vw
-	*
-	* \return true is the estimate can be trusted. False if the real observed
-	* data is too old or there is no valid data yet.
-	* \sa getLatestRobotPose
-	*/
+	 * as:
+	 *
+	 *   last_loc (+) [ last_odo (-) odo_ref ] (+) extrapolation_from_vw
+	 *
+	 * \return true is the estimate can be trusted. False if the real observed
+	 * data is too old or there is no valid data yet.
+	 * \sa getLatestRobotPose
+	 */
 	bool getCurrentEstimate(
 		mrpt::math::TPose2D& pose, mrpt::math::TTwist2D& velLocal,
 		mrpt::math::TTwist2D& velGlobal,
 		mrpt::Clock::time_point tim_query = mrpt::Clock::now()) const;
 
 	/** Get the latest known robot pose, either from odometry or localization.
-	*  This differs from getCurrentEstimate() in that this method does NOT
-	* extrapolate as getCurrentEstimate() does.
-	* \return false if there is not estimation yet.
-	* \sa getCurrentEstimate
-	*/
+	 *  This differs from getCurrentEstimate() in that this method does NOT
+	 * extrapolate as getCurrentEstimate() does.
+	 * \return false if there is not estimation yet.
+	 * \sa getCurrentEstimate
+	 */
 	bool getLatestRobotPose(mrpt::math::TPose2D& pose) const;
 
 	/** \overload */
@@ -76,11 +76,11 @@ class CRobot2DPoseEstimator
 
 	struct TOptions
 	{
-		TOptions() : max_odometry_age(1.0), max_localiz_age(4.0) {}
+		TOptions() = default;
 		/** To consider data old, in seconds */
-		double max_odometry_age;
+		double max_odometry_age{1.0};
 		/** To consider data old, in seconds */
-		double max_localiz_age;
+		double max_localiz_age{4.0};
 	};
 
 	/** parameters of the filter. */
@@ -111,6 +111,4 @@ class CRobot2DPoseEstimator
 
 };  // end of class
 
-}
-
-
+}  // namespace mrpt::poses

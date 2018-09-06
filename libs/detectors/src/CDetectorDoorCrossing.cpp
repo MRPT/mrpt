@@ -27,8 +27,8 @@ CDetectorDoorCrossing::CDetectorDoorCrossing()
 	  options(),
 	  lastObs(),
 	  entropy(),
-	  lastEntropy(),
-	  lastEntropyValid(false)
+	  lastEntropy()
+	  
 {
 	clear();
 }

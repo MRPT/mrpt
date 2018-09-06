@@ -52,12 +52,7 @@ class COctreePointRenderer
 {
    public:
 	/** Default ctor */
-	COctreePointRenderer()
-		: m_octree_has_to_rebuild_all(true),
-		  m_visible_octree_nodes(0),
-		  m_visible_octree_nodes_ongoing(0)
-	{
-	}
+	COctreePointRenderer() {}
 
 	/** Copy ctor */
 	COctreePointRenderer(const COctreePointRenderer&)
@@ -136,22 +131,21 @@ class COctreePointRenderer
 	struct TNode
 	{
 		TNode()
-			: is_leaf(true),
-			  bb_min(
+			: bb_min(
 				  std::numeric_limits<float>::max(),
 				  std::numeric_limits<float>::max(),
 				  std::numeric_limits<float>::max()),
 			  bb_max(
 				  -std::numeric_limits<float>::max(),
 				  -std::numeric_limits<float>::max(),
-				  -std::numeric_limits<float>::max()),
-			  all(false)
+				  -std::numeric_limits<float>::max())
+
 		{
 		}
 
 		/** true: it's a leaf and \a pts has valid indices; false: \a children
 		 * is valid. */
-		bool is_leaf;
+		bool is_leaf{true};
 
 		// In all cases, the bounding_box:
 		mrpt::math::TPoint3Df bb_min, bb_max;
@@ -161,7 +155,7 @@ class COctreePointRenderer
 		std::vector<size_t> pts;
 		/** true: All elements in the reference object; false: only those in \a
 		 * pts */
-		bool all;
+		bool all{false};
 
 		// Fields used if is_leaf=false
 		/** [is_leaf=false] The center of the node, whose coordinates are used
@@ -281,13 +275,13 @@ class COctreePointRenderer
 	/** The list of elements that really are visible and will be rendered. */
 	mutable std::vector<TRenderQueueElement> m_render_queue;
 
-	bool m_octree_has_to_rebuild_all;
+	bool m_octree_has_to_rebuild_all{true};
 	/** First one [0] is always the root node */
 	mrpt::aligned_std_deque<TNode> m_octree_nodes;
 
 	// Counters of visible octrees for each render:
-	volatile mutable size_t m_visible_octree_nodes,
-		m_visible_octree_nodes_ongoing;
+	volatile mutable size_t m_visible_octree_nodes{0},
+		m_visible_octree_nodes_ongoing{0};
 
 	/** Render a given node. */
 	void octree_recursive_render(

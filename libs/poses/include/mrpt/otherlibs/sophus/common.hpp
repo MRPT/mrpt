@@ -164,7 +164,7 @@ template <class T>
 
 class optional {
  public:
-  optional() : is_valid_(false) {}
+  optional()  {}
 
   optional(nullopt_t) : is_valid_(false) {}
 
@@ -194,7 +194,7 @@ class optional {
 
  private:
   T type_;
-  bool is_valid_;
+  bool is_valid_{false};
 };
 
 template <bool B, class T = void>
