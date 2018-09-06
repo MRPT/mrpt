@@ -61,8 +61,10 @@ int COpenNI2Generic::getNumInstances()
 ctor
 -------------------------------------------------------------*/
 COpenNI2Generic::COpenNI2Generic()
+#if MRPT_HAS_OPENNI2
 	: m_rgb_format(openni::PIXEL_FORMAT_RGB888),
 	  m_depth_format(openni::PIXEL_FORMAT_DEPTH_1_MM)
+#endif
 {
 	const char* sVerbose = getenv("MRPT_HWDRIVERS_VERBOSE");
 	m_verbose = (sVerbose != nullptr) && atoi(sVerbose) != 0;
