@@ -104,11 +104,11 @@ CWindowDialogPlots::CWindowDialogPlots(
 		wxID_ANY, wxEVT_CHAR,
 		(wxObjectEventFunction)&CWindowDialogPlots::OnChar);
 	m_plot->Connect(
-		wxEVT_CHAR, (wxObjectEventFunction)&CWindowDialogPlots::OnChar, 0,
+		wxEVT_CHAR, (wxObjectEventFunction)&CWindowDialogPlots::OnChar, nullptr,
 		this);
 	m_plot->Connect(
 		wxEVT_MOTION, (wxObjectEventFunction)&CWindowDialogPlots::OnMouseMove,
-		0, this);
+		nullptr, this);
 
 	m_plot->Connect(
 		wxEVT_LEFT_DOWN,

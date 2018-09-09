@@ -419,7 +419,7 @@ class CNationalInstrumentsDAQ : public mrpt::system::COutputLogger,
 	{
 		TInfoPerTask();
 
-		void* taskHandle{0};
+		void* taskHandle{nullptr};
 		std::thread hThread;
 
 		std::unique_ptr<mrpt::io::CPipeReadEndPoint> read_pipe;

@@ -47,7 +47,7 @@ struct TColor
 
 	/** Operator for implicit conversion into an int binary representation
 	 * 0xRRGGBB */
-	inline operator unsigned int(void) const
+	inline operator unsigned int() const
 	{
 		return (((unsigned int)R) << 16) | (((unsigned int)G) << 8) | B;
 	}

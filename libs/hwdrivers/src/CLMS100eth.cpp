@@ -81,7 +81,7 @@ void CLMS100Eth::loadConfig_sensorSpecific(
 		DEG2RAD(pose_roll));
 }
 
-bool CLMS100Eth::checkIsConnected(void)
+bool CLMS100Eth::checkIsConnected()
 {
 	if (m_connected)
 		return true;

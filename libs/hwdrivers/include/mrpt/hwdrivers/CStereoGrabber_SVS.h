@@ -95,7 +95,7 @@ class CStereoGrabber_SVS
 	CStereoGrabber_SVS& operator=(const CStereoGrabber_SVS&) = delete;
 
 	/** Destructor */
-	virtual ~CStereoGrabber_SVS(void);
+	virtual ~CStereoGrabber_SVS();
 
 	/** Grab stereo images, and return the pair of rectified images.
 	 * \param out_observation The object to be filled with sensed data.

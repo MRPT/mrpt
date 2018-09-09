@@ -2025,7 +2025,7 @@ void slamdemoFrame::executeOneStep()
 		}
 
 		// Save historic data ------------------------
-		m_historicData.push_back(THistoric());
+		m_historicData.emplace_back();
 		THistoric& hist = m_historicData.back();
 
 		hist.GT_robot_pose = m_GT_pose;

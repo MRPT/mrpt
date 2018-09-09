@@ -92,7 +92,7 @@ void CSICKTim561Eth::loadConfig_sensorSpecific(
 		DEG2RAD(pose_roll));
 }
 
-bool CSICKTim561Eth::checkIsConnected(void)
+bool CSICKTim561Eth::checkIsConnected()
 {
 	if (m_connected)
 	{

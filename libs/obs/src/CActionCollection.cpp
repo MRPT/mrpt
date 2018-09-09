@@ -24,7 +24,7 @@ IMPLEMENTS_SERIALIZABLE(CActionCollection, CSerializable, mrpt::obs)
 
 CActionCollection::CActionCollection(CAction& a) : m_actions()
 {
-	m_actions.push_back(CAction::Ptr(static_cast<CAction*>(a.clone())));
+	m_actions.emplace_back(CAction::Ptr(static_cast<CAction*>(a.clone())));
 }
 
 uint8_t CActionCollection::serializeGetVersion() const { return 0; }
@@ -84,7 +84,7 @@ size_t CActionCollection::size() { return m_actions.size(); }
  ---------------------------------------------------------------*/
 void CActionCollection::insert(CAction& action)
 {
-	m_actions.push_back(CAction::Ptr(static_cast<CAction*>(action.clone())));
+	m_actions.emplace_back(CAction::Ptr(static_cast<CAction*>(action.clone())));
 }
 
 /*---------------------------------------------------------------

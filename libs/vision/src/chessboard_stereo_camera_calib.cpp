@@ -224,10 +224,9 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		obj_points.reserve(CORNERS_COUNT);
 		for (unsigned int y = 0; y < p.check_size_y; y++)
 			for (unsigned int x = 0; x < p.check_size_x; x++)
-				obj_points.push_back(
-					TPoint3D(
+				obj_points.emplace_back(
 						p.check_squares_length_X_meters * x,
-						p.check_squares_length_Y_meters * y, 0));
+						p.check_squares_length_Y_meters * y, 0);
 
 		// ----------------------------------------------------------------------------------
 		//  Levenberg-Marquardt algorithm

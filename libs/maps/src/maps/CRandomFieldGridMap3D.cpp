@@ -314,7 +314,7 @@ void CRandomFieldGridMap3D::updateMapEstimation()
 
 	Eigen::VectorXd x_incr, x_var;
 	m_gmrf.updateEstimation(
-		x_incr, insertionOptions.GMRF_skip_variance ? NULL : &x_var);
+		x_incr, insertionOptions.GMRF_skip_variance ? nullptr : &x_var);
 
 	ASSERT_(size_t(m_map.size()) == size_t(x_incr.size()));
 	ASSERT_(

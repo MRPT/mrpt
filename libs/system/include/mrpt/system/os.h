@@ -186,7 +186,7 @@ void setConsoleColor(TConsoleColor color, bool changeStdErr = false);
  * \note Original code snippet found in http://stackoverflow.com/a/30357710
  */
 int executeCommand(
-	const std::string& command, std::string* output = NULL,
+	const std::string& command, std::string* output = nullptr,
 	const std::string& mode = "r");
 
 /** Executes the given command (which may contain a program + arguments), and

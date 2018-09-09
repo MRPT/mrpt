@@ -175,7 +175,7 @@ void CGyroKVHDSP3000::changeMode(GYRO_MODE _newMode)
 	}
 }
 
-void CGyroKVHDSP3000::resetIncrementalAngle(void)
+void CGyroKVHDSP3000::resetIncrementalAngle()
 {
 	if (m_mode != RATE)
 	{

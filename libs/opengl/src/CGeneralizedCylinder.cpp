@@ -107,10 +107,9 @@ inline void createMesh(
 	mesh.reserve(R * C);
 	for (size_t i = 0; i < R; i++)
 		for (size_t j = 0; j < C; j++)
-			mesh.push_back(
-				CGeneralizedCylinder::TQuadrilateral(
+			mesh.emplace_back(
 					pointsMesh(i, j), pointsMesh(i, j + 1),
-					pointsMesh(i + 1, j + 1), pointsMesh(i + 1, j)));
+					pointsMesh(i + 1, j + 1), pointsMesh(i + 1, j));
 }
 
 /*void transformMesh(const CPose3D &pose,const CMatrixTemplate<TPoint3D>

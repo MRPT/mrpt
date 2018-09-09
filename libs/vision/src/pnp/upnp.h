@@ -175,12 +175,12 @@ class upnp
 	/**
 	 * @brief Compute object points based on control points
 	 */
-	void compute_pcs(void);
+	void compute_pcs();
 
 	/**
 	 * @brief Internal member function
 	 */
-	void solve_for_sign(void);
+	void solve_for_sign();
 
 	/**
 	 * @brief Function to approximately calculate betas and focal length

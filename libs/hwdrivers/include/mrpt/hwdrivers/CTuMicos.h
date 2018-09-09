@@ -104,7 +104,7 @@ class CTuMicos : public CPtuBase, public mrpt::system::COutputLogger
 	*	continue accept commands
 	*/
 
-	bool aWait(void) override;
+	bool aWait() override;
 
 	/** Inmediately stop all */
 
@@ -160,19 +160,19 @@ class CTuMicos : public CPtuBase, public mrpt::system::COutputLogger
 
 	/** Reset PTU to initial state */
 
-	bool reset(void) override;
+	bool reset() override;
 
 	/** Save or restart default values */
 
-	bool save(void) override;
+	bool save() override;
 
 	/** Restore default values */
 
-	bool restoreDefaults(void) override;
+	bool restoreDefaults() override;
 
 	/** Restore factory default values */
 
-	bool restoreFactoryDefaults(void) override;
+	bool restoreFactoryDefaults() override;
 
 	/** Version and CopyRights */
 
@@ -282,7 +282,7 @@ class CTuMicos : public CPtuBase, public mrpt::system::COutputLogger
 	*	and initialize local atributes
 	*/
 
-	bool resolution(void) override;
+	bool resolution() override;
 
 	/** Check if ptu is moving */
 

@@ -1965,7 +1965,7 @@ bool CPointsMap::internal_insertObservation(
 				fuseWith(
 					&auxMap,  // Fuse with this map
 					insertionOptions.minDistBetweenLaserPoints,  // Min dist.
-					NULL  // rather than &checkForDeletion which we don't need
+					nullptr  // rather than &checkForDeletion which we don't need
 					// for 3D observations
 				);
 			}

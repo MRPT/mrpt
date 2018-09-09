@@ -185,10 +185,8 @@ void CMesh::updateTriangles() const
 				tvi.vind[1] = iX + 1 + rows * iY;
 
 				// Add triangle:
-				actualMesh.push_back(
-					std::pair<
-						CSetOfTriangles::TTriangle, TTriangleVertexIndices>(
-						tri, tvi));
+				actualMesh.emplace_back(
+						tri, tvi);
 
 				// For averaging normals:
 				for (unsigned long k : tvi.vind)
@@ -262,10 +260,8 @@ void CMesh::updateTriangles() const
 				tvi.vind[2] = iX + rows * (iY + 1);
 
 				// Add triangle:
-				actualMesh.push_back(
-					std::pair<
-						CSetOfTriangles::TTriangle, TTriangleVertexIndices>(
-						tri, tvi));
+				actualMesh.emplace_back(
+						tri, tvi);
 
 				// For averaging normals:
 				for (unsigned long k : tvi.vind)

@@ -212,7 +212,7 @@ void CAbstractNavigator::navigationStep()
 				if (m_lastNavigationState == NAVIGATING &&
 					m_navigationState == NAV_ERROR)
 				{
-					m_pending_events.push_back(std::bind(
+					m_pending_events.emplace_back(std::bind(
 						&CRobot2NavInterface::sendNavigationEndDueToErrorEvent,
 						std::ref(m_robot)));
 				}
@@ -509,7 +509,7 @@ void CAbstractNavigator::performNavigationStepNavigating(
 		// Have we just started the navigation?
 		if (m_lastNavigationState == IDLE)
 		{
-			m_pending_events.push_back(std::bind(
+			m_pending_events.emplace_back(std::bind(
 				&CRobot2NavInterface::sendNavigationStartEvent,
 				std::ref(m_robot)));
 		}
@@ -542,7 +542,7 @@ void CAbstractNavigator::performNavigationStepNavigating(
 					params_abstract_navigator.dist_to_target_for_sending_event)
 			{
 				m_navigationEndEventSent = true;
-				m_pending_events.push_back(std::bind(
+				m_pending_events.emplace_back(std::bind(
 					&CRobot2NavInterface::sendNavigationEndEvent,
 					std::ref(m_robot)));
 			}
@@ -563,7 +563,7 @@ void CAbstractNavigator::performNavigationStepNavigating(
 					if (!m_navigationEndEventSent)
 					{
 						m_navigationEndEventSent = true;
-						m_pending_events.push_back(std::bind(
+						m_pending_events.emplace_back(std::bind(
 							&CRobot2NavInterface::sendNavigationEndEvent,
 							std::ref(m_robot)));
 					}
@@ -592,7 +592,7 @@ void CAbstractNavigator::performNavigationStepNavigating(
 
 					m_navigationState = NAV_ERROR;
 
-					m_pending_events.push_back(std::bind(
+					m_pending_events.emplace_back(std::bind(
 						&CRobot2NavInterface::sendWaySeemsBlockedEvent,
 						std::ref(m_robot)));
 					return;
@@ -621,7 +621,7 @@ void CAbstractNavigator::performNavigationStepNavigating(
 							"Target seems to be blocked by obstacles. Invoking"
 							" sendCannotGetCloserToBlockedTargetEvent().");
 
-						m_pending_events.push_back(std::bind(
+						m_pending_events.emplace_back(std::bind(
 							&CRobot2NavInterface::
 								sendCannotGetCloserToBlockedTargetEvent,
 							std::ref(m_robot)));

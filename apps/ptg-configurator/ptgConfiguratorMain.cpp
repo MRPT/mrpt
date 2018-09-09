@@ -196,7 +196,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 		StaticText1, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
 	cbPTGClass = new wxChoice(
-		Panel1, ID_CHOICE1, wxDefaultPosition, wxDefaultSize, 0, 0, wxCB_SORT,
+		Panel1, ID_CHOICE1, wxDefaultPosition, wxDefaultSize, 0, nullptr, wxCB_SORT,
 		wxDefaultValidator, _T("ID_CHOICE1"));
 	FlexGridSizer7->Add(
 		cbPTGClass, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
@@ -699,11 +699,11 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 
 	m_plot->Connect(
 		wxEVT_MOTION,
-		(wxObjectEventFunction)&ptgConfiguratorframe::Onplot3DMouseMove, 0,
+		(wxObjectEventFunction)&ptgConfiguratorframe::Onplot3DMouseMove, nullptr,
 		this);
 	m_plot->Connect(
 		wxEVT_LEFT_DOWN,
-		(wxObjectEventFunction)&ptgConfiguratorframe::Onplot3DMouseClick, 0,
+		(wxObjectEventFunction)&ptgConfiguratorframe::Onplot3DMouseClick, nullptr,
 		this);
 
 	// Redirect all output to control:

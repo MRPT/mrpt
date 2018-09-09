@@ -1004,7 +1004,7 @@ class WXDLLIMPEXP_MATHPLOT mpWindow : public wxWindow
 		@return Scale
 	*/
 	double GetXscl() { return m_scaleX; }
-	double GetScaleX(void) const
+	double GetScaleX() const
 	{
 		return m_scaleX;
 	};  // Schaling's method: maybe another method esists with the same name
@@ -1014,7 +1014,7 @@ class WXDLLIMPEXP_MATHPLOT mpWindow : public wxWindow
 		@return Scale
 	*/
 	double GetYscl() const { return m_scaleY; }
-	double GetScaleY(void) const
+	double GetScaleY() const
 	{
 		return m_scaleY;
 	}  // Schaling's method: maybe another method exists with the same name
@@ -1025,7 +1025,7 @@ class WXDLLIMPEXP_MATHPLOT mpWindow : public wxWindow
 	   center point of the view.
 	*/
 	double GetXpos() const { return m_posX; }
-	double GetPosX(void) const { return m_posX; }
+	double GetPosX() const { return m_posX; }
 
 	/** Get current view's Y position.
 		See @ref mpLayer::Plot "rules for coordinate transformation"
@@ -1033,7 +1033,7 @@ class WXDLLIMPEXP_MATHPLOT mpWindow : public wxWindow
 	   center point of the view.
 	*/
 	double GetYpos() const { return m_posY; }
-	double GetPosY(void) const { return m_posY; }
+	double GetPosY() const { return m_posY; }
 
 	/** Get current view's X dimension in device context units.
 		Usually this is equal to wxDC::GetSize, but it might differ thus mpLayer
@@ -1041,8 +1041,8 @@ class WXDLLIMPEXP_MATHPLOT mpWindow : public wxWindow
 		See @ref mpLayer::Plot "rules for coordinate transformation"
 		@return X dimension.
 	*/
-	int GetScrX(void) const { return m_scrX; }
-	int GetXScreen(void) const { return m_scrX; }
+	int GetScrX() const { return m_scrX; }
+	int GetXScreen() const { return m_scrX; }
 
 	/** Get current view's Y dimension in device context units.
 		Usually this is equal to wxDC::GetSize, but it might differ thus mpLayer
@@ -1050,8 +1050,8 @@ class WXDLLIMPEXP_MATHPLOT mpWindow : public wxWindow
 		See @ref mpLayer::Plot "rules for coordinate transformation"
 		@return Y dimension.
 	*/
-	int GetScrY(void) const { return m_scrY; }
-	int GetYScreen(void) const { return m_scrY; }
+	int GetScrY() const { return m_scrY; }
+	int GetYScreen() const { return m_scrY; }
 
 	/** Set current view's X scale and refresh display.
 		@param scaleX New scale, must not be 0.

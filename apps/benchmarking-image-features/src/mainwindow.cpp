@@ -1140,11 +1140,11 @@ void MainWindow::on_file_input_choose(int choice)
 	/// option
 	if (choice == 0 || choice == 3)
 	{
-		if (image2 != NULL) image2->setVisible(false);
+		if (image2 != nullptr) image2->setVisible(false);
 	}
 	else
 	{
-		if (image2 != NULL) image2->setVisible(true);
+		if (image2 != nullptr) image2->setVisible(true);
 	}
 
 	/// HIDE previous and next buttons for the cases : single image, stereo
@@ -2043,7 +2043,7 @@ void MainWindow::readFilesFromFolder(int next_prev)
 				if (temp_filepath[i] == 'l' && temp_filepath[i + 1] == 'e' &&
 					temp_filepath[i + 2] == 'f' && temp_filepath[i + 3] == 't')
 				{
-					files.push_back(pdir->d_name);
+					files.emplace_back(pdir->d_name);
 					break;
 				}
 				else if (
@@ -2051,7 +2051,7 @@ void MainWindow::readFilesFromFolder(int next_prev)
 					temp_filepath[i + 2] == 'g' &&
 					temp_filepath[i + 3] == 'h' && temp_filepath[i + 4] == 't')
 				{
-					files2.push_back(pdir->d_name);
+					files2.emplace_back(pdir->d_name);
 					break;
 				}
 			}
@@ -2091,7 +2091,7 @@ void MainWindow::readFilesFromFolder(int next_prev)
 			2)  // meaning stereo dataset or single image dataset
 	{
 		dir = opendir(file_path1.c_str());
-		while ((pdir = readdir(dir))) files.push_back(pdir->d_name);
+		while ((pdir = readdir(dir))) files.emplace_back(pdir->d_name);
 		for (unsigned int i = 0, j = 0; i < files.size(); i++)
 		{
 			if (files.at(i).size() > 4)  // this removes the . and .. in linux
@@ -2117,7 +2117,7 @@ void MainWindow::readFilesFromFolder(int next_prev)
 		file_path2 = inputFilePath2->text().toStdString();
 
 		dir2 = opendir(file_path2.c_str());
-		while ((pdir2 = readdir(dir2))) files2.push_back(pdir2->d_name);
+		while ((pdir2 = readdir(dir2))) files2.emplace_back(pdir2->d_name);
 		for (unsigned int i = 0, j = 0; i < files2.size(); i++)
 		{
 			if (files2.at(i).size() > 4)  // this removes the . and .. in linux
@@ -2585,7 +2585,7 @@ void MainWindow::onTrackingEnabled(int state)
 				4)  // meaning stereo dataset or single image dataset
 		{
 			dir = opendir(file_path_temp.c_str());
-			while ((pdir = readdir(dir))) files.push_back(pdir->d_name);
+			while ((pdir = readdir(dir))) files.emplace_back(pdir->d_name);
 
 			for (unsigned long i = 0, j = 0; i < files.size(); i++)
 			{
@@ -2921,7 +2921,7 @@ void MainWindow::store_Training_TestingSets()
 			if (true)
 			{
 				dir = opendir(file_path_temp.c_str());
-				while ((pdir = readdir(dir))) files.push_back(pdir->d_name);
+				while ((pdir = readdir(dir))) files.emplace_back(pdir->d_name);
 				for (unsigned int i = 0, j = 0; i < files.size(); i++)
 				{
 					if (files.at(i).size() > 4)  // this removes the . and .. in
@@ -2959,7 +2959,7 @@ void MainWindow::store_Training_TestingSets()
 			if (true)
 			{
 				dir = opendir(file_path_temp.c_str());
-				while ((pdir = readdir(dir))) files.push_back(pdir->d_name);
+				while ((pdir = readdir(dir))) files.emplace_back(pdir->d_name);
 				for (unsigned int i = 0, j = 0; i < files.size(); i++)
 				{
 					if (files.at(i).size() > 4)  // this removes the . and .. in
@@ -3615,7 +3615,7 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 	flag_descriptor_match = false;
 
 	window_gui->setLayout(layout_grid);
-	QWidget* topLevelWidget = 0;
+	QWidget* topLevelWidget = nullptr;
 	topLevelWidget = window_gui;
 
 	QScrollArea* scroller = new QScrollArea;
@@ -3688,7 +3688,7 @@ string MainWindow::findRepeatability(float mouse_x, float mouse_y)
 			4)  // meaning stereo dataset or single image dataset
 	{
 		dir = opendir(file_path1_temp.c_str());
-		while ((pdir = readdir(dir))) files.push_back(pdir->d_name);
+		while ((pdir = readdir(dir))) files.emplace_back(pdir->d_name);
 		for (unsigned int i = 0, j = 0; i < files.size(); i++)
 		{
 			if (files.at(i).size() > 4)  // this removes the . and .. in linux
@@ -3810,7 +3810,7 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 			4)  // meaning stereo dataset or single image dataset
 	{
 		dir = opendir(file_path1_temp.c_str());
-		while ((pdir = readdir(dir))) files.push_back(pdir->d_name);
+		while ((pdir = readdir(dir))) files.emplace_back(pdir->d_name);
 		for (unsigned int i = 0, j = 0; i < files.size(); i++)
 		{
 			if (files.at(i).size() > 4)  // this removes the . and .. in linux
@@ -3834,7 +3834,7 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 		3)  // meaning single image dataset for repeatability
 	{
 		dir2 = opendir(file_path2_temp.c_str());
-		while ((pdir2 = readdir(dir2))) files2.push_back(pdir2->d_name);
+		while ((pdir2 = readdir(dir2))) files2.emplace_back(pdir2->d_name);
 		for (unsigned int i = 0, j = 0; i < files2.size(); i++)
 		{
 			if (files2.at(i).size() > 4)  // this removes the . and .. in linux
@@ -4091,26 +4091,26 @@ void MainWindow::makeGraphsVisible(bool flag)
 {
 	if (visualize_descriptor_clicked)
 	{
-		if (featureMatched != NULL) featureMatched->setVisible(flag);
+		if (featureMatched != nullptr) featureMatched->setVisible(flag);
 
-		if (detector_info != NULL) detector_info->setVisible(flag);
+		if (detector_info != nullptr) detector_info->setVisible(flag);
 
-		if (plotInfo != NULL)
+		if (plotInfo != nullptr)
 		{
 			plotInfo->setText("");
 			plotInfo->setVisible(flag);
 		}
-		if (images_static_sift_surf2 != NULL)
+		if (images_static_sift_surf2 != nullptr)
 			images_static_sift_surf2->setVisible(flag);
 
-		if (images_static_sift_surf != NULL)
+		if (images_static_sift_surf != nullptr)
 			images_static_sift_surf->setVisible(flag);
 
-		if (images_static != NULL) images_static->setVisible(flag);
+		if (images_static != nullptr) images_static->setVisible(flag);
 
-		if (images_static2 != NULL) images_static2->setVisible(flag);
+		if (images_static2 != nullptr) images_static2->setVisible(flag);
 
-		if (images_plots_sift_surf != NULL)
+		if (images_plots_sift_surf != nullptr)
 			images_plots_sift_surf->setVisible(flag);
 	}
 }
@@ -4162,26 +4162,26 @@ void MainWindow::Mouse_Pressed()
 		cvtColor(desc_Ref_img, temp_desc_ref, CV_GRAY2RGB);
 
 	/// images1 have all the descriptors
-	if (images_static_sift_surf != NULL)
+	if (images_static_sift_surf != nullptr)
 		images_static_sift_surf->setVisible(false);
 
-	if (images_static != NULL) images_static->setVisible(false);
+	if (images_static != nullptr) images_static->setVisible(false);
 
-	if (images_static2 != NULL) images_static2->setVisible(false);
+	if (images_static2 != nullptr) images_static2->setVisible(false);
 
-	if (images_static_sift_surf2 != NULL)
+	if (images_static_sift_surf2 != nullptr)
 		images_static_sift_surf2->setVisible(false);
 
-	if (plotInfo != NULL) plotInfo->setVisible(false);
+	if (plotInfo != nullptr) plotInfo->setVisible(false);
 
-	if (images_plots_sift_surf != NULL)
+	if (images_plots_sift_surf != nullptr)
 		images_plots_sift_surf->setVisible(false);
 
 	if (currentInputIndex == 1 || currentInputIndex == 4 ||
 		(currentInputIndex == 2 && rawlog_type == 1))
 	{
-		if (images_static2 != NULL) images_static2->setVisible(false);
-		if (images_static != NULL) images_static_sift_surf2->setVisible(false);
+		if (images_static2 != nullptr) images_static2->setVisible(false);
+		if (images_static != nullptr) images_static_sift_surf2->setVisible(false);
 	}
 
 	/// mapping to the correct x and y dimensions in the qlabel to correctly get

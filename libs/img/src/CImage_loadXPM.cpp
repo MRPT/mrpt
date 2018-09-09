@@ -80,11 +80,11 @@ using Long2LongHash = std::unordered_map<int64_t, int64_t>;
 static const char* ParseColor(const char* data)
 {
 	static const char* const targets[] = {"c ", "g ", "g4 ", "m ",
-										  "b ", "s ", NULL};
+										  "b ", "s ", nullptr};
 
 	const char *p, *r;
 	const char* q;
-	for (int i = 0; targets[i] != NULL; i++)
+	for (int i = 0; targets[i] != nullptr; i++)
 	{
 		r = data;
 		for (q = targets[i]; *r != '\0'; r++)
@@ -361,7 +361,7 @@ static const rgbRecord theRGBRecords[] = {
 	{"whitesmoke", myRGB(245, 245, 245)},
 	{"yellow", myRGB(255, 255, 0)},
 	{"yellowgreen", myRGB(50, 216, 56)},
-	{NULL, myRGB(0, 0, 0)}};
+	{nullptr, myRGB(0, 0, 0)}};
 static const int numTheRGBRecords = 235;
 
 static unsigned char ParseHexadecimal(char digit1, char digit2)
@@ -411,7 +411,7 @@ static bool GetRGBFromName(
 	// lot of gray...
 
 	// so first extract ' '
-	while ((p = strchr(name, ' ')) != NULL)
+	while ((p = strchr(name, ' ')) != nullptr)
 	{
 		while (*(p))  // till eof of string
 		{
@@ -429,7 +429,7 @@ static bool GetRGBFromName(
 
 	// substitute Grey with Gray, else rgbtab.h would have more than 100
 	// 'duplicate' entries
-	if ((grey = strstr(name, "grey")) != NULL) grey[2] = 'a';
+	if ((grey = strstr(name, "grey")) != nullptr) grey[2] = 'a';
 
 	// check for special 'none' colour:
 	bool found;
@@ -533,7 +533,7 @@ bool mrpt::img::CImage::loadFromXPM(const char* const* xpm_data, bool swap_rb)
 				key[i_key] = xmpColLine[i_key];
 			const char* clr_def = ParseColor(xmpColLine + chars_per_pixel);
 
-			if (clr_def == NULL)
+			if (clr_def == nullptr)
 			{
 				THROW_EXCEPTION_FMT(
 					"XPM: malformed colour definition '%s' at line %d!",

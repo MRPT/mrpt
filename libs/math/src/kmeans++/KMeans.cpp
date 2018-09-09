@@ -68,7 +68,7 @@ static void RunKMeansOnce(
 	bool is_done = false;
 	for (int iteration = 0; !is_done; iteration++)
 	{
-		Scalar new_cost = tree.DoKMeansStep(k, centers, 0);
+		Scalar new_cost = tree.DoKMeansStep(k, centers, nullptr);
 		is_done = (iteration > 0 && new_cost >= (1 - kEpsilon) * old_cost);
 		old_cost = new_cost;
 		LOG(true, "Completed iteration #" << (iteration + 1) << ", cost="
@@ -85,9 +85,9 @@ static void RunKMeansOnce(
 	if (*min_cost < 0 || old_cost < *min_cost)
 	{
 		*min_cost = old_cost;
-		if (best_assignment != 0)
+		if (best_assignment != nullptr)
 			tree.DoKMeansStep(k, centers, best_assignment);
-		if (best_centers != 0)
+		if (best_centers != nullptr)
 			memcpy(best_centers, centers, sizeof(Scalar) * k * d);
 	}
 
@@ -129,7 +129,7 @@ Scalar RunKMeans(
 	// Initialization
 	Scalar* centers = (Scalar*)malloc(sizeof(Scalar) * k * d);
 	int* unused_centers = (int*)malloc(sizeof(int) * n);
-	KM_ASSERT(centers != 0 && unused_centers != 0);
+	KM_ASSERT(centers != nullptr && unused_centers != nullptr);
 	Scalar min_cost = -1, max_cost = -1, total_cost = 0;
 	double min_time = -1, max_time = -1, total_time = 0;
 
@@ -187,7 +187,7 @@ Scalar RunKMeansPlusPlus(
 
 	// Initialization
 	Scalar* centers = (Scalar*)malloc(sizeof(Scalar) * k * d);
-	KM_ASSERT(centers != 0);
+	KM_ASSERT(centers != nullptr);
 	Scalar min_cost = -1, max_cost = -1, total_cost = 0;
 	double min_time = -1, max_time = -1, total_time = 0;
 

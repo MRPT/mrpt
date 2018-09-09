@@ -996,11 +996,10 @@ void vision::projectMatchedFeatures(
 		if (disp < 1) continue;
 
 		const double b_d = stereo_camera.rightCameraPose.x / disp;
-		out_points.push_back(
-			TPoint3D(
+		out_points.emplace_back(
 				(matche.first->x - stereo_camera.leftCamera.cx()) * b_d,
 				(matche.first->y - stereo_camera.leftCamera.cy()) * b_d,
-				stereo_camera.leftCamera.fx() * b_d));
+				stereo_camera.leftCamera.fx() * b_d);
 	}  // end-for
 }
 /*-------------------------------------------------------------

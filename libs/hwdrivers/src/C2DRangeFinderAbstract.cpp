@@ -153,7 +153,7 @@ void C2DRangeFinderAbstract::loadCommonParams(
 			iniSection, format("exclusionAngles%u_end", N++), -1000));
 
 		if (ini > -M_PI && end > -M_PI)
-			m_lstExclusionAngles.push_back(make_pair(ini, end));
+			m_lstExclusionAngles.emplace_back(ini, end);
 		else
 			break;
 	}

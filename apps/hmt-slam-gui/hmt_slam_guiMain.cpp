@@ -524,7 +524,7 @@ hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent, wxWindowID id)
 		StaticText2, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
 	cbHypos = new wxChoice(
-		Panel3, ID_CHOICE1, wxDefaultPosition, wxDefaultSize, 0, 0, 0,
+		Panel3, ID_CHOICE1, wxDefaultPosition, wxDefaultSize, 0, nullptr, 0,
 		wxDefaultValidator, _T("ID_CHOICE1"));
 	FlexGridSizer7->Add(
 		cbHypos, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,

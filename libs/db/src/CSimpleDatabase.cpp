@@ -206,7 +206,7 @@ size_t CSimpleDatabaseTable::fieldsCount() const { return field_names.size(); }
  ---------------------------------------------------------------*/
 void CSimpleDatabaseTable::addField(const char* fieldName)
 {
-	field_names.push_back(string(fieldName));
+	field_names.emplace_back(fieldName);
 	data.clear();
 }
 

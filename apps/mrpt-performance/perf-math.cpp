@@ -60,19 +60,16 @@ void register_tests_math()
 {
 	getRandomGenerator().randomize(1234);
 
-	lstTests.push_back(TestData("math: round", math_test_round));
+	lstTests.emplace_back("math: round", math_test_round);
 
 	using namespace std::placeholders;
-	lstTests.push_back(
-		TestData(
+	lstTests.emplace_back(
 			"math: std::hypot(float)",
-			[=](auto && arg1, auto && arg2) { return math_test_FUNC<float, decltype(std::hypotf)>(arg1, arg2, std::hypotf); }));
-	lstTests.push_back(
-		TestData(
+			[=](auto && arg1, auto && arg2) { return math_test_FUNC<float, decltype(std::hypotf)>(arg1, arg2, std::hypotf); });
+	lstTests.emplace_back(
 			"math: mrpt::hypot_fast(float)",
-			[=](auto && arg1, auto && arg2) { return math_test_FUNC<float, decltype(mrpt::hypot_fast<float>)>(arg1, arg2, mrpt::hypot_fast<float>); }));
-	lstTests.push_back(
-		TestData(
+			[=](auto && arg1, auto && arg2) { return math_test_FUNC<float, decltype(mrpt::hypot_fast<float>)>(arg1, arg2, mrpt::hypot_fast<float>); });
+	lstTests.emplace_back(
 			"math: mrpt::hypot_fast(double)",
-			[=](auto && arg1, auto && arg2) { return math_test_FUNC<double, decltype(mrpt::hypot_fast<double>)>(arg1, arg2, mrpt::hypot_fast<double>); }));
+			[=](auto && arg1, auto && arg2) { return math_test_FUNC<double, decltype(mrpt::hypot_fast<double>)>(arg1, arg2, mrpt::hypot_fast<double>); });
 }

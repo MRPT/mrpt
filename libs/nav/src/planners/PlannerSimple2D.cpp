@@ -65,7 +65,7 @@ void PlannerSimple2D::computePath(
 		theMap.y2idx(origin.y) == theMap.y2idx(target.y))
 	{
 		path.clear();
-		path.push_back(TPoint2D(target.x, target.y));
+		path.emplace_back(target.x, target.y);
 		notFound = false;
 		return;
 	}
@@ -494,7 +494,7 @@ void PlannerSimple2D::computePath(
 			minStepInReturnedPath)
 		{
 			// Add to the path:
-			path.push_back(TPoint2D(xx, yy));
+			path.emplace_back(xx, yy);
 
 			// For the next iteration:
 			last_xx = xx;
@@ -503,7 +503,7 @@ void PlannerSimple2D::computePath(
 	}
 
 	// Add the target point:
-	path.push_back(TPoint2D(target.x, target.y));
+	path.emplace_back(target.x, target.y);
 
 	// That's all!! :-)
 }

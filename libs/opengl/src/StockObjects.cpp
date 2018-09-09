@@ -241,12 +241,12 @@ CSetOfObjects::Ptr stock_objects::RobotRhodon()
 	float height = 0;
 
 	vector<TPoint2D> level1;
-	level1.push_back(TPoint2D(0.31, 0));
-	level1.push_back(TPoint2D(0.22, 0.24));
-	level1.push_back(TPoint2D(-0.22, 0.24));
-	level1.push_back(TPoint2D(-0.31, 0));
-	level1.push_back(TPoint2D(-0.22, -0.24));
-	level1.push_back(TPoint2D(0.22, -0.24));
+	level1.emplace_back(0.31, 0);
+	level1.emplace_back(0.22, 0.24);
+	level1.emplace_back(-0.22, 0.24);
+	level1.emplace_back(-0.31, 0);
+	level1.emplace_back(-0.22, -0.24);
+	level1.emplace_back(0.22, -0.24);
 
 	CPolyhedron::Ptr obj1 =
 		opengl::CPolyhedron::CreateCustomPrism(level1, 0.38);
@@ -256,10 +256,10 @@ CSetOfObjects::Ptr stock_objects::RobotRhodon()
 	ret->insert(obj1);
 
 	vector<TPoint2D> level2;
-	level2.push_back(TPoint2D(0.16, 0.21));
-	level2.push_back(TPoint2D(-0.16, 0.21));
-	level2.push_back(TPoint2D(-0.16, -0.21));
-	level2.push_back(TPoint2D(0.16, -0.21));
+	level2.emplace_back(0.16, 0.21);
+	level2.emplace_back(-0.16, 0.21);
+	level2.emplace_back(-0.16, -0.21);
+	level2.emplace_back(0.16, -0.21);
 
 	CPolyhedron::Ptr obj2 =
 		opengl::CPolyhedron::CreateCustomPrism(level2, 0.35);
@@ -269,10 +269,10 @@ CSetOfObjects::Ptr stock_objects::RobotRhodon()
 	ret->insert(obj2);
 
 	vector<TPoint2D> level3;
-	level3.push_back(TPoint2D(-0.12, 0.12));
-	level3.push_back(TPoint2D(-0.16, 0.12));
-	level3.push_back(TPoint2D(-0.16, -0.12));
-	level3.push_back(TPoint2D(-0.12, -0.12));
+	level3.emplace_back(-0.12, 0.12);
+	level3.emplace_back(-0.16, 0.12);
+	level3.emplace_back(-0.16, -0.12);
+	level3.emplace_back(-0.12, -0.12);
 
 	CPolyhedron::Ptr obj3 = opengl::CPolyhedron::CreateCustomPrism(level3, 1);
 	obj3->setLocation(0, 0, height);
@@ -305,12 +305,12 @@ CSetOfObjects::Ptr stock_objects::RobotGiraff()
 
 	// Base
 	vector<TPoint2D> level1;
-	level1.push_back(TPoint2D(0.31, 0));
-	level1.push_back(TPoint2D(0.22, 0.24));
-	level1.push_back(TPoint2D(-0.22, 0.24));
-	level1.push_back(TPoint2D(-0.31, 0));
-	level1.push_back(TPoint2D(-0.22, -0.24));
-	level1.push_back(TPoint2D(0.22, -0.24));
+	level1.emplace_back(0.31, 0);
+	level1.emplace_back(0.22, 0.24);
+	level1.emplace_back(-0.22, 0.24);
+	level1.emplace_back(-0.31, 0);
+	level1.emplace_back(-0.22, -0.24);
+	level1.emplace_back(0.22, -0.24);
 
 	CPolyhedron::Ptr obj1 =
 		opengl::CPolyhedron::CreateCustomPrism(level1, 0.23);
@@ -321,10 +321,10 @@ CSetOfObjects::Ptr stock_objects::RobotGiraff()
 
 	// Electronic's cage
 	vector<TPoint2D> level2;
-	level2.push_back(TPoint2D(0.13, 0.1));
-	level2.push_back(TPoint2D(-0.13, 0.1));
-	level2.push_back(TPoint2D(-0.13, -0.1));
-	level2.push_back(TPoint2D(0.13, -0.1));
+	level2.emplace_back(0.13, 0.1);
+	level2.emplace_back(-0.13, 0.1);
+	level2.emplace_back(-0.13, -0.1);
+	level2.emplace_back(0.13, -0.1);
 
 	CPolyhedron::Ptr obj2 =
 		opengl::CPolyhedron::CreateCustomPrism(level2, 0.45);
@@ -335,10 +335,10 @@ CSetOfObjects::Ptr stock_objects::RobotGiraff()
 
 	// Neck
 	vector<TPoint2D> level3;
-	level3.push_back(TPoint2D(0.03, 0.03));
-	level3.push_back(TPoint2D(-0.03, 0.03));
-	level3.push_back(TPoint2D(-0.03, -0.03));
-	level3.push_back(TPoint2D(0.03, -0.03));
+	level3.emplace_back(0.03, 0.03);
+	level3.emplace_back(-0.03, 0.03);
+	level3.emplace_back(-0.03, -0.03);
+	level3.emplace_back(0.03, -0.03);
 
 	CPolyhedron::Ptr obj3 =
 		opengl::CPolyhedron::CreateCustomPrism(level3, 0.55);
@@ -349,10 +349,10 @@ CSetOfObjects::Ptr stock_objects::RobotGiraff()
 
 	// Screen
 	vector<TPoint2D> level4;
-	level4.push_back(TPoint2D(0.03, 0.11));
-	level4.push_back(TPoint2D(-0.03, 0.11));
-	level4.push_back(TPoint2D(-0.03, -0.11));
-	level4.push_back(TPoint2D(0.03, -0.11));
+	level4.emplace_back(0.03, 0.11);
+	level4.emplace_back(-0.03, 0.11);
+	level4.emplace_back(-0.03, -0.11);
+	level4.emplace_back(0.03, -0.11);
 
 	CPolyhedron::Ptr obj4 = opengl::CPolyhedron::CreateCustomPrism(level4, 0.4);
 	obj4->setLocation(0, 0, height);

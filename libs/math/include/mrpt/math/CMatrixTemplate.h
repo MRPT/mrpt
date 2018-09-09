@@ -41,7 +41,7 @@ struct CMatrixTemplateSize : public std::array<size_t, 2>
 	}
 	/** This operator allows the size(N,M) to be compared with a plain size_t
 	 * N*M  */
-	inline operator size_t(void) const { return 2; }
+	inline operator size_t() const { return 2; }
 };
 
 /**  This template class provides the basic functionality for a general 2D

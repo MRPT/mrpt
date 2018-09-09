@@ -261,11 +261,11 @@ bool CLoopCloserERD<GRAPH_T>::getICPEdge(
 
 	// from-node parameters
 	const node_props_t* from_params =
-		ad_params ? &ad_params->from_params : NULL;
+		ad_params ? &ad_params->from_params : nullptr;
 	bool from_success = this->getPropsOfNodeID(
 		from, &from_pose, from_scan, from_params);  // TODO
 	// to-node parameters
-	const node_props_t* to_params = ad_params ? &ad_params->to_params : NULL;
+	const node_props_t* to_params = ad_params ? &ad_params->to_params : nullptr;
 	bool to_success = this->getPropsOfNodeID(to, &to_pose, to_scan, to_params);
 
 	if (!from_success || !to_success)
@@ -798,7 +798,7 @@ void CLoopCloserERD<GRAPH_T>::generateHypotsPool(
 				// by the
 				// getICPEdge fun.
 				// bool from_success, to_success;
-				TGetICPEdgeAdParams* icp_ad_params = NULL;
+				TGetICPEdgeAdParams* icp_ad_params = nullptr;
 				if (ad_params)
 				{
 					icp_ad_params = new TGetICPEdgeAdParams;
@@ -1022,7 +1022,7 @@ void CLoopCloserERD<GRAPH_T>::generatePWConsistenciesMatrix(
 						extracted_hypots.push_back(hypot_b2_a1);
 						extracted_hypots.push_back(hypot_b1_a2);
 
-						paths_t* curr_opt_paths = NULL;
+						paths_t* curr_opt_paths = nullptr;
 						if (groupA_opt_paths || groupB_opt_paths)
 						{  // fill curr_opt_paths
 							curr_opt_paths = new paths_t();
@@ -1227,7 +1227,7 @@ const mrpt::graphslam::TUncertaintyPath<GRAPH_T>*
 	using namespace mrpt;
 
 	ASSERTDEB_(vec_paths.size());
-	const path_t* res = NULL;
+	const path_t* res = nullptr;
 
 	for (typename paths_t::const_iterator cit = vec_paths.begin();
 		 cit != vec_paths.end(); ++cit)
@@ -1277,7 +1277,7 @@ mrpt::graphs::detail::THypothesis<GRAPH_T>*
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }  // end of findHypotByEnds
 
@@ -1304,7 +1304,7 @@ mrpt::graphs::detail::THypothesis<GRAPH_T>*
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 

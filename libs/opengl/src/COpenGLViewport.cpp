@@ -62,8 +62,8 @@ COpenGLViewport::COpenGLViewport(COpenGLScene* parent, const string& name)
 	  m_lights()
 {
 	// Default: one light from default direction
-	m_lights.push_back(CLight());
-	m_lights.push_back(CLight());
+	m_lights.emplace_back();
+	m_lights.emplace_back();
 
 	m_lights[0].setPosition(1, 1, 1, 0);
 	m_lights[0].setDirection(-1, -1, -1);
@@ -608,7 +608,7 @@ void COpenGLViewport::serializeFrom(
 			{
 				// Default: one light from default direction
 				m_lights.clear();
-				m_lights.push_back(CLight());
+				m_lights.emplace_back();
 			}
 		}
 		break;

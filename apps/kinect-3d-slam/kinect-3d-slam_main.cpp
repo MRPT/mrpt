@@ -487,7 +487,7 @@ void Test_Kinect()
 			{
 				// First iteration:
 				camera_key_frames_path.clear();
-				camera_key_frames_path.push_back(TPose3D(0, 0, 0, 0, 0, 0));
+				camera_key_frames_path.emplace_back(0, 0, 0, 0, 0, 0);
 				gl_keyframes_must_refresh = true;
 				lastVisibleFeats = curVisibleFeats;
 

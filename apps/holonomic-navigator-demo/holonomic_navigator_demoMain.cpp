@@ -429,12 +429,12 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 		wxEVT_MOTION,
 		(wxObjectEventFunction)&holonomic_navigator_demoFrame::
 			Onplot3DMouseMove,
-		0, this);
+		nullptr, this);
 	m_plot3D->Connect(
 		wxEVT_LEFT_DOWN,
 		(wxObjectEventFunction)&holonomic_navigator_demoFrame::
 			Onplot3DMouseClick,
-		0, this);
+		nullptr, this);
 
 	mnuViewMaxRange->Check(true);
 	mnuViewRobotPath->Check(true);

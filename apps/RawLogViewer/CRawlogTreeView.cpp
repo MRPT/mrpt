@@ -111,7 +111,7 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 	m_rawlog_last = INVALID_TIMESTAMP;
 
 	// Root:
-	m_tree_nodes.push_back(TNodeData());
+	m_tree_nodes.emplace_back();
 	TNodeData& d = m_tree_nodes.back();
 	d.level = 0;
 
@@ -124,7 +124,7 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 		for (CRawlog::iterator it = m_rawlog->begin(); it != end_it;
 			 it++, rawlog_index++)
 		{
-			m_tree_nodes.push_back(TNodeData());
+			m_tree_nodes.emplace_back();
 			TNodeData& d = m_tree_nodes.back();
 			d.level = 1;
 			d.data = (*it);
@@ -137,7 +137,7 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 					std::dynamic_pointer_cast<CSensoryFrame>(*it);
 				for (auto& o : *sf)
 				{
-					m_tree_nodes.push_back(TNodeData());
+					m_tree_nodes.emplace_back();
 					TNodeData& d = m_tree_nodes.back();
 					d.level = 2;
 					d.data = o;
@@ -156,7 +156,7 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 					std::dynamic_pointer_cast<CActionCollection>(*it);
 				for (auto& a : *acts)
 				{
-					m_tree_nodes.push_back(TNodeData());
+					m_tree_nodes.emplace_back();
 					TNodeData& d = m_tree_nodes.back();
 					d.level = 2;
 					d.data = a.get_ptr();

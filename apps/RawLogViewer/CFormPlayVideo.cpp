@@ -215,7 +215,7 @@ CFormPlayVideo::CFormPlayVideo(wxWindow* parent, wxWindowID id)
 		StaticText2, 1, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
 	cbImageDirs = new wxComboBox(
 		this, ID_COMBOBOX1, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0,
-		0, wxCB_READONLY | wxCB_DROPDOWN, wxDefaultValidator,
+		nullptr, wxCB_READONLY | wxCB_DROPDOWN, wxDefaultValidator,
 		_T("ID_COMBOBOX1"));
 	FlexGridSizer9->Add(
 		cbImageDirs, 1,

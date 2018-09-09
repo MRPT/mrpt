@@ -106,7 +106,7 @@ class CPtuBase
 	*	continue accept commands
 	*/
 
-	virtual bool aWait(void) = 0;
+	virtual bool aWait() = 0;
 
 	/** Inmediately stop all */
 
@@ -162,19 +162,19 @@ class CPtuBase
 
 	/** Reset PTU to initial state */
 
-	virtual bool reset(void) = 0;
+	virtual bool reset() = 0;
 
 	/** Save or restart default values */
 
-	virtual bool save(void) = 0;
+	virtual bool save() = 0;
 
 	/** Restore default values */
 
-	virtual bool restoreDefaults(void) = 0;
+	virtual bool restoreDefaults() = 0;
 
 	/** Restore factory default values */
 
-	virtual bool restoreFactoryDefaults(void) = 0;
+	virtual bool restoreFactoryDefaults() = 0;
 
 	/** Version and CopyRights */
 
@@ -287,7 +287,7 @@ class CPtuBase
 	*	and initialize local atributes
 	*/
 
-	virtual bool resolution(void) = 0;
+	virtual bool resolution() = 0;
 
 	/*************************** Methods for internal use ****************/
 

@@ -881,7 +881,7 @@ bool CDisplayWindow_WXAPP::OnInit()
 	// cout << "[wxApp::OnInit] wxApplication OnInit called." << endl;
 
 	// Create a dummy frame:
-	WxSubsystem::CWXMainFrame* Frame = new WxSubsystem::CWXMainFrame(0);
+	WxSubsystem::CWXMainFrame* Frame = new WxSubsystem::CWXMainFrame(nullptr);
 	Frame->Hide();
 
 	// We are ready!!

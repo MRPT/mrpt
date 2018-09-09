@@ -99,7 +99,7 @@ void CConfigFile::writeString(
 
 	m_modified = true;
 
-	if (0 > m_impl->m_ini.SetValue(section.c_str(), name.c_str(), str.c_str(), NULL))
+	if (0 > m_impl->m_ini.SetValue(section.c_str(), name.c_str(), str.c_str(), nullptr))
 		THROW_EXCEPTION("Error changing value in INI-style file!");
 
 	MRPT_END
@@ -113,11 +113,11 @@ std::string CConfigFile::readString(
 	const std::string& defaultStr, bool failIfNotFound) const
 {
 	MRPT_START
-	const char* defVal = failIfNotFound ? NULL : defaultStr.c_str();
+	const char* defVal = failIfNotFound ? nullptr : defaultStr.c_str();
 
 	const char* aux = m_impl->m_ini.GetValue(
 				section.c_str(), name.c_str(), defVal,
-				NULL);  // The memory is managed by the SimpleIni object
+				nullptr);  // The memory is managed by the SimpleIni object
 
 	if (failIfNotFound && !aux)
 	{

@@ -217,7 +217,7 @@ bool CPtuDPerception::inmediateExecution(bool set)
 						aWait
 -------------------------------------------------------------*/
 
-bool CPtuDPerception::aWait(void)
+bool CPtuDPerception::aWait()
 {
 	return (transmit("A") && receive("A", nullptr));
 }
@@ -249,7 +249,7 @@ bool CPtuDPerception::halt(char axis)
 						reset
 -------------------------------------------------------------*/
 
-bool CPtuDPerception::reset(void)
+bool CPtuDPerception::reset()
 {
 	if (!transmit("R")) return false;
 	receive("R", nullptr);
@@ -261,7 +261,7 @@ bool CPtuDPerception::reset(void)
 						save
 -------------------------------------------------------------*/
 
-bool CPtuDPerception::save(void)
+bool CPtuDPerception::save()
 {
 	return (transmit("DS") && receive("DS", nullptr));
 }
@@ -270,7 +270,7 @@ bool CPtuDPerception::save(void)
 					restoreDefaults
 -------------------------------------------------------------*/
 
-bool CPtuDPerception::restoreDefaults(void)
+bool CPtuDPerception::restoreDefaults()
 {
 	return (transmit("DR") && receive("DR", nullptr));
 }
@@ -279,7 +279,7 @@ bool CPtuDPerception::restoreDefaults(void)
 				restoreFactoryDefaults
 -------------------------------------------------------------*/
 
-bool CPtuDPerception::restoreFactoryDefaults(void)
+bool CPtuDPerception::restoreFactoryDefaults()
 {
 	return (transmit("DF") && receive("DF", nullptr));
 }
@@ -562,7 +562,7 @@ bool CPtuDPerception::echoMode(bool mode)
 						  resolution
 -------------------------------------------------------------*/
 
-bool CPtuDPerception::resolution(void)
+bool CPtuDPerception::resolution()
 {
 	char response[150];
 

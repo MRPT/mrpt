@@ -1288,7 +1288,7 @@ bool math::intersect(const TPolygon2D& p1, const TLine2D& r2, TObject2D& obj)
 			double a = projPoly[i - 1].x;
 			double c = projPoly[i].x;
 			double x = a - pre * (c - a) / (cur - pre);
-			pnts.push_back(TPoint2D(x, 0));
+			pnts.emplace_back(x, 0);
 		}
 		pre = cur;
 	}
@@ -2248,8 +2248,7 @@ bool depthFirstSearch(
 				{
 					if (s2p != current[0].seg1Point)
 					{
-						current.push_back(
-							MatchingVertex(searching, i, s1p, s2p));
+						current.emplace_back(searching, i, s1p, s2p);
 						for (std::vector<MatchingVertex>::const_iterator it =
 								 current.begin();
 							 it != current.end(); ++it)
@@ -2263,7 +2262,7 @@ bool depthFirstSearch(
 				}
 				else
 				{
-					current.push_back(MatchingVertex(searching, i, s1p, s2p));
+					current.emplace_back(searching, i, s1p, s2p);
 					if (depthFirstSearch(
 							mat, res, used, i, s2p ? 0x3 : 0xC, current))
 						return true;

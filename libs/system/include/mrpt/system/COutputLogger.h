@@ -219,7 +219,7 @@ class COutputLogger
 	 *
 	 * \sa dumpToConsole, getAsString
 	 */
-	void writeLogToFile(const std::string* fname_in = NULL) const;
+	void writeLogToFile(const std::string* fname_in = nullptr) const;
 	/** \brief Dump the current contents of the COutputLogger instance in the
 	 * terminal window.
 	 *

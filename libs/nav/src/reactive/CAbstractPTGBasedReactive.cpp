@@ -559,7 +559,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		}
 		if (is_all_ptg_collision)
 		{
-			m_pending_events.push_back(std::bind(
+			m_pending_events.emplace_back(std::bind(
 				&CRobot2NavInterface::sendApparentCollisionEvent,
 				std::ref(m_robot)));
 		}

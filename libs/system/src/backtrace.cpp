@@ -100,15 +100,15 @@ void mrpt::system::getCallStackBackTrace(TCallStackBackTrace& out_bt)
 		Dl_info info;
 		if (dladdr(callstack[i], &info) && info.dli_sname)
 		{
-			char* demangled = NULL;
+			char* demangled = nullptr;
 			int status = -1;
 			if (info.dli_sname[0] == '_')
 			{
 				demangled =
-					abi::__cxa_demangle(info.dli_sname, NULL, 0, &status);
+					abi::__cxa_demangle(info.dli_sname, nullptr, nullptr, &status);
 			}
 			cse.symbolNameOriginal =
-				info.dli_sname == 0 ? symbols[i] : info.dli_sname;
+				info.dli_sname == nullptr ? symbols[i] : info.dli_sname;
 			cse.symbolName =
 				status == 0 ? std::string(demangled) : cse.symbolNameOriginal;
 			free(demangled);

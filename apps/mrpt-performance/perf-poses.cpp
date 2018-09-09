@@ -442,83 +442,59 @@ void register_tests_poses()
 {
 	getRandomGenerator().randomize(1234);
 
-	lstTests.push_back(
-		TestData("poses: CPose3D (+) CPose3D", poses_test_compose3D));
-	lstTests.push_back(
-		TestData("poses: CPose3D.composeFrom()", poses_test_compose3D2));
-	lstTests.push_back(
-		TestData("poses: CPose3D (+) CPoint3D", poses_test_compose3Dpoint));
-	lstTests.push_back(
-		TestData("poses: CPose3D.composePoint()", poses_test_compose3Dpoint2));
-	lstTests.push_back(
-		TestData(
+	lstTests.emplace_back("poses: CPose3D (+) CPose3D", poses_test_compose3D);
+	lstTests.emplace_back("poses: CPose3D.composeFrom()", poses_test_compose3D2);
+	lstTests.emplace_back("poses: CPose3D (+) CPoint3D", poses_test_compose3Dpoint);
+	lstTests.emplace_back("poses: CPose3D.composePoint()", poses_test_compose3Dpoint2);
+	lstTests.emplace_back(
 			"poses: CPose3D.composePoint()+Jacobs",
-			poses_test_compose3Dpoint3));
+			poses_test_compose3Dpoint3);
 
-	lstTests.push_back(
-		TestData("poses: CPoint3D (-) CPose3D", poses_test_invcompose3Dpoint));
-	lstTests.push_back(
-		TestData(
+	lstTests.emplace_back("poses: CPoint3D (-) CPose3D", poses_test_invcompose3Dpoint);
+	lstTests.emplace_back(
 			"poses: CPose3D.inverseComposePoint()",
-			poses_test_invcompose3Dpoint2));
+			poses_test_invcompose3Dpoint2);
 
-	lstTests.push_back(
-		TestData("poses: CPose2D (+) CPose2D", poses_test_compose2D));
-	lstTests.push_back(
-		TestData("poses: CPose2D.composeFrom()", poses_test_compose2D2));
-	lstTests.push_back(
-		TestData("poses: CPose2D (+) CPoint2D", poses_test_compose2Dpoint));
-	lstTests.push_back(
-		TestData("poses: CPose2D.composePoint()", poses_test_compose2Dpoint2));
+	lstTests.emplace_back("poses: CPose2D (+) CPose2D", poses_test_compose2D);
+	lstTests.emplace_back("poses: CPose2D.composeFrom()", poses_test_compose2D2);
+	lstTests.emplace_back("poses: CPose2D (+) CPoint2D", poses_test_compose2Dpoint);
+	lstTests.emplace_back("poses: CPose2D.composePoint()", poses_test_compose2Dpoint2);
 
-	lstTests.push_back(
-		TestData(
-			"poses: CPose3DQuat (+) CPose3DQuat", poses_test_compose3DQuat));
-	lstTests.push_back(
-		TestData(
-			"poses: CPose3DQuat.composeFrom()", poses_test_compose3DQuat2));
-	lstTests.push_back(
-		TestData(
-			"poses: CPose3DQuat (+) CPoint3D", poses_test_compose3DQuatpoint));
-	lstTests.push_back(
-		TestData(
+	lstTests.emplace_back(
+			"poses: CPose3DQuat (+) CPose3DQuat", poses_test_compose3DQuat);
+	lstTests.emplace_back(
+			"poses: CPose3DQuat.composeFrom()", poses_test_compose3DQuat2);
+	lstTests.emplace_back(
+			"poses: CPose3DQuat (+) CPoint3D", poses_test_compose3DQuatpoint);
+	lstTests.emplace_back(
 			"poses: CPose3DQuat.composePoint()",
-			poses_test_compose3DQuatpoint2));
+			poses_test_compose3DQuatpoint2);
 
-	lstTests.push_back(
-		TestData(
+	lstTests.emplace_back(
 			"poses: CPose3DQuat.invcomposePoint()",
-			poses_test_invcompose3DQuatpoint2));
+			poses_test_invcompose3DQuatpoint2);
 
-	lstTests.push_back(
-		TestData(
-			"poses: Conv CPose3DQuat <- CPose3D", poses_test_convert_quat_ypr));
-	lstTests.push_back(
-		TestData(
-			"poses: Conv CPose3D -> CPose3DQuat", poses_test_convert_ypr_quat));
+	lstTests.emplace_back(
+			"poses: Conv CPose3DQuat <- CPose3D", poses_test_convert_quat_ypr);
+	lstTests.emplace_back(
+			"poses: Conv CPose3D -> CPose3DQuat", poses_test_convert_ypr_quat);
 
-	lstTests.push_back(
-		TestData(
+	lstTests.emplace_back(
 			"poses: Conv CPose3DQuat Gauss <- CPose3D Gauss (DEF)",
-			poses_test_convert_quat_ypr_pdf, -1));
-	lstTests.push_back(
-		TestData(
+			poses_test_convert_quat_ypr_pdf, -1);
+	lstTests.emplace_back(
 			"poses: Conv CPose3DQuat Gauss <- CPose3D Gauss (Lin)",
-			poses_test_convert_quat_ypr_pdf, 0));
-	lstTests.push_back(
-		TestData(
+			poses_test_convert_quat_ypr_pdf, 0);
+	lstTests.emplace_back(
 			"poses: Conv CPose3DQuat Gauss <- CPose3D Gauss (SUT)",
-			poses_test_convert_quat_ypr_pdf, 1));
-	lstTests.push_back(
-		TestData(
+			poses_test_convert_quat_ypr_pdf, 1);
+	lstTests.emplace_back(
 			"poses: Conv CPose3D Gauss <- CPose3DQuat Gauss (DEF)",
-			poses_test_convert_ypr_quat_pdf, -1));
-	lstTests.push_back(
-		TestData(
+			poses_test_convert_ypr_quat_pdf, -1);
+	lstTests.emplace_back(
 			"poses: Conv CPose3D Gauss <- CPose3DQuat Gauss (Lin)",
-			poses_test_convert_ypr_quat_pdf, 0));
-	lstTests.push_back(
-		TestData(
+			poses_test_convert_ypr_quat_pdf, 0);
+	lstTests.emplace_back(
 			"poses: Conv CPose3D Gauss <- CPose3DQuat Gauss (SUT)",
-			poses_test_convert_ypr_quat_pdf, 1));
+			poses_test_convert_ypr_quat_pdf, 1);
 }

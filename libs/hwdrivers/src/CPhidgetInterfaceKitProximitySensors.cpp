@@ -190,7 +190,7 @@ void CPhidgetInterfaceKitProximitySensors::loadConfig_sensorSpecific(
 /* -----------------------------------------------------
 				Initialize
    ----------------------------------------------------- */
-void CPhidgetInterfaceKitProximitySensors::initialize(void)
+void CPhidgetInterfaceKitProximitySensors::initialize()
 {
 #if MRPT_HAS_PHIDGET
 	/*Try to connect to the interface kit board*/

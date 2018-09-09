@@ -1722,7 +1722,7 @@ Entry:
 void add_element(PlyFile* plyfile, const vector<string>& words)
 {
 	/* create the new element */
-	plyfile->elems.push_back(PlyElement());
+	plyfile->elems.emplace_back();
 
 	PlyElement* elem = &(*plyfile->elems.rbegin());
 	elem->name = words[1];
@@ -1764,7 +1764,7 @@ void add_property(PlyFile* plyfile, const vector<string>& words)
 	/* add this property to the list of properties of the current element */
 	PlyElement* elem = &(*plyfile->elems.rbegin());
 
-	elem->props.push_back(PlyProperty());
+	elem->props.emplace_back();
 
 	PlyProperty* prop = &(*elem->props.rbegin());
 
@@ -1964,8 +1964,8 @@ bool PLY_Exporter::saveToPlyFile(
 	{
 		/* list of the kinds of elements in the user's object */
 		vector<string> elem_names;
-		elem_names.push_back(string("vertex"));
-		elem_names.push_back(string("face"));
+		elem_names.emplace_back("vertex");
+		elem_names.emplace_back("face");
 
 		/* create the vertex index lists for the faces */
 		// for (i = 0; i < nfaces; i++)

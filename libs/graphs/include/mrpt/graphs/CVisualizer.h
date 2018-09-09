@@ -64,19 +64,19 @@ class CVisualizer
 	/**\{ */
 	virtual void drawGroundGrid(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::system::TParametersDouble* viz_params = NULL) const;
+		const mrpt::system::TParametersDouble* viz_params = nullptr) const;
 	virtual void drawNodeCorners(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::system::TParametersDouble* viz_params = NULL) const;
+		const mrpt::system::TParametersDouble* viz_params = nullptr) const;
 	virtual void drawNodePoints(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::system::TParametersDouble* viz_params = NULL) const;
+		const mrpt::system::TParametersDouble* viz_params = nullptr) const;
 	virtual void drawEdgeRelPoses(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::system::TParametersDouble* viz_params = NULL) const;
+		const mrpt::system::TParametersDouble* viz_params = nullptr) const;
 	virtual void drawEdges(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::system::TParametersDouble* viz_params = NULL) const;
+		const mrpt::system::TParametersDouble* viz_params = nullptr) const;
 
 	/**\} */
 

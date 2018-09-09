@@ -650,41 +650,41 @@ bool CFaceDetection::checkIfFaceRegions(CObservation3DRangeScan* face)
 				++numPoints[row][col];
 
 				if (row == 0 && col == 0)
-					regions2[0].push_back(TPoint3D(
+					regions2[0].emplace_back(
 						face->points3D_x[cont], face->points3D_y[cont],
-						face->points3D_z[cont]));
+						face->points3D_z[cont]);
 				else if (row == 0 && col == 1)
-					regions2[1].push_back(TPoint3D(
+					regions2[1].emplace_back(
 						face->points3D_x[cont], face->points3D_y[cont],
-						face->points3D_z[cont]));
+						face->points3D_z[cont]);
 				else if (row == 0 && col == 2)
-					regions2[2].push_back(TPoint3D(
+					regions2[2].emplace_back(
 						face->points3D_x[cont], face->points3D_y[cont],
-						face->points3D_z[cont]));
+						face->points3D_z[cont]);
 				else if (row == 1 && col == 0)
-					regions2[3].push_back(TPoint3D(
+					regions2[3].emplace_back(
 						face->points3D_x[cont], face->points3D_y[cont],
-						face->points3D_z[cont]));
+						face->points3D_z[cont]);
 				else if (row == 1 && col == 1)
-					regions2[4].push_back(TPoint3D(
+					regions2[4].emplace_back(
 						face->points3D_x[cont], face->points3D_y[cont],
-						face->points3D_z[cont]));
+						face->points3D_z[cont]);
 				else if (row == 1 && col == 2)
-					regions2[5].push_back(TPoint3D(
+					regions2[5].emplace_back(
 						face->points3D_x[cont], face->points3D_y[cont],
-						face->points3D_z[cont]));
+						face->points3D_z[cont]);
 				else if (row == 2 && col == 0)
-					regions2[6].push_back(TPoint3D(
+					regions2[6].emplace_back(
 						face->points3D_x[cont], face->points3D_y[cont],
-						face->points3D_z[cont]));
+						face->points3D_z[cont]);
 				else if (row == 2 && col == 1)
-					regions2[7].push_back(TPoint3D(
+					regions2[7].emplace_back(
 						face->points3D_x[cont], face->points3D_y[cont],
-						face->points3D_z[cont]));
+						face->points3D_z[cont]);
 				else
-					regions2[8].push_back(TPoint3D(
+					regions2[8].emplace_back(
 						face->points3D_x[cont], face->points3D_y[cont],
-						face->points3D_z[cont]));
+						face->points3D_z[cont]);
 			}
 		}
 	}
@@ -896,9 +896,9 @@ bool CFaceDetection::checkIfDiagonalSurface(CObservation3DRangeScan* face)
 			{
 				sumDepth += face->points3D_x[cont];
 				total++;
-				points.push_back(TPoint3D(
+				points.emplace_back(
 					face->points3D_x[cont], face->points3D_y[cont],
-					face->points3D_z[cont]));
+					face->points3D_z[cont]);
 			}
 		}
 		cont += faceWidth - x2 - 1;
@@ -979,9 +979,9 @@ bool CFaceDetection::checkIfDiagonalSurface(CObservation3DRangeScan* face)
 			//&& ( face->points3D_x[cont] < meanDepth + max_desv ) )
 			{
 				valids.set_unsafe(i, j, true);
-				points.push_back(TPoint3D(
+				points.emplace_back(
 					face->points3D_x[cont], face->points3D_y[cont],
-					face->points3D_z[cont]));
+					face->points3D_z[cont]);
 			}
 			else
 				valids.set_unsafe(i, j, false);
@@ -1155,9 +1155,9 @@ bool CFaceDetection::checkIfDiagonalSurface2(CObservation3DRangeScan* face)
 			{
 				sumDepth += face->points3D_x[cont];
 				total++;
-				points.push_back(TPoint3D(
+				points.emplace_back(
 					face->points3D_x[cont], face->points3D_y[cont],
-					face->points3D_z[cont]));
+					face->points3D_z[cont]);
 			}
 		}
 	}
@@ -1608,16 +1608,16 @@ void CFaceDetection::experimental_viewRegions(
 	}
 
 	vector<TSegment3D> sgms;
-	sgms.push_back(TSegment3D(meanPos[0][0], meanPos[0][1]));
-	sgms.push_back(TSegment3D(meanPos[0][1], meanPos[0][2]));
-	sgms.push_back(TSegment3D(meanPos[1][0], meanPos[1][1]));
-	sgms.push_back(TSegment3D(meanPos[1][1], meanPos[1][2]));
-	sgms.push_back(TSegment3D(meanPos[2][0], meanPos[2][1]));
-	sgms.push_back(TSegment3D(meanPos[2][1], meanPos[2][2]));
-	sgms.push_back(TSegment3D(meanPos[0][0], meanPos[1][1]));
-	sgms.push_back(TSegment3D(meanPos[1][1], meanPos[2][2]));
-	sgms.push_back(TSegment3D(meanPos[2][0], meanPos[1][1]));
-	sgms.push_back(TSegment3D(meanPos[1][1], meanPos[0][2]));
+	sgms.emplace_back(meanPos[0][0], meanPos[0][1]);
+	sgms.emplace_back(meanPos[0][1], meanPos[0][2]);
+	sgms.emplace_back(meanPos[1][0], meanPos[1][1]);
+	sgms.emplace_back(meanPos[1][1], meanPos[1][2]);
+	sgms.emplace_back(meanPos[2][0], meanPos[2][1]);
+	sgms.emplace_back(meanPos[2][1], meanPos[2][2]);
+	sgms.emplace_back(meanPos[0][0], meanPos[1][1]);
+	sgms.emplace_back(meanPos[1][1], meanPos[2][2]);
+	sgms.emplace_back(meanPos[2][0], meanPos[1][1]);
+	sgms.emplace_back(meanPos[1][1], meanPos[0][2]);
 	mrpt::opengl::CSetOfLines::Ptr lines =
 		mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>(sgms);
 	lines->setColor(0, 0, 1, 1);

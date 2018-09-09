@@ -625,7 +625,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 		StaticText4, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
 	toolbarcomboImages = new wxComboBox(
 		this, ID_COMBO_IMG_DIRS, wxEmptyString, wxDefaultPosition,
-		wxDefaultSize, 0, 0, 0, wxDefaultValidator, _T("ID_COMBO_IMG_DIRS"));
+		wxDefaultSize, 0, nullptr, 0, wxDefaultValidator, _T("ID_COMBO_IMG_DIRS"));
 	toolbarcomboImages->SetMinSize(wxSize(250, -1));
 	toolbarcomboImages->SetToolTip(_("Found external images paths"));
 	toolbarcomboImages->SetHelpText(_("Found external images paths"));

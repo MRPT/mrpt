@@ -203,8 +203,7 @@ void CLogFileRecord::serializeFrom(
 				{
 					mrpt::poses::CPoint2D pos;
 					in >> pos;
-					ipp.TP_Targets.push_back(
-						mrpt::math::TPoint2D(pos.x(), pos.y()));
+					ipp.TP_Targets.emplace_back(pos.x(), pos.y());
 				}
 				if (version >= 17)
 					in >> ipp.TP_Robot;
@@ -303,15 +302,14 @@ void CLogFileRecord::serializeFrom(
 				{
 					mrpt::math::TPoint2D trg;
 					in >> trg;
-					WS_targets_relative.push_back(trg);
+					WS_targets_relative.emplace_back(trg);
 				}
 			}
 			else
 			{
 				mrpt::poses::CPoint2D pos;
 				in >> pos;
-				WS_targets_relative.push_back(
-					mrpt::math::TPoint2D(pos.x(), pos.y()));
+				WS_targets_relative.emplace_back(mrpt::math::TPoint2D(pos.x(), pos.y()));
 			}
 
 			if (version >= 16)

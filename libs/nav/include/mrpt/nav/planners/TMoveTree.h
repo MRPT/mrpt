@@ -84,8 +84,8 @@ class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 	mrpt::graphs::TNodeID getNearestNode(
 		const NODE_TYPE_FOR_METRIC& query_pt,
 		const PoseDistanceMetric<NODE_TYPE_FOR_METRIC>& distanceMetricEvaluator,
-		double* out_distance = NULL,
-		const std::set<mrpt::graphs::TNodeID>* ignored_nodes = NULL) const
+		double* out_distance = nullptr,
+		const std::set<mrpt::graphs::TNodeID>* ignored_nodes = nullptr) const
 	{
 		ASSERT_(!m_nodes.empty());
 		double min_d = std::numeric_limits<double>::max();
@@ -134,7 +134,7 @@ class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 	void insertNode(
 		const mrpt::graphs::TNodeID node_id, const NODE_TYPE_DATA& node_data)
 	{
-		m_nodes[node_id] = node_t(node_id, INVALID_NODEID, NULL, node_data);
+		m_nodes[node_id] = node_t(node_id, INVALID_NODEID, nullptr, node_data);
 	}
 
 	mrpt::graphs::TNodeID getNextFreeNodeID() const { return m_nodes.size(); }

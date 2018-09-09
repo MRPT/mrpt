@@ -35,9 +35,9 @@ struct TCoords
 	inline TCoords(const double dec) { setFromDecimal(dec); }
 	inline TCoords() { setFromDecimal(0); }
 	/** Automatic conversion to a double value (read-only) */
-	inline operator double(void) const { return decimal_value; }
+	inline operator double() const { return decimal_value; }
 	/** Automatic conversion to a double value (read-only) */
-	inline operator double&(void) { return decimal_value; }
+	inline operator double&() { return decimal_value; }
 	/** Set from a decimal value (XX.YYYYY) in degrees. */
 	inline void setFromDecimal(const double dec) { decimal_value = dec; }
 	/** Get the decimal value (XX.YYYYY), in degrees - you can also use the

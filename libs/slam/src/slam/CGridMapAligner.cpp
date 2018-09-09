@@ -217,7 +217,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 					lm1->landmarks.get(idx1)->features[0]->descriptorDistanceTo(
 						*lm2->landmarks.get(idx2)->features[0]);
 
-				corrs_indiv.push_back(std::make_pair(idx2, minDist));
+				corrs_indiv.emplace_back(idx2, minDist);
 				corrs_indiv_only.push_back(minDist);
 			}  // end for idx2
 
@@ -241,9 +241,8 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 				{
 					idxs1.push_back(idx1);
 					idxs2.push_back(corrs_indiv[w].first);
-					outInfo.correspondences_dists_maha.push_back(
-						TReturnInfo::TPairPlusDistance(
-							idx1, corrs_indiv[w].first, corrs_indiv[w].second));
+					outInfo.correspondences_dists_maha.emplace_back(
+							idx1, corrs_indiv[w].first, corrs_indiv[w].second);
 				}
 			}
 

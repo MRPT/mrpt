@@ -361,7 +361,7 @@ CFormEdit::CFormEdit(wxWindow* parent, wxWindowID id)
 	FlexGridSizer5->AddGrowableCol(0);
 	FlexGridSizer5->AddGrowableRow(0);
 	cbObsClass = new wxCheckListBox(
-		this, ID_CHECKLISTBOX2, wxDefaultPosition, wxSize(-1, 200), 0, 0, 0,
+		this, ID_CHECKLISTBOX2, wxDefaultPosition, wxSize(-1, 200), 0, nullptr, 0,
 		wxDefaultValidator, _T("ID_CHECKLISTBOX2"));
 	cbObsClass->SetMaxSize(wxSize(-1, 200));
 	FlexGridSizer5->Add(
@@ -397,7 +397,7 @@ CFormEdit::CFormEdit(wxWindow* parent, wxWindowID id)
 	FlexGridSizer13->AddGrowableCol(0);
 	FlexGridSizer13->AddGrowableRow(0);
 	cbObsLabel = new wxCheckListBox(
-		this, ID_CHECKLISTBOX1, wxDefaultPosition, wxSize(-1, 200), 0, 0, 0,
+		this, ID_CHECKLISTBOX1, wxDefaultPosition, wxSize(-1, 200), 0, nullptr, 0,
 		wxDefaultValidator, _T("ID_CHECKLISTBOX1"));
 	cbObsLabel->SetMaxSize(wxSize(-1, 200));
 	FlexGridSizer13->Add(
@@ -548,7 +548,7 @@ void loadSelectionsFromListBox(std::vector<std::string>& v, wxCheckListBox* c)
 {
 	v.clear();
 	for (unsigned i = 0; i < c->GetCount(); i++)
-		if (c->IsChecked(i)) v.push_back(string(c->GetString(i).mb_str()));
+		if (c->IsChecked(i)) v.emplace_back(c->GetString(i).mb_str());
 }
 
 void CFormEdit::OnbtnCloseClick(wxCommandEvent& event) { Close(); }

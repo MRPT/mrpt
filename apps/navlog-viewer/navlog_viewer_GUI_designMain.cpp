@@ -231,7 +231,7 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(
 	FlexGridSizer3->Add(
 		rbPerPTGPlots, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
 	cbList = new wxCheckListBox(
-		Panel_AUX, ID_CHECKLISTBOX1, wxDefaultPosition, wxSize(250, 71), 0, 0,
+		Panel_AUX, ID_CHECKLISTBOX1, wxDefaultPosition, wxSize(250, 71), 0, nullptr,
 		0, wxDefaultValidator, _T("ID_CHECKLISTBOX1"));
 	FlexGridSizer3->Add(
 		cbList, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
@@ -1448,8 +1448,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 							const double a =
 								-M_PI + (i + 0.5) * 2 * M_PI / double(nAlphas);
 							const double r = dir_evals[iScore][i];
-							pts.push_back(
-								mrpt::math::TPoint2D(r * cos(a), r * sin(a)));
+							pts.emplace_back(r * cos(a), r * sin(a));
 						}
 
 						mrpt::opengl::CSetOfLines::Ptr& gl_obj =

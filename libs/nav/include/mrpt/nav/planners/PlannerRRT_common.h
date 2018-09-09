@@ -197,10 +197,10 @@ class PlannerTPS_VirtualBase
 
 		TRenderPlannedPathOptions()
 			: highlight_path_to_node_id(INVALID_NODEID),
-			  x_rand_pose(NULL),
-			  x_nearest_pose(NULL),
-			  local_obs_from_nearest_pose(NULL),
-			  new_state(NULL),
+			  x_rand_pose(nullptr),
+			  x_nearest_pose(nullptr),
+			  local_obs_from_nearest_pose(nullptr),
+			  new_state(nullptr),
 			  color_vehicle(0xFF, 0x00, 0x00, 0xFF),
 			  color_obstacles(0x00, 0x00, 0xFF, 0x40),
 			  color_local_obstacles(0x00, 0x00, 0xFF),
