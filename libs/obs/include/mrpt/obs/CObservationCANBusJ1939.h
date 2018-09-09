@@ -25,11 +25,11 @@ class CObservationCANBusJ1939 : public CObservation
    public:
 	/** Constructor.
 	 */
-	CObservationCANBusJ1939() {}
+	CObservationCANBusJ1939() = default;
 
 	/** Destructor
 	 */
-	~CObservationCANBusJ1939() override {}
+	~CObservationCANBusJ1939() override = default;
 	/** The Parameter Group Number within this frame */
 	uint16_t m_pgn{0};
 

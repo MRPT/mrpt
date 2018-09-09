@@ -611,7 +611,7 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	{
 	}
 	/** Destructor */
-	~CKalmanFilterCapable() override {}
+	~CKalmanFilterCapable() override = default;
 	mrpt::system::CTimeLogger& getProfiler() { return m_timLogger; }
 	/** Generic options for the Kalman Filter algorithm itself. */
 	TKF_options KF_options;

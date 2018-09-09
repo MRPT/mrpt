@@ -92,7 +92,7 @@ class CLoadableOptions
 	virtual void dumpToTextStream(std::ostream& out) const;
 
 	/** Virtual destructor */
-	virtual ~CLoadableOptions() {}
+	virtual ~CLoadableOptions() = default;
 };  // End of class def.
 
 /** Macro for dumping a variable to a stream, within the method

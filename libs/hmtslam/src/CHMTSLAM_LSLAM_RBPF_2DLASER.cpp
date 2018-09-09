@@ -40,7 +40,7 @@ CLSLAM_RBPF_2DLASER::CLSLAM_RBPF_2DLASER(CHMTSLAM* parent)
 {
 }
 // Destructor
-CLSLAM_RBPF_2DLASER::~CLSLAM_RBPF_2DLASER() {}
+CLSLAM_RBPF_2DLASER::~CLSLAM_RBPF_2DLASER() = default;
 /*---------------------------------------------------------------
 
 					CLSLAM_RBPF_2DLASER

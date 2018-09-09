@@ -74,14 +74,14 @@ class CDisk : public CRenderizableDisplayList
 
 	/** Constructor
 	 */
-	CDisk() {}
+	CDisk() = default;
 	CDisk(float rOut, float rIn, uint32_t slices = 50, uint32_t loops = 4)
 		: m_radiusIn(rIn), m_radiusOut(rOut), m_nSlices(slices), m_nLoops(loops)
 	{
 	}
 
 	/** Private, virtual destructor: only can be deleted from smart pointers */
-	~CDisk() override {}
+	~CDisk() override = default;
 };
 
 }  // namespace mrpt::opengl

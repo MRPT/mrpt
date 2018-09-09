@@ -42,7 +42,7 @@ class CRejectionSamplingRangeOnlyLocalization
 
 	/** Destructor
 	 */
-	~CRejectionSamplingRangeOnlyLocalization() override {}
+	~CRejectionSamplingRangeOnlyLocalization() override = default;
 	/** The parameters used in the generation of random samples:
 	 * \param beaconsMap The map containing the N beacons (indexed by their
 	 * "beacon ID"s). Only the mean 3D position of the beacons is used, the

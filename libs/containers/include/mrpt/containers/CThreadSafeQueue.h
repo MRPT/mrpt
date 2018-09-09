@@ -61,7 +61,7 @@ class CThreadSafeQueue
 
    public:
 	/** Default ctor. */
-	CThreadSafeQueue() {}
+	CThreadSafeQueue() = default;
 	virtual ~CThreadSafeQueue() { clear(); }
 	/** Clear the queue of messages, freeing memory as required. */
 	void clear()

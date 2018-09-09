@@ -993,7 +993,7 @@ class EigenvalueDecomposition
 
    public:
 	//! Constructor for EigenvalueDecomposition class
-	EigenvalueDecomposition() {}
+	EigenvalueDecomposition() = default;
 	/**
 	 * Initializes & computes the Eigenvalue Decomposition for a general matrix
 	 * given in src. This function is a port of the EigenvalueSolver in JAMA,
@@ -1037,7 +1037,7 @@ class EigenvalueDecomposition
 	}
 
 	//! Destructor for EigenvalueDecomposition class
-	~EigenvalueDecomposition() {}
+	~EigenvalueDecomposition() = default;
 	/**
 	 * @brief Returns the eigenvalues of the Eigenvalue Decomposition.
 	 * @return eigenvalues

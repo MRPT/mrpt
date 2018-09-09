@@ -149,7 +149,7 @@ struct MapGetAs3DObject
 
 struct MapAuxPFCleanup
 {
-	MapAuxPFCleanup() {}
+	MapAuxPFCleanup() = default;
 	template <typename PTR>
 	inline void operator()(PTR& ptr)
 	{

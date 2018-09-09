@@ -70,9 +70,9 @@ class CEllipsoidInverseDepth2D : public CGeneralizedEllipsoidTemplate<2>
    public:
 	/** Constructor
 	 */
-	CEllipsoidInverseDepth2D() {}
+	CEllipsoidInverseDepth2D() = default;
 	/** Private, virtual destructor: only can be deleted from smart pointers */
-	~CEllipsoidInverseDepth2D() override {}
+	~CEllipsoidInverseDepth2D() override = default;
 };
 
 }  // namespace mrpt::opengl

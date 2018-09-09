@@ -32,7 +32,7 @@ CFileGZInputStream::CFileGZInputStream(const string& fileName) : m_f(nullptr)
 	MRPT_END
 }
 
-CFileGZInputStream::CFileGZInputStream()  {}
+CFileGZInputStream::CFileGZInputStream()  = default;
 bool CFileGZInputStream::open(const std::string& fileName)
 {
 	MRPT_START

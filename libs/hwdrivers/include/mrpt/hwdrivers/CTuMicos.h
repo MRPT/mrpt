@@ -24,7 +24,7 @@ class CTuMicos : public CPtuBase, public mrpt::system::COutputLogger
    public:
 	/** Default constructor */
 
-	CTuMicos(){};
+	CTuMicos()= default;
 
 	/** Destructor */
 

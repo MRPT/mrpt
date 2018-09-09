@@ -212,7 +212,7 @@ void CAssimpModel::getBoundingBox(
 	m_pose.composePoint(bb_max, bb_max);
 }
 
-CAssimpModel::TImplAssimp::TImplAssimp()  {}
+CAssimpModel::TImplAssimp::TImplAssimp()  = default;
 CAssimpModel::TImplAssimp::~TImplAssimp()
 {
 #if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP

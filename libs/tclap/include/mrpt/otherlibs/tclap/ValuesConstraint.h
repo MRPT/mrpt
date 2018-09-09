@@ -69,7 +69,7 @@ class ValuesConstraint : public Constraint<T>
 		/**
 		 * Virtual destructor.
 		 */
-		virtual ~ValuesConstraint() {}
+		virtual ~ValuesConstraint() = default;
 
 		/**
 		 * Returns a description of the Constraint. 

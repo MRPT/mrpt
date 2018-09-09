@@ -169,7 +169,7 @@ class CEllipsoid : public CRenderizableDisplayList
 	{
 	}
 	/** Private, virtual destructor: only can be deleted from smart pointers */
-	~CEllipsoid() override {}
+	~CEllipsoid() override = default;
 };
 
 }  // namespace mrpt::opengl

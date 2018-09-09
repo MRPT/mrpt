@@ -49,7 +49,7 @@ struct TKinematicLink
 		  is_prismatic(_is_prismatic)
 	{
 	}
-	TKinematicLink() {}
+	TKinematicLink() = default;
 };
 
 mrpt::serialization::CArchive& operator>>(

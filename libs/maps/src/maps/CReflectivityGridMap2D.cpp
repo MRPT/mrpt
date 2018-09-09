@@ -35,8 +35,7 @@ MAP_DEFINITION_REGISTER(
 CReflectivityGridMap2D::TMapDefinition::TMapDefinition()
 	
 	  
-{
-}
+= default;
 
 void CReflectivityGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(
 	const mrpt::config::CConfigFileBase& source,
@@ -276,7 +275,7 @@ void CReflectivityGridMap2D::serializeFrom(
 /*---------------------------------------------------------------
 					TInsertionOptions
  ---------------------------------------------------------------*/
-CReflectivityGridMap2D::TInsertionOptions::TInsertionOptions()  {}
+CReflectivityGridMap2D::TInsertionOptions::TInsertionOptions()  = default;
 void CReflectivityGridMap2D::TInsertionOptions::dumpToTextStream(
 	std::ostream& out) const
 {

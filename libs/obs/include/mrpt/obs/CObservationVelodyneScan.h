@@ -209,7 +209,7 @@ class CObservationVelodyneScan : public CObservation
 	 * @{ */
 	struct TGeneratePointCloudParameters
 	{
-		TGeneratePointCloudParameters() {}
+		TGeneratePointCloudParameters() = default;
 		/** Minimum azimuth, in degrees (Default=0). Points will be generated
 		 * only the the area of interest [minAzimuth, maxAzimuth] */
 		double minAzimuth_deg{.0};

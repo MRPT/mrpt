@@ -22,7 +22,7 @@ CPoseDirection::CPoseDirection(QWidget* parent)
 		m_ui->roll, SIGNAL(valueChanged(double)), this, SLOT(dataChanged()));
 }
 
-CPoseDirection::~CPoseDirection() {}
+CPoseDirection::~CPoseDirection() = default;
 void CPoseDirection::setDirection(double yaw, double pitch, double roll)
 {
 	blockSignals(true);

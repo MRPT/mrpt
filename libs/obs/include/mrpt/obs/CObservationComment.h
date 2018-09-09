@@ -31,7 +31,7 @@ class CObservationComment : public CObservation
 	CObservationComment() : text() {}
 	/** Destructor
 	  */
-	~CObservationComment() override {}
+	~CObservationComment() override = default;
 	/** The text block. */
 	std::string text;
 

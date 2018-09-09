@@ -15,7 +15,7 @@ using namespace mrpt::kinematics;
 
 IMPLEMENTS_SERIALIZABLE(CVehicleVelCmd_Holo, CVehicleVelCmd, mrpt::kinematics)
 
-CVehicleVelCmd_Holo::CVehicleVelCmd_Holo() {}
+CVehicleVelCmd_Holo::CVehicleVelCmd_Holo() = default;
 
 CVehicleVelCmd_Holo::CVehicleVelCmd_Holo(
 	double vel_, double dir_local_, double ramp_time_, double rot_speed_)
@@ -26,7 +26,7 @@ CVehicleVelCmd_Holo::CVehicleVelCmd_Holo(
 {
 }
 
-CVehicleVelCmd_Holo::~CVehicleVelCmd_Holo() {}
+CVehicleVelCmd_Holo::~CVehicleVelCmd_Holo() = default;
 size_t CVehicleVelCmd_Holo::getVelCmdLength() const { return 4; }
 std::string CVehicleVelCmd_Holo::getVelCmdDescription(const int index) const
 {

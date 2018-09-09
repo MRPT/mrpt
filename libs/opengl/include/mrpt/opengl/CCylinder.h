@@ -157,7 +157,7 @@ class CCylinder : public CRenderizableDisplayList
 	 */
 	CCylinder()
 
-		{};
+		= default;
 	/**
 	 * Complete constructor. Allows the configuration of every parameter.
 	 */
@@ -175,7 +175,7 @@ class CCylinder : public CRenderizableDisplayList
 	/**
 	 * Destructor.
 	 */
-	~CCylinder() override{};
+	~CCylinder() override= default;
 
    private:
 	/**

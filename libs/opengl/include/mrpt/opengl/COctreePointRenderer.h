@@ -52,7 +52,7 @@ class COctreePointRenderer
 {
    public:
 	/** Default ctor */
-	COctreePointRenderer() {}
+	COctreePointRenderer() = default;
 
 	/** Copy ctor */
 	COctreePointRenderer(const COctreePointRenderer&)

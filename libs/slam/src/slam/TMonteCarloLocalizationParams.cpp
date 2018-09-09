@@ -33,9 +33,4 @@ TMonteCarloLocalizationParams::TMonteCarloLocalizationParams(
  */
 TMonteCarloLocalizationParams& TMonteCarloLocalizationParams::operator=(
 	const TMonteCarloLocalizationParams& o)
-{
-	metricMap = o.metricMap;
-	metricMaps = o.metricMaps;
-	KLD_params = o.KLD_params;
-	return *this;
-}
+= default;

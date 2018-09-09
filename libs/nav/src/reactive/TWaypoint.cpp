@@ -69,7 +69,7 @@ std::string TWaypoint::getAsText() const
 }
 
 // TWaypointSequence ==========
-TWaypointSequence::TWaypointSequence() {}
+TWaypointSequence::TWaypointSequence() = default;
 // Gets navigation params as a human-readable format:
 std::string TWaypointSequence::getAsText() const
 {

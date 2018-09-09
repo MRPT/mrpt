@@ -15,9 +15,9 @@
 
 using namespace mrpt::kinematics;
 
-CVehicleSimulVirtualBase::CVehicleSimulVirtualBase() {}
+CVehicleSimulVirtualBase::CVehicleSimulVirtualBase() = default;
 
-CVehicleSimulVirtualBase::~CVehicleSimulVirtualBase() {}
+CVehicleSimulVirtualBase::~CVehicleSimulVirtualBase() = default;
 void CVehicleSimulVirtualBase::setCurrentGTPose(const mrpt::math::TPose2D& pose)
 {
 	m_GT_pose = pose;

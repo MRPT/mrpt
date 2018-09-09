@@ -205,7 +205,7 @@ CWindowDialog::CWindowDialog(
 }
 
 // Destructor
-CWindowDialog::~CWindowDialog() {}
+CWindowDialog::~CWindowDialog() = default;
 // OnClose event:
 void CWindowDialog::OnClose(wxCloseEvent& event)
 {

@@ -33,7 +33,7 @@ class CRejectionSamplingCapable
 
 	/** Virtual destructor
 	  */
-	virtual ~CRejectionSamplingCapable() {}
+	virtual ~CRejectionSamplingCapable() = default;
 	/** Generates a set of N independent samples via rejection sampling.
 	  * \param desiredSamples The number of desired samples to generate
 	  * \param outSamples The output samples.

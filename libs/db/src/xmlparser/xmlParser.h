@@ -518,7 +518,7 @@ typedef struct XMLDLLENTRY XMLNode
 	XMLNode(const XMLNode& A);  ///< to allow shallow/fast copy:
 	XMLNode& operator=(const XMLNode& A);  ///< to allow shallow/fast copy:
 
-	XMLNode(){};
+	XMLNode()= default;
 	static XMLNode emptyXMLNode;
 	static XMLClear emptyXMLClear;
 	static XMLAttribute emptyXMLAttribute;
@@ -1060,7 +1060,7 @@ typedef struct XMLDLLENTRY ToXMLStringTool
 typedef struct XMLDLLENTRY XMLParserBase64Tool
 {
    public:
-	XMLParserBase64Tool() {}
+	XMLParserBase64Tool() = default;
 	~XMLParserBase64Tool();
 	void freeBuffer();  ///< Call this function when you have finished using
 	/// this object to release memory used by the internal

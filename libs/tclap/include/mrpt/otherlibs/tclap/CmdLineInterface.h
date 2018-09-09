@@ -54,7 +54,7 @@ class CmdLineInterface
 		/**
 		 * Destructor
 		 */
-		virtual ~CmdLineInterface() {}
+		virtual ~CmdLineInterface() = default;
 
 		/**
 		 * Adds an argument to the list of arguments to be parsed.

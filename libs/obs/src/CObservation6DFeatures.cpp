@@ -23,8 +23,7 @@ IMPLEMENTS_SERIALIZABLE(CObservation6DFeatures, CObservation, mrpt::obs)
 /** Default constructor */
 CObservation6DFeatures::CObservation6DFeatures()
 	 
-{
-}
+= default;
 
 CObservation6DFeatures::TMeasurement::TMeasurement() : id(INVALID_LANDMARK_ID)
 {

@@ -52,7 +52,7 @@ void Topic::cleanupSubscriber(std::list<std::weak_ptr<Subscriber>>::iterator it)
 }
 
 // -------------- TopicDirectory ---------------------
-TopicDirectory::TopicDirectory() {}
+TopicDirectory::TopicDirectory() = default;
 
 void TopicDirectory::cleanupTopic(const std::string& key)
 {

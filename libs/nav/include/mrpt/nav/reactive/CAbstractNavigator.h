@@ -101,7 +101,7 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 	/** Base for all high-level navigation commands. See derived classes */
 	struct TNavigationParamsBase
 	{
-		virtual ~TNavigationParamsBase() {}
+		virtual ~TNavigationParamsBase() = default;
 		/** Gets navigation params as a human-readable format */
 		virtual std::string getAsText() const = 0;
 

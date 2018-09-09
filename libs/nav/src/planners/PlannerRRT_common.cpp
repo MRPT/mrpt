@@ -31,7 +31,7 @@ RRTAlgorithmParams::RRTAlgorithmParams()
 	robot_shape.push_back(mrpt::math::TPoint2D(-0.5, 0.5));
 }
 
-PlannerTPS_VirtualBase::PlannerTPS_VirtualBase()  {}
+PlannerTPS_VirtualBase::PlannerTPS_VirtualBase()  = default;
 void PlannerTPS_VirtualBase::internal_initialize_PTG()
 {
 	ASSERTMSG_(

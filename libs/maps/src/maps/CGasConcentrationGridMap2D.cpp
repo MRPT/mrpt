@@ -41,8 +41,7 @@ MAP_DEFINITION_REGISTER(
 CGasConcentrationGridMap2D::TMapDefinition::TMapDefinition()
 	
 	  
-{
-}
+= default;
 
 void CGasConcentrationGridMap2D::TMapDefinition::
 	loadFromConfigFile_map_specific(
@@ -128,7 +127,7 @@ CGasConcentrationGridMap2D::CGasConcentrationGridMap2D(
 	timeLastSimulated = mrpt::system::now();
 }
 
-CGasConcentrationGridMap2D::~CGasConcentrationGridMap2D() {}
+CGasConcentrationGridMap2D::~CGasConcentrationGridMap2D() = default;
 /*---------------------------------------------------------------
 						clear
   ---------------------------------------------------------------*/

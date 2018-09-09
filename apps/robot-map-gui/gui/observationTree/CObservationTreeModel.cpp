@@ -22,7 +22,7 @@ CObservationTreeModel::CObservationTreeModel(
 		}
 }
 
-CObservationTreeModel::~CObservationTreeModel() {}
+CObservationTreeModel::~CObservationTreeModel() = default;
 QItemSelection CObservationTreeModel::changeSelected(
 	const std::vector<size_t>& indexes)
 {

@@ -36,7 +36,7 @@ class CPTG_DiffDrive_alpha : public CPTG_DiffDrive_CollisionGridBased
 {
 	DEFINE_SERIALIZABLE(CPTG_DiffDrive_alpha)
    public:
-	CPTG_DiffDrive_alpha() {}
+	CPTG_DiffDrive_alpha() = default;
 	CPTG_DiffDrive_alpha(
 		const mrpt::config::CConfigFileBase& cfg, const std::string& sSection)
 	{

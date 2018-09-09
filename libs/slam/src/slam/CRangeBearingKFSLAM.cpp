@@ -84,7 +84,7 @@ void CRangeBearingKFSLAM::reset()
 /*---------------------------------------------------------------
 							Destructor
   ---------------------------------------------------------------*/
-CRangeBearingKFSLAM::~CRangeBearingKFSLAM() {}
+CRangeBearingKFSLAM::~CRangeBearingKFSLAM() = default;
 /*---------------------------------------------------------------
 							getCurrentRobotPose
   ---------------------------------------------------------------*/

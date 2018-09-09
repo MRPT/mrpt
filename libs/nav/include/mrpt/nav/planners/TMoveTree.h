@@ -68,7 +68,7 @@ class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 			  edge_to_parent(edge_to_parent_)
 		{
 		}
-		node_t() {}
+		node_t() = default;
 	};
 
 	using base_t = mrpt::graphs::CDirectedTree<EDGE_TYPE>;
@@ -217,7 +217,7 @@ struct TNodeSE2
 	/** state in SE2 as 2D pose (x, y, phi) */
 	mrpt::math::TPose2D state;
 	TNodeSE2(const mrpt::math::TPose2D& state_) : state(state_) {}
-	TNodeSE2() {}
+	TNodeSE2() = default;
 };
 
 /** Pose metric for SE(2) */
@@ -238,7 +238,7 @@ struct PoseDistanceMetric<TNodeSE2>
 			   mrpt::square(a.state.y - b.state.y) +
 			   mrpt::square(mrpt::math::angDistance(a.state.phi, b.state.phi));
 	}
-	PoseDistanceMetric() {}
+	PoseDistanceMetric() = default;
 };
 
 struct TNodeSE2_TP
@@ -246,7 +246,7 @@ struct TNodeSE2_TP
 	/** state in SE2 as 2D pose (x, y, phi) */
 	mrpt::math::TPose2D state;
 	TNodeSE2_TP(const mrpt::math::TPose2D& state_) : state(state_) {}
-	TNodeSE2_TP() {}
+	TNodeSE2_TP() = default;
 };
 
 /** Pose metric for SE(2) limited to a given PTG manifold. NOTE: This 'metric'

@@ -46,7 +46,7 @@ using mrpt::maps::internal::TSequenceLandmarks;
 //  =========== Begin of Map definition ============
 MAP_DEFINITION_REGISTER("CLandmarksMap,landmarksMap", mrpt::maps::CLandmarksMap)
 
-CLandmarksMap::TMapDefinition::TMapDefinition() {}
+CLandmarksMap::TMapDefinition::TMapDefinition() = default;
 void CLandmarksMap::TMapDefinition::loadFromConfigFile_map_specific(
 	const mrpt::config::CConfigFileBase& source,
 	const std::string& sectionNamePrefix)
@@ -2329,8 +2329,7 @@ CLandmarksMap::TLikelihoodOptions::TLikelihoodOptions()
 CLandmarksMap::TLikelihoodOptions::TGPSOrigin::TGPSOrigin()
 	
 	  
-{
-}
+= default;
 
 /*---------------------------------------------------------------
 					dumpToTextStream
@@ -2445,8 +2444,7 @@ void CLandmarksMap::TLikelihoodOptions::loadFromConfigFile(
   ---------------------------------------------------------------*/
 CLandmarksMap::TFuseOptions::TFuseOptions()
 	 
-{
-}
+= default;
 
 /*---------------------------------------------------------------
 					 isEmpty

@@ -137,7 +137,7 @@ class CFrustum : public CRenderizableDisplayList
 		bool draw_planes);
 
 	/** Destructor  */
-	~CFrustum() override {}
+	~CFrustum() override = default;
 };
 }
 

@@ -86,11 +86,11 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 		/**
 		 * Empty constructor. Initializes to garbage.
 		 */
-		TQuadrilateral() {}
+		TQuadrilateral() = default;
 		/**
 		 * Destructor.
 		 */
-		~TQuadrilateral() {}
+		~TQuadrilateral() = default;
 	};
 
    protected:
@@ -422,6 +422,6 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 	/**
 	 * Destructor.
 	 */
-	~CGeneralizedCylinder() override{};
+	~CGeneralizedCylinder() override= default;
 };
 }  // namespace mrpt::opengl

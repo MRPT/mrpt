@@ -92,7 +92,7 @@ class CSphere : public CRenderizableDisplayList
 	}
 
 	/** Private, virtual destructor: only can be deleted from smart pointers */
-	~CSphere() override {}
+	~CSphere() override = default;
 };
 
 }  // namespace mrpt::opengl

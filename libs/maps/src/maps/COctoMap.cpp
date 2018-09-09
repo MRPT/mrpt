@@ -35,7 +35,7 @@ using namespace mrpt::opengl;
 //  =========== Begin of Map definition ============
 MAP_DEFINITION_REGISTER("COctoMap,octoMap", mrpt::maps::COctoMap)
 
-COctoMap::TMapDefinition::TMapDefinition()  {}
+COctoMap::TMapDefinition::TMapDefinition()  = default;
 void COctoMap::TMapDefinition::loadFromConfigFile_map_specific(
 	const mrpt::config::CConfigFileBase& source,
 	const std::string& sectionNamePrefix)
@@ -82,7 +82,7 @@ COctoMap::COctoMap(const double resolution) :
 {
 }
 
-COctoMap::~COctoMap() {}
+COctoMap::~COctoMap() = default;
 uint8_t COctoMap::serializeGetVersion() const { return 3; }
 void COctoMap::serializeTo(mrpt::serialization::CArchive& out) const
 {

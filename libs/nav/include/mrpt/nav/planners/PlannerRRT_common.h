@@ -214,7 +214,7 @@ class PlannerTPS_VirtualBase
 		{
 		}
 
-		virtual ~TRenderPlannedPathOptions() {}
+		virtual ~TRenderPlannedPathOptions() = default;
 	};
 
 	template <typename node_pose_t, typename world_limits_t, typename tree_t>

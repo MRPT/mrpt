@@ -34,7 +34,7 @@ using namespace mrpt::config;
 MAP_DEFINITION_REGISTER(
 	"CColouredPointsMap,colourPointsMap", mrpt::maps::CColouredPointsMap)
 
-CColouredPointsMap::TMapDefinition::TMapDefinition() {}
+CColouredPointsMap::TMapDefinition::TMapDefinition() = default;
 void CColouredPointsMap::TMapDefinition::loadFromConfigFile_map_specific(
 	const CConfigFileBase& source, const std::string& sectionNamePrefix)
 {
@@ -403,8 +403,7 @@ TColourOptions
 ---------------------------------------------------------------*/
 CColouredPointsMap::TColourOptions::TColourOptions()
 	 
-{
-}
+= default;
 
 void CColouredPointsMap::TColourOptions::loadFromConfigFile(
 	const CConfigFileBase& source, const std::string& section)

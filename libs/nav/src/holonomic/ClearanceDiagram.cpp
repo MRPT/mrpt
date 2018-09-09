@@ -21,8 +21,7 @@ using namespace mrpt::nav;
 
 ClearanceDiagram::ClearanceDiagram()
 	 
-{
-}
+= default;
 
 void ClearanceDiagram::renderAs3DObject(
 	mrpt::opengl::CMesh& mesh, double min_x, double max_x, double min_y,

@@ -156,7 +156,7 @@ struct CGenericFeatureTracker
 	{
 	}
 	/** Dtor */
-	virtual ~CGenericFeatureTracker() {}
+	virtual ~CGenericFeatureTracker() = default;
 	/** Perform feature tracking from "old_img" to "new_img", with a (possibly
 	 *empty) list of previously tracked features "inout_featureList".
 	 *  This is a list of parameters (in "extraParams") accepted by ALL
@@ -311,7 +311,7 @@ using CGenericFeatureTrackerAutoPtr = std::unique_ptr<CGenericFeatureTracker>;
 struct CFeatureTracker_KL : public CGenericFeatureTracker
 {
 	/** Default ctor */
-	inline CFeatureTracker_KL() {}
+	inline CFeatureTracker_KL() = default;
 	/** Ctor with extra parameters */
 	inline CFeatureTracker_KL(mrpt::system::TParametersDouble extraParams)
 		: CGenericFeatureTracker(extraParams)

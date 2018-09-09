@@ -195,8 +195,7 @@ void CRandomFieldGridMap3D::internal_initialize(bool erase_prev_contents)
 CRandomFieldGridMap3D::TInsertionOptions::TInsertionOptions()
 	
 	  
-{
-}
+= default;
 
 void CRandomFieldGridMap3D::TInsertionOptions::dumpToTextStream(
 	std::ostream& out) const

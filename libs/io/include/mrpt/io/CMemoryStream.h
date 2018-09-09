@@ -41,7 +41,7 @@ class CMemoryStream : public CStream
 
    public:
 	/** Default constructor */
-	CMemoryStream() {}
+	CMemoryStream() = default;
 	/** Constructor to initilize the data in the stream from a block of memory
 	 * (which is copied), and sets the current stream position at the beginning
 	 * of the data.

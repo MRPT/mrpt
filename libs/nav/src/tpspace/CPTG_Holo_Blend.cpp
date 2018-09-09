@@ -803,7 +803,7 @@ CPTG_Holo_Blend::CPTG_Holo_Blend(
 	this->loadFromConfigFile(cfg, sSection);
 }
 
-CPTG_Holo_Blend::~CPTG_Holo_Blend() {}
+CPTG_Holo_Blend::~CPTG_Holo_Blend() = default;
 void CPTG_Holo_Blend::internal_construct_exprs()
 {
 	std::map<std::string, double*> symbols;

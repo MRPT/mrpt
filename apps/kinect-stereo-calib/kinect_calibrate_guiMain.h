@@ -55,7 +55,7 @@
 //   and exploit multicore CPUs.
 struct TThreadParam
 {
-	TThreadParam() {}
+	TThreadParam() = default;
 
 	volatile bool quit{false};
 	volatile bool terminated{false};

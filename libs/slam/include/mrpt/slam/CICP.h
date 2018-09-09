@@ -185,11 +185,11 @@ class CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 	 * options */
 	CICP(const TConfigParams& icpParams) : options(icpParams) {}
 	/** Destructor */
-	~CICP() override {}
+	~CICP() override = default;
 	/** The ICP algorithm return information*/
 	struct TReturnInfo
 	{
-		TReturnInfo() {}
+		TReturnInfo() = default;
 		/** The number of executed iterations until convergence */
 		unsigned short nIterations{0};
 		/** A goodness measure for the alignment, it is a [0,1] range indicator

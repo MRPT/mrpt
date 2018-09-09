@@ -187,7 +187,7 @@ class WXDLLIMPEXP_MATHPLOT mpLayer : public wxObject
    public:
 	mpLayer();
 
-	~mpLayer() override{};
+	~mpLayer() override= default;
 
 	/** Check whether this layer has a bounding box.
 		The default implementation returns \a TRUE. Override and return
@@ -941,7 +941,7 @@ typedef std::deque<mpLayer*> wxLayerList;
 class WXDLLIMPEXP_MATHPLOT mpWindow : public wxWindow
 {
    public:
-	mpWindow() {}
+	mpWindow() = default;
 	mpWindow(
 		wxWindow* parent, wxWindowID id, const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize, long flags = 0);
@@ -1662,7 +1662,7 @@ class WXDLLIMPEXP_MATHPLOT mpPrintout : public wxPrintout
 	mpPrintout(
 		mpWindow* drawWindow,
 		const wxChar* title = _T("wxMathPlot print output"));
-	~mpPrintout() override{};
+	~mpPrintout() override= default;
 
 	void SetDrawState(bool drawState) { drawn = drawState; };
 	bool OnPrintPage(int page) override;
@@ -1690,7 +1690,7 @@ class WXDLLIMPEXP_MATHPLOT mpMovableObject : public mpLayer
 	 */
 	mpMovableObject() : m_shape_xs(0), m_shape_ys(0) { m_type = mpLAYER_PLOT; }
 
-	~mpMovableObject() override{};
+	~mpMovableObject() override= default;
 
 	/** Get the current coordinate transformation.
 	 */
@@ -1814,7 +1814,7 @@ class WXDLLIMPEXP_MATHPLOT mpCovarianceEllipse : public mpMovableObject
 		m_type = mpLAYER_PLOT;
 	}
 
-	~mpCovarianceEllipse() override {}
+	~mpCovarianceEllipse() override = default;
 
 	double GetQuantiles() const { return m_quantiles; }
 
@@ -1886,7 +1886,7 @@ class WXDLLIMPEXP_MATHPLOT mpPolygon : public mpMovableObject
 		m_name = layerName;
 	}
 
-	~mpPolygon() override {}
+	~mpPolygon() override = default;
 
 	/** Set the points in the polygon.
 	 * @param points_xs  The X coordinates of the points.
@@ -1931,7 +1931,7 @@ class WXDLLIMPEXP_MATHPLOT mpBitmapLayer : public mpLayer
 		m_type = mpLAYER_BITMAP;
 	}
 
-	~mpBitmapLayer() override{};
+	~mpBitmapLayer() override= default;
 
 	/** Returns a copy of the current bitmap assigned to the layer.
 	 */

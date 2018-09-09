@@ -112,7 +112,7 @@ class CClassRegistry
 	// PRIVATE constructor
 	CClassRegistry() : m_being_modified(false) {}
 	// PRIVATE destructor
-	~CClassRegistry() {}
+	~CClassRegistry() = default;
 	// This must be static since we can be called from C startup
 	// functions and it cannot be assured that classesKeeper will be
 	// initialized before other classes that call it...

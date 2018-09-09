@@ -46,7 +46,7 @@ typedef enum
  */
 struct TCaptureOptions_dc1394
 {
-	TCaptureOptions_dc1394() {}
+	TCaptureOptions_dc1394() = default;
 
 	/** Capture resolution (Default: 640x480) */
 	int frame_width{640}, frame_height{480};

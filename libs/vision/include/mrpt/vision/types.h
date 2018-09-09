@@ -134,7 +134,7 @@ enum TFeatureTrackStatus
  * TSequenceFeatureObservations */
 struct TFeatureObservation
 {
-	inline TFeatureObservation() {}
+	inline TFeatureObservation() = default;
 	inline TFeatureObservation(
 		const TLandmarkID _id_feature, const TCameraPoseID _id_frame,
 		const mrpt::img::TPixelCoordf& _px)
@@ -156,7 +156,7 @@ struct TFeatureObservation
  */
 struct TRelativeFeaturePos
 {
-	inline TRelativeFeaturePos() {}
+	inline TRelativeFeaturePos() = default;
 	inline TRelativeFeaturePos(
 		const mrpt::vision::TCameraPoseID _id_frame_base,
 		const mrpt::math::TPoint3D& _pos)
@@ -188,12 +188,11 @@ struct TSequenceFeatureObservations : public std::vector<TFeatureObservation>
 {
 	using BASE = std::vector<TFeatureObservation>;
 
-	inline TSequenceFeatureObservations() {}
+	inline TSequenceFeatureObservations() = default;
 	inline TSequenceFeatureObservations(size_t size) : BASE(size) {}
 	inline TSequenceFeatureObservations(const TSequenceFeatureObservations& o)
-		: BASE(o)
-	{
-	}
+		 
+	= default;
 
 	/** Saves all entries to a text file, with each line having this format:
 	 * #FRAME_ID  #FEAT_ID  #PIXEL_X  #PIXEL_Y

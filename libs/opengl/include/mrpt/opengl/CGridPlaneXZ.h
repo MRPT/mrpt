@@ -104,7 +104,7 @@ class CGridPlaneXZ : public CRenderizableDisplayList
 		float y = 0, float frequency = 1, float lineWidth = 1.3f,
 		bool antiAliasing = true);
 	/** Private, virtual destructor: only can be deleted from smart pointers */
-	~CGridPlaneXZ() override {}
+	~CGridPlaneXZ() override = default;
 };
 
 }

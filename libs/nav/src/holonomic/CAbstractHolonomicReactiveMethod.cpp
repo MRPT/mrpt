@@ -25,7 +25,7 @@ CAbstractHolonomicReactiveMethod::CAbstractHolonomicReactiveMethod(
 	  m_cfgSectionName(defaultCfgSectionName)
 {
 }
-CAbstractHolonomicReactiveMethod::~CAbstractHolonomicReactiveMethod() {}
+CAbstractHolonomicReactiveMethod::~CAbstractHolonomicReactiveMethod() = default;
 /** Defines the name of the section (Default: "FULL_EVAL_CONFIG") */
 void CAbstractHolonomicReactiveMethod::setConfigFileSectionName(
 	const std::string& sectName)
@@ -77,5 +77,4 @@ CAbstractHolonomicReactiveMethod::NavInput::NavInput()
 
 CAbstractHolonomicReactiveMethod::NavOutput::NavOutput()
 	 
-{
-}
+= default;

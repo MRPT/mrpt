@@ -301,8 +301,7 @@ void CReactiveNavigationSystem::TReactiveNavigatorParams::saveToConfigFile(
 
 CReactiveNavigationSystem::TReactiveNavigatorParams::TReactiveNavigatorParams()
 	 
-{
-}
+= default;
 
 bool CReactiveNavigationSystem::checkCollisionWithLatestObstacles(
 	const mrpt::math::TPose2D& relative_robot_pose) const

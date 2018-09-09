@@ -25,7 +25,7 @@ class CTextFileLinesParser
 {
    public:
 	/** Default constructor; should call \a open() at some moment later. */
-	CTextFileLinesParser() {}
+	CTextFileLinesParser() = default;
 	/** Constructor for opening a file  \exception std::exception On error
 	 * opening file */
 	explicit CTextFileLinesParser(const std::string& filename);

@@ -33,7 +33,7 @@ class PlannerSimple2D
 	/** Default constructor */
 	PlannerSimple2D();
 	/** Destructor */
-	virtual ~PlannerSimple2D() {}
+	virtual ~PlannerSimple2D() = default;
 	/** The maximum occupancy probability to consider a cell as an obstacle,
 	 * default=0.5  */
 	float occupancyThreshold{0.5f};

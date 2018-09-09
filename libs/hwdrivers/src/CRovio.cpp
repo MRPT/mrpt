@@ -510,7 +510,7 @@ bool CRovio::getPosition(mrpt::math::TPose2D& pose)
 	return errormsg.empty();
 }
 
-CRovio::CRovio() {}
+CRovio::CRovio() = default;
 CRovio::~CRovio()
 {
 	if (isVideoStreamming()) stop_video();

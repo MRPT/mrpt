@@ -54,7 +54,7 @@ CMesh3D::CMesh3D(
 	m_num_verts = 0;
 }
 
-CMesh3D::~CMesh3D() {}
+CMesh3D::~CMesh3D() = default;
 void CMesh3D::loadMesh(
 	unsigned int num_verts, unsigned int num_faces, int* verts_per_face,
 	int* face_verts, float* vert_coords)

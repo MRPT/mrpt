@@ -15,9 +15,9 @@ using namespace mrpt::kinematics;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CVehicleVelCmd, CSerializable, mrpt::kinematics)
 
-CVehicleVelCmd::CVehicleVelCmd() {}
+CVehicleVelCmd::CVehicleVelCmd() = default;
 CVehicleVelCmd::CVehicleVelCmd(const CVehicleVelCmd& other) { *this = other; }
-CVehicleVelCmd::~CVehicleVelCmd() {}
+CVehicleVelCmd::~CVehicleVelCmd() = default;
 std::string mrpt::kinematics::CVehicleVelCmd::asString() const
 {
 	std::string s;
@@ -67,4 +67,4 @@ void CVehicleVelCmd::TVelCmdParams::saveToConfigFile(
 		"raise exception if needed and not set]");
 }
 
-CVehicleVelCmd::TVelCmdParams::TVelCmdParams() {}
+CVehicleVelCmd::TVelCmdParams::TVelCmdParams() = default;

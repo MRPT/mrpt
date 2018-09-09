@@ -32,7 +32,7 @@ class CPtuBase
    public:
 	/** Destructor */
 
-	virtual ~CPtuBase(){};
+	virtual ~CPtuBase()= default;
 
 	/** Search limit forward */
 

@@ -270,8 +270,7 @@ void CTimeLogger::registerUserMeasure(
 
 CTimeLogger::TCallData::TCallData()
 	 
-{
-}
+= default;
 
 double CTimeLogger::getMeanTime(const std::string& name) const
 {

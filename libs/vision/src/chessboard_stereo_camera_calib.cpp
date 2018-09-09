@@ -1325,10 +1325,8 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 TStereoCalibParams::TStereoCalibParams()
 	
 	  
-{
-}
+= default;
 
 TStereoCalibResults::TStereoCalibResults()
 	 
-{
-}
+= default;

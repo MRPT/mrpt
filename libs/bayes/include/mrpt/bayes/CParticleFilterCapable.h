@@ -39,7 +39,7 @@ class CParticleFilterCapable
 	CParticleFilterCapable() : m_fastDrawAuxiliary() {}
 	/** Virtual destructor
 	 */
-	virtual ~CParticleFilterCapable() {}
+	virtual ~CParticleFilterCapable() = default;
 	/** A callback function type for evaluating the probability of m_particles
 	 * of being selected, used in "fastDrawSample".
 	 *  The default evaluator function "defaultEvaluator" simply returns the
@@ -268,7 +268,7 @@ class CParticleFilterCapable
 	 */
 	struct TFastDrawAuxVars
 	{
-		TFastDrawAuxVars() {}
+		TFastDrawAuxVars() = default;
 
 		std::vector<double> CDF;
 		std::vector<uint32_t> CDF_indexes;

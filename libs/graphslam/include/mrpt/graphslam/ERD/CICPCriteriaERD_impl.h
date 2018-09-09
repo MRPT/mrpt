@@ -622,8 +622,7 @@ CICPCriteriaERD<GRAPH_T>::TParams::TParams(decider_t& d)
 
 template <class GRAPH_T>
 CICPCriteriaERD<GRAPH_T>::TParams::~TParams()
-{
-}
+= default;
 
 template <class GRAPH_T>
 void CICPCriteriaERD<GRAPH_T>::TParams::dumpToTextStream(

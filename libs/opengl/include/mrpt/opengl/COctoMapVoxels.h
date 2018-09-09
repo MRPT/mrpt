@@ -98,7 +98,7 @@ class COctoMapVoxels : public CRenderizableDisplayList
 		double side_length;
 		mrpt::img::TColor color;
 
-		TVoxel() {}
+		TVoxel() = default;
 		TVoxel(
 			const mrpt::math::TPoint3D& coords_, const double side_length_,
 			mrpt::img::TColor color_)
@@ -113,7 +113,7 @@ class COctoMapVoxels : public CRenderizableDisplayList
 		/** opposite corners of the cube */
 		mrpt::math::TPoint3D min, max;
 
-		TGridCube() {}
+		TGridCube() = default;
 		TGridCube(
 			const mrpt::math::TPoint3D& min_, const mrpt::math::TPoint3D& max_)
 			: min(min_), max(max_)
@@ -350,7 +350,7 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	/** Constructor */
 	COctoMapVoxels();
 	/** Private, virtual destructor: only can be deleted from smart pointers. */
-	~COctoMapVoxels() override {}
+	~COctoMapVoxels() override = default;
 };
 
 }  // namespace mrpt::opengl

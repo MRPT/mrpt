@@ -30,8 +30,7 @@ using namespace mrpt::obs;
 VelodyneCalibration::PerLaserCalib::PerLaserCalib()
 	
 	  
-{
-}
+= default;
 
 VelodyneCalibration::VelodyneCalibration() : laser_corrections(0) {}
 bool VelodyneCalibration::internal_loadFromXMLNode(void* node_ptr)

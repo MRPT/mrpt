@@ -49,7 +49,7 @@ void CPipe::initializePipe(
 }
 
 // ------------------  CPipeBaseEndPoint ------------------
-CPipeBaseEndPoint::CPipeBaseEndPoint() {}
+CPipeBaseEndPoint::CPipeBaseEndPoint() = default;
 
 CPipeBaseEndPoint::~CPipeBaseEndPoint() { this->close(); }
 // Close:

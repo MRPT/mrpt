@@ -432,7 +432,7 @@ class CPose3DQuat : public CPose<CPose3DQuat>,
 		{
 			return m_cur_idx > it2.m_cur_idx;
 		}
-		inline iterator() {}
+		inline iterator() = default;
 		inline iterator(CPose3DQuat& obj, size_t start_idx)
 			: m_obj(&obj), m_cur_idx(start_idx)
 		{
@@ -542,7 +542,7 @@ class CPose3DQuat : public CPose<CPose3DQuat>,
 		{
 			return m_cur_idx > it2.m_cur_idx;
 		}
-		inline const_iterator() {}
+		inline const_iterator() = default;
 		inline const_iterator(const CPose3DQuat& obj, size_t start_idx)
 			: m_obj(&obj), m_cur_idx(start_idx)
 		{

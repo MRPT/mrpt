@@ -21,7 +21,7 @@ using namespace std;
 #include <Eigen/SparseQR>
 #endif
 
-ScalarFactorGraph::FactorBase::~FactorBase() {}
+ScalarFactorGraph::FactorBase::~FactorBase() = default;
 ScalarFactorGraph::ScalarFactorGraph()
 	: COutputLogger("GMRF") 
 {

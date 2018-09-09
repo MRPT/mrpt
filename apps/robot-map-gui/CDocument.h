@@ -31,8 +31,8 @@ using TypeConfig = std::map<TypeOfConfig, std::vector<MetricPolyPtr>>;
 class CDocument
 {
    public:
-	CDocument() {}
-	~CDocument() {}
+	CDocument() = default;
+	~CDocument() = default;
 
 	bool isFileChanged() const;
 

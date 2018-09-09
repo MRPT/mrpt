@@ -32,8 +32,7 @@ MAP_DEFINITION_REGISTER(
 COccupancyGridMap2D::TMapDefinition::TMapDefinition()
 	
 	  
-{
-}
+= default;
 
 void COccupancyGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(
 	const mrpt::config::CConfigFileBase& source,

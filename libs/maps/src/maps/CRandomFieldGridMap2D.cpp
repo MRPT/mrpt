@@ -58,7 +58,7 @@ CRandomFieldGridMap2D::CRandomFieldGridMap2D(
 	//  and set there that variable...
 }
 
-CRandomFieldGridMap2D::~CRandomFieldGridMap2D() {}
+CRandomFieldGridMap2D::~CRandomFieldGridMap2D() = default;
 /** Changes the size of the grid, erasing previous contents. \sa resize */
 void CRandomFieldGridMap2D::setSize(
 	const double x_min, const double x_max, const double y_min,
@@ -2748,5 +2748,5 @@ void CRandomFieldGridMap2D::TPriorFactorGMRF::evalJacobian(
 	dr_dx_j = -1.0;
 }
 
-CRandomFieldGridMap2D::ConnectivityDescriptor::ConnectivityDescriptor() {}
-CRandomFieldGridMap2D::ConnectivityDescriptor::~ConnectivityDescriptor() {}
+CRandomFieldGridMap2D::ConnectivityDescriptor::ConnectivityDescriptor() = default;
+CRandomFieldGridMap2D::ConnectivityDescriptor::~ConnectivityDescriptor() = default;

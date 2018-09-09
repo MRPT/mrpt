@@ -78,7 +78,7 @@ CMetricMapBuilderRBPF& CMetricMapBuilderRBPF::operator=(
 /*---------------------------------------------------------------
 						Destructor
   ---------------------------------------------------------------*/
-CMetricMapBuilderRBPF::~CMetricMapBuilderRBPF() {}
+CMetricMapBuilderRBPF::~CMetricMapBuilderRBPF() = default;
 /*---------------------------------------------------------------
 						clear
   ---------------------------------------------------------------*/

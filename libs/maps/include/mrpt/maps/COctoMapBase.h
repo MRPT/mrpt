@@ -50,7 +50,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 	/** Constructor, defines the resolution of the octomap (length of each voxel
 	 * side) */
 	COctoMapBase(double resolution);
-	~COctoMapBase() override {}
+	~COctoMapBase() override = default;
 	/** Get a reference to the internal octomap object. Example:
 	 * \code
 	 *  mrpt::maps::COctoMap  map;
@@ -234,7 +234,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		/** Initilization of default parameters
 		 */
 		TLikelihoodOptions();
-		~TLikelihoodOptions() override {}
+		~TLikelihoodOptions() override = default;
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs

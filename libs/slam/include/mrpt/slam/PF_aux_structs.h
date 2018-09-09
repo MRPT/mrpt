@@ -70,7 +70,7 @@ struct TPathBin2D
  * CPosePDFParticles, CMultiMetricMapPDF */
 struct TPoseBin3D
 {
-	TPoseBin3D() {}
+	TPoseBin3D() = default;
 	/** Bin indices */
 	int x{0}, y{0}, z{0}, yaw{0}, pitch{0}, roll{0};
 

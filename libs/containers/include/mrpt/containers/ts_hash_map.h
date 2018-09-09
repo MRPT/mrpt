@@ -178,7 +178,7 @@ class ts_hash_map
 	/** @name Constructors, read/write access and other operations
 		@{ */
 	//!< Default constructor */
-	ts_hash_map() {}
+	ts_hash_map() = default;
 	/** Clear the contents of this container */
 	void clear()
 	{

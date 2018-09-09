@@ -105,7 +105,7 @@ CAbstractNavigator::CAbstractNavigator(CRobot2NavInterface& react_iterf_impl)
 }
 
 // Dtor:
-CAbstractNavigator::~CAbstractNavigator() {}
+CAbstractNavigator::~CAbstractNavigator() = default;
 /** \callergraph */
 void CAbstractNavigator::cancel()
 {
@@ -422,8 +422,7 @@ bool CAbstractNavigator::stop(bool isEmergencyStop)
 CAbstractNavigator::TAbstractNavigatorParams::TAbstractNavigatorParams()
 	
 	  
-{
-}
+= default;
 void CAbstractNavigator::TAbstractNavigatorParams::loadFromConfigFile(
 	const mrpt::config::CConfigFileBase& c, const std::string& s)
 {

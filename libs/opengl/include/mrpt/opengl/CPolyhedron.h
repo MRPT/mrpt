@@ -75,7 +75,7 @@ class CPolyhedron : public CRenderizableDisplayList
 		/**
 		 * Destructor.
 		 */
-		~TPolyhedronEdge() {}
+		~TPolyhedronEdge() = default;
 	};
 	/**
 	 * Struct used to store a polyhedron face. Consists on a set of vertex
@@ -90,7 +90,7 @@ class CPolyhedron : public CRenderizableDisplayList
 		/** Fast default constructor. Initializes to garbage. */
 		TPolyhedronFace() : vertices() {}
 		/** Destructor.  */
-		~TPolyhedronFace() {}
+		~TPolyhedronFace() = default;
 		/** Given a set of vertices, computes the area of this face. */
 		double area(const std::vector<mrpt::math::TPoint3D>& vertices) const;
 		/** Given a set of vertices, get this face's center. */
@@ -931,7 +931,7 @@ class CPolyhedron : public CRenderizableDisplayList
 	/** Creates an empty Polyhedron. */
 	static CPolyhedron::Ptr CreateEmpty();
 	/** Destructor. */
-	~CPolyhedron() override {}
+	~CPolyhedron() override = default;
 };
 
 // Implemented after the definition of Smart::Ptrs in the _POST() macro above.

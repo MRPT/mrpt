@@ -330,7 +330,7 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 	{
 	}
 	/** Empty destructor. */
-	~CAngularObservationMesh() override {}
+	~CAngularObservationMesh() override = default;
 	/**
 	 * Returns whether the object is configured as wireframe or solid.
 	 */

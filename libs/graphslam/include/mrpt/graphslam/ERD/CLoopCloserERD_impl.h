@@ -2527,8 +2527,7 @@ CLoopCloserERD<GRAPH_T>::TLaserParams::TLaserParams()
 
 template <class GRAPH_T>
 CLoopCloserERD<GRAPH_T>::TLaserParams::~TLaserParams()
-{
-}
+= default;
 
 template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::TLaserParams::dumpToTextStream(
@@ -2579,8 +2578,7 @@ CLoopCloserERD<GRAPH_T>::TLoopClosureParams::TLoopClosureParams()
 
 template <class GRAPH_T>
 CLoopCloserERD<GRAPH_T>::TLoopClosureParams::~TLoopClosureParams()
-{
-}
+= default;
 
 template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::TLoopClosureParams::dumpToTextStream(

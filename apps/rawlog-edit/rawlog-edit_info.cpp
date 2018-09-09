@@ -18,7 +18,7 @@ using namespace mrpt::io;
 
 struct TInfoPerSensorLabel
 {
-	TInfoPerSensorLabel() {}
+	TInfoPerSensorLabel() = default;
 
 	string className;
 	size_t occurrences{0};

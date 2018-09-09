@@ -20,7 +20,7 @@ TColorManager::TColorManager(bool use_standard_colors_first_in /* = true */)
 	this->use_standard_colors_first = use_standard_colors_first_in;
 }  // end of TColorManager (ctor)
 
-TColorManager::~TColorManager() {}
+TColorManager::~TColorManager() = default;
 TColor TColorManager::getNextTColor()
 {
 	if (have_exceeded_colors)

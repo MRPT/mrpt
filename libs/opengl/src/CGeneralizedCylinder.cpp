@@ -58,7 +58,7 @@ class FQuadrilateralRenderer
 			glVertex3d(point.x, point.y, point.z);
 	}
 	FQuadrilateralRenderer(const mrpt::img::TColor& c) : color(c) {}
-	~FQuadrilateralRenderer() {}
+	~FQuadrilateralRenderer() = default;
 };
 #endif
 

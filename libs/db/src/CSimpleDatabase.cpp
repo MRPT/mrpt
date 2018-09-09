@@ -119,7 +119,7 @@ void CSimpleDatabaseTable::serializeFrom(
 /*---------------------------------------------------------------
 						Constructor
  ---------------------------------------------------------------*/
-CSimpleDatabase::CSimpleDatabase() {}
+CSimpleDatabase::CSimpleDatabase() = default;
 /*---------------------------------------------------------------
 						Destructor
  ---------------------------------------------------------------*/
@@ -192,11 +192,11 @@ CSimpleDatabaseTable::Ptr CSimpleDatabase::createTable(const string& name)
 /*---------------------------------------------------------------
 						Constructor
  ---------------------------------------------------------------*/
-CSimpleDatabaseTable::CSimpleDatabaseTable() {}
+CSimpleDatabaseTable::CSimpleDatabaseTable() = default;
 /*---------------------------------------------------------------
 						Destructor
  ---------------------------------------------------------------*/
-CSimpleDatabaseTable::~CSimpleDatabaseTable() {}
+CSimpleDatabaseTable::~CSimpleDatabaseTable() = default;
 /*---------------------------------------------------------------
 					fieldsCount
  ---------------------------------------------------------------*/

@@ -80,11 +80,11 @@ class THypothesisIDSet : public mrpt::serialization::CSerializable,
    public:
 	/** Default constructor
 	 */
-	THypothesisIDSet() {}
+	THypothesisIDSet() = default;
 	/** Constructor with one initial element
 	 */
 	THypothesisIDSet(const THypothesisID& val) { insert(val); }
-	~THypothesisIDSet() override {}
+	~THypothesisIDSet() override = default;
 	/** Returns true if the hypothesis is into the set.
 	 */
 	bool has(const THypothesisID& val) const

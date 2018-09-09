@@ -600,7 +600,7 @@ class CObservation3DRangeScan : public CObservation
 		{
 		}
 
-		virtual ~TPixelLabelInfoBase() {}
+		virtual ~TPixelLabelInfoBase() = default;
 		/** Minimum number of bytes required to hold MAX_NUM_DIFFERENT_LABELS
 		 * bits. */
 		const uint8_t BITFIELD_BYTES;

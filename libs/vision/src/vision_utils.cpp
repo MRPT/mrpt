@@ -2268,7 +2268,7 @@ void vision::computeStereoRectificationMaps(
 /*-------------------------------------------------------------
 					TROI Constructors
 -------------------------------------------------------------*/
-vision::TROI::TROI()  {}
+vision::TROI::TROI()  = default;
 vision::TROI::TROI(float x1, float x2, float y1, float y2, float z1, float z2)
 	: xMin(x1), xMax(x2), yMin(y1), yMax(y2), zMin(z1), zMax(z2)
 {
@@ -2277,7 +2277,7 @@ vision::TROI::TROI(float x1, float x2, float y1, float y2, float z1, float z2)
 /*-------------------------------------------------------------
 					TImageROI Constructors
 -------------------------------------------------------------*/
-vision::TImageROI::TImageROI()  {}
+vision::TImageROI::TImageROI()  = default;
 vision::TImageROI::TImageROI(float x1, float x2, float y1, float y2)
 	: xMin(x1), xMax(x2), yMin(y1), yMax(y2)
 {
@@ -2389,8 +2389,7 @@ void TStereoSystemParams::dumpToTextStream(std::ostream& out) const
 TMatchingOptions::TMatchingOptions()
 	
 	  
-{
-}  // end constructor TMatchingOptions
+= default;  // end constructor TMatchingOptions
 
 /*-------------------------------------------------------------
 			TMatchingOptions: loadFromConfigFile

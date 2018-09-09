@@ -20,8 +20,7 @@ using namespace mrpt::poses;
 SO_average<2>::SO_average()
 	
 	  
-{
-}
+= default;
 void SO_average<2>::clear()
 {
 	m_count = .0;

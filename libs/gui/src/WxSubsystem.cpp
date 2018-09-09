@@ -54,7 +54,7 @@ bool WxSubsystem::isConsoleApp() { return isConsoleApp_value; }
 WxSubsystem::CAuxWxSubsystemShutdowner WxSubsystem::global_wxsubsystem_shutdown;
 
 // Auxiliary class implementation:
-WxSubsystem::CAuxWxSubsystemShutdowner::CAuxWxSubsystemShutdowner() {}
+WxSubsystem::CAuxWxSubsystemShutdowner::CAuxWxSubsystemShutdowner() = default;
 WxSubsystem::CAuxWxSubsystemShutdowner::~CAuxWxSubsystemShutdowner()
 {
 	if (WxSubsystem::isConsoleApp())
@@ -139,7 +139,7 @@ class CDialogAskUserForCamera : public wxDialog
 		// pressing ENTER.
 	}
 
-	~CDialogAskUserForCamera() override {}
+	~CDialogAskUserForCamera() override = default;
 	void OnBtnOk(wxCommandEvent& event) { EndModal(wxID_OK); }
 	void OnBtnCancel(wxCommandEvent& event) { EndModal(wxID_CANCEL); }
 };

@@ -53,7 +53,7 @@ CMesh::CMesh(
 	m_color.B = 150;
 }
 
-CMesh::~CMesh() {}
+CMesh::~CMesh() = default;
 void CMesh::updateTriangles() const
 {
 	CRenderizableDisplayList::notifyChange();

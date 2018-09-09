@@ -179,7 +179,7 @@ class CParticleFilter : public mrpt::system::COutputLogger
 	 */
 	CParticleFilter();
 
-	~CParticleFilter() override {}
+	~CParticleFilter() override = default;
 	/** Executes a complete prediction + update step of the selected particle
 	 * filtering algorithm.
 	 *    The member CParticleFilter::m_options must be set before calling this

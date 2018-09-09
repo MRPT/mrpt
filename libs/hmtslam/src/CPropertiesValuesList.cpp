@@ -85,7 +85,7 @@ void CPropertiesValuesList::serializeFrom(
 /*---------------------------------------------------------------
 						Constructor
  ---------------------------------------------------------------*/
-CPropertiesValuesList::CPropertiesValuesList() {}
+CPropertiesValuesList::CPropertiesValuesList() = default;
 /*---------------------------------------------------------------
 						Destructor
  ---------------------------------------------------------------*/

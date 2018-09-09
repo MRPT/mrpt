@@ -20,11 +20,10 @@ using namespace std;
 
 CHeightGridMap2D_Base::TPointInsertParams::TPointInsertParams()
 	 
-{
-}
+= default;
 
-CHeightGridMap2D_Base::CHeightGridMap2D_Base() {}
-CHeightGridMap2D_Base::~CHeightGridMap2D_Base() {}
+CHeightGridMap2D_Base::CHeightGridMap2D_Base() = default;
+CHeightGridMap2D_Base::~CHeightGridMap2D_Base() = default;
 bool CHeightGridMap2D_Base::getMinMaxHeight(float& z_min, float& z_max) const
 {
 	const size_t size_x = dem_get_size_x();

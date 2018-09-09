@@ -105,7 +105,7 @@ class CCamera : public CRenderizable
 	CCamera();
 
 	/** Private, virtual destructor: only can be deleted from smart pointers */
-	~CCamera() override {}
+	~CCamera() override = default;
 };
 
 }

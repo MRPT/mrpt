@@ -119,7 +119,7 @@ void mrpt::system::getCallStackBackTrace(TCallStackBackTrace& out_bt)
 #endif
 }
 
-mrpt::system::TCallStackBackTrace::TCallStackBackTrace() {}
+mrpt::system::TCallStackBackTrace::TCallStackBackTrace() = default;
 std::string mrpt::system::TCallStackBackTrace::asString() const
 {
 	std::ostringstream trace_buf;

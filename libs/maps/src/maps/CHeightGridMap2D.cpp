@@ -33,8 +33,7 @@ MAP_DEFINITION_REGISTER(
 CHeightGridMap2D::TMapDefinition::TMapDefinition()
 	
 	  
-{
-}
+= default;
 
 void CHeightGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(
 	const mrpt::config::CConfigFileBase& source,
@@ -238,8 +237,7 @@ void CHeightGridMap2D::serializeFrom(
 
 CHeightGridMap2D::TInsertionOptions::TInsertionOptions()
 	 
-{
-}
+= default;
 
 void CHeightGridMap2D::TInsertionOptions::dumpToTextStream(
 	std::ostream& out) const

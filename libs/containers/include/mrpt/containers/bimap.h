@@ -41,7 +41,7 @@ class bimap
 	using iterator_inverse = typename std::map<VALUE, KEY>::iterator;
 
 	/** Default constructor - does nothing */
-	bimap() {}
+	bimap() = default;
 	inline const_iterator begin() const { return m_k2v.begin(); }
 	inline iterator begin() { return m_k2v.begin(); }
 	inline const_iterator end() const { return m_k2v.end(); }

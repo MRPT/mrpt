@@ -27,9 +27,9 @@ class MT_buffer
 
    public:
 	/** Default constructor */
-	MT_buffer() {}
+	MT_buffer() = default;
 	/** Destructor */
-	virtual ~MT_buffer() {}
+	virtual ~MT_buffer() = default;
 	/** Empty the buffer */
 	void clear()
 	{

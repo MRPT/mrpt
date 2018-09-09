@@ -59,7 +59,7 @@ inline TypeOfConfig nameToType(const std::string& str)
 
 struct SType
 {
-	SType() {}
+	SType() = default;
 	SType(TypeOfConfig _type, int _index) : type(_type), index(_index) {}
 	inline bool operator<(const SType& i) const
 	{

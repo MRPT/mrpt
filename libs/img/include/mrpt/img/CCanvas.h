@@ -62,7 +62,7 @@ class CCanvas
 
 	/** Dummy virtual destructor:
 	 */
-	virtual ~CCanvas() {}
+	virtual ~CCanvas() = default;
 	/** Changes the value of the pixel (x,y).
 	 *  Pixel coordinates starts at the left-top corner of the image, and start
 	 * in (0,0).

@@ -65,7 +65,7 @@
 // rawlog.
 struct TInfoPerSensorLabel
 {
-	TInfoPerSensorLabel() {}
+	TInfoPerSensorLabel() = default;
 	std::vector<double> timOccurs;
 	double max_ellapsed_tim_between_obs{.0};
 	mrpt::system::TTimeStamp first, last;
@@ -79,7 +79,7 @@ struct TInfoPerSensorLabel
 class wxStaticBitmapPopup : public wxStaticBitmap
 {
    public:
-	wxStaticBitmapPopup() {}
+	wxStaticBitmapPopup() = default;
 	wxStaticBitmapPopup(
 		wxWindow* parent, wxWindowID id, const wxBitmap& img,
 		const wxPoint& pos = wxDefaultPosition,

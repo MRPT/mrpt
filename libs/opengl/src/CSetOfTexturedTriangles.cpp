@@ -26,7 +26,7 @@ IMPLEMENTS_SERIALIZABLE(
 /*---------------------------------------------------------------
 							~CTexturedPlane
   ---------------------------------------------------------------*/
-CSetOfTexturedTriangles::~CSetOfTexturedTriangles() {}
+CSetOfTexturedTriangles::~CSetOfTexturedTriangles() = default;
 /*---------------------------------------------------------------
 							render
   ---------------------------------------------------------------*/
@@ -182,8 +182,7 @@ void CSetOfTexturedTriangles::getBoundingBox(
 
 CSetOfTexturedTriangles::TVertex::TVertex()
 	 
-{
-}
+= default;
 
 CSetOfTexturedTriangles::TVertex::TVertex(
 	float x, float y, float z, uint32_t u, uint32_t v)
@@ -202,7 +201,7 @@ void CSetOfTexturedTriangles::TVertex::readFromStream(
 	in >> m_x >> m_y >> m_z >> m_u >> m_v;
 }
 
-CSetOfTexturedTriangles::TTriangle::TTriangle() {}
+CSetOfTexturedTriangles::TTriangle::TTriangle() = default;
 CSetOfTexturedTriangles::TTriangle::TTriangle(
 	TVertex v1, TVertex v2, TVertex v3)
 	: m_v1(v1), m_v2(v2), m_v3(v3)

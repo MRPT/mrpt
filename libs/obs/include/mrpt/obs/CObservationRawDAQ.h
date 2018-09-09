@@ -31,9 +31,9 @@ class CObservationRawDAQ : public CObservation
 	DEFINE_SERIALIZABLE(CObservationRawDAQ)
    public:
 	/** Constructor */
-	inline CObservationRawDAQ() {}
+	inline CObservationRawDAQ() = default;
 	/** Destructor */
-	~CObservationRawDAQ() override {}
+	~CObservationRawDAQ() override = default;
 	std::vector<uint8_t> AIN_8bits; /** Readings from 8-bit analog input (ADCs)
 									   channels (vector length=channel count) in
 									   ADC units. */

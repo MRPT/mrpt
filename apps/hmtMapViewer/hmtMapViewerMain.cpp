@@ -89,7 +89,7 @@ class CMyGLCanvas : public CWxGLCanvasBase
 	{
 	}
 
-	~CMyGLCanvas() override {}
+	~CMyGLCanvas() override = default;
 	// void OnKeyDownCustom( wxKeyEvent& event );
 
 	void OnPreRender() override;

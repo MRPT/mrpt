@@ -82,7 +82,7 @@ class KDTreeCapable
 	// ---------------------
 
 	/// Constructor
-	inline KDTreeCapable() {}
+	inline KDTreeCapable() = default;
 	/// CRTP helper method
 	inline const Derived& derived() const
 	{
@@ -92,7 +92,7 @@ class KDTreeCapable
 	inline Derived& derived() { return *static_cast<Derived*>(this); }
 	struct TKDTreeSearchParams
 	{
-		TKDTreeSearchParams() {}
+		TKDTreeSearchParams() = default;
 		/** Max points per leaf */
 		size_t leaf_max_size{10};
 	};
@@ -738,7 +738,7 @@ class KDTreeCapable
 	template <int _DIM = -1>
 	struct TKDTreeDataHolder
 	{
-		inline TKDTreeDataHolder() {}
+		inline TKDTreeDataHolder() = default;
 		/** Copy constructor: It actually does NOT copy the kd-tree, a new
 		 * object will be created if required!   */
 		inline TKDTreeDataHolder(const TKDTreeDataHolder&) : TKDTreeDataHolder()

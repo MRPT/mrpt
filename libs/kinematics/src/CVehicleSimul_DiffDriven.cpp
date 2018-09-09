@@ -18,7 +18,7 @@ CVehicleSimul_DiffDriven::CVehicleSimul_DiffDriven()
 	resetStatus();
 	resetTime();
 }
-CVehicleSimul_DiffDriven::~CVehicleSimul_DiffDriven() {}
+CVehicleSimul_DiffDriven::~CVehicleSimul_DiffDriven() = default;
 void CVehicleSimul_DiffDriven::internal_clear()
 {
 	Command_Time = .0;

@@ -141,6 +141,6 @@ class COpenGLStandardObject : public CRenderizableDisplayList
 	/**
 	 * Destructor.
 	 */
-	~COpenGLStandardObject() override {}
+	~COpenGLStandardObject() override = default;
 };
 }  // namespace mrpt::opengl

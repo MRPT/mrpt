@@ -24,7 +24,7 @@ namespace nav
  * CPTG_DiffDrive_CollisionGridBased */
 struct TCPoint
 {
-	TCPoint() {}
+	TCPoint() = default;
 	TCPoint(
 		const float x_, const float y_, const float phi_, const float t_,
 		const float dist_, const float v_, const float w_)
@@ -179,7 +179,7 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 			  m_parent(parent)
 		{
 		}
-		~CCollisionGrid() override {}
+		~CCollisionGrid() override = default;
 		/** Save to file, true = OK */
 		bool saveToFile(
 			mrpt::serialization::CArchive* fil,

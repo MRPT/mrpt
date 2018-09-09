@@ -42,7 +42,7 @@ CRuntimeCompiledExpression::CRuntimeCompiledExpression():
 {
 }
 
-CRuntimeCompiledExpression::~CRuntimeCompiledExpression(){}
+CRuntimeCompiledExpression::~CRuntimeCompiledExpression()= default;
 
 void CRuntimeCompiledExpression::compile(
 	/** [in] The expression to be compiled. */

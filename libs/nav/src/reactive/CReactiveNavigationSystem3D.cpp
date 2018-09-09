@@ -21,7 +21,7 @@ using namespace std;
 
 // ---------   CReactiveNavigationSystem3D::TPTGmultilevel -----------------
 // Ctor:
-CReactiveNavigationSystem3D::TPTGmultilevel::TPTGmultilevel() {}
+CReactiveNavigationSystem3D::TPTGmultilevel::TPTGmultilevel() = default;
 // Dtor: free PTG memory
 CReactiveNavigationSystem3D::TPTGmultilevel::~TPTGmultilevel()
 {

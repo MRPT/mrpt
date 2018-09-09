@@ -153,7 +153,7 @@ namespace nanoflann
 			init();
 		}
 
-		inline ~RadiusResultSet() { }
+		inline ~RadiusResultSet() = default;
 
 		inline void init() { clear(); }
 		inline void clear() { m_indices_dists.clear(); }
@@ -741,7 +741,7 @@ namespace nanoflann
 	{
 	private:
 		/** Hidden copy constructor, to disallow copying indices (Not implemented) */
-		KDTreeSingleIndexAdaptor(const KDTreeSingleIndexAdaptor<Distance,DatasetAdaptor,DIM,IndexType>&);
+		KDTreeSingleIndexAdaptor(const KDTreeSingleIndexAdaptor<Distance,DatasetAdaptor,DIM,IndexType>&) = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete;
 	public:
 		typedef typename Distance::ElementType  ElementType;
 		typedef typename Distance::DistanceType DistanceType;
@@ -842,7 +842,7 @@ namespace nanoflann
 		}
 
 		/** Standard destructor */
-		~KDTreeSingleIndexAdaptor() { }
+		~KDTreeSingleIndexAdaptor() = default;
 
 		/** Frees the previously-built index. Automatically called within buildIndex(). */
 		void freeIndex()
@@ -1326,7 +1326,7 @@ namespace nanoflann
 		}
 	private:
 		/** Hidden copy constructor, to disallow copying this class (Not implemented) */
-		KDTreeEigenMatrixAdaptor(const self_t&);
+		KDTreeEigenMatrixAdaptor(const self_t&) = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete;
 	public:
 
 		~KDTreeEigenMatrixAdaptor() {

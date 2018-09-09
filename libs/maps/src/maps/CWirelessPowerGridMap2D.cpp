@@ -31,8 +31,7 @@ MAP_DEFINITION_REGISTER(
 CWirelessPowerGridMap2D::TMapDefinition::TMapDefinition()
 	
 	  
-{
-}
+= default;
 
 void CWirelessPowerGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(
 	const mrpt::config::CConfigFileBase& source,
@@ -102,7 +101,7 @@ CWirelessPowerGridMap2D::CWirelessPowerGridMap2D(
 	CMetricMap::clear();
 }
 
-CWirelessPowerGridMap2D::~CWirelessPowerGridMap2D() {}
+CWirelessPowerGridMap2D::~CWirelessPowerGridMap2D() = default;
 /*---------------------------------------------------------------
 						clear
   ---------------------------------------------------------------*/
@@ -335,7 +334,7 @@ void CWirelessPowerGridMap2D::serializeFrom(
 	};
 }
 
-CWirelessPowerGridMap2D::TInsertionOptions::TInsertionOptions() {}
+CWirelessPowerGridMap2D::TInsertionOptions::TInsertionOptions() = default;
 void CWirelessPowerGridMap2D::TInsertionOptions::dumpToTextStream(
 	std::ostream& out) const
 {

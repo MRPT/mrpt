@@ -288,7 +288,7 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 	}
 
 	CGeneralizedEllipsoidTemplate() : m_bb_min(0, 0, 0), m_bb_max(0, 0, 0) {}
-	~CGeneralizedEllipsoidTemplate() override {}
+	~CGeneralizedEllipsoidTemplate() override = default;
 };
 
 }  // namespace opengl

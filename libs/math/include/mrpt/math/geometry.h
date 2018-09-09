@@ -44,7 +44,7 @@ class TPolygonWithPlane
 	TPolygonWithPlane(const TPolygon3D& p);
 	/** Basic constructor. Needed to create containers  \sa
 	 * TPolygonWithPlane(const TPolygon3D &) */
-	TPolygonWithPlane() {}
+	TPolygonWithPlane() = default;
 	/** Static method for vectors. Takes a set of polygons and creates every
 	 * TPolygonWithPlane  */
 	static void getPlanes(

@@ -17,7 +17,7 @@
 using namespace mrpt::system;
 
 CRateTimer::CRateTimer(const double rate_hz) { setRate(rate_hz); }
-CRateTimer::~CRateTimer() {}
+CRateTimer::~CRateTimer() = default;
 void CRateTimer::setRate(const double rate_hz)
 {
 	ASSERT_ABOVE_(rate_hz, 0.0);

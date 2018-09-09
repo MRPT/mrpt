@@ -713,8 +713,7 @@ CLevMarqGSO<GRAPH_T>::OptimizationParams::OptimizationParams()
 }
 template <class GRAPH_T>
 CLevMarqGSO<GRAPH_T>::OptimizationParams::~OptimizationParams()
-{
-}
+= default;
 template <class GRAPH_T>
 void CLevMarqGSO<GRAPH_T>::OptimizationParams::dumpToTextStream(
 	std::ostream& out) const
@@ -765,8 +764,7 @@ CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::GraphVisualizationParams()
 }
 template <class GRAPH_T>
 CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::~GraphVisualizationParams()
-{
-}
+= default;
 template <class GRAPH_T>
 void CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::dumpToTextStream(
 	std::ostream& out) const

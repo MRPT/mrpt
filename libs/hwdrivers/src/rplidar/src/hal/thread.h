@@ -64,8 +64,8 @@ class Thread
 	static Thread create(thread_proc_t proc, void* data = nullptr);
 
    public:
-	~Thread() {}
-	Thread() {}
+	~Thread() = default;
+	Thread() = default;
 	_word_size_t getHandle() { return _handle; }
 	u_result terminate();
 	void* getData() { return _data; }

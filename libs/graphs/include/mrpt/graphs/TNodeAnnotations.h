@@ -28,9 +28,9 @@ struct TNodeAnnotations
 	using self_t = TNodeAnnotations;
 
 	/**\brief Constructor */
-	TNodeAnnotations() {}
+	TNodeAnnotations() = default;
 	/**\brief Destructor */
-	virtual ~TNodeAnnotations() {}
+	virtual ~TNodeAnnotations() = default;
 	/**\brief Generic copy constructor */
 	TNodeAnnotations(const TNodeAnnotations& other) {}
 	virtual void getAnnotsAsString(std::string* s) const { ASSERT_(s); }

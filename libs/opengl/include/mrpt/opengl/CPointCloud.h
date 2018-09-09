@@ -292,7 +292,7 @@ class CPointCloud : public CRenderizable,
 	CPointCloud();
 
 	/** Private, virtual destructor: only can be deleted from smart pointers */
-	~CPointCloud() override {}
+	~CPointCloud() override = default;
    private:
 	/** Buffer for min/max coords when m_colorFromDepth is true. */
 	mutable float m_min{0}, m_max{0}, m_max_m_min{0}, m_max_m_min_inv{0};

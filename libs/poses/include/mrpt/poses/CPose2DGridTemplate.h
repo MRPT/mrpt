@@ -105,7 +105,7 @@ class CPose2DGridTemplate
 			phiMax);
 	}
 
-	virtual ~CPose2DGridTemplate() {}
+	virtual ~CPose2DGridTemplate() = default;
 	/** Changes the limits and size of the grid, erasing previous contents:
 	 */
 	void setSize(

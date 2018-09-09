@@ -20,7 +20,7 @@ CPTG_RobotShape_Polygonal::CPTG_RobotShape_Polygonal()
 	: m_robotShape() 
 {
 }
-CPTG_RobotShape_Polygonal::~CPTG_RobotShape_Polygonal() {}
+CPTG_RobotShape_Polygonal::~CPTG_RobotShape_Polygonal() = default;
 void CPTG_RobotShape_Polygonal::setRobotShape(
 	const mrpt::math::CPolygon& robotShape)
 {

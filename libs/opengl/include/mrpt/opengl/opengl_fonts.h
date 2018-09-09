@@ -81,7 +81,7 @@ struct TFontParams
  */
 struct T2DTextData : public TFontParams
 {
-	T2DTextData() {}
+	T2DTextData() = default;
 	std::string text;
 	double x{0}, y{0};
 };

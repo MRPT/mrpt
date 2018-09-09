@@ -60,7 +60,7 @@ const double KEYFRAMES_MIN_ANG = DEG2RAD(10);
 //   and exploit multicore CPUs.
 struct TThreadParam
 {
-	TThreadParam()  {}
+	TThreadParam()  = default;
 	volatile bool quit{false};
 	volatile int pushed_key{0};
 	volatile double tilt_ang_deg{0};

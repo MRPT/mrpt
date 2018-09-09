@@ -126,7 +126,7 @@ wxStaticBitmapPopup::wxStaticBitmapPopup(
 	mnuImages.Append(mnu1);
 	mnuImages.Append(mnu2);
 }
-wxStaticBitmapPopup::~wxStaticBitmapPopup() {}
+wxStaticBitmapPopup::~wxStaticBitmapPopup() = default;
 void wxStaticBitmapPopup::OnShowPopupMenu(wxMouseEvent& event)
 {
 	PopupMenu(&mnuImages);
@@ -6137,7 +6137,7 @@ void xRawLogViewerFrame::OnMenuRegenerateTimestampBySF(wxCommandEvent& event)
 // Used below. Must be at global scope for usage within STL.
 struct TImageToSaveData
 {
-	TImageToSaveData()  {}
+	TImageToSaveData()  = default;
 	TImageToSaveData(mrpt::img::CImage* _img, const char* str)
 		: img(_img), channel_desc(str)
 	{

@@ -61,7 +61,7 @@ class CBoardSonars : public mrpt::comms::CInterfaceFTDI, public CGenericSensor
 
 	/** Destructor
 	  */
-	~CBoardSonars() override {}
+	~CBoardSonars() override = default;
 	/** Query the firmware version on the device (can be used to test
 	 * communications).
 	  * \return true on success, false on communications errors or device not

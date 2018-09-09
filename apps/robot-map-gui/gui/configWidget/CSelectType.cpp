@@ -24,7 +24,7 @@ CSelectType::CSelectType(QWidget* parent)
 	addItem(tr("GasGrid"), TypeOfConfig::GasGrid);
 }
 
-CSelectType::~CSelectType() {}
+CSelectType::~CSelectType() = default;
 int CSelectType::selectedItem() const
 {
 	QListWidgetItem* item = m_ui->m_typeList->currentItem();

@@ -71,7 +71,7 @@ CPointsMap::CPointsMap()
 /*---------------------------------------------------------------
 						Destructor
   ---------------------------------------------------------------*/
-CPointsMap::~CPointsMap() {}
+CPointsMap::~CPointsMap() = default;
 /*---------------------------------------------------------------
 					save2D_to_text_file
   Save to a text file. In each line there are a point coordinates.
@@ -658,8 +658,7 @@ void CPointsMap::TInsertionOptions::readFromStream(
 
 CPointsMap::TLikelihoodOptions::TLikelihoodOptions()
 	 
-{
-}
+= default;
 
 void CPointsMap::TLikelihoodOptions::writeToStream(
 	mrpt::serialization::CArchive& out) const

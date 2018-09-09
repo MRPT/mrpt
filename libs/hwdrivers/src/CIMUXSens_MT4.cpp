@@ -52,7 +52,7 @@ and is intended for use only by Xsens Technologies BV and
 class DeviceClass
 {
    public:
-	DeviceClass() {}
+	DeviceClass() = default;
 	~DeviceClass()
 	{
 		if (m_streamInterface)

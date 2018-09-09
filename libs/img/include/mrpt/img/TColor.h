@@ -19,7 +19,7 @@ namespace mrpt::img
  * \ingroup mrpt_img_grp */
 struct TColor
 {
-	constexpr inline TColor() {}
+	constexpr inline TColor() = default;
 	constexpr inline TColor(
 		uint8_t r, uint8_t g, uint8_t b, uint8_t alpha = 255)
 		: R(r), G(g), B(b), A(alpha)

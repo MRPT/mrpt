@@ -61,7 +61,7 @@ struct TSimpleFeature_templ
 	}
 
 	/** Default constructor, leaves all fields uninitialized */
-	inline TSimpleFeature_templ() {}
+	inline TSimpleFeature_templ() = default;
 	template <typename OTHER_TSIMPLEFEATURE>
 	explicit TSimpleFeature_templ(const OTHER_TSIMPLEFEATURE& o)
 		: pt(o.pt.x, o.pt.y),

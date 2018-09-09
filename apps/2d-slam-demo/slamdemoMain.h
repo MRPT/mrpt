@@ -279,7 +279,7 @@ class slamdemoFrame : public wxFrame
 	/** Historic data */
 	struct THistoric
 	{
-		THistoric() {}
+		THistoric() = default;
 
 		mrpt::poses::CPose2D GT_robot_pose;
 		mrpt::poses::CPosePDFGaussian estimate_robot_pose;

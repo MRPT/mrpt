@@ -51,7 +51,7 @@ class CPointCloudColoured : public CRenderizable,
    public:
 	struct TPointColour
 	{
-		inline TPointColour() {}
+		inline TPointColour() = default;
 		inline TPointColour(
 			float _x, float _y, float _z, float _R, float _G, float _B)
 			: x(_x), y(_y), z(_z), R(_R), G(_G), B(_B)
@@ -82,7 +82,7 @@ class CPointCloudColoured : public CRenderizable,
 	 */
 	CPointCloudColoured() : m_points() {}
 	/** Private, virtual destructor: only can be deleted from smart pointers */
-	~CPointCloudColoured() override {}
+	~CPointCloudColoured() override = default;
 	/** Do needed internal work if all points are new (octree rebuilt,...) */
 	void markAllPointsAsNew();
 

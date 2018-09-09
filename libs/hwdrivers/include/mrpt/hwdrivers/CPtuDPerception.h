@@ -23,7 +23,7 @@ class CPtuDPerception : public CPtuBase
    public:
 	/** Default constructor */
 
-	CPtuDPerception(){};
+	CPtuDPerception()= default;
 
 	/** Destructor */
 

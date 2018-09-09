@@ -526,7 +526,7 @@ class CLSLAMAlgorithmBase
 	CLSLAMAlgorithmBase(CHMTSLAM* parent) : m_parent(parent) {}
 	/** Destructor
 	 */
-	virtual ~CLSLAMAlgorithmBase() {}
+	virtual ~CLSLAMAlgorithmBase() = default;
 	/** Main entry point from HMT-SLAM: process some actions & observations.
 	 *  The passed action/observation will be deleted, so a copy must be made
 	 * if necessary.

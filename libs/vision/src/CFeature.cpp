@@ -1008,11 +1008,11 @@ void CFeature::saveToTextFile(const std::string& filename, bool APPEND)
 // --------------------------------------------------
 // CONSTRUCTOR
 // --------------------------------------------------
-CFeatureList::CFeatureList() {}  // end constructor
+CFeatureList::CFeatureList() = default;  // end constructor
 // --------------------------------------------------
 // DESTRUCTOR
 // --------------------------------------------------
-CFeatureList::~CFeatureList() {}  // end destructor
+CFeatureList::~CFeatureList() = default;  // end destructor
 // --------------------------------------------------
 // saveToTextFile
 // --------------------------------------------------
@@ -1325,11 +1325,11 @@ TFeatureID CFeatureList::getMaxID() const
 // --------------------------------------------------
 // CONSTRUCTOR
 // --------------------------------------------------
-CMatchedFeatureList::CMatchedFeatureList()  {}
+CMatchedFeatureList::CMatchedFeatureList()  = default;
 // --------------------------------------------------
 // DESTRUCTOR
 // --------------------------------------------------
-CMatchedFeatureList::~CMatchedFeatureList() {}  // end destructor
+CMatchedFeatureList::~CMatchedFeatureList() = default;  // end destructor
 // --------------------------------------------------
 // saveToTextFile
 // --------------------------------------------------

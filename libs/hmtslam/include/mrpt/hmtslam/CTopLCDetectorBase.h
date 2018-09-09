@@ -32,7 +32,7 @@ class CTopLCDetectorBase
 	// static CTopLCDetectorBase* createNewInstance();
 
 	/** Destructor */
-	virtual ~CTopLCDetectorBase() {}
+	virtual ~CTopLCDetectorBase() = default;
 	/** Reset the internal state of the TLCD, if any.
 	  *  This is needed since the objects are created while loading HMT-SLAM
 	 * options, but the algorithm may be re-started after that at any time.

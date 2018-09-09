@@ -34,7 +34,7 @@ class CDetectorDoorCrossing : public mrpt::system::COutputLogger
 	 */
 	struct TOptions
 	{
-		TOptions() {}
+		TOptions() = default;
 		/** The window size, in (action,observations) pairs;min. value is 2.
 		 */
 		unsigned int windowSize{5};

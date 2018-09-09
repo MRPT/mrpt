@@ -17,8 +17,7 @@ using namespace mrpt::obs;
 CObservation2DRangeScanWithUncertainty::TEvalParams::TEvalParams()
 	
 	  
-{
-}
+= default;
 
 double CObservation2DRangeScanWithUncertainty::evaluateScanLikelihood(
 	const CObservation2DRangeScan& otherScan, const TEvalParams& params) const

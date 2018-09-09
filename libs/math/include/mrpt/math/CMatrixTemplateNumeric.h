@@ -110,7 +110,7 @@ class CMatrixTemplateNumeric : public Eigen::Matrix<
 
 	/** Destructor
 	 */
-	inline ~CMatrixTemplateNumeric() {}
+	inline ~CMatrixTemplateNumeric() = default;
 	/** == comparison of two matrices; it differs from default Eigen operator in
 	 * that returns false if matrices are of different sizes instead of raising
 	 * an assert. */

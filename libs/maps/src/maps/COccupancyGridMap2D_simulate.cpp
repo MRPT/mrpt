@@ -184,13 +184,11 @@ COccupancyGridMap2D::TLaserSimulUncertaintyParams::
 	TLaserSimulUncertaintyParams()
 	
 	  
-{
-}
+= default;
 
 COccupancyGridMap2D::TLaserSimulUncertaintyResult::
 	TLaserSimulUncertaintyResult()
-{
-}
+= default;
 
 struct TFunctorLaserSimulData
 {

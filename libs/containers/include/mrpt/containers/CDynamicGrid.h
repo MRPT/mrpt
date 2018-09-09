@@ -60,7 +60,7 @@ class CDynamicGrid
 	}
 
 	/** Destructor */
-	virtual ~CDynamicGrid() {}
+	virtual ~CDynamicGrid() = default;
 	/** Changes the size of the grid, ERASING all previous contents.
 	 * If \a fill_value is left as nullptr, the contents of cells may be
 	 * undefined (some will remain with

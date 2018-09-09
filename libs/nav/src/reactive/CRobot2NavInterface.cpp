@@ -17,7 +17,7 @@ CRobot2NavInterface::CRobot2NavInterface()
 	: mrpt::system::COutputLogger("CRobot2NavInterface")
 {
 }
-CRobot2NavInterface::~CRobot2NavInterface() {}
+CRobot2NavInterface::~CRobot2NavInterface() = default;
 bool CRobot2NavInterface::changeSpeedsNOP()
 {
 	MRPT_LOG_THROTTLE_INFO(

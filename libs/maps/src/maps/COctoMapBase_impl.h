@@ -294,8 +294,7 @@ COctoMapBase<OCTREE, OCTREE_NODE>::TInsertionOptions::TInsertionOptions()
 template <class OCTREE, class OCTREE_NODE>
 COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::TLikelihoodOptions()
 	 
-{
-}
+= default;
 
 template <class OCTREE, class OCTREE_NODE>
 void COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::writeToStream(

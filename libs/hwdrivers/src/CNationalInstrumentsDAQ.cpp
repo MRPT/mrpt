@@ -975,4 +975,4 @@ void CNationalInstrumentsDAQ::writeDigitalOutputTask(
 }
 
 // Ctor:
-CNationalInstrumentsDAQ::TaskDescription::TaskDescription() {}
+CNationalInstrumentsDAQ::TaskDescription::TaskDescription() = default;

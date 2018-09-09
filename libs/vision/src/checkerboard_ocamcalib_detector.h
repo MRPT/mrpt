@@ -36,7 +36,7 @@ struct CvCBCorner;
 struct CvCBCorner
 {
 	using Ptr = std::shared_ptr<CvCBCorner>;
-	CvCBCorner() {}
+	CvCBCorner() = default;
 	CvPoint2D32f pt;  // X and y coordinates
 	int row{-1000};  // Row and column of the corner
 	int column{-1000};  // in the found pattern
@@ -52,7 +52,7 @@ struct CvCBQuad;
 struct CvCBQuad
 {
 	using Ptr = std::shared_ptr<CvCBQuad>;
-	CvCBQuad() {}
+	CvCBQuad() = default;
 
 	int count{0};  // Number of quad neihbors
 	int group_idx{0};  // Quad group ID

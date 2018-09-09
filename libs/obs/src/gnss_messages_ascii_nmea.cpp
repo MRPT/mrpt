@@ -119,8 +119,7 @@ bool Message_NMEA_GLL::getAllFieldValues(std::ostream& o) const
 // ---------------------------------------
 Message_NMEA_VTG::content_t::content_t()
 	 
-{
-}
+= default;
 
 void Message_NMEA_VTG::dumpToStream(std::ostream& out) const
 {

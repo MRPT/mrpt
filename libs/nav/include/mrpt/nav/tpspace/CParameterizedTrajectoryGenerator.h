@@ -82,7 +82,7 @@ class CParameterizedTrajectoryGenerator
 	/** Default ctor. Must call `loadFromConfigFile()` before initialization */
 	CParameterizedTrajectoryGenerator();
 	/**  Destructor  */
-	~CParameterizedTrajectoryGenerator() override {}
+	~CParameterizedTrajectoryGenerator() override = default;
 	/** The class factory for creating a PTG from a list of parameters in a
 	  *section of a given config file (physical file or in memory).
 	  *  Possible parameters are:

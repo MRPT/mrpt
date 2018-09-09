@@ -28,7 +28,7 @@ CFileGZOutputStream::CFileGZOutputStream(const string& fileName) : m_f(nullptr)
 	MRPT_END
 }
 
-CFileGZOutputStream::CFileGZOutputStream()  {}
+CFileGZOutputStream::CFileGZOutputStream()  = default;
 bool CFileGZOutputStream::open(const string& fileName, int compress_level)
 {
 	MRPT_START

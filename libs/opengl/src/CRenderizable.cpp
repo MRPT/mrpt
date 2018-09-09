@@ -61,7 +61,7 @@ CRenderizable::CRenderizable()
 }
 
 // Destructor:
-CRenderizable::~CRenderizable() {}
+CRenderizable::~CRenderizable() = default;
 /** Returns the lowest, free texture name.
  */
 unsigned int CRenderizable::getNewTextureNumber()

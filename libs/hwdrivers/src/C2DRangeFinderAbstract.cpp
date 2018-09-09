@@ -30,7 +30,7 @@ C2DRangeFinderAbstract::C2DRangeFinderAbstract()
 /*-------------------------------------------------------------
 						Destructor
 -------------------------------------------------------------*/
-C2DRangeFinderAbstract::~C2DRangeFinderAbstract() {}
+C2DRangeFinderAbstract::~C2DRangeFinderAbstract() = default;
 /*-------------------------------------------------------------
 						bindIO
 -------------------------------------------------------------*/

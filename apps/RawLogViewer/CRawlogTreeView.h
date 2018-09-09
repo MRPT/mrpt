@@ -101,7 +101,7 @@ class CRawlogTreeView : public wxScrolledWindow
 
 	struct TNodeData
 	{
-		TNodeData() {}
+		TNodeData() = default;
 		/** Hierarchy level: 0,1,2. */
 		uint8_t level{0};
 		/** The object, or nullptr */

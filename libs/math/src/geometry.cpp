@@ -1423,7 +1423,7 @@ struct TSegmentWithLine
 	{
 		line = TLine2D(p1, p2);
 	}
-	TSegmentWithLine() {}
+	TSegmentWithLine() = default;
 };
 bool intersect(
 	const TSegmentWithLine& s1, const TSegmentWithLine& s2, TObject2D& obj)
@@ -2200,7 +2200,7 @@ struct MatchingVertex
 	size_t seg2;
 	bool seg1Point;  // true for point2, false for point1
 	bool seg2Point;  // same
-	MatchingVertex() {}
+	MatchingVertex() = default;
 	MatchingVertex(size_t s1, size_t s2, bool s1p, bool s2p)
 		: seg1(s1), seg2(s2), seg1Point(s1p), seg2Point(s2p)
 	{

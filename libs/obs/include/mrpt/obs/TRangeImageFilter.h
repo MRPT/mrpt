@@ -48,7 +48,7 @@ struct TRangeImageFilter
 		: fp(filter_params)
 	{
 	}
-	inline TRangeImageFilter() {}
+	inline TRangeImageFilter() = default;
 };
 
 // ======== Implementation ========

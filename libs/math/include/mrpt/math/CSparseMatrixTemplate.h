@@ -71,7 +71,7 @@ class CSparseMatrixTemplate
 	/**
 	 * Basic constructor with no data. Size is set to (0,0).
 	 */
-	CSparseMatrixTemplate() {}
+	CSparseMatrixTemplate() = default;
 	/**
 	 * Constructor with default size.
 	 */
@@ -418,7 +418,7 @@ class CSparseSymmetricalMatrix : public CSparseMatrixTemplate<T>
 		: CSparseMatrixTemplate<T>(o)
 	{
 	}
-	virtual ~CSparseSymmetricalMatrix() {}
+	virtual ~CSparseSymmetricalMatrix() = default;
 	void resize(size_t matrixSize)
 	{
 		CSparseMatrixTemplate<T>::resize(matrixSize, matrixSize);
