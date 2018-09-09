@@ -24,7 +24,7 @@ IMPLEMENTS_SERIALIZABLE(CActionCollection, CSerializable, mrpt::obs)
 
 CActionCollection::CActionCollection(CAction& a) : m_actions()
 {
-	m_actions.emplace_back(CAction::Ptr(static_cast<CAction*>(a.clone())));
+	m_actions.emplace_back(CAction::Ptr(dynamic_cast<CAction*>(a.clone())));
 }
 
 uint8_t CActionCollection::serializeGetVersion() const { return 0; }
@@ -84,7 +84,8 @@ size_t CActionCollection::size() { return m_actions.size(); }
  ---------------------------------------------------------------*/
 void CActionCollection::insert(CAction& action)
 {
-	m_actions.emplace_back(CAction::Ptr(static_cast<CAction*>(action.clone())));
+	m_actions.emplace_back(
+		CAction::Ptr(dynamic_cast<CAction*>(action.clone())));
 }
 
 /*---------------------------------------------------------------
@@ -96,14 +97,13 @@ CActionRobotMovement2D::Ptr CActionCollection::getBestMovementEstimation() const
 	double bestDet = 1e3;
 
 	// Find the best
-	for (const auto & it : *this)
+	for (const auto& it : *this)
 	{
 		if (it->GetRuntimeClass()->derivedFrom(
 				CLASS_ID(CActionRobotMovement2D)))
 		{
 			CActionRobotMovement2D::Ptr temp =
-				std::dynamic_pointer_cast<CActionRobotMovement2D>(
-					it.get_ptr());
+				std::dynamic_pointer_cast<CActionRobotMovement2D>(it.get_ptr());
 
 			if (temp->estimationMethod ==
 				CActionRobotMovement2D::emScan2DMatching)
@@ -143,14 +143,13 @@ CActionRobotMovement2D::Ptr CActionCollection::getMovementEstimationByType(
 	CActionRobotMovement2D::TEstimationMethod method)
 {
 	// Find it:
-	for (auto & it : *this)
+	for (auto& it : *this)
 	{
 		if (it->GetRuntimeClass()->derivedFrom(
 				CLASS_ID(CActionRobotMovement2D)))
 		{
 			CActionRobotMovement2D::Ptr temp =
-				std::dynamic_pointer_cast<CActionRobotMovement2D>(
-					it.get_ptr());
+				std::dynamic_pointer_cast<CActionRobotMovement2D>(it.get_ptr());
 
 			// Is it of the required type?
 			if (temp->estimationMethod == method)

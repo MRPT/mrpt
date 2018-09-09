@@ -233,9 +233,8 @@ static void velodyne_scan_to_pointcloud(
 			 block++)  // Firings per packet
 		{
 			// ignore packets with mangled or otherwise different contents
-			if ((num_lasers != 64 &&
-				 CObservationVelodyneScan::UPPER_BANK !=
-					 raw->blocks[block].header) ||
+			if ((num_lasers != 64 && CObservationVelodyneScan::UPPER_BANK !=
+										 raw->blocks[block].header) ||
 				(raw->blocks[block].header !=
 					 CObservationVelodyneScan::UPPER_BANK &&
 				 raw->blocks[block].header !=
@@ -592,3 +591,7 @@ void CObservationVelodyneScan::TPointCloud::clear_deep()
 		azimuth.swap(d);
 	}
 }
+
+// Default ctor. Do NOT move to the .h, that causes build errors.
+CObservationVelodyneScan::TGeneratePointCloudParameters::
+	TGeneratePointCloudParameters() = default;

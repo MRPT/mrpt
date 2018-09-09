@@ -16,19 +16,6 @@
 using namespace std;
 using namespace mrpt::obs::gnss;
 
-nv_oem6_header_t::nv_oem6_header_t()
-	
-	  
-{
-	synch[0] = synch[1] = synch[2] = 0;
-}
-
-nv_oem6_short_header_t::nv_oem6_short_header_t()
-	 
-{
-	synch[0] = synch[1] = synch[2] = 0;
-}
-
 // ------------
 void Message_NV_OEM6_GENERIC_FRAME::dumpToStream(std::ostream& out) const
 {

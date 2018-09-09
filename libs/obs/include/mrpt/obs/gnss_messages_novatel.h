@@ -29,7 +29,7 @@ struct nv_oem6_header_t
 		SYNCH2 = 0x12
 	};
 
-	uint8_t synch[3];
+	uint8_t synch[3]{0, 0, 0};
 	uint8_t hdr_len{0};
 	uint16_t msg_id{0};
 	uint8_t msg_type{0};
@@ -43,8 +43,6 @@ struct nv_oem6_header_t
 	uint32_t receiver_status{0};
 	uint16_t reserved{0};
 	uint16_t receiver_sw_version{0};
-
-	nv_oem6_header_t();
 };
 
 /** Novatel OEM6 short header structure \sa mrpt::obs::CObservationGPS  */
@@ -56,13 +54,11 @@ struct nv_oem6_short_header_t
 		SYNCH1 = 0X44,
 		SYNCH2 = 0x13
 	};
-	uint8_t synch[3];
-	uint8_t msg_len{};
-	uint16_t msg_id{};
-	uint16_t week{};
-	uint32_t ms_in_week{};
-
-	nv_oem6_short_header_t();
+	uint8_t synch[3]{0, 0, 0};
+	uint8_t msg_len{0};
+	uint16_t msg_id{0};
+	uint16_t week{0};
+	uint32_t ms_in_week{0};
 };
 
 namespace nv_oem6_position_type

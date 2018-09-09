@@ -70,7 +70,7 @@ bool CObservation3DRangeScan::EXTERNALS_AS_TEXT()
 struct CObservation3DRangeScan_Points_MemPoolParams
 {
 	/** Width*Height, that is, the number of 3D points */
-	size_t WH;
+	size_t WH{0};
 	inline bool isSuitable(
 		const CObservation3DRangeScan_Points_MemPoolParams& req) const
 	{
@@ -166,15 +166,14 @@ void mempool_donate_range_matrix(CObservation3DRangeScan& obs)
 							Constructor
  ---------------------------------------------------------------*/
 CObservation3DRangeScan::CObservation3DRangeScan()
-	: 
-	  pixelLabels(),  // Start without label info
+	: pixelLabels(),  // Start without label info
 	  cameraParams(),
 	  cameraParamsIntensity(),
 	  relativePoseIntensityWRTDepth(
 		  0, 0, 0, DEG2RAD(-90), DEG2RAD(0), DEG2RAD(-90)),
-	  
+
 	  sensorPose()
-	  
+
 {
 }
 
@@ -1298,6 +1297,6 @@ T3DPointsTo2DScanParams::T3DPointsTo2DScanParams()
 	  angle_inf(mrpt::DEG2RAD(5)),
 	  z_min(-std::numeric_limits<double>::max()),
 	  z_max(std::numeric_limits<double>::max())
-	  
+
 {
 }
