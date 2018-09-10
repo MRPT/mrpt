@@ -741,7 +741,7 @@ namespace nanoflann
 	{
 	private:
 		/** Hidden copy constructor, to disallow copying indices (Not implemented) */
-		KDTreeSingleIndexAdaptor(const KDTreeSingleIndexAdaptor<Distance,DatasetAdaptor,DIM,IndexType>&) = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete;
+		KDTreeSingleIndexAdaptor(const KDTreeSingleIndexAdaptor<Distance,DatasetAdaptor,DIM,IndexType>&) = delete;
 	public:
 		typedef typename Distance::ElementType  ElementType;
 		typedef typename Distance::DistanceType DistanceType;
@@ -919,7 +919,7 @@ namespace nanoflann
 		 * the result object.
 		 *  \sa radiusSearch, findNeighbors
 		 * \note nChecks_IGNORED is ignored but kept for compatibility with the original FLANN interface.
-		 * \return Number `N` of valid points in the result set. Only the first `N` entries in `out_indices` and `out_distances_sq` will be valid. 
+		 * \return Number `N` of valid points in the result set. Only the first `N` entries in `out_indices` and `out_distances_sq` will be valid.
 		 *         Return may be less than `num_closest` only if the number of elements in the tree is less than `num_closest`.
 		 */
 		size_t knnSearch(const ElementType *query_point, const size_t num_closest, IndexType *out_indices, DistanceType *out_distances_sq, const int /* nChecks_IGNORED */ = 10) const
@@ -1326,7 +1326,7 @@ namespace nanoflann
 		}
 	private:
 		/** Hidden copy constructor, to disallow copying this class (Not implemented) */
-		KDTreeEigenMatrixAdaptor(const self_t&) = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete = delete;
+		KDTreeEigenMatrixAdaptor(const self_t&) = delete;
 	public:
 
 		~KDTreeEigenMatrixAdaptor() {
