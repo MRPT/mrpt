@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/core/exceptions.h>
 #include <map>
 
 namespace mrpt::containers

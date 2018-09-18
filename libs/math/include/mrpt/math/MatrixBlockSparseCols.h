@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <mrpt/core/aligned_std_map.h>
 #include <mrpt/containers/map_as_vector.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>  // For mrpt::math::CMatrixDouble
 
@@ -35,7 +36,7 @@ namespace mrpt::math
   */
 template <typename Scalar, int NROWS, int NCOLS, typename INFO, bool HAS_REMAP,
 		  typename INDEX_REMAP_MAP_IMPL =
-			  mrpt::utils::map_as_vector<size_t, size_t>>
+			  mrpt::containers::map_as_vector<size_t, size_t>>
 struct MatrixBlockSparseCols
 {
 	using matrix_t = Eigen::Matrix<Scalar, NROWS, NCOLS>;
@@ -56,18 +57,18 @@ struct MatrixBlockSparseCols
 	/** -> cols[i]: i'th column.
 	  * -> Each column is a map [row] -> TEntry
 	  */
-	std::deque<col_t> cols;
+	std::deque<col_t> m_cols;
 	/** "remapped index" is the index of some global variable, interpreted by
 	 * the external user of this class. */
 	// map<size_t,size_t> col_inverse_remapped_indices;
-	mrpt::utils::map_as_vector<size_t, size_t> col_inverse_remapped_indices;
+	mrpt::containers::map_as_vector<size_t, size_t> col_inverse_remapped_indices;
 	std::vector<size_t> col_remapped_indices;
 
    public:
-	inline MatrixBlockSparseCols() : cols(0) {}
-	inline col_t& getCol(const size_t idx) { return cols[idx]; }
-	inline const col_t& getCol(const size_t idx) const { return cols[idx]; }
-	inline const mrpt::utils::map_as_vector<size_t, size_t>&
+	inline MatrixBlockSparseCols() : m_cols(0) {}
+	inline col_t& getCol(const size_t idx) { return m_cols[idx]; }
+	inline const col_t& getCol(const size_t idx) const { return m_cols[idx]; }
+	inline const mrpt::containers::map_as_vector<size_t, size_t>&
 		getColInverseRemappedIndices() const
 	{
 		if (!HAS_REMAP) assert(false);
@@ -82,8 +83,8 @@ struct MatrixBlockSparseCols
 	/** Append one column, returning a ref to the new col_t data */
 	inline col_t& appendCol(const size_t remapIndex)
 	{
-		const size_t idx = cols.size();
-		cols.push_back(col_t());
+		const size_t idx = m_cols.size();
+		m_cols.push_back(col_t());
 
 		if (HAS_REMAP)
 		{
@@ -93,25 +94,25 @@ struct MatrixBlockSparseCols
 			col_inverse_remapped_indices[remapIndex] = idx;
 		}
 
-		return *cols.rbegin();
+		return *m_cols.rbegin();
 	}
 
 	/** Change the number of columns (keep old contents) */
-	inline void setColCount(const size_t nCols) { cols.resize(nCols); }
+	inline void setColCount(const size_t nCols) { m_cols.resize(nCols); }
 	/** Get current number of cols. \sa findCurrentNumberOfRows */
-	inline size_t cols() const { return cols.size(); }
+	inline size_t cols() const { return m_cols.size(); }
 	/** Clear all the entries in each column (do not change the number of
 	 * columns, though!) \sa getColCount */
 	inline void clearColEntries()
 	{
-		for (size_t i = 0; i < cols.size(); i++) cols[i].clear();
+		for (size_t i = 0; i < m_cols.size(); i++) m_cols[i].clear();
 	}
 
 	/** Clear all the entries in each column (do not change the number of
 	 * columns, though!) \sa getColCount */
 	inline void clearAll()
 	{
-		cols.clear();
+		m_cols.clear();
 		if (HAS_REMAP)
 		{
 			col_remapped_indices.clear();
@@ -137,7 +138,7 @@ struct MatrixBlockSparseCols
 		mrpt::math::CMatrixDouble& D, const bool force_symmetry = false,
 		const bool is_col_compressed = true) const
 	{
-		const size_t nCols = cols.size();
+		const size_t nCols = m_cols.size();
 		const size_t nRows = findCurrentNumberOfRows();
 
 		if (is_col_compressed)
@@ -147,8 +148,8 @@ struct MatrixBlockSparseCols
 
 		for (size_t j = 0; j < nCols; j++)
 		{
-			for (typename col_t::const_iterator itRow = cols[j].begin();
-				 itRow != cols[j].end(); ++itRow)
+			for (typename col_t::const_iterator itRow = m_cols[j].begin();
+				 itRow != m_cols[j].end(); ++itRow)
 			{
 				const size_t row = itRow->first;
 				const size_t row_idx =
@@ -168,10 +169,10 @@ struct MatrixBlockSparseCols
 	size_t findCurrentNumberOfRows() const
 	{
 		size_t nRows = 0;
-		const size_t nCols = cols.size();
+		const size_t nCols = m_cols.size();
 		for (size_t j = 0; j < nCols; j++)
-			for (typename col_t::const_iterator itRow = cols[j].begin();
-				 itRow != cols[j].end(); ++itRow)
+			for (typename col_t::const_iterator itRow = m_cols[j].begin();
+				 itRow != m_cols[j].end(); ++itRow)
 				mrpt::keep_max(nRows, itRow->first);
 		return nRows +
 			   1;  // nRows was the max. row index, now it's the row count.
@@ -182,12 +183,12 @@ struct MatrixBlockSparseCols
 	template <class MATRIX>
 	void getBinaryBlocksRepresentation(MATRIX& out) const
 	{
-		const size_t nCols = cols.size();
+		const size_t nCols = m_cols.size();
 		const size_t nRows = findCurrentNumberOfRows();
 		out.zeros(nRows, nCols);
 		for (size_t j = 0; j < nCols; j++)
-			for (typename col_t::const_iterator itRow = cols[j].begin();
-				 itRow != cols[j].end(); ++itRow)
+			for (typename col_t::const_iterator itRow = m_cols[j].begin();
+				 itRow != m_cols[j].end(); ++itRow)
 			{
 				const size_t row = itRow->first;
 				out(row, j) = 1;
@@ -199,17 +200,17 @@ struct MatrixBlockSparseCols
 	void copyNumericalValuesFrom(
 		const MatrixBlockSparseCols<Scalar, NROWS, NCOLS, INFO, HAS_REMAP>& o)
 	{
-		const size_t nC = o.cols.size();
-		if (cols.size() != nC)
+		const size_t nC = o.m_cols.size();
+		if (m_cols.size() != nC)
 		{
 			// Just create an empty structure with the numerical matrices:
-			cols.resize(nC);
+			m_cols.resize(nC);
 			for (size_t i = 0; i < nC; i++)
 			{
-				cols[i].clear();
-				for (typename col_t::const_iterator it = o.cols[i].begin();
-					 it != o.cols[i].end(); ++it)
-					cols[i][it->first].num = it->second.num;
+				m_cols[i].clear();
+				for (typename col_t::const_iterator it = o.m_cols[i].begin();
+					 it != o.m_cols[i].end(); ++it)
+					m_cols[i][it->first].num = it->second.num;
 			}
 		}
 		else
@@ -219,9 +220,9 @@ struct MatrixBlockSparseCols
 			{
 				// ASSERTMSG_(cols[i].size()>=o.cols[i].size(),
 				// "copyNumericalValuesFrom() invoked on dissimilar structures")
-				typename col_t::iterator it_dst = cols[i].begin();
-				typename col_t::const_iterator it_src = o.cols[i].begin();
-				while (it_src != o.cols[i].end())
+				typename col_t::iterator it_dst = m_cols[i].begin();
+				typename col_t::const_iterator it_src = o.m_cols[i].begin();
+				while (it_src != o.m_cols[i].end())
 				{
 					if (it_dst->first < it_src->first)
 					{
@@ -230,7 +231,7 @@ struct MatrixBlockSparseCols
 					}
 					else if (it_dst->first > it_src->first)
 					{
-						cols[i][it_src->first].num = it_src->second.num;
+						m_cols[i][it_src->first].num = it_src->second.num;
 						it_src++;
 					}
 					else
