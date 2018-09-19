@@ -9,6 +9,7 @@
 
 #pragma once
 #include <mrpt/opengl/CDisk.h>
+#include <mrpt/opengl/CPlanarLaserScan.h>
 
 namespace mrpt::graphslam::deciders
 {
