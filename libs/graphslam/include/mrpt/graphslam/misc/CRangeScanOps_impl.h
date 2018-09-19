@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #pragma once
+#include <mrpt/maps/CSimplePointsMap.h>
 
 namespace mrpt::graphslam::deciders
 {

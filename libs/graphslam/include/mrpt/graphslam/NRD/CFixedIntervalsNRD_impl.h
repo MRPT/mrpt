@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #pragma once
+#include <mrpt/config/CConfigFile.h>
 
 namespace mrpt::graphslam::deciders
 {

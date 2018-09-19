@@ -13,6 +13,7 @@
 #include <mrpt/opengl/CEllipsoid.h>
 #include <mrpt/opengl/CSphere.h>
 #include <mrpt/math/data_utils.h>
+#include <mrpt/obs/obs_utils.h>
 
 namespace mrpt::graphslam::deciders
 {
