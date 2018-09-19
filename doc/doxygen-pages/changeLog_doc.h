@@ -26,6 +26,8 @@
 	- \ref mrpt_graphslam_grp
 		- levenberg-Marquardt graphslam modified to use more stable SE(2) Jacobians.
 		- CNetworkOfPoses: read/write format made compatible with G2O EDGE_SE2 types.
+	- \ref mrpt_nav_grp
+		- Add virtual method CAbstractPTGBasedReactive::getHoloMethod()
 	- BUG FIXES:
 		- Fix missing "-ldl" linker flag.
 		- Fix building against wxWidgets 3.1.1 in Windows (zlib link error).

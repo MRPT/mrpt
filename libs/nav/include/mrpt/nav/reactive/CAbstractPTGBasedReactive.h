@@ -211,6 +211,7 @@ namespace mrpt
 		/** The main method for the navigator */
 		virtual void performNavigationStep() MRPT_OVERRIDE;
 
+		virtual CAbstractHolonomicReactiveMethod* getHoloMethod(int idx);
 		std::vector<CAbstractHolonomicReactiveMethod*>  m_holonomicMethod;   //!< The holonomic navigation algorithm (one object per PTG, so internal states are maintained)
 		mrpt::utils::CStream  *m_logFile, *m_prev_logfile;         //!< The current log file stream, or NULL if not being used
 		bool                   m_enableKeepLogRecords; //!< See enableKeepLogRecords
