@@ -445,7 +445,9 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			CParameterizedTrajectoryGenerator * ptg = getPTG(indexPTG);
 
 			// Ensure the method knows about its associated PTG:
-			m_holonomicMethod[indexPTG]->setAssociatedPTG(this->getPTG(indexPTG));
+			auto holoMethod = this->getHoloMethod(indexPTG);
+			ASSERT_(holoMethod);
+			holoMethod->setAssociatedPTG(this->getPTG(indexPTG));
 
 			TInfoPerPTG &ipf = m_infoPerPTG[indexPTG];
 
@@ -458,7 +460,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				relTargets, rel_pose_PTG_origin_wrt_sense,
 				ipf, cm,
 				newLogRec, false /* this is a regular PTG reactive case */,
-				m_holonomicMethod[indexPTG],
+				holoMethod,
 				tim_start_iteration,
 				*m_navigationParams
 				);
@@ -583,7 +585,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 					relTargets_NOPs, rel_pose_PTG_origin_wrt_sense_NOP,
 					m_infoPerPTG[nPTGs], candidate_movs[nPTGs],
 					newLogRec, true /* this is the PTG continuation (NOP) choice */,
-					m_holonomicMethod[m_lastSentVelCmd.ptg_index],
+					getHoloMethod(m_lastSentVelCmd.ptg_index),
 					tim_start_iteration,
 					*m_navigationParams,
 					rel_cur_pose_wrt_last_vel_cmd_NOP);
@@ -904,11 +906,11 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 
 	// Make sure that the target slow-down is honored, as seen in real-world Euclidean space
 	// (as opposed to TP-Space, where the holo methods are evaluated)
-	if (m_navigationParams && m_navigationParams->target.targetDesiredRelSpeed<1.0 && !m_holonomicMethod.empty() && m_holonomicMethod[0]!=nullptr
+	if (m_navigationParams && m_navigationParams->target.targetDesiredRelSpeed<1.0 && !m_holonomicMethod.empty() && getHoloMethod(0)!=nullptr
 		&& !cm.PTG->supportSpeedAtTarget()  // If the PTG is able to handle the slow-down on its own, dont change speed here
 		)
 	{
-		const double TARGET_SLOW_APPROACHING_DISTANCE = m_holonomicMethod[0]->getTargetApproachSlowDownDistance();
+		const double TARGET_SLOW_APPROACHING_DISTANCE = getHoloMethod(0)->getTargetApproachSlowDownDistance();
 
 		const double Vf = m_navigationParams->target.targetDesiredRelSpeed; // [0,1]
 
@@ -1660,4 +1662,9 @@ double CAbstractPTGBasedReactive::getTargetApproachSlowDownDistance() const
 {
 	ASSERT_(!m_holonomicMethod.empty());
 	return m_holonomicMethod[0]->getTargetApproachSlowDownDistance();
+}
+
+CAbstractHolonomicReactiveMethod* CAbstractPTGBasedReactive::getHoloMethod(int idx)
+{
+	return m_holonomicMethod[idx];
 }
