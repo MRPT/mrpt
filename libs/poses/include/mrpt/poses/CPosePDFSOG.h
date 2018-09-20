@@ -40,13 +40,13 @@ class CPosePDFSOG : public CPosePDF
 	 */
 	struct TGaussianMode
 	{
-		TGaussianMode() : mean(), cov(), log_w(0) {}
+		TGaussianMode() : mean(), cov() {}
 		CPose2D mean;
 		mrpt::math::CMatrixDouble33 cov;
 
 		/** The log-weight
-		  */
-		double log_w;
+		 */
+		double log_w{0};
 
 	   public:
 		MRPT_MAKE_ALIGNED_OPERATOR_NEW;
@@ -67,6 +67,7 @@ class CPosePDFSOG : public CPosePDF
 	using iterator = CListGaussianModes::iterator;
 
 	const CListGaussianModes& getSOGModes() const { return m_modes; }
+
    protected:
 	/** Ensures the symmetry of the covariance matrix (eventually certain
 	 * operations in the math-coprocessor lead to non-symmetric matrixes!) */
@@ -77,7 +78,7 @@ class CPosePDFSOG : public CPosePDF
 
    public:
 	/** Default constructor
-	  * \param nModes The initial size of CPosePDFSOG::m_modes */
+	 * \param nModes The initial size of CPosePDFSOG::m_modes */
 	CPosePDFSOG(size_t nModes = 1);
 
 	/** Return the number of Gaussian modes. */
@@ -125,13 +126,13 @@ class CPosePDFSOG : public CPosePDF
 
 	/** Merge very close modes so the overall number of modes is reduced while
 	 * preserving the total distribution.
-	  *  This method uses the approach described in the paper:
-	  *  - "Kullback-Leibler Approach to Gaussian Mixture Reduction" AR
+	 *  This method uses the approach described in the paper:
+	 *  - "Kullback-Leibler Approach to Gaussian Mixture Reduction" AR
 	 * Runnalls. IEEE Transactions on Aerospace and Electronic Systems, 2007.
-	  *
-	  *  \param max_KLd The maximum KL-divergence to consider the merge of two
+	 *
+	 *  \param max_KLd The maximum KL-divergence to consider the merge of two
 	 * nodes (and then stops the process).
-	  */
+	 */
 	void mergeModes(double max_KLd = 0.5, bool verbose = false);
 
 	/** Returns an estimate of the pose, (the mean, or mathematical expectation
@@ -153,24 +154,24 @@ class CPosePDFSOG : public CPosePDF
 	void copyFrom(const CPosePDF& o) override;
 
 	/** Save the density to a text file, with the following format:
-	  *  There is one row per Gaussian "mode", and each row contains 10
+	 *  There is one row per Gaussian "mode", and each row contains 10
 	 * elements:
-	  *   - w (The weight)
-	  *   - x_mean (gaussian mean value)
-	  *   - y_mean (gaussian mean value)
-	  *   - phi_mean (gaussian mean value)
-	  *   - C11 (Covariance elements)
-	  *   - C22 (Covariance elements)
-	  *   - C33 (Covariance elements)
-	  *   - C12 (Covariance elements)
-	  *   - C13 (Covariance elements)
-	  *   - C23 (Covariance elements)
-	  */
+	 *   - w (The weight)
+	 *   - x_mean (gaussian mean value)
+	 *   - y_mean (gaussian mean value)
+	 *   - phi_mean (gaussian mean value)
+	 *   - C11 (Covariance elements)
+	 *   - C22 (Covariance elements)
+	 *   - C33 (Covariance elements)
+	 *   - C12 (Covariance elements)
+	 *   - C13 (Covariance elements)
+	 *   - C23 (Covariance elements)
+	 */
 	bool saveToTextFile(const std::string& file) const override;
 
 	/** this = p (+) this. This can be used to convert a PDF from local
 	 * coordinates to global, providing the point (newReferenceBase) from which
-	  *   "to project" the current pdf. Result PDF substituted the currently
+	 *   "to project" the current pdf. Result PDF substituted the currently
 	 * stored one in the object. */
 	void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
 
@@ -216,6 +217,4 @@ class CPosePDFSOG : public CPosePDF
 		const double minMahalanobisDistToDrop = 0) override;
 
 };  // End of class def.
-}
-
-
+}  // namespace mrpt::poses

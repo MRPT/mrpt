@@ -236,9 +236,9 @@ void optimize_graph_spa_levmarq(
 	{
 		const TNodeID id1 = itJ->first.first;
 		const TNodeID id2 = itJ->first.second;
-		obsIdx2fnIdx.push_back(std::make_pair(
+		obsIdx2fnIdx.emplace_back(
 			mrpt::containers::find_in_vector(id1, *nodes_to_optimize),
-			mrpt::containers::find_in_vector(id2, *nodes_to_optimize)));
+			mrpt::containers::find_in_vector(id2, *nodes_to_optimize));
 	}
 
 	// other important vars for the main loop:

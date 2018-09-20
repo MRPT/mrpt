@@ -73,8 +73,7 @@ void CGeneralConfig::openBackgroundColor()
 
 SGeneralSetting::SGeneralSetting()
 	: backgroundColor(Qt::white),
-	  gridColor(Qt::black),
-	  isGridVisibleChanged(true),
-	  currentBot(0)
+	  gridColor(Qt::black)
+	  
 {
 }

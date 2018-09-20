@@ -21,48 +21,48 @@
 namespace mrpt::opengl
 {
 /**
-  * A mesh built from a set of 2D laser scan observations.
-  * Each element of this set is a single scan through the yaw, given a specific
+ * A mesh built from a set of 2D laser scan observations.
+ * Each element of this set is a single scan through the yaw, given a specific
  * pitch.
-  * Each scan has a mrpt::poses::CPose3D identifying the origin of the scan,
+ * Each scan has a mrpt::poses::CPose3D identifying the origin of the scan,
  * which ideally is the
-  * same for every one of them.
-  *
-  *  <div align="center">
-  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
+ * same for every one of them.
+ *
+ *  <div align="center">
+ *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
  * border-style: solid;">
-  *   <tr> <td> mrpt::opengl::CAngularObservationMesh </td> <td> \image html
+ *   <tr> <td> mrpt::opengl::CAngularObservationMesh </td> <td> \image html
  * preview_CAngularObservationMesh.png </td> </tr>
-  *  </table>
-  *  </div>
-  *
-  * \ingroup mrpt_maps_grp
-  */
+ *  </table>
+ *  </div>
+ *
+ * \ingroup mrpt_maps_grp
+ */
 class CAngularObservationMesh : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CAngularObservationMesh)
    public:
 	/**
-	  * Range specification type, with several uses.
-	  */
+	 * Range specification type, with several uses.
+	 */
 	struct TDoubleRange
 	{
 	   private:
 		/**
-		  * Range type.
-		  * If 0, it's specified by an initial and a final value, and an
+		 * Range type.
+		 * If 0, it's specified by an initial and a final value, and an
 		 * increment.
-		  * If 1, it's specified by an initial and a final value, and a fixed
+		 * If 1, it's specified by an initial and a final value, and a fixed
 		 * size of samples.
-		  * If 2, it's specified by an aperture, a fixed size of samples and a
+		 * If 2, it's specified by an aperture, a fixed size of samples and a
 		 * boolean variable controlling direction. This type is always
 		 * zero-centered.
-		  */
+		 */
 		char rangeType;
 		/**
-		  * Union type with the actual data.
-		  * \sa rangeType
-		  */
+		 * Union type with the actual data.
+		 * \sa rangeType
+		 */
 		union rd {
 			struct
 			{
@@ -86,8 +86,8 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 
 	   public:
 		/**
-		  * Constructor from initial value, final value and range.
-		  */
+		 * Constructor from initial value, final value and range.
+		 */
 		TDoubleRange(double a, double b, double c) : rangeType(0)
 		{
 			rangeData.mode0.initial = a;
@@ -95,8 +95,8 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 			rangeData.mode0.increment = c;
 		}
 		/**
-		  * Constructor from initial value, final value and amount of samples.
-		  */
+		 * Constructor from initial value, final value and amount of samples.
+		 */
 		TDoubleRange(double a, double b, size_t c) : rangeType(1)
 		{
 			rangeData.mode1.initial = a;
@@ -104,8 +104,8 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 			rangeData.mode1.amount = c;
 		}
 		/**
-		  * Constructor from aperture, amount of samples and scan direction.
-		  */
+		 * Constructor from aperture, amount of samples and scan direction.
+		 */
 		TDoubleRange(double a, size_t b, bool c) : rangeType(2)
 		{
 			rangeData.mode2.aperture = a;
@@ -113,10 +113,10 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 			rangeData.mode2.negToPos = c;
 		}
 		/**
-		  * Creates a range of values from the initial value, the final value
+		 * Creates a range of values from the initial value, the final value
 		 * and the increment.
-		  * \throw std::logic_error if the increment is zero.
-		  */
+		 * \throw std::logic_error if the increment is zero.
+		 */
 		inline static TDoubleRange CreateFromIncrement(
 			double initial, double final, double increment)
 		{
@@ -125,27 +125,27 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 			return TDoubleRange(initial, final, increment);
 		}
 		/**
-		  * Creates a range of values from the initial value, the final value
+		 * Creates a range of values from the initial value, the final value
 		 * and a desired amount of samples.
-		  */
+		 */
 		inline static TDoubleRange CreateFromAmount(
 			double initial, double final, size_t amount)
 		{
 			return TDoubleRange(initial, final, amount);
 		}
 		/**
-		  * Creates a zero-centered range of values from an aperture, an amount
+		 * Creates a zero-centered range of values from an aperture, an amount
 		 * of samples and a direction.
-		  */
+		 */
 		inline static TDoubleRange CreateFromAperture(
 			double aperture, size_t amount, bool negToPos = true)
 		{
 			return TDoubleRange(aperture, amount, negToPos);
 		}
 		/**
-		  * Returns the total aperture of the range.
-		  * \throw std::logic_error on invalid range type.
-		  */
+		 * Returns the total aperture of the range.
+		 * \throw std::logic_error on invalid range type.
+		 */
 		inline double aperture() const
 		{
 			switch (rangeType)
@@ -168,9 +168,9 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 			}
 		}
 		/**
-		  * Returns the first value of the range.
-		  * \throw std::logic_error on invalid range type.
-		  */
+		 * Returns the first value of the range.
+		 * \throw std::logic_error on invalid range type.
+		 */
 		inline double initialValue() const
 		{
 			switch (rangeType)
@@ -187,9 +187,9 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 			}
 		}
 		/**
-		  * Returns the last value of the range.
-		  * \throw std::logic_error on invalid range type.
-		  */
+		 * Returns the last value of the range.
+		 * \throw std::logic_error on invalid range type.
+		 */
 		inline double finalValue() const
 		{
 			switch (rangeType)
@@ -212,9 +212,9 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 			}
 		}
 		/**
-		  * Returns the increment between two consecutive values of the range.
-		  * \throw std::logic_error on invalid range type.
-		  */
+		 * Returns the increment between two consecutive values of the range.
+		 * \throw std::logic_error on invalid range type.
+		 */
 		inline double increment() const
 		{
 			switch (rangeType)
@@ -237,9 +237,9 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 			}
 		}
 		/**
-		  * Returns the total amount of values in this range.
-		  * \throw std::logic_error on invalid range type.
-		  */
+		 * Returns the total amount of values in this range.
+		 * \throw std::logic_error on invalid range type.
+		 */
 		inline size_t amount() const
 		{
 			switch (rangeType)
@@ -249,11 +249,10 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 							mrpt::sign(
 								rangeData.mode0.final -
 								rangeData.mode0.initial))
-							   ? 1 + static_cast<size_t>(
-										 ceil(
-											 (rangeData.mode0.final -
-											  rangeData.mode0.initial) /
-											 rangeData.mode0.increment))
+							   ? 1 + static_cast<size_t>(ceil(
+										 (rangeData.mode0.final -
+										  rangeData.mode0.initial) /
+										 rangeData.mode0.increment))
 							   : 1;
 				case 1:
 					return rangeData.mode1.amount;
@@ -264,15 +263,15 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 			}
 		}
 		/**
-		  * Gets a vector with every value in the range.
-		  * \throw std::logic_error on invalid range type.
-		  */
+		 * Gets a vector with every value in the range.
+		 * \throw std::logic_error on invalid range type.
+		 */
 		void values(std::vector<double>& vals) const;
 		/**
-		  * Returns the direction of the scan. True if the increment is
+		 * Returns the direction of the scan. True if the increment is
 		 * positive, false otherwise.
-		  * \throw std::logic_error on invalid range type.
-		  */
+		 * \throw std::logic_error on invalid range type.
+		 */
 		inline bool negToPos() const
 		{
 			switch (rangeType)
@@ -306,12 +305,12 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 		const mrpt::math::TPoint3D& p1, const mrpt::math::TPoint3D& p2,
 		const mrpt::math::TPoint3D& p3) const;
 	/** Whether the mesh will be displayed wireframe or solid. */
-	bool mWireframe;
+	bool mWireframe{true};
 	/** Mutable variable which controls if the object has suffered any change
 	 * since last time the mesh was updated. */
-	mutable bool meshUpToDate;
+	mutable bool meshUpToDate{false};
 	/** Whether the object may present transparencies or not. */
-	bool mEnableTransparency;
+	bool mEnableTransparency{true};
 	/** Mutable object with the mesh's points. */
 	mutable mrpt::math::CMatrixTemplate<mrpt::math::TPoint3D> actualMesh;
 	/** Scan validity matrix. */
@@ -324,111 +323,105 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 
    public:
 	/**
-	  * Basic constructor.
-	  */
+	 * Basic constructor.
+	 */
 	CAngularObservationMesh()
-		: mWireframe(true),
-		  meshUpToDate(false),
-		  mEnableTransparency(true),
-		  actualMesh(0, 0),
-		  validityMatrix(0, 0),
-		  pitchBounds(),
-		  scanSet()
+		: actualMesh(0, 0), validityMatrix(0, 0), pitchBounds(), scanSet()
 	{
 	}
 	/** Empty destructor. */
-	~CAngularObservationMesh() override {}
+	~CAngularObservationMesh() override = default;
 	/**
-	  * Returns whether the object is configured as wireframe or solid.
-	  */
+	 * Returns whether the object is configured as wireframe or solid.
+	 */
 	inline bool isWireframe() const { return mWireframe; }
 	/**
-	  * Sets the display mode for the object. True=wireframe, False=solid.
-	  */
+	 * Sets the display mode for the object. True=wireframe, False=solid.
+	 */
 	inline void setWireframe(bool enabled = true)
 	{
 		mWireframe = enabled;
 		CRenderizableDisplayList::notifyChange();
 	}
 	/**
-	  * Returns whether the object may be transparent or not.
-	  */
+	 * Returns whether the object may be transparent or not.
+	 */
 	inline bool isTransparencyEnabled() const { return mEnableTransparency; }
 	/**
-	  * Enables or disables transparencies.
-	  */
+	 * Enables or disables transparencies.
+	 */
 	inline void enableTransparency(bool enabled = true)
 	{
 		mEnableTransparency = enabled;
 		CRenderizableDisplayList::notifyChange();
 	}
 	/**
-	  * Renderizes the object.
-	  * \sa mrpt::opengl::CRenderizable
-	  */
+	 * Renderizes the object.
+	 * \sa mrpt::opengl::CRenderizable
+	 */
 	void render_dl() const override;
 	/**
-	  * Traces a ray to the object, returning the distance to a given pose
+	 * Traces a ray to the object, returning the distance to a given pose
 	 * through its X axis.
-	  * \sa mrpt::opengl::CRenderizable,trace2DSetOfRays,trace1DSetOfRays
-	  */
+	 * \sa mrpt::opengl::CRenderizable,trace2DSetOfRays,trace1DSetOfRays
+	 */
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 	/**
-	  * Sets the pitch bounds for this range.
-	  */
+	 * Sets the pitch bounds for this range.
+	 */
 	void setPitchBounds(const double initial, const double final);
 	/**
-	  * Sets the pitch bounds for this range.
-	  */
+	 * Sets the pitch bounds for this range.
+	 */
 	void setPitchBounds(const std::vector<double>& bounds);
 	/**
-	  * Gets the initial and final pitch bounds for this range.
-	  */
+	 * Gets the initial and final pitch bounds for this range.
+	 */
 	void getPitchBounds(double& initial, double& final) const;
 	/**
-	  * Gets the pitch bounds for this range.
-	  */
+	 * Gets the pitch bounds for this range.
+	 */
 	void getPitchBounds(std::vector<double>& bounds) const;
 	/**
-	  * Gets the scan set.
-	  */
+	 * Gets the scan set.
+	 */
 	void getScanSet(
 		std::vector<mrpt::obs::CObservation2DRangeScan>& scans) const;
 	/**
-	  * Sets the scan set.
-	  */
+	 * Sets the scan set.
+	 */
 	bool setScanSet(
 		const std::vector<mrpt::obs::CObservation2DRangeScan>& scans);
 	/**
-	  * Gets the mesh as a set of triangles, for displaying them.
-	  * \sa generateSetOfTriangles(std::vector<TPolygon3D>
+	 * Gets the mesh as a set of triangles, for displaying them.
+	 * \sa generateSetOfTriangles(std::vector<TPolygon3D>
 	 * &),mrpt::opengl::CSetOfTriangles,mrpt::opengl::CSetOfTriangles::TTriangle
-	  */
+	 */
 	void generateSetOfTriangles(CSetOfTriangles::Ptr& res) const;
 	/**
-	  * Returns the scanned points as a 3D point cloud. The target pointmap must
+	 * Returns the scanned points as a 3D point cloud. The target pointmap must
 	 * be passed as a pointer to allow the use of any derived class.
-	  */
+	 */
 	void generatePointCloud(mrpt::maps::CPointsMap* out_map) const;
 	/**
-	  * Gets a set of lines containing the traced rays, for displaying them.
-	  * \sa getUntracedRays,mrpt::opengl::CSetOfLines
-	  */
+	 * Gets a set of lines containing the traced rays, for displaying them.
+	 * \sa getUntracedRays,mrpt::opengl::CSetOfLines
+	 */
 	void getTracedRays(CSetOfLines::Ptr& res) const;
 	/**
-	  * Gets a set of lines containing the untraced rays, up to a specified
+	 * Gets a set of lines containing the untraced rays, up to a specified
 	 * distance, for displaying them.
-	  * \sa getTracedRays,mrpt::opengl::CSetOfLines
-	  */
+	 * \sa getTracedRays,mrpt::opengl::CSetOfLines
+	 */
 	void getUntracedRays(CSetOfLines::Ptr& res, double dist) const;
 	/**
-	  * Gets the mesh as a set of polygons, to work with them.
-	  * \sa generateSetOfTriangles(mrpt::opengl::CSetOfTriangles &)
-	  */
+	 * Gets the mesh as a set of polygons, to work with them.
+	 * \sa generateSetOfTriangles(mrpt::opengl::CSetOfTriangles &)
+	 */
 	void generateSetOfTriangles(std::vector<mrpt::math::TPolygon3D>& res) const;
 	/**
-	  * Retrieves the full mesh, along with the validity matrix.
-	  */
+	 * Retrieves the full mesh, along with the validity matrix.
+	 */
 	void getActualMesh(
 		mrpt::math::CMatrixTemplate<mrpt::math::TPoint3D>& pts,
 		mrpt::math::CMatrixBool& validity) const
@@ -440,8 +433,8 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 
    private:
 	/**
-	  * Internal functor class to trace a ray.
-	  */
+	 * Internal functor class to trace a ray.
+	 */
 	template <class T>
 	class FTrace1D
 	{
@@ -476,8 +469,8 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 		}
 	};
 	/**
-	  * Internal functor class to trace a set of rays.
-	  */
+	 * Internal functor class to trace a set of rays.
+	 */
 	template <class T>
 	class FTrace2D
 	{
@@ -532,26 +525,26 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 
    public:
 	/**
-	  * 2D ray tracing (will generate a 3D mesh). Given an object and two
+	 * 2D ray tracing (will generate a 3D mesh). Given an object and two
 	 * ranges, realizes a scan from the initial pose and stores it in a
 	 * CAngularObservationMesh object.
-	  * The objective may be a COpenGLScene, a CRenderizable or any children of
+	 * The objective may be a COpenGLScene, a CRenderizable or any children of
 	 * its.
-	  * \sa mrpt::opengl::CRenderizable,mrpt::opengl::COpenGLScene.
-	  */
+	 * \sa mrpt::opengl::CRenderizable,mrpt::opengl::COpenGLScene.
+	 */
 	template <class T>
 	static void trace2DSetOfRays(
 		const T& e, const mrpt::poses::CPose3D& initial,
 		CAngularObservationMesh::Ptr& caom, const TDoubleRange& pitchs,
 		const TDoubleRange& yaws);
 	/**
-	  * 2D ray tracing (will generate a vectorial mesh inside a plane). Given an
+	 * 2D ray tracing (will generate a vectorial mesh inside a plane). Given an
 	 * object and a range, realizes a scan from the initial pose and stores it
 	 * in a CObservation2DRangeScan object.
-	  * The objective may be a COpenGLScene, a CRenderizable or any children of
+	 * The objective may be a COpenGLScene, a CRenderizable or any children of
 	 * its.
-	  * \sa mrpt::opengl::CRenderizable,mrpt::opengl::COpenGLScene.
-	  */
+	 * \sa mrpt::opengl::CRenderizable,mrpt::opengl::COpenGLScene.
+	 */
 	template <class T>
 	static void trace1DSetOfRays(
 		const T& e, const mrpt::poses::CPose3D& initial,
@@ -595,6 +588,4 @@ void CAngularObservationMesh::trace2DSetOfRays(
 	caom->setPitchBounds(pValues);
 	caom->setScanSet(vObs);
 }
-}
-
-
+}  // namespace mrpt::opengl

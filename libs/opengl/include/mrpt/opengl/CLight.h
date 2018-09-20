@@ -28,7 +28,7 @@ struct CLight
 	void setDirection(float dx, float dy, float dz);
 
 	/** OpenGL ID (typical range: 0-7) */
-	uint8_t light_ID;
+	uint8_t light_ID{0};
 
 	float color_ambient[4];
 	float color_diffuse[4];
@@ -39,11 +39,11 @@ struct CLight
 	float position[4];
 	/** [x,y,z] */
 	float direction[3];
-	float constant_attenuation;
-	float linear_attenuation;
-	float quadratic_attenuation;
-	float spot_exponent;
-	float spot_cutoff;
+	float constant_attenuation{1.f};
+	float linear_attenuation{0.f};
+	float quadratic_attenuation{0.f};
+	float spot_exponent{0.f};
+	float spot_cutoff{180.f};
 
 	void writeToStream(mrpt::serialization::CArchive& out) const;
 	void readFromStream(mrpt::serialization::CArchive& in);

@@ -21,7 +21,7 @@ using namespace mrpt::img;
 using namespace mrpt::system;
 using namespace std;
 
-CFeatureExtraction::~CFeatureExtraction() {}
+CFeatureExtraction::~CFeatureExtraction() = default;
 struct sort_pred
 {
 	bool operator()(

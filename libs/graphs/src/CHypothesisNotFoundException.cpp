@@ -52,15 +52,15 @@ void HypothesisNotFoundException::clear()
 	m_msg.clear();
 }
 
-HypothesisNotFoundException::~HypothesisNotFoundException() throw() {}
-std::string HypothesisNotFoundException::getErrorMsg() const throw()
+HypothesisNotFoundException::~HypothesisNotFoundException() noexcept = default;
+std::string HypothesisNotFoundException::getErrorMsg() const noexcept
 {
 	return m_msg;
 }
 
 std::string persistent_error_msg;
 
-const char* HypothesisNotFoundException::what() const throw()
+const char* HypothesisNotFoundException::what() const noexcept
 {
 	persistent_error_msg = getErrorMsg();
 	return persistent_error_msg.c_str();

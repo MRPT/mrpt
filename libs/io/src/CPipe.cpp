@@ -49,10 +49,7 @@ void CPipe::initializePipe(
 }
 
 // ------------------  CPipeBaseEndPoint ------------------
-CPipeBaseEndPoint::CPipeBaseEndPoint()
-	: timeout_read_start_us(0), timeout_read_between_us(0), m_pipe_file(0)
-{
-}
+CPipeBaseEndPoint::CPipeBaseEndPoint() = default;
 
 CPipeBaseEndPoint::~CPipeBaseEndPoint() { this->close(); }
 // Close:
@@ -98,10 +95,10 @@ CPipeBaseEndPoint::CPipeBaseEndPoint(const std::string& serialized)
 }
 
 /** Converts the end-point into a string suitable for reconstruction at a child
-* process.
-* This *invalidates* this object, since only one real end-point can exist at
-* once.
-*/
+ * process.
+ * This *invalidates* this object, since only one real end-point can exist at
+ * once.
+ */
 std::string CPipeBaseEndPoint::serialize()
 {
 	ASSERTMSG_(m_pipe_file != 0, "Pipe is closed, can't serialize!");
@@ -214,7 +211,7 @@ size_t CPipeBaseEndPoint::Read(void* Buffer, size_t Count)
 }
 
 /** Introduces a pure virtual method responsible for writing to the stream.
-	*  Write attempts to write up to Count bytes to Buffer, and returns the
+ *  Write attempts to write up to Count bytes to Buffer, and returns the
  * number of bytes actually written. */
 size_t CPipeBaseEndPoint::Write(const void* Buffer, size_t Count)
 {

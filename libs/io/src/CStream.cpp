@@ -23,7 +23,7 @@ using namespace mrpt;
 using namespace mrpt::io;
 using namespace std;
 
-CStream::~CStream() {}
+CStream::~CStream() = default;
 /*---------------------------------------------------------------
 			Writes an elemental data type to stream.
  ---------------------------------------------------------------*/

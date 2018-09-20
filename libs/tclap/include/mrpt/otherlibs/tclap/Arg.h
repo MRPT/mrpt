@@ -404,7 +404,7 @@ inline Arg::Arg(const std::string& flag,
 
 }
 
-inline Arg::~Arg() { }
+inline Arg::~Arg() = default;
 
 inline std::string Arg::shortID( const std::string& valueId ) const
 {

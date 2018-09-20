@@ -31,11 +31,8 @@ CMesh3D::CMesh3D(
 	  m_antiAliasing(antiAliasing),
 	  m_showEdges(enableShowEdges),
 	  m_showFaces(enableShowFaces),
-	  m_showVertices(enableShowVertices),
-	  m_computeNormals(true),
-	  m_lineWidth(2.f),
-	  m_pointSize(6.f),
-	  m_colorMap(mrpt::img::cmHOT)
+	  m_showVertices(enableShowVertices)
+	  
 {
 	m_color.R = 1.f;
 	m_color.G = 0.f;
@@ -57,7 +54,7 @@ CMesh3D::CMesh3D(
 	m_num_verts = 0;
 }
 
-CMesh3D::~CMesh3D() {}
+CMesh3D::~CMesh3D() = default;
 void CMesh3D::loadMesh(
 	unsigned int num_verts, unsigned int num_faces, int* verts_per_face,
 	int* face_verts, float* vert_coords)

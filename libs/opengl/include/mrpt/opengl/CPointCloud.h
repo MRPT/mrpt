@@ -54,15 +54,15 @@ class CPointCloud : public CRenderizable,
 		colZ,
 		colY,
 		colX
-	} m_colorFromDepth;
+	} m_colorFromDepth{CPointCloud::colNone};
 	std::vector<float> m_xs, m_ys, m_zs;
 	/** By default is 1.0 */
-	float m_pointSize;
+	float m_pointSize{1};
 	/** Default: false */
-	bool m_pointSmooth;
+	bool m_pointSmooth{false};
 
-	mutable volatile size_t m_last_rendered_count,
-		m_last_rendered_count_ongoing;
+	mutable volatile size_t m_last_rendered_count{0},
+		m_last_rendered_count_ongoing{0};
 
 	/** Do needed internal work if all points are new (octree rebuilt,...) */
 	void markAllPointsAsNew();
@@ -292,13 +292,13 @@ class CPointCloud : public CRenderizable,
 	CPointCloud();
 
 	/** Private, virtual destructor: only can be deleted from smart pointers */
-	~CPointCloud() override {}
+	~CPointCloud() override = default;
    private:
 	/** Buffer for min/max coords when m_colorFromDepth is true. */
-	mutable float m_min, m_max, m_max_m_min, m_max_m_min_inv;
+	mutable float m_min{0}, m_max{0}, m_max_m_min{0}, m_max_m_min_inv{0};
 	/** Color linear function slope */
 	mutable mrpt::img::TColorf m_col_slop, m_col_slop_inv;
-	mutable bool m_minmax_valid;
+	mutable bool m_minmax_valid{false};
 
 	/** The colors used to interpolate when m_colorFromDepth is true. */
 	mrpt::img::TColorf m_colorFromDepth_min, m_colorFromDepth_max;

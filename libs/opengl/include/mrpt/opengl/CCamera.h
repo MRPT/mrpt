@@ -30,18 +30,18 @@ class CCamera : public CRenderizable
 
 	DEFINE_SERIALIZABLE(CCamera)
    protected:
-	float m_pointingX, m_pointingY, m_pointingZ;
-	float m_distanceZoom;
-	float m_azimuthDeg, m_elevationDeg;
+	float m_pointingX{0}, m_pointingY{0}, m_pointingZ{0};
+	float m_distanceZoom{10};
+	float m_azimuthDeg{45}, m_elevationDeg{45};
 
 	/** If set to true (default), camera model is projective, otherwise, it's
 	 * orthogonal. */
-	bool m_projectiveModel;
+	bool m_projectiveModel{true};
 	/** Field-of-View in degs, only when projectiveModel=true (default=30 deg).
 	 */
-	float m_projectiveFOVdeg;
+	float m_projectiveFOVdeg{30};
 	/** If set to true, camera pose is used when rendering the viewport */
-	bool m_6DOFMode;
+	bool m_6DOFMode{false};
 
    public:
 	void setPointingAt(float x, float y, float z)
@@ -105,7 +105,7 @@ class CCamera : public CRenderizable
 	CCamera();
 
 	/** Private, virtual destructor: only can be deleted from smart pointers */
-	~CCamera() override {}
+	~CCamera() override = default;
 };
 
 }

@@ -28,7 +28,7 @@ class CObservationSkeleton : public CObservation
 
    public:
 	/** Constructor.
-	*/
+	 */
 	CObservationSkeleton()
 		: sensorPose(),
 		  head(),
@@ -50,8 +50,8 @@ class CObservationSkeleton : public CObservation
 	}
 
 	/** Destructor
-	*/
-	~CObservationSkeleton() override {}
+	 */
+	~CObservationSkeleton() override = default;
 	/** The pose of the sensor on the robot. */
 	mrpt::poses::CPose3D sensorPose;
 
@@ -59,12 +59,11 @@ class CObservationSkeleton : public CObservation
 	struct TSkeletonJoint
 	{
 		/** Default constructor */
-		TSkeletonJoint() : x(.0), y(.0), z(.0), conf(.0) {}
+		TSkeletonJoint() = default;
 		/** 3D position */
-		double x, y, z;
-
+		double x{.0}, y{.0}, z{.0};
 		/** Confidence value [0...1] */
-		double conf;
+		double conf{.0};
 	};
 
 	/** The skeleton joints (15)*/
@@ -84,6 +83,4 @@ class CObservationSkeleton : public CObservation
 
 };  // End of class def.
 
-}
-
-
+}  // namespace mrpt::obs

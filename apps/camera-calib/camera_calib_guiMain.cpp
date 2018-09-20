@@ -212,7 +212,7 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent, wxWindowID id)
 	FlexGridSizer15->AddGrowableCol(0);
 	FlexGridSizer15->AddGrowableRow(0);
 	lbFiles = new wxListBox(
-		this, ID_LISTBOX1, wxDefaultPosition, wxSize(294, 84), 0, 0,
+		this, ID_LISTBOX1, wxDefaultPosition, wxSize(294, 84), 0, nullptr,
 		wxLB_ALWAYS_SB | wxVSCROLL | wxHSCROLL | wxALWAYS_SHOW_SB,
 		wxDefaultValidator, _T("ID_LISTBOX1"));
 	FlexGridSizer15->Add(
@@ -225,7 +225,7 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent, wxWindowID id)
 		StaticText5, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
 	cbZoom = new wxChoice(
-		this, ID_CHOICE1, wxDefaultPosition, wxDefaultSize, 0, 0, 0,
+		this, ID_CHOICE1, wxDefaultPosition, wxDefaultSize, 0, nullptr, 0,
 		wxDefaultValidator, _T("ID_CHOICE1"));
 	cbZoom->Append(_("25%"));
 	cbZoom->Append(_("50%"));

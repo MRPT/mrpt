@@ -25,12 +25,8 @@ using namespace std;
 /*-------------------------------------------------------------
 					CGyroKVHDSP3000
 -------------------------------------------------------------*/
-CGyroKVHDSP3000::CGyroKVHDSP3000()
-	: m_COMbauds(38400),
-	  m_com_port(),
-	  m_sensorPose(),
-	  m_mode(RATE),
-	  m_firstInteration(true)
+CGyroKVHDSP3000::CGyroKVHDSP3000() : m_com_port(), m_sensorPose()
+
 {
 	m_state = ssInitializing;
 	m_sensorLabel = "KVH_DSP3000";
@@ -179,7 +175,7 @@ void CGyroKVHDSP3000::changeMode(GYRO_MODE _newMode)
 	}
 }
 
-void CGyroKVHDSP3000::resetIncrementalAngle(void)
+void CGyroKVHDSP3000::resetIncrementalAngle()
 {
 	if (m_mode != RATE)
 	{

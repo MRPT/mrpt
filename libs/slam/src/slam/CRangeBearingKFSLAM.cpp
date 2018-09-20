@@ -84,7 +84,7 @@ void CRangeBearingKFSLAM::reset()
 /*---------------------------------------------------------------
 							Destructor
   ---------------------------------------------------------------*/
-CRangeBearingKFSLAM::~CRangeBearingKFSLAM() {}
+CRangeBearingKFSLAM::~CRangeBearingKFSLAM() = default;
 /*---------------------------------------------------------------
 							getCurrentRobotPose
   ---------------------------------------------------------------*/
@@ -788,20 +788,10 @@ void CRangeBearingKFSLAM::TOptions::loadFromConfigFile(
   ---------------------------------------------------------------*/
 CRangeBearingKFSLAM::TOptions::TOptions()
 	: stds_Q_no_odo(get_vehicle_size(), 0),
-	  std_sensor_range(0.01f),
+	  
 	  std_sensor_yaw(DEG2RAD(0.2f)),
-	  std_sensor_pitch(DEG2RAD(0.2f)),
-	  std_odo_z_additional(0),
-	  doPartitioningExperiment(false),
-	  quantiles_3D_representation(3),
-	  partitioningMethod(0),
-	  data_assoc_method(assocNN),
-	  data_assoc_metric(metricMaha),
-	  data_assoc_IC_chi2_thres(0.99),
-	  data_assoc_IC_metric(metricMaha),
-	  data_assoc_IC_ml_threshold(0.0),
-	  create_simplemap(false),
-	  force_ignore_odometry(false)
+	  std_sensor_pitch(DEG2RAD(0.2f))
+	  
 {
 	stds_Q_no_odo[0] = stds_Q_no_odo[1] = stds_Q_no_odo[2] = 0.10f;
 	stds_Q_no_odo[3] = stds_Q_no_odo[4] = stds_Q_no_odo[5] = stds_Q_no_odo[6] =

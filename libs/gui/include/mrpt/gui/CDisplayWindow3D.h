@@ -135,9 +135,9 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	mrpt::void_ptr_noncopy m_GLRenderingContext;
 
 	std::string m_grab_imgs_prefix;
-	unsigned int m_grab_imgs_idx;
+	unsigned int m_grab_imgs_idx{0};
 
-	bool m_is_capturing_imgs;
+	bool m_is_capturing_imgs{false};
 	mrpt::img::CImage::Ptr m_last_captured_img;
 	mutable std::mutex m_last_captured_img_cs;
 
@@ -146,7 +146,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	mrpt::system::TTimeStamp m_lastFullScreen;
 
 	/** \sa getRenderingFPS */
-	double m_last_FPS;
+	double m_last_FPS{10};
 
 	void internalSetMinMaxRange();
 

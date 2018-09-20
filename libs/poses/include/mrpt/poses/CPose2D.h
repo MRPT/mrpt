@@ -47,10 +47,10 @@ class CPose2D : public CPose<CPose2D>, public mrpt::serialization::CSerializable
 
    protected:
 	/** The orientation of the pose, in radians. */
-	double m_phi;
+	double m_phi{0};
 	/** Precomputed cos() & sin() of phi. */
 	mutable double m_cosphi, m_sinphi;
-	mutable bool m_cossin_uptodate;
+	mutable bool m_cossin_uptodate{false};
 	void update_cached_cos_sin() const;
 
    public:

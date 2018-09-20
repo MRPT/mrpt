@@ -47,7 +47,7 @@ bool ptgConfiguratorApp::OnInit()
 	wxInitAllImageHandlers();
 	if (wxsOK)
 	{
-		ptgConfiguratorframe* Frame = new ptgConfiguratorframe(0);
+		ptgConfiguratorframe* Frame = new ptgConfiguratorframe(nullptr);
 		Frame->Show();
 		SetTopWindow(Frame);
 	}

@@ -16,7 +16,7 @@ namespace mrpt::system
 /** Used in getCallStackBackTrace() */
 struct TCallStackEntry
 {
-	inline TCallStackEntry() : address(NULL) {}
+	inline TCallStackEntry() : address(nullptr) {}
 	/** Address of the calling point */
 	void* address;
 	/** Demangled symbol name */

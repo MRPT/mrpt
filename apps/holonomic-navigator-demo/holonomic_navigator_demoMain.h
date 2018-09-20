@@ -140,12 +140,12 @@ class holonomic_navigator_demoFrame : public wxFrame
 	/* Vars: */
 	struct TOptions : public mrpt::config::CLoadableOptions
 	{
-		double ROBOT_MAX_SPEED;
-		double MAX_SENSOR_RADIUS;
-		uint64_t SENSOR_NUM_RANGES;
-		double SENSOR_RANGE_NOISE_STD;
+		double ROBOT_MAX_SPEED{4.0};
+		double MAX_SENSOR_RADIUS{5.0};
+		uint64_t SENSOR_NUM_RANGES{181};
+		double SENSOR_RANGE_NOISE_STD{0.02};
 
-		TOptions();
+		TOptions() = default;
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
@@ -157,7 +157,7 @@ class holonomic_navigator_demoFrame : public wxFrame
 	TOptions m_simul_options;
 
 	/**  The state of the cursor onto the 3D view:
-	  */
+	 */
 	enum TCursorPickState
 	{
 		cpsNone = 0,

@@ -26,7 +26,7 @@ using namespace mrpt::tfest;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CMetricMap, CSerializable, mrpt::maps)
 
-CMetricMap::CMetricMap() {}
+CMetricMap::CMetricMap() = default;
 /** Erase all the contents of the map */
 void CMetricMap::clear()
 {

@@ -559,7 +559,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		}
 		if (is_all_ptg_collision)
 		{
-			m_pending_events.push_back(std::bind(
+			m_pending_events.emplace_back(std::bind(
 				&CRobot2NavInterface::sendApparentCollisionEvent,
 				std::ref(m_robot)));
 		}
@@ -1858,17 +1858,9 @@ CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::
 	TAbstractPTGNavigatorParams()
 	: holonomic_method(),
 	  ptg_cache_files_directory("."),
-	  ref_distance(4.0),
-	  speedfilter_tau(0.0),
-	  secure_distance_start(0.05),
-	  secure_distance_end(0.20),
-	  use_delays_model(false),
-	  max_distance_predicted_actual_path(0.15),
-	  min_normalized_free_space_for_ptg_continuation(0.2),
-	  robot_absolute_speed_limits(),
-	  enable_obstacle_filtering(true),
-	  evaluate_clearance(false),
-	  max_dist_for_timebased_path_prediction(2.0)
+	  
+	  robot_absolute_speed_limits()
+	  
 {
 }
 

@@ -26,7 +26,7 @@ IMPLEMENTS_SERIALIZABLE(CHierarchicalMHMap, CSerializable, mrpt::hmtslam)
 /*---------------------------------------------------------------
 						Constructor
   ---------------------------------------------------------------*/
-CHierarchicalMHMap::CHierarchicalMHMap() {}
+CHierarchicalMHMap::CHierarchicalMHMap() = default;
 /*---------------------------------------------------------------
 						Destructor
   ---------------------------------------------------------------*/

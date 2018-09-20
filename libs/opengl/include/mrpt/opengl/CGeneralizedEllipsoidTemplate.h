@@ -229,8 +229,7 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 
 	/** Ray tracing
 	 */
-	bool traceRay(
-		const mrpt::poses::CPose3D& o, double& dist) const override
+	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override
 	{
 		MRPT_UNUSED_PARAM(o);
 		MRPT_UNUSED_PARAM(dist);
@@ -249,13 +248,13 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 
 	mutable cov_matrix_t m_cov;
 	mean_vector_t m_mean;
-	mutable bool m_needToRecomputeEigenVals;
+	mutable bool m_needToRecomputeEigenVals{true};
 	/** The number of "sigmas" for drawing the ellipse/ellipsoid (default=3) */
-	float m_quantiles;
+	float m_quantiles{3.f};
 	/** The line width for 2D ellipses or 3D wireframe ellipsoids (default=1) */
-	float m_lineWidth;
+	float m_lineWidth{1.f};
 	/** Number of segments in 2D/3D ellipsoids (default=10) */
-	uint32_t m_numSegments;
+	uint32_t m_numSegments{50};
 	mutable mrpt::math::TPoint3D m_bb_min, m_bb_max;
 
 	/** Cholesky U triangular matrix cache. */
@@ -288,19 +287,10 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 		CRenderizableDisplayList::notifyChange();
 	}
 
-	CGeneralizedEllipsoidTemplate()
-		: m_needToRecomputeEigenVals(true),
-		  m_quantiles(3.f),
-		  m_lineWidth(1.f),
-		  m_numSegments(50),
-		  m_bb_min(0, 0, 0),
-		  m_bb_max(0, 0, 0)
-	{
-	}
-	~CGeneralizedEllipsoidTemplate() override {}
+	CGeneralizedEllipsoidTemplate() : m_bb_min(0, 0, 0), m_bb_max(0, 0, 0) {}
+	~CGeneralizedEllipsoidTemplate() override = default;
 };
 
 }  // namespace opengl
 
 }  // namespace mrpt
-

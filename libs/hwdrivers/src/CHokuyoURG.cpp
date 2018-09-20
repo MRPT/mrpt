@@ -28,22 +28,12 @@ using namespace std;
 const int MINIMUM_PACKETS_TO_SET_TIMESTAMP_REFERENCE = 10;
 
 CHokuyoURG::CHokuyoURG()
-	: m_firstRange(44),
-	  m_lastRange(725),
-	  m_motorSpeed_rpm(0),
-	  m_sensorPose(0, 0, 0),
+	: m_sensorPose(0, 0, 0),
 	  m_rx_buffer(40000),
-	  m_highSensMode(false),
-	  m_reduced_fov(0),
+
 	  m_com_port(""),
-	  m_ip_dir(""),
-	  m_port_dir(10940),
-	  m_I_am_owner_serial_port(false),
-	  m_timeStartUI(0),
-	  m_timeStartSynchDelay(0),
-	  m_disable_firmware_timestamp(false),
-	  m_intensity(false),
-	  m_scan_interval(0)
+	  m_ip_dir("")
+
 {
 	m_sensorLabel = "Hokuyo";
 }

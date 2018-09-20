@@ -22,9 +22,8 @@ IMPLEMENTS_SERIALIZABLE(CObservation6DFeatures, CObservation, mrpt::obs)
 
 /** Default constructor */
 CObservation6DFeatures::CObservation6DFeatures()
-	: minSensorDistance(0), maxSensorDistance(1e6f)
-{
-}
+	 
+= default;
 
 CObservation6DFeatures::TMeasurement::TMeasurement() : id(INVALID_LANDMARK_ID)
 {

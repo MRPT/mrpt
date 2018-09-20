@@ -149,9 +149,8 @@ void CLogFileRecord_VFF::serializeFrom(
 						TOptions
   ---------------------------------------------------------------*/
 CHolonomicVFF::TOptions::TOptions()
-	: TARGET_SLOW_APPROACHING_DISTANCE(0.10), TARGET_ATTRACTIVE_FORCE(20.0)
-{
-}
+	 
+= default;
 
 void CHolonomicVFF::TOptions::loadFromConfigFile(
 	const mrpt::config::CConfigFileBase& source, const std::string& section)

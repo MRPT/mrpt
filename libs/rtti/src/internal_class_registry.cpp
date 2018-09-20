@@ -47,13 +47,13 @@ using TClassnameToRuntimeId = std::map<std::string, const TRuntimeClassId*>;
 
 /** A singleton with the central registry for CSerializable run-time classes:
  * users do not use this class in any direct way.
-  * \note Class is thread-safe.
-  */
+ * \note Class is thread-safe.
+ */
 class CClassRegistry
 {
    public:
 	/**  The unique access point point to the singleton instance.
-	  */
+	 */
 	static CClassRegistry& Instance()
 	{
 		static CClassRegistry obj;
@@ -103,29 +103,25 @@ class CClassRegistry
 		std::unique_lock<std::mutex> lk(m_cs);
 
 		std::vector<const TRuntimeClassId*> ret;
-		for (auto & registeredClasse : registeredClasses)
+		for (auto& registeredClasse : registeredClasses)
 			ret.push_back(registeredClasse.second);
 		return ret;
 	}
 
    private:
-	// PRIVATE constructor
-	CClassRegistry() : m_being_modified(false) {}
-	// PRIVATE destructor
-	~CClassRegistry() {}
 	// This must be static since we can be called from C startup
 	// functions and it cannot be assured that classesKeeper will be
 	// initialized before other classes that call it...
 	TClassnameToRuntimeId registeredClasses;
 	std::mutex m_cs;
-	std::atomic<bool> m_being_modified;
+	std::atomic<bool> m_being_modified{false};
 };
 
 }  // namespace mrpt::rtti
 
 /** Register all pending classes - to be called just before de-serializing an
  * object, for example.
-*/
+ */
 void mrpt::rtti::registerAllPendingClasses()
 {
 	if (!pending_class_registers_modified) return;  // Quick return
@@ -160,7 +156,7 @@ void mrpt::rtti::registerClass(const TRuntimeClassId* pNewClass)
 
 /** For internal use within mrpt sources, and only in exceptional cases
  * (CMultiMetricMaps, CImage,...)
-  */
+ */
 void mrpt::rtti::registerClassCustomName(
 	const char* customName, const TRuntimeClassId* pNewClass)
 {

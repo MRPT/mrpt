@@ -1120,7 +1120,7 @@ struct CmtScenario
 enum CmtCallbackSelector
 {
 	/** Callback function, called right before sending a GotoMeasurement message
-	   */
+	 */
 	CMT_CALLBACK_ONMEASUREMENTPREPARE = 0,
 	/** Callback function, called right after successfully switching to
 	   Measurement mode */
@@ -1168,15 +1168,15 @@ typedef XsensResultValue(__cdecl* CmtCallbackFunction)(
 struct CmtPortInfo
 {
 	/** The baudrate at which an Xsens device was detected */
-	uint32_t m_baudrate;
+	uint32_t m_baudrate{0};
 	/** The device Id of the detected Xsens device */
-	uint32_t m_deviceId;
+	uint32_t m_deviceId{0};
 	/** The port number */
-	uint8_t m_portNr;
+	uint8_t m_portNr{0};
 	/** The port name */
 	char m_portName[270];
 
-	CmtPortInfo() : m_baudrate(0), m_deviceId(0), m_portNr(0) {}
+	CmtPortInfo() {}
 #ifdef __cplusplus
 #ifdef _WIN32
 	//! greater than operator, used for sorting the list
@@ -1243,8 +1243,8 @@ struct CmtRawGpsData
 };
 struct CmtAnalogInData
 {
-	CmtAnalogInData() : m_data(0) {}
-	uint16_t m_data;
+	CmtAnalogInData() {}
+	uint16_t m_data{0};
 };
 struct CmtVector
 {

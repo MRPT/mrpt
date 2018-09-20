@@ -490,7 +490,7 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent, wxWindowID id)
 		StaticText3, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
 	cbOpencvCamType = new wxChoice(
-		Panel2, ID_CHOICE1, wxDefaultPosition, wxDefaultSize, 0, 0, 0,
+		Panel2, ID_CHOICE1, wxDefaultPosition, wxDefaultSize, 0, nullptr, 0,
 		wxDefaultValidator, _T("ID_CHOICE1"));
 	cbOpencvCamType->SetSelection(
 		cbOpencvCamType->Append(_("CAMERA_CV_AUTODETECT")));
@@ -507,7 +507,7 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent, wxWindowID id)
 	FlexGridSizer10->Add(
 		StaticText6, 1, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
 	cbOpencvResolution = new wxChoice(
-		Panel2, ID_CHOICE2, wxDefaultPosition, wxDefaultSize, 0, 0, 0,
+		Panel2, ID_CHOICE2, wxDefaultPosition, wxDefaultSize, 0, nullptr, 0,
 		wxDefaultValidator, _T("ID_CHOICE2"));
 	cbOpencvResolution->SetSelection(cbOpencvResolution->Append(_("default")));
 	cbOpencvResolution->Append(_("320x240"));

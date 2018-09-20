@@ -102,15 +102,12 @@ void CFrustum::render_dl() const
 
 // Ctors
 CFrustum::CFrustum()
-	: m_min_distance(0.1f),
-	  m_max_distance(1.f),
+	: 
 	  m_fov_horz_left(mrpt::DEG2RAD(45)),
 	  m_fov_horz_right(mrpt::DEG2RAD(45)),
 	  m_fov_vert_down(mrpt::DEG2RAD(30)),
 	  m_fov_vert_up(mrpt::DEG2RAD(30)),
-	  m_draw_lines(true),
-	  m_draw_planes(false),
-	  m_lineWidth(1.5f),
+	  
 	  m_planes_color(0xE0, 0x00, 0x00, 0x50)  // RGBA
 {
 	keep_min(m_fov_horz_left, DEG2RAD(89.9f));

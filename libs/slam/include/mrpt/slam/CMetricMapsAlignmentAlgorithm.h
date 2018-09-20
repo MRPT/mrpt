@@ -31,7 +31,7 @@ class CMetricMapsAlignmentAlgorithm : public mrpt::system::COutputLogger
 	{
 	}
 	/** Dtor */
-	~CMetricMapsAlignmentAlgorithm() override {}
+	~CMetricMapsAlignmentAlgorithm() override = default;
 	/** The method for aligning a pair of metric maps, aligning only 2D +
 	 * orientation.
 	 *   The meaning of some parameters and the kind of the maps to be aligned

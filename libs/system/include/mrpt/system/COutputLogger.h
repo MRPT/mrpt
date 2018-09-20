@@ -37,7 +37,7 @@ enum VerbosityLevel
 /** Callback types for use with mrpt::system::COuputLogger */
 using output_logger_callback_t = std::function<void(
 	const std::string& msg, const mrpt::system::VerbosityLevel level,
-	const std::string& loggerName, const mrpt::Clock::time_point &timestamp)>;
+	const std::string& loggerName, const mrpt::Clock::time_point& timestamp)>;
 
 /** \brief Versatile class for consistent logging and
  *        management of output messages
@@ -219,7 +219,7 @@ class COutputLogger
 	 *
 	 * \sa dumpToConsole, getAsString
 	 */
-	void writeLogToFile(const std::string* fname_in = NULL) const;
+	void writeLogToFile(const std::string* fname_in = nullptr) const;
 	/** \brief Dump the current contents of the COutputLogger instance in the
 	 * terminal window.
 	 *
@@ -236,10 +236,10 @@ class COutputLogger
 
 	/** [Default=true] Set it to false in case you don't want the logged
 	 * messages to be dumped to the output automatically. */
-	bool logging_enable_console_output;
+	bool logging_enable_console_output{true};
 	/** [Default=false] Enables storing all messages into an internal list. \sa
 	 * writeLogToFile, getLogAsString */
-	bool logging_enable_keep_record;
+	bool logging_enable_keep_record{false};
 
 	void logRegisterCallback(output_logger_callback_t userFunc);
 	/** \return true if an entry was found and deleted. */
@@ -249,7 +249,7 @@ class COutputLogger
    protected:
 	/** \brief Provided messages with VerbosityLevel smaller than this value
 	 * shall be ignored */
-	VerbosityLevel m_min_verbosity_level;
+	VerbosityLevel m_min_verbosity_level{LVL_INFO};
 
    private:
 	/**

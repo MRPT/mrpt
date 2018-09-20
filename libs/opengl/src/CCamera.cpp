@@ -26,17 +26,9 @@ IMPLEMENTS_SERIALIZABLE(CCamera, CRenderizable, mrpt::opengl)
 					CCamera
   ---------------------------------------------------------------*/
 CCamera::CCamera()
-	: m_pointingX(0),
-	  m_pointingY(0),
-	  m_pointingZ(0),
-	  m_distanceZoom(10),
-	  m_azimuthDeg(45),
-	  m_elevationDeg(45),
-	  m_projectiveModel(true),
-	  m_projectiveFOVdeg(30),
-	  m_6DOFMode(false)
-{
-}
+	
+	  
+= default;
 
 uint8_t CCamera::serializeGetVersion() const { return 1; }
 void CCamera::serializeTo(mrpt::serialization::CArchive& out) const

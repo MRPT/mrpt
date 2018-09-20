@@ -245,8 +245,8 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 				unsigned int k;
 				for (y = 0, k = 0; y < check_size.height; y++)
 					for (x = 0; x < check_size.width; x++, k++)
-						dat.detected_corners.push_back(mrpt::img::TPixelCoordf(
-							this_img_pts[k].x, this_img_pts[k].y));
+						dat.detected_corners.emplace_back(
+							this_img_pts[k].x, this_img_pts[k].y);
 
 				// Draw the checkerboard in the corresponding image:
 				// ----------------------------------------------------

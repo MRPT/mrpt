@@ -197,8 +197,7 @@ static void extractLines_CannyHough(
 					onSegment = false;
 					if (nbPixels >= threshold)
 					{
-						segments.push_back(
-							cv::Vec4i(memoryX, memoryY, xPrev, yPrev));
+						segments.emplace_back(memoryX, memoryY, xPrev, yPrev);
 						// cout << "new segment " << segments.back() << endl;
 					}
 				}

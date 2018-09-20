@@ -51,7 +51,7 @@ CWaypointsNavigator::CWaypointsNavigator(CRobot2NavInterface& robot_if)
 {
 }
 
-CWaypointsNavigator::~CWaypointsNavigator() {}
+CWaypointsNavigator::~CWaypointsNavigator() = default;
 void CWaypointsNavigator::onNavigateCommandReceived()
 {
 	CAbstractNavigator::onNavigateCommandReceived();
@@ -256,8 +256,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 						wp.skipped = false;
 						wp.timestamp_reach = mrpt::system::now();
 
-						m_pending_events.push_back(
-							std::bind(
+						m_pending_events.emplace_back(std::bind(
 								&CRobot2NavInterface::sendWaypointReachedEvent,
 								std::ref(m_robot),
 								wps.waypoint_index_current_goal,
@@ -343,8 +342,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 						wp.skipped = true;
 						wp.timestamp_reach = mrpt::system::now();
 
-						m_pending_events.push_back(
-							std::bind(
+						m_pending_events.emplace_back(std::bind(
 								&CRobot2NavInterface::sendWaypointReachedEvent,
 								std::ref(m_robot), k,
 								false /*reason: skipped*/));
@@ -368,8 +366,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 				ASSERT_(params_waypoints_navigator.multitarget_look_ahead >= 0);
 
 				// Notify we have a new "current waypoint"
-				m_pending_events.push_back(
-					std::bind(
+				m_pending_events.emplace_back(std::bind(
 						&CRobot2NavInterface::sendNewWaypointTargetEvent,
 						std::ref(m_robot), wps.waypoint_index_current_goal));
 
@@ -535,11 +532,9 @@ void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::
 }
 
 CWaypointsNavigator::TWaypointsNavigatorParams::TWaypointsNavigatorParams()
-	: max_distance_to_allow_skip_waypoint(-1.0),
-	  min_timesteps_confirm_skip_waypoints(1),
-	  waypoint_angle_tolerance(mrpt::DEG2RAD(5.0)),
-	  rel_speed_for_stop_waypoints(0.10),
-	  multitarget_look_ahead(0)
+	: 
+	  waypoint_angle_tolerance(mrpt::DEG2RAD(5.0))
+	  
 {
 }
 

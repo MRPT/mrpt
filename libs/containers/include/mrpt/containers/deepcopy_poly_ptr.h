@@ -31,7 +31,7 @@ class deepcopy_poly_ptr
 		m_smartptr.reset(dynamic_cast<typename T::element_type*>(ptr->clone()));
 	}
 	/** Default ctor; init to nullptr. */
-	deepcopy_poly_ptr() {}
+	deepcopy_poly_ptr() = default;
 	/** copy ctor: makes a copy of the object via `clone()` */
 	deepcopy_poly_ptr(const deepcopy_poly_ptr<T>& o)
 	{
@@ -65,7 +65,7 @@ class deepcopy_poly_ptr
 		o.m_smartptr.reset();
 		return *this;
 	}
-	~deepcopy_poly_ptr() {}
+	~deepcopy_poly_ptr() = default;
 	typename T::element_type* get()
 	{
 		if (m_smartptr)
@@ -84,7 +84,7 @@ class deepcopy_poly_ptr
 	typename T::element_type* operator->() { return get(); }
 	const typename T::element_type* operator->() const { return get(); }
 	typename T::element_type& operator*(void) { return *get(); }
-	const typename T::element_type& operator*(void)const { return *get(); }
+	const typename T::element_type& operator*()const { return *get(); }
 	operator bool() const { return m_smartptr ? true : false; }
 	bool operator!(void) const { return m_smartptr ? false : true; }
 	const T& get_ptr() const { return m_smartptr; }

@@ -90,7 +90,7 @@ class map_as_vector
 	/** @name Constructors, read/write access and other operations
 		@{ */
 	//!< Default constructor - does nothing */
-	inline map_as_vector() {}
+	inline map_as_vector() = default;
 	/** Copy constructor */
 	inline map_as_vector(const map_as_vector<KEY, VALUE>& o) : m_vec(o.m_vec) {}
 	inline size_t size() const { return m_vec.size(); }

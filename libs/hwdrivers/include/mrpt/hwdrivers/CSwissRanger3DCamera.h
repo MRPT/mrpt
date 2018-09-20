@@ -253,34 +253,34 @@ class CSwissRanger3DCamera : public mrpt::hwdrivers::CGenericSensor
 	mrpt::poses::CPose3D m_sensorPoseOnRobot;
 
 	/** Save the 3D point cloud (default: true) */
-	bool m_save_3d;
+	bool m_save_3d{true};
 	/** Save the 2D range image (default: true) */
-	bool m_save_range_img;
+	bool m_save_range_img{true};
 	/** Save the 2D intensity image (default: true) */
-	bool m_save_intensity_img;
+	bool m_save_intensity_img{true};
 	/** Save the estimated confidence 2D image (default: false) */
-	bool m_save_confidence;
+	bool m_save_confidence{false};
 
-	bool m_enable_img_hist_equal;
-	bool m_enable_median_filter;
-	bool m_enable_mediancross_filter;
-	bool m_enable_conv_gray;
-	bool m_enable_denoise_anf;
+	bool m_enable_img_hist_equal{false};
+	bool m_enable_median_filter{true};
+	bool m_enable_mediancross_filter{false};
+	bool m_enable_conv_gray{false};
+	bool m_enable_denoise_anf{true};
 
 	/** true: USB, false: ETH */
-	bool m_open_from_usb;
-	size_t m_usb_serial;
+	bool m_open_from_usb{true};
+	size_t m_usb_serial{0};
 	std::string m_ip_address;
 
 	/** Size of camera images, set on open() */
-	size_t m_rows, m_cols;
+	size_t m_rows{0}, m_cols{0};
 	/** Serial number of the camera, set on open() */
-	unsigned int m_cam_serial_num;
+	unsigned int m_cam_serial_num{0};
 	/** Max range, as deducted from the camera frequency. */
-	double m_maxRange;
+	double m_maxRange{5};
 
 	/** Show preview window while grabbing */
-	bool m_preview_window;
+	bool m_preview_window{false};
 	mrpt::gui::CDisplayWindow::Ptr m_win_range, m_win_int;
 
 	/** opaque handler to SRCAM. nullptr means it's not open yet. */

@@ -33,8 +33,7 @@ template <class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
 		  class EDGE_ANNOTATIONS>
 CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 			  EDGE_ANNOTATIONS>::~CMRVisualizer()
-{
-}
+= default;
 
 template <class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
 		  class EDGE_ANNOTATIONS>
@@ -73,8 +72,7 @@ CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
 template <class CPOSE, class MAPS_IMPLEMENTATION, class EDGE_ANNOTATIONS>
 CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
 			  EDGE_ANNOTATIONS>::~CMRVisualizer()
-{
-}
+= default;
 
 template <class CPOSE, class MAPS_IMPLEMENTATION, class EDGE_ANNOTATIONS>
 void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,

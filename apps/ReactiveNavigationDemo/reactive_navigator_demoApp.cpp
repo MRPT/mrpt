@@ -30,7 +30,7 @@ bool reactive_navigator_demoApp::OnInit()
 	if (wxsOK)
 	{
 		reactive_navigator_demoframe* Frame =
-			new reactive_navigator_demoframe(0);
+			new reactive_navigator_demoframe(nullptr);
 		Frame->Show();
 		SetTopWindow(Frame);
 	}

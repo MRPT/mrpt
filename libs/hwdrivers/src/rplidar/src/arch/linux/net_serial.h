@@ -75,10 +75,10 @@ class raw_serial : public rp::hal::serial_rxtx
 	void _init();
 
 	char _portName[200];
-	uint32_t _baudrate;
-	uint32_t _flags;
+	uint32_t _baudrate{0};
+	uint32_t _flags{0};
 
-	int serial_fd;
+	int serial_fd{-1};
 
 	size_t required_tx_cnt;
 	size_t required_rx_cnt;

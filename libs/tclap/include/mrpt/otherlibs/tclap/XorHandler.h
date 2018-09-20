@@ -56,7 +56,7 @@ class XorHandler
 		/**
 		 * Constructor.  Does nothing.
 		 */
-		XorHandler( ) {}
+		XorHandler( ) = default;
 
 		/**
 		 * Add a list of Arg*'s that will be orred together.

@@ -16,7 +16,7 @@
 using namespace mrpt::system;
 using namespace std;
 
-CObservable::CObservable() {}
+CObservable::CObservable() = default;
 CObservable::~CObservable()
 {
 	// Notify my destruction:

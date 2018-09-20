@@ -27,7 +27,7 @@ IMPLEMENTS_SERIALIZABLE(CActionRobotMovement3D, CAction, mrpt::obs)
 CActionRobotMovement3D::CActionRobotMovement3D()
 	: poseChange(),
 	  rawOdometryIncrementReading(),
-	  estimationMethod(emOdometry),
+
 	  motionModelConfiguration(),
 	  hasVelocities(6, false),
 	  velocities(6)
@@ -89,7 +89,7 @@ void CActionRobotMovement3D::computeFromOdometry(
 						TMotionModelOptions
  ---------------------------------------------------------------*/
 CActionRobotMovement3D::TMotionModelOptions::TMotionModelOptions()
-	: modelSelection(mm6DOF), mm6DOFModel()
+	: mm6DOFModel()
 {
 	mm6DOFModel.nParticlesCount = 300;
 	mm6DOFModel.a1 = 0.05f;
@@ -119,7 +119,7 @@ void CActionRobotMovement3D::computeFromOdometry_model6DOF(
 
 	mrpt::poses::CPose3DPDF::Ptr poseChangeTemp =
 		mrpt::make_aligned_shared<CPose3DPDFParticles>();
-	aux = static_cast<CPose3DPDFParticles*>(poseChangeTemp.get());
+	aux = dynamic_cast<CPose3DPDFParticles*>(poseChangeTemp.get());
 
 	// Set the number of particles:
 	aux->resetDeterministic(nullPose, o.mm6DOFModel.nParticlesCount);
@@ -192,41 +192,36 @@ void CActionRobotMovement3D::computeFromOdometry_model6DOF(
 	for (size_t i = 0; i < o.mm6DOFModel.nParticlesCount; i++)
 	{
 		float Ayaw1_draw =
-			Ayaw1 +
-			(o.mm6DOFModel.a1 * Ayaw1 + o.mm6DOFModel.a2 * Atrans) *
-				getRandomGenerator().drawGaussian1D_normalized();
+			Ayaw1 + (o.mm6DOFModel.a1 * Ayaw1 + o.mm6DOFModel.a2 * Atrans) *
+						getRandomGenerator().drawGaussian1D_normalized();
 		float Apitch1_draw =
-			Apitch1 +
-			(o.mm6DOFModel.a3 * odometryIncrement.z()) *
-				getRandomGenerator().drawGaussian1D_normalized();
+			Apitch1 + (o.mm6DOFModel.a3 * odometryIncrement.z()) *
+						  getRandomGenerator().drawGaussian1D_normalized();
 		float Atrans_draw =
-			Atrans +
-			(o.mm6DOFModel.a4 * Atrans + o.mm6DOFModel.a5 * Ayaw2 +
-			 o.mm6DOFModel.a6 * (Aroll + Apitch2)) *
-				getRandomGenerator().drawGaussian1D_normalized();
+			Atrans + (o.mm6DOFModel.a4 * Atrans + o.mm6DOFModel.a5 * Ayaw2 +
+					  o.mm6DOFModel.a6 * (Aroll + Apitch2)) *
+						 getRandomGenerator().drawGaussian1D_normalized();
 
-		float Aroll_draw = Aroll +
-						   (o.mm6DOFModel.a7 * Aroll) *
-							   getRandomGenerator().drawGaussian1D_normalized();
+		float Aroll_draw =
+			Aroll + (o.mm6DOFModel.a7 * Aroll) *
+						getRandomGenerator().drawGaussian1D_normalized();
 		float Apitch2_draw =
-			Apitch2 +
-			(o.mm6DOFModel.a8 * Apitch2) *
-				getRandomGenerator().drawGaussian1D_normalized();
+			Apitch2 + (o.mm6DOFModel.a8 * Apitch2) *
+						  getRandomGenerator().drawGaussian1D_normalized();
 		float Ayaw2_draw =
-			Ayaw2 +
-			(o.mm6DOFModel.a9 * Ayaw2 + o.mm6DOFModel.a10 * Atrans) *
-				getRandomGenerator().drawGaussian1D_normalized();
+			Ayaw2 + (o.mm6DOFModel.a9 * Ayaw2 + o.mm6DOFModel.a10 * Atrans) *
+						getRandomGenerator().drawGaussian1D_normalized();
 
 		// Output:
 		aux->m_particles[i].d.x =
 			Atrans_draw * sin(Apitch1_draw) * cos(Ayaw1_draw) +
 			motionModelConfiguration.mm6DOFModel.additional_std_XYZ *
 				getRandomGenerator().drawGaussian1D_normalized();
-		aux->m_particles[i].d.y = 
+		aux->m_particles[i].d.y =
 			Atrans_draw * sin(Apitch1_draw) * sin(Ayaw1_draw) +
 			motionModelConfiguration.mm6DOFModel.additional_std_XYZ *
 				getRandomGenerator().drawGaussian1D_normalized();
-		aux->m_particles[i].d.z = 
+		aux->m_particles[i].d.z =
 			Atrans_draw * cos(Apitch1_draw) +
 			motionModelConfiguration.mm6DOFModel.additional_std_XYZ *
 				getRandomGenerator().drawGaussian1D_normalized();

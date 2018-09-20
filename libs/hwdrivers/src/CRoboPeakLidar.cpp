@@ -32,7 +32,7 @@ using namespace std;
 						Constructor
 -------------------------------------------------------------*/
 CRoboPeakLidar::CRoboPeakLidar()
-	: m_com_port(""), m_com_port_baudrate(115200), m_rplidar_drv(nullptr)
+	: m_com_port("") 
 {
 	m_sensorLabel = "RPLidar";
 }

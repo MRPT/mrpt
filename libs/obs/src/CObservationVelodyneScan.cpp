@@ -233,9 +233,8 @@ static void velodyne_scan_to_pointcloud(
 			 block++)  // Firings per packet
 		{
 			// ignore packets with mangled or otherwise different contents
-			if ((num_lasers != 64 &&
-				 CObservationVelodyneScan::UPPER_BANK !=
-					 raw->blocks[block].header) ||
+			if ((num_lasers != 64 && CObservationVelodyneScan::UPPER_BANK !=
+										 raw->blocks[block].header) ||
 				(raw->blocks[block].header !=
 					 CObservationVelodyneScan::UPPER_BANK &&
 				 raw->blocks[block].header !=
@@ -544,8 +543,7 @@ void CObservationVelodyneScan::generatePointCloudAlongSE3Trajectory(
 				global_sensor_pose.composeFrom(last_query_, me_.sensorPose);
 				double gx, gy, gz;
 				global_sensor_pose.composePoint(pt_x, pt_y, pt_z, gx, gy, gz);
-				out_points_.push_back(
-					mrpt::math::TPointXYZIu8(gx, gy, gz, pt_intensity));
+				out_points_.emplace_back(gx, gy, gz, pt_intensity);
 				++results_stats_.num_correctly_inserted_points;
 			}
 			++results_stats_.num_points;
@@ -593,3 +591,7 @@ void CObservationVelodyneScan::TPointCloud::clear_deep()
 		azimuth.swap(d);
 	}
 }
+
+// Default ctor. Do NOT move to the .h, that causes build errors.
+CObservationVelodyneScan::TGeneratePointCloudParameters::
+	TGeneratePointCloudParameters() = default;

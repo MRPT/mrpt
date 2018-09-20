@@ -28,7 +28,8 @@ IMPLEMENTS_SERIALIZABLE(CObservation2DRangeScan, CObservation, mrpt::obs)
 
 CObservation2DRangeScan::CObservation2DRangeScan(
 	const CObservation2DRangeScan& o)
-	: scan(m_scan),  // proxy ctor
+	: CObservation(o),  // base copy ctor
+	  scan(m_scan),  // proxy ctor
 	  intensity(m_intensity),  // proxy ctor
 	  validRange(m_validRange)  // proxy ctor
 {
@@ -71,9 +72,9 @@ void CObservation2DRangeScan::truncateByDistanceAndAngle(
 	unsigned int k = 0;
 	unsigned int nPts = scan.size();
 
-
 	auto itValid = m_validRange.begin();
-	for (auto itScan = m_scan.begin(); itScan != m_scan.end(); itScan++, itValid++, k++)
+	for (auto itScan = m_scan.begin(); itScan != m_scan.end();
+		 itScan++, itValid++, k++)
 	{
 		float ang = fabs(k * aperture / nPts - aperture * 0.5);
 		float x = (*itScan) * cos(ang);
@@ -211,12 +212,14 @@ mxArray* CObservation2DRangeScan::writeToMatlab() const
 	const char* fields[] = {"class",  // Data common to any MRPT class
 							"ts",
 							"sensorLabel",  // Data common to any observation
-							"scan", "validRange",
+							"scan",
+							"validRange",
 							"intensity"  // Received raw data
 							"aperture",
 							"rightToLeft",
 							"maxRange",  // Scan plane geometry and properties
-							"stdError", "beamAperture",
+							"stdError",
+							"beamAperture",
 							"deltaPitch",  // Ray properties
 							"pose",  // Sensor pose
 							"map"};  // Points map
@@ -291,7 +294,8 @@ void CObservation2DRangeScan::filterByExclusionAreas(
 	}
 
 	auto valid_it = m_validRange.begin();
-	for (auto scan_it = m_scan.begin(); scan_it != m_scan.end(); scan_it++, valid_it++)
+	for (auto scan_it = m_scan.begin(); scan_it != m_scan.end();
+		 scan_it++, valid_it++)
 	{
 		if (!*valid_it)
 		{
@@ -309,7 +313,7 @@ void CObservation2DRangeScan::filterByExclusionAreas(
 		this->sensorPose.composePoint(Lx, Ly, 0, Gx, Gy, Gz);
 
 		// Filter by X,Y:
-		for (const auto & area : areas)
+		for (const auto& area : areas)
 		{
 			if (area.first.PointIntoPolygon(Gx, Gy) &&
 				(Gz >= area.second.first && Gz <= area.second.second))
@@ -332,7 +336,7 @@ void CObservation2DRangeScan::filterByExclusionAreas(
 	if (areas.empty()) return;
 
 	TListExclusionAreasWithRanges lst;
-	for (const auto & area : areas)
+	for (const auto& area : areas)
 	{
 		TListExclusionAreasWithRanges::value_type dat;
 		dat.first = area;
@@ -373,7 +377,7 @@ void CObservation2DRangeScan::filterByExclusionAngles(
 	}
 
 	// For each forbiden angle range:
-	for (const auto & angle : angles)
+	for (const auto& angle : angles)
 	{
 		int ap_idx_ini = mrpt::math::wrapTo2Pi(angle.first - Ang) /
 						 dA;  // The signs are all right! ;-)
@@ -419,7 +423,7 @@ void internal_set_build_points_map_from_scan2D(scan2pts_functor fn)
 {
 	ptr_internal_build_points_map_from_scan2D = fn;
 }
-}
+}  // namespace mrpt::obs
 
 /*---------------------------------------------------------------
 						internal_buildAuxPointsMap

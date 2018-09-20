@@ -396,9 +396,7 @@ void CActionRobotMovement2D::computeFromOdometry(
 						TMotionModelOptions
  ---------------------------------------------------------------*/
 CActionRobotMovement2D::TMotionModelOptions::TMotionModelOptions()
-	: modelSelection(CActionRobotMovement2D::mmGaussian),
-	  gaussianModel(),
-	  thrunModel()
+	: gaussianModel(), thrunModel()
 {
 	gaussianModel.a1 = 0.01f;
 	gaussianModel.a2 = RAD2DEG(0.001f);
@@ -426,8 +424,7 @@ void CActionRobotMovement2D::computeFromOdometry_modelGaussian(
 	// The Gaussian PDF:
 	// ---------------------------
 	poseChange = mrpt::make_aligned_shared<CPosePDFGaussian>();
-	CPosePDFGaussian* aux;
-	aux = static_cast<CPosePDFGaussian*>(poseChange.get());
+	CPosePDFGaussian* aux = dynamic_cast<CPosePDFGaussian*>(poseChange.get());
 
 	// See http://www.mrpt.org/Probabilistic_Motion_Models
 	// -----------------------------------
@@ -476,11 +473,10 @@ void CActionRobotMovement2D::computeFromOdometry_modelThrun(
 {
 	// The Gaussian PDF:
 	// ---------------------------
-	CPosePDFParticles* aux;
 	const mrpt::math::TPose2D nullPose(0, 0, 0);
 
-	poseChange = mrpt::make_aligned_shared<CPosePDFParticles>();
-	aux = static_cast<CPosePDFParticles*>(poseChange.get());
+	poseChange = CPosePDFParticles::Create();
+	CPosePDFParticles* aux = dynamic_cast<CPosePDFParticles*>(poseChange.get());
 
 	// Set the number of particles:
 	aux->resetDeterministic(nullPose, o.thrunModel.nParticlesCount);
@@ -502,19 +498,19 @@ void CActionRobotMovement2D::computeFromOdometry_modelThrun(
 	// Draw samples:
 	for (size_t i = 0; i < o.thrunModel.nParticlesCount; i++)
 	{
-		float Arot1_draw = Arot1 -
-						   (o.thrunModel.alfa1_rot_rot * fabs(Arot1) +
-							o.thrunModel.alfa2_rot_trans * Atrans) *
-							   getRandomGenerator().drawGaussian1D_normalized();
+		float Arot1_draw =
+			Arot1 - (o.thrunModel.alfa1_rot_rot * fabs(Arot1) +
+					 o.thrunModel.alfa2_rot_trans * Atrans) *
+						getRandomGenerator().drawGaussian1D_normalized();
 		float Atrans_draw =
 			Atrans -
 			(o.thrunModel.alfa3_trans_trans * Atrans +
 			 o.thrunModel.alfa4_trans_rot * (fabs(Arot1) + fabs(Arot2))) *
 				getRandomGenerator().drawGaussian1D_normalized();
-		float Arot2_draw = Arot2 -
-						   (o.thrunModel.alfa1_rot_rot * fabs(Arot2) +
-							o.thrunModel.alfa2_rot_trans * Atrans) *
-							   getRandomGenerator().drawGaussian1D_normalized();
+		float Arot2_draw =
+			Arot2 - (o.thrunModel.alfa1_rot_rot * fabs(Arot2) +
+					 o.thrunModel.alfa2_rot_trans * Atrans) *
+						getRandomGenerator().drawGaussian1D_normalized();
 
 		// Output:
 		aux->m_particles[i].d.x =
@@ -525,7 +521,7 @@ void CActionRobotMovement2D::computeFromOdometry_modelThrun(
 			Atrans_draw * sin(Arot1_draw) +
 			motionModelConfiguration.thrunModel.additional_std_XY *
 				getRandomGenerator().drawGaussian1D_normalized();
-		aux->m_particles[i].d.phi = 
+		aux->m_particles[i].d.phi =
 			Arot1_draw + Arot2_draw +
 			motionModelConfiguration.thrunModel.additional_std_phi *
 				getRandomGenerator().drawGaussian1D_normalized();
@@ -670,7 +666,8 @@ void CActionRobotMovement2D::prepareFastDrawSingleSample_modelGaussian() const
 	CMatrixDouble33 D;
 
 	const CPosePDFGaussian* gPdf =
-		static_cast<const CPosePDFGaussian*>(poseChange.get());
+		dynamic_cast<const CPosePDFGaussian*>(poseChange.get());
+	ASSERT_(gPdf != nullptr);
 	const CMatrixDouble33& cov = gPdf->cov;
 
 	m_fastDrawGauss_M = gPdf->mean;

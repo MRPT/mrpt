@@ -19,12 +19,10 @@ using namespace mrpt::poses;
 // ------- FrameTransformerInterface --------
 template <int DIM>
 FrameTransformerInterface<DIM>::FrameTransformerInterface()
-{
-}
+= default;
 template <int DIM>
 FrameTransformerInterface<DIM>::~FrameTransformerInterface()
-{
-}
+= default;
 
 namespace mrpt
 {
@@ -39,12 +37,10 @@ template class FrameTransformerInterface<3>;
 // ------- FrameTransformer --------
 template <int DIM>
 FrameTransformer<DIM>::FrameTransformer()
-{
-}
+= default;
 template <int DIM>
 FrameTransformer<DIM>::~FrameTransformer()
-{
-}
+= default;
 
 template <int DIM>
 void FrameTransformer<DIM>::sendTransform(

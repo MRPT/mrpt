@@ -15,7 +15,7 @@
 using namespace mrpt::system;
 using namespace std;
 
-CObserver::CObserver() {}
+CObserver::CObserver() = default;
 CObserver::~CObserver()
 {
 	while (!m_subscribed.empty()) this->observeEnd(**m_subscribed.begin());

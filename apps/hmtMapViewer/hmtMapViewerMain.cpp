@@ -89,7 +89,7 @@ class CMyGLCanvas : public CWxGLCanvasBase
 	{
 	}
 
-	~CMyGLCanvas() override {}
+	~CMyGLCanvas() override = default;
 	// void OnKeyDownCustom( wxKeyEvent& event );
 
 	void OnPreRender() override;
@@ -247,7 +247,7 @@ hmtMapViewerFrame::hmtMapViewerFrame(wxWindow* parent, wxWindowID id)
 		StaticText2, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
 	cbHypos = new wxChoice(
-		Panel5, ID_CHOICE1, wxDefaultPosition, wxDefaultSize, 0, 0, 0,
+		Panel5, ID_CHOICE1, wxDefaultPosition, wxDefaultSize, 0, nullptr, 0,
 		wxDefaultValidator, _T("ID_CHOICE1"));
 	FlexGridSizer5->Add(
 		cbHypos, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,

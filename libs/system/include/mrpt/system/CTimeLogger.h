@@ -50,10 +50,10 @@ class CTimeLogger : public mrpt::system::COutputLogger
 	{
 		TCallData();
 
-		size_t n_calls;
-		double min_t, max_t, mean_t, last_t;
+		size_t n_calls{0};
+		double min_t{0}, max_t{0}, mean_t{0}, last_t{0};
 		std::stack<double, std::vector<double>> open_calls;
-		bool has_time_units;
+		bool has_time_units{true};
 	};
 
    protected:

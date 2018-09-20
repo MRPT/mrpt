@@ -117,15 +117,15 @@ class CServoeNeck : public mrpt::comms::CInterfaceFTDI
 	/** A copy of the device serial number (to open the USB FTDI chip). */
 	std::string m_usbSerialNumber;
 	/** The value set in the ICR register within the ATMEGA16 controller. */
-	double m_MaxValue;
+	double m_MaxValue{10000};
 	/** The range of turn of the servo will be truncated to
 	 * "+-m_truncate_factor*(pi/2)". */
-	double m_TruncateFactor;
+	double m_TruncateFactor{0.5};
 	/** A vector containing the last N angles which where passed to the servo
 	 * (for averaging) */
 	std::deque<double> m_PrevAngles;
 	/** Number of previous angles to store for averaging */
-	unsigned int m_NumPrevAngles;
+	unsigned int m_NumPrevAngles{5};
 	/** The offset used for each servo */
 	std::vector<float> m_offsets;
 

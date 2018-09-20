@@ -43,19 +43,19 @@ class CPointCloudFilterByDistance : public mrpt::maps::CPointCloudFilterBase
 	struct TOptions : public mrpt::config::CLoadableOptions
 	{
 		/** (Default: 0.05 m) */
-		double min_dist;
+		double min_dist{0.10};
 		/** (Default: 2 deg) Stored in rad. */
 		double angle_tolerance;
 		/** (Default: 1 s) */
-		double too_old_seconds;
+		double too_old_seconds{1.0};
 		/** (Default: 1) How many previous keyframes will be compared with the
 		 * latest pointcloud. */
-		int previous_keyframes;
+		int previous_keyframes{1};
 		/** (Default: 0.4) If the ratio [0,1] of points considered invalid
 		 * ("deletion") is larger than this ratio, no point will be deleted
 		 * since it'd be too suspicious and may indicate a failure of this
 		 * filter. */
-		double max_deletion_ratio;
+		double max_deletion_ratio{.4};
 
 		TOptions();
 		void loadFromConfigFile(

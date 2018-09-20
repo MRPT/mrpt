@@ -11,7 +11,7 @@
 #include <QDoubleSpinBox>
 
 CPoseDirection::CPoseDirection(QWidget* parent)
-	: QWidget(parent), m_ui(std::make_unique<Ui::CPoseDirection>()), m_index(0)
+	: QWidget(parent), m_ui(std::make_unique<Ui::CPoseDirection>()) 
 {
 	m_ui->setupUi(this);
 
@@ -22,7 +22,7 @@ CPoseDirection::CPoseDirection(QWidget* parent)
 		m_ui->roll, SIGNAL(valueChanged(double)), this, SLOT(dataChanged()));
 }
 
-CPoseDirection::~CPoseDirection() {}
+CPoseDirection::~CPoseDirection() = default;
 void CPoseDirection::setDirection(double yaw, double pitch, double roll)
 {
 	blockSignals(true);

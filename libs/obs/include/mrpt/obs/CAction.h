@@ -29,8 +29,8 @@ class CAction : public mrpt::serialization::CSerializable
 	DEFINE_VIRTUAL_SERIALIZABLE(CAction)
 
 	/** Default ctor */
-	CAction() {}
-	~CAction() override {}
+	CAction() = default;
+	~CAction() override = default;
 
 	/** The associated time-stamp.*/
 	mrpt::system::TTimeStamp timestamp{INVALID_TIMESTAMP};

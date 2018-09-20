@@ -86,11 +86,11 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 		/**
 		 * Empty constructor. Initializes to garbage.
 		 */
-		TQuadrilateral() {}
+		TQuadrilateral() = default;
 		/**
 		 * Destructor.
 		 */
-		~TQuadrilateral() {}
+		~TQuadrilateral() = default;
 	};
 
    protected:
@@ -106,7 +106,7 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 	 * computations. */
 	mutable mrpt::math::CMatrixTemplate<mrpt::math::TPoint3D> pointsMesh;
 	/**  Mutable flag which tells if recalculations are needed. */
-	mutable bool meshUpToDate;
+	mutable bool meshUpToDate{false};
 	/**
 	 * Mutable set of data used in ray tracing.
 	 * \sa mrpt::math::TPolygonWithPlane
@@ -114,13 +114,13 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 	mutable std::vector<mrpt::math::TPolygonWithPlane> polys;
 	/** Mutable flag telling whether ray tracing temporary data must be
 	 * recalculated or not. */
-	mutable bool polysUpToDate;
+	mutable bool polysUpToDate{false};
 	/** Boolean variable which determines if the profile is closed at each
 	 * section. */
-	bool closed;
+	bool closed{false};
 	/** Flag to determine whether the object is fully visible or only some
 	 * sections are. */
-	bool fullyVisible;
+	bool fullyVisible{true};
 	/**
 	 * First visible section, if fullyVisible is set to false.
 	 * \sa fullyVisible,lastSection
@@ -403,16 +403,7 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 	/**
 	 * Basic constructor with default initialization.
 	 */
-	CGeneralizedCylinder()
-		: axis(),
-		  generatrix(),
-		  mesh(),
-		  meshUpToDate(false),
-		  polysUpToDate(false),
-		  closed(false),
-		  fullyVisible(true)
-	{
-	}
+	CGeneralizedCylinder() : axis(), generatrix(), mesh() {}
 	/**
 	 * Constructor with axis and generatrix.
 	 */
@@ -431,8 +422,6 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 	/**
 	 * Destructor.
 	 */
-	~CGeneralizedCylinder() override{};
+	~CGeneralizedCylinder() override= default;
 };
-}
-
-
+}  // namespace mrpt::opengl

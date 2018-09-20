@@ -156,7 +156,7 @@ struct Constants<float> {
 // TODO: Replace with std::optional once Sophus moves to c++17.
 //
 struct nullopt_t {
-  explicit constexpr nullopt_t() {}
+  explicit constexpr nullopt_t() = default;
 };
 
 constexpr nullopt_t nullopt{};
@@ -164,7 +164,7 @@ template <class T>
 
 class optional {
  public:
-  optional() : is_valid_(false) {}
+  optional()  = default;
 
   optional(nullopt_t) : is_valid_(false) {}
 
@@ -194,7 +194,7 @@ class optional {
 
  private:
   T type_;
-  bool is_valid_;
+  bool is_valid_{false};
 };
 
 template <bool B, class T = void>

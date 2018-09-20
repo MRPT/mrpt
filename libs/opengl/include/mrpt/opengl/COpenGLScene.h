@@ -243,7 +243,7 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 	}
 
    protected:
-	bool m_followCamera;
+	bool m_followCamera{false};
 
 	using TListViewports = std::vector<COpenGLViewport::Ptr>;
 

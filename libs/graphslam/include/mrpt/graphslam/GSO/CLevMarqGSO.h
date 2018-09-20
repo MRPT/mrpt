@@ -323,14 +323,14 @@ class CLevMarqGSO
 	// protected members
 	//////////////////////////////////////////////////////////////
 
-	bool m_first_time_call;
-	bool m_has_read_config;
+	bool m_first_time_call{false};
+	bool m_has_read_config{false};
 	bool registered_new_node;
-	bool m_autozoom_active;
+	bool m_autozoom_active{true};
 
 	// start optimizing the graph after a certain number of nodes has been
 	// added (when m_graph->nodeCount() > m_last_total_num_of_nodes)
-	size_t m_last_total_num_of_nodes;
+	size_t m_last_total_num_of_nodes{5};
 
 	// Use second thread for graph optimization
 	std::thread m_thread_optimize;
@@ -366,7 +366,7 @@ class CLevMarqGSO
 	 *
 	 * \sa m_max_used_consec_lcs
 	 */
-	size_t m_curr_used_consec_lcs;
+	size_t m_curr_used_consec_lcs{0};
 	/**\brief Number of consecutive loop closures to ignore after \b
 	 * m_max_used_consec_lcs have already been issued.
 	 *
@@ -377,16 +377,16 @@ class CLevMarqGSO
 	 *
 	 * \sa m_max_ignored_consec_lcs
 	 */
-	size_t m_curr_ignored_consec_lcs;
+	size_t m_curr_ignored_consec_lcs{0};
 
 	/**\}*/
 
 	/**\brief Indicates whether a full graph optimization was just issued.
 	 */
-	bool m_just_fully_optimized_graph;
+	bool m_just_fully_optimized_graph{false};
 
 	/**\brief Minimum number of nodes before we try optimizing the graph */
-	size_t m_min_nodes_for_optimization;
+	size_t m_min_nodes_for_optimization{3};
 };
 }
 #include "CLevMarqGSO_impl.h"

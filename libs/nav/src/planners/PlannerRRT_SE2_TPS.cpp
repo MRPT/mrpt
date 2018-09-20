@@ -23,7 +23,7 @@ using namespace std;
 
 MRPT_TODO("Optimize getNearestNode() with KD-tree!")
 
-PlannerRRT_SE2_TPS::PlannerRRT_SE2_TPS() : m_initialized(false) {}
+PlannerRRT_SE2_TPS::PlannerRRT_SE2_TPS()  = default;
 /** Load all params from a config file source */
 void PlannerRRT_SE2_TPS::loadConfig(
 	const mrpt::config::CConfigFileBase& ini, const std::string& sSect)

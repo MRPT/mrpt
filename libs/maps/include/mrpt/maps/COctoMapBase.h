@@ -50,7 +50,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 	/** Constructor, defines the resolution of the octomap (length of each voxel
 	 * side) */
 	COctoMapBase(double resolution);
-	~COctoMapBase() override {}
+	~COctoMapBase() override = default;
 	/** Get a reference to the internal octomap object. Example:
 	 * \code
 	 *  mrpt::maps::COctoMap  map;
@@ -81,7 +81,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 			// Copy all but the m_parent pointer!
 			maxrange = o.maxrange;
 			pruning = o.pruning;
-			const bool o_has_parent = o.m_parent.get() != NULL;
+			const bool o_has_parent = o.m_parent.get() != nullptr;
 			setOccupancyThres(
 				o_has_parent ? o.getOccupancyThres() : o.occupancyThres);
 			setProbHit(o_has_parent ? o.getProbHit() : o.probHit);
@@ -99,9 +99,10 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		void dumpToTextStream(
 			std::ostream& out) const override;  // See base docs
 
-		double maxrange;  //!< maximum range for how long individual beams are
+		double maxrange{
+			-1.};  //!< maximum range for how long individual beams are
 		//! inserted (default -1: complete beam)
-		bool pruning;  //!< whether the tree is (losslessly) pruned after
+		bool pruning{true};  //!< whether the tree is (losslessly) pruned after
 		//! insertion (default: true)
 
 		/// (key name in .ini files: "occupancyThres") sets the threshold for
@@ -205,16 +206,19 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 	   private:
 		mrpt::ignored_copy_ptr<myself_t> m_parent;
 
-		double occupancyThres;  // sets the threshold for occupancy (sensor
+		double occupancyThres{0.5};  // sets the threshold for occupancy (sensor
 		// model) (Default=0.5)
-		double probHit;  // sets the probablility for a "hit" (will be converted
+		double probHit{
+			0.7};  // sets the probablility for a "hit" (will be converted
 		// to logodds) - sensor model (Default=0.7)
-		double probMiss;  // sets the probablility for a "miss" (will be
+		double probMiss{0.4};  // sets the probablility for a "miss" (will be
 		// converted to logodds) - sensor model (Default=0.4)
-		double clampingThresMin;  // sets the minimum threshold for occupancy
+		double clampingThresMin{
+			0.1192};  // sets the minimum threshold for occupancy
 		// clamping (sensor model) (Default=0.1192, -2
 		// in log odds)
-		double clampingThresMax;  // sets the maximum threshold for occupancy
+		double clampingThresMax{
+			0.971};  // sets the maximum threshold for occupancy
 		// clamping (sensor model) (Default=0.971, 3.5
 		// in log odds)
 	};
@@ -230,7 +234,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		/** Initilization of default parameters
 		 */
 		TLikelihoodOptions();
-		~TLikelihoodOptions() override {}
+		~TLikelihoodOptions() override = default;
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
@@ -242,7 +246,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		/** Binary dump to stream */
 		void readFromStream(mrpt::serialization::CArchive& in);
 
-		uint32_t decimation;  //!< Speed up the likelihood computation by
+		uint32_t decimation{1};  //!< Speed up the likelihood computation by
 		//! considering only one out of N rays (default=1)
 	};
 
@@ -255,30 +259,26 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 	 * mrpt::opengl::COctoMapVoxels */
 	struct TRenderingOptions
 	{
-		bool generateGridLines;  //!< Generate grid lines for all octree nodes,
+		bool generateGridLines{
+			false};  //!< Generate grid lines for all octree nodes,
 		//! useful to draw the "structure" of the
 		//! octree, but computationally costly (Default:
 		//! false)
 
-		bool generateOccupiedVoxels;  //!< Generate voxels for the occupied
+		bool generateOccupiedVoxels{
+			true};  //!< Generate voxels for the occupied
 		//! volumes  (Default=true)
-		bool visibleOccupiedVoxels;  //!< Set occupied voxels visible (requires
+		bool visibleOccupiedVoxels{
+			true};  //!< Set occupied voxels visible (requires
 		//! generateOccupiedVoxels=true)
 		//!(Default=true)
 
-		bool generateFreeVoxels;  //!< Generate voxels for the freespace
+		bool generateFreeVoxels{true};  //!< Generate voxels for the freespace
 		//!(Default=true)
-		bool visibleFreeVoxels;  //!< Set free voxels visible (requires
+		bool visibleFreeVoxels{true};  //!< Set free voxels visible (requires
 		//! generateFreeVoxels=true) (Default=true)
 
-		TRenderingOptions()
-			: generateGridLines(false),
-			  generateOccupiedVoxels(true),
-			  visibleOccupiedVoxels(true),
-			  generateFreeVoxels(true),
-			  visibleFreeVoxels(true)
-		{
-		}
+		TRenderingOptions() = default;
 
 		/** Binary dump to stream */
 		void writeToStream(mrpt::serialization::CArchive& out) const;
@@ -291,8 +291,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 	/** Returns a 3D object representing the map.
 	 * \sa renderingOptions
 	 */
-	void getAs3DObject(
-		mrpt::opengl::CSetOfObjects::Ptr& outObj) const override
+	void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const override
 	{
 		auto gl_obj = mrpt::opengl::COctoMapVoxels::Create();
 		this->getAsOctoMapVoxels(*gl_obj);
@@ -388,6 +387,4 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		const mrpt::poses::CPose3D& takenFrom) override;
 
 };  // End of class def.
-}
-
-
+}  // namespace mrpt::maps

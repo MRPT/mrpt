@@ -46,7 +46,7 @@ class CStereoGrabber_Bumblebee_libdc1394
 		const CStereoGrabber_Bumblebee_libdc1394&) = delete;
 
 	/** Destructor */
-	virtual ~CStereoGrabber_Bumblebee_libdc1394(void);
+	virtual ~CStereoGrabber_Bumblebee_libdc1394();
 
 	/** Grab stereo images, and return the pair of rectified images.
 	 * \param out_observation The object to be filled with sensed data.

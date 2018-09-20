@@ -14,15 +14,9 @@ namespace mrpt::graphslam::optimizers
 
 template <class GRAPH_T>
 CLevMarqGSO<GRAPH_T>::CLevMarqGSO()
-	: m_first_time_call(false),
-	  m_has_read_config(false),
-	  m_autozoom_active(true),
-	  m_last_total_num_of_nodes(5),
-	  m_optimization_policy(OptimizationPolicy::UseLoopClosures),
-	  m_curr_used_consec_lcs(0),
-	  m_curr_ignored_consec_lcs(0),
-	  m_just_fully_optimized_graph(false),
-	  m_min_nodes_for_optimization(3)
+	: 
+	  m_optimization_policy(OptimizationPolicy::UseLoopClosures)
+	  
 {
 	this->initializeLoggers("CLevMarqGSO");
 }
@@ -719,8 +713,7 @@ CLevMarqGSO<GRAPH_T>::OptimizationParams::OptimizationParams()
 }
 template <class GRAPH_T>
 CLevMarqGSO<GRAPH_T>::OptimizationParams::~OptimizationParams()
-{
-}
+= default;
 template <class GRAPH_T>
 void CLevMarqGSO<GRAPH_T>::OptimizationParams::dumpToTextStream(
 	std::ostream& out) const
@@ -753,8 +746,8 @@ void CLevMarqGSO<GRAPH_T>::OptimizationParams::loadFromConfigFile(
 			optimization_distance));
 
 	// optimization parameters
-	cfg["verbose"] = source.read_bool(section, "verbose", 0, false);
-	cfg["profiler"] = source.read_bool(section, "profiler", 0, false);
+	cfg["verbose"] = source.read_bool(section, "verbose", false, false);
+	cfg["profiler"] = source.read_bool(section, "profiler", false, false);
 	cfg["max_iterations"] =
 		source.read_double(section, "max_iterations", 100, false);
 	cfg["scale_hessian"] =
@@ -771,8 +764,7 @@ CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::GraphVisualizationParams()
 }
 template <class GRAPH_T>
 CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::~GraphVisualizationParams()
-{
-}
+= default;
 template <class GRAPH_T>
 void CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::dumpToTextStream(
 	std::ostream& out) const
@@ -798,22 +790,22 @@ void CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::loadFromConfigFile(
 	MRPT_START;
 
 	visualize_optimized_graph =
-		source.read_bool(section, "visualize_optimized_graph", 1, false);
+		source.read_bool(section, "visualize_optimized_graph", true, false);
 
 	cfg["show_ID_labels"] =
-		source.read_bool(section, "optimized_show_ID_labels", 0, false);
+		source.read_bool(section, "optimized_show_ID_labels", false, false);
 	cfg["show_ground_grid"] =
 		source.read_double(section, "optimized_show_ground_grid", 1, false);
 	cfg["show_edges"] =
-		source.read_bool(section, "optimized_show_edges", 1, false);
+		source.read_bool(section, "optimized_show_edges", true, false);
 	cfg["edge_color"] =
 		source.read_int(section, "optimized_edge_color", 1500, false);
 	cfg["edge_width"] =
 		source.read_double(section, "optimized_edge_width", 1.5, false);
 	cfg["show_node_corners"] =
-		source.read_bool(section, "optimized_show_node_corners", 1, false);
+		source.read_bool(section, "optimized_show_node_corners", true, false);
 	cfg["show_edge_rel_poses"] =
-		source.read_bool(section, "optimized_show_edge_rel_poses", 1, false);
+		source.read_bool(section, "optimized_show_edge_rel_poses", true, false);
 	cfg["edge_rel_poses_color"] = source.read_int(
 		section, "optimized_edge_rel_poses_color", 2000, false);
 	cfg["nodes_edges_corner_scale"] = source.read_double(

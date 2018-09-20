@@ -98,7 +98,7 @@ bool mrpt::system::decodeBase64(
 		tablesBuilt = true;
 		for (int i = (sizeof(alphabet)) - 1; i >= 0; i--)
 		{
-			inalphabet[alphabet[i]] = 1;
+			inalphabet[alphabet[i]] = true;
 			decoder[alphabet[i]] = i;
 		}
 	}

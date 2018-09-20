@@ -52,15 +52,7 @@ using namespace std::literals;
 /*-------------------------------------------------------------
 					CIMUXSens
 -------------------------------------------------------------*/
-CIMUXSens::CIMUXSens()
-	: m_COMbauds(0),
-	  m_com_port(),
-	  m_timeStartUI(),
-	  m_timeStartTT(),
-	  m_sensorPose(),
-	  m_cmt3_ptr(nullptr),
-	  m_deviceId_ptr(nullptr),
-	  m_toutCounter(0)
+CIMUXSens::CIMUXSens() : m_com_port(), m_timeStartTT(), m_sensorPose()
 {
 	m_sensorLabel = "XSensMTi";
 #if MRPT_HAS_xSENS_MT3
@@ -171,7 +163,7 @@ void CIMUXSens::doProcess()
 				m_timeStartTT = mrpt::system::now();
 			}
 			else
-				AtUI = nowUI - m_timeStartUI; // ms
+				AtUI = nowUI - m_timeStartUI;  // ms
 
 			obs->timestamp = m_timeStartTT + std::chrono::milliseconds(AtUI);
 			obs->sensorPose = m_sensorPose;

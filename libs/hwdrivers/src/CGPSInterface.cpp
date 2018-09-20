@@ -50,28 +50,19 @@ struct TParsersRegistry
    ----------------------------------------------------- */
 CGPSInterface::CGPSInterface()
 	: mrpt::system::COutputLogger("CGPSInterface"),
-	  m_data_stream(nullptr),  // Typically a CSerialPort created by this class,
-	  // but may be set externally.
-	  m_data_stream_cs(nullptr),
-	  m_data_stream_is_external(false),
+	  
 	  m_customInit(),
 	  m_rx_buffer(0x10000),
-	  m_parser(CGPSInterface::AUTO),
+	  
 	  m_raw_dump_file_prefix(),
 	  m_COMname(),
-	  m_COMbauds(4800),
-	  m_sensorLabelAppendMsgType(true),
-	  m_GPS_comsWork(false),
+	  
 	  m_last_timestamp(INVALID_TIMESTAMP),
-	  m_custom_cmds_delay(0.1),
-	  m_custom_cmds_append_CRLF(true),
+	  
 
 	  m_JAVAD_rtk_src_port(),
-	  m_JAVAD_rtk_src_baud(0),
-	  m_JAVAD_rtk_format("cmr"),
-	  m_topcon_useAIMMode(false),
-	  m_topcon_AIMConfigured(false),
-	  m_topcon_data_period(0.2)  // 20 Hz
+	  
+	  m_JAVAD_rtk_format("cmr")
 {
 	m_sensorLabel = "GPS";
 }

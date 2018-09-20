@@ -28,18 +28,18 @@ class TKLDParams : public mrpt::config::CLoadableOptions
 	 * papers), which is used only if the CParticleFilter is created with the
 	 * "adaptiveSampleSize" flag set to true.
 	  */
-	double KLD_binSize_XY, KLD_binSize_PHI, KLD_delta, KLD_epsilon;
+	double KLD_binSize_XY{0.2f}, KLD_binSize_PHI, KLD_delta{0.01f}, KLD_epsilon{0.02f};
 
 	/** Parameters for the KLD adaptive sample size algorithm (see Dieter Fox's
 	 * papers), which is used only if the CParticleFilter is created with the
 	 * "adaptiveSampleSize" flag set to true.
 	  */
-	unsigned int KLD_minSampleSize, KLD_maxSampleSize;
+	unsigned int KLD_minSampleSize{250}, KLD_maxSampleSize{100000};
 
 	/** (Default: KLD_minSamplesPerBin=0) The minimum number of samples will be
 	 * the maximum of KLD_minSampleSize and KLD_minSamplesPerBin *
 	 * #ofBinsOccupied in the last time step */
-	double KLD_minSamplesPerBin;
+	double KLD_minSamplesPerBin{0};
 };
 
 }

@@ -99,12 +99,12 @@ class CHeightGridMap2D_MRF : public CRandomFieldGridMap2D,
 
 	MAP_DEFINITION_START(CHeightGridMap2D_MRF)
 	/** Runs map estimation at start up (Default:true) */
-	bool run_map_estimation_at_ctor;
+	bool run_map_estimation_at_ctor{true};
 	/** See CHeightGridMap2D_MRF::CHeightGridMap2D_MRF */
-	double min_x, max_x, min_y, max_y, resolution;
+	double min_x{-2}, max_x{2}, min_y{-2}, max_y{2}, resolution{0.10f};
 	/** The kind of map representation (see
 	 * CHeightGridMap2D_MRF::CHeightGridMap2D_MRF) */
-	mrpt::maps::CHeightGridMap2D_MRF::TMapRepresentation mapType;
+	mrpt::maps::CHeightGridMap2D_MRF::TMapRepresentation mapType{mrGMRF_SD};
 	/** Observations insertion options */
 	mrpt::maps::CHeightGridMap2D_MRF::TInsertionOptions insertionOpts;
 	MAP_DEFINITION_END(CHeightGridMap2D_MRF)

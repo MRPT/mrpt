@@ -56,10 +56,10 @@ struct VelodyneCalibration
 #pragma pack(push, 1)
 	struct PerLaserCalib
 	{
-		double azimuthCorrection, verticalCorrection, distanceCorrection;
-		double verticalOffsetCorrection, horizontalOffsetCorrection;
-		double sinVertCorrection, cosVertCorrection;
-		double sinVertOffsetCorrection, cosVertOffsetCorrection;
+		double azimuthCorrection{.0}, verticalCorrection{.0}, distanceCorrection{.0};
+		double verticalOffsetCorrection{.0}, horizontalOffsetCorrection{.0};
+		double sinVertCorrection{.0}, cosVertCorrection{1.0};
+		double sinVertOffsetCorrection{.0}, cosVertOffsetCorrection{1.0};
 
 		PerLaserCalib();
 	};

@@ -76,7 +76,7 @@ CDlgPLYOptions::CDlgPLYOptions(wxWindow* parent, wxWindowID id)
 		StaticText1, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
 	cbPointSize = new wxChoice(
-		this, ID_CHOICE1, wxDefaultPosition, wxDefaultSize, 0, 0, 0,
+		this, ID_CHOICE1, wxDefaultPosition, wxDefaultSize, 0, nullptr, 0,
 		wxDefaultValidator, _T("ID_CHOICE1"));
 	cbPointSize->SetSelection(cbPointSize->Append(_("1.0")));
 	cbPointSize->Append(_("2.0"));

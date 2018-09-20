@@ -249,7 +249,7 @@ bool CTuMicos::inmediateExecution(bool set)
 						aWait
 -------------------------------------------------------------*/
 
-bool CTuMicos::aWait(void) { return true; }
+bool CTuMicos::aWait() { return true; }
 /*-------------------------------------------------------------
 						haltAll
 -------------------------------------------------------------*/
@@ -279,7 +279,7 @@ bool CTuMicos::halt(char axis)
 						reset
 -------------------------------------------------------------*/
 
-bool CTuMicos::reset(void)
+bool CTuMicos::reset()
 {
 	char command[50], command2[50];
 	sprintf(command, "%u %s ", axis_index, "nreset");
@@ -299,7 +299,7 @@ bool CTuMicos::reset(void)
 						save
 -------------------------------------------------------------*/
 
-bool CTuMicos::save(void)
+bool CTuMicos::save()
 {
 	cout << endl << "[ERROR] Command not defined for this PTunit" << endl;
 
@@ -310,7 +310,7 @@ bool CTuMicos::save(void)
 					restoreDefaults
 -------------------------------------------------------------*/
 
-bool CTuMicos::restoreDefaults(void)
+bool CTuMicos::restoreDefaults()
 {
 	cout << endl << "[ERROR] Command not defined for this PTunit" << endl;
 
@@ -321,7 +321,7 @@ bool CTuMicos::restoreDefaults(void)
 				restoreFactoryDefaults
 -------------------------------------------------------------*/
 
-bool CTuMicos::restoreFactoryDefaults(void)
+bool CTuMicos::restoreFactoryDefaults()
 {
 	cout << endl << "[ERROR] Command not defined for this PTunit" << endl;
 
@@ -613,7 +613,7 @@ bool CTuMicos::echoMode(bool mode)
 						  resolution
 -------------------------------------------------------------*/
 
-bool CTuMicos::resolution(void)
+bool CTuMicos::resolution()
 {
 	cout << endl << "[ERROR] Command not defined for this PTunit" << endl;
 

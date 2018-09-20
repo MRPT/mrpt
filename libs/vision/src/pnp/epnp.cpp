@@ -65,7 +65,7 @@ mrpt::vision::pnp::epnp::~epnp()
 	if (A2) delete[] A2;
 }
 
-void mrpt::vision::pnp::epnp::choose_control_points(void)
+void mrpt::vision::pnp::epnp::choose_control_points()
 {
 	// Take C0 as the reference points centroid:
 	cws[0][0] = cws[0][1] = cws[0][2] = 0;
@@ -87,7 +87,7 @@ void mrpt::vision::pnp::epnp::choose_control_points(void)
 			PW0->data.db[3 * i + j] = pws[3 * i + j] - cws[0][j];
 
 	cvMulTransposed(PW0, &PW0tPW0, 1);
-	cvSVD(&PW0tPW0, &DC, &UCt, 0, CV_SVD_MODIFY_A | CV_SVD_U_T);
+	cvSVD(&PW0tPW0, &DC, &UCt, nullptr, CV_SVD_MODIFY_A | CV_SVD_U_T);
 
 	cvReleaseMat(&PW0);
 
@@ -99,7 +99,7 @@ void mrpt::vision::pnp::epnp::choose_control_points(void)
 	}
 }
 
-void mrpt::vision::pnp::epnp::compute_barycentric_coordinates(void)
+void mrpt::vision::pnp::epnp::compute_barycentric_coordinates()
 {
 	double cc[3 * 3], cc_inv[3 * 3];
 	CvMat CC = cvMat(3, 3, CV_64F, cc);
@@ -153,7 +153,7 @@ void mrpt::vision::pnp::epnp::compute_ccs(const double* betas, const double* ut)
 	}
 }
 
-void mrpt::vision::pnp::epnp::compute_pcs(void)
+void mrpt::vision::pnp::epnp::compute_pcs()
 {
 	for (int i = 0; i < number_of_correspondences; i++)
 	{
@@ -182,7 +182,7 @@ void mrpt::vision::pnp::epnp::compute_pose(cv::Mat& R, cv::Mat& t)
 	CvMat Ut = cvMat(12, 12, CV_64F, ut);
 
 	cvMulTransposed(M, &MtM, 1);
-	cvSVD(&MtM, &D, &Ut, 0, CV_SVD_MODIFY_A | CV_SVD_U_T);
+	cvSVD(&MtM, &D, &Ut, nullptr, CV_SVD_MODIFY_A | CV_SVD_U_T);
 	cvReleaseMat(&M);
 
 	double l_6x10[6 * 10], rho[6];
@@ -304,7 +304,7 @@ void mrpt::vision::pnp::epnp::estimate_R_and_t(double R[3][3], double t[3])
 	t[2] = pc0[2] - dot(R[2], pw0);
 }
 
-void mrpt::vision::pnp::epnp::solve_for_sign(void)
+void mrpt::vision::pnp::epnp::solve_for_sign()
 {
 	if (pcs[2] < 0.0)
 	{

@@ -22,9 +22,7 @@ IMPLEMENTS_SERIALIZABLE(CObservationBeaconRanges, CObservation, mrpt::obs)
 /** Default constructor.
  */
 CObservationBeaconRanges::CObservationBeaconRanges()
-	: minSensorDistance(0),
-	  maxSensorDistance(1e2f),
-	  stdError(1e-2f),
+	: 
 	  sensedData(),
 	  auxEstimatePose()
 {

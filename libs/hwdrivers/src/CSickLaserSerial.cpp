@@ -41,15 +41,9 @@ int CSickLaserSerial::CRC16_GEN_POL = 0x8005;
 						CSickLaserSerial
 -------------------------------------------------------------*/
 CSickLaserSerial::CSickLaserSerial()
-	: m_mm_mode(false),
-	  m_scans_FOV(180),
-	  m_scans_res(50),
-	  m_com_port(),
-	  m_mySerialPort(nullptr),
-	  m_com_baudRate(38400),
-	  m_nTries_connect(1),
-	  m_nTries_current(0),
-	  m_skip_laser_config(false)
+	: 
+	  m_com_port()
+	  
 {
 	m_sensorLabel = "SICKLMS";
 	memset(m_received_frame_buffer, 0, sizeof(m_received_frame_buffer));

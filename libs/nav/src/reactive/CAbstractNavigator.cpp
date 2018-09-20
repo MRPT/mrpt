@@ -23,11 +23,8 @@ const double PREVIOUS_POSES_MAX_AGE = 20;  // seconds
 // Ctor: CAbstractNavigator::TargetInfo
 CAbstractNavigator::TargetInfo::TargetInfo()
 	: target_coords(0, 0, 0),
-	  target_frame_id("map"),
-	  targetAllowedDistance(0.5),
-	  targetIsRelative(false),
-	  targetDesiredRelSpeed(.05),
-	  targetIsIntermediaryWaypoint(false)
+	  target_frame_id("map")
+	  
 {
 }
 
@@ -108,7 +105,7 @@ CAbstractNavigator::CAbstractNavigator(CRobot2NavInterface& react_iterf_impl)
 }
 
 // Dtor:
-CAbstractNavigator::~CAbstractNavigator() {}
+CAbstractNavigator::~CAbstractNavigator() = default;
 /** \callergraph */
 void CAbstractNavigator::cancel()
 {
@@ -215,7 +212,7 @@ void CAbstractNavigator::navigationStep()
 				if (m_lastNavigationState == NAVIGATING &&
 					m_navigationState == NAV_ERROR)
 				{
-					m_pending_events.push_back(std::bind(
+					m_pending_events.emplace_back(std::bind(
 						&CRobot2NavInterface::sendNavigationEndDueToErrorEvent,
 						std::ref(m_robot)));
 				}
@@ -423,12 +420,9 @@ bool CAbstractNavigator::stop(bool isEmergencyStop)
 }
 
 CAbstractNavigator::TAbstractNavigatorParams::TAbstractNavigatorParams()
-	: dist_to_target_for_sending_event(0),
-	  alarm_seems_not_approaching_target_timeout(30),
-	  dist_check_target_is_blocked(0.6),
-	  hysteresis_check_target_is_blocked(3)
-{
-}
+	
+	  
+= default;
 void CAbstractNavigator::TAbstractNavigatorParams::loadFromConfigFile(
 	const mrpt::config::CConfigFileBase& c, const std::string& s)
 {
@@ -514,7 +508,7 @@ void CAbstractNavigator::performNavigationStepNavigating(
 		// Have we just started the navigation?
 		if (m_lastNavigationState == IDLE)
 		{
-			m_pending_events.push_back(std::bind(
+			m_pending_events.emplace_back(std::bind(
 				&CRobot2NavInterface::sendNavigationStartEvent,
 				std::ref(m_robot)));
 		}
@@ -547,7 +541,7 @@ void CAbstractNavigator::performNavigationStepNavigating(
 					params_abstract_navigator.dist_to_target_for_sending_event)
 			{
 				m_navigationEndEventSent = true;
-				m_pending_events.push_back(std::bind(
+				m_pending_events.emplace_back(std::bind(
 					&CRobot2NavInterface::sendNavigationEndEvent,
 					std::ref(m_robot)));
 			}
@@ -568,7 +562,7 @@ void CAbstractNavigator::performNavigationStepNavigating(
 					if (!m_navigationEndEventSent)
 					{
 						m_navigationEndEventSent = true;
-						m_pending_events.push_back(std::bind(
+						m_pending_events.emplace_back(std::bind(
 							&CRobot2NavInterface::sendNavigationEndEvent,
 							std::ref(m_robot)));
 					}
@@ -597,7 +591,7 @@ void CAbstractNavigator::performNavigationStepNavigating(
 
 					m_navigationState = NAV_ERROR;
 
-					m_pending_events.push_back(std::bind(
+					m_pending_events.emplace_back(std::bind(
 						&CRobot2NavInterface::sendWaySeemsBlockedEvent,
 						std::ref(m_robot)));
 					return;
@@ -626,7 +620,7 @@ void CAbstractNavigator::performNavigationStepNavigating(
 							"Target seems to be blocked by obstacles. Invoking"
 							" sendCannotGetCloserToBlockedTargetEvent().");
 
-						m_pending_events.push_back(std::bind(
+						m_pending_events.emplace_back(std::bind(
 							&CRobot2NavInterface::
 								sendCannotGetCloserToBlockedTargetEvent,
 							std::ref(m_robot)));

@@ -9,7 +9,6 @@
    */
 #include "CUndoManager.h"
 
-CUndoManager::CUndoManager() : m_lastAction(-1) {}
 void CUndoManager::addAction(UserAction undo, UserAction redo)
 {
 	ASSERT_(m_undo.size() == m_redo.size());

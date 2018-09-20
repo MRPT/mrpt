@@ -68,12 +68,12 @@ class CLogFileRecord : public mrpt::serialization::CSerializable
 
 	mrpt::nav::CParameterizedTrajectoryGenerator::TNavDynamicState navDynState;
 	/** The number of PTGS: */
-	uint32_t nPTGs;
+	uint32_t nPTGs{0};
 	/** The info for each applied PTG: must contain "nPTGs * nSecDistances"
 	 * elements */
 	mrpt::aligned_std_vector<TInfoPerPTG> infoPerPTG;
 	/** The selected PTG. */
-	int32_t nSelectedPTG;
+	int32_t nSelectedPTG{-1};
 
 	/** Known values:
 	 *	- "executionTime": The total computation time, excluding sensing.
@@ -117,13 +117,13 @@ class CLogFileRecord : public mrpt::serialization::CSerializable
 	mrpt::math::CVectorFloat robotShape_x, robotShape_y;
 	/** The circular robot radius. Used by PTGs derived from
 	 * mrpt::nav::CPTG_RobotShape_Circular */
-	double robotShape_radius;
+	double robotShape_radius{.0};
 
 	// "NOP motion command" mode variables:
 	/** Negative means no NOP mode evaluation, so the rest of "NOP variables"
 	 * should be ignored. */
-	int16_t ptg_index_NOP;
-	uint16_t ptg_last_k_NOP;
+	int16_t ptg_index_NOP{-1};
+	uint16_t ptg_last_k_NOP{0};
 	mrpt::math::TPose2D rel_cur_pose_wrt_last_vel_cmd_NOP,
 		rel_pose_PTG_origin_wrt_sense_NOP;
 	mrpt::nav::CParameterizedTrajectoryGenerator::TNavDynamicState

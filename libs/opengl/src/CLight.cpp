@@ -20,12 +20,8 @@ using namespace std;
 
 // Ctor:
 CLight::CLight()
-	: light_ID(0),
-	  constant_attenuation(1.f),
-	  linear_attenuation(0.f),
-	  quadratic_attenuation(0.f),
-	  spot_exponent(0.f),
-	  spot_cutoff(180.f)
+	
+	  
 {
 	color_ambient[0] = 0.05f;
 	color_ambient[1] = 0.05f;

@@ -90,7 +90,7 @@ class CFaceDetection : public CObjectDetection
 	bool m_checkIfDiagonalSurface_res;
 
 	/** Indicates to all threads that must finish their execution */
-	bool m_end_threads;
+	bool m_end_threads{false};
 
 	/** Indicates to thread_checkIfFaceRegions that exist a new face to analyze
 	 */

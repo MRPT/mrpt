@@ -62,11 +62,11 @@ struct TDataAssociationResults
 {
 	TDataAssociationResults()
 		: associations(),
-		  distance(0),
+
 		  indiv_distances(0, 0),
 		  indiv_compatibility(0, 0),
-		  indiv_compatibility_counts(),
-		  nNodesExploredInJCBB(0)
+		  indiv_compatibility_counts()
+
 	{
 	}
 
@@ -96,7 +96,7 @@ struct TDataAssociationResults
 	std::map<observation_index_t, prediction_index_t> associations;
 	/** The Joint Mahalanobis distance or matching likelihood of the best
 	 * associations found. */
-	double distance;
+	double distance{0};
 
 	/** Individual mahalanobis distances (or matching likelihood, depending on
 	 * the selected metric) between predictions (row indices) & observations
@@ -114,7 +114,7 @@ struct TDataAssociationResults
 
 	/** Only for the JCBB method,the number of recursive calls expent in the
 	 * algorithm. */
-	size_t nNodesExploredInJCBB;
+	size_t nNodesExploredInJCBB{0};
 };
 
 /** Computes the data-association between the prediction of a set of landmarks
@@ -223,7 +223,7 @@ void data_association_independent_predictions(
 
 /** @} */  // end of grouping
 
-}
+}  // namespace mrpt::slam
 MRPT_ENUM_TYPE_BEGIN(mrpt::slam::TDataAssociationMethod)
 using namespace mrpt::slam;
 MRPT_FILL_ENUM(assocNN);
@@ -235,6 +235,3 @@ using namespace mrpt::slam;
 MRPT_FILL_ENUM(metricMaha);
 MRPT_FILL_ENUM(metricML);
 MRPT_ENUM_TYPE_END()
-
-
-

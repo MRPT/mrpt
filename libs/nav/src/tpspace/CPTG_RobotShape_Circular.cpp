@@ -17,8 +17,8 @@
 
 using namespace mrpt::nav;
 
-CPTG_RobotShape_Circular::CPTG_RobotShape_Circular() : m_robotRadius(.0) {}
-CPTG_RobotShape_Circular::~CPTG_RobotShape_Circular() {}
+CPTG_RobotShape_Circular::CPTG_RobotShape_Circular()  = default;
+CPTG_RobotShape_Circular::~CPTG_RobotShape_Circular() = default;
 void CPTG_RobotShape_Circular::setRobotShapeRadius(const double robot_radius)
 {
 	m_robotRadius = robot_radius;

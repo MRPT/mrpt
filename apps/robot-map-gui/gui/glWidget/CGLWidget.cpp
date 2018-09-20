@@ -82,7 +82,7 @@ CGlWidget::CGlWidget(bool is2D, QWidget* parent)
 	setFocusPolicy(Qt::StrongFocus);
 }
 
-CGlWidget::~CGlWidget() {}
+CGlWidget::~CGlWidget() = default;
 void CGlWidget::fillMap(const CSetOfObjects::Ptr& renderizableMap)
 {
 	removeFromMap(m_map);

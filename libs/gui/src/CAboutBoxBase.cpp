@@ -27,7 +27,7 @@ CAboutBoxBase::CAboutBoxBase(
 {
 }
 
-CAboutBoxBase::~CAboutBoxBase() {}
+CAboutBoxBase::~CAboutBoxBase() = default;
 std::string CAboutBoxBase::MRPTBuildVersion() const
 {
 	std::string s("Build: ");

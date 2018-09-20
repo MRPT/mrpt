@@ -68,7 +68,7 @@ COutputLogger::COutputLogger(const std::string& name)
 	m_logger_name = name;
 }
 COutputLogger::COutputLogger() { this->loggerReset(); }
-COutputLogger::~COutputLogger() {}
+COutputLogger::~COutputLogger() = default;
 void COutputLogger::logStr(
 	const VerbosityLevel level, const std::string& msg_str) const
 {
@@ -229,7 +229,7 @@ COutputLogger::TMsg::TMsg(
 {
 }
 
-COutputLogger::TMsg::~TMsg() {}
+COutputLogger::TMsg::~TMsg() = default;
 
 std::string COutputLogger::TMsg::getAsString() const
 {

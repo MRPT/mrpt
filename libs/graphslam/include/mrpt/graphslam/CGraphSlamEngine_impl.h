@@ -337,9 +337,9 @@ void CGraphSlamEngine<GRAPH_T>::initClass()
 
 	// register the types of edges
 	vector<string> vec_edge_types;
-	vec_edge_types.push_back("Odometry");
-	vec_edge_types.push_back("ICP2D");
-	vec_edge_types.push_back("ICP3D");
+	vec_edge_types.emplace_back("Odometry");
+	vec_edge_types.emplace_back("ICP2D");
+	vec_edge_types.emplace_back("ICP3D");
 
 	for (vector<string>::const_iterator cit = vec_edge_types.begin();
 		 cit != vec_edge_types.end(); ++cit)

@@ -30,7 +30,7 @@ class CObservation6DFeatures : public CObservation
 	CObservation6DFeatures();
 
 	/** Information about the sensor */
-	float minSensorDistance, maxSensorDistance;
+	float minSensorDistance{0}, maxSensorDistance{1e6f};
 
 	/** Each one of the measurements */
 	struct TMeasurement

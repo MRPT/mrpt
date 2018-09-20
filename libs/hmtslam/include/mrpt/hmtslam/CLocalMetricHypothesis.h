@@ -87,7 +87,7 @@ class CLocalMetricHypothesis
 	struct ThreadLocks
 	{
 		// Don't really copy mutexes
-		ThreadLocks() {}
+		ThreadLocks() = default;
 		ThreadLocks(const ThreadLocks&) {}
 		mutable std::mutex m_lock;
 	} threadLocks;
@@ -132,7 +132,7 @@ class CLocalMetricHypothesis
 	/** Used by AA thread */
 	struct TRobotPosesPartitioning
 	{
-		TRobotPosesPartitioning() {}
+		TRobotPosesPartitioning() = default;
 		TRobotPosesPartitioning(const TRobotPosesPartitioning& o)
 			: partitioner(o.partitioner), idx2pose(o.idx2pose)
 		{

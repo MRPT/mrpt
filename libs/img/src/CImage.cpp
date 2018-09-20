@@ -79,7 +79,7 @@ CImage::CImage(
 			Default	Constructor
 ---------------------------------------------------------------*/
 CImage::CImage()
-	: img(nullptr), m_imgIsReadOnly(false), m_imgIsExternalStorage(false)
+	 
 {
 #if MRPT_HAS_OPENCV
 	MRPT_START

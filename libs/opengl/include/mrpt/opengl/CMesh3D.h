@@ -45,9 +45,9 @@ class CMesh3D : public CRenderizableDisplayList
 	bool m_showEdges;
 	bool m_showFaces;
 	bool m_showVertices;
-	bool m_computeNormals;
-	float m_lineWidth;
-	float m_pointSize;
+	bool m_computeNormals{true};
+	float m_lineWidth{2.f};
+	float m_pointSize{6.f};
 
 	// Data
 	/** Number of vertices of the mesh */
@@ -72,7 +72,7 @@ class CMesh3D : public CRenderizableDisplayList
 	float face_color[4];
 	/** Color of the vertices (when shown) */
 	float vert_color[4];
-	mrpt::img::TColormap m_colorMap;  // Not used yet. I leave it here in case
+	mrpt::img::TColormap m_colorMap{mrpt::img::cmHOT};  // Not used yet. I leave it here in case
 	// I want to use it in the future
 
    public:

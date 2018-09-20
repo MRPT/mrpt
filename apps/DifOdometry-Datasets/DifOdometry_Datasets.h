@@ -41,7 +41,7 @@ class CDifodoDatasets : public mrpt::vision::CDifodo
 	/** Constructor. */
 	CDifodoDatasets() : mrpt::vision::CDifodo()
 	{
-		save_results = 0;
+		save_results = false;
 		first_pose = false;
 		dataset_finished = false;
 	}

@@ -187,7 +187,7 @@ class WXDLLIMPEXP_MATHPLOT mpLayer : public wxObject
    public:
 	mpLayer();
 
-	~mpLayer() override{};
+	~mpLayer() override= default;
 
 	/** Check whether this layer has a bounding box.
 		The default implementation returns \a TRUE. Override and return
@@ -374,7 +374,7 @@ class WXDLLIMPEXP_MATHPLOT mpLayer : public wxObject
 	/** select if the layer should draw only inside margins or over all DC */
 	bool m_drawOutsideMargins;
 	/** Define layer type, which is assigned by constructor */
-	mpLayerType m_type;
+	mpLayerType m_type{mpLAYER_UNDEF};
 	/** Toggles layer visibility */
 	bool m_visible;
 	DECLARE_DYNAMIC_CLASS(mpLayer)
@@ -941,7 +941,7 @@ typedef std::deque<mpLayer*> wxLayerList;
 class WXDLLIMPEXP_MATHPLOT mpWindow : public wxWindow
 {
    public:
-	mpWindow() {}
+	mpWindow() = default;
 	mpWindow(
 		wxWindow* parent, wxWindowID id, const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize, long flags = 0);
@@ -1004,7 +1004,7 @@ class WXDLLIMPEXP_MATHPLOT mpWindow : public wxWindow
 		@return Scale
 	*/
 	double GetXscl() { return m_scaleX; }
-	double GetScaleX(void) const
+	double GetScaleX() const
 	{
 		return m_scaleX;
 	};  // Schaling's method: maybe another method esists with the same name
@@ -1014,7 +1014,7 @@ class WXDLLIMPEXP_MATHPLOT mpWindow : public wxWindow
 		@return Scale
 	*/
 	double GetYscl() const { return m_scaleY; }
-	double GetScaleY(void) const
+	double GetScaleY() const
 	{
 		return m_scaleY;
 	}  // Schaling's method: maybe another method exists with the same name
@@ -1025,7 +1025,7 @@ class WXDLLIMPEXP_MATHPLOT mpWindow : public wxWindow
 	   center point of the view.
 	*/
 	double GetXpos() const { return m_posX; }
-	double GetPosX(void) const { return m_posX; }
+	double GetPosX() const { return m_posX; }
 
 	/** Get current view's Y position.
 		See @ref mpLayer::Plot "rules for coordinate transformation"
@@ -1033,7 +1033,7 @@ class WXDLLIMPEXP_MATHPLOT mpWindow : public wxWindow
 	   center point of the view.
 	*/
 	double GetYpos() const { return m_posY; }
-	double GetPosY(void) const { return m_posY; }
+	double GetPosY() const { return m_posY; }
 
 	/** Get current view's X dimension in device context units.
 		Usually this is equal to wxDC::GetSize, but it might differ thus mpLayer
@@ -1041,8 +1041,8 @@ class WXDLLIMPEXP_MATHPLOT mpWindow : public wxWindow
 		See @ref mpLayer::Plot "rules for coordinate transformation"
 		@return X dimension.
 	*/
-	int GetScrX(void) const { return m_scrX; }
-	int GetXScreen(void) const { return m_scrX; }
+	int GetScrX() const { return m_scrX; }
+	int GetXScreen() const { return m_scrX; }
 
 	/** Get current view's Y dimension in device context units.
 		Usually this is equal to wxDC::GetSize, but it might differ thus mpLayer
@@ -1050,8 +1050,8 @@ class WXDLLIMPEXP_MATHPLOT mpWindow : public wxWindow
 		See @ref mpLayer::Plot "rules for coordinate transformation"
 		@return Y dimension.
 	*/
-	int GetScrY(void) const { return m_scrY; }
-	int GetYScreen(void) const { return m_scrY; }
+	int GetScrY() const { return m_scrY; }
+	int GetYScreen() const { return m_scrY; }
 
 	/** Set current view's X scale and refresh display.
 		@param scaleX New scale, must not be 0.
@@ -1662,7 +1662,7 @@ class WXDLLIMPEXP_MATHPLOT mpPrintout : public wxPrintout
 	mpPrintout(
 		mpWindow* drawWindow,
 		const wxChar* title = _T("wxMathPlot print output"));
-	~mpPrintout() override{};
+	~mpPrintout() override= default;
 
 	void SetDrawState(bool drawState) { drawn = drawState; };
 	bool OnPrintPage(int page) override;
@@ -1688,17 +1688,9 @@ class WXDLLIMPEXP_MATHPLOT mpMovableObject : public mpLayer
    public:
 	/** Default constructor (sets location and rotation to (0,0,0))
 	 */
-	mpMovableObject()
-		: m_reference_x(0),
-		  m_reference_y(0),
-		  m_reference_phi(0),
-		  m_shape_xs(0),
-		  m_shape_ys(0)
-	{
-		m_type = mpLAYER_PLOT;
-	}
+	mpMovableObject() : m_shape_xs(0), m_shape_ys(0) { m_type = mpLAYER_PLOT; }
 
-	~mpMovableObject() override{};
+	~mpMovableObject() override= default;
 
 	/** Get the current coordinate transformation.
 	 */
@@ -1752,7 +1744,7 @@ class WXDLLIMPEXP_MATHPLOT mpMovableObject : public mpLayer
 
 	/** The coordinates of the object (orientation "phi" is in radians).
 	 */
-	double m_reference_x, m_reference_y, m_reference_phi;
+	double m_reference_x{0}, m_reference_y{0}, m_reference_phi{0};
 
 	/** A method for 2D translation and rotation, using the current
 	 * transformation stored in m_reference_x,m_reference_y,m_reference_phi.
@@ -1822,7 +1814,7 @@ class WXDLLIMPEXP_MATHPLOT mpCovarianceEllipse : public mpMovableObject
 		m_type = mpLAYER_PLOT;
 	}
 
-	~mpCovarianceEllipse() override {}
+	~mpCovarianceEllipse() override = default;
 
 	double GetQuantiles() const { return m_quantiles; }
 
@@ -1894,7 +1886,7 @@ class WXDLLIMPEXP_MATHPLOT mpPolygon : public mpMovableObject
 		m_name = layerName;
 	}
 
-	~mpPolygon() override {}
+	~mpPolygon() override = default;
 
 	/** Set the points in the polygon.
 	 * @param points_xs  The X coordinates of the points.
@@ -1939,7 +1931,7 @@ class WXDLLIMPEXP_MATHPLOT mpBitmapLayer : public mpLayer
 		m_type = mpLAYER_BITMAP;
 	}
 
-	~mpBitmapLayer() override{};
+	~mpBitmapLayer() override= default;
 
 	/** Returns a copy of the current bitmap assigned to the layer.
 	 */
@@ -2005,4 +1997,3 @@ class WXDLLIMPEXP_MATHPLOT mpBitmapLayer : public mpLayer
 #if defined(_MSC_VER)
 #pragma warning(pop)
 #endif
-

@@ -19,9 +19,8 @@ using namespace mrpt::gui;
 
 CQtGlCanvasBase::CQtGlCanvasBase(QWidget* parent)
 	: QOpenGLWidget(parent),
-	  mrpt::gui::CGlCanvasBase(),
-	  m_isPressLMouseButton(false),
-	  m_isPressRMouseButton(false)
+	  mrpt::gui::CGlCanvasBase()
+	  
 {
 	m_mainViewport = getOpenGLSceneRef()->getViewport("main");
 	setMouseTracking(true);

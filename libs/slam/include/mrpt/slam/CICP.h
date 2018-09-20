@@ -73,7 +73,8 @@ class CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void saveToConfigFile(
-			mrpt::config::CConfigFileBase& c, const std::string& s) const override;
+			mrpt::config::CConfigFileBase& c,
+			const std::string& s) const override;
 
 		/** @name Algorithms selection
 			@{ */
@@ -184,20 +185,20 @@ class CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 	 * options */
 	CICP(const TConfigParams& icpParams) : options(icpParams) {}
 	/** Destructor */
-	~CICP() override {}
+	~CICP() override = default;
 	/** The ICP algorithm return information*/
 	struct TReturnInfo
 	{
-		TReturnInfo() : nIterations(0), goodness(0), quality(0) {}
+		TReturnInfo() = default;
 		/** The number of executed iterations until convergence */
-		unsigned short nIterations;
+		unsigned short nIterations{0};
 		/** A goodness measure for the alignment, it is a [0,1] range indicator
 		 * of percentage of correspondences. */
-		float goodness;
+		float goodness{0};
 		/** A measure of the 'quality' of the local minimum of the sqr. error
 		 * found by the method. Higher values are better. Low values will be
 		 * found in ill-conditioned situations (e.g. a corridor) */
-		float quality;
+		float quality{0};
 	};
 
 	/** An implementation of CMetricMapsAlignmentAlgorithm for the case of a
@@ -261,7 +262,7 @@ class CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 		const mrpt::poses::CPose3DPDFGaussian& initialEstimationPDF,
 		TReturnInfo& outInfo);
 };
-}
+}  // namespace mrpt::slam
 MRPT_ENUM_TYPE_BEGIN(mrpt::slam::TICPAlgorithm)
 using namespace mrpt::slam;
 MRPT_FILL_ENUM(icpClassic);
@@ -273,6 +274,3 @@ using namespace mrpt::slam;
 MRPT_FILL_ENUM(icpCovLinealMSE);
 MRPT_FILL_ENUM(icpCovFiniteDifferences);
 MRPT_ENUM_TYPE_END()
-
-
-

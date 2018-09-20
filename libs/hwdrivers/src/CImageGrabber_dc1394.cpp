@@ -33,9 +33,7 @@ using namespace mrpt::hwdrivers;
 CImageGrabber_dc1394::CImageGrabber_dc1394(
 	uint64_t cameraGUID, uint16_t cameraUnit,
 	const TCaptureOptions_dc1394& options, bool verbose)
-	: m_bInitialized(false),
-	  m_dc1394_lib_context(nullptr),
-	  m_dc1394camera(nullptr),
+	: 
 	  m_options(options)
 {
 	MRPT_START
@@ -142,7 +140,7 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
 		options.color_coding == COLOR_CODING_##COLORMODEL) m_desired_mode = \
 		DC1394_VIDEO_MODE_##W##x##H##_##COLORMODEL;
 
-		if (0)
+		if (false)
 		{
 		}
 		TEST_MODE(160, 120, YUV444)

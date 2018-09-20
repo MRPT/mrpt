@@ -36,7 +36,7 @@ bool kinect_calibrate_guiApp::OnInit()
 	wxInitAllImageHandlers();
 	if (wxsOK)
 	{
-		kinect_calibrate_guiDialog Dlg(0);
+		kinect_calibrate_guiDialog Dlg(nullptr);
 		SetTopWindow(&Dlg);
 		Dlg.ShowModal();
 		wxsOK = false;

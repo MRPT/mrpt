@@ -78,7 +78,7 @@ class CColouredOctoMap
 		mrpt::opengl::COctoMapVoxels& gl_obj) const override;
 
 	MAP_DEFINITION_START(CColouredOctoMap)
-	double resolution;  //!< The finest resolution of the octomap (default: 0.10
+	double resolution{0.10};  //!< The finest resolution of the octomap (default: 0.10
 	//! meters)
 	mrpt::maps::CColouredOctoMap::TInsertionOptions
 		insertionOpts;  //!< Observations insertion options
@@ -158,7 +158,7 @@ class CColouredOctoMap
 		const mrpt::obs::CObservation* obs,
 		const mrpt::poses::CPose3D* robotPose) override;
 
-	TColourUpdate m_colour_method;  //! Method used to updated voxels colour.
+	TColourUpdate m_colour_method{INTEGRATE};  //! Method used to updated voxels colour.
 
 };  // End of class def.
 }  // End of namespace

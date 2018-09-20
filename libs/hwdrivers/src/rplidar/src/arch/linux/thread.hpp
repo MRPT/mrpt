@@ -45,7 +45,7 @@ Thread Thread::create(thread_proc_t proc, void * data)
     // tricky code, we assume pthread_t is not a structure but a word size value
     assert( sizeof(newborn._handle) >= sizeof(pthread_t));
 
-    pthread_create((pthread_t *)&newborn._handle, NULL, (void * (*)(void *))proc, data);
+    pthread_create((pthread_t *)&newborn._handle, nullptr, (void * (*)(void *))proc, data);
 
     return newborn;
 }
@@ -130,7 +130,7 @@ u_result Thread::join(unsigned long timeout)
 {
     if (!this->_handle) return RESULT_OK;
     
-    pthread_join((pthread_t)(this->_handle), NULL);
+    pthread_join((pthread_t)(this->_handle), nullptr);
     return RESULT_OK;
 }
 

@@ -23,12 +23,12 @@ KmTree::KmTree(int n, int d, Scalar* points) : n_(n), d_(d), points_(points)
 	node_data_ = (char*)malloc((2 * n - 1) * node_size);
 	point_indices_ = (int*)malloc(n * sizeof(int));
 	for (int i = 0; i < n; i++) point_indices_[i] = i;
-	KM_ASSERT(node_data_ != 0 && point_indices_ != 0);
+	KM_ASSERT(node_data_ != nullptr && point_indices_ != nullptr);
 
 	// Calculate the bounding box for the points
 	Scalar* bound_v1 = PointAllocate(d_);
 	Scalar* bound_v2 = PointAllocate(d_);
-	KM_ASSERT(bound_v1 != 0 && bound_v2 != 0);
+	KM_ASSERT(bound_v1 != nullptr && bound_v2 != nullptr);
 	PointCopy(bound_v1, points, d_);
 	PointCopy(bound_v2, points, d_);
 	for (int i = 1; i < n; i++)
@@ -59,7 +59,7 @@ Scalar KmTree::DoKMeansStep(int k, Scalar* centers, int* assignment) const
 {
 	// Create an invalid center for comparison purposes
 	Scalar* bad_center = PointAllocate(d_);
-	KM_ASSERT(bad_center != 0);
+	KM_ASSERT(bad_center != nullptr);
 	memset(bad_center, 0xff, d_ * sizeof(Scalar));
 
 	// Allocate data
@@ -67,7 +67,7 @@ Scalar KmTree::DoKMeansStep(int k, Scalar* centers, int* assignment) const
 	int* counts = (int*)calloc(k, sizeof(int));
 	int num_candidates = 0;
 	int* candidates = (int*)malloc(k * sizeof(int));
-	KM_ASSERT(sums != 0 && counts != 0 && candidates != 0);
+	KM_ASSERT(sums != nullptr && counts != nullptr && candidates != nullptr);
 	for (int i = 0; i < k; i++)
 		if (memcmp(centers + i * d_, bad_center, d_ * sizeof(Scalar)) != 0)
 			candidates[num_candidates++] = i;
@@ -124,7 +124,7 @@ KmTree::Node* KmTree::BuildNodes(
 	Scalar* first_point = points + point_indices_[first_index] * d_;
 	Scalar* bound_p1 = PointAllocate(d_);
 	Scalar* bound_p2 = PointAllocate(d_);
-	KM_ASSERT(bound_p1 != 0 && bound_p2 != 0);
+	KM_ASSERT(bound_p1 != nullptr && bound_p2 != nullptr);
 	PointCopy(bound_p1, first_point, d_);
 	PointCopy(bound_p2, first_point, d_);
 	for (int i = first_index + 1; i <= last_index; i++)
@@ -154,7 +154,7 @@ KmTree::Node* KmTree::BuildNodes(
 	// If the max spread is 0, make this a leaf node
 	if (max_radius == 0)
 	{
-		node->lower_node = node->upper_node = 0;
+		node->lower_node = node->upper_node = nullptr;
 		PointCopy(node->sum, first_point, d_);
 		if (last_index != first_index)
 			PointScale(node->sum, Scalar(last_index - first_index + 1), d_);
@@ -204,7 +204,7 @@ KmTree::Node* KmTree::BuildNodes(
 	PointCopy(node->sum, node->lower_node->sum, d_);
 	PointAdd(node->sum, node->upper_node->sum, d_);
 	Scalar* center = PointAllocate(d_);
-	KM_ASSERT(center != 0);
+	KM_ASSERT(center != nullptr);
 	PointCopy(center, node->sum, d_);
 	PointScale(center, Scalar(1) / node->num_points, d_);
 	node->opt_cost = GetNodeCost(node->lower_node, center) +
@@ -269,12 +269,12 @@ Scalar KmTree::DoKMeansStepAtNode(
 	}
 
 	// If this is a non-leaf node, recurse if necessary
-	if (node->lower_node != 0)
+	if (node->lower_node != nullptr)
 	{
 		// Build the new list of candidates
 		int new_k = 0;
 		int* new_candidates = (int*)malloc(k * sizeof(int));
-		KM_ASSERT(new_candidates != 0);
+		KM_ASSERT(new_candidates != nullptr);
 		for (int i = 0; i < k; i++)
 			if (!ShouldBePruned(
 					node->median, node->radius, centers, closest_i,
@@ -302,7 +302,7 @@ Scalar KmTree::DoKMeansStepAtNode(
 	// Assigns all points within this node to a single center
 	PointAdd(sums + closest_i * d_, node->sum, d_);
 	counts[closest_i] += node->num_points;
-	if (assignment != 0)
+	if (assignment != nullptr)
 	{
 		for (int i = node->first_point_index;
 			 i < node->first_point_index + node->num_points; i++)
@@ -346,7 +346,7 @@ bool KmTree::ShouldBePruned(
 Scalar KmTree::SeedKMeansPlusPlus(int k, Scalar* centers) const
 {
 	Scalar* dist_sq = (Scalar*)malloc(n_ * sizeof(Scalar));
-	KM_ASSERT(dist_sq != 0);
+	KM_ASSERT(dist_sq != nullptr);
 
 	// Choose an initial center uniformly at random
 	SeedKmppSetClusterIndex(top_node_, 0);
@@ -362,7 +362,7 @@ Scalar KmTree::SeedKMeansPlusPlus(int k, Scalar* centers) const
 	// Repeatedly choose more centers
 	for (int new_cluster = 1; new_cluster < k; new_cluster++)
 	{
-		while (1)
+		while (true)
 		{
 			Scalar cutoff = (rand() / Scalar(RAND_MAX)) * total_cost;
 			Scalar cur_cost = 0;
@@ -392,7 +392,7 @@ Scalar KmTree::SeedKMeansPlusPlus(int k, Scalar* centers) const
 void KmTree::SeedKmppSetClusterIndex(const Node* node, int value) const
 {
 	node->kmpp_cluster_index = value;
-	if (node->lower_node != 0)
+	if (node->lower_node != nullptr)
 	{
 		SeedKmppSetClusterIndex(node->lower_node, value);
 		SeedKmppSetClusterIndex(node->upper_node, value);
@@ -424,7 +424,7 @@ Scalar KmTree::SeedKmppUpdateAssignment(
 
 		// It may be that the a leaf-node point is equidistant from the new
 		// center or old
-		if (node->lower_node == 0)
+		if (node->lower_node == nullptr)
 			return GetNodeCost(node, centers + node->kmpp_cluster_index * d_);
 	}
 

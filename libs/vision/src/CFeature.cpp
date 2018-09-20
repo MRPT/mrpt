@@ -452,21 +452,7 @@ void CFeature::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 *****************************************************/
 // CONSTRUCTOR
 CFeature::CFeature()
-	: x(0.0f),
-	  y(0.0f),
-	  ID(0),
-	  patchSize(21),
-	  type(featNotDefined),
-	  track_status(status_IDLE),
-	  response(0.0),
-	  orientation(0.0),
-	  scale(0.0),
-	  user_flags(0),
-	  nTimesSeen(1),
-	  nTimesNotSeen(0),
-	  nTimesLastSeen(0),
-	  depth(0),
-	  initialDepth(0),
+	: 
 	  p3D(),
 	  multiScales(),
 	  multiOrientations(),
@@ -480,10 +466,10 @@ CFeature::TDescriptors::TDescriptors()
 	: SIFT(),
 	  SURF(),
 	  SpinImg(),
-	  SpinImg_range_rows(0),
+	  
 	  PolarImg(0, 0),
 	  LogPolarImg(0, 0),
-	  polarImgsNoRotation(false),
+	  
 	  ORB(),
 	  BLD(),
 	  LATCH()
@@ -1022,11 +1008,11 @@ void CFeature::saveToTextFile(const std::string& filename, bool APPEND)
 // --------------------------------------------------
 // CONSTRUCTOR
 // --------------------------------------------------
-CFeatureList::CFeatureList() {}  // end constructor
+CFeatureList::CFeatureList() = default;  // end constructor
 // --------------------------------------------------
 // DESTRUCTOR
 // --------------------------------------------------
-CFeatureList::~CFeatureList() {}  // end destructor
+CFeatureList::~CFeatureList() = default;  // end destructor
 // --------------------------------------------------
 // saveToTextFile
 // --------------------------------------------------
@@ -1339,11 +1325,11 @@ TFeatureID CFeatureList::getMaxID() const
 // --------------------------------------------------
 // CONSTRUCTOR
 // --------------------------------------------------
-CMatchedFeatureList::CMatchedFeatureList() : m_leftMaxID(0), m_rightMaxID(0) {}
+CMatchedFeatureList::CMatchedFeatureList()  = default;
 // --------------------------------------------------
 // DESTRUCTOR
 // --------------------------------------------------
-CMatchedFeatureList::~CMatchedFeatureList() {}  // end destructor
+CMatchedFeatureList::~CMatchedFeatureList() = default;  // end destructor
 // --------------------------------------------------
 // saveToTextFile
 // --------------------------------------------------

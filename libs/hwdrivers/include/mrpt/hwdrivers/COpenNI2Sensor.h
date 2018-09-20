@@ -351,11 +351,11 @@ class COpenNI2Sensor : public mrpt::hwdrivers::CGenericSensor,
 
 	/** Show preview window while grabbing
  */
-	bool m_preview_window;
+	bool m_preview_window{false};
 	/** If preview is enabled, only show 1 out of N images.
  */
-	size_t m_preview_window_decimation;
-	size_t m_preview_decim_counter_range, m_preview_decim_counter_rgb;
+	size_t m_preview_window_decimation{1};
+	size_t m_preview_decim_counter_range{0}, m_preview_decim_counter_rgb{0};
 	mrpt::gui::CDisplayWindow::Ptr m_win_range, m_win_int;
 
 	/** Params for the RGB camera
@@ -374,10 +374,10 @@ class COpenNI2Sensor : public mrpt::hwdrivers::CGenericSensor,
 
 	/** Number of device to open (0:first,...)
  */
-	int m_user_device_number;
+	int m_user_device_number{0};
 	/** Serial number of device to open
  */
-	int m_serial_number;
+	int m_serial_number{0};
 
 };  // End of class
 }

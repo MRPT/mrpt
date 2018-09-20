@@ -59,7 +59,7 @@ struct TColorManager
 	bool checkStdColorsUsed();
 
 	uint8_t color_step;
-	const uint8_t color_thresh;
+	const uint8_t color_thresh{255};
 
 	bool have_exceeded_colors;
 

@@ -16,9 +16,9 @@
 namespace mrpt::opengl
 {
 /** Existing fonts for 2D texts in mrpt::opengl methods.
-  * \sa mrpt::opengl::CWxGLCanvasBase::renderTextBitmap
-  * \ingroup mrpt_opengl_grp
-  */
+ * \sa mrpt::opengl::CWxGLCanvasBase::renderTextBitmap
+ * \ingroup mrpt_opengl_grp
+ */
 enum TOpenGLFont
 {
 	MRPT_GLUT_BITMAP_NONE = -1,
@@ -38,32 +38,23 @@ enum TOpenGLFontStyle
 };
 
 /** A description of a bitmapped or vectorized text font.
-  *  (Vectorized fonts are recommended for new code).
-  *
-  * \sa mrpt::opengl::gl_utils::glSetFont(),
+ *  (Vectorized fonts are recommended for new code).
+ *
+ * \sa mrpt::opengl::gl_utils::glSetFont(),
  * mrpt::opengl::gl_utils::glDrawText()
-  */
+ */
 struct TFontParams
 {
-	TFontParams()
-		: draw_shadow(false),
-		  font(MRPT_GLUT_BITMAP_NONE),
-		  vfont_name("sans"),
-		  vfont_scale(10),
-		  vfont_style(),
-		  vfont_spacing(1.5),
-		  vfont_kerning(0.1)
-	{
-	}
+	TFontParams() : vfont_name("sans") {}
 
 	mrpt::img::TColorf color;
 
-	bool draw_shadow;
+	bool draw_shadow{false};
 	mrpt::img::TColorf shadow_color;
 
 	/** @name Bitmapped font params
 		@{ */
-	mrpt::opengl::TOpenGLFont font;
+	mrpt::opengl::TOpenGLFont font{MRPT_GLUT_BITMAP_NONE};
 	/** @} */
 
 	/** @name Vectorized font params - Applicable only if
@@ -72,28 +63,26 @@ struct TFontParams
 	/** Vectorized font name ("sans","mono","serif") */
 	std::string vfont_name;
 	/** Size of characters */
-	double vfont_scale;
+	double vfont_scale{10};
 	/** (default: NICE) See TOpenGLFontStyle. */
-	TOpenGLFontStyle vfont_style;
+	TOpenGLFontStyle vfont_style{};
 	/** (default: 1.5) Refer to mrpt::opengl::gl_utils::glDrawText */
-	double vfont_spacing;
+	double vfont_spacing{1.5};
 	/** (default: 0.1) Refer to mrpt::opengl::gl_utils::glDrawText */
-	double vfont_kerning;
+	double vfont_kerning{0.1};
 	/** @} */
 };
 
 /** An auxiliary struct for holding a list of text messages in some mrpt::opengl
  * & mrpt::gui classes
-  *  The font can be either a bitmapped or a vectorized font.
-  *  \sa mrpt::opengl::CTextMessageCapable
-  * \ingroup mrpt_opengl_grp
-  */
+ *  The font can be either a bitmapped or a vectorized font.
+ *  \sa mrpt::opengl::CTextMessageCapable
+ * \ingroup mrpt_opengl_grp
+ */
 struct T2DTextData : public TFontParams
 {
-	T2DTextData() : x(0), y(0) {}
+	T2DTextData() = default;
 	std::string text;
-	double x, y;
+	double x{0}, y{0};
 };
-}
-
-
+}  // namespace mrpt::opengl

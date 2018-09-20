@@ -139,10 +139,10 @@ class CRandomFieldGridMap3D
 		/** @name Gaussian Markov Random Fields method
 			@{ */
 		/** The information (Lambda) of fixed map constraints */
-		double GMRF_lambdaPrior;
+		double GMRF_lambdaPrior{0.01f};
 		/** (Default:false) Skip the computation of the variance, just compute
 		 * the mean */
-		bool GMRF_skip_variance;
+		bool GMRF_skip_variance{false};
 		/** @} */
 	};
 
@@ -173,7 +173,7 @@ class CRandomFieldGridMap3D
 	{
 		using Ptr = std::shared_ptr<ConnectivityDescriptor>;
 		// Virtual destructor for polymorphic type.
-		virtual ~ConnectivityDescriptor() {}
+		virtual ~ConnectivityDescriptor() = default;
 		/** Implement the check of whether node i=(icx,icy,icz) is connected
 		* with node j=(jcx,jcy,jcy).
 		* This visitor method will be called only for immediate neighbors.

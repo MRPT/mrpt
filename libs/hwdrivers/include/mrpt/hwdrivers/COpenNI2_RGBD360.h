@@ -289,11 +289,11 @@ class COpenNI2_RGBD360 : public mrpt::hwdrivers::CGenericSensor,
 
 	/** Show preview window while grabbing
  */
-	bool m_preview_window;
+	bool m_preview_window{false};
 	/** If preview is enabled, only show 1 out of N images.
  */
-	size_t m_preview_window_decimation;
-	size_t m_preview_decim_counter_range, m_preview_decim_counter_rgb;
+	size_t m_preview_window_decimation{1};
+	size_t m_preview_decim_counter_range{0}, m_preview_decim_counter_rgb{0};
 	mrpt::gui::CDisplayWindow::Ptr m_win_range[NUM_SENSORS],
 		m_win_int[NUM_SENSORS];
 
@@ -303,7 +303,7 @@ class COpenNI2_RGBD360 : public mrpt::hwdrivers::CGenericSensor,
 
 	/** Default: all true
  */
-	bool m_grab_rgb, m_grab_depth, m_grab_3D_points;
+	bool m_grab_rgb{true}, m_grab_depth{true}, m_grab_3D_points{true};
 
 };  // End of class
 }

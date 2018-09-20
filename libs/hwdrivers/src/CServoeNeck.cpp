@@ -29,17 +29,16 @@ using namespace std::literals;
 -------------------------------------------------------------*/
 CServoeNeck::CServoeNeck()
 	: m_usbSerialNumber("eNeck001"),
-	  m_MaxValue(10000),
-	  m_TruncateFactor(0.5),
-	  m_PrevAngles(0),
-	  m_NumPrevAngles(5)
+	  
+	  m_PrevAngles(0)
+	  
 {
 	m_offsets.resize(3, 0);
 }  // end-constructor
 /*-------------------------------------------------------------
 					default destructor
 -------------------------------------------------------------*/
-CServoeNeck::~CServoeNeck() {}
+CServoeNeck::~CServoeNeck() = default;
 /*-------------------------------------------------------------
 					queryFirmwareVersion
 -------------------------------------------------------------*/

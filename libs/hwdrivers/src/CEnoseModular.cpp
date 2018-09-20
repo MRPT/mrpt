@@ -30,7 +30,7 @@ IMPLEMENTS_GENERIC_SENSOR(CEnoseModular, mrpt::hwdrivers)
 					CEnoseModular
 -------------------------------------------------------------*/
 CEnoseModular::CEnoseModular()
-	: m_usbSerialNumber("ENOSE002"), m_COM_port(), m_COM_baud(115200)
+	: m_usbSerialNumber("ENOSE002"), m_COM_port() 
 {
 	m_sensorLabel = "EnoseModular";
 	first_reading = true;

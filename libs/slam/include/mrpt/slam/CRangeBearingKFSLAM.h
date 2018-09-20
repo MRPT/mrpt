@@ -181,45 +181,45 @@ class CRangeBearingKFSLAM
 
 		/** The std. deviation of the sensor (for the matrix R in the kalman
 		 * filters), in meters and radians. */
-		float std_sensor_range, std_sensor_yaw, std_sensor_pitch;
+		float std_sensor_range{0.01f}, std_sensor_yaw, std_sensor_pitch;
 
 		/** Additional std. dev. to sum to the motion model in the z axis
 		 * (useful when there is only 2D odometry and we want to put things hard
 		 * to the algorithm) (default=0) */
-		float std_odo_z_additional;
+		float std_odo_z_additional{0};
 
 		/** If set to true (default=false), map will be partitioned using the
 		 * method stated by partitioningMethod */
-		bool doPartitioningExperiment;
+		bool doPartitioningExperiment{false};
 
 		/** Default = 3 */
-		float quantiles_3D_representation;
+		float quantiles_3D_representation{3};
 
 		/** Applicable only if "doPartitioningExperiment=true".
 		  *   0: Automatically detect partition through graph-cut.
 		  *   N>=1: Cut every "N" observations.
 		  */
-		int partitioningMethod;
+		int partitioningMethod{0};
 
 		// Data association:
-		TDataAssociationMethod data_assoc_method;
-		TDataAssociationMetric data_assoc_metric;
+		TDataAssociationMethod data_assoc_method{assocNN};
+		TDataAssociationMetric data_assoc_metric{metricMaha};
 		/** Threshold in [0,1] for the chi2square test for individual
 		 * compatibility between predictions and observations (default: 0.99) */
-		double data_assoc_IC_chi2_thres;
+		double data_assoc_IC_chi2_thres{0.99};
 		/** Whether to use mahalanobis (->chi2 criterion) vs. Matching
 		 * likelihood. */
-		TDataAssociationMetric data_assoc_IC_metric;
+		TDataAssociationMetric data_assoc_IC_metric{metricMaha};
 		/** Only if data_assoc_IC_metric==ML, the log-ML threshold (Default=0.0)
 		 */
-		double data_assoc_IC_ml_threshold;
+		double data_assoc_IC_ml_threshold{0.0};
 
 		/** Whether to fill m_SFs (default=false) */
-		bool create_simplemap;
+		bool create_simplemap{false};
 
 		/** Whether to ignore the input odometry and behave as if there was no
 		 * odometry at all (default: false) */
-		bool force_ignore_odometry;
+		bool force_ignore_odometry{false};
 	} options;
 
 	/** Information for data-association:

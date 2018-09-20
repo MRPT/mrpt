@@ -26,7 +26,7 @@ using namespace mrpt::math;
 MAP_DEFINITION_REGISTER(
 	"CWeightedPointsMap,weightedPointsMap", mrpt::maps::CWeightedPointsMap)
 
-CWeightedPointsMap::TMapDefinition::TMapDefinition() {}
+CWeightedPointsMap::TMapDefinition::TMapDefinition() = default;
 void CWeightedPointsMap::TMapDefinition::loadFromConfigFile_map_specific(
 	const mrpt::config::CConfigFileBase& source,
 	const std::string& sectionNamePrefix)
@@ -65,7 +65,7 @@ CWeightedPointsMap::CWeightedPointsMap() { reserve(400); }
 /*---------------------------------------------------------------
 						Destructor
   ---------------------------------------------------------------*/
-CWeightedPointsMap::~CWeightedPointsMap() {}
+CWeightedPointsMap::~CWeightedPointsMap() = default;
 /*---------------------------------------------------------------
 				reserve & resize methods
  ---------------------------------------------------------------*/

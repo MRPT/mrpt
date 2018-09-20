@@ -106,7 +106,7 @@ bool CDifodoCamera::openCamera()
 			"SimpleViewer: Device open failed:\n%s\n",
 			openni::OpenNI::getExtendedError());
 		openni::OpenNI::shutdown();
-		return 1;
+		return true;
 	}
 
 	//				Create Depth channel
@@ -156,7 +156,7 @@ bool CDifodoCamera::openCamera()
 			"Couldn't find depth stream:\n%s\n",
 			openni::OpenNI::getExtendedError());
 
-	return 0;
+	return false;
 }
 
 void CDifodoCamera::loadFrame()
@@ -276,7 +276,7 @@ void CDifodoCamera::initializeScene()
 	CPointCloudColoured::Ptr cam_points =
 		mrpt::make_aligned_shared<CPointCloudColoured>();
 	cam_points->setPointSize(2);
-	cam_points->enablePointSmooth(1);
+	cam_points->enablePointSmooth(true);
 	cam_points->setPose(cam_pose);
 	scene->insert(cam_points);
 
@@ -292,7 +292,7 @@ void CDifodoCamera::initializeScene()
 	CPointCloud::Ptr traj_points_odo = mrpt::make_aligned_shared<CPointCloud>();
 	traj_points_odo->setColor(0, 0.6, 0);
 	traj_points_odo->setPointSize(4);
-	traj_points_odo->enablePointSmooth(1);
+	traj_points_odo->enablePointSmooth(true);
 	scene->insert(traj_points_odo);
 
 	// Ellipsoid showing covariance

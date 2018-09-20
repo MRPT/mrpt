@@ -84,7 +84,7 @@ class CSimpleLine : public CRenderizableDisplayList
 		float z1 = 0, float lineWidth = 1, bool antiAliasing = true);
 
 	/** Private, virtual destructor: only can be deleted from smart pointers */
-	~CSimpleLine() override {}
+	~CSimpleLine() override = default;
 };
 
 }

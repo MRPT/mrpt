@@ -24,8 +24,7 @@ IMPLEMENTS_SERIALIZABLE(CLogFileRecord, CSerializable, mrpt::nav)
 					Constructor
   ---------------------------------------------------------------*/
 CLogFileRecord::CLogFileRecord()
-	: nPTGs(0),
-	  nSelectedPTG(-1),
+	: 
 	  robotPoseLocalization(0, 0, 0),
 	  robotPoseOdometry(0, 0, 0),
 	  relPoseSense(0, 0, 0),
@@ -33,9 +32,7 @@ CLogFileRecord::CLogFileRecord()
 	  WS_targets_relative(),
 	  cur_vel(0, 0, 0),
 	  cur_vel_local(0, 0, 0),
-	  robotShape_radius(.0),
-	  ptg_index_NOP(-1),
-	  ptg_last_k_NOP(0),
+	  
 	  rel_cur_pose_wrt_last_vel_cmd_NOP(0, 0, 0),
 	  rel_pose_PTG_origin_wrt_sense_NOP(0, 0, 0)
 {
@@ -206,8 +203,7 @@ void CLogFileRecord::serializeFrom(
 				{
 					mrpt::poses::CPoint2D pos;
 					in >> pos;
-					ipp.TP_Targets.push_back(
-						mrpt::math::TPoint2D(pos.x(), pos.y()));
+					ipp.TP_Targets.emplace_back(pos.x(), pos.y());
 				}
 				if (version >= 17)
 					in >> ipp.TP_Robot;
@@ -306,15 +302,14 @@ void CLogFileRecord::serializeFrom(
 				{
 					mrpt::math::TPoint2D trg;
 					in >> trg;
-					WS_targets_relative.push_back(trg);
+					WS_targets_relative.emplace_back(trg);
 				}
 			}
 			else
 			{
 				mrpt::poses::CPoint2D pos;
 				in >> pos;
-				WS_targets_relative.push_back(
-					mrpt::math::TPoint2D(pos.x(), pos.y()));
+				WS_targets_relative.emplace_back(mrpt::math::TPoint2D(pos.x(), pos.y()));
 			}
 
 			if (version >= 16)

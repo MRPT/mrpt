@@ -24,37 +24,29 @@ class CObservationCANBusJ1939 : public CObservation
 
    public:
 	/** Constructor.
-	*/
-	CObservationCANBusJ1939()
-		: m_pgn(0),
-		  m_src_address(0),
-		  m_priority(0),
-		  m_pdu_format(0),
-		  m_pdu_spec(0),
-		  m_data_length(0)
-	{
-	}
+	 */
+	CObservationCANBusJ1939() = default;
 
 	/** Destructor
-	*/
-	~CObservationCANBusJ1939() override {}
+	 */
+	~CObservationCANBusJ1939() override = default;
 	/** The Parameter Group Number within this frame */
-	uint16_t m_pgn;
+	uint16_t m_pgn{0};
 
 	/** The address of the source node within this frame */
-	uint8_t m_src_address;
+	uint8_t m_src_address{0};
 
 	/** The priority */
-	uint8_t m_priority;
+	uint8_t m_priority{0};
 
 	/** PDU Format */
-	uint8_t m_pdu_format;
+	uint8_t m_pdu_format{0};
 
 	/** PDU Specific */
-	uint8_t m_pdu_spec;
+	uint8_t m_pdu_spec{0};
 
 	/** Data length  */
-	uint8_t m_data_length;
+	uint8_t m_data_length{0};
 
 	/** The data within this frame (0-8 bytes) */
 	std::vector<uint8_t> m_data;
@@ -70,6 +62,4 @@ class CObservationCANBusJ1939 : public CObservation
 
 };  // End of class def.
 
-}
-
-
+}  // namespace mrpt::obs

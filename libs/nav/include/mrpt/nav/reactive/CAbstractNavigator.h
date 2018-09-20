@@ -74,18 +74,18 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 		std::string target_frame_id;
 		/** (Default=0.5 meters) Allowed distance to target in order to end the
 		 * navigation. */
-		float targetAllowedDistance;
+		float targetAllowedDistance{0.5};
 		/** (Default=false) Whether the \a target coordinates are in global
 		 * coordinates (false) or are relative to the current robot pose (true).
 		 */
-		bool targetIsRelative;
+		bool targetIsRelative{false};
 		/** (Default=.05) Desired relative speed (wrt maximum speed), in range
 		 * [0,1], of the vehicle at target. Holonomic nav methods will perform
 		 * "slow down" approaching target only if this is "==.0". Intermediary
 		 * values will be honored only by the higher-level navigator, based on
 		 * straight-line Euclidean distances. */
-		double targetDesiredRelSpeed;
-		bool targetIsIntermediaryWaypoint;  // !< (Default=false) If true, event
+		double targetDesiredRelSpeed{.05};
+		bool targetIsIntermediaryWaypoint{false};  // !< (Default=false) If true, event
 		// callback
 		// `sendWaypointReachedEvent()` will
 		// be called instead of
@@ -101,7 +101,7 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 	/** Base for all high-level navigation commands. See derived classes */
 	struct TNavigationParamsBase
 	{
-		virtual ~TNavigationParamsBase() {}
+		virtual ~TNavigationParamsBase() = default;
 		/** Gets navigation params as a human-readable format */
 		virtual std::string getAsText() const = 0;
 
@@ -197,15 +197,15 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 	{
 		/** Default value=0, means use the "targetAllowedDistance" passed by the
 		 * user in the navigation request. */
-		double dist_to_target_for_sending_event;
+		double dist_to_target_for_sending_event{0};
 		/** navigator timeout (seconds) [Default=30 sec] */
-		double alarm_seems_not_approaching_target_timeout;
+		double alarm_seems_not_approaching_target_timeout{30};
 		/** (Default value=0.6) When closer than this distance, check if the
 		 * target is blocked to abort navigation with an error. */
-		double dist_check_target_is_blocked;
+		double dist_check_target_is_blocked{0.6};
 		/** (Default=3) How many steps should the condition for
 		 * dist_check_target_is_blocked be fulfilled to raise an event */
-		int hysteresis_check_target_is_blocked;
+		int hysteresis_check_target_is_blocked{3};
 
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& c,

@@ -34,7 +34,7 @@ CTexturedPlane::Ptr CTexturedPlane::Create(
   ---------------------------------------------------------------*/
 CTexturedPlane::CTexturedPlane(
 	float x_min, float x_max, float y_min, float y_max)
-	: polygonUpToDate(false)
+	 
 {
 	// Copy data:
 	m_xMin = x_min;
@@ -46,7 +46,7 @@ CTexturedPlane::CTexturedPlane(
 /*---------------------------------------------------------------
 							~CTexturedPlane
   ---------------------------------------------------------------*/
-CTexturedPlane::~CTexturedPlane() {}
+CTexturedPlane::~CTexturedPlane() = default;
 /*---------------------------------------------------------------
 							render
   ---------------------------------------------------------------*/

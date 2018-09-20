@@ -31,11 +31,8 @@ CLMS100Eth::CLMS100Eth(string _ip, unsigned int _port)
 	: m_ip(_ip),
 	  m_port(_port),
 	  m_client(),
-	  m_turnedOn(false),
 	  m_cmd(),
-	  m_connected(false),
 	  m_sensorPose(0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
-	  m_maxRange(20.0),
 	  m_beamApperture(.25 * M_PI / 180.0)
 {
 	setVerbosityLevel(mrpt::system::LVL_DEBUG);
@@ -84,7 +81,7 @@ void CLMS100Eth::loadConfig_sensorSpecific(
 		DEG2RAD(pose_roll));
 }
 
-bool CLMS100Eth::checkIsConnected(void)
+bool CLMS100Eth::checkIsConnected()
 {
 	if (m_connected)
 		return true;

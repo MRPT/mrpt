@@ -23,7 +23,6 @@ IMPLEMENTS_SERIALIZABLE(CHMHMapNode, CSerializable, mrpt::hmtslam)
 CHMHMapNode::CHMHMapNode(
 	CHierarchicalMHMap* parent, const THypothesisIDSet& hyps)
 	: m_hypotheses(hyps),
-	  m_ID(),
 	  m_arcs(),
 	  m_parent(parent),
 	  m_nodeType(NODE_TYPES, DEFAULT_NODE_TYPE),
@@ -58,8 +57,7 @@ CHMHMapNode::~CHMHMapNode()
 	if (m_parent.get()) m_parent->onNodeDestruction(this);
 
 	// To the arcs:
-	for (auto & m_arc : m_arcs)
-		m_arc->onNodeDestruction(this);
+	for (auto& m_arc : m_arcs) m_arc->onNodeDestruction(this);
 }
 
 uint8_t CHMHMapNode::serializeGetVersion() const { return 0; }
@@ -169,7 +167,7 @@ unsigned int CHMHMapNode::getRelatedArcsCount()
 void CHMHMapNode::getArcs(TArcList& out, const THypothesisID& hyp_id) const
 {
 	out.clear();
-	for (const auto & m_arc : m_arcs)
+	for (const auto& m_arc : m_arcs)
 		if (m_arc->m_hypotheses.has(hyp_id)) out.push_back(m_arc);
 }
 
@@ -191,7 +189,7 @@ void CHMHMapNode::getArcs(
 bool CHMHMapNode::isNeighbor(
 	const TNodeID& otherArea, const THypothesisID& hyp_id) const
 {
-	for (const auto & m_arc : m_arcs)
+	for (const auto& m_arc : m_arcs)
 		if (m_arc->m_hypotheses.has(hyp_id) &&
 			(m_arc->m_nodeFrom == otherArea || m_arc->m_nodeTo == otherArea))
 			return true;

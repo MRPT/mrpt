@@ -149,7 +149,7 @@ struct MapGetAs3DObject
 
 struct MapAuxPFCleanup
 {
-	MapAuxPFCleanup() {}
+	MapAuxPFCleanup() = default;
 	template <typename PTR>
 	inline void operator()(PTR& ptr)
 	{
@@ -182,7 +182,7 @@ struct MapIsEmpty
 // Ctor
 CMultiMetricMap::CMultiMetricMap(
 	const TSetOfMetricMapInitializers* initializers)
-	: maps(), ALL_PROXIES_INIT, m_ID(0)
+	: maps(), ALL_PROXIES_INIT 
 {
 	MRPT_START
 	setListOfMaps(initializers);

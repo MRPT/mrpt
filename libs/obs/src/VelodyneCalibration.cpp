@@ -28,17 +28,9 @@ using namespace std;
 using namespace mrpt::obs;
 
 VelodyneCalibration::PerLaserCalib::PerLaserCalib()
-	: azimuthCorrection(.0),
-	  verticalCorrection(.0),
-	  distanceCorrection(.0),
-	  verticalOffsetCorrection(.0),
-	  horizontalOffsetCorrection(.0),
-	  sinVertCorrection(.0),
-	  cosVertCorrection(1.0),
-	  sinVertOffsetCorrection(.0),
-	  cosVertOffsetCorrection(1.0)
-{
-}
+	
+	  
+= default;
 
 VelodyneCalibration::VelodyneCalibration() : laser_corrections(0) {}
 bool VelodyneCalibration::internal_loadFromXMLNode(void* node_ptr)

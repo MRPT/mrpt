@@ -479,7 +479,7 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	 * copied to other maps using the copy constructor, copy operator,
 	 * streaming,etc) The default value is 0.
 	 */
-	unsigned int m_ID;
+	unsigned int m_ID{0};
 
 };  // End of class def.
 

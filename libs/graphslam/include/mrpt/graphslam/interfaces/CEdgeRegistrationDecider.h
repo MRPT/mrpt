@@ -47,7 +47,7 @@ class CEdgeRegistrationDecider
 	using pose_t = typename GRAPH_T::constraint_t::type_value;
 	/**\}*/
 
-	CEdgeRegistrationDecider()=default;;
+	CEdgeRegistrationDecider()=default;
 	~CEdgeRegistrationDecider() override =default;
 	/**\brief Fill the given map with the type of registered edges as well as
 	 * the corresponding number of registration of each edge.

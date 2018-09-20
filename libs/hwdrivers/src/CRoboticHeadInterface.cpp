@@ -80,9 +80,9 @@ bool CRoboticHeadInterface::SetGain(int& new_gain, int& channel)
 	while (!archiveFrom(m_usbConnection).receiveMessage(msg))
 		;
 	if (msg.content[0] == 0)
-		return 0;
+		return false;
 	else
-		return 1;
+		return true;
 }
 
 /*-------------------------------------------------------------

@@ -25,7 +25,7 @@ struct TRangeImageFilterParams
 	 * D<=rangeMask_max)
 	 *
 	 * \note Default value:true */
-	bool rangeCheckBetween;
+	bool rangeCheckBetween{true};
 	/** (Default: nullptr) If provided, each data range will be tested to be
 	 * greater-than (rangeMask_min) or less-than (rangeMask_max) each element in
 	 * these matrices
@@ -33,13 +33,8 @@ struct TRangeImageFilterParams
 	 * directions.
 	 * If both `rangeMask_min` and `rangeMask_max` are provided, the joint
 	 * filtering operation is determined by `rangeCheckBetween` */
-	const mrpt::math::CMatrix *rangeMask_min, *rangeMask_max;
-	TRangeImageFilterParams()
-		: rangeCheckBetween(true),
-		  rangeMask_min(nullptr),
-		  rangeMask_max(nullptr)
-	{
-	}
+	const mrpt::math::CMatrix *rangeMask_min{nullptr}, *rangeMask_max{nullptr};
+	TRangeImageFilterParams() = default;
 };
 
 /** Mainly for internal use within
@@ -53,7 +48,7 @@ struct TRangeImageFilter
 		: fp(filter_params)
 	{
 	}
-	inline TRangeImageFilter() {}
+	inline TRangeImageFilter() = default;
 };
 
 // ======== Implementation ========

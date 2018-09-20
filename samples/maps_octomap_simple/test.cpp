@@ -102,7 +102,7 @@ void TestOctoMap()
 {
 	COctoMap map(0.2);
 
-	if (0)
+	if (false)
 	{
 		// Manually update voxels:
 		map.updateVoxel(1, 1, 1, true);  // integrate 'occupied' measurement

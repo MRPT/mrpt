@@ -54,14 +54,10 @@ string jointNames[] = {
 					CSkeletonTracker
 -------------------------------------------------------------*/
 CSkeletonTracker::CSkeletonTracker()
-	: m_skeletons_ptr(nullptr),
-	  m_userTracker_ptr(nullptr),
-	  m_timeStartUI(),
+	: 
 	  m_timeStartTT(),
-	  m_sensorPose(),
-	  m_nUsers(0),
-	  m_showPreview(false),
-	  m_toutCounter(0)
+	  m_sensorPose()
+	  
 {
 	m_sensorLabel = "skeletonTracker";
 

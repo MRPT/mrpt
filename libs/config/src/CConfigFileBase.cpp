@@ -29,7 +29,7 @@ int mrpt::config::MRPT_SAVE_VALUE_PADDING()
 	return ::MRPT_SAVE_VALUE_PADDING;
 }
 
-CConfigFileBase::~CConfigFileBase() {}
+CConfigFileBase::~CConfigFileBase() = default;
 void CConfigFileBase::write(
 	const std::string& section, const std::string& name, double value,
 	const int name_padding_width, const int value_padding_width,

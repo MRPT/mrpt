@@ -76,9 +76,9 @@ class CVehicleSimul_DiffDriven : public CVehicleSimulVirtualBase
 
 	/** The time-constants for the first order low-pass filter for the
 	 * velocities changes. */
-	double cTAU;
+	double cTAU{.0};
 	/** The delay constant for the velocities changes */
-	double cDELAY;
+	double cDELAY{.0};
 
 	void internal_simulControlStep(const double dt) override;
 	void internal_clear() override;

@@ -47,7 +47,7 @@ class CStream
 
 	/* Constructor
 	 */
-	CStream() {}
+	CStream() = default;
 	/* Destructor
 	 */
 	virtual ~CStream();

@@ -245,9 +245,9 @@ class CColouredPointsMap : public CPointsMap
 		void dumpToTextStream(
 			std::ostream& out) const override;  // See base docs
 
-		TColouringMethod scheme;
-		float z_min, z_max;
-		float d_max;
+		TColouringMethod scheme{cmFromHeightRelativeToSensor};
+		float z_min{-10}, z_max{10};
+		float d_max{5};
 	};
 
 	/** The options employed when inserting laser scans in the map. */

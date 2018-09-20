@@ -18,12 +18,9 @@ using namespace mrpt::poses;
 
 // -----------   SO_average<2> --------------------
 SO_average<2>::SO_average()
-	: enable_exception_on_undeterminate(false),
-	  m_count(0),
-	  m_accum_x(0),
-	  m_accum_y(0)
-{
-}
+	
+	  
+= default;
 void SO_average<2>::clear()
 {
 	m_count = .0;
@@ -59,7 +56,7 @@ double SO_average<2>::get_average() const
 
 // -----------   SO_average<3> --------------------
 SO_average<3>::SO_average()
-	: enable_exception_on_undeterminate(false), m_count(0), m_accum_rot()
+	:  m_accum_rot()
 {
 	clear();
 }
@@ -108,10 +105,7 @@ Eigen::Matrix3d SO_average<3>::get_average() const
 
 // -----------   SE_average<2> --------------------
 SE_average<2>::SE_average()
-	: enable_exception_on_undeterminate(false),
-	  m_count(0),
-	  m_accum_x(0),
-	  m_accum_y(0),
+	: 
 	  m_rot_part()
 {
 	clear();
@@ -149,11 +143,7 @@ void SE_average<2>::get_average(mrpt::poses::CPose2D& ret_mean) const
 
 // -----------   SE_average<3> --------------------
 SE_average<3>::SE_average()
-	: enable_exception_on_undeterminate(false),
-	  m_count(0),
-	  m_accum_x(0),
-	  m_accum_y(0),
-	  m_accum_z(0),
+	: 
 	  m_rot_part()
 {
 	clear();

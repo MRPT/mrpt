@@ -44,7 +44,7 @@ class CWirelessPower : public mrpt::hwdrivers::CGenericSensor
 	/** Default constructor.
 	 */
 	CWirelessPower();
-	~CWirelessPower() override{};
+	~CWirelessPower() override= default;
 
 	/** Set the SSID and GUID of the target network.
 	 * \exception std::exception In case there is a failure

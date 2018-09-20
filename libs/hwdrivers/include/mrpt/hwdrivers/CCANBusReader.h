@@ -93,15 +93,15 @@ class CCANBusReader : public mrpt::system::COutputLogger, public CGenericSensor
 	std::string m_com_port;
 	/** Will be !=nullptr only if I created it, so I must destroy it at the end.
 	 */
-	mrpt::comms::CSerialPort* m_mySerialPort;
+	mrpt::comms::CSerialPort* m_mySerialPort{nullptr};
 	/** Baudrate: 9600, 38400, 500000 */
-	int m_com_baudRate;
+	int m_com_baudRate{57600};
 	/** Default = 1 */
-	unsigned int m_nTries_connect;
-	unsigned int m_nTries_current;
-	int m_canbus_speed;
-	bool m_canreader_timestamp;  // for future work
-	bool m_CANBusChannel_isOpen;  // if the can bus channel is open or not
+	unsigned int m_nTries_connect{1};
+	unsigned int m_nTries_current{0};
+	int m_canbus_speed{250000};
+	bool m_canreader_timestamp{false};  // for future work
+	bool m_CANBusChannel_isOpen{false};  // if the can bus channel is open or not
 
    protected:
 	/** See the class documentation at the top for expected parameters */

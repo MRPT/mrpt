@@ -30,7 +30,7 @@ class CGlCanvasBase
    public:
 	struct CamaraParams
 	{
-		CamaraParams() {}
+		CamaraParams() = default;
 		void setElevationDeg(float deg);
 
 		float cameraPointingX = .0f, cameraPointingY = .0f,
@@ -41,8 +41,8 @@ class CGlCanvasBase
 		float cameraFOV = 30.f;
 	};
 
-	CGlCanvasBase() {}
-	virtual ~CGlCanvasBase() {}
+	CGlCanvasBase() = default;
+	virtual ~CGlCanvasBase() = default;
 	/** Sets the minimum of the zoom
 	 * See also setMaximumZoom(float) */
 	void setMinimumZoom(float zoom);

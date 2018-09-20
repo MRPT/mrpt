@@ -15,10 +15,10 @@ namespace mrpt::kinematics
 {
 /** Kinematic simulator of a holonomic 2D robot capable of moving in any
  * direction, with "blended"
-  * velocity profiles. See CVehicleSimul_Holo::sendVelCmd() for a description of
+ * velocity profiles. See CVehicleSimul_Holo::sendVelCmd() for a description of
  * the velocity commands in this kinematic model.
  * \ingroup mrpt_kinematics_grp
-  */
+ */
 class CVehicleSimul_Holo : public CVehicleSimulVirtualBase
 {
    public:
@@ -60,11 +60,11 @@ class CVehicleSimul_Holo : public CVehicleSimulVirtualBase
 	{
 		/** time when the cmd was issued. (<0: invalid, means there are no
 		 * pending cmds to execute) */
-		double issue_time;
+		double issue_time{-1.0};
 		double target_vel_x, target_vel_y, ramp_time, rot_speed, dir;
 		mrpt::math::TTwist2D init_vel;
 
-		TVelRampCmd() : issue_time(-1.0) {}
+		TVelRampCmd() = default;
 	};
 	/** the last cmd received from the user. */
 	TVelRampCmd m_vel_ramp_cmd;
@@ -73,5 +73,4 @@ class CVehicleSimul_Holo : public CVehicleSimulVirtualBase
 	void internal_simulControlStep(const double dt) override;
 	void internal_clear() override;
 };
-}
-
+}  // namespace mrpt::kinematics

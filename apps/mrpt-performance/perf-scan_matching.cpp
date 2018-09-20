@@ -201,15 +201,11 @@ double scan_matching_test_4(int nCorrs, int nRepets)
 // ------------------------------------------------------
 void register_tests_scan_matching()
 {
-	lstTests.push_back(
-		TestData("tfest: se3_l2 [CPose3DQuat]", scan_matching_test_1, 1e4));
-	lstTests.push_back(
-		TestData("tfest: se3_l2 [vector TPoint3D]", scan_matching_test_3, 1e4));
+	lstTests.emplace_back("tfest: se3_l2 [CPose3DQuat]", scan_matching_test_1, 1e4);
+	lstTests.emplace_back("tfest: se3_l2 [vector TPoint3D]", scan_matching_test_3, 1e4);
 
-	lstTests.push_back(
-		TestData("tfest: se2_l2 [x10 corrs]", scan_matching_test_4, 10, 1e6));
-	lstTests.push_back(
-		TestData("tfest: se2_l2 [x100 corrs]", scan_matching_test_4, 100, 1e6));
-	lstTests.push_back(TestData(
-		"tfest: se2_l2 [x1000 corrs]", scan_matching_test_4, 1000, 1e5));
+	lstTests.emplace_back("tfest: se2_l2 [x10 corrs]", scan_matching_test_4, 10, 1e6);
+	lstTests.emplace_back("tfest: se2_l2 [x100 corrs]", scan_matching_test_4, 100, 1e6);
+	lstTests.emplace_back(
+		"tfest: se2_l2 [x1000 corrs]", scan_matching_test_4, 1000, 1e5);
 }

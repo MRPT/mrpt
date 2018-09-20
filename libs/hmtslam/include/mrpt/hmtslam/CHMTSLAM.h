@@ -62,7 +62,7 @@ class CLSLAM_RBPF_2DLASER;
  *interface.
  *
  * \sa CHierarchicalMHMap
-  * \ingroup mrpt_hmtslam_grp
+ * \ingroup mrpt_hmtslam_grp
  */
 class CHMTSLAM : public mrpt::system::COutputLogger,
 				 public mrpt::serialization::CSerializable
@@ -135,21 +135,21 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 
 		struct TBI_info
 		{
-			TBI_info() : log_lik(0), delta_new_cur(0) {}
+			TBI_info() = default;
 			/** Log likelihood for this loop-closure. */
-			double log_lik;
+			double log_lik{0};
 
 			/** Depending on the loop-closure engine, an guess of the relative
 			 * pose of "area_new" relative to "cur_area" is given here.
-			  *  If the SOG contains 0 modes, then the engine does not provide
+			 *  If the SOG contains 0 modes, then the engine does not provide
 			 * this information.
-			  */
-			mrpt::poses::CPose3DPDFSOG delta_new_cur;
+			 */
+			mrpt::poses::CPose3DPDFSOG delta_new_cur{0};
 		};
 
 		/** The meat is here: only feasible loop closures from "cur_area" are
 		 * included here, with associated data.
-		  */
+		 */
 		std::map<CHMHMapNode::TNodeID, TBI_info> loopClosureData;
 
 		// MRPT_MAKE_ALIGNED_OPERATOR_NEW
@@ -165,23 +165,23 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 	/** @} */
 
 	/** The Area Abstraction (AA) method, invoked from LSLAM.
-	  * \param LMH (IN) The LMH which to this query applies.
-	  * \param newPoseIDs (IN) The new poseIDs to be added to the graph
+	 * \param LMH (IN) The LMH which to this query applies.
+	 * \param newPoseIDs (IN) The new poseIDs to be added to the graph
 	 * partitioner.
-	  * \return A structure with all return data. Memory to be freed by user.
-	  * \note The critical section for LMH must be locked BEFORE calling this
+	 * \return A structure with all return data. Memory to be freed by user.
+	 * \note The critical section for LMH must be locked BEFORE calling this
 	 * method (it does NOT lock any critical section).
-	  */
+	 */
 	static TMessageLSLAMfromAA::Ptr areaAbstraction(
 		CLocalMetricHypothesis* LMH, const TPoseIDList& newPoseIDs);
 
 	/** The entry point for Topological Bayesian Inference (TBI) engines,
 	 * invoked from LSLAM.
-	  * \param LMH (IN) The LMH which to this query applies.
-	  * \param areaID (IN) The area ID to consider for potential loop-closures.
-	  * \note The critical section for LMH must be locked BEFORE calling this
+	 * \param LMH (IN) The LMH which to this query applies.
+	 * \param areaID (IN) The area ID to consider for potential loop-closures.
+	 * \note The critical section for LMH must be locked BEFORE calling this
 	 * method (it does NOT lock any critical section).
-	  */
+	 */
 	static TMessageLSLAMfromTBI::Ptr TBI_main_method(
 		CLocalMetricHypothesis* LMH, const CHMHMapNode::TNodeID& areaID);
 
@@ -193,37 +193,37 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 
 	/** Returns true if the input queue is empty (Note that the queue must not
 	 * be empty to the user to enqueue more actions/observaitions)
-	  * \sa pushAction,pushObservations, inputQueueSize
-	  */
+	 * \sa pushAction,pushObservations, inputQueueSize
+	 */
 	bool isInputQueueEmpty();
 
 	/** Returns the number of objects waiting for processing in the input queue.
-	  * \sa pushAction,pushObservations, isInputQueueEmpty
-	  */
+	 * \sa pushAction,pushObservations, isInputQueueEmpty
+	 */
 	size_t inputQueueSize();
 
 	/** Here the user can enter an action into the system (will go to the SLAM
 	 * process).
-	  *  This class will delete the passed object when required, so DO NOT
+	 *  This class will delete the passed object when required, so DO NOT
 	 * DELETE the passed object after calling this.
-	  * \sa pushObservations,pushObservation
-	  */
+	 * \sa pushObservations,pushObservation
+	 */
 	void pushAction(const mrpt::obs::CActionCollection::Ptr& acts);
 
 	/** Here the user can enter observations into the system (will go to the
 	 * SLAM process).
-	  *  This class will delete the passed object when required, so DO NOT
+	 *  This class will delete the passed object when required, so DO NOT
 	 * DELETE the passed object after calling this.
-	  * \sa pushAction,pushObservation
-	  */
+	 * \sa pushAction,pushObservation
+	 */
 	void pushObservations(const mrpt::obs::CSensoryFrame::Ptr& sf);
 
 	/** Here the user can enter an observation into the system (will go to the
 	 * SLAM process).
-	  *  This class will delete the passed object when required, so DO NOT
+	 *  This class will delete the passed object when required, so DO NOT
 	 * DELETE the passed object after calling this.
-	  * \sa pushAction,pushObservation
-	  */
+	 * \sa pushAction,pushObservation
+	 */
 	void pushObservation(const mrpt::obs::CObservation::Ptr& obs);
 
 	enum TLSlamMethod
@@ -233,8 +233,8 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 
    protected:
 	/** Used from the LSLAM thread to retrieve the next object from the queue.
-	  * \return The object, or nullptr if empty.
-	  */
+	 * \return The object, or nullptr if empty.
+	 */
 	mrpt::serialization::CSerializable::Ptr getNextObjectFromInputQueue();
 
 	/** The queue of pending actions/observations supplied by the user waiting
@@ -273,11 +273,11 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 	void LSLAM_process_message(const mrpt::serialization::CMessage& msg);
 
 	/** No critical section locks are assumed at the entrance of this method.
-	  */
+	 */
 	void LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg);
 
 	/** No critical section locks are assumed at the entrance of this method.
-	  */
+	 */
 	void LSLAM_process_message_from_TBI(const TMessageLSLAMfromTBI& myMsg);
 
 	/** Topological Loop Closure: Performs all the required operations
@@ -297,7 +297,7 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 
 	/** An instance of a local SLAM method, to be applied to each LMH -
 	 * initialized by "initializeEmptyMap" or "loadState".
-	  */
+	 */
 	CLSLAMAlgorithmBase* m_LSLAM_method;
 
 	/** @} */
@@ -325,10 +325,10 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 		CTopLCDetectorBase* (*ptrCreateObject)(CHMTSLAM*));
 
 	/** The class factory for topological loop closure detectors.
-	  *  Possible values are enumerated in TOptions::TLC_detectors
-	  *
-	  * \exception std::exception On unknown name.
-	  */
+	 *  Possible values are enumerated in TOptions::TLC_detectors
+	 *
+	 * \exception std::exception On unknown name.
+	 */
 	CTopLCDetectorBase* loopClosureDetector_factory(const std::string& name);
 
 	/** @} */
@@ -337,7 +337,7 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 	bool m_terminateThreads;
 
 	/** Threads termination flags:
-	  */
+	 */
 	bool m_terminationFlag_LSLAM, m_terminationFlag_TBI,
 		m_terminationFlag_3D_viewer;
 
@@ -357,9 +357,9 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 
    public:
 	/** Default constructor
-	  *  \param debug_out_stream If debug output messages should be redirected
+	 *  \param debug_out_stream If debug output messages should be redirected
 	 * to any other stream apart from std::cout
-	  */
+	 */
 	CHMTSLAM();
 
 	CHMTSLAM(const CHMTSLAM&) : mrpt::system::COutputLogger()
@@ -372,13 +372,13 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 	}
 
 	/** Destructor
-	  */
+	 */
 	~CHMTSLAM() override;
 
 	/** Return true if an exception has been caught in any thread leading to the
 	 * end of the mapping application: no more actions/observations will be
 	 * processed from now on.
-	  */
+	 */
 	bool abortedDueToErrors();
 
 	/** @name High-level map management
@@ -396,16 +396,16 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 
 	/** Save the state of the whole HMT-SLAM framework to some binary stream
 	 * (e.g. a file).
-	  * \return true if everything goes OK.
-	  * \sa loadState
-	  */
+	 * \return true if everything goes OK.
+	 * \sa loadState
+	 */
 	bool saveState(mrpt::serialization::CArchive& out) const;
 
 	/** Load the state of the whole HMT-SLAM framework from some binary stream
 	 * (e.g. a file).
-	  * \return true if everything goes OK.
-	  * \sa saveState
-	  */
+	 * \return true if everything goes OK.
+	 * \sa saveState
+	 */
 	bool loadState(mrpt::serialization::CArchive& in);
 	/** @} */
 
@@ -418,22 +418,22 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 	/** @} */
 
 	/** Called from LSLAM thread when log files must be created.
-	  */
+	 */
 	void generateLogFiles(unsigned int nIteration);
 
 	/** Gets a 3D representation of the current state of the whole mapping
 	 * framework.
-	  */
+	 */
 	void getAs3DScene(mrpt::opengl::COpenGLScene& outScene);
 
    protected:
 	/** A variety of options and configuration params (private, use
 	 * loadOptions).
-	  */
+	 */
 	struct TOptions : public mrpt::config::CLoadableOptions
 	{
 		/** Initialization of default params
-		  */
+		 */
 		TOptions();
 
 		void loadFromConfigFile(
@@ -450,12 +450,12 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 		int LOG_FREQUENCY;
 
 		/** [LSLAM] The method to use for local SLAM
-		  */
+		 */
 		TLSlamMethod SLAM_METHOD;
 
 		/** [LSLAM] Minimum distance (and heading) difference between
 		 * observations inserted in the map.
-		*/
+		 */
 		float SLAM_MIN_DIST_BETWEEN_OBS, SLAM_MIN_HEADING_BETWEEN_OBS;
 
 		/** [LSLAM] Minimum uncertainty (1 sigma, meters) in x and y for
@@ -467,22 +467,22 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 		float MIN_ODOMETRY_STD_PHI;
 
 		/** [VIEW3D] The height of the areas' spheres.
-		  */
+		 */
 		float VIEW3D_AREA_SPHERES_HEIGHT;
 
 		/** [VIEW3D] The radius of the areas' spheres.
-		  */
+		 */
 		float VIEW3D_AREA_SPHERES_RADIUS;
 
 		/** A 3-length vector with the std. deviation of the transition model in
 		 * (x,y,phi) used only when there is no odometry (if there is odo, its
 		 * uncertainty values will be used instead); x y: In meters, phi:
 		 * radians (but in degrees when loading from a configuration ini-file!)
-		  */
+		 */
 		mrpt::math::CVectorFloat stds_Q_no_odo;
 
 		/** [AA] The options for the partitioning algorithm
-		*/
+		 */
 		mrpt::slam::CIncrementalMapPartitioner::TOptions AA_options;
 
 		/** The default set of maps to be created in each particle */
@@ -497,9 +497,9 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 
 		/** A list of topological loop-closure detectors to use: can be one or
 		 * more from this list:
-		  *  'gridmaps': Occupancy Grid matching.
-		  *  'fabmap': Mark Cummins' image matching framework.
-		  */
+		 *  'gridmaps': Occupancy Grid matching.
+		 *  'fabmap': Mark Cummins' image matching framework.
+		 */
 		std::vector<std::string> TLC_detectors;
 
 		/** Options passed to this TLC constructor */
@@ -512,7 +512,7 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 };  // End of class CHMTSLAM.
 
 /** Virtual base for local SLAM methods, used in mrpt::slam::CHMTSLAM.
-  */
+ */
 class CLSLAMAlgorithmBase
 {
 	friend class CLocalMetricHypothesis;
@@ -522,30 +522,30 @@ class CLSLAMAlgorithmBase
 
    public:
 	/** Constructor
-	  */
+	 */
 	CLSLAMAlgorithmBase(CHMTSLAM* parent) : m_parent(parent) {}
 	/** Destructor
-	  */
-	virtual ~CLSLAMAlgorithmBase() {}
+	 */
+	virtual ~CLSLAMAlgorithmBase() = default;
 	/** Main entry point from HMT-SLAM: process some actions & observations.
-	  *  The passed action/observation will be deleted, so a copy must be made
+	 *  The passed action/observation will be deleted, so a copy must be made
 	 * if necessary.
-	  *  This method must be in charge of updating the robot pose estimates and
+	 *  This method must be in charge of updating the robot pose estimates and
 	 * also to update the
-	  *   map when required.
-	  *
-	  * \param LMH   The local metric hypothesis which must be updated by this
+	 *   map when required.
+	 *
+	 * \param LMH   The local metric hypothesis which must be updated by this
 	 * SLAM algorithm.
-	  * \param act   The action to process (or nullptr).
-	  * \param sf    The observations to process (or nullptr).
-	  */
+	 * \param act   The action to process (or nullptr).
+	 * \param sf    The observations to process (or nullptr).
+	 */
 	virtual void processOneLMH(
 		CLocalMetricHypothesis* LMH,
 		const mrpt::obs::CActionCollection::Ptr& act,
 		const mrpt::obs::CSensoryFrame::Ptr& sf) = 0;
 
 	/** The PF algorithm implementation.
-	  */
+	 */
 	virtual void prediction_and_update_pfAuxiliaryPFOptimal(
 		CLocalMetricHypothesis* LMH, const mrpt::obs::CActionCollection* action,
 		const mrpt::obs::CSensoryFrame* observation,
@@ -561,33 +561,33 @@ class CLSLAMAlgorithmBase
 
 /** Implements a 2D local SLAM method based on a RBPF over an occupancy grid
  * map.
-  *  This class is used internally in mrpt::slam::CHMTSLAM
-  */
+ *  This class is used internally in mrpt::slam::CHMTSLAM
+ */
 class CLSLAM_RBPF_2DLASER : public CLSLAMAlgorithmBase
 {
 	friend class CLocalMetricHypothesis;
 
    public:
 	/** Constructor
-	  */
+	 */
 	CLSLAM_RBPF_2DLASER(CHMTSLAM* parent);
 
 	/** Destructor
-	  */
+	 */
 	~CLSLAM_RBPF_2DLASER() override;
 
 	/** Main entry point from HMT-SLAM: process some actions & observations.
-	  *  The passed action/observation will be deleted, so a copy must be made
+	 *  The passed action/observation will be deleted, so a copy must be made
 	 * if necessary.
-	  *  This method must be in charge of updating the robot pose estimates and
+	 *  This method must be in charge of updating the robot pose estimates and
 	 * also to update the
-	  *   map when required.
-	  *
-	  * \param LMH   The local metric hypothesis which must be updated by this
+	 *   map when required.
+	 *
+	 * \param LMH   The local metric hypothesis which must be updated by this
 	 * SLAM algorithm.
-	  * \param act   The action to process (or nullptr).
-	  * \param sf    The observations to process (or nullptr).
-	  */
+	 * \param act   The action to process (or nullptr).
+	 * \param sf    The observations to process (or nullptr).
+	 */
 	void processOneLMH(
 		CLocalMetricHypothesis* LMH,
 		const mrpt::obs::CActionCollection::Ptr& act,
@@ -597,45 +597,47 @@ class CLSLAM_RBPF_2DLASER : public CLSLAMAlgorithmBase
 	void prediction_and_update_pfAuxiliaryPFOptimal(
 		CLocalMetricHypothesis* LMH, const mrpt::obs::CActionCollection* action,
 		const mrpt::obs::CSensoryFrame* observation,
-		const bayes::CParticleFilter::TParticleFilterOptions& PF_options) override;
+		const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
+		override;
 
 	/** The PF algorithm implementation.  */
 	void prediction_and_update_pfOptimalProposal(
 		CLocalMetricHypothesis* LMH, const mrpt::obs::CActionCollection* action,
 		const mrpt::obs::CSensoryFrame* observation,
-		const bayes::CParticleFilter::TParticleFilterOptions& PF_options) override;
+		const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
+		override;
 
    protected:
 	/**  For use within PF callback methods */
 	bool m_insertNewRobotPose;
 
 	/** Auxiliary structure
-	  */
+	 */
 	struct TPathBin
 	{
 		TPathBin() : x(), y(), phi() {}
 		std::vector<int> x, y, phi;
 
 		/** For debugging purposes!
-		  */
+		 */
 		void dumpToStdOut() const;
 	};
 
 	/** Fills out a "TPathBin" variable, given a path hypotesis and (if not set
 	 * to nullptr) a new pose appended at the end, using the KLD params in
 	 * "options".
-		*/
+	 */
 	void loadTPathBinFromPath(
 		TPathBin& outBin, TMapPoseID2Pose3D* path = nullptr,
 		mrpt::poses::CPose2D* newPose = nullptr);
 
 	/** Checks if a given "TPathBin" element is already into a set of them, and
 	 * return its index (first one is 0), or -1 if not found.
-		*/
+	 */
 	int findTPathBinIntoSet(TPathBin& desiredBin, std::deque<TPathBin>& theSet);
 
 	/** Auxiliary function used in "prediction_and_update_pfAuxiliaryPFOptimal"
-		*/
+	 */
 	static double particlesEvaluator_AuxPFOptimal(
 		const mrpt::bayes::CParticleFilter::TParticleFilterOptions& PF_options,
 		const mrpt::bayes::CParticleFilterCapable* obj, size_t index,
@@ -644,7 +646,7 @@ class CLSLAM_RBPF_2DLASER : public CLSLAMAlgorithmBase
 	/** Auxiliary function that evaluates the likelihood of an observation,
 	 * given a robot pose, and according to the options in
 	 * "CPosePDFParticles::options".
-	  */
+	 */
 	static double auxiliarComputeObservationLikelihood(
 		const mrpt::bayes::CParticleFilter::TParticleFilterOptions& PF_options,
 		const mrpt::bayes::CParticleFilterCapable* obj,
@@ -653,6 +655,5 @@ class CLSLAM_RBPF_2DLASER : public CLSLAMAlgorithmBase
 
 };  // end class CLSLAM_RBPF_2DLASER
 
-}  // End of namespace
-}  // End of namespace
-
+}  // namespace hmtslam
+}  // namespace mrpt

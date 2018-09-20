@@ -61,11 +61,6 @@ CRawlogTreeView::CRawlogTreeView(
 	: wxScrolledWindow(
 		  parent, id, pos, size, style | wxVSCROLL | wxFULL_REPAINT_ON_RESIZE,
 		  name),
-	  m_rawlog(nullptr),
-	  m_imageList(nullptr),
-	  m_selectedItem(-1),
-	  m_event_select_change(nullptr),
-	  m_win_parent(nullptr),
 	  m_rawlog_start(INVALID_TIMESTAMP),
 	  m_rawlog_last(INVALID_TIMESTAMP),
 	  m_tree_nodes()
@@ -116,7 +111,7 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 	m_rawlog_last = INVALID_TIMESTAMP;
 
 	// Root:
-	m_tree_nodes.push_back(TNodeData());
+	m_tree_nodes.emplace_back();
 	TNodeData& d = m_tree_nodes.back();
 	d.level = 0;
 
@@ -129,7 +124,7 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 		for (CRawlog::iterator it = m_rawlog->begin(); it != end_it;
 			 it++, rawlog_index++)
 		{
-			m_tree_nodes.push_back(TNodeData());
+			m_tree_nodes.emplace_back();
 			TNodeData& d = m_tree_nodes.back();
 			d.level = 1;
 			d.data = (*it);
@@ -140,9 +135,9 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 			{
 				CSensoryFrame::Ptr sf =
 					std::dynamic_pointer_cast<CSensoryFrame>(*it);
-				for (auto & o : *sf)
+				for (auto& o : *sf)
 				{
-					m_tree_nodes.push_back(TNodeData());
+					m_tree_nodes.emplace_back();
 					TNodeData& d = m_tree_nodes.back();
 					d.level = 2;
 					d.data = o;
@@ -159,9 +154,9 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 			{
 				CActionCollection::Ptr acts =
 					std::dynamic_pointer_cast<CActionCollection>(*it);
-				for (auto & a : *acts)
+				for (auto& a : *acts)
 				{
-					m_tree_nodes.push_back(TNodeData());
+					m_tree_nodes.emplace_back();
 					TNodeData& d = m_tree_nodes.back();
 					d.level = 2;
 					d.data = a.get_ptr();
@@ -174,8 +169,8 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 					}
 				}
 			}
-			else if (
-				(*it)->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
+			else if ((*it)->GetRuntimeClass()->derivedFrom(
+						 CLASS_ID(CObservation)))
 			{
 				CObservation::Ptr o =
 					std::dynamic_pointer_cast<CObservation>(*it);

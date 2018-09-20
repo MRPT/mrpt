@@ -66,11 +66,11 @@ class CStereoGrabber_SVS
 {
    protected:
 	/** If this has been correctly initiated */
-	bool m_bInitialized;
+	bool m_bInitialized{false};
 
-	void* m_videoObject;  // svsVideoImages*
-	void* m_stereoImage;  // svsStereoImage*
-	void* m_disparityParams;  // svsDisparityParams*
+	void* m_videoObject{nullptr};  // svsVideoImages*
+	void* m_stereoImage{nullptr};  // svsStereoImage*
+	void* m_disparityParams{nullptr};  // svsDisparityParams*
 	void* m_processObject;  // svsStereoProcess
 	unsigned int m_resolutionX;
 	unsigned int m_resolutionY;
@@ -95,7 +95,7 @@ class CStereoGrabber_SVS
 	CStereoGrabber_SVS& operator=(const CStereoGrabber_SVS&) = delete;
 
 	/** Destructor */
-	virtual ~CStereoGrabber_SVS(void);
+	virtual ~CStereoGrabber_SVS();
 
 	/** Grab stereo images, and return the pair of rectified images.
 	 * \param out_observation The object to be filled with sensed data.

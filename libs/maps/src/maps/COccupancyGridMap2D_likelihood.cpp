@@ -820,30 +820,10 @@ double COccupancyGridMap2D::computeLikelihoodField_II(
 	Initilization of values, don't needed to be called directly.
   ---------------------------------------------------------------*/
 COccupancyGridMap2D::TLikelihoodOptions::TLikelihoodOptions()
-	: likelihoodMethod(lmLikelihoodField_Thrun),
+	: 
+	  OWA_weights(100, 1 / 100.0f)
 
-	  LF_stdHit(0.35f),
-	  LF_zHit(0.95f),
-	  LF_zRandom(0.05f),
-	  LF_maxRange(81.0f),
-	  LF_decimation(5),
-	  LF_maxCorrsDistance(0.3f),
-	  LF_useSquareDist(false),
-	  LF_alternateAverageMethod(false),
-
-	  MI_exponent(2.5f),
-	  MI_skip_rays(10),
-	  MI_ratio_max_distance(1.5f),
-
-	  rayTracing_useDistanceFilter(true),
-	  rayTracing_decimation(10),
-	  rayTracing_stdHit(1.0f),
-
-	  consensus_takeEachRange(1),
-	  consensus_pow(5),
-	  OWA_weights(100, 1 / 100.0f),
-
-	  enableLikelihoodCache(true)
+	  
 {
 }
 

@@ -101,13 +101,13 @@ class epnp
 	/**
 	 * @brief Function to select 4 control points from n points
 	 */
-	void choose_control_points(void);
+	void choose_control_points();
 
 	/**
 	 * @brief Convert from object space to relative object space (Barycentric
 	 * coordinates)
 	 */
-	void compute_barycentric_coordinates(void);
+	void compute_barycentric_coordinates();
 
 	/**
 	 * @brief Generate the Matrix M
@@ -131,12 +131,12 @@ class epnp
 	/**
 	 * @brief Internal function
 	 */
-	void compute_pcs(void);
+	void compute_pcs();
 
 	/**
 	 * @brief Internal function
 	 */
-	void solve_for_sign(void);
+	void solve_for_sign();
 
 	/**
 	 * @brief Internal function

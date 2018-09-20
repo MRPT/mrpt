@@ -42,7 +42,7 @@ using namespace std;
 //  =========== Begin of Map definition ============
 MAP_DEFINITION_REGISTER("CBeaconMap,beaconMap", mrpt::maps::CBeaconMap)
 
-CBeaconMap::TMapDefinition::TMapDefinition() {}
+CBeaconMap::TMapDefinition::TMapDefinition() = default;
 void CBeaconMap::TMapDefinition::loadFromConfigFile_map_specific(
 	const mrpt::config::CConfigFileBase& source,
 	const std::string& sectionNamePrefix)

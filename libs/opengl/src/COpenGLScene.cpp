@@ -41,7 +41,7 @@ IMPLEMENTS_SERIALIZABLE(COpenGLScene, CRenderizableDisplayList, mrpt::opengl)
 /*---------------------------------------------------------------
 						Constructor
 ---------------------------------------------------------------*/
-COpenGLScene::COpenGLScene() : m_followCamera(false) { createViewport("main"); }
+COpenGLScene::COpenGLScene()  { createViewport("main"); }
 /*--------------------------------------------------------------
 					Copy constructor
   ---------------------------------------------------------------*/

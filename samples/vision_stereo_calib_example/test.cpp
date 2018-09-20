@@ -90,7 +90,7 @@ int TestStereoCalibrate(int argc, char** argv)
 		// Calibration was OK:
 
 		// Show detected corners:
-		if (1)
+		if (true)
 		{
 			mrpt::gui::CDisplayWindow3D win("Calibration results", 1000, 480);
 

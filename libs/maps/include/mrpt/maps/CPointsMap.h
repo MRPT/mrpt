@@ -215,35 +215,35 @@ class CPointsMap : public CMetricMap,
 		/** The minimum distance between points (in 3D): If two points are too
 		 * close, one of them is not inserted into the map. Default is 0.02
 		 * meters. */
-		float minDistBetweenLaserPoints;
+		float minDistBetweenLaserPoints{0.02f};
 		/** Applicable to "loadFromRangeScan" only! If set to false, the points
 		 * from the scan are loaded, clearing all previous content. Default is
 		 * false. */
-		bool addToExistingPointsMap;
+		bool addToExistingPointsMap{true};
 		/** If set to true, far points (<1m) are interpolated with samples at
 		 * "minDistSqrBetweenLaserPoints" intervals (Default is false). */
-		bool also_interpolate;
+		bool also_interpolate{false};
 		/** If set to false (default=true) points in the same plane as the
 		 * inserted scan and inside the free space, are erased: i.e. they don't
 		 * exist yet. */
-		bool disableDeletion;
+		bool disableDeletion{true};
 		/** If set to true (default=false), inserted points are "fused" with
 		 * previously existent ones. This shrink the size of the points map, but
 		 * its slower. */
-		bool fuseWithExisting;
+		bool fuseWithExisting{false};
 		/** If set to true, only HORIZONTAL (in the XY plane) measurements will
 		 * be inserted in the map (Default value is false, thus 3D maps are
 		 * generated). \sa	horizontalTolerance */
-		bool isPlanarMap;
+		bool isPlanarMap{false};
 		/** The tolerance in rads in pitch & roll for a laser scan to be
 		 * considered horizontal, considered only when isPlanarMap=true
 		 * (default=0). */
 		float horizontalTolerance;
 		/** The maximum distance between two points to interpolate between them
 		 * (ONLY when also_interpolate=true) */
-		float maxDistForInterpolatePoints;
+		float maxDistForInterpolatePoints{2.0f};
 		/** Points with x,y,z coordinates set to zero will also be inserted */
-		bool insertInvalidPoints;
+		bool insertInvalidPoints{false};
 
 		/** Binary dump to stream - for usage in derived classes' serialization
 		 */
@@ -265,7 +265,7 @@ class CPointsMap : public CMetricMap,
 		/** Initilization of default parameters
 		 */
 		TLikelihoodOptions();
-		~TLikelihoodOptions() override {}
+		~TLikelihoodOptions() override = default;
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
@@ -281,14 +281,14 @@ class CPointsMap : public CMetricMap,
 
 		/** Sigma squared (variance, in meters) of the exponential used to model
 		 * the likelihood (default= 0.5^2 meters) */
-		double sigma_dist;
+		double sigma_dist{0.0025};
 		/** Maximum distance in meters to consider for the numerator divided by
 		 * "sigma_dist", so that each point has a minimum (but very small)
 		 * likelihood to avoid underflows (default=1.0 meters) */
-		double max_corr_distance;
+		double max_corr_distance{1.0};
 		/** Speed up the likelihood computation by considering only one out of N
 		 * rays (default=10) */
-		uint32_t decimation;
+		uint32_t decimation{10};
 	};
 	TLikelihoodOptions likelihoodOptions;
 
@@ -1099,7 +1099,7 @@ class CPointsMap : public CMetricMap,
 	/** Auxiliary variables used in "getLargestDistanceFromOrigin"
 	 * \sa getLargestDistanceFromOrigin
 	 */
-	mutable float m_largestDistanceFromOrigin;
+	mutable float m_largestDistanceFromOrigin{0};
 
 	/** Auxiliary variables used in "getLargestDistanceFromOrigin"
 	 * \sa getLargestDistanceFromOrigin
@@ -1154,11 +1154,11 @@ class CPointsMap : public CMetricMap,
 	/** The minimum and maximum height for a certain laser scan to be inserted
 	 * into this map
 	 * \sa m_heightfilter_enabled */
-	double m_heightfilter_z_min, m_heightfilter_z_max;
+	double m_heightfilter_z_min{-10}, m_heightfilter_z_max{10};
 
 	/** Whether or not (default=not) filter the input points by height
 	 * \sa m_heightfilter_z_min, m_heightfilter_z_max */
-	bool m_heightfilter_enabled;
+	bool m_heightfilter_enabled{false};
 
 	// Friend methods:
 	template <class Derived>

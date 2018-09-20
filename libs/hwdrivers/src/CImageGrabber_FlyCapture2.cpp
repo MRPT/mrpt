@@ -142,36 +142,10 @@ const char* fc2_defnum2str(const T& val)
 //  Options: TCaptureOptions_bumblebee
 // -------------------------------------------------------------
 TCaptureOptions_FlyCapture2::TCaptureOptions_FlyCapture2()
-	: camera_index(0),
-	  open_by_guid(false),
-	  videomode(),  //("VIDEOMODE_640x480Y8"),
+	: videomode(),  //("VIDEOMODE_640x480Y8"),
 	  framerate(),  // ("FRAMERATE_30"),
-	  grabmode("BUFFER_FRAMES"),
-	  numBuffers(30),
-	  grabTimeout(-1),
-	  trigger_enabled(false),
-	  trigger_polarity(0),
-	  trigger_source(0),
-	  trigger_mode(0),
-	  strobe_enabled(false),
-	  strobe_source(0),
-	  strobe_polarity(0),
-	  strobe_delay(0.0f),
-	  strobe_duration(1.0f),
-	  autoexposure_auto(true),
-	  autoexposure_onOff(true),
-	  autoexposure_abs(true),
-	  autoexposure_EV(0.0f),
-	  shutter_auto(true),
-	  shutter_abs(true),
-	  shutter_time_ms(4.0f),
-	  gain_auto(true),
-	  gain_abs(true),
-	  gain_dB(0.0f),
-	  stereo_mode(false),
-	  get_rectified(false),
-	  rect_width(640),
-	  rect_height(480)
+	  grabmode("BUFFER_FRAMES")
+
 {
 	memset(camera_guid, 0, 4 * sizeof(camera_guid[0]));
 }
@@ -260,10 +234,6 @@ void TCaptureOptions_FlyCapture2::loadOptionsFrom(
 // ---------------------------------------------------------------
 /** Default constructor */
 CImageGrabber_FlyCapture2::CImageGrabber_FlyCapture2()
-	: m_camera(nullptr),
-	  m_camera_info(nullptr),
-	  m_img_buffer(nullptr),
-	  m_triclops(nullptr)
 {
 #if MRPT_HAS_FLYCAPTURE2
 	m_img_buffer = new FlyCapture2::Image();
@@ -325,11 +295,10 @@ void CImageGrabber_FlyCapture2::open(
 		CHECK_FC2_ERROR(fe)
 
 		if (m_options.camera_index >= numCameras)
-			THROW_EXCEPTION(
-				mrpt::format(
-					"Error: camera_index to open is '%u', but only '%u' "
-					"cameras were detected in the system.",
-					m_options.camera_index, numCameras))
+			THROW_EXCEPTION(mrpt::format(
+				"Error: camera_index to open is '%u', but only '%u' "
+				"cameras were detected in the system.",
+				m_options.camera_index, numCameras))
 
 		fe = busMgr.GetCameraFromIndex(m_options.camera_index, &guid);
 		CHECK_FC2_ERROR(fe)
@@ -385,14 +354,11 @@ void CImageGrabber_FlyCapture2::open(
 				fe =
 					FC2_CAM->GetVideoModeAndFrameRate(&curVidMode, &curVidRate);
 
-				THROW_EXCEPTION(
-					mrpt::format(
-						"Camera mode '%s' + '%s' is not supported by this "
-						"camera. Current mode is %d, current rate is %d.",
-						m_options.videomode.c_str(),
-						m_options.framerate.c_str(),
-						static_cast<int>(curVidMode),
-						static_cast<int>(curVidRate)))
+				THROW_EXCEPTION(mrpt::format(
+					"Camera mode '%s' + '%s' is not supported by this "
+					"camera. Current mode is %d, current rate is %d.",
+					m_options.videomode.c_str(), m_options.framerate.c_str(),
+					static_cast<int>(curVidMode), static_cast<int>(curVidRate)))
 			}
 
 			fe = FC2_CAM->SetVideoModeAndFrameRate(vidMode, vidRate);

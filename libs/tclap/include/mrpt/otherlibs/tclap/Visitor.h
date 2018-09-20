@@ -42,12 +42,12 @@ class Visitor
 		/**
 		 * Constructor. Does nothing.
 		 */
-		Visitor() { }
+		Visitor() = default;
 
 		/**
 		 * Destructor. Does nothing.
 		 */
-		virtual ~Visitor() { }
+		virtual ~Visitor() = default;
 
 		/**
 		 * Does nothing. Should be overridden by child.

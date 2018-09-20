@@ -44,7 +44,7 @@ class CCanvas
 	std::string m_selectedFont;
 
 	/** Direct access to character bitmaps. */
-	const uint32_t* m_selectedFontBitmaps;
+	const uint32_t* m_selectedFontBitmaps{nullptr};
 
    public:
 	CCanvas();
@@ -62,7 +62,7 @@ class CCanvas
 
 	/** Dummy virtual destructor:
 	 */
-	virtual ~CCanvas() {}
+	virtual ~CCanvas() = default;
 	/** Changes the value of the pixel (x,y).
 	 *  Pixel coordinates starts at the left-top corner of the image, and start
 	 * in (0,0).

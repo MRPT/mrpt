@@ -52,29 +52,9 @@ using namespace std::literals;
 
 // ctor
 CSerialPort::CSerialPort(const string& portName, bool openNow)
-	: m_serialName(portName),
-	  m_totalTimeout_ms(0),
-	  m_interBytesTimeout_ms(0),
-#ifdef _WIN32
-	  hCOM(nullptr)
-#else
-	  hCOM(-1)  // Not connected
-#endif
+	: m_serialName(portName)
 {
 	if (openNow) open();
-}
-
-// Default ctor
-CSerialPort::CSerialPort()
-	: m_serialName(),
-	  m_totalTimeout_ms(0),
-	  m_interBytesTimeout_ms(0),
-#ifdef _WIN32
-	  hCOM(nullptr)
-#else
-	  hCOM(-1)  // Not connected
-#endif
-{
 }
 
 // Dtor:

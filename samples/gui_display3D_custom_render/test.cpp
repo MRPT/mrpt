@@ -30,10 +30,10 @@ using namespace mrpt::system;
 struct TMyExtraRenderingStuff : public mrpt::system::CObserver
 {
 	opengl::CSphere::Ptr ball_obj;  // The ball moving in the scene
-	bool showing_help, hiding_help;
+	bool showing_help{false}, hiding_help{false};
 	mrpt::system::CTicTac tim_show_start, tim_show_end;
 
-	TMyExtraRenderingStuff() : showing_help(false), hiding_help(false) {}
+	TMyExtraRenderingStuff()  {}
 	void OnEvent(const mrptEvent& e) override
 	{
 		if (e.isOfType<mrptEventGLPreRender>())
@@ -121,7 +121,7 @@ void TestDisplay3D()
 
 	theScene->insert(mrpt::opengl::stock_objects::CornerXYZ());
 
-	if (1)
+	if (true)
 	{
 		opengl::CAxis::Ptr obj = mrpt::make_aligned_shared<opengl::CAxis>();
 		obj->setFrequency(5);

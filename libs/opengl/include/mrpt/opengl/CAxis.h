@@ -35,7 +35,7 @@ class CAxis : public CRenderizableDisplayList
 	float m_lineWidth;
 	/** draw marks for X,Y,Z */
 	bool m_marks[3];
-	float m_textScale;
+	float m_textScale{0.25f};
 	float m_textRot[3][3];  // {x,y,z},{yaw,pitch,roll}
 
    public:
@@ -80,7 +80,7 @@ class CAxis : public CRenderizableDisplayList
 		float frecuency = 0.25f, float lineWidth = 3.0f, bool marks = false);
 
 	/** Private, virtual destructor: only can be deleted from smart pointers */
-	~CAxis() override {}
+	~CAxis() override = default;
 };
 
 }

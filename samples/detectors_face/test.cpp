@@ -479,7 +479,7 @@ void TestPrepareDetector()
 	else
 		throw std::runtime_error("Incorrect cascade classifier type.");
 
-	showEachDetectedFace = cfg.read_bool("Example", "showEachDetectedFace", 0);
+	showEachDetectedFace = cfg.read_bool("Example", "showEachDetectedFace", false);
 	batchMode = cfg.read_bool("Example", "batchMode", false);
 
 	if (batchMode)

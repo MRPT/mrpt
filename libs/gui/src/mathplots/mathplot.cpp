@@ -90,7 +90,7 @@ double mpWindow::zoomIncrementalFactor = 1.5;
 
 IMPLEMENT_ABSTRACT_CLASS(mpLayer, wxObject)
 
-mpLayer::mpLayer() : m_type(mpLAYER_UNDEF)
+mpLayer::mpLayer()  
 {
 	SetPen((wxPen&)*wxBLACK_PEN);
 	SetFont((wxFont&)*wxNORMAL_FONT);
@@ -139,7 +139,7 @@ mpInfoLayer::mpInfoLayer(wxRect rect, const wxBrush* brush) : m_dim(rect)
 	m_type = mpLAYER_INFO;
 }
 
-mpInfoLayer::~mpInfoLayer() {}
+mpInfoLayer::~mpInfoLayer() = default;
 void mpInfoLayer::UpdateInfo(mpWindow& w, wxEvent& event) {}
 bool mpInfoLayer::Inside(wxPoint& point) { return m_dim.Contains(point); }
 void mpInfoLayer::Move(wxPoint delta)
@@ -199,7 +199,7 @@ mpInfoCoords::mpInfoCoords(wxRect rect, const wxBrush* brush)
 {
 }
 
-mpInfoCoords::~mpInfoCoords() {}
+mpInfoCoords::~mpInfoCoords() = default;
 void mpInfoCoords::UpdateInfo(mpWindow& w, wxEvent& event)
 {
 	if (event.GetEventType() == wxEVT_MOTION)
@@ -264,7 +264,7 @@ mpInfoLegend::mpInfoLegend(wxRect rect, const wxBrush* brush)
 {
 }
 
-mpInfoLegend::~mpInfoLegend() {}
+mpInfoLegend::~mpInfoLegend() = default;
 void mpInfoLegend::UpdateInfo(mpWindow& w, wxEvent& event) {}
 void mpInfoLegend::Plot(wxDC& dc, mpWindow& w)
 {

@@ -236,12 +236,9 @@ class CRawlog : public mrpt::serialization::CSerializable
 	   public:
 		iterator() : m_it() {}
 		iterator(const TListObjects::iterator& it) : m_it(it) {}
-		virtual ~iterator() {}
+		virtual ~iterator() = default;
 		iterator& operator=(const iterator& o)
-		{
-			m_it = o.m_it;
-			return *this;
-		}
+		= default;
 
 		bool operator==(const iterator& o) { return m_it == o.m_it; }
 		bool operator!=(const iterator& o) { return m_it != o.m_it; }
@@ -296,7 +293,7 @@ class CRawlog : public mrpt::serialization::CSerializable
 	   public:
 		const_iterator() : m_it() {}
 		const_iterator(const TListObjects::const_iterator& it) : m_it(it) {}
-		virtual ~const_iterator() {}
+		virtual ~const_iterator() = default;
 		bool operator==(const const_iterator& o) { return m_it == o.m_it; }
 		bool operator!=(const const_iterator& o) { return m_it != o.m_it; }
 		const mrpt::serialization::CSerializable::Ptr operator*() const

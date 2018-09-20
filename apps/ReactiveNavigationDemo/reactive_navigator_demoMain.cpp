@@ -736,7 +736,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	FlexGridSizer11->Add(
 		StaticText4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
 	cbSelPTG = new wxChoice(
-		Panel3, ID_CHOICE1, wxDefaultPosition, wxDefaultSize, 0, 0, 0,
+		Panel3, ID_CHOICE1, wxDefaultPosition, wxDefaultSize, 0, nullptr, 0,
 		wxDefaultValidator, _T("ID_CHOICE1"));
 	FlexGridSizer11->Add(
 		cbSelPTG, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
@@ -930,17 +930,17 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	m_plot3D->Connect(
 		wxEVT_MOTION,
 		(wxObjectEventFunction)&reactive_navigator_demoframe::Onplot3DMouseMove,
-		0, this);
+		nullptr, this);
 	m_plot3D->Connect(
 		wxEVT_LEFT_DOWN,
 		(wxObjectEventFunction)&reactive_navigator_demoframe::
 			Onplot3DMouseClick,
-		0, this);
+		nullptr, this);
 	m_plot3D->Connect(
 		wxEVT_RIGHT_DOWN,
 		(wxObjectEventFunction)&reactive_navigator_demoframe::
 			Onplot3DMouseClick,
-		0, this);
+		nullptr, this);
 
 	mnuViewMaxRange->Check(true);
 	mnuViewRobotPath->Check(true);
@@ -1839,9 +1839,9 @@ void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
 					this->edWayPtHeading->GetValue().ToDouble(&heading);
 					heading *= M_PI / 180;
 				}
-				m_waypoints_clicked.waypoints.push_back(TWaypoint(
+				m_waypoints_clicked.waypoints.emplace_back(
 					m_curCursorPos.x, m_curCursorPos.y, 0.2 /* allowed dist */,
-					allow_skip_wps, heading));
+					allow_skip_wps, heading);
 			}
 			if (event.ButtonIsDown(wxMOUSE_BTN_RIGHT))
 			{
@@ -1931,15 +1931,6 @@ void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
 }
 
 // ==== reactive_navigator_demoframe::TOptions ======
-reactive_navigator_demoframe::TOptions::TOptions()
-	: MAX_SENSOR_RADIUS(10.0),
-	  SENSOR_FOV(M_PI * 2.0),
-	  SENSOR_NUM_RANGES(181),
-	  SENSOR_RANGE_NOISE_STD(0.02),
-	  SENSOR_RATE(10.0),
-	  NAVIGATION_RATE(4.0)
-{
-}
 void reactive_navigator_demoframe::TOptions::loadFromConfigFile(
 	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {

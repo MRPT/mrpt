@@ -29,22 +29,20 @@ struct nv_oem6_header_t
 		SYNCH2 = 0x12
 	};
 
-	uint8_t synch[3];
-	uint8_t hdr_len;
-	uint16_t msg_id;
-	uint8_t msg_type;
-	uint8_t port_addr;
-	uint16_t msg_len;
-	uint16_t seq_number;
-	uint8_t idle_percent;
-	uint8_t time_status;
-	uint16_t week;
-	uint32_t ms_in_week;
-	uint32_t receiver_status;
-	uint16_t reserved;
-	uint16_t receiver_sw_version;
-
-	nv_oem6_header_t();
+	uint8_t synch[3]{0, 0, 0};
+	uint8_t hdr_len{0};
+	uint16_t msg_id{0};
+	uint8_t msg_type{0};
+	uint8_t port_addr{0};
+	uint16_t msg_len{0};
+	uint16_t seq_number{0};
+	uint8_t idle_percent{0};
+	uint8_t time_status{0};
+	uint16_t week{0};
+	uint32_t ms_in_week{0};
+	uint32_t receiver_status{0};
+	uint16_t reserved{0};
+	uint16_t receiver_sw_version{0};
 };
 
 /** Novatel OEM6 short header structure \sa mrpt::obs::CObservationGPS  */
@@ -56,13 +54,11 @@ struct nv_oem6_short_header_t
 		SYNCH1 = 0X44,
 		SYNCH2 = 0x13
 	};
-	uint8_t synch[3];
-	uint8_t msg_len;
-	uint16_t msg_id;
-	uint16_t week;
-	uint32_t ms_in_week;
-
-	nv_oem6_short_header_t();
+	uint8_t synch[3]{0, 0, 0};
+	uint8_t msg_len{0};
+	uint16_t msg_id{0};
+	uint16_t week{0};
+	uint32_t ms_in_week{0};
 };
 
 namespace nv_oem6_position_type
@@ -302,7 +298,7 @@ GNSS_BINARY_MSG_DEFINITION_MID_END
 struct Message_NV_OEM6_RANGECMP : public gnss_message
 {
 	Message_NV_OEM6_RANGECMP()
-		: gnss_message((gnss_message_type_t)NV_OEM6_RANGECMP), num_obs(0)
+		: gnss_message((gnss_message_type_t)NV_OEM6_RANGECMP)
 	{
 	}
 	struct TCompressedRangeLog
@@ -312,7 +308,7 @@ struct Message_NV_OEM6_RANGECMP : public gnss_message
 
 	/** Frame header */
 	nv_oem6_header_t header;
-	uint32_t num_obs;
+	uint32_t num_obs{0};
 	std::vector<TCompressedRangeLog> obs_data;
 	uint32_t crc;
 
@@ -348,7 +344,7 @@ GNSS_BINARY_MSG_DEFINITION_END
 struct Message_NV_OEM6_VERSION : public gnss_message
 {
 	Message_NV_OEM6_VERSION()
-		: gnss_message((gnss_message_type_t)NV_OEM6_VERSION), num_comps(0)
+		: gnss_message((gnss_message_type_t)NV_OEM6_VERSION)
 	{
 	}
 	struct TComponentVersion
@@ -361,7 +357,7 @@ struct Message_NV_OEM6_VERSION : public gnss_message
 
 	/** Frame header */
 	nv_oem6_header_t header;
-	uint32_t num_comps;
+	uint32_t num_comps{0};
 	std::vector<TComponentVersion> components;
 	uint32_t crc;
 

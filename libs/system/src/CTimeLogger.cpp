@@ -32,6 +32,10 @@ struct MyGlobalProfiler : public mrpt::system::CTimeLogger
 					  << std::endl;
 		}
 	}
+	MyGlobalProfiler(const MyGlobalProfiler&) = delete;
+	MyGlobalProfiler(MyGlobalProfiler&&) = delete;
+	MyGlobalProfiler& operator=(const MyGlobalProfiler&) = delete;
+	MyGlobalProfiler& operator=(MyGlobalProfiler&&) = delete;
 };
 MyGlobalProfiler global_profiler;
 
@@ -46,7 +50,7 @@ void global_profiler_leave(const char* func_name) noexcept
 {
 	global_profiler.leave(func_name);
 }
-}
+}  // namespace mrpt::system
 
 CTimeLogger::CTimeLogger(
 	bool enabled /*=true*/, const std::string& name /*=""*/)
@@ -269,9 +273,8 @@ void CTimeLogger::registerUserMeasure(
 }
 
 CTimeLogger::TCallData::TCallData()
-	: n_calls(0), min_t(0), max_t(0), mean_t(0), last_t(0), has_time_units(true)
-{
-}
+
+	= default;
 
 double CTimeLogger::getMeanTime(const std::string& name) const
 {

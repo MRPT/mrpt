@@ -790,7 +790,7 @@ double CPTG_Holo_Blend::maxTimeInVelCmdNOP(int path_k) const
 
 double CPTG_Holo_Blend::getPathStepDuration() const { return PATH_TIME_STEP; }
 CPTG_Holo_Blend::CPTG_Holo_Blend()
-	: T_ramp_max(-1.0), V_MAX(-1.0), W_MAX(-1.0), turningRadiusReference(0.30)
+	 
 {
 	internal_construct_exprs();
 }
@@ -803,7 +803,7 @@ CPTG_Holo_Blend::CPTG_Holo_Blend(
 	this->loadFromConfigFile(cfg, sSection);
 }
 
-CPTG_Holo_Blend::~CPTG_Holo_Blend() {}
+CPTG_Holo_Blend::~CPTG_Holo_Blend() = default;
 void CPTG_Holo_Blend::internal_construct_exprs()
 {
 	std::map<std::string, double*> symbols;

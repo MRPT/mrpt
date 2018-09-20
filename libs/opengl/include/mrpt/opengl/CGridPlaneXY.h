@@ -103,7 +103,7 @@ class CGridPlaneXY : public CRenderizableDisplayList
 		bool antiAliasing = true);
 
 	/** Private, virtual destructor: only can be deleted from smart pointers */
-	~CGridPlaneXY() override {}
+	~CGridPlaneXY() override = default;
 };
 
 }

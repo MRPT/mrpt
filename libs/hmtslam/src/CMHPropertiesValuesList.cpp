@@ -88,7 +88,7 @@ void CMHPropertiesValuesList::serializeFrom(
 /*---------------------------------------------------------------
 						Constructor
  ---------------------------------------------------------------*/
-CMHPropertiesValuesList::CMHPropertiesValuesList() {}
+CMHPropertiesValuesList::CMHPropertiesValuesList() = default;
 /*---------------------------------------------------------------
 						Destructor
  ---------------------------------------------------------------*/

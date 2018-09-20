@@ -33,10 +33,10 @@ class CSetOfLines : public CRenderizableDisplayList
 	DEFINE_SERIALIZABLE(CSetOfLines)
    protected:
 	std::vector<mrpt::math::TSegment3D> mSegments;
-	float mLineWidth;
-	bool m_antiAliasing;
+	float mLineWidth{1.0};
+	bool m_antiAliasing{true};
 	/** 0: means hidden */
-	float m_verticesPointSize;
+	float m_verticesPointSize{.0f};
 
    public:
 	/**
@@ -250,7 +250,7 @@ class CSetOfLines : public CRenderizableDisplayList
 		const std::vector<mrpt::math::TSegment3D>& sgms,
 		bool antiAliasing = true);
 	/** Private, virtual destructor: only can be deleted from smart pointers. */
-	~CSetOfLines() override {}
+	~CSetOfLines() override = default;
 };
 /** Inserts a set of segments into the list. Allows call chaining.
  * \sa mrpt::opengl::CSetOfLines::appendLines

@@ -14,7 +14,7 @@ using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::img;
 
-CImagePyramid::CImagePyramid() {}
+CImagePyramid::CImagePyramid() = default;
 CImagePyramid::~CImagePyramid()
 {
 	// Nothing especial to do, mem. is automatically freed.

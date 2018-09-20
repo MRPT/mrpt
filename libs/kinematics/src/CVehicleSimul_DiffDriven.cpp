@@ -13,12 +13,12 @@
 
 using namespace mrpt::kinematics;
 
-CVehicleSimul_DiffDriven::CVehicleSimul_DiffDriven() : cTAU(.0), cDELAY(.0)
+CVehicleSimul_DiffDriven::CVehicleSimul_DiffDriven()  
 {
 	resetStatus();
 	resetTime();
 }
-CVehicleSimul_DiffDriven::~CVehicleSimul_DiffDriven() {}
+CVehicleSimul_DiffDriven::~CVehicleSimul_DiffDriven() = default;
 void CVehicleSimul_DiffDriven::internal_clear()
 {
 	Command_Time = .0;

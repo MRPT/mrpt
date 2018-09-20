@@ -259,7 +259,7 @@ CFormChangeSensorPositions::CFormChangeSensorPositions(
 		StaticText30, 1, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
 	edLabel = new wxComboBox(
 		this, ID_COMBOBOX1, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0,
-		0, 0, wxDefaultValidator, _T("ID_COMBOBOX1"));
+		nullptr, 0, wxDefaultValidator, _T("ID_COMBOBOX1"));
 	edLabel->Disable();
 	FlexGridSizer17->Add(
 		edLabel, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);

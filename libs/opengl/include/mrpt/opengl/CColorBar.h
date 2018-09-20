@@ -41,7 +41,7 @@ class CColorBar : public CRenderizableDisplayList
 	std::string m_label_format;
 	double m_min_col, m_max_col, m_min_value, m_max_value;
 	double m_label_font_size;
-	bool m_disable_depth_test;
+	bool m_disable_depth_test{true};
 
    public:
 	/** Constructor returning a smart pointer to the newly created object. */

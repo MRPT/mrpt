@@ -35,12 +35,12 @@ class CUndoManager
 	bool hasRedo() const;
 
    private:
-	CUndoManager();
+	CUndoManager() = default;
 	~CUndoManager() = default;
 	CUndoManager(CUndoManager const&) = delete;
 	CUndoManager& operator=(CUndoManager const&) = delete;
 
 	std::vector<UserAction> m_undo;
 	std::vector<UserAction> m_redo;
-	int m_lastAction;
+	int m_lastAction{-1};
 };

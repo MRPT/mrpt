@@ -45,7 +45,7 @@ CObservationsNode::CObservationsNode(
 				this, scanStereo, pose));
 }
 
-CObservationsNode::~CObservationsNode() {}
+CObservationsNode::~CObservationsNode() = default;
 int CObservationsNode::childCount() const { return m_observations.size(); }
 CNode* CObservationsNode::child(int id)
 {

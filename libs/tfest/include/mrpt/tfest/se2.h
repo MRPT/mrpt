@@ -73,42 +73,42 @@ bool se2_l2(
 struct TSE2RobustParams
 {
 	/** (Default=3) */
-	unsigned int ransac_minSetSize;
+	unsigned int ransac_minSetSize{3};
 	/** (Default = 20) */
-	unsigned int ransac_maxSetSize;
+	unsigned int ransac_maxSetSize{20};
 	/** (Default = 3.0) */
-	double ransac_mahalanobisDistanceThreshold;
+	double ransac_mahalanobisDistanceThreshold{3.0};
 	/** (Default = 0) If set to 0, an adaptive algorithm is used to determine
 	 * the number of iterations, such as a good model is found with a
 	 * probability p=0.999, or that passed as the parameter
 	 * probability_find_good_model */
-	unsigned int ransac_nSimulations;
+	unsigned int ransac_nSimulations{0};
 	/** (Default = true)  If true, the weight of Gaussian modes will be
 	 * increased when an exact match in the
 	 *   subset of correspondences for the modes is found. Otherwise, an
 	 * approximate method is used as test by just looking at the
 	 *   resulting X,Y,PHI means. Threshold in this case are:
 	 * ransac_fuseMaxDiffXY, ransac_fuseMaxDiffPhi */
-	bool ransac_fuseByCorrsMatch;
+	bool ransac_fuseByCorrsMatch{true};
 	/** (Default = 0.01) */
-	double ransac_fuseMaxDiffXY;
+	double ransac_fuseMaxDiffXY{0.01};
 	/** (Default=0.1degree) (In radians) */
-	double ransac_fuseMaxDiffPhi;
+	double ransac_fuseMaxDiffPhi{mrpt::DEG2RAD(0.1)};
 	/** (Default = true) Use Mahalanobis distance (true) or Euclidean dist
 	 * (false) */
-	bool ransac_algorithmForLandmarks;
+	bool ransac_algorithmForLandmarks{true};
 	/** (Default = 0.999) See parameter ransac_nSimulations. When using
 	 * `probability_find_good_model`, the minimum number of iterations can be
 	 * set with `ransac_min_nSimulations` */
-	double probability_find_good_model;
+	double probability_find_good_model{0.999};
 	/** (Default = 1500) See parameter probability_find_good_model */
-	unsigned int ransac_min_nSimulations;
+	unsigned int ransac_min_nSimulations{1500};
 	/** Stop searching for solutions when the RMSE of one solution is below this
 	 * threshold. Special value "0" means "auto", which employs
 	 * "2*normalizationStd". */
-	double max_rmse_to_end;
+	double max_rmse_to_end{0};
 	/** (Default=false) */
-	bool verbose;
+	bool verbose{false};
 
 	/** If provided, this user callback will be invoked to determine the
 	 * individual compatibility between each potential pair
@@ -123,21 +123,7 @@ struct TSE2RobustParams
 	void* user_individual_compat_callback_userdata;
 
 	/** Default values */
-	TSE2RobustParams()
-		: ransac_minSetSize(3),
-		  ransac_maxSetSize(20),
-		  ransac_mahalanobisDistanceThreshold(3.0),
-		  ransac_nSimulations(0),
-		  ransac_fuseByCorrsMatch(true),
-		  ransac_fuseMaxDiffXY(0.01),
-		  ransac_fuseMaxDiffPhi(mrpt::DEG2RAD(0.1)),
-		  ransac_algorithmForLandmarks(true),
-		  probability_find_good_model(0.999),
-		  ransac_min_nSimulations(1500),
-		  max_rmse_to_end(0),
-		  verbose(false)
-	{
-	}
+	TSE2RobustParams() = default;
 };
 
 /** Output placeholder for se2_l2_robust() */
@@ -148,9 +134,9 @@ struct TSE2RobustResult
 	/** the largest consensus sub-set */
 	mrpt::tfest::TMatchingPairList largestSubSet;
 	/** Number of actual iterations executed  */
-	unsigned int ransac_iters;
+	unsigned int ransac_iters{0};
 
-	TSE2RobustResult() : ransac_iters(0) {}
+	TSE2RobustResult() = default;
 };
 
 /** Robust least-squares (L2 norm) solution to finding the optimal SE(2)

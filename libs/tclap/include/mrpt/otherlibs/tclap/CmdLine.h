@@ -388,7 +388,7 @@ inline bool CmdLine::parse(int argc, char** argv)
 	// this step is necessary so that we have easy access to mutable strings.
 	std::vector<std::string> args;
   	for (int i = 1; i < argc; i++)
-		args.push_back(argv[i]);
+		args.emplace_back(argv[i]);
 
 	int requiredCount = 0;
 

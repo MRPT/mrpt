@@ -64,7 +64,7 @@ bool CAtan2LookUpTable::atan2(double y, double x, double& out_atan2) const
 	return true;
 }
 
-CAtan2LookUpTableMultiRes::CAtan2LookUpTableMultiRes() noexcept {}
+CAtan2LookUpTableMultiRes::CAtan2LookUpTableMultiRes() noexcept = default;
 CAtan2LookUpTableMultiRes::CAtan2LookUpTableMultiRes(
 	const std::map<double, double>& lst_resolutions2extensions) noexcept
 {

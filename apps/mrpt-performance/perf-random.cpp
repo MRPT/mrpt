@@ -200,47 +200,35 @@ double random_test_10(int a1, int a2)
 // ------------------------------------------------------
 void register_tests_random()
 {
-	lstTests.push_back(TestData("random: drawUniform32bit", random_test_1));
-	lstTests.push_back(TestData("random: drawUniform", random_test_2));
-	lstTests.push_back(
-		TestData("random: drawGaussian1D_normalized", random_test_3));
-	lstTests.push_back(TestData("random: drawGaussian1D", random_test_4));
-	lstTests.push_back(TestData("random: system rand()", random_test_5));
+	lstTests.emplace_back("random: drawUniform32bit", random_test_1);
+	lstTests.emplace_back("random: drawUniform", random_test_2);
+	lstTests.emplace_back("random: drawGaussian1D_normalized", random_test_3);
+	lstTests.emplace_back("random: drawGaussian1D", random_test_4);
+	lstTests.emplace_back("random: system rand()", random_test_5);
 
-	lstTests.push_back(
-		TestData("random: drawGaussianMultivariate(fixed 3x3)", random_test_6));
-	lstTests.push_back(
-		TestData("random: drawGaussianMultivariate(dyn 3x3)", random_test_7));
+	lstTests.emplace_back("random: drawGaussianMultivariate(fixed 3x3)", random_test_6);
+	lstTests.emplace_back("random: drawGaussianMultivariate(dyn 3x3)", random_test_7);
 
-	lstTests.push_back(
-		TestData(
+	lstTests.emplace_back(
 			"random: drawGaussianMultivariateMany(fixed 2x2, 1000)",
-			random_test_8<2>));
-	lstTests.push_back(
-		TestData(
+			random_test_8<2>);
+	lstTests.emplace_back(
 			"random: drawGaussianMultivariateMany(fixed 3x3, 1000)",
-			random_test_8<3>));
-	lstTests.push_back(
-		TestData(
+			random_test_8<3>);
+	lstTests.emplace_back(
 			"random: drawGaussianMultivariateMany(fixed 6x6, 1000)",
-			random_test_8<6>));
-	lstTests.push_back(
-		TestData(
+			random_test_8<6>);
+	lstTests.emplace_back(
 			"random: drawGaussianMultivariateMany(dyn 2x2, 1000)",
-			random_test_9, 2));
-	lstTests.push_back(
-		TestData(
+			random_test_9, 2);
+	lstTests.emplace_back(
 			"random: drawGaussianMultivariateMany(dyn 3x3, 1000)",
-			random_test_9, 3));
-	lstTests.push_back(
-		TestData(
+			random_test_9, 3);
+	lstTests.emplace_back(
 			"random: drawGaussianMultivariateMany(dyn 6x6, 1000)",
-			random_test_9, 6));
+			random_test_9, 6);
 
-	lstTests.push_back(
-		TestData("random: permuteVector (len=10)", random_test_10, 10));
-	lstTests.push_back(
-		TestData("random: permuteVector (len=100)", random_test_10, 100));
-	lstTests.push_back(
-		TestData("random: permuteVector (len=1000)", random_test_10, 1000));
+	lstTests.emplace_back("random: permuteVector (len=10)", random_test_10, 10);
+	lstTests.emplace_back("random: permuteVector (len=100)", random_test_10, 100);
+	lstTests.emplace_back("random: permuteVector (len=1000)", random_test_10, 1000);
 }

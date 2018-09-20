@@ -21,9 +21,9 @@ using namespace std;
 #include <Eigen/SparseQR>
 #endif
 
-ScalarFactorGraph::FactorBase::~FactorBase() {}
+ScalarFactorGraph::FactorBase::~FactorBase() = default;
 ScalarFactorGraph::ScalarFactorGraph()
-	: COutputLogger("GMRF"), m_enable_profiler(false)
+	: COutputLogger("GMRF") 
 {
 }
 
@@ -121,8 +121,7 @@ void ScalarFactorGraph::updateEstimation(
 		double dr_dx;
 		e->evalJacobian(dr_dx);
 		const int node_id = e->node_id;
-		A_tri.push_back(
-			Eigen::Triplet<double>(edge_counter, node_id, w * dr_dx));
+		A_tri.emplace_back(edge_counter, node_id, w * dr_dx);
 		// gradient:
 		g[edge_counter] -= w * e->evaluateResidual();
 
@@ -136,10 +135,8 @@ void ScalarFactorGraph::updateEstimation(
 		double dr_dxi, dr_dxj;
 		e->evalJacobian(dr_dxi, dr_dxj);
 		const int node_id_i = e->node_id_i, node_id_j = e->node_id_j;
-		A_tri.push_back(
-			Eigen::Triplet<double>(edge_counter, node_id_i, w * dr_dxi));
-		A_tri.push_back(
-			Eigen::Triplet<double>(edge_counter, node_id_j, w * dr_dxj));
+		A_tri.emplace_back(edge_counter, node_id_i, w * dr_dxi);
+		A_tri.emplace_back(edge_counter, node_id_j, w * dr_dxj);
 		// gradient:
 		g[edge_counter] -= w * e->evaluateResidual();
 

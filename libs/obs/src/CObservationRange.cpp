@@ -21,8 +21,7 @@ IMPLEMENTS_SERIALIZABLE(CObservationRange, CObservation, mrpt::obs)
 /** Default constructor.
  */
 CObservationRange::CObservationRange()
-	: minSensorDistance(0),
-	  maxSensorDistance(5),
+	: 
 	  sensorConeApperture(DEG2RAD(20)),
 	  sensedData()
 {

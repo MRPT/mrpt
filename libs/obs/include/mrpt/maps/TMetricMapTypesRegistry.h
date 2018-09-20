@@ -48,7 +48,7 @@ struct TMetricMapTypesRegistry
 	const TListRegisteredMaps& getAllRegistered() const { return m_registry; }
 
    private:
-	TMetricMapTypesRegistry() {}  // Access thru singleton in Instance()
+	TMetricMapTypesRegistry() = default;  // Access thru singleton in Instance()
 	TListRegisteredMaps m_registry;
 };
 
