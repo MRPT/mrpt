@@ -60,7 +60,7 @@ bool hmtMapViewerApp::OnInit()
 	wxInitAllImageHandlers();
 	if (wxsOK)
 	{
-		hmtMapViewerFrame* Frame = new hmtMapViewerFrame(0);
+		hmtMapViewerFrame* Frame = new hmtMapViewerFrame(nullptr);
 		Frame->Show();
 		SetTopWindow(Frame);
 	}

@@ -38,36 +38,35 @@ class CPose3DPDFSOG : public CPose3DPDF
 	 */
 	struct TGaussianMode
 	{
-		TGaussianMode() : val(), log_w(0) {}
+		TGaussianMode() : val() {}
 		CPose3DPDFGaussian val;
 
 		/** The log-weight
-		  */
-		double log_w;
+		 */
+		double log_w{0};
 	};
 
-	using TModesList =
-		std::vector<TGaussianMode,
-					mrpt::aligned_allocator_cpp11<TGaussianMode>>;
+	using TModesList = std::vector<
+		TGaussianMode, mrpt::aligned_allocator_cpp11<TGaussianMode>>;
 	using const_iterator = TModesList::const_iterator;
 	using iterator = TModesList::iterator;
 
    protected:
 	/** Assures the symmetry of the covariance matrix (eventually certain
 	 * operations in the math-coprocessor lead to non-symmetric matrixes!)
-	  */
+	 */
 	void assureSymmetry();
 
 	/** Access directly to this array for modify the modes as desired.
-	  *  Note that no weight can be zero!!
-	  *  We must use pointers to satisfy the mem-alignment of the matrixes
-	  */
+	 *  Note that no weight can be zero!!
+	 *  We must use pointers to satisfy the mem-alignment of the matrixes
+	 */
 	TModesList m_modes;
 
    public:
 	/** Default constructor
-	  * \param nModes The initial size of CPose3DPDFSOG::m_modes
-	  */
+	 * \param nModes The initial size of CPose3DPDFSOG::m_modes
+	 */
 	CPose3DPDFSOG(size_t nModes = 1);
 
 	/** Clear all the gaussian modes */
@@ -101,28 +100,28 @@ class CPose3DPDFSOG : public CPose3DPDF
 	void copyFrom(const CPose3DPDF& o) override;
 
 	/** Save the density to a text file, with the following format:
-	  *  There is one row per Gaussian "mode", and each row contains 10
+	 *  There is one row per Gaussian "mode", and each row contains 10
 	 * elements:
-	  *   - w (The linear weight)
-	  *   - x_mean (gaussian mean value)
-	  *   - y_mean (gaussian mean value)
-	  *   - x_mean (gaussian mean value)
-	  *   - yaw_mean (gaussian mean value, in radians)
-	  *   - pitch_mean (gaussian mean value, in radians)
-	  *   - roll_mean (gaussian mean value, in radians)
-	  *   - C11,C22,C33,C44,C55,C66 (Covariance elements)
-	  *   - C12,C13,C14,C15,C16 (Covariance elements)
-	  *   - C23,C24,C25,C25 (Covariance elements)
-	  *   - C34,C35,C36 (Covariance elements)
-	  *   - C45,C46 (Covariance elements)
-	  *   - C56 (Covariance elements)
-	  *
+	 *   - w (The linear weight)
+	 *   - x_mean (gaussian mean value)
+	 *   - y_mean (gaussian mean value)
+	 *   - x_mean (gaussian mean value)
+	 *   - yaw_mean (gaussian mean value, in radians)
+	 *   - pitch_mean (gaussian mean value, in radians)
+	 *   - roll_mean (gaussian mean value, in radians)
+	 *   - C11,C22,C33,C44,C55,C66 (Covariance elements)
+	 *   - C12,C13,C14,C15,C16 (Covariance elements)
+	 *   - C23,C24,C25,C25 (Covariance elements)
+	 *   - C34,C35,C36 (Covariance elements)
+	 *   - C45,C46 (Covariance elements)
+	 *   - C56 (Covariance elements)
+	 *
 	 */
 	bool saveToTextFile(const std::string& file) const override;
 
 	/** this = p (+) this. This can be used to convert a PDF from local
 	 * coordinates to global, providing the point (newReferenceBase) from which
-	  *   "to project" the current pdf. Result PDF substituted the currently
+	 *   "to project" the current pdf. Result PDF substituted the currently
 	 * stored one in the object. */
 	void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
 
@@ -146,5 +145,4 @@ class CPose3DPDFSOG : public CPose3DPDF
 	void appendFrom(const CPose3DPDFSOG& o);
 
 };  // End of class def.
-}
-
+}  // namespace mrpt::poses

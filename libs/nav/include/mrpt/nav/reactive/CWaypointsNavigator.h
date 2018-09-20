@@ -109,20 +109,20 @@ class CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
 	struct TWaypointsNavigatorParams : public mrpt::config::CLoadableOptions
 	{
 		/** In meters. <0: unlimited */
-		double max_distance_to_allow_skip_waypoint;
+		double max_distance_to_allow_skip_waypoint{-1.0};
 		/** How many times shall a future waypoint be seen as reachable to skip
 		 * to it (Default: 1) */
-		int min_timesteps_confirm_skip_waypoints;
+		int min_timesteps_confirm_skip_waypoints{1};
 		/** [rad] Angular error tolerance for waypoints with an assigned heading
 		 * (Default: 5 deg) */
 		double waypoint_angle_tolerance;
 		/** [0,1] Relative speed when aiming at a stop-point waypoint
 		 * (Default=0.10) */
-		double rel_speed_for_stop_waypoints;
+		double rel_speed_for_stop_waypoints{0.10};
 		/** >=0 number of waypoints to forward to the underlying navigation
 		 * engine, to ease obstacles avoidance when a waypoint is blocked
 		 * (Default=0 : none). */
-		int multitarget_look_ahead;
+		int multitarget_look_ahead{0};
 
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& c,

@@ -123,7 +123,7 @@ int CMultiObjMotionOpt_Scalarization::impl_decide(
 	return best_idx;
 }
 
-CMultiObjMotionOpt_Scalarization::TParams::TParams() {}
+CMultiObjMotionOpt_Scalarization::TParams::TParams() = default;
 void CMultiObjMotionOpt_Scalarization::TParams::loadFromConfigFile(
 	const mrpt::config::CConfigFileBase& c, const std::string& s)
 {

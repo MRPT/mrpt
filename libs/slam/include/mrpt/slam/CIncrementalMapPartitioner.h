@@ -179,7 +179,7 @@ class CIncrementalMapPartitioner : public mrpt::system::COutputLogger,
 	*/
 	void getAs3DScene(
 		mrpt::opengl::CSetOfObjects::Ptr& objs,
-		const std::map<uint32_t, int64_t>* renameIndexes = NULL) const;
+		const std::map<uint32_t, int64_t>* renameIndexes = nullptr) const;
 
 	/** Return a copy of the adjacency matrix.  */
 	template <class MATRIX>

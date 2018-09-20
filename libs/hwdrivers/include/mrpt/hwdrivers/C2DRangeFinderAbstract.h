@@ -42,8 +42,8 @@ class C2DRangeFinderAbstract : public mrpt::system::COutputLogger,
 {
    private:
 	mrpt::obs::CObservation2DRangeScan m_lastObservation;
-	bool m_lastObservationIsNew;
-	bool m_hardwareError;
+	bool m_lastObservationIsNew{false};
+	bool m_hardwareError{false};
 
 	/** For being thread-safe.
 	  */
@@ -61,12 +61,12 @@ class C2DRangeFinderAbstract : public mrpt::system::COutputLogger,
 	std::vector<std::pair<double, double>> m_lstExclusionAngles;
 
 	/** If true, shows a 3D window with a preview of the grabber data */
-	bool m_showPreview;
+	bool m_showPreview{false};
 	mrpt::gui::CDisplayWindow3D::Ptr m_win;
 
    protected:
 	/** The I/O channel (will be nullptr if not bound). */
-	mrpt::io::CStream* m_stream;
+	mrpt::io::CStream* m_stream{nullptr};
 
 	/** Should be call by derived classes at "loadConfig" (loads exclusion areas
 	  *AND exclusion angles).

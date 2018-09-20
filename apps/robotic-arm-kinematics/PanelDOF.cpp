@@ -38,7 +38,7 @@ PanelDOF::PanelDOF(wxWindow* parent, wxWindowID id)
 		_T("id"));
 	FlexGridSizer1 = new wxFlexGridSizer(3, 1, 0, 0);
 	Label1 = new wxSimpleHtmlListBox(
-		this, ID_SIMPLEHTMLLISTBOX2, wxDefaultPosition, wxSize(-1, 30), 0, 0,
+		this, ID_SIMPLEHTMLLISTBOX2, wxDefaultPosition, wxSize(-1, 30), 0, nullptr,
 		wxNO_BORDER, wxDefaultValidator, _T("ID_SIMPLEHTMLLISTBOX2"));
 	Label1->Append(_("&theta;<sub>i</sub>"));
 	Label1->Disable();

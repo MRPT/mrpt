@@ -200,7 +200,7 @@ class CICPCriteriaERD
 	std::map<mrpt::graphs::TNodeID, mrpt::obs::CObservation3DRangeScan::Ptr>
 		m_nodes_to_laser_scans3D;
 	std::map<std::string, int> m_edge_types_to_nums;
-	bool m_is_using_3DScan;
+	bool m_is_using_3DScan{false};
 
 	mrpt::obs::CObservation2DRangeScan::Ptr m_last_laser_scan2D;
 	mrpt::obs::CObservation3DRangeScan::Ptr m_last_laser_scan3D;

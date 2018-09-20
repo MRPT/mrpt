@@ -38,12 +38,12 @@ class CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
 	friend class CWindowDialogPlots;
 
 	/** Whether hold_on is enabled */
-	bool m_holdon;
-	bool m_holdon_just_disabled;
+	bool m_holdon{false};
+	bool m_holdon_just_disabled{false};
 	/** Counter for hold_on */
-	uint32_t m_holdon_cnt;
-	TCallbackMenu m_callback;
-	void* m_callback_param;
+	uint32_t m_holdon_cnt{0};
+	TCallbackMenu m_callback{nullptr};
+	void* m_callback_param{nullptr};
 
 	void internal_plot(
 		mrpt::math::CVectorFloat& x, mrpt::math::CVectorFloat& y,

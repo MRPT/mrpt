@@ -22,9 +22,9 @@ using namespace std;
  * CPosePDFParticles, CMultiMetricMapPDF */
 struct TPoseBin2D
 {
-	TPoseBin2D() : x(0), y(0), phi(0) {}
+	TPoseBin2D() = default;
 	/** Bin indices */
-	int x, y, phi;
+	int x{0}, y{0}, phi{0};
 
 	/** less-than ordering of bins for usage in STL containers */
 	struct lt_operator
@@ -70,9 +70,9 @@ struct TPathBin2D
  * CPosePDFParticles, CMultiMetricMapPDF */
 struct TPoseBin3D
 {
-	TPoseBin3D() : x(0), y(0), z(0), yaw(0), pitch(0), roll(0) {}
+	TPoseBin3D() = default;
 	/** Bin indices */
-	int x, y, z, yaw, pitch, roll;
+	int x{0}, y{0}, z{0}, yaw{0}, pitch{0}, roll{0};
 
 	/** less-than ordering of bins for usage in STL containers */
 	struct lt_operator
@@ -94,6 +94,4 @@ struct TPoseBin3D
 	};
 };
 
-}
-
-
+}  // namespace mrpt::slam::detail

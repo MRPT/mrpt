@@ -38,10 +38,7 @@ using mrpt::DEG2RAD;
 using mrpt::RAD2DEG;
 
 CMainWindow::CMainWindow(QWidget* parent)
-	: QMainWindow(parent),
-	  m_document(nullptr),
-	  m_model(nullptr),
-	  m_ui(std::make_unique<Ui::CMainWindow>())
+	: QMainWindow(parent), m_ui(std::make_unique<Ui::CMainWindow>())
 {
 	m_ui->setupUi(this);
 

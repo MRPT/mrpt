@@ -73,15 +73,15 @@ class CHolonomicFullEval : public CAbstractHolonomicReactiveMethod
 	{
 		/** Directions with collision-free distances below this threshold are
 		 * not elegible. */
-		double TOO_CLOSE_OBSTACLE;
+		double TOO_CLOSE_OBSTACLE{0.15};
 		/** Start to reduce speed when closer than this to target  [m] */
-		double TARGET_SLOW_APPROACHING_DISTANCE;
+		double TARGET_SLOW_APPROACHING_DISTANCE{0.60};
 		/** Start to reduce speed when clearance is below this value ([0,1]
 		 * ratio wrt obstacle reference/max distance) */
-		double OBSTACLE_SLOW_DOWN_DISTANCE;
+		double OBSTACLE_SLOW_DOWN_DISTANCE{0.15};
 		/** Range of "sectors" (directions) for hysteresis over successive
 		 * timesteps */
-		double HYSTERESIS_SECTOR_COUNT;
+		double HYSTERESIS_SECTOR_COUNT{5};
 		/** See docs above */
 		std::vector<double> factorWeights;
 		/** 0/1 to normalize factors. */
@@ -95,15 +95,15 @@ class CHolonomicFullEval : public CAbstractHolonomicReactiveMethod
 		std::vector<double> PHASE_THRESHOLDS;
 
 		/** (default:false, to save space) */
-		bool LOG_SCORE_MATRIX;
+		bool LOG_SCORE_MATRIX{false};
 
 		/**  Ratio [0,1], times path_count, gives the minimum number of paths at
 		 * each side of a target direction to be accepted as desired direction
 		 */
-		double clearance_threshold_ratio;
+		double clearance_threshold_ratio{0.05};
 		/**  Ratio [0,1], times path_count, gives the minimum gap width to
 		 * accept a direct motion towards target. */
-		double gap_width_ratio_threshold;
+		double gap_width_ratio_threshold{0.25};
 
 		TOptions();
 		void loadFromConfigFile(
@@ -144,7 +144,7 @@ class CHolonomicFullEval : public CAbstractHolonomicReactiveMethod
 	struct EvalOutput
 	{
 		unsigned int best_k;
-		double best_eval;
+		double best_eval{.0};
 		std::vector<std::vector<double>> phase_scores;
 		EvalOutput();
 	};
@@ -167,14 +167,14 @@ class CLogFileRecord_FullEval : public CHolonomicLogFileRecord
 	CLogFileRecord_FullEval();
 
 	/** Member data */
-	int32_t selectedSector;
-	double evaluation;
+	int32_t selectedSector{0};
+	double evaluation{.0};
 	/** Individual scores for each direction: (i,j), i (row) are directions, j
 	 * (cols) are scores. Not all directions may have evaluations, in which case
 	 * a "-1" value will be found. */
 	mrpt::math::CMatrixD dirs_scores;
 	/** Normally = 0. Can be >0 if multiple targets passed simultaneously. */
-	int32_t selectedTarget;
+	int32_t selectedTarget{0};
 
 	const mrpt::math::CMatrixD* getDirectionScores() const override
 	{

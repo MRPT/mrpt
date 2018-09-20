@@ -108,14 +108,14 @@ class generic_copier_ptr
 			throw std::runtime_error("dereferencing nullptr poly_ptr");
 	}
 
-	T& operator*(void)
+	T& operator*()
 	{
 		if (m_ptr)
 			return *m_ptr;
 		else
 			throw std::runtime_error("dereferencing nullptr poly_ptr");
 	}
-	const T& operator*(void)const
+	const T& operator*()const
 	{
 		if (m_ptr)
 			return *m_ptr;
@@ -126,7 +126,7 @@ class generic_copier_ptr
 	T* get() { return m_ptr; }
 	const T* get() const { return m_ptr; }
 	operator bool() const { return m_ptr != nullptr; }
-	bool operator!(void)const { return m_ptr == nullptr; }
+	bool operator!()const { return m_ptr == nullptr; }
 	/** Releases the pointer (do not destroy the object) */
 	T* release()
 	{

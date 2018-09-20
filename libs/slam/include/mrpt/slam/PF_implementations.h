@@ -795,8 +795,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 			if (posFound == stateSpaceBinsLastTimestep.end())
 			{  // Yes, create a new pair <bin,index_list> in the list:
 				stateSpaceBinsLastTimestep.insert(p);
-				stateSpaceBinsLastTimestepParticles.push_back(
-					std::vector<uint32_t>(1, partIndex));
+				stateSpaceBinsLastTimestepParticles.emplace_back(1, partIndex);
 			}
 			else
 			{  // No, add the particle's index to the existing entry:

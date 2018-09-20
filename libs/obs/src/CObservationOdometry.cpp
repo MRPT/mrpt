@@ -23,10 +23,7 @@ IMPLEMENTS_SERIALIZABLE(CObservationOdometry, CObservation, mrpt::obs)
  */
 CObservationOdometry::CObservationOdometry()
 	: odometry(),
-	  hasEncodersInfo(false),
-	  encoderLeftTicks(0),
-	  encoderRightTicks(0),
-	  hasVelocities(false),
+	  
 	  velocityLocal(.0, .0, .0)
 {
 }

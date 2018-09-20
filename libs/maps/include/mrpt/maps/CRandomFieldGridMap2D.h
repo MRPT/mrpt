@@ -40,7 +40,7 @@ struct TRandomFieldCell
 	TRandomFieldCell(double kfmean_dm_mean = 1e-20, double kfstd_dmmeanw = 0)
 		: kf_mean(kfmean_dm_mean),
 		  kf_std(kfstd_dmmeanw),
-		  dmv_var_mean(0),
+
 		  last_updated(mrpt::system::now()),
 		  updated_std(kfstd_dmmeanw)
 	{
@@ -76,7 +76,7 @@ struct TRandomFieldCell
 	};
 
 	/** [Kernel DM-V only] The cumulative weighted variance of this cell */
-	double dmv_var_mean;
+	double dmv_var_mean{0};
 
 	/** [Dynamic maps only] The timestamp of the last time the cell was updated
 	 */
@@ -252,62 +252,62 @@ class CRandomFieldGridMap2D
 		/** @name Kernel methods (mrKernelDM, mrKernelDMV)
 			@{ */
 		/** The sigma of the "Parzen"-kernel Gaussian */
-		float sigma;
+		float sigma{0.15f};
 		/** The cutoff radius for updating cells. */
 		float cutoffRadius;
 		/** Limits for normalization of sensor readings. */
-		float R_min, R_max;
+		float R_min{0}, R_max{3};
 		/** [DM/DM+V methods] The scaling parameter for the confidence "alpha"
 		 * values (see the IROS 2009 paper; see CRandomFieldGridMap2D) */
-		double dm_sigma_omega;
+		double dm_sigma_omega{0.05};
 		/** @} */
 
 		/** @name Kalman-filter methods (mrKalmanFilter, mrKalmanApproximate)
 			@{ */
 		/** The "sigma" for the initial covariance value between cells (in
 		 * meters). */
-		float KF_covSigma;
+		float KF_covSigma{0.35f};
 		/** The initial standard deviation of each cell's concentration (will be
 		 * stored both at each cell's structure and in the covariance matrix as
 		 * variances in the diagonal) (in normalized concentration units). */
-		float KF_initialCellStd;
+		float KF_initialCellStd{1.0};
 		/** The sensor model noise (in normalized concentration units). */
-		float KF_observationModelNoise;
+		float KF_observationModelNoise{0};
 		/** The default value for the mean of cells' concentration. */
-		float KF_defaultCellMeanValue;
+		float KF_defaultCellMeanValue{0};
 		/** [mrKalmanApproximate] The size of the window of neighbor cells. */
-		uint16_t KF_W_size;
+		uint16_t KF_W_size{4};
 		/** @} */
 
 		/** @name Gaussian Markov Random Fields methods (mrGMRF_SD)
 			@{ */
 		/** The information (Lambda) of fixed map constraints */
-		double GMRF_lambdaPrior;
+		double GMRF_lambdaPrior{0.01f};
 		/** The initial information (Lambda) of each observation (this
 		 * information will decrease with time) */
-		double GMRF_lambdaObs;
+		double GMRF_lambdaObs{10.0f};
 		/** The loss of information of the observations with each iteration */
-		double GMRF_lambdaObsLoss;
+		double GMRF_lambdaObsLoss{0.0f};
 
 		/** whether to use information of an occupancy_gridmap map for building
 		 * the GMRF */
-		bool GMRF_use_occupancy_information;
+		bool GMRF_use_occupancy_information{false};
 		/** simplemap_file name of the occupancy_gridmap */
 		std::string GMRF_simplemap_file;
 		/** image name of the occupancy_gridmap */
 		std::string GMRF_gridmap_image_file;
 		/** occupancy_gridmap resolution: size of each pixel (m) */
-		double GMRF_gridmap_image_res;
+		double GMRF_gridmap_image_res{0.01f};
 		/** Pixel coordinates of the origin for the occupancy_gridmap */
-		size_t GMRF_gridmap_image_cx;
+		size_t GMRF_gridmap_image_cx{0};
 		/** Pixel coordinates of the origin for the occupancy_gridmap */
-		size_t GMRF_gridmap_image_cy;
+		size_t GMRF_gridmap_image_cy{0};
 
 		/** (Default:-inf,+inf) Saturate the estimated mean in these limits */
 		double GMRF_saturate_min, GMRF_saturate_max;
 		/** (Default:false) Skip the computation of the variance, just compute
 		 * the mean */
-		bool GMRF_skip_variance;
+		bool GMRF_skip_variance{false};
 		/** @} */
 	};
 
@@ -385,8 +385,7 @@ class CRandomFieldGridMap2D
 	void getAsMatlab3DGraphScript(std::string& out_script) const;
 
 	/** Returns a 3D object representing the map (mean) */
-	void getAs3DObject(
-		mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
+	void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
 
 	/** Returns two 3D objects representing the mean and variance maps */
 	virtual void getAs3DObject(
@@ -480,13 +479,14 @@ class CRandomFieldGridMap2D
 		this->m_gmrf.enableProfiler(enable);
 	}
 	bool isProfilerEnabled() const { return this->m_gmrf.isProfilerEnabled(); }
+
    protected:
-	bool m_rfgm_run_update_upon_clear;
+	bool m_rfgm_run_update_upon_clear{true};
 
 	/** Common options to all random-field grid maps: pointer that is set to the
 	 * derived-class instance of "insertOptions" upon construction of this
 	 * class. */
-	TInsertionOptionsCommon* m_insertOptions_common;
+	TInsertionOptionsCommon* m_insertOptions_common{nullptr};
 
 	/** Get the part of the options common to all CRandomFieldGridMap2D classes
 	 */
@@ -508,14 +508,14 @@ class CRandomFieldGridMap2D
 	 */
 	mrpt::math::CMatrixD m_stackedCov;
 	/** Only for the KF2 implementation. */
-	mutable bool m_hasToRecoverMeanAndCov;
+	mutable bool m_hasToRecoverMeanAndCov{true};
 
 	/** @name Auxiliary vars for DM & DM+V methods
 		@{ */
-	float m_DM_lastCutOff;
+	float m_DM_lastCutOff{0};
 	std::vector<float> m_DM_gaussWindow;
-	double m_average_normreadings_mean, m_average_normreadings_var;
-	size_t m_average_normreadings_count;
+	double m_average_normreadings_mean{0}, m_average_normreadings_var{0};
+	size_t m_average_normreadings_count{0};
 	/** @} */
 
 	/** Empty: default */
@@ -642,7 +642,7 @@ class CRandomFieldGridMap2D
 		const size_t objective_cyo);
 };
 
-}
+}  // namespace mrpt::maps
 MRPT_ENUM_TYPE_BEGIN(mrpt::maps::CRandomFieldGridMap2D::TMapRepresentation)
 MRPT_FILL_ENUM_MEMBER(
 	mrpt::maps::CRandomFieldGridMap2D::TMapRepresentation, mrKernelDM);
@@ -655,6 +655,3 @@ MRPT_FILL_ENUM_MEMBER(
 MRPT_FILL_ENUM_MEMBER(
 	mrpt::maps::CRandomFieldGridMap2D::TMapRepresentation, mrGMRF_SD);
 MRPT_ENUM_TYPE_END()
-
-
-

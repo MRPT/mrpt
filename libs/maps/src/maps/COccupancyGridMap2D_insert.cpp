@@ -1314,20 +1314,10 @@ bool COccupancyGridMap2D::internal_insertObservation(
 	Initilization of values, don't needed to be called directly.
   ---------------------------------------------------------------*/
 COccupancyGridMap2D::TInsertionOptions::TInsertionOptions()
-	: mapAltitude(0),
-	  useMapAltitude(false),
-	  maxDistanceInsertion(15.0f),
-	  maxOccupancyUpdateCertainty(0.65f),
-	  maxFreenessUpdateCertainty(.0f),
-	  maxFreenessInvalidRanges(.0f),
-	  considerInvalidRangesAsFreeSpace(true),
-	  decimation(1),
-	  horizontalTolerance(DEG2RAD(0.05)),
+	: 
+	  horizontalTolerance(DEG2RAD(0.05))
 
-	  CFD_features_gaussian_size(1),
-	  CFD_features_median_size(3),
-
-	  wideningBeamsWithDistance(false)
+	  
 {
 }
 

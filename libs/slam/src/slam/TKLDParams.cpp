@@ -19,13 +19,9 @@ using namespace mrpt::slam;
 					TKLDParams
  ---------------------------------------------------------------*/
 TKLDParams::TKLDParams()
-	: KLD_binSize_XY(0.2f),
-	  KLD_binSize_PHI(DEG2RAD(5)),
-	  KLD_delta(0.01f),
-	  KLD_epsilon(0.02f),
-	  KLD_minSampleSize(250),
-	  KLD_maxSampleSize(100000),
-	  KLD_minSamplesPerBin(0)
+	: 
+	  KLD_binSize_PHI(DEG2RAD(5))
+	  
 {
 }
 

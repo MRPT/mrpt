@@ -13,14 +13,12 @@
 namespace mrpt::graphs::detail
 {
 template <class GRAPH_T>
-THypothesis<GRAPH_T>::THypothesis() : is_valid(true), goodness(0)
-{
-}
+THypothesis<GRAPH_T>::THypothesis()  
+= default;
 
 template <class GRAPH_T>
 THypothesis<GRAPH_T>::~THypothesis()
-{
-}
+= default;
 
 template <class GRAPH_T>
 std::string THypothesis<GRAPH_T>::getAsString(bool oneline /*=true*/) const

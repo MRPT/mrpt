@@ -26,7 +26,7 @@ CPairNode::CPairNode(
 		this, poseSensFramePair.second, pos);
 }
 
-CPairNode::~CPairNode() {}
+CPairNode::~CPairNode() = default;
 int CPairNode::childCount() const { return 2; }
 CNode* CPairNode::child(int id) { return getChild(id); }
 CNode* CPairNode::child(int id) const { return getChild(id); }

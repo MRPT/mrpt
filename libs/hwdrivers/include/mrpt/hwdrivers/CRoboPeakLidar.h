@@ -88,8 +88,8 @@ class CRoboPeakLidar : public C2DRangeFinderAbstract
 	/** The sensor 6D pose: */
 	poses::CPose3D m_sensorPose;
 	std::string m_com_port;
-	int m_com_port_baudrate;
-	void* m_rplidar_drv;  // Opaque "RPlidarDriver*"
+	int m_com_port_baudrate{115200};
+	void* m_rplidar_drv{nullptr};  // Opaque "RPlidarDriver*"
 
 	/** Returns true if communication has been established with the device. If
 	 * it's not,

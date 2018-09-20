@@ -65,8 +65,6 @@ double format_test2(int a, int b)
 // ------------------------------------------------------
 void register_tests_strings()
 {
-	lstTests.push_back(
-		TestData("Strings: mrpt::format() short str", &format_test1));
-	lstTests.push_back(
-		TestData("Strings: mrpt::format() long str", &format_test2));
+	lstTests.emplace_back("Strings: mrpt::format() short str", &format_test1);
+	lstTests.emplace_back("Strings: mrpt::format() long str", &format_test2);
 }

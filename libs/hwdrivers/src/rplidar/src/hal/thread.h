@@ -64,8 +64,8 @@ class Thread
 	static Thread create(thread_proc_t proc, void* data = nullptr);
 
    public:
-	~Thread() {}
-	Thread() : _data(nullptr), _func(nullptr), _handle(0) {}
+	~Thread() = default;
+	Thread() = default;
 	_word_size_t getHandle() { return _handle; }
 	u_result terminate();
 	void* getData() { return _data; }
@@ -83,9 +83,8 @@ class Thread
 		: _data(data), _func(proc), _handle(0)
 	{
 	}
-	void* _data;
-	thread_proc_t _func;
-	_word_size_t _handle;
+	void* _data{nullptr};
+	thread_proc_t _func{nullptr};
+	_word_size_t _handle{0};
 };
-}
-
+}  // namespace rp::hal

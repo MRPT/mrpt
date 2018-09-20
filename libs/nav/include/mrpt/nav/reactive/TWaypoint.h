@@ -48,7 +48,7 @@ struct TWaypoint
 	 * always considered to be the
 	 * ultimate goal and hence not subject to be skipped.
 	 */
-	bool allow_skip;
+	bool allow_skip{true};
 
 	/** Check whether all the minimum mandatory fields have been filled by the
 	 * user. */
@@ -70,12 +70,12 @@ struct TWaypointsRenderingParams
 {
 	TWaypointsRenderingParams();
 
-	double outter_radius, inner_radius;
-	double outter_radius_non_skippable, inner_radius_non_skippable;
-	double outter_radius_reached, inner_radius_reached;
-	double heading_arrow_len;
+	double outter_radius{.3}, inner_radius{.2};
+	double outter_radius_non_skippable{.3}, inner_radius_non_skippable{.0};
+	double outter_radius_reached{.2}, inner_radius_reached{.1};
+	double heading_arrow_len{1.0};
 	mrpt::img::TColor color_regular, color_current_goal, color_reached;
-	bool show_labels;
+	bool show_labels{true};
 };
 
 /** The struct for requesting navigation requests for a sequence of waypoints.
@@ -109,17 +109,17 @@ struct TWaypointStatus : public TWaypoint
 {
 	/** Whether this waypoint has been reached already (to within the allowed
 	 * distance as per user specifications) or skipped. */
-	bool reached;
+	bool reached{false};
 	/** If `reached==true` this boolean tells whether the waypoint was
 	 * physically reached (false) or marked as reached because it was skipped
 	 * (true). */
-	bool skipped;
+	bool skipped{false};
 	/** Timestamp of when this waypoint was reached. (Default=INVALID_TIMESTAMP
 	 * means not reached so far) */
 	mrpt::system::TTimeStamp timestamp_reach;
 	/** (Initialized to 0 automatically) How many times this waypoint has been
 	 * seen as "reachable" before it being the current active waypoint. */
-	int counter_seen_reachable;
+	int counter_seen_reachable{0};
 
 	TWaypointStatus();
 	TWaypointStatus& operator=(const TWaypoint& wp);
@@ -137,12 +137,12 @@ struct TWaypointStatusSequence
 	/** Timestamp of user navigation command. */
 	mrpt::system::TTimeStamp timestamp_nav_started;
 	/** Whether the final waypoint has been reached successfuly. */
-	bool final_goal_reached;
+	bool final_goal_reached{false};
 	/** Index in `waypoints` of the waypoint the navigator is currently trying
 	 * to reach.
 	 * This will point to the last waypoint after navigation ends successfully.
 	 * Its value is `-1` if navigation has not started yet */
-	int waypoint_index_current_goal;
+	int waypoint_index_current_goal{-1};
 
 	/** Robot pose at last time step (has INVALID_NUM fields upon
 	 * initialization) */

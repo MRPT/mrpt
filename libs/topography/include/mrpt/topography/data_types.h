@@ -13,14 +13,14 @@
 namespace mrpt::topography
 {
 /** \addtogroup mrpt_topography_grp
-  *  @{ */
+ *  @{ */
 
 /** @name Data structures
    @{ */
 
 /** A coordinate that is stored as a simple "decimal" angle in degrees, but can
  * be retrieved/set in the form of DEGREES + arc-MINUTES + arc-SECONDS.
-  */
+ */
 struct TCoords
 {
 	// Only keep one of the possible representations:
@@ -35,9 +35,9 @@ struct TCoords
 	inline TCoords(const double dec) { setFromDecimal(dec); }
 	inline TCoords() { setFromDecimal(0); }
 	/** Automatic conversion to a double value (read-only) */
-	inline operator double(void) const { return decimal_value; }
+	inline operator double() const { return decimal_value; }
 	/** Automatic conversion to a double value (read-only) */
-	inline operator double&(void) { return decimal_value; }
+	inline operator double&() { return decimal_value; }
 	/** Set from a decimal value (XX.YYYYY) in degrees. */
 	inline void setFromDecimal(const double dec) { decimal_value = dec; }
 	/** Get the decimal value (XX.YYYYY), in degrees - you can also use the
@@ -78,7 +78,7 @@ std::ostream& operator<<(std::ostream& out, const TCoords& o);
 
 struct TEllipsoid
 {
-	inline TEllipsoid() : sa(6378137.0), sb(6356752.314245), name("WGS84") {}
+	inline TEllipsoid() : name("WGS84") {}
 	inline TEllipsoid(
 		const double _sa, const double _sb, const std::string& _name)
 		: sa(_sa), sb(_sb), name(_name)
@@ -86,9 +86,9 @@ struct TEllipsoid
 	}
 
 	/** largest semiaxis of the reference ellipsoid (in meters) */
-	double sa;
+	double sa{6378137.0};
 	/** smallest semiaxis of the reference ellipsoid (in meters) */
-	double sb;
+	double sb{6356752.314245};
 	/** the ellipsoid name */
 	std::string name;
 
@@ -191,7 +191,7 @@ using TGeocentricCoords = mrpt::math::TPoint3D;
  * a given geoid (typically, WGS84)  */
 struct TGeodeticCoords
 {
-	TGeodeticCoords() : lat(0), lon(0), height(0) {}
+	TGeodeticCoords() : lat(0), lon(0) {}
 	TGeodeticCoords(const double _lat, const double _lon, const double _height)
 		: lat(_lat), lon(_lon), height(_height)
 	{
@@ -208,15 +208,15 @@ struct TGeodeticCoords
 	/** Longitude (in degrees) */
 	TCoords lon;
 	/** Geodetic height (in meters) */
-	double height;
+	double height{0};
 };
 
 bool operator==(const TGeodeticCoords& a, const TGeodeticCoords& o);
 bool operator!=(const TGeodeticCoords& a, const TGeodeticCoords& o);
 
 /** Parameters for a topographic transfomation
-  * \sa TDatum10Params, transform7params
-  */
+ * \sa TDatum10Params, transform7params
+ */
 struct TDatum7Params
 {
 	/** Deltas (X,Y,Z) */
@@ -269,8 +269,8 @@ struct TDatum7Params_TOPCON
 };
 
 /** Parameters for a topographic transfomation
-  * \sa TDatum7Params, transform10params
-  */
+ * \sa TDatum7Params, transform10params
+ */
 struct TDatum10Params
 {
 	/** Deltas (X,Y,Z) */
@@ -296,8 +296,8 @@ struct TDatum10Params
 };
 
 /** Parameters for a topographic transfomation
-  * \sa TDatumHelmert3D, transformHelmert2D
-  */
+ * \sa TDatumHelmert3D, transformHelmert2D
+ */
 struct TDatumHelmert2D
 {
 	/** Deltas [X,Y] */
@@ -328,8 +328,8 @@ struct TDatumHelmert2D_TOPCON
 };
 
 /** Parameters for a topographic transfomation
-  * \sa TDatumHelmert2D, transformHelmert3D
-  */
+ * \sa TDatumHelmert2D, transformHelmert3D
+ */
 struct TDatumHelmert3D
 {
 	/** Deltas (X,Y,Z) */
@@ -352,8 +352,8 @@ struct TDatumHelmert3D
 };
 
 /** Parameters for a topographic transfomation
-  * \sa TDatumHelmert2D, transformHelmert3D
-  */
+ * \sa TDatumHelmert2D, transformHelmert3D
+ */
 struct TDatumHelmert3D_TOPCON
 {
 	double a, b, c, d, e, f, g;
@@ -367,8 +367,8 @@ struct TDatumHelmert3D_TOPCON
 };
 
 /** Parameters for a topographic transfomation
-  * \sa transform1D
-  */
+ * \sa transform1D
+ */
 struct TDatum1DTransf
 {
 	/** Deltas (X,Y,Z) */
@@ -385,8 +385,8 @@ struct TDatum1DTransf
 };
 
 /** Parameters for a topographic transfomation
-  * \sa transform1D
-  */
+ * \sa transform1D
+ */
 struct TDatumTransfInterpolation
 {
 	/** Deltas (X,Y,Z) */
@@ -411,6 +411,4 @@ struct TDatumTransfInterpolation
 
 /** @} */  // end of grouping
 
-}
-
-
+}  // namespace mrpt::topography

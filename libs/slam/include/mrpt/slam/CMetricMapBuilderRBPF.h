@@ -78,7 +78,7 @@ class CMetricMapBuilderRBPF : public mrpt::slam::CMetricMapBuilder
    public:
 	/** Options for building a CMetricMapBuilderRBPF object, passed to the
 	 * constructor.
-	  */
+	 */
 	struct TConstructionOptions : public mrpt::config::CLoadableOptions
 	{
 	   public:
@@ -90,17 +90,17 @@ class CMetricMapBuilderRBPF : public mrpt::slam::CMetricMapBuilder
 		void dumpToTextStream(
 			std::ostream& out) const override;  // See base docs
 
-		float insertionLinDistance;
+		float insertionLinDistance{1.0f};
 		float insertionAngDistance;
 
-		float localizeLinDistance;
+		float localizeLinDistance{0.4f};
 		float localizeAngDistance;
 
 		bayes::CParticleFilter::TParticleFilterOptions PF_options;
 
 		mrpt::maps::TSetOfMetricMapInitializers mapsInitializers;
 		mrpt::maps::CMultiMetricMapPDF::TPredictionParams predictionOptions;
-		mrpt::system::VerbosityLevel verbosity_level;
+		mrpt::system::VerbosityLevel verbosity_level{mrpt::system::LVL_INFO};
 	};
 
 	/** Constructor. */
@@ -125,16 +125,16 @@ of type CMetricMapBuilderRBPF  */
 		const mrpt::poses::CPosePDF* x0 = nullptr) override;
 
 	/** Clear all elements of the maps.
-	  */
+	 */
 	void clear();
 
 	/** Returns a copy of the current best pose estimation as a pose PDF.
-	  */
+	 */
 	mrpt::poses::CPose3DPDF::Ptr getCurrentPoseEstimation() const override;
 
 	/** Returns the current most-likely path estimation (the path associated to
 	 * the most likely particle).
-	  */
+	 */
 	void getCurrentMostLikelyPath(
 		std::deque<mrpt::math::TPose3D>& outPath) const;
 
@@ -153,25 +153,26 @@ of type CMetricMapBuilderRBPF  */
 
 	/** Fills "out_map" with the set of "poses"-"sensory-frames", thus the so
 	 * far built map.
-	  */
+	 */
 	void getCurrentlyBuiltMap(mrpt::maps::CSimpleMap& out_map) const override;
 
 	/** Returns the map built so far. NOTE that for efficiency a pointer to the
 	 * internal object is passed, DO NOT delete nor modify the object in any
 	 * way, if desired, make a copy of ir with "clone()".
-	  */
-	const mrpt::maps::CMultiMetricMap* getCurrentlyBuiltMetricMap() const override;
+	 */
+	const mrpt::maps::CMultiMetricMap* getCurrentlyBuiltMetricMap()
+		const override;
 
 	/** Returns just how many sensory-frames are stored in the currently build
 	 * map.
-	  */
+	 */
 	unsigned int getCurrentlyBuiltMapSize() override;
 
 	/** A useful method for debugging: the current map (and/or poses) estimation
 	 * is dumped to an image file.
-	  * \param file The output file name
-	  * \param formatEMF_BMP Output format = true:EMF, false:BMP
-	  */
+	 * \param file The output file name
+	 * \param formatEMF_BMP Output format = true:EMF, false:BMP
+	 */
 	void saveCurrentEstimationToImage(
 		const std::string& file, bool formatEMF_BMP = true) override;
 
@@ -182,19 +183,19 @@ of type CMetricMapBuilderRBPF  */
 	/** A logging utility: saves the current path estimation for each particle
 	 * in a text file (a row per particle, each 3-column-entry is a set
 	 * [x,y,phi], respectively).
-	  */
+	 */
 	void saveCurrentPathEstimationToTextFile(const std::string& fil);
 
 	double getCurrentJointEntropy();
 
 	/** This structure will hold stats after each execution of
 	 * processActionObservation
-	  */
+	 */
 	struct TStats
 	{
-		TStats() : observationsInserted(false) {}
+		TStats() = default;
 		/** Whether the SF has been inserted in the metric maps. */
-		bool observationsInserted;
+		bool observationsInserted{false};
 	};
 
 	/** This structure will hold stats after each execution of
@@ -203,6 +204,4 @@ of type CMetricMapBuilderRBPF  */
 
 };  // End of class def.
 
-}
-
-
+}  // namespace mrpt::slam

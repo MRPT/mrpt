@@ -223,9 +223,9 @@ TEST(Geometry, PolygonConvexContainsPoint)
 {
 	// Test with a polygon in one winding order:
 	std::vector<TPoint2D> vs;
-	vs.push_back(TPoint2D(-1.0, -1.0));
-	vs.push_back(TPoint2D(0.0, 1.0));
-	vs.push_back(TPoint2D(1.0, -1.0));
+	vs.emplace_back(-1.0, -1.0);
+	vs.emplace_back(0.0, 1.0);
+	vs.emplace_back(1.0, -1.0);
 	myTestPolygonContainsPoint(vs, true);
 
 	// and the other:
@@ -247,14 +247,14 @@ TEST(Geometry, PolygonConcaveContainsPoint)
 {
 	// Test with a polygon in one winding order:
 	std::vector<TPoint2D> vs;
-	vs.push_back(TPoint2D(-2.0, 3.0));
-	vs.push_back(TPoint2D(2.0, 2.0));
-	vs.push_back(TPoint2D(3.0, -4.0));
-	vs.push_back(TPoint2D(0.1, -3.0));
-	vs.push_back(TPoint2D(0.1, -0.1));
-	vs.push_back(TPoint2D(-0.1, -0.1));
-	vs.push_back(TPoint2D(-0.1, -3.0));
-	vs.push_back(TPoint2D(-2.0, -2.0));
+	vs.emplace_back(-2.0, 3.0);
+	vs.emplace_back(2.0, 2.0);
+	vs.emplace_back(3.0, -4.0);
+	vs.emplace_back(0.1, -3.0);
+	vs.emplace_back(0.1, -0.1);
+	vs.emplace_back(-0.1, -0.1);
+	vs.emplace_back(-0.1, -3.0);
+	vs.emplace_back(-2.0, -2.0);
 
 	myTestPolygonContainsPoint(vs, false);
 

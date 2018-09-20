@@ -39,13 +39,13 @@ class CObservationBatteryState : public CObservation
 	/** The data members
 	 * \sa voltageMainRobotBatteryIsValid,voltageMainRobotComputerIsValid
 	 */
-	double voltageMainRobotBattery, voltageMainRobotComputer;
+	double voltageMainRobotBattery{0}, voltageMainRobotComputer{0};
 
 	/** These values must be true if the corresponding fields contain valid
 	 * values.
 	  * \sa voltageMainRobotBattery,voltageMainRobotComputer
 	  */
-	bool voltageMainRobotBatteryIsValid, voltageMainRobotComputerIsValid;
+	bool voltageMainRobotBatteryIsValid{false}, voltageMainRobotComputerIsValid{false};
 
 	/** The users can use this vector for any arbitrary number of batteries or
 	 * any other analog measurements.

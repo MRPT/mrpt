@@ -46,13 +46,13 @@ void randomColor(const CRenderizable::Ptr& obj, double alpha)
 class PIThreadParam
 {
    public:
-	const pair<CPolyhedron::Ptr, CPolyhedron::Ptr>* polys;
+	const pair<CPolyhedron::Ptr, CPolyhedron::Ptr>* polys{nullptr};
 	vector<TSegment3D> intersection;
 	PIThreadParam(const pair<CPolyhedron::Ptr, CPolyhedron::Ptr>& p)
 		: polys(&p), intersection()
 	{
 	}
-	PIThreadParam() : polys(nullptr), intersection() {}
+	PIThreadParam() :  intersection() {}
 	inline static PIThreadParam createObject(
 		const pair<CPolyhedron::Ptr, CPolyhedron::Ptr>& p)
 	{

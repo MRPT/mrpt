@@ -31,7 +31,7 @@ bool hmt_slam_guiApp::OnInit()
 	wxInitAllImageHandlers();
 	if (wxsOK)
 	{
-		hmt_slam_guiFrame* Frame = new hmt_slam_guiFrame(0);
+		hmt_slam_guiFrame* Frame = new hmt_slam_guiFrame(nullptr);
 		Frame->Show();
 		SetTopWindow(Frame);
 	}

@@ -78,7 +78,7 @@ class CDetectable3D : public CDetectable2D
 	DEFINE_SERIALIZABLE(CDetectable3D)
 
    public:
-	CDetectable3D(){};
+	CDetectable3D()= default;
 
 	CDetectable3D(const CDetectable2D::Ptr& object2d);
 

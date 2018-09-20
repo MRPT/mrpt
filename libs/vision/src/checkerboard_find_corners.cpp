@@ -104,8 +104,7 @@ bool mrpt::vision::findChessboardCorners(
 		unsigned int k;
 		for (y = 0, k = 0; y < check_size.height; y++)
 			for (int x = 0; x < check_size.width; x++, k++)
-				cornerCoords.push_back(
-					TPixelCoordf(corners_list[k].x, corners_list[k].y));
+				cornerCoords.emplace_back(corners_list[k].x, corners_list[k].y);
 	}
 
 	return corners_found;

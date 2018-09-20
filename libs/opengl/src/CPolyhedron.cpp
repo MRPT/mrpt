@@ -242,8 +242,7 @@ void insertCupola(
 	for (size_t i = 0; i < edges2; i++)
 	{
 		double ang = angleShift + 2 * M_PI * i / edges2;
-		verts.push_back(
-			TPoint3D(minorRadius * cos(ang), minorRadius * sin(ang), height));
+		verts.emplace_back(minorRadius * cos(ang), minorRadius * sin(ang), height);
 	}
 	CPolyhedron::TPolyhedronFace tri, quad, cBase;
 	tri.vertices.resize(3);
@@ -542,8 +541,7 @@ CPolyhedron::Ptr CPolyhedron::CreateCubicPrism(
 	vector<TPoint3D> verts;
 	vector<TPolyhedronFace> faces;
 	for (int i = 0; i < 8; i++)
-		verts.push_back(
-			TPoint3D((i & 1) ? x2 : x1, (i & 2) ? y2 : y1, (i & 4) ? z2 : z1));
+		verts.emplace_back((i & 1) ? x2 : x1, (i & 2) ? y2 : y1, (i & 4) ? z2 : z1);
 	static uint32_t faceVertices[] = {0, 1, 5, 4, 2, 3, 7, 6, 0, 2, 6, 4,
 									  1, 3, 7, 5, 0, 1, 3, 2, 4, 5, 7, 6};
 	TPolyhedronFace f;
@@ -564,9 +562,9 @@ CPolyhedron::Ptr CPolyhedron::CreatePyramid(
 	if (baseVertices.size() < 3) throw std::logic_error("Not enought vertices");
 	vector<TPoint3D> verts;
 	vector<TPolyhedronFace> faces;
-	verts.push_back(TPoint3D(0, 0, height));
+	verts.emplace_back(0, 0, height);
 	for (auto baseVertice : baseVertices)
-		verts.push_back(TPoint3D(baseVertice.x, baseVertice.y, 0));
+		verts.emplace_back(baseVertice.x, baseVertice.y, 0);
 	TPolyhedronFace f, g;
 	f.vertices.push_back(0);
 	f.vertices.push_back(n);
@@ -593,10 +591,10 @@ CPolyhedron::Ptr CPolyhedron::CreateDoublePyramid(
 	verts.reserve(N + 2);
 	vector<TPolyhedronFace> faces;
 	faces.reserve(N << 1);
-	verts.push_back(TPoint3D(0, 0, height1));
+	verts.emplace_back(0, 0, height1);
 	for (auto baseVertice : baseVertices)
-		verts.push_back(TPoint3D(baseVertice.x, baseVertice.y, 0));
-	verts.push_back(TPoint3D(0, 0, -height2));
+		verts.emplace_back(baseVertice.x, baseVertice.y, 0);
+	verts.emplace_back(0, 0, -height2);
 	TPolyhedronFace f, g;
 	f.vertices.resize(3);
 	g.vertices.resize(3);
@@ -911,8 +909,7 @@ CPolyhedron::Ptr CPolyhedron::CreateJohnsonSolidWithConstantBase(
 					face.vertices[1] = face.vertices[2];
 					face.vertices[2]++;
 				} while (face.vertices[2] < initialBase + numBaseEdges);
-				verts.push_back(
-					TPoint3D(0, 0, verts[initialBase].z + apexHeight));
+				verts.emplace_back(0, 0, verts[initialBase].z + apexHeight);
 				break;
 			}
 			case DOWNWARDS_PYRAMID:
@@ -930,7 +927,7 @@ CPolyhedron::Ptr CPolyhedron::CreateJohnsonSolidWithConstantBase(
 					face.vertices[1] = face.vertices[2];
 					face.vertices[2]++;
 				} while (face.vertices[2] < endBase + numBaseEdges);
-				verts.push_back(TPoint3D(0, 0, verts[endBase].z - apexHeight));
+				verts.emplace_back(0, 0, verts[endBase].z - apexHeight);
 				break;
 			}
 			case UPWARDS_CUPOLA:
@@ -1873,8 +1870,7 @@ void CPolyhedron::generateBase(
 	for (size_t i = 0; i < numBaseEdges; i++)
 	{
 		double ang = 2 * M_PI * i / numBaseEdges;
-		vec.push_back(
-			TPoint3D(baseRadius * cos(ang), baseRadius * sin(ang), height));
+		vec.emplace_back(baseRadius * cos(ang), baseRadius * sin(ang), height);
 	}
 }
 
@@ -1885,8 +1881,7 @@ void CPolyhedron::generateShiftedBase(
 	for (size_t i = 0; i < numBaseEdges; i++)
 	{
 		double ang = 2 * M_PI * i / numBaseEdges + shift;
-		vec.push_back(
-			TPoint3D(baseRadius * cos(ang), baseRadius * sin(ang), height));
+		vec.emplace_back(baseRadius * cos(ang), baseRadius * sin(ang), height);
 	}
 }
 

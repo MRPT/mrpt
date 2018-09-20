@@ -27,7 +27,7 @@ class my_qlabel : public QLabel
 	Q_OBJECT
 
    public:
-	explicit my_qlabel(QWidget* parent = 0);
+	explicit my_qlabel(QWidget* parent = nullptr);
 
 	void mousePressEvent(QMouseEvent* ev) override;
 	void leaveEvent(QEvent*) override;

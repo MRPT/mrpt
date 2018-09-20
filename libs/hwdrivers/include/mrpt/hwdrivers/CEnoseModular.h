@@ -65,7 +65,7 @@ class CEnoseModular : public mrpt::hwdrivers::CGenericSensor
 	 * will try to open USB FTDI device "m_usbSerialNumber" */
 	std::string m_COM_port;
 	/** Default=115200 */
-	unsigned int m_COM_baud;
+	unsigned int m_COM_baud{115200};
 
 	// Only one of these two streams will be !=nullptr and open for each
 	// specific eNose board!

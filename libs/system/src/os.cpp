@@ -66,7 +66,7 @@ using namespace std;
  * http://stackoverflow.com/questions/3962263/checking-if-a-key-was-pressed
  */
 void my_aux_sighandler(int) {}
-int myKbhit(void)
+int myKbhit()
 {
 	struct termios oldtio, curtio;
 	//		struct sigaction sa;
@@ -677,7 +677,7 @@ int mrpt::system::executeCommand(
 	}
 
 	// Parse output
-	while (fgets(buff, sizeof(buff), in) != NULL)
+	while (fgets(buff, sizeof(buff), in) != nullptr)
 	{
 		sout << buff;
 	}

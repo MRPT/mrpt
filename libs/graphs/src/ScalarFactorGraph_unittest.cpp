@@ -78,10 +78,10 @@ TEST(ScalarFactorGraph, MiniMRF_UnaryEdges)
 
 	std::deque<MySimpleUnaryEdge> edges1;
 
-	edges1.push_back(MySimpleUnaryEdge(my_map, 0, 1.0, 4.0));
-	edges1.push_back(MySimpleUnaryEdge(my_map, 1, 5.0, 4.0));
-	edges1.push_back(MySimpleUnaryEdge(my_map, 2, 3.0, 4.0));
-	edges1.push_back(MySimpleUnaryEdge(my_map, 3, 2.0, 16.0));
+	edges1.emplace_back(my_map, 0, 1.0, 4.0);
+	edges1.emplace_back(my_map, 1, 5.0, 4.0);
+	edges1.emplace_back(my_map, 2, 3.0, 4.0);
+	edges1.emplace_back(my_map, 3, 2.0, 16.0);
 
 	for (const auto& e : edges1) gmrf.addConstraint(e);
 
@@ -110,7 +110,7 @@ TEST(ScalarFactorGraph, MiniMRF_UnaryEdges)
 		my_map.assign(N, .0);
 
 		// Add new edge:
-		edges1.push_back(MySimpleUnaryEdge(my_map, 0, 4.0, 2.0));
+		edges1.emplace_back(my_map, 0, 4.0, 2.0);
 		gmrf.addConstraint(*edges1.rbegin());
 
 		Eigen::VectorXd x_incr, x_var;

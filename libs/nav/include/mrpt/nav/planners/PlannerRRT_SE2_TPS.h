@@ -101,7 +101,7 @@ class PlannerRRT_SE2_TPS : public PlannerTPS_VirtualBase
 	void solve(const TPlannerInput& pi, TPlannerResult& result);
 
    protected:
-	bool m_initialized;
+	bool m_initialized{false};
 
 };  // end class PlannerRRT_SE2_TPS
 

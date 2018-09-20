@@ -61,7 +61,7 @@ class CActionRobotMovement2D : public CAction
 
 	/** If "true" means that "velocityLin" and "velocityAng" contain valid
 	 * values. */
-	bool hasVelocities{0};
+	bool hasVelocities{false};
 	/** If "hasVelocities"=true, the robot velocity in local (robot frame, +X
 	 * forward) coordinates. */
 	mrpt::math::TTwist2D velocityLocal{.0, .0, .0};
@@ -80,7 +80,7 @@ class CActionRobotMovement2D : public CAction
 		TMotionModelOptions();
 
 		/** The model to be used. */
-		TDrawSampleMotionModel modelSelection;
+		TDrawSampleMotionModel modelSelection{CActionRobotMovement2D::mmGaussian};
 
 		/** Options for the gaussian model, which generates a CPosePDFGaussian
 		 * object in poseChange

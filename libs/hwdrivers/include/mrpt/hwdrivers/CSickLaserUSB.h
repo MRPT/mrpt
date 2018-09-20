@@ -64,11 +64,11 @@ class CSickLaserUSB : public C2DRangeFinderAbstract
 	DEFINE_GENERIC_SENSOR(CSickLaserUSB)
 
    private:
-	mrpt::comms::CInterfaceFTDI* m_usbConnection;
+	mrpt::comms::CInterfaceFTDI* m_usbConnection{nullptr};
 	std::string m_serialNumber;
 
 	/** Time of the first data packet, for synchronization purposes. */
-	uint32_t m_timeStartUI;
+	uint32_t m_timeStartUI{0};
 	mrpt::system::TTimeStamp m_timeStartTT;
 
 	/** The sensor 6D pose:

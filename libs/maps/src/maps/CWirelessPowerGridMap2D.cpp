@@ -29,14 +29,9 @@ MAP_DEFINITION_REGISTER(
 	"CWirelessPowerGridMap2D,wifiGrid", mrpt::maps::CWirelessPowerGridMap2D)
 
 CWirelessPowerGridMap2D::TMapDefinition::TMapDefinition()
-	: min_x(-2),
-	  max_x(2),
-	  min_y(-2),
-	  max_y(2),
-	  resolution(0.10f),
-	  mapType(CWirelessPowerGridMap2D::mrKernelDM)
-{
-}
+	
+	  
+= default;
 
 void CWirelessPowerGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(
 	const mrpt::config::CConfigFileBase& source,
@@ -106,7 +101,7 @@ CWirelessPowerGridMap2D::CWirelessPowerGridMap2D(
 	CMetricMap::clear();
 }
 
-CWirelessPowerGridMap2D::~CWirelessPowerGridMap2D() {}
+CWirelessPowerGridMap2D::~CWirelessPowerGridMap2D() = default;
 /*---------------------------------------------------------------
 						clear
   ---------------------------------------------------------------*/
@@ -339,7 +334,7 @@ void CWirelessPowerGridMap2D::serializeFrom(
 	};
 }
 
-CWirelessPowerGridMap2D::TInsertionOptions::TInsertionOptions() {}
+CWirelessPowerGridMap2D::TInsertionOptions::TInsertionOptions() = default;
 void CWirelessPowerGridMap2D::TInsertionOptions::dumpToTextStream(
 	std::ostream& out) const
 {

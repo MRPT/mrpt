@@ -81,10 +81,10 @@ class CWirelessPowerGridMap2D : public CRandomFieldGridMap2D
 
 	MAP_DEFINITION_START(CWirelessPowerGridMap2D)
 	/** See CWirelessPowerGridMap2D::CWirelessPowerGridMap2D */
-	double min_x, max_x, min_y, max_y, resolution;
+	double min_x{-2}, max_x{2}, min_y{-2}, max_y{2}, resolution{0.10f};
 	/** The kind of map representation (see
 	 * CWirelessPowerGridMap2D::CWirelessPowerGridMap2D) */
-	mrpt::maps::CWirelessPowerGridMap2D::TMapRepresentation mapType;
+	mrpt::maps::CWirelessPowerGridMap2D::TMapRepresentation mapType{CWirelessPowerGridMap2D::mrKernelDM};
 	mrpt::maps::CWirelessPowerGridMap2D::TInsertionOptions insertionOpts;
 	MAP_DEFINITION_END(CWirelessPowerGridMap2D)
 };

@@ -489,21 +489,21 @@ class CKinect : public mrpt::hwdrivers::CGenericSensor
 	mrpt::poses::CPose3D m_sensorPoseOnRobot;
 
 	/** Show preview window while grabbing */
-	bool m_preview_window;
+	bool m_preview_window{false};
 	/** If preview is enabled, only show 1 out of N images. */
-	size_t m_preview_window_decimation;
-	size_t m_preview_decim_counter_range, m_preview_decim_counter_rgb;
+	size_t m_preview_window_decimation{1};
+	size_t m_preview_decim_counter_range{0}, m_preview_decim_counter_rgb{0};
 	mrpt::gui::CDisplayWindow::Ptr m_win_range, m_win_int;
 
 #if MRPT_HAS_KINECT_FREENECT
 	/** The "freenect_context", or nullptr if closed */
-	void* m_f_ctx;
+	void* m_f_ctx{nullptr};
 	/** The "freenect_device", or nullptr if closed */
-	void* m_f_dev;
+	void* m_f_dev{nullptr};
 
 	// Data fields for use with the callback function:
 	mrpt::obs::CObservation3DRangeScan m_latest_obs;
-	volatile uint32_t m_tim_latest_depth, m_tim_latest_rgb;  // 0 = not updated
+	volatile uint32_t m_tim_latest_depth{0}, m_tim_latest_rgb{0};  // 0 = not updated
 	std::mutex m_latest_obs_cs;
 #endif
 
@@ -516,16 +516,16 @@ class CKinect : public mrpt::hwdrivers::CGenericSensor
 
 	/** Set Kinect tilt to an initial deegre (it should be take in account in
 	 * the sensor pose by the user) */
-	int m_initial_tilt_angle;
+	int m_initial_tilt_angle{360};
 
 	/** Sensor max range (meters) */
 	double m_maxRange;
 
 	/** Number of device to open (0:first,...) */
-	int m_user_device_number;
+	int m_user_device_number{0};
 
 	/** Default: all true */
-	bool m_grab_image, m_grab_depth, m_grab_3D_points, m_grab_IMU;
+	bool m_grab_image{true}, m_grab_depth{true}, m_grab_3D_points{true}, m_grab_IMU{true};
 
 	/** The video channel to open: RGB or IR */
 	TVideoChannel m_video_channel;

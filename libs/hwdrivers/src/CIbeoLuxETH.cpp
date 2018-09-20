@@ -37,9 +37,7 @@ CIbeoLuxETH::CIbeoLuxETH(string _ip, unsigned int _port)
 	: m_ip(_ip),
 	  m_port(_port),
 	  m_sensorPose(0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
-	  m_maxRange(200.0),
-	  m_beamApperture(.25 * M_PI / 180.0),
-	  vwinkel(0.0)
+	  m_beamApperture(.25 * M_PI / 180.0)
 {
 }
 
@@ -355,10 +353,10 @@ void CIbeoLuxETH::makeTypeCommand(unsigned char* buffer)
 }
 
 /** This method can or cannot be implemented in the derived class, depending on
-* the need for it.
-*  \exception This method must throw an exception with a descriptive message if
-* some critical error is found.
-*/
+ * the need for it.
+ *  \exception This method must throw an exception with a descriptive message if
+ * some critical error is found.
+ */
 void CIbeoLuxETH::initialize()
 {
 	m_run = true;

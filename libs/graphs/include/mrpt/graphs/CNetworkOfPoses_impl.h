@@ -863,7 +863,7 @@ struct graph_ops
 
 				// free dynamically allocated mem
 				delete node_annots;
-				node_annots = NULL;
+				node_annots = nullptr;
 
 				// make sure setting annotations was successful
 				ASSERTMSG_(

@@ -77,7 +77,7 @@ class CReflectivityGridMap2D : public CMetricMap,
 		void dumpToTextStream(
 			std::ostream& out) const override;  // See base docs
 
-		int16_t channel;  //!< The reflectivity channel for this map. If
+		int16_t channel{-1};  //!< The reflectivity channel for this map. If
 		//! channel=-1, then any channel will be accepted.
 		//! Otherwise, the map will ignore
 		//! CObservationReflectivity instances with a differing
@@ -113,7 +113,7 @@ class CReflectivityGridMap2D : public CMetricMap,
 
 	MAP_DEFINITION_START(CReflectivityGridMap2D)
 	/** See CReflectivityGridMap2DOptions::CReflectivityGridMap2DOptions */
-	double min_x, max_x, min_y, max_y, resolution;
+	double min_x{-10.0f}, max_x{10.0f}, min_y{-10.0f}, max_y{10.0f}, resolution{0.10f};
 	mrpt::maps::CReflectivityGridMap2D::TInsertionOptions insertionOpts;
 	MAP_DEFINITION_END(CReflectivityGridMap2D)
 };

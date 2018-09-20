@@ -1087,15 +1087,15 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 		@{ */
 
 	/** The internal IplImage pointer to the actual image content. */
-	void* img;
+	void* img{nullptr};
 
 	/**  Set to true only when using setFromIplImageReadOnly.
 	 * \sa setFromIplImageReadOnly  */
-	bool m_imgIsReadOnly;
+	bool m_imgIsReadOnly{false};
 	/**  Set to true only when using setExternalStorage.
 	 * \sa setExternalStorage
 	 */
-	mutable bool m_imgIsExternalStorage;
+	mutable bool m_imgIsExternalStorage{false};
 	/** The file name of a external storage image. */
 	mutable std::string m_externalFile;
 

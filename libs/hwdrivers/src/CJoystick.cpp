@@ -49,13 +49,7 @@ using namespace mrpt::hwdrivers;
 /*---------------------------------------------------------------
 					Constructor
  ---------------------------------------------------------------*/
-CJoystick::CJoystick()
-#if defined(MRPT_OS_LINUX) && defined(HAVE_LINUX_INPUT_H)
-	: m_joy_fd(-1), m_joy_index(-1)
-#endif
-{
-	setLimits();
-}
+CJoystick::CJoystick() { setLimits(); }
 
 /*---------------------------------------------------------------
 					Destructor

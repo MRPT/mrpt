@@ -20,7 +20,7 @@ CPointsConfig::CPointsConfig()
 	setLikelihoodOpt();
 }
 
-CPointsConfig::~CPointsConfig() {}
+CPointsConfig::~CPointsConfig() = default;
 const QString CPointsConfig::getName()
 {
 	return QString::fromStdString(typeToName(TypeOfConfig::PointsMap));

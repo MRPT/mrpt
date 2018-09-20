@@ -911,8 +911,8 @@ void CLocalMetricHypothesis::updateAreaFromLMH(
 void CLocalMetricHypothesis::dumpAsText(std::vector<std::string>& st) const
 {
 	st.clear();
-	st.push_back("LIST OF POSES IN LMH");
-	st.push_back("====================");
+	st.emplace_back("LIST OF POSES IN LMH");
+	st.emplace_back("====================");
 
 	string s;
 	s = "Neighbors: ";

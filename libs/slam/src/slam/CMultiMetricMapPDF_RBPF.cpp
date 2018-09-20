@@ -115,17 +115,17 @@ struct TAuxRangeMeasInfo
 {
 	TAuxRangeMeasInfo()
 		: sensorLocationOnRobot(),
-		  sensedDistance(0),
-		  beaconID(INVALID_BEACON_ID),
-		  nGaussiansInMap(0)
+		  
+		  beaconID(INVALID_BEACON_ID)
+		  
 	{
 	}
 
 	CPoint3D sensorLocationOnRobot;
-	float sensedDistance;
+	float sensedDistance{0};
 	int64_t beaconID;
 	size_t
-		nGaussiansInMap;  // Number of Gaussian modes in the map representation
+		nGaussiansInMap{0};  // Number of Gaussian modes in the map representation
 
 	/** Auxiliary for optimal sampling in RO-SLAM */
 	static bool cmp_Asc(const TAuxRangeMeasInfo& a, const TAuxRangeMeasInfo& b)

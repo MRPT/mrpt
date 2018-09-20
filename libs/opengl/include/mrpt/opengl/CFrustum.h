@@ -54,13 +54,13 @@ class CFrustum : public CRenderizableDisplayList
 
    protected:
 	/** Near and far planes */
-	float m_min_distance, m_max_distance;
+	float m_min_distance{0.1f}, m_max_distance{1.f};
 	/** Semi FOVs (in radians) */
 	float m_fov_horz_left, m_fov_horz_right;
 	/** Semi FOVs (in radians) */
 	float m_fov_vert_down, m_fov_vert_up;
-	bool m_draw_lines, m_draw_planes;
-	float m_lineWidth;
+	bool m_draw_lines{true}, m_draw_planes{false};
+	float m_lineWidth{1.5f};
 	mrpt::img::TColor m_planes_color;
 
    public:
@@ -137,7 +137,7 @@ class CFrustum : public CRenderizableDisplayList
 		bool draw_planes);
 
 	/** Destructor  */
-	~CFrustum() override {}
+	~CFrustum() override = default;
 };
 }
 

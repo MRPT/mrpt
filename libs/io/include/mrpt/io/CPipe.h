@@ -83,11 +83,11 @@ class CPipeBaseEndPoint : public mrpt::io::CStream
 
 	/** (Default=0) Timeout for read operations: microseconds (us) to wait for
 	 * the first byte. 0 means infinite timeout. */
-	unsigned int timeout_read_start_us;
+	unsigned int timeout_read_start_us{0};
 	/** (Default=0) Timeout between burst reads operations: microseconds (us) to
 	 * wait between two partial reads inside one large read. 0 means infinite
 	 * timeout. */
-	unsigned int timeout_read_between_us;
+	unsigned int timeout_read_between_us{0};
 
 	/** Returns false if the pipe was closed due to some error. */
 	inline bool isOpen() const { return m_pipe_file != 0; }
@@ -99,7 +99,7 @@ class CPipeBaseEndPoint : public mrpt::io::CStream
 #ifdef _WIN32
 	void* m_pipe_file;
 #else
-	int m_pipe_file;
+	int m_pipe_file{0};
 #endif
    public:
 	size_t Read(void* Buffer, size_t Count) override;

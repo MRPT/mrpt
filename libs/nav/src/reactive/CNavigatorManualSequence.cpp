@@ -24,7 +24,7 @@ CNavigatorManualSequence::CNavigatorManualSequence(
 }
 
 // Dtor:
-CNavigatorManualSequence::~CNavigatorManualSequence() {}
+CNavigatorManualSequence::~CNavigatorManualSequence() = default;
 void CNavigatorManualSequence::saveConfigFile(
 	mrpt::config::CConfigFileBase& c) const
 {

@@ -535,7 +535,7 @@ class MainWindow : public QMainWindow
 	 * window
 	 * @param window_gui asks a QWidget default=0
 	 */
-	explicit MainWindow(QWidget* parent = 0);
+	explicit MainWindow(QWidget* parent = nullptr);
 
 	/**
 	 * readInputFormat() reads and stores the states of the user selections for

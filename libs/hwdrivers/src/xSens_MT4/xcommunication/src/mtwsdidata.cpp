@@ -22,7 +22,7 @@ MtwSdiData::MtwSdiData()
 	  m_timeSync(0),
 	  m_firstFrameNumber(0),
 	  m_lastFrameNumber(0),
-	  m_aidingData(0),
+	  m_aidingData(false),
 	  m_barometer(0),
 	  m_rssi(0)
 {

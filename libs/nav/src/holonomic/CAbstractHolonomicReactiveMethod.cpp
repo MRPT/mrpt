@@ -25,7 +25,7 @@ CAbstractHolonomicReactiveMethod::CAbstractHolonomicReactiveMethod(
 	  m_cfgSectionName(defaultCfgSectionName)
 {
 }
-CAbstractHolonomicReactiveMethod::~CAbstractHolonomicReactiveMethod() {}
+CAbstractHolonomicReactiveMethod::~CAbstractHolonomicReactiveMethod() = default;
 /** Defines the name of the section (Default: "FULL_EVAL_CONFIG") */
 void CAbstractHolonomicReactiveMethod::setConfigFileSectionName(
 	const std::string& sectName)
@@ -71,11 +71,10 @@ CAbstractHolonomicReactiveMethod::Ptr CAbstractHolonomicReactiveMethod::Factory(
 }
 
 CAbstractHolonomicReactiveMethod::NavInput::NavInput()
-	: targets(), maxRobotSpeed(1.0), maxObstacleDist(1.0), clearance(nullptr)
+	: targets() 
 {
 }
 
 CAbstractHolonomicReactiveMethod::NavOutput::NavOutput()
-	: desiredDirection(0), desiredSpeed(0)
-{
-}
+	 
+= default;

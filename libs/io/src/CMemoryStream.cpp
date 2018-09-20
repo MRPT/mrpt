@@ -147,7 +147,7 @@ void CMemoryStream::Clear()
 	}
 	else
 	{
-		m_memory = 0;
+		m_memory = nullptr;
 		m_size = 0;
 		m_position = 0;
 		m_bytesWritten = 0;

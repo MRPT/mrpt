@@ -1405,8 +1405,8 @@ void CHierarchicalMapMHPartition::computeGloballyConsistentNodeCoordinates(
 void CHierarchicalMapMHPartition::dumpAsText(std::vector<std::string>& st) const
 {
 	st.clear();
-	st.push_back("LIST OF NODES");
-	st.push_back("================");
+	st.emplace_back("LIST OF NODES");
+	st.emplace_back("================");
 
 	for (const auto & m_node : m_nodes)
 	{
@@ -1467,13 +1467,13 @@ void CHierarchicalMapMHPartition::dumpAsText(std::vector<std::string>& st) const
 			}
 		}
 
-		st.push_back("");
+		st.emplace_back("");
 	}
 
-	st.push_back("");
-	st.push_back("");
-	st.push_back("LIST OF ARCS");
-	st.push_back("================");
+	st.emplace_back("");
+	st.emplace_back("");
+	st.emplace_back("LIST OF ARCS");
+	st.emplace_back("================");
 
 	for (const auto & m_arc : m_arcs)
 	{
@@ -1535,7 +1535,7 @@ void CHierarchicalMapMHPartition::dumpAsText(std::vector<std::string>& st) const
 			}
 		}
 
-		st.push_back("");
+		st.emplace_back("");
 	}
 }
 

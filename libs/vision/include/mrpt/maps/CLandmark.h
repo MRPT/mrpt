@@ -47,8 +47,8 @@ class CLandmark : public mrpt::serialization::CSerializable
 	/** The "normal" to the landmark, i.e. a unitary 3D vector towards the
 	 * viewing direction, or a null vector if not applicable */
 	mrpt::math::TPoint3D normal;
-	float pose_cov_11, pose_cov_22, pose_cov_33, pose_cov_12, pose_cov_13,
-		pose_cov_23;
+	float pose_cov_11{}, pose_cov_22{}, pose_cov_33{}, pose_cov_12{}, pose_cov_13{},
+		pose_cov_23{};
 
 	/** An ID for the landmark (see details next...)
 	 *  This ID was introduced in the version 3 of this class (21/NOV/2006),
@@ -75,7 +75,7 @@ class CLandmark : public mrpt::serialization::CSerializable
 	/** The last time that this landmark was observed. */
 	mrpt::system::TTimeStamp timestampLastSeen;
 	/** The number of times that this landmark has been seen. */
-	uint32_t seenTimesCount;
+	uint32_t seenTimesCount{0};
 
 	/** Returns the pose as an object:
 	 */

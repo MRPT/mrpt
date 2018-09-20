@@ -27,18 +27,18 @@ namespace kinematics
 struct TKinematicLink
 {
 	/** Rotation from X_i to X_{i+1} (radians) */
-	double theta;
+	double theta{0};
 	/** Distance along Z_i to the common normal between Z_i and Z_{i+1} */
-	double d;
+	double d{0};
 	/** Distance along the common normal (in the same direction than the new
 	 * X_{i+1}) */
-	double a;
+	double a{0};
 	/** Rotation along X_{i+1} to transform Z_i into Z_{i+1} */
-	double alpha;
+	double alpha{0};
 
 	/** "false": Is revolute ("q_i" is "theta"), "true": is prismatic ("q_i" is
 	 * "d") */
-	bool is_prismatic;
+	bool is_prismatic{false};
 
 	TKinematicLink(
 		double _theta, double _d, double _a, double _alpha, bool _is_prismatic)
@@ -49,7 +49,7 @@ struct TKinematicLink
 		  is_prismatic(_is_prismatic)
 	{
 	}
-	TKinematicLink() : theta(0), d(0), a(0), alpha(0), is_prismatic(false) {}
+	TKinematicLink() = default;
 };
 
 mrpt::serialization::CArchive& operator>>(
@@ -201,4 +201,3 @@ MRPT_DECLARE_TTYPENAME_NAMESPACE(TKinematicLink, ::mrpt::kinematics)
 }  // namespace typemeta
 
 }  // namespace mrpt
-

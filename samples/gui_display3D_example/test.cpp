@@ -61,7 +61,7 @@ void TestDisplay3D()
 	}
 
 	// And another transparent viewport just to show 3D text:
-	if (0)
+	if (false)
 	{
 		mrpt::opengl::CText::Ptr txt1 =
 			mrpt::make_aligned_shared<mrpt::opengl::CText>();

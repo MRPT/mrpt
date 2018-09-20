@@ -24,7 +24,7 @@ IMPLEMENTS_GENERIC_SENSOR(CGPS_NTRIP, mrpt::hwdrivers)
  */
 CGPS_NTRIP::CGPS_NTRIP() : gps(), ntrip() {}
 /** Destructor */
-CGPS_NTRIP::~CGPS_NTRIP() {}
+CGPS_NTRIP::~CGPS_NTRIP() = default;
 void CGPS_NTRIP::initialize()
 {
 	gps.initialize();

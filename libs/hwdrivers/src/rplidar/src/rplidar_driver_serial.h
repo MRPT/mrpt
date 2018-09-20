@@ -113,9 +113,9 @@ class RPlidarDriverSerialImpl : public RPlidarDriver
 
 	void _disableDataGrabbing();
 
-	bool _isConnected;
-	bool _isScanning;
-	bool _isSupportingMotorCtrl;
+	bool _isConnected{false};
+	bool _isScanning{false};
+	bool _isSupportingMotorCtrl{false};
 
 	rp::hal::Locker _lock;
 	rp::hal::Event _dataEvt;

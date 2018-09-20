@@ -60,14 +60,7 @@ TColor& TColor::operator-=(const TColor& other)
 }
 
 TColor& TColor::operator=(const TColor& other)
-{
-	this->R = other.R;
-	this->G = other.G;
-	this->B = other.B;
-	this->A = other.A;
-
-	return *this;
-}
+= default;
 
 bool mrpt::img::operator==(const TColor& first, const TColor& second)
 {

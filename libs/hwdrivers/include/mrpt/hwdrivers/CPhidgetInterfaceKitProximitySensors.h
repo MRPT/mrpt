@@ -164,7 +164,7 @@ class CPhidgetInterfaceKitProximitySensors : public mrpt::system::COutputLogger,
 	/** The board serial number read in the configuration file. -1 for any
 	 * board.
 	 */
-	int m_serialNumber;
+	int m_serialNumber{-1};
 	float m_minOfMinRanges;
 	float m_maxOfMaxRanges;
 

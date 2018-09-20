@@ -149,14 +149,14 @@ class COpenNI2Generic
 
 	/** The same options (width, height and fps) are set for all the sensors.
 	 * (This could be changed if necessary) */
-	int m_width, m_height;
-	float m_fps;
+	int m_width{640}, m_height{480};
+	float m_fps{30.0f};
 	int m_rgb_format, m_depth_format;
-	bool m_verbose;
+	bool m_verbose{false};
 	void showLog(const std::string& message) const;
 	/** The data that the RGBD sensors can return */
 	/** Default: all true
 	 */
-	bool m_grab_image, m_grab_depth, m_grab_3D_points;
+	bool m_grab_image{true}, m_grab_depth{true}, m_grab_3D_points{true};
 };  // End of class
 }  // namespace mrpt::hwdrivers

@@ -55,7 +55,7 @@ template <class T>
 struct CProbabilityParticle<T, particle_storage_mode::VALUE>
 	: public CProbabilityParticleBase
 {
-	CProbabilityParticle() {}
+	CProbabilityParticle() = default;
 	CProbabilityParticle(const T& data, const double logw)
 		: CProbabilityParticleBase(logw), d(data)
 	{

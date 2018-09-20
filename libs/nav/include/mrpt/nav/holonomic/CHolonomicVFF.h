@@ -64,10 +64,10 @@ class CHolonomicVFF : public CAbstractHolonomicReactiveMethod
 	struct TOptions : public mrpt::config::CLoadableOptions
 	{
 		/** For stopping gradually (Default: 0.10) */
-		double TARGET_SLOW_APPROACHING_DISTANCE;
+		double TARGET_SLOW_APPROACHING_DISTANCE{0.10};
 		/** Dimension-less (may have to be tuned depending on the density of
 		 * obstacle sampling) (Default: 20) */
-		double TARGET_ATTRACTIVE_FORCE;
+		double TARGET_ATTRACTIVE_FORCE{20.0};
 
 		TOptions();
 		void loadFromConfigFile(

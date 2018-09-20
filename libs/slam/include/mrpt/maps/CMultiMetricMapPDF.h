@@ -94,7 +94,7 @@ class CMultiMetricMapPDF
    private:
 	/** Internal buffer for the averaged map. */
 	mrpt::maps::CMultiMetricMap averageMap;
-	bool averageMapIsUpdated;
+	bool averageMapIsUpdated{false};
 
 	/** The SFs and their corresponding pose estimations */
 	mrpt::maps::CSimpleMap SFs;
@@ -131,14 +131,14 @@ class CMultiMetricMapPDF
 		 * of points (based on Stachniss' work)
 		 *  Default = 0
 		 */
-		int pfOptimalProposal_mapSelection;
+		int pfOptimalProposal_mapSelection{0};
 
 		/** [prediction stage][pf optimal proposal only] If
 		 * useICPGlobalAlign_withGrid=true, this is the minimum quality ratio
 		 * [0,1] of the alignment such as it will be accepted. Otherwise, raw
 		 * odometry is used for those bad cases (default=0.7).
 		  */
-		float ICPGlobalAlign_MinQuality;
+		float ICPGlobalAlign_MinQuality{0.70f};
 
 		/** [update stage] If the likelihood is computed through the occupancy
 		 * grid map, then this structure is passed to the map when updating the
@@ -244,7 +244,7 @@ class CMultiMetricMapPDF
 
 	/** An index [0,1] measuring how much information an observation aports to
 	 * the map (Typ. threshold=0.07) */
-	float newInfoIndex;
+	float newInfoIndex{0};
 
    public:
 	/** \name Virtual methods that the PF_implementations assume exist.

@@ -2250,9 +2250,9 @@ int icvGenerateQuads(
 	cv::MemStorage temp_storage = cv::MemStorage(cvCreateMemStorage(0));
 #endif
 
-	CvSeq* src_contour = 0;
+	CvSeq* src_contour = nullptr;
 	CvSeq* root;  // cv::Seq<> root;  //
-	CvContourEx* board = 0;
+	CvContourEx* board = nullptr;
 	CvContourScanner scanner;
 
 	// Empiric sower bound for the size of allowable quadrangles.
@@ -2268,9 +2268,9 @@ int icvGenerateQuads(
 		sizeof(CvContourEx), CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE);
 
 	// Get all the contours one by one
-	while ((src_contour = cvFindNextContour(scanner)) != 0)
+	while ((src_contour = cvFindNextContour(scanner)) != nullptr)
 	{
-		CvSeq* dst_contour = 0;
+		CvSeq* dst_contour = nullptr;
 		CvRect rect = ((CvContour*)src_contour)->rect;
 
 		// Reject contours with a too small perimeter and contours which are

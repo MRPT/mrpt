@@ -31,7 +31,7 @@ bool camera_calib_guiApp::OnInit()
 	wxInitAllImageHandlers();
 	if (wxsOK)
 	{
-		camera_calib_guiDialog Dlg(0);
+		camera_calib_guiDialog Dlg(nullptr);
 		SetTopWindow(&Dlg);
 		Dlg.ShowModal();
 		wxsOK = false;

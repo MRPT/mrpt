@@ -150,14 +150,13 @@ void mrpt::math::ransac_detect_3D_planes(
 		if (this_best_inliers.size() >= min_inliers_for_valid_plane)
 		{
 			// Add this plane to the output list:
-			out_detected_planes.push_back(
-				std::make_pair(
+			out_detected_planes.emplace_back(
 					this_best_inliers.size(),
 					TPlane(
 						double(this_best_model(0, 0)),
 						double(this_best_model(0, 1)),
 						double(this_best_model(0, 2)),
-						double(this_best_model(0, 3)))));
+						double(this_best_model(0, 3))));
 
 			out_detected_planes.rbegin()->second.unitarize();
 
@@ -317,13 +316,12 @@ void mrpt::math::ransac_detect_2D_lines(
 		if (this_best_inliers.size() >= min_inliers_for_valid_line)
 		{
 			// Add this plane to the output list:
-			out_detected_lines.push_back(
-				std::make_pair(
+			out_detected_lines.emplace_back(
 					this_best_inliers.size(),
 					TLine2D(
 						double(this_best_model(0, 0)),
 						double(this_best_model(0, 1)),
-						double(this_best_model(0, 2)))));
+						double(this_best_model(0, 2))));
 
 			out_detected_lines.rbegin()->second.unitarize();
 

@@ -73,7 +73,7 @@ CMonteCarloLocalization2D::CMonteCarloLocalization2D(size_t M)
 	this->setLoggerName("CMonteCarloLocalization2D");
 }
 
-CMonteCarloLocalization2D::~CMonteCarloLocalization2D() {}
+CMonteCarloLocalization2D::~CMonteCarloLocalization2D() = default;
 TPose3D CMonteCarloLocalization2D::getLastPose(
 	const size_t i, bool& is_valid_pose) const
 {

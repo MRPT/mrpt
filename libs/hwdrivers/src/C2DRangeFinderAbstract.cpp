@@ -23,20 +23,14 @@ using namespace mrpt::hwdrivers;
 						Constructor
 -------------------------------------------------------------*/
 C2DRangeFinderAbstract::C2DRangeFinderAbstract()
-	: mrpt::system::COutputLogger("C2DRangeFinderAbstract"),
-	  m_lastObservation(),
-	  m_lastObservationIsNew(false),
-	  m_hardwareError(false),
-	  m_nextObservation(),
-	  m_showPreview(false),
-	  m_stream(nullptr)
+	: mrpt::system::COutputLogger("C2DRangeFinderAbstract")
 {
 }
 
 /*-------------------------------------------------------------
 						Destructor
 -------------------------------------------------------------*/
-C2DRangeFinderAbstract::~C2DRangeFinderAbstract() {}
+C2DRangeFinderAbstract::~C2DRangeFinderAbstract() = default;
 /*-------------------------------------------------------------
 						bindIO
 -------------------------------------------------------------*/
@@ -153,15 +147,13 @@ void C2DRangeFinderAbstract::loadCommonParams(
 
 	for (;;)
 	{
-		const double ini = DEG2RAD(
-			configSource.read_double(
-				iniSection, format("exclusionAngles%u_ini", N), -1000));
-		const double end = DEG2RAD(
-			configSource.read_double(
-				iniSection, format("exclusionAngles%u_end", N++), -1000));
+		const double ini = DEG2RAD(configSource.read_double(
+			iniSection, format("exclusionAngles%u_ini", N), -1000));
+		const double end = DEG2RAD(configSource.read_double(
+			iniSection, format("exclusionAngles%u_end", N++), -1000));
 
 		if (ini > -M_PI && end > -M_PI)
-			m_lstExclusionAngles.push_back(make_pair(ini, end));
+			m_lstExclusionAngles.emplace_back(ini, end);
 		else
 			break;
 	}
@@ -201,10 +193,8 @@ void C2DRangeFinderAbstract::processPreview(
 			m_win->setCameraAzimuthDeg(180);
 			m_win->setCameraElevationDeg(90);
 			COpenGLScene::Ptr& theScene = m_win->get3DSceneAndLock();
-			theScene->insert(
-				CAxis::Ptr(
-					mrpt::make_aligned_shared<CAxis>(
-						-300, -300, -50, 300, 300, 50, 1.0, 3, true)));
+			theScene->insert(CAxis::Ptr(mrpt::make_aligned_shared<CAxis>(
+				-300, -300, -50, 300, 300, 50, 1.0, 3, true)));
 			m_win->unlockAccess3DScene();
 		}
 

@@ -30,7 +30,7 @@ struct TGraphvizExportParams
 {
 	/** If true (default=false), an "[constraint=false]" will be added to all
 	 * edges (see Graphviz docs). */
-	bool mark_edges_as_not_constraint;
+	bool mark_edges_as_not_constraint{false};
 	/** If provided, these textual names will be used for naming the nodes
 	 * instead of their numeric IDs given in the edges. */
 	std::map<TNodeID, std::string> node_names;
@@ -38,7 +38,7 @@ struct TGraphvizExportParams
 	 * each node, e.g. to set a node position, use the string "pos = \"x,y\"" */
 	std::map<TNodeID, std::string> node_props;
 
-	TGraphvizExportParams() : mark_edges_as_not_constraint(false) {}
+	TGraphvizExportParams() = default;
 };
 
 namespace detail
@@ -62,8 +62,8 @@ struct edge_annotations_empty
  * mrpt::graphs::CDirectedTree
  * \ingroup mrpt_graphs_grp
  */
-template <class TYPE_EDGES,
-		  class EDGE_ANNOTATIONS = detail::edge_annotations_empty>
+template <
+	class TYPE_EDGES, class EDGE_ANNOTATIONS = detail::edge_annotations_empty>
 class CDirectedGraph
 {
    public:

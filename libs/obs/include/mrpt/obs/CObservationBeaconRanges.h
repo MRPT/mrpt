@@ -30,16 +30,16 @@ class CObservationBeaconRanges : public CObservation
 	CObservationBeaconRanges();
 
 	/** Info about sensor */
-	float minSensorDistance, maxSensorDistance;
+	float minSensorDistance{0}, maxSensorDistance{1e2f};
 	/** The "sigma" of the sensor, assuming a zero-mean Gaussian noise model. */
-	float stdError;
+	float stdError{1e-2f};
 
 	/** Each one of the measurements */
 	struct TMeasurement
 	{
 		TMeasurement()
 			: sensorLocationOnRobot(),
-			  sensedDistance(0),
+
 			  beaconID(INVALID_BEACON_ID)
 		{
 		}
@@ -47,7 +47,7 @@ class CObservationBeaconRanges : public CObservation
 		/** Position of the sensor on the robot */
 		mrpt::poses::CPoint3D sensorLocationOnRobot;
 		/** The sensed range itself (in meters). */
-		float sensedDistance;
+		float sensedDistance{0};
 		/** The ID of the sensed beacon (or INVALID_BEACON_ID if unknown) */
 		int32_t beaconID;
 	};
@@ -75,6 +75,4 @@ class CObservationBeaconRanges : public CObservation
 
 };  // End of class def.
 
-}
-
-
+}  // namespace mrpt::obs

@@ -30,7 +30,7 @@ IMPLEMENTS_GENERIC_SENSOR(CBoardENoses, mrpt::hwdrivers)
 					CBoardENoses
 -------------------------------------------------------------*/
 CBoardENoses::CBoardENoses()
-	: m_usbSerialNumber("ENOSE001"), m_COM_port(), m_COM_baud(115200)
+	: m_usbSerialNumber("ENOSE001"), m_COM_port() 
 {
 	m_sensorLabel = "ENOSE";
 	first_reading = true;

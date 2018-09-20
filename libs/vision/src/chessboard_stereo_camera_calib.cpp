@@ -224,10 +224,9 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		obj_points.reserve(CORNERS_COUNT);
 		for (unsigned int y = 0; y < p.check_size_y; y++)
 			for (unsigned int x = 0; x < p.check_size_x; x++)
-				obj_points.push_back(
-					TPoint3D(
+				obj_points.emplace_back(
 						p.check_squares_length_X_meters * x,
-						p.check_squares_length_Y_meters * y, 0));
+						p.check_squares_length_Y_meters * y, 0);
 
 		// ----------------------------------------------------------------------------------
 		//  Levenberg-Marquardt algorithm
@@ -1324,27 +1323,10 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 
 // Ctor:
 TStereoCalibParams::TStereoCalibParams()
-	: check_size_x(7),
-	  check_size_y(9),
-	  check_squares_length_X_meters(0.02),
-	  check_squares_length_Y_meters(0.02),
-	  normalize_image(true),
-	  skipDrawDetectedImgs(false),
-	  verbose(true),
-	  maxIters(2000),
-	  optimize_k1(true),
-	  optimize_k2(true),
-	  optimize_k3(false),
-	  optimize_t1(false),
-	  optimize_t2(false),
-	  use_robust_kernel(false),
-	  robust_kernel_param(10),
-	  callback(nullptr),
-	  callback_user_param(nullptr)
-{
-}
+	
+	  
+= default;
 
 TStereoCalibResults::TStereoCalibResults()
-	: final_rmse(0), final_iters(0), final_number_good_image_pairs(0)
-{
-}
+	 
+= default;

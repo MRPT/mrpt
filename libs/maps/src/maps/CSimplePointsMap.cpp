@@ -26,7 +26,7 @@ using namespace mrpt::math;
 MAP_DEFINITION_REGISTER(
 	"CSimplePointsMap,pointsMap", mrpt::maps::CSimplePointsMap)
 
-CSimplePointsMap::TMapDefinition::TMapDefinition() {}
+CSimplePointsMap::TMapDefinition::TMapDefinition() = default;
 void CSimplePointsMap::TMapDefinition::loadFromConfigFile_map_specific(
 	const mrpt::config::CConfigFileBase& c,
 	const std::string& s)
@@ -59,7 +59,7 @@ mrpt::maps::CMetricMap* CSimplePointsMap::internal_CreateFromMapDefinition(
 
 IMPLEMENTS_SERIALIZABLE(CSimplePointsMap, CPointsMap, mrpt::maps)
 
-CSimplePointsMap::CSimplePointsMap() { }
+CSimplePointsMap::CSimplePointsMap() = default;
 void CSimplePointsMap::reserve(size_t newLength)
 {
 	m_x.reserve(newLength);

@@ -27,12 +27,8 @@ CVectorField3D::CVectorField3D()
 	  z_vf(0, 0),
 	  x_p(0, 0),
 	  y_p(0, 0),
-	  z_p(0, 0),
-	  m_LineWidth(1.0),
-	  m_pointSize(1.0),
-	  m_antiAliasing(true),
-	  m_colorFromModule(false),
-	  m_showPoints(true)
+	  z_p(0, 0)
+	  
 {
 	m_point_color = m_color;
 	m_field_color = m_color;

@@ -98,7 +98,7 @@ class COctoMapVoxels : public CRenderizableDisplayList
 		double side_length;
 		mrpt::img::TColor color;
 
-		TVoxel() {}
+		TVoxel() = default;
 		TVoxel(
 			const mrpt::math::TPoint3D& coords_, const double side_length_,
 			mrpt::img::TColor color_)
@@ -113,7 +113,7 @@ class COctoMapVoxels : public CRenderizableDisplayList
 		/** opposite corners of the cube */
 		mrpt::math::TPoint3D min, max;
 
-		TGridCube() {}
+		TGridCube() = default;
 		TGridCube(
 			const mrpt::math::TPoint3D& min_, const mrpt::math::TPoint3D& max_)
 			: min(min_), max(max_)
@@ -123,10 +123,10 @@ class COctoMapVoxels : public CRenderizableDisplayList
 
 	struct TInfoPerVoxelSet
 	{
-		bool visible;
+		bool visible{true};
 		std::vector<TVoxel> voxels;
 
-		TInfoPerVoxelSet() : visible(true) {}
+		TInfoPerVoxelSet() = default;
 	};
 
    protected:
@@ -136,14 +136,14 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	/** Cached bounding boxes */
 	mrpt::math::TPoint3D m_bb_min, m_bb_max;
 
-	bool m_enable_lighting;
-	bool m_enable_cube_transparency;
-	bool m_showVoxelsAsPoints;
-	float m_showVoxelsAsPointsSize;
-	bool m_show_grids;
-	float m_grid_width;
+	bool m_enable_lighting{false};
+	bool m_enable_cube_transparency{true};
+	bool m_showVoxelsAsPoints{false};
+	float m_showVoxelsAsPointsSize{3.0f};
+	bool m_show_grids{false};
+	float m_grid_width{1.0f};
 	mrpt::img::TColor m_grid_color;
-	visualization_mode_t m_visual_mode;
+	visualization_mode_t m_visual_mode{COctoMapVoxels::COLOR_FROM_OCCUPANCY};
 
    public:
 	/** Clears everything */
@@ -350,8 +350,7 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	/** Constructor */
 	COctoMapVoxels();
 	/** Private, virtual destructor: only can be deleted from smart pointers. */
-	~COctoMapVoxels() override {}
+	~COctoMapVoxels() override = default;
 };
 
-}
-
+}  // namespace mrpt::opengl

@@ -101,17 +101,17 @@ class COccupancyGridMap2D : public CMetricMap,
 	/** Store of cell occupancy values. Order: row by row, from left to right */
 	std::vector<cellType> map;
 	/** The size of the grid in cells */
-	uint32_t size_x, size_y;
+	uint32_t size_x{0}, size_y{0};
 	/** The limits of the grid in "units" (meters) */
-	float x_min, x_max, y_min, y_max;
+	float x_min{}, x_max{}, y_min{}, y_max{};
 	/** Cell size, i.e. resolution of the grid map. */
-	float resolution;
+	float resolution{};
 
 	/** Auxiliary variables to speed up the computation of observation
 	 * likelihood values for LF method among others, at a high cost in memory
 	 * (see TLikelihoodOptions::enableLikelihoodCache). */
 	std::vector<double> precomputedLikelihood;
-	bool precomputedLikelihoodToBeRecomputed;
+	bool precomputedLikelihoodToBeRecomputed{true};
 
 	/** Used for Voronoi calculation.Same struct as "map", but contains a "0" if
 	 * not a basis point. */
@@ -124,14 +124,13 @@ class COccupancyGridMap2D : public CMetricMap,
 	mrpt::containers::CDynamicGrid<uint16_t> m_voronoi_diagram;
 
 	/** True upon construction; used by isEmpty() */
-	bool m_is_empty;
+	bool m_is_empty{true};
 
 	/** See base class */
-	void OnPostSuccesfulInsertObs(
-		const mrpt::obs::CObservation*) override;
+	void OnPostSuccesfulInsertObs(const mrpt::obs::CObservation*) override;
 
 	/** The free-cells threshold used to compute the Voronoi diagram. */
-	float voroni_free_threshold;
+	float voroni_free_threshold{};
 
 	/** Entropy computation internal function: */
 	static double H(double p);
@@ -228,8 +227,8 @@ class COccupancyGridMap2D : public CMetricMap,
 			bool enabled_ = false, double I_change_ = 0, int cellsUpdated_ = 0)
 			: enabled(enabled_),
 			  I_change(I_change_),
-			  cellsUpdated(cellsUpdated_),
-			  laserRaysSkip(1)
+			  cellsUpdated(cellsUpdated_)
+
 		{
 		}
 		/** If set to false (default), this struct is not used. Set to true only
@@ -242,7 +241,7 @@ class COccupancyGridMap2D : public CMetricMap,
 		 * "updateCell" method. */
 		int cellsUpdated;
 		/** In this mode, some laser rays can be skips to speep-up */
-		int laserRaysSkip;
+		int laserRaysSkip{1};
 	} updateInfoChangeOnly;
 
 	/** Fills all the cells with a default value. */
@@ -509,42 +508,42 @@ class COccupancyGridMap2D : public CMetricMap,
 
 		/** The altitude (z-axis) of 2D scans (within a 0.01m tolerance) for
 		 * they to be inserted in this map! */
-		float mapAltitude;
+		float mapAltitude{0};
 		/** The parameter "mapAltitude" has effect while inserting observations
 		 * in the grid only if this is true. */
-		bool useMapAltitude;
+		bool useMapAltitude{false};
 		/** The largest distance at which cells will be updated (Default 15
 		 * meters) */
-		float maxDistanceInsertion;
+		float maxDistanceInsertion{15.0f};
 		/** A value in the range [0.5,1] used for updating cell with a bayesian
 		 * approach (default 0.8) */
-		float maxOccupancyUpdateCertainty;
+		float maxOccupancyUpdateCertainty{0.65f};
 		/** A value in the range [0.5,1] for updating a free cell. (default=0
 		 * means use the same than maxOccupancyUpdateCertainty) */
-		float maxFreenessUpdateCertainty;
+		float maxFreenessUpdateCertainty{.0f};
 		/** Like maxFreenessUpdateCertainty, but for invalid ranges (no echo).
 		 * (default=0 means same than maxOccupancyUpdateCertainty)*/
-		float maxFreenessInvalidRanges;
+		float maxFreenessInvalidRanges{.0f};
 		/** If set to true (default), invalid range values (no echo rays) as
 		 * consider as free space until "maxOccupancyUpdateCertainty", but ONLY
 		 * when the previous and next rays are also an invalid ray. */
-		bool considerInvalidRangesAsFreeSpace;
+		bool considerInvalidRangesAsFreeSpace{true};
 		/** Specify the decimation of the range scan (default=1 : take all the
 		 * range values!) */
-		uint16_t decimation;
+		uint16_t decimation{1};
 		/** The tolerance in rads in pitch & roll for a laser scan to be
 		 * considered horizontal, then processed by calls to this class
 		 * (default=0). */
 		float horizontalTolerance;
 		/** Gaussian sigma of the filter used in getAsImageFiltered (for
 		 * features detection) (Default=1) (0:Disabled)  */
-		float CFD_features_gaussian_size;
+		float CFD_features_gaussian_size{1};
 		/** Size of the Median filter used in getAsImageFiltered (for features
 		 * detection) (Default=3) (0:Disabled) */
-		float CFD_features_median_size;
+		float CFD_features_median_size{3};
 		/** Enabled: Rays widen with distance to approximate the real behavior
 		 * of lasers, disabled: insert rays as simple lines (Default=false) */
-		bool wideningBeamsWithDistance;
+		bool wideningBeamsWithDistance{false};
 	};
 
 	/** With this struct options are provided to the observation insertion
@@ -590,51 +589,51 @@ class COccupancyGridMap2D : public CMetricMap,
 			std::ostream& out) const override;  // See base docs
 
 		/** The selected method to compute an observation likelihood */
-		TLikelihoodMethod likelihoodMethod;
+		TLikelihoodMethod likelihoodMethod{lmLikelihoodField_Thrun};
 		/** [LikelihoodField] The laser range "sigma" used in computations;
 		 * Default value = 0.35 */
-		float LF_stdHit;
+		float LF_stdHit{0.35f};
 		/** [LikelihoodField] */
-		float LF_zHit, LF_zRandom;
+		float LF_zHit{0.95f}, LF_zRandom{0.05f};
 		/** [LikelihoodField] The max. range of the sensor (Default= 81 m) */
-		float LF_maxRange;
+		float LF_maxRange{81.0f};
 		/** [LikelihoodField] The decimation of the points in a scan, default=1
 		 * == no decimation */
-		uint32_t LF_decimation;
+		uint32_t LF_decimation{5};
 		/** [LikelihoodField] The max. distance for searching correspondences
 		 * around each sensed point */
-		float LF_maxCorrsDistance;
+		float LF_maxCorrsDistance{0.3f};
 		/** [LikelihoodField] (Default:false) Use `exp(dist^2/std^2)` instead of
 		 * `exp(dist^2/std^2)` */
-		bool LF_useSquareDist;
+		bool LF_useSquareDist{false};
 		/** [LikelihoodField] Set this to "true" ot use an alternative method,
 		 * where the likelihood of the whole range scan is computed by
 		 * "averaging" of individual ranges, instead of by the "product". */
-		bool LF_alternateAverageMethod;
+		bool LF_alternateAverageMethod{false};
 		/** [MI] The exponent in the MI likelihood computation. Default value =
 		 * 5 */
-		float MI_exponent;
+		float MI_exponent{2.5f};
 		/** [MI] The scan rays decimation: at every N rays, one will be used to
 		 * compute the MI */
-		uint32_t MI_skip_rays;
+		uint32_t MI_skip_rays{10};
 		/** [MI] The ratio for the max. distance used in the MI computation and
 		 * in the insertion of scans, e.g. if set to 2.0 the MI will use twice
 		 * the distance that the update distance. */
-		float MI_ratio_max_distance;
+		float MI_ratio_max_distance{1.5f};
 		/** [rayTracing] If true (default), the rayTracing method will ignore
 		 * measured ranges shorter than the simulated ones. */
-		bool rayTracing_useDistanceFilter;
+		bool rayTracing_useDistanceFilter{true};
 		/** [rayTracing] One out of "rayTracing_decimation" rays will be
 		 * simulated and compared only: set to 1 to use all the sensed ranges.
 		 */
-		int32_t rayTracing_decimation;
+		int32_t rayTracing_decimation{10};
 		/** [rayTracing] The laser range sigma. */
-		float rayTracing_stdHit;
+		float rayTracing_stdHit{1.0f};
 		/** [Consensus] The down-sample ratio of ranges (default=1, consider all
 		 * the ranges) */
-		int32_t consensus_takeEachRange;
+		int32_t consensus_takeEachRange{1};
 		/** [Consensus] The power factor for the likelihood (default=5) */
-		float consensus_pow;
+		float consensus_pow{5};
 		/** [OWA] The sequence of weights to be multiplied to of the ordered
 		 * list of likelihood values (first one is the largest); the size of
 		 * this vector determines the number of highest likelihood values to
@@ -643,7 +642,7 @@ class COccupancyGridMap2D : public CMetricMap,
 
 		/** Enables the usage of a cache of likelihood values (for LF methods),
 		 * if set to true (default=false). */
-		bool enableLikelihoodCache;
+		bool enableLikelihoodCache{true};
 	} likelihoodOptions;
 
 	/** Auxiliary private class. */
@@ -863,15 +862,15 @@ class COccupancyGridMap2D : public CMetricMap,
 	{
 		/** (Default: sumMonteCarlo) Select the method to do the uncertainty
 		 * propagation */
-		TLaserSimulUncertaintyMethod method;
+		TLaserSimulUncertaintyMethod method{sumUnscented};
 		/** @name Parameters for each uncertainty method
 			@{ */
 		/** [sumUnscented] UT parameters. Defaults: alpha=0.99, kappa=0,
 		 * betta=2.0 */
-		double UT_alpha, UT_kappa, UT_beta;
+		double UT_alpha{0.99}, UT_kappa{.0}, UT_beta{2.0};
 		/** [sumMonteCarlo] MonteCarlo parameter: number of samples (Default:
 		 * 10) */
-		size_t MC_samples;
+		size_t MC_samples{10};
 		/** @} */
 
 		/** @name Generic parameters for all methods
@@ -882,29 +881,29 @@ class COccupancyGridMap2D : public CMetricMap,
 		mrpt::poses::CPosePDFGaussian robotPose;
 		/** (Default: M_PI) The "aperture" or field-of-view of the range finder,
 		 * in radians (typically M_PI = 180 degrees). */
-		float aperture;
+		float aperture{M_PIf};
 		/** (Default: true) The scanning direction: true=counterclockwise;
 		 * false=clockwise */
-		bool rightToLeft;
+		bool rightToLeft{true};
 		/** (Default: 80) The maximum range allowed by the device, in meters
 		 * (e.g. 80m, 50m,...) */
-		float maxRange;
+		float maxRange{80.f};
 		/** (Default: at origin) The 6D pose of the sensor on the robot at the
 		 * moment of starting the scan. */
 		mrpt::poses::CPose3D sensorPose;
-		size_t nRays;
+		size_t nRays{361};
 		/** (Default: 0) The standard deviation of measurement noise. If not
 		 * desired, set to 0 */
-		float rangeNoiseStd;
+		float rangeNoiseStd{.0f};
 		/** (Default: 0) The sigma of an optional Gaussian noise added to the
 		 * angles at which ranges are measured (in radians) */
-		float angleNoiseStd;
+		float angleNoiseStd{.0f};
 		/** (Default: 1) The rays that will be simulated are at indexes: 0, D,
 		 * 2D, 3D,... */
-		unsigned int decimation;
+		unsigned int decimation{1};
 		/** (Default: 0.6f) The minimum occupancy threshold to consider a cell
 		 * to be occupied */
-		float threshold;
+		float threshold{.6f};
 		/** @} */
 
 		TLaserSimulUncertaintyParams();
@@ -1169,7 +1168,8 @@ class COccupancyGridMap2D : public CMetricMap,
 
 	MAP_DEFINITION_START(COccupancyGridMap2D)
 	/** See COccupancyGridMap2D::COccupancyGridMap2D */
-	float min_x, max_x, min_y, max_y, resolution;
+	float min_x{-10.0f}, max_x{10.0f}, min_y{-10.0f}, max_y{10.0f},
+		resolution{0.10f};
 	/** Observations insertion options */
 	mrpt::maps::COccupancyGridMap2D::TInsertionOptions insertionOpts;
 	/** Probabilistic observation likelihood options */
@@ -1180,7 +1180,7 @@ class COccupancyGridMap2D : public CMetricMap,
 bool operator<(
 	const COccupancyGridMap2D::TPairLikelihoodIndex& e1,
 	const COccupancyGridMap2D::TPairLikelihoodIndex& e2);
-}
+}  // namespace mrpt::maps
 MRPT_ENUM_TYPE_BEGIN(mrpt::maps::COccupancyGridMap2D::TLikelihoodMethod)
 MRPT_FILL_ENUM_MEMBER(mrpt::maps::COccupancyGridMap2D, lmMeanInformation);
 MRPT_FILL_ENUM_MEMBER(mrpt::maps::COccupancyGridMap2D, lmRayTracing);
@@ -1190,5 +1190,3 @@ MRPT_FILL_ENUM_MEMBER(mrpt::maps::COccupancyGridMap2D, lmLikelihoodField_Thrun);
 MRPT_FILL_ENUM_MEMBER(mrpt::maps::COccupancyGridMap2D, lmLikelihoodField_II);
 MRPT_FILL_ENUM_MEMBER(mrpt::maps::COccupancyGridMap2D, lmConsensusOWA);
 MRPT_ENUM_TYPE_END()
-
-

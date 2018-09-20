@@ -54,7 +54,7 @@ bool WxSubsystem::isConsoleApp() { return isConsoleApp_value; }
 WxSubsystem::CAuxWxSubsystemShutdowner WxSubsystem::global_wxsubsystem_shutdown;
 
 // Auxiliary class implementation:
-WxSubsystem::CAuxWxSubsystemShutdowner::CAuxWxSubsystemShutdowner() {}
+WxSubsystem::CAuxWxSubsystemShutdowner::CAuxWxSubsystemShutdowner() = default;
 WxSubsystem::CAuxWxSubsystemShutdowner::~CAuxWxSubsystemShutdowner()
 {
 	if (WxSubsystem::isConsoleApp())
@@ -139,7 +139,7 @@ class CDialogAskUserForCamera : public wxDialog
 		// pressing ENTER.
 	}
 
-	~CDialogAskUserForCamera() override {}
+	~CDialogAskUserForCamera() override = default;
 	void OnBtnOk(wxCommandEvent& event) { EndModal(wxID_OK); }
 	void OnBtnCancel(wxCommandEvent& event) { EndModal(wxID_CANCEL); }
 };
@@ -881,7 +881,7 @@ bool CDisplayWindow_WXAPP::OnInit()
 	// cout << "[wxApp::OnInit] wxApplication OnInit called." << endl;
 
 	// Create a dummy frame:
-	WxSubsystem::CWXMainFrame* Frame = new WxSubsystem::CWXMainFrame(0);
+	WxSubsystem::CWXMainFrame* Frame = new WxSubsystem::CWXMainFrame(nullptr);
 	Frame->Hide();
 
 	// We are ready!!

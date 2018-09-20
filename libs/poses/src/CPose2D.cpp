@@ -28,7 +28,7 @@ IMPLEMENTS_SERIALIZABLE(CPose2D, CSerializable, mrpt::poses)
 /*---------------------------------------------------------------
 	Constructors
   ---------------------------------------------------------------*/
-CPose2D::CPose2D() : m_phi(0), m_cossin_uptodate(false)
+CPose2D::CPose2D()  
 {
 	m_coords[0] = m_coords[1] = 0;
 }

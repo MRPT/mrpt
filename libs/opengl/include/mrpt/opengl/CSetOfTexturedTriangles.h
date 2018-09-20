@@ -32,10 +32,10 @@ class CSetOfTexturedTriangles : public CTexturedObject
 		TVertex();
 		TVertex(float x, float y, float z, uint32_t u, uint32_t v);
 		/** 3D vertex coordinates. */
-		float m_x, m_y, m_z;
+		float m_x{0.0}, m_y{0.0}, m_z{0.0};
 		/** 2D texture coordinates. Notice that the texture coordinates are 2D
 		 * pixels!!! */
-		uint32_t m_u, m_v;
+		uint32_t m_u{0}, m_v{0};
 		void writeToStream(mrpt::serialization::CArchive& out) const;
 		void readFromStream(mrpt::serialization::CArchive& in);
 	};

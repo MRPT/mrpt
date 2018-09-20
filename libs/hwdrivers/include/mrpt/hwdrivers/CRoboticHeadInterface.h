@@ -72,7 +72,7 @@ class CRoboticHeadInterface : public mrpt::system::COutputLogger
 
 	/** Destructor
 	  */
-	~CRoboticHeadInterface() override {}
+	~CRoboticHeadInterface() override = default;
 	/** Changes the serial number of the device to open
 	  */
 	void setDeviceSerialNumber(const std::string& deviceSerialNumber)

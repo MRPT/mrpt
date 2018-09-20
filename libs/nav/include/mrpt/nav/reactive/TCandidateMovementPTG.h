@@ -21,15 +21,15 @@ class CParameterizedTrajectoryGenerator;
 struct TCandidateMovementPTG
 {
 	/** The associated PTG. nullptr if not applicable / undefined. */
-	CParameterizedTrajectoryGenerator* PTG;
+	CParameterizedTrajectoryGenerator* PTG{nullptr};
 	/** TP-Space movement direction. Within [-2*PI,+2*PI] */
-	double direction;
+	double direction{0};
 	/** TP-Space movement speed, normalized to [0,1]. A negative number means
 	 * this candidate movement is unfeasible and must be discarded. */
-	double speed;
+	double speed{0};
 	/** Default to 0, they can be used to reflect a robot starting at a position
 	 * not at (0,0). Used in "PTG continuation" */
-	double starting_robot_dir, starting_robot_dist;
+	double starting_robot_dir{0}, starting_robot_dist{0};
 
 	/** List of properties. May vary for different user implementations of
 	* scores and/or different multi-objective optimizers.

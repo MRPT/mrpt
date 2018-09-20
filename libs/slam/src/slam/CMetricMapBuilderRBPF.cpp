@@ -78,7 +78,7 @@ CMetricMapBuilderRBPF& CMetricMapBuilderRBPF::operator=(
 /*---------------------------------------------------------------
 						Destructor
   ---------------------------------------------------------------*/
-CMetricMapBuilderRBPF::~CMetricMapBuilderRBPF() {}
+CMetricMapBuilderRBPF::~CMetricMapBuilderRBPF() = default;
 /*---------------------------------------------------------------
 						clear
   ---------------------------------------------------------------*/
@@ -518,14 +518,14 @@ void CMetricMapBuilderRBPF::saveCurrentPathEstimationToTextFile(
 						TConstructionOptions
   ---------------------------------------------------------------*/
 CMetricMapBuilderRBPF::TConstructionOptions::TConstructionOptions()
-	: insertionLinDistance(1.0f),
+	: 
 	  insertionAngDistance(DEG2RAD(30)),
-	  localizeLinDistance(0.4f),
+	  
 	  localizeAngDistance(DEG2RAD(10)),
 	  PF_options(),
 	  mapsInitializers(),
-	  predictionOptions(),
-	  verbosity_level(mrpt::system::LVL_INFO)
+	  predictionOptions()
+	  
 {
 }
 

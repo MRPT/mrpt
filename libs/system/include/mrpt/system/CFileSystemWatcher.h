@@ -31,7 +31,7 @@ class CFileSystemWatcher
 	  */
 	struct TFileSystemChange
 	{
-		TFileSystemChange() {}
+		TFileSystemChange() = default;
 		/** Complete path of the file/directory that has changed. */
 		std::string path{};
 		/** Whether the event happened to a file or a directory. */

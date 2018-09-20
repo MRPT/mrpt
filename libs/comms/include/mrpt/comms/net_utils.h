@@ -132,7 +132,7 @@ std::string getLastSocketErrorStr();
  */
 bool Ping(
 	const std::string& address, const int max_attempts,
-	std::string* output_str = NULL);
+	std::string* output_str = nullptr);
 
 /** @} */  // end grouping
 

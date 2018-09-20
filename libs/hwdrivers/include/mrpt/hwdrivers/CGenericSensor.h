@@ -129,22 +129,22 @@ class CGenericSensor
 		@{ */
 
 	/** See CGenericSensor */
-	double m_process_rate;
+	double m_process_rate{0};
 	/** See CGenericSensor */
-	size_t m_max_queue_len;
+	size_t m_max_queue_len{200};
 	/** If set to N>=2, only 1 out of N observations will be saved to m_objList.
 	 */
-	size_t m_grab_decimation;
+	size_t m_grab_decimation{0};
 	/** See CGenericSensor */
 	std::string m_sensorLabel;
 
 	/** @} */
 
 	/** Used when "m_grab_decimation" is enabled */
-	size_t m_grab_decimation_counter;
+	size_t m_grab_decimation_counter{0};
 
-	TSensorState m_state;
-	bool m_verbose;
+	TSensorState m_state{ssInitializing};
+	bool m_verbose{false};
 
 	// === Data for off-rawlog file external image directory ====
 	//  Only used by a few sensor classes.
@@ -155,7 +155,7 @@ class CGenericSensor
 	 * images saved externally \sa setPathForExternalImages */
 	std::string m_external_images_format;
 	/** For JPEG images, the quality (default=95%). */
-	unsigned int m_external_images_jpeg_quality;
+	unsigned int m_external_images_jpeg_quality{95};
 	// ======================================
 
 	/** This method must be called by derived classes to enqueue a new

@@ -27,12 +27,9 @@ TEST(poly_roots, solve_poly2)
 							   {5.0, 0, 1, 0, 0, 0},
 							   {2.0, 0, 0, 2, 0, 0}};
 
-	const unsigned int nTests = sizeof(coefs_roots) / sizeof(coefs_roots[0]);
-
-	for (auto & coefs_root : coefs_roots)
+	for (auto& coefs_root : coefs_roots)
 	{
-		const double a = coefs_root[0], b = coefs_root[1],
-					 c = coefs_root[2];
+		const double a = coefs_root[0], b = coefs_root[1], c = coefs_root[2];
 		const int num_roots_good = static_cast<int>(coefs_root[3]);
 		const double r1_good = coefs_root[4], r2_good = coefs_root[5];
 
@@ -63,12 +60,9 @@ TEST(poly_roots, solve_poly3)
 							   {2, 3, 4, 1, -1.650629191439386, 0, 0},
 							   {0, -91, -90, 3, -1.0, -9.0, 10.0}};
 
-	const unsigned int nTests = sizeof(coefs_roots) / sizeof(coefs_roots[0]);
-
-	for (auto & coefs_root : coefs_roots)
+	for (auto& coefs_root : coefs_roots)
 	{
-		const double a = coefs_root[0], b = coefs_root[1],
-					 c = coefs_root[2];
+		const double a = coefs_root[0], b = coefs_root[1], c = coefs_root[2];
 		const int num_roots_good = static_cast<int>(coefs_root[3]);
 		const double roots_good[3] = {coefs_root[4], coefs_root[5],
 									  coefs_root[6]};
@@ -99,12 +93,10 @@ TEST(poly_roots, solve_poly4)
 	double coefs_roots[][9] = {{-10, 35, -50, 24, 4, 1.0, 2.0, 3.0, 4.0},
 							   {-14, 35, 50, 0, 4, -1, 0, 5, 10}};
 
-	const unsigned int nTests = sizeof(coefs_roots) / sizeof(coefs_roots[0]);
-
-	for (auto & coefs_root : coefs_roots)
+	for (auto& coefs_root : coefs_roots)
 	{
-		const double a = coefs_root[0], b = coefs_root[1],
-					 c = coefs_root[2], d = coefs_root[3];
+		const double a = coefs_root[0], b = coefs_root[1], c = coefs_root[2],
+					 d = coefs_root[3];
 		const int num_roots_good = static_cast<int>(coefs_root[4]);
 		const double roots_good[4] = {coefs_root[5], coefs_root[6],
 									  coefs_root[7], coefs_root[8]};

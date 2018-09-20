@@ -77,9 +77,9 @@ class CPTG_Holo_Blend : public CPTG_RobotShape_Circular
 	static double eps;
 
    protected:
-	double T_ramp_max;
-	double V_MAX, W_MAX;
-	double turningRadiusReference;
+	double T_ramp_max{-1.0};
+	double V_MAX{-1.0}, W_MAX{-1.0};
+	double turningRadiusReference{0.30};
 
 	std::string expr_V, expr_W, expr_T_ramp;
 	mutable std::vector<int> m_pathStepCountCache;

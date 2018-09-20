@@ -62,23 +62,24 @@ class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 		std::string gasSensorLabel;
 		/** id for the enose used to generate this map (must be < gasGrid_count)
 		 */
-		uint16_t enose_id;
+		uint16_t enose_id{0};
 		/** The sensor type for the gas concentration map (0x0000 ->mean of all
 		 * installed sensors, 0x2600, 0x6810, ...) */
-		uint16_t gasSensorType;
+		uint16_t gasSensorType{
+		  0x0000};
 		/** The label of the WindSenor used to simulate advection */
 		std::string windSensorLabel;
 
 		//[Advection Options]
-		bool useWindInformation;  //! Indicates if wind information must be used
+		bool useWindInformation{false};  //! Indicates if wind information must be used
 		//! to simulate Advection
 		float advectionFreq;  //! Frequency for simulating advection (only used
 		//! to transform wind speed to distance)
-		float std_windNoise_phi, std_windNoise_mod;  //! The std to consider on
+		float std_windNoise_phi{0.2f}, std_windNoise_mod{0.2f};  //! The std to consider on
 		//! wind information
 		//! measurements
-		float default_wind_direction,
-			default_wind_speed;  //! The default value for the wind information
+		float default_wind_direction{0.0f},
+			default_wind_speed{1.0f};  //! The default value for the wind information
 
 		/** @} */
 
@@ -167,10 +168,10 @@ class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 
 	MAP_DEFINITION_START(CGasConcentrationGridMap2D)
 	/** See CGasConcentrationGridMap2D::CGasConcentrationGridMap2D */
-	float min_x, max_x, min_y, max_y, resolution;
+	float min_x{-2}, max_x{2}, min_y{-2}, max_y{2}, resolution{0.10f};
 	/** The kind of map representation (see
 	 * CGasConcentrationGridMap2D::CGasConcentrationGridMap2D) */
-	mrpt::maps::CGasConcentrationGridMap2D::TMapRepresentation mapType;
+	mrpt::maps::CGasConcentrationGridMap2D::TMapRepresentation mapType{CGasConcentrationGridMap2D::mrKernelDM};
 	/** Observations insertion options */
 	mrpt::maps::CGasConcentrationGridMap2D::TInsertionOptions insertionOpts;
 	MAP_DEFINITION_END(CGasConcentrationGridMap2D)

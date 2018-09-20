@@ -29,7 +29,7 @@ class CArrayNumeric : public Eigen::Matrix<T, N, 1>
 	using Base = Eigen::Matrix<T, N, 1>;
 
 	/** Default constructor */
-	CArrayNumeric() {}
+	CArrayNumeric() = default;
 	/** Constructor from initial values ptr[0]-ptr[N-1] */
 	CArrayNumeric(const T* ptr) : Eigen::Matrix<T, N, 1>(ptr) {}
 	/** Initialization from a vector-like source, that is, anything implementing

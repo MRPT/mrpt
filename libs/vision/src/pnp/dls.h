@@ -39,10 +39,10 @@ class dls
 
    private:
 	/**
-	* @brief Initialization of object points and image points
-	* @param[in] opoints
-	* @param[in] ipoints
-	*/
+	 * @brief Initialization of object points and image points
+	 * @param[in] opoints
+	 * @param[in] ipoints
+	 */
 	template <typename OpointType, typename IpointType>
 	void init_points(const cv::Mat& opoints, const cv::Mat& ipoints)
 	{
@@ -203,7 +203,7 @@ class dls
 class EigenvalueDecomposition
 {
    private:
-	int n;  //! Holds the data dimension.
+	int n{0};  //! Holds the data dimension.
 
 	double cdivr, cdivi;  //! Stores real/imag part of a complex division.
 
@@ -993,7 +993,7 @@ class EigenvalueDecomposition
 
    public:
 	//! Constructor for EigenvalueDecomposition class
-	EigenvalueDecomposition() : n(0) {}
+	EigenvalueDecomposition() = default;
 	/**
 	 * Initializes & computes the Eigenvalue Decomposition for a general matrix
 	 * given in src. This function is a port of the EigenvalueSolver in JAMA,
@@ -1037,7 +1037,7 @@ class EigenvalueDecomposition
 	}
 
 	//! Destructor for EigenvalueDecomposition class
-	~EigenvalueDecomposition() {}
+	~EigenvalueDecomposition() = default;
 	/**
 	 * @brief Returns the eigenvalues of the Eigenvalue Decomposition.
 	 * @return eigenvalues
@@ -1055,7 +1055,5 @@ class EigenvalueDecomposition
  */
 
 /** @}  */  // end of grouping
-}
+}  // namespace mrpt::vision::pnp
 #endif  // OPENCV_Check
-
-

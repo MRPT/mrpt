@@ -74,12 +74,12 @@ class CNTRIPEmitter : public CGenericSensor
 	 * automatically when this class is first used to request data from the
 	 * laser. */
 	std::string m_com_port;
-	int m_com_bauds;
-	bool m_transmit_to_server;
+	int m_com_bauds{38400};
+	bool m_transmit_to_server{true};
 	std::string m_raw_output_file_prefix;
 	std::ofstream m_raw_output_file_stream;
 	mrpt::system::CTicTac m_rate_timer;
-	size_t m_rate_count;
+	size_t m_rate_count{0};
 
    protected:
 	/** See the class documentation at the top for expected parameters */

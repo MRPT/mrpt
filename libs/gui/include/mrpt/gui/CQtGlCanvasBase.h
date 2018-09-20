@@ -62,8 +62,8 @@ class CQtGlCanvasBase : public QOpenGLWidget, public mrpt::gui::CGlCanvasBase
 	void unpressMouseButtons();
 
    private:
-	bool m_isPressLMouseButton;
-	bool m_isPressRMouseButton;
+	bool m_isPressLMouseButton{false};
+	bool m_isPressRMouseButton{false};
 
 	mrpt::opengl::COpenGLViewport::Ptr m_mainViewport;
 

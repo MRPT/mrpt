@@ -25,7 +25,7 @@ CMyGLCanvas::CMyGLCanvas(
 	setCameraProjective(true);
 }
 
-CMyGLCanvas::~CMyGLCanvas() {}
+CMyGLCanvas::~CMyGLCanvas() = default;
 void CMyGLCanvas::OnRenderError(const wxString& str) {}
 void CMyGLCanvas::OnPreRender() {}
 void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC& dc) {}

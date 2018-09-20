@@ -44,25 +44,9 @@ using namespace std;
  -------------------------------------------------------------*/
 CSwissRanger3DCamera::CSwissRanger3DCamera()
 	: m_sensorPoseOnRobot(),
-	  m_save_3d(true),
-	  m_save_range_img(true),
-	  m_save_intensity_img(true),
-	  m_save_confidence(false),
-
-	  m_enable_img_hist_equal(false),
-	  m_enable_median_filter(true),
-	  m_enable_mediancross_filter(false),
-	  m_enable_conv_gray(false),
-	  m_enable_denoise_anf(true),
-
-	  m_open_from_usb(true),
-	  m_usb_serial(0),
-	  m_ip_address("192.168.2.14"),
-	  m_rows(0),
-	  m_cols(0),
-	  m_cam_serial_num(0),
-	  m_maxRange(5),
-	  m_preview_window(false)
+	  
+	  m_ip_address("192.168.2.14")
+	  
 {
 	m_sensorLabel = "3DCAM";
 

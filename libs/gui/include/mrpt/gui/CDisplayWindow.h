@@ -36,7 +36,7 @@ class CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 	/** Enables or disables the visualization of cursor coordinates on the
 	 * window caption.
 	  */
-	bool m_enableCursorCoordinates;
+	bool m_enableCursorCoordinates{true};
 
    public:
 	/** Constructor

@@ -81,7 +81,7 @@ void CDifodoDatasets::loadConfiguration(
 	f_gt >> last_gt_data[4];
 	f_gt >> last_gt_data[5];
 	f_gt >> last_gt_data[6];
-	last_groundtruth_ok = 1;
+	last_groundtruth_ok = true;
 
 	//			Resize matrices and adjust parameters
 	//=========================================================
@@ -232,7 +232,7 @@ void CDifodoDatasets::initializeScene()
 		mrpt::make_aligned_shared<CPointCloudColoured>();
 	cam_points->setColor(1, 0, 0);
 	cam_points->setPointSize(2);
-	cam_points->enablePointSmooth(1);
+	cam_points->enablePointSmooth(true);
 	cam_points->setPose(cam_pose);
 	scene->insert(cam_points);
 
@@ -248,7 +248,7 @@ void CDifodoDatasets::initializeScene()
 	CPointCloud::Ptr traj_points_odo = mrpt::make_aligned_shared<CPointCloud>();
 	traj_points_odo->setColor(0, 0.6, 0);
 	traj_points_odo->setPointSize(4);
-	traj_points_odo->enablePointSmooth(1);
+	traj_points_odo->enablePointSmooth(true);
 	scene->insert(traj_points_odo);
 
 	// Groundtruth
@@ -260,7 +260,7 @@ void CDifodoDatasets::initializeScene()
 	CPointCloud::Ptr traj_points_gt = mrpt::make_aligned_shared<CPointCloud>();
 	traj_points_gt->setColor(0.6, 0, 0);
 	traj_points_gt->setPointSize(4);
-	traj_points_gt->enablePointSmooth(1);
+	traj_points_gt->enablePointSmooth(true);
 	scene->insert(traj_points_gt);
 
 	// Ellipsoid showing covariance
@@ -390,21 +390,21 @@ void CDifodoDatasets::loadFrame()
 	// Exit if there is no groundtruth at this time
 	if (last_groundtruth > timestamp_obs)
 	{
-		groundtruth_ok = 0;
+		groundtruth_ok = false;
 		obs3D->unload();
 		rawlog_count++;
 		return;
 	}
 
 	// Search the corresponding groundtruth data and interpolate
-	bool new_data = 0;
+	bool new_data = false;
 	last_groundtruth_ok = groundtruth_ok;
 	while (last_groundtruth < timestamp_obs - 0.01)
 	{
 		f_gt.ignore(100, '\n');
 		f_gt >> timestamp_gt;
 		last_groundtruth = timestamp_gt;
-		new_data = 1;
+		new_data = true;
 
 		if (f_gt.eof())
 		{
@@ -458,7 +458,7 @@ void CDifodoDatasets::loadFrame()
 	f_gt >> last_gt_data[6];
 
 	if (last_groundtruth - timestamp_obs > 0.01)
-		groundtruth_ok = 0;
+		groundtruth_ok = false;
 
 	else
 	{
@@ -472,7 +472,7 @@ void CDifodoDatasets::loadFrame()
 
 		if (incr_t == 0.f)  // Deal with defects in the groundtruth files
 		{
-			groundtruth_ok = 0;
+			groundtruth_ok = false;
 			return;
 		}
 
@@ -526,7 +526,7 @@ void CDifodoDatasets::loadFrame()
 		}
 
 		gt_pose = gt + transf;
-		groundtruth_ok = 1;
+		groundtruth_ok = true;
 	}
 
 	obs3D->unload();

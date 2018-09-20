@@ -715,7 +715,7 @@ class CNetworkOfPoses
 		const self_t& other,
 		const typename std::vector<detail::THypothesis<self_t>>& common_hypots,
 		const bool hypots_from_other_to_self = true,
-		std::map<TNodeID, TNodeID>* old_to_new_nodeID_mappings_out = NULL)
+		std::map<TNodeID, TNodeID>* old_to_new_nodeID_mappings_out = nullptr)
 	{
 		MRPT_START;
 		using namespace mrpt::graphs;

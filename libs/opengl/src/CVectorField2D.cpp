@@ -25,14 +25,8 @@ IMPLEMENTS_SERIALIZABLE(CVectorField2D, CRenderizableDisplayList, mrpt::opengl)
 /** Constructor */
 CVectorField2D::CVectorField2D()
 	: xcomp(0, 0),
-	  ycomp(0, 0),
-	  xMin(-1.0),
-	  xMax(1.0),
-	  yMin(-1.0),
-	  yMax(1.0),
-	  m_LineWidth(1.0),
-	  m_pointSize(1.0),
-	  m_antiAliasing(true)
+	  ycomp(0, 0)
+	  
 {
 	m_point_color = m_color;
 	m_field_color = m_color;

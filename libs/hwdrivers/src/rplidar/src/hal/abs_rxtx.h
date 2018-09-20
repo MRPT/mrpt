@@ -51,7 +51,7 @@ class serial_rxtx
 	static void ReleaseRxTx(serial_rxtx*);
 
 	serial_rxtx() : _is_serial_opened(false) {}
-	virtual ~serial_rxtx() {}
+	virtual ~serial_rxtx() = default;
 	virtual void flush(_u32 flags) = 0;
 
 	virtual bool bind(const char* portname, _u32 baudrate, _u32 flags = 0) = 0;

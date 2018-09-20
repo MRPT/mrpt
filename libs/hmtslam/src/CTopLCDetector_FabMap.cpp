@@ -107,10 +107,8 @@ void CTopLCDetector_FabMap::OnNewPose(
 // Initialization
 CTopLCDetector_FabMap::TOptions::TOptions()
 	: vocab_path("./vocab"),
-	  vocabName("vocab_name"),
-	  p_obs_given_exists(0.39),
-	  p_at_new_place(0.99),
-	  df_lik_smooth(0.99)
+	  vocabName("vocab_name")
+	  
 {
 }
 

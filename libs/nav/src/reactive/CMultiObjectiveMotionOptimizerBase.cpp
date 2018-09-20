@@ -255,7 +255,7 @@ CMultiObjectiveMotionOptimizerBase::TParamsBase::TParamsBase()
 	formula_score["clearance"] = "clearance";
 
 	// Default:
-	scores_to_normalize.push_back("clearance");
+	scores_to_normalize.emplace_back("clearance");
 }
 
 void CMultiObjectiveMotionOptimizerBase::TParamsBase::loadFromConfigFile(

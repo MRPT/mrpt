@@ -39,7 +39,7 @@ class CParticleFilterCapable
 	CParticleFilterCapable() : m_fastDrawAuxiliary() {}
 	/** Virtual destructor
 	 */
-	virtual ~CParticleFilterCapable() {}
+	virtual ~CParticleFilterCapable() = default;
 	/** A callback function type for evaluating the probability of m_particles
 	 * of being selected, used in "fastDrawSample".
 	 *  The default evaluator function "defaultEvaluator" simply returns the
@@ -268,21 +268,13 @@ class CParticleFilterCapable
 	 */
 	struct TFastDrawAuxVars
 	{
-		TFastDrawAuxVars()
-			: CDF(),
-			  CDF_indexes(),
-			  PDF(),
-			  alreadyDrawnIndexes(),
-			  alreadyDrawnNextOne(0)
-		{
-		}
+		TFastDrawAuxVars() = default;
 
 		std::vector<double> CDF;
 		std::vector<uint32_t> CDF_indexes;
 		std::vector<double> PDF;
-
 		std::vector<uint32_t> alreadyDrawnIndexes;
-		size_t alreadyDrawnNextOne;
+		size_t alreadyDrawnNextOne{0};
 	};
 
 	/** Auxiliary vectors, see CParticleFilterCapable::prepareFastDrawSample for
@@ -292,5 +284,4 @@ class CParticleFilterCapable
 
 };  // End of class def.
 
-}
-
+}  // namespace mrpt::bayes

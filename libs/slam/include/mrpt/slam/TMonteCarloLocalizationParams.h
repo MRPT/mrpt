@@ -35,7 +35,7 @@ struct TMonteCarloLocalizationParams
 	/** [update stage] Must be set to a metric map used to estimate the
 	 * likelihood of observations
 		*/
-	mrpt::maps::CMetricMap* metricMap;
+	mrpt::maps::CMetricMap* metricMap{nullptr};
 
 	/** [update stage] Alternative way (if metricMap==nullptr): A metric map is
 	 * supplied for each particle: There must be the same maps here as pose

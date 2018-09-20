@@ -28,12 +28,12 @@ static uint64_t getCurrentTime()
 #else
 #if defined(__APPLE__)
 	struct timeval tv;
-	timespec tim;
+	timespec tim{0, 0};
 	gettimeofday(&tv, nullptr);
 	tim.tv_sec = tv.tv_sec;
 	tim.tv_nsec = tv.tv_usec * 1000;
 #else
-	timespec tim;
+	timespec tim{0, 0};
 	clock_gettime(CLOCK_REALTIME, &tim);
 #endif
 
@@ -53,4 +53,3 @@ mrpt::Clock::time_point mrpt::Clock::fromDouble(const double t) noexcept
 	return mrpt::Clock::time_point(mrpt::Clock::duration(
 		uint64_t(t * 10000000.0) + UINT64_C(116444736) * UINT64_C(1000000000)));
 }
-

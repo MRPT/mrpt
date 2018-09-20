@@ -121,7 +121,7 @@ int main(int num_arg, char* argv[])
 		//==============================================================================
 
 		int pushed_key = 0;
-		bool working = 0, stop = 0;
+		bool working = false, stop = false;
 
 		// Necessary step before starting
 		odo.reset();
@@ -139,7 +139,7 @@ int main(int num_arg, char* argv[])
 				case 'n':
 					if (odo.dataset_finished)
 					{
-						working = 0;
+						working = false;
 						cout << endl << "End of dataset.";
 						if (odo.f_res.is_open()) odo.f_res.close();
 					}
@@ -163,7 +163,7 @@ int main(int num_arg, char* argv[])
 
 				// Close the program
 				case 'e':
-					stop = 1;
+					stop = true;
 					if (odo.f_res.is_open()) odo.f_res.close();
 					break;
 			}
@@ -172,7 +172,7 @@ int main(int num_arg, char* argv[])
 			{
 				if (odo.dataset_finished)
 				{
-					working = 0;
+					working = false;
 					cout << endl << "End of dataset.";
 					if (odo.f_res.is_open()) odo.f_res.close();
 				}

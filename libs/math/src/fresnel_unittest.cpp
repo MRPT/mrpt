@@ -31,8 +31,6 @@ TEST(fresnel, fresnelc)
 									 {-3.34, -0.407099627096608},
 									 {-50.0, -0.499999189430728}};
 
-	const unsigned int nTests = sizeof(test_values) / sizeof(test_values[0]);
-
 	for (auto test_value : test_values)
 	{
 		const double x = test_value[0], val_good = test_value[1];
@@ -55,8 +53,6 @@ TEST(fresnel, fresnels)
 									 {-2.4, -0.619689964945684},
 									 {-3.34, -0.479600423968308},
 									 {-50.0, -0.493633802585939}};
-
-	const unsigned int nTests = sizeof(test_values) / sizeof(test_values[0]);
 
 	for (auto test_value : test_values)
 	{

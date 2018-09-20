@@ -105,7 +105,9 @@ void CSimpleMap::insert(
 	TPosePDFSensFramePair pair;
 
 	pair.second = in_SF;
-	pair.first = CPose3DPDF::Ptr(static_cast<CPose3DPDF*>(in_posePDF->clone()));
+	pair.first =
+		CPose3DPDF::Ptr(dynamic_cast<CPose3DPDF*>(in_posePDF->clone()));
+	ASSERT_(pair.first);
 
 	m_posesObsPairs.push_back(pair);
 
@@ -141,7 +143,9 @@ void CSimpleMap::insert(
 	TPosePDFSensFramePair pair;
 
 	pair.second = CSensoryFrame::Create(in_SF);
-	pair.first = CPose3DPDF::Ptr(static_cast<CPose3DPDF*>(in_posePDF->clone()));
+	pair.first =
+		CPose3DPDF::Ptr(dynamic_cast<CPose3DPDF*>(in_posePDF->clone()));
+	ASSERT_(pair.first);
 
 	m_posesObsPairs.push_back(pair);
 
@@ -158,7 +162,9 @@ void CSimpleMap::insert(const CPosePDF* in_posePDF, const CSensoryFrame& in_SF)
 	TPosePDFSensFramePair pair;
 
 	pair.second = CSensoryFrame::Create(in_SF);
-	pair.first = CPose3DPDF::Ptr(static_cast<CPose3DPDF*>(in_posePDF->clone()));
+	pair.first =
+		CPose3DPDF::Ptr(dynamic_cast<CPose3DPDF*>(in_posePDF->clone()));
+	ASSERT_(pair.first);
 
 	m_posesObsPairs.push_back(pair);
 
@@ -176,7 +182,9 @@ void CSimpleMap::insert(
 	TPosePDFSensFramePair pair;
 
 	pair.second = in_SF;
-	pair.first = CPose3DPDF::Ptr(static_cast<CPose3DPDF*>(in_posePDF->clone()));
+	pair.first =
+		CPose3DPDF::Ptr(dynamic_cast<CPose3DPDF*>(in_posePDF->clone()));
+	ASSERT_(pair.first);
 
 	m_posesObsPairs.push_back(pair);
 

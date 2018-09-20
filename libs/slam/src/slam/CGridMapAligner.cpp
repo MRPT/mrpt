@@ -217,7 +217,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 					lm1->landmarks.get(idx1)->features[0]->descriptorDistanceTo(
 						*lm2->landmarks.get(idx2)->features[0]);
 
-				corrs_indiv.push_back(std::make_pair(idx2, minDist));
+				corrs_indiv.emplace_back(idx2, minDist);
 				corrs_indiv_only.push_back(minDist);
 			}  // end for idx2
 
@@ -241,9 +241,8 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 				{
 					idxs1.push_back(idx1);
 					idxs2.push_back(corrs_indiv[w].first);
-					outInfo.correspondences_dists_maha.push_back(
-						TReturnInfo::TPairPlusDistance(
-							idx1, corrs_indiv[w].first, corrs_indiv[w].second));
+					outInfo.correspondences_dists_maha.emplace_back(
+							idx1, corrs_indiv[w].first, corrs_indiv[w].second);
 				}
 			}
 
@@ -1160,26 +1159,9 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_correlation(
 					TConfigParams
   ---------------------------------------------------------------*/
 CGridMapAligner::TConfigParams::TConfigParams()
-	: methodSelection(CGridMapAligner::amModifiedRANSAC),
-
-	  feature_descriptor(descPolarImages),
-	  feature_detector_options(),
-
-	  ransac_minSetSizeRatio(0.20f),
-	  ransac_SOG_sigma_m(0.10f),
-	  ransac_mahalanobisDistanceThreshold(6.0f),
-	  ransac_chi2_quantile(0.99),
-	  ransac_prob_good_inliers(0.9999),
-	  featsPerSquareMeter(0.015f),
-	  threshold_max(0.15f),
-	  threshold_delta(0.10f),
-	  min_ICP_goodness(0.30f),
-	  max_ICP_mahadist(10.0),
-	  maxKLd_for_merge(0.9),
-
-	  save_feat_coors(false),
-	  debug_show_corrs(false),
-	  debug_save_map_pairs(false)
+	: 
+	  feature_detector_options()
+	  
 {
 }
 

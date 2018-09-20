@@ -42,7 +42,7 @@ class CSerializable : public mrpt::rtti::CObject
 	// This must be added to any CObject derived class:
 	DEFINE_VIRTUAL_MRPT_OBJECT(CSerializable)
 
-	~CSerializable() override {}
+	~CSerializable() override = default;
 
    protected:
 	/** @name CSerializable virtual methods

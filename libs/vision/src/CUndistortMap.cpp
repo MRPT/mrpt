@@ -18,7 +18,7 @@ using namespace mrpt::vision;
 using namespace mrpt::img;
 
 // Ctor: Leave all vectors empty
-CUndistortMap::CUndistortMap() {}
+CUndistortMap::CUndistortMap() = default;
 /** Prepares the mapping from the distortion parameters of a camera.
   * Must be called before invoking \a undistort().
   */

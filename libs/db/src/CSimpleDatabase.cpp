@@ -119,7 +119,7 @@ void CSimpleDatabaseTable::serializeFrom(
 /*---------------------------------------------------------------
 						Constructor
  ---------------------------------------------------------------*/
-CSimpleDatabase::CSimpleDatabase() {}
+CSimpleDatabase::CSimpleDatabase() = default;
 /*---------------------------------------------------------------
 						Destructor
  ---------------------------------------------------------------*/
@@ -192,11 +192,11 @@ CSimpleDatabaseTable::Ptr CSimpleDatabase::createTable(const string& name)
 /*---------------------------------------------------------------
 						Constructor
  ---------------------------------------------------------------*/
-CSimpleDatabaseTable::CSimpleDatabaseTable() {}
+CSimpleDatabaseTable::CSimpleDatabaseTable() = default;
 /*---------------------------------------------------------------
 						Destructor
  ---------------------------------------------------------------*/
-CSimpleDatabaseTable::~CSimpleDatabaseTable() {}
+CSimpleDatabaseTable::~CSimpleDatabaseTable() = default;
 /*---------------------------------------------------------------
 					fieldsCount
  ---------------------------------------------------------------*/
@@ -206,7 +206,7 @@ size_t CSimpleDatabaseTable::fieldsCount() const { return field_names.size(); }
  ---------------------------------------------------------------*/
 void CSimpleDatabaseTable::addField(const char* fieldName)
 {
-	field_names.push_back(string(fieldName));
+	field_names.emplace_back(fieldName);
 	data.clear();
 }
 

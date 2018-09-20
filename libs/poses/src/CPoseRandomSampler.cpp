@@ -27,7 +27,7 @@ using namespace mrpt::random;
 /*---------------------------------------------------------------
 		Constructor
   ---------------------------------------------------------------*/
-CPoseRandomSampler::CPoseRandomSampler() {}
+CPoseRandomSampler::CPoseRandomSampler() = default;
 CPoseRandomSampler::CPoseRandomSampler(const CPoseRandomSampler& o)
 {
 	if (o.m_pdf2D)

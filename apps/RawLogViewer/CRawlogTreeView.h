@@ -86,28 +86,27 @@ class CRawlogTreeView : public wxScrolledWindow
 
    protected:
 	/** A reference to the rawlog to be rendered. */
-	mrpt::obs::CRawlog* m_rawlog;
+	mrpt::obs::CRawlog* m_rawlog{nullptr};
 	/** We own this pointer */
-	wxImageList* m_imageList;
+	wxImageList* m_imageList{nullptr};
 	/** Selected row, or -1 if none */
-	int m_selectedItem;
+	int m_selectedItem{-1};
 	/** File name */
 	std::string m_rawlog_name;
-	wxRawlogTreeEventFunction m_event_select_change;
-	wxWindow* m_win_parent;
+	wxRawlogTreeEventFunction m_event_select_change{nullptr};
+	wxWindow* m_win_parent{nullptr};
 
 	mrpt::system::TTimeStamp m_rawlog_start;
 	mrpt::system::TTimeStamp m_rawlog_last;
 
 	struct TNodeData
 	{
-		TNodeData() : level(0), data(), index(0) {}
-		~TNodeData() {}
+		TNodeData() = default;
 		/** Hierarchy level: 0,1,2. */
-		uint8_t level;
+		uint8_t level{0};
 		/** The object, or nullptr */
 		mrpt::serialization::CSerializable::Ptr data;
-		size_t index;
+		size_t index{0};
 	};
 
 	/** The nuimber of rows to display for the rawlog, used to compute the

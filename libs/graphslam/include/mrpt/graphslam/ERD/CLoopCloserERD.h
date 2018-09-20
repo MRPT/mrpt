@@ -490,13 +490,13 @@ public:
 		int text_index_map_partitions;
 
 		// map partitioning  - visualization window parameters
-		const double balloon_elevation;
-		const double balloon_radius;
+		const double balloon_elevation{3};
+		const double balloon_radius{0.5};
 		const mrpt::img::TColor balloon_std_color;
 		const mrpt::img::TColor balloon_curr_color;
 		const mrpt::img::TColor connecting_lines_color;
 
-		bool has_read_config;
+		bool has_read_config{false};
 	};
 	TLaserParams m_laser_params;
 	TLoopClosureParams m_lc_params;

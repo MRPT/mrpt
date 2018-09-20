@@ -26,8 +26,7 @@ template <class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
 		  class EDGE_ANNOTATIONS>
 CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 			EDGE_ANNOTATIONS>::~CVisualizer()
-{
-}
+= default;
 
 // methods implementations
 ////////////////////////////////////////////////////////////

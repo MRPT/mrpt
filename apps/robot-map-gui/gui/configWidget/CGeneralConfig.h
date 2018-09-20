@@ -22,8 +22,8 @@ struct SGeneralSetting
 	double selectedRobotPosesSize;
 	int robotPosesColor;
 	int selectedRobotPosesColor;
-	bool isGridVisibleChanged;
-	int currentBot;
+	bool isGridVisibleChanged{true};
+	int currentBot{0};
 };
 
 class CGeneralConfig : public CBaseConfig

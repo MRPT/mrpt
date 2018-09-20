@@ -52,7 +52,7 @@ IMPLEMENTS_SERIALIZABLE(CPose3D, CSerializable, mrpt::poses)
 /*---------------------------------------------------------------
 	Constructors
   ---------------------------------------------------------------*/
-CPose3D::CPose3D() : m_ypr_uptodate(true), m_yaw(0), m_pitch(0), m_roll(0)
+CPose3D::CPose3D()  
 {
 	m_coords[0] = m_coords[1] = m_coords[2] = 0;
 	m_ROT.unit(3, 1.0);

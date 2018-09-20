@@ -31,15 +31,15 @@ class CObservation2DRangeScanWithUncertainty
 	{
 		/** (Default: 0.5) Probability of having an outlier (dynamic obstacles,
 		 * not mapped) in each scan ray. */
-		double prob_outliers;
+		double prob_outliers{0.5};
 		/** (Default: 0.3) Conditional probability: how many of the "no return"
 		 * ranges come from a failure to detect a real obstacle. */
-		double prob_lost_ray;
+		double prob_lost_ray{0.3};
 		/** (Default: 1.0m) Maximum std deviation of overall uncertainty for a
 		 * range prediction to be considered as reliable for evaluation */
-		double max_prediction_std_dev;
+		double max_prediction_std_dev{1.0};
 		/** (Default: -20) Minimum log-likelihood of a single ray */
-		double min_ray_log_lik;
+		double min_ray_log_lik{-20.0};
 
 		TEvalParams();
 	};

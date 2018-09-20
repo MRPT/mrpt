@@ -20,38 +20,29 @@ namespace mrpt::maps
 struct TMatchingParams
 {
 	/** Maximum linear distance between two points to be paired (meters) */
-	float maxDistForCorrespondence;
+	float maxDistForCorrespondence{0.50f};
 	/** Allowed "angular error" (in radians): this permits larger pairing
 	 * threshold distances to more distant points. */
-	float maxAngularDistForCorrespondence;
+	float maxAngularDistForCorrespondence{.0f};
 	/** If set to true (default), only the closest correspondence will be
 	 * returned. If false all are returned. */
-	bool onlyKeepTheClosest;
+	bool onlyKeepTheClosest{true};
 	/** Additional consistency filter: "onlyKeepTheClosest" allows one
 	 * correspondence for each "local map" point, but many of them may have as
 	 * corresponding pair the same "global point", which this flag avoids. */
-	bool onlyUniqueRobust;
+	bool onlyUniqueRobust{false};
 	/** (Default=1) Only consider 1 out of this number of points from the
 	 * "other" map. */
-	size_t decimation_other_map_points;
+	size_t decimation_other_map_points{1};
 	/** Index of the first point in the "other" map to start checking for
 	 * correspondences (Default=0) */
-	size_t offset_other_map_points;
+	size_t offset_other_map_points{0};
 	/** The point used to calculate angular distances: e.g. the coordinates of
 	 * the sensor for a 2D laser scanner. */
-	mrpt::math::TPoint3D angularDistPivotPoint;
+	mrpt::math::TPoint3D angularDistPivotPoint{0, 0, 0};
 
 	/** Ctor: default values */
-	TMatchingParams()
-		: maxDistForCorrespondence(0.50f),
-		  maxAngularDistForCorrespondence(.0f),
-		  onlyKeepTheClosest(true),
-		  onlyUniqueRobust(false),
-		  decimation_other_map_points(1),
-		  offset_other_map_points(0),
-		  angularDistPivotPoint(0, 0, 0)
-	{
-	}
+	TMatchingParams() = default;
 };
 
 /** Additional results from the determination of matchings between point clouds,
@@ -61,12 +52,12 @@ struct TMatchingExtraResults
 {
 	/** The ratio [0,1] of points in otherMap with at least one correspondence.
 	 */
-	float correspondencesRatio;
+	float correspondencesRatio{0};
 	/** The sum of all matched points squared distances.If undesired, set to
 	 * nullptr, as default. */
-	float sumSqrDist;
+	float sumSqrDist{0};
 
-	TMatchingExtraResults() : correspondencesRatio(0), sumSqrDist(0) {}
+	TMatchingExtraResults() = default;
 };
 
 /** Parameters for CMetricMap::compute3DMatchingRatio() */
@@ -74,12 +65,12 @@ struct TMatchingRatioParams
 {
 	/** (Default: 0.10f) The minimum distance between 2 non-probabilistic map
 	 * elements for counting them as a correspondence. */
-	float maxDistForCorr;
+	float maxDistForCorr{0.10f};
 	/** (Default: 2.0f) The minimum Mahalanobis distance between 2 probabilistic
 	 * map elements for counting them as a correspondence. */
-	float maxMahaDistForCorr;
+	float maxMahaDistForCorr{2.0f};
 
-	TMatchingRatioParams() : maxDistForCorr(0.10f), maxMahaDistForCorr(2.0f) {}
+	TMatchingRatioParams() = default;
 };
 
 /** Common params to all maps derived from mrpt::maps::CMetricMap  */
@@ -104,5 +95,4 @@ class TMapGenericParams : public mrpt::config::CLoadableOptions,
 		const std::string& section) const override;
 };
 
-}
-
+}  // namespace mrpt::maps

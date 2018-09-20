@@ -68,7 +68,7 @@ void CConfigFileMemory::getContent(std::string& str) const
 	m_impl->m_ini.Save(str);
 }
 
-CConfigFileMemory::~CConfigFileMemory() { }
+CConfigFileMemory::~CConfigFileMemory() = default;
 void CConfigFileMemory::writeString(
 	const std::string& section, const std::string& name, const std::string& str)
 {

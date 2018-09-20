@@ -48,7 +48,7 @@ void CPosePDFGrid::copyFrom(const CPosePDF& o)
 /*---------------------------------------------------------------
 	Destructor
   ---------------------------------------------------------------*/
-CPosePDFGrid::~CPosePDFGrid() {}
+CPosePDFGrid::~CPosePDFGrid() = default;
 /*---------------------------------------------------------------
 						getMean
   Returns an estimate of the pose, (the mean, or mathematical expectation of the

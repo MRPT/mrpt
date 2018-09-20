@@ -142,7 +142,7 @@ void BenchmarkGridmaps()
 
 	// test 1: getcell
 	// ----------------------------------------
-	if (1)
+	if (true)
 	{
 		N = 10000000;
 
@@ -164,7 +164,7 @@ void BenchmarkGridmaps()
 
 	// test 2: setcell
 	// ----------------------------------------
-	if (1)
+	if (true)
 	{
 		N = 10000000;
 
@@ -185,7 +185,7 @@ void BenchmarkGridmaps()
 
 	// test 3: updateCell
 	// ----------------------------------------
-	if (1)
+	if (true)
 	{
 		N = 1000000;
 
@@ -206,7 +206,7 @@ void BenchmarkGridmaps()
 
 	// test 4: updateCell_fast
 	// ----------------------------------------
-	if (1)
+	if (true)
 	{
 		N = 10000000;
 
@@ -250,7 +250,7 @@ void BenchmarkGridmaps()
 
 	// test 5: Laser insertion
 	// ----------------------------------------
-	if (1)
+	if (true)
 	{
 		gridMap->insertionOptions.wideningBeamsWithDistance = false;
 		N = 3000;
@@ -283,7 +283,7 @@ void BenchmarkGridmaps()
 
 	// test 6: Laser insertion without widening
 	// --------------------------------------------------
-	if (1)
+	if (true)
 	{
 		gridMap->insertionOptions.wideningBeamsWithDistance = true;
 		N = 3000;
@@ -315,7 +315,7 @@ void BenchmarkGridmaps()
 
 	// test 7: Grid resize
 	// ----------------------------------------
-	if (1)
+	if (true)
 	{
 		N = 400;
 		cout << "Running test #7: Grid resize... ";
@@ -332,7 +332,7 @@ void BenchmarkGridmaps()
 
 	// test 8: Likelihood computation
 	// ----------------------------------------
-	if (1)
+	if (true)
 	{
 		N = 5000;
 

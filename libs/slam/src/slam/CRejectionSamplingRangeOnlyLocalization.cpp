@@ -28,10 +28,9 @@ using namespace std;
 ---------------------------------------------------------------*/
 CRejectionSamplingRangeOnlyLocalization::
 	CRejectionSamplingRangeOnlyLocalization()
-	: m_z_robot(0),
-	  m_sigmaRanges(0.10f),
+	: 
 	  m_oldPose(),
-	  m_drawIndex(0),
+	  
 	  m_dataPerBeacon()
 {
 }

@@ -251,7 +251,7 @@ void upnp::estimate_R_and_t(double R[3][3], double t[3])
 	t[2] = pc0[2] - dot(R[2], pw0);
 }
 
-void upnp::solve_for_sign(void)
+void upnp::solve_for_sign()
 {
 	if (pcs[2] < 0.0)
 	{
@@ -357,7 +357,7 @@ void upnp::compute_ccs(const double* betas, const double* ut)
 	for (int i = 0; i < 4; ++i) ccs[i][2] *= fu;
 }
 
-void upnp::compute_pcs(void)
+void upnp::compute_pcs()
 {
 	for (int i = 0; i < number_of_correspondences; i++)
 	{

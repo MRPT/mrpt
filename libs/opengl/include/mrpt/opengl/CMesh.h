@@ -46,9 +46,9 @@ class CMesh : public CRenderizableDisplayList
 	mrpt::img::CImage m_textureImage;
 
 	bool m_enableTransparency;
-	bool m_colorFromZ;
-	bool m_isWireFrame;
-	bool m_isImage;
+	bool m_colorFromZ{false};
+	bool m_isWireFrame{false};
+	bool m_isImage{false};
 
 	/** Z(x,y): Z-coordinate of the point (x,y) */
 	math::CMatrix Z;
@@ -68,12 +68,12 @@ class CMesh : public CRenderizableDisplayList
 	mutable math::CMatrix C_b;
 
 	/** Used when m_colorFromZ is true */
-	mrpt::img::TColormap m_colorMap;
+	mrpt::img::TColormap m_colorMap{mrpt::img::cmHOT};
 
 	/** Whether C is not up-to-date wrt to Z */
-	mutable bool m_modified_Z;
+	mutable bool m_modified_Z{true};
 	/** Whether C is not up-to-date wrt to the texture image */
-	mutable bool m_modified_Image;
+	mutable bool m_modified_Image{false};
 
 	/** Called internally to assure C is updated. */
 	void updateColorsMatrix() const;
@@ -92,7 +92,7 @@ class CMesh : public CRenderizableDisplayList
 	 * averaged. */
 	mutable std::vector<std::pair<mrpt::math::TPoint3D, size_t>> vertex_normals;
 	/**Whether the actual mesh needs to be recalculated */
-	mutable bool trianglesUpToDate;
+	mutable bool trianglesUpToDate{false};
 	mutable bool polygonsUpToDate;  //<!Whether the polygon mesh (auxiliary
 	// structure for ray tracing) needs to be
 	// recalculated

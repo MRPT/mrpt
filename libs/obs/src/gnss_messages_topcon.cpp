@@ -17,31 +17,11 @@ using namespace mrpt::obs::gnss;
 
 Message_TOPCON_PZS::Message_TOPCON_PZS()
 	: gnss_message(TOPCON_PZS),
-	  latitude_degrees(0),
-	  longitude_degrees(0),
-	  height_meters(0),
-	  RTK_height_meters(0),
-	  PSigma(0),
-	  angle_transmitter(0),
-	  nId(0),
-	  Fix(0),
-	  TXBattery(0),
-	  RXBattery(0),
-	  error(0),
-	  hasCartesianPosVel(false),
-	  cartesian_x(0),
-	  cartesian_y(0),
-	  cartesian_z(0),
-	  cartesian_vx(0),
-	  cartesian_vy(0),
-	  cartesian_vz(0),
-	  hasPosCov(false),
+	  
 	  pos_covariance(),
-	  hasVelCov(false),
-	  vel_covariance(),
-	  hasStats(false),
-	  stats_GPS_sats_used(0),
-	  stats_GLONASS_sats_used(0)
+	  
+	  vel_covariance()
+	  
 {
 }
 

@@ -32,11 +32,11 @@ using namespace mrpt::graphs;
 class CCoinDistribution
 {
    public:
-	size_t coins2;
-	size_t coins7;
-	size_t coins8;
-	size_t coins19;
-	CCoinDistribution() : coins2(0), coins7(0), coins8(0), coins19(0) {}
+	size_t coins2{0};
+	size_t coins7{0};
+	size_t coins8{0};
+	size_t coins19{0};
+	CCoinDistribution()  {}
 	/**
 	 * Auxiliary function to calculate the amount of money. Not strictly
 	 * necessary, but handy.

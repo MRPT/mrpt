@@ -39,14 +39,14 @@ class CObservationOdometry : public CObservation
 
 	/** "true" means that "encoderLeftTicks" and "encoderRightTicks" contain
 	 * valid values. */
-	bool hasEncodersInfo;
+	bool hasEncodersInfo{false};
 	/** For differential-driven robots: The ticks count for each wheel in
 	 * ABSOLUTE VALUE (IT IS NOT INCREMENTAL) (positive means FORWARD, for both
 	 * wheels); \sa hasEncodersInfo  */
-	int32_t encoderLeftTicks, encoderRightTicks;
+	int32_t encoderLeftTicks{0}, encoderRightTicks{0};
 
 	/** "true" means that `velocityLocal` contains valid values. */
-	bool hasVelocities;
+	bool hasVelocities{false};
 	/** Velocity, in the robot (local) frame of reference (+X=forward). */
 	mrpt::math::TTwist2D velocityLocal;
 

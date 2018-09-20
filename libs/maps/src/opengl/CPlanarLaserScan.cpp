@@ -47,25 +47,8 @@ IMPLEMENTS_SERIALIZABLE(
   ---------------------------------------------------------------*/
 CPlanarLaserScan::CPlanarLaserScan()
 	: m_scan(),
-	  m_cache_points(),
-	  m_cache_valid(false),
-	  m_line_width(1),
-	  m_line_R(1.f),
-	  m_line_G(0.f),
-	  m_line_B(0.f),
-	  m_line_A(0.5f),
-	  m_points_width(3),
-	  m_points_R(1.0f),
-	  m_points_G(0.0f),
-	  m_points_B(0.0f),
-	  m_points_A(1.0f),
-	  m_plane_R(0.01f),
-	  m_plane_G(0.01f),
-	  m_plane_B(0.6f),
-	  m_plane_A(0.6f),
-	  m_enable_points(true),
-	  m_enable_line(true),
-	  m_enable_surface(true)
+	  m_cache_points()
+	  
 {
 }
 

@@ -49,13 +49,13 @@ class CVehicleVelCmd : public mrpt::serialization::CSerializable
 	{
 		/** Max. linear speed (m/s) [Default=-1 (not set), will raise exception
 		 * if needed and not set] */
-		double robotMax_V_mps;
+		double robotMax_V_mps{-1.};
 		/** Max. angular speed (rad/s) [Default=-1 (not set), will raise
 		 * exception if needed and not set] */
-		double robotMax_W_radps;
+		double robotMax_W_radps{-1.};
 		/** Min. radius of curvature of paths (m) [Default=-1 (not set), will
 		 * raise exception if needed and not set] */
-		double robotMinCurvRadius;
+		double robotMinCurvRadius{-1.};
 
 		TVelCmdParams();
 		/** Load any parameter required by a CVehicleVelCmd derived class. */

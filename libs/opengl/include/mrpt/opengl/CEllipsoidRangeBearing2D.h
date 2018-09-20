@@ -53,9 +53,9 @@ class CEllipsoidRangeBearing2D : public CGeneralizedEllipsoidTemplate<2>
 	/** Constructor
 	  */
    public:
-	CEllipsoidRangeBearing2D() {}
+	CEllipsoidRangeBearing2D() = default;
 	/** Private, virtual destructor: only can be deleted from smart pointers */
-	~CEllipsoidRangeBearing2D() override {}
+	~CEllipsoidRangeBearing2D() override = default;
 };
 
 }

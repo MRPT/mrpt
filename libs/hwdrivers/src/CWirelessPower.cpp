@@ -340,7 +340,7 @@ std::vector<std::string> CWirelessPower::ListInterfaces()
 	netname = ::strtok(ifaceread, "\n");
 	while (netname)
 	{
-		output.push_back(std::string(netname));
+		output.emplace_back(netname);
 		netname = ::strtok(nullptr, "\n");
 	}
 #endif
@@ -403,7 +403,7 @@ std::vector<std::string> CWirelessPower::ListNetworks()
 	netname = ::strtok(listread, "\n");
 	while (netname)
 	{
-		output.push_back(std::string(netname));
+		output.emplace_back(netname);
 		netname = ::strtok(nullptr, "\n");
 	}
 
@@ -463,7 +463,7 @@ int CWirelessPower::GetPower()
 
 	while (!strstr(powerReadL, ssidLine.str().c_str()))
 	{
-		powerReadV.push_back(std::string(powerReadL));
+		powerReadV.emplace_back(powerReadL);
 		if (getline(&powerReadL, &readBytes, cmdoutput))
 			THROW_EXCEPTION("Error reading response from iwlist");
 	}

@@ -30,7 +30,7 @@ void TestDisplay3D()
 	COpenGLScene::Ptr& theScene = win.get3DSceneAndLock();
 
 	// Add a clone viewport:
-	if (1)
+	if (true)
 	{
 		COpenGLViewport::Ptr vi = theScene->createViewport("myClone");
 		vi->setViewportPosition(0.7, 0.05, 0.28, 0.28);

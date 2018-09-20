@@ -38,7 +38,7 @@ class MyObserver : public mrpt::system::CObserver
 	{
 		if (e.isOfType<mrptEventMouseDown>())
 		{
-			mouse_click = 1;
+			mouse_click = true;
 		}
 	}
 
@@ -154,11 +154,11 @@ class CRobotKinects
 			if ((kinectrelpose.distance3DTo(x[i], y[i], z[i]) < m_min_range) ||
 				(kinectrelpose.distance3DTo(x[i], y[i], z[i]) > m_max_range))
 			{
-				deletion.push_back(1);
+				deletion.push_back(true);
 			}
 			else
 			{
-				deletion.push_back(0);
+				deletion.push_back(false);
 			}
 		}
 		m_points.applyDeletionMask(deletion);
@@ -389,12 +389,12 @@ class CShortTermMemory
 
 		float level_height = 0.0;
 		vector<bool> obs_in;
-		obs_in.resize(square(num_col), 0);
+		obs_in.resize(square(num_col), false);
 		grid_points.clear();
 
 		for (unsigned int n = 0; n < obsgrids.size(); n++)
 		{
-			obs_in.assign(square(num_col), 0);
+			obs_in.assign(square(num_col), false);
 
 			// Vector obs_in is filled with 0 or 1 depending on the presence of
 			// any obstacle at each cell (of the grid)
@@ -418,7 +418,7 @@ class CShortTermMemory
 				{
 					index = obsgrids[n].x2idx(paux.x) +
 							num_col * obsgrids[n].y2idx(paux.y);
-					obs_in[index] = 1;
+					obs_in[index] = true;
 				}
 			}
 
@@ -693,23 +693,23 @@ class CMyReactInterface
 			DEG2RAD(ini.read_float("ReactiveParams", "PHI0", 0, true));
 		robotSim.setDelayModelParams(tau, delay);
 		robotSim.resetStatus();
-		robotSim.setOdometryErrors(0);
+		robotSim.setOdometryErrors(false);
 		robotSim.setCurrentGTPose(mrpt::math::TPose2D(x_ini, y_ini, phi_ini));
 
 		// Read the "short term memory" parameters
-		stm.is_active = ini.read_bool("STM_CONFIG", "Stm_active", 0, 1);
+		stm.is_active = ini.read_bool("STM_CONFIG", "Stm_active", false, true);
 		float grid_length =
-			ini.read_float("STM_CONFIG", "Obs_grid_length", 0.8f, 1);
+			ini.read_float("STM_CONFIG", "Obs_grid_length", 0.8f, true);
 		float grid_resolution =
-			ini.read_float("STM_CONFIG", "Obs_grid_resolution", 0.1f, 1);
+			ini.read_float("STM_CONFIG", "Obs_grid_resolution", 0.1f, true);
 		stm.vision_limit =
-			ini.read_float("STM_CONFIG", "Vision_limit", 0.6f, 1);
+			ini.read_float("STM_CONFIG", "Vision_limit", 0.6f, true);
 		stm.likelihood_incr =
-			ini.read_float("STM_CONFIG", "Pos_likelihood_incr", 0.55f, 1);
+			ini.read_float("STM_CONFIG", "Pos_likelihood_incr", 0.55f, true);
 		stm.likelihood_decr =
-			ini.read_float("STM_CONFIG", "Neg_likelihood_incr", 0.45f, 1);
+			ini.read_float("STM_CONFIG", "Neg_likelihood_incr", 0.45f, true);
 		stm.occupancy_threshold =
-			ini.read_float("STM_CONFIG", "Occupancy_threshold", 0.8f, 1);
+			ini.read_float("STM_CONFIG", "Occupancy_threshold", 0.8f, true);
 
 		if (stm.is_active)
 		{

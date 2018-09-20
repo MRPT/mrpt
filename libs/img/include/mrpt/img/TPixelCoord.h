@@ -20,14 +20,16 @@ struct TPixelCoordf
 	/** The type of \a x and \a y */
 	using pixel_coord_t = float;
 
-	float x, y;
+	float x{.0f}, y{.0f};
 
 	/** Default constructor: undefined values of x,y */
-	TPixelCoordf() : x(), y() {}
+	TPixelCoordf() = default;
 	/** Constructor from x,y values */
 	TPixelCoordf(const float _x, const float _y) : x(_x), y(_y) {}
 	template <typename T>
-	TPixelCoordf(const std::pair<T,T>& p) : x(p.first), y(p.second) {}
+	TPixelCoordf(const std::pair<T, T>& p) : x(p.first), y(p.second)
+	{
+	}
 };
 
 /** Prints TPixelCoordf as "(x,y)" */
@@ -39,9 +41,9 @@ struct TPixelCoord
 	/** The type of \a x and \a y */
 	using pixel_coord_t = int;
 
-	TPixelCoord() : x(0), y(0) {}
+	TPixelCoord() = default;
 	TPixelCoord(const int _x, const int _y) : x(_x), y(_y) {}
-	int x, y;
+	int x{0}, y{0};
 };
 
 /** Prints TPixelCoord as "(x,y)" */
@@ -50,5 +52,4 @@ std::ostream& operator<<(std::ostream& o, const TPixelCoord& p);
 /** A type for image sizes. */
 using TImageSize = TPixelCoord;
 
-}
-
+}  // namespace mrpt::img

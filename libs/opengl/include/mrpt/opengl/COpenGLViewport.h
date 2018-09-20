@@ -299,9 +299,8 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 		// If not found directly, search recursively:
 		for (const auto& o : m_objects)
 		{
-			if (o &&
-				o->GetRuntimeClass() ==
-					CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::opengl))
+			if (o && o->GetRuntimeClass() ==
+						 CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::opengl))
 			{
 				typename T::Ptr obj = std::dynamic_pointer_cast<T>(
 					std::dynamic_pointer_cast<CSetOfObjects>(o)
@@ -360,26 +359,26 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	/** The scene that contains this viewport. */
 	mrpt::safe_ptr<COpenGLScene> m_parent;
 	/** Set by setCloneView */
-	bool m_isCloned;
+	bool m_isCloned{false};
 	/** Set by setCloneCamera */
-	bool m_isClonedCamera;
+	bool m_isClonedCamera{false};
 	/** Only if m_isCloned=true */
 	std::string m_clonedViewport;
 	/** The viewport's name */
 	std::string m_name;
 	/** Whether to clear color buffer. */
-	bool m_isTransparent;
+	bool m_isTransparent{false};
 	/** Default=0, the border around the viewport. */
-	uint32_t m_borderWidth;
+	uint32_t m_borderWidth{0};
 	/** The viewport position [0,1] */
-	double m_view_x, m_view_y, m_view_width, m_view_height;
+	double m_view_x{0}, m_view_y{0}, m_view_width{1}, m_view_height{1};
 	/** The min/max clip depth distances (default: 0.1 - 10000) */
-	double m_clip_min, m_clip_max;
-	bool m_custom_backgb_color;
+	double m_clip_min{0.1}, m_clip_max{10000};
+	bool m_custom_backgb_color{false};
 	/** used only if m_custom_backgb_color */
 	mrpt::img::TColorf m_background_color;
 	/** Set by setImageView */
-	bool m_isImageView;
+	bool m_isImageView{false};
 	// CRenderizable::Ptr m_imageview_quad ; //!< A mrpt::opengl::CTexturedPlane
 	// used after setImageView() is called
 	/** The image to display, after calling \a setImageView() */
@@ -388,16 +387,8 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	struct TLastProjectiveMatrixInfo
 	{
 		TLastProjectiveMatrixInfo()
-			: eye(0, 0, 0),
-			  pointing(0, 0, 0),
-			  up(0, 0, 0),
-			  viewport_width(640),
-			  viewport_height(480),
-			  FOV(30),
-			  azimuth(0),
-			  elev(0),
-			  zoom(1),
-			  is_projective(true)
+			: eye(0, 0, 0), pointing(0, 0, 0), up(0, 0, 0)
+
 		{
 		}
 		/** The camera is here. */
@@ -407,13 +398,13 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 		/** Up vector of the camera. */
 		mrpt::math::TPoint3D up;
 		/** In pixels. This may be smaller than the total render window. */
-		size_t viewport_width, viewport_height;
+		size_t viewport_width{640}, viewport_height{480};
 		/** FOV in degrees. */
-		float FOV;
+		float FOV{30};
 		/** Camera elev & azimuth, in radians. */
-		float azimuth, elev;
-		float zoom;
-		bool is_projective;  // true: projective, false: ortho
+		float azimuth{0}, elev{0};
+		float zoom{1};
+		bool is_projective{true};  // true: projective, false: ortho
 	};
 	/** Info updated with each "render()" and used in "get3DRayForPixelCoord" */
 	mutable TLastProjectiveMatrixInfo m_lastProjMat;
@@ -427,7 +418,7 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	void internal_setImageView_fast(const mrpt::img::CImage& img, bool is_fast);
 
 	// OpenGL global settings:
-	bool m_OpenGL_enablePolygonNicest;
+	bool m_OpenGL_enablePolygonNicest{true};
 
 	std::vector<CLight> m_lights;
 };
@@ -449,8 +440,7 @@ inline COpenGLViewport::Ptr& operator<<(
 inline COpenGLViewport::Ptr& operator<<(
 	COpenGLViewport::Ptr& s, const std::vector<CRenderizable::Ptr>& v)
 {
-	for (const auto & it : v)
-		s->insert(it);
+	for (const auto& it : v) s->insert(it);
 	return s;
 }
 
@@ -482,6 +472,7 @@ class mrptEventGLPreRender : public mrpt::system::mrptEvent
    protected:
 	/** Just to allow this class to be polymorphic */
 	void do_nothing() override {}
+
    public:
 	inline mrptEventGLPreRender(const COpenGLViewport* obj)
 		: source_viewport(obj)
@@ -507,6 +498,7 @@ class mrptEventGLPostRender : public mrpt::system::mrptEvent
    protected:
 	/** Just to allow this class to be polymorphic */
 	void do_nothing() override {}
+
    public:
 	inline mrptEventGLPostRender(const COpenGLViewport* obj)
 		: source_viewport(obj)

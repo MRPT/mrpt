@@ -1811,30 +1811,6 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 	}
 }
 
-/*---------------------------------------------------------------
-						TSimulationOptions
-  ---------------------------------------------------------------*/
-slamdemoFrame::TSimulationOptions::TSimulationOptions()
-	: random_seed(-1),
-	  map_generator("1"),
-	  randomMap_nLMs(70),
-	  sensorOnTheRobot(0, 0, 0),
-	  sensor_max_range(5),
-	  sensor_min_range(0.50),
-	  sensor_fov(DEG2RAD(140)),
-	  sensorDistingishesLandmarks(false),
-	  path_square_len(8),
-	  robot_step_length(0.3),
-	  odometry_noise_std_xy(0.02),
-	  odometry_noise_std_phi(DEG2RAD(0.2)),
-	  uncert_overestim_odom(1.2),
-	  uncert_overestim_sensor(1.2),
-	  show_map_real_correspondences(false),
-	  spurious_count_mean(0),
-	  spurious_count_std(0)
-{
-}
-
 void slamdemoFrame::TSimulationOptions::loadFromConfigFile(
 	const mrpt::config::CConfigFileBase& f, const std::string& c)
 {
@@ -2049,7 +2025,7 @@ void slamdemoFrame::executeOneStep()
 		}
 
 		// Save historic data ------------------------
-		m_historicData.push_back(THistoric());
+		m_historicData.emplace_back();
 		THistoric& hist = m_historicData.back();
 
 		hist.GT_robot_pose = m_GT_pose;

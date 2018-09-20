@@ -182,7 +182,7 @@ void CMTLOG(const char* str, ...)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Default constructor, initializes all members to their default values.
-Cmt1s::Cmt1s() : m_onBytesReceived(nullptr)
+Cmt1s::Cmt1s()  
 {
 	m_port = 0;
 	m_isOpen = false;

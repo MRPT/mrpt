@@ -100,33 +100,33 @@ void register_tests_pose_interp()
 	using mrpt::math::TPose3D;
 	using namespace mrpt::poses;
 
-	lstTests.push_back(TestData(
+	lstTests.emplace_back(
 		"CPose3DInterpolator: CPose3D insert pose at end",
-		&pose_interp_test<CPose3DInterpolator, CPose3D, true, true>));
-	lstTests.push_back(TestData(
+		&pose_interp_test<CPose3DInterpolator, CPose3D, true, true>);
+	lstTests.emplace_back(
 		"CPose3DInterpolator: CPose3D insert pose random",
-		&pose_interp_test<CPose3DInterpolator, CPose3D, false, true>));
-	lstTests.push_back(TestData(
+		&pose_interp_test<CPose3DInterpolator, CPose3D, false, true>);
+	lstTests.emplace_back(
 		"CPose3DInterpolator: CPose3D query",
-		&pose_interp_test<CPose3DInterpolator, CPose3D, true, false>));
+		&pose_interp_test<CPose3DInterpolator, CPose3D, true, false>);
 
-	lstTests.push_back(TestData(
+	lstTests.emplace_back(
 		"CPose3DInterpolator: TPose3D insert pose at end",
-		&pose_interp_test<CPose3DInterpolator, TPose3D, true, true>));
-	lstTests.push_back(TestData(
+		&pose_interp_test<CPose3DInterpolator, TPose3D, true, true>);
+	lstTests.emplace_back(
 		"CPose3DInterpolator: TPose3D insert pose random",
-		&pose_interp_test<CPose3DInterpolator, TPose3D, false, true>));
-	lstTests.push_back(TestData(
+		&pose_interp_test<CPose3DInterpolator, TPose3D, false, true>);
+	lstTests.emplace_back(
 		"CPose3DInterpolator: TPose3D query",
-		&pose_interp_test<CPose3DInterpolator, TPose3D, true, false>));
+		&pose_interp_test<CPose3DInterpolator, TPose3D, true, false>);
 
-	lstTests.push_back(TestData(
+	lstTests.emplace_back(
 		"CPose2DInterpolator: TPose2D insert pose at end",
-		&pose_interp_test<CPose2DInterpolator, TPose2D, true, true>));
-	lstTests.push_back(TestData(
+		&pose_interp_test<CPose2DInterpolator, TPose2D, true, true>);
+	lstTests.emplace_back(
 		"CPose2DInterpolator: TPose2D insert pose random",
-		&pose_interp_test<CPose2DInterpolator, TPose2D, false, true>));
-	lstTests.push_back(TestData(
+		&pose_interp_test<CPose2DInterpolator, TPose2D, false, true>);
+	lstTests.emplace_back(
 		"CPose2DInterpolator: TPose2D query",
-		&pose_interp_test<CPose2DInterpolator, TPose2D, true, false>));
+		&pose_interp_test<CPose2DInterpolator, TPose2D, true, false>);
 }

@@ -50,7 +50,7 @@ class CActionRobotMovement3D : public CAction
 	mrpt::poses::CPose3D rawOdometryIncrementReading;
 	/** This fields indicates the way this estimation was obtained.
 	  */
-	TEstimationMethod estimationMethod;
+	TEstimationMethod estimationMethod{emOdometry};
 
 	enum TDrawSampleMotionModel
 	{
@@ -65,7 +65,7 @@ class CActionRobotMovement3D : public CAction
 		TMotionModelOptions();
 
 		/** The model to be used. */
-		TDrawSampleMotionModel modelSelection;
+		TDrawSampleMotionModel modelSelection{mm6DOF};
 
 		struct TOptions_6DOFModel
 		{

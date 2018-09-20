@@ -45,7 +45,7 @@ int main(int num_arg, char* argv[])
 	{
 		//						Read function arguments
 		//----------------------------------------------------------------------
-		bool use_config_file = 0;
+		bool use_config_file = false;
 		string filename;
 		CDifodoCamera odo;
 
@@ -86,13 +86,13 @@ int main(int num_arg, char* argv[])
 			{
 				if (string(argv[i]) == "--save-logfile")
 				{
-					odo.save_results = 1;
+					odo.save_results = true;
 					odo.CreateResultsFile();
 				}
 
 				if (string(argv[i]) == "--config")
 				{
-					use_config_file = 1;
+					use_config_file = true;
 					filename = argv[i + 1];
 				}
 			}
@@ -121,7 +121,7 @@ int main(int num_arg, char* argv[])
 		//==============================================================================
 
 		int pushed_key = 0;
-		bool working = 0, stop = 0;
+		bool working = false, stop = false;
 		mrpt::system::CTicTac main_clock;
 		main_clock.Tic();
 
@@ -154,7 +154,7 @@ int main(int num_arg, char* argv[])
 
 				// Close the program
 				case 'e':
-					stop = 1;
+					stop = true;
 					if (odo.f_res.is_open()) odo.f_res.close();
 					break;
 

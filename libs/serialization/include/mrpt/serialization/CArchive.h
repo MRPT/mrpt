@@ -52,8 +52,8 @@ class CExceptionEOF : public std::runtime_error
 class CArchive
 {
    public:
-	CArchive() {}
-	virtual ~CArchive() {}
+	CArchive() = default;
+	virtual ~CArchive() = default;
 	/** @name Serialization API for generic "archives" I/O streams
 	 * @{ */
 	/** Reads a block of bytes from the stream into Buffer

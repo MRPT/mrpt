@@ -23,10 +23,10 @@ struct TCaptureOptions_FlyCapture2
 	  * @{ */
 	/** (Default=0) If open_by_guid==false, will open the i'th camera based on
 	 * this 0-based index. */
-	unsigned int camera_index;
+	unsigned int camera_index{0};
 	/** (Default=false) Set to true to force opening a camera by its GUID, in \a
 	 * camera_guid */
-	bool open_by_guid;
+	bool open_by_guid{false};
 	/** GUID of the camera to open, only when open_by_guid==true. */
 	unsigned int camera_guid[4];
 	/** @} */
@@ -50,63 +50,63 @@ struct TCaptureOptions_FlyCapture2
 	std::string grabmode;
 	/** (Default=30) Number of images that can be stored in the buffer, if
 	 * enabled with grabMode. */
-	unsigned int numBuffers;
+	unsigned int numBuffers{30};
 	/** (Default=5000) Time in milliseconds that RetrieveBuffer() and
 	 * WaitForBufferEvent() will wait for an image before timing out and
 	 * returning. */
-	int grabTimeout;
+	int grabTimeout{-1};
 
 	/** (default=false) Enable non-free-running mode, only capturing when a
 	 * given input trigger signal is detected. Refer to PGR docs. */
-	bool trigger_enabled;
+	bool trigger_enabled{false};
 	/** (default=0) Refer to PGR docs. */
-	unsigned int trigger_polarity;
+	unsigned int trigger_polarity{0};
 	/** (default=0) Refer to PGR docs. */
-	unsigned int trigger_source;
+	unsigned int trigger_source{0};
 	/** (default=0) Refer to PGR docs. */
-	unsigned int trigger_mode;
+	unsigned int trigger_mode{0};
 
 	/** (default=false) Enable the generation of a strobe signal in GPIO. Refer
 	 * to PGR docs. */
-	bool strobe_enabled;
+	bool strobe_enabled{false};
 	/** (default=0)  Refer to PGR docs. */
-	unsigned int strobe_source;
+	unsigned int strobe_source{0};
 	/** (default=0)  Refer to PGR docs. */
-	unsigned int strobe_polarity;
+	unsigned int strobe_polarity{0};
 	/** (default=0.0) Delay in ms. Refer to PGR docs. */
-	float strobe_delay;
+	float strobe_delay{0.0f};
 	/** (default=1.0) Pulse durationin ms. Refer to PGR docs. */
-	float strobe_duration;
+	float strobe_duration{1.0f};
 
 	/** (default=true) */
-	bool autoexposure_auto;
+	bool autoexposure_auto{true};
 	/** (default=true) Activate this feature */
-	bool autoexposure_onOff;
+	bool autoexposure_onOff{true};
 	/** (default=true) Numeric mode (absolute or integer values) */
-	bool autoexposure_abs;
+	bool autoexposure_abs{true};
 	/** (default=0.0) Exposure Value, if autoexposure_auto=false */
-	float autoexposure_EV;
+	float autoexposure_EV{0.0f};
 	/** (default=true) */
-	bool shutter_auto;
+	bool shutter_auto{true};
 	/** (default=true) Numeric mode (absolute or integer values) */
-	bool shutter_abs;
+	bool shutter_abs{true};
 	/** (default=4.0) Shutter time, if shutter_auto=false */
-	float shutter_time_ms;
+	float shutter_time_ms{4.0f};
 	/** (default=true) */
-	bool gain_auto;
+	bool gain_auto{true};
 	/** (default=true) Numeric mode (absolute or integer values) */
-	bool gain_abs;
+	bool gain_abs{true};
 	/** (default=0.0) Sensor gain, if gain_auto=false */
-	float gain_dB;
+	float gain_dB{0.0f};
 
 	/** (default=false) Obtain images as stereo pairs with Flycapture2 */
-	bool stereo_mode;
+	bool stereo_mode{false};
 	/** (default=false) Rectify stereo images (needs Triclops installed) */
-	bool get_rectified;
+	bool get_rectified{false};
 	/** (default=640) Width for output rectified images */
-	unsigned int rect_width;
+	unsigned int rect_width{640};
 	/** (default=480) Height for output rectified images */
-	unsigned int rect_height;
+	unsigned int rect_height{480};
 	/** @} */
 
 	// clang-format off
@@ -186,16 +186,16 @@ class CImageGrabber_FlyCapture2
    protected:
 	/** Opaque pointer to the FlyCapture2::Camera object. nullptr if no camera
 	 * is grabbing. */
-	void* m_camera;
+	void* m_camera{nullptr};
 	/** Opaque pointer to the FlyCapture2::CameraInfo object. nullptr if no
 	 * camera is grabbing. */
-	void* m_camera_info;
+	void* m_camera_info{nullptr};
 	/** Opaque pointer to the FlyCapture2::Image, used as a temporary buffer and
 	 * to avoid mem alloc/reallocs. */
-	void* m_img_buffer;
+	void* m_img_buffer{nullptr};
 	/** Opaque pointer to the TriclopsContext objetc. nullptr if no context is
 	 * active. */
-	void* m_triclops;
+	void* m_triclops{nullptr};
 
 	// Camera intrinsic calibration
 	/** Camera baseline (only for stereo cameras) */

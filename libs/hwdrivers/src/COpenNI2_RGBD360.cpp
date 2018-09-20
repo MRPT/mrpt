@@ -21,25 +21,17 @@ using namespace mrpt::system;
 using namespace mrpt::obs;
 using namespace mrpt::math;
 using namespace std;
-using mrpt::system::CTicTac;
 using mrpt::DEG2RAD;
 using mrpt::obs::CObservationRGBD360;
+using mrpt::system::CTicTac;
 
 IMPLEMENTS_GENERIC_SENSOR(COpenNI2_RGBD360, mrpt::hwdrivers)
 
 /*-------------------------------------------------------------
 ctor
 -------------------------------------------------------------*/
-COpenNI2_RGBD360::COpenNI2_RGBD360()
-	: m_sensorPoseOnRobot(),
-	  m_preview_window(false),
-	  m_preview_window_decimation(1),
-	  m_preview_decim_counter_range(0),
-	  m_preview_decim_counter_rgb(0),
+COpenNI2_RGBD360::COpenNI2_RGBD360() : m_sensorPoseOnRobot()
 
-	  m_grab_rgb(true),
-	  m_grab_depth(true),
-	  m_grab_3D_points(true)
 {
 	// Default label:
 	m_sensorLabel = "RGBD360";
@@ -56,10 +48,10 @@ COpenNI2_RGBD360::~COpenNI2_RGBD360()
 }
 
 /** This method can or cannot be implemented in the derived class, depending on
-* the need for it.
-*  \exception This method must throw an exception with a descriptive message if
-* some critical error is found.
-*/
+ * the need for it.
+ *  \exception This method must throw an exception with a descriptive message if
+ * some critical error is found.
+ */
 void COpenNI2_RGBD360::initialize()
 {
 #if MRPT_HAS_OPENNI2
@@ -83,9 +75,9 @@ void COpenNI2_RGBD360::initialize()
 }
 
 /** This method will be invoked at a minimum rate of "process_rate" (Hz)
-*  \exception This method must throw an exception with a descriptive message if
-* some critical error is found.
-*/
+ *  \exception This method must throw an exception with a descriptive message if
+ * some critical error is found.
+ */
 void COpenNI2_RGBD360::doProcess()
 {
 #if MRPT_HAS_OPENNI2
@@ -124,11 +116,11 @@ void COpenNI2_RGBD360::doProcess()
 }
 
 /** Loads specific configuration for the device from a given source of
-* configuration parameters, for example, an ".ini" file, loading from the
-* section "[iniSection]" (see config::CConfigFileBase and derived classes)
-*  \exception This method must throw an exception with a descriptive message if
-* some critical parameter is missing or has an invalid value.
-*/
+ * configuration parameters, for example, an ".ini" file, loading from the
+ * section "[iniSection]" (see config::CConfigFileBase and derived classes)
+ *  \exception This method must throw an exception with a descriptive message if
+ * some critical parameter is missing or has an invalid value.
+ */
 void COpenNI2_RGBD360::loadConfig_sensorSpecific(
 	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
@@ -162,13 +154,13 @@ void COpenNI2_RGBD360::loadConfig_sensorSpecific(
 }
 
 /** The main data retrieving function, to be called after calling loadConfig()
-* and initialize().
-*  \param out_obs The output retrieved observation (only if there_is_obs=true).
-*  \param there_is_obs If set to false, there was no new observation.
-*  \param hardware_error True on hardware/comms error.
-*
-* \sa doProcess
-*/
+ * and initialize().
+ *  \param out_obs The output retrieved observation (only if there_is_obs=true).
+ *  \param there_is_obs If set to false, there was no new observation.
+ *  \param hardware_error True on hardware/comms error.
+ *
+ * \sa doProcess
+ */
 void COpenNI2_RGBD360::getNextObservation(
 	CObservationRGBD360& out_obs, bool& there_is_obs, bool& hardware_error)
 {
@@ -191,8 +183,6 @@ void COpenNI2_RGBD360::getNextObservation(
 	for (unsigned sensor_id = 0; sensor_id < (unsigned int)NUM_SENSORS;
 		 sensor_id++)
 	{
-		//		cout << "Get sensor " << sensor_id << " \n";
-		bool there_is_obs, hardware_error;
 		getNextFrameRGB(
 			newObs.intensityImages[sensor_id], newObs.timestamps[sensor_id],
 			there_is_obs, hardware_error, sensor_id);

@@ -223,7 +223,7 @@ void CHolonomicND::gapsEstimator(
 		{
 			if (gaps_temp[i].ini == gaps_temp[j].ini ||
 				gaps_temp[i].end == gaps_temp[j].end)
-				delete_gaps[j] = 1;
+				delete_gaps[j] = true;
 		}
 	}
 
@@ -234,7 +234,7 @@ void CHolonomicND::gapsEstimator(
 
 		if ((gaps_temp[i].maxDistance - gaps_temp[i].minDistance) >
 			max_depth * GAPS_MAX_RELATIVE_DEPTH)
-			delete_gaps[i] = 1;
+			delete_gaps[i] = true;
 	}
 
 	// Delete gaps which contain more than one other gaps
@@ -253,7 +253,7 @@ void CHolonomicND::gapsEstimator(
 				gaps_temp[j].end <= gaps_temp[i].end)
 				if (++inner_gap_count > 1)
 				{
-					delete_gaps[i] = 1;
+					delete_gaps[i] = true;
 					break;
 				}
 		}
@@ -269,7 +269,7 @@ void CHolonomicND::gapsEstimator(
 			if (i == j || delete_gaps[j]) continue;
 			if (gaps_temp[i].ini <= gaps_temp[j].ini &&
 				gaps_temp[i].end >= gaps_temp[j].end)
-				delete_gaps[j] = 1;
+				delete_gaps[j] = true;
 		}
 	}
 
@@ -664,13 +664,7 @@ void CLogFileRecord_ND::serializeFrom(
 						TOptions
   ---------------------------------------------------------------*/
 CHolonomicND::TOptions::TOptions()
-	:  // Default values:
-	  TOO_CLOSE_OBSTACLE(0.15),
-	  WIDE_GAP_SIZE_PERCENT(0.25),
-	  RISK_EVALUATION_SECTORS_PERCENT(0.10),
-	  RISK_EVALUATION_DISTANCE(0.4),
-	  MAX_SECTOR_DIST_FOR_D2_PERCENT(0.25),
-	  TARGET_SLOW_APPROACHING_DISTANCE(0.60),
+	:  
 	  factorWeights{1.0, 0.5, 2.0, 0.4}
 {
 }

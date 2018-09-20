@@ -103,11 +103,7 @@ IMPLEMENTS_GENERIC_SENSOR(CNationalInstrumentsDAQ, mrpt::hwdrivers)
 // -------------  CNationalInstrumentsDAQ::TInfoPerTask  -----------
 // Default ctor:
 CNationalInstrumentsDAQ::TInfoPerTask::TInfoPerTask()
-	: taskHandle(0),
-	  must_close(false),
-	  is_closed(false),
-	  new_obs_available(0),
-	  task()
+	: new_obs_available(0), task()
 {
 }
 
@@ -979,19 +975,4 @@ void CNationalInstrumentsDAQ::writeDigitalOutputTask(
 }
 
 // Ctor:
-CNationalInstrumentsDAQ::TaskDescription::TaskDescription()
-	: has_ai(false),
-	  has_ao(false),
-	  has_di(false),
-	  has_do(false),
-	  has_ci_period(false),
-	  has_ci_count_edges(false),
-	  has_ci_pulse_width(false),
-	  has_ci_lin_encoder(false),
-	  has_ci_ang_encoder(false),
-	  has_co_pulses(false),
-	  samplesPerSecond(1000.0),
-	  bufferSamplesPerChannel(200000),
-	  samplesPerChannelToRead(1000)
-{
-}
+CNationalInstrumentsDAQ::TaskDescription::TaskDescription() = default;

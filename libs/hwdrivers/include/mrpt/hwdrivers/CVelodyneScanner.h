@@ -206,17 +206,17 @@ class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
    protected:
 	bool m_initialized;
 	/** Default: "VLP16" */
-	model_t m_model;
+	model_t m_model{CVelodyneScanner::VLP16};
 	/** Default: 0.5 seconds */
-	double m_pos_packets_min_period;
+	double m_pos_packets_min_period{0.5};
 	/** Default: 30 seconds */
-	double m_pos_packets_timing_timeout;
+	double m_pos_packets_timing_timeout{30.0};
 	/** Default: "" (no IP-based filtering) */
 	std::string m_device_ip;
 	/** Default: true Output whole frames and not data packets  */
-	bool m_return_frames;
+	bool m_return_frames{true};
 	/** Default: true Output PCAP Info msgs */ 
-	bool m_pcap_verbose;
+	bool m_pcap_verbose{true};
 	/** Default: "" (do not operate from an offline file) */
 	std::string m_pcap_input_file;
 	/** Default: "" (do not dump to an offline file) */
@@ -228,24 +228,24 @@ class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
 
 	// offline operation:
 	/** opaque ptr: "pcap_t*" */
-	void* m_pcap;
+	void* m_pcap{nullptr};
 	/** opaque ptr: "pcap_t*" */
-	void* m_pcap_out;
+	void* m_pcap_out{nullptr};
 	/** opaque ptr: "pcap_dumper_t *" */
-	void* m_pcap_dumper;
+	void* m_pcap_dumper{nullptr};
 	/** opaque ptr: bpf_program* */
-	void* m_pcap_bpf_program;
-	bool m_pcap_file_empty;
+	void* m_pcap_bpf_program{nullptr};
+	bool m_pcap_file_empty{true};
 	/** number of pkts read from the file so far (for debugging) */
 	unsigned int m_pcap_read_count;
 	/** Default: false */
-	bool m_pcap_read_once;
+	bool m_pcap_read_once{false};
 	/** (Default: false) If false, will use m_pcap_read_full_scan_delay_ms */
-	bool m_pcap_read_fast;
+	bool m_pcap_read_fast{false};
 	/** (Default:100 ms) delay after each full scan read from a PCAP log */
-	double m_pcap_read_full_scan_delay_ms;
+	double m_pcap_read_full_scan_delay_ms{100};
 	/** Default: 0 (in seconds) */
-	double m_pcap_repeat_delay;
+	double m_pcap_repeat_delay{0.0};
 
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
@@ -427,8 +427,8 @@ class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
 
 	mrpt::obs::gnss::Message_NMEA_RMC m_last_gps_rmc;
 	mrpt::system::TTimeStamp m_last_gps_rmc_age;
-	int m_lidar_rpm;
-	return_type_t m_lidar_return;
+	int m_lidar_rpm{0};
+	return_type_t m_lidar_return{UNCHANGED};
 
 	bool internal_send_http_post(const std::string& post_data);
 

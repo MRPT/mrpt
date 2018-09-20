@@ -101,7 +101,7 @@ void CSetOfObjects::initializeAllTextures()
 #endif
 }
 
-CSetOfObjects::CSetOfObjects() {}
+CSetOfObjects::CSetOfObjects() = default;
 CSetOfObjects::~CSetOfObjects() { clear(); }
 void CSetOfObjects::insert(const CRenderizable::Ptr& newObject)
 {
@@ -183,7 +183,7 @@ class FSetColor
 		: r(R), g(G), b(B), a(A)
 	{
 	}
-	~FSetColor() {}
+	~FSetColor() = default;
 };
 
 CRenderizable& CSetOfObjects::setColor_u8(const mrpt::img::TColor& c)

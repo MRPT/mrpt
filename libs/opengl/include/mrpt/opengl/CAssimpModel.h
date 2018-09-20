@@ -87,14 +87,14 @@ class CAssimpModel : public CRenderizableDisplayList
 		TImplAssimp();
 		~TImplAssimp();
 		/** aiScene* */
-		void* scene;
+		void* scene{nullptr};
 	};
 	std::shared_ptr<TImplAssimp> m_assimp_scene;
 
 	/** Bounding box */
 	mrpt::math::TPoint3D m_bbox_min, m_bbox_max;
 
-	mutable bool m_textures_loaded;
+	mutable bool m_textures_loaded{false};
 	std::string m_modelPath;
 	mutable std::vector<unsigned int> m_textureIds;
 

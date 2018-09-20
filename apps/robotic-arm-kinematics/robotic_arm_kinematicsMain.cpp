@@ -190,7 +190,7 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 		StaticText1, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
 	listLinks = new wxSimpleHtmlListBox(
-		this, ID_SIMPLEHTMLLISTBOX1, wxDefaultPosition, wxDefaultSize, 0, 0,
+		this, ID_SIMPLEHTMLLISTBOX1, wxDefaultPosition, wxDefaultSize, 0, nullptr,
 		wxHLB_DEFAULT_STYLE, wxDefaultValidator, _T("ID_SIMPLEHTMLLISTBOX1"));
 	listLinks->Append(_("aasas"));
 	listLinks->Append(_("a<font color=\"red\">s</font>asas"));
@@ -242,7 +242,7 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 	FlexGridSizer5->AddGrowableCol(0);
 	SimpleHtmlListBox2 = new wxSimpleHtmlListBox(
 		panelProperties, ID_SIMPLEHTMLLISTBOX2, wxDefaultPosition,
-		wxSize(-1, 25), 0, 0, wxNO_BORDER, wxDefaultValidator,
+		wxSize(-1, 25), 0, nullptr, wxNO_BORDER, wxDefaultValidator,
 		_T("ID_SIMPLEHTMLLISTBOX2"));
 	SimpleHtmlListBox2->Append(
 		_("&theta;<sub>i</sub> (Angle between X<sub>i</sub> and  "
@@ -291,7 +291,7 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 	FlexGridSizer8->AddGrowableCol(0);
 	SimpleHtmlListBox3 = new wxSimpleHtmlListBox(
 		panelProperties, ID_SIMPLEHTMLLISTBOX3, wxDefaultPosition,
-		wxSize(-1, 25), 0, 0, wxNO_BORDER, wxDefaultValidator,
+		wxSize(-1, 25), 0, nullptr, wxNO_BORDER, wxDefaultValidator,
 		_T("ID_SIMPLEHTMLLISTBOX3"));
 	SimpleHtmlListBox3->Append(_("d<sub>i</sub> (Distance to common normal)"));
 	SimpleHtmlListBox3->Disable();
@@ -338,7 +338,7 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 	FlexGridSizer10->AddGrowableCol(0);
 	SimpleHtmlListBox4 = new wxSimpleHtmlListBox(
 		panelProperties, ID_SIMPLEHTMLLISTBOX4, wxDefaultPosition,
-		wxSize(-1, 25), 0, 0, wxNO_BORDER, wxDefaultValidator,
+		wxSize(-1, 25), 0, nullptr, wxNO_BORDER, wxDefaultValidator,
 		_T("ID_SIMPLEHTMLLISTBOX4"));
 	SimpleHtmlListBox4->Append(_("a<sub>i</sub> (Common normal length)"));
 	SimpleHtmlListBox4->Disable();
@@ -385,7 +385,7 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 	FlexGridSizer12->AddGrowableCol(0);
 	SimpleHtmlListBox5 = new wxSimpleHtmlListBox(
 		panelProperties, ID_SIMPLEHTMLLISTBOX5, wxDefaultPosition,
-		wxSize(-1, 25), 0, 0, wxNO_BORDER, wxDefaultValidator,
+		wxSize(-1, 25), 0, nullptr, wxNO_BORDER, wxDefaultValidator,
 		_T("ID_SIMPLEHTMLLISTBOX5"));
 	SimpleHtmlListBox5->Append(
 		_("&alpha;<sub>i</sub> (Angle Z<sub>i</sub> to Z<sub>i+1</sub>)"));
@@ -509,7 +509,7 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 	FlexGridSizer19->AddGrowableCol(1);
 	FlexGridSizer19->AddGrowableRow(0);
 	lbXYZs = new wxListBox(
-		Panel1, ID_LISTBOX1, wxDefaultPosition, wxSize(45, -1), 0, 0, 0,
+		Panel1, ID_LISTBOX1, wxDefaultPosition, wxSize(45, -1), 0, nullptr, 0,
 		wxDefaultValidator, _T("ID_LISTBOX1"));
 	wxFont lbXYZsFont(
 		7, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL, false,

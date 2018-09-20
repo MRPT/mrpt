@@ -23,8 +23,8 @@ TWaypoint::TWaypoint()
 	: target(INVALID_NUM, INVALID_NUM),
 	  target_heading(INVALID_NUM),
 	  target_frame_id("map"),
-	  allowed_distance(INVALID_NUM),
-	  allow_skip(true)
+	  allowed_distance(INVALID_NUM)
+	  
 {
 }
 
@@ -69,7 +69,7 @@ std::string TWaypoint::getAsText() const
 }
 
 // TWaypointSequence ==========
-TWaypointSequence::TWaypointSequence() {}
+TWaypointSequence::TWaypointSequence() = default;
 // Gets navigation params as a human-readable format:
 std::string TWaypointSequence::getAsText() const
 {
@@ -88,10 +88,9 @@ std::string TWaypointSequence::getAsText() const
 
 // TWaypointStatus ==========
 TWaypointStatus::TWaypointStatus()
-	: reached(false),
-	  skipped(false),
-	  timestamp_reach(INVALID_TIMESTAMP),
-	  counter_seen_reachable(0)
+	: 
+	  timestamp_reach(INVALID_TIMESTAMP)
+	  
 {
 }
 TWaypointStatus& TWaypointStatus::operator=(const TWaypoint& wp)
@@ -111,8 +110,7 @@ std::string TWaypointStatus::getAsText() const
 TWaypointStatusSequence::TWaypointStatusSequence()
 	: waypoints(),
 	  timestamp_nav_started(INVALID_TIMESTAMP),
-	  final_goal_reached(false),
-	  waypoint_index_current_goal(-1),
+	  
 	  last_robot_pose(
 		  TWaypoint::INVALID_NUM, TWaypoint::INVALID_NUM,
 		  TWaypoint::INVALID_NUM)
@@ -139,17 +137,11 @@ std::string TWaypointStatusSequence::getAsText() const
 }
 
 TWaypointsRenderingParams::TWaypointsRenderingParams()
-	: outter_radius(.3),
-	  inner_radius(.2),
-	  outter_radius_non_skippable(.3),
-	  inner_radius_non_skippable(.0),
-	  outter_radius_reached(.2),
-	  inner_radius_reached(.1),
-	  heading_arrow_len(1.0),
+	: 
 	  color_regular(mrpt::img::TColor(0x00, 0x00, 0xff)),
 	  color_current_goal(mrpt::img::TColor(0xff, 0x00, 0x20)),
-	  color_reached(mrpt::img::TColor(0x00, 0x00, 0xc0, 0xd0)),
-	  show_labels(true)
+	  color_reached(mrpt::img::TColor(0x00, 0x00, 0xc0, 0xd0))
+	  
 {
 }
 

@@ -34,8 +34,8 @@ CAxis::CAxis(
 	  m_ymax(ymax),
 	  m_zmax(zmax),
 	  m_frequency(frecuency),
-	  m_lineWidth(lineWidth),
-	  m_textScale(0.25f)
+	  m_lineWidth(lineWidth)
+	  
 {
 	for (bool& m_mark : m_marks) m_mark = marks;
 

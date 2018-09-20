@@ -256,8 +256,8 @@ class RPlidarDriver
 		rplidar_response_measurement_node_t* nodebuffer, size_t count) = 0;
 
    protected:
-	RPlidarDriver() {}
-	virtual ~RPlidarDriver() {}
+	RPlidarDriver() = default;
+	virtual ~RPlidarDriver() = default;
 };
 }
 

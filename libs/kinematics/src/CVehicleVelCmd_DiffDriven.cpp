@@ -16,7 +16,7 @@ using namespace mrpt::kinematics;
 IMPLEMENTS_SERIALIZABLE(
 	CVehicleVelCmd_DiffDriven, CVehicleVelCmd, mrpt::kinematics)
 
-CVehicleVelCmd_DiffDriven::~CVehicleVelCmd_DiffDriven() {}
+CVehicleVelCmd_DiffDriven::~CVehicleVelCmd_DiffDriven() = default;
 size_t CVehicleVelCmd_DiffDriven::getVelCmdLength() const { return 2; }
 std::string CVehicleVelCmd_DiffDriven::getVelCmdDescription(
 	const int index) const

@@ -102,11 +102,11 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 
 	/** Whether yaw/pitch/roll members are up-to-date since the last rotation
 	 * matrix update. */
-	mutable bool m_ypr_uptodate;
+	mutable bool m_ypr_uptodate{true};
 	/** These variables are updated every time that the object rotation matrix
 	 * is modified (construction, loading from values, pose composition, etc )
 	 */
-	mutable double m_yaw, m_pitch, m_roll;
+	mutable double m_yaw{0}, m_pitch{0}, m_roll{0};
 
 	/** Rebuild the homog matrix from the angles. */
 	void rebuildRotationMatrix();

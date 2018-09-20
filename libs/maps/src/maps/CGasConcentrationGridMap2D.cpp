@@ -39,14 +39,9 @@ MAP_DEFINITION_REGISTER(
 	mrpt::maps::CGasConcentrationGridMap2D)
 
 CGasConcentrationGridMap2D::TMapDefinition::TMapDefinition()
-	: min_x(-2),
-	  max_x(2),
-	  min_y(-2),
-	  max_y(2),
-	  resolution(0.10f),
-	  mapType(CGasConcentrationGridMap2D::mrKernelDM)
-{
-}
+	
+	  
+= default;
 
 void CGasConcentrationGridMap2D::TMapDefinition::
 	loadFromConfigFile_map_specific(
@@ -132,7 +127,7 @@ CGasConcentrationGridMap2D::CGasConcentrationGridMap2D(
 	timeLastSimulated = mrpt::system::now();
 }
 
-CGasConcentrationGridMap2D::~CGasConcentrationGridMap2D() {}
+CGasConcentrationGridMap2D::~CGasConcentrationGridMap2D() = default;
 /*---------------------------------------------------------------
 						clear
   ---------------------------------------------------------------*/
@@ -445,15 +440,9 @@ CGasConcentrationGridMap2D::TInsertionOptions::TInsertionOptions()
 	:
 
 	  gasSensorLabel("MCEnose"),
-	  enose_id(0),  // By default use the first enose
-	  gasSensorType(
-		  0x0000),  // By default use the mean between all e-nose sensors
-	  windSensorLabel("windSensor"),
-	  useWindInformation(false),  // By default dont use wind
-	  std_windNoise_phi(0.2f),
-	  std_windNoise_mod(0.2f),
-	  default_wind_direction(0.0f),
-	  default_wind_speed(1.0f)
+	    // By default use the mean between all e-nose sensors
+	  windSensorLabel("windSensor")
+	  
 {
 }
 

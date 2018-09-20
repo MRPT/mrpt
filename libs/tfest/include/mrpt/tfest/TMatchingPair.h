@@ -30,18 +30,7 @@ namespace mrpt::tfest
  */
 struct TMatchingPair
 {
-	TMatchingPair()
-		: this_idx(0),
-		  other_idx(0),
-		  this_x(0),
-		  this_y(0),
-		  this_z(0),
-		  other_x(0),
-		  other_y(0),
-		  other_z(0),
-		  errorSquareAfterTransformation(0)
-	{
-	}
+	TMatchingPair() = default;
 
 	TMatchingPair(
 		uint32_t _this_idx, uint32_t _other_idx, float _this_x, float _this_y,
@@ -58,11 +47,11 @@ struct TMatchingPair
 	{
 	}
 
-	uint32_t this_idx;
-	uint32_t other_idx;
-	float this_x, this_y, this_z;
-	float other_x, other_y, other_z;
-	float errorSquareAfterTransformation;
+	uint32_t this_idx{0};
+	uint32_t other_idx{0};
+	float this_x{0}, this_y{0}, this_z{0};
+	float other_x{0}, other_y{0}, other_z{0};
+	float errorSquareAfterTransformation{0};
 };
 
 #if defined(MRPT_IS_X86_AMD64)
@@ -154,5 +143,4 @@ bool operator==(const TMatchingPair& a, const TMatchingPair& b);
 /** A comparison operator */
 bool operator==(const TMatchingPairList& a, const TMatchingPairList& b);
 
-}
-
+}  // namespace mrpt::tfest

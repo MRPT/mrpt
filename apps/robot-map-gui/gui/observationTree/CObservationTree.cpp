@@ -16,7 +16,7 @@
 #include <QDebug>
 
 CObservationTree::CObservationTree(QWidget* parent)
-	: QTreeView(parent), m_model(nullptr)
+	: QTreeView(parent) 
 {
 }
 

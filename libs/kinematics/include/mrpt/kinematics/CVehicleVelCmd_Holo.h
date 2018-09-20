@@ -21,15 +21,15 @@ class CVehicleVelCmd_Holo : public CVehicleVelCmd
 	DEFINE_SERIALIZABLE(CVehicleVelCmd_Holo)
    public:
 	/** speed(m / s) */
-	double vel;
+	double vel{.0};
 	/**: direction, **relative** to the current robot heading (radians). 0 means
 	 * forward. */
-	double dir_local;
+	double dir_local{.0};
 	/**: Blending time between current and target time. */
-	double ramp_time;
+	double ramp_time{.0};
 	/**: (rad/s) rotational speed for rotating such as the robot slowly faces
 	 * forward. */
-	double rot_speed;
+	double rot_speed{.0};
 
 	CVehicleVelCmd_Holo();
 	CVehicleVelCmd_Holo(

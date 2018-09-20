@@ -104,11 +104,11 @@ CWindowDialogPlots::CWindowDialogPlots(
 		wxID_ANY, wxEVT_CHAR,
 		(wxObjectEventFunction)&CWindowDialogPlots::OnChar);
 	m_plot->Connect(
-		wxEVT_CHAR, (wxObjectEventFunction)&CWindowDialogPlots::OnChar, 0,
+		wxEVT_CHAR, (wxObjectEventFunction)&CWindowDialogPlots::OnChar, nullptr,
 		this);
 	m_plot->Connect(
 		wxEVT_MOTION, (wxObjectEventFunction)&CWindowDialogPlots::OnMouseMove,
-		0, this);
+		nullptr, this);
 
 	m_plot->Connect(
 		wxEVT_LEFT_DOWN,
@@ -164,7 +164,7 @@ CWindowDialogPlots::CWindowDialogPlots(
 }
 
 // Destructor
-CWindowDialogPlots::~CWindowDialogPlots() {}
+CWindowDialogPlots::~CWindowDialogPlots() = default;
 // OnClose event:
 void CWindowDialogPlots::OnClose(wxCloseEvent& event)
 {
@@ -681,12 +681,8 @@ CDisplayWindowPlots::Ptr CDisplayWindowPlots::Create(
 CDisplayWindowPlots::CDisplayWindowPlots(
 	const std::string& windowCaption, unsigned int initialWidth,
 	unsigned int initialHeight)
-	: CBaseGUIWindow(static_cast<void*>(this), 400, 499, windowCaption),
-	  m_holdon(false),
-	  m_holdon_just_disabled(false),
-	  m_holdon_cnt(0),
-	  m_callback(nullptr),
-	  m_callback_param(nullptr)
+	: CBaseGUIWindow(static_cast<void*>(this), 400, 499, windowCaption)
+	  
 {
 	CBaseGUIWindow::createWxWindow(initialWidth, initialHeight);
 }

@@ -162,7 +162,7 @@ class CObject
 	/** Returns a deep copy (clone) of the object, indepently of its class. */
 	virtual CObject* clone() const = 0;
 
-	virtual ~CObject() {}
+	virtual ~CObject() = default;
 };  // End of class def.
 
 inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const

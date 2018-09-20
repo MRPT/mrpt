@@ -43,7 +43,7 @@ namespace arch
 namespace net
 {
 raw_serial::raw_serial()
-	: rp::hal::serial_rxtx(), _baudrate(0), _flags(0), serial_fd(-1)
+	: rp::hal::serial_rxtx() 
 {
 	_init();
 }

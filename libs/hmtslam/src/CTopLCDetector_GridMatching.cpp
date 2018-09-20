@@ -27,7 +27,7 @@ CTopLCDetector_GridMatching::CTopLCDetector_GridMatching(CHMTSLAM* hmtslam)
 {
 }
 
-CTopLCDetector_GridMatching::~CTopLCDetector_GridMatching() {}
+CTopLCDetector_GridMatching::~CTopLCDetector_GridMatching() = default;
 /** This method must compute the topological observation model.
   * \param out_log_lik The output, a log-likelihood.
   * \return nullptr, or a PDF of the estimated translation between the two areas

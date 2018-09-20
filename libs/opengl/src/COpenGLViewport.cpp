@@ -50,30 +50,20 @@ mrpt::system::CTimeLogger glv_timlog;
 COpenGLViewport::COpenGLViewport(COpenGLScene* parent, const string& name)
 	: m_camera(),
 	  m_parent(parent),
-	  m_isCloned(false),
-	  m_isClonedCamera(false),
+	  
 	  m_clonedViewport(),
 	  m_name(name),
-	  m_isTransparent(false),
-	  m_borderWidth(0),
-	  m_view_x(0),
-	  m_view_y(0),
-	  m_view_width(1),
-	  m_view_height(1),
-	  m_clip_min(0.1),
-	  m_clip_max(10000),
-	  m_custom_backgb_color(false),
+	  
 	  m_background_color(0.6f, 0.6f, 0.6f),
-	  m_isImageView(false),
+	  
 	  m_imageview_img(),
 	  m_objects(),
-	  // OpenGL settings:
-	  m_OpenGL_enablePolygonNicest(true),
+	  
 	  m_lights()
 {
 	// Default: one light from default direction
-	m_lights.push_back(CLight());
-	m_lights.push_back(CLight());
+	m_lights.emplace_back();
+	m_lights.emplace_back();
 
 	m_lights[0].setPosition(1, 1, 1, 0);
 	m_lights[0].setDirection(-1, -1, -1);
@@ -618,7 +608,7 @@ void COpenGLViewport::serializeFrom(
 			{
 				// Default: one light from default direction
 				m_lights.clear();
-				m_lights.push_back(CLight());
+				m_lights.emplace_back();
 			}
 		}
 		break;

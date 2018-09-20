@@ -24,21 +24,20 @@ class CRateTimer
 	/** Ctor: specifies the desired rate (Hz) */
 	CRateTimer(const double rate_hz = 1.0);
 	/** Dtor */
-	virtual ~CRateTimer();
+	virtual ~CRateTimer() = default;
 
 	/** Changes the object loop rate (Hz) */
 	void setRate(const double rate_hz);
 	/** Sleeps for some time, such as the return of this method is 1/rate
 	 * (seconds)
-	  * after the return of the previous call.
-	  * \return false if the rate could not be achieved ("we are already late"),
+	 * after the return of the previous call.
+	 * \return false if the rate could not be achieved ("we are already late"),
 	 * true if all went right. */
 	bool sleep();
 
    private:
-	double m_rate_hz;
+	double m_rate_hz{1.0};
 	mrpt::system::CTicTac m_tictac;
 };  // End of class def.
 
-}
-
+}  // namespace mrpt::system

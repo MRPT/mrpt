@@ -421,28 +421,28 @@ class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
 
 	/** Can be "opencv",... */
 	std::string m_grabber_type;
-	bool m_capture_grayscale;
+	bool m_capture_grayscale{false};
 
 	// Options for grabber_type= opencv  ------------------------------------
-	int m_cv_camera_index;
+	int m_cv_camera_index{0};
 	std::string m_cv_camera_type;
 	TCaptureCVOptions m_cv_options;
 
 	// Options for grabber_type= dc1394 -------------------------------------
-	uint64_t m_dc1394_camera_guid;
-	int m_dc1394_camera_unit;
+	uint64_t m_dc1394_camera_guid{0};
+	int m_dc1394_camera_unit{0};
 	TCaptureOptions_dc1394 m_dc1394_options;
-	int m_preview_decimation;
-	int m_preview_reduction;
+	int m_preview_decimation{0};
+	int m_preview_reduction{1};
 
 	// Options for grabber_type= bumblebee_dc1394
 	// ----------------------------------
-	uint64_t m_bumblebee_dc1394_camera_guid;
-	int m_bumblebee_dc1394_camera_unit;
-	double m_bumblebee_dc1394_framerate;
+	uint64_t m_bumblebee_dc1394_camera_guid{0};
+	int m_bumblebee_dc1394_camera_unit{0};
+	double m_bumblebee_dc1394_framerate{15};
 
 	// Options for grabber type= svs -----------------------------------------
-	int m_svs_camera_index;
+	int m_svs_camera_index{0};
 	TCaptureOptions_SVS m_svs_options;
 
 	// Options for grabber_type= ffmpeg -------------------------------------
@@ -456,27 +456,28 @@ class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
 	// Options for grabber_type= swissranger
 	// -------------------------------------
 	/** true: USB, false: ETH */
-	bool m_sr_open_from_usb;
+	bool m_sr_open_from_usb{true};
 	std::string m_sr_ip_address;
 	/** Save the 3D point cloud (default: true) */
-	bool m_sr_save_3d;
+	bool m_sr_save_3d{true};
 	/** Save the 2D range image (default: true) */
-	bool m_sr_save_range_img;
+	bool m_sr_save_range_img{true};
 	/** Save the 2D intensity image (default: true) */
-	bool m_sr_save_intensity_img;
+	bool m_sr_save_intensity_img{true};
 	/** Save the estimated confidence 2D image (default: false) */
-	bool m_sr_save_confidence;
+	bool m_sr_save_confidence{true};
 
 	// Options for grabber_type= XBox kinect
 	// -------------------------------------
 	/** Save the 3D point cloud (default: true) */
-	bool m_kinect_save_3d;
+	bool m_kinect_save_3d{
+		  true};
 	/** Save the 2D range image (default: true) */
-	bool m_kinect_save_range_img;
+	bool m_kinect_save_range_img{true};
 	/** Save the 2D intensity image (default: true) */
-	bool m_kinect_save_intensity_img;
+	bool m_kinect_save_intensity_img{true};
 	/** Save RGB or IR channels (default:true) */
-	bool m_kinect_video_rgb;
+	bool m_kinect_video_rgb{true};
 
 	// Options for grabber type= flycap
 	// -----------------------------------------
@@ -484,7 +485,7 @@ class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
 
 	// Options for grabber type= flycap_stereo
 	// -----------------------------------------
-	bool m_fcs_start_synch_capture;
+	bool m_fcs_start_synch_capture{false};
 	TCaptureOptions_FlyCapture2
 		m_flycap_stereo_options[2];  // [0]:left, [1]:right
 
@@ -492,18 +493,18 @@ class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
 	std::string m_img_dir_url;
 	std::string m_img_dir_left_format;
 	std::string m_img_dir_right_format;
-	int m_img_dir_start_index;
-	int m_img_dir_end_index;
+	int m_img_dir_start_index{0};
+	int m_img_dir_end_index{100};
 
-	bool m_img_dir_is_stereo;
-	int m_img_dir_counter;
+	bool m_img_dir_is_stereo{true};
+	int m_img_dir_counter{0};
 
 	// Options for grabber type= duo3d
 	TCaptureOptions_DUO3D m_duo3d_options;
 
 	// Other options:
 	/** Whether to launch independent thread */
-	bool m_external_images_own_thread;
+	bool m_external_images_own_thread{false};
 
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
@@ -540,10 +541,10 @@ class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
 	std::unique_ptr<CDUO3DCamera> m_cap_duo3d;
 	// =========================
 
-	int m_camera_grab_decimator;
-	int m_camera_grab_decimator_counter;
+	int m_camera_grab_decimator{0};
+	int m_camera_grab_decimator_counter{0};
 
-	int m_preview_counter;
+	int m_preview_counter{0};
 	/** Normally we'll use only one window, but for stereo images we'll use two
 	 * of them. */
 	mrpt::gui::CDisplayWindow::Ptr m_preview_win1, m_preview_win2;
@@ -554,7 +555,7 @@ class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
 	unsigned int m_external_image_saver_count;
 	std::vector<std::thread> m_threadImagesSaver;
 
-	bool m_threadImagesSaverShouldEnd;
+	bool m_threadImagesSaverShouldEnd{false};
 	/** The critical section for m_toSaveList */
 	std::mutex m_csToSaveList;
 	/** The queues of objects to be returned by getObservations, one for each
@@ -564,7 +565,7 @@ class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
 	void thread_save_images(unsigned int my_working_thread_index);
 
 	TPreSaveUserHook m_hook_pre_save;
-	void* m_hook_pre_save_param;
+	void* m_hook_pre_save_param{nullptr};
 	/**  @} */
 
 };  // end class

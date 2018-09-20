@@ -63,7 +63,7 @@ class ArgException : public std::exception
 		/**
 		 * Destructor.
 		 */
-		~ArgException() throw() override { }
+		~ArgException() noexcept override = default;
 
 		/**
 		 * Returns the error text.
@@ -84,7 +84,7 @@ class ArgException : public std::exception
 		/**
 		 * Returns the arg id and error text.
 		 */
-		const char* what() const throw() override
+		const char* what() const noexcept override
 		{
 			static std::string ex;
 			ex = _argId + " -- " + _errorText;

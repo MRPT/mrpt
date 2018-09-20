@@ -279,19 +279,13 @@ class slamdemoFrame : public wxFrame
 	/** Historic data */
 	struct THistoric
 	{
-		THistoric()
-			: run_time(0),
-			  da_true_pos(0),
-			  da_true_neg(0),
-			  da_false_pos(0),
-			  da_false_neg(0)
-		{
-		}
+		THistoric() = default;
 
 		mrpt::poses::CPose2D GT_robot_pose;
 		mrpt::poses::CPosePDFGaussian estimate_robot_pose;
-		double run_time;
-		uint16_t da_true_pos, da_true_neg, da_false_pos, da_false_neg;
+		double run_time{0};
+		uint16_t da_true_pos{0}, da_true_neg{0}, da_false_pos{0},
+			da_false_neg{0};
 		size_t jcbb_iters;
 	};
 
@@ -300,24 +294,22 @@ class slamdemoFrame : public wxFrame
 	std::vector<THistoric, Eigen::aligned_allocator<THistoric>> m_historicData;
 
 	/** Reset the simulator and re-generate the ground truth map
-	  *  map_type can be:
-	  *		- "1": The default map
-	  *		- a plain text file name: A Nx2 matrix with the coordinates of the
-	  *landmarks
-	  */
+	 *  map_type can be:
+	 *		- "1": The default map
+	 *		- a plain text file name: A Nx2 matrix with the coordinates of the
+	 *landmarks
+	 */
 	void resetSimulator(const std::string& map_type);
 
 	/** Executes 1 step of the simulator (does NOT update the graphs) */
 	void executeOneStep();
 
 	/** Update all the plots with the latest data
-	  */
+	 */
 	void updateAllGraphs(bool alsoGTMap = false);
 
 	struct TSimulationOptions : public mrpt::config::CLoadableOptions
 	{
-		TSimulationOptions();
-
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
@@ -328,39 +320,39 @@ class slamdemoFrame : public wxFrame
 			std::ostream& out) const override;  // See base docs
 
 		/** -1: random, other, use as seed */
-		int random_seed;
+		int random_seed{-1};
 
 		/** the parameter to resetSimulator */
-		std::string map_generator;
+		std::string map_generator{"1"};
 
 		/** # of landmarks in the random map */
-		uint32_t randomMap_nLMs;
+		uint32_t randomMap_nLMs{70};
 
-		mrpt::poses::CPose2D sensorOnTheRobot;
+		mrpt::poses::CPose2D sensorOnTheRobot{0, 0, 0};
 
-		double sensor_max_range;
-		double sensor_min_range;
-		double sensor_fov;
+		double sensor_max_range{5};
+		double sensor_min_range{0.50};
+		double sensor_fov{mrpt::DEG2RAD(140.)};
 		/** If false (default), data associatin must be done */
-		bool sensorDistingishesLandmarks;
+		bool sensorDistingishesLandmarks{false};
 
 		/** Used to simulate the robot path */
-		double path_square_len;
+		double path_square_len{8};
 		/** The length (in meters) of each robot forward step. */
-		double robot_step_length;
+		double robot_step_length{0.3};
 
 		/** sigma of the odometry errors in X/Y */
-		double odometry_noise_std_xy;
+		double odometry_noise_std_xy{0.02};
 		/** sigma of the odometry errors in PHI */
-		double odometry_noise_std_phi;
+		double odometry_noise_std_phi{mrpt::DEG2RAD(0.2)};
 
-		double uncert_overestim_odom;
-		double uncert_overestim_sensor;
+		double uncert_overestim_odom{1.2};
+		double uncert_overestim_sensor{1.2};
 
-		bool show_map_real_correspondences;
+		bool show_map_real_correspondences{false};
 
 		/** Mean and std of spurious readings per "sensor observation". */
-		double spurious_count_mean, spurious_count_std;
+		double spurious_count_mean{0}, spurious_count_std{0};
 	};
 
 	/** Options used in the simulator */

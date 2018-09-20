@@ -41,11 +41,11 @@ class CHeightGridMap2D_Base
 		/** (Default:0.0) If !=0, use this value as the uncertainty (standard
 		 * deviation) for the point "z" coordinate, instead of the map-wise
 		 * default value. */
-		double pt_z_std;
+		double pt_z_std{0.0};
 		/** (default: true) run any required operation to ensure the map
 		 * reflects the changes caused by this point. Otherwise, calling
 		 * dem_update_map() is required. */
-		bool update_map_after_insertion;
+		bool update_map_after_insertion{true};
 
 		TPointInsertParams();
 	};

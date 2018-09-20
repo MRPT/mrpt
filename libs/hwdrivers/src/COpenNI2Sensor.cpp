@@ -38,15 +38,11 @@ ctor
 -------------------------------------------------------------*/
 COpenNI2Sensor::COpenNI2Sensor()
 	: m_sensorPoseOnRobot(),
-	  m_preview_window(false),
-	  m_preview_window_decimation(1),
-	  m_preview_decim_counter_range(0),
-	  m_preview_decim_counter_rgb(0),
+	  
 
 	  m_relativePoseIntensityWRTDepth(
-		  0, 0, 0, DEG2RAD(-90), DEG2RAD(0), DEG2RAD(-90)),
-	  m_user_device_number(0),
-	  m_serial_number(0)
+		  0, 0, 0, DEG2RAD(-90), DEG2RAD(0), DEG2RAD(-90))
+	  
 {
 	// Default label:
 	m_sensorLabel = "OPENNI2";

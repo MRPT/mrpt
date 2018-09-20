@@ -69,7 +69,7 @@ struct TPoint2D : public TPoseOrPoint
 	/**
 	 * Default fast constructor. Initializes to garbage.
 	 */
-	TPoint2D() {}
+	TPoint2D() = default;
 	/** Coordinate access using operator[]. Order: x,y */
 	double& operator[](size_t i)
 	{
@@ -210,7 +210,7 @@ struct TPose2D : public TPoseOrPoint
 	/**
 	 * Default fast constructor. Initializes to garbage.
 	 */
-	TPose2D() {}
+	TPose2D() = default;
 	/** Coordinate access using operator[]. Order: x,y,phi */
 	double& operator[](size_t i)
 	{
@@ -314,7 +314,7 @@ struct TPoint3Df : public TPoseOrPoint
 	float y;
 	float z;
 
-	TPoint3Df() {}
+	TPoint3Df() = default;
 	constexpr TPoint3Df(const float xx, const float yy, const float zz)
 		: x(xx), y(yy), z(zz)
 	{
@@ -379,7 +379,7 @@ struct TPoint3D : public TPoseOrPoint
 	/** Constructor from coordinates.  */
 	constexpr TPoint3D(double xx, double yy, double zz) : x(xx), y(yy), z(zz) {}
 	/** Default fast constructor. Initializes to garbage. */
-	TPoint3D() {}
+	TPoint3D() = default;
 	/** Explicit constructor from coordinates.  */
 	explicit TPoint3D(const TPoint3Df& p) : x(p.x), y(p.y), z(p.z) {}
 	/** Implicit constructor from TPoint2D. Zeroes the z.
@@ -540,8 +540,8 @@ struct TPoint3D : public TPoseOrPoint
 struct TPointXYZIu8
 {
 	mrpt::math::TPoint3D pt;
-	uint8_t intensity;
-	TPointXYZIu8() : pt(), intensity(0) {}
+	uint8_t intensity{0};
+	TPointXYZIu8() : pt() {}
 	constexpr TPointXYZIu8(double x, double y, double z, uint8_t intensity_val)
 		: pt(x, y, z), intensity(intensity_val)
 	{
@@ -551,8 +551,8 @@ struct TPointXYZIu8
 struct TPointXYZRGBu8
 {
 	mrpt::math::TPoint3D pt;
-	uint8_t R, G, B;
-	TPointXYZRGBu8() : pt(), R(0), G(0), B(0) {}
+	uint8_t R{0}, G{0}, B{0};
+	TPointXYZRGBu8() = default;
 	constexpr TPointXYZRGBu8(
 		double x, double y, double z, uint8_t R_val, uint8_t G_val,
 		uint8_t B_val)
@@ -564,8 +564,8 @@ struct TPointXYZRGBu8
 struct TPointXYZfIu8
 {
 	mrpt::math::TPoint3Df pt;
-	uint8_t intensity;
-	TPointXYZfIu8() : pt(), intensity(0) {}
+	uint8_t intensity{0};
+	TPointXYZfIu8() = default;
 	constexpr TPointXYZfIu8(float x, float y, float z, uint8_t intensity_val)
 		: pt(x, y, z), intensity(intensity_val)
 	{
@@ -575,8 +575,8 @@ struct TPointXYZfIu8
 struct TPointXYZfRGBu8
 {
 	mrpt::math::TPoint3Df pt;
-	uint8_t R, G, B;
-	TPointXYZfRGBu8() : pt(), R(0), G(0), B(0) {}
+	uint8_t R{0}, G{0}, B{0};
+	TPointXYZfRGBu8() : pt() {}
 	constexpr TPointXYZfRGBu8(
 		float x, float y, float z, uint8_t R_val, uint8_t G_val, uint8_t B_val)
 		: pt(x, y, z), R(R_val), G(G_val), B(B_val)
@@ -631,7 +631,7 @@ struct TPose3D : public TPoseOrPoint
 	/**
 	 * Default fast constructor. Initializes to garbage.
 	 */
-	TPose3D() {}
+	TPose3D() = default;
 	/** Coordinate access using operator[]. Order: x,y,z,yaw,pitch,roll */
 	double& operator[](size_t i)
 	{
@@ -720,7 +720,7 @@ struct TPose3D : public TPoseOrPoint
 	 */
 	void getAsQuaternion(
 		mrpt::math::CQuaternion<double>& q,
-		mrpt::math::CMatrixFixedNumeric<double, 4, 3>* out_dq_dr = NULL) const;
+		mrpt::math::CMatrixFixedNumeric<double, 4, 3>* out_dq_dr = nullptr) const;
 
 	void composePoint(const TPoint3D l, TPoint3D& g) const;
 	void inverseComposePoint(const TPoint3D g, TPoint3D& l) const;
@@ -770,7 +770,7 @@ struct TPose3DQuat : public TPoseOrPoint
 	{
 	}
 	/** Default fast constructor. Initializes to garbage. */
-	TPose3DQuat() {}
+	TPose3DQuat() = default;
 	/** Coordinate access using operator[]. Order: x,y,z,qr,qx,qy,qz */
 	double& operator[](size_t i)
 	{
@@ -1018,7 +1018,7 @@ struct TSegment2D
 	/**
 	 * Fast default constructor. Initializes to garbage.
 	 */
-	TSegment2D() {}
+	TSegment2D() = default;
 	/**
 	 * Explicit constructor from 3D object, discarding the z.
 	 */
@@ -1105,7 +1105,7 @@ struct TSegment3D
 	/**
 	 * Fast default constructor. Initializes to garbage.
 	 */
-	TSegment3D() {}
+	TSegment3D() = default;
 	/**
 	 * Constructor from 2D object. Sets the z to zero.
 	 */
@@ -1208,7 +1208,7 @@ struct TLine2D
 	/**
 	 * Fast default constructor. Initializes to garbage.
 	 */
-	TLine2D() {}
+	TLine2D() = default;
 	/**
 	 * Constructor from line's coefficients.
 	 */
@@ -1283,7 +1283,7 @@ struct TLine3D
 	/**
 	 * Fast default constructor. Initializes to garbage.
 	 */
-	TLine3D() {}
+	TLine3D() = default;
 	/** Constructor from 2D object. Zeroes the z. */
 	explicit TLine3D(const TLine2D& l);
 };
@@ -1362,7 +1362,7 @@ struct TPlane
 	/**
 	 * Fast default constructor. Initializes to garbage.
 	 */
-	TPlane() {}
+	TPlane() = default;
 	/**
 	 * Constructor from plane coefficients.
 	 */
@@ -1542,9 +1542,9 @@ struct TObject2D
 		TPoint2D point;
 		TSegment2D segment;
 		TLine2D line;
-		TPolygon2D* polygon;
+		TPolygon2D* polygon{nullptr};
 
-		tobject2d_data_t() : polygon(nullptr) {}
+		tobject2d_data_t() = default;
 	} data;
 	/**
 	 * Destroys the object, releasing the pointer to the content (if any).
@@ -1803,10 +1803,10 @@ struct TObject3D
 		TPoint3D point;
 		TSegment3D segment;
 		TLine3D line;
-		TPolygon3D* polygon;
+		TPolygon3D* polygon{nullptr};
 		TPlane plane;
 
-		tobject3d_data_t() : polygon(nullptr) {}
+		tobject3d_data_t() = default;
 	} data;
 	/**
 	 * Destroys the object and releases the pointer, if any.
@@ -2141,7 +2141,7 @@ struct TTwist2D
 	{
 	}
 	/** Default fast constructor. Initializes to garbage  */
-	TTwist2D() {}
+	TTwist2D() = default;
 	/** Coordinate access using operator[]. Order: vx,vy,vphi */
 	double& operator[](size_t i)
 	{
@@ -2230,7 +2230,7 @@ struct TTwist3D
 	{
 	}
 	/** Default fast constructor. Initializes to garbage  */
-	TTwist3D() {}
+	TTwist3D() = default;
 	/** Coordinate access using operator[]. Order: vx,vy,vphi */
 	double& operator[](size_t i)
 	{

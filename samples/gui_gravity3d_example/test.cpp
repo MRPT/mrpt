@@ -33,10 +33,10 @@ const double COLLIS_LOSS = 0.98;
 
 struct TMass
 {
-	TMass() : x(0), y(0), z(0), vx(0), vy(0), vz(0), mass(1), obj3d() {}
-	double x, y, z;
-	double vx, vy, vz;
-	double mass;
+	TMass() :  obj3d() {}
+	double x{0}, y{0}, z{0};
+	double vx{0}, vy{0}, vz{0};
+	double mass{1};
 	double radius;
 	opengl::CSphere::Ptr obj3d;
 };

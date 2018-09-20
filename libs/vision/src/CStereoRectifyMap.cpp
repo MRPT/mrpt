@@ -21,11 +21,9 @@ using namespace mrpt::math;
 
 // Ctor: Leave all vectors empty
 CStereoRectifyMap::CStereoRectifyMap()
-	: m_alpha(-1),
-	  m_resize_output(false),
-	  m_enable_both_centers_coincide(false),
-	  m_resize_output_value(0, 0),
-	  m_interpolation_method(mrpt::img::IMG_INTERP_LINEAR)
+	: 
+	  m_resize_output_value(0, 0)
+	  
 {
 }
 

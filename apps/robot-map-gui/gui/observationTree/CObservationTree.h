@@ -33,5 +33,5 @@ class CObservationTree : public QTreeView
 	void contextMenuEvent(QContextMenuEvent* event) override;
 
    private:
-	CObservationTreeModel* m_model;
+	CObservationTreeModel* m_model{nullptr};
 };

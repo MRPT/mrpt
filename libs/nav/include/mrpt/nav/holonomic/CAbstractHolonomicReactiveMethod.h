@@ -46,14 +46,14 @@ class CAbstractHolonomicReactiveMethod
 		std::vector<mrpt::math::TPoint2D> targets;
 		/** Maximum robot speed, in the same units than `obstacles`, per second.
 		 */
-		double maxRobotSpeed;
+		double maxRobotSpeed{1.0};
 		/** Maximum expected value to be found in `obstacles`. Typically, values
 		 * in `obstacles` larger or equal to this value mean there is no visible
 		 * obstacle in that direction. */
-		double maxObstacleDist;
+		double maxObstacleDist{1.0};
 		/** The computed clearance for each direction (optional in some
 		 * implementations). Leave to default (NULL) if not needed. */
-		const mrpt::nav::ClearanceDiagram* clearance;
+		const mrpt::nav::ClearanceDiagram* clearance{nullptr};
 
 		NavInput();
 	};
@@ -62,10 +62,10 @@ class CAbstractHolonomicReactiveMethod
 	struct NavOutput
 	{
 		/** The desired motion direction, in the range [-PI, PI] */
-		double desiredDirection;
+		double desiredDirection{0};
 		/** The desired motion speed in that direction, from 0 up to
 		 * NavInput::maxRobotSpeed */
-		double desiredSpeed;
+		double desiredSpeed{0};
 
 		/** The navigation method will create a log record and store it here via
 		 * a smart pointer. Input value is ignored. */

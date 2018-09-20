@@ -92,9 +92,9 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 
    private:
 	/** The first and last ranges to consider from the scan. */
-	int m_firstRange, m_lastRange;
+	int m_firstRange{44}, m_lastRange{725};
 	/** The motor speed (default=600rpm) */
-	int m_motorSpeed_rpm;
+	int m_motorSpeed_rpm{0};
 	/** The sensor 6D pose: */
 	poses::CPose3D m_sensorPose;
 	/** Auxiliary buffer for readings */
@@ -104,7 +104,7 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	std::string m_lastSentMeasCmd;
 
 	/** High sensitivity [HS] mode (default: false) */
-	bool m_highSensMode;
+	bool m_highSensMode{false};
 	mrpt::gui::CDisplayWindow3D::Ptr m_win;
 
 	/** Enables the SCIP2.0 protocol (this must be called at the very
@@ -254,7 +254,7 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	bool ensureStreamIsOpen();
 
 	/** Used to reduce artificially the interval of scan ranges. */
-	double m_reduced_fov;
+	double m_reduced_fov{0};
 
 	/** If set to non-empty, the serial port will be attempted to be opened
 	 * automatically when this class is first used to request data from the
@@ -266,23 +266,23 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	std::string m_ip_dir;
 	/** If set to non-empty and m_ip_dir too, the program will try to connect to
 	 * a Hokuyo using Ethernet communication */
-	unsigned int m_port_dir;
+	unsigned int m_port_dir{10940};
 
 	/** The information gathered when the laser is first open */
 	TSensorInfo m_sensor_info;
 
-	bool m_I_am_owner_serial_port;
+	bool m_I_am_owner_serial_port{false};
 
 	/** Time of the first data packet, for synchronization purposes. */
-	uint32_t m_timeStartUI;
+	uint32_t m_timeStartUI{0};
 	/** Counter to discard to first few packets before setting the
 	 * correspondence between device and computer timestamps. */
-	int m_timeStartSynchDelay;
+	int m_timeStartSynchDelay{0};
 	mrpt::system::TTimeStamp m_timeStartTT;
-	bool m_disable_firmware_timestamp;
+	bool m_disable_firmware_timestamp{false};
 	/** Get intensity from lidar scan (default: false) */
-	bool m_intensity;
-	unsigned int m_scan_interval;
+	bool m_intensity{false};
+	unsigned int m_scan_interval{0};
 
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(

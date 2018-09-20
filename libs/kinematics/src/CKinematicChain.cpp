@@ -29,7 +29,7 @@ IMPLEMENTS_SERIALIZABLE(CKinematicChain, CSerializable, mrpt::kinematics)
 void CKinematicChain::addLink(
 	double theta, double d, double a, double alpha, bool is_prismatic)
 {
-	m_links.push_back(TKinematicLink(theta, d, a, alpha, is_prismatic));
+	m_links.emplace_back(theta, d, a, alpha, is_prismatic);
 }
 
 /** Removes one link from the kinematic chain (0<=idx<N) */

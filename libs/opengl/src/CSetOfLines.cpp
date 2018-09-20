@@ -24,10 +24,8 @@ IMPLEMENTS_SERIALIZABLE(CSetOfLines, CRenderizableDisplayList, mrpt::opengl)
 
 /** Constructor */
 CSetOfLines::CSetOfLines()
-	: mSegments(),
-	  mLineWidth(1.0),
-	  m_antiAliasing(true),
-	  m_verticesPointSize(.0f)
+	: mSegments()
+	  
 {
 }
 

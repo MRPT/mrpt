@@ -81,7 +81,7 @@ class CIbeoLuxETH : public mrpt::hwdrivers::CGenericSensor
 	double m_startAngle;  // degrees
 	double m_stopAngle;  // degrees
 	mrpt::poses::CPose3D m_sensorPose;
-	double m_maxRange;
+	double m_maxRange{200.0};
 	double m_beamApperture;
 	bool m_run;
 	void dataCollection();
@@ -90,7 +90,7 @@ class CIbeoLuxETH : public mrpt::hwdrivers::CGenericSensor
 	double convertTicksToHRad(int hticks, int hticksPerRotation);
 	mrpt::poses::CPoint3D convertToCartesian(
 		float vrad, float hrad, float distance);
-	float vwinkel;
+	float vwinkel{0.0};
 	std::vector<mrpt::obs::CObservation3DRangeScan> m_observations;
 	bool m_newObs;
 	float m_vAngle;

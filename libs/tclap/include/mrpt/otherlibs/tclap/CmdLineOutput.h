@@ -53,7 +53,7 @@ class CmdLineOutput
 		/**
 		 * Virtual destructor.
 		 */
-		virtual ~CmdLineOutput() {}
+		virtual ~CmdLineOutput() = default;
 
 		/**
 		 * Generates some sort of output for the USAGE. 

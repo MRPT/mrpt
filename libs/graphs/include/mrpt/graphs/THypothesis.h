@@ -87,7 +87,7 @@ struct THypothesis
 	/**\brief Ending node of the hypothesis */
 	mrpt::graphs::TNodeID to;
 	/**\brief Field that specifies if the hypothesis is to be considered */
-	bool is_valid;
+	bool is_valid{true};
 	/**\brief Goodness value corresponding to the hypothesis edge
 	 *
 	 * \note For ICP edges this resolves to the CICP goodness measure for the
@@ -95,7 +95,7 @@ struct THypothesis
 	 *
 	 * \sa edge, mrpt::slam::CICP::goodness
 	 */
-	double goodness;
+	double goodness{0};
 	/**\brief Compare the start and end nodes of two hypothesis
 	 *
 	 * \return True if ends match.
@@ -123,8 +123,5 @@ struct THypothesis
 	/**\brief Edge connecting the two nodes */
 	constraint_t edge;
 };
-}
+}  // namespace mrpt::graphs::detail
 #include "THypothesis_impl.h"
-
-
-

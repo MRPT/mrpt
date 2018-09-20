@@ -60,11 +60,11 @@ const double KEYFRAMES_MIN_ANG = DEG2RAD(10);
 //   and exploit multicore CPUs.
 struct TThreadParam
 {
-	TThreadParam() : quit(false), pushed_key(0), tilt_ang_deg(0), Hz(0) {}
-	volatile bool quit;
-	volatile int pushed_key;
-	volatile double tilt_ang_deg;
-	volatile double Hz;
+	TThreadParam()  = default;
+	volatile bool quit{false};
+	volatile int pushed_key{0};
+	volatile double tilt_ang_deg{0};
+	volatile double Hz{0};
 
 	CObservation3DRangeScan::Ptr new_obs;
 };
@@ -487,7 +487,7 @@ void Test_Kinect()
 			{
 				// First iteration:
 				camera_key_frames_path.clear();
-				camera_key_frames_path.push_back(TPose3D(0, 0, 0, 0, 0, 0));
+				camera_key_frames_path.emplace_back(0, 0, 0, 0, 0, 0);
 				gl_keyframes_must_refresh = true;
 				lastVisibleFeats = curVisibleFeats;
 

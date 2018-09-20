@@ -62,7 +62,7 @@ class aligned_allocator_cpp11 : public std::allocator<T>
 		: std::allocator<T>(other)
 	{
 	}
-	~aligned_allocator_cpp11() {}
+	~aligned_allocator_cpp11() = default;
 	pointer allocate(size_type num, const void* /*hint*/ = nullptr)
 	{
 		return static_cast<pointer>(

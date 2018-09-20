@@ -1416,7 +1416,7 @@ MtwSdiData LegacyDataPacket::mtwSdiData(int32_t index) const
 		buffer.m_firstFrameNumber = 0;
 		buffer.m_lastFrameNumber = 0;
 		buffer.m_currentBias.zero();
-		buffer.m_aidingData = 0;
+		buffer.m_aidingData = false;
 		buffer.m_barometer = 0;
 		buffer.m_rssi = 0;
 

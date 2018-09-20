@@ -145,12 +145,12 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		/** Auxiliary variables used in "getLargestDistanceFromOrigin"
 		  * \sa getLargestDistanceFromOrigin
 		  */
-		mutable float m_largestDistanceFromOrigin;
+		mutable float m_largestDistanceFromOrigin{};
 
 		/** Auxiliary variables used in "getLargestDistanceFromOrigin"
 		  * \sa getLargestDistanceFromOrigin
 		  */
-		mutable bool m_largestDistanceFromOriginIsUpdated;
+		mutable bool m_largestDistanceFromOriginIsUpdated{false};
 
 	   public:
 		/** Default constructor
@@ -246,34 +246,34 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		/** If set to true (default), the insertion of a CObservationImage in
 		 * the map will insert SIFT 3D features.
 		  */
-		bool insert_SIFTs_from_monocular_images;
+		bool insert_SIFTs_from_monocular_images{true};
 
 		/** If set to true (default), the insertion of a
 		 * CObservationStereoImages in the map will insert SIFT 3D features.
 		  */
-		bool insert_SIFTs_from_stereo_images;
+		bool insert_SIFTs_from_stereo_images{true};
 
 		/** If set to true (default), inserting a CObservation2DRangeScan in the
 		 * map will generate landmarks for each range.
 		  */
-		bool insert_Landmarks_from_range_scans;
+		bool insert_Landmarks_from_range_scans{true};
 
 		/** [For SIFT landmarks only] The ratio between the best and second best
 		 * descriptor distances to set as correspondence (Default=0.4)
 		  */
-		float SiftCorrRatioThreshold;
+		float SiftCorrRatioThreshold{0.4f};
 
 		/** [For SIFT landmarks only] The minimum likelihood value of a match to
 		 * set as correspondence (Default=0.5)
 		  */
-		float SiftLikelihoodThreshold;
+		float SiftLikelihoodThreshold{0.5f};
 
 		/****************************************** FAMD
 		 * ******************************************/
 		/** [For SIFT landmarks only] The minimum Euclidean Descriptor Distance
 		 * value of a match to set as correspondence (Default=200)
 		  */
-		float SiftEDDThreshold;
+		float SiftEDDThreshold{200.0f};
 
 		/** [For SIFT landmarks only] Method to compute 3D matching (Default = 0
 		 * (Our method))
@@ -282,7 +282,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		  * 1: Sim, Elinas, Griffin, Little -> Euclidean Distance between
 		 * Descriptors
 		  */
-		unsigned int SIFTMatching3DMethod;
+		unsigned int SIFTMatching3DMethod{0};
 
 		/** [For SIFT landmarks only] Method to compute the likelihood (Default
 		 * = 0 (Our method))
@@ -290,7 +290,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		 * position
 		  * 1: Sim, Elinas, Griffin, Little -> 3D position
 		  */
-		unsigned int SIFTLikelihoodMethod;
+		unsigned int SIFTLikelihoodMethod{0};
 
 		/****************************************** END FAMD
 		 * ******************************************/
@@ -298,38 +298,38 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		/** [For SIFT landmarks only] The distance (in meters) of the mean value
 		 * of landmarks, for the initial position PDF (Default = 3m)
 		  */
-		float SIFTsLoadDistanceOfTheMean;
+		float SIFTsLoadDistanceOfTheMean{3.0f};
 
 		/** [For SIFT landmarks only] The width (in meters, standard deviation)
 		 * of the ellipsoid in the axis perpendicular to the main directiom
 		 * (Default = 0.05f)
 		  */
-		float SIFTsLoadEllipsoidWidth;
+		float SIFTsLoadEllipsoidWidth{0.05f};
 
 		/** [For SIFT landmarks only] The standard deviation (in pixels) for the
 		 * SIFTs detector (This is used for the Jacobbian to project stereo
 		 * images to 3D)
 		  */
-		float SIFTs_stdXY, SIFTs_stdDisparity;
+		float SIFTs_stdXY{2.0f}, SIFTs_stdDisparity{1.0f};
 
 		/** Number of points to extract in the image
 		  */
-		int SIFTs_numberOfKLTKeypoints;
+		int SIFTs_numberOfKLTKeypoints{60};
 
 		/** Maximum depth of 3D landmarks when loading a landmarks map from a
 		 * stereo image observation.
 		  */
-		float SIFTs_stereo_maxDepth;
+		float SIFTs_stereo_maxDepth{15.0f};
 
 		/** Maximum distance (in pixels) from a point to a certain epipolar line
 		 * to be considered a potential match.
 		  */
-		float SIFTs_epipolar_TH;
+		float SIFTs_epipolar_TH{1.5f};
 
 		/** Indicates if the images (as well as the SIFT detected features)
 		 * should be shown in a window.
 		  */
-		bool PLOT_IMAGES;
+		bool PLOT_IMAGES{false};
 
 		/** Parameters of the SIFT feature detector/descriptors while inserting
 		 * images in the landmark map.
@@ -360,18 +360,18 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		  * @{ */
 		/** The number of rays from a 2D range scan will be decimated by this
 		 * factor (default = 1, no decimation) */
-		unsigned int rangeScan2D_decimation;
+		unsigned int rangeScan2D_decimation{20};
 		/** @} */
 
 		/** @name Parameters for: images
 		  * @{ */
-		double SIFTs_sigma_euclidean_dist;
-		double SIFTs_sigma_descriptor_dist;
-		float SIFTs_mahaDist_std;
-		float SIFTnullCorrespondenceDistance;
+		double SIFTs_sigma_euclidean_dist{0.30f};
+		double SIFTs_sigma_descriptor_dist{100.0f};
+		float SIFTs_mahaDist_std{4.0f};
+		float SIFTnullCorrespondenceDistance{4.0f};
 		/** Considers 1 out of "SIFTs_decimation" visual landmarks in the
 		 * observation during the likelihood computation. */
-		int SIFTs_decimation;
+		int SIFTs_decimation{1};
 		/** Parameters of the SIFT feature detector/descriptors while inserting
 		 * images in the landmark map.
 		  *  \note There exists another \a SIFT_feat_options field in the \a
@@ -386,18 +386,18 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		  * @{ */
 		/** The standard deviation used for Beacon ranges likelihood
 		 * (default=0.08) [meters] \sa beaconRangesUseObservationStd */
-		float beaconRangesStd;
+		float beaconRangesStd{0.08f};
 		/** (Default: false) If true, `beaconRangesStd` is ignored and each
 		 * individual `CObservationBeaconRanges::stdError` field is used
 		 * instead. */
-		bool beaconRangesUseObservationStd;
+		bool beaconRangesUseObservationStd{false};
 		/** @} */
 
 		/** @name Parameters for: External robot poses observation
 		  * @{ */
 		/** The standard deviation used for external robot poses likelihood
 		 * (default=0.05) [meters] */
-		float extRobotPoseStd;
+		float extRobotPoseStd{0.05f};
 		/** @} */
 
 		/** @name Parameters for: GPS readings
@@ -411,22 +411,22 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		   public:
 			TGPSOrigin();
 			/** degrees */
-			double longitude;
+			double longitude{-4.47763833333333};
 			/** degrees */
-			double latitude;
+			double latitude{36.71559000000000};
 			/** meters */
-			double altitude;
+			double altitude{42.3};
 			/** These 3 params allow rotating and shifting GPS coordinates with
 			 * other 2D maps (e.g. gridmaps).
 			  * - ang : Map rotation [deg]
 			  * - x_shift, y_shift: (x,y) offset [m] */
-			double ang, x_shift, y_shift;
+			double ang{0}, x_shift{0}, y_shift{0};
 			/** Minimum number of sats to take into account the data */
-			unsigned int min_sat;
+			unsigned int min_sat{4};
 		} GPSOrigin;
 
 		/** A constant "sigma" for GPS localization data (in meters) */
-		float GPS_sigma;
+		float GPS_sigma{1.0f};
 		/** @} */
 
 	} likelihoodOptions;
@@ -453,11 +453,11 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		/** Required number of times of a landmark to be seen not to be removed,
 		 * in "ellapsedTime" seconds.
 		  */
-		unsigned int minTimesSeen;
+		unsigned int minTimesSeen{2};
 
 		/** See "minTimesSeen"
 		  */
-		float ellapsedTime;
+		float ellapsedTime{4.0f};
 
 	} fuseOptions;
 

@@ -124,24 +124,24 @@ class CRangeBearingKFSLAM2D
 		mrpt::math::CVectorFloat stds_Q_no_odo;
 		/** The std. deviation of the sensor (for the matrix R in the kalman
 		 * filters), in meters and radians. */
-		float std_sensor_range, std_sensor_yaw;
+		float std_sensor_range{0.1f}, std_sensor_yaw;
 		/** Default = 3 */
-		float quantiles_3D_representation;
+		float quantiles_3D_representation{3};
 		/** Whether to fill m_SFs (default=false) */
-		bool create_simplemap;
+		bool create_simplemap{false};
 
 		// Data association:
-		TDataAssociationMethod data_assoc_method;
-		TDataAssociationMetric data_assoc_metric;
+		TDataAssociationMethod data_assoc_method{assocNN};
+		TDataAssociationMetric data_assoc_metric{metricMaha};
 		/** Threshold in [0,1] for the chi2square test for individual
 		 * compatibility between predictions and observations (default: 0.99) */
-		double data_assoc_IC_chi2_thres;
+		double data_assoc_IC_chi2_thres{0.99};
 		/** Whether to use mahalanobis (->chi2 criterion) vs. Matching
 		 * likelihood. */
-		TDataAssociationMetric data_assoc_IC_metric;
+		TDataAssociationMetric data_assoc_IC_metric{metricMaha};
 		/** Only if data_assoc_IC_metric==ML, the log-ML threshold (Default=0.0)
 		 */
-		double data_assoc_IC_ml_threshold;
+		double data_assoc_IC_ml_threshold{0.0};
 	};
 
 	/** The options for the algorithm */

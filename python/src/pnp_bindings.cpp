@@ -77,7 +77,7 @@ PnPAlgos::PnPAlgos(int new_m)
 	std::cout << " Initializing PnP class " << std::endl << std::endl;
 #endif
 }
-PnPAlgos::~PnPAlgos() {}
+PnPAlgos::~PnPAlgos() = default;
 #if MRPT_HAS_OPENCV
 int PnPAlgos::epnp_solve(
 	PyObject* obj_pts, PyObject* img_pts, int n, PyObject* cam_intrinsic,

@@ -34,5 +34,5 @@ class CPoseDirection : public QWidget
 
    private:
 	std::unique_ptr<Ui::CPoseDirection> m_ui;
-	int m_index;
+	int m_index{0};
 };

@@ -14,7 +14,7 @@
 using namespace mrpt::config;
 using namespace std;
 
-CConfigFilePrefixer::CConfigFilePrefixer() : m_bound_object(nullptr) {}
+CConfigFilePrefixer::CConfigFilePrefixer()  = default;
 CConfigFilePrefixer::CConfigFilePrefixer(
 	const CConfigFileBase& o, const std::string& prefix_sections,
 	const std::string& prefix_keys)

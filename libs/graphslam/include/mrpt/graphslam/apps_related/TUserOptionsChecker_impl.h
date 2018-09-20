@@ -321,8 +321,8 @@ void TUserOptionsChecker<GRAPH_t>::populateDeciderOptimizerProperties()
 			"information for estimating the robot movement";
 		dec->type = "Node";
 		dec->rawlog_format = "Both";
-		dec->observations_used.push_back("CActionRobotMovement2D - Format #1");
-		dec->observations_used.push_back("CObservationOdometry - Format #2");
+		dec->observations_used.emplace_back("CActionRobotMovement2D - Format #1");
+		dec->observations_used.emplace_back("CObservationOdometry - Format #2");
 		dec->is_slam_2d = true;
 		dec->is_slam_3d = true;
 
@@ -337,8 +337,8 @@ void TUserOptionsChecker<GRAPH_t>::populateDeciderOptimizerProperties()
 			"alignment for estimating the robot movement";
 		dec->type = "Node";
 		dec->rawlog_format = "#2 - Observation-only";
-		dec->observations_used.push_back("CObservation2DRangeScan - Format #2");
-		dec->observations_used.push_back("CObservation3DRangeScan - Format #2");
+		dec->observations_used.emplace_back("CObservation2DRangeScan - Format #2");
+		dec->observations_used.emplace_back("CObservation3DRangeScan - Format #2");
 		dec->is_slam_2d = true;
 
 		regs_descriptions.push_back(dec);
@@ -365,9 +365,8 @@ void TUserOptionsChecker<GRAPH_t>::populateDeciderOptimizerProperties()
 			"for adding a new edge";
 		dec->type = "Edge";
 		dec->rawlog_format = "Both";
-		dec->observations_used.push_back(
-			"CObservation2DRangeScan - Format #1, #2");
-		dec->observations_used.push_back("CObservation3DRangeScan - Format #2");
+		dec->observations_used.emplace_back("CObservation2DRangeScan - Format #1, #2");
+		dec->observations_used.emplace_back("CObservation3DRangeScan - Format #2");
 		dec->is_slam_2d = true;
 
 		regs_descriptions.push_back(dec);
@@ -393,8 +392,7 @@ void TUserOptionsChecker<GRAPH_t>::populateDeciderOptimizerProperties()
 			"Pairwise consistency matrix of each set.";
 		dec->type = "Edge";
 		dec->rawlog_format = "Both";
-		dec->observations_used.push_back(
-			"CObservation2DRangeScan - Format #1, #2");
+		dec->observations_used.emplace_back("CObservation2DRangeScan - Format #1, #2");
 		dec->is_slam_2d = true;
 
 		regs_descriptions.push_back(dec);

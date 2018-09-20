@@ -193,11 +193,9 @@ void CRandomFieldGridMap3D::internal_initialize(bool erase_prev_contents)
 					TInsertionOptions
  ---------------------------------------------------------------*/
 CRandomFieldGridMap3D::TInsertionOptions::TInsertionOptions()
-	: GMRF_lambdaPrior(0.01f),  // [GMRF model] The information (Lambda) of
-	  // fixed map constraints
-	  GMRF_skip_variance(false)
-{
-}
+	
+	  
+= default;
 
 void CRandomFieldGridMap3D::TInsertionOptions::dumpToTextStream(
 	std::ostream& out) const
@@ -315,7 +313,7 @@ void CRandomFieldGridMap3D::updateMapEstimation()
 
 	Eigen::VectorXd x_incr, x_var;
 	m_gmrf.updateEstimation(
-		x_incr, insertionOptions.GMRF_skip_variance ? NULL : &x_var);
+		x_incr, insertionOptions.GMRF_skip_variance ? nullptr : &x_var);
 
 	ASSERT_(size_t(m_map.size()) == size_t(x_incr.size()));
 	ASSERT_(

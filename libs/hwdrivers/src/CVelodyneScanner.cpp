@@ -95,27 +95,15 @@ std::string CVelodyneScanner::TModelPropertiesFactory::getListKnownModels()
 }
 
 CVelodyneScanner::CVelodyneScanner()
-	: m_model(CVelodyneScanner::VLP16),
-	  m_pos_packets_min_period(0.5),
-	  m_pos_packets_timing_timeout(30.0),
+	: 
 	  m_device_ip(""),
-	  m_return_frames(true),
-	  m_pcap_verbose(true),
+	  
 	  m_last_pos_packet_timestamp(INVALID_TIMESTAMP),
-	  m_pcap(nullptr),
-	  m_pcap_out(nullptr),
-	  m_pcap_dumper(nullptr),
-	  m_pcap_bpf_program(nullptr),
-	  m_pcap_file_empty(true),
-	  m_pcap_read_once(false),
-	  m_pcap_read_fast(false),
-	  m_pcap_read_full_scan_delay_ms(100),
-	  m_pcap_repeat_delay(0.0),
+	  
 	  m_hDataSock(INVALID_SOCKET),
 	  m_hPositionSock(INVALID_SOCKET),
-	  m_last_gps_rmc_age(INVALID_TIMESTAMP),
-	  m_lidar_rpm(0),
-	  m_lidar_return(UNCHANGED)
+	  m_last_gps_rmc_age(INVALID_TIMESTAMP)
+	  
 {
 	m_sensorLabel = "Velodyne";
 

@@ -30,7 +30,7 @@ CRobot2DPoseEstimator::CRobot2DPoseEstimator() { reset(); }
 /* --------------------------------------------------------
 				Dtor
    -------------------------------------------------------- */
-CRobot2DPoseEstimator::~CRobot2DPoseEstimator() {}
+CRobot2DPoseEstimator::~CRobot2DPoseEstimator() = default;
 /* --------------------------------------------------------
 				reset
    -------------------------------------------------------- */

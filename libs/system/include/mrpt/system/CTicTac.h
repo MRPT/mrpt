@@ -28,8 +28,7 @@ class CTicTac
 	double Tac() noexcept;
 
    private:
-	alignas(16) unsigned long largeInts[4];
+	alignas(16) unsigned long largeInts[4]{0, 0, 0, 0};
 };  // End of class def.
 
-}
-
+}  // namespace mrpt::system

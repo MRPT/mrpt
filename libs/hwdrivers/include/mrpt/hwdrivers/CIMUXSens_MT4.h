@@ -57,18 +57,18 @@ class CIMUXSens_MT4 : public hwdrivers::CGenericSensor
 	DEFINE_GENERIC_SENSOR(CIMUXSens_MT4)
    protected:
 	/** Baudrate, only for COM ports. */
-	int m_port_bauds;
+	int m_port_bauds{0};
 	/** The USB or COM port name (if blank -> autodetect) */
 	std::string m_portname;
-	int m_sampleFreq;
+	int m_sampleFreq{100};
 
-	uint64_t m_timeStartUI;
+	uint64_t m_timeStartUI{};
 	mrpt::system::TTimeStamp m_timeStartTT;
 
 	mrpt::poses::CPose3D m_sensorPose;
 
-	void* /*DeviceClass */ m_dev_ptr;
-	void* /*XsDeviceId */ m_devid_ptr;
+	void* /*DeviceClass */ m_dev_ptr{nullptr};
+	void* /*XsDeviceId */ m_devid_ptr{nullptr};
 
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(

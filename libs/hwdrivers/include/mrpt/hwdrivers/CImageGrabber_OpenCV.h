@@ -29,55 +29,48 @@ enum TCameraType
 };
 
 /** Options used when creating an OpenCV capture object
-  *  Some options apply to IEEE1394 cameras only.
-  * \sa CImageGrabber_OpenCV
-  * \ingroup mrpt_hwdrivers_grp
-  */
+ *  Some options apply to IEEE1394 cameras only.
+ * \sa CImageGrabber_OpenCV
+ * \ingroup mrpt_hwdrivers_grp
+ */
 struct TCaptureCVOptions
 {
-	TCaptureCVOptions()
-		: frame_width(0),
-		  frame_height(0),
-		  gain(0),
-		  ieee1394_fps(0),
-		  ieee1394_grayscale(false)
-	{
-	}
+	TCaptureCVOptions() = default;
 
 	/** (All cameras) Capture resolution (0: Leave the default) */
-	int frame_width, frame_height;
+	int frame_width{0}, frame_height{0};
 	/** (All cameras) Camera gain (0: Leave the default) */
-	double gain;
+	double gain{0};
 	/** (IEEE1394 cameras) Frame rate for the capture (0: Leave the default). */
-	double ieee1394_fps;
+	double ieee1394_fps{0};
 	/** (IEEE1394 cameras) Whether to grab grayscale images (Default=false). */
-	bool ieee1394_grayscale;
+	bool ieee1394_grayscale{false};
 };
 
 /** A class for grabing images from a "OpenCV"-compatible camera, or from an AVI
  * video file.
-  *   See the constructor for the options when opening the camera.
-  *
-  *  Unless input from AVI files is required, it is recommended to use the more
+ *   See the constructor for the options when opening the camera.
+ *
+ *  Unless input from AVI files is required, it is recommended to use the more
  * generic class
-  *   mrpt::hwdrivers::CCameraSensor.
-  *
-  * \note This class is only available when compiling MRPT with the flag
+ *   mrpt::hwdrivers::CCameraSensor.
+ *
+ * \note This class is only available when compiling MRPT with the flag
  * "MRPT_HAS_OPENCV" defined.
-  * \note Some code is based on the class CaptureCamera from the Orocos project.
-  * \sa mrpt::hwdrivers::CCameraSensor, CImageGrabber_dc1394
-  * \sa The most generic camera grabber in MRPT: mrpt::hwdrivers::CCameraSensor
-  * \ingroup mrpt_hwdrivers_grp
-  */
+ * \note Some code is based on the class CaptureCamera from the Orocos project.
+ * \sa mrpt::hwdrivers::CCameraSensor, CImageGrabber_dc1394
+ * \sa The most generic camera grabber in MRPT: mrpt::hwdrivers::CCameraSensor
+ * \ingroup mrpt_hwdrivers_grp
+ */
 class CImageGrabber_OpenCV
 {
    protected:
 	/** Set to false if we could not initialize the camera.
-	  */
+	 */
 	bool m_bInitialized;
 
 	/** Internal use:
-	  */
+	 */
 	mrpt::void_ptr_noncopy /*CvCapture*/ m_capture;
 
    public:
@@ -95,11 +88,11 @@ class CImageGrabber_OpenCV
 		const TCaptureCVOptions& options = TCaptureCVOptions());
 
 	/** Constructor for AVI files:
-	*/
+	 */
 	CImageGrabber_OpenCV(const std::string& AVI_fileName);
 
 	/** Destructor
-	*/
+	 */
 	virtual ~CImageGrabber_OpenCV();
 
 	/** Check whether the camera has been open successfully. */
@@ -108,12 +101,12 @@ class CImageGrabber_OpenCV
 	 * \param out_observation The object to be filled with sensed data.
 	 *
 	 * \return false on any error, true if all go fine.
-	*/
+	 */
 	bool getObservation(mrpt::obs::CObservationImage& out_observation);
 
 };  // End of class
 
-}
+}  // namespace mrpt::hwdrivers
 MRPT_ENUM_TYPE_BEGIN(mrpt::hwdrivers::TCameraType)
 MRPT_FILL_ENUM_MEMBER(mrpt::hwdrivers, CAMERA_CV_AUTODETECT);
 MRPT_FILL_ENUM_MEMBER(mrpt::hwdrivers, CAMERA_CV_DC1394);
@@ -122,6 +115,3 @@ MRPT_FILL_ENUM_MEMBER(mrpt::hwdrivers, CAMERA_CV_VFW);
 MRPT_FILL_ENUM_MEMBER(mrpt::hwdrivers, CAMERA_CV_MIL);
 MRPT_FILL_ENUM_MEMBER(mrpt::hwdrivers, CAMERA_CV_DSHOW);
 MRPT_ENUM_TYPE_END()
-
-
-

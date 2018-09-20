@@ -251,7 +251,7 @@ int main(int argc, char** argv)
 				cout << endl;
 
 				// Make list of all data:
-				all_perf_data.push_back(pair<string, double>(it->name, t));
+				all_perf_data.emplace_back(it->name, t);
 
 				if (doLog)
 				{

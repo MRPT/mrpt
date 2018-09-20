@@ -69,11 +69,11 @@ class CSickLaserSerial : public C2DRangeFinderAbstract
 	DEFINE_GENERIC_SENSOR(CSickLaserSerial)
 
    private:
-	bool m_mm_mode;
+	bool m_mm_mode{false};
 	/** 100 or 180 deg */
-	int m_scans_FOV;
+	int m_scans_FOV{180};
 	/** 1/100th of deg: 100, 50 or 25 */
-	int m_scans_res;
+	int m_scans_res{50};
 
 	/** The sensor 6D pose: */
 	mrpt::math::TPose3D m_sensorPose;
@@ -116,15 +116,15 @@ class CSickLaserSerial : public C2DRangeFinderAbstract
 	std::string m_com_port;
 	/** Will be !=nullptr only if I created it, so I must destroy it at the end.
 	 */
-	mrpt::comms::CSerialPort* m_mySerialPort;
+	mrpt::comms::CSerialPort* m_mySerialPort{nullptr};
 	/** Baudrate: 9600, 38400, 500000 */
-	int m_com_baudRate;
+	int m_com_baudRate{38400};
 	/** Default = 1 */
-	unsigned int m_nTries_connect;
-	unsigned int m_nTries_current;
+	unsigned int m_nTries_connect{1};
+	unsigned int m_nTries_current{0};
 	/** If true, doesn't send the initialization commands to the laser and go
 	 * straight to capturing */
-	bool m_skip_laser_config;
+	bool m_skip_laser_config{false};
 
    protected:
 	/** See the class documentation at the top for expected parameters */

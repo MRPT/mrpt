@@ -60,11 +60,11 @@ class SO_average<2>
 	double get_average() const;
 	/** (Default=false) Set to true if you want to raise an exception on
 	 * undetermined average values. */
-	bool enable_exception_on_undeterminate;
+	bool enable_exception_on_undeterminate{false};
 
    private:
-	double m_count;
-	double m_accum_x, m_accum_y;
+	double m_count{0};
+	double m_accum_x{0}, m_accum_y{0};
 };  // end SO_average<2>
 
 /** Computes weighted and un-weighted averages of SO(3) orientations.
@@ -101,10 +101,10 @@ class SO_average<3>
 	Eigen::Matrix3d get_average() const;
 	/** (Default=false) Set to true if you want to raise an exception on
 	 * undetermined average values. */
-	bool enable_exception_on_undeterminate;
+	bool enable_exception_on_undeterminate{false};
 
    private:
-	double m_count;
+	double m_count{0};
 	Eigen::Matrix3d m_accum_rot;
 };  // end SO_average<3>
 
@@ -138,11 +138,11 @@ class SE_average<2>
 	void get_average(mrpt::poses::CPose2D& out_mean) const;
 	/** (Default=false) Set to true if you want to raise an exception on
 	 * undetermined average values. */
-	bool enable_exception_on_undeterminate;
+	bool enable_exception_on_undeterminate{false};
 
    private:
-	double m_count;
-	double m_accum_x, m_accum_y;
+	double m_count{0};
+	double m_accum_x{0}, m_accum_y{0};
 	SO_average<2> m_rot_part;
 };  // end SE_average<2>
 
@@ -176,11 +176,11 @@ class SE_average<3>
 	void get_average(mrpt::poses::CPose3D& out_mean) const;
 	/** (Default=false) Set to true if you want to raise an exception on
 	 * undetermined average values. */
-	bool enable_exception_on_undeterminate;
+	bool enable_exception_on_undeterminate{false};
 
    private:
-	double m_count;
-	double m_accum_x, m_accum_y, m_accum_z;
+	double m_count{0};
+	double m_accum_x{0}, m_accum_y{0}, m_accum_z{0};
 	SO_average<3> m_rot_part;
 };  // end SE_average<3>
 

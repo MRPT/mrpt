@@ -83,7 +83,7 @@ namespace nanoflann
 		CountType count;
 
 	public:
-		inline KNNResultSet(CountType capacity_) : indices(0), dists(0), capacity(capacity_), count(0)
+		inline KNNResultSet(CountType capacity_) : indices(nullptr), dists(nullptr), capacity(capacity_), count(0)
 		{
 		}
 
@@ -153,7 +153,7 @@ namespace nanoflann
 			init();
 		}
 
-		inline ~RadiusResultSet() { }
+		inline ~RadiusResultSet() = default;
 
 		inline void init() { clear(); }
 		inline void clear() { m_indices_dists.clear(); }
@@ -474,7 +474,7 @@ namespace nanoflann
 		void internal_init()
 		{
 			remaining = 0;
-			base = NULL;
+			base = nullptr;
 			usedMemory = 0;
 			wastedMemory = 0;
 		}
@@ -500,7 +500,7 @@ namespace nanoflann
 		/** Frees all allocated memory chunks */
 		void free_all()
 		{
-			while (base != NULL) {
+			while (base != nullptr) {
 				void *prev = *(static_cast<void**>( base)); /* Get pointer to prev block. */
 				::free(base);
 				base = prev;
@@ -535,7 +535,7 @@ namespace nanoflann
 				void* m = ::malloc(blocksize);
 				if (!m) {
 					fprintf(stderr,"Failed to allocate memory.\n");
-					return NULL;
+					return nullptr;
 				}
 
 				/* Fill first word of new block with pointer to previous block. */
@@ -741,7 +741,7 @@ namespace nanoflann
 	{
 	private:
 		/** Hidden copy constructor, to disallow copying indices (Not implemented) */
-		KDTreeSingleIndexAdaptor(const KDTreeSingleIndexAdaptor<Distance,DatasetAdaptor,DIM,IndexType>&);
+		KDTreeSingleIndexAdaptor(const KDTreeSingleIndexAdaptor<Distance,DatasetAdaptor,DIM,IndexType>&) = delete;
 	public:
 		typedef typename Distance::ElementType  ElementType;
 		typedef typename Distance::DistanceType DistanceType;
@@ -829,7 +829,7 @@ namespace nanoflann
 		 * @param params Basically, the maximum leaf node size
 		 */
 		KDTreeSingleIndexAdaptor(const int dimensionality, const DatasetAdaptor& inputData, const KDTreeSingleIndexAdaptorParams& params = KDTreeSingleIndexAdaptorParams() ) :
-			dataset(inputData), index_params(params), root_node(NULL), distance(inputData)
+			dataset(inputData), index_params(params), root_node(nullptr), distance(inputData)
 		{
 			m_size = dataset.kdtree_get_point_count();
 			m_size_at_index_build = m_size;
@@ -842,13 +842,13 @@ namespace nanoflann
 		}
 
 		/** Standard destructor */
-		~KDTreeSingleIndexAdaptor() { }
+		~KDTreeSingleIndexAdaptor() = default;
 
 		/** Frees the previously-built index. Automatically called within buildIndex(). */
 		void freeIndex()
 		{
 			pool.free_all();
-			root_node=NULL;
+			root_node=nullptr;
 			m_size_at_index_build = 0;
 		}
 
@@ -919,7 +919,7 @@ namespace nanoflann
 		 * the result object.
 		 *  \sa radiusSearch, findNeighbors
 		 * \note nChecks_IGNORED is ignored but kept for compatibility with the original FLANN interface.
-		 * \return Number `N` of valid points in the result set. Only the first `N` entries in `out_indices` and `out_distances_sq` will be valid. 
+		 * \return Number `N` of valid points in the result set. Only the first `N` entries in `out_indices` and `out_distances_sq` will be valid.
 		 *         Return may be less than `num_closest` only if the number of elements in the tree is less than `num_closest`.
 		 */
 		size_t knnSearch(const ElementType *query_point, const size_t num_closest, IndexType *out_indices, DistanceType *out_distances_sq, const int /* nChecks_IGNORED */ = 10) const
@@ -1044,7 +1044,7 @@ namespace nanoflann
 
 			/* If too few exemplars remain, then make this a leaf node. */
 			if ( (right-left) <= static_cast<IndexType>(m_leaf_max_size) ) {
-				node->child1 = node->child2 = NULL;    /* Mark as leaf node. */
+				node->child1 = node->child2 = nullptr;    /* Mark as leaf node. */
 				node->node_type.lr.left = left;
 				node->node_type.lr.right = right;
 
@@ -1208,7 +1208,7 @@ namespace nanoflann
 						 distance_vector_t& dists, const float epsError) const
 		{
 			/* If this is a leaf node, then do check and return. */
-			if ((node->child1 == NULL)&&(node->child2 == NULL)) {
+			if ((node->child1 == nullptr)&&(node->child2 == nullptr)) {
 				//count_leaf += (node->lr.right-node->lr.left);  // Removed since was neither used nor returned to the user.
 				DistanceType worst_dist = result_set.worstDist();
 				for (IndexType i=node->node_type.lr.left; i<node->node_type.lr.right; ++i) {
@@ -1326,7 +1326,7 @@ namespace nanoflann
 		}
 	private:
 		/** Hidden copy constructor, to disallow copying this class (Not implemented) */
-		KDTreeEigenMatrixAdaptor(const self_t&);
+		KDTreeEigenMatrixAdaptor(const self_t&) = delete;
 	public:
 
 		~KDTreeEigenMatrixAdaptor() {

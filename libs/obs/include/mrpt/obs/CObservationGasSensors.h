@@ -35,11 +35,7 @@ class CObservationGasSensors : public CObservation
 	struct TObservationENose
 	{
 		TObservationENose()
-			: eNosePoseOnTheRobot(),
-			  readingsVoltage(),
-			  sensorTypes(),
-			  hasTemperature(false),
-			  temperature()
+			: eNosePoseOnTheRobot(), readingsVoltage(), sensorTypes()
 		{
 		}
 
@@ -50,19 +46,19 @@ class CObservationGasSensors : public CObservation
 		std::vector<float> readingsVoltage;
 
 		/** The kind of sensors in the array (size of "sensorTypes" is the same
-		  *that the size of "readingsVoltage")
-		  *  The meaning of values for types of sensors is as follows:
-		  *	 0x0000 : No sensor installed in this slot
-		  *  0x2600 : Figaro TGS 2600
-		  *  0x2602 : Figaro TGS 2602
-		  *  0x2620 : Figaro TGS 2620
-		  *  0x4161 : Figaro TGS 4161
-		  */
+		 *that the size of "readingsVoltage")
+		 *  The meaning of values for types of sensors is as follows:
+		 *	 0x0000 : No sensor installed in this slot
+		 *  0x2600 : Figaro TGS 2600
+		 *  0x2602 : Figaro TGS 2602
+		 *  0x2620 : Figaro TGS 2620
+		 *  0x4161 : Figaro TGS 4161
+		 */
 		std::vector<int> sensorTypes;
 		/** Must be true for "temperature" to contain a valid measurement */
-		bool hasTemperature;
+		bool hasTemperature{false};
 		/** Sensed temperature in Celcius (valid if hasTemperature=true only) */
-		float temperature;
+		float temperature{0};
 		/** True if the input to this chamber/enose is poluted air, False if
 		 * clean air */
 		bool isActive;
@@ -88,7 +84,7 @@ class CObservationGasSensors : public CObservation
 	{
 	   public:
 		/** @name MOS-model parameters
-		  *  @{  */
+		 *  @{  */
 		/** The size of the mobile average window used to reduce noise on sensor
 		 * reagings. */
 		size_t winNoise_size{30};
@@ -118,7 +114,7 @@ class CObservationGasSensors : public CObservation
 	   protected:
 		/** The content of each m_lastObservations in the estimation when using
 		 * the option : MOS_MODEl (useMOSmodel =1)
-			*/
+		 */
 		struct TdataMap
 		{
 			/** Sensore reading */
@@ -153,19 +149,19 @@ class CObservationGasSensors : public CObservation
 		bool first_iteration{true};
 
 		/** Estimates the gas concentration based on readings and sensor model
-		  */
+		 */
 		void inverse_MOSmodeling(
 			const float& reading, const mrpt::system::TTimeStamp& timestamp);
 
 		/** Reduce noise by averaging with a mobile window of specific size
 		 * (winNoise_size)
-		  */
+		 */
 		void noise_filtering(
 			const float& reading, const mrpt::system::TTimeStamp& timestamp);
 
 		/** Save the gas distribution estiamtion into a log file for offline
 		 * representation
-		*/
+		 */
 		void save_log_map(
 			const mrpt::system::TTimeStamp& timestamp, const float& reading,
 			const float& estimation, const float& tau);
@@ -174,6 +170,4 @@ class CObservationGasSensors : public CObservation
 
 };  // End of class def.
 
-}
-
-
+}  // namespace mrpt::obs

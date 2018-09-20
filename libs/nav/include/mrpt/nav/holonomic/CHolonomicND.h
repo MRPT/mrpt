@@ -90,10 +90,10 @@ class CHolonomicND : public CAbstractHolonomicReactiveMethod
 	/** Algorithm options */
 	struct TOptions : public mrpt::config::CLoadableOptions
 	{
-		double TOO_CLOSE_OBSTACLE, WIDE_GAP_SIZE_PERCENT,
-			RISK_EVALUATION_SECTORS_PERCENT;
-		double RISK_EVALUATION_DISTANCE, MAX_SECTOR_DIST_FOR_D2_PERCENT;
-		double TARGET_SLOW_APPROACHING_DISTANCE;
+		double TOO_CLOSE_OBSTACLE{0.15}, WIDE_GAP_SIZE_PERCENT{0.25},
+			RISK_EVALUATION_SECTORS_PERCENT{0.10};
+		double RISK_EVALUATION_DISTANCE{0.4}, MAX_SECTOR_DIST_FOR_D2_PERCENT{0.25};
+		double TARGET_SLOW_APPROACHING_DISTANCE{0.60};
 		/** Vector of 4 weights: [0]=Free space, [1]=Dist. in sectors,
 		 * [2]=Closer to target (Euclidean), [3]=Hysteresis */
 		std::vector<double> factorWeights;

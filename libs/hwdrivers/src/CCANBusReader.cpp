@@ -53,14 +53,8 @@ char hexCharToInt(char n)
 -------------------------------------------------------------*/
 CCANBusReader::CCANBusReader()
 	: mrpt::system::COutputLogger("CCANBusReader"),
-	  m_com_port(),
-	  m_mySerialPort(nullptr),
-	  m_com_baudRate(57600),
-	  m_nTries_connect(1),
-	  m_nTries_current(0),
-	  m_canbus_speed(250000),
-	  m_canreader_timestamp(false),
-	  m_CANBusChannel_isOpen(false)
+	  m_com_port()
+	  
 {
 	m_sensorLabel = "CANBusReader";
 	memset(m_received_frame_buffer, 0, sizeof(m_received_frame_buffer));

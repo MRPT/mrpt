@@ -23,14 +23,9 @@ IMPLEMENTS_SERIALIZABLE(COctoMapVoxels, CRenderizableDisplayList, mrpt::opengl)
 
 /** Ctor */
 COctoMapVoxels::COctoMapVoxels()
-	: m_enable_lighting(false),
-	  m_enable_cube_transparency(true),
-	  m_showVoxelsAsPoints(false),
-	  m_showVoxelsAsPointsSize(3.0f),
-	  m_show_grids(false),
-	  m_grid_width(1.0f),
-	  m_grid_color(0xE0, 0xE0, 0xE0, 0x90),
-	  m_visual_mode(COctoMapVoxels::COLOR_FROM_OCCUPANCY)
+	: 
+	  m_grid_color(0xE0, 0xE0, 0xE0, 0x90)
+	  
 {
 }
 

@@ -63,7 +63,7 @@ class CMyRedirector : public std::streambuf
 			setp(ptr, ptr + bufferSize);
 		}
 		else
-			setp(0, 0);
+			setp(nullptr, nullptr);
 
 		// Redirect:
 		sbOld = std::cout.rdbuf();

@@ -41,7 +41,7 @@ inline std::string throw_typed_exception(
 #define THROW_EXCEPTION(msg) THROW_TYPED_EXCEPTION(msg, std::logic_error);
 
 #define THROW_EXCEPTION_FMT(_FORMAT_STRING, ...) \
-	THROW_EXCEPTION(mrpt::format(_FORMAT_STRING, __VA_ARGS__));
+	THROW_EXCEPTION(mrpt::format(_FORMAT_STRING, __VA_ARGS__))
 
 #define THROW_TYPED_EXCEPTION_FMT(exceptionClass, _FORMAT_STRING, ...) \
 	THROW_TYPED_EXCEPTION(                                             \
@@ -75,7 +75,8 @@ inline std::string throw_stacked_exception(
  *for x=%i",x
  */
 #define THROW_STACKED_EXCEPTION_CUSTOM_MSG2(e, stuff, param1) \
-	throw std::logic_error(throw_stacked_exception_custom_msg2(e, stuff, param1))
+	throw std::logic_error(                                   \
+		throw_stacked_exception_custom_msg2(e, stuff, param1))
 template <typename E, typename T>
 inline std::string throw_stacked_exception_custom_msg2(
 	E&& e, const char* stuff, T&& param1)
@@ -208,12 +209,24 @@ inline std::string asrt_fail(
 #define ASSERTDEBMSG_(f, __ERROR_MSG) \
 	{                                 \
 	}
-#define ASSERTDEB_EQUAL_(__A, __B) {}
-#define ASSERTDEB_NOT_EQUAL_(__A, __B) {}
-#define ASSERTDEB_BELOW_(__A, __B) {}
-#define ASSERTDEB_ABOVE_(__A, __B) {}
-#define ASSERTDEB_BELOWEQ_(__A, __B) {}
-#define ASSERTDEB_ABOVEEQ_(__A, __B) {}
+#define ASSERTDEB_EQUAL_(__A, __B) \
+	{                              \
+	}
+#define ASSERTDEB_NOT_EQUAL_(__A, __B) \
+	{                                  \
+	}
+#define ASSERTDEB_BELOW_(__A, __B) \
+	{                              \
+	}
+#define ASSERTDEB_ABOVE_(__A, __B) \
+	{                              \
+	}
+#define ASSERTDEB_BELOWEQ_(__A, __B) \
+	{                                \
+	}
+#define ASSERTDEB_ABOVEEQ_(__A, __B) \
+	{                                \
+	}
 
 #endif
 

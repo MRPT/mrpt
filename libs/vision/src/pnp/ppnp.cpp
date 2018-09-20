@@ -82,5 +82,5 @@ bool mrpt::vision::pnp::ppnp::compute_pose(
 
 	t = -R * c;
 
-	return 1;
+	return true;
 }

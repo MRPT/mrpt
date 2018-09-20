@@ -30,7 +30,7 @@ bool holonomic_navigator_demoApp::OnInit()
 	if (wxsOK)
 	{
 		holonomic_navigator_demoFrame* Frame =
-			new holonomic_navigator_demoFrame(0);
+			new holonomic_navigator_demoFrame(nullptr);
 		Frame->Show();
 		SetTopWindow(Frame);
 	}

@@ -41,7 +41,7 @@ struct safe_ptr_basic
 		return *this;
 	}
 
-	virtual ~safe_ptr_basic() {}
+	virtual ~safe_ptr_basic() = default;
 	bool operator==(const T* o) const { return o == ptr; }
 	bool operator==(const safe_ptr_basic<T>& o) const { return o.ptr == ptr; }
 	bool operator!=(const T* o) const { return o != ptr; }
@@ -74,7 +74,7 @@ struct safe_ptr : safe_ptr_basic<T>
 	safe_ptr() : safe_ptr_basic<T>() {}
 	safe_ptr(const safe_ptr<T>& o) : safe_ptr_basic<T>(o) {}
 	safe_ptr(const T* p) : safe_ptr_basic<T>(p) {}
-	~safe_ptr() override {}
+	~safe_ptr() override = default;
 	T& operator*()
 	{
 		ASSERT_(safe_ptr_basic<T>::ptr);
@@ -130,7 +130,7 @@ struct non_copiable_ptr_basic
 	/** This method can change the pointer, since the change is made explicitly,
 	 * not through copy operators transparent to the user. */
 	void set(const T* p) { ptr = const_cast<T*>(p); }
-	virtual ~non_copiable_ptr_basic() {}
+	virtual ~non_copiable_ptr_basic() = default;
 	bool operator==(const T* o) const { return o == ptr; }
 	bool operator==(const non_copiable_ptr_basic<T>& o) const
 	{
@@ -184,7 +184,7 @@ struct non_copiable_ptr : non_copiable_ptr_basic<T>
 		THROW_EXCEPTION("Pointer non-copiable...");
 	}
 
-	virtual ~non_copiable_ptr() {}
+	virtual ~non_copiable_ptr() = default;
 	T& operator*()
 	{
 		ASSERT_(non_copiable_ptr_basic<T>::ptr);
@@ -236,7 +236,7 @@ struct ignored_copy_ptr
 	/** This method can change the pointer, since the change is made explicitly,
 	 * not through copy operators transparent to the user. */
 	void set(const T* p) { ptr = const_cast<T*>(p); }
-	virtual ~ignored_copy_ptr() {}
+	virtual ~ignored_copy_ptr() = default;
 	bool operator==(const T* o) const { return o == ptr; }
 	bool operator==(const ignored_copy_ptr<T>& o) const { return o.ptr == ptr; }
 	bool operator!=(const T* o) const { return o != ptr; }
@@ -282,7 +282,7 @@ struct copiable_NULL_ptr_basic
 		return *this;
 	}
 
-	virtual ~copiable_NULL_ptr_basic() {}
+	virtual ~copiable_NULL_ptr_basic() = default;
 	bool operator==(const T* o) const { return o == ptr; }
 	bool operator==(const copiable_NULL_ptr_basic<T>& o) const
 	{
@@ -330,7 +330,7 @@ struct copiable_NULL_ptr : copiable_NULL_ptr_basic<T>
 		return *this;
 	}
 
-	virtual ~copiable_NULL_ptr() {}
+	virtual ~copiable_NULL_ptr() = default;
 	T& operator*()
 	{
 		ASSERT_(copiable_NULL_ptr_basic<T>::ptr);

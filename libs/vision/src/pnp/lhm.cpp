@@ -229,5 +229,5 @@ bool lhm::compute_pose(
 	R_ = R;
 	t_ = t - R * p_bar;
 
-	return 1;
+	return true;
 }

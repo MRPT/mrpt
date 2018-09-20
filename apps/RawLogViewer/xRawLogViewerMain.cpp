@@ -126,7 +126,7 @@ wxStaticBitmapPopup::wxStaticBitmapPopup(
 	mnuImages.Append(mnu1);
 	mnuImages.Append(mnu2);
 }
-wxStaticBitmapPopup::~wxStaticBitmapPopup() {}
+wxStaticBitmapPopup::~wxStaticBitmapPopup() = default;
 void wxStaticBitmapPopup::OnShowPopupMenu(wxMouseEvent& event)
 {
 	PopupMenu(&mnuImages);
@@ -625,7 +625,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 		StaticText4, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
 	toolbarcomboImages = new wxComboBox(
 		this, ID_COMBO_IMG_DIRS, wxEmptyString, wxDefaultPosition,
-		wxDefaultSize, 0, 0, 0, wxDefaultValidator, _T("ID_COMBO_IMG_DIRS"));
+		wxDefaultSize, 0, nullptr, 0, wxDefaultValidator, _T("ID_COMBO_IMG_DIRS"));
 	toolbarcomboImages->SetMinSize(wxSize(250, -1));
 	toolbarcomboImages->SetToolTip(_("Found external images paths"));
 	toolbarcomboImages->SetHelpText(_("Found external images paths"));
@@ -6137,12 +6137,12 @@ void xRawLogViewerFrame::OnMenuRegenerateTimestampBySF(wxCommandEvent& event)
 // Used below. Must be at global scope for usage within STL.
 struct TImageToSaveData
 {
-	TImageToSaveData() : img(nullptr) {}
+	TImageToSaveData()  = default;
 	TImageToSaveData(mrpt::img::CImage* _img, const char* str)
 		: img(_img), channel_desc(str)
 	{
 	}
-	mrpt::img::CImage* img;
+	mrpt::img::CImage* img{nullptr};
 	std::string channel_desc;  // LEFT, RIGHT, etc...
 };
 

@@ -48,10 +48,10 @@ class CMRVisualizer
 	~CMRVisualizer() override;
 	void drawNodePoints(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::system::TParametersDouble* viz_params = NULL) const override;
+		const mrpt::system::TParametersDouble* viz_params = nullptr) const override;
 	void drawEdges(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::system::TParametersDouble* viz_params = NULL) const override;
+		const mrpt::system::TParametersDouble* viz_params = nullptr) const override;
 
    private:
 };
@@ -79,10 +79,10 @@ class CMRVisualizer<
 	~CMRVisualizer();
 	void drawNodePoints(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::system::TParametersDouble* viz_params = NULL) const;
+		const mrpt::system::TParametersDouble* viz_params = nullptr) const;
 	void drawEdges(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::system::TParametersDouble* viz_params = NULL) const;
+		const mrpt::system::TParametersDouble* viz_params = nullptr) const;
 
    private:
 };
