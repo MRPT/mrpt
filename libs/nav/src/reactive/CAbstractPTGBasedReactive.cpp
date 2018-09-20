@@ -495,7 +495,9 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		bool NOP_not_too_close_and_have_to_slowdown = true;
 		double NOP_max_time = -1.0, NOP_At = -1.0;
 		double slowdowndist = .0;
-		CParameterizedTrajectoryGenerator * last_sent_ptg = m_lastSentVelCmd.isValid() ? getPTG(m_lastSentVelCmd.ptg_index) : nullptr;
+		CParameterizedTrajectoryGenerator * last_sent_ptg =
+			(m_lastSentVelCmd.isValid() && m_lastSentVelCmd.ptg_index>=0) ?
+				getPTG(m_lastSentVelCmd.ptg_index) : nullptr;
 		if (last_sent_ptg) {
 			// So supportSpeedAtTarget() below is evaluated in the correct context:
 			last_sent_ptg->updateNavDynamicState(m_lastSentVelCmd.ptg_dynState);
