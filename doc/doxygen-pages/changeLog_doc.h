@@ -28,6 +28,7 @@
 		- CNetworkOfPoses: read/write format made compatible with G2O EDGE_SE2 types.
 	- \ref mrpt_nav_grp
 		- Add virtual method CAbstractPTGBasedReactive::getHoloMethod()
+		- New method CAbstractPTGBasedReactive::enableRethrowNavExceptions() to rethrow exceptions during navigation.
 	- BUG FIXES:
 		- Fix missing "-ldl" linker flag.
 		- Fix building against wxWidgets 3.1.1 in Windows (zlib link error).
