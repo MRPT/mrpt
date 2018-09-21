@@ -137,6 +137,16 @@ namespace mrpt
 		/** Get the current frame tf object (defaults to nullptr) \sa setFrameTF */
 		const mrpt::poses::FrameTransformer<2> * getFrameTF() const { return m_frame_tf; }
 
+		/** By default, error exceptions on navigationStep() will dump an error message
+		* to the output logger interface. If rethrow is enabled (default=false), the
+		* error message will be reported as well, but exceptions will be re-thrown.
+		*/
+		void enableRethrowNavExceptions(const bool enable) {
+			m_rethrow_exceptions = enable;
+		}
+		bool isRethrowNavExceptionsEnabled() const {
+			return m_rethrow_exceptions;
+		}
 		/** @}*/
 
 		struct NAV_IMPEXP TAbstractNavigatorParams : public mrpt::utils::CLoadableOptions
@@ -160,6 +170,7 @@ namespace mrpt
 		TState  m_lastNavigationState; //!< Last internal state of navigator:
 		bool    m_navigationEndEventSent; //!< Will be false until the navigation end is sent, and it is reset with each new command
 		int m_counter_check_target_is_blocked;
+		bool m_rethrow_exceptions;
 
 		/** Called before starting a new navigation. Internally, it calls to child-implemented onStartNewNavigation() */
 		void internal_onStartNewNavigation();

@@ -88,6 +88,7 @@ CAbstractNavigator::CAbstractNavigator(CRobot2NavInterface &react_iterf_impl) :
 	m_lastNavigationState ( IDLE ),
 	m_navigationEndEventSent(false),
 	m_counter_check_target_is_blocked(0),
+	m_rethrow_exceptions(false),
 	m_navigationState     ( IDLE ),
 	m_navigationParams    ( nullptr ),
 	m_robot               ( react_iterf_impl ),
@@ -579,10 +580,12 @@ void CAbstractNavigator::performNavigationStepNavigating(bool call_virtual_nav_m
 	catch (std::exception &e)
 	{
 		MRPT_LOG_ERROR_FMT("[CAbstractNavigator::navigationStep] Exception:\n %s",e.what());
+		if (m_rethrow_exceptions) throw;
 	}
 	catch (...)
 	{
 		MRPT_LOG_ERROR("[CAbstractNavigator::navigationStep] Untyped exception!");
+		if (m_rethrow_exceptions) throw;
 	}
 	m_navigationState = prevState;
 }
