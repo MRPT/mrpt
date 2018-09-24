@@ -10,13 +10,23 @@ set(CMAKE_MRPT_HAS_ROS_SYSTEM 0)
 if (NOT DISABLE_ROS)
 	# Bare minimum pkg:
 	find_package(roscpp QUIET)
-	if(roscpp_FOUND)
-		set(CMAKE_MRPT_HAS_ROS 1)
-		set(CMAKE_MRPT_HAS_ROS_SYSTEM 1)
+	find_package(rosbag QUIET)
+	find_package(cv_bridge QUIET)
+	find_package(sensor_msgs QUIET)
+	find_package(tf2_msgs QUIET)
+	find_package(tf2 QUIET)
+
+	if(roscpp_FOUND AND
+	   rosbag_FOUND AND
+	   cv_bridge_FOUND AND
+	   sensor_msgs_FOUND AND
+	   tf2_msgs_FOUND AND
+	   tf2_FOUND)
+		SET(CMAKE_MRPT_HAS_ROS 1)
+		SET(CMAKE_MRPT_HAS_ROS_SYSTEM 1)
 
 		# Optional ROS pkgs:
 		find_package(std_msgs QUIET)
-		find_package(sensor_msgs QUIET)
 		find_package(geometry_msgs QUIET)
 		find_package(nav_msgs QUIET)
 
