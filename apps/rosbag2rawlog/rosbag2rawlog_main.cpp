@@ -26,11 +26,17 @@
 
 #include <rosbag/bag.h>
 #include <rosbag/view.h>
+
 #include <cv_bridge/cv_bridge.h>
-#include <tf2_msgs/TFMessage.h>
-#include <std_msgs/Int32.h>
+#include <sensor_msgs/CameraInfo.h>
 #include <sensor_msgs/Image.h>
+#include <std_msgs/Int32.h>
+#include <tf2_msgs/TFMessage.h>
 #include <tf2_ros/buffer.h>
+
+#include <yaml-cpp/yaml.h>
+
+#include <memory>
 
 using namespace mrpt;
 //using namespace mrpt::obs;
@@ -49,6 +55,10 @@ TCLAP::ValueArg<std::string> arg_output_file(
 	"o", "output", "Output dataset (*.rawlog)", true, "", "dataset_out.rawlog",
 	cmd);
 
+TCLAP::ValueArg<std::string> arg_config_file(
+	"c", "config", "Config yaml file (*.yml)", true, "", "config.yml",
+	cmd);
+
 TCLAP::SwitchArg arg_overwrite(
 	"w", "overwrite", "Force overwrite target file without prompting.", cmd,
 	false);
@@ -58,21 +68,185 @@ TCLAP::ValueArg<std::string> arg_world_frame(
 	cmd);
 
 
+using CallbackFunction = std::function<mrpt::serialization::CSerializable::Ptr(const rosbag::MessageInstance &)>;
+
+template <typename ... Args>
+class RosSynchronizer : public std::enable_shared_from_this<RosSynchronizer<Args...>>
+{
+public:
+	using Tuple = std::tuple<boost::shared_ptr<Args>...>;
+
+	using Callback = std::function<mrpt::serialization::CSerializable::Ptr(const boost::shared_ptr<Args> &...)>;
+
+	RosSynchronizer(const Callback &callback) : m_callback(callback)
+	{
+	}
+
+
+	template <std::size_t ... N>
+	mrpt::serialization::CSerializable::Ptr signal(std::index_sequence<N...>)
+	{
+		auto ptr = m_callback(std::get<N>(m_cache)...);
+		m_cache = {};
+		return ptr;
+	}
+
+	mrpt::serialization::CSerializable::Ptr signal()
+	{
+		return signal(std::make_index_sequence<sizeof...(Args)>{});
+	}
+
+	template <std::size_t... N>
+	bool check(std::index_sequence<N...>)
+	{
+		return (std::get<N>(m_cache) && ...);
+	}
+
+	bool check()
+	{
+		return check(std::make_index_sequence<sizeof...(Args)>{});
+	}
+
+	template <size_t i>
+	CallbackFunction bind()
+	{
+		std::shared_ptr<RosSynchronizer> ptr = this->shared_from_this();
+		return [=](const rosbag::MessageInstance &rosmsg)
+		{
+			if(!std::get<i>(ptr->m_cache))
+			{
+				std::get<i>(ptr->m_cache) = 
+					rosmsg.instantiate<typename std::tuple_element<i,Tuple>::type::element_type>();
+			}
+			if(ptr->check())
+			{
+				return ptr->signal();
+			}
+			return mrpt::serialization::CSerializable::Ptr();
+		};
+	}
+private:
+	Tuple m_cache;
+	Callback m_callback;
+};
+
+
+mrpt::serialization::CSerializable::Ptr toRangeImage(std::string_view msg, const std::string &rootFrame, const tf2::BufferCore &tfBuffer, const sensor_msgs::Image::Ptr &image, const sensor_msgs::CameraInfo::Ptr &cameraInfo)
+{
+	auto cv_ptr = cv_bridge::toCvShare(image);
+	
+	//For now we are just assuming this is a range image
+	if(cv_ptr->encoding == "32FC1")
+	{
+		try
+		{
+			//Convert pose
+			auto t = tfBuffer.lookupTransform(image->header.frame_id, rootFrame, ros::Time(0));
+		
+			auto &translate = t.transform.translation;
+			double x = translate.x;
+			double y = translate.y;
+			double z = translate.z;
+
+			auto &q = t.transform.rotation;
+
+			mrpt::math::CQuaternion quat(q.w, q.x, q.y, q.z);
+
+			double yaw, pitch, roll;
+
+			quat.rpy(roll,pitch,yaw);
+
+			mrpt::poses::CPose3D pose(x,y,z, yaw, pitch, roll); 
+
+			auto rangeScan = mrpt::obs::CObservation3DRangeScan::Create();
+
+			mrpt::Clock::duration time = 
+				std::chrono::duration_cast<mrpt::Clock::duration>(
+					std::chrono::seconds(image->header.stamp.sec) +
+					std::chrono::nanoseconds(image->header.stamp.nsec) +
+					std::chrono::seconds(11644473600));
+
+			rangeScan->sensorLabel = msg;
+			rangeScan->timestamp = TTimeStamp(time);
+			rangeScan->setSensorPose(pose);
+
+			rangeScan->hasRangeImage = true;
+			rangeScan->rangeImage_setSize(cv_ptr->image.rows, cv_ptr->image.cols);
+
+			rangeScan->cameraParams.nrows = cv_ptr->image.rows;
+			rangeScan->cameraParams.ncols = cv_ptr->image.cols;
+
+			rangeScan->cameraParams.dist[0] = 0;
+			rangeScan->cameraParams.dist[1] = 0;
+			rangeScan->cameraParams.dist[2] = 0;
+			rangeScan->cameraParams.dist[3] = 0;
+			rangeScan->cameraParams.dist[4] = 0;
+
+			size_t rows = cv_ptr->image.rows;
+			size_t cols = cv_ptr->image.cols;
+			//Need to implement something like ros synchronization
+			MRPT_TODO("This should come from range sensor_msgs/CameraInfo");
+			const double init[] = {50,0,cols/2,0,50,rows/2,0,0,1};
+			rangeScan->cameraParams.intrinsicParams = mrpt::math::CMatrixDouble33(init);
+
+			for(size_t i = 0; i < rows; i++)
+			{
+				for(size_t j = 0; j < cols; j++)
+				{
+					rangeScan->rangeImage(i,j) = cv_ptr->image.at<float>(i,j);
+				}
+			}
+
+			return rangeScan;
+		}
+		catch (tf2::TransformException& ex)
+		{
+			std::cerr << ex.what() << std::endl;
+		}
+	}
+	return {};
+}
+
 class Transcriber
 {
-	public:
-	Transcriber(std::string_view rootFrame) : m_rootFrame(rootFrame) {}
-	mrpt::serialization::CSerializable::Ptr toMrpt(const rosbag::MessageInstance &rosmsg)
+public:
+	Transcriber(std::string_view rootFrame, const YAML::Node &config) : m_rootFrame(rootFrame)
 	{
-		mrpt::serialization::CSerializable::Ptr ptr;
-		auto data = rosmsg.getDataType();
-		auto topic = rosmsg.getTopic();
-		if(data == "tf2_msgs/TFMessage")
+		m_lookup["/tf"].emplace_back([=](const rosbag::MessageInstance &rosmsg) {
+			toTf<false>(rosmsg);
+			return mrpt::serialization::CSerializable::Ptr();
+		});
+		m_lookup["/tf_static"].emplace_back([=](const rosbag::MessageInstance &rosmsg) {
+			toTf<true>(rosmsg);
+			return mrpt::serialization::CSerializable::Ptr();
+		});
+
+		for(auto &sensorNode: config["sensors"])
+		{
+			auto &sensorName = sensorNode.first.as<std::string>();
+			auto &sensor = sensorNode.second;
+			if(sensor["type"].as<std::string>() == "CObservation3DRangeScan")
+			{
+				auto callback = [=](const sensor_msgs::Image::Ptr &image, const sensor_msgs::CameraInfo::Ptr &info)
+				{
+					return toRangeImage(sensorName, m_rootFrame, m_tfBuffer, image, info);
+				};
+				using Synchronizer = RosSynchronizer<sensor_msgs::Image, sensor_msgs::CameraInfo>;
+				auto sync = std::make_shared<Synchronizer>(callback);
+				m_lookup[sensor["depth"].as<std::string>()].emplace_back(sync->bind<0>());
+				m_lookup[sensor["cameraInfo"].as<std::string>()].emplace_back(sync->bind<1>());
+			}
+		}
+
+	}
+	template <bool isStatic>
+	mrpt::serialization::CSerializable::Ptr toTf(const rosbag::MessageInstance &rosmsg)
+	{
+		if(rosmsg.getDataType() == "tf2_msgs/TFMessage")
 		{
 			auto tfs = rosmsg.instantiate<tf2_msgs::TFMessage>();
 			for(auto & tf : tfs->transforms)
 			{
-				bool isStatic = topic == "/tf_static";	
 				try
 				{
 					m_tfBuffer.setTransform(tf, "bagfile", isStatic);
@@ -83,88 +257,32 @@ class Transcriber
 				}
 			}
 		}
-		else if(data == "sensor_msgs/Image")
+		return {};
+	}
+
+
+	std::vector<mrpt::serialization::CSerializable::Ptr> toMrpt(const rosbag::MessageInstance &rosmsg)
+	{
+		std::vector<mrpt::serialization::CSerializable::Ptr> rets;
+		auto topic = rosmsg.getTopic();
+		auto search = m_lookup.find(topic);
+		if(search != m_lookup.end())
 		{
-			auto image = rosmsg.instantiate<sensor_msgs::Image>();
-			auto cv_ptr = cv_bridge::toCvShare(image);
-			
-			MRPT_TODO("Create a config file to explicity map ros topics to MRPT types");
-
-			//For now we are just assuming this is a range image
-			if(cv_ptr->encoding == "32FC1")
+			for(const auto &found : std::get<1>(*search))
 			{
-				try
+				auto obs = found(rosmsg);
+				if(obs)
 				{
-					//Convert pose
-					auto t = m_tfBuffer.lookupTransform(image->header.frame_id, m_rootFrame, ros::Time(0));
-				
-					auto &translate = t.transform.translation;
-					double x = translate.x;
-					double y = translate.y;
-					double z = translate.z;
-
-					auto &q = t.transform.rotation;
-
-					mrpt::math::CQuaternion quat(q.w, q.x, q.y, q.z);
-
-					double yaw, pitch, roll;
-
-					quat.rpy(roll,pitch,yaw);
-
-					mrpt::poses::CPose3D pose(x,y,z, yaw, pitch, roll); 
-
-					auto rangeScan = mrpt::obs::CObservation3DRangeScan::Create();
-
-					mrpt::Clock::duration time = 
-						std::chrono::duration_cast<mrpt::Clock::duration>(
-							std::chrono::seconds(image->header.stamp.sec) +
-							std::chrono::nanoseconds(image->header.stamp.nsec) +
-							std::chrono::seconds(11644473600));
-
-					rangeScan->sensorLabel = topic;
-					rangeScan->timestamp = TTimeStamp(time);
-					rangeScan->setSensorPose(pose);
-
-					rangeScan->hasRangeImage = true;
-					rangeScan->rangeImage_setSize(cv_ptr->image.rows, cv_ptr->image.cols);
-
-					rangeScan->cameraParams.nrows = cv_ptr->image.rows;
-					rangeScan->cameraParams.ncols = cv_ptr->image.cols;
-
-					rangeScan->cameraParams.dist[0] = 0;
-					rangeScan->cameraParams.dist[1] = 0;
-					rangeScan->cameraParams.dist[2] = 0;
-					rangeScan->cameraParams.dist[3] = 0;
-					rangeScan->cameraParams.dist[4] = 0;
-
-					size_t rows = cv_ptr->image.rows;
-					size_t cols = cv_ptr->image.cols;
-					//Need to implement something like ros synchronization
-					MRPT_TODO("This should come from range sensor_msgs/CameraInfo");
-					const double init[] = {50,0,cols/2,0,50,rows/2,0,0,1};
-					rangeScan->cameraParams.intrinsicParams = mrpt::math::CMatrixDouble33(init);
-
-					for(size_t i = 0; i < rows; i++)
-					{
-						for(size_t j = 0; j < cols; j++)
-						{
-							rangeScan->rangeImage(i,j) = cv_ptr->image.at<float>(i,j);
-						}
-					}
-
-					ptr = rangeScan;
-				}
-				catch (tf2::TransformException& ex)
-				{
-					std::cerr << ex.what() << std::endl;
+					rets.push_back(obs);
 				}
 			}
 		}
-		return ptr;
+		return rets;
 	};
-	private:
+private:
 	tf2::BufferCore m_tfBuffer;
 	std::string m_rootFrame;
+	std::map<std::string, std::vector<CallbackFunction>> m_lookup; 
 };
 
 int main(int argc, char** argv)
@@ -179,6 +297,8 @@ int main(int argc, char** argv)
 		// Parse arguments:
 		if (!cmd.parse(argc, argv))
 			throw std::runtime_error("");  // should exit.
+
+		YAML::Node config = YAML::LoadFile(arg_config_file.getValue());
 
 		auto input_bag_files = arg_input_files.getValue();
 		string output_rawlog_file = arg_output_file.getValue();
@@ -213,11 +333,11 @@ int main(int argc, char** argv)
 			throw std::runtime_error("Error writing file!");
 
 		auto arch = archiveFrom(fil_out);
-		Transcriber t(arg_world_frame.getValue());
+		Transcriber t(arg_world_frame.getValue(), config);
 		for(const auto &m: full_view)
 		{
-			auto ptr = t.toMrpt(m);
-			if(ptr)
+			auto ptrs = t.toMrpt(m);
+			for(auto &ptr : ptrs)
 			{
 				arch << ptr;
 			}
