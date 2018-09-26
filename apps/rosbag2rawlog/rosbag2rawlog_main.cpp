@@ -176,18 +176,11 @@ mrpt::serialization::CSerializable::Ptr toRangeImage(std::string_view msg, const
 			rangeScan->cameraParams.nrows = cv_ptr->image.rows;
 			rangeScan->cameraParams.ncols = cv_ptr->image.cols;
 
-			rangeScan->cameraParams.dist[0] = 0;
-			rangeScan->cameraParams.dist[1] = 0;
-			rangeScan->cameraParams.dist[2] = 0;
-			rangeScan->cameraParams.dist[3] = 0;
-			rangeScan->cameraParams.dist[4] = 0;
+			std::copy(cameraInfo->D.begin(), cameraInfo->D.end(), rangeScan->cameraParams.dist.begin());
 
 			size_t rows = cv_ptr->image.rows;
 			size_t cols = cv_ptr->image.cols;
-			//Need to implement something like ros synchronization
-			MRPT_TODO("This should come from range sensor_msgs/CameraInfo");
-			const double init[] = {50,0,cols/2,0,50,rows/2,0,0,1};
-			rangeScan->cameraParams.intrinsicParams = mrpt::math::CMatrixDouble33(init);
+			std::copy(cameraInfo->K.begin(), cameraInfo->K.end(), rangeScan->cameraParams.intrinsicParams.begin());
 
 			for(size_t i = 0; i < rows; i++)
 			{
