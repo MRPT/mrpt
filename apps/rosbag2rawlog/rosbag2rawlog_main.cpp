@@ -23,6 +23,7 @@
 #include <mrpt/system/os.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/otherlibs/tclap/CmdLine.h>
+#include <mrpt/poses/CPose3DQuat.h>
 
 #include <rosbag/bag.h>
 #include <rosbag/view.h>
@@ -141,7 +142,7 @@ mrpt::serialization::CSerializable::Ptr toRangeImage(std::string_view msg, const
 		try
 		{
 			//Convert pose
-			auto t = tfBuffer.lookupTransform(image->header.frame_id, rootFrame, ros::Time(0));
+			auto t = tfBuffer.lookupTransform(rootFrame, image->header.frame_id, ros::Time(0));
 		
 			auto &translate = t.transform.translation;
 			double x = translate.x;
@@ -149,14 +150,15 @@ mrpt::serialization::CSerializable::Ptr toRangeImage(std::string_view msg, const
 			double z = translate.z;
 
 			auto &q = t.transform.rotation;
+			mrpt::math::CQuaternion<double> quat{q.w, q.x, q.y, q.z};
+			MRPT_TODO("Figure out whats wrong with rotation");
+			//mrpt::math::CQuaternion<double> rot{0.7068252, 0.7073883, 0, 0};
+			//mrpt::math::CQuaternion<double> quat;
+			//quat.crossProduct(rosQuat, rot);
+			//
+			mrpt::poses::CPose3DQuat poseQuat(x,y,z, quat);
 
-			mrpt::math::CQuaternion quat(q.w, q.x, q.y, q.z);
-
-			double yaw, pitch, roll;
-
-			quat.rpy(roll,pitch,yaw);
-
-			mrpt::poses::CPose3D pose(x,y,z, yaw, pitch, roll); 
+			mrpt::poses::CPose3D pose(poseQuat);
 
 			auto rangeScan = mrpt::obs::CObservation3DRangeScan::Create();
 
@@ -171,12 +173,16 @@ mrpt::serialization::CSerializable::Ptr toRangeImage(std::string_view msg, const
 			rangeScan->setSensorPose(pose);
 
 			rangeScan->hasRangeImage = true;
-			rangeScan->rangeImage_setSize(cv_ptr->image.rows, cv_ptr->image.cols);
+			rangeScan->rangeImage_setSize(
+					cv_ptr->image.rows,
+					cv_ptr->image.cols
+					);
 
 			rangeScan->cameraParams.nrows = cv_ptr->image.rows;
 			rangeScan->cameraParams.ncols = cv_ptr->image.cols;
 
-			std::copy(cameraInfo->D.begin(), cameraInfo->D.end(), rangeScan->cameraParams.dist.begin());
+			std::copy(cameraInfo->D.begin(), cameraInfo->D.end(),
+					rangeScan->cameraParams.dist.begin());
 
 			size_t rows = cv_ptr->image.rows;
 			size_t cols = cv_ptr->image.cols;
@@ -186,7 +192,7 @@ mrpt::serialization::CSerializable::Ptr toRangeImage(std::string_view msg, const
 			{
 				for(size_t j = 0; j < cols; j++)
 				{
-					rangeScan->rangeImage(i,j) = cv_ptr->image.at<float>(i,j);
+					rangeScan->rangeImage(i, j) = cv_ptr->image.at<float>(i,j);
 				}
 			}
 
