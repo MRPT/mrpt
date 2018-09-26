@@ -131,7 +131,7 @@ private:
 };
 
 
-mrpt::serialization::CSerializable::Ptr toRangeImage(std::string_view msg, const std::string &rootFrame, const tf2::BufferCore &tfBuffer, const sensor_msgs::Image::Ptr &image, const sensor_msgs::CameraInfo::Ptr &cameraInfo)
+mrpt::serialization::CSerializable::Ptr toRangeImage(std::string_view msg, const std::string &rootFrame, const tf2::BufferCore &tfBuffer, const sensor_msgs::Image::Ptr &image, const sensor_msgs::CameraInfo::Ptr &cameraInfo, bool rangeIsDepth)
 {
 	auto cv_ptr = cv_bridge::toCvShare(image);
 	
@@ -190,6 +190,7 @@ mrpt::serialization::CSerializable::Ptr toRangeImage(std::string_view msg, const
 				}
 			}
 
+			rangeScan->range_is_depth = rangeIsDepth;
 			return rangeScan;
 		}
 		catch (tf2::TransformException& ex)
@@ -220,9 +221,10 @@ public:
 			auto &sensor = sensorNode.second;
 			if(sensor["type"].as<std::string>() == "CObservation3DRangeScan")
 			{
+				bool rangeIsDepth = sensor["rangeIsDepth"].as<bool>(true);
 				auto callback = [=](const sensor_msgs::Image::Ptr &image, const sensor_msgs::CameraInfo::Ptr &info)
 				{
-					return toRangeImage(sensorName, m_rootFrame, m_tfBuffer, image, info);
+					return toRangeImage(sensorName, m_rootFrame, m_tfBuffer, image, info, rangeIsDepth);
 				};
 				using Synchronizer = RosSynchronizer<sensor_msgs::Image, sensor_msgs::CameraInfo>;
 				auto sync = std::make_shared<Synchronizer>(callback);
