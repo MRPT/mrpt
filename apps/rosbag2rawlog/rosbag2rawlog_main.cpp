@@ -150,12 +150,15 @@ mrpt::serialization::CSerializable::Ptr toRangeImage(std::string_view msg, const
 			double z = translate.z;
 
 			auto &q = t.transform.rotation;
-			mrpt::math::CQuaternion<double> quat{q.w, q.x, q.y, q.z};
-			MRPT_TODO("Figure out whats wrong with rotation");
-			//mrpt::math::CQuaternion<double> rot{0.7068252, 0.7073883, 0, 0};
-			//mrpt::math::CQuaternion<double> quat;
-			//quat.crossProduct(rosQuat, rot);
-			//
+			mrpt::math::CQuaternion<double> rosQuat{q.w, q.x, q.y, q.z};
+
+			// MRPT assumes the image plane is parallel to the YZ plane, so the camera is pointed in the X direction
+			// ROS assumes the image plane is parallel to XY plane, so the camera is pointed in the Z direction
+			// Apply a rotation to convert between these conventions.
+			mrpt::math::CQuaternion<double> rot{-0.5, 0.5, 0.5, 0.5};
+			mrpt::math::CQuaternion<double> quat;
+			quat.crossProduct(rosQuat, rot);
+
 			mrpt::poses::CPose3DQuat poseQuat(x,y,z, quat);
 
 			mrpt::poses::CPose3D pose(poseQuat);
