@@ -77,24 +77,32 @@ class RosSynchronizer : public std::enable_shared_from_this<RosSynchronizer<Args
 public:
 	using Tuple = std::tuple<boost::shared_ptr<Args>...>;
 
-	using Callback = std::function<mrpt::serialization::CSerializable::Ptr(const boost::shared_ptr<Args> &...)>;
+	using Callback = std::function<mrpt::serialization::CSerializable::Ptr(const geometry_msgs::TransformStamped &, const boost::shared_ptr<Args> &...)>;
 
-	RosSynchronizer(const Callback &callback) : m_callback(callback)
+	RosSynchronizer(std::string_view rootFrame, std::shared_ptr<tf2::BufferCore> tfBuffer, const Callback &callback) :
+		m_rootFrame(rootFrame),m_tfBuffer(std::move(tfBuffer)), m_callback(callback)
 	{
 	}
 
 
 	template <std::size_t ... N>
-	mrpt::serialization::CSerializable::Ptr signal(std::index_sequence<N...>)
+	mrpt::serialization::CSerializable::Ptr signal(const geometry_msgs::TransformStamped &t, std::index_sequence<N...>)
 	{
-		auto ptr = m_callback(std::get<N>(m_cache)...);
+		auto ptr = m_callback(t, std::get<N>(m_cache)...);
 		m_cache = {};
 		return ptr;
 	}
 
 	mrpt::serialization::CSerializable::Ptr signal()
 	{
-		return signal(std::make_index_sequence<sizeof...(Args)>{});
+		auto & frame = std::get<0>(m_cache)->header.frame_id;
+		auto & stamp = std::get<0>(m_cache)->header.stamp;
+		if(m_tfBuffer->canTransform(m_rootFrame, frame, stamp))
+		{
+			auto t = m_tfBuffer->lookupTransform(m_rootFrame, frame, stamp);
+			return signal(t, std::make_index_sequence<sizeof...(Args)>{});
+		}
+		return {};
 	}
 
 	template <std::size_t... N>
@@ -103,9 +111,12 @@ public:
 		return (std::get<N>(m_cache) && ...);
 	}
 
-	bool check()
+	mrpt::serialization::CSerializable::Ptr checkAndSignal()
 	{
-		return check(std::make_index_sequence<sizeof...(Args)>{});
+		if(check(std::make_index_sequence<sizeof...(Args)>{})) {
+			return signal();
+		}
+		return {};
 	}
 
 	template <size_t i>
@@ -116,23 +127,29 @@ public:
 		{
 			if(!std::get<i>(ptr->m_cache))
 			{
-				std::get<i>(ptr->m_cache) = 
-					rosmsg.instantiate<typename std::tuple_element<i,Tuple>::type::element_type>();
-			}
-			if(ptr->check())
-			{
-				return ptr->signal();
+				std::get<i>(ptr->m_cache) = rosmsg.instantiate<typename std::tuple_element<i,Tuple>::type::element_type>();
+				return ptr->checkAndSignal();
 			}
 			return mrpt::serialization::CSerializable::Ptr();
 		};
 	}
+
+	CallbackFunction bindTfSync(){
+		std::shared_ptr<RosSynchronizer> ptr = this->shared_from_this();
+		return [=](const rosbag::MessageInstance &rosmsg)
+		{
+			return ptr->checkAndSignal();
+		};
+	}
 private:
+	std::string m_rootFrame;
+	std::shared_ptr<tf2::BufferCore> m_tfBuffer;
 	Tuple m_cache;
 	Callback m_callback;
 };
 
 
-mrpt::serialization::CSerializable::Ptr toRangeImage(std::string_view msg, const std::string &rootFrame, const tf2::BufferCore &tfBuffer, const sensor_msgs::Image::Ptr &image, const sensor_msgs::CameraInfo::Ptr &cameraInfo, bool rangeIsDepth)
+mrpt::serialization::CSerializable::Ptr toRangeImage(std::string_view msg, const geometry_msgs::TransformStamped &t, const sensor_msgs::Image::Ptr &image, const sensor_msgs::CameraInfo::Ptr &cameraInfo, bool rangeIsDepth)
 {
 	auto cv_ptr = cv_bridge::toCvShare(image);
 	
@@ -141,9 +158,6 @@ mrpt::serialization::CSerializable::Ptr toRangeImage(std::string_view msg, const
 	{
 		try
 		{
-			//Convert pose
-			auto t = tfBuffer.lookupTransform(rootFrame, image->header.frame_id, ros::Time(0));
-		
 			auto &translate = t.transform.translation;
 			double x = translate.x;
 			double y = translate.y;
@@ -155,7 +169,7 @@ mrpt::serialization::CSerializable::Ptr toRangeImage(std::string_view msg, const
 			// MRPT assumes the image plane is parallel to the YZ plane, so the camera is pointed in the X direction
 			// ROS assumes the image plane is parallel to XY plane, so the camera is pointed in the Z direction
 			// Apply a rotation to convert between these conventions.
-			mrpt::math::CQuaternion<double> rot{-0.5, 0.5, 0.5, 0.5};
+			mrpt::math::CQuaternion<double> rot{0.5, 0.5, -0.5, 0.5};
 			mrpt::math::CQuaternion<double> quat;
 			quat.crossProduct(rosQuat, rot);
 
@@ -165,7 +179,7 @@ mrpt::serialization::CSerializable::Ptr toRangeImage(std::string_view msg, const
 
 			auto rangeScan = mrpt::obs::CObservation3DRangeScan::Create();
 
-			mrpt::Clock::duration time = 
+			mrpt::Clock::duration time =
 				std::chrono::duration_cast<mrpt::Clock::duration>(
 					std::chrono::seconds(image->header.stamp.sec) +
 					std::chrono::nanoseconds(image->header.stamp.nsec) +
@@ -210,18 +224,39 @@ mrpt::serialization::CSerializable::Ptr toRangeImage(std::string_view msg, const
 	return {};
 }
 
+template <bool isStatic>
+mrpt::serialization::CSerializable::Ptr toTf(tf2::BufferCore &tfBuffer, const rosbag::MessageInstance &rosmsg)
+{
+	if(rosmsg.getDataType() == "tf2_msgs/TFMessage")
+	{
+		auto tfs = rosmsg.instantiate<tf2_msgs::TFMessage>();
+		for(auto & tf : tfs->transforms)
+		{
+			try
+			{
+				tfBuffer.setTransform(tf, "bagfile", isStatic);
+			}
+			catch (tf2::TransformException& ex)
+			{
+				std::cerr << ex.what() << std::endl;
+			}
+		}
+	}
+	return {};
+}
+
 class Transcriber
 {
 public:
 	Transcriber(std::string_view rootFrame, const YAML::Node &config) : m_rootFrame(rootFrame)
 	{
+		auto tfBuffer = std::make_shared<tf2::BufferCore>();
+
 		m_lookup["/tf"].emplace_back([=](const rosbag::MessageInstance &rosmsg) {
-			toTf<false>(rosmsg);
-			return mrpt::serialization::CSerializable::Ptr();
+			return toTf<false>(*tfBuffer, rosmsg);
 		});
 		m_lookup["/tf_static"].emplace_back([=](const rosbag::MessageInstance &rosmsg) {
-			toTf<true>(rosmsg);
-			return mrpt::serialization::CSerializable::Ptr();
+			return toTf<true>(*tfBuffer, rosmsg);
 		});
 
 		for(auto &sensorNode: config["sensors"])
@@ -231,37 +266,18 @@ public:
 			if(sensor["type"].as<std::string>() == "CObservation3DRangeScan")
 			{
 				bool rangeIsDepth = sensor["rangeIsDepth"].as<bool>(true);
-				auto callback = [=](const sensor_msgs::Image::Ptr &image, const sensor_msgs::CameraInfo::Ptr &info)
+				auto callback = [=](const geometry_msgs::TransformStamped &t,const sensor_msgs::Image::Ptr &image, const sensor_msgs::CameraInfo::Ptr &info)
 				{
-					return toRangeImage(sensorName, m_rootFrame, m_tfBuffer, image, info, rangeIsDepth);
+					return toRangeImage(sensorName, t, image, info, rangeIsDepth);
 				};
 				using Synchronizer = RosSynchronizer<sensor_msgs::Image, sensor_msgs::CameraInfo>;
-				auto sync = std::make_shared<Synchronizer>(callback);
+				auto sync = std::make_shared<Synchronizer>(rootFrame, tfBuffer, callback);
 				m_lookup[sensor["depth"].as<std::string>()].emplace_back(sync->bind<0>());
 				m_lookup[sensor["cameraInfo"].as<std::string>()].emplace_back(sync->bind<1>());
+				m_lookup["/tf"].emplace_back(sync->bindTfSync());
 			}
 		}
 
-	}
-	template <bool isStatic>
-	mrpt::serialization::CSerializable::Ptr toTf(const rosbag::MessageInstance &rosmsg)
-	{
-		if(rosmsg.getDataType() == "tf2_msgs/TFMessage")
-		{
-			auto tfs = rosmsg.instantiate<tf2_msgs::TFMessage>();
-			for(auto & tf : tfs->transforms)
-			{
-				try
-				{
-					m_tfBuffer.setTransform(tf, "bagfile", isStatic);
-				}
-				catch (tf2::TransformException& ex)
-				{
-					std::cerr << ex.what() << std::endl;
-				}
-			}
-		}
-		return {};
 	}
 
 
@@ -284,9 +300,8 @@ public:
 		return rets;
 	};
 private:
-	tf2::BufferCore m_tfBuffer;
 	std::string m_rootFrame;
-	std::map<std::string, std::vector<CallbackFunction>> m_lookup; 
+	std::map<std::string, std::vector<CallbackFunction>> m_lookup;
 };
 
 int main(int argc, char** argv)
