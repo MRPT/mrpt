@@ -12,7 +12,7 @@
 //  Intention: Parse bag files, save
 //             as a RawLog file, easily readable by MRPT C++ programs.
 //
-//  Started: JLBC @ Feb-2016
+//  Started: HL @ SEPT-2018
 // ===========================================================================
 
 #include <mrpt/system/filesystem.h>
@@ -22,6 +22,9 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/os.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/obs/CActionRobotMovement3D.h>
+#include <mrpt/obs/CActionCollection.h>
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 #include <mrpt/poses/CPose3DQuat.h>
 
@@ -69,7 +72,10 @@ TCLAP::ValueArg<std::string> arg_world_frame(
 	cmd);
 
 
-using CallbackFunction = std::function<mrpt::serialization::CSerializable::Ptr(const rosbag::MessageInstance &)>;
+using Obs = std::list<mrpt::serialization::CSerializable::Ptr>;
+
+using CallbackFunction = std::function<Obs(const rosbag::MessageInstance &)>;
+
 
 template <typename ... Args>
 class RosSynchronizer : public std::enable_shared_from_this<RosSynchronizer<Args...>>
@@ -77,7 +83,7 @@ class RosSynchronizer : public std::enable_shared_from_this<RosSynchronizer<Args
 public:
 	using Tuple = std::tuple<boost::shared_ptr<Args>...>;
 
-	using Callback = std::function<mrpt::serialization::CSerializable::Ptr(const geometry_msgs::TransformStamped &, const boost::shared_ptr<Args> &...)>;
+	using Callback = std::function<Obs(const boost::shared_ptr<Args> &...)>;
 
 	RosSynchronizer(std::string_view rootFrame, std::shared_ptr<tf2::BufferCore> tfBuffer, const Callback &callback) :
 		m_rootFrame(rootFrame),m_tfBuffer(std::move(tfBuffer)), m_callback(callback)
@@ -86,21 +92,49 @@ public:
 
 
 	template <std::size_t ... N>
-	mrpt::serialization::CSerializable::Ptr signal(const geometry_msgs::TransformStamped &t, std::index_sequence<N...>)
+	Obs signal(std::index_sequence<N...>)
 	{
-		auto ptr = m_callback(t, std::get<N>(m_cache)...);
+		auto ptr = m_callback(std::get<N>(m_cache)...);
 		m_cache = {};
 		return ptr;
 	}
 
-	mrpt::serialization::CSerializable::Ptr signal()
+	Obs signal()
 	{
 		auto & frame = std::get<0>(m_cache)->header.frame_id;
 		auto & stamp = std::get<0>(m_cache)->header.stamp;
 		if(m_tfBuffer->canTransform(m_rootFrame, frame, stamp))
 		{
 			auto t = m_tfBuffer->lookupTransform(m_rootFrame, frame, stamp);
-			return signal(t, std::make_index_sequence<sizeof...(Args)>{});
+			mrpt::obs::CActionRobotMovement3D odom_move;
+
+			auto &translate = t.transform.translation;
+			double x = translate.x;
+			double y = translate.y;
+			double z = translate.z;
+
+			auto &q = t.transform.rotation;
+			mrpt::math::CQuaternion<double> quat{q.w, q.x, q.y, q.z};
+
+			mrpt::poses::CPose3DQuat poseQuat(x,y,z, quat);
+			mrpt::poses::CPose3D currentPose(poseQuat);
+
+			mrpt::poses::CPose3D incOdoPose(0,0,0,0,0,0);
+			if(m_poseValid)
+			{
+				incOdoPose = currentPose - m_lastPose;
+			}
+			m_lastPose = currentPose;
+			m_poseValid = true;
+			mrpt::obs::CActionRobotMovement3D::TMotionModelOptions model;
+			odom_move.computeFromOdometry(incOdoPose, model);
+
+			auto acts = mrpt::obs::CActionCollection::Create();
+			acts->insert(odom_move);
+
+			auto obs = signal(std::make_index_sequence<sizeof...(Args)>{});
+			obs.push_front(acts);
+			return obs;
 		}
 		return {};
 	}
@@ -111,7 +145,7 @@ public:
 		return (std::get<N>(m_cache) && ...);
 	}
 
-	mrpt::serialization::CSerializable::Ptr checkAndSignal()
+	Obs checkAndSignal()
 	{
 		if(check(std::make_index_sequence<sizeof...(Args)>{})) {
 			return signal();
@@ -130,7 +164,7 @@ public:
 				std::get<i>(ptr->m_cache) = rosmsg.instantiate<typename std::tuple_element<i,Tuple>::type::element_type>();
 				return ptr->checkAndSignal();
 			}
-			return mrpt::serialization::CSerializable::Ptr();
+			return Obs();
 		};
 	}
 
@@ -145,11 +179,13 @@ private:
 	std::string m_rootFrame;
 	std::shared_ptr<tf2::BufferCore> m_tfBuffer;
 	Tuple m_cache;
+	bool m_poseValid = false;
+	mrpt::poses::CPose3D m_lastPose;
 	Callback m_callback;
 };
 
 
-mrpt::serialization::CSerializable::Ptr toRangeImage(std::string_view msg, const geometry_msgs::TransformStamped &t, const sensor_msgs::Image::Ptr &image, const sensor_msgs::CameraInfo::Ptr &cameraInfo, bool rangeIsDepth)
+Obs toRangeImage(std::string_view msg, const sensor_msgs::Image::Ptr &image, const sensor_msgs::CameraInfo::Ptr &cameraInfo, bool rangeIsDepth)
 {
 	auto cv_ptr = cv_bridge::toCvShare(image);
 	
@@ -158,26 +194,15 @@ mrpt::serialization::CSerializable::Ptr toRangeImage(std::string_view msg, const
 	{
 		try
 		{
-			auto &translate = t.transform.translation;
-			double x = translate.x;
-			double y = translate.y;
-			double z = translate.z;
-
-			auto &q = t.transform.rotation;
-			mrpt::math::CQuaternion<double> rosQuat{q.w, q.x, q.y, q.z};
+			auto rangeScan = mrpt::obs::CObservation3DRangeScan::Create();
 
 			// MRPT assumes the image plane is parallel to the YZ plane, so the camera is pointed in the X direction
 			// ROS assumes the image plane is parallel to XY plane, so the camera is pointed in the Z direction
 			// Apply a rotation to convert between these conventions.
 			mrpt::math::CQuaternion<double> rot{0.5, 0.5, -0.5, 0.5};
-			mrpt::math::CQuaternion<double> quat;
-			quat.crossProduct(rosQuat, rot);
-
-			mrpt::poses::CPose3DQuat poseQuat(x,y,z, quat);
-
+			mrpt::poses::CPose3DQuat poseQuat(0,0,0, rot);
 			mrpt::poses::CPose3D pose(poseQuat);
-
-			auto rangeScan = mrpt::obs::CObservation3DRangeScan::Create();
+			rangeScan->setSensorPose(pose);
 
 			mrpt::Clock::duration time =
 				std::chrono::duration_cast<mrpt::Clock::duration>(
@@ -187,7 +212,6 @@ mrpt::serialization::CSerializable::Ptr toRangeImage(std::string_view msg, const
 
 			rangeScan->sensorLabel = msg;
 			rangeScan->timestamp = TTimeStamp(time);
-			rangeScan->setSensorPose(pose);
 
 			rangeScan->hasRangeImage = true;
 			rangeScan->rangeImage_setSize(
@@ -214,7 +238,11 @@ mrpt::serialization::CSerializable::Ptr toRangeImage(std::string_view msg, const
 			}
 
 			rangeScan->range_is_depth = rangeIsDepth;
-			return rangeScan;
+			auto sf = mrpt::make_aligned_shared<mrpt::obs::CSensoryFrame>();
+			sf->insert(rangeScan);
+
+
+			return {sf};
 		}
 		catch (tf2::TransformException& ex)
 		{
@@ -225,7 +253,7 @@ mrpt::serialization::CSerializable::Ptr toRangeImage(std::string_view msg, const
 }
 
 template <bool isStatic>
-mrpt::serialization::CSerializable::Ptr toTf(tf2::BufferCore &tfBuffer, const rosbag::MessageInstance &rosmsg)
+Obs toTf(tf2::BufferCore &tfBuffer, const rosbag::MessageInstance &rosmsg)
 {
 	if(rosmsg.getDataType() == "tf2_msgs/TFMessage")
 	{
@@ -266,9 +294,9 @@ public:
 			if(sensor["type"].as<std::string>() == "CObservation3DRangeScan")
 			{
 				bool rangeIsDepth = sensor["rangeIsDepth"].as<bool>(true);
-				auto callback = [=](const geometry_msgs::TransformStamped &t,const sensor_msgs::Image::Ptr &image, const sensor_msgs::CameraInfo::Ptr &info)
+				auto callback = [=](const sensor_msgs::Image::Ptr &image, const sensor_msgs::CameraInfo::Ptr &info)
 				{
-					return toRangeImage(sensorName, t, image, info, rangeIsDepth);
+					return toRangeImage(sensorName, image, info, rangeIsDepth);
 				};
 				using Synchronizer = RosSynchronizer<sensor_msgs::Image, sensor_msgs::CameraInfo>;
 				auto sync = std::make_shared<Synchronizer>(rootFrame, tfBuffer, callback);
@@ -281,9 +309,9 @@ public:
 	}
 
 
-	std::vector<mrpt::serialization::CSerializable::Ptr> toMrpt(const rosbag::MessageInstance &rosmsg)
+	Obs toMrpt(const rosbag::MessageInstance &rosmsg)
 	{
-		std::vector<mrpt::serialization::CSerializable::Ptr> rets;
+		Obs rets;
 		auto topic = rosmsg.getTopic();
 		auto search = m_lookup.find(topic);
 		if(search != m_lookup.end())
@@ -291,10 +319,7 @@ public:
 			for(const auto &found : std::get<1>(*search))
 			{
 				auto obs = found(rosmsg);
-				if(obs)
-				{
-					rets.push_back(obs);
-				}
+				rets.insert(rets.end(), obs.begin(), obs.end());
 			}
 		}
 		return rets;
