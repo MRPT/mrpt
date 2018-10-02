@@ -209,11 +209,11 @@ namespace mrpt
 		virtual void onNavigateCommandReceived();
 
 		/** Does the job of navigate(), except the call to onNavigateCommandReceived() */
-		void processNavigateCommand(const TNavigationParams *params);
+		virtual void processNavigateCommand(const TNavigationParams *params);
 
 		/** Call to the robot getCurrentPoseAndSpeeds() and updates members m_curPoseVel accordingly.
 		  * If an error is returned by the user callback, first, it calls robot.stop() ,then throws an std::runtime_error exception. */
-		void updateCurrentPoseAndSpeeds();
+		virtual void updateCurrentPoseAndSpeeds();
 
 		/** Factorization of the part inside navigationStep(), for the case of state being NAVIGATING.
 		  * Performs house-hold tasks like raising events in case of starting/ending navigation, timeout reaching destination, etc.
@@ -222,7 +222,7 @@ namespace mrpt
 		virtual void performNavigationStepNavigating(bool call_virtual_nav_method = true);
 
 		/** Stops the robot and set navigation state to error */
-		void doEmergencyStop( const std::string &msg );
+		virtual void doEmergencyStop( const std::string &msg );
 
 		virtual bool changeSpeeds(const mrpt::kinematics::CVehicleVelCmd &vel_cmd); //!< Default: forward call to m_robot.changeSpeed(). Can be overriden.
 		virtual bool changeSpeedsNOP(); //!< Default: forward call to m_robot.changeSpeedsNOP(). Can be overriden.
