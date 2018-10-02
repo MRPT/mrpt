@@ -286,6 +286,8 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 	/** The main method for the navigator */
 	void performNavigationStep() override;
 
+	virtual CAbstractHolonomicReactiveMethod* getHoloMethod(int idx);
+
 	/** The holonomic navigation algorithm (one object per PTG, so internal
 	 * states are maintained) */
 	std::vector<CAbstractHolonomicReactiveMethod::Ptr> m_holonomicMethod;
