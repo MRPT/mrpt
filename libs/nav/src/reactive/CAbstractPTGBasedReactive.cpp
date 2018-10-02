@@ -1991,5 +1991,5 @@ double CAbstractPTGBasedReactive::getTargetApproachSlowDownDistance() const
 CAbstractHolonomicReactiveMethod* CAbstractPTGBasedReactive::getHoloMethod(
 	int idx)
 {
-	return m_holonomicMethod[idx];
+	return m_holonomicMethod[idx].get();
 }
