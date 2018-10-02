@@ -572,8 +572,9 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		double NOP_max_time = -1.0, NOP_At = -1.0;
 		double slowdowndist = .0;
 		CParameterizedTrajectoryGenerator* last_sent_ptg =
-			m_lastSentVelCmd.isValid() ? getPTG(m_lastSentVelCmd.ptg_index)
-									   : nullptr;
+			(m_lastSentVelCmd.isValid() && m_lastSentVelCmd.ptg_index >= 0)
+				? getPTG(m_lastSentVelCmd.ptg_index)
+				: nullptr;
 		if (last_sent_ptg)
 		{
 			// So supportSpeedAtTarget() below is evaluated in the correct
@@ -1556,9 +1557,9 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 	bool any_TPTarget_is_valid = false;
 	if (use_this_ptg)
 	{
-		for (const auto & trg : relTargets)
+		for (const auto& trg : relTargets)
 		{
-				PTGTarget ptg_target;
+			PTGTarget ptg_target;
 
 			ptg_target.valid_TP = ptg->inverseMap_WS2TP(
 				trg.x, trg.y, ptg_target.target_k, ptg_target.target_dist);
@@ -1858,9 +1859,9 @@ CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::
 	TAbstractPTGNavigatorParams()
 	: holonomic_method(),
 	  ptg_cache_files_directory("."),
-	  
+
 	  robot_absolute_speed_limits()
-	  
+
 {
 }
 

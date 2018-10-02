@@ -38,7 +38,7 @@ CReactiveNavigationSystem::~CReactiveNavigationSystem()
 	this->preDestructor();
 
 	// Free PTGs:
-	for (auto & PTG : PTGs) delete PTG;
+	for (auto& PTG : PTGs) delete PTG;
 	PTGs.clear();
 }
 
@@ -115,7 +115,7 @@ void CReactiveNavigationSystem::loadConfigFile(
 	// Load PTGs from file:
 	// ---------------------------------------------
 	// Free previous PTGs:
-	for (auto & PTG : PTGs) delete PTG;
+	for (auto& PTG : PTGs) delete PTG;
 	PTGs.assign(PTG_COUNT, nullptr);
 
 	for (unsigned int n = 0; n < PTG_COUNT; n++)
@@ -174,7 +174,7 @@ void CReactiveNavigationSystem::STEP1_InitPTGs()
 						.c_str(),
 					i),
 				m_enableConsoleOutput /*verbose*/
-				);
+			);
 			logStr(mrpt::system::LVL_INFO, "Done!");
 		}
 	}
@@ -227,6 +227,7 @@ void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(
 	const mrpt::math::TPose2D& rel_pose_PTG_origin_wrt_sense_,
 	const bool eval_clearance)
 {
+	ASSERT_BELOW_(ptg_idx, this->getPTG_count());
 	CParameterizedTrajectoryGenerator* ptg = this->getPTG(ptg_idx);
 
 	const mrpt::poses::CPose2D rel_pose_PTG_origin_wrt_sense(
@@ -300,8 +301,8 @@ void CReactiveNavigationSystem::TReactiveNavigatorParams::saveToConfigFile(
 }
 
 CReactiveNavigationSystem::TReactiveNavigatorParams::TReactiveNavigatorParams()
-	 
-= default;
+
+	= default;
 
 bool CReactiveNavigationSystem::checkCollisionWithLatestObstacles(
 	const mrpt::math::TPose2D& relative_robot_pose) const
