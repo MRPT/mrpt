@@ -85,7 +85,8 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 		 * values will be honored only by the higher-level navigator, based on
 		 * straight-line Euclidean distances. */
 		double targetDesiredRelSpeed{.05};
-		bool targetIsIntermediaryWaypoint{false};  // !< (Default=false) If true, event
+		bool targetIsIntermediaryWaypoint{
+			false};  // !< (Default=false) If true, event
 		// callback
 		// `sendWaypointReachedEvent()` will
 		// be called instead of
@@ -191,6 +192,17 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 		return m_frame_tf;
 	}
 
+	/** By default, error exceptions on navigationStep() will dump an error
+	 * message to the output logger interface. If rethrow is enabled
+	 * (default=false), the error message will be reported as well, but
+	 * exceptions will be re-thrown.
+	 */
+	void enableRethrowNavExceptions(const bool enable)
+	{
+		m_rethrow_exceptions = enable;
+	}
+	bool isRethrowNavExceptionsEnabled() const { return m_rethrow_exceptions; }
+
 	/** @}*/
 
 	struct TAbstractNavigatorParams : public mrpt::config::CLoadableOptions
@@ -232,6 +244,7 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 	 * each new command */
 	bool m_navigationEndEventSent;
 	int m_counter_check_target_is_blocked;
+	bool m_rethrow_exceptions{false};
 
 	/** Called before starting a new navigation. Internally, it calls to
 	 * child-implemented onStartNewNavigation() */
@@ -259,7 +272,7 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 	 * m_curPoseVel accordingly.
 	 * If an error is returned by the user callback, first, it calls
 	 * robot.stop() ,then throws an std::runtime_error exception. */
-	void updateCurrentPoseAndSpeeds();
+	virtual void updateCurrentPoseAndSpeeds();
 
 	/** Factorization of the part inside navigationStep(), for the case of state
 	 * being NAVIGATING.
@@ -273,10 +286,10 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 
 	/** Does the job of navigate(), except the call to
 	 * onNavigateCommandReceived() */
-	void processNavigateCommand(const TNavigationParams* params);
+	virtual void processNavigateCommand(const TNavigationParams* params);
 
 	/** Stops the robot and set navigation state to error */
-	void doEmergencyStop(const std::string& msg);
+	virtual void doEmergencyStop(const std::string& msg);
 
 	/** Default: forward call to m_robot.changeSpeed(). Can be overriden. */
 	virtual bool changeSpeeds(const mrpt::kinematics::CVehicleVelCmd& vel_cmd);
@@ -348,7 +361,7 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 bool operator==(
 	const CAbstractNavigator::TNavigationParamsBase&,
 	const CAbstractNavigator::TNavigationParamsBase&);
-}
+}  // namespace mrpt::nav
 MRPT_ENUM_TYPE_BEGIN(mrpt::nav::CAbstractNavigator::TState)
 using namespace mrpt::nav;
 MRPT_FILL_ENUM_MEMBER(CAbstractNavigator, IDLE);
@@ -356,5 +369,3 @@ MRPT_FILL_ENUM_MEMBER(CAbstractNavigator, NAVIGATING);
 MRPT_FILL_ENUM_MEMBER(CAbstractNavigator, SUSPENDED);
 MRPT_FILL_ENUM_MEMBER(CAbstractNavigator, NAV_ERROR);
 MRPT_ENUM_TYPE_END()
-
-
