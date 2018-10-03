@@ -22,9 +22,8 @@ const double PREVIOUS_POSES_MAX_AGE = 20;  // seconds
 
 // Ctor: CAbstractNavigator::TargetInfo
 CAbstractNavigator::TargetInfo::TargetInfo()
-	: target_coords(0, 0, 0),
-	  target_frame_id("map")
-	  
+	: target_coords(0, 0, 0), target_frame_id("map")
+
 {
 }
 
@@ -420,9 +419,8 @@ bool CAbstractNavigator::stop(bool isEmergencyStop)
 }
 
 CAbstractNavigator::TAbstractNavigatorParams::TAbstractNavigatorParams()
-	
-	  
-= default;
+
+	= default;
 void CAbstractNavigator::TAbstractNavigatorParams::loadFromConfigFile(
 	const mrpt::config::CConfigFileBase& c, const std::string& s)
 {
@@ -645,11 +643,13 @@ void CAbstractNavigator::performNavigationStepNavigating(
 	{
 		MRPT_LOG_ERROR_FMT(
 			"[CAbstractNavigator::navigationStep] Exception:\n %s", e.what());
+		if (m_rethrow_exceptions) throw;
 	}
 	catch (...)
 	{
 		MRPT_LOG_ERROR(
 			"[CAbstractNavigator::navigationStep] Untyped exception!");
+		if (m_rethrow_exceptions) throw;
 	}
 	m_navigationState = prevState;
 }
