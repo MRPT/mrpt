@@ -131,14 +131,22 @@ TTimeStamp mrpt::system::buildTimestampFromPartsLocalTime(const TTimeParts& p)
 string mrpt::system::formatTimeInterval(const double t)
 {
 	double timeSeconds = (t < 0) ? (-t) : t;
+	std::string s;
 
-	unsigned int nHours = (unsigned int)timeSeconds / 3600;
-	unsigned int nMins = ((unsigned int)timeSeconds % 3600) / 60;
-	unsigned int nSecs = (unsigned int)timeSeconds % 60;
-	unsigned int milSecs =
-		(unsigned int)(1000 * (timeSeconds - floor(timeSeconds)));
+	const auto nDays = static_cast<unsigned int>(timeSeconds / (3600 * 24));
+	timeSeconds -= nDays * 3600 * 24;
+	const auto nHours = static_cast<unsigned int>(timeSeconds / 3600);
+	timeSeconds -= nHours * 3600;
+	const auto nMins = static_cast<unsigned int>(timeSeconds / 60);
+	const auto nSecs = static_cast<unsigned int>(timeSeconds) % 60;
+	const auto milSecs =
+		static_cast<unsigned int>(1000 * timeSeconds - floor(timeSeconds));
 
-	return format("%02u:%02u:%02u.%03u", nHours, nMins, nSecs, milSecs);
+	if (nDays > 0) s += mrpt::format("%udays ", nDays);
+	if (nHours > 0) s += mrpt::format("%uh ", nHours);
+	if (nMins > 0) s += mrpt::format("%02umin ", nMins);
+	s += mrpt::format("%02u.%03us", nSecs, milSecs);
+	return s;
 }
 
 /*---------------------------------------------------------------
