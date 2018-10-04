@@ -438,7 +438,7 @@ CDisplayWindow3D::Ptr CDisplayWindow3D::Create(
 	const std::string& windowCaption, unsigned int initialWindowWidth,
 	unsigned int initialWindowHeight)
 {
-	return CDisplayWindow3D::Create(
+	return std::make_shared<CDisplayWindow3D>(
 		windowCaption, initialWindowWidth, initialWindowHeight);
 }
 /*---------------------------------------------------------------

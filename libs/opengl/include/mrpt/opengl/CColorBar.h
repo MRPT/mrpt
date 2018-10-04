@@ -44,21 +44,6 @@ class CColorBar : public CRenderizableDisplayList
 	bool m_disable_depth_test{true};
 
    public:
-	/** Constructor returning a smart pointer to the newly created object. */
-	static CColorBar::Ptr Create(
-		/** The colormap to represent. */
-		const mrpt::img::TColormap colormap,
-		/** size of the color bar */
-		double width, double height,
-		/** limits for [0,1] colormap indices */
-		double min_col, double max_col,
-		/** limits for values associated to extreme colors */
-		double min_value, double max_value,
-		/** sprintf-like format string for values */
-		const std::string& label_format = std::string("%7.02f"),
-		/** Label text font size */
-		double label_font_size = .05);
-
 	/** Render
 	 * \sa mrpt::opengl::CRenderizable
 	 */

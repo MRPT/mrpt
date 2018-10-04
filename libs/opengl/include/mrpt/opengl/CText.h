@@ -61,9 +61,6 @@ class CText : public CRenderizable
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
 
-	/** Class factory  */
-	static CText::Ptr Create(const std::string& str);
-
 	/** Constructor */
 	CText(const std::string& str = std::string(""));
 

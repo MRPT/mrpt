@@ -21,12 +21,6 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CSimpleLine, CRenderizableDisplayList, mrpt::opengl)
 
-CSimpleLine::Ptr CSimpleLine::Create(
-	float x0, float y0, float z0, float x1, float y1, float z1, float lineWidth)
-{
-	return CSimpleLine::Create(x0, y0, z0, x1, y1, z1, lineWidth);
-}
-
 CSimpleLine::CSimpleLine(
 	float x0, float y0, float z0, float x1, float y1, float z1, float lineWidth,
 	bool antiAliasing)

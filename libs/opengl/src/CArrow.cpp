@@ -27,19 +27,6 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CArrow, CRenderizableDisplayList, mrpt::opengl)
 
-/** Class factory  */
-CArrow::Ptr CArrow::Create(
-	float x0, float y0, float z0, float x1, float y1, float z1, float headRatio,
-	float smallRadius, float largeRadius, float arrow_roll, float arrow_pitch,
-	float arrow_yaw)
-{
-	return std::make_shared<CArrow>(
-		x0, y0, z0, x1, y1, z1, headRatio, smallRadius, largeRadius, arrow_roll,
-		arrow_pitch, arrow_yaw);
-}
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
 void CArrow::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT

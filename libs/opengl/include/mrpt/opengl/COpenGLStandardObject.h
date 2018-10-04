@@ -60,15 +60,6 @@ class COpenGLStandardObject : public CRenderizableDisplayList
 	 * \sa mrpt::opengl::CRenderizable
 	 */
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
-	/**
-	 * Creation of object from type, vertices, chunk size and a list of enabled
-	 * openGL flags.
-	 * \throw std::logic_error if the number of vertices is not an exact
-	 * multiple of the chunk size.
-	 */
-	static COpenGLStandardObject::Ptr Create(
-		_GLENUM t, const std::vector<mrpt::math::TPoint3D>& v, uint32_t cs = 0,
-		const std::vector<_GLENUM>& en = std::vector<_GLENUM>());
 
 	/**
 	 * Enable some openGL flag.
@@ -119,7 +110,10 @@ class COpenGLStandardObject : public CRenderizableDisplayList
 		for (size_t i = 0; i < 3; i++) n[i] = normal[i];
 	}
 	/**
-	 * Constructor with all the information.
+	 * Creation of object from type, vertices, chunk size and a list of enabled
+	 * openGL flags.
+	 * \throw std::logic_error if the number of vertices is not an exact
+	 * multiple of the chunk size.
 	 */
 	COpenGLStandardObject(
 		_GLENUM t, const std::vector<mrpt::math::TPoint3D>& v, uint32_t cs,

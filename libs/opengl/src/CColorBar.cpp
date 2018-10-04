@@ -48,25 +48,6 @@ CColorBar::CColorBar(
 {
 }
 
-CColorBar::Ptr CColorBar::Create(
-	/** The colormap to represent. */
-	const mrpt::img::TColormap colormap,
-	/** size of the color bar */
-	double width, double height,
-	/** limits for [0,1] colormap indices */
-	double min_col, double max_col,
-	/** limits for values associated to extreme colors */
-	double min_value, double max_value,
-	/** sprintf-like format string for values */
-	const std::string& label_format,
-	/** Label text font size */
-	double label_font_size)
-{
-	return mrpt::make_aligned_shared<CColorBar>(
-		colormap, width, height, min_col, max_col, min_value, max_value,
-		label_format, label_font_size);
-}
-
 void CColorBar::setColormap(const mrpt::img::TColormap colormap)
 {
 	m_colormap = colormap;

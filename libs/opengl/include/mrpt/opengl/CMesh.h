@@ -206,11 +206,6 @@ class CMesh : public CRenderizableDisplayList
 		CRenderizableDisplayList::notifyChange();
 	}
 
-	/** Class factory  */
-	static CMesh::Ptr Create(
-		bool enableTransparency, float xMin = 0.0f, float xMax = 0.0f,
-		float yMin = 0.0f, float yMax = 0.0f);
-
 	/** Render
 	  */
 	void render_dl() const override;

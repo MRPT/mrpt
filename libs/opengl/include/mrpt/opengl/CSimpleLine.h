@@ -66,11 +66,6 @@ class CSimpleLine : public CRenderizableDisplayList
 	  */
 	void render_dl() const override;
 
-	/** Class factory */
-	static CSimpleLine::Ptr Create(
-		float x0, float y0, float z0, float x1, float y1, float z1,
-		float lineWidth = 1);
-
 	/** Evaluates the bounding box of this object (including possible children)
 	 * in the coordinate frame of the object parent. */
 	void getBoundingBox(

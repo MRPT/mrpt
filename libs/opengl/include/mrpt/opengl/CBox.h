@@ -54,12 +54,6 @@ class CBox : public CRenderizableDisplayList
 	mrpt::img::TColor m_solidborder_color;
 
    public:
-	/** Constructor returning a smart pointer to the newly created object. */
-	static CBox::Ptr Create(
-		const mrpt::math::TPoint3D& corner1,
-		const mrpt::math::TPoint3D& corner2, bool is_wireframe = false,
-		float lineWidth = 1.0);
-
 	/** Render
 	  * \sa mrpt::opengl::CRenderizable
 	  */

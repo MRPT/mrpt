@@ -672,7 +672,7 @@ CDisplayWindowPlots::Ptr CDisplayWindowPlots::Create(
 	const std::string& windowCaption, unsigned int initialWindowWidth,
 	unsigned int initialWindowHeight)
 {
-	return CDisplayWindowPlots::Create(
+	return std::make_shared<CDisplayWindowPlots>(
 		windowCaption, initialWindowWidth, initialWindowHeight);
 }
 /*---------------------------------------------------------------
@@ -682,7 +682,7 @@ CDisplayWindowPlots::CDisplayWindowPlots(
 	const std::string& windowCaption, unsigned int initialWidth,
 	unsigned int initialHeight)
 	: CBaseGUIWindow(static_cast<void*>(this), 400, 499, windowCaption)
-	  
+
 {
 	CBaseGUIWindow::createWxWindow(initialWidth, initialHeight);
 }

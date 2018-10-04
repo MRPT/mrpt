@@ -64,12 +64,6 @@ class CFrustum : public CRenderizableDisplayList
 	mrpt::img::TColor m_planes_color;
 
    public:
-	/** Constructor returning a smart pointer to the newly created object. */
-	static CFrustum::Ptr Create(
-		float near_distance, float far_distance, float horz_FOV_degrees,
-		float vert_FOV_degrees, float lineWidth = 1.5f, bool draw_lines = true,
-		bool draw_planes = false);
-
 	inline void setLineWidth(float width)
 	{
 		m_lineWidth = width;

@@ -184,11 +184,6 @@ class CSetOfLines : public CRenderizableDisplayList
 		size_t index, double& x0, double& y0, double& z0, double& x1,
 		double& y1, double& z1) const;
 
-	/** Class factory */
-	static CSetOfLines::Ptr Create(
-		const std::vector<mrpt::math::TSegment3D>& sgms,
-		const bool antiAliasing = true);
-
 	/** Render */
 	void render_dl() const override;
 

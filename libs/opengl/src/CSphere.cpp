@@ -23,14 +23,6 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CSphere, CRenderizableDisplayList, mrpt::opengl)
 
-CSphere::Ptr CSphere::Create(
-	float radius, int nDivsLongitude, int nDivsLatitude)
-{
-	return CSphere::Create(radius, nDivsLongitude, nDivsLatitude);
-}
-/*---------------------------------------------------------------
-							render_dl
-  ---------------------------------------------------------------*/
 void CSphere::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT

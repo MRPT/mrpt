@@ -357,7 +357,7 @@ CDisplayWindow::Ptr CDisplayWindow::Create(
 	const std::string& windowCaption, unsigned int initWidth,
 	unsigned int initHeight)
 {
-	return CDisplayWindow::Create(windowCaption, initWidth, initHeight);
+	return std::make_shared<CDisplayWindow>(windowCaption, initWidth, initHeight);
 }
 /*---------------------------------------------------------------
 					Constructor

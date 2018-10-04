@@ -91,11 +91,6 @@ class CGridPlaneXY : public CRenderizableDisplayList
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
 
-	/** Class factory  */
-	static CGridPlaneXY::Ptr Create(
-		float xMin, float xMax, float yMin, float yMax, float z = 0,
-		float frequency = 1, float lineWidth = 1.3f, bool antiAliasing = true);
-
 	/** Constructor  */
 	CGridPlaneXY(
 		float xMin = -10, float xMax = 10, float yMin = -10, float yMax = 10,

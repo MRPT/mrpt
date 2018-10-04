@@ -69,10 +69,6 @@ class CTexturedPlane : public CTexturedObject
 		yMax = m_yMax;
 	}
 
-	/** Class factory  */
-	static CTexturedPlane::Ptr Create(
-		float x_min, float x_max, float y_min, float y_max);
-
 	bool traceRay(
 		const mrpt::poses::CPose3D& o, double& dist) const override;
 	void getBoundingBox(

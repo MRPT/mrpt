@@ -82,11 +82,6 @@ class CGridPlaneXZ : public CRenderizableDisplayList
 		CRenderizableDisplayList::notifyChange();
 	}
 	float getGridFrequency() const { return m_frequency; }
-	/** Class factory  */
-	static CGridPlaneXZ::Ptr Create(
-		float xMin = -10, float xMax = 10, float zMin = -10, float zMax = 10,
-		float y = 0, float frequency = 1, float lineWidth = 1.3f,
-		bool antiAliasing = true);
 
 	/** Render
 	  */

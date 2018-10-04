@@ -186,11 +186,6 @@ class CMeshFast : public CRenderizableDisplayList
 		CRenderizableDisplayList::notifyChange();
 	}
 
-	/** Class factory  */
-	static CMeshFast::Ptr Create(
-		bool enableTransparency, float xMin = -1.0f, float xMax = 1.0f,
-		float yMin = -1.0f, float yMax = 1.0f);
-
 	/** Render
 	 */
 	void render_dl() const override;
