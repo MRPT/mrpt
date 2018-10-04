@@ -62,7 +62,7 @@ class CAtan2LookUpTable
 class CAtan2LookUpTableMultiRes
 {
    public:
-	CAtan2LookUpTableMultiRes() noexcept;
+	CAtan2LookUpTableMultiRes() = default;
 	/** See CAtan2LookUpTableMultiRes for a discussion of the parameters */
 	CAtan2LookUpTableMultiRes(
 		const std::map<double, double>& lst_resolutions2extensions) noexcept;
