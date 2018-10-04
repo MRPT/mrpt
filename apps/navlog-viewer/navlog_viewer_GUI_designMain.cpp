@@ -119,7 +119,8 @@ class MyArtProvider : public wxArtProvider
 {
    protected:
 	wxBitmap CreateBitmap(
-		const wxArtID& id, const wxArtClient& client, const wxSize& size) override
+		const wxArtID& id, const wxArtClient& client,
+		const wxSize& size) override
 	{
 		if (id == wxART_MAKE_ART_ID(MAIN_ICON)) return wxBitmap(main_icon_xpm);
 		if (id == wxART_MAKE_ART_ID(IMG_MRPT_LOGO))
@@ -231,8 +232,8 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(
 	FlexGridSizer3->Add(
 		rbPerPTGPlots, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
 	cbList = new wxCheckListBox(
-		Panel_AUX, ID_CHECKLISTBOX1, wxDefaultPosition, wxSize(250, 71), 0, nullptr,
-		0, wxDefaultValidator, _T("ID_CHECKLISTBOX1"));
+		Panel_AUX, ID_CHECKLISTBOX1, wxDefaultPosition, wxSize(250, 71), 0,
+		nullptr, 0, wxDefaultValidator, _T("ID_CHECKLISTBOX1"));
 	FlexGridSizer3->Add(
 		cbList, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
 	FlexGridSizer11->Add(
@@ -441,6 +442,7 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(
 	m_cbIdx_DrawShape = cbList->Append(_("Draw shape along path"));
 	m_cbIdx_ShowAllDebugFields = cbList->Append(_("Show all debug fields"));
 	m_cbIdx_GlobalFrame = cbList->Append(_("Represent in global frame"));
+	m_cbIdx_UseOdometryCoords = cbList->Append(_("Use raw odometry"));
 	m_cbIdx_ShowDelays = cbList->Append(_("Show delays model-based poses"));
 	m_cbIdx_ClearanceOverPath =
 		cbList->Append(_("Clearance over path (uncheck=pointwise)"));
@@ -748,7 +750,23 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 							gl_rbframe_r);
 				}
 				// Global or local coordinates?
-				if (cbList->IsChecked(m_cbIdx_GlobalFrame))
+				if (cbList->IsChecked(m_cbIdx_UseOdometryCoords))
+				{
+					// Use odometry pose increment wrt initial instant,
+					// taking the localization-based "good" pose of the initial
+					// instant as a reference, such that the obtained
+					// coordinates closely match those expected in the "map"
+					// frame:
+					auto log0ptr =
+						mrpt::ptr_cast<CLogFileRecord>::from(m_logdata[0]);
+					ASSERT_(log0ptr.get());
+					const auto curPose =
+						log0ptr->robotPoseLocalization +
+						(log.robotPoseOdometry - log0ptr->robotPoseOdometry);
+
+					gl_robot_frame->setPose(curPose);
+				}
+				else if (cbList->IsChecked(m_cbIdx_GlobalFrame))
 				{
 					gl_robot_frame->setPose(mrpt::poses::CPose3D(
 						mrpt::poses::CPose2D(log.robotPoseLocalization)));
@@ -881,7 +899,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					gl_robot_frame->insert(gl_path);
 				}
 				else
-					gl_path = mrpt::ptr_cast<mrpt::opengl::CSetOfLines>::from(gl_path_r);
+					gl_path = mrpt::ptr_cast<mrpt::opengl::CSetOfLines>::from(
+						gl_path_r);
 				gl_path->clear();
 				if (sel_ptg_idx < int(m_logdata_ptg_paths.size()) &&
 					sel_ptg_idx >= 0)

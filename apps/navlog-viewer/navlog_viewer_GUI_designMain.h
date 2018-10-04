@@ -135,7 +135,8 @@ class navlog_viewer_GUI_designDialog : public wxFrame  // wxDialog
 	wxTimer timMouseXY;
 
 	int m_cbIdx_DrawShape, m_cbIdx_ShowAllDebugFields, m_cbIdx_GlobalFrame,
-		m_cbIdx_ShowDelays, m_cbIdx_ClearanceOverPath, m_cbIdx_ShowCursor;
+		m_cbIdx_ShowDelays, m_cbIdx_ClearanceOverPath, m_cbIdx_ShowCursor,
+		m_cbIdx_UseOdometryCoords;
 
 	DECLARE_EVENT_TABLE()
 
