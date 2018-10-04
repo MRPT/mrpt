@@ -53,14 +53,6 @@ CAxis::CAxis(
 	m_textRot[2][2] = 90.f;
 }
 
-CAxis::Ptr CAxis::Create(
-	float xmin, float ymin, float zmin, float xmax, float ymax, float zmax,
-	float frecuency, float lineWidth, bool marks)
-{
-	return CAxis::Create(
-		xmin, ymin, zmin, xmax, ymax, zmax, frecuency, lineWidth, marks);
-}
-
 void CAxis::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT

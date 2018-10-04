@@ -230,13 +230,6 @@ class CVectorField2D : public CRenderizableDisplayList
 	/** Returns the total count of columns used to represent the vector field.
 	 */
 	inline size_t rows() const { return xcomp.rows(); }
-	/**
-	  * Class factory
-	  */
-	static CVectorField2D::Ptr Create(
-		const mrpt::math::CMatrixFloat& Matrix_x,
-		const mrpt::math::CMatrixFloat& Matrix_y, float xmin = -1,
-		float xmax = 1, float ymin = -1, float ymax = 1);
 	/** Render
 	  */
 	void render_dl() const override;

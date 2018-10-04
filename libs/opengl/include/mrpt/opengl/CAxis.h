@@ -59,11 +59,6 @@ class CAxis : public CRenderizableDisplayList
 	void enableTickMarks(bool v = true);
 	void enableTickMarks(bool show_x, bool show_y, bool show_z);
 
-	/** Class factory  */
-	static CAxis::Ptr Create(
-		float xmin, float ymin, float zmin, float xmax, float ymax, float zmax,
-		float frecuency = 1, float lineWidth = 3, bool marks = false);
-
 	/** Render */
 	void render_dl() const override;
 
@@ -77,7 +72,7 @@ class CAxis : public CRenderizableDisplayList
 	CAxis(
 		float xmin = -1.0f, float ymin = -1.0f, float zmin = -1.0f,
 		float xmax = 1.0f, float ymax = 1.0f, float zmax = 1.0f,
-		float frecuency = 0.25f, float lineWidth = 3.0f, bool marks = false);
+		float frecuency = 1.f, float lineWidth = 3.0f, bool marks = false);
 
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	~CAxis() override = default;

@@ -134,12 +134,6 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 
    public:
 	/**
-	 * Creation of generalized cylinder from axis and generatrix
-	 */
-	static CGeneralizedCylinder::Ptr Create(
-		const std::vector<mrpt::math::TPoint3D>& axis,
-		const std::vector<mrpt::math::TPoint3D>& generatrix);
-	/**
 	 * Render.
 	 * \sa mrpt::opengl::CRenderizable
 	 */

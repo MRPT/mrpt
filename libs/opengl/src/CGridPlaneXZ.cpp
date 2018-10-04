@@ -21,14 +21,6 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CGridPlaneXZ, CRenderizableDisplayList, mrpt::opengl)
 
-CGridPlaneXZ::Ptr CGridPlaneXZ::Create(
-	float xMin, float xMax, float zMin, float zMax, float y, float frequency,
-	float lineWidth, bool antiAliasing)
-{
-	return CGridPlaneXZ::Create(
-		xMin, xMax, zMin, zMax, y, frequency, lineWidth, antiAliasing);
-}
-
 /** Constructor */
 CGridPlaneXZ::CGridPlaneXZ(
 	float xMin, float xMax, float zMin, float zMax, float y, float frequency,

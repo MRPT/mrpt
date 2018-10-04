@@ -63,10 +63,6 @@ class CSphere : public CRenderizableDisplayList
 		return m_keepRadiusIndependentEyeDistance;
 	}
 
-	/** Class factory  */
-	static CSphere::Ptr Create(
-		float radius, int nDivsLongitude = 20, int nDivsLatitude = 20);
-
 	/** Render */
 	void render_dl() const override;
 

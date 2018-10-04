@@ -95,14 +95,6 @@ class CText3D : public CRenderizableDisplayList
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
 
-	/** Class factory  */
-	static CText3D::Ptr Create(
-		const std::string& str,
-		const std::string& fontName = std::string("sans"),
-		const double scale = 1.0,
-		const mrpt::opengl::TOpenGLFontStyle text_style = mrpt::opengl::FILL,
-		const double text_spacing = 1.5, const double text_kerning = 0.1);
-
 	/** Constructor */
 	CText3D(
 		const std::string& str = std::string(""),

@@ -347,16 +347,6 @@ class CVectorField3D : public CRenderizableDisplayList
 	/** Returns the total count of columns used to represent the vector field.
 	 */
 	inline size_t rows() const { return x_vf.rows(); }
-	/**
-	 * Class factory
-	 */
-	static CVectorField3D::Ptr Create(
-		const mrpt::math::CMatrixFloat x_vf_ini,
-		const mrpt::math::CMatrixFloat y_vf_ini,
-		const mrpt::math::CMatrixFloat z_vf_ini,
-		const mrpt::math::CMatrixFloat x_p_ini,
-		const mrpt::math::CMatrixFloat y_p_ini,
-		const mrpt::math::CMatrixFloat z_p_ini);
 	/** Render
 	 */
 	void render_dl() const override;
