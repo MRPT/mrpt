@@ -1,15 +1,15 @@
-INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
+include(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
 
 # ----------------------------------------------------------------------------
 #  Auxiliary static library: wxThings
 #   Used in some apps/* projects.
 # ----------------------------------------------------------------------------
 
-PROJECT(wxThings)
+project(wxThings)
 
-INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/wxThings/")
+include_directories("${MRPT_SOURCE_DIR}/otherlibs/wxThings/")
 
-ADD_LIBRARY(mrptwxthings
+add_library(mrptwxthings
 	STATIC
 	src/toggle.cpp    # fancy button
 	)

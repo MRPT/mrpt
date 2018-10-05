@@ -27,10 +27,10 @@ if (USE_QT)
 			list(APPEND Qt5_COMPONENTS_INCLUDE_DIRS "${Qt5_component_incl}")
 		endforeach()
 		
-		IF($ENV{VERBOSE})
-			MESSAGE(STATUS "Qt5 link libs: ${Qt5_COMPONENTS_LIBS}")
-			MESSAGE(STATUS "Qt5 include dirs: ${Qt5_COMPONENTS_INCLUDE_DIRS}")
-		ENDIF()
+		if($ENV{VERBOSE})
+			message(STATUS "Qt5 link libs: ${Qt5_COMPONENTS_LIBS}")
+			message(STATUS "Qt5 include dirs: ${Qt5_COMPONENTS_INCLUDE_DIRS}")
+		endif()
 		
 	endif(Qt5Core_FOUND)
 

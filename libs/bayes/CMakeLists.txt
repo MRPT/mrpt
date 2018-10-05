@@ -9,6 +9,6 @@ define_mrpt_lib(
 	mrpt-config
 	)
 
-IF(BUILD_mrpt-bayes)
+if(BUILD_mrpt-bayes)
 
-ENDIF( )
+endif( )

@@ -1,4 +1,4 @@
-INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
+include(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
 
 #-----------------------------------------------------------------
 # CMake file for the MRPT application:  navlog-viewer
@@ -8,38 +8,38 @@ INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CM
 #  Feb 2010, Jose Luis Blanco <jlblanco@ctima.uma.es>
 #-----------------------------------------------------------------
 
-PROJECT(navlog-viewer)
+project(navlog-viewer)
 
-IF(CMAKE_MRPT_HAS_WXWIDGETS)
+if(CMAKE_MRPT_HAS_WXWIDGETS)
 	# ---------------------------------------------
 	# TARGET:
 	# ---------------------------------------------
-	SET(SRCS
+	set(SRCS
 		navlog_viewer_GUI_designMain.h navlog_viewer_GUI_designMain.cpp
 		navlog_viewer_GUI_designApp.h  navlog_viewer_GUI_designApp.cpp
 	 	)
 
-	IF(WIN32)
-		SET(SRCS ${SRCS} resource.rc)
-	ENDIF()
+	if(WIN32)
+		set(SRCS ${SRCS} resource.rc)
+	endif()
 
-	INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/wxThings/")
+	include_directories("${MRPT_SOURCE_DIR}/otherlibs/wxThings/")
 
 
 	# Define the executable target:
-	ADD_EXECUTABLE(${PROJECT_NAME} WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
+	add_executable(${PROJECT_NAME} WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
 
 	# -ldl required by the plugin load mechanism of this app:
-	IF(UNIX)
-	        TARGET_LINK_LIBRARIES(${PROJECT_NAME} dl)
-	ENDIF()
+	if(UNIX)
+	        target_link_libraries(${PROJECT_NAME} dl)
+	endif()
 
 	# Add the required libraries for linking:
-	TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${wxWidgets_LIBRARIES} )
-	TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
+	target_link_libraries(${PROJECT_NAME} ${wxWidgets_LIBRARIES} )
+	target_link_libraries(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
 
-	TARGET_LINK_LIBRARIES(${PROJECT_NAME} mrptwxthings)
-	ADD_DEPENDENCIES(${PROJECT_NAME} mrptwxthings)
+	target_link_libraries(${PROJECT_NAME} mrptwxthings)
+	add_dependencies(${PROJECT_NAME} mrptwxthings)
 
 	# Dependencies on MRPT libraries:
 	#  Just mention the top-level dependency, the rest will be detected automatically,
@@ -50,9 +50,9 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 
 	AppStartMenuLink(${PROJECT_NAME} "Viewer of navigation log files")   # Add link to the Start menu (in Windows Installable packages)
 
-ELSE()
+else()
 	# ----------------------------------------------------------------------------------
     	# For convenience. When we cannot continue, inform the user
 	# ----------------------------------------------------------------------------------
-    MESSAGE(STATUS "wxWidgets not found!: **This target will not be included in the Makefiles**")
-ENDIF()
+    message(STATUS "wxWidgets not found!: **This target will not be included in the Makefiles**")
+endif()

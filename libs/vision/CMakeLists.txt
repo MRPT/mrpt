@@ -1,29 +1,29 @@
 # Lists of directories with source files:
 #  See "DeclareMRPTLib.cmake" for explanations
 # -------------------------------------------------
-LIST(APPEND vision_EXTRA_SRCS		"${MRPT_SOURCE_DIR}/libs/vision/src/maps/*.cpp" "${MRPT_SOURCE_DIR}/libs/vision/include/mrpt/maps/*.h" "${MRPT_SOURCE_DIR}/libs/vision/include/mrpt/slam/*.h")
-LIST(APPEND vision_EXTRA_SRCS_NAME 	"maps" "maps" "maps-bcks-compat")
+list(APPEND vision_EXTRA_SRCS		"${MRPT_SOURCE_DIR}/libs/vision/src/maps/*.cpp" "${MRPT_SOURCE_DIR}/libs/vision/include/mrpt/maps/*.h" "${MRPT_SOURCE_DIR}/libs/vision/include/mrpt/slam/*.h")
+list(APPEND vision_EXTRA_SRCS_NAME 	"maps" "maps" "maps-bcks-compat")
 
-LIST(APPEND vision_EXTRA_SRCS		"${MRPT_SOURCE_DIR}/libs/vision/src/obs/*.cpp" "${MRPT_SOURCE_DIR}/libs/vision/include/mrpt/slam/CObservation*.h")
-LIST(APPEND vision_EXTRA_SRCS_NAME 	"observations" "observations")
+list(APPEND vision_EXTRA_SRCS		"${MRPT_SOURCE_DIR}/libs/vision/src/obs/*.cpp" "${MRPT_SOURCE_DIR}/libs/vision/include/mrpt/slam/CObservation*.h")
+list(APPEND vision_EXTRA_SRCS_NAME 	"observations" "observations")
 
-LIST(APPEND vision_EXTRA_SRCS		"${MRPT_SOURCE_DIR}/libs/vision/src/pnp/*.cpp" "${MRPT_SOURCE_DIR}/libs/vision/include/mrpt/vision/pnp_algos.h")
-LIST(APPEND vision_EXTRA_SRCS_NAME 	"pnp" "pnp")
+list(APPEND vision_EXTRA_SRCS		"${MRPT_SOURCE_DIR}/libs/vision/src/pnp/*.cpp" "${MRPT_SOURCE_DIR}/libs/vision/include/mrpt/vision/pnp_algos.h")
+list(APPEND vision_EXTRA_SRCS_NAME 	"pnp" "pnp")
 
-IF(CMAKE_MRPT_HAS_SIFT_HESS)
-	LIST(APPEND vision_EXTRA_SRCS
+if(CMAKE_MRPT_HAS_SIFT_HESS)
+	list(APPEND vision_EXTRA_SRCS
 		"${MRPT_SOURCE_DIR}/libs/vision/src/sift-hess/imgfeatures.c"
 		"${MRPT_SOURCE_DIR}/libs/vision/src/sift-hess/sift.c"
 		"${MRPT_SOURCE_DIR}/libs/vision/src/sift-hess/utils.c"
 		"${MRPT_SOURCE_DIR}/libs/vision/include/mrpt/sift-hess/*.h")
-	LIST(APPEND vision_EXTRA_SRCS_NAME 	"sift-hess" "sift-hess" "sift-hess" "sift-hess")
-ENDIF()
+	list(APPEND vision_EXTRA_SRCS_NAME 	"sift-hess" "sift-hess" "sift-hess" "sift-hess")
+endif()
 
-IF(CMAKE_MRPT_HAS_OPENCV)
-	INCLUDE_DIRECTORIES(${CVD_INCLUDE_DIRS})
+if(CMAKE_MRPT_HAS_OPENCV)
+	include_directories(${CVD_INCLUDE_DIRS})
 
-	INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${OPENCV_INCLUDE_DIRS} ${OPENCV_INCLUDEDIR})
-ENDIF()
+	include_directories(${OpenCV_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${OPENCV_INCLUDE_DIRS} ${OPENCV_INCLUDEDIR})
+endif()
 
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
@@ -35,30 +35,30 @@ define_mrpt_lib(
 	mrpt-obs
 	)
 
-IF(CMAKE_MRPT_HAS_OPENCV)
+if(CMAKE_MRPT_HAS_OPENCV)
 	add_dependencies(mrpt-vision libcvd)
-ENDIF()
+endif()
 
-IF(BUILD_mrpt-vision)
-	IF(CMAKE_MRPT_HAS_SIFT_HESS)
-		IF (MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
+if(BUILD_mrpt-vision)
+	if(CMAKE_MRPT_HAS_SIFT_HESS)
+		if (MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
 			# Ignore precompiled headers in sift-hess sources:
 			set_source_files_properties(${sift-hess_FILES} PROPERTIES COMPILE_FLAGS "/Y- /wd4244")
-		ENDIF ()
+		endif ()
 
 		# Avoid some annoying warnings:
-		IF (CMAKE_COMPILER_IS_GNUCXX)
+		if (CMAKE_COMPILER_IS_GNUCXX)
 			set_source_files_properties(${sift-hess_FILES} PROPERTIES COMPILE_FLAGS "-Wno-unused-function")
-		ENDIF ()
-	ENDIF()
+		endif ()
+	endif()
 
 	# Ignore precompiled headers in faster sources:
-	IF (MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
+	if (MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
 		set_source_files_properties(${faster_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
-	ENDIF ()
+	endif ()
 
-	IF(CMAKE_MRPT_HAS_OPENCV)
+	if(CMAKE_MRPT_HAS_OPENCV)
 		target_link_libraries(mrpt-vision PRIVATE ${OpenCV_LIBRARIES} ${CVD_LIB})
-	ENDIF()
+	endif()
 
-ENDIF()
+endif()

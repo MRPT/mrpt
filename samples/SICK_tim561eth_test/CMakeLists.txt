@@ -4,15 +4,15 @@
 #  Run with "ccmake ." at the root directory, or use it as a template for 
 #   starting your own programs
 #-----------------------------------------------------------------------------------------------
-SET(sampleName SICK_tim561eth_test)
-SET(PRJ_NAME "EXAMPLE_${sampleName}")
+set(sampleName SICK_tim561eth_test)
+set(PRJ_NAME "EXAMPLE_${sampleName}")
 
 # ---------------------------------------
 # Declare a new CMake Project:
 # ---------------------------------------
-PROJECT(${PRJ_NAME})
+project(${PRJ_NAME})
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
+cmake_minimum_required(VERSION 3.1)
 set (CMAKE_CXX_STANDARD 14)  # Require C++14
 cmake_policy(SET CMP0003 NEW)  # Required by CMake 2.7+
 #cmake_policy(SET CMP0043 OLD) #  Ignore COMPILE_DEFINITIONS_<Config> properties.
@@ -21,7 +21,7 @@ cmake_policy(SET CMP0003 NEW)  # Required by CMake 2.7+
 # Set the output directory of each example to its corresponding subdirectory
 #  in the binary tree:
 # ---------------------------------------------------------------------------
-SET(EXECUTABLE_OUTPUT_PATH ".")
+set(EXECUTABLE_OUTPUT_PATH ".")
 
 # --------------------------------------------------------------------------
 #   The list of "libs" which can be included can be found in:
@@ -30,42 +30,42 @@ SET(EXECUTABLE_OUTPUT_PATH ".")
 #   The dependencies of a library are automatically added, so you only 
 #    need to specify the top-most libraries your code depend on.
 # --------------------------------------------------------------------------
-FIND_PACKAGE(MRPT REQUIRED hwdrivers;maps)
+find_package(MRPT REQUIRED hwdrivers;maps)
 
 # ---------------------------------------------
 # TARGET:
 # ---------------------------------------------
 # Define the executable target:
-ADD_EXECUTABLE(${sampleName} test.cpp  ) 
+add_executable(${sampleName} test.cpp  ) 
 
-SET_TARGET_PROPERTIES(
+set_target_properties(
 	${sampleName} 
 	PROPERTIES 
 	PROJECT_LABEL "(EXAMPLE) ${sampleName}")
 
 # Add special defines needed by this example, if any:
-SET(MY_DEFS )
-IF(MY_DEFS) # If not empty
-	ADD_DEFINITIONS("-D${MY_DEFS}")
-ENDIF(MY_DEFS)
+set(MY_DEFS )
+if(MY_DEFS) # If not empty
+	add_definitions("-D${MY_DEFS}")
+endif(MY_DEFS)
 
 # Add the required libraries for linking:
-TARGET_LINK_LIBRARIES(${sampleName} 
-	${MRPT_LIBS}  # This is filled by FIND_PACKAGE(MRPT ...)
+target_link_libraries(${sampleName} 
+	${MRPT_LIBS}  # This is filled by find_package(MRPT ...)
 	""  # Optional extra libs...
 	)
 
 # Set optimized building:
-IF((${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX) AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
+if((${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX) AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
 	add_compile_options(-O3)
-ENDIF()
+endif()
 
 # -------------------------------------------------------------------------
 # This part can be removed if you are compiling this program outside of 
 #  the MRPT tree:
 # -------------------------------------------------------------------------
-IF(${CMAKE_PROJECT_NAME} STREQUAL "MRPT") # Fails if build outside of MRPT project.
+if(${CMAKE_PROJECT_NAME} STREQUAL "MRPT") # Fails if build outside of MRPT project.
 	DeclareAppDependencies(${sampleName} mrpt-hwdrivers;mrpt-maps) # Dependencies
-ENDIF()
+endif()
 # -------------------------------------------------------------------------
 

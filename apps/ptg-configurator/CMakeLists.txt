@@ -1,35 +1,35 @@
 # CMake file for the MRPT application:  ptg-configurator
 #  Run with "cmake ." at the root directory
-INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
+include(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
 
-PROJECT(ptg-configurator)
+project(ptg-configurator)
 
-IF(CMAKE_MRPT_HAS_WXWIDGETS)
+if(CMAKE_MRPT_HAS_WXWIDGETS)
 
 	# ---------------------------------------------
 	# TARGET:
 	# ---------------------------------------------
-	SET(SRCS
+	set(SRCS
 	 ptgConfiguratorApp.cpp   ptgConfiguratorApp.h
 	 ptgConfiguratorMain.cpp  ptgConfiguratorMain.h
 	 MyGLCanvas.cpp MyGLCanvas.h
 	)
 
-	IF(WIN32)
-		SET(SRCS ${SRCS} resource.rc)
-	ENDIF()
+	if(WIN32)
+		set(SRCS ${SRCS} resource.rc)
+	endif()
 
 	# Define the executable target:
-	ADD_EXECUTABLE(${PROJECT_NAME} WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
+	add_executable(${PROJECT_NAME} WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
 
 	# Add the required libraries for linking:
-	TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${wxWidgets_LIBRARIES} )
-	TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
+	target_link_libraries(${PROJECT_NAME} ${wxWidgets_LIBRARIES} )
+	target_link_libraries(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
 
 	# -ldl required by the plugin load mechanism of this app:
-	IF(UNIX)
-	        TARGET_LINK_LIBRARIES(${PROJECT_NAME} dl)
-	ENDIF()
+	if(UNIX)
+	        target_link_libraries(${PROJECT_NAME} dl)
+	endif()
 
 	# Dependencies on MRPT libraries:
 	#  Just mention the top-level dependency, the rest will be detected automatically,
@@ -40,6 +40,6 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 
 	AppStartMenuLink(${PROJECT_NAME} "PTG configurator")   # Add link to the Start menu (in Windows Installable packages)
 
-ELSE()
-    MESSAGE(STATUS "wxWidgets not found!: **This target will not be included in the Makefiles**")
-ENDIF()
+else()
+    message(STATUS "wxWidgets not found!: **This target will not be included in the Makefiles**")
+endif()

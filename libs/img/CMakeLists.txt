@@ -1,6 +1,6 @@
-IF(CMAKE_MRPT_HAS_OPENCV)
-	INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${OPENCV_INCLUDE_DIRS} ${OPENCV_INCLUDEDIR})
-ENDIF()
+if(CMAKE_MRPT_HAS_OPENCV)
+	include_directories(${OpenCV_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${OPENCV_INCLUDE_DIRS} ${OPENCV_INCLUDEDIR})
+endif()
 
 define_mrpt_lib(
 	img 		# Lib name
@@ -12,25 +12,25 @@ define_mrpt_lib(
 	mrpt-config
 	)
 
-IF(BUILD_mrpt-img)
+if(BUILD_mrpt-img)
 	# Ignore precompiled headers in some sources:
-	IF(MRPT_ENABLE_PRECOMPILED_HDRS)
-		IF (MSVC)
+	if(MRPT_ENABLE_PRECOMPILED_HDRS)
+		if (MSVC)
 			set_source_files_properties(
 				${img/jpeglib_FILES}
 				PROPERTIES COMPILE_FLAGS "/Y-"
 				)
-		ENDIF ()
-	ENDIF()
+		endif ()
+	endif()
 
-	IF(CMAKE_MRPT_HAS_OPENCV)
+	if(CMAKE_MRPT_HAS_OPENCV)
 		target_link_libraries(mrpt-img PRIVATE ${OpenCV_LIBRARIES})
-	ENDIF()
-	IF(CMAKE_MRPT_HAS_JPEG)
-		IF(NOT CMAKE_MRPT_HAS_JPEG_SYSTEM)
-			ADD_DEPENDENCIES(mrpt-img JPEG)
-		ENDIF()
+	endif()
+	if(CMAKE_MRPT_HAS_JPEG)
+		if(NOT CMAKE_MRPT_HAS_JPEG_SYSTEM)
+			add_dependencies(mrpt-img JPEG)
+		endif()
 		target_link_libraries(mrpt-img PRIVATE ${JPEG_LIBRARIES})
-	ENDIF()
+	endif()
 
-ENDIF()
+endif()

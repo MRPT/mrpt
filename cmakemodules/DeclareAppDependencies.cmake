@@ -12,17 +12,17 @@ macro(DeclareAppDependencies name)
 	# set deps:
 	set(ALL_DEPS "")
 
-	FOREACH(DEP ${ARGN})
-		LIST(APPEND ALL_DEPS ${DEP})
-	ENDFOREACH(DEP)
+	foreach(DEP ${ARGN})
+		list(APPEND ALL_DEPS ${DEP})
+	endforeach(DEP)
 
-	FOREACH(DEP ${ARGN})
+	foreach(DEP ${ARGN})
 		# Only for "mrpt-XXX" libs:
-		IF (${DEP} MATCHES "mrpt-")
+		if (${DEP} MATCHES "mrpt-")
 			get_property(LIB_DEP GLOBAL PROPERTY "${DEP}_LIB_DEPS")
-			LIST(APPEND ALL_DEPS ${LIB_DEP})
-		ENDIF (${DEP} MATCHES "mrpt-")
-	ENDFOREACH(DEP)
+			list(APPEND ALL_DEPS ${LIB_DEP})
+		endif (${DEP} MATCHES "mrpt-")
+	endforeach(DEP)
 
 
 	# Add the detected dependencies:
@@ -30,39 +30,39 @@ macro(DeclareAppDependencies name)
 
 	set(AUX_ALL_DEPS_BUILD 1)  # Will be set to "0" if any dependency if not built
 
-	IF (NOT "${ALL_DEPS}" STREQUAL "")
-		#MESSAGE(STATUS "Adding deps: ${name} --> ${ALL_DEPS}")
-		ADD_DEPENDENCIES(${name} ${ALL_DEPS})
+	if (NOT "${ALL_DEPS}" STREQUAL "")
+		#message(STATUS "Adding deps: ${name} --> ${ALL_DEPS}")
+		add_dependencies(${name} ${ALL_DEPS})
 
-		FOREACH (_DEP ${ALL_DEPS})
+		foreach (_DEP ${ALL_DEPS})
 			# Link:
 			get_property(_LIB_HDRONLY GLOBAL PROPERTY "${_DEP}_LIB_IS_HEADERS_ONLY")
 			if (NOT _LIB_HDRONLY)
-				TARGET_LINK_LIBRARIES(${name} ${_DEP}${MRPT_LINKER_LIBS_POSTFIX})
-				LIST(APPEND AUX_EXTRA_LINK_LIBS
+				target_link_libraries(${name} ${_DEP}${MRPT_LINKER_LIBS_POSTFIX})
+				list(APPEND AUX_EXTRA_LINK_LIBS
 					optimized ${MRPT_LIB_PREFIX}${DEP}${MRPT_DLL_VERSION_POSTFIX}
 					debug     ${MRPT_LIB_PREFIX}${DEP}${MRPT_DLL_VERSION_POSTFIX}${CMAKE_DEBUG_POSTFIX})
 			endif (NOT _LIB_HDRONLY)
 
 			# Include:
-			STRING(REGEX REPLACE "mrpt-(.*)" "\\1" DEP_MRPT_NAME ${_DEP})
-			IF(NOT "${DEP_MRPT_NAME}" STREQUAL "")
-				INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/${DEP_MRPT_NAME}/include/")
-			ENDIF(NOT "${DEP_MRPT_NAME}" STREQUAL "")
+			string(REGEX REPLACE "mrpt-(.*)" "\\1" DEP_MRPT_NAME ${_DEP})
+			if(NOT "${DEP_MRPT_NAME}" STREQUAL "")
+				include_directories("${MRPT_LIBS_ROOT}/${DEP_MRPT_NAME}/include/")
+			endif(NOT "${DEP_MRPT_NAME}" STREQUAL "")
 
 			# Check if all dependencies are to be build:
 			if (${BUILD_mrpt-${DEP_MRPT_NAME}} STREQUAL "OFF")
-				SET(AUX_ALL_DEPS_BUILD 0)
-				MESSAGE(STATUS "*Warning*: App ${name} cannot be built because dependency mrpt-${DEP_MRPT_NAME} has been disabled!")
+				set(AUX_ALL_DEPS_BUILD 0)
+				message(STATUS "*Warning*: App ${name} cannot be built because dependency mrpt-${DEP_MRPT_NAME} has been disabled!")
 			endif (${BUILD_mrpt-${DEP_MRPT_NAME}} STREQUAL "OFF")
 
-		ENDFOREACH (_DEP)
-	ENDIF ()
+		endforeach (_DEP)
+	endif ()
 
 	# Impossible to build?
 	if (NOT AUX_ALL_DEPS_BUILD)
-		MESSAGE(STATUS "*Warning* ==> Forcing BUILD_APP_${name}=OFF for missing dependencies listed above (re-enable manually if needed).")
-		SET(BUILD_APP_${name} OFF CACHE BOOL "Build ${name}" FORCE) # this var is checked in [MRPT]/app/CMakeLists.txt
+		message(STATUS "*Warning* ==> Forcing BUILD_APP_${name}=OFF for missing dependencies listed above (re-enable manually if needed).")
+		set(BUILD_APP_${name} OFF CACHE BOOL "Build ${name}" FORCE) # this var is checked in [MRPT]/app/CMakeLists.txt
 		mark_as_advanced(CLEAR BUILD_APP_${name})
 	endif (NOT AUX_ALL_DEPS_BUILD)
 
@@ -79,7 +79,7 @@ endmacro(AppStartMenuLink)
 
 
 macro(DeclareAppForInstall name)
-INSTALL(TARGETS ${name}
+install(TARGETS ${name}
 	RUNTIME DESTINATION ${mrpt_apps_INSTALL_PREFIX}bin COMPONENT Apps
 	LIBRARY DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX} COMPONENT Apps
 	ARCHIVE DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX} COMPONENT Apps)

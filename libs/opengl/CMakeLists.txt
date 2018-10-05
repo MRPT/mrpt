@@ -5,45 +5,45 @@
 
 
 # Embedded freeglut? Built-in into mrpt-opengl, and enable DLL-exporting it to other client libs.
-IF(CMAKE_MRPT_HAS_OPENGL_GLUT AND NOT CMAKE_MRPT_HAS_GLUT_SYSTEM)
-	LIST(APPEND opengl_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/opengl/src/freeglut-2.4.0/*.c" "${MRPT_LIBS_ROOT}/opengl/src/freeglut-2.4.0/*.h")
-	LIST(APPEND opengl_EXTRA_SRCS_NAME 	"freeglut" "freeglut")
-	#ADD_DEFINITIONS(/DFREEGLUT_STATIC)
-	ADD_DEFINITIONS(/DFREEGLUT_EXPORTS)
-	INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/opengl/include/otherlibs/freeglut/")
-ENDIF()
+if(CMAKE_MRPT_HAS_OPENGL_GLUT AND NOT CMAKE_MRPT_HAS_GLUT_SYSTEM)
+	list(APPEND opengl_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/opengl/src/freeglut-2.4.0/*.c" "${MRPT_LIBS_ROOT}/opengl/src/freeglut-2.4.0/*.h")
+	list(APPEND opengl_EXTRA_SRCS_NAME 	"freeglut" "freeglut")
+	#add_definitions(/DFREEGLUT_STATIC)
+	add_definitions(/DFREEGLUT_EXPORTS)
+	include_directories("${MRPT_LIBS_ROOT}/opengl/include/otherlibs/freeglut/")
+endif()
 
 # Embedded version of Glew:
-IF(WIN32)
-	LIST(APPEND opengl_EXTRA_SRCS		"${MRPT_SOURCE_DIR}/libs/opengl/src/glew/src/*.c" "${MRPT_SOURCE_DIR}/libs/opengl/src/glew/include/*.h")
-	LIST(APPEND opengl_EXTRA_SRCS_NAME 	"glew" "glew")
-	INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/libs/opengl/src/glew/include")
-ENDIF()
+if(WIN32)
+	list(APPEND opengl_EXTRA_SRCS		"${MRPT_SOURCE_DIR}/libs/opengl/src/glew/src/*.c" "${MRPT_SOURCE_DIR}/libs/opengl/src/glew/include/*.h")
+	list(APPEND opengl_EXTRA_SRCS_NAME 	"glew" "glew")
+	include_directories("${MRPT_SOURCE_DIR}/libs/opengl/src/glew/include")
+endif()
 
 # Glext headers only (for Windows)
-INCLUDE_DIRECTORIES(${CVD_DIR})
+include_directories(${CVD_DIR})
 
-INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/libs/opengl/src/glext")
+include_directories("${MRPT_SOURCE_DIR}/libs/opengl/src/glext")
 
 # Assimp:
-IF (CMAKE_MRPT_HAS_ASSIMP)
+if (CMAKE_MRPT_HAS_ASSIMP)
 	# ASSIMP_ROOT_DIR - the root directory where the installation can be found
 	# ASSIMP_CXX_FLAGS - extra flags for compilation
 	# ASSIMP_LINK_FLAGS - extra flags for linking
 	# ASSIMP_INCLUDE_DIRS - include directories
 	# ASSIMP_LIBRARY_DIRS - link directories
 	# ASSIMP_LIBRARIES - libraries to link plugins with
-	IF (NOT ${ASSIMP_CXX_FLAGS} STREQUAL "")
-		ADD_DEFINITIONS("${ASSIMP_CXX_FLAGS}")
-	ENDIF()
-	IF (NOT "${ASSIMP_INCLUDE_DIRS}" STREQUAL "")
-		INCLUDE_DIRECTORIES("${ASSIMP_INCLUDE_DIRS}")
-	ENDIF()
-	IF(NOT "${ASSIMP_VERSION}" STREQUAL "")
+	if (NOT ${ASSIMP_CXX_FLAGS} STREQUAL "")
+		add_definitions("${ASSIMP_CXX_FLAGS}")
+	endif()
+	if (NOT "${ASSIMP_INCLUDE_DIRS}" STREQUAL "")
+		include_directories("${ASSIMP_INCLUDE_DIRS}")
+	endif()
+	if(NOT "${ASSIMP_VERSION}" STREQUAL "")
 		string(SUBSTRING "${ASSIMP_VERSION}" 0 1 MRPT_ASSIMP_VERSION_MAJOR)
-		ADD_DEFINITIONS(-DMRPT_ASSIMP_VERSION_MAJOR=${MRPT_ASSIMP_VERSION_MAJOR})
-	ENDIF()
-ENDIF ()
+		add_definitions(-DMRPT_ASSIMP_VERSION_MAJOR=${MRPT_ASSIMP_VERSION_MAJOR})
+	endif()
+endif ()
 
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
@@ -57,12 +57,12 @@ define_mrpt_lib(
 	)
 
 add_dependencies(mrpt-opengl libcvd)
-INCLUDE_DIRECTORIES(${CVD_INCLUDE_DIRS})
+include_directories(${CVD_INCLUDE_DIRS})
 
-IF(BUILD_mrpt-opengl)
+if(BUILD_mrpt-opengl)
 	# Ignore precompiled headers in some sources:
-	IF(MRPT_ENABLE_PRECOMPILED_HDRS)
-		IF (MSVC)
+	if(MRPT_ENABLE_PRECOMPILED_HDRS)
+		if (MSVC)
 			set_source_files_properties(
 				${freeglut_FILES}
 				${glew_FILES}
@@ -70,22 +70,22 @@ IF(BUILD_mrpt-opengl)
 				)
 			# Params for glew:
 			set_source_files_properties(${glew_FILES} PROPERTIES COMPILE_FLAGS "/Y- /DGLEW_STATIC")
-	ENDIF ()
-	ENDIF()
+	endif ()
+	endif()
 
-	IF (MSVC)
+	if (MSVC)
 		# Avoid duplicated export symbol warnings in MSVC SRC glut version
 		set_target_properties(mrpt-opengl PROPERTIES LINK_FLAGS "/ignore:4197")
-	ENDIF()
+	endif()
 
 	# Link against gl, glu, glut:
-	TARGET_LINK_LIBRARIES(mrpt-opengl PUBLIC ${MRPT_OPENGL_LIBS} ${MRPT_3DS_LIBS} ${CVD_LIB})
+	target_link_libraries(mrpt-opengl PUBLIC ${MRPT_OPENGL_LIBS} ${MRPT_3DS_LIBS} ${CVD_LIB})
 
 	# Link against assimp:
-	IF (CMAKE_MRPT_HAS_ASSIMP)
-		IF(TARGET "EP_assimp")
-			ADD_DEPENDENCIES(mrpt-opengl EP_assimp)
-		ENDIF()
-		TARGET_LINK_LIBRARIES(mrpt-opengl PRIVATE ${ASSIMP_LIBRARIES})
-	ENDIF ()
-ENDIF()
+	if (CMAKE_MRPT_HAS_ASSIMP)
+		if(TARGET "EP_assimp")
+			add_dependencies(mrpt-opengl EP_assimp)
+		endif()
+		target_link_libraries(mrpt-opengl PRIVATE ${ASSIMP_LIBRARIES})
+	endif ()
+endif()

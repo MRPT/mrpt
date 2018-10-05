@@ -1,4 +1,4 @@
-INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
+include(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
 
 #-----------------------------------------------------------------
 # CMake file for the MRPT application:  RawLogViewer
@@ -7,14 +7,14 @@ INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CM
 #
 #  October 2007, Jose Luis Blanco <jlblanco@ctima.uma.es>
 #-----------------------------------------------------------------
-PROJECT(camera-calib)
+project(camera-calib)
 
-IF(CMAKE_MRPT_HAS_WXWIDGETS)
+if(CMAKE_MRPT_HAS_WXWIDGETS)
 
 	# ---------------------------------------------
 	# TARGET:
 	# ---------------------------------------------
-	SET(SRCS
+	set(SRCS
 		camera_calib_guiApp.cpp   camera_calib_guiApp.h
 		camera_calib_guiMain.cpp  camera_calib_guiMain.h
 		CDlgCalibWizardOnline.cpp  CDlgCalibWizardOnline.h
@@ -22,18 +22,18 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 		MyGLCanvas.cpp MyGLCanvas.h
 	 )
 
-	IF(WIN32)
-		SET(SRCS ${SRCS} resource.rc)
-	ENDIF()
+	if(WIN32)
+		set(SRCS ${SRCS} resource.rc)
+	endif()
 
 	# Define the executable target:
-	ADD_EXECUTABLE(${PROJECT_NAME} WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
+	add_executable(${PROJECT_NAME} WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
 
 
 	# Add the required libraries for linking:
-	INCLUDE_DIRECTORIES( ${wxWidgets_INCLUDE_DIRS} )
-	TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${wxWidgets_LIBRARIES} )
-	TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
+	include_directories( ${wxWidgets_INCLUDE_DIRS} )
+	target_link_libraries(${PROJECT_NAME} ${wxWidgets_LIBRARIES} )
+	target_link_libraries(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
 
 	# Dependencies on MRPT libraries:
 	#  Just mention the top-level dependency, the rest will be detected automatically,
@@ -44,9 +44,9 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 
 	AppStartMenuLink(${PROJECT_NAME} "Camera calibration GUI")   # Add link to the Start menu (in Windows Installable packages)
 
-ELSE()
+else()
 	# ----------------------------------------------------------------------------------
     # For convenience. When we cannot continue, inform the user
 	# ----------------------------------------------------------------------------------
-    MESSAGE(STATUS "wxWidgets not found!: **This target will not be included in the Makefiles**")
-ENDIF()
+    message(STATUS "wxWidgets not found!: **This target will not be included in the Makefiles**")
+endif()

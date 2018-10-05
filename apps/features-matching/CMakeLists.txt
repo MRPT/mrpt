@@ -1,4 +1,4 @@
-INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
+include(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
 
 #-----------------------------------------------------------------
 # CMake file for the MRPT application:  features_matching
@@ -7,13 +7,13 @@ INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CM
 #
 #  Feb 2008, Jose Luis Blanco <jlblanco@ctima.uma.es>
 #-----------------------------------------------------------------
-PROJECT(features-matching)
+project(features-matching)
 
 # ---------------------------------------------
 # TARGET:
 # ---------------------------------------------
 # Define the executable target:
-ADD_EXECUTABLE(${PROJECT_NAME}
+add_executable(${PROJECT_NAME}
 	features_matching_main.cpp
 	../common/sample_image1.h
 	../common/sample_image2.h
@@ -21,7 +21,7 @@ ADD_EXECUTABLE(${PROJECT_NAME}
 )
 
 # Add the required libraries for linking:
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${MRPT_LINKER_LIBS} ${OpenCV_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${MRPT_LINKER_LIBS} ${OpenCV_LIBRARIES})
 
 # Dependencies on MRPT libraries:
 #  Just mention the top-level dependency, the rest will be detected automatically,

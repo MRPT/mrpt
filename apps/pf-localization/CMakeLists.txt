@@ -1,4 +1,4 @@
-INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
+include(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
 
 #-----------------------------------------------------------------
 # CMake file for the MRPT application:  pf-localization
@@ -7,7 +7,7 @@ INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CM
 #
 #  October 2007, Jose Luis Blanco <jlblanco@ctima.uma.es>
 #-----------------------------------------------------------------
-PROJECT(pf-localization)
+project(pf-localization)
 
 
 
@@ -15,10 +15,10 @@ PROJECT(pf-localization)
 # TARGET:
 # ---------------------------------------------
 # Define the executable target:
-ADD_EXECUTABLE(${PROJECT_NAME} pf_localization_main.cpp ${MRPT_VERSION_RC_FILE})
+add_executable(${PROJECT_NAME} pf_localization_main.cpp ${MRPT_VERSION_RC_FILE})
 
 # Add the required libraries for linking:
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
+target_link_libraries(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
 
 # Dependencies on MRPT libraries:
 #  Just mention the top-level dependency, the rest will be detected automatically,

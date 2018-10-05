@@ -1,5 +1,5 @@
-PROJECT(add-doxygen-grouping-headers)
+project(add-doxygen-grouping-headers)
 
-ADD_EXECUTABLE( add-doxygen-grouping-headers main.cpp )
+add_executable( add-doxygen-grouping-headers main.cpp )
 
 

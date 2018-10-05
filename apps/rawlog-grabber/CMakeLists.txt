@@ -1,4 +1,4 @@
-INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
+include(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
 
 #-----------------------------------------------------------------
 # CMake file for the MRPT application:  RawLogGrabber
@@ -7,7 +7,7 @@ INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CM
 #
 #  October 2007, Jose Luis Blanco <jlblanco@ctima.uma.es>
 #-----------------------------------------------------------------
-PROJECT(rawlog-grabber)
+project(rawlog-grabber)
 
 
 
@@ -22,28 +22,28 @@ PROJECT(rawlog-grabber)
 #
 #  The preprocessor define "RAWLOGGRABBER_PLUGIN" will be defined.
 #
-SET(RAWLOGGRABBER_PLUGIN_DIR "" CACHE PATH "Path to a rawlog-grabber plug-in directory (empty: don't use)")
-MARK_AS_ADVANCED(RAWLOGGRABBER_PLUGIN_DIR)
+set(RAWLOGGRABBER_PLUGIN_DIR "" CACHE PATH "Path to a rawlog-grabber plug-in directory (empty: don't use)")
+mark_as_advanced(RAWLOGGRABBER_PLUGIN_DIR)
 
 if (NOT "${RAWLOGGRABBER_PLUGIN_DIR}" STREQUAL "")
 	if (EXISTS "${RAWLOGGRABBER_PLUGIN_DIR}")
 		if (NOT EXISTS "${RAWLOGGRABBER_PLUGIN_DIR}/register.cpp")
-			MESSAGE(FATAL_ERROR "Selected rawlog-grabber plug-in directory (${RAWLOGGRABBER_PLUGIN_DIR}) does not contain a register.cpp!")
+			message(FATAL_ERROR "Selected rawlog-grabber plug-in directory (${RAWLOGGRABBER_PLUGIN_DIR}) does not contain a register.cpp!")
 		else (NOT EXISTS "${RAWLOGGRABBER_PLUGIN_DIR}/register.cpp")
 			# OK:
-			FILE(GLOB aux_srcs "${RAWLOGGRABBER_PLUGIN_DIR}/*.cpp")
-			FILE(GLOB aux_hdrs "${RAWLOGGRABBER_PLUGIN_DIR}/*.h")
-			INCLUDE_DIRECTORIES("${RAWLOGGRABBER_PLUGIN_DIR}")
-			ADD_DEFINITIONS(-DRAWLOGGRABBER_PLUGIN)
-			IF (EXISTS "${RAWLOGGRABBER_PLUGIN_DIR}/rawloggrabber_plugin.cmake")
-				INCLUDE("${RAWLOGGRABBER_PLUGIN_DIR}/rawloggrabber_plugin.cmake")
-				MESSAGE(STATUS "rawlog-grabber plug-in libs: ${RAWLOGGRABBER_PLUGIN_LIBS}")
-			ENDIF (EXISTS "${RAWLOGGRABBER_PLUGIN_DIR}/rawloggrabber_plugin.cmake")
+			file(GLOB aux_srcs "${RAWLOGGRABBER_PLUGIN_DIR}/*.cpp")
+			file(GLOB aux_hdrs "${RAWLOGGRABBER_PLUGIN_DIR}/*.h")
+			include_directories("${RAWLOGGRABBER_PLUGIN_DIR}")
+			add_definitions(-DRAWLOGGRABBER_PLUGIN)
+			if (EXISTS "${RAWLOGGRABBER_PLUGIN_DIR}/rawloggrabber_plugin.cmake")
+				include("${RAWLOGGRABBER_PLUGIN_DIR}/rawloggrabber_plugin.cmake")
+				message(STATUS "rawlog-grabber plug-in libs: ${RAWLOGGRABBER_PLUGIN_LIBS}")
+			endif (EXISTS "${RAWLOGGRABBER_PLUGIN_DIR}/rawloggrabber_plugin.cmake")
 
-			MESSAGE(STATUS "Successful detection of rawlog-grabber plug-in directory: ${RAWLOGGRABBER_PLUGIN_DIR}")
+			message(STATUS "Successful detection of rawlog-grabber plug-in directory: ${RAWLOGGRABBER_PLUGIN_DIR}")
 		endif (NOT EXISTS "${RAWLOGGRABBER_PLUGIN_DIR}/register.cpp")
 	else (EXISTS "${RAWLOGGRABBER_PLUGIN_DIR}")
-		MESSAGE(FATAL_ERROR "Selected rawlog-grabber plug-in directory does not exist!")
+		message(FATAL_ERROR "Selected rawlog-grabber plug-in directory does not exist!")
 	endif (EXISTS "${RAWLOGGRABBER_PLUGIN_DIR}")
 endif (NOT "${RAWLOGGRABBER_PLUGIN_DIR}" STREQUAL "")
 
@@ -53,7 +53,7 @@ endif (NOT "${RAWLOGGRABBER_PLUGIN_DIR}" STREQUAL "")
 # TARGET:
 # ---------------------------------------------
 # Define the executable target:
-ADD_EXECUTABLE(${PROJECT_NAME}
+add_executable(${PROJECT_NAME}
                rawloggrabber_main.cpp
 			   ${aux_srcs}
 			   ${aux_hdrs}
@@ -61,8 +61,8 @@ ADD_EXECUTABLE(${PROJECT_NAME}
 			   )
 
 # Add the required libraries for linking:
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${MRPT_LINKER_LIBS_RELorDEB} )
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} mrpt-hwdrivers${MRPT_LINKER_LIBS_POSTFIX} ${RAWLOGGRABBER_PLUGIN_LIBS} )
+target_link_libraries(${PROJECT_NAME} ${MRPT_LINKER_LIBS_RELorDEB} )
+target_link_libraries(${PROJECT_NAME} mrpt-hwdrivers${MRPT_LINKER_LIBS_POSTFIX} ${RAWLOGGRABBER_PLUGIN_LIBS} )
 
 # Dependencies on MRPT libraries:
 #  Just mention the top-level dependency, the rest will be detected automatically,

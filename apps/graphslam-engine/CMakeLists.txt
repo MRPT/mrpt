@@ -1,4 +1,4 @@
-INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
+include(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
 
 #-----------------------------------------------------------------
 # CMake file for the MRPT application:  graph_slam
@@ -6,7 +6,7 @@ INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CM
 #  Run with "cmake ." at the root directory
 #-----------------------------------------------------------------
 
-IF(BUILD_mrpt-graphslam)
+if(BUILD_mrpt-graphslam)
 #-------------------------------------------------------------------------------
 # Declare a new CMake Project:
 #-------------------------------------------------------------------------------
@@ -22,14 +22,14 @@ set(SRC_FILES
     )
 
 # Define the executable target:
-ADD_EXECUTABLE(${PROJECT_NAME}
+add_executable(${PROJECT_NAME}
 	${SRC_FILES}
 	${MRPT_VERSION_RC_FILE}
 	)
 
 
 # Add the required libraries for linking:
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
+target_link_libraries(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
 
 
 # Dependencies on MRPT libraries:
@@ -47,4 +47,4 @@ DeclareAppDependencies(${PROJECT_NAME}
 	)
 
 DeclareAppForInstall(${PROJECT_NAME})
-ENDIF() #BUILD_mrpt-graphslam
+endif() #BUILD_mrpt-graphslam

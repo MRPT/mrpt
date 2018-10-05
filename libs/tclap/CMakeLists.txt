@@ -9,6 +9,6 @@ define_mrpt_lib_header_only(
 	# Dependencies
 	)
 
-IF(BUILD_mrpt-tclap)
+if(BUILD_mrpt-tclap)
 
-ENDIF( )
+endif( )

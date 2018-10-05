@@ -4,6 +4,6 @@ define_mrpt_lib(
 	mrpt-bayes
 	)
 
-IF(BUILD_mrpt-poses)
+if(BUILD_mrpt-poses)
 
-ENDIF()
+endif()

@@ -1,4 +1,4 @@
-INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
+include(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
 
 #-----------------------------------------------------------------
 # CMake file for the MRPT application:  ReactiveNav3D-Demo
@@ -7,7 +7,7 @@ INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CM
 #
 #  Juin 2013, Mariano Jaimez Tarifa <marianojt@uma.es>
 #-----------------------------------------------------------------
-PROJECT(ReactiveNav3D-Demo)
+project(ReactiveNav3D-Demo)
 
 
 
@@ -15,17 +15,17 @@ PROJECT(ReactiveNav3D-Demo)
 # TARGET:
 # ---------------------------------------------
 # Define the executable target:
-ADD_EXECUTABLE(${PROJECT_NAME}
+add_executable(${PROJECT_NAME}
                ReactiveNav3D_demo_main.cpp
 			   ReactiveNav3D_demo.h
 			    ${MRPT_VERSION_RC_FILE})
 
-SET(TMP_TARGET_NAME "ReactiveNav3D-Demo")
+set(TMP_TARGET_NAME "ReactiveNav3D-Demo")
 
 
 
 # Add the required libraries for linking:
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
+target_link_libraries(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
 
 # Dependencies on MRPT libraries:
 #  Just mention the top-level dependency, the rest will be detected automatically,
@@ -36,4 +36,4 @@ DeclareAppForInstall(${PROJECT_NAME})
 
 
 
-#FIND_PACKAGE( MRPT REQUIRED base gui opengl slam maps reactivenav)
+#find_package( MRPT REQUIRED base gui opengl slam maps reactivenav)

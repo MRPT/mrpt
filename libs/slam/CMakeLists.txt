@@ -2,12 +2,12 @@
 #  See "DeclareMRPTLib.cmake" for explanations
 # -------------------------------------------------
 
-LIST(APPEND slam_EXTRA_SRCS
+list(APPEND slam_EXTRA_SRCS
 	"${MRPT_LIBS_ROOT}/slam/src/maps/*.cpp"
 	"${MRPT_LIBS_ROOT}/slam/src/slam/*.cpp"
 	"${MRPT_LIBS_ROOT}/slam/include/mrpt/slam/*.h"
 	)
-LIST(APPEND slam_EXTRA_SRCS_NAME
+list(APPEND slam_EXTRA_SRCS_NAME
 	"slam" "slam" "slam-headers")
 
 #---------------------------------------------
@@ -21,6 +21,6 @@ define_mrpt_lib(
 	mrpt-maps
 	)
 
-IF(BUILD_mrpt-slam)
+if(BUILD_mrpt-slam)
 
-ENDIF()
+endif()

@@ -1,4 +1,4 @@
-INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
+include(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
 
 #-----------------------------------------------------------------
 # CMake file for the MRPT application:  mrpt-performance
@@ -7,18 +7,18 @@ INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CM
 #
 #  October 2007, Jose Luis Blanco <jlblanco@ctima.uma.es>
 #-----------------------------------------------------------------
-PROJECT(mrpt-performance)
+project(mrpt-performance)
 
 
 # ---------------------------------------------
 # TARGET:
 # ---------------------------------------------
 
-ADD_DEFINITIONS(-DMRPT_DATASET_DIR="${MRPT_SOURCE_DIR}/share/mrpt/datasets")
-ADD_DEFINITIONS(-DMRPT_DOC_PERF_DIR="${MRPT_SOURCE_DIR}/doc/perf-data")
+add_definitions(-DMRPT_DATASET_DIR="${MRPT_SOURCE_DIR}/share/mrpt/datasets")
+add_definitions(-DMRPT_DOC_PERF_DIR="${MRPT_SOURCE_DIR}/doc/perf-data")
 
 # Define the executable target:
-ADD_EXECUTABLE(${PROJECT_NAME}
+add_executable(${PROJECT_NAME}
 	perf-main.cpp
 	common.h
 	run_build_tables.h
@@ -44,7 +44,7 @@ ADD_EXECUTABLE(${PROJECT_NAME}
 	)
 
 # Add the required libraries for linking:
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
+target_link_libraries(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
 
 # Dependencies on MRPT libraries:
 #  Just mention the top-level dependency, the rest will be detected automatically,

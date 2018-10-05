@@ -1,7 +1,7 @@
 
-INCLUDE(../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
+include(../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
 
-IF (CMAKE_MRPT_HAS_WXWIDGETS)
+if (CMAKE_MRPT_HAS_WXWIDGETS)
 	add_subdirectory(wxThings)
-ENDIF (CMAKE_MRPT_HAS_WXWIDGETS)
+endif (CMAKE_MRPT_HAS_WXWIDGETS)
 

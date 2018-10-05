@@ -1,4 +1,4 @@
-INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake)
+include(../../cmakemodules/AssureCMakeRootFile.cmake)
 
 project(benchmarkingImageFeatures_GUI)
 

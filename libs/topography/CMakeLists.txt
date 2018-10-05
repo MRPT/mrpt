@@ -8,8 +8,8 @@ define_mrpt_lib(
 	mrpt-obs
 	)
 
-IF(BUILD_mrpt-topography)
-	IF(CMAKE_MRPT_HAS_WXWIDGETS)
+if(BUILD_mrpt-topography)
+	if(CMAKE_MRPT_HAS_WXWIDGETS)
 		target_link_libraries(mrpt-topography PRIVATE ${wxWidgets_LIBRARIES})
-	ENDIF()
-ENDIF()
+	endif()
+endif()

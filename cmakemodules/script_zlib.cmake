@@ -7,7 +7,7 @@ if (MSVC)
 else()
 	find_package(ZLIB)
 	if (ZLIB_FOUND)
-			#MESSAGE(STATUS "Found library: zlib - Include: ${ZLIB_INCLUDE_DIR}")
+			#message(STATUS "Found library: zlib - Include: ${ZLIB_INCLUDE_DIR}")
 			include_directories("${ZLIB_INCLUDE_DIR}")
 
 			set(MRPT_ZLIB_LIBS ${ZLIB_LIBRARIES}) # APPEND_MRPT_LIBS(z)
