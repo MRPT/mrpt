@@ -18,7 +18,7 @@ void THypothesisIDSet::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	uint32_t N = (uint32_t)size();
 	out << N;
-	for (long it : *this) out << it;
+	for (THypothesisID it : *this) out << it;
 }
 
 void THypothesisIDSet::serializeFrom(
