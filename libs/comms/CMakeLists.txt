@@ -11,6 +11,6 @@ define_mrpt_lib(
 	mrpt-io
 	)
 
-IF(CMAKE_MRPT_HAS_FTDI_SYSTEM)
-	TARGET_LINK_LIBRARIES(mrpt-comms PRIVATE ${FTDI_LIBS})
-ENDIF()
+if(CMAKE_MRPT_HAS_FTDI_SYSTEM)
+	target_link_libraries(mrpt-comms PRIVATE ${FTDI_LIBS})
+endif()

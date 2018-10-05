@@ -4,52 +4,52 @@
 #  Run with "ccmake ." at the root directory, or use it as a template for
 #   starting your own programs
 #-----------------------------------------------------------------------------------------------
-SET(sampleName opengl_texture_sizes_test)
-PROJECT(EXAMPLE_${sampleName})
+set(sampleName opengl_texture_sizes_test)
+project(EXAMPLE_${sampleName})
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
+cmake_minimum_required(VERSION 3.1)
 cmake_policy(SET CMP0003 NEW)  # Required by CMake 2.7+
 
 # ---------------------------------------------------------------------------
 # Set the output directory of each example to its corresponding subdirectory
 #  in the binary tree:
 # ---------------------------------------------------------------------------
-SET(EXECUTABLE_OUTPUT_PATH ".")
+set(EXECUTABLE_OUTPUT_PATH ".")
 
 # The list of "libs" which can be included can be found in:
 #  http://www.mrpt.org/Libraries
 # Add the top-level dependencies only.
 # --------------------------------------------------------------------------
-FIND_PACKAGE(MRPT REQUIRED gui)
+find_package(MRPT REQUIRED gui)
 
 # Define the executable target:
-ADD_EXECUTABLE(${sampleName} test.cpp  )
+add_executable(${sampleName} test.cpp  )
 
-ADD_DEPENDENCIES(examples ${sampleName})
+add_dependencies(examples ${sampleName})
 
-SET_TARGET_PROPERTIES(
+set_target_properties(
 	${sampleName}
 	PROPERTIES
 	PROJECT_LABEL "(EXAMPLE) ${sampleName}")
 
 # Add special defines needed by this example, if any:
-SET(MY_DEFS )
-IF(MY_DEFS) # If not empty
-	ADD_DEFINITIONS("-D${MY_DEFS}")
-ENDIF()
+set(MY_DEFS )
+if(MY_DEFS) # If not empty
+	add_definitions("-D${MY_DEFS}")
+endif()
 
 # Add the required libraries for linking:
-TARGET_LINK_LIBRARIES(${sampleName}
-	${MRPT_LIBRARIES}  # This is filled by FIND_PACKAGE(MRPT ...)
+target_link_libraries(${sampleName}
+	${MRPT_LIBRARIES}  # This is filled by find_package(MRPT ...)
 	)
 
 # Set optimized building:
-IF((${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX) AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
+if((${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX) AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
 	add_compile_options(-O3)
-ENDIF()
+endif()
 
 # This part can be removed if you are compiling this program outside of
 #  the MRPT tree:
-IF(${CMAKE_PROJECT_NAME} STREQUAL "MRPT") # Fails if build outside of MRPT project.
+if(${CMAKE_PROJECT_NAME} STREQUAL "MRPT") # Fails if build outside of MRPT project.
 	DeclareAppDependencies(${sampleName} mrpt-gui) # Dependencies
-ENDIF()
+endif()

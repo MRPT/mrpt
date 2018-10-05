@@ -1,39 +1,39 @@
 # SSE{2,3,4} extensions?
 # ===================================================
-SET(MRPT_AUTODETECT_SSE ON CACHE BOOL "Check /proc/cpuinfo to determine if SSE{2,3,4} optimizations are available")
-MARK_AS_ADVANCED(MRPT_AUTODETECT_SSE)
+set(MRPT_AUTODETECT_SSE ON CACHE BOOL "Check /proc/cpuinfo to determine if SSE{2,3,4} optimizations are available")
+mark_as_advanced(MRPT_AUTODETECT_SSE)
 
 # Read info about CPUs:
-SET(DO_SSE_AUTODETECT 0)
-IF(MRPT_AUTODETECT_SSE AND EXISTS "/proc/cpuinfo" AND
+set(DO_SSE_AUTODETECT 0)
+if(MRPT_AUTODETECT_SSE AND EXISTS "/proc/cpuinfo" AND
 	("${CMAKE_MRPT_ARCH}" STREQUAL "x86_64" OR
 	"${CMAKE_MRPT_ARCH}" STREQUAL "i686") )
-	SET(DO_SSE_AUTODETECT 1)
-ENDIF()
+	set(DO_SSE_AUTODETECT 1)
+endif()
 
-IF (DO_SSE_AUTODETECT)
-	FILE(READ "/proc/cpuinfo" MRPT_CPU_INFO)
-ENDIF (DO_SSE_AUTODETECT)
+if (DO_SSE_AUTODETECT)
+	file(READ "/proc/cpuinfo" MRPT_CPU_INFO)
+endif (DO_SSE_AUTODETECT)
 
 # Macro for each SSE* var: Invoke with name in uppercase:
 macro(DEFINE_SSE_VAR  _setname)
 	string(TOLOWER ${_setname} _set)
 
-	IF (DO_SSE_AUTODETECT)
+	if (DO_SSE_AUTODETECT)
 		# Automatic detection:
-		SET(CMAKE_MRPT_HAS_${_setname} 0)
-		IF (${MRPT_CPU_INFO} MATCHES ".*${_set}.*")
-			SET(CMAKE_MRPT_HAS_${_setname} 1)
-		ENDIF()
-	ELSE (DO_SSE_AUTODETECT)
+		set(CMAKE_MRPT_HAS_${_setname} 0)
+		if (${MRPT_CPU_INFO} MATCHES ".*${_set}.*")
+			set(CMAKE_MRPT_HAS_${_setname} 1)
+		endif()
+	else (DO_SSE_AUTODETECT)
 		# Manual:
-		SET("DISABLE_${_setname}" OFF CACHE BOOL "Forces compilation WITHOUT ${_setname} extensions")
-		MARK_AS_ADVANCED("DISABLE_${_setname}")
-		SET(CMAKE_MRPT_HAS_${_setname} 0)
-		IF (NOT DISABLE_${_setname})
-			SET(CMAKE_MRPT_HAS_${_setname} 1)
-		ENDIF (NOT DISABLE_${_setname})
-	ENDIF (DO_SSE_AUTODETECT)
+		set("DISABLE_${_setname}" OFF CACHE BOOL "Forces compilation WITHOUT ${_setname} extensions")
+		mark_as_advanced("DISABLE_${_setname}")
+		set(CMAKE_MRPT_HAS_${_setname} 0)
+		if (NOT DISABLE_${_setname})
+			set(CMAKE_MRPT_HAS_${_setname} 1)
+		endif (NOT DISABLE_${_setname})
+	endif (DO_SSE_AUTODETECT)
 endmacro(DEFINE_SSE_VAR)
 
 # SSE optimizations:

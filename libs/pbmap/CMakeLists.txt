@@ -1,6 +1,6 @@
 
 # This library is especial: it *really* needs PCL, so don't even declare it if we don't have PCL:
-IF(CMAKE_MRPT_HAS_PCL)
+if(CMAKE_MRPT_HAS_PCL)
 
 	#---------------------------------------------
 	# Macro declared in "DeclareMRPTLib.cmake":
@@ -12,10 +12,10 @@ IF(CMAKE_MRPT_HAS_PCL)
 		mrpt-graphs
 		)
 
-	IF(BUILD_mrpt-pbmap)
+	if(BUILD_mrpt-pbmap)
 		target_link_libraries(mrpt-pbmap PRIVATE ${PCL_LIBRARIES})
-	ENDIF()
+	endif()
 
-ELSE(CMAKE_MRPT_HAS_PCL)
-	SET(BUILD_mrpt-pbmap "OFF" CACHE BOOL "Build the library mrpt-pbmap" FORCE)
-ENDIF()
+else(CMAKE_MRPT_HAS_PCL)
+	set(BUILD_mrpt-pbmap "OFF" CACHE BOOL "Build the library mrpt-pbmap" FORCE)
+endif()

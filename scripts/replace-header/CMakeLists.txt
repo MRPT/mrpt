@@ -1,5 +1,5 @@
-PROJECT(replace-header)
+project(replace-header)
 
-ADD_EXECUTABLE( replace-header main.cpp )
+add_executable( replace-header main.cpp )
 
 

@@ -12,4 +12,4 @@ if(MRPT_ALLOW_LGPLV3)
 		# Dependencies:
 		mrpt-vision
 		)
-ENDIF()
+endif()

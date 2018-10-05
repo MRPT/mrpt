@@ -7,6 +7,6 @@ define_mrpt_lib(
 	# Dependencies
 	)
 
-IF(BUILD_mrpt-core)
+if(BUILD_mrpt-core)
 
-ENDIF()
+endif()

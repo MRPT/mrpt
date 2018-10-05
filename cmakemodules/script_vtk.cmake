@@ -1,12 +1,12 @@
 # Check forVTK
 # ===================================================
-SET(CMAKE_MRPT_HAS_VTK 0)
+set(CMAKE_MRPT_HAS_VTK 0)
 
-OPTION(DISABLE_VTK "Force not using VTK libs" "OFF")
-MARK_AS_ADVANCED(DISABLE_VTK)
-IF(NOT DISABLE_VTK)
-	FIND_PACKAGE(VTK QUIET)
-	IF (VTK_FOUND)
-		SET(CMAKE_MRPT_HAS_VTK 1)
-	ENDIF()
-ENDIF()
+option(DISABLE_VTK "Force not using VTK libs" "OFF")
+mark_as_advanced(DISABLE_VTK)
+if(NOT DISABLE_VTK)
+	find_package(VTK QUIET)
+	if (VTK_FOUND)
+		set(CMAKE_MRPT_HAS_VTK 1)
+	endif()
+endif()

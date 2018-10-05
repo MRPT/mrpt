@@ -10,6 +10,6 @@ define_mrpt_lib(
 	)
 
 
-IF(BUILD_mrpt-graphs)
+if(BUILD_mrpt-graphs)
 
-ENDIF()
+endif()

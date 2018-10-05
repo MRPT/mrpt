@@ -22,6 +22,6 @@ define_mrpt_lib(
 	mrpt-rtti
 	)
 
-IF(BUILD_mrpt-serialization)
+if(BUILD_mrpt-serialization)
 	target_link_libraries(mrpt-serialization PRIVATE ${tst_json_dep})
-ENDIF( )
+endif( )

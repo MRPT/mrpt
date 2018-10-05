@@ -1,16 +1,16 @@
 # Lists of directories with source files:
 #  See "DeclareMRPTLib.cmake" for explanations
 # -------------------------------------------------
-LIST(APPEND maps_EXTRA_SRCS			"${MRPT_SOURCE_DIR}/libs/maps/src/maps/*.cpp" "${MRPT_SOURCE_DIR}/libs/maps/include/mrpt/maps/*.h" "${MRPT_SOURCE_DIR}/libs/maps/include/mrpt/slam/*.h")
-LIST(APPEND maps_EXTRA_SRCS_NAME 	"maps" "maps" "back-compat-hdrs")
+list(APPEND maps_EXTRA_SRCS			"${MRPT_SOURCE_DIR}/libs/maps/src/maps/*.cpp" "${MRPT_SOURCE_DIR}/libs/maps/include/mrpt/maps/*.h" "${MRPT_SOURCE_DIR}/libs/maps/include/mrpt/slam/*.h")
+list(APPEND maps_EXTRA_SRCS_NAME 	"maps" "maps" "back-compat-hdrs")
 
-LIST(APPEND maps_EXTRA_SRCS			"${MRPT_SOURCE_DIR}/libs/maps/src/opengl/*.cpp" "${MRPT_SOURCE_DIR}/libs/maps/include/mrpt/opengl/*.h")
-LIST(APPEND maps_EXTRA_SRCS_NAME 	"opengl" "opengl")
+list(APPEND maps_EXTRA_SRCS			"${MRPT_SOURCE_DIR}/libs/maps/src/opengl/*.cpp" "${MRPT_SOURCE_DIR}/libs/maps/include/mrpt/opengl/*.h")
+list(APPEND maps_EXTRA_SRCS_NAME 	"opengl" "opengl")
 
-IF(CMAKE_MRPT_HAS_LIBLAS)
-	LINK_DIRECTORIES(${LAS_LINK_DIRS})
-	INCLUDE_DIRECTORIES(${LAS_INCLUDE_DIRS})
-ENDIF()
+if(CMAKE_MRPT_HAS_LIBLAS)
+	link_directories(${LAS_LINK_DIRS})
+	include_directories(${LAS_INCLUDE_DIRS})
+endif()
 
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
@@ -25,28 +25,28 @@ define_mrpt_lib(
 	mrpt-opengl
 	)
 
-IF(BUILD_mrpt-maps)
-	IF (CMAKE_MRPT_HAS_PCL)
+if(BUILD_mrpt-maps)
+	if (CMAKE_MRPT_HAS_PCL)
 		target_link_libraries(mrpt-maps PRIVATE ${PCL_LIBRARIES})
-	ENDIF()
+	endif()
 
-	IF(CMAKE_MRPT_HAS_LIBLAS)
+	if(CMAKE_MRPT_HAS_LIBLAS)
 		target_link_libraries(mrpt-maps PRIVATE ${LAS_LIBS})
-	ENDIF()
+	endif()
 
-	IF (CMAKE_MRPT_HAS_VTK)
-        INCLUDE(${VTK_USE_FILE})
+	if (CMAKE_MRPT_HAS_VTK)
+        include(${VTK_USE_FILE})
 		target_link_libraries(mrpt-maps PRIVATE ${VTK_LIBRARIES})
-	ENDIF()
+	endif()
 
-	IF (CMAKE_MRPT_HAS_OCTOMAP)
+	if (CMAKE_MRPT_HAS_OCTOMAP)
 		if (NOT "${OCTOMAP_LIBRARY_DIRS}" STREQUAL "")
-			LINK_DIRECTORIES("${OCTOMAP_LIBRARY_DIRS}")
+			link_directories("${OCTOMAP_LIBRARY_DIRS}")
 		endif()
-		IF(TARGET "EP_octomap")
-			ADD_DEPENDENCIES(mrpt-maps EP_octomap)
-		ENDIF()
+		if(TARGET "EP_octomap")
+			add_dependencies(mrpt-maps EP_octomap)
+		endif()
 		target_link_libraries(mrpt-maps PUBLIC ${OCTOMAP_LIBRARIES})
-	ENDIF()
+	endif()
 
-ENDIF()
+endif()

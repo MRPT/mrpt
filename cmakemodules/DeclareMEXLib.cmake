@@ -16,30 +16,30 @@ endmacro(define_mex_lib_private)
 # Implementation of both define_mex_lib() and define_mex_lib_private():
 #-----------------------------------------------------------------------------
 macro(internal_define_mex_lib   name   is_private)
-	INCLUDE(../../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
+	include(../../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
 
-	IF(${is_private})
-		SET(subfolder  private) # Special subfolder private in Matlab (restricted access)
-		SET(underscore "_")		# Suffix _ (syntax chosen for private libraries)
-	ENDIF(${is_private})
+	if(${is_private})
+		set(subfolder  private) # Special subfolder private in Matlab (restricted access)
+		set(underscore "_")		# Suffix _ (syntax chosen for private libraries)
+	endif(${is_private})
 
 	# 32-bit or 64-bit mex: choose correct suffix depending on system
 	if(WIN32)
 		if (CMAKE_CL_64)
-			SET(MEX_SUFFIX .mexw64)
+			set(MEX_SUFFIX .mexw64)
 		else(CMAKE_CL_64)
-			SET(MEX_SUFFIX .mexw32)
+			set(MEX_SUFFIX .mexw32)
 		endif(CMAKE_CL_64)
 	else(WIN32)
 		if (CMAKE_SIZEOF_VOID_P MATCHES "8")
-			SET(MEX_SUFFIX .mexa64)
+			set(MEX_SUFFIX .mexa64)
 		else(CMAKE_SIZEOF_VOID_P MATCHES "8")
-			SET(MEX_SUFFIX .mexglx)
+			set(MEX_SUFFIX .mexglx)
 		endif (CMAKE_SIZEOF_VOID_P MATCHES "8")
 	endif(WIN32)
 
 	# Define MEX library target with specific options
-	SET_TARGET_PROPERTIES(${name} PROPERTIES
+	set_target_properties(${name} PROPERTIES
 	PREFIX ""
 	SUFFIX "${underscore}${MEX_SUFFIX}"
 	DEBUG_POSTFIX "" # Remove DEBUG_POSTFIX in MEX libraries (usually -dbg)
@@ -48,8 +48,8 @@ macro(internal_define_mex_lib   name   is_private)
 	)
 
 	# Preprocessor #defines are done here to set proper behaviour of Matlab headers (e.g. matrix.h) during compilation
-	ADD_DEFINITIONS(/DMATLAB_MEX_FILE)	# Equivalent to #define MATLAB_MEX_FILE
-	ADD_DEFINITIONS(/DMX_COMPAT_32)		# Equivalent to #define MX_COMPAT_32
+	add_definitions(/DMATLAB_MEX_FILE)	# Equivalent to #define MATLAB_MEX_FILE
+	add_definitions(/DMX_COMPAT_32)		# Equivalent to #define MX_COMPAT_32
 endmacro(internal_define_mex_lib)
 
 # define_mex_test(): Declares a MEX executable which allows debug of mexFunction() through main() function:
@@ -58,18 +58,18 @@ endmacro(internal_define_mex_lib)
 #-----------------------------------------------------------------------
 	macro(define_mex_test name)
 	# Recover all sources used for MEX library
-	GET_PROPERTY(all_sources
+	get_property(all_sources
 				TARGET ${name}
 				PROPERTY SOURCES)
 	# Recover all libraries linked to MEX library
-	GET_PROPERTY(all_linked_libs
+	get_property(all_linked_libs
 				TARGET ${name}
 				PROPERTY LINK_LIBRARIES)
 
 	# Add new executable which can be used for Debug purposes
-	ADD_EXECUTABLE(		  "${name}-test" ${all_sources} )
-	TARGET_LINK_LIBRARIES("${name}-test" ${all_linked_libs} )
+	add_executable(		  "${name}-test" ${all_sources} )
+	target_link_libraries("${name}-test" ${all_linked_libs} )
 
 	# Set MEX tests' output directory
-	SET_TARGET_PROPERTIES("${name}-test" PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${MEX_EXECUTABLE_OUTPUT_PATH})
+	set_target_properties("${name}-test" PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${MEX_EXECUTABLE_OUTPUT_PATH})
 endmacro(define_mex_test name)

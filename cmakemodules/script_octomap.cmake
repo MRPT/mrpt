@@ -1,45 +1,45 @@
 # Check for liboctomap
-SET(CMAKE_MRPT_HAS_OCTOMAP 0)
-SET(CMAKE_MRPT_HAS_OCTOMAP_SYSTEM 0)
+set(CMAKE_MRPT_HAS_OCTOMAP 0)
+set(CMAKE_MRPT_HAS_OCTOMAP_SYSTEM 0)
 
-SET(EMBEDDED_OCTOMAP_DIR "${MRPT_BINARY_DIR}/otherlibs/octomap")
+set(EMBEDDED_OCTOMAP_DIR "${MRPT_BINARY_DIR}/otherlibs/octomap")
 
 # Try to locate the pkg via CMake:
-FIND_PACKAGE(OCTOMAP QUIET)
-IF (OCTOMAP_FOUND)
-	IF ($ENV{VERBOSE})
-		MESSAGE(STATUS "liboctomap: Found via pkg-config")
-		MESSAGE(STATUS " OCTOMAP_LIBRARIES=${OCTOMAP_LIBRARIES}")
-		MESSAGE(STATUS " OCTOMAP_INCLUDE_DIRS=${OCTOMAP_INCLUDE_DIRS}")
-	ENDIF()
+find_package(OCTOMAP QUIET)
+if (OCTOMAP_FOUND)
+	if ($ENV{VERBOSE})
+		message(STATUS "liboctomap: Found via pkg-config")
+		message(STATUS " OCTOMAP_LIBRARIES=${OCTOMAP_LIBRARIES}")
+		message(STATUS " OCTOMAP_INCLUDE_DIRS=${OCTOMAP_INCLUDE_DIRS}")
+	endif()
 
-	SET(CMAKE_MRPT_HAS_OCTOMAP 1)
-	SET(CMAKE_MRPT_HAS_OCTOMAP_SYSTEM 1)
-ENDIF()
+	set(CMAKE_MRPT_HAS_OCTOMAP 1)
+	set(CMAKE_MRPT_HAS_OCTOMAP_SYSTEM 1)
+endif()
 
-IF (NOT OCTOMAP_FOUND)
-	SET(BUILD_OCTOMAP ON CACHE BOOL "Build an embedded version of Octomap")
-	IF (BUILD_OCTOMAP)
+if (NOT OCTOMAP_FOUND)
+	set(BUILD_OCTOMAP ON CACHE BOOL "Build an embedded version of Octomap")
+	if (BUILD_OCTOMAP)
 		# Use embedded version:
 		# --------------------------
 		if (MSVC)
-			SET(LIB_EXT "lib")
-			SET(LIB_PREFIX "")
+			set(LIB_EXT "lib")
+			set(LIB_PREFIX "")
 		else()
-			SET(LIB_EXT "a")
-			SET(LIB_PREFIX "lib")
+			set(LIB_EXT "a")
+			set(LIB_PREFIX "lib")
 		endif()
-		SET(CMD_CMAKE_POSTFIX "-DCMAKE_DEBUG_POSTFIX=${CMAKE_DEBUG_POSTFIX}")
+		set(CMD_CMAKE_POSTFIX "-DCMAKE_DEBUG_POSTFIX=${CMAKE_DEBUG_POSTFIX}")
 
 		# Include embedded version headers:
 		include(ExternalProject)
 
 		# download from GH or use embedded ZIPed version (used only for old Ubuntu PPAs):
-		IF (EXISTS "${MRPT_SOURCE_DIR}/otherlibs/octomap.zip")
-			SET(OCTOMAP_EP_URL "${MRPT_SOURCE_DIR}/otherlibs/octomap.zip")
-		ELSE()
-			SET(OCTOMAP_EP_URL "https://github.com/MRPT/octomap/archive/devel.zip")
-		ENDIF()
+		if (EXISTS "${MRPT_SOURCE_DIR}/otherlibs/octomap.zip")
+			set(OCTOMAP_EP_URL "${MRPT_SOURCE_DIR}/otherlibs/octomap.zip")
+		else()
+			set(OCTOMAP_EP_URL "https://github.com/MRPT/octomap/archive/devel.zip")
+		endif()
 
 		ExternalProject_Add(EP_octomap
 		  URL               "${OCTOMAP_EP_URL}" #TO-DO: Switch back to original repo after next stable release.
@@ -57,33 +57,33 @@ IF (NOT OCTOMAP_FOUND)
 		  TEST_COMMAND      ""
 		)
 
-		SET(CMAKE_MRPT_HAS_OCTOMAP 1)
-		SET(CMAKE_MRPT_HAS_OCTOMAP_SYSTEM 0)
+		set(CMAKE_MRPT_HAS_OCTOMAP 1)
+		set(CMAKE_MRPT_HAS_OCTOMAP_SYSTEM 0)
 
 		set(OCTOMAP_LIBRARIES "")
 
-		LIST(APPEND OCTOMAP_LIBRARIES
+		list(APPEND OCTOMAP_LIBRARIES
 			${MRPT_BINARY_DIR}/lib/${LIB_PREFIX}octomath$<$<CONFIG:Debug>:${CMAKE_DEBUG_POSTFIX}>.${LIB_EXT}
 			${MRPT_BINARY_DIR}/lib/${LIB_PREFIX}octomap$<$<CONFIG:Debug>:${CMAKE_DEBUG_POSTFIX}>.${LIB_EXT}
 			)
-		SET(OCTOMAP_INCLUDE_DIRS
+		set(OCTOMAP_INCLUDE_DIRS
 			"${MRPT_BINARY_DIR}/otherlibs/octomap/octomap/include/"
 		)
-	ENDIF()
-ENDIF()
+	endif()
+endif()
 
 
-IF (CMAKE_MRPT_HAS_OCTOMAP)
-	MARK_AS_ADVANCED(OCTOMAP_DIR)
-	INCLUDE_DIRECTORIES("${OCTOMAP_INCLUDE_DIRS}")
+if (CMAKE_MRPT_HAS_OCTOMAP)
+	mark_as_advanced(OCTOMAP_DIR)
+	include_directories("${OCTOMAP_INCLUDE_DIRS}")
 
-	IF ($ENV{VERBOSE})
-		MESSAGE(STATUS "octomap:")
-		MESSAGE(STATUS " OCTOMAP_INCLUDE_DIRS: ${OCTOMAP_INCLUDE_DIRS}")
-		MESSAGE(STATUS " OCTOMAP_CXX_FLAGS: ${OCTOMAP_CXX_FLAGS}")
-		MESSAGE(STATUS " OCTOMAP_LINK_FLAGS: ${OCTOMAP_LINK_FLAGS}")
-		MESSAGE(STATUS " OCTOMAP_LIBRARIES: ${OCTOMAP_LIBRARIES}")
-		MESSAGE(STATUS " OCTOMAP_LIBRARY_DIRS: ${OCTOMAP_LIBRARY_DIRS}")
-		MESSAGE(STATUS " OCTOMAP_VERSION: ${OCTOMAP_VERSION}")
-	ENDIF ($ENV{VERBOSE})
-ENDIF ()
+	if ($ENV{VERBOSE})
+		message(STATUS "octomap:")
+		message(STATUS " OCTOMAP_INCLUDE_DIRS: ${OCTOMAP_INCLUDE_DIRS}")
+		message(STATUS " OCTOMAP_CXX_FLAGS: ${OCTOMAP_CXX_FLAGS}")
+		message(STATUS " OCTOMAP_LINK_FLAGS: ${OCTOMAP_LINK_FLAGS}")
+		message(STATUS " OCTOMAP_LIBRARIES: ${OCTOMAP_LIBRARIES}")
+		message(STATUS " OCTOMAP_LIBRARY_DIRS: ${OCTOMAP_LIBRARY_DIRS}")
+		message(STATUS " OCTOMAP_VERSION: ${OCTOMAP_VERSION}")
+	endif ($ENV{VERBOSE})
+endif ()

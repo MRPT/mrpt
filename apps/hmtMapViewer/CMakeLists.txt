@@ -1,4 +1,4 @@
-INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
+include(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
 
 #-----------------------------------------------------------------
 # CMake file for the MRPT application:  hmtMapViewer
@@ -7,34 +7,34 @@ INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CM
 #
 #  May 2008, Jose Luis Blanco <jlblanco@ctima.uma.es>
 #-----------------------------------------------------------------
-PROJECT(hmtMapViewer)
+project(hmtMapViewer)
 
-IF(CMAKE_MRPT_HAS_WXWIDGETS AND CMAKE_MRPT_HAS_OPENGL_GLUT)
+if(CMAKE_MRPT_HAS_WXWIDGETS AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 
 	# ---------------------------------------------
 	# TARGET:
 	# ---------------------------------------------
-	SET(SRCS
+	set(SRCS
 		hmtMapViewerApp.cpp hmtMapViewerApp.h
 		hmtMapViewerMain.cpp hmtMapViewerMain.h
 		)
-	IF(WIN32)
-#		SET(SRCS ${SRCS} resource.rc)
-	ENDIF()
+	if(WIN32)
+#		set(SRCS ${SRCS} resource.rc)
+	endif()
 
 	# Define the executable target:
-	ADD_EXECUTABLE(${PROJECT_NAME} WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
+	add_executable(${PROJECT_NAME} WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
 
 	# Add the required libraries for linking:
-	INCLUDE_DIRECTORIES( ${wxWidgets_INCLUDE_DIRS} )
-	TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${wxWidgets_LIBRARIES} )
+	include_directories( ${wxWidgets_INCLUDE_DIRS} )
+	target_link_libraries(${PROJECT_NAME} ${wxWidgets_LIBRARIES} )
 
-	TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
+	target_link_libraries(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
 
 	#   FabMap module for HMT-SLAM? (optional)
-	IF(FabMap_FOUND)
-		TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${FabMap_LIBRARIES})
-	ENDIF()
+	if(FabMap_FOUND)
+		target_link_libraries(${PROJECT_NAME} ${FabMap_LIBRARIES})
+	endif()
 
 
 	# Dependencies on MRPT libraries:
@@ -45,9 +45,9 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 	DeclareAppForInstall(${PROJECT_NAME})
 
 
-ELSE()
+else()
 	# ----------------------------------------------------------------------------------
     # For convenience. When we cannot continue, inform the user
 	# ----------------------------------------------------------------------------------
-    MESSAGE(STATUS "wxWidgets and/or GL/GLUT not found!: **This target will not be included in the Makefiles**")
-ENDIF()
+    message(STATUS "wxWidgets and/or GL/GLUT not found!: **This target will not be included in the Makefiles**")
+endif()

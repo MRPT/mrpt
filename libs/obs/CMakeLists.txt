@@ -5,21 +5,21 @@ set_property(GLOBAL PROPERTY mrpt_obs_UNIT_TEST_EXTRA_DEPS mrpt-maps)
 #  See "DeclareMRPTLib.cmake" for explanations
 # -------------------------------------------------
 
-LIST(APPEND obs_EXTRA_SRCS
+list(APPEND obs_EXTRA_SRCS
 	"${MRPT_LIBS_ROOT}/obs/src/*.cpp"
 	"${MRPT_LIBS_ROOT}/obs/include/mrpt/obs/*.h"
 	"${MRPT_LIBS_ROOT}/obs/include/mrpt/maps/*.h"
 	"${MRPT_LIBS_ROOT}/obs/include/mrpt/slam/*.h"
 	)
 
-LIST(APPEND obs_EXTRA_SRCS_NAME
+list(APPEND obs_EXTRA_SRCS_NAME
 	"obs sources"
 	"obs headers"
 	"maps headers"
 	"back-compat-hdrs")
 
 # Minimal XMLParser:
-INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/db/src/")  # Notice the "src", not "include": these are private hdrs
+include_directories("${MRPT_LIBS_ROOT}/db/src/")  # Notice the "src", not "include": these are private hdrs
 # No need to compile XML sources here (already in mrpt-db), will be exported and linked from mrpt-db, 
 # even if their interface is in a private .h file.
 
@@ -36,5 +36,5 @@ define_mrpt_lib(
 	mrpt-tfest
 	)
 
-IF(BUILD_mrpt-obs)
-ENDIF(BUILD_mrpt-obs)
+if(BUILD_mrpt-obs)
+endif(BUILD_mrpt-obs)

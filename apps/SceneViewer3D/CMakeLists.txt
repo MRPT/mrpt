@@ -1,4 +1,4 @@
-INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
+include(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
 
 #-----------------------------------------------------------------
 # CMake file for the MRPT application:  SceneViewer
@@ -7,14 +7,14 @@ INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CM
 #
 #  October 2007, Jose Luis Blanco <jlblanco@ctima.uma.es>
 #-----------------------------------------------------------------
-PROJECT(SceneViewer3D)
+project(SceneViewer3D)
 
-IF(CMAKE_MRPT_HAS_WXWIDGETS AND CMAKE_MRPT_HAS_OPENGL_GLUT)
+if(CMAKE_MRPT_HAS_WXWIDGETS AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 
 	# ---------------------------------------------
 	# TARGET:
 	# ---------------------------------------------
-	SET(SRCS
+	set(SRCS
 		_DSceneViewerApp.cpp _DSceneViewerApp.h
 		_DSceneViewerMain.cpp _DSceneViewerMain.h
 		CDialogOptions.cpp   CDialogOptions.h
@@ -22,27 +22,27 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 		CDlgCamTracking.cpp  CDlgCamTracking.h
 		CDlgPLYOptions.cpp   CDlgPLYOptions.h
 	)
-	IF(WIN32)
-		SET(SRCS ${SRCS} resource.rc)
-	ENDIF()
+	if(WIN32)
+		set(SRCS ${SRCS} resource.rc)
+	endif()
 
-	INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/wxThings/")
+	include_directories("${MRPT_SOURCE_DIR}/otherlibs/wxThings/")
 
 	# Define the executable target:
-	ADD_EXECUTABLE(${PROJECT_NAME} WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
+	add_executable(${PROJECT_NAME} WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
 
 	# Add the required libraries for linking:
-	INCLUDE_DIRECTORIES( ${wxWidgets_INCLUDE_DIRS} )
-	TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${wxWidgets_LIBRARIES} )
+	include_directories( ${wxWidgets_INCLUDE_DIRS} )
+	target_link_libraries(${PROJECT_NAME} ${wxWidgets_LIBRARIES} )
 
-	TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
+	target_link_libraries(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
 
-	TARGET_LINK_LIBRARIES(${PROJECT_NAME} mrptwxthings)
-	ADD_DEPENDENCIES(${PROJECT_NAME} mrptwxthings)
+	target_link_libraries(${PROJECT_NAME} mrptwxthings)
+	add_dependencies(${PROJECT_NAME} mrptwxthings)
 
-	IF(CMAKE_MRPT_HAS_LIBLAS)
+	if(CMAKE_MRPT_HAS_LIBLAS)
 		target_link_libraries(${PROJECT_NAME} ${LAS_LIBS})
-	ENDIF()
+	endif()
 
 	# Dependencies on MRPT libraries:
 	#  Just mention the top-level dependency, the rest will be detected automatically,
@@ -53,9 +53,9 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 
 	AppStartMenuLink(${PROJECT_NAME} "Scene Viewer 3D")   # Add link to the Start menu (in Windows Installable packages)
 
-ELSE()
+else()
 	# ----------------------------------------------------------------------------------
     # For convenience. When we cannot continue, inform the user
 	# ----------------------------------------------------------------------------------
-    MESSAGE(STATUS "wxWidgets and/or GL/GLUT not found!: **This target will not be included in the Makefiles**")
-ENDIF()
+    message(STATUS "wxWidgets and/or GL/GLUT not found!: **This target will not be included in the Makefiles**")
+endif()

@@ -9,6 +9,6 @@ define_mrpt_lib(
 	mrpt-slam
 	)
 
-IF(BUILD_mrpt-graphslam)
+if(BUILD_mrpt-graphslam)
 
-ENDIF()
+endif()

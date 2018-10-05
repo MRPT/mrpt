@@ -1,14 +1,14 @@
 # National Instruments "DAQmxBase" C API 
 # -----------------------------------------
 
-SET(MRPT_HAS_NI_DAQmxBASE OFF CACHE BOOL "Build with support for National Instruments DAQmx Base C API")
-SET(CMAKE_MRPT_HAS_NIDAQMXBASE 0)
+set(MRPT_HAS_NI_DAQmxBASE OFF CACHE BOOL "Build with support for National Instruments DAQmx Base C API")
+set(CMAKE_MRPT_HAS_NIDAQMXBASE 0)
 
 # Leave at the user's choice to disable the SWR libs:
-OPTION(DISABLE_NationalInstruments "Forces NOT using NationalInstrument libs, even if they are found by CMake" "OFF")
-MARK_AS_ADVANCED(DISABLE_NationalInstruments)
-IF(NOT DISABLE_NationalInstruments)	
-	IF(MRPT_HAS_NI_DAQmxBASE)
+option(DISABLE_NationalInstruments "Forces NOT using NationalInstrument libs, even if they are found by CMake" "OFF")
+mark_as_advanced(DISABLE_NationalInstruments)
+if(NOT DISABLE_NationalInstruments)	
+	if(MRPT_HAS_NI_DAQmxBASE)
 		# Look for DAQmxBase libs & headers:
 		find_library(NI_DAQmxBASE_LIB_FILE
 			NAMES nidaqmxbase libnidaqmxbase
@@ -31,21 +31,21 @@ IF(NOT DISABLE_NationalInstruments)
 		)
 		
 		# The variable that actually ends up in config.h
-		IF (NI_DAQmxBASE_INCLUDE_DIR AND NI_DAQmxBASE_LIB_FILE)
-			SET(CMAKE_MRPT_HAS_NIDAQMXBASE 1) 
-		ELSE(NI_DAQmxBASE_INCLUDE_DIR AND NI_DAQmxBASE_LIB_FILE)
-			MESSAGE("Error: Correct NI_DAQmxBASE_LIB_FILE and NI_DAQmxBASE_INCLUDE_DIR, or uncheck MRPT_HAS_NI_DAQmxBASE")
-		ENDIF (NI_DAQmxBASE_INCLUDE_DIR AND NI_DAQmxBASE_LIB_FILE)
-	ENDIF(MRPT_HAS_NI_DAQmxBASE)
-ENDIF(NOT DISABLE_NationalInstruments)	
+		if (NI_DAQmxBASE_INCLUDE_DIR AND NI_DAQmxBASE_LIB_FILE)
+			set(CMAKE_MRPT_HAS_NIDAQMXBASE 1) 
+		else(NI_DAQmxBASE_INCLUDE_DIR AND NI_DAQmxBASE_LIB_FILE)
+			message("Error: Correct NI_DAQmxBASE_LIB_FILE and NI_DAQmxBASE_INCLUDE_DIR, or uncheck MRPT_HAS_NI_DAQmxBASE")
+		endif (NI_DAQmxBASE_INCLUDE_DIR AND NI_DAQmxBASE_LIB_FILE)
+	endif(MRPT_HAS_NI_DAQmxBASE)
+endif(NOT DISABLE_NationalInstruments)	
 
 
 # National Instruments "DAQmx" C API 
 # -----------------------------------------
-SET(MRPT_HAS_NI_DAQmx OFF CACHE BOOL "Build with support for National Instruments DAQmx C API")
-SET(CMAKE_MRPT_HAS_NIDAQMX 0)
-IF(NOT DISABLE_NationalInstruments)	
-	IF(MRPT_HAS_NI_DAQmx)
+set(MRPT_HAS_NI_DAQmx OFF CACHE BOOL "Build with support for National Instruments DAQmx C API")
+set(CMAKE_MRPT_HAS_NIDAQMX 0)
+if(NOT DISABLE_NationalInstruments)	
+	if(MRPT_HAS_NI_DAQmx)
 		# Look for DAQmx  libs & headers:
 		find_library(NI_DAQmx_LIB_FILE
 			NAMES nidaqmx libnidaqmx
@@ -68,10 +68,10 @@ IF(NOT DISABLE_NationalInstruments)
 		)
 		
 		# The variable that actually ends up in config.h
-		IF (NI_DAQmx_INCLUDE_DIR AND NI_DAQmx_LIB_FILE)
-			SET(CMAKE_MRPT_HAS_NIDAQMX 1) 
-		ELSE(NI_DAQmx_INCLUDE_DIR AND NI_DAQmx_LIB_FILE)
-			MESSAGE("Error: Correct NI_DAQmx_LIB_FILE and NI_DAQmx_INCLUDE_DIR, or uncheck MRPT_HAS_NI_DAQmx")
-		ENDIF (NI_DAQmx_INCLUDE_DIR AND NI_DAQmx_LIB_FILE)
-	ENDIF(MRPT_HAS_NI_DAQmx)
-ENDIF(NOT DISABLE_NationalInstruments)	
+		if (NI_DAQmx_INCLUDE_DIR AND NI_DAQmx_LIB_FILE)
+			set(CMAKE_MRPT_HAS_NIDAQMX 1) 
+		else(NI_DAQmx_INCLUDE_DIR AND NI_DAQmx_LIB_FILE)
+			message("Error: Correct NI_DAQmx_LIB_FILE and NI_DAQmx_INCLUDE_DIR, or uncheck MRPT_HAS_NI_DAQmx")
+		endif (NI_DAQmx_INCLUDE_DIR AND NI_DAQmx_LIB_FILE)
+	endif(MRPT_HAS_NI_DAQmx)
+endif(NOT DISABLE_NationalInstruments)	

@@ -13,15 +13,15 @@
 #  NOTE: CMake can be obtained at http://www.cmake.org/
 # ----------------------------------------------------------------------------
 # Tell CMake we'll use both C & C++ for use in its tests/flags.
-PROJECT(MRPT LANGUAGES C CXX)
+project(MRPT LANGUAGES C CXX)
 
 # -------------------------
 #        Setup CMake
 # -------------------------
 if (WIN32)
-	CMAKE_MINIMUM_REQUIRED(VERSION 3.4) # required for CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS
+	cmake_minimum_required(VERSION 3.4) # required for CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS
 else()
-	CMAKE_MINIMUM_REQUIRED(VERSION 3.3)
+	cmake_minimum_required(VERSION 3.3)
 endif()
 
 # Display timing information for each compiler instance on screen
@@ -47,15 +47,15 @@ endif()
 
 
 # Detect wordsize:
-IF(CMAKE_SIZEOF_VOID_P EQUAL 8)  # Size in bytes!
-	SET(CMAKE_MRPT_WORD_SIZE 64)
-ELSE()
-	SET(CMAKE_MRPT_WORD_SIZE 32)
-ENDIF()
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)  # Size in bytes!
+	set(CMAKE_MRPT_WORD_SIZE 64)
+else()
+	set(CMAKE_MRPT_WORD_SIZE 32)
+endif()
 
 include(cmakemodules/script_version_number.cmake REQUIRED)	#  Loads MRPT version number
 
-LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmakemodules") # Directory for CMake scripts
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmakemodules") # Directory for CMake scripts
 
 # -------------------------
 #            CodeCov
@@ -67,16 +67,16 @@ find_package(codecov)
 # -------------------------
 
 
-SET(ALLOW_GPL OFF CACHE BOOL "Allows MRPT to link to GPL code. This effectively makes some MRPT binaries GPL licensed. Use this at your own risk.")
-OPTION(MRPT_ALLOW_LGPLV3 "Allows MRPT to use LGPLV3 code" "OFF")
+set(ALLOW_GPL OFF CACHE BOOL "Allows MRPT to link to GPL code. This effectively makes some MRPT binaries GPL licensed. Use this at your own risk.")
+option(MRPT_ALLOW_LGPLV3 "Allows MRPT to use LGPLV3 code" "OFF")
 
 # The root directory for all MRPT libraries/modules:
-SET(MRPT_LIBS_ROOT "${CMAKE_SOURCE_DIR}/libs" CACHE INTERNAL "")  # This emulates global vars
+set(MRPT_LIBS_ROOT "${CMAKE_SOURCE_DIR}/libs" CACHE INTERNAL "")  # This emulates global vars
 
 # Windows default: lib. Debian pkgs: set from outside rules script
-IF(NOT DEFINED CMAKE_INSTALL_LIBDIR)
-	SET(CMAKE_INSTALL_LIBDIR "lib")
-ENDIF()
+if(NOT DEFINED CMAKE_INSTALL_LIBDIR)
+	set(CMAKE_INSTALL_LIBDIR "lib")
+endif()
 
 # ---------------------------------------------------------------------------
 # Create the minimum list of libraries required by an application that
@@ -84,7 +84,7 @@ ENDIF()
 # NOTE: For the compilers MSVC* & Borland most of the libraries are
 #        automatically included through "#pragma"'s ;-)
 # ---------------------------------------------------------------------------
-SET(MRPT_LINKER_LIBS "")
+set(MRPT_LINKER_LIBS "")
 
 
 # ----- Useful macros ------
@@ -107,12 +107,12 @@ endif()
 # We want libraries to be named "libXXX"
 #  in all compilers, and and "libXXX-dbg" in MSVC
 # ------------------------------------------
-IF(MSVC)
+if(MSVC)
 	set(MRPT_LIB_PREFIX "lib")  # Libs are: "libXXX"
 	set(CMAKE_DEBUG_POSTFIX  "-dbg")
-ELSE()
+else()
 	set(CMAKE_DEBUG_POSTFIX "")
-ENDIF()
+endif()
 
 # In case of Makefiles if the user does not setup CMAKE_BUILD_TYPE, assume it's Release:
 if (${CMAKE_GENERATOR} MATCHES ".*Makefiles")
@@ -130,65 +130,65 @@ include(cmakemodules/script_select_app_to_build.cmake REQUIRED)		# Build (or not
 # Build static or dynamic libs?
 # ===================================================
 # Default: dynamic libraries:
-SET(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries (.dll/.so) instead of static ones (.lib/.a)")
-IF(BUILD_SHARED_LIBS)
-	SET(CMAKE_MRPT_BUILD_SHARED_LIB "#define MRPT_BUILT_AS_DLL")
-	SET(CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF 1)
-ELSE()
-	SET(CMAKE_MRPT_BUILD_SHARED_LIB "/* #define MRPT_BUILT_AS_DLL */")
-	SET(CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF 0)
-ENDIF()
+set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries (.dll/.so) instead of static ones (.lib/.a)")
+if(BUILD_SHARED_LIBS)
+	set(CMAKE_MRPT_BUILD_SHARED_LIB "#define MRPT_BUILT_AS_DLL")
+	set(CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF 1)
+else()
+	set(CMAKE_MRPT_BUILD_SHARED_LIB "/* #define MRPT_BUILT_AS_DLL */")
+	set(CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF 0)
+endif()
 
 # Only for Unix: use pkg-config to find libraries
 # ===================================================
-INCLUDE(FindPkgConfig OPTIONAL)
+include(FindPkgConfig OPTIONAL)
 
 # Group projects in "folders"
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMakeTargets")
 
 # Build the RoboPeak Lidar library?
-SET(DEFAULT_BUILD_ROBOPEAK_LIDAR ON) # Default: Yes
+set(DEFAULT_BUILD_ROBOPEAK_LIDAR ON) # Default: Yes
 if (${CMAKE_MRPT_KERNEL} MATCHES "GNU" OR APPLE)   # Unless in HURD
-	SET(DEFAULT_BUILD_ROBOPEAK_LIDAR OFF)
+	set(DEFAULT_BUILD_ROBOPEAK_LIDAR OFF)
 endif ()
 # Decl option:
-SET(BUILD_ROBOPEAK_LIDAR ${DEFAULT_BUILD_ROBOPEAK_LIDAR} CACHE BOOL "Build an embedded version of RoboPeak LIDAR SDK (interface to low-cost lidar)")
-IF(BUILD_ROBOPEAK_LIDAR)
-	SET(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR 1)
-ELSE()
-	SET(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR 0)
-ENDIF()
+set(BUILD_ROBOPEAK_LIDAR ${DEFAULT_BUILD_ROBOPEAK_LIDAR} CACHE BOOL "Build an embedded version of RoboPeak LIDAR SDK (interface to low-cost lidar)")
+if(BUILD_ROBOPEAK_LIDAR)
+	set(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR 1)
+else()
+	set(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR 0)
+endif()
 
 #-----------------------------------
 #  Build the hardware drivers?
 #-----------------------------------
-SET(BUILD_HWDRIVERS ON CACHE BOOL "Build hardware drivers (library apps/lib_hwdrivers)?.")
-MARK_AS_ADVANCED(BUILD_HWDRIVERS)
+set(BUILD_HWDRIVERS ON CACHE BOOL "Build hardware drivers (library apps/lib_hwdrivers)?.")
+mark_as_advanced(BUILD_HWDRIVERS)
 
 #-----------------------------------
 #  Build with MRPT-MEX compatibility?
 #-----------------------------------
-SET(BUILD_MATLAB OFF CACHE BOOL "Build with compatibility options for MEX wrapper?.")
+set(BUILD_MATLAB OFF CACHE BOOL "Build with compatibility options for MEX wrapper?.")
 
 # GCC only:
 # ===================================================
-IF(CMAKE_COMPILER_IS_GNUCXX)
+if(CMAKE_COMPILER_IS_GNUCXX)
 	# Enable libstdc++ parallel mode?
-	SET(MRPT_ENABLE_LIBSTD_PARALLEL_MODE OFF CACHE BOOL "Enable parallel mode in libstdc++ (requires GCC 4.2.2+)")
-ENDIF()
+	set(MRPT_ENABLE_LIBSTD_PARALLEL_MODE OFF CACHE BOOL "Enable parallel mode in libstdc++ (requires GCC 4.2.2+)")
+endif()
 
 # Enable precompiled headers:
 # ===================================================
-IF (MSVC)
+if (MSVC)
 	set(default_use_precomp ON)
-ELSE()
+else()
 	# JLBC 28th Dec 2017: It seems cotire does not work well with imported -I
 	# directories via target_include_directories(... PUBLIC/INTERFACE ...)
 	set(default_use_precomp OFF)
-ENDIF()
-SET(MRPT_ENABLE_PRECOMPILED_HDRS ${default_use_precomp} CACHE BOOL "Enable precompiled headers")
-MARK_AS_ADVANCED(MRPT_ENABLE_PRECOMPILED_HDRS)
+endif()
+set(MRPT_ENABLE_PRECOMPILED_HDRS ${default_use_precomp} CACHE BOOL "Enable precompiled headers")
+mark_as_advanced(MRPT_ENABLE_PRECOMPILED_HDRS)
 
 # Eigen library plugins:
 # ===================================================
@@ -196,45 +196,45 @@ include(cmakemodules/script_eigen.cmake REQUIRED)
 
 # MRPT_TRY_START/END blocks
 # ===================================================
-SET(MRPT_HAS_STACKED_EXCEPTIONS ON CACHE BOOL "Enable MRPT_TRY_START/END blocks (disable it for speed up).")
+set(MRPT_HAS_STACKED_EXCEPTIONS ON CACHE BOOL "Enable MRPT_TRY_START/END blocks (disable it for speed up).")
 
 # Optional MRPT embedded profiler:
 # ===================================================
-SET(MRPT_ENABLE_EMBEDDED_GLOBAL_PROFILER OFF CACHE BOOL "Enable MRPT embedded profiler.")
+set(MRPT_ENABLE_EMBEDDED_GLOBAL_PROFILER OFF CACHE BOOL "Enable MRPT embedded profiler.")
 if (MRPT_ENABLE_EMBEDDED_GLOBAL_PROFILER)
 	add_definitions(-DMRPT_ENABLE_EMBEDDED_GLOBAL_PROFILER)
 endif()
 
 # ASSERT_ blocks
 # ===================================================
-SET(MRPT_HAS_ASSERT ON CACHE BOOL "Enable ASSERT_ statements (disable it for speed up).")
+set(MRPT_HAS_ASSERT ON CACHE BOOL "Enable ASSERT_ statements (disable it for speed up).")
 
 #   "Classic" function & headers detection:
 include(cmakemodules/script_detect_functions_headers.cmake REQUIRED)
 
 # MSVC only:
 # ===================================================
-IF(MSVC)
+if(MSVC)
 	# Enable Parallel compilation?
-	SET(COMPILE_IN_PARALLEL ON CACHE BOOL "Enable parallel compilation in Visual Studio")
-ENDIF()
+	set(COMPILE_IN_PARALLEL ON CACHE BOOL "Enable parallel compilation in Visual Studio")
+endif()
 
 # ----------------------------------------------------------------------------
 #   Uninstall target, for "make uninstall"
 # Must be invoked *before* other embedded projects so MRPT's target "uninstall" exists first
 # ----------------------------------------------------------------------------
-CONFIGURE_FILE(
+configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/parse-files/cmake_uninstall.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
   IMMEDIATE @ONLY)
 
-ADD_CUSTOM_TARGET(uninstall
+add_custom_target(uninstall
   "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
 
 set_target_properties(uninstall PROPERTIES FOLDER "CMakeTargets")
 
 # See docs for CMake FindThreads()
-SET(THREADS_PREFER_PTHREAD_FLAG ON)
+set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads) # Defines imported target Threads::Threads
 
 # ----------------------------------------------------------------------------
@@ -283,10 +283,10 @@ include(cmakemodules/script_jsoncpp.cmake REQUIRED)     # Check for jsoncpp
 #			OPTIONS
 #The options for the user when using "cmakesetup" or "ccmake":
 # ---------------------------------------------------------------------------
-OPTION(MRPT_ALWAYS_CHECKS_DEBUG "Additional checks even in Release" "OFF")
-MARK_AS_ADVANCED(FORCE MRPT_ALWAYS_CHECKS_DEBUG)
-OPTION(MRPT_ALWAYS_CHECKS_DEBUG_MATRICES "Additional checks even in Release (Only in matrix classes)" "OFF")
-MARK_AS_ADVANCED(FORCE MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
+option(MRPT_ALWAYS_CHECKS_DEBUG "Additional checks even in Release" "OFF")
+mark_as_advanced(FORCE MRPT_ALWAYS_CHECKS_DEBUG)
+option(MRPT_ALWAYS_CHECKS_DEBUG_MATRICES "Additional checks even in Release (Only in matrix classes)" "OFF")
+mark_as_advanced(FORCE MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 
 # ---------------------------------------------------------------------------
 # Create the minimum list of libraries required by an application that
@@ -294,22 +294,22 @@ MARK_AS_ADVANCED(FORCE MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 # NOTE: For the compilers MSVC* & Borland most of the libraries are
 #        automatically included through "#pragma"'s ;-)
 # ---------------------------------------------------------------------------
-IF(NOT MSVC)
+if(NOT MSVC)
 	# In Linux, link against librt
 	# Jerome Monceaux : 2011/03/08
 	# exclude rt from apple osx linking
-	IF(UNIX AND NOT APPLE)
+	if(UNIX AND NOT APPLE)
 		APPEND_MRPT_LIBS(rt)
-	ENDIF()
+	endif()
 
 	# In Windows, link against ole32 & uuid & oleaut32, etc...
-	IF(MINGW)
+	if(MINGW)
 		APPEND_MRPT_LIBS(ole32 uuid oleaut32 gdi32 winmm setupapi ws2_32)
-	ENDIF()
-ENDIF()
+	endif()
+endif()
 
 
-SET(CMAKE_MRPT_HAS_GZ_STREAMS ${CMAKE_MRPT_HAS_ZLIB})   # We have gz-streams is we have zlib:
+set(CMAKE_MRPT_HAS_GZ_STREAMS ${CMAKE_MRPT_HAS_ZLIB})   # We have gz-streams is we have zlib:
 
 include(cmakemodules/script_kinect.cmake REQUIRED)  # Kinect support in a set of different ways
 include(cmakemodules/script_pcl.cmake REQUIRED)     # PCL library
@@ -317,28 +317,28 @@ include(cmakemodules/script_suitesparse.cmake REQUIRED)     # SuiteSparse libs
 
 # Save the basic list of libraries (without MRPT-libs):
 # -------------------------------------------------------------------------------------
-SET(MRPTLIB_LINKER_LIBS ${MRPT_LINKER_LIBS} ${MRPT_FFMPEG_LIBS_TO_LINK})
-IF($ENV{VERBOSE})
-	MESSAGE(STATUS "MRPTLIB_LINKER_LIBS: ${MRPTLIB_LINKER_LIBS}")
-ENDIF()
+set(MRPTLIB_LINKER_LIBS ${MRPT_LINKER_LIBS} ${MRPT_FFMPEG_LIBS_TO_LINK})
+if($ENV{VERBOSE})
+	message(STATUS "MRPTLIB_LINKER_LIBS: ${MRPTLIB_LINKER_LIBS}")
+endif()
 
 # If we are building .so libs, don't link every program to all the libs:
-IF(BUILD_SHARED_LIBS)
-	SET(MRPT_LINKER_LIBS "")
-ENDIF()
+if(BUILD_SHARED_LIBS)
+	set(MRPT_LINKER_LIBS "")
+endif()
 
 # Save the list of libraries according to the current debug/release build (gcc only)
 # -------------------------------------------------------------------------------------
-SET(MRPT_LINKER_LIBS_RELorDEB ${MRPT_LINKER_LIBS})
+set(MRPT_LINKER_LIBS_RELorDEB ${MRPT_LINKER_LIBS})
 
-IF(CMAKE_BUILD_TYPE STREQUAL "Debug")
-	SET(MRPT_LINKER_LIBS_POSTFIX "${MRPT_DEBUG_POSTFIX}")
-ELSE()
-	SET(MRPT_LINKER_LIBS_POSTFIX "")
-ENDIF()
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	set(MRPT_LINKER_LIBS_POSTFIX "${MRPT_DEBUG_POSTFIX}")
+else()
+	set(MRPT_LINKER_LIBS_POSTFIX "")
+endif()
 
 # Include Asian fonts in utils::CMRPTCanvas ?
-SET( MRPT_HAS_ASIAN_FONTS ON CACHE BOOL "Enable Asian fonts in utils::CMRPTCanvas (increases library size).")
+set( MRPT_HAS_ASIAN_FONTS ON CACHE BOOL "Enable Asian fonts in utils::CMRPTCanvas (increases library size).")
 
 include(cmakemodules/script_declare_defines.cmake REQUIRED)  # Transform the variables MRPT_XXX="ON/OFF" to CMAKE_MRPT_XXX="1/0"
 
@@ -348,79 +348,79 @@ include(cmakemodules/script_create_version_h.cmake REQUIRED)  # Build version.h
 # ---------------------------------------------------------------------------
 # The C++ include & link directories:
 # ---------------------------------------------------------------------------
-INCLUDE_DIRECTORIES(".")
-INCLUDE_DIRECTORIES("${MRPT_CONFIG_FILE_INCLUDE_DIR}")
+include_directories(".")
+include_directories("${MRPT_CONFIG_FILE_INCLUDE_DIR}")
 
 # Add user supplied extra options (optimization, etc...)
-SET(USER_EXTRA_CPP_FLAGS "" CACHE STRING "Put extra compiler options here if desired")
+set(USER_EXTRA_CPP_FLAGS "" CACHE STRING "Put extra compiler options here if desired")
 
 # Should be set to true for development
-SET( MRPT_WARNINGS_ARE_ERRORS OFF CACHE BOOL "Treat warnings as errors")
-MARK_AS_ADVANCED(MRPT_WARNINGS_ARE_ERRORS)
+set( MRPT_WARNINGS_ARE_ERRORS OFF CACHE BOOL "Treat warnings as errors")
+mark_as_advanced(MRPT_WARNINGS_ARE_ERRORS)
 
 # Whole program optimization?
-SET( MRPT_WHOLE_PROGRAM_OPTIMIZATION OFF CACHE BOOL "Flags for whole program optimization.")
-MARK_AS_ADVANCED(MRPT_WHOLE_PROGRAM_OPTIMIZATION)
+set( MRPT_WHOLE_PROGRAM_OPTIMIZATION OFF CACHE BOOL "Flags for whole program optimization.")
+mark_as_advanced(MRPT_WHOLE_PROGRAM_OPTIMIZATION)
 
 # Enable profiling?
-SET(MRPT_ENABLE_PROFILING OFF CACHE BOOL "Enable profiling (add -g -pg in GCC/CLANG, /PROFILE in Visual C++)")
+set(MRPT_ENABLE_PROFILING OFF CACHE BOOL "Enable profiling (add -g -pg in GCC/CLANG, /PROFILE in Visual C++)")
 
-IF(MSVC)
+if(MSVC)
 	add_compile_options(/W3)
 	add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
 	add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
 	add_definitions(-D_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS)
 
-	LINK_DIRECTORIES("${CMAKE_BINARY_DIR}/lib")  # Required to find libraries
+	link_directories("${CMAKE_BINARY_DIR}/lib")  # Required to find libraries
 
-	IF (NOT BUILD_SHARED_LIBS)
+	if (NOT BUILD_SHARED_LIBS)
 		# static libs in Win: don't optimize out the initializers for class auto registration:
 		set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /OPT:NOREF")
 		set(CMAKE_SHARED_LINKER_FLAGS_MINSIZEREL "${CMAKE_SHARED_LINKER_FLAGS_MINSIZEREL} /OPT:NOREF")
 		set(CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO} /OPT:NOREF")
-	ENDIF()
+	endif()
 
-	SET( BUILD_WITH_DEBUG_INFO ON CACHE BOOL "Include debug info in binaries")
-	MARK_AS_ADVANCED(BUILD_WITH_DEBUG_INFO)
+	set( BUILD_WITH_DEBUG_INFO ON CACHE BOOL "Include debug info in binaries")
+	mark_as_advanced(BUILD_WITH_DEBUG_INFO)
 	if(BUILD_WITH_DEBUG_INFO)
-		SET(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /DEBUG ")
-		SET(CMAKE_MODULE_LINKER_FLAGS_DEBUG "${CMAKE_MODULE_LINKER_FLAGS_DEBUG} /DEBUG ")
+		set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /DEBUG ")
+		set(CMAKE_MODULE_LINKER_FLAGS_DEBUG "${CMAKE_MODULE_LINKER_FLAGS_DEBUG} /DEBUG ")
 	endif()
 
 	# Whole program optimization
-	IF(MRPT_WHOLE_PROGRAM_OPTIMIZATION)
+	if(MRPT_WHOLE_PROGRAM_OPTIMIZATION)
 		add_compile_options(/GL)
-		SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LTCG ")
-		SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /LTCG ")
-		SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /LTCG ")
-	ENDIF()
+		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LTCG ")
+		set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /LTCG ")
+		set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /LTCG ")
+	endif()
 
 	# Remove unreferenced functions: function level linking
 	add_compile_options(/Gy)
 
 	# SSE2 for MSVC?
-	IF (CMAKE_MRPT_HAS_SSE2 AND NOT CMAKE_MRPT_WORD_SIZE EQUAL 64)
+	if (CMAKE_MRPT_HAS_SSE2 AND NOT CMAKE_MRPT_WORD_SIZE EQUAL 64)
 		add_compile_options(/arch:SSE2)
-	ENDIF()
+	endif()
 
 	# Profiling?
-	IF(MRPT_ENABLE_PROFILING)
-		SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /PROFILE ")
-		SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /PROFILE ")
-	ENDIF()
-ENDIF()
+	if(MRPT_ENABLE_PROFILING)
+		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /PROFILE ")
+		set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /PROFILE ")
+	endif()
+endif()
 
 # GNU GCC options ================================
-IF(CMAKE_COMPILER_IS_GNUCXX)
+if(CMAKE_COMPILER_IS_GNUCXX)
 	# Since MRPT 2.0 (March 2018) we need gcc-7.{1,2} due to compiler bugs in older versions:
 	if (NOT "${CMAKE_CXX_COMPILER_VERSION}" VERSION_GREATER "7.0")
-		MESSAGE(FATAL_ERROR "MRPT requires gcc-7 or above. Please, see instructions for upgrading in: https://github.com/MRPT/mrpt/blob/master/README.md#32-build-from-sources")
+		message(FATAL_ERROR "MRPT requires gcc-7 or above. Please, see instructions for upgrading in: https://github.com/MRPT/mrpt/blob/master/README.md#32-build-from-sources")
 	endif()
 
 	# Wall & pedantic?
-	SET(MRPT_BUILD_GCC_PEDANTIC_DEFAULT "OFF")
-	SET( MRPT_BUILD_GCC_PEDANTIC ${MRPT_BUILD_GCC_PEDANTIC_DEFAULT} CACHE BOOL "Enable pedantic error detection (with GCC only)")
-	MARK_AS_ADVANCED(MRPT_BUILD_GCC_PEDANTIC)
+	set(MRPT_BUILD_GCC_PEDANTIC_DEFAULT "OFF")
+	set( MRPT_BUILD_GCC_PEDANTIC ${MRPT_BUILD_GCC_PEDANTIC_DEFAULT} CACHE BOOL "Enable pedantic error detection (with GCC only)")
+	mark_as_advanced(MRPT_BUILD_GCC_PEDANTIC)
 
 	# High level of warnings.
 	# The -Wno-long-long is required in 64bit systems when including sytem headers.
@@ -428,37 +428,37 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
  	add_compile_options(${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-long-long -Wno-variadic-macros -Wshadow)
 
 	# Workaround: Eigen <3.4 produces *tons* of warnings in GCC >=6. See http://eigen.tuxfamily.org/bz/show_bug.cgi?id=1221
-	IF (NOT ${CMAKE_CXX_COMPILER_VERSION} LESS "6.0" AND "${MRPT_EIGEN_VERSION}" VERSION_LESS "3.4")
+	if (NOT ${CMAKE_CXX_COMPILER_VERSION} LESS "6.0" AND "${MRPT_EIGEN_VERSION}" VERSION_LESS "3.4")
 		add_compile_options(-Wno-ignored-attributes -Wno-int-in-bool-context)
-	ENDIF()
+	endif()
 
-	IF(NOT APPLE)
+	if(NOT APPLE)
 		# This causes the option "-Wnowrite-strings" to be set on gcc-4.9 on OS X
 		add_compile_options(-Wno-write-strings)
-	ENDIF()
- 	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_CONFIGURE_CFLAGS}")
+	endif()
+ 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_CONFIGURE_CFLAGS}")
 
 	# Use "modern" C99 ! ;-)
- 	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
+ 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 
-	IF(MRPT_BUILD_GCC_PEDANTIC)
+	if(MRPT_BUILD_GCC_PEDANTIC)
 		# Only for C++ sources:
-		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
 		# No need to be pendantic in old C files, most of them from 3rd parties anyway...
- 		#SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pedantic")
-	ENDIF()
+ 		#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pedantic")
+	endif()
 
 	# Parallel stdlibc++?
-	IF(MRPT_ENABLE_LIBSTD_PARALLEL_MODE)
+	if(MRPT_ENABLE_LIBSTD_PARALLEL_MODE)
 		add_compile_options(-fopenmp)
 		add_definitions(-D_GLIBCXX_PARALLEL)
-	ENDIF()
+	endif()
 
 	# BUILD_TYPE: Coverage
-	SET(CMAKE_CXX_FLAGS_COVERAGE "${CMAKE_CXX_FLAGS_DEBUG} --coverage -fno-inline -fno-inline-small-functions -fno-default-inline")
-	SET(CMAKE_EXE_LINKER_FLAGS_COVERAGE "${CMAKE_EXE_LINKER_FLAGS_DEBUG} --coverage")
-	SET(CMAKE_SHARED_LINKER_FLAGS_COVERAGE "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} --coverage")
-ENDIF()
+	set(CMAKE_CXX_FLAGS_COVERAGE "${CMAKE_CXX_FLAGS_DEBUG} --coverage -fno-inline -fno-inline-small-functions -fno-default-inline")
+	set(CMAKE_EXE_LINKER_FLAGS_COVERAGE "${CMAKE_EXE_LINKER_FLAGS_DEBUG} --coverage")
+	set(CMAKE_SHARED_LINKER_FLAGS_COVERAGE "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} --coverage")
+endif()
 
 # CLang options ================================
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
@@ -467,17 +467,17 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
 	# High level of warnings.
 	# no-unused-private-field: clang seems to complain in templates without reason.
 	add_compile_options(${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-unused-private-field -Wshadow-all)
- 	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_CONFIGURE_CFLAGS}")
+ 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_CONFIGURE_CFLAGS}")
 
 	# Use "modern" C99 ! ;-)
- 	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
+ 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 
-	IF(NOT APPLE) # any reason for not using it in all platforms?
+	if(NOT APPLE) # any reason for not using it in all platforms?
 	# Use the libstdc++ lib vs. libc++, to avoid some build errors in MacOS
-		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libstdc++")
-		SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libstdc++")
-		SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -stdlib=libstdc++")
-	ENDIF()
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libstdc++")
+		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libstdc++")
+		set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -stdlib=libstdc++")
+	endif()
 
 endif()
 
@@ -487,148 +487,148 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
 	# Even more warnings for different compilers
 	add_compile_options(-Wreturn-type -Wextra -Wabi -Wtype-limits -Wcast-align -Wparentheses -Wno-unused-parameter) # -Wold-style-cast  -Woverloaded-virtual
 
-	IF(MRPT_WARNINGS_ARE_ERRORS)
+	if(MRPT_WARNINGS_ARE_ERRORS)
 		add_compile_options(-Werror)
-	ENDIF()
+	endif()
 
-	IF(CMAKE_BUILD_TYPE MATCHES "Debug")
+	if(CMAKE_BUILD_TYPE MATCHES "Debug")
 		add_compile_options(-g)
-		ADD_DEFINITIONS( -D_DEBUG)
-		ADD_DEFINITIONS( -DDEBUG)
-	ENDIF()
+		add_definitions( -D_DEBUG)
+		add_definitions( -DDEBUG)
+	endif()
 
 	# Profiling?
-	IF(MRPT_ENABLE_PROFILING)
+	if(MRPT_ENABLE_PROFILING)
 		add_compile_options(-pg -g)
-	ELSEIF()
+	elseif()
 		# Remove unreferenced functions: function level linking
 		# Remove unreferenced functions: function level linking
 		if(NOT APPLE)
 			add_compile_options(-ffunction-sections)
 		endif()
-	ENDIF()
+	endif()
 
 	# Whole program optimization
-	IF(MRPT_WHOLE_PROGRAM_OPTIMIZATION)
+	if(MRPT_WHOLE_PROGRAM_OPTIMIZATION)
 		add_compile_options(--combine)
-		SET(MRPT_EXES_CXX_FLAGS "${MRPT_EXES_CXX_FLAGS} -fwhole-program --combine")
-	ENDIF()
+		set(MRPT_EXES_CXX_FLAGS "${MRPT_EXES_CXX_FLAGS} -fwhole-program --combine")
+	endif()
 
 	# "-mtune=native" generates code optimized for the detected current processor.
 	if (WIN32 OR "${CMAKE_MRPT_ARCH}" MATCHES ".*86" OR "${CMAKE_MRPT_ARCH}" MATCHES "amd64")
 		set(opt_native_def ON)
 	endif ()
 
-	SET( MRPT_OPTIMIZE_NATIVE ${opt_native_def} CACHE BOOL "GCC/clang optimizations for current processor (-mtune=native). Requires GCC 4.2+")
+	set( MRPT_OPTIMIZE_NATIVE ${opt_native_def} CACHE BOOL "GCC/clang optimizations for current processor (-mtune=native). Requires GCC 4.2+")
 
-	IF(CMAKE_BUILD_TYPE STREQUAL "Debug")  # Not in debug!
-		SET(MRPT_OPTIMIZE_NATIVE OFF)
-	ENDIF()
+	if(CMAKE_BUILD_TYPE STREQUAL "Debug")  # Not in debug!
+		set(MRPT_OPTIMIZE_NATIVE OFF)
+	endif()
 
-	IF(CMAKE_MRPT_USE_DEB_POSTFIXS OR CMAKE_MRPT_IS_RPM_PACKAGE)
+	if(CMAKE_MRPT_USE_DEB_POSTFIXS OR CMAKE_MRPT_IS_RPM_PACKAGE)
 		# If we're building a Debian package, just DO NOT use -mtune=native
-	ELSE()
-		IF(MRPT_OPTIMIZE_NATIVE AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+	else()
+		if(MRPT_OPTIMIZE_NATIVE AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
 			add_compile_options(-O3 -mtune=native)
-		ENDIF()
-	ENDIF()
+		endif()
+	endif()
 
 	# SSE2?
-	IF (CMAKE_MRPT_HAS_SSE2)
+	if (CMAKE_MRPT_HAS_SSE2)
 		add_compile_options(-msse2 -funroll-loops)
-		IF (CMAKE_COMPILER_IS_GNUCXX)
+		if (CMAKE_COMPILER_IS_GNUCXX)
 			add_compile_options(-mfpmath=sse)
-		ENDIF()
-	ENDIF()
+		endif()
+	endif()
 
 	# SSE3?
-	IF (CMAKE_MRPT_HAS_SSE3)
+	if (CMAKE_MRPT_HAS_SSE3)
 		add_compile_options(-msse3 -mssse3)
-	ENDIF()
+	endif()
 
 	# SSE4*?
-	IF (CMAKE_MRPT_HAS_SSE4_1)
+	if (CMAKE_MRPT_HAS_SSE4_1)
 		add_compile_options(-msse4.1)
-	ENDIF()
-	IF (CMAKE_MRPT_HAS_SSE4_2)
+	endif()
+	if (CMAKE_MRPT_HAS_SSE4_2)
 		add_compile_options(-msse4.2)
-	ENDIF()
-	IF (CMAKE_MRPT_HAS_SSE4_A)
+	endif()
+	if (CMAKE_MRPT_HAS_SSE4_A)
 		add_compile_options(-msse4a)
-	ENDIF()
+	endif()
 endif ()
 
 # Add user supplied extra options (optimization, etc...)
 # ==========================================================
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${USER_EXTRA_CPP_FLAGS}")
-SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${USER_EXTRA_CPP_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${USER_EXTRA_CPP_FLAGS}")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${USER_EXTRA_CPP_FLAGS}")
 
 # Some tricks for MSVC:
 if(MSVC)
-	STRING(REGEX REPLACE "/EHsc" "/EHa" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-	SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /GS-")
+	string(REGEX REPLACE "/EHsc" "/EHa" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /GS-")
 
 	if (COMPILE_IN_PARALLEL)
-		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")  # Multi-CPU parallel compilation (Suggested by  robert.schattschneide)
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")  # Multi-CPU parallel compilation (Suggested by  robert.schattschneide)
 	endif ()
 
 	# For MSVC to avoid the C1128 error about too large object files:
-	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
 
 endif()
 
-IF($ENV{VERBOSE})
-	MESSAGE(STATUS "Final CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
-	MESSAGE(STATUS "Final CMAKE_EXE_LINKER_FLAGS: ${CMAKE_EXE_LINKER_FLAGS}")
-	MESSAGE(STATUS "Final CMAKE_SHARED_LINKER_FLAGS: ${CMAKE_SHARED_LINKER_FLAGS}")
-	MESSAGE(STATUS "Final MRPTLIB_LINKER_LIBS: ${MRPTLIB_LINKER_LIBS}")
-ENDIF()
+if($ENV{VERBOSE})
+	message(STATUS "Final CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+	message(STATUS "Final CMAKE_EXE_LINKER_FLAGS: ${CMAKE_EXE_LINKER_FLAGS}")
+	message(STATUS "Final CMAKE_SHARED_LINKER_FLAGS: ${CMAKE_SHARED_LINKER_FLAGS}")
+	message(STATUS "Final MRPTLIB_LINKER_LIBS: ${MRPTLIB_LINKER_LIBS}")
+endif()
 
 # Save libs and executables in the same place
-SET( LIBRARY_OUTPUT_PATH ${MRPT_BINARY_DIR}/lib CACHE PATH "Output directory for libraries" )
-SET( EXECUTABLE_OUTPUT_PATH ${MRPT_BINARY_DIR}/bin CACHE PATH "Output directory for applications" )
-SET( MEX_LIBRARY_OUTPUT_PATH ${MRPT_BINARY_DIR}/mex/+mrpt CACHE PATH "Output directory for mex functions" )
-SET( MEX_EXECUTABLE_OUTPUT_PATH ${MRPT_BINARY_DIR}/mex/test CACHE PATH "Output directory for executable mexs" )
+set( LIBRARY_OUTPUT_PATH ${MRPT_BINARY_DIR}/lib CACHE PATH "Output directory for libraries" )
+set( EXECUTABLE_OUTPUT_PATH ${MRPT_BINARY_DIR}/bin CACHE PATH "Output directory for applications" )
+set( MEX_LIBRARY_OUTPUT_PATH ${MRPT_BINARY_DIR}/mex/+mrpt CACHE PATH "Output directory for mex functions" )
+set( MEX_EXECUTABLE_OUTPUT_PATH ${MRPT_BINARY_DIR}/mex/test CACHE PATH "Output directory for executable mexs" )
 
 #--------------------------------------------------------------
 # If we are building the final step of the Debian package,
 #  save each library files in the corresponding directories:
 #--------------------------------------------------------------
-IF(CMAKE_MRPT_USE_DEB_POSTFIXS)
+if(CMAKE_MRPT_USE_DEB_POSTFIXS)
 	# Values when building a Debian package ---------------
-	MESSAGE(STATUS "** mrpt cmake: Using Debian post-fix for install directories **")
-	SET(libmrpt_common_dev_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/libmrpt-common-dev/usr/")
-	SET(libmrpt_dev_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/libmrpt-dev/usr/")
-	SET(mrpt_apps_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/mrpt-apps/usr/")
-	SET(mrpt_doc_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/mrpt-doc/usr/")
-	SET(mrpt_common_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/mrpt-common/usr/")
-	SET(mrpt_pkgconfig_INSTALL_PREFIX "/usr")
-ELSE()
+	message(STATUS "** mrpt cmake: Using Debian post-fix for install directories **")
+	set(libmrpt_common_dev_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/libmrpt-common-dev/usr/")
+	set(libmrpt_dev_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/libmrpt-dev/usr/")
+	set(mrpt_apps_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/mrpt-apps/usr/")
+	set(mrpt_doc_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/mrpt-doc/usr/")
+	set(mrpt_common_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/mrpt-common/usr/")
+	set(mrpt_pkgconfig_INSTALL_PREFIX "/usr")
+else()
 	# Values under normal conditions -----------------------
-	SET(libmrpt_common_dev_INSTALL_PREFIX "")
-	SET(libmrpt_dev_INSTALL_PREFIX "")
-	SET(mrpt_apps_INSTALL_PREFIX "")
-	SET(mrpt_doc_INSTALL_PREFIX "")
-	SET(mrpt_common_INSTALL_PREFIX "")
-	SET(mrpt_pkgconfig_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
-ENDIF()
+	set(libmrpt_common_dev_INSTALL_PREFIX "")
+	set(libmrpt_dev_INSTALL_PREFIX "")
+	set(mrpt_apps_INSTALL_PREFIX "")
+	set(mrpt_doc_INSTALL_PREFIX "")
+	set(mrpt_common_INSTALL_PREFIX "")
+	set(mrpt_pkgconfig_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
+endif()
 
 # Remove /STACK:10000000 set by CMake. This value for stack size
 # is very high, limiting the number of threads we can spawn.
 # Default value used by Windows is 1MB which is good enough.
 # By: Sahn Lam, @ CMake mailing list
-STRING(REGEX REPLACE "/STACK:[0-9]+" "/STACK:1000000" CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}")
-STRING(REGEX REPLACE "/STACK:[0-9]+" "/STACK:1000000" CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}")
+string(REGEX REPLACE "/STACK:[0-9]+" "/STACK:1000000" CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}")
+string(REGEX REPLACE "/STACK:[0-9]+" "/STACK:1000000" CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}")
 
 
 # This will become a list with all libraries to be built, and their
 #  dependencies stored in "mrpt-${name}_LIB_DEPS"
-SET(ALL_MRPT_LIBS "" CACHE INTERNAL "")  # This emulates global vars
+set(ALL_MRPT_LIBS "" CACHE INTERNAL "")  # This emulates global vars
 
-IF (NOT MSVC)
+if (NOT MSVC)
 	include(cmakemodules/cotire.cmake REQUIRED) # COmpiler TIme REducer helper for PCH
 	set_directory_properties(PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE) # Disable unity targets
-ENDIF()
+endif()
 
 add_custom_target(all_mrpt_libs ALL) # all_mrpt_libs: target to build all mrpt-* modules
 
@@ -638,32 +638,32 @@ add_custom_target(all_mrpt_libs ALL) # all_mrpt_libs: target to build all mrpt-*
 add_subdirectory(otherlibs)   # The third-party libraries
 add_subdirectory(libs)        # The MRPT C++ libraries:
 
-SET( BUILD_APPLICATIONS ON CACHE BOOL "If you only want the MRPT libraries, disable this.")
-IF(BUILD_APPLICATIONS)
+set( BUILD_APPLICATIONS ON CACHE BOOL "If you only want the MRPT libraries, disable this.")
+if(BUILD_APPLICATIONS)
 	add_subdirectory(apps)    # The applications:
-ENDIF()
+endif()
 
-IF(BUILD_MATLAB)
+if(BUILD_MATLAB)
         add_subdirectory(mex/apps)# The MEX applications
-ENDIF()
+endif()
 
 # Generate .h to locate MRPT sources:
-CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/parse-files/mrpt_paths_config.h.in" "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/mrpt_paths_config.h")
+configure_file("${CMAKE_SOURCE_DIR}/parse-files/mrpt_paths_config.h.in" "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/mrpt_paths_config.h")
 
 # Documentation targets (must be AFTER "apps" because it uses the aux program "mrpt-perfdata2html")
 add_subdirectory(doc)
 
 #   UNIT TESTS:
 # ----------------------------------------------------------------------------
-SET( BUILD_TESTING ON CACHE BOOL "Build MRPT tests")
-IF( BUILD_TESTING)
+set( BUILD_TESTING ON CACHE BOOL "Build MRPT tests")
+if( BUILD_TESTING)
 	# Try using libgtest (Google testing library) from the system, if available
-	IF(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND APPLE)
+	if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND APPLE)
 		add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
-	ENDIF()
+	endif()
 	add_subdirectory(${CMAKE_MRPT_GTEST_SRC_DIR})  # Build gtest from sources
 	add_subdirectory(tests)  # Build my tests
-ENDIF()
+endif()
 
 include(cmakemodules/script_create_MRPTConfig.cmake REQUIRED)  # Generate the MRPTConfig.cmake & configure files
 
@@ -678,7 +678,7 @@ include(cmakemodules/script_setup_cpack.cmake REQUIRED)
 # ----------------------------------------------------------------------------
 #  Hide some variables to the user, just show the important variables:
 # ----------------------------------------------------------------------------
-MARK_AS_ADVANCED(FORCE
+mark_as_advanced(FORCE
 	CMAKE_BACKWARDS_COMPATIBILITY
 	wxWidgets_CONFIGURATION
 	wxWidgets_LIB_DIR
@@ -691,13 +691,13 @@ MARK_AS_ADVANCED(FORCE
 # *Note*: This must be AFTER the generation of the MRPTConfig.cmake files
 #-----------------------------------
 add_definitions(-DMRPT_OPENCV_SRC_DIR="${MRPT_OPENCV_SRC_DIR}")
-SET(MRPT_DIR ${MRPT_BINARY_DIR})
+set(MRPT_DIR ${MRPT_BINARY_DIR})
 include(cmakemodules/DefineExamples.cmake REQUIRED)
 
-SET(IS_DEBIAN_DBG_PKG 0)
-IF (CMAKE_MRPT_USE_DEB_POSTFIXS AND CMAKE_BUILD_TYPE STREQUAL "Debug")
-	SET(IS_DEBIAN_DBG_PKG 1)
-ENDIF ()
+set(IS_DEBIAN_DBG_PKG 0)
+if (CMAKE_MRPT_USE_DEB_POSTFIXS AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+	set(IS_DEBIAN_DBG_PKG 1)
+endif ()
 
 # Build list of files to install, packages, etc.
 include(cmakemodules/script_install_commands.cmake REQUIRED)

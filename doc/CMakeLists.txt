@@ -1,13 +1,13 @@
-INCLUDE(../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
+include(../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
 
 
 # Dummy documentation target for showing grouped files in IDEs:
 # ----------------------------------------------------------------------------
-FILE(GLOB DOX_HDRS "${CMAKE_SOURCE_DIR}/doc/doxygen-pages/*.h")
-SET(DOC_INDIV_FILES
+file(GLOB DOX_HDRS "${CMAKE_SOURCE_DIR}/doc/doxygen-pages/*.h")
+set(DOC_INDIV_FILES
 	"${CMAKE_SOURCE_DIR}/README.md"
 	)
-SET(all_docs_files ${DOX_HDRS} ${DOC_INDIV_FILES})
+set(all_docs_files ${DOX_HDRS} ${DOC_INDIV_FILES})
 add_custom_target(DocumentationFiles DEPENDS ${all_docs_files} SOURCES ${all_docs_files})
 set_target_properties(DocumentationFiles PROPERTIES FOLDER "documentation")
 
@@ -15,19 +15,19 @@ set_target_properties(DocumentationFiles PROPERTIES FOLDER "documentation")
 # Targets for building the documentation of the MRPT
 # ----------------------------------------------------------------------------
 
-PROJECT(documentation)
+project(documentation)
 
-IF(UNIX)
+if(UNIX)
 	add_subdirectory(man-pages)
-ENDIF()
+endif()
 
-FIND_PACKAGE(Doxygen)
+find_package(Doxygen)
 
 # --------------------------------
 # documentation_performance_html
 # --------------------------------
 if(TARGET mrpt-perfdata2html)
-	SET(PERF2HTML_GENERATED_EXE "$<TARGET_FILE:mrpt-perfdata2html>")
+	set(PERF2HTML_GENERATED_EXE "$<TARGET_FILE:mrpt-perfdata2html>")
 	add_custom_target(documentation_performance_html
 		COMMAND 		${PERF2HTML_GENERATED_EXE} "${MRPT_SOURCE_DIR}/doc/perf-data/"
 		WORKING_DIRECTORY	${MRPT_SOURCE_DIR}/
@@ -37,16 +37,16 @@ if(TARGET mrpt-perfdata2html)
 	set_target_properties(documentation_performance_html PROPERTIES FOLDER "documentation")
 endif()
 
-IF(DOXYGEN_EXECUTABLE)
+if(DOXYGEN_EXECUTABLE)
 	# --------------------------------
 	#   documentation_html
 	# --------------------------------
-	IF(WIN32)
-		SET(CMD build_docs-HTML.bat)
-	ELSE()
-		SET(CMD "build_docs.sh")
-		SET(PARAM "-h")
-	ENDIF()
+	if(WIN32)
+		set(CMD build_docs-HTML.bat)
+	else()
+		set(CMD "build_docs.sh")
+		set(PARAM "-h")
+	endif()
 	add_custom_target(documentation_html
 		COMMAND 		${MRPT_SOURCE_DIR}/scripts/${CMD} ${PARAM}
 		WORKING_DIRECTORY	${MRPT_SOURCE_DIR}/
@@ -57,12 +57,12 @@ IF(DOXYGEN_EXECUTABLE)
 	# --------------------------------
 	#   documentation_chm
 	# --------------------------------
-	IF(WIN32)
-		SET(CMD build_docs-CHM.bat)
-	ELSE()
-		SET(CMD "build_docs.sh")
-		SET(PARAM "-c")
-	ENDIF()
+	if(WIN32)
+		set(CMD build_docs-CHM.bat)
+	else()
+		set(CMD "build_docs.sh")
+		set(PARAM "-c")
+	endif()
 	add_custom_target(documentation_chm
 		COMMAND 		${MRPT_SOURCE_DIR}/scripts/${CMD} ${PARAM}
 		WORKING_DIRECTORY	${MRPT_SOURCE_DIR}/
@@ -73,26 +73,26 @@ IF(DOXYGEN_EXECUTABLE)
 	# --------------------------------
 	#   documentation_html_chm
 	# --------------------------------
-	IF(WIN32)
-		SET(CMD build_docs-HTML-CHM.bat)
-	ELSE()
-		SET(CMD "build_docs.sh")
-		SET(PARAM "-ch")
-	ENDIF()
+	if(WIN32)
+		set(CMD build_docs-HTML-CHM.bat)
+	else()
+		set(CMD "build_docs.sh")
+		set(PARAM "-ch")
+	endif()
 	add_custom_target(documentation_html_chm
 		COMMAND 		${MRPT_SOURCE_DIR}/scripts/${CMD} ${PARAM}
 		WORKING_DIRECTORY	${MRPT_SOURCE_DIR}/
 		COMMENT 		"Generating MRPT documentation (html+chm)"
 		)
 	set_target_properties(documentation_html_chm PROPERTIES FOLDER "documentation")
-ENDIF()
+endif()
 
 
 # Compile Latex targets:
-IF(NOT WIN32)
+if(NOT WIN32)
 find_program(LATEXMK_PROGRAM latexmk)
 mark_as_advanced(LATEXMK_PROGRAM)
-IF(LATEXMK_PROGRAM)
+if(LATEXMK_PROGRAM)
 	# The main (empty) target:
 	add_custom_target(documentation_psgz_guides)
 
@@ -110,5 +110,5 @@ IF(LATEXMK_PROGRAM)
 		)
 	add_dependencies(documentation_psgz_guides documentation_graphslam-engine-guide)
 
-ENDIF()
-ENDIF()
+endif()
+endif()

@@ -5,18 +5,18 @@
 #
 #  October 2007, Jose Luis Blanco <jlblanco@ctima.uma.es>
 #-----------------------------------------------------------------
-PROJECT(mrpt-perfdata2html)
+project(mrpt-perfdata2html)
 
 # ---------------------------------------------
 # TARGET:
 # ---------------------------------------------
 # Define the executable target:
-ADD_EXECUTABLE(${PROJECT_NAME}
+add_executable(${PROJECT_NAME}
 	mrpt-perfdata2html-main.cpp
 	)
 
 # Add the required libraries for linking:
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
+target_link_libraries(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
 
 # Dependencies on MRPT libraries:
 #  Just mention the top-level dependency, the rest will be detected automatically,

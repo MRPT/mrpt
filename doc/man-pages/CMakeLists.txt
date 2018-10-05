@@ -1,23 +1,23 @@
-INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
+include(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
 
 # ----------------------------------------------------------------------------
 # Targets for building man-pages of the MRPT
 # ----------------------------------------------------------------------------
 
-PROJECT(all_man_pages)
+project(all_man_pages)
 
-FIND_PROGRAM(PROG_POD2MAN pod2man)
-FIND_PROGRAM(PROG_GZIP gzip)
+find_program(PROG_POD2MAN pod2man)
+find_program(PROG_GZIP gzip)
 
-IF (PROG_GZIP AND PROG_POD2MAN)
-	MARK_AS_ADVANCED(PROG_POD2MAN)
-	MARK_AS_ADVANCED(PROG_GZIP)
+if (PROG_GZIP AND PROG_POD2MAN)
+	mark_as_advanced(PROG_POD2MAN)
+	mark_as_advanced(PROG_GZIP)
 
 	# Make sure the output dir exists:
-	FILE(MAKE_DIRECTORY "${MRPT_BINARY_DIR}/man-pages")
+	file(MAKE_DIRECTORY "${MRPT_BINARY_DIR}/man-pages")
 
 	# Macro for declaring man-pages targets:
-	MACRO(CREATE_MANPAGE_PROJECT appname)
+	macro(CREATE_MANPAGE_PROJECT appname)
 		add_custom_target(man_page_${appname}
 			COMMAND 			pod2man --center="Mobile Robot Programming Toolkit - MRPT"  ${MRPT_SOURCE_DIR}/doc/man-pages/pod/${appname}.pod |gzip -c > ${MRPT_BINARY_DIR}/man-pages/${appname}.1.gz
 			WORKING_DIRECTORY	${MRPT_SOURCE_DIR}/
@@ -25,9 +25,9 @@ IF (PROG_GZIP AND PROG_POD2MAN)
 			)
 		add_dependencies(man_pages_all man_page_${appname})
 		if (UNIX)
-			INSTALL(FILES "${MRPT_BINARY_DIR}/man-pages/${appname}.1.gz" DESTINATION ${mrpt_apps_INSTALL_PREFIX}share/man/man1/ )
+			install(FILES "${MRPT_BINARY_DIR}/man-pages/${appname}.1.gz" DESTINATION ${mrpt_apps_INSTALL_PREFIX}share/man/man1/ )
 		endif()
-	ENDMACRO(CREATE_MANPAGE_PROJECT)
+	endmacro(CREATE_MANPAGE_PROJECT)
 
 	# The main (empty) target:
 	add_custom_target(man_pages_all ALL)
@@ -82,4 +82,4 @@ IF (PROG_GZIP AND PROG_POD2MAN)
 	CREATE_MANPAGE_PROJECT(robot-map-gui)
 
 	CREATE_MANPAGE_PROJECT(benchmarking-image-features)
-ENDIF (PROG_GZIP AND PROG_POD2MAN)
+endif (PROG_GZIP AND PROG_POD2MAN)

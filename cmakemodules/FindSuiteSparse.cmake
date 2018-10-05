@@ -133,9 +133,9 @@ macro(SuiteSparse_FIND_COMPONENTS )
 		string(TOLOWER ${suitesparseComp} suitesparseCompLC)
 
 		## Special case: CXSparse library is named "libcxsparse.*" but headers are "cs.h":
-		SET(suitesparseComp_ALT "${suitesparseComp}") # Alternative names
+		set(suitesparseComp_ALT "${suitesparseComp}") # Alternative names
 		if("${suitesparseComp}" STREQUAL "CXSPARSE")
-			SET(suitesparseComp_ALT "cs") # Alternative name of CXSparse
+			set(suitesparseComp_ALT "cs") # Alternative name of CXSparse
 		endif()
 
 		## try to find include dir (looking for very important header file)
@@ -260,7 +260,7 @@ macro(SuiteSparse_FIND_COMPONENTS )
 	foreach(componentToCheck ${SuiteSparse_FOUND_LIST})
 		set(SuiteSparse_FOUND ON)
 		if(SuiteSparse_VERBOSE)
-		MESSAGE(STATUS "final check: ${componentToCheck}")
+		message(STATUS "final check: ${componentToCheck}")
 		endif()
 		if(NOT ${componentToCheck})
 			set(SuiteSparse_FOUND OFF)
@@ -425,14 +425,14 @@ if(SuiteSparse_VERBOSE)
 endif()
 
 ## Show error if not found and _REQUIRED
-IF(NOT SuiteSparse_FOUND)
+if(NOT SuiteSparse_FOUND)
   # make FIND_PACKAGE friendly
-  IF(NOT SuiteSparse_FIND_QUIETLY)
-    IF(SuiteSparse_FIND_REQUIRED)
-      MESSAGE(FATAL_ERROR
+  if(NOT SuiteSparse_FIND_QUIETLY)
+    if(SuiteSparse_FIND_REQUIRED)
+      message(FATAL_ERROR
         "SuiteSparse required but some headers or libs not found.")
-    ELSE()
-      MESSAGE(STATUS "ERROR: SuiteSparse was not found.")
-    ENDIF()
-  ENDIF()
-ENDIF()
+    else()
+      message(STATUS "ERROR: SuiteSparse was not found.")
+    endif()
+  endif()
+endif()

@@ -10,6 +10,6 @@ define_mrpt_lib_header_only(
 	# Dependencies
 	)
 
-IF(BUILD_mrpt-nanoflann)
+if(BUILD_mrpt-nanoflann)
 
-ENDIF( )
+endif( )

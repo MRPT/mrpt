@@ -7,6 +7,6 @@ define_mrpt_lib_header_only(
 	# Dependencies
 	)
 
-IF(BUILD_mrpt-typemeta)
+if(BUILD_mrpt-typemeta)
 
-ENDIF( )
+endif( )

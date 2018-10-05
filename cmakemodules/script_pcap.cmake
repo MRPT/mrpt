@@ -1,24 +1,24 @@
 # Check for the libpcap library 
 # ==============================
 
-OPTION(DISABLE_PCAP "Disable using the PCAP library" "OFF")
-MARK_AS_ADVANCED(DISABLE_PCAP)
+option(DISABLE_PCAP "Disable using the PCAP library" "OFF")
+mark_as_advanced(DISABLE_PCAP)
 
-SET(CMAKE_MRPT_HAS_LIBPCAP 0)
-SET(CMAKE_MRPT_HAS_LIBPCAP_SYSTEM 0)
+set(CMAKE_MRPT_HAS_LIBPCAP 0)
+set(CMAKE_MRPT_HAS_LIBPCAP_SYSTEM 0)
 
-IF (NOT DISABLE_PCAP)
-	FIND_PACKAGE(PCAP QUIET)
-	IF(PCAP_FOUND)
-		SET(CMAKE_MRPT_HAS_LIBPCAP 1)
-		SET(CMAKE_MRPT_HAS_LIBPCAP_SYSTEM 1)
+if (NOT DISABLE_PCAP)
+	find_package(PCAP QUIET)
+	if(PCAP_FOUND)
+		set(CMAKE_MRPT_HAS_LIBPCAP 1)
+		set(CMAKE_MRPT_HAS_LIBPCAP_SYSTEM 1)
 
-		IF ($ENV{VERBOSE})
-			MESSAGE(STATUS "Found libpcap:")
-			MESSAGE(STATUS "  PCAP_INCLUDE_DIR :${PCAP_INCLUDE_DIR}")
-			MESSAGE(STATUS "  PCAP_LIBRARY     :${PCAP_LIBRARY}")
-		ENDIF()
+		if ($ENV{VERBOSE})
+			message(STATUS "Found libpcap:")
+			message(STATUS "  PCAP_INCLUDE_DIR :${PCAP_INCLUDE_DIR}")
+			message(STATUS "  PCAP_LIBRARY     :${PCAP_LIBRARY}")
+		endif()
 
-	ENDIF()
-ENDIF()
+	endif()
+endif()
 

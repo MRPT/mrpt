@@ -2,23 +2,23 @@
 # ===================================================
 
 # disabled on start
-SET(CMAKE_MRPT_HAS_PYTHON_BINDINGS 0)
+set(CMAKE_MRPT_HAS_PYTHON_BINDINGS 0)
 
 # Leave at the user's choice to disable the python bindings:
-OPTION(DISABLE_PYTHON_BINDINGS "Disable the build (if possible) of Python bindings" "OFF")
-IF(DISABLE_PYTHON_BINDINGS)
-    SET(CMAKE_MRPT_HAS_PYTHON_BINDINGS 0)
-ENDIF(DISABLE_PYTHON_BINDINGS)
+option(DISABLE_PYTHON_BINDINGS "Disable the build (if possible) of Python bindings" "OFF")
+if(DISABLE_PYTHON_BINDINGS)
+    set(CMAKE_MRPT_HAS_PYTHON_BINDINGS 0)
+endif(DISABLE_PYTHON_BINDINGS)
 
-IF(UNIX AND NOT DISABLE_PYTHON_BINDINGS)
-    #SET( BUILD_PY_BINDINGS OFF CACHE BOOL "If you want to build the MRPT python bindings, enable this.")
+if(UNIX AND NOT DISABLE_PYTHON_BINDINGS)
+    #set( BUILD_PY_BINDINGS OFF CACHE BOOL "If you want to build the MRPT python bindings, enable this.")
     # find packages quiet
-    FIND_PACKAGE(Boost QUIET COMPONENTS python)
-    FIND_PACKAGE(PythonLibs 2.7 QUIET)
+    find_package(Boost QUIET COMPONENTS python)
+    find_package(PythonLibs 2.7 QUIET)
 
     # build python bindings if we have all requirements
-    IF(Boost_FOUND AND PYTHONLIBS_FOUND)
-        SET(CMAKE_MRPT_HAS_PYTHON_BINDINGS 1)
-        ADD_SUBDIRECTORY(python)
-    ENDIF()
-ENDIF(UNIX AND NOT DISABLE_PYTHON_BINDINGS)
+    if(Boost_FOUND AND PYTHONLIBS_FOUND)
+        set(CMAKE_MRPT_HAS_PYTHON_BINDINGS 1)
+        add_subdirectory(python)
+    endif()
+endif(UNIX AND NOT DISABLE_PYTHON_BINDINGS)

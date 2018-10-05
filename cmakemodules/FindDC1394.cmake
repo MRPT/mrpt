@@ -7,29 +7,29 @@
 #
 
 
-FIND_PATH( DC1394_INCLUDE_DIR dc1394/control.h
+find_path( DC1394_INCLUDE_DIR dc1394/control.h
   /usr/include
   /usr/local/include
 )
 
-FIND_LIBRARY( DC1394_LIBRARY dc1394
+find_library( DC1394_LIBRARY dc1394
   /usr/lib64
   /usr/lib
   /usr/local/lib
 )
 
 
-SET( DC1394_FOUND "NO" )
-IF(DC1394_INCLUDE_DIR)
-  IF(DC1394_LIBRARY)
-    SET( DC1394_LIBRARIES
+set( DC1394_FOUND "NO" )
+if(DC1394_INCLUDE_DIR)
+  if(DC1394_LIBRARY)
+    set( DC1394_LIBRARIES
       ${DC1394_LIBRARY}
     )
-    SET( DC1394_FOUND "YES" )
+    set( DC1394_FOUND "YES" )
 
 #The following deprecated settings are for backwards compatibility with CMake1.4
-    SET (DC1394_INCLUDE_PATH ${DC1394_INCLUDE_DIR})
+    set (DC1394_INCLUDE_PATH ${DC1394_INCLUDE_DIR})
 
-  ENDIF(DC1394_LIBRARY)
-ENDIF(DC1394_INCLUDE_DIR)
+  endif(DC1394_LIBRARY)
+endif(DC1394_INCLUDE_DIR)
 

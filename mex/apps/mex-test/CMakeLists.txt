@@ -1,4 +1,4 @@
-INCLUDE(../../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
+include(../../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
 
 #-----------------------------------------------------------------
 # CMake file for the MRPT MEX library:  MexTest
@@ -7,13 +7,13 @@ INCLUDE(../../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in
 #
 #  October 2014, Jesus Briales <jesusbriales@uma.es>
 #-----------------------------------------------------------------
-PROJECT(MexTest)
+project(MexTest)
 
 # ---------------------------------------------
 # MEX FUNCTION:
 # ---------------------------------------------
 # Define the MEX module for Matlab:
-ADD_LIBRARY(mextest SHARED # MEX must be SHARED
+add_library(mextest SHARED # MEX must be SHARED
 			mex_test.cpp
 			${CMAKE_CURRENT_LIST_DIR}/Matlabdef.def
 			)
@@ -21,7 +21,7 @@ ADD_LIBRARY(mextest SHARED # MEX must be SHARED
 set(TMP_MEX_NAME "mextest")
 
 # Add the required libraries for linking:
-TARGET_LINK_LIBRARIES(${TMP_MEX_NAME} 
+target_link_libraries(${TMP_MEX_NAME} 
 	${MRPT_LINKER_LIBS_RELorDEB}
 	mrpt-hwdrivers${MRPT_LINKER_LIBS_POSTFIX}
 	${MATLAB_LIBRARIES}
