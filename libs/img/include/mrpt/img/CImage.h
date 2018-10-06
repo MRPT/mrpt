@@ -304,6 +304,8 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 		changeSize(width, height, nChannels, originTopLeft, depth);
 	}
 
+	PixelDepth getPixelDepth() const;
+
 	/** Scales this image to a new size, interpolating as needed.
 	 * \sa resize, rotateImage
 	 */

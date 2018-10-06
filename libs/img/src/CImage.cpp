@@ -64,32 +64,46 @@ mrpt::img::CTimeLogger alloc_tims;
 #endif
 
 #if MRPT_HAS_OPENCV
-int32_t pixelDepth2CvDepth(PixelDepth d)
+static int32_t pixelDepth2CvDepth(PixelDepth d)
 {
-	switch(d)
+	switch (d)
 	{
-		case PixelDepth::D8U: return IPL_DEPTH_8U;
-		case PixelDepth::D8S: return IPL_DEPTH_8S;
-		case PixelDepth::D16U: return IPL_DEPTH_16U;
-		case PixelDepth::D16S: return IPL_DEPTH_16S;
-		case PixelDepth::D32S: return IPL_DEPTH_32S;
-		case PixelDepth::D32F: return IPL_DEPTH_32F;
-		case PixelDepth::D64F: return IPL_DEPTH_64F;
+		case PixelDepth::D8U:
+			return IPL_DEPTH_8U;
+		case PixelDepth::D8S:
+			return IPL_DEPTH_8S;
+		case PixelDepth::D16U:
+			return IPL_DEPTH_16U;
+		case PixelDepth::D16S:
+			return IPL_DEPTH_16S;
+		case PixelDepth::D32S:
+			return IPL_DEPTH_32S;
+		case PixelDepth::D32F:
+			return IPL_DEPTH_32F;
+		case PixelDepth::D64F:
+			return IPL_DEPTH_64F;
 	}
 	return -1;
 }
 
-PixelDepth cvDepth2PixelDepth(int32_t d)
+static PixelDepth cvDepth2PixelDepth(int32_t d)
 {
-	switch(d)
+	switch (d)
 	{
-		case IPL_DEPTH_8U:  return PixelDepth::D8U;
-		case IPL_DEPTH_8S:  return PixelDepth::D8S;
-		case IPL_DEPTH_16U: return PixelDepth::D16U;
-		case IPL_DEPTH_16S: return PixelDepth::D16S;
-		case IPL_DEPTH_32S: return PixelDepth::D32S;
-		case IPL_DEPTH_32F: return PixelDepth::D32F;
-		case IPL_DEPTH_64F: return PixelDepth::D64F;
+		case IPL_DEPTH_8U:
+			return PixelDepth::D8U;
+		case IPL_DEPTH_8S:
+			return PixelDepth::D8S;
+		case IPL_DEPTH_16U:
+			return PixelDepth::D16U;
+		case IPL_DEPTH_16S:
+			return PixelDepth::D16S;
+		case IPL_DEPTH_32S:
+			return PixelDepth::D32S;
+		case IPL_DEPTH_32F:
+			return PixelDepth::D32F;
+		case IPL_DEPTH_64F:
+			return PixelDepth::D64F;
 	}
 	return PixelDepth::D8U;
 }
@@ -111,7 +125,7 @@ CImage::CImage(
 			Default	Constructor
 ---------------------------------------------------------------*/
 CImage::CImage()
-	 
+
 {
 #if MRPT_HAS_OPENCV
 	MRPT_START
@@ -293,7 +307,8 @@ void CImage::changeSize(
 	alloc_tims.enter(sLog.c_str());
 #endif
 
-	img = cvCreateImage(cvSize(width, height), pixelDepth2CvDepth(depth), nChannels);
+	img = cvCreateImage(
+		cvSize(width, height), pixelDepth2CvDepth(depth), nChannels);
 	img->origin = originTopLeft ? 0 : 1;
 
 #if IMAGE_ALLOC_PERFLOG
@@ -304,6 +319,18 @@ void CImage::changeSize(
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
 
+	MRPT_END
+}
+
+PixelDepth CImage::getPixelDepth() const
+{
+	MRPT_START
+#if MRPT_HAS_OPENCV
+	ASSERT_(img);
+	return cvDepth2PixelDepth(img->depth);
+#else
+	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
+#endif
 	MRPT_END
 }
 
@@ -449,13 +476,10 @@ void CImage::loadFromMemoryBuffer(
 	}
 	else
 	{
-		if (img->widthStep ==
-			img->width * img->nChannels)
+		if (img->widthStep == img->width * img->nChannels)
 		{
 			// Copy the image data:
-			memcpy(
-				img->imageData, rawpixels,
-				img->imageSize);
+			memcpy(img->imageData, rawpixels, img->imageSize);
 		}
 		else
 		{
@@ -577,7 +601,8 @@ void CImage::serializeTo(mrpt::serialization::CArchive& out) const
 				// Version 10: depth
 				int32_t depth = img->depth;
 
-				out << width << height << origin << imageSize << int32_t(cvDepth2PixelDepth(depth));
+				out << width << height << origin << imageSize
+					<< int32_t(cvDepth2PixelDepth(depth));
 
 				// Version 5: Use CImage::DISABLE_ZIP_COMPRESSION
 				bool imageStoredAsZip =
@@ -603,9 +628,7 @@ void CImage::serializeTo(mrpt::serialization::CArchive& out) const
 				}
 				else
 				{
-					out.WriteBuffer(
-						img->imageData,
-						img->imageSize);
+					out.WriteBuffer(img->imageData, img->imageSize);
 				}
 			}
 			else
@@ -743,13 +766,13 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 					int32_t width, height, origin, imageSize;
 					in >> width >> height >> origin >> imageSize;
 					PixelDepth depth(PixelDepth::D8U);
-					if(version >=9)
+					if (version >= 9)
 					{
 						int32_t tempdepth;
 						in >> tempdepth;
 						depth = PixelDepth(tempdepth);
 					}
-					changeSize(width, height, 1, origin == 0,  depth);
+					changeSize(width, height, 1, origin == 0, depth);
 					ASSERT_(imageSize == img->imageSize);
 
 					if (version == 2)
@@ -793,9 +816,7 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 						else
 						{
 							// Raw bytes:
-							in.ReadBuffer(
-								img->imageData,
-								img->imageSize);
+							in.ReadBuffer(img->imageData, img->imageSize);
 						}
 					}
 				}
@@ -1245,7 +1266,8 @@ void CImage::loadFromMemoryBuffer(
 	for (unsigned int y = 0; y < height; y++)
 	{
 		// The target pixels:
-		unsigned char* dest = (unsigned char*)img->imageData + img->widthStep * y;
+		unsigned char* dest =
+			(unsigned char*)img->imageData + img->widthStep * y;
 
 		// Source channels:
 		unsigned char* srcR = red + bytesPerRow * y;
@@ -1884,10 +1906,8 @@ void CImage::getAsMatrixTiled(CMatrix& outMatrix) const
 		// Luminance: Y = 0.3R + 0.59G + 0.11B
 		for (unsigned int y = 0; y < matrix_ly; y++)
 		{
-			unsigned char* min_pixels =
-				(*this)(0, y % img->height, 0);
-			unsigned char* max_pixels =
-				min_pixels + img->width * 3;
+			unsigned char* min_pixels = (*this)(0, y % img->height, 0);
+			unsigned char* max_pixels = min_pixels + img->width * 3;
 			unsigned char* pixels = min_pixels;
 			float aux;
 			for (unsigned int x = 0; x < matrix_lx; x++)
@@ -1904,8 +1924,7 @@ void CImage::getAsMatrixTiled(CMatrix& outMatrix) const
 	{
 		for (unsigned int y = 0; y < matrix_ly; y++)
 		{
-			unsigned char* min_pixels =
-				(*this)(0, y % img->height, 0);
+			unsigned char* min_pixels = (*this)(0, y % img->height, 0);
 			unsigned char* max_pixels = min_pixels + img->width;
 			unsigned char* pixels = min_pixels;
 			for (unsigned int x = 0; x < matrix_lx; x++)
