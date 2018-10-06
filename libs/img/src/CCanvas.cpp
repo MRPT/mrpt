@@ -254,6 +254,7 @@ void CCanvas::selectTextFont(const std::string& fontName)
 void CCanvas::drawImage(int x, int y, const mrpt::img::CImage& img)
 {
 	MRPT_START
+	ASSERT_EQUAL_(img.getPixelDepth(), mrpt::img::PixelDepth::D8U);
 
 	int img_lx = img.getWidth();
 	int img_ly = img.getHeight();
@@ -392,7 +393,7 @@ void CCanvas::textOut(
 
 	for (unsigned short unichar : uniStr)
 	{
-			// look for the character in the table:
+		// look for the character in the table:
 		const uint32_t* table_ptr = m_selectedFontBitmaps + 2;
 		uint32_t charset_ini = table_ptr[0];
 		uint32_t charset_end = table_ptr[1];

@@ -1316,6 +1316,7 @@ void CImage::setPixel(int x, int y, size_t color)
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
 	ASSERT_(ipl);
 #endif
+	ASSERT_EQUAL_(this->getPixelDepth(), mrpt::img::PixelDepth::D8U);
 
 	if (x >= 0 && y >= 0 && y < ipl->height && x < ipl->width)
 	{
