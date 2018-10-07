@@ -13,6 +13,19 @@
 #include <mrpt/img/CCanvas.h>
 #include <mrpt/img/TCamera.h>
 #include <mrpt/img/TPixelCoord.h>
+#if MRPT_HAS_OPENCV
+struct _IplImage;
+using IplImage = struct _IplImage;
+namespace cv
+{
+	class Mat;
+}
+#else
+// Shouldn't matter what the type is.
+using IplImage = void *;
+#endif
+
+
 
 // Add for declaration of mexplus::from template specialization
 DECLARE_MEXPLUS_FROM(mrpt::img::CImage)
@@ -25,6 +38,18 @@ class CStream;
 }
 namespace img
 {
+
+enum class PixelDepth : int32_t
+{
+	D8U  = 0,
+	D8S  = 1,
+	D16U = 2,
+	D16S = 3,
+	D32S = 4,
+	D32F = 5,
+	D64F = 6
+};
+
 /** Interpolation methods for images.
  *  Used for OpenCV related operations with images, but also with MRPT native
  * classes.
@@ -191,17 +216,27 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 		const CImage& other_img, TConstructorFlags_CImage constructor_flag)
 		: img(nullptr), m_imgIsReadOnly(false), m_imgIsExternalStorage(false)
 	{
+#if MRPT_HAS_OPENCV
 		MRPT_UNUSED_PARAM(constructor_flag);
 		if (other_img.isColor())
 			other_img.grayscale(*this);
 		else
 			this->setFromImageReadOnly(other_img);
+#else
+		THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
+#endif
 	}
 
+#if MRPT_HAS_OPENCV
 	/** Constructor from an IPLImage*, making a copy of the image.
 	 * \sa loadFromIplImage, setFromIplImage
 	 */
-	CImage(void* iplImage);
+	CImage(const IplImage* iplImage);
+
+	/** Constructor from an cv::Mat, making a copy of the image.
+	 */
+	CImage(const cv::Mat &mat);
+#endif
 
 	/** Explicit constructor from a matrix, interpreted as grayscale intensity
 	 * values, in the range [0,1] (normalized=true) or [0,255]
@@ -213,7 +248,11 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 		const Eigen::MatrixBase<Derived>& m, bool matrix_is_normalized)
 		: img(nullptr), m_imgIsReadOnly(false), m_imgIsExternalStorage(false)
 	{
+#if MRPT_HAS_OPENCV
 		this->setFromMatrix(m, matrix_is_normalized);
+#else
+		THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
+#endif
 	}
 
 	/** Destructor: */
@@ -260,10 +299,12 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	 */
 	inline void resize(
 		unsigned int width, unsigned int height, TImageChannels nChannels,
-		bool originTopLeft)
+		bool originTopLeft, PixelDepth depth = PixelDepth::D8U)
 	{
-		changeSize(width, height, nChannels, originTopLeft);
+		changeSize(width, height, nChannels, originTopLeft, depth);
 	}
+
+	PixelDepth getPixelDepth() const;
 
 	/** Scales this image to a new size, interpolating as needed.
 	 * \sa resize, rotateImage
@@ -591,7 +632,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	// ================================================================
 	/** @name Access to image contents (IplImage structure and raw pixels).
 		@{ */
-
+#if MRPT_HAS_OPENCV
 	/** Returns a pointer to a const T* containing the image - the idea is to
 	 * call like "img.getAs<IplImage>()" so we can avoid here including OpenCV's
 	 * headers. */
@@ -610,6 +651,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 		makeSureImageIsLoaded();
 		return static_cast<T*>(img);
 	}
+#endif
 
 	/**  Access to pixels without checking boundaries - Use normally the ()
 	  operator better, which checks the coordinates.
@@ -846,9 +888,10 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 		unsigned int width, unsigned int height, unsigned int bytesPerRow,
 		unsigned char* red, unsigned char* green, unsigned char* blue);
 
+#if MRPT_HAS_OPENCV
 	/** Reads the image from a OpenCV IplImage object (making a COPY).
 	 */
-	void loadFromIplImage(void* iplImage);
+	void loadFromIplImage(const IplImage* iplImage);
 
 	/** Reads the image from a OpenCV IplImage object (WITHOUT making a copy).
 	 *   This object will own the memory of the passed object and free the
@@ -857,7 +900,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	 *   This method provides a fast method to grab images from a camera
 	 * without making a copy of every frame.
 	 */
-	void setFromIplImage(void* iplImage);
+	void setFromIplImage(IplImage* iplImage);
 
 	/** Reads the image from a OpenCV IplImage object (WITHOUT making a copy)
 	 * and from now on the image cannot be modified, just read.
@@ -867,7 +910,8 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	 * without making a copy of every frame.
 	 *  \sa setFromImageReadOnly
 	 */
-	void setFromIplImageReadOnly(void* iplImage);
+	void setFromIplImageReadOnly(IplImage* iplImage);
+#endif
 
 	/** Sets the internal IplImage pointer to that of another given image,
 	 * WITHOUT making a copy, and from now on the image cannot be modified in
@@ -879,7 +923,11 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	 */
 	inline void setFromImageReadOnly(const CImage& other_img)
 	{
-		setFromIplImageReadOnly(const_cast<void*>(other_img.getAs<void>()));
+#if MRPT_HAS_OPENCV
+		setFromIplImageReadOnly(other_img.img);
+#else
+		THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
+#endif
 	}
 
 	/** Set the image from a matrix, interpreted as grayscale intensity values,
@@ -1087,7 +1135,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 		@{ */
 
 	/** The internal IplImage pointer to the actual image content. */
-	void* img{nullptr};
+	IplImage* img{nullptr};
 
 	/**  Set to true only when using setFromIplImageReadOnly.
 	 * \sa setFromIplImageReadOnly  */
@@ -1106,7 +1154,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	 */
 	void changeSize(
 		unsigned int width, unsigned int height, TImageChannels nChannels,
-		bool originTopLeft);
+		bool originTopLeft, PixelDepth depth = PixelDepth::D8U);
 
 	/** Release the internal IPL image, if not nullptr or read-only. */
 	void releaseIpl(bool thisIsExternalImgUnload = false) noexcept;

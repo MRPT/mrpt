@@ -63,6 +63,52 @@ void CImage::setImagesPathBase(const std::string& path)
 mrpt::img::CTimeLogger alloc_tims;
 #endif
 
+#if MRPT_HAS_OPENCV
+static int32_t pixelDepth2CvDepth(PixelDepth d)
+{
+	switch (d)
+	{
+		case PixelDepth::D8U:
+			return IPL_DEPTH_8U;
+		case PixelDepth::D8S:
+			return IPL_DEPTH_8S;
+		case PixelDepth::D16U:
+			return IPL_DEPTH_16U;
+		case PixelDepth::D16S:
+			return IPL_DEPTH_16S;
+		case PixelDepth::D32S:
+			return IPL_DEPTH_32S;
+		case PixelDepth::D32F:
+			return IPL_DEPTH_32F;
+		case PixelDepth::D64F:
+			return IPL_DEPTH_64F;
+	}
+	return -1;
+}
+
+static PixelDepth cvDepth2PixelDepth(int32_t d)
+{
+	switch (d)
+	{
+		case IPL_DEPTH_8U:
+			return PixelDepth::D8U;
+		case IPL_DEPTH_8S:
+			return PixelDepth::D8S;
+		case IPL_DEPTH_16U:
+			return PixelDepth::D16U;
+		case IPL_DEPTH_16S:
+			return PixelDepth::D16S;
+		case IPL_DEPTH_32S:
+			return PixelDepth::D32S;
+		case IPL_DEPTH_32F:
+			return PixelDepth::D32F;
+		case IPL_DEPTH_64F:
+			return PixelDepth::D64F;
+	}
+	return PixelDepth::D8U;
+}
+#endif
+
 /*---------------------------------------------------------------
 					Constructor
 ---------------------------------------------------------------*/
@@ -79,7 +125,7 @@ CImage::CImage(
 			Default	Constructor
 ---------------------------------------------------------------*/
 CImage::CImage()
-	 
+
 {
 #if MRPT_HAS_OPENCV
 	MRPT_START
@@ -116,7 +162,7 @@ CImage& CImage::operator=(const CImage& o)
 		ASSERTMSG_(
 			o.img != nullptr,
 			"Source image in = operator has nullptr IplImage*");
-		img = cvCloneImage((IplImage*)o.img);
+		img = cvCloneImage(o.img);
 #endif
 	}
 	else
@@ -196,22 +242,31 @@ void CImage::copyFastFrom(CImage& o)
 	MRPT_END
 }
 
+#if MRPT_HAS_OPENCV
 /*---------------------------------------------------------------
 					Constructor from IplImage
 ---------------------------------------------------------------*/
-CImage::CImage(void* iplImage)
+CImage::CImage(const IplImage* iplImage)
 	: img(nullptr), m_imgIsReadOnly(false), m_imgIsExternalStorage(false)
 {
 	MRPT_START
 
-#if MRPT_HAS_OPENCV
 	if (!iplImage)
 		changeSize(1, 1, 1, true);
 	else
-		img = cvCloneImage((IplImage*)iplImage);
-#endif
+		img = cvCloneImage(iplImage);
 	MRPT_END
 }
+
+CImage::CImage(const cv::Mat& mat)
+	: img(nullptr), m_imgIsReadOnly(false), m_imgIsExternalStorage(false)
+{
+	MRPT_START
+	IplImage temp(mat);
+	img = cvCloneImage(&temp);
+	MRPT_END
+}
+#endif
 
 /*---------------------------------------------------------------
 					Destructor
@@ -222,7 +277,7 @@ CImage::~CImage() { releaseIpl(); }
 ---------------------------------------------------------------*/
 void CImage::changeSize(
 	unsigned int width, unsigned int height, TImageChannels nChannels,
-	bool originTopLeft)
+	bool originTopLeft, PixelDepth depth)
 {
 	MRPT_START
 
@@ -232,11 +287,12 @@ void CImage::changeSize(
 	if (img)
 	{
 		makeSureImageIsLoaded();  // For delayed loaded images stored externally
-		IplImage* ipl = static_cast<IplImage*>(img);
+		IplImage* ipl = img;
 		if (static_cast<unsigned int>(ipl->width) == width &&
 			static_cast<unsigned int>(ipl->height) == height &&
 			ipl->nChannels == nChannels &&
-			ipl->origin == (originTopLeft ? 0 : 1))
+			ipl->origin == (originTopLeft ? 0 : 1) &&
+			ipl->depth == pixelDepth2CvDepth(depth))
 		{
 			return;  // nothing to do, we're already right with the current
 			// IplImage!
@@ -251,8 +307,9 @@ void CImage::changeSize(
 	alloc_tims.enter(sLog.c_str());
 #endif
 
-	img = cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, nChannels);
-	((IplImage*)img)->origin = originTopLeft ? 0 : 1;
+	img = cvCreateImage(
+		cvSize(width, height), pixelDepth2CvDepth(depth), nChannels);
+	img->origin = originTopLeft ? 0 : 1;
 
 #if IMAGE_ALLOC_PERFLOG
 	alloc_tims.leave(sLog.c_str());
@@ -262,6 +319,18 @@ void CImage::changeSize(
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
 
+	MRPT_END
+}
+
+PixelDepth CImage::getPixelDepth() const
+{
+	MRPT_START
+#if MRPT_HAS_OPENCV
+	ASSERT_(img);
+	return cvDepth2PixelDepth(img->depth);
+#else
+	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
+#endif
 	MRPT_END
 }
 
@@ -318,66 +387,57 @@ bool CImage::saveToFile(const std::string& fileName, int jpeg_quality) const
 /*---------------------------------------------------------------
 					loadFromIplImage
 ---------------------------------------------------------------*/
-void CImage::loadFromIplImage(void* iplImage)
+#if MRPT_HAS_OPENCV
+void CImage::loadFromIplImage(const IplImage* iplImage)
 {
 	MRPT_START
 	ASSERT_(iplImage != nullptr);
 	releaseIpl();
 	if (iplImage)
 	{
-#if MRPT_HAS_OPENCV
-		img = cvCloneImage((IplImage*)iplImage);
-#else
-		THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
-#endif
+		img = cvCloneImage(iplImage);
 	}
 	MRPT_END
 }
+#endif
 
 /*---------------------------------------------------------------
 					setFromIplImageReadOnly
 ---------------------------------------------------------------*/
-void CImage::setFromIplImageReadOnly(void* iplImage)
+#if MRPT_HAS_OPENCV
+void CImage::setFromIplImageReadOnly(IplImage* iplImage)
 {
 	MRPT_START
 	releaseIpl();
-#if MRPT_HAS_OPENCV
 	ASSERT_(iplImage != nullptr);
 	ASSERTMSG_(iplImage != this->img, "Trying to assign read-only to itself.");
 
-	img = (IplImage*)iplImage;
-#else
-	if (iplImage)
-	{
-		THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
-	}
-#endif
+	img = iplImage;
 	m_imgIsReadOnly = true;
 	m_imgIsExternalStorage = false;
 	MRPT_END
 }
+#endif
 
 /*---------------------------------------------------------------
 					setFromIplImage
 ---------------------------------------------------------------*/
-void CImage::setFromIplImage(void* iplImage)
+#if MRPT_HAS_OPENCV
+void CImage::setFromIplImage(IplImage* iplImage)
 {
 	MRPT_START
 
 	releaseIpl();
 	if (iplImage)
 	{
-#if MRPT_HAS_OPENCV
-		img = (IplImage*)iplImage;
-#else
-		THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
-#endif
+		img = iplImage;
 	}
 	m_imgIsReadOnly = false;
 	m_imgIsExternalStorage = false;
 
 	MRPT_END
 }
+#endif
 
 /*---------------------------------------------------------------
 					loadFromMemoryBuffer
@@ -398,8 +458,8 @@ void CImage::loadFromMemoryBuffer(
 		// Do copy & swap at once:
 		unsigned char* ptr_src = rawpixels;
 		unsigned char* ptr_dest =
-			reinterpret_cast<unsigned char*>(((IplImage*)img)->imageData);
-		const int bytes_per_row_out = ((IplImage*)img)->widthStep;
+			reinterpret_cast<unsigned char*>(img->imageData);
+		const int bytes_per_row_out = img->widthStep;
 
 		for (int h = height; h--;)
 		{
@@ -416,22 +476,19 @@ void CImage::loadFromMemoryBuffer(
 	}
 	else
 	{
-		if (((IplImage*)img)->widthStep ==
-			((IplImage*)img)->width * ((IplImage*)img)->nChannels)
+		if (img->widthStep == img->width * img->nChannels)
 		{
 			// Copy the image data:
-			memcpy(
-				((IplImage*)img)->imageData, rawpixels,
-				((IplImage*)img)->imageSize);
+			memcpy(img->imageData, rawpixels, img->imageSize);
 		}
 		else
 		{
 			// Copy the image row by row:
 			unsigned char* ptr_src = rawpixels;
 			unsigned char* ptr_dest =
-				reinterpret_cast<unsigned char*>(((IplImage*)img)->imageData);
+				reinterpret_cast<unsigned char*>(img->imageData);
 			int bytes_per_row = width * (color ? 3 : 1);
-			int bytes_per_row_out = ((IplImage*)img)->widthStep;
+			int bytes_per_row_out = img->widthStep;
 			for (unsigned int y = 0; y < height; y++)
 			{
 				memcpy(ptr_dest, ptr_src, bytes_per_row);
@@ -459,7 +516,7 @@ unsigned char* CImage::operator()(
 #endif
 
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	IplImage* ipl = ((IplImage*)img);
+	IplImage* ipl = (img);
 
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
 	ASSERT_(ipl);
@@ -492,7 +549,7 @@ unsigned char* CImage::get_unsafe(
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	IplImage* ipl = ((IplImage*)img);
+	IplImage* ipl = (img);
 	return (unsigned char*)&ipl
 		->imageData[row * ipl->widthStep + col * ipl->nChannels + channel];
 #else
@@ -505,7 +562,7 @@ uint8_t CImage::serializeGetVersion() const
 #if !MRPT_HAS_OPENCV
 	return 100;
 #else
-	return 8;
+	return 9;
 #endif
 }
 void CImage::serializeTo(mrpt::serialization::CArchive& out) const
@@ -537,12 +594,15 @@ void CImage::serializeTo(mrpt::serialization::CArchive& out) const
 				// GRAY-SCALE: Raw bytes:
 				// Version 3: ZIP compression!
 				// Version 4: Skip zip if the image size <= 16Kb
-				int32_t width = ((IplImage*)img)->width;
-				int32_t height = ((IplImage*)img)->height;
-				int32_t origin = ((IplImage*)img)->origin;
-				int32_t imageSize = ((IplImage*)img)->imageSize;
+				int32_t width = img->width;
+				int32_t height = img->height;
+				int32_t origin = img->origin;
+				int32_t imageSize = img->imageSize;
+				// Version 10: depth
+				int32_t depth = img->depth;
 
-				out << width << height << origin << imageSize;
+				out << width << height << origin << imageSize
+					<< int32_t(cvDepth2PixelDepth(depth));
 
 				// Version 5: Use CImage::DISABLE_ZIP_COMPRESSION
 				bool imageStoredAsZip =
@@ -555,8 +615,8 @@ void CImage::serializeTo(mrpt::serialization::CArchive& out) const
 				{
 					std::vector<unsigned char> tempBuf;
 					mrpt::io::zip::compress(
-						((IplImage*)img)->imageData,  // Data
-						((IplImage*)img)->imageSize,  // Size
+						img->imageData,  // Data
+						img->imageSize,  // Size
 						tempBuf);
 
 					int32_t zipDataLen = (int32_t)tempBuf.size();
@@ -568,9 +628,7 @@ void CImage::serializeTo(mrpt::serialization::CArchive& out) const
 				}
 				else
 				{
-					out.WriteBuffer(
-						((IplImage*)img)->imageData,
-						((IplImage*)img)->imageSize);
+					out.WriteBuffer(img->imageData, img->imageSize);
 				}
 			}
 			else
@@ -578,8 +636,8 @@ void CImage::serializeTo(mrpt::serialization::CArchive& out) const
 				// COLOR: High quality JPEG image
 
 				// v7: If size is 0xN or Nx0, don't call "saveToStreamAsJPEG"!!
-				const int32_t width = ((IplImage*)img)->width;
-				const int32_t height = ((IplImage*)img)->height;
+				const int32_t width = img->width;
+				const int32_t height = img->height;
 
 				// v8: If DISABLE_JPEG_COMPRESSION
 				if (!CImage::DISABLE_JPEG_COMPRESSION)
@@ -657,7 +715,7 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			in >> width >> height >> nChannels >> originTopLeft >> imgLength;
 
 			changeSize(width, height, nChannels, originTopLeft != 0);
-			in.ReadBuffer(((IplImage*)img)->imageData, imgLength);
+			in.ReadBuffer(img->imageData, imgLength);
 		}
 		break;
 		case 1:
@@ -683,6 +741,7 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		case 6:
 		case 7:
 		case 8:
+		case 9:
 		{
 			// Version 6: 	m_imgIsExternalStorage ??
 			if (version >= 6)
@@ -706,14 +765,20 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 					// GRAY SCALE:
 					int32_t width, height, origin, imageSize;
 					in >> width >> height >> origin >> imageSize;
-
-					changeSize(width, height, 1, origin == 0);
-					ASSERT_(imageSize == ((IplImage*)img)->imageSize);
+					PixelDepth depth(PixelDepth::D8U);
+					if (version >= 9)
+					{
+						int32_t tempdepth;
+						in >> tempdepth;
+						depth = PixelDepth(tempdepth);
+					}
+					changeSize(width, height, 1, origin == 0, depth);
+					ASSERT_(imageSize == img->imageSize);
 
 					if (version == 2)
 					{
 						// RAW BYTES:
-						in.ReadBuffer(((IplImage*)img)->imageData, imageSize);
+						in.ReadBuffer(img->imageData, imageSize);
 					}
 					else
 					{
@@ -740,7 +805,7 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 						size_t outDataBufferSize = imageSize;
 						size_t outDataActualSize;
 						mrpt::io::zip::decompress(
-							in, zipDataLen, ((IplImage*)img)->imageData,
+							in, zipDataLen, img->imageData,
 							outDataBufferSize, outDataActualSize);
 						ASSERT_(outDataActualSize == outDataBufferSize);
 #else
@@ -751,9 +816,7 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 						else
 						{
 							// Raw bytes:
-							in.ReadBuffer(
-								((IplImage*)img)->imageData,
-								((IplImage*)img)->imageSize);
+							in.ReadBuffer(img->imageData, img->imageSize);
 						}
 					}
 				}
@@ -782,8 +845,7 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 
 								this->changeSize(real_w, real_h, 3, true);
 
-								const IplImage* ipl =
-									static_cast<const IplImage*>(img);
+								const IplImage* ipl = img;
 								const size_t bytes_per_row = ipl->width * 3;
 								for (int y = 0; y < ipl->height; y++)
 								{
@@ -852,8 +914,8 @@ void CImage::getSize(TImageSize& s) const
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 	ASSERT_(img != nullptr);
-	s.x = ((IplImage*)img)->width;
-	s.y = ((IplImage*)img)->height;
+	s.x = img->width;
+	s.y = img->height;
 #endif
 }
 
@@ -865,7 +927,7 @@ size_t CImage::getWidth() const
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 	ASSERT_(img != nullptr);
-	return ((IplImage*)img)->width;
+	return img->width;
 #else
 	return 0;
 #endif
@@ -879,7 +941,7 @@ size_t CImage::getRowStride() const
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 	ASSERT_(img != nullptr);
-	return ((IplImage*)img)->widthStep;
+	return img->widthStep;
 #else
 	return 0;
 #endif
@@ -893,7 +955,7 @@ size_t CImage::getHeight() const
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 	ASSERT_(img != nullptr);
-	return ((IplImage*)img)->height;
+	return img->height;
 #else
 	return 0;
 #endif
@@ -907,7 +969,7 @@ bool CImage::isColor() const
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 	ASSERT_(img != nullptr);
-	return ((IplImage*)img)->nChannels > 1;
+	return img->nChannels > 1;
 #else
 	return false;
 #endif
@@ -921,7 +983,7 @@ TImageChannels CImage::getChannelCount() const
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 	ASSERT_(img != nullptr);
-	return static_cast<unsigned int>(((IplImage*)img)->nChannels);
+	return static_cast<unsigned int>(img->nChannels);
 #else
 	return 0;
 #endif
@@ -935,7 +997,7 @@ bool CImage::isOriginTopLeft() const
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 	ASSERT_(img != nullptr);
-	return ((IplImage*)img)->origin == 0;
+	return img->origin == 0;
 #else
 	THROW_EXCEPTION("MRPT compiled without OpenCV");
 #endif
@@ -1033,7 +1095,7 @@ void CImage::grayscale(CImage& ret) const
 #if MRPT_HAS_OPENCV
 	// The image is already grayscale??
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	const IplImage* ipl = this->getAs<const IplImage>();
+	const IplImage* ipl = img;
 	ASSERT_(ipl);
 	if (ipl->nChannels == 1)
 	{
@@ -1055,7 +1117,7 @@ void CImage::grayscaleInPlace()
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	const IplImage* ipl = this->getAs<const IplImage>();
+	const IplImage* ipl = img;
 	ASSERT_(ipl);
 	if (ipl->nChannels == 1) return;  // Already done.
 
@@ -1072,7 +1134,7 @@ void CImage::scaleHalf(CImage& out) const
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 	ASSERT_(img != nullptr);
 	// Get this image size:
-	const IplImage* img_src = ((IplImage*)img);
+	const IplImage* img_src = img;
 	const int w = img_src->width;
 	const int h = img_src->height;
 
@@ -1129,7 +1191,7 @@ void CImage::scaleHalfSmooth(CImage& out) const
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 	ASSERT_(img != nullptr);
 	// Get this image size:
-	const IplImage* img_src = ((IplImage*)img);
+	const IplImage* img_src = img;
 	const int w = img_src->width;
 	const int h = img_src->height;
 
@@ -1181,7 +1243,7 @@ const char* CImage::getChannelsOrder() const
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 	ASSERT_(img);
-	return ((IplImage*)img)->channelSeq;
+	return img->channelSeq;
 #else
 	THROW_EXCEPTION("MRPT compiled without OpenCV");
 #endif
@@ -1204,8 +1266,8 @@ void CImage::loadFromMemoryBuffer(
 	for (unsigned int y = 0; y < height; y++)
 	{
 		// The target pixels:
-		unsigned char* dest = (unsigned char*)((IplImage*)img)->imageData +
-							  ((IplImage*)img)->widthStep * y;
+		unsigned char* dest =
+			(unsigned char*)img->imageData + img->widthStep * y;
 
 		// Source channels:
 		unsigned char* srcR = red + bytesPerRow * y;
@@ -1232,7 +1294,7 @@ void CImage::setOriginTopLeft(bool val)
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 	ASSERT_(img);
-	((IplImage*)img)->origin = val ? 0 : 1;
+	img->origin = val ? 0 : 1;
 #endif
 }
 
@@ -1249,11 +1311,12 @@ void CImage::setPixel(int x, int y, size_t color)
 
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 
-	IplImage* ipl = ((IplImage*)img);
+	IplImage* ipl = img;
 
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
 	ASSERT_(ipl);
 #endif
+	ASSERT_(this->getPixelDepth() == mrpt::img::PixelDepth::D8U);
 
 	if (x >= 0 && y >= 0 && y < ipl->height && x < ipl->width)
 	{
@@ -1299,7 +1362,7 @@ void CImage::line(
 #if MRPT_HAS_OPENCV
 	MRPT_UNUSED_PARAM(penStyle);
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	IplImage* ipl = ((IplImage*)img);
+	IplImage* ipl = img;
 	ASSERT_(ipl);
 
 	cvLine(
@@ -1317,7 +1380,7 @@ void CImage::drawCircle(
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	IplImage* ipl = ((IplImage*)img);
+	IplImage* ipl = img;
 	ASSERT_(ipl);
 
 	cvCircle(
@@ -1332,8 +1395,8 @@ void CImage::update_patch(
 	const CImage& patch, const unsigned int col_, const unsigned int row_)
 {
 #if MRPT_HAS_OPENCV
-	IplImage* ipl_int = ((IplImage*)img);
-	IplImage* ipl_ext = ((IplImage*)patch.img);
+	IplImage* ipl_int = img;
+	IplImage* ipl_ext = patch.img;
 	ASSERT_(ipl_int);
 	ASSERT_(ipl_ext);
 	// We check that patch do not jut out of the image.
@@ -1362,7 +1425,7 @@ void CImage::extract_patch(
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 
-	IplImage* ipl_int = ((IplImage*)img);
+	IplImage* ipl_int = img;
 	ASSERT_(ipl_int);
 
 	if ((ipl_int->width < (int)(col_ + col_num)) ||
@@ -1374,8 +1437,8 @@ void CImage::extract_patch(
 			ipl_int->width, ipl_int->height, col_num, row_num, col_, row_))
 	}
 
-	patch.resize(col_num, row_num, ((IplImage*)img)->nChannels, true);
-	IplImage* ipl_ext = ((IplImage*)patch.img);
+	patch.resize(col_num, row_num, img->nChannels, true);
+	IplImage* ipl_ext = patch.img;
 	ASSERT_(ipl_ext);
 
 	for (unsigned int i = 0; i < row_num; i++)
@@ -1470,8 +1533,8 @@ void CImage::cross_correlation(
 
 	if (this->isColor() && patch_img.isColor())
 	{
-		const IplImage* im_ = this->getAs<IplImage>();
-		const IplImage* patch_im_ = patch_img.getAs<IplImage>();
+		const IplImage* im_ = img;
+		const IplImage* patch_im_ = patch_img.img;
 
 		IplImage* aux = cvCreateImage(cvGetSize(im_), 8, 1);
 		IplImage* aux2 = cvCreateImage(cvGetSize(patch_im_), 8, 1);
@@ -1623,11 +1686,11 @@ void CImage::getAsMatrix(
 	ASSERT_(img);
 
 	// Set sizes:
-	if (x_max == -1) x_max = ((IplImage*)img)->width - 1;
-	if (y_max == -1) y_max = ((IplImage*)img)->height - 1;
+	if (x_max == -1) x_max = img->width - 1;
+	if (y_max == -1) y_max = img->height - 1;
 
-	ASSERT_(x_min >= 0 && x_min < ((IplImage*)img)->width && x_min < x_max);
-	ASSERT_(y_min >= 0 && y_min < ((IplImage*)img)->height && y_min < y_max);
+	ASSERT_(x_min >= 0 && x_min < img->width && x_min < x_max);
+	ASSERT_(y_min >= 0 && y_min < img->height && y_min < y_max);
 
 	int lx = (x_max - x_min + 1);
 	int ly = (y_max - y_min + 1);
@@ -1680,11 +1743,11 @@ void CImage::getAsRGBMatrices(
 	ASSERT_(img);
 
 	// Set sizes:
-	if (x_max == -1) x_max = ((IplImage*)img)->width - 1;
-	if (y_max == -1) y_max = ((IplImage*)img)->height - 1;
+	if (x_max == -1) x_max = img->width - 1;
+	if (y_max == -1) y_max = img->height - 1;
 
-	ASSERT_(x_min >= 0 && x_min < ((IplImage*)img)->width && x_min < x_max);
-	ASSERT_(y_min >= 0 && y_min < ((IplImage*)img)->height && y_min < y_max);
+	ASSERT_(x_min >= 0 && x_min < img->width && x_min < x_max);
+	ASSERT_(y_min >= 0 && y_min < img->height && y_min < y_max);
 
 	int lx = (x_max - x_min + 1);
 	int ly = (y_max - y_min + 1);
@@ -1844,10 +1907,8 @@ void CImage::getAsMatrixTiled(CMatrix& outMatrix) const
 		// Luminance: Y = 0.3R + 0.59G + 0.11B
 		for (unsigned int y = 0; y < matrix_ly; y++)
 		{
-			unsigned char* min_pixels =
-				(*this)(0, y % ((IplImage*)img)->height, 0);
-			unsigned char* max_pixels =
-				min_pixels + ((IplImage*)img)->width * 3;
+			unsigned char* min_pixels = (*this)(0, y % img->height, 0);
+			unsigned char* max_pixels = min_pixels + img->width * 3;
 			unsigned char* pixels = min_pixels;
 			float aux;
 			for (unsigned int x = 0; x < matrix_lx; x++)
@@ -1864,9 +1925,8 @@ void CImage::getAsMatrixTiled(CMatrix& outMatrix) const
 	{
 		for (unsigned int y = 0; y < matrix_ly; y++)
 		{
-			unsigned char* min_pixels =
-				(*this)(0, y % ((IplImage*)img)->height, 0);
-			unsigned char* max_pixels = min_pixels + ((IplImage*)img)->width;
+			unsigned char* min_pixels = (*this)(0, y % img->height, 0);
+			unsigned char* max_pixels = min_pixels + img->width;
 			unsigned char* pixels = min_pixels;
 			for (unsigned int x = 0; x < matrix_lx; x++)
 			{
@@ -1908,7 +1968,7 @@ void CImage::releaseIpl(bool thisIsExternalImgUnload) noexcept
 #if MRPT_HAS_OPENCV
 	if (img && !m_imgIsReadOnly)
 	{
-		IplImage* ptr = (IplImage*)img;
+		IplImage* ptr = img;
 		cvReleaseImage(&ptr);
 	}
 	img = nullptr;
@@ -1983,7 +2043,7 @@ void CImage::getExternalStorageFileAbsolutePath(std::string& out_path) const
 void CImage::flipVertical(bool also_swapRB)
 {
 #if MRPT_HAS_OPENCV
-	IplImage* ptr = (IplImage*)img;
+	IplImage* ptr = img;
 	int options = CV_CVTIMG_FLIP;
 	if (also_swapRB) options |= CV_CVTIMG_SWAP_RB;
 	cvConvertImage(ptr, ptr, options);
@@ -1993,7 +2053,7 @@ void CImage::flipVertical(bool also_swapRB)
 void CImage::flipHorizontal()
 {
 #if MRPT_HAS_OPENCV
-	IplImage* ptr = (IplImage*)img;
+	IplImage* ptr = img;
 	cvFlip(ptr, nullptr, 1);
 #endif
 }
@@ -2006,7 +2066,7 @@ void CImage::swapRB()
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 	ASSERT_(img != nullptr);
-	IplImage* ptr = (IplImage*)img;
+	IplImage* ptr = img;
 	cvConvertImage(ptr, ptr, CV_CVTIMG_SWAP_RB);
 #endif
 }
@@ -2732,7 +2792,7 @@ void CImage::setChannelsOrder_RGB()
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 	ASSERT_(img);
-	strcpy(((IplImage*)img)->channelSeq, "RGB");
+	strcpy(img->channelSeq, "RGB");
 #else
 	THROW_EXCEPTION("MRPT compiled without OpenCV");
 #endif
@@ -2743,7 +2803,7 @@ void CImage::setChannelsOrder_BGR()
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 	ASSERT_(img);
-	strcpy(((IplImage*)img)->channelSeq, "BGR");
+	strcpy(img->channelSeq, "BGR");
 #else
 	THROW_EXCEPTION("MRPT compiled without OpenCV");
 #endif
@@ -2815,11 +2875,11 @@ bool CImage::loadTGA(
 	for (unsigned int r = 0; r < height; r++)
 	{
 		unsigned int actual_row = origin_is_low_corner ? (height - 1 - r) : r;
-		IplImage* ipl = ((IplImage*)out_RGB.img);
+		IplImage* ipl = out_RGB.img;
 		unsigned char* data =
 			(unsigned char*)&ipl->imageData[actual_row * ipl->widthStep];
 
-		IplImage* ipl_alpha = ((IplImage*)out_alpha.img);
+		IplImage* ipl_alpha = out_alpha.img;
 		unsigned char* data_alpha =
 			(unsigned char*)&ipl->imageData[actual_row * ipl_alpha->widthStep];
 
