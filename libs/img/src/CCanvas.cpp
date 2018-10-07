@@ -254,7 +254,7 @@ void CCanvas::selectTextFont(const std::string& fontName)
 void CCanvas::drawImage(int x, int y, const mrpt::img::CImage& img)
 {
 	MRPT_START
-	ASSERT_EQUAL_(img.getPixelDepth(), mrpt::img::PixelDepth::D8U);
+	ASSERT_(img.getPixelDepth() == mrpt::img::PixelDepth::D8U);
 
 	int img_lx = img.getWidth();
 	int img_ly = img.getHeight();

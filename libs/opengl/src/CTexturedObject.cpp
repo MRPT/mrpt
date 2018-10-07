@@ -181,7 +181,7 @@ void CTexturedObject::loadTextureInOpenGL() const
 		}
 
 		// Reserve the new one --------------------------
-		ASSERT_EQUAL_(m_textureImage.getPixelDepth(), mrpt::img::PixelDepth::D8U);
+		ASSERT_(m_textureImage.getPixelDepth() == mrpt::img::PixelDepth::D8U);
 
 		// allocate texture names:
 		m_glTextureName = getNewTextureNumber();
