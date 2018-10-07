@@ -41,8 +41,10 @@ class CObservationImage : public CObservation
 	 * in the member "image", or nullptr (default) for an empty image.
 	 *
 	 */
-	CObservationImage(void* iplImage = nullptr);
-
+	CObservationImage() = default;
+#ifdef MRPT_HAS_OPENCV
+	CObservationImage(const IplImage *ipl);
+#endif
 	/** The pose of the camera on the robot
 	 */
 	mrpt::poses::CPose3D cameraPose;
