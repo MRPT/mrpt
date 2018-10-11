@@ -23,20 +23,6 @@ endif()
 
 find_package(Doxygen)
 
-# --------------------------------
-# documentation_performance_html
-# --------------------------------
-if(TARGET mrpt-perfdata2html)
-	set(PERF2HTML_GENERATED_EXE "$<TARGET_FILE:mrpt-perfdata2html>")
-	add_custom_target(documentation_performance_html
-		COMMAND 		${PERF2HTML_GENERATED_EXE} "${MRPT_SOURCE_DIR}/doc/perf-data/"
-		WORKING_DIRECTORY	${MRPT_SOURCE_DIR}/
-		COMMENT 		"Generating performance HTML pages"
-		)
-	add_dependencies(documentation_performance_html mrpt-perfdata2html)
-	set_target_properties(documentation_performance_html PROPERTIES FOLDER "documentation")
-endif()
-
 if(DOXYGEN_EXECUTABLE)
 	# --------------------------------
 	#   documentation_html
