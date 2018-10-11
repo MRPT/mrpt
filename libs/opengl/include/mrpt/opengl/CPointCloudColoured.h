@@ -277,11 +277,11 @@ class PointCloudAdapter<mrpt::opengl::CPointCloudColoured>
 	/** The type of each point XYZ coordinates */
 	using coords_t = float;
 	/** Has any color RGB info? */
-	static const int HAS_RGB = 1;
+	static constexpr bool HAS_RGB = true;
 	/** Has native RGB info (as floats)? */
-	static const int HAS_RGBf = 1;
+	static constexpr bool HAS_RGBf = true;
 	/** Has native RGB info (as uint8_t)? */
-	static const int HAS_RGBu8 = 0;
+	static constexpr bool HAS_RGBu8 = false;
 
 	/** Constructor (accept a const ref for convenience) */
 	inline PointCloudAdapter(const mrpt::opengl::CPointCloudColoured& obj)
@@ -407,8 +407,16 @@ void CPointCloudColoured::loadFromPointsMap(const POINTSMAP* themap)
 	for (size_t i = 0; i < N; i++)
 	{
 		float x, y, z, r, g, b;
-		pc_src.getPointXYZ_RGBf(i, x, y, z, r, g, b);
-		pc_dst.setPointXYZ_RGBf(i, x, y, z, r, g, b);
+		if constexpr (mrpt::opengl::PointCloudAdapter<POINTSMAP>::HAS_RGB)
+		{
+			pc_src.getPointXYZ_RGBf(i, x, y, z, r, g, b);
+			pc_dst.setPointXYZ_RGBf(i, x, y, z, r, g, b);
+		}
+		else
+		{
+			pc_src.getPointXYZ(i, x, y, z);
+			pc_dst.setPointXYZ_RGBf(i, x, y, z, 0, 0, 0);
+		}
 	}
 }
 }  // namespace opengl
