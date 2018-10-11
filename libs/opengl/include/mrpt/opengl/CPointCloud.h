@@ -310,8 +310,6 @@ class CPointCloud : public CRenderizable,
  * \ingroup mrpt_adapters_grp */
 template <>
 class PointCloudAdapter<mrpt::opengl::CPointCloud>
-	: public detail::PointCloudAdapterHelperNoRGB<mrpt::opengl::CPointCloud,
-												  float>
 {
    private:
 	mrpt::opengl::CPointCloud& m_obj;
@@ -320,11 +318,11 @@ class PointCloudAdapter<mrpt::opengl::CPointCloud>
 	/** The type of each point XYZ coordinates */
 	using coords_t = float;
 	/** Has any color RGB info? */
-	static const int HAS_RGB = 0;
+	static constexpr bool HAS_RGB = false;
 	/** Has native RGB info (as floats)? */
-	static const int HAS_RGBf = 0;
+	static constexpr bool HAS_RGBf = false;
 	/** Has native RGB info (as uint8_t)? */
-	static const int HAS_RGBu8 = 0;
+	static constexpr bool HAS_RGBu8 = false;
 
 	/** Constructor (accept a const ref for convenience) */
 	inline PointCloudAdapter(const mrpt::opengl::CPointCloud& obj)
