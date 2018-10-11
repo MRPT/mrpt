@@ -367,11 +367,11 @@ class PointCloudAdapter<mrpt::maps::CColouredPointsMap>
 	/** The type of each point XYZ coordinates */
 	using coords_t = float;
 	/** Has any color RGB info? */
-	static const int HAS_RGB = 1;
+	static constexpr bool HAS_RGB = true;
 	/** Has native RGB info (as floats)? */
-	static const int HAS_RGBf = 1;
+	static constexpr bool HAS_RGBf = true;
 	/** Has native RGB info (as uint8_t)? */
-	static const int HAS_RGBu8 = 0;
+	static constexpr bool HAS_RGBu8 = false;
 
 	/** Constructor (accept a const ref for convenience) */
 	inline PointCloudAdapter(const mrpt::maps::CColouredPointsMap& obj)

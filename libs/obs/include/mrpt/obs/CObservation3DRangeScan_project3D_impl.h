@@ -29,6 +29,50 @@ void do_project_3d_pointcloud_SSE2(
 	std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
 	const mrpt::obs::TRangeImageFilterParams& filterParams, bool MAKE_DENSE);
 
+template <typename POINTMAP, bool isDepth>
+inline void range2XYZ(
+	mrpt::opengl::PointCloudAdapter<POINTMAP> &pca,
+	mrpt::obs::CObservation3DRangeScan& src_obs,
+	const mrpt::obs::TRangeImageFilterParams& filterParams,
+	const int H,
+	const int W)
+{
+		/* range_is_depth = false :
+		 *   Ky = (r_cx - c)/r_fx
+		 *   Kz = (r_cy - r)/r_fy
+		 *
+		 *   x(i) = rangeImage(r,c) / sqrt( 1 + Ky^2 + Kz^2 )
+		 *   y(i) = Ky * x(i)
+		 *   z(i) = Kz * x(i)
+		 */
+		const float r_cx = src_obs.cameraParams.cx();
+		const float r_cy = src_obs.cameraParams.cy();
+		const float r_fx_inv = 1.0f / src_obs.cameraParams.fx();
+		const float r_fy_inv = 1.0f / src_obs.cameraParams.fy();
+		TRangeImageFilter rif(filterParams);
+		size_t idx = 0;
+		for (int r = 0; r < H; r++)
+			for (int c = 0; c < W; c++)
+			{
+				const float D = src_obs.rangeImage.coeff(r, c);
+				if (rif.do_range_filter(r, c, D))
+				{
+					const float Ky = (r_cx - c) * r_fx_inv;
+					const float Kz = (r_cy - r) * r_fy_inv;
+					pca.setPointXYZ(
+						idx,
+						isDepth ? D : D / std::sqrt(1 + Ky * Ky + Kz * Kz),  // x
+						Ky * D,  // y
+						Kz * D  // z
+						);
+					src_obs.points3D_idxs_x[idx] = c;
+					src_obs.points3D_idxs_y[idx] = r;
+					++idx;
+				}
+			}
+		pca.resize(idx);  // Actual number of valid pts
+}
+
 template <class POINTMAP>
 void project3DPointsFromDepthImageInto(
 	mrpt::obs::CObservation3DRangeScan& src_obs, POINTMAP& dest_pointcloud,
@@ -134,172 +178,115 @@ void project3DPointsFromDepthImageInto(
 		}
 		else
 		{
-			// Without LUT:
-			const float r_cx = src_obs.cameraParams.cx();
-			const float r_cy = src_obs.cameraParams.cy();
-			const float r_fx_inv = 1.0f / src_obs.cameraParams.fx();
-			const float r_fy_inv = 1.0f / src_obs.cameraParams.fy();
-			TRangeImageFilter rif(filterParams);
-			size_t idx = 0;
-			for (int r = 0; r < H; r++)
-				for (int c = 0; c < W; c++)
-				{
-					const float D = src_obs.rangeImage.coeff(r, c);
-					if (rif.do_range_filter(r, c, D))
-					{
-						const float Kz = (r_cy - r) * r_fy_inv;
-						const float Ky = (r_cx - c) * r_fx_inv;
-						pca.setPointXYZ(
-							idx,
-							D,  // x
-							Ky * D,  // y
-							Kz * D  // z
-							);
-						src_obs.points3D_idxs_x[idx] = c;
-						src_obs.points3D_idxs_y[idx] = r;
-						++idx;
-					}
-				}
-			pca.resize(idx);  // Actual number of valid pts
+			range2XYZ<POINTMAP, true>(pca, src_obs, filterParams, H, W);
 		}
 	}
 	else
 	{
-		/* range_is_depth = false :
-		 *   Ky = (r_cx - c)/r_fx
-		 *   Kz = (r_cy - r)/r_fy
-		 *
-		 *   x(i) = rangeImage(r,c) / sqrt( 1 + Ky^2 + Kz^2 )
-		 *   y(i) = Ky * x(i)
-		 *   z(i) = Kz * x(i)
-		 */
-		const float r_cx = src_obs.cameraParams.cx();
-		const float r_cy = src_obs.cameraParams.cy();
-		const float r_fx_inv = 1.0f / src_obs.cameraParams.fx();
-		const float r_fy_inv = 1.0f / src_obs.cameraParams.fy();
-		TRangeImageFilter rif(filterParams);
-		size_t idx = 0;
-		for (int r = 0; r < H; r++)
-			for (int c = 0; c < W; c++)
-			{
-				const float D = src_obs.rangeImage.coeff(r, c);
-				if (rif.do_range_filter(r, c, D))
-				{
-					const float Ky = (r_cx - c) * r_fx_inv;
-					const float Kz = (r_cy - r) * r_fy_inv;
-					pca.setPointXYZ(
-						idx,
-						D / std::sqrt(1 + Ky * Ky + Kz * Kz),  // x
-						Ky * D,  // y
-						Kz * D  // z
-						);
-					src_obs.points3D_idxs_x[idx] = c;
-					src_obs.points3D_idxs_y[idx] = r;
-					++idx;
-				}
-			}
-		pca.resize(idx);  // Actual number of valid pts
+		range2XYZ<POINTMAP, false>(pca, src_obs, filterParams, H, W);
 	}
 
 	// -------------------------------------------------------------
 	// Stage 2/3: Project local points into RGB image to get colors
 	// -------------------------------------------------------------
-	if (src_obs.hasIntensityImage)
+	if constexpr (pca.HAS_RGB)
 	{
-		const int imgW = src_obs.intensityImage.getWidth();
-		const int imgH = src_obs.intensityImage.getHeight();
-		const bool hasColorIntensityImg = src_obs.intensityImage.isColor();
-
-		const float cx = src_obs.cameraParamsIntensity.cx();
-		const float cy = src_obs.cameraParamsIntensity.cy();
-		const float fx = src_obs.cameraParamsIntensity.fx();
-		const float fy = src_obs.cameraParamsIntensity.fy();
-
-		// Unless we are in a special case (both depth & RGB images coincide)...
-		const bool isDirectCorresp =
-			src_obs.doDepthAndIntensityCamerasCoincide();
-
-		// ...precompute the inverse of the pose transformation out of the loop,
-		//  store as a 4x4 homogeneous matrix to exploit SSE optimizations
-		//  below:
-		mrpt::math::CMatrixFixedNumeric<float, 4, 4> T_inv;
-		if (!isDirectCorresp)
+		if (src_obs.hasIntensityImage)
 		{
-			mrpt::math::CMatrixFixedNumeric<double, 3, 3> R_inv;
-			mrpt::math::CMatrixFixedNumeric<double, 3, 1> t_inv;
-			mrpt::math::homogeneousMatrixInverse(
-				src_obs.relativePoseIntensityWRTDepth.getRotationMatrix(),
-				src_obs.relativePoseIntensityWRTDepth.m_coords, R_inv, t_inv);
+			const int imgW = src_obs.intensityImage.getWidth();
+			const int imgH = src_obs.intensityImage.getHeight();
+			const bool hasColorIntensityImg = src_obs.intensityImage.isColor();
 
-			T_inv(3, 3) = 1;
-			T_inv.block<3, 3>(0, 0) = R_inv.cast<float>();
-			T_inv.block<3, 1>(0, 3) = t_inv.cast<float>();
-		}
+			const float cx = src_obs.cameraParamsIntensity.cx();
+			const float cy = src_obs.cameraParamsIntensity.cy();
+			const float fx = src_obs.cameraParamsIntensity.fx();
+			const float fy = src_obs.cameraParamsIntensity.fy();
 
-		Eigen::Matrix<float, 4, 1> pt_wrt_color, pt_wrt_depth;
-		pt_wrt_depth[3] = 1;
+			// Unless we are in a special case (both depth & RGB images coincide)...
+			const bool isDirectCorresp =
+				src_obs.doDepthAndIntensityCamerasCoincide();
 
-		mrpt::img::TColor pCol;
-
-		// For each local point:
-		const size_t nPts = pca.size();
-		for (size_t i = 0; i < nPts; i++)
-		{
-			int img_idx_x, img_idx_y;  // projected pixel coordinates, in the
-			// RGB image plane
-			bool pointWithinImage = false;
-			if (isDirectCorresp)
+			// ...precompute the inverse of the pose transformation out of the loop,
+			//  store as a 4x4 homogeneous matrix to exploit SSE optimizations
+			//  below:
+			mrpt::math::CMatrixFixedNumeric<float, 4, 4> T_inv;
+			if (!isDirectCorresp)
 			{
-				pointWithinImage = true;
-				img_idx_x = src_obs.points3D_idxs_x[i];
-				img_idx_y = src_obs.points3D_idxs_y[i];
-			}
-			else
-			{
-				// Project point, which is now in "pca" in local coordinates wrt
-				// the depth camera, into the intensity camera:
-				pca.getPointXYZ(
-					i, pt_wrt_depth[0], pt_wrt_depth[1], pt_wrt_depth[2]);
-				pt_wrt_color = T_inv * pt_wrt_depth;
+				mrpt::math::CMatrixFixedNumeric<double, 3, 3> R_inv;
+				mrpt::math::CMatrixFixedNumeric<double, 3, 1> t_inv;
+				mrpt::math::homogeneousMatrixInverse(
+					src_obs.relativePoseIntensityWRTDepth.getRotationMatrix(),
+					src_obs.relativePoseIntensityWRTDepth.m_coords, R_inv, t_inv);
 
-				// Project to image plane:
-				if (pt_wrt_color[2])
-				{
-					img_idx_x = mrpt::round(
-						cx + fx * pt_wrt_color[0] / pt_wrt_color[2]);
-					img_idx_y = mrpt::round(
-						cy + fy * pt_wrt_color[1] / pt_wrt_color[2]);
-					pointWithinImage = img_idx_x >= 0 && img_idx_x < imgW &&
-									   img_idx_y >= 0 && img_idx_y < imgH;
-				}
+				T_inv(3, 3) = 1;
+				T_inv.block<3, 3>(0, 0) = R_inv.cast<float>();
+				T_inv.block<3, 1>(0, 3) = t_inv.cast<float>();
 			}
 
-			if (pointWithinImage)
+			Eigen::Matrix<float, 4, 1> pt_wrt_color, pt_wrt_depth;
+			pt_wrt_depth[3] = 1;
+
+			mrpt::img::TColor pCol;
+
+			// For each local point:
+			const size_t nPts = pca.size();
+			for (size_t i = 0; i < nPts; i++)
 			{
-				if (hasColorIntensityImg)
+				int img_idx_x, img_idx_y;  // projected pixel coordinates, in the
+				// RGB image plane
+				bool pointWithinImage = false;
+				if (isDirectCorresp)
 				{
-					const uint8_t* c = src_obs.intensityImage.get_unsafe(
-						img_idx_x, img_idx_y, 0);
-					pCol.R = c[2];
-					pCol.G = c[1];
-					pCol.B = c[0];
+					pointWithinImage = true;
+					img_idx_x = src_obs.points3D_idxs_x[i];
+					img_idx_y = src_obs.points3D_idxs_y[i];
 				}
 				else
 				{
-					uint8_t c = *src_obs.intensityImage.get_unsafe(
-						img_idx_x, img_idx_y, 0);
-					pCol.R = pCol.G = pCol.B = c;
-				}
-			}
-			else
-			{
-				pCol.R = pCol.G = pCol.B = 255;
-			}
-			// Set color:
-			pca.setPointRGBu8(i, pCol.R, pCol.G, pCol.B);
-		}  // end for each point
-	}  // end if src_obs has intensity image
+					// Project point, which is now in "pca" in local coordinates wrt
+					// the depth camera, into the intensity camera:
+					pca.getPointXYZ(
+						i, pt_wrt_depth[0], pt_wrt_depth[1], pt_wrt_depth[2]);
+					pt_wrt_color = T_inv * pt_wrt_depth;
 
+					// Project to image plane:
+					if (pt_wrt_color[2])
+					{
+						img_idx_x = mrpt::round(
+							cx + fx * pt_wrt_color[0] / pt_wrt_color[2]);
+						img_idx_y = mrpt::round(
+							cy + fy * pt_wrt_color[1] / pt_wrt_color[2]);
+						pointWithinImage = img_idx_x >= 0 && img_idx_x < imgW &&
+										   img_idx_y >= 0 && img_idx_y < imgH;
+					}
+				}
+
+				if (pointWithinImage)
+				{
+					if (hasColorIntensityImg)
+					{
+						const uint8_t* c = src_obs.intensityImage.get_unsafe(
+							img_idx_x, img_idx_y, 0);
+						pCol.R = c[2];
+						pCol.G = c[1];
+						pCol.B = c[0];
+					}
+					else
+					{
+						uint8_t c = *src_obs.intensityImage.get_unsafe(
+							img_idx_x, img_idx_y, 0);
+						pCol.R = pCol.G = pCol.B = c;
+					}
+				}
+				else
+				{
+					pCol.R = pCol.G = pCol.B = 255;
+				}
+				// Set color:
+				pca.setPointRGBu8(i, pCol.R, pCol.G, pCol.B);
+			}  // end for each point
+		}  // end if src_obs has intensity image
+	}
 	// ...
 
 	// ------------------------------------------------------------

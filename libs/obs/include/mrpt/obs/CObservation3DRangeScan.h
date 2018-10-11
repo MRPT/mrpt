@@ -795,8 +795,6 @@ namespace opengl
  * \ingroup mrpt_adapters_grp */
 template <>
 class PointCloudAdapter<mrpt::obs::CObservation3DRangeScan>
-	: public detail::PointCloudAdapterHelperNoRGB<
-		  mrpt::obs::CObservation3DRangeScan, float>
 {
    private:
 	mrpt::obs::CObservation3DRangeScan& m_obj;
@@ -805,11 +803,11 @@ class PointCloudAdapter<mrpt::obs::CObservation3DRangeScan>
 	/** The type of each point XYZ coordinates */
 	using coords_t = float;
 	/** Has any color RGB info? */
-	static const int HAS_RGB = 0;
+	static constexpr bool HAS_RGB = false;
 	/** Has native RGB info (as floats)? */
-	static const int HAS_RGBf = 0;
+	static constexpr bool HAS_RGBf = false;
 	/** Has native RGB info (as uint8_t)? */
-	static const int HAS_RGBu8 = 0;
+	static constexpr bool HAS_RGBu8 = false;
 
 	/** Constructor (accept a const ref for convenience) */
 	inline PointCloudAdapter(const mrpt::obs::CObservation3DRangeScan& obj)
