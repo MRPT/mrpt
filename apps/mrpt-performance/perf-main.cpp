@@ -323,7 +323,7 @@ int main(int argc, char** argv)
 			const char* compiler_name = "MSVC2013";
 #elif _MSC_VER == 1900
 			const char* compiler_name = "MSVC2015";
-#elif _MSC_VER == 1910
+#elif (_MSC_VER >= 1910) && (_MSC_VER <= 1919)
 			const char* compiler_name = "MSVC2017";
 #else
 			const char* compiler_name = "MSVC";
