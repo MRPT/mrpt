@@ -28,8 +28,7 @@ using namespace mrpt::nav;
  *   - v_max, w_max: Maximum robot speeds.
  */
 CPTG_DiffDrive_CollisionGridBased::CPTG_DiffDrive_CollisionGridBased()
-	: 
-	  m_collisionGrid(-1, 1, -1, 1, 0.5, this)
+	: m_collisionGrid(-1, 1, -1, 1, 0.5, this)
 {
 }
 
@@ -275,8 +274,7 @@ mrpt::kinematics::CVehicleVelCmd::Ptr
 	float v, w;
 	ptgDiffDriveSteeringFunction(index2alpha(k), 0, 0, 0, 0, v, w);
 
-	auto* cmd =
-		new mrpt::kinematics::CVehicleVelCmd_DiffDriven();
+	auto* cmd = new mrpt::kinematics::CVehicleVelCmd_DiffDriven();
 	cmd->lin_vel = v;
 	cmd->ang_vel = w;
 	return mrpt::kinematics::CVehicleVelCmd::Ptr(cmd);
@@ -716,7 +714,7 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(
 		10 * refDistance / min_dist,  // max.n,
 		0.0005f,  // diferencial_t
 		min_dist  // min_dist
-		);
+	);
 
 	// Just for debugging, etc.
 	// debugDumpInFiles(n);
@@ -887,7 +885,7 @@ void CPTG_DiffDrive_CollisionGridBased::updateTPObstacle(
 	ASSERTMSG_(!m_trajectory.empty(), "PTG has not been initialized!");
 	const TCollisionCell& cell = m_collisionGrid.getTPObstacle(ox, oy);
 	// Keep the minimum distance:
-	for (const auto & i : cell)
+	for (const auto& i : cell)
 	{
 		const double dist = i.second;
 		internal_TPObsDistancePostprocess(ox, oy, dist, tp_obstacles[i.first]);
@@ -900,7 +898,7 @@ void CPTG_DiffDrive_CollisionGridBased::updateTPObstacleSingle(
 	ASSERTMSG_(!m_trajectory.empty(), "PTG has not been initialized!");
 	const TCollisionCell& cell = m_collisionGrid.getTPObstacle(ox, oy);
 	// Keep the minimum distance:
-	for (const auto & i : cell)
+	for (const auto& i : cell)
 		if (i.first == k)
 		{
 			const double dist = i.second;

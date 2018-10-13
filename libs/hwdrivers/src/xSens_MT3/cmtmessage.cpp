@@ -794,4 +794,4 @@ uint8_t computeChecksum(const uint8_t* buffer, uint32_t length)
 	return cs;
 }
 
-}  // end of xsens namespace
+}  // namespace xsens

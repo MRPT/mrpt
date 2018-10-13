@@ -58,7 +58,7 @@ TEST(SerializeTestMaps, WriteReadToMem)
 		CLASS_ID(COctoMap),
 		CLASS_ID(CColouredOctoMap)};
 
-	for (auto & lstClasse : lstClasses)
+	for (auto& lstClasse : lstClasses)
 	{
 		try
 		{

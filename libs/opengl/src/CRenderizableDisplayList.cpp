@@ -57,7 +57,7 @@ TAuxDLData* TAuxDLData::m_pInstance = nullptr;
 
 // Default constructor:
 CRenderizableDisplayList::CRenderizableDisplayList()
-	: m_dl(INVALID_DISPLAY_LIST_ID) 
+	: m_dl(INVALID_DISPLAY_LIST_ID)
 {
 }
 
@@ -95,8 +95,7 @@ void CRenderizableDisplayList::render() const
 		{
 			obj.dls_to_delete_cs.lock();
 #if MRPT_HAS_OPENGL_GLUT
-			for (unsigned int i : obj.dls_to_delete)
-				glDeleteLists(i, 1);
+			for (unsigned int i : obj.dls_to_delete) glDeleteLists(i, 1);
 #endif
 			obj.dls_to_delete.clear();
 			obj.dls_to_delete_cs.unlock();

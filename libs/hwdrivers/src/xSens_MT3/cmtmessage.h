@@ -19,13 +19,13 @@ namespace xsens
 {
 //////////////////////////////////////////////////////////////////////////////////////////
 /*! \brief Compute the checksum of the given byte string.
-*/
+ */
 uint8_t computeChecksum(const uint8_t* buffer, uint32_t length);
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /* different alignment commands for gcc / MSVS, the structure needs to be 1-byte
  * aligned.
-*/
+ */
 #ifdef _MSC_VER
 #pragma pack(push, 1)
 #endif
@@ -373,6 +373,6 @@ class Message
 	void insertData(uint16_t size, uint16_t offset = 0);
 };
 
-}  // end of xsens namespace
+}  // namespace xsens
 
 #endif  // _CMTMESSAGE_H_2006_05_24

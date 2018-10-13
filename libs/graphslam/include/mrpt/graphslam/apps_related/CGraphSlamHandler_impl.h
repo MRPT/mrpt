@@ -323,7 +323,6 @@ std::string CGraphSlamHandler<GRAPH_T>::getParamsAsString() const
 	return str;
 }
 
-
 template <class GRAPH_T>
 void CGraphSlamHandler<GRAPH_T>::setResultsDirName(const std::string& dirname)
 {
@@ -442,4 +441,3 @@ bool CGraphSlamHandler<GRAPH_T>::queryObserverForEvents()
 
 	return !request_to_exit;
 }
-

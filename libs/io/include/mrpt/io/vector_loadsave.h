@@ -38,5 +38,4 @@ bool loadBinaryFile(
 bool loadTextFile(std::vector<std::string>& o, const std::string& fileName);
 /** @} */
 
-}
-
+}  // namespace mrpt::io

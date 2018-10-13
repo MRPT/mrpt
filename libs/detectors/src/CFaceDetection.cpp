@@ -44,7 +44,7 @@ using namespace mrpt::obs;
 //------------------------------------------------------------------------
 //							CFaceDetection
 //------------------------------------------------------------------------
-CFaceDetection::CFaceDetection()  
+CFaceDetection::CFaceDetection()
 {
 	m_measure.numPossibleFacesDetected = 0;
 	m_measure.numRealFacesDetected = 0;
@@ -292,10 +292,10 @@ void CFaceDetection::detectObjects_Impl(
 		}
 
 		// Convert 2d detected objects to 3d
-		for (const auto & i : localDetected)
+		for (const auto& i : localDetected)
 		{
-			CDetectable3D::Ptr object3d = CDetectable3D::Ptr(new CDetectable3D(
-				std::dynamic_pointer_cast<CDetectable2D>(i)));
+			CDetectable3D::Ptr object3d = CDetectable3D::Ptr(
+				new CDetectable3D(std::dynamic_pointer_cast<CDetectable2D>(i)));
 			detected.push_back(object3d);
 		}
 

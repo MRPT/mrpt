@@ -104,7 +104,7 @@ void CHMTSLAM::perform_TLC(
 
 	// * Mark all poses in LMH \in Ai as being of "Ae":
 	// ----------------------------------------------------------------------------------------------
-	for (auto & m_nodeIDmembership : LMH.m_nodeIDmemberships)
+	for (auto& m_nodeIDmembership : LMH.m_nodeIDmemberships)
 		if (m_nodeIDmembership.second == Ai) m_nodeIDmembership.second = Ae;
 
 	// * Replace "Ai" by "Ae" in the list of neighbors areas:
@@ -120,8 +120,7 @@ void CHMTSLAM::perform_TLC(
 	{
 		TArcList lstArcs;
 		m_map.getNodeByID(Ai)->getArcs(lstArcs, LMH.m_ID);
-		for (auto arc = lstArcs.begin(); arc != lstArcs.end();
-			 ++arc)
+		for (auto arc = lstArcs.begin(); arc != lstArcs.end(); ++arc)
 		{
 			// TODO ...
 		}
@@ -132,7 +131,7 @@ void CHMTSLAM::perform_TLC(
 	{
 		TArcList lstArcs;
 		m_map.getNodeByID(Ai)->getArcs(lstArcs);
-		for (auto & lstArc : lstArcs)
+		for (auto& lstArc : lstArcs)
 			lstArc.reset();  // The "delete" will automatically remove the entry
 		// in "m_map". Other smrtpnts will be cleared too.
 
@@ -156,8 +155,7 @@ void CHMTSLAM::perform_TLC(
 			NODE_ANNOTATION_POSES_GRAPH, LMH.m_ID);
 
 	// For each pose in Ae:
-	for (auto it = AePG->begin(); it != AePG->end();
-		 ++it)
+	for (auto it = AePG->begin(); it != AePG->end(); ++it)
 	{
 		const TPoseID poseId = it->first;
 		const TPoseInfo& pi = it->second;

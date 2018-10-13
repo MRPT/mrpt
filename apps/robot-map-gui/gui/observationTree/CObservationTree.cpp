@@ -15,10 +15,7 @@
 #include <QMenu>
 #include <QDebug>
 
-CObservationTree::CObservationTree(QWidget* parent)
-	: QTreeView(parent) 
-{
-}
+CObservationTree::CObservationTree(QWidget* parent) : QTreeView(parent) {}
 
 void CObservationTree::setModel(QAbstractItemModel* model)
 {

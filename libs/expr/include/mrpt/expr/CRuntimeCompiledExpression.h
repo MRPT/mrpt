@@ -15,9 +15,10 @@
 #include <memory>
 #include "mrpt-expr_export.h"
 
-namespace exprtk {
-	template <typename T>
-	class expression;
+namespace exprtk
+{
+template <typename T>
+class expression;
 }
 
 namespace mrpt
@@ -57,11 +58,11 @@ class MRPT_EXPR_EXPORT CRuntimeCompiledExpression
 	~CRuntimeCompiledExpression();
 
 	/** Initializes the object by compiling an expression.
-	  * \exception std::runtime_error On any syntax error or undefined symbol
+	 * \exception std::runtime_error On any syntax error or undefined symbol
 	 * while compiling the expression. The `e.what()` message describes what is
 	 * exactly the problem.
-	  * \sa register_symbol_table()
-	  */
+	 * \sa register_symbol_table()
+	 */
 	void compile(
 		/** [in] The expression to be compiled. */
 		const std::string& expression,
@@ -83,8 +84,8 @@ class MRPT_EXPR_EXPORT CRuntimeCompiledExpression
 		const std::map<std::string, double*>& variables);
 
 	/** Evaluates the current value of the precompiled formula.
-	  * \exception std::runtime_error If the formula has not been compiled yet.
-	*/
+	 * \exception std::runtime_error If the formula has not been compiled yet.
+	 */
 	double eval() const;
 
 	/** Returns true if compile() was called and ended without errors. */
@@ -103,7 +104,6 @@ class MRPT_EXPR_EXPORT CRuntimeCompiledExpression
 	mrpt::pimpl<Impl> m_impl;
 };  // End of class def.
 
-}  // End of namespace
+}  // namespace expr
 
-
-}  // End of namespace
+}  // namespace mrpt

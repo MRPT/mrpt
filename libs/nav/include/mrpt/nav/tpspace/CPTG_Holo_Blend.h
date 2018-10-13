@@ -53,8 +53,8 @@ class CPTG_Holo_Blend : public CPTG_RobotShape_Circular
 	 * action. See derived classes for the meaning of these actions */
 	mrpt::kinematics::CVehicleVelCmd::Ptr directionToMotionCommand(
 		uint16_t k) const override;
-	mrpt::kinematics::CVehicleVelCmd::Ptr
-		getSupportedKinematicVelocityCommand() const override;
+	mrpt::kinematics::CVehicleVelCmd::Ptr getSupportedKinematicVelocityCommand()
+		const override;
 
 	size_t getPathStepCount(uint16_t k) const override;
 	void getPathPose(
@@ -112,5 +112,4 @@ class CPTG_Holo_Blend : public CPTG_RobotShape_Circular
 	static double calc_trans_distance_t_below_Tramp_abc(
 		double t, double a, double b, double c);
 };
-}
-
+}  // namespace mrpt::nav

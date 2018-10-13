@@ -50,15 +50,15 @@ mrpt::system::CTimeLogger glv_timlog;
 COpenGLViewport::COpenGLViewport(COpenGLScene* parent, const string& name)
 	: m_camera(),
 	  m_parent(parent),
-	  
+
 	  m_clonedViewport(),
 	  m_name(name),
-	  
+
 	  m_background_color(0.6f, 0.6f, 0.6f),
-	  
+
 	  m_imageview_img(),
 	  m_objects(),
-	  
+
 	  m_lights()
 {
 	// Default: one light from default direction
@@ -271,10 +271,9 @@ void COpenGLViewport::render(
 					// Prepare image data types:
 					const GLenum img_type = GL_UNSIGNED_BYTE;
 					const int nBytesPerPixel = img->isColor() ? 3 : 1;
-					const bool is_RGB_order =
-						(!::strcmp(
-							img->getChannelsOrder(),
-							"RGB"));  // Reverse RGB <-> BGR order?
+					const bool is_RGB_order = (!::strcmp(
+						img->getChannelsOrder(),
+						"RGB"));  // Reverse RGB <-> BGR order?
 					const GLenum img_format =
 						nBytesPerPixel == 3 ? (is_RGB_order ? GL_RGB : GL_BGR)
 											: GL_LUMINANCE;
@@ -462,8 +461,7 @@ void COpenGLViewport::render(
 			glShadeModel(GL_SMOOTH);
 			glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 
-			for (const auto & m_light : m_lights)
-				m_light.sendToOpenGL();
+			for (const auto& m_light : m_lights) m_light.sendToOpenGL();
 
 			// Render all the objects:
 			// -------------------------------------------
@@ -544,8 +542,7 @@ void COpenGLViewport::serializeTo(mrpt::serialization::CArchive& out) const
 	uint32_t n;
 	n = (uint32_t)m_objects.size();
 	out << n;
-	for (const auto & m_object : m_objects)
-		out << *m_object;
+	for (const auto& m_object : m_objects) out << *m_object;
 
 	// Added in v2: Global OpenGL settings:
 	out << m_OpenGL_enablePolygonNicest;
@@ -622,7 +619,7 @@ void COpenGLViewport::serializeFrom(
   ---------------------------------------------------------------*/
 CRenderizable::Ptr COpenGLViewport::getByName(const string& str)
 {
-	for (auto & m_object : m_objects)
+	for (auto& m_object : m_objects)
 	{
 		if (m_object->m_name == str)
 			return m_object;
@@ -631,7 +628,8 @@ CRenderizable::Ptr COpenGLViewport::getByName(const string& str)
 			CLASS_ID_NAMESPACE(CSetOfObjects, opengl))
 		{
 			CRenderizable::Ptr ret =
-				std::dynamic_pointer_cast<CSetOfObjects>(m_object)->getByName(str);
+				std::dynamic_pointer_cast<CSetOfObjects>(m_object)->getByName(
+					str);
 			if (ret) return ret;
 		}
 	}
@@ -644,8 +642,7 @@ CRenderizable::Ptr COpenGLViewport::getByName(const string& str)
 void COpenGLViewport::initializeAllTextures()
 {
 #if MRPT_HAS_OPENGL_GLUT
-	for (auto it = m_objects.begin();
-		 it != m_objects.end(); ++it)
+	for (auto it = m_objects.begin(); it != m_objects.end(); ++it)
 	{
 		if (IS_DERIVED(*it, CTexturedObject))
 			std::dynamic_pointer_cast<CTexturedObject>(*it)
@@ -659,7 +656,7 @@ void COpenGLViewport::initializeAllTextures()
 
 void COpenGLViewport::dumpListOfObjects(std::vector<std::string>& lst)
 {
-	for (auto & m_object : m_objects)
+	for (auto& m_object : m_objects)
 	{
 		// Single obj:
 		string s(m_object->GetRuntimeClass()->className);
@@ -672,10 +669,10 @@ void COpenGLViewport::dumpListOfObjects(std::vector<std::string>& lst)
 		{
 			std::vector<std::string> auxLst;
 
-			dynamic_cast<CSetOfObjects*>(m_object.get())->dumpListOfObjects(auxLst);
+			dynamic_cast<CSetOfObjects*>(m_object.get())
+				->dumpListOfObjects(auxLst);
 
-			for (const auto & i : auxLst)
-				lst.emplace_back(string(" ") + i);
+			for (const auto& i : auxLst) lst.emplace_back(string(" ") + i);
 		}
 	}
 }
@@ -685,8 +682,7 @@ void COpenGLViewport::dumpListOfObjects(std::vector<std::string>& lst)
   ---------------------------------------------------------------*/
 void COpenGLViewport::removeObject(const CRenderizable::Ptr& obj)
 {
-	for (auto it = m_objects.begin();
-		 it != m_objects.end(); ++it)
+	for (auto it = m_objects.begin(); it != m_objects.end(); ++it)
 		if (*it == obj)
 		{
 			m_objects.erase(it);
@@ -906,7 +902,7 @@ void COpenGLViewport::getBoundingBox(
 		-std::numeric_limits<double>::max(),
 		-std::numeric_limits<double>::max());
 
-	for (const auto & m_object : m_objects)
+	for (const auto& m_object : m_objects)
 	{
 		TPoint3D child_bbmin(
 			std::numeric_limits<double>::max(),

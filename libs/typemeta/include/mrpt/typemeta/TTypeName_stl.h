@@ -95,5 +95,4 @@ struct TTypeName<std::chrono::time_point<T>>
 
 /** @} */
 
-}
-
+}  // namespace mrpt::typemeta

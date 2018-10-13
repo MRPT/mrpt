@@ -486,8 +486,7 @@ void CWindowDialogPlots::plotEllipse(
 	if (existingLy)
 	{
 		// Assure the class:
-		auto* lyPlotEllipse =
-			static_cast<mpCovarianceEllipse*>(existingLy);
+		auto* lyPlotEllipse = static_cast<mpCovarianceEllipse*>(existingLy);
 
 		if (!lyPlotEllipse)
 		{
@@ -741,8 +740,7 @@ void CDisplayWindowPlots::resize(unsigned int width, unsigned int height)
 	}
 
 	// Send a request to destroy this object:
-	auto* REQ =
-		new WxSubsystem::TRequestToWxMainThread[1];
+	auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->sourcePlots = this;
 	REQ->OPCODE = 403;
 	REQ->x = width;
@@ -768,8 +766,7 @@ void CDisplayWindowPlots::setPos(int x, int y)
 	}
 
 	// Send a request to destroy this object:
-	auto* REQ =
-		new WxSubsystem::TRequestToWxMainThread[1];
+	auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->sourcePlots = this;
 	REQ->OPCODE = 402;
 	REQ->x = x;
@@ -795,8 +792,7 @@ void CDisplayWindowPlots::setWindowTitle(const std::string& str)
 	}
 
 	// Send a request to destroy this object:
-	auto* REQ =
-		new WxSubsystem::TRequestToWxMainThread[1];
+	auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->sourcePlots = this;
 	REQ->OPCODE = 404;
 	REQ->str = str;
@@ -815,8 +811,7 @@ void CDisplayWindowPlots::enableMousePanZoom(bool enabled)
 	if (!isOpen()) return;
 
 	// Send a request to destroy this object:
-	auto* REQ =
-		new WxSubsystem::TRequestToWxMainThread[1];
+	auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->sourcePlots = this;
 	REQ->OPCODE = 410;
 	REQ->boolVal = enabled;
@@ -835,8 +830,7 @@ void CDisplayWindowPlots::axis_equal(bool enabled)
 	if (!isOpen()) return;
 
 	// Send a request to destroy this object:
-	auto* REQ =
-		new WxSubsystem::TRequestToWxMainThread[1];
+	auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->sourcePlots = this;
 	REQ->OPCODE = 411;
 	REQ->boolVal = enabled;
@@ -856,8 +850,7 @@ void CDisplayWindowPlots::axis(
 	if (!isOpen()) return;
 
 	// Send a request to destroy this object:
-	auto* REQ =
-		new WxSubsystem::TRequestToWxMainThread[1];
+	auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->sourcePlots = this;
 	REQ->OPCODE = 412;
 	REQ->vector_x.resize(2);
@@ -886,8 +879,7 @@ void CDisplayWindowPlots::axis_fit(bool aspectRatioFix)
 	if (!isOpen()) return;
 
 	// Send a request to destroy this object:
-	auto* REQ =
-		new WxSubsystem::TRequestToWxMainThread[1];
+	auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->sourcePlots = this;
 	REQ->OPCODE = 413;
 	REQ->boolVal = aspectRatioFix;
@@ -926,8 +918,7 @@ void CDisplayWindowPlots::plotEllipse(
 			format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
 
 	// Send a request to destroy this object:
-	auto* REQ =
-		new WxSubsystem::TRequestToWxMainThread[1];
+	auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->sourcePlots = this;
 	REQ->OPCODE = 421;
 	// 421: Add/update a 2D ellipse: format string=str, plot name =plotName,
@@ -999,8 +990,7 @@ void CDisplayWindowPlots::plotEllipse(
 			format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
 
 	// Send a request to destroy this object:
-	auto* REQ =
-		new WxSubsystem::TRequestToWxMainThread[1];
+	auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->sourcePlots = this;
 	REQ->OPCODE = 421;
 	// 421: Add/update a 2D ellipse: format string=str, plot name =plotName,
@@ -1066,8 +1056,7 @@ void CDisplayWindowPlots::image(
 			format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
 
 	// Send a request to destroy this object:
-	auto* REQ =
-		new WxSubsystem::TRequestToWxMainThread[1];
+	auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->sourcePlots = this;
 	REQ->OPCODE = 422;
 
@@ -1123,8 +1112,7 @@ void CDisplayWindowPlots::internal_plot(
 			format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
 
 	// Send a request to destroy this object:
-	auto* REQ =
-		new WxSubsystem::TRequestToWxMainThread[1];
+	auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->sourcePlots = this;
 	REQ->OPCODE = 420;
 	REQ->str = lineFormat;
@@ -1152,8 +1140,7 @@ void CDisplayWindowPlots::clear()
 	if (!isOpen()) return;
 
 	// Send a request to destroy this object:
-	auto* REQ =
-		new WxSubsystem::TRequestToWxMainThread[1];
+	auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->sourcePlots = this;
 	REQ->OPCODE = 414;
 
@@ -1190,8 +1177,7 @@ void CDisplayWindowPlots::addPopupMenuEntry(
 	MRPT_START
 	if (!isOpen()) return;
 
-	auto* REQ =
-		new WxSubsystem::TRequestToWxMainThread[1];
+	auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->sourcePlots = this;
 	REQ->OPCODE = 440;
 	REQ->plotName = label;

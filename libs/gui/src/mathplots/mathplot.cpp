@@ -90,7 +90,7 @@ double mpWindow::zoomIncrementalFactor = 1.5;
 
 IMPLEMENT_ABSTRACT_CLASS(mpLayer, wxObject)
 
-mpLayer::mpLayer()  
+mpLayer::mpLayer()
 {
 	SetPen((wxPen&)*wxBLACK_PEN);
 	SetFont((wxFont&)*wxNORMAL_FONT);
@@ -1905,14 +1905,12 @@ void mpWindow::ZoomIn(const wxPoint& centerPoint)
 
 	m_desiredXmin = m_posX;
 	m_desiredXmax =
-		m_posX +
-		(m_scrX - m_marginLeft - m_marginRight) /
-			m_scaleX;  // m_desiredXmax = m_posX + m_scrX / m_scaleX;
+		m_posX + (m_scrX - m_marginLeft - m_marginRight) /
+					 m_scaleX;  // m_desiredXmax = m_posX + m_scrX / m_scaleX;
 	m_desiredYmax = m_posY;
 	m_desiredYmin =
-		m_posY -
-		(m_scrY - m_marginTop - m_marginBottom) /
-			m_scaleY;  // m_desiredYmin = m_posY - m_scrY / m_scaleY;
+		m_posY - (m_scrY - m_marginTop - m_marginBottom) /
+					 m_scaleY;  // m_desiredYmin = m_posY - m_scrY / m_scaleY;
 
 #ifdef MATHPLOT_DO_LOGGING
 	wxLogMessage(
@@ -1950,14 +1948,12 @@ void mpWindow::ZoomOut(const wxPoint& centerPoint)
 
 	m_desiredXmin = m_posX;
 	m_desiredXmax =
-		m_posX +
-		(m_scrX - m_marginLeft - m_marginRight) /
-			m_scaleX;  // m_desiredXmax = m_posX + m_scrX / m_scaleX;
+		m_posX + (m_scrX - m_marginLeft - m_marginRight) /
+					 m_scaleX;  // m_desiredXmax = m_posX + m_scrX / m_scaleX;
 	m_desiredYmax = m_posY;
 	m_desiredYmin =
-		m_posY -
-		(m_scrY - m_marginTop - m_marginBottom) /
-			m_scaleY;  // m_desiredYmin = m_posY - m_scrY / m_scaleY;
+		m_posY - (m_scrY - m_marginTop - m_marginBottom) /
+					 m_scaleY;  // m_desiredYmin = m_posY - m_scrY / m_scaleY;
 
 #ifdef MATHPLOT_DO_LOGGING
 	wxLogMessage(
@@ -2150,7 +2146,7 @@ void mpWindow::OnPaint(wxPaintEvent& WXUNUSED(event))
 {
 	wxPaintDC dc(this);
 	dc.GetSize(&m_scrX, &m_scrY);  // This is the size of the visible area only!
-//     DoPrepareDC(dc);
+	//     DoPrepareDC(dc);
 
 #ifdef MATHPLOT_DO_LOGGING
 	{
@@ -2343,7 +2339,7 @@ bool mpWindow::UpdateBBox()
 
 	for (auto f : m_layers)
 	{
-			if (f->HasBBox())
+		if (f->HasBBox())
 		{
 			if (first)
 			{
@@ -2590,7 +2586,7 @@ unsigned int mpWindow::CountLayers()
 {
 	// wxNode *node = m_layers.GetFirst();
 	unsigned int layerNo = 0;
-	for (auto & m_layer : m_layers)  // while(node)
+	for (auto& m_layer : m_layers)  // while(node)
 	{
 		if (m_layer->HasBBox()) layerNo++;
 		// node = node->GetNext();
@@ -2606,7 +2602,7 @@ mpLayer* mpWindow::GetLayer(int position)
 
 mpLayer* mpWindow::GetLayerByName(const wxString& name)
 {
-	for (auto & m_layer : m_layers)
+	for (auto& m_layer : m_layers)
 		if (!m_layer->GetName().Cmp(name)) return m_layer;
 	return nullptr;  // Not found
 }

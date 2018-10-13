@@ -16,10 +16,11 @@ namespace mrpt::graphs::detail
 // vvvvvvvvvvvvvvvvvvvvvvvv
 //////////////////////////////////////////////////////////
 
-template <class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
-		  class EDGE_ANNOTATIONS>
-CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
-			  EDGE_ANNOTATIONS>::CMRVisualizer(const GRAPH_T& graph_in)
+template <
+	class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
+	class EDGE_ANNOTATIONS>
+CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>::
+	CMRVisualizer(const GRAPH_T& graph_in)
 	: parent(graph_in)
 {
 	THROW_EXCEPTION(
@@ -29,26 +30,28 @@ CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 		"as the 3rd template argument");
 }
 
-template <class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
-		  class EDGE_ANNOTATIONS>
-CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
-			  EDGE_ANNOTATIONS>::~CMRVisualizer()
-= default;
+template <
+	class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
+	class EDGE_ANNOTATIONS>
+CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>::
+	~CMRVisualizer() = default;
 
-template <class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
-		  class EDGE_ANNOTATIONS>
-void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
-				   EDGE_ANNOTATIONS>::
+template <
+	class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
+	class EDGE_ANNOTATIONS>
+void CMRVisualizer<
+	CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>::
 	drawNodePoints(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
 		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
 {
 }
 
-template <class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
-		  class EDGE_ANNOTATIONS>
-void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
-				   EDGE_ANNOTATIONS>::
+template <
+	class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
+	class EDGE_ANNOTATIONS>
+void CMRVisualizer<
+	CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>::
 	drawEdges(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
 		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
@@ -63,20 +66,21 @@ void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 //////////////////////////////////////////////////////////
 
 template <class CPOSE, class MAPS_IMPLEMENTATION, class EDGE_ANNOTATIONS>
-CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
-			  EDGE_ANNOTATIONS>::CMRVisualizer(const GRAPH_T& graph_in)
+CMRVisualizer<
+	CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
+	EDGE_ANNOTATIONS>::CMRVisualizer(const GRAPH_T& graph_in)
 	: parent(graph_in)
 {
 }
 
 template <class CPOSE, class MAPS_IMPLEMENTATION, class EDGE_ANNOTATIONS>
-CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
-			  EDGE_ANNOTATIONS>::~CMRVisualizer()
-= default;
+CMRVisualizer<
+	CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
+	EDGE_ANNOTATIONS>::~CMRVisualizer() = default;
 
 template <class CPOSE, class MAPS_IMPLEMENTATION, class EDGE_ANNOTATIONS>
-void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
-				   EDGE_ANNOTATIONS>::
+void CMRVisualizer<
+	CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations, EDGE_ANNOTATIONS>::
 	drawNodePoints(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
 		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
@@ -126,9 +130,8 @@ void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
 		else
 		{  // CPointCloud not yet registered.
 			// Create CPointCloud
-			strid_to_cloud.insert(
-				make_pair(
-					curr_strid, mrpt::make_aligned_shared<CPointCloud>()));
+			strid_to_cloud.insert(make_pair(
+				curr_strid, mrpt::make_aligned_shared<CPointCloud>()));
 			// Create TColorf
 			strid_to_color.insert(
 				make_pair(curr_strid, nodes_color_mngr.getNextTColorf()));
@@ -151,9 +154,7 @@ void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
 	}  // end for - nodes loop
 
 	// insert all CPointCloud(s)
-	for (auto it =
-			 strid_to_cloud.begin();
-		 it != strid_to_cloud.end(); ++it)
+	for (auto it = strid_to_cloud.begin(); it != strid_to_cloud.end(); ++it)
 	{
 		object->insert(it->second);
 	}
@@ -161,8 +162,8 @@ void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
 }  // end of drawNodePoints
 
 template <class CPOSE, class MAPS_IMPLEMENTATION, class EDGE_ANNOTATIONS>
-void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
-				   EDGE_ANNOTATIONS>::
+void CMRVisualizer<
+	CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations, EDGE_ANNOTATIONS>::
 	drawEdges(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
 		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
@@ -236,9 +237,8 @@ void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
 			// Color depends only on the agent_ID_str
 			if (strid_to_color.find(curr_end_strid) == strid_to_color.end())
 			{
-				strid_to_color.insert(
-					make_pair(
-						curr_end_strid, edges_color_mngr.getNextTColorf()));
+				strid_to_color.insert(make_pair(
+					curr_end_strid, edges_color_mngr.getNextTColorf()));
 			}
 
 			// both the CSetOfLines and TColorf entries should exist in their
@@ -270,13 +270,10 @@ void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
 	}  // end for - nodes loop
 
 	// insert all CSetOfLines(s)
-	for (auto it = id_to_set_of_lines.begin();
-		 it != id_to_set_of_lines.end(); ++it)
+	for (auto it = id_to_set_of_lines.begin(); it != id_to_set_of_lines.end();
+		 ++it)
 	{
 		object->insert(it->second);
 	}
 }
-}  // end of namespaces
-
-
-
+}  // namespace mrpt::graphs::detail

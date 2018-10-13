@@ -268,8 +268,7 @@ static void velodyne_scan_to_pointcloud(
 						 .distance)  // Invalid return?
 					continue;
 
-				const auto rawLaserId =
-					static_cast<uint8_t>(dsr + dsr_offset);
+				const auto rawLaserId = static_cast<uint8_t>(dsr + dsr_offset);
 				uint8_t laserId = rawLaserId;
 
 				// Detect VLP-16 data and adjust laser id if necessary

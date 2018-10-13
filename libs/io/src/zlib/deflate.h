@@ -337,4 +337,3 @@ extern const uch _dist_code[];
 #define _tr_tally_dist(s, distance, length, flush) \
 	flush = _tr_tally(s, distance, length)
 #endif
-

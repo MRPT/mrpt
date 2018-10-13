@@ -62,5 +62,4 @@ void path_from_rtk_gps(
 
 /** @} */  // end of grouping
 
-}
-
+}  // namespace mrpt::topography

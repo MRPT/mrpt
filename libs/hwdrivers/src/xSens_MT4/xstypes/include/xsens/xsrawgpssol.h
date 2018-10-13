@@ -23,7 +23,7 @@
 #endif
 
 /*! \brief A container for NAV-SOL data
-*/
+ */
 struct XsRawGpsSol
 {
 	/** Gps time of week (ms) */

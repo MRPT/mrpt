@@ -691,16 +691,19 @@ void upnp::compute_A_and_b_gauss_newton(
 
 		rowA[0] = 2 * rowL[0] * betas[0] + rowL[1] * betas[1] +
 				  rowL[2] * betas[2] +
-				  f * f * (2 * rowL[6] * betas[0] + rowL[7] * betas[1] +
-						   rowL[8] * betas[2]);
+				  f * f *
+					  (2 * rowL[6] * betas[0] + rowL[7] * betas[1] +
+					   rowL[8] * betas[2]);
 		rowA[1] = rowL[1] * betas[0] + 2 * rowL[3] * betas[1] +
 				  rowL[4] * betas[2] +
-				  f * f * (rowL[7] * betas[0] + 2 * rowL[9] * betas[1] +
-						   rowL[10] * betas[2]);
+				  f * f *
+					  (rowL[7] * betas[0] + 2 * rowL[9] * betas[1] +
+					   rowL[10] * betas[2]);
 		rowA[2] = rowL[2] * betas[0] + rowL[4] * betas[1] +
 				  2 * rowL[5] * betas[2] +
-				  f * f * (rowL[8] * betas[0] + rowL[10] * betas[1] +
-						   2 * rowL[11] * betas[2]);
+				  f * f *
+					  (rowL[8] * betas[0] + rowL[10] * betas[1] +
+					   2 * rowL[11] * betas[2]);
 		rowA[3] =
 			2 * f *
 			(rowL[6] * betas[0] * betas[0] + rowL[7] * betas[0] * betas[1] +

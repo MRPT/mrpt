@@ -17,7 +17,7 @@
 #endif
 
 /*! \brief Default constructor, creates an empty (invalid) object
-*/
+ */
 PacketFixedData::PacketFixedData()
 	: m_infoList(nullptr),
 	  m_formatList(nullptr),
@@ -62,7 +62,7 @@ PacketFixedData::PacketFixedData(const PacketFixedData& p)
 }
 
 /*! \brief Destructor
-*/
+ */
 PacketFixedData::~PacketFixedData()
 {
 	PACKETLOG("%s %p\n", __FUNCTION__, this);

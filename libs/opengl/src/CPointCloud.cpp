@@ -51,11 +51,10 @@ IMPLEMENTS_SERIALIZABLE(CPointCloud, CRenderizable, mrpt::opengl)
 							render
   ---------------------------------------------------------------*/
 CPointCloud::CPointCloud()
-	: 
-	  m_xs(),
+	: m_xs(),
 	  m_ys(),
 	  m_zs(),
-	  
+
 	  m_colorFromDepth_min(0, 0, 0),
 	  m_colorFromDepth_max(0, 0, 1)
 {

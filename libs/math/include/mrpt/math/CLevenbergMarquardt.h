@@ -158,8 +158,9 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 			out_info.path.block(iter, 0, 1, N) = x.transpose();
 		}
 		else
-			out_info.path = Eigen::Matrix<NUMTYPE, Eigen::Dynamic,
-										  Eigen::Dynamic>();  // Empty matrix
+			out_info.path = Eigen::Matrix<
+				NUMTYPE, Eigen::Dynamic,
+				Eigen::Dynamic>();  // Empty matrix
 
 		while (!found && ++iter < maxIter)
 		{
@@ -256,6 +257,4 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 /** The default name for the LM class is an instantiation for "double" */
 using CLevenbergMarquardt = CLevenbergMarquardtTempl<mrpt::math::CVectorDouble>;
 
-}
-
-
+}  // namespace mrpt::math

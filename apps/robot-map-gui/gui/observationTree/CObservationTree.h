@@ -12,7 +12,7 @@
 
 /** This class implements tree view for storage observations matching robot
  * poses
-*/
+ */
 
 class CObservationTreeModel;
 

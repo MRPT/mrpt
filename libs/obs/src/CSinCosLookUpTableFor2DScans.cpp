@@ -16,9 +16,9 @@ using namespace std;
 using namespace mrpt::obs;
 
 /** Return two vectors with the cos and the sin of the angles for each of the
-  * rays in a scan, computing them only the first time and returning a cached
+ * rays in a scan, computing them only the first time and returning a cached
  * copy the rest.
-  */
+ */
 const CSinCosLookUpTableFor2DScans::TSinCosValues&
 	CSinCosLookUpTableFor2DScans::getSinCosForScan(
 		const CObservation2DRangeScan& scan) const
@@ -29,15 +29,14 @@ const CSinCosLookUpTableFor2DScans::TSinCosValues&
 }
 
 /** Return two vectors with the cos and the sin of the angles for each of the
-  * rays in a scan, computing them only the first time and returning a cached
+ * rays in a scan, computing them only the first time and returning a cached
  * copy the rest.
-  */
+ */
 const CSinCosLookUpTableFor2DScans::TSinCosValues&
 	CSinCosLookUpTableFor2DScans::getSinCosForScan(
 		const T2DScanProperties& scan_prop) const
 {
-	auto it =
-		m_cache.find(scan_prop);
+	auto it = m_cache.find(scan_prop);
 	if (it != m_cache.end())
 	{  // Found in the cache:
 		return it->second;

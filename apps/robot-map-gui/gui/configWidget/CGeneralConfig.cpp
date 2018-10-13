@@ -72,8 +72,7 @@ void CGeneralConfig::openBackgroundColor()
 }
 
 SGeneralSetting::SGeneralSetting()
-	: backgroundColor(Qt::white),
-	  gridColor(Qt::black)
-	  
+	: backgroundColor(Qt::white), gridColor(Qt::black)
+
 {
 }

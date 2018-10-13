@@ -160,4 +160,3 @@ Note that affine transforms are a subset of perspective transforms.
 @return Returns the point \f$(u, v)\f$ as above.
 */
 extern CvPoint2D64f persp_xform_pt(CvPoint2D64f pt, CvMat* T);
-

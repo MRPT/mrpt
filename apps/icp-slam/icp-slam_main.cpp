@@ -443,7 +443,7 @@ void MapBuilding_ICP(
 				// Draw laser scanners in 3D:
 				if (SHOW_LASER_SCANS_3D)
 				{
-					for (auto & lst_current_laser_scan : lst_current_laser_scans)
+					for (auto& lst_current_laser_scan : lst_current_laser_scans)
 					{
 						// Create opengl object and load scan data from the scan
 						// observation:
@@ -482,9 +482,8 @@ void MapBuilding_ICP(
 					// Update:
 					win3D->forceRepaint();
 
-					std::this_thread::sleep_for(
-						std::chrono::milliseconds(
-							SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS));
+					std::this_thread::sleep_for(std::chrono::milliseconds(
+						SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS));
 				}
 			}
 

@@ -206,7 +206,7 @@ void CDlgCamTracking::UpdateTableFromPoses()
 	size_t i = 0;
 	auto it = m_poses.begin();
 	Clock::time_point t0 = it->first;
-	for (;it != m_poses.end(); ++it, ++i)
+	for (; it != m_poses.end(); ++it, ++i)
 	{
 		const Clock::time_point t = it->first;
 		const auto& p = it->second;

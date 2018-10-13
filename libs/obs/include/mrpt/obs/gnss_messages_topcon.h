@@ -67,7 +67,7 @@ struct Message_TOPCON_PZS : public gnss_message
 	Message_TOPCON_PZS();
 	/**  Return the geodetic coords as a mrpt::topography::TGeodeticCoords
 	 * structure (requires linking against mrpt-topography)
-		*   Call as: getAsStruct<TGeodeticCoords>(); */
+	 *   Call as: getAsStruct<TGeodeticCoords>(); */
 	template <class TGEODETICCOORDS>
 	inline TGEODETICCOORDS getAsStruct() const
 	{
@@ -111,5 +111,4 @@ struct Message_TOPCON_SATS : public gnss_message
 		mrpt::serialization::CArchive& out) const override;
 	void internal_readFromStream(mrpt::serialization::CArchive& in) override;
 };
-}
-
+}  // namespace mrpt::obs::gnss

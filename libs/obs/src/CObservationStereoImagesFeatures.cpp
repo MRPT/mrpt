@@ -59,7 +59,7 @@ void CObservationStereoImagesFeatures::serializeTo(
 	out << rightCameraPose << cameraPoseOnRobot;
 	out << (uint32_t)theFeatures.size();  // Write the number of items
 	// within the feature list
-	for (const auto & theFeature : theFeatures)
+	for (const auto& theFeature : theFeatures)
 	{
 		out << theFeature.pixels.first.x << theFeature.pixels.first.y;
 		out << theFeature.pixels.second.x << theFeature.pixels.second.y;
@@ -81,12 +81,10 @@ void CObservationStereoImagesFeatures::serializeFrom(
 			in >> rightCameraPose >> cameraPoseOnRobot;
 			in >> nL;
 			theFeatures.resize(nL);
-			for (auto & theFeature : theFeatures)
+			for (auto& theFeature : theFeatures)
 			{
-				in >> theFeature.pixels.first.x >>
-					theFeature.pixels.first.y;
-				in >> theFeature.pixels.second.x >>
-					theFeature.pixels.second.y;
+				in >> theFeature.pixels.first.x >> theFeature.pixels.first.y;
+				in >> theFeature.pixels.second.x >> theFeature.pixels.second.y;
 				in >> nR;
 				theFeature.ID = (unsigned int)nR;
 			}

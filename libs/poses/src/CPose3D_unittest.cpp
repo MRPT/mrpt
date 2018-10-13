@@ -32,8 +32,7 @@ class Pose3DTests : public ::testing::Test
 	{
 		const CPose3D p1(x1, y1, z1, yaw1, pitch1, roll1);
 
-		const auto HM =
-			p1.getHomogeneousMatrixVal<CMatrixDouble44>();
+		const auto HM = p1.getHomogeneousMatrixVal<CMatrixDouble44>();
 		CMatrixDouble44 HMi;
 		p1.getInverseHomogeneousMatrix(HMi);
 
@@ -831,68 +830,62 @@ const size_t num_ptc = sizeof(ptc) / sizeof(ptc[0]);
 // More complex tests:
 TEST_F(Pose3DTests, InverseHM)
 {
-	for (const auto & i : ptc)
+	for (const auto& i : ptc)
 		test_inverse(
-			i[0], i[1], i[2], DEG2RAD(i[3]),
-			DEG2RAD(i[4]), DEG2RAD(i[5]));
+			i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]));
 }
 
 TEST_F(Pose3DTests, Compose)
 {
-	for (const auto & i : ptc)
-		for (const auto & j : ptc)
+	for (const auto& i : ptc)
+		for (const auto& j : ptc)
 			test_compose(
-				i[0], i[1], i[2], DEG2RAD(i[3]),
-				DEG2RAD(i[4]), DEG2RAD(i[5]), j[0], j[1],
-				j[2], DEG2RAD(j[3]), DEG2RAD(j[4]),
-				DEG2RAD(j[5]));
+				i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]),
+				j[0], j[1], j[2], DEG2RAD(j[3]), DEG2RAD(j[4]), DEG2RAD(j[5]));
 }
 TEST_F(Pose3DTests, composeFrom)
 {
-	for (const auto & i : ptc)
-		for (const auto & j : ptc)
+	for (const auto& i : ptc)
+		for (const auto& j : ptc)
 			test_composeFrom(
-				i[0], i[1], i[2], DEG2RAD(i[3]),
-				DEG2RAD(i[4]), DEG2RAD(i[5]), j[0], j[1],
-				j[2], DEG2RAD(j[3]), DEG2RAD(j[4]),
-				DEG2RAD(j[5]));
+				i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]),
+				j[0], j[1], j[2], DEG2RAD(j[3]), DEG2RAD(j[4]), DEG2RAD(j[5]));
 }
 
 TEST_F(Pose3DTests, ToFromCPose2D)
 {
-	for (const auto & i : ptc)
-		test_to_from_2d(i[0], i[1], DEG2RAD(i[3]));
+	for (const auto& i : ptc) test_to_from_2d(i[0], i[1], DEG2RAD(i[3]));
 }
 
 TEST_F(Pose3DTests, ComposeAndInvComposeWithPoint)
 {
-	for (const auto & i : ptc)
+	for (const auto& i : ptc)
 	{
 		test_composePoint(
-			i[0], i[1], i[2], DEG2RAD(i[3]),
-			DEG2RAD(i[4]), DEG2RAD(i[5]), 10, 11, 12);
+			i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]), 10,
+			11, 12);
 		test_composePoint(
-			i[0], i[1], i[2], DEG2RAD(i[3]),
-			DEG2RAD(i[4]), DEG2RAD(i[5]), -5, 1, 2);
+			i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]), -5,
+			1, 2);
 		test_composePoint(
-			i[0], i[1], i[2], DEG2RAD(i[3]),
-			DEG2RAD(i[4]), DEG2RAD(i[5]), 5, -1, 2);
+			i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]), 5,
+			-1, 2);
 		test_composePoint(
-			i[0], i[1], i[2], DEG2RAD(i[3]),
-			DEG2RAD(i[4]), DEG2RAD(i[5]), 5, 1, -2);
+			i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]), 5, 1,
+			-2);
 	}
 }
 
 TEST_F(Pose3DTests, ComposePointJacob)
 {
-	for (const auto & i : ptc)
+	for (const auto& i : ptc)
 	{
 		test_composePointJacob(
-			i[0], i[1], i[2], DEG2RAD(i[3]),
-			DEG2RAD(i[4]), DEG2RAD(i[5]), 10, 11, 12);
+			i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]), 10,
+			11, 12);
 		test_composePointJacob(
-			i[0], i[1], i[2], DEG2RAD(i[3]),
-			DEG2RAD(i[4]), DEG2RAD(i[5]), -5, 1, 2);
+			i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]), -5,
+			1, 2);
 	}
 }
 
@@ -910,72 +903,65 @@ TEST_F(Pose3DTests, ComposePointJacobApprox)
 
 TEST_F(Pose3DTests, InvComposePointJacob)
 {
-	for (const auto & i : ptc)
+	for (const auto& i : ptc)
 	{
 		test_invComposePointJacob(
-			i[0], i[1], i[2], DEG2RAD(i[3]),
-			DEG2RAD(i[4]), DEG2RAD(i[5]), 10, 11, 12);
+			i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]), 10,
+			11, 12);
 		test_invComposePointJacob(
-			i[0], i[1], i[2], DEG2RAD(i[3]),
-			DEG2RAD(i[4]), DEG2RAD(i[5]), -5, 1, 2);
+			i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]), -5,
+			1, 2);
 		test_invComposePointJacob(
-			i[0], i[1], i[2], DEG2RAD(i[3]),
-			DEG2RAD(i[4]), DEG2RAD(i[5]), 5, -1, 2);
+			i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]), 5,
+			-1, 2);
 		test_invComposePointJacob(
-			i[0], i[1], i[2], DEG2RAD(i[3]),
-			DEG2RAD(i[4]), DEG2RAD(i[5]), 5, 1, -2);
+			i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]), 5, 1,
+			-2);
 	}
 }
 
 TEST_F(Pose3DTests, ComposePointJacob_se3)
 {
-	for (const auto & i : ptc)
+	for (const auto& i : ptc)
 	{
 		test_composePointJacob_se3(
 			CPose3D(
-				i[0], i[1], i[2], DEG2RAD(i[3]),
-				DEG2RAD(i[4]), DEG2RAD(i[5])),
+				i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5])),
 			TPoint3D(0, 0, 0));
 		test_composePointJacob_se3(
 			CPose3D(
-				i[0], i[1], i[2], DEG2RAD(i[3]),
-				DEG2RAD(i[4]), DEG2RAD(i[5])),
+				i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5])),
 			TPoint3D(10, 11, 12));
 		test_composePointJacob_se3(
 			CPose3D(
-				i[0], i[1], i[2], DEG2RAD(i[3]),
-				DEG2RAD(i[4]), DEG2RAD(i[5])),
+				i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5])),
 			TPoint3D(-5.0, -15.0, 8.0));
 	}
 }
 TEST_F(Pose3DTests, InvComposePointJacob_se3)
 {
-	for (const auto & i : ptc)
+	for (const auto& i : ptc)
 	{
 		test_invComposePointJacob_se3(
 			CPose3D(
-				i[0], i[1], i[2], DEG2RAD(i[3]),
-				DEG2RAD(i[4]), DEG2RAD(i[5])),
+				i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5])),
 			TPoint3D(0, 0, 0));
 		test_invComposePointJacob_se3(
 			CPose3D(
-				i[0], i[1], i[2], DEG2RAD(i[3]),
-				DEG2RAD(i[4]), DEG2RAD(i[5])),
+				i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5])),
 			TPoint3D(10, 11, 12));
 		test_invComposePointJacob_se3(
 			CPose3D(
-				i[0], i[1], i[2], DEG2RAD(i[3]),
-				DEG2RAD(i[4]), DEG2RAD(i[5])),
+				i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5])),
 			TPoint3D(-5.0, -15.0, 8.0));
 	}
 }
 
 TEST_F(Pose3DTests, ExpLnEqual)
 {
-	for (const auto & i : ptc)
+	for (const auto& i : ptc)
 		test_ExpLnEqual(
-			i[0], i[1], i[2], DEG2RAD(i[3]),
-			DEG2RAD(i[4]), DEG2RAD(i[5]));
+			i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]));
 }
 
 TEST_F(Pose3DTests, Jacob_dExpe_de_at_0) { check_jacob_expe_e_at_0(); }
@@ -993,19 +979,16 @@ TEST_F(Pose3DTests, Jacob_dLnT_dT)
 
 TEST_F(Pose3DTests, Jacob_dexpeD_de)
 {
-	for (const auto & i : ptc)
+	for (const auto& i : ptc)
 		test_Jacob_dexpeD_de(
-			i[0], i[1], i[2], DEG2RAD(i[3]),
-			DEG2RAD(i[4]), DEG2RAD(i[5]));
+			i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]));
 }
 
 TEST_F(Pose3DTests, Jacob_dAexpeD_de)
 {
-	for (const auto & i : ptc)
-		for (const auto & j : ptc)
+	for (const auto& i : ptc)
+		for (const auto& j : ptc)
 			test_Jacob_dAexpeD_de(
-				i[0], i[1], i[2], DEG2RAD(i[3]),
-				DEG2RAD(i[4]), DEG2RAD(i[5]), j[0], j[1],
-				j[2], DEG2RAD(j[3]), DEG2RAD(j[4]),
-				DEG2RAD(j[5]));
+				i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]),
+				j[0], j[1], j[2], DEG2RAD(j[3]), DEG2RAD(j[4]), DEG2RAD(j[5]));
 }

@@ -164,7 +164,7 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 	typename T::Ptr getByClass(const size_t& ith = 0) const
 	{
 		MRPT_START
-		for (const auto & m_viewport : m_viewports)
+		for (const auto& m_viewport : m_viewports)
 		{
 			typename T::Ptr o = m_viewport->getByClass<T>(ith);
 			if (o) return o;
@@ -222,9 +222,9 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 	void visitAllObjects(FUNCTOR functor) const
 	{
 		MRPT_START
-		for (const auto & m_viewport : m_viewports)
-			for (auto itO = m_viewport->begin();
-				 itO != m_viewport->end(); ++itO)
+		for (const auto& m_viewport : m_viewports)
+			for (auto itO = m_viewport->begin(); itO != m_viewport->end();
+				 ++itO)
 				internal_visitAllObjects(functor, *itO);
 		MRPT_END
 	}
@@ -259,8 +259,7 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 		{
 			CSetOfObjects::Ptr obj =
 				std::dynamic_pointer_cast<CSetOfObjects>(o);
-			for (auto it = obj->begin();
-				 it != obj->end(); ++it)
+			for (auto it = obj->begin(); it != obj->end(); ++it)
 				internal_visitAllObjects(functor, *it);
 		}
 	}
@@ -286,4 +285,3 @@ inline COpenGLScene::Ptr& operator<<(
 }  // namespace opengl
 
 }  // namespace mrpt
-

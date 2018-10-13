@@ -70,5 +70,4 @@ class CFileGZInputStream : public CStream
 	size_t Read(void* Buffer, size_t Count) override;
 	size_t Write(const void* Buffer, size_t Count) override;
 };  // End of class def.
-}
-
+}  // namespace mrpt::io

@@ -78,17 +78,18 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 	}
 
 	/** Hook for each time a "internal_insertObservation" returns "true"
-	  * This is called automatically from insertObservation() when
+	 * This is called automatically from insertObservation() when
 	 * internal_insertObservation returns true. */
 	virtual void OnPostSuccesfulInsertObs(const mrpt::obs::CObservation*)
-	{ /* Default: do nothing */}
+	{ /* Default: do nothing */
+	}
 
    public:
 	/** Erase all the contents of the map */
 	void clear();
 
 	/** Returns true if the map is empty/no observation has been inserted.
-	  */
+	 */
 	virtual bool isEmpty() const = 0;
 
 	/** Load the map contents from a CSimpleMap object, erasing all previous
@@ -271,7 +272,7 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 		const std::string& filNamePrefix) const = 0;
 
 	/** Returns a 3D object representing the map.
-	  * \sa genericMapParams, TMapGenericParams::enableSaveAs3DObject */
+	 * \sa genericMapParams, TMapGenericParams::enableSaveAs3DObject */
 	virtual void getAs3DObject(
 		mrpt::opengl::CSetOfObjects::Ptr& outObj) const = 0;
 
@@ -281,11 +282,12 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 	/** This method is called at the end of each "prediction-update-map
 	 * insertion" cycle within
 	 * "mrpt::slam::CMetricMapBuilderRBPF::processActionObservation".
-	  *  This method should normally do nothing, but in some cases can be used
+	 *  This method should normally do nothing, but in some cases can be used
 	 * to free auxiliary cached variables.
-	  */
+	 */
 	virtual void auxParticleFilterCleanUp()
-	{ /* Default implementation: do nothing. */}
+	{ /* Default implementation: do nothing. */
+	}
 
 	/** Returns the square distance from the 2D point (x0,y0) to the closest
 	 * correspondence in the map. */
@@ -294,8 +296,8 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 
 	/** If the map is a simple points map or it's a multi-metric map that
 	 * contains EXACTLY one simple points map, return it.
-	  * Otherwise, return NULL
-	  */
+	 * Otherwise, return NULL
+	 */
 	virtual const mrpt::maps::CSimplePointsMap* getAsSimplePointsMap() const
 	{
 		return nullptr;
@@ -308,9 +310,7 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 };  // End of class def.
 
 /** A list of metric maps (used in the mrpt::poses::CPosePDFParticles class):
-  */
+ */
 using TMetricMapList = std::deque<CMetricMap*>;
 
-}
-
-
+}  // namespace mrpt::maps

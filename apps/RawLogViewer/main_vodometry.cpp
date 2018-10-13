@@ -140,37 +140,38 @@ void xRawLogViewerFrame::OnMenuVisualOdometry(wxCommandEvent& event)
 				}
 				break;
 
-				// case CRawlog::etObservation:
-				//{
-				//	CObservation::Ptr o = rawlog.getAsObservation(countLoop);
+					// case CRawlog::etObservation:
+					//{
+					//	CObservation::Ptr o =
+					//rawlog.getAsObservation(countLoop);
 
-				//	if (IS_CLASS(o,CObservationStereoImages) )
-				//	{
-				//		CObservationStereoImages::Ptr obsSt =
-				// CObservationStereoImages::Ptr(o);
-				//		obsSt->imageLeft.saveToFile( format(
-				//"%s/img_stereo_%s_left_%05u.%s",outDir.c_str(),
-				// obsSt->sensorLabel.c_str() ,imgSaved,
-				// imgFileExtension.c_str()
-				//) );
+					//	if (IS_CLASS(o,CObservationStereoImages) )
+					//	{
+					//		CObservationStereoImages::Ptr obsSt =
+					// CObservationStereoImages::Ptr(o);
+					//		obsSt->imageLeft.saveToFile( format(
+					//"%s/img_stereo_%s_left_%05u.%s",outDir.c_str(),
+					// obsSt->sensorLabel.c_str() ,imgSaved,
+					// imgFileExtension.c_str()
+					//) );
 
-				//		obsSt->imageRight.saveToFile(
-				// format("%s/img_stereo_%s_right_%05u.%s",outDir.c_str(),obsSt->sensorLabel.c_str(),imgSaved,
-				// imgFileExtension.c_str()) );
-				//		imgSaved++;
-				//	}
-				//	else
-				//	if (IS_CLASS(o,CObservationImage) )
-				//	{
-				//		CObservationImage::Ptr obsIm =
-				// CObservationImage::Ptr(o);
-				//		obsIm->image.saveToFile(
-				// format("%s/img_monocular_%s_%05u.%s",outDir.c_str(),obsIm->sensorLabel.c_str(),imgSaved,
-				// imgFileExtension.c_str()) );
-				//		imgSaved++;
-				//	}
-				//}
-				// break;
+					//		obsSt->imageRight.saveToFile(
+					// format("%s/img_stereo_%s_right_%05u.%s",outDir.c_str(),obsSt->sensorLabel.c_str(),imgSaved,
+					// imgFileExtension.c_str()) );
+					//		imgSaved++;
+					//	}
+					//	else
+					//	if (IS_CLASS(o,CObservationImage) )
+					//	{
+					//		CObservationImage::Ptr obsIm =
+					// CObservationImage::Ptr(o);
+					//		obsIm->image.saveToFile(
+					// format("%s/img_monocular_%s_%05u.%s",outDir.c_str(),obsIm->sensorLabel.c_str(),imgSaved,
+					// imgFileExtension.c_str()) );
+					//		imgSaved++;
+					//	}
+					//}
+					// break;
 
 				default:
 					break;
@@ -190,9 +191,9 @@ void xRawLogViewerFrame::OnMenuVisualOdometry(wxCommandEvent& event)
 	progDia.Update(nEntries);
 	this->rebuildTreeView();
 
-// Set error msg:
-// wxMessageBox(_U(format("Images saved:
-// %i",imgSaved).c_str()),_("Done"),wxOK,this);
+	// Set error msg:
+	// wxMessageBox(_U(format("Images saved:
+	// %i",imgSaved).c_str()),_("Done"),wxOK,this);
 
 #else
 	THROW_EXCEPTION(

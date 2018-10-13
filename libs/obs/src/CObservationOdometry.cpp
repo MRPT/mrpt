@@ -23,7 +23,7 @@ IMPLEMENTS_SERIALIZABLE(CObservationOdometry, CObservation, mrpt::obs)
  */
 CObservationOdometry::CObservationOdometry()
 	: odometry(),
-	  
+
 	  velocityLocal(.0, .0, .0)
 {
 }
@@ -32,7 +32,8 @@ uint8_t CObservationOdometry::serializeGetVersion() const { return 2; }
 void CObservationOdometry::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// The data
-	out << odometry << sensorLabel << timestamp
+	out << odometry << sensorLabel
+		<< timestamp
 		// Added in V1:
 		<< hasEncodersInfo;
 	if (hasEncodersInfo) out << encoderLeftTicks << encoderRightTicks;

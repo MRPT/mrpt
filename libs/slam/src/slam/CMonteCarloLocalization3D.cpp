@@ -61,7 +61,7 @@ void KLF_loadBinFromParticle(
 		outBin.roll = round(currentParticleValue->roll / opts.KLD_binSize_PHI);
 	}
 }
-}
+}  // namespace mrpt::slam
 
 #include <mrpt/slam/PF_implementations.h>
 
@@ -168,7 +168,8 @@ void CMonteCarloLocalization3D::prediction_and_update_pfAuxiliaryPFOptimal(
  ---------------------------------------------------------------*/
 double
 	CMonteCarloLocalization3D::PF_SLAM_computeObservationLikelihoodForParticle(
-		[[maybe_unused]] const CParticleFilter::TParticleFilterOptions& PF_options,
+		[[maybe_unused]] const CParticleFilter::TParticleFilterOptions&
+			PF_options,
 		const size_t particleIndexForMap, const CSensoryFrame& observation,
 		const CPose3D& x) const
 {
@@ -181,7 +182,7 @@ double
 
 	// For each observation:
 	double ret = 1;
-	for (const auto & it : observation)
+	for (const auto& it : observation)
 		ret += map->computeObservationLikelihood(
 			it.get(), x);  // Compute the likelihood:
 

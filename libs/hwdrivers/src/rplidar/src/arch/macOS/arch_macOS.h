@@ -48,7 +48,8 @@
 #include <string>
 
 // POSIX specific
-extern "C" {
+extern "C"
+{
 #include <unistd.h>
 #include <errno.h>
 #include <pthread.h>

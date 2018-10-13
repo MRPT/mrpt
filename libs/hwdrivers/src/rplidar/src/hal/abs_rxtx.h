@@ -76,8 +76,8 @@ class serial_rxtx
 	virtual void clearDTR() = 0;
 
 	virtual bool isOpened() { return _is_serial_opened; }
+
    protected:
 	volatile bool _is_serial_opened;
 };
-}
-
+}  // namespace rp::hal

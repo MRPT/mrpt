@@ -24,9 +24,10 @@ namespace mrpt::containers
  * map_traits_map_as_vector */
 struct map_traits_stdmap
 {
-	template <class KEY, class VALUE, class _LessPred = std::less<KEY>,
-			  class _Alloc =
-				  mrpt::aligned_allocator_cpp11<std::pair<const KEY, VALUE>>>
+	template <
+		class KEY, class VALUE, class _LessPred = std::less<KEY>,
+		class _Alloc =
+			mrpt::aligned_allocator_cpp11<std::pair<const KEY, VALUE>>>
 	struct map : public std::map<KEY, VALUE, _LessPred, _Alloc>
 	{
 	};
@@ -36,9 +37,10 @@ struct map_traits_stdmap
  * representation) \sa map_traits_stdmap  */
 struct map_traits_map_as_vector
 {
-	template <class KEY, class VALUE, class _LessPred = std::less<KEY>,
-			  class _Alloc =
-				  mrpt::aligned_allocator_cpp11<std::pair<const KEY, VALUE>>>
+	template <
+		class KEY, class VALUE, class _LessPred = std::less<KEY>,
+		class _Alloc =
+			mrpt::aligned_allocator_cpp11<std::pair<const KEY, VALUE>>>
 	struct map : public mrpt::containers::map_as_vector<KEY, VALUE>
 	{
 	};
@@ -47,5 +49,4 @@ struct map_traits_map_as_vector
 /** @} */
 /** @} */  // end of grouping
 
-}
-
+}  // namespace mrpt::containers

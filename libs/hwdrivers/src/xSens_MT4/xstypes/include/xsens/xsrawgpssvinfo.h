@@ -80,7 +80,7 @@ struct XsSvInfo
 typedef struct XsSvInfo XsSvInfo;
 
 /*! \brief A container for NAV-SVINFO data
-*/
+ */
 struct XsRawGpsSvInfo
 {
 	/** Gps time of week (ms) */

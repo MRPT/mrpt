@@ -66,7 +66,7 @@ void CDirectoryExplorer::explore(
 #endif
 		}
 
-// cout << "searchPath:"<<searchPath<<endl;
+		// cout << "searchPath:"<<searchPath<<endl;
 
 #ifdef _WIN32
 	// ====================

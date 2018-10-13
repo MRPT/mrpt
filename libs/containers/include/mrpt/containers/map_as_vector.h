@@ -16,43 +16,44 @@ namespace mrpt::containers
 {
 /** A STL-like container which looks and behaves (almost exactly) like a
  * std::map<> but is implemented as a linear std::vector<> indexed by KEY.
-  *  Note that KEY must be integer types only (size_t, uint32_t, etc.)
-  *  This implementation is much more efficient than std::map<> when the most
+ *  Note that KEY must be integer types only (size_t, uint32_t, etc.)
+ *  This implementation is much more efficient than std::map<> when the most
  * common operation is accesing elements
-  *   by KEY with find() or [], and the range of KEY values starts at 0 (or a
+ *   by KEY with find() or [], and the range of KEY values starts at 0 (or a
  * reasonable low number).
-  *
-  * This container is internally implemented as a linear array (std::vector) of
+ *
+ * This container is internally implemented as a linear array (std::vector) of
  * the same fundamental type than the equivalent std::map<K,V>,
-  *  that is, elements are <code> std::pair<K,V> </code> (note that K is NOT
+ *  that is, elements are <code> std::pair<K,V> </code> (note that K is NOT
  * const as in std::map).
-  * I know, I know... this implementation wastes a lot of useless key elements
+ * I know, I know... this implementation wastes a lot of useless key elements
  * in the pair.first when indices
-  * are already implicit in the std::vector<> order... but I promise I'll pay a
+ * are already implicit in the std::vector<> order... but I promise I'll pay a
  * beer to whoever show me an
-  *  *efficient* alternative. If failed, update this comment: COUNTER OF WASTED
+ *  *efficient* alternative. If failed, update this comment: COUNTER OF WASTED
  * HOURS WITH THIS: 3h
-  *
-  * Note that there is one <b>fundamental difference</b> wrt std::map<>: if you
+ *
+ * Note that there is one <b>fundamental difference</b> wrt std::map<>: if you
  * start with an empty map_as_vector<> and
-  *   insert one element at the i'th position (with either [] or insert), the
+ *   insert one element at the i'th position (with either [] or insert), the
  * elements [0,i-1] will also exist then, but both
-  *   their first & second entries (for the corresponding std::pair) will be
+ *   their first & second entries (for the corresponding std::pair) will be
  * <b>undefined</b>. This was intentional in order to
-  *   gain efficiency (in particular, each std::pair<> doesn't have a
+ *   gain efficiency (in particular, each std::pair<> doesn't have a
  * constructor when resizing the underlying std::vector).
-  *
-  * The default underlying non-associative container is a "memory-aligned
+ *
+ * The default underlying non-associative container is a "memory-aligned
  * std::vector<>", but it can be changed to a
-  *  standard vector<> or to a deque<> (to avoid memory reallocations) by
+ *  standard vector<> or to a deque<> (to avoid memory reallocations) by
  * changing the template parameter \a VECTOR_T.
-  *
-  * \note Defined in #include <mrpt/containers/map_as_vector.h>
-  * \ingroup mrpt_containers_grp
-  */
-template <typename KEY, typename VALUE,
-		  typename VECTOR_T =
-			  typename mrpt::aligned_std_vector<std::pair<KEY, VALUE>>>
+ *
+ * \note Defined in #include <mrpt/containers/map_as_vector.h>
+ * \ingroup mrpt_containers_grp
+ */
+template <
+	typename KEY, typename VALUE,
+	typename VECTOR_T =
+		typename mrpt::aligned_std_vector<std::pair<KEY, VALUE>>>
 class map_as_vector
 {
    public:
@@ -158,6 +159,4 @@ class map_as_vector
 
 };  // end class map_as_vector
 
-}
-
-
+}  // namespace mrpt::containers

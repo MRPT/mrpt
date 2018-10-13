@@ -72,14 +72,14 @@ struct SE_traits<3>
 		const CPose3D& P1DP2inv, matrix_VxV_t* df_de1, matrix_VxV_t* df_de2);
 
 	/** Return one or both of the following 3x3 Jacobians, useful in graph-slam
-	* problems:
-	*   \f[  \frac{\partial pseudoLn(D^{-1} P_1^{-1} P_2}{\partial \epsilon_1}
-	* \f]
-	*   \f[  \frac{\partial pseudoLn(D^{-1} P_1^{-1} P_2}{\partial \epsilon_1}
-	* \f]
-	*  With \f$ \epsilon_1 \f$ and \f$ \epsilon_2 \f$ being increments in the
-	* linearized manifold for P1 and P2.
-	*/
+	 * problems:
+	 *   \f[  \frac{\partial pseudoLn(D^{-1} P_1^{-1} P_2}{\partial \epsilon_1}
+	 * \f]
+	 *   \f[  \frac{\partial pseudoLn(D^{-1} P_1^{-1} P_2}{\partial \epsilon_1}
+	 * \f]
+	 *  With \f$ \epsilon_1 \f$ and \f$ \epsilon_2 \f$ being increments in the
+	 * linearized manifold for P1 and P2.
+	 */
 	static void jacobian_dDinvP1invP2_depsilon(
 		const CPose3D& Dinv, const CPose3D& P1, const CPose3D& P2,
 		matrix_VxV_t* df_de1, matrix_VxV_t* df_de2);

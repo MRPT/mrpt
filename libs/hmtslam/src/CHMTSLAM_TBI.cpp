@@ -114,8 +114,7 @@ CHMTSLAM::TMessageLSLAMfromTBI::Ptr CHMTSLAM::TBI_main_method(
 	// Lock the map:
 	std::lock_guard<std::mutex>(obj->m_map_cs);
 
-	TMessageLSLAMfromTBI::Ptr msg =
-		std::make_shared<TMessageLSLAMfromTBI>();
+	TMessageLSLAMfromTBI::Ptr msg = std::make_shared<TMessageLSLAMfromTBI>();
 
 	// Fill out easy data:
 	msg->hypothesisID = LMH_ID;
@@ -140,8 +139,7 @@ CHMTSLAM::TMessageLSLAMfromTBI::Ptr CHMTSLAM::TBI_main_method(
 		LMH->updateAreaFromLMH(areaID);
 	}
 
-	for (auto a = obj->m_map.begin();
-		 a != obj->m_map.end(); ++a)
+	for (auto a = obj->m_map.begin(); a != obj->m_map.end(); ++a)
 	{
 		// Only for other areas!
 		if (a->first == areaID) continue;
@@ -192,11 +190,10 @@ CHMTSLAM::TMessageLSLAMfromTBI::Ptr CHMTSLAM::TBI_main_method(
 	{
 		std::lock_guard<std::mutex> lock(obj->m_topLCdets_cs);
 
-		for (auto it =
-				 obj->m_topLCdets.begin();
-			 it != obj->m_topLCdets.end(); ++it)
+		for (auto it = obj->m_topLCdets.begin(); it != obj->m_topLCdets.end();
+			 ++it)
 		{
-			for (auto & candidate : msg->loopClosureData)
+			for (auto& candidate : msg->loopClosureData)
 			{
 				// If the current log_lik of this area is reaaaally low, we
 				// could skip the computation with other LC detectors...
@@ -236,8 +233,7 @@ CHMTSLAM::TMessageLSLAMfromTBI::Ptr CHMTSLAM::TBI_main_method(
 	}  // end of m_topLCdets_cs lock
 
 	// Delete candidates which had no PDF when they should.
-	for (unsigned long it : lstNodesToErase)
-		msg->loopClosureData.erase(it);
+	for (unsigned long it : lstNodesToErase) msg->loopClosureData.erase(it);
 
 	obj->logFmt(
 		mrpt::system::LVL_DEBUG, "[TBI_main] Done. %u candidates found.\n",

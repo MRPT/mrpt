@@ -61,5 +61,4 @@ class CObserver
 
 };  // End of class def.
 
-}
-
+}  // namespace mrpt::system

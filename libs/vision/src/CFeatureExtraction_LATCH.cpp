@@ -46,8 +46,8 @@ using namespace std;
 #endif
 
 /************************************************************************************************
-*						internal_computeLATCHDescriptors
-************************************************************************************************/
+ *						internal_computeLATCHDescriptors
+ ************************************************************************************************/
 void CFeatureExtraction::internal_computeLATCHDescriptors(
 	const mrpt::img::CImage& in_img, CFeatureList& in_features) const
 {

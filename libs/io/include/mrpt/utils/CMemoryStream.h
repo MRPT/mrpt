@@ -4,4 +4,3 @@ namespace mrpt::utils
 {
 using CMemoryStream = mrpt::io::CMemoryStream;
 }
-

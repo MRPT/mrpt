@@ -22,9 +22,9 @@ using namespace mrpt::img;
 using namespace std;
 
 /************************************************************************************************
-*								extractFeaturesORB
-**
-************************************************************************************************/
+ *								extractFeaturesORB
+ **
+ ************************************************************************************************/
 void CFeatureExtraction::extractFeaturesORB(
 	const mrpt::img::CImage& inImg, CFeatureList& feats,
 	const unsigned int init_ID, const unsigned int nDesiredFeatures,

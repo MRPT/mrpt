@@ -19,51 +19,51 @@
 namespace mrpt::hwdrivers
 {
 /** This "software driver" implements the communication protocol for interfacing
-* a Ibeo Lux laser scanners through an ethernet controller.
-	*   This class does not need to be bind, i.e. you do not need to call
-* C2DRangeFinderAbstract::bindIO.
-	*   Connection is established when user call the turnOn() method. You can
-* pass to the class's constructor the Lux's ip address and port.
-	*   Device will NOT be configured. Configuration has to be done seperately.
-	*
-	* To get a laser scan you must proceed like that :
-	* \code
-	*     CIbeoLuxETH laser(string("192.168.0.10"), 1234);
-	*     laser.turnOn();
-	*     bool isOutObs, hardwareError;
-	*     CObservation2DRangeScan outObs;
-	*     laser.doProcessSimple(isOutObs, outObs, hardwareError);
-	* \endcode
-	*
-	* \note This class was contributed by Adrien Barral - Robopec (France)
-	* \note And modified by Jan Girlich - University of Hamburg
-* \ingroup mrpt_hwdrivers_grp
-	*/
+ * a Ibeo Lux laser scanners through an ethernet controller.
+ *   This class does not need to be bind, i.e. you do not need to call
+ * C2DRangeFinderAbstract::bindIO.
+ *   Connection is established when user call the turnOn() method. You can
+ * pass to the class's constructor the Lux's ip address and port.
+ *   Device will NOT be configured. Configuration has to be done seperately.
+ *
+ * To get a laser scan you must proceed like that :
+ * \code
+ *     CIbeoLuxETH laser(string("192.168.0.10"), 1234);
+ *     laser.turnOn();
+ *     bool isOutObs, hardwareError;
+ *     CObservation2DRangeScan outObs;
+ *     laser.doProcessSimple(isOutObs, outObs, hardwareError);
+ * \endcode
+ *
+ * \note This class was contributed by Adrien Barral - Robopec (France)
+ * \note And modified by Jan Girlich - University of Hamburg
+ * \ingroup mrpt_hwdrivers_grp
+ */
 class CIbeoLuxETH : public mrpt::hwdrivers::CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CIbeoLuxETH)
 
    public:
 	/** Constructor.
-		* Note that there is default arguments, here you can customize IP Adress
+	 * Note that there is default arguments, here you can customize IP Adress
 	 * and TCP Port of your device.
-		*/
+	 */
 	CIbeoLuxETH(
 		std::string _ip = std::string("10.152.36.93"),
 		unsigned int _port = 12002);
 	/** Destructor.
-		* Close communcation with the device, and free memory.
-		*/
+	 * Close communcation with the device, and free memory.
+	 */
 	~CIbeoLuxETH() override;
 	/** This function acquire a laser scan from the device. If an error occured,
 	 * hardwareError will be set to true.
-		* The new laser scan will be stored in the outObservation argument.
-		*
-		* \exception This method throw exception if the frame received from the
+	 * The new laser scan will be stored in the outObservation argument.
+	 *
+	 * \exception This method throw exception if the frame received from the
 	 * LMS 100 contain the following bad parameters :
-		*  * Status is not OK
-		*  * Data in the scan aren't DIST1 (may be RSSIx or DIST2).
-		*/
+	 *  * Status is not OK
+	 *  * Data in the scan aren't DIST1 (may be RSSIx or DIST2).
+	 */
 	void doProcess() override;
 	void initialize() override;
 	void start();
@@ -99,11 +99,9 @@ class CIbeoLuxETH : public mrpt::hwdrivers::CGenericSensor
 
    protected:
 	/** Load sensor pose on the robot, or keep the default sensor pose.
-		*/
+	 */
 	void loadConfig_sensorSpecific(
 		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& iniSection) override;
 };
-}
-
-
+}  // namespace mrpt::hwdrivers

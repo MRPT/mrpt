@@ -17,7 +17,8 @@
 #include <mrpt/config.h>
 
 #if MRPT_HAS_FFMPEG
-extern "C" {
+extern "C"
+{
 #define _MSC_STDINT_H_  // We already have pstdint.h in MRPT
 #include <libavformat/avformat.h>
 #include <libavcodec/avcodec.h>
@@ -36,7 +37,6 @@ using namespace mrpt::hwdrivers;
 #if MRPT_HAS_FFMPEG
 namespace mrpt::hwdrivers
 {
-
 // All context for ffmpeg:
 struct TFFMPEGContext
 {
@@ -49,7 +49,7 @@ struct TFFMPEGContext
 	SwsContext* img_convert_ctx;
 	std::vector<uint8_t> buffer;
 };
-}
+}  // namespace mrpt::hwdrivers
 #endif
 
 struct CFFMPEG_InputStream::Impl
@@ -64,7 +64,7 @@ struct CFFMPEG_InputStream::Impl
    -------------------------------------------------------- */
 CFFMPEG_InputStream::CFFMPEG_InputStream()
 #if MRPT_HAS_FFMPEG
-: m_impl(mrpt::make_impl<CFFMPEG_InputStream::Impl>())
+	: m_impl(mrpt::make_impl<CFFMPEG_InputStream::Impl>())
 {
 	TFFMPEGContext* ctx = &m_impl->m_state;
 
@@ -147,7 +147,7 @@ bool CFFMPEG_InputStream::openURL(
 #else
 		av_find_stream_info(ctx->pFormatCtx) < 0
 #endif
-		)
+	)
 	{
 		std::cerr << "[CFFMPEG_InputStream::openURL] Couldn't find stream "
 					 "information: "
@@ -175,7 +175,7 @@ bool CFFMPEG_InputStream::openURL(
 #else
 			AVMEDIA_TYPE_VIDEO
 #endif
-			)
+		)
 		{
 			ctx->videoStream = (int)i;
 			break;
@@ -252,7 +252,7 @@ bool CFFMPEG_InputStream::openURL(
 		,
 		1
 #endif
-		);
+	);
 
 	ctx->buffer.resize(numBytes);
 

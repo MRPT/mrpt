@@ -34,22 +34,19 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CIncrementalMapPartitioner, CSerializable, mrpt::slam)
 
-
 static double eval_similarity_metric_map_matching(
-	const CIncrementalMapPartitioner *parent,
-	const map_keyframe_t &kf1,
-	const map_keyframe_t &kf2,
-	const mrpt::poses::CPose3D &relPose2wrt1)
+	const CIncrementalMapPartitioner* parent, const map_keyframe_t& kf1,
+	const map_keyframe_t& kf2, const mrpt::poses::CPose3D& relPose2wrt1)
 {
-	return  kf1.metric_map->compute3DMatchingRatio(kf2.metric_map.get(), relPose2wrt1, parent->options.mrp);
+	return kf1.metric_map->compute3DMatchingRatio(
+		kf2.metric_map.get(), relPose2wrt1, parent->options.mrp);
 }
 static double eval_similarity_observation_overlap(
-	const map_keyframe_t &kf1,
-	const map_keyframe_t &kf2,
-	const mrpt::poses::CPose3D &relPose2wrt1
-)
+	const map_keyframe_t& kf1, const map_keyframe_t& kf2,
+	const mrpt::poses::CPose3D& relPose2wrt1)
 {
-	return observationsOverlap(kf1.raw_observations, kf2.raw_observations, &relPose2wrt1);
+	return observationsOverlap(
+		kf1.raw_observations, kf2.raw_observations, &relPose2wrt1);
 }
 
 CIncrementalMapPartitioner::TOptions::TOptions()
@@ -69,14 +66,15 @@ void CIncrementalMapPartitioner::TOptions::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR(
 		minimumNumberElementsEachCluster, uint64_t, source, section);
 	MRPT_LOAD_HERE_CONFIG_VAR(
-		"minDistForCorrespondence", double, mrp.maxDistForCorr,
-		source, section);
+		"minDistForCorrespondence", double, mrp.maxDistForCorr, source,
+		section);
 	MRPT_LOAD_HERE_CONFIG_VAR(
-		"minMahaDistForCorrespondence", double, mrp.maxMahaDistForCorr,
-		source, section);
+		"minMahaDistForCorrespondence", double, mrp.maxMahaDistForCorr, source,
+		section);
 	MRPT_LOAD_CONFIG_VAR(maxKeyFrameDistanceToEval, uint64_t, source, section);
 
-	mrpt::config::CConfigFilePrefixer cfp(source, section + std::string("."), "");
+	mrpt::config::CConfigFilePrefixer cfp(
+		source, section + std::string("."), "");
 	metricmap.loadFromConfigFile(cfp, "metricmap");
 	MRPT_TODO("Add link to example INI file");
 
@@ -84,16 +82,26 @@ void CIncrementalMapPartitioner::TOptions::loadFromConfigFile(
 }
 
 void CIncrementalMapPartitioner::TOptions::saveToConfigFile(
-	mrpt::config::CConfigFileBase& c,
-	const std::string& s) const
+	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
-	MRPT_SAVE_CONFIG_VAR_COMMENT(partitionThreshold, "N-cut partition threshold [0,2]");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(forceBisectionOnly, "Force bisection (true) or automatically determine number of partitions(false = default)");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		partitionThreshold, "N-cut partition threshold [0,2]");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		forceBisectionOnly,
+		"Force bisection (true) or automatically determine number of "
+		"partitions(false = default)");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(simil_method, "Similarity method");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(minimumNumberElementsEachCluster, "");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(maxKeyFrameDistanceToEval, "Max KF ID distance");
-	c.write(s, "minDistForCorrespondence", mrp.maxDistForCorr, mrpt::config::MRPT_SAVE_NAME_PADDING(), mrpt::config::MRPT_SAVE_VALUE_PADDING());
-	c.write(s, "minMahaDistForCorrespondence", mrp.maxMahaDistForCorr, mrpt::config::MRPT_SAVE_NAME_PADDING(), mrpt::config::MRPT_SAVE_VALUE_PADDING());
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		maxKeyFrameDistanceToEval, "Max KF ID distance");
+	c.write(
+		s, "minDistForCorrespondence", mrp.maxDistForCorr,
+		mrpt::config::MRPT_SAVE_NAME_PADDING(),
+		mrpt::config::MRPT_SAVE_VALUE_PADDING());
+	c.write(
+		s, "minMahaDistForCorrespondence", mrp.maxMahaDistForCorr,
+		mrpt::config::MRPT_SAVE_NAME_PADDING(),
+		mrpt::config::MRPT_SAVE_VALUE_PADDING());
 
 	mrpt::config::CConfigFilePrefixer cfp(c, s + std::string("."), "");
 	metricmap.saveToConfigFile(cfp, "metricmap");
@@ -115,7 +123,7 @@ uint32_t CIncrementalMapPartitioner::addMapFrame(
 	MRPT_START
 
 	const uint32_t new_id = m_individualMaps.size();
-	const size_t n = new_id + 1; // new size
+	const size_t n = new_id + 1;  // new size
 
 	// Create new new metric map:
 	m_individualMaps.push_back(CMultiMetricMap::Create());
@@ -136,20 +144,21 @@ uint32_t CIncrementalMapPartitioner::addMapFrame(
 
 	// Select method to evaluate similarity:
 	similarity_func_t sim_func;
-	using namespace std::placeholders; // for _1, _2 etc.
+	using namespace std::placeholders;  // for _1, _2 etc.
 	switch (options.simil_method)
 	{
-	case smMETRIC_MAP_MATCHING:
-		sim_func = std::bind(&eval_similarity_metric_map_matching, this, _1, _2, _3);
-		break;
-	case smOBSERVATION_OVERLAP:
-		sim_func = &eval_similarity_observation_overlap;
-		break;
-	case smCUSTOM_FUNCTION:
-		sim_func = m_sim_func;
-		break;
-	default:
-		THROW_EXCEPTION("Invalid value for `simil_method`");
+		case smMETRIC_MAP_MATCHING:
+			sim_func = std::bind(
+				&eval_similarity_metric_map_matching, this, _1, _2, _3);
+			break;
+		case smOBSERVATION_OVERLAP:
+			sim_func = &eval_similarity_observation_overlap;
+			break;
+		case smCUSTOM_FUNCTION:
+			sim_func = m_sim_func;
+			break;
+		default:
+			THROW_EXCEPTION("Invalid value for `simil_method`");
 	};
 
 	// Evaluate the similarity metric for the last row & column:
@@ -190,7 +199,7 @@ uint32_t CIncrementalMapPartitioner::addMapFrame(
 				// Evaluate similarity metric & make it symetric:
 				const auto s_ij = sim_func(map_i, map_j, relPose);
 				const auto s_ji = sim_func(map_j, map_i, relPose);
-				s_sym = 0.5*(s_ij + s_ji);
+				s_sym = 0.5 * (s_ij + s_ji);
 			}
 			m_A(i, j) = m_A(j, i) = s_sym;
 		}  // for j
@@ -201,7 +210,7 @@ uint32_t CIncrementalMapPartitioner::addMapFrame(
 
 	// If a partition has been already computed, add these new keyframes
 	// into a new partition on its own. When the user calls updatePartitions()
-	// all keyframes will be re-distributed according to the real similarity 
+	// all keyframes will be re-distributed according to the real similarity
 	// scores.
 	if (m_last_last_partition_are_new_ones)
 	{
@@ -232,9 +241,9 @@ void CIncrementalMapPartitioner::updatePartitions(
 	partitions.clear();
 	CGraphPartitioner<CMatrixD>::RecursiveSpectralPartition(
 		m_A, partitions, options.partitionThreshold, true, true,
-		!options.forceBisectionOnly,
-		options.minimumNumberElementsEachCluster, false /* verbose */
-		);
+		!options.forceBisectionOnly, options.minimumNumberElementsEachCluster,
+		false /* verbose */
+	);
 
 	m_last_partition = partitions;
 	m_last_last_partition_are_new_ones = false;
@@ -357,7 +366,8 @@ void CIncrementalMapPartitioner::getAs3DScene(
 
 	auto gl_grid = opengl::CGridPlaneXY::Create();
 	objs->insert(gl_grid);
-	int bbminx = std::numeric_limits<int>::max(), bbminy = std::numeric_limits<int>::max();
+	int bbminx = std::numeric_limits<int>::max(),
+		bbminy = std::numeric_limits<int>::max();
 	int bbmaxx = -bbminx, bbmaxy = -bbminy;
 
 	for (size_t i = 0; i < m_individualFrames.size(); i++)
@@ -383,8 +393,7 @@ void CIncrementalMapPartitioner::getAs3DScene(
 			i_sph->setName(format("%u", static_cast<unsigned int>(i)));
 		else
 		{
-			auto itName =
-				renameIndexes->find(i);
+			auto itName = renameIndexes->find(i);
 			ASSERT_(itName != renameIndexes->end());
 			i_sph->setName(
 				format("%lu", static_cast<unsigned long>(itName->second)));

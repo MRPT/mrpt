@@ -107,8 +107,9 @@ inline void cumsum_tmpl(const CONTAINER1& in_data, CONTAINER2& out_cumsum)
 template <class CONTAINER1, class CONTAINER2>
 inline void cumsum(const CONTAINER1& in_data, CONTAINER2& out_cumsum)
 {
-	cumsum_tmpl<CONTAINER1, CONTAINER2,
-				typename mrpt::math::ContainerType<CONTAINER2>::element_t>(
+	cumsum_tmpl<
+		CONTAINER1, CONTAINER2,
+		typename mrpt::math::ContainerType<CONTAINER2>::element_t>(
 		in_data, out_cumsum);
 }
 
@@ -268,10 +269,8 @@ template <class CONTAINER1, class CONTAINER2>
 size_t countCommonElements(const CONTAINER1& a, const CONTAINER2& b)
 {
 	size_t ret = 0;
-	for (auto it1 = a.begin(); it1 != a.end();
-		 ++it1)
-		for (auto it2 = b.begin();
-			 it2 != b.end(); ++it2)
+	for (auto it1 = a.begin(); it1 != a.end(); ++it1)
+		for (auto it2 = b.begin(); it2 != b.end(); ++it2)
 			if ((*it1) == (*it2)) ret++;
 	return ret;
 }
@@ -359,9 +358,8 @@ void meanAndCovVec(
 	out_mean.assign(M, 0);
 	for (size_t i = 0; i < N; i++)
 		for (size_t j = 0; j < M; j++) out_mean[j] += v[i][j];
-	
-	for (size_t j = 0; j < M; j++)
-		out_mean[j] *= N_inv;
+
+	for (size_t j = 0; j < M; j++) out_mean[j] *= N_inv;
 
 	// Second: Compute the covariance
 	//  Save only the above-diagonal part, then after averaging
@@ -428,8 +426,5 @@ double ncc_vector(const CONT1& patch1, const CONT2& patch2)
 
 /** @} Misc ops */
 
-}
+}  // namespace mrpt::math
 /**  @} */  // end of grouping
-
-
-

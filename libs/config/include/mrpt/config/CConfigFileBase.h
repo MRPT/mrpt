@@ -35,19 +35,19 @@ int MRPT_SAVE_VALUE_PADDING();
 /** This class allows loading and storing values and vectors of different types
  * from a configuration text, which can be implemented as a ".ini" file, a
  * memory-stored string, etc...
-  *   This is a virtual class, use only as a pointer to an implementation of one
+ *   This is a virtual class, use only as a pointer to an implementation of one
  * of the derived classes.
-  *
-  * See: \ref config_file_format
-  * \ingroup mrpt_base_grp
-  */
+ *
+ * See: \ref config_file_format
+ * \ingroup mrpt_base_grp
+ */
 class CConfigFileBase
 {
 	friend class CConfigFilePrefixer;
 
    protected:
 	/** A virtual method to write a generic string.
-	  */
+	 */
 	virtual void writeString(
 		const std::string& section, const std::string& name,
 		const std::string& str) = 0;
@@ -60,8 +60,8 @@ class CConfigFileBase
 		const int value_padding_width, const std::string& comment);
 
 	/** A virtual method to read a generic string.
-	* \exception std::exception If the key name is not found and
-	* "failIfNotFound" is true. Otherwise the "defaultValue" is returned. */
+	 * \exception std::exception If the key name is not found and
+	 * "failIfNotFound" is true. Otherwise the "defaultValue" is returned. */
 	virtual std::string readString(
 		const std::string& section, const std::string& name,
 		const std::string& defaultStr, bool failIfNotFound = false) const = 0;
@@ -80,8 +80,9 @@ class CConfigFileBase
 	/** Checks if a given section exists (name is case insensitive) */
 	bool sectionExists(const std::string& section_name) const;
 
-	template <typename enum_t,
-			  typename = std::enable_if_t<std::is_enum<enum_t>::value>>
+	template <
+		typename enum_t,
+		typename = std::enable_if_t<std::is_enum<enum_t>::value>>
 	void write(
 		const std::string& section, const std::string& name, enum_t value,
 		const int name_padding_width = -1, const int value_padding_width = -1,
@@ -95,9 +96,10 @@ class CConfigFileBase
 	 * the desired width in number of characters (-1: no fill), and add a final
 	 * comment field at the end of the line (a "// " prefix is automatically
 	 * inserted).
-	  * @{ */
-	template <typename data_t,
-			  typename = std::enable_if_t<!std::is_enum<data_t>::value>>
+	 * @{ */
+	template <
+		typename data_t,
+		typename = std::enable_if_t<!std::is_enum<data_t>::value>>
 	void write(
 		const std::string& section, const std::string& name,
 		const data_t& value, const int name_padding_width = -1,
@@ -138,7 +140,7 @@ class CConfigFileBase
 
 	/** @name Read a configuration parameter, launching exception if key name is
 	 * not found and `failIfNotFound`=true
-	  * @{ */
+	 * @{ */
 	double read_double(
 		const std::string& section, const std::string& name,
 		double defaultValue, bool failIfNotFound = false) const;
@@ -222,25 +224,25 @@ class CConfigFileBase
 
 	/** Reads an "enum" value, where the value in the config file can be either
 	 * a numerical value or the symbolic name, for example:
-	  *   In the code:
-	  *  \code
-	  *    enum my_type_t { type_foo=0, type_bar };
-	  *  \endcode
-	  *  In the config file:
-	  *  \code
-	  *    [section]
-	  *    type   = type_bar   // Use the symbolic name, or
-	  *    type   = 1          // use the numerical value (both lines will be
+	 *   In the code:
+	 *  \code
+	 *    enum my_type_t { type_foo=0, type_bar };
+	 *  \endcode
+	 *  In the config file:
+	 *  \code
+	 *    [section]
+	 *    type   = type_bar   // Use the symbolic name, or
+	 *    type   = 1          // use the numerical value (both lines will be
 	 * equivalent)
-	  *  \endcode
-	  *  Which can be loaded with:
-	  *  \code
-	  *    cfgfile.read_enum<my_type_t>("section","type", type_foo );
-	  *  \endcode
-	  *
-	  *  \note For an enum type to work with this template it is required that
+	 *  \endcode
+	 *  Which can be loaded with:
+	 *  \code
+	 *    cfgfile.read_enum<my_type_t>("section","type", type_foo );
+	 *  \endcode
+	 *
+	 *  \note For an enum type to work with this template it is required that
 	 * it defines a specialization of mrpt::typemeta::TEnumType
-	  */
+	 */
 	template <typename ENUMTYPE>
 	ENUMTYPE read_enum(
 		const std::string& section, const std::string& name,
@@ -276,9 +278,9 @@ class CConfigFileBase
 /** An useful macro for loading variables stored in a INI-like file under a key
  * with the same name that the variable, and assigning the variable the current
  * value if not found in the config file.
-  *  The variableType must be the suffix of "read_XXX" functions, i.e. int,
+ *  The variableType must be the suffix of "read_XXX" functions, i.e. int,
  * bool,...
-  */
+ */
 #define MRPT_LOAD_CONFIG_VAR(                                     \
 	variableName, variableType, configFileObject, sectionNameStr) \
 	{                                                             \
@@ -293,23 +295,21 @@ class CConfigFileBase
 
 /** Loads a double variable, stored as radians but entered in the INI-file as
  * degrees */
-#define MRPT_LOAD_CONFIG_VAR_DEGREES(                                         \
-	variableName, configFileObject, sectionNameStr)                           \
-	{                                                                         \
-		variableName = mrpt::DEG2RAD(                                         \
-			configFileObject.read_double(                                     \
-				sectionNameStr, #variableName, mrpt::RAD2DEG(variableName))); \
+#define MRPT_LOAD_CONFIG_VAR_DEGREES(                                     \
+	variableName, configFileObject, sectionNameStr)                       \
+	{                                                                     \
+		variableName = mrpt::DEG2RAD(configFileObject.read_double(        \
+			sectionNameStr, #variableName, mrpt::RAD2DEG(variableName))); \
 	}
 
 /** Loads a double, required, variable, stored as radians but entered in the
  * INI-file as degrees */
-#define MRPT_LOAD_CONFIG_VAR_DEGREES_NO_DEFAULT(                            \
-	variableName, configFileObject, sectionNameStr)                         \
-	{                                                                       \
-		variableName = mrpt::DEG2RAD(                                       \
-			configFileObject.read_double(                                   \
-				sectionNameStr, #variableName, mrpt::RAD2DEG(variableName), \
-				true));                                                     \
+#define MRPT_LOAD_CONFIG_VAR_DEGREES_NO_DEFAULT(                        \
+	variableName, configFileObject, sectionNameStr)                     \
+	{                                                                   \
+		variableName = mrpt::DEG2RAD(configFileObject.read_double(      \
+			sectionNameStr, #variableName, mrpt::RAD2DEG(variableName), \
+			true));                                                     \
 	}
 
 #define MRPT_LOAD_CONFIG_VAR_CAST(                                  \
@@ -327,69 +327,64 @@ class CConfigFileBase
 	targetVariable = configFileObject.read_##variableType(        \
 		sectionNameStr, #variableName, targetVariable, false);
 
-#define MRPT_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(                                  \
-	variableName, variableType, targetVariable, configFileObject,              \
-	sectionNameStr)                                                            \
-	{                                                                          \
-		try                                                                    \
-		{                                                                      \
-			targetVariable = configFileObject.read_##variableType(             \
-				sectionNameStr, #variableName, targetVariable, true);          \
-		}                                                                      \
-		catch (std::exception&)                                                \
-		{                                                                      \
-			THROW_EXCEPTION(                                                   \
-				mrpt::format(                                                  \
-					"Value for '%s' not found in config file in section '%s'", \
-					static_cast<const char*>(#variableName),                   \
-					std::string(sectionNameStr).c_str()));                     \
-		}                                                                      \
+#define MRPT_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(                              \
+	variableName, variableType, targetVariable, configFileObject,          \
+	sectionNameStr)                                                        \
+	{                                                                      \
+		try                                                                \
+		{                                                                  \
+			targetVariable = configFileObject.read_##variableType(         \
+				sectionNameStr, #variableName, targetVariable, true);      \
+		}                                                                  \
+		catch (std::exception&)                                            \
+		{                                                                  \
+			THROW_EXCEPTION(mrpt::format(                                  \
+				"Value for '%s' not found in config file in section '%s'", \
+				static_cast<const char*>(#variableName),                   \
+				std::string(sectionNameStr).c_str()));                     \
+		}                                                                  \
 	}
 
-#define MRPT_LOAD_HERE_CONFIG_VAR_DEGREES(                                \
-	variableName, variableType, targetVariable, configFileObject,         \
-	sectionNameStr)                                                       \
-	targetVariable = mrpt::DEG2RAD(                                       \
-		configFileObject.read_##variableType(                             \
-			sectionNameStr, #variableName, mrpt::RAD2DEG(targetVariable), \
-			false));
+#define MRPT_LOAD_HERE_CONFIG_VAR_DEGREES(                               \
+	variableName, variableType, targetVariable, configFileObject,        \
+	sectionNameStr)                                                      \
+	targetVariable = mrpt::DEG2RAD(configFileObject.read_##variableType( \
+		sectionNameStr, #variableName, mrpt::RAD2DEG(targetVariable), false));
 
-#define MRPT_LOAD_HERE_CONFIG_VAR_DEGREES_NO_DEFAULT(                          \
-	variableName, variableType, targetVariable, configFileObject,              \
-	sectionNameStr)                                                            \
-	{                                                                          \
-		try                                                                    \
-		{                                                                      \
-			targetVariable = mrpt::DEG2RAD(                                    \
-				configFileObject.read_##variableType(                          \
-					sectionNameStr, #variableName, targetVariable, true));     \
-		}                                                                      \
-		catch (std::exception&)                                                \
-		{                                                                      \
-			THROW_EXCEPTION(                                                   \
-				mrpt::format(                                                  \
-					"Value for '%s' not found in config file in section '%s'", \
-					static_cast<const char*>(#variableName),                   \
-					std::string(sectionNameStr).c_str()));                     \
-		}                                                                      \
+#define MRPT_LOAD_HERE_CONFIG_VAR_DEGREES_NO_DEFAULT(                      \
+	variableName, variableType, targetVariable, configFileObject,          \
+	sectionNameStr)                                                        \
+	{                                                                      \
+		try                                                                \
+		{                                                                  \
+			targetVariable =                                               \
+				mrpt::DEG2RAD(configFileObject.read_##variableType(        \
+					sectionNameStr, #variableName, targetVariable, true)); \
+		}                                                                  \
+		catch (std::exception&)                                            \
+		{                                                                  \
+			THROW_EXCEPTION(mrpt::format(                                  \
+				"Value for '%s' not found in config file in section '%s'", \
+				static_cast<const char*>(#variableName),                   \
+				std::string(sectionNameStr).c_str()));                     \
+		}                                                                  \
 	}
 
-#define MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(                                       \
-	variableName, variableType, configFileObject, sectionNameStr)              \
-	{                                                                          \
-		try                                                                    \
-		{                                                                      \
-			variableName = configFileObject.read_##variableType(               \
-				sectionNameStr, #variableName, variableName, true);            \
-		}                                                                      \
-		catch (std::exception&)                                                \
-		{                                                                      \
-			THROW_EXCEPTION(                                                   \
-				mrpt::format(                                                  \
-					"Value for '%s' not found in config file in section '%s'", \
-					static_cast<const char*>(#variableName),                   \
-					std::string(sectionNameStr).c_str()));                     \
-		}                                                                      \
+#define MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(                                   \
+	variableName, variableType, configFileObject, sectionNameStr)          \
+	{                                                                      \
+		try                                                                \
+		{                                                                  \
+			variableName = configFileObject.read_##variableType(           \
+				sectionNameStr, #variableName, variableName, true);        \
+		}                                                                  \
+		catch (std::exception&)                                            \
+		{                                                                  \
+			THROW_EXCEPTION(mrpt::format(                                  \
+				"Value for '%s' not found in config file in section '%s'", \
+				static_cast<const char*>(#variableName),                   \
+				std::string(sectionNameStr).c_str()));                     \
+		}                                                                  \
 	}
 
 /** Shortcut for MRPT_LOAD_CONFIG_VAR_NO_DEFAULT() for REQUIRED variables config
@@ -397,51 +392,49 @@ class CConfigFileBase
 #define MRPT_LOAD_CONFIG_VAR_REQUIRED_CS(variableName, variableType) \
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(variableName, variableType, c, s)
 
-#define MRPT_LOAD_CONFIG_VAR_CAST_NO_DEFAULT(                                  \
-	variableName, variableType, variableTypeCast, configFileObject,            \
-	sectionNameStr)                                                            \
-	{                                                                          \
-		try                                                                    \
-		{                                                                      \
-			variableName = static_cast<variableTypeCast>(                      \
-				configFileObject.read_##variableType(                          \
-					sectionNameStr, #variableName, variableName, true));       \
-		}                                                                      \
-		catch (std::exception&)                                                \
-		{                                                                      \
-			THROW_EXCEPTION(                                                   \
-				mrpt::format(                                                  \
-					"Value for '%s' not found in config file in section '%s'", \
-					static_cast<const char*>(#variableName),                   \
-					std::string(sectionNameStr).c_str()));                     \
-		}                                                                      \
+#define MRPT_LOAD_CONFIG_VAR_CAST_NO_DEFAULT(                              \
+	variableName, variableType, variableTypeCast, configFileObject,        \
+	sectionNameStr)                                                        \
+	{                                                                      \
+		try                                                                \
+		{                                                                  \
+			variableName = static_cast<variableTypeCast>(                  \
+				configFileObject.read_##variableType(                      \
+					sectionNameStr, #variableName, variableName, true));   \
+		}                                                                  \
+		catch (std::exception&)                                            \
+		{                                                                  \
+			THROW_EXCEPTION(mrpt::format(                                  \
+				"Value for '%s' not found in config file in section '%s'", \
+				static_cast<const char*>(#variableName),                   \
+				std::string(sectionNameStr).c_str()));                     \
+		}                                                                  \
 	}
 
-#define MRPT_LOAD_HERE_CONFIG_VAR_CAST(                           \
-	variableName, variableType, variableTypeCast, targetVariable, \
-	configFileObject, sectionNameStr)                             \
-	targetVariable = static_cast<variableTypeCast>(               \
-		configFileObject.read_##variableType(                     \
+#define MRPT_LOAD_HERE_CONFIG_VAR_CAST(                                     \
+	variableName, variableType, variableTypeCast, targetVariable,           \
+	configFileObject, sectionNameStr)                                       \
+	targetVariable =                                                        \
+		static_cast<variableTypeCast>(configFileObject.read_##variableType( \
 			sectionNameStr, #variableName, targetVariable));
 
-#define MRPT_LOAD_HERE_CONFIG_VAR_CAST_NO_DEFAULT(                             \
-	variableName, variableType, variableTypeCast, targetVariable,              \
-	configFileObject, sectionNameStr)                                          \
-	{                                                                          \
-		try                                                                    \
-		{                                                                      \
-			targetVariable = static_cast<variableTypeCast>(                    \
-				configFileObject.read_##variableType(                          \
-					sectionNameStr, #variableName, targetVariable, true));     \
-		}                                                                      \
-		catch (std::exception&)                                                \
-		{                                                                      \
-			THROW_EXCEPTION(                                                   \
-				mrpt::format(                                                  \
-					"Value for '%s' not found in config file in section '%s'", \
-					static_cast<const char*>(#variableName),                   \
-					std::string(sectionNameStr).c_str()));                     \
-		}                                                                      \
+#define MRPT_LOAD_HERE_CONFIG_VAR_CAST_NO_DEFAULT(                         \
+	variableName, variableType, variableTypeCast, targetVariable,          \
+	configFileObject, sectionNameStr)                                      \
+	{                                                                      \
+		try                                                                \
+		{                                                                  \
+			targetVariable = static_cast<variableTypeCast>(                \
+				configFileObject.read_##variableType(                      \
+					sectionNameStr, #variableName, targetVariable, true)); \
+		}                                                                  \
+		catch (std::exception&)                                            \
+		{                                                                  \
+			THROW_EXCEPTION(mrpt::format(                                  \
+				"Value for '%s' not found in config file in section '%s'", \
+				static_cast<const char*>(#variableName),                   \
+				std::string(sectionNameStr).c_str()));                     \
+		}                                                                  \
 	}
 
 #define MRPT_SAVE_CONFIG_VAR(variableName, configFileObject, sectionNameStr) \
@@ -472,5 +465,5 @@ class CConfigFileBase
 			mrpt::config::MRPT_SAVE_VALUE_PADDING(), __comment); \
 	}
 
-}  // End of namespace
-}  // end of namespace
+}  // namespace config
+}  // namespace mrpt

@@ -26,13 +26,13 @@ using namespace mrpt::img;
 using namespace std;
 
 /** Track a set of features from old_img -> new_img using sparse optimal flow
-  *(classic KL method)
-  *  Optional parameters that can be passed in "extra_params":
-  *		- "window_width"  (Default=15)
-  *		- "window_height" (Default=15)
-  *
-  *  \sa OpenCV's method cvCalcOpticalFlowPyrLK
-  */
+ *(classic KL method)
+ *  Optional parameters that can be passed in "extra_params":
+ *		- "window_width"  (Default=15)
+ *		- "window_height" (Default=15)
+ *
+ *  \sa OpenCV's method cvCalcOpticalFlowPyrLK
+ */
 template <typename FEATLIST>
 void CFeatureTracker_KL::trackFeatures_impl_templ(
 	const CImage& old_img, const CImage& new_img, FEATLIST& featureList)

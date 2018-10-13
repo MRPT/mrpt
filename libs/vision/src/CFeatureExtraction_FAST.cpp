@@ -23,9 +23,9 @@ using namespace mrpt::math;
 using namespace std;
 
 /************************************************************************************************
-*								extractFeaturesFAST
-**
-************************************************************************************************/
+ *								extractFeaturesFAST
+ **
+ ************************************************************************************************/
 void CFeatureExtraction::extractFeaturesFAST(
 	const mrpt::img::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
 	unsigned int nDesiredFeatures, const TImageROI& ROI,
@@ -46,10 +46,10 @@ void CFeatureExtraction::extractFeaturesFAST(
 	// Make sure we operate on a gray-scale version of the image:
 	const CImage inImg_gray(inImg, FAST_REF_OR_CONVERT_TO_GRAY);
 
-// JL: Instead of
-//	int aux = options.FASTOptions.threshold; ....
-//  It's better to use an adaptive threshold, controlled from our caller
-//  outside.
+	// JL: Instead of
+	//	int aux = options.FASTOptions.threshold; ....
+	//  It's better to use an adaptive threshold, controlled from our caller
+	//  outside.
 
 #if MRPT_OPENCV_VERSION_NUM >= 0x211
 
@@ -236,7 +236,7 @@ void CFeatureExtraction::extractFeaturesFAST(
 		feats.push_back(ft);
 		++cont;
 	}
-// feats.resize( cont );  // JL: really needed???
+	// feats.resize( cont );  // JL: really needed???
 
 #endif
 #endif

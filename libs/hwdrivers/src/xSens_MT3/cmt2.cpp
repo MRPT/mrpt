@@ -105,7 +105,7 @@ int32_t findValidMessage(const uint8_t* buffer, const uint16_t bufferLength)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Default constructor, initializes all members to their default values.
-Cmt2s::Cmt2s()  
+Cmt2s::Cmt2s()
 {
 	m_lastResult = XRV_OK;
 	m_readBufferCount = 0;
@@ -302,8 +302,7 @@ XsensResultValue Cmt2s::readMessage(Message* rcv)
 			CMT2LOG("L2: readMessage OK\n");
 			if (m_onMessageReceived != nullptr)
 			{
-				auto* bytes =
-					(CmtBinaryData*)malloc(sizeof(CmtBinaryData));
+				auto* bytes = (CmtBinaryData*)malloc(sizeof(CmtBinaryData));
 				bytes->m_size = target;
 				bytes->m_portNr = m_cmt1s.getPortNr();
 				//				bytes->m_type = CMT_CALLBACK_ONMESSAGERECEIVED;
@@ -523,8 +522,7 @@ XsensResultValue Cmt2s::waitForMessage(
 				(uint32_t)rcv->getMessageId(), (uint32_t)msgId, target);
 			if (m_onMessageReceived != nullptr)
 			{
-				auto* bytes =
-					(CmtBinaryData*)malloc(sizeof(CmtBinaryData));
+				auto* bytes = (CmtBinaryData*)malloc(sizeof(CmtBinaryData));
 				bytes->m_size = target;
 				bytes->m_portNr = m_cmt1s.getPortNr();
 				//				bytes->m_type = CMT_CALLBACK_ONMESSAGERECEIVED;
@@ -872,4 +870,4 @@ XsensResultValue Cmt2f::writeMessage(const Message* msg)
 			   msg->getTotalMessageSize(), msg->getMessageStart());
 }
 
-}  // end of xsens namespace
+}  // namespace xsens

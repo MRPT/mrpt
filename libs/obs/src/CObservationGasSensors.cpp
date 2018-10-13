@@ -226,8 +226,7 @@ void CObservationGasSensors::CMOSmodel::noise_filtering(
 
 		// Average data to reduce noise (Noise Filtering)
 		float partial_sum = 0;
-		for (auto & i : m_antiNoise_window)
-			partial_sum += i.reading;
+		for (auto& i : m_antiNoise_window) partial_sum += i.reading;
 
 		m_antiNoise_window.at(winNoise_size / 2).reading_filtered =
 			partial_sum / winNoise_size;

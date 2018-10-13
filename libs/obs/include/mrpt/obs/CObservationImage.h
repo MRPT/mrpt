@@ -43,16 +43,16 @@ class CObservationImage : public CObservation
 	 */
 	CObservationImage() = default;
 #ifdef MRPT_HAS_OPENCV
-	CObservationImage(const IplImage *ipl);
+	CObservationImage(const IplImage* ipl);
 #endif
 	/** The pose of the camera on the robot
 	 */
 	mrpt::poses::CPose3D cameraPose;
 
 	/** Intrinsic and distortion parameters of the camera.
-	  * See the <a href="http://www.mrpt.org/Camera_Parameters" >tutorial</a>
+	 * See the <a href="http://www.mrpt.org/Camera_Parameters" >tutorial</a>
 	 * for a discussion of these parameters.
-	  */
+	 */
 	mrpt::img::TCamera cameraParams;
 
 	/** The image captured by the camera, that is, the main piece of information
@@ -61,7 +61,7 @@ class CObservationImage : public CObservation
 
 	/** Computes the rectified (un-distorted) image, using the embeded
 	 * distortion parameters.
-	  */
+	 */
 	void getRectifiedImage(mrpt::img::CImage& out_img) const;
 
 	// See base class docs
@@ -77,9 +77,6 @@ class CObservationImage : public CObservation
 
 };  // End of class def.
 
-}
+}  // namespace mrpt::obs
 // Add for declaration of mexplus::from template specialization
 DECLARE_MEXPLUS_FROM(mrpt::obs::CObservationImage)
-
-
-

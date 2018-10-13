@@ -17,13 +17,13 @@
 namespace mrpt::vision
 {
 /** \addtogroup chessboard_calib Chessboard calibration
-  *  \ingroup mrpt_vision_grp
-  *  @{  */
+ *  \ingroup mrpt_vision_grp
+ *  @{  */
 
 /** Data associated to each image in the calibration process
  * mrpt::vision::checkerBoardCameraCalibration (All the information can be left
  * empty and will be filled up in the calibration method).
-  */
+ */
 struct TImageCalibData
 {
 	/** This image will be automatically loaded from the file name passed to
@@ -51,8 +51,8 @@ struct TImageCalibData
 };
 
 /**  A list of images, used in checkerBoardCameraCalibration
-  * \sa checkerBoardCameraCalibration
-  */
+ * \sa checkerBoardCameraCalibration
+ */
 using TCalibrationImageList = std::map<std::string, TImageCalibData>;
 
 /** Performs a camera calibration (computation of projection and distortion
@@ -105,6 +105,4 @@ bool checkerBoardCameraCalibration(
 	bool useScaramuzzaAlternativeDetector = false);
 
 /** @}  */  // end of grouping
-}
-
-
+}  // namespace mrpt::vision

@@ -31,9 +31,8 @@ MAP_DEFINITION_REGISTER(
 	"CHeightGridMap2D,heightMap,dem", mrpt::maps::CHeightGridMap2D)
 
 CHeightGridMap2D::TMapDefinition::TMapDefinition()
-	
-	  
-= default;
+
+	= default;
 
 void CHeightGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(
 	const mrpt::config::CConfigFileBase& source,
@@ -176,7 +175,7 @@ void CHeightGridMap2D::serializeTo(mrpt::serialization::CArchive& out) const
 	// Save the map contents:
 	n = static_cast<uint32_t>(m_map.size());
 	out << n;
-	for (const auto & it : m_map)
+	for (const auto& it : m_map)
 		out << it.h
 			<< it.w;  // This was removed in version 1: << it->history_Zs;
 
@@ -208,7 +207,7 @@ void CHeightGridMap2D::serializeFrom(
 			// Save the map contents:
 			in >> n;
 			m_map.resize(n);
-			for (auto & it : m_map)
+			for (auto& it : m_map)
 			{
 				in >> it.h >> it.w;
 				// Data member in version 0:
@@ -236,8 +235,8 @@ void CHeightGridMap2D::serializeFrom(
 }
 
 CHeightGridMap2D::TInsertionOptions::TInsertionOptions()
-	 
-= default;
+
+	= default;
 
 void CHeightGridMap2D::TInsertionOptions::dumpToTextStream(
 	std::ostream& out) const

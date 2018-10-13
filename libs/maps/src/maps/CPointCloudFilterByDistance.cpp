@@ -162,7 +162,7 @@ void CPointCloudFilterByDistance::filter(
 				options.max_deletion_ratio  // If we are deleting too many
 			// points, it may be that the filter
 			// is plainly wrong
-			)
+		)
 		{
 			pc->applyDeletionMask(deletion_mask);
 		}
@@ -202,9 +202,8 @@ void CPointCloudFilterByDistance::filter(
 }
 
 CPointCloudFilterByDistance::TOptions::TOptions()
-	: 
-	  angle_tolerance(mrpt::DEG2RAD(5))
-	  
+	: angle_tolerance(mrpt::DEG2RAD(5))
+
 {
 }
 

@@ -21,9 +21,7 @@ void CGraphSlamOptimizer<GRAPH_T>::loadParams(const std::string& source_fname)
 template <class GRAPH_T>
 void CGraphSlamOptimizer<GRAPH_T>::printParams() const
 {
-	std::cout << "GSO Verbosity: " << this->getMinLoggingLevelStr() << std::endl;
+	std::cout << "GSO Verbosity: " << this->getMinLoggingLevelStr()
+			  << std::endl;
 }
-}  // end of namespaces
-
-
-
+}  // namespace mrpt::graphslam::optimizers

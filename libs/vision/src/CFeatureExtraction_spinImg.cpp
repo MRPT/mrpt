@@ -20,9 +20,9 @@ using namespace mrpt::math;
 using namespace std;
 
 /************************************************************************************************
-*								computeSpinImageDescriptors
-**
-************************************************************************************************/
+ *								computeSpinImageDescriptors
+ **
+ ************************************************************************************************/
 void CFeatureExtraction::internal_computeSpinImageDescriptors(
 	const CImage& in_img, CFeatureList& in_features) const
 {
@@ -70,7 +70,7 @@ void CFeatureExtraction::internal_computeSpinImageDescriptors(
 	CMatrixDouble hist2d(HIST_N_INT, HIST_N_DIS);
 
 	// Compute intensity-domain spin images
-	for (auto & in_feature : in_features)
+	for (auto& in_feature : in_features)
 	{
 		// Overwrite scale with the descriptor scale:
 		in_feature->scale = options.SpinImagesOptions.radius;
@@ -108,14 +108,16 @@ void CFeatureExtraction::internal_computeSpinImageDescriptors(
 						(aux_pix_ptr[0] + aux_pix_ptr[1] + aux_pix_ptr[2]) / 3;
 				}
 
-				const float pix_dist = hypot(in_feature->x - px, in_feature->y - py);
+				const float pix_dist =
+					hypot(in_feature->x - px, in_feature->y - py);
 				const int center_bin_dist = k_dis2idx * pix_dist;
 
-// A factor to correct the histogram due to the existence of more pixels at
-// larger radius:
-//  Obtained as Area = PI ( R1^2 - R2^2 ) for R1,R2 being pix_dist +- Delta/2
-// const double density_circular_area = 1.0/ (M_2PI * (center_bin_dist+0.5) *
-// square(k_idx2dis) );
+				// A factor to correct the histogram due to the existence of
+				// more pixels at larger radius:
+				//  Obtained as Area = PI ( R1^2 - R2^2 ) for R1,R2 being
+				//  pix_dist +- Delta/2
+				// const double density_circular_area = 1.0/ (M_2PI *
+				// (center_bin_dist+0.5) * square(k_idx2dis) );
 
 #if 0
 				// "normal" histogram
@@ -130,17 +132,15 @@ void CFeatureExtraction::internal_computeSpinImageDescriptors(
 				// bins,
 				//  weighted by a exponential function to model a Gaussian
 				//  kernel
-				const int bin_int_low = max(
-					0, static_cast<int>(
-						   ceil(
+				const int bin_int_low =
+					max(0, static_cast<int>(ceil(
 							   k_int2idx *
 							   (pix_val -
 								STD_TIMES *
 									options.SpinImagesOptions.std_intensity))));
-				const int bin_int_hi = min(
-					static_cast<int>(HIST_N_INT - 1),
-					static_cast<int>(
-						ceil(
+				const int bin_int_hi =
+					min(static_cast<int>(HIST_N_INT - 1),
+						static_cast<int>(ceil(
 							k_int2idx *
 							(pix_val +
 							 STD_TIMES *

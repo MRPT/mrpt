@@ -90,8 +90,7 @@ class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 		ASSERT_(!m_nodes.empty());
 		double min_d = std::numeric_limits<double>::max();
 		auto min_id = INVALID_NODEID;
-		for (auto it = m_nodes.begin();
-			 it != m_nodes.end(); ++it)
+		for (auto it = m_nodes.begin(); it != m_nodes.end(); ++it)
 		{
 			if (ignored_nodes &&
 				ignored_nodes->find(it->first) != ignored_nodes->end())
@@ -163,8 +162,7 @@ class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 			}
 			else
 			{
-				auto it_next =
-					m_nodes.find(next_node_id);
+				auto it_next = m_nodes.find(next_node_id);
 				if (it_next == m_nodes.end())
 					throw std::runtime_error(
 						"backtrackPath: Node ID not found during tree "
@@ -292,5 +290,4 @@ struct PoseDistanceMetric<TNodeSE2_TP>
 using TMoveTreeSE2_TP = TMoveTree<TNodeSE2_TP, TMoveEdgeSE2_TP>;
 
 /** @} */
-}
-
+}  // namespace mrpt::nav

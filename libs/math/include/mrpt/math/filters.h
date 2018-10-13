@@ -14,13 +14,13 @@
 namespace mrpt::math
 {
 /** @addtogroup filtering_grp Filtering algorithms
-  * \ingroup mrpt_math_grp
-  *  @{ */
+ * \ingroup mrpt_math_grp
+ *  @{ */
 
 /** 1-order low-pass IIR filter.
-  * Discrete time equation: `y[k]=alpha*y[k-1]+(1-alpha)*x[k]`.
-  * With: x[k] input, y[k] output, alpha a parameter in [0,1]
-  */
+ * Discrete time equation: `y[k]=alpha*y[k-1]+(1-alpha)*x[k]`.
+ * With: x[k] input, y[k] output, alpha a parameter in [0,1]
+ */
 struct LowPassFilter_IIR1
 {
 	LowPassFilter_IIR1(double alpha = 0.5, double y_k_minus_1 = .0);
@@ -36,5 +36,4 @@ struct LowPassFilter_IIR1
 };
 
 /** @} */  // end grouping filtering_grp
-}
-
+}  // namespace mrpt::math

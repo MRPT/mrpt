@@ -271,6 +271,4 @@ void computeMultiOrientations(
 	const TMultiResDescOptions& opts);
 
 /** @} */  // end of grouping
-}
-
-
+}  // namespace mrpt::vision

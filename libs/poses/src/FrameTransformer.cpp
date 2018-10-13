@@ -18,11 +18,9 @@ using namespace mrpt::poses;
 
 // ------- FrameTransformerInterface --------
 template <int DIM>
-FrameTransformerInterface<DIM>::FrameTransformerInterface()
-= default;
+FrameTransformerInterface<DIM>::FrameTransformerInterface() = default;
 template <int DIM>
-FrameTransformerInterface<DIM>::~FrameTransformerInterface()
-= default;
+FrameTransformerInterface<DIM>::~FrameTransformerInterface() = default;
 
 namespace mrpt
 {
@@ -31,16 +29,14 @@ namespace poses
 // Explicit instantations:
 template class FrameTransformerInterface<2>;
 template class FrameTransformerInterface<3>;
-}
-}
+}  // namespace poses
+}  // namespace mrpt
 
 // ------- FrameTransformer --------
 template <int DIM>
-FrameTransformer<DIM>::FrameTransformer()
-= default;
+FrameTransformer<DIM>::FrameTransformer() = default;
 template <int DIM>
-FrameTransformer<DIM>::~FrameTransformer()
-= default;
+FrameTransformer<DIM>::~FrameTransformer() = default;
 
 template <int DIM>
 void FrameTransformer<DIM>::sendTransform(
@@ -94,5 +90,5 @@ namespace poses
 // Explicit instantations:
 template class FrameTransformer<2>;
 template class FrameTransformer<3>;
-}
-}
+}  // namespace poses
+}  // namespace mrpt

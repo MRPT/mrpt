@@ -60,7 +60,7 @@ void RPlidarDriver::DisposeDriver(RPlidarDriver* drv) { delete drv; }
 // Serial Driver Impl
 
 RPlidarDriverSerialImpl::RPlidarDriverSerialImpl()
-	 
+
 {
 	_rxtx = rp::hal::serial_rxtx::CreateRxTx();
 	_cached_scan_node_count = 0;
@@ -476,31 +476,21 @@ void RPlidarDriverSerialImpl::_capsuleToNormal(
 
 		int angleInc_q16 = (diffAngle_q8 << 3);
 		int currentAngle_raw_q16 = (prevStartAngle_q8 << 8);
-		for (auto & cabin : _cached_previous_capsuledata.cabins)
+		for (auto& cabin : _cached_previous_capsuledata.cabins)
 		{
 			int dist_q2[2];
 			int angle_q6[2];
 			int syncBit[2];
 
-			dist_q2[0] =
-				(cabin.distance_angle_1 &
-				 0xFFFC);
-			dist_q2[1] =
-				(cabin.distance_angle_2 &
-				 0xFFFC);
+			dist_q2[0] = (cabin.distance_angle_1 & 0xFFFC);
+			dist_q2[1] = (cabin.distance_angle_2 & 0xFFFC);
 
 			int angle_offset1_q3 =
-				((cabin.offset_angles_q3 &
-				  0xF) |
-				 ((cabin.distance_angle_1 &
-				   0x3)
-				  << 4));
+				((cabin.offset_angles_q3 & 0xF) |
+				 ((cabin.distance_angle_1 & 0x3) << 4));
 			int angle_offset2_q3 =
-				((cabin.offset_angles_q3 >>
-				  4) |
-				 ((cabin.distance_angle_2 &
-				   0x3)
-				  << 4));
+				((cabin.offset_angles_q3 >> 4) |
+				 ((cabin.distance_angle_2 & 0x3) << 4));
 
 			angle_q6[0] =
 				((currentAngle_raw_q16 - (angle_offset1_q3 << 13)) >> 10);
@@ -924,8 +914,7 @@ u_result RPlidarDriverSerialImpl::_sendCommand(
 	_u8 cmd, const void* payload, size_t payloadsize)
 {
 	_u8 pkt_header[10];
-	auto* header =
-		reinterpret_cast<rplidar_cmd_packet_t*>(pkt_header);
+	auto* header = reinterpret_cast<rplidar_cmd_packet_t*>(pkt_header);
 	_u8 checksum = 0;
 
 	if (!_isConnected) return RESULT_OPERATION_FAIL;
@@ -1201,6 +1190,4 @@ u_result RPlidarDriverSerialImpl::stopMotor()
 		return RESULT_OK;
 	}
 }
-}
-
-
+}  // namespace rp::standalone::rplidar

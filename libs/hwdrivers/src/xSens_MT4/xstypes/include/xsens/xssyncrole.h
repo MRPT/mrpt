@@ -13,7 +13,7 @@
 	@{
 */
 /*! \brief Synchronization roles
-*/
+ */
 enum XsSyncRole
 {
 	XSR_Slave,

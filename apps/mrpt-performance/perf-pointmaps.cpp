@@ -285,55 +285,54 @@ double pointmap_test_5(int a1, int a2)
 // ------------------------------------------------------
 void register_tests_pointmaps()
 {
-	lstTests.emplace_back("pointmap: insert 100 scans", pointmap_test_0, 100, 2000);
+	lstTests.emplace_back(
+		"pointmap: insert 100 scans", pointmap_test_0, 100, 2000);
 
 	lstTests.emplace_back(
-			"pointmap: build 2D kd-tree of 1 scan", pointmap_test_1, 1, 1);
+		"pointmap: build 2D kd-tree of 1 scan", pointmap_test_1, 1, 1);
 	lstTests.emplace_back(
-			"pointmap: build 2D kd-tree of 100 scan", pointmap_test_1, 100, 1);
+		"pointmap: build 2D kd-tree of 100 scan", pointmap_test_1, 100, 1);
 	lstTests.emplace_back(
-			"pointmap: build 2D kd-tree of 1000 scan", pointmap_test_1, 1000,
-			1);
+		"pointmap: build 2D kd-tree of 1000 scan", pointmap_test_1, 1000, 1);
 
 	lstTests.emplace_back(
-			"pointmap: build 3D kd-tree of 1 scan", pointmap_test_1, 1, 2);
+		"pointmap: build 3D kd-tree of 1 scan", pointmap_test_1, 1, 2);
 	lstTests.emplace_back(
-			"pointmap: build 3D kd-tree of 100 scan", pointmap_test_1, 100, 2);
+		"pointmap: build 3D kd-tree of 100 scan", pointmap_test_1, 100, 2);
 	lstTests.emplace_back(
-			"pointmap: build 3D kd-tree of 1000 scan", pointmap_test_1, 1000,
-			2);
+		"pointmap: build 3D kd-tree of 1000 scan", pointmap_test_1, 1000, 2);
 
 	lstTests.emplace_back(
-			"pointmap: kd-tree 2d query on 10 scans", pointmap_test_3, 10,
-			1000);
+		"pointmap: kd-tree 2d query on 10 scans", pointmap_test_3, 10, 1000);
 	lstTests.emplace_back(
-			"pointmap: kd-tree 2d query on 1000 scans", pointmap_test_3, 1000,
-			1000);
+		"pointmap: kd-tree 2d query on 1000 scans", pointmap_test_3, 1000,
+		1000);
 	lstTests.emplace_back(
-			"pointmap: kd-tree 2d query on 10000 scans", pointmap_test_3, 10000,
-			100);
+		"pointmap: kd-tree 2d query on 10000 scans", pointmap_test_3, 10000,
+		100);
 
 	lstTests.emplace_back(
-			"pointmap: (insert scan+2D kd-tree query) x 10", pointmap_test_2,
-			10, 1);
+		"pointmap: (insert scan+2D kd-tree query) x 10", pointmap_test_2, 10,
+		1);
 	lstTests.emplace_back(
-			"pointmap: (insert scan+2D kd-tree query) x 50", pointmap_test_2,
-			50, 1);
+		"pointmap: (insert scan+2D kd-tree query) x 50", pointmap_test_2, 50,
+		1);
 	// lstTests.push_back( TestData("pointmap: (insert scan+2D kd-tree query) x
 	// 100",pointmap_test_2, 100, 1 ) );
 	lstTests.emplace_back(
-			"pointmap: (insert scan+3D kd-tree query) x 10", pointmap_test_2,
-			10, 2);
+		"pointmap: (insert scan+3D kd-tree query) x 10", pointmap_test_2, 10,
+		2);
 	lstTests.emplace_back(
-			"pointmap: (insert scan+3D kd-tree query) x 50", pointmap_test_2,
-			50, 2);
+		"pointmap: (insert scan+3D kd-tree query) x 50", pointmap_test_2, 50,
+		2);
 	// lstTests.push_back( TestData("pointmap: (insert scan+3D kd-tree query) x
 	// 100",pointmap_test_2, 100, 2 ) );
 
-	lstTests.emplace_back("pointmap: computeMatchingWith2D", pointmap_test_4, 5000);
+	lstTests.emplace_back(
+		"pointmap: computeMatchingWith2D", pointmap_test_4, 5000);
 
 	lstTests.emplace_back(
-			"pointmap: boundingBox (10 scans)", pointmap_test_5, 10, 50000);
+		"pointmap: boundingBox (10 scans)", pointmap_test_5, 10, 50000);
 	lstTests.emplace_back(
-			"pointmap: boundingBox (1000 scans)", pointmap_test_5, 1000, 5000);
+		"pointmap: boundingBox (1000 scans)", pointmap_test_5, 1000, 5000);
 }

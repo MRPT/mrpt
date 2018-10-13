@@ -14,13 +14,13 @@
 namespace mrpt::math
 {
 /** \addtogroup container_ops_grp
-  * @{ */
+ * @{ */
 
 /** Modifies the given angle to translate it into the [0,2pi[ range.
-  * \note Take care of not instancing this template for integer numbers, since
+ * \note Take care of not instancing this template for integer numbers, since
  * it only works for float, double and long double.
-  * \sa wrapToPi, wrapTo2Pi, unwrap2PiSequence
-  */
+ * \sa wrapToPi, wrapTo2Pi, unwrap2PiSequence
+ */
 template <class T>
 inline void wrapTo2PiInPlace(T& a)
 {
@@ -30,10 +30,10 @@ inline void wrapTo2PiInPlace(T& a)
 }
 
 /** Modifies the given angle to translate it into the [0,2pi[ range.
-  * \note Take care of not instancing this template for integer numbers, since
+ * \note Take care of not instancing this template for integer numbers, since
  * it only works for float, double and long double.
-  * \sa wrapToPi, wrapTo2Pi, unwrap2PiSequence
-  */
+ * \sa wrapToPi, wrapTo2Pi, unwrap2PiSequence
+ */
 template <class T>
 inline T wrapTo2Pi(T a)
 {
@@ -42,10 +42,10 @@ inline T wrapTo2Pi(T a)
 }
 
 /** Modifies the given angle to translate it into the ]-pi,pi] range.
-  * \note Take care of not instancing this template for integer numbers, since
+ * \note Take care of not instancing this template for integer numbers, since
  * it only works for float, double and long double.
-  * \sa wrapTo2Pi, wrapToPiInPlace, unwrap2PiSequence
-  */
+ * \sa wrapTo2Pi, wrapToPiInPlace, unwrap2PiSequence
+ */
 template <class T>
 inline T wrapToPi(T a)
 {
@@ -53,10 +53,10 @@ inline T wrapToPi(T a)
 }
 
 /** Modifies the given angle to translate it into the ]-pi,pi] range.
-  * \note Take care of not instancing this template for integer numbers, since
+ * \note Take care of not instancing this template for integer numbers, since
  * it only works for float, double and long double.
-  * \sa wrapToPi,wrapTo2Pi, unwrap2PiSequence
-  */
+ * \sa wrapToPi,wrapTo2Pi, unwrap2PiSequence
+ */
 template <class T>
 inline void wrapToPiInPlace(T& a)
 {
@@ -65,8 +65,8 @@ inline void wrapToPiInPlace(T& a)
 
 /** Modify a sequence of angle values such as no consecutive values have a jump
  * larger than PI in absolute value.
-  * \sa wrapToPi
-  */
+ * \sa wrapToPi
+ */
 template <class VECTOR>
 void unwrap2PiSequence(VECTOR& x)
 {
@@ -83,14 +83,14 @@ void unwrap2PiSequence(VECTOR& x)
 
 /** Computes the shortest angular increment (or distance) between two planar
  * orientations,
-  * such that it is constrained to [-pi,pi] and is correct for any combination
+ * such that it is constrained to [-pi,pi] and is correct for any combination
  * of angles (e.g. near +-pi)
-  * Examples: angDistance(0,pi) -> +pi; angDistance(pi,0) -> -pi;
-  *           angDistance(-3.1,3.1) -> -0.08; angDistance(3.1,-3.1) -> +0.08;
-  * \note Take care of not instancing this template for integer numbers, since
+ * Examples: angDistance(0,pi) -> +pi; angDistance(pi,0) -> -pi;
+ *           angDistance(-3.1,3.1) -> -0.08; angDistance(3.1,-3.1) -> +0.08;
+ * \note Take care of not instancing this template for integer numbers, since
  * it only works for float, double and long double.
-  * \sa wrapToPi, wrapTo2Pi
-  */
+ * \sa wrapToPi, wrapTo2Pi
+ */
 template <class T>
 inline T angDistance(T from, T to)
 {
@@ -106,6 +106,4 @@ inline T angDistance(T from, T to)
 
 /** @} */
 
-}
-
-
+}  // namespace mrpt::math

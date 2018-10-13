@@ -118,7 +118,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 					img_gray, dat.detected_corners, p.check_size_x,
 					p.check_size_y,
 					p.normalize_image  // normalize_image
-					);
+				);
 
 				if (corners_found[lr] &&
 					dat.detected_corners.size() != CORNERS_COUNT)
@@ -225,8 +225,8 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		for (unsigned int y = 0; y < p.check_size_y; y++)
 			for (unsigned int x = 0; x < p.check_size_x; x++)
 				obj_points.emplace_back(
-						p.check_squares_length_X_meters * x,
-						p.check_squares_length_Y_meters * y, 0);
+					p.check_squares_length_X_meters * x,
+					p.check_squares_length_Y_meters * y, 0);
 
 		// ----------------------------------------------------------------------------------
 		//  Levenberg-Marquardt algorithm
@@ -515,7 +515,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 			// At
 			// output, like projectedPoints_distorted but for the undistorted
 			// image.
-				TImageCalibData& dat_l = images[idx].left;
+			TImageCalibData& dat_l = images[idx].left;
 			TImageCalibData& dat_r = images[idx].right;
 
 			// Rectify image.
@@ -734,12 +734,10 @@ void project_point(
 		1 + params.dist[0] * r2 + params.dist[1] * r4 + params.dist[4] * r6;
 	const double B = 2 * x * y;
 
-	px.x = params.cx() +
-		   params.fx() * (x * A + params.dist[2] * B +
-						  params.dist[3] * (r2 + 2 * square(x)));
-	px.y = params.cy() +
-		   params.fy() * (y * A + params.dist[3] * B +
-						  params.dist[2] * (r2 + 2 * square(y)));
+	px.x = params.cx() + params.fx() * (x * A + params.dist[2] * B +
+										params.dist[3] * (r2 + 2 * square(x)));
+	px.y = params.cy() + params.fy() * (y * A + params.dist[3] * B +
+										params.dist[2] * (r2 + 2 * square(y)));
 }
 
 // Build the "-gradient" and the Hessian matrix:
@@ -991,12 +989,12 @@ void eval_h_b(
 		1 + params.dist[0] * r2 + params.dist[1] * r4 + params.dist[4] * r6;
 	const double B = 2 * x * y;
 
-	out[0] = params.cx() +
-			 params.fx() * (x * A + params.dist[2] * B +
-							params.dist[3] * (r2 + 2 * square(x)));
-	out[1] = params.cy() +
-			 params.fy() * (y * A + params.dist[3] * B +
-							params.dist[2] * (r2 + 2 * square(y)));
+	out[0] =
+		params.cx() + params.fx() * (x * A + params.dist[2] * B +
+									 params.dist[3] * (r2 + 2 * square(x)));
+	out[1] =
+		params.cy() + params.fy() * (y * A + params.dist[3] * B +
+									 params.dist[2] * (r2 + 2 * square(y)));
 }
 
 void eval_b_p(const CArrayDouble<3>& P, const int& dummy, CArrayDouble<2>& b)
@@ -1323,10 +1321,9 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 
 // Ctor:
 TStereoCalibParams::TStereoCalibParams()
-	
-	  
-= default;
+
+	= default;
 
 TStereoCalibResults::TStereoCalibResults()
-	 
-= default;
+
+	= default;

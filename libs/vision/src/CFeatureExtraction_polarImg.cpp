@@ -37,8 +37,8 @@ void my_cvLinearPolar(
 
 	__BEGIN__;
 
-	CvMat srcstub, *src = (CvMat *)srcarr;
-	CvMat dststub, *dst = (CvMat *)dstarr;
+	CvMat srcstub, *src = (CvMat*)srcarr;
+	CvMat dststub, *dst = (CvMat*)dstarr;
 	CvSize ssize, dsize;
 
 	CV_CALL(src = cvGetMat(srcarr, &srcstub, 0, 0));
@@ -141,23 +141,20 @@ void CFeatureExtraction::internal_computePolarImageDescriptors(
 	CImage linpolar_frame(patch_w, patch_h, in_img.getChannelCount());
 
 	// Compute intensity-domain spin images
-	for (auto it = in_features.begin();
-		 it != in_features.end(); ++it)
+	for (auto it = in_features.begin(); it != in_features.end(); ++it)
 	{
 		// Overwrite scale with the descriptor scale:
 		(*it)->scale = radius;
 
 // Use OpenCV to convert:
 #if MRPT_OPENCV_VERSION_NUM < 0x111
-		my_cvLinearPolar(	// Use version embedded above in this file
+		my_cvLinearPolar(  // Use version embedded above in this file
 #else
-		cvLinearPolar(		// Use version sent to OpenCV
+		cvLinearPolar(  // Use version sent to OpenCV
 #endif
-			in_img.getAs<IplImage>(),
-			linpolar_frame.getAs<IplImage>(),
-			cvPoint2D32f( (*it)->x,(*it)->y ),
-			radius,
-			CV_INTER_LINEAR+CV_WARP_FILL_OUTLIERS );
+			in_img.getAs<IplImage>(), linpolar_frame.getAs<IplImage>(),
+			cvPoint2D32f((*it)->x, (*it)->y), radius,
+			CV_INTER_LINEAR + CV_WARP_FILL_OUTLIERS);
 
 		// Get the image as a matrix and save as patch:
 		linpolar_frame.getAsMatrix((*it)->descriptors.PolarImg);

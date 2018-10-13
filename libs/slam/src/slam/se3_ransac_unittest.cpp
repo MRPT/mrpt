@@ -94,12 +94,12 @@ bool ransac_data_assoc_run()
 		GT_pose_inv.composePoint(gx, gy, lx, ly);
 
 		observations[i].ID = idxs[i].first;
-		observations[i].x = lx +
-							mrpt::random::getRandomGenerator().drawGaussian1D(
-								0, normalizationStd);
-		observations[i].y = ly +
-							mrpt::random::getRandomGenerator().drawGaussian1D(
-								0, normalizationStd);
+		observations[i].x =
+			lx + mrpt::random::getRandomGenerator().drawGaussian1D(
+					 0, normalizationStd);
+		observations[i].y =
+			ly + mrpt::random::getRandomGenerator().drawGaussian1D(
+					 0, normalizationStd);
 	}
 
 	// ----------------------------------------------------

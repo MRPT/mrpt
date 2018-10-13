@@ -22,8 +22,8 @@ struct loadFromRangeImpl
 		const mrpt::poses::CPose3D* robotPose)
 	{
 		using namespace mrpt::poses;
-		using mrpt::square;
 		using mrpt::DEG2RAD;
+		using mrpt::square;
 		obj.mark_as_modified();
 
 		// The next may seem useless, but it's required in case the observation
@@ -201,8 +201,8 @@ struct loadFromRangeImpl
 												 _mm_mul_ps(ys, m21_4val))));
 			}
 #else  // MRPT_HAS_SSE2
-			// The "+3" is to assure the buffer has room for the SSE2 method
-			// which works with 4-tuples of floats.
+	   // The "+3" is to assure the buffer has room for the SSE2 method
+	   // which works with 4-tuples of floats.
 			Eigen::Array<float, Eigen::Dynamic, 1> scan_x(sizeRangeScan + 3),
 				scan_y(sizeRangeScan + 3);
 
@@ -281,8 +281,7 @@ struct loadFromRangeImpl
 							changeInDirection = 0;
 
 						// Conditions to really interpolate the points:
-						if (d >= 2 *
-									 obj.insertionOptions
+						if (d >= 2 * obj.insertionOptions
 										 .minDistBetweenLaserPoints &&
 							d < obj.insertionOptions
 									.maxDistForInterpolatePoints &&
@@ -518,6 +517,4 @@ struct loadFromRangeImpl
 	}
 };
 
-}
-
-
+}  // namespace mrpt::maps::detail

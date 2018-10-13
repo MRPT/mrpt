@@ -96,8 +96,9 @@ CPropertiesValuesList::~CPropertiesValuesList() { clear(); }
 CPropertiesValuesList::CPropertiesValuesList(const CPropertiesValuesList& o)
 	: m_properties(o.m_properties)
 {
-	for (auto & m_propertie : m_properties)
-		m_propertie.value.reset(dynamic_cast<CSerializable*>(m_propertie.value->clone()));
+	for (auto& m_propertie : m_properties)
+		m_propertie.value.reset(
+			dynamic_cast<CSerializable*>(m_propertie.value->clone()));
 }
 
 /*---------------------------------------------------------------
@@ -109,8 +110,9 @@ CPropertiesValuesList& CPropertiesValuesList::operator=(
 	if (this != &o) return *this;
 
 	m_properties = o.m_properties;
-	for (auto & m_propertie : m_properties)
-		m_propertie.value.reset(dynamic_cast<CSerializable*>(m_propertie.value->clone()));
+	for (auto& m_propertie : m_properties)
+		m_propertie.value.reset(
+			dynamic_cast<CSerializable*>(m_propertie.value->clone()));
 	return *this;
 }
 
@@ -130,7 +132,7 @@ void CPropertiesValuesList::clear()
 CSerializable::Ptr CPropertiesValuesList::get(
 	const std::string& propertyName) const
 {
-	for (const auto & m_propertie : m_properties)
+	for (const auto& m_propertie : m_properties)
 	{
 		if (!os::_strcmpi(propertyName.c_str(), m_propertie.name.c_str()))
 			return m_propertie.value;
@@ -147,7 +149,7 @@ void CPropertiesValuesList::set(
 {
 	MRPT_START
 
-	for (auto & m_propertie : m_properties)
+	for (auto& m_propertie : m_properties)
 	{
 		if (!os::_strcmpi(propertyName.c_str(), m_propertie.name.c_str()))
 		{
@@ -183,7 +185,7 @@ std::vector<std::string> CPropertiesValuesList::getPropertyNames() const
 {
 	std::vector<std::string> ret;
 
-	for (const auto & m_propertie : m_properties)
+	for (const auto& m_propertie : m_properties)
 		ret.push_back(m_propertie.name);
 
 	return ret;

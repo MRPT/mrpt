@@ -236,8 +236,7 @@ void mrpt::topography::path_from_rtk_gps(
 	if (doConsistencyCheck && GPS_local_coords_on_vehicle.size() == 3)
 	{
 		unsigned int cnt = 0;
-		for (auto i =
-				 GPS_local_coords_on_vehicle.begin();
+		for (auto i = GPS_local_coords_on_vehicle.begin();
 			 i != GPS_local_coords_on_vehicle.end(); ++i)
 		{
 			// Index tables:
@@ -245,8 +244,7 @@ void mrpt::topography::path_from_rtk_gps(
 			D_cov_rev_indexes[cnt] = i->first;
 			cnt++;
 
-			for (auto j = i;
-				 j != GPS_local_coords_on_vehicle.end(); ++j)
+			for (auto j = i; j != GPS_local_coords_on_vehicle.end(); ++j)
 			{
 				if (i != j)
 				{
@@ -428,8 +426,8 @@ void mrpt::topography::path_from_rtk_gps(
 
 		int idx_in_GPSs = 0;
 
-		for (auto i = list_gps_obs.begin();
-			 i != list_gps_obs.end(); ++i, idx_in_GPSs++)
+		for (auto i = list_gps_obs.begin(); i != list_gps_obs.end();
+			 ++i, idx_in_GPSs++)
 		{
 			// Now check if we have 3 gps with the same time stamp:
 			if (i->second.size() >= 3)

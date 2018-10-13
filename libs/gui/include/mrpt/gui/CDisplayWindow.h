@@ -35,7 +35,7 @@ class CDisplayWindow : public mrpt::gui::CBaseGUIWindow
    protected:
 	/** Enables or disables the visualization of cursor coordinates on the
 	 * window caption.
-	  */
+	 */
 	bool m_enableCursorCoordinates{true};
 
    public:
@@ -238,19 +238,18 @@ class CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 
 	/** Enables or disables the visualization of cursor coordinates on the
 	 * window caption (default = enabled).
-	  */
+	 */
 	inline void enableCursorCoordinatesVisualization(bool enable)
 	{
 		m_enableCursorCoordinates = enable;
 	}
 
 	/** Changes the window title text.
-	  */
+	 */
 	void setWindowTitle(const std::string& str) override;
 
 };  // End of class def.
 
-}  // End of namespace
+}  // namespace gui
 
-}  // End of namespace
-
+}  // namespace mrpt

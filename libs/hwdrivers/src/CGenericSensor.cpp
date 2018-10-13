@@ -23,12 +23,11 @@ using namespace std;
 						Constructor
 -------------------------------------------------------------*/
 CGenericSensor::CGenericSensor()
-	: 
-	  m_sensorLabel("UNNAMED_SENSOR"),
-	  
+	: m_sensorLabel("UNNAMED_SENSOR"),
+
 	  m_path_for_external_images(),
 	  m_external_images_format("png")
-	  
+
 {
 	const char* sVerbose = getenv("MRPT_HWDRIVERS_VERBOSE");
 	m_verbose = (sVerbose != nullptr) && atoi(sVerbose) != 0;
@@ -55,9 +54,9 @@ void CGenericSensor::appendObservations(
 
 		std::lock_guard<std::mutex> lock(m_csObjList);
 
-		for (const auto & obj : objs)
+		for (const auto& obj : objs)
 		{
-				if (!obj) continue;
+			if (!obj) continue;
 
 			// It must be a CObservation or a CAction!
 			TTimeStamp timestamp;
@@ -66,8 +65,8 @@ void CGenericSensor::appendObservations(
 			{
 				timestamp = dynamic_cast<CAction*>(obj.get())->timestamp;
 			}
-			else if (
-				obj->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
+			else if (obj->GetRuntimeClass()->derivedFrom(
+						 CLASS_ID(CObservation)))
 			{
 				timestamp = dynamic_cast<CObservation*>(obj.get())->timestamp;
 			}
@@ -121,9 +120,9 @@ void CGenericSensor::registerClass(const TSensorClassId* pNewClass)
 
 /** Loads the generic settings common to any sensor (See CGenericSensor), then
  * call to "loadConfig_sensorSpecific"
-  *  \exception This method throws an exception with a descriptive message if
+ *  \exception This method throws an exception with a descriptive message if
  * some critical parameter is missing or has an invalid value.
-  */
+ */
 void CGenericSensor::loadConfig(
 	const mrpt::config::CConfigFileBase& cfg, const std::string& sect)
 {

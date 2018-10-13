@@ -2110,9 +2110,8 @@ XsensResultValue Cmt3::setDeviceMode2(
 		else
 			snd.setBusId(bid);
 
-		if (force ||
-			m_config.m_deviceInfo[bid - 1].m_outputMode !=
-				(uint16_t)mode.m_outputMode)
+		if (force || m_config.m_deviceInfo[bid - 1].m_outputMode !=
+						 (uint16_t)mode.m_outputMode)
 		{
 			CMT3LOG(
 				"L3: setDeviceMode setting MT %08x output mode to %04X\n",
@@ -3122,4 +3121,4 @@ XsensResultValue Cmt3::storeXkfState(const CmtDeviceId deviceId)
 	return m_lastResult = XRV_OK;
 }
 
-}  // end of xsens namespace
+}  // namespace xsens

@@ -37,7 +37,7 @@ namespace mrpt::maps
  *
  *   Refer to the papers: []
  *
-  * \ingroup mrpt_maps_grp
+ * \ingroup mrpt_maps_grp
  * \sa CMetricMap
  */
 class CBeaconMap : public mrpt::maps::CMetricMap
@@ -118,7 +118,7 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 
 		/** The standard deviation used for Beacon ranges likelihood
 		 * (default=0.08m).
-		  */
+		 */
 		double rangeStd = {0.08};
 	} likelihoodOptions;
 
@@ -137,30 +137,30 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 
 		/** Insert a new beacon as a set of montecarlo samples (default=true),
 		 * or, if false, as a sum of gaussians (see mrpt::maps::CBeacon).
-		  * \sa MC_performResampling
-		  */
+		 * \sa MC_performResampling
+		 */
 		bool insertAsMonteCarlo{true};
 
 		/** Minimum and maximum elevation angles (in degrees) for inserting new
 		 * beacons at the first observation: the default values (both 0), makes
 		 * the beacons to be in the same horizontal plane that the sensors, that
 		 * is, 2D SLAM - the min/max values are -90/90.
-		  */
+		 */
 		double maxElevation_deg{0}, minElevation_deg{0};
 
 		/** Number of particles per meter of range, i.e. per meter of the
 		 * "radius of the ring".
-		  */
+		 */
 		unsigned int MC_numSamplesPerMeter{1000};
 
 		/** The threshold for the maximum std (X,Y,and Z) before colapsing the
 		 * particles into a Gaussian PDF (default=0.4).
-		  */
+		 */
 		float MC_maxStdToGauss = {0.4f};
 
 		/** Threshold for the maximum difference from the maximun (log) weight
 		 * in the set of samples for erasing a given sample (default=5).
-		  */
+		 */
 		double MC_thresholdNegligible{5};
 
 		/** If set to false (default), the samples will be generated the first
@@ -168,26 +168,26 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 		 * subsequently - if set to "true", fewer samples will be required since
 		 * the particles will be resamples when necessary, and a small "noise"
 		 * will be added to avoid depletion.
-		  */
+		 */
 		bool MC_performResampling{false};
 
 		/** The std.dev. of the Gaussian noise to be added to each sample after
 		 * resampling, only if MC_performResampling=true.
-		  */
+		 */
 		float MC_afterResamplingNoise{0.01f};
 
 		/** Threshold for the maximum difference from the maximun (log) weight
 		 * in the SOG for erasing a given mode (default=20).
-		  */
+		 */
 		float SOG_thresholdNegligible{20.0f};
 
 		/** A parameter for initializing 2D/3D SOGs
-		  */
+		 */
 		float SOG_maxDistBetweenGaussians{1.0f};
 
 		/** Constant used to compute the std. dev. int the tangent direction
 		 * when creating the Gaussians.
-		  */
+		 */
 		float SOG_separationConstant{3.0f};
 	} insertionOptions;
 
@@ -219,17 +219,17 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 
 	/** Perform a search for correspondences between "this" and another
 	 * lansmarks map:
-	  *  Firsly, the landmarks' descriptor is used to find correspondences, then
+	 *  Firsly, the landmarks' descriptor is used to find correspondences, then
 	 * inconsistent ones removed by
-	  *    looking at their 3D poses.
-	  * \param otherMap [IN] The other map.
-	  * \param correspondences [OUT] The matched pairs between maps.
-	  * \param correspondencesRatio [OUT] This is NumberOfMatchings /
+	 *    looking at their 3D poses.
+	 * \param otherMap [IN] The other map.
+	 * \param correspondences [OUT] The matched pairs between maps.
+	 * \param correspondencesRatio [OUT] This is NumberOfMatchings /
 	 * NumberOfLandmarksInTheAnotherMap
-	  * \param otherCorrespondences [OUT] Will be returned with a vector
+	 * \param otherCorrespondences [OUT] Will be returned with a vector
 	 * containing "true" for the indexes of the other map's landmarks with a
 	 * correspondence.
-	  */
+	 */
 	void computeMatchingWith3DLandmarks(
 		const mrpt::maps::CBeaconMap* otherMap,
 		mrpt::tfest::TMatchingPairList& correspondences,
@@ -237,62 +237,62 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 		std::vector<bool>& otherCorrespondences) const;
 
 	/** Changes the reference system of the map to a given 3D pose.
-	  */
+	 */
 	void changeCoordinatesReference(const mrpt::poses::CPose3D& newOrg);
 
 	/** Changes the reference system of the map "otherMap" and save the result
 	 * in "this" map.
-	  */
+	 */
 	void changeCoordinatesReference(
 		const mrpt::poses::CPose3D& newOrg,
 		const mrpt::maps::CBeaconMap* otherMap);
 
 	/** Returns true if the map is empty/no observation has been inserted.
-	   */
+	 */
 	bool isEmpty() const override;
 
 	/** Simulates a reading toward each of the beacons in the landmarks map, if
 	 * any.
-	  * \param in_robotPose This robot pose is used to simulate the ranges to
+	 * \param in_robotPose This robot pose is used to simulate the ranges to
 	 * each beacon.
-	  * \param in_sensorLocationOnRobot The 3D position of the sensor on the
+	 * \param in_sensorLocationOnRobot The 3D position of the sensor on the
 	 * robot
-	  * \param out_Observations The results will be stored here. NOTICE that the
+	 * \param out_Observations The results will be stored here. NOTICE that the
 	 * fields
 	 * "CObservationBeaconRanges::minSensorDistance","CObservationBeaconRanges::maxSensorDistance"
 	 * and "CObservationBeaconRanges::stdError" MUST BE FILLED OUT before
 	 * calling this function.
-	  * An observation will be generated for each beacon in the map, but notice
+	 * An observation will be generated for each beacon in the map, but notice
 	 * that some of them may be missed if out of the sensor maximum range.
-	  */
+	 */
 	void simulateBeaconReadings(
 		const mrpt::poses::CPose3D& in_robotPose,
 		const mrpt::poses::CPoint3D& in_sensorLocationOnRobot,
 		mrpt::obs::CObservationBeaconRanges& out_Observations) const;
 
 	/** This virtual method saves the map to a file "filNamePrefix"+<
-	  *some_file_extension >, as an image or in any other applicable way (Notice
-	  *that other methods to save the map may be implemented in classes
-	  *implementing this virtual interface).
-	  *  In the case of this class, these files are generated:
-	  *		- "filNamePrefix"+"_3D.m": A script for MATLAB for drawing landmarks
-	  *as
-	  *3D ellipses.
-	  *		- "filNamePrefix"+"_3D.3DScene": A 3D scene with a "ground plane
-	  *grid"
-	  *and the set of ellipsoids in 3D.
-	  *		- "filNamePrefix"+"_covs.m": A textual representation (see
-	  *saveToTextFile)
-	  */
+	 *some_file_extension >, as an image or in any other applicable way (Notice
+	 *that other methods to save the map may be implemented in classes
+	 *implementing this virtual interface).
+	 *  In the case of this class, these files are generated:
+	 *		- "filNamePrefix"+"_3D.m": A script for MATLAB for drawing landmarks
+	 *as
+	 *3D ellipses.
+	 *		- "filNamePrefix"+"_3D.3DScene": A 3D scene with a "ground plane
+	 *grid"
+	 *and the set of ellipsoids in 3D.
+	 *		- "filNamePrefix"+"_covs.m": A textual representation (see
+	 *saveToTextFile)
+	 */
 	void saveMetricMapRepresentationToFile(
 		const std::string& filNamePrefix) const override;
 
 	/** Save a text file with a row per beacon, containing this 11 elements:
-	  *  - X Y Z: Mean values
-	  *  - VX VY VZ: Variances of each dimension (C11, C22, C33)
-	  *  - DET2D DET3D: Determinant of the 2D and 3D covariance matrixes.
-	  *  - C12, C13, C23: Cross covariances
-	  */
+	 *  - X Y Z: Mean values
+	 *  - VX VY VZ: Variances of each dimension (C11, C22, C33)
+	 *  - DET2D DET3D: Determinant of the 2D and 3D covariance matrixes.
+	 *  - C12, C13, C23: Cross covariances
+	 */
 	void saveToTextFile(const std::string& fil) const;
 
 	/** Returns a 3D object representing the map. */
@@ -314,6 +314,4 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 
 };  // End of class def.
 
-}
-
-
+}  // namespace mrpt::maps

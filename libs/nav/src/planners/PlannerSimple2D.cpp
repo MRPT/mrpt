@@ -22,8 +22,8 @@ using namespace std;
 						Constructor
   ---------------------------------------------------------------*/
 PlannerSimple2D::PlannerSimple2D()
-	 
-= default;
+
+	= default;
 
 /*---------------------------------------------------------------
 						computePath
@@ -281,7 +281,7 @@ void PlannerSimple2D::computePath(
 					}
 					else
 					{  // Nothing to do: A free cell inside of all also free
-						// cells.
+					   // cells.
 					}
 				}  // if cell empty
 			}  // end for x

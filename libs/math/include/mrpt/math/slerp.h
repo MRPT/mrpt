@@ -14,20 +14,20 @@
 namespace mrpt::math
 {
 /** \addtogroup geometry_grp
-  *  @{ */
+ *  @{ */
 
 /** @name SLERP (Spherical Linear Interpolation) functions
 	@{ */
 
 /** SLERP interpolation between two quaternions
-  * \param[in] q0 The quaternion for t=0
-  * \param[in] q1 The quaternion for t=1
-  * \param[in] t  A "time" parameter, in the range [0,1].
-  * \param[out] q The output, interpolated quaternion.
-  * \tparam T  The type of the quaternion (e.g. float, double).
-  * \exception std::exception Only in Debug, if t is not in the valid range.
-  * \sa http://en.wikipedia.org/wiki/Slerp
-  */
+ * \param[in] q0 The quaternion for t=0
+ * \param[in] q1 The quaternion for t=1
+ * \param[in] t  A "time" parameter, in the range [0,1].
+ * \param[out] q The output, interpolated quaternion.
+ * \tparam T  The type of the quaternion (e.g. float, double).
+ * \exception std::exception Only in Debug, if t is not in the valid range.
+ * \sa http://en.wikipedia.org/wiki/Slerp
+ */
 template <typename T>
 void slerp(
 	const CQuaternion<T>& q0, const CQuaternion<T>& q1, const double t,
@@ -74,12 +74,12 @@ void slerp(
 
 /** SLERP interpolation between two 6D poses - like mrpt::math::slerp for
  * quaternions, but interpolates the [X,Y,Z] coordinates as well.
-  * \param[in] p0 The pose for t=0
-  * \param[in] p1 The pose for t=1
-  * \param[in] t  A "time" parameter, in the range [0,1].
-  * \param[out] p The output, interpolated pose.
-  * \exception std::exception Only in Debug, if t is not in the valid range.
-  */
+ * \param[in] p0 The pose for t=0
+ * \param[in] p1 The pose for t=1
+ * \param[in] t  A "time" parameter, in the range [0,1].
+ * \param[out] p The output, interpolated pose.
+ * \exception std::exception Only in Debug, if t is not in the valid range.
+ */
 void slerp(const TPose3D& q0, const TPose3D& q1, const double t, TPose3D& p);
 
 /** \overload Interpolates two SO(3) elements (the rotational part only), given
@@ -93,5 +93,4 @@ void slerp_ypr(
 /** @} */
 
 /** @} */  // grouping
-}
-
+}  // namespace mrpt::math

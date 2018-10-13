@@ -30,7 +30,7 @@ class CRangeScanEdgeRegistrationDecider
 	: public virtual CEdgeRegistrationDecider<GRAPH_T>,
 	  public CRangeScanOps<GRAPH_T>
 {
-public:
+   public:
 	using parent_t =
 		mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_T>;
 	/**\brief Typedef for accessing methods of the
@@ -40,10 +40,10 @@ public:
 	using nodes_to_scans2D_t = std::map<
 		mrpt::graphs::TNodeID, mrpt::obs::CObservation2DRangeScan::Ptr>;
 
-	CRangeScanEdgeRegistrationDecider()=default;
-	~CRangeScanEdgeRegistrationDecider() override =default;
+	CRangeScanEdgeRegistrationDecider() = default;
+	~CRangeScanEdgeRegistrationDecider() override = default;
 
-protected:
+   protected:
 	void loadParams(const std::string& source_fname) override;
 	void printParams() const override;
 	/**\brief Map for keeping track of the observation recorded at each graph
@@ -55,8 +55,5 @@ protected:
 	 */
 	size_t m_last_total_num_nodes = 0;
 };
-}
+}  // namespace mrpt::graphslam::deciders
 #include "CRangeScanEdgeRegistrationDecider_impl.h"
-
-
-

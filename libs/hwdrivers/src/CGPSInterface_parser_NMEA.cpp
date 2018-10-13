@@ -113,7 +113,7 @@ bool CGPSInterface::parse_NMEA(
 		s, "*,\t\r\n", lstTokens, false /* do not skip blank tokens */);
 	if (lstTokens.size() < 3) return false;
 
-	for (auto & lstToken : lstTokens)
+	for (auto& lstToken : lstTokens)
 		lstToken = mrpt::system::trim(lstToken);  // Trim whitespaces
 
 	bool parsed_ok = false;

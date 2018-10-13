@@ -102,8 +102,7 @@ class CSetOfObjects : public CRenderizable
 	/** Retrieves a list of all objects in text form  */
 	void dumpListOfObjects(std::vector<std::string>& lst);
 
-	bool traceRay(
-		const mrpt::poses::CPose3D& o, double& dist) const override;
+	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 
 	CRenderizable& setColor_u8(const mrpt::img::TColor& c) override;
 	CRenderizable& setColorR_u8(const uint8_t r) override;
@@ -191,12 +190,11 @@ typename T::Ptr CSetOfObjects::getByClass(const size_t& ith) const
 	// If not found directly, search recursively:
 	for (const auto& o : m_objects)
 	{
-		if (o &&
-			o->GetRuntimeClass() ==
-				CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::opengl))
+		if (o && o->GetRuntimeClass() ==
+					 CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::opengl))
 		{
 			typename T::Ptr obj = std::dynamic_pointer_cast<CSetOfObjects>(o)
-									->template getByClass<T>(ith);
+									  ->template getByClass<T>(ith);
 			if (obj) return obj;
 		}
 	}
@@ -204,6 +202,4 @@ typename T::Ptr CSetOfObjects::getByClass(const size_t& ith) const
 	return typename T::Ptr();  // Not found: return empty smart pointer
 	MRPT_END
 }
-}  // namespace mrpt
-
-
+}  // namespace mrpt::opengl

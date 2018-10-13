@@ -13,24 +13,24 @@
 
 TEST(exception, stackedException)
 {
-	EXPECT_THROW({
-		THROW_STACKED_EXCEPTION(std::runtime_error("stacked"));
-	}, std::logic_error);
+	EXPECT_THROW(
+		{ THROW_STACKED_EXCEPTION(std::runtime_error("stacked")); },
+		std::logic_error);
 }
 
 TEST(exception, assertException)
 {
 	bool trueValue = true;
 	bool falseValue = false;
-	EXPECT_THROW({
-		ASSERT_EQUAL_(trueValue, falseValue);
-	}, std::logic_error);
+	EXPECT_THROW({ ASSERT_EQUAL_(trueValue, falseValue); }, std::logic_error);
 }
 
 TEST(exception, stackedExceptionCustomMsg)
 {
-	EXPECT_THROW({
-		THROW_STACKED_EXCEPTION_CUSTOM_MSG2(std::runtime_error("stacked"),
-			"Foo %s\n", "bar");
-	}, std::logic_error);
+	EXPECT_THROW(
+		{
+			THROW_STACKED_EXCEPTION_CUSTOM_MSG2(
+				std::runtime_error("stacked"), "Foo %s\n", "bar");
+		},
+		std::logic_error);
 }

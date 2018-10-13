@@ -34,6 +34,7 @@ struct MySimpleUnaryEdge : public ScalarFactorGraph::UnaryFactorVirtualBase
 	}
 	double getInformation() const override { return m_information; }
 	void evalJacobian(double& dr_dx) const override { dr_dx = 1.0; }
+
    protected:
 	vector<double>& m_parent;
 	double m_observation, m_information;

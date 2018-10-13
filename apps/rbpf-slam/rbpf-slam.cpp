@@ -152,10 +152,9 @@ int main(int argc, char** argv)
 			"MappingApplication", "METRIC_MAP_CONTINUATION_START_POSE_X", .0);
 		METRIC_MAP_CONTINUATION_START_POSE.y = iniFile.read_double(
 			"MappingApplication", "METRIC_MAP_CONTINUATION_START_POSE_Y", .0);
-		METRIC_MAP_CONTINUATION_START_POSE.phi = DEG2RAD(
-			iniFile.read_double(
-				"MappingApplication",
-				"METRIC_MAP_CONTINUATION_START_POSE_PHI_DEG", .0));
+		METRIC_MAP_CONTINUATION_START_POSE.phi = DEG2RAD(iniFile.read_double(
+			"MappingApplication", "METRIC_MAP_CONTINUATION_START_POSE_PHI_DEG",
+			.0));
 
 		MRPT_LOAD_CONFIG_VAR(
 			PROGRESS_WINDOW_WIDTH, int, iniFile, "MappingApplication");
@@ -268,7 +267,7 @@ void MapBuilding_RBPF()
 
 		mapBuilder.initialize(dummySimpleMap, &startPose);
 
-		for (auto & m_particle : mapBuilder.mapPDF.m_particles)
+		for (auto& m_particle : mapBuilder.mapPDF.m_particles)
 		{
 			CRBPFParticleData* part_d = m_particle.d.get();
 			CMultiMetricMap& mmap = part_d->mapTillNow;
@@ -474,9 +473,8 @@ void MapBuilding_RBPF()
 
 					//  Most likely maps:
 					// ----------------------------------------
-					mostLikMap->saveMetricMapRepresentationToFile(
-						format(
-							"%s/mapbuilt_%05u_", OUT_DIR_MAPS.c_str(), step));
+					mostLikMap->saveMetricMapRepresentationToFile(format(
+						"%s/mapbuilt_%05u_", OUT_DIR_MAPS.c_str(), step));
 
 					if (mostLikMap->m_gridMaps.size() > 0)
 					{
@@ -533,11 +531,10 @@ void MapBuilding_RBPF()
 						mapBuilder.mapPDF.getPath(i, path);
 
 						float x0 = 0, y0 = 0, z0 = 0;
-						for (auto & k : path)
+						for (auto& k : path)
 						{
 							objLines->appendLine(
-								x0, y0, z0 + 0.001, k.x, k.y,
-								k.z + 0.001);
+								x0, y0, z0 + 0.001, k.x, k.y, k.z + 0.001);
 							x0 = k.x;
 							y0 = k.y;
 							z0 = k.z;
@@ -585,10 +582,9 @@ void MapBuilding_RBPF()
 
 				if (SAVE_3D_SCENE)
 				{  // Save as file:
-					CFileGZOutputStream f(
-						format(
-							"%s/buildingmap_%05u.3Dscene", OUT_DIR_3D.c_str(),
-							step));
+					CFileGZOutputStream f(format(
+						"%s/buildingmap_%05u.3Dscene", OUT_DIR_3D.c_str(),
+						step));
 					mrpt::serialization::archiveFrom(f) << *scene;
 				}
 

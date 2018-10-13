@@ -102,8 +102,7 @@ double joint_pdf_metric(
 	// ----------------------------------------------------------------------
 	Eigen::Matrix<T, Eigen::Dynamic, 1> innovations(N * info.length_O);
 	T* dst_ptr = &innovations[0];
-	for (auto it =
-			 info.currentAssociation.begin();
+	for (auto it = info.currentAssociation.begin();
 		 it != info.currentAssociation.end(); ++it)
 	{
 		const T* pred_i_mean = Y_predictions_mean.get_unsafe_row(it->second);
@@ -255,7 +254,7 @@ void JCBB_recursive(
 	}
 }
 
-}
+}  // namespace mrpt::slam
 
 /* ==================================================================================================
 Computes the data-association between the prediction of a set of landmarks and
@@ -510,8 +509,7 @@ void mrpt::slam::data_association_full_covariance(
 			// --------------------------------------------------------------------
 			std::set<prediction_index_t> lst_already_taken_preds;
 
-			for (auto it = lst_all_ICs.begin();
-				 it != lst_all_ICs.end(); ++it)
+			for (auto it = lst_all_ICs.begin(); it != lst_all_ICs.end(); ++it)
 			{
 				const observation_index_t obs_id = it->second.first;
 				const multimap<double, prediction_index_t>& lstCompats =
@@ -563,7 +561,7 @@ void mrpt::slam::data_association_full_covariance(
 	if (!predictions_IDs.empty())
 	{
 		ASSERT_(predictions_IDs.size() == nPredictions);
-		for (auto & association : results.associations)
+		for (auto& association : results.associations)
 			association.second = predictions_IDs[association.second];
 	}
 

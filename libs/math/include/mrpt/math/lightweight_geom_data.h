@@ -720,7 +720,8 @@ struct TPose3D : public TPoseOrPoint
 	 */
 	void getAsQuaternion(
 		mrpt::math::CQuaternion<double>& q,
-		mrpt::math::CMatrixFixedNumeric<double, 4, 3>* out_dq_dr = nullptr) const;
+		mrpt::math::CMatrixFixedNumeric<double, 4, 3>* out_dq_dr =
+			nullptr) const;
 
 	void composePoint(const TPoint3D l, TPoint3D& g) const;
 	void inverseComposePoint(const TPoint3D g, TPoint3D& l) const;

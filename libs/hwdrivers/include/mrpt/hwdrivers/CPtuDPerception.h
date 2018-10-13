@@ -15,15 +15,15 @@
 namespace mrpt::hwdrivers
 {
 /** This class implements initialization and comunication methods to
-  * control a Pan and Tilt Unit model PTU-46-17.5, working in radians .
-  * \ingroup mrpt_hwdrivers_grp
-  */
+ * control a Pan and Tilt Unit model PTU-46-17.5, working in radians .
+ * \ingroup mrpt_hwdrivers_grp
+ */
 class CPtuDPerception : public CPtuBase
 {
    public:
 	/** Default constructor */
 
-	CPtuDPerception()= default;
+	CPtuDPerception() = default;
 
 	/** Destructor */
 
@@ -44,17 +44,17 @@ class CPtuDPerception : public CPtuBase
 	bool absPosQ(char axis, double& nRad) override;
 
 	/** Specify desired axis position as an offset from the current position. \n
-	*	This method recives the number of radians to move.
-	*	\code
-	*	Example of use:
-	*		TT-500 *
-	*		A *
-	*		TO * Current Tilt position is -500
-	*		TO500 *
-	*		A *
-	*		TT * Current Pan position is 1000
-	*	\endcode
-	*/
+	 *	This method recives the number of radians to move.
+	 *	\code
+	 *	Example of use:
+	 *		TT-500 *
+	 *		A *
+	 *		TO * Current Tilt position is -500
+	 *		TO500 *
+	 *		A *
+	 *		TT * Current Pan position is 1000
+	 *	\endcode
+	 */
 
 	bool moveToOffPos(char axis, double nRad) override;
 
@@ -79,29 +79,29 @@ class CPtuDPerception : public CPtuBase
 	bool enableLimits(bool set) override;
 
 	/** With I mode (default) instructs pan-tilt unit to immediately
-	*	execute positional commands. \n
-	*	In S mode instructs pan-tilt unit to execute positional commands
-	*	only when an Await Position Command Completion command is executed
-	*	or when put into Immediate Execution Mode. \n
-	*	\code
-	*	Example of use of S mode:
-	*		DR *
-	*		S *
-	*		PP1500 *
-	*		TP-900 *
-	*		PP * Current Pan position is 0
-	*		TP * Current Tilt position is 0
-	*		A *
-	*		PP * Current Pan position is 1500
-	*		TP * Current Tilt position is -900
-	*	\endcode
-	*/
+	 *	execute positional commands. \n
+	 *	In S mode instructs pan-tilt unit to execute positional commands
+	 *	only when an Await Position Command Completion command is executed
+	 *	or when put into Immediate Execution Mode. \n
+	 *	\code
+	 *	Example of use of S mode:
+	 *		DR *
+	 *		S *
+	 *		PP1500 *
+	 *		TP-900 *
+	 *		PP * Current Pan position is 0
+	 *		TP * Current Tilt position is 0
+	 *		A *
+	 *		PP * Current Pan position is 1500
+	 *		TP * Current Tilt position is -900
+	 *	\endcode
+	 */
 
 	bool inmediateExecution(bool set) override;
 
 	/** Wait the finish of the last position command to
-	*	continue accept commands
-	*/
+	 *	continue accept commands
+	 */
 
 	bool aWait() override;
 
@@ -130,14 +130,14 @@ class CPtuDPerception : public CPtuBase
 	bool acelerationQ(char axis, double& radSec2) override;
 
 	/** Specification of velocity to which start and finish
-	*	the (de/a)celeration
-	*/
+	 *	the (de/a)celeration
+	 */
 
 	bool baseSpeed(char axis, double radSec) override;
 
 	/** Query velocity to which start and finish
-	*	the (de/a)celeration
-	*/
+	 *	the (de/a)celeration
+	 */
 
 	bool baseSpeedQ(char axis, double& radSec) override;
 
@@ -208,22 +208,22 @@ class CPtuDPerception : public CPtuBase
 	/**************************** State Queries ********************/
 
 	/** Check errors, returns 0 if there are not errors or error code in
-	*otherwise
-	*	Error codes:
-	*	\code
-	*	1: Com error
-	*	2: Time out error
-	*	3: Init error
-	*	4: Pan tilt hit error
-	*	5: Pan hit error
-	*	6: Tilt hit error
-	*	7: Max limit error
-	*	8: Min limit error
-	*	9: Out of range
-	*	10: Illegal command error
-	*	11: Unexpected error
-	*   \endcode
-	**/
+	 *otherwise
+	 *	Error codes:
+	 *	\code
+	 *	1: Com error
+	 *	2: Time out error
+	 *	3: Init error
+	 *	4: Pan tilt hit error
+	 *	5: Pan hit error
+	 *	6: Tilt hit error
+	 *	7: Max limit error
+	 *	8: Min limit error
+	 *	9: Out of range
+	 *	10: Illegal command error
+	 *	11: Unexpected error
+	 *   \endcode
+	 **/
 
 	int checkErrors() override;
 
@@ -285,9 +285,9 @@ class CPtuDPerception : public CPtuBase
 	void close() override;
 
 	/** To obtains the mistake for use discrete values when the movement
-	*	is expressed in radians. Parameters are the absolute position in
-	*	radians and the axis desired
-	*/
+	 *	is expressed in radians. Parameters are the absolute position in
+	 *	radians and the axis desired
+	 */
 
 	double radError(char axis, double nRadMoved) override;
 
@@ -300,30 +300,30 @@ class CPtuDPerception : public CPtuBase
 	double posToRad(char axis, long nPos) override;
 
 	/** Performs a scan in the axis indicated and whit the precision desired. \n
-	*		\param <axis> {Pan or Till} \n
-	*		\param <tWait> {Wait time betwen commands} \n
-	*		\param <initial> {initial position}
-	*		\param <final> {final position}
-	*		\param <radPre> {radians precision for the scan}
-	*/
+	 *		\param <axis> {Pan or Till} \n
+	 *		\param <tWait> {Wait time betwen commands} \n
+	 *		\param <initial> {initial position}
+	 *		\param <final> {final position}
+	 *		\param <radPre> {radians precision for the scan}
+	 */
 
-	bool scan(
-		char axis, int wait, float initial, float final, double radPre) override;
+	bool scan(char axis, int wait, float initial, float final, double radPre)
+		override;
 
 	/** Query verbose mode */
 
 	bool verboseQ(bool& modo) override;
 
 	/** Set verbose. \n
-	*	\conde
-	*	Example of response with FV (verbose) active:
-	*		FV *
-	*		PP * Current pan position is 0
-	*		Example of response with FT (terse) active:
-	*		FT *
-	*		PP * 0
-	*	\endcode
-	*/
+	 *	\conde
+	 *	Example of response with FV (verbose) active:
+	 *		FV *
+	 *		PP * Current pan position is 0
+	 *		Example of response with FT (terse) active:
+	 *		FT *
+	 *		PP * 0
+	 *	\endcode
+	 */
 
 	bool verbose(bool set) override;
 
@@ -332,19 +332,19 @@ class CPtuDPerception : public CPtuBase
 	bool echoModeQ(bool& mode) override;
 
 	/** Enable/Disable echo response with command. \n
-	*	\code
-	*	Example of use (EE supposed):
-	*		PP * 22
-	*		ED *
-	*		<pp entered again, but not echoed>* 22
-	*	\endcode
-	*/
+	 *	\code
+	 *	Example of use (EE supposed):
+	 *		PP * 22
+	 *		ED *
+	 *		<pp entered again, but not echoed>* 22
+	 *	\endcode
+	 */
 
 	bool echoMode(bool mode) override;
 
 	/** Query the pan and tilt resolution per position moved
-	*	and initialize local atributes
-	*/
+	 *	and initialize local atributes
+	 */
 
 	bool resolution() override;
 
@@ -395,9 +395,9 @@ class CPtuDPerception : public CPtuBase
 	};
 
 	/** TimeoutError: Only occurs if the communication is cut with PTU
-	*		so it is advisable to check the connection and initialize
-	*		again the comunication.
-	*/
+	 *		so it is advisable to check the connection and initialize
+	 *		again the comunication.
+	 */
 
 	int nError;
 
@@ -423,6 +423,4 @@ class CPtuDPerception : public CPtuBase
 
 };  // End of class
 
-}
-
-
+}  // namespace mrpt::hwdrivers

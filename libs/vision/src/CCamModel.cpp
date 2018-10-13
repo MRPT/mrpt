@@ -41,12 +41,12 @@ void CCamModel::jacob_undistor_fm(
 	double rd4 = rd2 * rd2;
 
 	J_undist.setSize(2, 2);
-	J_undist(0, 0) =
-		(1 + k1 * rd2 + k2 * rd4) +
-		(p.x - Cx) * (k1 + 2 * k2 * rd2) * (2 * (p.x - Cx) * dx * dx);
-	J_undist(1, 1) =
-		(1 + k1 * rd2 + k2 * rd4) +
-		(p.y - Cy) * (k1 + 2 * k2 * rd2) * (2 * (p.y - Cy) * dy * dy);
+	J_undist(0, 0) = (1 + k1 * rd2 + k2 * rd4) + (p.x - Cx) *
+													 (k1 + 2 * k2 * rd2) *
+													 (2 * (p.x - Cx) * dx * dx);
+	J_undist(1, 1) = (1 + k1 * rd2 + k2 * rd4) + (p.y - Cy) *
+													 (k1 + 2 * k2 * rd2) *
+													 (2 * (p.y - Cy) * dy * dy);
 	J_undist(0, 1) =
 		(p.x - Cx) * (k1 + 2 * k2 * rd2) * (2 * (p.y - Cy) * dy * dy);
 	J_undist(1, 0) =
@@ -174,7 +174,7 @@ void CCamModel::project_3D_point(
 
 /**	Return the 3D location of a point (at a fixed distance z=1), for the given
  * (distorted) pixel position
-  */
+ */
 void CCamModel::unproject_3D_point(
 	const mrpt::img::TPixelCoordf& distorted_p, mrpt::math::TPoint3D& p3D) const
 {

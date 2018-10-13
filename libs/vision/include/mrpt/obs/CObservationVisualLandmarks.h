@@ -37,20 +37,20 @@ class CObservationVisualLandmarks : public CObservation
 	mrpt::maps::CLandmarksMap landmarks;
 
 	/** Implements the virtual method in charge of finding the likelihood
-	  *between this
-	  *   and another observation, probably only of the same derived class. The
-	  *operator
-	  *   may be asymmetric.
-	  *
-	  * \param anotherObs The other observation to compute likelihood with.
-	  * \param anotherObsPose If known, the belief about the robot pose when the
-	  *other observation was taken can be supplied here, or nullptr if it is
-	  *unknown.
-	  *
-	  * \return Returns a likelihood measurement, in the range [0,1].
-	  *	\exception std::exception On any error, as another observation being of
-	  *an invalid class.
-	  */
+	 *between this
+	 *   and another observation, probably only of the same derived class. The
+	 *operator
+	 *   may be asymmetric.
+	 *
+	 * \param anotherObs The other observation to compute likelihood with.
+	 * \param anotherObsPose If known, the belief about the robot pose when the
+	 *other observation was taken can be supplied here, or nullptr if it is
+	 *unknown.
+	 *
+	 * \return Returns a likelihood measurement, in the range [0,1].
+	 *	\exception std::exception On any error, as another observation being of
+	 *an invalid class.
+	 */
 	float likelihoodWith(
 		const mrpt::obs::CObservation* anotherObs,
 		const mrpt::poses::CPosePDF* anotherObsPose = nullptr) const;
@@ -68,6 +68,4 @@ class CObservationVisualLandmarks : public CObservation
 
 };  // End of class def.
 
-}
-
-
+}  // namespace mrpt::obs

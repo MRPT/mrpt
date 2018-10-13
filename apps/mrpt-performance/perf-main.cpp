@@ -230,8 +230,7 @@ int main(int argc, char** argv)
 				"<td align=\"center\"><b>Execution rate (Hz)</b></td> </tr>\n");
 		}
 
-		for (auto it = lstTests.begin();
-			 it != lstTests.end(); it++)
+		for (auto it = lstTests.begin(); it != lstTests.end(); it++)
 		{
 			// Filter tests?
 			if (!match_contains.empty())

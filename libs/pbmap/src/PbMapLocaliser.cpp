@@ -94,16 +94,14 @@ void PbMapLocaliser::compareSubgraphNeighbors(SubgraphMatcher& matcher)
 	cout << "PbMapLocaliser::compareSubgraphNeighbors\n";
 	PbMap& matchedPbMap = previousPbMaps[bestMap];
 
-	for (auto it = bestMatch.begin();
-		 it != bestMatch.end(); it++)
+	for (auto it = bestMatch.begin(); it != bestMatch.end(); it++)
 	{
 		// TODO: use the graph to grow
 		if (matcher.configLocaliser.graph_mode == 0)  // Nearby neighbors -
 			// Check the 2nd order
 			// neighbors of the
 			// matched planes
-			for (auto it1 =
-					 mPbMap.vPlanes[it->first].nearbyPlanes.begin();
+			for (auto it1 = mPbMap.vPlanes[it->first].nearbyPlanes.begin();
 				 it1 != mPbMap.vPlanes[it->first].nearbyPlanes.end(); it1++)
 			{
 				if (matcher.subgraphSrc->subgraphPlanesIdx.count(*it1))
@@ -123,8 +121,7 @@ void PbMapLocaliser::compareSubgraphNeighbors(SubgraphMatcher& matcher)
 						// FloorPlaneMap != -1) ? true
 						//: false ) )
 						continue;
-					for (auto it_matched =
-							 bestMatch.begin();
+					for (auto it_matched = bestMatch.begin();
 						 it_matched != bestMatch.end(); it_matched++)
 						if (!matcher.evalBinaryConstraints(
 								mPbMap.vPlanes[*it1],
@@ -139,16 +136,14 @@ void PbMapLocaliser::compareSubgraphNeighbors(SubgraphMatcher& matcher)
 			}
 		else  // if(matcher.configLocaliser.graph_mode == 1)// Co-visible
 			// neighbors - Check the 2nd order neighbors of the matched planes
-			for (auto it1 =
-					 mPbMap.vPlanes[it->first].neighborPlanes.begin();
+			for (auto it1 = mPbMap.vPlanes[it->first].neighborPlanes.begin();
 				 it1 != mPbMap.vPlanes[it->first].neighborPlanes.end(); it1++)
 			{
 				if (matcher.subgraphSrc->subgraphPlanesIdx.count(it1->first))
 					continue;
 
-				for (auto it2 =
-						 matchedPbMap.vPlanes[it->second]
-							 .neighborPlanes.begin();
+				for (auto it2 = matchedPbMap.vPlanes[it->second]
+									.neighborPlanes.begin();
 					 it2 !=
 					 matchedPbMap.vPlanes[it->second].neighborPlanes.end();
 					 it2++)
@@ -163,8 +158,7 @@ void PbMapLocaliser::compareSubgraphNeighbors(SubgraphMatcher& matcher)
 							false))  //(FloorPlane != -1 && FloorPlaneMap != -1)
 						//? true : false ) )
 						continue;
-					for (auto it_matched =
-							 bestMatch.begin();
+					for (auto it_matched = bestMatch.begin();
 						 it_matched != bestMatch.end(); it_matched++)
 						if (!matcher.evalBinaryConstraints(
 								mPbMap.vPlanes[it1->first],
@@ -183,8 +177,7 @@ void PbMapLocaliser::compareSubgraphNeighbors(SubgraphMatcher& matcher)
 double PbMapLocaliser::getAreaMatch()
 {
 	double area = 0.0;
-	for (auto it = bestMatch.begin();
-		 it != bestMatch.end(); it++)
+	for (auto it = bestMatch.begin(); it != bestMatch.end(); it++)
 		area += mPbMap.vPlanes[it->first].areaVoxels;
 
 #ifdef _VERBOSE
@@ -197,7 +190,7 @@ double PbMapLocaliser::getAreaMatch()
 /**!
  * Searches the input plane in the rest of planes of the map taking into account
  * the neighboring relations
-*/
+ */
 bool PbMapLocaliser::searchPlaneContext(Plane& searchPlane)
 {
 #ifdef _VERBOSE
@@ -289,8 +282,7 @@ bool PbMapLocaliser::searchPlaneContext(Plane& searchPlane)
 		if (getAreaMatch() < 3.0) return false;
 
 		pcl::PointXYZ placePos(0, 0, 0);
-		for (auto it = bestMatch.begin();
-			 it != bestMatch.end(); it++)
+		for (auto it = bestMatch.begin(); it != bestMatch.end(); it++)
 		{
 			if (mPbMap.vPlanes[it->first].label !=
 				winnerPbMap.vPlanes[it->second].label)
@@ -467,9 +459,8 @@ void PbMapLocaliser::run()
 
 				//    cout << "nChecks " << matcher.nCheckConditions << endl;
 				double search_plane_end = pcl::getTime();
-				if (timeLocalizer.count(
-						mPbMap.vPlanes[vQueueObservedPlanes[0]]
-							.neighborPlanes.size()) == 0)
+				if (timeLocalizer.count(mPbMap.vPlanes[vQueueObservedPlanes[0]]
+											.neighborPlanes.size()) == 0)
 				{
 					timeLocalizer[mPbMap.vPlanes[vQueueObservedPlanes[0]]
 									  .neighborPlanes.size()]
@@ -505,11 +496,8 @@ void PbMapLocaliser::run()
 	cout << "Print TIME PbLocalizer\n";
 	cout << "Tiempo1 " << time1 << " tiempo2 " << time2 << endl;
 	;
-	auto itChecks =
-		nCheckLocalizer.begin();
-	for (auto it =
-			 timeLocalizer.begin();
-		 it != timeLocalizer.end(); it++)
+	auto itChecks = nCheckLocalizer.begin();
+	for (auto it = timeLocalizer.begin(); it != timeLocalizer.end(); it++)
 	{
 		double sum_times = 0;
 		double sum_nChecks = 0;

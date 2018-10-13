@@ -11,7 +11,6 @@
 
 namespace mrpt::graphslam::deciders
 {
-
 template <class GRAPH_T>
 CICPCriteriaNRD<GRAPH_T>::CICPCriteriaNRD()
 	: params(*this)  // pass reference to self when initializing the parameters
@@ -336,7 +335,9 @@ void CICPCriteriaNRD<GRAPH_T>::getDescriptiveReport(
 }  // end of getDescriptiveReport
 
 template <class GRAPH_T>
-CICPCriteriaNRD<GRAPH_T>::TParams::TParams(decider_t& d) : decider(d) { }
+CICPCriteriaNRD<GRAPH_T>::TParams::TParams(decider_t& d) : decider(d)
+{
+}
 
 template <class GRAPH_T>
 void CICPCriteriaNRD<GRAPH_T>::TParams::dumpToTextStream(
@@ -378,7 +379,4 @@ void CICPCriteriaNRD<GRAPH_T>::TParams::loadFromConfigFile(
 
 	MRPT_END;
 }
-}  // end of namespace
-
-
-
+}  // namespace mrpt::graphslam::deciders

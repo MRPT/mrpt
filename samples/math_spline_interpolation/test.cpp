@@ -57,9 +57,8 @@ void TestCPose3DInterpolation()
 	poseInt.insert(ts, pose);  // Fourth point
 
 	unsigned int i;
-	for (i = 0, ots = iniTs;
-		ots <= iniTs + std::chrono::seconds(3);
-		ots += std::chrono::milliseconds(100), i++)
+	for (i = 0, ots = iniTs; ots <= iniTs + std::chrono::seconds(3);
+		 ots += std::chrono::milliseconds(100), i++)
 	{
 		poseInt.interpolate(ots, outPose, valid);
 		p.push_back(outPose);

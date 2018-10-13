@@ -259,6 +259,4 @@ void ba_build_gradient_Hessians(
 	mrpt::aligned_std_vector<CArrayDouble<3>>& eps_point,
 	const size_t num_fix_frames, const size_t num_fix_points,
 	const vector<double>* kernel_1st_deriv);
-}
-
-
+}  // namespace mrpt::vision

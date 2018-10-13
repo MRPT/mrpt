@@ -352,7 +352,7 @@ void CPose3DPDFGaussian::drawManySamples(
 
 	getRandomGenerator().drawGaussianMultivariateMany(outSamples, N, cov);
 
-	for (auto & outSample : outSamples)
+	for (auto& outSample : outSamples)
 	{
 		outSample[0] += mean.x();
 		outSample[1] += mean.y();

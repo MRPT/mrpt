@@ -103,7 +103,7 @@ LegacyDataPacket::LegacyDataPacket(const LegacyDataPacket& other)
 }
 
 /*! \brief Assignment operator, copies the contents of \a pack into this
-*/
+ */
 const LegacyDataPacket& LegacyDataPacket::operator=(
 	const LegacyDataPacket& pack)
 {
@@ -149,7 +149,7 @@ LegacyDataPacket::~LegacyDataPacket()
 // lint -esym(613, LegacyDataPacket::m_fixedData) assert and dataSize take care
 // of this
 /*! \brief Returns the number of devices whose data is contained in the object
-*/
+ */
 uint16_t LegacyDataPacket::itemCount(void) const
 {
 	assert(m_fixedData);
@@ -158,7 +158,7 @@ uint16_t LegacyDataPacket::itemCount(void) const
 
 /*! \brief Set the number of devices whose data is contained in this object to
  * \a count
-*/
+ */
 void LegacyDataPacket::setItemCount(uint16_t count)
 {
 	assert(m_fixedData);
@@ -166,20 +166,20 @@ void LegacyDataPacket::setItemCount(uint16_t count)
 }
 
 /*! \brief Returns the Time Of Arrival value as stored in the object
-*/
+ */
 XsTimeStamp LegacyDataPacket::timeOfArrival(void) const { return m_toa; }
 /*! \brief Set the Time Of Arrival value to \a timeofarrival
-*/
+ */
 void LegacyDataPacket::setTimeOfArrival(XsTimeStamp timeofarrival)
 {
 	m_toa = timeofarrival;
 }
 
 /*! \brief Returns the Real Time Clock value as stored in the object
-*/
+ */
 XsTimeStamp LegacyDataPacket::rtc(void) const { return m_rtc; }
 /*! \brief Set the Real Time Clock value to \a realtimeclock
-*/
+ */
 void LegacyDataPacket::setRtc(const XsTimeStamp realtimeclock)
 {
 	m_rtc = realtimeclock;
@@ -196,7 +196,7 @@ int64_t LegacyDataPacket::largePacketCounter(void) const
 }
 
 /*! \brief Set the 64-bit sample counter associated with this packet
-*/
+ */
 void LegacyDataPacket::setLargePacketCounter(const int64_t sc)
 {
 	m_packetId = sc;
@@ -207,7 +207,7 @@ void LegacyDataPacket::setLargePacketCounter(const int64_t sc)
 XsMessage LegacyDataPacket::message(void) const { return m_msg; }
 /*! \brief Returns the original message as it was received, without computed and
  * added data (except for SDI interval reconstruction)
-*/
+ */
 XsMessage LegacyDataPacket::originalMessage(void) const
 {
 	assert(m_fixedData);
@@ -481,7 +481,7 @@ XsSize LegacyDataPacket::dataSize(int32_t index) const
 
 /*! \brief Update the internal info list by analyzing the known XsDataFormat for
  * each device.
-*/
+ */
 void LegacyDataPacket::updateInfoList()
 {
 	assert(m_fixedData);
@@ -1326,7 +1326,7 @@ XsPressure LegacyDataPacket::pressure(int32_t index) const
 }
 
 /*!	\brief Return true if the packet contains pressure data
-*/
+ */
 bool LegacyDataPacket::containsPressure(int32_t index) const
 {
 	if (dataSize(index) == 0) return false;
@@ -1339,7 +1339,7 @@ bool LegacyDataPacket::containsPressure(int32_t index) const
 }
 
 /*! \brief Add/update pressure data for the item
-*/
+ */
 bool LegacyDataPacket::setPressure(const XsPressure& data, int32_t index)
 {
 	if (dataSize(index) == 0) return false;
@@ -1936,9 +1936,10 @@ XsMatrix LegacyDataPacket::orientationMatrix(int32_t index) const
 		for (int32_t i = 0; i < 3; ++i)
 			for (int32_t j = 0; j < 3; ++j, k += ds)
 				buffer.setValue(
-					j, i, m_msg.getDataFPValue(
-							  CHECKIFDOUBLE(m_oriMat),
-							  m_fixedData->m_infoList[index].m_oriMat + k));
+					j, i,
+					m_msg.getDataFPValue(
+						CHECKIFDOUBLE(m_oriMat),
+						m_fixedData->m_infoList[index].m_oriMat + k));
 	}
 	else
 		buffer.zero();

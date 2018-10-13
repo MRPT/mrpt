@@ -56,8 +56,7 @@ DECLARE_OP_FUNCTION(op_export_imu_txt)
 			const CObservationIMU* obs =
 				dynamic_cast<CObservationIMU*>(o.get());
 
-			auto it =
-				lstFiles.find(obs->sensorLabel);
+			auto it = lstFiles.find(obs->sensorLabel);
 
 			FILE* f_this;
 
@@ -126,8 +125,7 @@ DECLARE_OP_FUNCTION(op_export_imu_txt)
 		// Destructor: close files and generate summary files:
 		~CRawlogProcessor_ExportIMU_TXT()
 		{
-			for (auto it = lstFiles.begin();
-				 it != lstFiles.end(); ++it)
+			for (auto it = lstFiles.begin(); it != lstFiles.end(); ++it)
 			{
 				os::fclose(it->second);
 			}

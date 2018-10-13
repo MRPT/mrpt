@@ -14,7 +14,7 @@
 namespace mrpt::containers
 {
 /** \addtogroup stlext_grp
-  * @{ */
+ * @{ */
 
 /** A generic proxy accessor template that only allows read-only access to the
  * original binded STL container object. */
@@ -62,5 +62,4 @@ struct ContainerReadOnlyProxyAccessor
 };
 
 /** @} */  // end of grouping
-}
-
+}  // namespace mrpt::containers

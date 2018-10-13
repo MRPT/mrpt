@@ -20,7 +20,9 @@
 using namespace mrpt::graphslam;
 
 TSlidingWindow::TSlidingWindow(const std::string& name /* = "window" */)
-	: m_name(name) { }
+	: m_name(name)
+{
+}
 
 double TSlidingWindow::getMedian()
 {
@@ -91,8 +93,7 @@ double TSlidingWindow::getStdDev()
 		double mean = this->getMean();
 
 		double sum_of_sq_diffs = 0;
-		for (auto it =
-				 m_measurements_vec.begin();
+		for (auto it = m_measurements_vec.begin();
 			 it != m_measurements_vec.end(); ++it)
 		{
 			sum_of_sq_diffs += std::pow(*it - mean, 2);

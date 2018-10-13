@@ -101,7 +101,7 @@ void CInterfaceFTDI::OpenBySerialNumber(const std::string& serialNumber)
 	// Look for the one we want:
 	void* myDev = nullptr;
 
-	for (auto & lstDev : lstDevs)
+	for (auto& lstDev : lstDevs)
 	{
 		if (lstDev.ftdi_serial == serialNumber)
 		{
@@ -125,7 +125,7 @@ void CInterfaceFTDI::OpenBySerialNumber(const std::string& serialNumber)
 #else
 		(struct usb_device*)myDev
 #endif
-		);
+	);
 
 	if (ret) THROW_EXCEPTION(string(ftdi_get_error_string(ctx)));
 
@@ -214,8 +214,7 @@ void CInterfaceFTDI::ListAllDevices(TFTDIDeviceList& outList)
 	if (getenv("VERBOSE") != nullptr)
 	{
 		printf("[CInterfaceFTDI::ListAllDevices] List: \n");
-		for (auto i = outList.begin();
-			 i != outList.end(); ++i)
+		for (auto i = outList.begin(); i != outList.end(); ++i)
 			printf(
 				"USB DEV: V=%04X P=%04X S=%s\n", i->usb_idVendor,
 				i->usb_idProduct, i->ftdi_serial.c_str());

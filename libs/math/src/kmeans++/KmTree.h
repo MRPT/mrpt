@@ -102,4 +102,3 @@ class KmTree
 	char* node_data_;
 	int* point_indices_;
 };
-

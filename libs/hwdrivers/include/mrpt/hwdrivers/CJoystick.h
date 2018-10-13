@@ -99,6 +99,4 @@ class CJoystick
 #endif
 };  // End of class def.
 
-}
-
-
+}  // namespace mrpt::hwdrivers

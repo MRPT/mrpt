@@ -608,7 +608,8 @@ class CNetworkOfPoses
 						bool is_there = false;
 
 						// for all unconnected nodes
-						for (unsigned long unconnected_nodeID : unconnected_nodeIDs)
+						for (unsigned long unconnected_nodeID :
+							 unconnected_nodeIDs)
 						{
 							if (n_it->first == unconnected_nodeID)
 							{
@@ -659,8 +660,7 @@ class CNetworkOfPoses
 						TNodeID prev_nodeID = *unconnected_nodeIDs.begin();
 						curr_island.insert(
 							prev_nodeID);  // add the initial node;
-						for (auto it =
-								 ++unconnected_nodeIDs.begin();
+						for (auto it = ++unconnected_nodeIDs.begin();
 							 *it < sub_graph->root &&
 							 it != unconnected_nodeIDs.end();
 							 ++it)
@@ -1041,4 +1041,3 @@ MRPT_DECLARE_TTYPENAME(mrpt::containers::map_traits_map_as_vector)
 // Visualization related template classes
 #include <mrpt/graphs/CVisualizer.h>
 #include <mrpt/graphs/CMRVisualizer.h>
-

@@ -159,4 +159,4 @@ bool IntList::operator==(const IntList& lst)
 	return true;
 }
 
-}  // end of xsens namespace
+}  // namespace xsens

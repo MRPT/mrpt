@@ -38,7 +38,7 @@ class CPoint2DPDF : public mrpt::serialization::CSerializable,
    public:
 	/** Copy operator, translating if necesary (for example, between particles
 	 * and gaussian representations)
-	  */
+	 */
 	virtual void copyFrom(const CPoint2DPDF& o) = 0;
 
 	virtual void changeCoordinatesReference(
@@ -48,12 +48,12 @@ class CPoint2DPDF : public mrpt::serialization::CSerializable,
 	 * distributions->new distribution), then save the result in this object
 	 * (WARNING: See implementing classes to see classes that can and cannot be
 	 * mixtured!)
-	  * \param p1 The first distribution to fuse
-	  * \param p2 The second distribution to fuse
-	  * \param minMahalanobisDistToDrop If set to different of 0, the result of
+	 * \param p1 The first distribution to fuse
+	 * \param p2 The second distribution to fuse
+	 * \param minMahalanobisDistToDrop If set to different of 0, the result of
 	 * very separate Gaussian modes (that will result in negligible components)
 	 * in SOGs will be dropped to reduce the number of modes in the output.
-	  */
+	 */
 	virtual void bayesianFusion(
 		const CPoint2DPDF& p1, const CPoint2DPDF& p2,
 		const double minMahalanobisDistToDrop = 0) = 0;
@@ -70,5 +70,4 @@ class CPoint2DPDF : public mrpt::serialization::CSerializable,
 	static constexpr bool is_PDF() { return is_PDF_val != 0; }
 };  // End of class def.
 
-}
-
+}  // namespace mrpt::poses

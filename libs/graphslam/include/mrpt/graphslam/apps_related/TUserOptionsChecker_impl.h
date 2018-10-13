@@ -23,14 +23,12 @@ TUserOptionsChecker<GRAPH_t>::~TUserOptionsChecker()
 
 	// release the instances holding the descriptions of the available
 	// deciders/optimizers
-	for (auto it =
-			 regs_descriptions.begin();
-		 it != regs_descriptions.end(); ++it)
+	for (auto it = regs_descriptions.begin(); it != regs_descriptions.end();
+		 ++it)
 	{
 		delete *it;
 	}
-	for (auto it =
-			 optimizers_descriptions.begin();
+	for (auto it = optimizers_descriptions.begin();
 		 it != optimizers_descriptions.end(); ++it)
 	{
 		delete *it;
@@ -130,8 +128,7 @@ void TUserOptionsChecker<GRAPH_t>::dumpRegistrarsToConsole(
 			 << " Registration Deciders: " << endl;
 		cout << sep_header << endl;
 
-		for (auto dec_it =
-				 regs_descriptions.begin();
+		for (auto dec_it = regs_descriptions.begin();
 			 dec_it != regs_descriptions.end(); ++dec_it)
 		{
 			TRegistrationDeciderProps* dec = *dec_it;
@@ -161,8 +158,7 @@ void TUserOptionsChecker<GRAPH_t>::dumpRegistrarsToConsole(
 						 << "3D" << endl;
 				}
 				cout << endl;
-				for (auto obs_it =
-						 dec->observations_used.begin();
+				for (auto obs_it = dec->observations_used.begin();
 					 obs_it != dec->observations_used.end(); ++obs_it)
 				{
 					cout << "\t\t+ " << *obs_it << endl;
@@ -189,8 +185,7 @@ void TUserOptionsChecker<GRAPH_t>::dumpOptimizersToConsole() const
 	cout << endl << "Available GraphSlam Optimizer classes: " << endl;
 	cout << sep_header << endl;
 
-	for (auto opt_it =
-			 optimizers_descriptions.begin();
+	for (auto opt_it = optimizers_descriptions.begin();
 		 opt_it != optimizers_descriptions.end(); ++opt_it)
 	{
 		TOptimizerProps* opt = *opt_it;
@@ -237,8 +232,7 @@ bool TUserOptionsChecker<GRAPH_t>::checkRegistrationDeciderExists(
 			reg_type.c_str()));
 	bool found = false;
 
-	for (auto dec_it =
-			 regs_descriptions.begin();
+	for (auto dec_it = regs_descriptions.begin();
 		 dec_it != regs_descriptions.end(); ++dec_it)
 	{
 		TRegistrationDeciderProps* dec = *dec_it;
@@ -277,8 +271,7 @@ bool TUserOptionsChecker<GRAPH_t>::checkOptimizerExists(
 
 	bool found = false;
 
-	for (auto opt_it =
-			 optimizers_descriptions.begin();
+	for (auto opt_it = optimizers_descriptions.begin();
 		 opt_it != optimizers_descriptions.end(); ++opt_it)
 	{
 		TOptimizerProps* opt = *opt_it;
@@ -321,7 +314,8 @@ void TUserOptionsChecker<GRAPH_t>::populateDeciderOptimizerProperties()
 			"information for estimating the robot movement";
 		dec->type = "Node";
 		dec->rawlog_format = "Both";
-		dec->observations_used.emplace_back("CActionRobotMovement2D - Format #1");
+		dec->observations_used.emplace_back(
+			"CActionRobotMovement2D - Format #1");
 		dec->observations_used.emplace_back("CObservationOdometry - Format #2");
 		dec->is_slam_2d = true;
 		dec->is_slam_3d = true;
@@ -337,8 +331,10 @@ void TUserOptionsChecker<GRAPH_t>::populateDeciderOptimizerProperties()
 			"alignment for estimating the robot movement";
 		dec->type = "Node";
 		dec->rawlog_format = "#2 - Observation-only";
-		dec->observations_used.emplace_back("CObservation2DRangeScan - Format #2");
-		dec->observations_used.emplace_back("CObservation3DRangeScan - Format #2");
+		dec->observations_used.emplace_back(
+			"CObservation2DRangeScan - Format #2");
+		dec->observations_used.emplace_back(
+			"CObservation3DRangeScan - Format #2");
 		dec->is_slam_2d = true;
 
 		regs_descriptions.push_back(dec);
@@ -365,8 +361,10 @@ void TUserOptionsChecker<GRAPH_t>::populateDeciderOptimizerProperties()
 			"for adding a new edge";
 		dec->type = "Edge";
 		dec->rawlog_format = "Both";
-		dec->observations_used.emplace_back("CObservation2DRangeScan - Format #1, #2");
-		dec->observations_used.emplace_back("CObservation3DRangeScan - Format #2");
+		dec->observations_used.emplace_back(
+			"CObservation2DRangeScan - Format #1, #2");
+		dec->observations_used.emplace_back(
+			"CObservation3DRangeScan - Format #2");
 		dec->is_slam_2d = true;
 
 		regs_descriptions.push_back(dec);
@@ -392,7 +390,8 @@ void TUserOptionsChecker<GRAPH_t>::populateDeciderOptimizerProperties()
 			"Pairwise consistency matrix of each set.";
 		dec->type = "Edge";
 		dec->rawlog_format = "Both";
-		dec->observations_used.emplace_back("CObservation2DRangeScan - Format #1, #2");
+		dec->observations_used.emplace_back(
+			"CObservation2DRangeScan - Format #1, #2");
 		dec->is_slam_2d = true;
 
 		regs_descriptions.push_back(dec);
@@ -424,6 +423,4 @@ void TUserOptionsChecker<GRAPH_t>::populateDeciderOptimizerProperties()
 
 	MRPT_END
 }
-}  // end of namespaces
-
-
+}  // namespace mrpt::graphslam::apps

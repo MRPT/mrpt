@@ -13,7 +13,8 @@
 #include "pstdint.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #else
 #define XSGPSPVTDATA_INITIALIZER                  \
 	{                                             \
@@ -21,10 +22,10 @@ extern "C" {
 	}
 #endif
 
-struct XsGpsPvtData;
+	struct XsGpsPvtData;
 
-XSTYPES_DLL_API void XsGpsPvtData_destruct(struct XsGpsPvtData* thisPtr);
-XSTYPES_DLL_API int XsGpsPvtData_empty(const struct XsGpsPvtData* thisPtr);
+	XSTYPES_DLL_API void XsGpsPvtData_destruct(struct XsGpsPvtData* thisPtr);
+	XSTYPES_DLL_API int XsGpsPvtData_empty(const struct XsGpsPvtData* thisPtr);
 
 #ifdef __cplusplus
 }  // extern "C"

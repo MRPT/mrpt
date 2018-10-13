@@ -14,7 +14,7 @@
 using namespace mrpt::config;
 using namespace std;
 
-CConfigFilePrefixer::CConfigFilePrefixer()  = default;
+CConfigFilePrefixer::CConfigFilePrefixer() = default;
 CConfigFilePrefixer::CConfigFilePrefixer(
 	const CConfigFileBase& o, const std::string& prefix_sections,
 	const std::string& prefix_keys)
@@ -57,8 +57,7 @@ void CConfigFilePrefixer::getAllSections(
 		m_bound_object,
 		"You must first bind CConfigFilePrefixer to an existing object!");
 	m_bound_object->getAllSections(sections);
-	for (auto & section : sections)
-		section = m_prefix_sections + section;
+	for (auto& section : sections) section = m_prefix_sections + section;
 }
 
 void CConfigFilePrefixer::getAllKeys(
@@ -68,7 +67,7 @@ void CConfigFilePrefixer::getAllKeys(
 		m_bound_object,
 		"You must first bind CConfigFilePrefixer to an existing object!");
 	m_bound_object->getAllKeys(section, keys);
-	for (auto & key : keys) key = m_prefix_keys + key;
+	for (auto& key : keys) key = m_prefix_keys + key;
 }
 
 void CConfigFilePrefixer::writeString(

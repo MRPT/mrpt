@@ -22,6 +22,4 @@ struct TMRSlamEdgeAnnotations
 	 */
 	bool is_interconnecting_edge;
 };
-}
-
-
+}  // namespace mrpt::graphs::detail

@@ -221,13 +221,14 @@ bool mrpt::system::deleteFilesInDirectory(
 	CDirectoryExplorer::explore(
 		path, FILE_ATTRIB_ARCHIVE | FILE_ATTRIB_DIRECTORY, lstFiles);
 
-	for (auto & lstFile : lstFiles)
+	for (auto& lstFile : lstFiles)
 	{
 		if (lstFile.isDir)
 		{
 			if (lstFile.name != "." && lstFile.name != "..")
 			{
-				if (!mrpt::system::deleteFilesInDirectory(lstFile.wholePath, true))
+				if (!mrpt::system::deleteFilesInDirectory(
+						lstFile.wholePath, true))
 					return false;
 			}
 		}
@@ -301,9 +302,9 @@ std::string mrpt::system::getTempFileName()
 
 /** Renames a file - If the target path is different and the filesystem allows
  * it, it will be moved to the new location.
-  * \return false on any error. In that case, if a pointer to a receiver string
+ * \return false on any error. In that case, if a pointer to a receiver string
  * is passed in error_msg, a description of the error is saved there.
-  */
+ */
 bool mrpt::system::renameFile(
 	const string& oldFileName, const string& newFileName,
 	std::string* error_msg)
@@ -331,7 +332,7 @@ std::string mrpt::system::fileNameStripInvalidChars(
 	const unsigned int nForbid = sizeof(forbid) / sizeof(forbid[0]);
 
 	string ret(filename);
-	for (char & c : ret)
+	for (char& c : ret)
 	{
 		bool invalid = (c < 32);
 
@@ -444,7 +445,7 @@ bool mrpt::system::copyFile(
 		}
 		else
 		{
-// It exists, but cannot overwrite it:
+			// It exists, but cannot overwrite it:
 
 #ifdef _WIN32
 			// Try changing the permissions of the target file:

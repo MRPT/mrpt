@@ -926,6 +926,6 @@ class Cmt3
 	XsensResultValue storeXkfState(const CmtDeviceId deviceId = CMT_DID_MASTER);
 };
 
-}  // end of xsens namespace
+}  // namespace xsens
 
 #endif  // _CMT3_H_2006_04_14

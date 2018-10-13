@@ -361,8 +361,8 @@ CFormEdit::CFormEdit(wxWindow* parent, wxWindowID id)
 	FlexGridSizer5->AddGrowableCol(0);
 	FlexGridSizer5->AddGrowableRow(0);
 	cbObsClass = new wxCheckListBox(
-		this, ID_CHECKLISTBOX2, wxDefaultPosition, wxSize(-1, 200), 0, nullptr, 0,
-		wxDefaultValidator, _T("ID_CHECKLISTBOX2"));
+		this, ID_CHECKLISTBOX2, wxDefaultPosition, wxSize(-1, 200), 0, nullptr,
+		0, wxDefaultValidator, _T("ID_CHECKLISTBOX2"));
 	cbObsClass->SetMaxSize(wxSize(-1, 200));
 	FlexGridSizer5->Add(
 		cbObsClass, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
@@ -397,8 +397,8 @@ CFormEdit::CFormEdit(wxWindow* parent, wxWindowID id)
 	FlexGridSizer13->AddGrowableCol(0);
 	FlexGridSizer13->AddGrowableRow(0);
 	cbObsLabel = new wxCheckListBox(
-		this, ID_CHECKLISTBOX1, wxDefaultPosition, wxSize(-1, 200), 0, nullptr, 0,
-		wxDefaultValidator, _T("ID_CHECKLISTBOX1"));
+		this, ID_CHECKLISTBOX1, wxDefaultPosition, wxSize(-1, 200), 0, nullptr,
+		0, wxDefaultValidator, _T("ID_CHECKLISTBOX1"));
 	cbObsLabel->SetMaxSize(wxSize(-1, 200));
 	FlexGridSizer13->Add(
 		cbObsLabel, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
@@ -726,8 +726,7 @@ void filter_delActsByIndex(
 	if (acts)
 	{
 		int j = 0;
-		for (auto it = acts->begin(); it != acts->end();
-			 ++j)
+		for (auto it = acts->begin(); it != acts->end(); ++j)
 		{
 			if (auxMask[j])
 			{
@@ -783,7 +782,7 @@ void filter_swapColors(
 	{
 		for (auto obs : *SF)
 		{
-				if (IS_CLASS(obs, CObservationImage))
+			if (IS_CLASS(obs, CObservationImage))
 			{
 				auto* o = (CObservationImage*)obs.get();
 				if (o->image.isColor())
@@ -794,8 +793,7 @@ void filter_swapColors(
 			}
 			else if (IS_CLASS(obs, CObservationStereoImages))
 			{
-				auto* o =
-					(CObservationStereoImages*)obs.get();
+				auto* o = (CObservationStereoImages*)obs.get();
 				if (o->imageLeft.isColor())
 				{
 					swapColors(o->imageLeft);
@@ -1052,8 +1050,8 @@ void CFormEdit::executeOperationOnRawlog(
 
 				if (!isInMemory) archiveFrom(*out_fil) << *sf;
 			}
-			else if (
-				newObj->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
+			else if (newObj->GetRuntimeClass()->derivedFrom(
+						 CLASS_ID(CObservation)))
 			{
 				// A single observation:
 				dummy_sf->clear();
@@ -1092,10 +1090,9 @@ void CFormEdit::executeOperationOnRawlog(
 			}
 			else
 			{  // Unknown class:
-				THROW_EXCEPTION(
-					format(
-						"Unexpected class found in the file: '%s'",
-						newObj->GetRuntimeClass()->className));
+				THROW_EXCEPTION(format(
+					"Unexpected class found in the file: '%s'",
+					newObj->GetRuntimeClass()->className));
 			}
 		}
 		catch (exception& e)
@@ -1231,8 +1228,7 @@ void leave_horizontalScans(
 
 			if (IS_CLASS(obs, CObservation2DRangeScan))
 			{
-				auto* o =
-					static_cast<CObservation2DRangeScan*>(obs.get());
+				auto* o = static_cast<CObservation2DRangeScan*>(obs.get());
 
 				if (fabs(o->sensorPose.pitch()) > minPitchToDeleteLaserScan)
 				{

@@ -100,7 +100,6 @@ struct pose_point_impl<DERIVEDCLASS, 0>
 {
 };
 
-}  // End of namespace
-}  // End of namespace
-}  // End of namespace
-
+}  // namespace detail
+}  // namespace poses
+}  // namespace mrpt

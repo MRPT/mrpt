@@ -54,6 +54,4 @@ struct TNodeProps
 		return o;
 	}
 };
-}
-
-
+}  // namespace mrpt::graphslam::detail

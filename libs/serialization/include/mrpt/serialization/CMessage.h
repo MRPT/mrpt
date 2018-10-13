@@ -112,5 +112,4 @@ class CMessage
 
 };  // End of class
 
-}
-
+}  // namespace mrpt::serialization

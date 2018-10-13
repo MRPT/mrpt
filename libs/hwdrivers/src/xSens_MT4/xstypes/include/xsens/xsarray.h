@@ -92,80 +92,82 @@ typedef struct XsArrayDescriptor XsArrayDescriptor;
 #ifdef __cplusplus
 #include <iterator>
 #include <stdexcept>
-extern "C" {
-#endif
-
-XSTYPES_DLL_API void XsArray_construct(
-	void* thisPtr, XsArrayDescriptor const* const descriptor, XsSize count,
-	void const* src);
-XSTYPES_DLL_API void XsArray_copyConstruct(void* thisPtr, void const* src);
-XSTYPES_DLL_API void XsArray_destruct(void* thisPtr);
-XSTYPES_DLL_API void XsArray_assign(
-	void* thisPtr, XsSize count, void const* src);
-XSTYPES_DLL_API void XsArray_resize(void* thisPtr, XsSize count);
-XSTYPES_DLL_API void XsArray_reserve(void* thisPtr, XsSize count);
-XSTYPES_DLL_API void XsArray_copy(void* thisPtr, void const* src);
-XSTYPES_DLL_API void XsArray_append(void* thisPtr, void const* other);
-XSTYPES_DLL_API void XsArray_insert(
-	void* thisPtr, XsSize index, XsSize count, void const* src);
-XSTYPES_DLL_API void XsArray_erase(void* thisPtr, XsSize index, XsSize count);
-XSTYPES_DLL_API void XsArray_swap(void* a, void* b);
-XSTYPES_DLL_API int XsArray_compare(void const* a, void const* b);
-XSTYPES_DLL_API int XsArray_compareSet(void const* a, void const* b);
-XSTYPES_DLL_API int XsArray_find(void const* thisPtr, void const* needle);
-XSTYPES_DLL_API void const* XsArray_at(void const* thisPtr, XsSize index);
-XSTYPES_DLL_API void* XsArray_atIndex(void* thisPtr, XsSize index);
-XSTYPES_DLL_API void XsArray_removeDuplicates(void* thisPtr);
-
-struct XsArray
+extern "C"
 {
-	XSARRAY_DECL(void)
-#ifdef __cplusplus
-	//! \copydoc XsArray_construct
-	inline XsArray(
-		XsArrayDescriptor const* descriptor, XsSize count = 0,
-		void const* src = 0)
-		: m_data(0), m_size(0), m_reserved(0), m_flags(0), m_descriptor(0)
-	{
-		XsArray_construct(this, descriptor, count, src);
-	}
-
-	//! \copydoc XsArray_copyConstruct
-	inline XsArray(const XsArray& src)
-		: m_data(0), m_size(0), m_reserved(0), m_flags(0), m_descriptor(0)
-	{
-		XsArray_copyConstruct(this, &src);
-	}
-
-	//! \brief Creates a array that references the data supplied in \a ref
-	//! without allocating the data itself
-	inline explicit XsArray(
-		XsArrayDescriptor const* descriptor, void* ref, XsSize count,
-		XsDataFlags flags)
-		: m_data(ref),
-		  m_size(count),
-		  m_reserved(count),
-		  m_flags(flags),
-		  m_descriptor(descriptor)
-	{
-	}
-
-	//! \brief Destructor
-	~XsArray() { XsArray_destruct(this); }
-	/*! \brief Assignment operator
-		\details Copies the values in \a src into \a this
-		\param src The array to copy from
-		\return A reference to this
-	*/
-	inline XsArray const& operator=(const XsArray& src)
-	{
-		if (this != &src) XsArray_copy(this, &src);
-		return *this;
-	}
 #endif
-};
 
-typedef struct XsArray XsArray;
+	XSTYPES_DLL_API void XsArray_construct(
+		void* thisPtr, XsArrayDescriptor const* const descriptor, XsSize count,
+		void const* src);
+	XSTYPES_DLL_API void XsArray_copyConstruct(void* thisPtr, void const* src);
+	XSTYPES_DLL_API void XsArray_destruct(void* thisPtr);
+	XSTYPES_DLL_API void XsArray_assign(
+		void* thisPtr, XsSize count, void const* src);
+	XSTYPES_DLL_API void XsArray_resize(void* thisPtr, XsSize count);
+	XSTYPES_DLL_API void XsArray_reserve(void* thisPtr, XsSize count);
+	XSTYPES_DLL_API void XsArray_copy(void* thisPtr, void const* src);
+	XSTYPES_DLL_API void XsArray_append(void* thisPtr, void const* other);
+	XSTYPES_DLL_API void XsArray_insert(
+		void* thisPtr, XsSize index, XsSize count, void const* src);
+	XSTYPES_DLL_API void XsArray_erase(
+		void* thisPtr, XsSize index, XsSize count);
+	XSTYPES_DLL_API void XsArray_swap(void* a, void* b);
+	XSTYPES_DLL_API int XsArray_compare(void const* a, void const* b);
+	XSTYPES_DLL_API int XsArray_compareSet(void const* a, void const* b);
+	XSTYPES_DLL_API int XsArray_find(void const* thisPtr, void const* needle);
+	XSTYPES_DLL_API void const* XsArray_at(void const* thisPtr, XsSize index);
+	XSTYPES_DLL_API void* XsArray_atIndex(void* thisPtr, XsSize index);
+	XSTYPES_DLL_API void XsArray_removeDuplicates(void* thisPtr);
+
+	struct XsArray
+	{
+		XSARRAY_DECL(void)
+#ifdef __cplusplus
+		//! \copydoc XsArray_construct
+		inline XsArray(
+			XsArrayDescriptor const* descriptor, XsSize count = 0,
+			void const* src = 0)
+			: m_data(0), m_size(0), m_reserved(0), m_flags(0), m_descriptor(0)
+		{
+			XsArray_construct(this, descriptor, count, src);
+		}
+
+		//! \copydoc XsArray_copyConstruct
+		inline XsArray(const XsArray& src)
+			: m_data(0), m_size(0), m_reserved(0), m_flags(0), m_descriptor(0)
+		{
+			XsArray_copyConstruct(this, &src);
+		}
+
+		//! \brief Creates a array that references the data supplied in \a ref
+		//! without allocating the data itself
+		inline explicit XsArray(
+			XsArrayDescriptor const* descriptor, void* ref, XsSize count,
+			XsDataFlags flags)
+			: m_data(ref),
+			  m_size(count),
+			  m_reserved(count),
+			  m_flags(flags),
+			  m_descriptor(descriptor)
+		{
+		}
+
+		//! \brief Destructor
+		~XsArray() { XsArray_destruct(this); }
+		/*! \brief Assignment operator
+			\details Copies the values in \a src into \a this
+			\param src The array to copy from
+			\return A reference to this
+		*/
+		inline XsArray const& operator=(const XsArray& src)
+		{
+			if (this != &src) XsArray_copy(this, &src);
+			return *this;
+		}
+#endif
+	};
+
+	typedef struct XsArray XsArray;
 
 #ifdef __cplusplus
 }  // extern "C"
@@ -253,6 +255,7 @@ struct XsArrayImpl : protected XsArray
 	inline XsSize reserved() const { return m_reserved; }
 	//! \brief Returns the XsArrayDescriptor describing the array
 	inline XsArrayDescriptor const& descriptor() const { return *m_descriptor; }
+
    protected:
 #ifndef XSENS_NOITERATOR
 	/*! \brief STL-style iterator */
@@ -284,6 +287,7 @@ struct XsArrayImpl : protected XsArray
 		inline explicit IteratorImplBase(T* p) : m_ptr(p) {}
 		//! \brief Copy constructor
 		inline IteratorImplBase(this_type const& i) : m_ptr(i.m_ptr) {}
+
 	   public:
 		//! \brief Assignment operator
 		inline this_type operator=(void* p)
@@ -403,6 +407,7 @@ struct XsArrayImpl : protected XsArray
 		inline R* operator->() const { return (R*)ptr(); }
 		//! \brief Access to internal pointer object, use should be avoided
 		inline T* ptr() const { return m_ptr; }
+
 	   private:
 		//! \brief The internal pointer
 		T* m_ptr;
@@ -722,6 +727,7 @@ struct XsArrayImpl : protected XsArray
 
 	/*! \copydoc XsArray_removeDuplicates */
 	inline void removeDuplicates() { XsArray_removeDuplicates(this); }
+
    protected:  // MRPT
 	/*! \internal
 		\brief Generic pointer movement function

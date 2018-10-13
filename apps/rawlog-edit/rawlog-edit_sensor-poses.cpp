@@ -67,7 +67,7 @@ DECLARE_OP_FUNCTION(op_sensors_pose)
 			std::vector<std::string> sections;
 			cfg.getAllSections(sections);
 
-			for (auto & section : sections)
+			for (auto& section : sections)
 			{
 				if (section.empty()) continue;
 
@@ -96,8 +96,7 @@ DECLARE_OP_FUNCTION(op_sensors_pose)
 		bool processOneObservation(CObservation::Ptr& obs) override
 		{
 			// Check the sensor label:
-			auto i =
-				desiredSensorPoses.find(obs->sensorLabel);
+			auto i = desiredSensorPoses.find(obs->sensorLabel);
 			if (i != desiredSensorPoses.end())
 			{
 				obs->setSensorPose(i->second);

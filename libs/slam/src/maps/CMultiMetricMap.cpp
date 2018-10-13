@@ -182,7 +182,7 @@ struct MapIsEmpty
 // Ctor
 CMultiMetricMap::CMultiMetricMap(
 	const TSetOfMetricMapInitializers* initializers)
-	: maps(), ALL_PROXIES_INIT 
+	: maps(), ALL_PROXIES_INIT
 {
 	MRPT_START
 	setListOfMaps(initializers);
@@ -231,7 +231,7 @@ void CMultiMetricMap::setListOfMaps(
 	if (initializers != nullptr)
 	{
 		// Process each entry in the "initializers" and create maps accordingly:
-		for (const auto & initializer : *initializers)
+		for (const auto& initializer : *initializers)
 		{
 			// Create map from the list of all params:
 			mrpt::maps::CMetricMap* theMap =
@@ -404,7 +404,7 @@ float CMultiMetricMap::compute3DMatchingRatio(
 
 	float accumResult = 0;
 
-	for (const auto & map : maps)
+	for (const auto& map : maps)
 	{
 		const mrpt::maps::CMetricMap* m = map.get();
 		ASSERT_(m);

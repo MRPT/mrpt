@@ -14,14 +14,14 @@ namespace mrpt::nav
 {
 /** Implementation of multi-objective motion chooser using scalarization: a
  * user-given formula is used to
-  * collapse all the scores into a single scalar score. The candidate with the
+ * collapse all the scores into a single scalar score. The candidate with the
  * highest positive score is selected.
-  * Note that assert expressions are honored via the base class
+ * Note that assert expressions are honored via the base class
  * CMultiObjectiveMotionOptimizerBase
-  *
-  * \sa CReactiveNavigationSystem, CReactiveNavigationSystem3D
-  * \ingroup nav_reactive
-  */
+ *
+ * \sa CReactiveNavigationSystem, CReactiveNavigationSystem3D
+ * \ingroup nav_reactive
+ */
 class CMultiObjMotionOpt_Scalarization
 	: public mrpt::nav::CMultiObjectiveMotionOptimizerBase
 {
@@ -62,5 +62,4 @@ class CMultiObjMotionOpt_Scalarization
 		const std::vector<mrpt::nav::TCandidateMovementPTG>& movs,
 		TResultInfo& extra_info) override;
 };
-}
-
+}  // namespace mrpt::nav

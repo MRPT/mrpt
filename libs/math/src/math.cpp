@@ -103,8 +103,9 @@ double math::normalQuantile(double p)
 		/* Rational approximation for central region. */
 		u = q - 0.5;
 		t = u * u;
-		u = u * (((((a[0] * t + a[1]) * t + a[2]) * t + a[3]) * t + a[4]) * t +
-				 a[5]) /
+		u = u *
+			(((((a[0] * t + a[1]) * t + a[2]) * t + a[3]) * t + a[4]) * t +
+			 a[5]) /
 			(((((b[0] * t + b[1]) * t + b[2]) * t + b[3]) * t + b[4]) * t + 1);
 	}
 	else
@@ -197,8 +198,9 @@ double math::normalCDF(double u)
 		/* evaluate erfc() for |u| > sqrt(2)*4.0 */
 		z = z * 1.4142135623730950488016887242097 / y;
 		y = 2 / (y * y);
-		y = y * (((((p[0] * y + p[1]) * y + p[2]) * y + p[3]) * y + p[4]) * y +
-				 p[5]) /
+		y = y *
+			(((((p[0] * y + p[1]) * y + p[2]) * y + p[3]) * y + p[4]) * y +
+			 p[5]) /
 			(((((q[0] * y + q[1]) * y + q[2]) * y + q[3]) * y + q[4]) * y +
 			 q[5]);
 		y = z * (0.564189583547756286948 - y);
@@ -428,9 +430,9 @@ string math::MATLAB_plotCovariance2D(
 	str += format("],'%s');\n", style.c_str());
 
 	return str;
-	MRPT_END_WITH_CLEAN_UP(
-		std::cerr << "The matrix that led to error was: " << std::endl
-				  << cov << std::endl;)
+	MRPT_END_WITH_CLEAN_UP(std::cerr << "The matrix that led to error was: "
+									 << std::endl
+									 << cov << std::endl;)
 }
 
 double mrpt::math::interpolate2points(

@@ -52,9 +52,8 @@ class ConsistencyTest
 	The translation is calculated from the planes centroids and the rotation
 	from the alignment of the plane's normals.*/
 	Eigen::Matrix4f initPose(std::map<unsigned, unsigned>& matched_planes);
-	Eigen::Matrix4f estimatePose(
-		std::map<unsigned, unsigned>&
-			matched_planes);  // Weighted with the area
+	Eigen::Matrix4f estimatePose(std::map<unsigned, unsigned>&
+									 matched_planes);  // Weighted with the area
 	bool estimatePoseWithCovariance(
 		std::map<unsigned, unsigned>& matched_planes,
 		Eigen::Matrix4f& rigidTransf, Eigen::Matrix<float, 6, 6>& covarianceM);
@@ -112,7 +111,5 @@ class ConsistencyTest
 	//
 	// void TestRANSAC();
 };
-}
+}  // namespace mrpt::pbmap
 #endif
-
-

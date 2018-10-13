@@ -20,8 +20,8 @@ using namespace mrpt::opengl;
 
 /** Renders the messages to the current opengl rendering context (to be called
  * OUT of MRPT mrpt::opengl render() methods ).
-  *  (w,h) are the dimensions of the rendering area in pixels.
-  */
+ *  (w,h) are the dimensions of the rendering area in pixels.
+ */
 void CTextMessageCapable::render_text_messages(const int w, const int h) const
 {
 #if MRPT_HAS_OPENGL_GLUT
@@ -39,18 +39,20 @@ void CTextMessageCapable::render_text_messages(const int w, const int h) const
 
 	glDisable(GL_DEPTH_TEST);
 
-	for (const auto & m_2D_text : m_2D_texts)
+	for (const auto& m_2D_text : m_2D_texts)
 	{
 		// If (x,y) \in [0,1[, it's interpreted as a ratio, otherwise, as an
 		// actual coordinate in pixels
-		const int x = m_2D_text.second.x >= 1
-						  ? int(m_2D_text.second.x)
-						  : (m_2D_text.second.x < 0 ? int(w + m_2D_text.second.x)
-											  : int(m_2D_text.second.x * w));
-		const int y = m_2D_text.second.y >= 1
-						  ? int(m_2D_text.second.y)
-						  : (m_2D_text.second.y < 0 ? int(h + m_2D_text.second.y)
-											  : int(m_2D_text.second.y * h));
+		const int x =
+			m_2D_text.second.x >= 1
+				? int(m_2D_text.second.x)
+				: (m_2D_text.second.x < 0 ? int(w + m_2D_text.second.x)
+										  : int(m_2D_text.second.x * w));
+		const int y =
+			m_2D_text.second.y >= 1
+				? int(m_2D_text.second.y)
+				: (m_2D_text.second.y < 0 ? int(h + m_2D_text.second.y)
+										  : int(m_2D_text.second.y * h));
 
 		// Font size and family:
 		double font_size = 10;
@@ -105,7 +107,8 @@ void CTextMessageCapable::render_text_messages(const int w, const int h) const
 
 			glTranslatef(x + 1, y - 1, 0.0);
 			glColor3f(
-				m_2D_text.second.shadow_color.R, m_2D_text.second.shadow_color.G,
+				m_2D_text.second.shadow_color.R,
+				m_2D_text.second.shadow_color.G,
 				m_2D_text.second.shadow_color.B);
 			mrpt::opengl::gl_utils::glSetFont(font_name);
 			mrpt::opengl::gl_utils::glDrawText(
@@ -119,10 +122,13 @@ void CTextMessageCapable::render_text_messages(const int w, const int h) const
 		glPushMatrix();
 
 		glTranslatef(x, y, 0.0);
-		glColor3f(m_2D_text.second.color.R, m_2D_text.second.color.G, m_2D_text.second.color.B);
+		glColor3f(
+			m_2D_text.second.color.R, m_2D_text.second.color.G,
+			m_2D_text.second.color.B);
 		mrpt::opengl::gl_utils::glSetFont(font_name);
 		mrpt::opengl::gl_utils::glDrawText(
-			m_2D_text.second.text, font_size, font_style, font_spacing, font_kerning);
+			m_2D_text.second.text, font_size, font_style, font_spacing,
+			font_kerning);
 
 		glPopMatrix();
 	}
@@ -158,13 +164,12 @@ void CTextMessageCapable::addTextMessage(
 
 /** Just updates the text of a given text message, without touching the other
  * parameters.
-  * \return false if given ID doesn't exist.
-  */
+ * \return false if given ID doesn't exist.
+ */
 bool CTextMessageCapable::updateTextMessage(
 	const size_t unique_index, const std::string& text)
 {
-	auto it =
-		m_2D_texts.find(unique_index);
+	auto it = m_2D_texts.find(unique_index);
 	if (it == m_2D_texts.end())
 		return false;
 	else

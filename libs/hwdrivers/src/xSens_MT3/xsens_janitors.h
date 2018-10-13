@@ -301,6 +301,6 @@ class JanitorSet
 	void enable(void) { m_enabled = true; }
 };
 
-}  // end of xsens namespace
+}  // namespace xsens
 
 #endif  // _JANITORS_H_2006_05_01

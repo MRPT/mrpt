@@ -16,14 +16,14 @@
 namespace mrpt::hwdrivers
 {
 /** This class implements a driver for the Gill Windsonic Option 1 Anemometer
-  *   The sensor is accessed via a standard serial port.
-  *
-  *   Refer to the manufacturer website for details on this sensor:
-  *http://gillinstruments.com/data/manuals/WindSonic-Web-Manual.pdf
-  *	  Configure for single <CR> return, at 2Hz
-  *  \sa mrpt::obs::CObservationWindSensor
-  * \ingroup mrpt_hwdrivers_grp
-  */
+ *   The sensor is accessed via a standard serial port.
+ *
+ *   Refer to the manufacturer website for details on this sensor:
+ *http://gillinstruments.com/data/manuals/WindSonic-Web-Manual.pdf
+ *	  Configure for single <CR> return, at 2Hz
+ *  \sa mrpt::obs::CObservationWindSensor
+ * \ingroup mrpt_hwdrivers_grp
+ */
 class CGillAnemometer : public mrpt::hwdrivers::CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CGillAnemometer)
@@ -44,9 +44,9 @@ class CGillAnemometer : public mrpt::hwdrivers::CGenericSensor
 
 	/** Returns true if the COM port is already open, or try to open it in other
 	 * case.
-	  * \return true if everything goes OK, or false if there are problems
+	 * \return true if everything goes OK, or false if there are problems
 	 * opening the port.
-	  */
+	 */
 	bool tryToOpenTheCOM();
 
    public:
@@ -63,6 +63,4 @@ class CGillAnemometer : public mrpt::hwdrivers::CGenericSensor
 		const std::string& section) override;
 };  // End of class def.
 
-}
-
-
+}  // namespace mrpt::hwdrivers

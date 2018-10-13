@@ -21,9 +21,7 @@ IMPLEMENTS_SERIALIZABLE(CObservationRange, CObservation, mrpt::obs)
 /** Default constructor.
  */
 CObservationRange::CObservationRange()
-	: 
-	  sensorConeApperture(DEG2RAD(20)),
-	  sensedData()
+	: sensorConeApperture(DEG2RAD(20)), sensedData()
 {
 }
 
@@ -117,7 +115,7 @@ void CObservationRange::getDescriptionAsText(std::ostream& o) const
 	// For each entry in this sequence:
 	o << "  SENSOR_ID    RANGE (m)    SENSOR POSE (on the robot)" << endl;
 	o << "-------------------------------------------------------" << endl;
-	for (const auto & q : sensedData)
+	for (const auto& q : sensedData)
 	{
 		o << format("     %7u", (unsigned int)q.sensorID);
 		o << format("    %4.03f   ", q.sensedDistance);

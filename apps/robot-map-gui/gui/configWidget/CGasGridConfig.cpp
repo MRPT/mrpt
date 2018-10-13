@@ -18,8 +18,7 @@ CGasGridConfig::CGasGridConfig()
 	: CBaseConfig(), m_ui(std::make_unique<Ui::CGasGridConfig>())
 {
 	m_ui->setupUi(this);
-	auto* def =
-		new CGasConcentrationGridMap2D::TMapDefinition();
+	auto* def = new CGasConcentrationGridMap2D::TMapDefinition();
 	setCreationOpt(
 		def->min_x, def->max_x, def->min_y, def->max_y, def->resolution);
 	setInsertOpt(def->insertionOpts);

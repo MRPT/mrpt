@@ -441,7 +441,7 @@ int main(int argc, char** argv)
 		// Check the selected operation:
 		//  Only one of the ops should be selected:
 		string selected_op;
-		for (auto & arg_op : arg_ops)
+		for (auto& arg_op : arg_ops)
 			if (arg_op->isSet())
 			{
 				if (selected_op.empty())
@@ -510,7 +510,7 @@ int main(int argc, char** argv)
 	}
 
 	// Free mem:
-	for (auto & arg_op : arg_ops) delete arg_op;
+	for (auto& arg_op : arg_ops) delete arg_op;
 
 	// end:
 	return ret_val;
@@ -538,8 +538,9 @@ TOutputRawlogCreator::TOutputRawlogCreator()
 		throw runtime_error(
 			string("*ABORTING*: Cannot open output file: ") +
 			out_rawlog_filename);
-	out_rawlog = std::make_unique<mrpt::serialization::CArchiveStreamBase<
-					 mrpt::io::CFileGZOutputStream>>(out_rawlog_io);
+	out_rawlog = std::make_unique<
+		mrpt::serialization::CArchiveStreamBase<mrpt::io::CFileGZOutputStream>>(
+		out_rawlog_io);
 }
 
 bool isFlagSet(TCLAP::CmdLine& cmdline, const std::string& arg_name)
@@ -547,7 +548,7 @@ bool isFlagSet(TCLAP::CmdLine& cmdline, const std::string& arg_name)
 	using namespace TCLAP;
 
 	std::list<Arg*>& args = cmdline.getArgList();
-	for (auto & arg : args)
+	for (auto& arg : args)
 		if (arg->getName() == arg_name) return arg->isSet();
 	return false;
 }
@@ -559,7 +560,7 @@ bool getArgValue(
 	using namespace TCLAP;
 
 	std::list<Arg*>& args = cmdline.getArgList();
-	for (auto & it : args)
+	for (auto& it : args)
 	{
 		if (it->getName() == arg_name)
 		{

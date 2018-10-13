@@ -16,25 +16,25 @@ namespace mrpt::maps
 {
 /** CGasConcentrationGridMap2D represents a PDF of gas concentrations over a 2D
  * area.
-  *
-  *  There are a number of methods available to build the gas grid-map,
+ *
+ *  There are a number of methods available to build the gas grid-map,
  * depending on the value of
-  *    "TMapRepresentation maptype" passed in the constructor (see base class
+ *    "TMapRepresentation maptype" passed in the constructor (see base class
  * mrpt::maps::CRandomFieldGridMap2D).
-  *
-  * Update the map with insertIndividualReading() or insertObservation()
-  *
-  * \sa mrpt::maps::CRandomFieldGridMap2D, mrpt::maps::CMetricMap,
+ *
+ * Update the map with insertIndividualReading() or insertObservation()
+ *
+ * \sa mrpt::maps::CRandomFieldGridMap2D, mrpt::maps::CMetricMap,
  * mrpt::containers::CDynamicGrid, The application icp-slam,
  * mrpt::maps::CMultiMetricMap
-  * \ingroup mrpt_maps_grp
-  */
+ * \ingroup mrpt_maps_grp
+ */
 class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 {
 	DEFINE_SERIALIZABLE(CGasConcentrationGridMap2D)
    public:
 	/** Constructor
-	  */
+	 */
 	CGasConcentrationGridMap2D(
 		TMapRepresentation mapType = mrAchim, float x_min = -2, float x_max = 2,
 		float y_min = -2, float y_max = 2, float resolution = 0.1);
@@ -43,7 +43,7 @@ class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 	~CGasConcentrationGridMap2D() override;
 
 	/** Parameters related with inserting observations into the map:
-	  */
+	 */
 	struct TInsertionOptions : public mrpt::config::CLoadableOptions,
 							   public TInsertionOptionsCommon
 	{
@@ -65,29 +65,30 @@ class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 		uint16_t enose_id{0};
 		/** The sensor type for the gas concentration map (0x0000 ->mean of all
 		 * installed sensors, 0x2600, 0x6810, ...) */
-		uint16_t gasSensorType{
-		  0x0000};
+		uint16_t gasSensorType{0x0000};
 		/** The label of the WindSenor used to simulate advection */
 		std::string windSensorLabel;
 
 		//[Advection Options]
-		bool useWindInformation{false};  //! Indicates if wind information must be used
+		bool useWindInformation{
+			false};  //! Indicates if wind information must be used
 		//! to simulate Advection
 		float advectionFreq;  //! Frequency for simulating advection (only used
 		//! to transform wind speed to distance)
-		float std_windNoise_phi{0.2f}, std_windNoise_mod{0.2f};  //! The std to consider on
+		float std_windNoise_phi{0.2f},
+			std_windNoise_mod{0.2f};  //! The std to consider on
 		//! wind information
 		//! measurements
 		float default_wind_direction{0.0f},
-			default_wind_speed{1.0f};  //! The default value for the wind information
+			default_wind_speed{
+				1.0f};  //! The default value for the wind information
 
 		/** @} */
 
 	} insertionOptions;
 
 	/** Returns a 3D object representing the map */
-	void getAs3DObject(
-		mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
+	void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
 
 	/** Returns two 3D objects representing the mean and variance maps */
 	void getAs3DObject(
@@ -98,8 +99,8 @@ class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 	void getWindAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& windObj) const;
 
 	/** Increase the kf_std of all cells from the m_map
-	*	This mehod is usually called by the main_map to simulate loss of
-	*confidence in measurements when time passes */
+	 *	This mehod is usually called by the main_map to simulate loss of
+	 *confidence in measurements when time passes */
 	virtual void increaseUncertainty(const double STD_increase_value);
 
 	/** Implements the transition model of the gasConcentration map using the
@@ -136,8 +137,8 @@ class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
    protected:
 	/** Get the part of the options common to all CRandomFieldGridMap2D classes
 	 */
-	CRandomFieldGridMap2D::TInsertionOptionsCommon*
-		getCommonInsertOptions() override
+	CRandomFieldGridMap2D::TInsertionOptionsCommon* getCommonInsertOptions()
+		override
 	{
 		return &insertionOptions;
 	}
@@ -152,9 +153,9 @@ class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 		const mrpt::poses::CPose3D& takenFrom) override;
 
 	/** Builds a LookUp table with the values of the Gaussian Weights result of
-	* the wind advection
-	*   for a specific std_windNoise_phi value.
-	*/
+	 * the wind advection
+	 *   for a specific std_windNoise_phi value.
+	 */
 	bool build_Gaussian_Wind_Grid();
 
 	bool save_Gaussian_Wind_Grid_To_File();
@@ -171,12 +172,11 @@ class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 	float min_x{-2}, max_x{2}, min_y{-2}, max_y{2}, resolution{0.10f};
 	/** The kind of map representation (see
 	 * CGasConcentrationGridMap2D::CGasConcentrationGridMap2D) */
-	mrpt::maps::CGasConcentrationGridMap2D::TMapRepresentation mapType{CGasConcentrationGridMap2D::mrKernelDM};
+	mrpt::maps::CGasConcentrationGridMap2D::TMapRepresentation mapType{
+		CGasConcentrationGridMap2D::mrKernelDM};
 	/** Observations insertion options */
 	mrpt::maps::CGasConcentrationGridMap2D::TInsertionOptions insertionOpts;
 	MAP_DEFINITION_END(CGasConcentrationGridMap2D)
 };
 
-}
-
-
+}  // namespace mrpt::maps

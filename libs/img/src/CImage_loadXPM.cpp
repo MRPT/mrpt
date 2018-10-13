@@ -79,7 +79,7 @@ using Long2LongHash = std::unordered_map<int64_t, int64_t>;
 
 static const char* ParseColor(const char* data)
 {
-	static const char* const targets[] = {"c ", "g ", "g4 ", "m ",
+	static const char* const targets[] = {"c ", "g ", "g4 ",  "m ",
 										  "b ", "s ", nullptr};
 
 	const char *p, *r;

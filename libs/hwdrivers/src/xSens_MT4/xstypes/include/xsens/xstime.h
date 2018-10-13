@@ -20,26 +20,29 @@
 
 #ifdef __cplusplus
 #include "xsstring.h"
-extern "C" {
+extern "C"
+{
 #endif
 
-XSTYPES_DLL_API extern const XsTimeStamp XsTime_secPerDay;
-XSTYPES_DLL_API extern const XsTimeStamp XsTime_milliSecPerDay;
-XSTYPES_DLL_API extern const XsTimeStamp XsTime_timeStampMax;
+	XSTYPES_DLL_API extern const XsTimeStamp XsTime_secPerDay;
+	XSTYPES_DLL_API extern const XsTimeStamp XsTime_milliSecPerDay;
+	XSTYPES_DLL_API extern const XsTimeStamp XsTime_timeStampMax;
 
-XSTYPES_DLL_API uint32_t XsTime_getTimeOfDay(struct tm* date_, time_t* secs_);
-XSTYPES_DLL_API int64_t XsTime_getDateTime(struct tm* date);
-XSTYPES_DLL_API void XsTime_getDateAsString(char* dest, struct tm const* date);
-// XSTYPES_DLL_API void XsTime_getTimeAsString(char* dest, struct tm const*
-// time);
-// XSTYPES_DLL_API void XsTime_getDateAsWString(
-//	wchar_t* dest, struct tm const* date);
-XSTYPES_DLL_API void XsTime_getTimeAsWString(
-	wchar_t* dest, struct tm const* time);
-XSTYPES_DLL_API void XsTime_msleep(uint32_t ms);
-XSTYPES_DLL_API void XsTime_udelay(uint32_t us);
-XSTYPES_DLL_API int64_t XsTime_timeStampNow(XsTimeStamp* now);
-XSTYPES_DLL_API void XsTime_initializeTime(void);
+	XSTYPES_DLL_API uint32_t
+		XsTime_getTimeOfDay(struct tm* date_, time_t* secs_);
+	XSTYPES_DLL_API int64_t XsTime_getDateTime(struct tm* date);
+	XSTYPES_DLL_API void XsTime_getDateAsString(
+		char* dest, struct tm const* date);
+	// XSTYPES_DLL_API void XsTime_getTimeAsString(char* dest, struct tm const*
+	// time);
+	// XSTYPES_DLL_API void XsTime_getDateAsWString(
+	//	wchar_t* dest, struct tm const* date);
+	XSTYPES_DLL_API void XsTime_getTimeAsWString(
+		wchar_t* dest, struct tm const* time);
+	XSTYPES_DLL_API void XsTime_msleep(uint32_t ms);
+	XSTYPES_DLL_API void XsTime_udelay(uint32_t us);
+	XSTYPES_DLL_API int64_t XsTime_timeStampNow(XsTimeStamp* now);
+	XSTYPES_DLL_API void XsTime_initializeTime(void);
 
 #ifdef __cplusplus
 }  // extern "C"
@@ -112,7 +115,7 @@ inline int64_t timeStampNow(XsTimeStamp* now = 0)
 {
 	return XsTime_timeStampNow(now);
 }
-}
+}  // namespace XsTime
 #endif
 
 #endif  // file guard

@@ -40,15 +40,14 @@ class CVehicleSimul_DiffDriven : public CVehicleSimulVirtualBase
 	double getV() { return m_v; }
 	double getW() { return m_w; }
 	/** Used to command the robot a desired movement:
-		* \param lin_vel Linar velocity (m/s)
-		* \param ang_vel Angular velocity (rad/s)
-		*/
+	 * \param lin_vel Linar velocity (m/s)
+	 * \param ang_vel Angular velocity (rad/s)
+	 */
 	void movementCommand(double lin_vel, double ang_vel);
 
 	void sendVelCmd(const CVehicleVelCmd& cmd_vel) override
 	{
-		const auto* cmd =
-			dynamic_cast<const kinematic_cmd_t*>(&cmd_vel);
+		const auto* cmd = dynamic_cast<const kinematic_cmd_t*>(&cmd_vel);
 		ASSERTMSG_(
 			cmd,
 			"Wrong vehicle kinematic class, expected "
@@ -65,13 +64,13 @@ class CVehicleSimul_DiffDriven : public CVehicleSimulVirtualBase
 	double m_v, m_w;
 
 	/** Dynamic limitations of the robot.
-		* Approximation to non-infinity motor forces: A first order low-pass
+	 * Approximation to non-infinity motor forces: A first order low-pass
 	 * filter, using:
-		*   Command_Time: Time "t" when the last order was received.
-		*   Command_v, Command_w: The user-desired velocities.
-		*   Command_v0, Command_w0: Actual robot velocities at the moment of
+	 *   Command_Time: Time "t" when the last order was received.
+	 *   Command_v, Command_w: The user-desired velocities.
+	 *   Command_v0, Command_w0: Actual robot velocities at the moment of
 	 * user request.
-		*/
+	 */
 	double Command_Time, Command_v, Command_w, Command_v0, Command_w0;
 
 	/** The time-constants for the first order low-pass filter for the
@@ -84,5 +83,4 @@ class CVehicleSimul_DiffDriven : public CVehicleSimulVirtualBase
 	void internal_clear() override;
 };
 
-}
-
+}  // namespace mrpt::kinematics

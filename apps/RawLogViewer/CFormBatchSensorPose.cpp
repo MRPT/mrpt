@@ -155,9 +155,10 @@ void CFormBatchSensorPose::OnbtnOpenClick(wxCommandEvent& event)
 	wxFileDialog dialog(
 		this, _("Select file with sensor parameters") /* caption */,
 		_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
-		_("*.ini") /* defaultFilename */, _("rawlog-grabber config files "
-											"(*.ini)|*.ini|All files "
-											"(*.*)|*.*") /* wildcard */,
+		_("*.ini") /* defaultFilename */,
+		_("rawlog-grabber config files "
+		  "(*.ini)|*.ini|All files "
+		  "(*.*)|*.*") /* wildcard */,
 		wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
 	if (dialog.ShowModal() != wxID_OK) return;

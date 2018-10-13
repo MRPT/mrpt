@@ -80,8 +80,7 @@ CHMHMapNode::Ptr CHierarchicalMapMHPartition::getNodeByLabel(
 	MRPT_START
 
 	// Look for the ID:
-	for (auto it = m_nodes.begin(); it != m_nodes.end();
-		 ++it)
+	for (auto it = m_nodes.begin(); it != m_nodes.end(); ++it)
 		if (it->second->m_hypotheses.has(hypothesisID))
 			if (!os::_strcmpi(it->second->m_label.c_str(), label.c_str()))
 				return it->second;
@@ -100,7 +99,7 @@ const CHMHMapNode::Ptr CHierarchicalMapMHPartition::getNodeByLabel(
 	MRPT_START
 
 	// Look for the ID:
-	for (const auto & m_node : m_nodes)
+	for (const auto& m_node : m_nodes)
 		if (m_node.second->m_hypotheses.has(hypothesisID))
 			if (!os::_strcmpi(m_node.second->m_label.c_str(), label.c_str()))
 				return m_node.second;
@@ -792,8 +791,7 @@ void CHierarchicalMapMHPartition::findPathBetweenNodes(
 
 		u = m_nodes.end();
 
-		for (auto i = m_nodes.begin(); i != m_nodes.end();
-			 ++i)
+		for (auto i = m_nodes.begin(); i != m_nodes.end(); ++i)
 		{
 			if (i->second->m_hypotheses.has(hypothesisID))
 			{
@@ -1157,8 +1155,7 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 			// Compute the mean pose:
 			CPose3D meanSFs(0, 0, 0);
 
-			for (auto it = posesGraph->begin();
-				 it != posesGraph->end(); ++it)
+			for (auto it = posesGraph->begin(); it != posesGraph->end(); ++it)
 				meanSFs.addComponents(it->second.pdf.getMeanVal());
 
 			meanSFs *= 1.0f / (posesGraph->size());
@@ -1245,8 +1242,7 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 
 		if (posesGraph)
 		{
-			for (auto it = posesGraph->begin();
-				 it != posesGraph->end(); ++it)
+			for (auto it = posesGraph->begin(); it != posesGraph->end(); ++it)
 			{
 				CPose3D SF_pose;
 				it->second.pdf.getMean(SF_pose);
@@ -1342,7 +1338,7 @@ void CHierarchicalMapMHPartition::computeGloballyConsistentNodeCoordinates(
 	// in future version of HTML-SLAM!!)
 	graphs::CNetworkOfPoses3DInf pose_graph;
 
-	for (const auto & m_arc : m_arcs)
+	for (const auto& m_arc : m_arcs)
 	{
 		if (!m_arc->m_hypotheses.has(hypothesisID)) continue;
 
@@ -1375,8 +1371,7 @@ void CHierarchicalMapMHPartition::computeGloballyConsistentNodeCoordinates(
 		graphslam_params);
 
 	// 4) Copy back optimized results into the HMT-SLAM graph:
-	for (auto it_node =
-			 pose_graph.nodes.begin();
+	for (auto it_node = pose_graph.nodes.begin();
 		 it_node != pose_graph.nodes.end(); ++it_node)
 	{
 		const CHMHMapNode::TNodeID node_id = it_node->first;
@@ -1408,7 +1403,7 @@ void CHierarchicalMapMHPartition::dumpAsText(std::vector<std::string>& st) const
 	st.emplace_back("LIST OF NODES");
 	st.emplace_back("================");
 
-	for (const auto & m_node : m_nodes)
+	for (const auto& m_node : m_nodes)
 	{
 		std::string s;
 		s += format(
@@ -1422,8 +1417,7 @@ void CHierarchicalMapMHPartition::dumpAsText(std::vector<std::string>& st) const
 
 		st.push_back(s);
 
-		for (auto ann =
-				 m_node.second->m_annotations.begin();
+		for (auto ann = m_node.second->m_annotations.begin();
 			 ann != m_node.second->m_annotations.end(); ++ann)
 		{
 			s = format(
@@ -1454,8 +1448,7 @@ void CHierarchicalMapMHPartition::dumpAsText(std::vector<std::string>& st) const
 					"     CRobotPosesGraph has %i poses:",
 					(int)posesGraph->size()));
 				CPose3D pdfMean;
-				for (auto p = posesGraph->begin();
-					 p != posesGraph->end(); ++p)
+				for (auto p = posesGraph->begin(); p != posesGraph->end(); ++p)
 				{
 					const CPose3DPDFParticles& pdf = p->second.pdf;
 					pdf.getMean(pdfMean);
@@ -1475,7 +1468,7 @@ void CHierarchicalMapMHPartition::dumpAsText(std::vector<std::string>& st) const
 	st.emplace_back("LIST OF ARCS");
 	st.emplace_back("================");
 
-	for (const auto & m_arc : m_arcs)
+	for (const auto& m_arc : m_arcs)
 	{
 		std::string s;
 		s += format(
@@ -1486,8 +1479,7 @@ void CHierarchicalMapMHPartition::dumpAsText(std::vector<std::string>& st) const
 
 		st.push_back(s);
 
-		for (auto ann =
-				 m_arc->m_annotations.begin();
+		for (auto ann = m_arc->m_annotations.begin();
 			 ann != m_arc->m_annotations.end(); ++ann)
 		{
 			s = format(

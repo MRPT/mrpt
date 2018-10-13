@@ -79,4 +79,3 @@ De-allocates the memory held by a minimizing priorioty queue
 @param min_pq pointer to a minimizing priority queue
 */
 extern void minpq_release(struct min_pq** min_pq);
-

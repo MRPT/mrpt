@@ -1651,7 +1651,7 @@ void getMinAndMaxBounds(
 	minP.reserve(N);
 	maxP.reserve(N);
 	TPoint3D p1, p2;
-	for (const auto & it : v1)
+	for (const auto& it : v1)
 	{
 		getPrismBounds(it, p1, p2);
 		minP.push_back(p1);
@@ -1698,8 +1698,8 @@ size_t math::intersect(
 	auto itP1 = w1.begin();
 	auto itMin1 = minBounds1.begin();
 	auto itMax1 = maxBounds1.begin();
-	for (auto it1 = v1.begin();
-		 it1 != v1.end(); ++it1, ++itP1, ++itMin1, ++itMax1)
+	for (auto it1 = v1.begin(); it1 != v1.end();
+		 ++it1, ++itP1, ++itMin1, ++itMax1)
 	{
 		const TPolygon3D& poly1 = *it1;
 		const TPlane& plane1 = *itP1;
@@ -1707,8 +1707,8 @@ size_t math::intersect(
 		const TPoint3D &min1 = *itMin1, max1 = *itMax1;
 		auto itMin2 = minBounds2.begin();
 		auto itMax2 = maxBounds2.begin();
-		for (auto it2 = v2.begin();
-			 it2 != v2.end(); ++it2, ++itP2, ++itMin2, ++itMax2)
+		for (auto it2 = v2.begin(); it2 != v2.end();
+			 ++it2, ++itP2, ++itMin2, ++itMax2)
 			if (!compatibleBounds(min1, max1, *itMin2, *itMax2))
 				continue;
 			else if (intersectAux(poly1, plane1, *it2, *itP2, obj))
@@ -2216,7 +2216,7 @@ class FCreatePolygon
 		TPolygon3D res;
 		size_t N = vertices.size();
 		res.reserve(N);
-		for (const auto & vertice : vertices)
+		for (const auto& vertice : vertices)
 			res.push_back(segs[vertice.seg2][vertice.seg2Point ? 1 : 0]);
 		return res;
 	}
@@ -2224,7 +2224,7 @@ class FCreatePolygon
 inline bool firstOrNonPresent(size_t i, const std::vector<MatchingVertex>& v)
 {
 	if (v.size() > 0 && v[0].seg1 == i) return true;
-	for (const auto & it : v)
+	for (const auto& it : v)
 		if (it.seg1 == i || it.seg2 == i) return false;
 	return true;
 }
@@ -2249,9 +2249,8 @@ bool depthFirstSearch(
 					if (s2p != current[0].seg1Point)
 					{
 						current.emplace_back(searching, i, s1p, s2p);
-						for (auto it =
-								 current.begin();
-							 it != current.end(); ++it)
+						for (auto it = current.begin(); it != current.end();
+							 ++it)
 							used[it->seg2] = true;
 						res.push_back(current);
 						return true;
@@ -2288,7 +2287,7 @@ void math::assemblePolygons(
 {
 	std::vector<TSegment3D> tmp;
 	tmp.reserve(segms.size());
-	for (const auto & segm : segms)
+	for (const auto& segm : segms)
 		if (segm.length() >= geometryEpsilon)
 			tmp.push_back(segm);
 		else
@@ -2408,11 +2407,11 @@ bool math::splitInConvexComponents(
 			if (intersect(segms[i].line, segms[j], obj) && obj.getPoint(pnt))
 			{
 				TSegmentWithLine sTmp = TSegmentWithLine(
-					pnt,
-					segms[i].segment[(distance(pnt, segms[i].segment.point1) <
-									  distance(pnt, segms[i].segment.point2))
-										 ? 0
-										 : 1]);
+					pnt, segms[i].segment
+							 [(distance(pnt, segms[i].segment.point1) <
+							   distance(pnt, segms[i].segment.point2))
+								  ? 0
+								  : 1]);
 				bool cross = false;
 				TPoint2D pTmp;
 				for (size_t k = 0; (k < N) && !cross; k++)
@@ -2591,7 +2590,7 @@ bool math::traceRay(
 	createFromPoseX(pose, lin);
 	lin.unitarize();
 	bool res = false;
-	for (const auto & it : vec)
+	for (const auto& it : vec)
 		if (::intersect(it, lin, nDist, dist))
 		{
 			res = true;

@@ -262,4 +262,3 @@ MRPT_DECLARE_TTYPENAME_PTR_NAMESPACE(CObservation2DRangeScan, ::mrpt::obs)
 }  // namespace typemeta
 
 }  // namespace mrpt
-

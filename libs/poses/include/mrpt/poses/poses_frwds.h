@@ -45,5 +45,4 @@ class CPose3DPDFGaussianInf;
 struct CPose3DPDFGaussianInfPtr;
 class CPose3DQuatPDFGaussianInf;
 struct CPose3DQuatPDFGaussianInfPtr;
-}
-
+}  // namespace mrpt::poses

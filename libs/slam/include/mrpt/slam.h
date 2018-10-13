@@ -43,4 +43,3 @@ MRPT_WARNING(
 // Others:
 #include <mrpt/slam/observations_overlap.h>
 #include <mrpt/slam/COccupancyGridMapFeatureExtractor.h>
-

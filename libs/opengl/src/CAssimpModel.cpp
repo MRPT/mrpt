@@ -133,8 +133,7 @@ void CAssimpModel::serializeFrom(
 	CRenderizableDisplayList::notifyChange();
 }
 
-CAssimpModel::CAssimpModel()
-	: m_bbox_min(0, 0, 0), m_bbox_max(0, 0, 0) 
+CAssimpModel::CAssimpModel() : m_bbox_min(0, 0, 0), m_bbox_max(0, 0, 0)
 {
 	m_assimp_scene = mrpt::make_aligned_shared<TImplAssimp>();
 }
@@ -212,7 +211,7 @@ void CAssimpModel::getBoundingBox(
 	m_pose.composePoint(bb_max, bb_max);
 }
 
-CAssimpModel::TImplAssimp::TImplAssimp()  = default;
+CAssimpModel::TImplAssimp::TImplAssimp() = default;
 CAssimpModel::TImplAssimp::~TImplAssimp()
 {
 #if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
@@ -325,8 +324,7 @@ void apply_material(
 		mtl->GetTexture(aiTextureType_DIFFUSE, texIndex, &texPath))
 	{
 		// bind texture
-		auto
-			it = textureIdMap.find(texPath.data);
+		auto it = textureIdMap.find(texPath.data);
 		if (it == textureIdMap.end())
 		{
 			std::cerr << "[CAssimpModel] Error: using un-loaded texture '"
@@ -474,8 +472,7 @@ void recursive_render(
 				{
 					glTexCoord2f(
 						mesh->mTextureCoords[0][vertexIndex].x,
-						1 -
-							mesh->mTextureCoords[0][vertexIndex]
+						1 - mesh->mTextureCoords[0][vertexIndex]
 								.y);  // mTextureCoords[channel][vertex]
 				}
 
@@ -553,8 +550,7 @@ void load_textures(
 	}
 
 	/* get iterator */
-	auto itr =
-		textureIdMap.begin();
+	auto itr = textureIdMap.begin();
 
 	std::string basepath = mrpt::system::filePathSeparatorsToNative(
 		mrpt::system::extractFileDirectory(modelPath));
@@ -620,10 +616,9 @@ void load_textures(
 			// Prepare image data types:
 			const GLenum img_type = GL_UNSIGNED_BYTE;
 			const int nBytesPerPixel = img_rgb->isColor() ? 3 : 1;
-			const bool is_RGB_order =
-				(!::strcmp(
-					img_rgb->getChannelsOrder(),
-					"RGB"));  // Reverse RGB <-> BGR order?
+			const bool is_RGB_order = (!::strcmp(
+				img_rgb->getChannelsOrder(),
+				"RGB"));  // Reverse RGB <-> BGR order?
 			const GLenum img_format = nBytesPerPixel == 3
 										  ? (is_RGB_order ? GL_RGB : GL_BGR)
 										  : GL_LUMINANCE;

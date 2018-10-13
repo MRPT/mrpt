@@ -148,7 +148,8 @@ bool PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
  *     Robot Localization," in Proc. IEEE International Conference on Robotics
  *     and Automation (ICRA'08), 2008, pp. 461466.
  */
-template <class PARTICLE_TYPE, class MYSELF,
+template <
+	class PARTICLE_TYPE, class MYSELF,
 	mrpt::bayes::particle_storage_mode STORAGE>
 template <class BINTYPE>
 void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
@@ -171,7 +172,8 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
  * - BINTYPE: TPoseBin or whatever to discretize the sample space for
  * KLD-sampling.
  */
-template <class PARTICLE_TYPE, class MYSELF,
+template <
+	class PARTICLE_TYPE, class MYSELF,
 	mrpt::bayes::particle_storage_mode STORAGE>
 template <class BINTYPE>
 void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
@@ -250,7 +252,8 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 
 				// Update the particle with the new pose: this part is
 				// caller-dependant and must be implemented there:
-				if constexpr(STORAGE == mrpt::bayes::particle_storage_mode::POINTER)
+				if constexpr (
+					STORAGE == mrpt::bayes::particle_storage_mode::POINTER)
 				{
 					PF_SLAM_implementation_custom_update_particle_with_new_pose(
 						me->m_particles[i].d.get(), finalPose.asTPose());
@@ -309,10 +312,12 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 
 				// Now, look if the particle falls in a new bin or not:
 				// --------------------------------------------------------
-				const PARTICLE_TYPE *part;
-				if constexpr(STORAGE == mrpt::bayes::particle_storage_mode::POINTER)
+				const PARTICLE_TYPE* part;
+				if constexpr (
+					STORAGE == mrpt::bayes::particle_storage_mode::POINTER)
 					part = me->m_particles[drawn_idx].d.get();
-				else part = &me->m_particles[drawn_idx].d;
+				else
+					part = &me->m_particles[drawn_idx].d;
 
 				BINTYPE p;
 				KLF_loadBinFromParticle<PARTICLE_TYPE, BINTYPE>(
@@ -393,7 +398,8 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
  * doi:10.2307/2670179.
  *
  */
-template <class PARTICLE_TYPE, class MYSELF,
+template <
+	class PARTICLE_TYPE, class MYSELF,
 	mrpt::bayes::particle_storage_mode STORAGE>
 template <class BINTYPE>
 void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
@@ -412,7 +418,8 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 /*---------------------------------------------------------------
 			PF_SLAM_particlesEvaluator_AuxPFOptimal
  ---------------------------------------------------------------*/
-template <class PARTICLE_TYPE, class MYSELF,
+template <
+	class PARTICLE_TYPE, class MYSELF,
 	mrpt::bayes::particle_storage_mode STORAGE>
 template <class BINTYPE>
 double PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
@@ -491,7 +498,8 @@ double PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
  * \param action MUST be a "const mrpt::poses::CPose3D*"
  * \param observation MUST be a "const CSensoryFrame*"
  */
-template <class PARTICLE_TYPE, class MYSELF,
+template <
+	class PARTICLE_TYPE, class MYSELF,
 	mrpt::bayes::particle_storage_mode STORAGE>
 template <class BINTYPE>
 double PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
@@ -593,7 +601,8 @@ double PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 // USE_OPTIMAL_SAMPLING:
 //   true -> PF_SLAM_implementation_pfAuxiliaryPFOptimal
 //  false -> PF_SLAM_implementation_pfAuxiliaryPFStandard
-template <class PARTICLE_TYPE, class MYSELF,
+template <
+	class PARTICLE_TYPE, class MYSELF,
 	mrpt::bayes::particle_storage_mode STORAGE>
 template <class BINTYPE>
 void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
@@ -780,18 +789,19 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 			 partIt != me->m_particles.end(); ++partIt, ++partIndex)
 		{
 			// Load the bin from the path data:
-			const PARTICLE_TYPE *part;
-			if constexpr(STORAGE == mrpt::bayes::particle_storage_mode::POINTER)
+			const PARTICLE_TYPE* part;
+			if constexpr (
+				STORAGE == mrpt::bayes::particle_storage_mode::POINTER)
 				part = partIt->d.get();
-			else part = &partIt->d;
+			else
+				part = &partIt->d;
 
 			BINTYPE p;
 			KLF_loadBinFromParticle<PARTICLE_TYPE, BINTYPE>(
 				p, KLD_options, part);
 
 			// Is it a new bin?
-			auto posFound =
-				stateSpaceBinsLastTimestep.find(p);
+			auto posFound = stateSpaceBinsLastTimestep.find(p);
 			if (posFound == stateSpaceBinsLastTimestep.end())
 			{  // Yes, create a new pair <bin,index_list> in the list:
 				stateSpaceBinsLastTimestep.insert(p);
@@ -886,10 +896,9 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 					ASSERT_(k < me->m_particles.size());
 
 					// Also erase it from the other permutation vector list:
-					oldPartIdxsStillNotPropragated.erase(
-						std::find(
-							oldPartIdxsStillNotPropragated.begin(),
-							oldPartIdxsStillNotPropragated.end(), k));
+					oldPartIdxsStillNotPropragated.erase(std::find(
+						oldPartIdxsStillNotPropragated.begin(),
+						oldPartIdxsStillNotPropragated.end(), k));
 				}
 				else
 				{
@@ -910,9 +919,8 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 							mrpt::random::getRandomGenerator()
 								.drawUniform32bit() %
 							oldPartIdxsStillNotPropragated.size();
-						auto it =
-							oldPartIdxsStillNotPropragated.begin() +
-							idx;  // advance(it,idx);
+						auto it = oldPartIdxsStillNotPropragated.begin() +
+								  idx;  // advance(it,idx);
 						k = *it;
 						oldPartIdxsStillNotPropragated.erase(it);
 					}
@@ -943,10 +951,12 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 			// Now, the KLD-sampling dynamic sample size stuff:
 			//  look if the particle's PATH falls into a new bin or not:
 			// ----------------------------------------------------------------
-			const PARTICLE_TYPE *part;
-			if constexpr(STORAGE == mrpt::bayes::particle_storage_mode::POINTER)
+			const PARTICLE_TYPE* part;
+			if constexpr (
+				STORAGE == mrpt::bayes::particle_storage_mode::POINTER)
 				part = me->m_particles[k].d.get();
-			else part = &me->m_particles[k].d;
+			else
+				part = &me->m_particles[k].d;
 
 			BINTYPE p;
 			const mrpt::math::TPose3D newPose_s = newPose.asTPose();
@@ -1010,7 +1020,8 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 /* ------------------------------------------------------------------------
 					PF_SLAM_aux_perform_one_rejection_sampling_step
    ------------------------------------------------------------------------ */
-template <class PARTICLE_TYPE, class MYSELF,
+template <
+	class PARTICLE_TYPE, class MYSELF,
 	mrpt::bayes::particle_storage_mode STORAGE>
 template <class BINTYPE>
 void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
@@ -1166,7 +1177,4 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 	}
 	// Done.
 }
-}  // end namespace
-
-
-
+}  // namespace mrpt::slam

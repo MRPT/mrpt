@@ -467,8 +467,7 @@ void CDisplayWindow3D::resize(unsigned int width, unsigned int height)
 	}
 
 	// Send a request to destroy this object:
-	auto* REQ =
-		new WxSubsystem::TRequestToWxMainThread[1];
+	auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->source3D = this;
 	REQ->OPCODE = 303;
 	REQ->x = width;
@@ -494,8 +493,7 @@ void CDisplayWindow3D::setPos(int x, int y)
 	}
 
 	// Send a request to destroy this object:
-	auto* REQ =
-		new WxSubsystem::TRequestToWxMainThread[1];
+	auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->source3D = this;
 	REQ->OPCODE = 302;
 	REQ->x = x;
@@ -521,8 +519,7 @@ void CDisplayWindow3D::setWindowTitle(const std::string& str)
 	}
 
 	// Send a request to destroy this object:
-	auto* REQ =
-		new WxSubsystem::TRequestToWxMainThread[1];
+	auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->source3D = this;
 	REQ->OPCODE = 304;
 	REQ->str = str;
@@ -558,8 +555,7 @@ void CDisplayWindow3D::forceRepaint()
 		// We must do this from the wx thread!
 
 		// Send refresh request:
-		auto* REQ =
-			new WxSubsystem::TRequestToWxMainThread[1];
+		auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 		REQ->source3D = this;
 		REQ->OPCODE = 350;
 		WxSubsystem::pushPendingWxRequest(REQ);
@@ -895,8 +891,7 @@ void CDisplayWindow3D::addTextMessage(
 		// Add a 2D text message:
 		//  vector_x: [0]:x, [1]:y, [2,3,4]:R G B, "x": enum of desired font.
 		//  "y": unique index, "str": String.
-		auto* REQ =
-			new WxSubsystem::TRequestToWxMainThread[1];
+		auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 		REQ->source3D = this;
 		REQ->OPCODE = 360;
 		REQ->str = text;
@@ -938,8 +933,7 @@ void CDisplayWindow3D::addTextMessage(
 	{
 		// Send request:
 		// Add a 2D text message:
-		auto* REQ =
-			new WxSubsystem::TRequestToWxMainThread[1];
+		auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 		REQ->source3D = this;
 		REQ->OPCODE = 362;
 		REQ->str = text;
@@ -989,8 +983,7 @@ void CDisplayWindow3D::clearTextMessages()
 	if (win)
 	{
 		// Send request:
-		auto* REQ =
-			new WxSubsystem::TRequestToWxMainThread[1];
+		auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 		REQ->source3D = this;
 		REQ->OPCODE = 361;
 		WxSubsystem::pushPendingWxRequest(REQ);

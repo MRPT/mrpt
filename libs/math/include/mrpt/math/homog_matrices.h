@@ -15,9 +15,9 @@ namespace mrpt::math
 /** Efficiently compute the inverse of a 4x4 homogeneous matrix by only
  * transposing the rotation 3x3 part and solving the translation with dot
  * products.
-  *  This is a generic template which works with:
-  *    MATRIXLIKE: CMatrixTemplateNumeric, CMatrixFixedNumeric
-  */
+ *  This is a generic template which works with:
+ *    MATRIXLIKE: CMatrixTemplateNumeric, CMatrixFixedNumeric
+ */
 template <class MATRIXLIKE1, class MATRIXLIKE2>
 void homogeneousMatrixInverse(const MATRIXLIKE1& M, MATRIXLIKE2& out_inverse_M)
 {
@@ -125,6 +125,4 @@ inline void homogeneousMatrixInverse(MATRIXLIKE& M)
 	M(1, 2) = M(2, 1);
 	M(2, 1) = t;
 }
-}
-
-
+}  // namespace mrpt::math

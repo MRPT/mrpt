@@ -76,5 +76,4 @@ struct TColorManager
 	/**\brief Mark the given color as used. */
 	void markColorAsUsed(mrpt::img::TColor color);
 };
-}
-
+}  // namespace mrpt::img

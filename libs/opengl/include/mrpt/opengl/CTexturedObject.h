@@ -81,6 +81,4 @@ class CTexturedObject : public CRenderizableDisplayList
 	void render_dl() const override;
 };
 
-}
-
-
+}  // namespace mrpt::opengl

@@ -18,6 +18,4 @@ class CWindowDialogPlots;
 class C3DWindowDialog;
 class CMyGLCanvas_DisplayWindow3D;
 
-}
-
-
+}  // namespace mrpt::gui

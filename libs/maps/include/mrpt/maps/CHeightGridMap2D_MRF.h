@@ -16,20 +16,20 @@ namespace mrpt::maps
 {
 /** CHeightGridMap2D_MRF represents digital-elevation-model over a 2D area, with
  * uncertainty, based on a Markov-Random-Field (MRF) estimator.
-  *
-  *  There are a number of methods available to build the gas grid-map,
+ *
+ *  There are a number of methods available to build the gas grid-map,
  * depending on the value of
-  *    "TMapRepresentation maptype" passed in the constructor (see base class
+ *    "TMapRepresentation maptype" passed in the constructor (see base class
  * mrpt::maps::CRandomFieldGridMap2D).
-  *
-  * Update the map with insertIndividualReading() or insertObservation()
-  *
-  * \sa mrpt::maps::CRandomFieldGridMap2D, mrpt::maps::CMetricMap,
+ *
+ * Update the map with insertIndividualReading() or insertObservation()
+ *
+ * \sa mrpt::maps::CRandomFieldGridMap2D, mrpt::maps::CMetricMap,
  * mrpt::containers::CDynamicGrid, The application icp-slam,
  * mrpt::maps::CMultiMetricMap
-  * \note New in MRPT 1.4.0
-  * \ingroup mrpt_maps_grp
-  */
+ * \note New in MRPT 1.4.0
+ * \ingroup mrpt_maps_grp
+ */
 class CHeightGridMap2D_MRF : public CRandomFieldGridMap2D,
 							 public CHeightGridMap2D_Base
 {
@@ -59,8 +59,7 @@ class CHeightGridMap2D_MRF : public CRandomFieldGridMap2D,
 	} insertionOptions;
 
 	/** Returns a 3D object representing the map */
-	void getAs3DObject(
-		mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
+	void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
 
 	/** Returns two 3D objects representing the mean and variance maps */
 	void getAs3DObject(
@@ -82,8 +81,8 @@ class CHeightGridMap2D_MRF : public CRandomFieldGridMap2D,
 
 	/** Get the part of the options common to all CRandomFieldGridMap2D classes
 	 */
-	CRandomFieldGridMap2D::TInsertionOptionsCommon*
-		getCommonInsertOptions() override
+	CRandomFieldGridMap2D::TInsertionOptionsCommon* getCommonInsertOptions()
+		override
 	{
 		return &insertionOptions;
 	}
@@ -110,6 +109,4 @@ class CHeightGridMap2D_MRF : public CRandomFieldGridMap2D,
 	MAP_DEFINITION_END(CHeightGridMap2D_MRF)
 };
 
-}
-
-
+}  // namespace mrpt::maps

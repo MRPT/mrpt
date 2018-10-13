@@ -15,10 +15,10 @@
 namespace mrpt::hwdrivers
 {
 /** This class implements a wireless power probe.
-  *  \sa mrpt::maps::CWirelessPowerGridMap2D,
+ *  \sa mrpt::maps::CWirelessPowerGridMap2D,
  * mrpt::obs::CObservationWirelessPower
-  * \ingroup mrpt_hwdrivers_grp
-  */
+ * \ingroup mrpt_hwdrivers_grp
+ */
 class CWirelessPower : public mrpt::hwdrivers::CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CWirelessPower)
@@ -44,7 +44,7 @@ class CWirelessPower : public mrpt::hwdrivers::CGenericSensor
 	/** Default constructor.
 	 */
 	CWirelessPower();
-	~CWirelessPower() override= default;
+	~CWirelessPower() override = default;
 
 	/** Set the SSID and GUID of the target network.
 	 * \exception std::exception In case there is a failure
@@ -89,6 +89,4 @@ class CWirelessPower : public mrpt::hwdrivers::CGenericSensor
 
 };  // End of class def.
 
-}
-
-
+}  // namespace mrpt::hwdrivers

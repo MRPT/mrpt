@@ -41,4 +41,3 @@ MRPT_WARNING(
 
 // Obs:
 #include <mrpt/obs/CObservationVisualLandmarks.h>
-

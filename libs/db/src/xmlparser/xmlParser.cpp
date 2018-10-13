@@ -253,7 +253,7 @@ char* myWideCharToMultiByte(const wchar_t* s)
 		0,  // size of buffer
 		nullptr,  // default for unmappable chars
 		nullptr  // set when default char used
-		);
+	);
 	if (i < 0) return nullptr;
 	char* d = (char*)malloc(i + 1);
 	WideCharToMultiByte(
@@ -265,7 +265,7 @@ char* myWideCharToMultiByte(const wchar_t* s)
 		i,  // size of buffer
 		nullptr,  // default for unmappable chars
 		nullptr  // set when default char used
-		);
+	);
 	d[i] = 0;
 	return d;
 }
@@ -549,7 +549,7 @@ XMLNode XMLNode::openFileHelper(XMLCSTR filename, XMLCSTR tag)
 	if (pResults.error != eXMLErrorNone)
 	{
 		// create message
-		char message[2000], *s1 = (char *)"", *s3 = (char *)"";
+		char message[2000], *s1 = (char*)"", *s3 = (char*)"";
 		XMLCSTR s2 = _CXML("");
 		if (pResults.error == eXMLErrorFirstTagNotFound)
 		{
@@ -763,7 +763,8 @@ XMLClear XMLNode::emptyXMLClear = {nullptr, nullptr, nullptr};
 XMLAttribute XMLNode::emptyXMLAttribute = {nullptr, nullptr};
 
 // Enumeration used to decipher what type a token is
-typedef enum XMLTokenTypeTag {
+typedef enum XMLTokenTypeTag
+{
 	eTokenText = 0,
 	eTokenQuotedText,
 	eTokenTagStart, /* "<"            */
@@ -1790,8 +1791,9 @@ int XMLNode::ParseXMLElement(void* pa)
 								return FALSE;
 							}
 
-// If we found a new element which is the same as this
-// element then we need to pass this back to the caller..
+							// If we found a new element which is the same as
+							// this element then we need to pass this back to
+							// the caller..
 
 #ifdef APPROXIMATE_PARSING
 							if (d->lpszName &&

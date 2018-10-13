@@ -172,10 +172,9 @@ void CMetricMapBuilderRBPF::processActionObservation(
 
 	if (do_map_update) do_localization = true;
 
-	MRPT_LOG_DEBUG(
-		mrpt::format(
-			"do_map_update=%s do_localization=%s", do_map_update ? "YES" : "NO",
-			do_localization ? "YES" : "NO"));
+	MRPT_LOG_DEBUG(mrpt::format(
+		"do_map_update=%s do_localization=%s", do_map_update ? "YES" : "NO",
+		do_localization ? "YES" : "NO"));
 
 	if (do_localization)
 	{
@@ -237,11 +236,10 @@ void CMetricMapBuilderRBPF::processActionObservation(
 			MRPT_LOG_INFO_STREAM(
 				"New pose=" << estPos << std::endl
 							<< "New ESS:" << mapPDF.ESS() << std::endl);
-			MRPT_LOG_INFO(
-				format(
-					"   STDs: x=%2.3f y=%2.3f z=%.03f yaw=%2.3fdeg\n",
-					sqrt(cov(0, 0)), sqrt(cov(1, 1)), sqrt(cov(2, 2)),
-					RAD2DEG(sqrt(cov(3, 3)))));
+			MRPT_LOG_INFO(format(
+				"   STDs: x=%2.3f y=%2.3f z=%.03f yaw=%2.3fdeg\n",
+				sqrt(cov(0, 0)), sqrt(cov(1, 1)), sqrt(cov(2, 2)),
+				RAD2DEG(sqrt(cov(3, 3)))));
 		}
 	}
 
@@ -270,7 +268,7 @@ void CMetricMapBuilderRBPF::processActionObservation(
 	// Added 29/JUN/2007 JLBC: Tell all maps that they can now free aux.
 	// variables
 	//  (if any) since one PF cycle is over:
-	for (auto & m_particle : mapPDF.m_particles)
+	for (auto& m_particle : mapPDF.m_particles)
 		m_particle.d->mapTillNow.auxParticleFilterCleanUp();
 
 	MRPT_END;
@@ -464,7 +462,7 @@ void CMetricMapBuilderRBPF::drawCurrentEstimationToImage(CCanvas* img)
 					i == M ? TColor(0, 0, 0)
 						   : TColor(0x50, 0x50, 0x50),  // Color, gray levels,
 					i == M ? 3 : 1  // Line width
-					);
+				);
 			}
 		}
 	}
@@ -518,14 +516,13 @@ void CMetricMapBuilderRBPF::saveCurrentPathEstimationToTextFile(
 						TConstructionOptions
   ---------------------------------------------------------------*/
 CMetricMapBuilderRBPF::TConstructionOptions::TConstructionOptions()
-	: 
-	  insertionAngDistance(DEG2RAD(30)),
-	  
+	: insertionAngDistance(DEG2RAD(30)),
+
 	  localizeAngDistance(DEG2RAD(10)),
 	  PF_options(),
 	  mapsInitializers(),
 	  predictionOptions()
-	  
+
 {
 }
 

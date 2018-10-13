@@ -58,7 +58,8 @@ class MyArtProvider : public wxArtProvider
 {
    protected:
 	wxBitmap CreateBitmap(
-		const wxArtID& id, const wxArtClient& client, const wxSize& size) override;
+		const wxArtID& id, const wxArtClient& client,
+		const wxSize& size) override;
 };
 wxBitmap MyArtProvider::CreateBitmap(
 	const wxArtID& id, const wxArtClient& client, const wxSize& size)
@@ -1265,8 +1266,8 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(
 			OnbtnHelpLiveCalibClick);
 	Panel5->Connect(
 		wxEVT_SET_FOCUS,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnPanel5SetFocus, nullptr,
-		this);
+		(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnPanel5SetFocus,
+		nullptr, this);
 	Connect(
 		ID_NOTEBOOK1, wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGING,
 		(wxObjectEventFunction)&kinect_calibrate_guiDialog::
@@ -1655,7 +1656,8 @@ void kinect_calibrate_guiDialog::ProcessNewGrabbedObs()
 					break;
 
 				case gsSwitchingRGB:
-					center_messages.emplace_back(" Switching to RGB channel...");
+					center_messages.emplace_back(
+						" Switching to RGB channel...");
 					m_cap_thread_data.select_IR_channel = false;
 					if (m_last_obs->intensityImageChannel ==
 						CObservation3DRangeScan::CH_VISIBLE)
@@ -1769,9 +1771,11 @@ void kinect_calibrate_guiDialog::ProcessNewGrabbedObs()
 			}
 			else
 			{
-				center_messages.emplace_back("*WARNING*: No chessboard detected!");
+				center_messages.emplace_back(
+					"*WARNING*: No chessboard detected!");
 				if (!at_least_detected_once)
-					center_messages.emplace_back("Make sure the Rows x Cols size is correct.");
+					center_messages.emplace_back(
+						"Make sure the Rows x Cols size is correct.");
 			}
 
 			// Messages:

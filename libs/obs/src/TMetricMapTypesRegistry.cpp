@@ -31,7 +31,7 @@ size_t TMetricMapTypesRegistry::doRegister(
 {
 	std::vector<std::string> lstNames;
 	mrpt::system::tokenize(names, " \t\r\n,", lstNames);
-	for (const auto & lstName : lstNames)
+	for (const auto& lstName : lstNames)
 		m_registry[lstName] = std::make_pair(func1, func2);
 	return m_registry.size();
 }
@@ -49,8 +49,7 @@ mrpt::maps::TMetricMapInitializer*
 mrpt::maps::CMetricMap* TMetricMapTypesRegistry::factoryMapObjectFromDefinition(
 	const mrpt::maps::TMetricMapInitializer& mi) const
 {
-	auto it =
-		m_registry.find(mi.getMetricMapClassType()->className);
+	auto it = m_registry.find(mi.getMetricMapClassType()->className);
 	if (it == m_registry.end())
 	{
 		THROW_EXCEPTION_FMT(

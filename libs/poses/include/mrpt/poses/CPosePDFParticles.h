@@ -161,8 +161,8 @@ class CPosePDFParticles
 	 * \sa saveParzenPDFToTextFile
 	 */
 	double evaluatePDF_parzen(
-		const double x, const double y, const double phi,
-		const double stdXY, const double stdPhi) const;
+		const double x, const double y, const double phi, const double stdXY,
+		const double stdPhi) const;
 
 	/** Save a text file (compatible with matlab) representing the 2D evaluation
 	 * of the PDF as reconstructed by a Parzen window.
@@ -175,6 +175,4 @@ class CPosePDFParticles
 
 };  // End of class def.
 
-}
-
-
+}  // namespace mrpt::poses

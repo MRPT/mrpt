@@ -19,7 +19,7 @@ namespace mrpt::obs
 /** Symbolic names for the indices of IMU data (refer to
  * mrpt::obs::CObservationIMU)
  * \ingroup mrpt_obs_grp
-  */
+ */
 enum TIMUDataIndex
 {
 	/** x-axis acceleration (local/vehicle frame) (m/sec<sup>2</sup>) */
@@ -117,21 +117,21 @@ class CObservationIMU : public CObservation
 	}
 
 	/** Destructor
-	  */
+	 */
 	~CObservationIMU() override = default;
 	/** The pose of the sensor on the robot. */
 	mrpt::poses::CPose3D sensorPose;
 
 	/** Each entry in this vector is true if the corresponding data index
 	 * contains valid data (the IMU unit supplies that kind of data).
-	  *  See the top of this page for the meaning of the indices.
-	  */
+	 *  See the top of this page for the meaning of the indices.
+	 */
 	std::vector<bool> dataIsPresent;
 
 	/** The accelerometer and/or gyroscope measurements taken by the IMU at the
 	 * given timestamp.
-	  * \sa dataIsPresent, CObservation::timestamp
-	  */
+	 * \sa dataIsPresent, CObservation::timestamp
+	 */
 	std::vector<double> rawMeasurements;
 
 	// See base class docs
@@ -147,6 +147,4 @@ class CObservationIMU : public CObservation
 
 };  // End of class def.
 
-}
-
-
+}  // namespace mrpt::obs

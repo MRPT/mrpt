@@ -55,8 +55,7 @@ bool navlog_viewer_GUI_designApp::OnInit()
 	wxInitAllImageHandlers();
 	if (wxsOK)
 	{
-		auto* Frame =
-			new navlog_viewer_GUI_designDialog(nullptr);
+		auto* Frame = new navlog_viewer_GUI_designDialog(nullptr);
 		Frame->Show();
 		SetTopWindow(Frame);
 		wxsOK = true;

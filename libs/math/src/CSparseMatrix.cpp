@@ -13,9 +13,9 @@
 #include <string>
 #include <iostream>
 
-using std::string;
 using std::cout;
 using std::endl;
+using std::string;
 using namespace mrpt;
 using namespace mrpt::math;
 
@@ -141,11 +141,11 @@ void CSparseMatrix::construct_from_existing_cs(const cs& sm)
 }
 
 /** Create an initially empty sparse matrix, in the "triplet" form.
-*  Notice that you must call "compressFromTriplet" after populating the matrix
-* and before using the math operatons on this matrix.
-*  The initial size can be later on extended with insert_entry() or
-* setRowCount() & setColCount().
-*/
+ *  Notice that you must call "compressFromTriplet" after populating the matrix
+ * and before using the math operatons on this matrix.
+ *  The initial size can be later on extended with insert_entry() or
+ * setRowCount() & setColCount().
+ */
 CSparseMatrix::CSparseMatrix(const size_t nRows, const size_t nCols)
 {
 	sparse_matrix.nzmax = 1;
@@ -228,7 +228,7 @@ CSparseMatrix CSparseMatrix::transpose() const
 
 /** Static method to convert a "cs" structure into a dense representation of the
  * sparse matrix.
-*/
+ */
 void CSparseMatrix::cs2dense(const cs& SM, CMatrixDouble& d_M)
 {
 	d_M.zeros(SM.m, SM.n);
@@ -274,7 +274,7 @@ void CSparseMatrix::compressFromTriplet()
 }
 
 /** save as a dense matrix to a text file \return False on any error.
-*/
+ */
 bool CSparseMatrix::saveToTextFile_dense(const std::string& filName)
 {
 	CMatrixDouble dense;
@@ -348,11 +348,11 @@ bool CSparseMatrix::saveToTextFile_sparse(const std::string& filName)
 // ==============================
 
 /** Constructor from a square semidefinite-positive sparse matrix.
-*   The actual Cholesky decomposition takes places in this constructor.
-*  \exception std::runtime_error On non-square input matrix.
-*  \exception mrpt::math::CExceptionNotDefPos On non-semidefinite-positive
-* matrix as input.
-*/
+ *   The actual Cholesky decomposition takes places in this constructor.
+ *  \exception std::runtime_error On non-square input matrix.
+ *  \exception mrpt::math::CExceptionNotDefPos On non-semidefinite-positive
+ * matrix as input.
+ */
 CSparseMatrix::CholeskyDecomp::CholeskyDecomp(const CSparseMatrix& SM)
 	: m_symbolic_structure(nullptr),
 	  m_numeric_structure(nullptr),
@@ -417,10 +417,10 @@ void CSparseMatrix::CholeskyDecomp::backsub(
 }
 
 /** Update the Cholesky factorization from an updated vesion of the original
-* input, square definite-positive sparse matrix.
-*  NOTE: This new matrix MUST HAVE exactly the same sparse structure than the
-* original one.
-*/
+ * input, square definite-positive sparse matrix.
+ *  NOTE: This new matrix MUST HAVE exactly the same sparse structure than the
+ * original one.
+ */
 void CSparseMatrix::CholeskyDecomp::update(const CSparseMatrix& new_SM)
 {
 	ASSERTMSG_(

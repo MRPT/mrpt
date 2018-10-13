@@ -51,7 +51,5 @@ namespace rp::arch
 {
 _u64 rp_getus();
 _u32 rp_getms();
-}
+}  // namespace rp::arch
 #define getms() rp::arch::rp_getms()
-
-

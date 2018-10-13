@@ -92,9 +92,9 @@ CDlgLog::CDlgLog(
 	//*)
 
 	m_redirector = std::make_unique<CMyRedirector>(
-		
-			edLog, false, 0, true, /* thread_safe */ true,
-			/*Also dump to cout*/ true);
+
+		edLog, false, 0, true, /* thread_safe */ true,
+		/*Also dump to cout*/ true);
 }
 
 CDlgLog::~CDlgLog()

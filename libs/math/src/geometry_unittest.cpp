@@ -64,14 +64,15 @@ TEST(Geometry, Segment2DIntersect)
 		EXPECT_FALSE(do_inter);
 	}
 	{
-		// Two parallel segments that do NOT intersect: result is a "segment in the middle".
-		const TSegment2D s1(TPoint2D(-0.05,0.05), TPoint2D(-0.05,-0.05));
-		const TSegment2D s2(TPoint2D(0,0.135), TPoint2D(0,-0.0149999));
+		// Two parallel segments that do NOT intersect: result is a "segment in
+		// the middle".
+		const TSegment2D s1(TPoint2D(-0.05, 0.05), TPoint2D(-0.05, -0.05));
+		const TSegment2D s2(TPoint2D(0, 0.135), TPoint2D(0, -0.0149999));
 
 		TObject2D inter;
 		bool do_inter = intersect(s1, s2, inter);
 
-		//EXPECT_TRUE(do_inter && inter.getType()==GEOMETRIC_TYPE_SEGMENT);
+		// EXPECT_TRUE(do_inter && inter.getType()==GEOMETRIC_TYPE_SEGMENT);
 		EXPECT_FALSE(do_inter);
 	}
 }
@@ -79,14 +80,10 @@ TEST(Geometry, Segment2DIntersect)
 TEST(Geometry, Intersection3D)
 {
 	{
-		TPolygon3D p3d({
-			{ 1,0,0},
-			{ 0,1,0},
-			{ 0,0,1}
-		});
+		TPolygon3D p3d({{1, 0, 0}, {0, 1, 0}, {0, 0, 1}});
 		TSegment3D s3d({
-			{ 1,0,0},
-			{ 0,1,0},
+			{1, 0, 0},
+			{0, 1, 0},
 		});
 
 		TObject3D inter;
@@ -94,17 +91,13 @@ TEST(Geometry, Intersection3D)
 		EXPECT_EQ(inter.getType(), GEOMETRIC_TYPE_SEGMENT);
 		TSegment3D test;
 		inter.getSegment(test);
-		//Should this be true? EXPECT_EQ(s3d, test);		
+		// Should this be true? EXPECT_EQ(s3d, test);
 	}
 	{
-		TPolygon3D p3d({
-			{ 1,0,0},
-			{ 0,1,0},
-			{ 0,0,1}
-		});
+		TPolygon3D p3d({{1, 0, 0}, {0, 1, 0}, {0, 0, 1}});
 		TSegment3D s3d({
-			{ 0,0,0},
-			{ 1,1,1},
+			{0, 0, 0},
+			{1, 1, 1},
 		});
 
 		TObject3D inter;
@@ -113,27 +106,26 @@ TEST(Geometry, Intersection3D)
 	}
 	{
 		TSegment3D s3d1({
-			{ 1,0,0},
-			{ 0,1,0},
+			{1, 0, 0},
+			{0, 1, 0},
 		});
 		TSegment3D s3d2({
-			{ 2,-1.0,0},
-			{ 0, 1.0,0},
+			{2, -1.0, 0},
+			{0, 1.0, 0},
 		});
 
 		TObject3D inter;
 		EXPECT_TRUE(intersect(s3d1, s3d2, inter));
 		EXPECT_EQ(inter.getType(), GEOMETRIC_TYPE_SEGMENT);
-
 	}
 	{
 		TSegment3D s3d1({
-			{ 1,0,0},
-			{ 0,1,0},
+			{1, 0, 0},
+			{0, 1, 0},
 		});
 		TSegment3D s3d2({
-			{ 0,0,0},
-			{ 1,1,0},
+			{0, 0, 0},
+			{1, 1, 0},
 		});
 
 		TObject3D inter;
@@ -150,32 +142,32 @@ TEST(Geometry, Intersection3D)
 TEST(Geometry, IntersectionPlanePlane)
 {
 	{
-		//Parallel planes
+		// Parallel planes
 		TPlane plane1({
-			{ 1,0,0},
-			{ 0,1,0},
-			{ 0,0,1},
+			{1, 0, 0},
+			{0, 1, 0},
+			{0, 0, 1},
 		});
 		TPlane plane2({
-			{ 2,0,0},
-			{ 0,2,0},
-			{ 0,0,2},
+			{2, 0, 0},
+			{0, 2, 0},
+			{0, 0, 2},
 		});
 
 		TObject3D inter;
 		EXPECT_FALSE(intersect(plane1, plane2, inter));
 	}
 	{
-		//Same plane
+		// Same plane
 		TPlane plane1({
-			{ 1,0,0},
-			{ 0,1,0},
-			{ 0,0,1},
+			{1, 0, 0},
+			{0, 1, 0},
+			{0, 0, 1},
 		});
 		TPlane plane2({
-			{ -1,1,1},
-			{ 1,-1,1},
-			{ 1,1,-1},
+			{-1, 1, 1},
+			{1, -1, 1},
+			{1, 1, -1},
 		});
 
 		TObject3D inter;
@@ -183,16 +175,16 @@ TEST(Geometry, IntersectionPlanePlane)
 		EXPECT_EQ(inter.getType(), GEOMETRIC_TYPE_PLANE);
 	}
 	{
-		//Intersecting planes
+		// Intersecting planes
 		TPlane plane1({
-			{ 1,0,0},
-			{ 0,1,0},
-			{ 0,0,1},
+			{1, 0, 0},
+			{0, 1, 0},
+			{0, 0, 1},
 		});
 		TPlane plane2({
-			{ 1,0,0},
-			{ 0,-1,0},
-			{ 0,0,-1},
+			{1, 0, 0},
+			{0, -1, 0},
+			{0, 0, -1},
 		});
 
 		TObject3D inter;

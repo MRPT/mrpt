@@ -28,39 +28,39 @@ namespace typemeta
 @{ */
 
 /** A template to obtain the type of its argument as a string at compile time.
-  *  It works with all classes derived from  CObject, plus many
+ *  It works with all classes derived from  CObject, plus many
  * specializations for the plain data types (bool, double, uint8_t, etc...)
-  *   For example:
-  *  \code
-  *     cout << TTypeName<double>::get() << endl;  // "double"
-  *   	cout << TTypeName<CPose2D>::get() << endl; // "CPose2D"
-  *  \endcode
-  *
-  *  Users can extend this for custom structs/classes with the macro
+ *   For example:
+ *  \code
+ *     cout << TTypeName<double>::get() << endl;  // "double"
+ *   	cout << TTypeName<CPose2D>::get() << endl; // "CPose2D"
+ *  \endcode
+ *
+ *  Users can extend this for custom structs/classes with the macro
  * DECLARE_CUSTOM_TTYPENAME:
-  *  \code
-  *     class MyClass { ... };
-  *     DECLARE_CUSTOM_TTYPENAME(MyClass)
-  *     cout << TTypeName<MyClass>::get() << endl;  // "MyClass"
-  *  \endcode
-  * or alternatively, to avoid adding out-of-class macros:
-  *  \code
-  *     namespace MyNS {
-  *      class MyClass {
-  *        DECLARE_TTYPENAME_CLASSNAME(MyNS::MyClass)
-  *      };
-  *     }
-  *     cout << TTypeName<MyNS::MyClass>::get() << endl; // "MyNS::MyClass"
-  *  \endcode
-  *  The following types are NOT ALLOWED since they have platform-dependant
+ *  \code
+ *     class MyClass { ... };
+ *     DECLARE_CUSTOM_TTYPENAME(MyClass)
+ *     cout << TTypeName<MyClass>::get() << endl;  // "MyClass"
+ *  \endcode
+ * or alternatively, to avoid adding out-of-class macros:
+ *  \code
+ *     namespace MyNS {
+ *      class MyClass {
+ *        DECLARE_TTYPENAME_CLASSNAME(MyNS::MyClass)
+ *      };
+ *     }
+ *     cout << TTypeName<MyNS::MyClass>::get() << endl; // "MyNS::MyClass"
+ *  \endcode
+ *  The following types are NOT ALLOWED since they have platform-dependant
  * sizes:
-  *  - int, unsigned int
-  *  - long, unsigned long
-  *  - short, unsigned short
-  *  - size_t
-  *
-  * \ingroup mrpt_typemeta_grp
-  */
+ *  - int, unsigned int
+ *  - long, unsigned long
+ *  - short, unsigned short
+ *  - size_t
+ *
+ * \ingroup mrpt_typemeta_grp
+ */
 template <typename T>
 struct TTypeName
 {
@@ -78,11 +78,11 @@ struct TTypeName<std::shared_ptr<T>>
 };
 
 /** Identical to MRPT_DECLARE_TTYPENAME but intended for user code.
-  * MUST be placed at the GLOBAL namespace. Can be used for types declared
-  * at the global or within some namespace. Just write the full namespace path
-  * as `_TYPE` argument here.
-  * \sa TTypeName, DECLARE_TTYPENAME_CLASSNAME
-  */
+ * MUST be placed at the GLOBAL namespace. Can be used for types declared
+ * at the global or within some namespace. Just write the full namespace path
+ * as `_TYPE` argument here.
+ * \sa TTypeName, DECLARE_TTYPENAME_CLASSNAME
+ */
 #define DECLARE_CUSTOM_TTYPENAME(_TYPE) \
 	namespace mrpt                      \
 	{                                   \
@@ -93,10 +93,10 @@ struct TTypeName<std::shared_ptr<T>>
 	}
 
 /** Like DECLARE_CUSTOM_TTYPENAME(), but for use within the class declaration
-  * body. It has the advantage of not requiring macros/definitions out of the
-  * original class namespace.
-  * \sa TTypeName
-  */
+ * body. It has the advantage of not requiring macros/definitions out of the
+ * original class namespace.
+ * \sa TTypeName
+ */
 #define DECLARE_TTYPENAME_CLASSNAME(_CLASSNAME)      \
    public:                                           \
 	static constexpr auto getClassName()             \
@@ -111,7 +111,7 @@ struct TTypeName<std::shared_ptr<T>>
 		constexpr static auto get() { return literal(#_TYPE); } \
 	};
 /** Declares a typename to be "namespace::type"
-  * \sa MRPT_DECLARE_TTYPENAME_NO_NAMESPACE */
+ * \sa MRPT_DECLARE_TTYPENAME_NO_NAMESPACE */
 #define MRPT_DECLARE_TTYPENAME_NAMESPACE(_TYPE, __NS)                      \
 	template <>                                                            \
 	struct TTypeName<__NS::_TYPE>                                          \
@@ -120,7 +120,7 @@ struct TTypeName<std::shared_ptr<T>>
 	};
 
 /** Declares a typename to be "type" (without the NS prefix)
-  * \sa MRPT_DECLARE_TTYPENAME_NAMESPACE */
+ * \sa MRPT_DECLARE_TTYPENAME_NAMESPACE */
 #define MRPT_DECLARE_TTYPENAME_NO_NAMESPACE(_TYPE, __NS)        \
 	template <>                                                 \
 	struct TTypeName<__NS::_TYPE>                               \
@@ -156,5 +156,5 @@ MRPT_DECLARE_TTYPENAME(int8_t)
 
 /** @} */
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace typemeta
+}  // namespace mrpt

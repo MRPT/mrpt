@@ -101,6 +101,4 @@ struct TMRSlamNodeAnnotations : public TNodeAnnotations
 	 */
 	mrpt::graphs::TNodeID nodeID_loc;
 };
-}
-
-
+}  // namespace mrpt::graphs::detail

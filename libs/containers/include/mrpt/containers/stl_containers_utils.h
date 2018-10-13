@@ -16,7 +16,7 @@
 namespace mrpt::containers
 {
 /** \addtogroup stlext_grp
-  * @{ */
+ * @{ */
 
 /** Returns the index of the value "T" in the container "vect"
  * (std::vector,std::deque,etc), or string::npos if not found.
@@ -144,5 +144,4 @@ void printMap(const std::map<T1, T2>& m)
 }
 
 /** @} */  // end of grouping
-}
-
+}  // namespace mrpt::containers

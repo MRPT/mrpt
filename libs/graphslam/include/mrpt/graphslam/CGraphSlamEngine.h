@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-# pragma once
+#pragma once
 
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
@@ -139,8 +139,7 @@ namespace mrpt::graphslam
 template <class GRAPH_T = typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CGraphSlamEngine : public mrpt::system::COutputLogger
 {
-
-public:
+   public:
 	/**\brief Map for managing output file streams.*/
 	using fstreams_out = std::map<std::string, mrpt::io::CFileOutputStream>;
 	/**\brief Map for iterating over output file streams.*/
@@ -894,7 +893,7 @@ public:
 	{
 		TRGBDInfoFileParams();
 		TRGBDInfoFileParams(const std::string& rawlog_fname);
-		~TRGBDInfoFileParams()=default;
+		~TRGBDInfoFileParams() = default;
 
 		void initTRGBDInfoFileParams();
 		/**\brief Parse the RGBD information file to gain information about the
@@ -972,6 +971,6 @@ public:
 	static const std::string header_sep;
 	static const std::string report_sep;
 };
-}
+}  // namespace mrpt::graphslam
 // pseudo-split the definition and implementation of template
 #include "CGraphSlamEngine_impl.h"

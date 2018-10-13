@@ -24,13 +24,14 @@ typedef enum XsBaudCode XsBaudCode;
 typedef enum XsBaudRate XsBaudRate;
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-XSTYPES_DLL_API XsBaudRate XsBaud_codeToRate(XsBaudCode baudcode);
-XSTYPES_DLL_API XsBaudCode XsBaud_rateToCode(XsBaudRate baudrate);
-XSTYPES_DLL_API int XsBaud_rateToNumeric(XsBaudRate baudrate);
-XSTYPES_DLL_API XsBaudRate XsBaud_numericToRate(int numeric);
+	XSTYPES_DLL_API XsBaudRate XsBaud_codeToRate(XsBaudCode baudcode);
+	XSTYPES_DLL_API XsBaudCode XsBaud_rateToCode(XsBaudRate baudrate);
+	XSTYPES_DLL_API int XsBaud_rateToNumeric(XsBaudRate baudrate);
+	XSTYPES_DLL_API XsBaudRate XsBaud_numericToRate(int numeric);
 
 #ifdef __cplusplus
 }  // extern "C"
@@ -60,7 +61,7 @@ inline XsBaudRate numericToRate(int numeric)
 {
 	return XsBaud_numericToRate(numeric);
 }
-}
+}  // namespace XsBaud
 
 #endif
 

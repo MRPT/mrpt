@@ -43,7 +43,7 @@ struct TSlidingWindow : public mrpt::config::CLoadableOptions
 {
    public:
 	TSlidingWindow(const std::string& name = "window");
-	~TSlidingWindow() override =default;
+	~TSlidingWindow() override = default;
 	/**\brief Return the current median value.  */
 	double getMedian();
 	/**\brief Return the current mean value.  */
@@ -100,15 +100,16 @@ struct TSlidingWindow : public mrpt::config::CLoadableOptions
 
 	double m_mean_cached = 0.0f; /**< Cached mean value */
 	double m_median_cached = 0.0f; /**< Cached median value */
-	double m_std_dev_cached = 0.0f; /**< Cached version of the standard deviation */
+	double m_std_dev_cached =
+		0.0f; /**< Cached version of the standard deviation */
 	bool m_mean_updated = false; /**< Is the mean up-to-date? */
 	bool m_median_updated = false; /**< Is the median up-to-date? */
-	bool m_std_dev_updated = false; /**< Is the standard deviation up-to-date? */
+	bool m_std_dev_updated =
+		false; /**< Is the standard deviation up-to-date? */
 
 	/**\brief flag is raised the first time that
 	 * TSlidingWindow::addNewMeasurement is called
 	 */
 	bool m_is_initialized = false;
 };
-}
-
+}  // namespace mrpt::graphslam

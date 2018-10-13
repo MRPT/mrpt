@@ -189,6 +189,4 @@ class CBeacon : public mrpt::poses::CPointPDF
 
 };  // End of class definition
 
-}
-
-
+}  // namespace mrpt::maps

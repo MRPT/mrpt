@@ -22,8 +22,8 @@ struct queue_register_functions_t
 	mutable std::mutex funcs_cs;
 
 	/** Retrieve the next message in the queue, or nullptr if there is no
-	* message. The user MUST call "delete" with the returned object after use.
-	*/
+	 * message. The user MUST call "delete" with the returned object after use.
+	 */
 	inline bool get(TRegisterFunction& ret)
 	{
 		std::lock_guard<std::mutex> lock(funcs_cs);
@@ -46,5 +46,4 @@ queue_register_functions_t& pending_class_registers();
  * registerAllPendingClasses(). Startup value is false. */
 extern bool pending_class_registers_modified;
 
-}
-
+}  // namespace mrpt::rtti

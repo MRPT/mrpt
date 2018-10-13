@@ -30,9 +30,8 @@ string mySimpleMap(
 	string("../share/mrpt/datasets/malaga-cs-fac-building.simplemap.gz"));
 string myCfgFileName(
 	MRPT_EXAMPLES_BASE_DIRECTORY +
-	string(
-		"../share/mrpt/config_files/navigation-ptgs/"
-		"ptrrt_config_example1.ini"));
+	string("../share/mrpt/config_files/navigation-ptgs/"
+		   "ptrrt_config_example1.ini"));
 
 // ------------------------------------------------------
 //				TestRRT1

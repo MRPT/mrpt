@@ -27,8 +27,7 @@ void TMapGenericParams::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR(enableObservationInsertion, bool, source, sct);
 }
 void TMapGenericParams::saveToConfigFile(
-	mrpt::config::CConfigFileBase& c,
-	const std::string& s) const
+	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
 	// Common:
 	MRPT_SAVE_CONFIG_VAR_COMMENT(enableSaveAs3DObject, "");

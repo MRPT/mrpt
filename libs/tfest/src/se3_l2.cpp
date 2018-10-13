@@ -69,8 +69,8 @@ bool se3_l2_internal(
 		points_this,  // IN/OUT: It gets modified!
 	std::vector<mrpt::math::TPoint3D>&
 		points_other,  // IN/OUT: It gets modified!
-	mrpt::poses::CPose3DQuat& out_transform,
-	double& out_scale, bool forceScaleToUnity)
+	mrpt::poses::CPose3DQuat& out_transform, double& out_scale,
+	bool forceScaleToUnity)
 {
 	MRPT_START
 

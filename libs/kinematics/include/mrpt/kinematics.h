@@ -12,4 +12,3 @@
 #include <mrpt/kinematics/CKinematicChain.h>
 #include <mrpt/kinematics/CVehicleSimul_DiffDriven.h>
 #include <mrpt/kinematics/CVehicleSimul_Holo.h>
-

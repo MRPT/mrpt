@@ -155,9 +155,8 @@ class GraphSlamLevMarqTest
 			}
 		}
 
-		for (auto itNode =
-				 graph.nodes.begin();
-			 itNode != graph.nodes.end(); ++itNode)
+		for (auto itNode = graph.nodes.begin(); itNode != graph.nodes.end();
+			 ++itNode)
 			if (itNode->first != graph.root)
 				itNode
 					->second += typename my_graph_t::edge_t::type_value(CPose3D(

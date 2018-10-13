@@ -47,11 +47,11 @@ CMultiMetricMapPDF::CMultiMetricMapPDF(
 	const mrpt::maps::TSetOfMetricMapInitializers* mapsInitializers,
 	const TPredictionParams* predictionOptions)
 	: averageMap(mapsInitializers),
-	  
+
 	  SFs(),
 	  SF2robotPath(),
 	  options()
-	  
+
 {
 	m_particles.resize(opts.sampleSize);
 	for (auto& m_particle : m_particles)
@@ -364,10 +364,8 @@ void CMultiMetricMapPDF::rebuildAverageMap()
 		{
 			// Variables:
 			std::vector<COccupancyGridMap2D::cellType>::iterator srcCell;
-			auto firstSrcCell =
-				part->d->mapTillNow.m_gridMaps[0]->map.begin();
-			auto lastSrcCell =
-				part->d->mapTillNow.m_gridMaps[0]->map.end();
+			auto firstSrcCell = part->d->mapTillNow.m_gridMaps[0]->map.begin();
+			auto lastSrcCell = part->d->mapTillNow.m_gridMaps[0]->map.end();
 			std::vector<float>::iterator destCell;
 
 			// The weight of particle:
@@ -385,8 +383,7 @@ void CMultiMetricMapPDF::rebuildAverageMap()
 
 		// Copy to fixed point map:
 		std::vector<float>::iterator srcCell;
-		auto destCell =
-			averageMap.m_gridMaps[0]->map.begin();
+		auto destCell = averageMap.m_gridMaps[0]->map.begin();
 
 		ASSERT_(averageMap.m_gridMaps[0]->map.size() == floatMap.size());
 
@@ -601,10 +598,7 @@ void CMultiMetricMapPDF::saveCurrentPathEstimationToTextFile(
 				TPredictionParams
   ---------------------------------------------------------------*/
 CMultiMetricMapPDF::TPredictionParams::TPredictionParams()
-	: 
-	  update_gridMapLikelihoodOptions(),
-	  KLD_params(),
-	  icp_params()
+	: update_gridMapLikelihoodOptions(), KLD_params(), icp_params()
 {
 }
 

@@ -244,8 +244,7 @@ class CDijkstra
 			// No need to check if the min. distance node is not visited yet,
 			// since we
 			// keep two lists: m_distances_non_visited & m_distances
-			for (auto itDist =
-					 m_distances_non_visited.begin();
+			for (auto itDist = m_distances_non_visited.begin();
 				 itDist != m_distances_non_visited.end(); ++itDist)
 			{
 				// TODO - remove these
@@ -270,14 +269,12 @@ class CDijkstra
 				std::set<TNodeID> nodeIDs_unconnected;
 
 				// for all the nodes in the graph
-				for (auto n_it =
-						 graph.nodes.begin();
-					 n_it != graph.nodes.end(); ++n_it)
+				for (auto n_it = graph.nodes.begin(); n_it != graph.nodes.end();
+					 ++n_it)
 				{
 					// have I already visited this node in Dijkstra?
 					bool have_traversed = false;
-					for (auto d_it =
-							 m_distances.begin();
+					for (auto d_it = m_distances.begin();
 						 d_it != m_distances.end(); ++d_it)
 					{
 						if (n_it->first == d_it->first)
@@ -314,7 +311,7 @@ class CDijkstra
 				m_allNeighbors[u];  // graph.getNeighborsOf(u,neighborsOfU);
 			for (unsigned long i : neighborsOfU)
 			{
-					if (i == u) continue;  // ignore self-loops...
+				if (i == u) continue;  // ignore self-loops...
 
 				// the "edge_ui" may be searched here or a bit later, so the
 				// "bool" var will tell us.
@@ -458,9 +455,8 @@ class CDijkstra
 		out_tree.root = m_source_node_ID;
 		// For each saved arc in "m_prev_arc", recover the original data in the
 		// input graph and save it to the output tree structure.
-		for (auto itArcs =
-				 m_prev_arc.begin();
-			 itArcs != m_prev_arc.end(); ++itArcs)
+		for (auto itArcs = m_prev_arc.begin(); itArcs != m_prev_arc.end();
+			 ++itArcs)
 		{
 			const TNodeID id = itArcs->first;
 			const TNodeID id_from = itArcs->second.first;
@@ -489,4 +485,4 @@ class CDijkstra
 
 };  // end class
 
-}
+}  // namespace mrpt::graphs

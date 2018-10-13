@@ -21,7 +21,7 @@ CICPCriteriaERD<GRAPH_T>::CICPCriteriaERD()
 	: params(*this),  // pass reference to self when initializing the parameters
 	  m_search_disk_color(142, 142, 56),
 	  m_laser_scans_color(0, 20, 255)
-	  
+
 {
 	MRPT_START;
 
@@ -508,8 +508,7 @@ void CICPCriteriaERD<GRAPH_T>::updateVisuals()
 		}
 
 		// set the pose of the laser scan
-		auto search =
-			this->m_graph->nodes.find(this->m_graph->nodeCount() - 1);
+		auto search = this->m_graph->nodes.find(this->m_graph->nodeCount() - 1);
 		if (search != this->m_graph->nodes.end())
 		{
 			laser_scan_viz->setPose(
@@ -622,8 +621,7 @@ CICPCriteriaERD<GRAPH_T>::TParams::TParams(decider_t& d)
 }
 
 template <class GRAPH_T>
-CICPCriteriaERD<GRAPH_T>::TParams::~TParams()
-= default;
+CICPCriteriaERD<GRAPH_T>::TParams::~TParams() = default;
 
 template <class GRAPH_T>
 void CICPCriteriaERD<GRAPH_T>::TParams::dumpToTextStream(

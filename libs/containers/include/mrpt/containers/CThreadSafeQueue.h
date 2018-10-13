@@ -15,40 +15,40 @@ namespace mrpt::containers
 {
 /** A thread-safe template queue for object passing between threads; for a
  * template argument of T, the objects being passed in the queue are "T*".
-  *
-  *  Usage example:
-  *
-  * \code
-  * // Declaration:
-  * CThreadSafeQueue<MyMsgType>  tsq;
-  * ...
-  *
-  * // Thread 1: Write
-  * {
-  *   MyMsgType *msg = new MyMsgType;
-  *   msg->...
-  *   tsq.push(msg);  // Insert in the queue
-  * }
-  *
-  * // Thread 2: Read
-  * {
-  *   MyMsgType *msg = tsq.get();
-  *   if (msg)
-  *   {
-  *      // Process "msg"...
-  *      delete msg;
-  *   }
-  * }
-  * \endcode
-  *
-  *  Note that only dynamically allocated objects can be inserted with \a push()
+ *
+ *  Usage example:
+ *
+ * \code
+ * // Declaration:
+ * CThreadSafeQueue<MyMsgType>  tsq;
+ * ...
+ *
+ * // Thread 1: Write
+ * {
+ *   MyMsgType *msg = new MyMsgType;
+ *   msg->...
+ *   tsq.push(msg);  // Insert in the queue
+ * }
+ *
+ * // Thread 2: Read
+ * {
+ *   MyMsgType *msg = tsq.get();
+ *   if (msg)
+ *   {
+ *      // Process "msg"...
+ *      delete msg;
+ *   }
+ * }
+ * \endcode
+ *
+ *  Note that only dynamically allocated objects can be inserted with \a push()
  * and that freeing that memory
-  *   if responsibility of the receiver of this queue as it receives objects
+ *   if responsibility of the receiver of this queue as it receives objects
  * with \a get(). However, elements
-  *   still in the queue upon destruction will be deleted automatically.
-  *
+ *   still in the queue upon destruction will be deleted automatically.
+ *
  * \ingroup mrpt_containers_grp
-  */
+ */
 template <class T>
 class CThreadSafeQueue
 {
@@ -76,7 +76,7 @@ class CThreadSafeQueue
 
 	/** Insert a new message in the queue - The object must be created with
 	 * "new", and do not delete is after calling this, it must be deleted later.
-	  */
+	 */
 	inline void push(T* msg)
 	{
 		std::lock_guard<std::mutex> lock(m_csQueue);
@@ -85,8 +85,8 @@ class CThreadSafeQueue
 
 	/** Retrieve the next message in the queue, or nullptr if there is no
 	 * message.
-	  *  The user MUST call "delete" with the returned object after use.
-	  */
+	 *  The user MUST call "delete" with the returned object after use.
+	 */
 	inline T* get()
 	{
 		std::lock_guard<std::mutex> lock(m_csQueue);
@@ -103,9 +103,9 @@ class CThreadSafeQueue
 	/** Skip all old messages in the queue and directly return the last one (the
 	 * most recent, at the bottom of the queue), or nullptr if there is no
 	 * message.
-	  *  \note The memory of all skipped messages is freed with "delete".
-	  *  \note The user MUST call "delete" with the returned object after use.
-	  */
+	 *  \note The memory of all skipped messages is freed with "delete".
+	 *  \note The user MUST call "delete" with the returned object after use.
+	 */
 	inline T* get_lastest_purge_old()
 	{
 		std::lock_guard<std::mutex> lock(m_csQueue);
@@ -140,5 +140,4 @@ class CThreadSafeQueue
 	}
 
 };  // End of class def.
-}
-
+}  // namespace mrpt::containers

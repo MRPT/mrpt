@@ -17,7 +17,8 @@ struct XsEuler;
 struct XsQuaternion;
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #else
 #define XSMATRIX_INITIALIZER           \
 	{                                  \
@@ -26,32 +27,32 @@ extern "C" {
 typedef struct XsMatrix XsMatrix;
 #endif
 
-XSTYPES_DLL_API void XsMatrix_ref(
-	XsMatrix* thisPtr, XsSize rows, XsSize cols, XsSize stride, XsReal* buffer,
-	XsDataFlags flags);
-XSTYPES_DLL_API void XsMatrix_construct(
-	XsMatrix* thisPtr, XsSize rows, XsSize cols, XsSize stride,
-	const XsReal* src, XsSize srcStride);
-XSTYPES_DLL_API void XsMatrix_assign(
-	XsMatrix* thisPtr, XsSize rows, XsSize cols, XsSize stride,
-	const XsReal* src, XsSize srcStride);
-XSTYPES_DLL_API void XsMatrix_destruct(XsMatrix* thisPtr);
-XSTYPES_DLL_API void XsMatrix_copy(XsMatrix* copy, XsMatrix const* src);
-XSTYPES_DLL_API void XsMatrix_setZero(XsMatrix* thisPtr);
-XSTYPES_DLL_API int XsMatrix_empty(const XsMatrix* thisPtr);
-XSTYPES_DLL_API void XsMatrix_multiplyScalar(
-	const XsMatrix* thisPtr, XsReal scalar, XsMatrix* dest);
-XSTYPES_DLL_API XsSize
-	XsMatrix_offset(const XsMatrix* thisPtr, XsSize row, XsSize column);
-XSTYPES_DLL_API XsReal
-	XsMatrix_value(const XsMatrix* thisPtr, XsSize row, XsSize column);
-XSTYPES_DLL_API void XsMatrix_setValue(
-	XsMatrix* thisPtr, XsSize row, XsSize column, XsReal value);
-XSTYPES_DLL_API int XsMatrix_dimensionsMatch(
-	const XsMatrix* thisPtr, XsSize rows, XsSize columns);
-XSTYPES_DLL_API void XsMatrix_fromQuaternion(
-	XsMatrix* thisPtr, const struct XsQuaternion* quat);
-XSTYPES_DLL_API void XsMatrix_swap(XsMatrix* a, XsMatrix* b);
+	XSTYPES_DLL_API void XsMatrix_ref(
+		XsMatrix* thisPtr, XsSize rows, XsSize cols, XsSize stride,
+		XsReal* buffer, XsDataFlags flags);
+	XSTYPES_DLL_API void XsMatrix_construct(
+		XsMatrix* thisPtr, XsSize rows, XsSize cols, XsSize stride,
+		const XsReal* src, XsSize srcStride);
+	XSTYPES_DLL_API void XsMatrix_assign(
+		XsMatrix* thisPtr, XsSize rows, XsSize cols, XsSize stride,
+		const XsReal* src, XsSize srcStride);
+	XSTYPES_DLL_API void XsMatrix_destruct(XsMatrix* thisPtr);
+	XSTYPES_DLL_API void XsMatrix_copy(XsMatrix* copy, XsMatrix const* src);
+	XSTYPES_DLL_API void XsMatrix_setZero(XsMatrix* thisPtr);
+	XSTYPES_DLL_API int XsMatrix_empty(const XsMatrix* thisPtr);
+	XSTYPES_DLL_API void XsMatrix_multiplyScalar(
+		const XsMatrix* thisPtr, XsReal scalar, XsMatrix* dest);
+	XSTYPES_DLL_API XsSize
+		XsMatrix_offset(const XsMatrix* thisPtr, XsSize row, XsSize column);
+	XSTYPES_DLL_API XsReal
+		XsMatrix_value(const XsMatrix* thisPtr, XsSize row, XsSize column);
+	XSTYPES_DLL_API void XsMatrix_setValue(
+		XsMatrix* thisPtr, XsSize row, XsSize column, XsReal value);
+	XSTYPES_DLL_API int XsMatrix_dimensionsMatch(
+		const XsMatrix* thisPtr, XsSize rows, XsSize columns);
+	XSTYPES_DLL_API void XsMatrix_fromQuaternion(
+		XsMatrix* thisPtr, const struct XsQuaternion* quat);
+	XSTYPES_DLL_API void XsMatrix_swap(XsMatrix* a, XsMatrix* b);
 
 #define XsMatrix_offsetM(thisPtr, row, column) \
 	(thisPtr->m_stride * row + column)
@@ -80,6 +81,7 @@ struct XsMatrix
 #ifdef __cplusplus
 	//! \brief Return the data management flags of the matrix.
 	inline int flags() { return m_flags; }
+
    public:
 	/*! \brief Initialize an XsMatrix object with the specified number of \a
 	 * rows and \a cols */

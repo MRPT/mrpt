@@ -44,9 +44,9 @@ using namespace std;
  -------------------------------------------------------------*/
 CSwissRanger3DCamera::CSwissRanger3DCamera()
 	: m_sensorPoseOnRobot(),
-	  
+
 	  m_ip_address("192.168.2.14")
-	  
+
 {
 	m_sensorLabel = "3DCAM";
 

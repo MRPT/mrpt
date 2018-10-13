@@ -299,9 +299,8 @@ CScanAnimation::CScanAnimation(
 	openGLSceneRef->insert(
 		mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>(
 			-50, 50, -50, 50, 0 /* z */, 5 /* freq */));
-	openGLSceneRef->insert(
-		mrpt::opengl::stock_objects::CornerXYZSimple(
-			1.0 /*scale*/, 3.0 /*line width*/));
+	openGLSceneRef->insert(mrpt::opengl::stock_objects::CornerXYZSimple(
+		1.0 /*scale*/, 3.0 /*line width*/));
 
 	m_mixlasers = cbAllowMix->GetValue();
 }
@@ -346,7 +345,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 
 	// Preprocess: make sure 3D observations are ready:
 	std::vector<CObservation3DRangeScan::Ptr> obs3D_to_clear;
-	for (auto & it : *sf)
+	for (auto& it : *sf)
 	{
 		it->load();
 		// force generate 3D point clouds:
@@ -368,7 +367,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 	if (!m_mixlasers)
 	{
 		// if not, just clear all old objects:
-		for (auto & m_gl_object : m_gl_objects)
+		for (auto& m_gl_object : m_gl_objects)
 		{
 			TRenderObject& ro = m_gl_object.second;
 			m_plot3D->getOpenGLSceneRef()->removeObject(
@@ -380,11 +379,10 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 	// Insert new scans:
 	mrpt::system::TTimeStamp tim_last = INVALID_TIMESTAMP;
 	bool wereScans = false;
-	for (auto & it : *sf)
+	for (auto& it : *sf)
 	{
 		const std::string sNameInMap =
-			std::string(it->GetRuntimeClass()->className) +
-			it->sensorLabel;
+			std::string(it->GetRuntimeClass()->className) + it->sensorLabel;
 		if (IS_CLASS(it, CObservation2DRangeScan))
 		{
 			CObservation2DRangeScan::Ptr obs =
@@ -533,7 +531,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 
 	// Post-process: unload 3D observations.
 	for (auto& o : *sf) o->unload();
-	for (auto & i : obs3D_to_clear)
+	for (auto& i : obs3D_to_clear)
 	{
 		i->resizePoints3DVectors(0);
 		i->hasPoints3D = false;

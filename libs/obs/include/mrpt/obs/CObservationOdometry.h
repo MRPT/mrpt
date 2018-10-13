@@ -60,6 +60,4 @@ class CObservationOdometry : public CObservation
 
 };  // End of class def.
 
-}
-
-
+}  // namespace mrpt::obs

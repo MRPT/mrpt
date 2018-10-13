@@ -73,8 +73,7 @@ class CRangeScanOps
 	using constraint_t = typename GRAPH_T::constraint_t;
 	using self_t = CRangeScanOps<GRAPH_T>;
 
-protected:
-
+   protected:
 	/**\brief Align the 2D range scans provided and fill the potential edge that
 	 * can transform the one into the other.
 	 *
@@ -122,8 +121,8 @@ protected:
 	struct TParams : public mrpt::config::CLoadableOptions
 	{
 	   public:
-		TParams()=default;
-		~TParams() override =default;
+		TParams() = default;
+		~TParams() override = default;
 
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
@@ -141,7 +140,5 @@ protected:
 	};
 	TParams params;
 };
-}
+}  // namespace mrpt::graphslam::deciders
 #include "CRangeScanOps_impl.h"
-
-

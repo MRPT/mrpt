@@ -81,8 +81,5 @@ class PbMap : public mrpt::serialization::CSerializable
 
 	//    boost::mutex mtx_pbmap_busy;
 };
-}
+}  // namespace mrpt::pbmap
 #endif
-
-
-

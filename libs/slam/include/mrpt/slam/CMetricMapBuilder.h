@@ -22,7 +22,7 @@
 namespace mrpt::slam
 {
 /** @defgroup metric_slam_grp Metric SLAM algorithms
-  * \ingroup mrpt_slam_grp */
+ * \ingroup mrpt_slam_grp */
 
 /** This virtual class is the base for SLAM implementations. See derived classes
  * for more information.
@@ -38,6 +38,7 @@ class CMetricMapBuilder : public mrpt::system::COutputLogger
 	inline void enterCriticalSection() { critZoneChangingMap.lock(); }
 	/** Leave critical section for map updating */
 	inline void leaveCriticalSection() { critZoneChangingMap.unlock(); }
+
    public:
 	/** Constructor */
 	CMetricMapBuilder();
@@ -87,9 +88,9 @@ class CMetricMapBuilder : public mrpt::system::COutputLogger
 
 	/** A useful method for debugging: the current map (and/or poses) estimation
 	 * is dumped to an image file.
-	  * \param file The output file name
-	  * \param formatEMF_BMP Output format = true:EMF, false:BMP
-	  */
+	 * \param file The output file name
+	 * \param formatEMF_BMP Output format = true:EMF, false:BMP
+	 */
 	virtual void saveCurrentEstimationToImage(
 		const std::string& file, bool formatEMF_BMP = true) = 0;
 
@@ -128,12 +129,12 @@ class CMetricMapBuilder : public mrpt::system::COutputLogger
 		/** A list of observation classes (derived from mrpt::obs::CObservation)
 		 * which will be always inserted in the map, disregarding the minimum
 		 * insertion distances).
-		  *  Default: Empty. How to insert classes:
-		  *   \code
-		  *     alwaysInserByClass.insert(CLASS_ID(CObservationImage));
-		  *   \endcode
-		  * \sa mrpt::rtti::CListOfClasses
-		  */
+		 *  Default: Empty. How to insert classes:
+		 *   \code
+		 *     alwaysInserByClass.insert(CLASS_ID(CObservationImage));
+		 *   \endcode
+		 * \sa mrpt::rtti::CListOfClasses
+		 */
 		mrpt::rtti::CListOfClasses alwaysInsertByClass;
 	};
 
@@ -143,6 +144,4 @@ class CMetricMapBuilder : public mrpt::system::COutputLogger
 	MRPT_MAKE_ALIGNED_OPERATOR_NEW
 };  // End of class def.
 
-}
-
-
+}  // namespace mrpt::slam

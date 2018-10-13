@@ -28,6 +28,7 @@ class CArchiveStreamBase<std::vector<uint8_t>> : public CArchive
 
    public:
 	CArchiveStreamBase(std::vector<uint8_t>& v) : m_v(v) {}
+
    protected:
 	size_t write(const void* d, size_t n) override
 	{
@@ -56,6 +57,7 @@ class CArchiveStreamBase<const std::vector<uint8_t>> : public CArchive
 
    public:
 	CArchiveStreamBase(const std::vector<uint8_t>& v) : m_v(v) {}
+
    protected:
 	size_t write(const void* d, size_t n) override
 	{
@@ -73,5 +75,4 @@ class CArchiveStreamBase<const std::vector<uint8_t>> : public CArchive
 		return n;
 	};
 };
-}
-
+}  // namespace mrpt::serialization

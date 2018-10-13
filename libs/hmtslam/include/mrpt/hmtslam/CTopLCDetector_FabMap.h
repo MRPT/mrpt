@@ -22,7 +22,7 @@ class CTopLCDetector_FabMap : public CTopLCDetectorBase
 
    public:
 	/** A class factory, to be implemented in derived classes.
-	  */
+	 */
 	static CTopLCDetectorBase* createNewInstance(CHMTSLAM* hmtslam)
 	{
 		return static_cast<CTopLCDetectorBase*>(
@@ -33,26 +33,27 @@ class CTopLCDetector_FabMap : public CTopLCDetectorBase
 	~CTopLCDetector_FabMap() override;
 
 	/** This method must compute the topological observation model.
-	  * \param out_log_lik The output, a log-likelihood.
-	  * \return nullptr (empty smart pointer), or a PDF of the estimated
+	 * \param out_log_lik The output, a log-likelihood.
+	 * \return nullptr (empty smart pointer), or a PDF of the estimated
 	 * translation between the two areas (can be a multi-modal PDF).
-	  */
+	 */
 	mrpt::poses::CPose3DPDF::Ptr computeTopologicalObservationModel(
 		const THypothesisID& hypID, const CHMHMapNode::Ptr& currentArea,
 		const CHMHMapNode::Ptr& refArea, double& out_log_lik) override;
 
 	/** Hook method for being warned about the insertion of a new poses into the
 	 * maps.
-	  *  This should be independent of hypothesis IDs.
-	  */
-	void OnNewPose(const TPoseID& poseID, const mrpt::obs::CSensoryFrame* SF) override;
+	 *  This should be independent of hypothesis IDs.
+	 */
+	void OnNewPose(
+		const TPoseID& poseID, const mrpt::obs::CSensoryFrame* SF) override;
 
 	/** Options for a TLC-detector of type FabMap, used from CHMTSLAM
-	  */
+	 */
 	struct TOptions : public mrpt::config::CLoadableOptions
 	{
 		/** Initialization of default params
-		  */
+		 */
 		TOptions();
 
 		void loadFromConfigFile(
@@ -62,10 +63,9 @@ class CTopLCDetector_FabMap : public CTopLCDetectorBase
 			std::ostream& out) const override;  // See base docs
 
 		std::string vocab_path, vocabName;
-		double p_obs_given_exists{0.39}, p_at_new_place{0.99}, df_lik_smooth{0.99};
+		double p_obs_given_exists{0.39}, p_at_new_place{0.99},
+			df_lik_smooth{0.99};
 	};
 
 };  // end class
-}
-
-
+}  // namespace mrpt::hmtslam

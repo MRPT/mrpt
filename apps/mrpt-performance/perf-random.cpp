@@ -206,29 +206,33 @@ void register_tests_random()
 	lstTests.emplace_back("random: drawGaussian1D", random_test_4);
 	lstTests.emplace_back("random: system rand()", random_test_5);
 
-	lstTests.emplace_back("random: drawGaussianMultivariate(fixed 3x3)", random_test_6);
-	lstTests.emplace_back("random: drawGaussianMultivariate(dyn 3x3)", random_test_7);
+	lstTests.emplace_back(
+		"random: drawGaussianMultivariate(fixed 3x3)", random_test_6);
+	lstTests.emplace_back(
+		"random: drawGaussianMultivariate(dyn 3x3)", random_test_7);
 
 	lstTests.emplace_back(
-			"random: drawGaussianMultivariateMany(fixed 2x2, 1000)",
-			random_test_8<2>);
+		"random: drawGaussianMultivariateMany(fixed 2x2, 1000)",
+		random_test_8<2>);
 	lstTests.emplace_back(
-			"random: drawGaussianMultivariateMany(fixed 3x3, 1000)",
-			random_test_8<3>);
+		"random: drawGaussianMultivariateMany(fixed 3x3, 1000)",
+		random_test_8<3>);
 	lstTests.emplace_back(
-			"random: drawGaussianMultivariateMany(fixed 6x6, 1000)",
-			random_test_8<6>);
+		"random: drawGaussianMultivariateMany(fixed 6x6, 1000)",
+		random_test_8<6>);
 	lstTests.emplace_back(
-			"random: drawGaussianMultivariateMany(dyn 2x2, 1000)",
-			random_test_9, 2);
+		"random: drawGaussianMultivariateMany(dyn 2x2, 1000)", random_test_9,
+		2);
 	lstTests.emplace_back(
-			"random: drawGaussianMultivariateMany(dyn 3x3, 1000)",
-			random_test_9, 3);
+		"random: drawGaussianMultivariateMany(dyn 3x3, 1000)", random_test_9,
+		3);
 	lstTests.emplace_back(
-			"random: drawGaussianMultivariateMany(dyn 6x6, 1000)",
-			random_test_9, 6);
+		"random: drawGaussianMultivariateMany(dyn 6x6, 1000)", random_test_9,
+		6);
 
 	lstTests.emplace_back("random: permuteVector (len=10)", random_test_10, 10);
-	lstTests.emplace_back("random: permuteVector (len=100)", random_test_10, 100);
-	lstTests.emplace_back("random: permuteVector (len=1000)", random_test_10, 1000);
+	lstTests.emplace_back(
+		"random: permuteVector (len=100)", random_test_10, 100);
+	lstTests.emplace_back(
+		"random: permuteVector (len=1000)", random_test_10, 1000);
 }

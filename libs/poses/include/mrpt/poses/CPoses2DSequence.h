@@ -88,5 +88,4 @@ class CPoses2DSequence : public mrpt::serialization::CSerializable
 	mrpt::aligned_std_vector<CPose2D> poses;
 
 };  // End of class def.
-}
-
+}  // namespace mrpt::poses

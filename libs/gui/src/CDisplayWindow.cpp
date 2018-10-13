@@ -357,7 +357,8 @@ CDisplayWindow::Ptr CDisplayWindow::Create(
 	const std::string& windowCaption, unsigned int initWidth,
 	unsigned int initHeight)
 {
-	return std::make_shared<CDisplayWindow>(windowCaption, initWidth, initHeight);
+	return std::make_shared<CDisplayWindow>(
+		windowCaption, initWidth, initHeight);
 }
 /*---------------------------------------------------------------
 					Constructor
@@ -366,7 +367,7 @@ CDisplayWindow::CDisplayWindow(
 	const std::string& windowCaption, unsigned int initWidth,
 	unsigned int initHeight)
 	: CBaseGUIWindow(static_cast<void*>(this), 200, 299, windowCaption)
-	  
+
 {
 	CBaseGUIWindow::createWxWindow(initWidth, initHeight);
 }
@@ -419,8 +420,7 @@ void CDisplayWindow::showImage(const CImage& img)
 	wxImage* newImg = mrpt::gui::MRPTImage2wxImage(img);
 
 	// Send a request to destroy this object:
-	auto* REQ =
-		new WxSubsystem::TRequestToWxMainThread[1];
+	auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->source2D = this;
 	REQ->OPCODE = 201;
 	REQ->voidPtr = m_hwnd.get();
@@ -598,8 +598,7 @@ void CDisplayWindow::resize(unsigned int width, unsigned int height)
 	}
 
 	// Send a request to destroy this object:
-	auto* REQ =
-		new WxSubsystem::TRequestToWxMainThread[1];
+	auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->source2D = this;
 	REQ->OPCODE = 203;
 	REQ->x = width;
@@ -625,8 +624,7 @@ void CDisplayWindow::setPos(int x, int y)
 	}
 
 	// Send a request to destroy this object:
-	auto* REQ =
-		new WxSubsystem::TRequestToWxMainThread[1];
+	auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->source2D = this;
 	REQ->OPCODE = 202;
 	REQ->x = x;
@@ -652,8 +650,7 @@ void CDisplayWindow::setWindowTitle(const std::string& str)
 	}
 
 	// Send a request to destroy this object:
-	auto* REQ =
-		new WxSubsystem::TRequestToWxMainThread[1];
+	auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->source2D = this;
 	REQ->OPCODE = 204;
 	REQ->str = str;

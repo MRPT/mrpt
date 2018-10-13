@@ -44,8 +44,7 @@ void CGPS_NTRIP::doProcess()
 
 		std::vector<mrpt::serialization::CSerializable::Ptr> vect;
 		vect.reserve(lst.size());
-		for (auto it = lst.begin();
-			 it != lst.end(); ++it)
+		for (auto it = lst.begin(); it != lst.end(); ++it)
 			vect.push_back(it->second);
 		this->appendObservations(vect);
 	}

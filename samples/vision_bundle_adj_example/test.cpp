@@ -366,8 +366,9 @@ int main(int argc, char** argv)
 						ss >> q[0] >> q[1] >> q[2] >> q[3] >> t[0] >> t[1] >>
 							t[2];
 						mrpt::poses::CPose3DQuat p(
-							t[0], t[1], t[2], mrpt::math::CQuaternionDouble(
-												  q[0], q[1], q[2], q[3]));
+							t[0], t[1], t[2],
+							mrpt::math::CQuaternionDouble(
+								q[0], q[1], q[2], q[3]));
 						// cout << "cam: " << p << endl;
 						frame_poses.push_back(CPose3D(p));
 					}

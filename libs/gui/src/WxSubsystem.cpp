@@ -65,8 +65,7 @@ WxSubsystem::CAuxWxSubsystemShutdowner::~CAuxWxSubsystemShutdowner()
 		// Shut down:
 		try
 		{
-			auto* REQ =
-				new WxSubsystem::TRequestToWxMainThread[1];
+			auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 			REQ->OPCODE = 999;
 			WxSubsystem::pushPendingWxRequest(REQ);
 
@@ -330,9 +329,8 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 						auto* img = (wxImage*)msg->voidPtr2;
 						if (!img) break;
 
-						wnd->m_image->AssignImage(
-							new wxBitmap(
-								*img));  // Memory will be freed by the object.
+						wnd->m_image->AssignImage(new wxBitmap(
+							*img));  // Memory will be freed by the object.
 
 						if (wnd->m_image->GetSize().GetX() != img->GetWidth() &&
 							wnd->m_image->GetSize().GetY() != img->GetHeight())
@@ -547,9 +545,8 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 402:
 					if (msg->sourcePlots)
 					{
-						auto* wnd =
-							(CWindowDialogPlots*)
-								msg->sourcePlots->getWxObject();
+						auto* wnd = (CWindowDialogPlots*)
+										msg->sourcePlots->getWxObject();
 						if (wnd)
 							wnd->SetSize(
 								msg->x, msg->y, wxDefaultCoord, wxDefaultCoord);
@@ -559,9 +556,8 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 403:
 					if (msg->sourcePlots)
 					{
-						auto* wnd =
-							(CWindowDialogPlots*)
-								msg->sourcePlots->getWxObject();
+						auto* wnd = (CWindowDialogPlots*)
+										msg->sourcePlots->getWxObject();
 						if (wnd) wnd->SetClientSize(msg->x, msg->y);
 					}
 					break;
@@ -569,9 +565,8 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 404:
 					if (msg->sourcePlots)
 					{
-						auto* wnd =
-							(CWindowDialogPlots*)
-								msg->sourcePlots->getWxObject();
+						auto* wnd = (CWindowDialogPlots*)
+										msg->sourcePlots->getWxObject();
 						if (wnd) wnd->SetTitle(_U(msg->str.c_str()));
 					}
 					break;
@@ -579,9 +574,8 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 410:
 					if (msg->sourcePlots)
 					{
-						auto* wnd =
-							(CWindowDialogPlots*)
-								msg->sourcePlots->getWxObject();
+						auto* wnd = (CWindowDialogPlots*)
+										msg->sourcePlots->getWxObject();
 						if (wnd) wnd->m_plot->EnableMousePanZoom(msg->boolVal);
 					}
 					break;
@@ -589,9 +583,8 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 411:
 					if (msg->sourcePlots)
 					{
-						auto* wnd =
-							(CWindowDialogPlots*)
-								msg->sourcePlots->getWxObject();
+						auto* wnd = (CWindowDialogPlots*)
+										msg->sourcePlots->getWxObject();
 						if (wnd) wnd->m_plot->LockAspect(msg->boolVal);
 					}
 					break;
@@ -600,9 +593,8 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 412:
 					if (msg->sourcePlots)
 					{
-						auto* wnd =
-							(CWindowDialogPlots*)
-								msg->sourcePlots->getWxObject();
+						auto* wnd = (CWindowDialogPlots*)
+										msg->sourcePlots->getWxObject();
 						if (wnd)
 						{
 							if (msg->vector_x.size() == 2 &&
@@ -620,9 +612,8 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 413:
 					if (msg->sourcePlots)
 					{
-						auto* wnd =
-							(CWindowDialogPlots*)
-								msg->sourcePlots->getWxObject();
+						auto* wnd = (CWindowDialogPlots*)
+										msg->sourcePlots->getWxObject();
 						if (wnd)
 						{
 							wnd->m_plot->LockAspect(msg->boolVal);
@@ -634,9 +625,8 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 414:
 					if (msg->sourcePlots)
 					{
-						auto* wnd =
-							(CWindowDialogPlots*)
-								msg->sourcePlots->getWxObject();
+						auto* wnd = (CWindowDialogPlots*)
+										msg->sourcePlots->getWxObject();
 						if (wnd)
 						{
 							wnd->m_plot->DelAllLayers(true, true);
@@ -650,9 +640,8 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 420:
 					if (msg->sourcePlots)
 					{
-						auto* wnd =
-							(CWindowDialogPlots*)
-								msg->sourcePlots->getWxObject();
+						auto* wnd = (CWindowDialogPlots*)
+										msg->sourcePlots->getWxObject();
 						if (wnd)
 							wnd->plot(
 								msg->vector_x, msg->vector_y, msg->str,
@@ -664,9 +653,8 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 421:
 					if (msg->sourcePlots)
 					{
-						auto* wnd =
-							(CWindowDialogPlots*)
-								msg->sourcePlots->getWxObject();
+						auto* wnd = (CWindowDialogPlots*)
+										msg->sourcePlots->getWxObject();
 						if (wnd)
 							wnd->plotEllipse(
 								msg->vector_x, msg->vector_y, msg->str,
@@ -678,9 +666,8 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 422:
 					if (msg->sourcePlots)
 					{
-						auto* wnd =
-							(CWindowDialogPlots*)
-								msg->sourcePlots->getWxObject();
+						auto* wnd = (CWindowDialogPlots*)
+										msg->sourcePlots->getWxObject();
 						if (wnd)
 							wnd->image(
 								msg->voidPtr2, msg->vector_x[0],
@@ -693,9 +680,8 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 440:
 					if (msg->sourcePlots)
 					{
-						auto* wnd =
-							(CWindowDialogPlots*)
-								msg->sourcePlots->getWxObject();
+						auto* wnd = (CWindowDialogPlots*)
+										msg->sourcePlots->getWxObject();
 						if (wnd)
 						{
 							const long MENUITEM_ID = wxNewId();
@@ -727,9 +713,8 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 499:
 					if (msg->sourcePlots)
 					{
-						auto* wnd =
-							(CWindowDialogPlots*)
-								msg->sourcePlots->getWxObject();
+						auto* wnd = (CWindowDialogPlots*)
+										msg->sourcePlots->getWxObject();
 						if (wnd)
 						{
 							// delete wnd;
@@ -745,8 +730,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 						auto* sem =
 							reinterpret_cast<std::promise<void>*>(msg->voidPtr);
 
-						auto* dlg =
-							new CDialogAskUserForCamera();
+						auto* dlg = new CDialogAskUserForCamera();
 						// Signal that the window is ready:
 						sem->set_value();
 
@@ -754,10 +738,9 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 						const bool wasOk = (dlg->ShowModal() == wxID_OK);
 
 						// send selection to caller:
-						auto*
-							promise = reinterpret_cast<std::promise<
-								mrpt::gui::detail::TReturnAskUserOpenCamera>*>(
-								msg->voidPtr2);
+						auto* promise = reinterpret_cast<std::promise<
+							mrpt::gui::detail::TReturnAskUserOpenCamera>*>(
+							msg->voidPtr2);
 						mrpt::gui::detail::TReturnAskUserOpenCamera ret;
 
 						// Parse selection as a config text block:
@@ -781,8 +764,9 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 #endif
 					app_closed = true;  // Do NOT launch a timer again
 					if (WxSubsystem::CWXMainFrame::oneInstance)
-						((WxSubsystem::
-							  CWXMainFrame*)(WxSubsystem::CWXMainFrame::oneInstance))
+						((WxSubsystem::CWXMainFrame*)(WxSubsystem::
+														  CWXMainFrame::
+															  oneInstance))
 							->Close();
 #ifdef WXSUBSYSTEM_VERBOSE
 					cout << "[WxSubsystem:999] Shutdown done" << endl;
@@ -848,10 +832,9 @@ wxBitmap WxSubsystem::getMRPTDefaultIcon()
 #ifdef _WIN32
 	const wxSize iconsSize(
 		::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON));
-	return wxBitmap(
-		wxBitmap(mrpt_default_icon_xpm)
-			.ConvertToImage()
-			.Scale(iconsSize.x, iconsSize.y));
+	return wxBitmap(wxBitmap(mrpt_default_icon_xpm)
+						.ConvertToImage()
+						.Scale(iconsSize.x, iconsSize.y));
 #else
 	return wxBitmap(mrpt_default_icon_xpm);
 #endif
@@ -1059,8 +1042,7 @@ void WxSubsystem::wxMainThread()
 #endif
 		wxWindow* topWin = static_cast<wxApp*>(app_gui)->GetTopWindow();
 
-		auto* Frame =
-			new WxSubsystem::CWXMainFrame(topWin);
+		auto* Frame = new WxSubsystem::CWXMainFrame(topWin);
 		Frame->Hide();
 
 // We are ready!!
@@ -1110,8 +1092,7 @@ bool WxSubsystem::createOneInstanceMainThread()
 			// Create our main hidden frame:
 			wxWindow* topWin = static_cast<wxApp*>(app_con)->GetTopWindow();
 
-			auto* Frame =
-				new WxSubsystem::CWXMainFrame(topWin);
+			auto* Frame = new WxSubsystem::CWXMainFrame(topWin);
 			// Frame->Show();
 			// SetTopWindow(Frame);
 			Frame->Hide();

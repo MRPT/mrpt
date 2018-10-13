@@ -20,16 +20,16 @@ namespace mrpt
 namespace math
 {
 /** \addtogroup stats_grp
-		  * @{
-		  */
+ * @{
+ */
 
 /** @name Probability density distributions (pdf) distance metrics
 @{ */
 
 /** Computes the squared mahalanobis distance of a vector X given the mean MU
  * and the covariance *inverse* COV_inv
-  *  \f[ d^2 =  (X-MU)^\top \Sigma^{-1} (X-MU)  \f]
-  */
+ *  \f[ d^2 =  (X-MU)^\top \Sigma^{-1} (X-MU)  \f]
+ */
 template <class VECTORLIKE1, class VECTORLIKE2, class MAT>
 typename MAT::Scalar mahalanobisDistance2(
 	const VECTORLIKE1& X, const VECTORLIKE2& MU, const MAT& COV)
@@ -51,8 +51,8 @@ typename MAT::Scalar mahalanobisDistance2(
 
 /** Computes the mahalanobis distance of a vector X given the mean MU and the
  * covariance *inverse* COV_inv
-  *  \f[ d = \sqrt{ (X-MU)^\top \Sigma^{-1} (X-MU) }  \f]
-  */
+ *  \f[ d = \sqrt{ (X-MU)^\top \Sigma^{-1} (X-MU) }  \f]
+ */
 template <class VECTORLIKE1, class VECTORLIKE2, class MAT>
 inline typename VECTORLIKE1::Scalar mahalanobisDistance(
 	const VECTORLIKE1& X, const VECTORLIKE2& MU, const MAT& COV)
@@ -63,9 +63,9 @@ inline typename VECTORLIKE1::Scalar mahalanobisDistance(
 /** Computes the squared mahalanobis distance between two *non-independent*
  * Gaussians, given the two covariance matrices and the vector with the
  * difference of their means.
-  *  \f[ d^2 = \Delta_\mu^\top (\Sigma_1 + \Sigma_2 - 2 \Sigma_12 )^{-1}
+ *  \f[ d^2 = \Delta_\mu^\top (\Sigma_1 + \Sigma_2 - 2 \Sigma_12 )^{-1}
  * \Delta_\mu  \f]
-  */
+ */
 template <class VECTORLIKE, class MAT1, class MAT2, class MAT3>
 typename MAT1::Scalar mahalanobisDistance2(
 	const VECTORLIKE& mean_diffs, const MAT1& COV1, const MAT2& COV2,
@@ -90,9 +90,9 @@ typename MAT1::Scalar mahalanobisDistance2(
 /** Computes the mahalanobis distance between two *non-independent* Gaussians
  * (or independent if CROSS_COV12=nullptr), given the two covariance matrices
  * and the vector with the difference of their means.
-  *  \f[ d = \sqrt{ \Delta_\mu^\top (\Sigma_1 + \Sigma_2 - 2 \Sigma_12 )^{-1}
+ *  \f[ d = \sqrt{ \Delta_\mu^\top (\Sigma_1 + \Sigma_2 - 2 \Sigma_12 )^{-1}
  * \Delta_\mu } \f]
-  */
+ */
 template <class VECTORLIKE, class MAT1, class MAT2, class MAT3>
 inline typename VECTORLIKE::Scalar mahalanobisDistance(
 	const VECTORLIKE& mean_diffs, const MAT1& COV1, const MAT2& COV2,
@@ -104,8 +104,8 @@ inline typename VECTORLIKE::Scalar mahalanobisDistance(
 /** Computes the squared mahalanobis distance between a point and a Gaussian,
  * given the covariance matrix and the vector with the difference between the
  * mean and the point.
-  *  \f[ d^2 = \Delta_\mu^\top \Sigma^{-1} \Delta_\mu  \f]
-  */
+ *  \f[ d^2 = \Delta_\mu^\top \Sigma^{-1} \Delta_\mu  \f]
+ */
 template <class VECTORLIKE, class MATRIXLIKE>
 inline typename MATRIXLIKE::Scalar mahalanobisDistance2(
 	const VECTORLIKE& delta_mu, const MATRIXLIKE& cov)
@@ -118,8 +118,8 @@ inline typename MATRIXLIKE::Scalar mahalanobisDistance2(
 /** Computes the mahalanobis distance between a point and a Gaussian, given the
  * covariance matrix and the vector with the difference between the mean and the
  * point.
-  *  \f[ d^2 = \sqrt( \Delta_\mu^\top \Sigma^{-1} \Delta_\mu ) \f]
-  */
+ *  \f[ d^2 = \sqrt( \Delta_\mu^\top \Sigma^{-1} \Delta_\mu ) \f]
+ */
 template <class VECTORLIKE, class MATRIXLIKE>
 inline typename MATRIXLIKE::Scalar mahalanobisDistance(
 	const VECTORLIKE& delta_mu, const MATRIXLIKE& cov)
@@ -129,9 +129,9 @@ inline typename MATRIXLIKE::Scalar mahalanobisDistance(
 
 /** Computes the integral of the product of two Gaussians, with means separated
  * by "mean_diffs" and covariances "COV1" and "COV2".
-  *  \f[ D = \frac{1}{(2 \pi)^{0.5 N} \sqrt{}  }  \exp( \Delta_\mu^\top
+ *  \f[ D = \frac{1}{(2 \pi)^{0.5 N} \sqrt{}  }  \exp( \Delta_\mu^\top
  * (\Sigma_1 + \Sigma_2 - 2 \Sigma_12)^{-1} \Delta_\mu)  \f]
-  */
+ */
 template <typename T>
 T productIntegralTwoGaussians(
 	const std::vector<T>& mean_diffs, const CMatrixTemplateNumeric<T>& COV1,
@@ -152,9 +152,9 @@ T productIntegralTwoGaussians(
 
 /** Computes the integral of the product of two Gaussians, with means separated
  * by "mean_diffs" and covariances "COV1" and "COV2".
-  *  \f[ D = \frac{1}{(2 \pi)^{0.5 N} \sqrt{}  }  \exp( \Delta_\mu^\top
+ *  \f[ D = \frac{1}{(2 \pi)^{0.5 N} \sqrt{}  }  \exp( \Delta_\mu^\top
  * (\Sigma_1 + \Sigma_2)^{-1} \Delta_\mu)  \f]
-  */
+ */
 template <typename T, size_t DIM>
 T productIntegralTwoGaussians(
 	const std::vector<T>& mean_diffs,
@@ -175,8 +175,8 @@ T productIntegralTwoGaussians(
 
 /** Computes both, the integral of the product of two Gaussians and their square
  * Mahalanobis distance.
-  * \sa productIntegralTwoGaussians, mahalanobisDistance2
-  */
+ * \sa productIntegralTwoGaussians, mahalanobisDistance2
+ */
 template <typename T, class VECLIKE, class MATLIKE1, class MATLIKE2>
 void productIntegralAndMahalanobisTwoGaussians(
 	const VECLIKE& mean_diffs, const MATLIKE1& COV1, const MATLIKE2& COV2,
@@ -203,9 +203,9 @@ void productIntegralAndMahalanobisTwoGaussians(
 
 /** Computes both, the logarithm of the PDF and the square Mahalanobis distance
  * between a point (given by its difference wrt the mean) and a Gaussian.
-  * \sa productIntegralTwoGaussians, mahalanobisDistance2, normalPDF,
+ * \sa productIntegralTwoGaussians, mahalanobisDistance2, normalPDF,
  * mahalanobisDistance2AndPDF
-  */
+ */
 template <typename T, class VECLIKE, class MATRIXLIKE>
 void mahalanobisDistance2AndLogPDF(
 	const VECLIKE& diff_mean, const MATRIXLIKE& cov, T& maha2_out,
@@ -227,8 +227,8 @@ void mahalanobisDistance2AndLogPDF(
 
 /** Computes both, the PDF and the square Mahalanobis distance between a point
  * (given by its difference wrt the mean) and a Gaussian.
-  * \sa productIntegralTwoGaussians, mahalanobisDistance2, normalPDF
-  */
+ * \sa productIntegralTwoGaussians, mahalanobisDistance2, normalPDF
+ */
 template <typename T, class VECLIKE, class MATRIXLIKE>
 inline void mahalanobisDistance2AndPDF(
 	const VECLIKE& diff_mean, const MATRIXLIKE& cov, T& maha2_out, T& pdf_out)
@@ -239,33 +239,33 @@ inline void mahalanobisDistance2AndPDF(
 
 /** Computes covariances and mean of any vector of containers, given optional
  * weights for the different samples.
-  * \param elements Any kind of vector of vectors/arrays, eg.
+ * \param elements Any kind of vector of vectors/arrays, eg.
  * std::vector<mrpt::math::CVectorDouble>, with all the input samples, each
  * sample in a "row".
-  * \param covariances Output estimated covariance; it can be a fixed/dynamic
+ * \param covariances Output estimated covariance; it can be a fixed/dynamic
  * matrix or a matrixview.
-  * \param means Output estimated mean; it can be CVectorDouble/CArrayDouble,
+ * \param means Output estimated mean; it can be CVectorDouble/CArrayDouble,
  * etc...
-  * \param weights_mean If !=nullptr, it must point to a vector of
+ * \param weights_mean If !=nullptr, it must point to a vector of
  * size()==number of elements, with normalized weights to take into account for
  * the mean.
-  * \param weights_cov If !=nullptr, it must point to a vector of size()==number
+ * \param weights_cov If !=nullptr, it must point to a vector of size()==number
  * of elements, with normalized weights to take into account for the covariance.
-  * \param elem_do_wrap2pi If !=nullptr; it must point to an array of "bool" of
+ * \param elem_do_wrap2pi If !=nullptr; it must point to an array of "bool" of
  * size()==dimension of each element, stating if it's needed to do a wrap to
  * [-pi,pi] to each dimension.
-  * \sa This method is used in mrpt::math::unscented_transform_gaussian
-  * \ingroup stats_grp
-  */
-template<class VECTOR_OF_VECTORS, class MATRIXLIKE,class VECTORLIKE,class VECTORLIKE2,class VECTORLIKE3>
-		inline void covariancesAndMeanWeighted(   // Done inline to speed-up the special case expanded in covariancesAndMean() below.
-			const VECTOR_OF_VECTORS &elements,
-			MATRIXLIKE &covariances,
-			VECTORLIKE &means,
-			const VECTORLIKE2 *weights_mean,
-			const VECTORLIKE3 *weights_cov,
-			const bool *elem_do_wrap2pi = nullptr
-			)
+ * \sa This method is used in mrpt::math::unscented_transform_gaussian
+ * \ingroup stats_grp
+ */
+template <
+	class VECTOR_OF_VECTORS, class MATRIXLIKE, class VECTORLIKE,
+	class VECTORLIKE2, class VECTORLIKE3>
+inline void
+	covariancesAndMeanWeighted(  // Done inline to speed-up the special case
+								 // expanded in covariancesAndMean() below.
+		const VECTOR_OF_VECTORS& elements, MATRIXLIKE& covariances,
+		VECTORLIKE& means, const VECTORLIKE2* weights_mean,
+		const VECTORLIKE3* weights_cov, const bool* elem_do_wrap2pi = nullptr)
 {
 	ASSERTMSG_(
 		elements.size() != 0,
@@ -368,40 +368,41 @@ template<class VECTOR_OF_VECTORS, class MATRIXLIKE,class VECTORLIKE,class VECTOR
 }
 
 /** Computes covariances and mean of any vector of containers.
-  * \param elements Any kind of vector of vectors/arrays, eg.
+ * \param elements Any kind of vector of vectors/arrays, eg.
  * std::vector<mrpt::math::CVectorDouble>, with all the input samples, each
  * sample in a "row".
-  * \param covariances Output estimated covariance; it can be a fixed/dynamic
+ * \param covariances Output estimated covariance; it can be a fixed/dynamic
  * matrix or a matrixview.
-  * \param means Output estimated mean; it can be CVectorDouble/CArrayDouble,
+ * \param means Output estimated mean; it can be CVectorDouble/CArrayDouble,
  * etc...
-  * \param elem_do_wrap2pi If !=nullptr; it must point to an array of "bool" of
+ * \param elem_do_wrap2pi If !=nullptr; it must point to an array of "bool" of
  * size()==dimension of each element, stating if it's needed to do a wrap to
  * [-pi,pi] to each dimension.
-  * \ingroup stats_grp
-  */
+ * \ingroup stats_grp
+ */
 template <class VECTOR_OF_VECTORS, class MATRIXLIKE, class VECTORLIKE>
 void covariancesAndMean(
 	const VECTOR_OF_VECTORS& elements, MATRIXLIKE& covariances,
 	VECTORLIKE& means, const bool* elem_do_wrap2pi = nullptr)
 {  // The function below is inline-expanded here:
-	covariancesAndMeanWeighted<VECTOR_OF_VECTORS, MATRIXLIKE, VECTORLIKE,
-							   CVectorDouble, CVectorDouble>(
+	covariancesAndMeanWeighted<
+		VECTOR_OF_VECTORS, MATRIXLIKE, VECTORLIKE, CVectorDouble,
+		CVectorDouble>(
 		elements, covariances, means, nullptr, nullptr, elem_do_wrap2pi);
 }
 
 /** Computes the weighted histogram for a vector of values and their
  * corresponding weights.
-  *  \param values [IN] The N values
-  *  \param weights [IN] The weights for the corresponding N values (don't need
+ *  \param values [IN] The N values
+ *  \param weights [IN] The weights for the corresponding N values (don't need
  * to be normalized)
-  *  \param binWidth [IN] The desired width of the bins
-  *  \param out_binCenters [OUT] The centers of the M bins generated to cover
+ *  \param binWidth [IN] The desired width of the bins
+ *  \param out_binCenters [OUT] The centers of the M bins generated to cover
  * from the minimum to the maximum value of "values" with the given "binWidth"
-  *  \param out_binValues [OUT] The ratio of values at each given bin, such as
+ *  \param out_binValues [OUT] The ratio of values at each given bin, such as
  * the whole vector sums up the unity.
-  *  \sa weightedHistogramLog
-  */
+ *  \sa weightedHistogramLog
+ */
 template <class VECTORLIKE1, class VECTORLIKE2>
 void weightedHistogram(
 	const VECTORLIKE1& values, const VECTORLIKE1& weights, float binWidth,
@@ -449,16 +450,16 @@ void weightedHistogram(
 
 /** Computes the weighted histogram for a vector of values and their
  * corresponding log-weights.
-  *  \param values [IN] The N values
-  *  \param weights [IN] The log-weights for the corresponding N values (don't
+ *  \param values [IN] The N values
+ *  \param weights [IN] The log-weights for the corresponding N values (don't
  * need to be normalized)
-  *  \param binWidth [IN] The desired width of the bins
-  *  \param out_binCenters [OUT] The centers of the M bins generated to cover
+ *  \param binWidth [IN] The desired width of the bins
+ *  \param out_binCenters [OUT] The centers of the M bins generated to cover
  * from the minimum to the maximum value of "values" with the given "binWidth"
-  *  \param out_binValues [OUT] The ratio of values at each given bin, such as
+ *  \param out_binValues [OUT] The ratio of values at each given bin, such as
  * the whole vector sums up the unity.
-  *  \sa weightedHistogram
-  */
+ *  \sa weightedHistogram
+ */
 template <class VECTORLIKE1, class VECTORLIKE2>
 void weightedHistogramLog(
 	const VECTORLIKE1& values, const VECTORLIKE1& log_weights, float binWidth,
@@ -509,40 +510,40 @@ void weightedHistogramLog(
 /** A numerically-stable method to compute average likelihood values with
  * strongly different ranges (unweighted likelihoods: compute the arithmetic
  * mean).
-  *  This method implements this equation:
-  *
-  *  \f[ return = - \log N + \log  \sum_{i=1}^N e^{ll_i-ll_{max}} + ll_{max} \f]
-  *
-  * See also the <a
+ *  This method implements this equation:
+ *
+ *  \f[ return = - \log N + \log  \sum_{i=1}^N e^{ll_i-ll_{max}} + ll_{max} \f]
+ *
+ * See also the <a
  * href="http://www.mrpt.org/Averaging_Log-Likelihood_Values:Numerical_Stability">tutorial
  * page</a>.
-  * \ingroup stats_grp
-  */
+ * \ingroup stats_grp
+ */
 double averageLogLikelihood(const CVectorDouble& logLikelihoods);
 
 /** Computes the average of a sequence of angles in radians taking into account
  * the correct wrapping in the range \f$ ]-\pi,\pi [ \f$, for example, the mean
  * of (2,-2) is \f$ \pi \f$, not 0.
-  * \ingroup stats_grp
-  */
+ * \ingroup stats_grp
+ */
 double averageWrap2Pi(const CVectorDouble& angles);
 
 /** A numerically-stable method to average likelihood values with strongly
  * different ranges (weighted likelihoods).
-  *  This method implements this equation:
-  *
-  *  \f[ return = \log \left( \frac{1}{\sum_i e^{lw_i}} \sum_i  e^{lw_i}
+ *  This method implements this equation:
+ *
+ *  \f[ return = \log \left( \frac{1}{\sum_i e^{lw_i}} \sum_i  e^{lw_i}
  * e^{ll_i}  \right) \f]
-  *
-  * See also the <a
+ *
+ * See also the <a
  * href="http://www.mrpt.org/Averaging_Log-Likelihood_Values:Numerical_Stability">tutorial
  * page</a>.
-  * \ingroup stats_grp
-  */
+ * \ingroup stats_grp
+ */
 double averageLogLikelihood(
 	const CVectorDouble& logWeights, const CVectorDouble& logLikelihoods);
 
 /**  @} */  // end of grouping container_ops_grp
 
-}  // End of MATH namespace
-}  // End of namespace
+}  // namespace math
+}  // namespace mrpt

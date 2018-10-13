@@ -1216,17 +1216,14 @@ void mrLabelQuadGroup(
 								quadNeighborJ
 									->corners[connectedNeighborCornerId];
 							CvCBCorner::Ptr& conCornerCW1 =
-								quadNeighborJ
-									->corners[(connectedNeighborCornerId + 1) %
-											  4];
+								quadNeighborJ->corners
+									[(connectedNeighborCornerId + 1) % 4];
 							CvCBCorner::Ptr& conCornerCW2 =
-								quadNeighborJ
-									->corners[(connectedNeighborCornerId + 2) %
-											  4];
+								quadNeighborJ->corners
+									[(connectedNeighborCornerId + 2) % 4];
 							CvCBCorner::Ptr& conCornerCW3 =
-								quadNeighborJ
-									->corners[(connectedNeighborCornerId + 3) %
-											  4];
+								quadNeighborJ->corners
+									[(connectedNeighborCornerId + 3) % 4];
 
 							(quad_group[i])->corners[j]->row = conCorner->row;
 							(quad_group[i])->corners[j]->column =
@@ -2381,9 +2378,8 @@ int icvGenerateQuads(
 		{
 			CvPoint2D32f pt =
 				cvPointTo32f(*(CvPoint*)cvGetSeqElem(src_contour, i));
-			CvCBCorner::Ptr& corner =
-				out_corners[quad_count * 4 +
-							i];  // &(*out_corners)[quad_count*4 + i];
+			CvCBCorner::Ptr& corner = out_corners[quad_count * 4 + i];  // &(*out_corners)[quad_count*4
+																		// + i];
 
 			// memset( corner, 0, sizeof(*corner) );
 			corner->pt = pt;

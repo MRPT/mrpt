@@ -66,9 +66,7 @@ CSetOfObjects::Ptr graph_visualize(
 		// Estimate bounding box.
 		mrpt::math::TPoint3D BB_min(-10., -10., 0.), BB_max(10., 10., 0.);
 
-		for (auto itNod =
-				 g.nodes.begin();
-			 itNod != g.nodes.end(); ++itNod)
+		for (auto itNod = g.nodes.begin(); itNod != g.nodes.end(); ++itNod)
 		{
 			const CPose3D p = CPose3D(
 				itNod->second);  // Convert to 3D from whatever its real type.
@@ -99,9 +97,7 @@ CSetOfObjects::Ptr graph_visualize(
 		pnts->setPointSize(nodes_point_size);
 
 		// Add nodes:
-		for (auto itNod =
-				 g.nodes.begin();
-			 itNod != g.nodes.end(); ++itNod)
+		for (auto itNod = g.nodes.begin(); itNod != g.nodes.end(); ++itNod)
 		{
 			const CPose3D p = CPose3D(
 				itNod->second);  // Convert to 3D from whatever its real type.
@@ -116,9 +112,7 @@ CSetOfObjects::Ptr graph_visualize(
 	// Show a 2D corner at each node (or just an empty object with the ID label)
 	if (show_node_corners || show_ID_labels)
 	{
-		for (auto itNod =
-				 g.nodes.begin();
-			 itNod != g.nodes.end(); ++itNod)
+		for (auto itNod = g.nodes.begin(); itNod != g.nodes.end(); ++itNod)
 		{
 			const CPose3D p = CPose3D(
 				itNod->second);  // Convert to 3D from whatever its real type.
@@ -222,7 +216,4 @@ CSetOfObjects::Ptr graph_visualize(
 
 	MRPT_TRY_END
 }
-}  // namespace mrpt
-
-
-
+}  // namespace mrpt::opengl::graph_tools

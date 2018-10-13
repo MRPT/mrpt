@@ -136,9 +136,6 @@ class CObservationStereoImages : public mrpt::obs::CObservation
 
 };  // End of class def.
 
-}
+}  // namespace mrpt::obs
 // Add for declaration of mexplus::from template specialization
 DECLARE_MEXPLUS_FROM(mrpt::obs::CObservationStereoImages)
-
-
-

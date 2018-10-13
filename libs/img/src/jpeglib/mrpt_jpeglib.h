@@ -198,7 +198,8 @@ struct jpeg_marker_struct
 
 /* Known color spaces. */
 
-typedef enum {
+typedef enum
+{
 	JCS_UNKNOWN, /* error/unspecified */
 	JCS_GRAYSCALE, /* monochrome */
 	JCS_RGB, /* red/green/blue */
@@ -209,7 +210,8 @@ typedef enum {
 
 /* DCT/IDCT algorithm options. */
 
-typedef enum {
+typedef enum
+{
 	JDCT_ISLOW, /* slow but accurate integer algorithm */
 	JDCT_IFAST, /* faster, less accurate integer method */
 	JDCT_FLOAT /* floating-point: accurate, fast on fast HW */
@@ -224,7 +226,8 @@ typedef enum {
 
 /* Dithering options for decompression. */
 
-typedef enum {
+typedef enum
+{
 	JDITHER_NONE, /* no dithering */
 	JDITHER_ORDERED, /* simple ordered dither */
 	JDITHER_FS /* Floyd-Steinberg error diffusion dither */
@@ -964,7 +967,7 @@ jpeg_read_header JPP((j_decompress_ptr cinfo, boolean require_image));
 #define JPEG_HEADER_OK 1 /* Found valid image datastream */
 #define JPEG_HEADER_TABLES_ONLY                  \
 	2 /* Found valid table-specs-only datastream \
-		 */
+	   */
 /* If you pass require_image = TRUE (normal case), you need not check for
  * a TABLES_ONLY return code; an abbreviated file will cause an error exit.
  * JPEG_SUSPENDED is only possible if you use a data source module that can
@@ -1158,4 +1161,3 @@ struct jpeg_color_quantizer
 #include "jpegint.h" /* fetch private declarations */
 #include "jerror.h" /* fetch error codes too */
 #endif
-

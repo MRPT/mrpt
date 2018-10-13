@@ -493,8 +493,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 						else
 						{
 							// It should be a newly created LM:
-							auto itNewLM =
-								da.newly_inserted_landmarks.find(i);
+							auto itNewLM = da.newly_inserted_landmarks.find(i);
 							if (itNewLM != da.newly_inserted_landmarks.end())
 								assoc_ID_in_SLAM = itNewLM->second;
 							else
@@ -525,8 +524,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 					const double tim =
 						mrpt::system::timestampToDouble(obsRB->timestamp);
 
-					auto itDA =
-						GT_DA.find(tim);
+					auto itDA = GT_DA.find(tim);
 
 					for (size_t i = 0; i < obsRB->sensedData.size(); i++)
 					{
@@ -539,8 +537,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 							ASSERT_BELOW_(i, vDA.size());
 							const int GT_ASSOC = vDA[i];
 
-							auto it =
-									da.results.associations.find(i);
+							auto it = da.results.associations.find(i);
 							if (it != da.results.associations.end())
 							{
 								// This observation was assigned the already
@@ -573,9 +570,8 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 							else
 							{
 								// No pairing, but should be a newly created LM:
-								auto
-									itNewLM =
-										da.newly_inserted_landmarks.find(i);
+								auto itNewLM =
+									da.newly_inserted_landmarks.find(i);
 								if (itNewLM !=
 									da.newly_inserted_landmarks.end())
 								{
@@ -648,7 +644,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 						init_pose = CPose3D(meanPath[0]).asTPose();
 
 					int path_decim = 0;
-					for (auto & it : meanPath)
+					for (auto& it : meanPath)
 					{
 						linesPath->appendLine(init_pose, it);
 						init_pose = it;
@@ -733,8 +729,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 						mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
 					lins->setLineWidth(1.2f);
 					lins->setColor(1, 1, 1);
-					for (auto it =
-								 da.results.associations.begin();
+					for (auto it = da.results.associations.begin();
 						 it != da.results.associations.end(); ++it)
 					{
 						const prediction_index_t idxPred = it->second;

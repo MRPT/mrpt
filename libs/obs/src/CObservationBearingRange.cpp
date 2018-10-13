@@ -27,12 +27,11 @@ IMPLEMENTS_SERIALIZABLE(CObservationBearingRange, CObservation, mrpt::obs)
  Default constructor.
  ---------------------------------------------------------------*/
 CObservationBearingRange::CObservationBearingRange()
-	: 
-	  fieldOfView_yaw(DEG2RAD(180)),
+	: fieldOfView_yaw(DEG2RAD(180)),
 	  fieldOfView_pitch(DEG2RAD(90)),
 	  sensorLocationOnRobot(),
 	  sensedData()
-	  
+
 {
 }
 
@@ -202,7 +201,7 @@ void CObservationBearingRange::getDescriptionAsText(std::ostream& o) const
 	o << "---------------------------------------------------------------------"
 		 "-----------------"
 	  << endl;
-	for (const auto & q : sensedData)
+	for (const auto& q : sensedData)
 	{
 		o << "      ";
 		if (q.landmarkID == INVALID_LANDMARK_ID)

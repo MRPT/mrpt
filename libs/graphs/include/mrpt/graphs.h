@@ -19,4 +19,3 @@
 #include <mrpt/graphs/CDirectedTree.h>
 #include <mrpt/graphs/THypothesis.h>
 #include <mrpt/graphs/CHypothesisNotFoundException.h>
-

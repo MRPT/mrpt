@@ -113,6 +113,4 @@ class TArcList : public mrpt::containers::list_searchable<
 	void write(mrpt::serialization::CArchive& out) const;
 };
 
-}
-
-
+}  // namespace mrpt::hmtslam

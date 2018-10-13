@@ -18,11 +18,11 @@ namespace mrpt::obs
 class CObservation2DRangeScan;
 
 /** A smart look-up-table (LUT) of sin/cos values for 2D laser scans.
-  *  Refer to the main method CSinCosLookUpTableFor2DScans::getSinCosForScan()
-  *
-  *  This class is used in mrpt::maps::CPointsMap
+ *  Refer to the main method CSinCosLookUpTableFor2DScans::getSinCosForScan()
+ *
+ *  This class is used in mrpt::maps::CPointsMap
  * \ingroup mrpt_obs_grp
-  */
+ */
 class CSinCosLookUpTableFor2DScans
 {
    public:
@@ -34,16 +34,16 @@ class CSinCosLookUpTableFor2DScans
 
 	/** Return two vectors with the cos and the sin of the angles for each of
 	 * the
-	  * rays in a scan, computing them only the first time and returning a
+	 * rays in a scan, computing them only the first time and returning a
 	 * cached copy the rest.
-	  *  Usage:
-	  * \code
-	  *   CSinCosLookUpTableFor2DScans cache;
-	  *   ...
-	  *   const CSinCosLookUpTableFor2DScans::TSinCosValues & sincos_vals =
+	 *  Usage:
+	 * \code
+	 *   CSinCosLookUpTableFor2DScans cache;
+	 *   ...
+	 *   const CSinCosLookUpTableFor2DScans::TSinCosValues & sincos_vals =
 	 * cache.getSinCosForScan( scan );
-	  * \endcode
-	  */
+	 * \endcode
+	 */
 	const TSinCosValues& getSinCosForScan(
 		const CObservation2DRangeScan& scan) const;
 	/** \overload */
@@ -55,6 +55,4 @@ class CSinCosLookUpTableFor2DScans
 	mutable std::map<T2DScanProperties, TSinCosValues> m_cache;
 };
 
-}
-
-
+}  // namespace mrpt::obs

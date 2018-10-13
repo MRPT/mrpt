@@ -36,7 +36,8 @@
 
 struct XsDataPacket;
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #else
 typedef struct XsDataPacket XsDataPacket;
 #define XSDATAPACKET_INITIALIZER                                              \
@@ -47,253 +48,265 @@ typedef struct XsDataPacket XsDataPacket;
 	}
 #endif
 
-XSTYPES_DLL_API void XsDataPacket_construct(XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_destruct(XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_copy(
-	XsDataPacket* copy, XsDataPacket const* src);
-XSTYPES_DLL_API void XsDataPacket_swap(XsDataPacket* a, XsDataPacket* b);
-XSTYPES_DLL_API int XsDataPacket_empty(const XsDataPacket* thisPtr);
-XSTYPES_DLL_API int XsDataPacket_itemOffsetExact(
-	const XsDataPacket* thisPtr, XsDataIdentifier id);
-XSTYPES_DLL_API int XsDataPacket_itemOffsetLoose(
-	const XsDataPacket* thisPtr, XsDataIdentifier id);
-XSTYPES_DLL_API int XsDataPacket_itemOffsetMasked(
-	const XsDataPacket* thisPtr, XsDataIdentifier id, XsDataIdentifier mask);
-XSTYPES_DLL_API void XsDataPacket_setMessage(
-	XsDataPacket* thisPtr, const XsMessage* msg);
-XSTYPES_DLL_API XsMessage* XsDataPacket_originalMessage(
-	const XsDataPacket* thisPtr, XsMessage* returnVal);
-XSTYPES_DLL_API XsDataIdentifier
-	XsDataPacket_dataFormat(const XsDataPacket* thisPtr, XsDataIdentifier id);
-XSTYPES_DLL_API uint8_t XsDataPacket_getFPValueSize(XsDataIdentifier id);
-XSTYPES_DLL_API XsUShortVector* XsDataPacket_rawAcceleration(
-	const XsDataPacket* thisPtr, XsUShortVector* returnVal);
-XSTYPES_DLL_API int XsDataPacket_containsRawAcceleration(
-	const XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_setRawAcceleration(
-	XsDataPacket* thisPtr, const XsUShortVector* vec);
-XSTYPES_DLL_API XsUShortVector* XsDataPacket_rawGyroscopeData(
-	const XsDataPacket* thisPtr, XsUShortVector* returnVal);
-XSTYPES_DLL_API int XsDataPacket_containsRawGyroscopeData(
-	const XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_setRawGyroscopeData(
-	XsDataPacket* thisPtr, const XsUShortVector* vec);
-XSTYPES_DLL_API XsUShortVector* XsDataPacket_rawGyroscopeTemperatureData(
-	const XsDataPacket* thisPtr, XsUShortVector* returnVal);
-XSTYPES_DLL_API int XsDataPacket_containsRawGyroscopeTemperatureData(
-	const XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_setRawGyroscopeTemperatureData(
-	XsDataPacket* thisPtr, const XsUShortVector* vec);
-XSTYPES_DLL_API XsUShortVector* XsDataPacket_rawMagneticField(
-	const XsDataPacket* thisPtr, XsUShortVector* returnVal);
-XSTYPES_DLL_API int XsDataPacket_containsRawMagneticField(
-	const XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_setRawMagneticField(
-	XsDataPacket* thisPtr, const XsUShortVector* vec);
-XSTYPES_DLL_API uint16_t
-	XsDataPacket_rawTemperature(const XsDataPacket* thisPtr);
-XSTYPES_DLL_API int XsDataPacket_containsRawTemperature(
-	const XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_setRawTemperature(
-	XsDataPacket* thisPtr, uint16_t temp);
-XSTYPES_DLL_API XsScrData* XsDataPacket_rawData(
-	const XsDataPacket* thisPtr, XsScrData* returnVal);
-XSTYPES_DLL_API int XsDataPacket_containsRawData(const XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_setRawData(
-	XsDataPacket* thisPtr, const XsScrData* data);
-XSTYPES_DLL_API XsVector* XsDataPacket_calibratedAcceleration(
-	const XsDataPacket* thisPtr, XsVector* returnVal);
-XSTYPES_DLL_API int XsDataPacket_containsCalibratedAcceleration(
-	const XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_setCalibratedAcceleration(
-	XsDataPacket* thisPtr, const XsVector* vec);
-XSTYPES_DLL_API XsVector* XsDataPacket_calibratedGyroscopeData(
-	const XsDataPacket* thisPtr, XsVector* returnVal);
-XSTYPES_DLL_API int XsDataPacket_containsCalibratedGyroscopeData(
-	const XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_setCalibratedGyroscopeData(
-	XsDataPacket* thisPtr, const XsVector* vec);
-XSTYPES_DLL_API XsVector* XsDataPacket_calibratedMagneticField(
-	const XsDataPacket* thisPtr, XsVector* returnVal);
-XSTYPES_DLL_API int XsDataPacket_containsCalibratedMagneticField(
-	const XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_setCalibratedMagneticField(
-	XsDataPacket* thisPtr, const XsVector* vec);
-XSTYPES_DLL_API XsCalibratedData* XsDataPacket_calibratedData(
-	const XsDataPacket* thisPtr, XsCalibratedData* returnVal);
-XSTYPES_DLL_API int XsDataPacket_containsCalibratedData(
-	const XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_setCalibratedData(
-	XsDataPacket* thisPtr, const XsCalibratedData* data);
-XSTYPES_DLL_API XsQuaternion* XsDataPacket_orientationQuaternion(
-	const XsDataPacket* thisPtr, XsQuaternion* returnVal,
-	XsDataIdentifier coordinateSystem);
-XSTYPES_DLL_API void XsDataPacket_setOrientationQuaternion(
-	XsDataPacket* thisPtr, const XsQuaternion* data,
-	XsDataIdentifier coordinateSystem);
-XSTYPES_DLL_API XsEuler* XsDataPacket_orientationEuler(
-	const XsDataPacket* thisPtr, XsEuler* returnVal,
-	XsDataIdentifier coordinateSystem);
-XSTYPES_DLL_API void XsDataPacket_setOrientationEuler(
-	XsDataPacket* thisPtr, const XsEuler* data,
-	XsDataIdentifier coordinateSystem);
-XSTYPES_DLL_API XsMatrix* XsDataPacket_orientationMatrix(
-	const XsDataPacket* thisPtr, XsMatrix* returnVal,
-	XsDataIdentifier coordinateSystem);
-XSTYPES_DLL_API void XsDataPacket_setOrientationMatrix(
-	XsDataPacket* thisPtr, const XsMatrix* data,
-	XsDataIdentifier coordinateSystem);
-XSTYPES_DLL_API int XsDataPacket_containsOrientation(
-	const XsDataPacket* thisPtr);
-XSTYPES_DLL_API XsDataIdentifier
-	XsDataPacket_orientationIdentifier(const XsDataPacket* thisPtr);
-XSTYPES_DLL_API XsDataIdentifier
-	XsDataPacket_coordinateSystemOrientation(const XsDataPacket* thisPtr);
-XSTYPES_DLL_API XsSdiData* XsDataPacket_sdiData(
-	const XsDataPacket* thisPtr, XsSdiData* returnVal);
-XSTYPES_DLL_API int XsDataPacket_containsSdiData(const XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_setSdiData(
-	XsDataPacket* thisPtr, const XsSdiData* data);
-XSTYPES_DLL_API uint32_t XsDataPacket_status(const XsDataPacket* thisPtr);
-XSTYPES_DLL_API int XsDataPacket_containsStatus(const XsDataPacket* thisPtr);
-XSTYPES_DLL_API int XsDataPacket_containsStatusByte(
-	const XsDataPacket* thisPtr);
-XSTYPES_DLL_API int XsDataPacket_containsDetailedStatus(
-	const XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_setStatus(
-	XsDataPacket* thisPtr, uint32_t data);
-XSTYPES_DLL_API void XsDataPacket_setStatusByte(
-	XsDataPacket* thisPtr, uint8_t data);
-XSTYPES_DLL_API uint8_t
-	XsDataPacket_packetCounter8(const XsDataPacket* thisPtr);
-XSTYPES_DLL_API int XsDataPacket_containsPacketCounter8(
-	const XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_setPacketCounter8(
-	XsDataPacket* thisPtr, uint8_t counter);
-XSTYPES_DLL_API uint16_t
-	XsDataPacket_packetCounter(const XsDataPacket* thisPtr);
-XSTYPES_DLL_API int XsDataPacket_containsPacketCounter(
-	const XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_setPacketCounter(
-	XsDataPacket* thisPtr, uint16_t counter);
-XSTYPES_DLL_API uint32_t
-	XsDataPacket_sampleTimeFine(const XsDataPacket* thisPtr);
-XSTYPES_DLL_API int XsDataPacket_containsSampleTimeFine(
-	const XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_setSampleTimeFine(
-	XsDataPacket* thisPtr, uint32_t counter);
-XSTYPES_DLL_API uint32_t
-	XsDataPacket_sampleTimeCoarse(const XsDataPacket* thisPtr);
-XSTYPES_DLL_API int XsDataPacket_containsSampleTimeCoarse(
-	const XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_setSampleTimeCoarse(
-	XsDataPacket* thisPtr, uint32_t counter);
-XSTYPES_DLL_API uint64_t XsDataPacket_sampleTime64(const XsDataPacket* thisPtr);
-XSTYPES_DLL_API int XsDataPacket_containsSampleTime64(
-	const XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_setSampleTime64(
-	XsDataPacket* thisPtr, uint64_t counter);
-XSTYPES_DLL_API XsVector* XsDataPacket_freeAcceleration(
-	const XsDataPacket* thisPtr, XsVector* returnVal);
-XSTYPES_DLL_API int XsDataPacket_containsFreeAcceleration(
-	const XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_setFreeAcceleration(
-	XsDataPacket* thisPtr, const XsVector* g);
-XSTYPES_DLL_API double XsDataPacket_temperature(const XsDataPacket* thisPtr);
-XSTYPES_DLL_API int XsDataPacket_containsTemperature(
-	const XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_setTemperature(
-	XsDataPacket* thisPtr, double temp);
-XSTYPES_DLL_API XsGpsPvtData* XsDataPacket_gpsPvtData(
-	const XsDataPacket* thisPtr, XsGpsPvtData* returnVal);
-XSTYPES_DLL_API int XsDataPacket_containsGpsPvtData(
-	const XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_setGpsPvtData(
-	XsDataPacket* thisPtr, const XsGpsPvtData* data);
-XSTYPES_DLL_API int XsDataPacket_containsPressure(const XsDataPacket* thisPtr);
-XSTYPES_DLL_API XsPressure* XsDataPacket_pressure(
-	const XsDataPacket* thisPtr, XsPressure* returnVal);
-XSTYPES_DLL_API int XsDataPacket_containsPressureAge(
-	const XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_setPressure(
-	XsDataPacket* thisPtr, const XsPressure* data);
-XSTYPES_DLL_API XsAnalogInData* XsDataPacket_analogIn1Data(
-	const XsDataPacket* thisPtr, XsAnalogInData* returnVal);
-XSTYPES_DLL_API int XsDataPacket_containsAnalogIn1Data(
-	const XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_setAnalogIn1Data(
-	XsDataPacket* thisPtr, const XsAnalogInData* data);
-XSTYPES_DLL_API XsAnalogInData* XsDataPacket_analogIn2Data(
-	const XsDataPacket* thisPtr, XsAnalogInData* returnVal);
-XSTYPES_DLL_API int XsDataPacket_containsAnalogIn2Data(
-	const XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_setAnalogIn2Data(
-	XsDataPacket* thisPtr, const XsAnalogInData* data);
-XSTYPES_DLL_API XsVector* XsDataPacket_positionLLA(
-	const XsDataPacket* thisPtr, XsVector* returnVal);
-XSTYPES_DLL_API int XsDataPacket_containsPositionLLA(
-	const XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_setPositionLLA(
-	XsDataPacket* thisPtr, const XsVector* data);
-XSTYPES_DLL_API XsVector* XsDataPacket_latitudeLongitude(
-	const XsDataPacket* thisPtr, XsVector* returnVal);
-XSTYPES_DLL_API int XsDataPacket_containsLatitudeLongitude(
-	const XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_setLatitudeLongitude(
-	XsDataPacket* thisPtr, const XsVector* data);
-XSTYPES_DLL_API double XsDataPacket_altitude(const XsDataPacket* thisPtr);
-XSTYPES_DLL_API int XsDataPacket_containsAltitude(const XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_setAltitude(
-	XsDataPacket* thisPtr, double data);
-XSTYPES_DLL_API XsVector* XsDataPacket_velocity(
-	const XsDataPacket* thisPtr, XsVector* returnVal,
-	XsDataIdentifier coordinateSystem);
-XSTYPES_DLL_API int XsDataPacket_containsVelocity(const XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_setVelocity(
-	XsDataPacket* thisPtr, const XsVector* data,
-	XsDataIdentifier coordinateSystem);
-XSTYPES_DLL_API XsDataIdentifier
-	XsDataPacket_velocityIdentifier(const XsDataPacket* thisPtr);
-XSTYPES_DLL_API XsDataIdentifier
-	XsDataPacket_coordinateSystemVelocity(const XsDataPacket* thisPtr);
-XSTYPES_DLL_API XsUtcTime* XsDataPacket_utcTime(
-	const XsDataPacket* thisPtr, XsUtcTime* returnVal);
-XSTYPES_DLL_API int XsDataPacket_containsUtcTime(const XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_setUtcTime(
-	XsDataPacket* thisPtr, const XsUtcTime* data);
-XSTYPES_DLL_API XsRange* XsDataPacket_frameRange(
-	const XsDataPacket* thisPtr, XsRange* returnVal);
-XSTYPES_DLL_API int XsDataPacket_containsFrameRange(
-	const XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_setFrameRange(
-	XsDataPacket* thisPtr, const XsRange* r);
-XSTYPES_DLL_API int XsDataPacket_rssi(const XsDataPacket* thisPtr);
-XSTYPES_DLL_API int XsDataPacket_containsRssi(const XsDataPacket* thisPtr);
-XSTYPES_DLL_API void XsDataPacket_setRssi(XsDataPacket* thisPtr, int r);
-XSTYPES_DLL_API XsRawGpsDop* XsDataPacket_rawGpsDop(
-	const XsDataPacket* thisPtr, XsRawGpsDop* returnVal);
-XSTYPES_DLL_API int XsDataPacket_containsRawGpsDop(const XsDataPacket* thisPtr);
-XSTYPES_DLL_API XsRawGpsSol* XsDataPacket_rawGpsSol(
-	const XsDataPacket* thisPtr, XsRawGpsSol* returnVal);
-XSTYPES_DLL_API int XsDataPacket_containsRawGpsSol(const XsDataPacket* thisPtr);
-XSTYPES_DLL_API XsRawGpsTimeUtc* XsDataPacket_rawGpsTimeUtc(
-	const XsDataPacket* thisPtr, XsRawGpsTimeUtc* returnVal);
-XSTYPES_DLL_API int XsDataPacket_containsRawGpsTimeUtc(
-	const XsDataPacket* thisPtr);
-XSTYPES_DLL_API XsRawGpsSvInfo* XsDataPacket_rawGpsSvInfo(
-	const XsDataPacket* thisPtr, XsRawGpsSvInfo* returnVal);
-XSTYPES_DLL_API int XsDataPacket_containsRawGpsSvInfo(
-	const XsDataPacket* thisPtr);
-XSTYPES_DLL_API XsDataPacket* XsDataPacket_append(
-	XsDataPacket* thisPtr, const XsDataPacket* other);
-XSTYPES_DLL_API void XsDataPacket_setTriggerIndication(
-	XsDataPacket* thisPtr, XsDataIdentifier triggerId,
-	XsTriggerIndicationData const* triggerIndicationData);
-XSTYPES_DLL_API XsTriggerIndicationData* XsDataPacket_triggerIndication(
-	XsDataPacket const* thisPtr, XsDataIdentifier triggerId,
-	XsTriggerIndicationData* returnVal);
-XSTYPES_DLL_API int XsDataPacket_containsTriggerIndication(
-	XsDataPacket const* thisPtr, XsDataIdentifier triggerId);
+	XSTYPES_DLL_API void XsDataPacket_construct(XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_destruct(XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_copy(
+		XsDataPacket* copy, XsDataPacket const* src);
+	XSTYPES_DLL_API void XsDataPacket_swap(XsDataPacket* a, XsDataPacket* b);
+	XSTYPES_DLL_API int XsDataPacket_empty(const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API int XsDataPacket_itemOffsetExact(
+		const XsDataPacket* thisPtr, XsDataIdentifier id);
+	XSTYPES_DLL_API int XsDataPacket_itemOffsetLoose(
+		const XsDataPacket* thisPtr, XsDataIdentifier id);
+	XSTYPES_DLL_API int XsDataPacket_itemOffsetMasked(
+		const XsDataPacket* thisPtr, XsDataIdentifier id,
+		XsDataIdentifier mask);
+	XSTYPES_DLL_API void XsDataPacket_setMessage(
+		XsDataPacket* thisPtr, const XsMessage* msg);
+	XSTYPES_DLL_API XsMessage* XsDataPacket_originalMessage(
+		const XsDataPacket* thisPtr, XsMessage* returnVal);
+	XSTYPES_DLL_API XsDataIdentifier XsDataPacket_dataFormat(
+		const XsDataPacket* thisPtr, XsDataIdentifier id);
+	XSTYPES_DLL_API uint8_t XsDataPacket_getFPValueSize(XsDataIdentifier id);
+	XSTYPES_DLL_API XsUShortVector* XsDataPacket_rawAcceleration(
+		const XsDataPacket* thisPtr, XsUShortVector* returnVal);
+	XSTYPES_DLL_API int XsDataPacket_containsRawAcceleration(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_setRawAcceleration(
+		XsDataPacket* thisPtr, const XsUShortVector* vec);
+	XSTYPES_DLL_API XsUShortVector* XsDataPacket_rawGyroscopeData(
+		const XsDataPacket* thisPtr, XsUShortVector* returnVal);
+	XSTYPES_DLL_API int XsDataPacket_containsRawGyroscopeData(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_setRawGyroscopeData(
+		XsDataPacket* thisPtr, const XsUShortVector* vec);
+	XSTYPES_DLL_API XsUShortVector* XsDataPacket_rawGyroscopeTemperatureData(
+		const XsDataPacket* thisPtr, XsUShortVector* returnVal);
+	XSTYPES_DLL_API int XsDataPacket_containsRawGyroscopeTemperatureData(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_setRawGyroscopeTemperatureData(
+		XsDataPacket* thisPtr, const XsUShortVector* vec);
+	XSTYPES_DLL_API XsUShortVector* XsDataPacket_rawMagneticField(
+		const XsDataPacket* thisPtr, XsUShortVector* returnVal);
+	XSTYPES_DLL_API int XsDataPacket_containsRawMagneticField(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_setRawMagneticField(
+		XsDataPacket* thisPtr, const XsUShortVector* vec);
+	XSTYPES_DLL_API uint16_t
+		XsDataPacket_rawTemperature(const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API int XsDataPacket_containsRawTemperature(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_setRawTemperature(
+		XsDataPacket* thisPtr, uint16_t temp);
+	XSTYPES_DLL_API XsScrData* XsDataPacket_rawData(
+		const XsDataPacket* thisPtr, XsScrData* returnVal);
+	XSTYPES_DLL_API int XsDataPacket_containsRawData(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_setRawData(
+		XsDataPacket* thisPtr, const XsScrData* data);
+	XSTYPES_DLL_API XsVector* XsDataPacket_calibratedAcceleration(
+		const XsDataPacket* thisPtr, XsVector* returnVal);
+	XSTYPES_DLL_API int XsDataPacket_containsCalibratedAcceleration(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_setCalibratedAcceleration(
+		XsDataPacket* thisPtr, const XsVector* vec);
+	XSTYPES_DLL_API XsVector* XsDataPacket_calibratedGyroscopeData(
+		const XsDataPacket* thisPtr, XsVector* returnVal);
+	XSTYPES_DLL_API int XsDataPacket_containsCalibratedGyroscopeData(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_setCalibratedGyroscopeData(
+		XsDataPacket* thisPtr, const XsVector* vec);
+	XSTYPES_DLL_API XsVector* XsDataPacket_calibratedMagneticField(
+		const XsDataPacket* thisPtr, XsVector* returnVal);
+	XSTYPES_DLL_API int XsDataPacket_containsCalibratedMagneticField(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_setCalibratedMagneticField(
+		XsDataPacket* thisPtr, const XsVector* vec);
+	XSTYPES_DLL_API XsCalibratedData* XsDataPacket_calibratedData(
+		const XsDataPacket* thisPtr, XsCalibratedData* returnVal);
+	XSTYPES_DLL_API int XsDataPacket_containsCalibratedData(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_setCalibratedData(
+		XsDataPacket* thisPtr, const XsCalibratedData* data);
+	XSTYPES_DLL_API XsQuaternion* XsDataPacket_orientationQuaternion(
+		const XsDataPacket* thisPtr, XsQuaternion* returnVal,
+		XsDataIdentifier coordinateSystem);
+	XSTYPES_DLL_API void XsDataPacket_setOrientationQuaternion(
+		XsDataPacket* thisPtr, const XsQuaternion* data,
+		XsDataIdentifier coordinateSystem);
+	XSTYPES_DLL_API XsEuler* XsDataPacket_orientationEuler(
+		const XsDataPacket* thisPtr, XsEuler* returnVal,
+		XsDataIdentifier coordinateSystem);
+	XSTYPES_DLL_API void XsDataPacket_setOrientationEuler(
+		XsDataPacket* thisPtr, const XsEuler* data,
+		XsDataIdentifier coordinateSystem);
+	XSTYPES_DLL_API XsMatrix* XsDataPacket_orientationMatrix(
+		const XsDataPacket* thisPtr, XsMatrix* returnVal,
+		XsDataIdentifier coordinateSystem);
+	XSTYPES_DLL_API void XsDataPacket_setOrientationMatrix(
+		XsDataPacket* thisPtr, const XsMatrix* data,
+		XsDataIdentifier coordinateSystem);
+	XSTYPES_DLL_API int XsDataPacket_containsOrientation(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API XsDataIdentifier
+		XsDataPacket_orientationIdentifier(const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API XsDataIdentifier
+		XsDataPacket_coordinateSystemOrientation(const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API XsSdiData* XsDataPacket_sdiData(
+		const XsDataPacket* thisPtr, XsSdiData* returnVal);
+	XSTYPES_DLL_API int XsDataPacket_containsSdiData(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_setSdiData(
+		XsDataPacket* thisPtr, const XsSdiData* data);
+	XSTYPES_DLL_API uint32_t XsDataPacket_status(const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API int XsDataPacket_containsStatus(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API int XsDataPacket_containsStatusByte(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API int XsDataPacket_containsDetailedStatus(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_setStatus(
+		XsDataPacket* thisPtr, uint32_t data);
+	XSTYPES_DLL_API void XsDataPacket_setStatusByte(
+		XsDataPacket* thisPtr, uint8_t data);
+	XSTYPES_DLL_API uint8_t
+		XsDataPacket_packetCounter8(const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API int XsDataPacket_containsPacketCounter8(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_setPacketCounter8(
+		XsDataPacket* thisPtr, uint8_t counter);
+	XSTYPES_DLL_API uint16_t
+		XsDataPacket_packetCounter(const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API int XsDataPacket_containsPacketCounter(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_setPacketCounter(
+		XsDataPacket* thisPtr, uint16_t counter);
+	XSTYPES_DLL_API uint32_t
+		XsDataPacket_sampleTimeFine(const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API int XsDataPacket_containsSampleTimeFine(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_setSampleTimeFine(
+		XsDataPacket* thisPtr, uint32_t counter);
+	XSTYPES_DLL_API uint32_t
+		XsDataPacket_sampleTimeCoarse(const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API int XsDataPacket_containsSampleTimeCoarse(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_setSampleTimeCoarse(
+		XsDataPacket* thisPtr, uint32_t counter);
+	XSTYPES_DLL_API uint64_t
+		XsDataPacket_sampleTime64(const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API int XsDataPacket_containsSampleTime64(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_setSampleTime64(
+		XsDataPacket* thisPtr, uint64_t counter);
+	XSTYPES_DLL_API XsVector* XsDataPacket_freeAcceleration(
+		const XsDataPacket* thisPtr, XsVector* returnVal);
+	XSTYPES_DLL_API int XsDataPacket_containsFreeAcceleration(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_setFreeAcceleration(
+		XsDataPacket* thisPtr, const XsVector* g);
+	XSTYPES_DLL_API double XsDataPacket_temperature(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API int XsDataPacket_containsTemperature(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_setTemperature(
+		XsDataPacket* thisPtr, double temp);
+	XSTYPES_DLL_API XsGpsPvtData* XsDataPacket_gpsPvtData(
+		const XsDataPacket* thisPtr, XsGpsPvtData* returnVal);
+	XSTYPES_DLL_API int XsDataPacket_containsGpsPvtData(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_setGpsPvtData(
+		XsDataPacket* thisPtr, const XsGpsPvtData* data);
+	XSTYPES_DLL_API int XsDataPacket_containsPressure(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API XsPressure* XsDataPacket_pressure(
+		const XsDataPacket* thisPtr, XsPressure* returnVal);
+	XSTYPES_DLL_API int XsDataPacket_containsPressureAge(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_setPressure(
+		XsDataPacket* thisPtr, const XsPressure* data);
+	XSTYPES_DLL_API XsAnalogInData* XsDataPacket_analogIn1Data(
+		const XsDataPacket* thisPtr, XsAnalogInData* returnVal);
+	XSTYPES_DLL_API int XsDataPacket_containsAnalogIn1Data(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_setAnalogIn1Data(
+		XsDataPacket* thisPtr, const XsAnalogInData* data);
+	XSTYPES_DLL_API XsAnalogInData* XsDataPacket_analogIn2Data(
+		const XsDataPacket* thisPtr, XsAnalogInData* returnVal);
+	XSTYPES_DLL_API int XsDataPacket_containsAnalogIn2Data(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_setAnalogIn2Data(
+		XsDataPacket* thisPtr, const XsAnalogInData* data);
+	XSTYPES_DLL_API XsVector* XsDataPacket_positionLLA(
+		const XsDataPacket* thisPtr, XsVector* returnVal);
+	XSTYPES_DLL_API int XsDataPacket_containsPositionLLA(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_setPositionLLA(
+		XsDataPacket* thisPtr, const XsVector* data);
+	XSTYPES_DLL_API XsVector* XsDataPacket_latitudeLongitude(
+		const XsDataPacket* thisPtr, XsVector* returnVal);
+	XSTYPES_DLL_API int XsDataPacket_containsLatitudeLongitude(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_setLatitudeLongitude(
+		XsDataPacket* thisPtr, const XsVector* data);
+	XSTYPES_DLL_API double XsDataPacket_altitude(const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API int XsDataPacket_containsAltitude(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_setAltitude(
+		XsDataPacket* thisPtr, double data);
+	XSTYPES_DLL_API XsVector* XsDataPacket_velocity(
+		const XsDataPacket* thisPtr, XsVector* returnVal,
+		XsDataIdentifier coordinateSystem);
+	XSTYPES_DLL_API int XsDataPacket_containsVelocity(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_setVelocity(
+		XsDataPacket* thisPtr, const XsVector* data,
+		XsDataIdentifier coordinateSystem);
+	XSTYPES_DLL_API XsDataIdentifier
+		XsDataPacket_velocityIdentifier(const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API XsDataIdentifier
+		XsDataPacket_coordinateSystemVelocity(const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API XsUtcTime* XsDataPacket_utcTime(
+		const XsDataPacket* thisPtr, XsUtcTime* returnVal);
+	XSTYPES_DLL_API int XsDataPacket_containsUtcTime(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_setUtcTime(
+		XsDataPacket* thisPtr, const XsUtcTime* data);
+	XSTYPES_DLL_API XsRange* XsDataPacket_frameRange(
+		const XsDataPacket* thisPtr, XsRange* returnVal);
+	XSTYPES_DLL_API int XsDataPacket_containsFrameRange(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_setFrameRange(
+		XsDataPacket* thisPtr, const XsRange* r);
+	XSTYPES_DLL_API int XsDataPacket_rssi(const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API int XsDataPacket_containsRssi(const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API void XsDataPacket_setRssi(XsDataPacket* thisPtr, int r);
+	XSTYPES_DLL_API XsRawGpsDop* XsDataPacket_rawGpsDop(
+		const XsDataPacket* thisPtr, XsRawGpsDop* returnVal);
+	XSTYPES_DLL_API int XsDataPacket_containsRawGpsDop(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API XsRawGpsSol* XsDataPacket_rawGpsSol(
+		const XsDataPacket* thisPtr, XsRawGpsSol* returnVal);
+	XSTYPES_DLL_API int XsDataPacket_containsRawGpsSol(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API XsRawGpsTimeUtc* XsDataPacket_rawGpsTimeUtc(
+		const XsDataPacket* thisPtr, XsRawGpsTimeUtc* returnVal);
+	XSTYPES_DLL_API int XsDataPacket_containsRawGpsTimeUtc(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API XsRawGpsSvInfo* XsDataPacket_rawGpsSvInfo(
+		const XsDataPacket* thisPtr, XsRawGpsSvInfo* returnVal);
+	XSTYPES_DLL_API int XsDataPacket_containsRawGpsSvInfo(
+		const XsDataPacket* thisPtr);
+	XSTYPES_DLL_API XsDataPacket* XsDataPacket_append(
+		XsDataPacket* thisPtr, const XsDataPacket* other);
+	XSTYPES_DLL_API void XsDataPacket_setTriggerIndication(
+		XsDataPacket* thisPtr, XsDataIdentifier triggerId,
+		XsTriggerIndicationData const* triggerIndicationData);
+	XSTYPES_DLL_API XsTriggerIndicationData* XsDataPacket_triggerIndication(
+		XsDataPacket const* thisPtr, XsDataIdentifier triggerId,
+		XsTriggerIndicationData* returnVal);
+	XSTYPES_DLL_API int XsDataPacket_containsTriggerIndication(
+		XsDataPacket const* thisPtr, XsDataIdentifier triggerId);
 
 #ifdef __cplusplus
 }  // extern "C"
@@ -392,7 +405,7 @@ struct XsDataPacket
 
 	/*! \brief Returns a const reference to the message that contains the data
 	 * packet
-	*/
+	 */
 	inline const XsMessage& XSNOCOMEXPORT message() const { return m_msg; }
 	/*! \brief Returns a reference to the message that contains the data packet
 		\returns A reference to the message that contains the data packet

@@ -721,8 +721,11 @@ size_t vision::matchFeatures(
 							for (unsigned int jj = 0;
 								 jj < (unsigned int)aux1->width; ++jj)  // Cols
 								res += fabs(
-									(double)(aux1->imageData[ii * aux1->widthStep + jj]) -
-									((double)(aux2->imageData[ii * aux2->widthStep + jj])));
+									(double)(aux1->imageData
+												 [ii * aux1->widthStep + jj]) -
+									((double)(aux2->imageData
+												  [ii * aux2->widthStep +
+												   jj])));
 						res = res / (255.0f * aux1->width * aux1->height);
 
 						if (res < minSAD1)
@@ -975,10 +978,9 @@ void vision::addFeaturesToImage(
 	const CImage& inImg, const CFeatureList& theList, CImage& outImg)
 {
 	outImg = inImg;  // Create a copy of the input image
-	for (const auto & it : theList)
+	for (const auto& it : theList)
 		outImg.rectangle(
-			it->x - 5, it->y - 5, it->x + 5, it->y + 5,
-			TColor(255, 0, 0));
+			it->x - 5, it->y - 5, it->x + 5, it->y + 5, TColor(255, 0, 0));
 }
 
 /*-------------------------------------------------------------
@@ -990,16 +992,16 @@ void vision::projectMatchedFeatures(
 {
 	out_points.clear();
 	out_points.reserve(matches.size());
-	for (const auto & matche : matches)
+	for (const auto& matche : matches)
 	{
 		const double disp = matche.first->x - matche.second->x;
 		if (disp < 1) continue;
 
 		const double b_d = stereo_camera.rightCameraPose.x / disp;
 		out_points.emplace_back(
-				(matche.first->x - stereo_camera.leftCamera.cx()) * b_d,
-				(matche.first->y - stereo_camera.leftCamera.cy()) * b_d,
-				stereo_camera.leftCamera.fx() * b_d);
+			(matche.first->x - stereo_camera.leftCamera.cx()) * b_d,
+			(matche.first->y - stereo_camera.leftCamera.cy()) * b_d,
+			stereo_camera.leftCamera.fx() * b_d);
 	}  // end-for
 }
 /*-------------------------------------------------------------
@@ -1873,7 +1875,7 @@ void vision::StereoObs2BRObs(
 	double sg_r2 = square(sg[1]);  // Sigma of the row variable
 	double sg_d2 = square(sg[2]);  // Sigma of the disparity
 
-	for (const auto & inMatche : inMatches)
+	for (const auto& inMatche : inMatches)
 	{
 		double x = inMatche.first->x;  // Column of the feature
 		double y = inMatche.first->y;  // Row of the feature
@@ -2019,8 +2021,8 @@ void vision::StereoObs2BRObs(
 	double sg_r2 = square(sg[1]);  // Sigma of the row variable
 	double sg_d2 = square(sg[2]);  // Sigma of the disparity
 
-	for (auto itMatchList = matchList.begin();
-		 itMatchList != matchList.end(); itMatchList++, id++)
+	for (auto itMatchList = matchList.begin(); itMatchList != matchList.end();
+		 itMatchList++, id++)
 	{
 		double x = itMatchList->first->x;  // Column of the feature
 		double y = itMatchList->first->y;  // Row of the feature
@@ -2230,7 +2232,7 @@ void vision::computeStereoRectificationMaps(
 
 	cv::Size nSize(resX, resY);
 	double alpha = 0.0;  // alpha value: 0.0 = zoom and crop the image so that
-// there's not black areas
+	// there's not black areas
 
 #if MRPT_OPENCV_VERSION_NUM < 0x210
 	// OpenCV 2.0.X
@@ -2268,7 +2270,7 @@ void vision::computeStereoRectificationMaps(
 /*-------------------------------------------------------------
 					TROI Constructors
 -------------------------------------------------------------*/
-vision::TROI::TROI()  = default;
+vision::TROI::TROI() = default;
 vision::TROI::TROI(float x1, float x2, float y1, float y2, float z1, float z2)
 	: xMin(x1), xMax(x2), yMin(y1), yMax(y2), zMin(z1), zMax(z2)
 {
@@ -2277,7 +2279,7 @@ vision::TROI::TROI(float x1, float x2, float y1, float y2, float z1, float z2)
 /*-------------------------------------------------------------
 					TImageROI Constructors
 -------------------------------------------------------------*/
-vision::TImageROI::TImageROI()  = default;
+vision::TImageROI::TImageROI() = default;
 vision::TImageROI::TImageROI(float x1, float x2, float y1, float y2)
 	: xMin(x1), xMax(x2), yMin(y1), yMax(y2)
 {
@@ -2287,8 +2289,7 @@ vision::TImageROI::TImageROI(float x1, float x2, float y1, float y2)
 			TStereoSystemParams: constructor
 -------------------------------------------------------------*/
 TStereoSystemParams::TStereoSystemParams()
-	
-	  
+
 {
 	K = defaultIntrinsicParamsMatrix(0, 640, 480);
 	F.zeros();
@@ -2387,9 +2388,8 @@ void TStereoSystemParams::dumpToTextStream(std::ostream& out) const
 			TMatchingOptions: constructor
 -------------------------------------------------------------*/
 TMatchingOptions::TMatchingOptions()
-	
-	  
-= default;  // end constructor TMatchingOptions
+
+	= default;  // end constructor TMatchingOptions
 
 /*-------------------------------------------------------------
 			TMatchingOptions: loadFromConfigFile

@@ -67,27 +67,26 @@ class CVehicleVelCmd : public mrpt::serialization::CSerializable
 	};
 
 	/** Scale the velocity command encoded in this object.
-	* \param[in] vel_scale A scale within [0,1] reflecting how much should be
-	* the raw velocity command be lessen (e.g. for safety reasons,...).
-	* \param[out] out_vel_cmd
-	*
-	* Users can directly inherit from existing implementations instead of
-	* manually redefining this method:
-	*  - mrpt::kinematics::CVehicleVelCmd_DiffDriven
-	*  - mrpt::kinematics::CVehicleVelCmd_Holo
-	*/
+	 * \param[in] vel_scale A scale within [0,1] reflecting how much should be
+	 * the raw velocity command be lessen (e.g. for safety reasons,...).
+	 * \param[out] out_vel_cmd
+	 *
+	 * Users can directly inherit from existing implementations instead of
+	 * manually redefining this method:
+	 *  - mrpt::kinematics::CVehicleVelCmd_DiffDriven
+	 *  - mrpt::kinematics::CVehicleVelCmd_Holo
+	 */
 	virtual void cmdVel_scale(double vel_scale) = 0;
 
 	/** Updates this command, computing a blended version of `beta` (within
-	* [0,1]) of `vel_cmd` and `1-beta` of `prev_vel_cmd`, simultaneously
-	* to honoring any user-side maximum velocities.
-	* \return The [0,1] ratio that the cmdvel had to be scaled down, or 1.0 if
-	* none.
-	*/
+	 * [0,1]) of `vel_cmd` and `1-beta` of `prev_vel_cmd`, simultaneously
+	 * to honoring any user-side maximum velocities.
+	 * \return The [0,1] ratio that the cmdvel had to be scaled down, or 1.0 if
+	 * none.
+	 */
 	virtual double cmdVel_limits(
 		const mrpt::kinematics::CVehicleVelCmd& prev_vel_cmd, const double beta,
 		const TVelCmdParams& params) = 0;
 };
 
-}
-
+}  // namespace mrpt::kinematics

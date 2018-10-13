@@ -28,8 +28,8 @@
 #include "COctoMapBase_impl.h"
 
 // Explicit instantiation:
-template class mrpt::maps::COctoMapBase<octomap::ColorOcTree,
-										octomap::ColorOcTreeNode>;
+template class mrpt::maps::COctoMapBase<
+	octomap::ColorOcTree, octomap::ColorOcTreeNode>;
 
 using namespace std;
 using namespace mrpt;
@@ -40,12 +40,11 @@ using namespace mrpt::img;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
 
-
 //  =========== Begin of Map definition ============
 MAP_DEFINITION_REGISTER(
 	"CColouredOctoMap,colourOctoMap,colorOctoMap", mrpt::maps::CColouredOctoMap)
 
-CColouredOctoMap::TMapDefinition::TMapDefinition()  = default;
+CColouredOctoMap::TMapDefinition::TMapDefinition() = default;
 void CColouredOctoMap::TMapDefinition::loadFromConfigFile_map_specific(
 	const mrpt::config::CConfigFileBase& source,
 	const std::string& sectionNamePrefix)
@@ -84,9 +83,9 @@ mrpt::maps::CMetricMap* CColouredOctoMap::internal_CreateFromMapDefinition(
 
 IMPLEMENTS_SERIALIZABLE(CColouredOctoMap, CMetricMap, mrpt::maps)
 
-CColouredOctoMap::CColouredOctoMap(const double resolution) :
-	COctoMapBase<octomap::ColorOcTree, octomap::ColorOcTreeNode>(resolution)
-	
+CColouredOctoMap::CColouredOctoMap(const double resolution)
+	: COctoMapBase<octomap::ColorOcTree, octomap::ColorOcTreeNode>(resolution)
+
 {
 }
 
@@ -162,8 +161,7 @@ bool CColouredOctoMap::internal_insertObservation(
 		/********************************************************************
 				OBSERVATION TYPE: CObservation2DRangeScan
 		********************************************************************/
-		const auto* o =
-			static_cast<const CObservation2DRangeScan*>(obs);
+		const auto* o = static_cast<const CObservation2DRangeScan*>(obs);
 
 		// Build a points-map representation of the points from the scan
 		// (coordinates are wrt the robot base)
@@ -174,8 +172,7 @@ bool CColouredOctoMap::internal_insertObservation(
 		sensorPt =
 			octomap::point3d(sensorPose.x(), sensorPose.y(), sensorPose.z());
 
-		const auto* scanPts =
-			o->buildAuxPointsMap<mrpt::maps::CPointsMap>();
+		const auto* scanPts = o->buildAuxPointsMap<mrpt::maps::CPointsMap>();
 		const size_t nPts = scanPts->size();
 
 		// Transform 3D point cloud:
@@ -197,8 +194,8 @@ bool CColouredOctoMap::internal_insertObservation(
 
 		// Insert rays:
 		m_impl->m_octomap.insertPointCloud(
-				scan, sensorPt, insertionOptions.maxrange,
-				insertionOptions.pruning);
+			scan, sensorPt, insertionOptions.maxrange,
+			insertionOptions.pruning);
 		return true;
 	}
 	else if (IS_CLASS(obs, CObservation3DRangeScan))
@@ -206,8 +203,7 @@ bool CColouredOctoMap::internal_insertObservation(
 		/********************************************************************
 				OBSERVATION TYPE: CObservation3DRangeScan
 		********************************************************************/
-		const auto* o =
-			static_cast<const CObservation3DRangeScan*>(obs);
+		const auto* o = static_cast<const CObservation3DRangeScan*>(obs);
 
 		o->load();  // Just to make sure the points are loaded from an external
 		// source, if that's the case...
@@ -242,17 +238,16 @@ bool CColouredOctoMap::internal_insertObservation(
 
 		// Insert rays:
 		octomap::KeySet free_cells, occupied_cells;
-		m_impl->m_octomap
-			.computeUpdate(
-				scan, sensorPt, free_cells, occupied_cells,
-				insertionOptions.maxrange);
+		m_impl->m_octomap.computeUpdate(
+			scan, sensorPt, free_cells, occupied_cells,
+			insertionOptions.maxrange);
 
 		// insert data into tree  -----------------------
-		for (const auto & free_cell : free_cells)
+		for (const auto& free_cell : free_cells)
 		{
 			m_impl->m_octomap.updateNode(free_cell, false, false);
 		}
-		for (const auto & occupied_cell : occupied_cells)
+		for (const auto& occupied_cell : occupied_cells)
 		{
 			m_impl->m_octomap.updateNode(occupied_cell, true, false);
 		}
@@ -272,8 +267,7 @@ bool CColouredOctoMap::internal_insertObservation(
 		}
 
 		// TODO: does pruning make sense if we used "lazy_eval"?
-		if (insertionOptions.pruning)
-			m_impl->m_octomap.prune();
+		if (insertionOptions.pruning) m_impl->m_octomap.prune();
 
 		return true;
 	}
@@ -282,15 +276,14 @@ bool CColouredOctoMap::internal_insertObservation(
 }
 
 /** Get the RGB colour of a point
-* \return false if the point is not mapped, in which case the returned colour is
-* undefined. */
+ * \return false if the point is not mapped, in which case the returned colour
+ * is undefined. */
 bool CColouredOctoMap::getPointColour(
 	const float x, const float y, const float z, uint8_t& r, uint8_t& g,
 	uint8_t& b) const
 {
 	octomap::OcTreeKey key;
-	if (m_impl->m_octomap
-			.coordToKeyChecked(octomap::point3d(x, y, z), key))
+	if (m_impl->m_octomap.coordToKeyChecked(octomap::point3d(x, y, z), key))
 	{
 		octomap::ColorOcTreeNode* node =
 			m_impl->m_octomap.search(key, 0 /*depth*/);
@@ -314,16 +307,13 @@ void CColouredOctoMap::updateVoxelColour(
 	switch (m_colour_method)
 	{
 		case INTEGRATE:
-			m_impl->m_octomap
-				.integrateNodeColor(x, y, z, r, g, b);
+			m_impl->m_octomap.integrateNodeColor(x, y, z, r, g, b);
 			break;
 		case SET:
-			m_impl->m_octomap
-				.setNodeColor(x, y, z, r, g, b);
+			m_impl->m_octomap.setNodeColor(x, y, z, r, g, b);
 			break;
 		case AVERAGE:
-			m_impl->m_octomap
-				.averageNodeColor(x, y, z, r, g, b);
+			m_impl->m_octomap.averageNodeColor(x, y, z, r, g, b);
 			break;
 		default:
 			THROW_EXCEPTION("Invalid value found for 'm_colour_method'");
@@ -338,8 +328,7 @@ void CColouredOctoMap::getAsOctoMapVoxels(
 	// Go thru all voxels:
 
 	// OcTreeVolume voxel; // current voxel, possibly transformed
-	octomap::ColorOcTree::tree_iterator it_end =
-		m_impl->m_octomap.end_tree();
+	octomap::ColorOcTree::tree_iterator it_end = m_impl->m_octomap.end_tree();
 
 	const unsigned char max_depth = 0;  // all
 	const TColorf general_color = gl_obj.getColor();
@@ -383,10 +372,9 @@ void CColouredOctoMap::getAsOctoMapVoxels(
 				octomap::ColorOcTreeNode::Color node_color = it->getColor();
 				vx_color = TColor(node_color.r, node_color.g, node_color.b);
 
-				const size_t vx_set =
-					(m_impl->m_octomap.isNodeOccupied(*it))
-						? VOXEL_SET_OCCUPIED
-						: VOXEL_SET_FREESPACE;
+				const size_t vx_set = (m_impl->m_octomap.isNodeOccupied(*it))
+										  ? VOXEL_SET_OCCUPIED
+										  : VOXEL_SET_FREESPACE;
 
 				gl_obj.push_back_Voxel(
 					vx_set,
@@ -424,11 +412,10 @@ void CColouredOctoMap::insertRay(
 	const float end_x, const float end_y, const float end_z,
 	const float sensor_x, const float sensor_y, const float sensor_z)
 {
-	m_impl->m_octomap
-		.insertRay(
-			octomap::point3d(sensor_x, sensor_y, sensor_z),
-			octomap::point3d(end_x, end_y, end_z), insertionOptions.maxrange,
-			insertionOptions.pruning);
+	m_impl->m_octomap.insertRay(
+		octomap::point3d(sensor_x, sensor_y, sensor_z),
+		octomap::point3d(end_x, end_y, end_z), insertionOptions.maxrange,
+		insertionOptions.pruning);
 }
 void CColouredOctoMap::updateVoxel(
 	const double x, const double y, const double z, bool occupied)
@@ -439,8 +426,7 @@ bool CColouredOctoMap::isPointWithinOctoMap(
 	const float x, const float y, const float z) const
 {
 	octomap::OcTreeKey key;
-	return m_impl->m_octomap
-		.coordToKeyChecked(octomap::point3d(x, y, z), key);
+	return m_impl->m_octomap.coordToKeyChecked(octomap::point3d(x, y, z), key);
 }
 
 double CColouredOctoMap::getResolution() const
@@ -451,10 +437,7 @@ unsigned int CColouredOctoMap::getTreeDepth() const
 {
 	return m_impl->m_octomap.getTreeDepth();
 }
-size_t CColouredOctoMap::size() const
-{
-	return m_impl->m_octomap.size();
-}
+size_t CColouredOctoMap::size() const { return m_impl->m_octomap.size(); }
 size_t CColouredOctoMap::memoryUsage() const
 {
 	return m_impl->m_octomap.memoryUsage();
@@ -467,10 +450,7 @@ size_t CColouredOctoMap::memoryFullGrid() const
 {
 	return m_impl->m_octomap.memoryFullGrid();
 }
-double CColouredOctoMap::volume()
-{
-	return m_impl->m_octomap.volume();
-}
+double CColouredOctoMap::volume() { return m_impl->m_octomap.volume(); }
 void CColouredOctoMap::getMetricSize(double& x, double& y, double& z)
 {
 	return m_impl->m_octomap.getMetricSize(x, y, z);
@@ -563,7 +543,4 @@ float CColouredOctoMap::getClampingThresMaxLog() const
 {
 	return m_impl->m_octomap.getClampingThresMaxLog();
 }
-void CColouredOctoMap::internal_clear()
-{
-	m_impl->m_octomap.clear();
-}
+void CColouredOctoMap::internal_clear() { m_impl->m_octomap.clear(); }

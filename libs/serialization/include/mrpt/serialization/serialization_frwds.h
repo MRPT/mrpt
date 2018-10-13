@@ -12,5 +12,4 @@ namespace mrpt::serialization
 {
 class CArchive;
 class CSchemeArchiveBase;
-}
-
+}  // namespace mrpt::serialization

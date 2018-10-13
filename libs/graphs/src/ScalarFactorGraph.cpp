@@ -22,10 +22,7 @@ using namespace std;
 #endif
 
 ScalarFactorGraph::FactorBase::~FactorBase() = default;
-ScalarFactorGraph::ScalarFactorGraph()
-	: COutputLogger("GMRF") 
-{
-}
+ScalarFactorGraph::ScalarFactorGraph() : COutputLogger("GMRF") {}
 
 void ScalarFactorGraph::clear()
 {

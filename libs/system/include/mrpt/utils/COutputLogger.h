@@ -4,4 +4,3 @@ namespace mrpt::utils
 {
 using COutputLogger = mrpt::system::COutputLogger;
 }
-

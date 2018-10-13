@@ -23,7 +23,7 @@ struct XsPortInfo;
 //////////////////////////////////////////////////////////////////////////////////////////
 
 /*! \brief The low-level serial communication class.
-*/
+ */
 class SerialInterface : public StreamInterface
 {
    private:
@@ -68,7 +68,8 @@ class SerialInterface : public StreamInterface
 	XsResultValue flushData(void) override;
 	bool isOpen(void) const override;
 	XsResultValue getLastResult(void) const override;
-	XsResultValue writeData(const XsByteArray& data, XsSize* written = 0) override;
+	XsResultValue writeData(
+		const XsByteArray& data, XsSize* written = 0) override;
 	XsResultValue readData(XsSize maxLength, XsByteArray& data) override;
 
 	void cancelIo(void) const override;

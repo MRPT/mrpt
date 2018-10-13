@@ -17,44 +17,44 @@
 namespace mrpt::vision
 {
 /** This abstract class implements a method called "Difodo" to perform Visual
-  *odometry with range cameras.
-  *	It is based on the range flow equation and assumes that the scene is rigid.
-  *	It can work with different image resolutions (640 x 480, 320 x 240 or 160 x
-  *120) and a different number of
-  * coarse-to-fine levels which can be adjusted with the member variables
-  *(rows,cols,ctf_levels).
-  *
-  * How to use:
-  * 	- A derived class must be created which defines the method
-  *"loadFrame(...)"
-  *according to the user application.
-  *		  This method has to load the depth image into the variable "depth_wf".
-  *		- Call loadFrame();
-  *		- Call odometryCalculation();
-  *
-  *	For further information have a look at the apps:
-  *    -
-  *[DifOdometry-Camera](http://www.mrpt.org/list-of-mrpt-apps/application-difodometry-camera/)
-  *    -
-  *[DifOdometry-Datasets](http://www.mrpt.org/list-of-mrpt-apps/application-difodometry-datasets/)
-  *
-  *	Please refer to the respective publication when using this method:
-  *		title = {Fast Visual Odometry for {3-D} Range Sensors},
-  *		author = {Jaimez, Mariano and Gonzalez-Jimenez, Javier},
-  *		journal = {IEEE Transactions on Robotics},
-  *		volume = {31},
-  *		number = {4},
-  *		pages = {809 - 822},
-  *		year = {2015}
-  *
-  * - JUN/2013: First design.
-  * - JAN/2014: Integrated into MRPT library.
-  * - DIC/2014: Reformulated and improved. The class now needs Eigen version
-  *3.1.0 or above.
-  *
-  *  \sa CDifodoCamera, CDifodoDatasets
-  *  \ingroup mrpt_vision_grp
-  */
+ *odometry with range cameras.
+ *	It is based on the range flow equation and assumes that the scene is rigid.
+ *	It can work with different image resolutions (640 x 480, 320 x 240 or 160 x
+ *120) and a different number of
+ * coarse-to-fine levels which can be adjusted with the member variables
+ *(rows,cols,ctf_levels).
+ *
+ * How to use:
+ * 	- A derived class must be created which defines the method
+ *"loadFrame(...)"
+ *according to the user application.
+ *		  This method has to load the depth image into the variable "depth_wf".
+ *		- Call loadFrame();
+ *		- Call odometryCalculation();
+ *
+ *	For further information have a look at the apps:
+ *    -
+ *[DifOdometry-Camera](http://www.mrpt.org/list-of-mrpt-apps/application-difodometry-camera/)
+ *    -
+ *[DifOdometry-Datasets](http://www.mrpt.org/list-of-mrpt-apps/application-difodometry-datasets/)
+ *
+ *	Please refer to the respective publication when using this method:
+ *		title = {Fast Visual Odometry for {3-D} Range Sensors},
+ *		author = {Jaimez, Mariano and Gonzalez-Jimenez, Javier},
+ *		journal = {IEEE Transactions on Robotics},
+ *		volume = {31},
+ *		number = {4},
+ *		pages = {809 - 822},
+ *		year = {2015}
+ *
+ * - JUN/2013: First design.
+ * - JAN/2014: Integrated into MRPT library.
+ * - DIC/2014: Reformulated and improved. The class now needs Eigen version
+ *3.1.0 or above.
+ *
+ *  \sa CDifodoCamera, CDifodoDatasets
+ *  \ingroup mrpt_vision_grp
+ */
 
 class CDifodo
 {
@@ -107,9 +107,9 @@ class CDifodo
 
 	/** The maximum resolution that will be considered by the visual odometry
 	 * method.
-	  * As a rule, the higher the resolution the slower but more accurate the
+	 * As a rule, the higher the resolution the slower but more accurate the
 	 * method becomes.
-	  * They always have to be less or equal to the size of the original depth
+	 * They always have to be less or equal to the size of the original depth
 	 * image. */
 	unsigned int rows;
 	unsigned int cols;
@@ -124,7 +124,7 @@ class CDifodo
 
 	/** Number of coarse-to-fine levels. I has to be consistent with the number
 	 * of rows and cols, because the
-	  * coarsest level cannot be smaller than 15 x 20. */
+	 * coarsest level cannot be smaller than 15 x 20. */
 	unsigned int ctf_levels;
 
 	/** Aux varibles: levels of the image pyramid and the solver, respectively
@@ -133,9 +133,9 @@ class CDifodo
 	unsigned int level;
 
 	/** Speed filter parameters:
-	  * Previous_speed_const_weight - Directly weights the previous speed in
+	 * Previous_speed_const_weight - Directly weights the previous speed in
 	 * order to calculate the filtered velocity. Recommended range - (0, 0.5)
-	  * Previous_speed_eig_weight - Weights the product of the corresponding
+	 * Previous_speed_eig_weight - Weights the product of the corresponding
 	 * eigenvalue and the previous velocity to calculate the filtered velocity*/
 	/**Default 0.05 */
 	float previous_speed_const_weight;
@@ -178,7 +178,7 @@ class CDifodo
 
 	/** The Solver. It buils the overdetermined system and gets the least-square
 	 * solution.
-	  * It also calculates the least-square covariance matrix */
+	 * It also calculates the least-square covariance matrix */
 	void solveOneLevel();
 
 	/** Method to filter the velocity at each level of the pyramid. */
@@ -299,13 +299,11 @@ class CDifodo
 	inline void getWeights(Eigen::MatrixXf& we);
 
 	/** Virtual method to be implemented in derived classes.
-	  * It should be used to load a new depth image into the variable depth_wf
+	 * It should be used to load a new depth image into the variable depth_wf
 	 */
 	virtual void loadFrame() = 0;
 
 	// Constructor. Initialize variables and matrix sizes
 	CDifodo();
 };
-}
-
-
+}  // namespace mrpt::vision

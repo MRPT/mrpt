@@ -62,7 +62,7 @@ class PbMapMaker
 	~PbMapMaker();
 
 	/*!Get the PbMap.*/
-    PbMap getPbMap() { return mPbMap; }
+	PbMap getPbMap() { return mPbMap; }
 	/*!Serialize the PbMap.*/
 	void serializePbMap(std::string path);
 
@@ -167,8 +167,5 @@ class PbMapMaker
 	float rejectColor_F, acceptColor_F, rejectColor_T, acceptColor_T;
 	float rejectHistH_F, acceptHistH_F, rejectHistH_T, acceptHistH_T;
 };
-}
+}  // namespace mrpt::pbmap
 #endif
-
-
-

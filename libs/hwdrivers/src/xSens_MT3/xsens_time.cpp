@@ -108,4 +108,4 @@ TimeStamp timeStampNow(void)
 	return ms;
 }
 
-}  // end of xsens namespace
+}  // namespace xsens

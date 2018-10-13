@@ -20,8 +20,7 @@ using namespace std;
 
 // Ctor:
 CLight::CLight()
-	
-	  
+
 {
 	color_ambient[0] = 0.05f;
 	color_ambient[1] = 0.05f;
@@ -127,6 +126,4 @@ mrpt::serialization::CArchive& operator<<(
 	o.writeToStream(out);
 	return out;
 }
-}  // namespace mrpt
-
-
+}  // namespace mrpt::opengl
