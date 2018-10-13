@@ -120,7 +120,7 @@ void CHMTSLAM::perform_TLC(
 	{
 		TArcList lstArcs;
 		m_map.getNodeByID(Ai)->getArcs(lstArcs, LMH.m_ID);
-		for (TArcList::iterator arc = lstArcs.begin(); arc != lstArcs.end();
+		for (auto arc = lstArcs.begin(); arc != lstArcs.end();
 			 ++arc)
 		{
 			// TODO ...
@@ -156,7 +156,7 @@ void CHMTSLAM::perform_TLC(
 			NODE_ANNOTATION_POSES_GRAPH, LMH.m_ID);
 
 	// For each pose in Ae:
-	for (CRobotPosesGraph::const_iterator it = AePG->begin(); it != AePG->end();
+	for (auto it = AePG->begin(); it != AePG->end();
 		 ++it)
 	{
 		const TPoseID poseId = it->first;

@@ -105,7 +105,7 @@ void CConfigWidget::addMap()
 	if (result == QDialog::Accepted)
 	{
 		int type = dialog->selectedItem();
-		TypeOfConfig typeOfConfig = static_cast<TypeOfConfig>(type);
+		auto typeOfConfig = static_cast<TypeOfConfig>(type);
 		CBaseConfig* w = configByType(typeOfConfig);
 		if (w) addWidget(typeOfConfig, w);
 	}
@@ -119,7 +119,7 @@ void CConfigWidget::removeMap()
 	QWidget* w = m_ui->stackedWidget->widget(currentRow);
 	ASSERT_(w);
 
-	CBaseConfig* base = dynamic_cast<CBaseConfig*>(w);
+	auto* base = dynamic_cast<CBaseConfig*>(w);
 	ASSERT_(base);
 
 	TypeOfConfig type = base->type();

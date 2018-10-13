@@ -410,7 +410,7 @@ void CBeacon::generateObservationModelDistribution(
 	if (m_typePDF == pdfGauss)
 	{
 		// Copy the gaussian to the SOG:
-		CPointPDFSOG* new_beaconPos = new CPointPDFSOG(1);
+		auto* new_beaconPos = new CPointPDFSOG(1);
 		new_beaconPos->push_back(CPointPDFSOG::TGaussianMode());
 		new_beaconPos->get(0).log_w = 0;
 		new_beaconPos->get(0).val = m_locationGauss;

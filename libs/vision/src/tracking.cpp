@@ -39,8 +39,8 @@ inline void trackFeatures_checkResponses<CFeatureList>(
 	const float minimum_KLT_response, const unsigned int KLT_response_half_win,
 	const unsigned int max_x, const unsigned int max_y)
 {
-	const CFeatureList::iterator itFeatEnd = featureList.end();
-	for (CFeatureList::iterator itFeat = featureList.begin();
+	const auto itFeatEnd = featureList.end();
+	for (auto itFeat = featureList.begin();
 		 itFeat != itFeatEnd; ++itFeat)
 	{
 		CFeature* ft = itFeat->get();
@@ -78,10 +78,10 @@ inline void trackFeatures_checkResponses_impl_simple(
 	if (featureList.empty()) return;
 
 	using pixel_coord_t = typename FEAT_LIST::feature_t::pixel_coord_t;
-	const pixel_coord_t half_win =
+	const auto half_win =
 		static_cast<pixel_coord_t>(KLT_response_half_win);
-	const pixel_coord_t max_x = static_cast<pixel_coord_t>(max_x_);
-	const pixel_coord_t max_y = static_cast<pixel_coord_t>(max_y_);
+	const auto max_x = static_cast<pixel_coord_t>(max_x_);
+	const auto max_y = static_cast<pixel_coord_t>(max_y_);
 
 	for (int N = featureList.size() - 1; N >= 0; --N)
 	{
@@ -519,7 +519,7 @@ inline size_t trackFeatures_deleteOOB(
 	CFeatureList& trackedFeats, const size_t img_width, const size_t img_height,
 	const int MIN_DIST_MARGIN_TO_STOP_TRACKING)
 {
-	CFeatureList::iterator itFeat = trackedFeats.begin();
+	auto itFeat = trackedFeats.begin();
 	size_t n_removed = 0;
 	while (itFeat != trackedFeats.end())
 	{

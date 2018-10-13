@@ -413,7 +413,7 @@ void weightedHistogram(
 	ASSERT_(values.size() == weights.size());
 	ASSERT_(binWidth > 0);
 	TNum minBin = minimum(values);
-	unsigned int nBins =
+	auto nBins =
 		static_cast<unsigned>(ceil((maximum(values) - minBin) / binWidth));
 
 	// Generate bin center and border values:
@@ -470,7 +470,7 @@ void weightedHistogramLog(
 	ASSERT_(values.size() == log_weights.size());
 	ASSERT_(binWidth > 0);
 	TNum minBin = minimum(values);
-	unsigned int nBins =
+	auto nBins =
 		static_cast<unsigned>(ceil((maximum(values) - minBin) / binWidth));
 
 	// Generate bin center and border values:

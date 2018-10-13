@@ -111,7 +111,7 @@ void xRawLogViewerFrame::OnMenuCompactRawlog(wxCommandEvent& event)
 						mrpt::make_aligned_shared<CSensoryFrame>();
 					set<string> knownLabels;
 
-					for (CSensoryFrame::const_iterator o = lastSF->begin();
+					for (auto o = lastSF->begin();
 						 o != lastSF->end(); ++o)
 					{
 						if (knownLabels.find((*o)->sensorLabel) ==
@@ -347,7 +347,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecFILE(wxCommandEvent& event)
 	CFileGZOutputStream f_out(filToSave);
 
 	wxBusyCursor waitCursor;
-	unsigned int filSize = (unsigned int)fil.getTotalBytesCount();
+	auto filSize = (unsigned int)fil.getTotalBytesCount();
 
 	wxString auxStr;
 	wxProgressDialog progDia(
@@ -547,7 +547,7 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored(wxCommandEvent& event)
 
 	wxBusyCursor waitCursor;
 	CFileGZInputStream fil(str);
-	unsigned int filSize = (unsigned int)fil.getTotalBytesCount();
+	auto filSize = (unsigned int)fil.getTotalBytesCount();
 
 	CFileGZOutputStream f_out(filToSave);
 
@@ -592,7 +592,7 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored(wxCommandEvent& event)
 					if (SF->getObservationByIndex(k)->GetRuntimeClass() ==
 						CLASS_ID(CObservationStereoImages))
 					{
-						CObservationStereoImages::Ptr obsSt =
+						auto obsSt =
 							SF->getObservationByIndexAs<
 								CObservationStereoImages::Ptr>(k);
 
@@ -617,7 +617,7 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored(wxCommandEvent& event)
 					if (SF->getObservationByIndex(k)->GetRuntimeClass() ==
 						CLASS_ID(CObservationImage))
 					{
-						CObservationImage::Ptr obsIm =
+						auto obsIm =
 							SF->getObservationByIndexAs<CObservationImage::Ptr>(
 								k);
 
@@ -685,7 +685,7 @@ void xRawLogViewerFrame::OnMenuConvertObservationOnly(wxCommandEvent& event)
 
 	wxBusyCursor waitCursor;
 	CFileGZInputStream fil(str);
-	unsigned int filSize = (unsigned int)fil.getTotalBytesCount();
+	auto filSize = (unsigned int)fil.getTotalBytesCount();
 
 	CFileGZOutputStream f_out(filToSave);
 
@@ -996,7 +996,7 @@ void xRawLogViewerFrame::OnMenuConvertSF(wxCommandEvent& event)
 	new_rawlog.setCommentText(rawlog.getCommentText());
 
 	wxBusyCursor waitCursor;
-	unsigned int nEntries = (unsigned int)rawlog.size();
+	auto nEntries = (unsigned int)rawlog.size();
 
 	wxProgressDialog progDia(
 		wxT("Progress"), wxT("Parsing rawlog..."),

@@ -407,7 +407,7 @@ void CMetricMapBuilderRBPF::drawCurrentEstimationToImage(CCanvas* img)
 	// Adapt the canvas size:
 	bool alreadyCopiedImage = false;
 	{
-		CImage* obj = dynamic_cast<CImage*>(img);
+		auto* obj = dynamic_cast<CImage*>(img);
 		if (obj)
 			obj->resize(
 				currentMetricMapEstimation->m_gridMaps[0]->getSizeX(),

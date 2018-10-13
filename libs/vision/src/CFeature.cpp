@@ -1248,7 +1248,7 @@ CFeature::Ptr CFeatureList::getByID(const TFeatureID& ID) const
 CFeature::Ptr CFeatureList::getByID(const TFeatureID& ID, int& out_idx) const
 {
 	int k = 0;
-	for (CFeatureList::const_iterator it = begin(); it != end(); ++it, ++k)
+	for (auto it = begin(); it != end(); ++it, ++k)
 		if ((*it)->ID == ID)
 		{
 			out_idx = k;
@@ -1375,7 +1375,7 @@ void CMatchedFeatureList::updateMaxID(const TListIdx& idx)
 	MRPT_START
 	TFeatureID maxID1 = begin()->first->ID;
 	TFeatureID maxID2 = begin()->second->ID;
-	for (CMatchedFeatureList::const_iterator itList = begin(); itList != end();
+	for (auto itList = begin(); itList != end();
 		 itList++)
 	{
 		if (idx == firstList || idx == bothLists)
@@ -1415,7 +1415,7 @@ void CMatchedFeatureList::getBothFeatureLists(
 	list2.resize(this->size());
 
 	unsigned int k = 0;
-	for (CMatchedFeatureList::iterator it = this->begin(); it != this->end();
+	for (auto it = this->begin(); it != this->end();
 		 ++it, ++k)
 	{
 		list1[k] = it->first;
@@ -1463,7 +1463,7 @@ bool CFeature::getFirstDescriptorAsMatrix(mrpt::math::CMatrixFloat& desc) const
 		const size_t nC =
 			descriptors.SpinImg.size() / descriptors.SpinImg_range_rows;
 		desc.resize(nR, nC);
-		std::vector<float>::const_iterator itD = descriptors.SpinImg.begin();
+		auto itD = descriptors.SpinImg.begin();
 		for (size_t r = 0; r < nR; r++)
 			for (size_t c = 0; c < nC; c++) desc.coeffRef(r, c) = *itD++;
 		return true;

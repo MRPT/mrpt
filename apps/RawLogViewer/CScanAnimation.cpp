@@ -394,7 +394,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 				tim_last = obs->timestamp;
 
 			// Already in the map with the same sensor label?
-			TListGlObjects::iterator it_gl = m_gl_objects.find(sNameInMap);
+			auto it_gl = m_gl_objects.find(sNameInMap);
 			if (it_gl != m_gl_objects.end())
 			{
 				// Update existing object:
@@ -433,7 +433,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 			pointMap.insertObservation(obs.get());
 
 			// Already in the map with the same sensor label?
-			TListGlObjects::iterator it_gl = m_gl_objects.find(sNameInMap);
+			auto it_gl = m_gl_objects.find(sNameInMap);
 			if (it_gl != m_gl_objects.end())
 			{
 				// Update existing object:
@@ -474,7 +474,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 			obs->point_cloud.clear_deep();
 
 			// Already in the map with the same sensor label?
-			TListGlObjects::iterator it_gl = m_gl_objects.find(sNameInMap);
+			auto it_gl = m_gl_objects.find(sNameInMap);
 			if (it_gl != m_gl_objects.end())
 			{
 				// Update existing object:

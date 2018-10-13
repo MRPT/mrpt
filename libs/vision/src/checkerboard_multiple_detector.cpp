@@ -299,7 +299,7 @@ bool find_chessboard_corners_multiple(
 	//  remove duplicates:
 	vector<TPoint2D>
 		out_boards_centers;  // the center (average) of each output board.
-	for (list<vector<CvCBQuad::Ptr>>::const_iterator it =
+	for (auto it =
 			 good_quad_groups.begin();
 		 it != good_quad_groups.end(); ++it)
 	{

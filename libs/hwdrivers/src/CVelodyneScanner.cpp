@@ -292,7 +292,7 @@ bool CVelodyneScanner::getNextObservation(
 				{
 					const model_properties_list_t& lstModels =
 						TModelPropertiesFactory::get();
-					model_properties_list_t::const_iterator it =
+					auto it =
 						lstModels.find(this->m_model);
 					if (it != lstModels.end())
 					{  // Model params:

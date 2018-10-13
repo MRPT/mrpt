@@ -64,7 +64,7 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
 		double maxW = minW;
 
 		/* Compute the max/min of weights: */
-		for (typename particle_list_t::iterator it =
+		for (auto it =
 				 derived().m_particles.begin();
 			 it != derived().m_particles.end(); ++it)
 		{
@@ -72,7 +72,7 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
 			minW = std::min<double>(minW, it->log_w);
 		}
 		/* Normalize: */
-		for (typename particle_list_t::iterator it =
+		for (auto it =
 				 derived().m_particles.begin();
 			 it != derived().m_particles.end(); ++it)
 			it->log_w -= maxW;
@@ -90,12 +90,12 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
 
 		/* Sum of weights: */
 		double sumLinearWeights = 0;
-		for (typename particle_list_t::const_iterator it =
+		for (auto it =
 				 derived().m_particles.begin();
 			 it != derived().m_particles.end(); ++it)
 			sumLinearWeights += std::exp(it->log_w);
 		/* Compute ESS: */
-		for (typename particle_list_t::const_iterator it =
+		for (auto it =
 				 derived().m_particles.begin();
 			 it != derived().m_particles.end(); ++it)
 			cum += mrpt::square(std::exp(it->log_w) / sumLinearWeights);
@@ -228,7 +228,7 @@ class CParticleFilterData
 	void writeParticlesToStream(STREAM& out) const
 	{
 		MRPT_START
-		uint32_t n = static_cast<uint32_t>(m_particles.size());
+		auto n = static_cast<uint32_t>(m_particles.size());
 		out << n;
 		typename CParticleList::const_iterator it;
 		for (it = m_particles.begin(); it != m_particles.end(); ++it)

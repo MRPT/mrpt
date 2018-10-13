@@ -72,7 +72,7 @@ mrpt::maps::CMetricMap* CBeaconMap::internal_CreateFromMapDefinition(
 {
 	const CBeaconMap::TMapDefinition& def =
 		*dynamic_cast<const CBeaconMap::TMapDefinition*>(&_def);
-	CBeaconMap* obj = new CBeaconMap();
+	auto* obj = new CBeaconMap();
 	obj->insertionOptions = def.insertionOpts;
 	obj->likelihoodOptions = def.likelihoodOpts;
 	return obj;
@@ -167,7 +167,7 @@ double CBeaconMap::internal_computeObservationLikelihood(
 
 			********************************************************************/
 		double ret = 0;
-		const CObservationBeaconRanges* o =
+		const auto* o =
 			static_cast<const CObservationBeaconRanges*>(obs);
 		deque<CObservationBeaconRanges::TMeasurement>::const_iterator it_obs;
 		const CBeacon* beac;
@@ -387,7 +387,7 @@ bool CBeaconMap::internal_insertObservation(
 
 		// Here we fuse OR create the beacon position PDF:
 		// --------------------------------------------------------
-		const CObservationBeaconRanges* o =
+		const auto* o =
 			static_cast<const CObservationBeaconRanges*>(obs);
 
 		for (const auto & it : o->sensedData)
@@ -798,7 +798,7 @@ void CBeaconMap::determineMatching2D(
 
 	// Check the other map class:
 	ASSERT_(otherMap->GetRuntimeClass() == CLASS_ID(CBeaconMap));
-	const CBeaconMap* otherMap2 = static_cast<const CBeaconMap*>(otherMap);
+	const auto* otherMap2 = static_cast<const CBeaconMap*>(otherMap);
 	vector<bool> otherCorrespondences;
 
 	// Coordinates change:

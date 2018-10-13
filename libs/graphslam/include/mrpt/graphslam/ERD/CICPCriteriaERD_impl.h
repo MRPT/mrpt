@@ -508,7 +508,7 @@ void CICPCriteriaERD<GRAPH_T>::updateVisuals()
 		}
 
 		// set the pose of the laser scan
-		typename GRAPH_T::global_poses_t::const_iterator search =
+		auto search =
 			this->m_graph->nodes.find(this->m_graph->nodeCount() - 1);
 		if (search != this->m_graph->nodes.end())
 		{

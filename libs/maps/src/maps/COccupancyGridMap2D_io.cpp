@@ -163,8 +163,8 @@ void COccupancyGridMap2D::serializeFrom(
 				in.ReadBuffer(&auxMap[0], sizeof(auxMap[0]) * auxMap.size());
 
 				size_t i, N = map.size();
-				uint8_t* ptrTrg = (uint8_t*)&map[0];
-				const uint16_t* ptrSrc = (const uint16_t*)&auxMap[0];
+				auto* ptrTrg = (uint8_t*)&map[0];
+				const auto* ptrSrc = (const uint16_t*)&auxMap[0];
 				for (i = 0; i < N; i++) *ptrTrg++ = (*ptrSrc++) >> 8;
 #else
 				// We are 16-bit, stream is 8-bit

@@ -346,8 +346,7 @@ void MapBuilding_ICP_Live(const string& INI_FILENAME)
 				global_list_obs.clear();
 			}
 			// Keep the most recent laser scan:
-			for (mrpt::hwdrivers::CGenericSensor::TListObservations::
-					 reverse_iterator it = obs_copy.rbegin();
+			for (auto it = obs_copy.rbegin();
 				 !observation && it != obs_copy.rend(); ++it)
 				if (it->second && IS_CLASS(it->second, CObservation2DRangeScan))
 					observation =
@@ -357,8 +356,7 @@ void MapBuilding_ICP_Live(const string& INI_FILENAME)
 			// Save all of them to rawlog for optional post-processing:
 			if (out_rawlog.fileOpenCorrectly())
 			{
-				for (mrpt::hwdrivers::CGenericSensor::TListObservations::
-						 iterator it = obs_copy.begin();
+				for (auto it = obs_copy.begin();
 					 it != obs_copy.end(); ++it)
 					if (it->second &&
 						IS_CLASS(it->second, CObservation2DRangeScan))

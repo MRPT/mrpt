@@ -446,7 +446,7 @@ void CKalmanFilterCapable<
 			for (int i : data_association)
 			{
 				if (i < 0) continue;
-				const size_t assoc_idx_in_map =
+				const auto assoc_idx_in_map =
 					static_cast<size_t>(i);
 				const size_t assoc_idx_in_pred =
 					mrpt::containers::find_in_vector(
@@ -535,7 +535,7 @@ void CKalmanFilterCapable<
 							{
 								if (data_association[i] < 0) continue;
 
-								const size_t assoc_idx_in_map =
+								const auto assoc_idx_in_map =
 									static_cast<size_t>(data_association[i]);
 								const size_t assoc_idx_in_pred =
 									mrpt::containers::find_in_vector(

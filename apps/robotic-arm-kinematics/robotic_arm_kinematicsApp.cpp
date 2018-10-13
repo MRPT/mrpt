@@ -29,7 +29,7 @@ bool robotic_arm_kinematicsApp::OnInit()
 	wxInitAllImageHandlers();
 	if (wxsOK)
 	{
-		robotic_arm_kinematicsFrame* Frame = new robotic_arm_kinematicsFrame(nullptr);
+		auto* Frame = new robotic_arm_kinematicsFrame(nullptr);
 		Frame->Show();
 		SetTopWindow(Frame);
 	}

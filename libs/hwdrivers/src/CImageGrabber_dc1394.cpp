@@ -533,7 +533,7 @@ bool CImageGrabber_dc1394::getObservation(
 		// dc1394_get_image_size_from_video_mode(THE_CAMERA, m_desired_mode,
 		// &width, &height);
 
-		dc1394video_frame_t* new_frame = static_cast<dc1394video_frame_t*>(
+		auto* new_frame = static_cast<dc1394video_frame_t*>(
 			calloc(1, sizeof(dc1394video_frame_t)));
 		new_frame->color_coding = DC1394_COLOR_CODING_RGB8;
 		dc1394_convert_frames(frame, new_frame);
@@ -551,8 +551,8 @@ bool CImageGrabber_dc1394::getObservation(
 		// Stereo images:
 		dc1394error_t err;
 
-		uint8_t* imageBuf = new uint8_t[width * height * 2];
-		uint8_t* imageBufRGB = new uint8_t[width * height * 2 * 3];
+		auto* imageBuf = new uint8_t[width * height * 2];
+		auto* imageBufRGB = new uint8_t[width * height * 2 * 3];
 
 		if ((err = dc1394_deinterlace_stereo(
 				 frame->image, imageBuf, width, 2 * height)) != DC1394_SUCCESS)
@@ -640,8 +640,8 @@ bool CImageGrabber_dc1394::getObservation(
 		// Stereo images:
 		dc1394error_t err;
 
-		uint8_t* imageBuf = new uint8_t[width * height * 2];
-		uint8_t* imageBufRGB = new uint8_t[width * height * 2 * 3];
+		auto* imageBuf = new uint8_t[width * height * 2];
+		auto* imageBufRGB = new uint8_t[width * height * 2 * 3];
 
 		if ((err = dc1394_deinterlace_stereo(
 				 frame->image, imageBuf, width, 2 * height)) != DC1394_SUCCESS)

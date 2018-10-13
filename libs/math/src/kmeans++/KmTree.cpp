@@ -63,7 +63,7 @@ Scalar KmTree::DoKMeansStep(int k, Scalar* centers, int* assignment) const
 	memset(bad_center, 0xff, d_ * sizeof(Scalar));
 
 	// Allocate data
-	Scalar* sums = (Scalar*)calloc(k * d_, sizeof(Scalar));
+	auto* sums = (Scalar*)calloc(k * d_, sizeof(Scalar));
 	int* counts = (int*)calloc(k, sizeof(int));
 	int num_candidates = 0;
 	int* candidates = (int*)malloc(k * sizeof(int));
@@ -345,7 +345,7 @@ bool KmTree::ShouldBePruned(
 
 Scalar KmTree::SeedKMeansPlusPlus(int k, Scalar* centers) const
 {
-	Scalar* dist_sq = (Scalar*)malloc(n_ * sizeof(Scalar));
+	auto* dist_sq = (Scalar*)malloc(n_ * sizeof(Scalar));
 	KM_ASSERT(dist_sq != nullptr);
 
 	// Choose an initial center uniformly at random

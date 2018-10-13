@@ -132,7 +132,7 @@ void CActionCollection::eraseByIndex(const size_t& index)
 {
 	if (index >= m_actions.size()) THROW_EXCEPTION("Index out of bounds");
 
-	iterator it = m_actions.begin() + index;
+	auto it = m_actions.begin() + index;
 	m_actions.erase(it);
 }
 

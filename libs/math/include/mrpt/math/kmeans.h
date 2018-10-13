@@ -41,8 +41,8 @@ double stub_kmeans(
 	if (!N) return 0;  // No points, we're done.
 	// Parse to required format:
 	size_t dims = 0;
-	const typename LIST_OF_VECTORS1::const_iterator it_first = points.begin();
-	const typename LIST_OF_VECTORS1::const_iterator it_end = points.end();
+	const auto it_first = points.begin();
+	const auto it_end = points.end();
 	using TInnerVector = typename LIST_OF_VECTORS1::value_type;
 	using TInnerVectorCenters = typename LIST_OF_VECTORS2::value_type;
 	std::vector<typename TInnerVector::value_type> raw_vals;

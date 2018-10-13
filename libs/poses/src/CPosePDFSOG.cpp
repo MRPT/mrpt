@@ -79,7 +79,7 @@ void CPosePDFSOG::getCovarianceAndMean(
 	{
 		// 1) Get the mean:
 		double sumW = 0;
-		CMatrixDouble31 estMeanMat = CMatrixDouble31(estMean2D);
+		auto estMeanMat = CMatrixDouble31(estMean2D);
 		CMatrixDouble33 temp;
 		CMatrixDouble31 estMean_i;
 
@@ -286,8 +286,8 @@ void CPosePDFSOG::bayesianFusion(
 	ASSERT_(p1_.GetRuntimeClass() == CLASS_ID(CPosePDFSOG));
 	ASSERT_(p2_.GetRuntimeClass() == CLASS_ID(CPosePDFGaussian));
 
-	const CPosePDFSOG* p1 = static_cast<const CPosePDFSOG*>(&p1_);
-	const CPosePDFGaussian* p2 = static_cast<const CPosePDFGaussian*>(&p2_);
+	const auto* p1 = static_cast<const CPosePDFSOG*>(&p1_);
+	const auto* p2 = static_cast<const CPosePDFGaussian*>(&p2_);
 
 	// Compute the new kernel means, covariances, and weights after multiplying
 	// to the Gaussian "p2":
@@ -296,7 +296,7 @@ void CPosePDFSOG::bayesianFusion(
 	CMatrixDouble33 covInv;
 	p2->cov.inv(covInv);
 
-	CMatrixDouble31 eta = CMatrixDouble31(p2->mean);
+	auto eta = CMatrixDouble31(p2->mean);
 	eta = covInv * eta;
 
 	// Normal distribution canonical form constant:
@@ -327,13 +327,13 @@ void CPosePDFSOG::bayesianFusion(
 		CMatrixDouble33 covInv_i;
 		auxSOG_Kernel_i.cov.inv(covInv_i);
 
-		CMatrixDouble31 eta_i = CMatrixDouble31(auxSOG_Kernel_i.mean);
+		auto eta_i = CMatrixDouble31(auxSOG_Kernel_i.mean);
 		eta_i = covInv_i * eta_i;
 
 		CMatrixDouble33 new_covInv_i;
 		newKernel.cov.inv(new_covInv_i);
 
-		CMatrixDouble31 new_eta_i = CMatrixDouble31(newKernel.mean);
+		auto new_eta_i = CMatrixDouble31(newKernel.mean);
 		new_eta_i = new_covInv_i * new_eta_i;
 
 		double a_i =
@@ -361,7 +361,7 @@ void CPosePDFSOG::bayesianFusion(
 void CPosePDFSOG::inverse(CPosePDF& o) const
 {
 	ASSERT_(o.GetRuntimeClass() == CLASS_ID(CPosePDFSOG));
-	CPosePDFSOG* out = static_cast<CPosePDFSOG*>(&o);
+	auto* out = static_cast<CPosePDFSOG*>(&o);
 
 	const_iterator itSrc;
 	iterator itDest;
@@ -398,7 +398,7 @@ double CPosePDFSOG::evaluatePDF(const CPose2D& x, bool sumOverAllPhis) const
 	if (!sumOverAllPhis)
 	{
 		// Normal evaluation:
-		CMatrixDouble31 X = CMatrixDouble31(x);
+		auto X = CMatrixDouble31(x);
 		CMatrixDouble31 MU;
 		double ret = 0;
 
@@ -440,7 +440,7 @@ double CPosePDFSOG::evaluatePDF(const CPose2D& x, bool sumOverAllPhis) const
  ---------------------------------------------------------------*/
 double CPosePDFSOG::evaluateNormalizedPDF(const CPose2D& x) const
 {
-	CMatrixDouble31 X = CMatrixDouble31(x);
+	auto X = CMatrixDouble31(x);
 	CMatrixDouble31 MU;
 	double ret = 0;
 
@@ -502,8 +502,8 @@ void CPosePDFSOG::evaluatePDFInArea(
 	ASSERT_(y_max > y_min);
 	ASSERT_(resolutionXY > 0);
 
-	const size_t Nx = (size_t)ceil((x_max - x_min) / resolutionXY);
-	const size_t Ny = (size_t)ceil((y_max - y_min) / resolutionXY);
+	const auto Nx = (size_t)ceil((x_max - x_min) / resolutionXY);
+	const auto Ny = (size_t)ceil((y_max - y_min) / resolutionXY);
 
 	outMatrix.setSize(Ny, Nx);
 
@@ -554,7 +554,7 @@ void CPosePDFSOG::mergeModes(double max_KLd, bool verbose)
 		CMatrixDouble33 min_Bij_COV;
 		size_t best_j = 0;
 
-		CMatrixDouble31 MUi = CMatrixDouble31(m_modes[i].mean);
+		auto MUi = CMatrixDouble31(m_modes[i].mean);
 
 		// Compute B(i,j), j=[i+1,N-1]  (the discriminant)
 		for (size_t j = 0; j < N; j++)
@@ -566,7 +566,7 @@ void CPosePDFSOG::mergeModes(double max_KLd, bool verbose)
 				CMatrixDouble33 Pij = m_modes[i].cov * (Wi * Wij_);
 				Pij.add_Ac(m_modes[j].cov, Wj * Wij_);
 
-				CMatrixDouble31 MUij = CMatrixDouble31(m_modes[j].mean);
+				auto MUij = CMatrixDouble31(m_modes[j].mean);
 				MUij -= MUi;
 				// Account for circular dimensions:
 				mrpt::math::wrapToPiInPlace(MUij(2, 0));
@@ -654,10 +654,10 @@ void CPosePDFSOG::mergeModes(double max_KLd, bool verbose)
 void CPosePDFSOG::getMostLikelyCovarianceAndMean(
 	CMatrixDouble33& cov, CPose2D& mean_point) const
 {
-	const_iterator it_best = end();
+	auto it_best = end();
 	double best_log_w = -std::numeric_limits<double>::max();
 
-	for (const_iterator i = begin(); i != end(); ++i)
+	for (auto i = begin(); i != end(); ++i)
 	{
 		if (i->log_w > best_log_w)
 		{

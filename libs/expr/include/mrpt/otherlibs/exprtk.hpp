@@ -202,8 +202,8 @@ namespace exprtk
 
             for (std::size_t i = 0; i < length;  ++i)
             {
-               const char_t c1 = static_cast<char>(std::tolower(s1[i]));
-               const char_t c2 = static_cast<char>(std::tolower(s2[i]));
+               const auto c1 = static_cast<char>(std::tolower(s1[i]));
+               const auto c2 = static_cast<char>(std::tolower(s2[i]));
 
                if (c1 > c2)
                   return false;
@@ -806,7 +806,7 @@ namespace exprtk
             {
                static inline float value()
                {
-                  const float epsilon = float(0.000001f);
+                  const auto epsilon = float(0.000001f);
                   return epsilon;
                }
             };
@@ -816,7 +816,7 @@ namespace exprtk
             {
                static inline long double value()
                {
-                  const long double epsilon = (long double)(0.000000000001);
+                  const auto epsilon = (long double)(0.000000000001);
                   return epsilon;
                }
             };
@@ -994,7 +994,7 @@ namespace exprtk
                if (v1 < T(0))
                   return std::numeric_limits<T>::quiet_NaN();
 
-               const std::size_t n = static_cast<std::size_t>(v1);
+               const auto n = static_cast<std::size_t>(v1);
 
                if ((v0 < T(0)) && (0 == (n % 2)))
                   return std::numeric_limits<T>::quiet_NaN();
@@ -1690,13 +1690,13 @@ namespace exprtk
                return false;
          }
 
-         static const uchar_t zero = static_cast<uchar_t>('0');
+         static const auto zero = static_cast<uchar_t>('0');
 
          while ((end != itr) && (zero == (*itr))) ++itr;
 
          bool return_result = true;
          unsigned int digit = 0;
-         const std::size_t length  = static_cast<std::size_t>(std::distance(itr,end));
+         const auto length  = static_cast<std::size_t>(std::distance(itr,end));
 
          if (length <= 4)
          {
@@ -1789,7 +1789,7 @@ namespace exprtk
          static const char_t inf_lc[] = "infinity";
          static const std::size_t inf_length = 8;
 
-         const std::size_t length = static_cast<std::size_t>(std::distance(itr,end));
+         const auto length = static_cast<std::size_t>(std::distance(itr,end));
 
          if ((3 != length) && (inf_length != length))
             return false;
@@ -3560,7 +3560,7 @@ namespace exprtk
 
             bool remove(const std::string& target_symbol)
             {
-               const replace_map_t::iterator itr = replace_map_.find(target_symbol);
+               const auto itr = replace_map_.find(target_symbol);
 
                if (replace_map_.end() == itr)
                   return false;
@@ -3574,7 +3574,7 @@ namespace exprtk
                              const std::string& replace_symbol,
                              const lexer::token::token_type token_type = lexer::token::e_symbol)
             {
-               const replace_map_t::iterator itr = replace_map_.find(target_symbol);
+               const auto itr = replace_map_.find(target_symbol);
 
                if (replace_map_.end() != itr)
                {
@@ -3600,7 +3600,7 @@ namespace exprtk
                   if (replace_map_.empty())
                      return false;
 
-                  const replace_map_t::iterator itr = replace_map_.find(t.value);
+                  const auto itr = replace_map_.find(t.value);
 
                   if (replace_map_.end() != itr)
                   {
@@ -7389,7 +7389,7 @@ namespace exprtk
          {
             if (is_ivector_node(binary_node<T>::branch_[0].first))
             {
-               vector_interface<T>* vi = reinterpret_cast<vector_interface<T>*>(0);
+               auto* vi = reinterpret_cast<vector_interface<T>*>(0);
 
                if (0 != (vi = dynamic_cast<vector_interface<T>*>(binary_node<T>::branch_[0].first)))
                {
@@ -7400,7 +7400,7 @@ namespace exprtk
 
             if (is_ivector_node(binary_node<T>::branch_[1].first))
             {
-               vector_interface<T>* vi = reinterpret_cast<vector_interface<T>*>(0);
+               auto* vi = reinterpret_cast<vector_interface<T>*>(0);
 
                if (0 != (vi = dynamic_cast<vector_interface<T>*>(binary_node<T>::branch_[1].first)))
                {
@@ -9397,7 +9397,7 @@ namespace exprtk
             {
                if (arg_list[i] && is_variable_node(arg_list[i]))
                {
-                  variable_node<T>* var_node_ptr = static_cast<variable_node<T>*>(arg_list[i]);
+                  auto* var_node_ptr = static_cast<variable_node<T>*>(arg_list[i]);
                   arg_list_[i] = (&var_node_ptr->ref());
                }
                else
@@ -9778,7 +9778,7 @@ namespace exprtk
             }
             else if (is_ivector_node(binary_node<T>::branch_[1].first))
             {
-               vector_interface<T>* vi = reinterpret_cast<vector_interface<T>*>(0);
+               auto* vi = reinterpret_cast<vector_interface<T>*>(0);
 
                if (0 != (vi = dynamic_cast<vector_interface<T>*>(binary_node<T>::branch_[1].first)))
                {
@@ -10201,7 +10201,7 @@ namespace exprtk
             }
             else if (is_ivector_node(binary_node<T>::branch_[1].first))
             {
-               vector_interface<T>* vi = reinterpret_cast<vector_interface<T>*>(0);
+               auto* vi = reinterpret_cast<vector_interface<T>*>(0);
 
                if (0 != (vi = dynamic_cast<vector_interface<T>*>(binary_node<T>::branch_[1].first)))
                {
@@ -10351,7 +10351,7 @@ namespace exprtk
             }
             else if (is_ivector_node(binary_node<T>::branch_[0].first))
             {
-               vector_interface<T>* vi = reinterpret_cast<vector_interface<T>*>(0);
+               auto* vi = reinterpret_cast<vector_interface<T>*>(0);
 
                if (0 != (vi = dynamic_cast<vector_interface<T>*>(binary_node<T>::branch_[0].first)))
                {
@@ -10366,7 +10366,7 @@ namespace exprtk
             }
             else if (is_ivector_node(binary_node<T>::branch_[1].first))
             {
-               vector_interface<T>* vi = reinterpret_cast<vector_interface<T>*>(0);
+               auto* vi = reinterpret_cast<vector_interface<T>*>(0);
 
                if (0 != (vi = dynamic_cast<vector_interface<T>*>(binary_node<T>::branch_[1].first)))
                {
@@ -10532,7 +10532,7 @@ namespace exprtk
             }
             else if (is_ivector_node(binary_node<T>::branch_[0].first))
             {
-               vector_interface<T>* vi = reinterpret_cast<vector_interface<T>*>(0);
+               auto* vi = reinterpret_cast<vector_interface<T>*>(0);
 
                if (0 != (vi = dynamic_cast<vector_interface<T>*>(binary_node<T>::branch_[0].first)))
                {
@@ -10687,7 +10687,7 @@ namespace exprtk
             }
             else if (is_ivector_node(binary_node<T>::branch_[1].first))
             {
-               vector_interface<T>* vi = reinterpret_cast<vector_interface<T>*>(0);
+               auto* vi = reinterpret_cast<vector_interface<T>*>(0);
 
                if (0 != (vi = dynamic_cast<vector_interface<T>*>(binary_node<T>::branch_[1].first)))
                {
@@ -10840,7 +10840,7 @@ namespace exprtk
             }
             else if (is_ivector_node(unary_node<T>::branch_))
             {
-               vector_interface<T>* vi = reinterpret_cast<vector_interface<T>*>(0);
+               auto* vi = reinterpret_cast<vector_interface<T>*>(0);
 
                if (0 != (vi = dynamic_cast<vector_interface<T>*>(unary_node<T>::branch_)))
                {
@@ -11451,7 +11451,7 @@ namespace exprtk
                   return false;
                else if (is_ivector_node(arg_list_[i]))
                {
-                  vector_interface<T>* vi = reinterpret_cast<vector_interface<T>*>(0);
+                  auto* vi = reinterpret_cast<vector_interface<T>*>(0);
 
                   if (0 == (vi = dynamic_cast<vector_interface<T>*>(arg_list_[i])))
                      return false;
@@ -11499,7 +11499,7 @@ namespace exprtk
                #endif
                else if (is_variable_node(arg_list_[i]))
                {
-                  variable_node_ptr_t var = variable_node_ptr_t(0);
+                  auto var = variable_node_ptr_t(0);
 
                   if (0 == (var = dynamic_cast<variable_node_ptr_t>(arg_list_[i])))
                      return false;
@@ -16238,7 +16238,7 @@ namespace exprtk
             if (map.empty())
                return std::string();
 
-            tm_const_itr_t itr = map.begin();
+            auto itr = map.begin();
 
             while (map.end() != itr)
             {
@@ -16259,7 +16259,7 @@ namespace exprtk
                return false;
             else
             {
-               const tm_const_itr_t itr = map.find(symbol_name);
+               const auto itr = map.find(symbol_name);
 
                if (map.end() == itr)
                   return false;
@@ -16392,7 +16392,7 @@ namespace exprtk
                }
             };
 
-            const tm_itr_t itr = map.find(symbol_name);
+            const auto itr = map.find(symbol_name);
 
             if (map.end() == itr)
             {
@@ -16405,7 +16405,7 @@ namespace exprtk
 
          inline type_ptr get(const std::string& symbol_name) const
          {
-            const tm_const_itr_t itr = map.find(symbol_name);
+            const auto itr = map.find(symbol_name);
 
             if (map.end() == itr)
                return reinterpret_cast<type_ptr>(0);
@@ -16434,7 +16434,7 @@ namespace exprtk
 
          inline type_ptr get_from_varptr(const void* ptr) const
          {
-            tm_const_itr_t itr = map.begin();
+            auto itr = map.begin();
 
             while (map.end() != itr)
             {
@@ -16517,8 +16517,8 @@ namespace exprtk
             {
                if (delete_node)
                {
-                  tm_itr_t itr = map.begin();
-                  tm_itr_t end = map.end  ();
+                  auto itr = map.begin();
+                  auto end = map.end  ();
 
                   while (end != itr)
                   {
@@ -18483,7 +18483,7 @@ namespace exprtk
                     details::is_variable_node(se.var_node)
                   )
                {
-                  variable_node_ptr vn = reinterpret_cast<variable_node_ptr>(se.var_node);
+                  auto vn = reinterpret_cast<variable_node_ptr>(se.var_node);
 
                   if (&(vn->ref()) == (&v))
                   {
@@ -18601,7 +18601,7 @@ namespace exprtk
             if (!valid_symbol(variable_name))
                return reinterpret_cast<variable_ptr>(0);
 
-            variable_ptr result = reinterpret_cast<variable_ptr>(0);
+            auto result = reinterpret_cast<variable_ptr>(0);
 
             for (std::size_t i = 0; i < symtab_list_.size(); ++i)
             {
@@ -18619,7 +18619,7 @@ namespace exprtk
 
          inline variable_ptr get_variable(const T& var_ref) const
          {
-            variable_ptr result = reinterpret_cast<variable_ptr>(0);
+            auto result = reinterpret_cast<variable_ptr>(0);
 
             for (std::size_t i = 0; i < symtab_list_.size(); ++i)
             {
@@ -18663,7 +18663,7 @@ namespace exprtk
             if (!valid_function_name(function_name))
                return reinterpret_cast<function_ptr>(0);
 
-            function_ptr result = reinterpret_cast<function_ptr>(0);
+            auto result = reinterpret_cast<function_ptr>(0);
 
             for (std::size_t i = 0; i < symtab_list_.size(); ++i)
             {
@@ -18684,7 +18684,7 @@ namespace exprtk
             if (!valid_function_name(vararg_function_name))
                return reinterpret_cast<vararg_function_ptr>(0);
 
-            vararg_function_ptr result = reinterpret_cast<vararg_function_ptr>(0);
+            auto result = reinterpret_cast<vararg_function_ptr>(0);
 
             for (std::size_t i = 0; i < symtab_list_.size(); ++i)
             {
@@ -18705,7 +18705,7 @@ namespace exprtk
             if (!valid_function_name(function_name))
                return reinterpret_cast<generic_function_ptr>(0);
 
-            generic_function_ptr result = reinterpret_cast<generic_function_ptr>(0);
+            auto result = reinterpret_cast<generic_function_ptr>(0);
 
             for (std::size_t i = 0; i < symtab_list_.size(); ++i)
             {
@@ -18726,7 +18726,7 @@ namespace exprtk
             if (!valid_function_name(function_name))
                return reinterpret_cast<generic_function_ptr>(0);
 
-            generic_function_ptr result = reinterpret_cast<generic_function_ptr>(0);
+            auto result = reinterpret_cast<generic_function_ptr>(0);
 
             for (std::size_t i = 0; i < symtab_list_.size(); ++i)
             {
@@ -18747,7 +18747,7 @@ namespace exprtk
             if (!valid_symbol(vector_name))
                return reinterpret_cast<vector_holder_ptr>(0);
 
-            vector_holder_ptr result = reinterpret_cast<vector_holder_ptr>(0);
+            auto result = reinterpret_cast<vector_holder_ptr>(0);
 
             for (std::size_t i = 0; i < symtab_list_.size(); ++i)
             {
@@ -19623,7 +19623,7 @@ namespace exprtk
                  (static_cast<std::size_t>(bf) < (details::base_function_list_size + 1))
                )
             {
-               const des_itr_t itr = disabled_func_set_.find(details::base_function_list[bf - 1]);
+               const auto itr = disabled_func_set_.find(details::base_function_list[bf - 1]);
 
                if (disabled_func_set_.end() != itr)
                {
@@ -19641,7 +19641,7 @@ namespace exprtk
                  (static_cast<std::size_t>(ctrl_struct) < (details::cntrl_struct_list_size + 1))
                )
             {
-               const des_itr_t itr = disabled_ctrl_set_.find(details::cntrl_struct_list[ctrl_struct - 1]);
+               const auto itr = disabled_ctrl_set_.find(details::cntrl_struct_list[ctrl_struct - 1]);
 
                if (disabled_ctrl_set_.end() != itr)
                {
@@ -19659,7 +19659,7 @@ namespace exprtk
                  (static_cast<std::size_t>(logic) < (details::logic_ops_list_size + 1))
                )
             {
-               const des_itr_t itr = disabled_logic_set_.find(details::logic_ops_list[logic - 1]);
+               const auto itr = disabled_logic_set_.find(details::logic_ops_list[logic - 1]);
 
                if (disabled_logic_set_.end() != itr)
                {
@@ -19677,7 +19677,7 @@ namespace exprtk
                  (static_cast<std::size_t>(arithmetic) < (details::arithmetic_ops_list_size + 1))
                )
             {
-               const des_itr_t itr = disabled_arithmetic_set_.find(details::arithmetic_ops_list[arithmetic - 1]);
+               const auto itr = disabled_arithmetic_set_.find(details::arithmetic_ops_list[arithmetic - 1]);
 
                if (disabled_arithmetic_set_.end() != itr)
                {
@@ -19695,7 +19695,7 @@ namespace exprtk
                  (static_cast<std::size_t>(assignment) < (details::assignment_ops_list_size + 1))
                )
             {
-               const des_itr_t itr = disabled_assignment_set_.find(details::assignment_ops_list[assignment - 1]);
+               const auto itr = disabled_assignment_set_.find(details::assignment_ops_list[assignment - 1]);
 
                if (disabled_assignment_set_.end() != itr)
                {
@@ -19713,7 +19713,7 @@ namespace exprtk
                  (static_cast<std::size_t>(inequality) < (details::inequality_ops_list_size + 1))
                )
             {
-               const des_itr_t itr = disabled_inequality_set_.find(details::inequality_ops_list[inequality - 1]);
+               const auto itr = disabled_inequality_set_.find(details::inequality_ops_list[inequality - 1]);
 
                if (disabled_inequality_set_.end() != itr)
                {
@@ -20650,7 +20650,7 @@ namespace exprtk
       {
          {
             typedef details::unary_branch_node<T,details::neg_op<T> > ubn_t;
-            ubn_t* n = dynamic_cast<ubn_t*>(node);
+            auto* n = dynamic_cast<ubn_t*>(node);
 
             if (n)
             {
@@ -20666,7 +20666,7 @@ namespace exprtk
          {
             typedef details::unary_variable_node<T,details::neg_op<T> > uvn_t;
 
-            uvn_t* n = dynamic_cast<uvn_t*>(node);
+            auto* n = dynamic_cast<uvn_t*>(node);
 
             if (n)
             {
@@ -20839,7 +20839,7 @@ namespace exprtk
 
       inline expression_node_ptr parse_function_invocation(ifunction<T>* function, const std::string& function_name)
       {
-         expression_node_ptr func_node = reinterpret_cast<expression_node_ptr>(0);
+         auto func_node = reinterpret_cast<expression_node_ptr>(0);
 
          switch (function->param_count)
          {
@@ -21104,7 +21104,7 @@ namespace exprtk
 
          if ((parameter_count > 0) && (parameter_count <= MaxNumberofParameters))
          {
-            for (base_ops_map_t::iterator itr = itr_range.first; itr != itr_range.second; ++itr)
+            for (auto itr = itr_range.first; itr != itr_range.second; ++itr)
             {
                details::base_operation_t& operation = itr->second;
 
@@ -22945,7 +22945,7 @@ namespace exprtk
       {
          const std::string symbol = current_token().value;
 
-         vector_holder_ptr vec = vector_holder_ptr(0);
+         auto vec = vector_holder_ptr(0);
 
          const scope_element& se = sem_.get_active_element(symbol);
 
@@ -23007,7 +23007,7 @@ namespace exprtk
          // Perform compile-time range check
          if (details::is_constant_node(index_expr))
          {
-            const std::size_t index    = static_cast<std::size_t>(details::numeric::to_int32(index_expr->value()));
+            const auto index    = static_cast<std::size_t>(details::numeric::to_int32(index_expr->value()));
             const std::size_t vec_size = vec->size();
 
             if (index >= vec_size)
@@ -23641,7 +23641,7 @@ namespace exprtk
          }
 
          const int sf_3_to_4                   = details::e_sf48;
-         const details::operator_type opt_type = details::operator_type(id + 1000);
+         const auto opt_type = details::operator_type(id + 1000);
          const std::size_t NumberOfParameters  = (id < (sf_3_to_4 - 1000)) ? 3U : 4U;
 
          switch (NumberOfParameters)
@@ -23983,9 +23983,9 @@ namespace exprtk
             }
          }
 
-         typename symbol_table_t::vector_holder_ptr vec_holder = typename symbol_table_t::vector_holder_ptr(0);
+         auto vec_holder = typename symbol_table_t::vector_holder_ptr(0);
 
-         const std::size_t vec_size = static_cast<std::size_t>(details::numeric::to_int32(vector_size));
+         const auto vec_size = static_cast<std::size_t>(details::numeric::to_int32(vector_size));
 
          scope_element& se = sem_.get_element(vec_name);
 
@@ -24269,7 +24269,7 @@ namespace exprtk
             return parse_define_string_statement(var_name,initialisation_expression);
          }
 
-         expression_node_ptr var_node = reinterpret_cast<expression_node_ptr>(0);
+         auto var_node = reinterpret_cast<expression_node_ptr>(0);
 
          scope_element& se = sem_.get_element(var_name);
 
@@ -24365,7 +24365,7 @@ namespace exprtk
             return error_node();
          }
 
-         expression_node_ptr var_node = reinterpret_cast<expression_node_ptr>(0);
+         auto var_node = reinterpret_cast<expression_node_ptr>(0);
 
          scope_element& se = sem_.get_element(var_name);
 
@@ -24627,8 +24627,8 @@ namespace exprtk
 
          typedef details::variable_node<T>* variable_node_ptr;
 
-         variable_node_ptr v0 = variable_node_ptr(0);
-         variable_node_ptr v1 = variable_node_ptr(0);
+         auto v0 = variable_node_ptr(0);
+         auto v1 = variable_node_ptr(0);
 
          expression_node_ptr result = error_node();
 
@@ -25562,7 +25562,7 @@ namespace exprtk
 
          inline bool valid_operator(const details::operator_type& operation, binary_functor_t& bop)
          {
-            typename binary_op_map_t::iterator bop_itr = binary_op_map_->find(operation);
+            auto bop_itr = binary_op_map_->find(operation);
 
             if ((*binary_op_map_).end() == bop_itr)
                return false;
@@ -25574,7 +25574,7 @@ namespace exprtk
 
          inline bool valid_operator(const details::operator_type& operation, unary_functor_t& uop)
          {
-            typename unary_op_map_t::iterator uop_itr = unary_op_map_->find(operation);
+            auto uop_itr = unary_op_map_->find(operation);
 
             if ((*unary_op_map_).end() == uop_itr)
                return false;
@@ -27200,7 +27200,7 @@ namespace exprtk
                   return error_node();
                }
 
-               function_N_node_t* func_node_ptr = static_cast<function_N_node_t*>(result);
+               auto* func_node_ptr = static_cast<function_N_node_t*>(result);
 
                if (func_node_ptr->init_branches(b))
                   return result;
@@ -27271,7 +27271,7 @@ namespace exprtk
             else
                result = node_allocator_->allocate<alloc_type2>(gf, param_seq_index, arg_list);
 
-            alloc_type1* genfunc_node_ptr = static_cast<alloc_type1*>(result);
+            auto* genfunc_node_ptr = static_cast<alloc_type1*>(result);
 
             if (
                  !arg_list.empty()                  &&
@@ -27372,7 +27372,7 @@ namespace exprtk
             expression_node_ptr result = node_allocator_->
                                             allocate_rr<alloc_type>(arg_list,parser_->results_ctx());
 
-            alloc_type* return_node_ptr = static_cast<alloc_type*>(result);
+            auto* return_node_ptr = static_cast<alloc_type*>(result);
 
             if (return_node_ptr->init_branches())
             {
@@ -27424,7 +27424,7 @@ namespace exprtk
 
             if (details::is_constant_node(index))
             {
-               std::size_t i = static_cast<std::size_t>(details::numeric::to_int64(index->value()));
+               auto i = static_cast<std::size_t>(details::numeric::to_int64(index->value()));
 
                details::free_node(*node_allocator_,index);
 
@@ -27910,8 +27910,8 @@ namespace exprtk
             {
                typedef details::variable_node<T>* variable_node_ptr;
 
-               variable_node_ptr v0 = variable_node_ptr(0);
-               variable_node_ptr v1 = variable_node_ptr(0);
+               auto v0 = variable_node_ptr(0);
+               auto v1 = variable_node_ptr(0);
 
                if (
                     (0 != (v0 = dynamic_cast<variable_node_ptr>(branch[0]))) &&
@@ -28063,7 +28063,7 @@ namespace exprtk
          inline expression_node_ptr cardinal_pow_optimisation(const T& v, const T& c)
          {
             const bool not_recipricol = (c >= T(0));
-            const unsigned int p = static_cast<unsigned int>(details::numeric::to_int32(details::numeric::abs(c)));
+            const auto p = static_cast<unsigned int>(details::numeric::to_int32(details::numeric::abs(c)));
 
             if (0 == p)
                return node_allocator_->allocate_c<literal_node_t>(T(1));
@@ -28090,7 +28090,7 @@ namespace exprtk
          {
             const Type c = static_cast<details::literal_node<Type>*>(branch[1])->value();
             const bool not_recipricol = (c >= T(0));
-            const unsigned int p = static_cast<unsigned int>(details::numeric::to_int32(details::numeric::abs(c)));
+            const auto p = static_cast<unsigned int>(details::numeric::to_int32(details::numeric::abs(c)));
 
             node_allocator_->free(branch[1]);
 
@@ -28468,7 +28468,7 @@ namespace exprtk
                        (operation == details::e_add)
                      )
                   {
-                     details::cob_base_node<Type>* cobnode = static_cast<details::cob_base_node<Type>*>(branch[1]);
+                     auto* cobnode = static_cast<details::cob_base_node<Type>*>(branch[1]);
 
                      if (operation == cobnode->operation())
                      {
@@ -28485,7 +28485,7 @@ namespace exprtk
 
                   if (operation == details::e_mul)
                   {
-                     details::cob_base_node<Type>* cobnode = static_cast<details::cob_base_node<Type>*>(branch[1]);
+                     auto* cobnode = static_cast<details::cob_base_node<Type>*>(branch[1]);
                      details::operator_type cob_opr = cobnode->operation();
 
                      if (
@@ -28505,7 +28505,7 @@ namespace exprtk
                   }
                   else if (operation == details::e_div)
                   {
-                     details::cob_base_node<Type>* cobnode = static_cast<details::cob_base_node<Type>*>(branch[1]);
+                     auto* cobnode = static_cast<details::cob_base_node<Type>*>(branch[1]);
                      details::operator_type cob_opr = cobnode->operation();
 
                      if (
@@ -28602,7 +28602,7 @@ namespace exprtk
                        (operation == details::e_add)
                      )
                   {
-                     details::boc_base_node<Type>* bocnode = static_cast<details::boc_base_node<Type>*>(branch[0]);
+                     auto* bocnode = static_cast<details::boc_base_node<Type>*>(branch[0]);
 
                      if (operation == bocnode->operation())
                      {
@@ -28618,7 +28618,7 @@ namespace exprtk
                   }
                   else if (operation == details::e_div)
                   {
-                     details::boc_base_node<Type>* bocnode = static_cast<details::boc_base_node<Type>*>(branch[0]);
+                     auto* bocnode = static_cast<details::boc_base_node<Type>*>(branch[0]);
                      details::operator_type        boc_opr = bocnode->operation();
 
                      if (
@@ -28639,7 +28639,7 @@ namespace exprtk
                   else if (operation == details::e_pow)
                   {
                      // (v ^ c0) ^ c1 --> v ^(c0 * c1)
-                     details::boc_base_node<Type>* bocnode = static_cast<details::boc_base_node<Type>*>(branch[0]);
+                     auto* bocnode = static_cast<details::boc_base_node<Type>*>(branch[0]);
                      details::operator_type        boc_opr = bocnode->operation();
 
                      if (details::e_pow == boc_opr)
@@ -28694,7 +28694,7 @@ namespace exprtk
                // (cob) o c --> cob
                if (details::is_cob_node(branch[0]))
                {
-                  details::cob_base_node<Type>* cobnode = static_cast<details::cob_base_node<Type>*>(branch[0]);
+                  auto* cobnode = static_cast<details::cob_base_node<Type>*>(branch[0]);
 
                   const Type c = static_cast<details::literal_node<Type>*>(branch[1])->value();
 
@@ -28782,7 +28782,7 @@ namespace exprtk
                // c o (cob) --> cob
                else if (details::is_cob_node(branch[1]))
                {
-                  details::cob_base_node<Type>* cobnode = static_cast<details::cob_base_node<Type>*>(branch[1]);
+                  auto* cobnode = static_cast<details::cob_base_node<Type>*>(branch[1]);
 
                   const Type c = static_cast<details::literal_node<Type>*>(branch[0])->value();
 
@@ -28899,7 +28899,7 @@ namespace exprtk
                // (boc) o c --> boc
                if (details::is_boc_node(branch[0]))
                {
-                  details::boc_base_node<Type>* bocnode = static_cast<details::boc_base_node<Type>*>(branch[0]);
+                  auto* bocnode = static_cast<details::boc_base_node<Type>*>(branch[0]);
 
                   const Type c = static_cast<details::literal_node<Type>*>(branch[1])->value();
 
@@ -28962,7 +28962,7 @@ namespace exprtk
                // c o (boc) --> boc
                else if (details::is_boc_node(branch[1]))
                {
-                  details::boc_base_node<Type>* bocnode = static_cast<details::boc_base_node<Type>*>(branch[1]);
+                  auto* bocnode = static_cast<details::boc_base_node<Type>*>(branch[1]);
 
                   const Type c = static_cast<details::literal_node<Type>*>(branch[0])->value();
 
@@ -33586,9 +33586,9 @@ namespace exprtk
             details::operator_type o1 = static_cast<details::uv_base_node<Type>*>(branch[1])->operation();
             const Type& v0 = static_cast<details::uv_base_node<Type>*>(branch[0])->v();
             const Type& v1 = static_cast<details::uv_base_node<Type>*>(branch[1])->v();
-            unary_functor_t u0 = reinterpret_cast<unary_functor_t> (0);
-            unary_functor_t u1 = reinterpret_cast<unary_functor_t> (0);
-            binary_functor_t f = reinterpret_cast<binary_functor_t>(0);
+            auto u0 = reinterpret_cast<unary_functor_t> (0);
+            auto u1 = reinterpret_cast<unary_functor_t> (0);
+            auto f = reinterpret_cast<binary_functor_t>(0);
 
             if (!valid_operator(o0,u0))
                return error_node();
@@ -34332,7 +34332,7 @@ namespace exprtk
             // Attempt simple constant folding optimisation.
 
             expression_node_ptr expression_point = node_allocator_->allocate<NodeType>(f);
-            function_N_node_t* func_node_ptr = dynamic_cast<function_N_node_t*>(expression_point);
+            auto* func_node_ptr = dynamic_cast<function_N_node_t*>(expression_point);
 
             if (0 == func_node_ptr)
             {

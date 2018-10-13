@@ -292,7 +292,7 @@ bool CServoeNeck::setAngleAndSpeed(
 
 	unsigned int reg = angle2RegValue(m_offsets[servo] + angle);
 	uint8_t thisSpeed = speed < 15 ? 15 : speed > 250 ? 250 : speed;
-	uint16_t delSpeed =
+	auto delSpeed =
 		uint16_t(0.25 * 1000000 / (500 + 1000 * (thisSpeed / 180.0f - 0.5)));
 	// cout << "Speed: " << int(speed) << " -> " << delSpeed << endl;
 	// std::cout << "Angle: " << RAD2DEG( angle ) << " - Reg: " << reg <<

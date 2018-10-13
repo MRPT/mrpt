@@ -36,7 +36,7 @@ void CPose3DPDFParticles::copyFrom(const CPose3DPDF& o)
 	if (this == &o) return;  // It may be used sometimes
 	if (o.GetRuntimeClass() == CLASS_ID(CPose3DPDFParticles))
 	{
-		const CPose3DPDFParticles* pdf =
+		const auto* pdf =
 			dynamic_cast<const CPose3DPDFParticles*>(&o);
 		ASSERT_(pdf);
 		m_particles = pdf->m_particles;
@@ -273,7 +273,7 @@ void CPose3DPDFParticles::inverse(CPose3DPDF& o) const
 {
 	MRPT_START
 	ASSERT_(o.GetRuntimeClass() == CLASS_ID(CPose3DPDFParticles));
-	CPose3DPDFParticles* out = static_cast<CPose3DPDFParticles*>(&o);
+	auto* out = static_cast<CPose3DPDFParticles*>(&o);
 	// Prepare the output:
 	out->copyFrom(*this);
 	const CPose3D zero(0, 0, 0);

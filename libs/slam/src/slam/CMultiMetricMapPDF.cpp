@@ -364,9 +364,9 @@ void CMultiMetricMapPDF::rebuildAverageMap()
 		{
 			// Variables:
 			std::vector<COccupancyGridMap2D::cellType>::iterator srcCell;
-			std::vector<COccupancyGridMap2D::cellType>::iterator firstSrcCell =
+			auto firstSrcCell =
 				part->d->mapTillNow.m_gridMaps[0]->map.begin();
-			std::vector<COccupancyGridMap2D::cellType>::iterator lastSrcCell =
+			auto lastSrcCell =
 				part->d->mapTillNow.m_gridMaps[0]->map.end();
 			std::vector<float>::iterator destCell;
 
@@ -385,7 +385,7 @@ void CMultiMetricMapPDF::rebuildAverageMap()
 
 		// Copy to fixed point map:
 		std::vector<float>::iterator srcCell;
-		std::vector<COccupancyGridMap2D::cellType>::iterator destCell =
+		auto destCell =
 			averageMap.m_gridMaps[0]->map.begin();
 
 		ASSERT_(averageMap.m_gridMaps[0]->map.size() == floatMap.size());

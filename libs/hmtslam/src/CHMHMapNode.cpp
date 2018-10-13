@@ -101,7 +101,7 @@ void CHMHMapNode::onArcDestruction(CHMHMapArc* arc)
 	if (arc->m_nodeFrom == m_ID || arc->m_nodeTo == m_ID)
 	{
 		// Remove from the list:
-		TArcList::iterator it = m_arcs.find_ptr_to(arc);
+		auto it = m_arcs.find_ptr_to(arc);
 		if (it != m_arcs.end()) m_arcs.erase(it);
 	}
 
@@ -119,7 +119,7 @@ void CHMHMapNode::onArcAddition(const CHMHMapArc::Ptr& arc)
 	if (arc->m_nodeFrom == m_ID || arc->m_nodeTo == m_ID)
 	{
 		// Already in the list?
-		TArcList::iterator it = m_arcs.find(arc);
+		auto it = m_arcs.find(arc);
 		if (it == m_arcs.end()) m_arcs.push_back(arc);  // Add to the list:
 	}
 

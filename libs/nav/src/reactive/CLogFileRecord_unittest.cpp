@@ -40,7 +40,7 @@ TEST(NavTests, Serialization_WriteReadToMem)
 			CMemoryStream buf;
 			auto arch = archiveFrom(buf);
 			{
-				CSerializable* o =
+				auto* o =
 					static_cast<CSerializable*>(lstClasse->createObject());
 				arch << *o;
 				delete o;
@@ -68,7 +68,7 @@ TEST(SerializeTestObs, WriteReadToOctectVectors)
 		{
 			std::vector<uint8_t> buf;
 			{
-				CSerializable* o =
+				auto* o =
 					static_cast<CSerializable*>(lstClasse->createObject());
 				mrpt::serialization::ObjectToOctetVector(o, buf);
 				delete o;

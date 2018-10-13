@@ -644,7 +644,7 @@ CRenderizable::Ptr COpenGLViewport::getByName(const string& str)
 void COpenGLViewport::initializeAllTextures()
 {
 #if MRPT_HAS_OPENGL_GLUT
-	for (CListOpenGLObjects::iterator it = m_objects.begin();
+	for (auto it = m_objects.begin();
 		 it != m_objects.end(); ++it)
 	{
 		if (IS_DERIVED(*it, CTexturedObject))
@@ -685,7 +685,7 @@ void COpenGLViewport::dumpListOfObjects(std::vector<std::string>& lst)
   ---------------------------------------------------------------*/
 void COpenGLViewport::removeObject(const CRenderizable::Ptr& obj)
 {
-	for (CListOpenGLObjects::iterator it = m_objects.begin();
+	for (auto it = m_objects.begin();
 		 it != m_objects.end(); ++it)
 		if (*it == obj)
 		{

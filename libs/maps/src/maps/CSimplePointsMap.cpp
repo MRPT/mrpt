@@ -49,7 +49,7 @@ mrpt::maps::CMetricMap* CSimplePointsMap::internal_CreateFromMapDefinition(
 {
 	const CSimplePointsMap::TMapDefinition& def =
 		*dynamic_cast<const CSimplePointsMap::TMapDefinition*>(&_def);
-	CSimplePointsMap* obj = new CSimplePointsMap();
+	auto* obj = new CSimplePointsMap();
 	obj->insertionOptions = def.insertionOpts;
 	obj->likelihoodOptions = def.likelihoodOpts;
 	obj->renderOptions = def.renderOpts;

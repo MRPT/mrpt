@@ -700,7 +700,7 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
 				options.data_assoc_IC_ml_threshold);
 
 			// Return pairings to the main KF algorithm:
-			for (map<size_t, size_t>::const_iterator it =
+			for (auto it =
 					 m_last_data_association.results.associations.begin();
 				 it != m_last_data_association.results.associations.end(); ++it)
 				data_association[it->first] = it->second;
@@ -1071,7 +1071,7 @@ void CRangeBearingKFSLAM::getAs3DObject(
 			// Build label:
 			string strParts("[");
 
-			for (map<int, bool>::iterator it = belongToPartition.begin();
+			for (auto it = belongToPartition.begin();
 				 it != belongToPartition.end(); ++it)
 			{
 				if (it != belongToPartition.begin()) strParts += string(",");

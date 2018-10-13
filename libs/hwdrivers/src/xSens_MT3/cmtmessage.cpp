@@ -161,7 +161,7 @@ double Message::getDataDouble(const uint16_t offset) const
 {
 	CMT_CHECKASSERT
 	double ret;
-	uint8_t* dest = (uint8_t*)&ret;
+	auto* dest = (uint8_t*)&ret;
 	uint8_t* src = &(getDataStart()[offset]);
 	dest[0] = src[7];
 	dest[1] = src[6];
@@ -181,7 +181,7 @@ float Message::getDataFloat(const uint16_t offset) const
 {
 	CMT_CHECKASSERT
 	float ret;
-	uint8_t* dest = (uint8_t*)&ret;
+	auto* dest = (uint8_t*)&ret;
 	uint8_t* src = &(getDataStart()[offset]);
 	dest[0] = src[3];
 	dest[1] = src[2];
@@ -199,7 +199,7 @@ double Message::getDataF1220(const uint16_t offset) const
 	CMT_CHECKASSERT
 	double ret;
 	int32_t tmp;
-	uint8_t* dest = (uint8_t*)&tmp;
+	auto* dest = (uint8_t*)&tmp;
 	uint8_t* src = &(getDataStart()[offset]);
 	dest[0] = src[3];
 	dest[1] = src[2];
@@ -243,7 +243,7 @@ double Message::getDataFP1632(const uint16_t offset) const
 	int16_t fpint;
 	int32_t fpfrac;
 
-	uint8_t* dest = (uint8_t*)&fpfrac;
+	auto* dest = (uint8_t*)&fpfrac;
 	uint8_t* src = &(getDataStart()[offset]);
 	dest[3] = *(src++);
 	dest[2] = *(src++);
@@ -323,7 +323,7 @@ uint32_t Message::getDataLong(const uint16_t offset) const
 {
 	CMT_CHECKASSERT
 	uint32_t ret;
-	uint8_t* dest = (uint8_t*)&ret;
+	auto* dest = (uint8_t*)&ret;
 	uint8_t* src = &(getDataStart()[offset]);
 	dest[0] = src[3];
 	dest[1] = src[2];
@@ -339,7 +339,7 @@ uint16_t Message::getDataShort(const uint16_t offset) const
 {
 	CMT_CHECKASSERT
 	uint16_t ret;
-	uint8_t* dest = (uint8_t*)&ret;
+	auto* dest = (uint8_t*)&ret;
 	uint8_t* src = &(getDataStart()[offset]);
 	dest[0] = src[1];
 	dest[1] = src[0];
@@ -430,7 +430,7 @@ void Message::resizeData(const uint16_t newSize)
 
 	if ((uint32_t)(newSize + CMT_LEN_MSGEXTHEADERCS) > m_maxLength)
 	{
-		uint16_t newLen = (uint16_t)(m_maxLength + m_maxLength);
+		auto newLen = (uint16_t)(m_maxLength + m_maxLength);
 		if ((newSize + CMT_LEN_MSGEXTHEADERCS) > newLen)
 			newLen = newSize + CMT_LEN_MSGEXTHEADERCS;
 		m_buffer = (MessageHeader*)realloc(m_buffer, newLen);
@@ -537,14 +537,14 @@ void Message::setDataDouble(const double data, const uint16_t offset)
 	if (getDataSize() < offset + 8) resizeData(offset + 8);
 
 	uint8_t* dest = &(getDataStart()[offset]);
-	const uint8_t* cdata = (const uint8_t*)&data;
+	const auto* cdata = (const uint8_t*)&data;
 	if (m_autoUpdateChecksum)
 		m_checksum[0] += dest[0] + dest[1] + dest[2] + dest[3] + dest[4] +
 						 dest[5] + dest[6] + dest[7] - cdata[0] - cdata[1] -
 						 cdata[2] - cdata[3] - cdata[4] - cdata[5] - cdata[6] -
 						 cdata[7];
 
-	const uint8_t* src = (const uint8_t*)&data;
+	const auto* src = (const uint8_t*)&data;
 	dest[0] = src[7];
 	dest[1] = src[6];
 	dest[2] = src[5];
@@ -562,12 +562,12 @@ void Message::setDataFloat(const float data, const uint16_t offset)
 	if (getDataSize() < offset + 4) resizeData(offset + 4);
 
 	uint8_t* dest = &(getDataStart()[offset]);
-	const uint8_t* cdata = (const uint8_t*)&data;
+	const auto* cdata = (const uint8_t*)&data;
 	if (m_autoUpdateChecksum)
 		m_checksum[0] += dest[0] + dest[1] + dest[2] + dest[3] - cdata[0] -
 						 cdata[1] - cdata[2] - cdata[3];
 
-	const uint8_t* src = (const uint8_t*)&data;
+	const auto* src = (const uint8_t*)&data;
 	dest[0] = src[3];
 	dest[1] = src[2];
 	dest[2] = src[1];
@@ -577,7 +577,7 @@ void Message::setDataFloat(const float data, const uint16_t offset)
 //////////////////////////////////////////////////////////////////////////////////////////
 void Message::setDataF1220(const double data, const uint16_t offset)
 {
-	int32_t val = (int32_t)(data * 1048576.0);
+	auto val = (int32_t)(data * 1048576.0);
 	setDataLong(val, offset);
 }
 
@@ -622,7 +622,7 @@ void Message::setDataFP1632(const double data, const uint16_t offset)
 		}
 	}
 
-	uint8_t* src = (uint8_t*)&fpfrac;
+	auto* src = (uint8_t*)&fpfrac;
 	uint8_t* dest = &(getDataStart()[offset]);
 
 	*(dest++) = src[3];
@@ -699,7 +699,7 @@ void Message::setDataLong(const uint32_t data, const uint16_t offset)
 			((data >> 8) & 0xFF) - ((data >> 16) & 0xFF) -
 			((data >> 24) & 0xFF));
 
-	const uint8_t* src = (const uint8_t*)&data;
+	const auto* src = (const uint8_t*)&data;
 	dest[0] = src[3];
 	dest[1] = src[2];
 	dest[2] = src[1];
@@ -716,7 +716,7 @@ void Message::setDataShort(const uint16_t data, const uint16_t offset)
 	if (m_autoUpdateChecksum)
 		m_checksum[0] += dest[0] + dest[1] - (data & 255) - (data >> 8);
 
-	const uint8_t* src = (const uint8_t*)&data;
+	const auto* src = (const uint8_t*)&data;
 	dest[0] = src[1];
 	dest[1] = src[0];
 }

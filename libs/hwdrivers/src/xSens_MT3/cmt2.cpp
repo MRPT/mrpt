@@ -191,7 +191,7 @@ XsensResultValue Cmt2s::open(const uint32_t portNumber, const uint32_t baudRate)
 // Read a message from the COM port.
 XsensResultValue Cmt2s::readMessage(Message* rcv)
 {
-	MessageHeader* hdr = (MessageHeader*)m_readBuffer;
+	auto* hdr = (MessageHeader*)m_readBuffer;
 	uint16_t pre = 0;
 	uint32_t length = 0;
 	uint32_t target = 0;
@@ -302,7 +302,7 @@ XsensResultValue Cmt2s::readMessage(Message* rcv)
 			CMT2LOG("L2: readMessage OK\n");
 			if (m_onMessageReceived != nullptr)
 			{
-				CmtBinaryData* bytes =
+				auto* bytes =
 					(CmtBinaryData*)malloc(sizeof(CmtBinaryData));
 				bytes->m_size = target;
 				bytes->m_portNr = m_cmt1s.getPortNr();
@@ -383,7 +383,7 @@ XsensResultValue Cmt2s::waitForMessage(
 	Message* rcv, const uint8_t msgId, uint32_t timeoutOverride,
 	bool acceptErrorMessage)
 {
-	MessageHeader* hdr = (MessageHeader*)m_readBuffer;
+	auto* hdr = (MessageHeader*)m_readBuffer;
 	uint16_t pre = 0;
 	uint32_t length = 0;
 	uint32_t target;
@@ -523,7 +523,7 @@ XsensResultValue Cmt2s::waitForMessage(
 				(uint32_t)rcv->getMessageId(), (uint32_t)msgId, target);
 			if (m_onMessageReceived != nullptr)
 			{
-				CmtBinaryData* bytes =
+				auto* bytes =
 					(CmtBinaryData*)malloc(sizeof(CmtBinaryData));
 				bytes->m_size = target;
 				bytes->m_portNr = m_cmt1s.getPortNr();
@@ -626,7 +626,7 @@ XsensResultValue Cmt2s::writeMessage(Message* msg)
 
 	if (m_onMessageSent != nullptr)
 	{
-		CmtBinaryData* bytes = (CmtBinaryData*)malloc(sizeof(CmtBinaryData));
+		auto* bytes = (CmtBinaryData*)malloc(sizeof(CmtBinaryData));
 		bytes->m_size = msg->getTotalMessageSize();
 		bytes->m_portNr = m_cmt1s.getPortNr();
 		memcpy(
@@ -775,7 +775,7 @@ XsensResultValue Cmt2f::readMessage(Message* msg, const uint8_t msgId)
 	uint8_t needle = CMT_PREAMBLE;
 	uint8_t buffer[CMT_MAXMSGLEN];
 	uint32_t length, bcount;
-	MessageHeader* hdr = (MessageHeader*)buffer;
+	auto* hdr = (MessageHeader*)buffer;
 	bool extended;
 	uint16_t target;
 

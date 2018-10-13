@@ -706,7 +706,7 @@ void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
 				options.data_assoc_IC_ml_threshold);
 
 			// Return pairings to the main KF algorithm:
-			for (map<size_t, size_t>::const_iterator it =
+			for (auto it =
 					 m_last_data_association.results.associations.begin();
 				 it != m_last_data_association.results.associations.end(); ++it)
 				data_association[it->first] = it->second;

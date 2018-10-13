@@ -101,7 +101,7 @@ void CHMHMapArc::serializeFrom(
 			// Find my smart pointer in the HMT map: we MUST have only 1 smrt.
 			// pointer pointing to the same object!!
 			CHMHMapArc::Ptr myPtr;
-			for (TArcList::const_iterator it = m_parent->m_arcs.begin();
+			for (auto it = m_parent->m_arcs.begin();
 				 it != m_parent->m_arcs.end(); ++it)
 			{
 				if (it->get() == this)

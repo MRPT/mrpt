@@ -30,14 +30,14 @@ double mrpt::slam::observationsOverlap(
 	if (IS_CLASS(o1, CObservation2DRangeScan) &&
 		IS_CLASS(o2, CObservation2DRangeScan))
 	{
-		const CObservation2DRangeScan* this_obs =
+		const auto* this_obs =
 			static_cast<const CObservation2DRangeScan*>(o1);
-		const CObservation2DRangeScan* obs =
+		const auto* obs =
 			static_cast<const CObservation2DRangeScan*>(o2);
 
-		const CPointsMap* map1 =
+		const auto* map1 =
 			this_obs->buildAuxPointsMap<mrpt::maps::CPointsMap>();
-		const CPointsMap* map2 =
+		const auto* map2 =
 			obs->buildAuxPointsMap<mrpt::maps::CPointsMap>();
 
 		// if PDF is available, get "mean" value as an estimation:

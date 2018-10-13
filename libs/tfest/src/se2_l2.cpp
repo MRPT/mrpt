@@ -97,9 +97,9 @@ bool tfest::se2_l2(
 		const __m128 b_xyz =
 			_mm_loadu_ps(&in_correspondence.other_x);  // *Unaligned* load
 
-		const __m128 a_xyxy =
+		const auto a_xyxy =
 			_mm_shuffle_ps(a_xyz, a_xyz, _MM_SHUFFLE(1, 0, 1, 0));
-		const __m128 b_xyyx =
+		const auto b_xyyx =
 			_mm_shuffle_ps(b_xyz, b_xyz, _MM_SHUFFLE(0, 1, 1, 0));
 
 		// Compute the terms:
