@@ -106,7 +106,7 @@ bool do_special_dilation(
 
 	return dilations==6; // Last dilation?
 #else
-	IplImage* ipl = thresh_img.getAs<IplImage>();
+	auto* ipl = thresh_img.getAs<IplImage>();
 
 	bool isLast = false;
 
@@ -2341,7 +2341,7 @@ int icvGenerateQuads(
 				// &&
 				// d1 >= 0.15 * p && d2 >= 0.15 * p )
 				{
-					CvContourEx* parent = (CvContourEx*)(src_contour->v_prev);
+					auto* parent = (CvContourEx*)(src_contour->v_prev);
 					parent->counter++;
 					if (!board || board->counter < parent->counter)
 						board = parent;

@@ -1106,7 +1106,7 @@ void exec_getCurrentCamCfgByIdx(
 			if (SF->getObservationByIndex(idxToProcess)->GetRuntimeClass() ==
 				CLASS_ID(CObservationImage))
 			{
-				CObservationImage::Ptr obsIm =
+				auto obsIm =
 					SF->getObservationByIndexAs<CObservationImage::Ptr>(
 						idxToProcess);
 				camDistortion =
@@ -1127,7 +1127,7 @@ void exec_getCurrentCamCfgByLabel(
 
 		if (o && o->GetRuntimeClass() == CLASS_ID(CObservationImage))
 		{
-			CObservationImage::Ptr obsIm =
+			auto obsIm =
 				SF->getObservationBySensorLabelAs<CObservationImage::Ptr>(
 					labelToProcess);
 			camDistortion = obsIm->cameraParams.getDistortionParamsAsVector();
@@ -1191,7 +1191,7 @@ void exec_setCurrentCamCfgByIdx(
 			if (SF->getObservationByIndex(idxToProcess)->GetRuntimeClass() ==
 				CLASS_ID(CObservationImage))
 			{
-				CObservationImage::Ptr obsIm =
+				auto obsIm =
 					SF->getObservationByIndexAs<CObservationImage::Ptr>(
 						idxToProcess);
 				obsIm->cameraParams.setDistortionParamsVector(camDistortion);
@@ -1210,7 +1210,7 @@ void exec_setCurrentCamCfgByLabel(
 		CObservation::Ptr o = SF->getObservationBySensorLabel(labelToProcess);
 		if (o && o->GetRuntimeClass() == CLASS_ID(CObservationImage))
 		{
-			CObservationImage::Ptr obsIm =
+			auto obsIm =
 				SF->getObservationBySensorLabelAs<CObservationImage::Ptr>(
 					labelToProcess);
 			obsIm->cameraParams.setDistortionParamsVector(camDistortion);

@@ -140,9 +140,9 @@ CWindowDialog::CWindowDialog(
 	SetWindowStyle(GetWindowStyle() | wxCLIP_CHILDREN);
 
 	// Menu:
-	wxMenuBar* MenuBar1 = new wxMenuBar();
+	auto* MenuBar1 = new wxMenuBar();
 
-	wxMenu* Menu1 = new wxMenu();
+	auto* Menu1 = new wxMenu();
 	wxMenuItem* MenuItem3 = new wxMenuItem(
 		Menu1, ID_MENUITEM3, _("Save to file..."), _(""), wxITEM_NORMAL);
 	Menu1->Append(MenuItem3);
@@ -151,7 +151,7 @@ CWindowDialog::CWindowDialog(
 	Menu1->Append(MenuItem1);
 	MenuBar1->Append(Menu1, _("&File"));
 
-	wxMenu* Menu2 = new wxMenu();
+	auto* Menu2 = new wxMenu();
 	wxMenuItem* MenuItem2 = new wxMenuItem(
 		Menu2, ID_MENUITEM2, _("About..."), _(""), wxITEM_NORMAL);
 	Menu2->Append(MenuItem2);
@@ -380,7 +380,7 @@ CDisplayWindow::~CDisplayWindow() { CBaseGUIWindow::destroyWxWindow(); }
 void CDisplayWindow::setCursorCross(bool cursorIsCross)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
-	const CWindowDialog* win = (const CWindowDialog*)m_hwnd.get();
+	const auto* win = (const CWindowDialog*)m_hwnd.get();
 	if (!win) return;
 	win->m_image->SetCursor(
 		*(cursorIsCross ? wxCROSS_CURSOR : wxSTANDARD_CURSOR));
@@ -395,7 +395,7 @@ void CDisplayWindow::setCursorCross(bool cursorIsCross)
 bool CDisplayWindow::getLastMousePosition(int& x, int& y) const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
-	const CWindowDialog* win = (const CWindowDialog*)m_hwnd.get();
+	const auto* win = (const CWindowDialog*)m_hwnd.get();
 	if (!win) return false;
 	x = win->m_image->m_last_mouse_point.x;
 	y = win->m_image->m_last_mouse_point.y;
@@ -419,7 +419,7 @@ void CDisplayWindow::showImage(const CImage& img)
 	wxImage* newImg = mrpt::gui::MRPTImage2wxImage(img);
 
 	// Send a request to destroy this object:
-	WxSubsystem::TRequestToWxMainThread* REQ =
+	auto* REQ =
 		new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->source2D = this;
 	REQ->OPCODE = 201;
@@ -598,7 +598,7 @@ void CDisplayWindow::resize(unsigned int width, unsigned int height)
 	}
 
 	// Send a request to destroy this object:
-	WxSubsystem::TRequestToWxMainThread* REQ =
+	auto* REQ =
 		new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->source2D = this;
 	REQ->OPCODE = 203;
@@ -625,7 +625,7 @@ void CDisplayWindow::setPos(int x, int y)
 	}
 
 	// Send a request to destroy this object:
-	WxSubsystem::TRequestToWxMainThread* REQ =
+	auto* REQ =
 		new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->source2D = this;
 	REQ->OPCODE = 202;
@@ -652,7 +652,7 @@ void CDisplayWindow::setWindowTitle(const std::string& str)
 	}
 
 	// Send a request to destroy this object:
-	WxSubsystem::TRequestToWxMainThread* REQ =
+	auto* REQ =
 		new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->source2D = this;
 	REQ->OPCODE = 204;

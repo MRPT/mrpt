@@ -446,15 +446,15 @@ void CRawlog::findObservationsByClassInRange(
 
 	// Find the first appearance of time_start:
 	// ---------------------------------------------------
-	TListObjects::const_iterator first = m_seqOfActObs.begin();
-	const TListObjects::const_iterator last = m_seqOfActObs.end();
+	auto first = m_seqOfActObs.begin();
+	const auto last = m_seqOfActObs.end();
 	{
 		// The following is based on lower_bound:
 		size_t count, step;
 		count = std::distance(first, last);
 		while (count > 0)
 		{
-			TListObjects::const_iterator it = first;
+			auto it = first;
 			step = count / 2;
 			std::advance(it, step);
 

@@ -136,7 +136,7 @@ class TCamera : public mrpt::serialization::CSerializable
 	template <class VECTORLIKE>
 	void setDistortionParamsVector(const VECTORLIKE& distParVector)
 	{
-		size_t N = static_cast<size_t>(distParVector.size());
+		auto N = static_cast<size_t>(distParVector.size());
 		ASSERT_(N == 4 || N == 5);
 		dist[4] = 0;  // Default value
 		for (size_t i = 0; i < N; i++) dist[i] = distParVector[i];

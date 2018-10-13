@@ -16,7 +16,7 @@ IMPLEMENTS_SERIALIZABLE(THypothesisIDSet, CSerializable, mrpt::hmtslam)
 uint8_t THypothesisIDSet::serializeGetVersion() const { return 0; }
 void THypothesisIDSet::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	uint32_t N = (uint32_t)size();
+	auto N = (uint32_t)size();
 	out << N;
 	for (THypothesisID it : *this) out << it;
 }

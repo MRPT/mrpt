@@ -61,7 +61,7 @@ void CEdgeCounter::getTotalNumOfEdges(int* total_num_edges) const
 
 int CEdgeCounter::getNumForEdgeType(const std::string& name) const
 {
-	std::map<std::string, int>::const_iterator search =
+	auto search =
 		m_name_to_edges_num.find(name);
 	if (search != m_name_to_edges_num.end())
 	{
@@ -75,7 +75,7 @@ int CEdgeCounter::getNumForEdgeType(const std::string& name) const
 
 void CEdgeCounter::getNumForEdgeType(const std::string& name, int* total_num)
 {
-	std::map<std::string, int>::const_iterator search =
+	auto search =
 		m_name_to_edges_num.find(name);
 	if (search != m_name_to_edges_num.end())
 	{
@@ -89,7 +89,7 @@ void CEdgeCounter::getNumForEdgeType(const std::string& name, int* total_num)
 
 void CEdgeCounter::setEdgesManually(const std::string& name, int num_of_edges)
 {
-	std::map<std::string, int>::iterator search =
+	auto search =
 		m_name_to_edges_num.find(name);
 	if (search != m_name_to_edges_num.end())
 	{
@@ -112,7 +112,7 @@ void CEdgeCounter::addEdge(
 	const std::string& name, bool is_loop_closure /* =false */,
 	bool is_new /* =false */)
 {
-	std::map<std::string, int>::iterator search =
+	auto search =
 		m_name_to_edges_num.find(name);
 	if (search != m_name_to_edges_num.end())
 	{
@@ -167,7 +167,7 @@ void CEdgeCounter::addEdge(
 
 void CEdgeCounter::addEdgeType(const std::string& name)
 {
-	std::map<std::string, int>::const_iterator search =
+	auto search =
 		m_name_to_edges_num.find(name);
 
 	if (search != m_name_to_edges_num.end())
@@ -250,7 +250,7 @@ void CEdgeCounter::setTextMessageParams(
 		std::string name = it.first;
 
 		// check if name already exist, otherwise throw exception
-		std::map<std::string, int>::const_iterator search =
+		auto search =
 			m_name_to_edges_num.find(name);
 		if (search == m_name_to_edges_num.end())
 		{

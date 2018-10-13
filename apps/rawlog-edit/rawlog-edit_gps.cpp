@@ -70,7 +70,7 @@ DECLARE_OP_FUNCTION(op_export_gps_kml)
 			// Insert the new entries:
 			TDataPerGPS& D = m_gps_paths[obs->sensorLabel];
 			TGPSDataPoint& d = D.path[o->timestamp];
-			const mrpt::obs::gnss::Message_NMEA_GGA& gga =
+			const auto& gga =
 				obs->getMsgByClass<mrpt::obs::gnss::Message_NMEA_GGA>();
 			d.lon = gga.fields.longitude_degrees;
 			d.lat = gga.fields.latitude_degrees;
@@ -144,7 +144,7 @@ DECLARE_OP_FUNCTION(op_export_gps_kml)
 
 			// For each sensor label:
 			int color_idx = 0;
-			for (map<string, TDataPerGPS>::const_iterator it =
+			for (auto it =
 					 m_gps_paths.begin();
 				 it != m_gps_paths.end(); ++it, color_idx++)
 			{
@@ -388,7 +388,7 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 			const CObservationGPS* obs =
 				dynamic_cast<CObservationGPS*>(o.get());
 
-			map<string, FILE*>::const_iterator it =
+			auto it =
 				lstFiles.find(obs->sensorLabel);
 
 			FILE* f_this;
@@ -435,7 +435,7 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 
 			if (obs->has_GGA_datum)
 			{
-				const mrpt::obs::gnss::Message_NMEA_GGA& gga =
+				const auto& gga =
 					obs->getMsgByClass<mrpt::obs::gnss::Message_NMEA_GGA>();
 				TPoint3D p;  // Transformed coordinates
 
@@ -469,7 +469,7 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 				TPoint3D cart_vel_local(0, 0, 0);
 				if (obs->has_PZS_datum)
 				{
-					const mrpt::obs::gnss::Message_TOPCON_PZS& pzs =
+					const auto& pzs =
 						obs->getMsgByClass<
 							mrpt::obs::gnss::Message_TOPCON_PZS>();
 					if (pzs.hasCartesianPosVel)
@@ -542,7 +542,7 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 		// Destructor: close files and generate summary files:
 		~CRawlogProcessor_ExportGPS_TXT()
 		{
-			for (map<string, FILE*>::const_iterator it = lstFiles.begin();
+			for (auto it = lstFiles.begin();
 				 it != lstFiles.end(); ++it)
 			{
 				os::fclose(it->second);
@@ -614,7 +614,7 @@ DECLARE_OP_FUNCTION(op_export_gps_all)
 			const CObservationGPS* obs =
 				dynamic_cast<CObservationGPS*>(o.get());
 
-			for (CObservationGPS::message_list_t::const_iterator it =
+			for (auto it =
 					 obs->messages.begin();
 				 it != obs->messages.end(); ++it)
 			{
@@ -626,7 +626,7 @@ DECLARE_OP_FUNCTION(op_export_gps_all)
 
 				const string sLabelMsg =
 					string(obs->sensorLabel) + string("_MSG_") + sMsg;
-				map<string, FILE*>::const_iterator itF =
+				auto itF =
 					lstFiles.find(sLabelMsg);
 
 				FILE* f_this;
@@ -678,7 +678,7 @@ DECLARE_OP_FUNCTION(op_export_gps_all)
 			VERBOSE_COUT << "Number of different files saved   : "
 						 << lstFiles.size() << endl;
 
-			for (map<string, FILE*>::const_iterator it = lstFiles.begin();
+			for (auto it = lstFiles.begin();
 				 it != lstFiles.end(); ++it)
 			{
 				os::fclose(it->second);

@@ -490,7 +490,7 @@ void xRawLogViewerFrame::OnMenuExportALOG(wxCommandEvent& event)
 					lastTime = obs->timestamp;
 					if (firstTime == INVALID_TIMESTAMP) firstTime = lastTime;
 					double time_obs = timeDifference(firstTime, lastTime);
-					unsigned int M_real =
+					auto M_real =
 						static_cast<unsigned int>(obs->scan.size());
 					ASSERT_(M_real == 361 || M_real == 181);
 
@@ -672,7 +672,7 @@ void xRawLogViewerFrame::OnImportRTL(wxCommandEvent& event)
 				if (newRecord.type >= 0)
 				{
 					// DO NOT OVERWRITE OTHER RECORDS! SHIFT TIMESTAMP A LITTLE
-					std::map<double, TAlogRecord>::const_iterator itPrev =
+					auto itPrev =
 						theAlog.begin();
 					while (itPrev != theAlog.end())
 					{
@@ -881,7 +881,7 @@ void xRawLogViewerFrame::OnMenuImportALOG(wxCommandEvent& event)
 				if (newRecord.type >= 0)
 				{
 					// DO NOT OVERWRITE OTHER RECORDS! SHIFT TIMESTAMP A LITTLE
-					std::map<double, TAlogRecord>::const_iterator itPrev =
+					auto itPrev =
 						theAlog.begin();
 					while (itPrev != theAlog.end())
 					{
@@ -922,7 +922,7 @@ void xRawLogViewerFrame::OnMenuImportALOG(wxCommandEvent& event)
 
 								// DO NOT OVERWRITE OTHER RECORDS! SHIFT
 								// TIMESTAMP A LITTLE
-								std::map<double, TAlogRecord>::const_iterator
+								auto
 									itPrev = theAlog.begin();
 								while (itPrev != theAlog.end())
 								{
@@ -1038,7 +1038,7 @@ void xRawLogViewerFrame::OnMenuImportALOG(wxCommandEvent& event)
 
 							// DO NOT OVERWRITE OTHER RECORDS! SHIFT TIMESTAMP A
 							// LITTLE
-							std::map<double, TAlogRecord>::const_iterator
+							auto
 								itPrev = theAlog.begin();
 							while (itPrev != theAlog.end())
 							{
@@ -1323,7 +1323,7 @@ void xRawLogViewerFrame::OnGenGasTxt(wxCommandEvent& event)
 					}
 
 					// Run each sensor on Enose
-					for (vector<float>::iterator it =
+					for (auto it =
 							 m_reading.readingsVoltage.begin();
 						 it != m_reading.readingsVoltage.end(); ++it)
 					{

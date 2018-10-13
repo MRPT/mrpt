@@ -559,8 +559,8 @@ CmtRawData Packet::getRawData(const uint16_t index) const
 	if (containsRawData(index))
 	{
 		const uint8_t* tmp = m_msg.getDataBuffer(m_infoList[index].m_rawData);
-		const uint16_t* sh = (const uint16_t*)tmp;
-		uint16_t* bare = (uint16_t*)&buffer;
+		const auto* sh = (const uint16_t*)tmp;
+		auto* bare = (uint16_t*)&buffer;
 
 		for (uint16_t i = 0; i < 10; ++i, ++sh, ++bare)
 			*bare = swapEndian16(
@@ -591,7 +591,7 @@ bool Packet::updateRawData(const CmtRawData& data, const uint16_t index)
 		m_infoList[index].m_size += 3 * 3 * 2 + 2;
 	}
 	// update
-	int16_t* bare = (int16_t*)&data;
+	auto* bare = (int16_t*)&data;
 	for (uint16_t i = 0; i < 10; ++i)
 		m_msg.setDataShort(bare[i], m_infoList[index].m_rawData + (2 * i));
 	return true;
@@ -619,7 +619,7 @@ CmtRawGpsData Packet::getRawGpsData(const uint16_t index) const
 		// lon,lat,height,hacc,vacc,veln,vele,veld
 		// tmp = m_msg.getDataBuffer(m_infoList[index].m_rawGpsGpsData);
 		// const uint32_t* ln = (const uint32_t*) tmp;
-		uint32_t* bareln = (uint32_t*)&buffer.m_itow;
+		auto* bareln = (uint32_t*)&buffer.m_itow;
 		for (uint16_t i = 0; i < 10; ++i)
 			bareln[i] =
 				m_msg.getDataLong(m_infoList[index].m_rawGpsGpsData + (4 * i));
@@ -679,7 +679,7 @@ bool Packet::updateRawGpsData(const CmtRawGpsData& data, const uint16_t index)
 		data.m_pressureAge, m_infoList[index].m_rawGpsPressureAge);
 
 	// lon,lat,height,hacc,vacc,veln,vele,veld
-	int32_t* bareln = (int32_t*)&data.m_itow;
+	auto* bareln = (int32_t*)&data.m_itow;
 	for (uint16_t i = 0; i < 10; ++i)
 		m_msg.setDataLong(
 			bareln[i], m_infoList[index].m_rawGpsGpsData + (4 * i));
@@ -849,7 +849,7 @@ bool Packet::updateCalMag(const CmtVector& vec, const uint16_t index)
 CmtCalData Packet::getCalData(const uint16_t index) const
 {
 	CmtCalData buffer;
-	double* bare = (double*)&buffer;
+	auto* bare = (double*)&buffer;
 	if (containsCalData(index))
 		m_msg.getDataFPValue(
 			bare, m_formatList[index].m_outputSettings,
@@ -885,7 +885,7 @@ bool Packet::updateCalData(const CmtCalData& data, const uint16_t index)
 	}
 	// update
 
-	double* bare = (double*)&data;
+	auto* bare = (double*)&data;
 	m_msg.setDataFPValue(
 		m_formatList[index].m_outputSettings, bare, m_infoList[index].m_calData,
 		numValues);

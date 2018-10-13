@@ -29,7 +29,7 @@ bool reactive_navigator_demoApp::OnInit()
 	wxInitAllImageHandlers();
 	if (wxsOK)
 	{
-		reactive_navigator_demoframe* Frame =
+		auto* Frame =
 			new reactive_navigator_demoframe(nullptr);
 		Frame->Show();
 		SetTopWindow(Frame);

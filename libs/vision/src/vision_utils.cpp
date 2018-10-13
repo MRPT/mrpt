@@ -950,8 +950,8 @@ double vision::computeSAD(const CImage& patch1, const CImage& patch2)
 {
 	MRPT_START
 #if MRPT_HAS_OPENCV
-	const IplImage* im1 = patch1.getAs<IplImage>();
-	const IplImage* im2 = patch2.getAs<IplImage>();
+	const auto* im1 = patch1.getAs<IplImage>();
+	const auto* im2 = patch2.getAs<IplImage>();
 
 	ASSERT_(im1->width == im2->width && im1->height == im2->height);
 	double res = 0.0;
@@ -2019,7 +2019,7 @@ void vision::StereoObs2BRObs(
 	double sg_r2 = square(sg[1]);  // Sigma of the row variable
 	double sg_d2 = square(sg[2]);  // Sigma of the disparity
 
-	for (CMatchedFeatureList::iterator itMatchList = matchList.begin();
+	for (auto itMatchList = matchList.begin();
 		 itMatchList != matchList.end(); itMatchList++, id++)
 	{
 		double x = itMatchList->first->x;  // Column of the feature

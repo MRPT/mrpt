@@ -80,7 +80,7 @@ TEST(Observations, WriteReadToMem)
 			CMemoryStream buf;
 			auto arch = mrpt::serialization::archiveFrom(buf);
 			{
-				CSerializable* o =
+				auto* o =
 					static_cast<CSerializable*>(lstClasse->createObject());
 				arch << *o;
 				delete o;
@@ -108,7 +108,7 @@ TEST(Observations, WriteReadToOctectVectors)
 		{
 			std::vector<uint8_t> buf;
 			{
-				CSerializable* o =
+				auto* o =
 					static_cast<CSerializable*>(lstClasse->createObject());
 				mrpt::serialization::ObjectToOctetVector(o, buf);
 				delete o;

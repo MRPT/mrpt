@@ -184,7 +184,7 @@ void CLocalMetricHypothesis::getAs3DScene(
 		else  // The current robot pose does not count
 		{
 			// Compute the area means:
-			std::map<TPoseID, CHMHMapNode::TNodeID>::const_iterator itAreaId =
+			auto itAreaId =
 				m_nodeIDmemberships.find(it->first);
 			ASSERT_(itAreaId != m_nodeIDmemberships.end());
 			CHMHMapNode::TNodeID areaId = itAreaId->second;
@@ -348,13 +348,13 @@ void CLocalMetricHypothesis::getAs3DScene(
 
 			TArcList lstArcs;
 			srcArea->getArcs(lstArcs);
-			for (TArcList::const_iterator a = lstArcs.begin();
+			for (auto a = lstArcs.begin();
 				 a != lstArcs.end(); ++a)
 			{
 				// target is in the neighborhood of LMH:
 				if ((*a)->getNodeFrom() == srcAreaID)
 				{
-					map<CHMHMapNode::TNodeID, CPoint3D>::const_iterator
+					auto
 						trgAreaPoseIt = areas_mean.find((*a)->getNodeTo());
 					if (trgAreaPoseIt != areas_mean.end())
 					{
@@ -442,7 +442,7 @@ void CLocalMetricHypothesis::getPathParticles(
 	if (m_particles.empty()) return;
 
 	// For each poseID:
-	for (TMapPoseID2Pose3D::const_iterator itPoseID =
+	for (auto itPoseID =
 			 m_particles.begin()->d->robotPoses.begin();
 		 itPoseID != m_particles.begin()->d->robotPoses.end(); ++itPoseID)
 	{
@@ -480,7 +480,7 @@ void CLocalMetricHypothesis::getPoseParticles(
 		 it != m_particles.end(); it++, itP++)
 	{
 		itP->log_w = it->log_w;
-		TMapPoseID2Pose3D::const_iterator itPose =
+		auto itPose =
 			it->d->robotPoses.find(poseID);
 		ASSERT_(itPose != it->d->robotPoses.end());
 		itP->d = itPose->second.asTPose();
@@ -517,7 +517,7 @@ const CPose3D* CLocalMetricHypothesis::getCurrentPose(
 	if (particleIdx >= m_particles.size())
 		THROW_EXCEPTION("Particle index out of bounds!");
 
-	TMapPoseID2Pose3D::const_iterator it =
+	auto it =
 		m_particles[particleIdx].d->robotPoses.find(m_currentRobotPose);
 	ASSERT_(it != m_particles[particleIdx].d->robotPoses.end());
 	return &it->second;
@@ -531,7 +531,7 @@ CPose3D* CLocalMetricHypothesis::getCurrentPose(const size_t& particleIdx)
 	if (particleIdx >= m_particles.size())
 		THROW_EXCEPTION("Particle index out of bounds!");
 
-	TMapPoseID2Pose3D::iterator it =
+	auto it =
 		m_particles[particleIdx].d->robotPoses.find(m_currentRobotPose);
 	ASSERT_(it != m_particles[particleIdx].d->robotPoses.end());
 	return &it->second;
@@ -589,9 +589,9 @@ void CLocalMetricHypothesis::changeCoordinateOrigin(const TPoseID& newOrigin)
 		itOrgPDF->d = refPose.asTPose();
 		itOrgPDF->log_w = it->log_w;
 
-		TMapPoseID2Pose3D::iterator End = it->d->robotPoses.end();
+		auto End = it->d->robotPoses.end();
 		// Change all other poses first:
-		for (TMapPoseID2Pose3D::iterator itP = it->d->robotPoses.begin();
+		for (auto itP = it->d->robotPoses.begin();
 			 itP != End; ++itP)
 			if (itP != refPoseIt) itP->second = itP->second - refPose;
 
@@ -607,7 +607,7 @@ void CLocalMetricHypothesis::changeCoordinateOrigin(const TPoseID& newOrigin)
 		std::lock_guard<std::mutex> locker(m_robotPosesGraph.lock);
 
 		CSimpleMap* SFseq = m_robotPosesGraph.partitioner.getSequenceOfFrames();
-		for (std::map<uint32_t, TPoseID>::const_iterator it =
+		for (auto it =
 				 m_robotPosesGraph.idx2pose.begin();
 			 it != m_robotPosesGraph.idx2pose.end(); ++it)
 		{
@@ -634,14 +634,14 @@ void CLocalMetricHypothesis::rebuildMetricMaps()
 		m_particle.d->metricMaps.clear();
 
 		// Follow all robot poses:
-		TMapPoseID2Pose3D::iterator End = m_particle.d->robotPoses.end();
-		for (TMapPoseID2Pose3D::iterator itP = m_particle.d->robotPoses.begin();
+		auto End = m_particle.d->robotPoses.end();
+		for (auto itP = m_particle.d->robotPoses.begin();
 			 itP != End; ++itP)
 		{
 			if (itP->first !=
 				m_currentRobotPose)  // Current robot pose has no SF stored.
 			{
-				std::map<TPoseID, CSensoryFrame>::const_iterator SFit =
+				auto SFit =
 					m_SFs.find(itP->first);
 				ASSERT_(SFit != m_SFs.end());
 				SFit->second.insertObservationsInto(
@@ -670,7 +670,7 @@ void CLocalMetricHypothesis::removeAreaFromLMH(
 
 	// Remove from m_neighbors:
 	// -----------------------------------
-	TNodeIDSet::iterator itNeig = m_neighbors.find(areaID);
+	auto itNeig = m_neighbors.find(areaID);
 	if (itNeig != m_neighbors.end()) m_neighbors.erase(itNeig);
 
 	// Build the list with the poses in the area to be removed from LMH:
@@ -690,7 +690,7 @@ void CLocalMetricHypothesis::removeAreaFromLMH(
 	// - Robot poses belonging to that area are removed from:
 	// 	- the particles.
 	// ----------------------------------------------------------------------
-	for (TNodeIDList::const_iterator it = lstPoseIDs.begin();
+	for (auto it = lstPoseIDs.begin();
 		 it != lstPoseIDs.end(); ++it)
 		for (auto & m_particle : m_particles)
 			m_particle.d->robotPoses.erase(m_particle.d->robotPoses.find(*it));
@@ -706,10 +706,10 @@ void CLocalMetricHypothesis::removeAreaFromLMH(
 		for (ws_it = m_log_w_metric_history.begin(), p = m_particles.begin();
 			 p != m_particles.end(); ++p, ++ws_it)
 		{
-			for (TNodeIDList::const_iterator it = lstPoseIDs.begin();
+			for (auto it = lstPoseIDs.begin();
 				 it != lstPoseIDs.end(); ++it)
 			{
-				map<TPoseID, double>::iterator itW = ws_it->find(*it);
+				auto itW = ws_it->find(*it);
 				if (itW != ws_it->end())
 				{
 					MRPT_CHECK_NORMAL_NUMBER(itW->second);
@@ -731,7 +731,7 @@ void CLocalMetricHypothesis::removeAreaFromLMH(
 		std::vector<uint32_t> indexesToRemove;
 		indexesToRemove.reserve(lstPoseIDs.size());
 
-		for (std::map<uint32_t, TPoseID>::iterator it =
+		for (auto it =
 				 m_robotPosesGraph.idx2pose.begin();
 			 it != m_robotPosesGraph.idx2pose.end();)
 		{
@@ -740,7 +740,7 @@ void CLocalMetricHypothesis::removeAreaFromLMH(
 				indexesToRemove.push_back(it->first);
 
 				// Remove from the mapping indexes->nodeIDs as well:
-				std::map<uint32_t, TPoseID>::iterator it2 = it;
+				auto it2 = it;
 				it2++;
 				// it = m_robotPosesGraph.idx2pose.erase( it );
 				m_robotPosesGraph.idx2pose.erase(it);
@@ -756,7 +756,7 @@ void CLocalMetricHypothesis::removeAreaFromLMH(
 		// "m_robotPosesGraph.partitioner":
 		unsigned idx = 0;
 		map<uint32_t, TPoseID> newList;
-		for (map<uint32_t, TPoseID>::iterator i =
+		for (auto i =
 				 m_robotPosesGraph.idx2pose.begin();
 			 i != m_robotPosesGraph.idx2pose.end(); ++i, idx++)
 			newList[idx] = i->second;
@@ -771,7 +771,7 @@ void CLocalMetricHypothesis::removeAreaFromLMH(
 	// - Robot poses belonging to that area are removed from:
 	// - the list m_nodeIDmemberships.
 	// ----------------------------------------------------------------------
-	for (TNodeIDList::const_iterator it = lstPoseIDs.begin();
+	for (auto it = lstPoseIDs.begin();
 		 it != lstPoseIDs.end(); ++it)
 		m_nodeIDmemberships.erase(m_nodeIDmemberships.find(*it));
 
@@ -804,7 +804,7 @@ void CLocalMetricHypothesis::updateAreaFromLMH(
 	// Build the list with the poses belonging to that area from LMH:
 	// ----------------------------------------------------------------------
 	TNodeIDList lstPoseIDs;
-	for (map<TPoseID, CHMHMapNode::TNodeID>::const_iterator it =
+	for (auto it =
 			 m_nodeIDmemberships.begin();
 		 it != m_nodeIDmemberships.end(); ++it)
 		if (it->second == areaID) lstPoseIDs.insert(it->first);
@@ -848,7 +848,7 @@ void CLocalMetricHypothesis::updateAreaFromLMH(
 	// For each pose in the area:
 	CPose3DPDFParticles pdfOrigin;
 	bool pdfOrigin_ok = false;
-	for (TNodeIDList::const_iterator it = lstPoseIDs.begin();
+	for (auto it = lstPoseIDs.begin();
 		 it != lstPoseIDs.end(); ++it)
 	{
 		TPoseInfo& poseInfo = (*posesGraph)[*it];
@@ -863,7 +863,7 @@ void CLocalMetricHypothesis::updateAreaFromLMH(
 
 		if (*it != m_currentRobotPose)  // The current robot pose has no SF
 		{
-			std::map<TPoseID, CSensoryFrame>::iterator itSF = m_SFs.find(*it);
+			auto itSF = m_SFs.find(*it);
 			ASSERT_(itSF != m_SFs.end());
 
 			if (eraseSFsFromLMH)
@@ -885,7 +885,7 @@ void CLocalMetricHypothesis::updateAreaFromLMH(
 	ASSERT_(pdfOrigin_ok);
 	CPose3DPDFParticles pdfOriginInv;
 	pdfOrigin.inverse(pdfOriginInv);
-	for (CRobotPosesGraph::iterator it = posesGraph->begin();
+	for (auto it = posesGraph->begin();
 		 it != posesGraph->end(); ++it)
 	{
 		CPose3DPDFParticles::CParticleList::iterator orgIt, pdfIt;
@@ -923,10 +923,10 @@ void CLocalMetricHypothesis::dumpAsText(std::vector<std::string>& st) const
 	TMapPoseID2Pose3D lst;
 	getMeans(lst);
 
-	for (TMapPoseID2Pose3D::const_iterator it = lst.begin(); it != lst.end();
+	for (auto it = lst.begin(); it != lst.end();
 		 ++it)
 	{
-		map<TPoseID, CHMHMapNode::TNodeID>::const_iterator area =
+		auto area =
 			m_nodeIDmemberships.find(it->first);
 
 		string s = format(

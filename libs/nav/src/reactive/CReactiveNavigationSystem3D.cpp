@@ -166,14 +166,14 @@ void CReactiveNavigationSystem3D::STEP1_InitPTGs()
 
 				// Polygonal robot shape?
 				{
-					mrpt::nav::CPTG_RobotShape_Polygonal* ptg =
+					auto* ptg =
 						dynamic_cast<mrpt::nav::CPTG_RobotShape_Polygonal*>(
 							m_ptgmultilevel[j].PTGs[i]);
 					if (ptg) ptg->setRobotShape(m_robotShape.polygon(i));
 				}
 				// Circular robot shape?
 				{
-					mrpt::nav::CPTG_RobotShape_Circular* ptg =
+					auto* ptg =
 						dynamic_cast<mrpt::nav::CPTG_RobotShape_Circular*>(
 							m_ptgmultilevel[j].PTGs[i]);
 					if (ptg)

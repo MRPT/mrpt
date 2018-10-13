@@ -128,7 +128,7 @@ DECLARE_OP_FUNCTION(op_info)
 
 	// By sensor labels:
 	cout << "All sensor labels                 : ";
-	for (map<string, TInfoPerSensorLabel>::const_iterator it =
+	for (auto it =
 			 proc.infoPerSensorLabel.begin();
 		 it != proc.infoPerSensorLabel.end(); ++it)
 	{
@@ -137,7 +137,7 @@ DECLARE_OP_FUNCTION(op_info)
 	}
 	cout << "\n";
 
-	for (map<std::string, TInfoPerSensorLabel>::const_iterator it =
+	for (auto it =
 			 proc.infoPerSensorLabel.begin();
 		 it != proc.infoPerSensorLabel.end(); ++it)
 	{

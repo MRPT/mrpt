@@ -279,7 +279,7 @@ bool COpenGLScene::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 	double tmp;
 	for (const auto & vp : m_viewports)
 	{
-			for (CListOpenGLObjects::const_iterator it2 = vp->m_objects.begin();
+			for (auto it2 = vp->m_objects.begin();
 			 it2 != vp->m_objects.end(); ++it2)
 			if ((*it2)->traceRay(o, tmp))
 			{

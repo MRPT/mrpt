@@ -269,8 +269,8 @@ void CPosePDFGaussian::bayesianFusion(
 	ASSERT_(p1_.GetRuntimeClass() == CLASS_ID(CPosePDFGaussian));
 	ASSERT_(p2_.GetRuntimeClass() == CLASS_ID(CPosePDFGaussian));
 
-	const CPosePDFGaussian* p1 = static_cast<const CPosePDFGaussian*>(&p1_);
-	const CPosePDFGaussian* p2 = static_cast<const CPosePDFGaussian*>(&p2_);
+	const auto* p1 = static_cast<const CPosePDFGaussian*>(&p1_);
+	const auto* p2 = static_cast<const CPosePDFGaussian*>(&p2_);
 
 	CMatrixDouble33 C1 = p1->cov;
 	CMatrixDouble33 C2 = p2->cov;
@@ -281,8 +281,8 @@ void CPosePDFGaussian::bayesianFusion(
 	CMatrixDouble33 C2_inv;
 	C2.inv(C2_inv);
 
-	CMatrixDouble31 x1 = CMatrixDouble31(p1->mean);
-	CMatrixDouble31 x2 = CMatrixDouble31(p2->mean);
+	auto x1 = CMatrixDouble31(p1->mean);
+	auto x2 = CMatrixDouble31(p2->mean);
 
 	CMatrixDouble33 auxC = C1_inv + C2_inv;
 	auxC.inv(this->cov);
@@ -304,7 +304,7 @@ void CPosePDFGaussian::bayesianFusion(
 void CPosePDFGaussian::inverse(CPosePDF& o) const
 {
 	ASSERT_(o.GetRuntimeClass() == CLASS_ID(CPosePDFGaussian));
-	CPosePDFGaussian* out = static_cast<CPosePDFGaussian*>(&o);
+	auto* out = static_cast<CPosePDFGaussian*>(&o);
 
 	// The mean:
 	out->mean = CPose2D(0, 0, 0) - mean;
@@ -338,8 +338,8 @@ void CPosePDFGaussian::operator+=(const CPose2D& Ap)
  ---------------------------------------------------------------*/
 double CPosePDFGaussian::evaluatePDF(const CPose2D& x) const
 {
-	CMatrixDouble31 X = CMatrixDouble31(x);
-	CMatrixDouble31 MU = CMatrixDouble31(mean);
+	auto X = CMatrixDouble31(x);
+	auto MU = CMatrixDouble31(mean);
 
 	return math::normalPDF(X, MU, this->cov);
 }
@@ -349,8 +349,8 @@ double CPosePDFGaussian::evaluatePDF(const CPose2D& x) const
  ---------------------------------------------------------------*/
 double CPosePDFGaussian::evaluateNormalizedPDF(const CPose2D& x) const
 {
-	CMatrixDouble31 X = CMatrixDouble31(x);
-	CMatrixDouble31 MU = CMatrixDouble31(mean);
+	auto X = CMatrixDouble31(x);
+	auto MU = CMatrixDouble31(mean);
 
 	return math::normalPDF(X, MU, this->cov) /
 		   math::normalPDF(MU, MU, this->cov);
@@ -375,7 +375,7 @@ double CPosePDFGaussian::mahalanobisDistanceTo(const CPosePDFGaussian& theOther)
 {
 	MRPT_START
 
-	CArrayDouble<3> MU = CArrayDouble<3>(mean);
+	auto MU = CArrayDouble<3>(mean);
 	MU -= CArrayDouble<3>(theOther.mean);
 
 	wrapToPiInPlace(MU[2]);

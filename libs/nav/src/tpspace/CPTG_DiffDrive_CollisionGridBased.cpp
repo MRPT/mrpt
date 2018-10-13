@@ -243,7 +243,7 @@ void CPTG_DiffDrive_CollisionGridBased::simulateTrajectories(
 
 		for (uint16_t k = 0; k < m_alphaValuesCount; k++)
 		{
-			const uint32_t M = static_cast<uint32_t>(m_trajectory[k].size());
+			const auto M = static_cast<uint32_t>(m_trajectory[k].size());
 			for (uint32_t n = 0; n < M; n++)
 			{
 				TCellForLambdaFunction* cell =
@@ -275,7 +275,7 @@ mrpt::kinematics::CVehicleVelCmd::Ptr
 	float v, w;
 	ptgDiffDriveSteeringFunction(index2alpha(k), 0, 0, 0, 0, v, w);
 
-	mrpt::kinematics::CVehicleVelCmd_DiffDriven* cmd =
+	auto* cmd =
 		new mrpt::kinematics::CVehicleVelCmd_DiffDriven();
 	cmd->lin_vel = v;
 	cmd->ang_vel = w;
@@ -307,8 +307,8 @@ void CPTG_DiffDrive_CollisionGridBased::CCollisionGrid::updateCellInfo(
 
 	// For such a small number of elements, brute-force search is not such a bad
 	// idea:
-	TCollisionCell::iterator itK = cell->end();
-	for (TCollisionCell::iterator it = cell->begin(); it != cell->end(); ++it)
+	auto itK = cell->end();
+	for (auto it = cell->begin(); it != cell->end(); ++it)
 		if (it->first == k)
 		{
 			itK = it;

@@ -56,7 +56,7 @@ DECLARE_OP_FUNCTION(op_export_2d_scans_txt)
 			const CObservation2DRangeScan* obs =
 				dynamic_cast<CObservation2DRangeScan*>(o.get());
 
-			map<string, FILE*>::const_iterator it =
+			auto it =
 				lstFiles.find(obs->sensorLabel);
 
 			FILE *f_this, *f_this_times;
@@ -108,7 +108,7 @@ DECLARE_OP_FUNCTION(op_export_2d_scans_txt)
 		// Destructor: close files and generate summary files:
 		~CRawlogProcessor_Export2DSCANS_TXT()
 		{
-			for (map<string, FILE*>::const_iterator it = lstFiles.begin();
+			for (auto it = lstFiles.begin();
 				 it != lstFiles.end(); ++it)
 			{
 				os::fclose(it->second);

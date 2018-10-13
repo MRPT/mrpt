@@ -61,9 +61,9 @@ CWindowDialogPlots::CWindowDialogPlots(
 	m_plot->Fit(-10, 10, -10, 10);
 
 	// Menu:
-	wxMenuBar* MenuBar1 = new wxMenuBar();
+	auto* MenuBar1 = new wxMenuBar();
 
-	wxMenu* Menu1 = new wxMenu();
+	auto* Menu1 = new wxMenu();
 	wxMenuItem* MenuItem1 =
 		new wxMenuItem(Menu1, ID_MENUITEM1, _("Close"), _(""), wxITEM_NORMAL);
 	Menu1->Append(MenuItem1);
@@ -74,7 +74,7 @@ CWindowDialogPlots::CWindowDialogPlots(
 
 	MenuBar1->Append(Menu1, _("&File"));
 
-	wxMenu* Menu2 = new wxMenu();
+	auto* Menu2 = new wxMenu();
 	wxMenuItem* MenuItem2 = new wxMenuItem(
 		Menu2, ID_MENUITEM2, _("About..."), _(""), wxITEM_NORMAL);
 	Menu2->Append(MenuItem2);
@@ -270,7 +270,7 @@ void CWindowDialogPlots::OnMenuAbout(wxCommandEvent& event)
 
 void CWindowDialogPlots::OnMenuSelected(wxCommandEvent& ev)
 {
-	std::map<long, long>::const_iterator it = m_ID2ID.find(ev.GetId());
+	auto it = m_ID2ID.find(ev.GetId());
 	if (it != m_ID2ID.end())
 	{
 		if (m_winPlots && m_winPlots->m_callback)
@@ -322,7 +322,7 @@ void CWindowDialogPlots::plot(
 	if (existingLy)
 	{
 		// Assure the class:
-		mpFXYVector* lyPlot2D = static_cast<mpFXYVector*>(existingLy);
+		auto* lyPlot2D = static_cast<mpFXYVector*>(existingLy);
 
 		if (!lyPlot2D)
 		{
@@ -486,7 +486,7 @@ void CWindowDialogPlots::plotEllipse(
 	if (existingLy)
 	{
 		// Assure the class:
-		mpCovarianceEllipse* lyPlotEllipse =
+		auto* lyPlotEllipse =
 			static_cast<mpCovarianceEllipse*>(existingLy);
 
 		if (!lyPlotEllipse)
@@ -636,7 +636,7 @@ void CWindowDialogPlots::image(
 	if (existingLy)
 	{
 		// Assure the class:
-		mpBitmapLayer* ly = static_cast<mpBitmapLayer*>(existingLy);
+		auto* ly = static_cast<mpBitmapLayer*>(existingLy);
 
 		if (!ly)
 		{
@@ -657,7 +657,7 @@ void CWindowDialogPlots::image(
 	}
 
 	// Set data:
-	wxImage* ii = static_cast<wxImage*>(theWxImage);
+	auto* ii = static_cast<wxImage*>(theWxImage);
 	theLayer->SetBitmap(*ii, x0, y0, w, h);
 
 	delete ii;
@@ -700,7 +700,7 @@ CDisplayWindowPlots::~CDisplayWindowPlots()
 void CDisplayWindowPlots::setCursorCross(bool cursorIsCross)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
-	const CWindowDialogPlots* win = (const CWindowDialogPlots*)m_hwnd.get();
+	const auto* win = (const CWindowDialogPlots*)m_hwnd.get();
 	if (!win) return;
 	win->m_plot->SetCursor(
 		*(cursorIsCross ? wxCROSS_CURSOR : wxSTANDARD_CURSOR));
@@ -715,7 +715,7 @@ void CDisplayWindowPlots::setCursorCross(bool cursorIsCross)
 bool CDisplayWindowPlots::getLastMousePosition(int& x, int& y) const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
-	const CWindowDialogPlots* win = (const CWindowDialogPlots*)m_hwnd.get();
+	const auto* win = (const CWindowDialogPlots*)m_hwnd.get();
 	if (!win) return false;
 	x = win->m_last_mouse_point.x;
 	y = win->m_last_mouse_point.y;
@@ -741,7 +741,7 @@ void CDisplayWindowPlots::resize(unsigned int width, unsigned int height)
 	}
 
 	// Send a request to destroy this object:
-	WxSubsystem::TRequestToWxMainThread* REQ =
+	auto* REQ =
 		new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->sourcePlots = this;
 	REQ->OPCODE = 403;
@@ -768,7 +768,7 @@ void CDisplayWindowPlots::setPos(int x, int y)
 	}
 
 	// Send a request to destroy this object:
-	WxSubsystem::TRequestToWxMainThread* REQ =
+	auto* REQ =
 		new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->sourcePlots = this;
 	REQ->OPCODE = 402;
@@ -795,7 +795,7 @@ void CDisplayWindowPlots::setWindowTitle(const std::string& str)
 	}
 
 	// Send a request to destroy this object:
-	WxSubsystem::TRequestToWxMainThread* REQ =
+	auto* REQ =
 		new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->sourcePlots = this;
 	REQ->OPCODE = 404;
@@ -815,7 +815,7 @@ void CDisplayWindowPlots::enableMousePanZoom(bool enabled)
 	if (!isOpen()) return;
 
 	// Send a request to destroy this object:
-	WxSubsystem::TRequestToWxMainThread* REQ =
+	auto* REQ =
 		new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->sourcePlots = this;
 	REQ->OPCODE = 410;
@@ -835,7 +835,7 @@ void CDisplayWindowPlots::axis_equal(bool enabled)
 	if (!isOpen()) return;
 
 	// Send a request to destroy this object:
-	WxSubsystem::TRequestToWxMainThread* REQ =
+	auto* REQ =
 		new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->sourcePlots = this;
 	REQ->OPCODE = 411;
@@ -856,7 +856,7 @@ void CDisplayWindowPlots::axis(
 	if (!isOpen()) return;
 
 	// Send a request to destroy this object:
-	WxSubsystem::TRequestToWxMainThread* REQ =
+	auto* REQ =
 		new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->sourcePlots = this;
 	REQ->OPCODE = 412;
@@ -886,7 +886,7 @@ void CDisplayWindowPlots::axis_fit(bool aspectRatioFix)
 	if (!isOpen()) return;
 
 	// Send a request to destroy this object:
-	WxSubsystem::TRequestToWxMainThread* REQ =
+	auto* REQ =
 		new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->sourcePlots = this;
 	REQ->OPCODE = 413;
@@ -926,7 +926,7 @@ void CDisplayWindowPlots::plotEllipse(
 			format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
 
 	// Send a request to destroy this object:
-	WxSubsystem::TRequestToWxMainThread* REQ =
+	auto* REQ =
 		new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->sourcePlots = this;
 	REQ->OPCODE = 421;
@@ -999,7 +999,7 @@ void CDisplayWindowPlots::plotEllipse(
 			format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
 
 	// Send a request to destroy this object:
-	WxSubsystem::TRequestToWxMainThread* REQ =
+	auto* REQ =
 		new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->sourcePlots = this;
 	REQ->OPCODE = 421;
@@ -1066,7 +1066,7 @@ void CDisplayWindowPlots::image(
 			format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
 
 	// Send a request to destroy this object:
-	WxSubsystem::TRequestToWxMainThread* REQ =
+	auto* REQ =
 		new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->sourcePlots = this;
 	REQ->OPCODE = 422;
@@ -1123,7 +1123,7 @@ void CDisplayWindowPlots::internal_plot(
 			format("_fig_%u", static_cast<unsigned int>(m_holdon_cnt++));
 
 	// Send a request to destroy this object:
-	WxSubsystem::TRequestToWxMainThread* REQ =
+	auto* REQ =
 		new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->sourcePlots = this;
 	REQ->OPCODE = 420;
@@ -1152,7 +1152,7 @@ void CDisplayWindowPlots::clear()
 	if (!isOpen()) return;
 
 	// Send a request to destroy this object:
-	WxSubsystem::TRequestToWxMainThread* REQ =
+	auto* REQ =
 		new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->sourcePlots = this;
 	REQ->OPCODE = 414;
@@ -1190,7 +1190,7 @@ void CDisplayWindowPlots::addPopupMenuEntry(
 	MRPT_START
 	if (!isOpen()) return;
 
-	WxSubsystem::TRequestToWxMainThread* REQ =
+	auto* REQ =
 		new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->sourcePlots = this;
 	REQ->OPCODE = 440;

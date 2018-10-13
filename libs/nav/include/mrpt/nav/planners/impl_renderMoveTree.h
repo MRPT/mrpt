@@ -121,17 +121,17 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 		edges_best_path_decim;
 	if (!best_path.empty())
 	{
-		typename tree_t::path_t::const_iterator it_end = best_path.end();
-		typename tree_t::path_t::const_iterator it_end_1 = best_path.end();
+		auto it_end = best_path.end();
+		auto it_end_1 = best_path.end();
 		std::advance(it_end_1, -1);
 
-		for (typename tree_t::path_t::const_iterator it = best_path.begin();
+		for (auto it = best_path.begin();
 			 it != it_end; ++it)
 			if (it->edge_to_parent) edges_best_path.insert(it->edge_to_parent);
 
 		// Decimate the path (always keeping the first and last entry):
 		ASSERT_ABOVE_(options.draw_shape_decimation, 0);
-		for (typename tree_t::path_t::const_iterator it = best_path.begin();
+		for (auto it = best_path.begin();
 			 it != it_end;)
 		{
 			if (it->edge_to_parent)
@@ -161,7 +161,7 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 		const typename tree_t::node_map_t& lstNodes =
 			result.move_tree.getAllNodes();
 
-		for (typename tree_t::node_map_t::const_iterator itNode =
+		for (auto itNode =
 				 lstNodes.begin();
 			 itNode != lstNodes.end(); ++itNode)
 		{
@@ -195,7 +195,7 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 				{
 					mrpt::opengl::CSetOfLines::Ptr vehShape(
 						new mrpt::opengl::CSetOfLines(*gl_veh_shape));
-					mrpt::poses::CPose3D shapePose =
+					auto shapePose =
 						mrpt::poses::CPose3D(trg_state);
 					shapePose.z_incr(options.vehicle_shape_z);
 					vehShape->setPose(shapePose);

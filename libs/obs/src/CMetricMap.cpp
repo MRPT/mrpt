@@ -86,7 +86,7 @@ double CMetricMap::computeObservationLikelihood(
 bool CMetricMap::canComputeObservationsLikelihood(const CSensoryFrame& sf) const
 {
 	bool can = false;
-	for (CSensoryFrame::const_iterator it = sf.begin(); !can && it != sf.end();
+	for (auto it = sf.begin(); !can && it != sf.end();
 		 ++it)
 		can = can || canComputeObservationLikelihood(it->get());
 	return can;

@@ -84,8 +84,8 @@ void CFeatureTracker_KL::trackFeatures_impl_templ(
 		}  // end for
 
 		// local scope for auxiliary variables around cvCalcOpticalFlowPyrLK()
-		const IplImage* prev_gray_ipl = prev_gray.getAs<IplImage>();
-		const IplImage* cur_gray_ipl = cur_gray.getAs<IplImage>();
+		const auto* prev_gray_ipl = prev_gray.getAs<IplImage>();
+		const auto* cur_gray_ipl = cur_gray.getAs<IplImage>();
 
 		// Pyramids
 		// JL: It seems that cache'ing the pyramids of previous images doesn't
@@ -95,7 +95,7 @@ void CFeatureTracker_KL::trackFeatures_impl_templ(
 
 		int flags = 0;
 
-		float* track_error =
+		auto* track_error =
 			reinterpret_cast<float*>(mrpt_alloca(sizeof(float) * nFeatures));
 
 		cvCalcOpticalFlowPyrLK(

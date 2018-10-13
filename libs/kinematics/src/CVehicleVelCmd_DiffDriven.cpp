@@ -103,7 +103,7 @@ double CVehicleVelCmd_DiffDriven::cmdVel_limits(
 {
 	ASSERT_(params.robotMax_V_mps > 0);
 	ASSERT_(params.robotMax_W_radps > 0);
-	const mrpt::kinematics::CVehicleVelCmd_DiffDriven* prevcmd =
+	const auto* prevcmd =
 		dynamic_cast<const mrpt::kinematics::CVehicleVelCmd_DiffDriven*>(
 			&prev_vel_cmd);
 	ASSERTMSG_(prevcmd, "Expected prevcmd of type `CVehicleVelCmd_DiffDriven`");

@@ -54,7 +54,7 @@ void PlannerTPS_VirtualBase::internal_initialize_PTG()
 
 		// Polygonal robot shape?
 		{
-			mrpt::nav::CPTG_DiffDrive_CollisionGridBased* diff_ptg =
+			auto* diff_ptg =
 				dynamic_cast<mrpt::nav::CPTG_DiffDrive_CollisionGridBased*>(
 					m_PTGs[i].get());
 			if (diff_ptg)
@@ -68,7 +68,7 @@ void PlannerTPS_VirtualBase::internal_initialize_PTG()
 		}
 		// Circular robot shape?
 		{
-			mrpt::nav::CPTG_RobotShape_Circular* ptg =
+			auto* ptg =
 				dynamic_cast<mrpt::nav::CPTG_RobotShape_Circular*>(
 					m_PTGs[i].get());
 			if (ptg)

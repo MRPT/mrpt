@@ -290,7 +290,7 @@ class SemanticClustering
 			}
 		}
 
-		for (map<unsigned, vector<unsigned>>::iterator it = newGroups.begin();
+		for (auto it = newGroups.begin();
 			 it != newGroups.end(); it++)
 			groups[it->first] = it->second;
 
@@ -328,16 +328,16 @@ class SemanticClustering
 		// Re-define currentSemanticGroup and current vicinity
 		//      std::vector<unsigned> newNeighborGroups;
 
-		for (std::map<unsigned, std::vector<unsigned>>::iterator it1 =
+		for (auto it1 =
 				 newGroups.begin();
 			 it1 != newGroups.end(); it1++)
 			vicinity[it1->first] = DEFAULT_VECTOR_U;
 
-		for (std::map<unsigned, std::vector<unsigned>>::iterator it1 =
+		for (auto it1 =
 				 newGroups.begin();
 			 it1 != newGroups.end(); it1++)
 		{
-			std::map<unsigned, std::vector<unsigned>>::iterator it2 = it1;
+			auto it2 = it1;
 			for (it2++; it2 != newGroups.end(); it2++)
 				for (unsigned i = 0; i < it1->second.size(); i++)
 				{
@@ -383,13 +383,13 @@ class SemanticClustering
 		// Select current group
 		unsigned current_group_votes = 0;
 		map<unsigned, unsigned> observed_group;
-		for (set<unsigned>::iterator it = observedPlanes.begin();
+		for (auto it = observedPlanes.begin();
 			 it != observedPlanes.end(); it++)
 			if (observed_group.count(mPbMap.vPlanes[*it].semanticGroup))
 				observed_group[mPbMap.vPlanes[*it].semanticGroup]++;
 			else
 				observed_group[mPbMap.vPlanes[*it].semanticGroup] = 1;
-		for (map<unsigned, unsigned>::iterator it = observed_group.begin();
+		for (auto it = observed_group.begin();
 			 it != observed_group.end(); it++)
 			if (it->second > current_group_votes)
 			{
@@ -448,13 +448,13 @@ class SemanticClustering
 		// Update currentSemanticGroup
 		current_group_votes = 0;
 		observed_group.clear();
-		for (set<unsigned>::iterator it = observedPlanes.begin();
+		for (auto it = observedPlanes.begin();
 			 it != observedPlanes.end(); it++)
 			if (observed_group.count(mPbMap.vPlanes[*it].semanticGroup))
 				observed_group[mPbMap.vPlanes[*it].semanticGroup]++;
 			else
 				observed_group[mPbMap.vPlanes[*it].semanticGroup] = 1;
-		for (map<unsigned, unsigned>::iterator it = observed_group.begin();
+		for (auto it = observed_group.begin();
 			 it != observed_group.end(); it++)
 			if (it->second > current_group_votes)
 			{

@@ -36,7 +36,7 @@ const CSinCosLookUpTableFor2DScans::TSinCosValues&
 	CSinCosLookUpTableFor2DScans::getSinCosForScan(
 		const T2DScanProperties& scan_prop) const
 {
-	std::map<T2DScanProperties, TSinCosValues>::const_iterator it =
+	auto it =
 		m_cache.find(scan_prop);
 	if (it != m_cache.end())
 	{  // Found in the cache:

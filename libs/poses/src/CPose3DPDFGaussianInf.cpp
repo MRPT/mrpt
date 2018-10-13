@@ -108,7 +108,7 @@ void CPose3DPDFGaussianInf::copyFrom(const CPose3DPDF& o)
 
 	if (IS_CLASS(&o, CPose3DPDFGaussianInf))
 	{  // It's my same class:
-		const CPose3DPDFGaussianInf* ptr =
+		const auto* ptr =
 			static_cast<const CPose3DPDFGaussianInf*>(&o);
 		mean = ptr->mean;
 		cov_inv = ptr->cov_inv;
@@ -126,7 +126,7 @@ void CPose3DPDFGaussianInf::copyFrom(const CPosePDF& o)
 {
 	if (IS_CLASS(&o, CPosePDFGaussianInf))
 	{  // cov is already inverted, but it's a 2D pose:
-		const CPosePDFGaussianInf* ptr =
+		const auto* ptr =
 			static_cast<const CPosePDFGaussianInf*>(&o);
 
 		mean = CPose3D(ptr->mean);
@@ -253,7 +253,7 @@ void CPose3DPDFGaussianInf::bayesianFusion(
 void CPose3DPDFGaussianInf::inverse(CPose3DPDF& o) const
 {
 	ASSERT_(o.GetRuntimeClass() == CLASS_ID(CPose3DPDFGaussianInf));
-	CPose3DPDFGaussianInf& out = static_cast<CPose3DPDFGaussianInf&>(o);
+	auto& out = static_cast<CPose3DPDFGaussianInf&>(o);
 
 	// This is like: b=(0,0,0)
 	//  OUT = b - THIS

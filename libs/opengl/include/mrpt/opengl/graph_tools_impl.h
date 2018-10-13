@@ -66,7 +66,7 @@ CSetOfObjects::Ptr graph_visualize(
 		// Estimate bounding box.
 		mrpt::math::TPoint3D BB_min(-10., -10., 0.), BB_max(10., 10., 0.);
 
-		for (typename GRAPH_T::global_poses_t::const_iterator itNod =
+		for (auto itNod =
 				 g.nodes.begin();
 			 itNod != g.nodes.end(); ++itNod)
 		{
@@ -99,7 +99,7 @@ CSetOfObjects::Ptr graph_visualize(
 		pnts->setPointSize(nodes_point_size);
 
 		// Add nodes:
-		for (typename GRAPH_T::global_poses_t::const_iterator itNod =
+		for (auto itNod =
 				 g.nodes.begin();
 			 itNod != g.nodes.end(); ++itNod)
 		{
@@ -116,7 +116,7 @@ CSetOfObjects::Ptr graph_visualize(
 	// Show a 2D corner at each node (or just an empty object with the ID label)
 	if (show_node_corners || show_ID_labels)
 	{
-		for (typename GRAPH_T::global_poses_t::const_iterator itNod =
+		for (auto itNod =
 				 g.nodes.begin();
 			 itNod != g.nodes.end(); ++itNod)
 		{

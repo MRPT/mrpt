@@ -244,7 +244,7 @@ class CDijkstra
 			// No need to check if the min. distance node is not visited yet,
 			// since we
 			// keep two lists: m_distances_non_visited & m_distances
-			for (typename std::map<TNodeID, TDistance>::const_iterator itDist =
+			for (auto itDist =
 					 m_distances_non_visited.begin();
 				 itDist != m_distances_non_visited.end(); ++itDist)
 			{
@@ -270,13 +270,13 @@ class CDijkstra
 				std::set<TNodeID> nodeIDs_unconnected;
 
 				// for all the nodes in the graph
-				for (typename TYPE_GRAPH::global_poses_t::const_iterator n_it =
+				for (auto n_it =
 						 graph.nodes.begin();
 					 n_it != graph.nodes.end(); ++n_it)
 				{
 					// have I already visited this node in Dijkstra?
 					bool have_traversed = false;
-					for (typename id2dist_map_t::const_iterator d_it =
+					for (auto d_it =
 							 m_distances.begin();
 						 d_it != m_distances.end(); ++d_it)
 					{
@@ -458,7 +458,7 @@ class CDijkstra
 		out_tree.root = m_source_node_ID;
 		// For each saved arc in "m_prev_arc", recover the original data in the
 		// input graph and save it to the output tree structure.
-		for (typename id2pairIDs_map_t::const_iterator itArcs =
+		for (auto itArcs =
 				 m_prev_arc.begin();
 			 itArcs != m_prev_arc.end(); ++itArcs)
 		{
@@ -470,7 +470,7 @@ class CDijkstra
 				out_tree.edges_to_children[id == id_from ? id_to : id_from];
 			TreeEdgeInfo newEdge(id);
 			newEdge.reverse = (id == id_from);  // true: root towards leafs.
-			typename graph_t::edges_map_t::const_iterator itEdgeData =
+			auto itEdgeData =
 				m_cached_graph.edges.find(std::make_pair(id_from, id_to));
 			ASSERTMSG_(
 				itEdgeData != m_cached_graph.edges.end(),

@@ -85,7 +85,7 @@ bool DemoFeatures()
 	}
 
 	// Compute descriptors:
-	TDescriptorType desc_to_compute = TDescriptorType(-1);
+	auto desc_to_compute = TDescriptorType(-1);
 
 	if (fext.options.featsType != featSIFT &&
 		fext.options.featsType != featSURF)

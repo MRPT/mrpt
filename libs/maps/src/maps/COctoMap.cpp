@@ -65,7 +65,7 @@ mrpt::maps::CMetricMap* COctoMap::internal_CreateFromMapDefinition(
 {
 	const COctoMap::TMapDefinition& def =
 		*dynamic_cast<const COctoMap::TMapDefinition*>(&_def);
-	COctoMap* obj = new COctoMap(def.resolution);
+	auto* obj = new COctoMap(def.resolution);
 	obj->insertionOptions = def.insertionOpts;
 	obj->likelihoodOptions = def.likelihoodOpts;
 	return obj;

@@ -1131,7 +1131,7 @@ void robotic_arm_kinematicsFrame::UpdateMatrixView()
 
 	edMatrix->Freeze();
 
-	const mrpt::math::CMatrixDouble44 M =
+	const auto M =
 		m_all_poses[sel].getHomogeneousMatrixVal<CMatrixDouble44>();
 
 	const std::string s = format(

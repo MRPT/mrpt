@@ -1025,14 +1025,14 @@ void MainWindow::readRawlogFiles(string rawlog)
 						if (SF->getObservationByIndex(k)->GetRuntimeClass() ==
 							CLASS_ID(CObservationStereoImages))
 						{
-							CObservationStereoImages::Ptr obsSt =
+							auto obsSt =
 								SF->getObservationByIndexAs<
 									CObservationStereoImages::Ptr>(k);
 						}
 						if (SF->getObservationByIndex(k)->GetRuntimeClass() ==
 							CLASS_ID(CObservationImage))
 						{
-							CObservationImage::Ptr obsIm =
+							auto obsIm =
 								SF->getObservationByIndexAs<
 									CObservationImage::Ptr>(k);
 							Mat cvImg =
@@ -3156,7 +3156,7 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 		detectors_select, SIGNAL(currentIndexChanged(int)), this,
 		SLOT(on_detector_choose(int)));
 
-	QPushButton* detector_button = new QPushButton;
+	auto* detector_button = new QPushButton;
 	detector_button->setText("Evaluate Detector");
 	detector_button->setFixedSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 	connect(
@@ -3172,7 +3172,7 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 		descriptors_select, SIGNAL(currentIndexChanged(int)), this,
 		SLOT(on_descriptor_choose(int)));
 
-	QPushButton* descriptor_button = new QPushButton;
+	auto* descriptor_button = new QPushButton;
 	descriptor_button->setText("Evaluate Descriptor");
 	descriptor_button->setFixedSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 	connect(
@@ -3188,7 +3188,7 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 	QLabel* selectDetector = new QLabel("<b>Select detector</b>");
 	QLabel* selectDescriptor = new QLabel("<b>Select descriptor</b>");
 
-	QGridLayout* vbox = new QGridLayout;
+	auto* vbox = new QGridLayout;
 	vbox->addWidget(selectDetector, 0, 0);
 	vbox->addWidget(selectDescriptor, 0, 1);
 	vbox->addWidget(detectors_select, 1, 0);
@@ -3245,7 +3245,7 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 	connect(image1, SIGNAL(Mouse_Pressed()), this, SLOT(Mouse_Pressed()));
 	connect(image1, SIGNAL(Mouse_Left()), this, SLOT(Mouse_left()));
 
-	QGridLayout* hbox_images = new QGridLayout;
+	auto* hbox_images = new QGridLayout;
 	hbox_images->addWidget(image1, 0, 0, 1, 1);
 	hbox_images->addWidget(image2, 0, 1, 1, 1);
 	hbox_images->addWidget(detector_info, 0, 2, 1, 1);
@@ -3256,7 +3256,7 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 	groupBox_images->setLayout(hbox_images);
 
 	/// provide user input image options
-	QGroupBox* inputGroupBox = new QGroupBox;
+	auto* inputGroupBox = new QGroupBox;
 	QLabel* inputLabel = new QLabel("<b>Specify the input data format</b>");
 	inputLabel->setFixedHeight(WIDGET_HEIGHT);
 	inputs = new QComboBox;
@@ -3291,7 +3291,7 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 	inputFilePath2->setVisible(false);
 	browse_button2->setVisible(false);
 
-	QGridLayout* inputVbox = new QGridLayout;
+	auto* inputVbox = new QGridLayout;
 	inputVbox->addWidget(inputLabel, 0, 0);
 	inputVbox->addWidget(inputs, 1, 0);
 	inputVbox->addWidget(inputFilePath, 2, 0);
@@ -3311,7 +3311,7 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 	inputVbox->addWidget(numFeaturesLineEdit, 6, 1);
 
 	/// provide user with some additional functions for HOMOGRAPHY
-	QGroupBox* userOptionsGroupBox = new QGroupBox;
+	auto* userOptionsGroupBox = new QGroupBox;
 	homography_enable = new QCheckBox;
 	homography_enable->setText("Activate Homography based Reapeatability ");
 	connect(
@@ -3443,13 +3443,13 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 	place_recog_image->setVisible(false);
 	placeRecogGroupBox = new QGroupBox;
 
-	QGridLayout* placeRecogBox = new QGridLayout;
+	auto* placeRecogBox = new QGridLayout;
 	placeRecogBox->addWidget(place_recog_image, 0, 0);
 	placeRecogBox->addWidget(place_recog_label, 0, 1);
 
 	placeRecogGroupBox->setLayout(placeRecogBox);
 
-	QGridLayout* userOptionsVBox = new QGridLayout;
+	auto* userOptionsVBox = new QGridLayout;
 	userOptionsVBox->addWidget(visual_odom_enable, 0, 0);
 	userOptionsVBox->addWidget(inputFilePath3, 1, 0);
 	userOptionsVBox->addWidget(browse_button3, 2, 0);
@@ -3483,7 +3483,7 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 	/// initially have all user options unavailable
 	makeVisionOptionsVisible(false);
 
-	QGroupBox* paramsGroupBox = new QGroupBox;
+	auto* paramsGroupBox = new QGroupBox;
 	QLabel* detector_param_label = new QLabel("<b>Detector Parameters: </b>");
 	QLabel* descriptor_param_label =
 		new QLabel("<b>Descriptor Parameters: </b>");
@@ -3492,7 +3492,7 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 
 	initializeParameters();
 
-	QGridLayout* paramVBox = new QGridLayout;
+	auto* paramVBox = new QGridLayout;
 	paramVBox->addWidget(detector_param_label, 0, 0);
 	paramVBox->addWidget(param1, 1, 0, 1, 1);
 	paramVBox->addWidget(param1_edit, 1, 1, 1, 1);
@@ -3527,7 +3527,7 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 	paramsGroupBox->setBaseSize(320, 180);
 
 	/// initializing the buttons here
-	QGroupBox* groupBox_buttons = new QGroupBox;
+	auto* groupBox_buttons = new QGroupBox;
 	button_generate = new QPushButton("Visualize Descriptors");
 	button_generate->setFixedSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 	connect(
@@ -3539,13 +3539,13 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 	connect(
 		button_close, SIGNAL(clicked(bool)), this,
 		SLOT(button_close_clicked()));
-	QGridLayout* hbox1 = new QGridLayout;
+	auto* hbox1 = new QGridLayout;
 	hbox1->addWidget(button_close, 0, 0);
 	hbox1->addWidget(button_generate, 0, 1);
 	groupBox_buttons->setLayout(hbox1);
 
-	QGroupBox* groupBox_buttons2 = new QGroupBox;
-	QGridLayout* hbox2 = new QGridLayout;
+	auto* groupBox_buttons2 = new QGroupBox;
+	auto* hbox2 = new QGridLayout;
 	next_button = new QPushButton("Next");
 	prev_button = new QPushButton("Previous");
 	next_button->setFixedSize(PARAMS_WIDTH, PARAMS_HEIGHT);
@@ -3563,8 +3563,8 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 	hbox2->addWidget(next_button, 0, 1);
 	groupBox_buttons2->setLayout(hbox2);
 
-	QGroupBox* decimateImage = new QGroupBox;
-	QGridLayout* vbox3 = new QGridLayout;
+	auto* decimateImage = new QGroupBox;
+	auto* vbox3 = new QGridLayout;
 	QPushButton* sample = new QPushButton("Decimate");
 	sample->setFixedSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 
@@ -3581,7 +3581,7 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 	decimateImage->setLayout(vbox3);
 
 	/// ADD DESCRIPTOR IMAGES FOR VISUALIZATION
-	QGroupBox* desc_images = new QGroupBox;
+	auto* desc_images = new QGroupBox;
 	desc_VisualizeGrid = new QGridLayout;
 
 	images_static = new QLabel;
@@ -3618,7 +3618,7 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 	QWidget* topLevelWidget = nullptr;
 	topLevelWidget = window_gui;
 
-	QScrollArea* scroller = new QScrollArea;
+	auto* scroller = new QScrollArea;
 	scroller->setWidget(window_gui);
 	topLevelWidget = scroller;
 

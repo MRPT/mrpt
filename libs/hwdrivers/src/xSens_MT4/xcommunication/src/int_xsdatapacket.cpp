@@ -64,7 +64,7 @@ void XsDataPacket_assignFromXsLegacyDataPacket(
 {
 	assert(pack);
 
-	InternalDataPacket* hacket = (InternalDataPacket*)thisPtr;
+	auto* hacket = (InternalDataPacket*)thisPtr;
 
 	hacket->legacyMsg() = pack->message();
 

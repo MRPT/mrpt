@@ -230,7 +230,7 @@ int main(int argc, char** argv)
 				"<td align=\"center\"><b>Execution rate (Hz)</b></td> </tr>\n");
 		}
 
-		for (std::list<TestData>::const_iterator it = lstTests.begin();
+		for (auto it = lstTests.begin();
 			 it != lstTests.end(); it++)
 		{
 			// Filter tests?

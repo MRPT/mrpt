@@ -102,7 +102,7 @@ double joint_pdf_metric(
 	// ----------------------------------------------------------------------
 	Eigen::Matrix<T, Eigen::Dynamic, 1> innovations(N * info.length_O);
 	T* dst_ptr = &innovations[0];
-	for (map<size_t, size_t>::const_iterator it =
+	for (auto it =
 			 info.currentAssociation.begin();
 		 it != info.currentAssociation.end(); ++it)
 	{
@@ -510,7 +510,7 @@ void mrpt::slam::data_association_full_covariance(
 			// --------------------------------------------------------------------
 			std::set<prediction_index_t> lst_already_taken_preds;
 
-			for (TListAllICs::const_iterator it = lst_all_ICs.begin();
+			for (auto it = lst_all_ICs.begin();
 				 it != lst_all_ICs.end(); ++it)
 			{
 				const observation_index_t obs_id = it->second.first;

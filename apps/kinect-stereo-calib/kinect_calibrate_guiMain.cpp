@@ -2076,7 +2076,7 @@ void myCalibCallback(
 {
 	if ((d.current_iter & 0x0F) != 0) return;
 
-	TCalibCallbackData* dat = reinterpret_cast<TCalibCallbackData*>(user_data);
+	auto* dat = reinterpret_cast<TCalibCallbackData*>(user_data);
 
 	string s;
 	switch (d.calibRound)

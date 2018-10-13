@@ -56,7 +56,7 @@ DECLARE_OP_FUNCTION(op_export_anemometer_txt)
 			const CObservationWindSensor* obs =
 				dynamic_cast<CObservationWindSensor*>(o.get());
 
-			map<string, FILE*>::const_iterator it =
+			auto it =
 				lstFiles.find(obs->sensorLabel);
 
 			FILE* f_this;
@@ -113,7 +113,7 @@ DECLARE_OP_FUNCTION(op_export_anemometer_txt)
 		// Destructor: close files and generate summary files:
 		~CRawlogProcessor_ExportANEMOMETER_TXT()
 		{
-			for (map<string, FILE*>::const_iterator it = lstFiles.begin();
+			for (auto it = lstFiles.begin();
 				 it != lstFiles.end(); ++it)
 			{
 				os::fclose(it->second);

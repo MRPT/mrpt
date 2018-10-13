@@ -155,7 +155,7 @@ class GraphSlamLevMarqTest
 			}
 		}
 
-		for (typename my_graph_t::global_poses_t::iterator itNode =
+		for (auto itNode =
 				 graph.nodes.begin();
 			 itNode != graph.nodes.end(); ++itNode)
 			if (itNode->first != graph.root)

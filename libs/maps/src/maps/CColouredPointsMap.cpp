@@ -59,7 +59,7 @@ mrpt::maps::CMetricMap* CColouredPointsMap::internal_CreateFromMapDefinition(
 {
 	const CColouredPointsMap::TMapDefinition& def =
 		*dynamic_cast<const CColouredPointsMap::TMapDefinition*>(&_def);
-	CColouredPointsMap* obj = new CColouredPointsMap();
+	auto* obj = new CColouredPointsMap();
 	obj->insertionOptions = def.insertionOpts;
 	obj->likelihoodOptions = def.likelihoodOpts;
 	obj->colorScheme = def.colourOpts;
@@ -121,7 +121,7 @@ void CColouredPointsMap::copyFrom(const CPointsMap& obj)
 	CPointsMap::base_copyFrom(
 		obj);  // This also does a ::resize(N) of all data fields.
 
-	const CColouredPointsMap* pCol =
+	const auto* pCol =
 		dynamic_cast<const CColouredPointsMap*>(&obj);
 	if (pCol)
 	{
@@ -667,7 +667,7 @@ void CColouredPointsMap::addFrom_classSpecific(
 	const size_t nOther = anotherMap.size();
 
 	// Specific data for this class:
-	const CColouredPointsMap* anotheMap_col =
+	const auto* anotheMap_col =
 		dynamic_cast<const CColouredPointsMap*>(&anotherMap);
 
 	if (anotheMap_col)

@@ -76,7 +76,7 @@ mrpt::maps::CMetricMap* CHeightGridMap2D::internal_CreateFromMapDefinition(
 {
 	const CHeightGridMap2D::TMapDefinition& def =
 		*dynamic_cast<const CHeightGridMap2D::TMapDefinition*>(&_def);
-	CHeightGridMap2D* obj = new CHeightGridMap2D(
+	auto* obj = new CHeightGridMap2D(
 		def.mapType, def.min_x, def.max_x, def.min_y, def.max_y,
 		def.resolution);
 	obj->insertionOptions = def.insertionOpts;
@@ -170,7 +170,7 @@ void CHeightGridMap2D::serializeTo(mrpt::serialization::CArchive& out) const
 	dyngridcommon_writeToStream(out);
 
 	// To assure compatibility: The size of each cell:
-	uint32_t n = static_cast<uint32_t>(sizeof(THeightGridmapCell));
+	auto n = static_cast<uint32_t>(sizeof(THeightGridmapCell));
 	out << n;
 
 	// Save the map contents:

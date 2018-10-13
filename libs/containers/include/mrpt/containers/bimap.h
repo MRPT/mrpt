@@ -107,7 +107,7 @@ class bimap
 	  */
 	VALUE direct(const KEY& k) const
 	{
-		const_iterator i = m_k2v.find(k);
+		auto i = m_k2v.find(k);
 		if (i == m_k2v.end()) THROW_EXCEPTION("Key not found.");
 		return i->second;
 	}
@@ -132,7 +132,7 @@ class bimap
 	  */
 	KEY inverse(const VALUE& v) const
 	{
-		const_iterator_inverse i = m_v2k.find(v);
+		auto i = m_v2k.find(v);
 		if (i == m_v2k.end()) THROW_EXCEPTION("Value not found.");
 		return i->second;
 	}

@@ -182,7 +182,7 @@ int main(int argc, char** argv)
 				<< "%          Ground truth positioning data \n"
 				   "%  Timestamp (sec)       x (m)    y (m)    phi (rad)  \n"
 				   "% ----------------------------------------------------\n";
-			for (map<TTimeStamp, TPose2D>::const_iterator it =
+			for (auto it =
 					 groundTruthPoses.begin();
 				 it != groundTruthPoses.end(); ++it)
 				gt_file << format(

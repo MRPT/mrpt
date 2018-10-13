@@ -148,7 +148,7 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 		{
 			TPoint3D X_ENU;  // Transformed coordinates
 
-			const TGeodeticCoords obsCoords =
+			const auto obsCoords =
 				gga->getAsStruct<TGeodeticCoords>();
 
 			// The first gps datum?
@@ -391,7 +391,7 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
 
 	// List of labels:
 	wxArrayString lstLabels;
-	for (std::map<std::string, TInfoPerSensorLabel>::iterator i =
+	for (auto i =
 			 listOfSensorLabels.begin();
 		 i != listOfSensorLabels.end(); ++i)
 		lstLabels.Add(_U(i->first.c_str()));
@@ -766,7 +766,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 							ith_obs++);
 						if (obs)
 						{
-							map<string, FILE*>::const_iterator it =
+							auto it =
 								lstFiles.find(obs->sensorLabel);
 
 							FILE* f_this;
@@ -889,7 +889,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 							std::dynamic_pointer_cast<CObservationGPS>(o);
 						if (obs)
 						{
-							map<string, FILE*>::const_iterator it =
+							auto it =
 								lstFiles.find(obs->sensorLabel);
 
 							FILE* f_this;
@@ -1085,7 +1085,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 			}
 		}
 
-		for (map<string, FILE*>::const_iterator it = lstFiles.begin();
+		for (auto it = lstFiles.begin();
 			 it != lstFiles.end(); ++it)
 		{
 			os::fclose(it->second);
@@ -1095,13 +1095,13 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 		// Save the joint file:
 		// -------------------------
 		// Remove those entries with not all the GPSs:
-		for (map<TTimeStamp, map<string, CPoint3D>>::iterator a =
+		for (auto a =
 				 lstXYZallGPS.begin();
 			 a != lstXYZallGPS.end();)
 		{
 			if (a->second.size() != lstAllGPSlabels.size())
 			{
-				map<TTimeStamp, map<string, CPoint3D>>::iterator b = a;
+				auto b = a;
 				b++;
 				lstXYZallGPS.erase(a);
 				a = b;
@@ -1114,14 +1114,14 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 
 		CMatrixDouble MAT(lstXYZallGPS.size(), 1 + 3 * lstAllGPSlabels.size());
 		int nLabels = 0;
-		for (map<TTimeStamp, map<string, CPoint3D>>::iterator a =
+		for (auto a =
 				 lstXYZallGPS.begin();
 			 a != lstXYZallGPS.end(); ++a, nLabels++)
 		{
 			MAT(nLabels, 0) = timestampTotime_t(a->first);
 			map<string, CPoint3D>& m = a->second;
 			int k = 0;
-			for (set<string>::iterator it = lstAllGPSlabels.begin();
+			for (auto it = lstAllGPSlabels.begin();
 				 it != lstAllGPSlabels.end(); ++it, k++)
 			{
 				MAT(nLabels, 1 + 3 * k + 0) = m[*it].x();
@@ -1165,7 +1165,7 @@ void filter_delGPSNan(
 {
 	if (SF)
 	{
-		for (CSensoryFrame::iterator it = SF->begin(); it != SF->end();)
+		for (auto it = SF->begin(); it != SF->end();)
 		{
 			bool del = false;
 			if (IS_CLASS(*it, CObservationGPS))

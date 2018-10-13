@@ -92,7 +92,7 @@ void CPointPDFSOG::getCovarianceAndMean(
 	{
 		// 1) Get the mean:
 		double sumW = 0;
-		CMatrixDouble31 estMean = CMatrixDouble31(p);
+		auto estMean = CMatrixDouble31(p);
 
 		CListGaussianModes::const_iterator it;
 
@@ -105,7 +105,7 @@ void CPointPDFSOG::getCovarianceAndMean(
 
 			// estCov += w * ( it->val.cov +
 			// ((estMean_i-estMean)*(~(estMean_i-estMean))) );
-			CMatrixDouble31 estMean_i = CMatrixDouble31(it->val.mean);
+			auto estMean_i = CMatrixDouble31(it->val.mean);
 			estMean_i -= estMean;
 			partCov.multiply_AAt(estMean_i);
 			partCov += it->val.cov;
@@ -259,8 +259,8 @@ void CPointPDFSOG::bayesianFusion(
 	ASSERT_(p1_.GetRuntimeClass() == CLASS_ID(CPointPDFSOG));
 	ASSERT_(p2_.GetRuntimeClass() == CLASS_ID(CPointPDFSOG));
 
-	const CPointPDFSOG* p1 = static_cast<const CPointPDFSOG*>(&p1_);
-	const CPointPDFSOG* p2 = static_cast<const CPointPDFSOG*>(&p2_);
+	const auto* p1 = static_cast<const CPointPDFSOG*>(&p1_);
+	const auto* p2 = static_cast<const CPointPDFSOG*>(&p2_);
 
 	// Compute the new kernel means, covariances, and weights after multiplying
 	// to the Gaussian "p2":
@@ -357,11 +357,11 @@ void CPointPDFSOG::bayesianFusion(
 				newKernel.val = auxGaussianProduct;  // Copy mean & cov
 
 				CMatrixDouble33 covInv_i = auxSOG_Kernel_i.cov.inv();
-				CMatrixDouble31 eta_i = CMatrixDouble31(auxSOG_Kernel_i.mean);
+				auto eta_i = CMatrixDouble31(auxSOG_Kernel_i.mean);
 				eta_i = covInv_i * eta_i;
 
 				CMatrixDouble33 new_covInv_i = newKernel.val.cov.inv();
-				CMatrixDouble31 new_eta_i = CMatrixDouble31(newKernel.val.mean);
+				auto new_eta_i = CMatrixDouble31(newKernel.val.mean);
 				new_eta_i = new_covInv_i * new_eta_i;
 
 				double a_i =
@@ -465,8 +465,8 @@ void CPointPDFSOG::evaluatePDFInArea(
 	ASSERT_(y_max > y_min);
 	ASSERT_(resolutionXY > 0);
 
-	const size_t Nx = (size_t)ceil((x_max - x_min) / resolutionXY);
-	const size_t Ny = (size_t)ceil((y_max - y_min) / resolutionXY);
+	const auto Nx = (size_t)ceil((x_max - x_min) / resolutionXY);
+	const auto Ny = (size_t)ceil((y_max - y_min) / resolutionXY);
 	outMatrix.setSize(Ny, Nx);
 
 	for (size_t i = 0; i < Ny; i++)
@@ -490,7 +490,7 @@ double CPointPDFSOG::evaluatePDF(const CPoint3D& x, bool sumOverAllZs) const
 	if (!sumOverAllZs)
 	{
 		// Normal evaluation:
-		CMatrixDouble31 X = CMatrixDouble31(x);
+		auto X = CMatrixDouble31(x);
 		double ret = 0;
 
 		CMatrixDouble31 MU;
@@ -539,8 +539,8 @@ void CPointPDFSOG::getMostLikelyMode(CPointPDFGaussian& outVal) const
 	}
 	else
 	{
-		const_iterator it_best = m_modes.end();
-		for (const_iterator it = m_modes.begin(); it != m_modes.end(); ++it)
+		auto it_best = m_modes.end();
+		for (auto it = m_modes.begin(); it != m_modes.end(); ++it)
 			if (it_best == m_modes.end() || it->log_w > it_best->log_w)
 				it_best = it;
 

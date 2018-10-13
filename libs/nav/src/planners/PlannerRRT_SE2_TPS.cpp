@@ -302,7 +302,7 @@ void PlannerRRT_SE2_TPS::solve(
 					(goal_dist < end_criteria.acceptedDistToTarget) &&
 					(goal_ang < end_criteria.acceptedAngToTarget);
 
-				mrpt::graphs::TNodeID new_nearest_id = INVALID_NODEID;
+				auto new_nearest_id = INVALID_NODEID;
 				if (!is_acceptable_goal)  // Only check for nearby nodes if this
 				// is not a solution!
 				{
@@ -405,7 +405,7 @@ void PlannerRRT_SE2_TPS::solve(
 				result.move_tree.backtrackPath(
 					new_child_id, candidate_solution_path);
 				this_path_cost = 0;
-				for (TMoveTreeSE2_TP::path_t::const_iterator it =
+				for (auto it =
 						 candidate_solution_path.begin();
 					 it != candidate_solution_path.end(); ++it)
 					if (it->edge_to_parent)

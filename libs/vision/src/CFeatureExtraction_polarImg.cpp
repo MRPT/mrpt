@@ -141,7 +141,7 @@ void CFeatureExtraction::internal_computePolarImageDescriptors(
 	CImage linpolar_frame(patch_w, patch_h, in_img.getChannelCount());
 
 	// Compute intensity-domain spin images
-	for (CFeatureList::iterator it = in_features.begin();
+	for (auto it = in_features.begin();
 		 it != in_features.end(); ++it)
 	{
 		// Overwrite scale with the descriptor scale:

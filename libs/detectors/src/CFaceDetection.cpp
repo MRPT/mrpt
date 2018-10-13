@@ -162,7 +162,7 @@ void CFaceDetection::detectObjects_Impl(
 			if (m_measure.takeTime) m_timeLog.enter("Check if real face time");
 		}
 
-		CObservation3DRangeScan* o = static_cast<CObservation3DRangeScan*>(
+		auto* o = static_cast<CObservation3DRangeScan*>(
 			const_cast<CObservation*>(obs));
 
 		if (o->hasPoints3D)
@@ -1851,7 +1851,7 @@ void CFaceDetection::experimental_calcHist(
 		for (size_t col = c1; col <= c2; col++)
 		{
 			unsigned char* c = face.get_unsafe(col, row);
-			size_t value = (size_t)*c;
+			auto value = (size_t)*c;
 			int count = hist.get_unsafe(0, value) + 1;
 			hist.set_unsafe(0, value, count);
 		}

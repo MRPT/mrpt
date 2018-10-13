@@ -88,7 +88,7 @@ void xRawLogViewerFrame::OnGenerateSeqImgs(wxCommandEvent& event)
 						if (SF->getObservationByIndex(k)->GetRuntimeClass() ==
 							CLASS_ID(CObservationStereoImages))
 						{
-							CObservationStereoImages::Ptr obsSt =
+							auto obsSt =
 								SF->getObservationByIndexAs<
 									CObservationStereoImages::Ptr>(k);
 							obsSt->imageLeft.saveToFile(format(
@@ -104,7 +104,7 @@ void xRawLogViewerFrame::OnGenerateSeqImgs(wxCommandEvent& event)
 						if (SF->getObservationByIndex(k)->GetRuntimeClass() ==
 							CLASS_ID(CObservationImage))
 						{
-							CObservationImage::Ptr obsIm =
+							auto obsIm =
 								SF->getObservationByIndexAs<
 									CObservationImage::Ptr>(k);
 							obsIm->image.saveToFile(format(
@@ -191,7 +191,7 @@ void xRawLogViewerFrame::OnMenuMono2Stereo(wxCommandEvent& event)
 	string lb_stereo = string(sNewLabel.mb_str());
 
 	wxBusyCursor waitCursor;
-	unsigned int nEntries = (unsigned int)rawlog.size();
+	auto nEntries = (unsigned int)rawlog.size();
 
 	wxProgressDialog progDia(
 		wxT("Progress"), wxT("Parsing rawlog..."),
@@ -338,7 +338,7 @@ void xRawLogViewerFrame::OnMenuRectifyImages(wxCommandEvent& event)
 						if (SF->getObservationByIndex(k)->GetRuntimeClass() ==
 							CLASS_ID(CObservationImage))
 						{
-							CObservationImage::Ptr obsIm =
+							auto obsIm =
 								SF->getObservationByIndexAs<
 									CObservationImage::Ptr>(k);
 
@@ -566,7 +566,7 @@ void xRawLogViewerFrame::OnMenuRenameImageFiles(wxCommandEvent& event)
 								SF->getObservationByIndex(k),
 								CObservationImage))
 						{
-							CObservationImage::Ptr obsIm =
+							auto obsIm =
 								SF->getObservationByIndexAs<
 									CObservationImage::Ptr>(k);
 							renameExternalImageFile(obsIm);
@@ -576,7 +576,7 @@ void xRawLogViewerFrame::OnMenuRenameImageFiles(wxCommandEvent& event)
 									 SF->getObservationByIndex(k),
 									 CObservationStereoImages))
 						{
-							CObservationStereoImages::Ptr obsIm =
+							auto obsIm =
 								SF->getObservationByIndexAs<
 									CObservationStereoImages::Ptr>(k);
 							renameExternalStereoImageFile(obsIm);

@@ -75,7 +75,7 @@ mrpt::maps::CMetricMap* CColouredOctoMap::internal_CreateFromMapDefinition(
 {
 	const CColouredOctoMap::TMapDefinition& def =
 		*dynamic_cast<const CColouredOctoMap::TMapDefinition*>(&_def);
-	CColouredOctoMap* obj = new CColouredOctoMap(def.resolution);
+	auto* obj = new CColouredOctoMap(def.resolution);
 	obj->insertionOptions = def.insertionOpts;
 	obj->likelihoodOptions = def.likelihoodOpts;
 	return obj;
@@ -162,7 +162,7 @@ bool CColouredOctoMap::internal_insertObservation(
 		/********************************************************************
 				OBSERVATION TYPE: CObservation2DRangeScan
 		********************************************************************/
-		const CObservation2DRangeScan* o =
+		const auto* o =
 			static_cast<const CObservation2DRangeScan*>(obs);
 
 		// Build a points-map representation of the points from the scan
@@ -174,7 +174,7 @@ bool CColouredOctoMap::internal_insertObservation(
 		sensorPt =
 			octomap::point3d(sensorPose.x(), sensorPose.y(), sensorPose.z());
 
-		const CPointsMap* scanPts =
+		const auto* scanPts =
 			o->buildAuxPointsMap<mrpt::maps::CPointsMap>();
 		const size_t nPts = scanPts->size();
 
@@ -206,7 +206,7 @@ bool CColouredOctoMap::internal_insertObservation(
 		/********************************************************************
 				OBSERVATION TYPE: CObservation3DRangeScan
 		********************************************************************/
-		const CObservation3DRangeScan* o =
+		const auto* o =
 			static_cast<const CObservation3DRangeScan*>(obs);
 
 		o->load();  // Just to make sure the points are loaded from an external

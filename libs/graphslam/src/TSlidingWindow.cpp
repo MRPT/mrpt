@@ -91,7 +91,7 @@ double TSlidingWindow::getStdDev()
 		double mean = this->getMean();
 
 		double sum_of_sq_diffs = 0;
-		for (std::vector<double>::const_iterator it =
+		for (auto it =
 				 m_measurements_vec.begin();
 			 it != m_measurements_vec.end(); ++it)
 		{

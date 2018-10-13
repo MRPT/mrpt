@@ -659,7 +659,7 @@ class CNetworkOfPoses
 						TNodeID prev_nodeID = *unconnected_nodeIDs.begin();
 						curr_island.insert(
 							prev_nodeID);  // add the initial node;
-						for (std::set<TNodeID>::const_iterator it =
+						for (auto it =
 								 ++unconnected_nodeIDs.begin();
 							 *it < sub_graph->root &&
 							 it != unconnected_nodeIDs.end();

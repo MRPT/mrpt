@@ -486,15 +486,14 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 
 					for (size_t i = 0; i < obsRB->sensedData.size(); i++)
 					{
-						std::map<observation_index_t, prediction_index_t>::
-							const_iterator it = da.results.associations.find(i);
+						auto it = da.results.associations.find(i);
 						int assoc_ID_in_SLAM;
 						if (it != da.results.associations.end())
 							assoc_ID_in_SLAM = it->second;
 						else
 						{
 							// It should be a newly created LM:
-							std::map<size_t, size_t>::const_iterator itNewLM =
+							auto itNewLM =
 								da.newly_inserted_landmarks.find(i);
 							if (itNewLM != da.newly_inserted_landmarks.end())
 								assoc_ID_in_SLAM = itNewLM->second;
@@ -526,7 +525,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 					const double tim =
 						mrpt::system::timestampToDouble(obsRB->timestamp);
 
-					std::map<double, std::vector<int>>::const_iterator itDA =
+					auto itDA =
 						GT_DA.find(tim);
 
 					for (size_t i = 0; i < obsRB->sensedData.size(); i++)
@@ -540,8 +539,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 							ASSERT_BELOW_(i, vDA.size());
 							const int GT_ASSOC = vDA[i];
 
-							std::map<observation_index_t, prediction_index_t>::
-								const_iterator it =
+							auto it =
 									da.results.associations.find(i);
 							if (it != da.results.associations.end())
 							{
@@ -575,7 +573,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 							else
 							{
 								// No pairing, but should be a newly created LM:
-								std::map<size_t, size_t>::const_iterator
+								auto
 									itNewLM =
 										da.newly_inserted_landmarks.find(i);
 								if (itNewLM !=
@@ -735,8 +733,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 						mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
 					lins->setLineWidth(1.2f);
 					lins->setColor(1, 1, 1);
-					for (std::map<observation_index_t, prediction_index_t>::
-							 const_iterator it =
+					for (auto it =
 								 da.results.associations.begin();
 						 it != da.results.associations.end(); ++it)
 					{

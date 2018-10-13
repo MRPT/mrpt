@@ -242,7 +242,7 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 		size_t size() const
 		{
 			size_t cnt = 0;
-			for (typename CONTAINER::const_iterator it = m_source->begin();
+			for (auto it = m_source->begin();
 				 it != m_source->end(); ++it)
 				if (dynamic_cast<const_ptr_t>(it->get())) cnt++;
 			return cnt;
@@ -250,7 +250,7 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 		SELECTED_CLASS_PTR operator[](size_t index) const
 		{
 			size_t cnt = 0;
-			for (typename CONTAINER::const_iterator it = m_source->begin();
+			for (auto it = m_source->begin();
 				 it != m_source->end(); ++it)
 				if (dynamic_cast<const_ptr_t>(it->get()))
 					if (cnt++ == index)
@@ -340,7 +340,7 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 		mutable SELECTED_CLASS_PTR m_ret;
 		void internal_update_ref() const
 		{
-			for (typename CONTAINER::const_iterator it = m_source->begin();
+			for (auto it = m_source->begin();
 				 it != m_source->end(); ++it)
 			{
 				if (dynamic_cast<const_ptr_t>(it->get()))

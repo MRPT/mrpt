@@ -121,11 +121,11 @@ class CDirectedTree
 		const size_t root_depth_level = 0) const
 	{
 		const size_t next_depth_level = root_depth_level + 1;
-		typename TMapNode2ListEdges::const_iterator itChildren =
+		auto itChildren =
 			edges_to_children.find(vroot);
 		if (itChildren == edges_to_children.end()) return;  // No children
 		const TListEdges& children = itChildren->second;
-		for (typename TListEdges::const_iterator itEdge = children.begin();
+		for (auto itEdge = children.begin();
 			 itEdge != children.end(); ++itEdge)
 		{
 			user_visitor.OnVisitNode(vroot, *itEdge, next_depth_level);
@@ -143,14 +143,14 @@ class CDirectedTree
 		const size_t root_depth_level = 0) const
 	{
 		const size_t next_depth_level = root_depth_level + 1;
-		typename TMapNode2ListEdges::const_iterator itChildren =
+		auto itChildren =
 			edges_to_children.find(vroot);
 		if (itChildren == edges_to_children.end()) return;  // No children
 		const TListEdges& children = itChildren->second;
-		for (typename TListEdges::const_iterator itEdge = children.begin();
+		for (auto itEdge = children.begin();
 			 itEdge != children.end(); ++itEdge)
 			user_visitor.OnVisitNode(vroot, *itEdge, next_depth_level);
-		for (typename TListEdges::const_iterator itEdge = children.begin();
+		for (auto itEdge = children.begin();
 			 itEdge != children.end(); ++itEdge)
 			visitDepthFirst(
 				itEdge->id, user_visitor,

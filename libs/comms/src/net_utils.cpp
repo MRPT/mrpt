@@ -157,7 +157,7 @@ ERRORCODE_HTTP mrpt::comms::net::http_request(
 			http_method.c_str(), get_object.c_str(), server_addr.c_str());
 
 		// Other headers:
-		for (TParameters<string>::const_iterator i = headers_to_send.begin();
+		for (auto i = headers_to_send.begin();
 			 i != headers_to_send.end(); ++i)
 		{
 			req += i->first;
@@ -296,7 +296,7 @@ ERRORCODE_HTTP mrpt::comms::net::http_request(
 						mrpt::system::tokenize(
 							aux_all_headers, "\r\n", lstLines);
 
-						for (deque<string>::const_iterator i = lstLines.begin();
+						for (auto i = lstLines.begin();
 							 i != lstLines.end(); ++i)
 						{
 							const size_t p = i->find(":");

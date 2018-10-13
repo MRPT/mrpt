@@ -631,7 +631,7 @@ void math::TPolygonWithPlane::getPlanes(
 bool math::intersect(const TSegment3D& s1, const TSegment3D& s2, TObject3D& obj)
 {
 	TObject3D irr;
-	TLine3D l = TLine3D(s1);
+	auto l = TLine3D(s1);
 	if (!intersect(l, TLine3D(s2), irr)) return false;
 	if (irr.isPoint())
 	{
@@ -844,7 +844,7 @@ bool math::intersect(const TLine2D& r1, const TSegment2D& s2, TObject2D& obj)
 
 bool math::intersect(const TSegment2D& s1, const TSegment2D& s2, TObject2D& obj)
 {
-	TLine2D lin = TLine2D(s1);
+	auto lin = TLine2D(s1);
 	if (!intersect(lin, TLine2D(s2), obj)) return false;
 	TPoint2D p;
 	if (obj.isLine())
@@ -1241,7 +1241,7 @@ void math::project2D(
 
 bool math::intersect(const TPolygon2D& p1, const TSegment2D& s2, TObject2D& obj)
 {
-	TLine2D l2 = TLine2D(s2);
+	auto l2 = TLine2D(s2);
 	if (!intersect(p1, l2, obj)) return false;
 	TPoint2D p;
 	TSegment2D s;
@@ -1695,19 +1695,19 @@ size_t math::intersect(
 	getMinAndMaxBounds(v1, minBounds1, maxBounds1);
 	getMinAndMaxBounds(v2, minBounds2, maxBounds2);
 	TObject3D obj;
-	std::vector<TPlane>::const_iterator itP1 = w1.begin();
-	std::vector<TPoint3D>::const_iterator itMin1 = minBounds1.begin();
-	std::vector<TPoint3D>::const_iterator itMax1 = maxBounds1.begin();
-	for (std::vector<TPolygon3D>::const_iterator it1 = v1.begin();
+	auto itP1 = w1.begin();
+	auto itMin1 = minBounds1.begin();
+	auto itMax1 = maxBounds1.begin();
+	for (auto it1 = v1.begin();
 		 it1 != v1.end(); ++it1, ++itP1, ++itMin1, ++itMax1)
 	{
 		const TPolygon3D& poly1 = *it1;
 		const TPlane& plane1 = *itP1;
-		std::vector<TPlane>::const_iterator itP2 = w2.begin();
+		auto itP2 = w2.begin();
 		const TPoint3D &min1 = *itMin1, max1 = *itMax1;
-		std::vector<TPoint3D>::const_iterator itMin2 = minBounds2.begin();
-		std::vector<TPoint3D>::const_iterator itMax2 = maxBounds2.begin();
-		for (std::vector<TPolygon3D>::const_iterator it2 = v2.begin();
+		auto itMin2 = minBounds2.begin();
+		auto itMax2 = maxBounds2.begin();
+		for (auto it2 = v2.begin();
 			 it2 != v2.end(); ++it2, ++itP2, ++itMin2, ++itMax2)
 			if (!compatibleBounds(min1, max1, *itMin2, *itMax2))
 				continue;
@@ -2249,7 +2249,7 @@ bool depthFirstSearch(
 					if (s2p != current[0].seg1Point)
 					{
 						current.emplace_back(searching, i, s1p, s2p);
-						for (std::vector<MatchingVertex>::const_iterator it =
+						for (auto it =
 								 current.begin();
 							 it != current.end(); ++it)
 							used[it->seg2] = true;

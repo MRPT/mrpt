@@ -624,7 +624,7 @@ void filter_delObsByIndex(
 	if (SF)
 	{
 		int j = 0;
-		for (CSensoryFrame::iterator it = SF->begin(); it != SF->end(); ++j)
+		for (auto it = SF->begin(); it != SF->end(); ++j)
 		{
 			if (auxMask[j])
 			{
@@ -664,7 +664,7 @@ void filter_delObsByClass(
 {
 	if (SF)
 	{
-		for (CSensoryFrame::iterator it = SF->begin(); it != SF->end();)
+		for (auto it = SF->begin(); it != SF->end();)
 		{
 			CObservation::Ptr obs = *it;
 			if (string::npos != find_in_vector(
@@ -687,7 +687,7 @@ void filter_remObsByClass(
 {
 	if (SF)
 	{
-		for (CSensoryFrame::iterator it = SF->begin(); it != SF->end();)
+		for (auto it = SF->begin(); it != SF->end();)
 		{
 			CObservation::Ptr obs = *it;
 			if (string::npos == find_in_vector(
@@ -726,7 +726,7 @@ void filter_delActsByIndex(
 	if (acts)
 	{
 		int j = 0;
-		for (CActionCollection::iterator it = acts->begin(); it != acts->end();
+		for (auto it = acts->begin(); it != acts->end();
 			 ++j)
 		{
 			if (auxMask[j])
@@ -785,7 +785,7 @@ void filter_swapColors(
 		{
 				if (IS_CLASS(obs, CObservationImage))
 			{
-				CObservationImage* o = (CObservationImage*)obs.get();
+				auto* o = (CObservationImage*)obs.get();
 				if (o->image.isColor())
 				{
 					swapColors(o->image);
@@ -794,7 +794,7 @@ void filter_swapColors(
 			}
 			else if (IS_CLASS(obs, CObservationStereoImages))
 			{
-				CObservationStereoImages* o =
+				auto* o =
 					(CObservationStereoImages*)obs.get();
 				if (o->imageLeft.isColor())
 				{
@@ -1149,7 +1149,7 @@ void filter_delObsByLabel(
 {
 	if (SF)
 	{
-		for (CSensoryFrame::iterator it = SF->begin(); it != SF->end();)
+		for (auto it = SF->begin(); it != SF->end();)
 		{
 			CObservation::Ptr obs = *it;
 			if (string::npos !=
@@ -1171,7 +1171,7 @@ void filter_NotDelObsByLabel(
 {
 	if (SF)
 	{
-		for (CSensoryFrame::iterator it = SF->begin(); it != SF->end();)
+		for (auto it = SF->begin(); it != SF->end();)
 		{
 			CObservation::Ptr obs = *it;
 			if (string::npos ==
@@ -1225,13 +1225,13 @@ void leave_horizontalScans(
 {
 	if (SF)
 	{
-		for (CSensoryFrame::iterator it = SF->begin(); it != SF->end();)
+		for (auto it = SF->begin(); it != SF->end();)
 		{
 			CObservation::Ptr obs = *it;
 
 			if (IS_CLASS(obs, CObservation2DRangeScan))
 			{
-				CObservation2DRangeScan* o =
+				auto* o =
 					static_cast<CObservation2DRangeScan*>(obs.get());
 
 				if (fabs(o->sensorPose.pitch()) > minPitchToDeleteLaserScan)

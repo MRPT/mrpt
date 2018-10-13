@@ -51,7 +51,7 @@ CHMHMapNode::Ptr CHierarchicalMapMHPartition::getNodeByID(
 	MRPT_START
 	if (id == AREAID_INVALID) return CHMHMapNode::Ptr();
 
-	TNodeList::iterator it = m_nodes.find(id);
+	auto it = m_nodes.find(id);
 	return it == m_nodes.end() ? CHMHMapNode::Ptr() : it->second;
 
 	MRPT_END
@@ -65,7 +65,7 @@ const CHMHMapNode::Ptr CHierarchicalMapMHPartition::getNodeByID(
 	MRPT_START
 	if (id == AREAID_INVALID) return CHMHMapNode::Ptr();
 
-	TNodeList::const_iterator it = m_nodes.find(id);
+	auto it = m_nodes.find(id);
 	return it == m_nodes.end() ? CHMHMapNode::Ptr() : it->second;
 
 	MRPT_END
@@ -80,7 +80,7 @@ CHMHMapNode::Ptr CHierarchicalMapMHPartition::getNodeByLabel(
 	MRPT_START
 
 	// Look for the ID:
-	for (TNodeList::const_iterator it = m_nodes.begin(); it != m_nodes.end();
+	for (auto it = m_nodes.begin(); it != m_nodes.end();
 		 ++it)
 		if (it->second->m_hypotheses.has(hypothesisID))
 			if (!os::_strcmpi(it->second->m_label.c_str(), label.c_str()))
@@ -792,7 +792,7 @@ void CHierarchicalMapMHPartition::findPathBetweenNodes(
 
 		u = m_nodes.end();
 
-		for (TNodeList::const_iterator i = m_nodes.begin(); i != m_nodes.end();
+		for (auto i = m_nodes.begin(); i != m_nodes.end();
 			 ++i)
 		{
 			if (i->second->m_hypotheses.has(hypothesisID))
@@ -814,7 +814,7 @@ void CHierarchicalMapMHPartition::findPathBetweenNodes(
 		const CHMHMapNode::Ptr nodeU = getNodeByID(u->first);
 		TArcList arcs;
 		nodeU->getArcs(arcs, hypothesisID);
-		for (TArcList::const_iterator i = arcs.begin(); i != arcs.end(); ++i)
+		for (auto i = arcs.begin(); i != arcs.end(); ++i)
 		{
 			CHMHMapNode::TNodeID vID;
 			if (!direction)
@@ -1157,7 +1157,7 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 			// Compute the mean pose:
 			CPose3D meanSFs(0, 0, 0);
 
-			for (CRobotPosesGraph::const_iterator it = posesGraph->begin();
+			for (auto it = posesGraph->begin();
 				 it != posesGraph->end(); ++it)
 				meanSFs.addComponents(it->second.pdf.getMeanVal());
 
@@ -1245,7 +1245,7 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 
 		if (posesGraph)
 		{
-			for (CRobotPosesGraph::const_iterator it = posesGraph->begin();
+			for (auto it = posesGraph->begin();
 				 it != posesGraph->end(); ++it)
 			{
 				CPose3D SF_pose;
@@ -1292,7 +1292,7 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 		// ----------------------
 		TArcList arcs;
 		node->getArcs(arcs, hypothesisID);
-		for (TArcList::const_iterator a = arcs.begin(); a != arcs.end(); ++a)
+		for (auto a = arcs.begin(); a != arcs.end(); ++a)
 		{
 			CHMHMapArc::Ptr arc = *a;
 
@@ -1375,7 +1375,7 @@ void CHierarchicalMapMHPartition::computeGloballyConsistentNodeCoordinates(
 		graphslam_params);
 
 	// 4) Copy back optimized results into the HMT-SLAM graph:
-	for (graphs::CNetworkOfPoses3DInf::global_poses_t::const_iterator it_node =
+	for (auto it_node =
 			 pose_graph.nodes.begin();
 		 it_node != pose_graph.nodes.end(); ++it_node)
 	{
@@ -1416,13 +1416,13 @@ void CHierarchicalMapMHPartition::dumpAsText(std::vector<std::string>& st) const
 			m_node.second->m_label.c_str());
 		TArcList arcs;
 		m_node.second->getArcs(arcs);
-		for (TArcList::const_iterator a = arcs.begin(); a != arcs.end(); ++a)
+		for (auto a = arcs.begin(); a != arcs.end(); ++a)
 			s += format(
 				"%i-%i, ", (int)(*a)->getNodeFrom(), (int)(*a)->getNodeTo());
 
 		st.push_back(s);
 
-		for (CMHPropertiesValuesList::const_iterator ann =
+		for (auto ann =
 				 m_node.second->m_annotations.begin();
 			 ann != m_node.second->m_annotations.end(); ++ann)
 		{
@@ -1454,7 +1454,7 @@ void CHierarchicalMapMHPartition::dumpAsText(std::vector<std::string>& st) const
 					"     CRobotPosesGraph has %i poses:",
 					(int)posesGraph->size()));
 				CPose3D pdfMean;
-				for (CRobotPosesGraph::const_iterator p = posesGraph->begin();
+				for (auto p = posesGraph->begin();
 					 p != posesGraph->end(); ++p)
 				{
 					const CPose3DPDFParticles& pdf = p->second.pdf;
@@ -1486,7 +1486,7 @@ void CHierarchicalMapMHPartition::dumpAsText(std::vector<std::string>& st) const
 
 		st.push_back(s);
 
-		for (CMHPropertiesValuesList::const_iterator ann =
+		for (auto ann =
 				 m_arc->m_annotations.begin();
 			 ann != m_arc->m_annotations.end(); ++ann)
 		{
@@ -1553,7 +1553,7 @@ CHMHMapArc::Ptr CHierarchicalMapMHPartition::findArcOfTypeBetweenNodes(
 	findArcsOfTypeBetweenNodes(
 		node1id, node2id, hypothesisID, arcType, lstArcs);
 
-	for (TArcList::const_iterator a = lstArcs.begin(); a != lstArcs.end(); ++a)
+	for (auto a = lstArcs.begin(); a != lstArcs.end(); ++a)
 	{
 		if ((*a)->getNodeFrom() == node1id)
 		{

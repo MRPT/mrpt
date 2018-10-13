@@ -46,7 +46,7 @@ class Subgraph
 		//        subgraphPlanesIdx.insert(*it);
 
 		// Add neighbors co-visible neighbors
-		for (std::map<unsigned, unsigned>::iterator it =
+		for (auto it =
 				 pPBM->vPlanes[refPlaneId].neighborPlanes.begin();
 			 it != pPBM->vPlanes[refPlaneId].neighborPlanes.end(); it++)
 			subgraphPlanesIdx.insert(it->first);

@@ -48,7 +48,7 @@ bool PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 		const mrpt::obs::CActionCollection* actions,
 		const mrpt::obs::CSensoryFrame* sf)
 {
-	MYSELF* me = static_cast<MYSELF*>(this);
+	auto* me = static_cast<MYSELF*>(this);
 
 	if (actions != nullptr)  // A valid action?
 	{
@@ -184,7 +184,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 	MRPT_START
 	using TSetStateSpaceBins = std::set<BINTYPE, typename BINTYPE::lt_operator>;
 
-	MYSELF* me = static_cast<MYSELF*>(this);
+	auto* me = static_cast<MYSELF*>(this);
 
 	// In this method we don't need the
 	// "PF_SLAM_implementation_gatherActionsCheckBothActObs" machinery,
@@ -363,7 +363,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 			bool pose_is_valid;
 			const mrpt::math::TPose3D partPose =
 				getLastPose(i, pose_is_valid);  // Take the particle data:
-			mrpt::poses::CPose3D partPose2 = mrpt::poses::CPose3D(partPose);
+			auto partPose2 = mrpt::poses::CPose3D(partPose);
 			const double obs_log_likelihood =
 				PF_SLAM_computeObservationLikelihoodForParticle(
 					PF_options, i, *sf, partPose2);
@@ -426,7 +426,7 @@ double PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 
 	// const PF_implementation<PARTICLE_TYPE,MYSELF> *myObj =
 	// reinterpret_cast<const PF_implementation<PARTICLE_TYPE,MYSELF>*>( obj );
-	const MYSELF* me = static_cast<const MYSELF*>(obj);
+	const auto* me = static_cast<const MYSELF*>(obj);
 
 	// Compute the quantity:
 	//     w[i]*p(zt|z^{t-1},x^{[i],t-1})
@@ -504,7 +504,7 @@ double PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 
 	// const PF_implementation<PARTICLE_TYPE,MYSELF> *myObj =
 	// reinterpret_cast<const PF_implementation<PARTICLE_TYPE,MYSELF>*>( obj );
-	const MYSELF* myObj = static_cast<const MYSELF*>(obj);
+	const auto* myObj = static_cast<const MYSELF*>(obj);
 
 	// Take the previous particle weight:
 	const double cur_logweight = myObj->m_particles[index].log_w;
@@ -606,7 +606,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 	MRPT_START
 	using TSetStateSpaceBins = std::set<BINTYPE, typename BINTYPE::lt_operator>;
 
-	MYSELF* me = static_cast<MYSELF*>(this);
+	auto* me = static_cast<MYSELF*>(this);
 
 	const size_t M = me->m_particles.size();
 
@@ -790,7 +790,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 				p, KLD_options, part);
 
 			// Is it a new bin?
-			typename TSetStateSpaceBins::iterator posFound =
+			auto posFound =
 				stateSpaceBinsLastTimestep.find(p);
 			if (posFound == stateSpaceBinsLastTimestep.end())
 			{  // Yes, create a new pair <bin,index_list> in the list:
@@ -910,7 +910,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 							mrpt::random::getRandomGenerator()
 								.drawUniform32bit() %
 							oldPartIdxsStillNotPropragated.size();
-						std::vector<size_t>::iterator it =
+						auto it =
 							oldPartIdxsStillNotPropragated.begin() +
 							idx;  // advance(it,idx);
 						k = *it;
@@ -1022,7 +1022,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 		const mrpt::bayes::CParticleFilter::TParticleFilterOptions& PF_options,
 		mrpt::poses::CPose3D& out_newPose, double& out_newParticleLogWeight)
 {
-	MYSELF* me = static_cast<MYSELF*>(this);
+	auto* me = static_cast<MYSELF*>(this);
 
 	// ADD-ON: If the 'm_pfAuxiliaryPFOptimal_estimatedProb[k]' is
 	// **extremelly** low relative to the other m_particles,

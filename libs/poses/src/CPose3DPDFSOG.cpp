@@ -325,7 +325,7 @@ void CPose3DPDFSOG::inverse(CPose3DPDF& o) const
 {
 	MRPT_START
 	ASSERT_(o.GetRuntimeClass() == CLASS_ID(CPose3DPDFSOG));
-	CPose3DPDFSOG* out = static_cast<CPose3DPDFSOG*>(&o);
+	auto* out = static_cast<CPose3DPDFSOG*>(&o);
 
 	// Prepare the output SOG:
 	out->resize(m_modes.size());
@@ -371,8 +371,8 @@ void CPose3DPDFSOG::getMostLikelyMode(CPose3DPDFGaussian& outVal) const
 	}
 	else
 	{
-		const_iterator it_best = m_modes.end();
-		for (const_iterator it = m_modes.begin(); it != m_modes.end(); ++it)
+		auto it_best = m_modes.end();
+		for (auto it = m_modes.begin(); it != m_modes.end(); ++it)
 			if (it_best == m_modes.end() || it->log_w > it_best->log_w)
 				it_best = it;
 

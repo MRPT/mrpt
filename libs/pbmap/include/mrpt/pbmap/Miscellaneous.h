@@ -115,7 +115,7 @@ dataType getMode(std::vector<dataType> data, dataType range)
 			histogram[data2[i]]++;
 
 	int mode = 0, count = 0;
-	for (std::map<int, int>::iterator bin = histogram.begin();
+	for (auto bin = histogram.begin();
 		 bin != histogram.end(); bin++)
 		if (bin->second > count)
 		{
@@ -185,7 +185,7 @@ Eigen::Vector4f getMultiDimMeanShift_color(
 		//  std::cout << "iteration " << iteration_counter << " Std " <<
 		//  stdDevHist << " maxEig " << svd.singularValues().maxCoeff() <<
 		//  std::endl;
-		for (typename std::vector<Eigen::Vector4f>::iterator it =
+		for (auto it =
 				 dataTemp.begin();
 			 it != dataTemp.end();)
 		{
@@ -229,7 +229,7 @@ Eigen::Vector4f getMultiDimMeanShift_color(
 
 	//    concentration = float(dataTemp.size()) / size;
 	int countFringe05 = 0;
-	for (typename std::vector<Eigen::Vector4f>::iterator it = data.begin();
+	for (auto it = data.begin();
 		 it != data.end(); it++)
 		if ((it->head(3) - meanShift).norm() <
 			0.05)  //&& *it(3) - averageIntensity < 0.3)
@@ -274,7 +274,7 @@ dataType getHistogramMeanShift(
 	{
 		//  std::cout << "iteration " << iteration_counter << " Std " <<
 		//  stdDevHist << std::endl;
-		for (typename std::vector<dataType>::iterator it = dataTemp.begin();
+		for (auto it = dataTemp.begin();
 			 it != dataTemp.end();)
 		{
 			//        cout << "CHeck\n";

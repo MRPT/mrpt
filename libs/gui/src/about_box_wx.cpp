@@ -21,7 +21,7 @@ void mrpt::gui::show_mrpt_about_box_wxWidgets(
 	const std::string& additionalInfo, const bool showStandardInfo)
 {
 #if MRPT_HAS_WXWIDGETS
-	wxWindow* parent = reinterpret_cast<wxWindow*>(parent_wx_window);
+	auto* parent = reinterpret_cast<wxWindow*>(parent_wx_window);
 	CAboutBox dlg(parent, appName, additionalInfo, showStandardInfo);
 	dlg.ShowModal();
 #else

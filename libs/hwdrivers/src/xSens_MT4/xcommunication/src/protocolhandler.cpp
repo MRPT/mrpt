@@ -36,7 +36,7 @@ ProtocolHandler::~ProtocolHandler() {}
 */
 int expectedMessageSize(const unsigned char* buffer, int sz)
 {
-	const XsMessageHeader* hdr = (const XsMessageHeader*)buffer;
+	const auto* hdr = (const XsMessageHeader*)buffer;
 	if (sz < 4)
 		return XS_LEN_MSGHEADERCS;  // no size information available at all,
 	// return a minimum message
@@ -98,7 +98,7 @@ MessageLocation ProtocolHandler::findMessage(
 
 			// read header
 			const uint8_t* msgStart = &(buffer[pre]);
-			const XsMessageHeader* hdr = (const XsMessageHeader*)msgStart;
+			const auto* hdr = (const XsMessageHeader*)msgStart;
 			if (hdr->m_length == XS_EXTLENCODE)
 			{
 				if (remaining < XS_LEN_MSGEXTHEADERCS)

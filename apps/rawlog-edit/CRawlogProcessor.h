@@ -255,7 +255,7 @@ class CRawlogProcessorFilterObservations
 		{
 			ASSERT_(actions && SF);
 			// Remove from SF those observations freed:
-			mrpt::obs::CSensoryFrame::iterator it = SF->begin();
+			auto it = SF->begin();
 			while (it != SF->end())
 			{
 				if (*it)

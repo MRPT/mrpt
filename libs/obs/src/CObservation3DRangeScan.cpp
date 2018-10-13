@@ -126,7 +126,7 @@ void mempool_donate_xyz_buffers(CObservation3DRangeScan& obs)
 			if (obs.points3D_idxs_y.capacity() != mem_params.WH)
 				obs.points3D_idxs_y.resize(mem_params.WH);
 
-			CObservation3DRangeScan_Points_MemPoolData* mem_block =
+			auto* mem_block =
 				new CObservation3DRangeScan_Points_MemPoolData();
 			obs.points3D_x.swap(mem_block->pts_x);
 			obs.points3D_y.swap(mem_block->pts_y);
@@ -151,7 +151,7 @@ void mempool_donate_range_matrix(CObservation3DRangeScan& obs)
 			mem_params.H = obs.rangeImage.rows();
 			mem_params.W = obs.rangeImage.cols();
 
-			CObservation3DRangeScan_Ranges_MemPoolData* mem_block =
+			auto* mem_block =
 				new CObservation3DRangeScan_Ranges_MemPoolData();
 			obs.rangeImage.swap(mem_block->rangeImage);
 
@@ -986,7 +986,7 @@ void CObservation3DRangeScan::convertTo2DScan(
 	//  while in images it is like ~tan(angle).
 	ASSERT_ABOVE_(
 		sp.oversampling_ratio, (sp.use_origin_sensor_pose ? 0.0 : 1.0));
-	const size_t nLaserRays =
+	const auto nLaserRays =
 		static_cast<size_t>(nCols * sp.oversampling_ratio);
 
 	// Prepare 2D scan data fields:
@@ -1171,7 +1171,7 @@ void CObservation3DRangeScan::getDescriptionAsText(std::ostream& o) const
 	if (hasPixelLabels())
 	{
 		o << " Human readable labels:" << endl;
-		for (TPixelLabelInfoBase::TMapLabelID2Name::const_iterator it =
+		for (auto it =
 				 pixelLabels->pixelLabelNames.begin();
 			 it != pixelLabels->pixelLabelNames.end(); ++it)
 			o << " label[" << it->first << "]: '" << it->second << "'" << endl;
@@ -1229,8 +1229,8 @@ void CObservation3DRangeScan::TPixelLabelInfo<BYTES_REQUIRED_>::
 	internal_writeToStream(mrpt::serialization::CArchive& out) const
 {
 	{
-		const uint32_t nR = static_cast<uint32_t>(pixelLabels.rows());
-		const uint32_t nC = static_cast<uint32_t>(pixelLabels.cols());
+		const auto nR = static_cast<uint32_t>(pixelLabels.rows());
+		const auto nC = static_cast<uint32_t>(pixelLabels.cols());
 		out << nR << nC;
 		for (uint32_t c = 0; c < nC; c++)
 			for (uint32_t r = 0; r < nR; r++) out << pixelLabels.coeff(r, c);

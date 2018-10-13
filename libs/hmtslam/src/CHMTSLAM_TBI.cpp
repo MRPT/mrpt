@@ -107,7 +107,7 @@ CHMTSLAM::TMessageLSLAMfromTBI::Ptr CHMTSLAM::TBI_main_method(
 {
 	MRPT_START
 
-	CHMTSLAM* obj = (CHMTSLAM*)LMH->m_parent.get();
+	auto* obj = (CHMTSLAM*)LMH->m_parent.get();
 
 	const THypothesisID LMH_ID = LMH->m_ID;
 
@@ -140,7 +140,7 @@ CHMTSLAM::TMessageLSLAMfromTBI::Ptr CHMTSLAM::TBI_main_method(
 		LMH->updateAreaFromLMH(areaID);
 	}
 
-	for (CHierarchicalMapMHPartition::iterator a = obj->m_map.begin();
+	for (auto a = obj->m_map.begin();
 		 a != obj->m_map.end(); ++a)
 	{
 		// Only for other areas!
@@ -192,7 +192,7 @@ CHMTSLAM::TMessageLSLAMfromTBI::Ptr CHMTSLAM::TBI_main_method(
 	{
 		std::lock_guard<std::mutex> lock(obj->m_topLCdets_cs);
 
-		for (deque<CTopLCDetectorBase*>::const_iterator it =
+		for (auto it =
 				 obj->m_topLCdets.begin();
 			 it != obj->m_topLCdets.end(); ++it)
 		{

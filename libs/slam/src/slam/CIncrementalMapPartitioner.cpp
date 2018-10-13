@@ -383,7 +383,7 @@ void CIncrementalMapPartitioner::getAs3DScene(
 			i_sph->setName(format("%u", static_cast<unsigned int>(i)));
 		else
 		{
-			std::map<uint32_t, int64_t>::const_iterator itName =
+			auto itName =
 				renameIndexes->find(i);
 			ASSERT_(itName != renameIndexes->end());
 			i_sph->setName(

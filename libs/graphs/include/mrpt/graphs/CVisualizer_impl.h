@@ -93,7 +93,7 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 	// Estimate bounding box.
 	mrpt::math::TPoint3D BB_min(-10., -10., 0.), BB_max(10., 10., 0.);
 
-	for (typename GRAPH_T::global_poses_t::const_iterator n_it =
+	for (auto n_it =
 			 m_graph.nodes.begin();
 		 n_it != m_graph.nodes.end(); ++n_it)
 	{
@@ -140,7 +140,7 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 	pnts->setPointSize(nodes_point_size);
 
 	// Add all nodesnodes:
-	for (typename GRAPH_T::global_poses_t::const_iterator n_it =
+	for (auto n_it =
 			 m_graph.nodes.begin();
 		 n_it != m_graph.nodes.end(); ++n_it)
 	{
@@ -173,7 +173,7 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 	const double nodes_corner_scale =
 		viz_params->getWithDefaultVal("nodes_corner_scale", 0.7);
 
-	for (typename GRAPH_T::global_poses_t::const_iterator n_it =
+	for (auto n_it =
 			 m_graph.nodes.begin();
 		 n_it != m_graph.nodes.end(); ++n_it)
 	{
@@ -227,7 +227,7 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 										  : edge_it->first.first;
 
 		// Draw only if we have the global coords of starting nodes:
-		typename GRAPH_T::global_poses_t::const_iterator n_it =
+		auto n_it =
 			m_graph.nodes.find(node_id_start);
 		if (n_it != m_graph.nodes.end())
 		{
@@ -291,16 +291,16 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 	gl_edges->setLineWidth(edge_width);
 
 	// for all registered edges.
-	for (typename GRAPH_T::const_iterator edge_it = m_graph.begin();
+	for (auto edge_it = m_graph.begin();
 		 edge_it != m_graph.end(); ++edge_it)
 	{
 		const TNodeID id1 = edge_it->first.first;
 		const TNodeID id2 = edge_it->first.second;
 
 		// Draw only if we have the global coords of both nodes:
-		typename GRAPH_T::global_poses_t::const_iterator n_it1 =
+		auto n_it1 =
 			m_graph.nodes.find(id1);
-		typename GRAPH_T::global_poses_t::const_iterator n_it2 =
+		auto n_it2 =
 			m_graph.nodes.find(id2);
 		if (n_it1 != m_graph.nodes.end() && n_it2 != m_graph.nodes.end())
 		{  // both nodes found?

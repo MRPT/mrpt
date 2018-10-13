@@ -89,7 +89,7 @@ void COccupancyGridMapFeatureExtractor::extractFeatures(
 #else
 	// Use cache mechanism:
 
-	TCache::const_iterator it = m_cache.find(&grid);
+	auto it = m_cache.find(&grid);
 	if (it == m_cache.end())
 	{
 		// We have to recompute the features:

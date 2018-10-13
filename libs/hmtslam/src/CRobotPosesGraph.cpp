@@ -22,7 +22,7 @@ IMPLEMENTS_SERIALIZABLE(CRobotPosesGraph, CSerializable, mrpt::hmtslam)
 uint8_t CRobotPosesGraph::serializeGetVersion() const { return 0; }
 void CRobotPosesGraph::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	uint32_t N = static_cast<uint32_t>(size());
+	auto N = static_cast<uint32_t>(size());
 	out << N;
 	for (const auto& e : *this) out << e.first << e.second.sf << e.second.pdf;
 }

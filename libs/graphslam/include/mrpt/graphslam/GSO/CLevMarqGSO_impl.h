@@ -479,7 +479,7 @@ bool CLevMarqGSO<GRAPH_T>::checkForLoopClosures()
 	typename GRAPH_T::edges_map_t::const_iterator search;
 	mrpt::graphs::TPairNodeIDs curr_pair;
 
-	for (typename GRAPH_T::edges_map_t::const_iterator it =
+	for (auto it =
 			 curr_pair_nodes_to_edge.begin();
 		 it != curr_pair_nodes_to_edge.end(); ++it)
 	{

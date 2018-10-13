@@ -208,10 +208,10 @@ TEST(SparseMatrix, Op_Multiply_AB)
 TEST(SparseMatrix, CholeskyDecomp)
 {
 	CSparseMatrix SM(10, 10);
-	const CMatrixDouble COV1 =
+	const auto COV1 =
 		mrpt::random::getRandomGenerator()
 			.drawDefinitePositiveMatrix<CMatrixDouble>(6, 0.2);
-	const CMatrixDouble COV2 =
+	const auto COV2 =
 		mrpt::random::getRandomGenerator()
 			.drawDefinitePositiveMatrix<CMatrixDouble>(4, 0.2);
 

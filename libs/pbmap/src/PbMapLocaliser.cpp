@@ -94,7 +94,7 @@ void PbMapLocaliser::compareSubgraphNeighbors(SubgraphMatcher& matcher)
 	cout << "PbMapLocaliser::compareSubgraphNeighbors\n";
 	PbMap& matchedPbMap = previousPbMaps[bestMap];
 
-	for (map<unsigned, unsigned>::iterator it = bestMatch.begin();
+	for (auto it = bestMatch.begin();
 		 it != bestMatch.end(); it++)
 	{
 		// TODO: use the graph to grow
@@ -102,14 +102,14 @@ void PbMapLocaliser::compareSubgraphNeighbors(SubgraphMatcher& matcher)
 			// Check the 2nd order
 			// neighbors of the
 			// matched planes
-			for (set<unsigned>::iterator it1 =
+			for (auto it1 =
 					 mPbMap.vPlanes[it->first].nearbyPlanes.begin();
 				 it1 != mPbMap.vPlanes[it->first].nearbyPlanes.end(); it1++)
 			{
 				if (matcher.subgraphSrc->subgraphPlanesIdx.count(*it1))
 					continue;
 
-				for (set<unsigned>::iterator it2 =
+				for (auto it2 =
 						 matchedPbMap.vPlanes[it->second].nearbyPlanes.begin();
 					 it2 != matchedPbMap.vPlanes[it->second].nearbyPlanes.end();
 					 it2++)
@@ -123,7 +123,7 @@ void PbMapLocaliser::compareSubgraphNeighbors(SubgraphMatcher& matcher)
 						// FloorPlaneMap != -1) ? true
 						//: false ) )
 						continue;
-					for (map<unsigned, unsigned>::iterator it_matched =
+					for (auto it_matched =
 							 bestMatch.begin();
 						 it_matched != bestMatch.end(); it_matched++)
 						if (!matcher.evalBinaryConstraints(
@@ -139,14 +139,14 @@ void PbMapLocaliser::compareSubgraphNeighbors(SubgraphMatcher& matcher)
 			}
 		else  // if(matcher.configLocaliser.graph_mode == 1)// Co-visible
 			// neighbors - Check the 2nd order neighbors of the matched planes
-			for (map<unsigned, unsigned>::iterator it1 =
+			for (auto it1 =
 					 mPbMap.vPlanes[it->first].neighborPlanes.begin();
 				 it1 != mPbMap.vPlanes[it->first].neighborPlanes.end(); it1++)
 			{
 				if (matcher.subgraphSrc->subgraphPlanesIdx.count(it1->first))
 					continue;
 
-				for (map<unsigned, unsigned>::iterator it2 =
+				for (auto it2 =
 						 matchedPbMap.vPlanes[it->second]
 							 .neighborPlanes.begin();
 					 it2 !=
@@ -163,7 +163,7 @@ void PbMapLocaliser::compareSubgraphNeighbors(SubgraphMatcher& matcher)
 							false))  //(FloorPlane != -1 && FloorPlaneMap != -1)
 						//? true : false ) )
 						continue;
-					for (map<unsigned, unsigned>::iterator it_matched =
+					for (auto it_matched =
 							 bestMatch.begin();
 						 it_matched != bestMatch.end(); it_matched++)
 						if (!matcher.evalBinaryConstraints(
@@ -183,7 +183,7 @@ void PbMapLocaliser::compareSubgraphNeighbors(SubgraphMatcher& matcher)
 double PbMapLocaliser::getAreaMatch()
 {
 	double area = 0.0;
-	for (map<unsigned, unsigned>::iterator it = bestMatch.begin();
+	for (auto it = bestMatch.begin();
 		 it != bestMatch.end(); it++)
 		area += mPbMap.vPlanes[it->first].areaVoxels;
 
@@ -289,7 +289,7 @@ bool PbMapLocaliser::searchPlaneContext(Plane& searchPlane)
 		if (getAreaMatch() < 3.0) return false;
 
 		pcl::PointXYZ placePos(0, 0, 0);
-		for (map<unsigned, unsigned>::iterator it = bestMatch.begin();
+		for (auto it = bestMatch.begin();
 			 it != bestMatch.end(); it++)
 		{
 			if (mPbMap.vPlanes[it->first].label !=
@@ -505,9 +505,9 @@ void PbMapLocaliser::run()
 	cout << "Print TIME PbLocalizer\n";
 	cout << "Tiempo1 " << time1 << " tiempo2 " << time2 << endl;
 	;
-	std::map<unsigned, vector<int>>::iterator itChecks =
+	auto itChecks =
 		nCheckLocalizer.begin();
-	for (std::map<unsigned, vector<double>>::iterator it =
+	for (auto it =
 			 timeLocalizer.begin();
 		 it != timeLocalizer.end(); it++)
 	{

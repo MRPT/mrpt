@@ -313,7 +313,7 @@ void Test_Kinect()
 				tracker->trackFeatures(previous_image, theImg, trackedFeats);
 
 				// Remove those now out of the image plane:
-				CFeatureList::iterator itFeat = trackedFeats.begin();
+				auto itFeat = trackedFeats.begin();
 				while (itFeat != trackedFeats.end())
 				{
 					const TFeatureTrackStatus status = (*itFeat)->track_status;
@@ -386,11 +386,11 @@ void Test_Kinect()
 			{
 				TMatchingPairList corrs;  // pairs of correspondences
 
-				for (map<TFeatureID, TPoint3D>::const_iterator itCur =
+				for (auto itCur =
 						 curVisibleFeats.begin();
 					 itCur != curVisibleFeats.end(); ++itCur)
 				{
-					map<TFeatureID, TPoint3D>::const_iterator itFound =
+					auto itFound =
 						lastVisibleFeats.find(itCur->first);
 					if (itFound != lastVisibleFeats.end())
 					{
@@ -538,7 +538,7 @@ void Test_Kinect()
 
 				// Current visual landmarks:
 				gl_curFeats->clear();
-				for (map<TFeatureID, TPoint3D>::const_iterator it =
+				for (auto it =
 						 curVisibleFeats.begin();
 					 it != curVisibleFeats.end(); ++it)
 				{

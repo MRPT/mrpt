@@ -36,7 +36,7 @@ double COccupancyGridMap2D::internal_computeObservationLikelihood(
 	//  at the altitude of this grid map:
 	if (obs->GetRuntimeClass() == CLASS_ID(CObservation2DRangeScan))
 	{
-		const CObservation2DRangeScan* scan =
+		const auto* scan =
 			static_cast<const CObservation2DRangeScan*>(obs);
 		if (!scan->isPlanarScan(insertionOptions.horizontalTolerance))
 			return -10;
@@ -98,7 +98,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_Consensus(
 	}
 	// Observation is a laser range scan:
 	// -------------------------------------------
-	const CObservation2DRangeScan* o =
+	const auto* o =
 		static_cast<const CObservation2DRangeScan*>(obs);
 
 	// Insert only HORIZONTAL scans, since the grid is supposed to
@@ -108,7 +108,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_Consensus(
 
 	// Assure we have a 2D points-map representation of the points from the
 	// scan:
-	const CPointsMap* compareMap =
+	const auto* compareMap =
 		o->buildAuxPointsMap<mrpt::maps::CPointsMap>();
 
 	// Observation is a points map:
@@ -159,7 +159,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_ConsensusOWA(
 	}
 	// Observation is a laser range scan:
 	// -------------------------------------------
-	const CObservation2DRangeScan* o =
+	const auto* o =
 		static_cast<const CObservation2DRangeScan*>(obs);
 
 	// Insert only HORIZONTAL scans, since the grid is supposed to
@@ -172,7 +172,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_ConsensusOWA(
 	CPointsMap::TInsertionOptions insOpt;
 	insOpt.minDistBetweenLaserPoints = -1;  // ALL the laser points
 
-	const CPointsMap* compareMap =
+	const auto* compareMap =
 		o->buildAuxPointsMap<mrpt::maps::CPointsMap>(&insOpt);
 
 	// Observation is a points map:
@@ -253,7 +253,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_CellsDifference(
 	{
 		// Observation is a laser range scan:
 		// -------------------------------------------
-		const CObservation2DRangeScan* o =
+		const auto* o =
 			static_cast<const CObservation2DRangeScan*>(obs);
 
 		// Insert only HORIZONTAL scans, since the grid is supposed to
@@ -365,7 +365,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_rayTracing(
 	{
 		// Observation is a laser range scan:
 		// -------------------------------------------
-		const CObservation2DRangeScan* o =
+		const auto* o =
 			static_cast<const CObservation2DRangeScan*>(obs);
 		CObservation2DRangeScan simulatedObs;
 
@@ -442,7 +442,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_likelihoodField_Thrun(
 	{
 		// Observation is a laser range scan:
 		// -------------------------------------------
-		const CObservation2DRangeScan* o =
+		const auto* o =
 			static_cast<const CObservation2DRangeScan*>(obs);
 
 		// Insert only HORIZONTAL scans, since the grid is supposed to
@@ -465,7 +465,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_likelihoodField_Thrun(
 	{
 		// Sonar-like observations:
 		// ---------------------------------------
-		const CObservationRange* o = static_cast<const CObservationRange*>(obs);
+		const auto* o = static_cast<const CObservationRange*>(obs);
 
 		// Create a point map representation of the observation:
 		CSimplePointsMap pts;
@@ -497,7 +497,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_likelihoodField_II(
 	{
 		// Observation is a laser range scan:
 		// -------------------------------------------
-		const CObservation2DRangeScan* o =
+		const auto* o =
 			static_cast<const CObservation2DRangeScan*>(obs);
 
 		// Insert only HORIZONTAL scans, since the grid is supposed to
@@ -974,7 +974,7 @@ bool COccupancyGridMap2D::internal_canComputeObservationLikelihood(
 	//  at the altitude of this grid map:
 	if (obs->GetRuntimeClass() == CLASS_ID(CObservation2DRangeScan))
 	{
-		const CObservation2DRangeScan* scan =
+		const auto* scan =
 			static_cast<const CObservation2DRangeScan*>(obs);
 
 		if (!scan->isPlanarScan(insertionOptions.horizontalTolerance))

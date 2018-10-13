@@ -327,7 +327,7 @@ void upnp::compute_alphas()
 void upnp::fill_M(
 	Mat* M, const int row, const double* as, const double u, const double v)
 {
-	double* M1 = M->ptr<double>(row);
+	auto* M1 = M->ptr<double>(row);
 	double* M2 = M1 + 12;
 
 	for (int i = 0; i < 4; i++)
@@ -687,7 +687,7 @@ void upnp::compute_A_and_b_gauss_newton(
 	for (int i = 0; i < 6; i++)
 	{
 		const double* rowL = l_6x12 + i * 12;
-		double* rowA = A->ptr<double>(i);
+		auto* rowA = A->ptr<double>(i);
 
 		rowA[0] = 2 * rowL[0] * betas[0] + rowL[1] * betas[1] +
 				  rowL[2] * betas[2] +
@@ -891,7 +891,7 @@ void upnp::qr_solve(Mat* A, Mat* b, Mat* X)
 	}
 
 	// X = R-1 b
-	double* pX = X->ptr<double>(0);
+	auto* pX = X->ptr<double>(0);
 	pX[nc - 1] = pb[nc - 1] / A2[nc - 1];
 	for (int i = nc - 2; i >= 0; i--)
 	{

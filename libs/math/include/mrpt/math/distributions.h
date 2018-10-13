@@ -240,10 +240,10 @@ void confidenceIntervals(
 	cumsum(H, Hc);  // CDF
 	Hc *= 1.0 / mrpt::math::maximum(Hc);
 
-	std::vector<double>::iterator it_low =
+	auto it_low =
 		std::lower_bound(Hc.begin(), Hc.end(), confidenceInterval);
 	ASSERT_(it_low != Hc.end());
-	std::vector<double>::iterator it_high =
+	auto it_high =
 		std::upper_bound(Hc.begin(), Hc.end(), 1 - confidenceInterval);
 	ASSERT_(it_high != Hc.end());
 	const size_t idx_low = std::distance(Hc.begin(), it_low);

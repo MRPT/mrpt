@@ -1119,8 +1119,8 @@ XsScrData LegacyDataPacket::rawData(int32_t index) const
 	{
 		const uint8_t* tmp =
 			m_msg.getDataBuffer(m_fixedData->m_infoList[index].m_rawData);
-		const uint16_t* sh = (const uint16_t*)tmp;
-		uint16_t* bare = (uint16_t*)&buffer;
+		const auto* sh = (const uint16_t*)tmp;
+		auto* bare = (uint16_t*)&buffer;
 
 		for (uint16_t i = 0; i < (9 + rawTemperatureChannelCount(index));
 			 ++i, ++sh, ++bare)
@@ -1160,7 +1160,7 @@ bool LegacyDataPacket::setRawData(const XsScrData& data, int32_t index)
 			3 * 3 * 2 + (XS_MAX_TEMPERATURE_CHANNELS * 2);
 	}
 	// update
-	int16_t* bare = (int16_t*)&data;
+	auto* bare = (int16_t*)&data;
 	for (uint16_t i = 0; i < (9 + rawTemperatureChannelCount(index)); ++i)
 		m_msg.setDataShort(
 			bare[i], m_fixedData->m_infoList[index].m_rawData + (2 * i));
@@ -1190,7 +1190,7 @@ XsGpsPvtData LegacyDataPacket::gpsPvtData(int32_t index) const
 		// tmp =
 		// m_msg.getDataBuffer(m_fixedData->m_infoList[index].m_gpsPvtGpsData);
 		// const uint32_t* ln = (const uint32_t*) tmp;
-		uint32_t* bareln = (uint32_t*)&buffer.m_itow;
+		auto* bareln = (uint32_t*)&buffer.m_itow;
 		for (uint16_t i = 0; i < 10; ++i)
 		{
 			// lint --e{662, 661}
@@ -1280,7 +1280,7 @@ bool LegacyDataPacket::setGpsPvtData(const XsGpsPvtData& data, int32_t index)
 		data.m_pressureAge, m_fixedData->m_infoList[index].m_gpsPvtPressureAge);
 
 	// lon,lat,height,hacc,vacc,veln,vele,veld
-	int32_t* bareln = (int32_t*)&data.m_itow;
+	auto* bareln = (int32_t*)&data.m_itow;
 	for (uint16_t i = 0; i < 10; ++i)
 		m_msg.setDataLong(
 			bareln[i], m_fixedData->m_infoList[index].m_gpsPvtGpsData +
@@ -1800,7 +1800,7 @@ bool LegacyDataPacket::setCalibratedData(
 		m_fixedData->m_infoList[index].m_size += numValues * ds;
 	}
 	// update
-	double* bare = (double*)&data;
+	auto* bare = (double*)&data;
 	if (m_fixedData->m_infoList[index].m_calAcc != XS_DATA_ITEM_NOT_AVAILABLE)
 		m_msg.setDataFPValue(
 			CHECKIFDOUBLE(m_calAcc), bare,
@@ -1861,7 +1861,7 @@ bool LegacyDataPacket::setOrientationQuaternion(
 		m_msg.resizeData(m_msg.getDataSize() + numValues * ds);
 		m_fixedData->m_infoList[index].m_size += numValues * ds;
 
-		double* bare = (double*)&data;
+		auto* bare = (double*)&data;
 		m_msg.setDataFPValue(
 			(m_fixedData->m_formatList[index].m_outputSettings &
 			 XOS_Dataformat_Mask) |
@@ -2265,7 +2265,7 @@ XsUtcTime LegacyDataPacket::utcTime(int32_t index) const
 			m_msg.getDataShort(m_fixedData->m_infoList[index].m_utcYear);
 
 		// month, day, hour, minute, second and valid
-		uint8_t* bareByte = (uint8_t*)&buffer.m_month;
+		auto* bareByte = (uint8_t*)&buffer.m_month;
 		for (uint16_t i = 0; i < 6; ++i)
 			bareByte[i] = m_msg.getDataByte(
 				m_fixedData->m_infoList[index].m_utcMonth +
@@ -2315,7 +2315,7 @@ bool LegacyDataPacket::setUtcTime(const XsUtcTime& data, int32_t index)
 	m_msg.setDataShort(data.m_year, m_fixedData->m_infoList[index].m_utcYear);
 
 	// month, day, hour, minute, second and valid
-	int8_t* bareByte = (int8_t*)&data.m_month;
+	auto* bareByte = (int8_t*)&data.m_month;
 	for (uint16_t i = 0; i < 6; ++i)
 		m_msg.setDataByte(
 			bareByte[i],

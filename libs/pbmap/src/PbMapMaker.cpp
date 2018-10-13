@@ -462,7 +462,7 @@ void PbMapMaker::detectPlanesCloud(
 		{
 			// Check similarity with previous planes detected
 			bool isSamePlane = false;
-			vector<Plane>::iterator itPlane = mPbMap.vPlanes.begin();
+			auto itPlane = mPbMap.vPlanes.begin();
 			//  if(frameQueue.size() != 12)
 			for (size_t j = 0; j < numPrevPlanes;
 				 j++, itPlane++)  // numPrevPlanes
@@ -499,7 +499,7 @@ void PbMapMaker::detectPlanesCloud(
 						mPbMap.vPlanes[j].numObservations++;
 
 						// Update co-visibility graph
-						for (set<unsigned>::iterator it =
+						for (auto it =
 								 observedPlanes.begin();
 							 it != observedPlanes.end(); it++)
 							if (mPbMap.vPlanes[j].neighborPlanes.count(*it))
@@ -537,14 +537,14 @@ void PbMapMaker::detectPlanesCloud(
 							mPbMap.vPlanes[j].numObservations +=
 								mPbMap.vPlanes[k].numObservations;
 
-							for (set<unsigned>::iterator it =
+							for (auto it =
 									 mPbMap.vPlanes[k].nearbyPlanes.begin();
 								 it != mPbMap.vPlanes[k].nearbyPlanes.end();
 								 it++)
 								mPbMap.vPlanes[*it].nearbyPlanes.erase(
 									mPbMap.vPlanes[k].id);
 
-							for (map<unsigned, unsigned>::iterator it =
+							for (auto it =
 									 mPbMap.vPlanes[k].neighborPlanes.begin();
 								 it != mPbMap.vPlanes[k].neighborPlanes.end();
 								 it++)
@@ -559,7 +559,7 @@ void PbMapMaker::detectPlanesCloud(
 							{
 								if (k == h) continue;
 
-								for (set<unsigned>::iterator it =
+								for (auto it =
 										 mPbMap.vPlanes[h].nearbyPlanes.begin();
 									 it != mPbMap.vPlanes[h].nearbyPlanes.end();
 									 it++)
@@ -571,7 +571,7 @@ void PbMapMaker::detectPlanesCloud(
 											*it);
 									}
 
-								for (map<unsigned, unsigned>::iterator it =
+								for (auto it =
 										 mPbMap.vPlanes[h]
 											 .neighborPlanes.begin();
 									 it !=
@@ -629,7 +629,7 @@ void PbMapMaker::detectPlanesCloud(
 				// 1.0 meters
 
 				// Update co-visibility graph
-				for (set<unsigned>::iterator it = observedPlanes.begin();
+				for (auto it = observedPlanes.begin();
 					 it != observedPlanes.end(); it++)
 				{
 					detectedPlanes[i].neighborPlanes[*it] = 1;
@@ -654,7 +654,7 @@ void PbMapMaker::detectPlanesCloud(
 #endif
 
 	// For all observed planes
-	for (set<unsigned>::iterator it = observedPlanes.begin();
+	for (auto it = observedPlanes.begin();
 		 it != observedPlanes.end(); it++)
 	{
 		Plane& observedPlane = mPbMap.vPlanes[*it];
@@ -685,7 +685,7 @@ void PbMapMaker::detectPlanesCloud(
 		cout << "Verify that the observed planes centers are above the floor\n";
 #endif
 
-		for (set<unsigned>::reverse_iterator it = observedPlanes.rbegin();
+		for (auto it = observedPlanes.rbegin();
 			 it != observedPlanes.rend(); it++)
 		{
 			if (static_cast<int>(*it) == mPbMap.FloorPlane) continue;
@@ -713,7 +713,7 @@ void PbMapMaker::detectPlanesCloud(
 	}
 
 	if (configPbMap.detect_loopClosure)
-		for (set<unsigned>::iterator it = observedPlanes.begin();
+		for (auto it = observedPlanes.begin();
 			 it != observedPlanes.end(); it++)
 		{
 			//    cout << "insert planes\n";
@@ -1131,7 +1131,7 @@ void PbMapMaker::viz_cb(pcl::visualization::PCLVisualizer& viz)
 
 				// Draw recognized plane labels
 				if (mpPbMapLocaliser != nullptr)
-					for (map<string, pcl::PointXYZ>::iterator it =
+					for (auto it =
 							 mpPbMapLocaliser->foundPlaces.begin();
 						 it != mpPbMapLocaliser->foundPlaces.end(); it++)
 						viz.addText3D(

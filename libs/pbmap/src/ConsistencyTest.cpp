@@ -40,7 +40,7 @@ double ConsistencyTest::calcAlignmentError(
 	double sum_depth_errors2 = 0;
 	double sum_areas = 0;
 	//  unsigned count_pts = 0;
-	for (map<unsigned, unsigned>::iterator it = matched_planes.begin();
+	for (auto it = matched_planes.begin();
 		 it != matched_planes.end(); it++)
 	{
 		sum_depth_errors2 +=
@@ -72,7 +72,7 @@ Eigen::Matrix4f ConsistencyTest::initPose(
 	// Calculate rotation
 	Matrix3f normalCovariances = Matrix3f::Zero();
 	normalCovariances(0, 0) = 1;  // Limit rotation on y/z (horizontal) axis
-	for (map<unsigned, unsigned>::iterator it = matched_planes.begin();
+	for (auto it = matched_planes.begin();
 		 it != matched_planes.end(); it++)
 		normalCovariances += PBMTarget.vPlanes[it->second].v3normal *
 							 PBMSource.vPlanes[it->first].v3normal.transpose();
@@ -83,10 +83,10 @@ Eigen::Matrix4f ConsistencyTest::initPose(
 	// Check consitioning. 3 non-parallel planes are required in 6DoF, and only
 	// two for planar movement (3DoF)
 	bool bPlanar_cond = false;
-	for (map<unsigned, unsigned>::iterator it1 = matched_planes.begin();
+	for (auto it1 = matched_planes.begin();
 		 it1 != matched_planes.end() && !bPlanar_cond; it1++)
 	{
-		map<unsigned, unsigned>::iterator it2 = it1;
+		auto it2 = it1;
 		it2++;
 		for (; it2 != matched_planes.end() && !bPlanar_cond; it2++)
 		{
@@ -140,7 +140,7 @@ Eigen::Matrix4f ConsistencyTest::initPose(
 	Vector3f gradient = Vector3f::Zero();
 	float accum_error2 = 0.0;
 	hessian(0, 0) = 1;  // Limit movement on x (vertical) axis
-	for (map<unsigned, unsigned>::iterator it = matched_planes.begin();
+	for (auto it = matched_planes.begin();
 		 it != matched_planes.end(); it++)
 	{
 		float trans_error =
@@ -199,7 +199,7 @@ Eigen::Matrix4f ConsistencyTest::estimatePose(
 	// Calculate rotation
 	Matrix3f normalCovariances = Matrix3f::Zero();
 	//  normalCovariances(0,0) = 1;  // Limit rotation on y/z (horizontal) axis
-	for (map<unsigned, unsigned>::iterator it = matched_planes.begin();
+	for (auto it = matched_planes.begin();
 		 it != matched_planes.end(); it++)
 		normalCovariances += (PBMTarget.vPlanes[it->second].areaHull /
 							  PBMTarget.vPlanes[it->second].d) *
@@ -219,10 +219,10 @@ Eigen::Matrix4f ConsistencyTest::estimatePose(
 	// Check consitioning. 3 non-parallel planes are required in 6DoF, and only
 	// two for planar movement (3DoF)
 	bool bPlanar_cond = false;
-	for (map<unsigned, unsigned>::iterator it1 = matched_planes.begin();
+	for (auto it1 = matched_planes.begin();
 		 it1 != matched_planes.end() && !bPlanar_cond; it1++)
 	{
-		map<unsigned, unsigned>::iterator it2 = it1;
+		auto it2 = it1;
 		it2++;
 		for (; it2 != matched_planes.end() && !bPlanar_cond; it2++)
 		{
@@ -271,7 +271,7 @@ Eigen::Matrix4f ConsistencyTest::estimatePose(
 	Vector3f gradient = Vector3f::Zero();
 	//  float accum_error2 = 0.0;
 	//  hessian(0,0) = 1; // Limit movement on x (vertical) axis
-	for (map<unsigned, unsigned>::iterator it = matched_planes.begin();
+	for (auto it = matched_planes.begin();
 		 it != matched_planes.end(); it++)
 	{
 		float trans_error =
@@ -339,7 +339,7 @@ bool ConsistencyTest::estimatePoseWithCovariance(
 
 	unsigned col = 0;
 	MatrixXf normalVectors(3, matched_planes.size());
-	for (map<unsigned, unsigned>::iterator it = matched_planes.begin();
+	for (auto it = matched_planes.begin();
 		 it != matched_planes.end(); it++, col++)
 		normalVectors.col(col) = PBMTarget.vPlanes[it->first].v3normal;
 	JacobiSVD<MatrixXf> svd_cond(normalVectors, ComputeThinU | ComputeThinV);
@@ -350,7 +350,7 @@ bool ConsistencyTest::estimatePoseWithCovariance(
 	// Calculate rotation
 	Matrix3f normalCovariances = Matrix3f::Zero();
 	//  normalCovariances(0,0) = 1;  // Limit rotation on y/z (horizontal) axis
-	for (map<unsigned, unsigned>::iterator it = matched_planes.begin();
+	for (auto it = matched_planes.begin();
 		 it != matched_planes.end(); it++)
 		normalCovariances += (PBMSource.vPlanes[it->first].areaHull /
 							  PBMSource.vPlanes[it->first].d) *
@@ -379,7 +379,7 @@ bool ConsistencyTest::estimatePoseWithCovariance(
 	Matrix3f hessian = Matrix3f::Zero();
 	Vector3f gradient = Vector3f::Zero();
 	//  hessian(0,0) = 1; // Limit movement on x (vertical) axis
-	for (map<unsigned, unsigned>::iterator it = matched_planes.begin();
+	for (auto it = matched_planes.begin();
 		 it != matched_planes.end(); it++)
 	{
 		float trans_error =
@@ -421,7 +421,7 @@ Eigen::Matrix4f ConsistencyTest::initPose2D(
 {
 	// Calculate rotation
 	Matrix3f normalCovariances = Matrix3f::Zero();
-	for (map<unsigned, unsigned>::iterator it = matched_planes.begin();
+	for (auto it = matched_planes.begin();
 		 it != matched_planes.end(); it++)
 		normalCovariances += PBMTarget.vPlanes[it->second].v3normal *
 							 PBMSource.vPlanes[it->first].v3normal.transpose();
@@ -440,7 +440,7 @@ Eigen::Matrix4f ConsistencyTest::initPose2D(
 	Vector3f centerFull_data = Vector3f::Zero(),
 			 centerFull_model = Vector3f::Zero();
 	unsigned numFull = 0, numNonStruct = 0;
-	for (map<unsigned, unsigned>::iterator it = matched_planes.begin();
+	for (auto it = matched_planes.begin();
 		 it != matched_planes.end(); it++)
 	{
 		if (PBMSource.vPlanes[it->first].bFromStructure)  // The certainty in
@@ -508,7 +508,7 @@ Eigen::Matrix4f ConsistencyTest::getRTwithModel(
 		Eigen::Matrix<float, 6, 6> m6Hessian =
 			Eigen::Matrix<float, 6, 6>::Zero();
 		double depthError;
-		for (map<unsigned, unsigned>::iterator it = matched_planes.begin();
+		for (auto it = matched_planes.begin();
 			 it != matched_planes.end(); it++)
 		{
 			ptInModelRef =
@@ -774,7 +774,7 @@ Eigen::Matrix4f ConsistencyTest::estimatePoseRANSAC(
 
 	CMatrixDouble planeCorresp(8, matched_planes.size());
 	unsigned col = 0;
-	for (map<unsigned, unsigned>::iterator it = matched_planes.begin();
+	for (auto it = matched_planes.begin();
 		 it != matched_planes.end(); it++, col++)
 	{
 		planeCorresp(0, col) = PBMSource.vPlanes[it->first].v3normal(0);

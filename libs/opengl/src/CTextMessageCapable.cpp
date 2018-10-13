@@ -163,7 +163,7 @@ void CTextMessageCapable::addTextMessage(
 bool CTextMessageCapable::updateTextMessage(
 	const size_t unique_index, const std::string& text)
 {
-	std::map<size_t, mrpt::opengl::T2DTextData>::iterator it =
+	auto it =
 		m_2D_texts.find(unique_index);
 	if (it == m_2D_texts.end())
 		return false;

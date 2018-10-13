@@ -135,7 +135,7 @@ void CRenderizable::writeToStreamRender(
 	out << magic_signature[0] << magic_signature[1];
 
 	// "m_name"
-	const uint16_t nameLen = static_cast<uint16_t>(m_name.size());
+	const auto nameLen = static_cast<uint16_t>(m_name.size());
 	out << nameLen;
 	if (nameLen) out.WriteBuffer(m_name.c_str(), m_name.size());
 

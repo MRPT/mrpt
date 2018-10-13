@@ -304,8 +304,8 @@ void CGPSInterface::doProcess()
 		THROW_EXCEPTION("Could not open the input stream");
 	}
 	ASSERT_(m_data_stream != nullptr);
-	CSerialPort* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
-	CClientTCPSocket* stream_tcpip =
+	auto* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
+	auto* stream_tcpip =
 		dynamic_cast<CClientTCPSocket*>(m_data_stream);
 
 	// Read as many bytes as available:
@@ -542,7 +542,7 @@ void CGPSInterface::JAVAD_sendMessage(const char* str, bool waitForAnswer)
 {
 	if (!str) return;
 	const size_t len = strlen(str);
-	CSerialPort* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
+	auto* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
 	if (!stream_serial) return;
 
 	size_t written;
@@ -593,7 +593,7 @@ void CGPSInterface::JAVAD_sendMessage(const char* str, bool waitForAnswer)
 
 bool CGPSInterface::OnConnectionShutdown()
 {
-	CSerialPort* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
+	auto* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
 
 	if (stream_serial && !stream_serial->isOpen()) return false;
 
@@ -639,7 +639,7 @@ bool CGPSInterface::OnConnectionEstablished()
 	}
 
 	// Purge input:
-	CSerialPort* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
+	auto* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
 	if (stream_serial)
 	{
 		std::lock_guard<std::mutex> lock(*m_data_stream_cs);
@@ -693,7 +693,7 @@ bool CGPSInterface::unsetJAVAD_AIM_mode()
 		std::this_thread::sleep_for(1000ms);
 
 		// Purge input:
-		CSerialPort* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
+		auto* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
 		if (stream_serial)
 		{
 			std::lock_guard<std::mutex> lock(*m_data_stream_cs);
@@ -807,7 +807,7 @@ bool CGPSInterface::legacy_topcon_setup_commands()
 	std::this_thread::sleep_for(1000ms);
 
 	// Purge input:
-	CSerialPort* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
+	auto* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
 	if (stream_serial)
 	{
 		std::lock_guard<std::mutex> lock(*m_data_stream_cs);

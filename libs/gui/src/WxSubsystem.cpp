@@ -65,7 +65,7 @@ WxSubsystem::CAuxWxSubsystemShutdowner::~CAuxWxSubsystemShutdowner()
 		// Shut down:
 		try
 		{
-			WxSubsystem::TRequestToWxMainThread* REQ =
+			auto* REQ =
 				new WxSubsystem::TRequestToWxMainThread[1];
 			REQ->OPCODE = 999;
 			WxSubsystem::pushPendingWxRequest(REQ);
@@ -106,12 +106,12 @@ class CDialogAskUserForCamera : public wxDialog
 			  nullptr, wxID_ANY, wxT("Select image source"), wxDefaultPosition,
 			  wxDefaultSize, wxDEFAULT_DIALOG_STYLE, wxDialogNameStr)
 	{
-		wxFlexGridSizer* f1 = new wxFlexGridSizer(2, 1, 0, 0);
+		auto* f1 = new wxFlexGridSizer(2, 1, 0, 0);
 		panel = new mrpt::gui::CPanelCameraSelection(this, wxID_ANY);
 		f1->Add(
 			panel, 1, wxALL | wxALIGN_BOTTOM | wxALIGN_CENTER_HORIZONTAL, 5);
 
-		wxFlexGridSizer* f2 = new wxFlexGridSizer(1, 2, 0, 0);
+		auto* f2 = new wxFlexGridSizer(1, 2, 0, 0);
 		wxButton* btnOk = new wxButton(
 			this, ID_BTN_OK, wxT("Ok"), wxDefaultPosition, wxDefaultSize);
 		wxButton* btnCancel = new wxButton(
@@ -305,7 +305,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 200:
 					if (msg->source2D)
 					{
-						CWindowDialog* wnd = new CWindowDialog(
+						auto* wnd = new CWindowDialog(
 							msg->source2D, this, (wxWindowID)-1, msg->str,
 							wxSize(msg->x, msg->y));
 
@@ -323,11 +323,11 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 201:
 					if (msg->source2D)
 					{
-						CWindowDialog* wnd =
+						auto* wnd =
 							(CWindowDialog*)
 								msg->voidPtr;  // msg->source2D->getWxObject();
 						if (!wnd) break;
-						wxImage* img = (wxImage*)msg->voidPtr2;
+						auto* img = (wxImage*)msg->voidPtr2;
 						if (!img) break;
 
 						wnd->m_image->AssignImage(
@@ -357,7 +357,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 202:
 					if (msg->source2D)
 					{
-						CWindowDialog* wnd =
+						auto* wnd =
 							(CWindowDialog*)msg->source2D->getWxObject();
 						if (wnd)
 							wnd->SetSize(
@@ -368,7 +368,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 203:
 					if (msg->source2D)
 					{
-						CWindowDialog* wnd =
+						auto* wnd =
 							(CWindowDialog*)msg->source2D->getWxObject();
 						if (wnd) wnd->SetClientSize(msg->x, msg->y);
 					}
@@ -377,7 +377,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 204:
 					if (msg->source2D)
 					{
-						CWindowDialog* wnd =
+						auto* wnd =
 							(CWindowDialog*)msg->source2D->getWxObject();
 						if (wnd) wnd->SetTitle(_U(msg->str.c_str()));
 					}
@@ -386,7 +386,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 299:
 					if (msg->source2D)
 					{
-						CWindowDialog* wnd =
+						auto* wnd =
 							(CWindowDialog*)msg->source2D->getWxObject();
 						if (wnd)
 						{
@@ -400,7 +400,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 300:
 					if (msg->source3D)
 					{
-						C3DWindowDialog* wnd = new C3DWindowDialog(
+						auto* wnd = new C3DWindowDialog(
 							msg->source3D, this, (wxWindowID)-1, msg->str,
 							wxSize(msg->x, msg->y));
 
@@ -418,7 +418,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 302:
 					if (msg->source3D)
 					{
-						C3DWindowDialog* wnd =
+						auto* wnd =
 							(C3DWindowDialog*)msg->source3D->getWxObject();
 						if (wnd)
 							wnd->SetSize(
@@ -429,7 +429,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 303:
 					if (msg->source3D)
 					{
-						C3DWindowDialog* wnd =
+						auto* wnd =
 							(C3DWindowDialog*)msg->source3D->getWxObject();
 						if (wnd) wnd->SetClientSize(msg->x, msg->y);
 					}
@@ -438,7 +438,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 304:
 					if (msg->source3D)
 					{
-						C3DWindowDialog* wnd =
+						auto* wnd =
 							(C3DWindowDialog*)msg->source3D->getWxObject();
 						if (wnd) wnd->SetTitle(_U(msg->str.c_str()));
 					}
@@ -447,7 +447,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 350:
 					if (msg->source3D)
 					{
-						C3DWindowDialog* wnd =
+						auto* wnd =
 							(C3DWindowDialog*)msg->source3D->getWxObject();
 						if (wnd)
 						{
@@ -460,7 +460,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 360:
 					if (msg->source3D)
 					{
-						C3DWindowDialog* wnd =
+						auto* wnd =
 							(C3DWindowDialog*)msg->source3D->getWxObject();
 						if (wnd)
 						{
@@ -478,7 +478,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 361:
 					if (msg->source3D)
 					{
-						C3DWindowDialog* wnd =
+						auto* wnd =
 							(C3DWindowDialog*)msg->source3D->getWxObject();
 						if (wnd)
 						{
@@ -491,7 +491,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 362:
 					if (msg->source3D)
 					{
-						C3DWindowDialog* wnd =
+						auto* wnd =
 							(C3DWindowDialog*)msg->source3D->getWxObject();
 						if (wnd)
 						{
@@ -515,7 +515,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 399:
 					if (msg->source3D)
 					{
-						C3DWindowDialog* wnd =
+						auto* wnd =
 							(C3DWindowDialog*)msg->source3D->getWxObject();
 						if (wnd)
 						{
@@ -529,7 +529,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 400:
 					if (msg->sourcePlots)
 					{
-						CWindowDialogPlots* wnd = new CWindowDialogPlots(
+						auto* wnd = new CWindowDialogPlots(
 							msg->sourcePlots, this, (wxWindowID)-1, msg->str,
 							wxSize(msg->x, msg->y));
 
@@ -547,7 +547,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 402:
 					if (msg->sourcePlots)
 					{
-						CWindowDialogPlots* wnd =
+						auto* wnd =
 							(CWindowDialogPlots*)
 								msg->sourcePlots->getWxObject();
 						if (wnd)
@@ -559,7 +559,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 403:
 					if (msg->sourcePlots)
 					{
-						CWindowDialogPlots* wnd =
+						auto* wnd =
 							(CWindowDialogPlots*)
 								msg->sourcePlots->getWxObject();
 						if (wnd) wnd->SetClientSize(msg->x, msg->y);
@@ -569,7 +569,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 404:
 					if (msg->sourcePlots)
 					{
-						CWindowDialogPlots* wnd =
+						auto* wnd =
 							(CWindowDialogPlots*)
 								msg->sourcePlots->getWxObject();
 						if (wnd) wnd->SetTitle(_U(msg->str.c_str()));
@@ -579,7 +579,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 410:
 					if (msg->sourcePlots)
 					{
-						CWindowDialogPlots* wnd =
+						auto* wnd =
 							(CWindowDialogPlots*)
 								msg->sourcePlots->getWxObject();
 						if (wnd) wnd->m_plot->EnableMousePanZoom(msg->boolVal);
@@ -589,7 +589,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 411:
 					if (msg->sourcePlots)
 					{
-						CWindowDialogPlots* wnd =
+						auto* wnd =
 							(CWindowDialogPlots*)
 								msg->sourcePlots->getWxObject();
 						if (wnd) wnd->m_plot->LockAspect(msg->boolVal);
@@ -600,7 +600,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 412:
 					if (msg->sourcePlots)
 					{
-						CWindowDialogPlots* wnd =
+						auto* wnd =
 							(CWindowDialogPlots*)
 								msg->sourcePlots->getWxObject();
 						if (wnd)
@@ -620,7 +620,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 413:
 					if (msg->sourcePlots)
 					{
-						CWindowDialogPlots* wnd =
+						auto* wnd =
 							(CWindowDialogPlots*)
 								msg->sourcePlots->getWxObject();
 						if (wnd)
@@ -634,7 +634,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 414:
 					if (msg->sourcePlots)
 					{
-						CWindowDialogPlots* wnd =
+						auto* wnd =
 							(CWindowDialogPlots*)
 								msg->sourcePlots->getWxObject();
 						if (wnd)
@@ -650,7 +650,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 420:
 					if (msg->sourcePlots)
 					{
-						CWindowDialogPlots* wnd =
+						auto* wnd =
 							(CWindowDialogPlots*)
 								msg->sourcePlots->getWxObject();
 						if (wnd)
@@ -664,7 +664,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 421:
 					if (msg->sourcePlots)
 					{
-						CWindowDialogPlots* wnd =
+						auto* wnd =
 							(CWindowDialogPlots*)
 								msg->sourcePlots->getWxObject();
 						if (wnd)
@@ -678,7 +678,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 422:
 					if (msg->sourcePlots)
 					{
-						CWindowDialogPlots* wnd =
+						auto* wnd =
 							(CWindowDialogPlots*)
 								msg->sourcePlots->getWxObject();
 						if (wnd)
@@ -693,7 +693,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 440:
 					if (msg->sourcePlots)
 					{
-						CWindowDialogPlots* wnd =
+						auto* wnd =
 							(CWindowDialogPlots*)
 								msg->sourcePlots->getWxObject();
 						if (wnd)
@@ -727,7 +727,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 499:
 					if (msg->sourcePlots)
 					{
-						CWindowDialogPlots* wnd =
+						auto* wnd =
 							(CWindowDialogPlots*)
 								msg->sourcePlots->getWxObject();
 						if (wnd)
@@ -742,10 +742,10 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				case 700:
 					if (msg->sourceCameraSelectDialog)
 					{
-						std::promise<void>* sem =
+						auto* sem =
 							reinterpret_cast<std::promise<void>*>(msg->voidPtr);
 
-						CDialogAskUserForCamera* dlg =
+						auto* dlg =
 							new CDialogAskUserForCamera();
 						// Signal that the window is ready:
 						sem->set_value();
@@ -754,8 +754,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 						const bool wasOk = (dlg->ShowModal() == wxID_OK);
 
 						// send selection to caller:
-						std::promise<
-							mrpt::gui::detail::TReturnAskUserOpenCamera>*
+						auto*
 							promise = reinterpret_cast<std::promise<
 								mrpt::gui::detail::TReturnAskUserOpenCamera>*>(
 								msg->voidPtr2);
@@ -881,7 +880,7 @@ bool CDisplayWindow_WXAPP::OnInit()
 	// cout << "[wxApp::OnInit] wxApplication OnInit called." << endl;
 
 	// Create a dummy frame:
-	WxSubsystem::CWXMainFrame* Frame = new WxSubsystem::CWXMainFrame(nullptr);
+	auto* Frame = new WxSubsystem::CWXMainFrame(nullptr);
 	Frame->Hide();
 
 	// We are ready!!
@@ -1060,7 +1059,7 @@ void WxSubsystem::wxMainThread()
 #endif
 		wxWindow* topWin = static_cast<wxApp*>(app_gui)->GetTopWindow();
 
-		WxSubsystem::CWXMainFrame* Frame =
+		auto* Frame =
 			new WxSubsystem::CWXMainFrame(topWin);
 		Frame->Hide();
 
@@ -1111,7 +1110,7 @@ bool WxSubsystem::createOneInstanceMainThread()
 			// Create our main hidden frame:
 			wxWindow* topWin = static_cast<wxApp*>(app_con)->GetTopWindow();
 
-			WxSubsystem::CWXMainFrame* Frame =
+			auto* Frame =
 				new WxSubsystem::CWXMainFrame(topWin);
 			// Frame->Show();
 			// SetTopWindow(Frame);

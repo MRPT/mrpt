@@ -233,7 +233,7 @@ std::vector<std::string> CMHPropertiesValuesList::getPropertyNames() const
 void CMHPropertiesValuesList::remove(
 	const char* propertyName, const int64_t& hypothesis_ID)
 {
-	for (std::vector<TPropertyValueIDTriplet>::iterator it =
+	for (auto it =
 			 m_properties.begin();
 		 it != m_properties.end();)
 		if (!os::_strcmpi(propertyName, it->name.c_str()) &&
@@ -248,7 +248,7 @@ void CMHPropertiesValuesList::remove(
  ---------------------------------------------------------------*/
 void CMHPropertiesValuesList::removeAll(const int64_t& hypothesis_ID)
 {
-	for (std::vector<TPropertyValueIDTriplet>::iterator it =
+	for (auto it =
 			 m_properties.begin();
 		 it != m_properties.end();)
 		if (it->ID == hypothesis_ID)

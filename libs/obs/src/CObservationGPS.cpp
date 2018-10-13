@@ -81,7 +81,7 @@ void CObservationGPS::serializeFrom(
 			in >> has_GGA_datum_;
 			if (has_GGA_datum_)
 			{
-				gnss::Message_NMEA_GGA* datum = new gnss::Message_NMEA_GGA();
+				auto* datum = new gnss::Message_NMEA_GGA();
 				in.ReadBuffer(&datum->fields, sizeof(datum->fields));
 				messages[gnss::NMEA_GGA] = gnss::gnss_message_ptr(datum);
 			}
@@ -90,7 +90,7 @@ void CObservationGPS::serializeFrom(
 			in >> has_RMC_datum_;
 			if (has_RMC_datum_)
 			{
-				gnss::Message_NMEA_RMC* datum = new gnss::Message_NMEA_RMC();
+				auto* datum = new gnss::Message_NMEA_RMC();
 				in.ReadBuffer(&datum->fields, sizeof(datum->fields));
 				messages[gnss::NMEA_RMC] = gnss::gnss_message_ptr(datum);
 			}
@@ -175,7 +175,7 @@ void CObservationGPS::serializeFrom(
 				in >> has_PZS_datum_;
 				if (has_PZS_datum_)
 				{
-					gnss::Message_TOPCON_PZS* datum =
+					auto* datum =
 						new gnss::Message_TOPCON_PZS();
 					messages[gnss::TOPCON_PZS] = gnss::gnss_message_ptr(datum);
 					gnss::Message_TOPCON_PZS& PZS_datum = *datum;
@@ -224,7 +224,7 @@ void CObservationGPS::serializeFrom(
 			// Added in V7:
 			if (version >= 7)
 			{
-				gnss::Message_TOPCON_SATS* datum =
+				auto* datum =
 					new gnss::Message_TOPCON_SATS();
 				messages[gnss::TOPCON_SATS] = gnss::gnss_message_ptr(datum);
 				gnss::Message_TOPCON_SATS& SATS_datum = *datum;
@@ -297,7 +297,7 @@ bool CObservationGPS::hasMsgType(const gnss::gnss_message_type_t type_id) const
 mrpt::obs::gnss::gnss_message* CObservationGPS::getMsgByType(
 	const gnss::gnss_message_type_t type_id)
 {
-	message_list_t::iterator it = messages.find(type_id);
+	auto it = messages.find(type_id);
 	ASSERTMSG_(
 		it != messages.end(), mrpt::format(
 								  "[CObservationGPS::getMsgByType] Cannot find "
@@ -309,7 +309,7 @@ mrpt::obs::gnss::gnss_message* CObservationGPS::getMsgByType(
 const mrpt::obs::gnss::gnss_message* CObservationGPS::getMsgByType(
 	const gnss::gnss_message_type_t type_id) const
 {
-	message_list_t::const_iterator it = messages.find(type_id);
+	auto it = messages.find(type_id);
 	ASSERTMSG_(
 		it != messages.end(), mrpt::format(
 								  "[CObservationGPS::getMsgByType] Cannot find "

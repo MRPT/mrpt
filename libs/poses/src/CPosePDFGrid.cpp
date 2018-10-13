@@ -228,7 +228,7 @@ void CPosePDFGrid::normalize()
 	double SUM = 0;
 
 	// SUM:
-	for (vector<double>::const_iterator it = m_data.begin(); it != m_data.end();
+	for (auto it = m_data.begin(); it != m_data.end();
 		 ++it)
 		SUM += *it;
 

@@ -188,7 +188,7 @@ class CSparseMatrix
 		// 1) Create triplet matrix
 		CSparseMatrix triplet(data.rows(), data.cols());
 		// 2) Put data in:
-		for (typename CSparseMatrixTemplate<T>::const_iterator it =
+		for (auto it =
 				 data.begin();
 			 it != data.end(); ++it)
 			triplet.insert_entry_fast(

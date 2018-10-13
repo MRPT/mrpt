@@ -232,8 +232,8 @@ bool CBoardENoses::getObservation(mrpt::obs::CObservationGasSensors& obs)
 
 			// HEADER Frame [ Nº of chambers/enoses (16b) , Active Chamber
 			// (16b)]
-			size_t NumberOfChambers = (size_t)readings[0];
-			size_t ActiveChamber = (size_t)readings[1];
+			auto NumberOfChambers = (size_t)readings[0];
+			auto ActiveChamber = (size_t)readings[1];
 
 			// Sensors readings info
 			ASSERT_(((readings.size() - 4) % NumberOfChambers) == 0);
@@ -307,7 +307,7 @@ bool CBoardENoses::getObservation(mrpt::obs::CObservationGasSensors& obs)
 			obs.sensorLabel = m_sensorLabel;
 
 			// Set Timestamp
-			uint16_t* p =
+			auto* p =
 				(uint16_t*)&readings[readings.size() - 2];  // Get readings time
 			// from frame
 			// (always last 2

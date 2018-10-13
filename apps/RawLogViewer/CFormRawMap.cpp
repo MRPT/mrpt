@@ -506,9 +506,9 @@ void loadMapInto3DScene(COpenGLScene& scene)
 				// Try to interpolate using the best GPS path:
 				// map<Clock::time_point,CPoint3D> best_gps_path;		// time
 				// -> 3D local coords
-				map<Clock::time_point, TPoint3D>::const_iterator i1 =
+				auto i1 =
 					rtk_path_info.best_gps_path.lower_bound(last_t.value());
-				map<Clock::time_point, TPoint3D>::const_iterator i2 =
+				auto i2 =
 					rtk_path_info.best_gps_path.upper_bound(this_t);
 
 				// cout << mrpt::system::timeLocalToString(last_t) << " -> " <<
@@ -517,7 +517,7 @@ void loadMapInto3DScene(COpenGLScene& scene)
 
 				if (i1 != rtk_path_info.best_gps_path.end())
 				{
-					for (map<Clock::time_point, TPoint3D>::const_iterator t =
+					for (auto t =
 							 i1;
 						 t != i2 && t != rtk_path_info.best_gps_path.end(); ++t)
 					{
@@ -544,9 +544,9 @@ void loadMapInto3DScene(COpenGLScene& scene)
 			// Try to interpolate using the best GPS path:
 			// map<Clock::time_point,CPoint3D> best_gps_path;		// time ->
 			// 3D local coords
-			map<Clock::time_point, TPoint3D>::const_iterator i1 =
+			auto i1 =
 				rtk_path_info.best_gps_path.lower_bound(last_t.value());
-			map<Clock::time_point, TPoint3D>::const_iterator i2 =
+			auto i2 =
 				rtk_path_info.best_gps_path.upper_bound(this_t);
 
 			// cout << mrpt::system::timeLocalToString(last_t) << " -> " <<
@@ -555,7 +555,7 @@ void loadMapInto3DScene(COpenGLScene& scene)
 
 			if (i1 != rtk_path_info.best_gps_path.end())
 			{
-				for (map<Clock::time_point, TPoint3D>::const_iterator t = i1;
+				for (auto t = i1;
 					 t != i2 && t != rtk_path_info.best_gps_path.end(); ++t)
 				{
 					obj2->appendLine(
@@ -720,7 +720,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
 				const CObservation* obs = rawlog.getAsObservation(i).get();
 				if (IS_CLASS(obs, CObservationOdometry))
 				{
-					const CObservationOdometry* obsOdo =
+					const auto* obsOdo =
 						static_cast<const CObservationOdometry*>(obs);
 					curPose = obsOdo->odometry;
 				}
@@ -1166,7 +1166,7 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent&)
 	double overall_dist = 0;
 	double last_x = 0, last_y = 0, last_z = 0;
 
-	for (CPose3DInterpolator::iterator i = robot_path.begin();
+	for (auto i = robot_path.begin();
 		 i != robot_path.end(); ++i)
 	{
 		if (i != robot_path.begin())

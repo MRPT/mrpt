@@ -102,7 +102,7 @@ mrpt::maps::CMetricMap* CLandmarksMap::internal_CreateFromMapDefinition(
 {
 	const CLandmarksMap::TMapDefinition& def =
 		*dynamic_cast<const CLandmarksMap::TMapDefinition*>(&_def);
-	CLandmarksMap* obj = new CLandmarksMap();
+	auto* obj = new CLandmarksMap();
 
 	for (const auto & initialBeacon : def.initialBeacons)
 	{
@@ -227,7 +227,7 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 		/********************************************************************
 						OBSERVATION TYPE: CObservation2DRangeScan
 			********************************************************************/
-		const CObservation2DRangeScan* o =
+		const auto* o =
 			static_cast<const CObservation2DRangeScan*>(obs);
 		CLandmarksMap auxMap;
 		CPose2D sensorPose2D(robotPose3D + o->sensorPose);
@@ -244,7 +244,7 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 						OBSERVATION TYPE: CObservationStereoImages
 				Lik. between "this" and "auxMap";
 			********************************************************************/
-		const CObservationStereoImages* o =
+		const auto* o =
 			static_cast<const CObservationStereoImages*>(obs);
 
 		CLandmarksMap auxMap;
@@ -275,7 +275,7 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 				Lik. between "this" and "auxMap";
 
 			********************************************************************/
-		const CObservationBeaconRanges* o =
+		const auto* o =
 			static_cast<const CObservationBeaconRanges*>(obs);
 
 		std::deque<CObservationBeaconRanges::TMeasurement>::const_iterator it;
@@ -341,7 +341,7 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 				Lik. between "this" and "robotPose";
 
 		********************************************************************/
-		const CObservationRobotPose* o =
+		const auto* o =
 			static_cast<const CObservationRobotPose*>(obs);
 
 		// Compute the 3D position of the sensor:
@@ -376,7 +376,7 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 						OBSERVATION TYPE: CObservationGPS
 
 		********************************************************************/
-		const CObservationGPS* o = static_cast<const CObservationGPS*>(obs);
+		const auto* o = static_cast<const CObservationGPS*>(obs);
 		// Compute the 3D position of the sensor:
 		CPoint3D point3D = CPoint3D(robotPose3D);
 		CPoint3D GPSpose;
@@ -487,7 +487,7 @@ bool CLandmarksMap::internal_insertObservation(
 						OBSERVATION TYPE: CObservationImage
 
 			********************************************************************/
-		const CObservationImage* o = static_cast<const CObservationImage*>(obs);
+		const auto* o = static_cast<const CObservationImage*>(obs);
 		CLandmarksMap tempMap;
 
 		// 1) Load the features in a temporary 3D landmarks map:
@@ -534,7 +534,7 @@ bool CLandmarksMap::internal_insertObservation(
 		/********************************************************************
 						OBSERVATION TYPE: CObservationStereoImages
 			********************************************************************/
-		const CObservationStereoImages* o =
+		const auto* o =
 			static_cast<const CObservationStereoImages*>(obs);
 
 		// Change coordinates ref:
@@ -557,7 +557,7 @@ bool CLandmarksMap::internal_insertObservation(
 						OBSERVATION TYPE:  CObservationVisualLandmarks
 
 			********************************************************************/
-		const CObservationVisualLandmarks* o =
+		const auto* o =
 			static_cast<const CObservationVisualLandmarks*>(obs);
 
 		// Change coordinates ref:
@@ -609,7 +609,7 @@ void CLandmarksMap::computeMatchingWith2D(
 
 	// Check the other map class:
 	ASSERT_(otherMap->GetRuntimeClass() == CLASS_ID(CLandmarksMap));
-	const CLandmarksMap* otherMap2 =
+	const auto* otherMap2 =
 		static_cast<const CLandmarksMap*>(otherMap);
 	std::vector<bool> otherCorrespondences;
 
@@ -1435,7 +1435,7 @@ bool CLandmarksMap::saveToTextFile(std::string file)
 	// os::fprintf(f,"%%
 	// -----------------------------------------------------------------------------------------------------\n");
 
-	for (TSequenceLandmarks::iterator it = landmarks.begin();
+	for (auto it = landmarks.begin();
 		 it != landmarks.end(); ++it)
 	{
 		os::fprintf(

@@ -59,7 +59,7 @@ void COpenGLStandardObject::render_dl() const
 	}
 	else
 	{
-		std::vector<TPoint3D>::const_iterator it = vertices.begin();
+		auto it = vertices.begin();
 		do
 		{
 			glBegin(type);
@@ -125,7 +125,7 @@ void COpenGLStandardObject::getBoundingBox(
 
 void COpenGLStandardObject::disable(_GLENUM flag)
 {
-	std::vector<_GLENUM>::iterator it = enabled.begin();
+	auto it = enabled.begin();
 	while (it != enabled.end())
 	{
 		if (*it == flag)

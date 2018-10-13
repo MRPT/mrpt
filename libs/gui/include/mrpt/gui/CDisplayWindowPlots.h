@@ -54,9 +54,9 @@ class CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
 		const std::string& plotName)
 	{
 		mrpt::math::CVectorFloat x1(x.size()), y1(y.size());
-		const size_t N1 = size_t(x.size());
+		const auto N1 = size_t(x.size());
 		for (size_t i = 0; i < N1; i++) x1[i] = x[i];
-		const size_t N2 = size_t(y.size());
+		const auto N2 = size_t(y.size());
 		for (size_t i = 0; i < N2; i++) y1[i] = y[i];
 		this->internal_plot(x1, y1, lineFormat, plotName);
 	}
@@ -65,7 +65,7 @@ class CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
 		const VECTOR1& y, const std::string& lineFormat,
 		const std::string& plotName)
 	{
-		const size_t N = size_t(y.size());
+		const auto N = size_t(y.size());
 		mrpt::math::CVectorFloat x1(N), y1(N);
 		for (size_t i = 0; i < N; i++)
 		{

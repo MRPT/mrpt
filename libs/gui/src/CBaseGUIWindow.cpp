@@ -51,7 +51,7 @@ void CBaseGUIWindow::createWxWindow(
 	if (!WxSubsystem::createOneInstanceMainThread()) return;  // Error!
 
 	// Create window:
-	WxSubsystem::TRequestToWxMainThread* REQ =
+	auto* REQ =
 		new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->source2D = static_cast<gui::CDisplayWindow*>(m_winobj_voidptr);
 	REQ->source3D = static_cast<gui::CDisplayWindow3D*>(m_winobj_voidptr);
@@ -109,7 +109,7 @@ void CBaseGUIWindow::destroyWxWindow()
 	// Send close request:
 	if (m_hwnd.get())
 	{
-		WxSubsystem::TRequestToWxMainThread* REQ =
+		auto* REQ =
 			new WxSubsystem::TRequestToWxMainThread[1];
 		REQ->OPCODE = m_CMD_DESTROY_WIN;
 		REQ->source2D = static_cast<gui::CDisplayWindow*>(m_winobj_voidptr);

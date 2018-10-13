@@ -837,7 +837,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 
 				// Move SOG modes into pdf_SOG:
 				pdf_SOG->clear();
-				for (TMapMatchingsToPoseMode::const_iterator s =
+				for (auto s =
 						 sog_modes.begin();
 					 s != sog_modes.end(); ++s)
 				{
@@ -886,7 +886,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 				CEnhancedMetaFile::LINUX_IMG_HEIGHT(
 					max(m1->getSizeY(), m2->getSizeY()) + 50);
 
-				for (TMapMatchingsToPoseMode::const_iterator s =
+				for (auto s =
 						 sog_modes.begin();
 					 s != sog_modes.end(); ++s)
 				{
@@ -929,7 +929,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 				// Invoke ICP once for each mode in the SOG:
 				size_t cnt = 0;
 				outInfo.icp_goodness_all_sog_modes.clear();
-				for (CPosePDFSOG::iterator i = pdf_SOG->begin();
+				for (auto i = pdf_SOG->begin();
 					 i != pdf_SOG->end(); ++cnt)
 				{
 					CPosePDF::Ptr icp_est = icp.Align(
@@ -989,7 +989,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 		"Refactor `info` so it is polymorphic and can use dynamic_cast<> here");
 	if (info)
 	{
-		TReturnInfo* info_ = static_cast<TReturnInfo*>(info);
+		auto* info_ = static_cast<TReturnInfo*>(info);
 		*info_ = outInfo;
 	}
 
@@ -1025,9 +1025,9 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_correlation(
 	// -----------------
 	ASSERT_(mm1->GetRuntimeClass() == CLASS_ID(COccupancyGridMap2D));
 	ASSERT_(mm2->GetRuntimeClass() == CLASS_ID(COccupancyGridMap2D));
-	const COccupancyGridMap2D* m1 =
+	const auto* m1 =
 		static_cast<const COccupancyGridMap2D*>(mm1);
-	const COccupancyGridMap2D* m2 =
+	const auto* m2 =
 		static_cast<const COccupancyGridMap2D*>(mm2);
 
 	ASSERT_(m1->getResolution() == m2->getResolution());

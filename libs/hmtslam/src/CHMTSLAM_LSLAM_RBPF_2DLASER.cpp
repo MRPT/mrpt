@@ -577,7 +577,7 @@ double CLSLAM_RBPF_2DLASER::particlesEvaluator_AuxPFOptimal(
 
 	MRPT_START
 
-	const CLocalMetricHypothesis* myObj =
+	const auto* myObj =
 		static_cast<const CLocalMetricHypothesis*>(obj);
 
 	// Compute the quantity:
@@ -668,9 +668,9 @@ double CLSLAM_RBPF_2DLASER::auxiliarComputeObservationLikelihood(
 	const CSensoryFrame* observation, const CPose2D* x)
 {
 	MRPT_UNUSED_PARAM(PF_options);
-	const CLocalMetricHypothesis* theObj =
+	const auto* theObj =
 		static_cast<const CLocalMetricHypothesis*>(obj);
-	CMultiMetricMap* map = const_cast<CMultiMetricMap*>(
+	auto* map = const_cast<CMultiMetricMap*>(
 		&theObj->m_particles[particleIndexForMap].d->metricMaps);
 
 	return map->computeObservationsLikelihood(*observation, *x);

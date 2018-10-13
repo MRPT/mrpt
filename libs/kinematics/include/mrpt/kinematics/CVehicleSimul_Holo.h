@@ -38,7 +38,7 @@ class CVehicleSimul_Holo : public CVehicleSimulVirtualBase
 
 	void sendVelCmd(const CVehicleVelCmd& cmd_vel) override
 	{
-		const kinematic_cmd_t* cmd =
+		const auto* cmd =
 			dynamic_cast<const kinematic_cmd_t*>(&cmd_vel);
 		ASSERTMSG_(
 			cmd,

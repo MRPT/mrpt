@@ -811,7 +811,7 @@ void CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::Reset()
 	// remove all strings
 	if (!m_strings.empty())
 	{
-		typename TNamesDepend::iterator i = m_strings.begin();
+		auto i = m_strings.begin();
 		for (; i != m_strings.end(); ++i)
 		{
 			delete[] const_cast<SI_CHAR*>(i->pItem);
@@ -912,7 +912,7 @@ SI_Error CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::Load(
 
 	// allocate memory for the data, ensure that there is a NULL
 	// terminator wherever the converted data ends
-	SI_CHAR* pData = new SI_CHAR[uLen + 1];
+	auto* pData = new SI_CHAR[uLen + 1];
 	if (!pData)
 	{
 		return SI_NOMEM;
@@ -1362,7 +1362,7 @@ SI_Error CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::CopyString(
 			;
 	}
 	++uLen;  // nullptr character
-	SI_CHAR* pCopy = new SI_CHAR[uLen];
+	auto* pCopy = new SI_CHAR[uLen];
 	if (!pCopy)
 	{
 		return SI_NOMEM;
@@ -1392,7 +1392,7 @@ SI_Error CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::AddEntry(
 	}
 
 	// check for existence of the section first if we need string copies
-	typename TSection::iterator iSection = m_data.end();
+	auto iSection = m_data.end();
 	if (a_bCopyStrings)
 	{
 		iSection = m_data.find(a_pSection);
@@ -1428,7 +1428,7 @@ SI_Error CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::AddEntry(
 
 	// check for existence of the key
 	TKeyVal& keyval = iSection->second;
-	typename TKeyVal::iterator iKey = keyval.find(a_pKey);
+	auto iKey = keyval.find(a_pKey);
 
 	// make string copies if necessary
 	if (a_bCopyStrings)
@@ -1477,12 +1477,12 @@ const SI_CHAR* CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::GetValue(
 	{
 		return a_pDefault;
 	}
-	typename TSection::const_iterator iSection = m_data.find(a_pSection);
+	auto iSection = m_data.find(a_pSection);
 	if (iSection == m_data.end())
 	{
 		return a_pDefault;
 	}
-	typename TKeyVal::const_iterator iKeyVal = iSection->second.find(a_pKey);
+	auto iKeyVal = iSection->second.find(a_pKey);
 	if (iKeyVal == iSection->second.end())
 	{
 		return a_pDefault;
@@ -1491,7 +1491,7 @@ const SI_CHAR* CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::GetValue(
 	// check for multiple entries with the same key
 	if (m_bAllowMultiKey && a_pHasMultiple)
 	{
-		typename TKeyVal::const_iterator iTemp = iKeyVal;
+		auto iTemp = iKeyVal;
 		if (++iTemp != iSection->second.end())
 		{
 			if (!IsLess(a_pKey, iTemp->first.pItem))
@@ -1513,12 +1513,12 @@ bool CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::GetAllValues(
 	{
 		return false;
 	}
-	typename TSection::const_iterator iSection = m_data.find(a_pSection);
+	auto iSection = m_data.find(a_pSection);
 	if (iSection == m_data.end())
 	{
 		return false;
 	}
-	typename TKeyVal::const_iterator iKeyVal = iSection->second.find(a_pKey);
+	auto iKeyVal = iSection->second.find(a_pKey);
 	if (iKeyVal == iSection->second.end())
 	{
 		return false;
@@ -1598,7 +1598,7 @@ template <class SI_CHAR, class SI_STRLESS, class SI_CONVERTER>
 void CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::GetAllSections(
 	TNamesDepend& a_names) const
 {
-	typename TSection::const_iterator i = m_data.begin();
+	auto i = m_data.begin();
 	for (int n = 0; i != m_data.end(); ++i, ++n)
 	{
 		a_names.push_back(i->first);
@@ -1614,7 +1614,7 @@ bool CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::GetAllKeys(
 		return false;
 	}
 
-	typename TSection::const_iterator iSection = m_data.find(a_pSection);
+	auto iSection = m_data.find(a_pSection);
 	if (iSection == m_data.end())
 	{
 		return false;
@@ -1622,7 +1622,7 @@ bool CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::GetAllKeys(
 
 	const TKeyVal& section = iSection->second;
 	const SI_CHAR* pLastKey = nullptr;
-	typename TKeyVal::const_iterator iKeyVal = section.begin();
+	auto iKeyVal = section.begin();
 	for (int n = 0; iKeyVal != section.end(); ++iKeyVal, ++n)
 	{
 		if (!pLastKey || IsLess(pLastKey, iKeyVal->first.pItem))
@@ -1705,7 +1705,7 @@ SI_Error CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::Save(
 	}
 
 	// iterate through our sections and output the data
-	typename TNamesDepend::const_iterator iSection = oSections.begin();
+	auto iSection = oSections.begin();
 	for (; iSection != oSections.end(); ++iSection)
 	{
 		// write out the comment if there is one
@@ -1755,7 +1755,7 @@ SI_Error CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::Save(
 #endif
 
 		// write all keys and values
-		typename TNamesDepend::const_iterator iKey = oKeys.begin();
+		auto iKey = oKeys.begin();
 		for (; iKey != oKeys.end(); ++iKey)
 		{
 			// get all values for this key
@@ -1772,7 +1772,7 @@ SI_Error CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::Save(
 				}
 			}
 
-			typename TNamesDepend::const_iterator iValue = oValues.begin();
+			auto iValue = oValues.begin();
 			for (; iValue != oValues.end(); ++iValue)
 			{
 				// write the key

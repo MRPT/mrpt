@@ -510,7 +510,7 @@ size_t CParticleFilterCapable::fastDrawSample(
 
 		// Use the look-up table to see the starting index we must start looking
 		// from:
-		size_t j = (size_t)floor(
+		auto j = (size_t)floor(
 			draw * ((double)PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS - 0.05));
 		CDF = m_fastDrawAuxiliary.CDF[j];
 		size_t i = m_fastDrawAuxiliary.CDF_indexes[j];

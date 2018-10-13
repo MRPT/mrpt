@@ -64,7 +64,7 @@ TEST(SerializeTestOpenGL, WriteReadToMem)
 		{
 			mrpt::io::CMemoryStream buf;
 			{
-				CSerializable* o =
+				auto* o =
 					static_cast<CSerializable*>(lstClasse->createObject());
 				mrpt::serialization::archiveFrom(buf) << *o;
 				delete o;

@@ -144,12 +144,12 @@ bool CHeightGridMap2D_Base::dem_internal_insertObservation(
 		/********************************************************************
 					OBSERVATION TYPE: CObservation2DRangeScan
 		********************************************************************/
-		const CObservation2DRangeScan* o =
+		const auto* o =
 			static_cast<const CObservation2DRangeScan*>(obs);
 
 		// Create points map, if not created yet:
 		CPointsMap::TInsertionOptions opts;
-		const CPointsMap* thePoints =
+		const auto* thePoints =
 			o->buildAuxPointsMap<mrpt::maps::CPointsMap>(&opts);
 
 		// And rotate to the robot pose:
@@ -160,7 +160,7 @@ bool CHeightGridMap2D_Base::dem_internal_insertObservation(
 		/********************************************************************
 					OBSERVATION TYPE: CObservationVelodyneScan
 		********************************************************************/
-		const CObservationVelodyneScan* o =
+		const auto* o =
 			static_cast<const CObservationVelodyneScan*>(obs);
 
 		// Create points map, if not created yet:

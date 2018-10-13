@@ -93,7 +93,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 					OBSERVATION TYPE: CObservation2DRangeScan
 
 			********************************************************************/
-		const CObservation2DRangeScan* o =
+		const auto* o =
 			static_cast<const CObservation2DRangeScan*>(obs);
 		CPose3D sensorPose3D = robotPose3D + o->sensorPose;
 		CPose2D laserPose(sensorPose3D);
@@ -160,9 +160,9 @@ bool COccupancyGridMap2D::internal_insertObservation(
 				// Reserve a temporary block of memory on the stack with
 				// "alloca": this memory has NOT to be deallocated,
 				//  so it's ideal for an efficient, small buffer:
-				float* scanPoints_x =
+				auto* scanPoints_x =
 					(float*)mrpt_alloca(sizeof(float) * nRanges);
-				float* scanPoints_y =
+				auto* scanPoints_y =
 					(float*)mrpt_alloca(sizeof(float) * nRanges);
 
 				float *scanPoint_x, *scanPoint_y;
@@ -804,7 +804,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 	}
 	else if (CLASS_ID(CObservationRange) == obs->GetRuntimeClass())
 	{
-		const CObservationRange* o = static_cast<const CObservationRange*>(obs);
+		const auto* o = static_cast<const CObservationRange*>(obs);
 		CPose3D spose;
 		o->getSensorPose(spose);
 		CPose3D sensorPose3D = robotPose3D + spose;

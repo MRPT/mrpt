@@ -209,7 +209,7 @@ PlyFile* ply_write(FILE* fp, const vector<string>& elem_names, int file_type)
 	if (fp == nullptr) return (nullptr);
 
 	/* create a record for this object */
-	PlyFile* plyfile = new PlyFile(fp);
+	auto* plyfile = new PlyFile(fp);
 
 	plyfile->file_type = file_type;
 	plyfile->version = 1.0;
@@ -631,7 +631,7 @@ PlyFile* ply_read(FILE* fp, vector<string>& elem_names)
 	if (fp == nullptr) return (nullptr);
 
 	/* create record for this object */
-	PlyFile* plyfile = new PlyFile(fp);
+	auto* plyfile = new PlyFile(fp);
 
 	/* read and parse the file's header */
 	string orig_line;

@@ -94,7 +94,7 @@ class CGenericMemoryPool
 		if (m_pool.empty()) return nullptr;
 
 		std::lock_guard<std::mutex> lock(m_pool_cs);
-		for (typename TList::iterator it = m_pool.begin(); it != m_pool.end();
+		for (auto it = m_pool.begin(); it != m_pool.end();
 			 ++it)
 		{
 			if (it->first.isSuitable(params))
@@ -131,7 +131,7 @@ class CGenericMemoryPool
 		m_was_destroyed = true;
 		// Free remaining memory blocks:
 		std::lock_guard<std::mutex> lock(m_pool_cs);
-		for (typename TList::iterator it = m_pool.begin(); it != m_pool.end();
+		for (auto it = m_pool.begin(); it != m_pool.end();
 			 ++it)
 			delete it->second;
 		m_pool.clear();

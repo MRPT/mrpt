@@ -83,7 +83,7 @@ void CAngularObservationMesh::updateMesh() const
 	size_t numCols = scanSet[0].scan.size();
 	actualMesh.setSize(numRows, numCols);
 	validityMatrix.setSize(numRows, numCols);
-	double* pitchs = new double[numRows];
+	auto* pitchs = new double[numRows];
 	if (pitchBounds.size() == 2)
 	{
 		double p1 = pitchBounds[0];
@@ -223,7 +223,7 @@ bool CAngularObservationMesh::setScanSet(
 	{
 		size_t setSize = scans[0].scan.size();
 		bool rToL = scans[0].rightToLeft;
-		for (std::vector<CObservation2DRangeScan>::const_iterator it =
+		for (auto it =
 				 scans.begin() + 1;
 			 it != scans.end(); ++it)
 		{
@@ -369,7 +369,7 @@ class FAddUntracedLines
 		: lins(l), pDist(p), pitchs()
 	{
 		pitchs.reserve(pi.size());
-		for (std::vector<double>::const_reverse_iterator it = pi.rbegin();
+		for (auto it = pi.rbegin();
 			 it != pi.rend(); ++it)
 			pitchs.push_back(*it);
 	}

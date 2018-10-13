@@ -57,7 +57,7 @@ DECLARE_OP_FUNCTION(op_export_enose_txt)
 			const CObservationGasSensors* obs =
 				dynamic_cast<CObservationGasSensors*>(o.get());
 
-			map<string, FILE*>::const_iterator it =
+			auto it =
 				lstFiles.find(obs->sensorLabel);
 
 			FILE* f_this;
@@ -123,7 +123,7 @@ DECLARE_OP_FUNCTION(op_export_enose_txt)
 				::fprintf(f_this, "%3.4f ", temp);
 
 				// For each sensor on the E-nose
-				for (std::vector<float>::const_iterator it =
+				for (auto it =
 						 m_reading.readingsVoltage.begin();
 					 it != m_reading.readingsVoltage.end(); ++it)
 					::fprintf(f_this, "%5.5f ", *it);
@@ -140,7 +140,7 @@ DECLARE_OP_FUNCTION(op_export_enose_txt)
 		// Destructor: close files and generate summary files:
 		~CRawlogProcessor_ExportENOSE_TXT()
 		{
-			for (map<string, FILE*>::const_iterator it = lstFiles.begin();
+			for (auto it = lstFiles.begin();
 				 it != lstFiles.end(); ++it)
 			{
 				os::fclose(it->second);

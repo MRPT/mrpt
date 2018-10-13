@@ -72,7 +72,7 @@ void COccupancyGridMap2D::sonarSimulator(
 {
 	const float free_thres = 1.0f - threshold;
 
-	for (CObservationRange::iterator itR = inout_observation.begin();
+	for (auto itR = inout_observation.begin();
 		 itR != inout_observation.end(); ++itR)
 	{
 		const CPose2D sensorAbsolutePose =
@@ -136,14 +136,14 @@ void COccupancyGridMap2D::simulateScanRay(
 #define int_x2idx(_X) (_X >> INTPRECNUMBIT)
 #define int_y2idx(_Y) (_Y >> INTPRECNUMBIT)
 
-	int64_t rxi = static_cast<int64_t>(
+	auto rxi = static_cast<int64_t>(
 		((start_x - x_min) / resolution) * (1L << INTPRECNUMBIT));
-	int64_t ryi = static_cast<int64_t>(
+	auto ryi = static_cast<int64_t>(
 		((start_y - y_min) / resolution) * (1L << INTPRECNUMBIT));
 
-	const int64_t Arxi = static_cast<int64_t>(
+	const auto Arxi = static_cast<int64_t>(
 		RAYTRACE_STEP_SIZE_IN_CELL_UNITS * Arx * (1L << INTPRECNUMBIT));
-	const int64_t Aryi = static_cast<int64_t>(
+	const auto Aryi = static_cast<int64_t>(
 		RAYTRACE_STEP_SIZE_IN_CELL_UNITS * Ary * (1L << INTPRECNUMBIT));
 
 	cellType hitCellOcc_int = 0;  // p2l(0.5f)

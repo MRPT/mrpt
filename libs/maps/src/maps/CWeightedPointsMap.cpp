@@ -49,7 +49,7 @@ mrpt::maps::CMetricMap* CWeightedPointsMap::internal_CreateFromMapDefinition(
 {
 	const CWeightedPointsMap::TMapDefinition& def =
 		*dynamic_cast<const CWeightedPointsMap::TMapDefinition*>(&_def);
-	CWeightedPointsMap* obj = new CWeightedPointsMap();
+	auto* obj = new CWeightedPointsMap();
 	obj->insertionOptions = def.insertionOpts;
 	obj->likelihoodOptions = def.likelihoodOpts;
 	return obj;
@@ -125,7 +125,7 @@ void CWeightedPointsMap::copyFrom(const CPointsMap& obj)
 	CPointsMap::base_copyFrom(
 		obj);  // This also does a ::resize(N) of all data fields.
 
-	const CWeightedPointsMap* pW =
+	const auto* pW =
 		dynamic_cast<const CWeightedPointsMap*>(&obj);
 	if (pW)
 	{
@@ -142,7 +142,7 @@ void CWeightedPointsMap::addFrom_classSpecific(
 	const size_t nOther = anotherMap.size();
 
 	// Specific data for this class:
-	const CWeightedPointsMap* anotheMap_w =
+	const auto* anotheMap_w =
 		dynamic_cast<const CWeightedPointsMap*>(&anotherMap);
 
 	if (anotheMap_w)

@@ -114,7 +114,7 @@ void CHierarchicalMHMap::onArcDestruction(CHMHMapArc* arc)
 {
 	// Important note: We cannot create a temporary smart pointer here, since
 	//  it will lead to an infinity recursion!  (BUGFIX, JLBC SEP-2009)
-	TArcList::iterator it = m_arcs.find_ptr_to(arc);
+	auto it = m_arcs.find_ptr_to(arc);
 	if (it != m_arcs.end()) m_arcs.erase(it);
 }
 
@@ -124,7 +124,7 @@ void CHierarchicalMHMap::onArcDestruction(CHMHMapArc* arc)
 void CHierarchicalMHMap::onNodeAddition(CHMHMapNode::Ptr& node)
 {
 	// Check if it is not already in the list:
-	TNodeList::iterator it = m_nodes.find(node->m_ID);
+	auto it = m_nodes.find(node->m_ID);
 
 	if (it != m_nodes.end())
 	{
@@ -145,7 +145,7 @@ void CHierarchicalMHMap::onNodeAddition(CHMHMapNode::Ptr& node)
 void CHierarchicalMHMap::onArcAddition(CHMHMapArc::Ptr& arc)
 {
 	// Check if it is not already in the list:
-	TArcList::iterator it = m_arcs.find(arc);
+	auto it = m_arcs.find(arc);
 
 	if (it == m_arcs.end())  // Is it new?
 		m_arcs.push_back(arc);
@@ -298,7 +298,7 @@ void CHierarchicalMHMap::dumpAsXMLfile(std::string fileName) const
 		tablenodes->set(i, "nodetype", m_node.second->m_nodeType);
 
 		tablenodes->set(i, "annotation-list", ".");
-		for (CMHPropertiesValuesList::const_iterator ann =
+		for (auto ann =
 				 m_node.second->m_annotations.begin();
 			 ann != m_node.second->m_annotations.end(); ++ann)
 		{
@@ -351,7 +351,7 @@ void CHierarchicalMHMap::dumpAsXMLfile(std::string fileName) const
 		tablearcs->set(i, "to", format("%u", static_cast<unsigned int>(toid)));
 		tablearcs->set(i, "arctype", m_arc->m_arcType);
 
-		for (CMHPropertiesValuesList::const_iterator ann =
+		for (auto ann =
 				 m_arc->m_annotations.begin();
 			 ann != m_arc->m_annotations.end(); ++ann)
 		{

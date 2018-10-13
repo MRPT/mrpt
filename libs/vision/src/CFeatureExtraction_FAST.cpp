@@ -191,9 +191,9 @@ void CFeatureExtraction::extractFeaturesFAST(
 		if (do_filter_min_dist)
 		{
 			// Check the min-distance:
-			const size_t section_idx_x =
+			const auto section_idx_x =
 				size_t(kp.pt.x * occupied_grid_cell_size_inv);
-			const size_t section_idx_y =
+			const auto section_idx_y =
 				size_t(kp.pt.y * occupied_grid_cell_size_inv);
 
 			if (occupied_sections(section_idx_x, section_idx_y))

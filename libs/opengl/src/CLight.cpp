@@ -82,7 +82,7 @@ void CLight::readFromStream(mrpt::serialization::CArchive& in)
 void CLight::sendToOpenGL() const
 {
 #if MRPT_HAS_OPENGL_GLUT
-	const GLenum id = (GLenum)((int)GL_LIGHT0 + light_ID);
+	const auto id = (GLenum)((int)GL_LIGHT0 + light_ID);
 
 	glEnable(id);
 

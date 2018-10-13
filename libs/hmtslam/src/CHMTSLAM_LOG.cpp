@@ -163,7 +163,7 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 		{
 			std::lock_guard<std::mutex> lockerLMH(bestLMH->threadLocks.m_lock);
 
-			for (TNodeIDSet::const_iterator n = bestLMH->m_neighbors.begin();
+			for (auto n = bestLMH->m_neighbors.begin();
 				 n != bestLMH->m_neighbors.end(); ++n)
 				bestLMH->updateAreaFromLMH(*n);
 

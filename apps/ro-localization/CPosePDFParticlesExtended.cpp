@@ -64,14 +64,14 @@ void CPosePDFParticlesExtended::copyFrom(const CPosePDF& o)
 
 	if (o.GetRuntimeClass() == CLASS_ID(CPosePDFParticlesExtended))
 	{
-		CPosePDFParticlesExtended* pdf = (CPosePDFParticlesExtended*)&o;
+		auto* pdf = (CPosePDFParticlesExtended*)&o;
 
 		// Both are particles:
 		m_particles = pdf->m_particles;
 	}
 	else if (o.GetRuntimeClass() == CLASS_ID(CPosePDFGaussian))
 	{
-		CPosePDFGaussian* pdf = (CPosePDFGaussian*)&o;
+		auto* pdf = (CPosePDFGaussian*)&o;
 		int M = (int)m_particles.size();
 		std::vector<vector<double>> parts;
 		std::vector<vector<double>>::iterator partsIt;
@@ -796,7 +796,7 @@ void CPosePDFParticlesExtended::operator+=(const CPose2D& Ap)
 void CPosePDFParticlesExtended::inverse(CPosePDF& o) const
 {
 	ASSERT_(o.GetRuntimeClass() == CLASS_ID(CPosePDFParticlesExtended));
-	CPosePDFParticlesExtended* out = (CPosePDFParticlesExtended*)&o;
+	auto* out = (CPosePDFParticlesExtended*)&o;
 
 	out->copyFrom(*this);
 	static CPose2D nullPose(0, 0, 0);
@@ -915,7 +915,7 @@ double CPosePDFParticlesExtended::auxiliarComputeObservationLikelihood(
 	double ret = 1;
 	CMetricMap* map;  // The map:
 
-	const CPosePDFParticlesExtended* pdf =
+	const auto* pdf =
 		static_cast<const CPosePDFParticlesExtended*>(obj);
 
 	if (pdf->options.metricMap)
@@ -935,7 +935,7 @@ double CPosePDFParticlesExtended::auxiliarComputeObservationLikelihood(
 		// JLBC: 20/ABR/2007 -> UWB offset from extended state vector
 		if (obser->GetRuntimeClass() == CLASS_ID(CObservationBeaconRanges))
 		{
-			CObservationBeaconRanges* obs = (CObservationBeaconRanges*)obser;
+			auto* obs = (CObservationBeaconRanges*)obser;
 			obserDumm = *obs;
 
 			// Introduce bias:
@@ -973,7 +973,7 @@ double CPosePDFParticlesExtended::particlesEvaluator_AuxPFOptimal(
 
 	// Take the previous particle weight:
 	// --------------------------------------------
-	const CPosePDFParticlesExtended* pdf =
+	const auto* pdf =
 		static_cast<const CPosePDFParticlesExtended*>(obj);
 
 	double ret = pdf->m_particles[index].log_w;

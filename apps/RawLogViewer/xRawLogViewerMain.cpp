@@ -1993,7 +1993,7 @@ void xRawLogViewerFrame::OnEditRawlog(wxCommandEvent& event)
 	CFormEdit dialog(this);
 
 	dialog.cbObsLabel->Clear();
-	for (std::map<std::string, TInfoPerSensorLabel>::iterator i =
+	for (auto i =
 			 listOfSensorLabels.begin();
 		 i != listOfSensorLabels.end(); ++i)
 		dialog.cbObsLabel->Append(_U(i->first.c_str()));
@@ -2077,7 +2077,7 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 		CDirectoryExplorer::TFileInfoList lstFiles;
 		CDirectoryExplorer::explore(
 			rawlog_path, FILE_ATTRIB_DIRECTORY, lstFiles);
-		for (CDirectoryExplorer::TFileInfoList::iterator i = lstFiles.begin();
+		for (auto i = lstFiles.begin();
 			 i != lstFiles.end(); ++i)
 			if (0 == os::_strcmpi(i->name.substr(0, 6).c_str(), "Images"))
 			{
@@ -2507,7 +2507,7 @@ void xRawLogViewerFrame::rebuildTreeView()
 
 	if (experimentLenght == 0) experimentLenght = 1;
 
-	for (TListOfObjectsOccurs::const_iterator it = listOfObjects.begin();
+	for (auto it = listOfObjects.begin();
 		 it != listOfObjects.end(); ++it)
 	{
 		const char* className = it->first->className;
@@ -2524,7 +2524,7 @@ void xRawLogViewerFrame::rebuildTreeView()
 		_("\nSummary of 'sensorLabels' found in the "
 		  "rawlog:\n-----------------------------------------\n"));
 
-	for (std::map<std::string, TInfoPerSensorLabel>::iterator it =
+	for (auto it =
 			 listOfSensorLabels.begin();
 		 it != listOfSensorLabels.end(); ++it)
 	{
@@ -2562,7 +2562,7 @@ void xRawLogViewerFrame::rebuildTreeView()
 		wxPen penBlue(wxColour(0, 0, 255), 5);
 		unsigned int id = 0;
 		double min_t = 0.0, max_t = 1.0;
-		for (std::map<std::string, TInfoPerSensorLabel>::iterator it =
+		for (auto it =
 				 listOfSensorLabels.begin();
 			 it != listOfSensorLabels.end(); ++it, ++id)
 		{
@@ -2602,7 +2602,7 @@ void xRawLogViewerFrame::OntreeViewSelectionChanged(
 	wxWindow* me, CRawlogTreeView* the_tree, TRawlogTreeViewEvent ev,
 	int item_index, const mrpt::serialization::CSerializable::Ptr& item_data)
 {
-	xRawLogViewerFrame* win = (xRawLogViewerFrame*)me;
+	auto* win = (xRawLogViewerFrame*)me;
 	win->SelectObjectInTreeView(item_data);
 	the_tree->SetFocus();
 }
@@ -2683,7 +2683,7 @@ void xRawLogViewerFrame::showNextTip(bool forceShow)
 	if (forceShow || user_wants_to_show)
 	{
 		size_t last_tip = iniFile->read_int("tips", "next", 0);
-		CMyTips* myTips = new CMyTips(last_tip);
+		auto* myTips = new CMyTips(last_tip);
 		bool cont_showing = ::wxShowTip(this, myTips);
 
 		// save cont_showing:
@@ -3003,7 +3003,7 @@ void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent& event)
 					if (sf->getObservationByIndex(k)->GetRuntimeClass() ==
 						CLASS_ID(CObservation2DRangeScan))
 					{
-						CObservation2DRangeScan::Ptr obs =
+						auto obs =
 							sf->getObservationByIndexAs<
 								CObservation2DRangeScan::Ptr>(k);
 
@@ -3238,7 +3238,7 @@ void xRawLogViewerFrame::OnFileCountEntries(wxCommandEvent& event)
 
 	wxBusyCursor waitCursor;
 	CFileGZInputStream fil(str);
-	unsigned int filSize = (unsigned int)fil.getTotalBytesCount();
+	auto filSize = (unsigned int)fil.getTotalBytesCount();
 
 	wxString auxStr;
 	wxProgressDialog progDia(
@@ -3326,7 +3326,7 @@ void xRawLogViewerFrame::OnFileSaveImages(wxCommandEvent& event)
 
 	wxBusyCursor waitCursor;
 	CFileGZInputStream fil(str);
-	unsigned int filSize = (unsigned int)fil.getTotalBytesCount();
+	auto filSize = (unsigned int)fil.getTotalBytesCount();
 
 	wxString auxStr;
 	wxProgressDialog progDia(
@@ -3368,7 +3368,7 @@ void xRawLogViewerFrame::OnFileSaveImages(wxCommandEvent& event)
 					if (SF->getObservationByIndex(k)->GetRuntimeClass() ==
 						CLASS_ID(CObservationStereoImages))
 					{
-						CObservationStereoImages::Ptr obsSt =
+						auto obsSt =
 							SF->getObservationByIndexAs<
 								CObservationStereoImages::Ptr>(k);
 						obsSt->imageLeft.saveToFile(format(
@@ -3388,7 +3388,7 @@ void xRawLogViewerFrame::OnFileSaveImages(wxCommandEvent& event)
 					if (SF->getObservationByIndex(k)->GetRuntimeClass() ==
 						CLASS_ID(CObservationImage))
 					{
-						CObservationImage::Ptr obsIm =
+						auto obsIm =
 							SF->getObservationByIndexAs<CObservationImage::Ptr>(
 								k);
 
@@ -3460,13 +3460,13 @@ void wxStaticBitmapPopup::OnPopupSaveImage(wxCommandEvent& event)
 
 		if (IS_CLASS(curSelectedObservation, CObservationImage))
 		{
-			CObservationImage* obs =
+			auto* obs =
 				(CObservationImage*)curSelectedObservation.get();
 			imgToSave = &obs->image;
 		}
 		else if (IS_CLASS(curSelectedObservation, CObservationStereoImages))
 		{
-			CObservationStereoImages* obs =
+			auto* obs =
 				(CObservationStereoImages*)curSelectedObservation.get();
 
 			switch (theMainWindow->Notebook2->GetSelection())
@@ -3484,7 +3484,7 @@ void wxStaticBitmapPopup::OnPopupSaveImage(wxCommandEvent& event)
 		}
 		else if (IS_CLASS(curSelectedObservation, CObservation3DRangeScan))
 		{
-			CObservation3DRangeScan* obs =
+			auto* obs =
 				(CObservation3DRangeScan*)curSelectedObservation.get();
 			obs->load();
 			switch (theMainWindow->nb_3DObsChannels->GetSelection())
@@ -3551,13 +3551,13 @@ void wxStaticBitmapPopup::OnPopupLoadImage(wxCommandEvent& event)
 
 		if (IS_CLASS(curSelectedObservation, CObservationImage))
 		{
-			CObservationImage* obs =
+			auto* obs =
 				(CObservationImage*)curSelectedObservation.get();
 			imgToLoad = &obs->image;
 		}
 		else if (IS_CLASS(curSelectedObservation, CObservationStereoImages))
 		{
-			CObservationStereoImages* obs =
+			auto* obs =
 				(CObservationStereoImages*)curSelectedObservation.get();
 
 			switch (theMainWindow->Notebook2->GetSelection())
@@ -3605,7 +3605,7 @@ void xRawLogViewerFrame::OnChangeSensorPositions(wxCommandEvent& event)
 	CFormChangeSensorPositions dialog(this);
 
 	dialog.edLabel->Clear();
-	for (std::map<std::string, TInfoPerSensorLabel>::iterator i =
+	for (auto i =
 			 listOfSensorLabels.begin();
 		 i != listOfSensorLabels.end(); ++i)
 		dialog.edLabel->Append(_U(i->first.c_str()));
@@ -3769,7 +3769,7 @@ void xRawLogViewerFrame::OnCountBadScans(wxCommandEvent& event)
 					if (SF->getObservationByIndex(k)->GetRuntimeClass() ==
 						CLASS_ID(CObservation2DRangeScan))
 					{
-						CObservation2DRangeScan::Ptr obsScan =
+						auto obsScan =
 							SF->getObservationByIndexAs<
 								CObservation2DRangeScan::Ptr>(k);
 						bool thisValid = false;
@@ -3875,7 +3875,7 @@ void xRawLogViewerFrame::OnFilterSpureousGas(wxCommandEvent& event)
 						if (SF->getObservationByIndex(k)->GetRuntimeClass() ==
 							CLASS_ID(CObservationGasSensors))
 						{
-							CObservationGasSensors::Ptr obs =
+							auto obs =
 								SF->getObservationByIndexAs<
 									CObservationGasSensors::Ptr>(k);
 
@@ -4982,12 +4982,12 @@ void xRawLogViewerFrame::OnRangeFinder1DGenTextFile(wxCommandEvent& event)
 					if (sf->getObservationByIndex(k)->GetRuntimeClass() ==
 						CLASS_ID(CObservationRange))
 					{
-						CObservationRange::Ptr obs =
+						auto obs =
 							sf->getObservationByIndexAs<CObservationRange::Ptr>(
 								k);
 
 						vector<float> rowOfRangesByID(100, 0);
-						for (CObservationRange::iterator it = obs->begin();
+						for (auto it = obs->begin();
 							 it != obs->end(); ++it)
 						{
 							ASSERT_(it->sensorID < rowOfRangesByID.size());
@@ -5143,7 +5143,7 @@ std::vector<std::string> xRawLogViewerFrame::AskForObservationByLabelMultiple(
 	// List of labels:
 	wxArrayString lstLabels;
 	std::vector<std::string> lstLabelsStd;
-	for (std::map<std::string, TInfoPerSensorLabel>::iterator i =
+	for (auto i =
 			 listOfSensorLabels.begin();
 		 i != listOfSensorLabels.end(); ++i)
 	{
@@ -5182,7 +5182,7 @@ std::string xRawLogViewerFrame::AskForObservationByLabel(
 
 	// List of labels:
 	wxArrayString lstLabels;
-	for (std::map<std::string, TInfoPerSensorLabel>::iterator i =
+	for (auto i =
 			 listOfSensorLabels.begin();
 		 i != listOfSensorLabels.end(); ++i)
 	{
@@ -5375,7 +5375,7 @@ void xRawLogViewerFrame::OnMenuChangePosesBatch(wxCommandEvent& event)
 				if (obs)
 				{
 					// Check the sensor label:
-					TSensor2PoseMap::iterator i =
+					auto i =
 						desiredSensorPoses.find(obs->sensorLabel);
 					if (i != desiredSensorPoses.end())
 					{
@@ -5384,8 +5384,7 @@ void xRawLogViewerFrame::OnMenuChangePosesBatch(wxCommandEvent& event)
 					}
 
 					// Check for camera params:
-					std::map<
-						std::string, mrpt::obs::CObservationImage>::iterator c =
+					auto c =
 						desiredCamParams.find(obs->sensorLabel);
 					if (c != desiredCamParams.end())
 					{
@@ -5746,7 +5745,7 @@ void xRawLogViewerFrame::OnMenuBatchLaserExclusionZones(wxCommandEvent& event)
 				if (obs)
 				{
 					// Check the sensor label:
-					TPolygonList::iterator i =
+					auto i =
 						lstExclusions.find(obs->sensorLabel);
 					if (i != lstExclusions.end())
 					{
@@ -5921,7 +5920,7 @@ void xRawLogViewerFrame::OnLaserFilterAngles(wxCommandEvent& event)
 				if (obs)
 				{
 					// Check the sensor label:
-					TExclAreasList::iterator i =
+					auto i =
 						lstExclusions.find(obs->sensorLabel);
 					if (i != lstExclusions.end())
 					{

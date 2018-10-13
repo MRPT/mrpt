@@ -341,7 +341,7 @@ void CGraphSlamEngine<GRAPH_T>::initClass()
 	vec_edge_types.emplace_back("ICP2D");
 	vec_edge_types.emplace_back("ICP3D");
 
-	for (vector<string>::const_iterator cit = vec_edge_types.begin();
+	for (auto cit = vec_edge_types.begin();
 		 cit != vec_edge_types.end(); ++cit)
 	{
 		m_edge_counter.addEdgeType(*cit);
@@ -360,7 +360,7 @@ void CGraphSlamEngine<GRAPH_T>::initClass()
 		// build each one of these
 		map<string, double> name_to_offset_y;
 		map<string, int> name_to_text_index;
-		for (vector<string>::const_iterator it = vec_edge_types.begin();
+		for (auto it = vec_edge_types.begin();
 			 it != vec_edge_types.end(); ++it)
 		{
 			m_win_manager->assignTextMessageParameters(
@@ -686,7 +686,7 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 		m_edge_reg->getEdgesStats(&edge_types_to_nums);
 		if (edge_types_to_nums.size())
 		{
-			for (std::map<std::string, int>::const_iterator it =
+			for (auto it =
 					 edge_types_to_nums.begin();
 				 it != edge_types_to_nums.end(); ++it)
 			{
@@ -961,9 +961,7 @@ inline void CGraphSlamEngine<GRAPH_T>::computeMap() const
 
 		// traverse all the nodes - add their laser scans at their corresponding
 		// poses
-		for (std::map<
-				 mrpt::graphs::TNodeID,
-				 mrpt::obs::CObservation2DRangeScan::Ptr>::const_iterator it =
+		for (auto it =
 				 m_nodes_to_laser_scans2D.begin();
 			 it != m_nodes_to_laser_scans2D.end(); ++it)
 		{
@@ -1798,7 +1796,7 @@ mrpt::system::TTimeStamp CGraphSlamEngine<GRAPH_T>::getTimeStamp(
 		// if still not available query the observations in the CSensoryFrame
 		if (timestamp == INVALID_TIMESTAMP)
 		{
-			for (mrpt::obs::CSensoryFrame::const_iterator sens_it =
+			for (auto sens_it =
 					 observations->begin();
 				 sens_it != observations->end(); ++sens_it)
 			{
@@ -1888,9 +1886,7 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 
 		// get the node laser scan
 		CObservation2DRangeScan::Ptr scan_content;
-		std::map<
-			mrpt::graphs::TNodeID,
-			mrpt::obs::CObservation2DRangeScan::Ptr>::const_iterator search =
+		auto search =
 			nodes_to_laser_scans2D.find(node_it);
 
 		// make sure that the laser scan exists and is valid
@@ -2342,7 +2338,7 @@ void CGraphSlamEngine<GRAPH_T>::TRGBDInfoFileParams::parseFile()
 		std::string literal_part = mrpt::system::trim(curr_tokens[0]);
 		std::string value_part = mrpt::system::trim(curr_tokens[1]);
 
-		for (std::map<std::string, std::string>::iterator it = fields.begin();
+		for (auto it = fields.begin();
 			 it != fields.end(); ++it)
 		{
 			if (mrpt::system::strCmpI(it->first, literal_part))
@@ -2462,12 +2458,12 @@ void CGraphSlamEngine<GRAPH_T>::computeSlamMetric(
 	m_curr_deformation_energy = 0;
 
 	// first element of map
-	std::map<mrpt::graphs::TNodeID, size_t>::const_iterator start_it =
+	auto start_it =
 		m_nodeID_to_gt_indices.begin();
 	start_it++;
 
 	// fetch the first node, gt positions separately
-	std::map<mrpt::graphs::TNodeID, size_t>::const_iterator prev_it = start_it;
+	auto prev_it = start_it;
 	prev_it--;
 	pose_t prev_node_pos = m_graph.nodes[prev_it->first];
 	pose_t prev_gt_pos = m_GT_poses[prev_it->second];
@@ -2475,7 +2471,7 @@ void CGraphSlamEngine<GRAPH_T>::computeSlamMetric(
 	// temporary constraint type
 	constraint_t c;
 
-	for (std::map<mrpt::graphs::TNodeID, size_t>::const_iterator index_it =
+	for (auto index_it =
 			 start_it;
 		 index_it != m_nodeID_to_gt_indices.end(); index_it++)
 	{
@@ -2651,7 +2647,7 @@ bool CGraphSlamEngine<GRAPH_T>::getGraphSlamStats(
 	(*node_stats)["nodes_total"] = m_nodeID_max + 1;
 
 	// fill the edge stats
-	for (CEdgeCounter::const_iterator it = m_edge_counter.cbegin();
+	for (auto it = m_edge_counter.cbegin();
 		 it != m_edge_counter.cend(); ++it)
 	{
 		(*edge_stats)[it->first] = it->second;
@@ -2743,7 +2739,7 @@ void CGraphSlamEngine<GRAPH_T>::generateReportFiles(
 		this->initResultsFile(fname);
 
 		m_out_streams[fname].printf("%s\n", desc.c_str());
-		for (std::vector<double>::const_iterator vec_it =
+		for (auto vec_it =
 				 m_deformation_energy_vec.begin();
 			 vec_it != m_deformation_energy_vec.end(); ++vec_it)
 		{
