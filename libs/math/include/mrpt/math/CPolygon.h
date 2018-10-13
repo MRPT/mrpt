@@ -66,5 +66,4 @@ class CPolygon : public mrpt::serialization::CSerializable,
 	}
 };
 
-}
-
+}  // namespace mrpt::math

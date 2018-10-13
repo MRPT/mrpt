@@ -75,8 +75,9 @@ CFileSystemWatcher::CFileSystemWatcher(const std::string& path)
 
 	// Create watcher:
 	m_wd = inotify_add_watch(
-		m_fd, path.c_str(), IN_CLOSE_WRITE | IN_DELETE | IN_MOVED_TO |
-								IN_MOVED_FROM | IN_CREATE | IN_ACCESS);
+		m_fd, path.c_str(),
+		IN_CLOSE_WRITE | IN_DELETE | IN_MOVED_TO | IN_MOVED_FROM | IN_CREATE |
+			IN_ACCESS);
 
 	if (m_wd < 0) THROW_EXCEPTION("inotify_add_watch returned error!");
 #endif

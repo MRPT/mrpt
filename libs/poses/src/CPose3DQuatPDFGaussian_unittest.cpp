@@ -175,9 +175,10 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 			x_incrs.assign(1e-7);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
-				x_mean, std::function<void(
-							const CArrayDouble<2 * 7>& x, const double& dummy,
-							CArrayDouble<7>& Y)>(&func_compose),
+				x_mean,
+				std::function<void(
+					const CArrayDouble<2 * 7>& x, const double& dummy,
+					CArrayDouble<7>& Y)>(&func_compose),
 				x_incrs, DUMMY, numJacobs);
 
 			numJacobs.extractMatrix(0, 0, num_df_dx);
@@ -306,11 +307,12 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 			<< "p1 mean: " << p7pdf1.mean << endl
 			<< "new_base: " << new_base << endl;
 		EXPECT_NEAR(
-			0, (p7_new_base_pdf.mean.getAsVectorVal() -
-				p7pdf1.mean.getAsVectorVal())
-				   .array()
-				   .abs()
-				   .mean(),
+			0,
+			(p7_new_base_pdf.mean.getAsVectorVal() -
+			 p7pdf1.mean.getAsVectorVal())
+				.array()
+				.abs()
+				.mean(),
 			1e-2)
 			<< "p1 mean: " << p7pdf1.mean << endl
 			<< "new_base: " << new_base << endl;

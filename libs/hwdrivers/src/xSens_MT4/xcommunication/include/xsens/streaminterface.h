@@ -22,7 +22,7 @@ class StreamInterface : public IoInterface
 {
    public:
 	/*! \brief Destroy the stream interface
-	*/
+	 */
 	inline ~StreamInterface() override {}
 	/*! \brief Set the read/write timeout to \a ms
 		A timeout of 0 means non-blocking operation of writeData() and
@@ -31,13 +31,13 @@ class StreamInterface : public IoInterface
 	XsResultValue setTimeout(uint32_t ms) override = 0;
 
 	/*! \brief The timeout used for read/write operations
-	*/
+	 */
 	virtual uint32_t getTimeout(void) const = 0;
 
 	XSENS_DISABLE_COPY(StreamInterface)
    protected:
 	/*! \brief Create a stream interface
-	*/
+	 */
 	inline StreamInterface() {}
 };
 

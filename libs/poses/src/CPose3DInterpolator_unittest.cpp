@@ -18,9 +18,9 @@ template class mrpt::CTraitsTest<mrpt::poses::CPose3DInterpolator>;
 TEST(CPose3DInterpolator, interp)
 {
 	using namespace mrpt::poses;
-	using mrpt::math::TPose3D;
-	using mrpt::math::CMatrixDouble44;
 	using mrpt::DEG2RAD;
+	using mrpt::math::CMatrixDouble44;
+	using mrpt::math::TPose3D;
 
 	auto t0 = mrpt::Clock::now();
 	mrpt::Clock::duration dt(std::chrono::milliseconds(100));
@@ -30,8 +30,9 @@ TEST(CPose3DInterpolator, interp)
 	pose_path.insert(
 		t0, TPose3D(1., 2., 3., DEG2RAD(30.0), DEG2RAD(.0), DEG2RAD(.0)));
 	pose_path.insert(
-		t0 + 2 * dt, TPose3D(1. + 3., 2. + 4., 3. + 5.,
-			DEG2RAD(30.0 + 20.0), DEG2RAD(.0), DEG2RAD(.0)));
+		t0 + 2 * dt, TPose3D(
+						 1. + 3., 2. + 4., 3. + 5., DEG2RAD(30.0 + 20.0),
+						 DEG2RAD(.0), DEG2RAD(.0)));
 
 	TPose3D interp;
 	bool valid;
@@ -42,10 +43,11 @@ TEST(CPose3DInterpolator, interp)
 		1. + 1.5, 2. + 2.0, 3. + 2.5, DEG2RAD(30.0 + 10.0), DEG2RAD(.0),
 		DEG2RAD(.0));
 	EXPECT_NEAR(
-		.0, (CPose3D(interp_good).getHomogeneousMatrixVal<CMatrixDouble44>() -
-			 CPose3D(interp).getHomogeneousMatrixVal<CMatrixDouble44>())
-				.array()
-				.abs()
-				.sum(),
+		.0,
+		(CPose3D(interp_good).getHomogeneousMatrixVal<CMatrixDouble44>() -
+		 CPose3D(interp).getHomogeneousMatrixVal<CMatrixDouble44>())
+			.array()
+			.abs()
+			.sum(),
 		1e-4);
 }

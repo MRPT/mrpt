@@ -36,7 +36,7 @@ struct TUncertaintyPath : public mrpt::config::CLoadableOptions
 	TUncertaintyPath(
 		const mrpt::graphs::TNodeID& starting_node,
 		const mrpt::graphs::TNodeID& ending_node, const constraint_t& edge);
-	~TUncertaintyPath() override =default;
+	~TUncertaintyPath() override = default;
 	void clear();
 	bool isEmpty() const;
 	/**\brief Assert that the current path is between the given nodeIDs.
@@ -103,8 +103,5 @@ struct TUncertaintyPath : public mrpt::config::CLoadableOptions
 	double determinant_cached;
 	/**\}*/
 };
-}
+}  // namespace mrpt::graphslam
 #include "TUncertaintyPath_impl.h"
-
-
-

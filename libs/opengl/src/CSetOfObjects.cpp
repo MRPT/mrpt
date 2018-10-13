@@ -53,8 +53,7 @@ void CSetOfObjects::serializeTo(mrpt::serialization::CArchive& out) const
 	writeToStreamRender(out);
 
 	out.WriteAs<uint32_t>(m_objects.size());
-	for (const auto & m_object : m_objects)
-		out << *m_object;
+	for (const auto& m_object : m_objects) out << *m_object;
 }
 
 /*---------------------------------------------------------------
@@ -116,7 +115,7 @@ void CSetOfObjects::insert(const CRenderizable::Ptr& newObject)
   ---------------------------------------------------------------*/
 void CSetOfObjects::dumpListOfObjects(std::vector<std::string>& lst)
 {
-	for (auto & m_object : m_objects)
+	for (auto& m_object : m_objects)
 	{
 		// Single obj:
 		string s(m_object->GetRuntimeClass()->className);
@@ -131,8 +130,7 @@ void CSetOfObjects::dumpListOfObjects(std::vector<std::string>& lst)
 
 			std::vector<std::string> auxLst;
 			objs->dumpListOfObjects(auxLst);
-			for (const auto & i : auxLst)
-				lst.emplace_back(string(" ") + i);
+			for (const auto& i : auxLst) lst.emplace_back(string(" ") + i);
 		}
 	}
 }
@@ -142,8 +140,7 @@ void CSetOfObjects::dumpListOfObjects(std::vector<std::string>& lst)
   ---------------------------------------------------------------*/
 void CSetOfObjects::removeObject(const CRenderizable::Ptr& obj)
 {
-	for (auto it = m_objects.begin();
-		 it != m_objects.end(); ++it)
+	for (auto it = m_objects.begin(); it != m_objects.end(); ++it)
 		if (*it == obj)
 		{
 			m_objects.erase(it);
@@ -160,7 +157,7 @@ bool CSetOfObjects::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 	CPose3D nueva = (CPose3D() - this->m_pose) + o;
 	bool found = false;
 	double tmp;
-	for (const auto & m_object : m_objects)
+	for (const auto& m_object : m_objects)
 		if (m_object->traceRay(nueva, tmp))
 		{
 			if (!found)
@@ -203,29 +200,25 @@ bool CSetOfObjects::contains(const CRenderizable::Ptr& obj) const
 
 CRenderizable& CSetOfObjects::setColorR_u8(const uint8_t r)
 {
-	for (auto & m_object : m_objects)
-		m_object->setColorR_u8(m_color.R = r);
+	for (auto& m_object : m_objects) m_object->setColorR_u8(m_color.R = r);
 	return *this;
 }
 
 CRenderizable& CSetOfObjects::setColorG_u8(const uint8_t g)
 {
-	for (auto & m_object : m_objects)
-		m_object->setColorG_u8(m_color.G = g);
+	for (auto& m_object : m_objects) m_object->setColorG_u8(m_color.G = g);
 	return *this;
 }
 
 CRenderizable& CSetOfObjects::setColorB_u8(const uint8_t b)
 {
-	for (auto & m_object : m_objects)
-		m_object->setColorB_u8(m_color.B = b);
+	for (auto& m_object : m_objects) m_object->setColorB_u8(m_color.B = b);
 	return *this;
 }
 
 CRenderizable& CSetOfObjects::setColorA_u8(const uint8_t a)
 {
-	for (auto & m_object : m_objects)
-		m_object->setColorA_u8(m_color.A = a);
+	for (auto& m_object : m_objects) m_object->setColorA_u8(m_color.A = a);
 	return *this;
 }
 
@@ -234,7 +227,7 @@ CRenderizable& CSetOfObjects::setColorA_u8(const uint8_t a)
   ---------------------------------------------------------------*/
 CRenderizable::Ptr CSetOfObjects::getByName(const string& str)
 {
-	for (auto & m_object : m_objects)
+	for (auto& m_object : m_objects)
 	{
 		if (m_object->m_name == str)
 			return m_object;
@@ -263,7 +256,7 @@ void CSetOfObjects::getBoundingBox(
 		-std::numeric_limits<double>::max(),
 		-std::numeric_limits<double>::max());
 
-	for (const auto & m_object : m_objects)
+	for (const auto& m_object : m_objects)
 	{
 		TPoint3D child_bbmin(
 			std::numeric_limits<double>::max(),

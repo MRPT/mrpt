@@ -37,8 +37,7 @@ COccupancyConfig::COccupancyConfig()
 	m_ui->likelihoodMethod->addItem(
 		"lmConsensusOWA", COccupancyGridMap2D::lmConsensusOWA);
 
-	auto* def =
-		new COccupancyGridMap2D::TMapDefinition();
+	auto* def = new COccupancyGridMap2D::TMapDefinition();
 	setCreationOpt(
 		def->min_x, def->max_x, def->min_y, def->max_y, def->resolution);
 	setInsertOpt(def->insertionOpts);

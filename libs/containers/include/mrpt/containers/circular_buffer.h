@@ -35,8 +35,8 @@ class circular_buffer
 	}
 
 	/** Insert a copy of the given element in the buffer.
-	  * \exception std::out_of_range If the buffer run out of space.
-	  */
+	 * \exception std::out_of_range If the buffer run out of space.
+	 */
 	void push(T d)
 	{
 		auto new_idx = m_next_write + 1;
@@ -48,8 +48,8 @@ class circular_buffer
 	}
 
 	/** Insert a reference of the given element in the buffer.
-	  * \exception std::out_of_range If the buffer run out of space.
-	  */
+	 * \exception std::out_of_range If the buffer run out of space.
+	 */
 	void push_ref(const T& d)
 	{
 		m_data[m_next_write++] = d;
@@ -60,16 +60,16 @@ class circular_buffer
 	}
 
 	/** Insert an array of elements in the buffer.
-	  * \exception std::out_of_range If the buffer run out of space.
-	  */
+	 * \exception std::out_of_range If the buffer run out of space.
+	 */
 	void push_many(T* array_elements, size_t count)
 	{
 		while (count--) push(*array_elements++);
 	}
 
 	/** Retrieve an element from the buffer.
-	  * \exception std::out_of_range If the buffer is empty.
-	  */
+	 * \exception std::out_of_range If the buffer is empty.
+	 */
 	T pop()
 	{
 		if (m_next_read == m_next_write)
@@ -81,8 +81,8 @@ class circular_buffer
 	}
 
 	/** Retrieve an element from the buffer.
-	  * \exception std::out_of_range If the buffer is empty.
-	  */
+	 * \exception std::out_of_range If the buffer is empty.
+	 */
 	void pop(T& out_val)
 	{
 		if (m_next_read == m_next_write)
@@ -93,7 +93,7 @@ class circular_buffer
 	}
 
 	/** Pop a number of elements into a user-provided array.
-	  * \exception std::out_of_range If the buffer has less elements than
+	 * \exception std::out_of_range If the buffer has less elements than
 	 * requested. */
 	void pop_many(T* out_array, size_t count)
 	{
@@ -102,7 +102,7 @@ class circular_buffer
 
 	/** Peek (see without modifying) what is to be read from the buffer if pop()
 	 * was to be called.
-	  * \exception std::out_of_range If the buffer is empty. */
+	 * \exception std::out_of_range If the buffer is empty. */
 	T peek() const
 	{
 		if (m_next_read == m_next_write)
@@ -111,7 +111,7 @@ class circular_buffer
 	}
 	/** Like peek(), but seeking ahead in the buffer (index=0 means the
 	 * immediate next element, index=1 the following one, etc.)
-	  * \exception std::out_of_range If trying to read passing the number of
+	 * \exception std::out_of_range If trying to read passing the number of
 	 * available elements. */
 	T peek(size_t index) const
 	{
@@ -122,7 +122,7 @@ class circular_buffer
 
 	/** Like peek(), for multiple elements, storing a number of elements into a
 	 * user-provided array.
-	  * \exception std::out_of_range If the buffer has less elements than
+	 * \exception std::out_of_range If the buffer has less elements than
 	 * requested. */
 	void peek_many(T* out_array, size_t count) const
 	{
@@ -139,7 +139,7 @@ class circular_buffer
 
 	/** Return the number of elements available for read ("pop") in the buffer
 	 * (this is NOT the maximum size of the internal buffer)
-	  * \sa capacity */
+	 * \sa capacity */
 	size_t size() const
 	{
 		if (m_next_write >= m_next_read)
@@ -149,17 +149,15 @@ class circular_buffer
 	}
 
 	/** Return the maximum capacity of the buffer.
-	  * \sa size
-	  */
+	 * \sa size
+	 */
 	size_t capacity() const { return m_size; }
 	/** The maximum number of elements that can be written ("push") without
 	 * rising an overflow error.
-	  */
+	 */
 	size_t available() const { return (capacity() - size()) - 1; }
 	/** Delete all the stored data, if any. */
 	void clear() { m_next_write = m_next_read = 0; }
 };  // end class circular_buffer
 
-}
-
-
+}  // namespace mrpt::containers

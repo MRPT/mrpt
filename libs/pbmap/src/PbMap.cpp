@@ -177,13 +177,11 @@ void PbMap::printPbMap(string txtFilePbm)
 			<< vPlanes[i].v3PpalDir << "\n RGB\n"
 			<< vPlanes[i].v3colorNrgb;
 		pbm << "\n Neighbors (" << vPlanes[i].neighborPlanes.size() << "): ";
-		for (auto it =
-				 vPlanes[i].neighborPlanes.begin();
+		for (auto it = vPlanes[i].neighborPlanes.begin();
 			 it != vPlanes[i].neighborPlanes.end(); it++)
 			pbm << it->first << " ";
 		pbm << "\n CommonObservations: ";
-		for (auto it =
-				 vPlanes[i].neighborPlanes.begin();
+		for (auto it = vPlanes[i].neighborPlanes.begin();
 			 it != vPlanes[i].neighborPlanes.end(); it++)
 			pbm << it->second << " ";
 		pbm << "\n ConvexHull (" << vPlanes[i].polygonContourPtr->size()

@@ -242,7 +242,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 					idxs1.push_back(idx1);
 					idxs2.push_back(corrs_indiv[w].first);
 					outInfo.correspondences_dists_maha.emplace_back(
-							idx1, corrs_indiv[w].first, corrs_indiv[w].second);
+						idx1, corrs_indiv[w].first, corrs_indiv[w].second);
 				}
 			}
 
@@ -276,7 +276,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 			for (size_t l = 0; l < idxs1.size(); l++)
 				corrs_by_idx[idxs1[l]].insert(idxs2[l]);
 
-			for (auto & it : corrs_by_idx)
+			for (auto& it : corrs_by_idx)
 			{
 				CMatrixFloat descriptor1;
 				lm1->landmarks.get(it.first)
@@ -361,20 +361,17 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 		else
 		{
 			outInfo.noRobustEstimation = mrpt::poses::CPose2D(noRobustEst);
-			MRPT_LOG_INFO(
-				mrpt::format(
-					"[CGridMapAligner] Overall estimation(%u corrs, total: "
-					"%u): (%.03f,%.03f,%.03fdeg)\n",
-					corrsCount, (unsigned)correspondences.size(),
-					outInfo.noRobustEstimation.x(),
-					outInfo.noRobustEstimation.y(),
-					RAD2DEG(outInfo.noRobustEstimation.phi())));
+			MRPT_LOG_INFO(mrpt::format(
+				"[CGridMapAligner] Overall estimation(%u corrs, total: "
+				"%u): (%.03f,%.03f,%.03fdeg)\n",
+				corrsCount, (unsigned)correspondences.size(),
+				outInfo.noRobustEstimation.x(), outInfo.noRobustEstimation.y(),
+				RAD2DEG(outInfo.noRobustEstimation.phi())));
 
 			// The list of SOG modes & their corresponding sub-sets of
 			// matchings:
-			using TMapMatchingsToPoseMode =
-				mrpt::aligned_std_map<mrpt::tfest::TMatchingPairList,
-									  CPosePDFSOG::TGaussianMode>;
+			using TMapMatchingsToPoseMode = mrpt::aligned_std_map<
+				mrpt::tfest::TMatchingPairList, CPosePDFSOG::TGaussianMode>;
 			TMapMatchingsToPoseMode sog_modes;
 
 			// ---------------------------------------------------------------
@@ -557,14 +554,14 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 
 					// before proceeding with this hypothesis, is it an old one?
 					bool is_new_hyp = true;
-					for (auto & sog_mode : sog_modes)
+					for (auto& sog_mode : sog_modes)
 					{
 						if (sog_mode.first.contains(all_corrs[idx1]) &&
 							sog_mode.first.contains(all_corrs[idx2]))
 						{
 							// Increment weight:
-							sog_mode.second.log_w = std::log(
-								std::exp(sog_mode.second.log_w) + 1.0);
+							sog_mode.second.log_w =
+								std::log(std::exp(sog_mode.second.log_w) + 1.0);
 							is_new_hyp = false;
 							break;
 						}
@@ -638,7 +635,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 							std::numeric_limits<double>::max();
 						pair<size_t, size_t> best_pair_ij;
 
-//#define SHOW_CORRS
+						//#define SHOW_CORRS
 
 #ifdef SHOW_CORRS
 						CDisplayWindowPlots win("Matches");
@@ -721,8 +718,8 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 									best_pair_ij.first = u;
 									best_pair_ij.second = j;
 
-									best_pair_d2 = square(
-										pdf_M1_i.mahalanobisDistanceTo(
+									best_pair_d2 =
+										square(pdf_M1_i.mahalanobisDistanceTo(
 											pdf_M2_j));
 
 									// cout << "P1: " << pdf_M1_i.mean << " C= "
@@ -837,9 +834,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 
 				// Move SOG modes into pdf_SOG:
 				pdf_SOG->clear();
-				for (auto s =
-						 sog_modes.begin();
-					 s != sog_modes.end(); ++s)
+				for (auto s = sog_modes.begin(); s != sog_modes.end(); ++s)
 				{
 					cout << "SOG mode: " << s->second.mean
 						 << " inliers: " << s->first.size() << endl;
@@ -860,11 +855,10 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 
 				outInfo.sog2 = pdf_SOG;
 				size_t nA = pdf_SOG->size();
-				MRPT_LOG_INFO(
-					mrpt::format(
-						"[CGridMapAligner] amModifiedRANSAC: %u SOG modes "
-						"merged to %u in %.03fsec\n",
-						(unsigned int)nB, (unsigned int)nA, merge_clock_tim));
+				MRPT_LOG_INFO(mrpt::format(
+					"[CGridMapAligner] amModifiedRANSAC: %u SOG modes "
+					"merged to %u in %.03fsec\n",
+					(unsigned int)nB, (unsigned int)nA, merge_clock_tim));
 
 			}  // end of amModifiedRANSAC
 
@@ -886,9 +880,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 				CEnhancedMetaFile::LINUX_IMG_HEIGHT(
 					max(m1->getSizeY(), m2->getSizeY()) + 50);
 
-				for (auto s =
-						 sog_modes.begin();
-					 s != sog_modes.end(); ++s)
+				for (auto s = sog_modes.begin(); s != sog_modes.end(); ++s)
 				{
 					COccupancyGridMap2D::saveAsEMFTwoMapsWithCorrespondences(
 						format("__debug_corrsGrid_%05u.emf", NN), m1, m2,
@@ -929,8 +921,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 				// Invoke ICP once for each mode in the SOG:
 				size_t cnt = 0;
 				outInfo.icp_goodness_all_sog_modes.clear();
-				for (auto i = pdf_SOG->begin();
-					 i != pdf_SOG->end(); ++cnt)
+				for (auto i = pdf_SOG->begin(); i != pdf_SOG->end(); ++cnt)
 				{
 					CPosePDF::Ptr icp_est = icp.Align(
 						pnts1.get(), pnts2.get(), (i)->mean, nullptr, &icpInfo);
@@ -1025,10 +1016,8 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_correlation(
 	// -----------------
 	ASSERT_(mm1->GetRuntimeClass() == CLASS_ID(COccupancyGridMap2D));
 	ASSERT_(mm2->GetRuntimeClass() == CLASS_ID(COccupancyGridMap2D));
-	const auto* m1 =
-		static_cast<const COccupancyGridMap2D*>(mm1);
-	const auto* m2 =
-		static_cast<const COccupancyGridMap2D*>(mm2);
+	const auto* m1 = static_cast<const COccupancyGridMap2D*>(mm1);
+	const auto* m2 = static_cast<const COccupancyGridMap2D*>(mm2);
 
 	ASSERT_(m1->getResolution() == m2->getResolution());
 
@@ -1104,7 +1093,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_correlation(
 			map2_img, outCrossCorr, -1, -1, -1, -1,
 			127,  // Bias to be substracted
 			127  // Bias to be substracted
-			);
+		);
 
 		float corrPeak = outCrossCorr.maxCoeff();
 		printf("phi = %fdeg \tmax corr=%f\n", RAD2DEG(phi), corrPeak);
@@ -1158,12 +1147,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_correlation(
 /*---------------------------------------------------------------
 					TConfigParams
   ---------------------------------------------------------------*/
-CGridMapAligner::TConfigParams::TConfigParams()
-	: 
-	  feature_detector_options()
-	  
-{
-}
+CGridMapAligner::TConfigParams::TConfigParams() : feature_detector_options() {}
 
 /*---------------------------------------------------------------
 					dumpToTextStream

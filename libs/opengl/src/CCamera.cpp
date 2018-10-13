@@ -26,9 +26,8 @@ IMPLEMENTS_SERIALIZABLE(CCamera, CRenderizable, mrpt::opengl)
 					CCamera
   ---------------------------------------------------------------*/
 CCamera::CCamera()
-	
-	  
-= default;
+
+	= default;
 
 uint8_t CCamera::serializeGetVersion() const { return 1; }
 void CCamera::serializeTo(mrpt::serialization::CArchive& out) const

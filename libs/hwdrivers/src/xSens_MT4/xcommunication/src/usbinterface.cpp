@@ -91,7 +91,7 @@ class UsbInterfacePrivate
 	{
 	   public:
 		/*! \brief Create the USB context
-		*/
+		 */
 		UsbContext()
 		{
 			m_libUsb.init(&m_usbContext);
@@ -402,7 +402,7 @@ void UsbInterfacePrivate::threadFunc()
 */
 
 /*! \brief Default constructor, initializes all members to their default values.
-*/
+ */
 UsbInterface::UsbInterface() : d(new UsbInterfacePrivate)
 {
 	d->m_lastResult = XRV_OK;
@@ -453,7 +453,7 @@ UsbInterface::~UsbInterface()
 }
 
 /*! \brief Close the USB communication port.
-*/
+ */
 XsResultValue UsbInterface::close(void) { return closeUsb(); }
 /*! \brief Close the USB communication port.
 	\returns XRV_OK if the port was closed successfully
@@ -589,15 +589,15 @@ XsResultValue UsbInterface::open(const XsPortInfo& portInfo, uint32_t, uint32_t)
 	JLDEBUG(gJournal, "Open usb port " << portInfo.portName().toStdString());
 #else
 	JLDEBUG(
-		gJournal, "Open usb port " << portInfo.usbBus() << ":"
-								   << portInfo.usbAddress());
+		gJournal,
+		"Open usb port " << portInfo.usbBus() << ":" << portInfo.usbAddress());
 #endif
 
 	if (isOpen())
 	{
 		JLALERT(
-			gJournal, "Port " << portInfo.portName().toStdString()
-							  << " already open");
+			gJournal,
+			"Port " << portInfo.portName().toStdString() << " already open");
 		return (d->m_lastResult = XRV_ALREADYOPEN);
 	}
 

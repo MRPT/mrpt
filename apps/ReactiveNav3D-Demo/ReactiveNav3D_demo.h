@@ -296,7 +296,7 @@ class CShortTermMemory
 			sqrt(square(incrx) + square(incry)) > 2.6 * obsgrids[0].getXMax())
 		// The displacement is too big so the grid is reset
 		{
-			for (auto & obsgrid : obsgrids)
+			for (auto& obsgrid : obsgrids)
 			{
 				obsgrid.setSize(
 					obsgrids[0].getXMin(), obsgrids[0].getXMax(),
@@ -320,7 +320,7 @@ class CShortTermMemory
 			vector<float> cells_newval;
 
 			// For each of the "n" grids
-			for (auto & obsgrid : obsgrids)
+			for (auto& obsgrid : obsgrids)
 			{
 				cells_newval.clear();
 
@@ -349,8 +349,7 @@ class CShortTermMemory
 							obsgrid.setCell(i, j, 0.5);
 						else
 							obsgrid.setCell(
-								i, j,
-								cells_newval[j + obsgrid.getSizeY() * i]);
+								i, j, cells_newval[j + obsgrid.getSizeY() * i]);
 					}
 				}
 			}
@@ -524,7 +523,7 @@ class CMyReactInterface
 		obstacles.clear();
 
 		// Laser scans
-		for (auto & laser : lasers)
+		for (auto& laser : lasers)
 		{
 			maps[laser.m_level - 1].laserScanSimulator(
 				laser.m_scan, new_pose, 0.5f, laser.m_segments,
@@ -535,7 +534,7 @@ class CMyReactInterface
 		timestamp = mrpt::system::now();
 
 		// Depth scans
-		for (auto & kinect : kinects)
+		for (auto& kinect : kinects)
 		{
 			kinectrelpose.x(kinect.m_xrel);
 			kinectrelpose.y(kinect.m_yrel);
@@ -629,22 +628,18 @@ class CMyReactInterface
 				"KINECT_CONFIG", format("KINECT%d_Y", i), 0, true);
 			kinects[i - 1].m_zrel = ini.read_float(
 				"KINECT_CONFIG", format("KINECT%d_Z", i), 0, true);
-			kinects[i - 1].m_phi = DEG2RAD(
-				ini.read_float(
-					"KINECT_CONFIG", format("KINECT%d_PHI", i), 0, true));
+			kinects[i - 1].m_phi = DEG2RAD(ini.read_float(
+				"KINECT_CONFIG", format("KINECT%d_PHI", i), 0, true));
 			kinects[i - 1].m_min_range = ini.read_float(
 				"KINECT_CONFIG", format("KINECT%d_MINRANGE", i), 0, true);
 			kinects[i - 1].m_max_range = ini.read_float(
 				"KINECT_CONFIG", format("KINECT%d_MAXRANGE", i), 0, true);
-			kinects[i - 1].m_fov_v = DEG2RAD(
-				ini.read_float(
-					"KINECT_CONFIG", format("KINECT%d_FOV_V", i), 60, true));
-			kinects[i - 1].m_fov_h = DEG2RAD(
-				ini.read_float(
-					"KINECT_CONFIG", format("KINECT%d_FOV_H", i), 60, true));
-			kinects[i - 1].m_pitch_angle = DEG2RAD(
-				ini.read_float(
-					"KINECT_CONFIG", format("KINECT%d_PITCH", i), 0, true));
+			kinects[i - 1].m_fov_v = DEG2RAD(ini.read_float(
+				"KINECT_CONFIG", format("KINECT%d_FOV_V", i), 60, true));
+			kinects[i - 1].m_fov_h = DEG2RAD(ini.read_float(
+				"KINECT_CONFIG", format("KINECT%d_FOV_H", i), 60, true));
+			kinects[i - 1].m_pitch_angle = DEG2RAD(ini.read_float(
+				"KINECT_CONFIG", format("KINECT%d_PITCH", i), 0, true));
 			kinects[i - 1].m_rows = ini.read_int(
 				"KINECT_CONFIG", format("KINECT%d_ROWS", i), 10, true);
 			kinects[i - 1].m_columns = ini.read_int(
@@ -716,7 +711,7 @@ class CMyReactInterface
 			stm.robot_ingrid.x = 0;
 			stm.robot_ingrid.y = 0;
 			stm.obsgrids.resize(num_levels);
-			for (auto & obsgrid : stm.obsgrids)
+			for (auto& obsgrid : stm.obsgrids)
 			{
 				obsgrid.setSize(
 					-grid_length, grid_length, -grid_length, grid_length,
@@ -743,7 +738,7 @@ class CMyReactInterface
 		{
 			CSetOfObjects::Ptr gl_grid =
 				mrpt::make_aligned_shared<CSetOfObjects>();
-			for (auto & map : maps)
+			for (auto& map : maps)
 			{
 				map.getAs3DObject(gl_grid);
 				scene->insert(gl_grid);

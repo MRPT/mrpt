@@ -247,6 +247,6 @@ class Cmt2f
 	XsensResultValue writeMessage(const Message* msg);
 };
 
-}  // end of xsens namespace
+}  // namespace xsens
 
 #endif  // _CMT2_H_2006_04_13

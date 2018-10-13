@@ -18,4 +18,4 @@ inline void vector_strong_clear(VECTOR_T& v)
 	VECTOR_T dummy;
 	dummy.swap(v);
 }
-}  // end of namespace
+}  // namespace mrpt

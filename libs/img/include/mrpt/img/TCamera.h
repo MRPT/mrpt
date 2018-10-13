@@ -196,8 +196,6 @@ class TCamera : public mrpt::serialization::CSerializable
 bool operator==(const mrpt::img::TCamera& a, const mrpt::img::TCamera& b);
 bool operator!=(const mrpt::img::TCamera& a, const mrpt::img::TCamera& b);
 
-}
+}  // namespace mrpt::img
 // Add for declaration of mexplus::from template specialization
 DECLARE_MEXPLUS_FROM(mrpt::img::TCamera)  // Not working at the beginning?
-
-

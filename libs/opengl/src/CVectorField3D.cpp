@@ -22,13 +22,8 @@ IMPLEMENTS_SERIALIZABLE(CVectorField3D, CRenderizableDisplayList, mrpt::opengl)
 
 /** Constructor */
 CVectorField3D::CVectorField3D()
-	: x_vf(0, 0),
-	  y_vf(0, 0),
-	  z_vf(0, 0),
-	  x_p(0, 0),
-	  y_p(0, 0),
-	  z_p(0, 0)
-	  
+	: x_vf(0, 0), y_vf(0, 0), z_vf(0, 0), x_p(0, 0), y_p(0, 0), z_p(0, 0)
+
 {
 	m_point_color = m_color;
 	m_field_color = m_color;

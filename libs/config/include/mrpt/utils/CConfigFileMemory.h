@@ -4,4 +4,3 @@ namespace mrpt::utils
 {
 using CConfigFileMemory = mrpt::config::CConfigFileMemory;
 }
-

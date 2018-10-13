@@ -128,8 +128,7 @@ DECLARE_OP_FUNCTION(op_info)
 
 	// By sensor labels:
 	cout << "All sensor labels                 : ";
-	for (auto it =
-			 proc.infoPerSensorLabel.begin();
+	for (auto it = proc.infoPerSensorLabel.begin();
 		 it != proc.infoPerSensorLabel.end(); ++it)
 	{
 		if (it != proc.infoPerSensorLabel.begin()) cout << ", ";
@@ -137,8 +136,7 @@ DECLARE_OP_FUNCTION(op_info)
 	}
 	cout << "\n";
 
-	for (auto it =
-			 proc.infoPerSensorLabel.begin();
+	for (auto it = proc.infoPerSensorLabel.begin();
 		 it != proc.infoPerSensorLabel.end(); ++it)
 	{
 		const TTimeStamp tf = it->second.tim_first;

@@ -87,4 +87,3 @@ De-allocates memory held by a kd tree
 @param kd_root pointer to the root of a kd tree
 */
 extern void kdtree_release(struct kd_node* kd_root);
-

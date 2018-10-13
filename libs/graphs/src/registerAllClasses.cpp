@@ -16,7 +16,7 @@
 MRPT_INITIALIZER(registerAllClasses_mrpt_graphs)
 {
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
-//	registerClass( CLASS_ID( ... ) );
+	//	registerClass( CLASS_ID( ... ) );
 
 #endif
 }

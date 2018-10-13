@@ -231,8 +231,7 @@ void CCanvas::selectTextFont(const std::string& fontName)
 	init_fonts_list();
 
 	// Assure list name is in the list:
-	auto it =
-		list_registered_fonts.find(fontName);
+	auto it = list_registered_fonts.find(fontName);
 	if (it == list_registered_fonts.end())
 	{
 		// Error

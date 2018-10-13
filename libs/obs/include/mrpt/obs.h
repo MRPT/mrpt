@@ -62,4 +62,3 @@ MRPT_WARNING(
 // Very basic classes for maps:
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/maps/CSimpleMap.h>
-

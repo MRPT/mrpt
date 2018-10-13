@@ -533,8 +533,7 @@ class CObservation3DRangeScan : public CObservation
 
 		const std::string& getLabelName(unsigned int label_idx) const
 		{
-			auto it =
-				pixelLabelNames.find(label_idx);
+			auto it = pixelLabelNames.find(label_idx);
 			if (it == pixelLabelNames.end())
 				throw std::runtime_error(
 					"Error: label index has no defined name");

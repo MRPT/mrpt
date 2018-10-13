@@ -4,4 +4,3 @@ namespace mrpt::utils
 {
 using CFileGZInputStream = mrpt::io::CFileGZInputStream;
 }
-

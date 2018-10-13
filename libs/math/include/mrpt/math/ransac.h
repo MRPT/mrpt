@@ -16,14 +16,14 @@
 namespace mrpt::math
 {
 /** @addtogroup ransac_grp RANSAC and other model fitting algorithms
-  * \ingroup mrpt_math_grp
-  * @{ */
+ * \ingroup mrpt_math_grp
+ * @{ */
 
 /** A generic RANSAC implementation with models as matrices.
-  *  See \a RANSAC_Template::execute for more info on usage.
-  *  \sa mrpt::math::ModelSearch, a more versatile RANSAC implementation where
+ *  See \a RANSAC_Template::execute for more info on usage.
+ *  \sa mrpt::math::ModelSearch, a more versatile RANSAC implementation where
  * models can be anything else, not only matrices.
-  */
+ */
 template <typename NUMTYPE = double>
 class RANSAC_Template : public mrpt::system::COutputLogger
 {
@@ -52,17 +52,17 @@ class RANSAC_Template : public mrpt::system::COutputLogger
 
 	/** An implementation of the RANSAC algorithm for robust fitting of models
 	 * to data.
-	  *
-	  *  \param data A DxN matrix with all the observed data. D is the
+	 *
+	 *  \param data A DxN matrix with all the observed data. D is the
 	 * dimensionality of data points and N the number of points.
-	  *  \param
-	  *
-	  *  This implementation is highly inspired on Peter Kovesi's MATLAB scripts
+	 *  \param
+	 *
+	 *  This implementation is highly inspired on Peter Kovesi's MATLAB scripts
 	 * (http://www.csse.uwa.edu.au/~pk).
-	  * \return false if no good solution can be found, true on success.
-	  * \note [MRPT 1.5.0] `verbose` parameter has been removed, supersedded by
+	 * \return false if no good solution can be found, true on success.
+	 * \note [MRPT 1.5.0] `verbose` parameter has been removed, supersedded by
 	 * COutputLogger settings.
-	  */
+	 */
 	bool execute(
 		const CMatrixTemplateNumeric<NUMTYPE>& data,
 		const TRansacFitFunctor& fit_func,
@@ -82,5 +82,4 @@ using RANSAC = RANSAC_Template<double>;
 
 /** @} */
 
-}
-
+}  // namespace mrpt::math

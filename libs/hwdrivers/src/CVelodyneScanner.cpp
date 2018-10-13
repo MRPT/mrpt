@@ -95,15 +95,14 @@ std::string CVelodyneScanner::TModelPropertiesFactory::getListKnownModels()
 }
 
 CVelodyneScanner::CVelodyneScanner()
-	: 
-	  m_device_ip(""),
-	  
+	: m_device_ip(""),
+
 	  m_last_pos_packet_timestamp(INVALID_TIMESTAMP),
-	  
+
 	  m_hDataSock(INVALID_SOCKET),
 	  m_hPositionSock(INVALID_SOCKET),
 	  m_last_gps_rmc_age(INVALID_TIMESTAMP)
-	  
+
 {
 	m_sensorLabel = "Velodyne";
 
@@ -292,8 +291,7 @@ bool CVelodyneScanner::getNextObservation(
 				{
 					const model_properties_list_t& lstModels =
 						TModelPropertiesFactory::get();
-					auto it =
-						lstModels.find(this->m_model);
+					auto it = lstModels.find(this->m_model);
 					if (it != lstModels.end())
 					{  // Model params:
 						m_rx_scan->maxRange = it->second.maxRange;

@@ -72,7 +72,4 @@ typename OBSERVATION_T::Ptr getObservation(
 
 	return obs_out;
 }
-}  // end of namespaces
-
-
-
+}  // namespace mrpt::obs::utils

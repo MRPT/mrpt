@@ -121,8 +121,7 @@ void CColouredPointsMap::copyFrom(const CPointsMap& obj)
 	CPointsMap::base_copyFrom(
 		obj);  // This also does a ::resize(N) of all data fields.
 
-	const auto* pCol =
-		dynamic_cast<const CColouredPointsMap*>(&obj);
+	const auto* pCol = dynamic_cast<const CColouredPointsMap*>(&obj);
 	if (pCol)
 	{
 		m_color_R = pCol->m_color_R;
@@ -402,8 +401,8 @@ void CColouredPointsMap::getAs3DObject(
 TColourOptions
 ---------------------------------------------------------------*/
 CColouredPointsMap::TColourOptions::TColourOptions()
-	 
-= default;
+
+	= default;
 
 void CColouredPointsMap::TColourOptions::loadFromConfigFile(
 	const CConfigFileBase& source, const std::string& section)
@@ -540,7 +539,8 @@ bool CColouredPointsMap::colourFromObservation(
 		{
 			TPixelCoordf px;
 			aux_projectPoint_with_distortion(
-				TPoint3D(m_x[idx], m_y[idx], m_z[idx]), obs.cameraParams, px, true);
+				TPoint3D(m_x[idx], m_y[idx], m_z[idx]), obs.cameraParams, px,
+				true);
 			projectedPoints.push_back(px);
 			p_proj.push_back(k);
 		}  // end if
@@ -1062,7 +1062,7 @@ struct pointmap_traits<CColouredPointsMap>
 		}
 	}
 };
-}
+}  // namespace mrpt::maps::detail
 /** See CPointsMap::loadFromRangeScan() */
 void CColouredPointsMap::loadFromRangeScan(
 	const CObservation2DRangeScan& rangeScan, const CPose3D* robotPose)
@@ -1078,5 +1078,3 @@ void CColouredPointsMap::loadFromRangeScan(
 	mrpt::maps::detail::loadFromRangeImpl<CColouredPointsMap>::
 		templ_loadFromRangeScan(*this, rangeScan, robotPose);
 }
-
-

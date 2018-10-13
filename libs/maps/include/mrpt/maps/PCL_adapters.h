@@ -389,6 +389,4 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA>>
 
 };  // end of mrpt::opengl::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA>
 // >
-}
-
-
+}  // namespace mrpt::opengl

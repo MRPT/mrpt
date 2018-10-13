@@ -116,8 +116,7 @@ void Test()
 			for (size_t j = 0; j < parts.size(); j++)
 			{
 				printf("  Part#%u=", (unsigned int)j);
-				for (unsigned int k : parts[j])
-					printf(" %u", k);
+				for (unsigned int k : parts[j]) printf(" %u", k);
 				printf("\n");
 			}
 		}
@@ -135,10 +134,9 @@ void Test()
 			extractFileName(MAP_FILE).c_str())
 			.c_str(),
 		"wt");
-	for (auto & part : parts)
+	for (auto& part : parts)
 	{
-		for (size_t j = 0; j < part.size(); j++)
-			fprintf(f, "%u ", part[j]);
+		for (size_t j = 0; j < part.size(); j++) fprintf(f, "%u ", part[j]);
 
 		fprintf(f, "\n");
 	}
@@ -160,10 +158,8 @@ void Test()
 		}
 
 		{
-			CFileOutputStream f(
-				format(
-					"MAP-PARTITION_RESULTS/out_part#%03u.simplemap",
-					(unsigned)i));
+			CFileOutputStream f(format(
+				"MAP-PARTITION_RESULTS/out_part#%03u.simplemap", (unsigned)i));
 			mrpt::serialization::archiveFrom(f) << out_map;
 		}
 	}
@@ -183,7 +179,7 @@ void Test()
 	CMatrix B(A.rows(), A.cols());
 	std::vector<uint32_t> rearrIndexes;
 	std::vector<uint32_t> separations;
-	for (auto & part : parts)
+	for (auto& part : parts)
 	{
 		uint32_t maxIdx = 0;
 		for (size_t j = 0; j < part.size(); j++)

@@ -19,20 +19,20 @@ namespace mrpt::opengl
 {
 /** A planar (XY) grid where each cell has an associated height and, optionally,
  * a texture map.
-  *  A typical usage example would be an elevation map or a 3D model of a
+ *  A typical usage example would be an elevation map or a 3D model of a
  * terrain.
-  *  \sa opengl::COpenGLScene
-  *
-  *  <div align="center">
-  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
+ *  \sa opengl::COpenGLScene
+ *
+ *  <div align="center">
+ *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
  * border-style: solid;">
-  *   <tr> <td> mrpt::opengl::CMesh </td> <td> \image html preview_CMesh.png
+ *   <tr> <td> mrpt::opengl::CMesh </td> <td> \image html preview_CMesh.png
  * </td> </tr>
-  *  </table>
-  *  </div>
-  *
-  * \ingroup mrpt_opengl_grp
-  */
+ *  </table>
+ *  </div>
+ *
+ * \ingroup mrpt_opengl_grp
+ */
 class CMesh : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CMesh)
@@ -207,7 +207,7 @@ class CMesh : public CRenderizableDisplayList
 	}
 
 	/** Render
-	  */
+	 */
 	void render_dl() const override;
 
 	/** Evaluates the bounding box of this object (including possible children)
@@ -217,18 +217,18 @@ class CMesh : public CRenderizableDisplayList
 		mrpt::math::TPoint3D& bb_max) const override;
 
 	/** Assigns a texture image, and disable transparency.
-	  */
+	 */
 	void assignImage(const mrpt::img::CImage& img);
 
 	/** Assigns a texture image and Z simultaneously, and disable transparency.
-	  */
+	 */
 	void assignImageAndZ(
 		const mrpt::img::CImage& img,
 		const mrpt::math::CMatrixTemplateNumeric<float>& in_Z);
 
 	/** Adjust grid limits according to the image aspect ratio, maintaining the
 	 * X limits and resizing in the Y direction.
-	  */
+	 */
 	inline void adjustGridToImageAR()
 	{
 		ASSERT_(m_isImage);
@@ -242,7 +242,7 @@ class CMesh : public CRenderizableDisplayList
 	}
 
 	/** Trace ray
-	  */
+	 */
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 
 	/** Constructor  */
@@ -254,6 +254,4 @@ class CMesh : public CRenderizableDisplayList
 	~CMesh() override;
 };
 
-}
-
-
+}  // namespace mrpt::opengl

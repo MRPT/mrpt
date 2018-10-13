@@ -61,5 +61,4 @@ mrpt::serialization::CArchive& operator>>(
 mrpt::serialization::CArchive& operator<<(
 	mrpt::serialization::CArchive& out, const mrpt::opengl::CLight& o);
 
-}
-
+}  // namespace mrpt::opengl

@@ -14,8 +14,8 @@
 namespace mrpt::detectors
 {
 /**
-  * \ingroup mrpt_detectors_grp
-  */
+ * \ingroup mrpt_detectors_grp
+ */
 class CCascadeClassifierDetection : virtual public CObjectDetection
 {
    public:
@@ -32,7 +32,8 @@ class CCascadeClassifierDetection : virtual public CObjectDetection
 	 */
 
 	void detectObjects_Impl(
-		const mrpt::obs::CObservation* obs, vector_detectable_object& detected) override;
+		const mrpt::obs::CObservation* obs,
+		vector_detectable_object& detected) override;
 
 	/** Cascade classifier object */
 	void* m_cascade;
@@ -48,6 +49,4 @@ class CCascadeClassifierDetection : virtual public CObjectDetection
 	} m_options;
 
 };  // End of class
-}
-
-
+}  // namespace mrpt::detectors

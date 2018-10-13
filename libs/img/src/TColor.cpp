@@ -59,8 +59,7 @@ TColor& TColor::operator-=(const TColor& other)
 	return *this;
 }
 
-TColor& TColor::operator=(const TColor& other)
-= default;
+TColor& TColor::operator=(const TColor& other) = default;
 
 bool mrpt::img::operator==(const TColor& first, const TColor& second)
 {

@@ -1162,5 +1162,4 @@ CMatrixTemplateNumeric<T> generateAxisBaseFromDirection(T dx, T dy, T dz)
 
 /** @} */  // end of grouping
 
-}
-
+}  // namespace mrpt::math

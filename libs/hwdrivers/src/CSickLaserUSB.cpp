@@ -30,8 +30,7 @@ using namespace mrpt::poses;
 /*-------------------------------------------------------------
 						CSickLaserUSB
 -------------------------------------------------------------*/
-CSickLaserUSB::CSickLaserUSB()
-	:  m_serialNumber("LASER001") 
+CSickLaserUSB::CSickLaserUSB() : m_serialNumber("LASER001")
 {
 	MRPT_START
 	m_sensorLabel = "SICKLMS";

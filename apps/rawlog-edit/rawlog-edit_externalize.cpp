@@ -61,12 +61,11 @@ DECLARE_OP_FUNCTION(op_externalize)
 					 string("_Images");
 			if (directoryExists(outDir))
 				throw runtime_error(
-					string(
-						"*ABORTING*: Output directory for images already "
-						"exists: ") +
-					outDir + string(
-								 "\n. Select a different output path or "
-								 "remove the directory."));
+					string("*ABORTING*: Output directory for images already "
+						   "exists: ") +
+					outDir +
+					string("\n. Select a different output path or "
+						   "remove the directory."));
 
 			VERBOSE_COUT << "Creating directory: " << outDir << endl;
 

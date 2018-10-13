@@ -70,11 +70,8 @@ CAbstractHolonomicReactiveMethod::Ptr CAbstractHolonomicReactiveMethod::Factory(
 	}
 }
 
-CAbstractHolonomicReactiveMethod::NavInput::NavInput()
-	: targets() 
-{
-}
+CAbstractHolonomicReactiveMethod::NavInput::NavInput() : targets() {}
 
 CAbstractHolonomicReactiveMethod::NavOutput::NavOutput()
-	 
-= default;
+
+	= default;

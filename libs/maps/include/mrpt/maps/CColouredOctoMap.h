@@ -12,8 +12,14 @@
 #include <mrpt/maps/COctoMapBase.h>
 #include <mrpt/obs/obs_frwds.h>
 
-namespace octomap { class ColorOcTree; }
-namespace octomap { class ColorOcTreeNode; }
+namespace octomap
+{
+class ColorOcTree;
+}
+namespace octomap
+{
+class ColorOcTreeNode;
+}
 
 namespace mrpt
 {
@@ -55,7 +61,7 @@ class CColouredOctoMap
 	};
 
 	/** Get the RGB colour of a point
-		* \return false if the point is not mapped, in which case the
+	 * \return false if the point is not mapped, in which case the
 	 * returned colour is undefined. */
 	bool getPointColour(
 		const float x, const float y, const float z, uint8_t& r, uint8_t& g,
@@ -78,7 +84,8 @@ class CColouredOctoMap
 		mrpt::opengl::COctoMapVoxels& gl_obj) const override;
 
 	MAP_DEFINITION_START(CColouredOctoMap)
-	double resolution{0.10};  //!< The finest resolution of the octomap (default: 0.10
+	double resolution{
+		0.10};  //!< The finest resolution of the octomap (default: 0.10
 	//! meters)
 	mrpt::maps::CColouredOctoMap::TInsertionOptions
 		insertionOpts;  //!< Observations insertion options
@@ -158,8 +165,9 @@ class CColouredOctoMap
 		const mrpt::obs::CObservation* obs,
 		const mrpt::poses::CPose3D* robotPose) override;
 
-	TColourUpdate m_colour_method{INTEGRATE};  //! Method used to updated voxels colour.
+	TColourUpdate m_colour_method{
+		INTEGRATE};  //! Method used to updated voxels colour.
 
 };  // End of class def.
-}  // End of namespace
-}  // End of namespace
+}  // namespace maps
+}  // namespace mrpt

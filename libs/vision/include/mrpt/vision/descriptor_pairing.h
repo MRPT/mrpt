@@ -150,6 +150,4 @@ size_t find_descriptor_pairings(
 }
 
 /** @} */
-}
-
-
+}  // namespace mrpt::vision

@@ -139,69 +139,68 @@ void register_tests_CObservation3DRangeScan()
 	if (mrpt::system::fileExists(rgbd_test_rawlog_file))
 	{
 		lstTests.emplace_back(
-				"3DRangeScan: 320x240 Depth->3D (no LUT,w/o SSE2)",
-				obs3d_test_depth_to_3d, 0x00, 0);
+			"3DRangeScan: 320x240 Depth->3D (no LUT,w/o SSE2)",
+			obs3d_test_depth_to_3d, 0x00, 0);
 		lstTests.emplace_back(
-				"3DRangeScan: 320x240 Depth->3D (no LUT,w/SSE2)",
-				obs3d_test_depth_to_3d, 0x02, 0);
+			"3DRangeScan: 320x240 Depth->3D (no LUT,w/SSE2)",
+			obs3d_test_depth_to_3d, 0x02, 0);
 		lstTests.emplace_back(
-				"3DRangeScan: 320x240 Depth->3D (LUT,w/o SSE2)",
-				obs3d_test_depth_to_3d, 0x01, 0);
+			"3DRangeScan: 320x240 Depth->3D (LUT,w/o SSE2)",
+			obs3d_test_depth_to_3d, 0x01, 0);
 		lstTests.emplace_back(
-				"3DRangeScan: 320x240 Depth->3D (LUT,w/SSE2)",
-				obs3d_test_depth_to_3d, 0x03, 0);
+			"3DRangeScan: 320x240 Depth->3D (LUT,w/SSE2)",
+			obs3d_test_depth_to_3d, 0x03, 0);
 
 		lstTests.emplace_back(
-				"3DRangeScan: 320x240 Depth->3D (no LUT,w/o SSE2,minFilter)",
-				obs3d_test_depth_to_3d, 0x00, 0x01);
+			"3DRangeScan: 320x240 Depth->3D (no LUT,w/o SSE2,minFilter)",
+			obs3d_test_depth_to_3d, 0x00, 0x01);
 		lstTests.emplace_back(
-				"3DRangeScan: 320x240 Depth->3D (no LUT,w/SSE2,minFilter)",
-				obs3d_test_depth_to_3d, 0x02, 0x01);
+			"3DRangeScan: 320x240 Depth->3D (no LUT,w/SSE2,minFilter)",
+			obs3d_test_depth_to_3d, 0x02, 0x01);
 		lstTests.emplace_back(
-				"3DRangeScan: 320x240 Depth->3D (LUT,w/o SSE2,minFilter)",
-				obs3d_test_depth_to_3d, 0x01, 0x01);
+			"3DRangeScan: 320x240 Depth->3D (LUT,w/o SSE2,minFilter)",
+			obs3d_test_depth_to_3d, 0x01, 0x01);
 		lstTests.emplace_back(
-				"3DRangeScan: 320x240 Depth->3D (LUT,w/SSE2,minFilter)",
-				obs3d_test_depth_to_3d, 0x03, 0x01);
+			"3DRangeScan: 320x240 Depth->3D (LUT,w/SSE2,minFilter)",
+			obs3d_test_depth_to_3d, 0x03, 0x01);
 
 		lstTests.emplace_back(
-				"3DRangeScan: 320x240 Depth->3D (no LUT,w/o SSE2,maxFilter)",
-				obs3d_test_depth_to_3d, 0x00, 0x02);
+			"3DRangeScan: 320x240 Depth->3D (no LUT,w/o SSE2,maxFilter)",
+			obs3d_test_depth_to_3d, 0x00, 0x02);
 		lstTests.emplace_back(
-				"3DRangeScan: 320x240 Depth->3D (no LUT,w/SSE2,maxFilter)",
-				obs3d_test_depth_to_3d, 0x02, 0x02);
+			"3DRangeScan: 320x240 Depth->3D (no LUT,w/SSE2,maxFilter)",
+			obs3d_test_depth_to_3d, 0x02, 0x02);
 		lstTests.emplace_back(
-				"3DRangeScan: 320x240 Depth->3D (LUT,w/o SSE2,maxFilter)",
-				obs3d_test_depth_to_3d, 0x01, 0x02);
+			"3DRangeScan: 320x240 Depth->3D (LUT,w/o SSE2,maxFilter)",
+			obs3d_test_depth_to_3d, 0x01, 0x02);
 		lstTests.emplace_back(
-				"3DRangeScan: 320x240 Depth->3D (LUT,w/SSE2,maxFilter)",
-				obs3d_test_depth_to_3d, 0x03, 0x02);
+			"3DRangeScan: 320x240 Depth->3D (LUT,w/SSE2,maxFilter)",
+			obs3d_test_depth_to_3d, 0x03, 0x02);
 
 		lstTests.emplace_back(
-				"3DRangeScan: 320x240 Depth->3D (no LUT,w/o "
-				"SSE2,min/maxFilter)",
-				obs3d_test_depth_to_3d, 0x00, 0x03);
+			"3DRangeScan: 320x240 Depth->3D (no LUT,w/o "
+			"SSE2,min/maxFilter)",
+			obs3d_test_depth_to_3d, 0x00, 0x03);
 		lstTests.emplace_back(
-				"3DRangeScan: 320x240 Depth->3D (no LUT,w/SSE2,min/maxFilter)",
-				obs3d_test_depth_to_3d, 0x02, 0x03);
+			"3DRangeScan: 320x240 Depth->3D (no LUT,w/SSE2,min/maxFilter)",
+			obs3d_test_depth_to_3d, 0x02, 0x03);
 		lstTests.emplace_back(
-				"3DRangeScan: 320x240 Depth->3D (LUT,w/o SSE2,min/maxFilter)",
-				obs3d_test_depth_to_3d, 0x01, 0x03);
+			"3DRangeScan: 320x240 Depth->3D (LUT,w/o SSE2,min/maxFilter)",
+			obs3d_test_depth_to_3d, 0x01, 0x03);
 		lstTests.emplace_back(
-				"3DRangeScan: 320x240 Depth->3D (LUT,w/SSE2,min/maxFilter)",
-				obs3d_test_depth_to_3d, 0x03, 0x03);
+			"3DRangeScan: 320x240 Depth->3D (LUT,w/SSE2,min/maxFilter)",
+			obs3d_test_depth_to_3d, 0x03, 0x03);
 
 		lstTests.emplace_back(
-				"3DRangeScan: 320x240 Depth->2D scan",
-				obs3d_test_depth_to_2d_scan);
+			"3DRangeScan: 320x240 Depth->2D scan", obs3d_test_depth_to_2d_scan);
 		lstTests.emplace_back(
-				"3DRangeScan: 320x240 Depth->2D scan + min_filter",
-				obs3d_test_depth_to_2d_scan, 1, 0);
+			"3DRangeScan: 320x240 Depth->2D scan + min_filter",
+			obs3d_test_depth_to_2d_scan, 1, 0);
 		lstTests.emplace_back(
-				"3DRangeScan: 320x240 Depth->2D scan + max_filter",
-				obs3d_test_depth_to_2d_scan, 0, 1);
+			"3DRangeScan: 320x240 Depth->2D scan + max_filter",
+			obs3d_test_depth_to_2d_scan, 0, 1);
 		lstTests.emplace_back(
-				"3DRangeScan: 320x240 Depth->2D scan + min/max_filters",
-				obs3d_test_depth_to_2d_scan, 1, 1);
+			"3DRangeScan: 320x240 Depth->2D scan + min/max_filters",
+			obs3d_test_depth_to_2d_scan, 1, 1);
 	}
 }

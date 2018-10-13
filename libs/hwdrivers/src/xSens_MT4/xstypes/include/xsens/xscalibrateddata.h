@@ -15,7 +15,8 @@
 struct XsCalibratedData;
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #else
 #define XSCALIBRATEDDATA_INITIALIZER                                        \
 	{                                                                       \
@@ -23,11 +24,11 @@ extern "C" {
 	}
 #endif
 
-XSTYPES_DLL_API void XsCalibratedData_construct(
-	struct XsCalibratedData* thisPtr, const XsReal* acc, const XsReal* gyr,
-	const XsReal* mag);
-XSTYPES_DLL_API void XsCalibratedData_destruct(
-	struct XsCalibratedData* thisPtr);
+	XSTYPES_DLL_API void XsCalibratedData_construct(
+		struct XsCalibratedData* thisPtr, const XsReal* acc, const XsReal* gyr,
+		const XsReal* mag);
+	XSTYPES_DLL_API void XsCalibratedData_destruct(
+		struct XsCalibratedData* thisPtr);
 
 #ifdef __cplusplus
 }  // extern "C"

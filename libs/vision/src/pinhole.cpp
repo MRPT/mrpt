@@ -176,10 +176,10 @@ void mrpt::vision::pinhole::undistort_points(
 		{
 			double r2 = x * x + y * y;
 			double icdist =
-				1. / (1 +
-					  ((cameraModel.dist[4] * r2 + cameraModel.dist[1]) * r2 +
-					   cameraModel.dist[0]) *
-						  r2);
+				1. /
+				(1 + ((cameraModel.dist[4] * r2 + cameraModel.dist[1]) * r2 +
+					  cameraModel.dist[0]) *
+						 r2);
 			double deltaX = 2 * cameraModel.dist[2] * x * y +
 							cameraModel.dist[3] * (r2 + 2 * x * x);
 			double deltaY = cameraModel.dist[2] * (r2 + 2 * y * y) +
@@ -199,8 +199,8 @@ void mrpt::vision::pinhole::undistort_points(
 
 /** Undistort one point given by its pixel coordinates and the camera
  * parameters.
-  * \sa undistort_points
-  */
+ * \sa undistort_points
+ */
 void mrpt::vision::pinhole::undistort_point(
 	const TPixelCoordf& inPt, TPixelCoordf& outPt,
 	const mrpt::img::TCamera& cameraModel)
@@ -229,10 +229,9 @@ void mrpt::vision::pinhole::undistort_point(
 	{
 		double r2 = x * x + y * y;
 		double icdist =
-			1. / (1 +
-				  ((cameraModel.dist[4] * r2 + cameraModel.dist[1]) * r2 +
-				   cameraModel.dist[0]) *
-					  r2);
+			1. / (1 + ((cameraModel.dist[4] * r2 + cameraModel.dist[1]) * r2 +
+					   cameraModel.dist[0]) *
+						  r2);
 		double deltaX = 2 * cameraModel.dist[2] * x * y +
 						cameraModel.dist[3] * (r2 + 2 * x * x);
 		double deltaY = cameraModel.dist[2] * (r2 + 2 * y * y) +

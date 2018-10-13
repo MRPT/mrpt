@@ -16,7 +16,7 @@ namespace opengl
 {
 class CCamera;
 }
-}
+}  // namespace mrpt
 
 namespace mrpt
 {
@@ -24,7 +24,7 @@ namespace gui
 {
 /** This base class implements a working with opengl::Camera and a OpenGL
  * canvas, and it's used in gui::CWxGLCanvasBase and gui::CQtGlCanvasBase.
-*/
+ */
 class CGlCanvasBase
 {
    public:
@@ -108,68 +108,68 @@ class CGlCanvasBase
 	/** This function gets a reference to mrpt::opengl::CCamera and
 	 * updates the camera parameters(pointing, zoom, azimuth, elevation,
 	 * IsProjective, FOV)
-	*/
+	 */
 	mrpt::opengl::CCamera& updateCameraParams(mrpt::opengl::CCamera& cam) const;
 
 	/** If set to true (default=false), the cameraPointingX,... parameters are
 	 * ignored and the camera stored in the 3D scene is used instead.
 	 * See also void bool getUseCameraFromScene()
-	  */
+	 */
 	void setUseCameraFromScene(bool is);
 
 	/** See also void setUseCameraFromScene(bool)
-	*/
+	 */
 	bool getUseCameraFromScene() const;
 
 	// Visualization params:
 	/** Saves the pointing of the camera
 	 * See also getCameraPointingX(), getCameraPointingY(), getCameraPointingZ()
-	*/
+	 */
 	virtual void setCameraPointing(float pointX, float pointY, float pointZ);
 
 	/** Returns the x pointing of the camera
 	 * See also setCameraPointing(float, float, float)
-	*/
+	 */
 	float getCameraPointingX() const;
 
 	/** Returns the y pointing of the camera
 	 * See also setCameraPointing(float, float, float)
-	*/
+	 */
 	float getCameraPointingY() const;
 
 	/** Returns the z pointing of the camera
 	 * See also setCameraPointing(float, float, float)
-	*/
+	 */
 	float getCameraPointingZ() const;
 
 	/** Saves camera zooming
 	 * See also getZoomDistance()
-	*/
+	 */
 	virtual void setZoomDistance(float zoom);
 
 	/** Returns a zoom
 	 * See also setZoomDistance(float)
-	*/
+	 */
 	float getZoomDistance() const;
 
 	/** Saves the degrees of the azimuth camera
 	 * See also getAzimuthDegrees()
-	*/
+	 */
 	virtual void setAzimuthDegrees(float ang);
 
 	/** Returns a azimuth degrees
 	 * See also setAzimuthDegrees(float)
-	*/
+	 */
 	float getAzimuthDegrees() const;
 
 	/** Saves the degrees of the elevation camera
 	 * See also getElevationDegrees()
-	*/
+	 */
 	virtual void setElevationDegrees(float ang);
 
 	/** Returns a elevation degrees
 	 * See also setElevationDegrees(float)
-	*/
+	 */
 	float getElevationDegrees() const;
 
 	virtual void setCameraProjective(bool is);
@@ -181,7 +181,7 @@ class CGlCanvasBase
 	/** Sets the RGBA colors for glClearColor
 	 * See also clearColors(), getClearColorR(),
 	 * getClearColorG(),getClearColorB(), getClearColorA()
-	*/
+	 */
 	void setClearColors(float r, float g, float b, float a = 1.0f);
 	float getClearColorR() const;
 	float getClearColorG() const;
@@ -192,21 +192,21 @@ class CGlCanvasBase
 
 	/** Overload this method to limit the capabilities of the user to move the
 	 * camera using the mouse.
-			  *  For all these variables:
-			  *  - cameraPointingX
-			  *  - cameraPointingY
-			  *  - cameraPointingZ
-			  *  - cameraZoomDistance
-			  *  - cameraElevationDeg
-			  *  - cameraAzimuthDeg
-			  *
-			  *  A "new_NAME" variable will be passed with the temptative new
+	 *  For all these variables:
+	 *  - cameraPointingX
+	 *  - cameraPointingY
+	 *  - cameraPointingZ
+	 *  - cameraZoomDistance
+	 *  - cameraElevationDeg
+	 *  - cameraAzimuthDeg
+	 *
+	 *  A "new_NAME" variable will be passed with the temptative new
 	 * value after the user action.
-			  *   The default behavior should be to copy all the new variables
+	 *   The default behavior should be to copy all the new variables
 	 * to the variables listed above
-			  *   but in the middle any find of user-defined filter can be
+	 *   but in the middle any find of user-defined filter can be
 	 * implemented.
-			  */
+	 */
 	virtual void OnUserManuallyMovesCamera(
 		float new_cameraPointingX, float new_cameraPointingY,
 		float new_cameraPointingZ, float new_cameraZoomDistance,
@@ -257,5 +257,5 @@ class CGlCanvasBase
 	float m_maxZoom = 3200.f;
 	CamaraParams m_cameraParams;
 };  // end of class
-}  // end namespace
-}  // end namespace
+}  // namespace gui
+}  // namespace mrpt

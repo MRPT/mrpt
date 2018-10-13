@@ -115,17 +115,17 @@ struct TAuxRangeMeasInfo
 {
 	TAuxRangeMeasInfo()
 		: sensorLocationOnRobot(),
-		  
+
 		  beaconID(INVALID_BEACON_ID)
-		  
+
 	{
 	}
 
 	CPoint3D sensorLocationOnRobot;
 	float sensedDistance{0};
 	int64_t beaconID;
-	size_t
-		nGaussiansInMap{0};  // Number of Gaussian modes in the map representation
+	size_t nGaussiansInMap{
+		0};  // Number of Gaussian modes in the map representation
 
 	/** Auxiliary for optimal sampling in RO-SLAM */
 	static bool cmp_Asc(const TAuxRangeMeasInfo& a, const TAuxRangeMeasInfo& b)
@@ -381,11 +381,11 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 			//			const double prior_dist_lin =
 			// initialPoseEstimation.distanceTo(icpEstimation.mean);
 			//			const double prior_dist_ang = std::abs(
-			//mrpt::math::wrapToPi(
+			// mrpt::math::wrapToPi(
 			// initialPoseEstimation.yaw()-icpEstimation.mean.phi() ) );
 			////			if (prior_dist_lin>0.10 ||
-			///prior_dist_ang>DEG2RAD(3)) /				printf(" >>>>>>>>>> %f
-			///%f\n",prior_dist_lin,RAD2DEG(prior_dist_ang));
+			/// prior_dist_ang>DEG2RAD(3)) /				printf(" >>>>>>>>>>
+			/// %f %f\n",prior_dist_lin,RAD2DEG(prior_dist_ang));
 			//			extra_log_lik = -(prior_dist_lin/0.20) -
 			//(prior_dist_ang/DEG2RAD(20));
 
@@ -584,8 +584,8 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 
 				// 2. Generate the optimal proposal by fusing obs models
 				// -------------------------------------------------------------
-				for (auto itBeacs = beacMap->begin();
-					 itBeacs != beacMap->end(); ++itBeacs)
+				for (auto itBeacs = beacMap->begin(); itBeacs != beacMap->end();
+					 ++itBeacs)
 				{
 					// for each observed beacon (by its ID), generate
 					// observation model:

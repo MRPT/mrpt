@@ -33,8 +33,8 @@ struct sort_pred
 };
 
 /************************************************************************************************
-*								extractFeatures *
-************************************************************************************************/
+ *								extractFeatures *
+ ************************************************************************************************/
 void CFeatureExtraction::detectFeatures(
 	const CImage& img, CFeatureList& feats, const unsigned int init_ID,
 	const unsigned int nDesiredFeatures, const TImageROI& ROI) const
@@ -289,8 +289,8 @@ void CFeatureExtraction::computeDescriptors(
 }
 
 /************************************************************************************************
-*								extractFeaturesBCD *
-************************************************************************************************/
+ *								extractFeaturesBCD *
+ ************************************************************************************************/
 void CFeatureExtraction::extractFeaturesBCD(
 	const CImage& img, CFeatureList& feats, unsigned int init_ID,
 	unsigned int nDesiredFeatures, const TImageROI& ROI) const

@@ -178,4 +178,3 @@ T wrapTo2Pi(T a);
 
 }  // namespace math
 }  // namespace mrpt
-

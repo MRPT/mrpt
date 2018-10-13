@@ -39,16 +39,13 @@ class Bar : public BarBase
 	Bar() {}
 	DEFINE_MRPT_OBJECT(Bar)
 
-	void printName() override
-	{
-		std::cout << "class: Bar" << std::endl;
-	}
+	void printName() override { std::cout << "class: Bar" << std::endl; }
 	void specificBarMethod()
 	{
 		std::cout << "specificBarMethod: reached." << std::endl;
 	}
 };
-}
+}  // namespace MyNS
 
 IMPLEMENTS_MRPT_OBJECT(Foo, mrpt::rtti::CObject, MyNS)
 IMPLEMENTS_VIRTUAL_MRPT_OBJECT(BarBase, mrpt::rtti::CObject, MyNS)

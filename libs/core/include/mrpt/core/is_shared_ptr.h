@@ -14,8 +14,8 @@
 namespace mrpt
 {
 /** This is useful for checking ::Ptr types.
-* I'm surprised it's not defined in <memory>
-*/
+ * I'm surprised it's not defined in <memory>
+ */
 template <class T>
 struct is_shared_ptr : std::false_type
 {
@@ -24,4 +24,4 @@ template <class T>
 struct is_shared_ptr<std::shared_ptr<T>> : std::true_type
 {
 };
-}  // End of namespace
+}  // namespace mrpt

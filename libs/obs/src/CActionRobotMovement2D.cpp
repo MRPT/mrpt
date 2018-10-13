@@ -665,8 +665,7 @@ void CActionRobotMovement2D::prepareFastDrawSingleSample_modelGaussian() const
 
 	CMatrixDouble33 D;
 
-	const auto* gPdf =
-		dynamic_cast<const CPosePDFGaussian*>(poseChange.get());
+	const auto* gPdf = dynamic_cast<const CPosePDFGaussian*>(poseChange.get());
 	ASSERT_(gPdf != nullptr);
 	const CMatrixDouble33& cov = gPdf->cov;
 

@@ -221,11 +221,11 @@ void COutputLogger::loggerReset()
 
 COutputLogger::TMsg::TMsg(
 	const mrpt::system::VerbosityLevel in_level, const std::string& msg_str,
-	const COutputLogger& logger) :
-		timestamp(mrpt::Clock::now()),  // fill with the current time
-		level(in_level),
-		name(logger.getLoggerName()),
-		body(msg_str)
+	const COutputLogger& logger)
+	: timestamp(mrpt::Clock::now()),  // fill with the current time
+	  level(in_level),
+	  name(logger.getLoggerName()),
+	  body(msg_str)
 {
 }
 
@@ -235,8 +235,8 @@ std::string COutputLogger::TMsg::getAsString() const
 {
 	stringstream out;
 	out << "[" << mrpt::system::timeLocalToString(timestamp, 4) << "|"
-		<< COutputLogger::logging_levels_to_names()[level] << "|" << name << "] "
-		<< body;
+		<< COutputLogger::logging_levels_to_names()[level] << "|" << name
+		<< "] " << body;
 	if (!body.empty() && *body.rbegin() != '\n') out << std::endl;
 
 	return out.str();
@@ -262,7 +262,8 @@ void COutputLogger::TMsg::dumpToConsole() const
 	// of stdout
 
 	// Set console color:
-	const TConsoleColor concol = COutputLogger::logging_levels_to_colors()[level];
+	const TConsoleColor concol =
+		COutputLogger::logging_levels_to_colors()[level];
 	mrpt::system::setConsoleColor(concol, dump_to_cerr);
 	// Output msg:
 	(dump_to_cerr ? std::cerr : std::cout) << str;

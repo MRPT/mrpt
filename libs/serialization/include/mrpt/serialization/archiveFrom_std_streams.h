@@ -23,6 +23,7 @@ class CArchiveStreamBase<std::istream> : public CArchive
 
    public:
 	CArchiveStreamBase(std::istream& s) : m_s(s) {}
+
    protected:
 	size_t write(const void* d, size_t n) override
 	{
@@ -47,6 +48,7 @@ class CArchiveStreamBase<std::ostream> : public CArchive
 
    public:
 	CArchiveStreamBase(std::ostream& s) : m_s(s) {}
+
    protected:
 	size_t write(const void* d, size_t n) override
 	{
@@ -71,6 +73,7 @@ class CArchiveStreamBase<std::iostream> : public CArchive
 
    public:
 	CArchiveStreamBase(std::iostream& s) : m_s(s) {}
+
    protected:
 	size_t write(const void* d, size_t n) override
 	{
@@ -88,5 +91,4 @@ class CArchiveStreamBase<std::iostream> : public CArchive
 	}
 };
 
-}
-
+}  // namespace mrpt::serialization

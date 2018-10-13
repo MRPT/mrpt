@@ -167,6 +167,7 @@ class mrptEventWindowChar : public mrpt::system::mrptEvent
    protected:
 	/** Just to allow this class to be polymorphic */
 	void do_nothing() override {}
+
    public:
 	inline mrptEventWindowChar(
 		CBaseGUIWindow* obj, int _char_code, mrptKeyModifier _key_mod)
@@ -193,6 +194,7 @@ class mrptEventWindowResize : public mrpt::system::mrptEvent
    protected:
 	/** Just to allow this class to be polymorphic */
 	void do_nothing() override {}
+
    public:
 	inline mrptEventWindowResize(
 		CBaseGUIWindow* obj, size_t _new_width, size_t _new_height)
@@ -218,6 +220,7 @@ class mrptEventMouseDown : public mrpt::system::mrptEvent
    protected:
 	/** Just to allow this class to be polymorphic */
 	void do_nothing() override {}
+
    public:
 	inline mrptEventMouseDown(
 		CBaseGUIWindow* obj, mrpt::img::TPixelCoord _coords, bool _leftButton,
@@ -246,6 +249,7 @@ class mrptEventMouseMove : public mrpt::system::mrptEvent
    protected:
 	/** Just to allow this class to be polymorphic */
 	void do_nothing() override {}
+
    public:
 	inline mrptEventMouseMove(
 		CBaseGUIWindow* obj, mrpt::img::TPixelCoord _coords, bool _leftButton,
@@ -265,7 +269,7 @@ class mrptEventMouseMove : public mrpt::system::mrptEvent
 
 /**  An event sent by a window upon when it's about to be closed, either
  * manually by the user or programmatically.
-  *   The event field member \a allow_close is default by default, but can be
+ *   The event field member \a allow_close is default by default, but can be
  * set to false in the event callback
  *   to forbid the window to be closed by the user. If the event corresponds to
  * a programatic close, this field is ignored.
@@ -281,6 +285,7 @@ class mrptEventWindowClosed : public mrpt::system::mrptEvent
    protected:
 	/** Just to allow this class to be polymorphic */
 	void do_nothing() override {}
+
    public:
 	inline mrptEventWindowClosed(CBaseGUIWindow* obj, bool _allow_close = true)
 		: source_object(obj), allow_close(_allow_close)
@@ -292,5 +297,4 @@ class mrptEventWindowClosed : public mrpt::system::mrptEvent
 
 /**  @} */
 
-}
-
+}  // namespace mrpt::gui

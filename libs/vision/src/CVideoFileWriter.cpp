@@ -118,11 +118,9 @@ const CVideoFileWriter& CVideoFileWriter::operator<<(
 
 	if ((size_t)m_img_size.x != img.getWidth() ||
 		(size_t)m_img_size.y != img.getHeight())
-		THROW_EXCEPTION(
-			format(
-				"Video frame size is %ix%i but image is %ux%u", m_img_size.x,
-				m_img_size.y, (unsigned)img.getWidth(),
-				(unsigned)img.getHeight()));
+		THROW_EXCEPTION(format(
+			"Video frame size is %ix%i but image is %ux%u", m_img_size.x,
+			m_img_size.y, (unsigned)img.getWidth(), (unsigned)img.getHeight()));
 
 #if MRPT_HAS_OPENCV
 	if (!cvWriteFrame(M_WRITER, img.getAs<IplImage>()))

@@ -101,6 +101,4 @@ class CAssimpModel : public CRenderizableDisplayList
 	mutable std::map<std::string, TInfoPerTexture> m_textureIdMap;
 };
 
-}
-
-
+}  // namespace mrpt::opengl

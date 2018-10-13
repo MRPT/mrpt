@@ -75,5 +75,4 @@ class MT_buffer
 
 };  // end of MT_buffer
 
-}
-
+}  // namespace mrpt::containers

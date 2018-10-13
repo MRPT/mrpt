@@ -71,6 +71,4 @@ class CPropertiesValuesList : public mrpt::serialization::CSerializable
 	std::vector<std::string> getPropertyNames() const;
 
 };  // End of class def.
-}
-
-
+}  // namespace mrpt::hmtslam

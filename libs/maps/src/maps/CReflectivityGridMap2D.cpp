@@ -33,9 +33,8 @@ MAP_DEFINITION_REGISTER(
 	mrpt::maps::CReflectivityGridMap2D)
 
 CReflectivityGridMap2D::TMapDefinition::TMapDefinition()
-	
-	  
-= default;
+
+	= default;
 
 void CReflectivityGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(
 	const mrpt::config::CConfigFileBase& source,
@@ -130,8 +129,7 @@ bool CReflectivityGridMap2D::internal_insertObservation(
 		/********************************************************************
 					OBSERVATION TYPE: CObservationReflectivity
 		********************************************************************/
-		const auto* o =
-			static_cast<const CObservationReflectivity*>(obs);
+		const auto* o = static_cast<const CObservationReflectivity*>(obs);
 
 		if (o->channel != -1 && insertionOptions.channel != -1 &&
 			o->channel != insertionOptions.channel)
@@ -196,8 +194,7 @@ double CReflectivityGridMap2D::internal_computeObservationLikelihood(
 		/********************************************************************
 					OBSERVATION TYPE: CObservationReflectivity
 		********************************************************************/
-		const auto* o =
-			static_cast<const CObservationReflectivity*>(obs);
+		const auto* o = static_cast<const CObservationReflectivity*>(obs);
 
 		if (o->channel != -1 && insertionOptions.channel != -1 &&
 			o->channel != insertionOptions.channel)
@@ -275,7 +272,7 @@ void CReflectivityGridMap2D::serializeFrom(
 /*---------------------------------------------------------------
 					TInsertionOptions
  ---------------------------------------------------------------*/
-CReflectivityGridMap2D::TInsertionOptions::TInsertionOptions()  = default;
+CReflectivityGridMap2D::TInsertionOptions::TInsertionOptions() = default;
 void CReflectivityGridMap2D::TInsertionOptions::dumpToTextStream(
 	std::ostream& out) const
 {

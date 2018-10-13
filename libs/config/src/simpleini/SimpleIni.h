@@ -2419,6 +2419,4 @@ using MRPT_CSimpleIni =
 #define SI_NEWLINE SI_NEWLINE_A
 #endif  // _UNICODE
 
-}
-
-
+}  // namespace mrpt::config::simpleini

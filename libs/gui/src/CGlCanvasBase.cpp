@@ -71,12 +71,12 @@ void CGlCanvasBase::updateZoom(CamaraParams& params, float delta) const
 void CGlCanvasBase::updateRotate(CamaraParams& params, int x, int y) const
 {
 	const float dis = max(0.01f, (params.cameraZoomDistance));
-	float eye_x = params.cameraPointingX +
-				  dis * cos(DEG2RAD(params.cameraAzimuthDeg)) *
-					  cos(DEG2RAD(params.cameraElevationDeg));
-	float eye_y = params.cameraPointingY +
-				  dis * sin(DEG2RAD(params.cameraAzimuthDeg)) *
-					  cos(DEG2RAD(params.cameraElevationDeg));
+	float eye_x =
+		params.cameraPointingX + dis * cos(DEG2RAD(params.cameraAzimuthDeg)) *
+									 cos(DEG2RAD(params.cameraElevationDeg));
+	float eye_y =
+		params.cameraPointingY + dis * sin(DEG2RAD(params.cameraAzimuthDeg)) *
+									 cos(DEG2RAD(params.cameraElevationDeg));
 	float eye_z =
 		params.cameraPointingZ + dis * sin(DEG2RAD(params.cameraElevationDeg));
 
@@ -88,12 +88,12 @@ void CGlCanvasBase::updateRotate(CamaraParams& params, int x, int y) const
 	params.setElevationDeg(params.cameraElevationDeg + A_ElevationDeg);
 
 	// Move cameraPointing pos:
-	params.cameraPointingX = eye_x -
-							 dis * cos(DEG2RAD(params.cameraAzimuthDeg)) *
-								 cos(DEG2RAD(params.cameraElevationDeg));
-	params.cameraPointingY = eye_y -
-							 dis * sin(DEG2RAD(params.cameraAzimuthDeg)) *
-								 cos(DEG2RAD(params.cameraElevationDeg));
+	params.cameraPointingX =
+		eye_x - dis * cos(DEG2RAD(params.cameraAzimuthDeg)) *
+					cos(DEG2RAD(params.cameraElevationDeg));
+	params.cameraPointingY =
+		eye_y - dis * sin(DEG2RAD(params.cameraAzimuthDeg)) *
+					cos(DEG2RAD(params.cameraElevationDeg));
 	params.cameraPointingZ =
 		eye_z - dis * sin(DEG2RAD(params.cameraElevationDeg));
 }

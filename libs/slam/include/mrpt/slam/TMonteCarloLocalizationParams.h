@@ -14,13 +14,13 @@
 namespace mrpt::slam
 {
 /** The struct for passing extra simulation parameters to the prediction stage
-	*    when running a particle filter.
-	*   \ingroup mrpt_slam_grp
-	*/
+ *    when running a particle filter.
+ *   \ingroup mrpt_slam_grp
+ */
 struct TMonteCarloLocalizationParams
 {
 	/** Default settings method.
-		*/
+	 */
 	TMonteCarloLocalizationParams();
 
 	/** Copy constructor: take care of knowing what you do, since this copies
@@ -34,19 +34,17 @@ struct TMonteCarloLocalizationParams
 
 	/** [update stage] Must be set to a metric map used to estimate the
 	 * likelihood of observations
-		*/
+	 */
 	mrpt::maps::CMetricMap* metricMap{nullptr};
 
 	/** [update stage] Alternative way (if metricMap==nullptr): A metric map is
 	 * supplied for each particle: There must be the same maps here as pose
 	 * m_particles.
-		*/
+	 */
 	mrpt::maps::TMetricMapList metricMaps;
 
 	/** Parameters for dynamic sample size, KLD method. */
 	TKLDParams KLD_params;
 };
 
-}
-
-
+}  // namespace mrpt::slam

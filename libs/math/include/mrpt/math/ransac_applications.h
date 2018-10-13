@@ -16,7 +16,7 @@ namespace mrpt::math
 using std::vector;
 
 /** @addtogroup ransac_grp
-  * @{ */
+ * @{ */
 
 /** @name RANSAC detectors
 	@{
@@ -25,13 +25,13 @@ using std::vector;
 /** Fit a number of 3-D planes to a given point cloud, automatically determining
  * the number of existing planes by means of the provided threshold and minimum
  * number of supporting inliers.
-  * \param out_detected_planes The output list of pairs: number of supporting
+ * \param out_detected_planes The output list of pairs: number of supporting
  * inliers, detected plane.
-  * \param threshold The maximum distance between a point and a temptative plane
+ * \param threshold The maximum distance between a point and a temptative plane
  * such as the point is considered an inlier.
-  * \param min_inliers_for_valid_plane  The minimum number of supporting inliers
+ * \param min_inliers_for_valid_plane  The minimum number of supporting inliers
  * to consider a plane as valid.
-  */
+ */
 template <typename NUMTYPE>
 void ransac_detect_3D_planes(
 	const Eigen::Matrix<NUMTYPE, Eigen::Dynamic, 1>& x,
@@ -43,13 +43,13 @@ void ransac_detect_3D_planes(
 /** Fit a number of 2-D lines to a given point cloud, automatically determining
  * the number of existing lines by means of the provided threshold and minimum
  * number of supporting inliers.
-  * \param out_detected_lines The output list of pairs: number of supporting
+ * \param out_detected_lines The output list of pairs: number of supporting
  * inliers, detected line.
-  * \param threshold The maximum distance between a point and a temptative line
+ * \param threshold The maximum distance between a point and a temptative line
  * such as the point is considered an inlier.
-  * \param min_inliers_for_valid_line  The minimum number of supporting inliers
+ * \param min_inliers_for_valid_line  The minimum number of supporting inliers
  * to consider a line as valid.
-  */
+ */
 template <typename NUMTYPE>
 void ransac_detect_2D_lines(
 	const Eigen::Matrix<NUMTYPE, Eigen::Dynamic, 1>& x,
@@ -59,7 +59,7 @@ void ransac_detect_2D_lines(
 
 /** A stub for ransac_detect_3D_planes() with the points given as a
  * mrpt::maps::CPointsMap
-  */
+ */
 template <class POINTSMAP>
 inline void ransac_detect_3D_planes(
 	const POINTSMAP* points_map,
@@ -76,6 +76,4 @@ inline void ransac_detect_3D_planes(
 /** @} */
 /** @} */  // end of grouping
 
-}
-
-
+}  // namespace mrpt::math

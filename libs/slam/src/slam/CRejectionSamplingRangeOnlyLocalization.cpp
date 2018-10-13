@@ -28,9 +28,8 @@ using namespace std;
 ---------------------------------------------------------------*/
 CRejectionSamplingRangeOnlyLocalization::
 	CRejectionSamplingRangeOnlyLocalization()
-	: 
-	  m_oldPose(),
-	  
+	: m_oldPose(),
+
 	  m_dataPerBeacon()
 {
 }
@@ -101,11 +100,12 @@ double CRejectionSamplingRangeOnlyLocalization::RS_observationLikelihood(
 
 		if (i != m_drawIndex)
 			// Evalute:
-			lik *= exp(
-				-0.5 * square(
-						   m_dataPerBeacon[i].radiusAtRobotPlane -
-						   P.distanceTo(m_dataPerBeacon[i].beaconPosition)) /
-				m_sigmaRanges2);
+			lik *=
+				exp(-0.5 *
+					square(
+						m_dataPerBeacon[i].radiusAtRobotPlane -
+						P.distanceTo(m_dataPerBeacon[i].beaconPosition)) /
+					m_sigmaRanges2);
 	}
 
 	return lik;

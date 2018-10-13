@@ -101,18 +101,20 @@ IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(float);
 IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(double);
 IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(long double);
 
-CArchive& mrpt::serialization::operator<<(CArchive& out, const mrpt::Clock::time_point &s)
+CArchive& mrpt::serialization::operator<<(
+	CArchive& out, const mrpt::Clock::time_point& s)
 {
 	uint64_t rep = s.time_since_epoch().count();
 	return out << rep;
 }
 
-CArchive& mrpt::serialization::operator>>(CArchive& in, mrpt::Clock::time_point &s)
+CArchive& mrpt::serialization::operator>>(
+	CArchive& in, mrpt::Clock::time_point& s)
 {
 	uint64_t rep;
 	in >> rep;
 	s = mrpt::Clock::time_point(mrpt::Clock::duration(rep));
-	return in; 
+	return in;
 }
 
 CArchive& mrpt::serialization::operator<<(CArchive& out, const char* s)

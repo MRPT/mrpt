@@ -57,10 +57,9 @@ class CTimeLogger : public mrpt::system::COutputLogger
 	};
 
    protected:
-	using TDataMap =
-		mrpt::containers::ts_hash_map<std::string, TCallData,
-									  1 /* bytes hash */,
-									  10 /* allowed hash collisions */>;
+	using TDataMap = mrpt::containers::ts_hash_map<
+		std::string, TCallData, 1 /* bytes hash */,
+		10 /* allowed hash collisions */>;
 	TDataMap m_data;
 
 	void do_enter(const char* func_name);
@@ -162,5 +161,4 @@ void global_profiler_leave(const char* func_name) noexcept;
 mrpt::system::CTimeLogger& global_profiler_getref() noexcept;
 /** @} */
 
-}
-
+}  // namespace mrpt::system

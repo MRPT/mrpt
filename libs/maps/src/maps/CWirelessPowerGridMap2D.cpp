@@ -29,9 +29,8 @@ MAP_DEFINITION_REGISTER(
 	"CWirelessPowerGridMap2D,wifiGrid", mrpt::maps::CWirelessPowerGridMap2D)
 
 CWirelessPowerGridMap2D::TMapDefinition::TMapDefinition()
-	
-	  
-= default;
+
+	= default;
 
 void CWirelessPowerGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(
 	const mrpt::config::CConfigFileBase& source,
@@ -140,8 +139,7 @@ bool CWirelessPowerGridMap2D::internal_insertObservation(
 		/********************************************************************
 					OBSERVATION TYPE: CObservationWirelessPower
 		********************************************************************/
-		const auto* o =
-			static_cast<const CObservationWirelessPower*>(obs);
+		const auto* o = static_cast<const CObservationWirelessPower*>(obs);
 		float sensorReading;
 
 		// Compute the 3D sensor pose in world coordinates:

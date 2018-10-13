@@ -144,9 +144,8 @@ DECLARE_OP_FUNCTION(op_export_gps_kml)
 
 			// For each sensor label:
 			int color_idx = 0;
-			for (auto it =
-					 m_gps_paths.begin();
-				 it != m_gps_paths.end(); ++it, color_idx++)
+			for (auto it = m_gps_paths.begin(); it != m_gps_paths.end();
+				 ++it, color_idx++)
 			{
 				const string& label = it->first;
 				const TDataPerGPS& D = it->second;
@@ -164,7 +163,7 @@ DECLARE_OP_FUNCTION(op_export_gps_kml)
 				);
 				f.printf("%s", LineString_START.c_str());
 
-				for (const auto & itP : D.path)
+				for (const auto& itP : D.path)
 				{
 					const TGPSDataPoint& d = itP.second;
 					// Format is: lon,lat[,alt]
@@ -201,7 +200,7 @@ DECLARE_OP_FUNCTION(op_export_gps_kml)
 					last_valid.lat = 0;
 					last_valid.lon = 0;
 
-					for (const auto & itP : D.path)
+					for (const auto& itP : D.path)
 					{
 						const TGPSDataPoint& d = itP.second;
 						if (d.fix != 4) continue;  // Skip this one..
@@ -329,7 +328,7 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 
 			// The name of the file:
 			string joint_name;
-			for (const auto & lstlabel : lstlabels)
+			for (const auto& lstlabel : lstlabels)
 			{
 				joint_name += lstlabel;
 			}
@@ -388,8 +387,7 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 			const CObservationGPS* obs =
 				dynamic_cast<CObservationGPS*>(o.get());
 
-			auto it =
-				lstFiles.find(obs->sensorLabel);
+			auto it = lstFiles.find(obs->sensorLabel);
 
 			FILE* f_this;
 
@@ -469,9 +467,8 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 				TPoint3D cart_vel_local(0, 0, 0);
 				if (obs->has_PZS_datum)
 				{
-					const auto& pzs =
-						obs->getMsgByClass<
-							mrpt::obs::gnss::Message_TOPCON_PZS>();
+					const auto& pzs = obs->getMsgByClass<
+						mrpt::obs::gnss::Message_TOPCON_PZS>();
 					if (pzs.hasCartesianPosVel)
 					{
 						cart_pos.x = pzs.cartesian_x;
@@ -542,8 +539,7 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 		// Destructor: close files and generate summary files:
 		~CRawlogProcessor_ExportGPS_TXT()
 		{
-			for (auto it = lstFiles.begin();
-				 it != lstFiles.end(); ++it)
+			for (auto it = lstFiles.begin(); it != lstFiles.end(); ++it)
 			{
 				os::fclose(it->second);
 			}
@@ -614,9 +610,8 @@ DECLARE_OP_FUNCTION(op_export_gps_all)
 			const CObservationGPS* obs =
 				dynamic_cast<CObservationGPS*>(o.get());
 
-			for (auto it =
-					 obs->messages.begin();
-				 it != obs->messages.end(); ++it)
+			for (auto it = obs->messages.begin(); it != obs->messages.end();
+				 ++it)
 			{
 				const gnss::gnss_message* msg_ptr = it->second.get();
 				if (!msg_ptr) continue;
@@ -626,8 +621,7 @@ DECLARE_OP_FUNCTION(op_export_gps_all)
 
 				const string sLabelMsg =
 					string(obs->sensorLabel) + string("_MSG_") + sMsg;
-				auto itF =
-					lstFiles.find(sLabelMsg);
+				auto itF = lstFiles.find(sLabelMsg);
 
 				FILE* f_this;
 
@@ -678,8 +672,7 @@ DECLARE_OP_FUNCTION(op_export_gps_all)
 			VERBOSE_COUT << "Number of different files saved   : "
 						 << lstFiles.size() << endl;
 
-			for (auto it = lstFiles.begin();
-				 it != lstFiles.end(); ++it)
+			for (auto it = lstFiles.begin(); it != lstFiles.end(); ++it)
 			{
 				os::fclose(it->second);
 			}

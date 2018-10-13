@@ -175,7 +175,7 @@ class CCylinder : public CRenderizableDisplayList
 	/**
 	 * Destructor.
 	 */
-	~CCylinder() override= default;
+	~CCylinder() override = default;
 
    private:
 	/**

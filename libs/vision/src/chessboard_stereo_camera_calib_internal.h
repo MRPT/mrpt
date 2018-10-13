@@ -79,6 +79,4 @@ void build_linear_system(
 void add_lm_increment(
 	const Eigen::VectorXd& eps, const std::vector<size_t>& var_indxs,
 	lm_stat_t& new_lm_stat);
-}
-
-
+}  // namespace mrpt::vision

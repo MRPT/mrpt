@@ -202,13 +202,11 @@ void TestRANSAC()
 
 			observations[i].ID = idxs[i].first;
 			observations[i].x =
-				lx +
-				mrpt::random::getRandomGenerator().drawGaussian1D(
-					0, normalizationStd);
+				lx + mrpt::random::getRandomGenerator().drawGaussian1D(
+						 0, normalizationStd);
 			observations[i].y =
-				ly +
-				mrpt::random::getRandomGenerator().drawGaussian1D(
-					0, normalizationStd);
+				ly + mrpt::random::getRandomGenerator().drawGaussian1D(
+						 0, normalizationStd);
 		}
 
 		// ----------------------------------------------------

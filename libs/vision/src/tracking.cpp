@@ -26,7 +26,6 @@ using namespace std;
 // ---------------------------------
 namespace mrpt::vision::detail
 {
-
 template <typename FEATLIST>
 inline void trackFeatures_checkResponses(
 	FEATLIST& featureList, const CImage& cur_gray,
@@ -40,8 +39,7 @@ inline void trackFeatures_checkResponses<CFeatureList>(
 	const unsigned int max_x, const unsigned int max_y)
 {
 	const auto itFeatEnd = featureList.end();
-	for (auto itFeat = featureList.begin();
-		 itFeat != itFeatEnd; ++itFeat)
+	for (auto itFeat = featureList.begin(); itFeat != itFeatEnd; ++itFeat)
 	{
 		CFeature* ft = itFeat->get();
 		if (ft->track_status != status_TRACKED)
@@ -78,8 +76,7 @@ inline void trackFeatures_checkResponses_impl_simple(
 	if (featureList.empty()) return;
 
 	using pixel_coord_t = typename FEAT_LIST::feature_t::pixel_coord_t;
-	const auto half_win =
-		static_cast<pixel_coord_t>(KLT_response_half_win);
+	const auto half_win = static_cast<pixel_coord_t>(KLT_response_half_win);
 	const auto max_x = static_cast<pixel_coord_t>(max_x_);
 	const auto max_y = static_cast<pixel_coord_t>(max_y_);
 
@@ -139,7 +136,7 @@ template <>
 inline void trackFeatures_updatePatch<CFeatureList>(
 	CFeatureList& featureList, const CImage& cur_gray)
 {
-	for (auto & itFeat : featureList)
+	for (auto& itFeat : featureList)
 	{
 		CFeature* ft = itFeat.get();
 		if (ft->track_status != status_TRACKED)
@@ -548,7 +545,7 @@ inline size_t trackFeatures_deleteOOB(
 	}
 	return n_removed;
 }  // end of trackFeatures_deleteOOB
-}  // end NS's
+}  // namespace mrpt::vision::detail
 // ---------------------------- end of internal helper templates
 // -------------------------------
 
@@ -563,17 +560,17 @@ void CGenericFeatureTracker::trackFeatures_impl(
 }
 
 /** Perform feature tracking from "old_img" to "new_img", with a (possibly
-  *empty) list of previously tracked features "featureList".
-  *  This is a list of parameters (in "extraParams") accepted by ALL
-  *implementations of feature tracker (see each derived class for more specific
-  *parameters).
-  *		- "add_new_features" (Default=0). If set to "1", new features will be
-  *also
-  *added to the existing ones in areas of the image poor of features.
-  * This method actually first call the pure virtual "trackFeatures_impl"
-  *method, then implements the optional detection of new features if
-  *"add_new_features"!=0.
-  */
+ *empty) list of previously tracked features "featureList".
+ *  This is a list of parameters (in "extraParams") accepted by ALL
+ *implementations of feature tracker (see each derived class for more specific
+ *parameters).
+ *		- "add_new_features" (Default=0). If set to "1", new features will be
+ *also
+ *added to the existing ones in areas of the image poor of features.
+ * This method actually first call the pure virtual "trackFeatures_impl"
+ *method, then implements the optional detection of new features if
+ *"add_new_features"!=0.
+ */
 template <typename FEATLIST>
 void CGenericFeatureTracker::internal_trackFeatures(
 	const CImage& old_img, const CImage& new_img, FEATLIST& featureList)

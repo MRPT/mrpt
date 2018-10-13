@@ -38,5 +38,4 @@ class PointCloudAdapter;
 
 /** @} */  // end of grouping
 
-}  // namespace mrpt
-
+}  // namespace mrpt::opengl

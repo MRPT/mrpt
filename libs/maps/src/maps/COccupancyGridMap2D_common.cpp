@@ -30,9 +30,8 @@ MAP_DEFINITION_REGISTER(
 	"COccupancyGridMap2D,occupancyGrid", mrpt::maps::COccupancyGridMap2D)
 
 COccupancyGridMap2D::TMapDefinition::TMapDefinition()
-	
-	  
-= default;
+
+	= default;
 
 void COccupancyGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(
 	const mrpt::config::CConfigFileBase& source,
@@ -102,12 +101,12 @@ CLogOddsGridMapLUT<COccupancyGridMap2D::cellType>&
 COccupancyGridMap2D::COccupancyGridMap2D(
 	float min_x, float max_x, float min_y, float max_y, float res)
 	: map(),
-	  
+
 	  precomputedLikelihood(),
-	  
+
 	  m_basis_map(),
 	  m_voronoi_diagram(),
-	  
+
 	  updateInfoChangeOnly(),
 	  insertionOptions(),
 	  likelihoodOptions(),
@@ -447,8 +446,7 @@ void COccupancyGridMap2D::internal_clear()
 void COccupancyGridMap2D::fill(float default_value)
 {
 	cellType defValue = p2l(default_value);
-	for (auto it = map.begin(); it < map.end(); ++it)
-		*it = defValue;
+	for (auto it = map.begin(); it < map.end(); ++it) *it = defValue;
 	// For the precomputed likelihood trick:
 	precomputedLikelihoodToBeRecomputed = true;
 	// resetFeaturesCache();
@@ -583,9 +581,9 @@ void COccupancyGridMap2D::determineMatching2D(
 	float local_y_min = std::numeric_limits<float>::max();
 	float local_y_max = -std::numeric_limits<float>::max();
 
-	const auto & otherMap_pxs = otherMap->getPointsBufferRef_x();
-	const auto & otherMap_pys = otherMap->getPointsBufferRef_y();
-	const auto & otherMap_pzs = otherMap->getPointsBufferRef_z();
+	const auto& otherMap_pxs = otherMap->getPointsBufferRef_x();
+	const auto& otherMap_pys = otherMap->getPointsBufferRef_y();
+	const auto& otherMap_pzs = otherMap->getPointsBufferRef_z();
 
 	// Translate all local map points:
 	for (unsigned int localIdx = params.offset_other_map_points;

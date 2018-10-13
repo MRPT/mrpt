@@ -72,8 +72,8 @@ void COccupancyGridMap2D::sonarSimulator(
 {
 	const float free_thres = 1.0f - threshold;
 
-	for (auto itR = inout_observation.begin();
-		 itR != inout_observation.end(); ++itR)
+	for (auto itR = inout_observation.begin(); itR != inout_observation.end();
+		 ++itR)
 	{
 		const CPose2D sensorAbsolutePose =
 			CPose2D(CPose3D(robotPose) + CPose3D(itR->sensorPose));
@@ -182,13 +182,11 @@ void COccupancyGridMap2D::simulateScanRay(
 
 COccupancyGridMap2D::TLaserSimulUncertaintyParams::
 	TLaserSimulUncertaintyParams()
-	
-	  
-= default;
+
+	= default;
 
 COccupancyGridMap2D::TLaserSimulUncertaintyResult::
-	TLaserSimulUncertaintyResult()
-= default;
+	TLaserSimulUncertaintyResult() = default;
 
 struct TFunctorLaserSimulData
 {
@@ -216,9 +214,9 @@ static void func_laserSimul_callback(
 	// Scan size:
 	y_scanRanges.resize(N);
 
-	double A = sensorPose.phi() +
-			   (fixed_param.params->rightToLeft ? -0.5 : +0.5) *
-				   fixed_param.params->aperture;
+	double A =
+		sensorPose.phi() + (fixed_param.params->rightToLeft ? -0.5 : +0.5) *
+							   fixed_param.params->aperture;
 	const double AA = (fixed_param.params->rightToLeft ? 1.0 : -1.0) *
 					  (fixed_param.params->aperture / (N - 1));
 
@@ -264,7 +262,7 @@ void COccupancyGridMap2D::laserScanSimulatorWithUncertainty(
 				nullptr,  // elem_do_wrap2pi,
 				in_params.UT_alpha, in_params.UT_kappa,
 				in_params.UT_beta  // alpha, K, beta
-				);
+			);
 			break;
 		case sumMonteCarlo:
 			//

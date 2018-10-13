@@ -167,6 +167,4 @@ class CMetricMapsAlignmentAlgorithm : public mrpt::system::COutputLogger
 		float* runningTime = nullptr, void* info = nullptr) = 0;
 };
 
-}
-
-
+}  // namespace mrpt::slam

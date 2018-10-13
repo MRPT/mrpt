@@ -1514,4 +1514,4 @@ void Packet::interpolate(const Packet& pa, const Packet& pb, const double f)
 }
 #endif
 
-}  // end of xsens namespace
+}  // namespace xsens

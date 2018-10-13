@@ -56,7 +56,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 
 /*! Default constructor, initializes all members to their default values.
-*/
+ */
 IoInterfaceFile::IoInterfaceFile()
 {
 	m_readPos = 0;
@@ -69,7 +69,7 @@ IoInterfaceFile::IoInterfaceFile()
 }
 
 /*! Destructor
-*/
+ */
 IoInterfaceFile::~IoInterfaceFile()
 {
 	try

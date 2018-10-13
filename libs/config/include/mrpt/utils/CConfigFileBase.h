@@ -4,4 +4,3 @@ namespace mrpt::utils
 {
 using CConfigFileBase = mrpt::config::CConfigFileBase;
 }
-

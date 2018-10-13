@@ -744,4 +744,3 @@ inline CConstMatrixColumnAccessorExtended<MAT> getColumnAccessor(
 
 }  // namespace math
 }  // namespace mrpt
-

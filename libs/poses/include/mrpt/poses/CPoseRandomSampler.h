@@ -71,43 +71,43 @@ class CPoseRandomSampler
 	CPoseRandomSampler& operator=(CPoseRandomSampler&& o);
 
 	/** This method must be called to select the PDF from which to draw samples.
-	  * \sa drawSample
-	  */
+	 * \sa drawSample
+	 */
 	void setPosePDF(const CPosePDF* pdf);
 
 	/** This method must be called to select the PDF from which to draw samples.
-	  * \sa drawSample
-	  */
+	 * \sa drawSample
+	 */
 	void setPosePDF(const CPosePDF::Ptr& pdf);
 
 	/** This method must be called to select the PDF from which to draw samples.
-	  * \sa drawSample
-	  */
+	 * \sa drawSample
+	 */
 	void setPosePDF(const CPosePDF& pdf) { setPosePDF(&pdf); }
 	/** This method must be called to select the PDF from which to draw samples.
-	  * \sa drawSample
-	  */
+	 * \sa drawSample
+	 */
 	void setPosePDF(const CPose3DPDF* pdf);
 
 	/** This method must be called to select the PDF from which to draw samples.
-	  * \sa drawSample
-	  */
+	 * \sa drawSample
+	 */
 	void setPosePDF(const CPose3DPDF::Ptr& pdf);
 
 	/** This method must be called to select the PDF from which to draw samples.
-	  * \sa drawSample
-	  */
+	 * \sa drawSample
+	 */
 	void setPosePDF(const CPose3DPDF& pdf) { setPosePDF(&pdf); }
 	/** Generate a new sample from the selected PDF.
-	  * \return A reference to the same object passed as argument.
-	  * \sa setPosePDF
-	  */
+	 * \return A reference to the same object passed as argument.
+	 * \sa setPosePDF
+	 */
 	CPose2D& drawSample(CPose2D& p) const;
 
 	/** Generate a new sample from the selected PDF.
-	  * \return A reference to the same object passed as argument.
-	  * \sa setPosePDF
-	  */
+	 * \return A reference to the same object passed as argument.
+	 * \sa setPosePDF
+	 */
 	CPose3D& drawSample(CPose3D& p) const;
 
 	/** Return true if samples can be generated, which only requires a previous
@@ -151,6 +151,4 @@ class CPoseRandomSampler
 	}
 
 };  // End of class def.
-}
-
-
+}  // namespace mrpt::poses

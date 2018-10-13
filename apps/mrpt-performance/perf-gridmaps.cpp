@@ -222,8 +222,10 @@ void register_tests_grids()
 	lstTests.emplace_back("gridmap2D: setCell", grid_test_2);
 	lstTests.emplace_back("gridmap2D: updateCell", grid_test_3);
 	lstTests.emplace_back("gridmap2D: updateCell_fast_occupied", grid_test_4);
-	lstTests.emplace_back("gridmap2D: insert scan w/o widening", grid_test_5_6, 0);
-	lstTests.emplace_back("gridmap2D: insert scan with widening", grid_test_5_6, 1);
+	lstTests.emplace_back(
+		"gridmap2D: insert scan w/o widening", grid_test_5_6, 0);
+	lstTests.emplace_back(
+		"gridmap2D: insert scan with widening", grid_test_5_6, 1);
 	lstTests.emplace_back("gridmap2D: resize", grid_test_7);
 	lstTests.emplace_back("gridmap2D: computeLikelihood", grid_test_8);
 	lstTests.emplace_back("gridmap2D: determineMatching2D", grid_test_9, 5000);

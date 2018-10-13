@@ -15,30 +15,30 @@ namespace mrpt::opengl
 {
 /** A 3D text (rendered with OpenGL primitives), with selectable font face and
  * drawing style.
-  *  Use \a setString and \a setFont to change the text displayed by this object
+ *  Use \a setString and \a setFont to change the text displayed by this object
  * (can be multi-lined).
-  *
-  *  Text is drawn along the (+X,+Y) axes.
-  *
-  *  Default size of characters is "1.0 units". Change it with the standard
+ *
+ *  Text is drawn along the (+X,+Y) axes.
+ *
+ *  Default size of characters is "1.0 units". Change it with the standard
  * method \a CRenderizable::setScale() as with any other 3D object.
-  *  The color can be also changed with standard methods in the base class \a
+ *  The color can be also changed with standard methods in the base class \a
  * CRenderizable.
-  *
-  *  \sa opengl::COpenGLScene, CText
-  *
-  *  <div align="center">
-  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
+ *
+ *  \sa opengl::COpenGLScene, CText
+ *
+ *  <div align="center">
+ *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
  * border-style: solid;">
-  *   <tr> <td> mrpt::opengl::CText3D </td> <td> \image html preview_CText3D.png
+ *   <tr> <td> mrpt::opengl::CText3D </td> <td> \image html preview_CText3D.png
  * </td> </tr>
-  *  </table>
-  *  </div>
-  *
-  * \note This class is based on code from libcvd (BSD,
+ *  </table>
+ *  </div>
+ *
+ * \note This class is based on code from libcvd (BSD,
  * http://www.edwardrosten.com/cvd/ )
-  * \ingroup mrpt_opengl_grp
-  */
+ * \ingroup mrpt_opengl_grp
+ */
 class CText3D : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CText3D)
@@ -107,6 +107,4 @@ class CText3D : public CRenderizableDisplayList
 	~CText3D() override;
 };
 
-}
-
-
+}  // namespace mrpt::opengl

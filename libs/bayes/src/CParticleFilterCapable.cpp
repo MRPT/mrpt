@@ -263,9 +263,8 @@ void CParticleFilterCapable::computeResampling(
 		}
 		break;
 		default:
-			THROW_EXCEPTION(
-				format(
-					"ERROR: Unknown resampling method selected: %i", method));
+			THROW_EXCEPTION(format(
+				"ERROR: Unknown resampling method selected: %i", method));
 	};
 
 	MRPT_END
@@ -440,11 +439,12 @@ void CParticleFilterCapable::prepareFastDrawSample(
 
 // Done!
 #if !defined(_MSC_VER) || (_MSC_VER > 1400)  // <=VC2005 doesn't work with this!
-		MRPT_END_WITH_CLEAN_UP( \
-			/* Debug: */ \
-			cout << "j=" << j << "\nm_fastDrawAuxiliary.CDF_indexes:" << m_fastDrawAuxiliary.CDF_indexes << endl; \
-			cout << "m_fastDrawAuxiliary.CDF:" << m_fastDrawAuxiliary.CDF << endl; \
-			);
+		MRPT_END_WITH_CLEAN_UP(/* Debug: */
+							   cout << "j=" << j
+									<< "\nm_fastDrawAuxiliary.CDF_indexes:"
+									<< m_fastDrawAuxiliary.CDF_indexes << endl;
+							   cout << "m_fastDrawAuxiliary.CDF:"
+									<< m_fastDrawAuxiliary.CDF << endl;);
 #else
 		MRPT_END
 #endif

@@ -64,15 +64,15 @@ void register_tests_graphslam()
 {
 	getRandomGenerator().randomize(1234);
 	lstTests.emplace_back(
-			"graphslam(2d): levmarq 50 KFs/101 edges",
-			graphslam_levmarq_solve<CNetworkOfPoses2D>, 50, 50);
+		"graphslam(2d): levmarq 50 KFs/101 edges",
+		graphslam_levmarq_solve<CNetworkOfPoses2D>, 50, 50);
 	lstTests.emplace_back(
-			"graphslam(2d): levmarq 100 KFs/451 edges",
-			graphslam_levmarq_solve<CNetworkOfPoses2D>, 100, 2);
+		"graphslam(2d): levmarq 100 KFs/451 edges",
+		graphslam_levmarq_solve<CNetworkOfPoses2D>, 100, 2);
 	lstTests.emplace_back(
-			"graphslam(3d): levmarq 50 KFs/101 edges",
-			graphslam_levmarq_solve<CNetworkOfPoses3D>, 50, 10);
+		"graphslam(3d): levmarq 50 KFs/101 edges",
+		graphslam_levmarq_solve<CNetworkOfPoses3D>, 50, 10);
 	lstTests.emplace_back(
-			"graphslam(3d): levmarq 100 KFs/451 edges",
-			graphslam_levmarq_solve<CNetworkOfPoses3D>, 100, 2);
+		"graphslam(3d): levmarq 100 KFs/451 edges",
+		graphslam_levmarq_solve<CNetworkOfPoses3D>, 100, 2);
 }

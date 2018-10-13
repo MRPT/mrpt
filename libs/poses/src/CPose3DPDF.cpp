@@ -59,8 +59,7 @@ CPose3DPDF* CPose3DPDF::createFrom2D(const CPosePDF& o)
 	else if (o.GetRuntimeClass() == CLASS_ID(CPosePDFGaussianInf))
 	{
 		auto* newObj = new CPose3DPDFGaussianInf();
-		const auto* obj =
-			static_cast<const CPosePDFGaussianInf*>(&o);
+		const auto* obj = static_cast<const CPosePDFGaussianInf*>(&o);
 
 		newObj->mean = CPose3D(obj->mean);
 		CMatrixDouble COVINV = CMatrixDouble(obj->cov_inv);
@@ -80,8 +79,7 @@ CPose3DPDF* CPose3DPDF::createFrom2D(const CPosePDF& o)
 	}
 	else if (o.GetRuntimeClass() == CLASS_ID(CPosePDFParticles))
 	{
-		const auto* obj =
-			static_cast<const CPosePDFParticles*>(&o);
+		const auto* obj = static_cast<const CPosePDFParticles*>(&o);
 		auto* newObj = new CPose3DPDFParticles(obj->size());
 
 		CPosePDFParticles::CParticleList::const_iterator it1;

@@ -15,12 +15,13 @@
 #define XS_RSSI_UNKNOWN (-XS_RSSI_MAX)
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-XSTYPES_DLL_API int XsRssi_max();
-XSTYPES_DLL_API int XsRssi_unknown();
-XSTYPES_DLL_API int XsRssi_unbiased(int raw);
+	XSTYPES_DLL_API int XsRssi_max();
+	XSTYPES_DLL_API int XsRssi_unknown();
+	XSTYPES_DLL_API int XsRssi_unbiased(int raw);
 
 #ifdef __cplusplus
 }  // extern "C"
@@ -32,7 +33,7 @@ static const int max = XS_RSSI_MAX;
 static const int unknown = XS_RSSI_UNKNOWN;
 /*! \copydoc XsRssi_unbiased */
 inline int unbiased(int raw) { return XsRssi_unbiased(raw); }
-}
+}  // namespace XsRssi
 #endif
 
 #endif  // file guard

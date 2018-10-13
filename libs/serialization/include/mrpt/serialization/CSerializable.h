@@ -125,12 +125,13 @@ void OctetVectorToObject(
 /** @} */
 /** This declaration must be inserted in all CSerializable classes definition,
  * within the class declaration. */
-#define DEFINE_SCHEMA_SERIALIZABLE()                                      \
-   protected:                                                             \
-	/*! @name CSerializable virtual methods for schema based archives*/   \
-	/*! @{ */                                                             \
-	void serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const override; \
-	void serializeFrom(mrpt::serialization::CSchemeArchiveBase& in) override;      \
+#define DEFINE_SCHEMA_SERIALIZABLE()                                          \
+   protected:                                                                 \
+	/*! @name CSerializable virtual methods for schema based archives*/       \
+	/*! @{ */                                                                 \
+	void serializeTo(mrpt::serialization::CSchemeArchiveBase& out)            \
+		const override;                                                       \
+	void serializeFrom(mrpt::serialization::CSchemeArchiveBase& in) override; \
 	/*! @} */
 
 /** For use inside all serializeTo(CSchemeArchiveBase) methods */

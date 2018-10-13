@@ -55,14 +55,14 @@ class CDifodoCamera : public mrpt::vision::CDifodo
 
 	/** A pre-step that should be performed before starting to estimate the
 	 * camera velocity.
-	  * It can also be called to reset the estimated trajectory and pose */
+	 * It can also be called to reset the estimated trajectory and pose */
 	void reset();
 
 	/** Save the pose estimation following the format of the TUM datasets:
-	  *
-	  * 'timestamp tx ty tz qx qy qz qw'
-	  *
-	  * Please visit
+	 *
+	 * 'timestamp tx ty tz qx qy qz qw'
+	 *
+	 * Please visit
 	 * http://vision.in.tum.de/data/datasets/rgbd-dataset/file_formats for
 	 * further details.*/
 	void writeTrajectoryFile();

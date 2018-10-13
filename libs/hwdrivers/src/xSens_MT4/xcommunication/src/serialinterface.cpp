@@ -290,8 +290,8 @@ XsResultValue SerialInterface::open(
 	if (isOpen())
 	{
 		JLALERT(
-			gJournal, "Port " << portInfo.portName().toStdString()
-							  << " is already open");
+			gJournal,
+			"Port " << portInfo.portName().toStdString() << " is already open");
 		return (m_lastResult = XRV_ALREADYOPEN);
 	}
 	m_baudrate = portInfo.baudrate();
@@ -470,7 +470,7 @@ XsResultValue SerialInterface::open(
 }
 
 /*! \brief Helper function for making filename of log file unique
-*/
+ */
 bool doesFileExist(char* filename)
 {
 	FILE* pf = fopen(filename, "r");
@@ -480,7 +480,7 @@ bool doesFileExist(char* filename)
 }
 
 /*! \brief Helper function for making filename of log file unique
-*/
+ */
 void makeFilenameUnique(char* filename)
 {
 	if (doesFileExist(filename))  // if a file already exist with the same name,

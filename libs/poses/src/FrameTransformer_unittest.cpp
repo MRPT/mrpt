@@ -30,10 +30,11 @@ void run_tf_test1(const mrpt::poses::CPose2D& A2B_)
 		const auto ret = tf.lookupTransform("B", "A", A2B_looked_up);
 		EXPECT_EQ(ret, mrpt::poses::LKUP_GOOD);
 		EXPECT_NEAR(
-			.0, (real_A2B.getAsVectorVal() - A2B_looked_up.getAsVectorVal())
-					.array()
-					.abs()
-					.sum(),
+			.0,
+			(real_A2B.getAsVectorVal() - A2B_looked_up.getAsVectorVal())
+				.array()
+				.abs()
+				.sum(),
 			1e-6);
 	}
 }

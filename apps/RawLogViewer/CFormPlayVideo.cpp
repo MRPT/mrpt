@@ -687,7 +687,7 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 	// displayedImgs.resize(3);
 
 	// unload current imgs:
-	for (auto & displayedImg : displayedImgs)
+	for (auto& displayedImg : displayedImgs)
 		if (displayedImg) displayedImg->unload();
 
 	CImage auxImgForSubSampling;
@@ -815,9 +815,9 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 			}
 
 			// save:
-			displayedImgs[thePanel == pnLeft ? 0
-											 : (thePanel == pnRight ? 1 : 2)] =
-				obsImg;
+			displayedImgs
+				[thePanel == pnLeft ? 0 : (thePanel == pnRight ? 1 : 2)] =
+					obsImg;
 
 			doDelay = true;
 
@@ -845,9 +845,8 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 
 				if (firstFit)
 				{
-					pnLeft->SetMinSize(
-						wxSize(
-							imgShow->getWidth() + 2, imgShow->getHeight() + 2));
+					pnLeft->SetMinSize(wxSize(
+						imgShow->getWidth() + 2, imgShow->getHeight() + 2));
 					// Fit();
 					// firstFit=false; // Done in the right pane below...
 				}
@@ -864,9 +863,8 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 					0, 0, wxIMG->GetWidth(), wxIMG->GetHeight(), &tmpDc, 0, 0);
 				delete wxIMG;
 
-				lbCam1->SetLabel(
-					_U(format("%s - left", obsImg2->sensorLabel.c_str())
-						   .c_str()));
+				lbCam1->SetLabel(_U(
+					format("%s - left", obsImg2->sensorLabel.c_str()).c_str()));
 
 				// save:
 				displayedImgs[0] = obsImg2;
@@ -888,9 +886,8 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 
 				if (firstFit)
 				{
-					pnRight->SetMinSize(
-						wxSize(
-							imgShow->getWidth() + 2, imgShow->getHeight() + 2));
+					pnRight->SetMinSize(wxSize(
+						imgShow->getWidth() + 2, imgShow->getHeight() + 2));
 					Fit();
 					firstFit = false;
 				}
@@ -931,9 +928,8 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 
 				if (firstFit)
 				{
-					pnRight->SetMinSize(
-						wxSize(
-							imgShow->getWidth() + 2, imgShow->getHeight() + 2));
+					pnRight->SetMinSize(wxSize(
+						imgShow->getWidth() + 2, imgShow->getHeight() + 2));
 					Fit();
 					firstFit = false;
 				}
@@ -983,9 +979,8 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 
 				if (firstFit)
 				{
-					pnLeft->SetMinSize(
-						wxSize(
-							imgShow->getWidth() + 2, imgShow->getHeight() + 2));
+					pnLeft->SetMinSize(wxSize(
+						imgShow->getWidth() + 2, imgShow->getHeight() + 2));
 					// Fit();
 					// firstFit=false; // Done in the right pane below...
 				}
@@ -1095,11 +1090,10 @@ void CFormPlayVideo::saveCamImage(int n)
 						.c_str());
 				break;
 			case 1:
-				defaultFilename =
-					_U(format(
-						   "%s_right_%i.jpg", o->sensorLabel.c_str(),
-						   m_idxInRawlog)
-						   .c_str());
+				defaultFilename = _U(format(
+										 "%s_right_%i.jpg",
+										 o->sensorLabel.c_str(), m_idxInRawlog)
+										 .c_str());
 				break;
 			case 2:
 				defaultFilename = _U(

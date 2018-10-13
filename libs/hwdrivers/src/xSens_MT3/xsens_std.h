@@ -28,7 +28,8 @@
 //! Xsens return values
 // NOTE!!! When adding a value to this list, also add its description in
 // xsens_std.cpp
-typedef enum /*! \cond NODOXYGEN */ _XsensResultValue_ /*! \endcond */ {
+typedef enum /*! \cond NODOXYGEN */ _XsensResultValue_ /*! \endcond */
+{
 	// general OK
 	/** Operation was performed successfully */
 	XRV_OK = 0

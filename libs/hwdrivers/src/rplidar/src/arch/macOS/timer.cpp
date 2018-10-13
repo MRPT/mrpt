@@ -48,6 +48,4 @@ _u32 rp_getms()
 	gettimeofday(&now, nullptr);
 	return now.tv_sec * 1000L + now.tv_usec / 1000L;
 }
-}
-
-
+}  // namespace rp::arch

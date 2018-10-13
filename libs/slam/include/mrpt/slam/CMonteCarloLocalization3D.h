@@ -37,8 +37,8 @@ class CMonteCarloLocalization3D
 	TMonteCarloLocalizationParams options;
 
 	/** Constructor
-	  * \param M The number of m_particles.
-	  */
+	 * \param M The number of m_particles.
+	 */
 	CMonteCarloLocalization3D(size_t M = 1);
 
 	/** Update the m_particles, predicting the posterior of robot pose and map
@@ -56,7 +56,8 @@ class CMonteCarloLocalization3D
 	void prediction_and_update_pfStandardProposal(
 		const mrpt::obs::CActionCollection* action,
 		const mrpt::obs::CSensoryFrame* observation,
-		const bayes::CParticleFilter::TParticleFilterOptions& PF_options) override;
+		const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
+		override;
 
 	/** Update the m_particles, predicting the posterior of robot pose and map
 	 * after a movement command.
@@ -73,7 +74,8 @@ class CMonteCarloLocalization3D
 	void prediction_and_update_pfAuxiliaryPFStandard(
 		const mrpt::obs::CActionCollection* action,
 		const mrpt::obs::CSensoryFrame* observation,
-		const bayes::CParticleFilter::TParticleFilterOptions& PF_options) override;
+		const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
+		override;
 
 	/** Update the m_particles, predicting the posterior of robot pose and map
 	 * after a movement command.
@@ -90,7 +92,8 @@ class CMonteCarloLocalization3D
 	void prediction_and_update_pfAuxiliaryPFOptimal(
 		const mrpt::obs::CActionCollection* action,
 		const mrpt::obs::CSensoryFrame* observation,
-		const bayes::CParticleFilter::TParticleFilterOptions& PF_options) override;
+		const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
+		override;
 
 	/** \name Virtual methods that the PF_implementations assume exist.
 		@{ */
@@ -121,6 +124,4 @@ class CMonteCarloLocalization3D
 
 };  // End of class def.
 
-}
-
-
+}  // namespace mrpt::slam

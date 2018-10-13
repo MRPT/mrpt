@@ -26,12 +26,12 @@ namespace mrpt::graphslam::detail
  */
 class CEdgeCounter
 {
-public:
+   public:
 	using iterator = std::map<std::string, int>::iterator;
 	using const_iterator = std::map<std::string, int>::const_iterator;
 
 	CEdgeCounter();
-	~CEdgeCounter()=default;
+	~CEdgeCounter() = default;
 	/**\brief Provide the instance with a CWindowManager.
 	 */
 	void setWindowManagerPtr(mrpt::graphslam::CWindowManager* win_manager);
@@ -133,9 +133,13 @@ public:
 
 	/**\brief Instance Iterators */
 	inline iterator begin() { return m_name_to_edges_num.begin(); }
-	inline const_iterator cbegin() const { return m_name_to_edges_num.cbegin(); }
+	inline const_iterator cbegin() const
+	{
+		return m_name_to_edges_num.cbegin();
+	}
 	inline iterator end() { return m_name_to_edges_num.end(); }
 	inline const_iterator cend() const { return m_name_to_edges_num.cend(); }
+
    private:
 	/**\brief Update the given CDisplayWindow3D with the edges registered so
 	 * far.
@@ -167,6 +171,4 @@ public:
 	int m_text_index_total_edges = 0;
 	int m_text_index_loop_closures = 0;
 };
-}
-
-
+}  // namespace mrpt::graphslam::detail

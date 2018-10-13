@@ -1537,8 +1537,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 	ipf.targets.clear();
 	bool use_this_ptg = true;
 	{
-		const auto* navpPTG =
-			dynamic_cast<const TNavigationParamsPTG*>(&navp);
+		const auto* navpPTG = dynamic_cast<const TNavigationParamsPTG*>(&navp);
 		if (navpPTG && !navpPTG->restrict_PTG_indices.empty())
 		{
 			use_this_ptg = false;
@@ -1881,8 +1880,7 @@ void CAbstractPTGBasedReactive::loadConfigFile(
 	// Filtering:
 	if (params_abstract_ptg_navigator.enable_obstacle_filtering)
 	{
-		auto* filter =
-			new mrpt::maps::CPointCloudFilterByDistance;
+		auto* filter = new mrpt::maps::CPointCloudFilterByDistance;
 		m_WS_filter = mrpt::maps::CPointCloudFilterBase::Ptr(filter);
 		filter->options.loadFromConfigFile(c, "CPointCloudFilterByDistance");
 	}

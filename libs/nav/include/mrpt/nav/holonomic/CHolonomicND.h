@@ -92,7 +92,8 @@ class CHolonomicND : public CAbstractHolonomicReactiveMethod
 	{
 		double TOO_CLOSE_OBSTACLE{0.15}, WIDE_GAP_SIZE_PERCENT{0.25},
 			RISK_EVALUATION_SECTORS_PERCENT{0.10};
-		double RISK_EVALUATION_DISTANCE{0.4}, MAX_SECTOR_DIST_FOR_D2_PERCENT{0.25};
+		double RISK_EVALUATION_DISTANCE{0.4},
+			MAX_SECTOR_DIST_FOR_D2_PERCENT{0.25};
 		double TARGET_SLOW_APPROACHING_DISTANCE{0.60};
 		/** Vector of 4 weights: [0]=Free space, [1]=Dist. in sectors,
 		 * [2]=Closer to target (Euclidean), [3]=Hysteresis */
@@ -175,7 +176,7 @@ class CLogFileRecord_ND : public CHolonomicLogFileRecord
 };
 
 /** @} */
-}
+}  // namespace mrpt::nav
 MRPT_ENUM_TYPE_BEGIN(mrpt::nav::CHolonomicND::TSituations)
 using namespace mrpt::nav;
 MRPT_FILL_ENUM_MEMBER(CHolonomicND, SITUATION_TARGET_DIRECTLY);
@@ -183,6 +184,3 @@ MRPT_FILL_ENUM_MEMBER(CHolonomicND, SITUATION_SMALL_GAP);
 MRPT_FILL_ENUM_MEMBER(CHolonomicND, SITUATION_WIDE_GAP);
 MRPT_FILL_ENUM_MEMBER(CHolonomicND, SITUATION_NO_WAY_FOUND);
 MRPT_ENUM_TYPE_END()
-
-
-

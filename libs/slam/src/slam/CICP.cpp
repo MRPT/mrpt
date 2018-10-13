@@ -779,8 +779,7 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 				CMatrixFloat H_(3, 3);
 				H_.multiply_AAt(dJ_dq);
 
-				auto H =
-					CMatrixFixedNumeric<float, 3, 3>(H_);
+				auto H = CMatrixFixedNumeric<float, 3, 3>(H_);
 
 				bool keepIteratingLM = true;
 

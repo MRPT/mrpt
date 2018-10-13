@@ -51,5 +51,4 @@ class CVehicleVelCmd_DiffDriven : public CVehicleVelCmd
 	double filter_max_vw(double& v, double& w, const TVelCmdParams& p);
 };
 
-}
-
+}  // namespace mrpt::kinematics

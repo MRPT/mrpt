@@ -213,6 +213,4 @@ class p3p
 };
 
 /** @}  */  // end of grouping
-}
-
-
+}  // namespace mrpt::vision::pnp

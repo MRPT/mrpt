@@ -48,14 +48,14 @@ class CMatrixTemplateObjects : public CMatrixTemplate<T*>
 
    public:
 	/** Copy constructor
-	*/
+	 */
 	CMatrixTemplateObjects(const CMatrixTemplate<T>& m)
 		: CMatrixTemplate<T*>(m), m_freeObjects(true)
 	{
 	}
 
 	/** Constructor
-	*/
+	 */
 	CMatrixTemplateObjects(size_t row = 3, size_t col = 3)
 		: CMatrixTemplate<T*>(row, col), m_freeObjects(true)
 	{
@@ -65,7 +65,7 @@ class CMatrixTemplateObjects : public CMatrixTemplate<T*>
 	}
 
 	/** Changes the size of matrix
-	*/
+	 */
 	virtual void setSize(size_t row, size_t col)
 	{
 		// TODO: BUGFIX. Doesn't remove objetcs if row<m_Row or col<m_Col
@@ -73,14 +73,14 @@ class CMatrixTemplateObjects : public CMatrixTemplate<T*>
 	}
 
 	/** Destructor
-	  */
+	 */
 	virtual ~CMatrixTemplateObjects()
 	{
 		if (m_freeObjects) freeAllObjects();
 	}
 
 	/** Delete all the objects in the matrix and set all entries to nullptr.
-	  */
+	 */
 	void freeAllObjects()
 	{
 		for (size_t i = 0; i < CMatrixTemplate<T*>::rows(); i++)
@@ -93,7 +93,7 @@ class CMatrixTemplateObjects : public CMatrixTemplate<T*>
 	}
 
 	/** Assignment operator
-	*/
+	 */
 	CMatrixTemplateObjects& operator=(const CMatrixTemplateObjects& m)
 	{
 		CMatrixTemplate<T*>::realloc(m.rows(), m.cols());
@@ -105,16 +105,16 @@ class CMatrixTemplateObjects : public CMatrixTemplate<T*>
 	}
 
 	/** Sets the behavior on matrix destroy.
-	  * See the general description of the class on the top.
-	  */
+	 * See the general description of the class on the top.
+	 */
 	void setDestroyBehavior(bool freeObjects = true)
 	{
 		m_freeObjects = freeObjects;
 	}
 
 	/** Alloc memory for all the non-NULL entries in the matrix.
-	  * See the general description of the class on the top.
-	  */
+	 * See the general description of the class on the top.
+	 */
 	void allocAllObjects()
 	{
 		for (size_t i = 0; i < CMatrixTemplate<T*>::rows(); i++)
@@ -125,6 +125,4 @@ class CMatrixTemplateObjects : public CMatrixTemplate<T*>
 
 };  // end of class definition
 
-}
-
-
+}  // namespace mrpt::math

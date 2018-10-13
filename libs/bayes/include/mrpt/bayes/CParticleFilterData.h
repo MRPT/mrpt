@@ -64,16 +64,14 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
 		double maxW = minW;
 
 		/* Compute the max/min of weights: */
-		for (auto it =
-				 derived().m_particles.begin();
+		for (auto it = derived().m_particles.begin();
 			 it != derived().m_particles.end(); ++it)
 		{
 			maxW = std::max<double>(maxW, it->log_w);
 			minW = std::min<double>(minW, it->log_w);
 		}
 		/* Normalize: */
-		for (auto it =
-				 derived().m_particles.begin();
+		for (auto it = derived().m_particles.begin();
 			 it != derived().m_particles.end(); ++it)
 			it->log_w -= maxW;
 		if (out_max_log_w) *out_max_log_w = maxW;
@@ -90,13 +88,11 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
 
 		/* Sum of weights: */
 		double sumLinearWeights = 0;
-		for (auto it =
-				 derived().m_particles.begin();
+		for (auto it = derived().m_particles.begin();
 			 it != derived().m_particles.end(); ++it)
 			sumLinearWeights += std::exp(it->log_w);
 		/* Compute ESS: */
-		for (auto it =
-				 derived().m_particles.begin();
+		for (auto it = derived().m_particles.begin();
 			 it != derived().m_particles.end(); ++it)
 			cum += mrpt::square(std::exp(it->log_w) / sumLinearWeights);
 
@@ -122,7 +118,8 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
 		parts.resize(sorted_indx.size());
 
 		// Implementation for particles as pointers:
-		if constexpr(Derived::PARTICLE_STORAGE == particle_storage_mode::POINTER)
+		if constexpr (
+			Derived::PARTICLE_STORAGE == particle_storage_mode::POINTER)
 		{
 			const size_t M_old = derived().m_particles.size();
 			std::vector<bool> oldParticlesReused(M_old, false);
@@ -131,24 +128,26 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
 			size_t i, lastIndxOld = 0;
 
 			for (i = 0, itDest = parts.begin(); itDest != parts.end();
-				i++, itDest++)
+				 i++, itDest++)
 			{
 				const size_t sorted_idx = sorted_indx[i];
 				itDest->log_w = derived().m_particles[sorted_idx].log_w;
-				/* We can safely delete old m_particles from [lastIndxOld,indx[i]-1]
-				 * (inclusive): */
+				/* We can safely delete old m_particles from
+				 * [lastIndxOld,indx[i]-1] (inclusive): */
 				for (size_t j = lastIndxOld; j < sorted_idx; j++)
 				{
-					if (!oldParticlesReused
-						[j]) /* If reused we can not delete that memory! */
+					if (!oldParticlesReused[j]) /* If reused we can not delete
+												   that memory! */
 						derived().m_particles[j].d.reset();
 				}
 
 				/* For the next iteration:*/
 				lastIndxOld = sorted_idx;
 
-				/* If this is the first time that the old particle "indx[i]" appears, */
-				 /*  we can reuse the old "data" instead of creating a new copy: */
+				/* If this is the first time that the old particle "indx[i]"
+				 * appears, */
+				/*  we can reuse the old "data" instead of creating a new copy:
+				 */
 				if (!oldParticlesReused[sorted_idx])
 				{
 					/* Reuse the data from the particle: */
@@ -159,15 +158,14 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
 				{
 					/* Make a copy of the particle's data: */
 					ASSERT_(derived().m_particles[sorted_idx].d);
-					parts[i].d.reset(
-						new typename Derived::CParticleDataContent(
-							*derived().m_particles[sorted_idx].d));
+					parts[i].d.reset(new typename Derived::CParticleDataContent(
+						*derived().m_particles[sorted_idx].d));
 				}
 			}
 			/* Free memory of unused particles */
 			for (itSrc = derived().m_particles.begin(),
 				oldPartIt = oldParticlesReused.begin();
-				itSrc != derived().m_particles.end(); itSrc++, oldPartIt++)
+				 itSrc != derived().m_particles.end(); itSrc++, oldPartIt++)
 				if (!*oldPartIt) itSrc->d.reset();
 		}
 		else
@@ -234,9 +232,10 @@ class CParticleFilterData
 		for (it = m_particles.begin(); it != m_particles.end(); ++it)
 		{
 			out << it->log_w;
-			if constexpr(STORAGE == particle_storage_mode::POINTER)
+			if constexpr (STORAGE == particle_storage_mode::POINTER)
 				out << (*it->d);
-			else out << it->d;
+			else
+				out << it->d;
 		}
 		MRPT_END
 	}
@@ -257,7 +256,7 @@ class CParticleFilterData
 		for (it = m_particles.begin(); it != m_particles.end(); ++it)
 		{
 			in >> it->log_w;
-			if constexpr(STORAGE == particle_storage_mode::POINTER)
+			if constexpr (STORAGE == particle_storage_mode::POINTER)
 			{
 				it->d.reset(new T());
 				in >> *it->d;
@@ -301,5 +300,4 @@ class CParticleFilterData
 
 };  // End of class def.
 
-}
-
+}  // namespace mrpt::bayes

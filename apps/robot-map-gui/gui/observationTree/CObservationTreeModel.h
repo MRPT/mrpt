@@ -22,7 +22,7 @@ namespace maps
 {
 class CSimpleMap;
 }
-}
+}  // namespace mrpt
 
 /** This class is a model for a tree view*/
 

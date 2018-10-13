@@ -301,6 +301,4 @@ class CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
 	void setMenuCallback(TCallbackMenu userFunction, void* userParam = nullptr);
 
 };  // End of class def.
-}
-
-
+}  // namespace mrpt::gui

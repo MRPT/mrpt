@@ -1163,7 +1163,7 @@ void hmtMapViewerFrame::OnTopologicalModel_Gridmap(wxCommandEvent& event)
 	CPose3DPDFSOG::Ptr pdfSOG = std::dynamic_pointer_cast<CPose3DPDFSOG>(pdf);
 
 	cout << "The relative estimated pose is: " << endl;
-	for (auto & i : *pdfSOG)
+	for (auto& i : *pdfSOG)
 	{
 		cout << " Mode: " << i.val.mean << endl;
 	}

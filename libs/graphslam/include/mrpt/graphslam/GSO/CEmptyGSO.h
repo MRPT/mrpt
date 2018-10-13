@@ -28,18 +28,22 @@ class CEmptyGSO
    public:
 	using constraint_t = typename GRAPH_T::constraint_t;
 
-	CEmptyGSO()=default;
-	~CEmptyGSO()=default;
+	CEmptyGSO() = default;
+	~CEmptyGSO() = default;
 
 	bool updateState(
 		mrpt::obs::CActionCollection::Ptr action,
 		mrpt::obs::CSensoryFrame::Ptr observations,
-		mrpt::obs::CObservation::Ptr observation) { return true; }
+		mrpt::obs::CObservation::Ptr observation)
+	{
+		return true;
+	}
 
    private:
 	void registerNewEdge(
 		const mrpt::graphs::TNodeID& from, const mrpt::graphs::TNodeID& to,
-		const constraint_t& rel_edge) {  }
+		const constraint_t& rel_edge)
+	{
+	}
 };
-}  // end of namespaces
-
+}  // namespace mrpt::graphslam::optimizers

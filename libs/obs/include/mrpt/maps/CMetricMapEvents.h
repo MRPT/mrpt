@@ -22,14 +22,15 @@ namespace maps
 class CMetricMap;
 
 /** Event emitted by a metric up upon call of clear()
-  * \sa CMetricMap
-  * \ingroup mrpt_obs_grp
-  */
+ * \sa CMetricMap
+ * \ingroup mrpt_obs_grp
+ */
 class mrptEventMetricMapClear : public mrpt::system::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */
 	void do_nothing() override {}
+
    public:
 	inline mrptEventMetricMapClear(const mrpt::maps::CMetricMap* smap)
 		: source_map(smap)
@@ -40,14 +41,15 @@ class mrptEventMetricMapClear : public mrpt::system::mrptEvent
 };
 
 /** Event emitted by a metric up upon a succesful call to insertObservation()
-  * \sa CMetricMap
-  * \ingroup mrpt_obs_grp
-  */
+ * \sa CMetricMap
+ * \ingroup mrpt_obs_grp
+ */
 class mrptEventMetricMapInsert : public mrpt::system::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */
 	void do_nothing() override {}
+
    public:
 	inline mrptEventMetricMapInsert(
 		const mrpt::maps::CMetricMap* smap, const mrpt::obs::CObservation* obs,
@@ -61,6 +63,5 @@ class mrptEventMetricMapInsert : public mrpt::system::mrptEvent
 	const mrpt::poses::CPose3D* inserted_robotPose;
 };
 
-}  // End of namespace
-}  // End of namespace
-
+}  // namespace maps
+}  // namespace mrpt

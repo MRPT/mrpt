@@ -29,7 +29,7 @@ class CPosePDFGrid : public CPosePDF, public CPose2DGridTemplate<double>
    public:
 	/** Constructor: Initializes a, uniform distribution over the whole given
 	 * range.
-	  */
+	 */
 	CPosePDFGrid(
 		double xMin = -1.0f, double xMax = 1.0f, double yMin = -1.0f,
 		double yMax = 1.0f, double resolutionXY = 0.5f,
@@ -62,7 +62,7 @@ class CPosePDFGrid : public CPosePDF, public CPose2DGridTemplate<double>
 
 	/** this = p (+) this. This can be used to convert a PDF from local
 	 * coordinates to global, providing the point (newReferenceBase) from which
-	  *   "to project" the current pdf. Result PDF substituted the currently
+	 *   "to project" the current pdf. Result PDF substituted the currently
 	 * stored one in the object. */
 	void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
 	/** Bayesian fusion of 2 densities (In the grid representation this becomes
@@ -82,6 +82,4 @@ class CPosePDFGrid : public CPosePDF, public CPose2DGridTemplate<double>
 		std::vector<mrpt::math::CVectorDouble>& outSamples) const override;
 
 };  // End of class def.
-}
-
-
+}  // namespace mrpt::poses

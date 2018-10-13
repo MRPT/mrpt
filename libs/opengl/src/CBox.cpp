@@ -26,7 +26,7 @@ IMPLEMENTS_SERIALIZABLE(CBox, CRenderizableDisplayList, mrpt::opengl)
 CBox::CBox()
 	: m_corner_min(-1, -1, -1),
 	  m_corner_max(1, 1, 1),
-	  
+
 	  m_solidborder_color(0, 0, 0)
 {
 }

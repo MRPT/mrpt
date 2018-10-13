@@ -27,18 +27,22 @@ class CEmptyERD
    public:
 	using constraint_t = typename GRAPH_T::constraint_t;
 
-	CEmptyERD()=default;
-	~CEmptyERD() override =default;
+	CEmptyERD() = default;
+	~CEmptyERD() override = default;
 
 	bool updateState(
 		mrpt::obs::CActionCollection::Ptr action,
 		mrpt::obs::CSensoryFrame::Ptr observations,
-		mrpt::obs::CObservation::Ptr observation) override { return true; }
+		mrpt::obs::CObservation::Ptr observation) override
+	{
+		return true;
+	}
 
    private:
 	void registerNewEdge(
 		const mrpt::graphs::TNodeID& from, const mrpt::graphs::TNodeID& to,
-		const constraint_t& rel_edge) override { }
+		const constraint_t& rel_edge) override
+	{
+	}
 };
-}  // end of namespaces
-
+}  // namespace mrpt::graphslam::deciders

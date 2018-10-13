@@ -21,17 +21,17 @@
 
 /** This auxiliary class redirects the output sent to a streambuf to a
  * wxTextCtrl object.
-  *  Uses code from http://www.devmaster.net/forums/showthread.php?t=7037
-  *  Jose Luis Blanco - Dec 2007
-  *  NOTE (10-Aug-2009): Added thread-safe support:
-  *    We cannot write in a wxTextCtrl from a thread different than the main wx
+ *  Uses code from http://www.devmaster.net/forums/showthread.php?t=7037
+ *  Jose Luis Blanco - Dec 2007
+ *  NOTE (10-Aug-2009): Added thread-safe support:
+ *    We cannot write in a wxTextCtrl from a thread different than the main wx
  * one,
-  *    so if this object will be used by several threads, set "m_threadSafe" to
+ *    so if this object will be used by several threads, set "m_threadSafe" to
  * true.
-  *    In this mode, the object will NEVER write the text to the text control,
+ *    In this mode, the object will NEVER write the text to the text control,
  * unless
-  *    the method "dumpNow()" is explicitly called FROM THE MAIN THREAD.
-  */
+ *    the method "dumpNow()" is explicitly called FROM THE MAIN THREAD.
+ */
 class CMyRedirector : public std::streambuf
 {
    protected:
@@ -171,4 +171,3 @@ class CMyRedirector : public std::streambuf
 		return 0;
 	}
 };
-

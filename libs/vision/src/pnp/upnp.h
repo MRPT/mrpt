@@ -356,7 +356,5 @@ class upnp
 };
 
 /** @}  */  // end of grouping
-}
+}  // namespace mrpt::vision::pnp
 #endif  // Check for OPENCV_LIB
-
-

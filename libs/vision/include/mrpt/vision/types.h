@@ -191,8 +191,8 @@ struct TSequenceFeatureObservations : public std::vector<TFeatureObservation>
 	inline TSequenceFeatureObservations() = default;
 	inline TSequenceFeatureObservations(size_t size) : BASE(size) {}
 	inline TSequenceFeatureObservations(const TSequenceFeatureObservations& o)
-		 
-	= default;
+
+		= default;
 
 	/** Saves all entries to a text file, with each line having this format:
 	 * #FRAME_ID  #FEAT_ID  #PIXEL_X  #PIXEL_Y

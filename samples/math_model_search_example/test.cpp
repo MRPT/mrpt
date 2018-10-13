@@ -135,9 +135,8 @@ void TestRANSAC()
 	opengl::COpenGLScene::Ptr scene =
 		mrpt::make_aligned_shared<opengl::COpenGLScene>();
 
-	scene->insert(
-		mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
-			-20, 20, -20, 20, 0, 1));
+	scene->insert(mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
+		-20, 20, -20, 20, 0, 1));
 	scene->insert(opengl::stock_objects::CornerXYZ());
 
 	opengl::CPointCloud::Ptr points =

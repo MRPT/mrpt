@@ -52,7 +52,7 @@ class PIThreadParam
 		: polys(&p), intersection()
 	{
 	}
-	PIThreadParam() :  intersection() {}
+	PIThreadParam() : intersection() {}
 	inline static PIThreadParam createObject(
 		const pair<CPolyhedron::Ptr, CPolyhedron::Ptr>& p)
 	{

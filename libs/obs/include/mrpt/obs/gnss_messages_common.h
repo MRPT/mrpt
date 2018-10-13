@@ -71,6 +71,7 @@ struct gnss_message
 	/** Returns "NMEA_GGA", etc. */
 	const std::string& getMessageTypeAsString() const;
 	virtual ~gnss_message() = default;
+
    protected:
 	/** Save to binary stream. Launches an exception upon error */
 	virtual void internal_writeToStream(

@@ -48,8 +48,7 @@ class CIncrementalNodeRegistrationDecider
 	: public virtual mrpt::graphslam::deciders::CNodeRegistrationDecider<
 		  GRAPH_T>
 {
-
-public:
+   public:
 	using constraint_t = typename GRAPH_T::constraint_t;
 	using pose_t = typename GRAPH_T::constraint_t::type_value;
 	using global_pose_t = typename GRAPH_T::global_pose_t;
@@ -57,8 +56,8 @@ public:
 	using parent_t =
 		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>;
 
-	CIncrementalNodeRegistrationDecider()=default;
-	virtual ~CIncrementalNodeRegistrationDecider()=default;
+	CIncrementalNodeRegistrationDecider() = default;
+	virtual ~CIncrementalNodeRegistrationDecider() = default;
 
 	/**\name Registration Conditions Specifiers
 	 */
@@ -85,9 +84,9 @@ public:
 	 */
 	struct TParams : public mrpt::config::CLoadableOptions
 	{
-	public:
-		TParams()=default;
-		~TParams()=default;
+	   public:
+		TParams() = default;
+		~TParams() = default;
 
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
@@ -107,6 +106,5 @@ public:
 
    private:
 };
-}
+}  // namespace mrpt::graphslam::deciders
 #include "CIncrementalNodeRegistrationDecider_impl.h"
-

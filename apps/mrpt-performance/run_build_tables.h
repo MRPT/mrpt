@@ -47,7 +47,7 @@ int run_build_tables()
 	// make list of "perf-results-<SUFIX>" -> "whole path file"
 	vector<TPerfField> lstConfigurations;
 
-	for (auto & fil : fils)
+	for (auto& fil : fils)
 	{
 		if (!strStarts(fil.name, "perf-results")) continue;
 		size_t p = fil.name.find(".dat");
@@ -110,9 +110,9 @@ int run_build_tables()
 		"<a href=\"#matrix\">comparison tables matrix</a>):<br>\n"
 		"<ul>\n");
 
-	for (const auto & P : lstConfigurations)
+	for (const auto& P : lstConfigurations)
 	{
-			fo.printf(
+		fo.printf(
 			"<li>"
 			"<a href=\"results_%s.html\">%s</a>"
 			"</li>\n",
@@ -159,9 +159,9 @@ int run_build_tables()
 	// and the last row:
 	fo.printf(" <tr>\n");
 	fo.printf("  <td></td>\n");
-	for (const auto & P1 : lstConfigurations)
+	for (const auto& P1 : lstConfigurations)
 	{
-			// class=\"my_rotated\"
+		// class=\"my_rotated\"
 		fo.printf(
 			"<td align=\"center\" width=\"20em\"><b><div >%s</div></b></td>",
 			P1.config_name.c_str());
@@ -180,9 +180,9 @@ int run_build_tables()
 	// ====================================================
 	//        results_<cfg>.html
 	// ====================================================
-	for (const auto & P : lstConfigurations)
+	for (const auto& P : lstConfigurations)
 	{
-			const string out_fil =
+		const string out_fil =
 			PERF_DATA_DIR +
 			format("/perf-html/results_%s.html", P.config_name.c_str());
 		cout << "Generating: " << out_fil << "...\n";
@@ -205,14 +205,13 @@ int run_build_tables()
 			"<td align=\"center\"><b>Execution time</b></td>"
 			"<td align=\"center\"><b>Execution rate (Hz)</b></td> </tr>\n");
 
-		for (const auto & j : P.all_perf_data)  // vector<pair<string,double> >
+		for (const auto& j : P.all_perf_data)  // vector<pair<string,double> >
 		{
 			const double t = j.second;
 			fo.printf(
 				"<tr> <td>%s</td> <td align=\"right\">%s</td> <td "
 				"align=\"right\">%sHz</td>  </tr>\n",
-				j.first.c_str(),
-				mrpt::system::intervalFormat(t).c_str(),
+				j.first.c_str(), mrpt::system::intervalFormat(t).c_str(),
 				mrpt::system::unitsFormat(1.0 / t).c_str());
 		}
 
@@ -252,8 +251,7 @@ int run_build_tables()
 
 			// Convert P2 data into a std::map<> for search efficiency:
 			map<string, double> P2_dat;
-			for (auto & k : P2.all_perf_data)
-				P2_dat[k.first] = k.second;
+			for (auto& k : P2.all_perf_data) P2_dat[k.first] = k.second;
 
 			CFileOutputStream fo(out_fil);
 
@@ -281,7 +279,7 @@ int run_build_tables()
 				"(Hz)</b></td> </tr>\n",
 				P1.config_name.c_str(), P2.config_name.c_str());
 
-			for (auto & k : P1.all_perf_data)  // vector<pair<string,double> >
+			for (auto& k : P1.all_perf_data)  // vector<pair<string,double> >
 			{
 				const double t1 = k.second;
 				const string test_name = k.first;

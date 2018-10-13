@@ -28,9 +28,8 @@ using namespace std;
 using namespace mrpt::obs;
 
 VelodyneCalibration::PerLaserCalib::PerLaserCalib()
-	
-	  
-= default;
+
+	= default;
 
 VelodyneCalibration::VelodyneCalibration() : laser_corrections(0) {}
 bool VelodyneCalibration::internal_loadFromXMLNode(void* node_ptr)
@@ -221,8 +220,7 @@ const VelodyneCalibration& VelodyneCalibration::LoadDefaultCalibration(
 	const std::string& lidar_model)
 {
 	// Cached calib data?
-	auto it =
-		cache_default_calibs.find(lidar_model);
+	auto it = cache_default_calibs.find(lidar_model);
 	if (it != cache_default_calibs.end()) return it->second;
 
 	VelodyneCalibration result;  // Leave empty to indicate unknown model

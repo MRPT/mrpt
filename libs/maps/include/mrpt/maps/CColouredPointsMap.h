@@ -207,8 +207,7 @@ class CColouredPointsMap : public CPointsMap
 	/** Override of the default 3D scene builder to account for the individual
 	 * points' color.
 	 */
-	void getAs3DObject(
-		mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
+	void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
 
 	/** Colour a set of points from a CObservationImage and the global pose of
 	 * the robot */
@@ -383,9 +382,7 @@ class PointCloudAdapter<mrpt::maps::CColouredPointsMap>
 	/** Set number of points (to uninitialized values) */
 	inline void resize(const size_t N) { m_obj.resize(N); }
 	/** Does nothing as of now */
-	inline void setDimensions(const size_t &height, const size_t &width)
-	{
-	}
+	inline void setDimensions(const size_t& height, const size_t& width) {}
 	/** Get XYZ coordinates of i'th point */
 	template <typename T>
 	inline void getPointXYZ(const size_t idx, T& x, T& y, T& z) const

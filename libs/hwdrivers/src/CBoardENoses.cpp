@@ -29,8 +29,7 @@ IMPLEMENTS_GENERIC_SENSOR(CBoardENoses, mrpt::hwdrivers)
 /*-------------------------------------------------------------
 					CBoardENoses
 -------------------------------------------------------------*/
-CBoardENoses::CBoardENoses()
-	: m_usbSerialNumber("ENOSE001"), m_COM_port() 
+CBoardENoses::CBoardENoses() : m_usbSerialNumber("ENOSE001"), m_COM_port()
 {
 	m_sensorLabel = "ENOSE";
 	first_reading = true;
@@ -332,7 +331,7 @@ bool CBoardENoses::getObservation(mrpt::obs::CObservationGasSensors& obs)
 			correct = false;
 		else
 		{
-			for (auto & m_reading : obs.m_readings)
+			for (auto& m_reading : obs.m_readings)
 			{
 				if ((m_reading.sensorTypes.size() != 7) ||
 					(m_reading.readingsVoltage.size() != 7))

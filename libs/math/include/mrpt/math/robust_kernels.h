@@ -75,5 +75,4 @@ struct RobustKernel<rkPseudoHuber, T>
 };
 
 /** @} */  // end of grouping
-}
-
+}  // namespace mrpt::math

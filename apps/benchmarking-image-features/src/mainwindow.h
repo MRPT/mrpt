@@ -409,7 +409,7 @@ class MainWindow : public QMainWindow
 
 	// DESCRIPTOR OPTIONS
 	/** SpinImagesOptions Options
-					*/
+	 */
 	struct SpinImageOptions
 	{
 		int radius;  //!< default value = 20
@@ -420,7 +420,7 @@ class MainWindow : public QMainWindow
 	} spin_opts;
 
 	/** PolarImagesOptions Options
-				  */
+	 */
 	struct PolarImageOptions
 	{
 		int radius;  //!< default value = 20
@@ -429,7 +429,7 @@ class MainWindow : public QMainWindow
 	} polar_opts;
 
 	/** LogPolarImagesOptions Options
-				  */
+	 */
 	struct LogPolarOptions
 	{
 		int radius;  //!< default value = 30
@@ -439,7 +439,7 @@ class MainWindow : public QMainWindow
 	} log_polar_opts;
 
 	/** BLDOptions Options
-				  */
+	 */
 	struct BLDOptions
 	{
 		int ksize_;  //!< default value = 1
@@ -449,7 +449,7 @@ class MainWindow : public QMainWindow
 	} BLD_opts;
 
 	/** LATCHOptions Options
-				  */
+	 */
 	struct LATCHOptions
 	{
 		int bytes;  //!< default value = 32
@@ -584,17 +584,17 @@ class MainWindow : public QMainWindow
 	void fillDescriptorInfo();
 
 	/**
-	  * readFilesFromFolder(int) reads the files from a folder, the function is
+	 * readFilesFromFolder(int) reads the files from a folder, the function is
 	 * called when the user presses the next or previous button
-	  * it iterates over the images present in the image dataset folder
+	 * it iterates over the images present in the image dataset folder
 	 * specified by the user
-	  * the function works under the assumption both the stereo image datasets
+	 * the function works under the assumption both the stereo image datasets
 	 * have the same number of images
-	  * the function also supports rawlog images datasets, has implementations
+	 * the function also supports rawlog images datasets, has implementations
 	 * for both single and stereo datasets
-	  * @param next_prev indicates 1 for next image and 0 for previous button
+	 * @param next_prev indicates 1 for next image and 0 for previous button
 	 * being pressed
-	  */
+	 */
 	void readFilesFromFolder(int next_prev);
 
 	/**
@@ -724,32 +724,32 @@ class MainWindow : public QMainWindow
 	void makeTrackerParamVisible(bool flag);
 
 	/**
-	  * makeVisualOdomParamsVisible this function makes all the widgets
+	 * makeVisualOdomParamsVisible this function makes all the widgets
 	 * (parameters) associated with the visual odometry visible/hidden
-	  * @param flag stores if the variables need to hidden/visible
-	  */
+	 * @param flag stores if the variables need to hidden/visible
+	 */
 	void makeVisualOdomParamsVisible(bool flag);
 
 	/**
-	  * makeGraphsVisible this function makes all the widgets (parameters)
+	 * makeGraphsVisible this function makes all the widgets (parameters)
 	 * associated with the visualiztion of descriptor visible/hidden
-	  * @param flag stores if the variables need to hidden/visible
-	  */
+	 * @param flag stores if the variables need to hidden/visible
+	 */
 	void makeGraphsVisible(bool flag);
 
 	/**
-	  * makeVisionOptionsVisible this function makes all the widgets (check
+	 * makeVisionOptionsVisible this function makes all the widgets (check
 	 * boxes for VO, tracking and homography) Vision tasks visible/hidden
-	  * @param flag stores if the variables need to hidden/visible
-	  */
+	 * @param flag stores if the variables need to hidden/visible
+	 */
 	void makeVisionOptionsVisible(bool flag);
 
 	/**
-	  * makeHomographyParamsVisible this function makes all the widgets
+	 * makeHomographyParamsVisible this function makes all the widgets
 	 * (parameters) associated with the homography based repeatability
 	 * visible/hidden
-	  * @param flag stores if the variables need to hidden/visible
-	  */
+	 * @param flag stores if the variables need to hidden/visible
+	 */
 	void makeHomographyParamsVisible(bool flag);
 
 	/**

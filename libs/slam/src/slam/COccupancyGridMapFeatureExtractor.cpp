@@ -45,7 +45,7 @@ void COccupancyGridMapFeatureExtractor::uncached_extractFeatures(
 		fExt.computeDescriptors(img, lstFeatures, descriptors);
 
 	// Copy all the features to a map of landmarks:
-	for (auto & lstFeature : lstFeatures)
+	for (auto& lstFeature : lstFeatures)
 	{
 		CLandmark lm;
 		lm.ID = lstFeature->ID;

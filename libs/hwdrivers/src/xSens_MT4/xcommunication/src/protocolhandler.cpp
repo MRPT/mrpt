@@ -135,8 +135,8 @@ MessageLocation ProtocolHandler::findMessage(
 			{
 				// not enough data read, skip current preamble
 				JLTRACE(
-					gJournal, "Not enough data read: " << remaining << " / "
-													   << target);
+					gJournal,
+					"Not enough data read: " << remaining << " / " << target);
 				if (rv.m_size == 0) rv.m_size = -target;
 				continue;
 			}

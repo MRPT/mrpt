@@ -88,11 +88,10 @@ int main(int argc, char** argv)
 				format("Input file doesn't exist: '%s'", input_log.c_str()));
 
 		if (mrpt::system::fileExists(output_file) && !overwrite)
-			throw runtime_error(
-				format(
-					"Output file already exist: '%s' (Use --overwrite to "
-					"override)",
-					output_file.c_str()));
+			throw runtime_error(format(
+				"Output file already exist: '%s' (Use --overwrite to "
+				"override)",
+				output_file.c_str()));
 
 		VERBOSE_COUT << "Input log        : " << input_log << endl;
 		VERBOSE_COUT << "Output map file  : " << output_file
@@ -144,7 +143,7 @@ int main(int argc, char** argv)
 				CSensoryFrame::Ptr SF =
 					mrpt::make_aligned_shared<CSensoryFrame>();
 
-				for (const auto & importedObservation : importedObservations)
+				for (const auto& importedObservation : importedObservations)
 				{
 					if (!IS_CLASS(
 							importedObservation,
@@ -187,9 +186,8 @@ int main(int argc, char** argv)
 		{
 			mrpt::io::CFileGZOutputStream out_map;
 			if (!out_map.open(output_file, compress_level))
-				throw runtime_error(
-					format(
-						"Error opening for write: '%s'", output_file.c_str()));
+				throw runtime_error(format(
+					"Error opening for write: '%s'", output_file.c_str()));
 
 			cout << "Dumping simplemap object to file...";
 			cout.flush();

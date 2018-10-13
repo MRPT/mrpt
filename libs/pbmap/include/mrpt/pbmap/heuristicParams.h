@@ -152,6 +152,4 @@ struct config_heuristics
 		cout << "height_threshold " << height_threshold << endl;
 	};
 };
-}
-
-
+}  // namespace mrpt::pbmap

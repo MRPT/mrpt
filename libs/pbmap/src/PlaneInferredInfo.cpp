@@ -30,7 +30,7 @@ using namespace mrpt::pbmap;
  * c) the input plane is big enough > 5m2.
  * d) ***we are not checking this now*** Most of the map planes are above the
  * floor plane
-*/
+ */
 
 bool PlaneInferredInfo::searchTheFloor(
 	Eigen::Matrix4f& poseSensor, Plane& plane)
@@ -81,7 +81,7 @@ bool PlaneInferredInfo::searchTheFloor(
  * squared cells downsampling
  * Check that the convex hull vertex are 'dist_threshold' away from the image
  * limits.
-*/
+ */
 bool PlaneInferredInfo::isPlaneCutbyImage(
 	vector<int>& planeIndices, unsigned& widthSampledImage,
 	unsigned& heightSampledImage, unsigned threshold)
@@ -110,7 +110,7 @@ bool PlaneInferredInfo::isPlaneCutbyImage(
 /**!
  * Check if the surrounding points of the input plane in the input frame are
  * behind the plane
-*/
+ */
 bool PlaneInferredInfo::isSurroundingBackground(
 	Plane& plane, pcl::PointCloud<pcl::PointXYZRGBA>::Ptr& frame,
 	vector<int>& planeIndices, unsigned threshold)
@@ -128,10 +128,9 @@ bool PlaneInferredInfo::isSurroundingBackground(
 				frame->points[planeIndices[j]].z ==
 					plane.polygonContourPtr->points[i].z)
 			{
-				polyImg.push_back(
-					pair<unsigned, unsigned>(
-						planeIndices[j] % frame->width,
-						planeIndices[j] / frame->width));
+				polyImg.push_back(pair<unsigned, unsigned>(
+					planeIndices[j] % frame->width,
+					planeIndices[j] / frame->width));
 				break;
 			}
 
@@ -160,12 +159,11 @@ bool PlaneInferredInfo::isSurroundingBackground(
 	for (unsigned i = 1; i < polyImg.size(); i++)
 	{
 		Eigen::Vector2f dir;
-		double normDir = sqrt(
-			double(
-				(polyImg[i].first - center.first) *
-					(polyImg[i].first - center.first) +
-				(polyImg[i].second - center.second) *
-					(polyImg[i].second - center.second)));
+		double normDir = sqrt(double(
+			(polyImg[i].first - center.first) *
+				(polyImg[i].first - center.first) +
+			(polyImg[i].second - center.second) *
+				(polyImg[i].second - center.second)));
 		dir[0] = (polyImg[i].first - center.first) / normDir;
 		dir[1] = (polyImg[i].second - center.second) / normDir;
 		//  cout << "polyImg[i] " << polyImg[i].first << " " <<
@@ -191,12 +189,11 @@ bool PlaneInferredInfo::isSurroundingBackground(
 	// Fill outerPolygonPtr point cloud
 	for (unsigned i = 1; i < outerPolygon.size(); i++)
 	{
-		double edgeLenght = std::sqrt(
-			static_cast<double>(
-				(outerPolygon[i][0] - outerPolygon[i - 1][0]) *
-					(outerPolygon[i][0] - outerPolygon[i - 1][0]) +
-				(outerPolygon[i][1] - outerPolygon[i - 1][1]) *
-					(outerPolygon[i][1] - outerPolygon[i - 1][1])));
+		double edgeLenght = std::sqrt(static_cast<double>(
+			(outerPolygon[i][0] - outerPolygon[i - 1][0]) *
+				(outerPolygon[i][0] - outerPolygon[i - 1][0]) +
+			(outerPolygon[i][1] - outerPolygon[i - 1][1]) *
+				(outerPolygon[i][1] - outerPolygon[i - 1][1])));
 		Eigen::Vector2f direction;
 		direction[0] =
 			(outerPolygon[i][0] - outerPolygon[i - 1][0]) / edgeLenght;
@@ -235,7 +232,7 @@ bool PlaneInferredInfo::isSurroundingBackground(
 /**!
  * Check if the area of input plane is stable and bounded (e.g < 1 m2) along the
  * last keyframes that observe it
-*/
+ */
 void PlaneInferredInfo::isFullExtent(Plane& plane, double newArea)
 {
 	// cout << "Plane " << plane.id << " newArea " << newArea << " limit " <<

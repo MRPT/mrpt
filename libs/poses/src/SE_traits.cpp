@@ -111,7 +111,6 @@ void SE_traits<3>::jacobian_dDinvP1invP2_depsilon(
 	THROW_EXCEPTION("Implement me!");
 }
 
-
 void SE_traits<2>::jacobian_dP1DP2inv_depsilon(
 	const CPose2D& P1DP2inv, matrix_VxV_t* df_de1, matrix_VxV_t* df_de2)
 {
@@ -153,10 +152,10 @@ void SE_traits<2>::jacobian_dDinvP1invP2_depsilon(
 
 	const TPoint2D dt(P2.x() - P1.x(), P2.y() - P1.y());
 	const double si = std::sin(phi1), ci = std::cos(phi1);
-	
+
 	CMatrixDouble22 RotDinv;
 	Dinv.getRotationMatrix(RotDinv);
-	CMatrixDouble33  K; // zeros
+	CMatrixDouble33 K;  // zeros
 	K.block<2, 2>(0, 0) = RotDinv;
 	K(2, 2) = 1.0;
 

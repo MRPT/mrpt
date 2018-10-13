@@ -12,7 +12,7 @@
 // -------------------------------------------------------------------------
 public:
 /** @name MRPT plugin: Types
-  *  @{ */
+ *  @{ */
 // size is constant
 enum
 {
@@ -22,7 +22,7 @@ enum
 
 /** @name MRPT plugin: Basic iterators. These iterators are intended for 1D
  * matrices only, i.e. column or row vectors.
-  *  @{ */
+ *  @{ */
 using iterator = Scalar*;
 using const_iterator = const Scalar*;
 
@@ -40,7 +40,7 @@ EIGEN_STRONG_INLINE const_iterator end() const
 /** @} */
 
 /** @name MRPT plugin: Set/get/load/save and other miscelaneous methods
-  *  @{ */
+ *  @{ */
 
 /*! Fill all the elements with a given value */
 EIGEN_STRONG_INLINE void fill(const Scalar v) { derived().setConstant(v); }
@@ -87,9 +87,9 @@ EIGEN_STRONG_INLINE void ones(const size_t row, const size_t col)
 EIGEN_STRONG_INLINE void ones() { derived().setOnes(); }
 /** Fast but unsafe method to obtain a pointer to a given row of the matrix (Use
  * only in time critical applications)
-  * VERY IMPORTANT WARNING: You must be aware of the memory layout, either
+ * VERY IMPORTANT WARNING: You must be aware of the memory layout, either
  * Column or Row-major ordering.
-  */
+ */
 EIGEN_STRONG_INLINE Scalar* get_unsafe_row(size_t row)
 {
 	return &derived().coeffRef(row, 0);
@@ -146,56 +146,57 @@ EIGEN_STRONG_INLINE bool isSingular(const Scalar absThreshold = 0) const
 
 /** Read a matrix from a string in Matlab-like format, for example "[1 0 2; 0 4
  * -1]"
-  *  The string must start with '[' and end with ']'. Rows are separated by
+ *  The string must start with '[' and end with ']'. Rows are separated by
  * semicolons ';' and
-  *  columns in each row by one or more whitespaces ' ', commas ',' or tabs
+ *  columns in each row by one or more whitespaces ' ', commas ',' or tabs
  * '\t'.
-  *
-  *  This format is also used for CConfigFile::read_matrix.
-  *
-  *  This template method can be instantiated for matrices of the types: int,
+ *
+ *  This format is also used for CConfigFile::read_matrix.
+ *
+ *  This template method can be instantiated for matrices of the types: int,
  * long, unsinged int, unsigned long, float, double, long double
-  *
-  * \return true on success. false if the string is malformed, and then the
+ *
+ * \return true on success. false if the string is malformed, and then the
  * matrix will be resized to 0x0.
-  * \sa inMatlabFormat, CConfigFile::read_matrix
-  */
+ * \sa inMatlabFormat, CConfigFile::read_matrix
+ */
 bool fromMatlabStringFormat(
 	const std::string& s, std::ostream* dump_errors_here = nullptr);
 // Method implemented in eigen_plugins_impl.h
 
 /** Dump matrix in matlab format.
-  *  This template method can be instantiated for matrices of the types: int,
+ *  This template method can be instantiated for matrices of the types: int,
  * long, unsinged int, unsigned long, float, double, long double
-  * \sa fromMatlabStringFormat
-  */
+ * \sa fromMatlabStringFormat
+ */
 std::string inMatlabFormat(const size_t decimal_digits = 6) const;
 // Method implemented in eigen_plugins_impl.h
 
 /** Save matrix to a text file, compatible with MATLAB text format (see also the
  * methods of matrix classes themselves).
-	* \param theMatrix It can be a CMatrixTemplate or a CMatrixFixedNumeric.
-	* \param file The target filename.
-	* \param fileFormat See TMatrixTextFileFormat. The format of the numbers in
+ * \param theMatrix It can be a CMatrixTemplate or a CMatrixFixedNumeric.
+ * \param file The target filename.
+ * \param fileFormat See TMatrixTextFileFormat. The format of the numbers in
  * the text file.
-	* \param appendMRPTHeader Insert this header to the file "% File generated
+ * \param appendMRPTHeader Insert this header to the file "% File generated
  * by MRPT. Load with MATLAB with: VAR=load(FILENAME);"
-	* \param userHeader Additional text to be written at the head of the file.
+ * \param userHeader Additional text to be written at the head of the file.
  * Typically MALAB comments "% This file blah blah". Final end-of-line is not
  * needed.
-	* \sa loadFromTextFile, CMatrixTemplate::inMatlabFormat, SAVE_MATRIX
-	*/
+ * \sa loadFromTextFile, CMatrixTemplate::inMatlabFormat, SAVE_MATRIX
+ */
 void saveToTextFile(
-	const std::string& file, mrpt::math::TMatrixTextFileFormat fileFormat =
-								 mrpt::math::MATRIX_FORMAT_ENG,
+	const std::string& file,
+	mrpt::math::TMatrixTextFileFormat fileFormat =
+		mrpt::math::MATRIX_FORMAT_ENG,
 	bool appendMRPTHeader = false,
 	const std::string& userHeader = std::string()) const;
 // Method implemented in eigen_plugins_impl.h
 
 /** Load matrix from a text file, compatible with MATLAB text format.
-  *  Lines starting with '%' or '#' are interpreted as comments and ignored.
-  * \sa saveToTextFile, fromMatlabStringFormat
-  */
+ *  Lines starting with '%' or '#' are interpreted as comments and ignored.
+ * \sa saveToTextFile, fromMatlabStringFormat
+ */
 void loadFromTextFile(const std::string& file);
 // Method implemented in eigen_plugins_impl.h
 
@@ -227,8 +228,8 @@ EIGEN_STRONG_INLINE size_t countNonZero() const
 }
 
 /** [VECTORS OR MATRICES] Finds the maximum value
-  * \exception std::exception On an empty input container
-  */
+ * \exception std::exception On an empty input container
+ */
 EIGEN_STRONG_INLINE Scalar maximum() const
 {
 	if (size() == 0) throw std::runtime_error("maximum: container is empty");
@@ -236,8 +237,8 @@ EIGEN_STRONG_INLINE Scalar maximum() const
 }
 
 /** [VECTORS OR MATRICES] Finds the minimum value
-  * \sa maximum, minimum_maximum
-  * \exception std::exception On an empty input container */
+ * \sa maximum, minimum_maximum
+ * \exception std::exception On an empty input container */
 EIGEN_STRONG_INLINE Scalar minimum() const
 {
 	if (size() == 0) throw std::runtime_error("minimum: container is empty");
@@ -245,8 +246,8 @@ EIGEN_STRONG_INLINE Scalar minimum() const
 }
 
 /** [VECTORS OR MATRICES] Compute the minimum and maximum of a container at once
-  * \sa maximum, minimum
-  * \exception std::exception On an empty input container */
+ * \sa maximum, minimum
+ * \exception std::exception On an empty input container */
 EIGEN_STRONG_INLINE void minimum_maximum(Scalar& out_min, Scalar& out_max) const
 {
 	out_min = minimum();
@@ -255,8 +256,8 @@ EIGEN_STRONG_INLINE void minimum_maximum(Scalar& out_min, Scalar& out_max) const
 
 /** [VECTORS ONLY] Finds the maximum value (and the corresponding zero-based
  * index) from a given container.
-  * \exception std::exception On an empty input vector
-  */
+ * \exception std::exception On an empty input vector
+ */
 EIGEN_STRONG_INLINE Scalar maximum(size_t* maxIndex) const
 {
 	if (size() == 0) throw std::runtime_error("maximum: container is empty");
@@ -268,8 +269,8 @@ EIGEN_STRONG_INLINE Scalar maximum(size_t* maxIndex) const
 
 /** [VECTORS OR MATRICES] Finds the maximum value (and the corresponding
  * zero-based index) from a given container.
-  * \exception std::exception On an empty input vector
-  */
+ * \exception std::exception On an empty input vector
+ */
 void find_index_max_value(size_t& u, size_t& v, Scalar& valMax) const
 {
 	if (cols() == 0 || rows() == 0)
@@ -282,8 +283,8 @@ void find_index_max_value(size_t& u, size_t& v, Scalar& valMax) const
 
 /** [VECTORS ONLY] Finds the minimum value (and the corresponding zero-based
  * index) from a given container.
-  * \sa maximum, minimum_maximum
-  * \exception std::exception On an empty input vector  */
+ * \sa maximum, minimum_maximum
+ * \exception std::exception On an empty input vector  */
 EIGEN_STRONG_INLINE Scalar minimum(size_t* minIndex) const
 {
 	if (size() == 0) throw std::runtime_error("minimum: container is empty");
@@ -294,8 +295,8 @@ EIGEN_STRONG_INLINE Scalar minimum(size_t* minIndex) const
 }
 
 /** [VECTORS ONLY] Compute the minimum and maximum of a container at once
-  * \sa maximum, minimum
-  * \exception std::exception On an empty input vector */
+ * \sa maximum, minimum
+ * \exception std::exception On an empty input vector */
 EIGEN_STRONG_INLINE void minimum_maximum(
 	Scalar& out_min, Scalar& out_max, size_t* minIndex, size_t* maxIndex) const
 {
@@ -317,9 +318,9 @@ EIGEN_STRONG_INLINE Scalar squareNorm() const { return squaredNorm(); }
  */
 EIGEN_STRONG_INLINE Scalar sumAll() const { return derived().sum(); }
 /** Computes the laplacian of this square graph weight matrix.
-  *  The laplacian matrix is L = D - W, with D a diagonal matrix with the degree
+ *  The laplacian matrix is L = D - W, with D a diagonal matrix with the degree
  * of each node, W the
-  */
+ */
 template <typename OtherDerived>
 EIGEN_STRONG_INLINE void laplacian(Eigen::MatrixBase<OtherDerived>& ret) const
 {
@@ -337,9 +338,9 @@ EIGEN_STRONG_INLINE void laplacian(Eigen::MatrixBase<OtherDerived>& ret) const
 
 /** Changes the size of matrix, maintaining its previous content as possible and
  * padding with zeros where applicable.
-  *  **WARNING**: MRPT's add-on method \a setSize() pads with zeros, while
+ *  **WARNING**: MRPT's add-on method \a setSize() pads with zeros, while
  * Eigen's \a resize() does NOT (new elements are undefined).
-  */
+ */
 EIGEN_STRONG_INLINE void setSize(size_t row, size_t col)
 {
 #ifdef _DEBUG
@@ -423,7 +424,7 @@ EIGEN_STRONG_INLINE Scalar maximumDiagonal() const
 }
 
 /** Computes the mean of the entire matrix
-  * \sa meanAndStdAll */
+ * \sa meanAndStdAll */
 EIGEN_STRONG_INLINE double mean() const
 {
 	if (size() == 0) throw std::runtime_error("mean: Empty container.");
@@ -432,11 +433,11 @@ EIGEN_STRONG_INLINE double mean() const
 
 /** Computes a row with the mean values of each column in the matrix and the
  * associated vector with the standard deviation of each column.
-  * \sa mean,meanAndStdAll \exception std::exception If the matrix/vector is
+ * \sa mean,meanAndStdAll \exception std::exception If the matrix/vector is
  * empty.
-  * \param unbiased_variance Standard deviation is sum(vals-mean)/K, with K=N-1
+ * \param unbiased_variance Standard deviation is sum(vals-mean)/K, with K=N-1
  * or N for unbiased_variance=true or false, respectively.
-  */
+ */
 template <class VEC>
 void meanAndStd(
 	VEC& outMeanVector, VEC& outStdVector,
@@ -459,11 +460,11 @@ void meanAndStd(
 
 /** Computes the mean and standard deviation of all the elements in the matrix
  * as a whole.
-  * \sa mean,meanAndStd  \exception std::exception If the matrix/vector is
+ * \sa mean,meanAndStd  \exception std::exception If the matrix/vector is
  * empty.
-  * \param unbiased_variance Standard deviation is sum(vals-mean)/K, with K=N-1
+ * \param unbiased_variance Standard deviation is sum(vals-mean)/K, with K=N-1
  * or N for unbiased_variance=true or false, respectively.
-  */
+ */
 void meanAndStdAll(
 	double& outMean, double& outStd, const bool unbiased_variance = true) const
 {
@@ -560,8 +561,7 @@ EIGEN_STRONG_INLINE void removeRows(const std::vector<size_t>& idxsToRemove)
 EIGEN_STRONG_INLINE void unsafeRemoveRows(const std::vector<size_t>& idxs)
 {
 	size_t k = 1;
-	for (auto it = idxs.rbegin();
-		 it != idxs.rend(); ++it, ++k)
+	for (auto it = idxs.rbegin(); it != idxs.rend(); ++it, ++k)
 	{
 		const size_t nR = rows() - *it - k;
 		if (nR > 0)
@@ -766,7 +766,7 @@ void multiply_skew3_A(const SKEW_3VECTOR& v, const MAT_A& A)
 }
 
 /** outResult = this * A
-  */
+ */
 template <class MAT_A, class MAT_OUT>
 EIGEN_STRONG_INLINE void multiply_subMatrix(
 	const MAT_A& A, MAT_OUT& outResult, const size_t A_cols_offset,
@@ -836,11 +836,11 @@ EIGEN_STRONG_INLINE void multiply_result_is_symmetric(
 /** [For square matrices only] Compute the eigenvectors and eigenvalues
  * (sorted), both returned as matrices: eigenvectors are the columns in "eVecs",
  * and eigenvalues in ascending order as the diagonal of "eVals".
-  *   \note Warning: Only the real part of complex eigenvectors and eigenvalues
+ *   \note Warning: Only the real part of complex eigenvectors and eigenvalues
  * are returned.
-  *   \sa eigenVectorsSymmetric, eigenVectorsVec
-  *  \return false on error
-  */
+ *   \sa eigenVectorsSymmetric, eigenVectorsVec
+ *  \return false on error
+ */
 template <class MATRIX1, class MATRIX2>
 EIGEN_STRONG_INLINE bool eigenVectors(MATRIX1& eVecs, MATRIX2& eVals) const;
 // Implemented in eigen_plugins_impl.h (can't be here since
@@ -849,21 +849,21 @@ EIGEN_STRONG_INLINE bool eigenVectors(MATRIX1& eVecs, MATRIX2& eVals) const;
 /** [For square matrices only] Compute the eigenvectors and eigenvalues
  * (sorted), eigenvectors are the columns in "eVecs", and eigenvalues are
  * returned in in ascending order in the vector "eVals".
-  *   \note Warning: Only the real part of complex eigenvectors and eigenvalues
+ *   \note Warning: Only the real part of complex eigenvectors and eigenvalues
  * are returned.
-  *   \sa eigenVectorsSymmetric, eigenVectorsVec
-  *  \return false on error
-  */
+ *   \sa eigenVectorsSymmetric, eigenVectorsVec
+ *  \return false on error
+ */
 template <class MATRIX1, class VECTOR1>
 EIGEN_STRONG_INLINE bool eigenVectorsVec(MATRIX1& eVecs, VECTOR1& eVals) const;
 // Implemented in eigen_plugins_impl.h
 
 /** [For square matrices only] Compute the eigenvectors and eigenvalues
  * (sorted), and return only the eigenvalues in the vector "eVals".
-  *   \note Warning: Only the real part of complex eigenvectors and eigenvalues
+ *   \note Warning: Only the real part of complex eigenvectors and eigenvalues
  * are returned.
-  *   \sa eigenVectorsSymmetric, eigenVectorsVec
-  */
+ *   \sa eigenVectorsSymmetric, eigenVectorsVec
+ */
 template <class VECTOR>
 EIGEN_STRONG_INLINE void eigenValues(VECTOR& eVals) const
 {
@@ -875,7 +875,7 @@ EIGEN_STRONG_INLINE void eigenValues(VECTOR& eVals) const
 /** [For symmetric matrices only] Compute the eigenvectors and eigenvalues (in
  * no particular order), both returned as matrices: eigenvectors are the
  * columns, and eigenvalues \sa eigenVectors
-  */
+ */
 template <class MATRIX1, class MATRIX2>
 EIGEN_STRONG_INLINE void eigenVectorsSymmetric(
 	MATRIX1& eVecs, MATRIX2& eVals) const;
@@ -885,7 +885,7 @@ EIGEN_STRONG_INLINE void eigenVectorsSymmetric(
 /** [For symmetric matrices only] Compute the eigenvectors and eigenvalues (in
  * no particular order), both returned as matrices: eigenvectors are the
  * columns, and eigenvalues \sa eigenVectorsVec
-  */
+ */
 template <class MATRIX1, class VECTOR1>
 EIGEN_STRONG_INLINE void eigenVectorsSymmetricVec(
 	MATRIX1& eVecs, VECTOR1& eVals) const;
@@ -909,9 +909,9 @@ EIGEN_STRONG_INLINE bool chol(MATRIX& U) const
 }
 
 /** Gets the rank of the matrix via the Eigen::ColPivHouseholderQR method
-  * \param threshold If set to >0, it's used as threshold instead of Eigen's
+ * \param threshold If set to >0, it's used as threshold instead of Eigen's
  * default one.
-  */
+ */
 EIGEN_STRONG_INLINE size_t rank(double threshold = 0) const
 {
 	Eigen::ColPivHouseholderQR<PlainObject> QR = this->colPivHouseholderQr();
@@ -1018,10 +1018,10 @@ EIGEN_STRONG_INLINE void extractSubmatrix(
  * M(idxs,idxs), where idxs is a sequence
  * {block_indices(i):block_indices(i)+block_size-1} for all "i" up to the size
  * of block_indices.
-  *  A perfect application of this method is in extracting covariance matrices
+ *  A perfect application of this method is in extracting covariance matrices
  * of a subset of variables from the full covariance matrix.
-  * \sa extractSubmatrix, extractSubmatrixSymmetrical
-  */
+ * \sa extractSubmatrix, extractSubmatrixSymmetrical
+ */
 template <class MATRIX>
 void extractSubmatrixSymmetricalBlocks(
 	const size_t block_size, const std::vector<size_t>& block_indices,
@@ -1061,10 +1061,10 @@ void extractSubmatrixSymmetricalBlocks(
 
 /** Get a submatrix from a square matrix, by collecting the elements
  * M(idxs,idxs), where idxs is the sequence of indices passed as argument.
-  *  A perfect application of this method is in extracting covariance matrices
+ *  A perfect application of this method is in extracting covariance matrices
  * of a subset of variables from the full covariance matrix.
-  * \sa extractSubmatrix, extractSubmatrixSymmetricalBlocks
-  */
+ * \sa extractSubmatrix, extractSubmatrixSymmetricalBlocks
+ */
 template <class MATRIX>
 void extractSubmatrixSymmetrical(
 	const std::vector<size_t>& indices, MATRIX& out) const

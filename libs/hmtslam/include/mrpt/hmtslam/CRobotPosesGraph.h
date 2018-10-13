@@ -31,8 +31,8 @@ struct TPoseInfo
  * this class stores a set of robot poses and its sensory frames and pose PDF,
  * for being stored in a HMT-map as a serializable object in annotation
  * NODE_ANNOTATION_POSES_GRAPH.
-  * \ingroup mrpt_hmtslam_grp
-  */
+ * \ingroup mrpt_hmtslam_grp
+ */
 class CRobotPosesGraph : public mrpt::serialization::CSerializable,
 						 public std::map<TPoseID, TPoseInfo>
 {
@@ -48,6 +48,4 @@ class CRobotPosesGraph : public mrpt::serialization::CSerializable,
 
 };  // end of class
 
-}
-
-
+}  // namespace mrpt::hmtslam

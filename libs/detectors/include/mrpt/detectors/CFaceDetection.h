@@ -23,11 +23,11 @@ namespace mrpt
 namespace detectors
 {
 /** Specific class for face detection.
-  * Methods and variables labeled as experimentals are temporals (for debug or
+ * Methods and variables labeled as experimentals are temporals (for debug or
  * testing
-  * purposes) and may disappear in future versions.
-  * \ingroup mrpt_detectors_grp
-  */
+ * purposes) and may disappear in future versions.
+ * \ingroup mrpt_detectors_grp
+ */
 class CFaceDetection : public CObjectDetection
 {
    public:
@@ -40,7 +40,8 @@ class CFaceDetection : public CObjectDetection
 	void init(const mrpt::config::CConfigFileBase& cfg) override;
 
 	void detectObjects_Impl(
-		const mrpt::obs::CObservation* obs, vector_detectable_object& detected) override;
+		const mrpt::obs::CObservation* obs,
+		vector_detectable_object& detected) override;
 
 	struct TOptions
 	{
@@ -202,6 +203,5 @@ class CFaceDetection : public CObjectDetection
 		mrpt::math::CMatrixTemplate<unsigned int>& hist);
 
 };  // End of class
-}
-}
-
+}  // namespace detectors
+}  // namespace mrpt

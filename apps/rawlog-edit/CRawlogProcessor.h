@@ -167,7 +167,8 @@ class CRawlogProcessorOnEachObservation : public CRawlogProcessor
 
 	bool processOneEntry(
 		mrpt::obs::CActionCollection::Ptr& actions,
-		mrpt::obs::CSensoryFrame::Ptr& SF, mrpt::obs::CObservation::Ptr& obs) override
+		mrpt::obs::CSensoryFrame::Ptr& SF,
+		mrpt::obs::CObservation::Ptr& obs) override
 	{
 		MRPT_UNUSED_PARAM(actions);
 		// Process each observation individually, either from "obs" or each
@@ -249,7 +250,8 @@ class CRawlogProcessorFilterObservations
 	// Save those entries which are not nullptr.
 	void OnPostProcess(
 		mrpt::obs::CActionCollection::Ptr& actions,
-		mrpt::obs::CSensoryFrame::Ptr& SF, mrpt::obs::CObservation::Ptr& obs) override
+		mrpt::obs::CSensoryFrame::Ptr& SF,
+		mrpt::obs::CObservation::Ptr& obs) override
 	{
 		if (actions)
 		{

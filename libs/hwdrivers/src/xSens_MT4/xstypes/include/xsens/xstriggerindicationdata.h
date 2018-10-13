@@ -13,7 +13,8 @@
 #include "pstdint.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #else
 #define XSTRIGGERINDICATIONDATA_INITIALIZER \
 	{                                       \
@@ -21,12 +22,12 @@ extern "C" {
 	}
 #endif
 
-struct XsTriggerIndicationData;
+	struct XsTriggerIndicationData;
 
-XSTYPES_DLL_API void XsTriggerIndicationData_destruct(
-	struct XsTriggerIndicationData* thisPtr);
-XSTYPES_DLL_API int XsTriggerIndicationData_valid(
-	const struct XsTriggerIndicationData* thisPtr);
+	XSTYPES_DLL_API void XsTriggerIndicationData_destruct(
+		struct XsTriggerIndicationData* thisPtr);
+	XSTYPES_DLL_API int XsTriggerIndicationData_valid(
+		const struct XsTriggerIndicationData* thisPtr);
 
 #ifdef __cplusplus
 }  // extern "C"

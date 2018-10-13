@@ -124,6 +124,4 @@ class CRenderizableDisplayList : public mrpt::opengl::CRenderizable
 	/** @} */
 };
 
-}
-
-
+}  // namespace mrpt::opengl

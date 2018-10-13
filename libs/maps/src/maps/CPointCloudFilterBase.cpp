@@ -16,5 +16,5 @@ using namespace mrpt::maps;
 CPointCloudFilterBase::CPointCloudFilterBase() = default;
 CPointCloudFilterBase::~CPointCloudFilterBase() = default;
 mrpt::maps::CPointCloudFilterBase::TExtraFilterParams::TExtraFilterParams()
-	 
-= default;
+
+	= default;

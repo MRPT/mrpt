@@ -18,8 +18,8 @@ namespace serialization
 {
 /** \addtogroup noncstream_serialization_zmq Serialization functions for ZMQ (v3
  * or above) (in #include <mrpt/serialization/serialization_zmq.h>)
-  * \ingroup noncstream_serialization
-  * @{ */
+ * \ingroup noncstream_serialization
+ * @{ */
 
 /** Send an MRPT object to a ZMQ socket.
  * \param[in] obj The object to be serialized and sent to the socket.
@@ -150,7 +150,7 @@ void free_zmq_msg_lst(VECTOR_MSG_T& lst_msgs)
 		delete lst_msgs[i];
 	}
 }
-}
+}  // namespace internal
 
 /** Receives an MRPT object from a ZMQ socket, determining the type of the
  *  object on-the-fly.
@@ -191,15 +191,15 @@ mrpt::serialization::CSerializable::Ptr mrpt_recv_from_zmq(
 }
 /** Like mrpt_recv_from_zmq() but without dynamically allocating the received
  * object,
-  * more efficient to use if the type of the received object is known in
+ * more efficient to use if the type of the received object is known in
  * advance.
-	* \param[in] target_object The received object will be stored here. An
+ * \param[in] target_object The received object will be stored here. An
  * exception will be raised upon type mismatch.
-	* \return true if all was OK, false on any ZMQ error.
-	* \sa mrpt_recv_from_zmq() for details on the rest of parameters.
-	* \note See examples of usage in
+ * \return true if all was OK, false on any ZMQ error.
+ * \sa mrpt_recv_from_zmq() for details on the rest of parameters.
+ * \note See examples of usage in
  * https://github.com/MRPT/mrpt/tree/master/doc/mrpt-zeromq-example
-  */
+ */
 template <typename ZMQ_SOCKET_TYPE>
 bool mrpt_recv_from_zmq_into(
 	ZMQ_SOCKET_TYPE zmq_socket,
@@ -219,5 +219,5 @@ bool mrpt_recv_from_zmq_into(
 }
 
 /** @} */
-}  // End of namespace
-}  // End of namespace
+}  // namespace serialization
+}  // namespace mrpt

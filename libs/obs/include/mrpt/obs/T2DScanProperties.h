@@ -12,11 +12,11 @@ namespace mrpt::obs
 {
 /** Auxiliary struct that holds all the relevant *geometry* information about a
  * 2D scan.
-  * This class is used in CSinCosLookUpTableFor2DScans
-  * \ingroup mrpt_obs_grp
-  * \sa CObservation2DRangeScan, CObservation2DRangeScan::getScanProperties,
+ * This class is used in CSinCosLookUpTableFor2DScans
+ * \ingroup mrpt_obs_grp
+ * \sa CObservation2DRangeScan, CObservation2DRangeScan::getScanProperties,
  * CSinCosLookUpTableFor2DScans
-  */
+ */
 struct T2DScanProperties
 {
 	size_t nRays;
@@ -28,6 +28,4 @@ struct T2DScanProperties
  * containers. */
 bool operator<(const T2DScanProperties& a, const T2DScanProperties& b);
 
-}
-
-
+}  // namespace mrpt::obs

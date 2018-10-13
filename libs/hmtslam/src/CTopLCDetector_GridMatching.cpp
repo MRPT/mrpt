@@ -29,10 +29,10 @@ CTopLCDetector_GridMatching::CTopLCDetector_GridMatching(CHMTSLAM* hmtslam)
 
 CTopLCDetector_GridMatching::~CTopLCDetector_GridMatching() = default;
 /** This method must compute the topological observation model.
-  * \param out_log_lik The output, a log-likelihood.
-  * \return nullptr, or a PDF of the estimated translation between the two areas
+ * \param out_log_lik The output, a log-likelihood.
+ * \return nullptr, or a PDF of the estimated translation between the two areas
  * (can be a multi-modal PDF).
-  */
+ */
 CPose3DPDF::Ptr CTopLCDetector_GridMatching::computeTopologicalObservationModel(
 	const THypothesisID& hypID, const CHMHMapNode::Ptr& currentArea,
 	const CHMHMapNode::Ptr& refArea, double& out_log_lik)
@@ -135,8 +135,8 @@ CPose3DPDF::Ptr CTopLCDetector_GridMatching::computeTopologicalObservationModel(
 
 /** Hook method for being warned about the insertion of a new poses into the
  * maps.
-  *  This should be independent of hypothesis IDs.
-  */
+ *  This should be independent of hypothesis IDs.
+ */
 void CTopLCDetector_GridMatching::OnNewPose(
 	const TPoseID& poseID, const CSensoryFrame* SF)
 {

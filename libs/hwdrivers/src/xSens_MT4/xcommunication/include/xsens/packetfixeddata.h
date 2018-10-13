@@ -154,7 +154,7 @@ struct PacketInfo
 	uint16_t m_doubleBoundary;
 
 	/*! \brief Default contructor, sets all values to XS_DATA_ITEM_NOT_AVAILABLE
-	*/
+	 */
 	PacketInfo() { memset(this, 0xFF, sizeof(*this)); }
 };
 

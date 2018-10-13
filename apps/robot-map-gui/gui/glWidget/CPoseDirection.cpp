@@ -11,7 +11,7 @@
 #include <QDoubleSpinBox>
 
 CPoseDirection::CPoseDirection(QWidget* parent)
-	: QWidget(parent), m_ui(std::make_unique<Ui::CPoseDirection>()) 
+	: QWidget(parent), m_ui(std::make_unique<Ui::CPoseDirection>())
 {
 	m_ui->setupUi(this);
 

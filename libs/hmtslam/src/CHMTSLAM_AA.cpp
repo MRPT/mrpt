@@ -40,7 +40,8 @@ CHMTSLAM::TMessageLSLAMfromAA::Ptr CHMTSLAM::areaAbstraction(
 	ASSERT_(obj);
 
 	// The output results:
-	TMessageLSLAMfromAA::Ptr resMsg = mrpt::make_aligned_shared<TMessageLSLAMfromAA>();
+	TMessageLSLAMfromAA::Ptr resMsg =
+		mrpt::make_aligned_shared<TMessageLSLAMfromAA>();
 
 	// Process msg:
 	THypothesisID LMH_ID = LMH->m_ID;
@@ -63,8 +64,7 @@ CHMTSLAM::TMessageLSLAMfromAA::Ptr CHMTSLAM::areaAbstraction(
 			// already within the LMH's lock!
 
 			// SF:
-			auto itSFs =
-				LMH->m_SFs.find(newPoseID);
+			auto itSFs = LMH->m_SFs.find(newPoseID);
 			ASSERT_(itSFs != LMH->m_SFs.end());
 			sf = &itSFs->second;
 

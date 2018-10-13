@@ -15,38 +15,38 @@
 namespace mrpt::hwdrivers
 {
 /** Interfaces a Robo Peak LIDAR laser scanner.
-  *
-  *  See the example "samples/RoboPeakLidar_laser_test" and the application
+ *
+ *  See the example "samples/RoboPeakLidar_laser_test" and the application
  * "rawlog-grabber" for a ready-to-use application to gather data from the
  * scanner.
-  *
-  *  \code
-  *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
-  * -------------------------------------------------------
-  *   [supplied_section_name]
-  *    COM_port_WIN = COM3
-  *    COM_port_LIN = ttyS0
-  *    pose_x=0	// Laser range scaner 3D position in the robot (meters)
-  *    pose_y=0
-  *    pose_z=0
-  *    pose_yaw=0	// Angles in degrees
-  *    pose_pitch=0
-  *    pose_roll=0
-  *
-  *    //preview = true // Enable GUI visualization of captured data
-  *
-  *    // Optional: Exclusion zones to avoid the robot seeing itself:
-  *    //exclusionZone1_x = 0.20 0.30 0.30 0.20
-  *    //exclusionZone1_y = 0.20 0.30 0.30 0.20
-  *
-  *    // Optional: Exclusion zones to avoid the robot seeing itself:
-  *    //exclusionAngles1_ini = 20  // Deg
-  *    //exclusionAngles1_end = 25  // Deg
-  *
-  *  \endcode
-  * \note Class introduced in MRPT 1.2.2
-  * \ingroup mrpt_hwdrivers_grp
-  */
+ *
+ *  \code
+ *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
+ * -------------------------------------------------------
+ *   [supplied_section_name]
+ *    COM_port_WIN = COM3
+ *    COM_port_LIN = ttyS0
+ *    pose_x=0	// Laser range scaner 3D position in the robot (meters)
+ *    pose_y=0
+ *    pose_z=0
+ *    pose_yaw=0	// Angles in degrees
+ *    pose_pitch=0
+ *    pose_roll=0
+ *
+ *    //preview = true // Enable GUI visualization of captured data
+ *
+ *    // Optional: Exclusion zones to avoid the robot seeing itself:
+ *    //exclusionZone1_x = 0.20 0.30 0.30 0.20
+ *    //exclusionZone1_y = 0.20 0.30 0.30 0.20
+ *
+ *    // Optional: Exclusion zones to avoid the robot seeing itself:
+ *    //exclusionAngles1_ini = 20  // Deg
+ *    //exclusionAngles1_end = 25  // Deg
+ *
+ *  \endcode
+ * \note Class introduced in MRPT 1.2.2
+ * \ingroup mrpt_hwdrivers_grp
+ */
 class CRoboPeakLidar : public C2DRangeFinderAbstract
 {
 	DEFINE_GENERIC_SENSOR(CRoboPeakLidar)
@@ -93,9 +93,9 @@ class CRoboPeakLidar : public C2DRangeFinderAbstract
 
 	/** Returns true if communication has been established with the device. If
 	 * it's not,
-	  *  try to create a comms channel.
-	  * \return false on error.
-	  */
+	 *  try to create a comms channel.
+	 * \return false on error.
+	 */
 	bool checkCOMMs();
 
 	/** See the class documentation at the top for expected parameters */
@@ -105,6 +105,4 @@ class CRoboPeakLidar : public C2DRangeFinderAbstract
 
 };  // End of class
 
-}
-
-
+}  // namespace mrpt::hwdrivers

@@ -283,8 +283,7 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
 				// Draw:
 				if (seq.size() > 1)
 				{
-					const auto it_end =
-						seq.end();
+					const auto it_end = seq.end();
 
 					auto it = seq.begin();
 					auto it_prev = it++;
@@ -302,14 +301,11 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
 			tracker->getProfiler().leave("drawFeatureTracks");
 
 			// Purge old data:
-			for (auto it =
-					 feat_tracks.begin();
-				 it != feat_tracks.end();)
+			for (auto it = feat_tracks.begin(); it != feat_tracks.end();)
 			{
 				if (observed_IDs.find(it->first) == observed_IDs.end())
 				{
-					auto
-						next_it = it;
+					auto next_it = it;
 					next_it++;
 					feat_tracks.erase(it);
 					it = next_it;
