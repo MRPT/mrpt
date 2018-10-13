@@ -33,6 +33,13 @@ jobs:
       - run: make gcov -C build
       - run: make -C build
       - run: bash <(curl -s https://codecov.io/bash) -X gcov -y .codecov.yml -s build
+  clang-format-lint:
+    docker:
+      - image: mrpt/mrpt-build-env:full-bionic
+    steps:
+      - checkout
+      - run: pip install --user -r travis/python_reqs.txt
+      - run: bash travis/check_style.sh
 
 workflows:
   version: 2
@@ -41,3 +48,4 @@ workflows:
       - full
       - headless
       - minimal
+      - clang-format-lint
