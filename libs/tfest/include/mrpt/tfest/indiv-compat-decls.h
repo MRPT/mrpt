@@ -29,5 +29,4 @@ struct TPotentialMatch
 using TFunctorCheckPotentialMatch = std::function<bool(const TPotentialMatch&)>;
 
 /** @} */  // end of grouping
-}
-
+}  // namespace mrpt::tfest

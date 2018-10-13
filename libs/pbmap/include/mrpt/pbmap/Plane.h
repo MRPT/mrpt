@@ -63,7 +63,7 @@ class Plane : public mrpt::serialization::CSerializable
 
 	/**!
 	 * Calculate the plane's convex hull with the monotone chain algorithm.
-	*/
+	 */
 	//    void calcConvexHull(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
 	//    &pointCloud );
 	void calcConvexHull(
@@ -83,7 +83,7 @@ normal
 		/*pcl::PointCloud<pcl::PointXYZRGBA>::Ptr &polygonContourPtr, Vector<3> &normal*/);
 
 	/** \brief Compute the patch's convex-hull area and mass center
-	  */
+	 */
 	void computeMassCenterAndArea();
 
 	/*!
@@ -120,7 +120,7 @@ normal
 
 	/**!
 	 *  Parameters to allow the plane-based representation of the map by a graph
-	*/
+	 */
 	unsigned id;
 	unsigned numObservations;
 	unsigned semanticGroup;
@@ -134,7 +134,7 @@ normal
 
 	/**!
 	 *  Geometric description
-	*/
+	 */
 	Eigen::Vector3f v3center;
 	Eigen::Vector3f v3normal;
 	float d;
@@ -152,7 +152,7 @@ normal
 
 	/**!
 	 *  Radiometric description
-	*/
+	 */
 	Eigen::Vector3f v3colorNrgb;
 	float dominantIntensity;
 	bool bDominantColor;
@@ -173,7 +173,7 @@ normal
 
 	/**!
 	 *  Convex Hull
-	*/
+	 */
 	//    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr contour::Ptr;
 	std::vector<int32_t> inliers;
 	pcl::PointCloud<pcl::PointXYZRGBA>::Ptr polygonContourPtr;
@@ -215,8 +215,5 @@ normal
 	//    vector<float> S;
 	//    vector<vector<float> > HSV;
 };
-}
+}  // namespace mrpt::pbmap
 #endif
-
-
-

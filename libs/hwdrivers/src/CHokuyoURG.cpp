@@ -422,8 +422,7 @@ bool CHokuyoURG::assureBufferHasBytes(const size_t nDesiredBytes)
 
 			if (!m_ip_dir.empty())
 			{
-				auto* client =
-					dynamic_cast<CClientTCPSocket*>(m_stream);
+				auto* client = dynamic_cast<CClientTCPSocket*>(m_stream);
 				nRead = client->readAsync(buf, to_read, 100, 10);
 			}
 			else

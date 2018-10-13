@@ -329,6 +329,7 @@ struct LegacyDataPacket
 	/*! \brief Returns a const pointer to the contained fixed data, mostly used
 	 * for debugging */
 	inline const PacketFixedData* fixedData() const { return m_fixedData; }
+
    private:
 	/** Fixed packet data */
 	PacketFixedData* m_fixedData;

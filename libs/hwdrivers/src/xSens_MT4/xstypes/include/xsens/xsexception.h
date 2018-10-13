@@ -16,7 +16,7 @@
 
 /*! \brief Exception class for Xsens public libraries. Inherits from
  * std::exception
-*/
+ */
 class XsException : public std::exception
 {
    public:
@@ -82,7 +82,8 @@ class XsException : public std::exception
 		\note Override this in inheriting classes to make sure the proper type
 	   of exception is raised
 	*/
-	virtual void raise() const { throw * this; }
+	virtual void raise() const { throw *this; }
+
    private:
 	/** The supplied error code */
 	XsResultValue m_code;

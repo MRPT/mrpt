@@ -201,11 +201,11 @@ class COpenNI2Generic::CDevice
 	bool open(int w, int h, int fps);
 
 	bool getNextFrameRGB(
-		mrpt::img::CImage& img, mrpt::system::TTimeStamp& timestamp, bool& there_is_obs,
-		bool& hardware_error);
+		mrpt::img::CImage& img, mrpt::system::TTimeStamp& timestamp,
+		bool& there_is_obs, bool& hardware_error);
 	bool getNextFrameD(
-		mrpt::math::CMatrix& img, mrpt::system::TTimeStamp& timestamp, bool& there_is_obs,
-		bool& hardware_error);
+		mrpt::math::CMatrix& img, mrpt::system::TTimeStamp& timestamp,
+		bool& there_is_obs, bool& hardware_error);
 	bool getNextFrameRGBD(
 		mrpt::obs::CObservation3DRangeScan& obs, bool& there_is_obs,
 		bool& hardware_error);

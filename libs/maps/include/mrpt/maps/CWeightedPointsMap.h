@@ -183,9 +183,7 @@ class PointCloudAdapter<mrpt::maps::CWeightedPointsMap>
 	/** Set number of points (to uninitialized values) */
 	inline void resize(const size_t N) { m_obj.resize(N); }
 	/** Does nothing as of now */
-	inline void setDimensions(const size_t &height, const size_t &width)
-	{
-	}
+	inline void setDimensions(const size_t& height, const size_t& width) {}
 	/** Get XYZ coordinates of i'th point */
 	template <typename T>
 	inline void getPointXYZ(const size_t idx, T& x, T& y, T& z) const
@@ -201,4 +199,3 @@ class PointCloudAdapter<mrpt::maps::CWeightedPointsMap>
 };  // end of PointCloudAdapter<mrpt::maps::CPointsMap>
 }  // namespace opengl
 }  // namespace mrpt
-

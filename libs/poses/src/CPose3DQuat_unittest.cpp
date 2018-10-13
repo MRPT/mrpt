@@ -48,19 +48,21 @@ class Pose3DQuatTests : public ::testing::Test
 		CPose3D p_q1_i_q2 = CPose3D(q1_i_q2);
 
 		EXPECT_NEAR(
-			0, (p1_c_p2.getAsVectorVal() - p_q1_c_q2.getAsVectorVal())
-				   .array()
-				   .abs()
-				   .sum(),
+			0,
+			(p1_c_p2.getAsVectorVal() - p_q1_c_q2.getAsVectorVal())
+				.array()
+				.abs()
+				.sum(),
 			1e-5)
 			<< "p1_c_p2: " << p1_c_p2 << endl
 			<< "q1_c_p2: " << p_q1_c_q2 << endl;
 
 		EXPECT_NEAR(
-			0, (p1_i_p2.getAsVectorVal() - p_q1_i_q2.getAsVectorVal())
-				   .array()
-				   .abs()
-				   .sum(),
+			0,
+			(p1_i_p2.getAsVectorVal() - p_q1_i_q2.getAsVectorVal())
+				.array()
+				.abs()
+				.sum(),
 			1e-5)
 			<< "p1_i_p2: " << p1_i_p2 << endl
 			<< "q1_i_p2: " << p_q1_i_q2 << endl;
@@ -70,10 +72,11 @@ class Pose3DQuatTests : public ::testing::Test
 			CPose3DQuat C = q1;
 			CPose3DQuat A = C + q2;
 			EXPECT_NEAR(
-				0, (A.getAsVectorVal() - q1_c_q2.getAsVectorVal())
-					   .array()
-					   .abs()
-					   .sum(),
+				0,
+				(A.getAsVectorVal() - q1_c_q2.getAsVectorVal())
+					.array()
+					.abs()
+					.sum(),
 				1e-6);
 		}
 		// Test + operator: trg same var
@@ -81,10 +84,11 @@ class Pose3DQuatTests : public ::testing::Test
 			CPose3DQuat A = q1;
 			A = A + q2;
 			EXPECT_NEAR(
-				0, (A.getAsVectorVal() - q1_c_q2.getAsVectorVal())
-					   .array()
-					   .abs()
-					   .sum(),
+				0,
+				(A.getAsVectorVal() - q1_c_q2.getAsVectorVal())
+					.array()
+					.abs()
+					.sum(),
 				1e-6);
 		}
 		// Test =+ operator
@@ -92,10 +96,11 @@ class Pose3DQuatTests : public ::testing::Test
 			CPose3DQuat A = q1;
 			A += q2;
 			EXPECT_NEAR(
-				0, (A.getAsVectorVal() - q1_c_q2.getAsVectorVal())
-					   .array()
-					   .abs()
-					   .sum(),
+				0,
+				(A.getAsVectorVal() - q1_c_q2.getAsVectorVal())
+					.array()
+					.abs()
+					.sum(),
 				1e-6);
 		}
 	}
@@ -112,10 +117,11 @@ class Pose3DQuatTests : public ::testing::Test
 		CPoint3D q1_plus_p = q1 + p;
 
 		EXPECT_NEAR(
-			0, (p1_plus_p.getAsVectorVal() - q1_plus_p.getAsVectorVal())
-				   .array()
-				   .abs()
-				   .sum(),
+			0,
+			(p1_plus_p.getAsVectorVal() - q1_plus_p.getAsVectorVal())
+				.array()
+				.abs()
+				.sum(),
 			1e-5)
 			<< "p1: " << p1 << endl
 			<< "q1: " << q1 << endl
@@ -164,9 +170,10 @@ class Pose3DQuatTests : public ::testing::Test
 			x_incrs.assign(1e-7);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
-				x_mean, std::function<void(
-							const CArrayDouble<7 + 3>& x, const double& dummy,
-							CArrayDouble<3>& Y)>(&func_compose_point),
+				x_mean,
+				std::function<void(
+					const CArrayDouble<7 + 3>& x, const double& dummy,
+					CArrayDouble<3>& Y)>(&func_compose_point),
 				x_incrs, DUMMY, numJacobs);
 
 			numJacobs.extractMatrix(0, 0, num_df_dpose);
@@ -209,10 +216,11 @@ class Pose3DQuatTests : public ::testing::Test
 		CPoint3D p_rec = q1 + p_minus_q1;
 
 		EXPECT_NEAR(
-			0, (p_minus_p1.getAsVectorVal() - p_minus_q1.getAsVectorVal())
-				   .array()
-				   .abs()
-				   .sum(),
+			0,
+			(p_minus_p1.getAsVectorVal() - p_minus_q1.getAsVectorVal())
+				.array()
+				.abs()
+				.sum(),
 			1e-5)
 			<< "p_minus_p1: " << p_minus_p1 << endl
 			<< "p_minus_q1: " << p_minus_q1 << endl;
@@ -291,9 +299,10 @@ class Pose3DQuatTests : public ::testing::Test
 			x_incrs.assign(1e-7);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
-				x_mean, std::function<void(
-							const CArrayDouble<7 + 3>& x, const double& dummy,
-							CArrayDouble<3>& Y)>(&func_inv_compose_point),
+				x_mean,
+				std::function<void(
+					const CArrayDouble<7 + 3>& x, const double& dummy,
+					CArrayDouble<3>& Y)>(&func_inv_compose_point),
 				x_incrs, DUMMY, numJacobs);
 
 			numJacobs.extractMatrix(0, 0, num_df_dpose);
@@ -335,11 +344,12 @@ class Pose3DQuatTests : public ::testing::Test
 		const CPose3D p1r = CPose3D(q1);
 
 		EXPECT_NEAR(
-			0, (p1.getHomogeneousMatrixVal<CMatrixDouble44>() -
-				q1.getHomogeneousMatrixVal<CMatrixDouble44>())
-				   .array()
-				   .abs()
-				   .sum(),
+			0,
+			(p1.getHomogeneousMatrixVal<CMatrixDouble44>() -
+			 q1.getHomogeneousMatrixVal<CMatrixDouble44>())
+				.array()
+				.abs()
+				.sum(),
 			1e-5)
 			<< "p1.getHomogeneousMatrixVal<CMatrixDouble44>():\n"
 			<< p1.getHomogeneousMatrixVal<CMatrixDouble44>() << endl
@@ -365,11 +375,12 @@ class Pose3DQuatTests : public ::testing::Test
 		const CPose3DQuat q1_inv = -q1;
 
 		EXPECT_NEAR(
-			0, (p1_inv.getHomogeneousMatrixVal<CMatrixDouble44>() -
-				q1_inv.getHomogeneousMatrixVal<CMatrixDouble44>())
-				   .array()
-				   .abs()
-				   .sum(),
+			0,
+			(p1_inv.getHomogeneousMatrixVal<CMatrixDouble44>() -
+			 q1_inv.getHomogeneousMatrixVal<CMatrixDouble44>())
+				.array()
+				.abs()
+				.sum(),
 			1e-5)
 			<< "p1_inv.getHomogeneousMatrixVal<CMatrixDouble44>():\n"
 			<< p1_inv.getHomogeneousMatrixVal<CMatrixDouble44>() << endl
@@ -387,11 +398,12 @@ class Pose3DQuatTests : public ::testing::Test
 		const CPose3DQuat q2 = q1;
 
 		EXPECT_NEAR(
-			0, (q1.getHomogeneousMatrixVal<CMatrixDouble44>() -
-				q2.getHomogeneousMatrixVal<CMatrixDouble44>())
-				   .array()
-				   .abs()
-				   .sum(),
+			0,
+			(q1.getHomogeneousMatrixVal<CMatrixDouble44>() -
+			 q2.getHomogeneousMatrixVal<CMatrixDouble44>())
+				.array()
+				.abs()
+				.sum(),
 			1e-5)
 			<< "q1.getHomogeneousMatrixVal<CMatrixDouble44>():\n"
 			<< q1.getHomogeneousMatrixVal<CMatrixDouble44>() << endl
@@ -501,9 +513,10 @@ class Pose3DQuatTests : public ::testing::Test
 			x_incrs.assign(1e-7);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
-				x_mean, std::function<void(
-							const CArrayDouble<7 + 3>& x, const double& dummy,
-							CArrayDouble<3>& Y)>(&func_spherical_coords),
+				x_mean,
+				std::function<void(
+					const CArrayDouble<7 + 3>& x, const double& dummy,
+					CArrayDouble<3>& Y)>(&func_spherical_coords),
 				x_incrs, DUMMY, numJacobs);
 
 			numJacobs.extractMatrix(0, 0, num_df_dpose);
@@ -562,9 +575,10 @@ class Pose3DQuatTests : public ::testing::Test
 			x_incrs.assign(1e-5);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
-				x_mean, std::function<void(
-							const CArrayDouble<4>& x, const double& dummy,
-							CArrayDouble<4>& Y)>(&func_normalizeJacob),
+				x_mean,
+				std::function<void(
+					const CArrayDouble<4>& x, const double& dummy,
+					CArrayDouble<4>& Y)>(&func_normalizeJacob),
 				x_incrs, DUMMY, numJacobs);
 
 			numJacobs.extractMatrix(0, 0, num_df_dpose);

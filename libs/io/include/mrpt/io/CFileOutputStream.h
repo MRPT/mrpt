@@ -79,5 +79,4 @@ static_assert(
 	!std::is_copy_constructible_v<CFileOutputStream> &&
 		!std::is_copy_assignable_v<CFileOutputStream>,
 	"Copy Check");
-}
-
+}  // namespace mrpt::io

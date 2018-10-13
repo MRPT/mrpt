@@ -13,9 +13,9 @@
 namespace mrpt::kinematics
 {
 /** Kinematic model for
-*
-* \ingroup mrpt_kinematics_grp
-*/
+ *
+ * \ingroup mrpt_kinematics_grp
+ */
 class CVehicleVelCmd_Holo : public CVehicleVelCmd
 {
 	DEFINE_SERIALIZABLE(CVehicleVelCmd_Holo)
@@ -49,5 +49,4 @@ class CVehicleVelCmd_Holo : public CVehicleVelCmd
 		const TVelCmdParams& params) override;
 };
 
-}
-
+}  // namespace mrpt::kinematics

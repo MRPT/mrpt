@@ -121,13 +121,16 @@ double atan2_raw_test_query(int, int)
 // ------------------------------------------------------
 void register_tests_atan2lut()
 {
-	lstTests.emplace_back("CAtan2LUT: 20x20m,1cm cells,build", atan2_lut_test_build);
-	lstTests.emplace_back("CAtan2LUT: 20x20m,1cm cells,query", atan2_lut_test_query);
+	lstTests.emplace_back(
+		"CAtan2LUT: 20x20m,1cm cells,build", atan2_lut_test_build);
+	lstTests.emplace_back(
+		"CAtan2LUT: 20x20m,1cm cells,query", atan2_lut_test_query);
 
 	lstTests.emplace_back(
-			"CAtan2LUTMultiRes: 22x22m,build", atan2_lut_multires_test_build);
+		"CAtan2LUTMultiRes: 22x22m,build", atan2_lut_multires_test_build);
 	lstTests.emplace_back(
-			"CAtan2LUTMultiRes: 22x22m,query", atan2_lut_multires_test_query);
+		"CAtan2LUTMultiRes: 22x22m,query", atan2_lut_multires_test_query);
 
-	lstTests.emplace_back("CAtan2LUT: raw ::atan2() call", atan2_raw_test_query);
+	lstTests.emplace_back(
+		"CAtan2LUT: raw ::atan2() call", atan2_raw_test_query);
 }

@@ -17,11 +17,11 @@ namespace mrpt::detectors
 {
 /** Base class that contains common atributes and functions of detectable
  * objects.
-  * It was initially thought for detected objects in images from cams, but it's
+ * It was initially thought for detected objects in images from cams, but it's
  * easily
-  * expandable to other source types (f.i. scanners).
-  * \ingroup mrpt_detectors_grp
-  */
+ * expandable to other source types (f.i. scanners).
+ * \ingroup mrpt_detectors_grp
+ */
 class CDetectableObject : public mrpt::serialization::CSerializable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CDetectableObject)
@@ -59,8 +59,8 @@ class CDetectable2D : public CDetectableObject
 	/** Copy pointer content constructor */
 	CDetectable2D(const CDetectable2D* d) { *this = *d; };
 	/** Compute distance between centers of two detectable 2D objects.
-	  * \return calculated distance.
-	  */
+	 * \return calculated distance.
+	 */
 	inline double distanceTo(const CDetectable2D& d2)
 	{
 		// Calculate objects centers
@@ -78,7 +78,7 @@ class CDetectable3D : public CDetectable2D
 	DEFINE_SERIALIZABLE(CDetectable3D)
 
    public:
-	CDetectable3D()= default;
+	CDetectable3D() = default;
 
 	CDetectable3D(const CDetectable2D::Ptr& object2d);
 
@@ -88,6 +88,4 @@ class CDetectable3D : public CDetectable2D
 	float m_z;
 
 };  // End of class
-}
-
-
+}  // namespace mrpt::detectors

@@ -39,8 +39,8 @@ TEST(Matrices, A_times_B_dyn)
 	CMatrixDouble C = A * B;
 	CMatrixDouble C_ok(3, 2, dat_Cok);
 	CMatrixDouble err = C - C_ok;
-	EXPECT_NEAR(0, fabs(err.sum()), 1e-5) << "A:   " << A << "B:   " << B
-										  << "A*B: " << C << endl;
+	EXPECT_NEAR(0, fabs(err.sum()), 1e-5)
+		<< "A:   " << A << "B:   " << B << "A*B: " << C << endl;
 }
 
 TEST(Matrices, A_times_B_fix)
@@ -53,8 +53,8 @@ TEST(Matrices, A_times_B_fix)
 	C = A * B;
 	Err = C - CMatrixFixedNumeric<double, 3, 2>(C_ok);
 
-	EXPECT_NEAR(0, fabs(Err.sum()), 1e-5) << "A:   " << A << "B:   " << B
-										  << "A*B: " << C << endl;
+	EXPECT_NEAR(0, fabs(Err.sum()), 1e-5)
+		<< "A:   " << A << "B:   " << B << "A*B: " << C << endl;
 }
 
 TEST(Matrices, SerializeCMatrixD)

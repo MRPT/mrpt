@@ -23,7 +23,7 @@ namespace comms
 namespace net
 {
 /** \addtogroup mrpt_comms_grp
-  * @{ */
+ * @{ */
 
 using std::string;
 
@@ -136,6 +136,6 @@ bool Ping(
 
 /** @} */  // end grouping
 
-}  // End of namespace
-}  // End of namespace
-}  // end of namespace
+}  // namespace net
+}  // namespace comms
+}  // namespace mrpt

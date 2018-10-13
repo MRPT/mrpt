@@ -4,4 +4,3 @@ namespace mrpt::utils
 {
 using CFileInputStream = mrpt::io::CFileInputStream;
 }
-

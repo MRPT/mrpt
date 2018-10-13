@@ -10,7 +10,7 @@
 #define XSBAUDCODE_H
 
 /*! \brief Internal baud rate configuration codes
-*/
+ */
 
 enum XSNOCOMEXPORT XsBaudCode
 {

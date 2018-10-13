@@ -87,5 +87,4 @@ class TStereoCamera : public mrpt::serialization::CSerializable
 	}
 
 };  // end class TStereoCamera
-}
-
+}  // namespace mrpt::img

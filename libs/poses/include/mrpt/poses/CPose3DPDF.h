@@ -72,28 +72,28 @@ class CPose3DPDF : public mrpt::serialization::CSerializable,
 	virtual void inverse(CPose3DPDF& o) const = 0;
 
 	/** This static method computes the pose composition Jacobians.
-	*
-	* See this techical report:
-	* http:///www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
-	*
-	* Direct equations (for the covariances) in yaw-pitch-roll are too complex.
-	*  Make a way around them and consider instead this path:
-	* \code
-	*      X(6D)       U(6D)
-	*        |           |
-	*        v           v
-	*      X(7D)       U(7D)
-	*        |           |
-	*        +--- (+) ---+
-	*              |
-	*              v
-	*            RES(7D)
-	*              |
-	*              v
-	*            RES(6D)
-	* \endcode
-	*
-	*/
+	 *
+	 * See this techical report:
+	 * http:///www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
+	 *
+	 * Direct equations (for the covariances) in yaw-pitch-roll are too complex.
+	 *  Make a way around them and consider instead this path:
+	 * \code
+	 *      X(6D)       U(6D)
+	 *        |           |
+	 *        v           v
+	 *      X(7D)       U(7D)
+	 *        |           |
+	 *        +--- (+) ---+
+	 *              |
+	 *              v
+	 *            RES(7D)
+	 *              |
+	 *              v
+	 *            RES(6D)
+	 * \endcode
+	 *
+	 */
 	static void jacobiansPoseComposition(
 		const CPose3D& x, const CPose3D& u, mrpt::math::CMatrixDouble66& df_dx,
 		mrpt::math::CMatrixDouble66& df_du);
@@ -110,14 +110,14 @@ class CPose3DPDF : public mrpt::serialization::CSerializable,
 	static constexpr bool is_PDF() { return is_PDF_val != 0; }
 	/** Returns a 3D representation of this PDF (it doesn't clear the current
 	 * contents of out_obj, but append new OpenGL objects to that list)
-	  * \note Needs the mrpt-opengl library, and using
+	 * \note Needs the mrpt-opengl library, and using
 	 * mrpt::opengl::CSetOfObjects::Ptr as template argument.
-	  * \note By default, ellipsoids for the confidence intervals of  "q=3" are
+	 * \note By default, ellipsoids for the confidence intervals of  "q=3" are
 	 * drawn; for more mathematical details, see
 	 * CGeneralizedEllipsoidTemplate::setQuantiles()
-	  * \sa mrpt::opengl::CSetOfObjects::posePDF2opengl() for details on
+	 * \sa mrpt::opengl::CSetOfObjects::posePDF2opengl() for details on
 	 * pose-to-opengl conversion
-	  */
+	 */
 	template <class OPENGL_SETOFOBJECTSPTR>
 	inline void getAs3DObject(OPENGL_SETOFOBJECTSPTR& out_obj) const
 	{
@@ -126,9 +126,9 @@ class CPose3DPDF : public mrpt::serialization::CSerializable,
 	}
 
 	/** Returns a 3D representation of this PDF.
-	  * \note Needs the mrpt-opengl library, and using
+	 * \note Needs the mrpt-opengl library, and using
 	 * mrpt::opengl::CSetOfObjects::Ptr as template argument.
-	  */
+	 */
 	template <class OPENGL_SETOFOBJECTSPTR>
 	inline OPENGL_SETOFOBJECTSPTR getAs3DObject() const
 	{
@@ -137,6 +137,4 @@ class CPose3DPDF : public mrpt::serialization::CSerializable,
 	}
 
 };  // End of class def.
-}
-
-
+}  // namespace mrpt::poses

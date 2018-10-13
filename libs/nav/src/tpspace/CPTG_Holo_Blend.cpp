@@ -422,8 +422,7 @@ mrpt::kinematics::CVehicleVelCmd::Ptr CPTG_Holo_Blend::directionToMotionCommand(
 {
 	const double dir_local = CParameterizedTrajectoryGenerator::index2alpha(k);
 
-	auto* cmd =
-		new mrpt::kinematics::CVehicleVelCmd_Holo();
+	auto* cmd = new mrpt::kinematics::CVehicleVelCmd_Holo();
 	cmd->vel = internal_get_v(dir_local);
 	cmd->dir_local = dir_local;
 	cmd->ramp_time = internal_get_T_ramp(dir_local);
@@ -789,11 +788,7 @@ double CPTG_Holo_Blend::maxTimeInVelCmdNOP(int path_k) const
 }
 
 double CPTG_Holo_Blend::getPathStepDuration() const { return PATH_TIME_STEP; }
-CPTG_Holo_Blend::CPTG_Holo_Blend()
-	 
-{
-	internal_construct_exprs();
-}
+CPTG_Holo_Blend::CPTG_Holo_Blend() { internal_construct_exprs(); }
 
 CPTG_Holo_Blend::CPTG_Holo_Blend(
 	const mrpt::config::CConfigFileBase& cfg, const std::string& sSection)

@@ -17,15 +17,15 @@
 #include <mrpt/math/ops_containers.h>  // Many generic operations
 
 /** \file ops_matrices.h
-  * This file implements miscelaneous matrix and matrix/vector operations, and
+ * This file implements miscelaneous matrix and matrix/vector operations, and
  * internal functions in mrpt::math::detail
-  */
+ */
 namespace mrpt
 {
 namespace math
 {
 /** \addtogroup container_ops_grp
-  *  @{ */
+ *  @{ */
 
 /** Transpose operator for matrices */
 template <class Derived>
@@ -91,13 +91,13 @@ void multiply_HtCH(
 
 /** Computes the mean vector and covariance from a list of samples in an NxM
  * matrix, where each row is a sample, so the covariance is MxM.
-  * \param v The set of data as a NxM matrix, of types: CMatrixTemplateNumeric
+ * \param v The set of data as a NxM matrix, of types: CMatrixTemplateNumeric
  * or CMatrixFixedNumeric
-  * \param out_mean The output M-vector for the estimated mean.
-  * \param out_cov The output MxM matrix for the estimated covariance matrix,
+ * \param out_mean The output M-vector for the estimated mean.
+ * \param out_cov The output MxM matrix for the estimated covariance matrix,
  * this can also be either a fixed-size of dynamic size matrix.
-  * \sa mrpt::math::meanAndCovVec, math::mean,math::stddev, math::cov
-  */
+ * \sa mrpt::math::meanAndCovVec, math::mean,math::stddev, math::cov
+ */
 template <class MAT_IN, class VECTOR, class MAT_OUT>
 void meanAndCovMat(const MAT_IN& v, VECTOR& out_mean, MAT_OUT& out_cov)
 {
@@ -137,18 +137,20 @@ void meanAndCovMat(const MAT_IN& v, VECTOR& out_mean, MAT_OUT& out_cov)
 
 /** Computes the covariance matrix from a list of samples in an NxM matrix,
  * where each row is a sample, so the covariance is MxM.
-  * \param v The set of data, as a NxM matrix.
-  * \param out_cov The output MxM matrix for the estimated covariance matrix.
-  * \sa math::mean,math::stddev, math::cov
-  */
+ * \param v The set of data, as a NxM matrix.
+ * \param out_cov The output MxM matrix for the estimated covariance matrix.
+ * \sa math::mean,math::stddev, math::cov
+ */
 template <class MATRIX>
-inline Eigen::Matrix<typename MATRIX::Scalar, MATRIX::ColsAtCompileTime,
-					 MATRIX::ColsAtCompileTime>
+inline Eigen::Matrix<
+	typename MATRIX::Scalar, MATRIX::ColsAtCompileTime,
+	MATRIX::ColsAtCompileTime>
 	cov(const MATRIX& v)
 {
 	Eigen::Matrix<double, MATRIX::ColsAtCompileTime, 1> m;
-	Eigen::Matrix<typename MATRIX::Scalar, MATRIX::ColsAtCompileTime,
-				  MATRIX::ColsAtCompileTime>
+	Eigen::Matrix<
+		typename MATRIX::Scalar, MATRIX::ColsAtCompileTime,
+		MATRIX::ColsAtCompileTime>
 		C;
 	meanAndCovMat(v, m, C);
 	return C;
@@ -160,7 +162,7 @@ inline Eigen::Matrix<typename MATRIX::Scalar, MATRIX::ColsAtCompileTime,
 /** Only for vectors/arrays "v" of length3, compute out = A * Skew(v), where
  * Skew(v) is the skew symmetric matric generated from \a v (see
  * mrpt::math::skew_symmetric3)
-  */
+ */
 template <class MAT_A, class SKEW_3VECTOR, class MAT_OUT>
 void multiply_A_skew3(const MAT_A& A, const SKEW_3VECTOR& v, MAT_OUT& out)
 {
@@ -184,7 +186,7 @@ void multiply_A_skew3(const MAT_A& A, const SKEW_3VECTOR& v, MAT_OUT& out)
 /** Only for vectors/arrays "v" of length3, compute out = Skew(v) * A, where
  * Skew(v) is the skew symmetric matric generated from \a v (see
  * mrpt::math::skew_symmetric3)
-  */
+ */
 template <class SKEW_3VECTOR, class MAT_A, class MAT_OUT>
 void multiply_skew3_A(const SKEW_3VECTOR& v, const MAT_A& A, MAT_OUT& out)
 {
@@ -225,10 +227,9 @@ void extractMatrix(
 				M.get_unsafe(first_row + r, first_col + c);
 }
 
-}  // end of detail namespace
+}  // namespace detail
 
 /**  @} */  // end of grouping
 
-}  // End of math namespace
-}  // End of mrpt namespace
-
+}  // namespace math
+}  // namespace mrpt

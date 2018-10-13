@@ -16,7 +16,7 @@ namespace mrpt
 namespace containers
 {
 /** \addtogroup mrpt_containers_grp
-  * @{ */
+ * @{ */
 
 namespace internal
 {
@@ -115,7 +115,7 @@ class generic_copier_ptr
 		else
 			throw std::runtime_error("dereferencing nullptr poly_ptr");
 	}
-	const T& operator*()const
+	const T& operator*() const
 	{
 		if (m_ptr)
 			return *m_ptr;
@@ -126,7 +126,7 @@ class generic_copier_ptr
 	T* get() { return m_ptr; }
 	const T* get() const { return m_ptr; }
 	operator bool() const { return m_ptr != nullptr; }
-	bool operator!()const { return m_ptr == nullptr; }
+	bool operator!() const { return m_ptr == nullptr; }
 	/** Releases the pointer (do not destroy the object) */
 	T* release()
 	{
@@ -142,28 +142,29 @@ class generic_copier_ptr
 		m_ptr = ptr;
 	}
 	void resetDefaultCtor() { this->reset(new T()); }
+
    protected:
 	T* m_ptr;
 };
 
-}  // end NS internal
+}  // namespace internal
 
 /** Smart pointer for polymorphic classes with a `clone()` method.
-  * No shared copies, that is, each `poly_ptr<T>` owns a unique instance of `T`.
-  * Copying a `poly_ptr<T>` invokes the copy operator for `T`.
-  * \sa copy_ptr<T>
-  */
+ * No shared copies, that is, each `poly_ptr<T>` owns a unique instance of `T`.
+ * Copying a `poly_ptr<T>` invokes the copy operator for `T`.
+ * \sa copy_ptr<T>
+ */
 template <typename T>
 using poly_ptr = internal::generic_copier_ptr<T, internal::CopyCloner<T>>;
 
 /** Smart pointer for non-polymorphic classes.
-* No shared copies, that is, each `copy_ptr<T>` owns a unique instance of `T`.
-* Copying a `copy_ptr<T>` invokes the copy operator for `T`.
-* \sa poly_ptr<T>
-*/
+ * No shared copies, that is, each `copy_ptr<T>` owns a unique instance of `T`.
+ * Copying a `copy_ptr<T>` invokes the copy operator for `T`.
+ * \sa poly_ptr<T>
+ */
 template <typename T>
 using copy_ptr = internal::generic_copier_ptr<T, internal::CopyStatic<T>>;
 
 /** @} */  // end of grouping
-}  // End of namespace
-}  // End of namespace
+}  // namespace containers
+}  // namespace mrpt

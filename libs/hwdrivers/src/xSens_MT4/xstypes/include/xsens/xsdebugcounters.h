@@ -16,17 +16,18 @@
 // For the public version, they will all always have a 0 value.
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-extern XsAtomicInt XSTYPES_DLL_API XsVector_allocCount;
-extern XsAtomicInt XSTYPES_DLL_API XsVector_freeCount;
+	extern XsAtomicInt XSTYPES_DLL_API XsVector_allocCount;
+	extern XsAtomicInt XSTYPES_DLL_API XsVector_freeCount;
 
-extern XsAtomicInt XSTYPES_DLL_API XsMatrix_allocCount;
-extern XsAtomicInt XSTYPES_DLL_API XsMatrix_freeCount;
+	extern XsAtomicInt XSTYPES_DLL_API XsMatrix_allocCount;
+	extern XsAtomicInt XSTYPES_DLL_API XsMatrix_freeCount;
 
-extern XsAtomicInt XSTYPES_DLL_API XsArray_allocCount;
-extern XsAtomicInt XSTYPES_DLL_API XsArray_freeCount;
+	extern XsAtomicInt XSTYPES_DLL_API XsArray_allocCount;
+	extern XsAtomicInt XSTYPES_DLL_API XsArray_freeCount;
 
 #ifdef __cplusplus
 }  // extern "C"

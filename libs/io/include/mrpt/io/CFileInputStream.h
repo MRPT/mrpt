@@ -63,11 +63,10 @@ class CFileInputStream : public CStream
 	uint64_t getPosition() const override;
 
 	/** Reads one string line from the file (until a new-line character)
-	  * \return true if a line has been read, false on EOF or error. */
+	 * \return true if a line has been read, false on EOF or error. */
 	bool readLine(std::string& str);
 
 	size_t Read(void* Buffer, size_t Count) override;
 	size_t Write(const void* Buffer, size_t Count) override;
 };  // End of class def.
-}
-
+}  // namespace mrpt::io

@@ -17,26 +17,27 @@ namespace mrpt::math
 {
 /** A templated column-indexed efficient storage of block-sparse Jacobian or
  * Hessian matrices, together with other arbitrary information.
-  *  Columns are stored in a non-associative container, but the contents of each
+ *  Columns are stored in a non-associative container, but the contents of each
  * column are kept within an std::map<> indexed by row.
-  *  All submatrix blocks have the same size, which allows dense storage of them
+ *  All submatrix blocks have the same size, which allows dense storage of them
  * in fixed-size matrices, avoiding costly memory allocations.
-  *
-  * \tparam NROWS Rows in each elementary matrix.
-  * \tparam NCOLS Cols in each elementary matrix.
-  * \tparam INFO  Type of the extra data fields within each block
-  * \tparam HAS_REMAP Is true, an inverse mapping between column indices and
+ *
+ * \tparam NROWS Rows in each elementary matrix.
+ * \tparam NCOLS Cols in each elementary matrix.
+ * \tparam INFO  Type of the extra data fields within each block
+ * \tparam HAS_REMAP Is true, an inverse mapping between column indices and
  * "user IDs" is kept.
-  * \tparam INDEX_REMAP_MAP_IMPL Ignore if HAS_REMAP=false. Defaults to
+ * \tparam INDEX_REMAP_MAP_IMPL Ignore if HAS_REMAP=false. Defaults to
  * "mrpt::utils::map_as_vector<size_t,size_t>" for amortized O(1). Can be set to
  * "std::map<size_t,size_t>" in very sparse systems to save memory at the cost
  * of a O(log N) access time when using the remap indices.
-  *
-  * \ingroup mrpt_math_grp
-  */
-template <typename Scalar, int NROWS, int NCOLS, typename INFO, bool HAS_REMAP,
-		  typename INDEX_REMAP_MAP_IMPL =
-			  mrpt::containers::map_as_vector<size_t, size_t>>
+ *
+ * \ingroup mrpt_math_grp
+ */
+template <
+	typename Scalar, int NROWS, int NCOLS, typename INFO, bool HAS_REMAP,
+	typename INDEX_REMAP_MAP_IMPL =
+		mrpt::containers::map_as_vector<size_t, size_t>>
 struct MatrixBlockSparseCols
 {
 	using matrix_t = Eigen::Matrix<Scalar, NROWS, NCOLS>;
@@ -55,13 +56,14 @@ struct MatrixBlockSparseCols
 
    private:
 	/** -> cols[i]: i'th column.
-	  * -> Each column is a map [row] -> TEntry
-	  */
+	 * -> Each column is a map [row] -> TEntry
+	 */
 	std::deque<col_t> m_cols;
 	/** "remapped index" is the index of some global variable, interpreted by
 	 * the external user of this class. */
 	// map<size_t,size_t> col_inverse_remapped_indices;
-	mrpt::containers::map_as_vector<size_t, size_t> col_inverse_remapped_indices;
+	mrpt::containers::map_as_vector<size_t, size_t>
+		col_inverse_remapped_indices;
 	std::vector<size_t> col_remapped_indices;
 
    public:
@@ -131,9 +133,9 @@ struct MatrixBlockSparseCols
 	}
 
 	/** Builds a dense representation of the matrix and saves to a text file.
-	  * \param is_col_compressed true: interpret this object as compressed by
+	 * \param is_col_compressed true: interpret this object as compressed by
 	 * cols; false: compressed by rows
-	  */
+	 */
 	void getAsDense(
 		mrpt::math::CMatrixDouble& D, const bool force_symmetry = false,
 		const bool is_col_compressed = true) const
@@ -247,6 +249,4 @@ struct MatrixBlockSparseCols
 
 };  // end of MatrixBlockSparseCols
 
-}
-
-
+}  // namespace mrpt::math

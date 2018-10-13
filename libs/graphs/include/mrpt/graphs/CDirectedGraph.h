@@ -213,8 +213,7 @@ class CDirectedGraph
 	void getAllNodes(std::set<TNodeID>& lstNode_IDs) const
 	{
 		lstNode_IDs.clear();
-		for (auto it = edges.begin();
-			 it != edges.end(); ++it)
+		for (auto it = edges.begin(); it != edges.end(); ++it)
 		{
 			lstNode_IDs.insert(it->first.first);
 			lstNode_IDs.insert(it->first.second);
@@ -281,8 +280,7 @@ class CDirectedGraph
 	void getAdjacencyMatrix(MAP_NODEID_SET_NODEIDS& outAdjacency) const
 	{
 		outAdjacency.clear();
-		for (auto it = edges.begin();
-			 it != edges.end(); ++it)
+		for (auto it = edges.begin(); it != edges.end(); ++it)
 		{
 			outAdjacency[it->first.first].insert(it->first.second);
 			outAdjacency[it->first.second].insert(it->first.first);
@@ -332,24 +330,20 @@ class CDirectedGraph
 			std::string s1, s2;
 			if (!p.node_names.empty())
 			{
-				auto itNam1 =
-					p.node_names.find(id1);
+				auto itNam1 = p.node_names.find(id1);
 				if (itNam1 != p.node_names.end()) s1 = itNam1->second;
-				auto itNam2 =
-					p.node_names.find(id2);
+				auto itNam2 = p.node_names.find(id2);
 				if (itNam2 != p.node_names.end()) s2 = itNam2->second;
 			}
 			if (s1.empty()) s1 = std::to_string(id1);
 			if (s2.empty()) s2 = std::to_string(id2);
 			if (p.node_props.empty())
 			{
-				auto itP1 =
-					p.node_props.find(id1);
+				auto itP1 = p.node_props.find(id1);
 				if (itP1 != p.node_props.end())
 					o << "\"" << s1 << "\""
 					  << " [" << itP1->second << "];\n";
-				auto itP2 =
-					p.node_props.find(id2);
+				auto itP2 = p.node_props.find(id2);
 				if (itP2 != p.node_props.end())
 					o << "\"" << s2 << "\""
 					  << " [" << itP2->second << "];\n";

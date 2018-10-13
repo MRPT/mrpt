@@ -89,8 +89,7 @@ class CSetOfTexturedTriangles : public CTexturedObject
 		CRenderizableDisplayList::notifyChange();
 	}
 
-	bool traceRay(
-		const mrpt::poses::CPose3D& o, double& dist) const override;
+	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 
 	/** Constructor
 	 */
@@ -99,5 +98,4 @@ class CSetOfTexturedTriangles : public CTexturedObject
 	~CSetOfTexturedTriangles() override;
 };
 
-}
-
+}  // namespace mrpt::opengl

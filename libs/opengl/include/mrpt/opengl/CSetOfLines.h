@@ -266,6 +266,4 @@ inline CSetOfLines::Ptr& operator<<(
 	l->appendLine(s);
 	return l;
 }
-}  // namespace mrpt
-
-
+}  // namespace mrpt::opengl

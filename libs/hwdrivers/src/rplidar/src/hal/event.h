@@ -181,5 +181,4 @@ class Event
 	bool _isAutoReset;
 #endif
 };
-}
-
+}  // namespace rp::hal

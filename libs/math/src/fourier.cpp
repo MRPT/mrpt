@@ -921,7 +921,7 @@ static void cdft2d(
 	}
 }
 
-} // namespace mrpt::math
+}  // namespace mrpt::math
 
 void mrpt::math::fft_real(
 	CVectorFloat& in_realData, CVectorFloat& out_FFT_Re,

@@ -182,7 +182,7 @@ void CMTLOG(const char* str, ...)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Default constructor, initializes all members to their default values.
-Cmt1s::Cmt1s()  
+Cmt1s::Cmt1s()
 {
 	m_port = 0;
 	m_isOpen = false;
@@ -1322,4 +1322,4 @@ XsensResultValue Cmt1f::writeData(const uint32_t length, const void* data)
 	return m_lastResult = XRV_OK;
 }
 
-}  // end of xsens namespace
+}  // namespace xsens

@@ -39,9 +39,8 @@ MAP_DEFINITION_REGISTER(
 	mrpt::maps::CGasConcentrationGridMap2D)
 
 CGasConcentrationGridMap2D::TMapDefinition::TMapDefinition()
-	
-	  
-= default;
+
+	= default;
 
 void CGasConcentrationGridMap2D::TMapDefinition::
 	loadFromConfigFile_map_specific(
@@ -192,8 +191,7 @@ bool CGasConcentrationGridMap2D::internal_insertObservation(
 		/********************************************************************
 					OBSERVATION TYPE: CObservationGasSensors
 		********************************************************************/
-		const auto* o =
-			static_cast<const CObservationGasSensors*>(obs);
+		const auto* o = static_cast<const CObservationGasSensors*>(obs);
 
 		if (o->sensorLabel.compare(insertionOptions.gasSensorLabel) == 0)
 		{
@@ -440,9 +438,9 @@ CGasConcentrationGridMap2D::TInsertionOptions::TInsertionOptions()
 	:
 
 	  gasSensorLabel("MCEnose"),
-	    // By default use the mean between all e-nose sensors
+	  // By default use the mean between all e-nose sensors
 	  windSensorLabel("windSensor")
-	  
+
 {
 }
 
@@ -743,7 +741,7 @@ bool CGasConcentrationGridMap2D::simulateAdvection(
 				LUT_TABLE[phi_indx][r_indx];
 
 			// Generate Sparse Matrix with the wind weights "SA"
-			for (auto & ci : cells_to_update)
+			for (auto& ci : cells_to_update)
 			{
 				int final_cx = cell_i_cx + ci.cx;
 				int final_cy = cell_i_cy + ci.cy;
@@ -1321,10 +1319,9 @@ bool CGasConcentrationGridMap2D::save_Gaussian_Wind_Grid_To_File()
 	// Save LUT to file
 	cout << "Saving to File ....";
 
-	CFileGZOutputStream fo(
-		format(
-			"Gaussian_Wind_Weights_res(%f)_stdPhi(%f)_stdR(%f).gz",
-			LUT.resolution, LUT.std_phi, LUT.std_r));
+	CFileGZOutputStream fo(format(
+		"Gaussian_Wind_Weights_res(%f)_stdPhi(%f)_stdR(%f).gz", LUT.resolution,
+		LUT.std_phi, LUT.std_r));
 	if (!fo.fileOpenCorrectly())
 	{
 		return false;
@@ -1385,10 +1382,9 @@ bool CGasConcentrationGridMap2D::load_Gaussian_Wind_Grid_From_File()
 
 	try
 	{
-		CFileGZInputStream fi(
-			format(
-				"Gaussian_Wind_Weights_res(%f)_stdPhi(%f)_stdR(%f).gz",
-				LUT.resolution, LUT.std_phi, LUT.std_r));
+		CFileGZInputStream fi(format(
+			"Gaussian_Wind_Weights_res(%f)_stdPhi(%f)_stdR(%f).gz",
+			LUT.resolution, LUT.std_phi, LUT.std_r));
 		if (!fi.fileOpenCorrectly())
 		{
 			cout << "WARNING WHILE READING FROM: Gaussian_Wind_Weights" << endl;

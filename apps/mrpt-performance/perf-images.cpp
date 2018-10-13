@@ -366,236 +366,250 @@ double stereoimage_rectify(int, int)
 void register_tests_image()
 {
 	lstTests.emplace_back(
-			"images: Save as JPEG (640x480, quality=95%)", image_test_1, 640,
-			95);
+		"images: Save as JPEG (640x480, quality=95%)", image_test_1, 640, 95);
 	lstTests.emplace_back(
-			"images: Save as JPEG (800x600, quality=95%)", image_test_1, 800,
-			95);
+		"images: Save as JPEG (800x600, quality=95%)", image_test_1, 800, 95);
 	lstTests.emplace_back(
-			"images: Save as JPEG (1024x768, quality=95%)", image_test_1, 1024,
-			95);
+		"images: Save as JPEG (1024x768, quality=95%)", image_test_1, 1024, 95);
 
 	lstTests.emplace_back(
-			"images: Save as JPEG (640x480, quality=75%)", image_test_1, 640,
-			75);
+		"images: Save as JPEG (640x480, quality=75%)", image_test_1, 640, 75);
 	lstTests.emplace_back(
-			"images: Save as JPEG (800x600, quality=75%)", image_test_1, 800,
-			75);
+		"images: Save as JPEG (800x600, quality=75%)", image_test_1, 800, 75);
 	lstTests.emplace_back(
-			"images: Save as JPEG (1024x768, quality=75%)", image_test_1, 1024,
-			75);
+		"images: Save as JPEG (1024x768, quality=75%)", image_test_1, 1024, 75);
 
-	lstTests.emplace_back("images: Save BMP 800x600 disk", image_saveload<false>, 0, 0);
-	lstTests.emplace_back("images: Save PNG 800x600 disk", image_saveload<false>, 1, 0);
-	lstTests.emplace_back("images: Save JPG 800x600 disk", image_saveload<false>, 2, 0);
-	lstTests.emplace_back("images: Load BMP 800x600 disk", image_saveload<true>, 0, 0);
-	lstTests.emplace_back("images: Load PNG 800x600 disk", image_saveload<true>, 1, 0);
-	lstTests.emplace_back("images: Load JPG 800x600 disk", image_saveload<true>, 2, 0);
+	lstTests.emplace_back(
+		"images: Save BMP 800x600 disk", image_saveload<false>, 0, 0);
+	lstTests.emplace_back(
+		"images: Save PNG 800x600 disk", image_saveload<false>, 1, 0);
+	lstTests.emplace_back(
+		"images: Save JPG 800x600 disk", image_saveload<false>, 2, 0);
+	lstTests.emplace_back(
+		"images: Load BMP 800x600 disk", image_saveload<true>, 0, 0);
+	lstTests.emplace_back(
+		"images: Load PNG 800x600 disk", image_saveload<true>, 1, 0);
+	lstTests.emplace_back(
+		"images: Load JPG 800x600 disk", image_saveload<true>, 2, 0);
 
 	if (mrpt::system::directoryExists("/dev/shm"))
 	{
 		lstTests.emplace_back(
-				"images: Save BMP 800x600 shared mem", image_saveload<false>, 0,
-				1);
+			"images: Save BMP 800x600 shared mem", image_saveload<false>, 0, 1);
 		lstTests.emplace_back(
-				"images: Save PNG 800x600 shared mem", image_saveload<false>, 1,
-				1);
+			"images: Save PNG 800x600 shared mem", image_saveload<false>, 1, 1);
 		lstTests.emplace_back(
-				"images: Save JPG 800x600 shared mem", image_saveload<false>, 2,
-				1);
+			"images: Save JPG 800x600 shared mem", image_saveload<false>, 2, 1);
 		lstTests.emplace_back(
-				"images: Load BMP 800x600 shared mem", image_saveload<true>, 0,
-				1);
+			"images: Load BMP 800x600 shared mem", image_saveload<true>, 0, 1);
 		lstTests.emplace_back(
-				"images: Load PNG 800x600 shared mem", image_saveload<true>, 1,
-				1);
+			"images: Load PNG 800x600 shared mem", image_saveload<true>, 1, 1);
 		lstTests.emplace_back(
-				"images: Load JPG 800x600 shared mem", image_saveload<true>, 2,
-				1);
+			"images: Load JPG 800x600 shared mem", image_saveload<true>, 2, 1);
 	}
 
-	lstTests.emplace_back("images: Gauss filter (640x480)", image_test_2, 640, 480);
-	lstTests.emplace_back("images: Gauss filter (800x600)", image_test_2, 800, 600);
-	lstTests.emplace_back("images: Gauss filter (1024x768)", image_test_2, 1024, 768);
+	lstTests.emplace_back(
+		"images: Gauss filter (640x480)", image_test_2, 640, 480);
+	lstTests.emplace_back(
+		"images: Gauss filter (800x600)", image_test_2, 800, 600);
+	lstTests.emplace_back(
+		"images: Gauss filter (1024x768)", image_test_2, 1024, 768);
 
 	lstTests.emplace_back(
-			"images: Half sample GRAY (160x120)", image_halfsample<CH_GRAY>,
-			160, 120);
+		"images: Half sample GRAY (160x120)", image_halfsample<CH_GRAY>, 160,
+		120);
 	lstTests.emplace_back(
-			"images: Half sample GRAY (320x240)", image_halfsample<CH_GRAY>,
-			320, 240);
+		"images: Half sample GRAY (320x240)", image_halfsample<CH_GRAY>, 320,
+		240);
 	lstTests.emplace_back(
-			"images: Half sample GRAY (640x480)", image_halfsample<CH_GRAY>,
-			640, 480);
+		"images: Half sample GRAY (640x480)", image_halfsample<CH_GRAY>, 640,
+		480);
 	lstTests.emplace_back(
-			"images: Half sample GRAY (800x600)", image_halfsample<CH_GRAY>,
-			800, 600);
+		"images: Half sample GRAY (800x600)", image_halfsample<CH_GRAY>, 800,
+		600);
 	lstTests.emplace_back(
-			"images: Half sample GRAY (1024x768)", image_halfsample<CH_GRAY>,
-			1024, 768);
+		"images: Half sample GRAY (1024x768)", image_halfsample<CH_GRAY>, 1024,
+		768);
 	lstTests.emplace_back(
-			"images: Half sample GRAY (1280x1024)", image_halfsample<CH_GRAY>,
-			1280, 1024);
+		"images: Half sample GRAY (1280x1024)", image_halfsample<CH_GRAY>, 1280,
+		1024);
 
 	lstTests.emplace_back(
-			"images: Half sample RGB (160x120)", image_halfsample<CH_RGB>, 160,
-			120);
+		"images: Half sample RGB (160x120)", image_halfsample<CH_RGB>, 160,
+		120);
 	lstTests.emplace_back(
-			"images: Half sample RGB (320x240)", image_halfsample<CH_RGB>, 320,
-			240);
+		"images: Half sample RGB (320x240)", image_halfsample<CH_RGB>, 320,
+		240);
 	lstTests.emplace_back(
-			"images: Half sample RGB (640x480)", image_halfsample<CH_RGB>, 640,
-			480);
+		"images: Half sample RGB (640x480)", image_halfsample<CH_RGB>, 640,
+		480);
 	lstTests.emplace_back(
-			"images: Half sample RGB (800x600)", image_halfsample<CH_RGB>, 800,
-			600);
+		"images: Half sample RGB (800x600)", image_halfsample<CH_RGB>, 800,
+		600);
 	lstTests.emplace_back(
-			"images: Half sample RGB (1024x768)", image_halfsample<CH_RGB>,
-			1024, 768);
+		"images: Half sample RGB (1024x768)", image_halfsample<CH_RGB>, 1024,
+		768);
 	lstTests.emplace_back(
-			"images: Half sample RGB (1280x1024)", image_halfsample<CH_RGB>,
-			1280, 1024);
+		"images: Half sample RGB (1280x1024)", image_halfsample<CH_RGB>, 1280,
+		1024);
 
 	lstTests.emplace_back(
-			"images: Half sample smooth GRAY (160x120)",
-			image_halfsample_smooth<CH_GRAY>, 160, 120);
+		"images: Half sample smooth GRAY (160x120)",
+		image_halfsample_smooth<CH_GRAY>, 160, 120);
 	lstTests.emplace_back(
-			"images: Half sample smooth GRAY (320x240)",
-			image_halfsample_smooth<CH_GRAY>, 320, 240);
+		"images: Half sample smooth GRAY (320x240)",
+		image_halfsample_smooth<CH_GRAY>, 320, 240);
 	lstTests.emplace_back(
-			"images: Half sample smooth GRAY (640x480)",
-			image_halfsample_smooth<CH_GRAY>, 640, 480);
+		"images: Half sample smooth GRAY (640x480)",
+		image_halfsample_smooth<CH_GRAY>, 640, 480);
 	lstTests.emplace_back(
-			"images: Half sample smooth GRAY (800x600)",
-			image_halfsample_smooth<CH_GRAY>, 800, 600);
+		"images: Half sample smooth GRAY (800x600)",
+		image_halfsample_smooth<CH_GRAY>, 800, 600);
 	lstTests.emplace_back(
-			"images: Half sample smooth GRAY (1024x768)",
-			image_halfsample_smooth<CH_GRAY>, 1024, 768);
+		"images: Half sample smooth GRAY (1024x768)",
+		image_halfsample_smooth<CH_GRAY>, 1024, 768);
 	lstTests.emplace_back(
-			"images: Half sample smooth GRAY (1280x1024)",
-			image_halfsample_smooth<CH_GRAY>, 1280, 1024);
+		"images: Half sample smooth GRAY (1280x1024)",
+		image_halfsample_smooth<CH_GRAY>, 1280, 1024);
 
 	lstTests.emplace_back(
-			"images: Half sample smooth RGB (160x120)",
-			image_halfsample_smooth<CH_RGB>, 160, 120);
+		"images: Half sample smooth RGB (160x120)",
+		image_halfsample_smooth<CH_RGB>, 160, 120);
 	lstTests.emplace_back(
-			"images: Half sample smooth RGB (320x240)",
-			image_halfsample_smooth<CH_RGB>, 320, 240);
+		"images: Half sample smooth RGB (320x240)",
+		image_halfsample_smooth<CH_RGB>, 320, 240);
 	lstTests.emplace_back(
-			"images: Half sample smooth RGB (640x480)",
-			image_halfsample_smooth<CH_RGB>, 640, 480);
+		"images: Half sample smooth RGB (640x480)",
+		image_halfsample_smooth<CH_RGB>, 640, 480);
 	lstTests.emplace_back(
-			"images: Half sample smooth RGB (800x600)",
-			image_halfsample_smooth<CH_RGB>, 800, 600);
+		"images: Half sample smooth RGB (800x600)",
+		image_halfsample_smooth<CH_RGB>, 800, 600);
 	lstTests.emplace_back(
-			"images: Half sample smooth RGB (1024x768)",
-			image_halfsample_smooth<CH_RGB>, 1024, 768);
+		"images: Half sample smooth RGB (1024x768)",
+		image_halfsample_smooth<CH_RGB>, 1024, 768);
 	lstTests.emplace_back(
-			"images: Half sample smooth RGB (1280x1024)",
-			image_halfsample_smooth<CH_RGB>, 1280, 1024);
-
-	lstTests.emplace_back("images: RGB->GRAY 8u (40x30)", image_rgb2gray_8u, 40, 30);
-	lstTests.emplace_back("images: RGB->GRAY 8u (80x60)", image_rgb2gray_8u, 80, 60);
-	lstTests.emplace_back(
-			"images: RGB->GRAY 8u (160x120)", image_rgb2gray_8u, 160, 120);
-	lstTests.emplace_back(
-			"images: RGB->GRAY 8u (320x240)", image_rgb2gray_8u, 320, 240);
-	lstTests.emplace_back(
-			"images: RGB->GRAY 8u (640x480)", image_rgb2gray_8u, 640, 480);
-	lstTests.emplace_back(
-			"images: RGB->GRAY 8u (800x600)", image_rgb2gray_8u, 800, 600);
-	lstTests.emplace_back(
-			"images: RGB->GRAY 8u (1024x768)", image_rgb2gray_8u, 1024, 768);
-	lstTests.emplace_back(
-			"images: RGB->GRAY 8u (1280x1024)", image_rgb2gray_8u, 1280, 1024);
-
-	lstTests.emplace_back("images: KLT score (WIN=2 5x5)", image_KLTscore, 2, 1e7);
-	lstTests.emplace_back("images: KLT score (WIN=3 7x7)", image_KLTscore, 3, 1e7);
-	lstTests.emplace_back("images: KLT score (WIN=4 9x9)", image_KLTscore, 4, 1e7);
-	lstTests.emplace_back("images: KLT score (WIN=5 10x10)", image_KLTscore, 5, 1e7);
-	lstTests.emplace_back("images: KLT score (WIN=6 13x13)", image_KLTscore, 6, 1e7);
-	lstTests.emplace_back("images: KLT score (WIN=7 15x15)", image_KLTscore, 7, 1e6);
-	lstTests.emplace_back("images: KLT score (WIN=8 17x17)", image_KLTscore, 8, 1e6);
-	lstTests.emplace_back("images: KLT score (WIN=9 19x19)", image_KLTscore, 9, 1e6);
-	lstTests.emplace_back("images: KLT score (WIN=10 21x21)", image_KLTscore, 10, 1e6);
-	lstTests.emplace_back("images: KLT score (WIN=11 23x23)", image_KLTscore, 11, 1e6);
-	lstTests.emplace_back("images: KLT score (WIN=12 25x25)", image_KLTscore, 12, 1e6);
-	lstTests.emplace_back("images: KLT score (WIN=13 27x27)", image_KLTscore, 13, 1e6);
-	lstTests.emplace_back("images: KLT score (WIN=14 29x29)", image_KLTscore, 14, 1e6);
-	lstTests.emplace_back("images: KLT score (WIN=15 31x31)", image_KLTscore, 15, 1e6);
-	lstTests.emplace_back("images: KLT score (WIN=16 33x33)", image_KLTscore, 16, 1e6);
+		"images: Half sample smooth RGB (1280x1024)",
+		image_halfsample_smooth<CH_RGB>, 1280, 1024);
 
 	lstTests.emplace_back(
-			"images: buildPyramid 640x480,4 levs,no smooth,no gray",
-			image_buildPyramid<false, false>, 500, 4);
+		"images: RGB->GRAY 8u (40x30)", image_rgb2gray_8u, 40, 30);
 	lstTests.emplace_back(
-			"images: buildPyramid 640x480,4 levs,   smooth,no gray",
-			image_buildPyramid<true, false>, 500, 4);
+		"images: RGB->GRAY 8u (80x60)", image_rgb2gray_8u, 80, 60);
 	lstTests.emplace_back(
-			"images: buildPyramid 640x480,4 levs,no smooth,   gray",
-			image_buildPyramid<false, true>, 500, 4);
+		"images: RGB->GRAY 8u (160x120)", image_rgb2gray_8u, 160, 120);
 	lstTests.emplace_back(
-			"images: buildPyramid 640x480,4 levs,   smooth,   gray",
-			image_buildPyramid<true, true>, 500, 4);
+		"images: RGB->GRAY 8u (320x240)", image_rgb2gray_8u, 320, 240);
+	lstTests.emplace_back(
+		"images: RGB->GRAY 8u (640x480)", image_rgb2gray_8u, 640, 480);
+	lstTests.emplace_back(
+		"images: RGB->GRAY 8u (800x600)", image_rgb2gray_8u, 800, 600);
+	lstTests.emplace_back(
+		"images: RGB->GRAY 8u (1024x768)", image_rgb2gray_8u, 1024, 768);
+	lstTests.emplace_back(
+		"images: RGB->GRAY 8u (1280x1024)", image_rgb2gray_8u, 1280, 1024);
 
 	lstTests.emplace_back(
-			"images: buildPyramid 640x480,8 levs,no smooth,no gray",
-			image_buildPyramid<false, false>, 500, 8);
+		"images: KLT score (WIN=2 5x5)", image_KLTscore, 2, 1e7);
 	lstTests.emplace_back(
-			"images: buildPyramid 640x480,8 levs,   smooth,no gray",
-			image_buildPyramid<true, false>, 500, 8);
+		"images: KLT score (WIN=3 7x7)", image_KLTscore, 3, 1e7);
 	lstTests.emplace_back(
-			"images: buildPyramid 640x480,8 levs,no smooth,   gray",
-			image_buildPyramid<false, true>, 500, 8);
+		"images: KLT score (WIN=4 9x9)", image_KLTscore, 4, 1e7);
 	lstTests.emplace_back(
-			"images: buildPyramid 640x480,8 levs,   smooth,   gray",
-			image_buildPyramid<true, true>, 500, 8);
+		"images: KLT score (WIN=5 10x10)", image_KLTscore, 5, 1e7);
+	lstTests.emplace_back(
+		"images: KLT score (WIN=6 13x13)", image_KLTscore, 6, 1e7);
+	lstTests.emplace_back(
+		"images: KLT score (WIN=7 15x15)", image_KLTscore, 7, 1e6);
+	lstTests.emplace_back(
+		"images: KLT score (WIN=8 17x17)", image_KLTscore, 8, 1e6);
+	lstTests.emplace_back(
+		"images: KLT score (WIN=9 19x19)", image_KLTscore, 9, 1e6);
+	lstTests.emplace_back(
+		"images: KLT score (WIN=10 21x21)", image_KLTscore, 10, 1e6);
+	lstTests.emplace_back(
+		"images: KLT score (WIN=11 23x23)", image_KLTscore, 11, 1e6);
+	lstTests.emplace_back(
+		"images: KLT score (WIN=12 25x25)", image_KLTscore, 12, 1e6);
+	lstTests.emplace_back(
+		"images: KLT score (WIN=13 27x27)", image_KLTscore, 13, 1e6);
+	lstTests.emplace_back(
+		"images: KLT score (WIN=14 29x29)", image_KLTscore, 14, 1e6);
+	lstTests.emplace_back(
+		"images: KLT score (WIN=15 31x31)", image_KLTscore, 15, 1e6);
+	lstTests.emplace_back(
+		"images: KLT score (WIN=16 33x33)", image_KLTscore, 16, 1e6);
 
 	lstTests.emplace_back(
-			"stereo: prepare rectify map 640x480 RGB",
-			stereoimage_rectify_prepare_map<CH_RGB, 640, 480, 640, 480>);
+		"images: buildPyramid 640x480,4 levs,no smooth,no gray",
+		image_buildPyramid<false, false>, 500, 4);
 	lstTests.emplace_back(
-			"stereo: prepare rectify map 800x600 RGB",
-			stereoimage_rectify_prepare_map<CH_RGB, 800, 600, 800, 600>);
+		"images: buildPyramid 640x480,4 levs,   smooth,no gray",
+		image_buildPyramid<true, false>, 500, 4);
 	lstTests.emplace_back(
-			"stereo: prepare rectify map 1024x768 RGB",
-			stereoimage_rectify_prepare_map<CH_RGB, 1024, 768, 1024, 768>);
+		"images: buildPyramid 640x480,4 levs,no smooth,   gray",
+		image_buildPyramid<false, true>, 500, 4);
 	lstTests.emplace_back(
-			"stereo: prepare rectify map 1024x768->800x600 RGB",
-			stereoimage_rectify_prepare_map<CH_RGB, 1024, 768, 800, 600>);
-	lstTests.emplace_back(
-			"stereo: prepare rectify map 1024x768->640x480 RGB",
-			stereoimage_rectify_prepare_map<CH_RGB, 1024, 768, 640, 480>);
+		"images: buildPyramid 640x480,4 levs,   smooth,   gray",
+		image_buildPyramid<true, true>, 500, 4);
 
 	lstTests.emplace_back(
-			"stereo: rectify 640x480 RGB",
-			stereoimage_rectify<CH_RGB, 640, 480, 640, 480>);
+		"images: buildPyramid 640x480,8 levs,no smooth,no gray",
+		image_buildPyramid<false, false>, 500, 8);
 	lstTests.emplace_back(
-			"stereo: rectify 800x600 RGB",
-			stereoimage_rectify<CH_RGB, 800, 600, 800, 600>);
+		"images: buildPyramid 640x480,8 levs,   smooth,no gray",
+		image_buildPyramid<true, false>, 500, 8);
 	lstTests.emplace_back(
-			"stereo: rectify 1024x768 RGB",
-			stereoimage_rectify<CH_RGB, 1024, 768, 1024, 768>);
+		"images: buildPyramid 640x480,8 levs,no smooth,   gray",
+		image_buildPyramid<false, true>, 500, 8);
 	lstTests.emplace_back(
-			"stereo: rectify 1024x768->800x600 RGB",
-			stereoimage_rectify<CH_RGB, 1024, 768, 800, 600>);
-	lstTests.emplace_back(
-			"stereo: rectify 1024x768->640x480 RGB",
-			stereoimage_rectify<CH_RGB, 1024, 768, 640, 480>);
+		"images: buildPyramid 640x480,8 levs,   smooth,   gray",
+		image_buildPyramid<true, true>, 500, 8);
 
 	lstTests.emplace_back(
-			"stereo: rectify 640x480 GRAY",
-			stereoimage_rectify<CH_GRAY, 640, 480, 640, 480>);
+		"stereo: prepare rectify map 640x480 RGB",
+		stereoimage_rectify_prepare_map<CH_RGB, 640, 480, 640, 480>);
 	lstTests.emplace_back(
-			"stereo: rectify 800x600 GRAY",
-			stereoimage_rectify<CH_GRAY, 800, 600, 800, 600>);
+		"stereo: prepare rectify map 800x600 RGB",
+		stereoimage_rectify_prepare_map<CH_RGB, 800, 600, 800, 600>);
 	lstTests.emplace_back(
-			"stereo: rectify 1024x768 GRAY",
-			stereoimage_rectify<CH_GRAY, 1024, 768, 1024, 768>);
+		"stereo: prepare rectify map 1024x768 RGB",
+		stereoimage_rectify_prepare_map<CH_RGB, 1024, 768, 1024, 768>);
 	lstTests.emplace_back(
-			"stereo: rectify 1024x768->800x600 GRAY",
-			stereoimage_rectify<CH_GRAY, 1024, 768, 800, 600>);
+		"stereo: prepare rectify map 1024x768->800x600 RGB",
+		stereoimage_rectify_prepare_map<CH_RGB, 1024, 768, 800, 600>);
 	lstTests.emplace_back(
-			"stereo: rectify 1024x768->640x480 GRAY",
-			stereoimage_rectify<CH_GRAY, 1024, 768, 640, 480>);
+		"stereo: prepare rectify map 1024x768->640x480 RGB",
+		stereoimage_rectify_prepare_map<CH_RGB, 1024, 768, 640, 480>);
+
+	lstTests.emplace_back(
+		"stereo: rectify 640x480 RGB",
+		stereoimage_rectify<CH_RGB, 640, 480, 640, 480>);
+	lstTests.emplace_back(
+		"stereo: rectify 800x600 RGB",
+		stereoimage_rectify<CH_RGB, 800, 600, 800, 600>);
+	lstTests.emplace_back(
+		"stereo: rectify 1024x768 RGB",
+		stereoimage_rectify<CH_RGB, 1024, 768, 1024, 768>);
+	lstTests.emplace_back(
+		"stereo: rectify 1024x768->800x600 RGB",
+		stereoimage_rectify<CH_RGB, 1024, 768, 800, 600>);
+	lstTests.emplace_back(
+		"stereo: rectify 1024x768->640x480 RGB",
+		stereoimage_rectify<CH_RGB, 1024, 768, 640, 480>);
+
+	lstTests.emplace_back(
+		"stereo: rectify 640x480 GRAY",
+		stereoimage_rectify<CH_GRAY, 640, 480, 640, 480>);
+	lstTests.emplace_back(
+		"stereo: rectify 800x600 GRAY",
+		stereoimage_rectify<CH_GRAY, 800, 600, 800, 600>);
+	lstTests.emplace_back(
+		"stereo: rectify 1024x768 GRAY",
+		stereoimage_rectify<CH_GRAY, 1024, 768, 1024, 768>);
+	lstTests.emplace_back(
+		"stereo: rectify 1024x768->800x600 GRAY",
+		stereoimage_rectify<CH_GRAY, 1024, 768, 800, 600>);
+	lstTests.emplace_back(
+		"stereo: rectify 1024x768->640x480 GRAY",
+		stereoimage_rectify<CH_GRAY, 1024, 768, 640, 480>);
 }

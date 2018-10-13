@@ -15,39 +15,39 @@ namespace mrpt::opengl
 {
 /** A solid or wireframe frustum in 3D (a rectangular truncated pyramid), with
  * arbitrary (possibly assymetric) field-of-view angles.
-  *
-  *  You can switch whether to show only the lines, the surface of the frustum,
+ *
+ *  You can switch whether to show only the lines, the surface of the frustum,
  * or both.
-  *  By default only the lines are drawn.
-  *
-  *  The color of the object (via CRenderizable::setColor()) affects the color
+ *  By default only the lines are drawn.
+ *
+ *  The color of the object (via CRenderizable::setColor()) affects the color
  * of lines.
-  *  To set the color of planes use \a setPlaneColor()
-  *
-  *  As usual in MRPT, the +X axis is assumed to by the main direction, in this
+ *  To set the color of planes use \a setPlaneColor()
+ *
+ *  As usual in MRPT, the +X axis is assumed to by the main direction, in this
  * case of the pyramid axis.
-  *
-  *  The horizontal and vertical FOVs can be set directly with \a setHorzFOV()
+ *
+ *  The horizontal and vertical FOVs can be set directly with \a setHorzFOV()
  * and \a setVertFOV() if
-  *  they are symmetric, or with \a setHorzFOVAsymmetric() and \a
+ *  they are symmetric, or with \a setHorzFOVAsymmetric() and \a
  * setVertFOVAsymmetric() otherwise.
-  *
-  *  All FOV angles are positive numbers. FOVs must be below 90deg on each side
+ *
+ *  All FOV angles are positive numbers. FOVs must be below 90deg on each side
  * (below 180deg in total).
-  *  If you try to set FOVs to larger values they'll truncated to 89.9deg.
-  *
-  * \sa opengl::COpenGLScene,opengl::CRenderizable
-  *
-  *  <div align="center">
-  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
+ *  If you try to set FOVs to larger values they'll truncated to 89.9deg.
+ *
+ * \sa opengl::COpenGLScene,opengl::CRenderizable
+ *
+ *  <div align="center">
+ *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
  * border-style: solid;">
-  *   <tr> <td> mrpt::opengl::CFrustum </td> <td> \image html
+ *   <tr> <td> mrpt::opengl::CFrustum </td> <td> \image html
  * preview_CFrustum.png </td> </tr>
-  *  </table>
-  *  </div>
-  *
-  * \ingroup mrpt_opengl_grp
-  */
+ *  </table>
+ *  </div>
+ *
+ * \ingroup mrpt_opengl_grp
+ */
 class CFrustum : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CFrustum)
@@ -133,6 +133,4 @@ class CFrustum : public CRenderizableDisplayList
 	/** Destructor  */
 	~CFrustum() override = default;
 };
-}
-
-
+}  // namespace mrpt::opengl

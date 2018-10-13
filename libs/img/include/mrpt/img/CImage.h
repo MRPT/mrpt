@@ -18,14 +18,12 @@ struct _IplImage;
 using IplImage = struct _IplImage;
 namespace cv
 {
-	class Mat;
+class Mat;
 }
 #else
 // Shouldn't matter what the type is.
-using IplImage = void *;
+using IplImage = void*;
 #endif
-
-
 
 // Add for declaration of mexplus::from template specialization
 DECLARE_MEXPLUS_FROM(mrpt::img::CImage)
@@ -38,11 +36,10 @@ class CStream;
 }
 namespace img
 {
-
 enum class PixelDepth : int32_t
 {
-	D8U  = 0,
-	D8S  = 1,
+	D8U = 0,
+	D8S = 1,
 	D16U = 2,
 	D16S = 3,
 	D32S = 4,
@@ -235,7 +232,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 
 	/** Constructor from an cv::Mat, making a copy of the image.
 	 */
-	CImage(const cv::Mat &mat);
+	CImage(const cv::Mat& mat);
 #endif
 
 	/** Explicit constructor from a matrix, interpreted as grayscale intensity
@@ -807,21 +804,21 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	 * unload.
 	 *   An image becomes of type "external storage" only through calling
 	 * setExternalStorage. This property remains after serializing the object.
-	  *   File names can be absolute, or relative to the
+	 *   File names can be absolute, or relative to the
 	 * CImage::getImagesPathBase() directory. Filenames staring with "X:\" or
 	 * "/"
 	 * are considered absolute paths.
-	  *   By calling this method the current contents of the image are NOT saved
+	 *   By calling this method the current contents of the image are NOT saved
 	 * to that file, because this method can be also called
-	  *    to let the object know where to load the image in case its contents
+	 *    to let the object know where to load the image in case its contents
 	 * are required. Thus, for saving images in this format (not when loading)
-	  *    the proper order of commands should be:
-	  *   \code
-	  *   img.saveToFile( fileName );
-	  *   img.setExternalStorage( fileName );
-	  *   \endcode
-	  *
-	  *   \note Modifications to the memory copy of the image are not
+	 *    the proper order of commands should be:
+	 *   \code
+	 *   img.saveToFile( fileName );
+	 *   img.setExternalStorage( fileName );
+	 *   \endcode
+	 *
+	 *   \note Modifications to the memory copy of the image are not
 	 * automatically saved to disk.
 	 *  \sa unload, isExternallyStored
 	 */

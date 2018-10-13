@@ -174,8 +174,7 @@ void register_tests_graph()
 
 	lstTests.emplace_back(
 		"graph(2d pdf): insertEdge x 1e4",
-		graphs_test_populate<CPosePDFGaussianInf, map_traits_stdmap>, 1e4,
-		250);
+		graphs_test_populate<CPosePDFGaussianInf, map_traits_stdmap>, 1e4, 250);
 	lstTests.emplace_back(
 		"graph(2d pdf,vec): insertEdge x 1e4",
 		graphs_test_populate<CPosePDFGaussianInf, map_traits_map_as_vector>,

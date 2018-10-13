@@ -132,5 +132,4 @@ class PLY_Exporter
 
 };  // End of class def.
 
-}
-
+}  // namespace mrpt::opengl

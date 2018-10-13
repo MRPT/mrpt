@@ -218,7 +218,7 @@ void TestICP()
 	 * For a full list of the available options check the online tutorials
 	 * page:
 	 * http://www.mrpt.org/Iterative_Closest_Point_(ICP)_and_other_matching_algorithms
-	*/
+	 */
 
 	//	select which algorithm version to use
 	//	ICP.options.ICP_algorithm = icpLevenbergMarquardt;

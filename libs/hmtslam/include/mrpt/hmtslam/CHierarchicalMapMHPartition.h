@@ -33,15 +33,15 @@ namespace hmtslam
  *  A usar will never create an instance of this class, rather it will employ
  * CHierarchicalMHMap.
  * \sa CHierarchicalMHMap, CHMHMapArc, CHMHMapNode
-  * \ingroup mrpt_hmtslam_grp
+ * \ingroup mrpt_hmtslam_grp
  */
 class CHierarchicalMapMHPartition : public mrpt::system::COutputLogger
 {
    protected:
 	/** The internal list of nodes and arcs in the whole hierarchical model.
-	  *  The objects must be deleted only in the CHierarchicalMap class, not in
+	 *  The objects must be deleted only in the CHierarchicalMap class, not in
 	 * partitions only objects.
-	  */
+	 */
 	TNodeList m_nodes;
 	TArcList m_arcs;
 
@@ -59,93 +59,93 @@ class CHierarchicalMapMHPartition : public mrpt::system::COutputLogger
 	iterator end() { return m_nodes.end(); }
 	CHierarchicalMapMHPartition() : m_nodes(), m_arcs() {}
 	/** A type that reprensents a sequence of node IDs
-	  */
+	 */
 	using TNodeIDsList = std::vector<CHMHMapNode::TNodeID>;
 
 	/** Returns the number of nodes in the partition:
-	  */
+	 */
 	size_t nodeCount() const;
 
 	/** Returns the number of arcs in the partition:
-	  */
+	 */
 	size_t arcCount() const;
 
 	/** Returns the first node in the graph, or nullptr if it does not exist.
-	  * \return A pointer to the object. DO NOT DELETE this object, if you want
+	 * \return A pointer to the object. DO NOT DELETE this object, if you want
 	 * to modify it in someway, first obtain a copy by invoking
 	 * "CSerializable::duplicate"
-	  */
+	 */
 	CHMHMapNode::Ptr getFirstNode();
 
 	/** Returns the node with the given ID, or nullptr if it does not exist.
-	  * \return A pointer to the object. DO NOT DELETE this object, if you want
+	 * \return A pointer to the object. DO NOT DELETE this object, if you want
 	 * to modify it in someway, first obtain a copy by invoking
 	 * "CSerializable::duplicate"
-	  */
+	 */
 	CHMHMapNode::Ptr getNodeByID(CHMHMapNode::TNodeID id);
 
 	/** Returns the node with the given ID, or nullptr if it does not exist.
-	  * \return A pointer to the object. DO NOT DELETE this object, if you want
+	 * \return A pointer to the object. DO NOT DELETE this object, if you want
 	 * to modify it in someway, first obtain a copy by invoking
 	 * "CSerializable::duplicate"
-	  */
+	 */
 	const CHMHMapNode::Ptr getNodeByID(CHMHMapNode::TNodeID id) const;
 
 	/** Returns the node with the given label (case insensitive) for some given
 	 * hypothesis ID, or nullptr if it does not exist.
-	  * \return A pointer to the object. DO NOT DELETE this object, if you want
+	 * \return A pointer to the object. DO NOT DELETE this object, if you want
 	 * to modify it in someway, first obtain a copy by invoking
 	 * "CSerializable::duplicate"
-	  */
+	 */
 	CHMHMapNode::Ptr getNodeByLabel(
 		const std::string& label, const THypothesisID& hypothesisID);
 
 	/** Returns the node with the given label (case insensitive) for some given
 	 * hypothesis ID, or nullptr if it does not exist.
-	  * \return A pointer to the object. DO NOT DELETE this object, if you want
+	 * \return A pointer to the object. DO NOT DELETE this object, if you want
 	 * to modify it in someway, first obtain a copy by invoking
 	 * "CSerializable::duplicate"
-	  */
+	 */
 	const CHMHMapNode::Ptr getNodeByLabel(
 		const std::string& label, const THypothesisID& hypothesisID) const;
 
 	/** Returns a partition of this graph only with nodes at a given level in
-	  *the hierarchy (0=ground level,1=parent level,etc)
-	   *	- The partition may be empty if no node fulfills the condition.
-	   *	- All arcs STARTING at each node from the partition will be added to
-	  *the partition as well.
-	   *	- Levels in the hierarchy here stands for arcs of type
-	  *"arcType_Belongs" only.
-	   * \sa CHMHMapArc
-	   */
+	 *the hierarchy (0=ground level,1=parent level,etc)
+	 *	- The partition may be empty if no node fulfills the condition.
+	 *	- All arcs STARTING at each node from the partition will be added to
+	 *the partition as well.
+	 *	- Levels in the hierarchy here stands for arcs of type
+	 *"arcType_Belongs" only.
+	 * \sa CHMHMapArc
+	 */
 	// CHierarchicalMapMHPartition	 getPartitionByHiearchyLevel( unsigned int
 	// level );
 
 	/** Saves a MATLAB script that represents graphically the nodes with
-	  *<i>type</i>="Area" in this hierarchical-map(partition), using the stated
-	  *node as global coordinates reference.
-	  *  ADDITIONAL NOTES:
-	  *	- Coordinates are computed simply as the mean value of the first arc
-	  *with an annotation "RelativePose", added to the pose of the original
-	  *node.
-	  *	- If the coordinates of any node can not be computed (no arcs,...), an
-	  *exception will be raised.
-	  */
+	 *<i>type</i>="Area" in this hierarchical-map(partition), using the stated
+	 *node as global coordinates reference.
+	 *  ADDITIONAL NOTES:
+	 *	- Coordinates are computed simply as the mean value of the first arc
+	 *with an annotation "RelativePose", added to the pose of the original
+	 *node.
+	 *	- If the coordinates of any node can not be computed (no arcs,...), an
+	 *exception will be raised.
+	 */
 	void saveAreasDiagramForMATLAB(
 		const std::string& filName, const CHMHMapNode::TNodeID& idReferenceNode,
 		const THypothesisID& hypothesisID) const;
 
 	/** Saves a MATLAB script that represents graphically the nodes with
-	  *<i>type</i>="Area" in this hierarchical-map(partition), using the stated
-	  *node as global coordinates reference, and drawing the ellipses of the
-	  *localization uncertainty for each node.
-	  *  ADDITIONAL NOTES:
-	  *	- Coordinates are computed simply as the mean value of the first arc
-	  *with an annotation "RelativePose", added to the pose of the original
-	  *node.
-	  *	- If the coordinates of any node can not be computed (no arcs,...), an
-	  *exception will be raised.
-	  */
+	 *<i>type</i>="Area" in this hierarchical-map(partition), using the stated
+	 *node as global coordinates reference, and drawing the ellipses of the
+	 *localization uncertainty for each node.
+	 *  ADDITIONAL NOTES:
+	 *	- Coordinates are computed simply as the mean value of the first arc
+	 *with an annotation "RelativePose", added to the pose of the original
+	 *node.
+	 *	- If the coordinates of any node can not be computed (no arcs,...), an
+	 *exception will be raised.
+	 */
 	void saveAreasDiagramWithEllipsedForMATLAB(
 		const std::string& filName, const CHMHMapNode::TNodeID& idReferenceNode,
 		const THypothesisID& hypothesisID,
@@ -153,23 +153,23 @@ class CHierarchicalMapMHPartition : public mrpt::system::COutputLogger
 		unsigned int numberOfIterationsForOptimalGlobalPoses = 4) const;
 
 	/** Saves a MATLAB script that represents graphically the reconstructed
-	  *"global map"
-	  *  ADDITIONAL NOTES:
-	  *	- Coordinates are computed simply as the mean value of the first arc
-	  *with an annotation "RelativePose", added to the pose of the original
-	  *node.
-	  *	- If the coordinates of any node can not be computed (no arcs,...), an
-	  *exception will be raised.
-	  */
+	 *"global map"
+	 *  ADDITIONAL NOTES:
+	 *	- Coordinates are computed simply as the mean value of the first arc
+	 *with an annotation "RelativePose", added to the pose of the original
+	 *node.
+	 *	- If the coordinates of any node can not be computed (no arcs,...), an
+	 *exception will be raised.
+	 */
 	void saveGlobalMapForMATLAB(
 		const std::string& filName, const THypothesisID& hypothesisID,
 		const CHMHMapNode::TNodeID& idReferenceNode) const;
 
 	/** The Dijkstra algorithm for finding the shortest path between a pair of
 	 * nodes.
-	  * \return The sequence of arcs connecting the nodes.It will be empty if no
+	 * \return The sequence of arcs connecting the nodes.It will be empty if no
 	 * path is found or when the starting and ending node coincide.
-	  */
+	 */
 	void findPathBetweenNodes(
 		const CHMHMapNode::TNodeID& nodeFrom,
 		const CHMHMapNode::TNodeID& nodeTo, const THypothesisID& hypothesisID,
@@ -177,10 +177,10 @@ class CHierarchicalMapMHPartition : public mrpt::system::COutputLogger
 
 	/** Draw a number of samples according to the PDF of the coordinates
 	 * transformation between a pair of "Area"'s nodes.
-	  * \exception std::exception If there is not enought information in arcs to
+	 * \exception std::exception If there is not enought information in arcs to
 	 * compute the PDF
-	  * \sa computeGloballyConsistentNodeCoordinates
-	  */
+	 * \sa computeGloballyConsistentNodeCoordinates
+	 */
 	void computeCoordinatesTransformationBetweenNodes(
 		const CHMHMapNode::TNodeID& nodeFrom,
 		const CHMHMapNode::TNodeID& nodeTo,
@@ -192,9 +192,9 @@ class CHierarchicalMapMHPartition : public mrpt::system::COutputLogger
 	/** Computes the probability [0,1] of two areas' gridmaps to "match" (loop
 	 * closure), according to the grid maps and pose uncertainty from
 	 * information in arcs (uses a Monte Carlo aproximation)
-	   *  If there is not enough information or a robust estimation cannot be
+	 *  If there is not enough information or a robust estimation cannot be
 	 * found, there will not be particles in "estimatedRelativePose".
-	   */
+	 */
 	float computeMatchProbabilityBetweenNodes(
 		const CHMHMapNode::TNodeID& nodeFrom,
 		const CHMHMapNode::TNodeID& nodeTo, float& maxMatchProb,
@@ -203,13 +203,13 @@ class CHierarchicalMapMHPartition : public mrpt::system::COutputLogger
 		unsigned int monteCarloSamplesPose = 300);
 
 	/** Returns all the arcs between a pair of nodes:
-	  */
+	 */
 	void findArcsBetweenNodes(
 		const CHMHMapNode::TNodeID& node1, const CHMHMapNode::TNodeID& node2,
 		const THypothesisID& hypothesisID, TArcList& out_listArcs) const;
 
 	/** Returns the arcs between a pair of nodes of a given type.
-	  */
+	 */
 	void findArcsOfTypeBetweenNodes(
 		const CHMHMapNode::TNodeID& node1id,
 		const CHMHMapNode::TNodeID& node2id, const THypothesisID& hypothesisID,
@@ -217,8 +217,8 @@ class CHierarchicalMapMHPartition : public mrpt::system::COutputLogger
 
 	/** Returns the first arc between a pair of nodes of a given type, and if it
 	 * is in the opposite direction.
-	  * \return The arc, or nullptr if not found.
-	  */
+	 * \return The arc, or nullptr if not found.
+	 */
 	CHMHMapArc::Ptr findArcOfTypeBetweenNodes(
 		const CHMHMapNode::TNodeID& node1id,
 		const CHMHMapNode::TNodeID& node2id, const THypothesisID& hypothesisID,
@@ -234,26 +234,27 @@ class CHierarchicalMapMHPartition : public mrpt::system::COutputLogger
 	/** This methods implements a Lu&Milios-like globally optimal estimation for
 	 * the global coordinates of all the nodes in the graph according to all
 	 * available arcs with relative pose information.
-	  * Global coordinates will be computed relative to the node
+	 * Global coordinates will be computed relative to the node
 	 * "idReferenceNode".
-	  * \exception std::exception If there is any node without a pose arc,
+	 * \exception std::exception If there is any node without a pose arc,
 	 * invalid (non invertible) matrixes, etc...
-	  * \sa computeCoordinatesTransformationBetweenNodes
-	  */
+	 * \sa computeCoordinatesTransformationBetweenNodes
+	 */
 	void computeGloballyConsistentNodeCoordinates(
-		std::map<CHMHMapNode::TNodeID, mrpt::poses::CPose3DPDFGaussian,
-				 std::less<CHMHMapNode::TNodeID>,
-				 Eigen::aligned_allocator<
-					 std::pair<const CHMHMapNode::TNodeID,
-							   mrpt::poses::CPose3DPDFGaussian>>>& nodePoses,
+		std::map<
+			CHMHMapNode::TNodeID, mrpt::poses::CPose3DPDFGaussian,
+			std::less<CHMHMapNode::TNodeID>,
+			Eigen::aligned_allocator<std::pair<
+				const CHMHMapNode::TNodeID, mrpt::poses::CPose3DPDFGaussian>>>&
+			nodePoses,
 		const CHMHMapNode::TNodeID& idReferenceNode,
 		const THypothesisID& hypothesisID,
 		const unsigned int& numberOfIterations = 2) const;
 
 	/** Returns a 3D scene reconstruction of the hierarchical map.
-	  *  See "computeGloballyConsistentNodeCoordinates" for the meaning of
+	 *  See "computeGloballyConsistentNodeCoordinates" for the meaning of
 	 * "numberOfIterationsForOptimalGlobalPoses"
-	  */
+	 */
 	void getAs3DScene(
 		mrpt::opengl::COpenGLScene& outScene,
 		const CHMHMapNode::TNodeID& idReferenceNode,
@@ -266,12 +267,12 @@ class CHierarchicalMapMHPartition : public mrpt::system::COutputLogger
 
 	/** Computes the probability [0,1] of two areas' gridmaps to overlap, via a
 	 * Monte Carlo aproximation.
-	  * \exception std::exception If there is not enought information in arcs,
+	 * \exception std::exception If there is not enought information in arcs,
 	 * etc...
-	  * \param margin_to_substract In meters, the area of each gridmap is
+	 * \param margin_to_substract In meters, the area of each gridmap is
 	 * "eroded" this amount to compensate the area in excess usually found in
 	 * gridmaps.
-	  */
+	 */
 	double computeOverlapProbabilityBetweenNodes(
 		const CHMHMapNode::TNodeID& nodeFrom,
 		const CHMHMapNode::TNodeID& nodeTo, const THypothesisID& hypothesisID,
@@ -280,6 +281,5 @@ class CHierarchicalMapMHPartition : public mrpt::system::COutputLogger
 
    protected:
 };  // End of class def.
-}
-}
-
+}  // namespace hmtslam
+}  // namespace mrpt

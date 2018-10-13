@@ -160,5 +160,4 @@ struct TWaypointStatusSequence
 		const mrpt::nav::TWaypointsRenderingParams& params =
 			mrpt::nav::TWaypointsRenderingParams()) const;
 };
-}
-
+}  // namespace mrpt::nav

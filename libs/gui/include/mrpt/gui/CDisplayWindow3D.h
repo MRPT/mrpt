@@ -23,95 +23,95 @@ class CMyGLCanvas_DisplayWindow3D;
 
 /** A graphical user interface (GUI) for efficiently rendering 3D scenes in
  * real-time.
-  *  This class always contains internally an instance of opengl::COpenGLScene,
+ *  This class always contains internally an instance of opengl::COpenGLScene,
  * which
-  *   the objects, viewports, etc. to be rendered.
-  *
-  *  Images can be grabbed automatically to disk for easy creation of videos.
-  *  See CDisplayWindow3D::grabImagesStart  (and for creating videos,
+ *   the objects, viewports, etc. to be rendered.
+ *
+ *  Images can be grabbed automatically to disk for easy creation of videos.
+ *  See CDisplayWindow3D::grabImagesStart  (and for creating videos,
  * mrpt::vision::CVideoFileWriter).
-  *
-  *  A short-cut for displaying 2D images (using the OpenGL rendering hardware)
+ *
+ *  A short-cut for displaying 2D images (using the OpenGL rendering hardware)
  * is available
-  *  through \a setImageView() and \a setImageView_fast(). Internally, these
+ *  through \a setImageView() and \a setImageView_fast(). Internally, these
  * methods call methods
-  *  in the "main" viewport of the window (see \a COpenGLViewport).
-  *
-  *  Since the 3D rendering is performed in a detached thread, especial care
+ *  in the "main" viewport of the window (see \a COpenGLViewport).
+ *
+ *  Since the 3D rendering is performed in a detached thread, especial care
  * must be taken
-  *   when updating the 3D scene to be rendered. The process involves an
+ *   when updating the 3D scene to be rendered. The process involves an
  * internal critical section
-  *   and it must always consist of these steps:
-  *
-  * \code
-  *   mrpt::gui::CDisplayWindow3D	win("My window");
-  *
-  *   // Adquire the scene:
-  *   mrpt::opengl::COpenGLScene::Ptr &ptrScene = win.get3DSceneAndLock();
-  *
-  *   // Modify the scene:
-  *   ptrScene->...
-  *   // or replace by another scene:
-  *   ptrScene = otherScene;
-  *
-  *   // Unlock it, so the window can use it for redraw:
-  *   win.unlockAccess3DScene();
-  *
-  *   // Update window, if required
-  *   win.forceRepaint();
-  * \endcode
-  *
-  * An alternative way of updating the scene is by creating, before locking the
+ *   and it must always consist of these steps:
+ *
+ * \code
+ *   mrpt::gui::CDisplayWindow3D	win("My window");
+ *
+ *   // Adquire the scene:
+ *   mrpt::opengl::COpenGLScene::Ptr &ptrScene = win.get3DSceneAndLock();
+ *
+ *   // Modify the scene:
+ *   ptrScene->...
+ *   // or replace by another scene:
+ *   ptrScene = otherScene;
+ *
+ *   // Unlock it, so the window can use it for redraw:
+ *   win.unlockAccess3DScene();
+ *
+ *   // Update window, if required
+ *   win.forceRepaint();
+ * \endcode
+ *
+ * An alternative way of updating the scene is by creating, before locking the
  * 3D window, a new object
-  *  of class COpenGLScene, then locking the window only for replacing the smart
+ *  of class COpenGLScene, then locking the window only for replacing the smart
  * pointer. This may be
-  *  advantageous is generating the 3D scene takes a long time, since while the
+ *  advantageous is generating the 3D scene takes a long time, since while the
  * window
-  *  is locked it will not be responsive to the user input or window redraw.
-  *
-  * It is safer against exceptions to use the auxiliary class
+ *  is locked it will not be responsive to the user input or window redraw.
+ *
+ * It is safer against exceptions to use the auxiliary class
  * CDisplayWindow3DLocker.
-  * \code
-  *   mrpt::gui::CDisplayWindow3D	win("My window");
-  *   // ...
-  *   { // The scene is adquired in this scope
-  *      mrpt::opengl::COpenGLScene::Ptr ptrScene;
-  *      mrpt::gui::CDisplayWindow3DLocker  locker(win,ptrScene);
-  *      //...
-  *
-  *   } // scene is unlocked upon dtor of `locker`
-  * \endcode
-  *
-  * Notice however that a copy of the smart pointer is made, so replacement of
+ * \code
+ *   mrpt::gui::CDisplayWindow3D	win("My window");
+ *   // ...
+ *   { // The scene is adquired in this scope
+ *      mrpt::opengl::COpenGLScene::Ptr ptrScene;
+ *      mrpt::gui::CDisplayWindow3DLocker  locker(win,ptrScene);
+ *      //...
+ *
+ *   } // scene is unlocked upon dtor of `locker`
+ * \endcode
+ *
+ * Notice however that a copy of the smart pointer is made, so replacement of
  * the entire scene
-  * via `operator =` is not possible if using this method. Still, in general it
+ * via `operator =` is not possible if using this method. Still, in general it
  * should be preferred because
-  * the mutexes are automatically released in case of unexpected exceptions.
-  *
-  * The window can also display a set of 2D text messages overlapped to the 3D
+ * the mutexes are automatically released in case of unexpected exceptions.
+ *
+ * The window can also display a set of 2D text messages overlapped to the 3D
  * scene.
-  *  See CDisplayWindow3D::addTextMessage
-  *
-  *  For a list of supported events with the observer/observable pattern, see
+ *  See CDisplayWindow3D::addTextMessage
+ *
+ *  For a list of supported events with the observer/observable pattern, see
  * the discussion in mrpt::gui::CBaseGUIWindow.
-  *  In addition to those events, this class introduces
+ *  In addition to those events, this class introduces
  * mrpt::gui::mrptEvent3DWindowGrabImageFile
-  *
-  * ** CDisplayWindow3D mouse view navigation cheatsheet **
-  *  - <b>Orbit camera</b>: Left-button pressed + move
-  *  - <b>Zoom in / out</b>:
-  *    - Mouse scroll wheel, or
-  *    - SHIFT+Left-button pressed + move up/down
-  *  - <b>Look around (pivot camera)</b>: CTRL+Left-button pressed + move
+ *
+ * ** CDisplayWindow3D mouse view navigation cheatsheet **
+ *  - <b>Orbit camera</b>: Left-button pressed + move
+ *  - <b>Zoom in / out</b>:
+ *    - Mouse scroll wheel, or
+ *    - SHIFT+Left-button pressed + move up/down
+ *  - <b>Look around (pivot camera)</b>: CTRL+Left-button pressed + move
  * up/down
-  *  - <b>Pan (XY plane)</b>: Right-button pressed + move
-  *  - <b>Move camera along Z axis</b>: SHIFT+Left-button pressed + move
+ *  - <b>Pan (XY plane)</b>: Right-button pressed + move
+ *  - <b>Move camera along Z axis</b>: SHIFT+Left-button pressed + move
  * left/right
-  *
-  * \sa  The example /samples/display3D, the <a
+ *
+ * \sa  The example /samples/display3D, the <a
  * href="http://www.mrpt.org/Tutorial_3D_Scenes" > tutorial only</a>.
-  * \ingroup mrpt_gui_grp
-  */
+ * \ingroup mrpt_gui_grp
+ */
 class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 {
    public:
@@ -167,14 +167,14 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 
 	/** Gets a reference to the smart shared pointer that holds the internal
 	 * scene (carefuly read introduction in gui::CDisplayWindow3D before use!)
-	  *  This also locks the critical section for accesing the scene, thus the
+	 *  This also locks the critical section for accesing the scene, thus the
 	 * window will not be repainted until it is unlocked.
-	  * \note It is safer to use mrpt::gui::CDisplayWindow3DLocker instead.*/
+	 * \note It is safer to use mrpt::gui::CDisplayWindow3DLocker instead.*/
 	mrpt::opengl::COpenGLScene::Ptr& get3DSceneAndLock();
 
 	/** Unlocks the access to the internal 3D scene. It is safer to use
 	 * mrpt::gui::CDisplayWindow3DLocker instead.
-	  *  Typically user will want to call forceRepaint after updating the scene.
+	 *  Typically user will want to call forceRepaint after updating the scene.
 	 */
 	void unlockAccess3DScene();
 
@@ -245,84 +245,84 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	void setCursorCross(bool cursorIsCross) override;
 
 	/** Start to save rendered images to disk.
-	  *  Images will be saved independently as png files, depending on
-	  *   the template path passed to this method. For example:
-	  *
-	  *  path_prefix: "./video_"
-	  *
-	  *  Will generate "./video_000001.png", etc.
-	  *
-	  *  If this feature is enabled, the window will emit events of the type
+	 *  Images will be saved independently as png files, depending on
+	 *   the template path passed to this method. For example:
+	 *
+	 *  path_prefix: "./video_"
+	 *
+	 *  Will generate "./video_000001.png", etc.
+	 *
+	 *  If this feature is enabled, the window will emit events of the type
 	 * mrpt::gui::mrptEvent3DWindowGrabImageFile() which you can subscribe to.
-	  *
-	  *  \sa grabImagesStop
-	  */
+	 *
+	 *  \sa grabImagesStop
+	 */
 	void grabImagesStart(
 		const std::string& grab_imgs_prefix = std::string("video_"));
 
 	/** Stops image grabbing started by grabImagesStart
-	  * \sa grabImagesStart
-	  */
+	 * \sa grabImagesStart
+	 */
 	void grabImagesStop();
 
 	/** Enables the grabbing of CImage objects from screenshots of the window.
-	  *  \sa getLastWindowImage
-	  */
+	 *  \sa getLastWindowImage
+	 */
 	void captureImagesStart();
 
 	/** Stop image grabbing
-	  * \sa captureImagesStart
-	  */
+	 * \sa captureImagesStart
+	 */
 	void captureImagesStop();
 
 	/** Retrieve the last captured image from the window.
-	  *  You MUST CALL FIRST captureImagesStart to enable image grabbing.
-	  * \return false if there was no time yet for grabbing any image (then, the
+	 *  You MUST CALL FIRST captureImagesStart to enable image grabbing.
+	 * \return false if there was no time yet for grabbing any image (then, the
 	 * output image is undefined).
-	  * \sa captureImagesStart, getLastWindowImagePtr
-	  */
+	 * \sa captureImagesStart, getLastWindowImagePtr
+	 */
 	bool getLastWindowImage(mrpt::img::CImage& out_img) const;
 
 	/** Retrieve the last captured image from the window, as a smart pointer.
-	  *  This method is more efficient than getLastWindowImage since only a copy
+	 *  This method is more efficient than getLastWindowImage since only a copy
 	 * of the pointer is performed, while
-	  *   getLastWindowImage would copy the entire image.
-	  *
-	  *  You MUST CALL FIRST captureImagesStart to enable image grabbing.
-	  * \Note If there was no time yet for grabbing any image, an empty smart
+	 *   getLastWindowImage would copy the entire image.
+	 *
+	 *  You MUST CALL FIRST captureImagesStart to enable image grabbing.
+	 * \Note If there was no time yet for grabbing any image, an empty smart
 	 * pointer will be returned.
-	  * \sa captureImagesStart, getLastWindowImage
-	  */
+	 * \sa captureImagesStart, getLastWindowImage
+	 */
 	mrpt::img::CImage::Ptr getLastWindowImagePtr() const;
 
 	/** Increments by one the image counter and return the next image file name
 	 * (Users normally don't want to call this method).
-	  * \sa grabImagesStart
-	  */
+	 * \sa grabImagesStart
+	 */
 	std::string grabImageGetNextFile();
 
 	bool isCapturingImgs() const { return m_is_capturing_imgs; }
 	/** Add 2D text messages overlapped to the 3D rendered scene. The string
 	 * will remain displayed in the 3D window
-	  *   until it's changed with subsequent calls to this same method, or all
+	 *   until it's changed with subsequent calls to this same method, or all
 	 * the texts are cleared with clearTextMessages().
-	  *
-	  *  \param x The X position, interpreted as absolute pixels from the left
+	 *
+	 *  \param x The X position, interpreted as absolute pixels from the left
 	 * if X>=1, absolute pixels from the left if X<0 or as a width factor if in
 	 * the range [0,1[.
-	  *  \param y The Y position, interpreted as absolute pixels from the bottom
+	 *  \param y The Y position, interpreted as absolute pixels from the bottom
 	 * if Y>=1, absolute pixels from the top if Y<0 or as a height factor if in
 	 * the range [0,1[.
-	  *  \param text The text string to display.
-	  *  \param color The text color. For example: TColorf(1.0,1.0,1.0)
-	  *  \param unique_index An "index" for this text message, so that
+	 *  \param text The text string to display.
+	 *  \param color The text color. For example: TColorf(1.0,1.0,1.0)
+	 *  \param unique_index An "index" for this text message, so that
 	 * subsequent calls with the same index will overwrite this text message
 	 * instead of creating new ones.
-	  *
-	  *  You'll need to refresh the display manually with forceRepaint().
-	  *
-	  * \sa clearTextMessages
-	  */
+	 *
+	 *  You'll need to refresh the display manually with forceRepaint().
+	 *
+	 * \sa clearTextMessages
+	 */
 	void addTextMessage(
 		const double x, const double y, const std::string& text,
 		const mrpt::img::TColorf& color = mrpt::img::TColorf(1.0, 1.0, 1.0),
@@ -343,9 +343,9 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 		const mrpt::img::TColorf& shadow_color = mrpt::img::TColorf(0, 0, 0));
 
 	/**  Clear all text messages created with addTextMessage().
-	  *  You'll need to refresh the display manually with forceRepaint().
-	  * \sa addTextMessage
-	  */
+	 *  You'll need to refresh the display manually with forceRepaint().
+	 * \sa addTextMessage
+	 */
 	void clearTextMessages();
 
 	/** Get the average Frames Per Second (FPS) value from the last 250
@@ -353,37 +353,37 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	double getRenderingFPS() const { return m_last_FPS; }
 	/** A short cut for getting the "main" viewport of the scene object, it is
 	 * equivalent to:
-	  *  \code
-	  *    mrpt::opengl::COpenGLScene::Ptr &scene = win3D.get3DSceneAndLock();
-	  *    viewport = scene->getViewport("main");
-	  *    win3D.unlockAccess3DScene();
-	  *  \endcode
-	  */
+	 *  \code
+	 *    mrpt::opengl::COpenGLScene::Ptr &scene = win3D.get3DSceneAndLock();
+	 *    viewport = scene->getViewport("main");
+	 *    win3D.unlockAccess3DScene();
+	 *  \endcode
+	 */
 	mrpt::opengl::COpenGLViewport::Ptr getDefaultViewport();
 
 	/** Set the "main" viewport into "image view"-mode, where an image is
 	 * efficiently drawn (fitting the viewport area) using an OpenGL textured
 	 * quad.
-	  *  Call this method with the new image to update the displayed image (but
+	 *  Call this method with the new image to update the displayed image (but
 	 * recall to first lock the parent openglscene's critical section, then do
 	 * the update, then release the lock, and then issue a window repaint).
-	  *  Internally, the texture is drawn using a mrpt::opengl::CTexturedPlane
-	  *  The viewport can be reverted to behave like a normal viewport by
+	 *  Internally, the texture is drawn using a mrpt::opengl::CTexturedPlane
+	 *  The viewport can be reverted to behave like a normal viewport by
 	 * calling setNormalMode()
-	  * \sa setImageView_fast, COpenGLViewport
-		* \note This method already locks/unlocks the 3D scene of the window, so
+	 * \sa setImageView_fast, COpenGLViewport
+	 * \note This method already locks/unlocks the 3D scene of the window, so
 	 * the user must NOT call get3DSceneAndLock() / unlockAccess3DScene()
 	 * before/after calling it.
-	  */
+	 */
 	void setImageView(const mrpt::img::CImage& img);
 
 	/** Just like \a setImageView but moves the internal image memory instead of
 	 * making a copy, so it's faster but empties the input image.
-	  * \sa setImageView, COpenGLViewport
-		* \note This method already locks/unlocks the 3D scene of the window, so
+	 * \sa setImageView, COpenGLViewport
+	 * \note This method already locks/unlocks the 3D scene of the window, so
 	 * the user must NOT call get3DSceneAndLock() / unlockAccess3DScene()
 	 * before/after calling it.
-	  */
+	 */
 	void setImageView_fast(mrpt::img::CImage& img);
 
    protected:
@@ -400,16 +400,17 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 
 /**  An event sent by a CDisplayWindow3D window when an image is saved after
  * enabling this feature with CDisplayWindow3D::grabImagesStart()
-  *
-  *  IMPORTANTE NOTICE: Event handlers in your observer class will be invoked
+ *
+ *  IMPORTANTE NOTICE: Event handlers in your observer class will be invoked
  * from the wxWidgets internal MRPT thread,
-  *    so all your code in the handler must be thread safe.
-  */
+ *    so all your code in the handler must be thread safe.
+ */
 class mrptEvent3DWindowGrabImageFile : public mrpt::system::mrptEvent
 {
    protected:
 	/** Just to allow this class to be polymorphic */
 	void do_nothing() override {}
+
    public:
 	inline mrptEvent3DWindowGrabImageFile(
 		CDisplayWindow3D* obj, const std::string& _img_file)
@@ -426,14 +427,14 @@ class mrptEvent3DWindowGrabImageFile : public mrpt::system::mrptEvent
 
 /** Auxiliary class for safely claiming the 3DScene of a
  * mrpt::gui::CDisplayWindow3D.
-  * The mutex will be hold between ctor and dtor calls of objects of this class,
+ * The mutex will be hold between ctor and dtor calls of objects of this class,
  * safely releasing
-  * the lock upon exceptions. See example usage code in docs of
+ * the lock upon exceptions. See example usage code in docs of
  * mrpt::gui::CDisplayWindow3D
-  *
-  * \ingroup mrpt_gui_grp
-  * \note New in MRPT 1.5.0
-  */
+ *
+ * \ingroup mrpt_gui_grp
+ * \note New in MRPT 1.5.0
+ */
 class CDisplayWindow3DLocker
 {
    public:
@@ -450,6 +451,4 @@ class CDisplayWindow3DLocker
 	CDisplayWindow3D& m_win;
 };
 
-}
-
-
+}  // namespace mrpt::gui

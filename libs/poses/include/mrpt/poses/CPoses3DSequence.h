@@ -87,6 +87,4 @@ class CPoses3DSequence : public mrpt::serialization::CSerializable
 	std::vector<mrpt::math::TPose3D> m_poses;
 
 };  // End of class def.
-}
-
-
+}  // namespace mrpt::poses

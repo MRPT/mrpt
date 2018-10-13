@@ -182,5 +182,5 @@ need to account for this with an extra offset.
 #endif
 
 /** Can be used to avoid "not used parameters" warnings from the compiler
-*/
+ */
 #define MRPT_UNUSED_PARAM(a) (void)(a)

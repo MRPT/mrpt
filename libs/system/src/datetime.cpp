@@ -159,8 +159,7 @@ string mrpt::system::dateTimeToString(const mrpt::system::TTimeStamp t)
 	uint64_t tmp =
 		(t.time_since_epoch().count() - ((uint64_t)116444736 * 1000000000));
 	time_t auxTime = tmp / (uint64_t)10000000;
-	auto secFractions =
-		(unsigned int)(1000000 * (tmp % 10000000) / 10000000.0);
+	auto secFractions = (unsigned int)(1000000 * (tmp % 10000000) / 10000000.0);
 	tm* ptm = gmtime(&auxTime);
 
 	if (!ptm) return std::string("(Malformed timestamp)");
@@ -182,8 +181,7 @@ string mrpt::system::dateTimeLocalToString(const mrpt::system::TTimeStamp t)
 	uint64_t tmp =
 		(t.time_since_epoch().count() - ((uint64_t)116444736 * 1000000000));
 	time_t auxTime = tmp / (uint64_t)10000000;
-	auto secFractions =
-		(unsigned int)(1000000 * (tmp % 10000000) / 10000000.0);
+	auto secFractions = (unsigned int)(1000000 * (tmp % 10000000) / 10000000.0);
 	tm* ptm = localtime(&auxTime);
 
 	if (!ptm) return "(Malformed timestamp)";
@@ -232,8 +230,7 @@ string mrpt::system::timeLocalToString(
 	const time_t auxTime = tmp / (uint64_t)10000000;
 	const tm* ptm = localtime(&auxTime);
 
-	auto secFractions =
-		(unsigned int)(1000000 * (tmp % 10000000) / 10000000.0);
+	auto secFractions = (unsigned int)(1000000 * (tmp % 10000000) / 10000000.0);
 	// We start with 10^{-6} second units: reduce if requested by user:
 	const unsigned int user_secondFractionDigits = secondFractionDigits;
 	while (secondFractionDigits++ < 6) secFractions = secFractions / 10;
@@ -253,8 +250,7 @@ string mrpt::system::timeToString(const mrpt::system::TTimeStamp tt)
 
 	uint64_t tmp = (t - ((uint64_t)116444736 * 1000000000));
 	time_t auxTime = tmp / (uint64_t)10000000;
-	auto secFractions =
-		(unsigned int)(1000000 * (tmp % 10000000) / 10000000.0);
+	auto secFractions = (unsigned int)(1000000 * (tmp % 10000000) / 10000000.0);
 	tm* ptm = gmtime(&auxTime);
 	if (!ptm) return string("(Malformed timestamp)");
 

@@ -17,21 +17,21 @@ namespace mrpt::hwdrivers
 {
 /** Grabs from a "Bumblebee" or "Bumblebee2" stereo camera using raw access to
  * the libdc1394 library.
-  * Only raw, unrectified images can be captured with this class, which can be
+ * Only raw, unrectified images can be captured with this class, which can be
  * manually rectified given
-  * correct calibration parameters.
-  *
-  * See mrpt::hwdrivers::CStereoGrabber_Bumblebee for another class capable of
+ * correct calibration parameters.
+ *
+ * See mrpt::hwdrivers::CStereoGrabber_Bumblebee for another class capable of
  * live capture of rectified images using
-  * the vendor (PointGreyResearch) Triclops API.
-  *
-  * Once connected to a camera, you can call `getStereoObservation()` to
+ * the vendor (PointGreyResearch) Triclops API.
+ *
+ * Once connected to a camera, you can call `getStereoObservation()` to
  * retrieve the stereo images.
-  *
-  * \sa You'll probably want to use instead the most generic camera grabber in
+ *
+ * \sa You'll probably want to use instead the most generic camera grabber in
  * MRPT: mrpt::hwdrivers::CCameraSensor
-  * \ingroup mrpt_hwdrivers_grp
-  */
+ * \ingroup mrpt_hwdrivers_grp
+ */
 class CStereoGrabber_Bumblebee_libdc1394
 {
    public:
@@ -57,7 +57,7 @@ class CStereoGrabber_Bumblebee_libdc1394
 	 * structure.
 	 *
 	 * \return false on any error, true if all go fine.
-	*/
+	 */
 	bool getStereoObservation(
 		mrpt::obs::CObservationStereoImages& out_observation);
 
@@ -72,5 +72,4 @@ static_assert(
 	!std::is_copy_constructible_v<CStereoGrabber_Bumblebee_libdc1394> &&
 		!std::is_copy_assignable_v<CStereoGrabber_Bumblebee_libdc1394>,
 	"Copy Check");
-}
-
+}  // namespace mrpt::hwdrivers

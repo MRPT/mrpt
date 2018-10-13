@@ -41,7 +41,5 @@ namespace rp::arch
 {
 void HPtimer_reset();
 _u32 getHDTimer();
-}
+}  // namespace rp::arch
 #define getms() rp::arch::getHDTimer()
-
-

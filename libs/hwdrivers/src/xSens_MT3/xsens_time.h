@@ -40,6 +40,6 @@ void msleep(uint32_t ms);
 
 TimeStamp timeStampNow(void);
 
-}  // end of xsens namespace
+}  // namespace xsens
 
 #endif  // _XSENS_TIME_2006_09_12

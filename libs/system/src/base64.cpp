@@ -38,7 +38,7 @@ void mrpt::system::encodeBase64(
 
 	for (unsigned char c : inputData)
 	{
-			bits += c;
+		bits += c;
 		char_count++;
 
 		if (char_count == 3)
@@ -114,7 +114,7 @@ bool mrpt::system::decodeBase64(
 
 	for (unsigned char c : inString)
 	{
-			if (c == '=')
+		if (c == '=')
 		{
 			finish_flag_found = true;
 			break;

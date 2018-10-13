@@ -22,8 +22,7 @@ bool mrpt::system::vectorToTextFile(
 	FILE* f = os::fopen(fileName.c_str(), append ? "at" : "wt");
 	if (!f) return false;
 
-	for (float it : vec)
-		os::fprintf(f, byRows ? "%e " : "%e\n", it);
+	for (float it : vec) os::fprintf(f, byRows ? "%e " : "%e\n", it);
 
 	if (byRows) os::fprintf(f, "\n");
 
@@ -37,8 +36,7 @@ bool mrpt::system::vectorToTextFile(
 	FILE* f = os::fopen(fileName.c_str(), append ? "at" : "wt");
 	if (!f) return false;
 
-	for (double it : vec)
-		os::fprintf(f, byRows ? "%e " : "%e\n", it);
+	for (double it : vec) os::fprintf(f, byRows ? "%e " : "%e\n", it);
 
 	if (byRows) os::fprintf(f, "\n");
 
@@ -52,8 +50,7 @@ bool mrpt::system::vectorToTextFile(
 	FILE* f = os::fopen(fileName.c_str(), append ? "at" : "wt");
 	if (!f) return false;
 
-	for (int it : vec)
-		os::fprintf(f, byRows ? "%i " : "%i\n", it);
+	for (int it : vec) os::fprintf(f, byRows ? "%i " : "%i\n", it);
 
 	if (byRows) os::fprintf(f, "\n");
 

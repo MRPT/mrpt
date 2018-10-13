@@ -20,12 +20,7 @@ using namespace mrpt::img;
 using namespace mrpt::math;
 
 // Ctor: Leave all vectors empty
-CStereoRectifyMap::CStereoRectifyMap()
-	: 
-	  m_resize_output_value(0, 0)
-	  
-{
-}
+CStereoRectifyMap::CStereoRectifyMap() : m_resize_output_value(0, 0) {}
 
 void CStereoRectifyMap::internal_invalidate()
 {
@@ -61,8 +56,8 @@ void CStereoRectifyMap::enableBothCentersCoincide(bool enable)
 }
 
 /** Prepares the mapping from the distortion parameters of a camera.
-  * Must be called before invoking \a undistort().
-  */
+ * Must be called before invoking \a undistort().
+ */
 void CStereoRectifyMap::setFromCamParams(const mrpt::img::TStereoCamera& params)
 {
 	MRPT_START
@@ -209,7 +204,7 @@ validPixROI2=0 );
 		K1, D1, K2, D2, img_size, R, T, R1, R2, P1, P2, Q,
 		m_enable_both_centers_coincide ? cv::CALIB_ZERO_DISPARITY : 0, m_alpha,
 		trg_size  // Size() by default=no resize
-		);
+	);
 // Rest of arguments -> default
 #endif
 
@@ -368,9 +363,9 @@ void CStereoRectifyMap::rectify(
 
 /** Overloaded version for in-place rectification of image pairs stored in a
  * mrpt::obs::CObservationStereoImages.
-  *  Upon return, the new camera intrinsic parameters will be already stored in
+ *  Upon return, the new camera intrinsic parameters will be already stored in
  * the observation object.
-  */
+ */
 void CStereoRectifyMap::rectify(
 	mrpt::obs::CObservationStereoImages& stereo_image_observation,
 	const bool use_internal_mem_cache) const

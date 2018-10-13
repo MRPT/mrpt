@@ -102,4 +102,3 @@ inline int GetRandom(int n)
 	int u = rand() * RAND_MAX + rand();
 	return ((u % n) + n) % n;
 }
-

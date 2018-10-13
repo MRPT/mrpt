@@ -274,109 +274,107 @@ double feature_extraction_test_FASTER(int N, int threshold)
 void register_tests_feature_extraction()
 {
 	lstTests.emplace_back(
-			"feature_extraction [640x480]: Harris",
-			feature_extraction_test_Harris, 30);
+		"feature_extraction [640x480]: Harris", feature_extraction_test_Harris,
+		30);
 	lstTests.emplace_back(
-			"feature_extraction [640x480]: KLT", feature_extraction_test_KLT,
-			30);
+		"feature_extraction [640x480]: KLT", feature_extraction_test_KLT, 30);
 #if 0  // crash in opencv 3.1?
 	lstTests.push_back( TestData("feature_extraction [640x480]: SIFT", feature_extraction_test_SIFT, 5  ) );
 	lstTests.push_back( TestData("feature_extraction [640x480]: SIFT desc.", feature_extraction_test_SIFT_desc, 5  ) );
 #endif
 	lstTests.emplace_back(
-			"feature_extraction [640x480]: SURF", feature_extraction_test_SURF,
-			10);
+		"feature_extraction [640x480]: SURF", feature_extraction_test_SURF, 10);
 	lstTests.emplace_back(
-			"feature_extraction [640x480]: FAST", feature_extraction_test_FAST,
-			100);
+		"feature_extraction [640x480]: FAST", feature_extraction_test_FAST,
+		100);
 	lstTests.emplace_back(
-			"feature_extraction [640x480]: Spin desc.",
-			feature_extraction_test_Spin_desc, 30);
+		"feature_extraction [640x480]: Spin desc.",
+		feature_extraction_test_Spin_desc, 30);
 
 	lstTests.emplace_back(
-			"feature_extraction [640x480]: FASTER-9",
-			feature_extraction_test_FASTER<featFASTER9, 0>, 100, 20);
+		"feature_extraction [640x480]: FASTER-9",
+		feature_extraction_test_FASTER<featFASTER9, 0>, 100, 20);
 	lstTests.emplace_back(
-			"feature_extraction [640x480]: FASTER-9 (sorted best 200)",
-			feature_extraction_test_FASTER<featFASTER9, 200>, 100, 20);
+		"feature_extraction [640x480]: FASTER-9 (sorted best 200)",
+		feature_extraction_test_FASTER<featFASTER9, 200>, 100, 20);
 
 	lstTests.emplace_back(
-			"feature_extraction [640x480]: FASTER-10",
-			feature_extraction_test_FASTER<featFASTER10, 0>, 100, 20);
+		"feature_extraction [640x480]: FASTER-10",
+		feature_extraction_test_FASTER<featFASTER10, 0>, 100, 20);
 	lstTests.emplace_back(
-			"feature_extraction [640x480]: FASTER-10 (sorted best 200)",
-			feature_extraction_test_FASTER<featFASTER10, 200>, 100, 20);
+		"feature_extraction [640x480]: FASTER-10 (sorted best 200)",
+		feature_extraction_test_FASTER<featFASTER10, 200>, 100, 20);
 
 	lstTests.emplace_back(
-			"feature_extraction [640x480]: FASTER-12",
-			feature_extraction_test_FASTER<featFASTER12, 0>, 100, 20);
+		"feature_extraction [640x480]: FASTER-12",
+		feature_extraction_test_FASTER<featFASTER12, 0>, 100, 20);
 	lstTests.emplace_back(
-			"feature_extraction [640x480]: FASTER-12 (sorted best 200)",
-			feature_extraction_test_FASTER<featFASTER12, 200>, 100, 20);
+		"feature_extraction [640x480]: FASTER-12 (sorted best 200)",
+		feature_extraction_test_FASTER<featFASTER12, 200>, 100, 20);
 
 	lstTests.emplace_back(
-			"feature_extraction [640x480]: detectFeatures_SSE2_FASTER9()",
-			feature_extraction_test_FAST9<640, 480, false>, 1000);
+		"feature_extraction [640x480]: detectFeatures_SSE2_FASTER9()",
+		feature_extraction_test_FAST9<640, 480, false>, 1000);
 	lstTests.emplace_back(
-			"feature_extraction [640x480]: detectFeatures_SSE2_FASTER10()",
-			feature_extraction_test_FAST10<640, 480, false>, 1000);
+		"feature_extraction [640x480]: detectFeatures_SSE2_FASTER10()",
+		feature_extraction_test_FAST10<640, 480, false>, 1000);
 	lstTests.emplace_back(
-			"feature_extraction [640x480]: detectFeatures_SSE2_FASTER12()",
-			feature_extraction_test_FAST12<640, 480, false>, 1000);
+		"feature_extraction [640x480]: detectFeatures_SSE2_FASTER12()",
+		feature_extraction_test_FAST12<640, 480, false>, 1000);
 	lstTests.emplace_back(
-			"feature_extraction [640x480]: "
-			"detectFeatures_SSE2_FASTER9()+row-index",
-			feature_extraction_test_FAST9<640, 480, true>, 1000);
+		"feature_extraction [640x480]: "
+		"detectFeatures_SSE2_FASTER9()+row-index",
+		feature_extraction_test_FAST9<640, 480, true>, 1000);
 	lstTests.emplace_back(
-			"feature_extraction [640x480]: "
-			"detectFeatures_SSE2_FASTER10()+row-index",
-			feature_extraction_test_FAST10<640, 480, true>, 1000);
+		"feature_extraction [640x480]: "
+		"detectFeatures_SSE2_FASTER10()+row-index",
+		feature_extraction_test_FAST10<640, 480, true>, 1000);
 	lstTests.emplace_back(
-			"feature_extraction [640x480]: "
-			"detectFeatures_SSE2_FASTER12()+row-index",
-			feature_extraction_test_FAST12<640, 480, true>, 1000);
+		"feature_extraction [640x480]: "
+		"detectFeatures_SSE2_FASTER12()+row-index",
+		feature_extraction_test_FAST12<640, 480, true>, 1000);
 
 	lstTests.emplace_back(
-			"feature_extraction [800x600]: detectFeatures_SSE2_FASTER9()",
-			feature_extraction_test_FAST9<800, 600, false>, 1000);
+		"feature_extraction [800x600]: detectFeatures_SSE2_FASTER9()",
+		feature_extraction_test_FAST9<800, 600, false>, 1000);
 	lstTests.emplace_back(
-			"feature_extraction [800x600]: detectFeatures_SSE2_FASTER10()",
-			feature_extraction_test_FAST10<800, 600, false>, 1000);
+		"feature_extraction [800x600]: detectFeatures_SSE2_FASTER10()",
+		feature_extraction_test_FAST10<800, 600, false>, 1000);
 	lstTests.emplace_back(
-			"feature_extraction [800x600]: detectFeatures_SSE2_FASTER12()",
-			feature_extraction_test_FAST12<800, 600, false>, 1000);
+		"feature_extraction [800x600]: detectFeatures_SSE2_FASTER12()",
+		feature_extraction_test_FAST12<800, 600, false>, 1000);
 	lstTests.emplace_back(
-			"feature_extraction [800x600]: "
-			"detectFeatures_SSE2_FASTER9()+row-index",
-			feature_extraction_test_FAST9<800, 600, true>, 1000);
+		"feature_extraction [800x600]: "
+		"detectFeatures_SSE2_FASTER9()+row-index",
+		feature_extraction_test_FAST9<800, 600, true>, 1000);
 	lstTests.emplace_back(
-			"feature_extraction [800x600]: "
-			"detectFeatures_SSE2_FASTER10()+row-index",
-			feature_extraction_test_FAST10<800, 600, true>, 1000);
+		"feature_extraction [800x600]: "
+		"detectFeatures_SSE2_FASTER10()+row-index",
+		feature_extraction_test_FAST10<800, 600, true>, 1000);
 	lstTests.emplace_back(
-			"feature_extraction [800x600]: "
-			"detectFeatures_SSE2_FASTER12()+row-index",
-			feature_extraction_test_FAST12<800, 600, true>, 1000);
+		"feature_extraction [800x600]: "
+		"detectFeatures_SSE2_FASTER12()+row-index",
+		feature_extraction_test_FAST12<800, 600, true>, 1000);
 
 	lstTests.emplace_back(
-			"feature_extraction [1024x768]: detectFeatures_SSE2_FASTER9()",
-			feature_extraction_test_FAST9<1024, 768, false>, 1000);
+		"feature_extraction [1024x768]: detectFeatures_SSE2_FASTER9()",
+		feature_extraction_test_FAST9<1024, 768, false>, 1000);
 	lstTests.emplace_back(
-			"feature_extraction [1024x768]: detectFeatures_SSE2_FASTER10()",
-			feature_extraction_test_FAST10<1024, 768, false>, 1000);
+		"feature_extraction [1024x768]: detectFeatures_SSE2_FASTER10()",
+		feature_extraction_test_FAST10<1024, 768, false>, 1000);
 	lstTests.emplace_back(
-			"feature_extraction [1024x768]: detectFeatures_SSE2_FASTER12()",
-			feature_extraction_test_FAST12<1024, 768, false>, 1000);
+		"feature_extraction [1024x768]: detectFeatures_SSE2_FASTER12()",
+		feature_extraction_test_FAST12<1024, 768, false>, 1000);
 	lstTests.emplace_back(
-			"feature_extraction [1024x768]: "
-			"detectFeatures_SSE2_FASTER9()+row-index",
-			feature_extraction_test_FAST9<1024, 768, true>, 1000);
+		"feature_extraction [1024x768]: "
+		"detectFeatures_SSE2_FASTER9()+row-index",
+		feature_extraction_test_FAST9<1024, 768, true>, 1000);
 	lstTests.emplace_back(
-			"feature_extraction [1024x768]: "
-			"detectFeatures_SSE2_FASTER10()+row-index",
-			feature_extraction_test_FAST10<1024, 768, true>, 1000);
+		"feature_extraction [1024x768]: "
+		"detectFeatures_SSE2_FASTER10()+row-index",
+		feature_extraction_test_FAST10<1024, 768, true>, 1000);
 	lstTests.emplace_back(
-			"feature_extraction [1024x768]: "
-			"detectFeatures_SSE2_FASTER12()+row-index",
-			feature_extraction_test_FAST12<1024, 768, true>, 1000);
+		"feature_extraction [1024x768]: "
+		"detectFeatures_SSE2_FASTER12()+row-index",
+		feature_extraction_test_FAST12<1024, 768, true>, 1000);
 }

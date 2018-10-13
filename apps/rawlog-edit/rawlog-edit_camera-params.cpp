@@ -92,12 +92,11 @@ DECLARE_OP_FUNCTION(op_camera_params)
 				catch (std::exception& e)
 				{
 					throw std::runtime_error(
-						string(
-							"--camera-params op: Error loading monocular "
-							"camera params:\n") +
-						sErrorCam + string(
-										"\nBut also an error found loading "
-										"stereo config:\n") +
+						string("--camera-params op: Error loading monocular "
+							   "camera params:\n") +
+						sErrorCam +
+						string("\nBut also an error found loading "
+							   "stereo config:\n") +
 						string(e.what()));
 				}
 			}

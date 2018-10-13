@@ -34,7 +34,7 @@ void CSimpleDatabase::serializeTo(mrpt::serialization::CArchive& out) const
 	auto n = (uint32_t)m_tables.size();
 	out << n;
 
-	for (const auto & m_table : m_tables)
+	for (const auto& m_table : m_tables)
 	{
 		out << m_table.first;  //.c_str();
 		out << *m_table.second;
@@ -359,7 +359,7 @@ bool CSimpleDatabase::saveAsXML(const string& fileName) const
 			XMLNode::createXMLTopNode("CSimpleDatabase-MRPT-Object");
 
 		// For each table:
-		for (const auto & m_table : m_tables)
+		for (const auto& m_table : m_tables)
 		{
 			CSimpleDatabaseTable::Ptr t = m_table.second;
 			XMLNode tabNod = rootXml.addChild("table");

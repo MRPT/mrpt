@@ -60,9 +60,8 @@ CParameterizedTrajectoryGenerator* CParameterizedTrajectoryGenerator::CreatePTG(
 			ptgClassName.c_str());
 	}
 
-	auto* ptg =
-		dynamic_cast<CParameterizedTrajectoryGenerator*>(
-			classId->createObject());
+	auto* ptg = dynamic_cast<CParameterizedTrajectoryGenerator*>(
+		classId->createObject());
 	if (!ptg)
 	{
 		THROW_EXCEPTION_FMT(

@@ -187,14 +187,11 @@ cv::Mat Tracker::trackThemAll(
 		tracker->getProfiler().leave("drawFeatureTracks");
 
 		// Purge old data:
-		for (auto it =
-				 feat_tracks.begin();
-			 it != feat_tracks.end();)
+		for (auto it = feat_tracks.begin(); it != feat_tracks.end();)
 		{
 			if (observed_IDs.find(it->first) == observed_IDs.end())
 			{
-				auto next_it =
-					it;
+				auto next_it = it;
 				next_it++;
 				feat_tracks.erase(it);
 				it = next_it;

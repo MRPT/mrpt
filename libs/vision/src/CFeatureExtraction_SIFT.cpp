@@ -53,24 +53,25 @@ using namespace cv;
 #if MRPT_HAS_OPENCV && MRPT_HAS_SIFT_HESS
 extern "C"  // This is mandatory since the implementations are in ".c" files
 {
-IplImage* create_init_img(const IplImage*, int, double);
-IplImage*** build_gauss_pyr(IplImage*, int, int, double);
-IplImage*** build_dog_pyr(IplImage***, int, int);
-CvSeq* scale_space_extrema(IplImage***, int, int, double, int, CvMemStorage*);
-int is_extremum(IplImage***, int, int, int, int);
-struct feature* new_feature(void);
-void calc_feature_scales(CvSeq*, double, int);
-void adjust_for_img_dbl(CvSeq*);
-void calc_feature_oris(CvSeq*, IplImage***);
-void compute_descriptors(CvSeq*, IplImage***, int, int);
-int feature_cmp(void*, void*, void*);
-void release_pyr(IplImage****, int, int);
+	IplImage* create_init_img(const IplImage*, int, double);
+	IplImage*** build_gauss_pyr(IplImage*, int, int, double);
+	IplImage*** build_dog_pyr(IplImage***, int, int);
+	CvSeq* scale_space_extrema(
+		IplImage***, int, int, double, int, CvMemStorage*);
+	int is_extremum(IplImage***, int, int, int, int);
+	struct feature* new_feature(void);
+	void calc_feature_scales(CvSeq*, double, int);
+	void adjust_for_img_dbl(CvSeq*);
+	void calc_feature_oris(CvSeq*, IplImage***);
+	void compute_descriptors(CvSeq*, IplImage***, int, int);
+	int feature_cmp(void*, void*, void*);
+	void release_pyr(IplImage****, int, int);
 }
 #endif  // MRPT_HAS_OPENCV
 
 /************************************************************************************************
-*								extractFeaturesSIFT *
-************************************************************************************************/
+ *								extractFeaturesSIFT *
+ ************************************************************************************************/
 void CFeatureExtraction::extractFeaturesSIFT(
 	const CImage& img, CFeatureList& feats, unsigned int init_ID,
 	unsigned int nDesiredFeatures, const TImageROI& ROI) const
@@ -100,9 +101,9 @@ void CFeatureExtraction::extractFeaturesSIFT(
 
 	switch (options.SIFTOptions.implementation)
 	{
-		// --------------------------------------------------------------------------------------
-		//		Binary in C# -> OPTIONAL: Feature position already computed
-		// --------------------------------------------------------------------------------------
+			// --------------------------------------------------------------------------------------
+			//		Binary in C# -> OPTIONAL: Feature position already computed
+			// --------------------------------------------------------------------------------------
 
 		case CSBinary:
 		{
@@ -407,7 +408,7 @@ void CFeatureExtraction::extractFeaturesSIFT(
 				options.SIFTOptions
 					.edgeThreshold  // SIFT::DetectorParams::GET_DEFAULT_EDGE_THRESHOLD()
 				// );
-				);
+			);
 
 			SiftDescriptorExtractor SIFTDescriptor;
 
@@ -564,8 +565,8 @@ void CFeatureExtraction::extractFeaturesSIFT(
 }  // end extractFeaturesSIFT
 
 /************************************************************************************************
-*								computeSiftDescriptors *
-************************************************************************************************/
+ *								computeSiftDescriptors *
+ ************************************************************************************************/
 // Compute SIFT descriptors on a set of already localized points
 void CFeatureExtraction::internal_computeSiftDescriptors(
 	const CImage& in_img, CFeatureList& in_features) const
@@ -686,12 +687,11 @@ void CFeatureExtraction::internal_computeSiftDescriptors(
 			dog_pyr = build_dog_pyr(gauss_pyr, octvs, SIFT_INTVLS);
 
 			storage = cvCreateMemStorage(0);
-			features = static_cast<CvSeq*>(
-				my_scale_space_extrema(
-					in_features, dog_pyr, octvs, SIFT_INTVLS,
-					options.SIFTOptions.threshold,  // SIFT_CONTR_THR,
-					options.SIFTOptions.edgeThreshold,  // SIFT_CURV_THR
-					storage));
+			features = static_cast<CvSeq*>(my_scale_space_extrema(
+				in_features, dog_pyr, octvs, SIFT_INTVLS,
+				options.SIFTOptions.threshold,  // SIFT_CONTR_THR,
+				options.SIFTOptions.edgeThreshold,  // SIFT_CURV_THR
+				storage));
 			calc_feature_scales(features, SIFT_SIGMA, SIFT_INTVLS);
 			if (SIFT_IMG_DBL) my_adjust_for_img_dbl(features);
 			calc_feature_oris(features, gauss_pyr);
@@ -951,8 +951,8 @@ void* CFeatureExtraction::my_scale_space_extrema(
 }
 
 /************************************************************************************************
-*								getLaplaceValue *
-************************************************************************************************/
+ *								getLaplaceValue *
+ ************************************************************************************************/
 double CFeatureExtraction::getLaplacianValue(
 	void* dog_pyr_, int octv, int intvl, float row, float col) const
 {
@@ -984,8 +984,8 @@ double CFeatureExtraction::getLaplacianValue(
 }  // end getLaplacianValue
 
 /************************************************************************************************
-*								getTimesExtrema *
-************************************************************************************************/
+ *								getTimesExtrema *
+ ************************************************************************************************/
 // void CFeatureExtraction::getTimesExtrema( IplImage*** dog_pyr, int octv, int
 // intvl, float row, float col, unsigned int &nMin, unsigned int &nMax )
 void CFeatureExtraction::getTimesExtrema(

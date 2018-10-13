@@ -40,8 +40,8 @@ using namespace std;
 #endif
 
 /************************************************************************************************
-*								extractFeaturesSURF *
-************************************************************************************************/
+ *								extractFeaturesSURF *
+ ************************************************************************************************/
 void CFeatureExtraction::extractFeaturesSURF(
 	const mrpt::img::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
 	unsigned int nDesiredFeatures, const TImageROI& ROI) const
@@ -152,8 +152,8 @@ void CFeatureExtraction::extractFeaturesSURF(
 }  // end extractFeaturesSURF
 
 /************************************************************************************************
-*						internal_computeSurfDescriptors
-************************************************************************************************/
+ *						internal_computeSurfDescriptors
+ ************************************************************************************************/
 void CFeatureExtraction::internal_computeSurfDescriptors(
 	const mrpt::img::CImage& inImg, CFeatureList& in_features) const
 {

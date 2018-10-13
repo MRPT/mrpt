@@ -31,10 +31,10 @@ CLandmark::CLandmark()
 	: features(),
 	  pose_mean(),
 	  normal(),
-	  
+
 	  ID(INVALID_LANDMARK_ID),
 	  timestampLastSeen(INVALID_TIMESTAMP)
-	  
+
 {
 }
 

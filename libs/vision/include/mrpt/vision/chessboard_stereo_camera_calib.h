@@ -56,7 +56,8 @@ struct TStereoCalibParams
 	unsigned int check_size_x{7}, check_size_y{9};
 	/** The size of each square in the checkerboard, in meters, in the "X" & Y"
 	 * axes. */
-	double check_squares_length_X_meters{0.02}, check_squares_length_Y_meters{0.02};
+	double check_squares_length_X_meters{0.02},
+		check_squares_length_Y_meters{0.02};
 	bool normalize_image{true};
 	bool skipDrawDetectedImgs{false};
 	/** Show progress messages to std::cout console (default=true) */
@@ -73,7 +74,8 @@ struct TStereoCalibParams
 	 * \note Default values are to only assume distortion via k1 and k2 (the
 	 * rest are zeros).
 	 */
-	bool optimize_k1{true}, optimize_k2{true}, optimize_k3{false}, optimize_t1{false}, optimize_t2{false};
+	bool optimize_k1{true}, optimize_k2{true}, optimize_k3{false},
+		optimize_t1{false}, optimize_t2{false};
 
 	/** Employ a Pseudo-Huber robustifier kernel (Default: false) */
 	bool use_robust_kernel{false};
@@ -163,6 +165,4 @@ bool checkerBoardStereoCalibration(
 	TStereoCalibResults& out_results);
 
 /** @}  */  // end of grouping
-}
-
-
+}  // namespace mrpt::vision

@@ -72,6 +72,4 @@ class COccupancyGridMapFeatureExtractor : public mrpt::system::CObserver
 
 };  // End of class def.
 
-}
-
-
+}  // namespace mrpt::slam

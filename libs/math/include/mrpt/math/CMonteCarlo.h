@@ -77,9 +77,8 @@ class CMonteCarlo
 			std::vector<double>& vx, std::vector<double>& vy,
 			const NUM width = 1.0) const
 		{
-			CHistogram hist(
-				CHistogram::createWithFixedWidth(
-					0, *max_element(data.begin(), data.end()), width));
+			CHistogram hist(CHistogram::createWithFixedWidth(
+				0, *max_element(data.begin(), data.end()), width));
 			hist.add(data);
 			hist.getHistogram(vx, vy);
 		}
@@ -150,6 +149,4 @@ class CMonteCarlo
 		return res;
 	}
 };
-}
-
-
+}  // namespace mrpt::math

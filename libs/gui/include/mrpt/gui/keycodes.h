@@ -169,6 +169,4 @@ enum mrptKeyModifier
 #endif
 };
 
-}
-
-
+}  // namespace mrpt::gui

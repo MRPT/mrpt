@@ -58,7 +58,7 @@ TEST(SerializeTestOpenGL, WriteReadToMem)
 		CLASS_ID(COctoMapVoxels)
 	};
 
-	for (auto & lstClasse : lstClasses)
+	for (auto& lstClasse : lstClasses)
 	{
 		try
 		{

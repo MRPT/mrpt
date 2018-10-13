@@ -51,8 +51,7 @@ void CPosePDFParticles::copyFrom(const CPosePDF& o)
 
 	if (o.GetRuntimeClass() == CLASS_ID(CPosePDFParticles))
 	{
-		const auto* pdf =
-			dynamic_cast<const CPosePDFParticles*>(&o);
+		const auto* pdf = dynamic_cast<const CPosePDFParticles*>(&o);
 		ASSERT_(pdf);
 
 		// Both are m_particles:
@@ -169,7 +168,9 @@ void CPosePDFParticles::serializeFrom(
 	{
 		case 0:
 		{
-			mrpt::bayes::CParticleFilterData<mrpt::poses::CPose2D, PARTICLE_STORAGE> old;
+			mrpt::bayes::CParticleFilterData<
+				mrpt::poses::CPose2D, PARTICLE_STORAGE>
+				old;
 			old.readParticlesFromStream(in);
 			m_particles.clear();
 			std::transform(

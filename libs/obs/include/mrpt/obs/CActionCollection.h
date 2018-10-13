@@ -132,7 +132,7 @@ class CActionCollection : public mrpt::serialization::CSerializable
 		size_t foundCount = 0;
 		const mrpt::rtti::TRuntimeClassId* class_ID =
 			&T::GetRuntimeClassIdStatic();
-		for (const auto & it : *this)
+		for (const auto& it : *this)
 			if (it->GetRuntimeClass()->derivedFrom(class_ID))
 				if (foundCount++ == ith)
 					return std::dynamic_pointer_cast<T>(it.get_ptr());
@@ -183,5 +183,4 @@ class CActionCollection : public mrpt::serialization::CSerializable
 
 };  // End of class def.
 
-}
-
+}  // namespace mrpt::obs

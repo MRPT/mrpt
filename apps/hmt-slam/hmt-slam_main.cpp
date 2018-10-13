@@ -177,9 +177,8 @@ void Run_HMT_SLAM()
 			// --------------------------------------------
 			if (IS_CLASS(objFromRawlog, CActionCollection))
 			{
-				mapping.pushAction(
-					std::dynamic_pointer_cast<CActionCollection>(
-						objFromRawlog));  // Memory will be freed in mapping
+				mapping.pushAction(std::dynamic_pointer_cast<CActionCollection>(
+					objFromRawlog));  // Memory will be freed in mapping
 				// class
 			}
 			else if (IS_CLASS(objFromRawlog, CSensoryFrame))
@@ -191,9 +190,8 @@ void Run_HMT_SLAM()
 			}
 			else if (IS_CLASS(objFromRawlog, CObservation))
 			{
-				mapping.pushObservation(
-					std::dynamic_pointer_cast<CObservation>(
-						objFromRawlog));  // Memory will be freed in mapping
+				mapping.pushObservation(std::dynamic_pointer_cast<CObservation>(
+					objFromRawlog));  // Memory will be freed in mapping
 				// class
 			}
 			else

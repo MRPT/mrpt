@@ -13,18 +13,18 @@
 namespace mrpt::opengl
 {
 /** A 3D arrow
-  *  \sa opengl::COpenGLScene
-  *
-  *  <div align="center">
-  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
+ *  \sa opengl::COpenGLScene
+ *
+ *  <div align="center">
+ *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
  * border-style: solid;">
-  *   <tr> <td> mrpt::opengl::CArrow </td> <td> \image html preview_CArrow.png
+ *   <tr> <td> mrpt::opengl::CArrow </td> <td> \image html preview_CArrow.png
  * </td> </tr>
-  *  </table>
-  *  </div>
-  * \ingroup mrpt_opengl_grp
-  *
-  */
+ *  </table>
+ *  </div>
+ * \ingroup mrpt_opengl_grp
+ *
+ */
 class CArrow : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CArrow)
@@ -75,7 +75,7 @@ class CArrow : public CRenderizableDisplayList
 	}
 
 	/** Render
-	  */
+	 */
 	void render_dl() const override;
 
 	/** Evaluates the bounding box of this object (including possible children)
@@ -85,7 +85,7 @@ class CArrow : public CRenderizableDisplayList
 		mrpt::math::TPoint3D& bb_max) const override;
 
 	/** Constructor
-	  */
+	 */
 	CArrow(
 		float x0 = 0, float y0 = 0, float z0 = 0, float x1 = 1, float y1 = 1,
 		float z1 = 1, float headRatio = 0.2f, float smallRadius = 0.05f,
@@ -110,6 +110,4 @@ class CArrow : public CRenderizableDisplayList
 	~CArrow() override = default;
 };
 
-}
-
-
+}  // namespace mrpt::opengl

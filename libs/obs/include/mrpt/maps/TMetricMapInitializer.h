@@ -327,5 +327,4 @@ class TSetOfMetricMapInitializers : public mrpt::config::CLoadableOptions
 	void dumpToTextStream(std::ostream& out) const override;
 };
 
-}
-
+}  // namespace mrpt::maps

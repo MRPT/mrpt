@@ -17,14 +17,14 @@ namespace mrpt::hwdrivers
 {
 /** This class implements a driver for the RAE Systems gas PhotoIonization
  * Detector (PID) (Tested on a MiniRAE Lite)
-  *   The sensor is accessed via a standard (or USB) serial port.
-  *
-  *   Refer to the manufacturer website for details on this sensor:
+ *   The sensor is accessed via a standard (or USB) serial port.
+ *
+ *   Refer to the manufacturer website for details on this sensor:
  * http://www.raesystems.com/products/minirae-lite
-  *
-  *  \sa mrpt::obs::CObservationGasSensors
-  * \ingroup mrpt_hwdrivers_grp
-  */
+ *
+ *  \sa mrpt::obs::CObservationGasSensors
+ * \ingroup mrpt_hwdrivers_grp
+ */
 class CRaePID : public mrpt::hwdrivers::CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CRaePID)
@@ -45,9 +45,9 @@ class CRaePID : public mrpt::hwdrivers::CGenericSensor
 
 	/** Returns true if the COM port is already open, or try to open it in other
 	 * case.
-	  * \return true if everything goes OK, or false if there are problems
+	 * \return true if everything goes OK, or false if there are problems
 	 * opening the port.
-	  */
+	 */
 	bool tryToOpenTheCOM();
 
    public:
@@ -99,6 +99,4 @@ class CRaePID : public mrpt::hwdrivers::CGenericSensor
 
 };  // End of class def.
 
-}
-
-
+}  // namespace mrpt::hwdrivers

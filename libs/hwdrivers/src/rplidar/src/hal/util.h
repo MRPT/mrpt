@@ -39,9 +39,11 @@
 #if !defined(__cplusplus)
 #define _countof(_Array) (sizeof(_Array) / sizeof(_Array[0]))
 #else
-extern "C++" {
-template <typename _CountofType, size_t _SizeOfArray>
-char (*__countof_helper(_CountofType (&_Array)[_SizeOfArray]))[_SizeOfArray];
+extern "C++"
+{
+	template <typename _CountofType, size_t _SizeOfArray>
+	char (
+		*__countof_helper(_CountofType (&_Array)[_SizeOfArray]))[_SizeOfArray];
 #define _countof(_Array) sizeof(*__countof_helper(_Array))
 }
 #endif
@@ -57,7 +59,7 @@ char (*__countof_helper(_CountofType (&_Array)[_SizeOfArray]))[_SizeOfArray];
 	static class _static_code_##_blockname_ \
 	{                                       \
 	   public:                              \
-	_static_code_##_blockname_()
+		_static_code_##_blockname_()
 
 #define END_STATIC_CODE(_blockname_) \
 	}                                \

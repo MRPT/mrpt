@@ -95,18 +95,17 @@ class CHistogram
 	double getBinRatio(const size_t index) const;
 
 	/** Returns the list of bin centers & hit counts
-	  * \sa getHistogramNormalized
-	  */
+	 * \sa getHistogramNormalized
+	 */
 	void getHistogram(std::vector<double>& x, std::vector<double>& hits) const;
 
 	/** Returns the list of bin centers & hit counts, normalized such as the
 	 * integral of the histogram, interpreted as a density PDF, amounts to 1.
-	  * \sa getHistogram
-	  */
+	 * \sa getHistogram
+	 */
 	void getHistogramNormalized(
 		std::vector<double>& x, std::vector<double>& hits) const;
 
 };  // End of class def.
 
-}
-
+}  // namespace mrpt::math

@@ -244,6 +244,4 @@ void generalizedEllipsoidPoints<3>(
 
 	MRPT_END
 }
-}  // end namespaces
-
-
+}  // namespace mrpt::opengl::detail

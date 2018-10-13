@@ -941,10 +941,8 @@ bool COpenNI2Generic::CDevice::getNextFrameRGBD(
 
 	for (int yc = 0; yc < height; ++yc)
 	{
-		const auto* pRgb =
-			(const openni::RGB888Pixel*)data[COLOR_STREAM];
-		const auto* pDepth =
-			(const openni::DepthPixel*)data[DEPTH_STREAM];
+		const auto* pRgb = (const openni::RGB888Pixel*)data[COLOR_STREAM];
+		const auto* pDepth = (const openni::DepthPixel*)data[DEPTH_STREAM];
 		for (int xc = 0; xc < width; ++xc, ++pDepth, ++pRgb)
 		{
 			int x = xc;

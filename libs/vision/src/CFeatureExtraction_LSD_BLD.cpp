@@ -175,8 +175,8 @@ void CFeatureExtraction::extractFeaturesLSD(
 }
 
 /************************************************************************************************
-*						internal_computeBLDDescriptors
-************************************************************************************************/
+ *						internal_computeBLDDescriptors
+ ************************************************************************************************/
 void CFeatureExtraction::internal_computeBLDLineDescriptors(
 	const mrpt::img::CImage& in_img, CFeatureList& in_features) const
 {

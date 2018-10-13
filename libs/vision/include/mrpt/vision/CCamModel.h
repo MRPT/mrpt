@@ -356,6 +356,4 @@ class CCamModel : public mrpt::config::CLoadableOptions
 
 };  // end class
 
-}
-
-
+}  // namespace mrpt::vision

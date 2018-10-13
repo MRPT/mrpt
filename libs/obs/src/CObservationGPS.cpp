@@ -40,8 +40,7 @@ void CObservationGPS::serializeTo(mrpt::serialization::CArchive& out) const
 
 	const uint32_t nMsgs = messages.size();
 	out << nMsgs;
-	for (const auto & message : messages)
-		message.second->writeToStream(out);
+	for (const auto& message : messages) message.second->writeToStream(out);
 }
 
 void CObservationGPS::serializeFrom(
@@ -175,8 +174,7 @@ void CObservationGPS::serializeFrom(
 				in >> has_PZS_datum_;
 				if (has_PZS_datum_)
 				{
-					auto* datum =
-						new gnss::Message_TOPCON_PZS();
+					auto* datum = new gnss::Message_TOPCON_PZS();
 					messages[gnss::TOPCON_PZS] = gnss::gnss_message_ptr(datum);
 					gnss::Message_TOPCON_PZS& PZS_datum = *datum;
 
@@ -224,8 +222,7 @@ void CObservationGPS::serializeFrom(
 			// Added in V7:
 			if (version >= 7)
 			{
-				auto* datum =
-					new gnss::Message_TOPCON_SATS();
+				auto* datum = new gnss::Message_TOPCON_SATS();
 				messages[gnss::TOPCON_SATS] = gnss::gnss_message_ptr(datum);
 				gnss::Message_TOPCON_SATS& SATS_datum = *datum;
 				bool has_SATS_datum_;
@@ -273,7 +270,7 @@ void CObservationGPS::clear()
 }
 void CObservationGPS::getDescriptionAsText(std::ostream& o) const
 {
-	using namespace mrpt::system; // for the TTimeStamp << operator
+	using namespace mrpt::system;  // for the TTimeStamp << operator
 
 	CObservation::getDescriptionAsText(o);
 

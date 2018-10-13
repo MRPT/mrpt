@@ -116,9 +116,8 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 
 		// Detect file extension:
 		// -----------------------------
-		string mapExt = lowerCase(
-			extractFileExtension(
-				MAP_FILE, true));  // Ignore possible .gz extensions
+		string mapExt = lowerCase(extractFileExtension(
+			MAP_FILE, true));  // Ignore possible .gz extensions
 
 		if (!mapExt.compare("simplemap"))
 		{
@@ -153,7 +152,7 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 
 	for (int PARTICLE_COUNT : particles_count)
 	{
-			// Global stats for all the experiment loops:
+		// Global stats for all the experiment loops:
 		vector<double> covergenceErrors;
 		covergenceErrors.reserve(NUM_REPS);
 		// --------------------------------------------------------------------
@@ -193,12 +192,10 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 						iniSectionName, "init_PDF_min_y", 0, true),
 					iniFile.read_float(
 						iniSectionName, "init_PDF_max_y", 0, true),
-					DEG2RAD(
-						iniFile.read_float(
-							iniSectionName, "init_PDF_min_phi_deg", -180)),
-					DEG2RAD(
-						iniFile.read_float(
-							iniSectionName, "init_PDF_max_phi_deg", 180)));
+					DEG2RAD(iniFile.read_float(
+						iniSectionName, "init_PDF_min_phi_deg", -180)),
+					DEG2RAD(iniFile.read_float(
+						iniSectionName, "init_PDF_max_phi_deg", 180)));
 			else
 				pdf.resetUniform(
 					iniFile.read_float(
@@ -209,12 +206,10 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 						iniSectionName, "init_PDF_min_y", 0, true),
 					iniFile.read_float(
 						iniSectionName, "init_PDF_max_y", 0, true),
-					DEG2RAD(
-						iniFile.read_float(
-							iniSectionName, "init_PDF_min_phi_deg", -180)),
-					DEG2RAD(
-						iniFile.read_float(
-							iniSectionName, "init_PDF_max_phi_deg", 180)),
+					DEG2RAD(iniFile.read_float(
+						iniSectionName, "init_PDF_min_phi_deg", -180)),
+					DEG2RAD(iniFile.read_float(
+						iniSectionName, "init_PDF_max_phi_deg", 180)),
 					PARTICLE_COUNT);
 
 			// -----------------------------
@@ -257,7 +252,7 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 							action.get(),  // Action
 							observations.get(),  // Obs.
 							&PF_stats  // Output statistics
-							);
+						);
 					}
 
 					pdf.getCovarianceAndMean(cov, meanPose);

@@ -17,7 +17,8 @@ struct XsVector;
 struct XsQuaternion;
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #else
 #define XSQUATERNION_INITIALIZER                                   \
 	{                                                              \
@@ -30,25 +31,26 @@ extern "C" {
 typedef struct XsQuaternion XsQuaternion;
 #endif
 
-XSTYPES_DLL_API void XsQuaternion_destruct(XsQuaternion* thisPtr);
-XSTYPES_DLL_API int XsQuaternion_empty(const XsQuaternion* thisPtr);
-XSTYPES_DLL_API void XsQuaternion_inverse(
-	const XsQuaternion* thisPtr, XsQuaternion* dest);
-XSTYPES_DLL_API XsReal
-	XsQuaternion_normalized(const XsQuaternion* thisPtr, XsQuaternion* dest);
-XSTYPES_DLL_API XsReal XsQuaternion_normalize(XsQuaternion* thisPtr);
-XSTYPES_DLL_API void XsQuaternion_fromEulerAngles(
-	XsQuaternion* thisPtr, const struct XsEuler* src);
-XSTYPES_DLL_API void XsQuaternion_fromRotationMatrix(
-	XsQuaternion* thisPtr, const struct XsMatrix* ori);
-XSTYPES_DLL_API const XsQuaternion* XsQuaternion_identity(void);
-XSTYPES_DLL_API void XsQuaternion_multiply(
-	const XsQuaternion* left, const XsQuaternion* right, XsQuaternion* dest);
-XSTYPES_DLL_API void XsQuaternion_swap(XsQuaternion* a, XsQuaternion* b);
-XSTYPES_DLL_API void XsQuaternion_copy(
-	XsQuaternion* copy, XsQuaternion const* src);
-XSTYPES_DLL_API int XsQuaternion_equal(
-	XsQuaternion const* a, XsQuaternion const* b);
+	XSTYPES_DLL_API void XsQuaternion_destruct(XsQuaternion* thisPtr);
+	XSTYPES_DLL_API int XsQuaternion_empty(const XsQuaternion* thisPtr);
+	XSTYPES_DLL_API void XsQuaternion_inverse(
+		const XsQuaternion* thisPtr, XsQuaternion* dest);
+	XSTYPES_DLL_API XsReal XsQuaternion_normalized(
+		const XsQuaternion* thisPtr, XsQuaternion* dest);
+	XSTYPES_DLL_API XsReal XsQuaternion_normalize(XsQuaternion* thisPtr);
+	XSTYPES_DLL_API void XsQuaternion_fromEulerAngles(
+		XsQuaternion* thisPtr, const struct XsEuler* src);
+	XSTYPES_DLL_API void XsQuaternion_fromRotationMatrix(
+		XsQuaternion* thisPtr, const struct XsMatrix* ori);
+	XSTYPES_DLL_API const XsQuaternion* XsQuaternion_identity(void);
+	XSTYPES_DLL_API void XsQuaternion_multiply(
+		const XsQuaternion* left, const XsQuaternion* right,
+		XsQuaternion* dest);
+	XSTYPES_DLL_API void XsQuaternion_swap(XsQuaternion* a, XsQuaternion* b);
+	XSTYPES_DLL_API void XsQuaternion_copy(
+		XsQuaternion* copy, XsQuaternion const* src);
+	XSTYPES_DLL_API int XsQuaternion_equal(
+		XsQuaternion const* a, XsQuaternion const* b);
 
 #ifdef __cplusplus
 }  // extern "C"
@@ -114,7 +116,7 @@ struct XsQuaternion
 	}
 
 	/*! \brief Set the Quaternion to these specific values
-	*/
+	 */
 	inline void assign(XsReal w, XsReal x, XsReal y, XsReal z)
 	{
 		m_w = w;

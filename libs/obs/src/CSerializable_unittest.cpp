@@ -73,7 +73,7 @@ const mrpt::rtti::TRuntimeClassId* lstClasses[] = {
 // bugs:
 TEST(Observations, WriteReadToMem)
 {
-	for (auto & lstClasse : lstClasses)
+	for (auto& lstClasse : lstClasses)
 	{
 		try
 		{
@@ -102,7 +102,7 @@ TEST(Observations, WriteReadToMem)
 // Also try to convert them to octect vectors:
 TEST(Observations, WriteReadToOctectVectors)
 {
-	for (auto & lstClasse : lstClasses)
+	for (auto& lstClasse : lstClasses)
 	{
 		try
 		{

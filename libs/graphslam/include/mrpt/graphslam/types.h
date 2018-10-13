@@ -16,18 +16,18 @@
 namespace mrpt
 {
 /** SLAM methods related to graphs of pose constraints
-	  * \sa mrpt::graphs::CNetworkOfPoses   \ingroup mrpt_graphslam_grp
-	  */
+ * \sa mrpt::graphs::CNetworkOfPoses   \ingroup mrpt_graphslam_grp
+ */
 namespace graphslam
 {
 /** \addtogroup mrpt_graphslam_grp
-  *  @{ */
+ *  @{ */
 
 /** Auxiliary traits template for use among graph-slam problems to make life
  * easier with these complicated, long data type names
-  * \tparam GRAPH_T This will typically be any
+ * \tparam GRAPH_T This will typically be any
  * mrpt::graphs::CNetworkOfPoses<...>
-  */
+ */
 template <class GRAPH_T>
 struct graphslam_traits
 {
@@ -54,7 +54,7 @@ struct graphslam_traits
 	{
 		using gst = graphslam_traits<GRAPH_T>;
 		// Data:
-		const typename gst::edge_map_entry_t* edge{ nullptr };
+		const typename gst::edge_map_entry_t* edge{nullptr};
 		const typename gst::graph_t::constraint_t::type_value* edge_mean;
 		typename gst::graph_t::constraint_t::type_value *P1, *P2;
 	};
@@ -76,5 +76,5 @@ struct TResultInfoSpaLevMarq
 
 /**  @} */  // end of grouping
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace graphslam
+}  // namespace mrpt

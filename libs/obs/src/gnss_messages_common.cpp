@@ -120,7 +120,7 @@ gnss_message* gnss_message::readAndBuildFromStream(
 }
 
 // Ctor (default: nullptr pointer)
-gnss_message_ptr::gnss_message_ptr()  = default;
+gnss_message_ptr::gnss_message_ptr() = default;
 // Ctor:Makes a copy of the pointee
 gnss_message_ptr::gnss_message_ptr(const gnss_message_ptr& o)
 {
@@ -171,7 +171,7 @@ gnss_message_ptr::~gnss_message_ptr()
 }
 
 // ---------------------------------------
-UTC_time::UTC_time()  = default;
+UTC_time::UTC_time() = default;
 void UTC_time::writeToStream(mrpt::serialization::CArchive& out) const
 {
 	out << hour << minute << sec;

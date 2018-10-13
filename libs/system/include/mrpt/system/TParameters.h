@@ -23,33 +23,33 @@ namespace mrpt::system
 {
 /** For usage when passing a dynamic number of (numeric) arguments to a
  * function, by name.
-  *  \code
-  *    TParameters<double> p;  // or TParametersDouble
-  *    p["v_max"] = 1.0;  // Write
-  *    ...
-  *    cout << p["w_max"]; // Read, even if "p" was const.
-  *  \endcode
-  *
-  *  A default list of parameters can be passed to the constructor as a sequence
-  *   of pairs "name, value", which MUST end in a nullptr name string. Names
+ *  \code
+ *    TParameters<double> p;  // or TParametersDouble
+ *    p["v_max"] = 1.0;  // Write
+ *    ...
+ *    cout << p["w_max"]; // Read, even if "p" was const.
+ *  \endcode
+ *
+ *  A default list of parameters can be passed to the constructor as a sequence
+ *   of pairs "name, value", which MUST end in a nullptr name string. Names
  * MUST BE "const char*"
-  *   (that is, "old plain strings" are OK), not std::string objects!.
-  *  See this example:
-  *
-  *  \code
-  *    TParameters<double> p("par1",2.0, "par2",-4.5, "par3",9.0, nullptr); //
+ *   (that is, "old plain strings" are OK), not std::string objects!.
+ *  See this example:
+ *
+ *  \code
+ *    TParameters<double> p("par1",2.0, "par2",-4.5, "par3",9.0, nullptr); //
  * MUST end with a NULL
-  *  \endcode
-  *
-  *  <b>VERY IMPORTANT:</b> If you use the NULL-ended constructor above, make
+ *  \endcode
+ *
+ *  <b>VERY IMPORTANT:</b> If you use the NULL-ended constructor above, make
  * sure all the values are of the proper
-  *    type or it will crash in runtime. For example, in a TParametersDouble all
+ *    type or it will crash in runtime. For example, in a TParametersDouble all
  * values must be double's, so
-  *    if you type "10" the compiler will make it an "int". Instead, write
+ *    if you type "10" the compiler will make it an "int". Instead, write
  * "10.0".
-  * \ingroup mrpt_system_grp
-  * \sa the example in MRPT/samples/params-by-name
-  */
+ * \ingroup mrpt_system_grp
+ * \sa the example in MRPT/samples/params-by-name
+ */
 template <typename T>
 struct TParameters : public std::map<std::string, T>
 {
@@ -85,9 +85,9 @@ struct TParameters : public std::map<std::string, T>
 		return std::map<std::string, T>::end() != BASE::find(s);
 	}
 	/** A const version of the [] operator, for usage as read-only.
-	  * \exception std::logic_error On parameter not present. Please, check
+	 * \exception std::logic_error On parameter not present. Please, check
 	 * existence with "has" before reading.
-	  */
+	 */
 	inline T operator[](const std::string& s) const
 	{
 		auto it = BASE::find(s);
@@ -99,7 +99,7 @@ struct TParameters : public std::map<std::string, T>
 	}
 	/** A const version of the [] operator and with a default value in case the
 	 * parameter is not set (for usage as read-only).
-	  */
+	 */
 	inline T getWithDefaultVal(const std::string& s, const T& defaultVal) const
 	{
 		auto it = BASE::find(s);
@@ -146,5 +146,4 @@ using TParametersDouble = TParameters<double>;
 /** See the generic template mrpt::system::TParameters */
 using TParametersString = TParameters<std::string>;
 
-}
-
+}  // namespace mrpt::system

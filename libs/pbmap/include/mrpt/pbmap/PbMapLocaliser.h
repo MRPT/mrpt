@@ -58,7 +58,8 @@ class PbMapLocaliser
 	/*!observedPlanes is a list containing the current observed planes.*/
 	std::vector<unsigned> vQueueObservedPlanes;
 
-	/*!List of places where the system has been localised, keeping also the associated point cloud corresponding to the PbMap.*/  // Mover a la clase PbMapLocaliser
+	/*!List of places where the system has been localised, keeping also the
+	 * associated point cloud corresponding to the PbMap.*/  // Mover a la clase PbMapLocaliser
 	std::map<std::string, pcl::PointXYZ> foundPlaces;
 
 	/*!Point cloud of recognized place.*/
@@ -76,10 +77,12 @@ class PbMapLocaliser
 	/*!Load previous PbMaps to search for previous places.*/
 	void LoadPreviousPbMaps(std::string fileMaps);
 
-	/*!List of places that have been matched, together with their plane correspondences.*/  // Cambiar nombre
+	/*!List of places that have been matched, together with their plane
+	 * correspondences.*/  // Cambiar nombre
 	std::map<std::string, std::pair<int, double>> planeRecognitionLUT;
 
-	/*!Search the subgraph defined by a plane (neighborhood of 1-connected planes) in the rest of the PbMap or PbMaps aquired till the moment.*/  // Cambiar nombre
+	/*!Search the subgraph defined by a plane (neighborhood of 1-connected
+	 * planes) in the rest of the PbMap or PbMaps aquired till the moment.*/  // Cambiar nombre
 	bool searchPlaneContext(Plane& searchPlane);
 
 	/*!Search the 2nd order neighbors.*/
@@ -112,8 +115,5 @@ class PbMapLocaliser
 	/*!PbMapLocaliser's stop var*/
 	bool m_pbMapLocaliser_finished;
 };
-}
+}  // namespace mrpt::pbmap
 #endif
-
-
-

@@ -54,6 +54,6 @@ bool cmtScanPort(
 //! Set to true from another thread to abort any scan currently in progress.
 extern bool abortScan;
 
-}  // end of xsens namespace
+}  // namespace xsens
 
 #endif  // _SCANPORTS_H_2006_06_09

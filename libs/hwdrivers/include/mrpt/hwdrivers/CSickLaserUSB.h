@@ -15,50 +15,50 @@ namespace mrpt::hwdrivers
 {
 /** This "software driver" implements the communication protocol for interfacing
  * a SICK LMS2XX laser scanners through a custom USB RS-422 interface board.
-  *
-  *   NOTE that this class is for a custom hardware built at our lab (MAPIR,
+ *
+ *   NOTE that this class is for a custom hardware built at our lab (MAPIR,
  * University of Malaga).
-  *   For a generic serial interface, see the class CSickLaserSerial.
-  *
-  *   This class does not need to be bind, i.e. you do not need to call
+ *   For a generic serial interface, see the class CSickLaserSerial.
+ *
+ *   This class does not need to be bind, i.e. you do not need to call
  * C2DRangeFinderAbstract::bindIO. However, calling it will have not effect.
-  *   In this class the "bind" is ignored since it is designed for USB
+ *   In this class the "bind" is ignored since it is designed for USB
  * connections only, thus it internally generate the required object for
  * simplicity of use.
-  *   The serial number of the USB device is used to open it on the first call
+ *   The serial number of the USB device is used to open it on the first call
  * to "doProcess", thus you must call "loadConfig" before this, or manually
-  *     call "setDeviceSerialNumber". The default serial number is "LASER001"
-  *
-  * Warning: Avoid defining an object of this class in a global scope if you
+ *     call "setDeviceSerialNumber". The default serial number is "LASER001"
+ *
+ * Warning: Avoid defining an object of this class in a global scope if you
  * want to catch all potential
-  *      exceptions during the constructors (like USB interface DLL not found,
+ *      exceptions during the constructors (like USB interface DLL not found,
  * etc...)
-  *
-  *
-  *  \code
-  *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
-  * -------------------------------------------------------
-  *   [supplied_section_name]
-  *   SICKUSB_serialNumber=LASER001
-  *   pose_x=0.21	; Laser range scaner 3D position in the robot (meters)
-  *   pose_y=0
-  *   pose_z=0.34
-  *   pose_yaw=0	; Angles in degrees
-  *   pose_pitch=0
-  *   pose_roll=0
-  *    //preview = true // Enable GUI visualization of captured data
-  *
-  *    // Optional: Exclusion zones to avoid the robot seeing itself:
-  *    //exclusionZone1_x = 0.20 0.30 0.30 0.20
-  *    //exclusionZone1_y = 0.20 0.30 0.30 0.20
-  *
-  *    // Optional: Exclusion zones to avoid the robot seeing itself:
-  *    //exclusionAngles1_ini = 20  // Deg
-  *    //exclusionAngles1_end = 25  // Deg
-  *  \endcode
-  * \ingroup mrpt_hwdrivers_grp
-  *
-  */
+ *
+ *
+ *  \code
+ *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
+ * -------------------------------------------------------
+ *   [supplied_section_name]
+ *   SICKUSB_serialNumber=LASER001
+ *   pose_x=0.21	; Laser range scaner 3D position in the robot (meters)
+ *   pose_y=0
+ *   pose_z=0.34
+ *   pose_yaw=0	; Angles in degrees
+ *   pose_pitch=0
+ *   pose_roll=0
+ *    //preview = true // Enable GUI visualization of captured data
+ *
+ *    // Optional: Exclusion zones to avoid the robot seeing itself:
+ *    //exclusionZone1_x = 0.20 0.30 0.30 0.20
+ *    //exclusionZone1_y = 0.20 0.30 0.30 0.20
+ *
+ *    // Optional: Exclusion zones to avoid the robot seeing itself:
+ *    //exclusionAngles1_ini = 20  // Deg
+ *    //exclusionAngles1_end = 25  // Deg
+ *  \endcode
+ * \ingroup mrpt_hwdrivers_grp
+ *
+ */
 class CSickLaserUSB : public C2DRangeFinderAbstract
 {
 	DEFINE_GENERIC_SENSOR(CSickLaserUSB)
@@ -72,7 +72,7 @@ class CSickLaserUSB : public C2DRangeFinderAbstract
 	mrpt::system::TTimeStamp m_timeStartTT;
 
 	/** The sensor 6D pose:
-	  */
+	 */
 	poses::CPose3D m_sensorPose;
 
 	bool checkControllerIsConnected();
@@ -88,16 +88,16 @@ class CSickLaserUSB : public C2DRangeFinderAbstract
 
    public:
 	/** Constructor
-	  */
+	 */
 	CSickLaserUSB();
 
 	/** Destructor
-	  */
+	 */
 	~CSickLaserUSB() override;
 
 	/** Changes the serial number of the device to open (call prior to
 	 * 'doProcess')
-	  */
+	 */
 	void setDeviceSerialNumber(const std::string& deviceSerialNumber)
 	{
 		m_serialNumber = deviceSerialNumber;
@@ -105,26 +105,24 @@ class CSickLaserUSB : public C2DRangeFinderAbstract
 
 	/** Specific laser scanner "software drivers" must process here new data
 	 * from the I/O stream, and, if a whole scan has arrived, return it.
-	  *  This method will be typically called in a different thread than other
+	 *  This method will be typically called in a different thread than other
 	 * methods, and will be called in a timely fashion.
-	  */
+	 */
 	void doProcessSimple(
 		bool& outThereIsObservation,
 		mrpt::obs::CObservation2DRangeScan& outObservation,
 		bool& hardwareError) override;
 
 	/** Enables the scanning mode (in this class this has no effect).
-	  * \return If everything works "true", or "false" if there is any error.
-	  */
+	 * \return If everything works "true", or "false" if there is any error.
+	 */
 	bool turnOn() override;
 
 	/** Disables the scanning mode (in this class this has no effect).
-	  * \return If everything works "true", or "false" if there is any error.
-	  */
+	 * \return If everything works "true", or "false" if there is any error.
+	 */
 	bool turnOff() override;
 
 };  // End of class
 
-}
-
-
+}  // namespace mrpt::hwdrivers

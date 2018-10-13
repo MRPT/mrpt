@@ -19,7 +19,8 @@ struct XsMessage;
 struct XsMessageHeader;
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #else
 #define XSMESSAGE_INITIALIZER         \
 	{                                 \
@@ -29,83 +30,86 @@ typedef struct XsMessage XsMessage;
 typedef struct XsMessageHeader XsMessageHeader;
 #endif
 
-XSTYPES_DLL_API void XsMessage_construct(XsMessage* thisPtr);
-XSTYPES_DLL_API void XsMessage_constructSized(
-	XsMessage* thisPtr, XsSize dataSize);
-XSTYPES_DLL_API void XsMessage_copyConstruct(
-	XsMessage* thisPtr, XsMessage const* src);
-XSTYPES_DLL_API void XsMessage_assign(XsMessage* thisPtr, XsSize dataSize);
-XSTYPES_DLL_API void XsMessage_load(
-	XsMessage* thisPtr, XsSize msgSize, unsigned char const* src);
-XSTYPES_DLL_API void XsMessage_destruct(XsMessage* thisPtr);
-XSTYPES_DLL_API void XsMessage_copy(XsMessage* copy, XsMessage const* src);
-XSTYPES_DLL_API void XsMessage_swap(XsMessage* a, XsMessage* b);
-XSTYPES_DLL_API XsSize XsMessage_dataSize(XsMessage const* thisPtr);
-XSTYPES_DLL_API const uint8_t* XsMessage_constData(
-	XsMessage const* thisPtr, XsSize offset);
-XSTYPES_DLL_API const uint8_t* XsMessage_getMessageStart(
-	XsMessage const* thisPtr);
-XSTYPES_DLL_API XsSize XsMessage_getTotalMessageSize(XsMessage const* thisPtr);
-XSTYPES_DLL_API uint8_t
-	XsMessage_getDataByte(XsMessage const* thisPtr, XsSize offset);
-XSTYPES_DLL_API uint16_t
-	XsMessage_getDataShort(XsMessage const* thisPtr, XsSize offset);
-XSTYPES_DLL_API uint32_t
-	XsMessage_getDataLong(XsMessage const* thisPtr, XsSize offset);
-XSTYPES_DLL_API float XsMessage_getDataFloat(
-	XsMessage const* thisPtr, XsSize offset);
-XSTYPES_DLL_API double XsMessage_getDataDouble(
-	XsMessage const* thisPtr, XsSize offset);
-XSTYPES_DLL_API double XsMessage_getDataF1220(
-	XsMessage const* thisPtr, XsSize offset);
-XSTYPES_DLL_API double XsMessage_getDataFP1632(
-	XsMessage const* thisPtr, XsSize offset);
-XSTYPES_DLL_API const uint8_t* XsMessage_getDataBuffer(
-	XsMessage const* thisPtr, XsSize offset);
-XSTYPES_DLL_API void XsMessage_setDataByte(
-	XsMessage* thisPtr, uint8_t value, XsSize offset);
-XSTYPES_DLL_API void XsMessage_setDataShort(
-	XsMessage* thisPtr, uint16_t value, XsSize offset);
-XSTYPES_DLL_API void XsMessage_setDataLong(
-	XsMessage* thisPtr, uint32_t value, XsSize offset);
-XSTYPES_DLL_API void XsMessage_setDataFloat(
-	XsMessage* thisPtr, float value, XsSize offset);
-XSTYPES_DLL_API void XsMessage_setDataDouble(
-	XsMessage* thisPtr, double value, XsSize offset);
-XSTYPES_DLL_API void XsMessage_setDataF1220(
-	XsMessage* thisPtr, double value, XsSize offset);
-XSTYPES_DLL_API void XsMessage_setDataFP1632(
-	XsMessage* thisPtr, double value, XsSize offset);
-XSTYPES_DLL_API void XsMessage_setDataBuffer(
-	XsMessage* thisPtr, const uint8_t* buffer, XsSize size, XsSize offset);
-XSTYPES_DLL_API uint8_t XsMessage_computeChecksum(XsMessage const* thisPtr);
-XSTYPES_DLL_API void XsMessage_recomputeChecksum(XsMessage* thisPtr);
-XSTYPES_DLL_API int XsMessage_isChecksumOk(XsMessage const* thisPtr);
-XSTYPES_DLL_API XsMessageHeader* XsMessage_getHeader(XsMessage*);
-XSTYPES_DLL_API const XsMessageHeader* XsMessage_getConstHeader(
-	XsMessage const* thisPtr);
-XSTYPES_DLL_API int XsMessage_empty(XsMessage const* thisPtr);
-XSTYPES_DLL_API void XsMessage_resizeData(XsMessage* thisPtr, XsSize newSize);
-XSTYPES_DLL_API void XsMessage_setBusId(XsMessage* thisPtr, uint8_t busId);
-XSTYPES_DLL_API void XsMessage_setMessageId(
-	XsMessage* thisPtr, XsXbusMessageId msgId);
-XSTYPES_DLL_API void XsMessage_insertData(
-	XsMessage* thisPtr, XsSize count, XsSize offset);
-XSTYPES_DLL_API void XsMessage_deleteData(
-	XsMessage* thisPtr, XsSize count, XsSize offset);
-XSTYPES_DLL_API void XsMessage_getDataFPValues(
-	XsMessage const* thisPtr, uint64_t outputSettings, double* dest,
-	XsSize offset, XsSize numValues);
-XSTYPES_DLL_API void XsMessage_setDataFPValues(
-	XsMessage* thisPtr, uint64_t outputSettings, double const* data,
-	XsSize offset, XsSize numValues);
-XSTYPES_DLL_API void XsMessage_getDataFPValuesById(
-	XsMessage const* thisPtr, XsDataIdentifier dataIdentifier, double* dest,
-	XsSize offset, XsSize numValues);
-XSTYPES_DLL_API void XsMessage_setDataFPValuesById(
-	XsMessage* thisPtr, XsDataIdentifier dataIdentifier, double const* data,
-	XsSize offset, XsSize numValues);
-XSTYPES_DLL_API int XsMessage_compare(XsMessage const* a, XsMessage const* b);
+	XSTYPES_DLL_API void XsMessage_construct(XsMessage* thisPtr);
+	XSTYPES_DLL_API void XsMessage_constructSized(
+		XsMessage* thisPtr, XsSize dataSize);
+	XSTYPES_DLL_API void XsMessage_copyConstruct(
+		XsMessage* thisPtr, XsMessage const* src);
+	XSTYPES_DLL_API void XsMessage_assign(XsMessage* thisPtr, XsSize dataSize);
+	XSTYPES_DLL_API void XsMessage_load(
+		XsMessage* thisPtr, XsSize msgSize, unsigned char const* src);
+	XSTYPES_DLL_API void XsMessage_destruct(XsMessage* thisPtr);
+	XSTYPES_DLL_API void XsMessage_copy(XsMessage* copy, XsMessage const* src);
+	XSTYPES_DLL_API void XsMessage_swap(XsMessage* a, XsMessage* b);
+	XSTYPES_DLL_API XsSize XsMessage_dataSize(XsMessage const* thisPtr);
+	XSTYPES_DLL_API const uint8_t* XsMessage_constData(
+		XsMessage const* thisPtr, XsSize offset);
+	XSTYPES_DLL_API const uint8_t* XsMessage_getMessageStart(
+		XsMessage const* thisPtr);
+	XSTYPES_DLL_API XsSize
+		XsMessage_getTotalMessageSize(XsMessage const* thisPtr);
+	XSTYPES_DLL_API uint8_t
+		XsMessage_getDataByte(XsMessage const* thisPtr, XsSize offset);
+	XSTYPES_DLL_API uint16_t
+		XsMessage_getDataShort(XsMessage const* thisPtr, XsSize offset);
+	XSTYPES_DLL_API uint32_t
+		XsMessage_getDataLong(XsMessage const* thisPtr, XsSize offset);
+	XSTYPES_DLL_API float XsMessage_getDataFloat(
+		XsMessage const* thisPtr, XsSize offset);
+	XSTYPES_DLL_API double XsMessage_getDataDouble(
+		XsMessage const* thisPtr, XsSize offset);
+	XSTYPES_DLL_API double XsMessage_getDataF1220(
+		XsMessage const* thisPtr, XsSize offset);
+	XSTYPES_DLL_API double XsMessage_getDataFP1632(
+		XsMessage const* thisPtr, XsSize offset);
+	XSTYPES_DLL_API const uint8_t* XsMessage_getDataBuffer(
+		XsMessage const* thisPtr, XsSize offset);
+	XSTYPES_DLL_API void XsMessage_setDataByte(
+		XsMessage* thisPtr, uint8_t value, XsSize offset);
+	XSTYPES_DLL_API void XsMessage_setDataShort(
+		XsMessage* thisPtr, uint16_t value, XsSize offset);
+	XSTYPES_DLL_API void XsMessage_setDataLong(
+		XsMessage* thisPtr, uint32_t value, XsSize offset);
+	XSTYPES_DLL_API void XsMessage_setDataFloat(
+		XsMessage* thisPtr, float value, XsSize offset);
+	XSTYPES_DLL_API void XsMessage_setDataDouble(
+		XsMessage* thisPtr, double value, XsSize offset);
+	XSTYPES_DLL_API void XsMessage_setDataF1220(
+		XsMessage* thisPtr, double value, XsSize offset);
+	XSTYPES_DLL_API void XsMessage_setDataFP1632(
+		XsMessage* thisPtr, double value, XsSize offset);
+	XSTYPES_DLL_API void XsMessage_setDataBuffer(
+		XsMessage* thisPtr, const uint8_t* buffer, XsSize size, XsSize offset);
+	XSTYPES_DLL_API uint8_t XsMessage_computeChecksum(XsMessage const* thisPtr);
+	XSTYPES_DLL_API void XsMessage_recomputeChecksum(XsMessage* thisPtr);
+	XSTYPES_DLL_API int XsMessage_isChecksumOk(XsMessage const* thisPtr);
+	XSTYPES_DLL_API XsMessageHeader* XsMessage_getHeader(XsMessage*);
+	XSTYPES_DLL_API const XsMessageHeader* XsMessage_getConstHeader(
+		XsMessage const* thisPtr);
+	XSTYPES_DLL_API int XsMessage_empty(XsMessage const* thisPtr);
+	XSTYPES_DLL_API void XsMessage_resizeData(
+		XsMessage* thisPtr, XsSize newSize);
+	XSTYPES_DLL_API void XsMessage_setBusId(XsMessage* thisPtr, uint8_t busId);
+	XSTYPES_DLL_API void XsMessage_setMessageId(
+		XsMessage* thisPtr, XsXbusMessageId msgId);
+	XSTYPES_DLL_API void XsMessage_insertData(
+		XsMessage* thisPtr, XsSize count, XsSize offset);
+	XSTYPES_DLL_API void XsMessage_deleteData(
+		XsMessage* thisPtr, XsSize count, XsSize offset);
+	XSTYPES_DLL_API void XsMessage_getDataFPValues(
+		XsMessage const* thisPtr, uint64_t outputSettings, double* dest,
+		XsSize offset, XsSize numValues);
+	XSTYPES_DLL_API void XsMessage_setDataFPValues(
+		XsMessage* thisPtr, uint64_t outputSettings, double const* data,
+		XsSize offset, XsSize numValues);
+	XSTYPES_DLL_API void XsMessage_getDataFPValuesById(
+		XsMessage const* thisPtr, XsDataIdentifier dataIdentifier, double* dest,
+		XsSize offset, XsSize numValues);
+	XSTYPES_DLL_API void XsMessage_setDataFPValuesById(
+		XsMessage* thisPtr, XsDataIdentifier dataIdentifier, double const* data,
+		XsSize offset, XsSize numValues);
+	XSTYPES_DLL_API int XsMessage_compare(
+		XsMessage const* a, XsMessage const* b);
 
 #ifdef __cplusplus
 }  // extern "C"
@@ -259,63 +263,63 @@ struct XsMessage
 	}
 
 	/*! \copydoc XsMessage_constData
-	*/
+	 */
 	const uint8_t* getDataBuffer(XsSize offset = 0) const
 	{
 		return XsMessage_constData(this, offset);
 	}
 
 	/*! \copydoc XsMessage_getDataByte
-	*/
+	 */
 	uint8_t getDataByte(XsSize offset = 0) const
 	{
 		return XsMessage_getDataByte(this, offset);
 	}
 
 	/*! \copydoc XsMessage_getDataDouble
-	*/
+	 */
 	double getDataDouble(XsSize offset = 0) const
 	{
 		return XsMessage_getDataDouble(this, offset);
 	}
 
 	/*! \copydoc XsMessage_getDataFloat
-	*/
+	 */
 	float getDataFloat(XsSize offset = 0) const
 	{
 		return XsMessage_getDataFloat(this, offset);
 	}
 
 	/*! \copydoc XsMessage_getDataF1220
-	*/
+	 */
 	double getDataF1220(XsSize offset = 0) const
 	{
 		return XsMessage_getDataF1220(this, offset);
 	}
 
 	/*! \copydoc XsMessage_getDataFP1632
-	*/
+	 */
 	double getDataFP1632(XsSize offset = 0) const
 	{
 		return XsMessage_getDataFP1632(this, offset);
 	}
 
 	/*! \copydoc XsMessage_getDataLong
-	*/
+	 */
 	uint32_t getDataLong(XsSize offset = 0) const
 	{
 		return XsMessage_getDataLong(this, offset);
 	}
 
 	/*! \copydoc XsMessage_getDataShort
-	*/
+	 */
 	uint16_t getDataShort(XsSize offset = 0) const
 	{
 		return XsMessage_getDataShort(this, offset);
 	}
 
 	/*! \copydoc XsMessage_dataSize
-	*/
+	 */
 	XsSize getDataSize(void) const { return XsMessage_dataSize(this); }
 	//! Return the current value of the m_messageId field.
 	XsXbusMessageId getMessageId(void) const
@@ -326,21 +330,21 @@ struct XsMessage
 	}
 
 	/*! \copydoc XsMessage_getMessageStart
-	*/
+	 */
 	const uint8_t* getMessageStart(void) const
 	{
 		return XsMessage_getMessageStart(this);
 	}
 
 	/*!	\copydoc XsMessage_getTotalMessageSize
-	*/
+	 */
 	XsSize getTotalMessageSize(void) const
 	{
 		return XsMessage_getTotalMessageSize(this);
 	}
 
 	/*! \copydoc XsMessage_isChecksumOk
-	*/
+	 */
 	bool isChecksumOk(void) const { return 0 != XsMessage_isChecksumOk(this); }
 	/*! \brief Initialize the %XsMessage with the data from \a src
 
@@ -356,51 +360,51 @@ struct XsMessage
 	}
 
 	/*! \copydoc XsMessage_recomputeChecksum
-	*/
+	 */
 	void recomputeChecksum(void) { XsMessage_recomputeChecksum(this); }
 	/*! \copydoc XsMessage_resizeData
-	*/
+	 */
 	void resizeData(XsSize newSize) { XsMessage_resizeData(this, newSize); }
 	/*! \copydoc XsMessage_setBusId
-	*/
+	 */
 	void setBusId(uint8_t busId) { XsMessage_setBusId(this, busId); }
 	/*! \copydoc XsMessage_setDataBuffer
-	*/
+	 */
 	void setDataBuffer(const uint8_t* buffer, XsSize size, XsSize offset = 0)
 	{
 		XsMessage_setDataBuffer(this, buffer, size, offset);
 	}
 
 	/*! \copydoc XsMessage_setDataByte
-	*/
+	 */
 	void setDataByte(const uint8_t value, XsSize offset = 0)
 	{
 		XsMessage_setDataByte(this, value, offset);
 	}
 
 	/*! \copydoc XsMessage_setDataDouble
-	*/
+	 */
 	void setDataDouble(const double value, XsSize offset = 0)
 	{
 		XsMessage_setDataDouble(this, value, offset);
 	}
 
 	/*! \copydoc XsMessage_setDataFloat
-	*/
+	 */
 	void setDataFloat(const float value, XsSize offset = 0)
 	{
 		XsMessage_setDataFloat(this, value, offset);
 	}
 
 	/*! \copydoc XsMessage_setDataF1220
-	*/
+	 */
 	void setDataF1220(const double value, XsSize offset = 0)
 	{
 		XsMessage_setDataF1220(this, value, offset);
 	}
 
 	/*! \copydoc XsMessage_setDataFP1632
-	*/
+	 */
 	void setDataFP1632(const double value, XsSize offset = 0)
 	{
 		XsMessage_setDataFP1632(this, value, offset);
@@ -416,21 +420,21 @@ struct XsMessage
 	// *data, XsSize offset, const uint16_t numValues);
 
 	/*! \copydoc XsMessage_setDataLong
-	*/
+	 */
 	void setDataLong(const uint32_t value, XsSize offset = 0)
 	{
 		XsMessage_setDataLong(this, value, offset);
 	}
 
 	/*!	\copydoc XsMessage_setDataShort
-	*/
+	 */
 	void setDataShort(const uint16_t value, XsSize offset = 0)
 	{
 		XsMessage_setDataShort(this, value, offset);
 	}
 
 	/*! \copydoc XsMessage_setMessageId
-	*/
+	 */
 	void setMessageId(const XsXbusMessageId msgId)
 	{
 		XsMessage_setMessageId(this, msgId);

@@ -130,7 +130,7 @@ double icp_test_1(int a1, int a2)
 void register_tests_icpslam()
 {
 	lstTests.emplace_back(
-			"icp-slam (match points): Run with sample dataset", icp_test_1, 0);
+		"icp-slam (match points): Run with sample dataset", icp_test_1, 0);
 	lstTests.emplace_back(
-			"icp-slam (match grid): Run with sample dataset", icp_test_1, 1);
+		"icp-slam (match grid): Run with sample dataset", icp_test_1, 1);
 }

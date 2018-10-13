@@ -23,7 +23,7 @@
 #endif
 
 /*! \brief A container for NAV-TIMEUTC data
-*/
+ */
 struct XsRawGpsTimeUtc
 {
 	/** Gps time of week (ms) */

@@ -17,10 +17,10 @@
 namespace mrpt::nav
 {
 /** Virtual base class for multi-objective motion choosers, as used for reactive
-  *navigation engines.
-  *\sa CReactiveNavigationSystem, CReactiveNavigationSystem3D
-  *  \ingroup nav_reactive
-  */
+ *navigation engines.
+ *\sa CReactiveNavigationSystem, CReactiveNavigationSystem3D
+ *  \ingroup nav_reactive
+ */
 class CMultiObjectiveMotionOptimizerBase : public mrpt::rtti::CObject
 {
 	DEFINE_VIRTUAL_MRPT_OBJECT(CMultiObjectiveMotionOptimizerBase)
@@ -33,7 +33,7 @@ class CMultiObjectiveMotionOptimizerBase : public mrpt::rtti::CObject
 	{
 		/** For each candidate (vector indices), the numerical evaluation of all
 		 * scores defined in TParamsBase::formula_score.
-		  * A value of 0 in all scores, or an empty map, means unsuitable
+		 * A value of 0 in all scores, or an empty map, means unsuitable
 		 * candidate. */
 		std::vector<std::map<std::string, double>> score_values;
 
@@ -46,8 +46,8 @@ class CMultiObjectiveMotionOptimizerBase : public mrpt::rtti::CObject
 
 	/** The main entry point for the class: returns the 0-based index of the
 	 * best of the N motion candidates in `movs`.
-	  * If no valid one is found, `-1` will be returned.
-	  */
+	 * If no valid one is found, `-1` will be returned.
+	 */
 	int decide(
 		const std::vector<mrpt::nav::TCandidateMovementPTG>& movs,
 		TResultInfo& extra_info);
@@ -62,20 +62,20 @@ class CMultiObjectiveMotionOptimizerBase : public mrpt::rtti::CObject
 
 		/** A list of `name` -> mathematical expression (in the format of the
 		 * exprtk library) for
-		  * the list of "score" factors to evaluate.
-		  */
+		 * the list of "score" factors to evaluate.
+		 */
 		std::map<std::string, std::string> formula_score;
 
 		/** A list of exprtk expressions for conditions that any candidate
 		 * movement must
-		  * fulfill in order to get through the evaluation process. *All* assert
+		 * fulfill in order to get through the evaluation process. *All* assert
 		 * conditions must be satisfied.
-		  */
+		 */
 		std::vector<std::string> movement_assert;
 
 		/** List of score names (as defined in the key of `formula_score`) that
 		 * must be normalized
-		  * across all candidates, such that the maximum value is 1. */
+		 * across all candidates, such that the maximum value is 1. */
 		std::vector<std::string> scores_to_normalize;
 
 		void loadFromConfigFile(
@@ -106,5 +106,4 @@ class CMultiObjectiveMotionOptimizerBase : public mrpt::rtti::CObject
 	std::vector<mrpt::expr::CRuntimeCompiledExpression> m_movement_assert_exprs;
 	std::map<std::string, double> m_expr_vars;
 };
-}
-
+}  // namespace mrpt::nav

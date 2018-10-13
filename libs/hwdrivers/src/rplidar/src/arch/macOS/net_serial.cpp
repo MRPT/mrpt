@@ -311,9 +311,9 @@ _u32 raw_serial::getTermBaudBitmap(_u32 baud)
 	}
 	return -1;
 }
-}
-}
-}  // end rp::arch::net
+}  // namespace net
+}  // namespace arch
+}  // namespace rp
 
 // begin rp::hal
 namespace rp
@@ -326,5 +326,5 @@ serial_rxtx* serial_rxtx::CreateRxTx()
 }
 
 void serial_rxtx::ReleaseRxTx(serial_rxtx* rxtx) { delete rxtx; }
-}
-}  // end rp::hal
+}  // namespace hal
+}  // namespace rp

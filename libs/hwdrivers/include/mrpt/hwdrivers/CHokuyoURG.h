@@ -17,60 +17,60 @@ namespace mrpt::hwdrivers
 {
 /** This software driver implements the protocol SCIP-2.0 for interfacing HOKUYO
  * URG/UTM/UXM/UST laser scanners (USB or Ethernet).
-  *  Refer to the example code
+ *  Refer to the example code
  * [HOKUYO_laser_test](http://www.mrpt.org/tutorials/mrpt-examples/example_hokuyo_urgutm_laser_scanner/)
-  *  and to example rawlog-grabber [config
+ *  and to example rawlog-grabber [config
  * files](https://github.com/MRPT/mrpt/tree/master/share/mrpt/config_files/rawlog-grabber)
-  *
-  *  See also the application "rawlog-grabber" for a ready-to-use application to
+ *
+ *  See also the application "rawlog-grabber" for a ready-to-use application to
  * gather data from the scanner.
-  *
-  *  \code
-  *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
-  * -------------------------------------------------------
-  *   [supplied_section_name]
-  *    HOKUYO_motorSpeed_rpm=600
-  *    #HOKUYO_HS_mode   = false    // Optional (un-comment line if used):
+ *
+ *  \code
+ *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
+ * -------------------------------------------------------
+ *   [supplied_section_name]
+ *    HOKUYO_motorSpeed_rpm=600
+ *    #HOKUYO_HS_mode   = false    // Optional (un-comment line if used):
  * Set/unset the High-sensitivity mode (not on all models/firmwares!)
-  *
-  *    # Uncomment serial port or IP address, depending on the Hokuyo model
+ *
+ *    # Uncomment serial port or IP address, depending on the Hokuyo model
  * (serial/USB vs. Ethernet):
-  *    COM_port_WIN = COM3       // Serial port name in Windows
-  *    COM_port_LIN = ttyS0      // Serial port name in GNU/Linux
-  *    #IP_DIR	=	192.168.0.10 // Uncommented this and "PORT_DIR" if the
+ *    COM_port_WIN = COM3       // Serial port name in Windows
+ *    COM_port_LIN = ttyS0      // Serial port name in GNU/Linux
+ *    #IP_DIR	=	192.168.0.10 // Uncommented this and "PORT_DIR" if the
  * used HOKUYO is connected by Ethernet instead of USB
-  *    #PORT_DIR = 10940         // Default value: 10940
-  *
-  *    pose_x=0.21	// Laser range scaner 3D position in the robot (meters)
-  *    pose_y=0
-  *    pose_z=0.34
-  *    pose_yaw=0	// Angles in degrees
-  *    pose_pitch=0
-  *    pose_roll=0
-  *
-  *    #disable_firmware_timestamp = true   // Uncomment to use PC time instead
+ *    #PORT_DIR = 10940         // Default value: 10940
+ *
+ *    pose_x=0.21	// Laser range scaner 3D position in the robot (meters)
+ *    pose_y=0
+ *    pose_z=0.34
+ *    pose_yaw=0	// Angles in degrees
+ *    pose_pitch=0
+ *    pose_roll=0
+ *
+ *    #disable_firmware_timestamp = true   // Uncomment to use PC time instead
  * of laser time
-  *
-  *    # Optional: reduced FOV:
-  *    # reduced_fov  = 25 // Deg
-  *
-  *    # Sets decimation of scans directly at the Hokuyo scanner.
-  *    # 0=means send all scans, 1=means send 50% of scans, etc.
-  *    # scan_interval = 0
-  *
-  *    #preview = true // Enable GUI visualization of captured data
-  *
-  *    # Optional: Exclusion zones to avoid the robot seeing itself:
-  *    #exclusionZone1_x = 0.20 0.30 0.30 0.20
-  *    #exclusionZone1_y = 0.20 0.30 0.30 0.20
-  *
-  *    # Optional: Exclusion zones to avoid the robot seeing itself:
-  *    #exclusionAngles1_ini = 20  // Deg
-  *    #exclusionAngles1_end = 25  // Deg
-  *
-  *  \endcode
-  * \ingroup mrpt_hwdrivers_grp
-  */
+ *
+ *    # Optional: reduced FOV:
+ *    # reduced_fov  = 25 // Deg
+ *
+ *    # Sets decimation of scans directly at the Hokuyo scanner.
+ *    # 0=means send all scans, 1=means send 50% of scans, etc.
+ *    # scan_interval = 0
+ *
+ *    #preview = true // Enable GUI visualization of captured data
+ *
+ *    # Optional: Exclusion zones to avoid the robot seeing itself:
+ *    #exclusionZone1_x = 0.20 0.30 0.30 0.20
+ *    #exclusionZone1_y = 0.20 0.30 0.30 0.20
+ *
+ *    # Optional: Exclusion zones to avoid the robot seeing itself:
+ *    #exclusionAngles1_ini = 20  // Deg
+ *    #exclusionAngles1_end = 25  // Deg
+ *
+ *  \endcode
+ * \ingroup mrpt_hwdrivers_grp
+ */
 class CHokuyoURG : public C2DRangeFinderAbstract
 {
 	DEFINE_GENERIC_SENSOR(CHokuyoURG)
@@ -109,73 +109,73 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 
 	/** Enables the SCIP2.0 protocol (this must be called at the very
 	 * begining!).
-	  * \return false on any error
-	  */
+	 * \return false on any error
+	 */
 	bool enableSCIP20();
 
 	/** Passes to 115200bps bitrate.
-	  * \return false on any error
-	  */
+	 * \return false on any error
+	 */
 	bool setHighBaudrate();
 
 	/** Switchs the laser on.
-	  * \return false on any error
-	  */
+	 * \return false on any error
+	 */
 	bool switchLaserOn();
 
 	/** Switchs the laser off
-	  * \return false on any error
-	  */
+	 * \return false on any error
+	 */
 	bool switchLaserOff();
 
 	/** Changes the motor speed in rpm's (default 600rpm)
-	  * \return false on any error
-	  */
+	 * \return false on any error
+	 */
 	bool setMotorSpeed(int motoSpeed_rpm);
 
 	/** Ask to the device, and print to the debug stream, details about the
 	 * firmware version,serial number,...
-	  * \return false on any error
-	  */
+	 * \return false on any error
+	 */
 	bool displayVersionInfo();
 
 	/** Ask to the device, and print to the debug stream, details about the
 	 * sensor model.
-	  *  It also optionally saves all the information in an user supplied data
+	 *  It also optionally saves all the information in an user supplied data
 	 * structure "out_data".
-	  * \return false on any error
-	  */
+	 * \return false on any error
+	 */
 	bool displaySensorInfo(CHokuyoURG::TSensorInfo* out_data = nullptr);
 
 	/** Start the continuous scanning mode, using parameters stored in the
 	 * object (loaded
-	  * from the .ini file). Maps to SCIP2.0 commands MD (no intensity) or ME
+	 * from the .ini file). Maps to SCIP2.0 commands MD (no intensity) or ME
 	 * (intensity).
-	  * After this command the device will start to send scans until
-	  * switchLaserOff() is called.
-	  * \return false on any error
-	  */
+	 * After this command the device will start to send scans until
+	 * switchLaserOff() is called.
+	 * \return false on any error
+	 */
 	bool startScanningMode();
 
 	/** Turns the laser on */
 	void initialize() override;
 
 	/** Waits for a response from the device. Packet is stored in m_rcv_data,
-	  * and status codes in the reference parameters.
-	  * \return false on any error
-	  */
+	 * and status codes in the reference parameters.
+	 * \return false on any error
+	 */
 	bool receiveResponse(char& rcv_status0, char& rcv_status1);
 
 	/** Assures a minimum number of bytes in the input buffer, reading from the
 	 * serial port only if required.
-	  * \return false if the number of bytes are not available, even after
+	 * \return false if the number of bytes are not available, even after
 	 * trying to fetch more data from the serial port.
-	  */
+	 */
 	bool assureBufferHasBytes(const size_t nDesiredBytes);
 
    public:
 	/** Constructor
-	  */
+	 */
 	CHokuyoURG();
 
 	/** Destructor: turns the laser off */
@@ -183,9 +183,9 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 
 	/** Specific laser scanner "software drivers" must process here new data
 	 * from the I/O stream, and, if a whole scan has arrived, return it.
-	  *  This method will be typically called in a different thread than other
+	 *  This method will be typically called in a different thread than other
 	 * methods, and will be called in a timely fashion.
-	  */
+	 */
 	void doProcessSimple(
 		bool& outThereIsObservation,
 		mrpt::obs::CObservation2DRangeScan& outObservation,
@@ -194,14 +194,14 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	/** Enables the scanning mode (which may depend on the specific laser
 	 * device); this must be called before asking for observations to assure
 	 * that the protocol has been initializated.
-	  * \return If everything works "true", or "false" if there is any error.
-	  */
+	 * \return If everything works "true", or "false" if there is any error.
+	 */
 	bool turnOn() override;
 
 	/** Disables the scanning mode (this can be used to turn the device in low
 	 * energy mode, if available)
-	  * \return If everything works "true", or "false" if there is any error.
-	  */
+	 * \return If everything works "true", or "false" if there is any error.
+	 */
 	bool turnOff() override;
 
 	/** Empties the RX buffers of the serial port */
@@ -222,23 +222,23 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	const std::string getSerialPort() { return m_com_port; }
 	/** If called (before calling "turnOn"), the field of view of the laser is
 	 * reduced to the given range (in radians), discarding the rest of measures.
-	  *  Call with "0" to disable this reduction again (the default).
-	  */
+	 *  Call with "0" to disable this reduction again (the default).
+	 */
 	void setReducedFOV(const double fov) { m_reduced_fov = fov; }
 	/** Changes the high sensitivity mode (HS) (default: false)
-	  * \return false on any error
-	  */
+	 * \return false on any error
+	 */
 	bool setHighSensitivityMode(bool enabled);
 
 	/** If true scans will capture intensity. (default: false)
-	  * Should not be called while scanning.
-	  * \return false on any error
-	  */
+	 * Should not be called while scanning.
+	 * \return false on any error
+	 */
 	bool setIntensityMode(bool enabled);
 
 	/** Set the skip scan count (0 means send all scans).
-	  * Must be set before initialize()
-	  */
+	 * Must be set before initialize()
+	 */
 	void setScanInterval(unsigned int skipScanCount);
 	unsigned int getScanInterval() const;
 
@@ -250,7 +250,7 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 
 	/** Returns true if there is a valid stream bound to the laser scanner,
 	 * otherwise it first try to open the serial port "m_com_port"
-	  */
+	 */
 	bool ensureStreamIsOpen();
 
 	/** Used to reduce artificially the interval of scan ranges. */
@@ -291,6 +291,4 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 
 };  // End of class
 
-}
-
-
+}  // namespace mrpt::hwdrivers

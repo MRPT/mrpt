@@ -35,7 +35,7 @@ class CVehicleSimulVirtualBase
 	virtual ~CVehicleSimulVirtualBase();
 
 	/** @name Kinematic simulation and control interface
-	  * @{ */
+	 * @{ */
 	/** Runs the simulator during "dt" seconds. It will be split into periods of
 	 * "m_firmware_control_period". */
 	void simulateOneTimeStep(const double dt);
@@ -79,7 +79,7 @@ class CVehicleSimulVirtualBase
 	double getTime() const { return m_time; }
 	/** Sends a velocity command to the robot. The number of components and
 	 * their meaning depends
-	  * on the vehicle-kinematics derived class */
+	 * on the vehicle-kinematics derived class */
 	virtual void sendVelCmd(const CVehicleVelCmd& cmd_vel) = 0;
 	/** Gets an empty velocity command object that can be queried to find out
 	 * the number of velcmd components,... */
@@ -139,5 +139,4 @@ class CVehicleSimulVirtualBase
    private:
 };
 
-}
-
+}  // namespace mrpt::kinematics

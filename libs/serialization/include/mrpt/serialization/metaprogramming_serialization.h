@@ -13,7 +13,7 @@
 namespace mrpt::serialization::metaprogramming
 {
 /** \addtogroup stlext_grp
-  * @{ */
+ * @{ */
 
 /** An object for reading objects from a stream, intended for being used in STL
  * algorithms. */
@@ -79,5 +79,4 @@ struct ObjectWriteToStream
 };
 
 /** @} */  // end of grouping
-}
-
+}  // namespace mrpt::serialization::metaprogramming

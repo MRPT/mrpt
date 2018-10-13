@@ -121,8 +121,7 @@ void display_graph(const GRAPHTYPE& g)
 		{
 			if (e.isOfType<mrpt::gui::mrptEventWindowChar>())
 			{
-				const auto* ev =
-					e.getAs<mrpt::gui::mrptEventWindowChar>();
+				const auto* ev = e.getAs<mrpt::gui::mrptEventWindowChar>();
 				bool rebuild_3d_obj = false;
 				switch (ev->char_code)
 				{
@@ -231,7 +230,7 @@ void display_graph(const GRAPHTYPE& g)
 					0.19f, 0.05f,  // width, height (in screen "ratios")
 					"Press 'h' for help",
 					0.015f  // text size
-					);
+				);
 
 				// Also showing help?
 				if (showing_help || hiding_help)
@@ -263,7 +262,7 @@ void display_graph(const GRAPHTYPE& g)
 						5.0f,  // border width
 						"serif",  // text font
 						mrpt::opengl::NICE  // text style
-						);
+					);
 
 					if (hide_tim > TRANSP_ANIMATION_TIME_SEC && hiding_help)
 						hiding_help = false;

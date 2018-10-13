@@ -43,7 +43,7 @@ class CPose3DPDFGaussian : public CPose3DPDF
    protected:
 	/** Assures the symmetry of the covariance matrix (eventually certain
 	 * operations in the math-coprocessor lead to non-symmetric matrixes!)
-	  */
+	 */
 	void assureSymmetry();
 
    public:
@@ -52,12 +52,12 @@ class CPose3DPDFGaussian : public CPose3DPDF
 	CPose3DPDFGaussian();
 
 	/** Constructor
-	  */
+	 */
 	explicit CPose3DPDFGaussian(const CPose3D& init_Mean);
 
 	/** Uninitialized constructor: leave all fields uninitialized - Call with
 	 * UNINITIALIZED_POSE as argument
-	  */
+	 */
 	CPose3DPDFGaussian(TConstructorFlags_Poses constructor_dummy_param);
 
 	/** Constructor  */
@@ -66,11 +66,11 @@ class CPose3DPDFGaussian : public CPose3DPDF
 
 	/** Constructor from a Gaussian 2D pose PDF (sets to 0 the missing variables
 	 * z,pitch, and roll).
-	  */
+	 */
 	explicit CPose3DPDFGaussian(const CPosePDFGaussian& o);
 
 	/** Constructor from a 6D pose PDF described as a Quaternion
-	  */
+	 */
 	explicit CPose3DPDFGaussian(const CPose3DQuatPDFGaussian& o);
 
 	/** The mean value
@@ -85,13 +85,13 @@ class CPose3DPDFGaussian : public CPose3DPDF
 	inline CPose3D& getPoseMean() { return mean; }
 	/** Returns an estimate of the pose, (the mean, or mathematical expectation
 	 * of the PDF).
-	  * \sa getCovariance
-	  */
+	 * \sa getCovariance
+	 */
 	void getMean(CPose3D& mean_pose) const override { mean_pose = mean; }
 	/** Returns an estimate of the pose covariance matrix (6x6 cov matrix) and
 	 * the mean, both at once.
-	  * \sa getMean
-	  */
+	 * \sa getMean
+	 */
 	void getCovarianceAndMean(
 		mrpt::math::CMatrixDouble66& out_cov,
 		CPose3D& mean_point) const override
@@ -110,16 +110,16 @@ class CPose3DPDFGaussian : public CPose3DPDF
 
 	/** Copy operator, translating if necesary (for example, between particles
 	 * and gaussian representations)
-	  */
+	 */
 	void copyFrom(const CPose3DPDF& o) override;
 
 	/** Copy operator, translating if necesary (for example, between particles
 	 * and gaussian representations)
-	  */
+	 */
 	void copyFrom(const CPosePDF& o);
 
 	/** Copy from a 6D pose PDF described as a Quaternion
-	  */
+	 */
 	void copyFrom(const CPose3DQuatPDFGaussian& o);
 
 	/** Save the PDF to a text file, containing the 3D pose in the first line,
@@ -129,36 +129,36 @@ class CPose3DPDFGaussian : public CPose3DPDF
 
 	/** this = p (+) this. This can be used to convert a PDF from local
 	 * coordinates to global, providing the point (newReferenceBase) from which
-	  *   "to project" the current pdf. Result PDF substituted the currently
+	 *   "to project" the current pdf. Result PDF substituted the currently
 	 * stored one in the object.
-	  */
+	 */
 	void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
 
 	/** Draws a single sample from the distribution
-	  */
+	 */
 	void drawSingleSample(CPose3D& outPart) const override;
 
 	/** Draws a number of samples from the distribution, and saves as a list of
 	 * 1x6 vectors, where each row contains a (x,y,phi) datum.
-	  */
+	 */
 	void drawManySamples(
 		size_t N,
 		std::vector<mrpt::math::CVectorDouble>& outSamples) const override;
 
 	/** Bayesian fusion of two points gauss. distributions, then save the result
-	  *in this object.
-	  *  The process is as follows:<br>
-	  *		- (x1,S1): Mean and variance of the p1 distribution.
-	  *		- (x2,S2): Mean and variance of the p2 distribution.
-	  *		- (x,S): Mean and variance of the resulting distribution.
-	  *
-	  *    S = (S1<sup>-1</sup> + S2<sup>-1</sup>)<sup>-1</sup>;
-	  *    x = S * ( S1<sup>-1</sup>*x1 + S2<sup>-1</sup>*x2 );
-	  */
+	 *in this object.
+	 *  The process is as follows:<br>
+	 *		- (x1,S1): Mean and variance of the p1 distribution.
+	 *		- (x2,S2): Mean and variance of the p2 distribution.
+	 *		- (x,S): Mean and variance of the resulting distribution.
+	 *
+	 *    S = (S1<sup>-1</sup> + S2<sup>-1</sup>)<sup>-1</sup>;
+	 *    x = S * ( S1<sup>-1</sup>*x1 + S2<sup>-1</sup>*x2 );
+	 */
 	void bayesianFusion(const CPose3DPDF& p1, const CPose3DPDF& p2) override;
 
 	/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
-	  */
+	 */
 	void inverse(CPose3DPDF& o) const override;
 
 	/** Unary - operator, returns the PDF of the inverse pose.  */
@@ -171,39 +171,39 @@ class CPose3DPDFGaussian : public CPose3DPDF
 
 	/** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the
 	 * mean, and the covariance matrix are updated).
-	  */
+	 */
 	void operator+=(const CPose3D& Ap);
 
 	/** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the
 	 * mean, and the covariance matrix are updated).
-	  */
+	 */
 	void operator+=(const CPose3DPDFGaussian& Ap);
 
 	/** Makes: thisPDF = thisPDF - Ap, where "-" is pose inverse composition
 	 * (both the mean, and the covariance matrix are updated).
-	  */
+	 */
 	void operator-=(const CPose3DPDFGaussian& Ap);
 
 	/** Evaluates the PDF at a given point.
-	  */
+	 */
 	double evaluatePDF(const CPose3D& x) const;
 
 	/** Evaluates the ratio PDF(x) / PDF(MEAN), that is, the normalized PDF in
 	 * the range [0,1].
-	  */
+	 */
 	double evaluateNormalizedPDF(const CPose3D& x) const;
 
 	/** Computes the Mahalanobis distance between the centers of two Gaussians.
-	  *  The variables with a variance exactly equal to 0 are not taken into
+	 *  The variables with a variance exactly equal to 0 are not taken into
 	 * account in the process, but
-	  *   "infinity" is returned if the corresponding elements are not exactly
+	 *   "infinity" is returned if the corresponding elements are not exactly
 	 * equal.
-	  */
+	 */
 	double mahalanobisDistanceTo(const CPose3DPDFGaussian& theOther);
 
 	/** Returns a 3x3 matrix with submatrix of the covariance for the variables
 	 * (x,y,yaw) only.
-	  */
+	 */
 	void getCovSubmatrix2D(mrpt::math::CMatrixDouble& out_cov) const;
 
 };  // End of class def.
@@ -228,28 +228,27 @@ inline CPose3DPDFGaussian operator-(
 }
 
 /** Dumps the mean and covariance matrix to a text stream.
-  */
+ */
 std::ostream& operator<<(std::ostream& out, const CPose3DPDFGaussian& obj);
 
 bool operator==(const CPose3DPDFGaussian& p1, const CPose3DPDFGaussian& p2);
 
-}  // End of namespace
+}  // namespace poses
 
 /** Global variables to change the run-time behaviour of some MRPT classes
  * within mrpt-base.
-  *  See each variable for the description of what classes it affects.
-  */
+ *  See each variable for the description of what classes it affects.
+ */
 namespace global_settings
 {
 /** If set to true (false), a Scaled Unscented Transform is used instead of a
-  *linear approximation with Jacobians.
-  * Affects to:
-  *		- CPose3DPDFGaussian::CPose3DPDFGaussian( const CPose3DQuatPDFGaussian
-  *&o)
-  */
+ *linear approximation with Jacobians.
+ * Affects to:
+ *		- CPose3DPDFGaussian::CPose3DPDFGaussian( const CPose3DQuatPDFGaussian
+ *&o)
+ */
 void USE_SUT_QUAT2EULER_CONVERSION(bool value);
 bool USE_SUT_QUAT2EULER_CONVERSION();
-}
+}  // namespace global_settings
 
-}  // End of namespace
-
+}  // namespace mrpt

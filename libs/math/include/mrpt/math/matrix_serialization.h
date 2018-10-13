@@ -146,5 +146,4 @@ void serializeSymmetricMatrixTo(MAT& m, mrpt::serialization::CArchive& out)
 /** @} */  // end MRPT matrices stream operators
 
 /**  @} */  // end of grouping
-}
-
+}  // namespace mrpt::math

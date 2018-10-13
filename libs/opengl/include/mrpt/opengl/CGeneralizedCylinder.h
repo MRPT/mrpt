@@ -416,6 +416,6 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 	/**
 	 * Destructor.
 	 */
-	~CGeneralizedCylinder() override= default;
+	~CGeneralizedCylinder() override = default;
 };
 }  // namespace mrpt::opengl

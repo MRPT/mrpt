@@ -93,8 +93,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 					OBSERVATION TYPE: CObservation2DRangeScan
 
 			********************************************************************/
-		const auto* o =
-			static_cast<const CObservation2DRangeScan*>(obs);
+		const auto* o = static_cast<const CObservation2DRangeScan*>(obs);
 		CPose3D sensorPose3D = robotPose3D + o->sensorPose;
 		CPose2D laserPose(sensorPose3D);
 
@@ -1314,10 +1313,8 @@ bool COccupancyGridMap2D::internal_insertObservation(
 	Initilization of values, don't needed to be called directly.
   ---------------------------------------------------------------*/
 COccupancyGridMap2D::TInsertionOptions::TInsertionOptions()
-	: 
-	  horizontalTolerance(DEG2RAD(0.05))
+	: horizontalTolerance(DEG2RAD(0.05))
 
-	  
 {
 }
 

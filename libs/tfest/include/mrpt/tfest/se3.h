@@ -138,5 +138,4 @@ bool se3_l2_robust(
 	const TSE3RobustParams& in_params, TSE3RobustResult& out_results);
 
 /** @} */  // end of grouping
-}
-
+}  // namespace mrpt::tfest

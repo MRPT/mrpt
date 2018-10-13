@@ -11,12 +11,10 @@
 
 namespace mrpt::graphslam::optimizers
 {
-
 template <class GRAPH_T>
 CLevMarqGSO<GRAPH_T>::CLevMarqGSO()
-	: 
-	  m_optimization_policy(OptimizationPolicy::UseLoopClosures)
-	  
+	: m_optimization_policy(OptimizationPolicy::UseLoopClosures)
+
 {
 	this->initializeLoggers("CLevMarqGSO");
 }
@@ -479,8 +477,7 @@ bool CLevMarqGSO<GRAPH_T>::checkForLoopClosures()
 	typename GRAPH_T::edges_map_t::const_iterator search;
 	mrpt::graphs::TPairNodeIDs curr_pair;
 
-	for (auto it =
-			 curr_pair_nodes_to_edge.begin();
+	for (auto it = curr_pair_nodes_to_edge.begin();
 		 it != curr_pair_nodes_to_edge.end(); ++it)
 	{
 		search = opt_params.last_pair_nodes_to_edge.find(it->first);
@@ -712,8 +709,7 @@ CLevMarqGSO<GRAPH_T>::OptimizationParams::OptimizationParams()
 {
 }
 template <class GRAPH_T>
-CLevMarqGSO<GRAPH_T>::OptimizationParams::~OptimizationParams()
-= default;
+CLevMarqGSO<GRAPH_T>::OptimizationParams::~OptimizationParams() = default;
 template <class GRAPH_T>
 void CLevMarqGSO<GRAPH_T>::OptimizationParams::dumpToTextStream(
 	std::ostream& out) const
@@ -763,8 +759,8 @@ CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::GraphVisualizationParams()
 {
 }
 template <class GRAPH_T>
-CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::~GraphVisualizationParams()
-= default;
+CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::~GraphVisualizationParams() =
+	default;
 template <class GRAPH_T>
 void CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::dumpToTextStream(
 	std::ostream& out) const
@@ -806,20 +802,17 @@ void CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::loadFromConfigFile(
 		source.read_bool(section, "optimized_show_node_corners", true, false);
 	cfg["show_edge_rel_poses"] =
 		source.read_bool(section, "optimized_show_edge_rel_poses", true, false);
-	cfg["edge_rel_poses_color"] = source.read_int(
-		section, "optimized_edge_rel_poses_color", 2000, false);
+	cfg["edge_rel_poses_color"] =
+		source.read_int(section, "optimized_edge_rel_poses_color", 2000, false);
 	cfg["nodes_edges_corner_scale"] = source.read_double(
 		section, "optimized_nodes_edges_corner_scale", 0.4, false);
 	cfg["nodes_corner_scale"] =
 		source.read_double(section, "optimized_nodes_corner_scale", 0.7, false);
 	cfg["nodes_point_size"] =
 		source.read_int(section, "optimized_nodes_point_size", 5, false);
-	cfg["nodes_point_color"] = source.read_int(
-		section, "optimized_nodes_point_color", 3000, false);
+	cfg["nodes_point_color"] =
+		source.read_int(section, "optimized_nodes_point_color", 3000, false);
 
 	MRPT_END;
 }
-}  // namespace mrpt
-
-
-
+}  // namespace mrpt::graphslam::optimizers

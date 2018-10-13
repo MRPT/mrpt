@@ -51,8 +51,7 @@ const QString CLandmarksConfig::getName()
 void CLandmarksConfig::updateConfiguration(
 	mrpt::maps::TMetricMapInitializer* options)
 {
-	auto* mapDefination =
-		dynamic_cast<CLandmarksMap::TMapDefinition*>(options);
+	auto* mapDefination = dynamic_cast<CLandmarksMap::TMapDefinition*>(options);
 	ASSERT_(mapDefination);
 
 	mapDefination->genericMapParams.enableSaveAs3DObject =

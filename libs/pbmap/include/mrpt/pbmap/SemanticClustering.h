@@ -61,8 +61,8 @@ class SemanticClustering
 	std::vector<unsigned> planesVicinity_order;
 
 	/*!
-	* Build the proximity matrix
-	*/
+	 * Build the proximity matrix
+	 */
 	void buildProximityMatrix()
 	{
 		size_t neigSize = 0;
@@ -118,8 +118,8 @@ class SemanticClustering
 	};
 
 	/*!
-	* Build the co-visibility matrix
-	*/
+	 * Build the co-visibility matrix
+	 */
 	void buildCoVisibilityMatrix()
 	{
 		size_t neigSize = 0;
@@ -183,8 +183,8 @@ class SemanticClustering
 	};
 
 	/*!
-	* Arrange the semantic groups
-	*/
+	 * Arrange the semantic groups
+	 */
 	void arrangeNewGroups(std::vector<std::vector<uint32_t>>& parts)
 	{
 		using namespace std;
@@ -232,8 +232,8 @@ class SemanticClustering
 				{
 					if (parts[i][j] < group_limits[i] ||
 						parts[i][j] >=
-							group_limits[i +
-										 1])  // The plane has changed the group
+							group_limits[i + 1])  // The plane has changed the
+												  // group
 					{
 						for (unsigned k = 0;
 							 k < neighborGroups.size() && i != k; k++)
@@ -290,8 +290,7 @@ class SemanticClustering
 			}
 		}
 
-		for (auto it = newGroups.begin();
-			 it != newGroups.end(); it++)
+		for (auto it = newGroups.begin(); it != newGroups.end(); it++)
 			groups[it->first] = it->second;
 
 		if (group_diff < 0)
@@ -328,14 +327,10 @@ class SemanticClustering
 		// Re-define currentSemanticGroup and current vicinity
 		//      std::vector<unsigned> newNeighborGroups;
 
-		for (auto it1 =
-				 newGroups.begin();
-			 it1 != newGroups.end(); it1++)
+		for (auto it1 = newGroups.begin(); it1 != newGroups.end(); it1++)
 			vicinity[it1->first] = DEFAULT_VECTOR_U;
 
-		for (auto it1 =
-				 newGroups.begin();
-			 it1 != newGroups.end(); it1++)
+		for (auto it1 = newGroups.begin(); it1 != newGroups.end(); it1++)
 		{
 			auto it2 = it1;
 			for (it2++; it2 != newGroups.end(); it2++)
@@ -370,9 +365,9 @@ class SemanticClustering
 	};
 
 	/*!
-	* Evaluate the partition of the current semantic groups into new ones with
-	* minNcut
-	*/
+	 * Evaluate the partition of the current semantic groups into new ones with
+	 * minNcut
+	 */
 	int evalPartition(std::set<unsigned>& observedPlanes)
 	{
 		using namespace std;
@@ -383,14 +378,12 @@ class SemanticClustering
 		// Select current group
 		unsigned current_group_votes = 0;
 		map<unsigned, unsigned> observed_group;
-		for (auto it = observedPlanes.begin();
-			 it != observedPlanes.end(); it++)
+		for (auto it = observedPlanes.begin(); it != observedPlanes.end(); it++)
 			if (observed_group.count(mPbMap.vPlanes[*it].semanticGroup))
 				observed_group[mPbMap.vPlanes[*it].semanticGroup]++;
 			else
 				observed_group[mPbMap.vPlanes[*it].semanticGroup] = 1;
-		for (auto it = observed_group.begin();
-			 it != observed_group.end(); it++)
+		for (auto it = observed_group.begin(); it != observed_group.end(); it++)
 			if (it->second > current_group_votes)
 			{
 				currentSemanticGroup = it->first;
@@ -448,14 +441,12 @@ class SemanticClustering
 		// Update currentSemanticGroup
 		current_group_votes = 0;
 		observed_group.clear();
-		for (auto it = observedPlanes.begin();
-			 it != observedPlanes.end(); it++)
+		for (auto it = observedPlanes.begin(); it != observedPlanes.end(); it++)
 			if (observed_group.count(mPbMap.vPlanes[*it].semanticGroup))
 				observed_group[mPbMap.vPlanes[*it].semanticGroup]++;
 			else
 				observed_group[mPbMap.vPlanes[*it].semanticGroup] = 1;
-		for (auto it = observed_group.begin();
-			 it != observed_group.end(); it++)
+		for (auto it = observed_group.begin(); it != observed_group.end(); it++)
 			if (it->second > current_group_votes)
 			{
 				currentSemanticGroup = it->first;
@@ -471,7 +462,5 @@ class SemanticClustering
 		return parts.size();
 	};
 };
-}
+}  // namespace mrpt::pbmap
 #endif
-
-

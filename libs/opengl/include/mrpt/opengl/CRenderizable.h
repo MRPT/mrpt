@@ -235,9 +235,8 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	/** Changes the default object color \return a ref to this */
 	CRenderizable& setColor(const mrpt::img::TColorf& c)
 	{
-		return setColor_u8(
-			mrpt::img::TColor(
-				c.R * 255.f, c.G * 255.f, c.B * 255.f, c.A * 255.f));
+		return setColor_u8(mrpt::img::TColor(
+			c.R * 255.f, c.G * 255.f, c.B * 255.f, c.A * 255.f));
 	}
 
 	/** Set the color components of this object (R,G,B,Alpha, in the range 0-1)
@@ -335,6 +334,4 @@ using CListOpenGLObjects = std::deque<CRenderizable::Ptr>;
 CRenderizable::Ptr& operator<<(
 	CRenderizable::Ptr& r, const mrpt::poses::CPose3D& p);
 
-}
-
-
+}  // namespace mrpt::opengl

@@ -700,8 +700,7 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
 				options.data_assoc_IC_ml_threshold);
 
 			// Return pairings to the main KF algorithm:
-			for (auto it =
-					 m_last_data_association.results.associations.begin();
+			for (auto it = m_last_data_association.results.associations.begin();
 				 it != m_last_data_association.results.associations.end(); ++it)
 				data_association[it->first] = it->second;
 		}
@@ -788,10 +787,10 @@ void CRangeBearingKFSLAM::TOptions::loadFromConfigFile(
   ---------------------------------------------------------------*/
 CRangeBearingKFSLAM::TOptions::TOptions()
 	: stds_Q_no_odo(get_vehicle_size(), 0),
-	  
+
 	  std_sensor_yaw(DEG2RAD(0.2f)),
 	  std_sensor_pitch(DEG2RAD(0.2f))
-	  
+
 {
 	stds_Q_no_odo[0] = stds_Q_no_odo[1] = stds_Q_no_odo[2] = 0.10f;
 	stds_Q_no_odo[3] = stds_Q_no_odo[4] = stds_Q_no_odo[5] = stds_Q_no_odo[6] =

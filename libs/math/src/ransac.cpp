@@ -147,28 +147,25 @@ bool RANSAC_Template<NUMTYPE>::execute(
 				pNoOutliers);  // Avoid division by 0.
 			// Number of
 			N = static_cast<size_t>(log(1 - p) / log(pNoOutliers));
-			MRPT_LOG_DEBUG(
-				format(
-					"Iter #%u Estimated number of iters: %u  pNoOutliers = %f  "
-					"#inliers: %u\n",
-					(unsigned)trialcount, (unsigned)N, pNoOutliers,
-					(unsigned)ninliers));
+			MRPT_LOG_DEBUG(format(
+				"Iter #%u Estimated number of iters: %u  pNoOutliers = %f  "
+				"#inliers: %u\n",
+				(unsigned)trialcount, (unsigned)N, pNoOutliers,
+				(unsigned)ninliers));
 		}
 
 		++trialcount;
 
-		MRPT_LOG_DEBUG(
-			format(
-				"trial %u out of %u \r", (unsigned int)trialcount,
-				(unsigned int)ceil(static_cast<double>(N))));
+		MRPT_LOG_DEBUG(format(
+			"trial %u out of %u \r", (unsigned int)trialcount,
+			(unsigned int)ceil(static_cast<double>(N))));
 
 		// Safeguard against being stuck in this loop forever
 		if (trialcount > maxIter)
 		{
-			MRPT_LOG_WARN(
-				format(
-					"Warning: maximum number of trials (%u) reached\n",
-					(unsigned)maxIter));
+			MRPT_LOG_WARN(format(
+				"Warning: maximum number of trials (%u) reached\n",
+				(unsigned)maxIter));
 			break;
 		}
 	}

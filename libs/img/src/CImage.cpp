@@ -457,8 +457,7 @@ void CImage::loadFromMemoryBuffer(
 	{
 		// Do copy & swap at once:
 		unsigned char* ptr_src = rawpixels;
-		auto* ptr_dest =
-			reinterpret_cast<unsigned char*>(img->imageData);
+		auto* ptr_dest = reinterpret_cast<unsigned char*>(img->imageData);
 		const int bytes_per_row_out = img->widthStep;
 
 		for (int h = height; h--;)
@@ -485,8 +484,7 @@ void CImage::loadFromMemoryBuffer(
 		{
 			// Copy the image row by row:
 			unsigned char* ptr_src = rawpixels;
-			auto* ptr_dest =
-				reinterpret_cast<unsigned char*>(img->imageData);
+			auto* ptr_dest = reinterpret_cast<unsigned char*>(img->imageData);
 			int bytes_per_row = width * (color ? 3 : 1);
 			int bytes_per_row_out = img->widthStep;
 			for (unsigned int y = 0; y < height; y++)

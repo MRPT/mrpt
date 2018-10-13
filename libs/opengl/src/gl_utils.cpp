@@ -27,11 +27,11 @@ using namespace mrpt::system;
 using namespace mrpt::opengl;
 
 /** For each object in the list:
-*   - checks visibility of each object
-*   - prepare the GL_MODELVIEW matrix according to its coordinates
-*   - call its ::render()
-*   - shows its name (if enabled).
-*/
+ *   - checks visibility of each object
+ *   - prepare the GL_MODELVIEW matrix according to its coordinates
+ *   - call its ::render()
+ *   - shows its name (if enabled).
+ */
 void gl_utils::renderSetOfObjects(const CListOpenGLObjects& objectsToRender)
 {
 #if MRPT_HAS_OPENGL_GLUT
@@ -211,8 +211,8 @@ void gl_utils::renderQuadWithNormal(
 }
 
 /** Gather useful information on the render parameters.
-  *  It can be called from within the render() method of derived classes.
-  */
+ *  It can be called from within the render() method of derived classes.
+ */
 void gl_utils::getCurrentRenderingInfo(TRenderInfo& ri)
 {
 #if MRPT_HAS_OPENGL_GLUT
@@ -296,8 +296,8 @@ void* aux_mrptfont2glutfont(const TOpenGLFont font)
 
 /** Return the exact width in pixels for a given string, as will be rendered by
  * renderTextBitmap().
-  * \sa renderTextBitmap
-  */
+ * \sa renderTextBitmap
+ */
 int gl_utils::textBitmapWidth(
 	const std::string& str, mrpt::opengl::TOpenGLFont font)
 {
@@ -369,8 +369,7 @@ void CRenderizable::renderTextBitmap(
 	// Select font:
 	void* glut_font_sel = aux_mrptfont2glutfont(font);
 
-	for (char i : str)
-		glutBitmapCharacter(glut_font_sel, i);
+	for (char i : str) glutBitmapCharacter(glut_font_sel, i);
 
 	glEnable(GL_DEPTH_TEST);
 #else
@@ -537,7 +536,8 @@ mrpt::img::TPixelCoordf gl_utils::glDrawText(
 	glPushMatrix();
 	glMatrixMode(GL_MODELVIEW);
 	glScaled(textScale, textScale, textScale);
-	auto ret = CVD::glDrawText(text, static_cast<CVD::TEXT_STYLE>(style), spacing, kerning);
+	auto ret = CVD::glDrawText(
+		text, static_cast<CVD::TEXT_STYLE>(style), spacing, kerning);
 	glPopMatrix();
 	return ret;
 #else

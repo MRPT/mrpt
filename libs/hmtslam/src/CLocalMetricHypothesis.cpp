@@ -90,7 +90,8 @@ void CLocalMetricHypothesis::getAs3DScene(
 
 		for (unsigned long m_neighbor : m_neighbors)
 		{
-			const CHMHMapNode::Ptr node = m_parent->m_map.getNodeByID(m_neighbor);
+			const CHMHMapNode::Ptr node =
+				m_parent->m_map.getNodeByID(m_neighbor);
 			ASSERT_(node);
 			TPoseID poseID_origin;
 			CPose3D originPose;
@@ -184,8 +185,7 @@ void CLocalMetricHypothesis::getAs3DScene(
 		else  // The current robot pose does not count
 		{
 			// Compute the area means:
-			auto itAreaId =
-				m_nodeIDmemberships.find(it->first);
+			auto itAreaId = m_nodeIDmemberships.find(it->first);
 			ASSERT_(itAreaId != m_nodeIDmemberships.end());
 			CHMHMapNode::TNodeID areaId = itAreaId->second;
 			areas_howmany[areaId]++;
@@ -348,14 +348,12 @@ void CLocalMetricHypothesis::getAs3DScene(
 
 			TArcList lstArcs;
 			srcArea->getArcs(lstArcs);
-			for (auto a = lstArcs.begin();
-				 a != lstArcs.end(); ++a)
+			for (auto a = lstArcs.begin(); a != lstArcs.end(); ++a)
 			{
 				// target is in the neighborhood of LMH:
 				if ((*a)->getNodeFrom() == srcAreaID)
 				{
-					auto
-						trgAreaPoseIt = areas_mean.find((*a)->getNodeTo());
+					auto trgAreaPoseIt = areas_mean.find((*a)->getNodeTo());
 					if (trgAreaPoseIt != areas_mean.end())
 					{
 						// Yes, target node of the arc is in the LMH: Draw it:
@@ -442,8 +440,7 @@ void CLocalMetricHypothesis::getPathParticles(
 	if (m_particles.empty()) return;
 
 	// For each poseID:
-	for (auto itPoseID =
-			 m_particles.begin()->d->robotPoses.begin();
+	for (auto itPoseID = m_particles.begin()->d->robotPoses.begin();
 		 itPoseID != m_particles.begin()->d->robotPoses.end(); ++itPoseID)
 	{
 		CPose3DPDFParticles auxPDF(m_particles.size());
@@ -480,8 +477,7 @@ void CLocalMetricHypothesis::getPoseParticles(
 		 it != m_particles.end(); it++, itP++)
 	{
 		itP->log_w = it->log_w;
-		auto itPose =
-			it->d->robotPoses.find(poseID);
+		auto itPose = it->d->robotPoses.find(poseID);
 		ASSERT_(itPose != it->d->robotPoses.end());
 		itP->d = itPose->second.asTPose();
 	}
@@ -496,7 +492,7 @@ void CLocalMetricHypothesis::clearRobotPoses()
 {
 	clearParticles();
 	m_particles.resize(m_parent->m_options.pf_options.sampleSize);
-	for (auto & m_particle : m_particles)
+	for (auto& m_particle : m_particles)
 	{
 		// Create particle:
 		m_particle.log_w = 0;
@@ -517,8 +513,7 @@ const CPose3D* CLocalMetricHypothesis::getCurrentPose(
 	if (particleIdx >= m_particles.size())
 		THROW_EXCEPTION("Particle index out of bounds!");
 
-	auto it =
-		m_particles[particleIdx].d->robotPoses.find(m_currentRobotPose);
+	auto it = m_particles[particleIdx].d->robotPoses.find(m_currentRobotPose);
 	ASSERT_(it != m_particles[particleIdx].d->robotPoses.end());
 	return &it->second;
 }
@@ -531,8 +526,7 @@ CPose3D* CLocalMetricHypothesis::getCurrentPose(const size_t& particleIdx)
 	if (particleIdx >= m_particles.size())
 		THROW_EXCEPTION("Particle index out of bounds!");
 
-	auto it =
-		m_particles[particleIdx].d->robotPoses.find(m_currentRobotPose);
+	auto it = m_particles[particleIdx].d->robotPoses.find(m_currentRobotPose);
 	ASSERT_(it != m_particles[particleIdx].d->robotPoses.end());
 	return &it->second;
 }
@@ -591,8 +585,7 @@ void CLocalMetricHypothesis::changeCoordinateOrigin(const TPoseID& newOrigin)
 
 		auto End = it->d->robotPoses.end();
 		// Change all other poses first:
-		for (auto itP = it->d->robotPoses.begin();
-			 itP != End; ++itP)
+		for (auto itP = it->d->robotPoses.begin(); itP != End; ++itP)
 			if (itP != refPoseIt) itP->second = itP->second - refPose;
 
 		// Now set new origin to 0:
@@ -607,8 +600,7 @@ void CLocalMetricHypothesis::changeCoordinateOrigin(const TPoseID& newOrigin)
 		std::lock_guard<std::mutex> locker(m_robotPosesGraph.lock);
 
 		CSimpleMap* SFseq = m_robotPosesGraph.partitioner.getSequenceOfFrames();
-		for (auto it =
-				 m_robotPosesGraph.idx2pose.begin();
+		for (auto it = m_robotPosesGraph.idx2pose.begin();
 			 it != m_robotPosesGraph.idx2pose.end(); ++it)
 		{
 			CPose3DPDF::Ptr pdf;
@@ -629,20 +621,18 @@ void CLocalMetricHypothesis::changeCoordinateOrigin(const TPoseID& newOrigin)
  ---------------------------------------------------------------*/
 void CLocalMetricHypothesis::rebuildMetricMaps()
 {
-	for (auto & m_particle : m_particles)
+	for (auto& m_particle : m_particles)
 	{
 		m_particle.d->metricMaps.clear();
 
 		// Follow all robot poses:
 		auto End = m_particle.d->robotPoses.end();
-		for (auto itP = m_particle.d->robotPoses.begin();
-			 itP != End; ++itP)
+		for (auto itP = m_particle.d->robotPoses.begin(); itP != End; ++itP)
 		{
 			if (itP->first !=
 				m_currentRobotPose)  // Current robot pose has no SF stored.
 			{
-				auto SFit =
-					m_SFs.find(itP->first);
+				auto SFit = m_SFs.find(itP->first);
 				ASSERT_(SFit != m_SFs.end());
 				SFit->second.insertObservationsInto(
 					&m_particle.d->metricMaps, &itP->second);
@@ -676,8 +666,9 @@ void CLocalMetricHypothesis::removeAreaFromLMH(
 	// Build the list with the poses in the area to be removed from LMH:
 	// ----------------------------------------------------------------------
 	TNodeIDList lstPoseIDs;
-	for (auto & m_nodeIDmembership : m_nodeIDmemberships)
-		if (m_nodeIDmembership.second == areaID) lstPoseIDs.insert(m_nodeIDmembership.first);
+	for (auto& m_nodeIDmembership : m_nodeIDmemberships)
+		if (m_nodeIDmembership.second == areaID)
+			lstPoseIDs.insert(m_nodeIDmembership.first);
 
 	ASSERT_(!lstPoseIDs.empty());
 
@@ -690,9 +681,8 @@ void CLocalMetricHypothesis::removeAreaFromLMH(
 	// - Robot poses belonging to that area are removed from:
 	// 	- the particles.
 	// ----------------------------------------------------------------------
-	for (auto it = lstPoseIDs.begin();
-		 it != lstPoseIDs.end(); ++it)
-		for (auto & m_particle : m_particles)
+	for (auto it = lstPoseIDs.begin(); it != lstPoseIDs.end(); ++it)
+		for (auto& m_particle : m_particles)
 			m_particle.d->robotPoses.erase(m_particle.d->robotPoses.find(*it));
 
 	// - The weights of all particles are changed to remove the effects of the
@@ -706,8 +696,7 @@ void CLocalMetricHypothesis::removeAreaFromLMH(
 		for (ws_it = m_log_w_metric_history.begin(), p = m_particles.begin();
 			 p != m_particles.end(); ++p, ++ws_it)
 		{
-			for (auto it = lstPoseIDs.begin();
-				 it != lstPoseIDs.end(); ++it)
+			for (auto it = lstPoseIDs.begin(); it != lstPoseIDs.end(); ++it)
 			{
 				auto itW = ws_it->find(*it);
 				if (itW != ws_it->end())
@@ -731,8 +720,7 @@ void CLocalMetricHypothesis::removeAreaFromLMH(
 		std::vector<uint32_t> indexesToRemove;
 		indexesToRemove.reserve(lstPoseIDs.size());
 
-		for (auto it =
-				 m_robotPosesGraph.idx2pose.begin();
+		for (auto it = m_robotPosesGraph.idx2pose.begin();
 			 it != m_robotPosesGraph.idx2pose.end();)
 		{
 			if (lstPoseIDs.find(it->second) != lstPoseIDs.end())
@@ -756,8 +744,7 @@ void CLocalMetricHypothesis::removeAreaFromLMH(
 		// "m_robotPosesGraph.partitioner":
 		unsigned idx = 0;
 		map<uint32_t, TPoseID> newList;
-		for (auto i =
-				 m_robotPosesGraph.idx2pose.begin();
+		for (auto i = m_robotPosesGraph.idx2pose.begin();
 			 i != m_robotPosesGraph.idx2pose.end(); ++i, idx++)
 			newList[idx] = i->second;
 		m_robotPosesGraph.idx2pose = newList;
@@ -771,8 +758,7 @@ void CLocalMetricHypothesis::removeAreaFromLMH(
 	// - Robot poses belonging to that area are removed from:
 	// - the list m_nodeIDmemberships.
 	// ----------------------------------------------------------------------
-	for (auto it = lstPoseIDs.begin();
-		 it != lstPoseIDs.end(); ++it)
+	for (auto it = lstPoseIDs.begin(); it != lstPoseIDs.end(); ++it)
 		m_nodeIDmemberships.erase(m_nodeIDmemberships.find(*it));
 
 	double out_max_log_w;
@@ -804,9 +790,8 @@ void CLocalMetricHypothesis::updateAreaFromLMH(
 	// Build the list with the poses belonging to that area from LMH:
 	// ----------------------------------------------------------------------
 	TNodeIDList lstPoseIDs;
-	for (auto it =
-			 m_nodeIDmemberships.begin();
-		 it != m_nodeIDmemberships.end(); ++it)
+	for (auto it = m_nodeIDmemberships.begin(); it != m_nodeIDmemberships.end();
+		 ++it)
 		if (it->second == areaID) lstPoseIDs.insert(it->first);
 
 	ASSERT_(!lstPoseIDs.empty());
@@ -848,8 +833,7 @@ void CLocalMetricHypothesis::updateAreaFromLMH(
 	// For each pose in the area:
 	CPose3DPDFParticles pdfOrigin;
 	bool pdfOrigin_ok = false;
-	for (auto it = lstPoseIDs.begin();
-		 it != lstPoseIDs.end(); ++it)
+	for (auto it = lstPoseIDs.begin(); it != lstPoseIDs.end(); ++it)
 	{
 		TPoseInfo& poseInfo = (*posesGraph)[*it];
 		getPoseParticles(*it, poseInfo.pdf);  // Save pose particles
@@ -885,8 +869,7 @@ void CLocalMetricHypothesis::updateAreaFromLMH(
 	ASSERT_(pdfOrigin_ok);
 	CPose3DPDFParticles pdfOriginInv;
 	pdfOrigin.inverse(pdfOriginInv);
-	for (auto it = posesGraph->begin();
-		 it != posesGraph->end(); ++it)
+	for (auto it = posesGraph->begin(); it != posesGraph->end(); ++it)
 	{
 		CPose3DPDFParticles::CParticleList::iterator orgIt, pdfIt;
 		ASSERT_(it->second.pdf.size() == pdfOriginInv.size());
@@ -923,11 +906,9 @@ void CLocalMetricHypothesis::dumpAsText(std::vector<std::string>& st) const
 	TMapPoseID2Pose3D lst;
 	getMeans(lst);
 
-	for (auto it = lst.begin(); it != lst.end();
-		 ++it)
+	for (auto it = lst.begin(); it != lst.end(); ++it)
 	{
-		auto area =
-			m_nodeIDmemberships.find(it->first);
+		auto area = m_nodeIDmemberships.find(it->first);
 
 		string s = format(
 			"  ID: %i \t AREA: %i \t %.03f,%.03f,%.03fdeg", (int)it->first,

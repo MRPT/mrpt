@@ -61,10 +61,11 @@ enum XsDataFlags
 typedef enum XsDataFlags XsDataFlags;
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-XSTYPES_DLL_API const char* XsDataFlags_toString(XsDataFlags f);
+	XSTYPES_DLL_API const char* XsDataFlags_toString(XsDataFlags f);
 
 #ifdef __cplusplus
 }  // extern "C"

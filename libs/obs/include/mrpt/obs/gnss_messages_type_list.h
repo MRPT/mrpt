@@ -11,14 +11,14 @@
 namespace mrpt::obs::gnss
 {
 /** List of all known GNSS message types.
-  * Normally, each type here has a corresponding class, derived from
+ * Normally, each type here has a corresponding class, derived from
  * mrpt::obs::gnss::gnss_message,
-  * that stores the message data, but some classes may be still in the "TO-DO"
+ * that stores the message data, but some classes may be still in the "TO-DO"
  * list or just not needed in practice.
-  * On the other hand, \b all message classes \b must be associated with one and
+ * On the other hand, \b all message classes \b must be associated with one and
  * only one value from this list.
-  * \sa mrpt::obs::CObservationGPS, mrpt::obs::gnss::gnss_message
-  */
+ * \sa mrpt::obs::CObservationGPS, mrpt::obs::gnss::gnss_message
+ */
 enum gnss_message_type_t
 {
 	// ====== NMEA ======
@@ -47,7 +47,7 @@ enum gnss_message_type_t
 	NV_OEM6_ALIGNBSLNXYZ = 1314 + NV_OEM6_MSG2ENUM,
 	NV_OEM6_ALIGNDOP = 1332 + NV_OEM6_MSG2ENUM,
 	NV_OEM6_BESTPOS = 42 + NV_OEM6_MSG2ENUM,  // SPAN: Best available combined
-	// GNSS and INS position
+											  // GNSS and INS position
 	NV_OEM6_BESTSATS = 1194 + NV_OEM6_MSG2ENUM,
 	NV_OEM6_BESTUTM = 726 + NV_OEM6_MSG2ENUM,
 	NV_OEM6_BESTVEL = 99 + NV_OEM6_MSG2ENUM,
@@ -78,23 +78,22 @@ enum gnss_message_type_t
 	// See "SPAN on OEM6 firmware reference"
 
 	NV_OEM6_INSPVAS = 508 + NV_OEM6_MSG2ENUM,  // Most recent position, velocity
-	// and attitude at full rate of
-	// IMU (short header)
+											   // and attitude at full rate of
+											   // IMU (short header)
 	NV_OEM6_INSATTS = 319 + NV_OEM6_MSG2ENUM,  // Most recent attitude (roll,
-	// pitch and azimuth)
-	// measurements (short header)
+											   // pitch and azimuth)
+											   // measurements (short header)
 	NV_OEM6_INSCOVS = 320 + NV_OEM6_MSG2ENUM,  // Position, attitude, and
-	// velocity matrices with respect
-	// to the local level frame
-	// (short header)
+											   // velocity matrices with respect
+											   // to the local level frame
+											   // (short header)
 	NV_OEM6_INSVELS = 324 + NV_OEM6_MSG2ENUM,  // Most recent North, East, and
-	// Up velocity vector values
-	// (short header)
+											   // Up velocity vector values
+											   // (short header)
 	NV_OEM6_RAWIMUS = 325 + NV_OEM6_MSG2ENUM  // IMU status indicator and the
-	// measurements from the
-	// accelerometers and gyros (short
-	// header)
+											  // measurements from the
+											  // accelerometers and gyros (short
+											  // header)
 
 };
-}
-
+}  // namespace mrpt::obs::gnss

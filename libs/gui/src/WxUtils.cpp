@@ -251,8 +251,7 @@ wxImage* mrpt::gui::IplImage2wxImage(void* img)
 	int row_bytes =
 		image->width * image->nChannels * ((image->depth & 255) >> 3);
 
-	auto* imageData =
-		(unsigned char*)malloc(row_bytes * image->height);
+	auto* imageData = (unsigned char*)malloc(row_bytes * image->height);
 	ASSERT_(imageData);
 
 	// copy row by row only if necesary
@@ -931,14 +930,13 @@ void CPanelCameraSelection::writeConfigFromVideoSourcePanel(
 				string(edCustomCamConfig->GetValue().mb_str()));
 			std::vector<std::string> allSects;
 			cfgIn.getAllSections(allSects);
-			for (const auto & allSect : allSects)
+			for (const auto& allSect : allSects)
 			{
 				std::vector<std::string> keys;
 				cfgIn.getAllKeys(allSect, keys);
-				for (const auto & key : keys)
+				for (const auto& key : keys)
 					cfg->write(
-						allSect, key,
-						cfgIn.read_string(allSect, key, ""));
+						allSect, key, cfgIn.read_string(allSect, key, ""));
 			}
 		}
 		break;

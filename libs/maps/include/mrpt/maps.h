@@ -39,4 +39,3 @@ MRPT_WARNING(
 
 #include <mrpt/opengl/CAngularObservationMesh.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
-

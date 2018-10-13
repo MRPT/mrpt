@@ -22,7 +22,7 @@ enum XsSyncLine
 	XSL_Bi1In, /*!< \brief Bidirectional Sync 1 In \remark Applies to Xbus
 				  Master */
 	XSL_ClockIn, /*!< \brief Clock synchronisation input \remark Applies to Mk4
-					*/
+				  */
 	XSL_CtsIn, /*!< \brief RS232 CTS sync in \remark Applies to Xbus Master */
 	XSL_GpsClockIn, /*!< \brief Clock synchronisation input line attached to
 					   internal GPS unit \remark Applies to Mk4 */

@@ -204,6 +204,4 @@ class CSimpleMap : public mrpt::serialization::CSerializable
 
 };  // End of class def.
 
-}
-
-
+}  // namespace mrpt::maps

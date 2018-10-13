@@ -21,7 +21,8 @@
 #endif
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 #ifdef XSENS_WINDOWS
@@ -52,21 +53,22 @@ extern "C" {
 
 #include <windows.h>
 
-/*!	\addtogroup enums Global enumerations
-	@{
-*/
-/*!	\brief Thread priorities for xsSetThreadPriority() and xsGetThreadPriority()
-*/
-enum XsThreadPriority
-{
-	XS_THREAD_PRIORITY_LOWEST = THREAD_PRIORITY_IDLE,
-	XS_THREAD_PRIORITY_LOWER = THREAD_PRIORITY_LOWEST,
-	XS_THREAD_PRIORITY_LOW = THREAD_PRIORITY_BELOW_NORMAL,
-	XS_THREAD_PRIORITY_NORMAL = THREAD_PRIORITY_NORMAL,
-	XS_THREAD_PRIORITY_HIGH = THREAD_PRIORITY_ABOVE_NORMAL,
-	XS_THREAD_PRIORITY_HIGHER = THREAD_PRIORITY_HIGHEST,
-	XS_THREAD_PRIORITY_HIGHEST = THREAD_PRIORITY_TIME_CRITICAL
-};
+	/*!	\addtogroup enums Global enumerations
+		@{
+	*/
+	/*!	\brief Thread priorities for xsSetThreadPriority() and
+	 * xsGetThreadPriority()
+	 */
+	enum XsThreadPriority
+	{
+		XS_THREAD_PRIORITY_LOWEST = THREAD_PRIORITY_IDLE,
+		XS_THREAD_PRIORITY_LOWER = THREAD_PRIORITY_LOWEST,
+		XS_THREAD_PRIORITY_LOW = THREAD_PRIORITY_BELOW_NORMAL,
+		XS_THREAD_PRIORITY_NORMAL = THREAD_PRIORITY_NORMAL,
+		XS_THREAD_PRIORITY_HIGH = THREAD_PRIORITY_ABOVE_NORMAL,
+		XS_THREAD_PRIORITY_HIGHER = THREAD_PRIORITY_HIGHEST,
+		XS_THREAD_PRIORITY_HIGHEST = THREAD_PRIORITY_TIME_CRITICAL
+	};
 /*! @} */
 
 // The components of the type of a thread function
@@ -87,19 +89,19 @@ enum XsThreadPriority
 */
 #define xsYield() Sleep(0)
 
-//! A handle for a thread
-typedef HANDLE XsThread;
+	//! A handle for a thread
+	typedef HANDLE XsThread;
 #ifdef __cplusplus
-typedef ::DWORD XsThreadId;
+	typedef ::DWORD XsThreadId;
 #else
-typedef DWORD XsThreadId;
+	typedef DWORD XsThreadId;
 #endif
 
 //! Start a function as a thread
 #define xsStartThread(func, param, pid) \
 	CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)func, param, 0, pid)
 
-XSTYPES_DLL_API void xsNameThisThread(const char* threadName);
+	XSTYPES_DLL_API void xsNameThisThread(const char* threadName);
 
 #define xsGetCurrentThreadId() GetCurrentThreadId()
 #define xsGetCurrentThreadHandle() GetCurrentThread()
@@ -118,7 +120,7 @@ XSTYPES_DLL_API void xsNameThisThread(const char* threadName);
 	@{
 */
 /*!	\brief Thread priorities for xsSetThreadPriority() and xsGetThreadPriority()
-*/
+ */
 enum XsThreadPriority
 {
 	XS_THREAD_PRIORITY_LOWEST = 0,  // THREAD_PRIORITY_IDLE,

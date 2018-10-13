@@ -77,12 +77,12 @@ class ScalarFactorGraph : public mrpt::system::COutputLogger
 		const size_t nodeCount);
 
 	/** Insert constraints into the GMRF problem.
-	  * \param listOfConstraints List of user-implemented constraints.
-	  * **A pointer to the passed object is kept**, but memory ownship *REMAINS*
+	 * \param listOfConstraints List of user-implemented constraints.
+	 * **A pointer to the passed object is kept**, but memory ownship *REMAINS*
 	 * being responsability of the caller. This is
-	  * done such that arrays/vectors of constraints can be more efficiently
+	 * done such that arrays/vectors of constraints can be more efficiently
 	 * allocated if their type is known at build time.
-	  */
+	 */
 	void addConstraint(const UnaryFactorVirtualBase& listOfConstraints);
 	void addConstraint(const BinaryFactorVirtualBase& listOfConstraints);
 
@@ -100,6 +100,7 @@ class ScalarFactorGraph : public mrpt::system::COutputLogger
 
 	bool isProfilerEnabled() const { return m_enable_profiler; }
 	void enableProfiler(bool enable = true) { m_enable_profiler = enable; }
+
    private:
 	/** number of nodes in the graph */
 	size_t m_numNodes;
@@ -112,5 +113,4 @@ class ScalarFactorGraph : public mrpt::system::COutputLogger
 
 };  // End of class def.
 
-}
-
+}  // namespace mrpt::graphs

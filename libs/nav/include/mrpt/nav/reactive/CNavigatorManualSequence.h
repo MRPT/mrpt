@@ -25,7 +25,7 @@ class CNavigatorManualSequence : public mrpt::nav::CAbstractNavigator
 	~CNavigatorManualSequence() override;
 
 	/** @name Initialization API
-	  * @{ */
+	 * @{ */
 	void loadConfigFile(const mrpt::config::CConfigFileBase& c)
 		override;  // See base class docs!
 	void saveConfigFile(mrpt::config::CConfigFileBase& c)
@@ -50,10 +50,10 @@ class CNavigatorManualSequence : public mrpt::nav::CAbstractNavigator
 
    protected:
 	void onStartNewNavigation() override {}
+
    private:
 	// Not used in this class:
 	void navigate(const TNavigationParams* params) override {}
 	void performNavigationStep() override {}
 };
-}
-
+}  // namespace mrpt::nav

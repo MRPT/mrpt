@@ -19,44 +19,44 @@
 namespace mrpt::hwdrivers
 {
 /** A class for interfacing an e-NoseModular via a FTDI USB link.
-  *  Implemented for the Mdular board v1.0 designed by 2013 @ MAPIR (University
+ *  Implemented for the Mdular board v1.0 designed by 2013 @ MAPIR (University
  * of Malaga).
-  *
-  *  \code
-  *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
-  * -------------------------------------------------------
-  *   [supplied_section_name]
-  *    USB_serialname=ENOSE001   // USB FTDI pipe: will open only if COM_port_*
+ *
+ *  \code
+ *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
+ * -------------------------------------------------------
+ *   [supplied_section_name]
+ *    USB_serialname=ENOSE001   // USB FTDI pipe: will open only if COM_port_*
  * are not set or empty
-  *
-  *    COM_port_WIN = COM1       // Serial port to connect to.
-  *    COM_port_LIN = ttyS0
-  *
-  *    COM_baudRate = 115200
-  *
-  *    ; 3D position (in meters) of the master +slave eNoses
-  *    enose_poses_x=<MASTER X> <SLAVE#1 X> <SLAVE#2 X> <SLAVE#3 X>...
-  *    enose_poses_y=<MASTER Y> <SLAVE#1 Y> <SLAVE#2 Y> <SLAVE#3 Y>...
-  *    enose_poses_z=<MASTER Z> <SLAVE#1 Z> <SLAVE#2 Z> <SLAVE#3 Z>...
-  *
-  *    ; 3D pose angles (in degrees) of the master +slave eNoses
-  *    enose_poses_yaw=<MASTER YAW> <SLAVE#1 YAW> <SLAVE#2 YAW> <SLAVE#3 YAW>...
-  *    enose_poses_pitch=<MASTER PITCH> <SLAVE#1 PITCH> <SLAVE#2 PITCH> <SLAVE#3
+ *
+ *    COM_port_WIN = COM1       // Serial port to connect to.
+ *    COM_port_LIN = ttyS0
+ *
+ *    COM_baudRate = 115200
+ *
+ *    ; 3D position (in meters) of the master +slave eNoses
+ *    enose_poses_x=<MASTER X> <SLAVE#1 X> <SLAVE#2 X> <SLAVE#3 X>...
+ *    enose_poses_y=<MASTER Y> <SLAVE#1 Y> <SLAVE#2 Y> <SLAVE#3 Y>...
+ *    enose_poses_z=<MASTER Z> <SLAVE#1 Z> <SLAVE#2 Z> <SLAVE#3 Z>...
+ *
+ *    ; 3D pose angles (in degrees) of the master +slave eNoses
+ *    enose_poses_yaw=<MASTER YAW> <SLAVE#1 YAW> <SLAVE#2 YAW> <SLAVE#3 YAW>...
+ *    enose_poses_pitch=<MASTER PITCH> <SLAVE#1 PITCH> <SLAVE#2 PITCH> <SLAVE#3
  * PITCH>...
-  *    enose_poses_roll=<MASTER ROLL> <SLAVE#1 ROLL> <SLAVE#2 ROLL> <SLAVE#3
+ *    enose_poses_roll=<MASTER ROLL> <SLAVE#1 ROLL> <SLAVE#2 ROLL> <SLAVE#3
  * ROLL>...
-  *
-  *  \endcode
-  *
-  * \ingroup mrpt_hwdrivers_grp
-  */
+ *
+ *  \endcode
+ *
+ * \ingroup mrpt_hwdrivers_grp
+ */
 class CEnoseModular : public mrpt::hwdrivers::CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CEnoseModular)
 
    protected:
 	/** A copy of the device serial number (to open the USB FTDI chip)
-	  */
+	 */
 	std::string m_usbSerialNumber;
 	mrpt::system::TTimeStamp initial_timestamp;
 	bool first_reading;
@@ -80,8 +80,8 @@ class CEnoseModular : public mrpt::hwdrivers::CGenericSensor
 		enose_poses_yaw, enose_poses_pitch, enose_poses_roll;
 
 	/** Tries to connect to the USB device (if disconnected).
-	  * \return nullptr on error, otherwise a stream to be used for comms.
-	  */
+	 * \return nullptr on error, otherwise a stream to be used for comms.
+	 */
 	mrpt::io::CStream* checkConnectionAndConnect();
 
 	/** See the class documentation at the top for expected parameters */
@@ -94,18 +94,18 @@ class CEnoseModular : public mrpt::hwdrivers::CGenericSensor
 
    public:
 	/** Constructor
-	  * \param serialNumberUSBdevice The serial number (text) of the device to
+	 * \param serialNumberUSBdevice The serial number (text) of the device to
 	 * open.
-	  *  The constructor will try to open the device. You can check if it failed
+	 *  The constructor will try to open the device. You can check if it failed
 	 * calling "isOpen()".
-	  */
+	 */
 	CEnoseModular();
 
 	/** Request the master eNose the latest readings from all the eNoses.
-	  *  The output observation contains a valid timestamp and 3D positions if
+	 *  The output observation contains a valid timestamp and 3D positions if
 	 * "loadConfig" has been called previously.
-	  * \return true if OK, false if there were any error.
-	  */
+	 * \return true if OK, false if there were any error.
+	 */
 	bool getObservation(mrpt::obs::CObservationGasSensors& outObservation);
 
 	// See docs in parent class
@@ -113,14 +113,12 @@ class CEnoseModular : public mrpt::hwdrivers::CGenericSensor
 
 	/** If not an empty string, will open that serial port, otherwise will try
 	 * to open USB FTDI device "m_usbSerialNumber"
-	  *  The default is an empty string. Example strings: "COM1", "ttyUSB0", ...
-	  */
+	 *  The default is an empty string. Example strings: "COM1", "ttyUSB0", ...
+	 */
 	inline void setSerialPort(const std::string& port) { m_COM_port = port; }
 	inline std::string getSerialPort() const { return m_COM_port; }
 	/** Set the serial port baud rate (default: 115200) */
 	inline void setSerialPortBaud(unsigned int baud) { m_COM_baud = baud; }
 	inline unsigned int getSerialPortBaud() const { return m_COM_baud; }
 };  // end of class
-}
-
-
+}  // namespace mrpt::hwdrivers

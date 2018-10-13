@@ -293,6 +293,7 @@ class CPointCloud : public CRenderizable,
 
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	~CPointCloud() override = default;
+
    private:
 	/** Buffer for min/max coords when m_colorFromDepth is true. */
 	mutable float m_min{0}, m_max{0}, m_max_m_min{0}, m_max_m_min_inv{0};
@@ -334,9 +335,7 @@ class PointCloudAdapter<mrpt::opengl::CPointCloud>
 	/** Set number of points (to uninitialized values) */
 	inline void resize(const size_t N) { m_obj.resize(N); }
 	/** Does nothing as of now */
-	inline void setDimensions(const size_t& height, const size_t& width)
-	{
-	}
+	inline void setDimensions(const size_t& height, const size_t& width) {}
 	/** Get XYZ coordinates of i'th point */
 	template <typename T>
 	inline void getPointXYZ(const size_t idx, T& x, T& y, T& z) const
@@ -376,5 +375,4 @@ void CPointCloud::loadFromPointsMap(const POINTSMAP* themap)
 		pc_dst.setPointXYZ(i, x, y, z);
 	}
 }
-}
-
+}  // namespace mrpt::opengl

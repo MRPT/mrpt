@@ -91,10 +91,9 @@ bool CDisk::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 	// The following expression yields the collision point between the plane and
 	// the beam (the y and z
 	// coordinates are zero).
-	dist = x +
-		   (y * (sin(p) * sin(w) * cos(r) - cos(w) * sin(r)) +
-			z * cos(p) * cos(r)) /
-			   coef;
+	dist = x + (y * (sin(p) * sin(w) * cos(r) - cos(w) * sin(r)) +
+				z * cos(p) * cos(r)) /
+				   coef;
 	if (dist < 0) return false;
 	// Euclidean distance is invariant to rotations...
 	double d2 = (x - dist) * (x - dist) + y * y + z * z;

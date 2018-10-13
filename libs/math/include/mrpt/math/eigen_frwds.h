@@ -18,7 +18,7 @@ template <typename Derived>
 struct EigenBase;
 template <typename Derived>
 class MatrixBase;
-}
+}  // namespace Eigen
 
 namespace mrpt
 {
@@ -88,5 +88,5 @@ using CMatrixFloat17 = CMatrixFixedNumeric<float, 1, 7>;
 using CMatrixFloat51 = CMatrixFixedNumeric<float, 5, 1>;
 using CMatrixFloat15 = CMatrixFixedNumeric<float, 1, 5>;
 /**  @} */
-}
-}
+}  // namespace math
+}  // namespace mrpt

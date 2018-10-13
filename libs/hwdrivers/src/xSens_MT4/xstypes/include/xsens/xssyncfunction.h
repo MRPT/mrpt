@@ -39,7 +39,7 @@ enum XsSyncFunction
 	XSF_SampleAndSend, /*!< \brief Sample a sample and send the MT Data message.
 						  \remark Applies to Mt. */
 	XSF_SendLatest, /*!< \brief Send the latest sample. \remark Applies to Mt.
-					   */
+					 */
 	XSF_ClockBiasEstimation, /*!< \brief Do a clock bias estimation on trigger.
 								\remark Applies to Mti-G. */
 

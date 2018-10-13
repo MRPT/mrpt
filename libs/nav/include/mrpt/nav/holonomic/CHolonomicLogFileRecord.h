@@ -37,6 +37,4 @@ class CHolonomicLogFileRecord : public mrpt::serialization::CSerializable
 };
 
 /** @} */
-}
-
-
+}  // namespace mrpt::nav

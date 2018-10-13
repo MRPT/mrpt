@@ -15,4 +15,3 @@
 #include <mrpt/bayes/CKalmanFilterCapable.h>
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/bayes/CRejectionSamplingCapable.h>
-

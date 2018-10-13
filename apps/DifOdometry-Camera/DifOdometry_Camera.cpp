@@ -169,8 +169,7 @@ void CDifodoCamera::loadFrame()
 	const int width = framed.getWidth();
 
 	// Store the depth values
-	const auto* pDepthRow =
-		(const openni::DepthPixel*)framed.getData();
+	const auto* pDepthRow = (const openni::DepthPixel*)framed.getData();
 	int rowSize = framed.getStrideInBytes() / sizeof(openni::DepthPixel);
 
 	for (int yc = height - 1; yc >= 0; --yc)

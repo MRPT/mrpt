@@ -301,8 +301,7 @@ using TSimpleFeaturefList = TSimpleFeatureList_templ<TSimpleFeaturef>;
  *	  - mrpt::vision::TSimpleFeatureList
  */
 template <typename FEATURE_LIST>
-struct KeypointResponseSorter
-	: public std::function<bool(size_t, size_t)>
+struct KeypointResponseSorter : public std::function<bool(size_t, size_t)>
 {
 	const FEATURE_LIST& m_data;
 	KeypointResponseSorter(const FEATURE_LIST& data) : m_data(data) {}
@@ -378,6 +377,4 @@ class CFeatureListKDTree
 
 /** @} */  // End of add to module: mrptvision_features
 
-}
-
-
+}  // namespace mrpt::vision

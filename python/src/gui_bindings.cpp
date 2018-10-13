@@ -164,10 +164,9 @@ void export_gui()
 				"CDisplayWindow3D",
 				"A graphical user interface (GUI) for efficiently rendering 3D "
 				"scenes in real-time.",
-				init<optional<std::string, unsigned int, unsigned int>>(
-					args(
-						"windowCaption", "initialWindowWidth",
-						"initialWindowHeight")))
+				init<optional<std::string, unsigned int, unsigned int>>(args(
+					"windowCaption", "initialWindowWidth",
+					"initialWindowHeight")))
 				.def(
 					"get3DSceneAndLock", &CDisplayWindow3D::get3DSceneAndLock,
 					return_value_policy<reference_existing_object>(),

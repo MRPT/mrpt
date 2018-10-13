@@ -75,5 +75,4 @@ class CColorBar : public CRenderizableDisplayList
 		/** Label text font size */
 		double label_font_size = .05);
 };
-}
-
+}  // namespace mrpt::opengl

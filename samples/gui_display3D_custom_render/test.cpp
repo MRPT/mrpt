@@ -33,7 +33,7 @@ struct TMyExtraRenderingStuff : public mrpt::system::CObserver
 	bool showing_help{false}, hiding_help{false};
 	mrpt::system::CTicTac tim_show_start, tim_show_end;
 
-	TMyExtraRenderingStuff()  {}
+	TMyExtraRenderingStuff() {}
 	void OnEvent(const mrptEvent& e) override
 	{
 		if (e.isOfType<mrptEventGLPreRender>())
@@ -52,7 +52,7 @@ struct TMyExtraRenderingStuff : public mrpt::system::CObserver
 				0.29f, 0.09f,  // width, height (in screen "ratios")
 				"Press 'h' for help",
 				0.02f  // text size
-				);
+			);
 
 			// Also showing help?
 			if (showing_help || hiding_help)
@@ -84,7 +84,7 @@ struct TMyExtraRenderingStuff : public mrpt::system::CObserver
 					6.0f,  // border width
 					"serif",  // text font
 					mrpt::opengl::NICE  // text style
-					);
+				);
 
 				if (hide_tim > TRANSP_ANIMATION_TIME_SEC && hiding_help)
 					hiding_help = false;

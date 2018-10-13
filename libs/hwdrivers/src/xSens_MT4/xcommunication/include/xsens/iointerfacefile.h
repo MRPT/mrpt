@@ -20,7 +20,7 @@ enum XsResultValue;
 //////////////////////////////////////////////////////////////////////////////////////////
 
 /*! \brief The low-level file communication class.
-*/
+ */
 class IoInterfaceFile : public IoInterface
 {
    private:
@@ -63,7 +63,8 @@ class IoInterfaceFile : public IoInterface
 	XsResultValue flushData(void) override;
 	bool isOpen(void) const override;
 	XsResultValue getLastResult(void) const override;
-	XsResultValue writeData(const XsByteArray& data, XsSize* written = nullptr) override;
+	XsResultValue writeData(
+		const XsByteArray& data, XsSize* written = nullptr) override;
 	XsResultValue readData(XsSize maxLength, XsByteArray& data) override;
 	XsResultValue readTerminatedData(
 		XsSize maxLength, unsigned char terminator, XsByteArray& bdata);
@@ -81,7 +82,8 @@ class IoInterfaceFile : public IoInterface
 	XsFilePos getWritePosition(void) const override;
 	XsResultValue insertData(XsFilePos start, const XsByteArray& data) override;
 	bool isReadOnly(void) const override;
-	XsResultValue open(const XsString& filename, bool createNew, bool readOnly) override;
+	XsResultValue open(
+		const XsString& filename, bool createNew, bool readOnly) override;
 	XsResultValue setReadPosition(XsFilePos pos) override;
 	XsResultValue setWritePosition(XsFilePos pos = -1) override;
 };

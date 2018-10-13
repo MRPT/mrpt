@@ -167,8 +167,7 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 			}
 
 			// Do the actual file renaming:
-			for (auto it = files2rename.begin();
-				 it != files2rename.end(); ++it)
+			for (auto it = files2rename.begin(); it != files2rename.end(); ++it)
 			{
 				const string& prevFil = it->first;
 				const string& newFil = it->second;

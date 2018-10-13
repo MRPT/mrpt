@@ -117,7 +117,7 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 			options.highlight_path_to_node_id, best_path);
 
 	// make list of nodes in the way of the best path:
-	std::set<const typename tree_t::edge_t *> edges_best_path,
+	std::set<const typename tree_t::edge_t*> edges_best_path,
 		edges_best_path_decim;
 	if (!best_path.empty())
 	{
@@ -125,14 +125,12 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 		auto it_end_1 = best_path.end();
 		std::advance(it_end_1, -1);
 
-		for (auto it = best_path.begin();
-			 it != it_end; ++it)
+		for (auto it = best_path.begin(); it != it_end; ++it)
 			if (it->edge_to_parent) edges_best_path.insert(it->edge_to_parent);
 
 		// Decimate the path (always keeping the first and last entry):
 		ASSERT_ABOVE_(options.draw_shape_decimation, 0);
-		for (auto it = best_path.begin();
-			 it != it_end;)
+		for (auto it = best_path.begin(); it != it_end;)
 		{
 			if (it->edge_to_parent)
 				edges_best_path_decim.insert(it->edge_to_parent);
@@ -161,9 +159,7 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 		const typename tree_t::node_map_t& lstNodes =
 			result.move_tree.getAllNodes();
 
-		for (auto itNode =
-				 lstNodes.begin();
-			 itNode != lstNodes.end(); ++itNode)
+		for (auto itNode = lstNodes.begin(); itNode != lstNodes.end(); ++itNode)
 		{
 			const typename tree_t::node_t& node = itNode->second;
 
@@ -195,8 +191,7 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 				{
 					mrpt::opengl::CSetOfLines::Ptr vehShape(
 						new mrpt::opengl::CSetOfLines(*gl_veh_shape));
-					auto shapePose =
-						mrpt::poses::CPose3D(trg_state);
+					auto shapePose = mrpt::poses::CPose3D(trg_state);
 					shapePose.z_incr(options.vehicle_shape_z);
 					vehShape->setPose(shapePose);
 					scene.insert(vehShape);
@@ -267,10 +262,8 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 			mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
 
 		obj->loadFromPointsMap(&pi.obstacles_points);
-		obj->setPose(
-			mrpt::poses::CPose3D(
-				mrpt::poses::CPose2D(
-					0.0, 0.0, 0.0)));  // Points are relative to the origin
+		obj->setPose(mrpt::poses::CPose3D(mrpt::poses::CPose2D(
+			0.0, 0.0, 0.0)));  // Points are relative to the origin
 
 		obj->setPointSize(options.point_size_obstacles);
 		obj->setColor_u8(options.color_obstacles);
@@ -328,5 +321,4 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 	}
 
 }  // end renderMoveTree()
-}
-
+}  // namespace mrpt::nav

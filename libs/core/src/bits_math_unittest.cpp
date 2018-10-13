@@ -12,7 +12,6 @@
 
 TEST(bits_math, sign)
 {
-
 	EXPECT_EQ(mrpt::sign(-8), -1);
 	EXPECT_EQ(mrpt::sign(8), 1);
 	EXPECT_EQ(mrpt::sign(0), 1);

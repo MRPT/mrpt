@@ -29,9 +29,9 @@ using namespace std::literals;
 -------------------------------------------------------------*/
 CServoeNeck::CServoeNeck()
 	: m_usbSerialNumber("eNeck001"),
-	  
+
 	  m_PrevAngles(0)
-	  
+
 {
 	m_offsets.resize(3, 0);
 }  // end-constructor

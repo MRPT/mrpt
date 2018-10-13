@@ -34,12 +34,12 @@ template <class GRAPH_t = typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CGraphSlamOptimizer
 	: public virtual mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_t>
 {
-public:
+   public:
 	using constraint_t = typename GRAPH_t::constraint_t;
 	using pose_t = typename GRAPH_t::constraint_t::type_value;
 
-	CGraphSlamOptimizer()=default;
-	~CGraphSlamOptimizer() override =default;
+	CGraphSlamOptimizer() = default;
+	~CGraphSlamOptimizer() override = default;
 	/**\brief Used by the caller to query for possible full graph optimization
 	 * on the latest optimizer run
 	 */
@@ -50,6 +50,4 @@ public:
 	 */
 	virtual void optimizeGraph() = 0;
 };
-}
-
-
+}  // namespace mrpt::graphslam::optimizers

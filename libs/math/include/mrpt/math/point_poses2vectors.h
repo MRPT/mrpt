@@ -13,8 +13,8 @@
 namespace mrpt::math
 {
 /** \name Container initializer from pose classes
-  * @{
-  */
+ * @{
+ */
 
 /** Conversion of poses to MRPT containers (vector/matrix) */
 template <class CONTAINER, class POINT_OR_POSE>
@@ -29,5 +29,4 @@ CONTAINER& containerFromPoseOrPoint(CONTAINER& C, const POINT_OR_POSE& p)
 
 /** @} */
 
-}
-
+}  // namespace mrpt::math

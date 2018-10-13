@@ -51,7 +51,7 @@ void CPosePDFSOG::getMean(CPose2D& p) const
 	if (!m_modes.empty())
 	{
 		mrpt::poses::SE_average<2> se_averager;
-		for (const auto & m : m_modes)
+		for (const auto& m : m_modes)
 		{
 			const double w = exp(m.log_w);
 			se_averager.append(m.mean, w);
@@ -83,7 +83,7 @@ void CPosePDFSOG::getCovarianceAndMean(
 		CMatrixDouble33 temp;
 		CMatrixDouble31 estMean_i;
 
-		for (const auto & m : m_modes)
+		for (const auto& m : m_modes)
 		{
 			double w;
 			sumW += w = exp(m.log_w);
@@ -212,7 +212,7 @@ void CPosePDFSOG::changeCoordinatesReference(const CPose3D& newReferenceBase_)
 	M(2, 1) = 0;
 	M(2, 2) = 1;
 
-	for (auto & m : m_modes)
+	for (auto& m : m_modes)
 	{
 		// The mean:
 		m.mean.composeFrom(newReferenceBase, m.mean);
@@ -220,8 +220,7 @@ void CPosePDFSOG::changeCoordinatesReference(const CPose3D& newReferenceBase_)
 		// The covariance:
 		// NOTE: The CMatrixDouble33() is NEEDED to create a temporary copy of
 		// (it)->cov
-		M.multiply_HCHt(
-			CMatrixDouble33(m.cov), m.cov);  // * (it)->cov * (~M);
+		M.multiply_HCHt(CMatrixDouble33(m.cov), m.cov);  // * (it)->cov * (~M);
 	}
 
 	assureSymmetry();
@@ -238,8 +237,7 @@ void CPosePDFSOG::rotateAllCovariances(const double& ang)
 	rot(1, 0) = sin(ang);
 	rot(2, 2) = 1;
 
-	for (auto & m : m_modes)
-		rot.multiply_HCHt(CMatrixDouble33(m.cov), m.cov);
+	for (auto& m : m_modes) rot.multiply_HCHt(CMatrixDouble33(m.cov), m.cov);
 }
 
 /*---------------------------------------------------------------
@@ -305,7 +303,7 @@ void CPosePDFSOG::bayesianFusion(
 					   (eta.adjoint() * p2->cov * eta)(0, 0));
 
 	this->m_modes.clear();
-	for (const auto & m : p1->m_modes)
+	for (const auto& m : p1->m_modes)
 	{
 		auxSOG_Kernel_i.mean = m.mean;
 		auxSOG_Kernel_i.cov = CMatrixDouble(m.cov);
@@ -384,8 +382,7 @@ void CPosePDFSOG::inverse(CPosePDF& o) const
  ---------------------------------------------------------------*/
 void CPosePDFSOG::operator+=(const CPose2D& Ap)
 {
-	for (auto & m : m_modes)
-		m.mean = m.mean + Ap;
+	for (auto& m : m_modes) m.mean = m.mean + Ap;
 
 	this->rotateAllCovariances(Ap.phi());
 }
@@ -402,7 +399,7 @@ double CPosePDFSOG::evaluatePDF(const CPose2D& x, bool sumOverAllPhis) const
 		CMatrixDouble31 MU;
 		double ret = 0;
 
-		for (const auto & m : m_modes)
+		for (const auto& m : m_modes)
 		{
 			MU = CMatrixDouble31(m.mean);
 			ret += exp(m.log_w) * math::normalPDF(X, MU, m.cov);
@@ -419,7 +416,7 @@ double CPosePDFSOG::evaluatePDF(const CPose2D& x, bool sumOverAllPhis) const
 		X(0, 0) = x.x();
 		X(1, 0) = x.y();
 
-		for (const auto & m : m_modes)
+		for (const auto& m : m_modes)
 		{
 			MU(0, 0) = m.mean.x();
 			MU(1, 0) = m.mean.y();
@@ -444,7 +441,7 @@ double CPosePDFSOG::evaluateNormalizedPDF(const CPose2D& x) const
 	CMatrixDouble31 MU;
 	double ret = 0;
 
-	for (const auto & m : m_modes)
+	for (const auto& m : m_modes)
 	{
 		MU = CMatrixDouble31(m.mean);
 		ret += exp(m.log_w) * math::normalPDF(X, MU, m.cov) /
@@ -461,7 +458,7 @@ void CPosePDFSOG::assureSymmetry()
 {
 	// Differences, when they exist, appear in the ~15'th significant
 	//  digit, so... just take one of them arbitrarily!
-	for (auto & m : m_modes)
+	for (auto& m : m_modes)
 	{
 		m.cov(0, 1) = m.cov(1, 0);
 		m.cov(0, 2) = m.cov(2, 0);
@@ -479,11 +476,9 @@ void CPosePDFSOG::normalizeWeights()
 	if (!m_modes.size()) return;
 
 	double maxW = m_modes[0].log_w;
-	for (auto & m : m_modes)
-		maxW = max(maxW, m.log_w);
+	for (auto& m : m_modes) maxW = max(maxW, m.log_w);
 
-	for (auto & m : m_modes)
-		m.log_w -= maxW;
+	for (auto& m : m_modes) m.log_w -= maxW;
 
 	MRPT_END
 }

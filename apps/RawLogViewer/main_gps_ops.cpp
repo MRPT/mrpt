@@ -148,8 +148,7 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 		{
 			TPoint3D X_ENU;  // Transformed coordinates
 
-			const auto obsCoords =
-				gga->getAsStruct<TGeodeticCoords>();
+			const auto obsCoords = gga->getAsStruct<TGeodeticCoords>();
 
 			// The first gps datum?
 			if (!ref_valid)
@@ -325,7 +324,7 @@ void xRawLogViewerFrame::OnMenuRegenerateGPSTimestamps(wxCommandEvent& event)
 			{
 				CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
 
-				for (auto & it : *sf)
+				for (auto& it : *sf)
 				{
 					if (it->GetRuntimeClass() == CLASS_ID(CObservationGPS) &&
 						find_in_vector(it->sensorLabel, the_labels) !=
@@ -391,9 +390,8 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
 
 	// List of labels:
 	wxArrayString lstLabels;
-	for (auto i =
-			 listOfSensorLabels.begin();
-		 i != listOfSensorLabels.end(); ++i)
+	for (auto i = listOfSensorLabels.begin(); i != listOfSensorLabels.end();
+		 ++i)
 		lstLabels.Add(_U(i->first.c_str()));
 
 	wxString ret = wxGetSingleChoice(
@@ -766,8 +764,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 							ith_obs++);
 						if (obs)
 						{
-							auto it =
-								lstFiles.find(obs->sensorLabel);
+							auto it = lstFiles.find(obs->sensorLabel);
 
 							FILE* f_this;
 
@@ -889,8 +886,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 							std::dynamic_pointer_cast<CObservationGPS>(o);
 						if (obs)
 						{
-							auto it =
-								lstFiles.find(obs->sensorLabel);
+							auto it = lstFiles.find(obs->sensorLabel);
 
 							FILE* f_this;
 
@@ -1085,8 +1081,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 			}
 		}
 
-		for (auto it = lstFiles.begin();
-			 it != lstFiles.end(); ++it)
+		for (auto it = lstFiles.begin(); it != lstFiles.end(); ++it)
 		{
 			os::fclose(it->second);
 		}
@@ -1095,9 +1090,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 		// Save the joint file:
 		// -------------------------
 		// Remove those entries with not all the GPSs:
-		for (auto a =
-				 lstXYZallGPS.begin();
-			 a != lstXYZallGPS.end();)
+		for (auto a = lstXYZallGPS.begin(); a != lstXYZallGPS.end();)
 		{
 			if (a->second.size() != lstAllGPSlabels.size())
 			{
@@ -1114,15 +1107,14 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 
 		CMatrixDouble MAT(lstXYZallGPS.size(), 1 + 3 * lstAllGPSlabels.size());
 		int nLabels = 0;
-		for (auto a =
-				 lstXYZallGPS.begin();
-			 a != lstXYZallGPS.end(); ++a, nLabels++)
+		for (auto a = lstXYZallGPS.begin(); a != lstXYZallGPS.end();
+			 ++a, nLabels++)
 		{
 			MAT(nLabels, 0) = timestampTotime_t(a->first);
 			map<string, CPoint3D>& m = a->second;
 			int k = 0;
-			for (auto it = lstAllGPSlabels.begin();
-				 it != lstAllGPSlabels.end(); ++it, k++)
+			for (auto it = lstAllGPSlabels.begin(); it != lstAllGPSlabels.end();
+				 ++it, k++)
 			{
 				MAT(nLabels, 1 + 3 * k + 0) = m[*it].x();
 				MAT(nLabels, 1 + 3 * k + 1) = m[*it].y();
@@ -1132,7 +1124,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 
 		// The name of the file:
 		string joint_name;
-		for (const auto & lstAllGPSlabel : lstAllGPSlabels)
+		for (const auto& lstAllGPSlabel : lstAllGPSlabels)
 		{
 			joint_name += lstAllGPSlabel;
 		}

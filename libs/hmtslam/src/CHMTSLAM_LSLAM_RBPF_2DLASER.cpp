@@ -76,7 +76,7 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
 		CPose3D initPose(0, 0, 0);
 
 		ASSERT_(LMH->m_particles.size() > 0);
-		for (auto & m_particle : LMH->m_particles)
+		for (auto& m_particle : LMH->m_particles)
 			m_particle.d->robotPoses[currentPoseID] = initPose;
 
 		ASSERT_(m_parent->m_map.nodeCount() == 1);
@@ -114,14 +114,14 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
 			float minDistAng = 1e6f;
 
 			// printf("Poses in graph:\n");
-			for (auto & lstRobotPose : lstRobotPoses)
+			for (auto& lstRobotPose : lstRobotPoses)
 			{
 				if (lstRobotPose.first != currentPoseID)
 				{
-					float linDist = lstRobotPose.second.distanceTo(*currentRobotPose);
-					float angDist = fabs(
-						math::wrapToPi(
-							lstRobotPose.second.yaw() - currentRobotPose->yaw()));
+					float linDist =
+						lstRobotPose.second.distanceTo(*currentRobotPose);
+					float angDist = fabs(math::wrapToPi(
+						lstRobotPose.second.yaw() - currentRobotPose->yaw()));
 
 					minDistLin = min(minDistLin, linDist);
 
@@ -172,9 +172,10 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
 		// one:
 		//     and insert the observations into the metric maps:
 		// ----------------------------------------------------------------------------
-		for (auto & m_particle : LMH->m_particles)
+		for (auto& m_particle : LMH->m_particles)
 		{
-			const CPose3D* curRobotPose = &m_particle.d->robotPoses[currentPoseID];
+			const CPose3D* curRobotPose =
+				&m_particle.d->robotPoses[currentPoseID];
 			m_particle.d->robotPoses[newCurrentPoseID] = *curRobotPose;
 			sf->insertObservationsInto(&m_particle.d->metricMaps, curRobotPose);
 		}
@@ -207,7 +208,7 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
 		{
 			std::lock_guard<std::mutex> lock(m_parent->m_topLCdets_cs);
 
-			for (auto & m_topLCdet : m_parent->m_topLCdets)
+			for (auto& m_topLCdet : m_parent->m_topLCdets)
 				m_topLCdet->OnNewPose(newlyAddedPose, sf.get());
 		}
 
@@ -218,7 +219,7 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
 
 /** The PF algorithm implementation for "optimal sampling for non-parametric
  * observation models"
-  */
+ */
 void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 	CLocalMetricHypothesis* LMH, const mrpt::obs::CActionCollection* actions,
 	const mrpt::obs::CSensoryFrame* sf,
@@ -315,12 +316,12 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 	LMH->m_movementDraws.resize(
 		PF_options.pfAuxFilterOptimal_MaximumSearchSamples * M);
 	size_t size_movementDraws = LMH->m_movementDraws.size();
-	LMH->m_movementDrawsIdx = (unsigned int)floor(
-		getRandomGenerator().drawUniform(
+	LMH->m_movementDrawsIdx =
+		(unsigned int)floor(getRandomGenerator().drawUniform(
 			0.0f, ((float)size_movementDraws) - 0.01f));
 
 	robotMovement->prepareFastDrawSingleSamples();
-	for (auto & m_movementDraw : LMH->m_movementDraws)
+	for (auto& m_movementDraw : LMH->m_movementDraws)
 		robotMovement->fastDrawSingleSample(m_movementDraw);
 
 	LMH->m_pfAuxiliaryPFOptimal_estimatedProb.resize(M);
@@ -425,8 +426,8 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 					// robotMovement->drawSingleSample( movementDraw );
 					// robotMovement->fastDrawSingleSample( movementDraw );
 					movementDraw =
-						LMH->m_movementDraws[LMH->m_movementDrawsIdx++ %
-											 size_movementDraws];
+						LMH->m_movementDraws
+							[LMH->m_movementDrawsIdx++ % size_movementDraws];
 				}
 
 				newPose.composeFrom(
@@ -577,8 +578,7 @@ double CLSLAM_RBPF_2DLASER::particlesEvaluator_AuxPFOptimal(
 
 	MRPT_START
 
-	const auto* myObj =
-		static_cast<const CLocalMetricHypothesis*>(obj);
+	const auto* myObj = static_cast<const CLocalMetricHypothesis*>(obj);
 
 	// Compute the quantity:
 	//     w[i]p(zt|z^{t-1},x^{[i],t-1})
@@ -668,8 +668,7 @@ double CLSLAM_RBPF_2DLASER::auxiliarComputeObservationLikelihood(
 	const CSensoryFrame* observation, const CPose2D* x)
 {
 	MRPT_UNUSED_PARAM(PF_options);
-	const auto* theObj =
-		static_cast<const CLocalMetricHypothesis*>(obj);
+	const auto* theObj = static_cast<const CLocalMetricHypothesis*>(obj);
 	auto* map = const_cast<CMultiMetricMap*>(
 		&theObj->m_particles[particleIndexForMap].d->metricMaps);
 
@@ -774,7 +773,7 @@ int CLSLAM_RBPF_2DLASER::findTPathBinIntoSet(
 
 /** The PF algorithm implementation for "optimal sampling" approximated with
  * scan matching (Stachniss method)
-  */
+ */
 void CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 	CLocalMetricHypothesis* LMH, const mrpt::obs::CActionCollection* actions,
 	const mrpt::obs::CSensoryFrame* sf,

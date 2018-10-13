@@ -53,7 +53,7 @@ int _wcsnicmp(const wchar_t* s1, const wchar_t* s2, int count);
 //////////////////////////////////////////////////////////////////////////////////////////
 
 /*! \brief The low-level serial communication class.
-*/
+ */
 class Cmt1s
 {
    private:
@@ -236,7 +236,7 @@ class Cmt1s
 //////////////////////////////////////////////////////////////////////////////////////////
 
 /*! \brief The low-level file communication class.
-*/
+ */
 class Cmt1f
 {
    private:
@@ -418,6 +418,6 @@ class Cmt1f
 	XsensResultValue writeData(const uint32_t length, const void* data);
 };
 
-}  // end of xsens namespace
+}  // namespace xsens
 
 #endif  // _CMT1_H_2006_04_12
