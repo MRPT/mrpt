@@ -47,7 +47,7 @@ struct MapExecutor
 	static void run(const CMultiMetricMap& _mmm, OP op)
 	{
 		MRPT_START
-		CMultiMetricMap& mmm =
+		auto& mmm =
 			const_cast<CMultiMetricMap&>(_mmm);  // This is to avoid duplicating
 		// "::run()" for const and
 		// non-const.
@@ -265,7 +265,7 @@ void CMultiMetricMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// Version 11: simply the list of maps:
 	out << static_cast<uint32_t>(m_ID);
-	const uint32_t n = static_cast<uint32_t>(maps.size());
+	const auto n = static_cast<uint32_t>(maps.size());
 	for (uint32_t i = 0; i < n; i++) out << *maps[i];
 }
 

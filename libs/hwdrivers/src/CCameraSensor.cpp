@@ -1411,7 +1411,7 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
 	std::promise<mrpt::gui::detail::TReturnAskUserOpenCamera> dlgSelection;
 
 	// Create window:
-	WxSubsystem::TRequestToWxMainThread* REQ =
+	auto* REQ =
 		new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->OPCODE = 700;
 	REQ->sourceCameraSelectDialog = true;
@@ -1506,7 +1506,7 @@ void mrpt::hwdrivers::writeConfigFromVideoSourcePanel(
 	MRPT_START
 #if MRPT_HAS_WXWIDGETS
 	ASSERT_(_panel);
-	mrpt::gui::CPanelCameraSelection* panel =
+	auto* panel =
 		reinterpret_cast<mrpt::gui::CPanelCameraSelection*>(_panel);
 	ASSERTMSG_(
 		panel, "panel must be of type mrpt::gui::CPanelCameraSelection *");
@@ -1528,7 +1528,7 @@ void mrpt::hwdrivers::readConfigIntoVideoSourcePanel(
 	MRPT_START
 #if MRPT_HAS_WXWIDGETS
 	ASSERT_(_panel);
-	mrpt::gui::CPanelCameraSelection* panel =
+	auto* panel =
 		reinterpret_cast<mrpt::gui::CPanelCameraSelection*>(_panel);
 	ASSERTMSG_(
 		panel, "panel must be of type mrpt::gui::CPanelCameraSelection *");
@@ -1555,7 +1555,7 @@ void CCameraSensor::thread_save_images(unsigned int my_working_thread_index)
 		m_toSaveList[my_working_thread_index].swap(newObs);
 		m_csToSaveList.unlock();
 
-		for (TListObservations::const_iterator i = newObs.begin();
+		for (auto i = newObs.begin();
 			 i != newObs.end(); ++i)
 		{
 			// Optional user-code hook:

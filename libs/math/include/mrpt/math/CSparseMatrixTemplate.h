@@ -81,7 +81,7 @@ class CSparseMatrixTemplate
 	 */
 	inline T operator()(size_t r, size_t c) const
 	{
-		const_iterator it = objectList.find(std::make_pair(r, c));
+		auto it = objectList.find(std::make_pair(r, c));
 		if (it == objectList.end())
 			return T();
 		else
@@ -286,14 +286,14 @@ class CSparseMatrixTemplate
 		mRows = nRows;
 		mColumns = nCols;
 		std::vector<std::pair<size_t, size_t>> toErase;
-		for (const_iterator it = objectList.begin(); it != objectList.end();
+		for (auto it = objectList.begin(); it != objectList.end();
 			 ++it)
 		{
 			const std::pair<size_t, size_t>& i = it->first;
 			if (i.first >= nRows || i.second >= nCols)
 				toErase.push_back(it->first);
 		}
-		for (std::vector<std::pair<size_t, size_t>>::const_iterator it =
+		for (auto it =
 				 toErase.begin();
 			 it != toErase.end(); ++it)
 			objectList.erase(*it);
@@ -390,7 +390,7 @@ class CSparseMatrixTemplate
 		std::vector<std::pair<size_t, size_t>> nulls;
 		for (const_iterator it = begin(); it != end(); ++it)
 			if (it->second == nullObject) nulls.push_back(it->first);
-		for (std::vector<std::pair<size_t, size_t>>::const_iterator it =
+		for (auto it =
 				 nulls.begin();
 			 it != nulls.end(); ++it)
 			objectList.erase(*it);

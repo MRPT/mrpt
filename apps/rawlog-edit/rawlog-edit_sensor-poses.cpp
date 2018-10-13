@@ -96,7 +96,7 @@ DECLARE_OP_FUNCTION(op_sensors_pose)
 		bool processOneObservation(CObservation::Ptr& obs) override
 		{
 			// Check the sensor label:
-			TSensor2PoseMap::iterator i =
+			auto i =
 				desiredSensorPoses.find(obs->sensorLabel);
 			if (i != desiredSensorPoses.end())
 			{

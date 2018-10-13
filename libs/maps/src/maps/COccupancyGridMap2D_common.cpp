@@ -74,7 +74,7 @@ mrpt::maps::CMetricMap* COccupancyGridMap2D::internal_CreateFromMapDefinition(
 {
 	const COccupancyGridMap2D::TMapDefinition& def =
 		*dynamic_cast<const COccupancyGridMap2D::TMapDefinition*>(&_def);
-	COccupancyGridMap2D* obj = new COccupancyGridMap2D(
+	auto* obj = new COccupancyGridMap2D(
 		def.min_x, def.max_x, def.min_y, def.max_y, def.resolution);
 	obj->insertionOptions = def.insertionOpts;
 	obj->likelihoodOptions = def.likelihoodOpts;
@@ -389,7 +389,7 @@ void COccupancyGridMap2D::computeEntropy(TEntropyInfo& info) const
 	info.effectiveMappedCells = 0;
 	for (signed char it : map)
 	{
-		cellTypeUnsigned ctu = static_cast<cellTypeUnsigned>(it);
+		auto ctu = static_cast<cellTypeUnsigned>(it);
 		h = entropyTable[ctu];
 		info.H += h;
 		if (h < (MAX_H - 0.001f))
@@ -447,7 +447,7 @@ void COccupancyGridMap2D::internal_clear()
 void COccupancyGridMap2D::fill(float default_value)
 {
 	cellType defValue = p2l(default_value);
-	for (std::vector<cellType>::iterator it = map.begin(); it < map.end(); ++it)
+	for (auto it = map.begin(); it < map.end(); ++it)
 		*it = defValue;
 	// For the precomputed likelihood trick:
 	precomputedLikelihoodToBeRecomputed = true;
@@ -549,7 +549,7 @@ void COccupancyGridMap2D::determineMatching2D(
 		params.offset_other_map_points, params.decimation_other_map_points);
 
 	ASSERT_(otherMap2->GetRuntimeClass()->derivedFrom(CLASS_ID(CPointsMap)));
-	const CPointsMap* otherMap = static_cast<const CPointsMap*>(otherMap2);
+	const auto* otherMap = static_cast<const CPointsMap*>(otherMap2);
 
 	const TPose2D otherMapPose = otherMapPose_.asTPose();
 

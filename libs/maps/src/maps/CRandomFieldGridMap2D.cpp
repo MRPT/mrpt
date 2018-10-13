@@ -618,7 +618,7 @@ void CRandomFieldGridMap2D::insertObservation_KernelDM_DMV(
 
 		// Actually the array could be 1/4 of this size, but this
 		// way it's easier and it's late night now :-)
-		vector<float>::iterator it = m_DM_gaussWindow.begin();
+		auto it = m_DM_gaussWindow.begin();
 		for (unsigned cx = 0; cx < Ac_all; cx++)
 		{
 			for (unsigned cy = 0; cy < Ac_all; cy++)
@@ -640,7 +640,7 @@ void CRandomFieldGridMap2D::insertObservation_KernelDM_DMV(
 	const int sensor_cx = x2idx(point.x);
 	const int sensor_cy = y2idx(point.y);
 	TRandomFieldCell* cell;
-	vector<float>::iterator windowIt = m_DM_gaussWindow.begin();
+	auto windowIt = m_DM_gaussWindow.begin();
 
 	for (int Acx = -Ac_cutoff; Acx <= Ac_cutoff; Acx++)
 	{
@@ -1242,7 +1242,7 @@ void CRandomFieldGridMap2D::insertObservation_KF(
 	tictac.Tic();
 
 	// We need to refer to the old cov: make an efficient copy of it:
-	double* oldCov = (double*)/*mrpt_alloca*/ malloc(sizeof(double) * N * N);
+	auto* oldCov = (double*)/*mrpt_alloca*/ malloc(sizeof(double) * N * N);
 	double* oldCov_ptr = oldCov;
 	for (i = 0; i < N; i++)
 	{

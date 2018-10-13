@@ -924,7 +924,7 @@ u_result RPlidarDriverSerialImpl::_sendCommand(
 	_u8 cmd, const void* payload, size_t payloadsize)
 {
 	_u8 pkt_header[10];
-	rplidar_cmd_packet_t* header =
+	auto* header =
 		reinterpret_cast<rplidar_cmd_packet_t*>(pkt_header);
 	_u8 checksum = 0;
 

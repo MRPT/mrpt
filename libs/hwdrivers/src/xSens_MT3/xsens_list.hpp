@@ -494,7 +494,7 @@ void List<T>::sortAscending(void)
 		T item;
 	};
 
-	Linker* list = (Linker*) malloc(m_count*sizeof(Linker));
+	auto* list = (Linker*) malloc(m_count*sizeof(Linker));
 
 	list[0].prev = NULL;
 	list[0].next = NULL;
@@ -636,7 +636,7 @@ void List<T>::sortAscendingDeref(void)
 		T item;
 	};
 
-	Linker* list = (Linker*) malloc(m_count*sizeof(Linker));
+	auto* list = (Linker*) malloc(m_count*sizeof(Linker));
 
 	list[0].prev = NULL;
 	list[0].next = NULL;

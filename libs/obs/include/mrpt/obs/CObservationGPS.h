@@ -143,7 +143,7 @@ class CObservationGPS : public CObservation
 	template <class MSG_CLASS>
 	MSG_CLASS& getMsgByClass()
 	{
-		message_list_t::iterator it = messages.find(
+		auto it = messages.find(
 			static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type));
 		ASSERTMSG_(
 			it != messages.end(), mrpt::format(
@@ -157,7 +157,7 @@ class CObservationGPS : public CObservation
 	template <class MSG_CLASS>
 	const MSG_CLASS& getMsgByClass() const
 	{
-		message_list_t::const_iterator it = messages.find(
+		auto it = messages.find(
 			static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type));
 		ASSERTMSG_(
 			it != messages.end(), mrpt::format(
@@ -173,7 +173,7 @@ class CObservationGPS : public CObservation
 	template <class MSG_CLASS>
 	MSG_CLASS* getMsgByClassPtr()
 	{
-		message_list_t::iterator it = messages.find(
+		auto it = messages.find(
 			static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type));
 		return it == messages.end()
 				   ? static_cast<MSG_CLASS*>(nullptr)
@@ -183,7 +183,7 @@ class CObservationGPS : public CObservation
 	template <class MSG_CLASS>
 	const MSG_CLASS* getMsgByClassPtr() const
 	{
-		message_list_t::const_iterator it = messages.find(
+		auto it = messages.find(
 			static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type));
 		return it == messages.end()
 				   ? dynamic_cast<MSG_CLASS*>(nullptr)

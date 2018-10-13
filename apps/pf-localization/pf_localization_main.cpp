@@ -664,7 +664,7 @@ void do_pf_localization(
 									ptrScene->getByName("particles");
 								if (parts) ptrScene->removeObject(parts);
 
-								CSetOfObjects::Ptr p =
+								auto p =
 									pdf.getAs3DObject<CSetOfObjects::Ptr>();
 								p->setName("particles");
 								ptrScene->insert(p);
@@ -996,7 +996,7 @@ void do_pf_localization(
 								scene.getByName("particles");
 							if (parts) scene.removeObject(parts);
 
-							CSetOfObjects::Ptr p =
+							auto p =
 								pdf.getAs3DObject<CSetOfObjects::Ptr>();
 							p->setName("particles");
 							scene.insert(p);

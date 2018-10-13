@@ -93,7 +93,7 @@ typename CPoseInterpolatorBase<DIM>::pose_t&
 	};
 
 	// Out of range?
-	const_iterator it_ge1 = m_path.lower_bound(t);
+	auto it_ge1 = m_path.lower_bound(t);
 
 	// Exact match?
 	if (it_ge1 != m_path.end() && it_ge1->first == t)
@@ -111,7 +111,7 @@ typename CPoseInterpolatorBase<DIM>::pose_t&
 	}  // end
 
 	p3 = *it_ge1;  // Third pair
-	const_iterator it_ge2 = it_ge1;
+	auto it_ge2 = it_ge1;
 	++it_ge2;
 	if (it_ge2 == m_path.end())
 	{
@@ -193,7 +193,7 @@ bool CPoseInterpolatorBase<DIM>::getPreviousPoseWithMinDistance(
 	pose_t myPose;
 
 	// Search for the desired timestamp
-	iterator it = m_path.find(t);
+	auto it = m_path.find(t);
 	if (it != m_path.end() && it != m_path.begin())
 		myPose = it->second;
 	else
@@ -238,7 +238,7 @@ bool CPoseInterpolatorBase<DIM>::saveToTextFile(const std::string& s) const
 		f.open(s);
 		if (!f.is_open()) return false;
 		std::string str;
-		for (const_iterator i = m_path.begin(); i != m_path.end(); ++i)
+		for (auto i = m_path.begin(); i != m_path.end(); ++i)
 		{
 			const double t = mrpt::system::timestampTotime_t(i->first);
 			const auto& p = i->second;
@@ -343,7 +343,7 @@ void CPoseInterpolatorBase<DIM>::getBoundingBox(
 		Max[k] = -std::numeric_limits<double>::max();
 	}
 
-	for (const_iterator p = m_path.begin(); p != m_path.end(); ++p)
+	for (auto p = m_path.begin(); p != m_path.end(); ++p)
 	{
 		for (unsigned int k = 0; k < point_t::static_size; k++)
 		{

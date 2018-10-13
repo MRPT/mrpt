@@ -991,7 +991,7 @@ double TPolygon2D::distance(const TPoint2D& point) const
 
 	double distance = std::numeric_limits<double>::max();
 
-	for (vector<TSegment2D>::const_iterator it = sgs.begin(); it != sgs.end();
+	for (auto it = sgs.begin(); it != sgs.end();
 		 ++it)
 	{
 		double d = (*it).distance(point);
@@ -1100,7 +1100,7 @@ bool TPolygon2D::isConvex() const
 	for (size_t i = 0; i < N; i++)
 	{
 		char s = 0;
-		TLine2D l = TLine2D(sgms[i]);
+		auto l = TLine2D(sgms[i]);
 		for (size_t j = 0; j < N; j++)
 		{
 			double d = l.evaluatePoint(operator[](j));

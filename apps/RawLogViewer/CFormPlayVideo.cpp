@@ -673,7 +673,7 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 	WX_START_TRY
 
 	ASSERT_(SF);
-	CSensoryFrame* sf = (CSensoryFrame*)SF;
+	auto* sf = (CSensoryFrame*)SF;
 
 	bool doDelay = false;
 	bool doReduceLargeImgs = cbReduceLarge->GetValue();

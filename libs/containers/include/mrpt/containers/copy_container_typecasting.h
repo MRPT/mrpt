@@ -30,9 +30,9 @@ inline void copy_container_typecasting(
 	const src_container& src, dst_container& trg)
 {
 	trg.resize(src.size());
-	typename src_container::const_iterator i = src.begin();
-	typename src_container::const_iterator last = src.end();
-	typename dst_container::iterator target = trg.begin();
+	auto i = src.begin();
+	auto last = src.end();
+	auto target = trg.begin();
 	for (; i != last; ++i, ++target)
 		*target = static_cast<typename dst_container::value_type>(*i);
 }

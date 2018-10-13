@@ -564,7 +564,7 @@ bool getArgValue(
 		if (it->getName() == arg_name)
 		{
 			// Is it set? Return the default value anyway:
-			TCLAP::ValueArg<T>* arg = static_cast<TCLAP::ValueArg<T>*>(it);
+			auto* arg = static_cast<TCLAP::ValueArg<T>*>(it);
 			out_val = arg->getValue();
 			return it->isSet();
 		}

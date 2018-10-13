@@ -60,7 +60,7 @@ void CRuntimeCompiledExpression::compile(
 	exprtk::symbol_table<double> symbol_table;
 	for (const auto& v : variables)
 	{
-		double& var = const_cast<double&>(v.second);
+		auto& var = const_cast<double&>(v.second);
 		symbol_table.add_variable(v.first, var);
 	}
 	symbol_table.add_constant("M_PI", M_PI);
@@ -94,7 +94,7 @@ void CRuntimeCompiledExpression::register_symbol_table(
 	exprtk::symbol_table<double> symbol_table;
 	for (const auto& v : variables)
 	{
-		double* var = const_cast<double*>(v.second);
+		auto* var = const_cast<double*>(v.second);
 		symbol_table.add_variable(v.first, *var);
 	}
 	m_impl->m_compiled_formula.register_symbol_table(symbol_table);

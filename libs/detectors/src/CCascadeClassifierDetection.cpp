@@ -97,18 +97,18 @@ void CCascadeClassifierDetection::detectObjects_Impl(
 
 	if (IS_CLASS(obs, CObservationImage))
 	{
-		const CObservationImage* o = static_cast<const CObservationImage*>(obs);
+		const auto* o = static_cast<const CObservationImage*>(obs);
 		img = &o->image;
 	}
 	else if (IS_CLASS(obs, CObservationStereoImages))
 	{
-		const CObservationStereoImages* o =
+		const auto* o =
 			static_cast<const CObservationStereoImages*>(obs);
 		img = &o->imageLeft;
 	}
 	else if (IS_CLASS(obs, CObservation3DRangeScan))
 	{
-		const CObservation3DRangeScan* o =
+		const auto* o =
 			static_cast<const CObservation3DRangeScan*>(obs);
 		img = &o->intensityImage;
 	}
@@ -124,7 +124,7 @@ void CCascadeClassifierDetection::detectObjects_Impl(
 	const CImage img_gray(*img, FAST_REF_OR_CONVERT_TO_GRAY);
 
 	// Convert to IplImage and copy it
-	const IplImage* image = img_gray.getAs<IplImage>();
+	const auto* image = img_gray.getAs<IplImage>();
 
 	// Detect objects
 	CASCADE->detectMultiScale(

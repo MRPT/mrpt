@@ -127,7 +127,7 @@ void CSetOfObjects::dumpListOfObjects(std::vector<std::string>& lst)
 		if (m_object->GetRuntimeClass() ==
 			CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::opengl))
 		{
-			CSetOfObjects* objs = dynamic_cast<CSetOfObjects*>(m_object.get());
+			auto* objs = dynamic_cast<CSetOfObjects*>(m_object.get());
 
 			std::vector<std::string> auxLst;
 			objs->dumpListOfObjects(auxLst);
@@ -142,7 +142,7 @@ void CSetOfObjects::dumpListOfObjects(std::vector<std::string>& lst)
   ---------------------------------------------------------------*/
 void CSetOfObjects::removeObject(const CRenderizable::Ptr& obj)
 {
-	for (CListOpenGLObjects::iterator it = m_objects.begin();
+	for (auto it = m_objects.begin();
 		 it != m_objects.end(); ++it)
 		if (*it == obj)
 		{

@@ -75,7 +75,7 @@ void CUndistortMap::undistort(
 		m_camera_params.nrows, m_camera_params.ncols, CV_16UC1,
 		const_cast<uint16_t*>(&m_dat_mapy[0]));
 
-	const IplImage* srcImg = in_img.getAs<IplImage>();  // Source Image
+	const auto* srcImg = in_img.getAs<IplImage>();  // Source Image
 	IplImage* outImg =
 		cvCreateImage(cvGetSize(srcImg), srcImg->depth, srcImg->nChannels);
 	cvRemap(srcImg, outImg, &mapx, &mapy);  // cv::remap(src, dst_part,

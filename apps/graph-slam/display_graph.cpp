@@ -121,7 +121,7 @@ void display_graph(const GRAPHTYPE& g)
 		{
 			if (e.isOfType<mrpt::gui::mrptEventWindowChar>())
 			{
-				const mrpt::gui::mrptEventWindowChar* ev =
+				const auto* ev =
 					e.getAs<mrpt::gui::mrptEventWindowChar>();
 				bool rebuild_3d_obj = false;
 				switch (ev->char_code)

@@ -90,7 +90,7 @@ struct TParameters : public std::map<std::string, T>
 	  */
 	inline T operator[](const std::string& s) const
 	{
-		typename BASE::const_iterator it = BASE::find(s);
+		auto it = BASE::find(s);
 		if (BASE::end() == it)
 			throw std::logic_error(
 				std::string("Parameter '") + s +
@@ -102,7 +102,7 @@ struct TParameters : public std::map<std::string, T>
 	  */
 	inline T getWithDefaultVal(const std::string& s, const T& defaultVal) const
 	{
-		typename BASE::const_iterator it = BASE::find(s);
+		auto it = BASE::find(s);
 		if (BASE::end() == it)
 			return defaultVal;
 		else

@@ -63,7 +63,7 @@ CHMTSLAM::TMessageLSLAMfromAA::Ptr CHMTSLAM::areaAbstraction(
 			// already within the LMH's lock!
 
 			// SF:
-			std::map<TPoseID, CSensoryFrame>::const_iterator itSFs =
+			auto itSFs =
 				LMH->m_SFs.find(newPoseID);
 			ASSERT_(itSFs != LMH->m_SFs.end());
 			sf = &itSFs->second;

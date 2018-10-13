@@ -403,7 +403,7 @@ XsTimeStamp IoInterfaceFile::getFileDate(void) const
 	if (stat(m_filename.c_str(), &stats) == 0)
 #endif
 	{
-		XsTimeStamp t = XsTimeStamp((int64_t)stats.st_mtime * 1000);
+		auto t = XsTimeStamp((int64_t)stats.st_mtime * 1000);
 		return t;
 	}
 	return XsTimeStamp();
@@ -758,7 +758,7 @@ XsResultValue IoInterfaceFile::writeData(
 	size_t writeRes = fwrite(data.data(), 1, length, m_handle);
 	if (writeRes == (size_t)EOF || writeRes < length)
 	{
-		int32_t err = (int32_t)errno;
+		auto err = (int32_t)errno;
 		switch (err)
 		{
 			case 0:

@@ -286,11 +286,11 @@ void CStereoRectifyMap::rectify(
 		trg_size.width, trg_size.height, in_left_image.isColor() ? 3 : 1,
 		in_left_image.isOriginTopLeft());
 
-	const IplImage* in_left = in_left_image.getAs<IplImage>();
-	const IplImage* in_right = in_right_image.getAs<IplImage>();
+	const auto* in_left = in_left_image.getAs<IplImage>();
+	const auto* in_right = in_right_image.getAs<IplImage>();
 
-	IplImage* out_left = out_left_image.getAs<IplImage>();
-	IplImage* out_right = out_right_image.getAs<IplImage>();
+	auto* out_left = out_left_image.getAs<IplImage>();
+	auto* out_right = out_right_image.getAs<IplImage>();
 
 	this->rectify_IPL(in_left, in_right, out_left, out_right);
 

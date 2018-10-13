@@ -468,7 +468,7 @@ int CWirelessPower::GetPower()
 			THROW_EXCEPTION("Error reading response from iwlist");
 	}
 
-	std::vector<std::string>::iterator ssiter = powerReadV.end() - 2;
+	auto ssiter = powerReadV.end() - 2;
 
 	char powerLine[256];
 

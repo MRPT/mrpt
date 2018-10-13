@@ -140,7 +140,7 @@ class COpenNI2Generic::CDevice
 	template <class NI_PIXEL, class MRPT_DATA>
 	void copyRow(const char* src, MRPT_DATA& rgb, int w, const int y)
 	{
-		const NI_PIXEL* s = (const NI_PIXEL*)src;
+		const auto* s = (const NI_PIXEL*)src;
 		for (int xc = 0; xc < w; ++xc, ++s)
 		{
 			int x = xc;

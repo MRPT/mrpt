@@ -106,7 +106,7 @@ void CSensoryFrame::operator+=(const CSensoryFrame& sf)
 {
 	MRPT_UNUSED_PARAM(sf);
 	m_cachedMap.reset();
-	for (const_iterator it = begin(); it != end(); ++it)
+	for (auto it = begin(); it != end(); ++it)
 	{
 		CObservation::Ptr newObs = *it;
 		newObs.reset(dynamic_cast<CObservation*>(newObs->clone()));
@@ -153,7 +153,7 @@ void CSensoryFrame::eraseByIndex(const size_t& idx)
 			"Index %u out of range.", static_cast<unsigned>(idx));
 
 	m_cachedMap.reset();
-	iterator it = begin() + idx;
+	auto it = begin() + idx;
 	ASSERT_(!*it);
 	// delete (*it);
 	m_observations.erase(it);
@@ -170,7 +170,7 @@ CObservation::Ptr CSensoryFrame::getObservationByIndex(const size_t& idx) const
 		THROW_EXCEPTION_FMT(
 			"Index %u out of range.", static_cast<unsigned>(idx));
 
-	const_iterator it = begin() + idx;
+	auto it = begin() + idx;
 	return *it;
 
 	MRPT_END
@@ -233,7 +233,7 @@ void CSensoryFrame::swap(CSensoryFrame& sf)
   ---------------------------------------------------------------*/
 void CSensoryFrame::eraseByLabel(const std::string& label)
 {
-	for (iterator it = begin(); it != end();)
+	for (auto it = begin(); it != end();)
 	{
 		if (!os::_strcmpi((*it)->sensorLabel.c_str(), label.c_str()))
 		{

@@ -32,7 +32,7 @@ class Pose3DTests : public ::testing::Test
 	{
 		const CPose3D p1(x1, y1, z1, yaw1, pitch1, roll1);
 
-		const CMatrixDouble44 HM =
+		const auto HM =
 			p1.getHomogeneousMatrixVal<CMatrixDouble44>();
 		CMatrixDouble44 HMi;
 		p1.getInverseHomogeneousMatrix(HMi);
@@ -49,7 +49,7 @@ class Pose3DTests : public ::testing::Test
 		CPose3D p1_inv_inv = p1;
 
 		p1_inv_inv.inverse();
-		const CMatrixDouble44 HMi_from_p1_inv =
+		const auto HMi_from_p1_inv =
 			p1_inv_inv.getHomogeneousMatrixVal<CMatrixDouble44>();
 
 		p1_inv_inv.inverse();

@@ -95,7 +95,7 @@ bool mrpt::tfest::operator==(
 	const TMatchingPairList& a, const TMatchingPairList& b)
 {
 	if (a.size() != b.size()) return false;
-	for (TMatchingPairList::const_iterator it1 = a.begin(), it2 = b.begin();
+	for (auto it1 = a.begin(), it2 = b.begin();
 		 it1 != a.end(); ++it1, ++it2)
 		if (!((*it1) == (*it2))) return false;
 	return true;

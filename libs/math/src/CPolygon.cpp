@@ -23,7 +23,7 @@ uint8_t CPolygon::serializeGetVersion() const { return 2; }
 void CPolygon::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// The number of vertexs:
-	const uint32_t n = (uint32_t)TPolygon2D::size();
+	const auto n = (uint32_t)TPolygon2D::size();
 
 	// Size:
 	out << n;

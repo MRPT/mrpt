@@ -200,7 +200,7 @@ int main(int argc, char** argv)
 
 				if (!global_list_obs.empty())
 				{
-					CGenericSensor::TListObservations::iterator itEnd =
+					auto itEnd =
 						global_list_obs.begin();
 					std::advance(itEnd, global_list_obs.size() / 2);
 					copy_of_global_list_obs.insert(
@@ -214,7 +214,7 @@ int main(int argc, char** argv)
 				// -----------------------
 				// USE SENSORY-FRAMES
 				// -----------------------
-				for (CGenericSensor::TListObservations::iterator it =
+				for (auto it =
 						 copy_of_global_list_obs.begin();
 					 it != copy_of_global_list_obs.end(); ++it)
 				{

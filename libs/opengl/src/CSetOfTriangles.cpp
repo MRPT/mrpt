@@ -107,7 +107,7 @@ uint8_t CSetOfTriangles::serializeGetVersion() const { return 1; }
 void CSetOfTriangles::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
-	uint32_t n = (uint32_t)m_triangles.size();
+	auto n = (uint32_t)m_triangles.size();
 	out << n;
 	for (size_t i = 0; i < n; i++) triangle_writeToStream(out, m_triangles[i]);
 

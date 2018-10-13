@@ -487,7 +487,7 @@ void CHMTSLAM::initializeEmptyMap()
 		// Create new list:
 		//  1: Occupancy Grid matching.
 		//  2: Cummins' image matching.
-		for (std::vector<std::string>::const_iterator d =
+		for (auto d =
 				 m_options.TLC_detectors.begin();
 			 d != m_options.TLC_detectors.end(); ++d)
 			m_topLCdets.push_back(loopClosureDetector_factory(*d));
@@ -563,7 +563,7 @@ CTopLCDetectorBase* CHMTSLAM::loopClosureDetector_factory(
 	const std::string& name)
 {
 	MRPT_START
-	std::map<std::string, TLopLCDetectorFactory>::const_iterator it =
+	auto it =
 		m_registeredLCDetectors.find(name);
 	if (it == m_registeredLCDetectors.end())
 		THROW_EXCEPTION_FMT(

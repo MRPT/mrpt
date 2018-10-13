@@ -61,7 +61,7 @@ bool xRawLogViewerApp::OnInit()
 	wxInitAllImageHandlers();
 	if (wxsOK)
 	{
-		xRawLogViewerFrame* Frame = new xRawLogViewerFrame(nullptr);
+		auto* Frame = new xRawLogViewerFrame(nullptr);
 		Frame->Show();
 		SetTopWindow(Frame);
 	}

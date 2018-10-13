@@ -159,7 +159,7 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml)
 				m_inFile.c_str(), m_inFile.c_str());
 
 			// For each GPS sensor label:
-			for (map<string, TDataPerGPSGAS>::const_iterator it =
+			for (auto it =
 					 m_gps_paths.begin();
 				 it != m_gps_paths.end(); ++it)
 			{
@@ -177,7 +177,7 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml)
 				int n = 0;
 				float scale = 1;  // scale to dispay in KML
 				int alpha = 120;  //[0 255]
-				for (map<TTimeStamp, TGPSGASDataPoint>::const_iterator
+				for (auto
 						 itP = D.path.begin();
 					 itP != D.path.end(); ++itP, n++)
 				{

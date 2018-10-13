@@ -167,7 +167,7 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 			}
 
 			// Do the actual file renaming:
-			for (map<string, string>::const_iterator it = files2rename.begin();
+			for (auto it = files2rename.begin();
 				 it != files2rename.end(); ++it)
 			{
 				const string& prevFil = it->first;

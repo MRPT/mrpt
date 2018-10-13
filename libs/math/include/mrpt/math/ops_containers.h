@@ -268,9 +268,9 @@ template <class CONTAINER1, class CONTAINER2>
 size_t countCommonElements(const CONTAINER1& a, const CONTAINER2& b)
 {
 	size_t ret = 0;
-	for (typename CONTAINER1::const_iterator it1 = a.begin(); it1 != a.end();
+	for (auto it1 = a.begin(); it1 != a.end();
 		 ++it1)
-		for (typename CONTAINER2::const_iterator it2 = b.begin();
+		for (auto it2 = b.begin();
 			 it2 != b.end(); ++it2)
 			if ((*it1) == (*it2)) ret++;
 	return ret;

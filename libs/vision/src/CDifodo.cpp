@@ -400,8 +400,8 @@ void CDifodo::performWarping()
 	wacu.assign(0.f);
 	depth_warped[image_level].assign(0.f);
 
-	const float cols_lim = float(cols_i - 1);
-	const float rows_lim = float(rows_i - 1);
+	const auto cols_lim = float(cols_i - 1);
+	const auto rows_lim = float(rows_i - 1);
 
 	//						Warping loop
 	//---------------------------------------------------------

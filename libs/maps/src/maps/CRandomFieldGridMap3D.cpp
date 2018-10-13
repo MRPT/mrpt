@@ -383,7 +383,7 @@ void CRandomFieldGridMap3D::serializeTo(
 	dyngridcommon_writeToStream(out);
 
 	// To assure compatibility: The size of each cell:
-	uint32_t n = static_cast<uint32_t>(sizeof(TRandomFieldVoxel));
+	auto n = static_cast<uint32_t>(sizeof(TRandomFieldVoxel));
 	out << n;
 
 	// Save the map contents:

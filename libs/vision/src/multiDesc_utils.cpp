@@ -237,7 +237,7 @@ TMultiResMatchingOutput vision::relocalizeMultiDesc(
 			// Erase duplicates
 			vID.resize(featsToCompareMap.size());  // To store only the IDs
 			int counter = 0;
-			for (map<TFeatureID, vector<double>>::iterator nit =
+			for (auto nit =
 					 featsToCompareMap.begin();
 				 nit != featsToCompareMap.end(); ++nit, ++counter)
 			{
@@ -261,7 +261,7 @@ TMultiResMatchingOutput vision::relocalizeMultiDesc(
 			int minDist = 1e6;
 			int minBaseScl = 0;
 			int minBaseFeat = 0;
-			for (map<TFeatureID, vector<double>>::iterator nit =
+			for (auto nit =
 					 featsToCompareMap.begin();
 				 nit != featsToCompareMap.end(); ++nit, ++counter)
 			{
@@ -1706,7 +1706,7 @@ int vision::computeMoreDescriptors(
 			cv::resize(
 				cv::cvarrToMat(tPatch.getAs<IplImage>(), false), out_mat_patch,
 				cv::Size(a + 2, a + 2));
-			IplImage aux_img = IplImage(out_mat_patch);
+			auto aux_img = IplImage(out_mat_patch);
 			CImage rsPatch(&aux_img);
 
 			//            cout << " ::: Patch extracted and resized" << endl;
@@ -1785,7 +1785,7 @@ int vision::computeMoreDescriptors(
 			cv::resize(
 				cv::cvarrToMat(tPatch.getAs<IplImage>(), false), out_mat_patch,
 				cv::Size(a + 2, a + 2));
-			IplImage aux_img = IplImage(out_mat_patch);
+			auto aux_img = IplImage(out_mat_patch);
 			CImage rsPatch(&aux_img);
 
 			//            cout << " ::: Patch extracted and resized" << endl;
@@ -1940,7 +1940,7 @@ void vision::computeMultiResolutionDescriptors(
 	unsigned int npSize;
 	unsigned int hpSize;
 
-	for (CMatchedFeatureList::iterator itMatch = matchedFeats.begin();
+	for (auto itMatch = matchedFeats.begin();
 		 itMatch != matchedFeats.end(); ++itMatch, ++feat_counter)
 	{
 		// We don't take into account the matching if it is too close to the
@@ -2021,7 +2021,7 @@ void vision::computeMultiResolutionDescriptors(
 			cv::resize(
 				cv::cvarrToMat(tPatch.getAs<IplImage>(), false), out_mat_patch,
 				cv::Size(a + 2, a + 2));
-			IplImage aux_img = IplImage(out_mat_patch);
+			auto aux_img = IplImage(out_mat_patch);
 			CImage rsPatch(&aux_img);
 			tlogger.leave("extract & resize");
 
@@ -2061,7 +2061,7 @@ void vision::computeMultiResolutionDescriptors(
 			cv::resize(
 				cv::cvarrToMat(tPatch.getAs<IplImage>(), false), out_mat_patch,
 				cv::Size(a + 2, a + 2));
-			IplImage aux_img2 = IplImage(out_mat_patch);
+			auto aux_img2 = IplImage(out_mat_patch);
 			CImage rsPatch2(&aux_img2);
 			tlogger.leave("extract & resize");
 
@@ -2164,7 +2164,7 @@ bool vision::computeMultiResolutionDescriptors(
 		cv::resize(
 			cv::cvarrToMat(tPatch.getAs<IplImage>(), false), out_mat_patch,
 			cv::Size(a + 2, a + 2));
-		IplImage aux_img = IplImage(out_mat_patch);
+		auto aux_img = IplImage(out_mat_patch);
 		CImage rsPatch(&aux_img);
 
 		// Compute the main orientations for the axa patch, taking into account
@@ -2245,7 +2245,7 @@ vector<bool> vision::computeMultiResolutionDescriptors(
 	auxOpts.blurImage = false;
 	vector<bool> st(list.size());
 	int k = 0;
-	for (CFeatureList::iterator it = list.begin(); it != list.end(); ++it, ++k)
+	for (auto it = list.begin(); it != list.end(); ++it, ++k)
 		st[k] = computeMultiResolutionDescriptors(smLeftImg, (*it), auxOpts);
 	return st;
 	MRPT_END
@@ -2294,7 +2294,7 @@ void vision::computeMultiOrientations(
 	unsigned int npSize;
 	unsigned int hpSize;
 
-	for (CFeatureList::iterator it = list.begin(); it != list.end(); ++it)
+	for (auto it = list.begin(); it != list.end(); ++it)
 	{
 		// We don't take into account the matching if it is too close to the
 		// image border (the largest patch cannot be extracted)
@@ -2340,7 +2340,7 @@ void vision::computeMultiOrientations(
 			cv::resize(
 				cv::cvarrToMat(tPatch.getAs<IplImage>(), false), out_mat_patch,
 				cv::Size(a + 2, a + 2));
-			IplImage aux_img = IplImage(out_mat_patch);
+			auto aux_img = IplImage(out_mat_patch);
 			CImage rsPatch(&aux_img);
 			tlogger.leave("extract & resize");
 

@@ -98,14 +98,14 @@ void CGlWidget::fillMap(const CSetOfObjects::Ptr& renderizableMap)
 		if (m_map->size() == 1)
 		{
 			CRenderizable* ren = m_map->begin()->get();
-			CTexturedPlane* textured = dynamic_cast<CTexturedPlane*>(ren);
+			auto* textured = dynamic_cast<CTexturedPlane*>(ren);
 			if (textured)
 			{
 				textured->getPlaneCorners(xMin, xMax, yMin, yMax);
 			}
 			else
 			{
-				CPointCloud* points = dynamic_cast<CPointCloud*>(ren);
+				auto* points = dynamic_cast<CPointCloud*>(ren);
 				if (points)
 				{
 					const std::vector<float>& arrayX = points->getArrayX();

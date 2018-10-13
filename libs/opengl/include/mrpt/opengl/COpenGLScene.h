@@ -223,7 +223,7 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 	{
 		MRPT_START
 		for (const auto & m_viewport : m_viewports)
-			for (COpenGLViewport::const_iterator itO = m_viewport->begin();
+			for (auto itO = m_viewport->begin();
 				 itO != m_viewport->end(); ++itO)
 				internal_visitAllObjects(functor, *itO);
 		MRPT_END
@@ -259,7 +259,7 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 		{
 			CSetOfObjects::Ptr obj =
 				std::dynamic_pointer_cast<CSetOfObjects>(o);
-			for (CSetOfObjects::const_iterator it = obj->begin();
+			for (auto it = obj->begin();
 				 it != obj->end(); ++it)
 				internal_visitAllObjects(functor, *it);
 		}

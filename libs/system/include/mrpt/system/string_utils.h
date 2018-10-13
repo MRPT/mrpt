@@ -117,7 +117,7 @@ template <typename T>
 std::string sprintf_container(const char* fmt, const T& V)
 {
 	std::string ret = "[";
-	typename T::const_iterator it = V.begin();
+	auto it = V.begin();
 	for (; it != V.end();)
 	{
 		ret += format(fmt, *it);

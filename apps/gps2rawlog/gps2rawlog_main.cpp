@@ -105,7 +105,7 @@ int main(int argc, char** argv)
 			printf(
 				"%u bytes parsed, %u new observations identified...\n",
 				(unsigned)fil_input.getPosition(), (unsigned)lst_obs.size());
-			for (CGenericSensor::TListObservations::const_iterator it =
+			for (auto it =
 					 lst_obs.begin();
 				 it != lst_obs.end(); ++it)
 			{

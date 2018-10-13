@@ -86,7 +86,7 @@ mrpt::maps::CMetricMap*
 {
 	const CGasConcentrationGridMap2D::TMapDefinition& def =
 		*dynamic_cast<const CGasConcentrationGridMap2D::TMapDefinition*>(&_def);
-	CGasConcentrationGridMap2D* obj = new CGasConcentrationGridMap2D(
+	auto* obj = new CGasConcentrationGridMap2D(
 		def.mapType, def.min_x, def.max_x, def.min_y, def.max_y,
 		def.resolution);
 	obj->insertionOptions = def.insertionOpts;
@@ -192,7 +192,7 @@ bool CGasConcentrationGridMap2D::internal_insertObservation(
 		/********************************************************************
 					OBSERVATION TYPE: CObservationGasSensors
 		********************************************************************/
-		const CObservationGasSensors* o =
+		const auto* o =
 			static_cast<const CObservationGasSensors*>(obs);
 
 		if (o->sensorLabel.compare(insertionOptions.gasSensorLabel) == 0)
@@ -297,7 +297,7 @@ void CGasConcentrationGridMap2D::serializeTo(
 	dyngridcommon_writeToStream(out);
 
 	// To assure compatibility: The size of each cell:
-	uint32_t n = static_cast<uint32_t>(sizeof(TRandomFieldCell));
+	auto n = static_cast<uint32_t>(sizeof(TRandomFieldCell));
 	out << n;
 
 	// Save the map contents:
@@ -697,7 +697,7 @@ bool CGasConcentrationGridMap2D::simulateAdvection(
 	mrpt::math::CMatrix A(N, N);
 	A.fill(0.0);
 	// std::vector<double> row_sum(N,0.0);
-	double* row_sum = (double*)calloc(N, sizeof(double));
+	auto* row_sum = (double*)calloc(N, sizeof(double));
 
 	try
 	{
@@ -781,9 +781,9 @@ bool CGasConcentrationGridMap2D::simulateAdvection(
 	{
 		tictac.Tic();
 		// std::vector<double> new_means(N,0.0);
-		double* new_means = (double*)calloc(N, sizeof(double));
+		auto* new_means = (double*)calloc(N, sizeof(double));
 		// std::vector<double> new_variances(N,0.0);
-		double* new_variances = (double*)calloc(N, sizeof(double));
+		auto* new_variances = (double*)calloc(N, sizeof(double));
 
 		for (size_t it_i = 0; it_i < N; it_i++)
 		{

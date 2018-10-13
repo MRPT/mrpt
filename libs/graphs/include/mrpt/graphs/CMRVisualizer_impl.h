@@ -151,7 +151,7 @@ void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
 	}  // end for - nodes loop
 
 	// insert all CPointCloud(s)
-	for (std::map<std::string, CPointCloud::Ptr>::const_iterator it =
+	for (auto it =
 			 strid_to_cloud.begin();
 		 it != strid_to_cloud.end(); ++it)
 	{
@@ -270,7 +270,7 @@ void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
 	}  // end for - nodes loop
 
 	// insert all CSetOfLines(s)
-	for (PairToSetOfLines_t::const_iterator it = id_to_set_of_lines.begin();
+	for (auto it = id_to_set_of_lines.begin();
 		 it != id_to_set_of_lines.end(); ++it)
 	{
 		object->insert(it->second);

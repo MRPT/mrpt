@@ -105,7 +105,7 @@ void CRoboPeakLidar::doProcessSimple(
 			{
 				if (nodes[i].distance_q2 != 0)
 				{
-					float angle =
+					auto angle =
 						(float)((nodes[i].angle_q6_checkbit >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT) / 64.0f);
 					int angle_value = (int)(angle * angle_compensate_multiple);
 					if ((angle_value - angle_compensate_offset) < 0)

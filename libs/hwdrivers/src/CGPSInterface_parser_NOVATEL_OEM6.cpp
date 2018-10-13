@@ -198,7 +198,7 @@ bool CGPSInterface::implement_parser_NOVATEL_OEM6(
 		{
 			// Detect NV_OEM6_IONUTC msgs to learn about the current leap
 			// seconds:
-			const gnss::Message_NV_OEM6_IONUTC* ionutc =
+			const auto* ionutc =
 				dynamic_cast<const gnss::Message_NV_OEM6_IONUTC*>(msg.get());
 			if (ionutc) num_leap_seconds = ionutc->fields.deltat_ls;
 		}

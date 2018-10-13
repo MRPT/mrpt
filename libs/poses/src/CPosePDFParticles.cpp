@@ -51,7 +51,7 @@ void CPosePDFParticles::copyFrom(const CPosePDF& o)
 
 	if (o.GetRuntimeClass() == CLASS_ID(CPosePDFParticles))
 	{
-		const CPosePDFParticles* pdf =
+		const auto* pdf =
 			dynamic_cast<const CPosePDFParticles*>(&o);
 		ASSERT_(pdf);
 
@@ -60,7 +60,7 @@ void CPosePDFParticles::copyFrom(const CPosePDF& o)
 	}
 	else if (o.GetRuntimeClass() == CLASS_ID(CPosePDFGaussian))
 	{
-		const CPosePDFGaussian* pdf = static_cast<const CPosePDFGaussian*>(&o);
+		const auto* pdf = static_cast<const CPosePDFGaussian*>(&o);
 		size_t M = m_particles.size();
 		std::vector<CVectorDouble> parts;
 		std::vector<CVectorDouble>::iterator partsIt;
@@ -312,7 +312,7 @@ void CPosePDFParticles::inverse(CPosePDF& o) const
 {
 	MRPT_START
 	ASSERT_(o.GetRuntimeClass() == CLASS_ID(CPosePDFParticles));
-	CPosePDFParticles* out = static_cast<CPosePDFParticles*>(&o);
+	auto* out = static_cast<CPosePDFParticles*>(&o);
 
 	out->copyFrom(*this);
 	TPose2D nullPose(0, 0, 0);

@@ -217,7 +217,7 @@ class CDynamicGrid3D
 	 */
 	inline void fill(const T& value)
 	{
-		for (typename std::vector<T>::iterator it = m_map.begin();
+		for (auto it = m_map.begin();
 			 it != m_map.end(); ++it)
 			*it = value;
 	}

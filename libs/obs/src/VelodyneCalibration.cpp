@@ -221,7 +221,7 @@ const VelodyneCalibration& VelodyneCalibration::LoadDefaultCalibration(
 	const std::string& lidar_model)
 {
 	// Cached calib data?
-	std::map<std::string, VelodyneCalibration>::const_iterator it =
+	auto it =
 		cache_default_calibs.find(lidar_model);
 	if (it != cache_default_calibs.end()) return it->second;
 

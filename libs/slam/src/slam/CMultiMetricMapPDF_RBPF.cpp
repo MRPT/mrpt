@@ -499,7 +499,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 			{
 				if (IS_CLASS(itObs, CObservationBeaconRanges))
 				{
-					const CObservationBeaconRanges* obs =
+					const auto* obs =
 						static_cast<const CObservationBeaconRanges*>(
 							itObs.get());
 					deque<CObservationBeaconRanges::TMeasurement>::
@@ -509,7 +509,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 					{
 						ASSERT_(itRanges->beaconID != INVALID_BEACON_ID);
 						// only add those in the map:
-						for (CBeaconMap::iterator itBeacs = beacMap->begin();
+						for (auto itBeacs = beacMap->begin();
 							 itBeacs != beacMap->end(); ++itBeacs)
 						{
 							if ((itBeacs)->m_ID == itRanges->beaconID)
@@ -584,7 +584,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 
 				// 2. Generate the optimal proposal by fusing obs models
 				// -------------------------------------------------------------
-				for (CBeaconMap::iterator itBeacs = beacMap->begin();
+				for (auto itBeacs = beacMap->begin();
 					 itBeacs != beacMap->end(); ++itBeacs)
 				{
 					// for each observed beacon (by its ID), generate
@@ -722,7 +722,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 
 				do
 				{
-					CPosePDFGrid* pdfGrid = new CPosePDFGrid(
+					auto* pdfGrid = new CPosePDFGrid(
 						grid_min_x, grid_max_x, grid_min_y, grid_max_y,
 						grid_resXY, DEG2RAD(180), 0, 0);
 
@@ -730,7 +730,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 
 					// Fuse all the observation models in the grid:
 					// -----------------------------------------------------
-					for (CBeaconMap::iterator itBeacs = beacMap->begin();
+					for (auto itBeacs = beacMap->begin();
 						 itBeacs != beacMap->end(); ++itBeacs)
 					{
 						// for each observed beacon (by its ID), generate
@@ -1019,7 +1019,7 @@ double CMultiMetricMapPDF::PF_SLAM_computeObservationLikelihoodForParticle(
 	const CPose3D& x) const
 {
 	MRPT_UNUSED_PARAM(PF_options);
-	CMultiMetricMap* map = const_cast<CMultiMetricMap*>(
+	auto* map = const_cast<CMultiMetricMap*>(
 		&m_particles[particleIndexForMap].d->mapTillNow);
 	double ret = 0;
 	for (const auto& it : observation)

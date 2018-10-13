@@ -725,7 +725,7 @@ void camera_calib_guiDialog::OnbtnSaveClick(wxCommandEvent& event)
 void camera_calib_guiDialog::updateListOfImages()
 {
 	lbFiles->Clear();
-	for (TCalibrationImageList::iterator s = lst_images.begin();
+	for (auto s = lst_images.begin();
 		 s != lst_images.end(); ++s)
 		lbFiles->Append(_U(s->first.c_str()));
 
@@ -750,7 +750,7 @@ void camera_calib_guiDialog::refreshDisplayedImage()
 
 		const string selFile = string(lbFiles->GetStringSelection().mb_str());
 
-		TCalibrationImageList::iterator it = lst_images.find(selFile);
+		auto it = lst_images.find(selFile);
 		if (it == lst_images.end()) return;
 
 		// Zoom:

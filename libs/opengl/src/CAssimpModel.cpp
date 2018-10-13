@@ -70,7 +70,7 @@ void CAssimpModel::render_dl() const
 
 	if (!m_assimp_scene->scene) return;  // No scene
 
-	aiScene* scene = (aiScene*)m_assimp_scene->scene;
+	auto* scene = (aiScene*)m_assimp_scene->scene;
 
 	glEnable(GL_TEXTURE_2D);
 	glDisable(GL_CULL_FACE);
@@ -175,7 +175,7 @@ void CAssimpModel::loadScene(const std::string& filepath)
 	if (m_assimp_scene->scene)
 	{
 		aiVector3D scene_min, scene_max;
-		aiScene* scene = (aiScene*)m_assimp_scene->scene;
+		auto* scene = (aiScene*)m_assimp_scene->scene;
 		get_bounding_box(scene, &scene_min, &scene_max);
 		m_bbox_min.x = scene_min.x;
 		m_bbox_min.y = scene_min.y;
@@ -325,7 +325,7 @@ void apply_material(
 		mtl->GetTexture(aiTextureType_DIFFUSE, texIndex, &texPath))
 	{
 		// bind texture
-		std::map<std::string, CAssimpModel::TInfoPerTexture>::const_iterator
+		auto
 			it = textureIdMap.find(texPath.data);
 		if (it == textureIdMap.end())
 		{
@@ -553,7 +553,7 @@ void load_textures(
 	}
 
 	/* get iterator */
-	std::map<std::string, CAssimpModel::TInfoPerTexture>::iterator itr =
+	auto itr =
 		textureIdMap.begin();
 
 	std::string basepath = mrpt::system::filePathSeparatorsToNative(

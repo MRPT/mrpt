@@ -51,7 +51,7 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::
 		/********************************************************************
 				 OBSERVATION TYPE: CObservation2DRangeScan
 		 ********************************************************************/
-		const CObservation2DRangeScan* o =
+		const auto* o =
 			static_cast<const CObservation2DRangeScan*>(obs);
 
 		// Build a points-map representation of the points from the scan
@@ -63,7 +63,7 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::
 		sensorPt =
 			octomap::point3d(sensorPose.x(), sensorPose.y(), sensorPose.z());
 
-		const CPointsMap* scanPts =
+		const auto* scanPts =
 			o->buildAuxPointsMap<mrpt::maps::CPointsMap>();
 		const size_t nPts = scanPts->size();
 
@@ -90,7 +90,7 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::
 		/********************************************************************
 				 OBSERVATION TYPE: CObservation3DRangeScan
 		 ********************************************************************/
-		const CObservation3DRangeScan* o =
+		const auto* o =
 			static_cast<const CObservation3DRangeScan*>(obs);
 
 		// Build a points-map representation of the points from the scan

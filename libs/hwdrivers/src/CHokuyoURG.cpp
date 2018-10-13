@@ -267,7 +267,7 @@ bool CHokuyoURG::turnOn()
 	// If we are over a serial link, set it up:
 	if (m_ip_dir.empty())
 	{
-		CSerialPort* COM = dynamic_cast<CSerialPort*>(m_stream);
+		auto* COM = dynamic_cast<CSerialPort*>(m_stream);
 
 		if (COM != nullptr)
 		{
@@ -300,7 +300,7 @@ bool CHokuyoURG::turnOn()
 	}
 	else
 	{
-		CClientTCPSocket* COM = dynamic_cast<CClientTCPSocket*>(m_stream);
+		auto* COM = dynamic_cast<CClientTCPSocket*>(m_stream);
 
 		if (COM != nullptr)
 		{
@@ -422,7 +422,7 @@ bool CHokuyoURG::assureBufferHasBytes(const size_t nDesiredBytes)
 
 			if (!m_ip_dir.empty())
 			{
-				CClientTCPSocket* client =
+				auto* client =
 					dynamic_cast<CClientTCPSocket*>(m_stream);
 				nRead = client->readAsync(buf, to_read, 100, 10);
 			}
@@ -890,7 +890,7 @@ bool CHokuyoURG::ensureStreamIsOpen()
 		if (!m_ip_dir.empty() && m_port_dir)
 		{
 			// Has the port been disconected (USB serial ports)??
-			CClientTCPSocket* COM = dynamic_cast<CClientTCPSocket*>(m_stream);
+			auto* COM = dynamic_cast<CClientTCPSocket*>(m_stream);
 
 			if (COM != nullptr)
 			{
@@ -922,7 +922,7 @@ bool CHokuyoURG::ensureStreamIsOpen()
 		else
 		{
 			// Has the port been disconected (USB serial ports)??
-			CSerialPort* COM = dynamic_cast<CSerialPort*>(m_stream);
+			auto* COM = dynamic_cast<CSerialPort*>(m_stream);
 			if (COM != nullptr)
 			{
 				if (COM->isOpen()) return true;
@@ -963,7 +963,7 @@ bool CHokuyoURG::ensureStreamIsOpen()
 		if (!m_ip_dir.empty())
 		{
 			// Try to open the serial port:
-			CClientTCPSocket* theCOM = new CClientTCPSocket();
+			auto* theCOM = new CClientTCPSocket();
 
 			MRPT_LOG_INFO_STREAM(
 				__CURRENT_FUNCTION_NAME__ << " Connecting to " << m_ip_dir
@@ -988,7 +988,7 @@ bool CHokuyoURG::ensureStreamIsOpen()
 		else
 		{
 			// Try to open the serial port:
-			CSerialPort* theCOM = new CSerialPort(m_com_port, true);
+			auto* theCOM = new CSerialPort(m_com_port, true);
 
 			if (!theCOM->isOpen())
 			{
@@ -1029,7 +1029,7 @@ void CHokuyoURG::purgeBuffers()
 
 	if (m_ip_dir.empty())
 	{
-		CSerialPort* COM = dynamic_cast<CSerialPort*>(m_stream);
+		auto* COM = dynamic_cast<CSerialPort*>(m_stream);
 		if (COM != nullptr)
 		{
 			COM->purgeBuffers();
@@ -1037,7 +1037,7 @@ void CHokuyoURG::purgeBuffers()
 	}
 	else  // Socket connection
 	{
-		CClientTCPSocket* COM = dynamic_cast<CClientTCPSocket*>(m_stream);
+		auto* COM = dynamic_cast<CClientTCPSocket*>(m_stream);
 
 		size_t to_read = COM->getReadPendingBytes();
 

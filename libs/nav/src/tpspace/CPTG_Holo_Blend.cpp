@@ -422,7 +422,7 @@ mrpt::kinematics::CVehicleVelCmd::Ptr CPTG_Holo_Blend::directionToMotionCommand(
 {
 	const double dir_local = CParameterizedTrajectoryGenerator::index2alpha(k);
 
-	mrpt::kinematics::CVehicleVelCmd_Holo* cmd =
+	auto* cmd =
 		new mrpt::kinematics::CVehicleVelCmd_Holo();
 	cmd->vel = internal_get_v(dir_local);
 	cmd->dir_local = dir_local;

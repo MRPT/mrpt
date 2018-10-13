@@ -160,7 +160,7 @@ char myIsTextWideChar(
 	// it's a char* buffer.
 	if ((((unsigned long)b) % sizeof(wchar_t)) != 0) return FALSE;
 #endif
-	const wchar_t* s = (const wchar_t*)b;
+	const auto* s = (const wchar_t*)b;
 
 	// buffer too small:
 	if (len < (int)sizeof(wchar_t)) return FALSE;
@@ -2302,7 +2302,7 @@ XMLNode XMLNode::parseFile(XMLCSTR filename, XMLCSTR tag, XMLResults* pResults)
 		return emptyXMLNode;
 	}
 	fseek(f, 0, SEEK_SET);
-	unsigned char* buf = (unsigned char*)malloc(l + 4);
+	auto* buf = (unsigned char*)malloc(l + 4);
 	int really_read = (int)fread(buf, 1, l, f);  // JLBC
 	if (really_read != l) buf[0] = '\0';
 	fclose(f);
@@ -3547,7 +3547,7 @@ XMLNode::XMLCharEncoding XMLNode::guessCharEncoding(
 	if (l < 25) return (XMLCharEncoding)0;
 	if (guessWideCharChars && (myIsTextWideChar(buf, l)))
 		return (XMLCharEncoding)0;
-	unsigned char* b = (unsigned char*)buf;
+	auto* b = (unsigned char*)buf;
 	if ((b[0] == 0xef) && (b[1] == 0xbb) && (b[2] == 0xbf))
 		return char_encoding_UTF8;
 

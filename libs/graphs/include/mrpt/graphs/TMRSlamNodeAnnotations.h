@@ -36,7 +36,7 @@ struct TMRSlamNodeAnnotations : public TNodeAnnotations
 
 	TNodeAnnotations* getCopyOfAnnots() const
 	{
-		self_t* annots = new self_t(*this);
+		auto* annots = new self_t(*this);
 		return annots;
 	}
 	bool setAnnots(const parent_t& other)
@@ -44,7 +44,7 @@ struct TMRSlamNodeAnnotations : public TNodeAnnotations
 		parent_t::setAnnots(other);
 
 		bool res;
-		const self_t* mr_slam_annots = dynamic_cast<const self_t*>(&other);
+		const auto* mr_slam_annots = dynamic_cast<const self_t*>(&other);
 		if (mr_slam_annots)
 		{
 			this->agent_ID_str = mr_slam_annots->agent_ID_str;
@@ -61,7 +61,7 @@ struct TMRSlamNodeAnnotations : public TNodeAnnotations
 
 	bool operator==(const TNodeAnnotations& other) const override
 	{
-		const TMRSlamNodeAnnotations* mr_slam_annots =
+		const auto* mr_slam_annots =
 			dynamic_cast<const TMRSlamNodeAnnotations*>(&other);
 
 		bool res = false;

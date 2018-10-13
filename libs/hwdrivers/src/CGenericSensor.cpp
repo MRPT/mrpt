@@ -98,7 +98,7 @@ void CGenericSensor::getObservations(TListObservations& lstObjects)
 CGenericSensor* CGenericSensor::createSensor(const std::string& className)
 {
 	registered_sensor_classes_t& regs = get_registered_sensor_classes();
-	const registered_sensor_classes_t::iterator it = regs.find(className);
+	const auto it = regs.find(className);
 	return it == regs.end() ? nullptr : it->second->ptrCreateObject();
 }
 

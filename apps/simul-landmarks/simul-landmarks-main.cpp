@@ -424,7 +424,7 @@ int main(int argc, char** argv)
 			scene->insert(mrpt::opengl::stock_objects::CornerXYZ());
 
 			// Insert all landmarks:
-			for (CLandmarksMap::TCustomSequenceLandmarks::const_iterator it =
+			for (auto it =
 					 landmarkMap.landmarks.begin();
 				 it != landmarkMap.landmarks.end(); ++it)
 			{
