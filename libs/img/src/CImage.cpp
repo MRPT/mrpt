@@ -86,7 +86,7 @@ static int32_t pixelDepth2CvDepth(PixelDepth d)
 	return -1;
 }
 
-static PixelDepth cvDepth2PixelDepth(int32_t d)
+static PixelDepth cvDepth2PixelDepth(int64_t d)
 {
 	switch (d)
 	{
