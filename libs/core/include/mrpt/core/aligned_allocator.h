@@ -22,7 +22,7 @@
 #endif
 
 // Fix a MSVC binary-breaking compatibility in MSVC 2017 15.8:
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && !defined(_ENABLE_EXTENDED_ALIGNED_STORAGE)
 #define _ENABLE_EXTENDED_ALIGNED_STORAGE
 #endif
 
