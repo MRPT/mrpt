@@ -671,7 +671,7 @@ XsensResultValue Cmt3::getEMtsData(void* buffer, const CmtDeviceId deviceId)
 	if (bid == CMT_BID_BROADCAST)
 	{
 		memset(buffer, 0, m_config.m_numberOfDevices * CMT_EMTS_SIZE);
-		uint8_t* buf = (uint8_t*)buffer;
+		auto* buf = (uint8_t*)buffer;
 		// loop over devices and request emts data for all of them
 		for (uint32_t dev = 0; dev < m_config.m_numberOfDevices; ++dev)
 			if (getEMtsData(
@@ -2110,9 +2110,8 @@ XsensResultValue Cmt3::setDeviceMode2(
 		else
 			snd.setBusId(bid);
 
-		if (force ||
-			m_config.m_deviceInfo[bid - 1].m_outputMode !=
-				(uint16_t)mode.m_outputMode)
+		if (force || m_config.m_deviceInfo[bid - 1].m_outputMode !=
+						 (uint16_t)mode.m_outputMode)
 		{
 			CMT3LOG(
 				"L3: setDeviceMode setting MT %08x output mode to %04X\n",
@@ -2131,7 +2130,7 @@ XsensResultValue Cmt3::setDeviceMode2(
 				(uint16_t)mode.m_outputMode;  // update device info
 		}
 
-		uint32_t settings = (uint32_t)mode.m_outputSettings;
+		auto settings = (uint32_t)mode.m_outputSettings;
 		if (xm) settings &= ~(uint32_t)CMT_OUTPUTSETTINGS_TIMESTAMP_MASK;
 
 		if (force ||
@@ -2994,7 +2993,7 @@ XsensResultValue Cmt3::setScenario(
 	CMT3LOG("L3: setScenario %u %08x\n", (uint32_t)scenarioType, deviceId);
 	CMT3EXITLOG;
 
-	uint16_t scenario = (uint16_t)scenarioType;
+	auto scenario = (uint16_t)scenarioType;
 	DO_DATA_SET(CMT_MID_SETSCENARIO, CMT_LEN_SETSCENARIO, Short, scenario);
 	return m_lastResult = XRV_OK;
 }
@@ -3122,4 +3121,4 @@ XsensResultValue Cmt3::storeXkfState(const CmtDeviceId deviceId)
 	return m_lastResult = XRV_OK;
 }
 
-}  // end of xsens namespace
+}  // namespace xsens

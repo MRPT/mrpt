@@ -31,7 +31,6 @@ CWindowObserver::CWindowObserver()
 	m_key_codes_to_pressed["Alt+Enter"] = false;
 	m_key_codes_to_pressed["Ctrl+c"] = false;
 	m_key_codes_to_pressed["mouse_clicked"] = false;
-
 }
 
 void CWindowObserver::returnEventsStruct(
@@ -43,7 +42,7 @@ void CWindowObserver::returnEventsStruct(
 	// reset the code flags
 	if (reset_keypresses)
 	{
-		for (auto & map_it : m_key_codes_to_pressed)
+		for (auto& map_it : m_key_codes_to_pressed)
 		{
 			map_it.second = false;
 		}
@@ -63,14 +62,14 @@ void CWindowObserver::OnEvent(const mrpt::system::mrptEvent& e)
 {
 	if (e.isOfType<mrpt::system::mrptEventOnDestroy>())
 	{
-		const mrpt::system::mrptEventOnDestroy& ev =
+		const auto& ev =
 			static_cast<const mrpt::system::mrptEventOnDestroy&>(e);
 		MRPT_UNUSED_PARAM(ev);
 		std::cout << "Event received: mrptEventOnDestroy" << std::endl;
 	}
 	else if (e.isOfType<mrpt::gui::mrptEventWindowResize>())
 	{
-		const mrpt::gui::mrptEventWindowResize& ev =
+		const auto& ev =
 			static_cast<const mrpt::gui::mrptEventWindowResize&>(e);
 		std::cout << "Resize event received from: " << ev.source_object
 				  << ", new size: " << ev.new_width << " x " << ev.new_height
@@ -78,8 +77,7 @@ void CWindowObserver::OnEvent(const mrpt::system::mrptEvent& e)
 	}
 	else if (e.isOfType<mrpt::gui::mrptEventWindowChar>())
 	{
-		const mrpt::gui::mrptEventWindowChar& ev =
-			static_cast<const mrpt::gui::mrptEventWindowChar&>(e);
+		const auto& ev = static_cast<const mrpt::gui::mrptEventWindowChar&>(e);
 		std::cout << "Char event received from: " << ev.source_object
 				  << ". Char code: " << ev.char_code
 				  << " modif: " << ev.key_modifiers << std::endl;
@@ -127,15 +125,14 @@ void CWindowObserver::OnEvent(const mrpt::system::mrptEvent& e)
 	}  // end of e.isOftype<mrptEventWindowChar>
 	else if (e.isOfType<mrpt::gui::mrptEventWindowClosed>())
 	{
-		const mrpt::gui::mrptEventWindowClosed& ev =
+		const auto& ev =
 			static_cast<const mrpt::gui::mrptEventWindowClosed&>(e);
 		std::cout << "Window closed event received from: " << ev.source_object
 				  << "\n";
 	}
 	else if (e.isOfType<mrpt::gui::mrptEventMouseDown>())
 	{
-		const mrpt::gui::mrptEventMouseDown& ev =
-			static_cast<const mrpt::gui::mrptEventMouseDown&>(e);
+		const auto& ev = static_cast<const mrpt::gui::mrptEventMouseDown&>(e);
 		m_key_codes_to_pressed["mouse_clicked"] = true;
 
 		std::cout << "Mouse down event received from: " << ev.source_object
@@ -144,10 +141,10 @@ void CWindowObserver::OnEvent(const mrpt::system::mrptEvent& e)
 	else if (e.isOfType<mrpt::opengl::mrptEventGLPostRender>())
 	{
 		/*
-			* An event sent by an mrpt::opengl::COpenGLViewport AFTER calling
+		 * An event sent by an mrpt::opengl::COpenGLViewport AFTER calling
 		 * the
-			* SCENE OPENGL DRAWING PRIMITIVES and before doing a glSwapBuffers.
-			*/
+		 * SCENE OPENGL DRAWING PRIMITIVES and before doing a glSwapBuffers.
+		 */
 
 		// std::cout << "mrpt::opengl::mrpptEventGLPostRender received." <<
 		// std::endl;
@@ -157,7 +154,7 @@ void CWindowObserver::OnEvent(const mrpt::system::mrptEvent& e)
 			0.25f, 0.09f,  // width, height (in screen "ratios")
 			"Press 'h' for help",
 			0.02f  // text size
-			);
+		);
 
 		// Also showing help?
 		if (m_showing_help || m_hiding_help)
@@ -185,7 +182,7 @@ void CWindowObserver::OnEvent(const mrpt::system::mrptEvent& e)
 				6.0f,  // border width
 				"serif",  // text font
 				mrpt::opengl::NICE  // text style
-				);
+			);
 
 			if (hide_tim > TRANSP_ANIMATION_TIME_SEC && m_hiding_help)
 			{

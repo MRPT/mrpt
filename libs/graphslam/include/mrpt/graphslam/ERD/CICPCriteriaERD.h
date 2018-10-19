@@ -111,7 +111,7 @@ class CICPCriteriaERD
 	// Public methods
 	//////////////////////////////////////////////////////////////
 	CICPCriteriaERD();
-	~CICPCriteriaERD() override =default;
+	~CICPCriteriaERD() override = default;
 
 	bool updateState(
 		mrpt::obs::CActionCollection::Ptr action,
@@ -120,7 +120,8 @@ class CICPCriteriaERD
 
 	void notifyOfWindowEvents(
 		const std::map<std::string, bool>& events_occurred) override;
-	void getEdgesStats(std::map<std::string, int>* edge_types_to_num) const override;
+	void getEdgesStats(
+		std::map<std::string, int>* edge_types_to_num) const override;
 
 	void initializeVisuals() override;
 	void updateVisuals() override;
@@ -208,7 +209,5 @@ class CICPCriteriaERD
 	// visualization reasons
 	mrpt::obs::CObservation2DRangeScan::Ptr m_fake_laser_scan2D;
 };
-}
+}  // namespace mrpt::graphslam::deciders
 #include "CICPCriteriaERD_impl.h"
-
-

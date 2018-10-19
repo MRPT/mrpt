@@ -46,7 +46,7 @@ using namespace std;
 //   and exploit multicore CPUs.
 struct TThreadParam
 {
-	TThreadParam()  = default;
+	TThreadParam() = default;
 	volatile bool quit{false};
 	volatile int pushed_key{0};
 	volatile double tilt_ang_deg{0};
@@ -320,11 +320,12 @@ void Test_Kinect()
 			{
 				win3D.get3DSceneAndLock();
 				win3D.addTextMessage(
-					10, 60, format(
-								"Acc: x=%.02f y=%.02f z=%.02f",
-								last_obs_imu->rawMeasurements[IMU_X_ACC],
-								last_obs_imu->rawMeasurements[IMU_Y_ACC],
-								last_obs_imu->rawMeasurements[IMU_Z_ACC]),
+					10, 60,
+					format(
+						"Acc: x=%.02f y=%.02f z=%.02f",
+						last_obs_imu->rawMeasurements[IMU_X_ACC],
+						last_obs_imu->rawMeasurements[IMU_Y_ACC],
+						last_obs_imu->rawMeasurements[IMU_Z_ACC]),
 					TColorf(0, 0, 1), "mono", 10, mrpt::opengl::FILL, 102);
 				win3D.unlockAccess3DScene();
 				do_refresh = true;
@@ -377,9 +378,8 @@ void Test_Kinect()
 		win3D.get3DSceneAndLock();
 		win3D.addTextMessage(
 			10, 10,
-			format(
-				"'o'/'i'-zoom out/in, 'w'-tilt up,'s'-tilt down, mouse: "
-				"orbit 3D,'c':Switch RGB/IR,'9':Save image,ESC: quit"),
+			format("'o'/'i'-zoom out/in, 'w'-tilt up,'s'-tilt down, mouse: "
+				   "orbit 3D,'c':Switch RGB/IR,'9':Save image,ESC: quit"),
 			TColorf(0, 0, 1), "mono", 10, mrpt::opengl::FILL, 110);
 		win3D.addTextMessage(
 			10, 35, format("Tilt angle: %.01f deg", thrPar.tilt_ang_deg),

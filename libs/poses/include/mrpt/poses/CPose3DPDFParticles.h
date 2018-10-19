@@ -39,8 +39,8 @@ class CPose3DPDFParticles
 
    public:
 	/** Constructor
-	  * \param M The number of m_particles.
-	  */
+	 * \param M The number of m_particles.
+	 */
 	CPose3DPDFParticles(size_t M = 1);
 
 	/** Copy operator, translating if necesary (for example, between m_particles
@@ -49,10 +49,10 @@ class CPose3DPDFParticles
 
 	/** Reset the PDF to a single point: All m_particles will be set exactly to
 	 * the supplied pose.
-	  * \param location The location to set all the m_particles.
-	  * \param particlesCount If this is set to 0 the number of m_particles
+	 * \param location The location to set all the m_particles.
+	 * \param particlesCount If this is set to 0 the number of m_particles
 	 * remains unchanged.
-	  *  \sa resetUniform, resetUniformFreeSpace */
+	 *  \sa resetUniform, resetUniformFreeSpace */
 	void resetDeterministic(
 		const mrpt::math::TPose3D& location, size_t particlesCount = 0);
 
@@ -76,7 +76,7 @@ class CPose3DPDFParticles
 	size_t size() const { return m_particles.size(); }
 	/** this = p (+) this. This can be used to convert a PDF from local
 	 * coordinates to global, providing the point (newReferenceBase) from which
-	  *   "to project" the current pdf. Result PDF substituted the currently
+	 *   "to project" the current pdf. Result PDF substituted the currently
 	 * stored one in the object. */
 	void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
 	/** Draws a single sample from the distribution (WARNING: weights are
@@ -100,6 +100,4 @@ class CPose3DPDFParticles
 	void bayesianFusion(const CPose3DPDF& p1, const CPose3DPDF& p2) override;
 
 };  // End of class def.
-}
-
-
+}  // namespace mrpt::poses

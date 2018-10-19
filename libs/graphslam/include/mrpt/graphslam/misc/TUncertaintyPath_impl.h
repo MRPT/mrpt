@@ -273,9 +273,8 @@ bool TUncertaintyPath<GRAPH_T>::hasLowerUncertaintyThan(
 	ASSERTDEBMSG_(
 		(curr_pose_pdf.isInfType() && other.curr_pose_pdf.isInfType()) ||
 			(!curr_pose_pdf.isInfType() && !other.curr_pose_pdf.isInfType()),
-		mrpt::format(
-			"Constraints of given paths don't have the same "
-			"representation of uncertainty"));
+		mrpt::format("Constraints of given paths don't have the same "
+					 "representation of uncertainty"));
 
 	// If we are talking about information form matrices, the *higher* the
 	// determinant the more confident we are.
@@ -292,7 +291,4 @@ bool TUncertaintyPath<GRAPH_T>::hasLowerUncertaintyThan(
 
 	return has_lower;
 }
-}  // end of namespaces
-
-
-
+}  // namespace mrpt::graphslam

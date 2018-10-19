@@ -4,4 +4,3 @@ namespace mrpt::utils
 {
 using CLoadableOptions = mrpt::config::CLoadableOptions;
 }
-

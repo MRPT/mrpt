@@ -255,6 +255,6 @@ class IntList : public List<uint32_t>
 	int32_t writeToString(char* buffer) const;
 	int32_t writeToStringHex(char* buffer) const;
 };
-}  // end of xsens namespace
+}  // namespace xsens
 
 #endif  // _XSENS_LIST_H_2006_06_08

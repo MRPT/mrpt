@@ -213,7 +213,7 @@ template <class GRAPH_T = typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 						   CRangeScanEdgeRegistrationDecider<GRAPH_T>
 {
-public:
+   public:
 	/**\brief Edge Registration Decider */
 	using parent_t = CRangeScanEdgeRegistrationDecider<GRAPH_T>;
 
@@ -244,10 +244,12 @@ public:
 		mrpt::obs::CSensoryFrame::Ptr observations,
 		mrpt::obs::CObservation::Ptr observation) override;
 
-	void setWindowManagerPtr(mrpt::graphslam::CWindowManager* win_manager) override;
+	void setWindowManagerPtr(
+		mrpt::graphslam::CWindowManager* win_manager) override;
 	void notifyOfWindowEvents(
 		const std::map<std::string, bool>& events_occurred) override;
-	void getEdgesStats(std::map<std::string, int>* edge_types_to_num) const override;
+	void getEdgesStats(
+		std::map<std::string, int>* edge_types_to_num) const override;
 
 	void initializeVisuals() override;
 	void updateVisuals() override;
@@ -289,9 +291,12 @@ public:
 		void getAsString(std::string* str) const
 		{
 			str->clear();
-			*str += mrpt::format("from_params: %s", from_params.getAsString().c_str());
-			*str += mrpt::format("to_params: %s", to_params.getAsString().c_str());
-			*str += mrpt::format("init_estim: %s\n", init_estim.asString().c_str());
+			*str += mrpt::format(
+				"from_params: %s", from_params.getAsString().c_str());
+			*str +=
+				mrpt::format("to_params: %s", to_params.getAsString().c_str());
+			*str +=
+				mrpt::format("init_estim: %s\n", init_estim.asString().c_str());
 		}
 		std::string getAsString() const
 		{
@@ -418,7 +423,8 @@ public:
 		int prev_nodes_for_ICP;
 
 		/** see Constructor for initialization */
-		const mrpt::img::TColor laser_scans_color = mrpt::img::TColor(0, 20, 255);
+		const mrpt::img::TColor laser_scans_color =
+			mrpt::img::TColor(0, 20, 255);
 		bool visualize_laser_scans;
 		// keystroke to be used by the user to toggle the LaserScans from
 		// the CDisplayWindow
@@ -432,7 +438,8 @@ public:
 		 * no scan-matching is not used.
 		 */
 		bool use_scan_matching;
-		bool has_read_config = false;;
+		bool has_read_config = false;
+		;
 		/**\brief Keep track of the mahalanobis distance between the initial
 		 * pose
 		 * difference and the suggested new edge for the pairs of checked
@@ -642,7 +649,8 @@ public:
 	 * \param[in] throw_exc If true and hypothesis is not found, <b>throw a
 	 * HypothesisNotFoundException</b>
 	 *
-	 * \return Pointer to the found hypothesis if that is found, otherwise nullptr.
+	 * \return Pointer to the found hypothesis if that is found, otherwise
+	 * nullptr.
 	 *
 	 */
 	static hypot_t* findHypotByEnds(
@@ -654,8 +662,8 @@ public:
 	 * \note If multiple paths between the same start and end node exist,
 	 * only the first one is returned.
 	 *
-	 * \return nullptr if a path with the given source and destination NodeIDs is
-	 * not found, otherwise a pointer to the matching TUncertaintyPath.
+	 * \return nullptr if a path with the given source and destination NodeIDs
+	 * is not found, otherwise a pointer to the matching TUncertaintyPath.
 	 *
 	 * \exception std::runtime_error if path was not found and throw_exc is set
 	 * to true
@@ -696,7 +704,8 @@ public:
 	 */
 	virtual bool getICPEdge(
 		const mrpt::graphs::TNodeID& from, const mrpt::graphs::TNodeID& to,
-		constraint_t* rel_edge, mrpt::slam::CICP::TReturnInfo* icp_info = nullptr,
+		constraint_t* rel_edge,
+		mrpt::slam::CICP::TReturnInfo* icp_info = nullptr,
 		const TGetICPEdgeAdParams* ad_params = nullptr);
 	/**\brief compute the minimum uncertainty of each node position with
 	 * regards to the graph root.
@@ -785,7 +794,8 @@ public:
 	mrpt::slam::CIncrementalMapPartitioner m_partitioner;
 
 	bool m_visualize_curr_node_covariance = false;
-	const mrpt::img::TColor m_curr_node_covariance_color = mrpt::img::TColor(160, 160, 160,  255);
+	const mrpt::img::TColor m_curr_node_covariance_color =
+		mrpt::img::TColor(160, 160, 160, 255);
 	double m_offset_y_curr_node_covariance;
 	int m_text_index_curr_node_covariance;
 
@@ -835,7 +845,5 @@ public:
 	 */
 	double m_lc_icp_constraint_factor;
 };
-}
+}  // namespace mrpt::graphslam::deciders
 #include "CLoopCloserERD_impl.h"
-
-

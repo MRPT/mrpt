@@ -78,8 +78,8 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 	 * CParameterizedTrajectoryGenerator::directionToMotionCommand() */
 	mrpt::kinematics::CVehicleVelCmd::Ptr directionToMotionCommand(
 		uint16_t k) const override;
-	mrpt::kinematics::CVehicleVelCmd::Ptr
-		getSupportedKinematicVelocityCommand() const override;
+	mrpt::kinematics::CVehicleVelCmd::Ptr getSupportedKinematicVelocityCommand()
+		const override;
 
 	/** Launches an exception in this class: it is not allowed in numerical
 	 * integration-based PTGs to change the reference distance
@@ -111,6 +111,7 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 
 	double getMax_V() const { return V_MAX; }
 	double getMax_W() const { return W_MAX; }
+
    protected:
 	CPTG_DiffDrive_CollisionGridBased();
 

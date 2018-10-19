@@ -39,9 +39,8 @@ MAP_DEFINITION_REGISTER(
 	mrpt::maps::CGasConcentrationGridMap2D)
 
 CGasConcentrationGridMap2D::TMapDefinition::TMapDefinition()
-	
-	  
-= default;
+
+	= default;
 
 void CGasConcentrationGridMap2D::TMapDefinition::
 	loadFromConfigFile_map_specific(
@@ -86,7 +85,7 @@ mrpt::maps::CMetricMap*
 {
 	const CGasConcentrationGridMap2D::TMapDefinition& def =
 		*dynamic_cast<const CGasConcentrationGridMap2D::TMapDefinition*>(&_def);
-	CGasConcentrationGridMap2D* obj = new CGasConcentrationGridMap2D(
+	auto* obj = new CGasConcentrationGridMap2D(
 		def.mapType, def.min_x, def.max_x, def.min_y, def.max_y,
 		def.resolution);
 	obj->insertionOptions = def.insertionOpts;
@@ -192,8 +191,7 @@ bool CGasConcentrationGridMap2D::internal_insertObservation(
 		/********************************************************************
 					OBSERVATION TYPE: CObservationGasSensors
 		********************************************************************/
-		const CObservationGasSensors* o =
-			static_cast<const CObservationGasSensors*>(obs);
+		const auto* o = static_cast<const CObservationGasSensors*>(obs);
 
 		if (o->sensorLabel.compare(insertionOptions.gasSensorLabel) == 0)
 		{
@@ -297,7 +295,7 @@ void CGasConcentrationGridMap2D::serializeTo(
 	dyngridcommon_writeToStream(out);
 
 	// To assure compatibility: The size of each cell:
-	uint32_t n = static_cast<uint32_t>(sizeof(TRandomFieldCell));
+	auto n = static_cast<uint32_t>(sizeof(TRandomFieldCell));
 	out << n;
 
 	// Save the map contents:
@@ -440,9 +438,9 @@ CGasConcentrationGridMap2D::TInsertionOptions::TInsertionOptions()
 	:
 
 	  gasSensorLabel("MCEnose"),
-	    // By default use the mean between all e-nose sensors
+	  // By default use the mean between all e-nose sensors
 	  windSensorLabel("windSensor")
-	  
+
 {
 }
 
@@ -697,7 +695,7 @@ bool CGasConcentrationGridMap2D::simulateAdvection(
 	mrpt::math::CMatrix A(N, N);
 	A.fill(0.0);
 	// std::vector<double> row_sum(N,0.0);
-	double* row_sum = (double*)calloc(N, sizeof(double));
+	auto* row_sum = (double*)calloc(N, sizeof(double));
 
 	try
 	{
@@ -743,7 +741,7 @@ bool CGasConcentrationGridMap2D::simulateAdvection(
 				LUT_TABLE[phi_indx][r_indx];
 
 			// Generate Sparse Matrix with the wind weights "SA"
-			for (auto & ci : cells_to_update)
+			for (auto& ci : cells_to_update)
 			{
 				int final_cx = cell_i_cx + ci.cx;
 				int final_cy = cell_i_cy + ci.cy;
@@ -781,9 +779,9 @@ bool CGasConcentrationGridMap2D::simulateAdvection(
 	{
 		tictac.Tic();
 		// std::vector<double> new_means(N,0.0);
-		double* new_means = (double*)calloc(N, sizeof(double));
+		auto* new_means = (double*)calloc(N, sizeof(double));
 		// std::vector<double> new_variances(N,0.0);
-		double* new_variances = (double*)calloc(N, sizeof(double));
+		auto* new_variances = (double*)calloc(N, sizeof(double));
 
 		for (size_t it_i = 0; it_i < N; it_i++)
 		{
@@ -1321,10 +1319,9 @@ bool CGasConcentrationGridMap2D::save_Gaussian_Wind_Grid_To_File()
 	// Save LUT to file
 	cout << "Saving to File ....";
 
-	CFileGZOutputStream fo(
-		format(
-			"Gaussian_Wind_Weights_res(%f)_stdPhi(%f)_stdR(%f).gz",
-			LUT.resolution, LUT.std_phi, LUT.std_r));
+	CFileGZOutputStream fo(format(
+		"Gaussian_Wind_Weights_res(%f)_stdPhi(%f)_stdR(%f).gz", LUT.resolution,
+		LUT.std_phi, LUT.std_r));
 	if (!fo.fileOpenCorrectly())
 	{
 		return false;
@@ -1385,10 +1382,9 @@ bool CGasConcentrationGridMap2D::load_Gaussian_Wind_Grid_From_File()
 
 	try
 	{
-		CFileGZInputStream fi(
-			format(
-				"Gaussian_Wind_Weights_res(%f)_stdPhi(%f)_stdR(%f).gz",
-				LUT.resolution, LUT.std_phi, LUT.std_r));
+		CFileGZInputStream fi(format(
+			"Gaussian_Wind_Weights_res(%f)_stdPhi(%f)_stdR(%f).gz",
+			LUT.resolution, LUT.std_phi, LUT.std_r));
 		if (!fi.fileOpenCorrectly())
 		{
 			cout << "WARNING WHILE READING FROM: Gaussian_Wind_Weights" << endl;

@@ -161,7 +161,7 @@ void CPose3DQuatPDFGaussianInf::changeCoordinatesReference(
 		this->mean,  // u
 		df_dx, df_du,
 		&this->mean  // Output:  newReferenceBaseQuat + this->mean;
-		);
+	);
 
 	// this->cov = H1*this->cov*~H1 + H2*Ap.cov*~H2;
 	// df_dx: not used, since its COV are all zeros... // df_dx.multiply_HCHt(
@@ -198,7 +198,7 @@ void CPose3DQuatPDFGaussianInf::drawManySamples(
 
 	getRandomGenerator().drawGaussianMultivariateMany(outSamples, N, COV);
 
-	for (auto & outSample : outSamples)
+	for (auto& outSample : outSamples)
 		for (unsigned int k = 0; k < 7; k++) outSample[k] += mean[k];
 
 	MRPT_END
@@ -210,7 +210,7 @@ void CPose3DQuatPDFGaussianInf::drawManySamples(
 void CPose3DQuatPDFGaussianInf::inverse(CPose3DQuatPDF& o) const
 {
 	ASSERT_(o.GetRuntimeClass() == CLASS_ID(CPose3DQuatPDFGaussianInf));
-	CPose3DQuatPDFGaussianInf& out = static_cast<CPose3DQuatPDFGaussianInf&>(o);
+	auto& out = static_cast<CPose3DQuatPDFGaussianInf&>(o);
 
 	// COV:
 	CMatrixFixedNumeric<double, 3, 7> df_dpose(UNINITIALIZED_MATRIX);
@@ -254,7 +254,7 @@ void CPose3DQuatPDFGaussianInf::operator+=(const CPose3DQuat& Ap)
 		Ap,  // u
 		df_dx, df_du,
 		&this->mean  // Output: this->mean + Ap;
-		);
+	);
 
 	// this->cov = H1*this->cov*~H1 + H2*Ap.cov*~H2;
 	CMatrixDouble77 NEW_COV(UNINITIALIZED_MATRIX);
@@ -279,7 +279,7 @@ void CPose3DQuatPDFGaussianInf::operator+=(const CPose3DQuatPDFGaussianInf& Ap)
 		Ap.mean,  // u
 		df_dx, df_du,
 		&this->mean  // Output:  this->mean + Ap.mean;
-		);
+	);
 
 	// this->cov = H1*this->cov*~H1 + H2*Ap.cov*~H2;
 	CMatrixDouble77 NEW_COV(UNINITIALIZED_MATRIX);

@@ -106,7 +106,7 @@ void CSensoryFrame::operator+=(const CSensoryFrame& sf)
 {
 	MRPT_UNUSED_PARAM(sf);
 	m_cachedMap.reset();
-	for (const_iterator it = begin(); it != end(); ++it)
+	for (auto it = begin(); it != end(); ++it)
 	{
 		CObservation::Ptr newObs = *it;
 		newObs.reset(dynamic_cast<CObservation*>(newObs->clone()));
@@ -153,7 +153,7 @@ void CSensoryFrame::eraseByIndex(const size_t& idx)
 			"Index %u out of range.", static_cast<unsigned>(idx));
 
 	m_cachedMap.reset();
-	iterator it = begin() + idx;
+	auto it = begin() + idx;
 	ASSERT_(!*it);
 	// delete (*it);
 	m_observations.erase(it);
@@ -170,7 +170,7 @@ CObservation::Ptr CSensoryFrame::getObservationByIndex(const size_t& idx) const
 		THROW_EXCEPTION_FMT(
 			"Index %u out of range.", static_cast<unsigned>(idx));
 
-	const_iterator it = begin() + idx;
+	auto it = begin() + idx;
 	return *it;
 
 	MRPT_END
@@ -198,7 +198,7 @@ CObservation::Ptr CSensoryFrame::getObservationBySensorLabel(
 	MRPT_START
 
 	size_t foundCount = 0;
-	for (const auto & it : *this)
+	for (const auto& it : *this)
 		if (!os::_strcmpi(it->sensorLabel.c_str(), label.c_str()))
 			if (foundCount++ == idx) return it;
 
@@ -233,7 +233,7 @@ void CSensoryFrame::swap(CSensoryFrame& sf)
   ---------------------------------------------------------------*/
 void CSensoryFrame::eraseByLabel(const std::string& label)
 {
-	for (iterator it = begin(); it != end();)
+	for (auto it = begin(); it != end();)
 	{
 		if (!os::_strcmpi((*it)->sensorLabel.c_str(), label.c_str()))
 		{
@@ -255,7 +255,7 @@ using scan2pts_functor = void (*)(
 	mrpt::maps::CMetricMap::Ptr& out_map, const void* insertOps);
 extern scan2pts_functor ptr_internal_build_points_map_from_scan2D;  // impl in
 // CObservation2DRangeScan.cpp
-}
+}  // namespace mrpt::obs
 /*---------------------------------------------------------------
 						internal_buildAuxPointsMap
   ---------------------------------------------------------------*/
@@ -266,7 +266,7 @@ void CSensoryFrame::internal_buildAuxPointsMap(const void* options) const
 			"[CSensoryFrame::buildAuxPointsMap] ERROR: This function needs "
 			"linking against mrpt-maps.\n");
 
-	for (const auto & it : *this)
+	for (const auto& it : *this)
 		if (IS_CLASS(it, CObservation2DRangeScan))
 			(*ptr_internal_build_points_map_from_scan2D)(
 				dynamic_cast<CObservation2DRangeScan&>(*it.get()), m_cachedMap,
@@ -277,9 +277,7 @@ bool CSensoryFrame::insertObservationsInto(
 	mrpt::maps::CMetricMap* theMap, const CPose3D* robotPose) const
 {
 	bool anyone = false;
-	for (const auto & it : *this)
+	for (const auto& it : *this)
 		anyone |= it->insertObservationInto(theMap, robotPose);
 	return anyone;
 }
-
-

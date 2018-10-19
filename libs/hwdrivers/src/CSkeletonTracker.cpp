@@ -53,11 +53,8 @@ string jointNames[] = {
 /*-------------------------------------------------------------
 					CSkeletonTracker
 -------------------------------------------------------------*/
-CSkeletonTracker::CSkeletonTracker()
-	: 
-	  m_timeStartTT(),
-	  m_sensorPose()
-	  
+CSkeletonTracker::CSkeletonTracker() : m_timeStartTT(), m_sensorPose()
+
 {
 	m_sensorLabel = "skeletonTracker";
 
@@ -122,7 +119,7 @@ void CSkeletonTracker::processPreviewNone()
 			CSetOfObjects::Ptr body =
 				mrpt::make_aligned_shared<CSetOfObjects>();
 			body->setName("body");
-			for (const auto & jointName : jointNames)
+			for (const auto& jointName : jointNames)
 			{
 				CSphere::Ptr sph = mrpt::make_aligned_shared<CSphere>(0.03f);
 				sph->setColor(0, 1, 0);
@@ -323,7 +320,7 @@ void CSkeletonTracker::processPreview(
 			CSetOfObjects::Ptr body =
 				mrpt::make_aligned_shared<CSetOfObjects>();
 			body->setName("body");
-			for (const auto & jointName : jointNames)
+			for (const auto& jointName : jointNames)
 			{
 				CSphere::Ptr sph = mrpt::make_aligned_shared<CSphere>(0.03f);
 				sph->setColor(0, 1, 0);

@@ -13,12 +13,13 @@ struct XsDataPacket;
 struct LegacyDataPacket;
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-void XsDataPacket_assignFromXsLegacyDataPacket(
-	struct XsDataPacket* thisPtr, struct LegacyDataPacket const* pack,
-	int index);
+	void XsDataPacket_assignFromXsLegacyDataPacket(
+		struct XsDataPacket* thisPtr, struct LegacyDataPacket const* pack,
+		int index);
 
 #ifdef __cplusplus
 }  // extern "C"

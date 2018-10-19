@@ -69,7 +69,5 @@ class CQtGlCanvasBase : public QOpenGLWidget, public mrpt::gui::CGlCanvasBase
 
 };  // end of class
 
-}
+}  // namespace mrpt::gui
 #endif  // MRPT_HAS_Qt5
-
-

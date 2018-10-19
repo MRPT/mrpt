@@ -25,7 +25,7 @@ CReactiveNavigationSystem3D::TPTGmultilevel::TPTGmultilevel() = default;
 // Dtor: free PTG memory
 CReactiveNavigationSystem3D::TPTGmultilevel::~TPTGmultilevel()
 {
-	for (auto & PTG : PTGs) delete PTG;
+	for (auto& PTG : PTGs) delete PTG;
 	PTGs.clear();
 }
 
@@ -166,14 +166,14 @@ void CReactiveNavigationSystem3D::STEP1_InitPTGs()
 
 				// Polygonal robot shape?
 				{
-					mrpt::nav::CPTG_RobotShape_Polygonal* ptg =
+					auto* ptg =
 						dynamic_cast<mrpt::nav::CPTG_RobotShape_Polygonal*>(
 							m_ptgmultilevel[j].PTGs[i]);
 					if (ptg) ptg->setRobotShape(m_robotShape.polygon(i));
 				}
 				// Circular robot shape?
 				{
-					mrpt::nav::CPTG_RobotShape_Circular* ptg =
+					auto* ptg =
 						dynamic_cast<mrpt::nav::CPTG_RobotShape_Circular*>(
 							m_ptgmultilevel[j].PTGs[i]);
 					if (ptg)
@@ -187,7 +187,7 @@ void CReactiveNavigationSystem3D::STEP1_InitPTGs()
 							.c_str(),
 						i, j),
 					m_enableConsoleOutput /*verbose*/
-					);
+				);
 				MRPT_LOG_INFO("...Done.");
 			}
 		}
@@ -255,7 +255,7 @@ bool CReactiveNavigationSystem3D::implementSenseObstacles(
 }
 
 /** Transform the obstacle into TP-Obstacles in TP-Spaces
-  * \callergraph */
+ * \callergraph */
 void CReactiveNavigationSystem3D::STEP3_WSpaceToTPSpace(
 	const size_t ptg_idx, std::vector<double>& out_TPObstacles,
 	mrpt::nav::ClearanceDiagram& out_clearance,
@@ -304,7 +304,7 @@ void CReactiveNavigationSystem3D::loggingGetWSObstaclesAndShape(
 	out_log.WS_Obstacles.clear();
 	// Include the points of all levels (this could be improved depending on
 	// STEP2)
-	for (auto & m_WS_Obstacles_inlevel : m_WS_Obstacles_inlevels)
+	for (auto& m_WS_Obstacles_inlevel : m_WS_Obstacles_inlevels)
 		out_log.WS_Obstacles.insertAnotherMap(
 			&m_WS_Obstacles_inlevel, CPose3D(0, 0, 0));
 
@@ -361,8 +361,9 @@ bool CReactiveNavigationSystem3D::checkCollisionWithLatestObstacles(
 			for (size_t obs = 0; obs < nObs; obs++)
 			{
 				const double gox = xs[obs], goy = ys[obs];
-				mrpt::math::TPoint2D lo = relative_robot_pose.inverseComposePoint(
-					mrpt::math::TPoint2D(gox, goy));
+				mrpt::math::TPoint2D lo =
+					relative_robot_pose.inverseComposePoint(
+						mrpt::math::TPoint2D(gox, goy));
 
 				if (lo.x >= -R && lo.x <= R && lo.y >= -R && lo.y <= R &&
 					ptg->isPointInsideRobotShape(lo.x, lo.y))

@@ -233,5 +233,4 @@ struct Message_NMEA_ZDA : public gnss_message
 	bool getAllFieldValues(std::ostream& o) const override;
 };
 #pragma pack(pop)  // End of pack = 1
-}
-
+}  // namespace mrpt::obs::gnss

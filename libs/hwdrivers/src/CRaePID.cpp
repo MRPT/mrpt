@@ -145,8 +145,7 @@ void CRaePID::doProcess()
 	obsG.timestamp = mrpt::system::now();
 
 	appendObservation(
-		std::make_shared<mrpt::obs::CObservationGasSensors>(
-			obsG));
+		std::make_shared<mrpt::obs::CObservationGasSensors>(obsG));
 }
 
 std::string CRaePID::getFirmware()
@@ -235,7 +234,7 @@ mrpt::obs::CObservationGasSensors CRaePID::getFullInfo()
 	mrpt::obs::CObservationGasSensors::TObservationENose obs;
 	mrpt::obs::CObservationGasSensors obsG;
 
-	for (auto & k : measurements_text)
+	for (auto& k : measurements_text)
 	{
 		const float readnum = atof(k.c_str());
 		const float val_ppm = readnum / 1000.f;

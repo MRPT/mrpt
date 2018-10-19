@@ -392,19 +392,22 @@ void export_poses()
 			.def(init<CPose3D>())
 			.def(init<double, double, double>())
 			.add_property(
-				"x", make_function(
-						 CPose2D_get_x,
-						 return_value_policy<copy_non_const_reference>()),
+				"x",
+				make_function(
+					CPose2D_get_x,
+					return_value_policy<copy_non_const_reference>()),
 				CPose2D_set_x)
 			.add_property(
-				"y", make_function(
-						 CPose2D_get_y,
-						 return_value_policy<copy_non_const_reference>()),
+				"y",
+				make_function(
+					CPose2D_get_y,
+					return_value_policy<copy_non_const_reference>()),
 				CPose2D_set_y)
 			.add_property(
-				"phi", make_function(
-						   CPose2D_get_phi,
-						   return_value_policy<copy_non_const_reference>()),
+				"phi",
+				make_function(
+					CPose2D_get_phi,
+					return_value_policy<copy_non_const_reference>()),
 				CPose2D_set_phi)
 			.def(
 				"inverse", &CPose2D::inverse,
@@ -496,19 +499,22 @@ void export_poses()
 			.def(init<CPose3D>())
 			.def(init<double, double, double, double, double, double>())
 			.add_property(
-				"x", make_function(
-						 CPose3D_get_x,
-						 return_value_policy<copy_non_const_reference>()),
+				"x",
+				make_function(
+					CPose3D_get_x,
+					return_value_policy<copy_non_const_reference>()),
 				CPose3D_set_x)
 			.add_property(
-				"y", make_function(
-						 CPose3D_get_y,
-						 return_value_policy<copy_non_const_reference>()),
+				"y",
+				make_function(
+					CPose3D_get_y,
+					return_value_policy<copy_non_const_reference>()),
 				CPose3D_set_y)
 			.add_property(
-				"z", make_function(
-						 CPose3D_get_z,
-						 return_value_policy<copy_non_const_reference>()),
+				"z",
+				make_function(
+					CPose3D_get_z,
+					return_value_policy<copy_non_const_reference>()),
 				CPose3D_set_z)
 			.def("__getitem__", &CPose3D_getitem)
 			.def(

@@ -115,17 +115,17 @@ struct TAuxRangeMeasInfo
 {
 	TAuxRangeMeasInfo()
 		: sensorLocationOnRobot(),
-		  
+
 		  beaconID(INVALID_BEACON_ID)
-		  
+
 	{
 	}
 
 	CPoint3D sensorLocationOnRobot;
 	float sensedDistance{0};
 	int64_t beaconID;
-	size_t
-		nGaussiansInMap{0};  // Number of Gaussian modes in the map representation
+	size_t nGaussiansInMap{
+		0};  // Number of Gaussian modes in the map representation
 
 	/** Auxiliary for optimal sampling in RO-SLAM */
 	static bool cmp_Asc(const TAuxRangeMeasInfo& a, const TAuxRangeMeasInfo& b)
@@ -381,11 +381,11 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 			//			const double prior_dist_lin =
 			// initialPoseEstimation.distanceTo(icpEstimation.mean);
 			//			const double prior_dist_ang = std::abs(
-			//mrpt::math::wrapToPi(
+			// mrpt::math::wrapToPi(
 			// initialPoseEstimation.yaw()-icpEstimation.mean.phi() ) );
 			////			if (prior_dist_lin>0.10 ||
-			///prior_dist_ang>DEG2RAD(3)) /				printf(" >>>>>>>>>> %f
-			///%f\n",prior_dist_lin,RAD2DEG(prior_dist_ang));
+			/// prior_dist_ang>DEG2RAD(3)) /				printf(" >>>>>>>>>>
+			/// %f %f\n",prior_dist_lin,RAD2DEG(prior_dist_ang));
 			//			extra_log_lik = -(prior_dist_lin/0.20) -
 			//(prior_dist_ang/DEG2RAD(20));
 
@@ -499,7 +499,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 			{
 				if (IS_CLASS(itObs, CObservationBeaconRanges))
 				{
-					const CObservationBeaconRanges* obs =
+					const auto* obs =
 						static_cast<const CObservationBeaconRanges*>(
 							itObs.get());
 					deque<CObservationBeaconRanges::TMeasurement>::
@@ -509,7 +509,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 					{
 						ASSERT_(itRanges->beaconID != INVALID_BEACON_ID);
 						// only add those in the map:
-						for (CBeaconMap::iterator itBeacs = beacMap->begin();
+						for (auto itBeacs = beacMap->begin();
 							 itBeacs != beacMap->end(); ++itBeacs)
 						{
 							if ((itBeacs)->m_ID == itRanges->beaconID)
@@ -584,8 +584,8 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 
 				// 2. Generate the optimal proposal by fusing obs models
 				// -------------------------------------------------------------
-				for (CBeaconMap::iterator itBeacs = beacMap->begin();
-					 itBeacs != beacMap->end(); ++itBeacs)
+				for (auto itBeacs = beacMap->begin(); itBeacs != beacMap->end();
+					 ++itBeacs)
 				{
 					// for each observed beacon (by its ID), generate
 					// observation model:
@@ -722,7 +722,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 
 				do
 				{
-					CPosePDFGrid* pdfGrid = new CPosePDFGrid(
+					auto* pdfGrid = new CPosePDFGrid(
 						grid_min_x, grid_max_x, grid_min_y, grid_max_y,
 						grid_resXY, DEG2RAD(180), 0, 0);
 
@@ -730,7 +730,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 
 					// Fuse all the observation models in the grid:
 					// -----------------------------------------------------
-					for (CBeaconMap::iterator itBeacs = beacMap->begin();
+					for (auto itBeacs = beacMap->begin();
 						 itBeacs != beacMap->end(); ++itBeacs)
 					{
 						// for each observed beacon (by its ID), generate
@@ -1019,7 +1019,7 @@ double CMultiMetricMapPDF::PF_SLAM_computeObservationLikelihoodForParticle(
 	const CPose3D& x) const
 {
 	MRPT_UNUSED_PARAM(PF_options);
-	CMultiMetricMap* map = const_cast<CMultiMetricMap*>(
+	auto* map = const_cast<CMultiMetricMap*>(
 		&m_particles[particleIndexForMap].d->mapTillNow);
 	double ret = 0;
 	for (const auto& it : observation)

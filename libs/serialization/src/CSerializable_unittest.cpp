@@ -22,7 +22,7 @@ class Foo : public CSerializable
    public:
 	int16_t value;
 };
-}
+}  // namespace MyNS
 
 IMPLEMENTS_SERIALIZABLE(Foo, CSerializable, MyNS);
 

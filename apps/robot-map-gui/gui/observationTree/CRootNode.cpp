@@ -20,7 +20,7 @@ CRootNode::CRootNode(const CSimpleMap& simplemap) : CNode(nullptr)
 		size_t idx = 0;
 		for (auto& p : simplemap)
 		{
-			CPairNode* node = new CPairNode(this, p, idx++);
+			auto* node = new CPairNode(this, p, idx++);
 			m_posesNode.push_back(node);
 		}
 	}

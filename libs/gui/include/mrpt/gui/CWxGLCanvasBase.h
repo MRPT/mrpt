@@ -20,7 +20,7 @@ namespace mrpt
 namespace gui
 {
 }
-}  // At least declare the existence of the namespace mrpt::gui even if we don't
+}  // namespace mrpt
 // have wxWidgets libs
 
 #if MRPT_HAS_WXWIDGETS
@@ -60,10 +60,10 @@ namespace gui
 /** This class implements a OpenGL canvas, and it's used in
  * gui::CDisplayWindow3D and a number of standalone applications in the MRPT
  * project.
-  *  There is a filter to control the user capability of moving the camera with
+ *  There is a filter to control the user capability of moving the camera with
  * the mouse. See OnUserManuallyMovesCamera
-  * \ingroup mrpt_gui_grp
-  */
+ * \ingroup mrpt_gui_grp
+ */
 class CWxGLCanvasBase : public CGlCanvasBase,
 						public wxGLCanvas,
 						public mrpt::opengl::CTextMessageCapable
@@ -94,7 +94,7 @@ class CWxGLCanvasBase : public CGlCanvasBase,
 
 	/** Set the camera from a CPose3D, which defines the +X,+Y axis as image
 	 * place RIGHT and UP dirctions, and -Z as towards the pointing direction.
-	  */
+	 */
 	void setCameraPose(const mrpt::poses::CPose3D& camPose);
 
 	/**  Methods that can be implemented in custom derived classes  */
@@ -108,6 +108,7 @@ class CWxGLCanvasBase : public CGlCanvasBase,
 	}
 
 	virtual void OnRenderError(const wxString& str) { MRPT_UNUSED_PARAM(str); }
+
    protected:
 	wxGLContext* m_gl_context = nullptr;
 	bool m_init = false;
@@ -126,8 +127,8 @@ class CWxGLCanvasBase : public CGlCanvasBase,
 
 };  // end of class
 
-}  // end namespace
-}  // end namespace
+}  // namespace gui
+}  // namespace mrpt
 
 #endif  // wxUSE_GLCANVAS
 #endif  // MRPT_HAS_WXWIDGETS

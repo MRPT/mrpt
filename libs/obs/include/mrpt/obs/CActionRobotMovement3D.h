@@ -14,15 +14,15 @@
 namespace mrpt::obs
 {
 /** Represents a probabilistic 3D (6D) movement.
-*   Currently this can be determined from visual odometry for full 6D, or from
-* wheel encoders for 2D movements only.
-* Here implemented the  motion model from the next article: A. L. Ballardini, A.
-* Furlan, A. Galbiati, M. Matteucci, F. Sacchi, D. G. Sorrenti An effective 6DoF
-* motion model for 3D-6DoF Monte Carlo Localization 4th Workshop on Planning,
-* Perception and Navigation for Intelligent Vehicles, IROS, 2012
-* \ingroup mrpt_obs_grp
-* \sa CAction
-*/
+ *   Currently this can be determined from visual odometry for full 6D, or from
+ * wheel encoders for 2D movements only.
+ * Here implemented the  motion model from the next article: A. L. Ballardini,
+ * A. Furlan, A. Galbiati, M. Matteucci, F. Sacchi, D. G. Sorrenti An effective
+ * 6DoF motion model for 3D-6DoF Monte Carlo Localization 4th Workshop on
+ * Planning, Perception and Navigation for Intelligent Vehicles, IROS, 2012
+ * \ingroup mrpt_obs_grp
+ * \sa CAction
+ */
 class CActionRobotMovement3D : public CAction
 {
 	DEFINE_SERIALIZABLE(CActionRobotMovement3D)
@@ -30,7 +30,7 @@ class CActionRobotMovement3D : public CAction
    public:
 	/** A list of posible ways for estimating the content of a
 	 * CActionRobotMovement3D object.
-		*/
+	 */
 	enum TEstimationMethod
 	{
 		emOdometry = 0,
@@ -41,15 +41,15 @@ class CActionRobotMovement3D : public CAction
 
 	/** The 3D pose change probabilistic estimation. It can be converted to/from
 	 * these alternative classes:
-	  * - mrpt::poses::CPose3DQuatPDFGaussian
-	  */
+	 * - mrpt::poses::CPose3DQuatPDFGaussian
+	 */
 	mrpt::poses::CPose3DPDFGaussian poseChange;
 
 	/** This is the raw odometry reading, and only is used when
 	 * "estimationMethod" is "TEstimationMethod::emOdometry" */
 	mrpt::poses::CPose3D rawOdometryIncrementReading;
 	/** This fields indicates the way this estimation was obtained.
-	  */
+	 */
 	TEstimationMethod estimationMethod{emOdometry};
 
 	enum TDrawSampleMotionModel
@@ -84,10 +84,10 @@ class CActionRobotMovement3D : public CAction
 	/** Computes the PDF of the pose increment from an odometry reading and
 	 * according to the given motion model (speed and encoder ticks information
 	 * is not modified).
-	  * According to the parameters in the passed struct, it will be called one
+	 * According to the parameters in the passed struct, it will be called one
 	 * the private sampling functions (see "see also" next).
-	  * \sa computeFromOdometry_model6DOF
-	  */
+	 * \sa computeFromOdometry_model6DOF
+	 */
 	void computeFromOdometry(
 		const mrpt::poses::CPose3D& odometryIncrement,
 		const TMotionModelOptions& options);
@@ -105,17 +105,15 @@ class CActionRobotMovement3D : public CAction
 
 	/** Each "true" entry means that the corresponding "velocities" element
 	 * contains valid data - There are 6 entries.
-	  */
+	 */
 	std::vector<bool> hasVelocities;
 
 	/** The velocity of the robot in each of 6D:
 	 * v_x,v_y,v_z,v_yaw,v_pitch,v_roll (linear in meters/sec and angular in
 	 * rad/sec).
-	  */
+	 */
 	mrpt::math::CVectorFloat velocities;
 
 };  // End of class def.
 
-}
-
-
+}  // namespace mrpt::obs

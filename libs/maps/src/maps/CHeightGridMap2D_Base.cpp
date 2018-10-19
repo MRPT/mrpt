@@ -19,8 +19,8 @@ using namespace mrpt::maps;
 using namespace std;
 
 CHeightGridMap2D_Base::TPointInsertParams::TPointInsertParams()
-	 
-= default;
+
+	= default;
 
 CHeightGridMap2D_Base::CHeightGridMap2D_Base() = default;
 CHeightGridMap2D_Base::~CHeightGridMap2D_Base() = default;
@@ -144,12 +144,11 @@ bool CHeightGridMap2D_Base::dem_internal_insertObservation(
 		/********************************************************************
 					OBSERVATION TYPE: CObservation2DRangeScan
 		********************************************************************/
-		const CObservation2DRangeScan* o =
-			static_cast<const CObservation2DRangeScan*>(obs);
+		const auto* o = static_cast<const CObservation2DRangeScan*>(obs);
 
 		// Create points map, if not created yet:
 		CPointsMap::TInsertionOptions opts;
-		const CPointsMap* thePoints =
+		const auto* thePoints =
 			o->buildAuxPointsMap<mrpt::maps::CPointsMap>(&opts);
 
 		// And rotate to the robot pose:
@@ -160,8 +159,7 @@ bool CHeightGridMap2D_Base::dem_internal_insertObservation(
 		/********************************************************************
 					OBSERVATION TYPE: CObservationVelodyneScan
 		********************************************************************/
-		const CObservationVelodyneScan* o =
-			static_cast<const CObservationVelodyneScan*>(obs);
+		const auto* o = static_cast<const CObservationVelodyneScan*>(obs);
 
 		// Create points map, if not created yet:
 		thePointsMoved.loadFromVelodyneScan(*o, &robotPose3D);

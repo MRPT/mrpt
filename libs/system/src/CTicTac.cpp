@@ -82,7 +82,7 @@ void CTicTac::Tic() noexcept
 	LARGE_INTEGER* l = LARGE_INTEGER_NUMS;
 	QueryPerformanceCounter(&l[0]);
 #else
-	struct timeval* ts = TIMEVAL_NUMS;
+	auto* ts = TIMEVAL_NUMS;
 	gettimeofday(&ts[0], nullptr);
 #endif
 }
@@ -95,7 +95,7 @@ double CTicTac::Tac() noexcept
 	return (l[1].QuadPart - l[0].QuadPart) *
 		   AuxWindowsTicTac::GetInstance().dbl_period;
 #else
-	struct timeval* ts = TIMEVAL_NUMS;
+	auto* ts = TIMEVAL_NUMS;
 	gettimeofday(&ts[1], nullptr);
 	return (ts[1].tv_sec - ts[0].tv_sec) +
 		   1e-6 * (ts[1].tv_usec - ts[0].tv_usec);

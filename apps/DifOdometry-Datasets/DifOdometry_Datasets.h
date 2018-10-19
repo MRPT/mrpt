@@ -63,16 +63,16 @@ class CDifodoDatasets : public mrpt::vision::CDifodo
 
 	/** A pre-step that should be performed before starting to estimate the
 	 * camera speed
-	  * As a couple of frames are necessary to estimate the camera motion, this
+	 * As a couple of frames are necessary to estimate the camera motion, this
 	 * methods loads the first frame
-	  * before any motion can be estimated.*/
+	 * before any motion can be estimated.*/
 	void reset();
 
 	/** Save the pose estimation following the format of the TUM datasets:
-	  *
-	  * 'timestamp tx ty tz qx qy qz qw'
-	  *
-	  * Please visit
+	 *
+	 * 'timestamp tx ty tz qx qy qz qw'
+	 *
+	 * Please visit
 	 * http://vision.in.tum.de/data/datasets/rgbd-dataset/file_formats for
 	 * further details.*/
 	void writeTrajectoryFile();

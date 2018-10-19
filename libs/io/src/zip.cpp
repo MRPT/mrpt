@@ -163,7 +163,7 @@ void mrpt::io::zip::decompress(
 	int ret = 0;
 	MRPT_START
 
-	unsigned long actualOutSize = (unsigned long)outDataBufferSize;
+	auto actualOutSize = (unsigned long)outDataBufferSize;
 
 	ret = ::uncompress(
 		(unsigned char*)outData, &actualOutSize, (unsigned char*)inData,
@@ -186,7 +186,7 @@ void mrpt::io::zip::decompress(
 	int ret = 0;
 	MRPT_START
 
-	unsigned long actualOutSize = (unsigned long)outDataBufferSize;
+	auto actualOutSize = (unsigned long)outDataBufferSize;
 	std::vector<unsigned char> inData;
 
 	inData.resize(inDataSize);

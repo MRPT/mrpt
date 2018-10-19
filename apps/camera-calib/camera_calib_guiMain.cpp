@@ -65,7 +65,8 @@ class MyArtProvider : public wxArtProvider
 {
    protected:
 	wxBitmap CreateBitmap(
-		const wxArtID& id, const wxArtClient& client, const wxSize& size) override;
+		const wxArtID& id, const wxArtClient& client,
+		const wxSize& size) override;
 };
 
 // CreateBitmap function
@@ -529,11 +530,10 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent, wxWindowID id)
 	this->show3Dview();  // Empty 3D scene
 
 	Center();
-	this->SetTitle(
-		_U(format(
-			   "Camera calibration %s - Part of the MRPT project",
-			   CAMERA_CALIB_GUI_VERSION)
-			   .c_str()));
+	this->SetTitle(_U(format(
+						  "Camera calibration %s - Part of the MRPT project",
+						  CAMERA_CALIB_GUI_VERSION)
+						  .c_str()));
 	Maximize();
 }
 
@@ -725,8 +725,7 @@ void camera_calib_guiDialog::OnbtnSaveClick(wxCommandEvent& event)
 void camera_calib_guiDialog::updateListOfImages()
 {
 	lbFiles->Clear();
-	for (TCalibrationImageList::iterator s = lst_images.begin();
-		 s != lst_images.end(); ++s)
+	for (auto s = lst_images.begin(); s != lst_images.end(); ++s)
 		lbFiles->Append(_U(s->first.c_str()));
 
 	btnSaveImages->Enable(!lst_images.empty());
@@ -750,7 +749,7 @@ void camera_calib_guiDialog::refreshDisplayedImage()
 
 		const string selFile = string(lbFiles->GetStringSelection().mb_str());
 
-		TCalibrationImageList::iterator it = lst_images.find(selFile);
+		auto it = lst_images.find(selFile);
 		if (it == lst_images.end()) return;
 
 		// Zoom:
@@ -784,11 +783,9 @@ void camera_calib_guiDialog::refreshDisplayedImage()
 				imgSizes.x * zoomVal, imgSizes.y * zoomVal, IMG_INTERP_NN);
 
 			// Draw reprojected:
-			for (auto & k : it->second.projectedPoints_undistorted)
+			for (auto& k : it->second.projectedPoints_undistorted)
 				imgRect.drawCircle(
-					zoomVal * k.x,
-					zoomVal * k.y, 4,
-					TColor(0, 255, 64));
+					zoomVal * k.x, zoomVal * k.y, 4, TColor(0, 255, 64));
 
 			imgRect.drawCircle(10, 10, 4, TColor(0, 255, 64));
 			imgRect.textOut(18, 4, "Reprojected corners", TColor::white());
@@ -879,7 +876,7 @@ void camera_calib_guiDialog::show3Dview()
 			check_squares_length_X_meters);
 	scene->insert(grid);
 
-	for (auto & lst_image : lst_images)
+	for (auto& lst_image : lst_images)
 	{
 		if (!lst_image.second.detected_corners.empty())
 		{
@@ -1070,7 +1067,7 @@ void camera_calib_guiDialog::OnbtnSaveImagesClick(wxCommandEvent& event)
 		{
 			string dir = string(dlg.GetPath().mb_str());
 
-			for (auto & lst_image : lst_images)
+			for (auto& lst_image : lst_images)
 				lst_image.second.img_original.saveToFile(
 					dir + string("/") + lst_image.first + string(".png"));
 		}

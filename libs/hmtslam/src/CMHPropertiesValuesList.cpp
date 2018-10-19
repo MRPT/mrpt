@@ -129,9 +129,10 @@ CSerializable::Ptr CMHPropertiesValuesList::get(
 CSerializable::Ptr CMHPropertiesValuesList::getAnyHypothesis(
 	const char* propertyName) const
 {
-	for (const auto & m_propertie : m_properties)
+	for (const auto& m_propertie : m_properties)
 	{
-		if (!os::_strcmpi(propertyName, m_propertie.name.c_str())) return m_propertie.value;
+		if (!os::_strcmpi(propertyName, m_propertie.name.c_str()))
+			return m_propertie.value;
 	}
 	// Not found:
 	return CSerializable::Ptr();
@@ -146,7 +147,7 @@ void CMHPropertiesValuesList::set(
 {
 	MRPT_START
 
-	for (auto & m_propertie : m_properties)
+	for (auto& m_propertie : m_properties)
 	{
 		if (m_propertie.ID == hypothesis_ID &&
 			!os::_strcmpi(propertyName, m_propertie.name.c_str()))
@@ -181,7 +182,7 @@ void CMHPropertiesValuesList::setMemoryReference(
 {
 	MRPT_START
 
-	for (auto & m_propertie : m_properties)
+	for (auto& m_propertie : m_properties)
 	{
 		if (m_propertie.ID == hypothesis_ID &&
 			!os::_strcmpi(propertyName, m_propertie.name.c_str()))
@@ -210,10 +211,10 @@ std::vector<std::string> CMHPropertiesValuesList::getPropertyNames() const
 {
 	std::vector<std::string> ret;
 
-	for (const auto & m_propertie : m_properties)
+	for (const auto& m_propertie : m_properties)
 	{
 		bool isNew = true;
-		for (auto & itS : ret)
+		for (auto& itS : ret)
 		{
 			if (itS == m_propertie.name)
 			{
@@ -233,9 +234,7 @@ std::vector<std::string> CMHPropertiesValuesList::getPropertyNames() const
 void CMHPropertiesValuesList::remove(
 	const char* propertyName, const int64_t& hypothesis_ID)
 {
-	for (std::vector<TPropertyValueIDTriplet>::iterator it =
-			 m_properties.begin();
-		 it != m_properties.end();)
+	for (auto it = m_properties.begin(); it != m_properties.end();)
 		if (!os::_strcmpi(propertyName, it->name.c_str()) &&
 			it->ID == hypothesis_ID)
 			it = m_properties.erase(it);
@@ -248,9 +247,7 @@ void CMHPropertiesValuesList::remove(
  ---------------------------------------------------------------*/
 void CMHPropertiesValuesList::removeAll(const int64_t& hypothesis_ID)
 {
-	for (std::vector<TPropertyValueIDTriplet>::iterator it =
-			 m_properties.begin();
-		 it != m_properties.end();)
+	for (auto it = m_properties.begin(); it != m_properties.end();)
 		if (it->ID == hypothesis_ID)
 			it = m_properties.erase(it);
 		else
@@ -264,8 +261,9 @@ CMHPropertiesValuesList::CMHPropertiesValuesList(
 	const CMHPropertiesValuesList& o)
 	: m_properties(o.m_properties)
 {
-	for (auto & m_propertie : m_properties)
-		m_propertie.value.reset(dynamic_cast<CSerializable*>(m_propertie.value->clone()));
+	for (auto& m_propertie : m_properties)
+		m_propertie.value.reset(
+			dynamic_cast<CSerializable*>(m_propertie.value->clone()));
 }
 
 /*---------------------------------------------------------------
@@ -278,7 +276,8 @@ CMHPropertiesValuesList& CMHPropertiesValuesList::operator=(
 
 	m_properties = o.m_properties;
 
-	for (auto & m_propertie : m_properties)
-		m_propertie.value.reset(dynamic_cast<CSerializable*>(m_propertie.value->clone()));
+	for (auto& m_propertie : m_properties)
+		m_propertie.value.reset(
+			dynamic_cast<CSerializable*>(m_propertie.value->clone()));
 	return *this;
 }

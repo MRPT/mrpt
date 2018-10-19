@@ -9,9 +9,9 @@
 #pragma once
 
 /** \file static string for constexpr. Based on:
-  * https://akrzemi1.wordpress.com/2017/06/28/compile-time-string-concatenation/
-  * (Boost License)
-  */
+ * https://akrzemi1.wordpress.com/2017/06/28/compile-time-string-concatenation/
+ * (Boost License)
+ */
 
 #include <mrpt/typemeta/xassert.h>
 
@@ -86,7 +86,7 @@ struct make_sequence_ : append<make_sequence<I - 1>>
 {
 	static_assert(I >= 0, "negative size");
 };
-}  // end NS internal
+}  // namespace internal
 
 template <int N>
 class array_string

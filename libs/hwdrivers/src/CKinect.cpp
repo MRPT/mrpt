@@ -264,9 +264,9 @@ void depth_cb(freenect_device* dev, void* v_depth, uint32_t timestamp)
 {
 	const freenect_frame_mode frMode = freenect_get_current_video_mode(dev);
 
-	uint16_t* depth = reinterpret_cast<uint16_t*>(v_depth);
+	auto* depth = reinterpret_cast<uint16_t*>(v_depth);
 
-	CKinect* obj = reinterpret_cast<CKinect*>(freenect_get_user(dev));
+	auto* obj = reinterpret_cast<CKinect*>(freenect_get_user(dev));
 
 	// Update of the timestamps at the end:
 	std::lock_guard<std::mutex> lock(obj->internal_latest_obs_cs());
@@ -301,7 +301,7 @@ void depth_cb(freenect_device* dev, void* v_depth, uint32_t timestamp)
 
 void rgb_cb(freenect_device* dev, void* img_data, uint32_t timestamp)
 {
-	CKinect* obj = reinterpret_cast<CKinect*>(freenect_get_user(dev));
+	auto* obj = reinterpret_cast<CKinect*>(freenect_get_user(dev));
 	const freenect_frame_mode frMode = freenect_get_current_video_mode(dev);
 
 	// Update of the timestamps at the end:

@@ -25,6 +25,4 @@ class CPose : public CPoseOrPoint<DERIVEDCLASS>
 {
 };  // End of class def.
 
-}
-
-
+}  // namespace mrpt::poses

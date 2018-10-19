@@ -257,9 +257,8 @@ void TestParticlesLocalization()
 			CPose2D odometryEstimation(
 				iniFile->read_float("OdometryEstimation", "odometry_X", 0),
 				iniFile->read_float("OdometryEstimation", "odometry_Y", 0),
-				DEG2RAD(
-					iniFile->read_float(
-						"OdometryEstimation", "odometry_PHI", 0)));
+				DEG2RAD(iniFile->read_float(
+					"OdometryEstimation", "odometry_PHI", 0)));
 
 			CPose2D initialPoseExperiment(odometryEstimation);
 
@@ -441,16 +440,16 @@ void TestParticlesLocalization()
 					action.get(),  // Action
 					observations.get(),  // Obs.
 					&PF_stats  // Output statistics
-					);
+				);
 				printf(
 					" Done! in %.03fms, ESS=%f\n", 1000.0f * tictac.Tac(),
 					pdf.ESS());
 
 				// Text output:
 				// ----------------------------------------
-				odometryEstimation = odometryEstimation +
-									 action->getBestMovementEstimation()
-										 ->poseChange->getMeanVal();
+				odometryEstimation =
+					odometryEstimation + action->getBestMovementEstimation()
+											 ->poseChange->getMeanVal();
 				pdf.getMean(pdfEstimation);
 
 				CPose2D GT_Pose;
@@ -549,24 +548,25 @@ void TestParticlesLocalization()
 					size_t(meanState.state.size()), size_t(nBeaconsInMap));
 				for (size_t l = 0; l < nBeaconsInMap; l++)
 					particle_matrix(step, 12 + l) = meanState.state[l];
-//----------------------------------------------
+					//----------------------------------------------
 
-//// Generate text files for matlab:
-//// ------------------------------------
-// pdf.saveToTextFile(format("%s/particles_%03u.txt",OUT_DIR.c_str(),step));
+					//// Generate text files for matlab:
+					//// ------------------------------------
+					// pdf.saveToTextFile(format("%s/particles_%03u.txt",OUT_DIR.c_str(),step));
 
-/*{
-	CObservation2DRangeScan		*o = (CObservation2DRangeScan*)
-observations->getObservationByClass( CLASS_ID(CObservation2DRangeScan));
-	if (o)
-	{
-		MRPT_OS::sprintf(auxDirStr,1000,"%s/observation_scan_%03u.txt",OUT_DIR,step);
-		FILE	*f=MRPT_OS::fopen(auxDirStr,"wt");
-		for (unsigned int i=0;i<o->scan.size();i++)
-			fprintf(f,"%.03f ",o->scan[i]);
-		fclose(f);
-	}
-}*/
+					/*{
+						CObservation2DRangeScan		*o =
+					(CObservation2DRangeScan*)
+					observations->getObservationByClass(
+					CLASS_ID(CObservation2DRangeScan)); if (o)
+						{
+							MRPT_OS::sprintf(auxDirStr,1000,"%s/observation_scan_%03u.txt",OUT_DIR,step);
+							FILE	*f=MRPT_OS::fopen(auxDirStr,"wt");
+							for (unsigned int i=0;i<o->scan.size();i++)
+								fprintf(f,"%.03f ",o->scan[i]);
+							fclose(f);
+						}
+					}*/
 
 #ifdef STORE_3D
 				// Generate 3D scene:
@@ -576,13 +576,14 @@ observations->getObservationByClass( CLASS_ID(CObservation2DRangeScan));
 					CMatrixDouble33 cov;
 					pdf.getCovarianceAndMean(cov, meanPose);
 
-//// The gridmap:
-// if (metricMap.m_gridMaps.size())
-//{
-//	opengl::CSetOfObjects	*plane = new opengl::CSetOfObjects();
-//	metricMap.m_gridMaps[0]->getAs3DObject( *plane );
-//	scene->insert( plane );
-//}
+					//// The gridmap:
+					// if (metricMap.m_gridMaps.size())
+					//{
+					//	opengl::CSetOfObjects	*plane = new
+					//opengl::CSetOfObjects();
+					//	metricMap.m_gridMaps[0]->getAs3DObject( *plane );
+					//	scene->insert( plane );
+					//}
 
 #ifdef SHOW_REAL_TIME_3D
 					sceneTR = window.get3DSceneAndLock();
@@ -685,15 +686,13 @@ observations->getObservationByClass( CLASS_ID(CObservation2DRangeScan));
 					if (metricMap.m_landmarksMap && dist &&
 						!dist->sensedData.empty())
 					{
-						for (auto & k : dist->sensedData)
+						for (auto& k : dist->sensedData)
 						{
-							string beacon_name = format(
-								"ring%u",
-								unsigned(k.beaconID));
+							string beacon_name =
+								format("ring%u", unsigned(k.beaconID));
 							const mrpt::maps::CLandmark* lm =
 								metricMap.m_landmarksMap->landmarks
-									.getByBeaconID(
-										k.beaconID);
+									.getByBeaconID(k.beaconID);
 							if (lm)
 							{
 #ifdef SHOW_REAL_TIME_3D
@@ -722,12 +721,10 @@ observations->getObservationByClass( CLASS_ID(CObservation2DRangeScan));
 								sphere->setLocation(
 									lm->pose_mean.x, lm->pose_mean.y, 0.05);
 
-								float R =
-									square(k.sensedDistance) -
-									square(
-										k
-											.sensorLocationOnRobot.z() -
-										lm->pose_mean.z);
+								float R = square(k.sensedDistance) -
+										  square(
+											  k.sensorLocationOnRobot.z() -
+											  lm->pose_mean.z);
 
 								if (R > 0)
 									R = sqrt(R);
@@ -995,9 +992,8 @@ observations->getObservationByClass( CLASS_ID(CObservation2DRangeScan));
 #endif
 
 				if ((step % SCENE3D_FREQ) == 0)
-					scene->saveToFile(
-						format(
-							"%s/3Dscene_%03u.3Dscene", OUT_DIR.c_str(), step));
+					scene->saveToFile(format(
+						"%s/3Dscene_%03u.3Dscene", OUT_DIR.c_str(), step));
 
 				step++;
 			}  // while rawlogEntries

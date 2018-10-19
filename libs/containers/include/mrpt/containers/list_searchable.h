@@ -17,7 +17,7 @@ namespace mrpt::containers
  * a std::list.
  * \note Defined in #include <mrpt/containers/list_searchable.h>
  * \ingroup mrpt_containers_grp
-  */
+ */
 template <class T>
 class list_searchable : public std::list<T>
 {
@@ -38,8 +38,7 @@ class list_searchable : public std::list<T>
 	template <typename PTR>
 	typename std::list<T>::iterator find_ptr_to(const PTR ptr)
 	{
-		for (typename std::list<T>::iterator it = std::list<T>::begin();
-			 it != std::list<T>::end(); it++)
+		for (auto it = std::list<T>::begin(); it != std::list<T>::end(); it++)
 			if (it->get() == ptr) return it;
 		return std::list<T>::end();
 	}
@@ -55,5 +54,4 @@ class list_searchable : public std::list<T>
 		return std::list<T>::end();
 	}
 };
-}
-
+}  // namespace mrpt::containers

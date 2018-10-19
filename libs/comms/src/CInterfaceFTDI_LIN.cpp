@@ -39,7 +39,7 @@ CInterfaceFTDI::CInterfaceFTDI() : m_readBuffer(4096)
 
 #if MRPT_HAS_FTDI
 	// Alloc mem:
-	ftdi_context* newCtx = new ftdi_context[1];
+	auto* newCtx = new ftdi_context[1];
 	ASSERT_(newCtx);
 
 	// Init:
@@ -68,7 +68,7 @@ CInterfaceFTDI::~CInterfaceFTDI()
 #if MRPT_HAS_FTDI
 	// Close USB:
 	if (isOpen()) Close();
-	ftdi_context* ctx = static_cast<ftdi_context*>(m_ftdi_context);
+	auto* ctx = static_cast<ftdi_context*>(m_ftdi_context);
 
 	// Close context:
 	ftdi_deinit(ctx);
@@ -101,7 +101,7 @@ void CInterfaceFTDI::OpenBySerialNumber(const std::string& serialNumber)
 	// Look for the one we want:
 	void* myDev = nullptr;
 
-	for (auto & lstDev : lstDevs)
+	for (auto& lstDev : lstDevs)
 	{
 		if (lstDev.ftdi_serial == serialNumber)
 		{
@@ -116,7 +116,7 @@ void CInterfaceFTDI::OpenBySerialNumber(const std::string& serialNumber)
 			serialNumber.c_str());
 
 	// Open it:
-	ftdi_context* ctx = static_cast<ftdi_context*>(m_ftdi_context);
+	auto* ctx = static_cast<ftdi_context*>(m_ftdi_context);
 
 	int ret = ftdi_usb_open_dev(
 		ctx,
@@ -125,7 +125,7 @@ void CInterfaceFTDI::OpenBySerialNumber(const std::string& serialNumber)
 #else
 		(struct usb_device*)myDev
 #endif
-		);
+	);
 
 	if (ret) THROW_EXCEPTION(string(ftdi_get_error_string(ctx)));
 
@@ -214,8 +214,7 @@ void CInterfaceFTDI::ListAllDevices(TFTDIDeviceList& outList)
 	if (getenv("VERBOSE") != nullptr)
 	{
 		printf("[CInterfaceFTDI::ListAllDevices] List: \n");
-		for (std::deque<TFTDIDevice>::const_iterator i = outList.begin();
-			 i != outList.end(); ++i)
+		for (auto i = outList.begin(); i != outList.end(); ++i)
 			printf(
 				"USB DEV: V=%04X P=%04X S=%s\n", i->usb_idVendor,
 				i->usb_idProduct, i->ftdi_serial.c_str());
@@ -327,7 +326,7 @@ void CInterfaceFTDI::ftdi_read(
 {
 #if MRPT_HAS_FTDI
 	MRPT_TRY_START
-	ftdi_context* ctx = static_cast<ftdi_context*>(m_ftdi_context);
+	auto* ctx = static_cast<ftdi_context*>(m_ftdi_context);
 
 	int ret = ftdi_read_data(ctx, (unsigned char*)lpvBuffer, dwBuffSize);
 	if (ret >= 0)
@@ -358,7 +357,7 @@ void CInterfaceFTDI::ftdi_write(
 {
 #if MRPT_HAS_FTDI
 	MRPT_TRY_START
-	ftdi_context* ctx = static_cast<ftdi_context*>(m_ftdi_context);
+	auto* ctx = static_cast<ftdi_context*>(m_ftdi_context);
 
 	int ret = ftdi_write_data(ctx, (unsigned char*)lpvBuffer, dwBuffSize);
 	if (ret >= 0)
@@ -380,7 +379,7 @@ void CInterfaceFTDI::ftdi_write(
 bool CInterfaceFTDI::isOpen()
 {
 #if MRPT_HAS_FTDI
-	ftdi_context* ctx = static_cast<ftdi_context*>(m_ftdi_context);
+	auto* ctx = static_cast<ftdi_context*>(m_ftdi_context);
 	return ctx->usb_dev != nullptr;
 #else
 	return false;
@@ -393,7 +392,7 @@ bool CInterfaceFTDI::isOpen()
 void CInterfaceFTDI::Close()
 {
 #if MRPT_HAS_FTDI
-	ftdi_context* ctx = static_cast<ftdi_context*>(m_ftdi_context);
+	auto* ctx = static_cast<ftdi_context*>(m_ftdi_context);
 	if (ctx->usb_dev)
 	{
 		ftdi_usb_close(ctx);
@@ -414,7 +413,7 @@ void CInterfaceFTDI::Close()
 void CInterfaceFTDI::ResetDevice()
 {
 #if MRPT_HAS_FTDI
-	ftdi_context* ctx = static_cast<ftdi_context*>(m_ftdi_context);
+	auto* ctx = static_cast<ftdi_context*>(m_ftdi_context);
 	ASSERT_(ctx->usb_dev);
 
 	if (ftdi_usb_reset(ctx) < 0) THROW_EXCEPTION("Error resetting device");
@@ -429,7 +428,7 @@ void CInterfaceFTDI::ResetDevice()
 void CInterfaceFTDI::Purge()
 {
 #if MRPT_HAS_FTDI
-	ftdi_context* ctx = static_cast<ftdi_context*>(m_ftdi_context);
+	auto* ctx = static_cast<ftdi_context*>(m_ftdi_context);
 	ASSERT_(ctx->usb_dev);
 
 	if (ftdi_usb_purge_buffers(ctx) < 0)
@@ -445,7 +444,7 @@ void CInterfaceFTDI::Purge()
 void CInterfaceFTDI::SetLatencyTimer(unsigned char latency_ms)
 {
 #if MRPT_HAS_FTDI
-	ftdi_context* ctx = static_cast<ftdi_context*>(m_ftdi_context);
+	auto* ctx = static_cast<ftdi_context*>(m_ftdi_context);
 	ASSERT_(ctx->usb_dev);
 
 	if (ftdi_set_latency_timer(ctx, latency_ms) < 0)
@@ -462,7 +461,7 @@ void CInterfaceFTDI::SetTimeouts(
 	unsigned long dwReadTimeout_ms, unsigned long dwWriteTimeout_ms)
 {
 #if MRPT_HAS_FTDI
-	ftdi_context* ctx = static_cast<ftdi_context*>(m_ftdi_context);
+	auto* ctx = static_cast<ftdi_context*>(m_ftdi_context);
 	ASSERT_(ctx->usb_dev);
 
 // JL: It seems it works worse with timeouts...

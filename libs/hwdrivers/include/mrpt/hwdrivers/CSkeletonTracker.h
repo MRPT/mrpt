@@ -106,17 +106,17 @@ class CSkeletonTracker : public hwdrivers::CGenericSensor
 
    public:
 	/** Constructor
-	  */
+	 */
 	CSkeletonTracker();
 
 	/** Destructor
-	  */
+	 */
 	~CSkeletonTracker() override;
 
 	/** This method will be invoked at a minimum rate of "process_rate" (Hz)
-	  *  \exception This method must throw an exception with a descriptive
+	 *  \exception This method must throw an exception with a descriptive
 	 * message if some critical error is found.
-	  */
+	 */
 	void doProcess() override;
 
 	/** Connects to the PrimeSense camera and prepares it to get skeleton data
@@ -130,6 +130,4 @@ class CSkeletonTracker : public hwdrivers::CGenericSensor
 	}
 };  // end of class
 
-}
-
-
+}  // namespace mrpt::hwdrivers

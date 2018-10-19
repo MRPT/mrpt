@@ -29,12 +29,12 @@ void TMatchingPairList::dumpToFile(const std::string& fileName) const
 {
 	std::ofstream f(fileName);
 	ASSERT_(f.is_open());
-	for (const auto & it : *this)
+	for (const auto& it : *this)
 	{
 		f << mrpt::format(
 			"%u %u %f %f %f %f %f %f %f\n", it.this_idx, it.other_idx,
-			it.this_x, it.this_y, it.this_z, it.other_x, it.other_y,
-			it.other_z, it.errorSquareAfterTransformation);
+			it.this_x, it.this_y, it.this_z, it.other_x, it.other_y, it.other_z,
+			it.errorSquareAfterTransformation);
 	}
 }
 
@@ -52,7 +52,7 @@ void TMatchingPairList::saveAsMATLABScript(const std::string& filName) const
 	fprintf(f, "%% ----------------------------------------------------\n\n");
 
 	fprintf(f, "axis equal; hold on;\n");
-	for (const auto & it : *this)
+	for (const auto& it : *this)
 	{
 		fprintf(
 			f, "line([%f %f],[%f %f],'Color',colorLines);\n", it.this_x,
@@ -71,7 +71,7 @@ void TMatchingPairList::saveAsMATLABScript(const std::string& filName) const
   ---------------------------------------------------------------*/
 bool TMatchingPairList::indexOtherMapHasCorrespondence(size_t idx) const
 {
-	for (const auto & it : *this)
+	for (const auto& it : *this)
 	{
 		if (it.other_idx == idx) return true;
 	}
@@ -95,8 +95,7 @@ bool mrpt::tfest::operator==(
 	const TMatchingPairList& a, const TMatchingPairList& b)
 {
 	if (a.size() != b.size()) return false;
-	for (TMatchingPairList::const_iterator it1 = a.begin(), it2 = b.begin();
-		 it1 != a.end(); ++it1, ++it2)
+	for (auto it1 = a.begin(), it2 = b.begin(); it1 != a.end(); ++it1, ++it2)
 		if (!((*it1) == (*it2))) return false;
 	return true;
 }
@@ -121,7 +120,7 @@ float TMatchingPairList::overallSquareErrorAndPoints(
   ---------------------------------------------------------------*/
 bool TMatchingPairList::contains(const TMatchingPair& p) const
 {
-	for (const auto & corresp : *this)
+	for (const auto& corresp : *this)
 		if (corresp == p) return true;
 	return false;
 }
@@ -197,7 +196,7 @@ void TMatchingPairList::filterUniqueRobustPairs(
 			c.errorSquareAfterTransformation <
 				bestMatchForThisMap[c.this_idx]
 					->errorSquareAfterTransformation  // or better
-			)
+		)
 		{
 			bestMatchForThisMap[c.this_idx] = &c;
 		}

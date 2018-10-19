@@ -521,6 +521,6 @@ class FifoQueueBasic
 	}
 };
 
-}  // end of xsens namespace
+}  // namespace xsens
 
 #endif  // _FIFOQUEUE_H_2006_05_03

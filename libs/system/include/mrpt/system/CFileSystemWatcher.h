@@ -17,18 +17,18 @@ namespace mrpt::system
 {
 /** This class subscribes to notifications of file system changes, thus it can
  * be used to efficiently stay informed about changes in a directory tree.
-  *  - Windows: Requires Windows 2000 or newer.
-  *  - Linux: Requires kernel 2.6.13 or newer.
-  *  Using this class in an old Linux or other unsoported system (Unix,etc...)
+ *  - Windows: Requires Windows 2000 or newer.
+ *  - Linux: Requires kernel 2.6.13 or newer.
+ *  Using this class in an old Linux or other unsoported system (Unix,etc...)
  * has no effect, i.e. no notification will be ever received.
-  *  \sa CDirectoryExplorer
+ *  \sa CDirectoryExplorer
  * \ingroup mrpt_system_grp
-  */
+ */
 class CFileSystemWatcher
 {
    public:
 	/** Each of the changes detected by utils::CFileSystemWatcher
-	  */
+	 */
 	struct TFileSystemChange
 	{
 		TFileSystemChange() = default;
@@ -48,18 +48,18 @@ class CFileSystemWatcher
 	using TFileSystemChangeList = std::deque<TFileSystemChange>;
 
 	/** Creates the subscription to a specified path.
-	  * \param path The file or directory to watch.
-	  */
+	 * \param path The file or directory to watch.
+	 */
 	CFileSystemWatcher(const std::string& path);
 
 	/** Destructor
-	  */
+	 */
 	virtual ~CFileSystemWatcher();
 
 	/** Call this method sometimes to get the list of changes in the watched
 	 * directory.
-	  *  \sa processChange
-	  */
+	 *  \sa processChange
+	 */
 	void getChanges(TFileSystemChangeList& out_list);
 
    private:
@@ -83,5 +83,4 @@ class CFileSystemWatcher
 
 };  // End of class def.
 
-}
-
+}  // namespace mrpt::system

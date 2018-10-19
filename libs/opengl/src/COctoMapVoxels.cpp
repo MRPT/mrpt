@@ -22,12 +22,7 @@ using namespace std;
 IMPLEMENTS_SERIALIZABLE(COctoMapVoxels, CRenderizableDisplayList, mrpt::opengl)
 
 /** Ctor */
-COctoMapVoxels::COctoMapVoxels()
-	: 
-	  m_grid_color(0xE0, 0xE0, 0xE0, 0x90)
-	  
-{
-}
+COctoMapVoxels::COctoMapVoxels() : m_grid_color(0xE0, 0xE0, 0xE0, 0x90) {}
 
 /** Clears everything */
 void COctoMapVoxels::clear()
@@ -148,7 +143,7 @@ void COctoMapVoxels::render_dl() const
 		glBegin(GL_POINTS);
 	}
 
-	for (const auto & m_voxel_set : m_voxel_sets)
+	for (const auto& m_voxel_set : m_voxel_sets)
 	{
 		if (!m_voxel_set.visible) continue;
 
@@ -240,7 +235,7 @@ CArchive& operator>>(CArchive& in, COctoMapVoxels::TVoxel& a)
 	in >> a.coords >> a.side_length >> a.color;
 	return in;
 }
-} // end of namespace mrpt::opengl
+}  // end of namespace mrpt::opengl
 
 uint8_t COctoMapVoxels::serializeGetVersion() const { return 2; }
 void COctoMapVoxels::serializeTo(CArchive& out) const
@@ -311,7 +306,7 @@ bool sort_voxels_z(
 
 void COctoMapVoxels::sort_voxels_by_z()
 {
-	for (auto & m_voxel_set : m_voxel_sets)
+	for (auto& m_voxel_set : m_voxel_sets)
 	{
 		std::sort(
 			m_voxel_set.voxels.begin(), m_voxel_set.voxels.end(),

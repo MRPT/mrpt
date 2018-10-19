@@ -26,33 +26,33 @@ class CPlanarLaserScan;
 
 /** This object renders a 2D laser scan by means of three elements: the points,
  * the line along end-points and the 2D scanned surface.
-  *
-  *  By default, all those three elements are drawn, but you can individually
+ *
+ *  By default, all those three elements are drawn, but you can individually
  * switch them on/off with:
-  *    - CPlanarLaserScan::enablePoints()
-  *    - CPlanarLaserScan::enableLine()
-  *    - CPlanarLaserScan::enableSurface()
-  *
-  *  To change the final result, more methods allow further customization of the
+ *    - CPlanarLaserScan::enablePoints()
+ *    - CPlanarLaserScan::enableLine()
+ *    - CPlanarLaserScan::enableSurface()
+ *
+ *  To change the final result, more methods allow further customization of the
  * 3D object (color of each element, etc.).
-  *
-  *  The scan is passed or updated through CPlanarLaserScan::setScan()
-  *
-  *  <div align="center">
-  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
+ *
+ *  The scan is passed or updated through CPlanarLaserScan::setScan()
+ *
+ *  <div align="center">
+ *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
  * border-style: solid;">
-  *   <tr> <td> mrpt::opengl::CPlanarLaserScan </td> <td> \image html
+ *   <tr> <td> mrpt::opengl::CPlanarLaserScan </td> <td> \image html
  * preview_CPlanarLaserScan.png </td> </tr>
-  *  </table>
-  *  </div>
-  *
-  *  \note The laser points are projected at the sensor pose as given in the
+ *  </table>
+ *  </div>
+ *
+ *  \note The laser points are projected at the sensor pose as given in the
  * "scan" object, so this CPlanarLaserScan object should be placed at the exact
  * pose of the robot coordinates origin.
-  *
-  *  \sa mrpt::opengl::CPointCloud, opengl::COpenGLScene
-  * \ingroup mrpt_maps_grp
-  */
+ *
+ *  \sa mrpt::opengl::CPointCloud, opengl::COpenGLScene
+ * \ingroup mrpt_maps_grp
+ */
 class CPlanarLaserScan : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CPlanarLaserScan)
@@ -65,7 +65,8 @@ class CPlanarLaserScan : public CRenderizableDisplayList
 	float m_line_R{1.f}, m_line_G{0.f}, m_line_B{0.f}, m_line_A{0.5f};
 
 	float m_points_width{3};
-	float m_points_R{1.0f}, m_points_G{0.0f}, m_points_B{0.0f}, m_points_A{1.0f};
+	float m_points_R{1.0f}, m_points_G{0.0f}, m_points_B{0.0f},
+		m_points_A{1.0f};
 
 	float m_plane_R{0.01f}, m_plane_G{0.01f}, m_plane_B{0.6f}, m_plane_A{0.6f};
 
@@ -132,7 +133,7 @@ class CPlanarLaserScan : public CRenderizableDisplayList
 	}
 
 	/** Render
-	  */
+	 */
 	void render_dl() const override;
 
 	void getBoundingBox(
@@ -140,12 +141,12 @@ class CPlanarLaserScan : public CRenderizableDisplayList
 		mrpt::math::TPoint3D& bb_max) const override;
 
 	/** Constructor
-	  */
+	 */
 	CPlanarLaserScan();
 
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	~CPlanarLaserScan() override = default;
 };
 
-}  // end namespace
-}  // End of namespace
+}  // namespace opengl
+}  // namespace mrpt

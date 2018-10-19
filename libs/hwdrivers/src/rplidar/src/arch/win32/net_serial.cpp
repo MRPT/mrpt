@@ -334,9 +334,9 @@ void raw_serial::_init()
 
 	_portName[0] = 0;
 }
-}
-}
-}  // end rp::arch::net
+}  // namespace net
+}  // namespace arch
+}  // namespace rp
 
 // begin rp::hal
 namespace rp
@@ -349,5 +349,5 @@ serial_rxtx* serial_rxtx::CreateRxTx()
 }
 
 void serial_rxtx::ReleaseRxTx(serial_rxtx* rxtx) { delete rxtx; }
-}
-}  // end rp::hal
+}  // namespace hal
+}  // namespace rp

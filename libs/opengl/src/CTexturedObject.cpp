@@ -434,8 +434,7 @@ void CTexturedObject::loadTextureInOpenGL() const
 				CTexturedObject_MemPoolParams mem_params;
 				mem_params.len = data.size();
 
-				CTexturedObject_MemPoolData* mem_block =
-					new CTexturedObject_MemPoolData();
+				auto* mem_block = new CTexturedObject_MemPoolData();
 				data.swap(mem_block->data);
 
 				pool->dump_to_pool(mem_params, mem_block);

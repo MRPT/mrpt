@@ -64,12 +64,18 @@ void register_tests_math()
 
 	using namespace std::placeholders;
 	lstTests.emplace_back(
-			"math: std::hypot(float)",
-			[=](auto && arg1, auto && arg2) { return math_test_FUNC<float, decltype(std::hypotf)>(arg1, arg2, std::hypotf); });
+		"math: std::hypot(float)", [=](auto&& arg1, auto&& arg2) {
+			return math_test_FUNC<float, decltype(std::hypotf)>(
+				arg1, arg2, std::hypotf);
+		});
 	lstTests.emplace_back(
-			"math: mrpt::hypot_fast(float)",
-			[=](auto && arg1, auto && arg2) { return math_test_FUNC<float, decltype(mrpt::hypot_fast<float>)>(arg1, arg2, mrpt::hypot_fast<float>); });
+		"math: mrpt::hypot_fast(float)", [=](auto&& arg1, auto&& arg2) {
+			return math_test_FUNC<float, decltype(mrpt::hypot_fast<float>)>(
+				arg1, arg2, mrpt::hypot_fast<float>);
+		});
 	lstTests.emplace_back(
-			"math: mrpt::hypot_fast(double)",
-			[=](auto && arg1, auto && arg2) { return math_test_FUNC<double, decltype(mrpt::hypot_fast<double>)>(arg1, arg2, mrpt::hypot_fast<double>); });
+		"math: mrpt::hypot_fast(double)", [=](auto&& arg1, auto&& arg2) {
+			return math_test_FUNC<double, decltype(mrpt::hypot_fast<double>)>(
+				arg1, arg2, mrpt::hypot_fast<double>);
+		});
 }

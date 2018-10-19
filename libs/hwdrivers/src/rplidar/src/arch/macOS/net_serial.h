@@ -86,5 +86,4 @@ class raw_serial : public rp::hal::serial_rxtx
 	size_t required_tx_cnt;
 	size_t required_rx_cnt;
 };
-}
-
+}  // namespace rp::arch::net

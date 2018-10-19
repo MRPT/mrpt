@@ -28,8 +28,7 @@ using namespace mrpt::nav;
  *   - v_max, w_max: Maximum robot speeds.
  */
 CPTG_DiffDrive_CollisionGridBased::CPTG_DiffDrive_CollisionGridBased()
-	: 
-	  m_collisionGrid(-1, 1, -1, 1, 0.5, this)
+	: m_collisionGrid(-1, 1, -1, 1, 0.5, this)
 {
 }
 
@@ -243,7 +242,7 @@ void CPTG_DiffDrive_CollisionGridBased::simulateTrajectories(
 
 		for (uint16_t k = 0; k < m_alphaValuesCount; k++)
 		{
-			const uint32_t M = static_cast<uint32_t>(m_trajectory[k].size());
+			const auto M = static_cast<uint32_t>(m_trajectory[k].size());
 			for (uint32_t n = 0; n < M; n++)
 			{
 				TCellForLambdaFunction* cell =
@@ -275,8 +274,7 @@ mrpt::kinematics::CVehicleVelCmd::Ptr
 	float v, w;
 	ptgDiffDriveSteeringFunction(index2alpha(k), 0, 0, 0, 0, v, w);
 
-	mrpt::kinematics::CVehicleVelCmd_DiffDriven* cmd =
-		new mrpt::kinematics::CVehicleVelCmd_DiffDriven();
+	auto* cmd = new mrpt::kinematics::CVehicleVelCmd_DiffDriven();
 	cmd->lin_vel = v;
 	cmd->ang_vel = w;
 	return mrpt::kinematics::CVehicleVelCmd::Ptr(cmd);
@@ -307,8 +305,8 @@ void CPTG_DiffDrive_CollisionGridBased::CCollisionGrid::updateCellInfo(
 
 	// For such a small number of elements, brute-force search is not such a bad
 	// idea:
-	TCollisionCell::iterator itK = cell->end();
-	for (TCollisionCell::iterator it = cell->begin(); it != cell->end(); ++it)
+	auto itK = cell->end();
+	for (auto it = cell->begin(); it != cell->end(); ++it)
 		if (it->first == k)
 		{
 			itK = it;
@@ -716,7 +714,7 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(
 		10 * refDistance / min_dist,  // max.n,
 		0.0005f,  // diferencial_t
 		min_dist  // min_dist
-		);
+	);
 
 	// Just for debugging, etc.
 	// debugDumpInFiles(n);
@@ -887,7 +885,7 @@ void CPTG_DiffDrive_CollisionGridBased::updateTPObstacle(
 	ASSERTMSG_(!m_trajectory.empty(), "PTG has not been initialized!");
 	const TCollisionCell& cell = m_collisionGrid.getTPObstacle(ox, oy);
 	// Keep the minimum distance:
-	for (const auto & i : cell)
+	for (const auto& i : cell)
 	{
 		const double dist = i.second;
 		internal_TPObsDistancePostprocess(ox, oy, dist, tp_obstacles[i.first]);
@@ -900,7 +898,7 @@ void CPTG_DiffDrive_CollisionGridBased::updateTPObstacleSingle(
 	ASSERTMSG_(!m_trajectory.empty(), "PTG has not been initialized!");
 	const TCollisionCell& cell = m_collisionGrid.getTPObstacle(ox, oy);
 	// Keep the minimum distance:
-	for (const auto & i : cell)
+	for (const auto& i : cell)
 		if (i.first == k)
 		{
 			const double dist = i.second;

@@ -40,16 +40,16 @@ struct logoddscell_traits<int16_t>
 	static const int16_t P2LTABLE_SIZE = CELLTYPE_MAX;
 	static const size_t LOGODDS_LUT_ENTRIES = 1 << 16;
 };
-}
+}  // namespace detail
 
 /** A generic provider of log-odds grid-map maintainance functions.
-  *  Map cells must be type TCELL, which can be only:
-  *		- int8_t or
-  *		- int16_t
-  *
-  *  \sa CLogOddsGridMapLUT, See derived classes for usage examples.
-  * \ingroup mrpt_maps_grp
-  */
+ *  Map cells must be type TCELL, which can be only:
+ *		- int8_t or
+ *		- int16_t
+ *
+ *  \sa CLogOddsGridMapLUT, See derived classes for usage examples.
+ * \ingroup mrpt_maps_grp
+ */
 template <typename TCELL>
 struct CLogOddsGridMap2D : public detail::logoddscell_traits<TCELL>
 {
@@ -59,14 +59,14 @@ struct CLogOddsGridMap2D : public detail::logoddscell_traits<TCELL>
 
 	/** Performs the Bayesian fusion of a new observation of a cell, without
 	 * checking for grid limits nor updateInfoChangeOnly.
-	  * This method increases the "occupancy-ness" of a cell, managing possible
+	 * This method increases the "occupancy-ness" of a cell, managing possible
 	 * saturation.
-	  *  \param x Cell index in X axis.
-	  *  \param y Cell index in Y axis.
-	  *  \param logodd_obs Observation of the cell, in log-odd form as
+	 *  \param x Cell index in X axis.
+	 *  \param y Cell index in Y axis.
+	 *  \param logodd_obs Observation of the cell, in log-odd form as
 	 * transformed by p2l.
-	  *  \param thres  This must be CELLTYPE_MIN+logodd_obs
-	  * \sa updateCell, updateCell_fast_free
+	 *  \param thres  This must be CELLTYPE_MIN+logodd_obs
+	 * \sa updateCell, updateCell_fast_free
 	 */
 	inline static void updateCell_fast_occupied(
 		const unsigned x, const unsigned y, const cell_t logodd_obs,
@@ -81,13 +81,13 @@ struct CLogOddsGridMap2D : public detail::logoddscell_traits<TCELL>
 
 	/** Performs the Bayesian fusion of a new observation of a cell, without
 	 * checking for grid limits nor updateInfoChangeOnly.
-	  * This method increases the "occupancy-ness" of a cell, managing possible
+	 * This method increases the "occupancy-ness" of a cell, managing possible
 	 * saturation.
-	  *  \param theCell The cell to modify
-	  *  \param logodd_obs Observation of the cell, in log-odd form as
+	 *  \param theCell The cell to modify
+	 *  \param logodd_obs Observation of the cell, in log-odd form as
 	 * transformed by p2l.
-	  *  \param thres  This must be CELLTYPE_MIN+logodd_obs
-	  * \sa updateCell, updateCell_fast_free
+	 *  \param thres  This must be CELLTYPE_MIN+logodd_obs
+	 * \sa updateCell, updateCell_fast_free
 	 */
 	inline static void updateCell_fast_occupied(
 		cell_t* theCell, const cell_t logodd_obs, const cell_t thres)
@@ -100,14 +100,14 @@ struct CLogOddsGridMap2D : public detail::logoddscell_traits<TCELL>
 
 	/** Performs the Bayesian fusion of a new observation of a cell, without
 	 * checking for grid limits nor updateInfoChangeOnly.
-	  * This method increases the "free-ness" of a cell, managing possible
+	 * This method increases the "free-ness" of a cell, managing possible
 	 * saturation.
-	  *  \param x Cell index in X axis.
-	  *  \param y Cell index in Y axis.
-	  *  \param logodd_obs Observation of the cell, in log-odd form as
+	 *  \param x Cell index in X axis.
+	 *  \param y Cell index in Y axis.
+	 *  \param logodd_obs Observation of the cell, in log-odd form as
 	 * transformed by p2l.
-	  *  \param thres  This must be CELLTYPE_MAX-logodd_obs
-	  * \sa updateCell_fast_occupied
+	 *  \param thres  This must be CELLTYPE_MAX-logodd_obs
+	 * \sa updateCell_fast_occupied
 	 */
 	inline static void updateCell_fast_free(
 		const unsigned x, const unsigned y, const cell_t logodd_obs,
@@ -122,14 +122,14 @@ struct CLogOddsGridMap2D : public detail::logoddscell_traits<TCELL>
 
 	/** Performs the Bayesian fusion of a new observation of a cell, without
 	 * checking for grid limits nor updateInfoChangeOnly.
-	  * This method increases the "free-ness" of a cell, managing possible
+	 * This method increases the "free-ness" of a cell, managing possible
 	 * saturation.
-	  *  \param x Cell index in X axis.
-	  *  \param y Cell index in Y axis.
-	  *  \param logodd_obs Observation of the cell, in log-odd form as
+	 *  \param x Cell index in X axis.
+	 *  \param y Cell index in Y axis.
+	 *  \param logodd_obs Observation of the cell, in log-odd form as
 	 * transformed by p2l.
-	  *  \param thres  This must be CELLTYPE_MAX-logodd_obs
-	  * \sa updateCell_fast_occupied
+	 *  \param thres  This must be CELLTYPE_MAX-logodd_obs
+	 * \sa updateCell_fast_occupied
 	 */
 	inline static void updateCell_fast_free(
 		cell_t* theCell, const cell_t logodd_obs, const cell_t thres)
@@ -143,15 +143,15 @@ struct CLogOddsGridMap2D : public detail::logoddscell_traits<TCELL>
 };  // end of CLogOddsGridMap2D
 
 /** One static instance of this struct should exist in any class implementing
-  *CLogOddsGridMap2D to hold the Look-up-tables (LUTs) for log-odss Bayesian
-  *update.
-  *  Map cells must be type TCELL, which can be only:
-  *		- int8_t or
-  *		- int16_t
-  *
-  *  \sa CLogOddsGridMap2D, see derived classes for usage examples.
-  * \ingroup mrpt_maps_grp
-  */
+ *CLogOddsGridMap2D to hold the Look-up-tables (LUTs) for log-odss Bayesian
+ *update.
+ *  Map cells must be type TCELL, which can be only:
+ *		- int8_t or
+ *		- int16_t
+ *
+ *  \sa CLogOddsGridMap2D, see derived classes for usage examples.
+ * \ingroup mrpt_maps_grp
+ */
 template <typename TCELL>
 struct CLogOddsGridMapLUT : public detail::logoddscell_traits<TCELL>
 {
@@ -162,14 +162,14 @@ struct CLogOddsGridMapLUT : public detail::logoddscell_traits<TCELL>
 	/** A lookup table to compute occupancy probabilities in [0,1] from integer
 	 * log-odds values in the cells, using \f$ p(m_{xy}) =
 	 * \frac{1}{1+exp(-log_odd)} \f$.
-	  */
+	 */
 	std::vector<float> logoddsTable;
 
 	/** A lookup table to compute occupancy probabilities in the range [0,255]
 	 * from integer log-odds values in the cells, using \f$ p(m_{xy}) =
 	 * \frac{1}{1+exp(-log_odd)} \f$.
-	  *  This is used to speed-up conversions to grayscale images.
-	  */
+	 *  This is used to speed-up conversions to grayscale images.
+	 */
 	std::vector<uint8_t> logoddsTable_255;
 
 	/** A lookup table for passing from float to log-odds as cell_t. */
@@ -215,7 +215,7 @@ struct CLogOddsGridMapLUT : public detail::logoddscell_traits<TCELL>
 
 	/** Scales an integer representation of the log-odd into a real valued
 	 * probability in [0,1], using p=exp(l)/(1+exp(l))
-	  */
+	 */
 	inline float l2p(const cell_t l)
 	{
 		if (l < traits_t::CELLTYPE_MIN)
@@ -227,7 +227,7 @@ struct CLogOddsGridMapLUT : public detail::logoddscell_traits<TCELL>
 
 	/** Scales an integer representation of the log-odd into a linear scale
 	 * [0,255], using p=exp(l)/(1+exp(l))
-	  */
+	 */
 	inline uint8_t l2p_255(const cell_t l)
 	{
 		if (l < traits_t::CELLTYPE_MIN)
@@ -239,7 +239,7 @@ struct CLogOddsGridMapLUT : public detail::logoddscell_traits<TCELL>
 
 	/** Scales a real valued probability in [0,1] to an integer representation
 	 * of: log(p)-log(1-p)  in the valid range of cell_t.
-	  */
+	 */
 	inline cell_t p2l(const float p)
 	{
 		return p2lTable[static_cast<unsigned int>(p * traits_t::P2LTABLE_SIZE)];
@@ -247,6 +247,5 @@ struct CLogOddsGridMapLUT : public detail::logoddscell_traits<TCELL>
 
 };  // end of CLogOddsGridMap2D
 
-}  // End of namespace
-}  // End of namespace
-
+}  // namespace maps
+}  // namespace mrpt

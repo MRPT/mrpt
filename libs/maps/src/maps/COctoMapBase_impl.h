@@ -16,7 +16,6 @@
 
 namespace mrpt::maps
 {
-
 template <class OCTREE, class OCTREE_NODE>
 struct mrpt::maps::COctoMapBase<OCTREE, OCTREE_NODE>::Impl
 {
@@ -25,9 +24,9 @@ struct mrpt::maps::COctoMapBase<OCTREE, OCTREE_NODE>::Impl
 
 template <class OCTREE, class OCTREE_NODE>
 COctoMapBase<OCTREE, OCTREE_NODE>::COctoMapBase(double resolution)
-	: insertionOptions(*this),
- 	  m_impl(new Impl({resolution}))
-{}
+	: insertionOptions(*this), m_impl(new Impl({resolution}))
+{
+}
 
 template <class OCTREE, class OCTREE_NODE>
 template <class octomap_point3d, class octomap_pointcloud>
@@ -51,8 +50,7 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::
 		/********************************************************************
 				 OBSERVATION TYPE: CObservation2DRangeScan
 		 ********************************************************************/
-		const CObservation2DRangeScan* o =
-			static_cast<const CObservation2DRangeScan*>(obs);
+		const auto* o = static_cast<const CObservation2DRangeScan*>(obs);
 
 		// Build a points-map representation of the points from the scan
 		// (coordinates are wrt the robot base)
@@ -63,8 +61,7 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::
 		sensorPt =
 			octomap::point3d(sensorPose.x(), sensorPose.y(), sensorPose.z());
 
-		const CPointsMap* scanPts =
-			o->buildAuxPointsMap<mrpt::maps::CPointsMap>();
+		const auto* scanPts = o->buildAuxPointsMap<mrpt::maps::CPointsMap>();
 		const size_t nPts = scanPts->size();
 
 		// Transform 3D point cloud:
@@ -90,8 +87,7 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::
 		/********************************************************************
 				 OBSERVATION TYPE: CObservation3DRangeScan
 		 ********************************************************************/
-		const CObservation3DRangeScan* o =
-			static_cast<const CObservation3DRangeScan*>(obs);
+		const auto* o = static_cast<const CObservation3DRangeScan*>(obs);
 
 		// Build a points-map representation of the points from the scan
 		// (coordinates are wrt the robot base)
@@ -196,11 +192,9 @@ double COctoMapBase<OCTREE, OCTREE_NODE>::internal_computeObservationLikelihood(
 	double log_lik = 0;
 	for (size_t i = 0; i < N; i += likelihoodOptions.decimation)
 	{
-		if (m_impl->m_octomap
-				.coordToKeyChecked(scan.getPoint(i), key))
+		if (m_impl->m_octomap.coordToKeyChecked(scan.getPoint(i), key))
 		{
-			OCTREE_NODE* node =
-				m_impl->m_octomap.search(key, 0 /*depth*/);
+			OCTREE_NODE* node = m_impl->m_octomap.search(key, 0 /*depth*/);
 			if (node) log_lik += std::log(node->getOccupancy());
 		}
 	}
@@ -213,11 +207,9 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::getPointOccupancy(
 	const float x, const float y, const float z, double& prob_occupancy) const
 {
 	octomap::OcTreeKey key;
-	if (m_impl->m_octomap
-			.coordToKeyChecked(octomap::point3d(x, y, z), key))
+	if (m_impl->m_octomap.coordToKeyChecked(octomap::point3d(x, y, z), key))
 	{
-		OCTREE_NODE* node =
-			m_impl->m_octomap.search(key, 0 /*depth*/);
+		OCTREE_NODE* node = m_impl->m_octomap.search(key, 0 /*depth*/);
 		if (!node) return false;
 
 		prob_occupancy = node->getOccupancy();
@@ -238,10 +230,9 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::insertPointCloud(
 	const float *xs, *ys, *zs;
 	ptMap.getPointsBuffer(N, xs, ys, zs);
 	for (size_t i = 0; i < N; i++)
-		m_impl->m_octomap
-			.insertRay(
-				sensorPt, octomap::point3d(xs[i], ys[i], zs[i]),
-				insertionOptions.maxrange, insertionOptions.pruning);
+		m_impl->m_octomap.insertRay(
+			sensorPt, octomap::point3d(xs[i], ys[i], zs[i]),
+			insertionOptions.maxrange, insertionOptions.pruning);
 	MRPT_END
 }
 
@@ -252,12 +243,10 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::castRay(
 {
 	octomap::point3d _end;
 
-	const bool ret =
-		m_impl->m_octomap
-			.castRay(
-				octomap::point3d(origin.x, origin.y, origin.z),
-				octomap::point3d(direction.x, direction.y, direction.z), _end,
-				ignoreUnknownCells, maxRange);
+	const bool ret = m_impl->m_octomap.castRay(
+		octomap::point3d(origin.x, origin.y, origin.z),
+		octomap::point3d(direction.x, direction.y, direction.z), _end,
+		ignoreUnknownCells, maxRange);
 
 	end.x = _end.x();
 	end.y = _end.y();
@@ -285,16 +274,15 @@ COctoMapBase<OCTREE, OCTREE_NODE>::TInsertionOptions::TInsertionOptions(
 
 template <class OCTREE, class OCTREE_NODE>
 COctoMapBase<OCTREE, OCTREE_NODE>::TInsertionOptions::TInsertionOptions()
-	: 
-	  m_parent(nullptr)
-	  
+	: m_parent(nullptr)
+
 {
 }
 
 template <class OCTREE, class OCTREE_NODE>
 COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::TLikelihoodOptions()
-	 
-= default;
+
+	= default;
 
 template <class OCTREE, class OCTREE_NODE>
 void COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::writeToStream(
@@ -414,5 +402,4 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::TRenderingOptions::readFromStream(
 	}
 }
 
-}
-
+}  // namespace mrpt::maps

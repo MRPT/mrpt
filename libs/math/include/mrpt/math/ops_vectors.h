@@ -162,5 +162,4 @@ mrpt::serialization::CArchive& operator>>(
 
 /**  @} */  // end of grouping
 
-}
-
+}  // namespace mrpt::math

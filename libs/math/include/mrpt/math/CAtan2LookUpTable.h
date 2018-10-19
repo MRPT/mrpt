@@ -15,11 +15,11 @@ namespace mrpt::math
 {
 /** A look-up-table (LUT) of atan values for any (x,y) value in a
  * square/rectangular grid of predefined resolution
-  *
-  * \sa mrpt::math::CAtan2LookUpTableMultiRes,
+ *
+ * \sa mrpt::math::CAtan2LookUpTableMultiRes,
  * mrpt::obs::CSinCosLookUpTableFor2DScans
  * \ingroup mrpt_math_grp
-  */
+ */
 class CAtan2LookUpTable
 {
    public:
@@ -40,6 +40,7 @@ class CAtan2LookUpTable
 	double getYMin() const { return m_grid.getYMin(); }
 	double getYMax() const { return m_grid.getYMax(); }
 	double getResolution() const { return m_grid.getResolution(); }
+
    private:
 	mrpt::containers::CDynamicGrid<double> m_grid;
 };
@@ -58,7 +59,7 @@ class CAtan2LookUpTable
  *  atan2lut.resize(res2extension);
  * \endcode
  * \ingroup mrpt_math_grp
-  */
+ */
 class CAtan2LookUpTableMultiRes
 {
    public:
@@ -80,5 +81,4 @@ class CAtan2LookUpTableMultiRes
 	std::map<double, mrpt::containers::CDynamicGrid<double>> m_grids;
 };
 
-}
-
+}  // namespace mrpt::math

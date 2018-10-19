@@ -36,7 +36,7 @@ bool gridmapSimulApp::OnInit()
 	wxInitAllImageHandlers();
 	if (wxsOK)
 	{
-		gridmapSimulFrame* Frame = new gridmapSimulFrame(nullptr);
+		auto* Frame = new gridmapSimulFrame(nullptr);
 		Frame->Show();
 		SetTopWindow(Frame);
 	}

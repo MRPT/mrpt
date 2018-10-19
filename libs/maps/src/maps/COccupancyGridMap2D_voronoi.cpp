@@ -42,8 +42,8 @@ void COccupancyGridMap2D::buildVoronoiDiagram(
 	int robot_size_units = round(100 * robot_size / resolution);
 
 	/* We store 0 in cells NOT belonging to Voronoi, or the closest distance
- * to obstacle otherwise, the "clearance" in "int" distance units.
- */
+	 * to obstacle otherwise, the "clearance" in "int" distance units.
+	 */
 	m_voronoi_diagram.setSize(
 		x_min, x_max, y_min, y_max, resolution);  // assign(size_x*size_y,0);
 	ASSERT_EQUAL_(m_voronoi_diagram.getSizeX(), size_x);

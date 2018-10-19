@@ -160,7 +160,7 @@ char myIsTextWideChar(
 	// it's a char* buffer.
 	if ((((unsigned long)b) % sizeof(wchar_t)) != 0) return FALSE;
 #endif
-	const wchar_t* s = (const wchar_t*)b;
+	const auto* s = (const wchar_t*)b;
 
 	// buffer too small:
 	if (len < (int)sizeof(wchar_t)) return FALSE;
@@ -253,7 +253,7 @@ char* myWideCharToMultiByte(const wchar_t* s)
 		0,  // size of buffer
 		nullptr,  // default for unmappable chars
 		nullptr  // set when default char used
-		);
+	);
 	if (i < 0) return nullptr;
 	char* d = (char*)malloc(i + 1);
 	WideCharToMultiByte(
@@ -265,7 +265,7 @@ char* myWideCharToMultiByte(const wchar_t* s)
 		i,  // size of buffer
 		nullptr,  // default for unmappable chars
 		nullptr  // set when default char used
-		);
+	);
 	d[i] = 0;
 	return d;
 }
@@ -549,7 +549,7 @@ XMLNode XMLNode::openFileHelper(XMLCSTR filename, XMLCSTR tag)
 	if (pResults.error != eXMLErrorNone)
 	{
 		// create message
-		char message[2000], *s1 = (char *)"", *s3 = (char *)"";
+		char message[2000], *s1 = (char*)"", *s3 = (char*)"";
 		XMLCSTR s2 = _CXML("");
 		if (pResults.error == eXMLErrorFirstTagNotFound)
 		{
@@ -763,7 +763,8 @@ XMLClear XMLNode::emptyXMLClear = {nullptr, nullptr, nullptr};
 XMLAttribute XMLNode::emptyXMLAttribute = {nullptr, nullptr};
 
 // Enumeration used to decipher what type a token is
-typedef enum XMLTokenTypeTag {
+typedef enum XMLTokenTypeTag
+{
 	eTokenText = 0,
 	eTokenQuotedText,
 	eTokenTagStart, /* "<"            */
@@ -1790,8 +1791,9 @@ int XMLNode::ParseXMLElement(void* pa)
 								return FALSE;
 							}
 
-// If we found a new element which is the same as this
-// element then we need to pass this back to the caller..
+							// If we found a new element which is the same as
+							// this element then we need to pass this back to
+							// the caller..
 
 #ifdef APPROXIMATE_PARSING
 							if (d->lpszName &&
@@ -2302,7 +2304,7 @@ XMLNode XMLNode::parseFile(XMLCSTR filename, XMLCSTR tag, XMLResults* pResults)
 		return emptyXMLNode;
 	}
 	fseek(f, 0, SEEK_SET);
-	unsigned char* buf = (unsigned char*)malloc(l + 4);
+	auto* buf = (unsigned char*)malloc(l + 4);
 	int really_read = (int)fread(buf, 1, l, f);  // JLBC
 	if (really_read != l) buf[0] = '\0';
 	fclose(f);
@@ -3547,7 +3549,7 @@ XMLNode::XMLCharEncoding XMLNode::guessCharEncoding(
 	if (l < 25) return (XMLCharEncoding)0;
 	if (guessWideCharChars && (myIsTextWideChar(buf, l)))
 		return (XMLCharEncoding)0;
-	unsigned char* b = (unsigned char*)buf;
+	auto* b = (unsigned char*)buf;
 	if ((b[0] == 0xef) && (b[1] == 0xbb) && (b[2] == 0xbf))
 		return char_encoding_UTF8;
 

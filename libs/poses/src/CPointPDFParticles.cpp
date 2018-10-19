@@ -135,8 +135,9 @@ void CPointPDFParticles::serializeTo(mrpt::serialization::CArchive& out) const
 	uint32_t N = size();
 	out << N;
 
-	for (const auto & m_particle : m_particles)
-		out << m_particle.log_w << m_particle.d->x << m_particle.d->y << m_particle.d->z;
+	for (const auto& m_particle : m_particles)
+		out << m_particle.log_w << m_particle.d->x << m_particle.d->y
+			<< m_particle.d->z;
 }
 
 void CPointPDFParticles::serializeFrom(
@@ -150,8 +151,9 @@ void CPointPDFParticles::serializeFrom(
 			in >> N;
 			setSize(N);
 
-			for (auto & m_particle : m_particles)
-				in >> m_particle.log_w >> m_particle.d->x >> m_particle.d->y >> m_particle.d->z;
+			for (auto& m_particle : m_particles)
+				in >> m_particle.log_w >> m_particle.d->x >> m_particle.d->y >>
+					m_particle.d->z;
 		}
 		break;
 		default:
@@ -195,12 +197,12 @@ void CPointPDFParticles::changeCoordinatesReference(
 	const CPose3D& newReferenceBase)
 {
 	TPoint3D pt;
-	for (auto & m_particle : m_particles)
+	for (auto& m_particle : m_particles)
 	{
 		newReferenceBase.composePoint(
 			m_particle.d->x, m_particle.d->y, m_particle.d->z,  // In
 			pt.x, pt.y, pt.z  // Out
-			);
+		);
 		m_particle.d->x = pt.x;
 		m_particle.d->y = pt.y;
 		m_particle.d->z = pt.z;
@@ -222,7 +224,7 @@ double CPointPDFParticles::computeKurtosis()
 	var.assign(3, .0);
 
 	// Means:
-	for (auto & m_particle : m_particles)
+	for (auto& m_particle : m_particles)
 	{
 		m[0] += m_particle.d->x;
 		m[1] += m_particle.d->y;
@@ -231,7 +233,7 @@ double CPointPDFParticles::computeKurtosis()
 	m *= 1.0 / m_particles.size();
 
 	// variances:
-	for (auto & m_particle : m_particles)
+	for (auto& m_particle : m_particles)
 	{
 		var[0] += square(m_particle.d->x - m[0]);
 		var[1] += square(m_particle.d->y - m[1]);
@@ -243,7 +245,7 @@ double CPointPDFParticles::computeKurtosis()
 	var[2] = square(var[2]);
 
 	// Moment:
-	for (auto & m_particle : m_particles)
+	for (auto& m_particle : m_particles)
 	{
 		mu4[0] += pow(m_particle.d->x - m[0], 4.0);
 		mu4[1] += pow(m_particle.d->y - m[1], 4.0);

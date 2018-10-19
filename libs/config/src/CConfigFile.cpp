@@ -26,8 +26,8 @@ struct CConfigFile::Impl
 /*---------------------------------------------------------------
 					Constructor
  ---------------------------------------------------------------*/
-CConfigFile::CConfigFile(const std::string& fileName) :
-	m_impl(mrpt::make_impl<CConfigFile::Impl>())
+CConfigFile::CConfigFile(const std::string& fileName)
+	: m_impl(mrpt::make_impl<CConfigFile::Impl>())
 {
 	MRPT_START
 
@@ -41,8 +41,7 @@ CConfigFile::CConfigFile(const std::string& fileName) :
 /*---------------------------------------------------------------
 					Constructor
  ---------------------------------------------------------------*/
-CConfigFile::CConfigFile() :
-	m_impl(mrpt::make_impl<CConfigFile::Impl>())
+CConfigFile::CConfigFile() : m_impl(mrpt::make_impl<CConfigFile::Impl>())
 {
 	MRPT_START
 
@@ -84,10 +83,7 @@ void CConfigFile::discardSavingChanges() { m_modified = false; }
 /*---------------------------------------------------------------
 					Destructor
  ---------------------------------------------------------------*/
-CConfigFile::~CConfigFile()
-{
-	writeNow();
-}
+CConfigFile::~CConfigFile() { writeNow(); }
 
 /*---------------------------------------------------------------
 					writeString
@@ -99,7 +95,8 @@ void CConfigFile::writeString(
 
 	m_modified = true;
 
-	if (0 > m_impl->m_ini.SetValue(section.c_str(), name.c_str(), str.c_str(), nullptr))
+	if (0 > m_impl->m_ini.SetValue(
+				section.c_str(), name.c_str(), str.c_str(), nullptr))
 		THROW_EXCEPTION("Error changing value in INI-style file!");
 
 	MRPT_END
@@ -116,16 +113,15 @@ std::string CConfigFile::readString(
 	const char* defVal = failIfNotFound ? nullptr : defaultStr.c_str();
 
 	const char* aux = m_impl->m_ini.GetValue(
-				section.c_str(), name.c_str(), defVal,
-				nullptr);  // The memory is managed by the SimpleIni object
+		section.c_str(), name.c_str(), defVal,
+		nullptr);  // The memory is managed by the SimpleIni object
 
 	if (failIfNotFound && !aux)
 	{
-		string tmpStr(
-			format(
-				"Value '%s' not found in section '%s' of file '%s' and "
-				"failIfNotFound=true.",
-				name.c_str(), section.c_str(), m_file.c_str()));
+		string tmpStr(format(
+			"Value '%s' not found in section '%s' of file '%s' and "
+			"failIfNotFound=true.",
+			name.c_str(), section.c_str(), m_file.c_str()));
 		THROW_EXCEPTION(tmpStr);
 	}
 

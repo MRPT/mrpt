@@ -27,28 +27,21 @@ TEST(CRandomFieldGridMap3D, insertCheckMapBounds)
 	const double val = 10.0, var = 1.0;
 
 	// Inside:
-	EXPECT_TRUE(
-		grid3d.insertIndividualReading(
-			1.0 * val, var, TPoint3D(2.0, 3.0, 1.0), im, false));
-	EXPECT_TRUE(
-		grid3d.insertIndividualReading(
-			2.0 * val, var, TPoint3D(-3.0, 0.4, 1.0), im, false));
-	EXPECT_TRUE(
-		grid3d.insertIndividualReading(
-			3.0 * val, var, TPoint3D(3.0, 3.8, 3.0), im, false));
+	EXPECT_TRUE(grid3d.insertIndividualReading(
+		1.0 * val, var, TPoint3D(2.0, 3.0, 1.0), im, false));
+	EXPECT_TRUE(grid3d.insertIndividualReading(
+		2.0 * val, var, TPoint3D(-3.0, 0.4, 1.0), im, false));
+	EXPECT_TRUE(grid3d.insertIndividualReading(
+		3.0 * val, var, TPoint3D(3.0, 3.8, 3.0), im, false));
 	// Outside:
-	EXPECT_FALSE(
-		grid3d.insertIndividualReading(
-			val, var, TPoint3D(-11.0, 2.0, 2.0), im, false));
-	EXPECT_FALSE(
-		grid3d.insertIndividualReading(
-			val, var, TPoint3D(11.0, 2.0, 3.0), im, false));
-	EXPECT_FALSE(
-		grid3d.insertIndividualReading(
-			val, var, TPoint3D(2.0, -1.0, 11.0), im, false));
-	EXPECT_FALSE(
-		grid3d.insertIndividualReading(
-			val, var, TPoint3D(2.0, 6.0, 3.0), im, false));
+	EXPECT_FALSE(grid3d.insertIndividualReading(
+		val, var, TPoint3D(-11.0, 2.0, 2.0), im, false));
+	EXPECT_FALSE(grid3d.insertIndividualReading(
+		val, var, TPoint3D(11.0, 2.0, 3.0), im, false));
+	EXPECT_FALSE(grid3d.insertIndividualReading(
+		val, var, TPoint3D(2.0, -1.0, 11.0), im, false));
+	EXPECT_FALSE(grid3d.insertIndividualReading(
+		val, var, TPoint3D(2.0, 6.0, 3.0), im, false));
 
 #if 0
 	grid3d.updateMapEstimation();
@@ -72,9 +65,8 @@ TEST(CRandomFieldGridMap3D, insertPointsAndRead)
 
 	const double val = 55.0, var = 1.0;
 
-	EXPECT_TRUE(
-		grid3d.insertIndividualReading(
-			val, var, TPoint3D(2.0, 3.0, 1.0), im, false));
+	EXPECT_TRUE(grid3d.insertIndividualReading(
+		val, var, TPoint3D(2.0, 3.0, 1.0), im, false));
 
 	grid3d.insertionOptions.GMRF_skip_variance = true;
 	grid3d.updateMapEstimation();

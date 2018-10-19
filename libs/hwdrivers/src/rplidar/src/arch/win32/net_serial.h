@@ -83,5 +83,4 @@ class raw_serial : public rp::hal::serial_rxtx
 	DCB _dcb;
 	COMMTIMEOUTS _co;
 };
-}
-
+}  // namespace rp::arch::net

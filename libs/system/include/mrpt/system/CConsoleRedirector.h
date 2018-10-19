@@ -133,5 +133,4 @@ class CConsoleRedirector : public std::streambuf
 		return 0;
 	}
 };
-}
-
+}  // namespace mrpt::system

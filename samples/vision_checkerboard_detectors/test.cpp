@@ -48,7 +48,7 @@ void TestCheckerboardDetectors()
 		img, cornerCoords, checkerboard_size_x, checkerboard_size_y,
 		true,  // normalize_image
 		false  // useScaramuzzaMethod
-		);
+	);
 
 	timlog.leave("findChessboardCorners [OpenCV]");
 
@@ -64,7 +64,7 @@ void TestCheckerboardDetectors()
 		img, cornerCoords, checkerboard_size_x, checkerboard_size_y,
 		true,  // normalize_image
 		true  // useScaramuzzaMethod
-		);
+	);
 
 	timlog.leave("findChessboardCorners [Scaramuzza]");
 

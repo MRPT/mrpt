@@ -13,7 +13,8 @@
 #include "pstdint.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #else
 #define XSTIMESTAMP_INITIALIZER \
 	{                           \
@@ -21,27 +22,29 @@ extern "C" {
 	}
 #endif
 
-struct XsTimeStamp;
-struct XsUtcTime;
+	struct XsTimeStamp;
+	struct XsUtcTime;
 
-XSTYPES_DLL_API void XsTimeStamp_setMilliSecondTime(
-	struct XsTimeStamp* thisPtr, int64_t t);
-XSTYPES_DLL_API double XsTimeStamp_timeOfDay(const struct XsTimeStamp* thisPtr);
-XSTYPES_DLL_API int64_t
-	XsTimeStamp_secondTime(const struct XsTimeStamp* thisPtr);
-XSTYPES_DLL_API int32_t
-	XsTimeStamp_milliSecondPart(const struct XsTimeStamp* thisPtr);
-XSTYPES_DLL_API int32_t
-	XsTimeStamp_secondPart(const struct XsTimeStamp* thisPtr);
-XSTYPES_DLL_API int32_t
-	XsTimeStamp_minutePart(const struct XsTimeStamp* thisPtr);
-XSTYPES_DLL_API int32_t XsTimeStamp_hourPart(const struct XsTimeStamp* thisPtr);
-XSTYPES_DLL_API int64_t XsTimeStamp_now(struct XsTimeStamp* thisPtr);
-XSTYPES_DLL_API int64_t XsTimeStamp_maxValue();
-XSTYPES_DLL_API int64_t XsTimeStamp_fromUtcTime(
-	struct XsTimeStamp* thisPtr, const struct XsUtcTime* utc);
-XSTYPES_DLL_API void XsTimeStamp_toUtcTime(
-	struct XsTimeStamp* thisPtr, struct XsUtcTime* utc);
+	XSTYPES_DLL_API void XsTimeStamp_setMilliSecondTime(
+		struct XsTimeStamp* thisPtr, int64_t t);
+	XSTYPES_DLL_API double XsTimeStamp_timeOfDay(
+		const struct XsTimeStamp* thisPtr);
+	XSTYPES_DLL_API int64_t
+		XsTimeStamp_secondTime(const struct XsTimeStamp* thisPtr);
+	XSTYPES_DLL_API int32_t
+		XsTimeStamp_milliSecondPart(const struct XsTimeStamp* thisPtr);
+	XSTYPES_DLL_API int32_t
+		XsTimeStamp_secondPart(const struct XsTimeStamp* thisPtr);
+	XSTYPES_DLL_API int32_t
+		XsTimeStamp_minutePart(const struct XsTimeStamp* thisPtr);
+	XSTYPES_DLL_API int32_t
+		XsTimeStamp_hourPart(const struct XsTimeStamp* thisPtr);
+	XSTYPES_DLL_API int64_t XsTimeStamp_now(struct XsTimeStamp* thisPtr);
+	XSTYPES_DLL_API int64_t XsTimeStamp_maxValue();
+	XSTYPES_DLL_API int64_t XsTimeStamp_fromUtcTime(
+		struct XsTimeStamp* thisPtr, const struct XsUtcTime* utc);
+	XSTYPES_DLL_API void XsTimeStamp_toUtcTime(
+		struct XsTimeStamp* thisPtr, struct XsUtcTime* utc);
 
 #ifdef __cplusplus
 }  // extern "C"
@@ -81,11 +84,11 @@ struct XsTimeStamp
 	inline void setMsTime(int64_t t) { m_msTime = t; }
 	/*! \brief Get the time of day component of the stored timestamp in seconds
 	 * as a double precision value.
-	*/
+	 */
 	inline double timeOfDay() const { return XsTimeStamp_timeOfDay(this); }
 	/*! \brief Get the time of day component of the stored timestamp in
 	 * milliseconds
-	*/
+	 */
 	inline int64_t msTimeOfDay() const
 	{
 		return m_msTime % (24 * 60 * 60 * 1000);
@@ -243,6 +246,7 @@ struct XsTimeStamp
 	XsTimeStamp operator--() { return XsTimeStamp(--m_msTime); }
 	/*! \brief Decrement the timestamp by one ms, postfix */
 	XsTimeStamp operator--(int) { return XsTimeStamp(m_msTime--); }
+
    private:
 #endif
 

@@ -46,14 +46,14 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPosePDF& o)
 
 	if (IS_CLASS(&o, CPosePDFSOG))
 	{
-		const CPosePDFSOG* p = static_cast<const CPosePDFSOG*>(&o);
+		const auto* p = static_cast<const CPosePDFSOG*>(&o);
 
 		opengl::CSetOfLines::Ptr lins =
 			mrpt::make_aligned_shared<opengl::CSetOfLines>();
 		lins->setColor(0, 0, 1, 0.6);
 		lins->setLineWidth(POSE_TAIL_WIDTH);
 
-		for (const auto & it : *p)
+		for (const auto& it : *p)
 		{
 			opengl::CEllipsoid::Ptr ellip =
 				mrpt::make_aligned_shared<opengl::CEllipsoid>();
@@ -75,7 +75,7 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPosePDF& o)
 	}
 	else if (IS_CLASS(&o, CPosePDFGaussian))
 	{
-		const CPosePDFGaussian* p = static_cast<const CPosePDFGaussian*>(&o);
+		const auto* p = static_cast<const CPosePDFGaussian*>(&o);
 
 		opengl::CSetOfLines::Ptr lins =
 			mrpt::make_aligned_shared<opengl::CSetOfLines>();
@@ -103,7 +103,7 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPosePDF& o)
 	}
 	else if (IS_CLASS(&o, CPosePDFParticles))
 	{
-		const CPosePDFParticles* p = static_cast<const CPosePDFParticles*>(&o);
+		const auto* p = static_cast<const CPosePDFParticles*>(&o);
 
 		opengl::CPointCloud::Ptr pnts =
 			mrpt::make_aligned_shared<opengl::CPointCloud>();
@@ -120,8 +120,7 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPosePDF& o)
 			const auto po = p->m_particles[i].d;
 			pnts->insertPoint(po.x, po.y, 0);
 			lins->appendLine(
-				po.x, po.y, 0,
-				po.x + POSE_TAIL_LENGTH * cos(po.phi),
+				po.x, po.y, 0, po.x + POSE_TAIL_LENGTH * cos(po.phi),
 				po.y + POSE_TAIL_LENGTH * sin(po.phi), 0);
 		}
 		outObj->insert(pnts);
@@ -140,10 +139,10 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPointPDF& o)
 
 	if (IS_CLASS(&o, CPointPDFSOG))
 	{
-		const CPointPDFSOG* p = static_cast<const CPointPDFSOG*>(&o);
+		const auto* p = static_cast<const CPointPDFSOG*>(&o);
 
 		// For each gaussian node
-		for (const auto & it : *p)
+		for (const auto& it : *p)
 		{
 			opengl::CEllipsoid::Ptr obj =
 				mrpt::make_aligned_shared<opengl::CEllipsoid>();
@@ -160,7 +159,7 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPointPDF& o)
 	}
 	else if (IS_CLASS(&o, CPointPDFGaussian))
 	{
-		const CPointPDFGaussian* p = static_cast<const CPointPDFGaussian*>(&o);
+		const auto* p = static_cast<const CPointPDFGaussian*>(&o);
 
 		CEllipsoid::Ptr obj = mrpt::make_aligned_shared<CEllipsoid>();
 		obj->setLocation(p->mean.x(), p->mean.y(), p->mean.z());
@@ -172,8 +171,7 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPointPDF& o)
 	}
 	else if (IS_CLASS(&o, CPointPDFParticles))
 	{
-		const CPointPDFParticles* p =
-			static_cast<const CPointPDFParticles*>(&o);
+		const auto* p = static_cast<const CPointPDFParticles*>(&o);
 
 		mrpt::opengl::CPointCloud::Ptr obj =
 			mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
@@ -200,10 +198,10 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPose3DPDF& o)
 
 	if (IS_CLASS(&o, CPose3DPDFSOG))
 	{
-		const CPose3DPDFSOG* p = static_cast<const CPose3DPDFSOG*>(&o);
+		const auto* p = static_cast<const CPose3DPDFSOG*>(&o);
 
 		// For each gaussian node
-		for (const auto & it : *p)
+		for (const auto& it : *p)
 		{
 			opengl::CEllipsoid::Ptr obj =
 				mrpt::make_aligned_shared<opengl::CEllipsoid>();
@@ -227,8 +225,7 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPose3DPDF& o)
 	}
 	else if (IS_CLASS(&o, CPose3DPDFGaussian))
 	{
-		const CPose3DPDFGaussian* p =
-			static_cast<const CPose3DPDFGaussian*>(&o);
+		const auto* p = static_cast<const CPose3DPDFGaussian*>(&o);
 
 		opengl::CEllipsoid::Ptr obj =
 			mrpt::make_aligned_shared<opengl::CEllipsoid>();
@@ -249,8 +246,7 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPose3DPDF& o)
 	}
 	else if (IS_CLASS(&o, CPose3DPDFParticles))
 	{
-		const CPose3DPDFParticles* p =
-			static_cast<const CPose3DPDFParticles*>(&o);
+		const auto* p = static_cast<const CPose3DPDFParticles*>(&o);
 
 		for (size_t i = 0; i < p->size(); i++)
 		{
@@ -273,8 +269,7 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPose3DQuatPDF& o)
 
 	if (IS_CLASS(&o, CPose3DQuatPDFGaussian))
 	{
-		const CPose3DQuatPDFGaussian* p =
-			static_cast<const CPose3DQuatPDFGaussian*>(&o);
+		const auto* p = static_cast<const CPose3DQuatPDFGaussian*>(&o);
 
 		opengl::CEllipsoid::Ptr obj =
 			mrpt::make_aligned_shared<opengl::CEllipsoid>();

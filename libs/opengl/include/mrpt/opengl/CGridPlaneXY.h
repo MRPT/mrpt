@@ -14,18 +14,18 @@
 namespace mrpt::opengl
 {
 /** A grid of lines over the XY plane.
-  *  \sa opengl::COpenGLScene
-  *
-  *  <div align="center">
-  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
+ *  \sa opengl::COpenGLScene
+ *
+ *  <div align="center">
+ *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
  * border-style: solid;">
-  *   <tr> <td> mrpt::opengl::CGridPlaneXY </td> <td> \image html
+ *   <tr> <td> mrpt::opengl::CGridPlaneXY </td> <td> \image html
  * preview_CGridPlaneXY.png </td> </tr>
-  *  </table>
-  *  </div>
-  *
-  * \ingroup mrpt_opengl_grp
-  */
+ *  </table>
+ *  </div>
+ *
+ * \ingroup mrpt_opengl_grp
+ */
 class CGridPlaneXY : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CGridPlaneXY)
@@ -101,6 +101,4 @@ class CGridPlaneXY : public CRenderizableDisplayList
 	~CGridPlaneXY() override = default;
 };
 
-}
-
-
+}  // namespace mrpt::opengl

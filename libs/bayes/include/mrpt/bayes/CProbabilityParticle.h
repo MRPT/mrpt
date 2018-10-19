@@ -64,4 +64,4 @@ struct CProbabilityParticle<T, particle_storage_mode::VALUE>
 	T d{};
 };
 
-}
+}  // namespace mrpt::bayes

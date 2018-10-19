@@ -97,5 +97,4 @@ mrpt::serialization::CArchive& operator>>(
 	mrpt::serialization::CArchive& in, mrpt::math::CVectorDouble& a);
 mrpt::serialization::CArchive& operator>>(
 	mrpt::serialization::CArchive& in, mrpt::math::CVectorFloat& a);
-}
-
+}  // namespace mrpt::math

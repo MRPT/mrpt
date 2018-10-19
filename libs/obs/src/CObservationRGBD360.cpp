@@ -27,12 +27,7 @@ IMPLEMENTS_SERIALIZABLE(CObservationRGBD360, CObservation, mrpt::obs)
 /*---------------------------------------------------------------
 							Constructor
  ---------------------------------------------------------------*/
-CObservationRGBD360::CObservationRGBD360()
-	: 
-	  sensorPose()
-	  
-{
-}
+CObservationRGBD360::CObservationRGBD360() : sensorPose() {}
 
 /*---------------------------------------------------------------
 							Destructor
@@ -67,10 +62,11 @@ void CObservationRGBD360::serializeTo(mrpt::serialization::CArchive& out) const
 	//
 	out << hasRangeImage;
 	if (hasRangeImage)
-		for (const auto & rangeImage : rangeImages) out << rangeImage;
+		for (const auto& rangeImage : rangeImages) out << rangeImage;
 	out << hasIntensityImage;
 	if (hasIntensityImage)
-		for (const auto & intensityImage : intensityImages) out << intensityImage;
+		for (const auto& intensityImage : intensityImages)
+			out << intensityImage;
 	//		out << hasConfidenceImage; if (hasConfidenceImage) out <<
 	// confidenceImage;
 	for (auto timestamp : timestamps) out << timestamp;
@@ -93,7 +89,7 @@ void CObservationRGBD360::serializeFrom(
 			in >> maxRange >> sensorPose;
 			in >> hasRangeImage;
 			if (hasRangeImage)
-				for (auto & rangeImage : rangeImages)
+				for (auto& rangeImage : rangeImages)
 				{
 #ifdef COBS3DRANGE_USE_MEMPOOL
 					// We should call "rangeImage_setSize()" to exploit the
@@ -105,7 +101,7 @@ void CObservationRGBD360::serializeFrom(
 
 			in >> hasIntensityImage;
 			if (hasIntensityImage)
-				for (auto & intensityImage : intensityImages)
+				for (auto& intensityImage : intensityImages)
 					in >> intensityImage;
 
 			//      in >> hasConfidenceImage;
@@ -114,7 +110,7 @@ void CObservationRGBD360::serializeFrom(
 
 			//      in >> cameraParams;
 
-			for (auto & timestamp : timestamps) in >> timestamp;
+			for (auto& timestamp : timestamps) in >> timestamp;
 			in >> stdError;
 			in >> timestamp;
 			in >> sensorLabel;

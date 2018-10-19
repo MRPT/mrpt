@@ -13,49 +13,49 @@
 namespace mrpt::nav
 {
 /** \defgroup nav_reactive Reactive navigation classes
-  * \ingroup mrpt_nav_grp
-  */
+ * \ingroup mrpt_nav_grp
+ */
 
 /** See base class CAbstractPTGBasedReactive for a description and instructions
-* of use.
-* This particular implementation assumes a 2D robot shape which can be polygonal
-* or circular (depending on the selected PTGs).
-*
-* Publications:
-*  - Blanco, Jose-Luis, Javier Gonzalez, and Juan-Antonio Fernandez-Madrigal.
-* ["Extending obstacle avoidance methods through multiple parameter-space
-* transformations"](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.190.4672&rep=rep1&type=pdf).
-* Autonomous Robots 24.1 (2008): 29-48.
-*
-* Class history:
-* - 17/JUN/2004: First design.
-* - 16/SEP/2004: Totally redesigned, according to document "MultiParametric
-* Based Space Transformation for Reactive Navigation"
-* - 29/SEP/2005: Totally rewritten again, for integration into MRPT library and
-* according to the ICRA paper.
-* - 17/OCT/2007: Whole code updated to accomodate to MRPT 0.5 and make it
-* portable to Linux.
-* - DEC/2013: Code refactoring between this class and
-* CAbstractHolonomicReactiveMethod
-* - FEB/2017: Refactoring of all parameters for a consistent organization in
-* sections by class names (MRPT 1.5.0)
-*
-* This class requires a number of parameters which are usually provided via an
-* external config (".ini") file.
-* Alternatively, a memory-only object can be used to avoid physical files, see
-* mrpt::config::CConfigFileMemory.
-*
-* A template config file can be generated at any moment by the user by calling
-* saveConfigFile() with a default-constructed object.
-*
-* Next we provide a self-documented template config file; or see it online:
-* https://github.com/MRPT/mrpt/blob/master/share/mrpt/config_files/navigation-ptgs/reactive2d_config.ini
-* \verbinclude reactive2d_config.ini
-*
-*  \sa CAbstractNavigator, CParameterizedTrajectoryGenerator,
-* CAbstractHolonomicReactiveMethod
-*  \ingroup nav_reactive
-*/
+ * of use.
+ * This particular implementation assumes a 2D robot shape which can be
+ * polygonal or circular (depending on the selected PTGs).
+ *
+ * Publications:
+ *  - Blanco, Jose-Luis, Javier Gonzalez, and Juan-Antonio Fernandez-Madrigal.
+ * ["Extending obstacle avoidance methods through multiple parameter-space
+ * transformations"](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.190.4672&rep=rep1&type=pdf).
+ * Autonomous Robots 24.1 (2008): 29-48.
+ *
+ * Class history:
+ * - 17/JUN/2004: First design.
+ * - 16/SEP/2004: Totally redesigned, according to document "MultiParametric
+ * Based Space Transformation for Reactive Navigation"
+ * - 29/SEP/2005: Totally rewritten again, for integration into MRPT library and
+ * according to the ICRA paper.
+ * - 17/OCT/2007: Whole code updated to accomodate to MRPT 0.5 and make it
+ * portable to Linux.
+ * - DEC/2013: Code refactoring between this class and
+ * CAbstractHolonomicReactiveMethod
+ * - FEB/2017: Refactoring of all parameters for a consistent organization in
+ * sections by class names (MRPT 1.5.0)
+ *
+ * This class requires a number of parameters which are usually provided via an
+ * external config (".ini") file.
+ * Alternatively, a memory-only object can be used to avoid physical files, see
+ * mrpt::config::CConfigFileMemory.
+ *
+ * A template config file can be generated at any moment by the user by calling
+ * saveConfigFile() with a default-constructed object.
+ *
+ * Next we provide a self-documented template config file; or see it online:
+ * https://github.com/MRPT/mrpt/blob/master/share/mrpt/config_files/navigation-ptgs/reactive2d_config.ini
+ * \verbinclude reactive2d_config.ini
+ *
+ *  \sa CAbstractNavigator, CParameterizedTrajectoryGenerator,
+ * CAbstractHolonomicReactiveMethod
+ *  \ingroup nav_reactive
+ */
 class CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 {
    public:
@@ -64,8 +64,9 @@ class CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 	/** See docs in ctor of base class */
 	CReactiveNavigationSystem(
 		CRobot2NavInterface& react_iterf_impl, bool enableConsoleOutput = true,
-		bool enableLogFile = false, const std::string& logFileDirectory =
-										std::string("./reactivenav.logs"));
+		bool enableLogFile = false,
+		const std::string& logFileDirectory =
+			std::string("./reactivenav.logs"));
 
 	/** Destructor
 	 */
@@ -85,8 +86,7 @@ class CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 		ASSERT_(i < PTGs.size());
 		return PTGs[i];
 	}
-	const CParameterizedTrajectoryGenerator* getPTG(
-		size_t i) const override
+	const CParameterizedTrajectoryGenerator* getPTG(size_t i) const override
 	{
 		ASSERT_(i < PTGs.size());
 		return PTGs[i];
@@ -97,7 +97,8 @@ class CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 	struct TReactiveNavigatorParams : public mrpt::config::CLoadableOptions
 	{
 		double min_obstacles_height{0.0},
-			max_obstacles_height{10.0};  // The range of "z" coordinates for obstacles
+			max_obstacles_height{
+				10.0};  // The range of "z" coordinates for obstacles
 		// to be considered
 
 		void loadFromConfigFile(
@@ -139,8 +140,7 @@ class CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 
 	/** Generates a pointcloud of obstacles, and the robot shape, to be saved in
 	 * the logging record for the current timestep */
-	void loggingGetWSObstaclesAndShape(
-		CLogFileRecord& out_log) override;
+	void loggingGetWSObstaclesAndShape(CLogFileRecord& out_log) override;
 
 	/** The obstacle points, as seen from the local robot frame. */
 	mrpt::maps::CSimplePointsMap m_WS_Obstacles;
@@ -154,6 +154,4 @@ class CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 		const bool eval_clearance) override;
 
 };  // end class
-}
-
-
+}  // namespace mrpt::nav

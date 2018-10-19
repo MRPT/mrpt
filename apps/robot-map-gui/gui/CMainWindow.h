@@ -17,7 +17,7 @@
 #include <mrpt/maps/CSimpleMap.h>
 
 /** This class implements GUI of main window and connection with other classes
-*/
+ */
 
 namespace Ui
 {

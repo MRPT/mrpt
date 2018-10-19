@@ -45,9 +45,9 @@ class CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
 	{
 		/** If not empty, this will prevail over the base class single goal
 		 * target.
-		  * Semantic is: any of these targets will be good for heading the robot
+		 * Semantic is: any of these targets will be good for heading the robot
 		 * towards them,
-		  * but the priority is for the latest ones in the sequence. */
+		 * but the priority is for the latest ones in the sequence. */
 		std::vector<mrpt::nav::CAbstractNavigator::TargetInfo> multiple_targets;
 
 		std::string getAsText() const override;
@@ -74,13 +74,13 @@ class CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
 	void cancel() override;
 
 	/** \name Waypoint navigation control API
-	  * @{ */
+	 * @{ */
 
 	/** Waypoint navigation request. This immediately cancels any other previous
 	 * on-going navigation.
-	  * \sa CAbstractNavigator::navigate() for single waypoint navigation
+	 * \sa CAbstractNavigator::navigate() for single waypoint navigation
 	 * requests.
-	  */
+	 */
 	virtual void navigateWaypoints(const TWaypointSequence& nav_request);
 
 	/** Get a copy of the control structure which describes the progress status
@@ -99,10 +99,10 @@ class CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
 	/** @}*/
 
 	/** Returns `true` if, according to the information gathered at the last
-	* navigation step,
-	* there is a free path to the given point; `false` otherwise: if way is
-	* blocked or there is missing information,
-	* the point is out of range for the existing PTGs, etc. */
+	 * navigation step,
+	 * there is a free path to the given point; `false` otherwise: if way is
+	 * blocked or there is missing information,
+	 * the point is out of range for the existing PTGs, etc. */
 	bool isRelativePointReachable(
 		const mrpt::math::TPoint2D& wp_local_wrt_robot) const;
 
@@ -148,9 +148,9 @@ class CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
 
 	/** Implements the way to waypoint is free function in children classes:
 	 * `true` must be returned
-	  * if, according to the information gathered at the last navigation step,
+	 * if, according to the information gathered at the last navigation step,
 	 * there is a free path to
-	  * the given point; `false` otherwise: if way is blocked or there is
+	 * the given point; `false` otherwise: if way is blocked or there is
 	 * missing information, the point is out of range, etc. */
 	virtual bool impl_waypoint_is_reachable(
 		const mrpt::math::TPoint2D& wp_local_wrt_robot) const = 0;
@@ -171,5 +171,4 @@ class CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
 	bool m_is_aligning;
 	mrpt::system::TTimeStamp m_last_alignment_cmd;
 };
-}
-
+}  // namespace mrpt::nav

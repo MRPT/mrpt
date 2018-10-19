@@ -26,8 +26,8 @@ namespace maps
 {
 /** \addtogroup mrpt_maps_liblas_grp libLAS interface for CPointsMap (in
  * #include <mrpt/maps/CPointsMaps_liblas.h>)
-	*  \ingroup mrpt_maps_grp
-	* @{ */
+ *  \ingroup mrpt_maps_grp
+ * @{ */
 
 /** Optional settings for saveLASFile() */
 struct LAS_WriteParams
@@ -60,7 +60,7 @@ struct LAS_HeaderInfo
 
 /** Save the point cloud as an ASPRS LAS binary file (requires MRPT built
  * against liblas). Refer to http://www.liblas.org/
-	* \return false on any error */
+ * \return false on any error */
 template <class POINTSMAP>
 bool saveLASFile(
 	const POINTSMAP& ptmap, const std::string& filename,
@@ -121,9 +121,9 @@ bool saveLASFile(
 
 /** Load the point cloud from an ASPRS LAS binary file (requires MRPT built
  * against liblas). Refer to http://www.liblas.org/
-	* \note Color (RGB) information will be taken into account if using the
+ * \note Color (RGB) information will be taken into account if using the
  * derived class mrpt::maps::CColouredPointsMap
-	* \return false on any error */
+ * \return false on any error */
 template <class POINTSMAP>
 bool loadLASFile(
 	POINTSMAP& ptmap, const std::string& filename,
@@ -196,6 +196,5 @@ bool loadLASFile(
 	return true;  // All ok.
 }
 /** @} */
-}
-}  // End of namespaces
-
+}  // namespace maps
+}  // namespace mrpt

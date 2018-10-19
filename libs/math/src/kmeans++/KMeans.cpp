@@ -60,7 +60,7 @@ static void RunKMeansOnce(
 {
 	(void)(n);
 	(void)(points);
-	const Scalar kEpsilon =
+	const auto kEpsilon =
 		Scalar(1e-8);  // Used to determine when to terminate k-means
 
 	// Do iterations of k-means until the cost stabilizes
@@ -127,7 +127,7 @@ Scalar RunKMeans(
 	LOG(false, "Done preprocessing..." << endl);
 
 	// Initialization
-	Scalar* centers = (Scalar*)malloc(sizeof(Scalar) * k * d);
+	auto* centers = (Scalar*)malloc(sizeof(Scalar) * k * d);
 	int* unused_centers = (int*)malloc(sizeof(int) * n);
 	KM_ASSERT(centers != nullptr && unused_centers != nullptr);
 	Scalar min_cost = -1, max_cost = -1, total_cost = 0;
@@ -186,7 +186,7 @@ Scalar RunKMeansPlusPlus(
 	LOG(false, "Done preprocessing..." << endl);
 
 	// Initialization
-	Scalar* centers = (Scalar*)malloc(sizeof(Scalar) * k * d);
+	auto* centers = (Scalar*)malloc(sizeof(Scalar) * k * d);
 	KM_ASSERT(centers != nullptr);
 	Scalar min_cost = -1, max_cost = -1, total_cost = 0;
 	double min_time = -1, max_time = -1, total_time = 0;

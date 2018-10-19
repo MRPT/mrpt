@@ -571,7 +571,7 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 
 	// Assure the class of the maps:
 	ASSERT_(mm1->GetRuntimeClass()->derivedFrom(CLASS_ID(CPointsMap)));
-	const CPointsMap* m1 = static_cast<const CPointsMap*>(mm1);
+	const auto* m1 = static_cast<const CPointsMap*>(mm1);
 
 	// Asserts:
 	// -----------------
@@ -779,8 +779,7 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 				CMatrixFloat H_(3, 3);
 				H_.multiply_AAt(dJ_dq);
 
-				CMatrixFixedNumeric<float, 3, 3> H =
-					CMatrixFixedNumeric<float, 3, 3>(H_);
+				auto H = CMatrixFixedNumeric<float, 3, 3>(H_);
 
 				bool keepIteratingLM = true;
 

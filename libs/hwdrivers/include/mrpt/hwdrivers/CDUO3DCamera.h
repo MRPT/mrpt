@@ -30,7 +30,7 @@ struct TCaptureOptions_DUO3D
 	~TCaptureOptions_DUO3D();
 
 	/** @name Image settings
-	  * @{ */
+	 * @{ */
 	/** (Default = 640) Width of the captured image. */
 	int m_img_width{640};
 	/** (Default = 480) Height of the captured image. */
@@ -46,7 +46,7 @@ struct TCaptureOptions_DUO3D
 	/** @} */
 
 	/** @name Behaviour selection
-	  * @{ */
+	 * @{ */
 	/** (Default = false) Capture IMU data. */
 	bool m_capture_imu{false};
 	/** (Default = true) Rectify images. Rectification map must be provided \sa
@@ -58,7 +58,7 @@ struct TCaptureOptions_DUO3D
 	/** @} */
 
 	/** @name Files specification
-	  * @{ */
+	 * @{ */
 	/** Rectification map file provided by DUO3D Calibration App (YML format).
 	 */
 	std::string m_rectify_map_filename;
@@ -71,7 +71,7 @@ struct TCaptureOptions_DUO3D
 	/** @} */
 
 	/** @name Others
-	  * @{ */
+	 * @{ */
 	mrpt::img::TStereoCamera m_stereo_camera;
 	/** @} */
 
@@ -185,17 +185,17 @@ class CDUO3DCamera
 	const TCaptureOptions_DUO3D& getCameraOptions() const { return m_options; }
 	/** Tries to open the camera with the given options, and starts capturing.
 	 * Raises an exception on error.
-	  * \param[in] startCapture If set to false, the camera is only opened and
+	 * \param[in] startCapture If set to false, the camera is only opened and
 	 * configured, but a posterior call to startCapture() is required to start
 	 * grabbing data.
-	  * \sa close(), startCapture()
-	  */
+	 * \sa close(), startCapture()
+	 */
 	void open(
 		const TCaptureOptions_DUO3D& options, const bool startCapture = true);
 
 	/** Start the actual data capture of the camera. Must be called after
 	 * open(), only when "startCapture" was set to false.
-	  */
+	 */
 	void startCapture();
 
 	/** Stop capture. */
@@ -207,9 +207,9 @@ class CDUO3DCamera
 
 	/** Specific laser scanner "software drivers" must process here new data
 	 * from the I/O stream, and, if a whole scan has arrived, return it.
-	  *  This method will be typically called in a different thread than other
+	 *  This method will be typically called in a different thread than other
 	 * methods, and will be called in a timely fashion.
-	  */
+	 */
 	void getObservations(
 		mrpt::obs::CObservationStereoImages& outObservation_img,
 		mrpt::obs::CObservationIMU& outObservation_imu, bool& there_is_img,
@@ -221,6 +221,7 @@ class CDUO3DCamera
 	inline void* getEvent() { return this->m_evFrame; }
 	/** frame is a reinterpreted PDUOFrame */
 	inline void setDataFrame(void* frame) { this->m_pframe_data = frame; }
+
    protected:
 	/** Queries the DUO3D Camera firmware version */
 	bool queryVersion(std::string version, bool printOutVersion = false);
@@ -251,6 +252,4 @@ class CDUO3DCamera
 
 static_assert(!std::is_copy_constructible_v<CDUO3DCamera>, "Copy Check");
 static_assert(!std::is_copy_assignable_v<CDUO3DCamera>, "Assign Check");
-}
-
-
+}  // namespace mrpt::hwdrivers

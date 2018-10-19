@@ -31,4 +31,3 @@ void CEdgeRegistrationDecider<GRAPH_T>::registerNewEdge(
 								 << rel_edge.getMeanVal().asString()
 								 << "\tNorm: " << rel_edge.getMeanVal().norm());
 }
-

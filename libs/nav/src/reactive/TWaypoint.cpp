@@ -24,7 +24,7 @@ TWaypoint::TWaypoint()
 	  target_heading(INVALID_NUM),
 	  target_frame_id("map"),
 	  allowed_distance(INVALID_NUM)
-	  
+
 {
 }
 
@@ -87,12 +87,7 @@ std::string TWaypointSequence::getAsText() const
 }
 
 // TWaypointStatus ==========
-TWaypointStatus::TWaypointStatus()
-	: 
-	  timestamp_reach(INVALID_TIMESTAMP)
-	  
-{
-}
+TWaypointStatus::TWaypointStatus() : timestamp_reach(INVALID_TIMESTAMP) {}
 TWaypointStatus& TWaypointStatus::operator=(const TWaypoint& wp)
 {
 	TWaypoint::operator=(wp);
@@ -110,7 +105,7 @@ std::string TWaypointStatus::getAsText() const
 TWaypointStatusSequence::TWaypointStatusSequence()
 	: waypoints(),
 	  timestamp_nav_started(INVALID_TIMESTAMP),
-	  
+
 	  last_robot_pose(
 		  TWaypoint::INVALID_NUM, TWaypoint::INVALID_NUM,
 		  TWaypoint::INVALID_NUM)
@@ -137,11 +132,10 @@ std::string TWaypointStatusSequence::getAsText() const
 }
 
 TWaypointsRenderingParams::TWaypointsRenderingParams()
-	: 
-	  color_regular(mrpt::img::TColor(0x00, 0x00, 0xff)),
+	: color_regular(mrpt::img::TColor(0x00, 0x00, 0xff)),
 	  color_current_goal(mrpt::img::TColor(0xff, 0x00, 0x20)),
 	  color_reached(mrpt::img::TColor(0x00, 0x00, 0xc0, 0xd0))
-	  
+
 {
 }
 
@@ -172,9 +166,8 @@ void TWaypointSequence::getAsOpenglVisualization(
 		{
 			auto o = mrpt::make_aligned_shared<mrpt::opengl::CArrow>(
 				0, 0, 0, params.heading_arrow_len, 0.0f, 0.0f);
-			o->setPose(
-				mrpt::poses::CPose3D(
-					p.target.x, p.target.y, 0.02, p.target_heading, 0, 0));
+			o->setPose(mrpt::poses::CPose3D(
+				p.target.x, p.target.y, 0.02, p.target_heading, 0, 0));
 			obj.insert(o);
 		}
 		++idx;
@@ -206,9 +199,8 @@ void TWaypointStatusSequence::getAsOpenglVisualization(
 			gl_pt->setLocation(p.target.x, p.target.y, 0.01);
 			if (params.show_labels)
 			{
-				gl_pt->setName(
-					mrpt::format(
-						"WayPt #%2u Reach:%s", idx, p.reached ? "YES" : "NO"));
+				gl_pt->setName(mrpt::format(
+					"WayPt #%2u Reach:%s", idx, p.reached ? "YES" : "NO"));
 				gl_pt->enableShowName(true);
 			}
 			gl_pt->setColor_u8(
@@ -221,9 +213,8 @@ void TWaypointStatusSequence::getAsOpenglVisualization(
 			{
 				auto o = mrpt::make_aligned_shared<mrpt::opengl::CArrow>(
 					0, 0, 0, params.heading_arrow_len, 0.0f, 0.0f);
-				o->setPose(
-					mrpt::poses::CPose3D(
-						p.target.x, p.target.y, 0.02, p.target_heading, 0, 0));
+				o->setPose(mrpt::poses::CPose3D(
+					p.target.x, p.target.y, 0.02, p.target_heading, 0, 0));
 				obj.insert(o);
 			}
 			++idx;

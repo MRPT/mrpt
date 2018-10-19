@@ -217,9 +217,7 @@ class CDynamicGrid3D
 	 */
 	inline void fill(const T& value)
 	{
-		for (typename std::vector<T>::iterator it = m_map.begin();
-			 it != m_map.end(); ++it)
-			*it = value;
+		for (auto it = m_map.begin(); it != m_map.end(); ++it) *it = value;
 	}
 
 	static const size_t INVALID_VOXEL_IDX = size_t(-1);
@@ -310,6 +308,7 @@ class CDynamicGrid3D
 	inline double idx2x(int cx) const { return m_x_min + (cx)*m_resolution_xy; }
 	inline double idx2y(int cy) const { return m_y_min + (cy)*m_resolution_xy; }
 	inline double idx2z(int cz) const { return m_z_min + (cz)*m_resolution_z; }
+
    protected:
 	/** The cells */
 	mutable std::vector<T> m_map;
@@ -348,5 +347,4 @@ class CDynamicGrid3D
 
 };  // end of CDynamicGrid3D<>
 
-}
-
+}  // namespace mrpt::containers

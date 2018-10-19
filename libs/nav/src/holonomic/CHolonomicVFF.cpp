@@ -149,8 +149,8 @@ void CLogFileRecord_VFF::serializeFrom(
 						TOptions
   ---------------------------------------------------------------*/
 CHolonomicVFF::TOptions::TOptions()
-	 
-= default;
+
+	= default;
 
 void CHolonomicVFF::TOptions::loadFromConfigFile(
 	const mrpt::config::CConfigFileBase& source, const std::string& section)

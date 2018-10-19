@@ -151,9 +151,9 @@ void CSetOfTexturedTriangles::getBoundingBox(
 		-std::numeric_limits<double>::max(),
 		-std::numeric_limits<double>::max());
 
-	for (const auto & t : m_triangles)
+	for (const auto& t : m_triangles)
 	{
-			keep_min(bb_min.x, t.m_v1.m_x);
+		keep_min(bb_min.x, t.m_v1.m_x);
 		keep_max(bb_max.x, t.m_v1.m_x);
 		keep_min(bb_min.y, t.m_v1.m_y);
 		keep_max(bb_max.y, t.m_v1.m_y);
@@ -181,8 +181,8 @@ void CSetOfTexturedTriangles::getBoundingBox(
 }
 
 CSetOfTexturedTriangles::TVertex::TVertex()
-	 
-= default;
+
+	= default;
 
 CSetOfTexturedTriangles::TVertex::TVertex(
 	float x, float y, float z, uint32_t u, uint32_t v)

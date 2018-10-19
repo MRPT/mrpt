@@ -60,7 +60,7 @@ const double KEYFRAMES_MIN_ANG = DEG2RAD(10);
 //   and exploit multicore CPUs.
 struct TThreadParam
 {
-	TThreadParam()  = default;
+	TThreadParam() = default;
 	volatile bool quit{false};
 	volatile int pushed_key{0};
 	volatile double tilt_ang_deg{0};
@@ -313,7 +313,7 @@ void Test_Kinect()
 				tracker->trackFeatures(previous_image, theImg, trackedFeats);
 
 				// Remove those now out of the image plane:
-				CFeatureList::iterator itFeat = trackedFeats.begin();
+				auto itFeat = trackedFeats.begin();
 				while (itFeat != trackedFeats.end())
 				{
 					const TFeatureTrackStatus status = (*itFeat)->track_status;
@@ -346,7 +346,7 @@ void Test_Kinect()
 			// Create list of 3D features in space, wrt current camera pose:
 			// --------------------------------------------------------------------
 			map<TFeatureID, TPoint3D> curVisibleFeats;
-			for (auto & trackedFeat : trackedFeats)
+			for (auto& trackedFeat : trackedFeats)
 			{
 				// Pixel coordinates in the intensity image:
 				const int int_x = trackedFeat->x;
@@ -386,20 +386,16 @@ void Test_Kinect()
 			{
 				TMatchingPairList corrs;  // pairs of correspondences
 
-				for (map<TFeatureID, TPoint3D>::const_iterator itCur =
-						 curVisibleFeats.begin();
+				for (auto itCur = curVisibleFeats.begin();
 					 itCur != curVisibleFeats.end(); ++itCur)
 				{
-					map<TFeatureID, TPoint3D>::const_iterator itFound =
-						lastVisibleFeats.find(itCur->first);
+					auto itFound = lastVisibleFeats.find(itCur->first);
 					if (itFound != lastVisibleFeats.end())
 					{
-						corrs.push_back(
-							TMatchingPair(
-								itFound->first, itCur->first, itFound->second.x,
-								itFound->second.y, itFound->second.z,
-								itCur->second.x, itCur->second.y,
-								itCur->second.z));
+						corrs.push_back(TMatchingPair(
+							itFound->first, itCur->first, itFound->second.x,
+							itFound->second.y, itFound->second.z,
+							itCur->second.x, itCur->second.y, itCur->second.z));
 					}
 				}
 
@@ -538,8 +534,7 @@ void Test_Kinect()
 
 				// Current visual landmarks:
 				gl_curFeats->clear();
-				for (map<TFeatureID, TPoint3D>::const_iterator it =
-						 curVisibleFeats.begin();
+				for (auto it = curVisibleFeats.begin();
 					 it != curVisibleFeats.end(); ++it)
 				{
 					static double D = 0.02;
@@ -577,7 +572,7 @@ void Test_Kinect()
 			// camera_key_frames_path.size() << " frames.\n";
 			win3D.get3DSceneAndLock();
 			gl_keyframes->clear();
-			for (const auto & i : camera_key_frames_path)
+			for (const auto& i : camera_key_frames_path)
 			{
 				CSetOfObjects::Ptr obj =
 					mrpt::opengl::stock_objects::CornerXYZSimple(0.3f, 3);
@@ -630,9 +625,9 @@ void Test_Kinect()
 
 		win3D.get3DSceneAndLock();
 		win3D.addTextMessage(
-			2, -30, format(
-						"'s':save point cloud, 'r': reset, 'o'/'i': zoom "
-						"out/in, mouse: orbit 3D, ESC: quit"),
+			2, -30,
+			format("'s':save point cloud, 'r': reset, 'o'/'i': zoom "
+				   "out/in, mouse: orbit 3D, ESC: quit"),
 			TColorf(1, 1, 1), 110, MRPT_GLUT_BITMAP_HELVETICA_12);
 		win3D.addTextMessage(
 			2, -50, str_status, TColorf(1, 1, 1), 111,

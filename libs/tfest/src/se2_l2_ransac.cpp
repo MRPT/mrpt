@@ -35,7 +35,7 @@ void markAsPicked(
 	,
 	const std::vector<std::vector<int>>& listDuplicatedLandmarksThis
 #endif
-	)
+)
 {
 	ASSERTDEB_(c.this_idx < alreadySelectedThis.size());
 	ASSERTDEB_(c.other_idx < alreadySelectedOther.size());
@@ -80,7 +80,7 @@ bool tfest::se2_l2_robust(
 	const double normalizationStd, const TSE2RobustParams& params,
 	TSE2RobustResult& results)
 {
-//#define DO_PROFILING
+	//#define DO_PROFILING
 
 #ifdef DO_PROFILING
 	CTimeLogger timlog;
@@ -109,7 +109,7 @@ bool tfest::se2_l2_robust(
 #endif
 	// Find the max. index of "this" and "other:
 	unsigned int maxThis = 0, maxOther = 0;
-	for (const auto & in_correspondence : in_correspondences)
+	for (const auto& in_correspondence : in_correspondences)
 	{
 		maxThis = max(maxThis, in_correspondence.this_idx);
 		maxOther = max(maxOther, in_correspondence.other_idx);
@@ -126,7 +126,7 @@ bool tfest::se2_l2_robust(
 	std::vector<bool> hasCorrThis(maxThis + 1, false);
 	std::vector<bool> hasCorrOther(maxOther + 1, false);
 	unsigned int howManyDifCorrs = 0;
-	for (const auto & in_correspondence : in_correspondences)
+	for (const auto& in_correspondence : in_correspondences)
 	{
 		if (!hasCorrThis[in_correspondence.this_idx] &&
 			!hasCorrOther[in_correspondence.other_idx])
@@ -396,7 +396,7 @@ bool tfest::se2_l2_robust(
 					markAsPicked(
 						corr_j, alreadySelectedThis, alreadySelectedOther);
 				}
-// else -> Test failed
+				// else -> Test failed
 
 #ifdef DO_PROFILING
 				timlog.leave("ransac.test_consistency");
@@ -463,10 +463,9 @@ bool tfest::se2_l2_robust(
 					double diffXY =
 						results.transformation.get(i).mean.distanceTo(
 							referenceEstimation.mean);
-					double diffPhi = fabs(
-						math::wrapToPi(
-							results.transformation.get(i).mean.phi() -
-							referenceEstimation.mean.phi()));
+					double diffPhi = fabs(math::wrapToPi(
+						results.transformation.get(i).mean.phi() -
+						referenceEstimation.mean.phi()));
 					if (diffXY < params.ransac_fuseMaxDiffXY &&
 						diffPhi < params.ransac_fuseMaxDiffPhi)
 					{

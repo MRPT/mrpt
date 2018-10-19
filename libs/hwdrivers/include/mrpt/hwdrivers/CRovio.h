@@ -19,9 +19,9 @@
 namespace mrpt::hwdrivers
 {
 /** A class to interface a Rovio robot (manufactured by WowWee).
-  *  Supports: Simple motion commands, video streaming.
-  * \ingroup mrpt_hwdrivers_grp
-  */
+ *  Supports: Simple motion commands, video streaming.
+ * \ingroup mrpt_hwdrivers_grp
+ */
 class CRovio
 {
    private:
@@ -36,7 +36,7 @@ class CRovio
 
 	/** This function takes a frame and waits until getLastImage ask for it, and
 	 * so on.
-	  */
+	 */
 	void thread_video();
 
 	bool send_cmd_action(int act, int speed);
@@ -90,28 +90,28 @@ class CRovio
 
 	/** Establish Connection with Rovio and log in its system: Important, fill
 	 * out "options" members *BEFORE* calling this method.
-	  *  \exception std::runtime On errors
-	  */
+	 *  \exception std::runtime On errors
+	 */
 	void initialize();  // string &errormsg_out, std::string
 	// url_out="150.214.109.134", std::string
 	// user_out="admin", std::string
 	// password_out="investigacion");
 
 	/**	move send Rovio the command to move in the specified direcction
-	  * \param direction 'f'->forward, 'b'->backward, 'r'->right, 'l'->left
-	  * \return False on error
-	  */
+	 * \param direction 'f'->forward, 'b'->backward, 'r'->right, 'l'->left
+	 * \return False on error
+	 */
 	bool move(char direction, int speed = 5);
 
 	/** rotate send Rovio the command to rotate in the specified direcction
-	  * 'r'->right, 'l'->left
-	  * \return False on error
-	  */
+	 * 'r'->right, 'l'->left
+	 * \return False on error
+	 */
 	bool rotate(char direction, int speed = 5);
 
 	/**  Head positions
-	  * \return False on error
-	  */
+	 * \return False on error
+	 */
 	bool takeHeadUp();
 	bool takeHeadMiddle();
 	bool takeHeadDown();
@@ -122,7 +122,7 @@ class CRovio
 	bool pathRecordSave(const std::string& path_name);  // Repasar const
 	bool pathDelete(const std::string& path_name);
 	/** Get list of saved paths
-	  */
+	 */
 	bool pathGetList(std::string& path_list);
 	bool pathRunForward();
 	bool pathRunBackward();
@@ -132,50 +132,50 @@ class CRovio
 
 	/** goHome(bool dock) drives Rovio in front of charging station if the
 	 * paremeter dock is set to false, otherwise it also docks
-	  * \return False on error
-	  */
+	 * \return False on error
+	 */
 	bool goHome(bool dock, int speed = 5);
 
 	/** Loads the rovio camera calibration parameters (of leave the default ones
 	 * if not found) (See CGenericSensor), then call to
 	 * "loadConfig_sensorSpecific"
-	  *  \exception This method throws an exception with a descriptive message
+	 *  \exception This method throws an exception with a descriptive message
 	 * if some critical parameter is missing or has an invalid value.
-	  */
+	 */
 	void loadConfig(
 		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& section);
 
 	/** This function launchs a thread with the function "thread_video()" which
 	 * gets frames into a buffer.
-	  * After calling this method, images can be obtained with
+	 * After calling this method, images can be obtained with
 	 * getNextImageSync()
-	  * \return False on error
-	  * \sa getNextImageSync
-	  */
+	 * \return False on error
+	 * \sa getNextImageSync
+	 */
 	bool retrieve_video();  // como la protejo para que no se llame dos
 	// veces??????????????????????????????????????????????
 
 	/** This function stops and joins the thread launched by "retrieve_video()".
-	  * \return False on error
-	  */
+	 * \return False on error
+	 */
 	bool stop_video();
 
 	/** Returns the next frame from Rovio's live video stream, after starting
 	 * the live streaming with retrieve_video()
-	  * \return False on error
-	  * \sa retrieve_video, captureImageAsync
-	  */
+	 * \return False on error
+	 * \sa retrieve_video, captureImageAsync
+	 */
 	bool getNextImageSync(mrpt::obs::CObservationImage::Ptr& lastImage);
 
 	/** Returns a snapshot from Rovio, if rectified is set true, the returned
 	 * image is rectified with the parameters of intrinsic_matrix and
 	 * distortion_matrix.
-	  * This function works asynchronously and does not need to have enabled the
+	 * This function works asynchronously and does not need to have enabled the
 	 * live video streaming.
-	  * \return False on error
-	  * \sa captureImageSync
-	  */
+	 * \return False on error
+	 * \sa captureImageSync
+	 */
 	bool captureImageAsync(
 		mrpt::img::CImage& out_img, bool recttified);  // string pict_name,
 
@@ -185,19 +185,19 @@ class CRovio
 	// Rovio State
 	/** Returns a TRovioState with internal information of Rovio (State,
 	 * Navigation Signal Strength, Wifi Signal Strength)
-	  * \return False on error
-	  */
+	 * \return False on error
+	 */
 	bool getRovioState(TRovioState& state);
 
 	/** Returns a TEncoders with information of Rovio encoders (since last read,
 	 * it seems Rovio is continuously reading with unknown sample time)
-	  * \return False on error
-	  */
+	 * \return False on error
+	 */
 	bool getEncoders(TEncoders& encoders);
 
 	/** Returns the Rovio's pose
-	  * \return False on error
-	  */
+	 * \return False on error
+	 */
 	bool getPosition(mrpt::math::TPose2D& out_pose);
 
 	CRovio();
@@ -205,6 +205,4 @@ class CRovio
 
 };  // End of class
 
-}
-
-
+}  // namespace mrpt::hwdrivers

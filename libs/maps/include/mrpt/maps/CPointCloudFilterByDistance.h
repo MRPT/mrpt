@@ -21,7 +21,7 @@ namespace mrpt::maps
  *   the current timestamp and a previous one.
  *
  * \sa CPointsMap
-  * \ingroup mrpt_maps_grp
+ * \ingroup mrpt_maps_grp
  */
 class CPointCloudFilterByDistance : public mrpt::maps::CPointCloudFilterBase
 {
@@ -79,5 +79,4 @@ class CPointCloudFilterByDistance : public mrpt::maps::CPointCloudFilterBase
 
 	mrpt::aligned_std_map<mrpt::system::TTimeStamp, FrameInfo> m_last_frames;
 };
-}
-
+}  // namespace mrpt::maps

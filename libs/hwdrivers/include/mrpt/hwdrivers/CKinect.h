@@ -503,7 +503,8 @@ class CKinect : public mrpt::hwdrivers::CGenericSensor
 
 	// Data fields for use with the callback function:
 	mrpt::obs::CObservation3DRangeScan m_latest_obs;
-	volatile uint32_t m_tim_latest_depth{0}, m_tim_latest_rgb{0};  // 0 = not updated
+	volatile uint32_t m_tim_latest_depth{0},
+		m_tim_latest_rgb{0};  // 0 = not updated
 	std::mutex m_latest_obs_cs;
 #endif
 
@@ -525,7 +526,8 @@ class CKinect : public mrpt::hwdrivers::CGenericSensor
 	int m_user_device_number{0};
 
 	/** Default: all true */
-	bool m_grab_image{true}, m_grab_depth{true}, m_grab_3D_points{true}, m_grab_IMU{true};
+	bool m_grab_image{true}, m_grab_depth{true}, m_grab_3D_points{true},
+		m_grab_IMU{true};
 
 	/** The video channel to open: RGB or IR */
 	TVideoChannel m_video_channel;
@@ -540,12 +542,9 @@ class CKinect : public mrpt::hwdrivers::CGenericSensor
 	void calculate_range2meters();
 
 };  // End of class
-}
+}  // namespace mrpt::hwdrivers
 MRPT_ENUM_TYPE_BEGIN(mrpt::hwdrivers::CKinect::TVideoChannel)
 using namespace mrpt::hwdrivers;
 MRPT_FILL_ENUM_MEMBER(CKinect, VIDEO_CHANNEL_RGB);
 MRPT_FILL_ENUM_MEMBER(CKinect, VIDEO_CHANNEL_IR);
 MRPT_ENUM_TYPE_END()
-
-
-

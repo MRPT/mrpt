@@ -15,17 +15,18 @@ namespace mrpt::math
 {
 /** Estimate the Jacobian of a multi-dimensional function around a point "x",
  * using finite differences of a given size in each input dimension.
-	*  The template argument USERPARAM is for the data can be passed to the
+ *  The template argument USERPARAM is for the data can be passed to the
  * functor.
-	*   If it is not required, set to "int" or any other basic type.
-	*
-	*  This is a generic template which works with:
-	*    VECTORLIKE: vector_float, CVectorDouble, CArrayNumeric<>, double [N],
+ *   If it is not required, set to "int" or any other basic type.
+ *
+ *  This is a generic template which works with:
+ *    VECTORLIKE: vector_float, CVectorDouble, CArrayNumeric<>, double [N],
  * ...
-	*    MATRIXLIKE: CMatrixTemplateNumeric, CMatrixFixedNumeric
-	*/
-template <class VECTORLIKE, class VECTORLIKE2, class VECTORLIKE3,
-		  class MATRIXLIKE, class USERPARAM>
+ *    MATRIXLIKE: CMatrixTemplateNumeric, CMatrixFixedNumeric
+ */
+template <
+	class VECTORLIKE, class VECTORLIKE2, class VECTORLIKE3, class MATRIXLIKE,
+	class USERPARAM>
 void estimateJacobian(
 	const VECTORLIKE& x,
 	const std::function<void(
@@ -74,6 +75,4 @@ void estimateJacobian(
 
 	MRPT_END
 }
-}  // End of namespace
-
-
+}  // namespace mrpt::math

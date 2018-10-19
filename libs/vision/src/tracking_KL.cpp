@@ -26,13 +26,13 @@ using namespace mrpt::img;
 using namespace std;
 
 /** Track a set of features from old_img -> new_img using sparse optimal flow
-  *(classic KL method)
-  *  Optional parameters that can be passed in "extra_params":
-  *		- "window_width"  (Default=15)
-  *		- "window_height" (Default=15)
-  *
-  *  \sa OpenCV's method cvCalcOpticalFlowPyrLK
-  */
+ *(classic KL method)
+ *  Optional parameters that can be passed in "extra_params":
+ *		- "window_width"  (Default=15)
+ *		- "window_height" (Default=15)
+ *
+ *  \sa OpenCV's method cvCalcOpticalFlowPyrLK
+ */
 template <typename FEATLIST>
 void CFeatureTracker_KL::trackFeatures_impl_templ(
 	const CImage& old_img, const CImage& new_img, FEATLIST& featureList)
@@ -84,8 +84,8 @@ void CFeatureTracker_KL::trackFeatures_impl_templ(
 		}  // end for
 
 		// local scope for auxiliary variables around cvCalcOpticalFlowPyrLK()
-		const IplImage* prev_gray_ipl = prev_gray.getAs<IplImage>();
-		const IplImage* cur_gray_ipl = cur_gray.getAs<IplImage>();
+		const auto* prev_gray_ipl = prev_gray.getAs<IplImage>();
+		const auto* cur_gray_ipl = cur_gray.getAs<IplImage>();
 
 		// Pyramids
 		// JL: It seems that cache'ing the pyramids of previous images doesn't
@@ -95,7 +95,7 @@ void CFeatureTracker_KL::trackFeatures_impl_templ(
 
 		int flags = 0;
 
-		float* track_error =
+		auto* track_error =
 			reinterpret_cast<float*>(mrpt_alloca(sizeof(float) * nFeatures));
 
 		cvCalcOpticalFlowPyrLK(

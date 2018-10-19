@@ -55,5 +55,4 @@ _u32 getHDTimer()
 
 BEGIN_STATIC_CODE(timer_cailb) { HPtimer_reset(); }
 END_STATIC_CODE(timer_cailb)
-}
-
+}  // namespace rp::arch

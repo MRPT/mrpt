@@ -19,11 +19,11 @@ class CCamera;
 
 /** A camera: if added to a scene, the viewpoint defined by this camera will be
  * used instead of the camera parameters set in COpenGLViewport::m_camera.
-  *  A camera can be defined to provide a projective or orthogonal view of the
+ *  A camera can be defined to provide a projective or orthogonal view of the
  * world by setting the member CCamera::m_projectiveModel.
-  *  \sa opengl::COpenGLScene
-  * \ingroup mrpt_opengl_grp
-  */
+ *  \sa opengl::COpenGLScene
+ * \ingroup mrpt_opengl_grp
+ */
 class CCamera : public CRenderizable
 {
 	friend class COpenGLViewport;
@@ -101,13 +101,11 @@ class CCamera : public CRenderizable
 		mrpt::math::TPoint3D& bb_max) const override;
 
 	/** Constructor
-	  */
+	 */
 	CCamera();
 
 	/** Private, virtual destructor: only can be deleted from smart pointers */
 	~CCamera() override = default;
 };
 
-}
-
-
+}  // namespace mrpt::opengl

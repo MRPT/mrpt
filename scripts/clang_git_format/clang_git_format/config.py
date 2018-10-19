@@ -1,7 +1,7 @@
 import string
 
 PROGNAME = "clang-format"
-CLANG_FORMAT_VERSION = "3.8.0"
+CLANG_FORMAT_VERSION = "8.0.0"
 _last_dot = CLANG_FORMAT_VERSION.rfind(".")
 CLANG_FORMAT_SHORT_VERSION = CLANG_FORMAT_VERSION[:_last_dot]
 
@@ -13,4 +13,3 @@ CLANG_FORMAT_HTTP_DARWIN_CACHE = "https://s3.amazonaws.com/boxes.10gen.com/build
 CLANG_FORMAT_SOURCE_TAR_BASE = string.Template(
     "clang+llvm-$version-$tar_path/bin/" +
     PROGNAME)
-

@@ -511,10 +511,10 @@ void mrpt::topography::GeodeticToUTM(
 }
 
 /**  7-parameter Bursa-Wolf transformation:
-  *   [ X Y Z ]_WGS84 = [ dX dY dZ ] + ( 1 + dS ) [ 1 RZ -RY; -RZ 1 RX; RY -RX 1
+ *   [ X Y Z ]_WGS84 = [ dX dY dZ ] + ( 1 + dS ) [ 1 RZ -RY; -RZ 1 RX; RY -RX 1
  * ] [ X Y Z ]_local
-  * \sa transform10params
-  */
+ * \sa transform10params
+ */
 void mrpt::topography::transform7params(
 	const mrpt::math::TPoint3D& p, const TDatum7Params& d,
 	mrpt::math::TPoint3D& o)
@@ -527,10 +527,10 @@ void mrpt::topography::transform7params(
 }
 
 /**  7-parameter Bursa-Wolf transformation TOPCON:
-  *   [ X Y Z ]_WGS84 = [ dX dY dZ ] + ( 1 + dS ) [ 1 RZ -RY; -RZ 1 RX; RY -RX 1
+ *   [ X Y Z ]_WGS84 = [ dX dY dZ ] + ( 1 + dS ) [ 1 RZ -RY; -RZ 1 RX; RY -RX 1
  * ] [ X Y Z ]_local
-  * \sa transform10params
-  */
+ * \sa transform10params
+ */
 void mrpt::topography::transform7params_TOPCON(
 	const mrpt::math::TPoint3D& p, const TDatum7Params_TOPCON& d,
 	mrpt::math::TPoint3D& o)
@@ -543,10 +543,10 @@ void mrpt::topography::transform7params_TOPCON(
 }
 
 /**  10-parameter Molodensky-Badekas transformation:
-  *   [ X Y Z ]_WGS84 = [ dX dY dZ ] + ( 1 + dS ) [ 1 RZ -RY; -RZ 1 RX; RY -RX 1
+ *   [ X Y Z ]_WGS84 = [ dX dY dZ ] + ( 1 + dS ) [ 1 RZ -RY; -RZ 1 RX; RY -RX 1
  * ] [ X-Xp Y-Yp Z-Zp ]_local + [Xp Yp Zp]
-  * \sa transform7params
-  */
+ * \sa transform7params
+ */
 void mrpt::topography::transform10params(
 	const mrpt::math::TPoint3D& p, const TDatum10Params& d,
 	mrpt::math::TPoint3D& o)
@@ -563,10 +563,10 @@ void mrpt::topography::transform10params(
 }
 
 /**  Helmert 2D transformation:
-  *   [ X Y ]_WGS84 = [ dX dY ] + ( 1 + dS ) [ cos(alpha) -sin(alpha);
+ *   [ X Y ]_WGS84 = [ dX dY ] + ( 1 + dS ) [ cos(alpha) -sin(alpha);
  * sin(alpha) cos(alpha) ] [ X-Xp Y-Yp Z-Zp ]_local + [Xp Yp Zp]
-  * \sa transformHelmert3D
-  */
+ * \sa transformHelmert3D
+ */
 void mrpt::topography::transformHelmert2D(
 	const mrpt::math::TPoint2D& p, const TDatumHelmert2D& d,
 	mrpt::math::TPoint2D& o)
@@ -581,10 +581,10 @@ void mrpt::topography::transformHelmert2D(
 }
 
 /**  Helmert 2D transformation:
-  *   [ X Y ]_WGS84 = [ dX dY ] + ( 1 + dS ) [ cos(alpha) -sin(alpha);
+ *   [ X Y ]_WGS84 = [ dX dY ] + ( 1 + dS ) [ cos(alpha) -sin(alpha);
  * sin(alpha) cos(alpha) ] [ X-Xp Y-Yp Z-Zp ]_local + [Xp Yp Zp]
-  * \sa transformHelmert3D
-  */
+ * \sa transformHelmert3D
+ */
 void mrpt::topography::transformHelmert2D_TOPCON(
 	const mrpt::math::TPoint2D& p, const TDatumHelmert2D_TOPCON& d,
 	mrpt::math::TPoint2D& o)
@@ -594,10 +594,10 @@ void mrpt::topography::transformHelmert2D_TOPCON(
 }
 
 /**  Helmert 3D transformation:
-  *   [ X Y ]_WGS84 = [ dX dY ] + ( 1 + dS ) [ cos(alpha) -sin(alpha);
+ *   [ X Y ]_WGS84 = [ dX dY ] + ( 1 + dS ) [ cos(alpha) -sin(alpha);
  * sin(alpha) cos(alpha) ] [ X-Xp Y-Yp Z-Zp ]_local + [Xp Yp Zp]
-  * \sa transformHelmert3D
-  */
+ * \sa transformHelmert3D
+ */
 void mrpt::topography::transformHelmert3D(
 	const mrpt::math::TPoint3D& p, const TDatumHelmert3D& d,
 	mrpt::math::TPoint3D& o)
@@ -607,10 +607,10 @@ void mrpt::topography::transformHelmert3D(
 }
 
 /**  Helmert 3D transformation:
-  *   [ X Y ]_WGS84 = [ dX dY ] + ( 1 + dS ) [ cos(alpha) -sin(alpha);
+ *   [ X Y ]_WGS84 = [ dX dY ] + ( 1 + dS ) [ cos(alpha) -sin(alpha);
  * sin(alpha) cos(alpha) ] [ X-Xp Y-Yp Z-Zp ]_local + [Xp Yp Zp]
-  * \sa transformHelmert3D
-  */
+ * \sa transformHelmert3D
+ */
 void mrpt::topography::transformHelmert3D_TOPCON(
 	const mrpt::math::TPoint3D& p, const TDatumHelmert3D_TOPCON& d,
 	mrpt::math::TPoint3D& o)
@@ -621,9 +621,9 @@ void mrpt::topography::transformHelmert3D_TOPCON(
 }
 
 /**  1D transformation:
-  *   [ Z ]_WGS84 = (dy * X - dx * Y + Z)*(1+e)+DZ
-  * \sa transformHelmert3D
-  */
+ *   [ Z ]_WGS84 = (dy * X - dx * Y + Z)*(1+e)+DZ
+ * \sa transformHelmert3D
+ */
 void mrpt::topography::transform1D(
 	const mrpt::math::TPoint3D& p, const TDatum1DTransf& d,
 	mrpt::math::TPoint3D& o)
@@ -634,10 +634,10 @@ void mrpt::topography::transform1D(
 }
 
 /**  1D transformation:
-  *   [ X;Y ]_WGS84 = [X;Y]_locales+[1 -sin(d.beta);0
+ *   [ X;Y ]_WGS84 = [X;Y]_locales+[1 -sin(d.beta);0
  * cos(d.beta)]*[x*d.dSx;y*d.dSy ]
-  * \sa transformHelmert3D
-  */
+ * \sa transformHelmert3D
+ */
 void mrpt::topography::transfInterpolation(
 	const mrpt::math::TPoint3D& p, const TDatumTransfInterpolation& d,
 	mrpt::math::TPoint3D& o)
@@ -648,8 +648,8 @@ void mrpt::topography::transfInterpolation(
 }
 
 /** ENU to geocentric coordinates.
-  * \sa geodeticToENU_WGS84
-  */
+ * \sa geodeticToENU_WGS84
+ */
 void mrpt::topography::ENUToGeocentric(
 	const mrpt::math::TPoint3D& p, const TGeodeticCoords& in_coords_origin,
 	TGeocentricCoords& out_coords, const TEllipsoid& ellip)

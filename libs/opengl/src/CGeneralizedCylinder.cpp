@@ -41,7 +41,7 @@ void CGeneralizedCylinder::TQuadrilateral::calculateNormal()
 	double s = 0;
 	for (double i : normal) s += i * i;
 	s = sqrt(s);
-	for (double & i : normal) i /= s;
+	for (double& i : normal) i /= s;
 }
 
 #if MRPT_HAS_OPENGL_GLUT
@@ -54,7 +54,7 @@ class FQuadrilateralRenderer
 	void operator()(const CGeneralizedCylinder::TQuadrilateral& t) const
 	{
 		glNormal3d(t.normal[0], t.normal[1], t.normal[2]);
-		for (const auto & point : t.points)
+		for (const auto& point : t.points)
 			glVertex3d(point.x, point.y, point.z);
 	}
 	FQuadrilateralRenderer(const mrpt::img::TColor& c) : color(c) {}
@@ -108,8 +108,8 @@ inline void createMesh(
 	for (size_t i = 0; i < R; i++)
 		for (size_t j = 0; j < C; j++)
 			mesh.emplace_back(
-					pointsMesh(i, j), pointsMesh(i, j + 1),
-					pointsMesh(i + 1, j + 1), pointsMesh(i + 1, j));
+				pointsMesh(i, j), pointsMesh(i, j + 1),
+				pointsMesh(i + 1, j + 1), pointsMesh(i + 1, j));
 }
 
 /*void transformMesh(const CPose3D &pose,const CMatrixTemplate<TPoint3D>

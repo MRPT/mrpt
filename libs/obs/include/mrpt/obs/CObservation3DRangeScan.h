@@ -533,8 +533,7 @@ class CObservation3DRangeScan : public CObservation
 
 		const std::string& getLabelName(unsigned int label_idx) const
 		{
-			std::map<uint32_t, std::string>::const_iterator it =
-				pixelLabelNames.find(label_idx);
+			auto it = pixelLabelNames.find(label_idx);
 			if (it == pixelLabelNames.end())
 				throw std::runtime_error(
 					"Error: label index has no defined name");
@@ -679,8 +678,8 @@ class CObservation3DRangeScan : public CObservation
 		void Print(std::ostream& out) const override
 		{
 			{
-				const uint32_t nR = static_cast<uint32_t>(pixelLabels.rows());
-				const uint32_t nC = static_cast<uint32_t>(pixelLabels.cols());
+				const auto nR = static_cast<uint32_t>(pixelLabels.rows());
+				const auto nC = static_cast<uint32_t>(pixelLabels.cols());
 				out << "Number of rows: " << nR << std::endl;
 				out << "Number of cols: " << nC << std::endl;
 				out << "Matrix of labels: " << std::endl;

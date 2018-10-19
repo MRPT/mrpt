@@ -30,5 +30,5 @@ TEST(CSimpleMap, ParseFileInFormat_v1_5)
 	mrpt::maps::CSimpleMap sm;
 	const bool load_ok = sm.loadFromFile(fil);
 	EXPECT_TRUE(load_ok);
-	EXPECT_EQ(sm.size(),72U);
+	EXPECT_EQ(sm.size(), 72U);
 }

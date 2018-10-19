@@ -23,14 +23,12 @@ TUserOptionsChecker<GRAPH_t>::~TUserOptionsChecker()
 
 	// release the instances holding the descriptions of the available
 	// deciders/optimizers
-	for (vector<TRegistrationDeciderProps*>::iterator it =
-			 regs_descriptions.begin();
-		 it != regs_descriptions.end(); ++it)
+	for (auto it = regs_descriptions.begin(); it != regs_descriptions.end();
+		 ++it)
 	{
 		delete *it;
 	}
-	for (vector<TOptimizerProps*>::iterator it =
-			 optimizers_descriptions.begin();
+	for (auto it = optimizers_descriptions.begin();
 		 it != optimizers_descriptions.end(); ++it)
 	{
 		delete *it;
@@ -130,8 +128,7 @@ void TUserOptionsChecker<GRAPH_t>::dumpRegistrarsToConsole(
 			 << " Registration Deciders: " << endl;
 		cout << sep_header << endl;
 
-		for (vector<TRegistrationDeciderProps*>::const_iterator dec_it =
-				 regs_descriptions.begin();
+		for (auto dec_it = regs_descriptions.begin();
 			 dec_it != regs_descriptions.end(); ++dec_it)
 		{
 			TRegistrationDeciderProps* dec = *dec_it;
@@ -161,8 +158,7 @@ void TUserOptionsChecker<GRAPH_t>::dumpRegistrarsToConsole(
 						 << "3D" << endl;
 				}
 				cout << endl;
-				for (vector<string>::const_iterator obs_it =
-						 dec->observations_used.begin();
+				for (auto obs_it = dec->observations_used.begin();
 					 obs_it != dec->observations_used.end(); ++obs_it)
 				{
 					cout << "\t\t+ " << *obs_it << endl;
@@ -189,8 +185,7 @@ void TUserOptionsChecker<GRAPH_t>::dumpOptimizersToConsole() const
 	cout << endl << "Available GraphSlam Optimizer classes: " << endl;
 	cout << sep_header << endl;
 
-	for (vector<TOptimizerProps*>::const_iterator opt_it =
-			 optimizers_descriptions.begin();
+	for (auto opt_it = optimizers_descriptions.begin();
 		 opt_it != optimizers_descriptions.end(); ++opt_it)
 	{
 		TOptimizerProps* opt = *opt_it;
@@ -237,8 +232,7 @@ bool TUserOptionsChecker<GRAPH_t>::checkRegistrationDeciderExists(
 			reg_type.c_str()));
 	bool found = false;
 
-	for (vector<TRegistrationDeciderProps*>::const_iterator dec_it =
-			 regs_descriptions.begin();
+	for (auto dec_it = regs_descriptions.begin();
 		 dec_it != regs_descriptions.end(); ++dec_it)
 	{
 		TRegistrationDeciderProps* dec = *dec_it;
@@ -277,8 +271,7 @@ bool TUserOptionsChecker<GRAPH_t>::checkOptimizerExists(
 
 	bool found = false;
 
-	for (vector<TOptimizerProps*>::const_iterator opt_it =
-			 optimizers_descriptions.begin();
+	for (auto opt_it = optimizers_descriptions.begin();
 		 opt_it != optimizers_descriptions.end(); ++opt_it)
 	{
 		TOptimizerProps* opt = *opt_it;
@@ -313,7 +306,7 @@ void TUserOptionsChecker<GRAPH_t>::populateDeciderOptimizerProperties()
 
 	// registering the available deciders
 	{  // CFixedIntervalsNRD
-		TRegistrationDeciderProps* dec = new TRegistrationDeciderProps;
+		auto* dec = new TRegistrationDeciderProps;
 		dec->name = "CFixedIntervalsNRD";
 		dec->description =
 			"Register a new node if the distance from the previous node "
@@ -321,7 +314,8 @@ void TUserOptionsChecker<GRAPH_t>::populateDeciderOptimizerProperties()
 			"information for estimating the robot movement";
 		dec->type = "Node";
 		dec->rawlog_format = "Both";
-		dec->observations_used.emplace_back("CActionRobotMovement2D - Format #1");
+		dec->observations_used.emplace_back(
+			"CActionRobotMovement2D - Format #1");
 		dec->observations_used.emplace_back("CObservationOdometry - Format #2");
 		dec->is_slam_2d = true;
 		dec->is_slam_3d = true;
@@ -329,7 +323,7 @@ void TUserOptionsChecker<GRAPH_t>::populateDeciderOptimizerProperties()
 		regs_descriptions.push_back(dec);
 	}
 	{  // CICPCriteriaNRD
-		TRegistrationDeciderProps* dec = new TRegistrationDeciderProps;
+		auto* dec = new TRegistrationDeciderProps;
 		dec->name = "CICPCriteriaNRD";
 		dec->description =
 			"Register a new node if the distance from the previous node "
@@ -337,14 +331,16 @@ void TUserOptionsChecker<GRAPH_t>::populateDeciderOptimizerProperties()
 			"alignment for estimating the robot movement";
 		dec->type = "Node";
 		dec->rawlog_format = "#2 - Observation-only";
-		dec->observations_used.emplace_back("CObservation2DRangeScan - Format #2");
-		dec->observations_used.emplace_back("CObservation3DRangeScan - Format #2");
+		dec->observations_used.emplace_back(
+			"CObservation2DRangeScan - Format #2");
+		dec->observations_used.emplace_back(
+			"CObservation3DRangeScan - Format #2");
 		dec->is_slam_2d = true;
 
 		regs_descriptions.push_back(dec);
 	}
 	{  // CEmptyNRD
-		TRegistrationDeciderProps* dec = new TRegistrationDeciderProps;
+		auto* dec = new TRegistrationDeciderProps;
 		dec->name = "CEmptyNRD";
 		dec->description =
 			"Empty Decider - does nothing when its class methods are called";
@@ -357,7 +353,7 @@ void TUserOptionsChecker<GRAPH_t>::populateDeciderOptimizerProperties()
 		regs_descriptions.push_back(dec);
 	}
 	{  // CICPCriteriaERD
-		TRegistrationDeciderProps* dec = new TRegistrationDeciderProps;
+		auto* dec = new TRegistrationDeciderProps;
 		dec->name = "CICPCriteriaERD";
 		dec->description =
 			"Register a new edge by aligning the provided 2D/3D RangeScans of "
@@ -365,14 +361,16 @@ void TUserOptionsChecker<GRAPH_t>::populateDeciderOptimizerProperties()
 			"for adding a new edge";
 		dec->type = "Edge";
 		dec->rawlog_format = "Both";
-		dec->observations_used.emplace_back("CObservation2DRangeScan - Format #1, #2");
-		dec->observations_used.emplace_back("CObservation3DRangeScan - Format #2");
+		dec->observations_used.emplace_back(
+			"CObservation2DRangeScan - Format #1, #2");
+		dec->observations_used.emplace_back(
+			"CObservation3DRangeScan - Format #2");
 		dec->is_slam_2d = true;
 
 		regs_descriptions.push_back(dec);
 	}
 	{  // CEmptyERD
-		TRegistrationDeciderProps* dec = new TRegistrationDeciderProps;
+		auto* dec = new TRegistrationDeciderProps;
 		dec->name = "CEmptyERD";
 		dec->description =
 			"Empty Decider - does nothing when its class methods are called";
@@ -385,14 +383,15 @@ void TUserOptionsChecker<GRAPH_t>::populateDeciderOptimizerProperties()
 		regs_descriptions.push_back(dec);
 	}
 	{  // CLoopCloserERD
-		TRegistrationDeciderProps* dec = new TRegistrationDeciderProps;
+		auto* dec = new TRegistrationDeciderProps;
 		dec->name = "CLoopCloserERD";
 		dec->description =
 			"Partition the map and register *sets* of edges based on the "
 			"Pairwise consistency matrix of each set.";
 		dec->type = "Edge";
 		dec->rawlog_format = "Both";
-		dec->observations_used.emplace_back("CObservation2DRangeScan - Format #1, #2");
+		dec->observations_used.emplace_back(
+			"CObservation2DRangeScan - Format #1, #2");
 		dec->is_slam_2d = true;
 
 		regs_descriptions.push_back(dec);
@@ -400,7 +399,7 @@ void TUserOptionsChecker<GRAPH_t>::populateDeciderOptimizerProperties()
 
 	// registering the available optimizers
 	{  // CEmptyGSO
-		TOptimizerProps* opt = new TOptimizerProps;
+		auto* opt = new TOptimizerProps;
 		opt->name = "CEmptyGSO";
 		opt->description =
 			"Empty Optimizer - does nothing when its class methods are called";
@@ -412,7 +411,7 @@ void TUserOptionsChecker<GRAPH_t>::populateDeciderOptimizerProperties()
 	}
 
 	{  // CLevMarqGSO
-		TOptimizerProps* opt = new TOptimizerProps;
+		auto* opt = new TOptimizerProps;
 		opt->name = "CLevMarqGSO";
 		opt->description = "Levenberg-Marqurdt non-linear graphSLAM solver";
 		opt->is_mr_slam_class = true;
@@ -424,6 +423,4 @@ void TUserOptionsChecker<GRAPH_t>::populateDeciderOptimizerProperties()
 
 	MRPT_END
 }
-}  // end of namespaces
-
-
+}  // namespace mrpt::graphslam::apps

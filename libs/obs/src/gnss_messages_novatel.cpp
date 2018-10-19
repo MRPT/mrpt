@@ -93,7 +93,7 @@ const std::string& nv_oem6_solution_status::enum2str(int val)
 		DEF_TYPESTR(INVALID_FIX)
 #undef DEF_TYPESTR
 	}
-	std::map<int, std::string>::const_iterator it = val2str.find(val);
+	auto it = val2str.find(val);
 	static const std::string nullstr("???");
 	return (it == val2str.end()) ? nullstr : it->second;
 }
@@ -136,7 +136,7 @@ const std::string& nv_oem6_position_type::enum2str(int val)
 		DEF_TYPESTR(CDGPS)
 #undef DEF_TYPESTR
 	}
-	std::map<int, std::string>::const_iterator it = val2str.find(val);
+	auto it = val2str.find(val);
 	static const std::string nullstr("???");
 	return (it == val2str.end()) ? nullstr : it->second;
 }
@@ -159,7 +159,7 @@ const std::string& nv_oem6_ins_status_type::enum2str(int val)
 		DEF_TYPESTR(WAITING_INITIALPOS)
 #undef DEF_TYPESTR
 	}
-	std::map<int, std::string>::const_iterator it = val2str.find(val);
+	auto it = val2str.find(val);
 	static const std::string nullstr("???");
 	return (it == val2str.end()) ? nullstr : it->second;
 }

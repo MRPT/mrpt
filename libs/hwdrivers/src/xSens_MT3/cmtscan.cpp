@@ -302,4 +302,4 @@ bool cmtScanPorts(
 	return true;
 }
 
-}  // end of xsens namespace
+}  // namespace xsens

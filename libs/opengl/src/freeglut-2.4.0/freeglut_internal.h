@@ -173,7 +173,8 @@ struct tagSFG_Time
  * An enumeration containing the state of the GLUT execution:
  * initializing, running, or stopping
  */
-typedef enum {
+typedef enum
+{
 	GLUT_EXEC_STATE_INIT,
 	GLUT_EXEC_STATE_RUNNING,
 	GLUT_EXEC_STATE_STOP
@@ -224,7 +225,7 @@ struct tagSFG_State
 	char* ProgramName; /* Name of the invoking program    */
 	GLboolean
 		JoysticksInitialised; /* Only initialize if application calls for them
-								 */
+							   */
 };
 
 /* The structure used by display initialization in freeglut_init.c */
@@ -822,6 +823,5 @@ void fgListInsert(SFG_List* list, SFG_Node* next, SFG_Node* node);
 /* Error Message functions */
 void fgError(const char* fmt, ...);
 void fgWarning(const char* fmt, ...);
-
 
 /*** END OF FILE ***/

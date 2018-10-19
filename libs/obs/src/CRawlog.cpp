@@ -37,16 +37,14 @@ void CRawlog::clear()
 
 void CRawlog::addObservations(CSensoryFrame& observations)
 {
-	m_seqOfActObs.push_back(
-		std::dynamic_pointer_cast<CSerializable>(
-			observations.duplicateGetSmartPtr()));
+	m_seqOfActObs.push_back(std::dynamic_pointer_cast<CSerializable>(
+		observations.duplicateGetSmartPtr()));
 }
 
 void CRawlog::addActions(CActionCollection& actions)
 {
-	m_seqOfActObs.push_back(
-		std::dynamic_pointer_cast<CSerializable>(
-			actions.duplicateGetSmartPtr()));
+	m_seqOfActObs.push_back(std::dynamic_pointer_cast<CSerializable>(
+		actions.duplicateGetSmartPtr()));
 }
 
 void CRawlog::addActionsMemoryReference(const CActionCollection::Ptr& action)
@@ -214,8 +212,8 @@ bool CRawlog::loadFromRawLogFile(
 				this->swap(*ao);
 				return true;
 			}
-			else if (
-				newObj->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
+			else if (newObj->GetRuntimeClass()->derivedFrom(
+						 CLASS_ID(CObservation)))
 			{
 				if (IS_CLASS(newObj, CObservationComment))
 				{
@@ -294,8 +292,7 @@ bool CRawlog::saveToRawLogFile(const std::string& fileName) const
 		CFileGZOutputStream fo(fileName);
 		auto f = archiveFrom(fo);
 		if (!m_commentTexts.text.empty()) f << m_commentTexts;
-		for (const auto & m_seqOfActOb : m_seqOfActObs)
-			f << *m_seqOfActOb;
+		for (const auto& m_seqOfActOb : m_seqOfActObs) f << *m_seqOfActOb;
 		return true;
 	}
 	catch (...)
@@ -446,15 +443,15 @@ void CRawlog::findObservationsByClassInRange(
 
 	// Find the first appearance of time_start:
 	// ---------------------------------------------------
-	TListObjects::const_iterator first = m_seqOfActObs.begin();
-	const TListObjects::const_iterator last = m_seqOfActObs.end();
+	auto first = m_seqOfActObs.begin();
+	const auto last = m_seqOfActObs.end();
 	{
 		// The following is based on lower_bound:
 		size_t count, step;
 		count = std::distance(first, last);
 		while (count > 0)
 		{
-			TListObjects::const_iterator it = first;
+			auto it = first;
 			step = count / 2;
 			std::advance(it, step);
 
@@ -561,15 +558,15 @@ std::string CRawlog::detectImagesDirectory(const std::string& str)
 		rawlog_path + extractFileName(str) + std::string("_Images");
 	if (mrpt::system::fileExists(temptative_img_path))
 		return temptative_img_path;
-	else if (
-		mrpt::system::fileExists(
-			temptative_img_path =
-				(rawlog_path + extractFileName(str) + std::string("_images"))))
+	else if (mrpt::system::fileExists(
+				 temptative_img_path =
+					 (rawlog_path + extractFileName(str) +
+					  std::string("_images"))))
 		return temptative_img_path;
-	else if (
-		mrpt::system::fileExists(
-			temptative_img_path =
-				(rawlog_path + extractFileName(str) + std::string("_IMAGES"))))
+	else if (mrpt::system::fileExists(
+				 temptative_img_path =
+					 (rawlog_path + extractFileName(str) +
+					  std::string("_IMAGES"))))
 		return temptative_img_path;
 	else
 		return rawlog_path + "Images";

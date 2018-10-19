@@ -14,17 +14,17 @@
 namespace mrpt::obs
 {
 /** Velodyne calibration data, for usage in mrpt::obs::CObservationVelodyneScan
-  *
-  * It is mandatory to use some calibration data to convert Velodyne scans into
+ *
+ * It is mandatory to use some calibration data to convert Velodyne scans into
  * 3D point clouds. Users should
-  * normally use the XML files provided by the manufacturer with each scanner,
+ * normally use the XML files provided by the manufacturer with each scanner,
  * but default calibration files can be
-  * loaded with \a VelodyneCalibration::LoadDefaultCalibration().
-  *
-  * \note New in MRPT 1.4.0
-  * \sa CObservationVelodyneScan, CVelodyneScanner
-  * \ingroup mrpt_obs_grp
-  */
+ * loaded with \a VelodyneCalibration::LoadDefaultCalibration().
+ *
+ * \note New in MRPT 1.4.0
+ * \sa CObservationVelodyneScan, CVelodyneScanner
+ * \ingroup mrpt_obs_grp
+ */
 struct VelodyneCalibration
 {
 	/** Default ctor (leaves all empty) */
@@ -36,12 +36,12 @@ struct VelodyneCalibration
 	void clear();
 
 	/** Loads default calibration files for common LIDAR models.
-	  * \param[in] lidar_model Valid model names are: `VLP16`, `HDL32`
-	  * \return It always return a calibration structure, but it may be empty if
+	 * \param[in] lidar_model Valid model names are: `VLP16`, `HDL32`
+	 * \return It always return a calibration structure, but it may be empty if
 	 * the model name is unknown. See \a empty()
-	  * \note Default files can be inspected in `[MRPT_SRC or
+	 * \note Default files can be inspected in `[MRPT_SRC or
 	 * /usr]/share/mrpt/config_files/rawlog-grabber/velodyne_default_calib_{*}.xml`
-	  */
+	 */
 	static const VelodyneCalibration& LoadDefaultCalibration(
 		const std::string& lidar_model);
 
@@ -56,7 +56,8 @@ struct VelodyneCalibration
 #pragma pack(push, 1)
 	struct PerLaserCalib
 	{
-		double azimuthCorrection{.0}, verticalCorrection{.0}, distanceCorrection{.0};
+		double azimuthCorrection{.0}, verticalCorrection{.0},
+			distanceCorrection{.0};
 		double verticalOffsetCorrection{.0}, horizontalOffsetCorrection{.0};
 		double sinVertCorrection{.0}, cosVertCorrection{1.0};
 		double sinVertOffsetCorrection{.0}, cosVertOffsetCorrection{1.0};
@@ -70,6 +71,4 @@ struct VelodyneCalibration
    private:
 	bool internal_loadFromXMLNode(void* node);
 };
-}
-
-
+}  // namespace mrpt::obs

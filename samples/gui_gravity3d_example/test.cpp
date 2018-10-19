@@ -33,7 +33,7 @@ const double COLLIS_LOSS = 0.98;
 
 struct TMass
 {
-	TMass() :  obj3d() {}
+	TMass() : obj3d() {}
 	double x{0}, y{0}, z{0};
 	double vx{0}, vy{0}, vz{0};
 	double mass{1};

@@ -44,7 +44,7 @@ SubgraphMatcher::SubgraphMatcher()
 
 /**!
  * Check if the two input planes could be the same
-*/
+ */
 bool SubgraphMatcher::evalUnaryConstraints(
 	Plane& plane1, Plane& plane2, PbMap& trgPbMap, bool useStructure)
 {
@@ -774,7 +774,7 @@ bool SubgraphMatcher::evalUnaryConstraintsOdometry2D(
 /**!
  * Compares the relation between Ref-neigRef with the relation between
  * Check-neigCheck. Returns true if both geometries are similar
-*/
+ */
 bool SubgraphMatcher::evalBinaryConstraints(
 	Plane& Ref, Plane& neigRef, Plane& Check, Plane& neigCheck)
 {
@@ -878,10 +878,9 @@ bool SubgraphMatcher::evalBinaryConstraints(
 	}
 
 	// Normal
-	double dif_normal = fabs(
-		RAD2DEG(
-			acos(Ref.v3normal.dot(neigRef.v3normal)) -
-			acos(Check.v3normal.dot(neigCheck.v3normal))));
+	double dif_normal = fabs(RAD2DEG(
+		acos(Ref.v3normal.dot(neigRef.v3normal)) -
+		acos(Check.v3normal.dot(neigCheck.v3normal))));
 	//  if( dif_normal > configLocaliser.angle_threshold ){
 	if (dif_normal > std::max(
 						 configLocaliser.angle_threshold,
@@ -984,8 +983,7 @@ bool isSubgraphContained(
 	if (contained.size() > container.size()) return false;
 
 	// is Subgraph Contained?
-	for (map<unsigned, unsigned>::iterator it = contained.begin();
-		 it != contained.end(); it++)
+	for (auto it = contained.begin(); it != contained.end(); it++)
 		if (container.count(it->first) == 0)
 			return false;
 		else if (container[it->first] != it->second)
@@ -1064,7 +1062,7 @@ void SubgraphMatcher::exploreSubgraphTreeR(
 
 	while (!sourcePlanes.empty())
 	{
-		set<unsigned>::iterator it1 = sourcePlanes.begin();
+		auto it1 = sourcePlanes.begin();
 #if _VERBOSE
 		cout << "Compare " << *it1
 			 << " Compare Compare Compare Compare Compare " << endl;
@@ -1091,8 +1089,7 @@ void SubgraphMatcher::exploreSubgraphTreeR(
 		//      return;
 		//    }
 
-		for (set<unsigned>::iterator it2 = targetPlanes.begin();
-			 it2 != targetPlanes.end(); it2++)
+		for (auto it2 = targetPlanes.begin(); it2 != targetPlanes.end(); it2++)
 		{
 #if _VERBOSE
 			cout << " " << *it1 << " with " << *it2 << endl;
@@ -1135,8 +1132,8 @@ void SubgraphMatcher::exploreSubgraphTreeR(
 				continue;
 
 			bool binaryFail = false;
-			for (map<unsigned, unsigned>::iterator it_matched = matched.begin();
-				 it_matched != matched.end(); it_matched++)
+			for (auto it_matched = matched.begin(); it_matched != matched.end();
+				 it_matched++)
 				if (!evalBinaryConstraints(
 						subgraphSrc->pPBM->vPlanes[*it1],
 						subgraphSrc->pPBM->vPlanes[it_matched->first],
@@ -1213,8 +1210,7 @@ void SubgraphMatcher::exploreSubgraphTreeR_Area(
 	float matchedArea = calcAreaMatched(matched);
 
 	float unmatchedArea = 0;  // Pass as value parameter
-	for (set<unsigned>::iterator it1 = sourcePlanes.begin();
-		 it1 != sourcePlanes.end(); it1++)
+	for (auto it1 = sourcePlanes.begin(); it1 != sourcePlanes.end(); it1++)
 		unmatchedArea += subgraphSrc->pPBM->vPlanes[*it1].areaHull;
 
 	//  unsigned requiredMatches = max(configLocaliser.min_planes_recognition,
@@ -1222,7 +1218,7 @@ void SubgraphMatcher::exploreSubgraphTreeR_Area(
 
 	while (!sourcePlanes.empty())
 	{
-		set<unsigned>::iterator it1 = sourcePlanes.begin();
+		auto it1 = sourcePlanes.begin();
 #if _VERBOSE
 		cout << "Compare " << *it1
 			 << " Compare Compare Compare Compare Compare " << endl;
@@ -1251,8 +1247,7 @@ void SubgraphMatcher::exploreSubgraphTreeR_Area(
 		//      return;
 		//    }
 
-		for (set<unsigned>::iterator it2 = targetPlanes.begin();
-			 it2 != targetPlanes.end(); it2++)
+		for (auto it2 = targetPlanes.begin(); it2 != targetPlanes.end(); it2++)
 		{
 #if _VERBOSE
 			cout << " " << *it1 << " with " << *it2 << endl;
@@ -1295,8 +1290,8 @@ void SubgraphMatcher::exploreSubgraphTreeR_Area(
 				continue;
 
 			bool binaryFail = false;
-			for (map<unsigned, unsigned>::iterator it_matched = matched.begin();
-				 it_matched != matched.end(); it_matched++)
+			for (auto it_matched = matched.begin(); it_matched != matched.end();
+				 it_matched++)
 				if (!evalBinaryConstraints(
 						subgraphSrc->pPBM->vPlanes[*it1],
 						subgraphSrc->pPBM->vPlanes[it_matched->first],
@@ -1348,8 +1343,7 @@ float SubgraphMatcher::calcAreaMatched(
 	std::map<unsigned, unsigned>& matched_planes)
 {
 	float areaMatched = 0;
-	for (map<unsigned, unsigned>::iterator it = matched_planes.begin();
-		 it != matched_planes.end(); it++)
+	for (auto it = matched_planes.begin(); it != matched_planes.end(); it++)
 		areaMatched += subgraphSrc->pPBM->vPlanes[it->first].areaHull;
 
 	return areaMatched;
@@ -1358,8 +1352,7 @@ float SubgraphMatcher::calcAreaMatched(
 float SubgraphMatcher::calcAreaUnmatched(std::set<unsigned>& unmatched_planes)
 {
 	float areaUnatched = 0;
-	for (set<unsigned>::iterator it = unmatched_planes.begin();
-		 it != unmatched_planes.end(); it++)
+	for (auto it = unmatched_planes.begin(); it != unmatched_planes.end(); it++)
 		areaUnatched += subgraphSrc->pPBM->vPlanes[*it].areaHull;
 
 	return areaUnatched;
@@ -1433,10 +1426,9 @@ std::map<unsigned, unsigned> SubgraphMatcher::compareSubgraphs(
 		subgraphSrc->pPBM->vPlanes.size(),
 		std::vector<int8_t>(subgraphTrg->pPBM->vPlanes.size()));
 	if (option == 0)  // Default subgraph matcher
-		for (set<unsigned>::iterator it1 = sourcePlanes.begin();
-			 it1 != sourcePlanes.end(); it1++)
-			for (set<unsigned>::iterator it2 = targetPlanes.begin();
-				 it2 != targetPlanes.end(); it2++)
+		for (auto it1 = sourcePlanes.begin(); it1 != sourcePlanes.end(); it1++)
+			for (auto it2 = targetPlanes.begin(); it2 != targetPlanes.end();
+				 it2++)
 				hashUnaryConstraints[*it1][*it2] =
 					(evalUnaryConstraints(
 						 subgraphSrc->pPBM->vPlanes[*it1],
@@ -1445,10 +1437,9 @@ std::map<unsigned, unsigned> SubgraphMatcher::compareSubgraphs(
 						 ? 1
 						 : 0);
 	else if (option == 1)  // Odometry graph matcher
-		for (set<unsigned>::iterator it1 = sourcePlanes.begin();
-			 it1 != sourcePlanes.end(); it1++)
-			for (set<unsigned>::iterator it2 = targetPlanes.begin();
-				 it2 != targetPlanes.end(); it2++)
+		for (auto it1 = sourcePlanes.begin(); it1 != sourcePlanes.end(); it1++)
+			for (auto it2 = targetPlanes.begin(); it2 != targetPlanes.end();
+				 it2++)
 				hashUnaryConstraints[*it1][*it2] =
 					(evalUnaryConstraintsOdometry(
 						 subgraphSrc->pPBM->vPlanes[*it1],
@@ -1458,10 +1449,9 @@ std::map<unsigned, unsigned> SubgraphMatcher::compareSubgraphs(
 						 : 0);
 	else if (option == 2)  // Default graph matcher restricted to planar
 		// movement (fix plane x=const)
-		for (set<unsigned>::iterator it1 = sourcePlanes.begin();
-			 it1 != sourcePlanes.end(); it1++)
-			for (set<unsigned>::iterator it2 = targetPlanes.begin();
-				 it2 != targetPlanes.end(); it2++)
+		for (auto it1 = sourcePlanes.begin(); it1 != sourcePlanes.end(); it1++)
+			for (auto it2 = targetPlanes.begin(); it2 != targetPlanes.end();
+				 it2++)
 				hashUnaryConstraints[*it1][*it2] =
 					(evalUnaryConstraints2D(
 						 subgraphSrc->pPBM->vPlanes[*it1],
@@ -1471,10 +1461,9 @@ std::map<unsigned, unsigned> SubgraphMatcher::compareSubgraphs(
 						 : 0);
 	else if (option == 3)  // Odometry graph matcher restricted to planar
 		// movement (fix plane x=const)
-		for (set<unsigned>::iterator it1 = sourcePlanes.begin();
-			 it1 != sourcePlanes.end(); it1++)
-			for (set<unsigned>::iterator it2 = targetPlanes.begin();
-				 it2 != targetPlanes.end(); it2++)
+		for (auto it1 = sourcePlanes.begin(); it1 != sourcePlanes.end(); it1++)
+			for (auto it2 = targetPlanes.begin(); it2 != targetPlanes.end();
+				 it2++)
 				hashUnaryConstraints[*it1][*it2] =
 					(evalUnaryConstraintsOdometry2D(
 						 subgraphSrc->pPBM->vPlanes[*it1],

@@ -57,5 +57,4 @@ class CListOfClasses
 
 };  // end of class
 
-}
-
+}  // namespace mrpt::rtti

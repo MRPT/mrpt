@@ -109,7 +109,7 @@ typedef struct PlyProperty
 
 typedef struct PlyElement
 { /* description of an element */
-	PlyElement() :  other_offset(NO_OTHER_PROPS) {}
+	PlyElement() : other_offset(NO_OTHER_PROPS) {}
 	string name; /* element name */
 	int num{0}; /* number of elements in this object */
 	int size{0}; /* size of element (bytes) or -1 if variable */
@@ -121,10 +121,7 @@ typedef struct PlyElement
 
 struct PlyFile
 { /* description of PLY file */
-	PlyFile(FILE* _fp = nullptr)
-		: fp(_fp) 
-	{
-	}
+	PlyFile(FILE* _fp = nullptr) : fp(_fp) {}
 
 	FILE* fp; /* file pointer */
 	int file_type{0}; /* ascii or binary */
@@ -209,7 +206,7 @@ PlyFile* ply_write(FILE* fp, const vector<string>& elem_names, int file_type)
 	if (fp == nullptr) return (nullptr);
 
 	/* create a record for this object */
-	PlyFile* plyfile = new PlyFile(fp);
+	auto* plyfile = new PlyFile(fp);
 
 	plyfile->file_type = file_type;
 	plyfile->version = 1.0;
@@ -287,10 +284,9 @@ void ply_describe_element(
 	/* look for appropriate element */
 	PlyElement* elem = find_element(plyfile, elem_name);
 	if (elem == nullptr)
-		throw std::runtime_error(
-			format(
-				"ply_describe_element: can't find element '%s'",
-				elem_name.c_str()));
+		throw std::runtime_error(format(
+			"ply_describe_element: can't find element '%s'",
+			elem_name.c_str()));
 
 	elem->num = nelems;
 
@@ -352,10 +348,8 @@ void ply_element_count(PlyFile* plyfile, const string& elem_name, int nelems)
 	/* look for appropriate element */
 	elem = find_element(plyfile, elem_name);
 	if (elem == nullptr)
-		throw std::runtime_error(
-			format(
-				"ply_element_count: can't find element '%s'",
-				elem_name.c_str()));
+		throw std::runtime_error(format(
+			"ply_element_count: can't find element '%s'", elem_name.c_str()));
 
 	elem->num = nelems;
 }
@@ -386,31 +380,28 @@ void ply_header_complete(PlyFile* plyfile)
 			fprintf(fp, "format binary_little_endian 1.0\n");
 			break;
 		default:
-			throw std::runtime_error(
-				format(
-					"ply_header_complete: bad file type = %d",
-					plyfile->file_type));
+			throw std::runtime_error(format(
+				"ply_header_complete: bad file type = %d", plyfile->file_type));
 	}
 
 	/* write out the comments */
 
-	for (auto & comment : plyfile->comments)
+	for (auto& comment : plyfile->comments)
 		fprintf(fp, "comment %s\n", comment.c_str());
 
 	/* write out object information */
 
-	for (auto & i : plyfile->obj_info)
-		fprintf(fp, "obj_info %s\n", i.c_str());
+	for (auto& i : plyfile->obj_info) fprintf(fp, "obj_info %s\n", i.c_str());
 
 	/* write out information about each element */
 
-	for (auto & i : plyfile->elems)
+	for (auto& i : plyfile->elems)
 	{
 		const PlyElement* elem = &i;
 		fprintf(fp, "element %s %d\n", elem->name.c_str(), elem->num);
 
 		/* write out each property */
-		for (const auto & j : elem->props)
+		for (const auto& j : elem->props)
 		{
 			const PlyProperty* prop = &j;
 			if (prop->is_list)
@@ -448,10 +439,8 @@ void ply_put_element_setup(PlyFile* plyfile, const string& elem_name)
 
 	elem = find_element(plyfile, elem_name);
 	if (elem == nullptr)
-		throw std::runtime_error(
-			format(
-				"ply_elements_setup: can't find element '%s'",
-				elem_name.c_str()));
+		throw std::runtime_error(format(
+			"ply_elements_setup: can't find element '%s'", elem_name.c_str()));
 
 	plyfile->which_elem = elem;
 }
@@ -631,7 +620,7 @@ PlyFile* ply_read(FILE* fp, vector<string>& elem_names)
 	if (fp == nullptr) return (nullptr);
 
 	/* create record for this object */
-	PlyFile* plyfile = new PlyFile(fp);
+	auto* plyfile = new PlyFile(fp);
 
 	/* read and parse the file's header */
 	string orig_line;
@@ -674,7 +663,7 @@ PlyFile* ply_read(FILE* fp, vector<string>& elem_names)
 	/* create tags for each property of each element, to be used */
 	/* later to say whether or not to store each property for the user */
 
-	for (auto & i : plyfile->elems)
+	for (auto& i : plyfile->elems)
 	{
 		PlyElement* elem = &i;
 
@@ -684,8 +673,7 @@ PlyFile* ply_read(FILE* fp, vector<string>& elem_names)
 
 	/* set return values about the elements */
 	elem_names.clear();
-	for (auto & elem : plyfile->elems)
-		elem_names.push_back(elem.name);
+	for (auto& elem : plyfile->elems) elem_names.push_back(elem.name);
 
 	/* return a pointer to the file's information */
 
@@ -905,7 +893,7 @@ Exit:
 
 PlyElement* find_element(PlyFile* plyfile, const string& element)
 {
-	for (auto & elem : plyfile->elems)
+	for (auto& elem : plyfile->elems)
 		if (element == elem.name) return &elem;
 
 	return (nullptr);
@@ -1870,10 +1858,10 @@ bool PLY_Importer::loadFromPlyFile(
 		/* go through each kind of element that we learned is in the file */
 		/* and read them */
 
-		for (const auto & elem_name : elist)
+		for (const auto& elem_name : elist)
 		{
 			/* get the description of the first element */
-				int num_elems = 0, nprops = 0;
+			int num_elems = 0, nprops = 0;
 
 			// vector<PlyProperty> plist =
 			ply_get_element_description(ply, elem_name, num_elems, nprops);
@@ -1885,7 +1873,7 @@ bool PLY_Importer::loadFromPlyFile(
 			if ("vertex" == elem_name)
 			{
 				/* set up for getting vertex elements */
-				for (const auto & vert_prop : vert_props)
+				for (const auto& vert_prop : vert_props)
 					ply_get_property(ply, elem_name, &vert_prop);
 
 				/* grab all the vertex elements */
@@ -1977,13 +1965,14 @@ bool PLY_Exporter::saveToPlyFile(
 
 		float version;
 		PlyFile* ply = ply_open_for_writing(
-			filename.c_str(), elem_names, save_in_binary ?
+			filename.c_str(), elem_names,
+			save_in_binary ?
 #if MRPT_IS_BIG_ENDIAN
-														 PLY_BINARY_BE
+						   PLY_BINARY_BE
 #else
-														 PLY_BINARY_LE
+						   PLY_BINARY_LE
 #endif
-														 : PLY_ASCII,
+						   : PLY_ASCII,
 			&version);
 
 		/* describe what properties go into the vertex and face elements */
@@ -2010,15 +1999,14 @@ bool PLY_Exporter::saveToPlyFile(
 		}
 
 		ply_element_count(ply, "face", nfaces);
-		for (const auto & face_prop : face_props)
+		for (const auto& face_prop : face_props)
 			ply_describe_property(ply, "face", &face_prop);
 
 		/* write a comment and an object information field */
-		for (const auto & file_comment : file_comments)
+		for (const auto& file_comment : file_comments)
 			ply_put_comment(ply, file_comment.c_str());
 
-		for (const auto & k : file_obj_info)
-			ply_put_obj_info(ply, k.c_str());
+		for (const auto& k : file_obj_info) ply_put_obj_info(ply, k.c_str());
 
 		/* we have described exactly what we will put in the file, so */
 		/* we are now done with the header info */

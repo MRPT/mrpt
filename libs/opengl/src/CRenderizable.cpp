@@ -33,10 +33,7 @@ IMPLEMENTS_VIRTUAL_SERIALIZABLE(CRenderizable, CSerializable, mrpt::opengl)
 struct TOpenGLNameBooker
 {
    private:
-	TOpenGLNameBooker()
-		: freeTextureNames(MAX_GL_TEXTURE_IDS, false)
-	{
-	}
+	TOpenGLNameBooker() : freeTextureNames(MAX_GL_TEXTURE_IDS, false) {}
 
    public:
 	std::vector<bool> freeTextureNames;
@@ -53,10 +50,10 @@ struct TOpenGLNameBooker
 // Default constructor:
 CRenderizable::CRenderizable()
 	: m_name(),
-	  
+
 	  m_color(255, 255, 255, 255),
 	  m_pose()
-	  
+
 {
 }
 
@@ -135,7 +132,7 @@ void CRenderizable::writeToStreamRender(
 	out << magic_signature[0] << magic_signature[1];
 
 	// "m_name"
-	const uint16_t nameLen = static_cast<uint16_t>(m_name.size());
+	const auto nameLen = static_cast<uint16_t>(m_name.size());
 	out << nameLen;
 	if (nameLen) out.WriteBuffer(m_name.c_str(), m_name.size());
 

@@ -83,8 +83,5 @@ class CVisualizer
 	bool m_is_3D_graph;
 	const GRAPH_T& m_graph;
 };
-}
+}  // namespace mrpt::graphs::detail
 #include <mrpt/graphs/CVisualizer_impl.h>
-
-
-

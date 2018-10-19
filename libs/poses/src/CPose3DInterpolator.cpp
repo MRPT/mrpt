@@ -53,9 +53,9 @@ namespace mrpt::poses
 // Specialization for DIM=3
 template <>
 void CPoseInterpolatorBase<3>::impl_interpolation(
-	const TTimePosePair &p1, const TTimePosePair &p2, 
-	const TTimePosePair &p3, const TTimePosePair &p4,
-	const TInterpolatorMethod method, const mrpt::Clock::time_point &t, pose_t& out_interp) const
+	const TTimePosePair& p1, const TTimePosePair& p2, const TTimePosePair& p3,
+	const TTimePosePair& p4, const TInterpolatorMethod method,
+	const mrpt::Clock::time_point& t, pose_t& out_interp) const
 {
 	using mrpt::math::TPose3D;
 	mrpt::math::CArrayDouble<4> X, Y, Z, yaw, pitch, roll;
@@ -63,11 +63,18 @@ void CPoseInterpolatorBase<3>::impl_interpolation(
 	using doubleDuration = std::chrono::duration<double>;
 	doubleDuration durationT = t.time_since_epoch();
 	double td = durationT.count();
-	ts[0] = std::chrono::duration_cast<doubleDuration>(p1.first.time_since_epoch()).count();
-	ts[1] = std::chrono::duration_cast<doubleDuration>(p2.first.time_since_epoch()).count();
-	ts[2] = std::chrono::duration_cast<doubleDuration>(p3.first.time_since_epoch()).count();
-	ts[3] = std::chrono::duration_cast<doubleDuration>(p4.first.time_since_epoch()).count();
-	
+	ts[0] =
+		std::chrono::duration_cast<doubleDuration>(p1.first.time_since_epoch())
+			.count();
+	ts[1] =
+		std::chrono::duration_cast<doubleDuration>(p2.first.time_since_epoch())
+			.count();
+	ts[2] =
+		std::chrono::duration_cast<doubleDuration>(p3.first.time_since_epoch())
+			.count();
+	ts[3] =
+		std::chrono::duration_cast<doubleDuration>(p4.first.time_since_epoch())
+			.count();
 
 	X[0] = p1.second.x;
 	Y[0] = p1.second.y;
@@ -223,5 +230,4 @@ void CPoseInterpolatorBase<3>::impl_interpolation(
 
 // Explicit instantations:
 template class CPoseInterpolatorBase<3>;
-}
-
+}  // namespace mrpt::poses

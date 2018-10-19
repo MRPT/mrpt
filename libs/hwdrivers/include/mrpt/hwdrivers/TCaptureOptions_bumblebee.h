@@ -11,9 +11,9 @@
 namespace mrpt::hwdrivers
 {
 /** Options used when creating a bumblebee camera capture object
-  * \sa CStereoGrabber_Bumblebee, CStereoGrabber_Bumblebee_dc1394
-  * \ingroup mrpt_hwdrivers_grp
-  */
+ * \sa CStereoGrabber_Bumblebee, CStereoGrabber_Bumblebee_dc1394
+ * \ingroup mrpt_hwdrivers_grp
+ */
 struct TCaptureOptions_bumblebee
 {
 	TCaptureOptions_bumblebee();
@@ -29,5 +29,4 @@ struct TCaptureOptions_bumblebee
 	/** Bumblebee camera frame rate (Default: 15 fps) */
 	double framerate;
 };
-}
-
+}  // namespace mrpt::hwdrivers

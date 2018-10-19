@@ -19,7 +19,7 @@ class CConfigFileBase;
 
 /** This is a virtual base class for sets of options than can be loaded from
  * and/or saved to configuration plain-text files.
-  * \todo Automatize this class thru a proxy auxiliary class where variables are
+ * \todo Automatize this class thru a proxy auxiliary class where variables are
  * registered from pointers, etc...
  * \ingroup mrpt_base_grp
  */
@@ -58,8 +58,8 @@ class CLoadableOptions
 	/** Behaves like loadFromConfigFile, but you can pass directly a file name
 	 * and a temporary CConfigFile object will be created automatically to load
 	 * the file.
-	  * \sa loadFromConfigFile
-	  */
+	 * \sa loadFromConfigFile
+	 */
 	void loadFromConfigFileName(
 		const std::string& config_file, const std::string& section);
 
@@ -74,8 +74,8 @@ class CLoadableOptions
 	/** Behaves like saveToConfigFile, but you can pass directly a file name and
 	 * a temporary CConfigFile object will be created automatically to save the
 	 * file.
-	  * \sa saveToConfigFile, loadFromConfigFileName
-	  */
+	 * \sa saveToConfigFile, loadFromConfigFileName
+	 */
 	void saveToConfigFileName(
 		const std::string& config_file, const std::string& section) const;
 
@@ -85,10 +85,10 @@ class CLoadableOptions
 
 	/** This method should clearly display all the contents of the structure in
 	 * textual form, sending it to a std::ostream.
-	  * The default implementation in this base class relies on \a
+	 * The default implementation in this base class relies on \a
 	 * saveToConfigFile() to generate a plain text representation of all the
 	 * parameters.
-	  */
+	 */
 	virtual void dumpToTextStream(std::ostream& out) const;
 
 	/** Virtual destructor */
@@ -111,5 +111,4 @@ class CLoadableOptions
 		dumpVar_double(                                                      \
 			out, #variableName, RAD2DEG(static_cast<double>(variableName))); \
 	}
-}  // end NS mrpt
-
+}  // namespace mrpt::config

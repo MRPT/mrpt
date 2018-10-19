@@ -19,7 +19,7 @@ using namespace std;
 					TMonteCarloLocalizationParams
  ---------------------------------------------------------------*/
 TMonteCarloLocalizationParams::TMonteCarloLocalizationParams()
-	:  metricMaps(), KLD_params()
+	: metricMaps(), KLD_params()
 {
 }
 
@@ -32,5 +32,4 @@ TMonteCarloLocalizationParams::TMonteCarloLocalizationParams(
 /** Copy operator: take care of knowing what you do, since this copies pointers.
  */
 TMonteCarloLocalizationParams& TMonteCarloLocalizationParams::operator=(
-	const TMonteCarloLocalizationParams& o)
-= default;
+	const TMonteCarloLocalizationParams& o) = default;

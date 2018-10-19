@@ -518,7 +518,7 @@ typedef struct XMLDLLENTRY XMLNode
 	XMLNode(const XMLNode& A);  ///< to allow shallow/fast copy:
 	XMLNode& operator=(const XMLNode& A);  ///< to allow shallow/fast copy:
 
-	XMLNode()= default;
+	XMLNode() = default;
 	static XMLNode emptyXMLNode;
 	static XMLClear emptyXMLClear;
 	static XMLAttribute emptyXMLAttribute;

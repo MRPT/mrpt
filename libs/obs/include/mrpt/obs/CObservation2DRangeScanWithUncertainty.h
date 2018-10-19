@@ -14,8 +14,8 @@
 namespace mrpt::obs
 {
 /** A 2D range scan plus an uncertainty model for each range.
-  * \sa mrpt::maps::COccupancyGridMap2D::laserScanSimulatorWithUncertainty()
-  */
+ * \sa mrpt::maps::COccupancyGridMap2D::laserScanSimulatorWithUncertainty()
+ */
 class CObservation2DRangeScanWithUncertainty
 {
    public:
@@ -51,6 +51,4 @@ class CObservation2DRangeScanWithUncertainty
 		const TEvalParams& params) const;
 };
 
-}
-
-
+}  // namespace mrpt::obs

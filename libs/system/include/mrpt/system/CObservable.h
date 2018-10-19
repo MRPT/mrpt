@@ -53,5 +53,4 @@ class CObservable
 	inline bool hasSubscribers() const { return !m_subscribers.empty(); }
 };  // End of class def.
 
-}
-
+}  // namespace mrpt::system

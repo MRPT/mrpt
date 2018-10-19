@@ -43,8 +43,7 @@ void CFeatureExtraction::internal_computeLogPolarImageDescriptors(
 		patch_w, patch_h, in_img.getChannelCount());
 
 	// Compute intensity-domain spin images
-	for (CFeatureList::iterator it = in_features.begin();
-		 it != in_features.end(); ++it)
+	for (auto it = in_features.begin(); it != in_features.end(); ++it)
 	{
 		// Overwrite scale with the descriptor scale:
 		(*it)->scale = radius;

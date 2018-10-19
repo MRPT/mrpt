@@ -257,10 +257,9 @@ void CWaypointsNavigator::waypoints_navigationStep()
 						wp.timestamp_reach = mrpt::system::now();
 
 						m_pending_events.emplace_back(std::bind(
-								&CRobot2NavInterface::sendWaypointReachedEvent,
-								std::ref(m_robot),
-								wps.waypoint_index_current_goal,
-								true /*reason: really reached*/));
+							&CRobot2NavInterface::sendWaypointReachedEvent,
+							std::ref(m_robot), wps.waypoint_index_current_goal,
+							true /*reason: really reached*/));
 
 						// Was this the final goal??
 						if (wps.waypoint_index_current_goal <
@@ -343,9 +342,8 @@ void CWaypointsNavigator::waypoints_navigationStep()
 						wp.timestamp_reach = mrpt::system::now();
 
 						m_pending_events.emplace_back(std::bind(
-								&CRobot2NavInterface::sendWaypointReachedEvent,
-								std::ref(m_robot), k,
-								false /*reason: skipped*/));
+							&CRobot2NavInterface::sendWaypointReachedEvent,
+							std::ref(m_robot), k, false /*reason: skipped*/));
 					}
 				}
 			}
@@ -367,8 +365,8 @@ void CWaypointsNavigator::waypoints_navigationStep()
 
 				// Notify we have a new "current waypoint"
 				m_pending_events.emplace_back(std::bind(
-						&CRobot2NavInterface::sendNewWaypointTargetEvent,
-						std::ref(m_robot), wps.waypoint_index_current_goal));
+					&CRobot2NavInterface::sendNewWaypointTargetEvent,
+					std::ref(m_robot), wps.waypoint_index_current_goal));
 
 				// Send the current targets + "multitarget_look_ahead"
 				// additional ones to help the local planner.
@@ -532,9 +530,8 @@ void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::
 }
 
 CWaypointsNavigator::TWaypointsNavigatorParams::TWaypointsNavigatorParams()
-	: 
-	  waypoint_angle_tolerance(mrpt::DEG2RAD(5.0))
-	  
+	: waypoint_angle_tolerance(mrpt::DEG2RAD(5.0))
+
 {
 }
 

@@ -35,8 +35,8 @@ class CFileGZOutputStream : public CStream
 	CFileGZOutputStream(const std::string& fileName);
 
 	/** Constructor, without opening the file.
-	  * \sa open
-	  */
+	 * \sa open
+	 */
 	CFileGZOutputStream();
 
 	CFileGZOutputStream(const CFileGZOutputStream&) = delete;
@@ -72,5 +72,4 @@ static_assert(
 	!std::is_copy_constructible_v<CFileGZOutputStream> &&
 		!std::is_copy_assignable_v<CFileGZOutputStream>,
 	"Copy Check");
-}
-
+}  // namespace mrpt::io

@@ -259,5 +259,4 @@ class RPlidarDriver
 	RPlidarDriver() = default;
 	virtual ~RPlidarDriver() = default;
 };
-}
-
+}  // namespace rp::standalone::rplidar

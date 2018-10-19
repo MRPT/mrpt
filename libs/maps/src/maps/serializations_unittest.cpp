@@ -58,14 +58,14 @@ TEST(SerializeTestMaps, WriteReadToMem)
 		CLASS_ID(COctoMap),
 		CLASS_ID(CColouredOctoMap)};
 
-	for (auto & lstClasse : lstClasses)
+	for (auto& lstClasse : lstClasses)
 	{
 		try
 		{
 			CMemoryStream buf;
 			auto arch = mrpt::serialization::archiveFrom(buf);
 			{
-				CSerializable* o =
+				auto* o =
 					static_cast<CSerializable*>(lstClasse->createObject());
 				arch << *o;
 				delete o;

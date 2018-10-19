@@ -208,5 +208,4 @@ class CEnhancedMetaFile : public CCanvas
 					  << *cov2D << std::endl;);
 	}
 };  // End of class def.
-}
-
+}  // namespace mrpt::img

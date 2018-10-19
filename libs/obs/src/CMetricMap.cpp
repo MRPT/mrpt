@@ -57,7 +57,7 @@ void CMetricMap::loadFromProbabilisticPosesAndObservations(
 		sf->insertObservationsInto(
 			this,  // Insert into THIS map.
 			&robotPose  // At this pose.
-			);
+		);
 	}
 }
 
@@ -68,7 +68,7 @@ double CMetricMap::computeObservationsLikelihood(
 	const CSensoryFrame& sf, const CPose2D& takenFrom)
 {
 	double lik = 0;
-	for (const auto & it : sf)
+	for (const auto& it : sf)
 		lik += computeObservationLikelihood(it.get(), takenFrom);
 
 	return lik;
@@ -86,8 +86,7 @@ double CMetricMap::computeObservationLikelihood(
 bool CMetricMap::canComputeObservationsLikelihood(const CSensoryFrame& sf) const
 {
 	bool can = false;
-	for (CSensoryFrame::const_iterator it = sf.begin(); !can && it != sf.end();
-		 ++it)
+	for (auto it = sf.begin(); !can && it != sf.end(); ++it)
 		can = can || canComputeObservationLikelihood(it->get());
 	return can;
 }

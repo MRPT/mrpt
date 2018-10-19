@@ -14,17 +14,18 @@
 
 #ifdef __cplusplus
 #include "xsstring.h"
-extern "C" {
+extern "C"
+{
 #endif
 
-extern XsArrayDescriptor const XSTYPES_DLL_API g_xsByteArrayDescriptor;
+	extern XsArrayDescriptor const XSTYPES_DLL_API g_xsByteArrayDescriptor;
 
 #ifndef __cplusplus
 #define XSBYTEARRAY_INITIALIZER XSARRAY_INITIALIZER(&g_xsByteArrayDescriptor)
-XSARRAY_STRUCT(XsByteArray, uint8_t);
-typedef struct XsByteArray XsByteArray;
-XSTYPES_DLL_API void XsByteArray_construct(
-	XsByteArray* thisPtr, XsSize count, uint8_t const* src);
+	XSARRAY_STRUCT(XsByteArray, uint8_t);
+	typedef struct XsByteArray XsByteArray;
+	XSTYPES_DLL_API void XsByteArray_construct(
+		XsByteArray* thisPtr, XsSize count, uint8_t const* src);
 
 // obsolete:
 #define XsByteArray_ref(thisPtr, sz, src, flags) \
@@ -48,44 +49,45 @@ XSTYPES_DLL_API void XsByteArray_construct(
 #endif
 
 #ifdef __cplusplus
-struct XsByteArray
-	: public XsArrayImpl<uint8_t, g_xsByteArrayDescriptor, XsByteArray>
-{
-	//! \brief Constructs an XsByteArray
-	inline explicit XsByteArray(XsSize sz = 0, uint8_t const* src = 0)
-		: ArrayImpl(sz, src)
+	struct XsByteArray
+		: public XsArrayImpl<uint8_t, g_xsByteArrayDescriptor, XsByteArray>
 	{
-	}
+		//! \brief Constructs an XsByteArray
+		inline explicit XsByteArray(XsSize sz = 0, uint8_t const* src = 0)
+			: ArrayImpl(sz, src)
+		{
+		}
 
-	//! \brief Constructs an XsByteArray as a copy of \a other
-	inline XsByteArray(XsByteArray const& other) : ArrayImpl(other) {}
-	//! \brief Constructs an XsByteArray that references the data supplied in \a
-	//! ref
-	inline explicit XsByteArray(
-		uint8_t* ref, XsSize sz, XsDataFlags flags = XSDF_None)
-		: ArrayImpl(ref, sz, flags)
-	{
-	}
+		//! \brief Constructs an XsByteArray as a copy of \a other
+		inline XsByteArray(XsByteArray const& other) : ArrayImpl(other) {}
+		//! \brief Constructs an XsByteArray that references the data supplied
+		//! in \a ref
+		inline explicit XsByteArray(
+			uint8_t* ref, XsSize sz, XsDataFlags flags = XSDF_None)
+			: ArrayImpl(ref, sz, flags)
+		{
+		}
 #ifndef XSENS_NOITERATOR
-	//! \brief Constructs an XsByteArray with the array bound by the supplied
-	//! iterators \a beginIt and \a endIt
-	template <typename Iterator>
-	inline XsByteArray(Iterator beginIt, Iterator endIt)
-		: ArrayImpl(beginIt, endIt)
-	{
-	}
+		//! \brief Constructs an XsByteArray with the array bound by the
+		//! supplied iterators \a beginIt and \a endIt
+		template <typename Iterator>
+		inline XsByteArray(Iterator beginIt, Iterator endIt)
+			: ArrayImpl(beginIt, endIt)
+		{
+		}
 #endif
-	//! \brief Constructs an XsByteArray as a copy of the supplied XsString,
-	//! including the terminating 0
-	inline XsByteArray(XsString const& src) : ArrayImpl()
-	{
-		assign(src.size() + 1, reinterpret_cast<uint8_t const*>(src.c_str()));
-	}
+		//! \brief Constructs an XsByteArray as a copy of the supplied XsString,
+		//! including the terminating 0
+		inline XsByteArray(XsString const& src) : ArrayImpl()
+		{
+			assign(
+				src.size() + 1, reinterpret_cast<uint8_t const*>(src.c_str()));
+		}
 
-	//! \brief Return a pointer to the internal data buffer
-	inline uint8_t* data() { return begin().operator->(); }
-	//! \brief Return a pointer to the internal data buffer
-	inline uint8_t const* data() const { return begin().operator->(); }
-};
+		//! \brief Return a pointer to the internal data buffer
+		inline uint8_t* data() { return begin().operator->(); }
+		//! \brief Return a pointer to the internal data buffer
+		inline uint8_t const* data() const { return begin().operator->(); }
+	};
 #endif
 #endif  // file guard

@@ -108,6 +108,4 @@ class CSICKTim561Eth : public C2DRangeFinderAbstract
 		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& iniSection) override;
 };
-}
-
-
+}  // namespace mrpt::hwdrivers

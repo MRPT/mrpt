@@ -15,9 +15,8 @@
 using namespace mrpt::obs;
 
 CObservation2DRangeScanWithUncertainty::TEvalParams::TEvalParams()
-	
-	  
-= default;
+
+	= default;
 
 double CObservation2DRangeScanWithUncertainty::evaluateScanLikelihood(
 	const CObservation2DRangeScan& otherScan, const TEvalParams& params) const
@@ -48,8 +47,9 @@ double CObservation2DRangeScanWithUncertainty::evaluateScanLikelihood(
 		const double otherScanRange =
 			otherScan.validRange[i] ? otherScan.scan[i] : otherScan.maxRange;
 
-		const double likGauss = std::exp(-0.5*mrpt::square(
-			otherScanRange - rangesMean[i]) / prediction_total_var);
+		const double likGauss = std::exp(
+			-0.5 * mrpt::square(otherScanRange - rangesMean[i]) /
+			prediction_total_var);
 		double pi;
 		if (otherScan.scan[i] > rangesMean[i])
 		{
@@ -58,7 +58,8 @@ double CObservation2DRangeScanWithUncertainty::evaluateScanLikelihood(
 			else
 				pi = std::max(likGauss, params.prob_lost_ray);
 		}
-		else pi = std::max( likGauss, std::min(1.0, params.prob_outliers) );
+		else
+			pi = std::max(likGauss, std::min(1.0, params.prob_outliers));
 
 		double lpi = std::max(params.min_ray_log_lik, log(pi));
 		lik_sum += lpi;

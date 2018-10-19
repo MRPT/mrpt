@@ -73,14 +73,14 @@ const mrpt::rtti::TRuntimeClassId* lstClasses[] = {
 // bugs:
 TEST(Observations, WriteReadToMem)
 {
-	for (auto & lstClasse : lstClasses)
+	for (auto& lstClasse : lstClasses)
 	{
 		try
 		{
 			CMemoryStream buf;
 			auto arch = mrpt::serialization::archiveFrom(buf);
 			{
-				CSerializable* o =
+				auto* o =
 					static_cast<CSerializable*>(lstClasse->createObject());
 				arch << *o;
 				delete o;
@@ -102,13 +102,13 @@ TEST(Observations, WriteReadToMem)
 // Also try to convert them to octect vectors:
 TEST(Observations, WriteReadToOctectVectors)
 {
-	for (auto & lstClasse : lstClasses)
+	for (auto& lstClasse : lstClasses)
 	{
 		try
 		{
 			std::vector<uint8_t> buf;
 			{
-				CSerializable* o =
+				auto* o =
 					static_cast<CSerializable*>(lstClasse->createObject());
 				mrpt::serialization::ObjectToOctetVector(o, buf);
 				delete o;

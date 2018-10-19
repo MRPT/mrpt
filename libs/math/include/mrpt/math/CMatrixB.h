@@ -34,5 +34,4 @@ class CMatrixB : public mrpt::serialization::CSerializable, public CMatrixBool
 	}
 };  // end of class definition
 
-}
-
+}  // namespace mrpt::math

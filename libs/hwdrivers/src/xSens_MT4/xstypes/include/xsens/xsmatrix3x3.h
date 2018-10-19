@@ -13,16 +13,18 @@
 
 struct XsMatrix3x3;
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #else
 typedef struct XsMatrix3x3 XsMatrix3x3;
 #endif
 
-XSTYPES_DLL_API void XsMatrix3x3_construct(XsMatrix3x3* thisPtr);
-XSTYPES_DLL_API void XsMatrix3x3_assign(
-	XsMatrix3x3* thisPtr, const XsReal* src, XsSize srcStride);
-XSTYPES_DLL_API void XsMatrix3x3_destruct(XsMatrix3x3* thisPtr);
-XSTYPES_DLL_API void XsMatrix3x3_copy(XsMatrix* copy, XsMatrix3x3 const* src);
+	XSTYPES_DLL_API void XsMatrix3x3_construct(XsMatrix3x3* thisPtr);
+	XSTYPES_DLL_API void XsMatrix3x3_assign(
+		XsMatrix3x3* thisPtr, const XsReal* src, XsSize srcStride);
+	XSTYPES_DLL_API void XsMatrix3x3_destruct(XsMatrix3x3* thisPtr);
+	XSTYPES_DLL_API void XsMatrix3x3_copy(
+		XsMatrix* copy, XsMatrix3x3 const* src);
 
 #ifdef __cplusplus
 }  // extern "C"

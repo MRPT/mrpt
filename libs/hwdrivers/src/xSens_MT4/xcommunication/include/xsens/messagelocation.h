@@ -11,7 +11,7 @@
 
 /*! \brief Stores the location of a message in a buffer using a start position
  * and a size
-*/
+ */
 class MessageLocation
 {
    public:
@@ -34,7 +34,7 @@ class MessageLocation
 
 	/*! \brief Returns whether the stored message information describes a valid
 	 * message
-	*/
+	 */
 	inline bool isValid() const { return m_startPos >= 0 && m_size > 0; }
 };
 

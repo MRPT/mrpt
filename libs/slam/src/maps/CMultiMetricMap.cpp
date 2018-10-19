@@ -47,7 +47,7 @@ struct MapExecutor
 	static void run(const CMultiMetricMap& _mmm, OP op)
 	{
 		MRPT_START
-		CMultiMetricMap& mmm =
+		auto& mmm =
 			const_cast<CMultiMetricMap&>(_mmm);  // This is to avoid duplicating
 		// "::run()" for const and
 		// non-const.
@@ -182,7 +182,7 @@ struct MapIsEmpty
 // Ctor
 CMultiMetricMap::CMultiMetricMap(
 	const TSetOfMetricMapInitializers* initializers)
-	: maps(), ALL_PROXIES_INIT 
+	: maps(), ALL_PROXIES_INIT
 {
 	MRPT_START
 	setListOfMaps(initializers);
@@ -231,7 +231,7 @@ void CMultiMetricMap::setListOfMaps(
 	if (initializers != nullptr)
 	{
 		// Process each entry in the "initializers" and create maps accordingly:
-		for (const auto & initializer : *initializers)
+		for (const auto& initializer : *initializers)
 		{
 			// Create map from the list of all params:
 			mrpt::maps::CMetricMap* theMap =
@@ -265,7 +265,7 @@ void CMultiMetricMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// Version 11: simply the list of maps:
 	out << static_cast<uint32_t>(m_ID);
-	const uint32_t n = static_cast<uint32_t>(maps.size());
+	const auto n = static_cast<uint32_t>(maps.size());
 	for (uint32_t i = 0; i < n; i++) out << *maps[i];
 }
 
@@ -404,7 +404,7 @@ float CMultiMetricMap::compute3DMatchingRatio(
 
 	float accumResult = 0;
 
-	for (const auto & map : maps)
+	for (const auto& map : maps)
 	{
 		const mrpt::maps::CMetricMap* m = map.get();
 		ASSERT_(m);

@@ -14,26 +14,26 @@ namespace mrpt::config
 {
 /** A wrapper for other CConfigFileBase-based objects that prefixes a given
  * token to every key and/or section.
-  *  If, for example, your code expect:
-  *   \code
-  *     [params1]
-  *     foo = 34.0
-  *     bar = /dev/ttyUSB0
-  *   \endcode
-  *
-  *  Using this class with key entries prefix "s1_" will enable the same
+ *  If, for example, your code expect:
+ *   \code
+ *     [params1]
+ *     foo = 34.0
+ *     bar = /dev/ttyUSB0
+ *   \endcode
+ *
+ *  Using this class with key entries prefix "s1_" will enable the same
  * existing code to transparently parse this file content:
-  *
-  *   \code
-  *     [params1]
-  *     s1_foo = 34.0
-  *     s1_bar = /dev/ttyUSB0
-  *   \endcode
-  *
-  * See: \ref config_file_format
-  * \sa CConfigFileBase
-  * \ingroup mrpt_config_grp
-  */
+ *
+ *   \code
+ *     [params1]
+ *     s1_foo = 34.0
+ *     s1_bar = /dev/ttyUSB0
+ *   \endcode
+ *
+ * See: \ref config_file_format
+ * \sa CConfigFileBase
+ * \ingroup mrpt_config_grp
+ */
 class CConfigFilePrefixer : public CConfigFileBase
 {
    private:
@@ -80,5 +80,4 @@ class CConfigFilePrefixer : public CConfigFileBase
 		const override;  // See base class docs
 
 };  // End of class def.
-}
-
+}  // namespace mrpt::config

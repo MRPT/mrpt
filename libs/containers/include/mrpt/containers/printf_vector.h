@@ -57,5 +57,4 @@ void printf_vector(const char* fmt, const std::vector<T>& V)
 }
 
 /** @} */  // end of grouping
-}
-
+}  // namespace mrpt::containers

@@ -140,7 +140,7 @@ class COpenNI2Generic::CDevice
 	template <class NI_PIXEL, class MRPT_DATA>
 	void copyRow(const char* src, MRPT_DATA& rgb, int w, const int y)
 	{
-		const NI_PIXEL* s = (const NI_PIXEL*)src;
+		const auto* s = (const NI_PIXEL*)src;
 		for (int xc = 0; xc < w; ++xc, ++s)
 		{
 			int x = xc;
@@ -201,11 +201,11 @@ class COpenNI2Generic::CDevice
 	bool open(int w, int h, int fps);
 
 	bool getNextFrameRGB(
-		mrpt::img::CImage& img, mrpt::system::TTimeStamp& timestamp, bool& there_is_obs,
-		bool& hardware_error);
+		mrpt::img::CImage& img, mrpt::system::TTimeStamp& timestamp,
+		bool& there_is_obs, bool& hardware_error);
 	bool getNextFrameD(
-		mrpt::math::CMatrix& img, mrpt::system::TTimeStamp& timestamp, bool& there_is_obs,
-		bool& hardware_error);
+		mrpt::math::CMatrix& img, mrpt::system::TTimeStamp& timestamp,
+		bool& there_is_obs, bool& hardware_error);
 	bool getNextFrameRGBD(
 		mrpt::obs::CObservation3DRangeScan& obs, bool& there_is_obs,
 		bool& hardware_error);

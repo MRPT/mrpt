@@ -418,14 +418,12 @@ int main(int argc, char** argv)
 
 			mrpt::opengl::COpenGLScene::Ptr& scene = win.get3DSceneAndLock();
 
-			scene->insert(
-				mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>(
-					min_x - 10, max_x + 10, min_y - 10, max_y + 10, 0));
+			scene->insert(mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>(
+				min_x - 10, max_x + 10, min_y - 10, max_y + 10, 0));
 			scene->insert(mrpt::opengl::stock_objects::CornerXYZ());
 
 			// Insert all landmarks:
-			for (CLandmarksMap::TCustomSequenceLandmarks::const_iterator it =
-					 landmarkMap.landmarks.begin();
+			for (auto it = landmarkMap.landmarks.begin();
 				 it != landmarkMap.landmarks.end(); ++it)
 			{
 				mrpt::opengl::CSphere::Ptr lm =
@@ -458,10 +456,9 @@ int main(int argc, char** argv)
 				mrpt::opengl::CSetOfObjects::Ptr corner =
 					mrpt::opengl::stock_objects::CornerXYZ();
 				corner->setScale(0.2f);
-				corner->setPose(
-					TPose3D(
-						GT_path(i, 0), GT_path(i, 1), GT_path(i, 2),
-						GT_path(i, 3), GT_path(i, 4), GT_path(i, 5)));
+				corner->setPose(TPose3D(
+					GT_path(i, 0), GT_path(i, 1), GT_path(i, 2), GT_path(i, 3),
+					GT_path(i, 4), GT_path(i, 5)));
 				scene->insert(corner);
 			}
 

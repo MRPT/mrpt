@@ -17,18 +17,18 @@ namespace mrpt::opengl
 {
 /** A 2D vector field representation, consisting of points and arrows drawn on a
  * plane (invisible grid).
-  *  \sa opengl::COpenGLScene
-  *
-  *  <div align="center">
-  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
+ *  \sa opengl::COpenGLScene
+ *
+ *  <div align="center">
+ *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
  * border-style: solid;">
-  *   <tr> <td> mrpt::opengl::CVectorField2D </td> <td> \image html
+ *   <tr> <td> mrpt::opengl::CVectorField2D </td> <td> \image html
  * preview_CVectorField2D.png </td> </tr>
-  *  </table>
-  *  </div>
-  *
-  * \ingroup mrpt_opengl_grp
-  */
+ *  </table>
+ *  </div>
+ *
+ * \ingroup mrpt_opengl_grp
+ */
 
 class CVectorField2D : public CRenderizableDisplayList
 {
@@ -53,8 +53,8 @@ class CVectorField2D : public CRenderizableDisplayList
 
    public:
 	/**
-	  * Clear the matrices
-	  */
+	 * Clear the matrices
+	 */
 	inline void clear()
 	{
 		xcomp.resize(0, 0);
@@ -63,8 +63,8 @@ class CVectorField2D : public CRenderizableDisplayList
 	}
 
 	/**
-	  * Set the point color in the range [0,1]
-	  */
+	 * Set the point color in the range [0,1]
+	 */
 	inline void setPointColor(
 		const float R, const float G, const float B, const float A = 1)
 	{
@@ -73,16 +73,16 @@ class CVectorField2D : public CRenderizableDisplayList
 	}
 
 	/**
-	  * Get the point color in the range [0,1]
-	  */
+	 * Get the point color in the range [0,1]
+	 */
 	inline mrpt::img::TColorf getPointColor() const
 	{
 		return mrpt::img::TColorf(m_point_color);
 	}
 
 	/**
-	  * Set the arrow color in the range [0,1]
-	  */
+	 * Set the arrow color in the range [0,1]
+	 */
 	inline void setVectorFieldColor(
 		const float R, const float G, const float B, const float A = 1)
 	{
@@ -91,16 +91,16 @@ class CVectorField2D : public CRenderizableDisplayList
 	}
 
 	/**
-	  * Get the arrow color in the range [0,1]
-	  */
+	 * Get the arrow color in the range [0,1]
+	 */
 	inline mrpt::img::TColorf getVectorFieldColor() const
 	{
 		return mrpt::img::TColorf(m_field_color);
 	}
 
 	/**
-	  * Set the size with which points will be drawn. By default 1.0
-	  */
+	 * Set the size with which points will be drawn. By default 1.0
+	 */
 	inline void setPointSize(const float p)
 	{
 		m_pointSize = p;
@@ -108,12 +108,12 @@ class CVectorField2D : public CRenderizableDisplayList
 	}
 
 	/**
-	  * Get the size with which points are drawn. By default 1.0
-	  */
+	 * Get the size with which points are drawn. By default 1.0
+	 */
 	inline float getPointSize() const { return m_pointSize; }
 	/**
-	  * Set the width with which lines will be drawn.
-	  */
+	 * Set the width with which lines will be drawn.
+	 */
 	inline void setLineWidth(const float w)
 	{
 		m_LineWidth = w;
@@ -121,15 +121,15 @@ class CVectorField2D : public CRenderizableDisplayList
 	}
 
 	/**
-	  * Get the width with which lines are drawn.
-	  */
+	 * Get the width with which lines are drawn.
+	 */
 	float getLineWidth() const { return m_LineWidth; }
 	/**
-	  * Set the coordinates of the grid on where the vector field will be drawn
+	 * Set the coordinates of the grid on where the vector field will be drawn
 	 * by setting its center and the cell size.
-	  * The number of cells is marked by the content of xcomp and ycomp.
-	  * \sa xcomp, ycomp
-	  */
+	 * The number of cells is marked by the content of xcomp and ycomp.
+	 * \sa xcomp, ycomp
+	 */
 	void setGridCenterAndCellSize(
 		const float center_x, const float center_y, const float cellsize_x,
 		const float cellsize_y)
@@ -142,9 +142,9 @@ class CVectorField2D : public CRenderizableDisplayList
 	}
 
 	/**
-	  * Set the coordinates of the grid on where the vector field will be drawn
+	 * Set the coordinates of the grid on where the vector field will be drawn
 	 * using x-y max and min values.
-	  */
+	 */
 	void setGridLimits(
 		const float xmin, const float xmax, const float ymin, const float ymax)
 	{
@@ -156,9 +156,9 @@ class CVectorField2D : public CRenderizableDisplayList
 	}
 
 	/**
-	  * Get the coordinates of the grid on where the vector field is drawn using
+	 * Get the coordinates of the grid on where the vector field is drawn using
 	 * the max and min values.
-	  */
+	 */
 	void getGridLimits(float& xmin, float& xmax, float& ymin, float& ymax) const
 	{
 		xmin = xMin;
@@ -168,9 +168,9 @@ class CVectorField2D : public CRenderizableDisplayList
 	}
 
 	/**
-	  * Get the vector field. Matrix_x stores the "x" component and Matrix_y
+	 * Get the vector field. Matrix_x stores the "x" component and Matrix_y
 	 * stores the "y" component.
-	  */
+	 */
 	void getVectorField(
 		mrpt::math::CMatrixFloat& Matrix_x,
 		mrpt::math::CMatrixFloat& Matrix_y) const
@@ -196,9 +196,9 @@ class CVectorField2D : public CRenderizableDisplayList
 	/** \overload */
 	inline mrpt::math::CMatrixFloat& getVectorField_y() { return ycomp; }
 	/**
-	  * Set the vector field. Matrix_x contains the "x" component and Matrix_y
+	 * Set the vector field. Matrix_x contains the "x" component and Matrix_y
 	 * contains the "y" component.
-	  */
+	 */
 	void setVectorField(
 		mrpt::math::CMatrixFloat& Matrix_x, mrpt::math::CMatrixFloat& Matrix_y)
 	{
@@ -211,13 +211,13 @@ class CVectorField2D : public CRenderizableDisplayList
 	}
 
 	/**
-	  * Adjust the vector field in the scene (vectors magnitude) according to
+	 * Adjust the vector field in the scene (vectors magnitude) according to
 	 * the grid size.
-	  */
+	 */
 	void adjustVectorFieldToGrid();
 
 	/** Resizes the set.
-	  */
+	 */
 	void resize(size_t rows, size_t cols)
 	{
 		xcomp.resize(rows, cols);
@@ -231,7 +231,7 @@ class CVectorField2D : public CRenderizableDisplayList
 	 */
 	inline size_t rows() const { return xcomp.rows(); }
 	/** Render
-	  */
+	 */
 	void render_dl() const override;
 
 	/** Evaluates the bounding box of this object (including possible children)
@@ -256,6 +256,4 @@ class CVectorField2D : public CRenderizableDisplayList
 	~CVectorField2D() override = default;
 };
 
-}
-
-
+}  // namespace mrpt::opengl

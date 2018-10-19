@@ -354,7 +354,7 @@ void do_pf_localization(
 
 	for (int PARTICLE_COUNT : particles_count)
 	{
-			printf(
+		printf(
 			"Initial PDF: %f particles/m2\n",
 			PARTICLE_COUNT / gridInfo.effectiveMappedArea);
 
@@ -664,7 +664,7 @@ void do_pf_localization(
 									ptrScene->getByName("particles");
 								if (parts) ptrScene->removeObject(parts);
 
-								CSetOfObjects::Ptr p =
+								auto p =
 									pdf.getAs3DObject<CSetOfObjects::Ptr>();
 								p->setName("particles");
 								ptrScene->insert(p);
@@ -909,9 +909,9 @@ void do_pf_localization(
 								static mrpt::gui::CDisplayWindowPlots win;
 
 								std::vector<float> ranges_mean, ranges_obs;
-								for (float i : ssu_out.scanWithUncert.rangeScan.scan)
-									ranges_mean.push_back(
-										i);
+								for (float i :
+									 ssu_out.scanWithUncert.rangeScan.scan)
+									ranges_mean.push_back(i);
 								for (float i : obs_scan->scan)
 									ranges_obs.push_back(i);
 
@@ -996,8 +996,7 @@ void do_pf_localization(
 								scene.getByName("particles");
 							if (parts) scene.removeObject(parts);
 
-							CSetOfObjects::Ptr p =
-								pdf.getAs3DObject<CSetOfObjects::Ptr>();
+							auto p = pdf.getAs3DObject<CSetOfObjects::Ptr>();
 							p->setName("particles");
 							scene.insert(p);
 						}

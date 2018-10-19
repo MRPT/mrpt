@@ -15,8 +15,8 @@
 namespace mrpt::nav
 {
 /** \addtogroup nav_holo Holonomic navigation methods
-  * \ingroup mrpt_nav_grp
-  * @{ */
+ * \ingroup mrpt_nav_grp
+ * @{ */
 
 /** A class for storing extra information about the execution of
  *    CHolonomicVFF navigation.
@@ -92,6 +92,4 @@ class CHolonomicVFF : public CAbstractHolonomicReactiveMethod
 	}
 };
 /** @} */
-}
-
-
+}  // namespace mrpt::nav

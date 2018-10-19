@@ -20,8 +20,8 @@ using namespace mrpt::img;
 // Ctor: Leave all vectors empty
 CUndistortMap::CUndistortMap() = default;
 /** Prepares the mapping from the distortion parameters of a camera.
-  * Must be called before invoking \a undistort().
-  */
+ * Must be called before invoking \a undistort().
+ */
 void CUndistortMap::setFromCamParams(const mrpt::img::TCamera& campar)
 {
 	MRPT_START
@@ -57,7 +57,7 @@ void CUndistortMap::setFromCamParams(const mrpt::img::TCamera& campar)
 
 /** Undistort the input image and saves the result in-place- \a
  * setFromCamParams() must have been set prior to calling this.
-  */
+ */
 void CUndistortMap::undistort(
 	const mrpt::img::CImage& in_img, mrpt::img::CImage& out_img) const
 {
@@ -75,7 +75,7 @@ void CUndistortMap::undistort(
 		m_camera_params.nrows, m_camera_params.ncols, CV_16UC1,
 		const_cast<uint16_t*>(&m_dat_mapy[0]));
 
-	const IplImage* srcImg = in_img.getAs<IplImage>();  // Source Image
+	const auto* srcImg = in_img.getAs<IplImage>();  // Source Image
 	IplImage* outImg =
 		cvCreateImage(cvGetSize(srcImg), srcImg->depth, srcImg->nChannels);
 	cvRemap(srcImg, outImg, &mapx, &mapy);  // cv::remap(src, dst_part,
@@ -88,7 +88,7 @@ void CUndistortMap::undistort(
 
 /** Undistort the input image and saves the result in-place- \a
  * setFromCamParams() must have been set prior to calling this.
-  */
+ */
 void CUndistortMap::undistort(mrpt::img::CImage& in_out_img) const
 {
 	MRPT_START

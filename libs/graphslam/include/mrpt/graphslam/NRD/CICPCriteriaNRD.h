@@ -108,7 +108,7 @@ class CICPCriteriaNRD
 	/**\}*/
 
 	CICPCriteriaNRD();
-	~CICPCriteriaNRD() override =default;
+	~CICPCriteriaNRD() override = default;
 
 	void loadParams(const std::string& source_fname) override;
 	void printParams() const override;
@@ -144,9 +144,9 @@ class CICPCriteriaNRD
 
 	struct TParams : public mrpt::config::CLoadableOptions
 	{
-	public:
+	   public:
 		TParams(decider_t& d);
-		~TParams() override =default;
+		~TParams() override = default;
 
 		decider_t& decider; /**< Reference to outer decider class */
 
@@ -156,14 +156,13 @@ class CICPCriteriaNRD
 		void dumpToTextStream(std::ostream& out) const override;
 		/** Maximum distance for new node registration */
 		double registration_max_distance;
- 		/** Maximum angle difference for new node registration */
+		/** Maximum angle difference for new node registration */
 		double registration_max_angle;
 	};
 
 	TParams params;
 
-protected:
-
+   protected:
 	bool checkRegistrationCondition() override;
 	/**\brief Specialized checkRegistrationCondtion method used solely when
 	 * dealing with 2DRangeScan information
@@ -230,7 +229,5 @@ protected:
 	/**How many times we used the Odometry Edge instead of the ICP edge */
 	int m_times_used_odom;
 };
-}
+}  // namespace mrpt::graphslam::deciders
 #include "CICPCriteriaNRD_impl.h"
-
-

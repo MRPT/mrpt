@@ -16,7 +16,8 @@
 #include <stdexcept>
 
 // Include CSparse lib headers, either from the system or embedded:
-extern "C" {
+extern "C"
+{
 #if MRPT_HAS_SUITESPARSE
 #define NCOMPLEX  // In MRPT we don't need complex numbers, so avoid the
 // annoying warning: 'cs_ci_house' has C-linkage specified,
@@ -188,9 +189,7 @@ class CSparseMatrix
 		// 1) Create triplet matrix
 		CSparseMatrix triplet(data.rows(), data.cols());
 		// 2) Put data in:
-		for (typename CSparseMatrixTemplate<T>::const_iterator it =
-				 data.begin();
-			 it != data.end(); ++it)
+		for (auto it = data.begin(); it != data.end(); ++it)
 			triplet.insert_entry_fast(
 				it->first.first, it->first.second, it->second);
 
@@ -505,5 +504,4 @@ class CSparseMatrix
 	/** @} */
 
 };  // end class CSparseMatrix
-}
-
+}  // namespace mrpt::math

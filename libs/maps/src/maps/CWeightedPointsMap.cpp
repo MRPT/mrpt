@@ -49,7 +49,7 @@ mrpt::maps::CMetricMap* CWeightedPointsMap::internal_CreateFromMapDefinition(
 {
 	const CWeightedPointsMap::TMapDefinition& def =
 		*dynamic_cast<const CWeightedPointsMap::TMapDefinition*>(&_def);
-	CWeightedPointsMap* obj = new CWeightedPointsMap();
+	auto* obj = new CWeightedPointsMap();
 	obj->insertionOptions = def.insertionOpts;
 	obj->likelihoodOptions = def.likelihoodOpts;
 	return obj;
@@ -125,8 +125,7 @@ void CWeightedPointsMap::copyFrom(const CPointsMap& obj)
 	CPointsMap::base_copyFrom(
 		obj);  // This also does a ::resize(N) of all data fields.
 
-	const CWeightedPointsMap* pW =
-		dynamic_cast<const CWeightedPointsMap*>(&obj);
+	const auto* pW = dynamic_cast<const CWeightedPointsMap*>(&obj);
 	if (pW)
 	{
 		pointWeight = pW->pointWeight;
@@ -142,7 +141,7 @@ void CWeightedPointsMap::addFrom_classSpecific(
 	const size_t nOther = anotherMap.size();
 
 	// Specific data for this class:
-	const CWeightedPointsMap* anotheMap_w =
+	const auto* anotheMap_w =
 		dynamic_cast<const CWeightedPointsMap*>(&anotherMap);
 
 	if (anotheMap_w)
@@ -341,7 +340,7 @@ struct pointmap_traits<CWeightedPointsMap>
 		MRPT_UNUSED_PARAM(lric);
 	}
 };
-}
+}  // namespace mrpt::maps::detail
 /** See CPointsMap::loadFromRangeScan() */
 void CWeightedPointsMap::loadFromRangeScan(
 	const CObservation2DRangeScan& rangeScan, const CPose3D* robotPose)
@@ -367,5 +366,3 @@ void CWeightedPointsMap::PLY_import_set_vertex_count(const size_t N)
 {
 	this->setSize(N);
 }
-
-

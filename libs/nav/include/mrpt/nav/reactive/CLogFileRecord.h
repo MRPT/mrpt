@@ -35,8 +35,8 @@ class CLogFileRecord : public mrpt::serialization::CSerializable
 	CLogFileRecord();
 
 	/** The structure used to store all relevant information about each
-	  *  transformation into TP-Space.
-	  *  \ingroup nav_reactive  */
+	 *  transformation into TP-Space.
+	 *  \ingroup nav_reactive  */
 	struct TInfoPerPTG
 	{
 		/** A short description for the applied PTG */
@@ -81,10 +81,10 @@ class CLogFileRecord : public mrpt::serialization::CSerializable
 	 */
 	std::map<std::string, double> values;
 	/** Known values:
-	*	- "tim_start_iteration": Time of start of navigationStep()
-	*implementation.
-	*	- "tim_send_cmd_vel": Time of sending cmdvel to robot.
-	*	- "curPoseAndVel":  Time of querying robot pose and velocities.
+	 *	- "tim_start_iteration": Time of start of navigationStep()
+	 *implementation.
+	 *	- "tim_send_cmd_vel": Time of sending cmdvel to robot.
+	 *	- "curPoseAndVel":  Time of querying robot pose and velocities.
 	 */
 	std::map<std::string, mrpt::system::TTimeStamp> timestamps;
 	/** Additional debug traces */
@@ -129,6 +129,4 @@ class CLogFileRecord : public mrpt::serialization::CSerializable
 	mrpt::nav::CParameterizedTrajectoryGenerator::TNavDynamicState
 		ptg_last_navDynState;
 };
-}
-
-
+}  // namespace mrpt::nav

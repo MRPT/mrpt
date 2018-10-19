@@ -37,47 +37,47 @@ class CObservationVisualLandmarks;
 namespace vision
 {
 /** \addtogroup mrpt_vision_grp
-  *  @{ */
+ *  @{ */
 
 /**	Computes the correlation between this image and another one, encapsulating
-* the openCV function cvMatchTemplate
-*   This implementation reduced computation time.
-* \param img            [IN]    The imput image. This function supports
-* gray-scale (1 channel only) images.
-* \param patch_img      [IN]    The "patch" image, which must be equal, or
-* smaller than "this" image. This function supports gray-scale (1 channel only)
-* images.
-* \param x_max          [OUT]   The x coordinate where it was found the maximun
-* cross correlation value.
-* \param y_max          [OUT]   The y coordinate where it was found the maximun
-* cross correlation value.
-* \param max_val        [OUT]   The maximun value of cross correlation which we
-* can find
-* \param x_search_ini   [IN]    The "x" coordinate of the search window.
-* \param y_search_ini   [IN]    The "y" coordinate of the search window.
-* \param x_search_size  [IN]    The width of the search window.
-* \param y_search_size  [IN]    The height of the search window.
-*  Note: By default, the search area is the whole (this) image.
-* \sa cross_correlation
-*/
+ * the openCV function cvMatchTemplate
+ *   This implementation reduced computation time.
+ * \param img            [IN]    The imput image. This function supports
+ * gray-scale (1 channel only) images.
+ * \param patch_img      [IN]    The "patch" image, which must be equal, or
+ * smaller than "this" image. This function supports gray-scale (1 channel only)
+ * images.
+ * \param x_max          [OUT]   The x coordinate where it was found the maximun
+ * cross correlation value.
+ * \param y_max          [OUT]   The y coordinate where it was found the maximun
+ * cross correlation value.
+ * \param max_val        [OUT]   The maximun value of cross correlation which we
+ * can find
+ * \param x_search_ini   [IN]    The "x" coordinate of the search window.
+ * \param y_search_ini   [IN]    The "y" coordinate of the search window.
+ * \param x_search_size  [IN]    The width of the search window.
+ * \param y_search_size  [IN]    The height of the search window.
+ *  Note: By default, the search area is the whole (this) image.
+ * \sa cross_correlation
+ */
 void openCV_cross_correlation(
 	const mrpt::img::CImage& img, const mrpt::img::CImage& patch_img,
 	size_t& x_max, size_t& y_max, double& max_val, int x_search_ini = -1,
 	int y_search_ini = -1, int x_search_size = -1, int y_search_size = -1);
 
 /**	Invert an image using OpenCV function
-*
-*/
+ *
+ */
 void flip(mrpt::img::CImage& img);
 
 /** Extract a UNITARY 3D vector in the direction of a 3D point, given from its
  * (x,y) pixels coordinates, and the camera intrinsic coordinates.
-  *  \param xy  [IN]   Pixels coordinates, from the top-left corner of the
+ *  \param xy  [IN]   Pixels coordinates, from the top-left corner of the
  * image.
-  *  \param A   [IN]   The 3x3 intrinsic parameters matrix for the camera.
-  *  \return The mrpt::math::TPoint3D containing the output unitary vector.
-  * \sa buildIntrinsicParamsMatrix, defaultIntrinsicParamsMatrix, TPixelCoordf
-  */
+ *  \param A   [IN]   The 3x3 intrinsic parameters matrix for the camera.
+ *  \return The mrpt::math::TPoint3D containing the output unitary vector.
+ * \sa buildIntrinsicParamsMatrix, defaultIntrinsicParamsMatrix, TPixelCoordf
+ */
 mrpt::math::TPoint3D pixelTo3D(
 	const mrpt::img::TPixelCoordf& xy, const mrpt::math::CMatrixDouble33& A);
 
@@ -152,39 +152,39 @@ mrpt::math::CMatrixDouble33 defaultIntrinsicParamsMatrix(
 
 /** Explore the feature list and removes features which are in the same
  * coordinates
-  * \param list [IN] The list of features.
-  */
+ * \param list [IN] The list of features.
+ */
 void deleteRepeatedFeats(CFeatureList& list);
 
 /** Search for correspondences which are not in the same row and deletes them
-  * \param leftList     [IN/OUT]    The left list of matched features.
-  * \param rightList    [IN/OUT]    The right list of matched features.
-  * \param threshold    [IN]        The tolerance value for the row checking:
+ * \param leftList     [IN/OUT]    The left list of matched features.
+ * \param rightList    [IN/OUT]    The right list of matched features.
+ * \param threshold    [IN]        The tolerance value for the row checking:
  * valid matched are within this threshold.
-  */
+ */
 void rowChecking(
 	CFeatureList& leftList, CFeatureList& rightList, float threshold = 1.0);
 
 /** Computes the dispersion of the features in the image
-  * \param list [IN]    Input list of features
-  * \param std	[OUT]   2 element vector containing the standard deviations in
+ * \param list [IN]    Input list of features
+ * \param std	[OUT]   2 element vector containing the standard deviations in
  * the 'x' and 'y' coordinates.
-  * \param mean	[OUT]   2 element vector containing the mean in the 'x' and
+ * \param mean	[OUT]   2 element vector containing the mean in the 'x' and
  * 'y' coordinates.
-  */
+ */
 void getDispersion(
 	const CFeatureList& list, mrpt::math::CVectorFloat& std,
 	mrpt::math::CVectorFloat& mean);
 
 /** Computes the mean squared distance between a set of 3D correspondences
-  * ...
-  */
+ * ...
+ */
 double computeMsd(
 	const mrpt::tfest::TMatchingPairList& list, const poses::CPose3D& Rt);
 
 /** Transform two clouds of 3D points into a matched list of points
-  * ...
-  */
+ * ...
+ */
 void cloudsToMatchedList(
 	const mrpt::obs::CObservationVisualLandmarks& cloud1,
 	const mrpt::obs::CObservationVisualLandmarks& cloud2,
@@ -192,31 +192,31 @@ void cloudsToMatchedList(
 
 /** Computes the main orientation of a set of points with an image (for using in
  * SIFT-based algorithms)
-  * \param image    [IN] The input image.
-  * \param x        [IN] A vector containing the 'x' coordinates of the image
+ * \param image    [IN] The input image.
+ * \param x        [IN] A vector containing the 'x' coordinates of the image
  * points.
-  * \param y        [IN] A vector containing the 'y' coordinates of the image
+ * \param y        [IN] A vector containing the 'y' coordinates of the image
  * points.
-  * \return The main orientation of the image point.
-  */
+ * \return The main orientation of the image point.
+ */
 float computeMainOrientation(
 	const mrpt::img::CImage& image, unsigned int x, unsigned int y);
 
 /** Normalizes the brigthness and contrast of an image by setting its mean value
  * to zero and its standard deviation to unit.
-  * \param image        [IN]        The input image.
-  * \param nimage       [OUTPUT]    The new normalized image.
-  */
+ * \param image        [IN]        The input image.
+ * \param nimage       [OUTPUT]    The new normalized image.
+ */
 void normalizeImage(const mrpt::img::CImage& image, mrpt::img::CImage& nimage);
 
 /** Find the matches between two lists of features which must be of the same
  * type.
-  * \param list1    [IN]    One list.
-  * \param list2    [IN]    Other list.
-  * \param matches  [OUT]   A vector of pairs of correspondences.
-  * \param options  [IN]    A struct containing matching options
-  * \return Returns the number of matched pairs of features.
-  */
+ * \param list1    [IN]    One list.
+ * \param list2    [IN]    Other list.
+ * \param matches  [OUT]   A vector of pairs of correspondences.
+ * \param options  [IN]    A struct containing matching options
+ * \return Returns the number of matched pairs of features.
+ */
 size_t matchFeatures(
 	const CFeatureList& list1, const CFeatureList& list2,
 	CMatchedFeatureList& matches,
@@ -225,31 +225,31 @@ size_t matchFeatures(
 
 /** Calculates the Sum of Absolutes Differences (range [0,1]) between two
  * patches. Both patches must have the same size.
-  * \param mList    [IN]  The list of matched features.
-  * \param mask1    [OUT] The output mask for left features.
-  * \param mask2    [OUT] The output mask for right features.
-  * \param wSize    [IN] The value of the masking window for each features.
-  * \exception if mList.size() = 0
-  */
+ * \param mList    [IN]  The list of matched features.
+ * \param mask1    [OUT] The output mask for left features.
+ * \param mask2    [OUT] The output mask for right features.
+ * \param wSize    [IN] The value of the masking window for each features.
+ * \exception if mList.size() = 0
+ */
 void generateMask(
 	const CMatchedFeatureList& mList, mrpt::math::CMatrixBool& mask1,
 	mrpt::math::CMatrixBool& mask2, int wSize = 10);
 
 /** Calculates the Sum of Absolutes Differences (range [0,1]) between two
  * patches. Both patches must have the same size.
-  * \param patch1 [IN]  One patch.
-  * \param patch2 [IN]  The other patch.
-  * \return The value of computed SAD normalized to [0,1]
-  */
+ * \param patch1 [IN]  One patch.
+ * \param patch2 [IN]  The other patch.
+ * \return The value of computed SAD normalized to [0,1]
+ */
 double computeSAD(
 	const mrpt::img::CImage& patch1, const mrpt::img::CImage& patch2);
 
 /** Draw rectangles around each of the features on a copy of the input image.
-  * \param inImg    [IN]    The input image where to draw the features.
-  * \param theList  [IN]    The list of features.
-  * \param outImg   [OUT]   The copy of the input image with the marked
+ * \param inImg    [IN]    The input image where to draw the features.
+ * \param theList  [IN]    The list of features.
+ * \param outImg   [OUT]   The copy of the input image with the marked
  * features.
-  */
+ */
 void addFeaturesToImage(
 	const mrpt::img::CImage& inImg, const CFeatureList& theList,
 	mrpt::img::CImage& outImg);
@@ -262,25 +262,25 @@ void projectMatchedFeatures(
 /** Computes the 3D position of a set of matched features from their coordinates
  * in the images. The list have to be matched in order, e.g.
  * leftList[0]<->rightList[0]
-  * \param leftList     [IN]    The left list of features.
-  * \param rightList    [IN]    The right list of features.
-  * \param vP3D         [OUT]   A vector of mrpt::math::TPoint3D containing the
+ * \param leftList     [IN]    The left list of features.
+ * \param rightList    [IN]    The right list of features.
+ * \param vP3D         [OUT]   A vector of mrpt::math::TPoint3D containing the
  * 3D positions of the projected points.
-  * \param params       [IN]    The intrinsic and extrinsic parameters of the
+ * \param params       [IN]    The intrinsic and extrinsic parameters of the
  * stereo pair.
-  */
+ */
 void projectMatchedFeatures(
 	const CFeatureList& leftList, const CFeatureList& rightList,
 	std::vector<mrpt::math::TPoint3D>& vP3D,
 	const TStereoSystemParams& params = TStereoSystemParams());
 
 /** Computes the 3D position of a particular matched feature.
-  * \param leftList     [IN]    The left feature.
-  * \param rightList    [IN]    The right feature.
-  * \param vP3D         [OUT]   The 3D position of the projected point.
-  * \param params       [IN]    The intrinsic and extrinsic parameters of the
+ * \param leftList     [IN]    The left feature.
+ * \param rightList    [IN]    The right feature.
+ * \param vP3D         [OUT]   The 3D position of the projected point.
+ * \param params       [IN]    The intrinsic and extrinsic parameters of the
  * stereo pair.
-  */
+ */
 void projectMatchedFeature(
 	const CFeature::Ptr& leftFeat, const CFeature::Ptr& rightFeat,
 	mrpt::math::TPoint3D& p3D,
@@ -288,28 +288,28 @@ void projectMatchedFeature(
 
 /** Project a list of matched features into the 3D space, using the provided
  * parameters of the stereo system
-  * \param mfList       [IN/OUT]    The list of matched features. Features which
+ * \param mfList       [IN/OUT]    The list of matched features. Features which
  * yields a 3D point outside the area defined in TStereoSystemParams are removed
  * from the lists.
-  * \param param        [IN]        The parameters of the stereo system.
-  * \param landmarks    [OUT]       A map containing the projected landmarks.
-  * \sa TStereoSystemParams, CLandmarksMap
-  */
+ * \param param        [IN]        The parameters of the stereo system.
+ * \param landmarks    [OUT]       A map containing the projected landmarks.
+ * \sa TStereoSystemParams, CLandmarksMap
+ */
 void projectMatchedFeatures(
 	CMatchedFeatureList& mfList, const TStereoSystemParams& param,
 	mrpt::maps::CLandmarksMap& landmarks);
 
 /** Project a pair of feature lists into the 3D space, using the provided
-  *options for the stereo system. The matches must be in order,
-  *	i.e. leftList[0] corresponds to rightList[0] and so on. Features which
-  *yields a 3D point outside the area defined in TStereoSystemParams are removed
-  *from the lists.
-  * \param leftList     [IN/OUT]    The left list of matched features.
-  * \param rightList    [IN/OUT]    The right list of matched features.
-  * \param param        [IN]        The options of the stereo system.
-  * \param landmarks    (OUT]       A map containing the projected landmarks.
-  * \sa TStereoSystemParams, CLandmarksMap
-  */
+ *options for the stereo system. The matches must be in order,
+ *	i.e. leftList[0] corresponds to rightList[0] and so on. Features which
+ *yields a 3D point outside the area defined in TStereoSystemParams are removed
+ *from the lists.
+ * \param leftList     [IN/OUT]    The left list of matched features.
+ * \param rightList    [IN/OUT]    The right list of matched features.
+ * \param param        [IN]        The options of the stereo system.
+ * \param landmarks    (OUT]       A map containing the projected landmarks.
+ * \sa TStereoSystemParams, CLandmarksMap
+ */
 void projectMatchedFeatures(
 	CFeatureList& leftList, CFeatureList& rightList,
 	const TStereoSystemParams& param, mrpt::maps::CLandmarksMap& landmarks);
@@ -382,6 +382,5 @@ void computeStereoRectificationMaps(
 
 /** @} */  // end of grouping
 
-}  // end-namespace-vision
-}  // end-namespace-mrpt
-
+}  // namespace vision
+}  // namespace mrpt

@@ -58,7 +58,7 @@ void KLF_loadBinFromParticle(
 		outBin.phi = round(currentParticleValue->phi / opts.KLD_binSize_PHI);
 	}
 }
-}
+}  // namespace mrpt::slam
 
 #include <mrpt/slam/PF_implementations.h>
 
@@ -178,7 +178,7 @@ double
 
 	// For each observation:
 	double ret = 1;
-	for (const auto & it : observation)
+	for (const auto& it : observation)
 		ret += map->computeObservationLikelihood(
 			it.get(), x);  // Compute the likelihood:
 
@@ -271,8 +271,7 @@ void CMonteCarloLocalization2D::resetUniformFreeSpace(
 	// Assure that map is not fully occupied!
 	ASSERT_(nFreeCells);
 
-	if (particlesCount > 0)
-		m_particles.resize(particlesCount);
+	if (particlesCount > 0) m_particles.resize(particlesCount);
 
 	const size_t M = m_particles.size();
 	// Generate pose m_particles:
@@ -281,10 +280,10 @@ void CMonteCarloLocalization2D::resetUniformFreeSpace(
 		int idx =
 			round(getRandomGenerator().drawUniform(0.0, nFreeCells - 1.001));
 
-		m_particles[i].d.x=
+		m_particles[i].d.x =
 			freeCells_x[idx] +
 			getRandomGenerator().drawUniform(-gridRes, gridRes);
-		m_particles[i].d.y=
+		m_particles[i].d.y =
 			freeCells_y[idx] +
 			getRandomGenerator().drawUniform(-gridRes, gridRes);
 		m_particles[i].d.phi =

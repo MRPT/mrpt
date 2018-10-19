@@ -17,22 +17,23 @@
 #include <stdio.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 #ifndef __cplusplus
-typedef struct XsPortInfo XsPortInfo;
+	typedef struct XsPortInfo XsPortInfo;
 #else
 struct XsPortInfo;
 #endif
 
-XSTYPES_DLL_API void XsPortInfo_clear(XsPortInfo* thisPtr);
-XSTYPES_DLL_API int XsPortInfo_empty(XsPortInfo const* thisPtr);
-XSTYPES_DLL_API int XsPortInfo_portNumber(XsPortInfo const* thisPtr);
-XSTYPES_DLL_API int XsPortInfo_isUsb(XsPortInfo const* thisPtr);
-XSTYPES_DLL_API int XsPortInfo_usbBus(XsPortInfo const* thisPtr);
-XSTYPES_DLL_API int XsPortInfo_usbAddress(XsPortInfo const* thisPtr);
-XSTYPES_DLL_API void XsPortInfo_swap(XsPortInfo* a, struct XsPortInfo* b);
+	XSTYPES_DLL_API void XsPortInfo_clear(XsPortInfo* thisPtr);
+	XSTYPES_DLL_API int XsPortInfo_empty(XsPortInfo const* thisPtr);
+	XSTYPES_DLL_API int XsPortInfo_portNumber(XsPortInfo const* thisPtr);
+	XSTYPES_DLL_API int XsPortInfo_isUsb(XsPortInfo const* thisPtr);
+	XSTYPES_DLL_API int XsPortInfo_usbBus(XsPortInfo const* thisPtr);
+	XSTYPES_DLL_API int XsPortInfo_usbAddress(XsPortInfo const* thisPtr);
+	XSTYPES_DLL_API void XsPortInfo_swap(XsPortInfo* a, struct XsPortInfo* b);
 
 #ifdef __cplusplus
 }
@@ -114,10 +115,10 @@ struct XsPortInfo
 	/*! \copydoc XsPortInfo_portNumber */
 	inline int portNumber() const { return XsPortInfo_portNumber(this); }
 	/*! \brief The port name
-	*/
+	 */
 	inline XsString portName() const { return XsString(m_portName); }
 	/*! \brief Set the port name
-	*/
+	 */
 	inline void setPortName(const XsString& portName_)
 	{
 		strncpy(m_portName, portName_.c_str(), 256);
@@ -130,17 +131,18 @@ struct XsPortInfo
 	/*! \copydoc XsPortInfo_usbAddress */
 	inline int usbAddress() const { return XsPortInfo_usbAddress(this); }
 	/*! \brief The baudrate
-	*/
+	 */
 	inline XsBaudRate baudrate() const { return m_baudrate; }
 	/*! \brief Set the baudrate
-	*/
+	 */
 	inline void setBaudrate(XsBaudRate baudrate_) { m_baudrate = baudrate_; }
 	/*! \brief The device ID
-	*/
+	 */
 	inline XsDeviceId deviceId() const { return m_deviceId; }
 	/*! \brief Set the device ID
-	*/
+	 */
 	inline void setDeviceId(XsDeviceId deviceId_) { m_deviceId = deviceId_; }
+
    private:
 #endif
 

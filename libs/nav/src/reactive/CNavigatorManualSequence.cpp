@@ -39,7 +39,7 @@ void CNavigatorManualSequence::loadConfigFile(
 	std::vector<std::string> lstKeys;
 	c.getAllKeys(s, lstKeys);
 
-	for (const auto & lstKey : lstKeys)
+	for (const auto& lstKey : lstKeys)
 	{
 		std::string str = c.read_string(s, lstKey, "", true);
 		std::vector<std::string> toks;

@@ -873,7 +873,7 @@ void hmtMapViewerFrame::updateLocalMapView()
 					// ---------------------------------------------------------
 					// Draw each of the robot poses as 2D/3D ellipsoids
 					// ---------------------------------------------------------
-					for (CRobotPosesGraph::iterator it = obj_robposes->begin();
+					for (auto it = obj_robposes->begin();
 						 it != obj_robposes->end(); ++it)
 					{
 					}
@@ -1163,7 +1163,7 @@ void hmtMapViewerFrame::OnTopologicalModel_Gridmap(wxCommandEvent& event)
 	CPose3DPDFSOG::Ptr pdfSOG = std::dynamic_pointer_cast<CPose3DPDFSOG>(pdf);
 
 	cout << "The relative estimated pose is: " << endl;
-	for (auto & i : *pdfSOG)
+	for (auto& i : *pdfSOG)
 	{
 		cout << " Mode: " << i.val.mean << endl;
 	}

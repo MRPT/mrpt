@@ -284,15 +284,16 @@ void TPose3D::getRotationMatrix(mrpt::math::CMatrixDouble33& R) const
 	const double cr = cos(roll);
 	const double sr = sin(roll);
 
-	alignas(MRPT_MAX_ALIGN_BYTES) const double rot_vals[] = {cy * cp,
-										   cy * sp * sr - sy * cr,
-										   cy * sp * cr + sy * sr,
-										   sy * cp,
-										   sy * sp * sr + cy * cr,
-										   sy * sp * cr - cy * sr,
-										   -sp,
-										   cp * sr,
-										   cp * cr};
+	alignas(MRPT_MAX_ALIGN_BYTES)
+		const double rot_vals[] = {cy * cp,
+								   cy * sp * sr - sy * cr,
+								   cy * sp * cr + sy * sr,
+								   sy * cp,
+								   sy * sp * sr + cy * cr,
+								   sy * sp * cr - cy * sr,
+								   -sp,
+								   cp * sr,
+								   cp * cr};
 	R.loadFromArray(rot_vals);
 }
 void TPose3D::SO3_to_yaw_pitch_roll(
@@ -682,7 +683,7 @@ void TLine2D::getNormalVector(double (&vector)[2]) const
 void TLine2D::unitarize()
 {
 	double s = sqrt(coefs[0] * coefs[0] + coefs[1] * coefs[1]);
-	for (double & coef : coefs) coef /= s;
+	for (double& coef : coefs) coef /= s;
 }
 void TLine2D::getDirectorVector(double (&vector)[2]) const
 {
@@ -774,7 +775,7 @@ double TLine3D::distance(const TPoint3D& point) const
 void TLine3D::unitarize()
 {
 	double s = sqrt(squareNorm<3, double>(director));
-	for (double & i : director) i /= s;
+	for (double& i : director) i /= s;
 }
 TLine3D::TLine3D(const TPoint3D& p1, const TPoint3D& p2)
 {
@@ -846,7 +847,7 @@ void TPlane::getNormalVector(double (&vector)[3]) const
 void TPlane::unitarize()
 {
 	double s = sqrt(squareNorm<3, double>(coefs));
-	for (double & coef : coefs) coef /= s;
+	for (double& coef : coefs) coef /= s;
 }
 
 // Returns a 6D pose such as its XY plane coincides with the plane
@@ -991,8 +992,7 @@ double TPolygon2D::distance(const TPoint2D& point) const
 
 	double distance = std::numeric_limits<double>::max();
 
-	for (vector<TSegment2D>::const_iterator it = sgs.begin(); it != sgs.end();
-		 ++it)
+	for (auto it = sgs.begin(); it != sgs.end(); ++it)
 	{
 		double d = (*it).distance(point);
 		if (d < distance) distance = d;
@@ -1100,7 +1100,7 @@ bool TPolygon2D::isConvex() const
 	for (size_t i = 0; i < N; i++)
 	{
 		char s = 0;
-		TLine2D l = TLine2D(sgms[i]);
+		auto l = TLine2D(sgms[i]);
 		for (size_t j = 0; j < N; j++)
 		{
 			double d = l.evaluatePoint(operator[](j));
@@ -1277,32 +1277,32 @@ void TObject2D::generate3DObject(TObject3D& obj) const
 void TObject2D::getPoints(
 	const std::vector<TObject2D>& objs, std::vector<TPoint2D>& pnts)
 {
-	for (const auto & obj : objs)
+	for (const auto& obj : objs)
 		if (obj.isPoint()) pnts.push_back(obj.data.point);
 }
 void TObject2D::getSegments(
 	const std::vector<TObject2D>& objs, std::vector<TSegment2D>& sgms)
 {
-	for (const auto & obj : objs)
+	for (const auto& obj : objs)
 		if (obj.isSegment()) sgms.push_back(obj.data.segment);
 }
 void TObject2D::getLines(
 	const std::vector<TObject2D>& objs, std::vector<TLine2D>& lins)
 {
-	for (const auto & obj : objs)
+	for (const auto& obj : objs)
 		if (obj.isLine()) lins.push_back(obj.data.line);
 }
 void TObject2D::getPolygons(
 	const std::vector<TObject2D>& objs, std::vector<TPolygon2D>& polys)
 {
-	for (const auto & obj : objs)
+	for (const auto& obj : objs)
 		if (obj.isPolygon()) polys.push_back(*(obj.data.polygon));
 }
 void TObject2D::getPoints(
 	const std::vector<TObject2D>& objs, std::vector<TPoint2D>& pnts,
 	std::vector<TObject2D>& remainder)
 {
-	for (const auto & obj : objs)
+	for (const auto& obj : objs)
 		if (obj.isPoint())
 			pnts.push_back(obj.data.point);
 		else
@@ -1312,7 +1312,7 @@ void TObject2D::getSegments(
 	const std::vector<TObject2D>& objs, std::vector<TSegment2D>& sgms,
 	std::vector<TObject2D>& remainder)
 {
-	for (const auto & obj : objs)
+	for (const auto& obj : objs)
 		if (obj.isSegment())
 			sgms.push_back(obj.data.segment);
 		else
@@ -1322,7 +1322,7 @@ void TObject2D::getLines(
 	const std::vector<TObject2D>& objs, std::vector<TLine2D>& lins,
 	std::vector<TObject2D>& remainder)
 {
-	for (const auto & obj : objs)
+	for (const auto& obj : objs)
 		if (obj.isLine())
 			lins.push_back(obj.data.line);
 		else
@@ -1332,7 +1332,7 @@ void TObject2D::getPolygons(
 	const std::vector<TObject2D>& objs, std::vector<TPolygon2D>& polys,
 	vector<TObject2D>& remainder)
 {
-	for (const auto & obj : objs)
+	for (const auto& obj : objs)
 		if (obj.isPolygon())
 			polys.push_back(*(obj.data.polygon));
 		else
@@ -1341,38 +1341,38 @@ void TObject2D::getPolygons(
 void TObject3D::getPoints(
 	const std::vector<TObject3D>& objs, std::vector<TPoint3D>& pnts)
 {
-	for (const auto & obj : objs)
+	for (const auto& obj : objs)
 		if (obj.isPoint()) pnts.push_back(obj.data.point);
 }
 void TObject3D::getSegments(
 	const std::vector<TObject3D>& objs, std::vector<TSegment3D>& sgms)
 {
-	for (const auto & obj : objs)
+	for (const auto& obj : objs)
 		if (obj.isSegment()) sgms.push_back(obj.data.segment);
 }
 void TObject3D::getLines(
 	const std::vector<TObject3D>& objs, std::vector<TLine3D>& lins)
 {
-	for (const auto & obj : objs)
+	for (const auto& obj : objs)
 		if (obj.isLine()) lins.push_back(obj.data.line);
 }
 void TObject3D::getPlanes(
 	const std::vector<TObject3D>& objs, std::vector<TPlane>& plns)
 {
-	for (const auto & obj : objs)
+	for (const auto& obj : objs)
 		if (obj.isPlane()) plns.push_back(obj.data.plane);
 }
 void TObject3D::getPolygons(
 	const std::vector<TObject3D>& objs, std::vector<TPolygon3D>& polys)
 {
-	for (const auto & obj : objs)
+	for (const auto& obj : objs)
 		if (obj.isPolygon()) polys.push_back(*(obj.data.polygon));
 }
 void TObject3D::getPoints(
 	const std::vector<TObject3D>& objs, std::vector<TPoint3D>& pnts,
 	std::vector<TObject3D>& remainder)
 {
-	for (const auto & obj : objs)
+	for (const auto& obj : objs)
 		if (obj.isPoint())
 			pnts.push_back(obj.data.point);
 		else
@@ -1382,7 +1382,7 @@ void TObject3D::getSegments(
 	const std::vector<TObject3D>& objs, std::vector<TSegment3D>& sgms,
 	std::vector<TObject3D>& remainder)
 {
-	for (const auto & obj : objs)
+	for (const auto& obj : objs)
 		if (obj.isSegment())
 			sgms.push_back(obj.data.segment);
 		else
@@ -1392,7 +1392,7 @@ void TObject3D::getLines(
 	const std::vector<TObject3D>& objs, std::vector<TLine3D>& lins,
 	std::vector<TObject3D>& remainder)
 {
-	for (const auto & obj : objs)
+	for (const auto& obj : objs)
 		if (obj.isLine())
 			lins.push_back(obj.data.line);
 		else
@@ -1402,7 +1402,7 @@ void TObject3D::getPlanes(
 	const std::vector<TObject3D>& objs, std::vector<TPlane>& plns,
 	std::vector<TObject3D>& remainder)
 {
-	for (const auto & obj : objs)
+	for (const auto& obj : objs)
 		if (obj.isPlane())
 			plns.push_back(obj.data.plane);
 		else
@@ -1412,7 +1412,7 @@ void TObject3D::getPolygons(
 	const std::vector<TObject3D>& objs, std::vector<TPolygon3D>& polys,
 	vector<TObject3D>& remainder)
 {
-	for (const auto & obj : objs)
+	for (const auto& obj : objs)
 		if (obj.isPolygon())
 			polys.push_back(*(obj.data.polygon));
 		else
@@ -1609,6 +1609,4 @@ CArchive& operator<<(CArchive& out, const mrpt::math::TObject3D& o)
 	}
 	return out;
 }
-}  // namespace mrpt
-
-
+}  // namespace mrpt::math

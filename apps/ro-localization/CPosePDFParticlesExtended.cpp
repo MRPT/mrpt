@@ -42,7 +42,7 @@ CPosePDFParticlesExtended::CPosePDFParticlesExtended(size_t M)
 {
 	m_particles.resize(M);
 
-	for (auto & m_particle : m_particles)
+	for (auto& m_particle : m_particles)
 		m_particle.d.reset(new TExtendedCPose2D());
 
 	static TExtendedCPose2D nullPose;
@@ -64,14 +64,14 @@ void CPosePDFParticlesExtended::copyFrom(const CPosePDF& o)
 
 	if (o.GetRuntimeClass() == CLASS_ID(CPosePDFParticlesExtended))
 	{
-		CPosePDFParticlesExtended* pdf = (CPosePDFParticlesExtended*)&o;
+		auto* pdf = (CPosePDFParticlesExtended*)&o;
 
 		// Both are particles:
 		m_particles = pdf->m_particles;
 	}
 	else if (o.GetRuntimeClass() == CLASS_ID(CPosePDFGaussian))
 	{
-		CPosePDFGaussian* pdf = (CPosePDFGaussian*)&o;
+		auto* pdf = (CPosePDFGaussian*)&o;
 		int M = (int)m_particles.size();
 		std::vector<vector<double>> parts;
 		std::vector<vector<double>>::iterator partsIt;
@@ -708,11 +708,10 @@ bool CPosePDFParticlesExtended::saveToTextFile(const std::string& file) const
 	FILE* f = os::fopen(file.c_str(), "wt");
 	if (!f) return false;
 
-	for (const auto & m_particle : m_particles)
+	for (const auto& m_particle : m_particles)
 		os::fprintf(
-			f, "%f %f %f %e\n", m_particle.d->pose.x(),
-			m_particle.d->pose.y(), m_particle.d->pose.phi(),
-			m_particle.log_w);
+			f, "%f %f %f %e\n", m_particle.d->pose.x(), m_particle.d->pose.y(),
+			m_particle.d->pose.phi(), m_particle.log_w);
 
 	os::fclose(f);
 	return true;
@@ -796,12 +795,12 @@ void CPosePDFParticlesExtended::operator+=(const CPose2D& Ap)
 void CPosePDFParticlesExtended::inverse(CPosePDF& o) const
 {
 	ASSERT_(o.GetRuntimeClass() == CLASS_ID(CPosePDFParticlesExtended));
-	CPosePDFParticlesExtended* out = (CPosePDFParticlesExtended*)&o;
+	auto* out = (CPosePDFParticlesExtended*)&o;
 
 	out->copyFrom(*this);
 	static CPose2D nullPose(0, 0, 0);
 
-	for (auto & m_particle : out->m_particles)
+	for (auto& m_particle : out->m_particles)
 		m_particle.d->pose = nullPose - m_particle.d->pose;
 }
 
@@ -846,16 +845,17 @@ double CPosePDFParticlesExtended::evaluatePDF_parzen(
 {
 	double difPhi, ret = 0;
 
-	for (const auto & m_particle : m_particles)
+	for (const auto& m_particle : m_particles)
 	{
 		difPhi = wrapToPi(phi - m_particle.d->pose.phi());
 
-		ret +=
-			exp(m_particle.log_w) *
-			mrpt::math::normalPDF(
-				sqrt(square(x - m_particle.d->pose.x()) + square(y - m_particle.d->pose.y())),
-				0, stdXY) *
-			mrpt::math::normalPDF(fabs(difPhi), 0, stdPhi);
+		ret += exp(m_particle.log_w) *
+			   mrpt::math::normalPDF(
+				   sqrt(
+					   square(x - m_particle.d->pose.x()) +
+					   square(y - m_particle.d->pose.y())),
+				   0, stdXY) *
+			   mrpt::math::normalPDF(fabs(difPhi), 0, stdPhi);
 	}
 
 	return ret;
@@ -915,8 +915,7 @@ double CPosePDFParticlesExtended::auxiliarComputeObservationLikelihood(
 	double ret = 1;
 	CMetricMap* map;  // The map:
 
-	const CPosePDFParticlesExtended* pdf =
-		static_cast<const CPosePDFParticlesExtended*>(obj);
+	const auto* pdf = static_cast<const CPosePDFParticlesExtended*>(obj);
 
 	if (pdf->options.metricMap)
 		map = pdf->options.metricMap;
@@ -927,7 +926,7 @@ double CPosePDFParticlesExtended::auxiliarComputeObservationLikelihood(
 	}
 
 	// For each observation:
-	for (const auto & it : *observation)
+	for (const auto& it : *observation)
 	{
 		const CObservation* obser = it.get();
 		CObservationBeaconRanges obserDumm;
@@ -935,7 +934,7 @@ double CPosePDFParticlesExtended::auxiliarComputeObservationLikelihood(
 		// JLBC: 20/ABR/2007 -> UWB offset from extended state vector
 		if (obser->GetRuntimeClass() == CLASS_ID(CObservationBeaconRanges))
 		{
-			CObservationBeaconRanges* obs = (CObservationBeaconRanges*)obser;
+			auto* obs = (CObservationBeaconRanges*)obser;
 			obserDumm = *obs;
 
 			// Introduce bias:
@@ -973,8 +972,7 @@ double CPosePDFParticlesExtended::particlesEvaluator_AuxPFOptimal(
 
 	// Take the previous particle weight:
 	// --------------------------------------------
-	const CPosePDFParticlesExtended* pdf =
-		static_cast<const CPosePDFParticlesExtended*>(obj);
+	const auto* pdf = static_cast<const CPosePDFParticlesExtended*>(obj);
 
 	double ret = pdf->m_particles[index].log_w;
 

@@ -117,17 +117,16 @@ void CPoseRandomSampler::setPosePDF(const CPosePDF* pdf)
 	// According to the PDF type:
 	if (IS_CLASS(m_pdf2D.get(), CPosePDFGaussian))
 	{
-		const CPosePDFGaussian* gPdf =
-			static_cast<const CPosePDFGaussian*>(pdf);
+		const auto* gPdf = static_cast<const CPosePDFGaussian*>(pdf);
 		const CMatrixDouble33& cov = gPdf->cov;
 
 		m_fastdraw_gauss_M_2D = gPdf->mean;
 
 		/** Computes the eigenvalues/eigenvector decomposition of this matrix,
-		*    so that: M = Z · D · Z<sup>T</sup>, where columns in Z are the
-		*	  eigenvectors and the diagonal matrix D contains the eigenvalues
-		*    as diagonal elements, sorted in <i>ascending</i> order.
-		*/
+		 *    so that: M = Z · D · Z<sup>T</sup>, where columns in Z are the
+		 *	  eigenvectors and the diagonal matrix D contains the eigenvalues
+		 *    as diagonal elements, sorted in <i>ascending</i> order.
+		 */
 		CMatrixDouble33 D;
 		cov.eigenVectors(m_fastdraw_gauss_Z3, D);
 
@@ -161,17 +160,16 @@ void CPoseRandomSampler::setPosePDF(const CPose3DPDF* pdf)
 	// According to the PDF type:
 	if (IS_CLASS(m_pdf3D.get(), CPose3DPDFGaussian))
 	{
-		const CPose3DPDFGaussian* gPdf =
-			static_cast<const CPose3DPDFGaussian*>(pdf);
+		const auto* gPdf = static_cast<const CPose3DPDFGaussian*>(pdf);
 		const CMatrixDouble66& cov = gPdf->cov;
 
 		m_fastdraw_gauss_M_3D = gPdf->mean;
 
 		/** Computes the eigenvalues/eigenvector decomposition of this matrix,
-		*    so that: M = Z · D · Z<sup>T</sup>, where columns in Z are the
-		*	  eigenvectors and the diagonal matrix D contains the eigenvalues
-		*    as diagonal elements, sorted in <i>ascending</i> order.
-		*/
+		 *    so that: M = Z · D · Z<sup>T</sup>, where columns in Z are the
+		 *	  eigenvectors and the diagonal matrix D contains the eigenvalues
+		 *    as diagonal elements, sorted in <i>ascending</i> order.
+		 */
 		CMatrixDouble66 D;
 		cov.eigenVectors(m_fastdraw_gauss_Z6, D);
 
@@ -292,8 +290,7 @@ void CPoseRandomSampler::do_sample_2D(CPose2D& p) const
 		// -------------------------------------
 		//      Particles: just sample as usual
 		// -------------------------------------
-		const CPosePDFParticles* pdf =
-			static_cast<const CPosePDFParticles*>(m_pdf2D.get());
+		const auto* pdf = static_cast<const CPosePDFParticles*>(m_pdf2D.get());
 		pdf->drawSingleSample(p);
 	}
 	else
@@ -346,7 +343,7 @@ void CPoseRandomSampler::do_sample_3D(CPose3D& p) const
 		// -------------------------------------
 		//      Particles: just sample as usual
 		// -------------------------------------
-		const CPose3DPDFParticles* pdf =
+		const auto* pdf =
 			static_cast<const CPose3DPDFParticles*>(m_pdf3D.get());
 		pdf->drawSingleSample(p);
 	}

@@ -18,9 +18,8 @@ using namespace mrpt::poses;
 
 // -----------   SO_average<2> --------------------
 SO_average<2>::SO_average()
-	
-	  
-= default;
+
+	= default;
 void SO_average<2>::clear()
 {
 	m_count = .0;
@@ -55,11 +54,7 @@ double SO_average<2>::get_average() const
 }
 
 // -----------   SO_average<3> --------------------
-SO_average<3>::SO_average()
-	:  m_accum_rot()
-{
-	clear();
-}
+SO_average<3>::SO_average() : m_accum_rot() { clear(); }
 void SO_average<3>::clear()
 {
 	m_count = .0;
@@ -104,12 +99,7 @@ Eigen::Matrix3d SO_average<3>::get_average() const
 }
 
 // -----------   SE_average<2> --------------------
-SE_average<2>::SE_average()
-	: 
-	  m_rot_part()
-{
-	clear();
-}
+SE_average<2>::SE_average() : m_rot_part() { clear(); }
 void SE_average<2>::clear()
 {
 	m_count = .0;
@@ -142,12 +132,7 @@ void SE_average<2>::get_average(mrpt::poses::CPose2D& ret_mean) const
 }
 
 // -----------   SE_average<3> --------------------
-SE_average<3>::SE_average()
-	: 
-	  m_rot_part()
-{
-	clear();
-}
+SE_average<3>::SE_average() : m_rot_part() { clear(); }
 void SE_average<3>::clear()
 {
 	m_count = .0;
@@ -165,7 +150,7 @@ void SE_average<3>::append(const mrpt::poses::CPose3D& p, const double weight)
 }
 void SE_average<3>::append(const mrpt::math::TPose3D& p, const double weight)
 {
-	append(CPose3D(p),weight);
+	append(CPose3D(p), weight);
 }
 void SE_average<3>::get_average(mrpt::poses::CPose3D& ret_mean) const
 {

@@ -22,7 +22,7 @@ namespace mrpt::hwdrivers
  * connects to a program that does the actual communication with the receiver.
  * This is done because the manufacturer only provides libraries for C# and
  * Java. The program that runs the device must be started after this object
-  */
+ */
 class CImpinjRFID : public mrpt::hwdrivers::CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CImpinjRFID)
@@ -89,11 +89,11 @@ class CImpinjRFID : public mrpt::hwdrivers::CGenericSensor
 		const std::string& section) override;
 
 	/** Gets the information of the tags as a timestamped observation
-	* NOTE: Deprecated, use getObservations instead. See CGenericSensor
-	* documentation. This function is kept for internal use of the module
-	* \return Returns true if the observation was correct, and false otherwise
-	* \sa mrpt::hwdrivers::CGenericSensor
-	*/
+	 * NOTE: Deprecated, use getObservations instead. See CGenericSensor
+	 * documentation. This function is kept for internal use of the module
+	 * \return Returns true if the observation was correct, and false otherwise
+	 * \sa mrpt::hwdrivers::CGenericSensor
+	 */
 	bool getObservation(mrpt::obs::CObservationRFID& obs);
 
 	/** Close the connection to the reader.
@@ -101,6 +101,4 @@ class CImpinjRFID : public mrpt::hwdrivers::CGenericSensor
 	void closeReader();
 };  // End of class def.
 
-}
-
-
+}  // namespace mrpt::hwdrivers

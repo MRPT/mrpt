@@ -56,8 +56,7 @@ DECLARE_OP_FUNCTION(op_export_odometry_txt)
 			const CObservationOdometry* obs =
 				dynamic_cast<CObservationOdometry*>(o.get());
 
-			map<string, FILE*>::const_iterator it =
-				lstFiles.find(obs->sensorLabel);
+			auto it = lstFiles.find(obs->sensorLabel);
 
 			FILE* f_this;
 
@@ -126,8 +125,7 @@ DECLARE_OP_FUNCTION(op_export_odometry_txt)
 		// Destructor: close files and generate summary files:
 		~CRawlogProcessor_ExportODO_TXT()
 		{
-			for (map<string, FILE*>::const_iterator it = lstFiles.begin();
-				 it != lstFiles.end(); ++it)
+			for (auto it = lstFiles.begin(); it != lstFiles.end(); ++it)
 			{
 				os::fclose(it->second);
 			}
@@ -192,8 +190,7 @@ DECLARE_OP_FUNCTION(op_recalc_odometry)
 		{
 			if (!IS_CLASS(o, CObservationOdometry)) return true;
 
-			CObservationOdometry* obs =
-				dynamic_cast<CObservationOdometry*>(o.get());
+			auto* obs = dynamic_cast<CObservationOdometry*>(o.get());
 
 			if (!obs->hasEncodersInfo)
 				throw std::runtime_error(

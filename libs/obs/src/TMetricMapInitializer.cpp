@@ -49,10 +49,10 @@ void TMetricMapInitializer::loadFromConfigFile(
 }
 
 void TMetricMapInitializer::saveToConfigFile(
-	mrpt::config::CConfigFileBase& target,
-	const std::string& section) const
+	mrpt::config::CConfigFileBase& target, const std::string& section) const
 {
-	auto s = section + std::string("_") + std::string(this->metricMapClassType->className);
+	auto s = section + std::string("_") +
+			 std::string(this->metricMapClassType->className);
 	this->genericMapParams.saveToConfigFile(target, s);
 }
 
@@ -80,7 +80,7 @@ void TSetOfMetricMapInitializers::loadFromConfigFile(
 
 	const TMetricMapTypesRegistry::TListRegisteredMaps& allMapKinds =
 		mmr.getAllRegistered();
-	for (const auto & allMapKind : allMapKinds)
+	for (const auto& allMapKind : allMapKinds)
 	{
 		//  ; Creation of maps:
 		//  occupancyGrid_count=<Number of mrpt::maps::COccupancyGridMap2D maps>
@@ -113,11 +113,9 @@ void TSetOfMetricMapInitializers::loadFromConfigFile(
 }
 
 void TSetOfMetricMapInitializers::saveToConfigFile(
-	mrpt::config::CConfigFileBase& target,
-	const std::string& section) const
+	mrpt::config::CConfigFileBase& target, const std::string& section) const
 {
-	for (auto & mi : *this)
-		mi->saveToConfigFile(target, section);
+	for (auto& mi : *this) mi->saveToConfigFile(target, section);
 }
 
 void TSetOfMetricMapInitializers::dumpToTextStream(std::ostream& out) const

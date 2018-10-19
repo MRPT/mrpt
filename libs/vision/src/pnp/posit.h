@@ -76,5 +76,4 @@ class posit
 };
 
 /** @}  */  // end of grouping
-}
-
+}  // namespace mrpt::vision::pnp

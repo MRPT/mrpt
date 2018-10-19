@@ -16,8 +16,8 @@ namespace mrpt::maps
 {
 /** Virtual base class for Digital Elevation Model (DEM) maps. See derived
  * classes for details.
-  * This class implements those operations which are especific to DEMs.
-  * \ingroup mrpt_maps_grp */
+ * This class implements those operations which are especific to DEMs.
+ * \ingroup mrpt_maps_grp */
 class CHeightGridMap2D_Base
 {
    public:
@@ -32,7 +32,7 @@ class CHeightGridMap2D_Base
 		const mrpt::math::TLine3D& r1, mrpt::math::TObject3D& obj) const;
 
 	/** Computes the minimum and maximum height in the grid.
-	  * \return False if there is no observed cell yet. */
+	 * \return False if there is no observed cell yet. */
 	bool getMinMaxHeight(float& z_min, float& z_max) const;
 
 	/** Extra params for insertIndividualPoint() */
@@ -50,9 +50,9 @@ class CHeightGridMap2D_Base
 		TPointInsertParams();
 	};
 	/** Update the DEM with one new point.
-	  * \sa mrpt::maps::CMetricMap::insertObservation() for inserting
+	 * \sa mrpt::maps::CMetricMap::insertObservation() for inserting
 	 * higher-level objects like 2D/3D LIDAR scans
-	  * \return true if updated OK, false if (x,y) is out of bounds */
+	 * \return true if updated OK, false if (x,y) is out of bounds */
 	virtual bool insertIndividualPoint(
 		const double x, const double y, const double z,
 		const TPointInsertParams& params = TPointInsertParams()) = 0;
@@ -77,6 +77,4 @@ class CHeightGridMap2D_Base
 		const mrpt::obs::CObservation* obs,
 		const mrpt::poses::CPose3D* robotPose = nullptr);
 };
-}
-
-
+}  // namespace mrpt::maps

@@ -16,4 +16,3 @@ int solve_deg3(
 int solve_deg4(
 	double a, double b, double c, double d, double e, double& x0, double& x1,
 	double& x2, double& x3);
-

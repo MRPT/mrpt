@@ -26,10 +26,10 @@ class CPointsMap;
 namespace maps
 {
 /** Virtual base class for all point-cloud filtering algorithm. See derived
-* classes for implementations.
-* \sa CPointsMap
-* \ingroup mrpt_maps_grp
-*/
+ * classes for implementations.
+ * \sa CPointsMap
+ * \ingroup mrpt_maps_grp
+ */
 class CPointCloudFilterBase
 {
    public:
@@ -63,5 +63,5 @@ class CPointCloudFilterBase
 		/** [in,out] additional in/out parameters */
 		TExtraFilterParams* params = nullptr) = 0;
 };
-}
-}  // End of namespace
+}  // namespace maps
+}  // namespace mrpt

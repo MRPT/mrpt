@@ -83,7 +83,7 @@ void IntList::setIncremental(
 
 	if ((uint32_t)size > m_max) resize(size);
 
-	uint32_t astep = (uint32_t)step;
+	auto astep = (uint32_t)step;
 	m_count = 0;
 	if (step > 0)
 		for (uint32_t i = start; i < end; i += astep) m_data[m_count++] = i;
@@ -159,4 +159,4 @@ bool IntList::operator==(const IntList& lst)
 	return true;
 }
 
-}  // end of xsens namespace
+}  // namespace xsens

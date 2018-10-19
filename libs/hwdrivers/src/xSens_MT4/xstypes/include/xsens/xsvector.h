@@ -19,7 +19,8 @@ struct XsQuaternion;
 #ifdef __cplusplus
 #include <vector>
 #include <algorithm>
-extern "C" {
+extern "C"
+{
 #else
 #define XSVECTOR_INITIALIZER \
 	{                        \
@@ -28,27 +29,27 @@ extern "C" {
 typedef struct XsVector XsVector;
 #endif
 
-XSTYPES_DLL_API void XsVector_ref(
-	XsVector* thisPtr, XsSize sz, XsReal* buffer, XsDataFlags flags);
-XSTYPES_DLL_API void XsVector_construct(
-	XsVector* thisPtr, XsSize sz, const XsReal* src);
-XSTYPES_DLL_API void XsVector_assign(
-	XsVector* thisPtr, XsSize sz, const XsReal* src);
-XSTYPES_DLL_API void XsVector_destruct(XsVector* thisPtr);
-XSTYPES_DLL_API void XsVector_copy(XsVector* copy, XsVector const* src);
-XSTYPES_DLL_API XsReal
-	XsVector_dotProduct(const XsVector* a, const XsVector* b);
-XSTYPES_DLL_API XsReal XsVector_cartesianLength(const XsVector* thisPtr);
-XSTYPES_DLL_API void XsVector_setZero(XsVector* thisPtr);
-XSTYPES_DLL_API int XsVector_empty(const XsVector* thisPtr);
-XSTYPES_DLL_API void XsVector_multiplyScalar(
-	const XsVector* thisPtr, XsReal scalar, XsVector* dest);
-XSTYPES_DLL_API void XsVector_angularVelocityFromQuaternion(
-	XsVector* thisPtr, XsReal deltaT, const struct XsQuaternion* quat);
-XSTYPES_DLL_API void XsVector_swap(XsVector* a, XsVector* b);
-XSTYPES_DLL_API void XsVector_fill(XsVector* thisPtr, XsReal value);
-XSTYPES_DLL_API int XsVector_equal(
-	const XsVector* thisPtr, const XsVector* thatPtr);
+	XSTYPES_DLL_API void XsVector_ref(
+		XsVector* thisPtr, XsSize sz, XsReal* buffer, XsDataFlags flags);
+	XSTYPES_DLL_API void XsVector_construct(
+		XsVector* thisPtr, XsSize sz, const XsReal* src);
+	XSTYPES_DLL_API void XsVector_assign(
+		XsVector* thisPtr, XsSize sz, const XsReal* src);
+	XSTYPES_DLL_API void XsVector_destruct(XsVector* thisPtr);
+	XSTYPES_DLL_API void XsVector_copy(XsVector* copy, XsVector const* src);
+	XSTYPES_DLL_API XsReal
+		XsVector_dotProduct(const XsVector* a, const XsVector* b);
+	XSTYPES_DLL_API XsReal XsVector_cartesianLength(const XsVector* thisPtr);
+	XSTYPES_DLL_API void XsVector_setZero(XsVector* thisPtr);
+	XSTYPES_DLL_API int XsVector_empty(const XsVector* thisPtr);
+	XSTYPES_DLL_API void XsVector_multiplyScalar(
+		const XsVector* thisPtr, XsReal scalar, XsVector* dest);
+	XSTYPES_DLL_API void XsVector_angularVelocityFromQuaternion(
+		XsVector* thisPtr, XsReal deltaT, const struct XsQuaternion* quat);
+	XSTYPES_DLL_API void XsVector_swap(XsVector* a, XsVector* b);
+	XSTYPES_DLL_API void XsVector_fill(XsVector* thisPtr, XsReal value);
+	XSTYPES_DLL_API int XsVector_equal(
+		const XsVector* thisPtr, const XsVector* thatPtr);
 
 #ifdef __cplusplus
 }  // extern "C"
@@ -69,6 +70,7 @@ struct XsVector
 #ifdef __cplusplus
 	//! \brief Return the data management flags of the vector.
 	inline int flags() { return m_flags; }
+
    public:
 	//! \brief Initialize a vector, empty or using the data in the supplied \a
 	//! sz and \a src

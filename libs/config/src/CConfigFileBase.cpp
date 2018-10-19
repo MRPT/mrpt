@@ -151,11 +151,8 @@ bool CConfigFileBase::read_bool(
 	const std::string& section, const std::string& name, bool defaultValue,
 	bool failIfNotFound) const
 {
-	const string s = mrpt::system::lowerCase(
-		trim(
-			readString(
-				section, name, string(defaultValue ? "1" : "0"),
-				failIfNotFound)));
+	const string s = mrpt::system::lowerCase(trim(readString(
+		section, name, string(defaultValue ? "1" : "0"), failIfNotFound)));
 	if (s == "true") return true;
 	if (s == "false") return false;
 	if (s == "yes") return true;
@@ -188,11 +185,10 @@ std::string CConfigFileBase::read_string_first_word(
 	{
 		if (failIfNotFound)
 		{
-			THROW_EXCEPTION(
-				format(
-					"Value '%s' seems to be present in section '%s' but, are "
-					"all whitespaces??",
-					name.c_str(), section.c_str()));
+			THROW_EXCEPTION(format(
+				"Value '%s' seems to be present in section '%s' but, are "
+				"all whitespaces??",
+				name.c_str(), section.c_str()));
 		}
 		else
 			return "";
@@ -206,7 +202,7 @@ bool CConfigFileBase::sectionExists(const std::string& section_name) const
 {
 	std::vector<std::string> sects;
 	getAllSections(sects);
-	for (auto & sect : sects)
+	for (auto& sect : sects)
 		if (!mrpt::system::os::_strcmpi(section_name.c_str(), sect.c_str()))
 			return true;
 	return false;

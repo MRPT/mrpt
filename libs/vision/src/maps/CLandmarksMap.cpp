@@ -88,10 +88,11 @@ void CLandmarksMap::TMapDefinition::dumpToTextStream_map_specific(
 	out << mrpt::format("      ID         (X,Y,Z)\n");
 	out << mrpt::format(
 		"--------------------------------------------------------\n");
-	for (const auto & initialBeacon : initialBeacons)
+	for (const auto& initialBeacon : initialBeacons)
 		out << mrpt::format(
 			"      %03u         (%8.03f,%8.03f,%8.03f)\n", initialBeacon.second,
-			initialBeacon.first.x, initialBeacon.first.y, initialBeacon.first.z);
+			initialBeacon.first.x, initialBeacon.first.y,
+			initialBeacon.first.z);
 
 	this->insertionOpts.dumpToTextStream(out);
 	this->likelihoodOpts.dumpToTextStream(out);
@@ -102,9 +103,9 @@ mrpt::maps::CMetricMap* CLandmarksMap::internal_CreateFromMapDefinition(
 {
 	const CLandmarksMap::TMapDefinition& def =
 		*dynamic_cast<const CLandmarksMap::TMapDefinition*>(&_def);
-	CLandmarksMap* obj = new CLandmarksMap();
+	auto* obj = new CLandmarksMap();
 
-	for (const auto & initialBeacon : def.initialBeacons)
+	for (const auto& initialBeacon : def.initialBeacons)
 	{
 		CLandmark lm;
 
@@ -176,8 +177,7 @@ void CLandmarksMap::serializeTo(mrpt::serialization::CArchive& out) const
 	out << n;
 
 	// Write all landmarks:
-	for (const auto & landmark : landmarks)
-		out << landmark;
+	for (const auto& landmark : landmarks) out << landmark;
 }
 
 void CLandmarksMap::serializeFrom(
@@ -227,8 +227,7 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 		/********************************************************************
 						OBSERVATION TYPE: CObservation2DRangeScan
 			********************************************************************/
-		const CObservation2DRangeScan* o =
-			static_cast<const CObservation2DRangeScan*>(obs);
+		const auto* o = static_cast<const CObservation2DRangeScan*>(obs);
 		CLandmarksMap auxMap;
 		CPose2D sensorPose2D(robotPose3D + o->sensorPose);
 
@@ -244,8 +243,7 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 						OBSERVATION TYPE: CObservationStereoImages
 				Lik. between "this" and "auxMap";
 			********************************************************************/
-		const CObservationStereoImages* o =
-			static_cast<const CObservationStereoImages*>(obs);
+		const auto* o = static_cast<const CObservationStereoImages*>(obs);
 
 		CLandmarksMap auxMap;
 		auxMap.insertionOptions = insertionOptions;
@@ -275,8 +273,7 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 				Lik. between "this" and "auxMap";
 
 			********************************************************************/
-		const CObservationBeaconRanges* o =
-			static_cast<const CObservationBeaconRanges*>(obs);
+		const auto* o = static_cast<const CObservationBeaconRanges*>(obs);
 
 		std::deque<CObservationBeaconRanges::TMeasurement>::const_iterator it;
 		TSequenceLandmarks::iterator lm_it;
@@ -341,8 +338,7 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 				Lik. between "this" and "robotPose";
 
 		********************************************************************/
-		const CObservationRobotPose* o =
-			static_cast<const CObservationRobotPose*>(obs);
+		const auto* o = static_cast<const CObservationRobotPose*>(obs);
 
 		// Compute the 3D position of the sensor:
 		CPose3D sensorPose3D = robotPose3D + o->sensorPose;
@@ -376,7 +372,7 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 						OBSERVATION TYPE: CObservationGPS
 
 		********************************************************************/
-		const CObservationGPS* o = static_cast<const CObservationGPS*>(obs);
+		const auto* o = static_cast<const CObservationGPS*>(obs);
 		// Compute the 3D position of the sensor:
 		CPoint3D point3D = CPoint3D(robotPose3D);
 		CPoint3D GPSpose;
@@ -487,7 +483,7 @@ bool CLandmarksMap::internal_insertObservation(
 						OBSERVATION TYPE: CObservationImage
 
 			********************************************************************/
-		const CObservationImage* o = static_cast<const CObservationImage*>(obs);
+		const auto* o = static_cast<const CObservationImage*>(obs);
 		CLandmarksMap tempMap;
 
 		// 1) Load the features in a temporary 3D landmarks map:
@@ -534,8 +530,7 @@ bool CLandmarksMap::internal_insertObservation(
 		/********************************************************************
 						OBSERVATION TYPE: CObservationStereoImages
 			********************************************************************/
-		const CObservationStereoImages* o =
-			static_cast<const CObservationStereoImages*>(obs);
+		const auto* o = static_cast<const CObservationStereoImages*>(obs);
 
 		// Change coordinates ref:
 		CLandmarksMap auxMap;
@@ -557,8 +552,7 @@ bool CLandmarksMap::internal_insertObservation(
 						OBSERVATION TYPE:  CObservationVisualLandmarks
 
 			********************************************************************/
-		const CObservationVisualLandmarks* o =
-			static_cast<const CObservationVisualLandmarks*>(obs);
+		const auto* o = static_cast<const CObservationVisualLandmarks*>(obs);
 
 		// Change coordinates ref:
 		CLandmarksMap auxMap;
@@ -609,8 +603,7 @@ void CLandmarksMap::computeMatchingWith2D(
 
 	// Check the other map class:
 	ASSERT_(otherMap->GetRuntimeClass() == CLASS_ID(CLandmarksMap));
-	const CLandmarksMap* otherMap2 =
-		static_cast<const CLandmarksMap*>(otherMap);
+	const auto* otherMap2 = static_cast<const CLandmarksMap*>(otherMap);
 	std::vector<bool> otherCorrespondences;
 
 	// Coordinates change:
@@ -1435,8 +1428,7 @@ bool CLandmarksMap::saveToTextFile(std::string file)
 	// os::fprintf(f,"%%
 	// -----------------------------------------------------------------------------------------------------\n");
 
-	for (TSequenceLandmarks::iterator it = landmarks.begin();
-		 it != landmarks.end(); ++it)
+	for (auto it = landmarks.begin(); it != landmarks.end(); ++it)
 	{
 		os::fprintf(
 			f, "%10f %10f %10f %4i %4u %10f", it->pose_mean.x, it->pose_mean.y,
@@ -1490,16 +1482,16 @@ bool CLandmarksMap::saveToMATLABScript3D(
 	// Main code:
 	os::fprintf(f, "hold on;\n\n");
 
-	for (const auto & landmark : landmarks)
+	for (const auto& landmark : landmarks)
 	{
 		os::fprintf(
-			f, "m=[%.4f %.4f %.4f];", landmark.pose_mean.x, landmark.pose_mean.y,
-			landmark.pose_mean.z);
+			f, "m=[%.4f %.4f %.4f];", landmark.pose_mean.x,
+			landmark.pose_mean.y, landmark.pose_mean.z);
 		os::fprintf(
 			f, "c=[%.8f %.8f %.8f;%.8f %.8f %.8f;%.8f %.8f %.8f]; ",
-			landmark.pose_cov_11, landmark.pose_cov_12, landmark.pose_cov_13, landmark.pose_cov_12,
-			landmark.pose_cov_22, landmark.pose_cov_23, landmark.pose_cov_13, landmark.pose_cov_23,
-			landmark.pose_cov_33);
+			landmark.pose_cov_11, landmark.pose_cov_12, landmark.pose_cov_13,
+			landmark.pose_cov_12, landmark.pose_cov_22, landmark.pose_cov_23,
+			landmark.pose_cov_13, landmark.pose_cov_23, landmark.pose_cov_33);
 
 		os::fprintf(
 			f,
@@ -1559,7 +1551,7 @@ bool CLandmarksMap::saveToMATLABScript2D(
 	// Main code:
 	os::fprintf(f, "hold on;\n\n");
 
-	for (auto & landmark : landmarks)
+	for (auto& landmark : landmarks)
 	{
 		// Compute the eigen-vectors & values:
 		cov(0, 0) = landmark.pose_cov_11;
@@ -1767,7 +1759,7 @@ double CLandmarksMap::computeLikelihood_RSLC_2007(
 				corrs = grid->cellByIndex(cx, cy);
 				ASSERT_(corrs != nullptr);
 				if (!corrs->empty())
-					for (int & it : *corrs)
+					for (int& it : *corrs)
 					{
 						lm = landmarks.get(it);
 
@@ -1852,9 +1844,8 @@ double CLandmarksMap::computeLikelihood_RSLC_2007(
 
   ---------------------------------------------------------------*/
 CLandmarksMap::TCustomSequenceLandmarks::TCustomSequenceLandmarks()
-	: m_landmarks(),
-	  m_grid(-10.0f, 10.0f, -10.0f, 10.f, 0.20f)
-	  
+	: m_landmarks(), m_grid(-10.0f, 10.0f, -10.0f, 10.f, 0.20f)
+
 {
 }
 
@@ -1990,7 +1981,7 @@ float CLandmarksMap::TCustomSequenceLandmarks::getLargestDistanceFromOrigin()
 	{
 		// NO: Update it:
 		float maxDistSq = 0, d;
-		for (const auto & it : *this)
+		for (const auto& it : *this)
 		{
 			d = square(it.pose_mean.x) + square(it.pose_mean.y) +
 				square(it.pose_mean.z);
@@ -2201,7 +2192,7 @@ double CLandmarksMap::computeLikelihood_SIFT_LandmarkMap(
 					TInsertionOptions
   ---------------------------------------------------------------*/
 CLandmarksMap::TInsertionOptions::TInsertionOptions()
-	: 
+	:
 
 	  SIFT_feat_options(vision::featSIFT)
 {
@@ -2318,18 +2309,16 @@ void CLandmarksMap::TInsertionOptions::loadFromConfigFile(
 					TLikelihoodOptions
   ---------------------------------------------------------------*/
 CLandmarksMap::TLikelihoodOptions::TLikelihoodOptions()
-	: 
-	  SIFT_feat_options(vision::featSIFT),
-	  
+	: SIFT_feat_options(vision::featSIFT),
+
 	  GPSOrigin()
-	  
+
 {
 }
 
 CLandmarksMap::TLikelihoodOptions::TGPSOrigin::TGPSOrigin()
-	
-	  
-= default;
+
+	= default;
 
 /*---------------------------------------------------------------
 					dumpToTextStream
@@ -2443,8 +2432,8 @@ void CLandmarksMap::TLikelihoodOptions::loadFromConfigFile(
 					TFuseOptions
   ---------------------------------------------------------------*/
 CLandmarksMap::TFuseOptions::TFuseOptions()
-	 
-= default;
+
+	= default;
 
 /*---------------------------------------------------------------
 					 isEmpty
@@ -2544,7 +2533,7 @@ void CLandmarksMap::getAs3DObject(
 
 	// Save 3D ellipsoids
 	CPointPDFGaussian pointGauss;
-	for (const auto & landmark : landmarks)
+	for (const auto& landmark : landmarks)
 	{
 		opengl::CEllipsoid::Ptr ellip =
 			mrpt::make_aligned_shared<opengl::CEllipsoid>();
@@ -2574,7 +2563,7 @@ mrpt::maps::CLandmark::TLandmarkID CLandmarksMap::getMapMaxID()
 const CLandmark* CLandmarksMap::TCustomSequenceLandmarks::getByID(
 	CLandmark::TLandmarkID ID) const
 {
-	for (const auto & m_landmark : m_landmarks)
+	for (const auto& m_landmark : m_landmarks)
 	{
 		if (m_landmark.ID == ID) return &m_landmark;
 	}
@@ -2595,7 +2584,7 @@ const CLandmark* CLandmarksMap::TCustomSequenceLandmarks::getByID(
 const CLandmark* CLandmarksMap::TCustomSequenceLandmarks::getByBeaconID(
 	unsigned int ID) const
 {
-	for (const auto & m_landmark : m_landmarks)
+	for (const auto& m_landmark : m_landmarks)
 	{
 		if (m_landmark.ID == ID) return &m_landmark;
 	}

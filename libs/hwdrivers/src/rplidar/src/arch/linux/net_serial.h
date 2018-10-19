@@ -55,13 +55,16 @@ class raw_serial : public rp::hal::serial_rxtx
 	void flush(_u32 flags) override;
 
 	int waitfordata(
-		size_t data_count, _u32 timeout = -1, size_t* returned_size = nullptr) override;
+		size_t data_count, _u32 timeout = -1,
+		size_t* returned_size = nullptr) override;
 
 	int senddata(const unsigned char* data, size_t size) override;
 	int recvdata(unsigned char* data, size_t size) override;
 
-	int waitforsent(_u32 timeout = -1, size_t* returned_size = nullptr) override;
-	int waitforrecv(_u32 timeout = -1, size_t* returned_size = nullptr) override;
+	int waitforsent(
+		_u32 timeout = -1, size_t* returned_size = nullptr) override;
+	int waitforrecv(
+		_u32 timeout = -1, size_t* returned_size = nullptr) override;
 
 	size_t rxqueue_count() override;
 
@@ -83,5 +86,4 @@ class raw_serial : public rp::hal::serial_rxtx
 	size_t required_tx_cnt;
 	size_t required_rx_cnt;
 };
-}
-
+}  // namespace rp::arch::net

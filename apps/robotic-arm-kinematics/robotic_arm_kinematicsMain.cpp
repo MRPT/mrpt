@@ -42,7 +42,8 @@ class MyArtProvider : public wxArtProvider
 {
    protected:
 	wxBitmap CreateBitmap(
-		const wxArtID& id, const wxArtClient& client, const wxSize& size) override;
+		const wxArtID& id, const wxArtClient& client,
+		const wxSize& size) override;
 };
 
 // CreateBitmap function
@@ -165,9 +166,8 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 	SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
 	{
 		wxIcon FrameIcon;
-		FrameIcon.CopyFromBitmap(
-			wxArtProvider::GetBitmap(
-				wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")), wxART_FRAME_ICON));
+		FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(
+			wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")), wxART_FRAME_ICON));
 		SetIcon(FrameIcon);
 	}
 	FlexGridSizer1 = new wxFlexGridSizer(1, 2, 0, 0);
@@ -190,8 +190,9 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 		StaticText1, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
 	listLinks = new wxSimpleHtmlListBox(
-		this, ID_SIMPLEHTMLLISTBOX1, wxDefaultPosition, wxDefaultSize, 0, nullptr,
-		wxHLB_DEFAULT_STYLE, wxDefaultValidator, _T("ID_SIMPLEHTMLLISTBOX1"));
+		this, ID_SIMPLEHTMLLISTBOX1, wxDefaultPosition, wxDefaultSize, 0,
+		nullptr, wxHLB_DEFAULT_STYLE, wxDefaultValidator,
+		_T("ID_SIMPLEHTMLLISTBOX1"));
 	listLinks->Append(_("aasas"));
 	listLinks->Append(_("a<font color=\"red\">s</font>asas"));
 	listLinks->SetMinSize(wxSize(360, 30));
@@ -869,7 +870,7 @@ void robotic_arm_kinematicsFrame::UpdateListLinks()
 void robotic_arm_kinematicsFrame::RegenerateDOFPanels()
 {
 	// Clear:
-	for (auto & m_dof_panel : m_dof_panels) delete m_dof_panel;
+	for (auto& m_dof_panel : m_dof_panels) delete m_dof_panel;
 	m_dof_panels.clear();
 
 	// Create:
@@ -1131,8 +1132,7 @@ void robotic_arm_kinematicsFrame::UpdateMatrixView()
 
 	edMatrix->Freeze();
 
-	const mrpt::math::CMatrixDouble44 M =
-		m_all_poses[sel].getHomogeneousMatrixVal<CMatrixDouble44>();
+	const auto M = m_all_poses[sel].getHomogeneousMatrixVal<CMatrixDouble44>();
 
 	const std::string s = format(
 		"%6.03f %6.03f %6.03f %6.03f\n"

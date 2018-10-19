@@ -23,7 +23,7 @@ using namespace std;
 template <typename T, size_t DIM1>
 double matrix_test_chol_dyn(int a1, int a2)
 {
-	CMatrixTemplateNumeric<T> A =
+	auto A =
 		getRandomGenerator()
 			.drawDefinitePositiveMatrix<CMatrixTemplateNumeric<T>>(DIM1, 0.2);
 	CMatrixTemplateNumeric<T> chol_U;
@@ -42,7 +42,7 @@ double matrix_test_chol_Nx6x6_dyn(int DIM, int nReps)
 	CMatrixDouble C(DIM * 6, DIM * 6);
 	for (int i = 0; i < DIM; i++)
 	{
-		CMatrixDouble subCov =
+		auto subCov =
 			getRandomGenerator().drawDefinitePositiveMatrix<CMatrixDouble>(
 				6, 0.2);
 		C.insertMatrix(i * 6, i * 6, subCov);
@@ -62,7 +62,7 @@ double matrix_test_chol_Nx6x6_dyn(int DIM, int nReps)
 template <typename T, size_t DIM1>
 double matrix_test_chol_fix(int a1, int a2)
 {
-	CMatrixFixedNumeric<T, DIM1, DIM1> A =
+	auto A =
 		getRandomGenerator()
 			.drawDefinitePositiveMatrix<
 				CMatrixFixedNumeric<T, DIM1, DIM1>, Eigen::MatrixXd>(DIM1, 0.2);
@@ -80,12 +80,10 @@ double matrix_test_chol_fix(int a1, int a2)
 template <size_t DIM1, size_t DIM2>
 double matrix_test_chol_sparse(int a1, int a2)
 {
-	CMatrixDouble A1 =
-		getRandomGenerator().drawDefinitePositiveMatrix<CMatrixDouble>(
-			DIM1, 0.2);
-	CMatrixDouble A2 =
-		getRandomGenerator().drawDefinitePositiveMatrix<CMatrixDouble>(
-			DIM2, 0.2);
+	auto A1 = getRandomGenerator().drawDefinitePositiveMatrix<CMatrixDouble>(
+		DIM1, 0.2);
+	auto A2 = getRandomGenerator().drawDefinitePositiveMatrix<CMatrixDouble>(
+		DIM2, 0.2);
 
 	CMatrixDouble A(DIM1 + DIM2, DIM1 + DIM2);
 	A.insertMatrix(0, 0, A1);
@@ -107,7 +105,7 @@ double matrix_test_chol_Nx6x6_sparse(int DIM, int a2)
 	CMatrixDouble C(DIM * 6, DIM * 6);
 	for (int i = 0; i < DIM; i++)
 	{
-		CMatrixDouble subCov =
+		auto subCov =
 			getRandomGenerator().drawDefinitePositiveMatrix<CMatrixDouble>(
 				6, 0.2);
 		C.insertMatrix(i * 6, i * 6, subCov);

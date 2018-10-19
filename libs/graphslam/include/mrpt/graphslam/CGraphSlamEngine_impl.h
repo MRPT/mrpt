@@ -27,12 +27,10 @@ const std::string CGraphSlamEngine<GRAPH_T>::report_sep = std::string(2, '\n');
 template <class GRAPH_T>
 CGraphSlamEngine<GRAPH_T>::CGraphSlamEngine(
 	const std::string& config_file, const std::string& rawlog_fname,
-	const std::string& fname_GT,
-	mrpt::graphslam::CWindowManager* win_manager,
+	const std::string& fname_GT, mrpt::graphslam::CWindowManager* win_manager,
 	mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>* node_reg,
 	mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_T>* edge_reg,
-	mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_T>* optimizer
-	)
+	mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_T>* optimizer)
 	: m_node_reg(node_reg),
 	  m_edge_reg(edge_reg),
 	  m_optimizer(optimizer),
@@ -341,8 +339,7 @@ void CGraphSlamEngine<GRAPH_T>::initClass()
 	vec_edge_types.emplace_back("ICP2D");
 	vec_edge_types.emplace_back("ICP3D");
 
-	for (vector<string>::const_iterator cit = vec_edge_types.begin();
-		 cit != vec_edge_types.end(); ++cit)
+	for (auto cit = vec_edge_types.begin(); cit != vec_edge_types.end(); ++cit)
 	{
 		m_edge_counter.addEdgeType(*cit);
 	}
@@ -360,8 +357,7 @@ void CGraphSlamEngine<GRAPH_T>::initClass()
 		// build each one of these
 		map<string, double> name_to_offset_y;
 		map<string, int> name_to_text_index;
-		for (vector<string>::const_iterator it = vec_edge_types.begin();
-			 it != vec_edge_types.end(); ++it)
+		for (auto it = vec_edge_types.begin(); it != vec_edge_types.end(); ++it)
 		{
 			m_win_manager->assignTextMessageParameters(
 				&name_to_offset_y[*it], &name_to_text_index[*it]);
@@ -686,8 +682,7 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 		m_edge_reg->getEdgesStats(&edge_types_to_nums);
 		if (edge_types_to_nums.size())
 		{
-			for (std::map<std::string, int>::const_iterator it =
-					 edge_types_to_nums.begin();
+			for (auto it = edge_types_to_nums.begin();
 				 it != edge_types_to_nums.end(); ++it)
 			{
 				// loop closure
@@ -961,10 +956,7 @@ inline void CGraphSlamEngine<GRAPH_T>::computeMap() const
 
 		// traverse all the nodes - add their laser scans at their corresponding
 		// poses
-		for (std::map<
-				 mrpt::graphs::TNodeID,
-				 mrpt::obs::CObservation2DRangeScan::Ptr>::const_iterator it =
-				 m_nodes_to_laser_scans2D.begin();
+		for (auto it = m_nodes_to_laser_scans2D.begin();
 			 it != m_nodes_to_laser_scans2D.end(); ++it)
 		{
 			const mrpt::graphs::TNodeID& curr_node = it->first;
@@ -1798,8 +1790,7 @@ mrpt::system::TTimeStamp CGraphSlamEngine<GRAPH_T>::getTimeStamp(
 		// if still not available query the observations in the CSensoryFrame
 		if (timestamp == INVALID_TIMESTAMP)
 		{
-			for (mrpt::obs::CSensoryFrame::const_iterator sens_it =
-					 observations->begin();
+			for (auto sens_it = observations->begin();
 				 sens_it != observations->end(); ++sens_it)
 			{
 				timestamp = (*sens_it)->timestamp;
@@ -1888,10 +1879,7 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 
 		// get the node laser scan
 		CObservation2DRangeScan::Ptr scan_content;
-		std::map<
-			mrpt::graphs::TNodeID,
-			mrpt::obs::CObservation2DRangeScan::Ptr>::const_iterator search =
-			nodes_to_laser_scans2D.find(node_it);
+		auto search = nodes_to_laser_scans2D.find(node_it);
 
 		// make sure that the laser scan exists and is valid
 		if (search != nodes_to_laser_scans2D.end() && search->second)
@@ -2039,11 +2027,11 @@ void CGraphSlamEngine<GRAPH_T>::initGTVisualization()
 	scene->insert(robot_model);
 	m_win->unlockAccess3DScene();
 
-	m_win_manager->assignTextMessageParameters( &m_offset_y_GT, &m_text_index_GT);
+	m_win_manager->assignTextMessageParameters(
+		&m_offset_y_GT, &m_text_index_GT);
 	m_win_manager->addTextMessage(
 		m_offset_x_left, -m_offset_y_GT, mrpt::format("Ground truth path"),
-		mrpt::img::TColorf(m_GT_color),
-		m_text_index_GT);
+		mrpt::img::TColorf(m_GT_color), m_text_index_GT);
 	m_win->forceRepaint();
 
 	MRPT_END;
@@ -2116,12 +2104,10 @@ void CGraphSlamEngine<GRAPH_T>::initOdometryVisualization()
 	m_win->unlockAccess3DScene();
 
 	m_win_manager->assignTextMessageParameters(
-		&m_offset_y_odometry,
-		&m_text_index_odometry);
+		&m_offset_y_odometry, &m_text_index_odometry);
 	m_win_manager->addTextMessage(
 		m_offset_x_left, -m_offset_y_odometry, mrpt::format("Odometry path"),
-		mrpt::img::TColorf(m_odometry_color),
-		m_text_index_odometry);
+		mrpt::img::TColorf(m_odometry_color), m_text_index_odometry);
 
 	m_win->forceRepaint();
 
@@ -2197,8 +2183,7 @@ void CGraphSlamEngine<GRAPH_T>::initEstimatedTrajectoryVisualization()
 	if (m_visualize_estimated_trajectory)
 	{
 		m_win_manager->assignTextMessageParameters(
-			&m_offset_y_estimated_traj,
-			&m_text_index_estimated_traj);
+			&m_offset_y_estimated_traj, &m_text_index_estimated_traj);
 		m_win_manager->addTextMessage(
 			m_offset_x_left, -m_offset_y_estimated_traj,
 			mrpt::format("Estimated trajectory"),
@@ -2342,8 +2327,7 @@ void CGraphSlamEngine<GRAPH_T>::TRGBDInfoFileParams::parseFile()
 		std::string literal_part = mrpt::system::trim(curr_tokens[0]);
 		std::string value_part = mrpt::system::trim(curr_tokens[1]);
 
-		for (std::map<std::string, std::string>::iterator it = fields.begin();
-			 it != fields.end(); ++it)
+		for (auto it = fields.begin(); it != fields.end(); ++it)
 		{
 			if (mrpt::system::strCmpI(it->first, literal_part))
 			{
@@ -2356,8 +2340,7 @@ void CGraphSlamEngine<GRAPH_T>::TRGBDInfoFileParams::parseFile()
 }
 
 template <class GRAPH_T>
-void CGraphSlamEngine<GRAPH_T>::saveGraph(
-	const std::string* fname_in) const
+void CGraphSlamEngine<GRAPH_T>::saveGraph(const std::string* fname_in) const
 {
 	MRPT_START;
 
@@ -2380,8 +2363,7 @@ void CGraphSlamEngine<GRAPH_T>::saveGraph(
 }
 
 template <class GRAPH_T>
-void CGraphSlamEngine<GRAPH_T>::save3DScene(
-	const std::string* fname_in) const
+void CGraphSlamEngine<GRAPH_T>::save3DScene(const std::string* fname_in) const
 {
 	MRPT_START;
 	ASSERTDEBMSG_(
@@ -2462,12 +2444,11 @@ void CGraphSlamEngine<GRAPH_T>::computeSlamMetric(
 	m_curr_deformation_energy = 0;
 
 	// first element of map
-	std::map<mrpt::graphs::TNodeID, size_t>::const_iterator start_it =
-		m_nodeID_to_gt_indices.begin();
+	auto start_it = m_nodeID_to_gt_indices.begin();
 	start_it++;
 
 	// fetch the first node, gt positions separately
-	std::map<mrpt::graphs::TNodeID, size_t>::const_iterator prev_it = start_it;
+	auto prev_it = start_it;
 	prev_it--;
 	pose_t prev_node_pos = m_graph.nodes[prev_it->first];
 	pose_t prev_gt_pos = m_GT_poses[prev_it->second];
@@ -2475,9 +2456,8 @@ void CGraphSlamEngine<GRAPH_T>::computeSlamMetric(
 	// temporary constraint type
 	constraint_t c;
 
-	for (std::map<mrpt::graphs::TNodeID, size_t>::const_iterator index_it =
-			 start_it;
-		 index_it != m_nodeID_to_gt_indices.end(); index_it++)
+	for (auto index_it = start_it; index_it != m_nodeID_to_gt_indices.end();
+		 index_it++)
 	{
 		curr_node_pos = m_graph.nodes[index_it->first];
 		curr_gt_pos = m_GT_poses[index_it->second];
@@ -2562,8 +2542,7 @@ void CGraphSlamEngine<GRAPH_T>::updateSlamMetricVisualization()
 		y[i] = m_deformation_energy_vec[i] * 1000;
 	}
 
-	m_win_plot->plot(
-		x, y, "r-1", "Deformation Energy (x1000)");
+	m_win_plot->plot(x, y, "r-1", "Deformation Energy (x1000)");
 
 	// set the limits so that he y-values can be monitored
 	// set the xmin limit with respect to xmax, which is constantly growing
@@ -2632,8 +2611,7 @@ void CGraphSlamEngine<GRAPH_T>::getDescriptiveReport(
 template <class GRAPH_T>
 bool CGraphSlamEngine<GRAPH_T>::getGraphSlamStats(
 	std::map<std::string, int>* node_stats,
-	std::map<std::string, int>* edge_stats,
-	mrpt::system::TTimeStamp* timestamp)
+	std::map<std::string, int>* edge_stats, mrpt::system::TTimeStamp* timestamp)
 {
 	MRPT_START;
 	using namespace std;
@@ -2651,8 +2629,7 @@ bool CGraphSlamEngine<GRAPH_T>::getGraphSlamStats(
 	(*node_stats)["nodes_total"] = m_nodeID_max + 1;
 
 	// fill the edge stats
-	for (CEdgeCounter::const_iterator it = m_edge_counter.cbegin();
-		 it != m_edge_counter.cend(); ++it)
+	for (auto it = m_edge_counter.cbegin(); it != m_edge_counter.cend(); ++it)
 	{
 		(*edge_stats)[it->first] = it->second;
 	}
@@ -2743,8 +2720,7 @@ void CGraphSlamEngine<GRAPH_T>::generateReportFiles(
 		this->initResultsFile(fname);
 
 		m_out_streams[fname].printf("%s\n", desc.c_str());
-		for (std::vector<double>::const_iterator vec_it =
-				 m_deformation_energy_vec.begin();
+		for (auto vec_it = m_deformation_energy_vec.begin();
 			 vec_it != m_deformation_energy_vec.end(); ++vec_it)
 		{
 			m_out_streams[fname].printf("%f\n", *vec_it);
@@ -2776,4 +2752,3 @@ void CGraphSlamEngine<GRAPH_T>::getDeformationEnergyVector(
 	*vec_out = m_deformation_energy_vec;
 }
 }  // namespace mrpt::graphslam
-

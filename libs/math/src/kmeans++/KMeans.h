@@ -57,4 +57,3 @@ Scalar RunKMeans(
 Scalar RunKMeansPlusPlus(
 	int n, int k, int d, Scalar* points, int attempts, Scalar* centers,
 	int* assignments);
-

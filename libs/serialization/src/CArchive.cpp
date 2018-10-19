@@ -101,23 +101,25 @@ IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(float);
 IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(double);
 IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(long double);
 
-CArchive& mrpt::serialization::operator<<(CArchive& out, const mrpt::Clock::time_point &s)
+CArchive& mrpt::serialization::operator<<(
+	CArchive& out, const mrpt::Clock::time_point& s)
 {
 	uint64_t rep = s.time_since_epoch().count();
 	return out << rep;
 }
 
-CArchive& mrpt::serialization::operator>>(CArchive& in, mrpt::Clock::time_point &s)
+CArchive& mrpt::serialization::operator>>(
+	CArchive& in, mrpt::Clock::time_point& s)
 {
 	uint64_t rep;
 	in >> rep;
 	s = mrpt::Clock::time_point(mrpt::Clock::duration(rep));
-	return in; 
+	return in;
 }
 
 CArchive& mrpt::serialization::operator<<(CArchive& out, const char* s)
 {
-	uint32_t l = (uint32_t)strlen(s);
+	auto l = (uint32_t)strlen(s);
 	out << l;
 	out.WriteBuffer(s, (int)l);
 	return out;
@@ -126,7 +128,7 @@ CArchive& mrpt::serialization::operator<<(CArchive& out, const char* s)
 CArchive& mrpt::serialization::operator<<(
 	CArchive& out, const std::vector<bool>& a)
 {
-	uint32_t n = (uint32_t)a.size();
+	auto n = (uint32_t)a.size();
 	out << n;
 	if (n)
 	{
@@ -142,7 +144,7 @@ CArchive& mrpt::serialization::operator<<(
 
 CArchive& mrpt::serialization::operator<<(CArchive& out, const std::string& str)
 {
-	uint32_t n = (uint32_t)str.size();
+	auto n = (uint32_t)str.size();
 	out << n;
 	if (n) out.WriteBuffer(str.c_str(), n);
 	return out;
@@ -225,7 +227,7 @@ namespace detail
 template <typename VEC>
 inline CArchive& writeStdVectorToStream(CArchive& s, const VEC& v)
 {
-	const uint32_t n = static_cast<uint32_t>(v.size());
+	const auto n = static_cast<uint32_t>(v.size());
 	s << n;
 	if (n) s.WriteBufferFixEndianness(&v[0], n);
 	return s;
@@ -573,7 +575,7 @@ void CArchive::ReadObject(CSerializable* existingObj)
 CArchive& mrpt::serialization::operator<<(
 	CArchive& s, const std::vector<std::string>& vec)
 {
-	uint32_t N = static_cast<uint32_t>(vec.size());
+	auto N = static_cast<uint32_t>(vec.size());
 	s << N;
 	for (size_t i = 0; i < N; i++) s << vec[i];
 	return s;

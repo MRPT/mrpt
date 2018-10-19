@@ -481,8 +481,7 @@ void CMetricMapBuilderICP::processActionObservation(
 	}
 
 	// 2) Process observations one by one:
-	for (auto & i : in_SF)
-		this->processObservation(i);
+	for (auto& i : in_SF) this->processObservation(i);
 }
 
 /*---------------------------------------------------------------

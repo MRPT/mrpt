@@ -101,7 +101,7 @@ void CHMHMapArc::serializeFrom(
 			// Find my smart pointer in the HMT map: we MUST have only 1 smrt.
 			// pointer pointing to the same object!!
 			CHMHMapArc::Ptr myPtr;
-			for (TArcList::const_iterator it = m_parent->m_arcs.begin();
+			for (auto it = m_parent->m_arcs.begin();
 				 it != m_parent->m_arcs.end(); ++it)
 			{
 				if (it->get() == this)
@@ -135,7 +135,7 @@ void CHMHMapArc::serializeFrom(
 void TArcList::debugDump()
 {
 	printf("Dumping arcs list: %u elements\n", (unsigned int)size());
-	for (auto & i : *this)
+	for (auto& i : *this)
 	{
 		printf(
 			"\t'%s'\t-> '%s'\n",
@@ -159,5 +159,5 @@ void TArcList::read(mrpt::serialization::CArchive& in)
 void TArcList::write(mrpt::serialization::CArchive& out) const
 {
 	out << static_cast<uint32_t>(this->size());
-	for (const auto & i : *this) out << *i;
+	for (const auto& i : *this) out << *i;
 }

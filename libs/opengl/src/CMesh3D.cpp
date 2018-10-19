@@ -32,7 +32,7 @@ CMesh3D::CMesh3D(
 	  m_showEdges(enableShowEdges),
 	  m_showFaces(enableShowFaces),
 	  m_showVertices(enableShowVertices)
-	  
+
 {
 	m_color.R = 1.f;
 	m_color.G = 0.f;

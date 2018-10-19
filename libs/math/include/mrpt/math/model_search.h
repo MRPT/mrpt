@@ -16,51 +16,51 @@
 namespace mrpt::math
 {
 /** Model search implementations: RANSAC and genetic algorithm
-  *
-  *  The type  \a TModelFit is a user-supplied struct/class that implements this
+ *
+ *  The type  \a TModelFit is a user-supplied struct/class that implements this
  * interface:
-  *  - Types:
-  *    - \a Real : The numeric type to use (typ: double, float)
-  *    - \a Model : The type of the model to be fitted (for example: A matrix, a
+ *  - Types:
+ *    - \a Real : The numeric type to use (typ: double, float)
+ *    - \a Model : The type of the model to be fitted (for example: A matrix, a
  * TLine2D, a TPlane3D, ...)
-  *  - Methods:
-  *    - size_t getSampleCount() const : return the number of samples. This
+ *  - Methods:
+ *    - size_t getSampleCount() const : return the number of samples. This
  * should not change during a model search.
-  *    - bool fitModel( const std::vector<size_t>& useIndices, Model& model )
+ *    - bool fitModel( const std::vector<size_t>& useIndices, Model& model )
  * const :
  * This function fits a model to the data selected by the indices. The return
  * value indicates the success, hence false means a degenerate case, where no
  * model was found.
-  *    - Real testSample( size_t index, const Model& model ) const : return some
+ *    - Real testSample( size_t index, const Model& model ) const : return some
  * value that indicates how well a sample fits to the model. This way the
  * thresholding is moved to the searching procedure and the model just tells how
  * good a sample is.
-  *
-  *  There are two methods provided in this class to fit a model:
-  *    - \a ransacSingleModel (RANSAC): Just like mrpt::math::RANSAC_Template
-  *
-  *    - \a geneticSingleModel (Genetic): Provides a mixture of a genetic and
+ *
+ *  There are two methods provided in this class to fit a model:
+ *    - \a ransacSingleModel (RANSAC): Just like mrpt::math::RANSAC_Template
+ *
+ *    - \a geneticSingleModel (Genetic): Provides a mixture of a genetic and
  * the ransac algorithm.
-  *         Instead of selecting a set of data in each iteration, it takes more
+ *         Instead of selecting a set of data in each iteration, it takes more
  * (ex. 10) and order these model
-  *         using some fitness function: the average error of the inliers scaled
+ *         using some fitness function: the average error of the inliers scaled
  * by the number of outliers (This
-  *         fitness might require some fine tuning). Than the (ex 10) new kernel
+ *         fitness might require some fine tuning). Than the (ex 10) new kernel
  * for the next iteration is created as follows:
-  *             - Take the best kernels (as for the original ransac)
-  *             - Select two kernels ( with a higher probability for the better
+ *             - Take the best kernels (as for the original ransac)
+ *             - Select two kernels ( with a higher probability for the better
  * models) and let the new kernel be a subset of the two original kernels (
  * additionally to leave the local minimums an additional random seed might
  * appear - mutation)
-  *             - Generate some new random samples.
-  *
-  *  For an example of usage, see "samples/model_search_test/"
-  *  \sa mrpt::math::RANSAC_Template, another RANSAC implementation where models
+ *             - Generate some new random samples.
+ *
+ *  For an example of usage, see "samples/model_search_test/"
+ *  \sa mrpt::math::RANSAC_Template, another RANSAC implementation where models
  * can be matrices only.
-  *
-  *  \author Zoltar Gaal
-  * \ingroup ransac_grp
-  */
+ *
+ *  \author Zoltar Gaal
+ * \ingroup ransac_grp
+ */
 class ModelSearch
 {
    private:
@@ -69,7 +69,7 @@ class ModelSearch
 		size_t p_size, size_t p_pick, std::vector<size_t>& p_ind);
 
 	/** Select random (unique) indices from the set.
-	  *  The set is destroyed during pick */
+	 *  The set is destroyed during pick */
 	void pickRandomIndex(
 		std::set<size_t> p_set, size_t p_pick, std::vector<size_t>& p_ind);
 
@@ -104,8 +104,6 @@ class ModelSearch
 		typename TModelFit::Model& p_bestModel, std::vector<size_t>& p_inliers);
 };  // end of class
 
-}
+}  // namespace mrpt::math
 // Template implementations:
 #include "model_search_impl.h"
-
-

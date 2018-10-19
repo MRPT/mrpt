@@ -32,7 +32,7 @@ void CFeatureExtraction::detectFeatures_SSE2_FASTER9(
 	std::vector<size_t>* out_feats_index_by_row)
 {
 #if MRPT_HAS_OPENCV
-	const IplImage* IPL = img.getAs<IplImage>();
+	const auto* IPL = img.getAs<IplImage>();
 	ASSERTDEB_(IPL && IPL->nChannels == 1);
 	if (!append_to_list) corners.clear();
 
@@ -48,7 +48,7 @@ void CFeatureExtraction::detectFeatures_SSE2_FASTER10(
 	std::vector<size_t>* out_feats_index_by_row)
 {
 #if MRPT_HAS_OPENCV
-	const IplImage* IPL = img.getAs<IplImage>();
+	const auto* IPL = img.getAs<IplImage>();
 	ASSERTDEB_(IPL && IPL->nChannels == 1);
 	if (!append_to_list) corners.clear();
 
@@ -64,7 +64,7 @@ void CFeatureExtraction::detectFeatures_SSE2_FASTER12(
 	std::vector<size_t>* out_feats_index_by_row)
 {
 #if MRPT_HAS_OPENCV
-	const IplImage* IPL = img.getAs<IplImage>();
+	const auto* IPL = img.getAs<IplImage>();
 	ASSERTDEB_(IPL && IPL->nChannels == 1);
 	if (!append_to_list) corners.clear();
 
@@ -92,7 +92,7 @@ void CFeatureExtraction::extractFeaturesFASTER_N(
 	// Make sure we operate on a gray-scale version of the image:
 	const CImage inImg_gray(inImg, FAST_REF_OR_CONVERT_TO_GRAY);
 
-	const IplImage* IPL = inImg_gray.getAs<IplImage>();
+	const auto* IPL = inImg_gray.getAs<IplImage>();
 
 	TSimpleFeatureList corners;
 	TFeatureType type_of_this_feature;
@@ -135,7 +135,7 @@ void CFeatureExtraction::extractFeaturesFASTER_N(
 		nDesiredFeatures != 0  // If the user wants us to limit the number of
 		// features, we need to do it according to some
 		// quality measure
-		)
+	)
 	{
 		const int KLT_half_win = 4;
 		const int max_x = inImg_gray.getWidth() - 1 - KLT_half_win;
@@ -226,9 +226,9 @@ void CFeatureExtraction::extractFeaturesFASTER_N(
 		if (do_filter_min_dist)
 		{
 			// Check the min-distance:
-			const size_t section_idx_x =
+			const auto section_idx_x =
 				size_t(feat.pt.x * occupied_grid_cell_size_inv);
-			const size_t section_idx_y =
+			const auto section_idx_y =
 				size_t(feat.pt.y * occupied_grid_cell_size_inv);
 
 			if (occupied_sections(section_idx_x, section_idx_y))

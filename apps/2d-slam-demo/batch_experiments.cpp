@@ -80,10 +80,9 @@ void slamdemoApp::DoBatchExperiments(const std::string& cfgFil)
 		{
 		}
 		err_D2 += dm2;
-		err_phi += fabs(
-			wrapToPi(
-				win->m_historicData[i].GT_robot_pose.phi() -
-				win->m_historicData[i].estimate_robot_pose.getMeanVal().phi()));
+		err_phi += fabs(wrapToPi(
+			win->m_historicData[i].GT_robot_pose.phi() -
+			win->m_historicData[i].estimate_robot_pose.getMeanVal().phi()));
 	}
 
 	if (N)

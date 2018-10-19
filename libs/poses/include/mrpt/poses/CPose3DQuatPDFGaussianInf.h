@@ -101,13 +101,13 @@ class CPose3DQuatPDFGaussianInf : public CPose3DQuatPDF
 
 	/** this = p (+) this. This can be used to convert a PDF from local
 	 * coordinates to global, providing the point (newReferenceBase) from which
-	  *   "to project" the current pdf. Result PDF substituted the currently
+	 *   "to project" the current pdf. Result PDF substituted the currently
 	 * stored one in the object. */
 	void changeCoordinatesReference(const CPose3DQuat& newReferenceBase);
 
 	/** this = p (+) this. This can be used to convert a PDF from local
 	 * coordinates to global, providing the point (newReferenceBase) from which
-	  *   "to project" the current pdf. Result PDF substituted the currently
+	 *   "to project" the current pdf. Result PDF substituted the currently
 	 * stored one in the object. */
 	void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
 
@@ -163,6 +163,4 @@ CPose3DQuatPDFGaussianInf operator-(
 std::ostream& operator<<(
 	std::ostream& out, const CPose3DQuatPDFGaussianInf& obj);
 
-}
-
-
+}  // namespace mrpt::poses

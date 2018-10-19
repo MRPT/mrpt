@@ -54,7 +54,7 @@ bool _DSceneViewerApp::OnInit()
 	wxInitAllImageHandlers();
 	if (wxsOK)
 	{
-		_DSceneViewerFrame* Frame = new _DSceneViewerFrame(nullptr);
+		auto* Frame = new _DSceneViewerFrame(nullptr);
 		Frame->Show();
 		SetTopWindow(Frame);
 	}

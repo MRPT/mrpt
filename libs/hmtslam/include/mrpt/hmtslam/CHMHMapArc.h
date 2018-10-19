@@ -23,7 +23,7 @@ class CHierarchicalMHMap;
  * \note Create objects by invoking the class factory "::Create"
  *
  * \sa CHierarchicalMHMap,CHMHMapNode
-  * \ingroup mrpt_hmtslam_grp
+ * \ingroup mrpt_hmtslam_grp
  */
 class CHMHMapArc : public mrpt::serialization::CSerializable
 {
@@ -36,12 +36,12 @@ class CHMHMapArc : public mrpt::serialization::CSerializable
 
    public:
 	/** The hypothesis IDs under which this arc exists.
-	  */
+	 */
 	THypothesisIDSet m_hypotheses;
 
    protected:
 	/** The origin/target nodes for this arc.
-	  */
+	 */
 	CHMHMapNode::TNodeID m_nodeFrom, m_nodeTo;
 
 	/** The hierarchical graph in which this object is into. */
@@ -57,7 +57,7 @@ class CHMHMapArc : public mrpt::serialization::CSerializable
 
    public:
 	/** Private constructor (see ::Create class factory)
-	  */
+	 */
 	CHMHMapArc(
 		const CHMHMapNode::TNodeID& from = 0,
 		const CHMHMapNode::TNodeID& to = 0,
@@ -65,17 +65,17 @@ class CHMHMapArc : public mrpt::serialization::CSerializable
 		CHierarchicalMHMap* parent = nullptr);
 
 	/** Alternative constructor, using pointers for convenience.
-	  */
+	 */
 	CHMHMapArc(
 		CHMHMapNode::Ptr& from, CHMHMapNode::Ptr& to,
 		const THypothesisIDSet& hyps, CHierarchicalMHMap* parent);
 
 	/** Destructor
-	  */
+	 */
 	~CHMHMapArc() override;
 
 	/** Return the starting node of the arc:
-	  */
+	 */
 	CHMHMapNode::TNodeID getNodeFrom() const
 	{
 		ASSERT_(m_nodeFrom != AREAID_INVALID);
@@ -83,7 +83,7 @@ class CHMHMapArc : public mrpt::serialization::CSerializable
 	}
 
 	/** Return the ending node of the arc:
-	  */
+	 */
 	CHMHMapNode::TNodeID getNodeTo() const
 	{
 		ASSERT_(m_nodeTo != AREAID_INVALID);
@@ -99,11 +99,9 @@ class CHMHMapArc : public mrpt::serialization::CSerializable
 
 	/** The annotations of the arc, see the general description of the class for
 	 * possible properties and values.
-	  */
+	 */
 	CMHPropertiesValuesList m_annotations;
 
 };  // End of class def.
 
-}
-
-
+}  // namespace mrpt::hmtslam

@@ -21,7 +21,8 @@
 #endif
 
 /* Possible inflate modes between inflate() calls */
-typedef enum {
+typedef enum
+{
 	HEAD, /* i: waiting for magic header */
 	FLAGS, /* i: waiting for method and flags (gzip) */
 	TIME, /* i: waiting for modification time (gzip) */

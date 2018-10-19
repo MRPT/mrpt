@@ -219,7 +219,6 @@ class CLevMarqGSO
 	GraphVisualizationParams viz_params;
 
    protected:
-
 	/**\brief Feedback of the Levenberg-Marquardt graph optimization procedure.
 	 *
 	 */
@@ -388,8 +387,5 @@ class CLevMarqGSO
 	/**\brief Minimum number of nodes before we try optimizing the graph */
 	size_t m_min_nodes_for_optimization{3};
 };
-}
+}  // namespace mrpt::graphslam::optimizers
 #include "CLevMarqGSO_impl.h"
-
-
-

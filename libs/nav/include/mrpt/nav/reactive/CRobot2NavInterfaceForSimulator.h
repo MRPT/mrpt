@@ -16,12 +16,12 @@ namespace mrpt::nav
 {
 /** CRobot2NavInterface implemented for a simulator object based on
  * mrpt::kinematics::CVehicleSimul_Holo.
-  * Only `senseObstacles()` remains virtual for the user to implement it.
-  *
-  * \sa CReactiveNavigationSystem, CAbstractNavigator,
+ * Only `senseObstacles()` remains virtual for the user to implement it.
+ *
+ * \sa CReactiveNavigationSystem, CAbstractNavigator,
  * mrpt::kinematics::CVehicleSimulVirtualBase
-  *  \ingroup nav_reactive
-  */
+ *  \ingroup nav_reactive
+ */
 class CRobot2NavInterfaceForSimulator_Holo : public CRobot2NavInterface
 {
    private:
@@ -48,8 +48,7 @@ class CRobot2NavInterfaceForSimulator_Holo : public CRobot2NavInterface
 		return true;  // ok
 	}
 
-	bool changeSpeeds(
-		const mrpt::kinematics::CVehicleVelCmd& vel_cmd) override
+	bool changeSpeeds(const mrpt::kinematics::CVehicleVelCmd& vel_cmd) override
 	{
 		m_simul.sendVelCmd(vel_cmd);
 		return true;  // ok
@@ -103,12 +102,12 @@ class CRobot2NavInterfaceForSimulator_Holo : public CRobot2NavInterface
 
 /** CRobot2NavInterface implemented for a simulator object based on
  * mrpt::kinematics::CVehicleSimul_DiffDriven
-  * Only `senseObstacles()` remains virtual for the user to implement it.
-  *
-  * \sa CReactiveNavigationSystem, CAbstractNavigator,
+ * Only `senseObstacles()` remains virtual for the user to implement it.
+ *
+ * \sa CReactiveNavigationSystem, CAbstractNavigator,
  * mrpt::kinematics::CVehicleSimulVirtualBase
-  *  \ingroup nav_reactive
-  */
+ *  \ingroup nav_reactive
+ */
 class CRobot2NavInterfaceForSimulator_DiffDriven : public CRobot2NavInterface
 {
    private:
@@ -173,5 +172,4 @@ class CRobot2NavInterfaceForSimulator_DiffDriven : public CRobot2NavInterface
 		m_simul_time_start = m_simul.getTime();
 	}
 };
-}
-
+}  // namespace mrpt::nav

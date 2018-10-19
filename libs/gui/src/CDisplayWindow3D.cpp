@@ -122,7 +122,7 @@ void CMyGLCanvas_DisplayWindow3D::display3D_processKeyEvent(
 			{
 				m_win3D->m_lastFullScreen = mrpt::system::now();
 				cout << "[CDisplayWindow3D] Switching fullscreen...\n";
-				C3DWindowDialog* win = (C3DWindowDialog*)m_win3D->m_hwnd.get();
+				auto* win = (C3DWindowDialog*)m_win3D->m_hwnd.get();
 				if (win)
 				{
 					win->ShowFullScreen(!win->IsFullScreen());
@@ -467,8 +467,7 @@ void CDisplayWindow3D::resize(unsigned int width, unsigned int height)
 	}
 
 	// Send a request to destroy this object:
-	WxSubsystem::TRequestToWxMainThread* REQ =
-		new WxSubsystem::TRequestToWxMainThread[1];
+	auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->source3D = this;
 	REQ->OPCODE = 303;
 	REQ->x = width;
@@ -494,8 +493,7 @@ void CDisplayWindow3D::setPos(int x, int y)
 	}
 
 	// Send a request to destroy this object:
-	WxSubsystem::TRequestToWxMainThread* REQ =
-		new WxSubsystem::TRequestToWxMainThread[1];
+	auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->source3D = this;
 	REQ->OPCODE = 302;
 	REQ->x = x;
@@ -521,8 +519,7 @@ void CDisplayWindow3D::setWindowTitle(const std::string& str)
 	}
 
 	// Send a request to destroy this object:
-	WxSubsystem::TRequestToWxMainThread* REQ =
-		new WxSubsystem::TRequestToWxMainThread[1];
+	auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->source3D = this;
 	REQ->OPCODE = 304;
 	REQ->str = str;
@@ -551,15 +548,14 @@ void CDisplayWindow3D::unlockAccess3DScene() { m_csAccess3DScene.unlock(); }
 void CDisplayWindow3D::forceRepaint()
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
-	C3DWindowDialog* win = (C3DWindowDialog*)m_hwnd.get();
+	auto* win = (C3DWindowDialog*)m_hwnd.get();
 	if (win)
 	{
 		// win->Refresh(false); // Do not erase background
 		// We must do this from the wx thread!
 
 		// Send refresh request:
-		WxSubsystem::TRequestToWxMainThread* REQ =
-			new WxSubsystem::TRequestToWxMainThread[1];
+		auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 		REQ->source3D = this;
 		REQ->OPCODE = 350;
 		WxSubsystem::pushPendingWxRequest(REQ);
@@ -573,7 +569,7 @@ void CDisplayWindow3D::forceRepaint()
 void CDisplayWindow3D::setCameraElevationDeg(float deg)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
-	C3DWindowDialog* win = (C3DWindowDialog*)m_hwnd.get();
+	auto* win = (C3DWindowDialog*)m_hwnd.get();
 	if (win) win->m_canvas->setElevationDegrees(deg);
 #else
 	MRPT_UNUSED_PARAM(deg);
@@ -583,7 +579,7 @@ void CDisplayWindow3D::setCameraElevationDeg(float deg)
 void CDisplayWindow3D::useCameraFromScene(bool useIt)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
-	C3DWindowDialog* win = (C3DWindowDialog*)m_hwnd.get();
+	auto* win = (C3DWindowDialog*)m_hwnd.get();
 	if (win) win->m_canvas->setUseCameraFromScene(useIt);
 #else
 	MRPT_UNUSED_PARAM(useIt);
@@ -596,7 +592,7 @@ void CDisplayWindow3D::useCameraFromScene(bool useIt)
 void CDisplayWindow3D::setCameraAzimuthDeg(float deg)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
-	C3DWindowDialog* win = (C3DWindowDialog*)m_hwnd.get();
+	auto* win = (C3DWindowDialog*)m_hwnd.get();
 	if (win) win->m_canvas->setAzimuthDegrees(deg);
 #else
 	MRPT_UNUSED_PARAM(deg);
@@ -609,7 +605,7 @@ void CDisplayWindow3D::setCameraAzimuthDeg(float deg)
 void CDisplayWindow3D::setCameraPointingToPoint(float x, float y, float z)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
-	C3DWindowDialog* win = (C3DWindowDialog*)m_hwnd.get();
+	auto* win = (C3DWindowDialog*)m_hwnd.get();
 	if (win)
 	{
 		win->m_canvas->setCameraPointing(x, y, z);
@@ -627,7 +623,7 @@ void CDisplayWindow3D::setCameraPointingToPoint(float x, float y, float z)
 void CDisplayWindow3D::setCameraZoom(float zoom)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
-	C3DWindowDialog* win = (C3DWindowDialog*)m_hwnd.get();
+	auto* win = (C3DWindowDialog*)m_hwnd.get();
 	if (win) win->m_canvas->setZoomDistance(zoom);
 #else
 	MRPT_UNUSED_PARAM(zoom);
@@ -640,7 +636,7 @@ void CDisplayWindow3D::setCameraZoom(float zoom)
 void CDisplayWindow3D::setCameraProjective(bool isProjective)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
-	C3DWindowDialog* win = (C3DWindowDialog*)m_hwnd.get();
+	auto* win = (C3DWindowDialog*)m_hwnd.get();
 	if (win) win->m_canvas->setCameraProjective(isProjective);
 #else
 	MRPT_UNUSED_PARAM(isProjective);
@@ -679,7 +675,7 @@ void CDisplayWindow3D::setMaxRange(double new_max)
 float CDisplayWindow3D::getFOV() const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
-	C3DWindowDialog* win = (C3DWindowDialog*)m_hwnd.get();
+	auto* win = (C3DWindowDialog*)m_hwnd.get();
 	if (win) return win->m_canvas->cameraFOV();
 #endif
 	return .0f;
@@ -688,7 +684,7 @@ float CDisplayWindow3D::getFOV() const
 void CDisplayWindow3D::setFOV(float v)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
-	C3DWindowDialog* win = (C3DWindowDialog*)m_hwnd.get();
+	auto* win = (C3DWindowDialog*)m_hwnd.get();
 	if (win) win->m_canvas->setCameraFOV(v);
 #endif
 }
@@ -699,7 +695,7 @@ void CDisplayWindow3D::setFOV(float v)
 float CDisplayWindow3D::getCameraElevationDeg() const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
-	const C3DWindowDialog* win = (const C3DWindowDialog*)m_hwnd.get();
+	const auto* win = (const C3DWindowDialog*)m_hwnd.get();
 	return win ? win->m_canvas->getElevationDegrees() : 0;
 #else
 	return 0;
@@ -712,7 +708,7 @@ float CDisplayWindow3D::getCameraElevationDeg() const
 float CDisplayWindow3D::getCameraAzimuthDeg() const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
-	const C3DWindowDialog* win = (const C3DWindowDialog*)m_hwnd.get();
+	const auto* win = (const C3DWindowDialog*)m_hwnd.get();
 	return win ? win->m_canvas->getAzimuthDegrees() : 0;
 #else
 	return 0;
@@ -726,7 +722,7 @@ void CDisplayWindow3D::getCameraPointingToPoint(
 	float& x, float& y, float& z) const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
-	const C3DWindowDialog* win = (const C3DWindowDialog*)m_hwnd.get();
+	const auto* win = (const C3DWindowDialog*)m_hwnd.get();
 	if (win)
 	{
 		x = win->m_canvas->getCameraPointingX();
@@ -748,7 +744,7 @@ void CDisplayWindow3D::getCameraPointingToPoint(
 float CDisplayWindow3D::getCameraZoom() const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
-	const C3DWindowDialog* win = (const C3DWindowDialog*)m_hwnd.get();
+	const auto* win = (const C3DWindowDialog*)m_hwnd.get();
 	return win ? win->m_canvas->getZoomDistance() : 0;
 #else
 	return 0;
@@ -761,7 +757,7 @@ float CDisplayWindow3D::getCameraZoom() const
 bool CDisplayWindow3D::isCameraProjective() const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
-	const C3DWindowDialog* win = (const C3DWindowDialog*)m_hwnd.get();
+	const auto* win = (const C3DWindowDialog*)m_hwnd.get();
 	return win ? win->m_canvas->isCameraProjective() : true;
 #else
 	return true;
@@ -774,7 +770,7 @@ bool CDisplayWindow3D::isCameraProjective() const
 bool CDisplayWindow3D::getLastMousePosition(int& x, int& y) const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
-	const C3DWindowDialog* win = (const C3DWindowDialog*)m_hwnd.get();
+	const auto* win = (const C3DWindowDialog*)m_hwnd.get();
 	if (!win) return false;
 	win->m_canvas->getLastMousePosition(x, y);
 	return true;
@@ -808,7 +804,7 @@ bool CDisplayWindow3D::getLastMousePositionRay(TLine3D& ray) const
 void CDisplayWindow3D::setCursorCross(bool cursorIsCross)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
-	const C3DWindowDialog* win = (const C3DWindowDialog*)m_hwnd.get();
+	const auto* win = (const C3DWindowDialog*)m_hwnd.get();
 	if (!win) return;
 	win->m_canvas->SetCursor(
 		*(cursorIsCross ? wxCROSS_CURSOR : wxSTANDARD_CURSOR));
@@ -888,15 +884,14 @@ void CDisplayWindow3D::addTextMessage(
 	const TOpenGLFont font)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
-	C3DWindowDialog* win = (C3DWindowDialog*)m_hwnd.get();
+	auto* win = (C3DWindowDialog*)m_hwnd.get();
 	if (win)
 	{
 		// Send request:
 		// Add a 2D text message:
 		//  vector_x: [0]:x, [1]:y, [2,3,4]:R G B, "x": enum of desired font.
 		//  "y": unique index, "str": String.
-		WxSubsystem::TRequestToWxMainThread* REQ =
-			new WxSubsystem::TRequestToWxMainThread[1];
+		auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 		REQ->source3D = this;
 		REQ->OPCODE = 360;
 		REQ->str = text;
@@ -933,13 +928,12 @@ void CDisplayWindow3D::addTextMessage(
 	const mrpt::img::TColorf& shadow_color)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
-	C3DWindowDialog* win = (C3DWindowDialog*)m_hwnd.get();
+	auto* win = (C3DWindowDialog*)m_hwnd.get();
 	if (win)
 	{
 		// Send request:
 		// Add a 2D text message:
-		WxSubsystem::TRequestToWxMainThread* REQ =
-			new WxSubsystem::TRequestToWxMainThread[1];
+		auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 		REQ->source3D = this;
 		REQ->OPCODE = 362;
 		REQ->str = text;
@@ -985,12 +979,11 @@ void CDisplayWindow3D::addTextMessage(
 void CDisplayWindow3D::clearTextMessages()
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
-	C3DWindowDialog* win = (C3DWindowDialog*)m_hwnd.get();
+	auto* win = (C3DWindowDialog*)m_hwnd.get();
 	if (win)
 	{
 		// Send request:
-		WxSubsystem::TRequestToWxMainThread* REQ =
-			new WxSubsystem::TRequestToWxMainThread[1];
+		auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 		REQ->source3D = this;
 		REQ->OPCODE = 361;
 		WxSubsystem::pushPendingWxRequest(REQ);
