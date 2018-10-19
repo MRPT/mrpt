@@ -27,22 +27,22 @@ class CObservationReflectivity : public CObservation
 
    public:
 	/** The read reflectivity level, in the range [0,1] (0=black, 1=white).
-	  */
+	 */
 	float reflectivityLevel{0.5f};
 
 	/** The channel for this observation. If channel=-1, it can be inserted into
 	 * any CReflectivityGridMap2D. Otherwise, it can only be inserted into
 	 * reflectivity maps with the same channel. (Default=-1)
-		 */
+	 */
 	int16_t channel{-1};
 
 	/** The pose of this sensor in robot's local coordinates.
-	  */
+	 */
 	mrpt::poses::CPose3D sensorPose;
 
 	/** 1-sigma of the sensor Gaussian noise (in the same normalized units than
 	 * \a reflectivityLevel)
-	  */
+	 */
 	float sensorStdNoise{0.2f};
 
 	// See base class docs
@@ -58,6 +58,4 @@ class CObservationReflectivity : public CObservation
 
 };  // End of class def.
 
-}
-
-
+}  // namespace mrpt::obs

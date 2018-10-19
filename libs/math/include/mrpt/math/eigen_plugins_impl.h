@@ -72,11 +72,11 @@ struct MatOrVecResizer<1, 1>
 			internal_resize(mat, new_cols);
 	}
 };
-}
+}  // namespace internal_mrpt
 
 /** Compute the eigenvectors and eigenvalues, both returned as matrices:
  * eigenvectors are the columns, and eigenvalues. \return false on error.
-  */
+ */
 template <class Derived>
 template <class MATRIX1, class MATRIX2>
 EIGEN_STRONG_INLINE bool Eigen::MatrixBase<Derived>::eigenVectors(
@@ -92,7 +92,7 @@ EIGEN_STRONG_INLINE bool Eigen::MatrixBase<Derived>::eigenVectors(
 
 /** Compute the eigenvectors and eigenvalues, both returned as matrices:
  * eigenvectors are the columns, and eigenvalues
-  */
+ */
 template <class Derived>
 template <class MATRIX1, class VECTOR1>
 EIGEN_STRONG_INLINE bool Eigen::MatrixBase<Derived>::eigenVectorsVec(
@@ -124,7 +124,7 @@ EIGEN_STRONG_INLINE bool Eigen::MatrixBase<Derived>::eigenVectorsVec(
 
 /** Compute the eigenvectors and eigenvalues, both returned as matrices:
  * eigenvectors are the columns, and eigenvalues
-  */
+ */
 template <class Derived>
 template <class MATRIX1, class MATRIX2>
 EIGEN_STRONG_INLINE void Eigen::MatrixBase<Derived>::eigenVectorsSymmetric(
@@ -139,7 +139,7 @@ EIGEN_STRONG_INLINE void Eigen::MatrixBase<Derived>::eigenVectorsSymmetric(
 
 /** Compute the eigenvectors and eigenvalues, both returned as matrices:
  * eigenvectors are the columns, and eigenvalues
-  */
+ */
 template <class Derived>
 template <class MATRIX1, class VECTOR1>
 EIGEN_STRONG_INLINE void Eigen::MatrixBase<Derived>::eigenVectorsSymmetricVec(
@@ -224,9 +224,9 @@ bool Eigen::MatrixBase<Derived>::fromMatlabStringFormat(
 				 Derived::ColsAtCompileTime != int(N)))
 			{
 				if (dump_errors_here)
-					(*dump_errors_here) << "[fromMatlabStringFormat] Row "
-										<< nRow + 1
-										<< " has invalid number of columns.\n";
+					(*dump_errors_here)
+						<< "[fromMatlabStringFormat] Row " << nRow + 1
+						<< " has invalid number of columns.\n";
 				return false;
 			}
 
@@ -430,8 +430,9 @@ void Eigen::MatrixBase<Derived>::loadFromTextFile(std::istream& f)
 				{
 					const size_t extra_rows =
 						std::max(static_cast<size_t>(1), nRows >> 1);
-					internal_mrpt::MatOrVecResizer<Derived::RowsAtCompileTime,
-												   Derived::ColsAtCompileTime>::
+					internal_mrpt::MatOrVecResizer<
+						Derived::RowsAtCompileTime,
+						Derived::ColsAtCompileTime>::
 						doit(derived(), nRows + extra_rows, i);
 				}
 			}
@@ -460,4 +461,3 @@ void Eigen::MatrixBase<Derived>::loadFromTextFile(std::istream& f)
 		throw std::runtime_error(
 			"loadFromTextFile: Error loading from text file");
 }
-

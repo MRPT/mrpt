@@ -104,7 +104,7 @@ void TestVideoBuildPyr()
 		mrpt::opengl::FILL,
 		10  // An arbitrary ID to always overwrite the same, previous 2D text
 		// message
-		);
+	);
 
 	// The image pyramid: Initially empty
 	CImagePyramid imgpyr;
@@ -169,7 +169,7 @@ void TestVideoBuildPyr()
 					mrpt::opengl::FILL,
 					11  // An arbitrary ID to always overwrite the same,
 					// previous 2D text message
-					);
+				);
 
 				win.unlockAccess3DScene();
 				win.repaint();

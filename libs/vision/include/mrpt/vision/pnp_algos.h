@@ -211,7 +211,6 @@ class CPnP
 };
 
 /** @}  */  // end of grouping
-}
-}
-}
-
+}  // namespace pnp
+}  // namespace vision
+}  // namespace mrpt

@@ -22,4 +22,3 @@
 #include <mrpt/pbmap/SemanticClustering.h>
 #include <mrpt/pbmap/Subgraph.h>
 #include <mrpt/pbmap/SubgraphMatcher.h>
-

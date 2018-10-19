@@ -29,8 +29,7 @@ bool holonomic_navigator_demoApp::OnInit()
 	wxInitAllImageHandlers();
 	if (wxsOK)
 	{
-		holonomic_navigator_demoFrame* Frame =
-			new holonomic_navigator_demoFrame(nullptr);
+		auto* Frame = new holonomic_navigator_demoFrame(nullptr);
 		Frame->Show();
 		SetTopWindow(Frame);
 	}

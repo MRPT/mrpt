@@ -47,8 +47,8 @@ class CEdgeRegistrationDecider
 	using pose_t = typename GRAPH_T::constraint_t::type_value;
 	/**\}*/
 
-	CEdgeRegistrationDecider()=default;
-	~CEdgeRegistrationDecider() override =default;
+	CEdgeRegistrationDecider() = default;
+	~CEdgeRegistrationDecider() override = default;
 	/**\brief Fill the given map with the type of registered edges as well as
 	 * the corresponding number of registration of each edge.
 	 */
@@ -62,12 +62,12 @@ class CEdgeRegistrationDecider
 
    protected:
 	/**\name Registration criteria checks
-		 *\brief Check whether a new edge should be registered in the
-		 * graph.
-		 *
-		 * If condition(s) for edge registration is satisfied, method should
-	   * call the registerNewEdge method.
-		 */
+	 *\brief Check whether a new edge should be registered in the
+	 * graph.
+	 *
+	 * If condition(s) for edge registration is satisfied, method should
+	 * call the registerNewEdge method.
+	 */
 	/**\{*/
 	virtual void checkRegistrationCondition(
 		mrpt::graphs::TNodeID from, mrpt::graphs::TNodeID to)
@@ -82,7 +82,7 @@ class CEdgeRegistrationDecider
 	 *
 	 * Implementations of this class should provide a wrapper around
 	 * GRAPH_T::insertEdge method.
- */
+	 */
 	virtual void registerNewEdge(
 		const mrpt::graphs::TNodeID& from, const mrpt::graphs::TNodeID& to,
 		const constraint_t& rel_edge);
@@ -94,8 +94,5 @@ class CEdgeRegistrationDecider
 	 */
 	bool m_override_registered_nodes_check = false;
 };
-}
+}  // namespace mrpt::graphslam::deciders
 #include "CEdgeRegistrationDecider_impl.h"
-
-
-

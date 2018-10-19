@@ -116,14 +116,8 @@ class ClangFormat(object):
         """
         cf_version = callo([self.clang_path, "--version"])
 
-        if CLANG_FORMAT_VERSION in cf_version:
-            return True
-
-        logger.warn("clang-format found in path, "
-                    "but incorrect version found at " + self.clang_path +
-                    " with version: " + cf_version)
-
-        return False
+        # JLBC: Disable version checks and just use the version we find:
+        return True
 
     def _lint(self, file_name, print_diff):
         """Check the specified file has the correct format

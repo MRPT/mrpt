@@ -13,8 +13,8 @@
 namespace mrpt::hwdrivers
 {
 /** Options used when creating a STOC Videre Design camera capture object
-  * \ingroup mrpt_hwdrivers_grp
-  */
+ * \ingroup mrpt_hwdrivers_grp
+ */
 struct TCaptureOptions_SVS
 {
 	TCaptureOptions_SVS(
@@ -44,24 +44,24 @@ struct TCaptureOptions_SVS
 };
 
 /** A class for grabing stereo images from a STOC camera of Videre Design
-  * NOTE:
-  *		- Windows:
-  *			- This class is not available.
-  *
-  *		- Linux:
-  *			- This class is only available when compiling MRPT with
-  *"MRPT_HAS_SVS".
-  *			- You must have the videre design's library.
-  *			- Capture will be made in grayscale.
-  * 			- The grabber must be launch in root.
-  *
-  * Once connected to a camera, you can call "getStereoObservation" to retrieve
-  *the Disparity images.
-  *
-  * \sa You'll probably want to use instead the most generic camera grabber in
-  *MRPT: mrpt::hwdrivers::CCameraSensor
-  * \ingroup mrpt_hwdrivers_grp
-  */
+ * NOTE:
+ *		- Windows:
+ *			- This class is not available.
+ *
+ *		- Linux:
+ *			- This class is only available when compiling MRPT with
+ *"MRPT_HAS_SVS".
+ *			- You must have the videre design's library.
+ *			- Capture will be made in grayscale.
+ * 			- The grabber must be launch in root.
+ *
+ * Once connected to a camera, you can call "getStereoObservation" to retrieve
+ *the Disparity images.
+ *
+ * \sa You'll probably want to use instead the most generic camera grabber in
+ *MRPT: mrpt::hwdrivers::CCameraSensor
+ * \ingroup mrpt_hwdrivers_grp
+ */
 class CStereoGrabber_SVS
 {
    protected:
@@ -107,7 +107,7 @@ class CStereoGrabber_SVS
 	 *          (2) The images are already rectified.
 	 *
 	 * \return false on any error, true if all go fine.
-	*/
+	 */
 	bool getStereoObservation(
 		mrpt::obs::CObservationStereoImages& out_observation);
 
@@ -116,6 +116,4 @@ static_assert(
 	!std::is_copy_constructible_v<CStereoGrabber_SVS> &&
 		!std::is_copy_assignable_v<CStereoGrabber_SVS>,
 	"Copy Check");
-}
-
-
+}  // namespace mrpt::hwdrivers

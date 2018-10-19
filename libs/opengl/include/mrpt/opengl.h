@@ -60,4 +60,3 @@
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/opengl/pose_pdfs.h>
 #include <mrpt/opengl/graph_tools.h>
-

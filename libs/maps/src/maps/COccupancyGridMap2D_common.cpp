@@ -30,9 +30,8 @@ MAP_DEFINITION_REGISTER(
 	"COccupancyGridMap2D,occupancyGrid", mrpt::maps::COccupancyGridMap2D)
 
 COccupancyGridMap2D::TMapDefinition::TMapDefinition()
-	
-	  
-= default;
+
+	= default;
 
 void COccupancyGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(
 	const mrpt::config::CConfigFileBase& source,
@@ -74,7 +73,7 @@ mrpt::maps::CMetricMap* COccupancyGridMap2D::internal_CreateFromMapDefinition(
 {
 	const COccupancyGridMap2D::TMapDefinition& def =
 		*dynamic_cast<const COccupancyGridMap2D::TMapDefinition*>(&_def);
-	COccupancyGridMap2D* obj = new COccupancyGridMap2D(
+	auto* obj = new COccupancyGridMap2D(
 		def.min_x, def.max_x, def.min_y, def.max_y, def.resolution);
 	obj->insertionOptions = def.insertionOpts;
 	obj->likelihoodOptions = def.likelihoodOpts;
@@ -102,12 +101,12 @@ CLogOddsGridMapLUT<COccupancyGridMap2D::cellType>&
 COccupancyGridMap2D::COccupancyGridMap2D(
 	float min_x, float max_x, float min_y, float max_y, float res)
 	: map(),
-	  
+
 	  precomputedLikelihood(),
-	  
+
 	  m_basis_map(),
 	  m_voronoi_diagram(),
-	  
+
 	  updateInfoChangeOnly(),
 	  insertionOptions(),
 	  likelihoodOptions(),
@@ -389,7 +388,7 @@ void COccupancyGridMap2D::computeEntropy(TEntropyInfo& info) const
 	info.effectiveMappedCells = 0;
 	for (signed char it : map)
 	{
-		cellTypeUnsigned ctu = static_cast<cellTypeUnsigned>(it);
+		auto ctu = static_cast<cellTypeUnsigned>(it);
 		h = entropyTable[ctu];
 		info.H += h;
 		if (h < (MAX_H - 0.001f))
@@ -447,8 +446,7 @@ void COccupancyGridMap2D::internal_clear()
 void COccupancyGridMap2D::fill(float default_value)
 {
 	cellType defValue = p2l(default_value);
-	for (std::vector<cellType>::iterator it = map.begin(); it < map.end(); ++it)
-		*it = defValue;
+	for (auto it = map.begin(); it < map.end(); ++it) *it = defValue;
 	// For the precomputed likelihood trick:
 	precomputedLikelihoodToBeRecomputed = true;
 	// resetFeaturesCache();
@@ -549,7 +547,7 @@ void COccupancyGridMap2D::determineMatching2D(
 		params.offset_other_map_points, params.decimation_other_map_points);
 
 	ASSERT_(otherMap2->GetRuntimeClass()->derivedFrom(CLASS_ID(CPointsMap)));
-	const CPointsMap* otherMap = static_cast<const CPointsMap*>(otherMap2);
+	const auto* otherMap = static_cast<const CPointsMap*>(otherMap2);
 
 	const TPose2D otherMapPose = otherMapPose_.asTPose();
 
@@ -583,9 +581,9 @@ void COccupancyGridMap2D::determineMatching2D(
 	float local_y_min = std::numeric_limits<float>::max();
 	float local_y_max = -std::numeric_limits<float>::max();
 
-	const auto & otherMap_pxs = otherMap->getPointsBufferRef_x();
-	const auto & otherMap_pys = otherMap->getPointsBufferRef_y();
-	const auto & otherMap_pzs = otherMap->getPointsBufferRef_z();
+	const auto& otherMap_pxs = otherMap->getPointsBufferRef_x();
+	const auto& otherMap_pys = otherMap->getPointsBufferRef_y();
+	const auto& otherMap_pzs = otherMap->getPointsBufferRef_z();
 
 	// Translate all local map points:
 	for (unsigned int localIdx = params.offset_other_map_points;

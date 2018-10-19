@@ -15,18 +15,18 @@ namespace mrpt::containers
 {
 /** A bidirectional version of std::map, declared as bimap<KEY,VALUE> and which
  * actually contains two std::map's, one for keys and another for values.
-  * To use this class, insert new pairs KEY<->VALUE with bimap::insert. Then,
+ * To use this class, insert new pairs KEY<->VALUE with bimap::insert. Then,
  * you can access the KEY->VALUE map with bimap::direct(), and the VALUE->KEY
  * map with bimap::inverse(). The consistency of the two internal maps is
  * assured at any time.
-  *
-  * \note This class can be accessed through iterators to the map KEY->VALUE
+ *
+ * \note This class can be accessed through iterators to the map KEY->VALUE
  * only.
-  * \note Both typenames KEY and VALUE must be suitable for being employed as
+ * \note Both typenames KEY and VALUE must be suitable for being employed as
  * keys in a std::map, i.e. they must be comparable through a "< operator".
-  * \note Defined in #include <mrpt/containers/bimap.h>
-  * \ingroup mrpt_containers_grp
-  */
+ * \note Defined in #include <mrpt/containers/bimap.h>
+ * \ingroup mrpt_containers_grp
+ */
 template <typename KEY, typename VALUE>
 class bimap
 {
@@ -76,9 +76,9 @@ class bimap
 
 	/**  Get the value associated the given key, KEY->VALUE, returning false if
 	 * not present.
-	  *  \sa inverse, hasKey, hasValue
-	  * \return false on key not found.
-	  */
+	 *  \sa inverse, hasKey, hasValue
+	 * \return false on key not found.
+	 */
 	bool direct(const KEY& k, VALUE& out_v) const
 	{
 		const_iterator i = m_k2v.find(k);
@@ -102,21 +102,21 @@ class bimap
 
 	/**  Get the value associated the given key, KEY->VALUE, raising an
 	 * exception if not present.
-	  *  \sa inverse, hasKey, hasValue
-	  * \exception std::exception On key not present in the bi-map.
-	  */
+	 *  \sa inverse, hasKey, hasValue
+	 * \exception std::exception On key not present in the bi-map.
+	 */
 	VALUE direct(const KEY& k) const
 	{
-		const_iterator i = m_k2v.find(k);
+		auto i = m_k2v.find(k);
 		if (i == m_k2v.end()) THROW_EXCEPTION("Key not found.");
 		return i->second;
 	}
 
 	/**  Get the key associated the given value, VALUE->KEY, returning false if
 	 * not present.
-	  *  \sa direct, hasKey, hasValue
-	  * \return false on value not found.
-	  */
+	 *  \sa direct, hasKey, hasValue
+	 * \return false on value not found.
+	 */
 	bool inverse(const VALUE& v, KEY& out_k) const
 	{
 		const_iterator_inverse i = m_v2k.find(v);
@@ -127,12 +127,12 @@ class bimap
 
 	/**  Get the key associated the given value, VALUE->KEY, raising an
 	 * exception if not present.
-	  *  \sa direct, hasKey, hasValue
-	  * \return false on value not found.
-	  */
+	 *  \sa direct, hasKey, hasValue
+	 * \return false on value not found.
+	 */
 	KEY inverse(const VALUE& v) const
 	{
-		const_iterator_inverse i = m_v2k.find(v);
+		auto i = m_v2k.find(v);
 		if (i == m_v2k.end()) THROW_EXCEPTION("Value not found.");
 		return i->second;
 	}
@@ -146,5 +146,4 @@ class bimap
 	inline iterator_inverse find_value(const VALUE& v) { return m_v2k.find(v); }
 };  // end class bimap
 
-}
-
+}  // namespace mrpt::containers

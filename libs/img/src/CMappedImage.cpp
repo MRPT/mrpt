@@ -33,7 +33,7 @@ CMappedImage::CMappedImage(
 	m_img->grayscale();
 	if (m_img->isColor())
 	{
-		CImage* new_img = new CImage();
+		auto* new_img = new CImage();
 		m_img->grayscale(*new_img);
 		m_img = CImage::Ptr(new_img);
 	}
@@ -105,14 +105,10 @@ double CMappedImage::getPixel(double x, double y) const
 			const int py0 = (int)floor(py);
 			const int py1 = (int)ceil(py);
 
-			const double P11 =
-				static_cast<double>(*m_img->get_unsafe(px0, py0));
-			const double P12 =
-				static_cast<double>(*m_img->get_unsafe(px0, py1));
-			const double P21 =
-				static_cast<double>(*m_img->get_unsafe(px1, py0));
-			const double P22 =
-				static_cast<double>(*m_img->get_unsafe(px1, py1));
+			const auto P11 = static_cast<double>(*m_img->get_unsafe(px0, py0));
+			const auto P12 = static_cast<double>(*m_img->get_unsafe(px0, py1));
+			const auto P21 = static_cast<double>(*m_img->get_unsafe(px1, py0));
+			const auto P22 = static_cast<double>(*m_img->get_unsafe(px1, py1));
 
 			const double R1 = P11 * (px1 - px) /* /(px1-px0)*/ +
 							  P21 * (px - px0) /* /(px1-px0) */;

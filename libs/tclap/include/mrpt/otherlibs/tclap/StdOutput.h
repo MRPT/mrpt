@@ -213,7 +213,7 @@ inline void StdOutput::_longUsage( CmdLineInterface& _cmd,
 	// first the xor 
 	for ( int i = 0; static_cast<unsigned int>(i) < xorList.size(); i++ )
 	{
-		for ( ArgVectorIterator it = xorList[i].begin(); 
+		for ( auto it = xorList[i].begin(); 
 			  it != xorList[i].end(); 
 			  it++ )
 		{

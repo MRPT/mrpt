@@ -76,9 +76,8 @@ int main(int argc, char** argv)
 
 		mrpt::img::CImage img;
 		if (!img.loadFromFile(inputFile))
-			throw std::runtime_error(
-				mrpt::format(
-					"Cannot load the map image file `%s`!", inputFile.c_str()));
+			throw std::runtime_error(mrpt::format(
+				"Cannot load the map image file `%s`!", inputFile.c_str()));
 
 		double px, py;
 		if ((arg_px.isSet() && !arg_py.isSet()) ||

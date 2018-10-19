@@ -97,19 +97,17 @@ void CCascadeClassifierDetection::detectObjects_Impl(
 
 	if (IS_CLASS(obs, CObservationImage))
 	{
-		const CObservationImage* o = static_cast<const CObservationImage*>(obs);
+		const auto* o = static_cast<const CObservationImage*>(obs);
 		img = &o->image;
 	}
 	else if (IS_CLASS(obs, CObservationStereoImages))
 	{
-		const CObservationStereoImages* o =
-			static_cast<const CObservationStereoImages*>(obs);
+		const auto* o = static_cast<const CObservationStereoImages*>(obs);
 		img = &o->imageLeft;
 	}
 	else if (IS_CLASS(obs, CObservation3DRangeScan))
 	{
-		const CObservation3DRangeScan* o =
-			static_cast<const CObservation3DRangeScan*>(obs);
+		const auto* o = static_cast<const CObservation3DRangeScan*>(obs);
 		img = &o->intensityImage;
 	}
 	if (!img)
@@ -124,7 +122,7 @@ void CCascadeClassifierDetection::detectObjects_Impl(
 	const CImage img_gray(*img, FAST_REF_OR_CONVERT_TO_GRAY);
 
 	// Convert to IplImage and copy it
-	const IplImage* image = img_gray.getAs<IplImage>();
+	const auto* image = img_gray.getAs<IplImage>();
 
 	// Detect objects
 	CASCADE->detectMultiScale(
@@ -138,10 +136,8 @@ void CCascadeClassifierDetection::detectObjects_Impl(
 	// Convert from cv::Rect to vision::CDetectable2D
 	for (unsigned int i = 0; i < N; i++)
 	{
-		CDetectable2D::Ptr obj = CDetectable2D::Ptr(
-			new CDetectable2D(
-				objects[i].x, objects[i].y, objects[i].height,
-				objects[i].width));
+		CDetectable2D::Ptr obj = CDetectable2D::Ptr(new CDetectable2D(
+			objects[i].x, objects[i].y, objects[i].height, objects[i].width));
 
 		detected.push_back((CDetectableObject::Ptr)obj);
 	}

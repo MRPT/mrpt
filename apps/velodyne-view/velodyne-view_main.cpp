@@ -75,7 +75,7 @@ TCLAP::SwitchArg arg_verbose(
 //   and exploit multicore CPUs.
 struct TThreadParam
 {
-	TThreadParam()  = default;
+	TThreadParam() = default;
 	volatile bool quit{false};
 	volatile int pushed_key{0};
 	volatile double tilt_ang_deg{0};
@@ -104,10 +104,9 @@ void thread_grabbing(TThreadParam& p)
 		if (arg_verbose.isSet()) velodyne.enableVerbose(true);
 
 		// Set params:
-		velodyne.setModelName(
-			mrpt::typemeta::TEnumType<
-				mrpt::hwdrivers::CVelodyneScanner::model_t>::
-				name2value(arg_model.getValue()));
+		velodyne.setModelName(mrpt::typemeta::TEnumType<
+							  mrpt::hwdrivers::CVelodyneScanner::model_t>::
+								  name2value(arg_model.getValue()));
 		if (arg_ip_filter.isSet())
 			velodyne.setDeviceIP(
 				arg_ip_filter.getValue());  // Default: from any IP

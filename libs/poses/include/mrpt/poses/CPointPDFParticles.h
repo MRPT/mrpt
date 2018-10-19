@@ -64,7 +64,7 @@ class CPointPDFParticles
 
 	/** this = p (+) this. This can be used to convert a PDF from local
 	 * coordinates to global, providing the point (newReferenceBase) from which
-	  *   "to project" the current pdf. Result PDF substituted the currently
+	 *   "to project" the current pdf. Result PDF substituted the currently
 	 * stored one in the object. Both the mean value and the covariance matrix
 	 * are updated correctly.  */
 	void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
@@ -79,17 +79,15 @@ class CPointPDFParticles
 	 * distributions->new distribution), then save the result in this object
 	 * (WARNING: See implementing classes to see classes that can and cannot be
 	 * mixtured!)
-	  * \param p1 The first distribution to fuse
-	  * \param p2 The second distribution to fuse
-	  * \param minMahalanobisDistToDrop If set to different of 0, the result of
+	 * \param p1 The first distribution to fuse
+	 * \param p2 The second distribution to fuse
+	 * \param minMahalanobisDistToDrop If set to different of 0, the result of
 	 * very separate Gaussian modes (that will result in negligible components)
 	 * in SOGs will be dropped to reduce the number of modes in the output.
-	  */
+	 */
 	void bayesianFusion(
 		const CPointPDF& p1, const CPointPDF& p2,
 		const double minMahalanobisDistToDrop = 0) override;
 
 };  // End of class def.
-}
-
-
+}  // namespace mrpt::poses

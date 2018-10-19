@@ -327,7 +327,7 @@ void upnp::compute_alphas()
 void upnp::fill_M(
 	Mat* M, const int row, const double* as, const double u, const double v)
 {
-	double* M1 = M->ptr<double>(row);
+	auto* M1 = M->ptr<double>(row);
 	double* M2 = M1 + 12;
 
 	for (int i = 0; i < 4; i++)
@@ -687,20 +687,23 @@ void upnp::compute_A_and_b_gauss_newton(
 	for (int i = 0; i < 6; i++)
 	{
 		const double* rowL = l_6x12 + i * 12;
-		double* rowA = A->ptr<double>(i);
+		auto* rowA = A->ptr<double>(i);
 
 		rowA[0] = 2 * rowL[0] * betas[0] + rowL[1] * betas[1] +
 				  rowL[2] * betas[2] +
-				  f * f * (2 * rowL[6] * betas[0] + rowL[7] * betas[1] +
-						   rowL[8] * betas[2]);
+				  f * f *
+					  (2 * rowL[6] * betas[0] + rowL[7] * betas[1] +
+					   rowL[8] * betas[2]);
 		rowA[1] = rowL[1] * betas[0] + 2 * rowL[3] * betas[1] +
 				  rowL[4] * betas[2] +
-				  f * f * (rowL[7] * betas[0] + 2 * rowL[9] * betas[1] +
-						   rowL[10] * betas[2]);
+				  f * f *
+					  (rowL[7] * betas[0] + 2 * rowL[9] * betas[1] +
+					   rowL[10] * betas[2]);
 		rowA[2] = rowL[2] * betas[0] + rowL[4] * betas[1] +
 				  2 * rowL[5] * betas[2] +
-				  f * f * (rowL[8] * betas[0] + rowL[10] * betas[1] +
-						   2 * rowL[11] * betas[2]);
+				  f * f *
+					  (rowL[8] * betas[0] + rowL[10] * betas[1] +
+					   2 * rowL[11] * betas[2]);
 		rowA[3] =
 			2 * f *
 			(rowL[6] * betas[0] * betas[0] + rowL[7] * betas[0] * betas[1] +
@@ -891,7 +894,7 @@ void upnp::qr_solve(Mat* A, Mat* b, Mat* X)
 	}
 
 	// X = R-1 b
-	double* pX = X->ptr<double>(0);
+	auto* pX = X->ptr<double>(0);
 	pX[nc - 1] = pb[nc - 1] / A2[nc - 1];
 	for (int i = nc - 2; i >= 0; i--)
 	{

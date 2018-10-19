@@ -167,10 +167,11 @@ bool find_chessboard_corners_multiple(
 
 			vector<int> assignments;
 			mrpt::math::kmeanspp<
-				vector<CArrayDouble<2>,
-					   Eigen::aligned_allocator<CArrayDouble<2>>>,
-				vector<CArrayDouble<2>,
-					   Eigen::aligned_allocator<CArrayDouble<2>>>>(
+				vector<
+					CArrayDouble<2>, Eigen::aligned_allocator<CArrayDouble<2>>>,
+				vector<
+					CArrayDouble<2>,
+					Eigen::aligned_allocator<CArrayDouble<2>>>>(
 				nClusters, quad_centers, assignments);
 
 			// Count # of quads in each cluster:
@@ -181,10 +182,9 @@ bool find_chessboard_corners_multiple(
 #if VIS
 			{
 				static mrpt::gui::CDisplayWindow win;
-				win.setWindowTitle(
-					format(
-						"All quads (%u) | %u clusters",
-						(unsigned)quad_centers.size(), (unsigned)nClusters));
+				win.setWindowTitle(format(
+					"All quads (%u) | %u clusters",
+					(unsigned)quad_centers.size(), (unsigned)nClusters));
 				CImage im;
 				img.colorImage(im);
 				for (size_t i = 0; i < quad_centers.size(); i++)
@@ -246,10 +246,9 @@ bool find_chessboard_corners_multiple(
 #if VIS
 						{
 							static mrpt::gui::CDisplayWindow win;
-							win.setWindowTitle(
-								format(
-									"Candidate group #%i (%i)", (int)group_idx,
-									(int)quad_group.size()));
+							win.setWindowTitle(format(
+								"Candidate group #%i (%i)", (int)group_idx,
+								(int)quad_group.size()));
 							CImage im;
 							img.colorImage(im);
 							for (size_t i = 0; i < quad_group.size(); i++)
@@ -299,9 +298,7 @@ bool find_chessboard_corners_multiple(
 	//  remove duplicates:
 	vector<TPoint2D>
 		out_boards_centers;  // the center (average) of each output board.
-	for (list<vector<CvCBQuad::Ptr>>::const_iterator it =
-			 good_quad_groups.begin();
-		 it != good_quad_groups.end(); ++it)
+	for (auto it = good_quad_groups.begin(); it != good_quad_groups.end(); ++it)
 	{
 		// Compute the center of this board:
 		TPoint2D boardCenter(0, 0);

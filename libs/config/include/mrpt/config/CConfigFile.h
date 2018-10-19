@@ -15,19 +15,19 @@ namespace mrpt::config
 {
 /** This class allows loading and storing values and vectors of different types
  * from ".ini" files easily.
-  *  The contents of the file will be modified by "write" operations in memory,
+ *  The contents of the file will be modified by "write" operations in memory,
  * and will be saved back
-  *   to the file at the destructor, and only if at least one write operation
+ *   to the file at the destructor, and only if at least one write operation
  * has been applied.
-  *
-  * Use base class `CConfigFileBase`'s methods
+ *
+ * Use base class `CConfigFileBase`'s methods
  * `read_{int,float,double,string,...}()` and `write()` to actually read and
  * write values.
-  *
-  * See: \ref config_file_format
-  *
-  * \ingroup mrpt_base_grp
-  */
+ *
+ * See: \ref config_file_format
+ *
+ * \ingroup mrpt_base_grp
+ */
 class CConfigFile : public CConfigFileBase
 {
    private:
@@ -60,9 +60,9 @@ class CConfigFile : public CConfigFileBase
 	/** Constructor, does not open any file. You should call "setFileName"
 	 * before reading or writting or otherwise nothing will be read and write
 	 * operations will be eventually lost.
-	  * However, it's perfectly right to use this object without an associated
+	 * However, it's perfectly right to use this object without an associated
 	 * file, in which case it will behave as an "in-memory" file.
-	  */
+	 */
 	CConfigFile();
 
 	/** Associate this object with the given file, so future read/write
@@ -83,15 +83,12 @@ class CConfigFile : public CConfigFileBase
 	~CConfigFile() override;
 
 	/** Returns a list with all the section names. */
-	void getAllSections(
-		std::vector<std::string>& sections) const override;
+	void getAllSections(std::vector<std::string>& sections) const override;
 
 	/** Returs a list with all the keys into a section. */
-	void getAllKeys(
-		const std::string& section,
-		std::vector<std::string>& keys) const override;
+	void getAllKeys(const std::string& section, std::vector<std::string>& keys)
+		const override;
 
 };  // End of class def.
 
-}
-
+}  // namespace mrpt::config

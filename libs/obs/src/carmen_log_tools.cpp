@@ -128,7 +128,8 @@ bool mrpt::obs::carmen_log_parse_line(
 		S >> timestamp >> robotName;
 
 		const mrpt::system::TTimeStamp obs_time =
-			time_start_log + std::chrono::microseconds(static_cast<uint64_t>(1e-6 * timestamp));
+			time_start_log +
+			std::chrono::microseconds(static_cast<uint64_t>(1e-6 * timestamp));
 
 		obsLaser->timestamp = obs_time;
 
@@ -237,7 +238,8 @@ bool mrpt::obs::carmen_log_parse_line(
 		S >> timestamp >> robotName;
 
 		const mrpt::system::TTimeStamp obs_time =
-			time_start_log + std::chrono::microseconds(static_cast<uint64_t>(1e-6 * timestamp));
+			time_start_log +
+			std::chrono::microseconds(static_cast<uint64_t>(1e-6 * timestamp));
 
 		obsLaser->timestamp = obs_time;
 

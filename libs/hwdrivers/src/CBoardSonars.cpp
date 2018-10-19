@@ -187,7 +187,7 @@ bool CBoardSonars::sendConfigCommands()
 		// ----------------------------
 		msg.type = 0x15;
 		msg.content.resize(2);
-		uint16_t T = (uint16_t)(m_minTimeBetweenPings * 1000.0f);
+		auto T = (uint16_t)(m_minTimeBetweenPings * 1000.0f);
 		msg.content[0] = T >> 8;
 		msg.content[1] = T & 0x00FF;
 		arch.sendMessage(msg);

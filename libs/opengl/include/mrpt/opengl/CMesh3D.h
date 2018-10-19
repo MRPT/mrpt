@@ -19,19 +19,19 @@ using Eigen::Dynamic;
 namespace mrpt::opengl
 {
 /** A 3D mesh composed of Triangles and/or Quads.
-  * A typical usage example would be a 3D model of an object.
-  *  \sa opengl::COpenGLScene,opengl::CMesh,opengl::CAssimpModel
-  *
-  *  <div align="center">
-  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
+ * A typical usage example would be a 3D model of an object.
+ *  \sa opengl::COpenGLScene,opengl::CMesh,opengl::CAssimpModel
+ *
+ *  <div align="center">
+ *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
  * border-style: solid;">
-  *   <tr> <td> mrpt::opengl::CMesh3D </td> <td> \image html preview_CMesh3D.png
+ *   <tr> <td> mrpt::opengl::CMesh3D </td> <td> \image html preview_CMesh3D.png
  * </td> </tr>
-  *  </table>
-  *  </div>
-  *
-  * \ingroup mrpt_opengl_grp
-  */
+ *  </table>
+ *  </div>
+ *
+ * \ingroup mrpt_opengl_grp
+ */
 class CMesh3D : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CMesh3D)
@@ -72,7 +72,8 @@ class CMesh3D : public CRenderizableDisplayList
 	float face_color[4];
 	/** Color of the vertices (when shown) */
 	float vert_color[4];
-	mrpt::img::TColormap m_colorMap{mrpt::img::cmHOT};  // Not used yet. I leave it here in case
+	mrpt::img::TColormap m_colorMap{
+		mrpt::img::cmHOT};  // Not used yet. I leave it here in case
 	// I want to use it in the future
 
    public:
@@ -147,12 +148,12 @@ class CMesh3D : public CRenderizableDisplayList
 	void setPointSize(float ps) { m_pointSize = ps; }
 
 	/** Render
-	  */
+	 */
 	void render_dl() const override;
 
 	/** Evaluates the bounding box of this object (including possible children)
 	 * in the coordinate frame of the object parent.
-	  */
+	 */
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
@@ -166,6 +167,4 @@ class CMesh3D : public CRenderizableDisplayList
 	~CMesh3D() override;
 };
 
-}
-
-
+}  // namespace mrpt::opengl

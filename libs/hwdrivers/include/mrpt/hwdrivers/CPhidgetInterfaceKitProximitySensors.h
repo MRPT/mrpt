@@ -88,7 +88,7 @@ namespace mrpt::hwdrivers
  * \warning{The Phidget library use udev. By default, udev require to be root to
  * be launched, if you want to be able to run a program wich use a phidget board
  * without be root, you must modify files in /etc/udev/rules.d .}
-  * \ingroup mrpt_hwdrivers_grp
+ * \ingroup mrpt_hwdrivers_grp
  */
 enum SensorType
 {
@@ -105,20 +105,20 @@ class CPhidgetInterfaceKitProximitySensors : public mrpt::system::COutputLogger,
 
    public:
 	/** Constructor
-	  * \param serialNumber The board's serial number. Set -1 to choose the
+	 * \param serialNumber The board's serial number. Set -1 to choose the
 	 * first available board
-	  */
+	 */
 	CPhidgetInterfaceKitProximitySensors();
 
 	/** Destructor
-	  */
+	 */
 	~CPhidgetInterfaceKitProximitySensors() override;
 
 	/** This method tries to get a set of range measurements from the IR
 	 * sensors.
-	  * \param outThereIsObservation Will be true if an observation was
+	 * \param outThereIsObservation Will be true if an observation was
 	 * sucessfully received.
-	  */
+	 */
 	void getObservation(mrpt::obs::CObservationRange& outObservation);
 	/** Initialize the sensor according to the parameters previously read in the
 	 * configuration file.
@@ -136,29 +136,29 @@ class CPhidgetInterfaceKitProximitySensors : public mrpt::system::COutputLogger,
    private:
 	/** An 8 dimension vector of boolean value wich store the presence or
 	 * abscence of a sensor on the phidget interface kit board.
-	  */
+	 */
 	std::vector<bool> m_sensorIsPlugged;
 	/** The minimum range in meters, this field is automaticaly filled according
 	 * to the sensor part number read in the configuration file.
-	  * Size of this vector depend on the number of sensors described in the
+	 * Size of this vector depend on the number of sensors described in the
 	 * configuration file.
-	  */
+	 */
 	std::vector<float> m_minRange;
 
 	/** The maximum range in meters, this field is automaticaly filled according
 	 * to the sensor part number read in the configuration file.
-	  * Size of this vector depend on the number of sensors described in the
+	 * Size of this vector depend on the number of sensors described in the
 	 * configuration file.
-	  */
+	 */
 	std::vector<float> m_maxRange;
 
 	/** The sensor type.
-	  */
+	 */
 	std::vector<SensorType> m_sensorType;
 	/** The poses of the 8 sensors x[m] y[m] z[m] yaw[deg] pitch[deg] roll[deg].
 	 * This field is automaticaly filled according to the sensor
-	  * described in the configuration file.
-	  */
+	 * described in the configuration file.
+	 */
 	std::vector<mrpt::poses::CPose3D> m_sensorPoses;
 
 	/** The board serial number read in the configuration file. -1 for any
@@ -176,6 +176,4 @@ class CPhidgetInterfaceKitProximitySensors : public mrpt::system::COutputLogger,
 		const std::string& iniSection) override;
 };  // end class
 
-}
-
-
+}  // namespace mrpt::hwdrivers

@@ -29,7 +29,7 @@ const QString CPointsConfig::getName()
 void CPointsConfig::updateConfiguration(
 	mrpt::maps::TMetricMapInitializer* options)
 {
-	mrpt::maps::CSimplePointsMap::TMapDefinition* mapDefination =
+	auto* mapDefination =
 		dynamic_cast<mrpt::maps::CSimplePointsMap::TMapDefinition*>(options);
 	ASSERT_(mapDefination);
 

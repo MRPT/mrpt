@@ -43,25 +43,25 @@ class CPosePDF : public mrpt::serialization::CSerializable,
    public:
 	/** Copy operator, translating if necesary (for example, between particles
 	 * and gaussian representations)
-	  */
+	 */
 	virtual void copyFrom(const CPosePDF& o) = 0;
 
 	/** Bayesian fusion of two pose distributions (product of two
 	 * distributions->new distribution), then save the result in this object
 	 * (WARNING: See implementing classes to see classes that can and cannot be
 	 * mixtured!)
-	  * \param p1 The first distribution to fuse
-	  * \param p2 The second distribution to fuse
-	  * \param minMahalanobisDistToDrop If set to different of 0, the result of
+	 * \param p1 The first distribution to fuse
+	 * \param p2 The second distribution to fuse
+	 * \param minMahalanobisDistToDrop If set to different of 0, the result of
 	 * very separate Gaussian modes (that will result in negligible components)
 	 * in SOGs will be dropped to reduce the number of modes in the output.
-	  */
+	 */
 	virtual void bayesianFusion(
 		const CPosePDF& p1, const CPosePDF& p2,
 		const double minMahalanobisDistToDrop = 0) = 0;
 
 	/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
-	  */
+	 */
 	virtual void inverse(CPosePDF& o) const = 0;
 
 	virtual void changeCoordinatesReference(
@@ -103,12 +103,12 @@ class CPosePDF : public mrpt::serialization::CSerializable,
 	static constexpr bool is_PDF() { return is_PDF_val != 0; }
 	/** Returns a 3D representation of this PDF (it doesn't clear the current
 	 * contents of out_obj, but append new OpenGL objects to that list)
-	  * \note Needs the mrpt-opengl library, and using
+	 * \note Needs the mrpt-opengl library, and using
 	 * mrpt::opengl::CSetOfObjects::Ptr as template argument.
-	  * \note By default, ellipsoids for the confidence intervals of  "q=3" are
+	 * \note By default, ellipsoids for the confidence intervals of  "q=3" are
 	 * drawn; for more mathematical details, see
 	 * CGeneralizedEllipsoidTemplate::setQuantiles()
-	  */
+	 */
 	template <class OPENGL_SETOFOBJECTSPTR>
 	inline void getAs3DObject(OPENGL_SETOFOBJECTSPTR& out_obj) const
 	{
@@ -117,9 +117,9 @@ class CPosePDF : public mrpt::serialization::CSerializable,
 	}
 
 	/** Returns a 3D representation of this PDF.
-	  * \note Needs the mrpt-opengl library, and using
+	 * \note Needs the mrpt-opengl library, and using
 	 * mrpt::opengl::CSetOfObjects::Ptr as template argument.
-	  */
+	 */
 	template <class OPENGL_SETOFOBJECTSPTR>
 	inline OPENGL_SETOFOBJECTSPTR getAs3DObject() const
 	{
@@ -131,6 +131,4 @@ class CPosePDF : public mrpt::serialization::CSerializable,
 	MRPT_MAKE_ALIGNED_OPERATOR_NEW
 };  // End of class def.
 
-}
-
-
+}  // namespace mrpt::poses

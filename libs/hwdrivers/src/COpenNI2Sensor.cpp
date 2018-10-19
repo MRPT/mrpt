@@ -38,11 +38,10 @@ ctor
 -------------------------------------------------------------*/
 COpenNI2Sensor::COpenNI2Sensor()
 	: m_sensorPoseOnRobot(),
-	  
 
 	  m_relativePoseIntensityWRTDepth(
 		  0, 0, 0, DEG2RAD(-90), DEG2RAD(0), DEG2RAD(-90))
-	  
+
 {
 	// Default label:
 	m_sensorLabel = "OPENNI2";
@@ -82,10 +81,10 @@ COpenNI2Sensor::~COpenNI2Sensor()
 }
 
 /** This method can or cannot be implemented in the derived class, depending on
-* the need for it.
-*  \exception This method must throw an exception with a descriptive message if
-* some critical error is found.
-*/
+ * the need for it.
+ *  \exception This method must throw an exception with a descriptive message if
+ * some critical error is found.
+ */
 void COpenNI2Sensor::initialize()
 {
 #if MRPT_HAS_OPENNI2
@@ -103,10 +102,9 @@ void COpenNI2Sensor::initialize()
 				if (getDeviceIDFromSerialNum(
 						m_serial_number, m_user_device_number) == false)
 				{
-					THROW_EXCEPTION(
-						mrpt::format(
-							"Failed to find sensor_id from serial number(%d).",
-							m_serial_number))
+					THROW_EXCEPTION(mrpt::format(
+						"Failed to find sensor_id from serial number(%d).",
+						m_serial_number))
 				}
 			}
 			else
@@ -114,9 +112,8 @@ void COpenNI2Sensor::initialize()
 		}
 		if (isOpen(m_user_device_number) == false)
 		{
-			THROW_EXCEPTION(
-				mrpt::format(
-					"Failed to open OpenNI2 device(%d).", m_user_device_number))
+			THROW_EXCEPTION(mrpt::format(
+				"Failed to open OpenNI2 device(%d).", m_user_device_number))
 		}
 		/* If camera parameter is not read from ini file, we get the parameters
 		 * from OpenNI2. */
@@ -147,9 +144,9 @@ void COpenNI2Sensor::initialize()
 }
 
 /** This method will be invoked at a minimum rate of "process_rate" (Hz)
-*  \exception This method must throw an exception with a descriptive message if
-* some critical error is found.
-*/
+ *  \exception This method must throw an exception with a descriptive message if
+ * some critical error is found.
+ */
 void COpenNI2Sensor::doProcess()
 {
 #if MRPT_HAS_OPENNI2
@@ -185,11 +182,11 @@ void COpenNI2Sensor::doProcess()
 }
 
 /** Loads specific configuration for the device from a given source of
-* configuration parameters, for example, an ".ini" file, loading from the
-* section "[iniSection]" (see config::CConfigFileBase and derived classes)
-*  \exception This method must throw an exception with a descriptive message if
-* some critical parameter is missing or has an invalid value.
-*/
+ * configuration parameters, for example, an ".ini" file, loading from the
+ * section "[iniSection]" (see config::CConfigFileBase and derived classes)
+ *  \exception This method must throw an exception with a descriptive message if
+ * some critical parameter is missing or has an invalid value.
+ */
 void COpenNI2Sensor::loadConfig_sensorSpecific(
 	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
@@ -271,13 +268,13 @@ void COpenNI2Sensor::loadConfig_sensorSpecific(
 }
 
 /** The main data retrieving function, to be called after calling loadConfig()
-* and initialize().
-*  \param out_obs The output retrieved observation (only if there_is_obs=true).
-*  \param there_is_obs If set to false, there was no new observation.
-*  \param hardware_error True on hardware/comms error.
-*
-* \sa doProcess
-*/
+ * and initialize().
+ *  \param out_obs The output retrieved observation (only if there_is_obs=true).
+ *  \param there_is_obs If set to false, there was no new observation.
+ *  \param hardware_error True on hardware/comms error.
+ *
+ * \sa doProcess
+ */
 void COpenNI2Sensor::getNextObservation(
 	mrpt::obs::CObservation3DRangeScan& out_obs, bool& there_is_obs,
 	bool& hardware_error)

@@ -137,8 +137,8 @@ void CCanvas::line(
 
 	float x, y;
 
-	float Ax = (float)(x1 - x0);
-	float Ay = (float)(y1 - y0);
+	auto Ax = (float)(x1 - x0);
+	auto Ay = (float)(y1 - y0);
 
 	// In this cases, there is nothing to do!
 	if (Ax == 0 && Ay == 0) return;
@@ -231,8 +231,7 @@ void CCanvas::selectTextFont(const std::string& fontName)
 	init_fonts_list();
 
 	// Assure list name is in the list:
-	map<string, std::vector<uint8_t>>::const_iterator it =
-		list_registered_fonts.find(fontName);
+	auto it = list_registered_fonts.find(fontName);
 	if (it == list_registered_fonts.end())
 	{
 		// Error
@@ -377,7 +376,7 @@ void CCanvas::textOut(
 
 	// Am I an image?
 	bool y_axis_reversed = false;
-	CImage* im_image = dynamic_cast<CImage*>(this);
+	auto* im_image = dynamic_cast<CImage*>(this);
 	if (im_image) y_axis_reversed = !im_image->isOriginTopLeft();
 
 	// Decode UNICODE string:

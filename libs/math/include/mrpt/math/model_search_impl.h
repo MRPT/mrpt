@@ -221,7 +221,4 @@ bool ModelSearch::geneticSingleModel(
 
 	return !p_inliers.empty();
 }
-}  // namespace mrpt
-
-
-
+}  // namespace mrpt::math

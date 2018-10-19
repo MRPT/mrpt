@@ -12,7 +12,8 @@
 #include "xsmath.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #else
 #define XSEULER_INITIALIZER                           \
 	{                                                 \
@@ -24,14 +25,14 @@ extern "C" {
 	}
 #endif
 
-struct XsEuler;
-struct XsQuaternion;
-struct XsMatrix;
+	struct XsEuler;
+	struct XsQuaternion;
+	struct XsMatrix;
 
-XSTYPES_DLL_API void XsEuler_destruct(struct XsEuler* thisPtr);
-XSTYPES_DLL_API int XsEuler_empty(const struct XsEuler* thisPtr);
-XSTYPES_DLL_API void XsEuler_fromQuaternion(
-	struct XsEuler* thisPtr, const struct XsQuaternion* quat);
+	XSTYPES_DLL_API void XsEuler_destruct(struct XsEuler* thisPtr);
+	XSTYPES_DLL_API int XsEuler_empty(const struct XsEuler* thisPtr);
+	XSTYPES_DLL_API void XsEuler_fromQuaternion(
+		struct XsEuler* thisPtr, const struct XsQuaternion* quat);
 
 #ifdef __cplusplus
 }  // extern "C"
@@ -97,7 +98,7 @@ struct XsEuler
 	}
 
 	/*! \brief Returns true if the values in \a other are exactly equal to this
-	*/
+	 */
 	inline bool operator==(const XsEuler& other) const
 	{
 		return m_roll == other.m_roll && m_pitch == other.m_pitch &&
@@ -105,7 +106,7 @@ struct XsEuler
 	}
 
 	/*! \brief Returns true if the values in \a other are different from this
-	*/
+	 */
 	inline bool operator!=(const XsEuler& other) const
 	{
 		return m_roll != other.m_roll || m_pitch != other.m_pitch ||
@@ -124,6 +125,7 @@ struct XsEuler
 	inline XsReal y() const { return m_y; }
 	//! \brief Returns the z or yaw value
 	inline XsReal z() const { return m_z; }
+
    private:
 #endif
 

@@ -47,7 +47,7 @@ class CPose3DQuatPDFGaussian : public CPose3DQuatPDF
    protected:
 	/** Assures the symmetry of the covariance matrix (eventually certain
 	 * operations in the math-coprocessor lead to non-symmetric matrixes!)
-	  */
+	 */
 	void assureSymmetry();
 
    public:
@@ -105,15 +105,15 @@ class CPose3DQuatPDFGaussian : public CPose3DQuatPDF
 
 	/** this = p (+) this. This can be used to convert a PDF from local
 	 * coordinates to global, providing the point (newReferenceBase) from which
-	  *   "to project" the current pdf. Result PDF substituted the currently
+	 *   "to project" the current pdf. Result PDF substituted the currently
 	 * stored one in the object. */
 	void changeCoordinatesReference(const CPose3DQuat& newReferenceBase);
 
 	/** this = p (+) this. This can be used to convert a PDF from local
 	 * coordinates to global, providing the point (newReferenceBase) from which
-	  *   "to project" the current pdf. Result PDF substituted the currently
+	 *   "to project" the current pdf. Result PDF substituted the currently
 	 * stored one in the object.
-	  */
+	 */
 	void changeCoordinatesReference(const CPose3D& newReferenceBase) override;
 
 	/** Draws a single sample from the distribution */
@@ -153,9 +153,9 @@ class CPose3DQuatPDFGaussian : public CPose3DQuatPDF
 	double evaluateNormalizedPDF(const CPose3DQuat& x) const;
 
 	/** Computes the Mahalanobis distance between the centers of two Gaussians.
-	  *  The variables with a variance exactly equal to 0 are not taken into
+	 *  The variables with a variance exactly equal to 0 are not taken into
 	 * account in the process, but
-	  *   "infinity" is returned if the corresponding elements are not exactly
+	 *   "infinity" is returned if the corresponding elements are not exactly
 	 * equal. */
 	double mahalanobisDistanceTo(const CPose3DQuatPDFGaussian& theOther);
 
@@ -175,19 +175,18 @@ CPose3DQuatPDFGaussian operator-(
 /** Dumps the mean and covariance matrix to a text stream. */
 std::ostream& operator<<(std::ostream& out, const CPose3DQuatPDFGaussian& obj);
 
-}  // End of namespace
+}  // namespace poses
 
 namespace global_settings
 {
 /** If set to true (default), a Scaled Unscented Transform is used instead of a
-  *linear approximation with Jacobians.
-  * Affects to:
-  *		- CPose3DQuatPDFGaussian::copyFrom(const CPose3DPDFGaussian &o)
-  *		- CPose3DQuatPDFGaussianInf::copyFrom(const CPose3DPDFGaussianInf &o)
-  */
+ *linear approximation with Jacobians.
+ * Affects to:
+ *		- CPose3DQuatPDFGaussian::copyFrom(const CPose3DPDFGaussian &o)
+ *		- CPose3DQuatPDFGaussianInf::copyFrom(const CPose3DPDFGaussianInf &o)
+ */
 void USE_SUT_EULER2QUAT_CONVERSION(bool value);
 bool USE_SUT_EULER2QUAT_CONVERSION();
-}
+}  // namespace global_settings
 
-}  // End of namespace
-
+}  // namespace mrpt

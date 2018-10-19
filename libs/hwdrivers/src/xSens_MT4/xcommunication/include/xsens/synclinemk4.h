@@ -40,11 +40,12 @@ enum SyncLineMk4
 typedef enum SyncLineMk4 SyncLineMk4;
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-XsSyncLine xsl4ToXsl(SyncLineMk4 mk4Line);
-SyncLineMk4 xslToXsl4(XsSyncLine line);
+	XsSyncLine xsl4ToXsl(SyncLineMk4 mk4Line);
+	SyncLineMk4 xslToXsl4(XsSyncLine line);
 
 #ifdef __cplusplus
 }  // extern "C"

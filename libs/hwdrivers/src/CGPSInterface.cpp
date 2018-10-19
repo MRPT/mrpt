@@ -50,18 +50,17 @@ struct TParsersRegistry
    ----------------------------------------------------- */
 CGPSInterface::CGPSInterface()
 	: mrpt::system::COutputLogger("CGPSInterface"),
-	  
+
 	  m_customInit(),
 	  m_rx_buffer(0x10000),
-	  
+
 	  m_raw_dump_file_prefix(),
 	  m_COMname(),
-	  
+
 	  m_last_timestamp(INVALID_TIMESTAMP),
-	  
 
 	  m_JAVAD_rtk_src_port(),
-	  
+
 	  m_JAVAD_rtk_format("cmr")
 {
 	m_sensorLabel = "GPS";
@@ -140,9 +139,9 @@ void CGPSInterface::loadConfig_sensorSpecific(
 
 	m_topcon_useAIMMode = configSource.read_bool(
 		iniSection, "JAVAD_useAIMMode", m_topcon_useAIMMode);
-	m_topcon_data_period = 1.0 /
-						   configSource.read_double(
-							   iniSection, "outputRate", m_topcon_data_period);
+	m_topcon_data_period =
+		1.0 / configSource.read_double(
+				  iniSection, "outputRate", m_topcon_data_period);
 }
 
 CGPSInterface::~CGPSInterface()
@@ -304,9 +303,8 @@ void CGPSInterface::doProcess()
 		THROW_EXCEPTION("Could not open the input stream");
 	}
 	ASSERT_(m_data_stream != nullptr);
-	CSerialPort* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
-	CClientTCPSocket* stream_tcpip =
-		dynamic_cast<CClientTCPSocket*>(m_data_stream);
+	auto* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
+	auto* stream_tcpip = dynamic_cast<CClientTCPSocket*>(m_data_stream);
 
 	// Read as many bytes as available:
 	uint8_t buf[0x1000];
@@ -542,7 +540,7 @@ void CGPSInterface::JAVAD_sendMessage(const char* str, bool waitForAnswer)
 {
 	if (!str) return;
 	const size_t len = strlen(str);
-	CSerialPort* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
+	auto* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
 	if (!stream_serial) return;
 
 	size_t written;
@@ -578,9 +576,8 @@ void CGPSInterface::JAVAD_sendMessage(const char* str, bool waitForAnswer)
 		if (m_verbose) std::cout << "[CGPSInterface] RX: " << buf << std::endl;
 
 		if (nRead < 3)
-			throw std::runtime_error(
-				format(
-					"ERROR: Invalid response '%s' for command '%s'", buf, str));
+			throw std::runtime_error(format(
+				"ERROR: Invalid response '%s' for command '%s'", buf, str));
 
 		if (nRead >= 3 && buf[0] == 'R' && buf[1] == 'E')
 			return;  // Ok!
@@ -593,16 +590,16 @@ void CGPSInterface::JAVAD_sendMessage(const char* str, bool waitForAnswer)
 
 bool CGPSInterface::OnConnectionShutdown()
 {
-	CSerialPort* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
+	auto* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
 
 	if (stream_serial && !stream_serial->isOpen()) return false;
 
 	// Send commands:
-	for (const auto & m_shutdown_cmd : m_shutdown_cmds)
+	for (const auto& m_shutdown_cmd : m_shutdown_cmds)
 	{
 		if (m_verbose)
-			cout << "[CGPSInterface] TX shutdown command: `"
-				 << m_shutdown_cmd << "`\n";
+			cout << "[CGPSInterface] TX shutdown command: `" << m_shutdown_cmd
+				 << "`\n";
 
 		std::string sTx = m_shutdown_cmd;
 		if (m_custom_cmds_append_CRLF) sTx += std::string("\r\n");
@@ -616,9 +613,8 @@ bool CGPSInterface::OnConnectionShutdown()
 			return false;  // On any I/O error
 		}
 
-		std::this_thread::sleep_for(
-			std::chrono::duration<double, std::milli>(
-				m_custom_cmds_delay * 1000));
+		std::this_thread::sleep_for(std::chrono::duration<double, std::milli>(
+			m_custom_cmds_delay * 1000));
 	}
 	return true;
 }
@@ -639,7 +635,7 @@ bool CGPSInterface::OnConnectionEstablished()
 	}
 
 	// Purge input:
-	CSerialPort* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
+	auto* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
 	if (stream_serial)
 	{
 		std::lock_guard<std::mutex> lock(*m_data_stream_cs);
@@ -650,7 +646,7 @@ bool CGPSInterface::OnConnectionEstablished()
 	// file.
 
 	// Send commands:
-	for (const auto & m_setup_cmd : m_setup_cmds)
+	for (const auto& m_setup_cmd : m_setup_cmds)
 	{
 		if (m_verbose)
 			cout << "[CGPSInterface] TX setup command: `" << m_setup_cmd
@@ -671,9 +667,8 @@ bool CGPSInterface::OnConnectionEstablished()
 					  << e.what() << std::endl;
 			return false;
 		}
-		std::this_thread::sleep_for(
-			std::chrono::duration<double, std::milli>(
-				m_custom_cmds_delay * 1000));
+		std::this_thread::sleep_for(std::chrono::duration<double, std::milli>(
+			m_custom_cmds_delay * 1000));
 	}
 	std::this_thread::sleep_for(
 		std::chrono::duration<double, std::milli>(m_custom_cmds_delay * 1000));
@@ -693,7 +688,7 @@ bool CGPSInterface::unsetJAVAD_AIM_mode()
 		std::this_thread::sleep_for(1000ms);
 
 		// Purge input:
-		CSerialPort* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
+		auto* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
 		if (stream_serial)
 		{
 			std::lock_guard<std::mutex> lock(*m_data_stream_cs);
@@ -738,11 +733,10 @@ bool CGPSInterface::setJAVAD_AIM_mode()
 					m_JAVAD_rtk_src_port.c_str())
 					.c_str());  // set corrections type CMR or CMR+
 			JAVAD_sendMessage("%%set,/par/cur/term/jps/2,{none,-1,n,\"\"}\r\n");
-			JAVAD_sendMessage(
-				format(
-					"%%%%set,/par%s/imode,cmr\r\n",
-					m_JAVAD_rtk_src_port.c_str())
-					.c_str());
+			JAVAD_sendMessage(format(
+								  "%%%%set,/par%s/imode,cmr\r\n",
+								  m_JAVAD_rtk_src_port.c_str())
+								  .c_str());
 		}
 		else if (m_JAVAD_rtk_format == "rtcm")
 		{
@@ -752,11 +746,10 @@ bool CGPSInterface::setJAVAD_AIM_mode()
 					m_JAVAD_rtk_src_port.c_str())
 					.c_str());  // set corrections type RTCM
 			JAVAD_sendMessage("%%set,/par/cur/term/jps/2,{none,-1,n,\"\"}\r\n");
-			JAVAD_sendMessage(
-				format(
-					"%%%%set,/par%s/imode,rtcm\r\n",
-					m_JAVAD_rtk_src_port.c_str())
-					.c_str());
+			JAVAD_sendMessage(format(
+								  "%%%%set,/par%s/imode,rtcm\r\n",
+								  m_JAVAD_rtk_src_port.c_str())
+								  .c_str());
 		}
 		else if (m_JAVAD_rtk_format == "rtcm3")
 		{
@@ -766,11 +759,10 @@ bool CGPSInterface::setJAVAD_AIM_mode()
 					m_JAVAD_rtk_src_port.c_str())
 					.c_str());  // set corrections type RTCM 3.x
 			JAVAD_sendMessage("%%set,/par/cur/term/jps/2,{none,-1,n,\"\"}\r\n");
-			JAVAD_sendMessage(
-				format(
-					"%%%%set,/par%s/imode,rtcm3\r\n",
-					m_JAVAD_rtk_src_port.c_str())
-					.c_str());
+			JAVAD_sendMessage(format(
+								  "%%%%set,/par%s/imode,rtcm3\r\n",
+								  m_JAVAD_rtk_src_port.c_str())
+								  .c_str());
 		}
 		else
 		{
@@ -807,7 +799,7 @@ bool CGPSInterface::legacy_topcon_setup_commands()
 	std::this_thread::sleep_for(1000ms);
 
 	// Purge input:
-	CSerialPort* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
+	auto* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
 	if (stream_serial)
 	{
 		std::lock_guard<std::mutex> lock(*m_data_stream_cs);
@@ -860,19 +852,19 @@ bool CGPSInterface::legacy_topcon_setup_commands()
 		// Set port bauds:
 		if (!m_topcon_useAIMMode && m_JAVAD_rtk_src_baud != 0 &&
 			!mrpt::system::strCmp(m_JAVAD_rtk_src_port, "/dev/usb/a"))
-			JAVAD_sendMessage(
-				format(
-					"%%%%set,/par%s/rate,%u\r\n", m_JAVAD_rtk_src_port.c_str(),
-					m_JAVAD_rtk_src_baud)
-					.c_str());
+			JAVAD_sendMessage(format(
+								  "%%%%set,/par%s/rate,%u\r\n",
+								  m_JAVAD_rtk_src_port.c_str(),
+								  m_JAVAD_rtk_src_baud)
+								  .c_str());
 
 		// Set Input Mode: CMR,RTCM,...
 		if (!m_topcon_useAIMMode && !m_JAVAD_rtk_format.empty())
-			JAVAD_sendMessage(
-				format(
-					"%%%%set,/par%s/imode,%s\r\n", m_JAVAD_rtk_src_port.c_str(),
-					m_JAVAD_rtk_format.c_str())
-					.c_str());
+			JAVAD_sendMessage(format(
+								  "%%%%set,/par%s/imode,%s\r\n",
+								  m_JAVAD_rtk_src_port.c_str(),
+								  m_JAVAD_rtk_format.c_str())
+								  .c_str());
 	}
 
 	// Start NMEA messaging:

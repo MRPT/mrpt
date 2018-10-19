@@ -105,13 +105,12 @@ TEST(CConfigFile, readMultiLineStrings)
 	EXPECT_EQ(readStr, expectedStr);
 }
 
-
 TEST(CConfigFileMemory, parseVariables)
 {
 #ifdef _MSC_VER
-	_putenv_s("ENV_VAR_MULTIPLIER","2");
+	_putenv_s("ENV_VAR_MULTIPLIER", "2");
 #else
-	::setenv("ENV_VAR_MULTIPLIER","2", 1);
+	::setenv("ENV_VAR_MULTIPLIER", "2", 1);
 #endif
 
 	const std::string sampleCfgTxt2 =

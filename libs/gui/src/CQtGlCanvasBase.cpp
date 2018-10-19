@@ -18,9 +18,8 @@ using namespace mrpt;
 using namespace mrpt::gui;
 
 CQtGlCanvasBase::CQtGlCanvasBase(QWidget* parent)
-	: QOpenGLWidget(parent),
-	  mrpt::gui::CGlCanvasBase()
-	  
+	: QOpenGLWidget(parent), mrpt::gui::CGlCanvasBase()
+
 {
 	m_mainViewport = getOpenGLSceneRef()->getViewport("main");
 	setMouseTracking(true);

@@ -18,23 +18,23 @@ class CPipeReadEndPoint;
 class CPipeWriteEndPoint;
 
 /** A pipe, portable across different OS.
-  * Pipes can be used as intraprocess (inter-threads) or interprocess
+ * Pipes can be used as intraprocess (inter-threads) or interprocess
  * communication mechanism.
-  * Read more on pipes here:
+ * Read more on pipes here:
  * http://www.gnu.org/software/libc/manual/html_node/Pipes-and-FIFOs.html
-  *
-  *  \code
-  *    std::unique_ptr<CPipeReadEndPoint>  read_pipe;
-  *    std::unique_ptr<CPipeWriteEndPoint> write_pipe;
-  *
-  *    CPipe::createPipe(read_pipe,write_pipe);
-  *
-  *  \endcode
-  *
-  * See also the example: MRPT/samples/threadsPipe/
-  *
-  * \ingroup mrpt_io_grp
-  */
+ *
+ *  \code
+ *    std::unique_ptr<CPipeReadEndPoint>  read_pipe;
+ *    std::unique_ptr<CPipeWriteEndPoint> write_pipe;
+ *
+ *    CPipe::createPipe(read_pipe,write_pipe);
+ *
+ *  \endcode
+ *
+ * See also the example: MRPT/samples/threadsPipe/
+ *
+ * \ingroup mrpt_io_grp
+ */
 class CPipe
 {
    public:
@@ -44,8 +44,8 @@ class CPipe
 
 	/** Creates a new pipe and returns the read & write end-points as newly
 	 * allocated objects.
-	  * \exception std::exception On any error during the pipe creation
-	  */
+	 * \exception std::exception On any error during the pipe creation
+	 */
 	/** Creates a new pipe and returns the read & write end-points as newly
 	 * allocated objects. */
 	template <typename ReadPtr, typename WritePtr>
@@ -76,9 +76,9 @@ class CPipeBaseEndPoint : public mrpt::io::CStream
 
 	/** Converts the end-point into a string suitable for reconstruction at a
 	 * child process.
-	  * This *invalidates* this object, since only one real end-point can exist
+	 * This *invalidates* this object, since only one real end-point can exist
 	 * at once.
-	  */
+	 */
 	std::string serialize();
 
 	/** (Default=0) Timeout for read operations: microseconds (us) to wait for
@@ -106,8 +106,7 @@ class CPipeBaseEndPoint : public mrpt::io::CStream
 	size_t Write(const void* Buffer, size_t Count) override;
 
 	/** Without effect in this class */
-	uint64_t Seek(
-		int64_t of, CStream::TSeekOrigin o = sFromBeginning) override;
+	uint64_t Seek(int64_t of, CStream::TSeekOrigin o = sFromBeginning) override;
 	/** Without effect in this class */
 	uint64_t getTotalBytesCount() const override;
 	/** Without effect in this class */
@@ -119,7 +118,7 @@ static_assert(
 	"Copy Check");
 
 /** The read end-point in a pipe created with mrpt::synch::CPipe.
-  * Use the method CStream::Read() of the base class CStream
+ * Use the method CStream::Read() of the base class CStream
  * for blocking reading.
  * \ingroup mrpt_io_grp
  */
@@ -144,7 +143,7 @@ class CPipeReadEndPoint : public CPipeBaseEndPoint
 };  // end of CPipeReadEndPoint
 
 /** The write end-point in a pipe created with mrpt::synch::CPipe.
-  * Use the method CStream::Write() of the base class CStream
+ * Use the method CStream::Write() of the base class CStream
  * for blocking writing. */
 class CPipeWriteEndPoint : public CPipeBaseEndPoint
 {
@@ -173,6 +172,4 @@ void CPipe::createPipe(ReadPtr& outReadPipe, WritePtr& outWritePipe)
 	outWritePipe = WritePtr(new CPipeWriteEndPoint);
 	CPipe::initializePipe(*outReadPipe, *outWritePipe);
 }
-}  // End of namespace
-
-
+}  // namespace mrpt::io

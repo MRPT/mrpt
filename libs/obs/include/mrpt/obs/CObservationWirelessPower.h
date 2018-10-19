@@ -48,6 +48,4 @@ class CObservationWirelessPower : public CObservation
 
 };  // End of class def.
 
-}
-
-
+}  // namespace mrpt::obs

@@ -44,7 +44,7 @@ double& CSplineInterpolator1D::query(double x, double& y, bool& out_valid) const
 
 	std::pair<double, double> p1, p2, p3, p4;
 
-	std::map<double, double>::const_iterator it_ge1 = m_x2y.lower_bound(x);
+	auto it_ge1 = m_x2y.lower_bound(x);
 
 	// Exact match?
 	if (it_ge1 != m_x2y.end() && it_ge1->first == x)

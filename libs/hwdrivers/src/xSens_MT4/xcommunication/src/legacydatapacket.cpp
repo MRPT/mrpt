@@ -103,7 +103,7 @@ LegacyDataPacket::LegacyDataPacket(const LegacyDataPacket& other)
 }
 
 /*! \brief Assignment operator, copies the contents of \a pack into this
-*/
+ */
 const LegacyDataPacket& LegacyDataPacket::operator=(
 	const LegacyDataPacket& pack)
 {
@@ -149,7 +149,7 @@ LegacyDataPacket::~LegacyDataPacket()
 // lint -esym(613, LegacyDataPacket::m_fixedData) assert and dataSize take care
 // of this
 /*! \brief Returns the number of devices whose data is contained in the object
-*/
+ */
 uint16_t LegacyDataPacket::itemCount(void) const
 {
 	assert(m_fixedData);
@@ -158,7 +158,7 @@ uint16_t LegacyDataPacket::itemCount(void) const
 
 /*! \brief Set the number of devices whose data is contained in this object to
  * \a count
-*/
+ */
 void LegacyDataPacket::setItemCount(uint16_t count)
 {
 	assert(m_fixedData);
@@ -166,20 +166,20 @@ void LegacyDataPacket::setItemCount(uint16_t count)
 }
 
 /*! \brief Returns the Time Of Arrival value as stored in the object
-*/
+ */
 XsTimeStamp LegacyDataPacket::timeOfArrival(void) const { return m_toa; }
 /*! \brief Set the Time Of Arrival value to \a timeofarrival
-*/
+ */
 void LegacyDataPacket::setTimeOfArrival(XsTimeStamp timeofarrival)
 {
 	m_toa = timeofarrival;
 }
 
 /*! \brief Returns the Real Time Clock value as stored in the object
-*/
+ */
 XsTimeStamp LegacyDataPacket::rtc(void) const { return m_rtc; }
 /*! \brief Set the Real Time Clock value to \a realtimeclock
-*/
+ */
 void LegacyDataPacket::setRtc(const XsTimeStamp realtimeclock)
 {
 	m_rtc = realtimeclock;
@@ -196,7 +196,7 @@ int64_t LegacyDataPacket::largePacketCounter(void) const
 }
 
 /*! \brief Set the 64-bit sample counter associated with this packet
-*/
+ */
 void LegacyDataPacket::setLargePacketCounter(const int64_t sc)
 {
 	m_packetId = sc;
@@ -207,7 +207,7 @@ void LegacyDataPacket::setLargePacketCounter(const int64_t sc)
 XsMessage LegacyDataPacket::message(void) const { return m_msg; }
 /*! \brief Returns the original message as it was received, without computed and
  * added data (except for SDI interval reconstruction)
-*/
+ */
 XsMessage LegacyDataPacket::originalMessage(void) const
 {
 	assert(m_fixedData);
@@ -481,7 +481,7 @@ XsSize LegacyDataPacket::dataSize(int32_t index) const
 
 /*! \brief Update the internal info list by analyzing the known XsDataFormat for
  * each device.
-*/
+ */
 void LegacyDataPacket::updateInfoList()
 {
 	assert(m_fixedData);
@@ -1119,8 +1119,8 @@ XsScrData LegacyDataPacket::rawData(int32_t index) const
 	{
 		const uint8_t* tmp =
 			m_msg.getDataBuffer(m_fixedData->m_infoList[index].m_rawData);
-		const uint16_t* sh = (const uint16_t*)tmp;
-		uint16_t* bare = (uint16_t*)&buffer;
+		const auto* sh = (const uint16_t*)tmp;
+		auto* bare = (uint16_t*)&buffer;
 
 		for (uint16_t i = 0; i < (9 + rawTemperatureChannelCount(index));
 			 ++i, ++sh, ++bare)
@@ -1160,7 +1160,7 @@ bool LegacyDataPacket::setRawData(const XsScrData& data, int32_t index)
 			3 * 3 * 2 + (XS_MAX_TEMPERATURE_CHANNELS * 2);
 	}
 	// update
-	int16_t* bare = (int16_t*)&data;
+	auto* bare = (int16_t*)&data;
 	for (uint16_t i = 0; i < (9 + rawTemperatureChannelCount(index)); ++i)
 		m_msg.setDataShort(
 			bare[i], m_fixedData->m_infoList[index].m_rawData + (2 * i));
@@ -1190,7 +1190,7 @@ XsGpsPvtData LegacyDataPacket::gpsPvtData(int32_t index) const
 		// tmp =
 		// m_msg.getDataBuffer(m_fixedData->m_infoList[index].m_gpsPvtGpsData);
 		// const uint32_t* ln = (const uint32_t*) tmp;
-		uint32_t* bareln = (uint32_t*)&buffer.m_itow;
+		auto* bareln = (uint32_t*)&buffer.m_itow;
 		for (uint16_t i = 0; i < 10; ++i)
 		{
 			// lint --e{662, 661}
@@ -1280,7 +1280,7 @@ bool LegacyDataPacket::setGpsPvtData(const XsGpsPvtData& data, int32_t index)
 		data.m_pressureAge, m_fixedData->m_infoList[index].m_gpsPvtPressureAge);
 
 	// lon,lat,height,hacc,vacc,veln,vele,veld
-	int32_t* bareln = (int32_t*)&data.m_itow;
+	auto* bareln = (int32_t*)&data.m_itow;
 	for (uint16_t i = 0; i < 10; ++i)
 		m_msg.setDataLong(
 			bareln[i], m_fixedData->m_infoList[index].m_gpsPvtGpsData +
@@ -1326,7 +1326,7 @@ XsPressure LegacyDataPacket::pressure(int32_t index) const
 }
 
 /*!	\brief Return true if the packet contains pressure data
-*/
+ */
 bool LegacyDataPacket::containsPressure(int32_t index) const
 {
 	if (dataSize(index) == 0) return false;
@@ -1339,7 +1339,7 @@ bool LegacyDataPacket::containsPressure(int32_t index) const
 }
 
 /*! \brief Add/update pressure data for the item
-*/
+ */
 bool LegacyDataPacket::setPressure(const XsPressure& data, int32_t index)
 {
 	if (dataSize(index) == 0) return false;
@@ -1800,7 +1800,7 @@ bool LegacyDataPacket::setCalibratedData(
 		m_fixedData->m_infoList[index].m_size += numValues * ds;
 	}
 	// update
-	double* bare = (double*)&data;
+	auto* bare = (double*)&data;
 	if (m_fixedData->m_infoList[index].m_calAcc != XS_DATA_ITEM_NOT_AVAILABLE)
 		m_msg.setDataFPValue(
 			CHECKIFDOUBLE(m_calAcc), bare,
@@ -1861,7 +1861,7 @@ bool LegacyDataPacket::setOrientationQuaternion(
 		m_msg.resizeData(m_msg.getDataSize() + numValues * ds);
 		m_fixedData->m_infoList[index].m_size += numValues * ds;
 
-		double* bare = (double*)&data;
+		auto* bare = (double*)&data;
 		m_msg.setDataFPValue(
 			(m_fixedData->m_formatList[index].m_outputSettings &
 			 XOS_Dataformat_Mask) |
@@ -1936,9 +1936,10 @@ XsMatrix LegacyDataPacket::orientationMatrix(int32_t index) const
 		for (int32_t i = 0; i < 3; ++i)
 			for (int32_t j = 0; j < 3; ++j, k += ds)
 				buffer.setValue(
-					j, i, m_msg.getDataFPValue(
-							  CHECKIFDOUBLE(m_oriMat),
-							  m_fixedData->m_infoList[index].m_oriMat + k));
+					j, i,
+					m_msg.getDataFPValue(
+						CHECKIFDOUBLE(m_oriMat),
+						m_fixedData->m_infoList[index].m_oriMat + k));
 	}
 	else
 		buffer.zero();
@@ -2265,7 +2266,7 @@ XsUtcTime LegacyDataPacket::utcTime(int32_t index) const
 			m_msg.getDataShort(m_fixedData->m_infoList[index].m_utcYear);
 
 		// month, day, hour, minute, second and valid
-		uint8_t* bareByte = (uint8_t*)&buffer.m_month;
+		auto* bareByte = (uint8_t*)&buffer.m_month;
 		for (uint16_t i = 0; i < 6; ++i)
 			bareByte[i] = m_msg.getDataByte(
 				m_fixedData->m_infoList[index].m_utcMonth +
@@ -2315,7 +2316,7 @@ bool LegacyDataPacket::setUtcTime(const XsUtcTime& data, int32_t index)
 	m_msg.setDataShort(data.m_year, m_fixedData->m_infoList[index].m_utcYear);
 
 	// month, day, hour, minute, second and valid
-	int8_t* bareByte = (int8_t*)&data.m_month;
+	auto* bareByte = (int8_t*)&data.m_month;
 	for (uint16_t i = 0; i < 6; ++i)
 		m_msg.setDataByte(
 			bareByte[i],

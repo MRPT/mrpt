@@ -31,11 +31,7 @@ using namespace std;
 /*-------------------------------------------------------------
 						Constructor
 -------------------------------------------------------------*/
-CRoboPeakLidar::CRoboPeakLidar()
-	: m_com_port("") 
-{
-	m_sensorLabel = "RPLidar";
-}
+CRoboPeakLidar::CRoboPeakLidar() : m_com_port("") { m_sensorLabel = "RPLidar"; }
 
 /*-------------------------------------------------------------
 					~CRoboPeakLidar
@@ -105,16 +101,16 @@ void CRoboPeakLidar::doProcessSimple(
 			{
 				if (nodes[i].distance_q2 != 0)
 				{
-					float angle =
+					auto angle =
 						(float)((nodes[i].angle_q6_checkbit >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT) / 64.0f);
 					int angle_value = (int)(angle * angle_compensate_multiple);
 					if ((angle_value - angle_compensate_offset) < 0)
 						angle_compensate_offset = angle_value;
 					for (size_t j = 0; j < angle_compensate_multiple; j++)
 					{
-						angle_compensate_nodes[angle_value -
-											   angle_compensate_offset + j] =
-							nodes[i];
+						angle_compensate_nodes
+							[angle_value - angle_compensate_offset + j] =
+								nodes[i];
 					}
 				}
 			}
@@ -285,9 +281,8 @@ bool CRoboPeakLidar::checkCOMMs()
 	}
 
 	// make connection...
-	if (IS_FAIL(
-			RPLIDAR_DRV->connect(
-				m_com_port.c_str(), (_u32)m_com_port_baudrate)))
+	if (IS_FAIL(RPLIDAR_DRV->connect(
+			m_com_port.c_str(), (_u32)m_com_port_baudrate)))
 	{
 		fprintf(
 			stderr,

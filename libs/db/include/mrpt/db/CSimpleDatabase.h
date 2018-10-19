@@ -190,5 +190,4 @@ class CSimpleDatabase : public mrpt::serialization::CSerializable
 	TTableList m_tables;
 
 };  // end of class definition
-}
-
+}  // namespace mrpt::db

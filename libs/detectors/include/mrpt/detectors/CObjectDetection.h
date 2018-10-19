@@ -55,6 +55,4 @@ class CObjectDetection
 		vector_detectable_object& detected) = 0;
 
 };  // End of class
-}
-
-
+}  // namespace mrpt::detectors

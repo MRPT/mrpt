@@ -81,10 +81,10 @@ class ClearanceDiagram
 	 * normalized_clearance_for_exactly_that_robot_pose  */
 	std::vector<dist2clearance_t> m_raw_clearances;
 
-	size_t m_actual_num_paths{0};  // The decimated number of paths is implicit in
+	size_t m_actual_num_paths{
+		0};  // The decimated number of paths is implicit in
 	// raw_clearances.size()
 	double m_k_a2d{.0}, m_k_d2a{.0};
 };
 
-}
-
+}  // namespace mrpt::nav

@@ -22,13 +22,13 @@ using namespace mrpt::system;
 using namespace std;
 
 /************************************************************************************************
-*							extractFeaturesKLT
-************************************************************************************************/
+ *							extractFeaturesKLT
+ ************************************************************************************************/
 void CFeatureExtraction::extractFeaturesKLT(
 	const mrpt::img::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
 	unsigned int nDesiredFeatures, const TImageROI& ROI) const
 {
-//#define VERBOSE_TIMING
+	//#define VERBOSE_TIMING
 
 #ifdef VERBOSE_TIMING
 	CTicTac tictac;

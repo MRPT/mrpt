@@ -16,8 +16,14 @@
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/obs/obs_frwds.h>
 
-namespace octomap { class OcTree; }
-namespace octomap { class OcTreeNode; }
+namespace octomap
+{
+class OcTree;
+}
+namespace octomap
+{
+class OcTreeNode;
+}
 
 namespace mrpt
 {
@@ -44,7 +50,8 @@ class COctoMap : public COctoMapBase<octomap::OcTree, octomap::OcTreeNode>
 		mrpt::opengl::COctoMapVoxels& gl_obj) const override;
 
 	MAP_DEFINITION_START(COctoMap)
-	double resolution{0.10};  //!< The finest resolution of the octomap (default: 0.10
+	double resolution{
+		0.10};  //!< The finest resolution of the octomap (default: 0.10
 	//! meters)
 	mrpt::maps::COctoMap::TInsertionOptions
 		insertionOpts;  //!< Observations insertion options
@@ -123,6 +130,5 @@ class COctoMap : public COctoMapBase<octomap::OcTree, octomap::OcTreeNode>
 		const mrpt::obs::CObservation* obs,
 		const mrpt::poses::CPose3D* robotPose) override;
 };  // End of class def.
-}  // End of namespace
-}  // End of namespace
-
+}  // namespace maps
+}  // namespace mrpt

@@ -342,4 +342,3 @@ static_assert(
 
 }  // namespace hwdrivers
 }  // namespace mrpt
-

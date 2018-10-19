@@ -61,6 +61,4 @@ double internal_kmeans<float>(
 
 	return ret;
 }
-}
-
-
+}  // namespace mrpt::math::detail

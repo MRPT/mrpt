@@ -295,4 +295,3 @@ double computeJacobiansAndErrors(
 
 }  // namespace graphslam
 }  // namespace mrpt
-

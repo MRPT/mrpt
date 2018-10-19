@@ -140,8 +140,8 @@ template double wrapTo2Pi<double>(double a);
 template double wrapToPi<double>(double a);
 template void wrapToPiInPlace<double>(double& a);
 template double angDistance<double>(double from, double to);
-}
-}
+}  // namespace math
+}  // namespace mrpt
 
 // exporter
 void export_math()

@@ -215,7 +215,7 @@ class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
 	std::string m_device_ip;
 	/** Default: true Output whole frames and not data packets  */
 	bool m_return_frames{true};
-	/** Default: true Output PCAP Info msgs */ 
+	/** Default: true Output PCAP Info msgs */
 	bool m_pcap_verbose{true};
 	/** Default: "" (do not operate from an offline file) */
 	std::string m_pcap_input_file;
@@ -338,10 +338,10 @@ class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
 	 * Requires setting a device IP address.
 	 * \return false on error*/
 	bool setLidarOnOff(bool on);
-	
-	/** Switches whole frame (points in a single revolution) on/off publication  
-	 * to data packet publication. When on, getNextObservation() will return 
-	 * true whenever a frame is avaliable, when off, getNextObservation() will 
+
+	/** Switches whole frame (points in a single revolution) on/off publication
+	 * to data packet publication. When on, getNextObservation() will return
+	 * true whenever a frame is avaliable, when off, getNextObservation() will
 	 * return true whenever a data packet is avaliable. The default is on. When
 	 * listening to data packets on a PCAP, pcap_read_fast is enforced.
 	 */
@@ -433,7 +433,7 @@ class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
 	bool internal_send_http_post(const std::string& post_data);
 
 };  // end of class
-}
+}  // namespace mrpt::hwdrivers
 MRPT_ENUM_TYPE_BEGIN(mrpt::hwdrivers::CVelodyneScanner::model_t)
 using namespace mrpt::hwdrivers;
 MRPT_FILL_ENUM_MEMBER(CVelodyneScanner, VLP16);
@@ -448,6 +448,3 @@ MRPT_FILL_ENUM_MEMBER(CVelodyneScanner, STRONGEST);
 MRPT_FILL_ENUM_MEMBER(CVelodyneScanner, LAST);
 MRPT_FILL_ENUM_MEMBER(CVelodyneScanner, DUAL);
 MRPT_ENUM_TYPE_END()
-
-
-

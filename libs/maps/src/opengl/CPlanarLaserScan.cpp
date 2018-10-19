@@ -45,12 +45,7 @@ IMPLEMENTS_SERIALIZABLE(
 /*---------------------------------------------------------------
 				Constructor
   ---------------------------------------------------------------*/
-CPlanarLaserScan::CPlanarLaserScan()
-	: m_scan(),
-	  m_cache_points()
-	  
-{
-}
+CPlanarLaserScan::CPlanarLaserScan() : m_scan(), m_cache_points() {}
 
 /*---------------------------------------------------------------
 							clear

@@ -58,12 +58,8 @@ IMPLEMENTS_VIRTUAL_SERIALIZABLE(CPointsMap, CMetricMap, mrpt::maps)
 						Constructor
   ---------------------------------------------------------------*/
 CPointsMap::CPointsMap()
-	: insertionOptions(),
-	  likelihoodOptions(),
-	  m_x(),
-	  m_y(),
-	  m_z()
-	  
+	: insertionOptions(), likelihoodOptions(), m_x(), m_y(), m_z()
+
 {
 	mark_as_modified();
 }
@@ -311,7 +307,7 @@ void CPointsMap::determineMatching2D(
 	ASSERT_BELOW_(
 		params.offset_other_map_points, params.decimation_other_map_points);
 	ASSERT_(IS_DERIVED(otherMap2, CPointsMap));
-	const CPointsMap* otherMap = static_cast<const CPointsMap*>(otherMap2);
+	const auto* otherMap = static_cast<const CPointsMap*>(otherMap2);
 
 	const TPose2D otherMapPose(
 		otherMapPose_.x(), otherMapPose_.y(), otherMapPose_.phi());
@@ -617,9 +613,8 @@ bool CPointsMap::isEmpty() const { return m_x.empty(); }
 				TInsertionOptions
  ---------------------------------------------------------------*/
 CPointsMap::TInsertionOptions::TInsertionOptions()
-	: 
-	  horizontalTolerance(DEG2RAD(0.05))
-	  
+	: horizontalTolerance(DEG2RAD(0.05))
+
 {
 }
 
@@ -657,8 +652,8 @@ void CPointsMap::TInsertionOptions::readFromStream(
 }
 
 CPointsMap::TLikelihoodOptions::TLikelihoodOptions()
-	 
-= default;
+
+	= default;
 
 void CPointsMap::TLikelihoodOptions::writeToStream(
 	mrpt::serialization::CArchive& out) const
@@ -1073,7 +1068,7 @@ void CPointsMap::determineMatching3D(
 		params.offset_other_map_points, params.decimation_other_map_points);
 
 	ASSERT_(otherMap2->GetRuntimeClass()->derivedFrom(CLASS_ID(CPointsMap)));
-	const CPointsMap* otherMap = static_cast<const CPointsMap*>(otherMap2);
+	const auto* otherMap = static_cast<const CPointsMap*>(otherMap2);
 
 	const size_t nLocalPoints = otherMap->size();
 	const size_t nGlobalPoints = this->size();
@@ -1283,7 +1278,7 @@ void CPointsMap::compute3DDistanceToMesh(
 	MRPT_START
 	MRPT_UNUSED_PARAM(otherMapPose);
 
-	const CPointsMap* otherMap = static_cast<const CPointsMap*>(otherMap2);
+	const auto* otherMap = static_cast<const CPointsMap*>(otherMap2);
 
 	const size_t nLocalPoints = otherMap->size();
 	const size_t nGlobalPoints = this->size();
@@ -1457,12 +1452,11 @@ double CPointsMap::internal_computeObservationLikelihood(
 	{
 		// Observation is a laser range scan:
 		// -------------------------------------------
-		const CObservation2DRangeScan* o =
-			static_cast<const CObservation2DRangeScan*>(obs);
+		const auto* o = static_cast<const CObservation2DRangeScan*>(obs);
 
 		// Build (if not done before) the points map representation of this
 		// observation:
-		const CPointsMap* scanPoints = o->buildAuxPointsMap<CPointsMap>();
+		const auto* scanPoints = o->buildAuxPointsMap<CPointsMap>();
 
 		float sumSqrDist = 0;
 
@@ -1541,8 +1535,7 @@ double CPointsMap::internal_computeObservationLikelihood(
 	{
 		// Observation is a laser range scan:
 		// -------------------------------------------
-		const CObservationVelodyneScan* o =
-			dynamic_cast<const CObservationVelodyneScan*>(obs);
+		const auto* o = dynamic_cast<const CObservationVelodyneScan*>(obs);
 		ASSERT_(o != nullptr);
 
 		double sumSqrDist = 0;
@@ -1606,7 +1599,7 @@ using scan2pts_functor = void (*)(
 	mrpt::maps::CMetricMap::Ptr& out_map, const void* insertOps);
 
 extern void internal_set_build_points_map_from_scan2D(scan2pts_functor fn);
-}
+}  // namespace mrpt::obs
 
 void internal_build_points_map_from_scan2D(
 	const mrpt::obs::CObservation2DRangeScan& obs,
@@ -1842,8 +1835,7 @@ bool CPointsMap::internal_insertObservation(
 		 ********************************************************************/
 		mark_as_modified();
 
-		const CObservation2DRangeScan* o =
-			static_cast<const CObservation2DRangeScan*>(obs);
+		const auto* o = static_cast<const CObservation2DRangeScan*>(obs);
 		// Insert only HORIZONTAL scans??
 		bool reallyInsertIt;
 
@@ -1934,8 +1926,7 @@ bool CPointsMap::internal_insertObservation(
 		 ********************************************************************/
 		mark_as_modified();
 
-		const CObservation3DRangeScan* o =
-			static_cast<const CObservation3DRangeScan*>(obs);
+		const auto* o = static_cast<const CObservation3DRangeScan*>(obs);
 		// Insert only HORIZONTAL scans??
 		bool reallyInsertIt;
 
@@ -1964,7 +1955,8 @@ bool CPointsMap::internal_insertObservation(
 				fuseWith(
 					&auxMap,  // Fuse with this map
 					insertionOptions.minDistBetweenLaserPoints,  // Min dist.
-					nullptr  // rather than &checkForDeletion which we don't need
+					nullptr  // rather than &checkForDeletion which we don't
+							 // need
 					// for 3D observations
 				);
 			}
@@ -2000,15 +1992,14 @@ bool CPointsMap::internal_insertObservation(
 		 ********************************************************************/
 		mark_as_modified();
 
-		const CObservationRange* o = static_cast<const CObservationRange*>(obs);
+		const auto* o = static_cast<const CObservationRange*>(obs);
 
 		const double aper_2 = 0.5 * o->sensorConeApperture;
 
 		this->reserve(
 			this->size() + o->sensedData.size() * 30);  // faster push_back's.
 
-		for (CObservationRange::const_iterator it = o->begin(); it != o->end();
-			 ++it)
+		for (auto it = o->begin(); it != o->end(); ++it)
 		{
 			const CPose3D sensorPose = robotPose3D + CPose3D(it->sensorPose);
 			const double rang = it->sensedDistance;
@@ -2045,8 +2036,7 @@ bool CPointsMap::internal_insertObservation(
 		 ********************************************************************/
 		mark_as_modified();
 
-		const CObservationVelodyneScan* o =
-			static_cast<const CObservationVelodyneScan*>(obs);
+		const auto* o = static_cast<const CObservationVelodyneScan*>(obs);
 
 		// Automatically generate pointcloud if needed:
 		if (!o->point_cloud.size())
@@ -2136,8 +2126,7 @@ void CPointsMap::fuseWith(
 		// Find closest correspondence of "a":
 		int closestCorr = -1;
 		float minDist = std::numeric_limits<float>::max();
-		for (TMatchingPairList::const_iterator corrsIt =
-				 correspondences.begin();
+		for (auto corrsIt = correspondences.begin();
 			 corrsIt != correspondences.end(); ++corrsIt)
 		{
 			if (corrsIt->other_idx == i)

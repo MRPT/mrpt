@@ -236,8 +236,7 @@ void mrpt::topography::path_from_rtk_gps(
 	if (doConsistencyCheck && GPS_local_coords_on_vehicle.size() == 3)
 	{
 		unsigned int cnt = 0;
-		for (map<string, TPoint3D>::iterator i =
-				 GPS_local_coords_on_vehicle.begin();
+		for (auto i = GPS_local_coords_on_vehicle.begin();
 			 i != GPS_local_coords_on_vehicle.end(); ++i)
 		{
 			// Index tables:
@@ -245,8 +244,7 @@ void mrpt::topography::path_from_rtk_gps(
 			D_cov_rev_indexes[cnt] = i->first;
 			cnt++;
 
-			for (map<string, TPoint3D>::iterator j = i;
-				 j != GPS_local_coords_on_vehicle.end(); ++j)
+			for (auto j = i; j != GPS_local_coords_on_vehicle.end(); ++j)
 			{
 				if (i != j)
 				{
@@ -324,14 +322,14 @@ void mrpt::topography::path_from_rtk_gps(
 		//  that skip some readings at some times .0 .2 .4 .6 .8
 		if (list_gps_obs.size() > 4)
 		{
-			TListGPSs::iterator F = list_gps_obs.begin();
+			auto F = list_gps_obs.begin();
 			++F;
 			++F;
-			TListGPSs::iterator E = list_gps_obs.end();
+			auto E = list_gps_obs.end();
 			--E;
 			--E;
 
-			for (TListGPSs::iterator it = F; it != E; ++it)
+			for (auto it = F; it != E; ++it)
 			{
 				// Now check if we have 3 gps with the same time stamp:
 				// const size_t N = i->second.size();
@@ -347,9 +345,9 @@ void mrpt::topography::path_from_rtk_gps(
 
 					// Ok, we have "*l" missing in the set "*i".
 					// Try to interpolate from neighbors:
-					TListGPSs::iterator i_b1 = it;
+					auto i_b1 = it;
 					--i_b1;
-					TListGPSs::iterator i_a1 = it;
+					auto i_a1 = it;
 					++i_a1;
 
 					CObservationGPS::Ptr GPS_b1, GPS_a1;
@@ -428,8 +426,8 @@ void mrpt::topography::path_from_rtk_gps(
 
 		int idx_in_GPSs = 0;
 
-		for (TListGPSs::iterator i = list_gps_obs.begin();
-			 i != list_gps_obs.end(); ++i, idx_in_GPSs++)
+		for (auto i = list_gps_obs.begin(); i != list_gps_obs.end();
+			 ++i, idx_in_GPSs++)
 		{
 			// Now check if we have 3 gps with the same time stamp:
 			if (i->second.size() >= 3)
@@ -600,7 +598,7 @@ void mrpt::topography::path_from_rtk_gps(
 				pitchs.push_back(p.pitch);
 				rolls.push_back(p.roll);
 
-				CPose3DInterpolator::iterator q = i;
+				auto q = i;
 				for (int k = 0;
 					 k < PATH_SMOOTH_FILTER && q != robot_path.begin(); k++)
 				{

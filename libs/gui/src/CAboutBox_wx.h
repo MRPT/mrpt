@@ -64,4 +64,3 @@ class CAboutBox : public wxDialog, public CAboutBoxBase
    private:
 	DECLARE_EVENT_TABLE()
 };
-

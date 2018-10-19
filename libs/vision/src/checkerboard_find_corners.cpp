@@ -23,15 +23,15 @@ using namespace mrpt::math;
 using namespace std;
 
 /** Look for the corners of a chessboard in the image
-  * \param cornerCoords [OUT] The pixel coordinates of all the corners.
-  * \param check_size_x [IN] The number of squares, in the X direction
-  * \param check_size_y [IN] The number of squares, in the Y direction
-  * \param normalize_image [IN] Whether to normalize the image before detection
-  * \param useScaramuzzaMethod [IN] Whether to use the alternative, more robust
+ * \param cornerCoords [OUT] The pixel coordinates of all the corners.
+ * \param check_size_x [IN] The number of squares, in the X direction
+ * \param check_size_y [IN] The number of squares, in the Y direction
+ * \param normalize_image [IN] Whether to normalize the image before detection
+ * \param useScaramuzzaMethod [IN] Whether to use the alternative, more robust
  * method by M. Rufli, D. Scaramuzza, and R. Siegwart.
-  *
-  * \return true on success
-  */
+ *
+ * \return true on success
+ */
 bool mrpt::vision::findChessboardCorners(
 	const mrpt::img::CImage& in_img, std::vector<TPixelCoordf>& cornerCoords,
 	unsigned int check_size_x, unsigned int check_size_y, bool normalize_image,
@@ -116,21 +116,21 @@ bool mrpt::vision::findChessboardCorners(
 }
 
 /** Look for the corners of one or more chessboard/checkerboards in the image.
-  *  This method uses an improved version of OpenCV's cvFindChessboardCorners
+ *  This method uses an improved version of OpenCV's cvFindChessboardCorners
  * published
-  *   by M. Rufli, D. Scaramuzza, and R. Siegwart.
-  *  That method has been extended in this MRPT implementation to automatically
+ *   by M. Rufli, D. Scaramuzza, and R. Siegwart.
+ *  That method has been extended in this MRPT implementation to automatically
  * detect a
-  *   number of different checkerboards in the same image.
-  *
-  * \param cornerCoords [OUT] A vector of N vectors of pixel coordinates, for
+ *   number of different checkerboards in the same image.
+ *
+ * \param cornerCoords [OUT] A vector of N vectors of pixel coordinates, for
  * each of the N chessboards detected.
-  * \param check_size_x [IN] The number of squares, in the X direction
-  * \param check_size_y [IN] The number of squares, in the Y direction
-  *
-  *
-  * \sa mrpt::vision::checkerBoardCameraCalibration, drawChessboardCorners
-  */
+ * \param check_size_x [IN] The number of squares, in the X direction
+ * \param check_size_y [IN] The number of squares, in the Y direction
+ *
+ *
+ * \sa mrpt::vision::checkerBoardCameraCalibration, drawChessboardCorners
+ */
 void mrpt::vision::findMultipleChessboardsCorners(
 	const mrpt::img::CImage& in_img,
 	std::vector<std::vector<TPixelCoordf>>& cornerCoords,
@@ -165,9 +165,8 @@ void mrpt::vision::findMultipleChessboardsCorners(
 			// save the corners in the data structure:
 			for (unsigned int y = 0, k = 0; y < check_size_y; y++)
 				for (unsigned int x = 0; x < check_size_x; x++, k++)
-					cornerCoords[i].push_back(
-						TPixelCoordf(
-							corners_list[i][k].x, corners_list[i][k].y));
+					cornerCoords[i].push_back(TPixelCoordf(
+						corners_list[i][k].x, corners_list[i][k].y));
 
 			// Consistency of the counter-clockwise XYZ reference system and
 			// corners ORDER.

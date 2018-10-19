@@ -59,10 +59,12 @@ class SubgraphMatcher
 	bool evalBinaryConstraintsOdometry(
 		Plane& plane1, Plane& plane2, Plane& planeA, Plane& planeB);
 
-	/*!List of combinations that have been explored in the interpretation tree.*/  // Cambiar nombre
+	/*!List of combinations that have been explored in the interpretation
+	 * tree.*/  // Cambiar nombre
 	std::vector<std::map<unsigned, unsigned>> alreadyExplored;
 
-	/*!Find the best combination of planes correspondences given two subgraphs represeting local neighborhoods of planes.*/  // Cambiar nombre o Quitar!
+	/*!Find the best combination of planes correspondences given two subgraphs
+	 * represeting local neighborhoods of planes.*/  // Cambiar nombre o Quitar!
 	void exploreSubgraphTreeR(
 		std::set<unsigned>& evalRef, std::set<unsigned>& evalCheck,
 		std::map<unsigned, unsigned>& matched);
@@ -109,7 +111,5 @@ class SubgraphMatcher
 
 	float calcAreaUnmatched(std::set<unsigned>& unmatched_planes);
 };
-}
+}  // namespace mrpt::pbmap
 #endif
-
-

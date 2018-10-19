@@ -46,7 +46,7 @@ class CWindowManager : public mrpt::system::COutputLogger
 		this->setCDisplayWindow3DPtr(win_in);
 	}
 	/**\brief Class destructor. */
-	~CWindowManager() override =default;
+	~CWindowManager() override = default;
 	/**\brief Store the CDisplayWindow3D pointer in the CWindowManager
 	 * instance.
 	 *
@@ -144,7 +144,7 @@ class CWindowManager : public mrpt::system::COutputLogger
 
 	mrpt::gui::CDisplayWindow3D* win; /**< CDisplayWindow instance */
 	mrpt::graphslam::CWindowObserver* observer; /**< CWindowObserver instance */
-private:
+   private:
 	/**\brief Initialization method, to be called from the various Constructors.
 	 */
 	void initCWindowManager()
@@ -189,6 +189,4 @@ private:
 	double m_viewp_y; /**< vertical layout of the viewports */
 	double m_viewp_margin;
 };
-}
-
-
+}  // namespace mrpt::graphslam

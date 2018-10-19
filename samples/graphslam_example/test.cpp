@@ -213,15 +213,13 @@ struct ExampleDemoGraphSLAM
 				 graph.edges.begin();
 			 itEdge != graph.edges.end(); ++itEdge)
 		{
-			const typename my_graph_t::edge_t::type_value delta_noise(
-				CPose3D(
-					getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_XYZ),
-					getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_XYZ),
-					getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_XYZ),
-					getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_ANG),
-					getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_ANG),
-					getRandomGenerator().drawGaussian1D(
-						0, STD_NOISE_EDGE_ANG)));
+			const typename my_graph_t::edge_t::type_value delta_noise(CPose3D(
+				getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_XYZ),
+				getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_XYZ),
+				getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_XYZ),
+				getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_ANG),
+				getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_ANG),
+				getRandomGenerator().drawGaussian1D(0, STD_NOISE_EDGE_ANG)));
 			itEdge->second.getPoseMean() +=
 				typename my_graph_t::edge_t::type_value(delta_noise);
 		}
@@ -231,20 +229,19 @@ struct ExampleDemoGraphSLAM
 			 itNode != graph.nodes.end(); ++itNode)
 			if (itNode->first != graph.root)
 				itNode->second.getPoseMean() +=
-					typename my_graph_t::edge_t::type_value(
-						CPose3D(
-							getRandomGenerator().drawGaussian1D(
-								0, STD_NOISE_NODE_XYZ),
-							getRandomGenerator().drawGaussian1D(
-								0, STD_NOISE_NODE_XYZ),
-							getRandomGenerator().drawGaussian1D(
-								0, STD_NOISE_NODE_XYZ),
-							getRandomGenerator().drawGaussian1D(
-								0, STD_NOISE_NODE_ANG),
-							getRandomGenerator().drawGaussian1D(
-								0, STD_NOISE_NODE_ANG),
-							getRandomGenerator().drawGaussian1D(
-								0, STD_NOISE_NODE_ANG)));
+					typename my_graph_t::edge_t::type_value(CPose3D(
+						getRandomGenerator().drawGaussian1D(
+							0, STD_NOISE_NODE_XYZ),
+						getRandomGenerator().drawGaussian1D(
+							0, STD_NOISE_NODE_XYZ),
+						getRandomGenerator().drawGaussian1D(
+							0, STD_NOISE_NODE_XYZ),
+						getRandomGenerator().drawGaussian1D(
+							0, STD_NOISE_NODE_ANG),
+						getRandomGenerator().drawGaussian1D(
+							0, STD_NOISE_NODE_ANG),
+						getRandomGenerator().drawGaussian1D(
+							0, STD_NOISE_NODE_ANG)));
 
 		// This is the initial input graph (make a copy for later use):
 		const my_graph_t graph_initial = graph;

@@ -58,13 +58,13 @@ TEST(SerializeTestOpenGL, WriteReadToMem)
 		CLASS_ID(COctoMapVoxels)
 	};
 
-	for (auto & lstClasse : lstClasses)
+	for (auto& lstClasse : lstClasses)
 	{
 		try
 		{
 			mrpt::io::CMemoryStream buf;
 			{
-				CSerializable* o =
+				auto* o =
 					static_cast<CSerializable*>(lstClasse->createObject());
 				mrpt::serialization::archiveFrom(buf) << *o;
 				delete o;

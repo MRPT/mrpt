@@ -4,4 +4,3 @@ namespace mrpt::utils
 {
 using CRateTimer = mrpt::system::CRateTimer;
 }
-

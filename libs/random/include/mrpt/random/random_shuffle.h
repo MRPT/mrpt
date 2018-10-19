@@ -10,16 +10,17 @@
 #pragma once
 
 #include <utility>  // std::swap
-#include <iterator> // iterator_traits
-#include <random> // uniform_int_distribution
+#include <iterator>  // iterator_traits
+#include <random>  // uniform_int_distribution
 
-namespace mrpt {
+namespace mrpt
+{
 namespace random
 {
 /** Uniform shuffle a sequence.
  *\ingroup mrpt_random_grp
  */
-template<class RandomIt, class URBG>
+template <class RandomIt, class URBG>
 void shuffle(RandomIt first, RandomIt last, URBG&& g)
 {
 	typedef typename std::iterator_traits<RandomIt>::difference_type diff_t;
@@ -42,5 +43,5 @@ void shuffle(RandomIt first, RandomIt last)
 	mrpt::random::shuffle(first, last, g);
 }
 
-}
-}
+}  // namespace random
+}  // namespace mrpt

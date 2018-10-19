@@ -41,7 +41,7 @@ IMPLEMENTS_SERIALIZABLE(COpenGLScene, CRenderizableDisplayList, mrpt::opengl)
 /*---------------------------------------------------------------
 						Constructor
 ---------------------------------------------------------------*/
-COpenGLScene::COpenGLScene()  { createViewport("main"); }
+COpenGLScene::COpenGLScene() { createViewport("main"); }
 /*--------------------------------------------------------------
 					Copy constructor
   ---------------------------------------------------------------*/
@@ -97,7 +97,7 @@ void COpenGLScene::render() const
 	GLint win_dims[4];
 	glGetIntegerv(GL_VIEWPORT, win_dims);
 
-	for (const auto & m_viewport : m_viewports)
+	for (const auto& m_viewport : m_viewports)
 		m_viewport->render(win_dims[2], win_dims[3]);
 
 	// Assure we restore the original viewport:
@@ -119,8 +119,7 @@ void COpenGLScene::serializeTo(mrpt::serialization::CArchive& out) const
 	uint32_t n;
 	n = (uint32_t)m_viewports.size();
 	out << n;
-	for (const auto & m_viewport : m_viewports)
-		out << *m_viewport;
+	for (const auto& m_viewport : m_viewports) out << *m_viewport;
 }
 
 void COpenGLScene::serializeFrom(
@@ -177,7 +176,7 @@ void COpenGLScene::insert(
 	const CRenderizable::Ptr& newObject, const std::string& viewportName)
 {
 	MRPT_START
-	for (auto & m_viewport : m_viewports)
+	for (auto& m_viewport : m_viewports)
 	{
 		if (m_viewport->m_name == viewportName)
 		{
@@ -198,7 +197,7 @@ CRenderizable::Ptr COpenGLScene::getByName(
 {
 	MRPT_UNUSED_PARAM(viewportName);
 	CRenderizable::Ptr obj;
-	for (auto & m_viewport : m_viewports)
+	for (auto& m_viewport : m_viewports)
 		if ((obj = m_viewport->getByName(str))) break;
 	return obj;
 }
@@ -208,8 +207,7 @@ CRenderizable::Ptr COpenGLScene::getByName(
   ---------------------------------------------------------------*/
 void COpenGLScene::initializeAllTextures()
 {
-	for (auto & m_viewport : m_viewports)
-		m_viewport->initializeAllTextures();
+	for (auto& m_viewport : m_viewports) m_viewport->initializeAllTextures();
 }
 
 /*--------------------------------------------------------------
@@ -252,7 +250,7 @@ COpenGLViewport::Ptr COpenGLScene::getViewport(
 	const std::string& viewportName) const
 {
 	MRPT_START
-	for (const auto & m_viewport : m_viewports)
+	for (const auto& m_viewport : m_viewports)
 		if (m_viewport->m_name == viewportName) return m_viewport;
 	return COpenGLViewport::Ptr();
 	MRPT_END
@@ -277,10 +275,10 @@ bool COpenGLScene::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 {
 	bool found = false;
 	double tmp;
-	for (const auto & vp : m_viewports)
+	for (const auto& vp : m_viewports)
 	{
-			for (CListOpenGLObjects::const_iterator it2 = vp->m_objects.begin();
-			 it2 != vp->m_objects.end(); ++it2)
+		for (auto it2 = vp->m_objects.begin(); it2 != vp->m_objects.end();
+			 ++it2)
 			if ((*it2)->traceRay(o, tmp))
 			{
 				if (!found)

@@ -28,7 +28,7 @@ struct MyBarClass2
 {
 	DECLARE_TTYPENAME_CLASSNAME(MyNS::MyBarClass2)
 };
-}
+}  // namespace MyNS
 DECLARE_CUSTOM_TTYPENAME(MyFooClass);
 DECLARE_CUSTOM_TTYPENAME(MyNS::MyBarClass);
 

@@ -42,11 +42,7 @@ namespace arch
 {
 namespace net
 {
-raw_serial::raw_serial()
-	: rp::hal::serial_rxtx() 
-{
-	_init();
-}
+raw_serial::raw_serial() : rp::hal::serial_rxtx() { _init(); }
 
 raw_serial::~raw_serial() { close(); }
 bool raw_serial::open() { return open(_portName, _baudrate, _flags); }
@@ -307,9 +303,9 @@ _u32 raw_serial::getTermBaudBitmap(_u32 baud)
 	}
 	return -1;
 }
-}
-}
-}  // end rp::arch::net
+}  // namespace net
+}  // namespace arch
+}  // namespace rp
 
 // begin rp::hal
 namespace rp
@@ -322,5 +318,5 @@ serial_rxtx* serial_rxtx::CreateRxTx()
 }
 
 void serial_rxtx::ReleaseRxTx(serial_rxtx* rxtx) { delete rxtx; }
-}
-}  // end rp::hal
+}  // namespace hal
+}  // namespace rp

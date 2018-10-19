@@ -18,7 +18,8 @@
 struct XsSyncSetting;
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #else
 #define XSSYNCSETTINGS_INITIALIZER                           \
 	{                                                        \
@@ -26,10 +27,12 @@ extern "C" {
 	}
 #endif
 
-XSTYPES_DLL_API int XsSyncSetting_isInput(const struct XsSyncSetting* thisPtr);
-XSTYPES_DLL_API int XsSyncSetting_isOutput(const struct XsSyncSetting* thisPtr);
-XSTYPES_DLL_API void XsSyncSetting_swap(
-	struct XsSyncSetting* a, struct XsSyncSetting* b);
+	XSTYPES_DLL_API int XsSyncSetting_isInput(
+		const struct XsSyncSetting* thisPtr);
+	XSTYPES_DLL_API int XsSyncSetting_isOutput(
+		const struct XsSyncSetting* thisPtr);
+	XSTYPES_DLL_API void XsSyncSetting_swap(
+		struct XsSyncSetting* a, struct XsSyncSetting* b);
 
 #ifdef __cplusplus
 }  // extern "C"
@@ -94,10 +97,10 @@ struct XsSyncSetting
 	//! \brief \copybrief XsSyncSetting_isOutput
 	inline bool isOutput() const { return 0 != XsSyncSetting_isOutput(this); }
 	/*! \brief Swap the contents with \a other
-	*/
+	 */
 	inline void swap(XsSyncSetting& other) { XsSyncSetting_swap(this, &other); }
 	/*! \brief Return true if \a other is identical to this
-	*/
+	 */
 	inline bool operator==(const XsSyncSetting& other) const
 	{
 		return (this == &other) ||

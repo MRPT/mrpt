@@ -24,12 +24,12 @@ class CObservationBeaconRanges;
 class CObservationBearingRange;
 class CObservationStereoImages;
 class CObservationGPS;
-}
+}  // namespace obs
 namespace maps
 {
 class CMetricMap;
 class CPointsMap;
 class CSimplePointsMap;
 class CSimpleMap;
-}
-}
+}  // namespace maps
+}  // namespace mrpt

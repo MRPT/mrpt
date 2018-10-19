@@ -24,9 +24,8 @@ MAP_DEFINITION_REGISTER(
 	"CHeightGridMap2D_MRF,dem_mrf", mrpt::maps::CHeightGridMap2D_MRF)
 
 CHeightGridMap2D_MRF::TMapDefinition::TMapDefinition()
-	
-	  
-= default;
+
+	= default;
 
 void CHeightGridMap2D_MRF::TMapDefinition::loadFromConfigFile_map_specific(
 	const mrpt::config::CConfigFileBase& source,
@@ -72,7 +71,7 @@ mrpt::maps::CMetricMap* CHeightGridMap2D_MRF::internal_CreateFromMapDefinition(
 {
 	const CHeightGridMap2D_MRF::TMapDefinition& def =
 		*dynamic_cast<const CHeightGridMap2D_MRF::TMapDefinition*>(&_def);
-	CHeightGridMap2D_MRF* obj = new CHeightGridMap2D_MRF(
+	auto* obj = new CHeightGridMap2D_MRF(
 		def.mapType, def.min_x, def.max_x, def.min_y, def.max_y, def.resolution,
 		def.run_map_estimation_at_ctor);
 	obj->insertionOptions = def.insertionOpts;
@@ -165,7 +164,7 @@ void CHeightGridMap2D_MRF::serializeTo(mrpt::serialization::CArchive& out) const
 	dyngridcommon_writeToStream(out);
 
 	// To assure compatibility: The size of each cell:
-	uint32_t n = static_cast<uint32_t>(sizeof(TRandomFieldCell));
+	auto n = static_cast<uint32_t>(sizeof(TRandomFieldCell));
 	out << n;
 
 	// Save the map contents:

@@ -14,28 +14,28 @@
 namespace mrpt::opengl
 {
 /** A solid or wireframe box in 3D, defined by 6 rectangular faces parallel to
-  *the planes X, Y and Z (note that the object can be translated and rotated
-  *afterwards as any other CRenderizable object using the "object pose" in the
-  *base class).
-  *  Three drawing modes are possible:
-  *	- Wireframe: setWireframe(true). Used color is the CRenderizable color
-  *	- Solid box: setWireframe(false). Used color is the CRenderizable color
-  *	- Solid box with border: setWireframe(false) + enableBoxBorder(true). Solid
-  *color is the CRenderizable color, border line can be set with
-  *setBoxBorderColor().
-  *
-  * \sa opengl::COpenGLScene,opengl::CRenderizable
-  *
-  *  <div align="center">
-  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
-  *border-style: solid;">
-  *   <tr> <td> mrpt::opengl::CBox </td> <td> \image html preview_CBox.png </td>
-  *</tr>
-  *  </table>
-  *  </div>
-  *
-  * \ingroup mrpt_opengl_grp
-  */
+ *the planes X, Y and Z (note that the object can be translated and rotated
+ *afterwards as any other CRenderizable object using the "object pose" in the
+ *base class).
+ *  Three drawing modes are possible:
+ *	- Wireframe: setWireframe(true). Used color is the CRenderizable color
+ *	- Solid box: setWireframe(false). Used color is the CRenderizable color
+ *	- Solid box with border: setWireframe(false) + enableBoxBorder(true). Solid
+ *color is the CRenderizable color, border line can be set with
+ *setBoxBorderColor().
+ *
+ * \sa opengl::COpenGLScene,opengl::CRenderizable
+ *
+ *  <div align="center">
+ *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
+ *border-style: solid;">
+ *   <tr> <td> mrpt::opengl::CBox </td> <td> \image html preview_CBox.png </td>
+ *</tr>
+ *  </table>
+ *  </div>
+ *
+ * \ingroup mrpt_opengl_grp
+ */
 class CBox : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CBox)
@@ -55,8 +55,8 @@ class CBox : public CRenderizableDisplayList
 
    public:
 	/** Render
-	  * \sa mrpt::opengl::CRenderizable
-	  */
+	 * \sa mrpt::opengl::CRenderizable
+	 */
 	void render_dl() const override;
 
 	/** Evaluates the bounding box of this object (including possible children)
@@ -66,9 +66,9 @@ class CBox : public CRenderizableDisplayList
 		mrpt::math::TPoint3D& bb_max) const override;
 
 	/**
-	  * Ray tracing.
-	  * \sa mrpt::opengl::CRenderizable
-	  */
+	 * Ray tracing.
+	 * \sa mrpt::opengl::CRenderizable
+	 */
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 
 	inline void setLineWidth(float width)
@@ -121,8 +121,7 @@ class CBox : public CRenderizableDisplayList
 
 	/** Destructor  */
 	~CBox() override = default;
+
    private:
 };
-}
-
-
+}  // namespace mrpt::opengl

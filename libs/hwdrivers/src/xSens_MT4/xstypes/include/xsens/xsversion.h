@@ -15,7 +15,8 @@
 typedef struct XsVersion XsVersion;
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #else
 #define XSVERSION_INITIALIZER            \
 	{                                    \
@@ -23,9 +24,9 @@ extern "C" {
 	}
 #endif
 
-XSTYPES_DLL_API int XsVersion_empty(const XsVersion* thisPtr);
-XSTYPES_DLL_API void XsVersion_toString(
-	const XsVersion* thisPtr, XsString* version);
+	XSTYPES_DLL_API int XsVersion_empty(const XsVersion* thisPtr);
+	XSTYPES_DLL_API void XsVersion_toString(
+		const XsVersion* thisPtr, XsString* version);
 
 #ifdef __cplusplus
 }  // extern "C"
@@ -90,6 +91,7 @@ struct XsVersion
 	//! version details such as 'beta' or 'Mk4' to indicate the readiness and
 	//! purpose of this version of the object.
 	inline XsString extra() const { return m_extra; }
+
    private:
 #endif
 

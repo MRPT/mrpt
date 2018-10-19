@@ -115,8 +115,7 @@ void CPosePDFGaussianInf::copyFrom(const CPosePDF& o)
 
 	if (IS_CLASS(&o, CPosePDFGaussianInf))
 	{  // It's my same class:
-		const CPosePDFGaussianInf* ptr =
-			static_cast<const CPosePDFGaussianInf*>(&o);
+		const auto* ptr = static_cast<const CPosePDFGaussianInf*>(&o);
 		mean = ptr->mean;
 		cov_inv = ptr->cov_inv;
 	}
@@ -140,8 +139,7 @@ void CPosePDFGaussianInf::copyFrom(const CPose3DPDF& o)
 
 	if (IS_CLASS(&o, CPose3DPDFGaussianInf))
 	{  // Cov is already in information form:
-		const CPose3DPDFGaussianInf* ptr =
-			static_cast<const CPose3DPDFGaussianInf*>(&o);
+		const auto* ptr = static_cast<const CPose3DPDFGaussianInf*>(&o);
 		cov_inv(0, 0) = ptr->cov_inv(0, 0);
 		cov_inv(1, 1) = ptr->cov_inv(1, 1);
 		cov_inv(2, 2) = ptr->cov_inv(3, 3);
@@ -298,16 +296,14 @@ void CPosePDFGaussianInf::bayesianFusion(
 	ASSERT_(p1_.GetRuntimeClass() == CLASS_ID(CPosePDFGaussianInf));
 	ASSERT_(p2_.GetRuntimeClass() == CLASS_ID(CPosePDFGaussianInf));
 
-	const CPosePDFGaussianInf* p1 =
-		static_cast<const CPosePDFGaussianInf*>(&p1_);
-	const CPosePDFGaussianInf* p2 =
-		static_cast<const CPosePDFGaussianInf*>(&p2_);
+	const auto* p1 = static_cast<const CPosePDFGaussianInf*>(&p1_);
+	const auto* p2 = static_cast<const CPosePDFGaussianInf*>(&p2_);
 
 	const CMatrixDouble33& C1_inv = p1->cov_inv;
 	const CMatrixDouble33& C2_inv = p2->cov_inv;
 
-	CMatrixDouble31 x1 = CMatrixDouble31(p1->mean);
-	CMatrixDouble31 x2 = CMatrixDouble31(p2->mean);
+	auto x1 = CMatrixDouble31(p1->mean);
+	auto x2 = CMatrixDouble31(p2->mean);
 
 	this->cov_inv = C1_inv + C2_inv;
 
@@ -330,7 +326,7 @@ void CPosePDFGaussianInf::bayesianFusion(
 void CPosePDFGaussianInf::inverse(CPosePDF& o) const
 {
 	ASSERT_(o.GetRuntimeClass() == CLASS_ID(CPosePDFGaussianInf));
-	CPosePDFGaussianInf* out = static_cast<CPosePDFGaussianInf*>(&o);
+	auto* out = static_cast<CPosePDFGaussianInf*>(&o);
 
 	// The mean:
 	out->mean = CPose2D(0, 0, 0) - mean;
@@ -365,8 +361,8 @@ void CPosePDFGaussianInf::operator+=(const CPose2D& Ap)
  ---------------------------------------------------------------*/
 double CPosePDFGaussianInf::evaluatePDF(const CPose2D& x) const
 {
-	CMatrixDouble31 X = CMatrixDouble31(x);
-	CMatrixDouble31 MU = CMatrixDouble31(mean);
+	auto X = CMatrixDouble31(x);
+	auto MU = CMatrixDouble31(mean);
 
 	return math::normalPDF(X, MU, cov_inv.inverse());
 }
@@ -376,8 +372,8 @@ double CPosePDFGaussianInf::evaluatePDF(const CPose2D& x) const
  ---------------------------------------------------------------*/
 double CPosePDFGaussianInf::evaluateNormalizedPDF(const CPose2D& x) const
 {
-	CMatrixDouble31 X = CMatrixDouble31(x);
-	CMatrixDouble31 MU = CMatrixDouble31(mean);
+	auto X = CMatrixDouble31(x);
+	auto MU = CMatrixDouble31(mean);
 
 	CMatrixDouble33 cov(UNINITIALIZED_MATRIX);
 	this->cov_inv.inv(cov);
@@ -405,7 +401,7 @@ double CPosePDFGaussianInf::mahalanobisDistanceTo(
 {
 	MRPT_START
 
-	CArrayDouble<3> MU = CArrayDouble<3>(mean);
+	auto MU = CArrayDouble<3>(mean);
 	MU -= CArrayDouble<3>(theOther.mean);
 
 	wrapToPiInPlace(MU[2]);

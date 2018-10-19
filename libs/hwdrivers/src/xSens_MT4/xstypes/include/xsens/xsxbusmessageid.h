@@ -13,7 +13,7 @@
 	@{
 */
 /*! \brief Xsens Xbus Message Identifiers
-*/
+ */
 enum XsXbusMessageId
 {
 	XMID_InvalidMessage = 0x00,

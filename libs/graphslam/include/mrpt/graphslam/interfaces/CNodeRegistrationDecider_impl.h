@@ -156,4 +156,3 @@ typename GRAPH_T::global_pose_t
 	pose_out += m_since_prev_node_PDF.getMeanVal();
 	return pose_out;
 }
-

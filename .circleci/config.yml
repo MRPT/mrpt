@@ -11,6 +11,22 @@ jobs:
       - run: make gcov -C build
       - run: make -C build
       - run: bash <(curl -s https://codecov.io/bash) -X gcov -y .codecov.yml -s build
+  clang:
+    docker:
+      - image: mrpt/mrpt-build-env:full-bionic
+    steps:
+      - checkout
+      - run:
+          name: Generate cmake files
+          command: cmake -DBUILD_EXAMPLES=On -DBUILD_TESTING=On -DENABLE_COVERAGE=On -H. -Bbuild
+          environment:
+            CC: /usr/bin/clang-6.0
+            CXX: /usr/bin/clang++-6.0
+      - run: make -C build tests_build_all
+      - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build
+      - run: make gcov -C build
+      - run: make -C build
+      - run: bash <(curl -s https://codecov.io/bash) -X gcov -y .codecov.yml -s build
   headless:
     docker:
       - image: mrpt/mrpt-build-env:headless-bionic
@@ -48,4 +64,5 @@ workflows:
       - full
       - headless
       - minimal
+      - clang
       - clang-format-lint

@@ -346,8 +346,7 @@ void MapBuilding_ICP_Live(const string& INI_FILENAME)
 				global_list_obs.clear();
 			}
 			// Keep the most recent laser scan:
-			for (mrpt::hwdrivers::CGenericSensor::TListObservations::
-					 reverse_iterator it = obs_copy.rbegin();
+			for (auto it = obs_copy.rbegin();
 				 !observation && it != obs_copy.rend(); ++it)
 				if (it->second && IS_CLASS(it->second, CObservation2DRangeScan))
 					observation =
@@ -357,9 +356,7 @@ void MapBuilding_ICP_Live(const string& INI_FILENAME)
 			// Save all of them to rawlog for optional post-processing:
 			if (out_rawlog.fileOpenCorrectly())
 			{
-				for (mrpt::hwdrivers::CGenericSensor::TListObservations::
-						 iterator it = obs_copy.begin();
-					 it != obs_copy.end(); ++it)
+				for (auto it = obs_copy.begin(); it != obs_copy.end(); ++it)
 					if (it->second &&
 						IS_CLASS(it->second, CObservation2DRangeScan))
 						mrpt::serialization::archiveFrom(out_rawlog)
@@ -501,7 +498,7 @@ void MapBuilding_ICP_Live(const string& INI_FILENAME)
 			// Draw laser scanners in 3D:
 			if (SHOW_LASER_SCANS_3D)
 			{
-				for (auto & lst_current_laser_scan : lst_current_laser_scans)
+				for (auto& lst_current_laser_scan : lst_current_laser_scans)
 				{
 					// Create opengl object and load scan data from the scan
 					// observation:
@@ -539,9 +536,8 @@ void MapBuilding_ICP_Live(const string& INI_FILENAME)
 				// Update:
 				win3D->forceRepaint();
 
-				std::this_thread::sleep_for(
-					std::chrono::milliseconds(
-						SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS));
+				std::this_thread::sleep_for(std::chrono::milliseconds(
+					SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS));
 			}
 		}
 

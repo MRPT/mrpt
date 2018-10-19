@@ -164,10 +164,11 @@ int main(int argc, char** argv)
 
 		vector<std::thread> lstThreads;
 
-		for (auto & section : sections)
+		for (auto& section : sections)
 		{
 			if (section == GLOBAL_SECTION_NAME || section.empty() ||
-				iniFile.read_bool(section, "rawlog-grabber-ignore", false, false))
+				iniFile.read_bool(
+					section, "rawlog-grabber-ignore", false, false))
 				continue;  // This is not a sensor:
 
 			TThreadParams threParms;
@@ -200,8 +201,7 @@ int main(int argc, char** argv)
 
 				if (!global_list_obs.empty())
 				{
-					CGenericSensor::TListObservations::iterator itEnd =
-						global_list_obs.begin();
+					auto itEnd = global_list_obs.begin();
 					std::advance(itEnd, global_list_obs.size() / 2);
 					copy_of_global_list_obs.insert(
 						global_list_obs.begin(), itEnd);
@@ -214,8 +214,7 @@ int main(int argc, char** argv)
 				// -----------------------
 				// USE SENSORY-FRAMES
 				// -----------------------
-				for (CGenericSensor::TListObservations::iterator it =
-						 copy_of_global_list_obs.begin();
+				for (auto it = copy_of_global_list_obs.begin();
 					 it != copy_of_global_list_obs.end(); ++it)
 				{
 					// If we have an action, save the SF and start a new one:
@@ -343,15 +342,12 @@ int main(int argc, char** argv)
 												"   IMU angles (degrees): "
 												"(yaw,pitch,roll)=(%.06f, "
 												"%.06f, %.06f)",
-												RAD2DEG(
-													imu->rawMeasurements
-														[IMU_YAW]),
-												RAD2DEG(
-													imu->rawMeasurements
-														[IMU_PITCH]),
-												RAD2DEG(
-													imu->rawMeasurements
-														[IMU_ROLL]))
+												RAD2DEG(imu->rawMeasurements
+															[IMU_YAW]),
+												RAD2DEG(imu->rawMeasurements
+															[IMU_PITCH]),
+												RAD2DEG(imu->rawMeasurements
+															[IMU_ROLL]))
 										 << endl;
 								}
 							}
@@ -380,14 +376,15 @@ int main(int argc, char** argv)
 				// ---------------------------
 				CObservationIMU::Ptr imu;  // Default:nullptr
 
-				for (auto & copy_of_global_list_ob : copy_of_global_list_obs)
+				for (auto& copy_of_global_list_ob : copy_of_global_list_obs)
 				{
 					out_arch << *(copy_of_global_list_ob.second);
 
 					// Show GPS mode:
 					if (hwdrivers_verbose)
 					{
-						if ((copy_of_global_list_ob.second)->GetRuntimeClass() ==
+						if ((copy_of_global_list_ob.second)
+								->GetRuntimeClass() ==
 							CLASS_ID(CObservationGPS))
 						{
 							CObservationGPS::Ptr gps =
@@ -404,7 +401,8 @@ int main(int argc, char** argv)
 							gps->getDescriptionAsText(cout);
 						}
 						else if (
-							(copy_of_global_list_ob.second)->GetRuntimeClass() ==
+							(copy_of_global_list_ob.second)
+								->GetRuntimeClass() ==
 							CLASS_ID(CObservationIMU))
 						{
 							imu = std::dynamic_pointer_cast<CObservationIMU>(
@@ -454,8 +452,7 @@ int main(int argc, char** argv)
 		allThreadsMustExit = true;
 		std::this_thread::sleep_for(300ms);
 		cout << endl << "Waiting for all threads to close..." << endl;
-		for (auto & lstThread : lstThreads)
-			lstThread.join();
+		for (auto& lstThread : lstThreads) lstThread.join();
 
 		return 0;
 	}

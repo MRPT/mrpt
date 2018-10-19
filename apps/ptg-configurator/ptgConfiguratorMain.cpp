@@ -35,7 +35,8 @@ class MyArtProvider : public wxArtProvider
 {
    protected:
 	wxBitmap CreateBitmap(
-		const wxArtID& id, const wxArtClient& client, const wxSize& size) override;
+		const wxArtID& id, const wxArtClient& client,
+		const wxSize& size) override;
 };
 
 // CreateBitmap function
@@ -171,9 +172,8 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	SetClientSize(wxSize(893, 576));
 	{
 		wxIcon FrameIcon;
-		FrameIcon.CopyFromBitmap(
-			wxArtProvider::GetBitmap(
-				wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")), wxART_OTHER));
+		FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(
+			wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")), wxART_OTHER));
 		SetIcon(FrameIcon);
 	}
 	FlexGridSizer1 = new wxFlexGridSizer(0, 1, 0, 0);
@@ -196,8 +196,8 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 		StaticText1, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
 	cbPTGClass = new wxChoice(
-		Panel1, ID_CHOICE1, wxDefaultPosition, wxDefaultSize, 0, nullptr, wxCB_SORT,
-		wxDefaultValidator, _T("ID_CHOICE1"));
+		Panel1, ID_CHOICE1, wxDefaultPosition, wxDefaultSize, 0, nullptr,
+		wxCB_SORT, wxDefaultValidator, _T("ID_CHOICE1"));
 	FlexGridSizer7->Add(
 		cbPTGClass, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
 	StaticText5 = new wxStaticText(
@@ -483,8 +483,9 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	FlexGridSizer12->AddGrowableRow(1);
 	FlexGridSizer12->AddGrowableRow(3);
 	StaticText8 = new wxStaticText(
-		Panel4, ID_STATICTEXT8, _("Motion direction to robot heading angle: "
-								  "for selected PTG over time [deg]"),
+		Panel4, ID_STATICTEXT8,
+		_("Motion direction to robot heading angle: "
+		  "for selected PTG over time [deg]"),
 		wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT8"));
 	FlexGridSizer12->Add(StaticText8, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
 	m_plotHeadAngIndiv =
@@ -493,8 +494,9 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 		m_plotHeadAngIndiv, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP,
 		0);
 	StaticText9 = new wxStaticText(
-		Panel4, ID_STATICTEXT9, _("Motion direction to robot heading angle: "
-								  "maximum value for each trajectory [deg]"),
+		Panel4, ID_STATICTEXT9,
+		_("Motion direction to robot heading angle: "
+		  "maximum value for each trajectory [deg]"),
 		wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT9"));
 	FlexGridSizer12->Add(StaticText9, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
 	m_plotHeadAngAll =
@@ -699,12 +701,12 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 
 	m_plot->Connect(
 		wxEVT_MOTION,
-		(wxObjectEventFunction)&ptgConfiguratorframe::Onplot3DMouseMove, nullptr,
-		this);
+		(wxObjectEventFunction)&ptgConfiguratorframe::Onplot3DMouseMove,
+		nullptr, this);
 	m_plot->Connect(
 		wxEVT_LEFT_DOWN,
-		(wxObjectEventFunction)&ptgConfiguratorframe::Onplot3DMouseClick, nullptr,
-		this);
+		(wxObjectEventFunction)&ptgConfiguratorframe::Onplot3DMouseClick,
+		nullptr, this);
 
 	// Redirect all output to control:
 	m_myRedirector = new CMyRedirector(edLog, false, 100, true);
@@ -856,11 +858,9 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 			mrpt::rtti::getAllRegisteredClasses();
 		for (auto lstClasse : lstClasses)
 		{
-			if (!lstClasse->derivedFrom(
-					"CParameterizedTrajectoryGenerator") ||
+			if (!lstClasse->derivedFrom("CParameterizedTrajectoryGenerator") ||
 				!mrpt::system::os::_strcmpi(
-					lstClasse->className,
-					"CParameterizedTrajectoryGenerator"))
+					lstClasse->className, "CParameterizedTrajectoryGenerator"))
 				continue;
 			cbPTGClass->AppendString(_U(lstClasse->className));
 		}
@@ -1074,11 +1074,10 @@ void ptgConfiguratorframe::rebuild3Dview()
 		{
 			const double ptg_alpha =
 				ptg->index2alpha(edIndexHighlightPath->GetValue());
-			StaticText12->SetLabel(
-				wxString::Format(
-					_("Selected path trajectory: Phi [deg]. PTG alpha=%.03f "
-					  "[deg]"),
-					mrpt::RAD2DEG(ptg_alpha)));
+			StaticText12->SetLabel(wxString::Format(
+				_("Selected path trajectory: Phi [deg]. PTG alpha=%.03f "
+				  "[deg]"),
+				mrpt::RAD2DEG(ptg_alpha)));
 		}
 		catch (...)
 		{
@@ -1315,11 +1314,9 @@ void ptgConfiguratorframe::loadPlugin()
 			mrpt::rtti::getAllRegisteredClasses();
 		for (auto lstClasse : lstClasses)
 		{
-			if (!lstClasse->derivedFrom(
-					"CParameterizedTrajectoryGenerator") ||
+			if (!lstClasse->derivedFrom("CParameterizedTrajectoryGenerator") ||
 				!mrpt::system::os::_strcmpi(
-					lstClasse->className,
-					"CParameterizedTrajectoryGenerator"))
+					lstClasse->className, "CParameterizedTrajectoryGenerator"))
 				continue;
 			cbPTGClass->AppendString(_U(lstClasse->className));
 		}

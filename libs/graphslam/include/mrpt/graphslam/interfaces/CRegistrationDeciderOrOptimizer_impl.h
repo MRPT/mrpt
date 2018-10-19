@@ -124,7 +124,4 @@ bool CRegistrationDeciderOrOptimizer<GRAPH_T>::isMultiRobotSlamClass()
 {
 	return is_mr_slam_class;
 }
-}  // end of namespaces
-
-
-
+}  // namespace mrpt::graphslam

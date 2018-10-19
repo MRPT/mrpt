@@ -1040,7 +1040,7 @@ namespace nanoflann
 		 */
 		NodePtr divideTree(const IndexType left, const IndexType right, BoundingBox& bbox)
 		{
-			NodePtr node = pool.allocate<Node>(); // allocate memory
+			auto node = pool.allocate<Node>(); // allocate memory
 
 			/* If too few exemplars remain, then make this a leaf node. */
 			if ( (right-left) <= static_cast<IndexType>(m_leaf_max_size) ) {
@@ -1102,7 +1102,7 @@ namespace nanoflann
 
 		void middleSplit_(IndexType* ind, IndexType count, IndexType& index, int& cutfeat, DistanceType& cutval, const BoundingBox& bbox)
 		{
-			const DistanceType EPS=static_cast<DistanceType>(0.00001);
+			const auto EPS=static_cast<DistanceType>(0.00001);
 			ElementType max_span = bbox[0].high-bbox[0].low;
 			for (int i=1; i<(DIM>0 ? DIM : dim); ++i) {
 				ElementType span = bbox[i].high-bbox[i].low;

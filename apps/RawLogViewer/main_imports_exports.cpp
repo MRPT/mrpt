@@ -490,8 +490,7 @@ void xRawLogViewerFrame::OnMenuExportALOG(wxCommandEvent& event)
 					lastTime = obs->timestamp;
 					if (firstTime == INVALID_TIMESTAMP) firstTime = lastTime;
 					double time_obs = timeDifference(firstTime, lastTime);
-					unsigned int M_real =
-						static_cast<unsigned int>(obs->scan.size());
+					auto M_real = static_cast<unsigned int>(obs->scan.size());
 					ASSERT_(M_real == 361 || M_real == 181);
 
 					::fprintf(
@@ -672,8 +671,7 @@ void xRawLogViewerFrame::OnImportRTL(wxCommandEvent& event)
 				if (newRecord.type >= 0)
 				{
 					// DO NOT OVERWRITE OTHER RECORDS! SHIFT TIMESTAMP A LITTLE
-					std::map<double, TAlogRecord>::const_iterator itPrev =
-						theAlog.begin();
+					auto itPrev = theAlog.begin();
 					while (itPrev != theAlog.end())
 					{
 						timestamp += 0.0002;
@@ -881,8 +879,7 @@ void xRawLogViewerFrame::OnMenuImportALOG(wxCommandEvent& event)
 				if (newRecord.type >= 0)
 				{
 					// DO NOT OVERWRITE OTHER RECORDS! SHIFT TIMESTAMP A LITTLE
-					std::map<double, TAlogRecord>::const_iterator itPrev =
-						theAlog.begin();
+					auto itPrev = theAlog.begin();
 					while (itPrev != theAlog.end())
 					{
 						timestamp += 0.0002;
@@ -922,8 +919,7 @@ void xRawLogViewerFrame::OnMenuImportALOG(wxCommandEvent& event)
 
 								// DO NOT OVERWRITE OTHER RECORDS! SHIFT
 								// TIMESTAMP A LITTLE
-								std::map<double, TAlogRecord>::const_iterator
-									itPrev = theAlog.begin();
+								auto itPrev = theAlog.begin();
 								while (itPrev != theAlog.end())
 								{
 									timestamp += 0.0002;
@@ -1015,7 +1011,7 @@ void xRawLogViewerFrame::OnMenuImportALOG(wxCommandEvent& event)
 				CDirectoryExplorer::filterByExtension(lstFiles, "jpg");
 				CDirectoryExplorer::sortByName(lstFiles);
 
-				for (auto & lstFile : lstFiles)
+				for (auto& lstFile : lstFiles)
 				{
 					// string strLine( it->wholePath );
 					TAlogRecord newRecord;
@@ -1026,20 +1022,20 @@ void xRawLogViewerFrame::OnMenuImportALOG(wxCommandEvent& event)
 					size_t idx_time = lstFile.name.rfind("_") + 1;
 					if (string::npos != idx_time)
 					{
-						double timestamp = atof(lstFile.name.c_str() + idx_time);
+						double timestamp =
+							atof(lstFile.name.c_str() + idx_time);
 
 						// Pan:
 						size_t idx_pan = lstFile.name.find("Motion");
 						if (idx_pan != string::npos)
 						{
 							newRecord.data.resize(1);
-							newRecord.data[0] =
-								DEG2RAD(atof(lstFile.name.c_str() + idx_pan + 6));
+							newRecord.data[0] = DEG2RAD(
+								atof(lstFile.name.c_str() + idx_pan + 6));
 
 							// DO NOT OVERWRITE OTHER RECORDS! SHIFT TIMESTAMP A
 							// LITTLE
-							std::map<double, TAlogRecord>::const_iterator
-								itPrev = theAlog.begin();
+							auto itPrev = theAlog.begin();
 							while (itPrev != theAlog.end())
 							{
 								timestamp += 0.0002;
@@ -1313,7 +1309,7 @@ void xRawLogViewerFrame::OnGenGasTxt(wxCommandEvent& event)
 				size_t lineCount = 0;
 
 				// run each Enose (if more than one)
-				for (auto & m_reading : obs->m_readings)
+				for (auto& m_reading : obs->m_readings)
 				{
 					// Temperature
 					if (m_reading.hasTemperature == true)
@@ -1323,8 +1319,7 @@ void xRawLogViewerFrame::OnGenGasTxt(wxCommandEvent& event)
 					}
 
 					// Run each sensor on Enose
-					for (vector<float>::iterator it =
-							 m_reading.readingsVoltage.begin();
+					for (auto it = m_reading.readingsVoltage.begin();
 						 it != m_reading.readingsVoltage.end(); ++it)
 					{
 						::fprintf(f, "%f ", *it);
@@ -2119,14 +2114,12 @@ void xRawLogViewerFrame::OnGenerateTextFileRangeBearing(wxCommandEvent& event)
 				if (obs)
 				{
 					// For each entry in this sequence:
-					for (auto & q : obs->sensedData)
+					for (auto& q : obs->sensedData)
 					{
 						M++;
 						::fprintf(
-							f, "%u %i %f %f %f\n", i,
-							q.landmarkID,
-							q.range, q.yaw,
-							q.pitch);
+							f, "%u %i %f %f %f\n", i, q.landmarkID, q.range,
+							q.yaw, q.pitch);
 					}
 				}
 			}
@@ -2139,14 +2132,12 @@ void xRawLogViewerFrame::OnGenerateTextFileRangeBearing(wxCommandEvent& event)
 					CObservationBearingRange::Ptr obs =
 						std::dynamic_pointer_cast<CObservationBearingRange>(o);
 					// For each entry in this sequence:
-					for (auto & q : obs->sensedData)
+					for (auto& q : obs->sensedData)
 					{
 						M++;
 						::fprintf(
-							f, "%u %i %f %f %f\n", i,
-							q.landmarkID,
-							q.range, q.yaw,
-							q.pitch);
+							f, "%u %i %f %f %f\n", i, q.landmarkID, q.range,
+							q.yaw, q.pitch);
 					}
 				}
 			}

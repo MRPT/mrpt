@@ -26,7 +26,7 @@
 // We only need this to be on this translation unit, hence the advantage of
 // using our MRPT wrapper instead
 // of the original exprtk sources.
-//PIMPL_IMPLEMENT(exprtk::expression<double>
+// PIMPL_IMPLEMENT(exprtk::expression<double>
 
 using namespace mrpt;
 using namespace mrpt::expr;
@@ -37,12 +37,12 @@ struct CRuntimeCompiledExpression::Impl
 	std::string m_original_expr_str;
 };
 
-CRuntimeCompiledExpression::CRuntimeCompiledExpression():
-	m_impl(mrpt::make_impl<CRuntimeCompiledExpression::Impl>())
+CRuntimeCompiledExpression::CRuntimeCompiledExpression()
+	: m_impl(mrpt::make_impl<CRuntimeCompiledExpression::Impl>())
 {
 }
 
-CRuntimeCompiledExpression::~CRuntimeCompiledExpression()= default;
+CRuntimeCompiledExpression::~CRuntimeCompiledExpression() = default;
 
 void CRuntimeCompiledExpression::compile(
 	/** [in] The expression to be compiled. */
@@ -60,7 +60,7 @@ void CRuntimeCompiledExpression::compile(
 	exprtk::symbol_table<double> symbol_table;
 	for (const auto& v : variables)
 	{
-		double& var = const_cast<double&>(v.second);
+		auto& var = const_cast<double&>(v.second);
 		symbol_table.add_variable(v.first, var);
 	}
 	symbol_table.add_constant("M_PI", M_PI);
@@ -70,9 +70,7 @@ void CRuntimeCompiledExpression::compile(
 
 	// Compile user-given expressions:
 	exprtk::parser<double> parser;
-	if (!parser.compile(
-			expression,
-			m_impl->m_compiled_formula))
+	if (!parser.compile(expression, m_impl->m_compiled_formula))
 		THROW_EXCEPTION_FMT(
 			"Error compiling expression (name=`%s`): `%s`. Error: `%s`",
 			expr_name_for_error_reporting.c_str(), expression.c_str(),
@@ -94,7 +92,7 @@ void CRuntimeCompiledExpression::register_symbol_table(
 	exprtk::symbol_table<double> symbol_table;
 	for (const auto& v : variables)
 	{
-		double* var = const_cast<double*>(v.second);
+		auto* var = const_cast<double*>(v.second);
 		symbol_table.add_variable(v.first, *var);
 	}
 	m_impl->m_compiled_formula.register_symbol_table(symbol_table);

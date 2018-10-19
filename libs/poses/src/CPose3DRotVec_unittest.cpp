@@ -34,10 +34,11 @@ class Pose3DRotVecTests : public ::testing::Test
 		CPose3DRotVec newPoseRVT_1(pose3D);
 
 		EXPECT_NEAR(
-			0, (poseRVT.getAsVectorVal() - newPoseRVT_1.getAsVectorVal())
-				   .array()
-				   .abs()
-				   .sum(),
+			0,
+			(poseRVT.getAsVectorVal() - newPoseRVT_1.getAsVectorVal())
+				.array()
+				.abs()
+				.sum(),
 			1e-5)
 			<< "EULER: " << endl
 			<< "pRVT        : " << poseRVT << endl
@@ -48,10 +49,11 @@ class Pose3DRotVecTests : public ::testing::Test
 		CPose3DRotVec newPoseRVT_2 = CPose3DRotVec(CPose3D(poseQuat));
 
 		EXPECT_NEAR(
-			0, (poseRVT.getAsVectorVal() - newPoseRVT_2.getAsVectorVal())
-				   .array()
-				   .abs()
-				   .sum(),
+			0,
+			(poseRVT.getAsVectorVal() - newPoseRVT_2.getAsVectorVal())
+				.array()
+				.abs()
+				.sum(),
 			1e-5)
 			<< "Quat: " << endl
 			<< "pRVT        : " << poseRVT << endl
@@ -114,20 +116,22 @@ class Pose3DRotVecTests : public ::testing::Test
 		const CPose3DRotVec p3 = CPose3DRotVec(CPose3D(q1_c_q2));
 
 		EXPECT_NEAR(
-			0, (p1_c_p2_i_p2.getAsVectorVal() - p2.getAsVectorVal())
-				   .array()
-				   .abs()
-				   .sum(),
+			0,
+			(p1_c_p2_i_p2.getAsVectorVal() - p2.getAsVectorVal())
+				.array()
+				.abs()
+				.sum(),
 			1e-5)
 			<< "p1          : " << p1 << endl
 			<< "p2          : " << p2 << endl
 			<< "p1_c_p2_i_p2: " << p1_c_p2_i_p2 << endl;
 
 		EXPECT_NEAR(
-			0, (p2_c_p1_i_p2.getAsVectorVal() - p1.getAsVectorVal())
-				   .array()
-				   .abs()
-				   .sum(),
+			0,
+			(p2_c_p1_i_p2.getAsVectorVal() - p1.getAsVectorVal())
+				.array()
+				.abs()
+				.sum(),
 			1e-5)
 			<< "p1          : " << p1 << endl
 			<< "p2          : " << p2 << endl
@@ -139,10 +143,11 @@ class Pose3DRotVecTests : public ::testing::Test
 			<< "p2_c_p1_i_p2: " << p2_c_p1_i_p2 << endl;
 
 		EXPECT_NEAR(
-			0, (p3.getAsVectorVal() - p1_c_p2.getAsVectorVal())
-				   .array()
-				   .abs()
-				   .sum(),
+			0,
+			(p3.getAsVectorVal() - p1_c_p2.getAsVectorVal())
+				.array()
+				.abs()
+				.sum(),
 			1e-5)
 			<< "p3          : " << p3 << endl
 			<< "p1_c_p2     : " << p1_c_p2 << endl;

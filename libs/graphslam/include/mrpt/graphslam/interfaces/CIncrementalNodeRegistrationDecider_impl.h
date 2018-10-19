@@ -11,7 +11,6 @@
 
 namespace mrpt::graphslam::deciders
 {
-
 template <class GRAPH_T>
 bool CIncrementalNodeRegistrationDecider<GRAPH_T>::checkRegistrationCondition()
 {
@@ -172,5 +171,4 @@ std::string CIncrementalNodeRegistrationDecider<GRAPH_T>::TParams::getAsString()
 
 	MRPT_END;
 }
-}  // end of namespaces
-
+}  // namespace mrpt::graphslam::deciders

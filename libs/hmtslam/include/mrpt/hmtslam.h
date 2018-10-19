@@ -17,4 +17,3 @@
 #include <mrpt/hmtslam/CRobotPosesGraph.h>
 #include <mrpt/hmtslam/CHMHMapNode.h>
 #include <mrpt/hmtslam/CHMHMapArc.h>
-

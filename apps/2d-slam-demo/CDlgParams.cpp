@@ -402,8 +402,9 @@ CDlgParams::CDlgParams(
 	FlexGridSizer12->AddGrowableCol(0);
 	FlexGridSizer13 = new wxFlexGridSizer(0, 3, 0, 0);
 	cbSensorDistin = new wxCheckBox(
-		this, ID_CHECKBOX1, _("Sensor distingishes landmarks (Checked: avoids "
-							  "data association problem)"),
+		this, ID_CHECKBOX1,
+		_("Sensor distingishes landmarks (Checked: avoids "
+		  "data association problem)"),
 		wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
 		_T("ID_CHECKBOX1"));
 	cbSensorDistin->SetValue(false);
@@ -518,8 +519,9 @@ CDlgParams::CDlgParams(
 	FlexGridSizer20 = new wxFlexGridSizer(1, 2, 0, 0);
 	FlexGridSizer20->AddGrowableCol(1);
 	StaticText26 = new wxStaticText(
-		this, ID_STATICTEXT26, _("Normally-distributeed number\nof spurious "
-								 "per \"observation\":\n(Both to 0 = disable)"),
+		this, ID_STATICTEXT26,
+		_("Normally-distributeed number\nof spurious "
+		  "per \"observation\":\n(Both to 0 = disable)"),
 		wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE,
 		_T("ID_STATICTEXT26"));
 	FlexGridSizer20->Add(

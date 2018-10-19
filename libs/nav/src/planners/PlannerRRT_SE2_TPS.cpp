@@ -23,7 +23,7 @@ using namespace std;
 
 MRPT_TODO("Optimize getNearestNode() with KD-tree!")
 
-PlannerRRT_SE2_TPS::PlannerRRT_SE2_TPS()  = default;
+PlannerRRT_SE2_TPS::PlannerRRT_SE2_TPS() = default;
 /** Load all params from a config file source */
 void PlannerRRT_SE2_TPS::loadConfig(
 	const mrpt::config::CConfigFileBase& ini, const std::string& sSect)
@@ -302,7 +302,7 @@ void PlannerRRT_SE2_TPS::solve(
 					(goal_dist < end_criteria.acceptedDistToTarget) &&
 					(goal_ang < end_criteria.acceptedAngToTarget);
 
-				mrpt::graphs::TNodeID new_nearest_id = INVALID_NODEID;
+				auto new_nearest_id = INVALID_NODEID;
 				if (!is_acceptable_goal)  // Only check for nearby nodes if this
 				// is not a solution!
 				{
@@ -405,8 +405,7 @@ void PlannerRRT_SE2_TPS::solve(
 				result.move_tree.backtrackPath(
 					new_child_id, candidate_solution_path);
 				this_path_cost = 0;
-				for (TMoveTreeSE2_TP::path_t::const_iterator it =
-						 candidate_solution_path.begin();
+				for (auto it = candidate_solution_path.begin();
 					 it != candidate_solution_path.end(); ++it)
 					if (it->edge_to_parent)
 						this_path_cost += it->edge_to_parent->cost;

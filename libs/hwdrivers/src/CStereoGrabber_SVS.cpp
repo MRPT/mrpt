@@ -29,8 +29,7 @@ using namespace mrpt::hwdrivers;
  -------------------------------------------------------------*/
 CStereoGrabber_SVS::CStereoGrabber_SVS(
 	int cameraIndex, const TCaptureOptions_SVS& options)
-	: 
-	  m_resolutionX(options.frame_width),
+	: m_resolutionX(options.frame_width),
 	  m_resolutionY(options.frame_height),
 	  m_procesOnChip(options.m_procesOnChip),
 	  m_calDisparity(options.m_calDisparity),

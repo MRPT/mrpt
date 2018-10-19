@@ -351,8 +351,7 @@ struct graph_ops
 
 				// EQUIV? Replace ID by new one.
 				{
-					const map<TNodeID, TNodeID>::const_iterator itEq =
-						lstEquivs.find(id);
+					const auto itEq = lstEquivs.find(id);
 					if (itEq != lstEquivs.end()) id = itEq->second;
 				}
 
@@ -394,8 +393,7 @@ struct graph_ops
 
 				// EQUIV? Replace ID by new one.
 				{
-					const map<TNodeID, TNodeID>::const_iterator itEq =
-						lstEquivs.find(id);
+					const auto itEq = lstEquivs.find(id);
 					if (itEq != lstEquivs.end()) id = itEq->second;
 				}
 
@@ -433,8 +431,7 @@ struct graph_ops
 
 				// EQUIV? Replace ID by new one.
 				{
-					const map<TNodeID, TNodeID>::const_iterator itEq =
-						lstEquivs.find(id);
+					const auto itEq = lstEquivs.find(id);
 					if (itEq != lstEquivs.end()) id = itEq->second;
 				}
 
@@ -465,13 +462,11 @@ struct graph_ops
 
 				// EQUIV? Replace ID by new one.
 				{
-					const map<TNodeID, TNodeID>::const_iterator itEq =
-						lstEquivs.find(to_id);
+					const auto itEq = lstEquivs.find(to_id);
 					if (itEq != lstEquivs.end()) to_id = itEq->second;
 				}
 				{
-					const map<TNodeID, TNodeID>::const_iterator itEq =
-						lstEquivs.find(from_id);
+					const auto itEq = lstEquivs.find(from_id);
 					if (itEq != lstEquivs.end()) from_id = itEq->second;
 				}
 
@@ -518,13 +513,11 @@ struct graph_ops
 
 				// EQUIV? Replace ID by new one.
 				{
-					const map<TNodeID, TNodeID>::const_iterator itEq =
-						lstEquivs.find(to_id);
+					const auto itEq = lstEquivs.find(to_id);
 					if (itEq != lstEquivs.end()) to_id = itEq->second;
 				}
 				{
-					const map<TNodeID, TNodeID>::const_iterator itEq =
-						lstEquivs.find(from_id);
+					const auto itEq = lstEquivs.find(from_id);
 					if (itEq != lstEquivs.end()) from_id = itEq->second;
 				}
 
@@ -603,13 +596,11 @@ struct graph_ops
 
 				// EQUIV? Replace ID by new one.
 				{
-					const map<TNodeID, TNodeID>::const_iterator itEq =
-						lstEquivs.find(to_id);
+					const auto itEq = lstEquivs.find(to_id);
 					if (itEq != lstEquivs.end()) to_id = itEq->second;
 				}
 				{
-					const map<TNodeID, TNodeID>::const_iterator itEq =
-						lstEquivs.find(from_id);
+					const auto itEq = lstEquivs.find(from_id);
 					if (itEq != lstEquivs.end()) from_id = itEq->second;
 				}
 
@@ -678,8 +669,8 @@ struct graph_ops
 				TNodeID id;
 				if (!(s >> id))
 					THROW_EXCEPTION(format(
-						"Line %u: Can't read id in FIX line: '%s'",
-						lineNum, lin.c_str()));
+						"Line %u: Can't read id in FIX line: '%s'", lineNum,
+						lin.c_str()));
 				g->root = id;
 			}
 			else
@@ -732,8 +723,7 @@ struct graph_ops
 		TListAllEdges lstAllEdges;
 
 		// Clasify all edges to identify duplicated ones:
-		for (TEdgeIterator itEd = g->edges.begin(); itEd != g->edges.end();
-			 ++itEd)
+		for (auto itEd = g->edges.begin(); itEd != g->edges.end(); ++itEd)
 		{
 			// Build a pair <id1,id2> with id1 < id2:
 			const pair<TNodeID, TNodeID> arc_id = make_pair(
@@ -747,8 +737,7 @@ struct graph_ops
 
 		// Now, remove all but the first edge:
 		size_t nRemoved = 0;
-		for (typename TListAllEdges::const_iterator it = lstAllEdges.begin();
-			 it != lstAllEdges.end(); ++it)
+		for (auto it = lstAllEdges.begin(); it != lstAllEdges.end(); ++it)
 		{
 			const size_t N = it->second.size();
 			for (size_t i = 1; i < N; i++)  // i=0 is NOT removed
@@ -833,9 +822,8 @@ struct graph_ops
 		map<const TNodeID, TNodeAnnotations*> nodeID_to_annots;
 		if (!empty_node_annots)
 		{
-			for (typename graph_t::global_poses_t::const_iterator poses_cit =
-					 g->nodes.begin();
-				 poses_cit != g->nodes.end(); ++poses_cit)
+			for (auto poses_cit = g->nodes.begin(); poses_cit != g->nodes.end();
+				 ++poses_cit)
 			{
 				nodeID_to_annots.insert(make_pair(
 					poses_cit->first, poses_cit->second.getCopyOfAnnots()));
@@ -853,9 +841,8 @@ struct graph_ops
 		// Fill the NODE_ANNOTATIONS part again
 		if (!empty_node_annots)
 		{
-			for (typename graph_t::global_poses_t::iterator poses_cit =
-					 g->nodes.begin();
-				 poses_cit != g->nodes.end(); ++poses_cit)
+			for (auto poses_cit = g->nodes.begin(); poses_cit != g->nodes.end();
+				 ++poses_cit)
 			{
 				TNodeAnnotations* node_annots =
 					nodeID_to_annots.at(poses_cit->first);
@@ -968,10 +955,8 @@ struct graph_ops
 		const TNodeID to_id = itEdge->first.second;
 
 		// And their global poses as stored in "nodes"
-		typename graph_t::global_poses_t::const_iterator itPoseFrom =
-			g->nodes.find(from_id);
-		typename graph_t::global_poses_t::const_iterator itPoseTo =
-			g->nodes.find(to_id);
+		auto itPoseFrom = g->nodes.find(from_id);
+		auto itPoseTo = g->nodes.find(to_id);
 		ASSERTMSG_(
 			itPoseFrom != g->nodes.end(),
 			format(

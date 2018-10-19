@@ -108,8 +108,7 @@ void CPose3DPDFGaussianInf::copyFrom(const CPose3DPDF& o)
 
 	if (IS_CLASS(&o, CPose3DPDFGaussianInf))
 	{  // It's my same class:
-		const CPose3DPDFGaussianInf* ptr =
-			static_cast<const CPose3DPDFGaussianInf*>(&o);
+		const auto* ptr = static_cast<const CPose3DPDFGaussianInf*>(&o);
 		mean = ptr->mean;
 		cov_inv = ptr->cov_inv;
 	}
@@ -126,8 +125,7 @@ void CPose3DPDFGaussianInf::copyFrom(const CPosePDF& o)
 {
 	if (IS_CLASS(&o, CPosePDFGaussianInf))
 	{  // cov is already inverted, but it's a 2D pose:
-		const CPosePDFGaussianInf* ptr =
-			static_cast<const CPosePDFGaussianInf*>(&o);
+		const auto* ptr = static_cast<const CPosePDFGaussianInf*>(&o);
 
 		mean = CPose3D(ptr->mean);
 
@@ -204,9 +202,8 @@ void CPose3DPDFGaussianInf::drawSingleSample(CPose3D& outPart) const
 		mean.x() + v[0], mean.y() + v[1], mean.z() + v[2], mean.yaw() + v[3],
 		mean.pitch() + v[4], mean.roll() + v[5]);
 
-	MRPT_END_WITH_CLEAN_UP(
-		cov_inv.saveToTextFile(
-			"__DEBUG_EXC_DUMP_drawSingleSample_COV_INV.txt"););
+	MRPT_END_WITH_CLEAN_UP(cov_inv.saveToTextFile(
+		"__DEBUG_EXC_DUMP_drawSingleSample_COV_INV.txt"););
 }
 
 /*---------------------------------------------------------------
@@ -222,7 +219,7 @@ void CPose3DPDFGaussianInf::drawManySamples(
 
 	getRandomGenerator().drawGaussianMultivariateMany(outSamples, N, cov);
 
-	for (auto & outSample : outSamples)
+	for (auto& outSample : outSamples)
 	{
 		outSample[0] += mean.x();
 		outSample[1] += mean.y();
@@ -253,7 +250,7 @@ void CPose3DPDFGaussianInf::bayesianFusion(
 void CPose3DPDFGaussianInf::inverse(CPose3DPDF& o) const
 {
 	ASSERT_(o.GetRuntimeClass() == CLASS_ID(CPose3DPDFGaussianInf));
-	CPose3DPDFGaussianInf& out = static_cast<CPose3DPDFGaussianInf&>(o);
+	auto& out = static_cast<CPose3DPDFGaussianInf&>(o);
 
 	// This is like: b=(0,0,0)
 	//  OUT = b - THIS

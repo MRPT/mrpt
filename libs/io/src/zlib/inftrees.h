@@ -49,7 +49,12 @@ typedef struct
 #define MAXD 592
 
 /* Type of code to build for inftable() */
-typedef enum { CODES, LENS, DISTS } codetype;
+typedef enum
+{
+	CODES,
+	LENS,
+	DISTS
+} codetype;
 
 extern int inflate_table
 	OF((codetype type, unsigned short FAR* lens, unsigned codes,

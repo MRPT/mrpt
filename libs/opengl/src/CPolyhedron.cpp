@@ -60,8 +60,7 @@ bool getVerticesAndFaces(
 		f.vertices.resize(N);
 		for (size_t i = 0; i < N; i++)
 		{
-			vector<TPoint3D>::iterator it2 =
-				find(vertices.begin(), vertices.end(), poly[i]);
+			auto it2 = find(vertices.begin(), vertices.end(), poly[i]);
 			if (it2 == vertices.end())
 			{
 				f.vertices[i] = vertices.size();
@@ -242,7 +241,8 @@ void insertCupola(
 	for (size_t i = 0; i < edges2; i++)
 	{
 		double ang = angleShift + 2 * M_PI * i / edges2;
-		verts.emplace_back(minorRadius * cos(ang), minorRadius * sin(ang), height);
+		verts.emplace_back(
+			minorRadius * cos(ang), minorRadius * sin(ang), height);
 	}
 	CPolyhedron::TPolyhedronFace tri, quad, cBase;
 	tri.vertices.resize(3);
@@ -541,11 +541,12 @@ CPolyhedron::Ptr CPolyhedron::CreateCubicPrism(
 	vector<TPoint3D> verts;
 	vector<TPolyhedronFace> faces;
 	for (int i = 0; i < 8; i++)
-		verts.emplace_back((i & 1) ? x2 : x1, (i & 2) ? y2 : y1, (i & 4) ? z2 : z1);
+		verts.emplace_back(
+			(i & 1) ? x2 : x1, (i & 2) ? y2 : y1, (i & 4) ? z2 : z1);
 	static uint32_t faceVertices[] = {0, 1, 5, 4, 2, 3, 7, 6, 0, 2, 6, 4,
 									  1, 3, 7, 5, 0, 1, 3, 2, 4, 5, 7, 6};
 	TPolyhedronFace f;
-	for (uint32_t* p = reinterpret_cast<uint32_t*>(&faceVertices);
+	for (auto* p = reinterpret_cast<uint32_t*>(&faceVertices);
 		 p < 24 + reinterpret_cast<uint32_t*>(&faceVertices); p += 4)
 	{
 		f.vertices.insert(f.vertices.begin(), p, p + 4);
@@ -866,9 +867,7 @@ CPolyhedron::Ptr CPolyhedron::CreateJohnsonSolidWithConstantBase(
 	mHeight /= 2;
 	double semi = M_PI / numBaseEdges;
 	// All the bases are generated and inserted into the vertices' vector.
-	for (vector<pair<double, size_t>>::const_iterator it =
-			 basePositionInfo.begin();
-		 it != basePositionInfo.end(); ++it)
+	for (auto it = basePositionInfo.begin(); it != basePositionInfo.end(); ++it)
 		generateShiftedBase(
 			numBaseEdges, baseRadius, it->first - mHeight, semi * it->second,
 			verts);
@@ -1075,8 +1074,8 @@ void CPolyhedron::render_dl() const
 		{
 			glBegin(GL_POLYGON);
 			glNormal3f(mFace.normal[0], mFace.normal[1], mFace.normal[2]);
-			for (vector<uint32_t>::const_iterator it2 = mFace.vertices.begin();
-				 it2 != mFace.vertices.end(); ++it2)
+			for (auto it2 = mFace.vertices.begin(); it2 != mFace.vertices.end();
+				 ++it2)
 			{
 				const TPoint3D& p = mVertices[*it2];
 				glVertex3f(p.x, p.y, p.z);
@@ -1097,18 +1096,16 @@ bool CPolyhedron::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 void CPolyhedron::getEdgesLength(std::vector<double>& lengths) const
 {
 	lengths.resize(mEdges.size());
-	std::vector<double>::iterator it2 = lengths.begin();
-	for (std::vector<TPolyhedronEdge>::const_iterator it = mEdges.begin();
-		 it != mEdges.end(); ++it, ++it2)
+	auto it2 = lengths.begin();
+	for (auto it = mEdges.begin(); it != mEdges.end(); ++it, ++it2)
 		*it2 = it->length(mVertices);
 }
 
 void CPolyhedron::getFacesArea(std::vector<double>& areas) const
 {
 	areas.resize(mFaces.size());
-	std::vector<double>::iterator it2 = areas.begin();
-	for (std::vector<TPolyhedronFace>::const_iterator it = mFaces.begin();
-		 it != mFaces.end(); ++it, ++it2)
+	auto it2 = areas.begin();
+	for (auto it = mFaces.begin(); it != mFaces.end(); ++it, ++it2)
 		*it2 = it->area(mVertices);
 }
 
@@ -1123,12 +1120,11 @@ double CPolyhedron::getVolume() const
 	getCenter(center);
 	double res = 0;
 	if (!polygonsUpToDate) updatePolygons();
-	vector<TPolygonWithPlane>::const_iterator itP = tempPolygons.begin();
+	auto itP = tempPolygons.begin();
 	vector<double> areas(mFaces.size());
 	getFacesArea(areas);
-	vector<double>::const_iterator itA = areas.begin();
-	for (vector<TPolyhedronFace>::const_iterator it = mFaces.begin();
-		 it != mFaces.end(); ++it, ++itP, ++itA)
+	auto itA = areas.begin();
+	for (auto it = mFaces.begin(); it != mFaces.end(); ++it, ++itP, ++itA)
 		res += abs(itP->plane.distance(center)) * (*itA);
 	return res / 3;
 }
@@ -1160,8 +1156,7 @@ void CPolyhedron::makeConvexPolygons()
 	vector<TPolygon3D> polys, polysTMP, polys2;
 	getSetOfPolygons(polys);
 	polys2.reserve(polys.size());
-	for (vector<TPolygon3D>::const_iterator it = polys.begin();
-		 it != polys.end(); ++it)
+	for (auto it = polys.begin(); it != polys.end(); ++it)
 		if (mrpt::math::splitInConvexComponents(*it, polysTMP))
 			polys2.insert(polys2.end(), polysTMP.begin(), polysTMP.end());
 		else
@@ -1325,7 +1320,7 @@ CPolyhedron::Ptr CPolyhedron::getDual() const
 		for (size_t j = 0; j < NF; j++) incidence(i, j) = false;
 		vector<const TPlane*> fPls;
 		fPls.reserve(mFaces[i].vertices.size());
-		for (vector<uint32_t>::const_iterator it = mFaces[i].vertices.begin();
+		for (auto it = mFaces[i].vertices.begin();
 			 it != mFaces[i].vertices.end(); ++it)
 		{
 			incidence(i, *it) = true;
@@ -1557,11 +1552,9 @@ CPolyhedron::Ptr CPolyhedron::cantellate(double factor) const
 		}
 		ind += oPS;
 	}
-	vector<TPolyhedronFace>::const_iterator begin = faces.begin(),
-											edgeBegin = faces.begin() + NF + NV,
-											end = faces.end();
-	for (vector<TPolyhedronFace>::iterator it = faces.begin() + NF;
-		 it != faces.begin() + NF + NV; ++it)
+	auto begin = faces.begin(), edgeBegin = faces.begin() + NF + NV,
+		 end = faces.end();
+	for (auto it = faces.begin() + NF; it != faces.begin() + NF + NV; ++it)
 	{
 		vector<uint32_t>& f = it->vertices;
 		if (f.size() == 3) continue;
@@ -1576,8 +1569,7 @@ CPolyhedron::Ptr CPolyhedron::cantellate(double factor) const
 					f.push_back(tmp);
 				}
 	}
-	for (vector<TPolyhedronFace>::iterator it = faces.begin() + NF + NV;
-		 it != faces.end(); ++it)
+	for (auto it = faces.begin() + NF + NV; it != faces.end(); ++it)
 	{
 		vector<uint32_t>& f =
 			it->vertices;  // Will always have exactly 4 vertices
@@ -1912,7 +1904,7 @@ bool CPolyhedron::setNormal(TPolyhedronFace& f, bool doCheck)
 void CPolyhedron::addEdges(const TPolyhedronFace& f)
 {
 	TPolyhedronEdge e;
-	vector<uint32_t>::const_iterator it = f.vertices.begin();
+	auto it = f.vertices.begin();
 	e.v1 = *it;
 	++it;
 	while (it != f.vertices.end())
@@ -1933,10 +1925,8 @@ bool CPolyhedron::checkConsistence(
 {
 	size_t N = vertices.size();
 	if (vertices.size() > 0)
-		for (vector<TPoint3D>::const_iterator it = vertices.begin();
-			 it != vertices.end() - 1; ++it)
-			for (vector<TPoint3D>::const_iterator it2 = it + 1;
-				 it2 != vertices.end(); ++it2)
+		for (auto it = vertices.begin(); it != vertices.end() - 1; ++it)
+			for (auto it2 = it + 1; it2 != vertices.end(); ++it2)
 				if (*it == *it2) return false;
 	for (const auto& face : faces)
 	{

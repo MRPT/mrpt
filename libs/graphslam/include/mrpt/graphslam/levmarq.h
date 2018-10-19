@@ -230,9 +230,7 @@ void optimize_graph_spa_levmarq(
 	// is fixed, as defined by "nodes_to_optimize"
 	obsIdx2fnIdx.reserve(nObservations);
 	ASSERTDEB_(lstJacobians.size() == nObservations);
-	for (typename gst::map_pairIDs_pairJacobs_t::const_iterator itJ =
-			 lstJacobians.begin();
-		 itJ != lstJacobians.end(); ++itJ)
+	for (auto itJ = lstJacobians.begin(); itJ != lstJacobians.end(); ++itJ)
 	{
 		const TNodeID id1 = itJ->first.first;
 		const TNodeID id2 = itJ->first.second;
@@ -429,9 +427,7 @@ void optimize_graph_spa_levmarq(
 					"optimize_graph_spa_levmarq.lambda_init");  // ---\  .
 				double H_diagonal_max = 0;
 				for (size_t i = 0; i < nFreeNodes; i++)
-					for (typename map_ID2matrix_VxV_t::const_iterator it =
-							 H_map[i].begin();
-						 it != H_map[i].end(); ++it)
+					for (auto it = H_map[i].begin(); it != H_map[i].end(); ++it)
 					{
 						const size_t j =
 							it->first;  // entry submatrix is for (i,j).
@@ -479,9 +475,7 @@ void optimize_graph_spa_levmarq(
 		{
 			const size_t i_offset = i * DIMS_POSE;
 
-			for (typename map_ID2matrix_VxV_t::const_iterator it =
-					 H_map[i].begin();
-				 it != H_map[i].end(); ++it)
+			for (auto it = H_map[i].begin(); it != H_map[i].end(); ++it)
 			{
 				const size_t j = it->first;  // entry submatrix is for (i,j).
 				const size_t j_offset = j * DIMS_POSE;
@@ -563,8 +557,7 @@ void optimize_graph_spa_levmarq(
 		{
 			for (unsigned long it : *nodes_to_optimize)
 			{
-				typename gst::graph_t::global_poses_t::const_iterator itP =
-					graph.nodes.find(it);
+				auto itP = graph.nodes.find(it);
 				const typename gst::graph_t::constraint_t::type_value& P =
 					itP->second;
 				for (size_t i = 0; i < DIMS_POSE; i++) x_norm += square(P[i]);
@@ -608,8 +601,7 @@ void optimize_graph_spa_levmarq(
 					// Gauss-Newton formula above.
 
 					// new_x_i =  exp_delta_i (+) old_x_i
-					typename gst::graph_t::global_poses_t::iterator
-						it_old_value = graph.nodes.find(it);
+					auto it_old_value = graph.nodes.find(it);
 					old_poses_backup[it] =
 						it_old_value->second;  // back up the old pose as a copy
 					detail::AuxPoseOPlus<typename gst::edge_t, gst>::sumIncr(
@@ -643,8 +635,7 @@ void optimize_graph_spa_levmarq(
 			{
 				// Nope...
 				// We have to revert the "graph.nodes" to "old_poses_backup"
-				for (typename gst::graph_t::global_poses_t::const_iterator it =
-						 old_poses_backup.begin();
+				for (auto it = old_poses_backup.begin();
 					 it != old_poses_backup.end(); ++it)
 					graph.nodes[it->first] = it->second;
 

@@ -4,4 +4,3 @@ namespace mrpt::utils
 {
 using CTicTac = mrpt::system::CTicTac;
 }
-

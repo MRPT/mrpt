@@ -68,8 +68,8 @@ void CRobot2DPoseEstimator::processUpdateNewPoseLocalization(
 
 /** Updates the filter so the pose is tracked to the current time */
 void CRobot2DPoseEstimator::processUpdateNewOdometry(
-	const TPose2D& newGlobalOdometry, Clock::time_point cur_tim, bool hasVelocities,
-	const mrpt::math::TTwist2D& velLocal)
+	const TPose2D& newGlobalOdometry, Clock::time_point cur_tim,
+	bool hasVelocities, const mrpt::math::TTwist2D& velLocal)
 {
 	MRPT_START
 
@@ -110,8 +110,7 @@ bool CRobot2DPoseEstimator::getCurrentEstimate(
 	mrpt::math::TPose2D& pose, mrpt::math::TTwist2D& velLocal,
 	mrpt::math::TTwist2D& velGlobal, mrpt::Clock::time_point tim_query) const
 {
-	if (!m_last_odo_time || !m_last_loc_time)
-		return false;
+	if (!m_last_odo_time || !m_last_loc_time) return false;
 
 	const double dTimeLoc = timeDifference(m_last_loc_time.value(), tim_query);
 	if (dTimeLoc > params.max_localiz_age) return false;
@@ -137,9 +136,9 @@ bool CRobot2DPoseEstimator::getCurrentEstimate(
 }
 
 /** get the current estimate
-* \return true is the estimate can be trusted. False if the real observed data
-* is too old.
-*/
+ * \return true is the estimate can be trusted. False if the real observed data
+ * is too old.
+ */
 bool CRobot2DPoseEstimator::getLatestRobotPose(TPose2D& pose) const
 {
 	if (!m_last_odo_time && !m_last_loc_time)

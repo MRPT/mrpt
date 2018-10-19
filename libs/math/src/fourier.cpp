@@ -921,7 +921,7 @@ static void cdft2d(
 	}
 }
 
-} // namespace mrpt::math
+}  // namespace mrpt::math
 
 void mrpt::math::fft_real(
 	CVectorFloat& in_realData, CVectorFloat& out_FFT_Re,
@@ -929,7 +929,7 @@ void mrpt::math::fft_real(
 {
 	MRPT_START
 
-	unsigned long n = (unsigned long)in_realData.size();
+	auto n = (unsigned long)in_realData.size();
 
 	// TODO: Test data lenght is 2^N...
 
@@ -1183,8 +1183,8 @@ static void myGeneralDFT(
 
 	size_t k1, k2, n1, n2;
 	float w_r, w_i;
-	float ang1 = (float)(sign * M_2PI / dim1);
-	float ang2 = (float)(sign * M_2PI / dim2);
+	auto ang1 = (float)(sign * M_2PI / dim1);
+	auto ang2 = (float)(sign * M_2PI / dim2);
 	float phase;
 	float R, I;
 	float scale = sign == 1 ? (1.0f / (dim1 * dim2)) : 1;

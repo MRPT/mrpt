@@ -174,7 +174,4 @@ bool operator!=(const CPoint<DERIVEDCLASS>& p1, const CPoint<DERIVEDCLASS>& p2)
 		if (p1[i] != p2[i]) return true;  //-V550
 	return false;
 }
-}  // namespace mrpt
-
-
-
+}  // namespace mrpt::poses

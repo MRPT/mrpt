@@ -15,8 +15,8 @@
 namespace mrpt::nav
 {
 /** \addtogroup nav_holo Holonomic navigation methods
-  * \ingroup mrpt_nav_grp
-  * @{ */
+ * \ingroup mrpt_nav_grp
+ * @{ */
 
 /** Full evaluation of all possible directions within the discrete set of input
  * directions.
@@ -183,5 +183,4 @@ class CLogFileRecord_FullEval : public CHolonomicLogFileRecord
 };
 
 /** @} */
-}
-
+}  // namespace mrpt::nav

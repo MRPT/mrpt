@@ -17,47 +17,47 @@
 namespace mrpt::hwdrivers
 {
 /** A class for interfacing XSens 3rd generation Inertial Measuring Units
-  *(IMUs), the "XSens MTi" model.
-  *  It uses a serial port or USB-to-serial adapter to communicate to the
-  *device, so no special drivers are needed.
-  *  For the more recent 4th generation devices, see the class
-  *mrpt::hwdrivers::CIMUXSens_MT4
-  *
-  *  See also the application "rawlog-grabber" for a ready-to-use application to
-  *gather data from the scanner.
-  *
-  *  \code
-  *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
-  * -------------------------------------------------------
-  *   [supplied_section_name]
-  *    pose_x=0	    ; Sensor 3D position relative to the robot (meters)
-  *    pose_y=0
-  *    pose_z=0
-  *    pose_yaw=0	; Angles in degrees
-  *    pose_pitch=0
-  *    pose_roll=0
-  *	   sensorLabel = <label> ; Label of the sensor
-  *	   COM_port_LIN	= /dev/ttyUSB0       ; COM PORT in LINUX (optional. If not
-  *provided, the system will search the connected port)
-  *	   COM_port_WIN	= COM1               ; COM PORT in Windows (optional. If not
-  *provided, the system will search the connected port)
-  *	   baudRate	                         ; Baudrate for communicating with the
-  *COM port (mandatory for Linux)
-  *						                    (for Windows, if COM_port_WIN is not
-  *provided,
-  *this
-  *value is ignored)
-  *  \endcode
-  * \ingroup mrpt_hwdrivers_grp
-  */
+ *(IMUs), the "XSens MTi" model.
+ *  It uses a serial port or USB-to-serial adapter to communicate to the
+ *device, so no special drivers are needed.
+ *  For the more recent 4th generation devices, see the class
+ *mrpt::hwdrivers::CIMUXSens_MT4
+ *
+ *  See also the application "rawlog-grabber" for a ready-to-use application to
+ *gather data from the scanner.
+ *
+ *  \code
+ *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
+ * -------------------------------------------------------
+ *   [supplied_section_name]
+ *    pose_x=0	    ; Sensor 3D position relative to the robot (meters)
+ *    pose_y=0
+ *    pose_z=0
+ *    pose_yaw=0	; Angles in degrees
+ *    pose_pitch=0
+ *    pose_roll=0
+ *	   sensorLabel = <label> ; Label of the sensor
+ *	   COM_port_LIN	= /dev/ttyUSB0       ; COM PORT in LINUX (optional. If not
+ *provided, the system will search the connected port)
+ *	   COM_port_WIN	= COM1               ; COM PORT in Windows (optional. If not
+ *provided, the system will search the connected port)
+ *	   baudRate	                         ; Baudrate for communicating with the
+ *COM port (mandatory for Linux)
+ *						                    (for Windows, if COM_port_WIN is not
+ *provided,
+ *this
+ *value is ignored)
+ *  \endcode
+ * \ingroup mrpt_hwdrivers_grp
+ */
 class CIMUXSens : public hwdrivers::CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CIMUXSens)
    protected:
 	/** This serial port will be attempted to be opened automatically when this
 	 * class is first used to request data from the device.
-	  * \sa comms::CSerialPort
-	  */
+	 * \sa comms::CSerialPort
+	 */
 	int m_COMbauds{0};
 	std::string m_com_port;
 	uint64_t m_timeStartUI{};
@@ -66,7 +66,7 @@ class CIMUXSens : public hwdrivers::CGenericSensor
 	mrpt::poses::CPose3D m_sensorPose;
 
 	/** Search the port where the sensor is located and connect to it
-	  */
+	 */
 	bool searchPortAndConnect();
 
 	void* /*xsens::Cmt3 */ m_cmt3_ptr{nullptr};
@@ -81,17 +81,17 @@ class CIMUXSens : public hwdrivers::CGenericSensor
 
    public:
 	/** Constructor
-	  */
+	 */
 	CIMUXSens();
 
 	/** Destructor
-	  */
+	 */
 	~CIMUXSens() override;
 
 	/** This method will be invoked at a minimum rate of "process_rate" (Hz)
-	  *  \exception This method must throw an exception with a descriptive
+	 *  \exception This method must throw an exception with a descriptive
 	 * message if some critical error is found.
-	  */
+	 */
 	void doProcess() override;
 
 	/** Turns on the xSens device and configure it for getting orientation data
@@ -100,6 +100,4 @@ class CIMUXSens : public hwdrivers::CGenericSensor
 
 };  // end of class
 
-}
-
-
+}  // namespace mrpt::hwdrivers

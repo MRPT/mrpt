@@ -89,9 +89,8 @@ class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 	{
 		ASSERT_(!m_nodes.empty());
 		double min_d = std::numeric_limits<double>::max();
-		mrpt::graphs::TNodeID min_id = INVALID_NODEID;
-		for (typename node_map_t::const_iterator it = m_nodes.begin();
-			 it != m_nodes.end(); ++it)
+		auto min_id = INVALID_NODEID;
+		for (auto it = m_nodes.begin(); it != m_nodes.end(); ++it)
 		{
 			if (ignored_nodes &&
 				ignored_nodes->find(it->first) != ignored_nodes->end())
@@ -147,7 +146,7 @@ class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 		const mrpt::graphs::TNodeID target_node, path_t& out_path) const
 	{
 		out_path.clear();
-		typename node_map_t::const_iterator it_src = m_nodes.find(target_node);
+		auto it_src = m_nodes.find(target_node);
 		if (it_src == m_nodes.end())
 			throw std::runtime_error(
 				"backtrackPath: target_node not found in tree!");
@@ -163,8 +162,7 @@ class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 			}
 			else
 			{
-				typename node_map_t::const_iterator it_next =
-					m_nodes.find(next_node_id);
+				auto it_next = m_nodes.find(next_node_id);
 				if (it_next == m_nodes.end())
 					throw std::runtime_error(
 						"backtrackPath: Node ID not found during tree "
@@ -292,5 +290,4 @@ struct PoseDistanceMetric<TNodeSE2_TP>
 using TMoveTreeSE2_TP = TMoveTree<TNodeSE2_TP, TMoveEdgeSE2_TP>;
 
 /** @} */
-}
-
+}  // namespace mrpt::nav

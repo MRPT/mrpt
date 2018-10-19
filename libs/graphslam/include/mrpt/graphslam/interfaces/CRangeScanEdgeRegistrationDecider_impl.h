@@ -10,8 +10,6 @@
 
 namespace mrpt::graphslam::deciders
 {
-
-
 template <class GRAPH_T>
 void CRangeScanEdgeRegistrationDecider<GRAPH_T>::loadParams(
 	const std::string& source_fname)
@@ -34,7 +32,4 @@ void CRangeScanEdgeRegistrationDecider<GRAPH_T>::printParams() const
 
 	MRPT_END;
 }
-}  // end of namespaces
-
-
-
+}  // namespace mrpt::graphslam::deciders

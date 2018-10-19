@@ -174,7 +174,7 @@ int main(int argc, char** argv)
 		// Check the selected operation:
 		//  Only one of the ops should be selected:
 		string selected_op;
-		for (auto & arg_op : arg_ops)
+		for (auto& arg_op : arg_ops)
 		{
 			if (arg_op->isSet())
 			{
@@ -230,7 +230,7 @@ int main(int argc, char** argv)
 	}
 
 	// Free mem:
-	for (auto & arg_op : arg_ops) delete arg_op;
+	for (auto& arg_op : arg_ops) delete arg_op;
 
 	// end:
 	return ret_val;

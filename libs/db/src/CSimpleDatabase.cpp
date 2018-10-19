@@ -31,10 +31,10 @@ uint8_t CSimpleDatabase::serializeGetVersion() const { return 0; }
 void CSimpleDatabase::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// Save all tables in DB:
-	uint32_t n = (uint32_t)m_tables.size();
+	auto n = (uint32_t)m_tables.size();
 	out << n;
 
-	for (const auto & m_table : m_tables)
+	for (const auto& m_table : m_tables)
 	{
 		out << m_table.first;  //.c_str();
 		out << *m_table.second;
@@ -136,7 +136,7 @@ CSimpleDatabaseTable::Ptr CSimpleDatabase::getTable(
 {
 	MRPT_START
 
-	iterator it = m_tables.find(tableName);
+	auto it = m_tables.find(tableName);
 	if (it != m_tables.end()) return it->second;
 
 	THROW_EXCEPTION_FMT("Table '%s' was not found", tableName.c_str())
@@ -152,7 +152,7 @@ CSimpleDatabaseTable::Ptr CSimpleDatabase::getTable(size_t tableIndex)
 	MRPT_START
 
 	ASSERT_(tableIndex < tablesCount());
-	iterator it = m_tables.begin();
+	auto it = m_tables.begin();
 	std::advance(it, tableIndex);
 	return it->second;
 
@@ -171,7 +171,7 @@ string CSimpleDatabase::tablesName(size_t tableIndex) const
 	MRPT_START
 
 	ASSERT_(tableIndex < tablesCount());
-	const_iterator it = m_tables.begin();
+	auto it = m_tables.begin();
 	std::advance(it, tableIndex);
 	return it->first;
 
@@ -340,7 +340,7 @@ void CSimpleDatabaseTable::deleteRecord(size_t recordIndex)
 {
 	MRPT_START
 	ASSERT_(recordIndex < getRecordCount());
-	std::vector<std::vector<std::string>>::iterator it = data.begin();
+	auto it = data.begin();
 	std::advance(it, recordIndex);
 	data.erase(it);
 
@@ -359,7 +359,7 @@ bool CSimpleDatabase::saveAsXML(const string& fileName) const
 			XMLNode::createXMLTopNode("CSimpleDatabase-MRPT-Object");
 
 		// For each table:
-		for (const auto & m_table : m_tables)
+		for (const auto& m_table : m_tables)
 		{
 			CSimpleDatabaseTable::Ptr t = m_table.second;
 			XMLNode tabNod = rootXml.addChild("table");
@@ -494,7 +494,7 @@ void CSimpleDatabase::dropTable(const std::string& tableName)
 {
 	MRPT_START
 
-	iterator it = m_tables.find(tableName);
+	auto it = m_tables.find(tableName);
 	if (it == m_tables.end())
 		THROW_EXCEPTION_FMT("Table '%s' was not found", tableName.c_str())
 
@@ -513,12 +513,12 @@ void CSimpleDatabase::renameTable(
 
 	if (tableName == newTableName) return;  // done
 
-	iterator it = m_tables.find(tableName);
+	auto it = m_tables.find(tableName);
 	if (it == m_tables.end())
 		THROW_EXCEPTION_FMT("Table '%s' was not found", tableName.c_str())
 
 		{
-			iterator itNew = m_tables.find(newTableName);
+			auto itNew = m_tables.find(newTableName);
 			if (itNew != m_tables.end())
 				THROW_EXCEPTION_FMT(
 					"A table with the name '%s' already exists",

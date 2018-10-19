@@ -15,7 +15,6 @@
 using namespace mrpt;
 using namespace mrpt::math;
 
-
 //----------------------------------------------------------------------
 //! Select random (unique) indices from the 0..p_size sequence
 void ModelSearch::pickRandomIndex(

@@ -13,15 +13,18 @@
 
 struct XsVector3;
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #else
 typedef struct XsVector3 XsVector3;
 #endif
 
-XSTYPES_DLL_API void XsVector3_construct(XsVector3* thisPtr, const XsReal* src);
-XSTYPES_DLL_API void XsVector3_assign(XsVector3* thisPtr, const XsReal* src);
-XSTYPES_DLL_API void XsVector3_destruct(XsVector3* thisPtr);
-XSTYPES_DLL_API void XsVector3_copy(XsVector* copy, XsVector3 const* src);
+	XSTYPES_DLL_API void XsVector3_construct(
+		XsVector3* thisPtr, const XsReal* src);
+	XSTYPES_DLL_API void XsVector3_assign(
+		XsVector3* thisPtr, const XsReal* src);
+	XSTYPES_DLL_API void XsVector3_destruct(XsVector3* thisPtr);
+	XSTYPES_DLL_API void XsVector3_copy(XsVector* copy, XsVector3 const* src);
 
 #ifdef __cplusplus
 }  // extern "C"

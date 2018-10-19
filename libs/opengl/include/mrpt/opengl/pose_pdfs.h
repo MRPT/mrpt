@@ -24,6 +24,4 @@ inline CSetOfObjects::Ptr posePDF2opengl(const POSE_PDF& o)
 }
 
 /**  @}  */
-}
-
-
+}  // namespace mrpt::opengl

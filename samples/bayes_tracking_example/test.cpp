@@ -214,7 +214,8 @@ class CRangeBearingParticleFilter
 	void prediction_and_update_pfStandardProposal(
 		const mrpt::obs::CActionCollection* action,
 		const mrpt::obs::CSensoryFrame* observation,
-		const bayes::CParticleFilter::TParticleFilterOptions& PF_options) override;
+		const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
+		override;
 
 	void initializeParticles(size_t numParticles);
 
@@ -285,9 +286,9 @@ void TestBayesianTracking()
 
 		// Simulate noisy observation:
 		float realBearing = atan2(y, x);
-		float obsBearing = realBearing +
-						   BEARING_SENSOR_NOISE_STD *
-							   getRandomGenerator().drawGaussian1D_normalized();
+		float obsBearing =
+			realBearing + BEARING_SENSOR_NOISE_STD *
+							  getRandomGenerator().drawGaussian1D_normalized();
 		printf(
 			"Real/Simulated bearing: %.03f / %.03f deg\n", RAD2DEG(realBearing),
 			RAD2DEG(obsBearing));

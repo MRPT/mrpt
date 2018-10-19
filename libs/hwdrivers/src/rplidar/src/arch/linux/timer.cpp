@@ -49,6 +49,4 @@ _u32 rp_getms()
 	clock_gettime(CLOCK_MONOTONIC, &t);
 	return t.tv_sec * 1000L + t.tv_nsec / 1000000L;
 }
-}
-
-
+}  // namespace rp::arch

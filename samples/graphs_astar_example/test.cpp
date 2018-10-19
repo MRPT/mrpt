@@ -36,7 +36,7 @@ class CCoinDistribution
 	size_t coins7{0};
 	size_t coins8{0};
 	size_t coins19{0};
-	CCoinDistribution()  {}
+	CCoinDistribution() {}
 	/**
 	 * Auxiliary function to calculate the amount of money. Not strictly
 	 * necessary, but handy.

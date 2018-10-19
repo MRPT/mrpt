@@ -52,9 +52,8 @@ char hexCharToInt(char n)
 						CCANBusReader
 -------------------------------------------------------------*/
 CCANBusReader::CCANBusReader()
-	: mrpt::system::COutputLogger("CCANBusReader"),
-	  m_com_port()
-	  
+	: mrpt::system::COutputLogger("CCANBusReader"), m_com_port()
+
 {
 	m_sensorLabel = "CANBusReader";
 	memset(m_received_frame_buffer, 0, sizeof(m_received_frame_buffer));
@@ -387,7 +386,7 @@ bool CCANBusReader::waitContinuousSampleFrame(
 	unsigned char buf[40];
 
 	// clear buffer
-	for (unsigned char & k : buf) k = 0;
+	for (unsigned char& k : buf) k = 0;
 
 	uint8_t dlc = 0;
 	while (nFrameBytes < (lengthField = (10U + dlc + 1U)))
@@ -397,7 +396,7 @@ bool CCANBusReader::waitContinuousSampleFrame(
 		{
 			cout << "#" << int(dlc) << " ";
 			nFrameBytes = 0;  // No es cabecera de trama correcta
-			for (unsigned char & k : buf) k = 0;
+			for (unsigned char& k : buf) k = 0;
 			dlc = 0;
 		}
 
@@ -439,7 +438,7 @@ bool CCANBusReader::waitContinuousSampleFrame(
 		else
 		{
 			nFrameBytes = 0;  // No es cabecera de trama correcta
-			for (unsigned char & k : buf) k = 0;
+			for (unsigned char& k : buf) k = 0;
 		}
 	}  // end while
 
@@ -685,9 +684,8 @@ bool CCANBusReader::waitIncomingFrame(uint16_t timeout)
 				nBytes++;
 			}
 			if (nBytes == 10)
-				dlc = 2 * uint8_t(
-							  hexCharToInt(
-								  m_received_frame_buffer[9]));  // here is the
+				dlc = 2 * uint8_t(hexCharToInt(
+							  m_received_frame_buffer[9]));  // here is the
 			// number of
 			// BYTES of
 			// data -> 2

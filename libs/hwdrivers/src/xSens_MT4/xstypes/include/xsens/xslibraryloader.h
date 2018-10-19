@@ -15,7 +15,8 @@
 struct XsLibraryLoader;
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #else
 #define XSLIBRARYLOADER_INITIALIZER \
 	{                               \
@@ -24,20 +25,20 @@ extern "C" {
 typedef struct XsLibraryLoader XsLibraryLoader;
 #endif
 
-XSTYPES_DLL_API int XsLibraryLoader_load(
-	XsLibraryLoader* thisp, const XsString* libraryName);
-XSTYPES_DLL_API void* XsLibraryLoader_resolve(
-	const XsLibraryLoader* thisp, const char* functionName);
-XSTYPES_DLL_API int XsLibraryLoader_unload(XsLibraryLoader* thisp);
-XSTYPES_DLL_API int XsLibraryLoader_isLoaded(const XsLibraryLoader* thisp);
-XSTYPES_DLL_API void XsLibraryLoader_getErrorString(XsString* error);
+	XSTYPES_DLL_API int XsLibraryLoader_load(
+		XsLibraryLoader* thisp, const XsString* libraryName);
+	XSTYPES_DLL_API void* XsLibraryLoader_resolve(
+		const XsLibraryLoader* thisp, const char* functionName);
+	XSTYPES_DLL_API int XsLibraryLoader_unload(XsLibraryLoader* thisp);
+	XSTYPES_DLL_API int XsLibraryLoader_isLoaded(const XsLibraryLoader* thisp);
+	XSTYPES_DLL_API void XsLibraryLoader_getErrorString(XsString* error);
 
 #ifdef __cplusplus
 }
 #endif
 
 /*! \brief The Xsens dynamic library loader base class
-*/
+ */
 struct XsLibraryLoader
 {
 #ifdef __cplusplus
@@ -78,7 +79,7 @@ struct XsLibraryLoader
 	}
 
 	/*! \brief Unload the loaded library
-	*/
+	 */
 	inline void unload() throw() { XsLibraryLoader_unload(this); }
 	/*! \brief Return a string describing the error that occurred
 

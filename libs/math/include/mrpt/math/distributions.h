@@ -17,24 +17,24 @@
 namespace mrpt::math
 {
 /** \addtogroup stats_grp Statistics functions, probability distributions
-  *  \ingroup mrpt_math_grp
-  * @{ */
+ *  \ingroup mrpt_math_grp
+ * @{ */
 
 /** Evaluates the univariate normal (Gaussian) distribution at a given point
  * "x".
-  */
+ */
 double normalPDF(double x, double mu, double std);
 
 /** Evaluates the multivariate normal (Gaussian) distribution at a given point
  * "x".
-  *  \param  x   A vector or column or row matrix with the point at which to
+ *  \param  x   A vector or column or row matrix with the point at which to
  * evaluate the pdf.
-  *  \param  mu  A vector or column or row matrix with the Gaussian mean.
-  *  \param  cov_inv  The inverse covariance (information) matrix of the
+ *  \param  mu  A vector or column or row matrix with the Gaussian mean.
+ *  \param  cov_inv  The inverse covariance (information) matrix of the
  * Gaussian.
-  *  \param  scaled_pdf If set to true, the PDF will be scaled to be in the
+ *  \param  scaled_pdf If set to true, the PDF will be scaled to be in the
  * range [0,1], in contrast to its integral from [-inf,+inf] being 1.
-  */
+ */
 template <class VECTORLIKE1, class VECTORLIKE2, class MATRIXLIKE>
 inline typename MATRIXLIKE::Scalar normalPDFInf(
 	const VECTORLIKE1& x, const VECTORLIKE2& mu, const MATRIXLIKE& cov_inv,
@@ -60,13 +60,13 @@ inline typename MATRIXLIKE::Scalar normalPDFInf(
 
 /** Evaluates the multivariate normal (Gaussian) distribution at a given point
  * "x".
-  *  \param  x   A vector or column or row matrix with the point at which to
+ *  \param  x   A vector or column or row matrix with the point at which to
  * evaluate the pdf.
-  *  \param  mu  A vector or column or row matrix with the Gaussian mean.
-  *  \param  cov  The covariance matrix of the Gaussian.
-  *  \param  scaled_pdf If set to true, the PDF will be scaled to be in the
+ *  \param  mu  A vector or column or row matrix with the Gaussian mean.
+ *  \param  cov  The covariance matrix of the Gaussian.
+ *  \param  scaled_pdf If set to true, the PDF will be scaled to be in the
  * range [0,1], in contrast to its integral from [-inf,+inf] being 1.
-  */
+ */
 template <class VECTORLIKE1, class VECTORLIKE2, class MATRIXLIKE>
 inline typename MATRIXLIKE::Scalar normalPDF(
 	const VECTORLIKE1& x, const VECTORLIKE2& mu, const MATRIXLIKE& cov,
@@ -77,7 +77,7 @@ inline typename MATRIXLIKE::Scalar normalPDF(
 
 /** Evaluates the multivariate normal (Gaussian) distribution at a given point
  * given its distance vector "d" from the Gaussian mean.
-  */
+ */
 template <typename VECTORLIKE, typename MATRIXLIKE>
 typename MATRIXLIKE::Scalar normalPDF(
 	const VECTORLIKE& d, const MATRIXLIKE& cov)
@@ -97,13 +97,14 @@ typename MATRIXLIKE::Scalar normalPDF(
 
 /** Kullback-Leibler divergence (KLD) between two independent multivariate
  * Gaussians.
-  *
-  * \f$ D_\mathrm{KL}(\mathcal{N}_0 \| \mathcal{N}_1) = { 1 \over 2 } ( \log_e (
+ *
+ * \f$ D_\mathrm{KL}(\mathcal{N}_0 \| \mathcal{N}_1) = { 1 \over 2 } ( \log_e (
  * { \det \Sigma_1 \over \det \Sigma_0 } ) + \mathrm{tr} ( \Sigma_1^{-1}
  * \Sigma_0 ) + ( \mu_1 - \mu_0 )^\top \Sigma_1^{-1} ( \mu_1 - \mu_0 ) - N ) \f$
-  */
-template <typename VECTORLIKE1, typename MATRIXLIKE1, typename VECTORLIKE2,
-		  typename MATRIXLIKE2>
+ */
+template <
+	typename VECTORLIKE1, typename MATRIXLIKE1, typename VECTORLIKE2,
+	typename MATRIXLIKE2>
 double KLD_Gaussians(
 	const VECTORLIKE1& mu0, const MATRIXLIKE1& cov0, const VECTORLIKE2& mu1,
 	const MATRIXLIKE2& cov1)
@@ -125,25 +126,25 @@ double KLD_Gaussians(
 
 /** Evaluates the Gaussian distribution quantile for the probability value
  * p=[0,1].
-  *  The employed approximation is that from Peter J. Acklam
+ *  The employed approximation is that from Peter J. Acklam
  * (pjacklam@online.no),
-  *  freely available in http://home.online.no/~pjacklam.
-  */
+ *  freely available in http://home.online.no/~pjacklam.
+ */
 double normalQuantile(double p);
 
 /** Evaluates the Gaussian cumulative density function.
-  *  The employed approximation is that from W. J. Cody
-  *  freely available in http://www.netlib.org/specfun/erf
-  *  \note Equivalent to MATLAB normcdf(x,mu,s) with p=(x-mu)/s
-  */
+ *  The employed approximation is that from W. J. Cody
+ *  freely available in http://www.netlib.org/specfun/erf
+ *  \note Equivalent to MATLAB normcdf(x,mu,s) with p=(x-mu)/s
+ */
 double normalCDF(double p);
 
 /** The "quantile" of the Chi-Square distribution, for dimension "dim" and
  * probability 0<P<1 (the inverse of chi2CDF)
-  * An aproximation from the Wilson-Hilferty transformation is used.
-  *  \note Equivalent to MATLAB chi2inv(), but note that this is just an
+ * An aproximation from the Wilson-Hilferty transformation is used.
+ *  \note Equivalent to MATLAB chi2inv(), but note that this is just an
  * approximation, which becomes very poor for small values of "P".
-  */
+ */
 double chi2inv(double P, unsigned int dim = 1);
 
 /*! Cumulative non-central chi square distribution (approximate).
@@ -199,8 +200,8 @@ double chi2PDF(
 
 /** Returns the 'exact' PDF (first) and CDF (second) of a Non-central
  * chi-squared probability distribution, using an iterative method.
-  * \note Equivalent to MATLAB's ncx2cdf(arg,degreesOfFreedom,noncentrality)
-  */
+ * \note Equivalent to MATLAB's ncx2cdf(arg,degreesOfFreedom,noncentrality)
+ */
 std::pair<double, double> noncentralChi2PDF_CDF(
 	unsigned int degreesOfFreedom, double noncentrality, double arg,
 	double eps = 1e-7);
@@ -208,10 +209,10 @@ std::pair<double, double> noncentralChi2PDF_CDF(
 /** Return the mean and the 10%-90% confidence points (or with any other
  * confidence value) of a set of samples by building the cummulative CDF of all
  * the elements of the container.
-  *  The container can be any MRPT container (CArray, matrices, vectors).
-  * \param confidenceInterval A number in the range (0,1) such as the confidence
+ *  The container can be any MRPT container (CArray, matrices, vectors).
+ * \param confidenceInterval A number in the range (0,1) such as the confidence
  * interval will be [100*confidenceInterval, 100*(1-confidenceInterval)].
-  */
+ */
 template <typename CONTAINER>
 void confidenceIntervals(
 	const CONTAINER& data,
@@ -240,10 +241,9 @@ void confidenceIntervals(
 	cumsum(H, Hc);  // CDF
 	Hc *= 1.0 / mrpt::math::maximum(Hc);
 
-	std::vector<double>::iterator it_low =
-		std::lower_bound(Hc.begin(), Hc.end(), confidenceInterval);
+	auto it_low = std::lower_bound(Hc.begin(), Hc.end(), confidenceInterval);
 	ASSERT_(it_low != Hc.end());
-	std::vector<double>::iterator it_high =
+	auto it_high =
 		std::upper_bound(Hc.begin(), Hc.end(), 1 - confidenceInterval);
 	ASSERT_(it_high != Hc.end());
 	const size_t idx_low = std::distance(Hc.begin(), it_low);
@@ -256,5 +256,4 @@ void confidenceIntervals(
 
 /** @} */
 
-}
-
+}  // namespace mrpt::math

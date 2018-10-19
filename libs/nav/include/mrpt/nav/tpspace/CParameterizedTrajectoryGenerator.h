@@ -25,17 +25,17 @@ namespace opengl
 {
 class CSetOfLines;
 }
-}
+}  // namespace mrpt
 
 namespace mrpt
 {
 namespace nav
 {
 /** Defines behaviors for where there is an obstacle *inside* the robot shape
-  *right at the beginning of a PTG trajectory.
-  *\ingroup nav_tpspace
-  * \sa Used in CParameterizedTrajectoryGenerator::COLLISION_BEHAVIOR
-  */
+ *right at the beginning of a PTG trajectory.
+ *\ingroup nav_tpspace
+ * \sa Used in CParameterizedTrajectoryGenerator::COLLISION_BEHAVIOR
+ */
 enum PTG_collision_behavior_t
 {
 	/** Favor getting back from too-close (almost collision) obstacles. */
@@ -46,8 +46,8 @@ enum PTG_collision_behavior_t
 };
 
 /** \defgroup nav_tpspace TP-Space and PTG classes
-  * \ingroup mrpt_nav_grp
-  */
+ * \ingroup mrpt_nav_grp
+ */
 
 /** This is the base class for any user-defined PTG.
  *  There is a class factory interface in
@@ -84,19 +84,19 @@ class CParameterizedTrajectoryGenerator
 	/**  Destructor  */
 	~CParameterizedTrajectoryGenerator() override = default;
 	/** The class factory for creating a PTG from a list of parameters in a
-	  *section of a given config file (physical file or in memory).
-	  *  Possible parameters are:
-	  *	  - Those explained in
-	  *CParameterizedTrajectoryGenerator::loadFromConfigFile()
-	  *	  - Those explained in the specific PTG being created (see list of
-	  *derived classes)
-	  *
-	  * `ptgClassName` can be any PTG class name which has been registered as
-	  *any other
-	  * mrpt::serialization::CSerializable class.
-	  *
-	  * \exception std::logic_error On invalid or missing parameters.
-	  */
+	 *section of a given config file (physical file or in memory).
+	 *  Possible parameters are:
+	 *	  - Those explained in
+	 *CParameterizedTrajectoryGenerator::loadFromConfigFile()
+	 *	  - Those explained in the specific PTG being created (see list of
+	 *derived classes)
+	 *
+	 * `ptgClassName` can be any PTG class name which has been registered as
+	 *any other
+	 * mrpt::serialization::CSerializable class.
+	 *
+	 * \exception std::logic_error On invalid or missing parameters.
+	 */
 	static CParameterizedTrajectoryGenerator* CreatePTG(
 		const std::string& ptgClassName,
 		const mrpt::config::CConfigFileBase& cfg, const std::string& sSection,
@@ -121,25 +121,25 @@ class CParameterizedTrajectoryGenerator
 	/** Computes the closest (alpha,d) TP coordinates of the trajectory point
 	 * closest to the Workspace (WS)
 	 *   Cartesian coordinates (x,y), relative to the current robot frame.
-	  * \param[in] x X coordinate of the query point, relative to the robot
+	 * \param[in] x X coordinate of the query point, relative to the robot
 	 * frame.
-	  * \param[in] y Y coordinate of the query point, relative to the robot
+	 * \param[in] y Y coordinate of the query point, relative to the robot
 	 * frame.
-	  * \param[out] out_k Trajectory parameter index (discretized alpha value,
+	 * \param[out] out_k Trajectory parameter index (discretized alpha value,
 	 * 0-based index).
-	  * \param[out] out_d Trajectory distance, normalized such that D_max
+	 * \param[out] out_d Trajectory distance, normalized such that D_max
 	 * becomes 1.
-	  *
-	  * \return true if the distance between (x,y) and the actual trajectory
+	 *
+	 * \return true if the distance between (x,y) and the actual trajectory
 	 * point is below the given tolerance (in meters).
-	  */
+	 */
 	virtual bool inverseMap_WS2TP(
 		double x, double y, int& out_k, double& out_normalized_d,
 		double tolerance_dist = 0.10) const = 0;
 
 	/** Returns the same than inverseMap_WS2TP() but without any additional
 	 * cost. The default implementation
-	  * just calls inverseMap_WS2TP() and discards (k,d). */
+	 * just calls inverseMap_WS2TP() and discards (k,d). */
 	virtual bool PTG_IsIntoDomain(double x, double y) const
 	{
 		int k;
@@ -157,7 +157,7 @@ class CParameterizedTrajectoryGenerator
 
 	/** Returns an empty kinematic velocity command object of the type supported
 	 * by this PTG.
-	  * Can be queried to determine the expected kinematic interface of the PTG.
+	 * Can be queried to determine the expected kinematic interface of the PTG.
 	 */
 	virtual mrpt::kinematics::CVehicleVelCmd::Ptr
 		getSupportedKinematicVelocityCommand() const = 0;
@@ -193,26 +193,26 @@ class CParameterizedTrajectoryGenerator
 	virtual void setRefDistance(const double refDist) { refDistance = refDist; }
 	/** Access path `k` ([0,N-1]=>[-pi,pi] in alpha): number of discrete "steps"
 	 * along the trajectory.
-	  * May be actual steps from a numerical integration or an arbitrary small
+	 * May be actual steps from a numerical integration or an arbitrary small
 	 * length for analytical PTGs.
-	  * \sa getAlphaValuesCount() */
+	 * \sa getAlphaValuesCount() */
 	virtual size_t getPathStepCount(uint16_t k) const = 0;
 
 	/** Access path `k` ([0,N-1]=>[-pi,pi] in alpha): pose of the vehicle at
 	 * discrete step `step`.
-	  * \sa getPathStepCount(), getAlphaValuesCount() */
+	 * \sa getPathStepCount(), getAlphaValuesCount() */
 	virtual void getPathPose(
 		uint16_t k, uint32_t step, mrpt::math::TPose2D& p) const = 0;
 
 	/** Access path `k` ([0,N-1]=>[-pi,pi] in alpha): traversed distance at
 	 * discrete step `step`.
-	  * \return Distance in pseudometers (real distance, NOT normalized to [0,1]
+	 * \return Distance in pseudometers (real distance, NOT normalized to [0,1]
 	 * for [0,refDist])
-	  * \sa getPathStepCount(), getAlphaValuesCount() */
+	 * \sa getPathStepCount(), getAlphaValuesCount() */
 	virtual double getPathDist(uint16_t k, uint32_t step) const = 0;
 
 	/** Returns the duration (in seconds) of each "step"
-	* \sa getPathStepCount() */
+	 * \sa getPathStepCount() */
 	virtual double getPathStepDuration() const = 0;
 
 	/** Returns the maximum linear velocity expected from this PTG [m/s] */
@@ -222,32 +222,32 @@ class CParameterizedTrajectoryGenerator
 
 	/** Access path `k` ([0,N-1]=>[-pi,pi] in alpha): largest step count for
 	 * which the traversed distance is < `dist`
-	  * \param[in] dist Distance in pseudometers (real distance, NOT normalized
+	 * \param[in] dist Distance in pseudometers (real distance, NOT normalized
 	 * to [0,1] for [0,refDist])
-	  * \return false if no step fulfills the condition for the given trajectory
+	 * \return false if no step fulfills the condition for the given trajectory
 	 * `k` (e.g. out of reference distance).
-	  * Note that, anyway, the maximum distance (closest point) is returned in
+	 * Note that, anyway, the maximum distance (closest point) is returned in
 	 * `out_step`.
-	  * \sa getPathStepCount(), getAlphaValuesCount() */
+	 * \sa getPathStepCount(), getAlphaValuesCount() */
 	virtual bool getPathStepForDist(
 		uint16_t k, double dist, uint32_t& out_step) const = 0;
 
 	/** Updates the radial map of closest TP-Obstacles given a single obstacle
 	 * point at (ox,oy)
-	  * \param [in,out] tp_obstacles A vector of length `getAlphaValuesCount()`,
+	 * \param [in,out] tp_obstacles A vector of length `getAlphaValuesCount()`,
 	 * initialized with `initTPObstacles()` (collision-free ranges, in
 	 * "pseudometers", un-normalized).
-	  * \param [in] ox Obstacle point (X), relative coordinates wrt origin of
+	 * \param [in] ox Obstacle point (X), relative coordinates wrt origin of
 	 * the PTG.
-	  * \param [in] oy Obstacle point (Y), relative coordinates wrt origin of
+	 * \param [in] oy Obstacle point (Y), relative coordinates wrt origin of
 	 * the PTG.
-	  * \note The length of tp_obstacles is not checked for efficiency since
+	 * \note The length of tp_obstacles is not checked for efficiency since
 	 * this method is potentially called thousands of times per
-	  *  navigation timestap, so it is left to the user responsibility to
+	 *  navigation timestap, so it is left to the user responsibility to
 	 * provide a valid buffer.
-	  * \note `tp_obstacles` must be initialized with initTPObstacle() before
+	 * \note `tp_obstacles` must be initialized with initTPObstacle() before
 	 * call.
-	  */
+	 */
 	virtual void updateTPObstacle(
 		double ox, double oy, std::vector<double>& tp_obstacles) const = 0;
 
@@ -259,14 +259,14 @@ class CParameterizedTrajectoryGenerator
 
 	/** Loads a set of default parameters into the PTG. Users normally will call
 	 * `loadFromConfigFile()` instead, this method is provided
-	  * exclusively for the PTG-configurator tool. */
+	 * exclusively for the PTG-configurator tool. */
 	virtual void loadDefaultParams();
 
 	/** Returns true if it is possible to stop sending velocity commands to the
 	 * robot and, still, the
-	  * robot controller will be able to keep following the last sent trajectory
+	 * robot controller will be able to keep following the last sent trajectory
 	 * ("NOP" velocity commands).
-	  * Default implementation returns "false". */
+	 * Default implementation returns "false". */
 	virtual bool supportVelCmdNOP() const;
 
 	/** Returns true if this PTG takes into account the desired velocity at
@@ -274,17 +274,17 @@ class CParameterizedTrajectoryGenerator
 	virtual bool supportSpeedAtTarget() const { return false; }
 	/** Only for PTGs supporting supportVelCmdNOP(): this is the maximum time
 	 * (in seconds) for which the path
-	  * can be followed without re-issuing a new velcmd. Note that this is only
+	 * can be followed without re-issuing a new velcmd. Note that this is only
 	 * an absolute maximum duration,
-	  * navigation implementations will check for many other conditions. Default
+	 * navigation implementations will check for many other conditions. Default
 	 * method in the base virtual class returns 0.
-	  * \param path_k Queried path `k` index  [0,N-1] */
+	 * \param path_k Queried path `k` index  [0,N-1] */
 	virtual double maxTimeInVelCmdNOP(int path_k) const;
 
 	/** Returns the actual distance (in meters) of the path, discounting
 	 * possible circular loops of the path (e.g. if it comes back to the
 	 * origin).
-	  * Default: refDistance */
+	 * Default: refDistance */
 	virtual double getActualUnloopedPathLength(uint16_t k) const
 	{
 		return this->refDistance;
@@ -323,7 +323,7 @@ class CParameterizedTrajectoryGenerator
 
 	/** The path used as defaul output in, for example, debugDumpInFiles.
 	 * (Default="./reactivenav.logs/") */
-	static std::string &OUTPUT_DEBUG_PATH_PREFIX();
+	static std::string& OUTPUT_DEBUG_PATH_PREFIX();
 
 	/** Must be called after setting all PTG parameters and before requesting
 	 * converting obstacles to TP-Space, inverseMap_WS2TP(), etc. */
@@ -378,14 +378,14 @@ class CParameterizedTrajectoryGenerator
 
 	/** Returns the representation of one trajectory of this PTG as a 3D OpenGL
 	 * object (a simple curved line).
-	  * \param[in] k The 0-based index of the selected trajectory (discrete
+	 * \param[in] k The 0-based index of the selected trajectory (discrete
 	 * "alpha" parameter).
-	  * \param[out] gl_obj Output object.
-	  * \param[in] decimate_distance Minimum distance between path points (in
+	 * \param[out] gl_obj Output object.
+	 * \param[in] decimate_distance Minimum distance between path points (in
 	 * meters).
-	  * \param[in] max_path_distance If >=0, cut the path at this distance (in
+	 * \param[in] max_path_distance If >=0, cut the path at this distance (in
 	 * meters).
-	  */
+	 */
 	virtual void renderPathAsSimpleLine(
 		const uint16_t k, mrpt::opengl::CSetOfLines& gl_obj,
 		const double decimate_distance = 0.1,
@@ -393,13 +393,13 @@ class CParameterizedTrajectoryGenerator
 
 	/** Dump PTG trajectories in four text files:
 	 * `./reactivenav.logs/PTGs/PTG%i_{x,y,phi,d}.txt`
-	  * Text files are loadable from MATLAB/Octave, and can be visualized with
+	 * Text files are loadable from MATLAB/Octave, and can be visualized with
 	 * the script `[MRPT_DIR]/scripts/viewPTG.m`
-	  * \note The directory "./reactivenav.logs/PTGs" will be created if doesn't
+	 * \note The directory "./reactivenav.logs/PTGs" will be created if doesn't
 	 * exist.
-	  * \return false on any error writing to disk.
-	  * \sa OUTPUT_DEBUG_PATH_PREFIX
-	  */
+	 * \return false on any error writing to disk.
+	 * \sa OUTPUT_DEBUG_PATH_PREFIX
+	 */
 	bool debugDumpInFiles(const std::string& ptg_name) const;
 
 	/** Parameters accepted by this base class:
@@ -426,7 +426,7 @@ class CParameterizedTrajectoryGenerator
 	 * right at the beginning of a PTG trajectory.
 	 * Default value: COLL_BEH_BACK_AWAY
 	 */
-	static PTG_collision_behavior_t &COLLISION_BEHAVIOR();
+	static PTG_collision_behavior_t& COLLISION_BEHAVIOR();
 
 	/** Must be called to resize a CD to its correct size, before calling
 	 * updateClearance() */
@@ -434,10 +434,10 @@ class CParameterizedTrajectoryGenerator
 
 	/** Updates the clearance diagram given one (ox,oy) obstacle point, in
 	 * coordinates relative
-	  * to the PTG path origin.
-	  * \param[in,out] cd The clearance will be updated here.
-	  * \sa m_clearance_dist_resolution
-	  */
+	 * to the PTG path origin.
+	 * \param[in,out] cd The clearance will be updated here.
+	 * \sa m_clearance_dist_resolution
+	 */
 	void updateClearance(
 		const double ox, const double oy, ClearanceDiagram& cd) const;
 	void updateClearancePost(
@@ -465,12 +465,12 @@ class CParameterizedTrajectoryGenerator
 
 	/** To be called by implementors of updateTPObstacle() and
 	 * updateTPObstacleSingle() to
-	  * honor the user settings regarding COLLISION_BEHAVIOR.
-	  * \param new_tp_obs_dist The newly determiend collision-free ranges, in
+	 * honor the user settings regarding COLLISION_BEHAVIOR.
+	 * \param new_tp_obs_dist The newly determiend collision-free ranges, in
 	 * "pseudometers", un-normalized, for some "k" direction.
-	  * \param inout_tp_obs The target where to store the new TP-Obs distance,
+	 * \param inout_tp_obs The target where to store the new TP-Obs distance,
 	 * if it fulfills the criteria determined by the collision behavior.
-	  */
+	 */
 	void internal_TPObsDistancePostprocess(
 		const double ox, const double oy, const double new_tp_obs_dist,
 		double& inout_tp_obs) const;
@@ -481,13 +481,13 @@ class CParameterizedTrajectoryGenerator
 
    public:
 	/** Evals the robot clearance for each robot pose along path `k`, for the
-	* real distances in
-	* the key of the map<>, then keep in the map value the minimum of its
-	* current stored clearance,
-	* or the computed clearance. In case of collision, clearance is zero.
-	* \param treat_as_obstacle true: normal use for obstacles; false: compute
-	* shortest distances to a target point (no collision)
-	*/
+	 * real distances in
+	 * the key of the map<>, then keep in the map value the minimum of its
+	 * current stored clearance,
+	 * or the computed clearance. In case of collision, clearance is zero.
+	 * \param treat_as_obstacle true: normal use for obstacles; false: compute
+	 * shortest distances to a target point (no collision)
+	 */
 	virtual void evalClearanceSingleObstacle(
 		const double ox, const double oy, const uint16_t k,
 		ClearanceDiagram::dist2clearance_t& inout_realdist2clearance,
@@ -509,7 +509,7 @@ class CPTG_RobotShape_Polygonal : public CParameterizedTrajectoryGenerator
 	~CPTG_RobotShape_Polygonal() override;
 
 	/** @name Robot shape
-	  * @{ **/
+	 * @{ **/
 	/** Robot shape must be set before initialization, either from ctor params
 	 * or via this method. */
 	void setRobotShape(const mrpt::math::CPolygon& robotShape);
@@ -552,7 +552,7 @@ class CPTG_RobotShape_Circular : public CParameterizedTrajectoryGenerator
 	~CPTG_RobotShape_Circular() override;
 
 	/** @name Robot shape
-	  * @{ **/
+	 * @{ **/
 	/** Robot shape must be set before initialization, either from ctor params
 	 * or via this method. */
 	void setRobotShapeRadius(const double robot_radius);
@@ -583,5 +583,5 @@ class CPTG_RobotShape_Circular : public CParameterizedTrajectoryGenerator
 	 * PTG-configurator tool. */
 	void loadDefaultParams() override;
 };
-}
-}
+}  // namespace nav
+}  // namespace mrpt

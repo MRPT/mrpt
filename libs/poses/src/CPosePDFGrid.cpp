@@ -228,15 +228,12 @@ void CPosePDFGrid::normalize()
 	double SUM = 0;
 
 	// SUM:
-	for (vector<double>::const_iterator it = m_data.begin(); it != m_data.end();
-		 ++it)
-		SUM += *it;
+	for (auto it = m_data.begin(); it != m_data.end(); ++it) SUM += *it;
 
 	if (SUM > 0)
 	{
 		// Normalize:
-		for (double & it : m_data)
-			it /= SUM;
+		for (double& it : m_data) it /= SUM;
 	}
 }
 
@@ -247,6 +244,5 @@ void CPosePDFGrid::uniformDistribution()
 {
 	double val = 1.0f / m_data.size();
 
-	for (double & it : m_data)
-		it = val;
+	for (double& it : m_data) it = val;
 }

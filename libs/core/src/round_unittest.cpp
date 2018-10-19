@@ -10,7 +10,4 @@
 #include <mrpt/core/round.h>
 #include <gtest/gtest.h>
 
-TEST(round, longRound)
-{
-	EXPECT_EQ(mrpt::round_long(4.8), 5);
-}
+TEST(round, longRound) { EXPECT_EQ(mrpt::round_long(4.8), 5); }

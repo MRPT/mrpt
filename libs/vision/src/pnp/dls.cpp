@@ -320,7 +320,7 @@ void mrpt::vision::pnp::dls::fill_coeff(const cv::Mat* D_mat)
 
 	for (int i = 0; i < D_mat->rows; ++i)
 	{
-		const double* Di = D_mat->ptr<double>(i);
+		const auto* Di = D_mat->ptr<double>(i);
 		for (int j = 0; j < D_mat->cols; ++j)
 		{
 			D[i + 1][j + 1] = Di[j];

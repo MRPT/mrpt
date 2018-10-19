@@ -58,4 +58,3 @@
 #endif
 
 #endif  // MRPT_HAS_OPENGL_GLUT
-

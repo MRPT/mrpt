@@ -320,6 +320,6 @@ class Packet
 #endif
 };
 
-}  // end of xsens namespace
+}  // namespace xsens
 
 #endif  // _CMTPACKET_H_2006_05_10

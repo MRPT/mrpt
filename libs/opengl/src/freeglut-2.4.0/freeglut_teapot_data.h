@@ -1381,4 +1381,3 @@ static double cpdata[][3] = {{0.2, 0, 2.7},
 static double tex[2][2][2] = {{{0.0, 0.0}, {1.0, 0.0}},
 							  {{0.0, 1.0}, {1.0, 1.0}}};
 #endif /* TARGET_HOST_WINCE */
-

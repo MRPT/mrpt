@@ -104,8 +104,8 @@ void mrpt::system::getCallStackBackTrace(TCallStackBackTrace& out_bt)
 			int status = -1;
 			if (info.dli_sname[0] == '_')
 			{
-				demangled =
-					abi::__cxa_demangle(info.dli_sname, nullptr, nullptr, &status);
+				demangled = abi::__cxa_demangle(
+					info.dli_sname, nullptr, nullptr, &status);
 			}
 			cse.symbolNameOriginal =
 				info.dli_sname == nullptr ? symbols[i] : info.dli_sname;

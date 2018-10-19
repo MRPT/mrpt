@@ -164,5 +164,4 @@ class AutoLocker
 	~AutoLocker() { _binded.unlock(); }
 	Locker& _binded;
 };
-}
-
+}  // namespace rp::hal

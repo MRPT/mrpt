@@ -33,9 +33,8 @@ MAP_DEFINITION_REGISTER(
 	mrpt::maps::CReflectivityGridMap2D)
 
 CReflectivityGridMap2D::TMapDefinition::TMapDefinition()
-	
-	  
-= default;
+
+	= default;
 
 void CReflectivityGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(
 	const mrpt::config::CConfigFileBase& source,
@@ -72,7 +71,7 @@ mrpt::maps::CMetricMap*
 {
 	const CReflectivityGridMap2D::TMapDefinition& def =
 		*dynamic_cast<const CReflectivityGridMap2D::TMapDefinition*>(&_def);
-	CReflectivityGridMap2D* obj = new CReflectivityGridMap2D(
+	auto* obj = new CReflectivityGridMap2D(
 		def.min_x, def.max_x, def.min_y, def.max_y, def.resolution);
 	obj->insertionOptions = def.insertionOpts;
 	return obj;
@@ -130,8 +129,7 @@ bool CReflectivityGridMap2D::internal_insertObservation(
 		/********************************************************************
 					OBSERVATION TYPE: CObservationReflectivity
 		********************************************************************/
-		const CObservationReflectivity* o =
-			static_cast<const CObservationReflectivity*>(obs);
+		const auto* o = static_cast<const CObservationReflectivity*>(obs);
 
 		if (o->channel != -1 && insertionOptions.channel != -1 &&
 			o->channel != insertionOptions.channel)
@@ -196,8 +194,7 @@ double CReflectivityGridMap2D::internal_computeObservationLikelihood(
 		/********************************************************************
 					OBSERVATION TYPE: CObservationReflectivity
 		********************************************************************/
-		const CObservationReflectivity* o =
-			static_cast<const CObservationReflectivity*>(obs);
+		const auto* o = static_cast<const CObservationReflectivity*>(obs);
 
 		if (o->channel != -1 && insertionOptions.channel != -1 &&
 			o->channel != insertionOptions.channel)
@@ -233,7 +230,7 @@ void CReflectivityGridMap2D::serializeTo(
 	dyngridcommon_writeToStream(out);
 
 	// Map cells:
-	const uint32_t n = static_cast<uint32_t>(m_map.size());
+	const auto n = static_cast<uint32_t>(m_map.size());
 	out << n;
 	if (n) out.WriteBuffer(&m_map[0], n);
 
@@ -275,7 +272,7 @@ void CReflectivityGridMap2D::serializeFrom(
 /*---------------------------------------------------------------
 					TInsertionOptions
  ---------------------------------------------------------------*/
-CReflectivityGridMap2D::TInsertionOptions::TInsertionOptions()  = default;
+CReflectivityGridMap2D::TInsertionOptions::TInsertionOptions() = default;
 void CReflectivityGridMap2D::TInsertionOptions::dumpToTextStream(
 	std::ostream& out) const
 {

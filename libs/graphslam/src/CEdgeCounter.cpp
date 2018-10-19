@@ -52,7 +52,7 @@ void CEdgeCounter::getTotalNumOfEdges(int* total_num_edges) const
 	ASSERTDEB_(total_num_edges);
 	int sum = 0;
 
-	for (const auto & it : m_name_to_edges_num)
+	for (const auto& it : m_name_to_edges_num)
 	{
 		sum += it.second;
 	}
@@ -61,8 +61,7 @@ void CEdgeCounter::getTotalNumOfEdges(int* total_num_edges) const
 
 int CEdgeCounter::getNumForEdgeType(const std::string& name) const
 {
-	std::map<std::string, int>::const_iterator search =
-		m_name_to_edges_num.find(name);
+	auto search = m_name_to_edges_num.find(name);
 	if (search != m_name_to_edges_num.end())
 	{
 		return search->second;
@@ -75,8 +74,7 @@ int CEdgeCounter::getNumForEdgeType(const std::string& name) const
 
 void CEdgeCounter::getNumForEdgeType(const std::string& name, int* total_num)
 {
-	std::map<std::string, int>::const_iterator search =
-		m_name_to_edges_num.find(name);
+	auto search = m_name_to_edges_num.find(name);
 	if (search != m_name_to_edges_num.end())
 	{
 		*total_num = search->second;
@@ -89,8 +87,7 @@ void CEdgeCounter::getNumForEdgeType(const std::string& name, int* total_num)
 
 void CEdgeCounter::setEdgesManually(const std::string& name, int num_of_edges)
 {
-	std::map<std::string, int>::iterator search =
-		m_name_to_edges_num.find(name);
+	auto search = m_name_to_edges_num.find(name);
 	if (search != m_name_to_edges_num.end())
 	{
 		search->second = num_of_edges;
@@ -112,8 +109,7 @@ void CEdgeCounter::addEdge(
 	const std::string& name, bool is_loop_closure /* =false */,
 	bool is_new /* =false */)
 {
-	std::map<std::string, int>::iterator search =
-		m_name_to_edges_num.find(name);
+	auto search = m_name_to_edges_num.find(name);
 	if (search != m_name_to_edges_num.end())
 	{
 		(search->second)++;  // increment to the found element
@@ -167,14 +163,12 @@ void CEdgeCounter::addEdge(
 
 void CEdgeCounter::addEdgeType(const std::string& name)
 {
-	std::map<std::string, int>::const_iterator search =
-		m_name_to_edges_num.find(name);
+	auto search = m_name_to_edges_num.find(name);
 
 	if (search != m_name_to_edges_num.end())
 	{
-		THROW_EXCEPTION(
-			mrpt::format(
-				"Specified edge type [%s] already exists", name.c_str()))
+		THROW_EXCEPTION(mrpt::format(
+			"Specified edge type [%s] already exists", name.c_str()))
 	}
 	else
 	{
@@ -214,7 +208,7 @@ void CEdgeCounter::getAsString(std::string* str_out) const
 			  "same nodes): "
 		   << m_unique_edges << std::endl;
 
-	for (const auto & it : m_name_to_edges_num)
+	for (const auto& it : m_name_to_edges_num)
 	{
 		ss_out << "\t" << it.first << " edges: " << it.second << std::endl;
 	}
@@ -245,13 +239,12 @@ void CEdgeCounter::setTextMessageParams(
 		"provided");
 	ASSERTDEB_EQUAL_(name_to_offset_y.size(), name_to_text_index.size());
 
-	for (const auto & it : name_to_offset_y)
+	for (const auto& it : name_to_offset_y)
 	{
 		std::string name = it.first;
 
 		// check if name already exist, otherwise throw exception
-		std::map<std::string, int>::const_iterator search =
-			m_name_to_edges_num.find(name);
+		auto search = m_name_to_edges_num.find(name);
 		if (search == m_name_to_edges_num.end())
 		{
 			std::stringstream ss_err;
@@ -312,7 +305,7 @@ void CEdgeCounter::updateTextMessages() const
 	}
 
 	// add a textMessage for every stored edge type
-	for (const auto & it : m_name_to_offset_y)
+	for (const auto& it : m_name_to_offset_y)
 	{
 		std::string name = it.first;
 		double offset_y = it.second;

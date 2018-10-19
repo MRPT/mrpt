@@ -144,10 +144,9 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 		static int CNT = 0;
 		if ((CNT++ % 20) == 0)
 		{
-			string hmtmap_file(
-				format(
-					"%s/HMTSLAM_state/state_%05u.hmtslam",
-					m_options.LOG_OUTPUT_DIR.c_str(), nIteration));
+			string hmtmap_file(format(
+				"%s/HMTSLAM_state/state_%05u.hmtslam",
+				m_options.LOG_OUTPUT_DIR.c_str(), nIteration));
 			MRPT_LOG_INFO_STREAM("[LOG] Saving: " << hmtmap_file.c_str());
 			CFileGZOutputStream f(hmtmap_file);
 			archiveFrom(f) << *this;
@@ -163,7 +162,7 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 		{
 			std::lock_guard<std::mutex> lockerLMH(bestLMH->threadLocks.m_lock);
 
-			for (TNodeIDSet::const_iterator n = bestLMH->m_neighbors.begin();
+			for (auto n = bestLMH->m_neighbors.begin();
 				 n != bestLMH->m_neighbors.end(); ++n)
 				bestLMH->updateAreaFromLMH(*n);
 
@@ -180,13 +179,12 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 					m_map.getFirstNode()->getID(),  // Reference node
 					bestHypoID,  // Hypothesis to get
 					3  // iterations
-					);
+				);
 			}
 
-			string hmtmap_file(
-				format(
-					"%s/HMAP_3D/mostLikelyHMT_MAP_%05u.3Dscene",
-					m_options.LOG_OUTPUT_DIR.c_str(), nIteration));
+			string hmtmap_file(format(
+				"%s/HMAP_3D/mostLikelyHMT_MAP_%05u.3Dscene",
+				m_options.LOG_OUTPUT_DIR.c_str(), nIteration));
 			MRPT_LOG_INFO_STREAM("[LOG] Saving " << hmtmap_file);
 			CFileGZOutputStream f(hmtmap_file);
 			archiveFrom(f) << sceneGlobalHMTMAP;

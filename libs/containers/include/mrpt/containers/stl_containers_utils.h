@@ -16,7 +16,7 @@
 namespace mrpt::containers
 {
 /** \addtogroup stlext_grp
-  * @{ */
+ * @{ */
 
 /** Returns the index of the value "T" in the container "vect"
  * (std::vector,std::deque,etc), or string::npos if not found.
@@ -24,8 +24,8 @@ namespace mrpt::containers
 template <class T, class CONTAINER>
 size_t find_in_vector(const T& value, const CONTAINER& vect)
 {
-	typename CONTAINER::const_iterator last = vect.end();
-	for (typename CONTAINER::const_iterator i = vect.begin(); i != last; ++i)
+	auto last = vect.end();
+	for (auto i = vect.begin(); i != last; ++i)
 		if (*i == value) return std::distance(vect.begin(), i);
 	return std::string::npos;
 }
@@ -63,7 +63,7 @@ template <class T>
 inline typename std::set<T>::iterator erase_return_next(
 	std::set<T>& cont, typename std::set<T>::iterator& it)
 {
-	typename std::set<T>::iterator itRet = it;
+	auto itRet = it;
 	++itRet;
 	cont.erase(it);
 	return itRet;
@@ -79,7 +79,7 @@ std::string getSTLContainerAsString(const T& t)
 {
 	using namespace std;
 	stringstream ss;
-	for (typename T::const_iterator it = t.begin(); it != t.end(); ++it)
+	for (auto it = t.begin(); it != t.end(); ++it)
 	{
 		ss << *it << ", ";
 	}
@@ -144,5 +144,4 @@ void printMap(const std::map<T1, T2>& m)
 }
 
 /** @} */  // end of grouping
-}
-
+}  // namespace mrpt::containers

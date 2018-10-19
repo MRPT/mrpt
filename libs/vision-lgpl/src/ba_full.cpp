@@ -223,8 +223,8 @@ double mrpt::vision::bundle_adj_full(
 			for (size_t i = 0; i < H_p.size(); ++i)
 				(H_p[i] + I_muPoint).inv_fast(V_inv[i]);
 
-			using WMap = mrpt::aligned_std_map<pair<TCameraPoseID, TLandmarkID>,
-											   Matrix_FxP>;
+			using WMap = mrpt::aligned_std_map<
+				pair<TCameraPoseID, TLandmarkID>, Matrix_FxP>;
 			WMap W, Y;
 
 			// For quick look-up of entries in W affecting a given point ID:
@@ -389,10 +389,9 @@ double mrpt::vision::bundle_adj_full(
 				for (size_t j = 0; j < num_free_frames; ++j)
 				{
 					WMap::iterator W_ij;
-					W_ij = W.find(
-						make_pair(
-							TCameraPoseID(j + num_fix_frames),
-							TLandmarkID(i + num_fix_points)));
+					W_ij = W.find(make_pair(
+						TCameraPoseID(j + num_fix_frames),
+						TLandmarkID(i + num_fix_points)));
 
 					if (W_ij != W.end())
 					{

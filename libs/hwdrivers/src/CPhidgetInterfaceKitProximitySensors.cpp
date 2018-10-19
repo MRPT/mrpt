@@ -32,7 +32,7 @@ IMPLEMENTS_GENERIC_SENSOR(CPhidgetInterfaceKitProximitySensors, mrpt::hwdrivers)
    ----------------------------------------------------- */
 CPhidgetInterfaceKitProximitySensors::CPhidgetInterfaceKitProximitySensors()
 	: mrpt::system::COutputLogger("CPhidgetInterfaceKitProximitySensors")
-	  
+
 {
 #if MRPT_HAS_PHIDGET
 	m_carteInterfaceKit = new CPhidgetInterfaceKitHandle;
@@ -208,17 +208,19 @@ void CPhidgetInterfaceKitProximitySensors::initialize()
 			"Can't find Phidget IK card, please check your serial number.");
 	}
 	// set frame rate
-	/*int miliseconds = static_cast<int>(1000./static_cast<float>(m_process_rate));
-	for(int i = 0 ; i < 8 ; i++)
+	/*int miliseconds =
+	static_cast<int>(1000./static_cast<float>(m_process_rate)); for(int i = 0 ;
+	i < 8 ; i++)
 	{
 		if(m_sensorIsPlugged[i])
 		{
-			int err = CPhidgetInterfaceKit_setDataRate(*((CPhidgetInterfaceKitHandle*)(m_carteInterfaceKit)), i, miliseconds);
-			if(err > 0)
+			int err =
+	CPhidgetInterfaceKit_setDataRate(*((CPhidgetInterfaceKitHandle*)(m_carteInterfaceKit)),
+	i, miliseconds); if(err > 0)
 			{
-				string error = format("Can't set process rate to %d ms on channel %d of the Phidget IK Board.", miliseconds, i);
-				m_state = CGenericSensor::ssError;
-				THROW_EXCEPTION(error);
+				string error = format("Can't set process rate to %d ms on
+	channel %d of the Phidget IK Board.", miliseconds, i); m_state =
+	CGenericSensor::ssError; THROW_EXCEPTION(error);
 			}
 		}
 	}*/  // seems to be used only in the event based programming way.

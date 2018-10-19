@@ -15,9 +15,9 @@ namespace mrpt::nav
 class CParameterizedTrajectoryGenerator;
 
 /** Stores a candidate movement in TP-Space-based navigation.
-*\sa CReactiveNavigationSystem, CReactiveNavigationSystem3D
-*  \ingroup nav_reactive
-*/
+ *\sa CReactiveNavigationSystem, CReactiveNavigationSystem3D
+ *  \ingroup nav_reactive
+ */
 struct TCandidateMovementPTG
 {
 	/** The associated PTG. nullptr if not applicable / undefined. */
@@ -32,13 +32,12 @@ struct TCandidateMovementPTG
 	double starting_robot_dir{0}, starting_robot_dist{0};
 
 	/** List of properties. May vary for different user implementations of
-	* scores and/or different multi-objective optimizers.
-	* See list of available variable names in docs for
-	* mrpt::nav::CAbstractPTGBasedReactive
-	*/
+	 * scores and/or different multi-objective optimizers.
+	 * See list of available variable names in docs for
+	 * mrpt::nav::CAbstractPTGBasedReactive
+	 */
 	mrpt::system::TParameters<double> props;
 
 	TCandidateMovementPTG();
 };
-}
-
+}  // namespace mrpt::nav

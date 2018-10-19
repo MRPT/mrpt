@@ -28,7 +28,7 @@ using namespace std;
 wxImage* mrpt::gui::MRPTImage2wxImage(const mrpt::img::CImage& img)
 {
 #if MRPT_HAS_OPENCV
-	IplImage* image = const_cast<IplImage*>(img.getAs<IplImage>());
+	auto* image = const_cast<IplImage*>(img.getAs<IplImage>());
 	bool free_image_at_end = false;
 
 	// If the image is GRAYSCALE, we need to convert it into RGB, so do it
@@ -63,7 +63,7 @@ wxImage* mrpt::gui::MRPTImage2wxImage(const mrpt::img::CImage& img)
 	}
 
 	int row_in_bytes = image->width * image->nChannels;
-	unsigned char* data = (unsigned char*)malloc(row_in_bytes * image->height);
+	auto* data = (unsigned char*)malloc(row_in_bytes * image->height);
 
 	// Copy row by row only if necesary:
 	if (row_in_bytes != image->widthStep)
@@ -167,7 +167,7 @@ wxImage* mrpt::gui::MRPTImage2wxImage(const mrpt::img::CImage& img)
 wxBitmap* mrpt::gui::MRPTImage2wxBitmap(const mrpt::img::CImage& img)
 {
 #if MRPT_HAS_OPENCV
-	IplImage* image = const_cast<IplImage*>(img.getAs<IplImage>());
+	auto* image = const_cast<IplImage*>(img.getAs<IplImage>());
 	bool free_image_at_end = false;
 
 	// If the image is GRAYSCALE, we need to convert it into RGB, so do it
@@ -201,7 +201,7 @@ wxBitmap* mrpt::gui::MRPTImage2wxBitmap(const mrpt::img::CImage& img)
 	}
 
 	int row_in_bytes = image->width * image->nChannels;
-	unsigned char* data = (unsigned char*)malloc(row_in_bytes * image->height);
+	auto* data = (unsigned char*)malloc(row_in_bytes * image->height);
 
 	// Copy row by row only if necesary:
 	if (row_in_bytes != image->widthStep)
@@ -235,7 +235,7 @@ wxBitmap* mrpt::gui::MRPTImage2wxBitmap(const mrpt::img::CImage& img)
 #if MRPT_HAS_OPENCV
 wxImage* mrpt::gui::IplImage2wxImage(void* img)
 {
-	IplImage* image = static_cast<IplImage*>(img);
+	auto* image = static_cast<IplImage*>(img);
 
 	ASSERT_(image);
 	ASSERT_(image->nChannels == 3);
@@ -251,8 +251,7 @@ wxImage* mrpt::gui::IplImage2wxImage(void* img)
 	int row_bytes =
 		image->width * image->nChannels * ((image->depth & 255) >> 3);
 
-	unsigned char* imageData =
-		(unsigned char*)malloc(row_bytes * image->height);
+	auto* imageData = (unsigned char*)malloc(row_bytes * image->height);
 	ASSERT_(imageData);
 
 	// copy row by row only if necesary
@@ -278,7 +277,7 @@ wxImage* mrpt::gui::IplImage2wxImage(void* img)
 //------------------------------------------------------------------------
 mrpt::img::CImage* mrpt::gui::wxImage2MRPTImage(const wxImage& img)
 {
-	mrpt::img::CImage* newImg = new mrpt::img::CImage();
+	auto* newImg = new mrpt::img::CImage();
 
 	const size_t lx = img.GetWidth();
 	const size_t ly = img.GetHeight();
@@ -931,14 +930,13 @@ void CPanelCameraSelection::writeConfigFromVideoSourcePanel(
 				string(edCustomCamConfig->GetValue().mb_str()));
 			std::vector<std::string> allSects;
 			cfgIn.getAllSections(allSects);
-			for (const auto & allSect : allSects)
+			for (const auto& allSect : allSects)
 			{
 				std::vector<std::string> keys;
 				cfgIn.getAllKeys(allSect, keys);
-				for (const auto & key : keys)
+				for (const auto& key : keys)
 					cfg->write(
-						allSect, key,
-						cfgIn.read_string(allSect, key, ""));
+						allSect, key, cfgIn.read_string(allSect, key, ""));
 			}
 		}
 		break;

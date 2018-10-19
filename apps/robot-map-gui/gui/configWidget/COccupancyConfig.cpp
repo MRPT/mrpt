@@ -37,8 +37,7 @@ COccupancyConfig::COccupancyConfig()
 	m_ui->likelihoodMethod->addItem(
 		"lmConsensusOWA", COccupancyGridMap2D::lmConsensusOWA);
 
-	COccupancyGridMap2D::TMapDefinition* def =
-		new COccupancyGridMap2D::TMapDefinition();
+	auto* def = new COccupancyGridMap2D::TMapDefinition();
 	setCreationOpt(
 		def->min_x, def->max_x, def->min_y, def->max_y, def->resolution);
 	setInsertOpt(def->insertionOpts);
@@ -52,7 +51,7 @@ const QString COccupancyConfig::getName()
 
 void COccupancyConfig::updateConfiguration(TMetricMapInitializer* options)
 {
-	COccupancyGridMap2D::TMapDefinition* mapDefination =
+	auto* mapDefination =
 		dynamic_cast<COccupancyGridMap2D::TMapDefinition*>(options);
 	ASSERT_(mapDefination);
 

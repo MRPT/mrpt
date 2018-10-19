@@ -504,9 +504,9 @@ CPose3DRotVec CPose3DRotVec::getInverse() const
 
 /**  Makes \f$ this = A \ominus B \f$ this method is slightly more efficient
  * than "this= A - B;" since it avoids the temporary object.
-  *  \note A or B can be "this" without problems.
-  * \sa composeFrom, composePoint
-  */
+ *  \note A or B can be "this" without problems.
+ * \sa composeFrom, composePoint
+ */
 void CPose3DRotVec::inverseComposeFrom(
 	const CPose3DRotVec& A, const CPose3DRotVec& B)
 {
@@ -533,8 +533,8 @@ void CPose3DRotVec::inverseComposeFrom(
 }
 
 /**  Computes the 3D point L such as \f$ L = G \ominus this \f$.
-  * \sa composePoint, composeFrom
-  */
+ * \sa composePoint, composeFrom
+ */
 void CPose3DRotVec::inverseComposePoint(
 	const double gx, const double gy, const double gz, double& lx, double& ly,
 	double& lz,
@@ -550,7 +550,7 @@ void CPose3DRotVec::inverseComposePoint(
 
 /** Exponentiate a Vector in the SE3 Lie Algebra to generate a new
  * CPose3DRotVec.
-  */
+ */
 CPose3DRotVec CPose3DRotVec::exp(const mrpt::math::CArrayDouble<6>& mu)
 {
 	return CPose3DRotVec(mu);
@@ -558,11 +558,11 @@ CPose3DRotVec CPose3DRotVec::exp(const mrpt::math::CArrayDouble<6>& mu)
 
 /** Take the logarithm of the 3x3 rotation matrix, generating the corresponding
  * vector in the Lie Algebra.
-  */
+ */
 CArrayDouble<3> CPose3DRotVec::ln_rotation() const { return m_rotvec; }
 /** Take the logarithm of the 3x4 matrix defined by this pose, generating the
  * corresponding vector in the SE3 Lie Algebra.
-  */
+ */
 void CPose3DRotVec::ln(CArrayDouble<6>& result) const
 {
 	result.head<3>() = m_coords;

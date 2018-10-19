@@ -17,14 +17,14 @@ namespace mrpt::config
 {
 /** This class implements a config file-like interface over a memory-stored
  * string list.
-*
+ *
  * Use base class `CConfigFileBase`'s methods
  * `read_{int,float,double,string,...}()` and `write()` to actually read and
  * write values.
  *
  * See: \ref config_file_format
  * \ingroup mrpt_base_grp
-  */
+ */
 class CConfigFileMemory : public CConfigFileBase
 {
    public:
@@ -76,5 +76,4 @@ class CConfigFileMemory : public CConfigFileBase
 
 };  // End of class def.
 
-}
-
+}  // namespace mrpt::config

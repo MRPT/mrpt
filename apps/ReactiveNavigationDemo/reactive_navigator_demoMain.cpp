@@ -1375,9 +1375,8 @@ bool reactive_navigator_demoframe::reinitSimulator()
 
 	cbSelPTG->Clear();
 	{
-		mrpt::nav::CAbstractPTGBasedReactive* ptg_nav =
-			dynamic_cast<mrpt::nav::CAbstractPTGBasedReactive*>(
-				m_navMethod.get());
+		auto* ptg_nav = dynamic_cast<mrpt::nav::CAbstractPTGBasedReactive*>(
+			m_navMethod.get());
 		if (ptg_nav)
 		{
 			for (size_t i = 0; i < ptg_nav->getPTG_count(); i++)
@@ -1488,7 +1487,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 		if (m_log_trajectory_file.is_open()) m_log_trajectory_file.close();
 	}
 
-	mrpt::nav::CAbstractPTGBasedReactive* ptg_nav =
+	auto* ptg_nav =
 		dynamic_cast<mrpt::nav::CAbstractPTGBasedReactive*>(m_navMethod.get());
 
 	// Clear stuff which will be updated if used below:
@@ -1648,8 +1647,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 		}
 	}
 
-	CWaypointsNavigator* wp_nav =
-		dynamic_cast<CWaypointsNavigator*>(m_navMethod.get());
+	auto* wp_nav = dynamic_cast<CWaypointsNavigator*>(m_navMethod.get());
 	if (wp_nav)
 	{
 		static wxFrame* wxFrWpInfo = nullptr;
@@ -1849,7 +1847,7 @@ void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
 				btnPlaceTarget->Refresh();
 				m_gl_placing_nav_target->setVisibility(false);
 
-				CWaypointsNavigator* wp_nav =
+				auto* wp_nav =
 					dynamic_cast<CWaypointsNavigator*>(m_navMethod.get());
 				if (wp_nav) wp_nav->navigateWaypoints(m_waypoints_clicked);
 
@@ -2114,8 +2112,7 @@ void reactive_navigator_demoframe::OnrbKinTypeSelect(wxCommandEvent& event)
 	{
 		case 0:
 		{
-			mrpt::kinematics::CVehicleSimul_DiffDriven* sim =
-				new mrpt::kinematics::CVehicleSimul_DiffDriven();
+			auto* sim = new mrpt::kinematics::CVehicleSimul_DiffDriven();
 			m_robotSimul.reset(sim);
 			m_robotSimul2NavInterface =
 				std::make_unique<MyRobot2NavInterface_Diff>(
@@ -2130,8 +2127,7 @@ void reactive_navigator_demoframe::OnrbKinTypeSelect(wxCommandEvent& event)
 		break;
 		case 1:
 		{
-			mrpt::kinematics::CVehicleSimul_Holo* sim =
-				new mrpt::kinematics::CVehicleSimul_Holo();
+			auto* sim = new mrpt::kinematics::CVehicleSimul_Holo();
 			m_robotSimul.reset(sim);
 			m_robotSimul2NavInterface =
 				std::make_unique<MyRobot2NavInterface_Holo>(
@@ -2257,8 +2253,7 @@ void reactive_navigator_demoframe::OnbtnDrawEmptyClick(wxCommandEvent& event)
 void reactive_navigator_demoframe::OnbtnSetWaypointSeqClick(
 	wxCommandEvent& event)
 {
-	CWaypointsNavigator* wp_nav =
-		dynamic_cast<CWaypointsNavigator*>(m_navMethod.get());
+	auto* wp_nav = dynamic_cast<CWaypointsNavigator*>(m_navMethod.get());
 	if (!wp_nav)
 	{
 		wxMessageBox(

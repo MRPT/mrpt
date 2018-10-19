@@ -88,9 +88,8 @@ void xRawLogViewerFrame::OnGenerateSeqImgs(wxCommandEvent& event)
 						if (SF->getObservationByIndex(k)->GetRuntimeClass() ==
 							CLASS_ID(CObservationStereoImages))
 						{
-							CObservationStereoImages::Ptr obsSt =
-								SF->getObservationByIndexAs<
-									CObservationStereoImages::Ptr>(k);
+							auto obsSt = SF->getObservationByIndexAs<
+								CObservationStereoImages::Ptr>(k);
 							obsSt->imageLeft.saveToFile(format(
 								"%s/img_stereo_%u_left_%05u.%s", outDir.c_str(),
 								k, imgSaved, imgFileExtension.c_str()));
@@ -104,9 +103,8 @@ void xRawLogViewerFrame::OnGenerateSeqImgs(wxCommandEvent& event)
 						if (SF->getObservationByIndex(k)->GetRuntimeClass() ==
 							CLASS_ID(CObservationImage))
 						{
-							CObservationImage::Ptr obsIm =
-								SF->getObservationByIndexAs<
-									CObservationImage::Ptr>(k);
+							auto obsIm = SF->getObservationByIndexAs<
+								CObservationImage::Ptr>(k);
 							obsIm->image.saveToFile(format(
 								"%s/img_monocular_%u_%05u.%s", outDir.c_str(),
 								k, imgSaved, imgFileExtension.c_str()));
@@ -191,7 +189,7 @@ void xRawLogViewerFrame::OnMenuMono2Stereo(wxCommandEvent& event)
 	string lb_stereo = string(sNewLabel.mb_str());
 
 	wxBusyCursor waitCursor;
-	unsigned int nEntries = (unsigned int)rawlog.size();
+	auto nEntries = (unsigned int)rawlog.size();
 
 	wxProgressDialog progDia(
 		wxT("Progress"), wxT("Parsing rawlog..."),
@@ -338,9 +336,8 @@ void xRawLogViewerFrame::OnMenuRectifyImages(wxCommandEvent& event)
 						if (SF->getObservationByIndex(k)->GetRuntimeClass() ==
 							CLASS_ID(CObservationImage))
 						{
-							CObservationImage::Ptr obsIm =
-								SF->getObservationByIndexAs<
-									CObservationImage::Ptr>(k);
+							auto obsIm = SF->getObservationByIndexAs<
+								CObservationImage::Ptr>(k);
 
 							if (obsIm->cameraParams.k1() != 0 ||
 								obsIm->cameraParams.k2() != 0 ||
@@ -566,9 +563,8 @@ void xRawLogViewerFrame::OnMenuRenameImageFiles(wxCommandEvent& event)
 								SF->getObservationByIndex(k),
 								CObservationImage))
 						{
-							CObservationImage::Ptr obsIm =
-								SF->getObservationByIndexAs<
-									CObservationImage::Ptr>(k);
+							auto obsIm = SF->getObservationByIndexAs<
+								CObservationImage::Ptr>(k);
 							renameExternalImageFile(obsIm);
 							N++;
 						}  // end if CObservationImage
@@ -576,9 +572,8 @@ void xRawLogViewerFrame::OnMenuRenameImageFiles(wxCommandEvent& event)
 									 SF->getObservationByIndex(k),
 									 CObservationStereoImages))
 						{
-							CObservationStereoImages::Ptr obsIm =
-								SF->getObservationByIndexAs<
-									CObservationStereoImages::Ptr>(k);
+							auto obsIm = SF->getObservationByIndexAs<
+								CObservationStereoImages::Ptr>(k);
 							renameExternalStereoImageFile(obsIm);
 							N++;
 						}  // end if CObservationImage

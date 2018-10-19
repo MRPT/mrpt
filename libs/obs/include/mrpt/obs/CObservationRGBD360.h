@@ -146,7 +146,6 @@ class CObservationRGBD360 : public CObservation
 
 };  // End of class def.
 
-}  // End of namespace
+}  // namespace obs
 
-}  // End of namespace
-
+}  // namespace mrpt

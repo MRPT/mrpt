@@ -91,7 +91,7 @@ class CFixedIntervalsNRD
 	/**\}*/
 
 	CFixedIntervalsNRD();
-	~CFixedIntervalsNRD() override =default;
+	~CFixedIntervalsNRD() override = default;
 
 	void loadParams(const std::string& source_fname) override;
 	void printParams() const override;
@@ -114,8 +114,8 @@ class CFixedIntervalsNRD
 	struct TParams : public mrpt::config::CLoadableOptions
 	{
 	   public:
-		TParams()=default;
-		~TParams() override =default;
+		TParams() = default;
+		~TParams() override = default;
 
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
@@ -133,8 +133,7 @@ class CFixedIntervalsNRD
 
 	TParams params;
 
-protected:
-
+   protected:
 	/**\name Registration Conditions Specifiers
 	 */
 	/**\brief If estimated position surpasses the registration max values since
@@ -163,7 +162,5 @@ protected:
 	 */
 	bool m_observation_only_rawlog;
 };
-}
+}  // namespace mrpt::graphslam::deciders
 #include "CFixedIntervalsNRD_impl.h"
-
-

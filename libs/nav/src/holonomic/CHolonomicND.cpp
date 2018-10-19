@@ -25,8 +25,8 @@ IMPLEMENTS_SERIALIZABLE(
 	CHolonomicND, CAbstractHolonomicReactiveMethod, mrpt::nav)
 
 /**  Initialize the parameters of the navigator, from some
-*    configuration file, or default values if filename is set to NULL.
-*/
+ *    configuration file, or default values if filename is set to NULL.
+ */
 CHolonomicND::CHolonomicND(const mrpt::config::CConfigFileBase* INI_FILE)
 	: CAbstractHolonomicReactiveMethod("CHolonomicND"),
 	  m_last_selected_sector(std::numeric_limits<unsigned int>::max())
@@ -565,7 +565,7 @@ void CHolonomicND::evaluateGaps(
 			target_x, target_y,  // Point
 			0, 0, x, y,  // Segment
 			closestX, closestY  // Out
-			);
+		);
 
 		const float factor3 =
 			(maxObsRange - std::min(maxObsRange, dist_eucl)) / maxObsRange;
@@ -663,11 +663,7 @@ void CLogFileRecord_ND::serializeFrom(
 /*---------------------------------------------------------------
 						TOptions
   ---------------------------------------------------------------*/
-CHolonomicND::TOptions::TOptions()
-	:  
-	  factorWeights{1.0, 0.5, 2.0, 0.4}
-{
-}
+CHolonomicND::TOptions::TOptions() : factorWeights{1.0, 0.5, 2.0, 0.4} {}
 
 void CHolonomicND::TOptions::loadFromConfigFile(
 	const mrpt::config::CConfigFileBase& source, const std::string& section)

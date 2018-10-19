@@ -385,6 +385,4 @@ class CVectorField3D : public CRenderizableDisplayList
 	~CVectorField3D() override = default;
 };
 
-}
-
-
+}  // namespace mrpt::opengl

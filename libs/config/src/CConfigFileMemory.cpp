@@ -26,8 +26,8 @@ struct CConfigFileMemory::Impl
 	MRPT_CSimpleIni m_ini;
 };
 
-CConfigFileMemory::CConfigFileMemory(const std::vector<std::string>& stringList) :
-	m_impl(mrpt::make_impl<CConfigFileMemory::Impl>())
+CConfigFileMemory::CConfigFileMemory(const std::vector<std::string>& stringList)
+	: m_impl(mrpt::make_impl<CConfigFileMemory::Impl>())
 {
 	// Load the strings:
 	std::string aux;
@@ -35,8 +35,8 @@ CConfigFileMemory::CConfigFileMemory(const std::vector<std::string>& stringList)
 	THE_INI.Load(aux.c_str(), aux.size());
 }
 
-CConfigFileMemory::CConfigFileMemory(const std::string& str) :
-	m_impl(mrpt::make_impl<CConfigFileMemory::Impl>())
+CConfigFileMemory::CConfigFileMemory(const std::string& str)
+	: m_impl(mrpt::make_impl<CConfigFileMemory::Impl>())
 {
 	// Load the strings:
 	THE_INI.Load(str.c_str(), str.size());
@@ -45,8 +45,8 @@ CConfigFileMemory::CConfigFileMemory(const std::string& str) :
 /*---------------------------------------------------------------
 					Constructor
  ---------------------------------------------------------------*/
-CConfigFileMemory::CConfigFileMemory():
-	m_impl(mrpt::make_impl<CConfigFileMemory::Impl>())
+CConfigFileMemory::CConfigFileMemory()
+	: m_impl(mrpt::make_impl<CConfigFileMemory::Impl>())
 {
 }
 
@@ -88,18 +88,16 @@ std::string CConfigFileMemory::readString(
 	MRPT_START
 	const char* defVal = failIfNotFound ? nullptr : defaultStr.c_str();
 
-	const char* aux =
-		m_impl->m_ini.GetValue(
-			section.c_str(), name.c_str(), defVal,
-			nullptr);  // The memory is managed by the SimpleIni object
+	const char* aux = m_impl->m_ini.GetValue(
+		section.c_str(), name.c_str(), defVal,
+		nullptr);  // The memory is managed by the SimpleIni object
 
 	if (failIfNotFound && !aux)
 	{
-		string tmpStr(
-			format(
-				"Value '%s' not found in section '%s' of memory configuration "
-				"string list and failIfNotFound=true.",
-				name.c_str(), section.c_str()));
+		string tmpStr(format(
+			"Value '%s' not found in section '%s' of memory configuration "
+			"string list and failIfNotFound=true.",
+			name.c_str(), section.c_str()));
 		THROW_EXCEPTION(tmpStr);
 	}
 

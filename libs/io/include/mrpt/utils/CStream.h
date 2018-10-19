@@ -4,4 +4,3 @@ namespace mrpt::utils
 {
 using CStream = mrpt::io::CStream;
 }
-

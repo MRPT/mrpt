@@ -44,7 +44,7 @@ CColorBar::CColorBar(
 	  m_min_value(min_value),
 	  m_max_value(max_value),
 	  m_label_font_size(label_font_size)
-	  
+
 {
 }
 

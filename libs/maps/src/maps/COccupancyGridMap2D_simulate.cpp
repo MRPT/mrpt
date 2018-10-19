@@ -72,8 +72,8 @@ void COccupancyGridMap2D::sonarSimulator(
 {
 	const float free_thres = 1.0f - threshold;
 
-	for (CObservationRange::iterator itR = inout_observation.begin();
-		 itR != inout_observation.end(); ++itR)
+	for (auto itR = inout_observation.begin(); itR != inout_observation.end();
+		 ++itR)
 	{
 		const CPose2D sensorAbsolutePose =
 			CPose2D(CPose3D(robotPose) + CPose3D(itR->sensorPose));
@@ -136,14 +136,14 @@ void COccupancyGridMap2D::simulateScanRay(
 #define int_x2idx(_X) (_X >> INTPRECNUMBIT)
 #define int_y2idx(_Y) (_Y >> INTPRECNUMBIT)
 
-	int64_t rxi = static_cast<int64_t>(
+	auto rxi = static_cast<int64_t>(
 		((start_x - x_min) / resolution) * (1L << INTPRECNUMBIT));
-	int64_t ryi = static_cast<int64_t>(
+	auto ryi = static_cast<int64_t>(
 		((start_y - y_min) / resolution) * (1L << INTPRECNUMBIT));
 
-	const int64_t Arxi = static_cast<int64_t>(
+	const auto Arxi = static_cast<int64_t>(
 		RAYTRACE_STEP_SIZE_IN_CELL_UNITS * Arx * (1L << INTPRECNUMBIT));
-	const int64_t Aryi = static_cast<int64_t>(
+	const auto Aryi = static_cast<int64_t>(
 		RAYTRACE_STEP_SIZE_IN_CELL_UNITS * Ary * (1L << INTPRECNUMBIT));
 
 	cellType hitCellOcc_int = 0;  // p2l(0.5f)
@@ -182,13 +182,11 @@ void COccupancyGridMap2D::simulateScanRay(
 
 COccupancyGridMap2D::TLaserSimulUncertaintyParams::
 	TLaserSimulUncertaintyParams()
-	
-	  
-= default;
+
+	= default;
 
 COccupancyGridMap2D::TLaserSimulUncertaintyResult::
-	TLaserSimulUncertaintyResult()
-= default;
+	TLaserSimulUncertaintyResult() = default;
 
 struct TFunctorLaserSimulData
 {
@@ -216,9 +214,9 @@ static void func_laserSimul_callback(
 	// Scan size:
 	y_scanRanges.resize(N);
 
-	double A = sensorPose.phi() +
-			   (fixed_param.params->rightToLeft ? -0.5 : +0.5) *
-				   fixed_param.params->aperture;
+	double A =
+		sensorPose.phi() + (fixed_param.params->rightToLeft ? -0.5 : +0.5) *
+							   fixed_param.params->aperture;
 	const double AA = (fixed_param.params->rightToLeft ? 1.0 : -1.0) *
 					  (fixed_param.params->aperture / (N - 1));
 
@@ -264,7 +262,7 @@ void COccupancyGridMap2D::laserScanSimulatorWithUncertainty(
 				nullptr,  // elem_do_wrap2pi,
 				in_params.UT_alpha, in_params.UT_kappa,
 				in_params.UT_beta  // alpha, K, beta
-				);
+			);
 			break;
 		case sumMonteCarlo:
 			//

@@ -16,7 +16,8 @@
 struct XsSdiData;
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #else
 #define XSSDIDATA_INITIALIZER                           \
 	{                                                   \
@@ -24,10 +25,10 @@ extern "C" {
 	}
 #endif
 
-XSTYPES_DLL_API void XsSdiData_construct(
-	struct XsSdiData* thisPtr, const XsReal* orientationIncrement,
-	const XsReal* velocityIncrement);
-XSTYPES_DLL_API void XsSdiData_destruct(struct XsSdiData* thisPtr);
+	XSTYPES_DLL_API void XsSdiData_construct(
+		struct XsSdiData* thisPtr, const XsReal* orientationIncrement,
+		const XsReal* velocityIncrement);
+	XSTYPES_DLL_API void XsSdiData_destruct(struct XsSdiData* thisPtr);
 
 #ifdef __cplusplus
 }  // extern "C"

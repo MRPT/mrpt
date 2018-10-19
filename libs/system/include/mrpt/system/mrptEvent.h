@@ -10,7 +10,6 @@
 
 #include <mrpt/core/Clock.h>
 
-
 namespace mrpt::system
 {
 class CObservable;
@@ -34,6 +33,7 @@ class mrptEvent
    protected:
 	/** Just to allow this class to be polymorphic */
 	virtual void do_nothing() {}
+
    public:
 	/** Default ctor */
 	inline mrptEvent() : timestamp(mrpt::Clock::now()) {}
@@ -68,11 +68,11 @@ class mrptEventOnDestroy : public mrptEvent
    protected:
 	/** Just to allow this class to be polymorphic */
 	void do_nothing() override {}
+
    public:
 	inline mrptEventOnDestroy(const CObservable* obj) : source_object(obj) {}
 	const CObservable* source_object;
 
 };  // End of class def.
 
-}
-
+}  // namespace mrpt::system

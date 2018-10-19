@@ -107,8 +107,7 @@ void CRangeScanOps<GRAPH_T>::getICPEdge(
 
 template <class GRAPH_T>
 void CRangeScanOps<GRAPH_T>::decimatePointsMap(
-	mrpt::maps::CPointsMap* m, size_t keep_point_every,
-	size_t low_lim)
+	mrpt::maps::CPointsMap* m, size_t keep_point_every, size_t low_lim)
 {
 	MRPT_START;
 
@@ -218,7 +217,4 @@ void CRangeScanOps<GRAPH_T>::TParams::loadFromConfigFile(
 
 	MRPT_END;
 }
-}  // end of namespaces
-
-
-
+}  // namespace mrpt::graphslam::deciders

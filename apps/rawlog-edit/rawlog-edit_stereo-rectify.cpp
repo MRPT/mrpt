@@ -85,12 +85,11 @@ DECLARE_OP_FUNCTION(op_stereo_rectify)
 					 string("_Images");
 			if (directoryExists(outDir))
 				throw runtime_error(
-					string(
-						"*ABORTING*: Output directory for rectified images "
-						"already exists: ") +
-					outDir + string(
-								 "\n. Select a different output path or "
-								 "remove the directory."));
+					string("*ABORTING*: Output directory for rectified images "
+						   "already exists: ") +
+					outDir +
+					string("\n. Select a different output path or "
+						   "remove the directory."));
 
 			VERBOSE_COUT << "Creating directory: " << outDir << endl;
 

@@ -866,8 +866,8 @@ void CFormChangeSensorPositions::executeOperationOnRawlog(
 
 				if (!isInMemory) archiveFrom(*out_fil) << *acts;
 			}
-			else if (
-				newObj->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
+			else if (newObj->GetRuntimeClass()->derivedFrom(
+						 CLASS_ID(CObservation)))
 			{
 				// A sensory frame:
 				CObservation::Ptr o(
@@ -884,10 +884,9 @@ void CFormChangeSensorPositions::executeOperationOnRawlog(
 			}
 			else
 			{  // Unknown class:
-				THROW_EXCEPTION(
-					format(
-						"Unexpected class found in the file: '%s'",
-						newObj->GetRuntimeClass()->className));
+				THROW_EXCEPTION(format(
+					"Unexpected class found in the file: '%s'",
+					newObj->GetRuntimeClass()->className));
 			}
 		}
 		catch (exception& e)
@@ -971,7 +970,7 @@ void exec_setPoseByLabel(
 	{
 		for (auto obs : *SF)
 		{
-				if (obs->sensorLabel == labelToProcess)
+			if (obs->sensorLabel == labelToProcess)
 			{
 				if (changeOnlyXYZ)
 				{
@@ -1106,7 +1105,7 @@ void exec_getCurrentCamCfgByIdx(
 			if (SF->getObservationByIndex(idxToProcess)->GetRuntimeClass() ==
 				CLASS_ID(CObservationImage))
 			{
-				CObservationImage::Ptr obsIm =
+				auto obsIm =
 					SF->getObservationByIndexAs<CObservationImage::Ptr>(
 						idxToProcess);
 				camDistortion =
@@ -1127,7 +1126,7 @@ void exec_getCurrentCamCfgByLabel(
 
 		if (o && o->GetRuntimeClass() == CLASS_ID(CObservationImage))
 		{
-			CObservationImage::Ptr obsIm =
+			auto obsIm =
 				SF->getObservationBySensorLabelAs<CObservationImage::Ptr>(
 					labelToProcess);
 			camDistortion = obsIm->cameraParams.getDistortionParamsAsVector();
@@ -1191,7 +1190,7 @@ void exec_setCurrentCamCfgByIdx(
 			if (SF->getObservationByIndex(idxToProcess)->GetRuntimeClass() ==
 				CLASS_ID(CObservationImage))
 			{
-				CObservationImage::Ptr obsIm =
+				auto obsIm =
 					SF->getObservationByIndexAs<CObservationImage::Ptr>(
 						idxToProcess);
 				obsIm->cameraParams.setDistortionParamsVector(camDistortion);
@@ -1210,7 +1209,7 @@ void exec_setCurrentCamCfgByLabel(
 		CObservation::Ptr o = SF->getObservationBySensorLabel(labelToProcess);
 		if (o && o->GetRuntimeClass() == CLASS_ID(CObservationImage))
 		{
-			CObservationImage::Ptr obsIm =
+			auto obsIm =
 				SF->getObservationBySensorLabelAs<CObservationImage::Ptr>(
 					labelToProcess);
 			obsIm->cameraParams.setDistortionParamsVector(camDistortion);

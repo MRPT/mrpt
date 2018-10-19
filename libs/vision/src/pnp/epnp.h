@@ -267,7 +267,5 @@ class epnp
 };
 
 /** @}  */  // end of grouping
-}
+}  // namespace mrpt::vision::pnp
 #endif
-
-

@@ -516,13 +516,22 @@ class CPointsMap : public CMetricMap,
 
 	/** Provides a direct access to a read-only reference of the internal point
 	 * buffer. \sa getAllPoints */
-	inline const mrpt::aligned_std_vector<float>& getPointsBufferRef_x() const { return m_x; }
+	inline const mrpt::aligned_std_vector<float>& getPointsBufferRef_x() const
+	{
+		return m_x;
+	}
 	/** Provides a direct access to a read-only reference of the internal point
 	 * buffer. \sa getAllPoints */
-	inline const mrpt::aligned_std_vector<float>& getPointsBufferRef_y() const { return m_y; }
+	inline const mrpt::aligned_std_vector<float>& getPointsBufferRef_y() const
+	{
+		return m_y;
+	}
 	/** Provides a direct access to a read-only reference of the internal point
 	 * buffer. \sa getAllPoints */
-	inline const mrpt::aligned_std_vector<float>& getPointsBufferRef_z() const { return m_z; }
+	inline const mrpt::aligned_std_vector<float>& getPointsBufferRef_z() const
+	{
+		return m_z;
+	}
 	/** Returns a copy of the 2D/3D points as a std::vector of float
 	 * coordinates.
 	 * If decimation is greater than 1, only 1 point out of that number will be
@@ -855,15 +864,13 @@ class CPointsMap : public CMetricMap,
 	/** Returns a 3D object representing the map.
 	 *  The color of the points is controlled by renderOptions
 	 */
-	void getAs3DObject(
-		mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
+	void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
 
 	/** If the map is a simple points map or it's a multi-metric map that
 	 * contains EXACTLY one simple points map, return it.
 	 * Otherwise, return NULL
 	 */
-	const mrpt::maps::CSimplePointsMap* getAsSimplePointsMap()
-		const override
+	const mrpt::maps::CSimplePointsMap* getAsSimplePointsMap() const override
 	{
 		return nullptr;
 	}
@@ -1200,9 +1207,7 @@ class PointCloudAdapter<mrpt::maps::CPointsMap>
 	/** Set number of points (to uninitialized values) */
 	inline void resize(const size_t N) { m_obj.resize(N); }
 	/** Does nothing as of now */
-	inline void setDimensions(const size_t& height, const size_t& width)
-	{
-	}
+	inline void setDimensions(const size_t& height, const size_t& width) {}
 	/** Get XYZ coordinates of i'th point */
 	template <typename T>
 	inline void getPointXYZ(const size_t idx, T& x, T& y, T& z) const

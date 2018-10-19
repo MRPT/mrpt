@@ -49,18 +49,18 @@ class CPose3DQuatPDF
    public:
 	/** Copy operator, translating if necesary (for example, between particles
 	 * and gaussian representations)
-	  * \sa createFrom2D
-	  */
+	 * \sa createFrom2D
+	 */
 	virtual void copyFrom(const CPose3DQuatPDF& o) = 0;
 
 	/** This is a static transformation method from 2D poses to 3D PDFs,
 	 * preserving the representation type (particles->particles,
 	 * Gaussians->Gaussians,etc)
-	  *  It returns a new object of any of the derived classes of
+	 *  It returns a new object of any of the derived classes of
 	 * CPose3DQuatPDF. This object must be deleted by the user when not required
 	 * anymore.
-	  *  \sa copyFrom
-	  */
+	 *  \sa copyFrom
+	 */
 	static CPose3DQuatPDF* createFrom2D(const CPosePDF& o);
 
 	/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
@@ -71,13 +71,13 @@ class CPose3DQuatPDF
 
 	/** This static method computes the two Jacobians of a pose composition
 	 * operation $f(x,u)= x \oplus u$
-	  *  \param out_x_oplus_u If set to !=nullptr, the result of "x+u" will be
+	 *  \param out_x_oplus_u If set to !=nullptr, the result of "x+u" will be
 	 * stored here (it will be computed internally anyway).
-	  *  To see the mathematical derivation of the formulas, refer to the
+	 *  To see the mathematical derivation of the formulas, refer to the
 	 * technical report here:
-	  *   -
+	 *   -
 	 * http://www.mrpt.org/Probability_Density_Distributions_Over_Spatial_Representations
-	  */
+	 */
 	static void jacobiansPoseComposition(
 		const CPose3DQuat& x, const CPose3DQuat& u,
 		mrpt::math::CMatrixDouble77& df_dx, mrpt::math::CMatrixDouble77& df_du,
@@ -85,12 +85,12 @@ class CPose3DQuatPDF
 
 	/** Returns a 3D representation of this PDF (it doesn't clear the current
 	 * contents of out_obj, but append new OpenGL objects to that list)
-	  * \note Needs the mrpt-opengl library, and using
+	 * \note Needs the mrpt-opengl library, and using
 	 * mrpt::opengl::CSetOfObjects::Ptr as template argument.
-	  * \note By default, ellipsoids for the confidence intervals of  "q=3" are
+	 * \note By default, ellipsoids for the confidence intervals of  "q=3" are
 	 * drawn; for more mathematical details, see
 	 * CGeneralizedEllipsoidTemplate::setQuantiles()
-	  */
+	 */
 	template <class OPENGL_SETOFOBJECTSPTR>
 	inline void getAs3DObject(OPENGL_SETOFOBJECTSPTR& out_obj) const
 	{
@@ -99,9 +99,9 @@ class CPose3DQuatPDF
 	}
 
 	/** Returns a 3D representation of this PDF.
-	  * \note Needs the mrpt-opengl library, and using
+	 * \note Needs the mrpt-opengl library, and using
 	 * mrpt::opengl::CSetOfObjects::Ptr as template argument.
-	  */
+	 */
 	template <class OPENGL_SETOFOBJECTSPTR>
 	inline OPENGL_SETOFOBJECTSPTR getAs3DObject() const
 	{
@@ -110,6 +110,4 @@ class CPose3DQuatPDF
 	}
 
 };  // End of class def.
-}
-
-
+}  // namespace mrpt::poses

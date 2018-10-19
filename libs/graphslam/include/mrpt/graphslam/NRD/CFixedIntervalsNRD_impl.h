@@ -21,7 +21,6 @@ CFixedIntervalsNRD<GRAPH_T>::CFixedIntervalsNRD()
 	this->initializeLoggers("CFixedIntervalsNRD");
 }
 
-
 // Member function implementations
 //////////////////////////////////////////////////////////////
 
@@ -278,7 +277,4 @@ std::string CFixedIntervalsNRD<GRAPH_T>::TParams::getAsString() const
 
 	MRPT_END;
 }
-}  // end of namespaces
-
-
-
+}  // namespace mrpt::graphslam::deciders

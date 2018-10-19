@@ -22,7 +22,7 @@ IMPLEMENTS_SERIALIZABLE(CRobotPosesGraph, CSerializable, mrpt::hmtslam)
 uint8_t CRobotPosesGraph::serializeGetVersion() const { return 0; }
 void CRobotPosesGraph::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	uint32_t N = static_cast<uint32_t>(size());
+	auto N = static_cast<uint32_t>(size());
 	out << N;
 	for (const auto& e : *this) out << e.first << e.second.sf << e.second.pdf;
 }
@@ -60,7 +60,7 @@ void CRobotPosesGraph::serializeFrom(
 void CRobotPosesGraph::insertIntoMetricMap(CMultiMetricMap& metricMap) const
 {
 	CPose3D meanPose;
-	for (const auto & it : *this)
+	for (const auto& it : *this)
 	{
 		it.second.pdf.getMean(meanPose);
 		it.second.sf.insertObservationsInto(&metricMap, &meanPose);
@@ -73,6 +73,6 @@ void CRobotPosesGraph::insertIntoMetricMap(CMultiMetricMap& metricMap) const
 void CRobotPosesGraph::convertIntoSimplemap(CSimpleMap& out_simplemap) const
 {
 	out_simplemap.clear();
-	for (const auto & it : *this)
+	for (const auto& it : *this)
 		out_simplemap.insert(&it.second.pdf, it.second.sf);
 }

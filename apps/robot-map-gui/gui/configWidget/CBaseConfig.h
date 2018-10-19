@@ -19,12 +19,12 @@ namespace maps
 {
 class TMapGenericParams;
 struct TMetricMapInitializer;
-}
+}  // namespace maps
 namespace config
 {
 class CLoadableOptions;
 }
-}
+}  // namespace mrpt
 
 class CBaseConfig : public QWidget
 {

@@ -4,4 +4,3 @@ namespace mrpt::utils
 {
 using CImage = mrpt::img::CImage;
 }
-

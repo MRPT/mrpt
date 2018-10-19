@@ -20,8 +20,8 @@
 namespace mrpt::nav
 {
 /** \addtogroup nav_holo Holonomic navigation methods
-  * \ingroup mrpt_nav_grp
-  * @{ */
+ * \ingroup mrpt_nav_grp
+ * @{ */
 
 /** A base class for holonomic reactive navigation methods.
  *  \sa CHolonomicVFF,CHolonomicND,CHolonomicFullEval, CReactiveNavigationSystem
@@ -35,11 +35,11 @@ class CAbstractHolonomicReactiveMethod
 	struct NavInput
 	{
 		/** Distance to obstacles in polar coordinates, relative to the robot.
-		  * First index refers to -PI direction, and last one to +PI direction.
-		  * Distances can be dealed as "meters", although when used inside the
+		 * First index refers to -PI direction, and last one to +PI direction.
+		 * Distances can be dealed as "meters", although when used inside the
 		 * PTG-based navigation system, they are "pseudometers", normalized to
 		 * the range [0,1].
-		  */
+		 */
 		std::vector<double> obstacles;
 		/** Relative location (x,y) of target point(s). In the same units than
 		 * `obstacles`. If many, last targets have higher priority. */
@@ -105,7 +105,7 @@ class CAbstractHolonomicReactiveMethod
 	virtual void setTargetApproachSlowDownDistance(const double dist) = 0;
 
 	/** Class factory from class name, e.g. `"CHolonomicVFF"`, etc.
-	  * \exception std::logic_error On invalid or missing parameters. */
+	 * \exception std::logic_error On invalid or missing parameters. */
 	static CAbstractHolonomicReactiveMethod* Create(
 		const std::string& className) noexcept;
 
@@ -133,6 +133,4 @@ class CAbstractHolonomicReactiveMethod
 	std::string m_cfgSectionName;
 };
 /** @} */
-}
-
-
+}  // namespace mrpt::nav

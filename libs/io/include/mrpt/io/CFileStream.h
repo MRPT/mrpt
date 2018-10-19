@@ -98,5 +98,4 @@ class CFileStream : public CStream
 	bool readLine(std::string& str);
 
 };  // End of class def.
-}
-
+}  // namespace mrpt::io

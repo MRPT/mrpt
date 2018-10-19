@@ -251,7 +251,7 @@ static void velodyne_scan_to_pointcloud(
 									CObservationVelodyneScan::LOWER_BANK)
 									   ? 32
 									   : 0;
-			const float azimuth_raw_f = (float)(raw->blocks[block].rotation);
+			const auto azimuth_raw_f = (float)(raw->blocks[block].rotation);
 			const bool block_is_dual_2nd_ranges =
 				(raw->laser_return_mode ==
 					 CObservationVelodyneScan::RETMODE_DUAL &&
@@ -268,8 +268,7 @@ static void velodyne_scan_to_pointcloud(
 						 .distance)  // Invalid return?
 					continue;
 
-				const uint8_t rawLaserId =
-					static_cast<uint8_t>(dsr + dsr_offset);
+				const auto rawLaserId = static_cast<uint8_t>(dsr + dsr_offset);
 				uint8_t laserId = rawLaserId;
 
 				// Detect VLP-16 data and adjust laser id if necessary

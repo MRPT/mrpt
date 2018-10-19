@@ -424,14 +424,14 @@ void CActionRobotMovement2D::computeFromOdometry_modelGaussian(
 	// The Gaussian PDF:
 	// ---------------------------
 	poseChange = mrpt::make_aligned_shared<CPosePDFGaussian>();
-	CPosePDFGaussian* aux = dynamic_cast<CPosePDFGaussian*>(poseChange.get());
+	auto* aux = dynamic_cast<CPosePDFGaussian*>(poseChange.get());
 
 	// See http://www.mrpt.org/Probabilistic_Motion_Models
 	// -----------------------------------
 
 	// Build the odometry noise matrix:
 	double Al = odometryIncrement.norm();
-	CMatrixDouble31 ODO_INCR = CMatrixDouble31(odometryIncrement);
+	auto ODO_INCR = CMatrixDouble31(odometryIncrement);
 	CMatrixDouble33 C_ODO;
 	C_ODO(0, 0) = square(
 		o.gaussianModel.minStdXY + o.gaussianModel.a1 * Al +
@@ -476,7 +476,7 @@ void CActionRobotMovement2D::computeFromOdometry_modelThrun(
 	const mrpt::math::TPose2D nullPose(0, 0, 0);
 
 	poseChange = CPosePDFParticles::Create();
-	CPosePDFParticles* aux = dynamic_cast<CPosePDFParticles*>(poseChange.get());
+	auto* aux = dynamic_cast<CPosePDFParticles*>(poseChange.get());
 
 	// Set the number of particles:
 	aux->resetDeterministic(nullPose, o.thrunModel.nParticlesCount);
@@ -665,8 +665,7 @@ void CActionRobotMovement2D::prepareFastDrawSingleSample_modelGaussian() const
 
 	CMatrixDouble33 D;
 
-	const CPosePDFGaussian* gPdf =
-		dynamic_cast<const CPosePDFGaussian*>(poseChange.get());
+	const auto* gPdf = dynamic_cast<const CPosePDFGaussian*>(poseChange.get());
 	ASSERT_(gPdf != nullptr);
 	const CMatrixDouble33& cov = gPdf->cov;
 

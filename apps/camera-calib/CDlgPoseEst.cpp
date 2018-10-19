@@ -350,7 +350,7 @@ void CDlgPoseEst::OnbtnStartClick(wxCommandEvent& event)
 	{
 		double arr[9];
 
-		for (double & i : arr) file >> i;
+		for (double& i : arr) file >> i;
 
 		for (int i = 0; i < 3; i++)
 			for (int j = 0; j < 3; j++) cam_intrinsic(i, j) = arr[3 * i + j];
@@ -557,13 +557,13 @@ void CDlgPoseEst::threadProcessCorners()
 						if (obj->flag_pose_est == true)
 						{
 							const double m_check_len_x =
-								0.1 * atof(
-										  string(edLengthX->GetValue().mb_str())
-											  .c_str());
+								0.1 *
+								atof(string(edLengthX->GetValue().mb_str())
+										 .c_str());
 							const double m_check_len_y =
-								0.1 * atof(
-										  string(edLengthY->GetValue().mb_str())
-											  .c_str());
+								0.1 *
+								atof(string(edLengthY->GetValue().mb_str())
+										 .c_str());
 
 							obj_pts.resize(m_check_size_x * m_check_size_y, 3);
 							img_pts.resize(m_check_size_x * m_check_size_y, 3);

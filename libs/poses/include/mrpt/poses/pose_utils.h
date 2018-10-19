@@ -93,7 +93,7 @@ inline void getPoseFromString</*QUAT_REPR=*/true, /*TUM_FORMAT=*/false>(
 	p = mrpt::poses::CPose3D(p_quat);
 }  // end of getPoseFromString
 
-}  // end of namespace internal
+}  // namespace mrpt::poses::internal
 
 /**\name Parsing of textfiles with poses */
 /**\{*/
@@ -214,4 +214,3 @@ void readFileWithPoses(
 
 	MRPT_END;
 }
-

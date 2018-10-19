@@ -16,7 +16,8 @@
 #define XS_MAX_OUTPUTCONFIGURATIONS (32)
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #else
 #define XSOUTPUTCONFIGURATION_INITIALIZER \
 	{                                     \
@@ -24,10 +25,10 @@ extern "C" {
 	}
 #endif
 
-struct XsOutputConfiguration;
+	struct XsOutputConfiguration;
 
-XSTYPES_DLL_API void XsOutputConfiguration_swap(
-	struct XsOutputConfiguration* a, struct XsOutputConfiguration* b);
+	XSTYPES_DLL_API void XsOutputConfiguration_swap(
+		struct XsOutputConfiguration* a, struct XsOutputConfiguration* b);
 
 #ifdef __cplusplus
 }  // extern "C"

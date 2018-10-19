@@ -17,64 +17,64 @@ namespace mrpt::graphs
 /** This class is intended to efficiently solve graph-search problems using
  * heuristics to determine the best path. To use it, a solution class must be
  * defined
-  * so that it contains all the information about any partial or complete
+ * so that it contains all the information about any partial or complete
  * solution. Then, a class inheriting from CAStarAlgorithm<Solution class> must
  * also be
-  * implemented, overriding five virtual methods which define the behaviour of
+ * implemented, overriding five virtual methods which define the behaviour of
  * the solutions. These methods are isSolutionEnded, isSolutionValid,
-  * generateChildren, getHeuristic and getCost.
-  * Once both classes are generated, each object of the class inheriting from
+ * generateChildren, getHeuristic and getCost.
+ * Once both classes are generated, each object of the class inheriting from
  * CAStarAlgorithm represents a problem who can be solved by calling
-  * getOptimalSolution. See http://en.wikipedia.org/wiki/A*_search_algorithm for
+ * getOptimalSolution. See http://en.wikipedia.org/wiki/A*_search_algorithm for
  * details about how this algorithm works.
-  * \sa CAStarAlgorithm::isSolutionEnded
-  * \sa CAStarAlgorithm::isSolutionValid
-  * \sa CAStarAlgorithm::generateChildren
-  * \sa CAStarAlgorithm::getHeuristic
-  * \sa CAStarAlgorithm::getCost
-  * \ingroup mrpt_graphs_grp
-  */
+ * \sa CAStarAlgorithm::isSolutionEnded
+ * \sa CAStarAlgorithm::isSolutionValid
+ * \sa CAStarAlgorithm::generateChildren
+ * \sa CAStarAlgorithm::getHeuristic
+ * \sa CAStarAlgorithm::getCost
+ * \ingroup mrpt_graphs_grp
+ */
 template <typename T>
 class CAStarAlgorithm
 {
    public:
 	/**
-	  * Client code must implement this method.
-	  * Returns true if the given solution is complete.
-	  */
+	 * Client code must implement this method.
+	 * Returns true if the given solution is complete.
+	 */
 	virtual bool isSolutionEnded(const T& sol) = 0;
 	/**
-	  * Client code must implement this method.
-	  * Returns true if the given solution is acceptable, that is, doesn't
+	 * Client code must implement this method.
+	 * Returns true if the given solution is acceptable, that is, doesn't
 	 * violate the problem logic.
-	  */
+	 */
 	virtual bool isSolutionValid(const T& sol) = 0;
 	/**
-	  * Client code must implement this method.
-	  * Given a partial solution, returns all its children solution, regardless
+	 * Client code must implement this method.
+	 * Given a partial solution, returns all its children solution, regardless
 	 * of their validity or completeness.
-	  */
+	 */
 	virtual void generateChildren(const T& sol, std::vector<T>& sols) = 0;
 	/**
-	  * Client code must implement this method.
-	  * Given a partial solution, estimates the cost of the remaining (unknown)
+	 * Client code must implement this method.
+	 * Given a partial solution, estimates the cost of the remaining (unknown)
 	 * part.
-	  * This cost must always be greater or equal to zero, and not greater than
+	 * This cost must always be greater or equal to zero, and not greater than
 	 * the actual cost. Thus, must be 0 if the solution is complete.
-	  */
+	 */
 	virtual double getHeuristic(const T& sol) = 0;
 	/**
-	  * Client code must implement this method.
-	  * Given a (possibly partial) solution, calculates its cost so far.
-	  * This cost must not decrease with each step. That is, a solution cannot
+	 * Client code must implement this method.
+	 * Given a (possibly partial) solution, calculates its cost so far.
+	 * This cost must not decrease with each step. That is, a solution cannot
 	 * have a smaller cost than the previous one from which it was generated.
-	  */
+	 */
 	virtual double getCost(const T& sol) = 0;
 
    private:
 	/**
-	  * Calculates the total cost (known+estimated) of a solution.
-	  */
+	 * Calculates the total cost (known+estimated) of a solution.
+	 */
 	inline double getTotalCost(const T& sol)
 	{
 		return getHeuristic(sol) + getCost(sol);
@@ -82,12 +82,12 @@ class CAStarAlgorithm
 
    public:
 	/**
-	  * Finds the optimal solution for a problem, using the A* algorithm.
+	 * Finds the optimal solution for a problem, using the A* algorithm.
 	 * Returns whether an optimal solution was actually found.
-	  * Returns 0 if no solution was found, 1 if an optimal solution was found
+	 * Returns 0 if no solution was found, 1 if an optimal solution was found
 	 * and 2 if a (possibly suboptimal) solution was found but the time lapse
 	 * ended.
-	  */
+	 */
 	int getOptimalSolution(
 		const T& initialSol, T& finalSol, double upperLevel = HUGE_VAL,
 		double maxComputationTime = HUGE_VAL)
@@ -161,6 +161,4 @@ class CAStarAlgorithm
 		return found ? 1 : 0;
 	}
 };
-}
-
-
+}  // namespace mrpt::graphs

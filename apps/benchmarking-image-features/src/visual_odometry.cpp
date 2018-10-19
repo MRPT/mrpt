@@ -23,8 +23,8 @@ int predicted_x[MAX_FRAME];
 int predicted_y[MAX_FRAME];
 
 /************************************************************************************************
-*					    Display function *
-************************************************************************************************/
+ *					    Display function *
+ ************************************************************************************************/
 void VisualOdometry::display()
 {
 	for (int i = 2; i < MAX_FRAME; i++)
@@ -38,8 +38,8 @@ void VisualOdometry::display()
 }
 
 /************************************************************************************************
-*					    Compute Odometry Error *
-************************************************************************************************/
+ *					    Compute Odometry Error *
+ ************************************************************************************************/
 double VisualOdometry::computeOdomError()
 {
 	double error = 0.0;
@@ -61,8 +61,8 @@ double VisualOdometry::computeOdomError()
 }
 
 /************************************************************************************************
-*					    Get Absolute Scale *
-************************************************************************************************/
+ *					    Get Absolute Scale *
+ ************************************************************************************************/
 double VisualOdometry::getAbsoluteScale(
 	int frame_id, int sequence_id, double z_cal, string poses_ground_truth)
 {
@@ -113,8 +113,8 @@ double VisualOdometry::getAbsoluteScale(
 }
 
 /************************************************************************************************
-*					    Get Calibration Params *
-************************************************************************************************/
+ *					    Get Calibration Params *
+ ************************************************************************************************/
 vector<double> VisualOdometry::getCalibrationParams(string calibration_file)
 {
 	string line;
@@ -169,8 +169,8 @@ vector<double> VisualOdometry::getCalibrationParams(string calibration_file)
 }
 
 /************************************************************************************************
-*					    Store Ground Truth *
-************************************************************************************************/
+ *					    Store Ground Truth *
+ ************************************************************************************************/
 void VisualOdometry::storeGroundTruth(string poses_ground_truth)
 {
 	char ch = poses_ground_truth.at(poses_ground_truth.length() - 5);
@@ -214,8 +214,8 @@ void VisualOdometry::storeGroundTruth(string poses_ground_truth)
 }
 
 /************************************************************************************************
-*					    Visual Odometry Constructor *
-************************************************************************************************/
+ *					    Visual Odometry Constructor *
+ ************************************************************************************************/
 VisualOdometry::VisualOdometry()
 {
 	current_frame = 0;
@@ -239,8 +239,8 @@ VisualOdometry::VisualOdometry()
 }
 
 /************************************************************************************************
-*					    Generate VO main funciton *
-************************************************************************************************/
+ *					    Generate VO main funciton *
+ ************************************************************************************************/
 Mat VisualOdometry::generateVO(
 	CFeatureExtraction fext, int numFeats,
 	std::array<std::string, 3> file_paths, int feat_type)
@@ -442,8 +442,8 @@ Mat VisualOdometry::generateVO(
 }
 
 /************************************************************************************************
-*					    Compute Starting Point *
-************************************************************************************************/
+ *					    Compute Starting Point *
+ ************************************************************************************************/
 vector<int> VisualOdometry::computeStartingPoint(char ch)
 {
 	int x = 300;
@@ -511,8 +511,8 @@ vector<int> VisualOdometry::computeStartingPoint(char ch)
 }
 
 /************************************************************************************************
-*					    Feature Tracking method *
-************************************************************************************************/
+ *					    Feature Tracking method *
+ ************************************************************************************************/
 void VisualOdometry::featureTracking(
 	Mat img_1, Mat img_2, vector<Point2f>& points1, vector<Point2f>& points2,
 	vector<uchar>& status)
@@ -548,8 +548,8 @@ void VisualOdometry::featureTracking(
 }
 
 /************************************************************************************************
-*					    Feature Detection method *
-************************************************************************************************/
+ *					    Feature Detection method *
+ ************************************************************************************************/
 void VisualOdometry::featureDetection(
 	CImage img1, vector<Point2f>& points1, int feat_type)
 {  // uses FAST as of now, modify parameters as necessary

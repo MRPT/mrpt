@@ -821,7 +821,7 @@ void CFormMotionModel::applyToRawlogFile()
 	CFileGZInputStream in_fil(fileName_IN);
 	CFileGZOutputStream out_fil(fileName_OUT);
 
-	unsigned int filSize = (unsigned int)in_fil.getTotalBytesCount();
+	auto filSize = (unsigned int)in_fil.getTotalBytesCount();
 
 	wxProgressDialog progDia(
 		wxT("Modifying motion model"), wxT("Processing file..."),

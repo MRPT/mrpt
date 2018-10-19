@@ -33,8 +33,7 @@ using namespace mrpt::hwdrivers;
 CImageGrabber_dc1394::CImageGrabber_dc1394(
 	uint64_t cameraGUID, uint16_t cameraUnit,
 	const TCaptureOptions_dc1394& options, bool verbose)
-	: 
-	  m_options(options)
+	: m_options(options)
 {
 	MRPT_START
 
@@ -533,7 +532,7 @@ bool CImageGrabber_dc1394::getObservation(
 		// dc1394_get_image_size_from_video_mode(THE_CAMERA, m_desired_mode,
 		// &width, &height);
 
-		dc1394video_frame_t* new_frame = static_cast<dc1394video_frame_t*>(
+		auto* new_frame = static_cast<dc1394video_frame_t*>(
 			calloc(1, sizeof(dc1394video_frame_t)));
 		new_frame->color_coding = DC1394_COLOR_CODING_RGB8;
 		dc1394_convert_frames(frame, new_frame);
@@ -551,8 +550,8 @@ bool CImageGrabber_dc1394::getObservation(
 		// Stereo images:
 		dc1394error_t err;
 
-		uint8_t* imageBuf = new uint8_t[width * height * 2];
-		uint8_t* imageBufRGB = new uint8_t[width * height * 2 * 3];
+		auto* imageBuf = new uint8_t[width * height * 2];
+		auto* imageBufRGB = new uint8_t[width * height * 2 * 3];
 
 		if ((err = dc1394_deinterlace_stereo(
 				 frame->image, imageBuf, width, 2 * height)) != DC1394_SUCCESS)
@@ -640,8 +639,8 @@ bool CImageGrabber_dc1394::getObservation(
 		// Stereo images:
 		dc1394error_t err;
 
-		uint8_t* imageBuf = new uint8_t[width * height * 2];
-		uint8_t* imageBufRGB = new uint8_t[width * height * 2 * 3];
+		auto* imageBuf = new uint8_t[width * height * 2];
+		auto* imageBufRGB = new uint8_t[width * height * 2 * 3];
 
 		if ((err = dc1394_deinterlace_stereo(
 				 frame->image, imageBuf, width, 2 * height)) != DC1394_SUCCESS)
@@ -810,11 +809,10 @@ void CImageGrabber_dc1394::enumerateCameras(TCameraInfoList& out_list)
 			dc1394camera_t* cam = dc1394_camera_new_unit(
 				lib_context, list->ids[i].guid, list->ids[i].unit);
 			if (!cam)
-				throw std::runtime_error(
-					format(
-						"[CImageGrabber_dc1394] ERROR: Failed to query camera "
-						"with GUID %u\n",
-						static_cast<unsigned int>(list->ids[i].guid)));
+				throw std::runtime_error(format(
+					"[CImageGrabber_dc1394] ERROR: Failed to query camera "
+					"with GUID %u\n",
+					static_cast<unsigned int>(list->ids[i].guid)));
 
 			info.unit_spec_ID = cam->unit_spec_ID;
 			info.unit_sw_version = cam->unit_sw_version;

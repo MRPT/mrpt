@@ -65,7 +65,7 @@ class PlaneInferredInfo
 	/*!Check if the input planar patch (after segmentation) is cut by the image.
 	 * It checks that the nearer 3D points to the plane's convex hull are behind
 	 * the plane
-	*/
+	 */
 	bool isSurroundingBackground(
 		Plane& plane, pcl::PointCloud<pcl::PointXYZRGBA>::Ptr& frame,
 		std::vector<int>& planeIndices, unsigned threshold);
@@ -80,8 +80,5 @@ class PlaneInferredInfo
    private:
 	PbMap& mPbMap;
 };
-}
+}  // namespace mrpt::pbmap
 #endif
-
-
-

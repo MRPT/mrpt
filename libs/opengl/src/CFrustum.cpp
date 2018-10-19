@@ -69,8 +69,7 @@ void CFrustum::render_dl() const
 		glBegin(GL_LINE_STRIP);
 		glColor4ub(m_color.R, m_color.G, m_color.B, m_color.A);
 
-		for (int i : draw_path)
-			glVertex3fv(&pts[i].x);
+		for (int i : draw_path) glVertex3fv(&pts[i].x);
 
 		glEnd();
 
@@ -102,12 +101,11 @@ void CFrustum::render_dl() const
 
 // Ctors
 CFrustum::CFrustum()
-	: 
-	  m_fov_horz_left(mrpt::DEG2RAD(45)),
+	: m_fov_horz_left(mrpt::DEG2RAD(45)),
 	  m_fov_horz_right(mrpt::DEG2RAD(45)),
 	  m_fov_vert_down(mrpt::DEG2RAD(30)),
 	  m_fov_vert_up(mrpt::DEG2RAD(30)),
-	  
+
 	  m_planes_color(0xE0, 0x00, 0x00, 0x50)  // RGBA
 {
 	keep_min(m_fov_horz_left, DEG2RAD(89.9f));
@@ -247,7 +245,7 @@ void CFrustum::getBoundingBox(
 		-std::numeric_limits<double>::max(),
 		-std::numeric_limits<double>::max(),
 		-std::numeric_limits<double>::max());
-	for (auto & pt : pts)
+	for (auto& pt : pts)
 	{
 		keep_min(bb_min.x, pt.x);
 		keep_min(bb_min.y, pt.y);

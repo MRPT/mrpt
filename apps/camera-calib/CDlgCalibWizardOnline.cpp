@@ -436,11 +436,12 @@ void CDlgCalibWizardOnline::OntimCaptureTrigger(wxTimerEvent& event)
 		}
 
 		// Progress:
-		const unsigned int nFramesToGrab = (unsigned)edNumCapture->GetValue();
+		const auto nFramesToGrab = (unsigned)edNumCapture->GetValue();
 		img_to_show.textOut(
-			10, 10, format(
-						"%u out of %u grabbed",
-						(unsigned int)m_calibFrames.size(), nFramesToGrab),
+			10, 10,
+			format(
+				"%u out of %u grabbed", (unsigned int)m_calibFrames.size(),
+				nFramesToGrab),
 			TColor::white());
 
 		m_realtimeview->AssignImage(img_to_show);

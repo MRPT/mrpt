@@ -21,8 +21,8 @@ using namespace std;
 
 /** Estimates the "overlap" or "matching ratio" of two observations (range
  * [0,1]), possibly taking into account their relative positions.
-  *  \note This is used in mrpt::slam::CIncrementalMapPartitioner
-  */
+ *  \note This is used in mrpt::slam::CIncrementalMapPartitioner
+ */
 double mrpt::slam::observationsOverlap(
 	const mrpt::obs::CObservation* o1, const mrpt::obs::CObservation* o2,
 	const mrpt::poses::CPose3D* pose_o2_wrt_o1)
@@ -30,15 +30,12 @@ double mrpt::slam::observationsOverlap(
 	if (IS_CLASS(o1, CObservation2DRangeScan) &&
 		IS_CLASS(o2, CObservation2DRangeScan))
 	{
-		const CObservation2DRangeScan* this_obs =
-			static_cast<const CObservation2DRangeScan*>(o1);
-		const CObservation2DRangeScan* obs =
-			static_cast<const CObservation2DRangeScan*>(o2);
+		const auto* this_obs = static_cast<const CObservation2DRangeScan*>(o1);
+		const auto* obs = static_cast<const CObservation2DRangeScan*>(o2);
 
-		const CPointsMap* map1 =
+		const auto* map1 =
 			this_obs->buildAuxPointsMap<mrpt::maps::CPointsMap>();
-		const CPointsMap* map2 =
-			obs->buildAuxPointsMap<mrpt::maps::CPointsMap>();
+		const auto* map2 = obs->buildAuxPointsMap<mrpt::maps::CPointsMap>();
 
 		// if PDF is available, get "mean" value as an estimation:
 		CPose3D otherObsPose;
@@ -66,10 +63,10 @@ double mrpt::slam::observationsOverlap(
 
 /** Estimates the "overlap" or "matching ratio" of two set of observations
  * (range [0,1]), possibly taking into account their relative positions.
-  *   This method computes the average between each of the observations in each
+ *   This method computes the average between each of the observations in each
  * SF.
-  *  \note This is used in mrpt::slam::CIncrementalMapPartitioner
-  */
+ *  \note This is used in mrpt::slam::CIncrementalMapPartitioner
+ */
 double mrpt::slam::observationsOverlap(
 	const mrpt::obs::CSensoryFrame& sf1, const mrpt::obs::CSensoryFrame& sf2,
 	const mrpt::poses::CPose3D* pose_sf2_wrt_sf1)
@@ -78,9 +75,9 @@ double mrpt::slam::observationsOverlap(
 	// Return the average value:
 	size_t N = 0;
 	double accum = 0;
-	for (const auto & i1 : sf1)
+	for (const auto& i1 : sf1)
 	{
-		for (const auto & i2 : sf2)
+		for (const auto& i2 : sf2)
 		{
 			accum += observationsOverlap(i1, i2);
 			N++;

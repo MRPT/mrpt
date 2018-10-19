@@ -14,42 +14,43 @@
 #include "pstdint.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-XSTYPES_DLL_API extern const XsReal XsMath_e;
-XSTYPES_DLL_API extern const XsReal XsMath_pi;
-XSTYPES_DLL_API extern const XsReal XsMath_tinyValue;
-XSTYPES_DLL_API extern const XsReal XsMath_hugeValue;
-XSTYPES_DLL_API extern const XsReal XsMath_epsilon;
-XSTYPES_DLL_API extern const XsReal XsMath_sqrtEpsilon;
-XSTYPES_DLL_API extern const XsReal XsMath_denormalized;
-XSTYPES_DLL_API extern const XsReal XsMath_sqrtDenormalized;
-XSTYPES_DLL_API extern const XsReal XsMath_rad2degValue;
-XSTYPES_DLL_API extern const XsReal XsMath_deg2radValue;
-XSTYPES_DLL_API extern const XsReal XsMath_zero;
-XSTYPES_DLL_API extern const XsReal XsMath_pt25;
-XSTYPES_DLL_API extern const XsReal XsMath_pt5;
-XSTYPES_DLL_API extern const XsReal XsMath_minusPt5;
-XSTYPES_DLL_API extern const XsReal XsMath_one;
-XSTYPES_DLL_API extern const XsReal XsMath_minusOne;
-XSTYPES_DLL_API extern const XsReal XsMath_two;
-XSTYPES_DLL_API extern const XsReal XsMath_four;
-XSTYPES_DLL_API extern const XsReal XsMath_minusTwo;
-XSTYPES_DLL_API extern const XsReal XsMath_minusHalfPi;
-XSTYPES_DLL_API extern const XsReal XsMath_halfPi;
-XSTYPES_DLL_API extern const XsReal XsMath_sqrt2;
-XSTYPES_DLL_API extern const XsReal XsMath_infinity;
+	XSTYPES_DLL_API extern const XsReal XsMath_e;
+	XSTYPES_DLL_API extern const XsReal XsMath_pi;
+	XSTYPES_DLL_API extern const XsReal XsMath_tinyValue;
+	XSTYPES_DLL_API extern const XsReal XsMath_hugeValue;
+	XSTYPES_DLL_API extern const XsReal XsMath_epsilon;
+	XSTYPES_DLL_API extern const XsReal XsMath_sqrtEpsilon;
+	XSTYPES_DLL_API extern const XsReal XsMath_denormalized;
+	XSTYPES_DLL_API extern const XsReal XsMath_sqrtDenormalized;
+	XSTYPES_DLL_API extern const XsReal XsMath_rad2degValue;
+	XSTYPES_DLL_API extern const XsReal XsMath_deg2radValue;
+	XSTYPES_DLL_API extern const XsReal XsMath_zero;
+	XSTYPES_DLL_API extern const XsReal XsMath_pt25;
+	XSTYPES_DLL_API extern const XsReal XsMath_pt5;
+	XSTYPES_DLL_API extern const XsReal XsMath_minusPt5;
+	XSTYPES_DLL_API extern const XsReal XsMath_one;
+	XSTYPES_DLL_API extern const XsReal XsMath_minusOne;
+	XSTYPES_DLL_API extern const XsReal XsMath_two;
+	XSTYPES_DLL_API extern const XsReal XsMath_four;
+	XSTYPES_DLL_API extern const XsReal XsMath_minusTwo;
+	XSTYPES_DLL_API extern const XsReal XsMath_minusHalfPi;
+	XSTYPES_DLL_API extern const XsReal XsMath_halfPi;
+	XSTYPES_DLL_API extern const XsReal XsMath_sqrt2;
+	XSTYPES_DLL_API extern const XsReal XsMath_infinity;
 
-XSTYPES_DLL_API XsReal XsMath_rad2deg(XsReal radians);
-XSTYPES_DLL_API XsReal XsMath_deg2rad(XsReal degrees);
-XSTYPES_DLL_API XsReal XsMath_pow2(XsReal a);
-XSTYPES_DLL_API XsReal XsMath_pow3(XsReal a);
-XSTYPES_DLL_API XsReal XsMath_asinClamped(XsReal x);
-XSTYPES_DLL_API int XsMath_isFinite(XsReal x);
-XSTYPES_DLL_API int32_t XsMath_doubleToLong(double d);
+	XSTYPES_DLL_API XsReal XsMath_rad2deg(XsReal radians);
+	XSTYPES_DLL_API XsReal XsMath_deg2rad(XsReal degrees);
+	XSTYPES_DLL_API XsReal XsMath_pow2(XsReal a);
+	XSTYPES_DLL_API XsReal XsMath_pow3(XsReal a);
+	XSTYPES_DLL_API XsReal XsMath_asinClamped(XsReal x);
+	XSTYPES_DLL_API int XsMath_isFinite(XsReal x);
+	XSTYPES_DLL_API int32_t XsMath_doubleToLong(double d);
 #ifndef XSENS_NO_INT64
-XSTYPES_DLL_API int64_t XsMath_doubleToInt64(double d);
+	XSTYPES_DLL_API int64_t XsMath_doubleToInt64(double d);
 #endif
 
 #ifdef __cplusplus
@@ -125,7 +126,7 @@ inline int32_t doubleToLong(double d) { return XsMath_doubleToLong(d); }
 //! \brief \copybrief XsMath_doubleToInt64
 inline int64_t doubleToInt64(double d) { return XsMath_doubleToInt64(d); }
 #endif
-}  // namespace
+}  // namespace XsMath
 #endif
 
 #endif  // file guard

@@ -31,7 +31,7 @@ namespace maps
 {
 /** Auxiliary class used in mrpt::maps::CMultiMetricMapPDF
  * \ingroup mrpt_slam_grp
-  */
+ */
 class CRBPFParticleData : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CRBPFParticleData)
@@ -137,13 +137,13 @@ class CMultiMetricMapPDF
 		 * useICPGlobalAlign_withGrid=true, this is the minimum quality ratio
 		 * [0,1] of the alignment such as it will be accepted. Otherwise, raw
 		 * odometry is used for those bad cases (default=0.7).
-		  */
+		 */
 		float ICPGlobalAlign_MinQuality{0.70f};
 
 		/** [update stage] If the likelihood is computed through the occupancy
 		 * grid map, then this structure is passed to the map when updating the
 		 * particles weights in the update stage.
-		  */
+		 */
 		COccupancyGridMap2D::TLikelihoodOptions update_gridMapLikelihoodOptions;
 
 		mrpt::slam::TKLDParams KLD_params;
@@ -155,7 +155,7 @@ class CMultiMetricMapPDF
 	} options;
 
 	/** Constructor
-	  */
+	 */
 	CMultiMetricMapPDF(
 		const bayes::CParticleFilter::TParticleFilterOptions& opts =
 			bayes::CParticleFilter::TParticleFilterOptions(),
@@ -192,9 +192,9 @@ class CMultiMetricMapPDF
 	/** Returns the weighted averaged map based on the current best estimation.
 	 * If you need a persistent copy of this object, please use
 	 * "CSerializable::duplicate" and use the copy.
-	  * \sa Almost 100% sure you would prefer the best current map, given by
+	 * \sa Almost 100% sure you would prefer the best current map, given by
 	 * getCurrentMostLikelyMetricMap()
-	  */
+	 */
 	const CMultiMetricMap* getAveragedMetricMapEstimation();
 
 	/** Returns a pointer to the current most likely map (associated to the most
@@ -205,37 +205,37 @@ class CMultiMetricMapPDF
 	size_t getNumberOfObservationsInSimplemap() const { return SFs.size(); }
 	/** Insert an observation to the map, at each particle's pose and to each
 	 * particle's metric map.
-	  * \param sf The SF to be inserted
-	  * \return true if any may was updated, false otherwise
-	  */
+	 * \param sf The SF to be inserted
+	 * \return true if any may was updated, false otherwise
+	 */
 	bool insertObservation(mrpt::obs::CSensoryFrame& sf);
 
 	/** Return the path (in absolute coordinate poses) for the i'th particle.
-	  * \exception On index out of bounds
-	  */
+	 * \exception On index out of bounds
+	 */
 	void getPath(size_t i, std::deque<math::TPose3D>& out_path) const;
 
 	/** Returns the current entropy of paths, computed as the average entropy of
 	 * poses along the path, where entropy of each pose estimation is computed
 	 * as the entropy of the gaussian approximation covariance.
-	  */
+	 */
 	double getCurrentEntropyOfPaths();
 
 	/** Returns the joint entropy estimation over paths and maps, acording to
 	 * "Information Gain-based Exploration Using" by C. Stachniss, G. Grissetti
 	 * and W.Burgard.
-	  */
+	 */
 	double getCurrentJointEntropy();
 
 	/** Update the poses estimation of the member "SFs" according to the current
 	 * path belief.
-	  */
+	 */
 	void updateSensoryFrameSequence();
 
 	/** A logging utility: saves the current path estimation for each particle
 	 * in a text file (a row per particle, each 3-column-entry is a set
 	 * [x,y,phi], respectively).
-	  */
+	 */
 	void saveCurrentPathEstimationToTextFile(const std::string& fil);
 
    private:
@@ -278,6 +278,5 @@ class CMultiMetricMapPDF
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}  // namespace maps
+}  // namespace mrpt

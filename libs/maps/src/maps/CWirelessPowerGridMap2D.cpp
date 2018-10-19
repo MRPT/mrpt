@@ -29,9 +29,8 @@ MAP_DEFINITION_REGISTER(
 	"CWirelessPowerGridMap2D,wifiGrid", mrpt::maps::CWirelessPowerGridMap2D)
 
 CWirelessPowerGridMap2D::TMapDefinition::TMapDefinition()
-	
-	  
-= default;
+
+	= default;
 
 void CWirelessPowerGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(
 	const mrpt::config::CConfigFileBase& source,
@@ -75,7 +74,7 @@ mrpt::maps::CMetricMap*
 {
 	const CWirelessPowerGridMap2D::TMapDefinition& def =
 		*dynamic_cast<const CWirelessPowerGridMap2D::TMapDefinition*>(&_def);
-	CWirelessPowerGridMap2D* obj = new CWirelessPowerGridMap2D(
+	auto* obj = new CWirelessPowerGridMap2D(
 		def.mapType, def.min_x, def.max_x, def.min_y, def.max_y,
 		def.resolution);
 	obj->insertionOptions = def.insertionOpts;
@@ -140,8 +139,7 @@ bool CWirelessPowerGridMap2D::internal_insertObservation(
 		/********************************************************************
 					OBSERVATION TYPE: CObservationWirelessPower
 		********************************************************************/
-		const CObservationWirelessPower* o =
-			static_cast<const CObservationWirelessPower*>(obs);
+		const auto* o = static_cast<const CObservationWirelessPower*>(obs);
 		float sensorReading;
 
 		// Compute the 3D sensor pose in world coordinates:
@@ -198,7 +196,7 @@ void CWirelessPowerGridMap2D::serializeTo(
 	dyngridcommon_writeToStream(out);
 
 	// To ensure compatibility: The size of each cell:
-	uint32_t n = static_cast<uint32_t>(sizeof(TRandomFieldCell));
+	auto n = static_cast<uint32_t>(sizeof(TRandomFieldCell));
 	out << n;
 
 	// Save the map contents:

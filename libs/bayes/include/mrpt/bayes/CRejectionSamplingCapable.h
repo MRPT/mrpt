@@ -29,22 +29,22 @@ template <
 class CRejectionSamplingCapable
 {
    public:
-	using TParticle = CProbabilityParticle<TStateSpace,STORAGE>;
+	using TParticle = CProbabilityParticle<TStateSpace, STORAGE>;
 
 	/** Virtual destructor
-	  */
+	 */
 	virtual ~CRejectionSamplingCapable() = default;
 	/** Generates a set of N independent samples via rejection sampling.
-	  * \param desiredSamples The number of desired samples to generate
-	  * \param outSamples The output samples.
-	  * \param timeoutTrials The maximum number of rejection trials for each
+	 * \param desiredSamples The number of desired samples to generate
+	 * \param outSamples The output samples.
+	 * \param timeoutTrials The maximum number of rejection trials for each
 	 * generated sample (i.e. the maximum number of iterations). This can be
 	 * used to set a limit to the time complexity of the algorithm for difficult
 	 * probability densities.
-	  *  All will have equal importance weights (a property of rejection
+	 *  All will have equal importance weights (a property of rejection
 	 * sampling), although those samples
-	  *   generated at timeout will have a different importance weights.
-	  */
+	 *   generated at timeout will have a different importance weights.
+	 */
 	void rejectionSampling(
 		size_t desiredSamples, std::vector<TParticle>& outSamples,
 		size_t timeoutTrials = 1000)
@@ -105,17 +105,16 @@ class CRejectionSamplingCapable
 
    protected:
 	/** Generates one sample, drawing from some proposal distribution.
-	  */
+	 */
 	virtual void RS_drawFromProposal(TStateSpace& outSample) = 0;
 
 	/** Returns the NORMALIZED observation likelihood (linear, not
 	 * exponential!!!) at a given point of the state space (values in the range
 	 * [0,1]).
-	  */
+	 */
 	virtual double RS_observationLikelihood(const TStateSpace& x) = 0;
 
 };  // End of class def.
 
-}  // End of namespace
-}  // End of namespace
-
+}  // namespace bayes
+}  // namespace mrpt

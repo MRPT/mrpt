@@ -17,9 +17,9 @@ namespace mrpt::hmtslam
 {
 /** The virtual base class for Topological Loop-closure Detectors; used in
  * HMT-SLAM
-  *  \sa mrpt::slam::CHMTSLAM
-  * \ingroup mrpt_hmtslam_grp
-  */
+ *  \sa mrpt::slam::CHMTSLAM
+ * \ingroup mrpt_hmtslam_grp
+ */
 class CTopLCDetectorBase
 {
    protected:
@@ -27,6 +27,7 @@ class CTopLCDetectorBase
 
 	/** Instances can be generated through a class factory only */
 	CTopLCDetectorBase(CHMTSLAM* htmslam_obj) : m_hmtslam(htmslam_obj) {}
+
    public:
 	/** A class factory, to be implemented in derived classes. */
 	// static CTopLCDetectorBase* createNewInstance();
@@ -34,29 +35,29 @@ class CTopLCDetectorBase
 	/** Destructor */
 	virtual ~CTopLCDetectorBase() = default;
 	/** Reset the internal state of the TLCD, if any.
-	  *  This is needed since the objects are created while loading HMT-SLAM
+	 *  This is needed since the objects are created while loading HMT-SLAM
 	 * options, but the algorithm may be re-started after that at any time.
-	  */
+	 */
 	virtual void reset()
 	{
 		// By default, do nothing.
 	}
 
 	/** This method must compute the topological observation model.
-	  * \param out_log_lik The output, a log-likelihood.
-	  * \return nullptr (an empty smart pointer), or a PDF of the estimated
+	 * \param out_log_lik The output, a log-likelihood.
+	 * \return nullptr (an empty smart pointer), or a PDF of the estimated
 	 * translation between the two areas (can be a multi-modal PDF).
-	  */
+	 */
 	virtual mrpt::poses::CPose3DPDF::Ptr computeTopologicalObservationModel(
 		const THypothesisID& hypID, const CHMHMapNode::Ptr& currentArea,
 		const CHMHMapNode::Ptr& refArea, double& out_log_lik) = 0;
 
 	/** If implemented, this method provides the evaluation of an additional
 	 * term to be added to the SSO between each pair of observations.
-	  * \param out_SSO The output, in the range [0,1].
-	  * \return true if computed SSO is meaningful. The default virtual method
+	 * \param out_SSO The output, in the range [0,1].
+	 * \return true if computed SSO is meaningful. The default virtual method
 	 * returns false.
-	  */
+	 */
 	virtual bool computeSSOBetweenObservations(
 		const THypothesisID& hypID, const TPoseID& poseID1,
 		const TPoseID& poseID2, double& out_SSO)
@@ -70,8 +71,8 @@ class CTopLCDetectorBase
 
 	/** Hook method for being warned about the insertion of a new poses into the
 	 * maps.
-	  *  This should be independent of hypothesis IDs.
-	  */
+	 *  This should be independent of hypothesis IDs.
+	 */
 	virtual void OnNewPose(
 		const TPoseID& poseID, const mrpt::obs::CSensoryFrame* SF)
 	{
@@ -82,6 +83,4 @@ class CTopLCDetectorBase
 
 };  // end class
 
-}
-
-
+}  // namespace mrpt::hmtslam

@@ -13,12 +13,10 @@
 namespace mrpt::graphs::detail
 {
 template <class GRAPH_T>
-THypothesis<GRAPH_T>::THypothesis()  
-= default;
+THypothesis<GRAPH_T>::THypothesis() = default;
 
 template <class GRAPH_T>
-THypothesis<GRAPH_T>::~THypothesis()
-= default;
+THypothesis<GRAPH_T>::~THypothesis() = default;
 
 template <class GRAPH_T>
 std::string THypothesis<GRAPH_T>::getAsString(bool oneline /*=true*/) const
@@ -122,7 +120,4 @@ bool THypothesis<GRAPH_T>::operator<(const self_t& other) const
 {
 	return this->id < other.id;
 }
-}  // namespace mrpt
-
-
-
+}  // namespace mrpt::graphs::detail

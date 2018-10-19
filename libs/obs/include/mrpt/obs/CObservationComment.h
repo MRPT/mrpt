@@ -30,7 +30,7 @@ class CObservationComment : public CObservation
 	 */
 	CObservationComment() : text() {}
 	/** Destructor
-	  */
+	 */
 	~CObservationComment() override = default;
 	/** The text block. */
 	std::string text;
@@ -42,6 +42,4 @@ class CObservationComment : public CObservation
 
 };  // End of class def.
 
-}
-
-
+}  // namespace mrpt::obs

@@ -13,9 +13,9 @@
 namespace mrpt::opengl
 {
 /** A line segment
-  *  \sa opengl::COpenGLScene
-  * \ingroup mrpt_opengl_grp
-  */
+ *  \sa opengl::COpenGLScene
+ * \ingroup mrpt_opengl_grp
+ */
 class CSimpleLine : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CSimpleLine)
@@ -63,7 +63,7 @@ class CSimpleLine : public CRenderizableDisplayList
 	}
 
 	/** Render
-	  */
+	 */
 	void render_dl() const override;
 
 	/** Evaluates the bounding box of this object (including possible children)
@@ -73,7 +73,7 @@ class CSimpleLine : public CRenderizableDisplayList
 		mrpt::math::TPoint3D& bb_max) const override;
 
 	/** Constructor
-	  */
+	 */
 	CSimpleLine(
 		float x0 = 0, float y0 = 0, float z0 = 0, float x1 = 0, float y1 = 0,
 		float z1 = 0, float lineWidth = 1, bool antiAliasing = true);
@@ -82,6 +82,4 @@ class CSimpleLine : public CRenderizableDisplayList
 	~CSimpleLine() override = default;
 };
 
-}
-
-
+}  // namespace mrpt::opengl

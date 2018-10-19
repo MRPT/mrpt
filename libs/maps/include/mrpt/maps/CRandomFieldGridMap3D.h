@@ -23,7 +23,7 @@ class vtkStructuredGrid;
 namespace mrpt::maps
 {
 /** The contents of each voxel in a CRandomFieldGridMap3D map.
-  * \ingroup mrpt_maps_grp
+ * \ingroup mrpt_maps_grp
  **/
 #if defined(MRPT_IS_X86_AMD64)  // Pragma defined to ensure no structure
 // packing: since we'll serialize
@@ -48,31 +48,31 @@ struct TRandomFieldVoxel
 
 /** CRandomFieldGridMap3D represents a 3D regular grid where each voxel is
  * associated one real-valued property which is to be estimated by this class.
-  *
-  *  This class implements a Gaussian Markov Random Field (GMRF) estimator, with
+ *
+ *  This class implements a Gaussian Markov Random Field (GMRF) estimator, with
  * each voxel being connected to its
-  *   6 immediate neighbors (Up, down, left, right, front, back).
-  *  - See papers:
-  *    - "Time-variant gas distribution mapping with obstacle information",
+ *   6 immediate neighbors (Up, down, left, right, front, back).
+ *  - See papers:
+ *    - "Time-variant gas distribution mapping with obstacle information",
  * Monroy, J. G., Blanco, J. L., & Gonzalez-Jimenez, J. Autonomous Robots,
  * 40(1), 1-16, 2016.
-  *
-  *  Note that this class does not derive from mrpt::maps::CMetricMap since the
+ *
+ *  Note that this class does not derive from mrpt::maps::CMetricMap since the
  * estimated values do not have sensor-especific semantics,
-  *  i.e. the grid can be used to estimate temperature, gas concentration, etc.
-  *
-  *  Usage:
-  *  - Define grid size with either constructor or via `setSize()`.
-  *  - Initialize the map with `initialize()`. This resets the contents of the
+ *  i.e. the grid can be used to estimate temperature, gas concentration, etc.
+ *
+ *  Usage:
+ *  - Define grid size with either constructor or via `setSize()`.
+ *  - Initialize the map with `initialize()`. This resets the contents of the
  * map, so previously-added observations will be lost.
-  *  - Add observations of 3D voxels with `insertIndividualReading()`
-  *
-  * Custom connectivity patterns can be defined with setVoxelsConnectivity().
-  *
-  * \sa mrpt::maps::CRandomFieldGridMap3D
-  * \ingroup mrpt_maps_grp
-  * \note [New in MRPT 1.5.0]
-  */
+ *  - Add observations of 3D voxels with `insertIndividualReading()`
+ *
+ * Custom connectivity patterns can be defined with setVoxelsConnectivity().
+ *
+ * \sa mrpt::maps::CRandomFieldGridMap3D
+ * \ingroup mrpt_maps_grp
+ * \note [New in MRPT 1.5.0]
+ */
 class CRandomFieldGridMap3D
 	: public mrpt::containers::CDynamicGrid3D<TRandomFieldVoxel>,
 	  public mrpt::serialization::CSerializable,
@@ -87,11 +87,11 @@ class CRandomFieldGridMap3D
 	static bool ENABLE_GMRF_PROFILER;
 
 	/** Constructor.
-	  * If you set call_initialize_now to false, the object will be initialized
+	 * If you set call_initialize_now to false, the object will be initialized
 	 * immediately (without the heavy initialization of the GMRF),
-	  * but you then must call `setSize()` or `clear()` later to properly
+	 * but you then must call `setSize()` or `clear()` later to properly
 	 * initialize the object before using it to insert observations.
-	  */
+	 */
 	CRandomFieldGridMap3D(
 		double x_min = -2, double x_max = 2, double y_min = -2,
 		double y_max = 2, double z_min = -2, double z_max = 2,
@@ -102,11 +102,11 @@ class CRandomFieldGridMap3D
 
 	/** Save the current estimated mean values to a CSV file (compatible with
 	 * Paraview) with fields `x y z mean_value`.
-	  * Optionally, std deviations can be also saved to another file with fields
+	 * Optionally, std deviations can be also saved to another file with fields
 	 * `x y z stddev_value`, if `filName_stddev` is provided.
-	  * \return false on error writing to file
-	  * \sa saveAsVtkStructuredGrid
-	  */
+	 * \return false on error writing to file
+	 * \sa saveAsVtkStructuredGrid
+	 */
 	bool saveAsCSV(
 		const std::string& filName_mean,
 		const std::string& filName_stddev = std::string()) const;
@@ -116,13 +116,13 @@ class CRandomFieldGridMap3D
 	bool saveAsVtkStructuredGrid(const std::string& fil) const;
 
 	/** Parameters common to any derived class.
-	  *  Derived classes should derive a new struct from this one, plus "public
+	 *  Derived classes should derive a new struct from this one, plus "public
 	 * utils::CLoadableOptions",
-	  *  and call the internal_* methods where appropiate to deal with the
+	 *  and call the internal_* methods where appropiate to deal with the
 	 * variables declared here.
-	  *  Derived classes instantions of their "TInsertionOptions" MUST set the
+	 *  Derived classes instantions of their "TInsertionOptions" MUST set the
 	 * pointer "m_insertOptions_common" upon construction.
-	  */
+	 */
 	struct TInsertionOptions : public mrpt::config::CLoadableOptions
 	{
 		/** Default values loader */
@@ -175,11 +175,11 @@ class CRandomFieldGridMap3D
 		// Virtual destructor for polymorphic type.
 		virtual ~ConnectivityDescriptor() = default;
 		/** Implement the check of whether node i=(icx,icy,icz) is connected
-		* with node j=(jcx,jcy,jcy).
-		* This visitor method will be called only for immediate neighbors.
-		* \return true if connected (and the "information" value should be also
-		* updated in out_edge_information), false otherwise.
-		*/
+		 * with node j=(jcx,jcy,jcy).
+		 * This visitor method will be called only for immediate neighbors.
+		 * \return true if connected (and the "information" value should be also
+		 * updated in out_edge_information), false otherwise.
+		 */
 		virtual bool getEdgeInformation(
 			/** The parent map on which we are running */
 			const CRandomFieldGridMap3D* parent,
@@ -204,8 +204,8 @@ class CRandomFieldGridMap3D
 	};
 
 	/** Direct update of the map with a reading in a given position of the map.
-	  * \return false if point is out of the grid extension.
-	  */
+	 * \return false if point is out of the grid extension.
+	 */
 	bool insertIndividualReading(
 		/** [in] The value observed in the (x,y,z) position */
 		const double sensorReading,
@@ -288,5 +288,4 @@ class CRandomFieldGridMap3D
 	std::deque<TPriorFactorGMRF> m_mrf_factors_priors;
 };
 
-}
-
+}  // namespace mrpt::maps

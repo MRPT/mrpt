@@ -59,8 +59,7 @@ class CSchemeArchive : public mrpt::serialization::CSchemeArchiveBase_impl
 		m_val = typename SCHEME_CAPABLE::UInt64(val);
 		return *m_parent;
 	}
-	mrpt::serialization::CSchemeArchiveBase& operator=(
-		const float val) override
+	mrpt::serialization::CSchemeArchiveBase& operator=(const float val) override
 	{
 		m_val = val;
 		return *m_parent;
@@ -83,36 +82,20 @@ class CSchemeArchive : public mrpt::serialization::CSchemeArchiveBase_impl
 		m_val = val;
 		return *m_parent;
 	}
-	mrpt::serialization::CSchemeArchiveBase& operator=(
-		const bool val) override
+	mrpt::serialization::CSchemeArchiveBase& operator=(const bool val) override
 	{
 		m_val = val;
 		return *m_parent;
 	}
 
 	explicit operator int32_t() const override { return m_val.asInt(); }
-	explicit operator uint32_t() const override
-	{
-		return m_val.asUInt();
-	}
-	explicit operator int64_t() const override
-	{
-		return m_val.asInt64();
-	}
-	explicit operator uint64_t() const override
-	{
-		return m_val.asUInt64();
-	}
+	explicit operator uint32_t() const override { return m_val.asUInt(); }
+	explicit operator int64_t() const override { return m_val.asInt64(); }
+	explicit operator uint64_t() const override { return m_val.asUInt64(); }
 	explicit operator float() const override { return m_val.asFloat(); }
-	explicit operator double() const override
-	{
-		return m_val.asDouble();
-	}
+	explicit operator double() const override { return m_val.asDouble(); }
 	explicit operator bool() const override { return m_val.asBool(); }
-	explicit operator std::string() const override
-	{
-		return m_val.asString();
-	}
+	explicit operator std::string() const override { return m_val.asString(); }
 
 	mrpt::serialization::CSchemeArchiveBase& operator=(
 		const mrpt::serialization::CSerializable& obj) override
@@ -126,14 +109,12 @@ class CSchemeArchive : public mrpt::serialization::CSchemeArchiveBase_impl
 		return;
 	}
 
-	mrpt::serialization::CSchemeArchiveBase operator[](
-		size_t idx) override
+	mrpt::serialization::CSchemeArchiveBase operator[](size_t idx) override
 	{
 		return mrpt::serialization::CSchemeArchiveBase(
 			std::make_unique<CSchemeArchive<SCHEME_CAPABLE>>(m_val[(int)idx]));
 	}
-	mrpt::serialization::CSchemeArchiveBase operator[](
-		std::string str) override
+	mrpt::serialization::CSchemeArchiveBase operator[](std::string str) override
 	{
 		return mrpt::serialization::CSchemeArchiveBase(
 			std::make_unique<CSchemeArchive<SCHEME_CAPABLE>>(

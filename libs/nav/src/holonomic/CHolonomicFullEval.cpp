@@ -56,17 +56,14 @@ struct TGap
 	int k_best_eval{-1};
 
 	TGap()
-		: 
-		  min_eval(std::numeric_limits<double>::max()),
+		: min_eval(std::numeric_limits<double>::max()),
 		  max_eval(-std::numeric_limits<double>::max())
-		  
+
 	{
 	}
 };
 
-CHolonomicFullEval::EvalOutput::EvalOutput() : best_k(INVALID_K) 
-{
-}
+CHolonomicFullEval::EvalOutput::EvalOutput() : best_k(INVALID_K) {}
 
 void CHolonomicFullEval::evalSingleTarget(
 	unsigned int target_idx, const NavInput& ni, EvalOutput& eo)
@@ -185,7 +182,7 @@ void CHolonomicFullEval::evalSingleTarget(
 						   endpt_dist_to_target_norm)  // the path does not get
 			// any closer to trg
 			//|| (ni.obstacles[i]<0.95*target_dist)
-			)
+		)
 		{
 			// path takes us away or way blocked:
 			sg.point1.x = x * 0.5;
@@ -216,9 +213,8 @@ void CHolonomicFullEval::evalSingleTarget(
 
 			if (hist_dist >= options.HYSTERESIS_SECTOR_COUNT)
 				scores[3] = square(
-					1.0 -
-					(hist_dist - options.HYSTERESIS_SECTOR_COUNT) /
-						double(nDirs));
+					1.0 - (hist_dist - options.HYSTERESIS_SECTOR_COUNT) /
+							  double(nDirs));
 			else
 				scores[3] = 1.0;
 		}
@@ -291,7 +287,7 @@ void CHolonomicFullEval::evalSingleTarget(
 				 phase_scores[phase_idx - 1][i] <
 					 last_phase_threshold)  // thresholding of the previous
 				// phase
-				)
+			)
 			{
 				this_dir_eval = .0;
 			}
@@ -470,7 +466,7 @@ void CHolonomicFullEval::evalSingleTarget(
 			 target_dist < (1.5 /*meters*/ / ptg_ref_dist))) &&
 		dirs_eval[target_k] >
 			0 /* the direct target direction has at least a minimum score */
-		)
+	)
 	{
 		eo.best_k = target_k;
 		eo.best_eval = dirs_eval[target_k];
@@ -586,10 +582,7 @@ unsigned int CHolonomicFullEval::direction2sector(
 		return static_cast<unsigned int>(idx);
 }
 
-CLogFileRecord_FullEval::CLogFileRecord_FullEval()
-	:  dirs_scores() 
-{
-}
+CLogFileRecord_FullEval::CLogFileRecord_FullEval() : dirs_scores() {}
 
 uint8_t CLogFileRecord_FullEval::serializeGetVersion() const { return 3; }
 void CLogFileRecord_FullEval::serializeTo(
@@ -645,12 +638,11 @@ void CLogFileRecord_FullEval::serializeFrom(
 						TOptions
   ---------------------------------------------------------------*/
 CHolonomicFullEval::TOptions::TOptions()
-	:  
-	  factorWeights{0.1, 0.5, 0.5, 0.01, 1},
+	: factorWeights{0.1, 0.5, 0.5, 0.01, 1},
 	  factorNormalizeOrNot{0, 0, 0, 0, 1},
 	  PHASE_FACTORS{{1, 2}, {4}, {0, 2}},
 	  PHASE_THRESHOLDS{0.5, 0.6, 0.7}
-	  
+
 {
 }
 

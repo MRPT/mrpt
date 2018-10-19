@@ -54,7 +54,7 @@ using mrpt_dest_ptr = mrpt_destination_mgr*;
 METHODDEF(void)
 init_destination(j_compress_ptr cinfo)
 {
-	mrpt_dest_ptr dest = (mrpt_dest_ptr)cinfo->dest;
+	auto dest = (mrpt_dest_ptr)cinfo->dest;
 
 	/* Allocate the output buffer --- it will be released when done with image
 	 */
@@ -91,7 +91,7 @@ init_destination(j_compress_ptr cinfo)
 METHODDEF(boolean)
 empty_output_buffer(j_compress_ptr cinfo)
 {
-	mrpt_dest_ptr dest = (mrpt_dest_ptr)cinfo->dest;
+	auto dest = (mrpt_dest_ptr)cinfo->dest;
 
 	dest->out->Write(dest->buffer, OUTPUT_BUF_SIZE);
 
@@ -113,7 +113,7 @@ empty_output_buffer(j_compress_ptr cinfo)
 METHODDEF(void)
 term_destination(j_compress_ptr cinfo)
 {
-	mrpt_dest_ptr dest = (mrpt_dest_ptr)cinfo->dest;
+	auto dest = (mrpt_dest_ptr)cinfo->dest;
 	size_t datacount = OUTPUT_BUF_SIZE - dest->pub.free_in_buffer;
 
 	/* Write any data remaining in the buffer */
@@ -168,7 +168,7 @@ using my_src_ptr = my_source_mgr*;
 METHODDEF(void)
 init_source(j_decompress_ptr cinfo)
 {
-	my_src_ptr src = (my_src_ptr)cinfo->src;
+	auto src = (my_src_ptr)cinfo->src;
 
 	/* We reset the empty-input-file flag for each image,
 	 * but we don't clear the input buffer.
@@ -213,7 +213,7 @@ init_source(j_decompress_ptr cinfo)
 METHODDEF(boolean)
 fill_input_buffer(j_decompress_ptr cinfo)
 {
-	my_src_ptr src = (my_src_ptr)cinfo->src;
+	auto src = (my_src_ptr)cinfo->src;
 	size_t nbytes;
 
 	nbytes = src->in->Read(src->buffer, INPUT_BUF_SIZE);
@@ -253,7 +253,7 @@ fill_input_buffer(j_decompress_ptr cinfo)
 METHODDEF(void)
 skip_input_data(j_decompress_ptr cinfo, long num_bytes)
 {
-	my_src_ptr src = (my_src_ptr)cinfo->src;
+	auto src = (my_src_ptr)cinfo->src;
 
 	/* Just a dumb implementation for now.  Could use fseek() except
 	 * it doesn't work on pipes.  Not clear that being smart is worth
@@ -355,7 +355,7 @@ void CImage::saveToStreamAsJPEG(CStream& out, const int jpeg_quality) const
 	struct jpeg_compress_struct cinfo;
 	struct jpeg_error_mgr jerr;
 
-	const IplImage* ipl = static_cast<const IplImage*>(img);
+	const auto* ipl = static_cast<const IplImage*>(img);
 
 	const unsigned int nCols = ipl->width;
 	const unsigned int nRows = ipl->height;
@@ -510,7 +510,7 @@ void CImage::loadFromStreamAsJPEG(CStream& in)
 	this->changeSize(
 		cinfo.output_width, cinfo.output_height, cinfo.out_color_components,
 		true);
-	IplImage* ipl = static_cast<IplImage*>(img);
+	auto* ipl = static_cast<IplImage*>(img);
 
 	/* Step 6: while (scan lines remain to be read) */
 	/*           jpeg_read_scanlines(...); */

@@ -9,8 +9,8 @@
 #pragma once
 
 /** \file Provide helper functions for MEX/MATLAB.
-  * This file can be safely included without checking MRPT_HAS_MATLAB
-  */
+ * This file can be safely included without checking MRPT_HAS_MATLAB
+ */
 
 #include <mrpt/config.h>
 #if MRPT_HAS_MATLAB
@@ -22,15 +22,15 @@ namespace mrpt::math
 {
 #if MRPT_HAS_MATLAB
 /** \addtogroup matlab_grp Helper functions for MEX & MATLAB
-  *  \ingroup mrpt_math_grp
-  * @{ */
+ *  \ingroup mrpt_math_grp
+ * @{ */
 
 /** Convert vectors, arrays and matrices into Matlab vectors/matrices.
-  * Supported input classes:
-  *  - Eigen::Matrix<T,N,1>
-  *  - mrpt::math::CArrayNumeric<T,N>
-  *  - mrpt::math::CMatrix{*}
-  */
+ * Supported input classes:
+ *  - Eigen::Matrix<T,N,1>
+ *  - mrpt::math::CArrayNumeric<T,N>
+ *  - mrpt::math::CMatrix{*}
+ */
 template <typename Derived>
 mxArray* convertToMatlab(const Eigen::EigenBase<Derived>& mat)
 {
@@ -60,6 +60,4 @@ mxArray* convertVectorToMatlab(const CONTAINER& vec)
 
 /** @} */
 #endif
-}
-
-
+}  // namespace mrpt::math

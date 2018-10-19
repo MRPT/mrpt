@@ -13,9 +13,9 @@
 namespace mrpt::opengl
 {
 /** A 2D plane in the XY plane with a texture image.
-  *  \sa opengl::COpenGLScene
-  * \ingroup mrpt_opengl_grp
-  */
+ *  \sa opengl::COpenGLScene
+ * \ingroup mrpt_opengl_grp
+ */
 class CTexturedPlane : public CTexturedObject
 {
 	DEFINE_SERIALIZABLE(CTexturedPlane)
@@ -69,14 +69,13 @@ class CTexturedPlane : public CTexturedObject
 		yMax = m_yMax;
 	}
 
-	bool traceRay(
-		const mrpt::poses::CPose3D& o, double& dist) const override;
+	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
 
 	/** Constructor
-	  */
+	 */
 	CTexturedPlane(
 		float x_min = -1, float x_max = 1, float y_min = -1, float y_max = 1);
 
@@ -84,6 +83,4 @@ class CTexturedPlane : public CTexturedObject
 	~CTexturedPlane() override;
 };
 
-}
-
-
+}  // namespace mrpt::opengl

@@ -45,7 +45,7 @@ void PbMap::serializeTo(mrpt::serialization::CArchive& out) const
 	out << label;
 
 	// The data
-	uint32_t n = uint32_t(vPlanes.size());
+	auto n = uint32_t(vPlanes.size());
 	out << n;
 	//  cout << "Write " << n << " planes\n";
 	for (uint32_t i = 0; i < n; i++) out << vPlanes[i];
@@ -177,13 +177,11 @@ void PbMap::printPbMap(string txtFilePbm)
 			<< vPlanes[i].v3PpalDir << "\n RGB\n"
 			<< vPlanes[i].v3colorNrgb;
 		pbm << "\n Neighbors (" << vPlanes[i].neighborPlanes.size() << "): ";
-		for (map<unsigned, unsigned>::iterator it =
-				 vPlanes[i].neighborPlanes.begin();
+		for (auto it = vPlanes[i].neighborPlanes.begin();
 			 it != vPlanes[i].neighborPlanes.end(); it++)
 			pbm << it->first << " ";
 		pbm << "\n CommonObservations: ";
-		for (map<unsigned, unsigned>::iterator it =
-				 vPlanes[i].neighborPlanes.begin();
+		for (auto it = vPlanes[i].neighborPlanes.begin();
 			 it != vPlanes[i].neighborPlanes.end(); it++)
 			pbm << it->second << " ";
 		pbm << "\n ConvexHull (" << vPlanes[i].polygonContourPtr->size()

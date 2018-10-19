@@ -120,5 +120,4 @@ class CStream
 
 };  // End of class def.
 
-}
-
+}  // namespace mrpt::io

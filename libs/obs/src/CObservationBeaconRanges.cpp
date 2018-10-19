@@ -22,9 +22,7 @@ IMPLEMENTS_SERIALIZABLE(CObservationBeaconRanges, CObservation, mrpt::obs)
 /** Default constructor.
  */
 CObservationBeaconRanges::CObservationBeaconRanges()
-	: 
-	  sensedData(),
-	  auxEstimatePose()
+	: sensedData(), auxEstimatePose()
 {
 }
 
@@ -136,9 +134,8 @@ void CObservationBeaconRanges::setSensorPose(const CPose3D& newSensorPose)
  ---------------------------------------------------------------*/
 float CObservationBeaconRanges::getSensedRangeByBeaconID(int32_t beaconID)
 {
-	for (auto & i : sensedData)
-		if (i.beaconID == beaconID)
-			return i.sensedDistance;
+	for (auto& i : sensedData)
+		if (i.beaconID == beaconID) return i.sensedDistance;
 	return 0;
 }
 
@@ -158,7 +155,7 @@ void CObservationBeaconRanges::getDescriptionAsText(std::ostream& o) const
 
 	o << "  BEACON   RANGE     SENSOR POSITION ON ROBOT \n";
 	o << "------------------------------------------------\n";
-	for (const auto & it : sensedData)
+	for (const auto& it : sensedData)
 	{
 		o << format(
 			"   %i      %.04f      (%.03f,%.03f,%.03f)\n", (int)it.beaconID,

@@ -14,6 +14,5 @@
 using namespace mrpt::nav;
 
 TCandidateMovementPTG::TCandidateMovementPTG()
-	
-	  
-= default;
+
+	= default;

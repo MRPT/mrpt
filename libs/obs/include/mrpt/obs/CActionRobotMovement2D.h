@@ -80,7 +80,8 @@ class CActionRobotMovement2D : public CAction
 		TMotionModelOptions();
 
 		/** The model to be used. */
-		TDrawSampleMotionModel modelSelection{CActionRobotMovement2D::mmGaussian};
+		TDrawSampleMotionModel modelSelection{
+			CActionRobotMovement2D::mmGaussian};
 
 		/** Options for the gaussian model, which generates a CPosePDFGaussian
 		 * object in poseChange
@@ -207,6 +208,4 @@ class CActionRobotMovement2D : public CAction
 
 };  // End of class def.
 
-}
-
-
+}  // namespace mrpt::obs

@@ -15,10 +15,10 @@ namespace mrpt::math
 {
 /** A (persistent) sequence of (x,y) coordinates, allowing queries of
  * intermediate points through spline interpolation, where possible.
-  *  This class internally relies on mrpt::math::spline. Optionally the y
+ *  This class internally relies on mrpt::math::spline. Optionally the y
  * coordinate can be set as wrapped in ]-pi,pi].
-  *  For querying interpolated points, see
-  * \ sa mrpt::math::spline, mrpt::poses::CPose3DInterpolator
+ *  For querying interpolated points, see
+ * \ sa mrpt::math::spline, mrpt::poses::CPose3DInterpolator
  * \ingroup interpolation_grp
  */
 class CSplineInterpolator1D : public mrpt::serialization::CSerializable
@@ -50,7 +50,7 @@ class CSplineInterpolator1D : public mrpt::serialization::CSerializable
 	/** Return the wrap property */
 	bool getWrap2pi() { return m_wrap2pi; }
 	/** Set all the data at once .
-	  *  The vectors must have the same length.
+	 *  The vectors must have the same length.
 	 */
 	template <class VECTOR>
 	void setXY(
@@ -70,18 +70,18 @@ class CSplineInterpolator1D : public mrpt::serialization::CSerializable
 	/** Clears all stored points */
 	void clear() { m_x2y.clear(); }
 	/** Query an interpolation of the curve at some "x".
-	  *   The result is stored in "y". If the "x" point is out of range,
+	 *   The result is stored in "y". If the "x" point is out of range,
 	 * "valid_out" is set to false.
-	  *  \return A reference to "y"
-	  * \sa queryVector
-	  */
+	 *  \return A reference to "y"
+	 * \sa queryVector
+	 */
 	double& query(double x, double& y, bool& out_valid) const;
 
 	/** As query, but for a whole vector at once.
-	  *  \return false if there is at least one value that couldn't be
+	 *  \return false if there is at least one value that couldn't be
 	 * interpolated (in this case the output is indeterminate).
-	  * \sa query
-	  */
+	 * \sa query
+	 */
 	template <class VECTOR1, class VECTOR2>
 	bool queryVector(const VECTOR1& x, VECTOR2& out_y) const
 	{
@@ -97,5 +97,4 @@ class CSplineInterpolator1D : public mrpt::serialization::CSerializable
 	}
 };
 
-}
-
+}  // namespace mrpt::math

@@ -81,7 +81,7 @@ class QuaternionTests : public ::testing::Test
 		CQuaternionDouble q1;
 		pp.getAsQuaternion(q1);
 
-		mrpt::math::CVectorDouble q1_ln = q1.ln<mrpt::math::CVectorDouble>();
+		auto q1_ln = q1.ln<mrpt::math::CVectorDouble>();
 		const CQuaternionDouble q2 = CQuaternionDouble::exp(q1_ln);
 
 		// q2 should be == q1
@@ -102,7 +102,7 @@ class QuaternionTests : public ::testing::Test
 		v[2] = v2;
 
 		const CQuaternionDouble q1 = CQuaternionDouble::exp(v);
-		CArrayDouble<3> q1_ln = q1.ln<CArrayDouble<3>>();
+		auto q1_ln = q1.ln<CArrayDouble<3>>();
 
 		// q1_ln should be == v
 		EXPECT_NEAR(0, (q1_ln - v).array().abs().sum(), 1e-10)

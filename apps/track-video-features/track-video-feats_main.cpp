@@ -283,11 +283,10 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
 				// Draw:
 				if (seq.size() > 1)
 				{
-					const std::list<TPixelCoord>::const_iterator it_end =
-						seq.end();
+					const auto it_end = seq.end();
 
-					std::list<TPixelCoord>::const_iterator it = seq.begin();
-					std::list<TPixelCoord>::const_iterator it_prev = it++;
+					auto it = seq.begin();
+					auto it_prev = it++;
 
 					for (; it != it_end; ++it)
 					{
@@ -302,14 +301,11 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
 			tracker->getProfiler().leave("drawFeatureTracks");
 
 			// Purge old data:
-			for (std::map<TFeatureID, std::list<TPixelCoord>>::iterator it =
-					 feat_tracks.begin();
-				 it != feat_tracks.end();)
+			for (auto it = feat_tracks.begin(); it != feat_tracks.end();)
 			{
 				if (observed_IDs.find(it->first) == observed_IDs.end())
 				{
-					std::map<TFeatureID, std::list<TPixelCoord>>::iterator
-						next_it = it;
+					auto next_it = it;
 					next_it++;
 					feat_tracks.erase(it);
 					it = next_it;

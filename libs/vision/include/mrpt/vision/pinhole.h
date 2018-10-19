@@ -84,12 +84,12 @@ inline void projectPoint_no_distortion(
 {
 	ASSERT_(in_point_wrt_cam.z != 0);
 	// Pinhole model:
-	out_projectedPoints.x =
-		cam_params.cx() +
-		cam_params.fx() * in_point_wrt_cam.x / in_point_wrt_cam.z;
-	out_projectedPoints.y =
-		cam_params.cy() +
-		cam_params.fy() * in_point_wrt_cam.y / in_point_wrt_cam.z;
+	out_projectedPoints.x = cam_params.cx() + cam_params.fx() *
+												  in_point_wrt_cam.x /
+												  in_point_wrt_cam.z;
+	out_projectedPoints.y = cam_params.cy() + cam_params.fy() *
+												  in_point_wrt_cam.y /
+												  in_point_wrt_cam.z;
 }
 
 /** Project a set of 3D points into a camera at an arbitrary 6D pose using its
@@ -197,4 +197,3 @@ void undistort_point(
 }  // namespace pinhole
 }  // namespace vision
 }  // namespace mrpt
-

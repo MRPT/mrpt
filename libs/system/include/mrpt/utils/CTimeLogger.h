@@ -4,4 +4,3 @@ namespace mrpt::utils
 {
 using CTimeLogger = mrpt::system::CTimeLogger;
 }
-

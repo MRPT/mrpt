@@ -34,16 +34,16 @@ namespace random
 {
 /** A thred-safe pseudo random number generator, based on an internal MT19937
  * randomness generator.
-  * The base algorithm for randomness is platform-independent. See
+ * The base algorithm for randomness is platform-independent. See
  * http://en.wikipedia.org/wiki/Mersenne_twister
-  *
-  * For real thread-safety, each thread must create and use its own instance of
+ *
+ * For real thread-safety, each thread must create and use its own instance of
  * this class.
-  *
-  * Single-thread programs can use the static object
+ *
+ * Single-thread programs can use the static object
  * mrpt::random::randomGenerator
  * \ingroup mrpt_random_grp
-  */
+ */
 class CRandomGenerator
 {
    protected:
@@ -76,7 +76,7 @@ class CRandomGenerator
 
 	/** Generate a uniformly distributed pseudo-random number using the MT19937
 	 * algorithm, in the whole range of 32-bit integers.
-	  *  See: http://en.wikipedia.org/wiki/Mersenne_twister */
+	 *  See: http://en.wikipedia.org/wiki/Mersenne_twister */
 	uint32_t drawUniform32bit();
 
 	/** Returns a uniformly distributed pseudo-random number by joining two
@@ -116,10 +116,10 @@ class CRandomGenerator
 	}
 
 	/** Fills the given matrix with independent, uniformly distributed samples.
-	  * Matrix classes can be mrpt::math::CMatrixTemplateNumeric or
+	 * Matrix classes can be mrpt::math::CMatrixTemplateNumeric or
 	 * mrpt::math::CMatrixFixedNumeric
-	  * \sa drawUniform
-	  */
+	 * \sa drawUniform
+	 */
 	template <class MAT>
 	void drawUniformMatrix(
 		MAT& matrix, const double unif_min = 0, const double unif_max = 1)
@@ -131,8 +131,8 @@ class CRandomGenerator
 	}
 
 	/** Fills the given vector with independent, uniformly distributed samples.
-	  * \sa drawUniform
-	  */
+	 * \sa drawUniform
+	 */
 	template <class VEC>
 	void drawUniformVector(
 		VEC& v, const double unif_min = 0, const double unif_max = 1)
@@ -166,10 +166,10 @@ class CRandomGenerator
 
 	/** Fills the given matrix with independent, 1D-normally distributed
 	 * samples.
-	  * Matrix classes can be mrpt::math::CMatrixTemplateNumeric or
+	 * Matrix classes can be mrpt::math::CMatrixTemplateNumeric or
 	 * mrpt::math::CMatrixFixedNumeric
-	  * \sa drawGaussian1D
-	  */
+	 * \sa drawGaussian1D
+	 */
 	template <class MAT>
 	void drawGaussian1DMatrix(
 		MAT& matrix, const double mean = 0, const double std = 1)
@@ -183,7 +183,7 @@ class CRandomGenerator
 	/** Generates a random definite-positive matrix of the given size, using the
 	 * formula C = v*v^t + epsilon*I, with "v" being a vector of gaussian random
 	 * samples.
-	  */
+	 */
 	template <class MATRIX, class AUXVECTOR_T = MATRIX>
 	MATRIX drawDefinitePositiveMatrix(
 		const size_t dim, const double std_scale = 1.0,
@@ -201,8 +201,8 @@ class CRandomGenerator
 
 	/** Fills the given vector with independent, 1D-normally distributed
 	 * samples.
-	  * \sa drawGaussian1D
-	  */
+	 * \sa drawGaussian1D
+	 */
 	template <class VEC>
 	void drawGaussian1DVector(
 		VEC& v, const double mean = 0, const double std = 1)
@@ -236,10 +236,10 @@ class CRandomGenerator
 		out_result.clear();
 		out_result.resize(dim, 0);
 		/** Computes the eigenvalues/eigenvector decomposition of this matrix,
-		*    so that: M = Z � D � Z<sup>T</sup>, where columns in Z are the
-		*	  eigenvectors and the diagonal matrix D contains the eigenvalues
-		*    as diagonal elements, sorted in <i>ascending</i> order.
-		*/
+		 *    so that: M = Z � D � Z<sup>T</sup>, where columns in Z are the
+		 *	  eigenvectors and the diagonal matrix D contains the eigenvalues
+		 *    as diagonal elements, sorted in <i>ascending</i> order.
+		 */
 		cov.eigenVectors(Z, D);
 		// Scale eigenvectors with eigenvalues:
 		D = D.array().sqrt().matrix();
@@ -359,7 +359,7 @@ class CRandomGenerator
 
 	/** Returns a random permutation of a vector: all the elements of the input
 	 * vector are in the output but at random positions.
-	  */
+	 */
 	template <class VEC>
 	void permuteVector(const VEC& in_vector, VEC& out_result)
 	{
@@ -379,17 +379,17 @@ CRandomGenerator& getRandomGenerator();
 
 /** A random number generator for usage in STL algorithms expecting a function
  * like this (eg, random_shuffle):
-  */
+ */
 inline ptrdiff_t random_generator_for_STL(ptrdiff_t i)
 {
 	return getRandomGenerator().drawUniform32bit() % i;
 }
 
 /** Fills the given matrix with independent, uniformly distributed samples.
-  * Matrix classes can be mrpt::math::CMatrixTemplateNumeric or
+ * Matrix classes can be mrpt::math::CMatrixTemplateNumeric or
  * mrpt::math::CMatrixFixedNumeric
-  * \sa matrixRandomNormal
-  */
+ * \sa matrixRandomNormal
+ */
 template <class MAT>
 void matrixRandomUni(
 	MAT& matrix, const double unif_min = 0, const double unif_max = 1)
@@ -401,8 +401,8 @@ void matrixRandomUni(
 }
 
 /** Fills the given matrix with independent, uniformly distributed samples.
-  * \sa vectorRandomNormal
-  */
+ * \sa vectorRandomNormal
+ */
 template <class T>
 void vectorRandomUni(
 	std::vector<T>& v_out, const T& unif_min = 0, const T& unif_max = 1)
@@ -413,10 +413,10 @@ void vectorRandomUni(
 }
 
 /** Fills the given matrix with independent, normally distributed samples.
-  * Matrix classes can be mrpt::math::CMatrixTemplateNumeric or
+ * Matrix classes can be mrpt::math::CMatrixTemplateNumeric or
  * mrpt::math::CMatrixFixedNumeric
-  * \sa matrixRandomUni
-  */
+ * \sa matrixRandomUni
+ */
 template <class MAT>
 void matrixRandomNormal(
 	MAT& matrix, const double mean = 0, const double std = 1)
@@ -428,8 +428,8 @@ void matrixRandomNormal(
 }
 
 /** Generates a random vector with independent, normally distributed samples.
-  * \sa matrixRandomUni
-  */
+ * \sa matrixRandomUni
+ */
 template <class T>
 void vectorRandomNormal(
 	std::vector<T>& v_out, const T& mean = 0, const T& std = 1)
@@ -450,7 +450,7 @@ inline void Randomize(const uint32_t seed)
 inline void Randomize() { getRandomGenerator().randomize(); }
 /** Returns a random permutation of a vector: all the elements of the input
  * vector are in the output but at random positions.
-  */
+ */
 template <class T>
 void randomPermutation(
 	const std::vector<T>& in_vector, std::vector<T>& out_result)
@@ -459,18 +459,18 @@ void randomPermutation(
 }
 
 /** Generate a given number of multidimensional random samples according to a
-* given covariance matrix.
-* \param cov The covariance matrix where to draw the samples from.
-* \param desiredSamples The number of samples to generate.
-* \param samplesLikelihoods If desired, set to a valid pointer to a vector,
-* where it will be stored the likelihoods of having obtained each sample: the
-* product of the gaussian-pdf for each independent variable.
-* \param ret The output list of samples
-*
-* \exception std::exception On invalid covariance matrix
-*
-* \sa randomNormalMultiDimensional
-*/
+ * given covariance matrix.
+ * \param cov The covariance matrix where to draw the samples from.
+ * \param desiredSamples The number of samples to generate.
+ * \param samplesLikelihoods If desired, set to a valid pointer to a vector,
+ * where it will be stored the likelihoods of having obtained each sample: the
+ * product of the gaussian-pdf for each independent variable.
+ * \param ret The output list of samples
+ *
+ * \exception std::exception On invalid covariance matrix
+ *
+ * \sa randomNormalMultiDimensional
+ */
 template <typename T, typename MATRIX>
 void randomNormalMultiDimensionalMany(
 	const MATRIX& cov, size_t desiredSamples, std::vector<std::vector<T>>& ret,
@@ -505,5 +505,5 @@ void randomNormalMultiDimensional(const MATRIX& cov, std::vector<T>& out_result)
 	getRandomGenerator().drawGaussianMultivariate(out_result, cov);
 }
 
-}  // End of namespace
-}  // End of namespace
+}  // namespace random
+}  // namespace mrpt

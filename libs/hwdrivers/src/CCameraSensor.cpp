@@ -46,23 +46,23 @@ CCameraSensor::CCameraSensor()
 	: mrpt::system::COutputLogger("CCameraSensor"),
 	  m_sensorPose(),
 	  m_grabber_type("opencv"),
-	  
+
 	  m_cv_camera_type("CAMERA_CV_AUTODETECT"),
 	  m_cv_options(),
-	  
+
 	  m_dc1394_options(),
-	  
+
 	  m_svs_options(),
-	  
+
 	  // ---
 	  m_img_dir_url(""),
 	  m_img_dir_left_format("imL_%04d.jpg"),
 	  m_img_dir_right_format("imR_%04d.jpg"),
-	  
+
 	  m_external_image_saver_count(std::thread::hardware_concurrency()),
-	  
+
 	  m_hook_pre_save(nullptr)
-	  
+
 {
 	m_sensorLabel = "CAMERA";
 	m_state = CGenericSensor::ssInitializing;
@@ -135,9 +135,10 @@ void CCameraSensor::initialize()
 			"GUID:0x%08X Index:%i FPS:%f...\n",
 			(unsigned int)(m_bumblebee_dc1394_camera_guid),
 			m_bumblebee_dc1394_camera_unit, m_bumblebee_dc1394_framerate);
-		m_cap_bumblebee_dc1394 = std::make_unique<CStereoGrabber_Bumblebee_libdc1394>(
-			m_bumblebee_dc1394_camera_guid, m_bumblebee_dc1394_camera_unit,
-			m_bumblebee_dc1394_framerate);
+		m_cap_bumblebee_dc1394 =
+			std::make_unique<CStereoGrabber_Bumblebee_libdc1394>(
+				m_bumblebee_dc1394_camera_guid, m_bumblebee_dc1394_camera_unit,
+				m_bumblebee_dc1394_framerate);
 	}
 	else if (m_grabber_type == "svs")
 	{
@@ -276,7 +277,8 @@ void CCameraSensor::initialize()
 		try
 		{
 			// Open camera and start capture:
-			m_cap_flycap = std::make_unique<CImageGrabber_FlyCapture2>(m_flycap_options);
+			m_cap_flycap =
+				std::make_unique<CImageGrabber_FlyCapture2>(m_flycap_options);
 		}
 		catch (std::exception&)
 		{
@@ -291,8 +293,10 @@ void CCameraSensor::initialize()
 		try
 		{
 			// Open camera and start capture:
-			m_cap_flycap_stereo_l = std::make_unique<CImageGrabber_FlyCapture2>();
-			m_cap_flycap_stereo_r = std::make_unique<CImageGrabber_FlyCapture2>();
+			m_cap_flycap_stereo_l =
+				std::make_unique<CImageGrabber_FlyCapture2>();
+			m_cap_flycap_stereo_r =
+				std::make_unique<CImageGrabber_FlyCapture2>();
 
 			cout << "[CCameraSensor::initialize] PGR FlyCapture2 stereo "
 					"camera: Opening LEFT camera...\n";
@@ -389,8 +393,7 @@ void CCameraSensor::close()
 	if (!m_threadImagesSaver.empty())
 	{
 		m_threadImagesSaverShouldEnd = true;
-		for (auto & i : m_threadImagesSaver)
-			i.join();
+		for (auto& i : m_threadImagesSaver) i.join();
 	}
 }
 
@@ -924,9 +927,9 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 				CSensoryFrame::Ptr sf =
 					std::dynamic_pointer_cast<CSensoryFrame>(newObs);
 
-				for (auto & o : *sf)
+				for (auto& o : *sf)
 				{
-						if (!m_rawlog_camera_sensor_label.empty() &&
+					if (!m_rawlog_camera_sensor_label.empty() &&
 						m_rawlog_camera_sensor_label != o->sensorLabel)
 						continue;
 
@@ -1411,8 +1414,7 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
 	std::promise<mrpt::gui::detail::TReturnAskUserOpenCamera> dlgSelection;
 
 	// Create window:
-	WxSubsystem::TRequestToWxMainThread* REQ =
-		new WxSubsystem::TRequestToWxMainThread[1];
+	auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->OPCODE = 700;
 	REQ->sourceCameraSelectDialog = true;
 	REQ->voidPtr = reinterpret_cast<void*>(&semDlg);
@@ -1506,8 +1508,7 @@ void mrpt::hwdrivers::writeConfigFromVideoSourcePanel(
 	MRPT_START
 #if MRPT_HAS_WXWIDGETS
 	ASSERT_(_panel);
-	mrpt::gui::CPanelCameraSelection* panel =
-		reinterpret_cast<mrpt::gui::CPanelCameraSelection*>(_panel);
+	auto* panel = reinterpret_cast<mrpt::gui::CPanelCameraSelection*>(_panel);
 	ASSERTMSG_(
 		panel, "panel must be of type mrpt::gui::CPanelCameraSelection *");
 	panel->writeConfigFromVideoSourcePanel(sect, cfg);
@@ -1528,8 +1529,7 @@ void mrpt::hwdrivers::readConfigIntoVideoSourcePanel(
 	MRPT_START
 #if MRPT_HAS_WXWIDGETS
 	ASSERT_(_panel);
-	mrpt::gui::CPanelCameraSelection* panel =
-		reinterpret_cast<mrpt::gui::CPanelCameraSelection*>(_panel);
+	auto* panel = reinterpret_cast<mrpt::gui::CPanelCameraSelection*>(_panel);
 	ASSERTMSG_(
 		panel, "panel must be of type mrpt::gui::CPanelCameraSelection *");
 
@@ -1555,8 +1555,7 @@ void CCameraSensor::thread_save_images(unsigned int my_working_thread_index)
 		m_toSaveList[my_working_thread_index].swap(newObs);
 		m_csToSaveList.unlock();
 
-		for (TListObservations::const_iterator i = newObs.begin();
-			 i != newObs.end(); ++i)
+		for (auto i = newObs.begin(); i != newObs.end(); ++i)
 		{
 			// Optional user-code hook:
 			if (m_hook_pre_save)

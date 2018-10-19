@@ -19,11 +19,10 @@ using namespace mrpt::poses;
 using namespace std;
 
 RRTAlgorithmParams::RRTAlgorithmParams()
-	: 
-	  ptg_cache_files_directory("."),
-	  
+	: ptg_cache_files_directory("."),
+
 	  minAngBetweenNewNodes(mrpt::DEG2RAD(15))
-	  
+
 {
 	robot_shape.push_back(mrpt::math::TPoint2D(-0.5, -0.5));
 	robot_shape.push_back(mrpt::math::TPoint2D(0.8, -0.4));
@@ -31,7 +30,7 @@ RRTAlgorithmParams::RRTAlgorithmParams()
 	robot_shape.push_back(mrpt::math::TPoint2D(-0.5, 0.5));
 }
 
-PlannerTPS_VirtualBase::PlannerTPS_VirtualBase()  = default;
+PlannerTPS_VirtualBase::PlannerTPS_VirtualBase() = default;
 void PlannerTPS_VirtualBase::internal_initialize_PTG()
 {
 	ASSERTMSG_(
@@ -54,7 +53,7 @@ void PlannerTPS_VirtualBase::internal_initialize_PTG()
 
 		// Polygonal robot shape?
 		{
-			mrpt::nav::CPTG_DiffDrive_CollisionGridBased* diff_ptg =
+			auto* diff_ptg =
 				dynamic_cast<mrpt::nav::CPTG_DiffDrive_CollisionGridBased*>(
 					m_PTGs[i].get());
 			if (diff_ptg)
@@ -68,9 +67,8 @@ void PlannerTPS_VirtualBase::internal_initialize_PTG()
 		}
 		// Circular robot shape?
 		{
-			mrpt::nav::CPTG_RobotShape_Circular* ptg =
-				dynamic_cast<mrpt::nav::CPTG_RobotShape_Circular*>(
-					m_PTGs[i].get());
+			auto* ptg = dynamic_cast<mrpt::nav::CPTG_RobotShape_Circular*>(
+				m_PTGs[i].get());
 			if (ptg)
 			{
 				ASSERTMSG_(
@@ -130,10 +128,9 @@ void PlannerTPS_VirtualBase::internal_loadConfig_PTG(
 		// Generate it:
 		const std::string sPTGName =
 			ini.read_string(sSect, format("PTG%u_Type", n), "", true);
-		m_PTGs.push_back(
-			CParameterizedTrajectoryGenerator::Ptr(
-				CParameterizedTrajectoryGenerator::CreatePTG(
-					sPTGName, ini, sSect, format("PTG%u_", n))));
+		m_PTGs.push_back(CParameterizedTrajectoryGenerator::Ptr(
+			CParameterizedTrajectoryGenerator::CreatePTG(
+				sPTGName, ini, sSect, format("PTG%u_", n))));
 	}
 }
 

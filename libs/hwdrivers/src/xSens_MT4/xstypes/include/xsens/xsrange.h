@@ -12,7 +12,8 @@
 #include "xstypesconfig.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #else
 #define XSRANGE_INITIALIZER \
 	{                       \
@@ -20,13 +21,14 @@ extern "C" {
 	}
 #endif
 
-struct XsRange;
+	struct XsRange;
 
-XSTYPES_DLL_API int XsRange_count(const struct XsRange* thisPtr);
-XSTYPES_DLL_API int XsRange_contains(const struct XsRange* thisPtr, int i);
-XSTYPES_DLL_API int XsRange_interval(const struct XsRange* thisPtr);
-XSTYPES_DLL_API void XsRange_setRange(struct XsRange* thisPtr, int f, int l);
-XSTYPES_DLL_API int XsRange_empty(const struct XsRange* thisPtr);
+	XSTYPES_DLL_API int XsRange_count(const struct XsRange* thisPtr);
+	XSTYPES_DLL_API int XsRange_contains(const struct XsRange* thisPtr, int i);
+	XSTYPES_DLL_API int XsRange_interval(const struct XsRange* thisPtr);
+	XSTYPES_DLL_API void XsRange_setRange(
+		struct XsRange* thisPtr, int f, int l);
+	XSTYPES_DLL_API int XsRange_empty(const struct XsRange* thisPtr);
 
 #ifdef __cplusplus
 }  // extern "C"

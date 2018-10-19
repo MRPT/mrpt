@@ -20,7 +20,7 @@ struct TCaptureOptions_FlyCapture2
 	TCaptureOptions_FlyCapture2();
 
 	/** @name Camera to open
-	  * @{ */
+	 * @{ */
 	/** (Default=0) If open_by_guid==false, will open the i'th camera based on
 	 * this 0-based index. */
 	unsigned int camera_index{0};
@@ -32,7 +32,7 @@ struct TCaptureOptions_FlyCapture2
 	/** @} */
 
 	/** @name Camera settings
-	  * @{ */
+	 * @{ */
 	/** (Default="", which means default) A string with a video mode, from the
 	 * list available in
 	 * [FlyCapture2::VideoMode](http://www.ptgrey.com/support/downloads/documents/flycapture/Doxygen/html/),
@@ -231,27 +231,27 @@ class CImageGrabber_FlyCapture2
 
 	/** Tries to open the camera with the given options, and starts capture.
 	 * Raises an exception on error.
-	  * \param[in] startCapture If set to false, the camera is only opened and
+	 * \param[in] startCapture If set to false, the camera is only opened and
 	 * configured, but a posterior call to startCapture() is required to start
 	 * grabbing images.
-	  * \sa close(), startCapture()
-	  */
+	 * \sa close(), startCapture()
+	 */
 	void open(
 		const TCaptureOptions_FlyCapture2& options,
 		const bool startCapture = true);
 
 	/** Start the actual image capture of the camera. Must be called after
 	 * open(), only when "startCapture" was set to false.
-	  * \sa startSyncCapture
-	  */
+	 * \sa startSyncCapture
+	 */
 	void startCapture();
 
 	/** Starts a synchronous capture of several cameras, which must have been
 	 * already opened.
-	  * NOTE: This method only works with Firewire cameras, not with USB3 or
+	 * NOTE: This method only works with Firewire cameras, not with USB3 or
 	 * GigaE ones (as confirmed by PGR support service).
-	  * \sa startCapture
-	  */
+	 * \sa startCapture
+	 */
 	static void startSyncCapture(
 		int numCameras, const CImageGrabber_FlyCapture2** cameras_array);
 
@@ -282,6 +282,4 @@ static_assert(
 	!std::is_copy_constructible_v<CImageGrabber_FlyCapture2> &&
 		!std::is_copy_assignable_v<CImageGrabber_FlyCapture2>,
 	"Copy Check");
-}
-
-
+}  // namespace mrpt::hwdrivers

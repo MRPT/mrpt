@@ -26,7 +26,7 @@ using namespace mrpt::system;
 // ==================== TSequenceFeatureObservations ====================
 /** Saves all entries to a text file, with each line having this format:
  * #FRAME_ID  #FEAT_ID  #PIXEL_X  #PIXEL_Y
-  * \sa loadFromTextFile  */
+ * \sa loadFromTextFile  */
 void TSequenceFeatureObservations::saveToTextFile(
 	const std::string& filName, bool skipFirstCommentLine) const
 {
@@ -40,7 +40,7 @@ void TSequenceFeatureObservations::saveToTextFile(
 		f << "% FRAME_ID  FEAT_ID   X         Y     \n"
 			 "%-------------------------------------\n";
 
-	for (const auto & it : *this)
+	for (const auto& it : *this)
 		f << setw(7) << it.id_frame << setw(7) << it.id_feature << setw(13)
 		  << it.px.x << setw(11) << it.px.y << endl;
 
@@ -75,10 +75,9 @@ void TSequenceFeatureObservations::loadFromTextFile(const std::string& filName)
 		TCameraPoseID camID;
 		TPixelCoordf px;
 		if (!(s >> camID >> featID >> px.x >> px.y))
-			THROW_EXCEPTION(
-				format(
-					"%s:%u: Error parsing line: '%s'", filName.c_str(), linNum,
-					lin.c_str()))
+			THROW_EXCEPTION(format(
+				"%s:%u: Error parsing line: '%s'", filName.c_str(), linNum,
+				lin.c_str()))
 
 		BASE::push_back(TFeatureObservation(featID, camID, px));
 	}
@@ -106,26 +105,22 @@ bool TSequenceFeatureObservations::saveAsSBAFiles(
 	if (!f.is_open()) return false;
 
 	f << "# X Y Z  nframes  frame0 x0 y0  frame1 x1 y1 ...\n";
-	for (std::map<TLandmarkID,
-				  std::map<TCameraPoseID, TPixelCoordf>>::const_iterator it =
-			 obs_by_point.begin();
-		 it != obs_by_point.end(); ++it)
+	for (auto it = obs_by_point.begin(); it != obs_by_point.end(); ++it)
 	{
 		const std::map<TCameraPoseID, TPixelCoordf>& m = it->second;
 		f << pts[it->first].x << " " << pts[it->first].y << " "
 		  << pts[it->first].z << " " << m.size() << " ";
 		for (auto itO : m)
-			f << itO.first << " " << itO.second.x << " " << itO.second.y
-			  << " ";
+			f << itO.first << " " << itO.second.x << " " << itO.second.y << " ";
 		f << endl;
 	}
 
 	ofstream fc(cams_file.c_str());
 	if (!fc.is_open()) return false;
 
-	for (const auto & pos : cams)
+	for (const auto& pos : cams)
 	{
-			const mrpt::poses::CPose3DQuat p(pos);
+		const mrpt::poses::CPose3DQuat p(pos);
 		fc << p.m_quat[0] << " " << p.m_quat[1] << " " << p.m_quat[2] << " "
 		   << p.m_quat[3] << " " << p.x() << " " << p.y() << " " << p.z()
 		   << endl;
@@ -146,8 +141,7 @@ size_t TSequenceFeatureObservations::removeFewObservedFeatures(
 
 	// 1st pass: Count total views
 	map<TLandmarkID, size_t> numViews;
-	for (auto & it : *this)
-		numViews[it.id_feature]++;
+	for (auto& it : *this) numViews[it.id_feature]++;
 
 	// 2nd pass: Remove selected ones:
 	for (size_t idx = 0; idx < BASE::size();)
@@ -165,7 +159,7 @@ size_t TSequenceFeatureObservations::removeFewObservedFeatures(
 }
 
 /** Remove one out of \a decimate_ratio camera frame IDs from the list.
-  * \sa After calling this you may want to call \a compressIDs */
+ * \sa After calling this you may want to call \a compressIDs */
 void TSequenceFeatureObservations::decimateCameraFrames(
 	const size_t decimate_ratio)
 {
@@ -174,12 +168,11 @@ void TSequenceFeatureObservations::decimateCameraFrames(
 
 	// 1) Make sorted list of frame IDs:
 	set<TCameraPoseID> frameIDs;
-	for (BASE::const_iterator it = BASE::begin(); it != BASE::end(); ++it)
+	for (auto it = BASE::begin(); it != BASE::end(); ++it)
 		frameIDs.insert(it->id_frame);
 
 	// 2) Leave in "frameIDs" just the IDs that will survive:
-	for (set<TCameraPoseID>::iterator it = frameIDs.begin();
-		 it != frameIDs.end();)
+	for (auto it = frameIDs.begin(); it != frameIDs.end();)
 	{
 		// Leave one:
 		++it;
@@ -191,7 +184,7 @@ void TSequenceFeatureObservations::decimateCameraFrames(
 	// 3) Make a new list of observations with only the desired data:
 	TSequenceFeatureObservations newLst;
 	newLst.reserve(BASE::size() / decimate_ratio);
-	for (BASE::const_iterator it = BASE::begin(); it != BASE::end(); ++it)
+	for (auto it = BASE::begin(); it != BASE::end(); ++it)
 		if (frameIDs.find(it->id_frame) != frameIDs.end())
 			newLst.push_back(*it);
 
@@ -209,7 +202,7 @@ void TSequenceFeatureObservations::compressIDs(
 	std::map<TCameraPoseID, TCameraPoseID> camIDs;
 	std::map<TLandmarkID, TLandmarkID> lmIDs;
 
-	for (BASE::const_iterator it = BASE::begin(); it != BASE::end(); ++it)
+	for (auto it = BASE::begin(); it != BASE::end(); ++it)
 	{
 		const TFeatureID f_ID = it->id_feature;
 		const TCameraPoseID c_ID = it->id_frame;

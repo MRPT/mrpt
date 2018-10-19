@@ -137,9 +137,9 @@ class CGraphSlamHandler
 	mrpt::graphslam::apps::TUserOptionsChecker<GRAPH_T>* m_options_checker;
 
 	bool m_do_save_results = true;
-	bool m_has_set_fnames = false;;
+	bool m_has_set_fnames = false;
+	;
 	bool m_enable_visuals;
 };
 
 #include "CGraphSlamHandler_impl.h"
-

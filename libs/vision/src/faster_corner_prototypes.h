@@ -31,6 +31,4 @@ void fast_corner_detect_12(
 	const IplImage* I, TSimpleFeatureList& corners, int barrier, uint8_t octave,
 	std::vector<size_t>* out_feats_index_by_row);
 
-
 #endif
-

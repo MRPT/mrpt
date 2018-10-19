@@ -101,7 +101,5 @@ class lhm
 };
 
 /** @}  */  // end of grouping
-}
+}  // namespace mrpt::vision::pnp
 #endif
-
-

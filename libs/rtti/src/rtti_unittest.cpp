@@ -18,7 +18,7 @@ class MyDerived1 : public mrpt::rtti::CObject
 	MyDerived1() = default;
 	DEFINE_MRPT_OBJECT(MyDerived1);
 };
-}
+}  // namespace MyNS
 
 IMPLEMENTS_MRPT_OBJECT(MyDerived1, mrpt::rtti::CObject, MyNS)
 

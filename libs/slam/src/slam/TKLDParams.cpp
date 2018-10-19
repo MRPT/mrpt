@@ -18,12 +18,7 @@ using namespace mrpt::slam;
 /*---------------------------------------------------------------
 					TKLDParams
  ---------------------------------------------------------------*/
-TKLDParams::TKLDParams()
-	: 
-	  KLD_binSize_PHI(DEG2RAD(5))
-	  
-{
-}
+TKLDParams::TKLDParams() : KLD_binSize_PHI(DEG2RAD(5)) {}
 
 /*---------------------------------------------------------------
 					dumpToTextStream

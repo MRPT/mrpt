@@ -37,5 +37,4 @@ class HypothesisNotFoundException : public std::runtime_error
 	/**\brief Error message */
 	std::string m_msg;
 };
-}
-
+}  // namespace mrpt::graphs

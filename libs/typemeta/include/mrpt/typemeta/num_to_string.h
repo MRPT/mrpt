@@ -35,14 +35,14 @@ template <unsigned... digits>
 struct explode<0, digits...> : to_chars<digits...>
 {
 };
-}
+}  // namespace detail
 
 /** constexpr string representation of a number.
-  * Use: `num_to_string<NUMBER>::value`.
-  * \note Credits: https://stackoverflow.com/a/24000041/1631514 */
+ * Use: `num_to_string<NUMBER>::value`.
+ * \note Credits: https://stackoverflow.com/a/24000041/1631514 */
 template <unsigned num>
 struct num_to_string : detail::explode<num>
 {
 };
-}
-}
+}  // namespace typemeta
+}  // namespace mrpt

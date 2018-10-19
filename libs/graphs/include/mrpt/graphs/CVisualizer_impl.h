@@ -12,28 +12,30 @@ namespace mrpt::graphs::detail
 {
 // constructor, destructor
 ////////////////////////////////////////////////////////////
-template <class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
-		  class EDGE_ANNOTATIONS>
-CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
-			EDGE_ANNOTATIONS>::CVisualizer(const GRAPH_T& graph_in)
+template <
+	class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
+	class EDGE_ANNOTATIONS>
+CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>::
+	CVisualizer(const GRAPH_T& graph_in)
 	: m_graph(graph_in)
 {
 	// Is a 2D or 3D graph network?
 	using constraint_t = typename GRAPH_T::constraint_t;
 	m_is_3D_graph = constraint_t::is_3D();
 }
-template <class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
-		  class EDGE_ANNOTATIONS>
-CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
-			EDGE_ANNOTATIONS>::~CVisualizer()
-= default;
+template <
+	class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
+	class EDGE_ANNOTATIONS>
+CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>::
+	~CVisualizer() = default;
 
 // methods implementations
 ////////////////////////////////////////////////////////////
-template <class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
-		  class EDGE_ANNOTATIONS>
-void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
-				 EDGE_ANNOTATIONS>::
+template <
+	class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
+	class EDGE_ANNOTATIONS>
+void CVisualizer<
+	CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>::
 	getAs3DObject(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
 		mrpt::system::TParametersDouble viz_params) const
@@ -79,10 +81,11 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 	}
 }
 
-template <class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
-		  class EDGE_ANNOTATIONS>
-void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
-				 EDGE_ANNOTATIONS>::
+template <
+	class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
+	class EDGE_ANNOTATIONS>
+void CVisualizer<
+	CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>::
 	drawGroundGrid(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
 		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
@@ -93,9 +96,7 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 	// Estimate bounding box.
 	mrpt::math::TPoint3D BB_min(-10., -10., 0.), BB_max(10., 10., 0.);
 
-	for (typename GRAPH_T::global_poses_t::const_iterator n_it =
-			 m_graph.nodes.begin();
-		 n_it != m_graph.nodes.end(); ++n_it)
+	for (auto n_it = m_graph.nodes.begin(); n_it != m_graph.nodes.end(); ++n_it)
 	{
 		const CPose3D p = CPose3D(
 			n_it->second);  // Convert to 3D from whatever its real type.
@@ -117,10 +118,11 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 	object->insert(grid);
 }
 
-template <class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
-		  class EDGE_ANNOTATIONS>
-void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
-				 EDGE_ANNOTATIONS>::
+template <
+	class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
+	class EDGE_ANNOTATIONS>
+void CVisualizer<
+	CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>::
 	drawNodePoints(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
 		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
@@ -140,9 +142,7 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 	pnts->setPointSize(nodes_point_size);
 
 	// Add all nodesnodes:
-	for (typename GRAPH_T::global_poses_t::const_iterator n_it =
-			 m_graph.nodes.begin();
-		 n_it != m_graph.nodes.end(); ++n_it)
+	for (auto n_it = m_graph.nodes.begin(); n_it != m_graph.nodes.end(); ++n_it)
 	{
 		const CPose3D p = CPose3D(
 			n_it->second);  // Convert to 3D from whatever its real type.
@@ -153,10 +153,11 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 	object->insert(pnts);
 }
 
-template <class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
-		  class EDGE_ANNOTATIONS>
-void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
-				 EDGE_ANNOTATIONS>::
+template <
+	class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
+	class EDGE_ANNOTATIONS>
+void CVisualizer<
+	CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>::
 	drawNodeCorners(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
 		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
@@ -173,9 +174,7 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 	const double nodes_corner_scale =
 		viz_params->getWithDefaultVal("nodes_corner_scale", 0.7);
 
-	for (typename GRAPH_T::global_poses_t::const_iterator n_it =
-			 m_graph.nodes.begin();
-		 n_it != m_graph.nodes.end(); ++n_it)
+	for (auto n_it = m_graph.nodes.begin(); n_it != m_graph.nodes.end(); ++n_it)
 	{
 		// Convert to 3D from whatever its real type.  CSetOfObjects::Ptr
 		// gl_corner = show_node_corners ?
@@ -198,10 +197,11 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 	}
 }
 
-template <class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
-		  class EDGE_ANNOTATIONS>
-void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
-				 EDGE_ANNOTATIONS>::
+template <
+	class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
+	class EDGE_ANNOTATIONS>
+void CVisualizer<
+	CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>::
 	drawEdgeRelPoses(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
 		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
@@ -227,8 +227,7 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 										  : edge_it->first.first;
 
 		// Draw only if we have the global coords of starting nodes:
-		typename GRAPH_T::global_poses_t::const_iterator n_it =
-			m_graph.nodes.find(node_id_start);
+		auto n_it = m_graph.nodes.find(node_id_start);
 		if (n_it != m_graph.nodes.end())
 		{
 			const CPose3D pSource = CPose3D(n_it->second);
@@ -267,10 +266,11 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 	}
 }
 
-template <class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
-		  class EDGE_ANNOTATIONS>
-void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
-				 EDGE_ANNOTATIONS>::
+template <
+	class CPOSE, class MAPS_IMPLEMENTATION, class NODE_ANNOTATIONS,
+	class EDGE_ANNOTATIONS>
+void CVisualizer<
+	CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>::
 	drawEdges(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
 		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
@@ -291,17 +291,14 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 	gl_edges->setLineWidth(edge_width);
 
 	// for all registered edges.
-	for (typename GRAPH_T::const_iterator edge_it = m_graph.begin();
-		 edge_it != m_graph.end(); ++edge_it)
+	for (auto edge_it = m_graph.begin(); edge_it != m_graph.end(); ++edge_it)
 	{
 		const TNodeID id1 = edge_it->first.first;
 		const TNodeID id2 = edge_it->first.second;
 
 		// Draw only if we have the global coords of both nodes:
-		typename GRAPH_T::global_poses_t::const_iterator n_it1 =
-			m_graph.nodes.find(id1);
-		typename GRAPH_T::global_poses_t::const_iterator n_it2 =
-			m_graph.nodes.find(id2);
+		auto n_it1 = m_graph.nodes.find(id1);
+		auto n_it2 = m_graph.nodes.find(id2);
 		if (n_it1 != m_graph.nodes.end() && n_it2 != m_graph.nodes.end())
 		{  // both nodes found?
 			const CPose3D p1 = CPose3D(n_it1->second);
@@ -313,7 +310,4 @@ void CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
 	}
 	object->insert(gl_edges);
 }
-}  // end of namespaces
-
-
-
+}  // namespace mrpt::graphs::detail

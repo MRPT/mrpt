@@ -19,8 +19,8 @@ namespace math
 {
 /** CArrayNumeric is an array for numeric types supporting several mathematical
  * operations (actually, just a wrapper on Eigen::Matrix<T,N,1>)
-  * \sa CArrayFloat, CArrayDouble, CArray
-  */
+ * \sa CArrayFloat, CArrayDouble, CArray
+ */
 template <typename T, std::size_t N>
 class CArrayNumeric : public Eigen::Matrix<T, N, 1>
 {
@@ -54,25 +54,25 @@ class CArrayNumeric : public Eigen::Matrix<T, N, 1>
 // --------------  Partial specializations of CArrayNumeric -----------
 
 /** A partial specialization of CArrayNumeric for float numbers.
-* \sa CArrayNumeric, CArray */
+ * \sa CArrayNumeric, CArray */
 template <std::size_t N>
 using CArrayFloat = CArrayNumeric<float, N>;
 
 /** A partial specialization of CArrayNumeric for double numbers.
-  * \sa CArrayNumeric, CArray */
+ * \sa CArrayNumeric, CArray */
 template <std::size_t N>
 using CArrayDouble = CArrayNumeric<double, N>;
 
 /** A partial specialization of CArrayNumeric for int numbers.
-  * \sa CArrayNumeric, CArray */
+ * \sa CArrayNumeric, CArray */
 template <std::size_t N>
 using CArrayInt = CArrayNumeric<int, N>;
 
 /** A partial specialization of CArrayNumeric for unsigned int numbers.
-  * \sa CArrayNumeric, CArray */
+ * \sa CArrayNumeric, CArray */
 template <std::size_t N>
 using CArrayUInt = CArrayNumeric<unsigned int, N>;
-}
+}  // namespace math
 
 namespace typemeta
 {
@@ -104,5 +104,5 @@ struct TTypeName<mrpt::math::CArrayFloat<N>>
 			   literal(">");
 	}
 };
-}
-}  // End of namespace
+}  // namespace typemeta
+}  // namespace mrpt

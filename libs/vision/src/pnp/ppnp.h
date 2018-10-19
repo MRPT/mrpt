@@ -48,5 +48,4 @@ class ppnp
 };
 
 /** @}  */  // end of grouping
-}
-
+}  // namespace mrpt::vision::pnp

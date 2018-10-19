@@ -36,7 +36,7 @@ ProtocolHandler::~ProtocolHandler() {}
 */
 int expectedMessageSize(const unsigned char* buffer, int sz)
 {
-	const XsMessageHeader* hdr = (const XsMessageHeader*)buffer;
+	const auto* hdr = (const XsMessageHeader*)buffer;
 	if (sz < 4)
 		return XS_LEN_MSGHEADERCS;  // no size information available at all,
 	// return a minimum message
@@ -98,7 +98,7 @@ MessageLocation ProtocolHandler::findMessage(
 
 			// read header
 			const uint8_t* msgStart = &(buffer[pre]);
-			const XsMessageHeader* hdr = (const XsMessageHeader*)msgStart;
+			const auto* hdr = (const XsMessageHeader*)msgStart;
 			if (hdr->m_length == XS_EXTLENCODE)
 			{
 				if (remaining < XS_LEN_MSGEXTHEADERCS)
@@ -135,8 +135,8 @@ MessageLocation ProtocolHandler::findMessage(
 			{
 				// not enough data read, skip current preamble
 				JLTRACE(
-					gJournal, "Not enough data read: " << remaining << " / "
-													   << target);
+					gJournal,
+					"Not enough data read: " << remaining << " / " << target);
 				if (rv.m_size == 0) rv.m_size = -target;
 				continue;
 			}

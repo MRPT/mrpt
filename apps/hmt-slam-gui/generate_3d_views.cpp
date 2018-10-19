@@ -217,7 +217,7 @@ void hmt_slam_guiFrame::updateLocalMapView()
 					// ---------------------------------------------------------
 					// Draw each of the robot poses as 2D/3D ellipsoids
 					// ---------------------------------------------------------
-					for (CRobotPosesGraph::iterator it = obj_robposes->begin();
+					for (auto it = obj_robposes->begin();
 						 it != obj_robposes->end(); ++it)
 					{
 					}

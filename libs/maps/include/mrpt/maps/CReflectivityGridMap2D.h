@@ -20,21 +20,21 @@
 namespace mrpt::maps
 {
 /** A 2D grid map representing the reflectivity of the environment (for example,
-  *measured with an IR proximity sensor).
-  *
-  *  Important implemented features are:
-  *		- Insertion of mrpt::obs::CObservationReflectivity observations.
-  *		- Probability estimation of observations. See base class.
-  *		- Rendering as 3D object: a 2D textured plane.
-  *		- Automatic resizing of the map limits when inserting observations close
-  *to
-  *the border.
-  *
-  *   Each cell contains the up-to-date average height from measured falling in
-  *that cell. Algorithms that can be used:
-  *		- mrSimpleAverage: Each cell only stores the current average value.
-  * \ingroup mrpt_maps_grp
-  */
+ *measured with an IR proximity sensor).
+ *
+ *  Important implemented features are:
+ *		- Insertion of mrpt::obs::CObservationReflectivity observations.
+ *		- Probability estimation of observations. See base class.
+ *		- Rendering as 3D object: a 2D textured plane.
+ *		- Automatic resizing of the map limits when inserting observations close
+ *to
+ *the border.
+ *
+ *   Each cell contains the up-to-date average height from measured falling in
+ *that cell. Algorithms that can be used:
+ *		- mrSimpleAverage: Each cell only stores the current average value.
+ * \ingroup mrpt_maps_grp
+ */
 class CReflectivityGridMap2D : public CMetricMap,
 							   public mrpt::containers::CDynamicGrid<int8_t>,
 							   public CLogOddsGridMap2D<int8_t>
@@ -47,9 +47,9 @@ class CReflectivityGridMap2D : public CMetricMap,
 
    public:
 	/** Calls the base CMetricMap::clear
-	  * Declared here to avoid ambiguity between the two clear() in both base
+	 * Declared here to avoid ambiguity between the two clear() in both base
 	 * classes.
-	  */
+	 */
 	inline void clear() { CMetricMap::clear(); }
 	float cell2float(const int8_t& c) const override
 	{
@@ -65,7 +65,7 @@ class CReflectivityGridMap2D : public CMetricMap,
 	bool isEmpty() const override;
 
 	/** Parameters related with inserting observations into the map.
-	  */
+	 */
 	struct TInsertionOptions : public mrpt::config::CLoadableOptions
 	{
 		/** Default values loader */
@@ -113,11 +113,10 @@ class CReflectivityGridMap2D : public CMetricMap,
 
 	MAP_DEFINITION_START(CReflectivityGridMap2D)
 	/** See CReflectivityGridMap2DOptions::CReflectivityGridMap2DOptions */
-	double min_x{-10.0f}, max_x{10.0f}, min_y{-10.0f}, max_y{10.0f}, resolution{0.10f};
+	double min_x{-10.0f}, max_x{10.0f}, min_y{-10.0f}, max_y{10.0f},
+		resolution{0.10f};
 	mrpt::maps::CReflectivityGridMap2D::TInsertionOptions insertionOpts;
 	MAP_DEFINITION_END(CReflectivityGridMap2D)
 };
 
-}
-
-
+}  // namespace mrpt::maps

@@ -28,8 +28,7 @@ MAP_DEFINITION_REGISTER(
 
 CSimplePointsMap::TMapDefinition::TMapDefinition() = default;
 void CSimplePointsMap::TMapDefinition::loadFromConfigFile_map_specific(
-	const mrpt::config::CConfigFileBase& c,
-	const std::string& s)
+	const mrpt::config::CConfigFileBase& c, const std::string& s)
 {
 	insertionOpts.loadFromConfigFile(c, s + string("_insertOpts"));
 	likelihoodOpts.loadFromConfigFile(c, s + string("_likelihoodOpts"));
@@ -49,7 +48,7 @@ mrpt::maps::CMetricMap* CSimplePointsMap::internal_CreateFromMapDefinition(
 {
 	const CSimplePointsMap::TMapDefinition& def =
 		*dynamic_cast<const CSimplePointsMap::TMapDefinition*>(&_def);
-	CSimplePointsMap* obj = new CSimplePointsMap();
+	auto* obj = new CSimplePointsMap();
 	obj->insertionOptions = def.insertionOpts;
 	obj->likelihoodOptions = def.likelihoodOpts;
 	obj->renderOptions = def.renderOpts;
@@ -155,7 +154,7 @@ void CSimplePointsMap::serializeFrom(
 			}
 			insertionOptions.readFromStream(in);
 			likelihoodOptions.readFromStream(in);
-			if (version>=10) renderOptions.readFromStream(in);
+			if (version >= 10) renderOptions.readFromStream(in);
 		}
 		break;
 
@@ -367,7 +366,7 @@ struct pointmap_traits<CSimplePointsMap>
 		MRPT_UNUSED_PARAM(lric);
 	}
 };
-}
+}  // namespace mrpt::maps::detail
 /** See CPointsMap::loadFromRangeScan() */
 void CSimplePointsMap::loadFromRangeScan(
 	const CObservation2DRangeScan& rangeScan, const CPose3D* robotPose)
@@ -393,5 +392,3 @@ void CSimplePointsMap::PLY_import_set_vertex_count(const size_t N)
 {
 	this->setSize(N);
 }
-
-

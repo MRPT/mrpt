@@ -40,10 +40,9 @@ namespace mrpt::graphslam
 template <class GRAPH_T = typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CRegistrationDeciderOrOptimizer : public mrpt::system::COutputLogger
 {
-
-public:
-	CRegistrationDeciderOrOptimizer()=default;
-	~CRegistrationDeciderOrOptimizer() override =default;
+   public:
+	CRegistrationDeciderOrOptimizer() = default;
+	~CRegistrationDeciderOrOptimizer() override = default;
 	/**\brief Generic method for fetching the incremental action-observations
 	 * (or
 	 * observation-only) measurements
@@ -133,6 +132,7 @@ public:
 	bool isMultiRobotSlamClass();
 
 	std::string getClassName() const { return m_class_name; };
+
    protected:
 	/**\brief Handy function for making all the visuals assertions in a
 	 * compact manner
@@ -171,7 +171,5 @@ public:
 	static const std::string header_sep;
 	static const std::string report_sep;
 };
-}
+}  // namespace mrpt::graphslam
 #include "CRegistrationDeciderOrOptimizer_impl.h"
-
-

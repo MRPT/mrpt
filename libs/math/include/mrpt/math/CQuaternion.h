@@ -503,5 +503,4 @@ using CQuaternionDouble = CQuaternion<double>;
 /** A quaternion of data type "float" */
 using CQuaternionFloat = CQuaternion<float>;
 
-}
-
+}  // namespace mrpt::math

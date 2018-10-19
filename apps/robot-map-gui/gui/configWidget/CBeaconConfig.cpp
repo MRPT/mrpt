@@ -25,7 +25,7 @@ CBeaconConfig::CBeaconConfig()
 void CBeaconConfig::updateConfiguration(
 	mrpt::maps::TMetricMapInitializer* options)
 {
-	mrpt::maps::CBeaconMap::TMapDefinition* mapDefination =
+	auto* mapDefination =
 		dynamic_cast<mrpt::maps::CBeaconMap::TMapDefinition*>(options);
 	ASSERT_(mapDefination);
 

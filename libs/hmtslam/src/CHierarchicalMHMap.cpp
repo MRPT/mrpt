@@ -114,7 +114,7 @@ void CHierarchicalMHMap::onArcDestruction(CHMHMapArc* arc)
 {
 	// Important note: We cannot create a temporary smart pointer here, since
 	//  it will lead to an infinity recursion!  (BUGFIX, JLBC SEP-2009)
-	TArcList::iterator it = m_arcs.find_ptr_to(arc);
+	auto it = m_arcs.find_ptr_to(arc);
 	if (it != m_arcs.end()) m_arcs.erase(it);
 }
 
@@ -124,7 +124,7 @@ void CHierarchicalMHMap::onArcDestruction(CHMHMapArc* arc)
 void CHierarchicalMHMap::onNodeAddition(CHMHMapNode::Ptr& node)
 {
 	// Check if it is not already in the list:
-	TNodeList::iterator it = m_nodes.find(node->m_ID);
+	auto it = m_nodes.find(node->m_ID);
 
 	if (it != m_nodes.end())
 	{
@@ -145,7 +145,7 @@ void CHierarchicalMHMap::onNodeAddition(CHMHMapNode::Ptr& node)
 void CHierarchicalMHMap::onArcAddition(CHMHMapArc::Ptr& arc)
 {
 	// Check if it is not already in the list:
-	TArcList::iterator it = m_arcs.find(arc);
+	auto it = m_arcs.find(arc);
 
 	if (it == m_arcs.end())  // Is it new?
 		m_arcs.push_back(arc);
@@ -189,7 +189,7 @@ void CHierarchicalMHMap::loadFromXMLfile(std::string fileName)
 		std::deque<std::string> lista;
 		mrpt::system::tokenize(table->get(j, "annotation-list"), " ", lista);
 
-		for (auto & r : lista)
+		for (auto& r : lista)
 			nodeanotmap.insert(
 				IDnodeanotPair((size_t)atoi(r.c_str()), node->getID()));
 
@@ -289,7 +289,7 @@ void CHierarchicalMHMap::dumpAsXMLfile(std::string fileName) const
 
 	// for nodes
 	printf("Generating nodes\n");
-	for (const auto & m_node : m_nodes)
+	for (const auto& m_node : m_nodes)
 	{
 		i = tablenodes->appendRecord();
 		tablenodes->set(i, "nodename", m_node.second->m_label.c_str());
@@ -298,8 +298,7 @@ void CHierarchicalMHMap::dumpAsXMLfile(std::string fileName) const
 		tablenodes->set(i, "nodetype", m_node.second->m_nodeType);
 
 		tablenodes->set(i, "annotation-list", ".");
-		for (CMHPropertiesValuesList::const_iterator ann =
-				 m_node.second->m_annotations.begin();
+		for (auto ann = m_node.second->m_annotations.begin();
 			 ann != m_node.second->m_annotations.end(); ++ann)
 		{
 			size_t j = tableannots->appendRecord();
@@ -337,7 +336,7 @@ void CHierarchicalMHMap::dumpAsXMLfile(std::string fileName) const
 	// for arcs
 	printf("Generating arcs (%u)\n", static_cast<unsigned int>(m_arcs.size()));
 
-	for (const auto & m_arc : m_arcs)
+	for (const auto& m_arc : m_arcs)
 	{
 		size_t fromid, toid;
 
@@ -351,8 +350,7 @@ void CHierarchicalMHMap::dumpAsXMLfile(std::string fileName) const
 		tablearcs->set(i, "to", format("%u", static_cast<unsigned int>(toid)));
 		tablearcs->set(i, "arctype", m_arc->m_arcType);
 
-		for (CMHPropertiesValuesList::const_iterator ann =
-				 m_arc->m_annotations.begin();
+		for (auto ann = m_arc->m_annotations.begin();
 			 ann != m_arc->m_annotations.end(); ++ann)
 		{
 			i = tableannots->appendRecord();
