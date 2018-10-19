@@ -54,3 +54,4 @@ workflows:
       - full
       - headless
       - minimal
+      - clang
