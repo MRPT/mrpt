@@ -16,9 +16,12 @@ jobs:
       - image: mrpt/mrpt-build-env:full-bionic
     steps:
       - checkout
-      - run: export CC=/usr/bin/clang-6.0
-      - run: export CXX=/usr/bin/clang++-6.0
-      - run: cmake -DBUILD_EXAMPLES=On -DBUILD_TESTING=On -DENABLE_COVERAGE=On -H. -Bbuild
+      - run:
+          name: Generate cmake files
+          command: cmake -DBUILD_EXAMPLES=On -DBUILD_TESTING=On -DENABLE_COVERAGE=On -H. -Bbuild
+          environment:
+            CC: /usr/bin/clang-6.0
+            CXX: /usr/bin/clang++-6.0
       - run: make -C build tests_build_all
       - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build
       - run: make gcov -C build
