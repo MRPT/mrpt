@@ -59,7 +59,7 @@ jobs:
           name: Run lint task
           command: bash travis/check_style.sh
           environment:
-            TASK: lint
+            TASK: lint_all
 
 workflows:
   version: 2
