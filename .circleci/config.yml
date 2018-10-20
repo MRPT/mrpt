@@ -55,7 +55,11 @@ jobs:
     steps:
       - checkout
       - run: pip install --user -r travis/python_reqs.txt
-      - run: bash travis/check_style.sh
+      - run:
+          name: Run lint task
+          command: bash travis/check_style.sh
+          environment:
+            TASK: lint
 
 workflows:
   version: 2
