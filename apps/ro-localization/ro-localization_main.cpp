@@ -580,7 +580,7 @@ void TestParticlesLocalization()
 					// if (metricMap.m_gridMaps.size())
 					//{
 					//	opengl::CSetOfObjects	*plane = new
-					//opengl::CSetOfObjects();
+					// opengl::CSetOfObjects();
 					//	metricMap.m_gridMaps[0]->getAs3DObject( *plane );
 					//	scene->insert( plane );
 					//}

@@ -143,7 +143,7 @@ void xRawLogViewerFrame::OnMenuVisualOdometry(wxCommandEvent& event)
 					// case CRawlog::etObservation:
 					//{
 					//	CObservation::Ptr o =
-					//rawlog.getAsObservation(countLoop);
+					// rawlog.getAsObservation(countLoop);
 
 					//	if (IS_CLASS(o,CObservationStereoImages) )
 					//	{
