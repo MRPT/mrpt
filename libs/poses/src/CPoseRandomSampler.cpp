@@ -344,7 +344,7 @@ void CPoseRandomSampler::do_sample_3D(CPose3D& p) const
 		//      Particles: just sample as usual
 		// -------------------------------------
 		const auto* pdf =
-		    dynamic_cast<const CPose3DPDFParticles*>(m_pdf3D.get());
+			dynamic_cast<const CPose3DPDFParticles*>(m_pdf3D.get());
 		pdf->drawSingleSample(p);
 	}
 	else

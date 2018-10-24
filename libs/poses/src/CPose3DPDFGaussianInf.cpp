@@ -109,7 +109,7 @@ void CPose3DPDFGaussianInf::copyFrom(const CPose3DPDF& o)
 	if (IS_CLASS(&o, CPose3DPDFGaussianInf))
 	{  // It's my same class:
 		const auto* ptr = dynamic_cast<const CPose3DPDFGaussianInf*>(&o);
-		ASSERT_(ptr!=nullptr);
+		ASSERT_(ptr != nullptr);
 		mean = ptr->mean;
 		cov_inv = ptr->cov_inv;
 	}
@@ -127,7 +127,7 @@ void CPose3DPDFGaussianInf::copyFrom(const CPosePDF& o)
 	if (IS_CLASS(&o, CPosePDFGaussianInf))
 	{  // cov is already inverted, but it's a 2D pose:
 		const auto* ptr = dynamic_cast<const CPosePDFGaussianInf*>(&o);
-		ASSERT_(ptr!=nullptr);
+		ASSERT_(ptr != nullptr);
 
 		mean = CPose3D(ptr->mean);
 

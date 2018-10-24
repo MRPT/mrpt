@@ -19,8 +19,7 @@ void mrpt::containers::reduced_hash(
 {
 	// dbj2 method:
 	uint64_t hash = 5381;
-	for (auto c : value)
-		hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+	for (auto c : value) hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
 	out_hash = hash;
 }
 void mrpt::containers::reduced_hash(const std::string& value, uint8_t& out_hash)

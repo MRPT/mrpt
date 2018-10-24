@@ -578,7 +578,7 @@ void CArchive::sendMessage(const CMessage& msg)
 {
 	MRPT_START
 
-	std::array<uint8_t,0x10100> buf;
+	std::array<uint8_t, 0x10100> buf;
 	unsigned int nBytesTx = 0;
 
 	const bool msg_format_is_tiny = msg.content.size() < 256;

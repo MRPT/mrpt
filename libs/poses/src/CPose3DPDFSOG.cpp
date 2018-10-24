@@ -326,7 +326,7 @@ void CPose3DPDFSOG::inverse(CPose3DPDF& o) const
 	MRPT_START
 	ASSERT_(o.GetRuntimeClass() == CLASS_ID(CPose3DPDFSOG));
 	auto* out = dynamic_cast<CPose3DPDFSOG*>(&o);
-	ASSERT_(out!=nullptr);
+	ASSERT_(out != nullptr);
 
 	// Prepare the output SOG:
 	out->resize(m_modes.size());

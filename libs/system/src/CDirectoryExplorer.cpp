@@ -146,7 +146,9 @@ void CDirectoryExplorer::explore(
 			newEntry.wholePath += newEntry.name;
 
 			// File times:
-			struct stat statDat{}, lstatDat{};
+			struct stat statDat
+			{
+			}, lstatDat{};
 			if (stat(newEntry.wholePath.c_str(), &statDat))
 			{
 				closedir(dir);

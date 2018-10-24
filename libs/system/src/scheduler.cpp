@@ -54,7 +54,9 @@ void mrpt::system::changeCurrentThreadPriority(TThreadPriority priority)
 #endif
 
 	int ret, policy;
-	struct sched_param param{};
+	struct sched_param param
+	{
+	};
 
 	if (0 != (ret = pthread_getschedparam(tid, &policy, &param)))
 	{

@@ -142,7 +142,9 @@ bool mrpt::system::directoryExists(const std::string& _path)
 		path = path.substr(0, path.size() - 1);
 
 	// Verify it's a directory:
-	struct _stat buf{};
+	struct _stat buf
+	{
+	};
 	if (0 != _stat(path.c_str(), &buf)) return false;
 
 #ifdef _WIN32
@@ -356,7 +358,9 @@ uint64_t mrpt::system::getFileSize(const std::string& fileName)
 		return uint64_t(filStat.st_size);
 #else
 	// The rest of the world:
-	struct stat filStat{};
+	struct stat filStat
+	{
+	};
 	if (stat(fileName.c_str(), &filStat))
 		return uint64_t(-1);
 	else
@@ -622,7 +626,9 @@ std::string mrpt::system::filePathSeparatorsToNative(
 
 time_t mrpt::system::getFileModificationTime(const std::string& filename)
 {
-	struct stat fS{};
+	struct stat fS
+	{
+	};
 	if (0 != stat(filename.c_str(), &fS))
 		return 0;
 	else

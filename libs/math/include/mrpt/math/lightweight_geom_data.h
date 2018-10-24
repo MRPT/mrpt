@@ -1146,7 +1146,7 @@ struct TLine2D
 	/**
 	 * Line coefficients, stored as an array: \f$\left[A,B,C\right]\f$.
 	 */
-	double coefs[3] = {0,0,0};
+	double coefs[3] = {0, 0, 0};
 	/**
 	 * Evaluate point in the line's equation.
 	 */
@@ -1236,7 +1236,7 @@ struct TLine3D
 	/**
 	 * Director vector.
 	 */
-	double director[3] = {.0,.0,.0};
+	double director[3] = {.0, .0, .0};
 	/**
 	 * Check whether a point is inside the line.
 	 */
@@ -1297,7 +1297,7 @@ struct TPlane
 	/**
 	 * Plane coefficients, stored as an array: \f$\left[A,B,C,D\right]\f$
 	 */
-	double coefs[4]={.0,.0,.0,.0};
+	double coefs[4] = {.0, .0, .0, .0};
 	/**
 	 * Evaluate a point in the plane's equation.
 	 */

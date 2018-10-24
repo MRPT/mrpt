@@ -68,7 +68,9 @@ using namespace std;
 void my_aux_sighandler(int) {}
 int myKbhit()
 {
-	struct termios oldtio{}, curtio{};
+	struct termios oldtio
+	{
+	}, curtio{};
 	//		struct sigaction sa;
 
 	/* Save stdin terminal attributes */
@@ -372,7 +374,9 @@ int os::getch() noexcept
 #ifdef _WIN32
 	return ::getch();  // cin.get();
 #else
-	struct termios oldt{}, newt{};
+	struct termios oldt
+	{
+	}, newt{};
 	int ch;
 	tcgetattr(STDIN_FILENO, &oldt);
 	newt = oldt;
