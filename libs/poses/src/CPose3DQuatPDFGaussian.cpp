@@ -300,7 +300,7 @@ void CPose3DQuatPDFGaussian::drawManySamples(
 void CPose3DQuatPDFGaussian::inverse(CPose3DQuatPDF& o) const
 {
 	ASSERT_(o.GetRuntimeClass() == CLASS_ID(CPose3DQuatPDFGaussian));
-	auto& out = static_cast<CPose3DQuatPDFGaussian&>(o);
+	auto& out = dynamic_cast<CPose3DQuatPDFGaussian&>(o);
 
 	// COV:
 	CMatrixFixedNumeric<double, 3, 7> df_dpose(UNINITIALIZED_MATRIX);

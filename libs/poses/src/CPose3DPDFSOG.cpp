@@ -147,7 +147,7 @@ void CPose3DPDFSOG::copyFrom(const CPose3DPDF& o)
 
 	if (o.GetRuntimeClass() == CLASS_ID(CPose3DPDFSOG))
 	{
-		*this = *static_cast<const CPose3DPDFSOG*>(&o);
+		*this = dynamic_cast<const CPose3DPDFSOG&>(o);
 	}
 	else
 	{
@@ -325,7 +325,8 @@ void CPose3DPDFSOG::inverse(CPose3DPDF& o) const
 {
 	MRPT_START
 	ASSERT_(o.GetRuntimeClass() == CLASS_ID(CPose3DPDFSOG));
-	auto* out = static_cast<CPose3DPDFSOG*>(&o);
+	auto* out = dynamic_cast<CPose3DPDFSOG*>(&o);
+	ASSERT_(out!=nullptr);
 
 	// Prepare the output SOG:
 	out->resize(m_modes.size());
