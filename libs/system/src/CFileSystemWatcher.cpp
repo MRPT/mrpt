@@ -153,7 +153,7 @@ void CFileSystemWatcher::getChanges(TFileSystemChangeList& out_list)
 	// Refer to:
 	//  http://www.linuxjournal.com/article/8478
 	//  http://inotify.aiken.cz/?section=common&page=home&lang=en
-	struct timeval time;
+	struct timeval time{};
 	fd_set rfds;
 	int ret;
 
@@ -208,7 +208,7 @@ void CFileSystemWatcher::getChanges(TFileSystemChangeList& out_list)
 
 		while (i < len)
 		{
-			struct inotify_event event_val;
+			struct inotify_event event_val{};
 			::memcpy(
 				&event_val, &buf[i],
 				sizeof(event_val));  // Was: event = (struct inotify_event *) ;

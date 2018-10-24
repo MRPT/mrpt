@@ -182,8 +182,8 @@ class CArchive
 	{
 		CSerializable::Ptr obj;
 		std::string strClassName;
-		bool isOldFormat;
-		int8_t version;
+		bool isOldFormat{false};
+		int8_t version{-1};
 		internal_ReadObjectHeader(strClassName, isOldFormat, version);
 		if (strClassName != "nullptr")
 		{

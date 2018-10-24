@@ -84,7 +84,7 @@ void mrpt::system::timestampToParts(TTimeStamp t, TTimeParts& p, bool localTime)
   ---------------------------------------------------------------*/
 TTimeStamp mrpt::system::buildTimestampFromParts(const TTimeParts& p)
 {
-	struct tm parts;
+	struct tm parts{};
 
 	parts.tm_year = p.year - 1900;
 	parts.tm_mon = p.month - 1;
@@ -107,7 +107,7 @@ TTimeStamp mrpt::system::buildTimestampFromParts(const TTimeParts& p)
   ---------------------------------------------------------------*/
 TTimeStamp mrpt::system::buildTimestampFromPartsLocalTime(const TTimeParts& p)
 {
-	struct tm parts;
+	struct tm parts{};
 
 	parts.tm_year = p.year - 1900;
 	parts.tm_mon = p.month - 1;

@@ -26,7 +26,7 @@ class CFileGZInputStream : public CStream
    private:
 	void* m_f{nullptr};
 	/** Compressed file size */
-	uint64_t m_file_size;
+	uint64_t m_file_size{0};
 
    public:
 	/** Constructor without open */
