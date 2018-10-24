@@ -117,14 +117,6 @@ CArchive& mrpt::serialization::operator>>(
 	return in;
 }
 
-CArchive& mrpt::serialization::operator<<(CArchive& out, const char* s)
-{
-	auto l = (uint32_t)strlen(s);
-	out << l;
-	out.WriteBuffer(s, (int)l);
-	return out;
-}
-
 CArchive& mrpt::serialization::operator<<(
 	CArchive& out, const std::vector<bool>& a)
 {
@@ -375,16 +367,6 @@ CArchive& mrpt::serialization::operator>>(CArchive& in, std::string& str)
 	in >> n;
 	str.resize(n);
 	if (n) in.ReadBuffer((void*)&str[0], n);
-	return in;
-}
-
-CArchive& mrpt::serialization::operator>>(CArchive& in, char* s)
-{
-	ASSERT_(s != nullptr);
-	uint32_t l;
-	in >> l;
-	if (l) in.ReadBuffer(s, l);
-	s[l] = '\0';
 	return in;
 }
 
