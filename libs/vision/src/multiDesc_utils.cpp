@@ -1618,7 +1618,7 @@ int vision::computeMoreDescriptors(
 	CFeature::Ptr& outputFeat, const bool& lowerScales,
 	const TMultiResDescOptions& opts)
 {
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x211
+#if MRPT_HAS_OPENCV
 
 	MRPT_START
 	//**************************************************************************
@@ -1885,7 +1885,7 @@ void vision::computeMultiResolutionDescriptors(
 	const CImage& imageLeft, const CImage& imageRight,
 	CMatchedFeatureList& matchedFeats, const TMultiResDescOptions& opts)
 {
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x211
+#if MRPT_HAS_OPENCV
 
 	MRPT_START
 	CTimeLogger tlogger;
@@ -2089,7 +2089,7 @@ void vision::computeMultiResolutionDescriptors(
 bool vision::computeMultiResolutionDescriptors(
 	const CImage& image, CFeature::Ptr& feat, const TMultiResDescOptions& opts)
 {
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x211
+#if MRPT_HAS_OPENCV
 
 	MRPT_START
 	int a = opts.basePSize;
@@ -2204,7 +2204,7 @@ bool vision::computeMultiResolutionDescriptors(
 vector<bool> vision::computeMultiResolutionDescriptors(
 	const CImage& image, CFeatureList& list, const TMultiResDescOptions& opts)
 {
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x211
+#if MRPT_HAS_OPENCV
 	MRPT_START
 	CTimeLogger tlogger;
 	tlogger.disable();
@@ -2250,7 +2250,7 @@ vector<bool> vision::computeMultiResolutionDescriptors(
 void vision::computeMultiOrientations(
 	const CImage& image, CFeatureList& list, const TMultiResDescOptions& opts)
 {
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x211
+#if MRPT_HAS_OPENCV
 	MRPT_START
 	CTimeLogger tlogger;
 	tlogger.disable();

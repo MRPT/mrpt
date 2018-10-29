@@ -2178,7 +2178,7 @@ void vision::computeStereoRectificationMaps(
 {
 	ASSERT_(cam1.ncols == cam2.ncols && cam1.nrows == cam2.nrows);
 
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x211
+#if MRPT_HAS_OPENCV
 
 	cv::Mat *mapx1, *mapy1, *mapx2, *mapy2;
 	mapx1 = static_cast<cv::Mat*>(outMap1x);
@@ -2234,25 +2234,11 @@ void vision::computeStereoRectificationMaps(
 	double alpha = 0.0;  // alpha value: 0.0 = zoom and crop the image so that
 	// there's not black areas
 
-#if MRPT_OPENCV_VERSION_NUM < 0x210
-	// OpenCV 2.0.X
-	cv::stereoRectify(
-		K1, D1, K2, D2, nSize, R, T, R1, R2, P1, P2, Q,
-		cv::CALIB_ZERO_DISPARITY);
-#elif MRPT_OPENCV_VERSION_NUM < 0x230
-	// OpenCV 2.1.X - 2.2.X
-	cv::stereoRectify(
-		K1, D1, K2, D2, nSize, R, T, R1, R2, P1, P2, Q, alpha,
-		nSize,  // Size() by default=no resize
-		nullptr, nullptr,  // Out ROIs
-		cv::CALIB_ZERO_DISPARITY);
-#else
 	// OpenCV 2.3+ has this signature:
 	cv::stereoRectify(
 		K1, D1, K2, D2, nSize, R, T, R1, R2, P1, P2, Q,
 		cv::CALIB_ZERO_DISPARITY, alpha);
 // Rest of arguments -> default
-#endif
 
 	cv::Size sz1, sz2;
 	cv::initUndistortRectifyMap(
@@ -2261,9 +2247,7 @@ void vision::computeStereoRectificationMaps(
 		K2, D2, R2, P2, cv::Size(resX, resY), CV_32FC1, *mapx2, *mapy2);
 /**/
 #else
-	THROW_EXCEPTION(
-		"The MRPT has been compiled with MRPT_HAS_OPENCV = 0 or OpenCV version "
-		"is < 2.1.1!");
+	THROW_EXCEPTION("The MRPT has been compiled without OPENCV!");
 #endif
 }  // end computeStereoRectificationMaps
 

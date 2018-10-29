@@ -18,25 +18,27 @@
 // OPENCV HEADERS
 #define CV_NO_CVV_IMAGE  // Avoid CImage name crash
 
-#if MRPT_OPENCV_VERSION_NUM >= 0x211
+#if MRPT_OPENCV_VERSION_NUM < 0x240
+#error "MRPT requires OpenCV 2.4.0 or newer"
+#endif
+
+#if (MRPT_OPENCV_VERSION_NUM >= 0x240)
 #if MRPT_OPENCV_VERSION_NUM > 0x300
 #include <opencv2/core/fast_math.hpp>
 #endif
-#if !defined(__cplusplus)
-#include <opencv2/core/core_c.h>
-#include <opencv2/highgui/highgui_c.h>
-#include <opencv2/imgproc/imgproc_c.h>
-#else
-#if (MRPT_OPENCV_VERSION_NUM >= 0x240)
 #include <opencv2/opencv_modules.hpp>
-#endif
+// Core:
 #include <opencv2/core/core.hpp>
 #include <opencv2/core/core_c.h>
+// Highgui:
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/highgui/highgui_c.h>
+// imgproc:
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/imgproc/imgproc_c.h>
+// features2d:
 #include <opencv2/features2d/features2d.hpp>
+// tracking:
 #include <opencv2/video/tracking.hpp>
 /// start added by Raghavender Sahdev
 #ifdef HAVE_OPENCV_XFEATURES2D
@@ -54,15 +56,6 @@
 #endif
 #include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/objdetect/objdetect.hpp>
-//#		include <opencv2/core/eigen.hpp>  // Removed: opencv 2.3 had this file
-//broken in Ubuntu 14.04 Trusty (??)
-#// These ones dissapeared in 3.0.0:  <opencv2/legacy/{legacy,compat}.hpp>  // CvImage
-#endif
-#else
-// For OpenCV <=2.1
-#include <cv.h>
-#include <highgui.h>
-#include <cvaux.h>
 #endif
 
 #if defined(__cplusplus)
@@ -72,4 +65,3 @@ using mrpt::img::CImage;
 using CvPoint2D32fVector = std::vector<CvPoint2D32f>;
 #endif
 #endif  // MRPT_HAS_OPENCV
-

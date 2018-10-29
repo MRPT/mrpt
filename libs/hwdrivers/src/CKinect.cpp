@@ -326,21 +326,6 @@ void rgb_cb(freenect_device* dev, void* img_data, uint32_t timestamp)
 			frMode.width, frMode.height, CH_RGB, true /* origin=top-left */);
 
 #if MRPT_HAS_OPENCV
-#if MRPT_OPENCV_VERSION_NUM < 0x200
-		// Version for VERY OLD OpenCV versions:
-		IplImage* src_img_bayer =
-			cvCreateImageHeader(cvSize(frMode.width, frMode.height), 8, 1);
-		src_img_bayer->imageDataOrigin = reinterpret_cast<char*>(img_data);
-		src_img_bayer->imageData = src_img_bayer->imageDataOrigin;
-		src_img_bayer->widthStep = frMode.width;
-
-		IplImage* dst_img_RGB = obs.intensityImage.getAs<IplImage>();
-
-		// Decode Bayer image:
-		cvCvtColor(src_img_bayer, dst_img_RGB, CV_BayerGB2BGR);
-
-#else
-		// Version for modern OpenCV:
 		const cv::Mat src_img_bayer(
 			frMode.height, frMode.width, CV_8UC1, img_data, frMode.width);
 
@@ -350,7 +335,6 @@ void rgb_cb(freenect_device* dev, void* img_data, uint32_t timestamp)
 
 		// Decode Bayer image:
 		cv::cvtColor(src_img_bayer, dst_img_RGB, CV_BayerGB2BGR);
-#endif
 #else
 		THROW_EXCEPTION("Need building with OpenCV!");
 #endif

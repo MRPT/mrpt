@@ -369,15 +369,11 @@ bool CImage::saveToFile(const std::string& fileName, int jpeg_quality) const
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 	ASSERT_(img != nullptr);
 
-#if MRPT_OPENCV_VERSION_NUM > 0x110
 	int p[3];
 	p[0] = CV_IMWRITE_JPEG_QUALITY;
 	p[1] = jpeg_quality;
 	p[2] = 0;
 	return (0 != cvSaveImage(fileName.c_str(), img, p));
-#else
-	return (0 != cvSaveImage(fileName.c_str(), img));
-#endif
 #else
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
@@ -2078,10 +2074,6 @@ void CImage::rectifyImageInPlace(void* mapX, void* mapY)
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 	ASSERT_(img != nullptr);
 
-#if MRPT_OPENCV_VERSION_NUM < 0x200
-	THROW_EXCEPTION("This method requires OpenCV 2.0.0 or above.");
-#else
-
 	auto* srcImg = getAs<IplImage>();  // Source Image
 	IplImage* outImg =
 		cvCreateImage(cvGetSize(srcImg), srcImg->depth, srcImg->nChannels);
@@ -2094,7 +2086,6 @@ void CImage::rectifyImageInPlace(void* mapX, void* mapY)
 	IplImage _mapYY = *_mapY;
 
 	cvRemap(srcImg, outImg, &_mapXX, &_mapYY, CV_INTER_CUBIC);
-#endif
 
 	releaseIpl();
 	img = outImg;

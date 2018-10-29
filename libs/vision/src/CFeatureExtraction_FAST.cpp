@@ -35,10 +35,6 @@ void CFeatureExtraction::extractFeaturesFAST(
 	MRPT_START
 
 #if MRPT_HAS_OPENCV
-#if MRPT_OPENCV_VERSION_NUM < 0x210
-	THROW_EXCEPTION("This function requires OpenCV > 2.1.0");
-#else
-
 	using namespace cv;
 
 	vector<KeyPoint> cv_feats;  // The opencv keypoint output vector
@@ -50,12 +46,6 @@ void CFeatureExtraction::extractFeaturesFAST(
 	//	int aux = options.FASTOptions.threshold; ....
 	//  It's better to use an adaptive threshold, controlled from our caller
 	//  outside.
-
-#if MRPT_OPENCV_VERSION_NUM >= 0x211
-
-	//    cv::Mat *mask ;
-	//    if( _mask )
-	//       mask = static_cast<cv::Mat*>(_mask);
 
 	const Mat theImg = cvarrToMat(inImg_gray.getAs<IplImage>());
 
@@ -89,11 +79,6 @@ void CFeatureExtraction::extractFeaturesFAST(
 	fastDetector->detect(theImg, cv_feats);
 #endif
 
-#elif MRPT_OPENCV_VERSION_NUM >= 0x210
-	FAST(
-		inImg_gray.getAs<IplImage>(), cv_feats, options.FASTOptions.threshold,
-		options.FASTOptions.nonmax_suppression);
-#endif
 
 	// *All* the features have been extracted.
 	const size_t N = cv_feats.size();
@@ -238,7 +223,6 @@ void CFeatureExtraction::extractFeaturesFAST(
 	}
 	// feats.resize( cont );  // JL: really needed???
 
-#endif
 #endif
 	MRPT_END
 }

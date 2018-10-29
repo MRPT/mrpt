@@ -49,13 +49,9 @@ CImageGrabber_OpenCV::CImageGrabber_OpenCV(
 		case CAMERA_CV_MIL:
 			cv_cap_indx = CV_CAP_MIL;
 			break;
-#if MRPT_OPENCV_VERSION_NUM >= 0x111
 		case CAMERA_CV_DSHOW:
 			cv_cap_indx = CV_CAP_DSHOW;
 			break;
-// *** HAVE YOU HAD A COMPILER ERROR NEAR THIS LINE?? : You need OpenCV >=1.1.1,
-// (2.0 final release) or a SVN version ***
-#endif
 		default:
 			THROW_EXCEPTION_FMT("Invalid camera type: %i", cameraType);
 	}
