@@ -90,7 +90,10 @@ void CAbstractPTGBasedReactive::preDestructor()
 
 	// Just in case.
 	try {
-		this->stop(false /*not emergency*/);
+		// Call base class method, NOT the generic, virtual one, 
+		// to avoid problems if we are in the dtor, while the vtable 
+		// is being destroyed.
+		CAbstractNavigator::stop(false /*not emergency*/);
 	} catch (...) { }
 
 	mrpt::utils::delete_safe(m_logFile);
