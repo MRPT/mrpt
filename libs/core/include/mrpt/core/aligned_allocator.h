@@ -21,11 +21,6 @@
 #define MRPT_MAX_ALIGN_BYTES 16
 #endif
 
-// Fix a MSVC binary-breaking compatibility in MSVC 2017 15.8:
-#if defined(_MSC_VER) && !defined(_ENABLE_EXTENDED_ALIGNED_STORAGE)
-#define _ENABLE_EXTENDED_ALIGNED_STORAGE
-#endif
-
 namespace mrpt
 {
 void* aligned_malloc(size_t size, size_t alignment);
