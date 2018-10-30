@@ -13,7 +13,7 @@
 #include <mrpt/otherlibs/do_opencv_includes.h>
 #include <thread>
 
-#if defined(MRPT_HAS_OPENCV)
+#if MRPT_HAS_OPENCV
 #include <opencv2/videoio.hpp>
 #endif
 
@@ -23,7 +23,7 @@ using namespace mrpt::hwdrivers;
 
 struct CImageGrabber_OpenCV::Impl
 {
-#if defined(MRPT_HAS_OPENCV)
+#if MRPT_HAS_OPENCV
 	cv::VideoCapture cap;
 #endif
 };
