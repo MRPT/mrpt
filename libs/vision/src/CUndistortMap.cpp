@@ -25,7 +25,7 @@ CUndistortMap::CUndistortMap() = default;
 void CUndistortMap::setFromCamParams(const mrpt::img::TCamera& campar)
 {
 	MRPT_START
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x200
+#if MRPT_HAS_OPENCV
 	m_camera_params = campar;
 
 	// Convert to opencv's format:
@@ -66,7 +66,7 @@ void CUndistortMap::undistort(
 		THROW_EXCEPTION(
 			"Error: setFromCamParams() must be called prior to undistort().")
 
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x200
+#if MRPT_HAS_OPENCV
 	CvMat mapx = cvMat(
 		m_camera_params.nrows, m_camera_params.ncols, CV_16SC2,
 		const_cast<int16_t*>(
@@ -96,7 +96,7 @@ void CUndistortMap::undistort(mrpt::img::CImage& in_out_img) const
 		THROW_EXCEPTION(
 			"Error: setFromCamParams() must be called prior to undistort().")
 
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x200
+#if MRPT_HAS_OPENCV
 	CvMat mapx = cvMat(
 		m_camera_params.nrows, m_camera_params.ncols, CV_16SC2,
 		const_cast<int16_t*>(
