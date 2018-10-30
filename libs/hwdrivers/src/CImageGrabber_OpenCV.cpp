@@ -218,19 +218,22 @@ bool CImageGrabber_OpenCV::getObservation(
 	// Capture the image:
 	if (!m_capture->cap.grab()) return false;
 
-	cv::Mat capImg;
-
 	// JL: Sometimes there're errors in some frames: try not to return an error
 	// unless it seems
 	//  there's no way:
 	for (int nTries = 0; nTries < 10; nTries++)
 	{
+		cv::Mat capImg;
 		if (m_capture->cap.retrieve(capImg))
 		{
 			// Fill the output class:
-			IplImage ipl(capImg);
-			out_observation.image.setFromIplImageReadOnly(&ipl);
 			out_observation.timestamp = mrpt::system::now();
+			// don't free the img memory, since we are transfering ownership
+			// to mrpt's CImage:
+			capImg.addref();
+			// Create a new IplImage structure:
+			auto ipl = new IplImage(capImg);
+			out_observation.image.setFromIplImageReadOnly(ipl);
 			return true;
 		}
 		cerr << "[CImageGrabber_OpenCV] WARNING: Ignoring error #" << nTries + 1
