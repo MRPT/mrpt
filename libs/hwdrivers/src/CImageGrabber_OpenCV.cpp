@@ -228,12 +228,7 @@ bool CImageGrabber_OpenCV::getObservation(
 		{
 			// Fill the output class:
 			out_observation.timestamp = mrpt::system::now();
-			// don't free the img memory, since we are transfering ownership
-			// to mrpt's CImage:
-			capImg.addref();
-			// Create a new IplImage structure:
-			auto ipl = new IplImage(capImg);
-			out_observation.image.setFromIplImageReadOnly(ipl);
+			out_observation.image.setFromMatNoCopy(capImg);
 			return true;
 		}
 		cerr << "[CImageGrabber_OpenCV] WARNING: Ignoring error #" << nTries + 1

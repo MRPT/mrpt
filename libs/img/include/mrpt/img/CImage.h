@@ -128,10 +128,11 @@ class CExceptionExternalImageNotFound : public std::runtime_error
  *  \code
  *    CImage::Ptr   myImg::Ptr = CImage::Ptr( new CImage(...) );
  *  \endcode
- *		- To set a CImage from an OpenCV "IPLImage*", use the methods:
+ *		- To set a CImage from an OpenCV `IplImage*` or `cv::Mat`, use:
  *			- CImage::loadFromIplImage
  *			- CImage::setFromIplImage
  *			- CImage::CImage(void *IPL)
+ *			- CImage::setFromMatNoCopy(cv::Mat &i)
  *
  *   Some functions are implemented in MRPT with highly optimized SSE2/SSE3
  *routines, in suitable platforms and compilers. To
@@ -231,6 +232,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	CImage(const IplImage* iplImage);
 
 	/** Constructor from an cv::Mat, making a copy of the image.
+	 * \sa setFromMatNoCopy()
 	 */
 	CImage(const cv::Mat& mat);
 #endif
@@ -905,9 +907,14 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	 * IPLImage will NOT be released/freed at this object destructor.
 	 *   This method provides a fast method to grab images from a camera
 	 * without making a copy of every frame.
-	 *  \sa setFromImageReadOnly
+	 *  \sa setFromImageReadOnly, setFromMatNoCopy
 	 */
 	void setFromIplImageReadOnly(IplImage* iplImage);
+
+	/** Set the image from a cv::Mat image, transfering owneership to this
+	 * CImage object, i.e. it calls the cv::Mat::addref() method. 
+	 * \sa setFromIplImageReadOnly */
+	void setFromMatNoCopy(cv::Mat& img);
 #endif
 
 	/** Sets the internal IplImage pointer to that of another given image,

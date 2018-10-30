@@ -56,6 +56,7 @@
 #endif
 #include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/objdetect/objdetect.hpp>
+#include <opencv2/imgcodecs.hpp>
 #endif
 
 #if defined(__cplusplus)
