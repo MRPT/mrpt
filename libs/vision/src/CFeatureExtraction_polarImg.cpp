@@ -20,7 +20,7 @@ using namespace mrpt::img;
 using namespace mrpt::system;
 using namespace std;
 
-//Linear-Polar Transform
+// Linear-Polar Transform
 // J.L. Blanco, Apr 2009
 // Code contributed to OpenCV 1.1.1 long time ago. Removed from MRPT now.
 

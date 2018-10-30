@@ -2238,7 +2238,7 @@ void vision::computeStereoRectificationMaps(
 	cv::stereoRectify(
 		K1, D1, K2, D2, nSize, R, T, R1, R2, P1, P2, Q,
 		cv::CALIB_ZERO_DISPARITY, alpha);
-// Rest of arguments -> default
+	// Rest of arguments -> default
 
 	cv::Size sz1, sz2;
 	cv::initUndistortRectifyMap(

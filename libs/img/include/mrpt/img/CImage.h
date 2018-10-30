@@ -912,7 +912,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	void setFromIplImageReadOnly(IplImage* iplImage);
 
 	/** Set the image from a cv::Mat image, transfering owneership to this
-	 * CImage object, i.e. it calls the cv::Mat::addref() method. 
+	 * CImage object, i.e. it calls the cv::Mat::addref() method.
 	 * \sa setFromIplImageReadOnly */
 	void setFromMatNoCopy(cv::Mat& img);
 #endif

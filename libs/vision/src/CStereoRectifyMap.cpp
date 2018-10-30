@@ -160,7 +160,7 @@ void CStereoRectifyMap::setFromCamParams(const mrpt::img::TStereoCamera& params)
 		m_enable_both_centers_coincide ? cv::CALIB_ZERO_DISPARITY : 0, m_alpha,
 		trg_size  // Size() by default=no resize
 	);
-// Rest of arguments -> default
+	// Rest of arguments -> default
 
 	cv::initUndistortRectifyMap(
 		K1, D1, R1, P1, real_trg_size, CV_16SC2, _mapx_left, _mapy_left);

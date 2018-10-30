@@ -79,7 +79,6 @@ void CFeatureExtraction::extractFeaturesFAST(
 	fastDetector->detect(theImg, cv_feats);
 #endif
 
-
 	// *All* the features have been extracted.
 	const size_t N = cv_feats.size();
 

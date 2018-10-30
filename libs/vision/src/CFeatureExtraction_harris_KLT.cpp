@@ -176,4 +176,3 @@ void CFeatureExtraction::extractFeaturesKLT(
 	MRPT_END
 
 }  // end of function
-
