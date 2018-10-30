@@ -61,7 +61,7 @@ void CStereoRectifyMap::enableBothCentersCoincide(bool enable)
 void CStereoRectifyMap::setFromCamParams(const mrpt::img::TStereoCamera& params)
 {
 	MRPT_START
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x200
+#if MRPT_HAS_OPENCV
 	const mrpt::img::TCamera& cam1 = params.leftCamera;
 	const mrpt::img::TCamera& cam2 = params.rightCamera;
 
@@ -154,59 +154,13 @@ void CStereoRectifyMap::setFromCamParams(const mrpt::img::TStereoCamera& params)
 		m_resize_output ? trg_size
 						: img_size;  // Note: trg_size is Size() by default
 
-/*
-OpenCV 2.0:
-CV_EXPORTS void stereoRectify( const Mat& cameraMatrix1, const Mat& distCoeffs1,
-							   const Mat& cameraMatrix2, const Mat& distCoeffs2,
-							   Size imageSize, const Mat& R, const Mat& T,
-							   Mat& R1, Mat& R2, Mat& P1, Mat& P2, Mat& Q,
-							   int flags=CALIB_ZERO_DISPARITY );
-
-OpenCV 2.1-2.2:
-CV_EXPORTS_W void stereoRectify( const Mat& cameraMatrix1, const Mat&
-distCoeffs1,
-								 const Mat& cameraMatrix2, const Mat&
-distCoeffs2,
-								 Size imageSize, const Mat& R, const Mat& T,
-								 CV_OUT Mat& R1, CV_OUT Mat& R2,
-								 CV_OUT Mat& P1, CV_OUT Mat& P2, CV_OUT Mat& Q,
-								 double alpha, Size newImageSize=Size(),
-								 CV_OUT Rect* validPixROI1=0, CV_OUT Rect*
-validPixROI2=0,
-								 int flags=CALIB_ZERO_DISPARITY );
-
-OpenCV 2.3:
-CV_EXPORTS void stereoRectify( InputArray cameraMatrix1, InputArray distCoeffs1,
-							   InputArray cameraMatrix2, InputArray distCoeffs2,
-							   Size imageSize, InputArray R, InputArray T,
-							   OutputArray R1, OutputArray R2,
-							   OutputArray P1, OutputArray P2,
-							   OutputArray Q, int flags=CALIB_ZERO_DISPARITY,
-							   double alpha=-1, Size newImageSize=Size(),
-							   CV_OUT Rect* validPixROI1=0, CV_OUT Rect*
-validPixROI2=0 );
-*/
-#if MRPT_OPENCV_VERSION_NUM < 0x210
-	// OpenCV 2.0.X
-	cv::stereoRectify(
-		K1, D1, K2, D2, img_size, R, T, R1, R2, P1, P2, Q,
-		m_enable_both_centers_coincide ? cv::CALIB_ZERO_DISPARITY : 0);
-#elif MRPT_OPENCV_VERSION_NUM < 0x230
-	// OpenCV 2.1.X - 2.2.X
-	cv::stereoRectify(
-		K1, D1, K2, D2, img_size, R, T, R1, R2, P1, P2, Q, m_alpha,
-		trg_size,  // Size() by default=no resize
-		nullptr, nullptr,  // Out ROIs
-		m_enable_both_centers_coincide ? cv::CALIB_ZERO_DISPARITY : 0);
-#else
 	// OpenCV 2.3+ has this signature:
 	cv::stereoRectify(
 		K1, D1, K2, D2, img_size, R, T, R1, R2, P1, P2, Q,
 		m_enable_both_centers_coincide ? cv::CALIB_ZERO_DISPARITY : 0, m_alpha,
 		trg_size  // Size() by default=no resize
 	);
-// Rest of arguments -> default
-#endif
+	// Rest of arguments -> default
 
 	cv::initUndistortRectifyMap(
 		K1, D1, R1, P1, real_trg_size, CV_16SC2, _mapx_left, _mapy_left);
@@ -265,7 +219,7 @@ void CStereoRectifyMap::rectify(
 {
 	MRPT_START
 
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x200
+#if MRPT_HAS_OPENCV
 	const uint32_t ncols = m_camera_params.leftCamera.ncols;
 	const uint32_t nrows = m_camera_params.leftCamera.nrows;
 
@@ -300,7 +254,7 @@ void CStereoRectifyMap::rectify(
 {
 	MRPT_START
 
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x200
+#if MRPT_HAS_OPENCV
 	const uint32_t ncols = m_camera_params.leftCamera.ncols;
 	const uint32_t nrows = m_camera_params.leftCamera.nrows;
 
@@ -406,7 +360,7 @@ void CStereoRectifyMap::rectify_IPL(
 		THROW_EXCEPTION(
 			"Error: setFromCamParams() must be called prior to rectify().")
 
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x200
+#if MRPT_HAS_OPENCV
 	const uint32_t ncols = m_camera_params.leftCamera.ncols;
 	const uint32_t nrows = m_camera_params.leftCamera.nrows;
 

@@ -34,10 +34,6 @@ void CFeatureExtraction::extractFeaturesORB(
 	MRPT_START
 
 #if MRPT_HAS_OPENCV
-#if MRPT_OPENCV_VERSION_NUM < 0x240
-	THROW_EXCEPTION("This function requires OpenCV > 2.4.0");
-#else
-
 	using namespace cv;
 
 	vector<KeyPoint> cv_feats;  // OpenCV keypoint output vector
@@ -231,7 +227,6 @@ void CFeatureExtraction::extractFeaturesORB(
 		c_feats++;
 	}
 #endif
-#endif
 	MRPT_END
 }
 
@@ -239,9 +234,6 @@ void CFeatureExtraction::internal_computeORBDescriptors(
 	const CImage& in_img, CFeatureList& in_features) const
 {
 #if MRPT_HAS_OPENCV
-#if MRPT_OPENCV_VERSION_NUM < 0x240
-	THROW_EXCEPTION("This function requires OpenCV > 2.4.0");
-#else
 	using namespace cv;
 
 	const size_t n_feats = in_features.size();
@@ -280,7 +272,6 @@ void CFeatureExtraction::internal_computeORBDescriptors(
 			in_features[k]->descriptors.ORB[i] = cv_descs.at<uchar>(k, i);
 
 	}  // end-for
-#endif
 #endif
 
 }  // end-internal_computeORBImageDescriptors

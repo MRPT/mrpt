@@ -13,15 +13,6 @@
 #include <mrpt/vision/utils.h>
 #include <mrpt/vision/pnp_algos.h>
 
-// Opencv 2.3 had a broken <opencv/eigen.h> in Ubuntu 14.04 Trusty => Disable
-// PNP classes
-#include <mrpt/config.h>
-
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM < 0x240
-#undef MRPT_HAS_OPENCV
-#define MRPT_HAS_OPENCV 0
-#endif
-
 #include <iostream>
 
 #include <mrpt/math/types_math.h>  // Eigen must be included first via MRPT to enable the plugin system

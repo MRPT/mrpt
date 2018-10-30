@@ -43,9 +43,7 @@ using namespace mrpt::math;
 using namespace std;
 
 #if MRPT_HAS_OPENCV
-#if MRPT_OPENCV_VERSION_NUM >= 0x211
 using namespace cv;
-#endif
 #endif
 
 /************************* Local Function Prototypes for Hess' SIFT
@@ -400,7 +398,7 @@ void CFeatureExtraction::extractFeaturesSIFT(
 #if defined(HAVE_OPENCV_NONFREE) || \
 	defined(HAVE_OPENCV_XFEATURES2D)  // MRPT_HAS_OPENCV_NONFREE
 
-#if MRPT_OPENCV_VERSION_NUM >= 0x211 && MRPT_OPENCV_VERSION_NUM < 0x300
+#if MRPT_OPENCV_VERSION_NUM < 0x300
 
 			SiftFeatureDetector SIFTDetector(
 				options.SIFTOptions

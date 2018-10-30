@@ -13,14 +13,6 @@
 #include <mrpt/config.h>
 #include <mrpt/otherlibs/do_opencv_includes.h>
 
-// Opencv 2.3 had a broken <opencv/eigen.h> in Ubuntu 14.04 Trusty => Disable
-// PNP classes
-#include <mrpt/config.h>
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM < 0x140
-#undef MRPT_HAS_OPENCV
-#define MRPT_HAS_OPENCV 0
-#endif
-
 #if MRPT_HAS_OPENCV
 
 #include "dls.h"
@@ -101,7 +93,6 @@ bool mrpt::vision::pnp::dls::compute_pose(cv::Mat& R, cv::Mat& t)
 
 void mrpt::vision::pnp::dls::run_kernel(const cv::Mat& pp)
 {
-#if MRPT_OPENCV_VERSION_NUM >= 0x240
 	cv::Mat Mtilde(27, 27, CV_64F);
 	cv::Mat D = cv::Mat::zeros(9, 9, CV_64F);
 	build_coeff_matrix(pp, Mtilde, D);
@@ -213,9 +204,6 @@ void mrpt::vision::pnp::dls::run_kernel(const cv::Mat& pp)
 			cost_.push_back(cost_valid);
 		}
 	}
-#else
-	THROW_EXCEPTION("Fix me: this method doesn't work with OpenCV < 2.4");
-#endif
 }
 
 void mrpt::vision::pnp::dls::build_coeff_matrix(

@@ -369,24 +369,14 @@ bool CImage::saveToFile(const std::string& fileName, int jpeg_quality) const
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 	ASSERT_(img != nullptr);
 
-#if MRPT_OPENCV_VERSION_NUM > 0x110
-	int p[3];
-	p[0] = CV_IMWRITE_JPEG_QUALITY;
-	p[1] = jpeg_quality;
-	p[2] = 0;
-	return (0 != cvSaveImage(fileName.c_str(), img, p));
-#else
-	return (0 != cvSaveImage(fileName.c_str(), img));
-#endif
+	const std::vector<int> params = {CV_IMWRITE_JPEG_QUALITY, jpeg_quality};
+	return cv::imwrite(fileName, cv::cvarrToMat(img), params);
 #else
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-					loadFromIplImage
----------------------------------------------------------------*/
 #if MRPT_HAS_OPENCV
 void CImage::loadFromIplImage(const IplImage* iplImage)
 {
@@ -399,18 +389,28 @@ void CImage::loadFromIplImage(const IplImage* iplImage)
 	}
 	MRPT_END
 }
-#endif
 
-/*---------------------------------------------------------------
-					setFromIplImageReadOnly
----------------------------------------------------------------*/
-#if MRPT_HAS_OPENCV
-void CImage::setFromIplImageReadOnly(IplImage* iplImage)
+void CImage::setFromMatNoCopy(cv::Mat& newimg)
 {
 	MRPT_START
 	releaseIpl();
-	ASSERT_(iplImage != nullptr);
+
+	// don't free the img memory, since we are transfering ownership:
+	newimg.addref();
+	// Create a new IplImage structure:
+	img = new IplImage(newimg);
+
+	m_imgIsReadOnly = true;
+	m_imgIsExternalStorage = false;
+	MRPT_END
+}
+
+void CImage::setFromIplImageReadOnly(IplImage* iplImage)
+{
+	MRPT_START
 	ASSERTMSG_(iplImage != this->img, "Trying to assign read-only to itself.");
+	ASSERT_(iplImage != nullptr);
+	releaseIpl();
 
 	img = iplImage;
 	m_imgIsReadOnly = true;
@@ -2078,10 +2078,6 @@ void CImage::rectifyImageInPlace(void* mapX, void* mapY)
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 	ASSERT_(img != nullptr);
 
-#if MRPT_OPENCV_VERSION_NUM < 0x200
-	THROW_EXCEPTION("This method requires OpenCV 2.0.0 or above.");
-#else
-
 	auto* srcImg = getAs<IplImage>();  // Source Image
 	IplImage* outImg =
 		cvCreateImage(cvGetSize(srcImg), srcImg->depth, srcImg->nChannels);
@@ -2094,7 +2090,6 @@ void CImage::rectifyImageInPlace(void* mapX, void* mapY)
 	IplImage _mapYY = *_mapY;
 
 	cvRemap(srcImg, outImg, &_mapXX, &_mapYY, CV_INTER_CUBIC);
-#endif
 
 	releaseIpl();
 	img = outImg;

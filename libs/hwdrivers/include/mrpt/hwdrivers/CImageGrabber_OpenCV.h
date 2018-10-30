@@ -12,6 +12,7 @@
 
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/core/safe_pointers.h>
+#include <mrpt/core/pimpl.h>
 #include <mrpt/typemeta/TEnumType.h>
 
 namespace mrpt::hwdrivers
@@ -24,7 +25,6 @@ enum TCameraType
 	CAMERA_CV_VFL,
 	CAMERA_CV_VFW,
 	CAMERA_CV_MIL,
-	/** Valid only with OpenCV >= 1.1.0 */
 	CAMERA_CV_DSHOW
 };
 
@@ -69,9 +69,8 @@ class CImageGrabber_OpenCV
 	 */
 	bool m_bInitialized;
 
-	/** Internal use:
-	 */
-	mrpt::void_ptr_noncopy /*CvCapture*/ m_capture;
+	struct Impl;
+	mrpt::pimpl<Impl> m_capture;
 
    public:
 	/** Constructor for cameras:
