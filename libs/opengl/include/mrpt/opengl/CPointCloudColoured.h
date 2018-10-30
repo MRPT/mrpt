@@ -406,14 +406,15 @@ void CPointCloudColoured::loadFromPointsMap(const POINTSMAP* themap)
 	pc_dst.resize(N);
 	for (size_t i = 0; i < N; i++)
 	{
-		float x, y, z, r, g, b;
 		if constexpr (mrpt::opengl::PointCloudAdapter<POINTSMAP>::HAS_RGB)
 		{
+			float x, y, z, r, g, b;
 			pc_src.getPointXYZ_RGBf(i, x, y, z, r, g, b);
 			pc_dst.setPointXYZ_RGBf(i, x, y, z, r, g, b);
 		}
 		else
 		{
+			float x, y, z;
 			pc_src.getPointXYZ(i, x, y, z);
 			pc_dst.setPointXYZ_RGBf(i, x, y, z, 0, 0, 0);
 		}
