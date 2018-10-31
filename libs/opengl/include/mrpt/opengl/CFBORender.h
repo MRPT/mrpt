@@ -78,7 +78,7 @@ class CFBORender : public mrpt::opengl::CTextMessageCapable
 
    protected:
 	int m_win, m_width, m_height;
-	unsigned int m_fbo, m_tex;
+	unsigned int m_fbo{0}, m_tex{0};
 	bool m_win_used;
 	mrpt::img::TColorf m_default_bk_color;
 
