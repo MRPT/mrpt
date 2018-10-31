@@ -274,7 +274,8 @@ void CPose3DPDFParticles::inverse(CPose3DPDF& o) const
 {
 	MRPT_START
 	ASSERT_(o.GetRuntimeClass() == CLASS_ID(CPose3DPDFParticles));
-	auto* out = static_cast<CPose3DPDFParticles*>(&o);
+	auto* out = dynamic_cast<CPose3DPDFParticles*>(&o);
+	ASSERT_(out != nullptr);
 	// Prepare the output:
 	out->copyFrom(*this);
 	const CPose3D zero(0, 0, 0);

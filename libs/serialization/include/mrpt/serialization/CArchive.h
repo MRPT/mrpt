@@ -182,8 +182,8 @@ class CArchive
 	{
 		CSerializable::Ptr obj;
 		std::string strClassName;
-		bool isOldFormat;
-		int8_t version;
+		bool isOldFormat{false};
+		int8_t version{-1};
 		internal_ReadObjectHeader(strClassName, isOldFormat, version);
 		if (strClassName != "nullptr")
 		{
@@ -424,7 +424,6 @@ CArchive& operator>>(CArchive& in, mrpt::Clock::time_point& a);
 // the ones listed here:
 
 // Write --------------------
-CArchive& operator<<(CArchive& s, const char* a);
 CArchive& operator<<(CArchive& s, const std::string& str);
 
 CArchive& operator<<(CArchive&, const std::vector<int32_t>& a);
@@ -444,7 +443,6 @@ CArchive& operator<<(CArchive&, const std::vector<size_t>& a);
 #endif
 
 // Read --------------------
-CArchive& operator>>(CArchive& in, char* a);
 CArchive& operator>>(CArchive& in, std::string& str);
 
 CArchive& operator>>(CArchive& in, std::vector<int32_t>& a);

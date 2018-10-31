@@ -93,9 +93,9 @@ class CMesh : public CRenderizableDisplayList
 	mutable std::vector<std::pair<mrpt::math::TPoint3D, size_t>> vertex_normals;
 	/**Whether the actual mesh needs to be recalculated */
 	mutable bool trianglesUpToDate{false};
-	mutable bool polygonsUpToDate;  //<!Whether the polygon mesh (auxiliary
-	// structure for ray tracing) needs to be
-	// recalculated
+	/**Whether the polygon mesh (auxiliary structure for ray tracing) needs to
+	 * be recalculated */
+	mutable bool polygonsUpToDate{false};
 	mutable std::vector<mrpt::math::TPolygonWithPlane> tmpPolys;
 
    public:

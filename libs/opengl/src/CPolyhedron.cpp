@@ -519,7 +519,7 @@ CPolyhedron::CPolyhedron(const std::vector<math::TPolygon3D>& polys)
 	mVertices = std::move(vertices);
 	mFaces = std::move(faces);
 
-	InitFromVertAndFaces(vertices, faces);
+	InitFromVertAndFaces(mVertices, mFaces);
 }
 
 CPolyhedron::CPolyhedron(

@@ -29,10 +29,10 @@ class HypothesisNotFoundException : public std::runtime_error
 	const char* what() const noexcept override;
 
    private:
-	mrpt::graphs::TNodeID m_from, m_to;
+	mrpt::graphs::TNodeID m_from{INVALID_NODEID}, m_to{INVALID_NODEID};
 
 	/**\brief Hypothesis ID */
-	size_t m_id;
+	size_t m_id{0};
 
 	/**\brief Error message */
 	std::string m_msg;

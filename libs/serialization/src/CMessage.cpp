@@ -98,26 +98,3 @@ void CMessage::getContentAsString(std::string& str)
 	str.resize(content.size());
 	if (content.size() > 0) memcpy(&str[0], &content[0], str.size());
 }
-
-/*---------------------------------------------------------------
-				setContentFromPointer
- ---------------------------------------------------------------*/
-void CMessage::setContentFromPointer(void* ptr)
-{
-	content.resize(sizeof(void*));
-	void** ptrPtr = reinterpret_cast<void**>(&content[0]);
-	*ptrPtr = ptr;
-}
-
-/*---------------------------------------------------------------
-				getContentAsPointer
- ---------------------------------------------------------------*/
-void* CMessage::getContentAsPointer() const
-{
-	MRPT_START
-	ASSERT_(content.size() == sizeof(void*));
-
-	return *reinterpret_cast<void**>(const_cast<unsigned char*>(&content[0]));
-
-	MRPT_END
-}

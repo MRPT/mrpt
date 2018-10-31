@@ -269,8 +269,8 @@ void CPosePDFGaussian::bayesianFusion(
 	ASSERT_(p1_.GetRuntimeClass() == CLASS_ID(CPosePDFGaussian));
 	ASSERT_(p2_.GetRuntimeClass() == CLASS_ID(CPosePDFGaussian));
 
-	const auto* p1 = static_cast<const CPosePDFGaussian*>(&p1_);
-	const auto* p2 = static_cast<const CPosePDFGaussian*>(&p2_);
+	const auto* p1 = dynamic_cast<const CPosePDFGaussian*>(&p1_);
+	const auto* p2 = dynamic_cast<const CPosePDFGaussian*>(&p2_);
 
 	CMatrixDouble33 C1 = p1->cov;
 	CMatrixDouble33 C2 = p2->cov;
@@ -304,7 +304,7 @@ void CPosePDFGaussian::bayesianFusion(
 void CPosePDFGaussian::inverse(CPosePDF& o) const
 {
 	ASSERT_(o.GetRuntimeClass() == CLASS_ID(CPosePDFGaussian));
-	auto* out = static_cast<CPosePDFGaussian*>(&o);
+	auto* out = dynamic_cast<CPosePDFGaussian*>(&o);
 
 	// The mean:
 	out->mean = CPose2D(0, 0, 0) - mean;

@@ -91,7 +91,7 @@ using TMyPointsMemPool = mrpt::system::CGenericMemoryPool<
 struct CObservation3DRangeScan_Ranges_MemPoolParams
 {
 	/** Size of matrix */
-	int H, W;
+	int H{0}, W{0};
 	inline bool isSuitable(
 		const CObservation3DRangeScan_Ranges_MemPoolParams& req) const
 	{
@@ -752,7 +752,7 @@ double CObservation3DRangeScan::recoverCameraCalibrationParameters(
 		1e-3, 1e-9, 1e-9, false);
 
 	const double avr_px_err =
-		sqrt(info.final_sqr_err / (nC * nR / square(CALIB_DECIMAT)));
+		sqrt(info.final_sqr_err / double(nC * nR / square(CALIB_DECIMAT)));
 
 	out_camParams.ncols = nC;
 	out_camParams.nrows = nR;

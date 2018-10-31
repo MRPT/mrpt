@@ -283,33 +283,26 @@ int CFBORender::isExtensionSupported(const char* extension)
 
 	MRPT_START
 
-	const GLubyte* extensions = nullptr;
-	const GLubyte* start;
-	GLubyte *where, *terminator;
-
 	/* Extension names should not have spaces. */
-	where = (GLubyte*)strchr(extension, ' ');
+	auto where = strchr(extension, ' ');
 	if (where || *extension == '\0') return 0;
-	extensions = glGetString(GL_EXTENSIONS);
+	const auto extensions = glGetString(GL_EXTENSIONS);
 
 	/* It takes a bit of care to be fool-proof about parsing the
 	OpenGL extensions string. Don't be fooled by sub-strings,
 	etc. */
-	start = extensions;
+	auto start = reinterpret_cast<const char*>(extensions);
 	for (;;)
 	{
-		where = (GLubyte*)strstr((const char*)start, extension);
+		where = strstr(start, extension);
 		if (!where) break;
-		terminator = where + strlen(extension);
+		auto terminator = where + strlen(extension);
 		if (where == start || *(where - 1) == ' ')
 			if (*terminator == ' ' || *terminator == '\0') return 1;
 		start = terminator;
 	}
 
 	MRPT_END
-
-//#else
-//	THROW_EXCEPTION("MRPT compiled without OpenGL support!!");
 #else
 	MRPT_UNUSED_PARAM(extension);
 #endif

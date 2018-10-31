@@ -43,7 +43,7 @@ void mrpt::io::zip::compress(
 	outData.resize(inDataSize + inDataSize / 1000 + 50);
 	resSize = (unsigned long)outData.size();
 	ret = ::compress(
-		&outData[0], &resSize, (unsigned char*)inData,
+		&outData[0], &resSize, static_cast<unsigned char*>(inData),
 		(unsigned long)inDataSize);
 	ASSERT_(ret == Z_OK);
 

@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/io/CStream.h>
+#include <mrpt/core/pimpl.h>
 
 namespace mrpt::io
 {
@@ -24,9 +25,10 @@ namespace mrpt::io
 class CFileGZInputStream : public CStream
 {
    private:
-	void* m_f{nullptr};
+	struct Impl;
+	mrpt::pimpl<Impl> m_f;
 	/** Compressed file size */
-	uint64_t m_file_size;
+	uint64_t m_file_size{0};
 
    public:
 	/** Constructor without open */

@@ -14,12 +14,21 @@
 
 #include <zlib.h>
 
-#define THE_GZFILE reinterpret_cast<gzFile>(m_f)
-
 using namespace mrpt::io;
 using namespace std;
 
-CFileGZOutputStream::CFileGZOutputStream(const string& fileName) : m_f(nullptr)
+struct CFileGZOutputStream::Impl
+{
+	gzFile f{nullptr};
+};
+
+CFileGZOutputStream::CFileGZOutputStream()
+	: m_f(mrpt::make_impl<CFileGZOutputStream::Impl>())
+{
+}
+
+CFileGZOutputStream::CFileGZOutputStream(const string& fileName)
+	: CFileGZOutputStream()
 {
 	MRPT_START
 	if (!open(fileName))
@@ -28,16 +37,15 @@ CFileGZOutputStream::CFileGZOutputStream(const string& fileName) : m_f(nullptr)
 	MRPT_END
 }
 
-CFileGZOutputStream::CFileGZOutputStream() = default;
 bool CFileGZOutputStream::open(const string& fileName, int compress_level)
 {
 	MRPT_START
 
-	if (m_f) gzclose(THE_GZFILE);
+	if (m_f->f) gzclose(m_f->f);
 
 	// Open gz stream:
-	m_f = gzopen(fileName.c_str(), format("wb%i", compress_level).c_str());
-	return m_f != nullptr;
+	m_f->f = gzopen(fileName.c_str(), format("wb%i", compress_level).c_str());
+	return m_f->f != nullptr;
 
 	MRPT_END
 }
@@ -45,10 +53,10 @@ bool CFileGZOutputStream::open(const string& fileName, int compress_level)
 CFileGZOutputStream::~CFileGZOutputStream() { close(); }
 void CFileGZOutputStream::close()
 {
-	if (m_f)
+	if (m_f->f)
 	{
-		gzclose(THE_GZFILE);
-		m_f = nullptr;
+		gzclose(m_f->f);
+		m_f->f = nullptr;
 	}
 }
 
@@ -59,23 +67,26 @@ size_t CFileGZOutputStream::Read(void*, size_t)
 
 size_t CFileGZOutputStream::Write(const void* Buffer, size_t Count)
 {
-	if (!m_f)
+	if (!m_f->f)
 	{
 		THROW_EXCEPTION("File is not open.");
 	}
-	return gzwrite(THE_GZFILE, const_cast<void*>(Buffer), Count);
+	return gzwrite(m_f->f, const_cast<void*>(Buffer), Count);
 }
 
 uint64_t CFileGZOutputStream::getPosition() const
 {
-	if (!m_f)
+	if (!m_f->f)
 	{
 		THROW_EXCEPTION("File is not open.");
 	}
-	return gztell(THE_GZFILE);
+	return gztell(m_f->f);
 }
 
-bool CFileGZOutputStream::fileOpenCorrectly() const { return m_f != nullptr; }
+bool CFileGZOutputStream::fileOpenCorrectly() const
+{
+	return m_f->f != nullptr;
+}
 uint64_t CFileGZOutputStream::Seek(int64_t, CStream::TSeekOrigin)
 {
 	THROW_EXCEPTION("Method not available in this class.");

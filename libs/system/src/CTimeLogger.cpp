@@ -113,7 +113,7 @@ std::string aux_format_string_multilines(const std::string& s, const size_t len)
 
 	for (size_t p = 0; p < s.size(); p += len)
 	{
-		ret += rightPad(s.c_str() + p, len, true);
+		ret += rightPad(s.substr(p), len, true);
 		if (p + len < s.size()) ret += "\n";
 	}
 	return ret;

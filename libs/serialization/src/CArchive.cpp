@@ -16,6 +16,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CMessage.h>
 #include <cstring>  // strlen()
+#include <array>
 
 using namespace mrpt::serialization;
 
@@ -115,14 +116,6 @@ CArchive& mrpt::serialization::operator>>(
 	in >> rep;
 	s = mrpt::Clock::time_point(mrpt::Clock::duration(rep));
 	return in;
-}
-
-CArchive& mrpt::serialization::operator<<(CArchive& out, const char* s)
-{
-	auto l = (uint32_t)strlen(s);
-	out << l;
-	out.WriteBuffer(s, (int)l);
-	return out;
 }
 
 CArchive& mrpt::serialization::operator<<(
@@ -378,16 +371,6 @@ CArchive& mrpt::serialization::operator>>(CArchive& in, std::string& str)
 	return in;
 }
 
-CArchive& mrpt::serialization::operator>>(CArchive& in, char* s)
-{
-	ASSERT_(s != nullptr);
-	uint32_t l;
-	in >> l;
-	if (l) in.ReadBuffer(s, l);
-	s[l] = '\0';
-	return in;
-}
-
 //#define CARCHIVE_VERBOSE     1
 #define CARCHIVE_VERBOSE 0
 
@@ -548,8 +531,8 @@ void CArchive::ReadObject(CSerializable* existingObj)
 	using mrpt::rtti::TRuntimeClassId;
 
 	std::string strClassName;
-	bool isOldFormat;
-	int8_t version;
+	bool isOldFormat{false};
+	int8_t version{-1};
 
 	internal_ReadObjectHeader(strClassName, isOldFormat, version);
 
@@ -595,7 +578,7 @@ void CArchive::sendMessage(const CMessage& msg)
 {
 	MRPT_START
 
-	unsigned char buf[0x10100];
+	std::array<uint8_t, 0x10100> buf;
 	unsigned int nBytesTx = 0;
 
 	const bool msg_format_is_tiny = msg.content.size() < 256;
@@ -615,12 +598,12 @@ void CArchive::sendMessage(const CMessage& msg)
 	}
 
 	if (!msg.content.empty())
-		memcpy(buf + nBytesTx, &msg.content[0], msg.content.size());
+		memcpy(&buf.at(nBytesTx), &msg.content[0], msg.content.size());
 	nBytesTx += (unsigned char)msg.content.size();
 	buf[nBytesTx++] = 0x96;
 
 	// Send buffer -------------------------------------
-	WriteBuffer(buf, nBytesTx);  // Exceptions will be raised on errors here
+	WriteBuffer(&buf[0], nBytesTx);  // Exceptions will be raised on errors here
 
 	MRPT_END
 }
@@ -687,7 +670,6 @@ bool CArchive::receiveMessage(CMessage& msg)
 				if (buf[nBytesInFrame - 1] != 0x96)
 				{
 					// Error in frame!
-					nBytesInFrame = 0;
 					return false;
 				}
 				else

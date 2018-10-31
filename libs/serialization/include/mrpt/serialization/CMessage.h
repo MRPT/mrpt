@@ -71,18 +71,6 @@ class CMessage
 	 */
 	void getContentAsString(std::string& str);
 
-	/** Sets the contents of the message from a "void*" (the pointer itself
-	 * becomes the message) - This is intended for inter-thread comms only.
-	 * \sa getContentAsPointer
-	 */
-	void setContentFromPointer(void* ptr);
-
-	/** Gets the contents of the message as a "void*" (the pointer itself is the
-	 * message) - This is intended for inter-thread comms only.
-	 * \sa setContentFromPointer
-	 */
-	void* getContentAsPointer() const;
-
 	/** Sets the contents of the message from an arbitary structure - This is
 	 * intended for inter-thread comms only, the message will be not
 	 * cross-platform.
