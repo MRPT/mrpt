@@ -415,7 +415,7 @@ void CPose3DPDFGaussian::bayesianFusion(
 void CPose3DPDFGaussian::inverse(CPose3DPDF& o) const
 {
 	ASSERT_(o.GetRuntimeClass() == CLASS_ID(CPose3DPDFGaussian));
-	auto& out = static_cast<CPose3DPDFGaussian&>(o);
+	auto& out = dynamic_cast<CPose3DPDFGaussian&>(o);
 
 	// This is like: b=(0,0,0)
 	//  OUT = b - THIS

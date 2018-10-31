@@ -74,6 +74,7 @@ void CGeneralizedCylinder::getMeshIterators(
 	}
 	else
 	{
+		ASSERT_(getNumberOfSections() > 0);
 		size_t qps =
 			m.size() / getNumberOfSections();  // quadrilaterals per section
 		begin = m.begin() + qps * firstSection;

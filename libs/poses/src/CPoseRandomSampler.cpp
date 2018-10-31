@@ -117,7 +117,7 @@ void CPoseRandomSampler::setPosePDF(const CPosePDF* pdf)
 	// According to the PDF type:
 	if (IS_CLASS(m_pdf2D.get(), CPosePDFGaussian))
 	{
-		const auto* gPdf = static_cast<const CPosePDFGaussian*>(pdf);
+		const auto* gPdf = dynamic_cast<const CPosePDFGaussian*>(pdf);
 		const CMatrixDouble33& cov = gPdf->cov;
 
 		m_fastdraw_gauss_M_2D = gPdf->mean;
@@ -160,7 +160,7 @@ void CPoseRandomSampler::setPosePDF(const CPose3DPDF* pdf)
 	// According to the PDF type:
 	if (IS_CLASS(m_pdf3D.get(), CPose3DPDFGaussian))
 	{
-		const auto* gPdf = static_cast<const CPose3DPDFGaussian*>(pdf);
+		const auto* gPdf = dynamic_cast<const CPose3DPDFGaussian*>(pdf);
 		const CMatrixDouble66& cov = gPdf->cov;
 
 		m_fastdraw_gauss_M_3D = gPdf->mean;
@@ -290,7 +290,7 @@ void CPoseRandomSampler::do_sample_2D(CPose2D& p) const
 		// -------------------------------------
 		//      Particles: just sample as usual
 		// -------------------------------------
-		const auto* pdf = static_cast<const CPosePDFParticles*>(m_pdf2D.get());
+		const auto* pdf = dynamic_cast<const CPosePDFParticles*>(m_pdf2D.get());
 		pdf->drawSingleSample(p);
 	}
 	else
@@ -344,7 +344,7 @@ void CPoseRandomSampler::do_sample_3D(CPose3D& p) const
 		//      Particles: just sample as usual
 		// -------------------------------------
 		const auto* pdf =
-			static_cast<const CPose3DPDFParticles*>(m_pdf3D.get());
+			dynamic_cast<const CPose3DPDFParticles*>(m_pdf3D.get());
 		pdf->drawSingleSample(p);
 	}
 	else

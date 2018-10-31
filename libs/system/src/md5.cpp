@@ -90,11 +90,11 @@ class MD5
 	static void decode(uint4 output[], const uint1 input[], size_type len);
 	static void encode(uint1 output[], const uint4 input[], size_type len);
 
-	bool finalized;
+	bool finalized{false};
 	uint1 buffer[blocksize];  // bytes that didn't fit in last 64 byte chunk
-	uint4 count[2];  // 64bit counter for number of bits (lo, hi)
+	uint4 count[2] = {0, 0};  // 64bit counter for number of bits (lo, hi)
 	uint4 state[4];  // digest so far
-	uint1 digest[16];  // the result
+	uint1 digest[16]{};  // the result
 
 	// low level logic operations
 	static inline uint4 F(uint4 x, uint4 y, uint4 z);

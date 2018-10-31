@@ -161,7 +161,7 @@ void CPosePDFSOG::copyFrom(const CPosePDF& o)
 
 	if (o.GetRuntimeClass() == CLASS_ID(CPosePDFSOG))
 	{
-		m_modes = static_cast<const CPosePDFSOG*>(&o)->m_modes;
+		m_modes = dynamic_cast<const CPosePDFSOG*>(&o)->m_modes;
 	}
 	else
 	{
@@ -284,8 +284,8 @@ void CPosePDFSOG::bayesianFusion(
 	ASSERT_(p1_.GetRuntimeClass() == CLASS_ID(CPosePDFSOG));
 	ASSERT_(p2_.GetRuntimeClass() == CLASS_ID(CPosePDFGaussian));
 
-	const auto* p1 = static_cast<const CPosePDFSOG*>(&p1_);
-	const auto* p2 = static_cast<const CPosePDFGaussian*>(&p2_);
+	const auto* p1 = dynamic_cast<const CPosePDFSOG*>(&p1_);
+	const auto* p2 = dynamic_cast<const CPosePDFGaussian*>(&p2_);
 
 	// Compute the new kernel means, covariances, and weights after multiplying
 	// to the Gaussian "p2":
@@ -359,7 +359,7 @@ void CPosePDFSOG::bayesianFusion(
 void CPosePDFSOG::inverse(CPosePDF& o) const
 {
 	ASSERT_(o.GetRuntimeClass() == CLASS_ID(CPosePDFSOG));
-	auto* out = static_cast<CPosePDFSOG*>(&o);
+	auto* out = dynamic_cast<CPosePDFSOG*>(&o);
 
 	const_iterator itSrc;
 	iterator itDest;

@@ -46,7 +46,7 @@ struct TPoint2D : public TPoseOrPoint
 		static_size = 2
 	};
 	/** X,Y coordinates */
-	double x, y;
+	double x{.0}, y{.0};
 	/** Constructor from TPose2D, discarding phi.
 	 * \sa TPose2D
 	 */
@@ -67,7 +67,7 @@ struct TPoint2D : public TPoseOrPoint
 	 */
 	constexpr TPoint2D(double xx, double yy) : x(xx), y(yy) {}
 	/**
-	 * Default fast constructor. Initializes to garbage.
+	 * Default fast constructor. Initializes to zeros.
 	 */
 	TPoint2D() = default;
 	/** Coordinate access using operator[]. Order: x,y */
@@ -184,9 +184,9 @@ struct TPose2D : public TPoseOrPoint
 		static_size = 3
 	};
 	/** X,Y coordinates */
-	double x, y;
+	double x{.0}, y{.0};
 	/** Orientation (rads) */
-	double phi;
+	double phi{.0};
 	/** Implicit constructor from TPoint2D. Zeroes the phi coordinate.
 	 * \sa TPoint2D
 	 */
@@ -208,7 +208,7 @@ struct TPose2D : public TPoseOrPoint
 	 */
 	TPose2D(double xx, double yy, double pphi) : x(xx), y(yy), phi(pphi) {}
 	/**
-	 * Default fast constructor. Initializes to garbage.
+	 * Default fast constructor. Initializes to zeros.
 	 */
 	TPose2D() = default;
 	/** Coordinate access using operator[]. Order: x,y,phi */
@@ -310,9 +310,7 @@ struct TPoint3Df : public TPoseOrPoint
 	{
 		static_size = 3
 	};
-	float x;
-	float y;
-	float z;
+	float x{.0f}, y{.0f}, z{.0f};
 
 	TPoint3Df() = default;
 	constexpr TPoint3Df(const float xx, const float yy, const float zz)
@@ -374,11 +372,11 @@ struct TPoint3D : public TPoseOrPoint
 		static_size = 3
 	};
 	/** X,Y,Z coordinates */
-	double x, y, z;
+	double x{.0}, y{.0}, z{.0};
 
 	/** Constructor from coordinates.  */
 	constexpr TPoint3D(double xx, double yy, double zz) : x(xx), y(yy), z(zz) {}
-	/** Default fast constructor. Initializes to garbage. */
+	/** Default fast constructor. Initializes to zeros. */
 	TPoint3D() = default;
 	/** Explicit constructor from coordinates.  */
 	explicit TPoint3D(const TPoint3Df& p) : x(p.x), y(p.y), z(p.z) {}
@@ -596,13 +594,13 @@ struct TPose3D : public TPoseOrPoint
 		static_size = 6
 	};
 	/** X,Y,Z, coords */
-	double x, y, z;
+	double x{.0}, y{.0}, z{.0};
 	/** Yaw coordinate (rotation angle over Z axis). */
-	double yaw;
+	double yaw{.0};
 	/** Pitch coordinate (rotation angle over Y axis). */
-	double pitch;
+	double pitch{.0};
 	/** Roll coordinate (rotation angle over X coordinate). */
-	double roll;
+	double roll{.0};
 	/** Implicit constructor from TPoint2D. Zeroes all the unprovided
 	 * information.
 	 * \sa TPoint2D
@@ -629,7 +627,7 @@ struct TPose3D : public TPoseOrPoint
 	{
 	}
 	/**
-	 * Default fast constructor. Initializes to garbage.
+	 * Default fast constructor. Initializes to zeros.
 	 */
 	TPose3D() = default;
 	/** Coordinate access using operator[]. Order: x,y,z,yaw,pitch,roll */
@@ -759,9 +757,9 @@ struct TPose3DQuat : public TPoseOrPoint
 		static_size = 7
 	};
 	/** Translation in x,y,z */
-	double x, y, z;
+	double x{.0}, y{.0}, z{.0};
 	/** Unit quaternion part, qr,qx,qy,qz */
-	double qr, qx, qy, qz;
+	double qr{1.}, qx{.0}, qy{.0}, qz{.0};
 
 	/** Constructor from coordinates. */
 	constexpr TPose3DQuat(
@@ -770,7 +768,7 @@ struct TPose3DQuat : public TPoseOrPoint
 		: x(_x), y(_y), z(_z), qr(_qr), qx(_qx), qy(_qy), qz(_qz)
 	{
 	}
-	/** Default fast constructor. Initializes to garbage. */
+	/** Default fast constructor. Initializes to identity transformation. */
 	TPose3DQuat() = default;
 	/** Coordinate access using operator[]. Order: x,y,z,qr,qx,qy,qz */
 	double& operator[](size_t i)
@@ -1148,7 +1146,7 @@ struct TLine2D
 	/**
 	 * Line coefficients, stored as an array: \f$\left[A,B,C\right]\f$.
 	 */
-	double coefs[3];
+	double coefs[3] = {0, 0, 0};
 	/**
 	 * Evaluate point in the line's equation.
 	 */
@@ -1238,7 +1236,7 @@ struct TLine3D
 	/**
 	 * Director vector.
 	 */
-	double director[3];
+	double director[3] = {.0, .0, .0};
 	/**
 	 * Check whether a point is inside the line.
 	 */
@@ -1299,7 +1297,7 @@ struct TPlane
 	/**
 	 * Plane coefficients, stored as an array: \f$\left[A,B,C,D\right]\f$
 	 */
-	double coefs[4];
+	double coefs[4] = {.0, .0, .0, .0};
 	/**
 	 * Evaluate a point in the plane's equation.
 	 */
@@ -1534,7 +1532,7 @@ struct TObject2D
 	/**
 	 * Object type identifier.
 	 */
-	unsigned char type;
+	unsigned char type{GEOMETRIC_TYPE_UNDEFINED};
 	/**
 	 * Union type storing pointers to every allowed type.
 	 */
@@ -1795,7 +1793,7 @@ struct TObject3D
 	/**
 	 * Object type identifier.
 	 */
-	unsigned char type;
+	unsigned char type{GEOMETRIC_TYPE_UNDEFINED};
 	/**
 	 * Union containing pointer to actual data.
 	 */
@@ -2132,16 +2130,16 @@ struct TTwist2D
 		static_size = 3
 	};
 	/** Velocity components: X,Y (m/s) */
-	double vx, vy;
+	double vx{.0}, vy{.0};
 	/** Angular velocity (rad/s) */
-	double omega;
+	double omega{.0};
 
 	/** Constructor from components */
 	constexpr TTwist2D(double vx_, double vy_, double omega_)
 		: vx(vx_), vy(vy_), omega(omega_)
 	{
 	}
-	/** Default fast constructor. Initializes to garbage  */
+	/** Default fast constructor. Initializes to zeros  */
 	TTwist2D() = default;
 	/** Coordinate access using operator[]. Order: vx,vy,vphi */
 	double& operator[](size_t i)
@@ -2220,9 +2218,9 @@ struct TTwist3D
 		static_size = 6
 	};
 	/** Velocity components: X,Y (m/s) */
-	double vx, vy, vz;
+	double vx{.0}, vy{.0}, vz{.0};
 	/** Angular velocity (rad/s) */
-	double wx, wy, wz;
+	double wx{.0}, wy{.0}, wz{.0};
 
 	/** Constructor from components */
 	constexpr TTwist3D(
@@ -2230,7 +2228,7 @@ struct TTwist3D
 		: vx(vx_), vy(vy_), vz(vz_), wx(wx_), wy(wy_), wz(wz_)
 	{
 	}
-	/** Default fast constructor. Initializes to garbage  */
+	/** Default fast constructor. Initializes to zeros  */
 	TTwist3D() = default;
 	/** Coordinate access using operator[]. Order: vx,vy,vphi */
 	double& operator[](size_t i)

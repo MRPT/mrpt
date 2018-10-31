@@ -356,7 +356,6 @@ CSetOfObjects::Ptr stock_objects::RobotGiraff()
 
 	CPolyhedron::Ptr obj4 = opengl::CPolyhedron::CreateCustomPrism(level4, 0.4);
 	obj4->setLocation(0, 0, height);
-	height += 0.4f;
 	obj4->setColor(1.0, 0.6, 0.0);
 	ret->insert(obj4);
 

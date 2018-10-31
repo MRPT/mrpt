@@ -97,6 +97,7 @@ size_t CMemoryStream::Read(void* Buffer, size_t Count)
 
 size_t CMemoryStream::Write(const void* Buffer, size_t Count)
 {
+	ASSERT_(Buffer != nullptr);
 	// Enought space in current bufer?
 	size_t requiredSize = m_position + Count;
 

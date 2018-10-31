@@ -23,21 +23,29 @@ static_assert(
 		!std::is_copy_assignable_v<CFileGZInputStream>,
 	"Copy Check");
 
-#define THE_GZFILE reinterpret_cast<gzFile>(m_f)
+struct CFileGZInputStream::Impl
+{
+	gzFile f{nullptr};
+};
 
-CFileGZInputStream::CFileGZInputStream(const string& fileName) : m_f(nullptr)
+CFileGZInputStream::CFileGZInputStream()
+	: m_f(mrpt::make_impl<CFileGZInputStream::Impl>())
+{
+}
+
+CFileGZInputStream::CFileGZInputStream(const string& fileName)
+	: CFileGZInputStream()
 {
 	MRPT_START
 	open(fileName);
 	MRPT_END
 }
 
-CFileGZInputStream::CFileGZInputStream() = default;
 bool CFileGZInputStream::open(const std::string& fileName)
 {
 	MRPT_START
 
-	if (m_f) gzclose(THE_GZFILE);
+	if (m_f->f) gzclose(m_f->f);
 
 	// Get compressed file size:
 	m_file_size = mrpt::system::getFileSize(fileName);
@@ -45,30 +53,30 @@ bool CFileGZInputStream::open(const std::string& fileName)
 		THROW_EXCEPTION_FMT("Couldn't access the file '%s'", fileName.c_str());
 
 	// Open gz stream:
-	m_f = gzopen(fileName.c_str(), "rb");
-	return m_f != nullptr;
+	m_f->f = gzopen(fileName.c_str(), "rb");
+	return m_f->f != nullptr;
 
 	MRPT_END
 }
 
 void CFileGZInputStream::close()
 {
-	if (m_f)
+	if (m_f->f)
 	{
-		gzclose(THE_GZFILE);
-		m_f = nullptr;
+		gzclose(m_f->f);
+		m_f->f = nullptr;
 	}
 }
 
 CFileGZInputStream::~CFileGZInputStream() { close(); }
 size_t CFileGZInputStream::Read(void* Buffer, size_t Count)
 {
-	if (!m_f)
+	if (!m_f->f)
 	{
 		THROW_EXCEPTION("File is not open.");
 	}
 
-	return gzread(THE_GZFILE, Buffer, Count);
+	return gzread(m_f->f, Buffer, Count);
 }
 
 size_t CFileGZInputStream::Write(const void* Buffer, size_t Count)
@@ -80,7 +88,7 @@ size_t CFileGZInputStream::Write(const void* Buffer, size_t Count)
 
 uint64_t CFileGZInputStream::getTotalBytesCount() const
 {
-	if (!m_f)
+	if (!m_f->f)
 	{
 		THROW_EXCEPTION("File is not open.");
 	}
@@ -89,20 +97,20 @@ uint64_t CFileGZInputStream::getTotalBytesCount() const
 
 uint64_t CFileGZInputStream::getPosition() const
 {
-	if (!m_f)
+	if (!m_f->f)
 	{
 		THROW_EXCEPTION("File is not open.");
 	}
-	return gztell(THE_GZFILE);
+	return gztell(m_f->f);
 }
 
-bool CFileGZInputStream::fileOpenCorrectly() const { return m_f != nullptr; }
+bool CFileGZInputStream::fileOpenCorrectly() const { return m_f->f != nullptr; }
 bool CFileGZInputStream::checkEOF()
 {
-	if (!m_f)
+	if (!m_f->f)
 		return true;
 	else
-		return 0 != gzeof(THE_GZFILE);
+		return 0 != gzeof(m_f->f);
 }
 
 uint64_t CFileGZInputStream::Seek(int64_t, CStream::TSeekOrigin)
