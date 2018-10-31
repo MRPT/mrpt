@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/io/CStream.h>
+#include <mrpt/core/pimpl.h>
 
 namespace mrpt::io
 {
@@ -24,7 +25,8 @@ namespace mrpt::io
 class CFileGZOutputStream : public CStream
 {
    private:
-	void* m_f{nullptr};
+	struct Impl;
+	mrpt::pimpl<Impl> m_f;
 
    public:
 	/** Constructor: opens an output file with compression level = 1 (minimum,
