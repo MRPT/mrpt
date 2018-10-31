@@ -73,14 +73,15 @@ namespace mrpt::graphslam
  * \ingroup mrpt_graphslam_grp
  * \note Implementation can be found in file \a levmarq_impl.h
  */
-template <class GRAPH_T>
+template <
+	class GRAPH_T, class FEEDBACK_CALLABLE =
+					   typename graphslam_traits<GRAPH_T>::TFunctorFeedback>
 void optimize_graph_spa_levmarq(
 	GRAPH_T& graph, TResultInfoSpaLevMarq& out_info,
 	const std::set<mrpt::graphs::TNodeID>* in_nodes_to_optimize = nullptr,
 	const mrpt::system::TParametersDouble& extra_params =
 		mrpt::system::TParametersDouble(),
-	typename graphslam_traits<GRAPH_T>::TFunctorFeedback functor_feedback =
-		typename graphslam_traits<GRAPH_T>::TFunctorFeedback())
+	FEEDBACK_CALLABLE functor_feedback = FEEDBACK_CALLABLE())
 {
 	using namespace mrpt;
 	using namespace mrpt::poses;
