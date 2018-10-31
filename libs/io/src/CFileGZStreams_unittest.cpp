@@ -21,14 +21,15 @@ namespace mrpt
 extern std::string MRPT_GLOBAL_UNITTEST_SRC_DIR;
 }
 
-const size_t tst_data_len = 1000;
+const size_t tst_data_len = 1000U;
 
 // Generate random data:
 void generate_test_data(std::vector<uint8_t>& tst_data)
 {
-	const int random_seed = 123;
+	const unsigned int random_seed = 123U;
 	std::mt19937 mersenne_engine{random_seed};
-	std::uniform_int_distribution<uint8_t> dist{0, 3};  // low entropy
+	// MSVC C++11 library enforces use of `unsigned short` as smallest type
+	std::uniform_int_distribution<unsigned short> dist{0, 3};  // low entropy
 	auto gen = [&dist, &mersenne_engine]() { return dist(mersenne_engine); };
 	// auto gen = []() { return 1; };
 
