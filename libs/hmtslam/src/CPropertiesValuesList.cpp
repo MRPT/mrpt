@@ -61,10 +61,8 @@ void CPropertiesValuesList::serializeFrom(
 			m_properties.resize(n);
 			for (i = 0; i < n; i++)
 			{
-				char nameBuf[1024];
 				// Name:
-				in >> nameBuf;
-				m_properties[i].name = nameBuf;
+				in >> m_properties[i].name;
 
 				// Object:
 				in >> isNull;

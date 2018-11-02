@@ -174,9 +174,7 @@ void CLogFileRecord::serializeFrom(
 			for (i = 0; i < n; i++)
 			{
 				auto& ipp = infoPerPTG[i];
-				char str[256];
-				in >> str;
-				ipp.PTG_desc = std::string(str);
+				in >> ipp.PTG_desc;
 
 				int32_t m;
 				in >> m;
