@@ -62,28 +62,8 @@ struct TParameters
 	TParameters() {}
 	/** Constructor with a list of initial values (see the description and use
 	 * example in mrpt::system::TParameters) */
-	MRPT_TODO("Use varadic templates");
-	TParameters(const char* nam1, ...)
+	TParameters(std::initializer_list<typename BASE::value_type> init) : base(init)
 	{
-		if (!nam1) return;  // No parameters
-		T val;
-		va_list args;
-		va_start(args, nam1);
-		// 1st one out of the loop:
-		val = va_arg(args, T);
-		BASE::operator[](std::string(nam1)) = val;
-		// Loop until NULL:
-		const char* nam;
-		do
-		{
-			nam = va_arg(args, const char*);
-			if (nam)
-			{
-				val = va_arg(args, T);
-				BASE::operator[](std::string(nam)) = val;
-			}
-		} while (nam);
-		va_end(args);
 	}
 	inline bool has(const std::string& s) const
 	{
