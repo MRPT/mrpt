@@ -81,7 +81,6 @@ std::string containerName(){ return "std::map";}
 template <typename T, std::enable_if_t<is_multimap<T>::value, int> = 0>
 std::string containerName(){ return "std::multimap";}
 
-
 /** Template method to serialize an associative STL container  */         
 template <class T, std::enable_if_t<is_map_like<T>::value, int> = 0>
 CArchive& operator<<(CArchive& out, const T& obj)
@@ -124,7 +123,7 @@ CArchive& operator>>(CArchive& in, T& obj)
 			mrpt::typemeta::TTypeName<typename T::mapped_type>::get().c_str()))                 
 	uint32_t n;                                                           
 	in >> n;                                                              
-	for (uint32_t i = 0; i < n; i++)                                      
+	for (uint32_t i = 0; i < n; i++)
 	{                                                                     
 		typename T::key_type key_obj;                                                        
 		in >> key_obj;                                                    
