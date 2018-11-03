@@ -37,6 +37,7 @@ class string_literal
 	}
 	constexpr const char* c_str() const { return _lit; }
 	constexpr operator const char*() const { return c_str(); }
+	operator std::string() const { return _lit; }
 };
 
 template <int N_PLUS_1>
@@ -136,6 +137,7 @@ class array_string
 	}
 	constexpr const char* c_str() const { return _array; }
 	constexpr operator const char*() const { return c_str(); }
+	operator std::string() const { return c_str(); }
 };
 
 template <int N1, int N2>

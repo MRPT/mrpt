@@ -21,7 +21,6 @@
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/system/TParameters.h>
-#include <mrpt/containers/traits_map.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/poses/poses_frwds.h>

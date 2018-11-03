@@ -113,7 +113,8 @@ void CLogFileRecord::serializeTo(mrpt::serialization::CArchive& out) const
 	// Version 3 ----------
 	for (i = 0; i < infoPerPTG.size(); i++)
 	{
-		out << infoPerPTG[i].evalFactors;  // v22: this is now a TParameters
+		out << infoPerPTG[i]
+				   .evalFactors.base;  // v22: this is now a TParameters
 	}
 
 	out << nPTGs;  // v4
@@ -174,9 +175,7 @@ void CLogFileRecord::serializeFrom(
 			for (i = 0; i < n; i++)
 			{
 				auto& ipp = infoPerPTG[i];
-				char str[256];
-				in >> str;
-				ipp.PTG_desc = std::string(str);
+				in >> ipp.PTG_desc;
 
 				int32_t m;
 				in >> m;
@@ -460,7 +459,7 @@ void CLogFileRecord::serializeFrom(
 					}
 					else
 					{
-						in >> infoPerPTG[i].evalFactors;
+						in >> infoPerPTG[i].evalFactors.base;
 					}
 				}
 			}

@@ -54,54 +54,6 @@ void CArchive::WriteBuffer(const void* Buffer, size_t Count)
 			THROW_EXCEPTION("Cannot write bytes to stream!");
 }
 
-/*---------------------------------------------------------------
-Writes an elemental data type to stream.
----------------------------------------------------------------*/
-#if MRPT_IS_BIG_ENDIAN
-// Big endian system: Convert into little-endian for streaming
-#define IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(T)                    \
-	CArchive& mrpt::serialization::operator<<(CArchive& out, const T a) \
-	{                                                                   \
-		mrpt::reverseBytesInPlace(a);                                   \
-		out.WriteBuffer((void*)&a, sizeof(a));                          \
-		return out;                                                     \
-	}                                                                   \
-	CArchive& mrpt::serialization::operator>>(CArchive& in, T& a)       \
-	{                                                                   \
-		T b;                                                            \
-		in.ReadBuffer((void*)&b, sizeof(a));                            \
-		mrpt::reverseBytesInPlace(b);                                   \
-		::memcpy(&a, &b, sizeof(b));                                    \
-		return in;                                                      \
-	}
-#else
-// Little endian system:
-#define IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(T)                    \
-	CArchive& mrpt::serialization::operator<<(CArchive& out, const T a) \
-	{                                                                   \
-		out.WriteBuffer((void*)&a, sizeof(a));                          \
-		return out;                                                     \
-	}                                                                   \
-	CArchive& mrpt::serialization::operator>>(CArchive& in, T& a)       \
-	{                                                                   \
-		in.ReadBuffer((void*)&a, sizeof(a));                            \
-		return in;                                                      \
-	}
-#endif
-
-IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(bool);
-IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(uint8_t);
-IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(int8_t);
-IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(uint16_t);
-IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(int16_t);
-IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(uint32_t);
-IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(int32_t);
-IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(uint64_t);
-IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(int64_t);
-IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(float);
-IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(double);
-IMPLEMENT_CArchive_READ_WRITE_SIMPLE_TYPE(long double);
-
 CArchive& mrpt::serialization::operator<<(
 	CArchive& out, const mrpt::Clock::time_point& s)
 {

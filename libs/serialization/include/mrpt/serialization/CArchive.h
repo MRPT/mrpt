@@ -388,23 +388,50 @@ class CArchive
 
 // Note: write op accepts parameters by value on purpose, to avoid misaligned
 // reference binding errors.
-#define DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(T)  \
-	CArchive& operator<<(CArchive& out, const T a); \
-	CArchive& operator>>(CArchive& in, T& a)
+template <class T, class... Ts>
+using is_any = std::disjunction<std::is_same<T, Ts>...>;
 
-// Definitions:
-DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(bool);
-DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(uint8_t);
-DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(int8_t);
-DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(uint16_t);
-DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(int16_t);
-DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(uint32_t);
-DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(int32_t);
-DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(uint64_t);
-DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(int64_t);
-DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(float);
-DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(double);
-DECLARE_CArchive_READ_WRITE_SIMPLE_TYPE(long double);
+template <typename T>
+using is_simple_type = is_any<
+	T, bool, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, uint64_t,
+	int64_t, float, double, long double>;
+
+#if MRPT_IS_BIG_ENDIAN
+// Big endian system: Convert into little-endian for streaming
+template <typename T, std::enable_if_t<is_simple_type<T>::value, int> = 0>
+CArchive& mrpt::serialization::operator<<(CArchive& out, const T a)
+{
+	mrpt::reverseBytesInPlace(a);
+	out.WriteBuffer((void*)&a, sizeof(a));
+	return out;
+}
+
+template <typename T, std::enable_if_t<is_simple_type<T>::value, int> = 0>
+CArchive& mrpt::serialization::operator>>(CArchive& in, T& a)
+{
+	T b;
+	in.ReadBuffer((void*)&b, sizeof(a));
+	mrpt::reverseBytesInPlace(b);
+	::memcpy(&a, &b, sizeof(b));
+	return in;
+}
+
+#else
+// Little endian system:
+template <typename T, std::enable_if_t<is_simple_type<T>::value, int> = 0>
+CArchive& operator<<(CArchive& out, const T& a)
+{
+	out.WriteBuffer((void*)&a, sizeof(a));
+	return out;
+}
+
+template <typename T, std::enable_if_t<is_simple_type<T>::value, int> = 0>
+CArchive& operator>>(CArchive& in, T& a)
+{
+	in.ReadBuffer((void*)&a, sizeof(a));
+	return in;
+}
+#endif
 
 CArchive& operator<<(CArchive& out, const mrpt::Clock::time_point& a);
 CArchive& operator>>(CArchive& in, mrpt::Clock::time_point& a);
