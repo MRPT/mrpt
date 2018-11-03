@@ -113,7 +113,8 @@ void CLogFileRecord::serializeTo(mrpt::serialization::CArchive& out) const
 	// Version 3 ----------
 	for (i = 0; i < infoPerPTG.size(); i++)
 	{
-		out << infoPerPTG[i].evalFactors.base;  // v22: this is now a TParameters
+		out << infoPerPTG[i]
+				   .evalFactors.base;  // v22: this is now a TParameters
 	}
 
 	out << nPTGs;  // v4

@@ -392,26 +392,28 @@ template <class T, class... Ts>
 using is_any = std::disjunction<std::is_same<T, Ts>...>;
 
 template <typename T>
-using is_simple_type = is_any<T, bool, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, uint64_t, int64_t, float, double, long double>;
+using is_simple_type = is_any<
+	T, bool, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, uint64_t,
+	int64_t, float, double, long double>;
 
 #if MRPT_IS_BIG_ENDIAN
 // Big endian system: Convert into little-endian for streaming
 template <typename T, std::enable_if_t<is_simple_type<T>::value, int> = 0>
 CArchive& mrpt::serialization::operator<<(CArchive& out, const T a)
 {
-        mrpt::reverseBytesInPlace(a);
-        out.WriteBuffer((void*)&a, sizeof(a));
-        return out;
+	mrpt::reverseBytesInPlace(a);
+	out.WriteBuffer((void*)&a, sizeof(a));
+	return out;
 }
 
 template <typename T, std::enable_if_t<is_simple_type<T>::value, int> = 0>
 CArchive& mrpt::serialization::operator>>(CArchive& in, T& a)
 {
-        T b;
-        in.ReadBuffer((void*)&b, sizeof(a));
-        mrpt::reverseBytesInPlace(b);
-        ::memcpy(&a, &b, sizeof(b));
-        return in;
+	T b;
+	in.ReadBuffer((void*)&b, sizeof(a));
+	mrpt::reverseBytesInPlace(b);
+	::memcpy(&a, &b, sizeof(b));
+	return in;
 }
 
 #else
@@ -419,18 +421,17 @@ CArchive& mrpt::serialization::operator>>(CArchive& in, T& a)
 template <typename T, std::enable_if_t<is_simple_type<T>::value, int> = 0>
 CArchive& operator<<(CArchive& out, const T& a)
 {
-        out.WriteBuffer((void*)&a, sizeof(a));
-        return out;
+	out.WriteBuffer((void*)&a, sizeof(a));
+	return out;
 }
 
 template <typename T, std::enable_if_t<is_simple_type<T>::value, int> = 0>
-CArchive& operator>> (CArchive& in, T& a)
+CArchive& operator>>(CArchive& in, T& a)
 {
-        in.ReadBuffer((void*)&a, sizeof(a));
-        return in;
+	in.ReadBuffer((void*)&a, sizeof(a));
+	return in;
 }
 #endif
-
 
 CArchive& operator<<(CArchive& out, const mrpt::Clock::time_point& a);
 CArchive& operator>>(CArchive& in, mrpt::Clock::time_point& a);
