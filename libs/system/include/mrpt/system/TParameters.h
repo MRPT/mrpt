@@ -62,7 +62,8 @@ struct TParameters
 	TParameters() {}
 	/** Constructor with a list of initial values (see the description and use
 	 * example in mrpt::system::TParameters) */
-	TParameters(std::initializer_list<typename BASE::value_type> init) : base(init)
+	TParameters(std::initializer_list<typename BASE::value_type> init)
+		: base(init)
 	{
 	}
 	inline bool has(const std::string& s) const
@@ -125,41 +126,19 @@ struct TParameters
 		s = str.str();
 	}
 
-	inline void clear()
-	{
-		base.clear();
-	}
+	inline void clear() { base.clear(); }
 
-	iterator find( const std::string& key )
-	{
-		return base.find(key);
-	}
+	iterator find(const std::string& key) { return base.find(key); }
 
-	const_iterator find( const std::string& key ) const
-	{
-		return base.find(key);
-	}
+	const_iterator find(const std::string& key) const { return base.find(key); }
 
-	iterator begin() noexcept
-	{
-		return base.begin();
-	}
+	iterator begin() noexcept { return base.begin(); }
 
-	const_iterator begin() const noexcept
-	{
-		return base.begin();
-	}
+	const_iterator begin() const noexcept { return base.begin(); }
 
-	iterator end() noexcept
-	{
-		return base.end();
-	}
+	iterator end() noexcept { return base.end(); }
 
-	const_iterator end() const noexcept
-	{
-		return base.end();
-	}
-
+	const_iterator end() const noexcept { return base.end(); }
 };
 
 /** See the generic template mrpt::system::TParameters */

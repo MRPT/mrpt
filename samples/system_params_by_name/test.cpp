@@ -41,12 +41,15 @@ void TestParameters()
 	{
 		// Call #2
 		cout << "CALL #2 ================================\n";
+		// clang-format off
 		TParametersDouble p(
 			{
 				{"threshold", 3.05},
 				{"altitude", 100.0},
 				{"level", -1.0}
-			});
+			}
+		);
+		// clang-format on
 
 		MyCoolFunction(p);
 	}
