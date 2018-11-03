@@ -51,38 +51,24 @@ namespace mrpt::system
  * \sa the example in MRPT/samples/params-by-name
  */
 template <typename T>
-struct TParameters : public std::map<std::string, T>
+struct TParameters
 {
 	using BASE = std::map<std::string, T>;
+	BASE base;
+	using iterator = typename BASE::iterator;
+	using const_iterator = typename BASE::const_iterator;
+
 	/** Default constructor (initializes empty) */
-	TParameters() : BASE() {}
+	TParameters() {}
 	/** Constructor with a list of initial values (see the description and use
 	 * example in mrpt::system::TParameters) */
-	TParameters(const char* nam1, ...) : BASE()
+	TParameters(std::initializer_list<typename BASE::value_type> init)
+		: base(init)
 	{
-		if (!nam1) return;  // No parameters
-		T val;
-		va_list args;
-		va_start(args, nam1);
-		// 1st one out of the loop:
-		val = va_arg(args, T);
-		BASE::operator[](std::string(nam1)) = val;
-		// Loop until NULL:
-		const char* nam;
-		do
-		{
-			nam = va_arg(args, const char*);
-			if (nam)
-			{
-				val = va_arg(args, T);
-				BASE::operator[](std::string(nam)) = val;
-			}
-		} while (nam);
-		va_end(args);
 	}
 	inline bool has(const std::string& s) const
 	{
-		return std::map<std::string, T>::end() != BASE::find(s);
+		return base.end() != base.find(s);
 	}
 	/** A const version of the [] operator, for usage as read-only.
 	 * \exception std::logic_error On parameter not present. Please, check
@@ -90,8 +76,8 @@ struct TParameters : public std::map<std::string, T>
 	 */
 	inline T operator[](const std::string& s) const
 	{
-		auto it = BASE::find(s);
-		if (BASE::end() == it)
+		auto it = base.find(s);
+		if (base.end() == it)
 			throw std::logic_error(
 				std::string("Parameter '") + s +
 				std::string("' is not present.").c_str());
@@ -102,14 +88,14 @@ struct TParameters : public std::map<std::string, T>
 	 */
 	inline T getWithDefaultVal(const std::string& s, const T& defaultVal) const
 	{
-		auto it = BASE::find(s);
-		if (BASE::end() == it)
+		auto it = base.find(s);
+		if (base.end() == it)
 			return defaultVal;
 		else
 			return it->second;
 	}
 	/** The write (non-const) version of the [] operator. */
-	inline T& operator[](const std::string& s) { return BASE::operator[](s); }
+	inline T& operator[](const std::string& s) { return base[s]; }
 	/** Dumps to console the output from getAsString() */
 	inline void dumpToConsole() const
 	{
@@ -139,6 +125,20 @@ struct TParameters : public std::map<std::string, T>
 				<< " = " << e.second << std::endl;
 		s = str.str();
 	}
+
+	inline void clear() { base.clear(); }
+
+	iterator find(const std::string& key) { return base.find(key); }
+
+	const_iterator find(const std::string& key) const { return base.find(key); }
+
+	iterator begin() noexcept { return base.begin(); }
+
+	const_iterator begin() const noexcept { return base.begin(); }
+
+	iterator end() noexcept { return base.end(); }
+
+	const_iterator end() const noexcept { return base.end(); }
 };
 
 /** See the generic template mrpt::system::TParameters */

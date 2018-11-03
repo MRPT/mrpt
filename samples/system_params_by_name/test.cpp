@@ -41,12 +41,15 @@ void TestParameters()
 	{
 		// Call #2
 		cout << "CALL #2 ================================\n";
+		// clang-format off
 		TParametersDouble p(
-			"threshold", 3.05, "altitude",
-			100.0,  // *VERY IMPORTANT* If you put "100" here it will be an
-			// "int" and it will crash!!! Make sure all params are
-			// doubles!!
-			"level", -1.0, nullptr);
+			{
+				{"threshold", 3.05},
+				{"altitude", 100.0},
+				{"level", -1.0}
+			}
+		);
+		// clang-format on
 
 		MyCoolFunction(p);
 	}

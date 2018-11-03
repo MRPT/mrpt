@@ -28,9 +28,7 @@ struct map_traits_stdmap
 		class KEY, class VALUE, class _LessPred = std::less<KEY>,
 		class _Alloc =
 			mrpt::aligned_allocator_cpp11<std::pair<const KEY, VALUE>>>
-	struct map : public std::map<KEY, VALUE, _LessPred, _Alloc>
-	{
-	};
+	using map = std::map<KEY, VALUE, _LessPred, _Alloc>;
 };
 
 /**  Traits for using a mrpt::utils::map_as_vector<> (dense, fastest
@@ -41,9 +39,7 @@ struct map_traits_map_as_vector
 		class KEY, class VALUE, class _LessPred = std::less<KEY>,
 		class _Alloc =
 			mrpt::aligned_allocator_cpp11<std::pair<const KEY, VALUE>>>
-	struct map : public mrpt::containers::map_as_vector<KEY, VALUE>
-	{
-	};
+	using map = mrpt::containers::map_as_vector<KEY, VALUE>;
 };
 
 /** @} */
