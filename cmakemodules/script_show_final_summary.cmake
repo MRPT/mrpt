@@ -76,7 +76,8 @@ if(NOT CMAKE_GENERATOR MATCHES "Xcode|Visual Studio")
 	message(STATUS " Configuration               : "  ${CMAKE_BUILD_TYPE})
 endif(NOT CMAKE_GENERATOR MATCHES "Xcode|Visual Studio")
 
-message( STATUS "C++ flags                   : ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}}")
+message(STATUS " C++ flags                   : ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}}")
+message(STATUS " clang-tidy checks           : ${CLANG_TIDY_CHECKS}")
 
 message(STATUS "")
 message(STATUS " __________________________ OPTIONS _____________________________")
