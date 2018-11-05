@@ -53,7 +53,7 @@ TEST(NavTests, PTGs_tests)
 		{
 			PTGs[n]->initialize(string(), false /*verbose */);
 		}
-		catch (std::exception& e)
+		catch (const std::exception& e)
 		{
 			GTEST_FAIL() << "Failed initializing PTG #" << n << endl
 						 << e.what() << endl;

@@ -160,9 +160,9 @@ void saveLastUsedDirectoryToCfgFile(const std::string& fil)
 	{
 		iniFile->write(iniFileSect, "LastDir", extractFileDirectory(fil));
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		wxMessageBox(_U(e.what()), _("Exception"), wxOK);
+		wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception"), wxOK);
 	}
 }
 
@@ -310,7 +310,7 @@ void CMyGLCanvas::OnCharCustom(wxKeyEvent& event)
 		catch (std::exception&)
 		{
 			// cerr << "*EXCEPTION* while determining next/previous file:\n" <<
-			// e.what() << endl;
+			// mrpt::exception_to_str(e) << endl;
 		}
 		catch (...)
 		{
@@ -1028,11 +1028,11 @@ void _DSceneViewerFrame::loadFromFile(
 
 		Refresh(false);
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		std::cerr << e.what() << std::endl;
+		std::cerr << mrpt::exception_to_str(e) << std::endl;
 		btnAutoplay->SetValue(false);
-		wxMessageBox(_U(e.what()), _("Exception"), wxOK, this);
+		wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception"), wxOK, this);
 	}
 	catch (...)
 	{
@@ -1216,11 +1216,11 @@ void _DSceneViewerFrame::OnInsert3DS(wxCommandEvent& event)
 
 		m_canvas->Refresh();
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		std::cerr << e.what() << std::endl;
+		std::cerr << mrpt::exception_to_str(e) << std::endl;
 		btnAutoplay->SetValue(false);
-		wxMessageBox(_U(e.what()), _("Exception"), wxOK, this);
+		wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception"), wxOK, this);
 	}
 	catch (...)
 	{
@@ -1251,11 +1251,11 @@ void _DSceneViewerFrame::OnMenuSave(wxCommandEvent& event)
 		CFileGZOutputStream fo(string(fileName.mb_str()));
 		mrpt::serialization::archiveFrom(fo) << *m_canvas->getOpenGLSceneRef();
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		std::cerr << e.what() << std::endl;
+		std::cerr << mrpt::exception_to_str(e) << std::endl;
 		btnAutoplay->SetValue(false);
-		wxMessageBox(_U(e.what()), _("Exception"), wxOK, this);
+		wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception"), wxOK, this);
 	}
 	catch (...)
 	{
@@ -1342,10 +1342,10 @@ void _DSceneViewerFrame::OnTravellingTrigger(wxTimerEvent& event)
 			Refresh(false);
 		}
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		std::cerr << e.what() << std::endl;
-		wxMessageBox(_U(e.what()), _("Exception"), wxOK, this);
+		std::cerr << mrpt::exception_to_str(e) << std::endl;
+		wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception"), wxOK, this);
 	}
 	catch (...)
 	{
@@ -1416,10 +1416,10 @@ void _DSceneViewerFrame::OnStartCameraTravelling(wxCommandEvent& event)
 			Refresh(false);
 		}
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		std::cerr << e.what() << std::endl;
-		wxMessageBox(_U(e.what()), _("Exception"), wxOK, this);
+		std::cerr << mrpt::exception_to_str(e) << std::endl;
+		wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception"), wxOK, this);
 	}
 	catch (...)
 	{
@@ -1437,10 +1437,10 @@ void _DSceneViewerFrame::OnMenuAddSICK(wxCommandEvent& event)
 		m_canvas->getOpenGLSceneRef()->insert(obj);
 		m_canvas->Refresh();
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		std::cerr << e.what() << std::endl;
-		wxMessageBox(_U(e.what()), _("Exception"), wxOK, this);
+		std::cerr << mrpt::exception_to_str(e) << std::endl;
+		wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception"), wxOK, this);
 	}
 	catch (...)
 	{
@@ -1613,9 +1613,9 @@ void _DSceneViewerFrame::OnmnuSceneStatsSelected(wxCommandEvent& event)
 
 		wxMessageBox(_U(ss.str().c_str()), _("Scene statistics"));
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		wxMessageBox(_U(e.what()), _("Exception"), wxOK, this);
+		wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception"), wxOK, this);
 	}
 }
 
@@ -1690,9 +1690,9 @@ void _DSceneViewerFrame::OnmnuItemShowCloudOctreesSelected(
 
 		Refresh(false);
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		wxMessageBox(_U(e.what()), _("Exception"), wxOK, this);
+		wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception"), wxOK, this);
 	}
 }
 
@@ -1826,9 +1826,9 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 				_("File info"), wxOK, this);
 		}
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		wxMessageBox(_U(e.what()), _("Exception"), wxOK, this);
+		wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception"), wxOK, this);
 	}
 }
 
@@ -1897,9 +1897,9 @@ void _DSceneViewerFrame::OnMenuItemExportPointsPLY(wxCommandEvent& event)
 				_("%u point cloud(s) exported to PLY files."), counter),
 			_("Result"));
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		wxMessageBox(_U(e.what()), _("Exception"), wxOK, this);
+		wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception"), wxOK, this);
 	}
 }
 
@@ -1949,9 +1949,9 @@ void _DSceneViewerFrame::OnMenuItemHighResRender(wxCommandEvent& event)
 			frame.saveToFile(sTargetFil);
 		}
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		wxMessageBox(_U(e.what()), _("Exception"), wxOK, this);
+		wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception"), wxOK, this);
 	}
 }
 
@@ -2247,9 +2247,9 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 		throw std::runtime_error("MRPT was built without libLAS support!");
 #endif
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		wxMessageBox(_U(e.what()), _("Exception"), wxOK, this);
+		wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception"), wxOK, this);
 	}
 }
 

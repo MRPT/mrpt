@@ -28,7 +28,7 @@ void mrpt::gui::tryCatch(
 	{
 		tryPart();
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		showErrorMessage(catchMessage + e.what());
 	}

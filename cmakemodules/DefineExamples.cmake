@@ -51,6 +51,14 @@ if(BUILD_EXAMPLES)
 	set(CMAKE_COMMANDS_INCLUDE_EXAMPLE_DIRS_ROOT "")
 	#set(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS}) # use CMake Interface?
 
+
+	# === Depending on: core ===
+	set(LIST_EXAMPLES_IN_THIS_DIR
+		core_exceptions_example
+		)
+	set(CMAKE_EXAMPLE_DEPS mrpt-core)
+	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+
 	# === Depending on: typemeta ===
 	set(LIST_EXAMPLES_IN_THIS_DIR
 		typemeta_TTypeName

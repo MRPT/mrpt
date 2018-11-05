@@ -619,9 +619,11 @@ void camera_calib_guiDialog::OnAddImage(wxCommandEvent& event)
 
 		this->updateListOfImages();
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		wxMessageBox(_U(e.what()), _("Error"), wxICON_INFORMATION, this);
+		wxMessageBox(
+			_U(mrpt::exception_to_str(e)), _("Error"), wxICON_INFORMATION,
+			this);
 	}
 }
 
@@ -671,9 +673,11 @@ void camera_calib_guiDialog::OnbtnRunCalibClick(wxCommandEvent& event)
 
 		if (res) show3Dview();
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		wxMessageBox(_U(e.what()), _("Error"), wxICON_INFORMATION, this);
+		wxMessageBox(
+			_U(mrpt::exception_to_str(e)), _("Error"), wxICON_INFORMATION,
+			this);
 	}
 }
 
@@ -843,9 +847,11 @@ void camera_calib_guiDialog::refreshDisplayedImage()
 		this->bmpOriginal->Refresh(false);
 		this->bmpRectified->Refresh(false);
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		wxMessageBox(_U(e.what()), _("Error"), wxICON_INFORMATION, this);
+		wxMessageBox(
+			_U(mrpt::exception_to_str(e)), _("Error"), wxICON_INFORMATION,
+			this);
 	}
 }
 
@@ -1072,9 +1078,11 @@ void camera_calib_guiDialog::OnbtnSaveImagesClick(wxCommandEvent& event)
 					dir + string("/") + lst_image.first + string(".png"));
 		}
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		wxMessageBox(_U(e.what()), _("Error"), wxICON_INFORMATION, this);
+		wxMessageBox(
+			_U(mrpt::exception_to_str(e)), _("Error"), wxICON_INFORMATION,
+			this);
 	}
 }
 

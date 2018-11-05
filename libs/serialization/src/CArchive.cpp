@@ -409,7 +409,7 @@ void CArchive::internal_ReadObjectHeader(
 	{
 		throw;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		if (lengthReadClassName == 255)
 		{
@@ -461,7 +461,7 @@ void CArchive::internal_ReadObject(
 	{
 		throw;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		THROW_STACKED_EXCEPTION_CUSTOM_MSG2(
 			e, "Exception while parsing typed object '%s' from stream!\n",

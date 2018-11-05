@@ -473,7 +473,7 @@ bool CTuMicos::init(const string& port)
 
 		cout << "OK" << endl;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		MRPT_LOG_ERROR_STREAM("Error initializating: " << e.what());
 		return false;

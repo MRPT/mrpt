@@ -318,7 +318,7 @@ MEX_DISPATCH  // Don't forget to add this if MEX_DEFINE() is used.
 		cout << format("[thread_%s] Closing...", params.sensor_label.c_str())
 			 << endl;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		printf("[mex-grabber::Exception] %s\n", e.what());
 		allThreadsMustExit = true;
@@ -387,7 +387,7 @@ int main(int argc, const char* argv[])
 
 		return 0;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		printf("[mex-grabber::Exception] %s\n", e.what());
 		return -1;

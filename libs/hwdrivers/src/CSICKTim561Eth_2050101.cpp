@@ -104,7 +104,7 @@ bool CSICKTim561Eth::checkIsConnected()
 		{
 			m_client.connect(m_ip, m_port);
 		}
-		catch (std::exception& e)
+		catch (const std::exception& e)
 		{
 			MRPT_LOG_ERROR_FMT(
 				"[SICKTIM561ETH] ERROR TRYING TO OPEN Ethernet DEVICE:\n%s",
@@ -357,7 +357,7 @@ bool CSICKTim561Eth::turnOn()
 			// }
 			m_turnedOn = true;
 		}
-		catch (std::exception& e)
+		catch (const std::exception& e)
 		{
 			MRPT_LOG_ERROR_FMT("%s", e.what());
 			return false;

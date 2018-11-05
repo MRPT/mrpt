@@ -14,24 +14,89 @@
 #include <mrpt/core/common.h>
 #include <mrpt/core/format.h>
 
-/** \def THROW_TYPED_EXCEPTION(msg,exceptionClass) */
-#define THROW_TYPED_EXCEPTION(msg, exceptionClass) \
-	throw exceptionClass(                          \
-		throw_typed_exception(msg, __CURRENT_FUNCTION_NAME__, __LINE__))
-
-template <typename T>
-inline std::string throw_typed_exception(
-	const T& msg, const char* function_name, unsigned int line)
+namespace mrpt::internal
 {
-	std::string s = "\n\n =============== MRPT EXCEPTION =============\n";
+template <typename T>
+inline std::string exception_line_msg(
+	const T& msg, const char* filename, unsigned int line,
+	const char* function_name)
+{
+	std::string s;
+	s += filename;
+	s += ":";
+	s += std::to_string(line);
+	s += ": [";
 	s += function_name;
-	s += ", line ";
-	s += mrpt::to_string(line);
-	s += ":\n";
+	s += "] ";
 	s += msg;
-	s += ":\n";
+	s += "\n";
 	return s;
 }
+
+/** Recursive implementation for mrpt::exception_to_str() */
+inline void impl_excep_to_str(
+	const std::exception& e, std::string& ret, int lvl = 0)
+{
+	ret = e.what() + ret;
+	try
+	{
+		std::rethrow_if_nested(e);
+		// We traversed the entire call stack:
+		ret = std::string("==== MRPT exception ====\n") + ret;
+	}
+	catch (const std::exception& er)
+	{
+		// It's nested: recursive call
+		impl_excep_to_str(er, ret, lvl + 1);
+	}
+	catch (...)
+	{
+	}
+}
+
+template <typename A, typename B>
+inline std::string asrt_fail(
+	std::string s, A&& a, B&& b, const char* astr, const char* bstr)
+{
+	s += "(";
+	s += astr;
+	s += ",";
+	s += bstr;
+	s += ") failed with\n";
+	s += astr;
+	s += "=";
+	s += mrpt::to_string(a);
+	s += "\n";
+	s += bstr;
+	s += "=";
+	s += mrpt::to_string(b);
+	s += "\n";
+	return s;
+}
+
+}  // namespace mrpt::internal
+
+namespace mrpt
+{
+/** Builds a nice textual representation of a nested exception, which if
+ * generated using MRPT macros (THROW_EXCEPTION,...) in between
+ * MRPT_START/MRPT_END macros, will contain function names and line numbers
+ * across the call stack at the original throw point.
+ * See example of use in \ref mrpt_core_grp
+ * Uses C++11 throw_with_nested(), rethrow_if_nested().
+ * \ingroup mrpt_core_grp
+ */
+inline std::string exception_to_str(const std::exception& e)
+{
+	std::string descr;
+	mrpt::internal::impl_excep_to_str(e, descr);
+	return descr;
+}
+
+/** \def THROW_TYPED_EXCEPTION(msg,exceptionClass) */
+#define THROW_TYPED_EXCEPTION(msg, exceptionClass)           \
+	throw exceptionClass(mrpt::internal::exception_line_msg( \
+		msg, __FILE__, __LINE__, __CURRENT_FUNCTION_NAME__))
 
 /** \def THROW_EXCEPTION(msg);
  * \param msg This can be a char*, a std::string, or a literal string.
@@ -50,24 +115,11 @@ inline std::string throw_typed_exception(
 /** \def THROW_STACKED_EXCEPTION
  * \sa MRPT_TRY_START, MRPT_TRY_END
  */
-#define THROW_STACKED_EXCEPTION(e)                  \
-	throw std::logic_error(throw_stacked_exception( \
-		e, __FILE__, __LINE__, __CURRENT_FUNCTION_NAME__))
-
-template <typename E>
-inline std::string throw_stacked_exception(
-	E&& e, const char* file, unsigned long line, const char* funcName)
-{
-	std::string s = e.what();
-	s += "\n";
-	s += file;
-	s += ":";
-	s += mrpt::to_string(line);
-	s += ": In `";
-	s += funcName;
-	s += "`\n";
-	return s;
-}
+#define THROW_STACKED_EXCEPTION(e)                           \
+	std::throw_with_nested(                                  \
+		std::logic_error(mrpt::internal::exception_line_msg( \
+			"Called from here.", __FILE__, __LINE__,         \
+			__CURRENT_FUNCTION_NAME__)))
 
 /** \def THROW_STACKED_EXCEPTION_CUSTOM_MSG
  * \param e The caught exception.
@@ -75,17 +127,10 @@ inline std::string throw_stacked_exception(
  *for x=%i",x
  */
 #define THROW_STACKED_EXCEPTION_CUSTOM_MSG2(e, stuff, param1) \
-	throw std::logic_error(                                   \
-		throw_stacked_exception_custom_msg2(e, stuff, param1))
-template <typename E, typename T>
-inline std::string throw_stacked_exception_custom_msg2(
-	E&& e, const char* stuff, T&& param1)
-{
-	std::string s = e.what();
-	s += mrpt::format(stuff, param1);
-	s += "\n";
-	return s;
-}
+	std::throw_with_nested(                                   \
+		std::logic_error(mrpt::internal::exception_line_msg(  \
+			mrpt::format(stuff, param1), __FILE__, __LINE__,  \
+			__CURRENT_FUNCTION_NAME__)))
 
 /** For use in CSerializable implementations */
 #define MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(__V)                      \
@@ -123,32 +168,9 @@ inline std::string throw_stacked_exception_custom_msg2(
 		ASSERT_(!std::isnan(v));    \
 	} while (0)
 
-// Static asserts: use compiler version if we have a modern GCC (>=4.3) or MSVC
-// (>=2010) version, otherwise rely on custom implementation:
-#define MRPT_COMPILE_TIME_ASSERT(expression) \
-	static_assert(expression, #expression)
-
 #define ASRT_FAIL(__CONDITIONSTR, __A, __B, __ASTR, __BSTR) \
-	THROW_EXCEPTION(asrt_fail(__CONDITIONSTR, __A, __B, __ASTR, __BSTR))
-template <typename A, typename B>
-inline std::string asrt_fail(
-	std::string s, A&& a, B&& b, const char* astr, const char* bstr)
-{
-	s += "(";
-	s += astr;
-	s += ",";
-	s += bstr;
-	s += ") failed with\n";
-	s += astr;
-	s += "=";
-	s += mrpt::to_string(a);
-	s += "\n";
-	s += bstr;
-	s += "=";
-	s += mrpt::to_string(b);
-	s += "\n";
-	return s;
-}
+	THROW_EXCEPTION(                                        \
+		mrpt::internal::asrt_fail(__CONDITIONSTR, __A, __B, __ASTR, __BSTR))
 
 /** Assert comparing two values, reporting their actual values upon failure */
 #define ASSERT_EQUAL_(__A, __B)                                          \
@@ -203,30 +225,16 @@ inline std::string asrt_fail(
 #define ASSERTDEB_BELOWEQ_(__A, __B) ASSERT_BELOWEQ_(__A, __B)
 #define ASSERTDEB_ABOVEEQ_(__A, __B) ASSERT_ABOVEEQ_(__A, __B)
 #else
-#define ASSERTDEB_(f) \
-	{                 \
-	}
-#define ASSERTDEBMSG_(f, __ERROR_MSG) \
-	{                                 \
-	}
-#define ASSERTDEB_EQUAL_(__A, __B) \
-	{                              \
-	}
-#define ASSERTDEB_NOT_EQUAL_(__A, __B) \
-	{                                  \
-	}
-#define ASSERTDEB_BELOW_(__A, __B) \
-	{                              \
-	}
-#define ASSERTDEB_ABOVE_(__A, __B) \
-	{                              \
-	}
-#define ASSERTDEB_BELOWEQ_(__A, __B) \
-	{                                \
-	}
-#define ASSERTDEB_ABOVEEQ_(__A, __B) \
-	{                                \
-	}
+// clang-format off
+#define ASSERTDEB_(f) {}
+#define ASSERTDEBMSG_(f, __ERROR_MSG) {}
+#define ASSERTDEB_EQUAL_(__A, __B) {}
+#define ASSERTDEB_NOT_EQUAL_(__A, __B) {}
+#define ASSERTDEB_BELOW_(__A, __B) {}
+#define ASSERTDEB_ABOVE_(__A, __B) {}
+#define ASSERTDEB_BELOWEQ_(__A, __B) {}
+#define ASSERTDEB_ABOVEEQ_(__A, __B) {}
+// clang-format on
 
 #endif
 
@@ -279,3 +287,4 @@ inline std::string asrt_fail(
 #define MRPT_END MRPT_TRY_END
 
 #define MRPT_END_WITH_CLEAN_UP(stuff) MRPT_TRY_END_WITH_CLEAN_UP(stuff)
+}  // namespace mrpt

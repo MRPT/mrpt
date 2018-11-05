@@ -116,7 +116,7 @@ CHMTSLAM::~CHMTSLAM()
 						f << m_knownAreas;
 						*/
 		}
-		catch (std::exception& e)
+		catch (const std::exception& e)
 		{
 			MRPT_LOG_WARN(mrpt::format(
 				"Ignoring exception at ~CHMTSLAM():\n%s", e.what()));

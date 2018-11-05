@@ -617,18 +617,19 @@ class xRawLogViewerFrame : public wxFrame
 #define WX_START_TRY \
 	try              \
 	{
-#define WX_END_TRY                                                            \
-	}                                                                         \
-	catch (std::exception & e)                                                \
-	{                                                                         \
-		std::cerr << e.what() << std::endl;                                   \
-		wxMessageBox(                                                         \
-			wxString(e.what(), wxConvUTF8), wxT("Exception"), wxOK, nullptr); \
-	}                                                                         \
-	catch (...)                                                               \
-	{                                                                         \
-		std::cerr << "Untyped exception!" << std::endl;                       \
-		wxMessageBox(_("Untyped exception!"), _("Exception"), wxOK, nullptr); \
+#define WX_END_TRY                                                             \
+	}                                                                          \
+	catch (std::exception & e)                                                 \
+	{                                                                          \
+		std::cerr << mrpt::exception_to_str(e) << std::endl;                   \
+		wxMessageBox(                                                          \
+			wxString(mrpt::exception_to_str(e), wxConvUTF8), wxT("Exception"), \
+			wxOK, nullptr);                                                    \
+	}                                                                          \
+	catch (...)                                                                \
+	{                                                                          \
+		std::cerr << "Untyped exception!" << std::endl;                        \
+		wxMessageBox(_("Untyped exception!"), _("Exception"), wxOK, nullptr);  \
 	}
 
 extern std::string iniFileSect;

@@ -176,7 +176,7 @@ bool CImpinjRFID::getObservation(mrpt::obs::CObservationRFID& obs)
 		else
 			return false;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		std::cerr << e.what() << std::endl;
 		return false;

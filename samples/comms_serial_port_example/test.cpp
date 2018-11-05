@@ -61,7 +61,7 @@ int main()
 
 		delete serPort;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		cerr << e.what() << endl;
 		return -1;

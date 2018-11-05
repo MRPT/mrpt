@@ -523,7 +523,7 @@ bool CPTG_DiffDrive_CollisionGridBased::CCollisionGrid::loadFromFile(
 
 		return true;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		std::cerr << "[CCollisionGrid::loadFromFile] " << e.what();
 		return false;

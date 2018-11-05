@@ -75,7 +75,7 @@ TEST(SerializeTestMaps, WriteReadToMem)
 			buf.Seek(0);
 			arch >> recons;
 		}
-		catch (std::exception& e)
+		catch (const std::exception& e)
 		{
 			GTEST_FAIL() << "Exception during serialization test for class '"
 						 << lstClasse->className << "':\n"

@@ -246,7 +246,7 @@ void CHMTSLAM::thread_LSLAM()
 		obj->logFmt(mrpt::system::LVL_DEBUG, "[thread_LSLAM] Thread finished");
 		obj->m_terminationFlag_LSLAM = true;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		obj->m_terminationFlag_LSLAM = true;
 

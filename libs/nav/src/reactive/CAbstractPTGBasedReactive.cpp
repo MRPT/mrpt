@@ -200,7 +200,7 @@ void CAbstractPTGBasedReactive::enableLogFile(bool enable)
 				aux));
 		}
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		MRPT_LOG_ERROR_FMT(
 			"[CAbstractPTGBasedReactive::enableLogFile] Exception: %s",
@@ -907,7 +907,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				tim_changeSpeed, tim_start_iteration);
 		}
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		doEmergencyStop(
 			std::string("[CAbstractPTGBasedReactive::performNavigationStep] "
@@ -1433,7 +1433,7 @@ double CAbstractPTGBasedReactive::generate_vel_cmd(
 
 		m_last_vel_cmd = new_vel_cmd;  // Save for filtering in next step
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		MRPT_LOG_ERROR_STREAM(
 			"[CAbstractPTGBasedReactive::generate_vel_cmd] Exception: "

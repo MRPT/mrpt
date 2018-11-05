@@ -174,7 +174,7 @@ bool CSickLaserUSB::checkControllerIsConnected()
 			m_serialNumber.c_str());
 		return true;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		MRPT_LOG_ERROR_FMT(
 			"[CSickLaserUSB] ERROR TRYING TO OPEN USB DEVICE S/N:'%s'\n%s",
@@ -217,7 +217,7 @@ bool CSickLaserUSB::waitContinuousSampleFrame(
 		{
 			nRead = m_usbConnection->ReadSync(buf + nFrameBytes, nBytesToRead);
 		}
-		catch (std::exception& e)
+		catch (const std::exception& e)
 		{
 			// Disconnected?
 			MRPT_LOG_ERROR_FMT(

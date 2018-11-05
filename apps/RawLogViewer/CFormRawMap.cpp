@@ -828,9 +828,10 @@ void CFormRawMap::OnbtnSaveTxtClick(wxCommandEvent&)
 			theMap.saveMetricMapRepresentationToFile(
 				std::string(fileName.mb_str()));
 		}
-		catch (std::exception& e)
+		catch (const std::exception& e)
 		{
-			wxMessageBox(_U(e.what()), _("Exception"), wxOK, this);
+			wxMessageBox(
+				_U(mrpt::exception_to_str(e)), _("Exception"), wxOK, this);
 		}
 	}
 }
@@ -863,9 +864,10 @@ void CFormRawMap::OnbtnSave3DClick(wxCommandEvent&)
 
 			archiveFrom(fil) << scene;
 		}
-		catch (std::exception& e)
+		catch (const std::exception& e)
 		{
-			wxMessageBox(_U(e.what()), _("Exception"), wxOK, this);
+			wxMessageBox(
+				_U(mrpt::exception_to_str(e)), _("Exception"), wxOK, this);
 		}
 	}
 }

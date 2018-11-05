@@ -63,7 +63,7 @@ void thread_server()
 		printf("[Server] Finish\n");
 #endif
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		cerr << e.what() << endl;
 	}
@@ -129,7 +129,7 @@ void thread_client()
 		printf("[Client] Finish\n");
 #endif
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		cerr << e.what() << endl;
 	}

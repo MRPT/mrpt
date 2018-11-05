@@ -104,7 +104,7 @@ int main()
 		Test_GPS();
 		return 0;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		std::cout << "EXCEPCION: " << e.what() << std::endl;
 		return -1;

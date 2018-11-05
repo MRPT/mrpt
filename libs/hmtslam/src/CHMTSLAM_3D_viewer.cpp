@@ -60,7 +60,7 @@ void CHMTSLAM::thread_3D_viewer()
 		// finished. CPU time used:%.06f secs \n",timCPU);
 		obj->m_terminationFlag_3D_viewer = true;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		obj->m_terminationFlag_3D_viewer = true;
 

@@ -484,7 +484,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecFILE(wxCommandEvent& event)
 		}
 		catch (exception& e)
 		{
-			errorMsg = e.what();
+			errorMsg = mrpt::exception_to_str(e);
 			keepLoading = false;
 		}
 		catch (...)
@@ -649,7 +649,7 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored(wxCommandEvent& event)
 		}
 		catch (exception& e)
 		{
-			errorMsg = e.what();
+			errorMsg = mrpt::exception_to_str(e);
 			keepLoading = false;
 		}
 		catch (...)
@@ -789,7 +789,7 @@ void xRawLogViewerFrame::OnMenuConvertObservationOnly(wxCommandEvent& event)
 		}
 		catch (exception& e)
 		{
-			errorMsg = e.what();
+			errorMsg = mrpt::exception_to_str(e);
 			keepLoading = false;
 		}
 		catch (...)

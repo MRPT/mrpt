@@ -238,7 +238,7 @@ void CCameraSensor::initialize()
 			m_cap_openni2
 				->initialize();  // This will launch an exception if needed.
 		}
-		catch (std::exception& e)
+		catch (const std::exception& e)
 		{
 			m_state = CGenericSensor::ssError;
 			throw e;
@@ -337,7 +337,7 @@ void CCameraSensor::initialize()
 		{
 			m_cap_duo3d = std::make_unique<CDUO3DCamera>(m_duo3d_options);
 		}
-		catch (std::exception& e)
+		catch (const std::exception& e)
 		{
 			m_state = CGenericSensor::ssError;
 			throw e;
@@ -1488,7 +1488,7 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromPanel(void* _panel)
 
 		return video;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		cerr << endl << e.what() << endl;
 		wxMessageBox(_("Couldn't open video source"), _("Error"));

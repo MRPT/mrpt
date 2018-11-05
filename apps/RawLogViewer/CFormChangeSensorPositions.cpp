@@ -891,7 +891,7 @@ void CFormChangeSensorPositions::executeOperationOnRawlog(
 		}
 		catch (exception& e)
 		{
-			errorMsg = e.what();
+			errorMsg = mrpt::exception_to_str(e);
 			keepLoading = false;
 		}
 		catch (...)
