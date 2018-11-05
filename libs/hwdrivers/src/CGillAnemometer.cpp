@@ -70,7 +70,7 @@ bool CGillAnemometer::tryToOpenTheCOM()
 
 		return true;  // All OK!
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		std::cerr << "[CGillAnemometer::tryToOpenTheCOM] Error opening or "
 					 "configuring the serial port:"
@@ -213,7 +213,7 @@ void CGillAnemometer::doProcess()
 				wind_reading.c_str(), static_cast<unsigned int>(list.size()));
 		}
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		std::cerr << "[CGillAnemometer::doProcess] Error:" << std::endl
 				  << e.what();

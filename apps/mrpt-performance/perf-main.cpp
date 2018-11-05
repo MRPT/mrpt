@@ -261,9 +261,10 @@ int main(int argc, char** argv)
 						mrpt::system::unitsFormat(1.0 / t).c_str());
 				}
 			}
-			catch (std::exception& e)
+			catch (const std::exception& e)
 			{
-				cerr << "Skipped due to exception:\n" << e.what() << endl;
+				cerr << "Skipped due to exception:\n"
+					 << mrpt::exception_to_str(e) << endl;
 			}
 		}
 
@@ -354,7 +355,7 @@ int main(int argc, char** argv)
 
 		return 0;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		if (::strlen(e.what()))
 		{
@@ -362,7 +363,7 @@ int main(int argc, char** argv)
 			std::cerr << "Program finished for an exception!!" << std::endl;
 			setConsoleColor(CONCOL_NORMAL, true);
 
-			std::cerr << e.what() << std::endl;
+			std::cerr << mrpt::exception_to_str(e) << std::endl;
 
 			mrpt::system::pause();
 		}

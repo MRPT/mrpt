@@ -1095,12 +1095,13 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 		// Prepare next interval
 		if (!we_are_closing) timRun.Start(TIMER_MS, true);
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		wxCommandEvent dum;
 		OnbtnEndClick(dum);
 		wxMessageBox(
-			wxString(e.what(), wxConvUTF8), wxT("Exception"), wxOK, this);
+			wxString(mrpt::exception_to_str(e), wxConvUTF8), wxT("Exception"),
+			wxOK, this);
 	}
 	catch (...)
 	{

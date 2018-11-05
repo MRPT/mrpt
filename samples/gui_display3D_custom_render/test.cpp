@@ -235,7 +235,7 @@ int main()
 			50ms);  // leave time for the window to close
 		return 0;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		std::cout << "MRPT exception caught: " << e.what() << std::endl;
 		return -1;

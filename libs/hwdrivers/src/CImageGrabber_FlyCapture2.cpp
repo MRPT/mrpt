@@ -735,7 +735,7 @@ bool CImageGrabber_FlyCapture2::getObservation(
 			out_observation.timestamp = mrpt::system::now();
 		return true;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		std::cerr << "[CImageGrabber_FlyCapture2::getObservation] Error:\n"
 				  << e.what() << std::endl;
@@ -893,7 +893,7 @@ bool CImageGrabber_FlyCapture2::getObservation(
 			m_focalLength, m_focalLength, m_centerCol, m_centerRow);
 		return true;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		std::cerr << "[CImageGrabber_FlyCapture2::getObservation] Error:\n"
 				  << e.what() << std::endl;

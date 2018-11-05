@@ -577,7 +577,8 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 catch (CExceptionExternalImageNotFound& e)
 {
 	wxMessageBox(
-		_U(e.what()), _("Error with a delayed load image"), wxOK, this);
+		_U(mrpt::exception_to_str(e)), _("Error with a delayed load image"),
+		wxOK, this);
 
 	if (wxYES ==
 		wxMessageBox(
@@ -598,8 +599,10 @@ catch (CExceptionExternalImageNotFound& e)
 		}
 	}
 }
-catch (std::exception& e)
+catch (const std::exception& e)
 {
-	wxMessageBox(wxString(e.what(), wxConvUTF8), wxT("Exception"), wxOK, this);
+	wxMessageBox(
+		wxString(mrpt::exception_to_str(e), wxConvUTF8), wxT("Exception"), wxOK,
+		this);
 }
 }

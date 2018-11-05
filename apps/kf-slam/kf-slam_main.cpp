@@ -102,9 +102,9 @@ int main(int argc, char** argv)
 
 		return 0;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		std::cerr << e.what() << std::endl
+		std::cerr << mrpt::exception_to_str(e) << std::endl
 				  << "Program finished for an exception!!" << std::endl;
 		mrpt::system::pause();
 		return -1;
@@ -841,10 +841,10 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 		{
 			GT.loadFromTextFile(ground_truth_file);
 		}
-		catch (std::exception& e)
+		catch (const std::exception& e)
 		{
 			cerr << "Ignoring the following error loading ground truth file: "
-				 << e.what() << endl;
+				 << mrpt::exception_to_str(e) << endl;
 		}
 
 		if (GT.rows() > 0 && !LMs.empty())

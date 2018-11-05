@@ -74,7 +74,7 @@ TEST(SerializeTestOpenGL, WriteReadToMem)
 			buf.Seek(0);
 			mrpt::serialization::archiveFrom(buf) >> recons;
 		}
-		catch (std::exception& e)
+		catch (const std::exception& e)
 		{
 			GTEST_FAIL() << "Exception during serialization test for class '"
 						 << lstClasse->className << "':\n"

@@ -20,6 +20,14 @@ href="modules.html" >See all modules</a> </small> <br>
 
 This library is part of MRPT and can be installed in Debian-based systems with:
 
-		sudo apt install libmrpt-rtti-dev
+		sudo apt install libmrpt-core-dev
+
+
+## Nested exceptions
+
+See: \ref core_exceptions_example/test.cpp
+\snippet core_exceptions_example/test.cpp example-nested-exceptions
+Output:
+\include core_exceptions_example/console.out
 
 */

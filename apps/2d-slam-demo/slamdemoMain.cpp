@@ -2104,7 +2104,7 @@ void slamdemoFrame::executeOneStep()
 			}
 		}
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		try
 		{
@@ -2114,8 +2114,8 @@ void slamdemoFrame::executeOneStep()
 		catch (...)
 		{
 		}
-		cerr << endl << e.what() << endl;
-		wxMessageBox(_U(e.what()), _("Exception"));
+		cerr << endl << mrpt::exception_to_str(e) << endl;
+		wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception"));
 	}
 }
 

@@ -155,16 +155,17 @@ class navlog_viewer_GUI_designDialog : public wxFrame  // wxDialog
 #define WX_START_TRY \
 	try              \
 	{
-#define WX_END_TRY                                                         \
-	}                                                                      \
-	catch (std::exception & e)                                             \
-	{                                                                      \
-		wxMessageBox(                                                      \
-			wxString(e.what(), wxConvUTF8), wxT("Exception"), wxOK, this); \
-	}                                                                      \
-	catch (...)                                                            \
-	{                                                                      \
-		wxMessageBox(_("Untyped exception!"), _("Exception"), wxOK, this); \
+#define WX_END_TRY                                                             \
+	}                                                                          \
+	catch (std::exception & e)                                                 \
+	{                                                                          \
+		wxMessageBox(                                                          \
+			wxString(mrpt::exception_to_str(e), wxConvUTF8), wxT("Exception"), \
+			wxOK, this);                                                       \
+	}                                                                          \
+	catch (...)                                                                \
+	{                                                                          \
+		wxMessageBox(_("Untyped exception!"), _("Exception"), wxOK, this);     \
 	}
 
 #endif  // NAVLOG_VIEWER_GUI_DESIGNMAIN_H

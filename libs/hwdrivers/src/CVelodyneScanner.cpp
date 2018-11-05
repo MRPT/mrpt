@@ -623,12 +623,14 @@ bool CVelodyneScanner::receivePackets(
 	mrpt::system::TTimeStamp& pos_pkt_timestamp,
 	mrpt::obs::CObservationVelodyneScan::TVelodynePositionPacket& out_pos_pkt)
 {
-	MRPT_COMPILE_TIME_ASSERT(
+	static_assert(
 		sizeof(mrpt::obs::CObservationVelodyneScan::TVelodynePositionPacket) ==
-		CObservationVelodyneScan::POS_PACKET_SIZE);
-	MRPT_COMPILE_TIME_ASSERT(
+			CObservationVelodyneScan::POS_PACKET_SIZE,
+		"Velodyne pos packet: wrong size!");
+	static_assert(
 		sizeof(mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket) ==
-		CObservationVelodyneScan::PACKET_SIZE);
+			CObservationVelodyneScan::PACKET_SIZE,
+		"Velodyne raw packet: wrong size!");
 
 	bool ret = true;  // all ok
 	if (m_pcap)

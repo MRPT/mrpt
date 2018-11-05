@@ -1535,9 +1535,10 @@ void kinect_calibrate_guiDialog::thread_grabbing()
 			}
 		}
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		cout << "[Kinect thread] Exception: " << e.what() << endl;
+		cout << "[Kinect thread] Exception: " << mrpt::exception_to_str(e)
+			 << endl;
 		p.quit = true;  // Exit for some error
 	}
 	p.terminated = true;
@@ -1571,9 +1572,9 @@ void kinect_calibrate_guiDialog::OntimMiscTrigger(wxTimerEvent& event)
 				{
 					ProcessNewGrabbedObs();
 				}
-				catch (std::exception& e)
+				catch (const std::exception& e)
 				{
-					cerr << e.what();
+					cerr << mrpt::exception_to_str(e);
 				}
 			}
 
@@ -1879,9 +1880,10 @@ void kinect_calibrate_guiDialog::thread_find_corners()
 				std::this_thread::sleep_for(2ms);
 			}
 		}
-		catch (std::exception& e)
+		catch (const std::exception& e)
 		{
-			cout << "[corner finding thread] Exception: " << e.what() << endl;
+			cout << "[corner finding thread] Exception: "
+				 << mrpt::exception_to_str(e) << endl;
 		}
 	}
 	p.terminated = true;
@@ -2062,10 +2064,11 @@ void kinect_calibrate_guiDialog::ProcessNewSelectedImageListBox()
 		this->m_view_left->Refresh();
 		this->m_view_right->Refresh();
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		wxMessageBox(wxString::Format(
-			_("[Draw selected image] Exception:\n %s"), e.what()));
+			_("[Draw selected image] Exception:\n %s"),
+			mrpt::exception_to_str(e)));
 	}
 }
 
@@ -2288,10 +2291,10 @@ void kinect_calibrate_guiDialog::OnbtnRunCalibClick(wxCommandEvent& event)
 				m_calib_result.final_rmse),
 			_("Done"), 0, this);
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		wxMessageBox(
-			wxString::Format(_("[Optimizer] Exception:\n %s"), e.what()));
+		wxMessageBox(wxString::Format(
+			_("[Optimizer] Exception:\n %s"), mrpt::exception_to_str(e)));
 	}
 }
 

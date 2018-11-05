@@ -465,10 +465,11 @@ void CFormPlayVideo::OnbtnPickClick(wxCommandEvent& event)
 			iniFile->write(
 				iniFileSect, "LastDir", std::string(filePath.mb_str()));
 		}
-		catch (std::exception& e)
+		catch (const std::exception& e)
 		{
 			wxMessageBox(
-				wxString(e.what(), wxConvUTF8), wxT("Exception"), wxOK, this);
+				wxString(mrpt::exception_to_str(e), wxConvUTF8),
+				wxT("Exception"), wxOK, this);
 		}
 
 		// Sets the file:
@@ -581,7 +582,8 @@ void CFormPlayVideo::OnbtnPlayClick(wxCommandEvent& event)
 	catch (CExceptionExternalImageNotFound& e)
 	{
 		wxMessageBox(
-			_U(e.what()), _("Error with a delayed load image"), wxOK, this);
+			_U(mrpt::exception_to_str(e)), _("Error with a delayed load image"),
+			wxOK, this);
 
 		if (wxYES ==
 			wxMessageBox(
@@ -602,9 +604,9 @@ void CFormPlayVideo::OnbtnPlayClick(wxCommandEvent& event)
 			}
 		}
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		wxMessageBox(_U(e.what()), _("Exception"), wxOK, this);
+		wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception"), wxOK, this);
 	}
 
 	btnPlay->Enable(true);

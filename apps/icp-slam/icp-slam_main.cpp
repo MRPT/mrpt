@@ -98,22 +98,13 @@ int main(int argc, char** argv)
 		// pause();
 		return 0;
 	}
-	catch (exception& e)
+	catch (const exception& e)
 	{
 		setConsoleColor(CONCOL_RED, true);
 		cerr << "Program finished for an exception!!" << endl;
 		setConsoleColor(CONCOL_NORMAL, true);
 
-		cerr << e.what() << endl;
-
-		mrpt::system::pause();
-		return -1;
-	}
-	catch (...)
-	{
-		setConsoleColor(CONCOL_RED, true);
-		cerr << "Program finished for an untyped exception!!" << endl;
-		setConsoleColor(CONCOL_NORMAL, true);
+		cerr << mrpt::exception_to_str(e) << endl;
 
 		mrpt::system::pause();
 		return -1;

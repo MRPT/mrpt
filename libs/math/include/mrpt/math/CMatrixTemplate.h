@@ -207,7 +207,7 @@ class CMatrixTemplate
 	CMatrixTemplate(size_t row, size_t col, V (&theArray)[N])
 		: m_Val(nullptr), m_Rows(0), m_Cols(0)
 	{
-		MRPT_COMPILE_TIME_ASSERT(N != 0);
+		static_assert(N != 0, "Empty array!");
 		realloc(row, col);
 		if (m_Rows * m_Cols != N)
 			THROW_EXCEPTION(format(
@@ -271,7 +271,7 @@ class CMatrixTemplate
 	template <typename V, size_t N>
 	CMatrixTemplate& operator=(V (&theArray)[N])
 	{
-		MRPT_COMPILE_TIME_ASSERT(N != 0);
+		static_assert(N != 0, "Empty array!");
 		if (m_Rows * m_Cols != N)
 		{
 			THROW_EXCEPTION(format(

@@ -73,8 +73,8 @@ bool tfest::se2_l2(
 
 	//{
 	//	TMatchingPair dumm;
-	//	MRPT_COMPILE_TIME_ASSERT(sizeof(dumm.this_x)==sizeof(float))
-	//	MRPT_COMPILE_TIME_ASSERT(sizeof(dumm.other_x)==sizeof(float))
+	//	static_assert(sizeof(dumm.this_x)==sizeof(float));
+	//	static_assert(sizeof(dumm.other_x)==sizeof(float));
 	//}
 
 	__m128 sum_a_xyz = _mm_setzero_ps();  // All 4 zeros (0.0f)

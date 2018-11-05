@@ -50,7 +50,7 @@ TEST(NavTests, Serialization_WriteReadToMem)
 			buf.Seek(0);
 			arch >> recons;
 		}
-		catch (std::exception& e)
+		catch (const std::exception& e)
 		{
 			GTEST_FAIL() << "Exception during serialization test for class '"
 						 << lstClasse->className << "':\n"
@@ -77,7 +77,7 @@ TEST(SerializeTestObs, WriteReadToOctectVectors)
 			CSerializable::Ptr recons;
 			mrpt::serialization::OctetVectorToObject(buf, recons);
 		}
-		catch (std::exception& e)
+		catch (const std::exception& e)
 		{
 			GTEST_FAIL() << "Exception during serialization test for class '"
 						 << lstClasse->className << "':\n"
@@ -110,7 +110,7 @@ TEST(NavTests, NavLogLoadFromTestFile)
 			arch.ReadObject(&lfr);
 		}
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		FAIL() << "Failed to parse stored navlog. Exception was:\n"
 			   << e.what() << endl;

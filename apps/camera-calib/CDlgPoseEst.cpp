@@ -510,7 +510,7 @@ void CDlgPoseEst::OntimCaptureTrigger(wxTimerEvent& event)
 		// Get on...
 		timCapture.Start(5, true);
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		try
 		{
@@ -520,8 +520,10 @@ void CDlgPoseEst::OntimCaptureTrigger(wxTimerEvent& event)
 		catch (...)
 		{
 		}
-		cerr << endl << e.what() << endl;
-		wxMessageBox(_U(e.what()), _("Error"), wxICON_INFORMATION, this);
+		cerr << endl << mrpt::exception_to_str(e) << endl;
+		wxMessageBox(
+			_U(mrpt::exception_to_str(e)), _("Error"), wxICON_INFORMATION,
+			this);
 		return;
 	}
 }
@@ -607,9 +609,9 @@ void CDlgPoseEst::threadProcessCorners()
 					obj->m_threadResultsComputed = true;
 					// flog.close();
 				}
-				catch (std::exception& e)
+				catch (const std::exception& e)
 				{
-					cerr << e.what() << endl;
+					cerr << mrpt::exception_to_str(e) << endl;
 				}
 				catch (...)
 				{
@@ -625,9 +627,9 @@ void CDlgPoseEst::threadProcessCorners()
 		// Signal we're done
 		obj->m_threadIsClosed = true;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		cerr << e.what() << endl;
+		cerr << mrpt::exception_to_str(e) << endl;
 		// Signal we're done
 		obj->m_threadIsClosed = true;
 	}

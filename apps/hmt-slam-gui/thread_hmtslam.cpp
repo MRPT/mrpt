@@ -180,16 +180,18 @@ void hmt_slam_guiFrame::thread_HMTSLAM()
 
 				std::this_thread::sleep_for(5ms);
 			}
-			catch (std::exception& e)
+			catch (const std::exception& e)
 			{
-				cerr << "[HMTSLAMGUI_THREAD] Exception: \n" << e.what();
+				cerr << "[HMTSLAMGUI_THREAD] Exception: \n"
+					 << mrpt::exception_to_str(e);
 			}
 
 		}  // while running
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		cerr << "[HMTSLAMGUI_THREAD] Exception: \n" << e.what();
+		cerr << "[HMTSLAMGUI_THREAD] Exception: \n"
+			 << mrpt::exception_to_str(e);
 	}
 	cout << "[HMTSLAMGUI_THREAD] Thread closed\n";
 }

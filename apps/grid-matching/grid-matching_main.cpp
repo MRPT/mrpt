@@ -878,9 +878,9 @@ int main(int argc, char** argv)
 
 		return 0;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		cerr << e.what() << endl;
+		cerr << mrpt::exception_to_str(e) << endl;
 		return -1;
 	}
 	catch (...)

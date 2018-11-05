@@ -191,9 +191,10 @@ int main(int num_arg, char* argv[])
 
 		return 0;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		std::cout << "MRPT exception caught: " << e.what() << std::endl;
+		std::cout << "MRPT exception caught: " << mrpt::exception_to_str(e)
+				  << std::endl;
 		return -1;
 	}
 	catch (...)

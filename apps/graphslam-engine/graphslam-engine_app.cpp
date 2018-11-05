@@ -204,8 +204,8 @@ int main(int argc, char** argv)
 	{
 		logger.logFmt(
 			LVL_ERROR, "Program finished due to an exception!!\n%s\n",
-			e.what());
-		printf("%s", e.what());
+			mrpt::exception_to_str(e));
+		printf("%s", mrpt::exception_to_str(e));
 
 		mrpt::system::pause();
 		return -1;

@@ -199,9 +199,9 @@ int main(int argc, char** argv)
 		// successful end of program.
 		return 0;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		if (strlen(e.what())) std::cerr << e.what() << std::endl;
+		std::cerr << mrpt::exception_to_str(e) << std::endl;
 		return -1;
 	}
 }

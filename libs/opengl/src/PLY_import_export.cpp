@@ -1935,7 +1935,7 @@ bool PLY_Importer::loadFromPlyFile(
 		m_ply_import_last_error = std::string();
 		return true;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		// Return error:
 		m_ply_import_last_error = std::string(e.what());
@@ -2051,7 +2051,7 @@ bool PLY_Exporter::saveToPlyFile(
 		m_ply_export_last_error = std::string();
 		return true;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		// Return error:
 		m_ply_export_last_error = std::string(e.what());

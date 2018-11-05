@@ -1,0 +1,5 @@
+==== MRPT exception ====
+/home/jlblanco/code/mrpt/samples/core_exceptions_example/test.cpp:20: [void test_except_3rd_lvl()] Aw!
+/home/jlblanco/code/mrpt/samples/core_exceptions_example/test.cpp:21: [void test_except_3rd_lvl()] Called from here.
+/home/jlblanco/code/mrpt/samples/core_exceptions_example/test.cpp:28: [void test_except_2nd_lvl()] Called from here.
+/home/jlblanco/code/mrpt/samples/core_exceptions_example/test.cpp:35: [void test_except_toplevel()] Called from here.

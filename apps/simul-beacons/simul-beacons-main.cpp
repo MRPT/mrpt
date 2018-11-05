@@ -254,9 +254,9 @@ int main(int argc, char** argv)
 
 		cout << "Data saved to directory: " << outDir << endl;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		std::cout << e.what();
+		std::cout << mrpt::exception_to_str(e);
 	}
 	catch (...)
 	{

@@ -111,7 +111,7 @@ ERRORCODE_HTTP mrpt::comms::net::http_request(
 		// Connect:
 		sock.connect(server_addr, port, timeout_ms);
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		out_errormsg = e.what();
 		return net::erCouldntConnect;
@@ -370,7 +370,7 @@ ERRORCODE_HTTP mrpt::comms::net::http_request(
 			return net::erOtherHTTPError;
 		}
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		out_errormsg = e.what();
 		return net::erCouldntConnect;

@@ -572,12 +572,12 @@ void navlog_viewer_GUI_designDialog::loadLogfile(const std::string& filName)
 		{
 			break;
 		}
-		catch (std::exception& e)
+		catch (const std::exception& e)
 		{
 			// EOF in the middle of an object... It may be usual if the logger
 			// is shut down not cleanly.
 			wxMessageBox(
-				wxString(e.what(), wxConvUTF8),
+				wxString(mrpt::exception_to_str(e), wxConvUTF8),
 				wxT("Loading ended with an exception"), wxOK, this);
 			break;
 		}

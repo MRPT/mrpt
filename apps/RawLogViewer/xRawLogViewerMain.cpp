@@ -2270,7 +2270,7 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 		}
 		catch (exception& e)
 		{
-			errorMsg = e.what();
+			errorMsg = mrpt::exception_to_str(e);
 			keepLoading = false;
 		}
 		catch (...)
@@ -3279,7 +3279,7 @@ void xRawLogViewerFrame::OnFileCountEntries(wxCommandEvent& event)
 		}
 		catch (exception& e)
 		{
-			errorMsg = e.what();
+			errorMsg = mrpt::exception_to_str(e);
 			keepLoading = false;
 		}
 		catch (...)
@@ -3408,7 +3408,7 @@ void xRawLogViewerFrame::OnFileSaveImages(wxCommandEvent& event)
 		}
 		catch (exception& e)
 		{
-			errorMsg = e.what();
+			errorMsg = mrpt::exception_to_str(e);
 			keepLoading = false;
 		}
 		catch (...)
@@ -3793,7 +3793,7 @@ void xRawLogViewerFrame::OnCountBadScans(wxCommandEvent& event)
 		}
 		catch (exception& e)
 		{
-			errorMsg = e.what();
+			errorMsg = mrpt::exception_to_str(e);
 			break;
 		}
 		catch (...)
@@ -4008,7 +4008,7 @@ void xRawLogViewerFrame::OnFilterSpureousGas(wxCommandEvent& event)
 		}
 		catch (exception& e)
 		{
-			errorMsg = e.what();
+			errorMsg = mrpt::exception_to_str(e);
 			break;
 		}
 		catch (...)
@@ -4232,7 +4232,7 @@ void xRawLogViewerFrame::OnForceEncodersFalse(wxCommandEvent& event)
 		}
 		catch (exception& e)
 		{
-			errorMsg = e.what();
+			errorMsg = mrpt::exception_to_str(e);
 			break;
 		}
 		catch (...)
@@ -4433,7 +4433,7 @@ void xRawLogViewerFrame::OnFilterErroneousScans(wxCommandEvent& event)
 		}
 		catch (exception& e)
 		{
-			errorMsg = e.what();
+			errorMsg = mrpt::exception_to_str(e);
 			break;
 		}
 		catch (...)
@@ -4642,7 +4642,7 @@ void xRawLogViewerFrame::OnRecalculateActionsICP(wxCommandEvent& event)
 		}
 		catch (exception& e)
 		{
-			errorMsg = e.what();
+			errorMsg = mrpt::exception_to_str(e);
 			break;
 		}
 		catch (...)
@@ -6305,7 +6305,7 @@ void xRawLogViewerFrame::OnmnuCreateAVISelected(wxCommandEvent& event)
 		}
 		catch (exception& e)
 		{
-			errorMsg = e.what();
+			errorMsg = mrpt::exception_to_str(e);
 			break;
 		}
 		catch (...)
@@ -6397,7 +6397,7 @@ void xRawLogViewerFrame::OnMenuRegenerateOdometryTimes(wxCommandEvent& event)
 		}
 		catch (exception& e)
 		{
-			errorMsg = e.what();
+			errorMsg = mrpt::exception_to_str(e);
 			break;
 		}
 		catch (...)
@@ -6487,7 +6487,7 @@ void xRawLogViewerFrame::OnMenuItem3DObsRecoverParams(wxCommandEvent& event)
 		}
 		catch (exception& e)
 		{
-			errorMsg = e.what();
+			errorMsg = mrpt::exception_to_str(e);
 			break;
 		}
 		catch (...)

@@ -75,9 +75,9 @@ DECLARE_OP_FUNCTION(op_camera_params)
 				new_cam_params.loadFromConfigFile("CAMERA_PARAMS", cfg);
 				is_stereo = false;
 			}
-			catch (std::exception& e)
+			catch (const std::exception& e)
 			{
-				sErrorCam = e.what();
+				sErrorCam = mrpt::exception_to_str(e);
 			}
 
 			if (!sErrorCam.empty())
@@ -89,7 +89,7 @@ DECLARE_OP_FUNCTION(op_camera_params)
 						"CAMERA_PARAMS", cfg);
 					// cout << new_stereo_cam_params.dumpAsText() << endl;
 				}
-				catch (std::exception& e)
+				catch (const std::exception& e)
 				{
 					throw std::runtime_error(
 						string("--camera-params op: Error loading monocular "
@@ -97,7 +97,7 @@ DECLARE_OP_FUNCTION(op_camera_params)
 						sErrorCam +
 						string("\nBut also an error found loading "
 							   "stereo config:\n") +
-						string(e.what()));
+						string(mrpt::exception_to_str(e)));
 				}
 			}
 			VERBOSE_COUT << "Type of camera configuration file found: "

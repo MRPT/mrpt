@@ -315,7 +315,7 @@ double CGlCanvasBase::renderCanvas(int width, int height)
 
 		glPopAttrib();
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		glPopAttrib();
 		const std::string err_msg =

@@ -495,9 +495,9 @@ int main(int argc, char** argv)
 		std::this_thread::sleep_for(150ms);  // give time to close GUI threads
 		return ret;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		std::cerr << e.what() << std::endl
+		std::cerr << mrpt::exception_to_str(e) << std::endl
 				  << "Program finished for an exception!!" << std::endl;
 		mrpt::system::pause();
 		return -1;

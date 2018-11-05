@@ -257,7 +257,7 @@ bool CSickLaserSerial::tryToOpenComms(std::string* err_msg)
 			return true;
 		}
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		std::string s = "[CSickLaserSerial] Error trying to open SICK at port ";
 		s += e.what();
@@ -301,7 +301,7 @@ bool CSickLaserSerial::waitContinuousSampleFrame(
 		{
 			nRead = COM->Read(buf + nFrameBytes, nBytesToRead);
 		}
-		catch (std::exception& e)
+		catch (const std::exception& e)
 		{
 			// Disconnected?
 			MRPT_LOG_ERROR_FMT(

@@ -211,7 +211,7 @@ void CKinect::loadConfig_sensorSpecific(
 	{
 		sc.loadFromConfigFile(iniSection, configSource);
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		std::cout << "[CKinect::loadConfig_sensorSpecific] Warning: Ignoring "
 					 "error loading calibration parameters:\n"

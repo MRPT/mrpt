@@ -200,7 +200,7 @@ std::string MATLAB_plotCovariance2D(
 template <typename EIGEN_VECTOR, typename At, size_t N>
 EIGEN_VECTOR& loadVector(EIGEN_VECTOR& v, At (&theArray)[N])
 {
-	MRPT_COMPILE_TIME_ASSERT(N != 0);
+	static_assert(N != 0, "N!=0");
 	v.derived().resize(N);
 	for (size_t i = 0; i < N; i++)
 		(v.derived())[i] =
@@ -211,7 +211,7 @@ EIGEN_VECTOR& loadVector(EIGEN_VECTOR& v, At (&theArray)[N])
 template <typename T, typename At, size_t N>
 std::vector<T>& loadVector(std::vector<T>& v, At (&theArray)[N])
 {
-	MRPT_COMPILE_TIME_ASSERT(N != 0);
+	static_assert(N != 0, "N!=0");
 	v.resize(N);
 	for (size_t i = 0; i < N; i++) v[i] = static_cast<T>(theArray[i]);
 	return v;

@@ -138,11 +138,11 @@ bool slamdemoApp::doCommandLineProcess()
 		{
 			DoBatchExperiments(cfgFil);
 		}
-		catch (std::exception& e)
+		catch (const std::exception& e)
 		{
-			cerr << e.what() << endl;
+			cerr << mrpt::exception_to_str(e) << endl;
 #ifdef MRPT_OS_WINDOWS
-			wxMessageBox(_U(e.what()), _("2d-slam-demo"));
+			wxMessageBox(_U(mrpt::exception_to_str(e)), _("2d-slam-demo"));
 #endif
 		}
 	}

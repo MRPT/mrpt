@@ -88,7 +88,8 @@ namespace gui
 	catch (std::exception & e)                                                \
 	{                                                                         \
 		wxMessageBox(                                                         \
-			wxString(e.what(), wxConvUTF8), wxT("Exception"), wxOK, nullptr); \
+			wxString(mrpt::exception_to_str(e).c_str(), wxConvUTF8),          \
+			wxT("Exception"), wxOK, nullptr);                                 \
 	}                                                                         \
 	catch (...)                                                               \
 	{                                                                         \

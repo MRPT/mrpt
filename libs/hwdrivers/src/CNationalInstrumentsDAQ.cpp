@@ -905,7 +905,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask& ipt)
 
 		}  // end of main thread loop
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		std::cerr << "[CNationalInstrumentsDAQ::grabbing_thread] Exception:\n"
 				  << e.what() << std::endl;

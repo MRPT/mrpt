@@ -205,7 +205,7 @@ bool CReactiveNavigationSystem::implementSenseObstacles(
 		// Note: Clip obstacles by "z" axis coordinates is more efficiently done
 		// in STEP3_WSpaceToTPSpace()
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		MRPT_LOG_ERROR_STREAM(
 			"[CReactiveNavigationSystem::STEP2_Sense] Exception:" << e.what());

@@ -74,7 +74,7 @@ bool CRaePID::tryToOpenTheCOM()
 
 		return true;  // All OK!
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		std::cerr << "[CRaePID::tryToOpenTheCOM] Error opening or configuring "
 					 "the serial port:"
