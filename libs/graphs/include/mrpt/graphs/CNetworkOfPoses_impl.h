@@ -718,7 +718,7 @@ struct graph_ops
 		using TListAllEdges =
 			map<pair<TNodeID, TNodeID>,
 				vector<TEdgeIterator>>;  // For god's sake... when will ALL
-										 // compilers support
+		// compilers support
 		// auto!! :'-(
 		TListAllEdges lstAllEdges;
 

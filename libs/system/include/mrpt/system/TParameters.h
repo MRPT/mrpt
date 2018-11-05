@@ -127,17 +127,11 @@ struct TParameters
 	}
 
 	inline void clear() { base.clear(); }
-
 	iterator find(const std::string& key) { return base.find(key); }
-
 	const_iterator find(const std::string& key) const { return base.find(key); }
-
 	iterator begin() noexcept { return base.begin(); }
-
 	const_iterator begin() const noexcept { return base.begin(); }
-
 	iterator end() noexcept { return base.end(); }
-
 	const_iterator end() const noexcept { return base.end(); }
 };
 

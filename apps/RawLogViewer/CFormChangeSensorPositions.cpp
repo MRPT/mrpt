@@ -694,7 +694,7 @@ void CFormChangeSensorPositions::OnbtnPickInputClick(wxCommandEvent& event)
 
 	wxFileDialog dialog(
 		this, _("Select input rawlog file") /* caption */,
-		_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
+		(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
 		_("*.rawlog") /* defaultFilename */,
 		_("Rawlog files (*.rawlog,*.rawlog.gz)|*.rawlog;*.rawlog.gz|All files "
 		  "(*.*)|*.*") /* wildcard */,
@@ -719,7 +719,7 @@ void CFormChangeSensorPositions::OnbtnPickOutClick(wxCommandEvent& event)
 
 	wxFileDialog dialog(
 		this, _("Select output rawlog file") /* caption */,
-		_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
+		(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
 		_("*.rawlog") /* defaultFilename */,
 		_("Rawlog files (*.rawlog,*.rawlog.gz)|*.rawlog;*.rawlog.gz|All files "
 		  "(*.*)|*.*") /* wildcard */,
@@ -925,7 +925,7 @@ void CFormChangeSensorPositions::executeOperationOnRawlog(
 		os::sprintf(
 			tmpStr, sizeof(tmpStr), "%s %i\n\nEnd message:\n%s", endMsg,
 			changes, errorMsg.c_str());
-		wxMessageBox(_U(tmpStr), _("Result:"), wxOK, this);
+		wxMessageBox(tmpStr, _("Result:"), wxOK, this);
 	}
 
 	if (in_fil) delete in_fil;
@@ -1072,15 +1072,14 @@ void CFormChangeSensorPositions::OnbtnGetCurPoseClick1(wxCommandEvent& event)
 	if (sensorPoseReadOK)
 	{
 		// Put the sensor pose (stored in "sensorPoseToRead"):
-		edX->SetValue(_U(format("%f", sensorPoseToRead.x).c_str()));
-		edY->SetValue(_U(format("%f", sensorPoseToRead.y).c_str()));
-		edZ->SetValue(_U(format("%f", sensorPoseToRead.z).c_str()));
-		edYaw->SetValue(
-			_U(format("%f", RAD2DEG(sensorPoseToRead.yaw)).c_str()));
+		edX->SetValue((format("%f", sensorPoseToRead.x).c_str()));
+		edY->SetValue((format("%f", sensorPoseToRead.y).c_str()));
+		edZ->SetValue((format("%f", sensorPoseToRead.z).c_str()));
+		edYaw->SetValue((format("%f", RAD2DEG(sensorPoseToRead.yaw)).c_str()));
 		edPitch->SetValue(
-			_U(format("%f", RAD2DEG(sensorPoseToRead.pitch)).c_str()));
+			(format("%f", RAD2DEG(sensorPoseToRead.pitch)).c_str()));
 		edRoll->SetValue(
-			_U(format("%f", RAD2DEG(sensorPoseToRead.roll)).c_str()));
+			(format("%f", RAD2DEG(sensorPoseToRead.roll)).c_str()));
 	}
 	else
 	{
@@ -1155,17 +1154,17 @@ void CFormChangeSensorPositions::OnbtnGetCurCamModelClick(wxCommandEvent& event)
 	if (camReadIsOk)
 	{
 		// Put the camara data:
-		edFX->SetValue(_U(format("%f", camIntrinsic(0, 0)).c_str()));
-		edFY->SetValue(_U(format("%f", camIntrinsic(1, 1)).c_str()));
-		edCX->SetValue(_U(format("%f", camIntrinsic(0, 2)).c_str()));
-		edCY->SetValue(_U(format("%f", camIntrinsic(1, 2)).c_str()));
+		edFX->SetValue((format("%f", camIntrinsic(0, 0)).c_str()));
+		edFY->SetValue((format("%f", camIntrinsic(1, 1)).c_str()));
+		edCX->SetValue((format("%f", camIntrinsic(0, 2)).c_str()));
+		edCY->SetValue((format("%f", camIntrinsic(1, 2)).c_str()));
 
-		edK1->SetValue(_U(format("%f", camDistortion[0]).c_str()));
-		edK2->SetValue(_U(format("%f", camDistortion[1]).c_str()));
-		edP1->SetValue(_U(format("%f", camDistortion[1]).c_str()));
-		edP2->SetValue(_U(format("%f", camDistortion[2]).c_str()));
+		edK1->SetValue((format("%f", camDistortion[0]).c_str()));
+		edK2->SetValue((format("%f", camDistortion[1]).c_str()));
+		edP1->SetValue((format("%f", camDistortion[1]).c_str()));
+		edP2->SetValue((format("%f", camDistortion[2]).c_str()));
 
-		edFocalLen->SetValue(_U(format("%f", camFocalLen).c_str()));
+		edFocalLen->SetValue((format("%f", camFocalLen).c_str()));
 	}
 	else
 	{

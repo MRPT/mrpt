@@ -165,7 +165,7 @@ CAboutBox::CAboutBox(wxWindow* parent, wxWindowID id)
 	Connect(
 		wxID_ANY, wxEVT_INIT_DIALOG, (wxObjectEventFunction)&CAboutBox::OnInit);
 	//*)
-	lbLicense->SetValue(_U(mrpt::system::getMRPTLicense().c_str()));
+	lbLicense->SetValue(mrpt::system::getMRPTLicense().c_str());
 }
 
 CAboutBox::~CAboutBox()
@@ -193,7 +193,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 
 	// Set the label with MRPT version:
 	wxString s(_("Build: "));
-	s << _U(mrpt::system::MRPT_getCompilationDate().c_str());
+	s << mrpt::system::MRPT_getCompilationDate().c_str();
 	s << _(" - ") << MRPTver;
 
 	lbBuild->SetLabel(s);

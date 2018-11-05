@@ -224,8 +224,7 @@ void CMultiMetricMap::setListOfMaps(
 	// Erase current list of maps:
 	deleteAllMaps();
 
-	internal::TMetricMapTypesRegistry& mmr =
-		internal::TMetricMapTypesRegistry::Instance();
+	auto& mmr = mrpt::maps::internal::TMetricMapTypesRegistry::Instance();
 
 	// Do we have any initializer?
 	if (initializers != nullptr)

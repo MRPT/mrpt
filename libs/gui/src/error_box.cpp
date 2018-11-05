@@ -45,7 +45,7 @@ void mrpt::gui::showErrorMessage(const std::string& str)
 	msg.showMessage(QString::fromStdString(str));
 	msg.exec();
 #elif MRPT_HAS_WXWIDGETS
-	wxMessageBox(_U(str.c_str()), _("Exception"));
+	wxMessageBox(str.c_str(), _("Exception"));
 #else
 	std::cerr << str << std::endl;
 #endif  // MRPT_HAS_Qt5

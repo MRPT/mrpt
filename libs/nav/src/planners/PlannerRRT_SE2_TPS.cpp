@@ -87,7 +87,7 @@ void PlannerRRT_SE2_TPS::solve(
 			||
 			(result.goal_distance < end_criteria.acceptedDistToTarget &&
 			 elap_tim >= end_criteria.minComputationTime)  // Reach closer than
-														   // this to target
+			// this to target
 		)
 		{
 			break;

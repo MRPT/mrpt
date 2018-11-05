@@ -1099,9 +1099,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 	{
 		wxCommandEvent dum;
 		OnbtnEndClick(dum);
-		wxMessageBox(
-			wxString(mrpt::exception_to_str(e), wxConvUTF8), wxT("Exception"),
-			wxOK, this);
+		wxMessageBox(mrpt::exception_to_str(e), wxT("Exception"), wxOK, this);
 	}
 	catch (...)
 	{
@@ -1283,7 +1281,7 @@ void gridmapSimulFrame::OnbtnResimulateClick(wxCommandEvent& event)
 	{
 		wxFileDialog dialog(
 			this, _("Corresponding rawlog..."),
-			_U(mrpt::system::extractFileDirectory(gt_file).c_str()),
+			mrpt::system::extractFileDirectory(gt_file).c_str(),
 			_("simul.rawlog"),
 			wxT("Rawlog files (*.rawlog)|*.rawlog|All files (*.*)|*.*"),
 			wxFD_OPEN | wxFD_FILE_MUST_EXIST);
@@ -1313,7 +1311,7 @@ void gridmapSimulFrame::OnbtnResimulateClick(wxCommandEvent& event)
 	{
 		wxFileDialog dialog(
 			this, _("New rawlog to create..."),
-			_U(mrpt::system::extractFileDirectory(gt_file).c_str()),
+			mrpt::system::extractFileDirectory(gt_file).c_str(),
 			_("simul_new.rawlog"),
 			wxT("Rawlog files (*.rawlog)|*.rawlog|All files (*.*)|*.*"),
 			wxFD_SAVE | wxFD_OVERWRITE_PROMPT);

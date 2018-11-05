@@ -84,7 +84,6 @@ void CConfigFile::discardSavingChanges() { m_modified = false; }
 					Destructor
  ---------------------------------------------------------------*/
 CConfigFile::~CConfigFile() { writeNow(); }
-
 /*---------------------------------------------------------------
 					writeString
  ---------------------------------------------------------------*/

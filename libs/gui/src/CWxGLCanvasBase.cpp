@@ -59,7 +59,7 @@ void CWxGLCanvasBase::preRender() { OnPreRender(); }
 void CWxGLCanvasBase::postRender() { OnPostRender(); }
 void CWxGLCanvasBase::renderError(const string& err_msg)
 {
-	OnRenderError(_U(err_msg.c_str()));
+	OnRenderError(err_msg.c_str());
 }
 
 void CWxGLCanvasBase::OnMouseDown(wxMouseEvent& event)

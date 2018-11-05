@@ -122,7 +122,6 @@ typedef struct PlyElement
 struct PlyFile
 { /* description of PLY file */
 	PlyFile(FILE* _fp = nullptr) : fp(_fp) {}
-
 	FILE* fp; /* file pointer */
 	int file_type{0}; /* ascii or binary */
 	float version{0}; /* version number of file */

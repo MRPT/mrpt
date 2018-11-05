@@ -282,7 +282,7 @@ C3DWindowDialog::C3DWindowDialog(
 #if MRPT_HAS_OPENGL_GLUT
 
 	Create(
-		parent, id, _U(caption.c_str()), wxDefaultPosition, initialSize,
+		parent, id, caption.c_str(), wxDefaultPosition, initialSize,
 		wxDEFAULT_FRAME_STYLE, _T("id"));
 
 	wxIcon FrameIcon;

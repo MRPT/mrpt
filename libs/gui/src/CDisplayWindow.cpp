@@ -124,7 +124,7 @@ CWindowDialog::CWindowDialog(
 	: m_win2D(win2D), m_mainFrame(parent)
 {
 	Create(
-		parent, id, _U(caption.c_str()), wxDefaultPosition, initialSize,
+		parent, id, caption.c_str(), wxDefaultPosition, initialSize,
 		wxDEFAULT_FRAME_STYLE, _T("id"));
 	SetClientSize(initialSize);
 

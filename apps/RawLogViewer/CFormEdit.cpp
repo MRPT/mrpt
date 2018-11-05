@@ -893,7 +893,7 @@ void CFormEdit::OnbtnPickInputClick(wxCommandEvent& event)
 
 	wxFileDialog dialog(
 		this, _("Select input rawlog file") /* caption */,
-		_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
+		(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
 		_("*.rawlog") /* defaultFilename */,
 		_("Rawlog files (*.rawlog,*.rawlog.gz)|*.rawlog;*.rawlog.gz|All files "
 		  "(*.*)|*.*") /* wildcard */,
@@ -918,7 +918,7 @@ void CFormEdit::OnbtnPickOutClick(wxCommandEvent& event)
 
 	wxFileDialog dialog(
 		this, _("Select output rawlog file") /* caption */,
-		_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
+		(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
 		_("*.rawlog") /* defaultFilename */,
 		_("Rawlog files (*.rawlog,*.rawlog.gz)|*.rawlog;*.rawlog.gz|All files "
 		  "(*.*)|*.*") /* wildcard */,
@@ -1126,9 +1126,8 @@ void CFormEdit::executeOperationOnRawlog(
 	progDia.Update(processMax);  // Close dialog.
 
 	wxMessageBox(
-		_U(format(
-			   "%s %i\n\nEnd message:\n%s", endMsg, changes, errorMsg.c_str())
-			   .c_str()),
+		(format("%s %i\n\nEnd message:\n%s", endMsg, changes, errorMsg.c_str())
+			 .c_str()),
 		_("Result:"), wxOK, this);
 
 	if (in_fil) delete in_fil;

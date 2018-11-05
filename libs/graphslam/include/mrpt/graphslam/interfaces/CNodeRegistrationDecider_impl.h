@@ -62,7 +62,7 @@ bool CNodeRegistrationDecider<GRAPH_T>::registerNewNodeAtEnd(
 		global_pose_t tmp_pose = this->getCurrentRobotPosEstimation();
 		this->addNodeAnnotsToPose(&tmp_pose);
 
-		// make sure that this pair hasn't been registered yet.
+// make sure that this pair hasn't been registered yet.
 #if _DEBUG
 		std::pair<typename GRAPH_T::global_poses_t::const_iterator, bool> res =
 #endif

@@ -192,7 +192,7 @@ void xRawLogViewerFrame::OnMenuVisualOdometry(wxCommandEvent& event)
 	this->rebuildTreeView();
 
 	// Set error msg:
-	// wxMessageBox(_U(format("Images saved:
+	// wxMessageBox((format("Images saved:
 	// %i",imgSaved).c_str()),_("Done"),wxOK,this);
 
 #else

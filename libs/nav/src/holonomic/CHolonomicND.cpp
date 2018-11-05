@@ -664,7 +664,6 @@ void CLogFileRecord_ND::serializeFrom(
 						TOptions
   ---------------------------------------------------------------*/
 CHolonomicND::TOptions::TOptions() : factorWeights{1.0, 0.5, 2.0, 0.4} {}
-
 void CHolonomicND::TOptions::loadFromConfigFile(
 	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {

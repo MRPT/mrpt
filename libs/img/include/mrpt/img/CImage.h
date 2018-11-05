@@ -625,12 +625,12 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	/** Very efficient swap of two images (just swap the internal pointers) */
 	void swap(CImage& o);
 
-	/** @} */
-	// ================================================================
+/** @} */
+// ================================================================
 
-	// ================================================================
-	/** @name Access to image contents (IplImage structure and raw pixels).
-		@{ */
+// ================================================================
+/** @name Access to image contents (IplImage structure and raw pixels).
+	@{ */
 #if MRPT_HAS_OPENCV
 	/** Returns a pointer to a const T* containing the image - the idea is to
 	 * call like "img.getAs<IplImage>()" so we can avoid here including OpenCV's

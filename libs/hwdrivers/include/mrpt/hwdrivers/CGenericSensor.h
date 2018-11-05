@@ -72,10 +72,11 @@ class CGenericSensor
 	using Ptr = std::shared_ptr<CGenericSensor>;
 	virtual const mrpt::hwdrivers::TSensorClassId* GetRuntimeClass() const = 0;
 
-	using TListObservations = std::multimap<
-		mrpt::system::TTimeStamp, mrpt::serialization::CSerializable::Ptr>;
-	using TListObsPair = std::pair<
-		mrpt::system::TTimeStamp, mrpt::serialization::CSerializable::Ptr>;
+	using TListObservations =
+		std::multimap<mrpt::system::TTimeStamp,
+					  mrpt::serialization::CSerializable::Ptr>;
+	using TListObsPair = std::pair<mrpt::system::TTimeStamp,
+								   mrpt::serialization::CSerializable::Ptr>;
 
 	/** The current state of the sensor
 	 * \sa CGenericSensor::getState

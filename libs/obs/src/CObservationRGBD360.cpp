@@ -28,7 +28,6 @@ IMPLEMENTS_SERIALIZABLE(CObservationRGBD360, CObservation, mrpt::obs)
 							Constructor
  ---------------------------------------------------------------*/
 CObservationRGBD360::CObservationRGBD360() : sensorPose() {}
-
 /*---------------------------------------------------------------
 							Destructor
  ---------------------------------------------------------------*/

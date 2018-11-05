@@ -42,7 +42,7 @@ CWindowDialogPlots::CWindowDialogPlots(
 	: m_winPlots(winPlots), m_mainFrame(parent), m_firstSubmenu(true)
 {
 	Create(
-		parent, id, _U(caption.c_str()), wxDefaultPosition, initialSize,
+		parent, id, caption.c_str(), wxDefaultPosition, initialSize,
 		wxDEFAULT_FRAME_STYLE, _T("id"));
 
 	SetClientSize(initialSize);
@@ -312,7 +312,7 @@ void CWindowDialogPlots::plot(
 {
 	mpFXYVector* theLayer;
 
-	wxString lyName = _U(plotName.c_str());
+	wxString lyName = plotName.c_str();
 	bool updateAtTheEnd = false;  // If we update an existing layer, update
 	// manually to refresh the changes!
 
@@ -476,7 +476,7 @@ void CWindowDialogPlots::plotEllipse(
 		return;
 	}
 
-	wxString lyName = _U(plotName.c_str());
+	wxString lyName = plotName.c_str();
 	bool updateAtTheEnd = false;  // If we update an existing layer, update
 	// manually to refresh the changes!
 
@@ -625,7 +625,7 @@ void CWindowDialogPlots::image(
 {
 	mpBitmapLayer* theLayer;
 
-	wxString lyName = _U(plotName.c_str());
+	wxString lyName = plotName.c_str();
 	bool updateAtTheEnd = false;  // If we update an existing layer, update
 	// manually to refresh the changes!
 

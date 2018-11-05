@@ -862,7 +862,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 				!mrpt::system::os::_strcmpi(
 					lstClasse->className, "CParameterizedTrajectoryGenerator"))
 				continue;
-			cbPTGClass->AppendString(_U(lstClasse->className));
+			cbPTGClass->AppendString(lstClasse->className);
 		}
 		if (cbPTGClass->GetCount() > 0) cbPTGClass->SetSelection(0);
 	}
@@ -894,7 +894,7 @@ void ptgConfiguratorframe::prepareRobotPathPlot(
 	plot->AddLayer(new mpScaleX(wxT("t [s]"), mpALIGN_CENTER, false /*grid*/));
 	plot->AddLayer(new mpScaleY(wxT("y"), mpALIGN_CENTER, false /*grid*/));
 
-	*graph = new mpFXYVector(_U(name.c_str()));
+	*graph = new mpFXYVector(name.c_str());
 	(*graph)->SetPen(wxPen(wxColour(0, 0, 255), 5));
 	(*graph)->SetContinuity(false);
 	plot->AddLayer(*graph);
@@ -1318,7 +1318,7 @@ void ptgConfiguratorframe::loadPlugin()
 				!mrpt::system::os::_strcmpi(
 					lstClasse->className, "CParameterizedTrajectoryGenerator"))
 				continue;
-			cbPTGClass->AppendString(_U(lstClasse->className));
+			cbPTGClass->AppendString(lstClasse->className);
 		}
 		if (cbPTGClass->GetCount() > 0) cbPTGClass->SetSelection(0);
 	}
@@ -1360,7 +1360,7 @@ void ptgConfiguratorframe::dumpPTGcfgToTextBox()
 	// Dump default params:
 	ptg->saveToConfigFile(cfp, sSection);
 
-	edCfg->SetValue(_U(cfg.getContent().c_str()));
+	edCfg->SetValue(cfg.getContent().c_str());
 }
 
 void ptgConfiguratorframe::OncbDrawShapePathClick(wxCommandEvent& event)
@@ -1407,18 +1407,18 @@ void ptgConfiguratorframe::Onplot3DMouseMove(wxMouseEvent& event)
 			case cpsPickObstacle:
 			{
 				edObsX->SetValue(
-					_U(mrpt::format("%.03f", m_curCursorPos.x).c_str()));
+					(mrpt::format("%.03f", m_curCursorPos.x).c_str()));
 				edObsY->SetValue(
-					_U(mrpt::format("%.03f", m_curCursorPos.y).c_str()));
+					(mrpt::format("%.03f", m_curCursorPos.y).c_str()));
 				rebuild3Dview();
 			}
 			break;
 			case cpsPickTarget:
 			{
 				edTargetX->SetValue(
-					_U(mrpt::format("%.03f", m_curCursorPos.x).c_str()));
+					(mrpt::format("%.03f", m_curCursorPos.x).c_str()));
 				edTargetY->SetValue(
-					_U(mrpt::format("%.03f", m_curCursorPos.y).c_str()));
+					(mrpt::format("%.03f", m_curCursorPos.y).c_str()));
 				rebuild3Dview();
 			}
 			break;

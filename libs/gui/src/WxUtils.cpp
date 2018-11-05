@@ -849,7 +849,7 @@ void CPanelCameraSelection::OnbtnBrowseRawlogClick(wxCommandEvent& event)
 			string fil = string(dialog.GetPath().mb_str());
 			string fil_path = mrpt::system::extractFileDirectory(fil);
 			fil_path += "/Images";
-			edRawlogImgDir->SetValue(_U(fil_path.c_str()));
+			edRawlogImgDir->SetValue(fil_path.c_str());
 		}
 	}
 }
@@ -1054,7 +1054,7 @@ void CPanelCameraSelection::readConfigIntoVideoSourcePanel(
 		this->opencvCamIndex->SetValue(
 			cfg->read_int(sect, "cv_camera_index", 0));
 		this->cbOpencvCamType->SetStringSelection(
-			_U(cfg->read_string(sect, "cv_camera_type", "").c_str()));
+			cfg->read_string(sect, "cv_camera_type", "").c_str());
 
 		const int w = cfg->read_int(sect, "cv_frame_width", 0);
 
@@ -1074,12 +1074,12 @@ void CPanelCameraSelection::readConfigIntoVideoSourcePanel(
 		if (url.substr(0, 5) == "rtsp:")
 		{
 			this->pagesCameras->SetSelection(1);
-			this->edIPcamURL->SetValue(_U(url.c_str()));
+			this->edIPcamURL->SetValue(url.c_str());
 		}
 		else
 		{
 			this->pagesCameras->SetSelection(3);
-			this->edVideoFile->SetValue(_U(url.c_str()));
+			this->edVideoFile->SetValue(url.c_str());
 		}
 	}
 	else if (grab_type == "rawlog")
@@ -1087,11 +1087,11 @@ void CPanelCameraSelection::readConfigIntoVideoSourcePanel(
 		this->pagesCameras->SetSelection(4);
 
 		this->edRawlogFile->SetValue(
-			_U(cfg->read_string(sect, "rawlog_file", "").c_str()));
+			cfg->read_string(sect, "rawlog_file", "").c_str());
 
 		const string lb =
 			cfg->read_string(sect, "rawlog_camera_sensor_label", "");
-		this->edRawlogLabel->SetValue(_U(lb.c_str()));
+		this->edRawlogLabel->SetValue(lb.c_str());
 	}
 	else if (grab_type == "bumblebee")
 	{
@@ -1109,7 +1109,7 @@ void CPanelCameraSelection::readConfigIntoVideoSourcePanel(
 		this->rbSR_usb->SetSelection(
 			cfg->read_bool(sect, "sr_use_usb", true) ? 0 : 1);
 		this->edSR_IP->SetValue(
-			_U(cfg->read_string(sect, "sr_IP", "192.168.0.1").c_str()));
+			cfg->read_string(sect, "sr_IP", "192.168.0.1").c_str());
 
 		this->cbSR_chIntensity->SetValue(
 			cfg->read_bool(sect, "sr_grab_grayscale", true));

@@ -78,7 +78,8 @@ class PbMapLocaliser
 	void LoadPreviousPbMaps(std::string fileMaps);
 
 	/*!List of places that have been matched, together with their plane
-	 * correspondences.*/  // Cambiar nombre
+	 * correspondences.*/  // Cambiar
+																		 // nombre
 	std::map<std::string, std::pair<int, double>> planeRecognitionLUT;
 
 	/*!Search the subgraph defined by a plane (neighborhood of 1-connected

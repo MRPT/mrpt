@@ -205,9 +205,11 @@ void project3DPointsFromDepthImageInto(
 			const bool isDirectCorresp =
 				src_obs.doDepthAndIntensityCamerasCoincide();
 
-			// ...precompute the inverse of the pose transformation out of the
+			// ...precompute the inverse of the pose transformation out of
+			// the
 			// loop,
-			//  store as a 4x4 homogeneous matrix to exploit SSE optimizations
+			//  store as a 4x4 homogeneous matrix to exploit SSE
+			//  optimizations
 			//  below:
 			mrpt::math::CMatrixFixedNumeric<float, 4, 4> T_inv;
 			if (!isDirectCorresp)
@@ -245,7 +247,8 @@ void project3DPointsFromDepthImageInto(
 				}
 				else
 				{
-					// Project point, which is now in "pca" in local coordinates
+					// Project point, which is now in "pca" in local
+					// coordinates
 					// wrt the depth camera, into the intensity camera:
 					pca.getPointXYZ(
 						i, pt_wrt_depth[0], pt_wrt_depth[1], pt_wrt_depth[2]);

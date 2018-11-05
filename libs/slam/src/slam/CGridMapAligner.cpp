@@ -1148,7 +1148,6 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_correlation(
 					TConfigParams
   ---------------------------------------------------------------*/
 CGridMapAligner::TConfigParams::TConfigParams() : feature_detector_options() {}
-
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/

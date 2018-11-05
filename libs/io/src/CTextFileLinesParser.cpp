@@ -23,7 +23,6 @@ CTextFileLinesParser::CTextFileLinesParser(const std::string& fil)
 }
 
 CTextFileLinesParser::CTextFileLinesParser(std::istream& in) { open(in); }
-
 void CTextFileLinesParser::open(std::istream& in)
 {
 	m_curLineNum = 0;
