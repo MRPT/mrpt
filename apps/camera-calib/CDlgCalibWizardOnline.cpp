@@ -410,7 +410,7 @@ void CDlgCalibWizardOnline::OntimCaptureTrigger(wxTimerEvent& event)
 
 			// Counter:
 			lbProgress->SetLabel(
-				_U(format("%u", (unsigned int)m_calibFrames.size()).c_str()));
+				format("%u", (unsigned int)m_calibFrames.size()).c_str());
 
 			last_valid = mrpt::system::now();
 
@@ -507,8 +507,7 @@ void CDlgCalibWizardOnline::OntimCaptureTrigger(wxTimerEvent& event)
 		}
 		cerr << endl << mrpt::exception_to_str(e) << endl;
 		wxMessageBox(
-			_U(mrpt::exception_to_str(e)), _("Error"), wxICON_INFORMATION,
-			this);
+			mrpt::exception_to_str(e), _("Error"), wxICON_INFORMATION, this);
 		return;
 	}
 }

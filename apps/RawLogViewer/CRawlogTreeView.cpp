@@ -34,6 +34,8 @@ END_EVENT_TABLE()
 #define MRPT_NO_WARN_BIG_HDR  // It's ok here
 #include <mrpt/obs.h>
 
+#include <mrpt/gui/WxUtils.h>
+
 using namespace mrpt;
 using namespace mrpt::system;
 using namespace mrpt::serialization;
@@ -43,14 +45,6 @@ using namespace std;
 
 const int CRawlogTreeView::ROW_HEIGHT = 17;
 const int CRawlogTreeView::TREE_HORZ_STEPS = 25;
-
-#ifdef wxUSE_UNICODE
-#define _U(x) wxString((x), wxConvUTF8)
-#define _UU(x, y) wxString((x), y)
-#else
-#define _U(x) (x)
-#define _UU(x, y) (x)
-#endif
 
 /* ------------------------------------------------------------
 						CRawlogTreeView
@@ -284,7 +278,7 @@ void CRawlogTreeView::OnDraw(wxDC& dc)
 		if (i == 0)
 		{
 			// The root node:
-			s = _U(format("Rawlog: %s", m_rawlog_name.c_str()).c_str());
+			s = (format("Rawlog: %s", m_rawlog_name.c_str()).c_str());
 			icon = 3;
 		}
 		else
@@ -300,10 +294,10 @@ void CRawlogTreeView::OnDraw(wxDC& dc)
 				// Text:
 				if (d.level == 1)
 				{
-					s << _U(format("[%i] ", (int)d.index).c_str());
+					s << (format("[%i] ", (int)d.index).c_str());
 				}
 
-				s << _U(d.data->GetRuntimeClass()->className);
+				s << d.data->GetRuntimeClass()->className;
 
 				// Sensor label:
 				if (d.data->GetRuntimeClass()->derivedFrom(
@@ -322,7 +316,7 @@ void CRawlogTreeView::OnDraw(wxDC& dc)
 					last_tim_y = y+1;*/
 
 					if (!obs->sensorLabel.empty())
-						s << wxT(" : ") << _U(obs->sensorLabel.c_str());
+						s << wxT(" : ") << obs->sensorLabel.c_str();
 				}
 			}
 		}
@@ -413,7 +407,7 @@ void CRawlogTreeView::OnDraw(wxDC& dc)
 						{
 							double sec = mrpt::system::timeDifference(
 								m_rawlog_start, t_this);
-							wxString s = _U(format("%.03fs", sec).c_str());
+							wxString s = (format("%.03fs", sec).c_str());
 							dc.DrawRotatedText(s, 17, ty + 3, -90);
 						}
 					}

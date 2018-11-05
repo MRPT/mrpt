@@ -96,7 +96,6 @@ class CSchemeArchive : public mrpt::serialization::CSchemeArchiveBase_impl
 	explicit operator double() const override { return m_val.asDouble(); }
 	explicit operator bool() const override { return m_val.asBool(); }
 	explicit operator std::string() const override { return m_val.asString(); }
-
 	mrpt::serialization::CSchemeArchiveBase& operator=(
 		const mrpt::serialization::CSerializable& obj) override
 	{

@@ -166,8 +166,7 @@ void xRawLogViewerFrame::OnGenerateSeqImgs(wxCommandEvent& event)
 
 	// Set error msg:
 	wxMessageBox(
-		_U(format("Images saved: %i", imgSaved).c_str()), _("Done"), wxOK,
-		this);
+		(format("Images saved: %i", imgSaved).c_str()), _("Done"), wxOK, this);
 
 	WX_END_TRY
 }
@@ -425,7 +424,7 @@ void xRawLogViewerFrame::OnMenuRectifyImages(wxCommandEvent& event)
 
 	// Set error msg:
 	wxMessageBox(
-		_U(format("Images rectified: %i", N).c_str()), _("Done"), wxOK, this);
+		(format("Images rectified: %i", N).c_str()), _("Done"), wxOK, this);
 
 	WX_END_TRY
 }

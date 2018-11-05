@@ -26,6 +26,7 @@
 
 #include <mrpt/slam/CRangeBearingKFSLAM2D.h>
 #include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/gui/WxUtils.h>
 
 class slamdemoApp;
 
@@ -358,13 +359,5 @@ class slamdemoFrame : public wxFrame
 	/** Options used in the simulator */
 	TSimulationOptions options;
 };
-
-#ifdef wxUSE_UNICODE
-#define _U(x) wxString((x), wxConvUTF8)
-#define _UU(x, y) wxString((x), y)
-#else
-#define _U(x) (x)
-#define _UU(x, y) (x)
-#endif
 
 #endif  // SLAMDEMOMAIN_H

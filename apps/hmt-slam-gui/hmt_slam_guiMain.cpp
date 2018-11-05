@@ -930,7 +930,7 @@ bool hmt_slam_guiFrame::loadHTMSLAMFromFile(const std::string& filePath)
 	if (!fileExists(filePath))
 	{
 		wxMessageBox(
-			_U(string(string("File doesn't exist:\n") + filePath).c_str()),
+			string(string("File doesn't exist:\n") + filePath).c_str(),
 			_("Error loading file"), wxOK, this);
 		return false;
 	}
@@ -989,7 +989,7 @@ void hmt_slam_guiFrame::rebuildTreeView()
 
 		// wxTreeItemId treeNode =
 		treeView->AppendItem(
-			root, _U(str.c_str()), 0, -1, new CItemData(it->second, i));
+			root, str.c_str(), 0, -1, new CItemData(it->second, i));
 	}
 
 	treeView->ExpandAll();
@@ -998,7 +998,7 @@ void hmt_slam_guiFrame::rebuildTreeView()
 	cbHypos->Clear();
 
 	for (const auto& h : m_hmtslam->m_LMHs)
-		cbHypos->Append(_U(format("%i", (int)h.first).c_str()));
+		cbHypos->Append(format("%i", (int)h.first));
 
 	cbHypos->SetSelection(0);
 
@@ -1014,10 +1014,8 @@ bool hmt_slam_guiFrame::AskForOpenHMTMap(std::string& fil)
 	wxString wildcard = wxT(
 		"HMT-SLAM files (*.hmtslam;*.hmtslam.gz)|*.hmtslam;*.hmtslam.gz|All "
 		"files (*.*)|*.*");
-	wxString defaultDir;  //( _U(
-	// iniFile->read_string(iniFileSect,"LastDir",".").c_str() )
-	//);
-	wxString defaultFilename = wxT("");
+	wxString defaultDir;
+	wxString defaultFilename;
 
 	wxFileDialog dialog(
 		this, caption, defaultDir, defaultFilename, wildcard,

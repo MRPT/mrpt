@@ -26,7 +26,6 @@ struct bimap
 	using const_iterator = typename std::map<KEY, VALUE>::const_iterator;
 	const_iterator begin() const { return m_k2v.begin(); }
 	const_iterator end() const { return m_k2v.end(); }
-
 	bool direct(const KEY& k, VALUE& out_v) const
 	{
 		auto i = m_k2v.find(k);

@@ -24,7 +24,6 @@ IMPLEMENTS_SERIALIZABLE(CSetOfLines, CRenderizableDisplayList, mrpt::opengl)
 
 /** Constructor */
 CSetOfLines::CSetOfLines() : mSegments() {}
-
 /** Constructor with a initial set of lines. */
 CSetOfLines::CSetOfLines(const std::vector<TSegment3D>& sgms, bool antiAliasing)
 	: mSegments(sgms),

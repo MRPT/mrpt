@@ -22,7 +22,7 @@ using namespace mrpt::maps;
 TMetricMapInitializer* TMetricMapInitializer::factory(
 	const std::string& mapClassName)
 {
-	using internal::TMetricMapTypesRegistry;
+	using mrpt::maps::internal::TMetricMapTypesRegistry;
 	TMetricMapTypesRegistry& mmr = TMetricMapTypesRegistry::Instance();
 	return mmr.factoryMapDefinition(mapClassName);
 }
@@ -71,7 +71,7 @@ void TSetOfMetricMapInitializers::loadFromConfigFile(
 {
 	MRPT_START
 
-	using internal::TMetricMapTypesRegistry;
+	using mrpt::maps::internal::TMetricMapTypesRegistry;
 
 	// Delete previous contents:
 	clear();

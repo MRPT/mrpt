@@ -1015,7 +1015,7 @@ typedef struct XMLDLLENTRY ToXMLStringTool
 	ToXMLStringTool() : buf(nullptr) {}
 	~ToXMLStringTool();
 	void freeBuffer();  ///< call this function when you have finished using
-						///< this
+	///< this
 	/// object to release memory used by the internal buffer.
 
 	XMLSTR toXML(XMLCSTR source);  ///< returns a pointer to an internal buffer

@@ -23,7 +23,6 @@ IMPLEMENTS_SERIALIZABLE(COctoMapVoxels, CRenderizableDisplayList, mrpt::opengl)
 
 /** Ctor */
 COctoMapVoxels::COctoMapVoxels() : m_grid_color(0xE0, 0xE0, 0xE0, 0x90) {}
-
 /** Clears everything */
 void COctoMapVoxels::clear()
 {

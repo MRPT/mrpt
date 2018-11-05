@@ -377,7 +377,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 					{
 						auto* wnd =
 							(CWindowDialog*)msg->source2D->getWxObject();
-						if (wnd) wnd->SetTitle(_U(msg->str.c_str()));
+						if (wnd) wnd->SetTitle(msg->str.c_str());
 					}
 					break;
 				// DESTROY EXISTING WINDOW:
@@ -438,7 +438,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 					{
 						auto* wnd =
 							(C3DWindowDialog*)msg->source3D->getWxObject();
-						if (wnd) wnd->SetTitle(_U(msg->str.c_str()));
+						if (wnd) wnd->SetTitle(msg->str.c_str());
 					}
 					break;
 				// FORCE REPAINT
@@ -567,7 +567,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 					{
 						auto* wnd = (CWindowDialogPlots*)
 										msg->sourcePlots->getWxObject();
-						if (wnd) wnd->SetTitle(_U(msg->str.c_str()));
+						if (wnd) wnd->SetTitle(msg->str.c_str());
 					}
 					break;
 				// Mouse pan
@@ -696,9 +696,8 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 								popupMnu->InsertSeparator(0);
 							}
 							wxMenuItem* mnuTarget = new wxMenuItem(
-								popupMnu, MENUITEM_ID,
-								_U(msg->plotName.c_str()), wxEmptyString,
-								wxITEM_NORMAL);
+								popupMnu, MENUITEM_ID, msg->plotName.c_str(),
+								wxEmptyString, wxITEM_NORMAL);
 							popupMnu->Insert(0, mnuTarget);
 
 							wnd->Connect(

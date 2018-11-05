@@ -136,7 +136,8 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
 				 * [lastIndxOld,indx[i]-1] (inclusive): */
 				for (size_t j = lastIndxOld; j < sorted_idx; j++)
 				{
-					if (!oldParticlesReused[j]) /* If reused we can not delete
+					if (!oldParticlesReused[j]) /* If reused we can not
+												   delete
 												   that memory! */
 						derived().m_particles[j].d.reset();
 				}
@@ -146,7 +147,8 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
 
 				/* If this is the first time that the old particle "indx[i]"
 				 * appears, */
-				/*  we can reuse the old "data" instead of creating a new copy:
+				/*  we can reuse the old "data" instead of creating a new
+				 * copy:
 				 */
 				if (!oldParticlesReused[sorted_idx])
 				{

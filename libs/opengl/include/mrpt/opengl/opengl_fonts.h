@@ -46,7 +46,6 @@ enum TOpenGLFontStyle
 struct TFontParams
 {
 	TFontParams() : vfont_name("sans") {}
-
 	mrpt::img::TColorf color;
 
 	bool draw_shadow{false};

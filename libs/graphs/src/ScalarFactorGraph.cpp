@@ -23,7 +23,6 @@ using namespace std;
 
 ScalarFactorGraph::FactorBase::~FactorBase() = default;
 ScalarFactorGraph::ScalarFactorGraph() : COutputLogger("GMRF") {}
-
 void ScalarFactorGraph::clear()
 {
 	MRPT_LOG_DEBUG("clear() called");

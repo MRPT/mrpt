@@ -2106,7 +2106,7 @@ void myCalibCallback(
 		s += mrpt::format(" (RMSE=%.05f px)", d.current_rmse);
 	}
 
-	dat->pd->Update(d.current_iter, _U(s.c_str()));
+	dat->pd->Update(d.current_iter, s.c_str());
 	dat->pd->SetSize(500, 100);
 
 	wxTheApp->Yield();
@@ -2359,7 +2359,7 @@ void kinect_calibrate_guiDialog::OnbtnListLoadClick(wxCommandEvent& event)
 
 		const string fil_dir = mrpt::system::extractFileDirectory(file_img_l);
 
-		startPath = _U(fil_dir.c_str());
+		startPath = fil_dir.c_str();
 		m_config.Write(_("last_path"), startPath);
 
 		wxFileDialog dialog2(
@@ -2463,10 +2463,9 @@ void kinect_calibrate_guiDialog::OnbtnListSaveClick(wxCommandEvent& event)
 		}
 
 		wxMessageBox(
-			_U(mrpt::format(
-				   "Images saved! An index file has been also generated:\n%s",
-				   sListFile.c_str())
-				   .c_str()),
+			mrpt::format(
+				"Images saved! An index file has been also generated:\n%s",
+				sListFile.c_str()),
 			_("Done!"));
 	}
 
@@ -2507,7 +2506,7 @@ void kinect_calibrate_guiDialog::OnbtnLoadImageListClick(wxCommandEvent& event)
 		const string file_list = string(dialog.GetPath().mb_str());
 
 		const string fil_dir = mrpt::system::extractFileDirectory(file_list);
-		startPath = _U(fil_dir.c_str());
+		startPath = fil_dir.c_str();
 		m_config.Write(_("last_path"), startPath);
 
 		std::vector<std::string> lst;
@@ -2736,10 +2735,9 @@ void kinect_calibrate_guiDialog::fillGridLine(
 	int r, const char* label_prefix, const char* label, const std::string& val)
 {
 	m_grid_live_calib->SetRowLabelValue(
-		r,
-		_U((std::string(label_prefix) + std::string(".") + std::string(label))
-			   .c_str()));
-	m_grid_live_calib->SetCellValue(r, 0, _U(val.c_str()));
+		r, (std::string(label_prefix) + std::string(".") + std::string(label))
+			   .c_str());
+	m_grid_live_calib->SetCellValue(r, 0, val.c_str());
 }
 
 void kinect_calibrate_guiDialog::LiveCalibGridInitialize()

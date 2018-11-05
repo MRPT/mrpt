@@ -35,7 +35,6 @@ void CEnhancedMetaFile::LINUX_IMG_HEIGHT(int value)
 	LINUX_IMG_HEIGHT_value = value;
 }
 int CEnhancedMetaFile::LINUX_IMG_HEIGHT() { return LINUX_IMG_HEIGHT_value; }
-
 /*---------------------------------------------------------------
 						Constructor
 ---------------------------------------------------------------*/

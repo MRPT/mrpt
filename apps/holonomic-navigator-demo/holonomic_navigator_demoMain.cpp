@@ -616,7 +616,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 		mrpt::nav::CHolonomicND holo_ND;
 		holo_ND.options.saveToConfigFile(cfg, "ND_CONFIG");
 
-		this->edHoloParams->SetValue(_U(cfg.getContent().c_str()));
+		this->edHoloParams->SetValue(cfg.getContent().c_str());
 	}
 
 	WX_END_TRY
@@ -711,9 +711,7 @@ void holonomic_navigator_demoFrame::OntimRunSimulTrigger(wxTimerEvent& event)
 	}
 	catch (const std::exception& e)
 	{
-		wxMessageBox(
-			wxString(mrpt::exception_to_str(e), wxConvUTF8), wxT("Exception"),
-			wxOK, this);
+		wxMessageBox(mrpt::exception_to_str(e), wxT("Exception"), wxOK, this);
 		// Stop:
 		wxCommandEvent ev;
 		OnbtnStopClick(ev);
@@ -836,7 +834,7 @@ void holonomic_navigator_demoFrame::simulateOneStep(double time_step)
 		sLog += mrpt::format(
 			"Gap count    : %u\n", static_cast<unsigned int>(nGaps));
 
-		edInfoLocalView->SetValue(_U(sLog.c_str()));
+		edInfoLocalView->SetValue(sLog.c_str());
 
 		gl_nd_gaps->appendLine(0, 0, 0, 0, 0, 0);
 
@@ -887,13 +885,9 @@ void holonomic_navigator_demoFrame::updateViewsDynamicObjects()
 
 	// Labels:
 	StatusBar1->SetStatusText(
-		_U(mrpt::format("Robot: (%.03f,%.03f)", m_robotPose.x, m_robotPose.y)
-			   .c_str()),
-		0);
+		mrpt::format("Robot: (%.03f,%.03f)", m_robotPose.x, m_robotPose.y), 0);
 	StatusBar1->SetStatusText(
-		_U(mrpt::format(
-			   "Target: (%.03f,%.03f)", m_targetPoint.x, m_targetPoint.y)
-			   .c_str()),
+		mrpt::format("Target: (%.03f,%.03f)", m_targetPoint.x, m_targetPoint.y),
 		1);
 
 	// Show/hide:

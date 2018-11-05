@@ -173,7 +173,7 @@ void xRawLogViewerFrame::OnMenuCompactRawlog(wxCommandEvent& event)
 	string str = format(
 		"%u actions deleted\n%u sensory frames deleted", nActionsDel,
 		nEmptySFDel);
-	::wxMessageBox(_U(str.c_str()));
+	::wxMessageBox(str.c_str());
 
 	rebuildTreeView();
 
@@ -519,21 +519,21 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored(wxCommandEvent& event)
 	if (fileExists(outDir))
 	{
 		wxMessageBox(
-			_U(format(
-				   "*ABORTING*: Output directory for images already exists. "
-				   "Select a different output path or remove the "
-				   "directory:\n%s",
-				   outDir.c_str())
-				   .c_str()));
+			(format(
+				 "*ABORTING*: Output directory for images already exists. "
+				 "Select a different output path or remove the "
+				 "directory:\n%s",
+				 outDir.c_str())
+				 .c_str()));
 		return;
 	}
 
 	createDirectory(outDir);
 	if (!fileExists(outDir))
 	{
-		wxMessageBox(_U(
-			format("*ABORTING*: Cannot create directory:\n%s", outDir.c_str())
-				.c_str()));
+		wxMessageBox(
+			(format("*ABORTING*: Cannot create directory:\n%s", outDir.c_str())
+				 .c_str()));
 		return;
 	}
 
@@ -662,8 +662,7 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored(wxCommandEvent& event)
 
 	// Set error msg:
 	wxMessageBox(
-		_U(format("Images saved: %i", imgSaved).c_str()), _("Done"), wxOK,
-		this);
+		(format("Images saved: %i", imgSaved).c_str()), _("Done"), wxOK, this);
 
 	WX_END_TRY
 }

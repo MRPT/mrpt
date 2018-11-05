@@ -72,7 +72,7 @@ int navlog_viewer_GUI_designApp::OnRun()
 	}
 	catch (const std::exception& e)
 	{
-		::wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception:"));
+		::wxMessageBox(mrpt::exception_to_str(e), _("Exception:"));
 		return -1;
 	}
 }

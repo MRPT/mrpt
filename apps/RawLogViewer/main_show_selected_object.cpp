@@ -577,22 +577,22 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 catch (CExceptionExternalImageNotFound& e)
 {
 	wxMessageBox(
-		_U(mrpt::exception_to_str(e)), _("Error with a delayed load image"),
-		wxOK, this);
+		mrpt::exception_to_str(e), _("Error with a delayed load image"), wxOK,
+		this);
 
 	if (wxYES ==
 		wxMessageBox(
-			_U(format(
-				   "The current directory for relative images is:\n%s\n\nDo "
-				   "you want to set it to a different one?",
-				   CImage::getImagesPathBase().c_str())
-				   .c_str()),
+			(format(
+				 "The current directory for relative images is:\n%s\n\nDo "
+				 "you want to set it to a different one?",
+				 CImage::getImagesPathBase().c_str())
+				 .c_str()),
 			_("Error with delayed loading image"), wxYES_NO, this))
 	{
 		// Change CImage::getImagesPathBase()
 		wxDirDialog dirDialog(
 			this, _("Choose the base directory for relative image paths"),
-			_U(CImage::getImagesPathBase().c_str()), 0, wxDefaultPosition);
+			CImage::getImagesPathBase().c_str(), 0, wxDefaultPosition);
 		if (dirDialog.ShowModal() == wxID_OK)
 		{
 			CImage::setImagesPathBase(string(dirDialog.GetPath().mb_str()));
@@ -601,8 +601,6 @@ catch (CExceptionExternalImageNotFound& e)
 }
 catch (const std::exception& e)
 {
-	wxMessageBox(
-		wxString(mrpt::exception_to_str(e), wxConvUTF8), wxT("Exception"), wxOK,
-		this);
+	wxMessageBox(mrpt::exception_to_str(e), wxT("Exception"), wxOK, this);
 }
 }

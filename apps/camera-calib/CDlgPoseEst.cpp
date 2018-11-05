@@ -522,8 +522,7 @@ void CDlgPoseEst::OntimCaptureTrigger(wxTimerEvent& event)
 		}
 		cerr << endl << mrpt::exception_to_str(e) << endl;
 		wxMessageBox(
-			_U(mrpt::exception_to_str(e)), _("Error"), wxICON_INFORMATION,
-			this);
+			mrpt::exception_to_str(e), _("Error"), wxICON_INFORMATION, this);
 		return;
 	}
 }

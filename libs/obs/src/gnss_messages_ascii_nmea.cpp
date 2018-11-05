@@ -17,7 +17,6 @@ using namespace mrpt::obs::gnss;
 
 // ---------------------------------------
 Message_NMEA_GGA::content_t::content_t() : UTCTime() {}
-
 void Message_NMEA_GGA::dumpToStream(std::ostream& out) const
 {
 	out << "[NMEA GGA datum]\n";
@@ -81,7 +80,6 @@ bool Message_NMEA_GGA::getAllFieldValues(std::ostream& o) const
 
 // ---------------------------------------
 Message_NMEA_GLL::content_t::content_t() : UTCTime() {}
-
 void Message_NMEA_GLL::dumpToStream(std::ostream& out) const
 {
 	out << "[NMEA GLL datum]\n";
@@ -140,7 +138,6 @@ bool Message_NMEA_VTG::getAllFieldValues(std::ostream& o) const
 
 // ---------------------------------------
 Message_NMEA_RMC::content_t::content_t() : UTCTime() {}
-
 /** Build an MRPT timestamp with the year/month/day of this observation. */
 
 mrpt::system::TTimeStamp Message_NMEA_RMC::getDateAsTimestamp() const
@@ -206,7 +203,6 @@ bool Message_NMEA_RMC::getAllFieldValues(std::ostream& o) const
 
 // ---------------------------------------
 Message_NMEA_ZDA::content_t::content_t() : UTCTime() {}
-
 void Message_NMEA_ZDA::dumpToStream(std::ostream& out) const
 {
 	out << mrpt::format("[NMEA ZDA datum]\n");

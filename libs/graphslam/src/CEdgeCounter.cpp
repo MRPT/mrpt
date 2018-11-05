@@ -14,7 +14,6 @@
 using namespace mrpt::graphslam::detail;
 
 CEdgeCounter::CEdgeCounter() { this->clearAllEdges(); }
-
 void CEdgeCounter::setWindowManagerPtr(
 	mrpt::graphslam::CWindowManager* win_manager)
 {

@@ -31,6 +31,8 @@
 #include <wx/things/toggle.h>
 //*)
 
+#include <mrpt/gui/WxUtils.h>
+
 // JLBC: Unix X headers have these funny things...
 #ifdef Button1
 #undef Button1
@@ -245,29 +247,5 @@ class CItemData : public wxTreeItemData
 	{
 	}
 };
-
-#ifdef wxUSE_UNICODE
-#define _U(x) wxString((x), wxConvUTF8)
-#define _UU(x, y) wxString((x), y)
-#else
-#define _U(x) (x)
-#define _UU(x, y) (x)
-#endif
-
-#define WX_START_TRY \
-	try              \
-	{
-#define WX_END_TRY                                                             \
-	}                                                                          \
-	catch (std::exception & e)                                                 \
-	{                                                                          \
-		wxMessageBox(                                                          \
-			wxString(mrpt::exception_to_str(e), wxConvUTF8), wxT("Exception"), \
-			wxOK, this);                                                       \
-	}                                                                          \
-	catch (...)                                                                \
-	{                                                                          \
-		wxMessageBox(_("Untyped exception!"), _("Exception"), wxOK, this);     \
-	}
 
 #endif  // HMT_SLAM_GUIMAIN_H

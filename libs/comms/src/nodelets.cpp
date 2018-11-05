@@ -22,7 +22,6 @@ Subscriber::Subscriber(
 }
 
 Subscriber::~Subscriber() { m_cleanup(); }
-
 Subscriber::Ptr Subscriber::create(
 	std::function<void(const std::any&)>&& func,
 	std::function<void()>&& cleanup)
@@ -31,11 +30,9 @@ Subscriber::Ptr Subscriber::create(
 }
 
 void Subscriber::pub(const std::any& a) { m_func(a); }
-
 // ------- Topic --------------
 Topic::Topic(std::function<void()>&& cleanup) : m_cleanup(std::move(cleanup)) {}
 Topic::~Topic() { m_cleanup(); }
-
 void Topic::publish(const std::any& any)
 {
 	std::lock_guard<std::mutex> lock(m_mutex);

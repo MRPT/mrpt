@@ -486,16 +486,6 @@ class CWindowDialogPlots : public wxFrame
 	DECLARE_EVENT_TABLE()
 };  // end class CWindowDialog
 
-#ifndef _U
-#ifdef wxUSE_UNICODE
-#define _U(x) wxString((x), wxConvUTF8)
-#define _UU(x, y) wxString((x), y)
-#else
-#define _U(x) (x)
-#define _UU(x, y) (x)
-#endif
-#endif
-
 #endif
 
 }  // namespace mrpt::gui

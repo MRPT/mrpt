@@ -223,7 +223,8 @@ void CPhidgetInterfaceKitProximitySensors::initialize()
 	CGenericSensor::ssError; THROW_EXCEPTION(error);
 			}
 		}
-	}*/  // seems to be used only in the event based programming way.
+	}*/  // seems to be used only in the event based programming
+						 // way.
 	// compute (min/max) of (min/max) ranges.
 	m_minOfMinRanges = *min_element(m_minRange.begin(), m_minRange.end());
 	m_maxOfMaxRanges = *max_element(m_maxRange.begin(), m_maxRange.end());

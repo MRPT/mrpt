@@ -202,7 +202,6 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 		m_rethrow_exceptions = enable;
 	}
 	bool isRethrowNavExceptionsEnabled() const { return m_rethrow_exceptions; }
-
 	/** @}*/
 
 	struct TAbstractNavigatorParams : public mrpt::config::CLoadableOptions

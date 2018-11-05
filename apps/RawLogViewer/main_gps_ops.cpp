@@ -392,7 +392,7 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
 	wxArrayString lstLabels;
 	for (auto i = listOfSensorLabels.begin(); i != listOfSensorLabels.end();
 		 ++i)
-		lstLabels.Add(_U(i->first.c_str()));
+		lstLabels.Add(i->first.c_str());
 
 	wxString ret = wxGetSingleChoice(
 		_("Choose the first GPS:"), _("Sensor Labels"), lstLabels, this);
@@ -571,11 +571,11 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
 		mrpt::math::meanAndStd(dists, d_mean, d_std);
 
 		wxMessageBox(
-			_U(format(
-				   "The distance between GPS sensors is %.04fm, with\n a "
-				   "sigma=%.04fm, average from %u entries.",
-				   d_mean, d_std, (unsigned)dists.size())
-				   .c_str()),
+			(format(
+				 "The distance between GPS sensors is %.04fm, with\n a "
+				 "sigma=%.04fm, average from %u entries.",
+				 d_mean, d_std, (unsigned)dists.size())
+				 .c_str()),
 			_("Done"), wxOK, this);
 	}
 
@@ -646,7 +646,7 @@ void xRawLogViewerFrame::OnSummaryGPS(wxCommandEvent& event)
 					"Mode %u : %u readings (Mode: '%s')\n", (unsigned)i,
 					histogramGPSModes[i], gpsModes[i]);
 
-	wxMessageBox(_U(s.c_str()), _("GPS data summary"), wxOK, this);
+	wxMessageBox(s.c_str(), _("GPS data summary"), wxOK, this);
 
 	WX_END_TRY
 }
@@ -658,9 +658,8 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 	wxString caption = wxT("Save as...");
 	wxString wildcard = wxT("Text files (*.txt)|*.txt|All files (*.*)|*.*");
 	wxString defaultDir(
-		_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
-	wxString defaultFilename =
-		_U((loadedFileName + string("_GPS.txt")).c_str());
+		(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
+	wxString defaultFilename = (loadedFileName + string("_GPS.txt")).c_str();
 	wxFileDialog dialog(
 		this, caption, defaultDir, defaultFilename, wildcard,
 		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
@@ -1141,8 +1140,8 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 			MATRIX_FORMAT_FIXED);
 
 		wxMessageBox(
-			_U(format("%u entries saved!", (unsigned)M).c_str()), _("Done"),
-			wxOK, this);
+			(format("%u entries saved!", (unsigned)M).c_str()), _("Done"), wxOK,
+			this);
 	}
 
 	WX_END_TRY

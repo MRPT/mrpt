@@ -16,7 +16,6 @@
 #include <QDebug>
 
 CObservationTree::CObservationTree(QWidget* parent) : QTreeView(parent) {}
-
 void CObservationTree::setModel(QAbstractItemModel* model)
 {
 	m_model = dynamic_cast<CObservationTreeModel*>(model);

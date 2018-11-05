@@ -508,7 +508,7 @@ void navlog_viewer_GUI_designDialog::loadLogfile(const std::string& filName)
 {
 	WX_START_TRY
 
-	this->edLogFile->SetLabel(_U(filName.c_str()));
+	this->edLogFile->SetLabel(filName.c_str());
 
 	mrpt::io::CFileGZInputStream f(filName);
 
@@ -533,10 +533,10 @@ void navlog_viewer_GUI_designDialog::loadLogfile(const std::string& filName)
 				validClasses.end())
 			{
 				wxMessageBox(
-					_U(format(
-						   "Unexpected class found: %s",
-						   obj->GetRuntimeClass()->className)
-						   .c_str()),
+					(format(
+						 "Unexpected class found: %s",
+						 obj->GetRuntimeClass()->className)
+						 .c_str()),
 					_("Error loading log:"));
 				break;
 			}
@@ -577,7 +577,7 @@ void navlog_viewer_GUI_designDialog::loadLogfile(const std::string& filName)
 			// EOF in the middle of an object... It may be usual if the logger
 			// is shut down not cleanly.
 			wxMessageBox(
-				wxString(mrpt::exception_to_str(e), wxConvUTF8),
+				mrpt::exception_to_str(e),
 				wxT("Loading ended with an exception"), wxOK, this);
 			break;
 		}
@@ -665,7 +665,7 @@ void navlog_viewer_GUI_designDialog::UpdateInfoFromLoadedLog()
 		sDuration = mrpt::system::intervalFormat(
 			mrpt::system::timeDifference(m_log_first_tim, m_log_last_tim));
 	}
-	this->txtLogDuration->SetLabel(_U(sDuration.c_str()));
+	this->txtLogDuration->SetLabel(sDuration.c_str());
 	;
 
 	// flexGridRightHand->RecalcSizes();
@@ -1697,7 +1697,7 @@ void navlog_viewer_GUI_designDialog::OnmnuSeePTGParamsSelected(
 	const std::string sCfgText = cfg.getContent();
 
 	wxMessageBox(
-		_U(sCfgText.c_str()), _("PTG parameters as stored in the log:"), wxOK,
+		sCfgText.c_str(), _("PTG parameters as stored in the log:"), wxOK,
 		this);
 
 	WX_END_TRY
@@ -1796,10 +1796,10 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabExportPaths(
 	wxFileDialog dialog(
 		this, _("Save MATLAB/Octave script with path info...") /*caption*/,
 		_(".") /* defaultDir */,
-		_U((mrpt::system::extractFileName(
-				std::string(this->edLogFile->GetValue().mb_str())) +
-			std::string("_log.m"))
-			   .c_str()) /* defaultFilename */,
+		(mrpt::system::extractFileName(
+			 std::string(this->edLogFile->GetValue().mb_str())) +
+		 std::string("_log.m"))
+			.c_str() /* defaultFilename */,
 		_("MATLAB/Octave script (*.m)|*.m") /* wildcard */,
 		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 	if (dialog.ShowModal() != wxID_OK) return;

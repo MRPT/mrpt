@@ -87,7 +87,7 @@ CKinect::CKinect()
 	// Get maximum range:
 	m_maxRange =
 		m_range2meters[KINECT_RANGES_TABLE_LEN - 2];  // Recall: r[Max-1] means
-													  // error.
+	// error.
 
 	// Default label:
 	m_sensorLabel = "KINECT";

@@ -379,7 +379,6 @@ class CNetworkOfPoses
 	/** Returns the total chi-squared error of the graph. Shortcut for
 	 * getGlobalSquareError(false). */
 	double chi2() const { return getGlobalSquareError(false); }
-
 	/** Evaluates the graph total square error (ignoreCovariances=true) or
 	 * chi2 (ignoreCovariances=false) from all the pose constraints (edges)
 	 * with respect to the global poses in \a nodes.

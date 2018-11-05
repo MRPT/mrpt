@@ -82,7 +82,6 @@ class CGridPlaneXZ : public CRenderizableDisplayList
 		CRenderizableDisplayList::notifyChange();
 	}
 	float getGridFrequency() const { return m_frequency; }
-
 	/** Render
 	 */
 	void render_dl() const override;

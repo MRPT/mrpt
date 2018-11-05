@@ -43,7 +43,6 @@ namespace arch
 namespace net
 {
 raw_serial::raw_serial() : rp::hal::serial_rxtx() { _init(); }
-
 raw_serial::~raw_serial() { close(); }
 bool raw_serial::open() { return open(_portName, _baudrate, _flags); }
 bool raw_serial::bind(const char* portname, uint32_t baudrate, uint32_t flags)

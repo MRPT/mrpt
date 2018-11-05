@@ -117,7 +117,6 @@ class CSchemeArchiveBase
 		return (*pimpl).operator=(val);
 	}
 	CSchemeArchiveBase& operator=(bool val) { return (*pimpl).operator=(val); }
-
 	// Type conversion methods
 	explicit operator int32_t() const { return static_cast<int32_t>(*pimpl); }
 	explicit operator uint32_t() const { return static_cast<uint32_t>(*pimpl); }

@@ -84,7 +84,6 @@ void CPosePDFParticles::copyFrom(const CPosePDF& o)
 }
 
 void CPosePDFParticles::clear() { clearParticles(); }
-
 void CPosePDFParticles::getMean(CPose2D& est_) const
 {
 	// Calc average on SE(2)

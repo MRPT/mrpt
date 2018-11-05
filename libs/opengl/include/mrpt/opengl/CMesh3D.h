@@ -146,7 +146,6 @@ class CMesh3D : public CRenderizableDisplayList
 	void setVertColor(float r, float g, float b, float a = 1.f);
 	void setLineWidth(float lw) { m_lineWidth = lw; }
 	void setPointSize(float ps) { m_pointSize = ps; }
-
 	/** Render
 	 */
 	void render_dl() const override;

@@ -64,7 +64,6 @@ struct TGap
 };
 
 CHolonomicFullEval::EvalOutput::EvalOutput() : best_k(INVALID_K) {}
-
 void CHolonomicFullEval::evalSingleTarget(
 	unsigned int target_idx, const NavInput& ni, EvalOutput& eo)
 {
@@ -583,7 +582,6 @@ unsigned int CHolonomicFullEval::direction2sector(
 }
 
 CLogFileRecord_FullEval::CLogFileRecord_FullEval() : dirs_scores() {}
-
 uint8_t CLogFileRecord_FullEval::serializeGetVersion() const { return 3; }
 void CLogFileRecord_FullEval::serializeTo(
 	mrpt::serialization::CArchive& out) const

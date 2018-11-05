@@ -806,13 +806,13 @@ void robotic_arm_kinematicsFrame::UpdateListLinks()
 			" &theta;=%.02f&deg; d=%.02fmm a=%.02fmm &alpha;=%.02f&deg;",
 			RAD2DEG(l.theta), l.d * 1e3, l.a * 1e3, RAD2DEG(l.alpha));
 
-		listLinks->Append(_U(ss.str().c_str()));
+		listLinks->Append(ss.str().c_str());
 	}
 
 	for (unsigned int i = 0; i <= m_robot.size(); i++)
 	{
 		lbXYZs->Append(
-			_U(mrpt::format("XYZ%u", static_cast<unsigned int>(i)).c_str()));
+			(mrpt::format("XYZ%u", static_cast<unsigned int>(i)).c_str()));
 	}
 
 	if (oldSelect >= 0) listLinks->SetSelection(oldSelect);
@@ -838,7 +838,7 @@ void robotic_arm_kinematicsFrame::UpdateListLinks()
 				else
 					ss << "&theta;<sub>" << (i + 1) << "</sub>";
 
-				m_dof_panels[i]->Label1->Append(_U(ss.str().c_str()));
+				m_dof_panels[i]->Label1->Append(ss.str().c_str());
 			}
 
 			if (l.is_prismatic)
@@ -849,7 +849,7 @@ void robotic_arm_kinematicsFrame::UpdateListLinks()
 				m_dof_panels[i]->Slider1->SetValue(l.d * 1e3);
 
 				std::string s = mrpt::format("%.02f", l.d * 1e3);
-				m_dof_panels[i]->TextCtrl1->SetValue(_U(s.c_str()));
+				m_dof_panels[i]->TextCtrl1->SetValue(s.c_str());
 			}
 			else
 			{
@@ -858,7 +858,7 @@ void robotic_arm_kinematicsFrame::UpdateListLinks()
 				m_dof_panels[i]->Slider1->SetValue(RAD2DEG(l.theta));
 
 				std::string s = mrpt::format("%.02f", RAD2DEG(l.theta));
-				m_dof_panels[i]->TextCtrl1->SetValue(_U(s.c_str()));
+				m_dof_panels[i]->TextCtrl1->SetValue(s.c_str());
 			}
 		}
 
@@ -1141,7 +1141,7 @@ void robotic_arm_kinematicsFrame::UpdateMatrixView()
 		"%6.03f %6.03f %6.03f %6.03f\n",
 		M(0, 0), M(0, 1), M(0, 2), M(0, 3), M(1, 0), M(1, 1), M(1, 2), M(1, 3),
 		M(2, 0), M(2, 1), M(2, 2), M(2, 3), M(3, 0), M(3, 1), M(3, 2), M(3, 3));
-	edMatrix->SetValue(_U(s.c_str()));
+	edMatrix->SetValue(s.c_str());
 
 	edMatrix->Thaw();
 }

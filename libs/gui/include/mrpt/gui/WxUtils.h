@@ -70,14 +70,6 @@ namespace gui
 	* @{ */
 #if MRPT_HAS_WXWIDGETS
 
-#ifndef _U
-#ifdef wxUSE_UNICODE
-#define _U(x) wxString::From8BitData(x)
-#else
-#define _U(x) (x)
-#endif
-#endif
-
 #ifndef WX_START_TRY
 
 #define WX_START_TRY \
@@ -88,8 +80,7 @@ namespace gui
 	catch (std::exception & e)                                                \
 	{                                                                         \
 		wxMessageBox(                                                         \
-			wxString(mrpt::exception_to_str(e).c_str(), wxConvUTF8),          \
-			wxT("Exception"), wxOK, nullptr);                                 \
+			mrpt::exception_to_str(e), wxT("Exception"), wxOK, nullptr);      \
 	}                                                                         \
 	catch (...)                                                               \
 	{                                                                         \

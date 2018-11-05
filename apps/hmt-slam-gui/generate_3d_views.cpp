@@ -48,7 +48,7 @@ void hmt_slam_guiFrame::updateLocalMapView()
 	if (m_hmtslam->m_LMHs.find(hypID) == m_hmtslam->m_LMHs.end())
 	{
 		wxMessageBox(
-			_U(format("No LMH has hypothesis ID %i!", (int)hypID).c_str()),
+			format("No LMH has hypothesis ID %i!", (int)hypID).c_str(),
 			_("Error with topological hypotesis"));
 		return;
 	}
@@ -267,7 +267,7 @@ void hmt_slam_guiFrame::updateGlobalMapView()
 		if (m_hmtslam->m_LMHs.find(hypID) == m_hmtslam->m_LMHs.end())
 		{
 			wxMessageBox(
-				_U(format("No LMH has hypothesis ID %i!", (int)hypID).c_str()),
+				format("No LMH has hypothesis ID %i!", (int)hypID),
 				_("Error with topological hypotesis"));
 			return;
 		}

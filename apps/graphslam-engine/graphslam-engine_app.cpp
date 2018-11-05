@@ -200,20 +200,11 @@ int main(int argc, char** argv)
 
 		return 0;
 	}
-	catch (exception& e)
+	catch (const std::exception& e)
 	{
-		logger.logFmt(
-			LVL_ERROR, "Program finished due to an exception!!\n%s\n",
-			mrpt::exception_to_str(e));
-		printf("%s", mrpt::exception_to_str(e));
-
-		mrpt::system::pause();
-		return -1;
-	}
-	catch (...)
-	{
-		logger.logFmt(
-			LVL_ERROR, "Program finished due to an untyped exception!!");
+		const auto se = mrpt::exception_to_str(e);
+		logger.logStr(LVL_ERROR, se);
+		std::cerr << se << std::endl;
 		mrpt::system::pause();
 		return -1;
 	}

@@ -1317,10 +1317,10 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 			ys.push_back(landmark.pose_mean.y);
 		}
 
-		lbGT->SetLabel(_U(format(
-							  "Ground truth (%u landmarks)",
-							  (unsigned)m_GT_map.landmarks.size())
-							  .c_str()));
+		lbGT->SetLabel(format(
+						   "Ground truth (%u landmarks",
+						   (unsigned)m_GT_map.landmarks.size())
+						   .c_str());
 
 		m_lyGTMap->Clear();
 		m_lyGTMap->SetData(xs, ys);
@@ -1339,10 +1339,10 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 	// Observation ----------------------
 	m_lyObsvisibleRange->setPoints(xs_area, ys_area);
 
-	lbObs->SetLabel(_U(format(
-						   "Observation (%u landmarks)",
-						   (unsigned)m_lastObservation.sensedData.size())
-						   .c_str()));
+	lbObs->SetLabel(format(
+						"Observation (%u landmarks",
+						(unsigned)m_lastObservation.sensedData.size())
+						.c_str());
 
 	for (auto& m_lyObsLM : m_lyObsLMs) plotObs->DelLayer(m_lyObsLM, true);
 	m_lyObsLMs.clear();
@@ -2115,7 +2115,7 @@ void slamdemoFrame::executeOneStep()
 		{
 		}
 		cerr << endl << mrpt::exception_to_str(e) << endl;
-		wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception"));
+		wxMessageBox(mrpt::exception_to_str(e), _("Exception"));
 	}
 }
 
@@ -2363,7 +2363,7 @@ void slamdemoFrame::OnMenuProfilerViewStats(wxCommandEvent& event)
 {
 	string profStats = m_SLAM.getProfiler().getStatsAsText();
 	CLogView dlg(this);
-	dlg.edLog->SetValue(_U(profStats.c_str()));
+	dlg.edLog->SetValue(profStats.c_str());
 	dlg.ShowModal();
 }
 

@@ -348,10 +348,10 @@ void CPointsMap::determineMatching2D(
 	const double sin_phi = sin(otherMapPose.phi);
 	const double cos_phi = cos(otherMapPose.phi);
 
-	// Do matching only there is any chance of the two maps to overlap:
-	// -----------------------------------------------------------
-	// Translate and rotate all local points, while simultaneously
-	// estimating the bounding box:
+// Do matching only there is any chance of the two maps to overlap:
+// -----------------------------------------------------------
+// Translate and rotate all local points, while simultaneously
+// estimating the bounding box:
 #if MRPT_HAS_SSE2
 	// Number of 4-floats:
 	size_t nPackets = nLocalPoints / 4;
@@ -1956,7 +1956,7 @@ bool CPointsMap::internal_insertObservation(
 					&auxMap,  // Fuse with this map
 					insertionOptions.minDistBetweenLaserPoints,  // Min dist.
 					nullptr  // rather than &checkForDeletion which we don't
-							 // need
+					// need
 					// for 3D observations
 				);
 			}

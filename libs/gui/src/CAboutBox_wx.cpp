@@ -23,7 +23,7 @@
 //*)
 
 #include <mrpt/gui/CMyRedirector.h>
-#include <mrpt/gui/WxUtils.h>  // _U()
+#include <mrpt/gui/WxUtils.h>  //
 
 // For CV_VERSION
 #include <mrpt/config.h>
@@ -124,7 +124,7 @@ CAboutBox::CAboutBox(
 		_T("Courier New"), wxFONTENCODING_DEFAULT);
 	lbLicense->SetFont(lbLicenseFont);
 	TextCtrl1 = new wxTextCtrl(
-		Notebook1, ID_TEXTCTRL3, _U(tutorial().c_str()), wxPoint(4, 24),
+		Notebook1, ID_TEXTCTRL3, tutorial().c_str(), wxPoint(4, 24),
 		wxSize(545, 222), wxTE_MULTILINE | wxTE_READONLY | wxTE_AUTO_URL,
 		wxDefaultValidator, _T("ID_TEXTCTRL3"));
 	wxFont TextCtrl1Font(
@@ -153,7 +153,7 @@ CAboutBox::CAboutBox(
 		wxID_ANY, wxEVT_INIT_DIALOG, (wxObjectEventFunction)&CAboutBox::OnInit);
 	//*)
 
-	lbLicense->SetValue(_U(license().c_str()));
+	lbLicense->SetValue(license().c_str());
 }
 
 CAboutBox::~CAboutBox()
@@ -169,7 +169,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 
 	// Set the label with MRPT version:
 	wxString s(_("Build: "));
-	s << _U(mrpt::system::MRPT_getCompilationDate().c_str());
+	s << mrpt::system::MRPT_getCompilationDate().c_str();
 	s << _(" - ") << MRPTver;
 
 	lbBuild->SetLabel(s);
@@ -183,7 +183,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 		cout << information("wxWidgets", std::string(wxVer.mb_str()));
 	}
 
-	lbProgName->SetLabel(_U(m_appName.c_str()));
+	lbProgName->SetLabel(m_appName.c_str());
 	lbProgName->SetForegroundColour(wxColour(0, 0, 128));
 
 	FlexGridSizer1->RecalcSizes();

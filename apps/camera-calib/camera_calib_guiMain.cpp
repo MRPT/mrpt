@@ -530,10 +530,10 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent, wxWindowID id)
 	this->show3Dview();  // Empty 3D scene
 
 	Center();
-	this->SetTitle(_U(format(
-						  "Camera calibration %s - Part of the MRPT project",
-						  CAMERA_CALIB_GUI_VERSION)
-						  .c_str()));
+	this->SetTitle(format(
+					   "Camera calibration %s - Part of the MRPT project",
+					   CAMERA_CALIB_GUI_VERSION)
+					   .c_str());
 	Maximize();
 }
 
@@ -606,8 +606,8 @@ void camera_calib_guiDialog::OnAddImage(wxCommandEvent& event)
 			if (!dat.img_original.loadFromFile(fil))
 			{
 				wxMessageBox(
-					_U(format("Error loading file: %s", fil.c_str()).c_str()),
-					_("Error"));
+					format("Error loading file: %s", fil.c_str()).c_str()),
+					_("Error");
 				this->updateListOfImages();
 				return;
 			}
@@ -622,8 +622,7 @@ void camera_calib_guiDialog::OnAddImage(wxCommandEvent& event)
 	catch (const std::exception& e)
 	{
 		wxMessageBox(
-			_U(mrpt::exception_to_str(e)), _("Error"), wxICON_INFORMATION,
-			this);
+			mrpt::exception_to_str(e), _("Error"), wxICON_INFORMATION, this);
 	}
 }
 
@@ -676,8 +675,7 @@ void camera_calib_guiDialog::OnbtnRunCalibClick(wxCommandEvent& event)
 	catch (const std::exception& e)
 	{
 		wxMessageBox(
-			_U(mrpt::exception_to_str(e)), _("Error"), wxICON_INFORMATION,
-			this);
+			mrpt::exception_to_str(e), _("Error"), wxICON_INFORMATION, this);
 	}
 }
 
@@ -730,7 +728,7 @@ void camera_calib_guiDialog::updateListOfImages()
 {
 	lbFiles->Clear();
 	for (auto s = lst_images.begin(); s != lst_images.end(); ++s)
-		lbFiles->Append(_U(s->first.c_str()));
+		lbFiles->Append(s->first.c_str());
 
 	btnSaveImages->Enable(!lst_images.empty());
 
@@ -850,8 +848,7 @@ void camera_calib_guiDialog::refreshDisplayedImage()
 	catch (const std::exception& e)
 	{
 		wxMessageBox(
-			_U(mrpt::exception_to_str(e)), _("Error"), wxICON_INFORMATION,
-			this);
+			mrpt::exception_to_str(e), _("Error"), wxICON_INFORMATION, this);
 	}
 }
 
@@ -1081,8 +1078,7 @@ void camera_calib_guiDialog::OnbtnSaveImagesClick(wxCommandEvent& event)
 	catch (const std::exception& e)
 	{
 		wxMessageBox(
-			_U(mrpt::exception_to_str(e)), _("Error"), wxICON_INFORMATION,
-			this);
+			mrpt::exception_to_str(e), _("Error"), wxICON_INFORMATION, this);
 	}
 }
 

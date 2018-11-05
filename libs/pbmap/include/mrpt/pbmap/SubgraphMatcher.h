@@ -60,7 +60,8 @@ class SubgraphMatcher
 		Plane& plane1, Plane& plane2, Plane& planeA, Plane& planeB);
 
 	/*!List of combinations that have been explored in the interpretation
-	 * tree.*/  // Cambiar nombre
+	 * tree.*/  // Cambiar
+																		   // nombre
 	std::vector<std::map<unsigned, unsigned>> alreadyExplored;
 
 	/*!Find the best combination of planes correspondences given two subgraphs

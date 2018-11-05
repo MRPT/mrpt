@@ -80,12 +80,10 @@ void timestampToParts(TTimeStamp t, TTimeParts& p, bool localTime = false);
  * \sa now
  */
 inline mrpt::system::TTimeStamp getCurrentTime() { return mrpt::Clock::now(); }
-
 /** A shortcut for system::getCurrentTime
  * \sa getCurrentTime
  */
 inline mrpt::system::TTimeStamp now() { return mrpt::Clock::now(); }
-
 /** Transform from standard "time_t" (actually a double number, it can contain
  * fractions of seconds) to TTimeStamp.
  * \sa timestampTotime_t

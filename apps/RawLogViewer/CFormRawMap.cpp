@@ -813,7 +813,7 @@ void CFormRawMap::OnbtnSaveTxtClick(wxCommandEvent&)
 	wxString wildcard = wxT("Text files (*.txt)|*.txt|All files (*.*)|*.*");
 
 	wxString defaultDir(
-		_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
+		(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
 
 	wxString defaultFilename = _("map.txt");
 	wxFileDialog dialog(
@@ -830,8 +830,7 @@ void CFormRawMap::OnbtnSaveTxtClick(wxCommandEvent&)
 		}
 		catch (const std::exception& e)
 		{
-			wxMessageBox(
-				_U(mrpt::exception_to_str(e)), _("Exception"), wxOK, this);
+			wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
 		}
 	}
 }
@@ -844,7 +843,7 @@ void CFormRawMap::OnbtnSave3DClick(wxCommandEvent&)
 		wxT("MRPT 3D scene files (*.3Dscene)|*.3Dscene|All files (*.*)|*.*");
 
 	wxString defaultDir(
-		_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
+		(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
 
 	wxString defaultFilename = _("map.3Dscene");
 	wxFileDialog dialog(
@@ -866,8 +865,7 @@ void CFormRawMap::OnbtnSave3DClick(wxCommandEvent&)
 		}
 		catch (const std::exception& e)
 		{
-			wxMessageBox(
-				_U(mrpt::exception_to_str(e)), _("Exception"), wxOK, this);
+			wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
 		}
 	}
 }
@@ -1251,7 +1249,7 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
 	// Save the vehicle path
 	// ---------------------------------------------
 	wxString defaultDir(
-		_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
+		(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
 	{
 		wxFileDialog dialog(
 			this, wxT("Save path as txt file..."), defaultDir,

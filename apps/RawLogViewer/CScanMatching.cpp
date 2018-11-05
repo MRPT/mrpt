@@ -516,7 +516,7 @@ CScanMatching::CScanMatching(wxWindow* parent, wxWindowID)
 		cfg.write("InitialPosition", "phi_DEG", 0.0);
 		icp_params.saveToConfigFile(cfg, "ICP");
 
-		edOptICP->SetValue(_U(cfg.getContent().c_str()));
+		edOptICP->SetValue(cfg.getContent().c_str());
 	}
 
 	wxLog* old_log = wxLog::SetActiveTarget(new wxLogTextCtrl(txtLog));
@@ -716,7 +716,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 			if (isAnimation)
 			{
 				txtStep->SetLabel(
-					_U(format("Step: %u / %u", curStep, maxSteps).c_str()));
+					(format("Step: %u / %u", curStep, maxSteps).c_str()));
 				pbSteps->SetValue(curStep);
 				wxTheApp->Yield();  // Let the app. process messages
 			}

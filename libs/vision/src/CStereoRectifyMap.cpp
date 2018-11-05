@@ -21,7 +21,6 @@ using namespace mrpt::math;
 
 // Ctor: Leave all vectors empty
 CStereoRectifyMap::CStereoRectifyMap() : m_resize_output_value(0, 0) {}
-
 void CStereoRectifyMap::internal_invalidate()
 {
 	m_dat_mapx_left

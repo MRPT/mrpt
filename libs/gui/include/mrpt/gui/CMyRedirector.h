@@ -92,12 +92,7 @@ class CMyRedirector : public std::streambuf
 	{
 		if (!m_threadSafe)
 		{
-			wxString s;
-#ifdef wxUSE_UNICODE
-			s = wxString(str.c_str(), wxConvUTF8);
-#else
-			s = _U(str.c_str());
-#endif
+			const auto s = wxString(str);
 
 #if wxCHECK_VERSION(3, 0, 0) && !defined(__APPLE__)  // OSX build error?
 			m_txt->GetEventHandler()->CallAfter(&wxTextCtrl::WriteText, s);
@@ -130,7 +125,7 @@ class CMyRedirector : public std::streambuf
 #ifdef wxUSE_UNICODE
 			*m_txt << wxString(m_strbuf.c_str(), wxConvUTF8);
 #else
-			*m_txt << _U(m_strbuf.c_str());
+			*m_txt << m_strbuf.c_str();
 #endif
 			m_strbuf.clear();
 		}

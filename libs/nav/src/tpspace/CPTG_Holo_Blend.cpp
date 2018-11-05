@@ -789,7 +789,6 @@ double CPTG_Holo_Blend::maxTimeInVelCmdNOP(int path_k) const
 
 double CPTG_Holo_Blend::getPathStepDuration() const { return PATH_TIME_STEP; }
 CPTG_Holo_Blend::CPTG_Holo_Blend() { internal_construct_exprs(); }
-
 CPTG_Holo_Blend::CPTG_Holo_Blend(
 	const mrpt::config::CConfigFileBase& cfg, const std::string& sSection)
 	: turningRadiusReference(0.30)

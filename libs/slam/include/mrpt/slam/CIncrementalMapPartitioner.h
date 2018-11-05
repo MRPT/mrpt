@@ -192,7 +192,6 @@ class CIncrementalMapPartitioner : public mrpt::system::COutputLogger,
 
 	/** Return a const ref to the internal adjacency matrix.  */
 	const mrpt::math::CMatrixDouble& getAdjacencyMatrix() const { return m_A; }
-
 	/** Read-only access to the sequence of Sensory Frames */
 	const mrpt::maps::CSimpleMap* getSequenceOfFrames() const
 	{

@@ -591,7 +591,7 @@ bool hmtMapViewerFrame::loadHTMSLAMFromFile(const std::string& filePath)
 	if (!fileExists(filePath))
 	{
 		wxMessageBox(
-			_U(string(string("File doesn't exist:\n") + filePath).c_str()),
+			string(string("File doesn't exist:\n") + filePath).c_str(),
 			_("Error loading file"), wxOK, this);
 		return false;
 	}
@@ -650,7 +650,7 @@ void hmtMapViewerFrame::rebuildTreeView()
 
 		// wxTreeItemId treeNode =
 		treeView->AppendItem(
-			root, _U(str.c_str()), 0, -1, new CItemData(it->second, i));
+			root, str.c_str(), 0, -1, new CItemData(it->second, i));
 	}
 
 	treeView->ExpandAll();
@@ -659,7 +659,7 @@ void hmtMapViewerFrame::rebuildTreeView()
 	cbHypos->Clear();
 
 	for (const auto& l : hmt_map->m_LMHs)
-		cbHypos->Append(_U(format("%i", (int)l.first).c_str()));
+		cbHypos->Append(std::to_string(l.first));
 
 	cbHypos->SetSelection(0);
 
@@ -674,9 +674,8 @@ bool hmtMapViewerFrame::AskForOpenHMTMap(std::string& fil)
 	wxString caption = wxT("Choose a file to open");
 	wxString wildcard =
 		wxT("HMT-SLAM files (*.hmtslam)|*.hmtslam|All files (*.*)|*.*");
-	wxString defaultDir(
-		_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
-	wxString defaultFilename = wxT("");
+	wxString defaultDir = iniFile->read_string(iniFileSect, "LastDir", ".");
+	wxString defaultFilename;
 
 	wxFileDialog dialog(
 		this, caption, defaultDir, defaultFilename, wildcard,
@@ -705,7 +704,7 @@ void hmtMapViewerFrame::updateLocalMapView()
 	if (hmt_map->m_LMHs.find(hypID) == hmt_map->m_LMHs.end())
 	{
 		wxMessageBox(
-			_U(format("No LMH has hypothesis ID %i!", (int)hypID).c_str()),
+			format("No LMH has hypothesis ID %i!", (int)hypID),
 			_("Error with topological hypotesis"));
 		return;
 	}
@@ -925,7 +924,7 @@ void hmtMapViewerFrame::updateGlobalMapView()
 		if (hmt_map->m_LMHs.find(hypID) == hmt_map->m_LMHs.end())
 		{
 			wxMessageBox(
-				_U(format("No LMH has hypothesis ID %i!", (int)hypID).c_str()),
+				format("No LMH has hypothesis ID %i!", (int)hypID),
 				_("Error with topological hypotesis"));
 			return;
 		}
@@ -1060,7 +1059,7 @@ void hmtMapViewerFrame::OnmenuExportLocalMapsSelected(wxCommandEvent& event)
 	if (hmt_map->m_LMHs.find(hypID) == hmt_map->m_LMHs.end())
 	{
 		wxMessageBox(
-			_U(format("No LMH has hypothesis ID %i!", (int)hypID).c_str()),
+			format("No LMH has hypothesis ID %i!", (int)hypID),
 			_("Error with topological hypotesis"));
 		return;
 	}
@@ -1068,9 +1067,8 @@ void hmtMapViewerFrame::OnmenuExportLocalMapsSelected(wxCommandEvent& event)
 	wxString caption = wxT("Choose the target file prefix");
 	wxString wildcard =
 		wxT("simplemap files (*.simplemap)|*.hmtslam|All files (*.*)|*.*");
-	wxString defaultDir(
-		_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
-	wxString defaultFilename = wxT("");
+	wxString defaultDir = iniFile->read_string(iniFileSect, "LastDir", ".");
+	wxString defaultFilename;
 
 	wxFileDialog dialog(
 		this, caption, defaultDir, defaultFilename, wildcard,
@@ -1119,7 +1117,7 @@ void hmtMapViewerFrame::OnTopologicalModel_Gridmap(wxCommandEvent& event)
 	if (hmt_map->m_LMHs.find(hypID) == hmt_map->m_LMHs.end())
 	{
 		wxMessageBox(
-			_U(format("No LMH has hypothesis ID %i!", (int)hypID).c_str()),
+			format("No LMH has hypothesis ID %i!", (int)hypID),
 			_("Error with topological hypotesis"));
 		return;
 	}

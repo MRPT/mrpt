@@ -162,7 +162,7 @@ void saveLastUsedDirectoryToCfgFile(const std::string& fil)
 	}
 	catch (const std::exception& e)
 	{
-		wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception"), wxOK);
+		wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK);
 	}
 }
 
@@ -220,14 +220,14 @@ void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC& dc)
 		"Center=(%.02f,%.02f,%.02f) Zoom:%.02f AZ=%.02f deg EL:%.02f deg",
 		getCameraPointingX(), getCameraPointingY(), getCameraPointingZ(),
 		getZoomDistance(), getAzimuthDegrees(), getElevationDegrees());
-	theWindow->StatusBar1->SetStatusText(_U(str.c_str()), 1);
+	theWindow->StatusBar1->SetStatusText(str.c_str(), 1);
 
 	str = format("%.02f FPS", meanEstimatedFPS);
-	theWindow->StatusBar1->SetStatusText(_U(str.c_str()), 2);
+	theWindow->StatusBar1->SetStatusText(str.c_str(), 2);
 
 	str =
 		format("%u viewports", (unsigned)getOpenGLSceneRef()->viewportsCount());
-	theWindow->StatusBar1->SetStatusText(_U(str.c_str()), 3);
+	theWindow->StatusBar1->SetStatusText(str.c_str(), 3);
 }
 
 void CMyGLCanvas::OnPostRender()
@@ -925,9 +925,9 @@ void _DSceneViewerFrame::OnOpenFile(wxCommandEvent& event)
 		wxT("3D scene files (*.3Dscene)|*.3Dscene|All files (*.*)|*.*");
 
 	wxString defaultDir(
-		_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
+		(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
 
-	wxString defaultFilename = wxT("");
+	wxString defaultFilename;
 	wxFileDialog dialog(
 		this, caption, defaultDir, defaultFilename, wildcard,
 		wxFD_OPEN | wxFD_FILE_MUST_EXIST);
@@ -1024,7 +1024,7 @@ void _DSceneViewerFrame::loadFromFile(
 		updateTitle();
 
 		theWindow->StatusBar1->SetStatusText(
-			_U(format("File loaded in %.03fs", timeToLoad).c_str()), 0);
+			(format("File loaded in %.03fs", timeToLoad).c_str()), 0);
 
 		Refresh(false);
 	}
@@ -1032,7 +1032,7 @@ void _DSceneViewerFrame::loadFromFile(
 	{
 		std::cerr << mrpt::exception_to_str(e) << std::endl;
 		btnAutoplay->SetValue(false);
-		wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception"), wxOK, this);
+		wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
 	}
 	catch (...)
 	{
@@ -1043,12 +1043,12 @@ void _DSceneViewerFrame::loadFromFile(
 
 void _DSceneViewerFrame::updateTitle()
 {
-	SetTitle(_U(format(
-					"3DSceneViewer - Part of the MRPT project [%s]",
-					(extractFileName(loadedFileName) + string(".") +
-					 extractFileExtension(loadedFileName))
-						.c_str())
-					.c_str()));
+	SetTitle((format(
+				  "3DSceneViewer - Part of the MRPT project [%s]",
+				  (extractFileName(loadedFileName) + string(".") +
+				   extractFileExtension(loadedFileName))
+					  .c_str())
+				  .c_str()));
 }
 
 void _DSceneViewerFrame::OntimLoadFileCmdLineTrigger(wxTimerEvent& event)
@@ -1146,8 +1146,7 @@ void _DSceneViewerFrame::OnBtnRecordClicked(wxCommandEvent& event)
 		// Starting recording:
 		wxDirDialog dirDialog(
 			this, _("Choose the directory where to save the screenshots:"),
-			_U(extractFileDirectory(loadedFileName).c_str()), 0,
-			wxDefaultPosition);
+			extractFileDirectory(loadedFileName).c_str(), 0, wxDefaultPosition);
 
 		if (dirDialog.ShowModal() == wxID_OK)
 		{
@@ -1193,8 +1192,8 @@ void _DSceneViewerFrame::OnInsert3DS(wxCommandEvent& event)
 				"*.md5*;*.smd;.vta;*.m3;*.3d;*.b3d;*.q3d;*.q3s;*.nff;*.nff;*."
 				"off;*.raw;*.ter;*.mdl;*.hmp;*.ndo;|All files (*.*)|*.*");
 		wxString defaultDir(
-			_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
-		wxString defaultFilename = wxT("");
+			(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
+		wxString defaultFilename;
 
 		wxFileDialog dialog(
 			this, caption, defaultDir, defaultFilename, wildcard,
@@ -1220,7 +1219,7 @@ void _DSceneViewerFrame::OnInsert3DS(wxCommandEvent& event)
 	{
 		std::cerr << mrpt::exception_to_str(e) << std::endl;
 		btnAutoplay->SetValue(false);
-		wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception"), wxOK, this);
+		wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
 	}
 	catch (...)
 	{
@@ -1237,8 +1236,8 @@ void _DSceneViewerFrame::OnMenuSave(wxCommandEvent& event)
 		wxString wildcard =
 			wxT("3Dscene files (*.3Dscene)|*.3Dscene|All files (*.*)|*.*");
 		wxString defaultDir(
-			_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
-		wxString defaultFilename = wxT("");
+			(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
+		wxString defaultFilename;
 
 		wxFileDialog dialog(
 			this, caption, defaultDir, defaultFilename, wildcard,
@@ -1255,7 +1254,7 @@ void _DSceneViewerFrame::OnMenuSave(wxCommandEvent& event)
 	{
 		std::cerr << mrpt::exception_to_str(e) << std::endl;
 		btnAutoplay->SetValue(false);
-		wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception"), wxOK, this);
+		wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
 	}
 	catch (...)
 	{
@@ -1345,7 +1344,7 @@ void _DSceneViewerFrame::OnTravellingTrigger(wxTimerEvent& event)
 	catch (const std::exception& e)
 	{
 		std::cerr << mrpt::exception_to_str(e) << std::endl;
-		wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception"), wxOK, this);
+		wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
 	}
 	catch (...)
 	{
@@ -1419,7 +1418,7 @@ void _DSceneViewerFrame::OnStartCameraTravelling(wxCommandEvent& event)
 	catch (const std::exception& e)
 	{
 		std::cerr << mrpt::exception_to_str(e) << std::endl;
-		wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception"), wxOK, this);
+		wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
 	}
 	catch (...)
 	{
@@ -1440,7 +1439,7 @@ void _DSceneViewerFrame::OnMenuAddSICK(wxCommandEvent& event)
 	catch (const std::exception& e)
 	{
 		std::cerr << mrpt::exception_to_str(e) << std::endl;
-		wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception"), wxOK, this);
+		wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
 	}
 	catch (...)
 	{
@@ -1473,7 +1472,7 @@ void _DSceneViewerFrame::OnMenuItem14Selected(wxCommandEvent& event)
 	wxString caption = wxT("Save snapshot to file");
 	wxString wildcard = wxT("Image files (*.png)|*.png|All files (*.*)|*.*");
 	wxString defaultDir(
-		_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
+		(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
 	wxString defaultFilename = wxT("snapshot.png");
 
 	wxFileDialog dialog(
@@ -1611,11 +1610,11 @@ void _DSceneViewerFrame::OnmnuSceneStatsSelected(wxCommandEvent& event)
 		   << "Visible octree nodes (in point clouds): "
 		   << sceneStats.nOctreeVisible << endl;
 
-		wxMessageBox(_U(ss.str().c_str()), _("Scene statistics"));
+		wxMessageBox(ss.str().c_str(), _("Scene statistics"));
 	}
 	catch (const std::exception& e)
 	{
-		wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception"), wxOK, this);
+		wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
 	}
 }
 
@@ -1692,7 +1691,7 @@ void _DSceneViewerFrame::OnmnuItemShowCloudOctreesSelected(
 	}
 	catch (const std::exception& e)
 	{
-		wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception"), wxOK, this);
+		wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
 	}
 }
 
@@ -1705,7 +1704,7 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 	{
 		wxFileDialog dialog(
 			this, _("Choose the PLY file to import"),
-			_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
+			(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
 			_("*.ply"),
 			_("PLY files (*.ply, *.PLY)|*.ply;*.PLY|All files (*.*)|*.*"),
 			wxFD_OPEN | wxFD_FILE_MUST_EXIST);
@@ -1818,17 +1817,17 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 			mrpt::system::stringListAsString(file_comments, sC);
 			mrpt::system::stringListAsString(file_info, sI);
 			wxMessageBox(
-				_U(format(
-					   "Comments:\n--------------------\n%s\nObject "
-					   "info:\n--------------------\n%s",
-					   sC.c_str(), sI.c_str())
-					   .c_str()),
+				(format(
+					 "Comments:\n--------------------\n%s\nObject "
+					 "info:\n--------------------\n%s",
+					 sC.c_str(), sI.c_str())
+					 .c_str()),
 				_("File info"), wxOK, this);
 		}
 	}
 	catch (const std::exception& e)
 	{
-		wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception"), wxOK, this);
+		wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
 	}
 }
 
@@ -1873,7 +1872,7 @@ void _DSceneViewerFrame::OnMenuItemExportPointsPLY(wxCommandEvent& event)
 
 		wxFileDialog dialog(
 			this, _("Choose the target PLY filename"),
-			_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
+			(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
 			_("*.ply"),
 			_("PLY files (*.ply, *.PLY)|*.ply;*.PLY|All files (*.*)|*.*"),
 			wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
@@ -1899,7 +1898,7 @@ void _DSceneViewerFrame::OnMenuItemExportPointsPLY(wxCommandEvent& event)
 	}
 	catch (const std::exception& e)
 	{
-		wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception"), wxOK, this);
+		wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
 	}
 }
 
@@ -1910,7 +1909,7 @@ void _DSceneViewerFrame::OnMenuItemHighResRender(wxCommandEvent& event)
 	{
 		wxFileDialog dialog(
 			this, _("Choose target image file"),
-			_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
+			(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
 			_("render.png"),
 			_("Image files (*.png,*.tif,*.jpg,...)|*.png;*.tif;*.jpg;*.bmp|All "
 			  "files (*.*)|*.*"),
@@ -1951,7 +1950,7 @@ void _DSceneViewerFrame::OnMenuItemHighResRender(wxCommandEvent& event)
 	}
 	catch (const std::exception& e)
 	{
-		wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception"), wxOK, this);
+		wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
 	}
 }
 
@@ -2017,7 +2016,7 @@ void _DSceneViewerFrame::OnmnuSelectByClassSelected(wxCommandEvent& event)
 			mrpt::rtti::getAllRegisteredClasses();
 		for (auto& all_mrpt_classe : all_mrpt_classes)
 			if (all_mrpt_classe->derivedFrom(CLASS_ID(CRenderizable)))
-				glClassNames.Add(_U(all_mrpt_classe->className));
+				glClassNames.Add(all_mrpt_classe->className);
 	}
 
 	wxArrayInt selections;
@@ -2045,10 +2044,10 @@ void _DSceneViewerFrame::OnmnuSelectByClassSelected(wxCommandEvent& event)
 	m_canvas->getOpenGLSceneRef()->visitAllObjects(filter);
 
 	theWindow->StatusBar1->SetStatusText(
-		_U(mrpt::format(
-			   "%u objects selected",
-			   static_cast<unsigned int>(m_selected_gl_objects.size()))
-			   .c_str()),
+		(mrpt::format(
+			 "%u objects selected",
+			 static_cast<unsigned int>(m_selected_gl_objects.size()))
+			 .c_str()),
 		0);
 }
 
@@ -2088,7 +2087,7 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 #if MRPT_HAS_LIBLAS
 		wxFileDialog dialog(
 			this, _("Choose the LAS file to import"),
-			_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
+			(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
 			_("*.las"),
 			_("LAS files (*.las, "
 			  "*.laz)|*.las;*.LAS;*.laz;*.LAZ|All files (*.*)|*.*"),
@@ -2242,14 +2241,14 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 		   << "Creation date      : Year=" << las_hdr.creation_year
 		   << " DOY=" << las_hdr.creation_DOY << endl;
 
-		wxMessageBox(_U(ss.str().c_str()), _("File info"), wxOK, this);
+		wxMessageBox(ss.str().c_str(), _("File info"), wxOK, this);
 #else
 		throw std::runtime_error("MRPT was built without libLAS support!");
 #endif
 	}
 	catch (const std::exception& e)
 	{
-		wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception"), wxOK, this);
+		wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
 	}
 }
 

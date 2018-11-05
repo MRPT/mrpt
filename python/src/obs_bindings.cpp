@@ -565,7 +565,7 @@ void export_obs()
 				"sensedDistance",
 				&CObservationRange::TMeasurement::sensedDistance);
 
-		// TMeasurementList
+// TMeasurementList
 #if 0
 		class_<CObservationRange::TMeasurementList>(
 			"TMeasurementList", init<>())
@@ -669,7 +669,7 @@ void export_obs()
 				"covariance",
 				&CObservationBearingRange::TMeasurement::covariance);
 
-		// TMeasurementList
+// TMeasurementList
 #if 0
 		class_<CObservationBearingRange::TMeasurementList>(
 			"TMeasurementList", init<>())
