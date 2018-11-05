@@ -1059,44 +1059,44 @@ void CFormMotionModel::showOptionsInDialog()
 		PageControl1->ChangeSelection(0);
 
 		sprintf(str, "%.8f", options.gaussianModel.a1);
-		edG_A1->SetValue(_U(str));
+		edG_A1->SetValue(str);
 
 		sprintf(str, "%.8f", options.gaussianModel.a2 * M_PIf / 180);
-		edG_A2->SetValue(_U(str));
+		edG_A2->SetValue(str);
 
 		sprintf(str, "%.8f", options.gaussianModel.a3 * 180 / M_PIf);
-		edG_A3->SetValue(_U(str));
+		edG_A3->SetValue(str);
 
 		sprintf(str, "%.8f", options.gaussianModel.a4);
-		edG_A4->SetValue(_U(str));
+		edG_A4->SetValue(str);
 
 		sprintf(str, "%.8f", options.gaussianModel.minStdXY);
-		edMinStdXY->SetValue(_U(str));
+		edMinStdXY->SetValue(str);
 
 		sprintf(str, "%.8f", RAD2DEG(options.gaussianModel.minStdPHI));
-		edMinStdPHI->SetValue(_U(str));
+		edMinStdPHI->SetValue(str);
 	}
 	else
 	{
 		PageControl1->ChangeSelection(1);
 
 		sprintf(str, "%.8f", options.thrunModel.alfa1_rot_rot);
-		edA1->SetValue(_U(str));
+		edA1->SetValue(str);
 		sprintf(str, "%.8f", options.thrunModel.alfa2_rot_trans * 180 / M_PIf);
-		edA2->SetValue(_U(str));
+		edA2->SetValue(str);
 		sprintf(str, "%.8f", options.thrunModel.alfa3_trans_trans);
-		edA3->SetValue(_U(str));
+		edA3->SetValue(str);
 		sprintf(str, "%.8f", options.thrunModel.alfa4_trans_rot * M_PIf / 180);
-		edA4->SetValue(_U(str));
+		edA4->SetValue(str);
 
 		sprintf(str, "%.8f", options.thrunModel.additional_std_XY);
-		edAddXY->SetValue(_U(str));
+		edAddXY->SetValue(str);
 
 		sprintf(str, "%.8f", RAD2DEG(options.thrunModel.additional_std_phi));
-		edAddPhi->SetValue(_U(str));
+		edAddPhi->SetValue(str);
 
 		sprintf(str, "%d", options.thrunModel.nParticlesCount);
-		edNumParts->SetValue(_U(str));
+		edNumParts->SetValue(str);
 	}
 }
 
@@ -1183,7 +1183,7 @@ void CFormMotionModel::OnbtnPickInputClick(wxCommandEvent& event)
 
 	wxFileDialog dialog(
 		this, _("Select input rawlog file") /* caption */,
-		_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
+		(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
 		_("*.rawlog") /* defaultFilename */,
 		_("Rawlog files (*.rawlog,*.rawlog.gz)|*.rawlog;*.rawlog.gz|All files "
 		  "(*.*)|*.*") /* wildcard */,
@@ -1209,7 +1209,7 @@ void CFormMotionModel::OnbtnPickOutClick(wxCommandEvent& event)
 
 	wxFileDialog dialog(
 		this, _("Select output rawlog file") /* caption */,
-		_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
+		(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
 		_("*.rawlog") /* defaultFilename */,
 		_("Rawlog files (*.rawlog,*.rawlog.gz)|*.rawlog;*.rawlog.gz|All files "
 		  "(*.*)|*.*") /* wildcard */,

@@ -108,7 +108,7 @@ bool slamdemoApp::doCommandLineProcess()
 	{
 #ifdef MRPT_OS_WINDOWS
 		if (!out_cmdLine.str().empty())
-			wxMessageBox(_U(out_cmdLine.str().c_str()), _("2d-slam-demo"));
+			wxMessageBox(out_cmdLine.str().c_str(), _("2d-slam-demo"));
 #endif
 		return false;
 	}
@@ -142,7 +142,7 @@ bool slamdemoApp::doCommandLineProcess()
 		{
 			cerr << mrpt::exception_to_str(e) << endl;
 #ifdef MRPT_OS_WINDOWS
-			wxMessageBox(_U(mrpt::exception_to_str(e)), _("2d-slam-demo"));
+			wxMessageBox(mrpt::exception_to_str(e), _("2d-slam-demo"));
 #endif
 		}
 	}

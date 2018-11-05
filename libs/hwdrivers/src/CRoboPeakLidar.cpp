@@ -32,7 +32,6 @@ using namespace std;
 						Constructor
 -------------------------------------------------------------*/
 CRoboPeakLidar::CRoboPeakLidar() : m_com_port("") { m_sensorLabel = "RPLidar"; }
-
 /*-------------------------------------------------------------
 					~CRoboPeakLidar
 -------------------------------------------------------------*/

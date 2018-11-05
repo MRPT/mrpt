@@ -1809,7 +1809,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 		string fil =
 			iniFile->read_string("RecentFiles", format("file_%03u", i), "");
 		if (fil.size() && mrpt::system::fileExists(fil))
-			m_fileHistory.AddFileToHistory(_U(fil.c_str()));
+			m_fileHistory.AddFileToHistory(fil.c_str());
 	}
 
 	// Image directory selector on the toolbar:
@@ -1856,9 +1856,9 @@ bool xRawLogViewerFrame::AskForOpenRawlog(std::string& fil)
 			"files (*.*)|*.*");
 
 	wxString defaultDir(
-		_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
+		(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
 
-	wxString defaultFilename = wxT("");
+	wxString defaultFilename;
 	wxFileDialog dialog(
 		this, caption, defaultDir, defaultFilename, wildcard,
 		wxFD_OPEN | wxFD_FILE_MUST_EXIST);
@@ -1885,9 +1885,9 @@ bool xRawLogViewerFrame::AskForSaveRawlog(std::string& fil)
 			"files (*.*)|*.*");
 
 	wxString defaultDir(
-		_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
+		(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
 
-	wxString defaultFilename = wxT("");
+	wxString defaultFilename;
 	wxFileDialog dialog(
 		this, caption, defaultDir, defaultFilename, wildcard,
 		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
@@ -1923,9 +1923,9 @@ void xRawLogViewerFrame::OnSaveFile(wxCommandEvent& event)
 			"files (*.*)|*.*");
 
 	wxString defaultDir(
-		_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
+		(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
 
-	wxString defaultFilename = _U(loadedFileName.c_str());
+	wxString defaultFilename = loadedFileName.c_str();
 	wxFileDialog dialog(
 		this, caption, defaultDir, defaultFilename, wildcard,
 		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
@@ -1996,7 +1996,7 @@ void xRawLogViewerFrame::OnEditRawlog(wxCommandEvent& event)
 	dialog.cbObsLabel->Clear();
 	for (auto i = listOfSensorLabels.begin(); i != listOfSensorLabels.end();
 		 ++i)
-		dialog.cbObsLabel->Append(_U(i->first.c_str()));
+		dialog.cbObsLabel->Append(i->first.c_str());
 
 	dialog.slFrom->SetRange(0, (int)rawlog.size() - 1);
 	dialog.slFrom->SetValue(0);
@@ -2016,7 +2016,7 @@ void xRawLogViewerFrame::OnEditRawlog(wxCommandEvent& event)
 	lstClasses = mrpt::rtti::getAllRegisteredClasses();
 	for (const auto& c : lstClasses)
 		if (c->derivedFrom(CLASS_ID(CObservation)))
-			dialog.cbObsClass->Append(_U(c->className));
+			dialog.cbObsClass->Append(c->className);
 
 	dialog.Fit();
 	dialog.ShowModal();
@@ -2035,7 +2035,7 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 	if (!fileExists(str))
 	{
 		wxMessageBox(
-			_U(string(string("File doesn't exist:\n") + str).c_str()),
+			string(string("File doesn't exist:\n") + str).c_str(),
 			_("Error loading file"), wxOK, this);
 		return;
 	}
@@ -2043,7 +2043,7 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 	// Add to MR files, and save the list:
 	WX_START_TRY
 
-	m_fileHistory.AddFileToHistory(_U(str.c_str()));
+	m_fileHistory.AddFileToHistory(str.c_str());
 
 	for (size_t i = 0; i < m_fileHistory.GetCount(); i++)
 		iniFile->write(
@@ -2067,7 +2067,7 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 	CImage::setImagesPathBase(CRawlog::detectImagesDirectory(str));
 
 	// Add found dir to the combo:
-	toolbarcomboImages->Append(_U(CImage::getImagesPathBase().c_str()));
+	toolbarcomboImages->Append(CImage::getImagesPathBase().c_str());
 	toolbarcomboImages->SetSelection(0);
 
 	// An extra rectified images dir??
@@ -2080,7 +2080,7 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 		for (auto i = lstFiles.begin(); i != lstFiles.end(); ++i)
 			if (0 == os::_strcmpi(i->name.substr(0, 6).c_str(), "Images"))
 			{
-				wxString s = _U(i->wholePath.c_str());
+				wxString s = i->wholePath.c_str();
 				if (toolbarcomboImages->FindString(s) == wxNOT_FOUND)
 					toolbarcomboImages->Append(s);
 			}
@@ -2105,7 +2105,7 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 
 	loadedFileName = str;
 	StatusBar1->SetStatusText(
-		_U(mrpt::format("Loading file: %s", str.c_str()).c_str()));
+		(mrpt::format("Loading file: %s", str.c_str()).c_str()));
 
 	wxString auxStr;
 	wxProgressDialog progDia(
@@ -2173,7 +2173,7 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 						"system runs out of memory while still loading.\n";
 					msg += "Do you want to continue loading this file?";
 					if (wxNO == wxMessageBox(
-									_U(msg.c_str()), _("Warning"),
+									msg.c_str(), _("Warning"),
 									wxYES_NO | wxICON_EXCLAMATION))
 						keepLoading = false;
 				}
@@ -2286,7 +2286,7 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 	rebuildTreeView();
 
 	//// Set error msg:
-	txtException->SetValue(_U(errorMsg.c_str()));
+	txtException->SetValue(errorMsg.c_str());
 
 	// Seems something bad happened?
 	if (!rawlog.size())
@@ -2356,7 +2356,7 @@ void xRawLogViewerFrame::rebuildTreeView()
 		}
 
 		// Process element:
-		s = wxT("");
+		s;
 		switch (rawlog.getType(i))
 		{
 			case CRawlog::etActionCollection:
@@ -2468,41 +2468,31 @@ void xRawLogViewerFrame::rebuildTreeView()
 	// ---------------------------
 	memStats->Clear();
 
-	memStats->AppendText(_U(
-		format(
-			"Time to load file:                  %.03fms\n", 1000 * timeToLoad)
-			.c_str()));
-	memStats->AppendText(_U(
-		format(
-			"Records loaded:                     %u\n", (unsigned)rawlog.size())
-			.c_str()));
-	memStats->AppendText(_U(
-		format(
-			"Traveled distance (from odometry):  %.02f meters\n", totalDistance)
-			.c_str()));
+	memStats->AppendText(format(
+		"Time to load file:                  %.03fms\n", 1000 * timeToLoad));
+	memStats->AppendText(format(
+		"Records loaded:                     %u\n", (unsigned)rawlog.size()));
+	memStats->AppendText(format(
+		"Traveled distance (from odometry:  %.02f meters\n", totalDistance));
 
 	if (tree_view->getFirstTimestamp() != INVALID_TIMESTAMP)
 	{
 		rawlog_first_timestamp = tree_view->getFirstTimestamp();
-		memStats->AppendText(_U(
-			format(
-				"Dataset first time-stamp (UTC):     %s\n",
-				mrpt::system::dateTimeToString(tree_view->getFirstTimestamp())
-					.c_str())
+		memStats->AppendText(format(
+			"Dataset first time-stamp (UTC:     %s\n",
+			mrpt::system::dateTimeToString(tree_view->getFirstTimestamp())
 				.c_str()));
 	}
 
-	memStats->AppendText(
-		_U(format(
-			   "Dataset length:                     %s (hh:mm:ss),  %.03f "
-			   "secs.\n",
-			   formatTimeInterval(experimentLenght).c_str(), experimentLenght)
-			   .c_str()));
+	memStats->AppendText(format(
+		"Dataset length:                     %s (hh:mm:ss,  %.03f "
+		"secs.\n",
+		formatTimeInterval(experimentLenght).c_str(), experimentLenght));
 
 	// Stats of object classes:
 	memStats->AppendText(
-		_("\nSummary of classes found in the "
-		  "rawlog:\n-----------------------------------------\n"));
+		"\nSummary of classes found in the "
+		"rawlog:\n-----------------------------------------\n");
 
 	if (experimentLenght == 0) experimentLenght = 1;
 
@@ -2510,17 +2500,15 @@ void xRawLogViewerFrame::rebuildTreeView()
 	{
 		const char* className = it->first->className;
 		size_t count = it->second;
-		memStats->AppendText(
-			_U(format(
-				   " %8u %25s : %5.03f Hz\n", (unsigned)count, className,
-				   double(count > 1 ? count - 1 : 1) / experimentLenght)
-				   .c_str()));
+		memStats->AppendText(format(
+			" %8u %25s : %5.03f Hz\n", (unsigned)count, className,
+			double(count > 1 ? count - 1 : 1) / experimentLenght));
 	}
 
 	// Stats of object classes:
 	memStats->AppendText(
-		_("\nSummary of 'sensorLabels' found in the "
-		  "rawlog:\n-----------------------------------------\n"));
+		"\nSummary of 'sensorLabels' found in the "
+		"rawlog:\n-----------------------------------------\n");
 
 	for (auto it = listOfSensorLabels.begin(); it != listOfSensorLabels.end();
 		 ++it)
@@ -2535,13 +2523,11 @@ void xRawLogViewerFrame::rebuildTreeView()
 			Hz = double(count > 1 ? count - 1 : 1) / dur;
 		}
 
-		memStats->AppendText(
-			_U(format(
-				   " %8u %25s : %5.03f Hz for %.04f s, with %.03f s max delay "
-				   "btw readings.\n",
-				   (unsigned)count, it->first.c_str(), Hz, dur,
-				   it->second.max_ellapsed_tim_between_obs)
-				   .c_str()));
+		memStats->AppendText(format(
+			" %8u %25s : %5.03f Hz for %.04f s, with %.03f s max delay "
+			"btw readings.\n",
+			(unsigned)count, it->first.c_str(), Hz, dur,
+			it->second.max_ellapsed_tim_between_obs));
 	}
 
 	memStats->ShowPosition(0);
@@ -2577,7 +2563,7 @@ void xRawLogViewerFrame::rebuildTreeView()
 			lyRawlogInfo->SetPen(penBlue);
 			lyRawlogInfo->SetContinuity(false);
 			lyRawlogInfo->SetData(it->second.timOccurs, yPts);
-			lyRawlogInfo->SetName(_U(it->first.c_str()));
+			lyRawlogInfo->SetName(it->first.c_str());
 			lyRawlogInfo->ShowName(true);
 			plotRawlogSensorTimes->AddLayer(
 				lyRawlogInfo, false /*dont refresh view*/);
@@ -2782,9 +2768,9 @@ void xRawLogViewerFrame::OnMenuGenerateBeaconList(wxCommandEvent& event)
 	wxString caption = wxT("Save as...");
 	wxString wildcard = wxT("Text files (*.txt)|*.txt|All files (*.*)|*.*");
 	wxString defaultDir(
-		_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
+		(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
 	wxString defaultFilename =
-		_U((loadedFileName + string("_beacons.txt")).c_str());
+		(loadedFileName + string("_beacons.txt")).c_str();
 	wxFileDialog dialog(
 		this, caption, defaultDir, defaultFilename, wildcard,
 		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
@@ -2864,7 +2850,7 @@ void xRawLogViewerFrame::OnMenuGenerateBeaconList(wxCommandEvent& event)
 
 		char auxStr[100];
 		os::sprintf(auxStr, sizeof(auxStr), "%u entries saved!", M);
-		wxMessageBox(_U(auxStr), _("Done"), wxOK, this);
+		wxMessageBox(auxStr, _("Done"), wxOK, this);
 	}
 
 	WX_END_TRY
@@ -2898,7 +2884,7 @@ void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent& event)
 
 	const wxString& target_dir_wx = ::wxDirSelector(
 		_("Select the directory where the files will be saved"),
-		_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
+		(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
 		wxDD_DEFAULT_STYLE, wxDefaultPosition, this);
 
 	if (target_dir_wx.empty()) return;
@@ -3295,7 +3281,7 @@ void xRawLogViewerFrame::OnFileCountEntries(wxCommandEvent& event)
 	os::sprintf(
 		auxStr2, sizeof(auxStr2), "There are %i entries in the rawlog file",
 		entryIndex);
-	wxMessageBox(_U(auxStr2), _("Count done"), wxOK, this);
+	wxMessageBox(auxStr2, _("Count done"), wxOK, this);
 
 	WX_END_TRY
 }
@@ -3421,8 +3407,7 @@ void xRawLogViewerFrame::OnFileSaveImages(wxCommandEvent& event)
 
 	// Set error msg:
 	wxMessageBox(
-		_U(format("Images saved: %i", imgSaved).c_str()), _("Done"), wxOK,
-		this);
+		(format("Images saved: %i", imgSaved).c_str()), _("Done"), wxOK, this);
 
 	WX_END_TRY
 }
@@ -3508,8 +3493,8 @@ void wxStaticBitmapPopup::OnPopupSaveImage(wxCommandEvent& event)
 		{
 			wxFileDialog dialog(
 				this, _("Save image as...") /*caption*/,
-				_U(iniFile->read_string(iniFileSect, "LastDir", ".")
-					   .c_str()) /* defaultDir */,
+				(iniFile->read_string(iniFileSect, "LastDir", ".")
+					 .c_str()) /* defaultDir */,
 				_("image.png") /* defaultFilename */,
 				_("Image files "
 				  "(*.bmp;*.gif;*.jpg;*.jpeg;*.png;*.tif)|*.bmp;*.gif;*.jpg;*."
@@ -3567,8 +3552,8 @@ void wxStaticBitmapPopup::OnPopupLoadImage(wxCommandEvent& event)
 		{
 			wxFileDialog dialog(
 				this, _("Load image...") /*caption*/,
-				_U(iniFile->read_string(iniFileSect, "LastDir", ".")
-					   .c_str()) /* defaultDir */,
+				(iniFile->read_string(iniFileSect, "LastDir", ".")
+					 .c_str()) /* defaultDir */,
 				_("image.png") /* defaultFilename */,
 				_("Image files "
 				  "(*.bmp;*.gif;*.jpg;*.jpeg;*.png;*.tif)|*.bmp;*.gif;*.jpg;*."
@@ -3596,7 +3581,7 @@ void xRawLogViewerFrame::OnChangeSensorPositions(wxCommandEvent& event)
 	dialog.edLabel->Clear();
 	for (auto i = listOfSensorLabels.begin(); i != listOfSensorLabels.end();
 		 ++i)
-		dialog.edLabel->Append(_U(i->first.c_str()));
+		dialog.edLabel->Append(i->first.c_str());
 
 	dialog.ShowModal();
 }
@@ -3805,9 +3790,9 @@ void xRawLogViewerFrame::OnCountBadScans(wxCommandEvent& event)
 	progDia.Update(nEntries);
 
 	wxMessageBox(
-		_U(format(
-			   "Found %u range scans with no valid range values.", invalidScans)
-			   .c_str()),
+		(format(
+			 "Found %u range scans with no valid range values.", invalidScans)
+			 .c_str()),
 		_("Done"), wxOK, this);
 
 	WX_END_TRY
@@ -4020,10 +4005,9 @@ void xRawLogViewerFrame::OnFilterSpureousGas(wxCommandEvent& event)
 	progDia.Update(nEntries);
 
 	wxMessageBox(
-		_U(format(
-			   "%u out of %u readings have been filtered out!", nFilt,
-			   nReadings)
-			   .c_str()),
+		(format(
+			 "%u out of %u readings have been filtered out!", nFilt, nReadings)
+			 .c_str()),
 		_("Done"), wxOK, this);
 
 	WX_END_TRY
@@ -4155,10 +4139,9 @@ void xRawLogViewerFrame::OnRemoveSpecificRangeMeas(wxCommandEvent& event)
 	}
 
 	wxMessageBox(
-		_U(format(
-			   "%u out of %u readings have been filtered out!", nFilt,
-			   nReadings)
-			   .c_str()),
+		(format(
+			 "%u out of %u readings have been filtered out!", nFilt, nReadings)
+			 .c_str()),
 		_("Done"), wxOK, this);
 
 	WX_END_TRY
@@ -4244,8 +4227,8 @@ void xRawLogViewerFrame::OnForceEncodersFalse(wxCommandEvent& event)
 	progDia.Update(nEntries);
 
 	wxMessageBox(
-		_U(format("%u entries have been modified", nChanges).c_str()),
-		_("Done"), wxOK, this);
+		(format("%u entries have been modified", nChanges).c_str()), _("Done"),
+		wxOK, this);
 
 	WX_END_TRY
 }
@@ -4445,12 +4428,11 @@ void xRawLogViewerFrame::OnFilterErroneousScans(wxCommandEvent& event)
 	progDia.Update(nEntries);
 
 	wxMessageBox(
-		_U(format(
-			   "Number of bad segments detected & marked as invalid: %u \n(%u "
-			   "individual ranges). Rawlog indexes modified:\n%s",
-			   (unsigned)invalidSegments, (unsigned)invalidRanges,
-			   lstTouched.c_str())
-			   .c_str()),
+		format(
+			"Number of bad segments detected & marked as invalid: %u \n(%u "
+			"individual ranges. Rawlog indexes modified:\n%s",
+			(unsigned)invalidSegments, (unsigned)invalidRanges,
+			lstTouched.c_str()),
 		_("Done"), wxOK, this);
 
 	WX_END_TRY
@@ -4871,13 +4853,13 @@ void xRawLogViewerFrame::OnRecomputeOdometry(wxCommandEvent& event)
 						if (!act->hasEncodersInfo)
 						{
 							wxMessageBox(
-								_U(format(
-									   "An odometry measurement was found at "
-									   "entry %i which does not\ncontain "
-									   "encoders info: Cannot recompute "
-									   "odometry without this information!",
-									   (unsigned)i)
-									   .c_str()));
+								(format(
+									 "An odometry measurement was found at "
+									 "entry %i which does not\ncontain "
+									 "encoders info: Cannot recompute "
+									 "odometry without this information!",
+									 (unsigned)i)
+									 .c_str()));
 							return;
 						}
 						act->computeFromEncoders(K_left, K_right, D);
@@ -4895,13 +4877,13 @@ void xRawLogViewerFrame::OnRecomputeOdometry(wxCommandEvent& event)
 					if (!odo->hasEncodersInfo)
 					{
 						wxMessageBox(
-							_U(format(
-								   "An odometry measurement was found at entry "
-								   "%i which does not\ncontain encoders info: "
-								   "Cannot recompute odometry without this "
-								   "information!",
-								   (unsigned)i)
-								   .c_str()));
+							(format(
+								 "An odometry measurement was found at entry "
+								 "%i which does not\ncontain encoders info: "
+								 "Cannot recompute odometry without this "
+								 "information!",
+								 (unsigned)i)
+								 .c_str()));
 						return;
 					}
 
@@ -4929,7 +4911,7 @@ void xRawLogViewerFrame::OnRecomputeOdometry(wxCommandEvent& event)
 			}
 		}
 
-		wxMessageBox(_U(format("%u entries modified!", (unsigned)M).c_str()));
+		wxMessageBox((format("%u entries modified!", (unsigned)M).c_str()));
 	}
 	WX_END_TRY
 }
@@ -4942,9 +4924,9 @@ void xRawLogViewerFrame::OnRangeFinder1DGenTextFile(wxCommandEvent& event)
 	wxString caption = wxT("Save as...");
 	wxString wildcard = wxT("Text files (*.txt)|*.txt|All files (*.*)|*.*");
 	wxString defaultDir(
-		_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
+		(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
 	wxString defaultFilename =
-		_U((loadedFileName + string("_1DrangeFinders.txt")).c_str());
+		(loadedFileName + string("_1DrangeFinders.txt")).c_str();
 	wxFileDialog dialog(
 		this, caption, defaultDir, defaultFilename, wildcard,
 		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
@@ -5016,7 +4998,7 @@ void xRawLogViewerFrame::OnRangeFinder1DGenTextFile(wxCommandEvent& event)
 		os::fclose(f);
 
 		wxMessageBox(
-			_U(format("%u entries saved!", M).c_str()), _("Done"), wxOK, this);
+			(format("%u entries saved!", M).c_str()), _("Done"), wxOK, this);
 	}
 
 	WX_END_TRY
@@ -5090,7 +5072,7 @@ void xRawLogViewerFrame::OnMenuModifyICPActionsUncertainty(
 		}
 	}
 
-	wxMessageBox(_U(format("%u entries modified!", (unsigned)M).c_str()));
+	wxMessageBox((format("%u entries modified!", (unsigned)M).c_str()));
 
 	WX_END_TRY
 }
@@ -5131,17 +5113,17 @@ std::vector<std::string> xRawLogViewerFrame::AskForObservationByLabelMultiple(
 		 ++i)
 	{
 		lstLabelsStd.push_back(i->first);
-		lstLabels.Add(_U(i->first.c_str()));
+		lstLabels.Add(i->first.c_str());
 	}
 
 	wxArrayInt sels;
 
 #if (wxMAJOR_VERSION >= 3) || ((wxMAJOR_VERSION == 2) && (wxMINOR_VERSION >= 9))
 	wxGetSelectedChoices(
-		sels, _U(title.c_str()), _("Sensor Labels"), lstLabels, this);
+		sels, title.c_str(), _("Sensor Labels"), lstLabels, this);
 #else
 	wxGetMultipleChoices(
-		sels, _U(title.c_str()), _("Sensor Labels"), lstLabels, this);
+		sels, title.c_str(), _("Sensor Labels"), lstLabels, this);
 #endif
 
 	labels.resize(sels.Count());
@@ -5168,11 +5150,11 @@ std::string xRawLogViewerFrame::AskForObservationByLabel(
 	for (auto i = listOfSensorLabels.begin(); i != listOfSensorLabels.end();
 		 ++i)
 	{
-		lstLabels.Add(_U(i->first.c_str()));
+		lstLabels.Add(i->first.c_str());
 	}
 
-	wxString ret = wxGetSingleChoice(
-		_U(title.c_str()), _("Sensor Labels"), lstLabels, this);
+	wxString ret =
+		wxGetSingleChoice(title.c_str(), _("Sensor Labels"), lstLabels, this);
 	if (ret.IsEmpty()) return string();
 
 	return string(ret.mb_str());
@@ -5187,7 +5169,7 @@ void xRawLogViewerFrame::OnMenuRenameSensor(wxCommandEvent& event)
 		AskForObservationByLabel("Choose the label of the sensor to change:");
 
 	wxString new_label = wxGetTextFromUser(
-		_("Enter the new sensor label"), _("New label:"), _U(the_label.c_str()),
+		_("Enter the new sensor label"), _("New label:"), the_label.c_str(),
 		this);
 	if (new_label.IsEmpty()) return;
 
@@ -5486,8 +5468,8 @@ void xRawLogViewerFrame::OnMenuMarkLaserScanInvalid(wxCommandEvent& event)
 	progDia.Update(nEntries);
 
 	wxMessageBox(
-		_U(format("Number of invalid ranges marked: %i", (int)invalidRanges)
-			   .c_str()),
+		(format("Number of invalid ranges marked: %i", (int)invalidRanges)
+			 .c_str()),
 		_("Done"), wxOK, this);
 
 	WX_END_TRY
@@ -5578,7 +5560,7 @@ void xRawLogViewerFrame::OnMenuChangeMaxRangeLaser(wxCommandEvent& event)
 	progDia.Update(nEntries);
 
 	wxMessageBox(
-		_U(format("Number of changes: %i", (int)N).c_str()), _("Done"), wxOK,
+		(format("Number of changes: %i", (int)N).c_str()), _("Done"), wxOK,
 		this);
 
 	WX_END_TRY
@@ -5590,7 +5572,7 @@ void xRawLogViewerFrame::OnbtnEditCommentsClick1(wxCommandEvent& event)
 
 	string s;
 	rawlog.getCommentText(s);
-	dlg.edText->SetValue(_U(s.c_str()));
+	dlg.edText->SetValue(s.c_str());
 
 	if (dlg.ShowModal())
 	{
@@ -6030,7 +6012,7 @@ void xRawLogViewerFrame::OnMenuRangeBearFilterIDs(wxCommandEvent& event)
 	progDia.Update(nEntries);
 
 	wxMessageBox(
-		_U(format("Number of changes: %i", (int)N).c_str()), _("Done"), wxOK,
+		(format("Number of changes: %i", (int)N).c_str()), _("Done"), wxOK,
 		this);
 
 	WX_END_TRY
@@ -6107,7 +6089,7 @@ void xRawLogViewerFrame::OnMenuRegenerateTimestampBySF(wxCommandEvent& event)
 	progDia.Update(nEntries);
 
 	wxMessageBox(
-		_U(format("Number of changes: %i", (int)N).c_str()), _("Done"), wxOK,
+		(format("Number of changes: %i", (int)N).c_str()), _("Done"), wxOK,
 		this);
 
 	WX_END_TRY
@@ -6140,9 +6122,9 @@ void xRawLogViewerFrame::OnmnuCreateAVISelected(wxCommandEvent& event)
 	wxString caption = wxT("Save AVI video...");
 	wxString wildcard = wxT("AVI files (*.avi)|*.avi|All files (*.*)|*.*");
 	wxString defaultDir(
-		_U(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
+		(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
 	wxString defaultFilename =
-		_U((loadedFileName + format("_%s.avi", senLabel.c_str())).c_str());
+		((loadedFileName + format("_%s.avi", senLabel.c_str())).c_str());
 	wxFileDialog dialog(
 		this, caption, defaultDir, defaultFilename, wildcard,
 		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
@@ -6316,10 +6298,10 @@ void xRawLogViewerFrame::OnmnuCreateAVISelected(wxCommandEvent& event)
 
 	progDia.Update(nEntries);
 
-	if (!errorMsg.empty()) wxMessageBox(_U(errorMsg.c_str()), _("Error"));
+	if (!errorMsg.empty()) wxMessageBox(errorMsg.c_str(), _("Error"));
 
 	wxMessageBox(
-		_U(format("Saved %u images.", nFrames).c_str()), _("Done"), wxOK, this);
+		(format("Saved %u images.", nFrames).c_str()), _("Done"), wxOK, this);
 
 	WX_END_TRY
 }
@@ -6409,8 +6391,8 @@ void xRawLogViewerFrame::OnMenuRegenerateOdometryTimes(wxCommandEvent& event)
 	progDia.Update(nEntries);
 
 	wxMessageBox(
-		_U(format("%u entries have been modified", nChanges).c_str()),
-		_("Done"), wxOK, this);
+		(format("%u entries have been modified", nChanges).c_str()), _("Done"),
+		wxOK, this);
 
 	WX_END_TRY
 }
@@ -6466,13 +6448,13 @@ void xRawLogViewerFrame::OnMenuItem3DObsRecoverParams(wxCommandEvent& event)
 
 						if (wxNO ==
 							wxMessageBox(
-								_U(format(
-									   "Calibration with first "
-									   "observation:\nAverage reprojection "
-									   "error=%.04fpx.\n Accept and apply to "
-									   "ALL 3D observations?",
-									   avrErr)
-									   .c_str()),
+								(format(
+									 "Calibration with first "
+									 "observation:\nAverage reprojection "
+									 "error=%.04fpx.\n Accept and apply to "
+									 "ALL 3D observations?",
+									 avrErr)
+									 .c_str()),
 								_("Warning"), wxYES_NO | wxICON_EXCLAMATION))
 							break;
 
@@ -6499,8 +6481,8 @@ void xRawLogViewerFrame::OnMenuItem3DObsRecoverParams(wxCommandEvent& event)
 	progDia.Update(nEntries);
 
 	wxMessageBox(
-		_U(format("%u entries have been modified", nChanges).c_str()),
-		_("Done"), wxOK, this);
+		(format("%u entries have been modified", nChanges).c_str()), _("Done"),
+		wxOK, this);
 
 	WX_END_TRY
 }
@@ -6543,7 +6525,7 @@ void xRawLogViewerFrame::OnMenuRenameSingleObs(wxCommandEvent& event)
 
 	const wxString new_label = wxGetTextFromUser(
 		_("Enter the new sensor label for selected object"), _("New label:"),
-		_U(obj->sensorLabel.c_str()), this);
+		obj->sensorLabel.c_str(), this);
 	if (new_label.IsEmpty()) return;
 
 	const string the_new_label = string(new_label.mb_str());

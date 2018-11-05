@@ -233,7 +233,7 @@ class SemanticClustering
 					if (parts[i][j] < group_limits[i] ||
 						parts[i][j] >=
 							group_limits[i + 1])  // The plane has changed the
-												  // group
+					// group
 					{
 						for (unsigned k = 0;
 							 k < neighborGroups.size() && i != k; k++)

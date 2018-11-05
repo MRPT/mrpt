@@ -25,11 +25,11 @@
 
 #include <wx/things/toggle.h>
 
-class CDlgCamTracking;
-
 #include <mrpt/system/datetime.h>
 #include <mrpt/gui/CWxGLCanvasBase.h>
+#include <mrpt/gui/WxUtils.h>
 
+class CDlgCamTracking;
 class CMyGLCanvas : public mrpt::gui::CWxGLCanvasBase
 {
    public:
@@ -222,29 +222,5 @@ class _DSceneViewerFrame : public wxFrame
 
 	DECLARE_EVENT_TABLE()
 };
-
-#ifdef wxUSE_UNICODE
-#define _U(x) wxString((x), wxConvUTF8)
-#define _UU(x, y) wxString((x), y)
-#else
-#define _U(x) (x)
-#define _UU(x, y) (x)
-#endif
-
-#define WX_START_TRY \
-	try              \
-	{
-#define WX_END_TRY                                                             \
-	}                                                                          \
-	catch (std::exception & e)                                                 \
-	{                                                                          \
-		wxMessageBox(                                                          \
-			wxString(mrpt::exception_to_str(e), wxConvUTF8), wxT("Exception"), \
-			wxOK, this);                                                       \
-	}                                                                          \
-	catch (...)                                                                \
-	{                                                                          \
-		wxMessageBox(_("Untyped exception!"), _("Exception"), wxOK, this);     \
-	}
 
 #endif  // _DSCENEVIEWERMAIN_H

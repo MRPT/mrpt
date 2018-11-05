@@ -260,8 +260,8 @@ void CFeatureLines::extractLines(
 	cv::Canny(
 		image, canny_img, lowThreshold, lowThreshold * ratio,
 		kernel_size);  // 250, 600 // CAUTION: Both thresholds depend on the
-					   // input image, they might be a bit hard to set because
-					   // they depend on the strength of the gradients
+	// input image, they might be a bit hard to set because
+	// they depend on the strength of the gradients
 	//            cv::namedWindow("Canny detector", cv::WINDOW_AUTOSIZE);
 	//            cv::imshow("Canny detector", canny_img);
 	//            cv::waitKey(0);
@@ -277,8 +277,8 @@ void CFeatureLines::extractLines(
 	cv::HoughLines(
 		canny_img, lines, 1, CV_PI / 180.0,
 		threshold);  // CAUTION: The last parameter depends on the input image,
-					 // it's the smallest number of pixels to consider a line in
-					 // the accumulator
+	// it's the smallest number of pixels to consider a line in
+	// the accumulator
 	//    double minLineLength=50, maxLineGap=5;
 	//    cv::HoughLinesP(canny_img, lines, 1, CV_PI / 180.0, threshold,
 	//    minLineLength, maxLineGap); // CAUTION: The last parameter depends on

@@ -132,7 +132,7 @@ void OctetVectorToObject(
 	void serializeTo(mrpt::serialization::CSchemeArchiveBase& out)            \
 		const override;                                                       \
 	void serializeFrom(mrpt::serialization::CSchemeArchiveBase& in) override; \
-	/*! @} */
+/*! @} */
 
 /** For use inside all serializeTo(CSchemeArchiveBase) methods */
 #define SCHEMA_SERIALIZE_DATATYPE_VERSION(ser_version)                     \

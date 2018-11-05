@@ -910,7 +910,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 			mrpt::system::find_mrpt_shared_dir() +
 			std::string(
 				"config_files/navigation-ptgs/reactivenav-app-config.ini");
-		edParamsReactive->LoadFile(_U(sFil.c_str()));
+		edParamsReactive->LoadFile(sFil.c_str());
 	}
 	catch (...)
 	{
@@ -1160,7 +1160,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 		mrpt::config::CConfigFileMemory cfg;
 
 		m_simul_options.saveToConfigFile(cfg, "SIMULATOR");
-		edParamsGeneral->SetValue(_U(cfg.getContent().c_str()));
+		edParamsGeneral->SetValue(cfg.getContent().c_str());
 	}
 
 	WX_END_TRY
@@ -1285,9 +1285,7 @@ void reactive_navigator_demoframe::OntimRunSimulTrigger(wxTimerEvent& event)
 	}
 	catch (const std::exception& e)
 	{
-		wxMessageBox(
-			wxString(mrpt::exception_to_str(e), wxConvUTF8), wxT("Exception"),
-			wxOK, this);
+		wxMessageBox(mrpt::exception_to_str(e), wxT("Exception"), wxOK, this);
 		// Stop:
 		wxCommandEvent ev;
 		OnbtnStopClick(ev);
@@ -1381,8 +1379,7 @@ bool reactive_navigator_demoframe::reinitSimulator()
 		if (ptg_nav)
 		{
 			for (size_t i = 0; i < ptg_nav->getPTG_count(); i++)
-				cbSelPTG->Append(
-					_U(ptg_nav->getPTG(i)->getDescription().c_str()));
+				cbSelPTG->Append(ptg_nav->getPTG(i)->getDescription().c_str());
 
 			if (ptg_nav->getPTG_count() > 0) cbSelPTG->SetSelection(0);
 		}
@@ -1518,7 +1515,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 			sLog += mrpt::format(
 				"Gap count    : %u\n", static_cast<unsigned int>(nGaps));
 
-			edInfoLocalView->SetValue(_U(sLog.c_str()));
+			edInfoLocalView->SetValue(sLog.c_str());
 
 			gl_nd_gaps->appendLine(0, 0, 0, 0, 0, 0);
 			for (size_t i = 0; i < nGaps; i++)
@@ -1681,7 +1678,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 		if (!wp_status.waypoints.empty())
 			if (!wxFrWpInfo->IsShown()) wxFrWpInfo->Show();
 
-		if (wxFrWpInfo->IsShown()) edWpLog->SetValue(_U(sWpLog.c_str()));
+		if (wxFrWpInfo->IsShown()) edWpLog->SetValue(sWpLog.c_str());
 
 		// Plot waypoints being clicked by the user graphically:
 		m_waypoints_clicked.getAsOpenglVisualization(*gl_waypoints_clicking);
@@ -1717,17 +1714,17 @@ void reactive_navigator_demoframe::updateViewsDynamicObjects()
 
 	// Labels:
 	StatusBar1->SetStatusText(
-		_U(mrpt::format(
-			   "Robot pose: %s vel: %s",
-			   m_robotSimul->getCurrentGTPose().asString().c_str(),
-			   m_robotSimul->getCurrentGTVel().asString().c_str())
-			   .c_str()),
+		(mrpt::format(
+			 "Robot pose: %s vel: %s",
+			 m_robotSimul->getCurrentGTPose().asString().c_str(),
+			 m_robotSimul->getCurrentGTVel().asString().c_str())
+			 .c_str()),
 		0);
 	StatusBar1->SetStatusText(
-		_U(mrpt::format(
-			   "Simul time: %.03f Target: (%.03f,%.03f)",
-			   m_robotSimul->getTime(), m_targetPoint.x, m_targetPoint.y)
-			   .c_str()),
+		(mrpt::format(
+			 "Simul time: %.03f Target: (%.03f,%.03f)", m_robotSimul->getTime(),
+			 m_targetPoint.x, m_targetPoint.y)
+			 .c_str()),
 		1);
 
 	// Show/hide:
@@ -2289,7 +2286,7 @@ void reactive_navigator_demoframe::OnbtnGenerateTemplateClick(
 
 	mrpt::config::CConfigFileMemory cfgMem;
 	react.saveConfigFile(cfgMem);
-	edParamsReactive->SetValue(_U(cfgMem.getContent().c_str()));
+	edParamsReactive->SetValue(cfgMem.getContent().c_str());
 
 	WX_END_TRY;
 }

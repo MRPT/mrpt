@@ -200,7 +200,7 @@ void CConfigWidget::clearConfig(bool deleteGeneral)
 
 TSetOfMetricMapInitializers CConfigWidget::config()
 {
-	using internal::TMetricMapTypesRegistry;
+	using mrpt::maps::internal::TMetricMapTypesRegistry;
 	TMetricMapTypesRegistry& mmr = TMetricMapTypesRegistry::Instance();
 	TSetOfMetricMapInitializers mapCfg;
 	MRPT_START

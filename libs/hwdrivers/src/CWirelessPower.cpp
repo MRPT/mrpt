@@ -38,7 +38,6 @@ using namespace std;
 IMPLEMENTS_GENERIC_SENSOR(CWirelessPower, mrpt::hwdrivers)
 
 CWirelessPower::CWirelessPower() { m_sensorLabel = "WIRELESS_POWER"; }
-
 #ifdef _WIN32
 #if defined(__GNUC__)
 // MinGW: Nothing to do here (yet)

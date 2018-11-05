@@ -164,7 +164,6 @@ class CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
 	virtual void waypoints_navigationStep();
 
 	bool waypoints_isAligning() const { return m_is_aligning; }
-
 	/** Whether the last timestep was "is_aligning" in a waypoint with heading
 	 */
 	bool m_was_aligning;
