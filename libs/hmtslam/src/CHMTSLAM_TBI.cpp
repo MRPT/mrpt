@@ -67,7 +67,7 @@ void CHMTSLAM::thread_TBI()
 		obj->logFmt(mrpt::system::LVL_DEBUG, "[thread_TBI] Thread finished");
 		obj->m_terminationFlag_TBI = true;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		obj->m_terminationFlag_TBI = true;
 

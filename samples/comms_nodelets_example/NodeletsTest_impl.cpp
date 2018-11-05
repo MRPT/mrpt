@@ -47,7 +47,7 @@ void thread_publisher()
 		printf("[publisher] Finish\n");
 #endif
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		cerr << e.what() << endl;
 	}
@@ -123,7 +123,7 @@ void thread_subscriber()
 		printf("[subscriber] Finish\n");
 #endif
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		cerr << e.what() << endl;
 	}

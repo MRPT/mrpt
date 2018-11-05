@@ -122,7 +122,7 @@ void thread_grabbing(TThreadParam& p)
 			}
 		}
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		cout << "Exception in Kinect thread: " << e.what() << endl;
 		p.quit = true;
@@ -415,7 +415,7 @@ int main(int argc, char** argv)
 		std::this_thread::sleep_for(50ms);
 		return 0;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		std::cout << "EXCEPCION: " << e.what() << std::endl;
 		return -1;

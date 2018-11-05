@@ -639,7 +639,7 @@ void CAbstractNavigator::performNavigationStepNavigating(
 			performNavigationStep();
 		}
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		MRPT_LOG_ERROR_FMT(
 			"[CAbstractNavigator::navigationStep] Exception:\n %s", e.what());

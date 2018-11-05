@@ -1283,10 +1283,11 @@ void reactive_navigator_demoframe::OntimRunSimulTrigger(wxTimerEvent& event)
 		// output an endless stream of
 		// errors.
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		wxMessageBox(
-			wxString(e.what(), wxConvUTF8), wxT("Exception"), wxOK, this);
+			wxString(mrpt::exception_to_str(e), wxConvUTF8), wxT("Exception"),
+			wxOK, this);
 		// Stop:
 		wxCommandEvent ev;
 		OnbtnStopClick(ev);

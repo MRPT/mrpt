@@ -456,9 +456,9 @@ int main(int argc, char** argv)
 
 		return 0;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		std::cerr << e.what() << std::endl
+		std::cerr << mrpt::exception_to_str(e) << std::endl
 				  << "Program finished for an exception!!" << std::endl;
 		mrpt::system::pause();
 		return -1;
@@ -539,9 +539,9 @@ void SensorThread(TThreadParams params)
 		cout << format("[thread_%s] Closing...", params.sensor_label.c_str())
 			 << endl;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		cerr << e.what() << endl;
+		cerr << mrpt::exception_to_str(e) << endl;
 		allThreadsMustExit = true;
 	}
 	catch (...)

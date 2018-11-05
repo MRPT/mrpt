@@ -223,7 +223,7 @@ void COpenNI2Sensor::loadConfig_sensorSpecific(
 	{
 		sc.loadFromConfigFile(iniSection, configSource);
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		std::cout << "[COpenNI2Sensor::loadConfig_sensorSpecific] Warning: "
 					 "Ignoring error loading calibration parameters:\n"

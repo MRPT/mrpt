@@ -89,7 +89,7 @@ int main(int argc, char** argv)
 		cerr << "Program finished for an exception!!" << endl;
 		setConsoleColor(CONCOL_NORMAL, true);
 
-		cerr << e.what() << endl;
+		cerr << mrpt::exception_to_str(e) << endl;
 
 		mrpt::system::pause();
 		return -1;
@@ -168,10 +168,10 @@ void SensorThread(TThreadParams params)
 		cout << format("[thread_%s] Closing...", params.section_name.c_str())
 			 << endl;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		cerr << "[SensorThread]  Closing due to exception:\n"
-			 << e.what() << endl;
+			 << mrpt::exception_to_str(e) << endl;
 		allThreadsMustExit = true;
 	}
 	catch (...)

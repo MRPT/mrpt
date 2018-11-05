@@ -273,7 +273,7 @@ bool CGPSInterface::tryToOpenTheCOM()
 			}
 			return true;  // All OK
 		}
-		catch (std::exception& e)
+		catch (const std::exception& e)
 		{
 			std::cerr << "[CGPSInterface::tryToOpenTheCOM] Error opening or "
 						 "configuring serial port:"
@@ -660,7 +660,7 @@ bool CGPSInterface::OnConnectionEstablished()
 			std::lock_guard<std::mutex> lock(*m_data_stream_cs);
 			m_data_stream->Write(&sTx[0], sTx.size());
 		}
-		catch (std::exception& e)
+		catch (const std::exception& e)
 		{
 			std::cerr << "[CGPSInterface::OnConnectionEstablished] Error "
 						 "sending setup cmds: "
@@ -912,7 +912,7 @@ bool CGPSInterface::sendCustomCommand(const void* data, const size_t datalen)
 		m_data_stream->Write(data, datalen);
 		return true;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		std::cerr << "[CGPSInterface::sendCustomCommand] Error sending cmd: "
 				  << e.what() << std::endl;

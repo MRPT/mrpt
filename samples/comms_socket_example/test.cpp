@@ -21,7 +21,7 @@ int main()
 		SocketsTest();
 		return 0;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		std::cerr << "MRPT exception caught: " << e.what() << std::endl;
 		return -1;

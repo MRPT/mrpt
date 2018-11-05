@@ -1096,7 +1096,7 @@ void MainWindow::readRawlogFiles(string rawlog)
 		}  // end of the try block
 		catch (exception& e)
 		{
-			errorMsg = e.what();
+			errorMsg = mrpt::exception_to_str(e);
 			break;
 		}
 

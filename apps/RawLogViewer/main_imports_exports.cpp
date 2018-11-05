@@ -358,7 +358,7 @@ void xRawLogViewerFrame::OnImportSequenceOfImages(wxCommandEvent& event)
 		}
 		catch (exception& e)
 		{
-			errorMsg = e.what();
+			errorMsg = mrpt::exception_to_str(e);
 			break;
 		}
 		catch (...)

@@ -560,7 +560,7 @@ bool CHokuyoURG::receiveResponse(char& rcv_status0, char& rcv_status1)
 				lastWasLF = false;
 		}
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		MRPT_LOG_ERROR_FMT(
 			"[Hokuyo] receiveResponse() Exception: %s", e.what());

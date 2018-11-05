@@ -70,9 +70,9 @@ int navlog_viewer_GUI_designApp::OnRun()
 	{
 		return wxApp::OnRun();
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		::wxMessageBox(_U(e.what()), _("Exception:"));
+		::wxMessageBox(_U(mrpt::exception_to_str(e)), _("Exception:"));
 		return -1;
 	}
 }

@@ -47,7 +47,7 @@ void thread_reader(CPipeReadEndPoint& read_pipe)
 
 		printf("[thread_reader] Finished.\n");
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		cerr << e.what() << endl;
 	}
@@ -75,7 +75,7 @@ void thread_writer(CPipeWriteEndPoint& write_pipe)
 
 		printf("[thread_writer] Finished.\n");
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		cerr << e.what() << endl;
 	}
@@ -112,7 +112,7 @@ int main()
 
 		return 0;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		std::cout << "MRPT exception caught: " << e.what() << std::endl;
 		return -1;

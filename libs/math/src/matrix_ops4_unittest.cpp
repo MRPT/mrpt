@@ -162,7 +162,7 @@ TEST(Matrices, loadFromTextFile)
 			M.loadFromTextFile(s);
 			retval = true;
 		}
-		catch (std::exception& e)
+		catch (const std::exception& e)
 		{
 			std::cerr << e.what() << std::endl;
 		}
@@ -182,7 +182,7 @@ TEST(Matrices, loadFromTextFile)
 			M.loadFromTextFile(s);
 			retval = true;
 		}
-		catch (std::exception& e)
+		catch (const std::exception& e)
 		{
 			std::cerr << e.what() << std::endl;
 		}
@@ -200,7 +200,7 @@ TEST(Matrices, loadFromTextFile)
 			M.loadFromTextFile(s);
 			retval = true;
 		}
-		catch (std::exception& e)
+		catch (const std::exception& e)
 		{
 			std::cerr << e.what() << std::endl;
 		}
@@ -220,7 +220,7 @@ TEST(Matrices, loadFromTextFile)
 			M.loadFromTextFile(s);
 			retval = true;
 		}
-		catch (std::exception& e)
+		catch (const std::exception& e)
 		{
 			std::cerr << e.what() << std::endl;
 		}

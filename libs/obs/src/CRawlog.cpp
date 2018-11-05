@@ -252,7 +252,7 @@ bool CRawlog::loadFromRawLogFile(
 		{  // EOF, just finish the loop
 			keepReading = false;
 		}
-		catch (std::exception& e)
+		catch (const std::exception& e)
 		{
 			std::cerr << e.what() << std::endl;
 			keepReading = false;
@@ -353,7 +353,7 @@ bool CRawlog::readActionObservationPair(
 	{
 		return false;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		std::cerr << "[CRawlog::readActionObservationPair] Found exception:"
 				  << std::endl
@@ -415,7 +415,7 @@ bool CRawlog::getActionObservationPairOrObservation(
 	{
 		return false;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		std::cerr << "[CRawlog::readActionObservationPair] Found exception:"
 				  << std::endl

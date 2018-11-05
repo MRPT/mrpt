@@ -455,7 +455,7 @@ void CGraphSlamEngine<GRAPH_T>::initClass()
 		MRPT_LOG_INFO_STREAM(
 			"Setting the Ground truth read step to: " << m_GT_poses_step);
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		MRPT_LOG_INFO_STREAM("RGBD_TUM info file was not found: " << e.what());
 	}

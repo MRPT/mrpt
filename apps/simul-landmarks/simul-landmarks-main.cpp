@@ -471,9 +471,9 @@ int main(int argc, char** argv)
 #endif  // MRPT_HAS_OPENGL_GLUT  && MRPT_HAS_WXWIDGETS
 		}
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
-		std::cout << e.what();
+		std::cout << mrpt::exception_to_str(e);
 	}
 	catch (...)
 	{

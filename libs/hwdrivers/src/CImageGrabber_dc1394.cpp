@@ -852,7 +852,7 @@ void CImageGrabber_dc1394::enumerateCameras(TCameraInfoList& out_list)
 		dc1394_camera_free_list(list);
 		list = nullptr;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		if (list) dc1394_camera_free_list(list);
 		if (lib_context) dc1394_free(lib_context);

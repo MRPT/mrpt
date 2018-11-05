@@ -109,7 +109,7 @@ int main(int argc, char** argv)
 	}
 	catch (exception& e)
 	{
-		cout << "Caught MRPT exception:\n" << e.what() << endl;
+		cout << "Caught MRPT exception:\n" << mrpt::exception_to_str(e) << endl;
 
 		// pause();
 		return -1;

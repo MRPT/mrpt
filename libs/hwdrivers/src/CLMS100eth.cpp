@@ -91,7 +91,7 @@ bool CLMS100Eth::checkIsConnected()
 		{
 			m_client.connect(m_ip, m_port);
 		}
-		catch (std::exception& e)
+		catch (const std::exception& e)
 		{
 			MRPT_LOG_ERROR_FMT(
 				"[CLMS100ETH] ERROR TRYING TO OPEN Ethernet DEVICE:\n%s",
@@ -194,7 +194,7 @@ bool CLMS100Eth::turnOn()
 			}
 			m_turnedOn = true;
 		}
-		catch (std::exception& e)
+		catch (const std::exception& e)
 		{
 			MRPT_LOG_ERROR_FMT("%s", e.what());
 			return false;

@@ -546,7 +546,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 
 		return true;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		std::cout << e.what() << std::endl;
 		return false;

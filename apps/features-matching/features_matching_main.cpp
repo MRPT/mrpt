@@ -497,7 +497,7 @@ int main(int argc, char** argv)
 	}
 	catch (exception& e)
 	{
-		cerr << e.what();
+		cerr << mrpt::exception_to_str(e);
 		return 1;
 	}
 }

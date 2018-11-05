@@ -260,7 +260,7 @@ void CRovio::thread_video()  // This function takes a frame and waits until
 
 		m_videothread_finished = true;
 	}
-	catch (std::exception& e)  // que hace eactamente esto?
+	catch (const std::exception& e)  // que hace eactamente esto?
 	{
 		m_videothread_initialized_done = true;  // Just in case...
 		m_videothread_finished = true;
@@ -360,7 +360,7 @@ bool CRovio::captureImageAsync(CImage& picture, bool rectified)
 		// cout<<"Response:\n"<<response<<endl;
 		return true;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		cerr << e.what() << endl;
 		return false;

@@ -764,7 +764,7 @@ bool CGasConcentrationGridMap2D::simulateAdvection(
 		cout << " - SA matrix computed in " << tictac.Tac() << "s" << endl
 			 << endl;
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		cout << " #########  EXCEPTION computing Transition Matrix (A) "
 				"##########\n: "
@@ -852,7 +852,7 @@ bool CGasConcentrationGridMap2D::simulateAdvection(
 		free(new_means);
 		free(new_variances);
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		cout << " #########  EXCEPTION Updating Covariances ##########\n: "
 			 << e.what() << endl;

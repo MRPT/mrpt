@@ -204,7 +204,7 @@ void PlannerTPS_VirtualBase::spaceTransformer(
 		// Leave distances in out_TPObstacles un-normalized ([0,1]), so they
 		// just represent real distances in meters.
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		cerr << "[PT_RRT::SpaceTransformer] Exception:" << endl;
 		cerr << e.what() << endl;
@@ -256,7 +256,7 @@ void PlannerTPS_VirtualBase::spaceTransformerOneDirectionOnly(
 		// Leave distances in out_TPObstacles un-normalized ([0,1]), so they
 		// just represent real distances in meters.
 	}
-	catch (std::exception& e)
+	catch (const std::exception& e)
 	{
 		cerr << "[PT_RRT::SpaceTransformer] Exception:" << endl;
 		cerr << e.what() << endl;
