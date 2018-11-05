@@ -72,11 +72,10 @@ class CGenericSensor
 	using Ptr = std::shared_ptr<CGenericSensor>;
 	virtual const mrpt::hwdrivers::TSensorClassId* GetRuntimeClass() const = 0;
 
-	using TListObservations =
-		std::multimap<mrpt::system::TTimeStamp,
-					  mrpt::serialization::CSerializable::Ptr>;
-	using TListObsPair = std::pair<mrpt::system::TTimeStamp,
-								   mrpt::serialization::CSerializable::Ptr>;
+	using TListObservations = std::multimap<
+		mrpt::system::TTimeStamp, mrpt::serialization::CSerializable::Ptr>;
+	using TListObsPair = std::pair<
+		mrpt::system::TTimeStamp, mrpt::serialization::CSerializable::Ptr>;
 
 	/** The current state of the sensor
 	 * \sa CGenericSensor::getState
@@ -311,18 +310,18 @@ static_assert(
 /** This declaration must be inserted in all CGenericSensor classes definition,
  * within the class declaration.
  */
-#define DEFINE_GENERIC_SENSOR(class_name)                                   \
-   protected:                                                               \
-	static mrpt::hwdrivers::CGenericSensor::CLASSINIT_GENERIC_SENSOR        \
-		_init_##class_name;                                                 \
-                                                                            \
-   public:                                                                  \
-	static mrpt::hwdrivers::TSensorClassId class##class_name;               \
-	virtual const mrpt::hwdrivers::TSensorClassId* GetRuntimeClass() const; \
-	static mrpt::hwdrivers::CGenericSensor* CreateObject();                 \
-	static void doRegister()                                                \
-	{                                                                       \
-		CGenericSensor::registerClass(SENSOR_CLASS_ID(class_name));         \
+#define DEFINE_GENERIC_SENSOR(class_name)                                    \
+   protected:                                                                \
+	static mrpt::hwdrivers::CGenericSensor::CLASSINIT_GENERIC_SENSOR         \
+		_init_##class_name;                                                  \
+                                                                             \
+   public:                                                                   \
+	static mrpt::hwdrivers::TSensorClassId class##class_name;                \
+	const mrpt::hwdrivers::TSensorClassId* GetRuntimeClass() const override; \
+	static mrpt::hwdrivers::CGenericSensor* CreateObject();                  \
+	static void doRegister()                                                 \
+	{                                                                        \
+		CGenericSensor::registerClass(SENSOR_CLASS_ID(class_name));          \
 	}
 
 /** This must be inserted in all CGenericSensor classes implementation files:
