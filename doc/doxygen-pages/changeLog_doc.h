@@ -591,6 +591,7 @@ to select covariance estimation method.
 			- \ref mrpt_topography_grp
 				- New function mrpt::topography::geocentricToENU_WGS84()
 			- \ref mrpt_vision_grp
+				- Removed the old GPL-licensed Hess SIFT implementation.
 				- mrpt::vision::CDifOdo has been refactored and now does faster
 image pyramid computation (By Mariano Jaimez)
 				- mrpt::maps::CLandmarksMap changes:
