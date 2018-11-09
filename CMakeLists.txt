@@ -66,9 +66,7 @@ find_package(codecov)
 
 # -------------------------
 
-
-set(ALLOW_GPL OFF CACHE BOOL "Allows MRPT to link to GPL code. This effectively makes some MRPT binaries GPL licensed. Use this at your own risk.")
-option(MRPT_ALLOW_LGPLV3 "Allows MRPT to use LGPLV3 code" "OFF")
+option(MRPT_ALLOW_LGPLV3 "Allows MRPT to use LGPLV3 code (mrpt-vision-lgpl)" "OFF")
 
 # The root directory for all MRPT libraries/modules:
 set(MRPT_LIBS_ROOT "${CMAKE_SOURCE_DIR}/libs" CACHE INTERNAL "")  # This emulates global vars
@@ -263,7 +261,6 @@ include(cmakemodules/script_swissrange.cmake REQUIRED)  # Support for SWISSRANGE
 include(cmakemodules/script_SIMD.cmake REQUIRED)        # SSE2/SSE3/... optimization options
 include(cmakemodules/script_gtest.cmake REQUIRED)       # Unit testing lib
 include(cmakemodules/script_national_instruments.cmake REQUIRED)  # NI C library
-include(cmakemodules/script_sift_hess.cmake REQUIRED)   # SIFT Hess implementation
 include(cmakemodules/script_xsens.cmake REQUIRED)       # XSens Motion trackers / IMU drivers
 include(cmakemodules/script_flycapture2.cmake REQUIRED) # Check for PointGreyResearch (PGR) FlyCapture2 library
 include(cmakemodules/script_triclops.cmake REQUIRED)    # Check for PointGreyResearch (PGR) Triclops library

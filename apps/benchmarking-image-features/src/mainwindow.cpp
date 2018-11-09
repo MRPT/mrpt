@@ -558,13 +558,6 @@ void MainWindow::on_descriptor_choose(int choice)
 		param5_edit_desc->setVisible(false);
 		param1_boolean_desc->setVisible(false);
 		param2_boolean_desc->setVisible(false);
-
-#if !MRPT_HAS_SIFT_HESS
-		QMessageBox::information(
-			this, "SIFT error",
-			"MRPT has been compiled without SIFT Hess support");
-		return;
-#endif
 	}
 	else if (choice == 1)  //!< SURF descriptors
 	{
@@ -760,12 +753,6 @@ void MainWindow::on_detector_choose(int choice)
 	// for SIFT Features
 	else if (choice == 2)
 	{
-#if !MRPT_HAS_SIFT_HESS
-		QMessageBox::information(
-			this, "SIFT error",
-			"MRPT has been compiled without SIFT Hess support");
-		return;
-#endif
 		param1->setText("Threshold: ");
 		param2->setText("Edge Threshold: ");
 		param1_edit->setText("0.04");
@@ -1522,15 +1509,6 @@ void MainWindow::fillDescriptorInfo()
  ************************************************************************************************/
 void MainWindow::on_detector_button_clicked()
 {
-	if (detector_selected == 2)
-	{
-#if !MRPT_HAS_SIFT_HESS
-		QMessageBox::information(
-			this, "SIFT error",
-			"MRPT has been compiled without SIFT Hess support");
-		return;
-#endif
-	}
 	evaluate_detector_clicked = true;
 
 	// read inputs from user
@@ -1710,12 +1688,6 @@ void MainWindow::on_descriptor_button_clicked()
 
 	if (descriptor_selected == 0)
 	{
-#if !MRPT_HAS_SIFT_HESS
-		QMessageBox::information(
-			this, "SIFT error",
-			"MRPT has been compiled without SIFT Hess support");
-		return;
-#endif
 		desc_to_compute = TDescriptorType(1);  //!< SIFT descriptors
 	}
 	else if (descriptor_selected == 1)
