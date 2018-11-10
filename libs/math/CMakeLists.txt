@@ -54,11 +54,7 @@ if(BUILD_mrpt-math)
 	endif()
 
 	# eigen3:
-	if (EIGEN_USE_EMBEDDED_VERSION)
-		target_link_libraries(mrpt-math PUBLIC EP_eigen3)
-	else()
-		target_link_libraries(mrpt-math PUBLIC Eigen3::Eigen)
-	endif()
+	target_link_libraries(mrpt-math PUBLIC Eigen3::Eigen)
 
 
 	if (NOT "${SuiteSparse_LIBRARIES}" STREQUAL "")
