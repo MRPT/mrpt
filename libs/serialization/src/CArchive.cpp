@@ -409,7 +409,7 @@ void CArchive::internal_ReadObjectHeader(
 	{
 		throw;
 	}
-	catch (const std::exception& e)
+	catch (...)
 	{
 		if (lengthReadClassName == 255)
 		{
@@ -419,13 +419,9 @@ void CArchive::internal_ReadObjectHeader(
 		else
 		{
 			THROW_STACKED_EXCEPTION_CUSTOM_MSG2(
-				e, "Exception while parsing typed object '%s' from stream!\n",
+				"Exception while parsing typed object '%s' from stream!\n",
 				readClassName);
 		}
-	}
-	catch (...)
-	{
-		THROW_EXCEPTION("Unexpected runtime error!");
 	}
 }  // end method
 
@@ -461,15 +457,11 @@ void CArchive::internal_ReadObject(
 	{
 		throw;
 	}
-	catch (const std::exception& e)
-	{
-		THROW_STACKED_EXCEPTION_CUSTOM_MSG2(
-			e, "Exception while parsing typed object '%s' from stream!\n",
-			strClassName.c_str());
-	}
 	catch (...)
 	{
-		THROW_EXCEPTION("Unexpected runtime error!");
+		THROW_STACKED_EXCEPTION_CUSTOM_MSG2(
+			"Exception while parsing typed object '%s' from stream!\n",
+			strClassName.c_str());
 	}
 }
 
