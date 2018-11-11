@@ -115,7 +115,7 @@ inline std::string exception_to_str(const std::exception& e)
 /** \def THROW_STACKED_EXCEPTION
  * \sa MRPT_TRY_START, MRPT_TRY_END
  */
-#define THROW_STACKED_EXCEPTION(e)                           \
+#define THROW_STACKED_EXCEPTION                              \
 	std::throw_with_nested(                                  \
 		std::logic_error(mrpt::internal::exception_line_msg( \
 			"Called from here.", __FILE__, __LINE__,         \
@@ -126,10 +126,10 @@ inline std::string exception_to_str(const std::exception& e)
  *	\param stuff Is a printf-like sequence of params, e.g: "The error happens
  *for x=%i",x
  */
-#define THROW_STACKED_EXCEPTION_CUSTOM_MSG2(e, stuff, param1) \
-	std::throw_with_nested(                                   \
-		std::logic_error(mrpt::internal::exception_line_msg(  \
-			mrpt::format(stuff, param1), __FILE__, __LINE__,  \
+#define THROW_STACKED_EXCEPTION_CUSTOM_MSG2(stuff, param1)   \
+	std::throw_with_nested(                                  \
+		std::logic_error(mrpt::internal::exception_line_msg( \
+			mrpt::format(stuff, param1), __FILE__, __LINE__, \
 			__CURRENT_FUNCTION_NAME__)))
 
 /** For use in CSerializable implementations */
@@ -249,24 +249,20 @@ inline std::string exception_to_str(const std::exception& e)
  * the call stack after an exception.
  * \sa MRPT_TRY_START,MRPT_TRY_END_WITH_CLEAN_UP
  */
-#define MRPT_TRY_END                                                       \
-	}                                                                      \
-	catch (std::bad_alloc&) { throw; }                                     \
-	catch (std::exception & __excep) { THROW_STACKED_EXCEPTION(__excep); } \
-	catch (...) { THROW_EXCEPTION("Unexpected runtime error!"); }
+#define MRPT_TRY_END                   \
+	}                                  \
+	catch (std::bad_alloc&) { throw; } \
+	catch (...) { THROW_STACKED_EXCEPTION; }
+
 /** The end of a standard MRPT "try...catch()" block that allows tracing throw
  * the call stack after an exception, including a "clean up" piece of code to be
  * run before throwing the exceptions.
  * \sa MRPT_TRY_END,MRPT_TRY_START
  */
-#define MRPT_TRY_END_WITH_CLEAN_UP(stuff)         \
-	}                                             \
-	catch (std::bad_alloc&) { throw; }            \
-	catch (std::exception & __excep)              \
-	{                                             \
-		{stuff} THROW_STACKED_EXCEPTION(__excep); \
-	}                                             \
-	catch (...) { {stuff} THROW_EXCEPTION("Unexpected runtime error!"); }
+#define MRPT_TRY_END_WITH_CLEAN_UP(stuff) \
+	}                                     \
+	catch (std::bad_alloc&) { throw; }    \
+	catch (...) { {stuff} THROW_STACKED_EXCEPTION; }
 
 #if MRPT_ENABLE_EMBEDDED_GLOBAL_PROFILER
 #define MRPT_PROFILE_FUNC_START               \
