@@ -262,6 +262,7 @@ include(cmakemodules/script_pcap.cmake REQUIRED)        # Check for the libpcap 
 #include(cmakemodules/script_ros1.cmake REQUIRED)       # Check for ROS
 include(cmakemodules/script_vtk.cmake REQUIRED)         # Check for VTK
 include(cmakemodules/script_clang_tidy.cmake REQUIRED)  # Clang tidy
+include(cmakemodules/script_iwyu.cmake REQUIRED)        # Include-what-you-use
 include(cmakemodules/script_cvd.cmake REQUIRED)         # Check for VTK
 include(cmakemodules/script_jsoncpp.cmake REQUIRED)     # Check for jsoncpp
 

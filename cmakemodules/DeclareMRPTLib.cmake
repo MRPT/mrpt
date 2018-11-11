@@ -309,6 +309,12 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 			# in libs which do not (yet) support mex stuff
 		endif ()
 
+		if (USE_IWYU)
+			set_property(
+				TARGET mrpt-${name}
+			PROPERTY CXX_INCLUDE_WHAT_YOU_USE ${IWYU_PATH_AND_OPTIONS})
+		endif()
+
 		# Special directories when building a .deb package:
 		if(CMAKE_MRPT_USE_DEB_POSTFIXS)
 			set(MRPT_PREFIX_INSTALL "${CMAKE_INSTALL_PREFIX}/libmrpt-${name}${CMAKE_MRPT_VERSION_NUMBER_MAJOR}.${CMAKE_MRPT_VERSION_NUMBER_MINOR}/usr/")
