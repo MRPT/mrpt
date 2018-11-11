@@ -183,13 +183,6 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
   */
 #define MRPT_HAS_FFMPEG ${CMAKE_MRPT_HAS_FFMPEG}
 
-
-/** Whether MRPT is compiled with the "mrpt-sift-hess" library.
-  *  This is always 0 in Debian due to a legal issue with the SIFT
-  *   descriptor and its pending patent.
-  */
-#define MRPT_HAS_SIFT_HESS ${CMAKE_MRPT_HAS_SIFT_HESS}
-
 /** Are we in a big-endian system? (Intel, amd, etc.. are little-endian) */
 #define MRPT_IS_BIG_ENDIAN ${CMAKE_MRPT_IS_BIG_ENDIAN}
 
