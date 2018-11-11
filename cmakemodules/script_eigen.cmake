@@ -28,16 +28,32 @@ if (EIGEN_USE_EMBEDDED_VERSION)
 	mark_as_advanced(EIGEN_EMBEDDED_INCLUDE_DIR)
 
 	set(MRPT_EIGEN_INCLUDE_DIR "${EIGEN_EMBEDDED_INCLUDE_DIR}")
+	# define interface lib for Eigen3:
+	add_library(Eigen INTERFACE)
+	add_dependencies(Eigen EP_eigen3)
+	export(
+		TARGETS Eigen
+		FILE "${CMAKE_BINARY_DIR}/Eigen-config.cmake"
+	)
+	install(TARGETS Eigen EXPORT Eigen-targets)
+	install(
+		EXPORT Eigen-targets
+		DESTINATION ${this_lib_dev_INSTALL_PREFIX}share/mrpt
+	)
+	target_include_directories(Eigen
+		SYSTEM  # omit warnings for these hdrs
+		INTERFACE
+	  $<BUILD_INTERFACE:${EIGEN_EMBEDDED_INCLUDE_DIR}>
+		$<BUILD_INTERFACE:${EIGEN_EMBEDDED_INCLUDE_DIR}/unsupported>
+#	  $<INSTALL_INTERFACE:include/Eigen>
+	)
+	add_library(Eigen3::Eigen ALIAS Eigen)
+
 elseif(Eigen3_FOUND)
 	# Use system version
 	set(MRPT_EIGEN_INCLUDE_DIR "${EIGEN3_INCLUDE_DIR}")
 else()
 	message(FATAL_ERROR "eigen3 is required to build MRPT! Either install it and set EIGEN3_DIR or enable the variable EIGEN_USE_EMBEDDED_VERSION to automatically download it now.")
-endif()
-
-include_directories("${MRPT_EIGEN_INCLUDE_DIR}")
-if(EXISTS "${MRPT_EIGEN_INCLUDE_DIR}/unsupported/")
-	include_directories("${MRPT_EIGEN_INCLUDE_DIR}/unsupported/")
 endif()
 
 # Create variables just for the final summary of the configuration (see bottom of this file):
@@ -51,10 +67,6 @@ else()
 	set(EIGEN_USE_EMBEDDED_VERSION_BOOL 0)
 	set(CMAKE_MRPT_HAS_EIGEN_SYSTEM 1)
 endif()
-
-# Add directories as "-isystem" to avoid warnings with :
-set(AUX_EIGEN_INCL_DIR ${MRPT_EIGEN_INCLUDE_DIR})
-ADD_DIRECTORIES_AS_ISYSTEM(AUX_EIGEN_INCL_DIR)
 
 # Detect Eigen version (just to show it in the CMake config summary)
 set(EIGEN_VER_H "${MRPT_EIGEN_INCLUDE_DIR}/Eigen/src/Core/util/Macros.h")
@@ -76,5 +88,5 @@ if (EXISTS ${EIGEN_VER_H})
 
 	if($ENV{VERBOSE})
 		message(STATUS "Eigen version detected: ${MRPT_EIGEN_VERSION}")
-	endif($ENV{VERBOSE})
-endif (EXISTS ${EIGEN_VER_H})
+	endif()
+endif ()

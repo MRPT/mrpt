@@ -17,15 +17,23 @@ cmake_policy(SET CMP0003 NEW)  # Required by CMake 2.7+
 set(EXECUTABLE_OUTPUT_PATH ".")
 
 # The list of "libs" which can be included can be found in:
-#  http://www.mrpt.org/Libraries
+#  https://www.mrpt.org/Libraries
 # Add the top-level dependencies only.
 # --------------------------------------------------------------------------
-find_package(MRPT REQUIRED poses;io;gui)
+foreach(dep poses;io;gui)
+	# if not building from inside MRPT source tree, find it as a cmake
+	# imported project:
+	if (NOT TARGET mrpt-${dep})
+		find_package(mrpt-${dep} REQUIRED)
+	endif()
+endforeach()
 
 # Define the executable target:
 add_executable(${sampleName} test.cpp  )
 
-add_dependencies(examples ${sampleName})
+if(TARGET examples)
+	add_dependencies(examples ${sampleName})
+endif()
 
 set_target_properties(
 	${sampleName}
@@ -39,9 +47,9 @@ if(MY_DEFS) # If not empty
 endif()
 
 # Add the required libraries for linking:
-target_link_libraries(${sampleName}
-	${MRPT_LIBRARIES}  # This is filled by find_package(MRPT ...)
-	)
+foreach(dep poses;io;gui)
+	target_link_libraries(${sampleName} mrpt-${dep})
+endforeach()
 
 # Set optimized building:
 if((${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX) AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
@@ -50,6 +58,6 @@ endif()
 
 # This part can be removed if you are compiling this program outside of
 #  the MRPT tree:
-if(${CMAKE_PROJECT_NAME} STREQUAL "MRPT") # Fails if build outside of MRPT project.
+if(DEFINED MRPT_LIBS_ROOT) # Fails if build outside of MRPT project.
 	DeclareAppDependencies(${sampleName} mrpt-poses;mrpt-io;mrpt-gui) # Dependencies
 endif()
