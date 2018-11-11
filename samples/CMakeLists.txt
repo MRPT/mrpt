@@ -1,15 +1,17 @@
-# This file is included from the main CMakeLists.txt
-#
-set( BUILD_EXAMPLES OFF CACHE BOOL "Build examples?")
+project(ALL_EXAMPLES)
+
+add_custom_target(examples ALL)
+
+set(BUILD_EXAMPLES OFF CACHE BOOL "Build examples?")
 if(BUILD_EXAMPLES)
-	set(CMAKE_MRPT_EXAMPLES_BASE_DIRECTORY "${CMAKE_SOURCE_DIR}/samples/")
-	# Fix "\" --> "\\" for windows:
-	string(REPLACE "\\" "\\\\" CMAKE_MRPT_EXAMPLES_BASE_DIRECTORY ${CMAKE_MRPT_EXAMPLES_BASE_DIRECTORY})
+	set(CMAKE_MRPT_EXAMPLES_BASE_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 
-	#message(STATUS "Parsing 'examples_config.h.in'")
-	configure_file("${CMAKE_SOURCE_DIR}/parse-files/examples_config.h.in" "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/examples_config.h")
+	# Generate examples_config.h
+	configure_file(
+    "${MRPT_SOURCE_DIR}/parse-files/examples_config.h.in"
+    "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/examples_config.h")
 
-	# Generate CMakeLists.txt from the template project file for examples:
+	# Generate CMakeLists.txt for each example:
 	message(STATUS "Generating CMakefiles.txt for examples...")
 
 	# ---------------------------------------------------------------
@@ -30,26 +32,18 @@ if(BUILD_EXAMPLES)
 		endforeach(DEP)
 
 		foreach(CMAKE_MRPT_EXAMPLE_NAME ${LIST_EXAMPLES_IN_THIS_DIR})
-			#message(STATUS "Example: ${CMAKE_MRPT_EXAMPLE_NAME}")
 			# Generate project file:
-			configure_file(${CMAKE_SOURCE_DIR}/samples/CMakeLists_template.txt.in ${CMAKE_SOURCE_DIR}/samples/${CMAKE_MRPT_EXAMPLE_NAME}/CMakeLists.txt @ONLY)
-			set(CMAKE_COMMANDS_INCLUDE_EXAMPLE_DIRS_ROOT "${CMAKE_COMMANDS_INCLUDE_EXAMPLE_DIRS_ROOT}\nadd_subdirectory(${CMAKE_MRPT_EXAMPLE_NAME})")
-		endforeach(CMAKE_MRPT_EXAMPLE_NAME)
-	endmacro(GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY)
-
-	macro(ADD_SAMPLES_DIRECTORY dir)
-		set(CMAKE_COMMANDS_INCLUDE_EXAMPLE_DIRS_ROOT "${CMAKE_COMMANDS_INCLUDE_EXAMPLE_DIRS_ROOT}\nadd_subdirectory(${dir})")
+			configure_file(
+			  ${MRPT_SOURCE_DIR}/samples/CMakeLists_template.txt.in
+			  ${MRPT_SOURCE_DIR}/samples/${CMAKE_MRPT_EXAMPLE_NAME}/CMakeLists.txt
+			  @ONLY)
+			# And parse it:
+			add_subdirectory(${CMAKE_MRPT_EXAMPLE_NAME})
+		endforeach()
 	endmacro()
 	# ---------------------------------------------------------------
 	#  END OF MACRO for samples directories
 	# ---------------------------------------------------------------
-
-	# -----------------------------------------------------------------
-	# This loop is generic, do not modify it...
-	#  modify the above variable and/or the list_examples.txt files!
-	# -----------------------------------------------------------------
-	set(CMAKE_COMMANDS_INCLUDE_EXAMPLE_DIRS_ROOT "")
-	#set(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS}) # use CMake Interface?
 
 
 	# === Depending on: core ===
@@ -365,11 +359,6 @@ if(BUILD_EXAMPLES)
 		set(CMAKE_EXAMPLE_DEPS mrpt-nav mrpt-gui)
 		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 	endif()
-
-	# Generate the CMakeLists.txt in the "/samples" directory
-	set(CMAKE_COMMANDS_INCLUDE_EXAMPLE_DIRS ${CMAKE_COMMANDS_INCLUDE_EXAMPLE_DIRS_ROOT})
-	configure_file(${CMAKE_SOURCE_DIR}/samples/CMakeLists_list_template.txt.in "${CMAKE_SOURCE_DIR}/samples/CMakeLists.txt" )
-	add_subdirectory(samples)
 
 	message(STATUS "Done.")
 endif()
