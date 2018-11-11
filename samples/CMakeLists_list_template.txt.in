@@ -1,7 +1,0 @@
-# File generated automatically. Build with cmake . at the root directory
-project(ALL_EXAMPLES)
-
-add_custom_target(examples ALL)
-
-${CMAKE_COMMANDS_INCLUDE_EXAMPLE_DIRS}
-

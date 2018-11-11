@@ -652,7 +652,7 @@ endif()
 
 #-----------------------------------
 # The python bindings
-# *Note*: This must be AFTER the generation of the MRPTConfig.cmake files
+# *Note*: This must be AFTER the generation of mrpt-xxx-config.cmake files
 include(cmakemodules/script_python_bindings.cmake REQUIRED)     # Support for python
 
 # Prepare CPack params for building binary packages (has to be after the apps/)
@@ -682,11 +682,10 @@ include(cmakemodules/script_show_final_summary.cmake REQUIRED)
 
 #-----------------------------------
 # The examples
-# *Note*: This must be AFTER the generation of the MRPTConfig.cmake files
+# *Note*: This must be AFTER the generation of the mrpt-xxx-config.cmake files
 #-----------------------------------
 add_definitions(-DMRPT_OPENCV_SRC_DIR="${MRPT_OPENCV_SRC_DIR}")
-set(MRPT_DIR ${MRPT_BINARY_DIR})
-include(cmakemodules/DefineExamples.cmake REQUIRED)
+add_subdirectory(samples)
 
 # evaluate coverage
 coverage_evaluate()

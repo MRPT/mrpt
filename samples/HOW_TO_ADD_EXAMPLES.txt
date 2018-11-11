@@ -10,14 +10,14 @@ How to create new examples under the MRPT tree:
    [MRPT]/samples/foo/test.cpp
 
 4) Add the example name to any of the lists in:
-   [MRPT]/cmakemodules/DefineExamples.cmake
+   [MRPT]/samples/CMakeLists.cmake
 
 5) In the build directory, run "cmake . -DBUILD_EXAMPLES=ON"
 
 6) An automatically generated CMake script will be created in:
    [MRPT]/samples/foo/CMakeLists.txt
 
-7) Add the source file (but not the cmake file) to the repository:
-   git add [MRPT]/samples/foo/test.cpp
+7) Commit BOTH the source file and the CMakeLists.txt files:
+   git add [MRPT]/samples/foo/test.cpp [MRPT]/samples/foo/CMakeLists.txt
 
 done!
