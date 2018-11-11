@@ -81,11 +81,11 @@ class CFeatureExtraction
    public:
 	enum TSIFTImplementation
 	{
-		LoweBinary = 0,
-		CSBinary,
-		VedaldiBinary,
-		Hess,
-		OpenCV
+		LoweBinary = 0 /* obsolete */,
+		CSBinary /* obsolete */,
+		VedaldiBinary /* obsolete */,
+		Hess /* obsolete */,
+		OpenCV /* DEFAULT */
 	};
 
 	/** The set of parameters for all the detectors & descriptor algorithms */
@@ -183,11 +183,7 @@ class CFeatureExtraction
 		struct TSIFTOptions
 		{
 			TSIFTOptions() = default;
-			TSIFTImplementation implementation;  //!< Default: Hess (OpenCV
-			//! should be preferred, but its
-			//! nonfree module is not always
-			//! available by default in all
-			//! systems)
+			TSIFTImplementation implementation{OpenCV};  //!< Default: OpenCV
 			double threshold{0.04};  //!< default= 0.04
 			double edgeThreshold{10};  //!< default= 10
 		} SIFTOptions;
@@ -511,19 +507,6 @@ class CFeatureExtraction
 	void internal_computeLATCHDescriptors(
 		const mrpt::img::CImage& in_img, CFeatureList& in_features) const;
 
-#if 0  // Delete? see comments in .cpp
-			/** Select good features using the openCV implementation of the KLT method.
-			* \param img (input) The image from where to select extract the images.
-			* \param feats (output) A complete list of features (containing a patch for each one of them if options.patchsize > 0).
-			* \param nDesiredFeatures (op. input) Number of features to be extracted. Default: all possible.
-			*/
-			void  selectGoodFeaturesKLT(
-				const mrpt::img::CImage	&inImg,
-				CFeatureList		&feats,
-				unsigned int		init_ID = 0,
-				unsigned int		nDesiredFeatures = 0) const;
-#endif
-
 	/** Extract features from the image based on the KLT method.
 	 * \param img The image from where to extract the images.
 	 * \param feats The list of extracted features.
@@ -642,57 +625,6 @@ class CFeatureExtraction
 		const mrpt::img::CImage& inImg, CFeatureList& feats,
 		unsigned int init_ID, unsigned int nDesiredFeatures,
 		const TImageROI& ROI = TImageROI()) const;
-
-	// ------------------------------------------------------------------------------------
-	//								my_scale_space_extrema
-	// ------------------------------------------------------------------------------------
-	/** Computes extrema in the scale space.
-	 * \param dog_pyr Pyramid of images.
-	 * \param octvs Number of considered octaves.
-	 * \param intvls Number of intervales in octaves.
-	 */
-	void* my_scale_space_extrema(
-		CFeatureList& featList, void* dog_pyr, int octvs, int intvls,
-		double contr_thr, int curv_thr, void* storage) const;
-
-	/** Adjust scale if the image was initially doubled.
-	 * \param features The sequence of features.
-	 */
-	void my_adjust_for_img_dbl(void* features) const;
-
-	/** Gets the number of times that a point in the image is higher or lower
-	 * than the surroundings in the image-scale space
-	 * \param dog_pyr Pyramid of images.
-	 * \param octvs Number of considered octaves.
-	 * \param intvls Number of intervales in octaves.
-	 * \param row The row of the feature in the original image.
-	 * \param col The column of the feature in the original image.
-	 * \param nMin [out]: Times that the feature is lower than the surroundings.
-	 * \param nMax [out]: Times that the feature is higher than the
-	 * surroundings.
-	 */
-	void getTimesExtrema(
-		void* dog_pyr, int octvs, int intvls, float row, float col,
-		unsigned int& nMin, unsigned int& nMax) const;
-
-	/** Computes the Laplacian value of the feature in the corresponing image in
-	 * the pyramid.
-	 * \param dog_pyr Pyramid of images.
-	 * \param octvs Number of considered octaves.
-	 * \param intvls Number of intervales in octaves.
-	 * \param row The row of the feature in the original image.
-	 * \param col The column of the feature in the original image.
-	 */
-	double getLaplacianValue(
-		void* dog_pyr, int octvs, int intvls, float row, float col) const;
-
-	/** Append a sequence of openCV features into an MRPT feature list.
-	 * \param features The sequence of features.
-	 * \param list [in-out] The list of MRPT features.
-	 * \param init_ID [in] The initial ID for the new features.
-	 */
-	void insertCvSeqInCFeatureList(
-		void* features, CFeatureList& list, unsigned int init_ID = 0) const;
 
 	/** Converts a sequence of openCV features into an MRPT feature list.
 	 * \param features The sequence of features.

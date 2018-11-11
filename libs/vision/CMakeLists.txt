@@ -10,15 +10,6 @@ list(APPEND vision_EXTRA_SRCS_NAME 	"observations" "observations")
 list(APPEND vision_EXTRA_SRCS		"${MRPT_SOURCE_DIR}/libs/vision/src/pnp/*.cpp" "${MRPT_SOURCE_DIR}/libs/vision/include/mrpt/vision/pnp_algos.h")
 list(APPEND vision_EXTRA_SRCS_NAME 	"pnp" "pnp")
 
-if(CMAKE_MRPT_HAS_SIFT_HESS)
-	list(APPEND vision_EXTRA_SRCS
-		"${MRPT_SOURCE_DIR}/libs/vision/src/sift-hess/imgfeatures.c"
-		"${MRPT_SOURCE_DIR}/libs/vision/src/sift-hess/sift.c"
-		"${MRPT_SOURCE_DIR}/libs/vision/src/sift-hess/utils.c"
-		"${MRPT_SOURCE_DIR}/libs/vision/include/mrpt/sift-hess/*.h")
-	list(APPEND vision_EXTRA_SRCS_NAME 	"sift-hess" "sift-hess" "sift-hess" "sift-hess")
-endif()
-
 if(CMAKE_MRPT_HAS_OPENCV)
 	include_directories(${CVD_INCLUDE_DIRS})
 
@@ -40,18 +31,6 @@ if(CMAKE_MRPT_HAS_OPENCV)
 endif()
 
 if(BUILD_mrpt-vision)
-	if(CMAKE_MRPT_HAS_SIFT_HESS)
-		if (MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
-			# Ignore precompiled headers in sift-hess sources:
-			set_source_files_properties(${sift-hess_FILES} PROPERTIES COMPILE_FLAGS "/Y- /wd4244")
-		endif ()
-
-		# Avoid some annoying warnings:
-		if (CMAKE_COMPILER_IS_GNUCXX)
-			set_source_files_properties(${sift-hess_FILES} PROPERTIES COMPILE_FLAGS "-Wno-unused-function")
-		endif ()
-	endif()
-
 	# Ignore precompiled headers in faster sources:
 	if (MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
 		set_source_files_properties(${faster_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
