@@ -14,9 +14,7 @@
 
 TEST(exception, stackedExceptionBasic)
 {
-	EXPECT_THROW(
-		{ THROW_STACKED_EXCEPTION(std::runtime_error("stacked")); },
-		std::logic_error);
+	EXPECT_THROW({ THROW_STACKED_EXCEPTION; }, std::logic_error);
 }
 
 void test_except_3rd_lvl()
@@ -66,9 +64,6 @@ TEST(exception, assertException)
 TEST(exception, stackedExceptionCustomMsg)
 {
 	EXPECT_THROW(
-		{
-			THROW_STACKED_EXCEPTION_CUSTOM_MSG2(
-				std::runtime_error("stacked"), "Foo %s\n", "bar");
-		},
+		{ THROW_STACKED_EXCEPTION_CUSTOM_MSG2("Foo %s\n", "bar"); },
 		std::logic_error);
 }

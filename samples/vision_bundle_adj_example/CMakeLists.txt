@@ -17,7 +17,7 @@ cmake_policy(SET CMP0003 NEW)  # Required by CMake 2.7+
 set(EXECUTABLE_OUTPUT_PATH ".")
 
 # The list of "libs" which can be included can be found in:
-#  http://www.mrpt.org/Libraries
+#  https://www.mrpt.org/Libraries
 # Add the top-level dependencies only.
 # --------------------------------------------------------------------------
 foreach(dep vision-lgpl;gui)
@@ -31,7 +31,9 @@ endforeach()
 # Define the executable target:
 add_executable(${sampleName} test.cpp  )
 
-add_dependencies(examples ${sampleName})
+if(TARGET examples)
+	add_dependencies(examples ${sampleName})
+endif()
 
 set_target_properties(
 	${sampleName}

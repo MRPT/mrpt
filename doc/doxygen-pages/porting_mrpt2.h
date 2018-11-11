@@ -18,9 +18,9 @@
  * working as usual after updating to MRPT 2.*:
  *
  * **Mandatory changes**
- *  - Your project must use C++17. Using CMake this is easy by adding this right
- * after your top-level `PROJECT`: \code CMAKE_MINIMUM_REQUIRED(VERSION 3.1) set
- * (CMAKE_CXX_STANDARD 17)  # Require C++17 \endcode
+ *  - Your project must use C++17. Using CMake this is now done automatically
+ *  when linking your targets against MRPT imported targes.
+ *  See: \ref mrpt_from_cmake.
  *  - **Smart pointers** are now standard
  * [`std::shared_ptr<>`](http://en.cppreference.com/w/cpp/memory/shared_ptr)
  * instead of those based on `stlplus`. Required changes:
