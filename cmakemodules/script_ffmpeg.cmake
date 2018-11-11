@@ -132,3 +132,13 @@ endif(MRPT_HAS_FFMPEG_WIN32)
 
 endif(NOT DISABLE_FFMPEG)
 
+
+# -- install DLLs --
+if(WIN32)
+	if (EXISTS "${FFMPEG_WIN32_ROOT_DIR}/bin")
+		file(GLOB_RECURSE EXTRA_DLLS "${FFMPEG_WIN32_ROOT_DIR}/bin/*.dll")
+		foreach(F ${EXTRA_DLLS})
+			install(FILES "${F}" DESTINATION bin)
+		endforeach()
+	endif()
+endif()

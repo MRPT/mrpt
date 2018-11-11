@@ -113,3 +113,14 @@ set(CMAKE_MRPT_HAS_WXWIDGETS_SYSTEM 0)
 if(CMAKE_MRPT_HAS_WXWIDGETS)
 	set(CMAKE_MRPT_HAS_WXWIDGETS_SYSTEM 1)
 endif(CMAKE_MRPT_HAS_WXWIDGETS)
+
+
+# -- install DLLs --
+if(WIN32)
+	if (EXISTS "${wxWidgets_LIB_DIR}")
+		file(GLOB_RECURSE EXTRA_DLLS "${wxWidgets_LIB_DIR}/*.dll")
+		foreach(F ${EXTRA_DLLS})
+			install(FILES "${F}" DESTINATION bin)
+		endforeach()
+	endif ()
+endif()
