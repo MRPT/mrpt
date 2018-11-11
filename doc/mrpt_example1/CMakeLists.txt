@@ -12,13 +12,13 @@ endif()
 #   The dependencies of a library are automatically added, so you only
 #    need to specify the top-most libraries your code depend on.
 # --------------------------------------------------------------------------
-find_package( MRPT REQUIRED poses system)
+find_package(mrpt-poses REQUIRED)
 
 # Declare the target (an executable)
 add_executable(mrpt_example1
 	test.cpp
 	)
-target_link_libraries(mrpt_example1 ${MRPT_LIBS})
+target_link_libraries(mrpt_example1 mrpt-poses)
 
 # Set optimized building:
 if(CMAKE_COMPILER_IS_GNUCXX AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
