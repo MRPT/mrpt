@@ -97,7 +97,7 @@ endif(DISABLE_OPENCV)
 
 # OpenCV (all compilers):
 if(CMAKE_MRPT_HAS_OPENCV)
-	# Important: we can't link against opencv_ts, apparently it leads to crashes 
+	# Important: we can't link against opencv_ts, apparently it leads to crashes
 	# when also linking to gtest (???)
 	list(REMOVE_ITEM OpenCV_LIBRARIES opencv_ts)
 
@@ -115,3 +115,13 @@ if(CMAKE_MRPT_HAS_OPENCV)
 	set(CMAKE_MRPT_HAS_OPENCV_SYSTEM 1)
 
 endif(CMAKE_MRPT_HAS_OPENCV)
+
+# -- install DLLs --
+if(WIN32)
+	if (EXISTS "${OpenCV_DIR}/bin/Release")
+		file(GLOB_RECURSE EXTRA_DLLS "${OpenCV_DIR}/bin/*.dll") # This includes debug & release DLLs
+		foreach(F ${EXTRA_DLLS})
+			install(FILES "${F}" DESTINATION bin)
+		endforeach()
+	endif()
+endif()
