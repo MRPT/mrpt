@@ -267,9 +267,6 @@ void CFeatureExtraction::extractFeaturesSIFT(
 	}  // end switch
 }  // end extractFeaturesSIFT
 
-/************************************************************************************************
- *								computeSiftDescriptors *
- ************************************************************************************************/
 // Compute SIFT descriptors on a set of already localized points
 void CFeatureExtraction::internal_computeSiftDescriptors(
 	const CImage& in_img, CFeatureList& in_features) const
@@ -277,97 +274,9 @@ void CFeatureExtraction::internal_computeSiftDescriptors(
 	ASSERT_(in_features.size() > 0);
 	switch (options.SIFTOptions.implementation)
 	{
-		case CSBinary:
-		{
-#ifdef _WIN32
-			char filImg[2000], filOut[2000], filFeat[2000];
-			char paramImg[2000];
-
-			CFeatureList::iterator feat;
-
-			// Save to temporary file
-			GetTempPathA(1000, filImg);
-			os::strcat(filImg, 1000, "temp_img.bmp");
-			GetTempPathA(1000, filOut);
-			os::strcat(filOut, 1000, "temp_feats.txt");
-			GetTempPathA(1000, filFeat);
-			os::strcat(filFeat, 1000, "temp_KLT_feats.txt");
-
-			// Fill the input file
-			FILE* fout = os::fopen(filFeat, "wt");
-			for (feat = in_features.begin(); feat != in_features.end(); feat++)
-				os::fprintf(fout, "%.6f %.6f\n", (*feat)->x, (*feat)->y);
-
-			os::fclose(fout);
-
-			// -------------------------------------------
-			//		CALL TO "extractSIFT.exe"
-			// -------------------------------------------
-			in_img.saveToFile(filImg);
-
-			// Version  with "CreateProcess":
-			// ------------------------------------
-			os::strcpy(paramImg, 1000, "extractSIFT.exe -i");
-			os::strcat(paramImg, 1000, filImg);
-			os::strcat(paramImg, 1000, " -f");
-			os::strcat(paramImg, 1000, filOut);
-			os::strcat(paramImg, 1000, " -l");
-			os::strcat(paramImg, 1000, filFeat);
-
-			bool ret = mrpt::system::launchProcess(paramImg);
-
-			if (!ret)
-				THROW_EXCEPTION(
-					"[extractFeaturesSIFT] Could not launch external "
-					"process... (extractSIFT.exe)");
-
-			MRPT_START
-			// Load the results:
-			CMatrix aux;
-			aux.loadFromTextFile(filOut);
-			size_t nRows = aux.rows();
-
-			std::cout << "[computeSiftFeatures1] " << nRows << " features.\n";
-
-			unsigned int i;
-			float lx, ly;
-			lx = 0.0;
-			ly = 0.0;
-			feat = in_features.begin();
-
-			for (i = 0; i < nRows; i++)
-			{
-				if (aux(i, 0) != lx ||
-					aux(i, 1) != ly)  // Only one descriptor for feature
-				{
-					(*feat)->type = featSIFT;
-					(*feat)->orientation = aux(i, 2);
-					(*feat)->scale = aux(i, 3);
-
-					// The descriptor:
-					aux.extractRow(i, (*feat)->descriptors.SIFT, 4);
-
-					lx = aux(i, 0);
-					ly = aux(i, 1);
-
-					feat++;
-				}  // end if
-			}  // end for
-			MRPT_END
-
-			break;
-#else
-			THROW_EXCEPTION("TO DO @ linux OS!");
-#endif
-		}  // end case CSBinary
-		case Hess:  // Implementation by Hess
-		{
-			THROW_EXCEPTION("Hess SIFT code not available since MRPT 1.9.9");
-			break;
-		}  // end case Hess
 		default:
 		{
-			cout << "SIFT Extraction method not supported for features with "
+			cerr << "SIFT Extraction method not supported for features with "
 					"already known image coordinates"
 				 << endl;
 			break;
