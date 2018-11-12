@@ -11,8 +11,6 @@ Requires: @mrpt_pkgconfig_REQUIRES@
 Version: @CMAKE_MRPT_VERSION_NUMBER_MAJOR@.@CMAKE_MRPT_VERSION_NUMBER_MINOR@.@CMAKE_MRPT_VERSION_NUMBER_PATCH@
 @mrpt_pkgconfig_lib_line_install@
 @mrpt_pkgconfig_libs_private_line@
-Cflags: -I${includedir}/mrpt/@mrpt_pkgconfig_LIBNAME@/include/ -I${includedir}/mrpt/mrpt-config/ @mrpt_pkgconfig_EXTRA_CFLAGS@
+Cflags: -I${includedir}/mrpt/@mrpt_pkgconfig_LIBNAME@/include/ -I${includedir} @mrpt_pkgconfig_EXTRA_CFLAGS@
 
 #@ wxWidgets_CXX_FLAGS @
-
-

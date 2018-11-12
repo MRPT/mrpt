@@ -45,38 +45,6 @@
             <Add option="-Dqh_QHpointer" />
             <Add option="-D_DEBUG" />
             <Add option="-DDEBUG" />
-            <Add directory="/home/jlblanco/code/mrpt/." />
-            <Add directory="/home/jlblanco/code/mrpt/include/mrpt-config/unix" />
-            <Add directory="/home/jlblanco/code/mrpt/libs/base/include" />
-            <Add directory="/home/jlblanco/code/mrpt/libs/gui/include" />
-            <Add directory="/home/jlblanco/code/mrpt/libs/kinematics/include" />
-            <Add directory="/home/jlblanco/code/mrpt/libs/opengl/include" />
-            <Add directory="/home/jlblanco/code/mrpt/otherlibs/wxThings" />
-            <Add directory="/usr/include/eigen3" />
-            <Add directory="/usr/include/eigen3/unsupported" />
-            <Add directory="/usr/include/freetype2" />
-            <Add directory="/usr/include/hdf5/openmpi" />
-            <Add directory="/usr/include/jsoncpp" />
-            <Add directory="/usr/include/libxml2" />
-            <Add directory="/usr/include/ni" />
-            <Add directory="/usr/include/opencv" />
-            <Add directory="/usr/include/pcl-1.7" />
-            <Add directory="/usr/include/python2.7" />
-            <Add directory="/usr/include/suitesparse" />
-            <Add directory="/usr/include/tcl" />
-            <Add directory="/usr/include/vtk-6.2" />
-            <Add directory="/usr/include/wx-3.0" />
-            <Add directory="/usr/include/x86_64-linux-gnu" />
-            <Add directory="/usr/include/x86_64-linux-gnu/ffmpeg" />
-            <Add directory="/usr/include/x86_64-linux-gnu/freetype2" />
-            <Add directory="/usr/include/x86_64-linux-gnu/libavcodec" />
-            <Add directory="/usr/include/x86_64-linux-gnu/libavformat" />
-            <Add directory="/usr/include/x86_64-linux-gnu/libswscale" />
-            <Add directory="/usr/lib/openmpi/include" />
-            <Add directory="/usr/lib/openmpi/include/openmpi" />
-            <Add directory="/usr/lib/openmpi/include/openmpi/opal/mca/event/libevent2021/libevent" />
-            <Add directory="/usr/lib/openmpi/include/openmpi/opal/mca/event/libevent2021/libevent/include" />
-            <Add directory="/usr/lib/x86_64-linux-gnu/wx/include/gtk2-unicode-3.0" />
          </Compiler>
          <MakeCommands>
             <Build command="/usr/bin/make -f &quot;/home/jlblanco/code/mrpt/apps/robotic-arm-kinematics/Makefile&quot;  VERBOSE=1 robotic-arm-kinematics" />
@@ -113,38 +81,6 @@
             <Add option="-Dqh_QHpointer" />
             <Add option="-D_DEBUG" />
             <Add option="-DDEBUG" />
-            <Add directory="/home/jlblanco/code/mrpt/." />
-            <Add directory="/home/jlblanco/code/mrpt/include/mrpt-config/unix" />
-            <Add directory="/home/jlblanco/code/mrpt/libs/base/include" />
-            <Add directory="/home/jlblanco/code/mrpt/libs/gui/include" />
-            <Add directory="/home/jlblanco/code/mrpt/libs/kinematics/include" />
-            <Add directory="/home/jlblanco/code/mrpt/libs/opengl/include" />
-            <Add directory="/home/jlblanco/code/mrpt/otherlibs/wxThings" />
-            <Add directory="/usr/include/eigen3" />
-            <Add directory="/usr/include/eigen3/unsupported" />
-            <Add directory="/usr/include/freetype2" />
-            <Add directory="/usr/include/hdf5/openmpi" />
-            <Add directory="/usr/include/jsoncpp" />
-            <Add directory="/usr/include/libxml2" />
-            <Add directory="/usr/include/ni" />
-            <Add directory="/usr/include/opencv" />
-            <Add directory="/usr/include/pcl-1.7" />
-            <Add directory="/usr/include/python2.7" />
-            <Add directory="/usr/include/suitesparse" />
-            <Add directory="/usr/include/tcl" />
-            <Add directory="/usr/include/vtk-6.2" />
-            <Add directory="/usr/include/wx-3.0" />
-            <Add directory="/usr/include/x86_64-linux-gnu" />
-            <Add directory="/usr/include/x86_64-linux-gnu/ffmpeg" />
-            <Add directory="/usr/include/x86_64-linux-gnu/freetype2" />
-            <Add directory="/usr/include/x86_64-linux-gnu/libavcodec" />
-            <Add directory="/usr/include/x86_64-linux-gnu/libavformat" />
-            <Add directory="/usr/include/x86_64-linux-gnu/libswscale" />
-            <Add directory="/usr/lib/openmpi/include" />
-            <Add directory="/usr/lib/openmpi/include/openmpi" />
-            <Add directory="/usr/lib/openmpi/include/openmpi/opal/mca/event/libevent2021/libevent" />
-            <Add directory="/usr/lib/openmpi/include/openmpi/opal/mca/event/libevent2021/libevent/include" />
-            <Add directory="/usr/lib/x86_64-linux-gnu/wx/include/gtk2-unicode-3.0" />
          </Compiler>
          <MakeCommands>
             <Build command="/usr/bin/make -f &quot;/home/jlblanco/code/mrpt/apps/robotic-arm-kinematics/Makefile&quot;  VERBOSE=1 robotic-arm-kinematics/fast" />
