@@ -11,7 +11,7 @@ if(BUILD_mrpt-core)
 	# Includes: <mrpt/config.h> & <mrpt/version.h> config headers:
 	target_include_directories(mrpt-core PUBLIC
 		$<BUILD_INTERFACE:${MRPT_CONFIG_FILE_INCLUDE_DIR}>
-		$<INSTALL_INTERFACE:${libmrpt_common_dev_INSTALL_PREFIX}include/mrpt/mrpt-config/mrpt/>
+		$<INSTALL_INTERFACE:${libmrpt_common_dev_INSTALL_PREFIX}include>
 	)
 
 	# Enforce C++17 in all dependent projects:

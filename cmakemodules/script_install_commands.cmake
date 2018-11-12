@@ -79,13 +79,13 @@ else(WIN32)
 	endif()
 endif()
 
-# Config-dependent headers: to libmrpt-common-dev pkg:
+# Config-dependent headers: to /usr/include/mrpt root dir.
 if (NOT IS_DEBIAN_DBG_PKG)
 	install(
 		FILES
 			"${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/config.h"
 			"${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/version.h"
 		DESTINATION
-			"${libmrpt_common_dev_INSTALL_PREFIX}include/mrpt/mrpt-config/mrpt/"
+			"${libmrpt_common_dev_INSTALL_PREFIX}include/mrpt/"
 		)
 endif()
