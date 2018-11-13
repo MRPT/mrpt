@@ -155,18 +155,19 @@ void project3DPointsFromDepthImageInto(
 					src_obs.rangeImage.rows());
 			}
 #if MRPT_HAS_SSE2
+			// if image width is not 8*N, use standard method
 			if ((W & 0x07) == 0 && projectParams.USE_SSE2)
 				do_project_3d_pointcloud_SSE2(
 					H, W, kys, kzs, src_obs.rangeImage, pca,
 					src_obs.points3D_idxs_x, src_obs.points3D_idxs_y,
 					filterParams, projectParams.MAKE_DENSE);
 			else
+			{
 				do_project_3d_pointcloud(
 					H, W, kys, kzs, src_obs.rangeImage, pca,
 					src_obs.points3D_idxs_x, src_obs.points3D_idxs_y,
-					filterParams, projectParams.MAKE_DENSE);  // if image width
-// is not 8*N, use
-// standard method
+					filterParams, projectParams.MAKE_DENSE);
+			}
 #else
 			do_project_3d_pointcloud(
 				H, W, kys, kzs, src_obs.rangeImage, pca,
@@ -343,6 +344,7 @@ inline void do_project_3d_pointcloud(
 		for (int c = 0; c < W; c++)
 		{
 			const float D = rangeImage.coeff(r, c);
+			const auto ky = *kys++, kz = *kzs++;  // LUT projection coefs.
 			if (!rif.do_range_filter(r, c, D))
 			{
 				if (!MAKE_DENSE)
@@ -353,7 +355,7 @@ inline void do_project_3d_pointcloud(
 				continue;
 			}
 
-			pca.setPointXYZ(idx, D /*x*/, *kys++ * D /*y*/, *kzs++ * D /*z*/);
+			pca.setPointXYZ(idx, D /*x*/, ky * D /*y*/, kz * D /*z*/);
 			idxs_x[idx] = c;
 			idxs_y[idx] = r;
 			++idx;
