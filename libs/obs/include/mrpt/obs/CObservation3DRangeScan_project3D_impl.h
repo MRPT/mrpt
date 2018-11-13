@@ -285,6 +285,7 @@ namespace detail {
 			for (int c=0;c<W;c++)
 			{
 				const float D = rangeImage.coeff(r,c);
+				const float ky = *kys++, kz = *kzs++;  // LUT projection coefs.
 				if (!rif.do_range_filter(r,c,D)){
 					if (!MAKE_DENSE)
 					{
@@ -294,7 +295,7 @@ namespace detail {
 					continue;
 				}
 
-				pca.setPointXYZ(idx, D /*x*/, *kys++ * D /*y*/, *kzs++ * D /*z*/);
+				pca.setPointXYZ(idx, D /*x*/, ky * D /*y*/, kz * D /*z*/);
 				idxs_x[idx]=c;
 				idxs_y[idx]=r;
 				++idx;
