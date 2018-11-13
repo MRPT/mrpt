@@ -29,6 +29,19 @@ else()
 	set(eigen_dep Eigen3) # find_package() lib name
 endif()
 
+# For Ubuntu 16.04, the Eigen version does not support imported target,
+# so create it ourselves in the mrpt-math-config.cmake file:
+set(EXTRA_CONFIG_CMDS
+"if (NOT TARGET Eigen3::Eigen)\n\
+	add_library(Eigen3::Eigen INTERFACE IMPORTED GLOBAL)\n\
+	set_target_properties(Eigen3::Eigen PROPERTIES\n\
+		INTERFACE_INCLUDE_DIRECTORIES\n\
+			$<BUILD_INTERFACE:${EIGEN3_INCLUDE_DIR}>\n\
+	)\n\
+endif()\n"
+)
+
+
 define_mrpt_lib(
 	math 		# Lib name
 	# Dependencies:
