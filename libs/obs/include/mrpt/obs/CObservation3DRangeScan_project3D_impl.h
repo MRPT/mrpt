@@ -20,14 +20,16 @@ void do_project_3d_pointcloud(
 	const mrpt::math::CMatrix& rangeImage,
 	mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
 	std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
-	const mrpt::obs::TRangeImageFilterParams& filterParams, bool MAKE_DENSE);
+	const mrpt::obs::TRangeImageFilterParams& filterParams,
+	bool MAKE_ORGANIZED);
 template <class POINTMAP>
 void do_project_3d_pointcloud_SSE2(
 	const int H, const int W, const float* kys, const float* kzs,
 	const mrpt::math::CMatrix& rangeImage,
 	mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
 	std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
-	const mrpt::obs::TRangeImageFilterParams& filterParams, bool MAKE_DENSE);
+	const mrpt::obs::TRangeImageFilterParams& filterParams,
+	bool MAKE_ORGANIZED);
 
 template <typename POINTMAP, bool isDepth>
 inline void range2XYZ(
@@ -160,19 +162,19 @@ void project3DPointsFromDepthImageInto(
 				do_project_3d_pointcloud_SSE2(
 					H, W, kys, kzs, src_obs.rangeImage, pca,
 					src_obs.points3D_idxs_x, src_obs.points3D_idxs_y,
-					filterParams, projectParams.MAKE_DENSE);
+					filterParams, projectParams.MAKE_ORGANIZED);
 			else
 			{
 				do_project_3d_pointcloud(
 					H, W, kys, kzs, src_obs.rangeImage, pca,
 					src_obs.points3D_idxs_x, src_obs.points3D_idxs_y,
-					filterParams, projectParams.MAKE_DENSE);
+					filterParams, projectParams.MAKE_ORGANIZED);
 			}
 #else
 			do_project_3d_pointcloud(
 				H, W, kys, kzs, src_obs.rangeImage, pca,
 				src_obs.points3D_idxs_x, src_obs.points3D_idxs_y, filterParams,
-				projectParams.MAKE_DENSE);
+				projectParams.MAKE_ORGANIZED);
 #endif
 		}
 		else
@@ -335,7 +337,7 @@ inline void do_project_3d_pointcloud(
 	const mrpt::math::CMatrix& rangeImage,
 	mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
 	std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
-	const mrpt::obs::TRangeImageFilterParams& fp, bool MAKE_DENSE)
+	const mrpt::obs::TRangeImageFilterParams& fp, bool MAKE_ORGANIZED)
 {
 	TRangeImageFilter rif(fp);
 	// Preconditions: minRangeMask() has the right size
@@ -347,7 +349,7 @@ inline void do_project_3d_pointcloud(
 			const auto ky = *kys++, kz = *kzs++;  // LUT projection coefs.
 			if (!rif.do_range_filter(r, c, D))
 			{
-				if (!MAKE_DENSE)
+				if (MAKE_ORGANIZED)
 				{
 					pca.setInvalidPoint(idx);
 					++idx;
@@ -370,7 +372,7 @@ inline void do_project_3d_pointcloud_SSE2(
 	const mrpt::math::CMatrix& rangeImage,
 	mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
 	std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
-	const mrpt::obs::TRangeImageFilterParams& filterParams, bool MAKE_DENSE)
+	const mrpt::obs::TRangeImageFilterParams& filterParams, bool MAKE_ORGANIZED)
 {
 #if MRPT_HAS_SSE2
 	// Preconditions: minRangeMask() has the right size
@@ -468,13 +470,13 @@ inline void do_project_3d_pointcloud_SSE2(
 						idxs_y[idx] = r;
 						++idx;
 					}
-					else if (!MAKE_DENSE)
+					else if (MAKE_ORGANIZED)
 					{
 						pca.setInvalidPoint(idx);
 						++idx;
 					}
 			}
-			else if (!MAKE_DENSE)
+			else if (MAKE_ORGANIZED)
 			{
 				for (int q = 0; q < 4; q++)
 				{
