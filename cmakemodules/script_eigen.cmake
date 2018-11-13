@@ -20,6 +20,7 @@ if (EIGEN_USE_EMBEDDED_VERSION)
 	  SOURCE_DIR        "${MRPT_BINARY_DIR}/otherlibs/eigen3/"
 	  CONFIGURE_COMMAND ""
 	  BUILD_COMMAND     ""
+	  INSTALL_COMMAND     ""
 	  TEST_COMMAND      ""
 	)
 
