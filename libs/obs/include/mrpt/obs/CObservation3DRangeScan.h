@@ -44,9 +44,6 @@ struct T3DPointsProjectionParams
 	bool PROJ3D_USE_LUT{true};
 	/** (Default:true) If possible, use SSE2 optimized code. */
 	bool USE_SSE2{true};
-	/** (Default:true) set to false if your point cloud can contain undefined
-	 * values */
-	bool MAKE_DENSE{true};
 	/** (Default:false) set to true if you want an organized point cloud */
 	bool MAKE_ORGANIZED{false};
 
