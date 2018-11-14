@@ -23,8 +23,14 @@ if(BUILD_mrpt-core)
 			target_compile_options(mrpt-core PUBLIC "-std=c++17")
 		endif()
 	else()
-		# Modern, clean way to do this:
-		target_compile_features(mrpt-core PUBLIC cxx_std_17)
+		if (NOT MSVC)
+			# Modern, clean way to do this:
+			target_compile_features(mrpt-core PUBLIC cxx_std_17)
+		else()
+			# At present (CMake 3.12 + MSVC 19.15.26732.1) it seems cxx_std_17
+			# does not enable C++17 in MSVC (!).
+			target_compile_options(mrpt-core PUBLIC "/std:c++17")
+		endif()
 	endif()
 
 	# Fix a MSVC binary-breaking compatibility in MSVC 2017 15.8:
