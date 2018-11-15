@@ -221,7 +221,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 						ev.event_wp_reached = true;
 						ev.event_wp_reached_index = wps.waypoint_index_current_goal;
 						ev.event_wp_reached_reached = true /* reason: really reached*/;
-						m_pending_events.push_back(ev);
+						m_pending_events.push_front(ev);
 					}
 
 					// Was this the final goal??
@@ -290,7 +290,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 						ev.event_wp_reached = true;
 						ev.event_wp_reached_index = k;
 						ev.event_wp_reached_reached = false /* reason: skipped */;
-						m_pending_events.push_back(ev);
+						m_pending_events.push_front(ev);
 					}
 				}
 			}
@@ -312,7 +312,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 				TPendingEvent ev;
 				ev.event_new_wp = true;
 				ev.event_new_wp_index = wps.waypoint_index_current_goal;
-				m_pending_events.push_back(ev);
+				m_pending_events.push_front(ev);
 			}
 
 			// Send the current targets + "multitarget_look_ahead" additional ones to help the local planner.
