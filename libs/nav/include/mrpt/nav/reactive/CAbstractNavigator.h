@@ -17,6 +17,7 @@
 #include <mrpt/poses/FrameTransformer.h>
 #include <mrpt/obs/obs_frwds.h>
 
+#include <list>
 #include <mutex>
 #include <memory>  // unique_ptr
 #include <functional>
@@ -253,7 +254,7 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 	/** Events generated during navigationStep(), enqueued to be called at the
 	 * end of the method execution to avoid user code to change the navigator
 	 * state. */
-	std::vector<std::function<void(void)>> m_pending_events;
+	std::list<std::function<void(void)>> m_pending_events;
 
 	void dispatchPendingNavEvents();
 
