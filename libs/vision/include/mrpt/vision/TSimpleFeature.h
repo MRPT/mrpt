@@ -211,7 +211,7 @@ namespace mrpt
 		  *	  - mrpt::vision::TSimpleFeatureList
 		  */
 		template <typename FEATURE_LIST>
-		struct KeypointResponseSorter : public std::binary_function<size_t,size_t,bool>
+		struct KeypointResponseSorter// : public std::binary_function<size_t,size_t,bool>
 		{
 			const FEATURE_LIST &m_data;
 			KeypointResponseSorter( const FEATURE_LIST &data ) : m_data(data) { }
