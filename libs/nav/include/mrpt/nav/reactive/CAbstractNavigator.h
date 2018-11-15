@@ -17,6 +17,7 @@
 #include <mrpt/poses/FrameTransformer.h>
 #include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/obs/obs_frwds.h>
+#include <list>
 
 #include <mrpt/nav/link_pragmas.h>
 
@@ -195,7 +196,7 @@ namespace mrpt
 		/** Events generated during navigationStep(), enqueued to be called
 		* at the end of the method execution to avoid user code to change
 		* the navigator state. */
-		std::vector<TPendingEvent> m_pending_events;
+		std::list<TPendingEvent> m_pending_events;
 
 		void dispatchPendingNavEvents();
 
