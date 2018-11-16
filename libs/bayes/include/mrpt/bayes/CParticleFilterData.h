@@ -122,53 +122,34 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
 			Derived::PARTICLE_STORAGE == particle_storage_mode::POINTER)
 		{
 			const size_t M_old = derived().m_particles.size();
-			std::vector<bool> oldParticlesReused(M_old, false);
-			std::vector<bool>::const_iterator oldPartIt;
-			typename particle_list_t::iterator itDest, itSrc;
-			size_t i, lastIndxOld = 0;
+			// Index, in the *new* set, of reused particle data, indexed
+			// by *old* indices, or "-1" if not reused.
+			std::vector<int> reusedIdx(M_old, -1);
+			typename particle_list_t::iterator itDest;
+			size_t i = 0;
 
-			for (i = 0, itDest = parts.begin(); itDest != parts.end();
-				 i++, itDest++)
+			for (size_t i = 0; i < parts.size(); i++)
 			{
 				const size_t sorted_idx = sorted_indx[i];
-				itDest->log_w = derived().m_particles[sorted_idx].log_w;
-				/* We can safely delete old m_particles from
-				 * [lastIndxOld,indx[i]-1] (inclusive): */
-				for (size_t j = lastIndxOld; j < sorted_idx; j++)
-				{
-					if (!oldParticlesReused[j]) /* If reused we can not
-												   delete
-												   that memory! */
-						derived().m_particles[j].d.reset();
-				}
+				parts[i].log_w = derived().m_particles[sorted_idx].log_w;
 
-				/* For the next iteration:*/
-				lastIndxOld = sorted_idx;
-
-				/* If this is the first time that the old particle "indx[i]"
-				 * appears, */
-				/*  we can reuse the old "data" instead of creating a new
-				 * copy:
-				 */
-				if (!oldParticlesReused[sorted_idx])
+				// The first time that the old particle "indx[i]" appears, we
+				// can reuse the old "data" instead of creating a new copy:
+				const int idx_of_this_in_new_set = reusedIdx[sorted_idx];
+				if (idx_of_this_in_new_set == -1)
 				{
-					/* Reuse the data from the particle: */
-					parts[i].d.reset(derived().m_particles[sorted_idx].d.get());
-					oldParticlesReused[sorted_idx] = true;
+					// First time: Reuse the data from the particle.
+					parts[i].d = std::move(derived().m_particles[sorted_idx].d);
+					reusedIdx[sorted_idx] = i;
 				}
 				else
 				{
-					/* Make a copy of the particle's data: */
-					ASSERT_(derived().m_particles[sorted_idx].d);
-					parts[i].d.reset(new typename Derived::CParticleDataContent(
-						*derived().m_particles[sorted_idx].d));
+					// Make a copy of the particle's data
+					// (The "= operator" already makes a deep copy)
+					parts[i].d = parts[idx_of_this_in_new_set].d;
 				}
 			}
-			/* Free memory of unused particles */
-			for (itSrc = derived().m_particles.begin(),
-				oldPartIt = oldParticlesReused.begin();
-				 itSrc != derived().m_particles.end(); itSrc++, oldPartIt++)
-				if (!*oldPartIt) itSrc->d.reset();
+			// Free memory of unused particles: Done automatically.
 		}
 		else
 		{
