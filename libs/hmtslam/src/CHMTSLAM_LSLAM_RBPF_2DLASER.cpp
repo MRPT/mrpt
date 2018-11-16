@@ -542,7 +542,7 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 		 newPartIt != newParticlesArray.end(); newPartIt++, trgPartIt++)
 	{
 		trgPartIt->log_w = newPartIt->log_w;
-		trgPartIt->d.move_from(newPartIt->d);
+		trgPartIt->d = std::move(newPartIt->d);
 	}
 
 	// Free buffers:

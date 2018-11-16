@@ -63,11 +63,6 @@ class generic_copier_ptr
 		if (m_ptr) delete m_ptr;
 	}
 
-	void move_from(generic_copier_ptr& o)
-	{
-		m_ptr = o.m_ptr;
-		o.m_ptr = nullptr;
-	}
 	/** move ctor */
 	generic_copier_ptr(generic_copier_ptr<T, Copier>&& o)
 	{
