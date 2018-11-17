@@ -33,7 +33,7 @@ if (EIGEN_USE_EMBEDDED_VERSION)
 	add_dependencies(Eigen EP_eigen3)
 	export(
 		TARGETS Eigen
-		FILE "${CMAKE_BINARY_DIR}/Eigen-config.cmake"
+		FILE "${MRPT_BINARY_DIR}/EP_eigen3-config.cmake"
 	)
 	install(TARGETS Eigen EXPORT Eigen-targets)
 	install(
@@ -45,6 +45,7 @@ if (EIGEN_USE_EMBEDDED_VERSION)
 		INTERFACE
 	  $<BUILD_INTERFACE:${EIGEN_EMBEDDED_INCLUDE_DIR}>
 	  $<BUILD_INTERFACE:${EIGEN_EMBEDDED_INCLUDE_DIR}/unsupported>
+# Install not required, since *embedded* Eigen hdrs will go under mrpt/math
 #	  $<INSTALL_INTERFACE:include/Eigen>
 	)
 	add_library(Eigen3::Eigen ALIAS Eigen)
