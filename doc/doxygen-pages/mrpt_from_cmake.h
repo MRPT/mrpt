@@ -24,10 +24,9 @@ add_executable(myapp  main.cpp)
 
 # Link against MRPT: this will also add all required flags,
 # include directories, etc.
-# Note: the namespace prefix `mrpt::` is optional.
 target_link_libraries(myapp
-  mrpt::mrpt-poses
-  mrpt::mrpt-gui
+  mrpt-poses
+  mrpt-gui
 )
 ```
 
