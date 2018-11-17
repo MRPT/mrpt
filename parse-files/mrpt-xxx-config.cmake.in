@@ -1,11 +1,28 @@
 include(CMakeFindDependencyMacro)
 
-SET(_deps "@ALL_DEPS_LIST@")
-foreach(_dep ${_deps}) # NO quotes for the list to be a CMake list!
-  find_dependency(${_dep})
+# Search HINT for placement of MRPT dependencies libs:
+set(_my_mrpt_hints "")
+get_cmake_property(_allVars CACHE_VARIABLES)
+foreach (_varName ${_allVars})
+  string(TOLOWER "${_varName}" _varNameLC)
+  if ("${_varNameLC}" MATCHES "^(mrpt).*dir")
+    if (${_varName} AND IS_DIRECTORY "${${_varName}}")
+      list(APPEND _my_mrpt_hints "${${_varName}}")
+    endif()
+  endif()
 endforeach()
-SET(_dep)
-SET(_deps)
+list(REMOVE_DUPLICATES _my_mrpt_hints)
+unset(_allVars)
+
+# Search for dependencies first:
+set(_deps "@ALL_DEPS_LIST@")
+foreach(_dep ${_deps}) # NO quotes for the list to be a CMake list!
+  find_dependency(${_dep} HINTS ${_my_mrpt_hints})
+endforeach()
+unset(_dep)
+unset(_deps)
+unset(_my_mrpt_hints)
 @EXTRA_CONFIG_CMDS@
 
+# Include targets for this library:
 include(${CMAKE_CURRENT_LIST_DIR}/@PKG_NAME@-targets.cmake)
