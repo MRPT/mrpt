@@ -34,13 +34,16 @@ endif()
 set(EXTRA_CONFIG_CMDS
 "if (NOT TARGET Eigen3::Eigen)\n\
 	add_library(Eigen3::Eigen INTERFACE IMPORTED GLOBAL)\n\
-	set_target_properties(Eigen3::Eigen PROPERTIES\n\
-		INTERFACE_INCLUDE_DIRECTORIES\n\
-			$<BUILD_INTERFACE:${EIGEN3_INCLUDE_DIR}>\n\
-	)\n\
+	if (TARGET Eigen)\n\
+		target_link_libraries(Eigen3::Eigen INTERFACE Eigen)\n\
+	else()\n\
+		set_target_properties(Eigen3::Eigen PROPERTIES\n\
+			INTERFACE_INCLUDE_DIRECTORIES\n\
+				$<BUILD_INTERFACE:D:/code/mrpt-2.0-msvc15-x64/include/eigen3>\n\
+		)\n\
+	endif()\n\
 endif()\n"
 )
-
 
 define_mrpt_lib(
 	math 		# Lib name
