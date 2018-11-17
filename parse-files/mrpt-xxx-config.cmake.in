@@ -10,6 +10,9 @@ list(REMOVE_DUPLICATES CMAKE_PREFIX_PATH)
 set(_deps "@ALL_DEPS_LIST@")
 foreach(_dep ${_deps}) # NO quotes for the list to be a CMake list!
   find_dependency(${_dep})
+  if(${_dep}_FOUND)
+    mark_as_advanced(${_dep}_DIR)
+  endif()
 endforeach()
 @EXTRA_CONFIG_CMDS@
 
