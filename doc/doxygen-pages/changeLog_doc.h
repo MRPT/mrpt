@@ -19,7 +19,7 @@ Either build the documentation invoking <code>make documentation_html</code> or
 <a name="2.0.0">
 <h2>Version 2.0.0: (Under development)  </h2></a>
 - <b>Most important changes:</b>
-	- MRPT now requires **C++14** to build and use. See this page for a guide to
+	- MRPT now requires **C++17** to build and use. See this page for a guide to
 port existing code to MRPT 2.0: \ref porting_mrpt2
 	- Support for old namespaces `mrpt-scanmatching`, `mrpt-reactivenav` is
 over.
