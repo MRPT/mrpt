@@ -311,21 +311,21 @@ void CEdgeCounter::updateTextMessages() const
 		int text_index = m_name_to_text_index.find(name)->second;
 		int edges_num = m_name_to_edges_num.find(name)->second;
 
-		std::stringstream title;
-		title << "  " << name << ": " << edges_num << std::endl;
+		std::stringstream ss;
+		ss << "  " << name << ": " << edges_num << std::endl;
 		m_win_manager->addTextMessage(
-			5, -offset_y, title.str(), mrpt::img::TColorf(1.0, 1.0, 1.0),
+			5, -offset_y, ss.str(), mrpt::img::TColorf(1.0, 1.0, 1.0),
 			/* unique_index = */ text_index);
 	}
 
 	// add text message for the loop closures
 	if (m_display_loop_closures)
 	{
-		std::stringstream title;
-		title << "  "
-			  << "Loop closures: " << m_num_loop_closures << std::endl;
+		std::stringstream ss;
+		ss << "  "
+		   << "Loop closures: " << m_num_loop_closures << std::endl;
 		m_win_manager->addTextMessage(
-			5, -m_offset_y_loop_closures, title.str(),
+			5, -m_offset_y_loop_closures, ss.str(),
 			mrpt::img::TColorf(1.0, 1.0, 1.0),
 			/* unique_index = */ m_text_index_loop_closures);
 	}

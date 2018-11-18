@@ -30,6 +30,7 @@
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
+#include <algorithm>  // max_element
 
 #ifdef _WIN32
 #include <process.h>
@@ -662,14 +663,7 @@ bool vision::computeMainOrientations(
 				return false;
 		}  // end
 	// Search for the maximum
-	double mxori = 0.0;
-	for (double ori : oris)
-	{
-		if (ori > mxori)
-		{
-			mxori = ori;
-		}
-	}  // end-for
+	const double mxori = *std::max_element(oris.begin(), oris.end());
 
 	// Compute the peaks of the histogram of orientations
 	double hist_mag_th = 0.8 * mxori;
@@ -861,18 +855,6 @@ void vision::computeHistogramOfOrientations(
 	double cbin, rbin, obin;
 	double c1 = 0.0, c2 = 0.0, c3 = 0.0;
 
-	//    FILE *f1 = mrpt::system::os::fopen( "imgs/c1p.txt", "wt" );
-	//    FILE *f2 = mrpt::system::os::fopen( "imgs/c1n.txt", "wt" );
-	//    FILE *f3 = mrpt::system::os::fopen( "imgs/c2p.txt", "wt" );
-	//    FILE *f4 = mrpt::system::os::fopen( "imgs/c2n.txt", "wt" );
-	//    FILE *f5 = mrpt::system::os::fopen( "imgs/c3p.txt", "wt" );
-	//    FILE *f6 = mrpt::system::os::fopen( "imgs/c3n.txt", "wt" );
-	//    FILE *f7 = mrpt::system::os::fopen( "imgs/c0.txt", "wt" );
-	//    FILE *f8 = mrpt::system::os::fopen( "imgs/c3.txt", "wt" );
-	//    FILE *f9 = mrpt::system::os::fopen( "imgs/r0.txt", "wt" );
-	//    FILE *f10 = mrpt::system::os::fopen( "imgs/r3.txt", "wt" );
-	//    FILE *f11 = mrpt::system::os::fopen( "imgs/out.txt", "wt" );
-
 	for (int c = -radius; c <= radius; ++c)
 		for (int r = -radius; r <= radius; ++r)
 		{
@@ -899,79 +881,36 @@ void vision::computeHistogramOfOrientations(
 					tlogger.leave("interpolate");
 				}  // end if
 
-				//				if( cbin < -0.5 )
-				//                    mrpt::system::os::fprintf( f7, "%d %d\n",
-				//                    y+r, x+c );
-				//                if( cbin > 0.5 )
-				//                    mrpt::system::os::fprintf( f8, "%d %d\n",
-				//                    y+r, x+c );
-				//				if( rbin < -0.5 )
-				//                    mrpt::system::os::fprintf( f9, "%d %d\n",
-				//                    y+r, x+c );
-				//                if( rbin > 0.5 )
-				//                    mrpt::system::os::fprintf( f10, "%d %d\n",
-				//                    y+r, x+c );
-
 				// Compute the hashing coefficients:
 				if (opts.computeHashCoeffs)
 				{
 					if (cbin < 0)
 					{
 						c1 += nimage.getAsFloat(c + radius, r + radius);
-						//				        mrpt::system::os::fprintf( f1,
-						//"%d
-						//%d\n", y+r, x+c );
 					}
 					else
 					{
 						c1 -= nimage.getAsFloat(c + radius, r + radius);
-						//				        mrpt::system::os::fprintf( f2,
-						//"%d
-						//%d\n", y+r, x+c );
 					}
 					if (rbin < 0)
 					{
 						c2 += nimage.getAsFloat(c + radius, r + radius);
-						//                        mrpt::system::os::fprintf( f3,
-						//                        "%d %d\n", y+r, x+c );
 					}
 					else
 					{
 						c2 -= nimage.getAsFloat(c + radius, r + radius);
-						//                        mrpt::system::os::fprintf( f4,
-						//                        "%d %d\n", y+r, x+c );
 					}
 					if ((cbin < 0 && rbin < 0) || (cbin > 0 && rbin > 0))
 					{
 						c3 += nimage.getAsFloat(c + radius, r + radius);
-						//                        mrpt::system::os::fprintf( f5,
-						//                        "%d %d\n", y+r, x+c );
 					}
 					else
 					{
 						c3 -= nimage.getAsFloat(c + radius, r + radius);
-						//                        mrpt::system::os::fprintf( f6,
-						//                        "%d %d\n", y+r, x+c );
 					}
 				}  // end-if
 			}  // end
-			//            else
-			//                mrpt::system::os::fprintf( f11, "%d %d\n", y+r,
-			//                x+c );
 		}  // end-for
-	//    mrpt::system::os::fclose(f1);
-	//    mrpt::system::os::fclose(f2);
-	//    mrpt::system::os::fclose(f3);
-	//    mrpt::system::os::fclose(f4);
-	//    mrpt::system::os::fclose(f5);
-	//    mrpt::system::os::fclose(f6);
-	//    mrpt::system::os::fclose(f7);
-	//    mrpt::system::os::fclose(f8);
-	//    mrpt::system::os::fclose(f9);
-	//    mrpt::system::os::fclose(f10);
-	//    mrpt::system::os::fclose(f11);
-
-	//    mrpt::system::pause();
 
 	if (opts.computeHashCoeffs)
 	{
@@ -986,17 +925,17 @@ void vision::computeHistogramOfOrientations(
 	// Normalize
 	tlogger.enter("normalize");
 	double sum = 0.0;
-	for (double ori : oris) sum += ori * ori;
+	for (double o : oris) sum += o * o;
 	sum = 1 / sqrt(sum);
-	for (double& ori : oris) ori *= sum;
+	for (double& o : oris) o *= sum;
 
 	// Crop to "crop_value"
-	for (double& ori : oris) ori = min(opts.cropValue, ori);
+	for (double& o : oris) o = min(opts.cropValue, o);
 
 	// Normalize again -> we have the descriptor!
-	for (double ori : oris) sum += ori * ori;
+	for (double o : oris) sum += o * o;
 	sum = 1 / sqrt(sum);
-	for (double& ori : oris) ori *= sum;
+	for (double& o : oris) o *= sum;
 
 	// Convert it to std::vector<int>
 	descriptor.resize(oris.size());

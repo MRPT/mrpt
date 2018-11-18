@@ -1291,11 +1291,11 @@ bool CFaceDetection::checkIfDiagonalSurface2(CObservation3DRangeScan* face)
 		if (m_measure.takeMeasures)
 			m_measure.sumDistances.push_back(sumDistances);
 
-		ofstream f;
-		f.open("distances.txt", ofstream::app);
+		ofstream fo;
+		fo.open("distances.txt", ofstream::app);
 		// f << m_measure.faceNum << " " << sumDistances << endl;
-		f << sumDistances << endl;
-		f.close();
+		fo << sumDistances << endl;
+		fo.close();
 
 		/*f.open("distances2.txt", ofstream::app);
 		f << m_measure.faceNum << " " << sumDistances << endl;

@@ -542,8 +542,7 @@ void CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 						oldPose.pose + m_movementDrawer.drawSample(drawnSample);
 					// Prediction of the BIAS "state vector":
 					newPose.state = oldPose.state;
-					for (size_t q = 0; q < size_t(newPose.state.size()); q++)
-						offsetTransitionModel(newPose.state[q]);
+					for (auto& s : newPose.state) offsetTransitionModel(s);
 
 					// Likelihood:
 					double lik = auxiliarComputeObservationLikelihood(

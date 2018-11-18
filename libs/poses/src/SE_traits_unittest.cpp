@@ -37,7 +37,7 @@ class SE_traits_tests : public ::testing::Test
 		CArrayDouble<SE_TYPE::VECTOR_SIZE>& Y)
 	{
 		typename SE_TYPE::array_t eps1, eps2;
-		for (int i = 0; i < SE_TYPE::VECTOR_SIZE; i++)
+		for (size_t i = 0; i < SE_TYPE::VECTOR_SIZE; i++)
 		{
 			eps1[i] = x[0 + i];
 			eps2[i] = x[SE_TYPE::VECTOR_SIZE + i];
