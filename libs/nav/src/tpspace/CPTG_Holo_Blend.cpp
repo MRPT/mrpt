@@ -713,15 +713,15 @@ void CPTG_Holo_Blend::updateTPObstacleSingle(
 		const double c1 = TR_2 * (vxi - vxf) - ox;
 		const double c2 = TR_2 * (vyi - vyf) - oy;
 
-		const double a = vf_mod * vf_mod;
-		const double b = 2 * (c1 * vxf + c2 * vyf);
-		const double c = c1 * c1 + c2 * c2 - R * R;
+		const double xa = vf_mod * vf_mod;
+		const double xb = 2 * (c1 * vxf + c2 * vyf);
+		const double xc = c1 * c1 + c2 * c2 - R * R;
 
-		const double discr = b * b - 4 * a * c;
+		const double discr = xb * xb - 4 * xa * xc;
 		if (discr >= 0)
 		{
-			const double sol_t0 = (-b + sqrt(discr)) / (2 * a);
-			const double sol_t1 = (-b - sqrt(discr)) / (2 * a);
+			const double sol_t0 = (-xb + sqrt(discr)) / (2 * xa);
+			const double sol_t1 = (-xb - sqrt(discr)) / (2 * xa);
 
 			// Identify the shortest valid collision time:
 			if (sol_t0 < T_ramp && sol_t1 < T_ramp)

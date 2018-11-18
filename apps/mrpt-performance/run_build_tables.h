@@ -186,21 +186,21 @@ int run_build_tables()
 			PERF_DATA_DIR +
 			format("/perf-html/results_%s.html", P.config_name.c_str());
 		cout << "Generating: " << out_fil << "...\n";
-		CFileOutputStream fo(out_fil);
+		CFileOutputStream f(out_fil);
 
-		fo.printf(
+		f.printf(
 			"<html><head><title>mrpt-performance results - Configuration: "
 			"%s</title></head>\n"
 			"<body style=\"background-color:#E6E6FA\">\n\n",
 			P.config_name.c_str());
 
-		fo.printf(
+		f.printf(
 			"<div align=\"center\"><h2>Results for: %s</h2></div>",
 			P.config_name.c_str());
-		fo.printf("<hr> <br><br>\n");
+		f.printf("<hr> <br><br>\n");
 
-		fo.printf("<div align=\"center\"><table border=\"1\">\n");
-		fo.printf(
+		f.printf("<div align=\"center\"><table border=\"1\">\n");
+		f.printf(
 			"<tr> <td align=\"center\"><b>Test description</b></td> "
 			"<td align=\"center\"><b>Execution time</b></td>"
 			"<td align=\"center\"><b>Execution rate (Hz)</b></td> </tr>\n");
@@ -208,22 +208,22 @@ int run_build_tables()
 		for (const auto& j : P.all_perf_data)  // vector<pair<string,double> >
 		{
 			const double t = j.second;
-			fo.printf(
+			f.printf(
 				"<tr> <td>%s</td> <td align=\"right\">%s</td> <td "
 				"align=\"right\">%sHz</td>  </tr>\n",
 				j.first.c_str(), mrpt::system::intervalFormat(t).c_str(),
 				mrpt::system::unitsFormat(1.0 / t).c_str());
 		}
 
-		fo.printf("</table></div>\n");
-		fo.printf("<p> &nbsp; </p>\n");
+		f.printf("</table></div>\n");
+		f.printf("<p> &nbsp; </p>\n");
 
-		fo.printf(
+		f.printf(
 			"<hr><small>Page generated automatically at %s with %s by "
 			"'mrpt-performance'.</small>\n",
 			mrpt::system::dateTimeLocalToString(now()).c_str(),
 			MRPT_getVersion().c_str());
-		fo.printf("</body></html>\n");
+		f.printf("</body></html>\n");
 
 	}  // for each perf
 
@@ -253,21 +253,21 @@ int run_build_tables()
 			map<string, double> P2_dat;
 			for (auto& k : P2.all_perf_data) P2_dat[k.first] = k.second;
 
-			CFileOutputStream fo(out_fil);
+			CFileOutputStream f(out_fil);
 
-			fo.printf(
+			f.printf(
 				"<html><head><title>mrpt-performance results - %s vs "
 				"%s</title></head>\n"
 				"<body style=\"background-color:#E6E6FA\">\n\n",
 				P1.config_name.c_str(), P2.config_name.c_str());
 
-			fo.printf(
+			f.printf(
 				"<div align=\"center\"><h2>Comparison: %s vs. %s</h2></div>",
 				P1.config_name.c_str(), P2.config_name.c_str());
-			fo.printf("<hr> <br><br>\n");
+			f.printf("<hr> <br><br>\n");
 
-			fo.printf("<div align=\"center\"><table border=\"1\">\n");
-			fo.printf(
+			f.printf("<div align=\"center\"><table border=\"1\">\n");
+			f.printf(
 				"<tr> <td rowspan=\"2\" align=\"center\"><b>Test "
 				"description</b></td> "
 				"<td colspan=\"4\" align=\"center\"><b>%s / <div "
@@ -326,7 +326,7 @@ int run_build_tables()
 						100 * AHz / (1.0 / t2));
 				}
 
-				fo.printf(
+				f.printf(
 					"<tr> <td>%s</td>"
 					"<td align=\"right\">%s</td>"
 					"<td align=\"center\">%s</td>"
@@ -337,15 +337,15 @@ int run_build_tables()
 					str_Hz.c_str(), str_Hz_res.c_str());
 			}
 
-			fo.printf("</table></div>\n");
-			fo.printf("<p> &nbsp; </p>\n");
+			f.printf("</table></div>\n");
+			f.printf("<p> &nbsp; </p>\n");
 
-			fo.printf(
+			f.printf(
 				"<hr><small>Page generated automatically at %s with %s by "
 				"'mrpt-performance'.</small>\n",
 				mrpt::system::dateTimeLocalToString(now()).c_str(),
 				MRPT_getVersion().c_str());
-			fo.printf("</body></html>\n");
+			f.printf("</body></html>\n");
 		}
 	}
 

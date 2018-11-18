@@ -743,21 +743,19 @@ void CLoopCloserERD<GRAPH_T>::generateHypotsPool(
 	// TODO
 	if (ad_params)
 	{
-		const typename TGenerateHypotsPoolAdParams::group_t& params =
-			ad_params->groupA_params;
-		if (params.size())
+		const auto& p = ad_params->groupA_params;
+		if (p.size())
 		{
 #if _DEBUG
 			size_t nodes_count = groupA.size();
 #endif
-
 			// map should have same size
 			ASSERTDEBMSG_(
-				nodes_count == params.size(),
+				nodes_count == p.size(),
 				format(
 					"Size mismatch between nodeIDs in group [%lu]"
 					" and corresponding properties map [%lu]",
-					nodes_count, params.size()));
+					nodes_count, p.size()));
 		}
 	}
 

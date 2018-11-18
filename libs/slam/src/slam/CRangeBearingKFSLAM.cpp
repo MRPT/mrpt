@@ -173,9 +173,7 @@ void CRangeBearingKFSLAM::getCurrentState(
 
 	// Full state:
 	out_fullState.resize(m_xkk.size());
-	for (KFVector::Index i = 0; i < m_xkk.size(); i++)
-		out_fullState[i] = m_xkk[i];
-
+	std::copy(m_xkk.begin(), m_xkk.end(), out_fullState.begin());
 	// Full cov:
 	out_fullCovariance = m_pkk;
 
@@ -237,12 +235,12 @@ void CRangeBearingKFSLAM::processActionObservation(
 			std::vector<uint32_t> tmpCluster;
 
 			ASSERT_(options.partitioningMethod > 1);
-			size_t K = options.partitioningMethod;
+			size_t N = options.partitioningMethod;
 
 			for (size_t i = 0; i < m_SFs.size(); i++)
 			{
 				tmpCluster.push_back(i);
-				if ((i % K) == 0)
+				if ((i % N) == 0)
 				{
 					partitions.push_back(tmpCluster);
 					tmpCluster.clear();
@@ -608,8 +606,6 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
 
 	{
 		std::vector<int>::iterator itDA;
-		CObservationBearingRange::TMeasurementList::const_iterator itObs;
-		size_t row;
 		for (row = 0, itObs = obs->sensedData.begin(),
 			itDA = data_association.begin();
 			 itObs != obs->sensedData.end(); ++itObs, ++itDA, ++row)

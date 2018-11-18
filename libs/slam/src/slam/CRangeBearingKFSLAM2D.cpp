@@ -123,8 +123,7 @@ void CRangeBearingKFSLAM2D::getCurrentState(
 
 	// Full state:
 	out_fullState.resize(m_xkk.size());
-	for (KFVector::Index i = 0; i < m_xkk.size(); i++)
-		out_fullState[i] = m_xkk[i];
+	std::copy(m_xkk.begin(), m_xkk.end(), out_fullState.begin());
 
 	// Full cov:
 	out_fullCovariance = m_pkk;
@@ -568,8 +567,6 @@ void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
 
 	{
 		std::vector<int>::iterator itDA;
-		CObservationBearingRange::TMeasurementList::const_iterator itObs;
-		size_t row;
 		for (row = 0, itObs = obs->sensedData.begin(),
 			itDA = data_association.begin();
 			 itObs != obs->sensedData.end(); ++itObs, ++itDA, ++row)

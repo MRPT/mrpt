@@ -573,17 +573,8 @@ void TestParticlesLocalization()
 				// ------------------------------
 				{
 					CPose2D meanPose;
-					CMatrixDouble33 cov;
-					pdf.getCovarianceAndMean(cov, meanPose);
-
-					//// The gridmap:
-					// if (metricMap.m_gridMaps.size())
-					//{
-					//	opengl::CSetOfObjects	*plane = new
-					// opengl::CSetOfObjects();
-					//	metricMap.m_gridMaps[0]->getAs3DObject( *plane );
-					//	scene->insert( plane );
-					//}
+					CMatrixDouble33 C;
+					pdf.getCovarianceAndMean(C, meanPose);
 
 #ifdef SHOW_REAL_TIME_3D
 					sceneTR = window.get3DSceneAndLock();
@@ -642,7 +633,7 @@ void TestParticlesLocalization()
 
 					ellip->setLineWidth(2);
 					ellip->setQuantiles(3);
-					ellip->setCovMatrix(cov, 2);
+					ellip->setCovMatrix(C, 2);
 					ellip->setName("cov");
 
 					if (!obj)
