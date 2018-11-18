@@ -38,6 +38,7 @@
 #include <mrpt/vision/CVideoFileWriter.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
+#include <mrpt/img/CImage.h>
 
 #define NUM_CLASSES 5
 
@@ -46,6 +47,7 @@ using namespace mrpt::math;
 using namespace mrpt;
 using namespace cv;
 using namespace std;
+using mrpt::img::CImage;
 
 class PlaceRecognition
 {

@@ -369,8 +369,13 @@ bool CImage::saveToFile(const std::string& fileName, int jpeg_quality) const
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 	ASSERT_(img != nullptr);
 
+#ifdef HAVE_OPENCV_IMGCODECS
 	const std::vector<int> params = {CV_IMWRITE_JPEG_QUALITY, jpeg_quality};
 	return cv::imwrite(fileName, cv::cvarrToMat(img), params);
+#else
+	int p[3] = {CV_IMWRITE_JPEG_QUALITY, jpeg_quality, 0};
+	return (0 != cvSaveImage(fileName.c_str(), img, p));
+#endif
 #else
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif

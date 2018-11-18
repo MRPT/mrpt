@@ -66,6 +66,7 @@ THE SOFTWARE.
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/math/data_utils.h>
+#include <mrpt/img/CImage.h>
 
 /// Qt includes
 #include <QMainWindow>
@@ -73,6 +74,8 @@ THE SOFTWARE.
 #include <QGridLayout>
 #include <QLabel>
 #include <QString>
+
+using mrpt::img::CImage;
 
 using namespace mrpt::vision;
 using namespace mrpt::gui;

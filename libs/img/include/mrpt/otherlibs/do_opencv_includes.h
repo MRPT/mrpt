@@ -22,7 +22,6 @@
 #error "MRPT requires OpenCV 2.4.0 or newer"
 #endif
 
-#if (MRPT_OPENCV_VERSION_NUM >= 0x240)
 #if MRPT_OPENCV_VERSION_NUM > 0x300
 #include <opencv2/core/fast_math.hpp>
 #endif
@@ -51,18 +50,14 @@
 #include <opencv2/plot.hpp>
 #endif
 /// end added by Raghavender Sahdev
+#ifdef HAVE_OPENCV_IMGCODECS
+#include <opencv2/imgcodecs.hpp>
+#endif
+
 #if MRPT_OPENCV_VERSION_NUM >= 0x300
 #include <opencv2/video/tracking_c.h>
 #endif
 #include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/objdetect/objdetect.hpp>
-#include <opencv2/imgcodecs.hpp>
-#endif
 
-#if defined(__cplusplus)
-#include <mrpt/img/CImage.h>
-using mrpt::img::CImage;
-
-using CvPoint2D32fVector = std::vector<CvPoint2D32f>;
-#endif
 #endif  // MRPT_HAS_OPENCV

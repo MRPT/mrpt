@@ -13,7 +13,8 @@
 #include <mrpt/otherlibs/do_opencv_includes.h>
 #include <thread>
 
-#if MRPT_HAS_OPENCV
+#ifdef HAVE_OPENCV_VIDEOIO
+// cv::VideoCapture moved from highgui in opencv2 to videoio in opencv3:
 #include <opencv2/videoio.hpp>
 #endif
 

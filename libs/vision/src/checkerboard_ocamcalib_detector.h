@@ -11,6 +11,7 @@
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
+#include <mrpt/img/CImage.h>
 
 #include <cmath>
 #include <cstdio>
