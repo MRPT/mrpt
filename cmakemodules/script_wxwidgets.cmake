@@ -10,21 +10,29 @@ if(UNIX)
 	# Linux:
 	if(CMAKE_BUILD_TYPE MATCHES "Debug")
 		set(wxWidgets_USE_DEBUG ON CACHE BOOL "Use wxWidgets debug libs" FORCE)
-	endif(CMAKE_BUILD_TYPE MATCHES "Debug")
+	endif()
 else(UNIX)
 	# Windows configuration of wxWidgets:
 	set(wxWidgets_USE_REL_AND_DBG ON)
 endif(UNIX)
 
-# Make things easier: If we are building for MSVC, select the vc_lib or vc_dll directory automatically:
-if(msvc)
-	if(BUILD_SHARED_LIBS)
-		set(wxWidgets_LIB_DIR "${wxWidgets_ROOT_DIR}/lib/vc_dll" FORCE)
-	else(BUILD_SHARED_LIBS)
-		set(wxWidgets_LIB_DIR "${wxWidgets_ROOT_DIR}/lib/vc_lib" FORCE)
-	endif(BUILD_SHARED_LIBS)
-endif(msvc)
+# Select wx toolkit options, like GTK2 vs GTK3, etc.
+if(UNIX)
+	# If available, prefer gtk3:
+	execute_process(
+		COMMAND wx-config --selected-config --toolkit=gtk3
+		RESULT_VARIABLE ret
+	)
+	if(ret EQUAL "0")
+		message(STATUS "wxWidgets: Found gtk3 version, using it.")
+		set(wxWidgets_CONFIG_OPTIONS_DEFAULT "--toolkit=gtk3")
+	else()
+		message(STATUS "wxWidgets: No gtk3 version found, falling back to default (likely gtk2)")
+	endif()
+	unset(ret)
 
+	set(wxWidgets_CONFIG_OPTIONS "${wxWidgets_CONFIG_OPTIONS_DEFAULT}" ON STRING "wxWidgets toolkit options")
+endif()
 
 # We need the Find package for wxWidgets to work
 find_package(wxWidgets COMPONENTS ${wxWidgets_MRPT_COMPONENTS_TO_SEARCH})
