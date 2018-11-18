@@ -585,7 +585,7 @@ int cvFindChessboardCorners3(
 		// section of PART 1.
 		// for( int dilations = max_dilations; dilations >= min_dilations;
 		// dilations-- )
-		bool last_dilation = false;
+		last_dilation = false;
 		for (int dilations = 0; !last_dilation; dilations++)
 		{
 			// if(max_dilation_run_ID == dilations)

@@ -126,8 +126,6 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
 			// by *old* indices, or "-1" if not reused.
 			std::vector<int> reusedIdx(M_old, -1);
 			typename particle_list_t::iterator itDest;
-			size_t i = 0;
-
 			for (size_t i = 0; i < parts.size(); i++)
 			{
 				const size_t sorted_idx = sorted_indx[i];

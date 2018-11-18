@@ -247,12 +247,12 @@ class ICPTests : public ::testing::Test
 		world->insert(pln);
 
 		{
-			CDisk::Ptr pln = mrpt::make_aligned_shared<opengl::CDisk>();
-			pln->setDiskRadius(2);
-			pln->setPose(
+			CDisk::Ptr pln2 = mrpt::make_aligned_shared<opengl::CDisk>();
+			pln2->setDiskRadius(2);
+			pln2->setPose(
 				CPose3D(0, 0, 0, DEG2RAD(30), DEG2RAD(-20), DEG2RAD(-2)));
-			pln->setColor(0.9, 0, 0);
-			world->insert(pln);
+			pln2->setColor(0.9, 0, 0);
+			world->insert(pln2);
 		}
 	}
 };

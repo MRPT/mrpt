@@ -586,24 +586,26 @@ void do_grid_align()
 
 				const bool SAVE_ALSO_COORS_DEBUG_MAPS = false;
 
-				CLandmarksMap::Ptr lm1 = info.landmarks_map1;
-				CLandmarksMap::Ptr lm2 = info.landmarks_map2;
+				CLandmarksMap::Ptr lmap1 = info.landmarks_map1;
+				CLandmarksMap::Ptr lmap2 = info.landmarks_map2;
 
 				// only for the case of non "--match":
-				if (!lm1 && !lm2)
+				if (!lmap1 && !lmap2)
 				{
-					lm1 = mrpt::make_aligned_shared<CLandmarksMap>();
-					lm2 = mrpt::make_aligned_shared<CLandmarksMap>();
+					lmap1 = CLandmarksMap::Create();
+					lmap2 = CLandmarksMap::Create();
 
 					gridfeatextract.extractFeatures(
-						*grid1, *lm1, N1, gridAlign.options.feature_descriptor,
+						*grid1, *lmap1, N1,
+						gridAlign.options.feature_descriptor,
 						gridAlign.options.feature_detector_options);
 					gridfeatextract.extractFeatures(
-						*grid2, *lm2, N2, gridAlign.options.feature_descriptor,
+						*grid2, *lmap2, N2,
+						gridAlign.options.feature_descriptor,
 						gridAlign.options.feature_detector_options);
 				}
 
-				ASSERT_(lm1 && lm2);
+				ASSERT_(lmap1 && lmap2);
 
 				// GT transformation:
 				const CPose2D GT_Ap(GT_Ax, GT_Ay, GT_Aphi_rad);
@@ -613,21 +615,19 @@ void do_grid_align()
 				CFileOutputStream fout_NCORR("GT_EXP_NCORR.txt", true);
 
 				// Compute the distances:
-				for (size_t i1 = 0; i1 < lm1->landmarks.size(); i1++)
+				for (size_t i1 = 0; i1 < lmap1->landmarks.size(); i1++)
 				{
-					CVectorDouble D(
-						lm2->landmarks
-							.size());  // Distances in descriptor space
-					CVectorDouble dErrs(
-						lm2->landmarks.size());  // Distances in (x,y)
+					// Distances in descriptor space
+					CVectorDouble D(lmap2->landmarks.size());
+					// Distances in (x,y)
+					CVectorDouble dErrs(lmap2->landmarks.size());
 					size_t i2;
-					// size_t gt_corr_of_i1=0;
 
-					const CLandmark* l1 = lm1->landmarks.get(i1);
+					const CLandmark* l1 = lmap1->landmarks.get(i1);
 
-					for (i2 = 0; i2 < lm2->landmarks.size(); i2++)
+					for (i2 = 0; i2 < lmap2->landmarks.size(); i2++)
 					{
-						CLandmark* l2 = lm2->landmarks.get(i2);
+						CLandmark* l2 = lmap2->landmarks.get(i2);
 
 						CPoint2D P1 = CPoint2D(l1->pose_mean);
 						CPoint2D P2 = GT_Ap + CPoint2D(l2->pose_mean);
@@ -647,7 +647,7 @@ void do_grid_align()
 					double MIN_DESCR_DIST = mrpt::math::minimum(D);
 					if (dErrs[best_match] < 0.20)
 					{
-						CLandmark* l2 = lm2->landmarks.get(best_match);
+						CLandmark* l2 = lmap2->landmarks.get(best_match);
 						gt_corrs.push_back(TMatchingPair(
 							i1, best_match, l1->pose_mean.x, l1->pose_mean.y,
 							l1->pose_mean.z, l2->pose_mean.x, l2->pose_mean.y,
@@ -660,7 +660,7 @@ void do_grid_align()
 					// mrpt::math::meanAndStd(D,m,s);
 					// D = Abs( (D-m)/s );
 					// The output files:
-					for (i2 = 0; i2 < lm2->landmarks.size(); i2++)
+					for (i2 = 0; i2 < lmap2->landmarks.size(); i2++)
 					{
 						if (i2 == best_match)
 							fout_CORR.printf(

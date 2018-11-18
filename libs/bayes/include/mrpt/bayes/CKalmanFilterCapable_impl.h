@@ -177,31 +177,31 @@ void CKalmanFilterCapable<
 
 	// Predict the observations for all the map LMs, so the user
 	//  can decide if their covariances (more costly) must be computed as well:
-	all_predictions.resize(N_map);
+	m_all_predictions.resize(N_map);
 	OnObservationModel(
-		mrpt::math::sequenceStdVec<size_t, 1>(0, N_map), all_predictions);
+		mrpt::math::sequenceStdVec<size_t, 1>(0, N_map), m_all_predictions);
 
 	const double tim_pred_obs = m_timLogger.leave("KF:3.predict all obs");
 
 	m_timLogger.enter("KF:4.decide pred obs");
 
 	// Decide if some of the covariances shouldn't be predicted.
-	predictLMidxs.clear();
+	m_predictLMidxs.clear();
 	if (FEAT_SIZE == 0)
 		// In non-SLAM problems, just do one prediction, for the entire system
 		// state:
-		predictLMidxs.assign(1, 0);
+		m_predictLMidxs.assign(1, 0);
 	else
 		// On normal SLAM problems:
-		OnPreComputingPredictions(all_predictions, predictLMidxs);
+		OnPreComputingPredictions(m_all_predictions, m_predictLMidxs);
 
 	m_timLogger.leave("KF:4.decide pred obs");
 
 	// =============================================================
-	//  6. COMPUTE INNOVATION MATRIX "S"
+	//  6. COMPUTE INNOVATION MATRIX "m_S"
 	// =============================================================
 	// Do the prediction of the observation covariances:
-	// Compute S:  S = H P ~H + R
+	// Compute m_S:  m_S = H P ~H + R
 	//
 	// Build a big dh_dx Jacobian composed of the small block Jacobians.
 	// , but: it's actually a subset of the full Jacobian, since the
@@ -209,13 +209,13 @@ void CKalmanFilterCapable<
 	//  features do not appear.
 	//
 	//  dh_dx: O*M x V+M*F
-	//      S: O*M x O*M
-	//  M = |predictLMidxs|
+	//      m_S: O*M x O*M
+	//  M = |m_predictLMidxs|
 	//  O=size of each observation.
 	//  F=size of features in the map
 	//
 	//  Updated: Now we only keep the non-zero blocks of that Jacobian,
-	//    in the vectors Hxs[] and Hys[].
+	//    in the vectors m_Hxs[] and m_Hys[].
 	//
 
 	m_timLogger.enter("KF:5.build Jacobians");
@@ -223,7 +223,7 @@ void CKalmanFilterCapable<
 	size_t N_pred =
 		FEAT_SIZE == 0
 			? 1 /* In non-SLAM problems, there'll be only 1 fixed observation */
-			: predictLMidxs.size();
+			: m_predictLMidxs.size();
 
 	std::vector<int>
 		data_association;  // -1: New map feature.>=0: Indexes in the
@@ -235,8 +235,8 @@ void CKalmanFilterCapable<
 	//  into "missing_predictions_to_add"
 	std::vector<size_t> missing_predictions_to_add;
 
-	Hxs.resize(N_pred);  // Lists of partial Jacobians
-	Hys.resize(N_pred);
+	m_Hxs.resize(N_pred);  // Lists of partial Jacobians
+	m_Hys.resize(N_pred);
 
 	size_t first_new_pred = 0;  // This will be >0 only if we perform multiple
 	// loops due to failures in the prediction
@@ -255,20 +255,20 @@ void CKalmanFilterCapable<
 
 			ASSERTDEB_(FEAT_SIZE != 0);
 			for (size_t j = 0; j < nNew; j++)
-				predictLMidxs.push_back(missing_predictions_to_add[j]);
+				m_predictLMidxs.push_back(missing_predictions_to_add[j]);
 
-			N_pred = predictLMidxs.size();
+			N_pred = m_predictLMidxs.size();
 			missing_predictions_to_add.clear();
 		}
 
-		Hxs.resize(N_pred);  // Append new entries, if needed.
-		Hys.resize(N_pred);
+		m_Hxs.resize(N_pred);  // Append new entries, if needed.
+		m_Hys.resize(N_pred);
 
 		for (size_t i = first_new_pred; i < N_pred; ++i)
 		{
-			const size_t lm_idx = FEAT_SIZE == 0 ? 0 : predictLMidxs[i];
-			KFMatrix_OxV& Hx = Hxs[i];
-			KFMatrix_OxF& Hy = Hys[i];
+			const size_t lm_idx = FEAT_SIZE == 0 ? 0 : m_predictLMidxs[i];
+			KFMatrix_OxV& Hx = m_Hxs[i];
+			KFMatrix_OxF& Hy = m_Hys[i];
 
 			// Try the analitic Jacobian first:
 			m_user_didnt_implement_jacobian =
@@ -354,14 +354,14 @@ void CKalmanFilterCapable<
 		}
 		m_timLogger.leave("KF:5.build Jacobians");
 
-		m_timLogger.enter("KF:6.build S");
+		m_timLogger.enter("KF:6.build m_S");
 
-		// Compute S:  S = H P ~H + R  (R will be added below)
+		// Compute m_S:  m_S = H P ~H + R  (R will be added below)
 		//  exploiting the sparsity of H:
-		// Each block in S is:
+		// Each block in m_S is:
 		//    Sij =
 		// ------------------------------------------
-		S.setSize(N_pred * OBS_SIZE, N_pred * OBS_SIZE);
+		m_S.setSize(N_pred * OBS_SIZE, N_pred * OBS_SIZE);
 
 		if (FEAT_SIZE > 0)
 		{  // SLAM-like problem:
@@ -371,19 +371,19 @@ void CKalmanFilterCapable<
 
 			for (size_t i = 0; i < N_pred; ++i)
 			{
-				const size_t lm_idx_i = predictLMidxs[i];
+				const size_t lm_idx_i = m_predictLMidxs[i];
 				const Eigen::Block<
 					const typename KFMatrix::Base, FEAT_SIZE, VEH_SIZE>
 					Pxyi_t(
 						m_pkk, VEH_SIZE + lm_idx_i * FEAT_SIZE, 0);  // Pxyi^t
 
-				// Only do j>=i (upper triangle), since S is symmetric:
+				// Only do j>=i (upper triangle), since m_S is symmetric:
 				for (size_t j = i; j < N_pred; ++j)
 				{
-					const size_t lm_idx_j = predictLMidxs[j];
+					const size_t lm_idx_j = m_predictLMidxs[j];
 					// Sij block:
 					Eigen::Block<typename KFMatrix::Base, OBS_SIZE, OBS_SIZE>
-						Sij(S, OBS_SIZE * i, OBS_SIZE * j);
+						Sij(m_S, OBS_SIZE * i, OBS_SIZE * j);
 
 					const Eigen::Block<
 						const typename KFMatrix::Base, VEH_SIZE, FEAT_SIZE>
@@ -394,45 +394,45 @@ void CKalmanFilterCapable<
 							m_pkk, VEH_SIZE + lm_idx_i * FEAT_SIZE,
 							VEH_SIZE + lm_idx_j * FEAT_SIZE);
 
-					Sij = Hxs[i] * Px * Hxs[j].transpose() +
-						  Hys[i] * Pxyi_t * Hxs[j].transpose() +
-						  Hxs[i] * Pxyj * Hys[j].transpose() +
-						  Hys[i] * Pyiyj * Hys[j].transpose();
+					Sij = m_Hxs[i] * Px * m_Hxs[j].transpose() +
+						  m_Hys[i] * Pxyi_t * m_Hxs[j].transpose() +
+						  m_Hxs[i] * Pxyj * m_Hys[j].transpose() +
+						  m_Hys[i] * Pyiyj * m_Hys[j].transpose();
 
 					// Copy transposed to the symmetric lower-triangular part:
 					if (i != j)
 						Eigen::Block<
 							typename KFMatrix::Base, OBS_SIZE, OBS_SIZE>(
-							S, OBS_SIZE * j, OBS_SIZE * i) = Sij.transpose();
+							m_S, OBS_SIZE * j, OBS_SIZE * i) = Sij.transpose();
 				}
 
 				// Sum the "R" term to the diagonal blocks:
 				const size_t obs_idx_off = i * OBS_SIZE;
 				Eigen::Block<typename KFMatrix::Base, OBS_SIZE, OBS_SIZE>(
-					S, obs_idx_off, obs_idx_off) += R;
+					m_S, obs_idx_off, obs_idx_off) += R;
 			}
 		}
 		else
-		{  // Not SLAM-like problem: simply S=H*Pkk*H^t + R
+		{  // Not SLAM-like problem: simply m_S=H*Pkk*H^t + R
 			ASSERTDEB_(N_pred == 1);
-			ASSERTDEB_(S.cols() == OBS_SIZE);
+			ASSERTDEB_(m_S.cols() == OBS_SIZE);
 
-			S = Hxs[0] * m_pkk * Hxs[0].transpose() + R;
+			m_S = m_Hxs[0] * m_pkk * m_Hxs[0].transpose() + R;
 		}
 
-		m_timLogger.leave("KF:6.build S");
+		m_timLogger.leave("KF:6.build m_S");
 
-		Z.clear();  // Each entry is one observation:
+		m_Z.clear();  // Each entry is one observation:
 
 		m_timLogger.enter("KF:7.get obs & DA");
 
 		// Get observations and do data-association:
 		OnGetObservationsAndDataAssociation(
-			Z, data_association,  // Out
-			all_predictions, S, predictLMidxs, R  // In
+			m_Z, data_association,  // Out
+			m_all_predictions, m_S, m_predictLMidxs, R  // In
 		);
 		ASSERTDEB_(
-			data_association.size() == Z.size() ||
+			data_association.size() == m_Z.size() ||
 			(data_association.empty() && FEAT_SIZE == 0));
 
 		// Check if an observation hasn't been predicted in
@@ -449,7 +449,7 @@ void CKalmanFilterCapable<
 				const auto assoc_idx_in_map = static_cast<size_t>(i);
 				const size_t assoc_idx_in_pred =
 					mrpt::containers::find_in_vector(
-						assoc_idx_in_map, predictLMidxs);
+						assoc_idx_in_map, m_predictLMidxs);
 				if (assoc_idx_in_pred == std::string::npos)
 					missing_predictions_to_add.push_back(assoc_idx_in_map);
 			}
@@ -466,7 +466,7 @@ void CKalmanFilterCapable<
 	//  7. UPDATE USING THE KALMAN GAIN
 	// =============================================================
 	// Update, only if there are observations!
-	if (!Z.empty())
+	if (!m_Z.empty())
 	{
 		m_timLogger.enter("KF:8.update stage");
 
@@ -514,13 +514,13 @@ void CKalmanFilterCapable<
 						size_t ytilde_idx = 0;
 
 						// TODO: Use a Matrix view of "dh_dx_full" instead of
-						// creating a copy into "dh_dx_full_obs"
-						dh_dx_full_obs.zeros(
+						// creating a copy into "m_dh_dx_full_obs"
+						m_dh_dx_full_obs.zeros(
 							N_upd * OBS_SIZE,
 							VEH_SIZE + FEAT_SIZE * N_map);  // Init to zeros.
-						KFMatrix S_observed;  // The KF "S" matrix: A
+						KFMatrix S_observed;  // The KF "m_S" matrix: A
 						// re-ordered, subset, version of
-						// the prediction S:
+						// the prediction m_S:
 
 						if (FEAT_SIZE != 0)
 						{  // SLAM problems:
@@ -538,7 +538,7 @@ void CKalmanFilterCapable<
 									static_cast<size_t>(data_association[i]);
 								const size_t assoc_idx_in_pred =
 									mrpt::containers::find_in_vector(
-										assoc_idx_in_map, predictLMidxs);
+										assoc_idx_in_map, m_predictLMidxs);
 								ASSERTMSG_(
 									assoc_idx_in_pred != string::npos,
 									"OnPreComputingPredictions() didn't "
@@ -548,8 +548,8 @@ void CKalmanFilterCapable<
 								// right now instead of launching an
 								// exception... or is this a bad idea??
 
-								// Build the subset dh_dx_full_obs:
-								//										dh_dx_full_obs.block(S_idxs.size()
+								// Build the subset m_dh_dx_full_obs:
+								//										m_dh_dx_full_obs.block(S_idxs.size()
 								//,0, OBS_SIZE, row_len)
 								//										=
 								//										dh_dx_full.block
@@ -559,65 +559,66 @@ void CKalmanFilterCapable<
 								Eigen::Block<
 									typename KFMatrix::Base, OBS_SIZE,
 									VEH_SIZE>(
-									dh_dx_full_obs, S_idxs.size(), 0) =
-									Hxs[assoc_idx_in_pred];
+									m_dh_dx_full_obs, S_idxs.size(), 0) =
+									m_Hxs[assoc_idx_in_pred];
 								Eigen::Block<
 									typename KFMatrix::Base, OBS_SIZE,
 									FEAT_SIZE>(
-									dh_dx_full_obs, S_idxs.size(),
+									m_dh_dx_full_obs, S_idxs.size(),
 									VEH_SIZE + assoc_idx_in_map * FEAT_SIZE) =
-									Hys[assoc_idx_in_pred];
+									m_Hys[assoc_idx_in_pred];
 
 								// S_idxs.size() is used as counter for
-								// "dh_dx_full_obs".
+								// "m_dh_dx_full_obs".
 								for (size_t k = 0; k < OBS_SIZE; k++)
 									S_idxs.push_back(
 										assoc_idx_in_pred * OBS_SIZE + k);
 
-								// ytilde_i = Z[i] - all_predictions[i]
-								KFArray_OBS ytilde_i = Z[i];
+								// ytilde_i = Z[i] - m_all_predictions[i]
+								KFArray_OBS ytilde_i = m_Z[i];
 								OnSubstractObservationVectors(
 									ytilde_i,
-									all_predictions
-										[predictLMidxs[assoc_idx_in_pred]]);
+									m_all_predictions
+										[m_predictLMidxs[assoc_idx_in_pred]]);
 								for (size_t k = 0; k < OBS_SIZE; k++)
 									ytilde[ytilde_idx++] = ytilde_i[k];
 							}
 							// Extract the subset that is involved in this
 							// observation:
-							S.extractSubmatrixSymmetrical(S_idxs, S_observed);
+							m_S.extractSubmatrixSymmetrical(S_idxs, S_observed);
 						}
 						else
 						{  // Non-SLAM problems:
 							ASSERT_(
-								Z.size() == 1 && all_predictions.size() == 1);
+								m_Z.size() == 1 &&
+								m_all_predictions.size() == 1);
 							ASSERT_(
-								dh_dx_full_obs.rows() == OBS_SIZE &&
-								dh_dx_full_obs.cols() == VEH_SIZE);
-							ASSERT_(Hxs.size() == 1);
-							dh_dx_full_obs = Hxs[0];  // Was: dh_dx_full
-							KFArray_OBS ytilde_i = Z[0];
+								m_dh_dx_full_obs.rows() == OBS_SIZE &&
+								m_dh_dx_full_obs.cols() == VEH_SIZE);
+							ASSERT_(m_Hxs.size() == 1);
+							m_dh_dx_full_obs = m_Hxs[0];  // Was: dh_dx_full
+							KFArray_OBS ytilde_i = m_Z[0];
 							OnSubstractObservationVectors(
-								ytilde_i, all_predictions[0]);
+								ytilde_i, m_all_predictions[0]);
 							for (size_t k = 0; k < OBS_SIZE; k++)
 								ytilde[ytilde_idx++] = ytilde_i[k];
 							// Extract the subset that is involved in this
 							// observation:
-							S_observed = S;
+							S_observed = m_S;
 						}
 
 						// Compute the full K matrix:
 						// ------------------------------
 						m_timLogger.enter("KF:8.update stage:1.FULLKF:build K");
 
-						K.setSize(m_pkk.rows(), S_observed.cols());
+						m_K.setSize(m_pkk.rows(), S_observed.cols());
 
-						// K = m_pkk * (~dh_dx) * S.inv() );
-						K.multiply_ABt(m_pkk, dh_dx_full_obs);
+						// K = m_pkk * (~dh_dx) * m_S.inv() );
+						m_K.multiply_ABt(m_pkk, m_dh_dx_full_obs);
 
-						// Inverse of S_observed -> S_1
-						S_observed.inv(S_1);
-						K *= S_1;
+						// Inverse of S_observed -> m_S_1
+						S_observed.inv(m_S_1);
+						m_K *= m_S_1;
 
 						m_timLogger.leave("KF:8.update stage:1.FULLKF:build K");
 
@@ -626,7 +627,7 @@ void CKalmanFilterCapable<
 						{
 							m_timLogger.enter(
 								"KF:8.update stage:2.FULLKF:update xkk");
-							m_xkk += K * ytilde;
+							m_xkk += m_K * ytilde;
 							m_timLogger.leave(
 								"KF:8.update stage:2.FULLKF:update xkk");
 						}
@@ -636,11 +637,11 @@ void CKalmanFilterCapable<
 								"KF:8.update stage:2.FULLKF:iter.update xkk");
 
 							KFVector HAx_column;
-							dh_dx_full_obs.multiply_Ab(
+							m_dh_dx_full_obs.multiply_Ab(
 								m_xkk - xkk_0, HAx_column);
 
 							m_xkk = xkk_0;
-							K.multiply_Ab(
+							m_K.multiply_Ab(
 								(ytilde - HAx_column), m_xkk,
 								true /* Accumulate in output */
 							);
@@ -661,27 +662,27 @@ void CKalmanFilterCapable<
 							// m_pkk = (I - K*dh_dx ) * m_pkk;
 							// TODO: "Optimize this: sparsity!"
 
-							// K * dh_dx_full_obs
-							aux_K_dh_dx.multiply(K, dh_dx_full_obs);
+							// K * m_dh_dx_full_obs
+							m_aux_K_dh_dx.multiply(m_K, m_dh_dx_full_obs);
 
-							// aux_K_dh_dx  <-- I-aux_K_dh_dx
-							const size_t stat_len = aux_K_dh_dx.cols();
+							// m_aux_K_dh_dx  <-- I-m_aux_K_dh_dx
+							const size_t stat_len = m_aux_K_dh_dx.cols();
 							for (size_t r = 0; r < stat_len; r++)
 							{
 								for (size_t c = 0; c < stat_len; c++)
 								{
 									if (r == c)
-										aux_K_dh_dx.get_unsafe(r, c) =
-											-aux_K_dh_dx.get_unsafe(r, c) +
+										m_aux_K_dh_dx.get_unsafe(r, c) =
+											-m_aux_K_dh_dx.get_unsafe(r, c) +
 											kftype(1);
 									else
-										aux_K_dh_dx.get_unsafe(r, c) =
-											-aux_K_dh_dx.get_unsafe(r, c);
+										m_aux_K_dh_dx.get_unsafe(r, c) =
+											-m_aux_K_dh_dx.get_unsafe(r, c);
 								}
 							}
 
 							m_pkk.multiply_result_is_symmetric(
-								aux_K_dh_dx, m_pkk);
+								m_aux_K_dh_dx, m_pkk);
 
 							m_timLogger.leave(
 								"KF:8.update stage:3.FULLKF:update Pkk");
@@ -697,7 +698,7 @@ void CKalmanFilterCapable<
 			case kfEKFAlaDavison:
 			{
 				// For each observed landmark/whole system state:
-				for (size_t obsIdx = 0; obsIdx < Z.size(); obsIdx++)
+				for (size_t obsIdx = 0; obsIdx < m_Z.size(); obsIdx++)
 				{
 					// Known & mapped landmark?
 					bool doit;
@@ -732,25 +733,25 @@ void CKalmanFilterCapable<
 						ASSERTDEB_(pred_obs.size() == 1);
 
 						// ytilde = observation - prediction
-						KFArray_OBS ytilde = Z[obsIdx];
+						KFArray_OBS ytilde = m_Z[obsIdx];
 						OnSubstractObservationVectors(ytilde, pred_obs[0]);
 
 						// Jacobians:
 						// dh_dx: already is (N_pred*OBS_SIZE) x (VEH_SIZE +
 						// FEAT_SIZE * N_pred )
-						//         with N_pred = |predictLMidxs|
+						//         with N_pred = |m_predictLMidxs|
 
 						const size_t i_idx_in_preds =
 							mrpt::containers::find_in_vector(
-								idxInTheFilter, predictLMidxs);
+								idxInTheFilter, m_predictLMidxs);
 						ASSERTMSG_(
 							i_idx_in_preds != string::npos,
 							"OnPreComputingPredictions() didn't recommend the "
 							"prediction of a landmark which has been actually "
 							"observed!");
 
-						const KFMatrix_OxV& Hx = Hxs[i_idx_in_preds];
-						const KFMatrix_OxF& Hy = Hys[i_idx_in_preds];
+						const KFMatrix_OxV& Hx = m_Hxs[i_idx_in_preds];
+						const KFMatrix_OxF& Hy = m_Hys[i_idx_in_preds];
 
 						m_timLogger.leave(
 							"KF:8.update stage:1.ScalarAtOnce.prepare");
@@ -834,7 +835,7 @@ void CKalmanFilterCapable<
 
 							// Compute the Kalman gain "Kij" for this
 							// observation element:
-							// -->  K = m_pkk * (~dh_dx) * S.inv() );
+							// -->  K = m_pkk * (~dh_dx) * m_S.inv() );
 							size_t N = m_pkk.cols();
 							vector<KFTYPE> Kij(N);
 
@@ -1030,7 +1031,7 @@ void CKalmanFilterCapable<
 										KFMatrix Si_1(OBS_SIZE,OBS_SIZE);
 
 										// Compute the Kalman gain "Ki" for this i'th observation:
-										// -->  Ki = m_pkk * (~dh_dx) * S.inv();
+										// -->  Ki = m_pkk * (~dh_dx) * m_S.inv();
 										size_t N = m_pkk.cols();
 
 										KFMatrix Ki( N, OBS_SIZE );
@@ -1055,7 +1056,7 @@ void CKalmanFilterCapable<
 											} // end for c
 										} // end for k
 
-										Ki.multiply(Ki, Si.inv() );  // K = (...) * S^-1
+										Ki.multiply(Ki, Si.inv() );  // K = (...) * m_S^-1
 
 
 										// Update the state vector m_xkk:
@@ -1175,7 +1176,7 @@ void CKalmanFilterCapable<
 	if (!data_association.empty())
 	{
 		m_timLogger.enter("KF:A.add new landmarks");
-		detail::addNewLandmarks(*this, Z, data_association, R);
+		detail::addNewLandmarks(*this, m_Z, data_association, R);
 		m_timLogger.leave("KF:A.add new landmarks");
 	}  // end if data_association!=empty
 

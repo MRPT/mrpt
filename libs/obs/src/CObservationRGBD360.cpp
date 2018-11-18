@@ -68,7 +68,7 @@ void CObservationRGBD360::serializeTo(mrpt::serialization::CArchive& out) const
 			out << intensityImage;
 	//		out << hasConfidenceImage; if (hasConfidenceImage) out <<
 	// confidenceImage;
-	for (auto timestamp : timestamps) out << timestamp;
+	for (auto t : timestamps) out << t;
 	//
 	out << stdError;
 	out << timestamp;
@@ -109,7 +109,7 @@ void CObservationRGBD360::serializeFrom(
 
 			//      in >> cameraParams;
 
-			for (auto& timestamp : timestamps) in >> timestamp;
+			for (auto& t : timestamps) in >> t;
 			in >> stdError;
 			in >> timestamp;
 			in >> sensorLabel;

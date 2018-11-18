@@ -620,19 +620,18 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	//  "Local" variables to runOneKalmanIteration, declared here to avoid
 	//   allocating them over and over again with each call.
 	//  (The variables that go into the stack remains in the function body)
-	vector_KFArray_OBS all_predictions;
-	std::vector<size_t> predictLMidxs;
+	vector_KFArray_OBS m_all_predictions;
+	std::vector<size_t> m_predictLMidxs;
 	/** The vector of all partial Jacobians dh[i]_dx for each prediction */
-	mrpt::aligned_std_vector<KFMatrix_OxV> Hxs;
+	mrpt::aligned_std_vector<KFMatrix_OxV> m_Hxs;
 	/** The vector of all partial Jacobians dh[i]_dy[i] for each prediction */
-	mrpt::aligned_std_vector<KFMatrix_OxF> Hys;
-	KFMatrix S;
-	KFMatrix Pkk_subset;
-	vector_KFArray_OBS Z;  // Each entry is one observation:
-	KFMatrix K;  // Kalman gain
-	KFMatrix S_1;  // Inverse of S
-	KFMatrix dh_dx_full_obs;
-	KFMatrix aux_K_dh_dx;
+	mrpt::aligned_std_vector<KFMatrix_OxF> m_Hys;
+	KFMatrix m_S;
+	vector_KFArray_OBS m_Z;  // Each entry is one observation:
+	KFMatrix m_K;  // Kalman gain
+	KFMatrix m_S_1;  // Inverse of m_S
+	KFMatrix m_dh_dx_full_obs;
+	KFMatrix m_aux_K_dh_dx;
 
    protected:
 	/** The main entry point, executes one complete step: prediction + update.

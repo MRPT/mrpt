@@ -60,10 +60,8 @@ void CHMTSLAM::thread_LSLAM()
 	{
 		// Start thread:
 		// -------------------------
-		obj->logFmt(
-			mrpt::system::LVL_DEBUG,
-			"[thread_LSLAM] Thread started (ID=0x%08lX)\n",
-			std::this_thread::get_id());
+		MRPT_LOG_DEBUG_STREAM(
+			"[thread_LSLAM] Thread started ID=" << std::this_thread::get_id());
 
 		// --------------------------------------------
 		//    The main loop
@@ -240,9 +238,7 @@ void CHMTSLAM::thread_LSLAM()
 
 		// Finish thread:
 		// -------------------------
-		MRPT_TODO("Fix thread times");
 		// try { mrpt::system::getCurrentThreadTimes( timCreat,timExit,timCPU);
-		// } catch(...) {};
 		obj->logFmt(mrpt::system::LVL_DEBUG, "[thread_LSLAM] Thread finished");
 		obj->m_terminationFlag_LSLAM = true;
 	}
@@ -261,16 +257,7 @@ void CHMTSLAM::thread_LSLAM()
 	{
 		obj->m_terminationFlag_LSLAM = true;
 
-		obj->logFmt(
-			mrpt::system::LVL_DEBUG,
-			"\n---------------------- EXCEPTION CAUGHT! "
-			"---------------------\n");
-		obj->logFmt(
-			mrpt::system::LVL_DEBUG,
-			" In CHierarchicalMappingFramework::thread_LSLAM. Unexpected "
-			"runtime error!!\n");
-
-		// Release semaphores:
+		MRPT_LOG_ERROR("Unexpected exception in thread_LSLAM");
 
 		// DEBUG: Terminate application:
 		obj->m_terminateThreads = true;
@@ -416,16 +403,18 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 			"[LSLAM_proc_msg_AA] Saved HMAP_%05i_before.txt\n", DEBUG_STEP);
 	}
 
-	vector<TPoseIDList>::const_iterator it;
-	for (i = 0, it = myMsg.partitions.begin(); it != myMsg.partitions.end();
-		 ++it, i++)
-		for (unsigned long itPose : *it)
-		{
-			auto itP = LMH->m_nodeIDmemberships.find(itPose);
-			ASSERT_(itP != LMH->m_nodeIDmemberships.end());
+	{
+		vector<TPoseIDList>::const_iterator it;
+		for (i = 0, it = myMsg.partitions.begin(); it != myMsg.partitions.end();
+			 ++it, i++)
+			for (unsigned long itPose : *it)
+			{
+				auto itP = LMH->m_nodeIDmemberships.find(itPose);
+				ASSERT_(itP != LMH->m_nodeIDmemberships.end());
 
-			votes[i][itP->second]++;
-		}
+				votes[i][itP->second]++;
+			}
+	}
 
 	// The goal: a mapping from partition index -> area IDs:
 	vector<CHMHMapNode::TNodeID> partIdx2Areas(
@@ -524,12 +513,11 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 
 	{
 		logFmt(mrpt::system::LVL_INFO, "[LSLAM_proc_msg_AA] partIdx2Areas:\n");
-		for (size_t i = 0; i < partIdx2Areas.size(); i++)
-			logFmt(
-				mrpt::system::LVL_INFO,
-				"       Partition #%i -> AREA_ID  %i ('%s')\n", (int)i,
-				(int)partIdx2Areas[i],
-				m_map.getNodeByID(partIdx2Areas[i])->m_label.c_str());
+		for (unsigned idx = 0; idx < partIdx2Areas.size(); idx++)
+			MRPT_LOG_INFO_STREAM(
+				"Partition "
+				<< idx << " -> AREA_ID  " << partIdx2Areas[idx] << " ('"
+				<< m_map.getNodeByID(partIdx2Areas[idx])->m_label << "')\n");
 	}
 
 	// --------------------------------------------------------
@@ -931,9 +919,9 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 
 				// Make sure we delete all its arcs as well first:
 				{
-					TArcList arcs;
-					node->getArcs(arcs);
-					for (auto& arc : arcs) arc.reset();
+					TArcList al;
+					node->getArcs(al);
+					for (auto& arc : al) arc.reset();
 				}
 
 				node.reset();  // And finally, delete the node.
@@ -1819,19 +1807,19 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 
 	if (new_poseID_origin != poseID_origin)
 	{  // Change coords AND rebuild metric maps
-		CTicTac tictac;
-		tictac.Tic();
+		CTicTac tt;
+		tt.Tic();
 		LMH->changeCoordinateOrigin(new_poseID_origin);
 		logFmt(
 			mrpt::system::LVL_INFO,
 			"[LSLAM_proc_msg_AA] LMH->changeCoordinateOrigin %lu->%lu took %f "
 			"ms\n",
-			poseID_origin, new_poseID_origin, tictac.Tac() * 1000);
+			poseID_origin, new_poseID_origin, tt.Tac() * 1000);
 	}
 	else if (areasDelayedMetricMapsInsertion.size())
 	{
-		CTicTac tictac;
-		tictac.Tic();
+		CTicTac tt;
+		tt.Tic();
 		// We haven't rebuilt the whole metric maps, so just insert the new
 		// observations as needed:
 		for (unsigned long areaID : areasDelayedMetricMapsInsertion)
@@ -1863,7 +1851,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 		logFmt(
 			mrpt::system::LVL_INFO,
 			"[LSLAM_proc_msg_AA] areasDelayedMetricMapsInsertion took %f ms\n",
-			tictac.Tac() * 1000);
+			tt.Tac() * 1000);
 	}
 
 	if (false)
