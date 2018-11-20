@@ -158,10 +158,10 @@ void CAbstractPTGBasedReactive::enableLogFile(bool enable)
 			if (m_logFile) return;  // Already enabled:
 
 			// Open file, find the first free file-name.
-			char aux[300];
-			unsigned int nFile = 0;
-			bool free_name = false;
-
+			MRPT_LOG_DEBUG_FMT(
+				"[CAbstractPTGBasedReactive::enableLogFile] Creating rnav log "
+				"directory: %s",
+				m_navlogfiles_dir.c_str());
 			mrpt::system::createDirectory(m_navlogfiles_dir);
 			if (!mrpt::system::directoryExists(m_navlogfiles_dir))
 			{
@@ -170,34 +170,35 @@ void CAbstractPTGBasedReactive::enableLogFile(bool enable)
 					m_navlogfiles_dir.c_str());
 			}
 
-			while (!free_name)
+			std::string filToOpen;
+			for (unsigned int nFile = 0;; nFile++)
 			{
-				nFile++;
-				sprintf(
-					aux, "%s/log_%03u.reactivenavlog",
-					m_navlogfiles_dir.c_str(), nFile);
-				free_name = !system::fileExists(aux);
+				filToOpen = mrpt::format(
+					"%s/log_%03u.reactivenavlog", m_navlogfiles_dir.c_str(),
+					nFile);
+				if (!system::fileExists(filToOpen)) break;
 			}
 
 			// Open log file:
 			{
 				std::unique_ptr<CFileGZOutputStream> fil(
 					new CFileGZOutputStream);
-				bool ok = fil->open(aux, 1 /* compress level */);
+				bool ok = fil->open(filToOpen, 1 /* compress level */);
 				if (!ok)
 				{
-					THROW_EXCEPTION_FMT("Error opening log file: `%s`", aux);
+					THROW_EXCEPTION_FMT(
+						"Error opening log file: `%s`", filToOpen.c_str());
 				}
 				else
 				{
-					m_logFile.reset(fil.release());
+					m_logFile = std::move(fil);
 				}
 			}
 
 			MRPT_LOG_DEBUG(mrpt::format(
 				"[CAbstractPTGBasedReactive::enableLogFile] Logging to "
-				"file `%s`\n",
-				aux));
+				"file `%s`",
+				filToOpen.c_str()));
 		}
 	}
 	catch (const std::exception& e)
