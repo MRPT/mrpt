@@ -22,12 +22,12 @@ const double PREVIOUS_POSES_MAX_AGE = 20; // seconds
 
 // Ctor: CAbstractNavigator::TargetInfo
 CAbstractNavigator::TargetInfo::TargetInfo() :
-	target_coords(0,0,0),
-	target_frame_id("map"),
-	targetAllowedDistance(0.5),
-	targetIsRelative(false),
-	targetDesiredRelSpeed(.05),
-	targetIsIntermediaryWaypoint(false)
+    target_coords(0,0,0),
+    target_frame_id("map"),
+    targetAllowedDistance(0.5),
+    targetIsRelative(false),
+    targetDesiredRelSpeed(.05),
+    targetIsIntermediaryWaypoint(false)
 {
 }
 
@@ -47,12 +47,12 @@ std::string CAbstractNavigator::TargetInfo::getAsText() const
 bool mrpt::nav::CAbstractNavigator::TargetInfo::operator==(const TargetInfo & o) const
 {
 	return target_coords == o.target_coords &&
-		target_frame_id == o.target_frame_id &&
-		targetAllowedDistance == o.targetAllowedDistance &&
-		targetIsRelative == o.targetIsRelative &&
-		targetDesiredRelSpeed == o.targetDesiredRelSpeed &&
-		targetIsIntermediaryWaypoint == o.targetIsIntermediaryWaypoint
-		;
+	    target_frame_id == o.target_frame_id &&
+	    targetAllowedDistance == o.targetAllowedDistance &&
+	    targetIsRelative == o.targetIsRelative &&
+	    targetDesiredRelSpeed == o.targetDesiredRelSpeed &&
+	    targetIsIntermediaryWaypoint == o.targetIsIntermediaryWaypoint
+	    ;
 }
 
 // Gets navigation params as a human-readable format:
@@ -71,12 +71,12 @@ bool CAbstractNavigator::TNavigationParams::isEqual(const CAbstractNavigator::TN
 }
 
 CAbstractNavigator::TRobotPoseVel::TRobotPoseVel() :
-	pose(0,0,0),
-	velGlobal(0,0,0),
-	velLocal(0,0,0),
-	rawOdometry(0,0,0),
-	timestamp(INVALID_TIMESTAMP),
-	pose_frame_id()
+    pose(0,0,0),
+    velGlobal(0,0,0),
+    velLocal(0,0,0),
+    rawOdometry(0,0,0),
+    timestamp(INVALID_TIMESTAMP),
+    pose_frame_id()
 {
 }
 
@@ -84,20 +84,20 @@ CAbstractNavigator::TRobotPoseVel::TRobotPoseVel() :
 							Constructor
   ---------------------------------------------------------------*/
 CAbstractNavigator::CAbstractNavigator(CRobot2NavInterface &react_iterf_impl) :
-	mrpt::utils::COutputLogger("MRPT_navigator"),
-	m_lastNavigationState ( IDLE ),
-	m_navigationEndEventSent(false),
-	m_counter_check_target_is_blocked(0),
-	m_rethrow_exceptions(false),
-	m_navigationState     ( IDLE ),
-	m_navigationParams    ( nullptr ),
-	m_robot               ( react_iterf_impl ),
-	m_frame_tf            (nullptr),
-	m_curPoseVel          (),
-	m_last_curPoseVelUpdate_robot_time(-1e9),
-	m_latestPoses         (),
-	m_latestOdomPoses     (),
-	m_timlog_delays       (true, "CAbstractNavigator::m_timlog_delays")
+    mrpt::utils::COutputLogger("MRPT_navigator"),
+    m_lastNavigationState ( IDLE ),
+    m_navigationEndEventSent(false),
+    m_counter_check_target_is_blocked(0),
+    m_rethrow_exceptions(false),
+    m_navigationState     ( IDLE ),
+    m_navigationParams    ( nullptr ),
+    m_robot               ( react_iterf_impl ),
+    m_frame_tf            (nullptr),
+    m_curPoseVel          (),
+    m_last_curPoseVelUpdate_robot_time(-1e9),
+    m_latestPoses         (),
+    m_latestOdomPoses     (),
+    m_timlog_delays       (true, "CAbstractNavigator::m_timlog_delays")
 {
 	m_latestPoses.setInterpolationMethod(mrpt::poses::imLinear2Neig);
 	m_latestOdomPoses.setInterpolationMethod(mrpt::poses::imLinear2Neig);
@@ -202,22 +202,22 @@ void CAbstractNavigator::navigationStep()
 	case IDLE:
 	case SUSPENDED:
 		try
-		{
-			// If we just arrived at this state, stop robot:
-			if ( m_lastNavigationState == NAVIGATING )
+	    {
+		    // If we just arrived at this state, stop robot:
+		    if ( m_lastNavigationState == NAVIGATING )
 			{
 				MRPT_LOG_INFO("[CAbstractNavigator::navigationStep()] Navigation stopped.");
 				// this->stop();  stop() is called by the method switching the "state", so we have more flexibility
 				m_robot.stopWatchdog();
 			}
-		} catch (...) { }
+	    } catch (...) { }
 		break;
 
 	case NAV_ERROR:
 		try
-		{
-			// Send end-of-navigation event:
-			if (m_lastNavigationState == NAVIGATING && m_navigationState == NAV_ERROR)
+	    {
+		    // Send end-of-navigation event:
+		    if (m_lastNavigationState == NAVIGATING && m_navigationState == NAV_ERROR)
 			{
 				TPendingEvent ev;
 				ev.event_noargs = &CRobot2NavInterface::sendNavigationEndDueToErrorEvent;
@@ -231,7 +231,7 @@ void CAbstractNavigator::navigationStep()
 				this->stop(false /*not emergency*/);
 				m_robot.stopWatchdog();
 			}
-		} catch (...) { }
+	    } catch (...) { }
 		break;
 
 	case NAVIGATING:
@@ -385,12 +385,12 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds()
 
 	// Purge old ones:
 	while (m_latestPoses.size() > 1 &&
-		mrpt::system::timeDifference(m_latestPoses.begin()->first, m_latestPoses.rbegin()->first) > PREVIOUS_POSES_MAX_AGE)
+	    mrpt::system::timeDifference(m_latestPoses.begin()->first, m_latestPoses.rbegin()->first) > PREVIOUS_POSES_MAX_AGE)
 	{
 		m_latestPoses.erase(m_latestPoses.begin());
 	}
 	while (m_latestOdomPoses.size() > 1 &&
-		mrpt::system::timeDifference(m_latestOdomPoses.begin()->first, m_latestOdomPoses.rbegin()->first) > PREVIOUS_POSES_MAX_AGE)
+	    mrpt::system::timeDifference(m_latestOdomPoses.begin()->first, m_latestOdomPoses.rbegin()->first) > PREVIOUS_POSES_MAX_AGE)
 	{
 		m_latestOdomPoses.erase(m_latestOdomPoses.begin());
 	}
@@ -410,10 +410,10 @@ bool CAbstractNavigator::stop(bool isEmergencyStop)
 }
 
 CAbstractNavigator::TAbstractNavigatorParams::TAbstractNavigatorParams() :
-	dist_to_target_for_sending_event(0),
-	alarm_seems_not_approaching_target_timeout(30),
-	dist_check_target_is_blocked(0.6),
-	hysteresis_check_target_is_blocked(3)
+    dist_to_target_for_sending_event(0),
+    alarm_seems_not_approaching_target_timeout(30),
+    dist_check_target_is_blocked(0.6),
+    hysteresis_check_target_is_blocked(3)
 {
 }
 void CAbstractNavigator::TAbstractNavigatorParams::loadFromConfigFile(const mrpt::utils::CConfigFileBase &c, const std::string &s)
@@ -482,12 +482,12 @@ void CAbstractNavigator::performNavigationStepNavigating(bool call_virtual_nav_m
 		// Build a 2D segment from the current robot pose to the previous one:
 		ASSERT_(!m_latestPoses.empty());
 		const mrpt::math::TSegment2D seg_robot_mov = mrpt::math::TSegment2D(
-			mrpt::math::TPoint2D(m_curPoseVel.pose),
-			m_latestPoses.size() > 1 ?
-			mrpt::math::TPoint2D((++m_latestPoses.rbegin())->second)
-			:
-			mrpt::math::TPoint2D((m_latestPoses.rbegin())->second)
-			);
+		    mrpt::math::TPoint2D(m_curPoseVel.pose),
+		    m_latestPoses.size() > 1 ?
+		    mrpt::math::TPoint2D((++m_latestPoses.rbegin())->second)
+		    :
+		    mrpt::math::TPoint2D((m_latestPoses.rbegin())->second)
+		    );
 
 		if (m_navigationParams)
 		{
@@ -500,6 +500,7 @@ void CAbstractNavigator::performNavigationStepNavigating(bool call_virtual_nav_m
 				TPendingEvent ev;
 				ev.event_noargs = &CRobot2NavInterface::sendNavigationEndEvent;
 				m_pending_events.push_back(ev);
+				MRPT_LOG_DEBUG("[CAbstractNavigator::performNavigationStepNavigating] Enqueuing NavigationEndEvent (reason: targetDist<dist_to_target_for_sending_event).");
 			}
 
 			// Have we really reached the target?
@@ -517,6 +518,7 @@ void CAbstractNavigator::performNavigationStepNavigating(bool call_virtual_nav_m
 						TPendingEvent ev;
 						ev.event_noargs = &CRobot2NavInterface::sendNavigationEndEvent;
 						m_pending_events.push_back(ev);
+						MRPT_LOG_DEBUG("[CAbstractNavigator::performNavigationStepNavigating] Enqueuing NavigationEndEvent (reason: checkHasReachedTarget()=true).");
 					}
 				}
 				return;
@@ -597,9 +599,9 @@ bool CAbstractNavigator::checkCollisionWithLatestObstacles(const mrpt::math::TPo
 }
 
 CAbstractNavigator::TPendingEvent::TPendingEvent() :
-	event_noargs(nullptr),
-	event_wp_reached(false),
-	event_new_wp(false),
-	event_cannot_get_closer_target(false)
+    event_noargs(nullptr),
+    event_wp_reached(false),
+    event_new_wp(false),
+    event_cannot_get_closer_target(false)
 {
 }
