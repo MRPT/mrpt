@@ -73,8 +73,6 @@ void CWaypointsNavigator::navigateWaypoints(
 
 	std::lock_guard<std::recursive_mutex> csl(m_nav_waypoints_cs);
 
-	m_pending_events.clear();
-
 	const size_t N = nav_request.waypoints.size();
 	ASSERTMSG_(N > 0, "List of waypoints is empty!");
 
