@@ -33,8 +33,15 @@ class CWeightedPointsMap : public CPointsMap
    public:
 	/** Default constructor */
 	CWeightedPointsMap();
-	/** Destructor */
-	~CWeightedPointsMap() override;
+	CWeightedPointsMap(const CPointsMap& o) : CWeightedPointsMap()
+	{
+		CPointsMap::operator=(o);
+	}
+	CWeightedPointsMap operator=(const CPointsMap& o)
+	{
+		CPointsMap::operator=(o);
+		return *this;
+	}
 
 	// --------------------------------------------
 	/** @name Pure virtual interfaces to be implemented by any class derived
@@ -44,17 +51,9 @@ class CWeightedPointsMap : public CPointsMap
 	void resize(size_t newLength) override;  // See base class docs
 	void setSize(size_t newLength) override;  // See base class docs
 
-	/** Changes the coordinates of the given point (0-based index), *without*
-	 * checking for out-of-bounds and *without* calling mark_as_modified() \sa
-	 * setPoint */
-	void setPointFast(size_t index, float x, float y, float z) override;
-
 	/** The virtual method for \a insertPoint() *without* calling
 	 * mark_as_modified()   */
 	void insertPointFast(float x, float y, float z = 0) override;
-
-	/** Virtual assignment operator, to be implemented in derived classes  */
-	void copyFrom(const CPointsMap& obj) override;
 
 	/** Get all the data fields for one point as a vector: [X Y Z WEIGHT]
 	 *  Unlike getPointAllFields(), this method does not check for index out of
@@ -97,8 +96,7 @@ class CWeightedPointsMap : public CPointsMap
 		const mrpt::poses::CPose3D* robotPose = nullptr) override;
 
    protected:
-	/** Auxiliary method called from within \a addFrom() automatically, to
-	 * finish the copying of class-specific data  */
+	void impl_copyFrom(const CPointsMap& obj) override;
 	void addFrom_classSpecific(
 		const CPointsMap& anotherMap, const size_t nPreviousPoints) override;
 

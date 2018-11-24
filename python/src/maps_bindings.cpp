@@ -631,11 +631,6 @@ void export_maps()
 					"The virtual method for insertPoint() *without* calling "
 					"mark_as_modified().")
 				.def(
-					"copyFrom", &CPointsMap::copyFrom,
-					"Virtual assignment operator, copies as much common data "
-					"(XYZ, color,...) as possible from the source map into "
-					"this one.")
-				.def(
 					"getPointAllFieldsFast", &CPointsMap::getPointAllFieldsFast,
 					"Get all the data fields for one point as a vector: "
 					"depending on the implementation class this can be [X Y Z] "

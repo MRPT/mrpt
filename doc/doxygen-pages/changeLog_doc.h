@@ -78,7 +78,9 @@ configuration files.
 			- This new module has been created to hold all serial devices &
 networking classes, with minimal dependencies.
 		- \ref mrpt_maps_grp
-			- Added optional "channel" attribute to CReflectivityGrdMap2D and
+			- New map type: mrpt::maps::CPointsMapXYZI for pointclouds with an
+intensity channel.
+			- Added optional "channel" attribute to CReflectivityGridMap2D and
 CObservationReflectivity to support different colors of light.
 		- \ref mrpt_hwdrivers_grp
 			- COpenNI2Generic: is safer in multithreading apps.
