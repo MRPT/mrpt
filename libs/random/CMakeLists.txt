@@ -8,5 +8,6 @@ define_mrpt_lib(
 	)
 
 if(BUILD_mrpt-random)
-
+	# Enforce C++17 in all dependent projects:
+	mrpt_lib_target_requires_cpp17(mrpt-random)
 endif()

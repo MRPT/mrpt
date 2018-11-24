@@ -1,6 +1,27 @@
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
+# Enforce C++17 in all dependent projects:
+function(mrpt_lib_target_requires_cpp17 _TARGET)
+	if(${CMAKE_VERSION} VERSION_LESS "3.8.0")
+		# Support older cmake versions:
+		if (MSVC)
+			target_compile_options(${_TARGET} INTERFACE "/std:c++latest")
+		else()
+			target_compile_options(${_TARGET} INTERFACE "-std=c++17")
+		endif()
+	else()
+		if (NOT MSVC)
+			# Modern, clean way to do this:
+			target_compile_features(${_TARGET} INTERFACE cxx_std_17)
+		else()
+			# At present (CMake 3.12 + MSVC 19.15.26732.1) it seems cxx_std_17
+			# does not enable C++17 in MSVC (!).
+			target_compile_options(${_TARGET} INTERFACE "/std:c++17")
+		endif()
+	endif()
+endfunction()
+
 # define_mrpt_lib(): Declares an MRPT library target:
 #-----------------------------------------------------------------------
 macro(define_mrpt_lib name)
@@ -374,7 +395,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 	else()
 		set(this_lib_dev_INSTALL_PREFIX "")
 	endif()
-	
+
 	if (NOT IS_DEBIAN_DBG_PKG)
 	# mrpt-xxx-config.cmake file:
 	# Makes the project importable from installed dir:
@@ -399,7 +420,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 	endif()
 endif()
 
-	
+
 	if(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
 		foreach(_N ${${name}_PLUGIN_SRCS_NAME})
 			#message(STATUS "Disabling precomp hdrs for N=${_N}: ${${_N}_FILES}")
