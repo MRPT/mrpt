@@ -113,13 +113,10 @@ void CColouredPointsMap::setSize(size_t newLength)
 	mark_as_modified();
 }
 
-/*---------------------------------------------------------------
-Copy constructor
----------------------------------------------------------------*/
-void CColouredPointsMap::copyFrom(const CPointsMap& obj)
+void CColouredPointsMap::impl_copyFrom(const CPointsMap& obj)
 {
-	CPointsMap::base_copyFrom(
-		obj);  // This also does a ::resize(N) of all data fields.
+	// This also does a ::resize(N) of all data fields.
+	CPointsMap::base_copyFrom(obj);
 
 	const auto* pCol = dynamic_cast<const CColouredPointsMap*>(&obj);
 	if (pCol)
@@ -127,7 +124,6 @@ void CColouredPointsMap::copyFrom(const CPointsMap& obj)
 		m_color_R = pCol->m_color_R;
 		m_color_G = pCol->m_color_G;
 		m_color_B = pCol->m_color_B;
-		// m_min_dist = pCol->m_min_dist;
 	}
 }
 
@@ -326,7 +322,7 @@ void CColouredPointsMap::internal_clear()
 /** Changes a given point from map. First index is 0.
  * \exception Throws std::exception on index out of bound.
  */
-void CColouredPointsMap::setPoint(
+void CColouredPointsMap::setPointRGB(
 	size_t index, float x, float y, float z, float R, float G, float B)
 {
 	if (index >= m_x.size()) THROW_EXCEPTION("Index out of bounds");
@@ -363,7 +359,7 @@ void CColouredPointsMap::insertPointFast(float x, float y, float z)
 	// mark_as_modified(); -> Fast
 }
 
-void CColouredPointsMap::insertPoint(
+void CColouredPointsMap::insertPointRGB(
 	float x, float y, float z, float R, float G, float B)
 {
 	m_x.push_back(x);
@@ -425,22 +421,7 @@ void CColouredPointsMap::TColourOptions::dumpToTextStream(
 	out << "d_max                                   = " << d_max << endl;
 }
 
-unsigned long CColouredPointsMap::getPoint(
-	size_t index, float& x, float& y, float& z) const
-{
-	if (index >= m_x.size()) THROW_EXCEPTION("Index out of bounds");
-
-	x = m_x[index];
-	y = m_y[index];
-	z = m_z[index];
-
-	return 1;  // Weight
-}
-
-/*---------------------------------------------------------------
-getPoint
----------------------------------------------------------------*/
-void CColouredPointsMap::getPoint(
+void CColouredPointsMap::getPointRGB(
 	size_t index, float& x, float& y, float& z, float& R, float& G,
 	float& B) const
 {
@@ -449,7 +430,6 @@ void CColouredPointsMap::getPoint(
 	x = m_x[index];
 	y = m_y[index];
 	z = m_z[index];
-
 	R = m_color_R[index];
 	G = m_color_G[index];
 	B = m_color_B[index];
@@ -470,7 +450,7 @@ void CColouredPointsMap::getPointColor(
 // This function is duplicated from
 // "mrpt::vision::pinhole::projectPoint_with_distortion", to avoid
 //  a dependency on mrpt-vision.
-void aux_projectPoint_with_distortion(
+static void aux_projectPoint_with_distortion(
 	const mrpt::math::TPoint3D& P, const TCamera& params, TPixelCoordf& pixel,
 	bool accept_points_behind)
 {
@@ -632,7 +612,7 @@ void CColouredPointsMap::PLY_import_set_vertex(
 	const size_t idx, const mrpt::math::TPoint3Df& pt, const TColorf* pt_color)
 {
 	if (pt_color)
-		this->setPoint(
+		this->setPointRGB(
 			idx, pt.x, pt.y, pt.z, pt_color->R, pt_color->G, pt_color->B);
 	else
 		this->setPoint(idx, pt.x, pt.y, pt.z);

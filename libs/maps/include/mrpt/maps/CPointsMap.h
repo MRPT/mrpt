@@ -116,6 +116,14 @@ class CPointsMap : public CMetricMap,
 	/** Virtual destructor. */
 	~CPointsMap() override;
 
+	CPointsMap& operator=(const CPointsMap& o)
+	{
+		this->impl_copyFrom(o);
+		return *this;
+	}
+	// CPointsMap(const CPointsMap& o): Don't define this one to avoid calling
+	// a virtual method during copy ctors.
+
 	// --------------------------------------------
 	/** @name Pure virtual interfaces to be implemented by any class derived
 	   from CPointsMap
@@ -145,17 +153,18 @@ class CPointsMap : public CMetricMap,
 	virtual void setSize(size_t newLength) = 0;
 
 	/** Changes the coordinates of the given point (0-based index), *without*
-	 * checking for out-of-bounds and *without* calling mark_as_modified()  \sa
-	 * setPoint */
-	virtual void setPointFast(size_t index, float x, float y, float z) = 0;
+	 * checking for out-of-bounds and *without* calling mark_as_modified().
+	 * Also, color, intensity, or other data is left unchanged. \sa setPoint */
+	inline void setPointFast(size_t index, float x, float y, float z)
+	{
+		m_x[index] = x;
+		m_y[index] = y;
+		m_z[index] = z;
+	}
 
 	/** The virtual method for \a insertPoint() *without* calling
 	 * mark_as_modified()   */
 	virtual void insertPointFast(float x, float y, float z = 0) = 0;
-
-	/** Virtual assignment operator, copies as much common data (XYZ, color,...)
-	 * as possible from the source map into this one. */
-	virtual void copyFrom(const CPointsMap& obj) = 0;
 
 	/** Get all the data fields for one point as a vector: depending on the
 	 * implementation class this can be [X Y Z] or [X Y Z R G B], etc...
@@ -176,6 +185,10 @@ class CPointsMap : public CMetricMap,
 		const size_t index, const std::vector<float>& point_data) = 0;
 
    protected:
+	/** Virtual assignment operator, copies as much common data (XYZ, color,...)
+	 * as possible from the source map into this one. */
+	virtual void impl_copyFrom(const CPointsMap& obj) = 0;
+
 	/** Auxiliary method called from within \a addFrom() automatically, to
 	 * finish the copying of class-specific data  */
 	virtual void addFrom_classSpecific(
@@ -407,27 +420,25 @@ class CPointsMap : public CMetricMap,
 	 */
 	inline size_t size() const { return m_x.size(); }
 	/** Access to a given point from map, as a 2D point. First index is 0.
-	 * \return The return value is the weight of the point (the times it has
-	 * been fused), or 1 if weights are not used.
 	 * \exception Throws std::exception on index out of bound.
 	 * \sa setPoint, getPointFast
 	 */
-	unsigned long getPoint(size_t index, float& x, float& y, float& z) const;
+	void getPoint(size_t index, float& x, float& y, float& z) const;
 	/// \overload
-	unsigned long getPoint(size_t index, float& x, float& y) const;
+	void getPoint(size_t index, float& x, float& y) const;
 	/// \overload
-	unsigned long getPoint(size_t index, double& x, double& y, double& z) const;
+	void getPoint(size_t index, double& x, double& y, double& z) const;
 	/// \overload
-	unsigned long getPoint(size_t index, double& x, double& y) const;
+	void getPoint(size_t index, double& x, double& y) const;
 	/// \overload
-	inline unsigned long getPoint(size_t index, mrpt::math::TPoint2D& p) const
+	inline void getPoint(size_t index, mrpt::math::TPoint2D& p) const
 	{
-		return getPoint(index, p.x, p.y);
+		getPoint(index, p.x, p.y);
 	}
 	/// \overload
-	inline unsigned long getPoint(size_t index, mrpt::math::TPoint3D& p) const
+	inline void getPoint(size_t index, mrpt::math::TPoint3D& p) const
 	{
-		return getPoint(index, p.x, p.y, p.z);
+		getPoint(index, p.x, p.y, p.z);
 	}
 
 	/** Access to a given point from map, and its colors, if the map defines
@@ -436,12 +447,12 @@ class CPointsMap : public CMetricMap,
 	 * been fused)
 	 * \exception Throws std::exception on index out of bound.
 	 */
-	virtual void getPoint(
+	virtual void getPointRGB(
 		size_t index, float& x, float& y, float& z, float& R, float& G,
 		float& B) const
 	{
 		getPoint(index, x, y, z);
-		R = G = B = 1;
+		R = G = B = 1.f;
 	}
 
 	/** Just like \a getPoint() but without checking out-of-bound index and
@@ -481,7 +492,7 @@ class CPointsMap : public CMetricMap,
 		setPoint(index, x, y, 0);
 	}
 	/// overload (RGB data is ignored in classes without color information)
-	virtual void setPoint(
+	virtual void setPointRGB(
 		size_t index, float x, float y, float z, float R, float G, float B)
 	{
 		MRPT_UNUSED_PARAM(R);
@@ -621,7 +632,7 @@ class CPointsMap : public CMetricMap,
 		insertPoint(p.x, p.y, p.z);
 	}
 	/// overload (RGB data is ignored in classes without color information)
-	virtual void insertPoint(
+	virtual void insertPointRGB(
 		float x, float y, float z, float R, float G, float B)
 	{
 		MRPT_UNUSED_PARAM(R);
