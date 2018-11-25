@@ -136,7 +136,7 @@ void CDetectorDoorCrossing::process(
 		out_estimation.enoughtInformation = true;
 
 		out_estimation.informationGain = entropy.I - lastEntropy.I;
-		out_estimation.pointsMap.copyFrom(*auxMap.m_pointsMaps[0]);
+		out_estimation.pointsMap = *auxMap.m_pointsMaps[0];
 	}
 
 	// For next iterations:

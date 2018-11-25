@@ -10,6 +10,7 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/CWeightedPointsMap.h>
 #include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/maps/CPointsMapXYZI.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <gtest/gtest.h>
 
@@ -154,6 +155,8 @@ TEST(CColouredPointsMapTests, insertPoints)
 {
 	do_test_insertPoints<CColouredPointsMap>();
 }
+
+TEST(CPointsMapXYZI, insertPoints) { do_test_insertPoints<CPointsMapXYZI>(); }
 
 TEST(CSimplePointsMapTests, clipOutOfRangeInZ)
 {

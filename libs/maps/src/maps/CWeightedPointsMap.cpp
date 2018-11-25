@@ -58,17 +58,8 @@ mrpt::maps::CMetricMap* CWeightedPointsMap::internal_CreateFromMapDefinition(
 
 IMPLEMENTS_SERIALIZABLE(CWeightedPointsMap, CPointsMap, mrpt::maps)
 
-/*---------------------------------------------------------------
-						Constructor
-  ---------------------------------------------------------------*/
 CWeightedPointsMap::CWeightedPointsMap() { reserve(400); }
-/*---------------------------------------------------------------
-						Destructor
-  ---------------------------------------------------------------*/
-CWeightedPointsMap::~CWeightedPointsMap() = default;
-/*---------------------------------------------------------------
-				reserve & resize methods
- ---------------------------------------------------------------*/
+
 void CWeightedPointsMap::reserve(size_t newLength)
 {
 	m_x.reserve(newLength);
@@ -99,15 +90,6 @@ void CWeightedPointsMap::setSize(size_t newLength)
 	pointWeight.assign(newLength, 1);
 }
 
-void CWeightedPointsMap::setPointFast(size_t index, float x, float y, float z)
-{
-	m_x[index] = x;
-	m_y[index] = y;
-	m_z[index] = z;
-	// this->pointWeight: Unmodified
-	// mark_as_modified(); -> Fast
-}
-
 void CWeightedPointsMap::insertPointFast(float x, float y, float z)
 {
 	m_x.push_back(x);
@@ -117,13 +99,10 @@ void CWeightedPointsMap::insertPointFast(float x, float y, float z)
 	// mark_as_modified(); -> Fast
 }
 
-/*---------------------------------------------------------------
-						Copy constructor
-  ---------------------------------------------------------------*/
-void CWeightedPointsMap::copyFrom(const CPointsMap& obj)
+void CWeightedPointsMap::impl_copyFrom(const CPointsMap& obj)
 {
-	CPointsMap::base_copyFrom(
-		obj);  // This also does a ::resize(N) of all data fields.
+	// This also does a ::resize(N) of all data fields.
+	CPointsMap::base_copyFrom(obj);
 
 	const auto* pW = dynamic_cast<const CWeightedPointsMap*>(&obj);
 	if (pW)

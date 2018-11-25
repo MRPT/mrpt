@@ -25,6 +25,7 @@ namespace mrpt::serialization
 class CSchemeArchiveBase_impl
 {
    public:
+	virtual ~CSchemeArchiveBase_impl() = default;
 	virtual CSchemeArchiveBase& operator=(const int32_t) = 0;
 	virtual CSchemeArchiveBase& operator=(const uint32_t) = 0;
 	virtual CSchemeArchiveBase& operator=(const int64_t) = 0;
@@ -84,6 +85,7 @@ class CSchemeArchiveBase
 	{
 		pimpl->setParent(this);
 	}
+	virtual ~CSchemeArchiveBase() = default;
 	CSchemeArchiveBase& operator=(const int32_t val)
 	{
 		return (*pimpl).operator=(val);

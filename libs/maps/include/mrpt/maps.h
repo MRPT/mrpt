@@ -30,12 +30,12 @@ MRPT_WARNING(
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/CWeightedPointsMap.h>
+#include <mrpt/maps/CPointsMapXYZI.h>
 #include <mrpt/maps/COctoMap.h>
 #include <mrpt/maps/CColouredOctoMap.h>
 
 //#include <mrpt/maps/PCL_adapters.h>  // NOTE: This file must be included from
-// the user
-// code only if he has already #include'd PCL headers.
+// the user code only if he has already #include'd PCL headers.
 
 #include <mrpt/opengl/CAngularObservationMesh.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>

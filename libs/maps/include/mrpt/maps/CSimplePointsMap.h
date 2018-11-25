@@ -34,6 +34,15 @@ class CSimplePointsMap : public CPointsMap
    public:
 	/** Default constructor */
 	CSimplePointsMap();
+	CSimplePointsMap(const CPointsMap& o) : CSimplePointsMap()
+	{
+		CPointsMap::operator=(o);
+	}
+	CSimplePointsMap operator=(const CPointsMap& o)
+	{
+		CPointsMap::operator=(o);
+		return *this;
+	}
 
 	// --------------------------------------------
 	/** @name Pure virtual interfaces to be implemented by any class derived
@@ -42,15 +51,9 @@ class CSimplePointsMap : public CPointsMap
 	void reserve(size_t newLength) override;  // See base class docs
 	void resize(size_t newLength) override;  // See base class docs
 	void setSize(size_t newLength) override;  // See base class docs
-	/** Changes the coordinates of the given point (0-based index), *without*
-	 * checking for out-of-bounds and *without* calling mark_as_modified()  \sa
-	 * setPoint */
-	void setPointFast(size_t index, float x, float y, float z) override;
 	/** The virtual method for \a insertPoint() *without* calling
 	 * mark_as_modified()   */
 	void insertPointFast(float x, float y, float z = 0) override;
-	/** Virtual assignment operator, to be implemented in derived classes  */
-	void copyFrom(const CPointsMap& obj) override;
 	/** Get all the data fields for one point as a vector: [X Y Z]
 	 *  Unlike getPointAllFields(), this method does not check for index out of
 	 * bounds
@@ -88,8 +91,7 @@ class CSimplePointsMap : public CPointsMap
 		const mrpt::poses::CPose3D* robotPose = nullptr) override;
 
    protected:
-	/** Auxiliary method called from within \a addFrom() automatically, to
-	 * finish the copying of class-specific data  */
+	void impl_copyFrom(const CPointsMap& obj) override;
 	void addFrom_classSpecific(
 		const CPointsMap& anotherMap, const size_t nPreviousPoints) override
 	{

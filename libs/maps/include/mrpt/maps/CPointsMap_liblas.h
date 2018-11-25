@@ -177,7 +177,7 @@ bool loadLASFile(
 		if (has_color)
 		{
 			liblas::Color const& col = p.GetColor();
-			ptmap.insertPoint(
+			ptmap.insertPointRGB(
 				p.GetX(), p.GetY(), p.GetZ(), col.GetRed() * col_fract,
 				col.GetGreen() * col_fract, col.GetBlue() * col_fract);
 		}
