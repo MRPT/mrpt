@@ -193,43 +193,31 @@ mxArray* CPointsMap::writeToMatlab() const
 					getPoint
 			Access to stored points coordinates:
   ---------------------------------------------------------------*/
-unsigned long CPointsMap::getPoint(size_t index, float& x, float& y) const
+void CPointsMap::getPoint(size_t index, float& x, float& y) const
 {
 	ASSERT_BELOW_(index, m_x.size());
 	x = m_x[index];
 	y = m_y[index];
-
-	return getPointWeight(index);
 }
-unsigned long CPointsMap::getPoint(
-	size_t index, float& x, float& y, float& z) const
+void CPointsMap::getPoint(size_t index, float& x, float& y, float& z) const
 {
 	ASSERT_BELOW_(index, m_x.size());
 	x = m_x[index];
 	y = m_y[index];
 	z = m_z[index];
-
-	return getPointWeight(index);
 }
-unsigned long CPointsMap::getPoint(size_t index, double& x, double& y) const
+void CPointsMap::getPoint(size_t index, double& x, double& y) const
 {
 	ASSERT_BELOW_(index, m_x.size());
 	x = m_x[index];
 	y = m_y[index];
-
-	return getPointWeight(index);
-	;
 }
-unsigned long CPointsMap::getPoint(
-	size_t index, double& x, double& y, double& z) const
+void CPointsMap::getPoint(size_t index, double& x, double& y, double& z) const
 {
 	ASSERT_BELOW_(index, m_x.size());
 	x = m_x[index];
 	y = m_y[index];
 	z = m_z[index];
-
-	return getPointWeight(index);
-	;
 }
 
 /*---------------------------------------------------------------
@@ -601,7 +589,7 @@ void CPointsMap::changeCoordinatesReference(const CPose3D& newBase)
 void CPointsMap::changeCoordinatesReference(
 	const CPointsMap& other, const CPose3D& newBase)
 {
-	copyFrom(other);
+	*this = other;
 	changeCoordinatesReference(newBase);
 }
 
@@ -1263,7 +1251,7 @@ void CPointsMap::extractPoints(
 		if ((m_x[k] >= minX && m_x[k] <= maxX) &&
 			(m_y[k] >= minY && m_y[k] <= maxY) &&
 			(m_z[k] >= minZ && m_z[k] <= maxZ))
-			outMap->insertPoint(m_x[k], m_y[k], m_z[k], R, G, B);
+			outMap->insertPointRGB(m_x[k], m_y[k], m_z[k], R, G, B);
 	}
 }
 
@@ -2120,8 +2108,8 @@ void CPointsMap::fuseWith(
 	// -------------------------------------------------
 	for (size_t i = 0; i < nOther; i++)
 	{
-		const unsigned long w_a =
-			otherMap->getPoint(i, a);  // Get "local" point into "a"
+		otherMap->getPoint(i, a);  // Get "local" point into "a"
+		const unsigned long w_a = otherMap->getPointWeight(i);
 
 		// Find closest correspondence of "a":
 		int closestCorr = -1;
@@ -2144,7 +2132,8 @@ void CPointsMap::fuseWith(
 
 		if (closestCorr != -1)
 		{  // Merge:		FUSION
-			unsigned long w_b = getPoint(closestCorr, b);
+			getPoint(closestCorr, b);
+			unsigned long w_b = getPointWeight(closestCorr);
 
 			ASSERT_((w_a + w_b) > 0);
 
@@ -2221,7 +2210,7 @@ void CPointsMap::loadFromVelodyneScan(
 		const double gy = m10 * lx + m11 * ly + m12 * lz + m13;
 		const double gz = m20 * lx + m21 * ly + m22 * lz + m23;
 
-		this->setPoint(
+		this->setPointRGB(
 			nOldPtsCount + i, gx, gy, gz,  // XYZ
 			inten, inten, inten  // RGB
 		);

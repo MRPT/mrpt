@@ -36,6 +36,7 @@ TEST_CLASS_MOVE_COPY_CTORS(COccupancyGridMap2D);
 TEST_CLASS_MOVE_COPY_CTORS(CSimplePointsMap);
 TEST_CLASS_MOVE_COPY_CTORS(CRandomFieldGridMap3D);
 TEST_CLASS_MOVE_COPY_CTORS(CWeightedPointsMap);
+TEST_CLASS_MOVE_COPY_CTORS(CPointsMapXYZI);
 TEST_CLASS_MOVE_COPY_CTORS(COctoMap);
 TEST_CLASS_MOVE_COPY_CTORS(CColouredOctoMap);
 
@@ -55,6 +56,7 @@ TEST(SerializeTestMaps, WriteReadToMem)
 		CLASS_ID(CSimplePointsMap),
 		CLASS_ID(CRandomFieldGridMap3D),
 		CLASS_ID(CWeightedPointsMap),
+		CLASS_ID(CPointsMapXYZI),
 		CLASS_ID(COctoMap),
 		CLASS_ID(CColouredOctoMap)};
 

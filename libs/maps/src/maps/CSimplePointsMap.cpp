@@ -55,7 +55,6 @@ mrpt::maps::CMetricMap* CSimplePointsMap::internal_CreateFromMapDefinition(
 	return obj;
 }
 //  =========== End of Map definition Block =========
-
 IMPLEMENTS_SERIALIZABLE(CSimplePointsMap, CPointsMap, mrpt::maps)
 
 CSimplePointsMap::CSimplePointsMap() = default;
@@ -90,10 +89,10 @@ void CSimplePointsMap::setSize(size_t newLength)
 	mark_as_modified();
 }
 
-void CSimplePointsMap::copyFrom(const CPointsMap& obj)
+void CSimplePointsMap::impl_copyFrom(const CPointsMap& obj)
 {
-	CPointsMap::base_copyFrom(
-		obj);  // This also does a ::resize(N) of all data fields.
+	// This also does a ::resize(N) of all data fields.
+	CPointsMap::base_copyFrom(obj);
 }
 
 uint8_t CSimplePointsMap::serializeGetVersion() const { return 10; }
@@ -265,13 +264,6 @@ void CSimplePointsMap::internal_clear()
 	vector_strong_clear(m_z);
 
 	mark_as_modified();
-}
-
-void CSimplePointsMap::setPointFast(size_t index, float x, float y, float z)
-{
-	m_x[index] = x;
-	m_y[index] = y;
-	m_z[index] = z;
 }
 
 void CSimplePointsMap::insertPointFast(float x, float y, float z)
