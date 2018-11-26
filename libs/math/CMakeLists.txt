@@ -37,9 +37,14 @@ set(EXTRA_CONFIG_CMDS
 	if (TARGET Eigen)\n\
 		target_link_libraries(Eigen3::Eigen INTERFACE Eigen)\n\
 	else()\n\
+		if(EXISTS \"${EIGEN3_INCLUDE_DIR}\")\n\
+			set(eigen_dirs ${EIGEN3_INCLUDE_DIR})\n\
+		else()\n\
+			set(eigen_dirs ${EIGEN_EMBEDDED_INCLUDE_DIR})\n\
+		endif()\n\
 		set_target_properties(Eigen3::Eigen PROPERTIES\n\
 			INTERFACE_INCLUDE_DIRECTORIES\n\
-				$<BUILD_INTERFACE:D:/code/mrpt-2.0-msvc15-x64/include/eigen3>\n\
+				$<BUILD_INTERFACE:\${eigen_dirs}>\n\
 		)\n\
 	endif()\n\
 endif()\n"
