@@ -131,7 +131,7 @@ void xRawLogViewerFrame::OnMenuCompactRawlog(wxCommandEvent& event)
 			{
 				// remove this one and accumulate in the first in the serie:
 				*lastSF =
-				    std::move(*std::dynamic_pointer_cast<CSensoryFrame>(*it));
+					std::move(*std::dynamic_pointer_cast<CSensoryFrame>(*it));
 
 				deleteThis = true;
 				nEmptySFDel++;
@@ -271,7 +271,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecimate(wxCommandEvent& event)
 
 			// Copy pointers to observations only (fast):
 			*accum_sf =
-			    std::move(*std::dynamic_pointer_cast<CSensoryFrame>(obj));
+				std::move(*std::dynamic_pointer_cast<CSensoryFrame>(obj));
 
 			if (++SF_counter >= DECIMATE_RATIO)
 			{
@@ -407,7 +407,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecFILE(wxCommandEvent& event)
 
 				// Copy pointers to observations only (fast):
 				*accum_sf = std::move(
-				    *std::dynamic_pointer_cast<CSensoryFrame>(newObj));
+					*std::dynamic_pointer_cast<CSensoryFrame>(newObj));
 
 				if (++SF_counter >= DECIMATE_RATIO)
 				{
