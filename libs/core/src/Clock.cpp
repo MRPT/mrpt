@@ -58,7 +58,7 @@ mrpt::Clock::time_point mrpt::Clock::fromDouble(const double t) noexcept
 double mrpt::Clock::toDouble(const mrpt::Clock::time_point t) noexcept
 {
 	return double(
-	           t.time_since_epoch().count() -
-	           UINT64_C(116444736) * UINT64_C(1000000000)) /
-	       10000000.0;
+			   t.time_since_epoch().count() -
+			   UINT64_C(116444736) * UINT64_C(1000000000)) /
+		   10000000.0;
 }
