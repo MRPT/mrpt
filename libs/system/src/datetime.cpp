@@ -47,17 +47,6 @@ mrpt::system::TTimeStamp mrpt::system::time_tToTimestamp(const time_t& t)
 	return time_tToTimestamp(static_cast<double>(t));
 }
 
-double mrpt::system::timestampTotime_t(const mrpt::system::TTimeStamp t)
-{
-	return double(
-			   t.time_since_epoch().count() -
-			   UINT64_C(116444736) * UINT64_C(1000000000)) /
-		   10000000.0;
-}
-
-/*---------------------------------------------------------------
-					timestampToParts
-  ---------------------------------------------------------------*/
 void mrpt::system::timestampToParts(TTimeStamp t, TTimeParts& p, bool localTime)
 {
 	const double T = mrpt::system::timestampTotime_t(t);

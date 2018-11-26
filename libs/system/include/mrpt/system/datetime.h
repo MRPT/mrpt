@@ -102,7 +102,10 @@ mrpt::system::TTimeStamp time_tToTimestamp(const time_t& t);
  * can contain fractions of seconds).
  * \sa time_tToTimestamp
  */
-double timestampTotime_t(const mrpt::system::TTimeStamp t);
+inline double timestampTotime_t(const mrpt::system::TTimeStamp t) noexcept
+{
+	return mrpt::Clock::toDouble(t);
+}
 
 /** Transform from TTimeStamp to standard "time_t" (actually a double number, it
  * can contain fractions of seconds).
@@ -110,7 +113,7 @@ double timestampTotime_t(const mrpt::system::TTimeStamp t);
  * significant name.
  * \sa time_tToTimestamp
  */
-inline double timestampToDouble(const mrpt::system::TTimeStamp t)
+inline double timestampToDouble(const mrpt::system::TTimeStamp t) noexcept
 {
 	return timestampTotime_t(t);
 }
