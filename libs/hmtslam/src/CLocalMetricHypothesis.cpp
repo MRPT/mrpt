@@ -852,10 +852,7 @@ void CLocalMetricHypothesis::updateAreaFromLMH(
 
 			if (eraseSFsFromLMH)
 			{
-				poseInfo.sf.moveFrom(itSF->second);  // This leaves m_SFs[*it]
-				// without observations,
-				// but it is being erased
-				// just now:
+				poseInfo.sf = std::move(itSF->second);
 				m_SFs.erase(itSF);
 			}
 			else
