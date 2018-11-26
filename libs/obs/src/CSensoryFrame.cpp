@@ -208,18 +208,6 @@ CObservation::Ptr CSensoryFrame::getObservationBySensorLabel(
 }
 
 /*---------------------------------------------------------------
-						moveFrom
-  ---------------------------------------------------------------*/
-void CSensoryFrame::moveFrom(CSensoryFrame& sf)
-{
-	copy(
-		sf.m_observations.begin(), sf.m_observations.end(),
-		back_inserter(m_observations));
-	sf.m_observations.clear();
-	m_cachedMap.reset();
-}
-
-/*---------------------------------------------------------------
 						swap
   ---------------------------------------------------------------*/
 void CSensoryFrame::swap(CSensoryFrame& sf)

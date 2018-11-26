@@ -22,6 +22,7 @@ if(UNIX)
 	execute_process(
 		COMMAND wx-config --selected-config --toolkit=gtk3
 		RESULT_VARIABLE ret
+		OUTPUT_QUIET
 	)
 	if(ret EQUAL "0")
 		message(STATUS "wxWidgets: Found gtk3 version, using it.")

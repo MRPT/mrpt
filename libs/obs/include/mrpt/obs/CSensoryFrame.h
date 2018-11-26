@@ -167,23 +167,14 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
 
 	/** You can use "sf1+=sf2;" to add observations in sf2 to sf1. Objects are
 	 * copied, not referenced, thus the source can be safely deleted next.
-	 * \sa moveFrom
 	 */
 	void operator+=(const CSensoryFrame& sf);
 
 	/** You can use "sf+=obs;" to add the observation "obs" to the "sf1".
 	 * Objects are copied, using the smart pointer, thus the original pointer
 	 * can be safely deleted next.
-	 * \sa moveFrom
 	 */
 	void operator+=(const CObservation::Ptr& obs);
-
-	/** Copies all the observation from another object, then erase them from the
-	 * origin object (this method is fast since only pointers are copied);
-	 * Previous objects in this objects are not deleted.
-	 * \sa operator +=
-	 */
-	void moveFrom(CSensoryFrame& sf);
 
 	/** Inserts a new observation to the list: The pointer to the objects is
 	 * copied, thus DO NOT delete the passed object, this class will do at
