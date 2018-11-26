@@ -30,8 +30,10 @@ class Clock
 	/** Returns the current time, with the highest resolution available.
 	 *  Typically this is better than 1 microsecond. */
 	static time_point now() noexcept;
-	/** Create a timestamp from its double representation. \sa
-	 * mrpt::system::timestampToDouble() */
+	/** Create a timestamp from its double representation. \sa toDouble */
 	static time_point fromDouble(const double t) noexcept;
+	/** Converts a timestamp to a UNIX time_t-like number, with fractional part
+	 * \sa fromDouble */
+	static double toDouble(const time_point t) noexcept;
 };
 }  // namespace mrpt
