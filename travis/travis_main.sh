@@ -15,8 +15,8 @@ ORIG_MRPT_DIR=`pwd`
 MRPT_DIR=/mrpt
 BUILD_DIR=/build
 
-CMAKE_C_FLAGS="-Wall -Wextra -Wabi"
-CMAKE_CXX_FLAGS="-Wall -Wextra -Wabi"
+CMAKE_C_FLAGS="-Wall -Wextra -Wabi=11"
+CMAKE_CXX_FLAGS="-Wall -Wextra -Wabi=11"
 EXTRA_CMAKE_ARGS=""
 
 function install_lint_reqs()
