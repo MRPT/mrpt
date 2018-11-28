@@ -31,7 +31,7 @@
 	}                                                                    \
 	static void f(void)
 #else
-// Static libs in Windows: the hardest case, subject to
+// Static libs in Windows: the hardest case, subject to be optimized out
 #define MRPT_INITIALIZER(f)   \
 	static void f(void);      \
 	struct f##_t_             \
@@ -42,8 +42,6 @@
 	static void f(void)
 #endif
 #else
-#include <cstdio>
-#include <cstdlib>
 #define MRPT_INITIALIZER(f)                                                 \
 	static void f(void) __attribute__((constructor)) __attribute__((used)); \
 	static void f(void)
