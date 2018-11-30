@@ -362,7 +362,8 @@ void CWaypointsNavigator::waypoints_navigationStep()
 				ASSERT_(params_waypoints_navigator.multitarget_look_ahead >= 0);
 
 				// Notify we have a new "current waypoint"
-				m_pending_events.emplace_front(std::bind(
+				// Push back so it's dispatched *after* the wp reached events:
+				m_pending_events.emplace_back(std::bind(
 					&CRobot2NavInterface::sendNewWaypointTargetEvent,
 					std::ref(m_robot), wps.waypoint_index_current_goal));
 
