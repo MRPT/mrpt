@@ -56,10 +56,10 @@ define_mrpt_lib(
 	mrpt-img
 	)
 
-add_dependencies(mrpt-opengl libcvd)
-include_directories(${CVD_INCLUDE_DIRS})
-
 if(BUILD_mrpt-opengl)
+	add_dependencies(mrpt-opengl libcvd)
+	include_directories(${CVD_INCLUDE_DIRS})
+
 	# Ignore precompiled headers in some sources:
 	if(MRPT_ENABLE_PRECOMPILED_HDRS)
 		if (MSVC)
