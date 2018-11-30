@@ -25,10 +25,14 @@ void CRateTimer::setRate(const double rate_hz)
 bool CRateTimer::sleep()
 {
 	const double elapsed_tim = m_tictac.Tac();
-	m_tictac.Tic();
 	const double period = 1.0 / m_rate_hz;
 	const int64_t wait_tim_us = 1000000L * (period - elapsed_tim);
-	if (wait_tim_us < 0) return false;
+	if (elapsed_tim > period)
+	{
+		m_tictac.Tic();
+		return false;
+	}
 	std::this_thread::sleep_for(std::chrono::microseconds(wait_tim_us));
+	m_tictac.Tic();
 	return true;
 }
