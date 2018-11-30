@@ -310,7 +310,8 @@ void CWaypointsNavigator::waypoints_navigationStep()
 				TPendingEvent ev;
 				ev.event_new_wp = true;
 				ev.event_new_wp_index = wps.waypoint_index_current_goal;
-				m_pending_events.push_front(ev);
+				// Push back so it's dispatched *after* the wp reached events:
+				m_pending_events.push_back(ev);
 			}
 
 			// Send the current targets + "multitarget_look_ahead" additional ones to help the local planner.
