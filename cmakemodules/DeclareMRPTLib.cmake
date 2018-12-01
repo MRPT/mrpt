@@ -263,6 +263,19 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 			)
 	endif ()
 
+	# Special directories when building a .deb package:
+	if(CMAKE_MRPT_USE_DEB_POSTFIXS)
+		set(MRPT_PREFIX_INSTALL "libmrpt-${name}${CMAKE_MRPT_VERSION_NUMBER_MAJOR}.${CMAKE_MRPT_VERSION_NUMBER_MINOR}/usr/")
+		set(this_lib_dev_INSTALL_PREFIX "libmrpt-${name}-dev/usr/")
+	else()
+		set(MRPT_PREFIX_INSTALL "")
+		set(this_lib_dev_INSTALL_PREFIX "")
+	endif()
+
+	message(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
+	message(STATUS "MRPT_PREFIX_INSTALL: ${MRPT_PREFIX_INSTALL}")
+	message(STATUS "this_lib_dev_INSTALL_PREFIX: ${this_lib_dev_INSTALL_PREFIX}")
+
 	# Set custom name of lib + dynamic link numbering convenions in Linux:
 	if (NOT ${headers_only})
 		set_target_properties(mrpt-${name} PROPERTIES
@@ -343,13 +356,6 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 			PROPERTY CXX_INCLUDE_WHAT_YOU_USE ${IWYU_PATH_AND_OPTIONS})
 		endif()
 
-		# Special directories when building a .deb package:
-		if(CMAKE_MRPT_USE_DEB_POSTFIXS)
-			set(MRPT_PREFIX_INSTALL "libmrpt-${name}${CMAKE_MRPT_VERSION_NUMBER_MAJOR}.${CMAKE_MRPT_VERSION_NUMBER_MINOR}/usr/")
-		else()
-			set(MRPT_PREFIX_INSTALL "")
-		endif()
-
 		# make sure the library gets installed
 		if (NOT is_metalib)
 			install(TARGETS mrpt-${name} EXPORT mrpt-${name}-targets
@@ -389,12 +395,6 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 		VERSION ${CMAKE_MRPT_FULL_VERSION}
 		COMPATIBILITY SameMajorVersion
 	)
-
-	if (CMAKE_MRPT_USE_DEB_POSTFIXS)
-		set(this_lib_dev_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/libmrpt-${name}-dev/usr/")
-	else()
-		set(this_lib_dev_INSTALL_PREFIX "")
-	endif()
 
 	# mrpt-xxx-config.cmake file:
 	# Makes the project importable from installed dir:
