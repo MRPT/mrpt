@@ -106,18 +106,9 @@ endif ()
 # -- Install --
 # Using embedded version of libraries that need public headers?
 if(EIGEN_USE_EMBEDDED_VERSION AND NOT IS_DEBIAN_DBG_PKG)
-	if(WIN32)
-		# Eigen headers must end up in /Program Files/MRPT-X.Y.Z/libs/base/...
-		set(MRPT_INSTALL_EIGEN_PREFIX "libs/math/include/")
-	else(WIN32)
-		# Eigen headers must end up in /usr/...
-		set(MRPT_INSTALL_EIGEN_PREFIX "${libmrpt_dev_INSTALL_PREFIX}include/mrpt/math/include/")
-	endif(WIN32)
-
 	install(
-		DIRECTORY "${MRPT_BINARY_DIR}/otherlibs/eigen3/Eigen"
-		DESTINATION "${MRPT_INSTALL_EIGEN_PREFIX}" )
-	install(
-		DIRECTORY "${MRPT_BINARY_DIR}/otherlibs/eigen3/unsupported"
-		DESTINATION "${MRPT_INSTALL_EIGEN_PREFIX}" )
+		DIRECTORY
+			"${MRPT_BINARY_DIR}/otherlibs/eigen3/Eigen"
+			"${MRPT_BINARY_DIR}/otherlibs/eigen3/unsupported"
+		DESTINATION libs/math/include/ )
 endif()
