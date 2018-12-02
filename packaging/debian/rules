@@ -28,8 +28,6 @@ CMAKE_FLAGS = \
 	-DCMAKE_INSTALL_LIBDIR="lib/$(DEB_HOST_MULTIARCH)" \
 	-DCMAKE_VERBOSE_MAKEFILE=ON \
 	-DCMAKE_BUILD_TYPE=Release  \
-	-DCMAKE_HOST="$(DEB_HOST_GNU_TYPE)" \
-	-DCMAKE_BUILD="$(DEB_BUILD_GNU_TYPE)" \
 	-DCMAKE_MRPT_USE_DEB_POSTFIXS="1" \
 	-DCMAKE_VERBOSE_MAKEFILE=ON \
 	-DCMAKE_C_FLAGS_RELEASE="$(CFLAGS)" \
@@ -76,6 +74,10 @@ override_dh_auto_test-arch:
 override_dh_install:
 	# Install:
 	dh_auto_build -O--buildsystem=cmake -- install
+
+	# Move all the ".so.x.y" files to the corresponding binary packages:
+	# libmrpt-${name}${CMAKE_MRPT_VERSION_NUMBER_MAJOR}.${CMAKE_MRPT_VERSION_NUMBER_MINOR}/usr/...
+	VERSION=$(head version_prefix.txt -n1 | cut -f 1-2 -d . ); find $(CURDIR)/debian/ -name "*.so.?.*" | while read line; do f=$$(basename $$line | cut -f 1 -d '.'); echo "Processing so file: $$line, basename: $$f"; dir= $(CURDIR)/debian/$$f$${VERSION}/usr/lib/$(DEB_HOST_MULTIARCH); mkdir -p $$dir; mv -f $$line $$dir; done
 
 	# Move all the ".so" files to the proper place: the -dev package:
 	find $(CURDIR)/debian/ -name "*.so" | grep -v 'dev' | grep -v 'pymrpt' | while read line; do f=$$(basename $$line .so); echo "Processing so file: $$line, basename: $f"; mkdir -p $(CURDIR)/debian/$$f-dev/usr/lib/$(DEB_HOST_MULTIARCH); mv -f $$line $(CURDIR)/debian/$$f-dev/usr/lib/$(DEB_HOST_MULTIARCH); done

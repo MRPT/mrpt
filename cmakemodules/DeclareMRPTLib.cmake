@@ -265,15 +265,12 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 
 	# Special directories when building a .deb package:
 	if(CMAKE_MRPT_USE_DEB_POSTFIXS)
-		set(MRPT_PREFIX_INSTALL "libmrpt-${name}${CMAKE_MRPT_VERSION_NUMBER_MAJOR}.${CMAKE_MRPT_VERSION_NUMBER_MINOR}/usr/")
 		set(this_lib_dev_INSTALL_PREFIX "libmrpt-${name}-dev/usr/")
 	else()
-		set(MRPT_PREFIX_INSTALL "")
 		set(this_lib_dev_INSTALL_PREFIX "")
 	endif()
 
 	message(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
-	message(STATUS "MRPT_PREFIX_INSTALL: ${MRPT_PREFIX_INSTALL}")
 	message(STATUS "this_lib_dev_INSTALL_PREFIX: ${this_lib_dev_INSTALL_PREFIX}")
 
 	# Set custom name of lib + dynamic link numbering convenions in Linux:
@@ -359,9 +356,9 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 		# make sure the library gets installed
 		if (NOT is_metalib)
 			install(TARGETS mrpt-${name} EXPORT mrpt-${name}-targets
-				RUNTIME DESTINATION ${MRPT_PREFIX_INSTALL}bin  COMPONENT Libraries
-				LIBRARY DESTINATION ${MRPT_PREFIX_INSTALL}${CMAKE_INSTALL_LIBDIR} COMPONENT Libraries
-				ARCHIVE DESTINATION ${MRPT_PREFIX_INSTALL}${CMAKE_INSTALL_LIBDIR} COMPONENT Libraries  # WAS: lib${LIB_SUFFIX}
+				RUNTIME DESTINATION bin  COMPONENT Libraries
+				LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Libraries
+				ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Libraries  # WAS: lib${LIB_SUFFIX}
 				)
 
 			# Collect .pdb debug files for optional installation:
