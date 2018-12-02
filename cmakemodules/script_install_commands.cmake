@@ -2,7 +2,7 @@
 #   More installation commands:
 # ----------------------------------------------------------------------------
 
-# CMake will look for MRPTConfig.cmake at: /usr/{share|lib}/mrpt
+# MRPTConfig.cmake: backwards-compatible file as it was named in mrpt v1.x
 if(WIN32)
 	install(FILES "${MRPT_SOURCE_DIR}/parse-files/MRPTConfig.cmake" DESTINATION ./ )
 else()

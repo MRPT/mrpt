@@ -587,14 +587,12 @@ if(CMAKE_MRPT_USE_DEB_POSTFIXS)
 	set(mrpt_apps_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/mrpt-apps/usr/")
 	set(mrpt_doc_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/mrpt-doc/usr/")
 	set(mrpt_common_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/mrpt-common/usr/")
-	set(mrpt_pkgconfig_INSTALL_PREFIX "/usr")
 else()
 	# Values under normal conditions -----------------------
 	set(libmrpt_common_dev_INSTALL_PREFIX "")
 	set(mrpt_apps_INSTALL_PREFIX "")
 	set(mrpt_doc_INSTALL_PREFIX "")
 	set(mrpt_common_INSTALL_PREFIX "")
-	set(mrpt_pkgconfig_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 endif()
 
 # Remove /STACK:10000000 set by CMake. This value for stack size
