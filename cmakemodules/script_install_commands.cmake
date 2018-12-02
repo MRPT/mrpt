@@ -67,15 +67,19 @@ else(WIN32)
 		install(
 			DIRECTORY
 				"${MRPT_SOURCE_DIR}/share/applications"
-				"${MRPT_SOURCE_DIR}/share/mrpt"
 				"${MRPT_SOURCE_DIR}/share/pixmaps"
 				"${MRPT_SOURCE_DIR}/share/metainfo"
+				"${MRPT_SOURCE_DIR}/share/mime"
 			DESTINATION
 				${mrpt_apps_INSTALL_PREFIX}share
 			)
 
-	 	# Mime types go to the mrpt-apps package
-		install(DIRECTORY "${MRPT_SOURCE_DIR}/share/mime" DESTINATION ${mrpt_apps_INSTALL_PREFIX}share )
+			install(
+				DIRECTORY
+					"${MRPT_SOURCE_DIR}/share/mrpt"
+				DESTINATION
+					${mrpt_common_INSTALL_PREFIX}share
+				)
 	endif()
 endif()
 

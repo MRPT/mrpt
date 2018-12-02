@@ -365,9 +365,9 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 		# make sure the library gets installed
 		if (NOT is_metalib)
 			install(TARGETS mrpt-${name} EXPORT mrpt-${name}-targets
-				RUNTIME DESTINATION bin  COMPONENT Libraries
-				LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Libraries
-				ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Libraries  # WAS: lib${LIB_SUFFIX}
+				RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}bin  COMPONENT Libraries
+				LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}${CMAKE_INSTALL_LIBDIR} COMPONENT Libraries
+				ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}${CMAKE_INSTALL_LIBDIR} COMPONENT Libraries  # WAS: lib${LIB_SUFFIX}
 				)
 
 			# Collect .pdb debug files for optional installation:
