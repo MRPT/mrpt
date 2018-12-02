@@ -41,10 +41,14 @@ CMAKE_FLAGS = \
 # and the rpath is removed anyway by cmake's install target.
 
 %:
-	dh $@ --buildsystem=cmake --parallel
+	dh $@ --buildsystem=cmake
 
 override_dh_auto_build-arch:
 	dh_auto_build -O--buildsystem=cmake
+
+	# Python bindings:
+	dh_python2 --package=python-mrpt
+
 
 override_dh_auto_build-indep:
 	# Build doc targets:
