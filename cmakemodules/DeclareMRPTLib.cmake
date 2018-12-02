@@ -265,8 +265,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 
 	# Special directories when building a .deb package:
 	if(CMAKE_MRPT_USE_DEB_POSTFIXS)
-		#set(MRPT_PREFIX_INSTALL "libmrpt-${name}${CMAKE_MRPT_VERSION_NUMBER_MAJOR}.${CMAKE_MRPT_VERSION_NUMBER_MINOR}/usr/")
-		set(MRPT_PREFIX_INSTALL "usr/")
+		set(MRPT_PREFIX_INSTALL "libmrpt-${name}${CMAKE_MRPT_VERSION_NUMBER_MAJOR}.${CMAKE_MRPT_VERSION_NUMBER_MINOR}/usr/")
 		set(this_lib_dev_INSTALL_PREFIX "libmrpt-${name}-dev/usr/")
 	else()
 		set(MRPT_PREFIX_INSTALL "")

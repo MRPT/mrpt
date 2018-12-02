@@ -706,3 +706,9 @@ Description: Mobile Robot Programming Toolkit - Console and GUI applications
   - robotic-arm-kinematics: GUI for design of robot arms with
                             Denavit-Hartenberg parameters.
   - velodyne-view: Live display/grabbing of Velodyne scanners.
+
+Package: python-mrpt
+Architecture: any
+Depends: ${python:Depends}, ${misc:Depends}
+Description: Mobile Robot Programming Toolkit - Python bindings
+ This package installs MRPT bindings for Python.
