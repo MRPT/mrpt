@@ -570,7 +570,7 @@ Package: libmrpt-topography-dev
 Section: libdevel
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-topography@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-obs-dev
+         libmrpt-common-dev, libmrpt-obs-dev
 Description: Mobile Robot Programming Toolkit - topography development package
  This package provides headers and libraries for development.
 
