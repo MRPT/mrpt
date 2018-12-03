@@ -1082,7 +1082,7 @@ void holonomic_navigator_demoFrame::OnbtnLoadMapClick(wxCommandEvent& event)
 			if (sCellSize.ToDouble(&cell_size) && sCX.ToDouble(&cx) &&
 				sCY.ToDouble(&cy))
 			{
-				if (!m_gridMap.loadFromBitmap(img, cell_size, cx, cy))
+				if (!m_gridMap.loadFromBitmap(img, cell_size, {cx, cy}))
 					wxMessageBox(
 						_("Error"),
 						_("Can't load the image file into the gridmap..."));

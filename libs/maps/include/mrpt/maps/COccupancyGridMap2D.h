@@ -1066,25 +1066,26 @@ class COccupancyGridMap2D : public CMetricMap,
 	 * \param file The file to be loaded.
 	 * \param resolution The size of a pixel (cell), in meters. Recall cells are
 	 * always squared, so just a dimension is needed.
-	 * \param xCentralPixel The `x` coordinate (0=first, increases <b>left to
-	 * right</b> on the image) for the pixel which will be taken at coordinates
-	 * origin (0,0). (Default: the center of the image)
-	 * \param yCentralPixel The `y` coordinate (0=first, increases <b>BOTTOM
-	 * upwards</b> on the image) for the pixel which will be taken at
-	 * coordinates origin (0,0). (Default: the center of the image)
-	 * \return False on any error.
-	 * \sa loadFromBitmap
+	 * \param origin The `x` (0=first, increases <b>left to right</b> on the
+	 * image) and `y` (0=first, increases <b>BOTTOM upwards</b> on the image)
+	 * coordinates for the pixel which will be taken at the origin of map
+	 * coordinates (0,0). (Default=center of the image) \return False on any
+	 * error. \sa loadFromBitmap
 	 */
 	bool loadFromBitmapFile(
-		const std::string& file, float resolution, float xCentralPixel = -1,
-		float yCentralPixel = -1);
+		const std::string& file, float resolution,
+		const mrpt::math::TPoint2D& origin = mrpt::math::TPoint2D(
+			std::numeric_limits<double>::quiet_NaN(),
+			std::numeric_limits<double>::quiet_NaN()));
 
 	/** Load the gridmap from a image in a file (the format can be any supported
 	 * by CImage::loadFromFile).
 	 *  See loadFromBitmapFile() for the meaning of parameters */
 	bool loadFromBitmap(
 		const mrpt::img::CImage& img, float resolution,
-		float xCentralPixel = -1, float yCentralPixel = -1);
+		const mrpt::math::TPoint2D& origin = mrpt::math::TPoint2D(
+			std::numeric_limits<double>::quiet_NaN(),
+			std::numeric_limits<double>::quiet_NaN()));
 
 	/** See the base class for more details: In this class it is implemented as
 	 * correspondences of the passed points map to occupied cells.

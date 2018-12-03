@@ -259,18 +259,8 @@ void COccupancyGridMap2D::serializeFrom(
 	};
 }
 
-/*---------------------------------------------------------------
-					loadFromBitmapFile
- Load a 8-bits, black & white bitmap file as a grid map. It will be loaded such
-as coordinates (0,0) falls just in the middle of map.
-\param file The file to be loaded.
-\param resolution The size of a pixel (cell), in meters. Recall cells are always
-squared, so just a dimension is needed.
-\return False on any error.
- ---------------------------------------------------------------*/
 bool COccupancyGridMap2D::loadFromBitmapFile(
-	const std::string& file, float res, float xCentralPixel,
-	float yCentralPixel)
+	const std::string& file, float res, const TPoint2D& origin)
 {
 	MRPT_START
 
@@ -278,17 +268,14 @@ bool COccupancyGridMap2D::loadFromBitmapFile(
 	if (!imgFl.loadFromFile(file, 0)) return false;
 
 	m_is_empty = false;
-	return loadFromBitmap(imgFl, res, xCentralPixel, yCentralPixel);
+	return loadFromBitmap(imgFl, res, origin);
 
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-					loadFromBitmap
- ---------------------------------------------------------------*/
 bool COccupancyGridMap2D::loadFromBitmap(
-	const mrpt::img::CImage& imgFl, float res, float xCentralPixel,
-	float yCentralPixel)
+	const mrpt::img::CImage& imgFl, float res,
+	const mrpt::math::TPoint2D& origin_)
 {
 	MRPT_START
 
@@ -300,18 +287,19 @@ bool COccupancyGridMap2D::loadFromBitmap(
 
 	if (size_x != bmpWidth || size_y != bmpHeight)
 	{
+		auto origin = origin_;
 		// Middle of bitmap?
-		if (xCentralPixel < -1 || yCentralPixel <= -1)
+		if (origin.x == std::numeric_limits<double>::quiet_NaN())
 		{
-			xCentralPixel = imgFl.getWidth() / 2.0f;
-			yCentralPixel = imgFl.getHeight() / 2.0f;
+			origin = mrpt::math::TPoint2D(
+				imgFl.getWidth() / 2.0, imgFl.getHeight() / 2.0);
 		}
 
 		// Resize grid:
-		float new_x_max = (imgFl.getWidth() - xCentralPixel) * res;
-		float new_x_min = -xCentralPixel * res;
-		float new_y_max = (imgFl.getHeight() - yCentralPixel) * res;
-		float new_y_min = -yCentralPixel * res;
+		float new_x_max = (imgFl.getWidth() - origin.x) * res;
+		float new_x_min = -origin.x * res;
+		float new_y_max = (imgFl.getHeight() - origin.y) * res;
+		float new_y_min = -origin.y * res;
 
 		setSize(new_x_min, new_x_max, new_y_min, new_y_max, res);
 	}
