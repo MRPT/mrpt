@@ -106,7 +106,7 @@ int main(int argc, char** argv)
 		}
 
 		mrpt::maps::COccupancyGridMap2D grid;
-		grid.loadFromBitmap(img, cell_res, px, py);
+		grid.loadFromBitmap(img, cell_res, {px, py});
 
 		const std::string sOutFile =
 			arg_output_file.isSet() ? arg_output_file.getValue()
