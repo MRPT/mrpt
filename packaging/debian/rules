@@ -102,10 +102,10 @@ override_dh_install:
 	dir=$(CURDIR)/debian/mrpt-doc/usr/share/doc/mrpt-doc; mkdir -p $$dir; mv -v $(CURDIR)/debian/usr/mrpt-doc/usr/share/doc/mrpt-doc/* $$dir
 
 	# Move mrpt-apps:
-	dir=$(CURDIR)/debian/mrpt-apps/usr/; mkdir -p $$dir; cp -vr $(CURDIR)/debian/usr/mrpt-apps/* $$dir
+	dir=$(CURDIR)/debian/mrpt-apps/usr/; mkdir -p $$dir; cp -vr $(CURDIR)/debian/usr/mrpt-apps/* $$dir/..
 
 	# Move mrpt-common:
-	dir=$(CURDIR)/debian/mrpt-common/usr/; mkdir -p $$dir; cp -vr $(CURDIR)/debian/usr/mrpt-common/* $$dir
+	dir=$(CURDIR)/debian/mrpt-common/usr/; mkdir -p $$dir; cp -vr $(CURDIR)/debian/usr/mrpt-common/* $$dir/..
 
 	# Fix Doxygen's embedded JQuery lib:
 	rm $(CURDIR)/debian/mrpt-doc/usr/share/doc/mrpt-doc/html/jquery.js || true

@@ -695,6 +695,6 @@ Description: Mobile Robot Programming Toolkit - Console and GUI applications
 
 Package: python-mrpt
 Architecture: any
-Depends: ${python:Depends}, ${misc:Depends}, python
+Depends: ${python:Depends}, ${misc:Depends}, ${shlibs:Depends},  python
 Description: Mobile Robot Programming Toolkit - Python bindings
  This package installs MRPT bindings for Python.
