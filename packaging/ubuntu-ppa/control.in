@@ -33,6 +33,7 @@ Build-Depends: debhelper (>= 9),
 	qtbase5-dev,
 	libqt5opengl5-dev,
 	libjsoncpp-dev,
+	dh-python,
 	g++-7
 Standards-Version: 4.0.0
 Homepage: https://www.mrpt.org/
@@ -360,7 +361,7 @@ Description: Mobile Robot Programming Toolkit - math development package
 
 Package: libmrpt-nanoflann-dev
 Section: libdevel
-Architecture: any
+Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, libmrpt-common-dev
 Description: Mobile Robot Programming Toolkit - nanoflann development package
  This package provides headers and libraries for development.
@@ -526,19 +527,10 @@ Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-system@MRPT_VER_MM@ (= ${bin
 Description: Mobile Robot Programming Toolkit - system development package
  This package provides headers and libraries for development.
 
-Package: libmrpt-tclap@MRPT_VER_MM@
-Section: libs
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Multi-Arch: same
-Description: Mobile Robot Programming Toolkit - tclap library
- More about MRPT libraries in: https://www.mrpt.org/Libraries
-
 Package: libmrpt-tclap-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-tclap@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-common-dev
+Depends: ${shlibs:Depends}, ${misc:Depends}, libmrpt-common-dev
 Description: Mobile Robot Programming Toolkit - tclap development package
  This package provides headers and libraries for development.
 
@@ -570,23 +562,14 @@ Package: libmrpt-topography-dev
 Section: libdevel
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-topography@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-obs-dev
+         libmrpt-common-dev, libmrpt-obs-dev
 Description: Mobile Robot Programming Toolkit - topography development package
  This package provides headers and libraries for development.
 
-Package: libmrpt-typemeta@MRPT_VER_MM@
-Section: libs
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Multi-Arch: same
-Description: Mobile Robot Programming Toolkit - typemeta library
- More about MRPT libraries in: https://www.mrpt.org/Libraries
-
 Package: libmrpt-typemeta-dev
 Section: libdevel
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-typemeta@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-common-dev
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, libmrpt-common-dev
 Description: Mobile Robot Programming Toolkit - typemeta development package
  This package provides headers and libraries for development.
 
@@ -652,6 +635,8 @@ Recommends: libmrpt-bayes-dev (= ${binary:Version}),
          libmrpt-typemeta-dev (= ${binary:Version}),
          libmrpt-vision-dev (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - Metapackage: all dev packages
+ .
+ This metapackage install all mrpt -dev packages.
 
 Package: mrpt-common
 Architecture: all
@@ -707,3 +692,9 @@ Description: Mobile Robot Programming Toolkit - Console and GUI applications
   - robotic-arm-kinematics: GUI for design of robot arms with
                             Denavit-Hartenberg parameters.
   - velodyne-view: Live display/grabbing of Velodyne scanners.
+
+Package: python-mrpt
+Architecture: any
+Depends: ${python:Depends}, ${misc:Depends}, ${shlibs:Depends},  python
+Description: Mobile Robot Programming Toolkit - Python bindings
+ This package installs MRPT bindings for Python.
