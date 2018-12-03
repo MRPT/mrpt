@@ -87,7 +87,7 @@ override_dh_install:
 	find $(CURDIR)/debian/ -name "*.so" | grep -v 'dev' | grep -v 'pymrpt' | while read line; do f=$$(basename $$line .so); echo "Processing so file: $$line, basename: $f"; mkdir -p $(CURDIR)/debian/$$f-dev/usr/lib/$(DEB_HOST_MULTIARCH); mv -f $$line $(CURDIR)/debian/$$f-dev/usr/lib/$(DEB_HOST_MULTIARCH); done
 
 	# Move cmake modules to the -dev packages:
-	find $(CURDIR)/debian/usr/share/ -name '*-config.cmake' | while read line; do f=$$(dirname $$line); f=$$(basename $$f); echo "Processing cmake scripts: $$line, module name: $$f"; dir=$(CURDIR)/debian/lib$$f-dev/usr/share/; mv -f $(CURDIR)/debian/usr/share/$$f $$dir; done
+	find $(CURDIR)/debian/usr/share/ -name '*-config.cmake' | while read line; do f=$$(dirname $$line); f=$$(basename $$f); echo "Processing cmake scripts: $$line, module name: $$f"; dir=$(CURDIR)/debian/lib$$f-dev/usr/share/; mkdir -p $$dir; mv -f $(CURDIR)/debian/usr/share/$$f $$dir; done
 
 	# Move headers to -dev directories:
 	cp -vr $(CURDIR)/debian/usr/libmrpt-*dev $(CURDIR)/debian/
