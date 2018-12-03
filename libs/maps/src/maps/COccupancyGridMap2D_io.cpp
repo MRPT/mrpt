@@ -286,8 +286,8 @@ void  COccupancyGridMap2D::readFromStream(mrpt::utils::CStream &in, int version)
 bool  COccupancyGridMap2D::loadFromBitmapFile(
 	const std::string	&file,
 	float			resolution,
-	float			xCentralPixel,
-	float			yCentralPixel)
+    float			origin_xPixel,
+    float			origin_yPixel)
 {
 	MRPT_START
 
@@ -296,7 +296,7 @@ bool  COccupancyGridMap2D::loadFromBitmapFile(
 		return false;
 
 	m_is_empty = false;
-	return loadFromBitmap(imgFl,resolution, xCentralPixel, yCentralPixel);
+	return loadFromBitmap(imgFl,resolution, origin_xPixel, origin_yPixel);
 
 	MRPT_END
 }
@@ -304,7 +304,7 @@ bool  COccupancyGridMap2D::loadFromBitmapFile(
 /*---------------------------------------------------------------
 					loadFromBitmap
  ---------------------------------------------------------------*/
-bool  COccupancyGridMap2D::loadFromBitmap(const mrpt::utils::CImage &imgFl, float resolution, float xCentralPixel, float yCentralPixel)
+bool  COccupancyGridMap2D::loadFromBitmap(const mrpt::utils::CImage &imgFl, float resolution, float origin_xPixel, float origin_yPixel)
 {
 	MRPT_START
 
@@ -317,17 +317,18 @@ bool  COccupancyGridMap2D::loadFromBitmap(const mrpt::utils::CImage &imgFl, floa
 	if (size_x!=bmpWidth || size_y!=bmpHeight)
 	{
 		// Middle of bitmap?
-		if (xCentralPixel<-1 || yCentralPixel<=-1)
+		if (origin_xPixel == std::numeric_limits<float>::quiet_NaN() ||
+		    origin_yPixel == std::numeric_limits<float>::quiet_NaN())
 		{
-			xCentralPixel = imgFl.getWidth() / 2.0f;
-			yCentralPixel = imgFl.getHeight() / 2.0f;
+			origin_xPixel = imgFl.getWidth() / 2.0f;
+			origin_yPixel = imgFl.getHeight() / 2.0f;
 		}
 
 		// Resize grid:
-		float new_x_max = (imgFl.getWidth() - xCentralPixel) * resolution;
-		float new_x_min = - xCentralPixel * resolution;
-		float new_y_max = (imgFl.getHeight() - yCentralPixel) * resolution;
-		float new_y_min = - yCentralPixel * resolution;
+		float new_x_max = (imgFl.getWidth() - origin_xPixel) * resolution;
+		float new_x_min = - origin_xPixel * resolution;
+		float new_y_max = (imgFl.getHeight() - origin_yPixel) * resolution;
+		float new_y_min = - origin_yPixel * resolution;
 
 		setSize(new_x_min,new_x_max,new_y_min,new_y_max,resolution);
 	}
