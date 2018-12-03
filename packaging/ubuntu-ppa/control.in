@@ -527,19 +527,10 @@ Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-system@MRPT_VER_MM@ (= ${bin
 Description: Mobile Robot Programming Toolkit - system development package
  This package provides headers and libraries for development.
 
-Package: libmrpt-tclap@MRPT_VER_MM@
-Section: libs
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Multi-Arch: same
-Description: Mobile Robot Programming Toolkit - tclap library
- More about MRPT libraries in: https://www.mrpt.org/Libraries
-
 Package: libmrpt-tclap-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},libmrpt-tclap@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-common-dev
+Depends: ${shlibs:Depends}, ${misc:Depends}, libmrpt-common-dev
 Description: Mobile Robot Programming Toolkit - tclap development package
  This package provides headers and libraries for development.
 
