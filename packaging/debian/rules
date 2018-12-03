@@ -24,12 +24,10 @@ endif
 MRPT_TEST_TARGET = test_legacy
 
 CMAKE_FLAGS = \
-	-DCMAKE_INSTALL_PREFIX="$(DESTDIR)/usr" \
+	-DCMAKE_INSTALL_PREFIX="$(CURDIR)/debian/usr/" \
 	-DCMAKE_INSTALL_LIBDIR="lib/$(DEB_HOST_MULTIARCH)" \
 	-DCMAKE_VERBOSE_MAKEFILE=ON \
 	-DCMAKE_BUILD_TYPE=Release  \
-	-DCMAKE_HOST="$(DEB_HOST_GNU_TYPE)" \
-	-DCMAKE_BUILD="$(DEB_BUILD_GNU_TYPE)" \
 	-DCMAKE_MRPT_USE_DEB_POSTFIXS="1" \
 	-DCMAKE_VERBOSE_MAKEFILE=ON \
 	-DCMAKE_C_FLAGS_RELEASE="$(CFLAGS)" \
@@ -43,10 +41,14 @@ CMAKE_FLAGS = \
 # and the rpath is removed anyway by cmake's install target.
 
 %:
-	dh $@ --buildsystem=cmake --parallel
+	dh $@ --buildsystem=cmake
 
 override_dh_auto_build-arch:
 	dh_auto_build -O--buildsystem=cmake
+
+	# Python bindings:
+	dh_python2 --package=python-mrpt
+
 
 override_dh_auto_build-indep:
 	# Build doc targets:
@@ -77,8 +79,33 @@ override_dh_install:
 	# Install:
 	dh_auto_build -O--buildsystem=cmake -- install
 
+	# Move all the ".so.x.y" files to the corresponding binary packages:
+	# libmrpt-${name}${CMAKE_MRPT_VERSION_NUMBER_MAJOR}.${CMAKE_MRPT_VERSION_NUMBER_MINOR}/usr/...
+	VERSION=$$(head version_prefix.txt -n1 | cut -f 1-2 -d . ); find $(CURDIR)/debian/ -name "*.so.?.*" | while read line; do f=$$(basename $$line | cut -f 1 -d '.'); echo "Processing so file: $$line, basename: $$f"; dir=$(CURDIR)/debian/$$f$${VERSION}/usr/lib/$(DEB_HOST_MULTIARCH); mkdir -p $$dir; mv -f $$line $$dir; done
+
+	# JLBC Nov 2018: Due to what is explained in MRPT/cmakemodules/DeclareMRPTLibs.cmake, we need to make some "mv" here:
+
 	# Move all the ".so" files to the proper place: the -dev package:
-	find $(CURDIR)/debian/ -name "*.so" | grep -v 'dev' | while read line; do f=$$(basename $$line .so); echo "Processing so file: $$line, basename: $f"; mkdir -p $(CURDIR)/debian/$$f-dev/usr/lib/$(DEB_HOST_MULTIARCH); mv -f $$line $(CURDIR)/debian/$$f-dev/usr/lib/$(DEB_HOST_MULTIARCH); done
+	find $(CURDIR)/debian/ -name "*.so" | grep -v 'dev' | grep -v 'pymrpt' | while read line; do f=$$(basename $$line .so); echo "Processing so file: $$line, basename: $f"; mkdir -p $(CURDIR)/debian/$$f-dev/usr/lib/$(DEB_HOST_MULTIARCH); mv -f $$line $(CURDIR)/debian/$$f-dev/usr/lib/$(DEB_HOST_MULTIARCH); done
+
+	# Move cmake modules to the -dev packages:
+	find $(CURDIR)/debian/usr/share/ -name '*-config.cmake' | while read line; do f=$$(dirname $$line); f=$$(basename $$f); echo "Processing cmake scripts: $$line, module name: $$f"; dir=$(CURDIR)/debian/lib$$f-dev/usr/share/; mkdir -p $$dir; mv -f $(CURDIR)/debian/usr/share/$$f $$dir; done
+
+	# Move headers to -dev directories:
+	cp -vr $(CURDIR)/debian/usr/libmrpt-*dev $(CURDIR)/debian/
+
+	# Move python stuff:
+	mkdir -p $(CURDIR)/debian/python-mrpt/usr/lib
+	mv -v $(CURDIR)/debian/usr/lib/* $(CURDIR)/debian/python-mrpt/usr/lib
+
+	# Move mrpt-doc:
+	dir=$(CURDIR)/debian/mrpt-doc/usr/share/doc/mrpt-doc; mkdir -p $$dir; mv -v $(CURDIR)/debian/usr/mrpt-doc/usr/share/doc/mrpt-doc/* $$dir
+
+	# Move mrpt-apps:
+	dir=$(CURDIR)/debian/mrpt-apps/usr/; mkdir -p $$dir; cp -vr $(CURDIR)/debian/usr/mrpt-apps/* $$dir/..
+
+	# Move mrpt-common:
+	dir=$(CURDIR)/debian/mrpt-common/usr/; mkdir -p $$dir; cp -vr $(CURDIR)/debian/usr/mrpt-common/* $$dir/..
 
 	# Fix Doxygen's embedded JQuery lib:
 	rm $(CURDIR)/debian/mrpt-doc/usr/share/doc/mrpt-doc/html/jquery.js || true

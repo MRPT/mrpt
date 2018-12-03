@@ -3,6 +3,10 @@ packages for MRPT. They should NOT appear in source tarballs (that's the rule ac
 to Debian policies) but I'll keep them in SVN HEAD.
 -----------------------------------------------------
 
+Note: the file /ubuntu/control.in only has only minor changes wrt Debian's, 
+with the goal of keeping compatibility with u16.04 (Xenial). It could be 
+deleted when Xenial reaches EOL.
+
 To create a Debian package from the sources:
 
 - Go to the MRPT source root directory.
