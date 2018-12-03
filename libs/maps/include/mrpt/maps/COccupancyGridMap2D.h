@@ -22,6 +22,7 @@
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/obs/CObservation2DRangeScanWithUncertainty.h>
 #include <mrpt/obs/obs_frwds.h>
+#include <limits>
 
 #include <mrpt/maps/link_pragmas.h>
 
@@ -739,16 +740,16 @@ namespace maps
 		/** Load the gridmap from a image in a file (the format can be any supported by CImage::loadFromFile).
 		 * \param file The file to be loaded.
 		 * \param resolution The size of a pixel (cell), in meters. Recall cells are always squared, so just a dimension is needed.
-		 * \param xCentralPixel The `x` coordinate (0=first, increases <b>left to right</b> on the image) for the pixel which will be taken at coordinates origin (0,0). (Default: the center of the image)
-		 * \param yCentralPixel The `y` coordinate (0=first, increases <b>BOTTOM upwards</b> on the image) for the pixel which will be taken at coordinates origin (0,0). (Default: the center of the image)
+         * \param origin_xPixel The `x` coordinate (0=first, increases <b>left to right</b> on the image) for the pixel which will be taken at coordinates origin (0,0). (Default: the center of the image)
+         * \param origin_yPixel The `y` coordinate (0=first, increases <b>BOTTOM upwards</b> on the image) for the pixel which will be taken at coordinates origin (0,0). (Default: the center of the image)
 		 * \return False on any error.
 		 * \sa loadFromBitmap
 		 */
-		bool  loadFromBitmapFile(const std::string	&file, float resolution, float xCentralPixel = -1, float yCentralPixel =-1 );
+        bool  loadFromBitmapFile(const std::string	&file, float resolution, float origin_xPixel = std::numeric_limits<float>::quiet_NaN(), float origin_yPixel = std::numeric_limits<float>::quiet_NaN() );
 
 		/** Load the gridmap from a image in a file (the format can be any supported by CImage::loadFromFile).
 		 *  See loadFromBitmapFile() for the meaning of parameters */
-		bool  loadFromBitmap(const mrpt::utils::CImage &img, float resolution, float xCentralPixel = -1, float yCentralPixel =-1 );
+        bool  loadFromBitmap(const mrpt::utils::CImage &img, float resolution, float origin_xPixel = std::numeric_limits<float>::quiet_NaN(), float origin_yPixel = std::numeric_limits<float>::quiet_NaN() );
 
 		/** See the base class for more details: In this class it is implemented as correspondences of the passed points map to occupied cells.
 		 * NOTICE: That the "z" dimension is ignored in the points. Clip the points as appropiated if needed before calling this method.
