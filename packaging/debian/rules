@@ -83,6 +83,8 @@ override_dh_install:
 	# libmrpt-${name}${CMAKE_MRPT_VERSION_NUMBER_MAJOR}.${CMAKE_MRPT_VERSION_NUMBER_MINOR}/usr/...
 	VERSION=$$(head version_prefix.txt -n1 | cut -f 1-2 -d . ); find $(CURDIR)/debian/ -name "*.so.?.*" | while read line; do f=$$(basename $$line | cut -f 1 -d '.'); echo "Processing so file: $$line, basename: $$f"; dir=$(CURDIR)/debian/$$f$${VERSION}/usr/lib/$(DEB_HOST_MULTIARCH); mkdir -p $$dir; mv -f $$line $$dir; done
 
+	# JLBC Nov 2018: Due to what is explained in MRPT/cmakemodules/DeclareMRPTLibs.cmake, we need to make some "mv" here:
+
 	# Move all the ".so" files to the proper place: the -dev package:
 	find $(CURDIR)/debian/ -name "*.so" | grep -v 'dev' | grep -v 'pymrpt' | while read line; do f=$$(basename $$line .so); echo "Processing so file: $$line, basename: $f"; mkdir -p $(CURDIR)/debian/$$f-dev/usr/lib/$(DEB_HOST_MULTIARCH); mv -f $$line $(CURDIR)/debian/$$f-dev/usr/lib/$(DEB_HOST_MULTIARCH); done
 
@@ -91,6 +93,20 @@ override_dh_install:
 
 	# Move headers to -dev directories:
 	cp -vr $(CURDIR)/debian/usr/libmrpt-*dev $(CURDIR)/debian/
+
+	# Move python stuff:
+	mkdir -p $(CURDIR)/debian/python-mrpt/usr/lib
+	mv -v $(CURDIR)/debian/usr/lib/* $(CURDIR)/debian/python-mrpt/usr/lib
+
+	# Move mrpt-doc:
+	mkdir -p $(CURDIR)/debian/mrpt-doc/usr/share/doc/mrpt-doc
+	mv -v $(CURDIR)/debian/usr/mrpt-doc/usr/share/doc/mrpt-doc/* $(CURDIR)/debian/mrpt-doc/usr/share/doc/mrpt-doc
+
+	# Move mrpt-apps:
+	cp -vr $(CURDIR)/debian/usr/mrpt-apps/* $(CURDIR)/debian/mrpt-apps/
+
+	# Move mrpt-common:
+	cp -vr $(CURDIR)/debian/usr/mrpt-common/* $(CURDIR)/debian/mrpt-common/
 
 	# Fix Doxygen's embedded JQuery lib:
 	rm $(CURDIR)/debian/mrpt-doc/usr/share/doc/mrpt-doc/html/jquery.js || true
