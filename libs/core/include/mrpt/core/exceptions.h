@@ -37,7 +37,9 @@ inline std::string exception_line_msg(
 inline void impl_excep_to_str(
 	const std::exception& e, std::string& ret, int lvl = 0)
 {
-	ret = e.what() + ret;
+	std::string err{e.what()};
+	if (!err.empty() && *err.rbegin() != '\n') err += "\n";
+	ret = err + ret;
 	try
 	{
 		std::rethrow_if_nested(e);
