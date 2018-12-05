@@ -1212,7 +1212,8 @@ void gridmapSimulFrame::OnMenuLoadMap(wxCommandEvent& event)
 			if (sCellSize.ToDouble(&cell_size) && sCX.ToDouble(&cx) &&
 				sCY.ToDouble(&cy))
 			{
-				if (the_grid.loadFromBitmap(img, cell_size, cx, cy))
+				if (the_grid.loadFromBitmap(
+						img, cell_size, mrpt::math::TPoint2D(cx, cy)))
 				{
 					update_grid_map_3d();
 					wxMessageBox(_("OK"), _("Map loaded!"));
