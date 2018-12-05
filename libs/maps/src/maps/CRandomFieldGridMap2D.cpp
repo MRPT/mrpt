@@ -272,8 +272,10 @@ void CRandomFieldGridMap2D::internal_clear()
 					const bool grid_loaded_ok = m_Ocgridmap.loadFromBitmapFile(
 						this->m_insertOptions_common->GMRF_gridmap_image_file,
 						this->m_insertOptions_common->GMRF_gridmap_image_res,
-						this->m_insertOptions_common->GMRF_gridmap_image_cx,
-						this->m_insertOptions_common->GMRF_gridmap_image_cy);
+						TPoint2D(
+							this->m_insertOptions_common->GMRF_gridmap_image_cx,
+							this->m_insertOptions_common
+								->GMRF_gridmap_image_cy));
 					ASSERT_(grid_loaded_ok);
 					res_coef =
 						this->getResolution() /

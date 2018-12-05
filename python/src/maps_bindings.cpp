@@ -175,7 +175,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
 	COccupancyGridMap2D_resizeGrid_overloads, resizeGrid, 4, 6)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
-	COccupancyGridMap2D_loadFromBitmapFile_overloads, loadFromBitmapFile, 2, 4)
+	COccupancyGridMap2D_loadFromBitmapFile_overloads, loadFromBitmapFile, 2, 3)
 // end of COccupancyGridMap2D
 
 // CPointsMap
