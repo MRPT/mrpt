@@ -27,6 +27,7 @@
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
+#include <mrpt/obs/CObservationPointCloud.h>
 
 #if MRPT_HAS_PCL
 #include <pcl/io/pcd_io.h>
@@ -1421,19 +1422,50 @@ void CPointsMap::compute3DDistanceToMesh(
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
- Computes the likelihood that a given observation was taken from a given pose in
- the world being modeled with this map.
-	takenFrom The robot's pose the observation is supposed to be taken from.
-	obs The observation.
- This method returns a likelihood in the range [0,1].
- ---------------------------------------------------------------*/
+double CPointsMap::internal_computeObservationLikelihoodPointCloud3D(
+	const mrpt::poses::CPose3D& pc_in_map, const float* xs, const float* ys,
+	const float* zs, const std::size_t num_pts)
+{
+	MRPT_TRY_START
+
+	float closest_x, closest_y, closest_z;
+	float closest_err;
+	const float max_sqr_err = square(likelihoodOptions.max_corr_distance);
+	double sumSqrDist = 0;
+
+	std::size_t nPtsForAverage = 0;
+	for (std::size_t i = 0; i < num_pts;
+		 i += likelihoodOptions.decimation, nPtsForAverage++)
+	{
+		// Transform the point from the scan reference to its global 3D
+		// position:
+		float xg, yg, zg;
+		pc_in_map.composePoint(xs[i], ys[i], zs[i], xg, yg, zg);
+
+		kdTreeClosestPoint3D(
+			xg, yg, zg,  // Look for the closest to this guy
+			closest_x, closest_y,
+			closest_z,  // save here the closest match
+			closest_err  // save here the min. distance squared
+		);
+
+		// Put a limit:
+		mrpt::keep_min(closest_err, max_sqr_err);
+
+		sumSqrDist += static_cast<double>(closest_err);
+
+		sumSqrDist /= nPtsForAverage;
+	}
+
+	// Log-likelihood:
+	return -sumSqrDist / likelihoodOptions.sigma_dist;
+
+	MRPT_TRY_END
+}
+
 double CPointsMap::internal_computeObservationLikelihood(
 	const CObservation* obs, const CPose3D& takenFrom)
 {
-	// If not, this map is standalone: Compute the likelihood:
-	double ret = 0;
-
 	// This function depends on the observation type:
 	// -----------------------------------------------------
 	if (obs->GetRuntimeClass() == CLASS_ID(CObservation2DRangeScan))
@@ -1446,8 +1478,6 @@ double CPointsMap::internal_computeObservationLikelihood(
 		// observation:
 		const auto* scanPoints = o->buildAuxPointsMap<CPointsMap>();
 
-		float sumSqrDist = 0;
-
 		const size_t N = scanPoints->m_x.size();
 		if (!N || !this->size()) return -100;
 
@@ -1455,24 +1485,26 @@ double CPointsMap::internal_computeObservationLikelihood(
 		const float* ys = &scanPoints->m_y[0];
 		const float* zs = &scanPoints->m_z[0];
 
-		float closest_x, closest_y, closest_z;
-		float closest_err;
-		const float max_sqr_err = square(likelihoodOptions.max_corr_distance);
-		int nPtsForAverage = 0;
-
 		if (takenFrom.isHorizontal())
 		{
+			double sumSqrDist = 0;
+			float closest_x, closest_y;
+			float closest_err;
+			const float max_sqr_err =
+				square(likelihoodOptions.max_corr_distance);
+
 			// optimized 2D version ---------------------------
 			TPose2D takenFrom2D = CPose2D(takenFrom).asTPose();
 
-			const float ccos = cos(takenFrom2D.phi);
-			const float csin = sin(takenFrom2D.phi);
+			const double ccos = cos(takenFrom2D.phi);
+			const double csin = sin(takenFrom2D.phi);
+			int nPtsForAverage = 0;
 
 			for (size_t i = 0; i < N;
 				 i += likelihoodOptions.decimation, nPtsForAverage++)
 			{
-				// Transform the point from the scan reference to its global 3D
-				// position:
+				// Transform the point from the scan reference to its global
+				// 3D position:
 				const float xg = takenFrom2D.x + ccos * xs[i] - csin * ys[i];
 				const float yg = takenFrom2D.y + csin * xs[i] + ccos * ys[i];
 
@@ -1485,48 +1517,23 @@ double CPointsMap::internal_computeObservationLikelihood(
 				// Put a limit:
 				mrpt::keep_min(closest_err, max_sqr_err);
 
-				sumSqrDist += closest_err;
+				sumSqrDist += static_cast<double>(closest_err);
 			}
+			sumSqrDist /= nPtsForAverage;
+			// Log-likelihood:
+			return -sumSqrDist / likelihoodOptions.sigma_dist;
 		}
 		else
 		{
 			// Generic 3D version ---------------------------
-
-			for (size_t i = 0; i < N;
-				 i += likelihoodOptions.decimation, nPtsForAverage++)
-			{
-				// Transform the point from the scan reference to its global 3D
-				// position:
-				float xg, yg, zg;
-				takenFrom.composePoint(xs[i], ys[i], zs[i], xg, yg, zg);
-
-				kdTreeClosestPoint3D(
-					xg, yg, zg,  // Look for the closest to this guy
-					closest_x, closest_y,
-					closest_z,  // save here the closest match
-					closest_err  // save here the min. distance squared
-				);
-
-				// Put a limit:
-				mrpt::keep_min(closest_err, max_sqr_err);
-
-				sumSqrDist += closest_err;
-			}
+			return internal_computeObservationLikelihoodPointCloud3D(
+				takenFrom, xs, ys, zs, N);
 		}
-
-		sumSqrDist /= nPtsForAverage;
-
-		// Log-likelihood:
-		ret = -sumSqrDist / likelihoodOptions.sigma_dist;
 	}
 	else if (obs->GetRuntimeClass() == CLASS_ID(CObservationVelodyneScan))
 	{
-		// Observation is a laser range scan:
-		// -------------------------------------------
 		const auto* o = dynamic_cast<const CObservationVelodyneScan*>(obs);
 		ASSERT_(o != nullptr);
-
-		double sumSqrDist = 0;
 
 		// Automatically generate pointcloud if needed:
 		if (!o->point_cloud.size())
@@ -1541,40 +1548,28 @@ double CPointsMap::internal_computeObservationLikelihood(
 		const float* ys = &o->point_cloud.y[0];
 		const float* zs = &o->point_cloud.z[0];
 
-		float closest_x, closest_y, closest_z;
-		float closest_err;
-		const float max_sqr_err = square(likelihoodOptions.max_corr_distance);
-		int nPtsForAverage = 0;
+		return internal_computeObservationLikelihoodPointCloud3D(
+			sensorAbsPose, xs, ys, zs, N);
+	}
+	else if (obs->GetRuntimeClass() == CLASS_ID(CObservationPointCloud))
+	{
+		const auto* o = dynamic_cast<const CObservationPointCloud*>(obs);
+		ASSERT_(o != nullptr);
 
-		for (size_t i = 0; i < N;
-			 i += likelihoodOptions.decimation, nPtsForAverage++)
-		{
-			// Transform the point from the scan reference to its global 3D
-			// position:
-			float xg, yg, zg;
-			sensorAbsPose.composePoint(xs[i], ys[i], zs[i], xg, yg, zg);
+		const size_t N = o->pointcloud->size();
+		if (!N || !this->size()) return -100;
 
-			kdTreeClosestPoint3D(
-				xg, yg, zg,  // Look for the closest to this guy
-				closest_x, closest_y,
-				closest_z,  // save here the closest match
-				closest_err  // save here the min. distance squared
-			);
+		const CPose3D sensorAbsPose = takenFrom + o->sensorPose;
 
-			// Put a limit:
-			mrpt::keep_min(closest_err, max_sqr_err);
+		auto xs = o->pointcloud->getPointsBufferRef_x();
+		auto ys = o->pointcloud->getPointsBufferRef_y();
+		auto zs = o->pointcloud->getPointsBufferRef_z();
 
-			sumSqrDist += closest_err;
-		}
-
-		sumSqrDist /= nPtsForAverage;
-
-		// Log-likelihood:
-		ret = -sumSqrDist / likelihoodOptions.sigma_dist;
+		return internal_computeObservationLikelihoodPointCloud3D(
+			sensorAbsPose, &xs[0], &ys[0], &zs[0], N);
 	}
 
-	return ret;
-	/**/
+	return .0;
 }
 
 namespace mrpt::obs
@@ -1617,13 +1612,13 @@ struct TAuxLoadFunctor
 TAuxLoadFunctor dummy_loader;  // used just to set
 // "ptr_internal_build_points_map_from_scan2D"
 
-// ================================ PLY files import & export virtual methods
+// ================================ PLY files import & export virtual
+// methods
 // ================================
 
-/** In a base class, will be called after PLY_import_set_vertex_count() once for
- * each loaded point.
- *  \param pt_color Will be nullptr if the loaded file does not provide color
- * info.
+/** In a base class, will be called after PLY_import_set_vertex_count() once
+ * for each loaded point. \param pt_color Will be nullptr if the loaded file
+ * does not provide color info.
  */
 void CPointsMap::PLY_import_set_vertex(
 	const size_t idx, const mrpt::math::TPoint3Df& pt,
@@ -1635,10 +1630,9 @@ void CPointsMap::PLY_import_set_vertex(
 
 /** In a base class, return the number of vertices */
 size_t CPointsMap::PLY_export_get_vertex_count() const { return this->size(); }
-/** In a base class, will be called after PLY_export_get_vertex_count() once for
- * each exported point.
- *  \param pt_color Will be nullptr if the loaded file does not provide color
- * info.
+/** In a base class, will be called after PLY_export_get_vertex_count() once
+ * for each exported point. \param pt_color Will be nullptr if the loaded
+ * file does not provide color info.
  */
 void CPointsMap::PLY_export_get_vertex(
 	const size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
@@ -1694,8 +1688,8 @@ bool CPointsMap::savePCDFile(
 #endif
 }
 
-/** Load the point cloud from a PCL PCD file (requires MRPT built against PCL)
- * \return false on any error */
+/** Load the point cloud from a PCL PCD file (requires MRPT built against
+ * PCL) \return false on any error */
 bool CPointsMap::loadPCDFile(const std::string& filename)
 {
 #if MRPT_HAS_PCL
@@ -1854,7 +1848,8 @@ bool CPointsMap::internal_insertObservation(
 				fuseWith(
 					&auxMap,  // Fuse with this map
 					insertionOptions.minDistBetweenLaserPoints,  // Min dist.
-					&checkForDeletion  // Set to "false" if a point in "map" has
+					&checkForDeletion  // Set to "false" if a point in "map"
+									   // has
 					// been fused.
 				);
 
@@ -1874,7 +1869,8 @@ bool CPointsMap::internal_insertObservation(
 					n = size();
 					for (size_t i = 0; i < n; i++)
 					{
-						if (checkForDeletion[i])  // Default to true, unless a
+						if (checkForDeletion[i])  // Default to true, unless
+												  // a
 						// fused point, which must be
 						// kept.
 						{
@@ -1886,7 +1882,8 @@ bool CPointsMap::internal_insertObservation(
 						}
 					}
 
-					// Create a new points list just with non-deleted points.
+					// Create a new points list just with non-deleted
+					// points.
 					// ----------------------------------------------------------
 					applyDeletionMask(checkForDeletion);
 				}
@@ -1958,15 +1955,6 @@ bool CPointsMap::internal_insertObservation(
 				);
 			}
 
-			// This could be implemented to check whether existing points fall
-			// into empty-space 3D polygon
-			// but performance for standard Swissranger scans (176*144 points)
-			// may be too sluggish?
-			// if (! insertionOptions.disableDeletion )   {
-			// ....
-			// }
-			// JL -> Nope, it's ok like that ;-)
-
 			return true;
 		}
 		// A planar map and a non-horizontal scan.
@@ -1996,7 +1984,8 @@ bool CPointsMap::internal_insertObservation(
 				rang > o->maxSensorDistance)
 				continue;
 
-			// Insert a few points with a given maximum separation between them:
+			// Insert a few points with a given maximum separation between
+			// them:
 			const double arc_len = o->sensorConeApperture * rang;
 			const unsigned int nSteps = round(1 + arc_len / 0.05);
 			const double Aa = o->sensorConeApperture / double(nSteps);
@@ -2048,6 +2037,26 @@ bool CPointsMap::internal_insertObservation(
 		}
 		return true;
 	}
+	else if (IS_CLASS(obs, CObservationPointCloud))
+	{
+		mark_as_modified();
+
+		const auto* o = static_cast<const CObservationPointCloud*>(obs);
+		ASSERT_(o->pointcloud);
+
+		if (insertionOptions.fuseWithExisting)
+		{
+			fuseWith(
+				o->pointcloud.get(), insertionOptions.minDistBetweenLaserPoints, nullptr /* rather than &checkForDeletion which we don't need for 3D observations */);
+		}
+		else
+		{
+			// Don't fuse: Simply add
+			insertionOptions.addToExistingPointsMap = true;
+			*this += *o->pointcloud;
+		}
+		return true;
+	}
 	else
 	{
 		/********************************************************************
@@ -2060,11 +2069,10 @@ bool CPointsMap::internal_insertObservation(
 }
 
 /*---------------------------------------------------------------
-Insert the contents of another map into this one, fusing the previous content
-with the new one.
- This means that points very close to existing ones will be "fused", rather than
-"added". This prevents
- the unbounded increase in size of these class of maps.
+Insert the contents of another map into this one, fusing the previous
+content with the new one. This means that points very close to existing ones
+will be "fused", rather than "added". This prevents the unbounded increase
+in size of these class of maps.
  ---------------------------------------------------------------*/
 void CPointsMap::fuseWith(
 	CPointsMap* otherMap, float minDistForFuse,
