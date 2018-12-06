@@ -31,10 +31,10 @@ DECLARE_OP_FUNCTION(op_remove_label)
 	   public:
 		CRawlogProcessor_RemoveLabel(
 			mrpt::io::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-			bool verbose, mrpt::io::CFileGZOutputStream& out_rawlog,
+			bool _verbose, mrpt::io::CFileGZOutputStream& out_rawlog,
 			const std::string& filter_label)
 			: CRawlogProcessorFilterObservations(
-				  in_rawlog, cmdline, verbose, out_rawlog)
+				  in_rawlog, cmdline, _verbose, out_rawlog)
 		{
 			mrpt::system::tokenize(filter_label, " ,", m_filter_labels);
 			ASSERT_(!m_filter_labels.empty());
@@ -92,10 +92,10 @@ DECLARE_OP_FUNCTION(op_keep_label)
 	   public:
 		CRawlogProcessor_KeepLabel(
 			mrpt::io::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-			bool verbose, mrpt::io::CFileGZOutputStream& out_rawlog,
+			bool _verbose, mrpt::io::CFileGZOutputStream& out_rawlog,
 			const std::string& filter_label)
 			: CRawlogProcessorFilterObservations(
-				  in_rawlog, cmdline, verbose, out_rawlog)
+				  in_rawlog, cmdline, _verbose, out_rawlog)
 		{
 			mrpt::system::tokenize(filter_label, " ,", m_filter_labels);
 			ASSERT_(!m_filter_labels.empty());

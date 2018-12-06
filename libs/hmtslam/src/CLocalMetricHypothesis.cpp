@@ -600,18 +600,16 @@ void CLocalMetricHypothesis::changeCoordinateOrigin(const TPoseID& newOrigin)
 		std::lock_guard<std::mutex> locker(m_robotPosesGraph.lock);
 
 		CSimpleMap* SFseq = m_robotPosesGraph.partitioner.getSequenceOfFrames();
-		for (auto it = m_robotPosesGraph.idx2pose.begin();
-			 it != m_robotPosesGraph.idx2pose.end(); ++it)
+		for (auto& p : m_robotPosesGraph.idx2pose)
 		{
 			CPose3DPDF::Ptr pdf;
 			CSensoryFrame::Ptr sf;
-			SFseq->get(it->first, pdf, sf);
+			SFseq->get(p.first, pdf, sf);
 
 			// Copy from particles:
 			ASSERT_(pdf->GetRuntimeClass() == CLASS_ID(CPose3DPDFParticles));
-			CPose3DPDFParticles::Ptr pdfParts =
-				std::dynamic_pointer_cast<CPose3DPDFParticles>(pdf);
-			getPoseParticles(it->second, *pdfParts);
+			auto pdfParts = std::dynamic_pointer_cast<CPose3DPDFParticles>(pdf);
+			getPoseParticles(p.second, *pdfParts);
 		}
 	}
 }
@@ -906,12 +904,10 @@ void CLocalMetricHypothesis::dumpAsText(std::vector<std::string>& st) const
 	for (auto it = lst.begin(); it != lst.end(); ++it)
 	{
 		auto area = m_nodeIDmemberships.find(it->first);
-
-		string s = format(
+		st.emplace_back(mrpt::format(
 			"  ID: %i \t AREA: %i \t %.03f,%.03f,%.03fdeg", (int)it->first,
 			(int)area->second, it->second.x(), it->second.y(),
-			RAD2DEG(it->second.yaw()));
-		st.push_back(s);
+			RAD2DEG(it->second.yaw())));
 	}
 }
 

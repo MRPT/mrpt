@@ -115,8 +115,8 @@ class CDifodo
 	unsigned int cols;
 
 	/** Aux variables: size from which the pyramid starts to be built */
-	unsigned int width;
-	unsigned int height;
+	unsigned int m_width;
+	unsigned int m_height;
 
 	/** Aux variables: number of rows and cols at a given level */
 	unsigned int rows_i;

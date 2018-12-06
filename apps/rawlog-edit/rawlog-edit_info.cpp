@@ -43,8 +43,8 @@ DECLARE_OP_FUNCTION(op_info)
 
 		CRawlogProcessor_Info(
 			CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-			bool verbose)
-			: CRawlogProcessor(in_rawlog, cmdline, verbose)
+			bool _verbose)
+			: CRawlogProcessor(in_rawlog, cmdline, _verbose)
 		{
 			has_actSF_format = false;
 			has_obs_format = false;
