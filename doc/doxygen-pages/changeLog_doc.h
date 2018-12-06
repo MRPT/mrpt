@@ -80,6 +80,7 @@ networking classes, with minimal dependencies.
 		- \ref mrpt_maps_grp
 			- New map type: mrpt::maps::CPointsMapXYZI for pointclouds with an
 intensity channel.
+			- New observation class: mrpt::obs::CObservationPointCloud
 			- Added optional "channel" attribute to CReflectivityGridMap2D and
 CObservationReflectivity to support different colors of light.
 		- \ref mrpt_hwdrivers_grp

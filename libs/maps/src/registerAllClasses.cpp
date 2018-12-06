@@ -11,6 +11,7 @@
 
 #define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/maps.h>
+#include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/core/initializer.h>
 
 using namespace mrpt::maps;
@@ -41,5 +42,7 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_maps)
 
 	registerClass(CLASS_ID(CAngularObservationMesh));
 	registerClass(CLASS_ID(CPlanarLaserScan));
+
+	registerClass(CLASS_ID(CObservationPointCloud));
 #endif
 }
