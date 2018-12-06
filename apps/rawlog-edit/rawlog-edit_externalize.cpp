@@ -40,8 +40,8 @@ DECLARE_OP_FUNCTION(op_externalize)
 
 		CRawlogProcessor_Externalize(
 			CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-			bool verbose)
-			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, verbose)
+			bool _verbose)
+			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, _verbose)
 		{
 			entries_converted = 0;
 			entries_skipped = 0;

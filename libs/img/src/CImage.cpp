@@ -812,8 +812,8 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 							outDataBufferSize, outDataActualSize);
 						ASSERT_(outDataActualSize == outDataBufferSize);
 #else
-							MRPT_TODO("Implement deserialization case:");
-							THROW_EXCEPTION("Implement mising method");
+							THROW_EXCEPTION(
+								"ZIP image deserialization not implemented");
 #endif
 						}
 						else

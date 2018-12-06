@@ -236,11 +236,11 @@ void CHierarchicalMHMap::loadFromXMLfile(std::string fileName)
 	table = db.getTable("annotations");
 	size_t numannot = table->getRecordCount();
 	printf("Loading annotations\n");
-	for (size_t j = 0; j < numannot; j++)
+	for (size_t ja = 0; ja < numannot; ja++)
 	{
-		string type = table->get(j, "annotation-type");
-		string value = table->get(j, "annotation-value");
-		nodeanotmapit = nodeanotmap.find(atoi(table->get(j, "id").c_str()));
+		string type = table->get(ja, "annotation-type");
+		string value = table->get(ja, "annotation-value");
+		nodeanotmapit = nodeanotmap.find(atoi(table->get(ja, "id").c_str()));
 
 		if (nodeanotmapit != nodeanotmap.end())
 		{
