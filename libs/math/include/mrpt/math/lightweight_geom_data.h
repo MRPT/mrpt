@@ -186,6 +186,10 @@ struct TPose2D : public TPoseOrPoint
 	double x{.0}, y{.0};
 	/** Orientation (rads) */
 	double phi{.0};
+
+	/** Returns the identity transformation */
+	static constexpr TPose2D Identity() { return TPose2D(); }
+
 	/** Implicit constructor from TPoint2D. Zeroes the phi coordinate.
 	 * \sa TPoint2D
 	 */
@@ -599,6 +603,10 @@ struct TPose3D : public TPoseOrPoint
 	double pitch{.0};
 	/** Roll coordinate (rotation angle over X coordinate). */
 	double roll{.0};
+
+	/** Returns the identity transformation, T=eye(4) */
+	static constexpr TPose3D Identity() { return TPose3D(); }
+
 	/** Implicit constructor from TPoint2D. Zeroes all the unprovided
 	 * information.
 	 * \sa TPoint2D
