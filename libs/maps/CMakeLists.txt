@@ -7,6 +7,9 @@ list(APPEND maps_EXTRA_SRCS_NAME 	"maps" "maps" "back-compat-hdrs")
 list(APPEND maps_EXTRA_SRCS			"${MRPT_SOURCE_DIR}/libs/maps/src/opengl/*.cpp" "${MRPT_SOURCE_DIR}/libs/maps/include/mrpt/opengl/*.h")
 list(APPEND maps_EXTRA_SRCS_NAME 	"opengl" "opengl")
 
+list(APPEND maps_EXTRA_SRCS			"${MRPT_SOURCE_DIR}/libs/maps/src/obs/*.cpp" "${MRPT_SOURCE_DIR}/libs/maps/include/mrpt/obs/*.h")
+list(APPEND maps_EXTRA_SRCS_NAME 	"obs" "obs")
+
 if(CMAKE_MRPT_HAS_LIBLAS)
 	link_directories(${LAS_LINK_DIRS})
 	include_directories(${LAS_INCLUDE_DIRS})
@@ -50,4 +53,3 @@ if(BUILD_mrpt-maps)
 	endif()
 
 endif()
-

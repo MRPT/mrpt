@@ -51,6 +51,7 @@ struct pointmap_traits;
  *   - mrpt::obs::CObservation3DRangeScan: 3D range scans (Kinect, etc...)
  *   - mrpt::obs::CObservationRange: IRs, Sonars, etc.
  *   - mrpt::obs::CObservationVelodyneScan
+ *   - mrpt::obs::CObservationPointCloud
  *
  * Loading and saving in the standard LAS LiDAR point cloud format is supported
  * by installing `libLAS` and including the
@@ -979,6 +980,10 @@ class CPointsMap : public CMetricMap,
 	double internal_computeObservationLikelihood(
 		const mrpt::obs::CObservation* obs,
 		const mrpt::poses::CPose3D& takenFrom) override;
+
+	double internal_computeObservationLikelihoodPointCloud3D(
+		const mrpt::poses::CPose3D& pc_in_map, const float* xs, const float* ys,
+		const float* zs, const std::size_t num_pts);
 
 	/** @name PCL library support
 		@{ */
