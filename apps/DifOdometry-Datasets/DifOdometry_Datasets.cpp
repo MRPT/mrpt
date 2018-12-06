@@ -85,13 +85,13 @@ void CDifodoDatasets::loadConfiguration(
 
 	//			Resize matrices and adjust parameters
 	//=========================================================
-	width = 640 / (cam_mode * downsample);
-	height = 480 / (cam_mode * downsample);
-	repr_level = mrpt::round(log(float(width / cols)) / log(2.f));
+	m_width = 640 / (cam_mode * downsample);
+	m_height = 480 / (cam_mode * downsample);
+	repr_level = mrpt::round(log(float(m_width / cols)) / log(2.f));
 
 	// Resize pyramid
 	const unsigned int pyr_levels =
-		round(log(float(width / cols)) / log(2.f)) + ctf_levels;
+		round(log(float(m_width / cols)) / log(2.f)) + ctf_levels;
 	depth.resize(pyr_levels);
 	depth_old.resize(pyr_levels);
 	depth_inter.resize(pyr_levels);
@@ -109,8 +109,8 @@ void CDifodoDatasets::loadConfiguration(
 	for (unsigned int i = 0; i < pyr_levels; i++)
 	{
 		unsigned int s = pow(2.f, int(i));
-		cols_i = width / s;
-		rows_i = height / s;
+		cols_i = m_width / s;
+		rows_i = m_height / s;
 		depth[i].resize(rows_i, cols_i);
 		depth_inter[i].resize(rows_i, cols_i);
 		depth_old[i].resize(rows_i, cols_i);
@@ -137,7 +137,7 @@ void CDifodoDatasets::loadConfiguration(
 	}
 
 	// Resize matrix that store the original depth image
-	depth_wf.setSize(height, width);
+	depth_wf.setSize(m_height, m_width);
 }
 
 void CDifodoDatasets::CreateResultsFile()

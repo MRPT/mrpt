@@ -679,13 +679,11 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 {
 	WX_START_TRY
 
-	const int i = this->slidLog->GetValue();
-	if (i >= int(m_logdata.size())) return;
-
+	const int log_idx = this->slidLog->GetValue();
+	if (log_idx >= int(m_logdata.size())) return;
 	// In the future, we could handle more log classes. For now, only
 	// "CLogFileRecord::Ptr":
-	CLogFileRecord::Ptr logptr =
-		std::dynamic_pointer_cast<CLogFileRecord>(m_logdata[i]);
+	auto logptr = std::dynamic_pointer_cast<CLogFileRecord>(m_logdata[log_idx]);
 	const CLogFileRecord& log = *logptr;
 
 	txtSelectedPTG->SetLabel(wxString::Format(
@@ -1519,8 +1517,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		if (win)
 		{
 			std::vector<double> xs(2), ys(2);
-			xs[0] = i;
-			xs[1] = i;
+			xs[0] = log_idx;
+			xs[1] = log_idx;
 			ys[0] = -2.0;
 			ys[1] = 2.0;
 			win->plot(xs, ys, "k-3", "cursor_time");
@@ -1913,8 +1911,8 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabExportPaths(
 
 			auto& p = cmdvels[tim_send_cmd_vel];
 			p.setZero();
-			for (size_t i = 0; i < logptr->cmd_vel->getVelCmdLength(); i++)
-				p(i) = logptr->cmd_vel->getVelCmdElement(i);
+			for (size_t k = 0; k < logptr->cmd_vel->getVelCmdLength(); k++)
+				p(k) = logptr->cmd_vel->getVelCmdElement(k);
 		}
 
 	}  // end for each timestep

@@ -30,13 +30,13 @@ CDifodo::CDifodo()
 	cam_mode = 1;  // (1 - 640 x 480, 2 - 320 x 240, 4 - 160 x 120)
 	downsample = 1;
 	ctf_levels = 1;
-	width = 640 / (cam_mode * downsample);
-	height = 480 / (cam_mode * downsample);
+	m_width = 640 / (cam_mode * downsample);
+	m_height = 480 / (cam_mode * downsample);
 	fast_pyramid = true;
 
 	// Resize pyramid
 	const unsigned int pyr_levels =
-		round(log(float(width / cols)) / log(2.f)) + ctf_levels;
+		round(log(float(m_width / cols)) / log(2.f)) + ctf_levels;
 	depth.resize(pyr_levels);
 	depth_old.resize(pyr_levels);
 	depth_inter.resize(pyr_levels);
@@ -54,8 +54,8 @@ CDifodo::CDifodo()
 	for (unsigned int i = 0; i < pyr_levels; i++)
 	{
 		unsigned int s = pow(2.f, int(i));
-		cols_i = width / s;
-		rows_i = height / s;
+		cols_i = m_width / s;
+		rows_i = m_height / s;
 		depth[i].resize(rows_i, cols_i);
 		depth_inter[i].resize(rows_i, cols_i);
 		depth_old[i].resize(rows_i, cols_i);
@@ -81,7 +81,7 @@ CDifodo::CDifodo()
 		}
 	}
 
-	depth_wf.setSize(height, width);
+	depth_wf.setSize(m_height, m_width);
 
 	fps = 30.f;  // In Hz
 
@@ -122,14 +122,14 @@ void CDifodo::buildCoordinatesPyramid()
 	// resolutions)
 
 	unsigned int pyr_levels =
-		round(log(float(width / cols)) / log(2.f)) + ctf_levels;
+		round(log(float(m_width / cols)) / log(2.f)) + ctf_levels;
 
 	// Generate levels
 	for (unsigned int i = 0; i < pyr_levels; i++)
 	{
 		unsigned int s = pow(2.f, int(i));
-		cols_i = width / s;
-		rows_i = height / s;
+		cols_i = m_width / s;
+		rows_i = m_height / s;
 		const int rows_i2 = 2 * rows_i;
 		const int cols_i2 = 2 * cols_i;
 		const int i_1 = i - 1;
@@ -281,14 +281,14 @@ void CDifodo::buildCoordinatesPyramidFast()
 	// resolutions)
 
 	unsigned int pyr_levels =
-		round(log(float(width / cols)) / log(2.f)) + ctf_levels;
+		round(log(float(m_width / cols)) / log(2.f)) + ctf_levels;
 
 	// Generate levels
 	for (unsigned int i = 0; i < pyr_levels; i++)
 	{
 		unsigned int s = pow(2.f, int(i));
-		cols_i = width / s;
-		rows_i = height / s;
+		cols_i = m_width / s;
+		rows_i = m_height / s;
 		// const int rows_i2 = 2*rows_i;
 		// const int cols_i2 = 2*cols_i;
 		const int i_1 = i - 1;
@@ -834,7 +834,7 @@ void CDifodo::odometryCalculation()
 		cols_i = cols / s;
 		rows_i = rows / s;
 		image_level =
-			ctf_levels - i + round(log(float(width / cols)) / log(2.f)) - 1;
+			ctf_levels - i + round(log(float(m_width / cols)) / log(2.f)) - 1;
 
 		// 1. Perform warping
 		if (i == 0)

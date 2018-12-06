@@ -730,11 +730,9 @@ void hmtMapViewerFrame::updateLocalMapView()
 		// Draw a grid on the ground:
 		// -------------------------------------------
 		{
-			opengl::CGridPlaneXY::Ptr obj =
-				mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
-					-100, 100, -100, 100, 0, 5);
-			obj->setColor(0.4, 0.4, 0.4);
-			objs->insert(obj);  // it will free the memory
+			auto o = opengl::CGridPlaneXY::Create(-100, 100, -100, 100, 0, 5);
+			o->setColor(0.4, 0.4, 0.4);
+			objs->insert(o);  // it will free the memory
 		}
 
 		// Two passes: 1st draw the map on the ground, then the rest.
@@ -745,13 +743,11 @@ void hmtMapViewerFrame::updateLocalMapView()
 
 			for (size_t nSelItem = 0; nSelItem < nSel; nSelItem++)
 			{
-				CItemData* data1 = static_cast<CItemData*>(
+				auto* d1 = static_cast<CItemData*>(
 					treeView->GetItemData(lstSelect.Item(nSelItem)));
-				if (!data1) continue;
-				if (!data1->m_ptr) continue;
+				if (!d1 || !d1->m_ptr) continue;
 
-				CHMHMapNode::Ptr area =
-					std::dynamic_pointer_cast<CHMHMapNode>(data1->m_ptr);
+				auto area = std::dynamic_pointer_cast<CHMHMapNode>(d1->m_ptr);
 				if (!area) continue;
 
 				// Is this the first rendered area??
