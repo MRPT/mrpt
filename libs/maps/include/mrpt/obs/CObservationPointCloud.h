@@ -14,6 +14,8 @@
 
 namespace mrpt::obs
 {
+class CObservation3DRangeScan;
+
 /** An observation from any sensor that can be summarized as a pointcloud.
  * The cloud can comprise plain XYZ points, or can include intensity, or RGB
  * data; in particular, the point cloud can be any of the derived classes of
@@ -34,6 +36,8 @@ class CObservationPointCloud : public CObservation
 
    public:
 	CObservationPointCloud() = default;
+
+	explicit CObservationPointCloud(const CObservation3DRangeScan& o);
 
 	/** The pointcloud */
 	mrpt::maps::CPointsMap::Ptr pointcloud;

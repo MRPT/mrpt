@@ -10,12 +10,20 @@
 #include "maps-precomp.h"  // Precomp header
 
 #include <mrpt/obs/CObservationPointCloud.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/serialization/CArchive.h>
 #include <iostream>
 
 using namespace mrpt::obs;
 
 IMPLEMENTS_SERIALIZABLE(CObservationPointCloud, CObservation, mrpt::obs);
+
+CObservationPointCloud::CObservationPointCloud(const CObservation3DRangeScan& o)
+{
+	pointcloud = mrpt::maps::CSimplePointsMap::Create();
+	pointcloud->loadFromRangeScan(o);
+}
 
 void CObservationPointCloud::getSensorPose(
 	mrpt::poses::CPose3D& out_sensorPose) const
