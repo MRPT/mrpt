@@ -156,7 +156,7 @@ class VicinityTraits;
  * This huge template encapsulates a function to get the vicinity of an
  * element, with maximum genericity. Although it's not meant to be called
  * directly,
- * every type defining the ASSERT_ENOUGHROOM assert and the get_unsafe method
+ * every type defining the get_unsafe method
  * will work. The assert checks if the boundaries (r-N,r+N,c-N,c+N) fit in
  * the matrix.
  * The template parameters are the following:

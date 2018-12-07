@@ -12,6 +12,7 @@
 #include <mrpt/math/math_frwds.h>  // forward declarations
 #include <algorithm>  // swap()
 #include <array>
+#include <type_traits>
 #include <cstring>  // memset()
 
 namespace mrpt::math
@@ -122,7 +123,11 @@ class CMatrixTemplate
 					if (doZeroColumns)
 					{
 						// Fill with zeros:
-						::memset(&m_Val[r][m_Cols], 0, sizeZeroColumns);
+						if constexpr (std::is_trivial_v<T>)
+							::memset(&m_Val[r][m_Cols], 0, sizeZeroColumns);
+						else
+							for (size_t k = m_Cols; k < col; k++)
+								m_Val[r][k] = T();
 					}
 				}
 				else
@@ -130,7 +135,10 @@ class CMatrixTemplate
 					// This is a new row, alloc the memory for the first time:
 					m_Val[r] =
 						static_cast<T*>(mrpt::aligned_malloc(row_size, 16));
-					::memset(m_Val[r], 0, row_size);
+					if constexpr (std::is_trivial_v<T>)
+						::memset(m_Val[r], 0, row_size);
+					else
+						for (size_t k = 0; k < col; k++) m_Val[r][k] = T();
 				}
 			}
 			// Done!
@@ -140,17 +148,6 @@ class CMatrixTemplate
 	}
 
    public:
-	/**
-	 * Checks whether the rows [r-N,r+N] and the columns [c-N,c+N] are present
-	 * in the matrix.
-	 */
-	template <size_t N>
-	inline void ASSERT_ENOUGHROOM(size_t r, size_t c) const
-	{
-#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
-		ASSERT_((r >= N) && (r + N < rows()) && (c >= N) && (c + N < cols()));
-#endif
-	}
 	/*! Fill all the elements with a given value (Note: named "fillAll" since
 	 * "fill" will be used by child classes) */
 	void fillAll(const T& val)
