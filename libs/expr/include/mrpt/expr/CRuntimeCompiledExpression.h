@@ -26,26 +26,27 @@ namespace mrpt
 namespace expr
 {
 /** A wrapper of `exprtk` runtime expression compiler: it takes a string
- * representing an
- * expression (from a simple mathematical formula to a complete program),
- * compiles it
- * and evaluates its result as many times as required. The result will change as
- * the "variables"
- * appearing in the expression (hold and managed by the user of this object)
- * change.
+ * representing an expression (from a simple mathematical formula to a complete
+ * program), compiles it and evaluates its result as many times as required. The
+ * result will change as the "variables" appearing in the expression (hold and
+ * managed by the user of this object) change.
  *
  * Refer to [exprtk documentation](https://github.com/ArashPartow/exprtk) for
  * reference on supported formulas, control flow instructions, etc.
  *
  * This wrapper is provided to reduce the (very large) compilation time and
- * memory required by the original
- * library, at the cost of only exposing the most commonly used part of its API:
+ * memory required by the original library, at the cost of only exposing the
+ * most commonly used part of its API:
  *  - Only expressions returning `double` are supported.
  *  - Variables must be provided via a `std::map` container **or** pointers to
  * user-stored variables.
  *
  * See examples of usage in the [unit test
  * file](https://github.com/MRPT/mrpt/blob/master/libs/base/src/math/CRuntimeCompiledExpression_unittest.cpp).
+ *
+ * If the environment variable `MRPT_EXPR_VERBOSE=1` is defined, debug
+ * information will be dumped to std::cout explaining the values of all the
+ * involved variables upon each call to `eval()`.
  *
  * \note (New in MRPT 1.5.0)
  * \ingroup mrpt_base_grp

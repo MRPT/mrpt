@@ -12,6 +12,8 @@
 #include <mrpt/expr/CRuntimeCompiledExpression.h>
 #include <mrpt/core/exceptions.h>
 #include <cmath>  // M_PI
+#include <cstdlib>
+#include <iostream>
 
 #define exprtk_disable_string_capabilities  // Workaround a bug in Ubuntu
 // precise's GCC+libstdc++
@@ -23,14 +25,15 @@
 #define exprtk_disable_rtl_io_file
 #include <mrpt/otherlibs/exprtk.hpp>
 
-// We only need this to be on this translation unit, hence the advantage of
-// using our MRPT wrapper instead
-// of the original exprtk sources.
-// PIMPL_IMPLEMENT(exprtk::expression<double>
-
 using namespace mrpt;
 using namespace mrpt::expr;
 
+const bool MRPT_EXPR_VERBOSE =
+	(nullptr != ::getenv("MRPT_EXPR_VERBOSE") &&
+	 ::atoi(::getenv("MRPT_EXPR_VERBOSE")) != 0);
+
+// We only need this to be on this translation unit, hence the advantage of
+// using our MRPT wrapper instead of the original exprtk sources.
 struct CRuntimeCompiledExpression::Impl
 {
 	exprtk::expression<double> m_compiled_formula;
@@ -80,7 +83,21 @@ void CRuntimeCompiledExpression::compile(
 double CRuntimeCompiledExpression::eval() const
 {
 	ASSERT_(m_impl);
-	return m_impl->m_compiled_formula.value();
+	double ret = m_impl->m_compiled_formula.value();
+	if (MRPT_EXPR_VERBOSE)
+	{
+		std::vector<std::pair<std::string, double>> lst;
+		m_impl->m_compiled_formula.get_symbol_table().get_variable_list(lst);
+		// clang-format off
+		std::cout << "[CRuntimeCompiledExpression::eval()] DEBUG:\n"
+		  "* Expression: " << m_impl->m_original_expr_str << "\n"
+		  "* Final value: " << ret << "\n"
+		  "* Using these symbols:\n";
+		// clang-format on
+		for (const auto& v : lst)
+			std::cout << " * " << v.first << " = " << v.second << "\n";
+	}
+	return ret;
 }
 
 void CRuntimeCompiledExpression::register_symbol_table(
