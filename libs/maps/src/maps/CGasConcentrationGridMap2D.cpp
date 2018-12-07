@@ -1364,7 +1364,7 @@ bool CGasConcentrationGridMap2D::save_Gaussian_Wind_Grid_To_File()
 		cout << "DONE" << endl;
 		return true;
 	}
-	catch (exception e)
+	catch (const std::exception& e)
 	{
 		cout << endl
 			 << "------------------------------------------------------------"
@@ -1453,7 +1453,7 @@ bool CGasConcentrationGridMap2D::load_Gaussian_Wind_Grid_From_File()
 		cout << "DONE" << endl;
 		return true;
 	}
-	catch (exception e)
+	catch (const std::exception& e)
 	{
 		cout << endl
 			 << "------------------------------------------------------------"

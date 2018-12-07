@@ -92,7 +92,6 @@ class CMatrixTemplate
 		{
 			size_t r;
 			bool doZeroColumns = newElementsToZero && (col > m_Cols);
-			size_t sizeZeroColumns = sizeof(T) * (col - m_Cols);
 
 			// If we are reducing rows, free that memory:
 			for (r = row; r < m_Rows; r++) mrpt::aligned_free(m_Val[r]);
@@ -124,7 +123,9 @@ class CMatrixTemplate
 					{
 						// Fill with zeros:
 						if constexpr (std::is_trivial_v<T>)
-							::memset(&m_Val[r][m_Cols], 0, sizeZeroColumns);
+							::memset(
+								&m_Val[r][m_Cols], 0,
+								sizeof(T) * (col - m_Cols));
 						else
 							for (size_t k = m_Cols; k < col; k++)
 								m_Val[r][k] = T();

@@ -224,14 +224,15 @@ void CObservationGPS::serializeFrom(
 			{
 				auto* datum = new gnss::Message_TOPCON_SATS();
 				messages[gnss::TOPCON_SATS] = gnss::gnss_message_ptr(datum);
-				gnss::Message_TOPCON_SATS& SATS_datum = *datum;
 				bool has_SATS_datum_;
 				in >> has_SATS_datum_;
 				if (has_SATS_datum_)
 				{
-					MRPT_READ_POD(in, SATS_datum.USIs);
-					MRPT_READ_POD(in, SATS_datum.ELs);
-					MRPT_READ_POD(in, SATS_datum.AZs);
+					THROW_EXCEPTION(
+						"Reading TOPCON_SATS is broken: non-trivial POD data "
+						"read.")
+					// was: MRPT_READ_POD(in, SATS_datum.USIs);
+					// gnss::Message_TOPCON_SATS& SATS_datum = *datum;
 				}
 			}
 		}

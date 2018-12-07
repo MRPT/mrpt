@@ -307,7 +307,7 @@ void CObservationGasSensors::CMOSmodel::inverse_MOSmodeling(
 			first_iteration = false;
 		}  // end-if estimation values
 	}
-	catch (exception e)
+	catch (const exception& e)
 	{
 		cerr << "**Exception in "
 				"CObservationGasSensors::CMOSmodel::inverse_MOSmodeling** "
