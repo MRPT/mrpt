@@ -34,6 +34,10 @@ namespace math
 	 *
 	 * See examples of usage in the [unit test file](https://github.com/MRPT/mrpt/blob/master/libs/base/src/math/CRuntimeCompiledExpression_unittest.cpp).
 	 *
+	 * If the environment variable `MRPT_EXPR_VERBOSE=1` is defined, debug
+	 * information will be dumped to std::cout explaining the values of all the
+	 * involved variables upon each call to `eval()`.
+	 *
 	 * \note (New in MRPT 1.5.0)
 	 * \ingroup mrpt_base_grp
 	 */

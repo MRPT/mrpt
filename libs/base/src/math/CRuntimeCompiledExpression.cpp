@@ -10,6 +10,8 @@
 #include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/CRuntimeCompiledExpression.h>
+#include <cstdlib>
+#include <iostream>
 
 #define exprtk_disable_string_capabilities   // Workaround a bug in Ubuntu precise's GCC+libstdc++
 #include <mrpt/otherlibs/exprtk.hpp>
@@ -20,6 +22,9 @@ PIMPL_IMPLEMENT(exprtk::expression<double>);
 
 using namespace mrpt;
 using namespace mrpt::math;
+
+const bool MRPT_EXPR_VERBOSE = (nullptr!=::getenv("MRPT_EXPR_VERBOSE")
+        && ::atoi(::getenv("MRPT_EXPR_VERBOSE"))!=0);
 
 CRuntimeCompiledExpression::CRuntimeCompiledExpression()
 {
@@ -52,7 +57,19 @@ void CRuntimeCompiledExpression::compile(
 double CRuntimeCompiledExpression::eval() const
 {
 	ASSERT_(m_compiled_formula.ptr.get() != nullptr);
-	return PIMPL_GET_CONSTREF(exprtk::expression<double>, m_compiled_formula).value();
+	double ret = PIMPL_GET_CONSTREF(exprtk::expression<double>, m_compiled_formula).value();
+	if (MRPT_EXPR_VERBOSE)
+	{
+		std::vector<std::pair<std::string,double> > lst;
+		PIMPL_GET_REF(exprtk::expression<double>, m_compiled_formula).get_symbol_table().get_variable_list(lst);
+		std::cout << "[CRuntimeCompiledExpression::eval()] DEBUG:\n"
+		             "* Expression: "<< m_original_expr_str << "\n"
+		             "* Final value: " << ret << "\n"
+		             "* Using these symbols:\n";
+		for (const auto &v : lst)
+			std::cout << " * " <<  v.first << " = " << v.second << "\n";
+	}
+	return ret;
 }
 
 void CRuntimeCompiledExpression::register_symbol_table(
