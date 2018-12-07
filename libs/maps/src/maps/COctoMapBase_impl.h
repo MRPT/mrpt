@@ -11,6 +11,8 @@
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservationPointCloud.h>
+#include <mrpt/obs/CObservationVelodyneScan.h>
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/serialization/CArchive.h>
 
@@ -82,26 +84,59 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::
 		}
 		return true;
 	}
-	else if (IS_CLASS(obs, CObservation3DRangeScan))
+	else if (
+		IS_CLASS(obs, CObservation3DRangeScan) ||
+		IS_CLASS(obs, CObservationPointCloud) ||
+		IS_CLASS(obs, CObservationVelodyneScan))
 	{
-		/********************************************************************
-				 OBSERVATION TYPE: CObservation3DRangeScan
-		 ********************************************************************/
-		const auto* o = static_cast<const CObservation3DRangeScan*>(obs);
+		// Observations that can be converted into 3D point clouds:
+		const auto* o_scan3D =
+			dynamic_cast<const CObservation3DRangeScan*>(obs);
+		const auto* o_pc = dynamic_cast<const CObservationPointCloud*>(obs);
+		const auto* o_velo = dynamic_cast<const CObservationVelodyneScan*>(obs);
+
+		// No points?
+		if (o_scan3D && !o_scan3D->hasPoints3D) return false;
+		if (o_pc && (!o_pc->pointcloud || !o_pc->pointcloud->size()))
+			return false;
+		if (o_velo && !o_velo->point_cloud.size()) return false;
 
 		// Build a points-map representation of the points from the scan
 		// (coordinates are wrt the robot base)
-		if (!o->hasPoints3D) return false;
 
 		// Sensor_pose = robot_pose (+) sensor_pose_on_robot
 		CPose3D sensorPose(UNINITIALIZED_POSE);
-		sensorPose.composeFrom(robotPose3D, o->sensorPose);
+		obs->getSensorPose(sensorPose);
+		sensorPose.composeFrom(robotPose3D, sensorPose);
 		sensorPt =
 			octomap::point3d(sensorPose.x(), sensorPose.y(), sensorPose.z());
 
-		o->load();  // Just to make sure the points are loaded from an external
-		// source, if that's the case...
-		const size_t sizeRangeScan = o->points3D_x.size();
+		obs->load();  // ensure points are loaded from an external source
+
+		// size:
+		std::size_t sizeRangeScan = 0;
+		const float *xs = nullptr, *ys = nullptr, *zs = nullptr;
+		if (o_scan3D)
+		{
+			sizeRangeScan = o_scan3D->points3D_x.size();
+			xs = &o_scan3D->points3D_x[0];
+			ys = &o_scan3D->points3D_y[0];
+			zs = &o_scan3D->points3D_z[0];
+		}
+		if (o_pc)
+		{
+			sizeRangeScan = o_pc->pointcloud->size();
+			xs = &o_pc->pointcloud->getPointsBufferRef_x()[0];
+			ys = &o_pc->pointcloud->getPointsBufferRef_y()[0];
+			zs = &o_pc->pointcloud->getPointsBufferRef_z()[0];
+		}
+		if (o_velo)
+		{
+			sizeRangeScan = o_velo->point_cloud.size();
+			xs = &o_velo->point_cloud.x[0];
+			ys = &o_velo->point_cloud.y[0];
+			zs = &o_velo->point_cloud.z[0];
+		}
 
 		// Transform 3D point cloud:
 		scan.reserve(sizeRangeScan);
@@ -125,9 +160,9 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::
 		mrpt::math::TPoint3Df pt;
 		for (size_t i = 0; i < sizeRangeScan; i++)
 		{
-			pt.x = o->points3D_x[i];
-			pt.y = o->points3D_y[i];
-			pt.z = o->points3D_z[i];
+			pt.x = xs[i];
+			pt.y = ys[i];
+			pt.z = zs[i];
 
 			// Valid point?
 			if (pt.x != 0 || pt.y != 0 || pt.z != 0)
