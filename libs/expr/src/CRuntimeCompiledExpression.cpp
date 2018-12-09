@@ -10,6 +10,7 @@
 #include "expr-precomp.h"  // Precompiled headers
 
 #include <mrpt/expr/CRuntimeCompiledExpression.h>
+#include <mrpt/system/string_utils.h>
 #include <mrpt/core/exceptions.h>
 #include <cmath>  // M_PI
 #include <cstdlib>
@@ -28,9 +29,32 @@
 using namespace mrpt;
 using namespace mrpt::expr;
 
-const bool MRPT_EXPR_VERBOSE =
-	(nullptr != ::getenv("MRPT_EXPR_VERBOSE") &&
-	 ::atoi(::getenv("MRPT_EXPR_VERBOSE")) != 0);
+struct CRuntimeCompiledExpression::ExprVerbose
+{
+	static CRuntimeCompiledExpression::ExprVerbose& Instance()
+	{
+		static CRuntimeCompiledExpression::ExprVerbose obj;
+		return obj;
+	}
+	void process(const CRuntimeCompiledExpression& rce, const double ret);
+
+   private:
+	bool m_verbose_always_enabled{false};
+	std::vector<std::string> m_verbose_matches;
+	ExprVerbose()
+	{
+		const char* sp = ::getenv("MRPT_EXPR_VERBOSE");
+		if (nullptr == sp) return;
+		const std::string s = mrpt::system::trim(std::string(sp));
+
+		if (s == std::string("1"))
+		{
+			m_verbose_always_enabled = true;
+			return;
+		}
+		mrpt::system::tokenize(s, "|", m_verbose_matches);
+	}
+};
 
 // We only need this to be on this translation unit, hence the advantage of
 // using our MRPT wrapper instead of the original exprtk sources.
@@ -84,19 +108,7 @@ double CRuntimeCompiledExpression::eval() const
 {
 	ASSERT_(m_impl);
 	double ret = m_impl->m_compiled_formula.value();
-	if (MRPT_EXPR_VERBOSE)
-	{
-		std::vector<std::pair<std::string, double>> lst;
-		m_impl->m_compiled_formula.get_symbol_table().get_variable_list(lst);
-		// clang-format off
-		std::cout << "[CRuntimeCompiledExpression::eval()] DEBUG:\n"
-		  "* Expression: " << m_impl->m_original_expr_str << "\n"
-		  "* Final value: " << ret << "\n"
-		  "* Using these symbols:\n";
-		// clang-format on
-		for (const auto& v : lst)
-			std::cout << " * " << v.first << " = " << v.second << "\n";
-	}
+	ExprVerbose::Instance().process(*this, ret);
 	return ret;
 }
 
@@ -135,4 +147,38 @@ bool CRuntimeCompiledExpression::is_compiled() const
 const std::string& CRuntimeCompiledExpression::get_original_expression() const
 {
 	return m_impl->m_original_expr_str;
+}
+
+void CRuntimeCompiledExpression::ExprVerbose::process(
+	const CRuntimeCompiledExpression& rce, const double ret)
+{
+	if (!m_verbose_always_enabled && m_verbose_matches.empty()) return;
+
+	const auto& exp = *rce.m_impl.get();
+
+	if (!m_verbose_matches.empty())
+	{
+		bool matched = false;
+		for (const auto& s : m_verbose_matches)
+		{
+			if (exp.m_original_expr_str.find(s) != std::string::npos)
+			{
+				matched = true;
+				break;
+			}
+		}
+		if (!matched) return;
+	}
+
+	std::vector<std::pair<std::string, double>> lst;
+	exp.m_compiled_formula.get_symbol_table().get_variable_list(lst);
+	// clang-format off
+    std::cout << "[CRuntimeCompiledExpression::eval()] DEBUG:\n"
+                 "* Expression: "
+              << exp.m_original_expr_str << "\n"
+                 "* Final value: " << ret << "\n"
+                 "* Using these symbols:\n";
+	// clang-format on
+	for (const auto& v : lst)
+		std::cout << " * " << v.first << " = " << v.second << "\n";
 }
