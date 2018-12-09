@@ -29,7 +29,7 @@ digraph MRPT_LIBS {
 	detectors -> slam;
 
 	expr       [label="mrpt-expr",URL="group__mrpt__expr__grp.html"];
-	expr -> core;
+	expr -> system;
 
 	graphs     [label="mrpt-graphs",URL="group__mrpt__graphs__grp.html"];
 	graphs -> opengl;

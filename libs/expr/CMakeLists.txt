@@ -6,6 +6,7 @@ list(APPEND expr_EXTRA_SRCS_NAME 	"expr" "expr")
 define_mrpt_lib(
 	expr 		# Lib name
 	# Dependencies:
+	mrpt-system
 	mrpt-core
 	)
 
