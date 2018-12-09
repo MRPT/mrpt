@@ -13,6 +13,10 @@
 
 set -e
 
+# List of distributions to create PPA packages for:
+LST_DISTROS=(xenial bionic cosmic disco)
+
+
 # Checks
 # --------------------------------
 if [ -f version_prefix.txt ];
@@ -46,8 +50,6 @@ rm -fr $MRPT_UBUNTU_OUT_DIR/
 # -------------------------------------------------------------------
 # And now create the custom packages for each Ubuntu distribution:
 # -------------------------------------------------------------------
-LST_DISTROS=(xenial bionic cosmic)
-
 # Xenial:armhf does not have any version of liboctomap-dev:
 export MRPT_RELEASE_EXTRA_OTHERLIBS_URL="https://github.com/MRPT/octomap/archive/devel.zip"
 export MRPT_RELEASE_EXTRA_OTHERLIBS_PATH="otherlibs/octomap.zip"
