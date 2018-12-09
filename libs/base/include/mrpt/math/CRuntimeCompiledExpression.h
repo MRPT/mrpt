@@ -35,10 +35,15 @@ namespace math
 	 * See examples of usage in the [unit test file](https://github.com/MRPT/mrpt/blob/master/libs/base/src/math/CRuntimeCompiledExpression_unittest.cpp).
 	 *
 	 * If the environment variable `MRPT_EXPR_VERBOSE=1` is defined, debug
-	 * information will be dumped to std::cout explaining the values of all the
+	 * information will be dumped to std::cout explaining the values of **all** the
 	 * involved variables upon each call to `eval()`.
+	 * Alternatively, the env var `MRPT_EXPR_VERBOSE` can be set to a list of
+	 * terms split by `|`, and only those formulas that match (i.e. contain as
+	 * substrings) any of the terms will be traced.
+	 * Example: `MRPT_EXPR_VERBOSE="cos|sin|speed|if (x>0)"`.
 	 *
 	 * \note (New in MRPT 1.5.0)
+	 * \note (`MRPT_EXPR_VERBOSE` new in MRPT 1.5.7)
 	 * \ingroup mrpt_base_grp
 	 */
 	class BASE_IMPEXP CRuntimeCompiledExpression
@@ -76,6 +81,8 @@ namespace math
 		PIMPL_DECLARE_TYPE(exprtk::expression<double>, m_compiled_formula);
 		std::string m_original_expr_str;
 
+		struct ExprVerbose;
+		friend struct ExprVerbose;
 	}; // End of class def.
 
 	} // End of namespace

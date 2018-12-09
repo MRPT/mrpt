@@ -10,6 +10,7 @@
 #include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/CRuntimeCompiledExpression.h>
+#include <mrpt/system/string_utils.h>
 #include <cstdlib>
 #include <iostream>
 
@@ -23,8 +24,32 @@ PIMPL_IMPLEMENT(exprtk::expression<double>);
 using namespace mrpt;
 using namespace mrpt::math;
 
-const bool MRPT_EXPR_VERBOSE = (nullptr!=::getenv("MRPT_EXPR_VERBOSE")
-        && ::atoi(::getenv("MRPT_EXPR_VERBOSE"))!=0);
+struct CRuntimeCompiledExpression::ExprVerbose
+{
+	static CRuntimeCompiledExpression::ExprVerbose & Instance()
+	{
+		static CRuntimeCompiledExpression::ExprVerbose obj;
+		return obj;
+	}
+	void process(const CRuntimeCompiledExpression& rce, const double ret);
+
+private:
+	bool m_verbose_always_enabled{false};
+	std::vector<std::string> m_verbose_matches;
+	ExprVerbose()
+	{
+		const char* sp = ::getenv("MRPT_EXPR_VERBOSE");
+		if (nullptr==sp) return;
+		const std::string s = mrpt::system::trim(std::string(sp));
+
+		if (s==std::string("1"))
+		{
+			m_verbose_always_enabled=true;
+			return;
+		}
+		mrpt::system::tokenize(s,"|",m_verbose_matches);
+	}
+};
 
 CRuntimeCompiledExpression::CRuntimeCompiledExpression()
 {
@@ -58,18 +83,36 @@ double CRuntimeCompiledExpression::eval() const
 {
 	ASSERT_(m_compiled_formula.ptr.get() != nullptr);
 	double ret = PIMPL_GET_CONSTREF(exprtk::expression<double>, m_compiled_formula).value();
-	if (MRPT_EXPR_VERBOSE)
-	{
-		std::vector<std::pair<std::string,double> > lst;
-		PIMPL_GET_REF(exprtk::expression<double>, m_compiled_formula).get_symbol_table().get_variable_list(lst);
-		std::cout << "[CRuntimeCompiledExpression::eval()] DEBUG:\n"
-		             "* Expression: "<< m_original_expr_str << "\n"
-		             "* Final value: " << ret << "\n"
-		             "* Using these symbols:\n";
-		for (const auto &v : lst)
-			std::cout << " * " <<  v.first << " = " << v.second << "\n";
-	}
+	CRuntimeCompiledExpression::ExprVerbose::Instance().process(*this, ret);
 	return ret;
+}
+
+void CRuntimeCompiledExpression::ExprVerbose::process(const CRuntimeCompiledExpression& rce, const double ret)
+{
+	if (!m_verbose_always_enabled && m_verbose_matches.empty()) return;
+
+	if (!m_verbose_matches.empty())
+	{
+		bool matched=false;
+		for (const auto &s:m_verbose_matches)
+		{
+			if (rce.m_original_expr_str.find(s)!=std::string::npos)
+			{
+				matched = true;
+				break;
+			}
+		}
+		if (!matched) return;
+	}
+
+	std::vector<std::pair<std::string,double> > lst;
+	PIMPL_GET_REF(exprtk::expression<double>, rce.m_compiled_formula).get_symbol_table().get_variable_list(lst);
+	std::cout << "[CRuntimeCompiledExpression::eval()] DEBUG:\n"
+	             "* Expression: "<< rce.m_original_expr_str << "\n"
+	             "* Final value: " << ret << "\n"
+	             "* Using these symbols:\n";
+	for (const auto &v : lst)
+		std::cout << " * " <<  v.first << " = " << v.second << "\n";
 }
 
 void CRuntimeCompiledExpression::register_symbol_table(
