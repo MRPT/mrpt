@@ -14,6 +14,7 @@
 #include <mrpt/core/round.h>
 #include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/stl_serialization.h>
 #include <iostream>
 
 using namespace std;
