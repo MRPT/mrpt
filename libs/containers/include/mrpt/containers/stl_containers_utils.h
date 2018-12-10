@@ -143,5 +143,14 @@ void printMap(const std::map<T1, T2>& m)
 	std::cout << getMapAsString(m) << std::endl;
 }
 
+/**\brief Deep clear for a std vector container
+ */
+template <class CONTAINER>
+void deep_clear(CONTAINER& c)
+{
+	CONTAINER empty;
+	c.swap(empty);
+}
+
 /** @} */  // end of grouping
 }  // namespace mrpt::containers
