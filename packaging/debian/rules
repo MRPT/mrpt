@@ -81,15 +81,15 @@ override_dh_install:
 
 	# Move all the ".so.x.y" files to the corresponding binary packages:
 	# libmrpt-${name}${CMAKE_MRPT_VERSION_NUMBER_MAJOR}.${CMAKE_MRPT_VERSION_NUMBER_MINOR}/usr/...
-	VERSION=$$(head version_prefix.txt -n1 | cut -f 1-2 -d . ); find $(CURDIR)/debian/ -name "*.so.?.*" | while read line; do f=$$(basename $$line | cut -f 1 -d '.'); echo "Processing so file: $$line, basename: $$f"; dir=$(CURDIR)/debian/$$f$${VERSION}/usr/lib/$(DEB_HOST_MULTIARCH); mkdir -p $$dir; mv -f $$line $$dir; done
+	VERSION=$$(head version_prefix.txt -n1 | cut -f 1-2 -d . ); tmpfil=$$(mktemp); find $(CURDIR)/debian/ -name "*.so.?.*" > $$tmpfil; cat $$tmpfil | while read line; do f=$$(basename $$line | cut -f 1 -d '.'); echo "Processing so file: $$line, basename: $$f"; dir=$(CURDIR)/debian/$$f$${VERSION}/usr/lib/$(DEB_HOST_MULTIARCH); mkdir -p $$dir; mv -f $$line $$dir; done
 
 	# JLBC Nov 2018: Due to what is explained in MRPT/cmakemodules/DeclareMRPTLibs.cmake, we need to make some "mv" here:
 
 	# Move all the ".so" files to the proper place: the -dev package:
-	find $(CURDIR)/debian/ -name "*.so" | grep -v 'dev' | grep -v 'pymrpt' | while read line; do f=$$(basename $$line .so); echo "Processing so file: $$line, basename: $f"; mkdir -p $(CURDIR)/debian/$$f-dev/usr/lib/$(DEB_HOST_MULTIARCH); mv -f $$line $(CURDIR)/debian/$$f-dev/usr/lib/$(DEB_HOST_MULTIARCH); done
+	tmpfil=$$(mktemp); find $(CURDIR)/debian/ -name "*.so" | grep -v 'dev' | grep -v 'pymrpt' > $$tmpfil; cat $$tmpfil | while read line; do f=$$(basename $$line .so); echo "Processing so file: $$line, basename: $f"; mkdir -p $(CURDIR)/debian/$$f-dev/usr/lib/$(DEB_HOST_MULTIARCH); mv -f $$line $(CURDIR)/debian/$$f-dev/usr/lib/$(DEB_HOST_MULTIARCH); done
 
 	# Move cmake modules to the -dev packages:
-	find $(CURDIR)/debian/usr/share/ -name '*-config.cmake' | while read line; do f=$$(dirname $$line); f=$$(basename $$f); echo "Processing cmake scripts: $$line, module name: $$f"; dir=$(CURDIR)/debian/lib$$f-dev/usr/share/; mkdir -p $$dir; mv -f $(CURDIR)/debian/usr/share/$$f $$dir; done
+	tmpfil=$$(mktemp); find $(CURDIR)/debian/usr/share/ -name '*-config.cmake' > $$tmpfil; cat $$tmpfil | while read line; do f=$$(dirname $$line); f=$$(basename $$f); echo "Processing cmake scripts: $$line, module name: $$f"; dir=$(CURDIR)/debian/lib$$f-dev/usr/share/; mkdir -p $$dir; mv -f $(CURDIR)/debian/usr/share/$$f $$dir; done
 
 	# Move headers to -dev directories:
 	cp -vr $(CURDIR)/debian/usr/libmrpt-*dev $(CURDIR)/debian/
