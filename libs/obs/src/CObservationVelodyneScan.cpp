@@ -47,7 +47,7 @@ mrpt::system::TTimeStamp Velo::getOriginalReceivedTimeStamp() const
 	return originalReceivedTimestamp;
 }
 
-uint8_t Velo::serializeGetVersion() const { return 1; }
+uint8_t Velo::serializeGetVersion() const { return 2; }
 void Velo::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out << timestamp << sensorLabel;
@@ -65,6 +65,9 @@ void Velo::serializeTo(mrpt::serialization::CArchive& out) const
 	out << point_cloud.x << point_cloud.y << point_cloud.z
 		<< point_cloud.intensity;
 	out << has_satellite_timestamp;  // v1
+	// v2:
+	out << point_cloud.timestamp << point_cloud.azimuth << point_cloud.laser_id
+		<< point_cloud.pointsForLaserID;
 }
 
 void Velo::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -73,6 +76,7 @@ void Velo::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	{
 		case 0:
 		case 1:
+		case 2:
 		{
 			in >> timestamp >> sensorLabel;
 
@@ -94,6 +98,7 @@ void Velo::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 						&calibration.laser_corrections[0],
 						sizeof(calibration.laser_corrections[0]) * N);
 			}
+			point_cloud.clear();
 			in >> point_cloud.x >> point_cloud.y >> point_cloud.z >>
 				point_cloud.intensity;
 			if (version >= 1)
@@ -101,6 +106,9 @@ void Velo::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			else
 				has_satellite_timestamp =
 					(this->timestamp != this->originalReceivedTimestamp);
+			if (version >= 2)
+				in >> point_cloud.timestamp >> point_cloud.azimuth >>
+					point_cloud.laser_id >> point_cloud.pointsForLaserID;
 		}
 		break;
 		default:
