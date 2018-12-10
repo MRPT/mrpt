@@ -26,13 +26,19 @@ namespace obs
 /** A `CObservation`-derived class for RAW DATA (and optionally, point cloud) of
  * scans from 3D Velodyne LIDAR scanners.
  * A scan comprises one or more "velodyne packets" (refer to Velodyne user
- * manual).
+ * manual). Normally, a full 360 degrees sweep is included in one observation
+ * object. Note that if a pointcloud is generated inside this class, each point
+ * is annotated with per-point information about its exact azimuth and laser_id
+ * (ring number), an information that is loss when inserting the observation in
+ * a regular mrpt::maps::CPointsMap.
  *
  * <h2>Main data fields:</h2><hr>
  * - CObservationVelodyneScan::scan_packets with raw data packets.
  * - CObservationVelodyneScan::point_cloud normally empty after grabbing for
  * efficiency, can be generated calling \a
  * CObservationVelodyneScan::generatePointCloud()
+ *
+ * Dual return mode is supported (see mrpt::hwdrivers::CVelodyneScanner).
  *
  * Axes convention for point cloud (x,y,z) coordinates:
  *
@@ -68,7 +74,7 @@ namespace obs
  * <b>first</b> CObservationVelodyneScan::scan_packets packet.
  *
  * \note New in MRPT 1.4.0
- * \sa CObservation, CPointsMap, CVelodyneScanner
+ * \sa CObservation, mrpt::maps::CPointsMap, mrpt::hwdrivers::CVelodyneScanner
  * \ingroup mrpt_obs_grp
  */
 class CObservationVelodyneScan : public CObservation
@@ -189,8 +195,15 @@ class CObservationVelodyneScan : public CObservation
 		/** Original azimuth of each point (if `generatePerPointAzimuth`=true,
 		 * empty otherwise ) */
 		std::vector<float> azimuth;
+		/** Laser ID ("ring number") for each point (0-15 for a VLP-16, etc.) */
+		std::vector<int16_t> laser_id;
+		/** The list of point indices (in x,y,z,...) generated for each laserID
+		 * (ring number). Generated only if `generatePointsForLaserID`=true in
+		 * `TGeneratePointCloudParameters`*/
+		std::vector<std::vector<std::size_t>> pointsForLaserID;
 
-		inline size_t size() const { return x.size(); }
+		inline std::size_t size() const { return x.size(); }
+		void reserve(std::size_t n);
 		/** Sets all vectors to zero length */
 		void clear();
 		/** Like clear(), but also enforcing freeing memory */
@@ -253,6 +266,8 @@ class CObservationVelodyneScan : public CObservation
 		bool generatePerPointTimestamp{false};
 		/** (Default:false) If `true`, populate the vector azimuth */
 		bool generatePerPointAzimuth{false};
+		/** (Default:false) If `true`, populate pointsForLaserID */
+		bool generatePointsForLaserID{false};
 	};
 
 	/** Generates the point cloud into the point cloud data fields in \a

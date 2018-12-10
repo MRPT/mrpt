@@ -12,26 +12,26 @@
 #include <mrpt/obs/CObservationVelodyneScan.h>
 #include <mrpt/poses/CPose3DInterpolator.h>
 #include <mrpt/core/round.h>
+#include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/serialization/CArchive.h>
 #include <iostream>
 
 using namespace std;
 using namespace mrpt::obs;
 
+// shortcut:
+using Velo = mrpt::obs::CObservationVelodyneScan;
+
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationVelodyneScan, CObservation, mrpt::obs)
 
-CSinCosLookUpTableFor2DScans velodyne_sincos_tables;
+static CSinCosLookUpTableFor2DScans velodyne_sincos_tables;
 
-const float CObservationVelodyneScan::ROTATION_RESOLUTION =
-	0.01f; /**< degrees */
-const float CObservationVelodyneScan::DISTANCE_MAX = 130.0f; /**< meters */
-const float CObservationVelodyneScan::DISTANCE_RESOLUTION =
-	0.002f; /**< meters */
-const float CObservationVelodyneScan::DISTANCE_MAX_UNITS =
-	(CObservationVelodyneScan::DISTANCE_MAX /
-		 CObservationVelodyneScan::DISTANCE_RESOLUTION +
-	 1.0f);
+const float Velo::ROTATION_RESOLUTION = 0.01f; /**< degrees */
+const float Velo::DISTANCE_MAX = 130.0f; /**< meters */
+const float Velo::DISTANCE_RESOLUTION = 0.002f; /**< meters */
+const float Velo::DISTANCE_MAX_UNITS =
+	(Velo::DISTANCE_MAX / Velo::DISTANCE_RESOLUTION + 1.0f);
 
 const int SCANS_PER_FIRING = 16;
 
@@ -39,18 +39,16 @@ const float VLP16_BLOCK_TDURATION = 110.592f;  // [us]
 const float VLP16_DSR_TOFFSET = 2.304f;  // [us]
 const float VLP16_FIRING_TOFFSET = 55.296f;  // [us]
 
-const float HDR32_DSR_TOFFSET = 1.152f;  // [us]
-const float HDR32_FIRING_TOFFSET = 46.08f;  // [us]
+const double HDR32_DSR_TOFFSET = 1.152;  // [us]
+const double HDR32_FIRING_TOFFSET = 46.08;  // [us]
 
-mrpt::system::TTimeStamp
-	CObservationVelodyneScan::getOriginalReceivedTimeStamp() const
+mrpt::system::TTimeStamp Velo::getOriginalReceivedTimeStamp() const
 {
 	return originalReceivedTimestamp;
 }
 
-uint8_t CObservationVelodyneScan::serializeGetVersion() const { return 1; }
-void CObservationVelodyneScan::serializeTo(
-	mrpt::serialization::CArchive& out) const
+uint8_t Velo::serializeGetVersion() const { return 1; }
+void Velo::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out << timestamp << sensorLabel;
 	out << minRange << maxRange << sensorPose;
@@ -69,8 +67,7 @@ void CObservationVelodyneScan::serializeTo(
 	out << has_satellite_timestamp;  // v1
 }
 
-void CObservationVelodyneScan::serializeFrom(
-	mrpt::serialization::CArchive& in, uint8_t version)
+void Velo::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -113,7 +110,7 @@ void CObservationVelodyneScan::serializeFrom(
 	// m_cachedMap.clear();
 }
 
-void CObservationVelodyneScan::getDescriptionAsText(std::ostream& o) const
+void Velo::getDescriptionAsText(std::ostream& o) const
 {
 	CObservation::getDescriptionAsText(o);
 	o << "Homogeneous matrix for the sensor 3D pose, relative to robot base:\n";
@@ -125,31 +122,35 @@ void CObservationVelodyneScan::getDescriptionAsText(std::ostream& o) const
 }
 
 /** [us] */
-double HDL32AdjustTimeStamp(int firingblock, int dsr)
+static double HDL32AdjustTimeStamp(int firingblock, int dsr)
 {
 	return (firingblock * HDR32_FIRING_TOFFSET) + (dsr * HDR32_DSR_TOFFSET);
 }
 /** [us] */
-double VLP16AdjustTimeStamp(int firingblock, int dsr, int firingwithinblock)
+static double VLP16AdjustTimeStamp(
+	int firingblock, int dsr, int firingwithinblock)
 {
 	return (firingblock * VLP16_BLOCK_TDURATION) + (dsr * VLP16_DSR_TOFFSET) +
 		   (firingwithinblock * VLP16_FIRING_TOFFSET);
 }
 
 /** Auxiliary class used to refactor
- * CObservationVelodyneScan::generatePointCloud() */
+ * Velo::generatePointCloud() */
 struct PointCloudStorageWrapper
 {
+	virtual void reserve(std::size_t n) = 0;
+	virtual void resizeLaserCount([[maybe_unused]] std::size_t n) {}
+
 	/** Process the insertion of a new (x,y,z) point to the cloud, in
 	 * sensor-centric coordinates, with the exact timestamp of that LIDAR ray */
 	virtual void add_point(
-		double pt_x, double pt_y, double pt_z, uint8_t pt_intensity,
-		const mrpt::system::TTimeStamp& tim, const float azimuth) = 0;
+		float pt_x, float pt_y, float pt_z, uint8_t pt_intensity,
+		const mrpt::system::TTimeStamp& tim, const float azimuth,
+		uint16_t laser_id) = 0;
 };
 
 static void velodyne_scan_to_pointcloud(
-	const CObservationVelodyneScan& scan,
-	const CObservationVelodyneScan::TGeneratePointCloudParameters& params,
+	const Velo& scan, const Velo::TGeneratePointCloudParameters& params,
 	PointCloudStorageWrapper& out_pc)
 {
 	// Initially based on code from ROS velodyne & from
@@ -159,7 +160,7 @@ static void velodyne_scan_to_pointcloud(
 	// Access to sin/cos table:
 	mrpt::obs::T2DScanProperties scan_props;
 	scan_props.aperture = 2 * M_PI;
-	scan_props.nRays = CObservationVelodyneScan::ROTATION_MAX_UNITS;
+	scan_props.nRays = Velo::ROTATION_MAX_UNITS;
 	scan_props.rightToLeft = true;
 	// The LUT contains sin/cos values for angles in this order: [180deg ... 0
 	// deg ... -180 deg]
@@ -172,17 +173,21 @@ static void velodyne_scan_to_pointcloud(
 		std::max(static_cast<float>(scan.minRange), params.minDistance);
 	const float realMaxDist =
 		std::min(params.maxDistance, static_cast<float>(scan.maxRange));
-	const int16_t isolatedPointsFilterDistance_units =
-		params.isolatedPointsFilterDistance /
-		CObservationVelodyneScan::DISTANCE_RESOLUTION;
+	const auto isolatedPointsFilterDistance_units = mrpt::round(
+		params.isolatedPointsFilterDistance / Velo::DISTANCE_RESOLUTION);
 
 	// This is: 16,32,64 depending on the LIDAR model
 	const size_t num_lasers = scan.calibration.laser_corrections.size();
 
+	out_pc.resizeLaserCount(num_lasers);
+	out_pc.reserve(
+		Velo::SCANS_PER_BLOCK * scan.scan_packets.size() *
+			Velo::BLOCKS_PER_PACKET +
+		16);
+
 	for (size_t iPkt = 0; iPkt < scan.scan_packets.size(); iPkt++)
 	{
-		const CObservationVelodyneScan::TVelodyneRawPacket* raw =
-			&scan.scan_packets[iPkt];
+		const Velo::TVelodyneRawPacket* raw = &scan.scan_packets[iPkt];
 
 		mrpt::system::TTimeStamp pkt_tim;  // Find out timestamp of this pkt
 		{
@@ -203,62 +208,47 @@ static void velodyne_scan_to_pointcloud(
 		{
 			// In dual return, the azimuth rate is actually twice this
 			// estimation:
-			const int nBlocksPerAzimuth =
-				(raw->laser_return_mode ==
-				 CObservationVelodyneScan::RETMODE_DUAL)
-					? 2
-					: 1;
-			std::vector<int> diffs(
-				CObservationVelodyneScan::BLOCKS_PER_PACKET -
-				nBlocksPerAzimuth);
-			for (int i = 0; i < CObservationVelodyneScan::BLOCKS_PER_PACKET -
-									nBlocksPerAzimuth;
-				 ++i)
+			const unsigned int nBlocksPerAzimuth =
+				(raw->laser_return_mode == Velo::RETMODE_DUAL) ? 2 : 1;
+			const size_t nDiffs = Velo::BLOCKS_PER_PACKET - nBlocksPerAzimuth;
+			std::vector<int> diffs(nDiffs);
+			for (size_t i = 0; i < nDiffs; ++i)
 			{
-				int localDiff = (CObservationVelodyneScan::ROTATION_MAX_UNITS +
+				int localDiff = (Velo::ROTATION_MAX_UNITS +
 								 raw->blocks[i + nBlocksPerAzimuth].rotation -
 								 raw->blocks[i].rotation) %
-								CObservationVelodyneScan::ROTATION_MAX_UNITS;
+								Velo::ROTATION_MAX_UNITS;
 				diffs[i] = localDiff;
 			}
 			std::nth_element(
-				diffs.begin(),
-				diffs.begin() + CObservationVelodyneScan::BLOCKS_PER_PACKET / 2,
+				diffs.begin(), diffs.begin() + Velo::BLOCKS_PER_PACKET / 2,
 				diffs.end());  // Calc median
-			median_azimuth_diff =
-				diffs[CObservationVelodyneScan::BLOCKS_PER_PACKET / 2];
+			median_azimuth_diff = diffs[Velo::BLOCKS_PER_PACKET / 2];
 		}
 
-		for (int block = 0; block < CObservationVelodyneScan::BLOCKS_PER_PACKET;
-			 block++)  // Firings per packet
+		// Firings per packet
+		for (int block = 0; block < Velo::BLOCKS_PER_PACKET; block++)
 		{
 			// ignore packets with mangled or otherwise different contents
-			if ((num_lasers != 64 && CObservationVelodyneScan::UPPER_BANK !=
-										 raw->blocks[block].header) ||
-				(raw->blocks[block].header !=
-					 CObservationVelodyneScan::UPPER_BANK &&
-				 raw->blocks[block].header !=
-					 CObservationVelodyneScan::LOWER_BANK))
+			if ((num_lasers != 64 &&
+				 Velo::UPPER_BANK != raw->blocks[block].header) ||
+				(raw->blocks[block].header != Velo::UPPER_BANK &&
+				 raw->blocks[block].header != Velo::LOWER_BANK))
 			{
-				cerr << "[CObservationVelodyneScan] skipping invalid packet: "
-						"block "
-					 << block << " header value is "
-					 << raw->blocks[block].header;
+				cerr << "[Velo] skipping invalid packet: block " << block
+					 << " header value is " << raw->blocks[block].header;
 				continue;
 			}
 
-			const int dsr_offset = (raw->blocks[block].header ==
-									CObservationVelodyneScan::LOWER_BANK)
-									   ? 32
-									   : 0;
-			const auto azimuth_raw_f = (float)(raw->blocks[block].rotation);
+			const int dsr_offset =
+				(raw->blocks[block].header == Velo::LOWER_BANK) ? 32 : 0;
+			const auto azimuth_raw_f =
+				static_cast<float>(raw->blocks[block].rotation);
 			const bool block_is_dual_2nd_ranges =
-				(raw->laser_return_mode ==
-					 CObservationVelodyneScan::RETMODE_DUAL &&
+				(raw->laser_return_mode == Velo::RETMODE_DUAL &&
 				 ((block & 0x01) != 0));
 			const bool block_is_dual_last_ranges =
-				(raw->laser_return_mode ==
-					 CObservationVelodyneScan::RETMODE_DUAL &&
+				(raw->laser_return_mode == Velo::RETMODE_DUAL &&
 				 ((block & 0x01) == 0));
 
 			for (int dsr = 0, k = 0; dsr < SCANS_PER_FIRING; dsr++, k++)
@@ -300,7 +290,7 @@ static void velodyne_scan_to_pointcloud(
 				// Return distance:
 				const float distance =
 					raw->blocks[block].laser_returns[k].distance *
-						CObservationVelodyneScan::DISTANCE_RESOLUTION +
+						Velo::DISTANCE_RESOLUTION +
 					calib.distanceCorrection;
 				if (distance < realMinDist || distance > realMaxDist) continue;
 
@@ -342,8 +332,7 @@ static void velodyne_scan_to_pointcloud(
 					// VLP-16
 					case 16:
 					{
-						if (raw->laser_return_mode ==
-							CObservationVelodyneScan::RETMODE_DUAL)
+						if (raw->laser_return_mode == Velo::RETMODE_DUAL)
 						{
 							timestampadjustment = VLP16AdjustTimeStamp(
 								block / 2, laserId, firingWithinBlock);
@@ -383,7 +372,7 @@ static void velodyne_scan_to_pointcloud(
 					azimuth_raw_f + azimuthadjustment;
 				const int azimuth_corrected =
 					((int)round(azimuth_corrected_f)) %
-					CObservationVelodyneScan::ROTATION_MAX_UNITS;
+					Velo::ROTATION_MAX_UNITS;
 
 				// Filter by azimuth:
 				if (!((minAzimuth_int < maxAzimuth_int &&
@@ -395,18 +384,22 @@ static void velodyne_scan_to_pointcloud(
 					continue;
 
 				// Vertical axis mis-alignment calibration:
-				const float cos_vert_angle = calib.cosVertCorrection;
-				const float sin_vert_angle = calib.sinVertCorrection;
-				const float horz_offset = calib.horizontalOffsetCorrection;
-				const float vert_offset = calib.verticalOffsetCorrection;
+				const float cos_vert_angle =
+					static_cast<float>(calib.cosVertCorrection);
+				const float sin_vert_angle =
+					static_cast<float>(calib.sinVertCorrection);
+				const float horz_offset =
+					static_cast<float>(calib.horizontalOffsetCorrection);
+				const float vert_offset =
+					static_cast<float>(calib.verticalOffsetCorrection);
 
 				float xy_distance = distance * cos_vert_angle;
-				if (vert_offset) xy_distance += vert_offset * sin_vert_angle;
+				if (vert_offset != .0f)
+					xy_distance += vert_offset * sin_vert_angle;
 
 				const int azimuth_corrected_for_lut =
-					(azimuth_corrected +
-					 (CObservationVelodyneScan::ROTATION_MAX_UNITS / 2)) %
-					CObservationVelodyneScan::ROTATION_MAX_UNITS;
+					(azimuth_corrected + (Velo::ROTATION_MAX_UNITS / 2)) %
+					Velo::ROTATION_MAX_UNITS;
 				const float cos_azimuth =
 					lut_sincos.ccos[azimuth_corrected_for_lut];
 				const float sin_azimuth =
@@ -439,32 +432,50 @@ static void velodyne_scan_to_pointcloud(
 				out_pc.add_point(
 					pt.x, pt.y, pt.z,
 					raw->blocks[block].laser_returns[k].intensity, pkt_tim,
-					azimuth_corrected_f);
+					azimuth_corrected_f, laserId);
 
 			}  // end for k,dsr=[0,31]
 		}  // end for each block [0,11]
 	}  // end for each data packet
 }
 
-void CObservationVelodyneScan::generatePointCloud(
-	const TGeneratePointCloudParameters& params)
+void Velo::generatePointCloud(const TGeneratePointCloudParameters& params)
 {
 	struct PointCloudStorageWrapper_Inner : public PointCloudStorageWrapper
 	{
-		CObservationVelodyneScan& me_;
+		Velo& me_;
 		const TGeneratePointCloudParameters& params_;
 		PointCloudStorageWrapper_Inner(
-			CObservationVelodyneScan& me,
-			const TGeneratePointCloudParameters& p)
+			Velo& me, const TGeneratePointCloudParameters& p)
 			: me_(me), params_(p)
 		{
 			// Reset point cloud:
 			me_.point_cloud.clear();
 		}
-		void add_point(
-			double pt_x, double pt_y, double pt_z, uint8_t pt_intensity,
-			const mrpt::system::TTimeStamp& tim, const float azimuth) override
+
+		void resizeLaserCount(std::size_t n) override
 		{
+			me_.point_cloud.pointsForLaserID.resize(n);
+		}
+
+		void reserve(std::size_t n) override
+		{
+			me_.point_cloud.reserve(n);
+			if (!me_.point_cloud.pointsForLaserID.empty())
+			{
+				const std::size_t n_per_ring =
+					100 + n / (me_.point_cloud.pointsForLaserID.size());
+				for (auto& v : me_.point_cloud.pointsForLaserID)
+					v.reserve(n_per_ring);
+			}
+		}
+
+		void add_point(
+			float pt_x, float pt_y, float pt_z, uint8_t pt_intensity,
+			const mrpt::system::TTimeStamp& tim, const float azimuth,
+			uint16_t laser_id) override
+		{
+			const auto idx = me_.point_cloud.x.size();
 			me_.point_cloud.x.push_back(pt_x);
 			me_.point_cloud.y.push_back(pt_y);
 			me_.point_cloud.z.push_back(pt_z);
@@ -476,33 +487,31 @@ void CObservationVelodyneScan::generatePointCloud(
 			if (params_.generatePerPointAzimuth)
 			{
 				const int azimuth_corrected =
-					((int)round(azimuth)) %
-					CObservationVelodyneScan::ROTATION_MAX_UNITS;
+					round(azimuth) % Velo::ROTATION_MAX_UNITS;
 				me_.point_cloud.azimuth.push_back(
 					azimuth_corrected * ROTATION_RESOLUTION);
 			}
+			me_.point_cloud.laser_id.push_back(laser_id);
+			if (params_.generatePointsForLaserID)
+				me_.point_cloud.pointsForLaserID[laser_id].push_back(idx);
 		}
 	};
 
 	PointCloudStorageWrapper_Inner my_pc_wrap(*this, params);
+	point_cloud.clear();
 
 	velodyne_scan_to_pointcloud(*this, params, my_pc_wrap);
 }
 
-void CObservationVelodyneScan::generatePointCloudAlongSE3Trajectory(
+void Velo::generatePointCloudAlongSE3Trajectory(
 	const mrpt::poses::CPose3DInterpolator& vehicle_path,
 	std::vector<mrpt::math::TPointXYZIu8>& out_points,
 	TGeneratePointCloudSE3Results& results_stats,
 	const TGeneratePointCloudParameters& params)
 {
-	// Pre-alloc mem:
-	out_points.reserve(
-		out_points.size() +
-		scan_packets.size() * BLOCKS_PER_PACKET * SCANS_PER_BLOCK + 16);
-
 	struct PointCloudStorageWrapper_SE3_Interp : public PointCloudStorageWrapper
 	{
-		CObservationVelodyneScan& me_;
+		Velo& me_;
 		const mrpt::poses::CPose3DInterpolator& vehicle_path_;
 		std::vector<mrpt::math::TPointXYZIu8>& out_points_;
 		TGeneratePointCloudSE3Results& results_stats_;
@@ -510,9 +519,13 @@ void CObservationVelodyneScan::generatePointCloudAlongSE3Trajectory(
 		mrpt::poses::CPose3D last_query_;
 		bool last_query_valid_;
 
+		void reserve(std::size_t n) override
+		{
+			out_points_.reserve(out_points_.size() + n);
+		}
+
 		PointCloudStorageWrapper_SE3_Interp(
-			CObservationVelodyneScan& me,
-			const mrpt::poses::CPose3DInterpolator& vehicle_path,
+			Velo& me, const mrpt::poses::CPose3DInterpolator& vehicle_path,
 			std::vector<mrpt::math::TPointXYZIu8>& out_points,
 			TGeneratePointCloudSE3Results& results_stats)
 			: me_(me),
@@ -524,8 +537,10 @@ void CObservationVelodyneScan::generatePointCloudAlongSE3Trajectory(
 		{
 		}
 		void add_point(
-			double pt_x, double pt_y, double pt_z, uint8_t pt_intensity,
-			const mrpt::system::TTimeStamp& tim, const float azimuth) override
+			float pt_x, float pt_y, float pt_z, uint8_t pt_intensity,
+			const mrpt::system::TTimeStamp& tim,
+			[[maybe_unused]] const float azimuth,
+			[[maybe_unused]] uint16_t laser_id) override
 		{
 			// Use a cache since it's expected that the same timestamp is
 			// queried several times in a row:
@@ -554,7 +569,7 @@ void CObservationVelodyneScan::generatePointCloudAlongSE3Trajectory(
 	velodyne_scan_to_pointcloud(*this, params, my_pc_wrap);
 }
 
-void CObservationVelodyneScan::TPointCloud::clear()
+void Velo::TPointCloud::clear()
 {
 	x.clear();
 	y.clear();
@@ -562,35 +577,34 @@ void CObservationVelodyneScan::TPointCloud::clear()
 	intensity.clear();
 	timestamp.clear();
 	azimuth.clear();
+	laser_id.clear();
+	pointsForLaserID.clear();
 }
-void CObservationVelodyneScan::TPointCloud::clear_deep()
+void Velo::TPointCloud::clear_deep()
 {
-	{
-		std::vector<float> d;
-		x.swap(d);
-	}
-	{
-		std::vector<float> d;
-		y.swap(d);
-	}
-	{
-		std::vector<float> d;
-		z.swap(d);
-	}
-	{
-		std::vector<uint8_t> d;
-		intensity.swap(d);
-	}
-	{
-		std::vector<mrpt::system::TTimeStamp> d;
-		timestamp.swap(d);
-	}
-	{
-		std::vector<float> d;
-		azimuth.swap(d);
-	}
+	using mrpt::containers::deep_clear;
+
+	deep_clear(x);
+	deep_clear(y);
+	deep_clear(z);
+	deep_clear(intensity);
+	deep_clear(timestamp);
+	deep_clear(azimuth);
+	deep_clear(laser_id);
+	deep_clear(pointsForLaserID);
+}
+
+void Velo::TPointCloud::reserve(std::size_t n)
+{
+	x.reserve(n);
+	y.reserve(n);
+	z.reserve(n);
+	intensity.reserve(n);
+	timestamp.reserve(n);
+	azimuth.reserve(n);
+	laser_id.reserve(n);
+	pointsForLaserID.reserve(64);  // ring number
 }
 
 // Default ctor. Do NOT move to the .h, that causes build errors.
-CObservationVelodyneScan::TGeneratePointCloudParameters::
-	TGeneratePointCloudParameters() = default;
+Velo::TGeneratePointCloudParameters::TGeneratePointCloudParameters() = default;
