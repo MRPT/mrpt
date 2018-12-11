@@ -143,24 +143,9 @@ static double VLP16AdjustTimeStamp(
 		   (firingwithinblock * VLP16_FIRING_TOFFSET);
 }
 
-/** Auxiliary class used to refactor
- * Velo::generatePointCloud() */
-struct PointCloudStorageWrapper
-{
-	virtual void reserve(std::size_t n) = 0;
-	virtual void resizeLaserCount([[maybe_unused]] std::size_t n) {}
-
-	/** Process the insertion of a new (x,y,z) point to the cloud, in
-	 * sensor-centric coordinates, with the exact timestamp of that LIDAR ray */
-	virtual void add_point(
-		float pt_x, float pt_y, float pt_z, uint8_t pt_intensity,
-		const mrpt::system::TTimeStamp& tim, const float azimuth,
-		uint16_t laser_id) = 0;
-};
-
 static void velodyne_scan_to_pointcloud(
 	const Velo& scan, const Velo::TGeneratePointCloudParameters& params,
-	PointCloudStorageWrapper& out_pc)
+	Velo::PointCloudStorageWrapper& out_pc)
 {
 	// Initially based on code from ROS velodyne & from
 	// vtkVelodyneHDLReader::vtkInternal::ProcessHDLPacket().
@@ -448,6 +433,12 @@ static void velodyne_scan_to_pointcloud(
 	}  // end for each data packet
 }
 
+void Velo::generatePointCloud(
+	PointCloudStorageWrapper& dest, const TGeneratePointCloudParameters& params)
+{
+	velodyne_scan_to_pointcloud(*this, params, dest);
+}
+
 void Velo::generatePointCloud(const TGeneratePointCloudParameters& params)
 {
 	struct PointCloudStorageWrapper_Inner : public PointCloudStorageWrapper
@@ -509,7 +500,7 @@ void Velo::generatePointCloud(const TGeneratePointCloudParameters& params)
 	PointCloudStorageWrapper_Inner my_pc_wrap(*this, params);
 	point_cloud.clear();
 
-	velodyne_scan_to_pointcloud(*this, params, my_pc_wrap);
+	generatePointCloud(my_pc_wrap, params);
 }
 
 void Velo::generatePointCloudAlongSE3Trajectory(
