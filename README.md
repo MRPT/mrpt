@@ -58,8 +58,7 @@ See [PPA](https://launchpad.net/~joseluisblancoc/+archive/ubuntu/mrpt) for mrpt 
         sudo apt-get install libmrpt-dev mrpt-apps
 
 Supported distributions:
-  * Ubuntu 18.10 Cosmic
-  * Ubuntu 18.04 Bionic
+  * Ubuntu 18.04 (Bionic), 18.10 (Cosmic), 19.04 (Disco)
   * Ubuntu 16.04LTS Xenial (EOL: April 2021)
   	* Using 16.04 requires installing gcc-7 due to some bugs in gcc-5:
 
