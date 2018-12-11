@@ -270,6 +270,22 @@ class CObservationVelodyneScan : public CObservation
 		bool generatePointsForLaserID{false};
 	};
 
+	/** Derive from this class to generate pointclouds into custom containers.
+	 * \sa generatePointCloud() */
+	struct PointCloudStorageWrapper
+	{
+		virtual void reserve(std::size_t n) {}
+		virtual void resizeLaserCount([[maybe_unused]] std::size_t n) {}
+
+		/** Process the insertion of a new (x,y,z) point to the cloud, in
+		 * sensor-centric coordinates, with the exact timestamp of that LIDAR
+		 * ray */
+		virtual void add_point(
+			float pt_x, float pt_y, float pt_z, uint8_t pt_intensity,
+			const mrpt::system::TTimeStamp& tim, const float azimuth,
+			uint16_t laser_id) = 0;
+	};
+
 	/** Generates the point cloud into the point cloud data fields in \a
 	 * CObservationVelodyneScan::point_cloud
 	 * where it is stored in local coordinates wrt the sensor (neither the
@@ -284,6 +300,12 @@ class CObservationVelodyneScan : public CObservation
 	 * TGeneratePointCloudParameters
 	 */
 	void generatePointCloud(
+		const TGeneratePointCloudParameters& params =
+			TGeneratePointCloudParameters());
+
+	/** \overload For custom data storage as destination of the pointcloud. */
+	void generatePointCloud(
+		PointCloudStorageWrapper& dest,
 		const TGeneratePointCloudParameters& params =
 			TGeneratePointCloudParameters());
 
