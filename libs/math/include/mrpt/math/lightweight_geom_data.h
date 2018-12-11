@@ -209,11 +209,13 @@ struct TPose2D : public TPoseOrPoint
 	/**
 	 * Constructor from coordinates.
 	 */
-	TPose2D(double xx, double yy, double pphi) : x(xx), y(yy), phi(pphi) {}
+	constexpr TPose2D(double xx, double yy, double Phi) : x(xx), y(yy), phi(Phi)
+	{
+	}
 	/**
 	 * Default fast constructor. Initializes to zeros.
 	 */
-	TPose2D() = default;
+	constexpr TPose2D() = default;
 	/** Coordinate access using operator[]. Order: x,y,phi */
 	double& operator[](size_t i)
 	{
@@ -635,7 +637,7 @@ struct TPose3D : public TPoseOrPoint
 	/**
 	 * Default fast constructor. Initializes to zeros.
 	 */
-	TPose3D() = default;
+	constexpr TPose3D() = default;
 	/** Coordinate access using operator[]. Order: x,y,z,yaw,pitch,roll */
 	double& operator[](size_t i)
 	{
