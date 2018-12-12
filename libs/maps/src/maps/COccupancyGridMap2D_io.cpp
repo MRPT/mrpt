@@ -289,7 +289,7 @@ bool COccupancyGridMap2D::loadFromBitmap(
 	{
 		auto origin = origin_;
 		// Middle of bitmap?
-		if (origin.x == std::numeric_limits<double>::quiet_NaN())
+		if (origin.x == std::numeric_limits<double>::max())
 		{
 			origin = mrpt::math::TPoint2D(
 				imgFl.getWidth() / 2.0, imgFl.getHeight() / 2.0);
