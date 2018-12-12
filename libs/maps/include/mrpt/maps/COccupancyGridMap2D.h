@@ -1075,8 +1075,8 @@ class COccupancyGridMap2D : public CMetricMap,
 	bool loadFromBitmapFile(
 		const std::string& file, float resolution,
 		const mrpt::math::TPoint2D& origin = mrpt::math::TPoint2D(
-			std::numeric_limits<double>::quiet_NaN(),
-			std::numeric_limits<double>::quiet_NaN()));
+			std::numeric_limits<double>::max(),
+			std::numeric_limits<double>::max()));
 
 	/** Load the gridmap from a image in a file (the format can be any supported
 	 * by CImage::loadFromFile).
@@ -1084,8 +1084,8 @@ class COccupancyGridMap2D : public CMetricMap,
 	bool loadFromBitmap(
 		const mrpt::img::CImage& img, float resolution,
 		const mrpt::math::TPoint2D& origin = mrpt::math::TPoint2D(
-			std::numeric_limits<double>::quiet_NaN(),
-			std::numeric_limits<double>::quiet_NaN()));
+			std::numeric_limits<double>::max(),
+			std::numeric_limits<double>::max()));
 
 	/** See the base class for more details: In this class it is implemented as
 	 * correspondences of the passed points map to occupied cells.

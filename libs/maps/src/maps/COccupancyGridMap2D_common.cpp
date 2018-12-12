@@ -147,9 +147,11 @@ void COccupancyGridMap2D::setSize(
 {
 	MRPT_START
 
-	ASSERT_(res > 0);
-	ASSERT_(xmax > xmin && ymax > ymin);
-	ASSERT_(default_value >= 0 && default_value <= 1);
+	ASSERT_ABOVE_(res, 0.0f);
+	ASSERT_ABOVE_(xmax, xmin);
+	ASSERT_ABOVE_(ymax, ymin);
+	ASSERT_ABOVEEQ_(default_value, 0.0f);
+	ASSERT_BELOWEQ_(default_value, 1.0f);
 
 	freeMap();
 	precomputedLikelihoodToBeRecomputed = true;
