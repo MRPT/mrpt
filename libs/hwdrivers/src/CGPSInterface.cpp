@@ -171,7 +171,8 @@ void CGPSInterface::bindStream(
 
 	m_data_stream_is_external = true;
 	m_data_stream = external_stream;
-	m_data_stream_cs = csOptionalExternalStream;
+	m_data_stream_cs = csOptionalExternalStream ? csOptionalExternalStream
+												: &m_data_stream_mine_cs;
 }
 void CGPSInterface::setSetupCommandsDelay(const double delay_secs)
 {
