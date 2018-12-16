@@ -745,11 +745,11 @@ namespace maps
 		 * \return False on any error.
 		 * \sa loadFromBitmap
 		 */
-        bool  loadFromBitmapFile(const std::string	&file, float resolution, float origin_xPixel = std::numeric_limits<float>::quiet_NaN(), float origin_yPixel = std::numeric_limits<float>::quiet_NaN() );
+		bool  loadFromBitmapFile(const std::string	&file, float resolution, float origin_xPixel = std::numeric_limits<float>::max(), float origin_yPixel = std::numeric_limits<float>::max() );
 
 		/** Load the gridmap from a image in a file (the format can be any supported by CImage::loadFromFile).
 		 *  See loadFromBitmapFile() for the meaning of parameters */
-        bool  loadFromBitmap(const mrpt::utils::CImage &img, float resolution, float origin_xPixel = std::numeric_limits<float>::quiet_NaN(), float origin_yPixel = std::numeric_limits<float>::quiet_NaN() );
+		bool  loadFromBitmap(const mrpt::utils::CImage &img, float resolution, float origin_xPixel = std::numeric_limits<float>::max(), float origin_yPixel = std::numeric_limits<float>::max() );
 
 		/** See the base class for more details: In this class it is implemented as correspondences of the passed points map to occupied cells.
 		 * NOTICE: That the "z" dimension is ignored in the points. Clip the points as appropiated if needed before calling this method.

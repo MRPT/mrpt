@@ -317,8 +317,8 @@ bool  COccupancyGridMap2D::loadFromBitmap(const mrpt::utils::CImage &imgFl, floa
 	if (size_x!=bmpWidth || size_y!=bmpHeight)
 	{
 		// Middle of bitmap?
-		if (origin_xPixel == std::numeric_limits<float>::quiet_NaN() ||
-		    origin_yPixel == std::numeric_limits<float>::quiet_NaN())
+		if (origin_xPixel == std::numeric_limits<float>::max() ||
+		    origin_yPixel == std::numeric_limits<float>::max())
 		{
 			origin_xPixel = imgFl.getWidth() / 2.0f;
 			origin_yPixel = imgFl.getHeight() / 2.0f;
