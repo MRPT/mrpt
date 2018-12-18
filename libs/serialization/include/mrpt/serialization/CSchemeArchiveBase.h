@@ -137,12 +137,12 @@ class CSchemeArchiveBase
 		return (*pimpl).operator=(obj);
 	}
 	// List accessor
-	CSchemeArchiveBase operator[](size_t val)
+	CSchemeArchiveBase& operator[](size_t val)
 	{
 		return (*pimpl).operator[](val);
 	}
 	// Dict accessor
-	CSchemeArchiveBase operator[](std::string val)
+	CSchemeArchiveBase& operator[](std::string val)
 	{
 		return (*pimpl).operator[](val);
 	}
