@@ -285,8 +285,6 @@ bool CPointsMapXYZI::savePCDFile(
 	cloud.is_dense = false;
 	cloud.points.resize(cloud.width * cloud.height);
 
-	const float f = 255.f;
-
 	for (size_t i = 0; i < nThis; ++i)
 	{
 		cloud.points[i].x = m_x[i];
