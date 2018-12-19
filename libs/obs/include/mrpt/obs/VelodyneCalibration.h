@@ -36,7 +36,7 @@ struct VelodyneCalibration
 	void clear();
 
 	/** Loads default calibration files for common LIDAR models.
-	 * \param[in] lidar_model Valid model names are: `VLP16`, `HDL32`
+	 * \param[in] lidar_model Valid model names are: `VLP16`, `HDL32`, `HDL64`
 	 * \return It always return a calibration structure, but it may be empty if
 	 * the model name is unknown. See \a empty()
 	 * \note Default files can be inspected in `[MRPT_SRC or
@@ -51,6 +51,14 @@ struct VelodyneCalibration
 	/** Loads calibration from a string containing an entire XML calibration
 	 * file. \sa loadFromXMLFile \return false on any error, true on success */
 	bool loadFromXMLText(const std::string& xml_file_contents);
+	/** Loads calibration from a string containing an entire YAML calibration
+	 * file. \sa loadFromYAMLFile, loadFromXMLFile \return false on any error,
+	 * true on success */
+	bool loadFromYAMLText(const std::string& yaml_file_contents);
+	/** Loads calibration from a YAML calibration file.
+	 * \sa loadFromYAMLText, loadFromXMLFile
+	 * \return false on any error, true on success */
+	bool loadFromYAMLFile(const std::string& velodyne_calib_yaml_filename);
 
 // Pragma to ensure we can safely serialize some of these structures
 #pragma pack(push, 1)
