@@ -33,6 +33,7 @@ Build-Depends: debhelper (>= 10),
 	liboctomap-dev,
 	libqt5opengl5-dev,
 	libjsoncpp-dev,
+	libyaml-cpp-dev,
 	dh-python
 Standards-Version: 4.1.1
 Homepage: https://www.mrpt.org/

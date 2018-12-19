@@ -37,4 +37,9 @@ define_mrpt_lib(
 	)
 
 if(BUILD_mrpt-obs)
+	if (CMAKE_MRPT_HAS_YAMLCPP)
+		# ${LIBYAMLCPP_INCLUDE_DIRS}
+		target_link_libraries(mrpt-obs PRIVATE ${LIBYAMLCPP_LIBRARIES})
+	endif()
+
 endif(BUILD_mrpt-obs)

@@ -88,6 +88,7 @@ CObservationReflectivity to support different colors of light.
 			- CHokuyoURG:
 				- Rewrite driver to be safer and reduce mem allocs.
 				- New parameter `scan_interval` to decimate scans.
+			- VelodyneCalibration: Can now load YAML files, in addition to XML.
 		- \ref mrpt_opengl_grp
 			- Update Assimp lib version 4.0.1 -> 4.1.0 (when built as
 ExternalProject)
