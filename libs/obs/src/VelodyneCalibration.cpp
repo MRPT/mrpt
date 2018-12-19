@@ -13,15 +13,23 @@
 #include <mrpt/core/bits_math.h>
 #include <mrpt/core/exceptions.h>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <map>
 #include <cmath>
 
 #undef _UNICODE  // JLBC, for xmlParser
 #include "xmlparser/xmlParser.h"
 
+#include <mrpt/config.h>
+#if MRPT_HAS_YAMLCPP
+#include <yaml-cpp/yaml.h>
+#endif
+
 // ======= Default calibration files ========================
 #include "velodyne_default_calib_VLP-16.h"
 #include "velodyne_default_calib_HDL-32.h"
+#include "velodyne_default_calib_hdl64e-s3.h"
 // ======= End of default calibration files =================
 
 using namespace std;
@@ -210,9 +218,92 @@ bool VelodyneCalibration::loadFromXMLFile(
 	}
 }
 
+bool VelodyneCalibration::loadFromYAMLText(const std::string& str)
+{
+#if MRPT_HAS_YAMLCPP
+	try
+	{
+		YAML::Node root = YAML::Load(str);
+
+		// Clear previous contents:
+		clear();
+
+		const auto num_lasers = root["num_lasers"].as<unsigned int>(0);
+		ASSERT_(num_lasers > 0);
+
+		this->laser_corrections.resize(num_lasers);
+
+		auto lasers = root["lasers"];
+		ASSERT_EQUAL_(lasers.size(), num_lasers);
+
+		for (auto item : lasers)
+		{
+			const auto id = item["laser_id"].as<unsigned int>(9999999);
+			ASSERT_(id < num_lasers);
+
+			PerLaserCalib* plc = &laser_corrections[id];
+
+			plc->azimuthCorrection = item["rot_correction"].as<double>();
+			plc->verticalCorrection = item["vert_correction"].as<double>();
+
+			plc->distanceCorrection = item["dist_correction"].as<double>();
+			plc->verticalOffsetCorrection =
+				item["vert_offset_correction"].as<double>();
+			plc->horizontalOffsetCorrection =
+				item["horiz_offset_correction"].as<double>();
+
+			plc->sinVertCorrection = std::sin(plc->verticalCorrection);
+			plc->cosVertCorrection = std::cos(plc->verticalCorrection);
+
+			plc->sinVertOffsetCorrection =
+				plc->sinVertCorrection * plc->sinVertOffsetCorrection;
+			plc->cosVertOffsetCorrection =
+				plc->cosVertCorrection * plc->sinVertOffsetCorrection;
+		}
+
+		return true;  // all ok
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "[VelodyneCalibration::loadFromYAMLText]" << e.what()
+				  << "\n";
+		return false;
+	}
+#else
+	THROW_EXCEPTION("This method requires building MRPT with YAML-CPP.");
+#endif
+}
+
+bool VelodyneCalibration::loadFromYAMLFile(const std::string& filename)
+{
+#if MRPT_HAS_YAMLCPP
+	try
+	{
+		std::ifstream f(filename);
+		if (!f.is_open())
+			THROW_EXCEPTION_FMT("Cannot open file: '%s'", filename.c_str());
+
+		// Load file:
+		std::string str(
+			(std::istreambuf_iterator<char>(f)),
+			std::istreambuf_iterator<char>());
+
+		return loadFromYAMLText(str);
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "[VelodyneCalibration::loadFromYAMLFile]" << e.what()
+				  << "\n";
+		return false;
+	}
+#else
+	THROW_EXCEPTION("This method requires building MRPT with YAML-CPP.");
+#endif
+}
+
 bool VelodyneCalibration::empty() const { return laser_corrections.empty(); }
 void VelodyneCalibration::clear() { laser_corrections.clear(); }
-std::map<std::string, VelodyneCalibration> cache_default_calibs;
+static std::map<std::string, VelodyneCalibration> cache_default_calibs;
 
 // It always return a calibration structure, but it may be empty if the model
 // name is unknown.
@@ -224,21 +315,27 @@ const VelodyneCalibration& VelodyneCalibration::LoadDefaultCalibration(
 	if (it != cache_default_calibs.end()) return it->second;
 
 	VelodyneCalibration result;  // Leave empty to indicate unknown model
-	std::string xml_contents;
+	std::string xml_contents, yaml_contents;
 
 	if (lidar_model == "VLP16")
 		xml_contents = velodyne_default_calib_VLP16;
 	else if (lidar_model == "HDL32")
 		xml_contents = velodyne_default_calib_HDL32;
-	else
-	{
-	}
+	else if (lidar_model == "HDL64")
+		yaml_contents = velodyne_default_calib_HDL64E_S3;
 
 	if (!xml_contents.empty())
 	{
 		if (!result.loadFromXMLText(xml_contents))
 			std::cerr << "[VelodyneCalibration::LoadDefaultCalibration] Error "
 						 "parsing default XML calibration file for model '"
+					  << lidar_model << "'\n";
+	}
+	else if (!yaml_contents.empty())
+	{
+		if (!result.loadFromYAMLText(yaml_contents))
+			std::cerr << "[VelodyneCalibration::LoadDefaultCalibration] Error "
+						 "parsing default YAML calibration file for model '"
 					  << lidar_model << "'\n";
 	}
 
