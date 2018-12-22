@@ -65,11 +65,6 @@ void openCV_cross_correlation(
 	size_t& x_max, size_t& y_max, double& max_val, int x_search_ini = -1,
 	int y_search_ini = -1, int x_search_size = -1, int y_search_size = -1);
 
-/**	Invert an image using OpenCV function
- *
- */
-void flip(mrpt::img::CImage& img);
-
 /** Extract a UNITARY 3D vector in the direction of a 3D point, given from its
  * (x,y) pixels coordinates, and the camera intrinsic coordinates.
  *  \param xy  [IN]   Pixels coordinates, from the top-left corner of the

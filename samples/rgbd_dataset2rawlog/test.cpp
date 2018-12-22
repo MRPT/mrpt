@@ -218,10 +218,9 @@ void rgbd2rawlog(const string& src_path, const string& out_name)
 
 				for (unsigned int row = 0; row < h; row++)
 				{
-					const uint16_t* ptr = reinterpret_cast<const uint16_t*>(
-						depth_img.get_unsafe(0, row));
+					const uint16_t* ptr = depth_img.ptrLine<uint16_t>(row);
 					for (unsigned int col = 0; col < w; col++)
-						obs.rangeImage(row, col) = (*ptr++) * (1. / 5000);
+						obs.rangeImage(row, col) = (*ptr++) * (1.f / 5000);
 				}
 
 				const string sDepthfile =
@@ -281,10 +280,9 @@ void rgbd2rawlog(const string& src_path, const string& out_name)
 
 			for (unsigned int row = 0; row < h; row++)
 			{
-				const uint16_t* ptr = reinterpret_cast<const uint16_t*>(
-					depth_img.get_unsafe(0, row));
+				const uint16_t* ptr = depth_img.ptrLine<uint16_t>(row);
 				for (unsigned int col = 0; col < w; col++)
-					obs.rangeImage(row, col) = (*ptr++) * (1. / 5000);
+					obs.rangeImage(row, col) = (*ptr++) * (1.f / 5000);
 			}
 
 			const string sDepthfile =

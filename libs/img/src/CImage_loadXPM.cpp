@@ -90,7 +90,7 @@ static const char* ParseColor(const char* data)
 		for (q = targets[i]; *r != '\0'; r++)
 		{
 			if (*r != *q) continue;
-			if (!isspace((int)(*(r - 1)))) continue;
+			if (!isspace(*(r - 1))) continue;
 			p = r;
 			for (;;)
 			{
@@ -123,7 +123,9 @@ typedef struct
 	uint32_t rgb;
 } rgbRecord;
 
-#define myRGB(r, g, b) ((uint32_t)r << 16 | (uint32_t)g << 8 | (uint32_t)b)
+#define myRGB(r, g, b)                                                \
+	(static_cast<uint32_t>(r) << 16 | static_cast<uint32_t>(g) << 8 | \
+	 static_cast<uint32_t>(b))
 
 static const rgbRecord theRGBRecords[] = {
 	{"aliceblue", myRGB(240, 248, 255)},
@@ -500,7 +502,6 @@ bool mrpt::img::CImage::loadFromXPM(const char* const* xpm_data, bool swap_rb)
 		if (count != 4 || width * height * colors_cnt == 0)
 		{
 			THROW_EXCEPTION("XPM: incorrect header format!");
-			return false;
 		}
 
 		// VS: XPM color map this large would be insane, since XPMs are encoded
@@ -509,7 +510,7 @@ bool mrpt::img::CImage::loadFromXPM(const char* const* xpm_data, bool swap_rb)
 		ASSERTMSG_(
 			chars_per_pixel < 64, "XPM colormaps this large not supported.");
 
-		this->changeSize(width, height, CH_RGB, true /*originTopLeft*/);
+		this->resize(width, height, CH_RGB);
 		key[chars_per_pixel] = '\0';
 
 		/*
@@ -526,7 +527,6 @@ bool mrpt::img::CImage::loadFromXPM(const char* const* xpm_data, bool swap_rb)
 				THROW_EXCEPTION_FMT(
 					"XPM: incorrect colour description in line %d",
 					(int)(1 + i));
-				return false;
 			}
 
 			for (size_t i_key = 0; i_key < chars_per_pixel; i_key++)
@@ -538,7 +538,6 @@ bool mrpt::img::CImage::loadFromXPM(const char* const* xpm_data, bool swap_rb)
 				THROW_EXCEPTION_FMT(
 					"XPM: malformed colour definition '%s' at line %d!",
 					xmpColLine, (int)(1 + i));
-				return false;
 			}
 
 			bool isNone = false;
@@ -548,7 +547,6 @@ bool mrpt::img::CImage::loadFromXPM(const char* const* xpm_data, bool swap_rb)
 				THROW_EXCEPTION_FMT(
 					"XPM: malformed colour definition '%s' at line %d!",
 					xmpColLine, (int)(1 + i));
-				return false;
 			}
 
 			keyString = key;
@@ -576,7 +574,6 @@ bool mrpt::img::CImage::loadFromXPM(const char* const* xpm_data, bool swap_rb)
 			if (rgb > 0xffffff)
 			{
 				THROW_EXCEPTION("XPM: no colors left to use for mask!");
-				return false;
 			}
 
 			XPMColorMapData& maskData = clr_tbl[maskKey];

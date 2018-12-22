@@ -269,26 +269,26 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 					// Checkboad as color image:
 					dat.img_original.colorImage(dat.img_checkboard);
 
-					void* rgb_img = dat.img_checkboard.getAs<IplImage>();
+					cv::Mat rgb_img =
+						dat.img_checkboard.asCvMat<cv::Mat>(SHALLOW_COPY);
 
 					for (y = 0, k = 0; y < check_size.height; y++)
 					{
-						CvScalar color = line_colors[y % line_max];
+						cv::Scalar color = line_colors[y % line_max];
 						for (x = 0; x < check_size.width; x++, k++)
 						{
-							CvPoint pt;
-							pt.x = cvRound(this_img_pts[k].x);
-							pt.y = cvRound(this_img_pts[k].y);
+							cv::Point pt{cvRound(this_img_pts[k].x),
+										 cvRound(this_img_pts[k].y)};
 
-							if (k != 0) cvLine(rgb_img, prev_pt, pt, color);
+							if (k != 0) cv::line(rgb_img, prev_pt, pt, color);
 
-							cvLine(
-								rgb_img, cvPoint(pt.x - r, pt.y - r),
-								cvPoint(pt.x + r, pt.y + r), color);
-							cvLine(
-								rgb_img, cvPoint(pt.x - r, pt.y + r),
-								cvPoint(pt.x + r, pt.y - r), color);
-							cvCircle(rgb_img, pt, r + 1, color);
+							cv::line(
+								rgb_img, cv::Point(pt.x - r, pt.y - r),
+								cv::Point(pt.x + r, pt.y + r), color);
+							cv::line(
+								rgb_img, cv::Point(pt.x - r, pt.y + r),
+								cv::Point(pt.x + r, pt.y - r), color);
+							cv::circle(rgb_img, pt, r + 1, color);
 							prev_pt = pt;
 						}
 					}
@@ -377,7 +377,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 		{
 			TImageCalibData& dat = it->second;
 			if (!dat.img_original.isExternallyStored())
-				dat.img_original.rectifyImage(
+				dat.img_original.undistort(
 					dat.img_rectified, out_camera_params);
 		}  // end undistort
 
@@ -436,9 +436,9 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 				{
 					if (px >= 0 && px < imgSize.width && py >= 0 &&
 						py < imgSize.height)
-						cvCircle(
-							dat.img_rectified.getAs<IplImage>(),
-							cvPoint(px, py), 4, CV_RGB(0, 0, 255));
+						cv::circle(
+							dat.img_rectified.asCvMat<cv::Mat>(SHALLOW_COPY),
+							cv::Point(px, py), 4, CV_RGB(0, 0, 255));
 				}
 
 				// Accumulate error:

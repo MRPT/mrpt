@@ -27,16 +27,16 @@
 #endif
 #include <opencv2/opencv_modules.hpp>
 // Core:
-#include <opencv2/core/core.hpp>
+#include <opencv2/core.hpp>
 #include <opencv2/core/core_c.h>
 // Highgui:
-#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/highgui.hpp>
 #include <opencv2/highgui/highgui_c.h>
 // imgproc:
-#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/imgproc.hpp>
 #include <opencv2/imgproc/imgproc_c.h>
 // features2d:
-#include <opencv2/features2d/features2d.hpp>
+#include <opencv2/features2d.hpp>
 // tracking:
 #include <opencv2/video/tracking.hpp>
 /// start added by Raghavender Sahdev
@@ -57,7 +57,7 @@
 #if MRPT_OPENCV_VERSION_NUM >= 0x300
 #include <opencv2/video/tracking_c.h>
 #endif
-#include <opencv2/calib3d/calib3d.hpp>
-#include <opencv2/objdetect/objdetect.hpp>
+#include <opencv2/calib3d.hpp>
+#include <opencv2/objdetect.hpp>
 
 #endif  // MRPT_HAS_OPENCV

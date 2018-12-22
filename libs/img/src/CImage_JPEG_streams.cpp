@@ -11,6 +11,7 @@
 
 #include <mrpt/img/CImage.h>
 #include <mrpt/io/CStream.h>
+#include "CImage_impl.h"
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
@@ -54,12 +55,13 @@ using mrpt_dest_ptr = mrpt_destination_mgr*;
 METHODDEF(void)
 init_destination(j_compress_ptr cinfo)
 {
-	auto dest = (mrpt_dest_ptr)cinfo->dest;
+	auto dest = reinterpret_cast<mrpt_dest_ptr>(cinfo->dest);
 
 	/* Allocate the output buffer --- it will be released when done with image
 	 */
-	dest->buffer = (JOCTET*)(*cinfo->mem->alloc_small)(
-		(j_common_ptr)cinfo, JPOOL_IMAGE, OUTPUT_BUF_SIZE * sizeof(JOCTET));
+	dest->buffer = reinterpret_cast<JOCTET*>(((*cinfo->mem->alloc_small)(
+		reinterpret_cast<j_common_ptr>(cinfo), JPOOL_IMAGE,
+		OUTPUT_BUF_SIZE * sizeof(JOCTET))));
 
 	dest->pub.next_output_byte = dest->buffer;
 	dest->pub.free_in_buffer = OUTPUT_BUF_SIZE;
@@ -342,9 +344,6 @@ jpeg_stdio_src(j_decompress_ptr cinfo, CStream* in)
 //							END OF JPEG FUNCTIONS PART
 // ---------------------------------------------------------------------------------------
 
-/*---------------------------------------------------------------
-					saveToStreamAsJPEG
- ---------------------------------------------------------------*/
 void CImage::saveToStreamAsJPEG(CStream& out, const int jpeg_quality) const
 {
 #if MRPT_HAS_OPENCV
@@ -355,16 +354,14 @@ void CImage::saveToStreamAsJPEG(CStream& out, const int jpeg_quality) const
 	struct jpeg_compress_struct cinfo;
 	struct jpeg_error_mgr jerr;
 
-	const auto* ipl = static_cast<const IplImage*>(img);
+	const auto& img = m_impl->img;
 
-	const unsigned int nCols = ipl->width;
-	const unsigned int nRows = ipl->height;
-	const bool is_color = (ipl->nChannels == 3);
+	const unsigned int nCols = img.cols, nRows = img.rows;
+	const bool is_color = (img.channels() == 3);
 
 	// Some previous verification:
 	ASSERT_(nCols >= 1 && nRows >= 1);
-	ASSERT_(ipl);
-	ASSERT_(ipl->nChannels == 1 || ipl->nChannels == 3);
+	ASSERT_(img.channels() == 1 || img.channels() == 3);
 
 	// 1) Initialization of the JPEG compresion object:
 	// --------------------------------------------------
@@ -400,17 +397,13 @@ void CImage::saveToStreamAsJPEG(CStream& out, const int jpeg_quality) const
 	if (is_color)
 	{
 		JSAMPROW row_pointer[1]; /* pointer to a single row */
-		row_pointer[0] = (JSAMPROW) new char[ipl->widthStep];
+		row_pointer[0] = new uint8_t[img.step[0]];
 
 		for (unsigned int row = 0; row < nRows; row++)
 		{
 			// Flip RGB bytes order!
-			char* src;
-			if (ipl->origin == 0)
-				src = &ipl->imageData[row * ipl->widthStep];
-			else
-				src = &ipl->imageData[(nRows - 1 - row) * ipl->widthStep];
-			char* target = (char*)row_pointer[0];
+			const uint8_t* src = img.ptr<uint8_t>(row);
+			uint8_t* target = row_pointer[0];
 			for (unsigned int col = 0; col < nCols; col++)
 			{
 				target[0] = src[2];
@@ -435,13 +428,7 @@ void CImage::saveToStreamAsJPEG(CStream& out, const int jpeg_quality) const
 
 		for (unsigned int row = 0; row < nRows; row++)
 		{
-			if (ipl->origin == 0)
-				row_pointer[0] =
-					(JSAMPROW)&ipl->imageData[row * ipl->widthStep];
-			else
-				row_pointer[0] =
-					(JSAMPROW)&ipl
-						->imageData[(nRows - 1 - row) * ipl->widthStep];
+			row_pointer[0] = const_cast<JSAMPROW>(img.ptr<uint8_t>(row));
 
 			// Gray scale:
 			if (1 != jpeg_write_scanlines(&cinfo, row_pointer, 1))
@@ -461,9 +448,6 @@ void CImage::saveToStreamAsJPEG(CStream& out, const int jpeg_quality) const
 #endif
 }
 
-/*---------------------------------------------------------------
-					saveToStreamAsJPEG
- ---------------------------------------------------------------*/
 void CImage::loadFromStreamAsJPEG(CStream& in)
 {
 #if MRPT_HAS_OPENCV
@@ -507,10 +491,10 @@ void CImage::loadFromStreamAsJPEG(CStream& in)
 		(j_common_ptr)&cinfo, JPOOL_IMAGE, row_stride, 1);
 
 	// Resize the CImage now:
-	this->changeSize(
-		cinfo.output_width, cinfo.output_height, cinfo.out_color_components,
-		true);
-	auto* ipl = static_cast<IplImage*>(img);
+	this->resize(
+		cinfo.output_width, cinfo.output_height,
+		cinfo.out_color_components == 1 ? CH_GRAY : CH_RGB);
+	auto& img = m_impl->img;
 
 	/* Step 6: while (scan lines remain to be read) */
 	/*           jpeg_read_scanlines(...); */
@@ -518,8 +502,7 @@ void CImage::loadFromStreamAsJPEG(CStream& in)
 	/* Here we use the library's state variable cinfo.output_scanline as the
 	 * loop counter, so that we don't have to keep track ourselves.
 	 */
-	const unsigned int nCols = cinfo.output_width;
-	const unsigned int nRows = cinfo.output_height;
+	const unsigned int nCols = cinfo.output_width, nRows = cinfo.output_height;
 
 	for (unsigned int row = 0; row < nRows; row++)
 	{
@@ -533,8 +516,8 @@ void CImage::loadFromStreamAsJPEG(CStream& in)
 		if (isColor())
 		{
 			// Flip RGB bytes order!
-			char* target = &ipl->imageData[row * ipl->widthStep];
-			const char* src = (char*)buffer[0];
+			auto target = img.ptr<uint8_t>(row);
+			const auto* src = buffer[0];
 			for (unsigned int col = 0; col < nCols; col++)
 			{
 				target[0] = src[2];
@@ -548,8 +531,7 @@ void CImage::loadFromStreamAsJPEG(CStream& in)
 		else
 		{
 			// Gray scale:
-			memcpy(
-				&ipl->imageData[row * ipl->widthStep], buffer[0], row_stride);
+			std::memcpy(img.ptr<uint8_t>(row), buffer[0], row_stride);
 		}
 	}
 

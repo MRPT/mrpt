@@ -49,9 +49,10 @@ void CFeatureExtraction::internal_computeLogPolarImageDescriptors(
 		(*it)->scale = radius;
 
 		// Use OpenCV to convert:
-		cvLogPolar(
-			in_img.getAs<IplImage>(), logpolar_frame.getAs<IplImage>(),
-			cvPoint2D32f((*it)->x, (*it)->y), rho_scale,
+		cv::logPolar(
+			in_img.asCvMat<cv::Mat>(SHALLOW_COPY),
+			logpolar_frame.asCvMat<cv::Mat>(SHALLOW_COPY),
+			cv::Point2f((*it)->x, (*it)->y), rho_scale,
 			CV_INTER_LINEAR + CV_WARP_FILL_OUTLIERS);
 
 		// Get the image as a matrix and save as patch:

@@ -972,18 +972,17 @@ struct pointmap_traits<CColouredPointsMap>
 					}
 				}
 
+				const auto& ii = lric.rangeScan.intensityImage;
 				if (hasValidColor && hasColorIntensityImg)
 				{
-					const uint8_t* c = lric.rangeScan.intensityImage.get_unsafe(
-						img_idx_x, img_idx_y, 0);
+					const auto* c = ii.ptr<uint8_t>(img_idx_x, img_idx_y);
 					pR = c[2] * K_8u;
 					pG = c[1] * K_8u;
 					pB = c[0] * K_8u;
 				}
 				else if (hasValidColor && hasValidIntensityImage)
 				{
-					uint8_t c = *lric.rangeScan.intensityImage.get_unsafe(
-						img_idx_x, img_idx_y, 0);
+					const auto c = ii.at<uint8_t>(img_idx_x, img_idx_y);
 					pR = pG = pB = c * K_8u;
 				}
 				else

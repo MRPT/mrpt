@@ -182,7 +182,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 		// Compute correlation between landmarks:
 		// ---------------------------------------------
 		CMatrixFloat CORR(lm1->size(), lm2->size()), auxCorr;
-		CImage im1(1, 1, 1), im2(1, 1, 1);  // Grayscale
+		CImage im1, im2;  // Grayscale
 		CVectorFloat corr;
 		unsigned int corrsCount = 0;
 		std::vector<bool> hasCorr(nLM1, false);
@@ -245,25 +245,6 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 						idx1, corrs_indiv[w].first, corrs_indiv[w].second);
 				}
 			}
-
-#if 0
-			if (options.debug_show_corrs)
-			{
-				auxWin->setWindowTitle(format("Corr: %i - rest", int(idx1)));
-
-				auxWin->plot(corrs_indiv_only,".3","the_corr");
-
-				CVectorFloat xs(2), ys(2);
-				xs[0]=0; xs[1]=corrs_indiv_only.size()+1;
-
-				ys[0]=ys[1] = corr_best+thres_delta;
-				auxWin->plot(xs,ys,"g","the_thres");
-
-				if (idx1==0) auxWin->axis_fit();
-				auxWin->waitForKey();
-			}
-#endif
-
 		}  // end for idx1
 
 		// Save an image with each feature and its matches:

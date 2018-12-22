@@ -323,15 +323,13 @@ void rgb_cb(freenect_device* dev, void* img_data, uint32_t timestamp)
 		obs.intensityImageChannel =
 			mrpt::obs::CObservation3DRangeScan::CH_VISIBLE;
 		obs.intensityImage.resize(
-			frMode.width, frMode.height, CH_RGB, true /* origin=top-left */);
+			frMode.width, frMode.height, mrpt::img::CH_RGB);
 
 #if MRPT_HAS_OPENCV
 		const cv::Mat src_img_bayer(
 			frMode.height, frMode.width, CV_8UC1, img_data, frMode.width);
 
-		cv::Mat dst_img_RGB = cv::cvarrToMat(
-			obs.intensityImage.getAs<IplImage>(),
-			false /* dont copy buffers */);
+		cv::Mat& dst_img_RGB = obs.intensityImage.asCvMatRef();
 
 		// Decode Bayer image:
 		cv::cvtColor(src_img_bayer, dst_img_RGB, CV_BayerGB2BGR);

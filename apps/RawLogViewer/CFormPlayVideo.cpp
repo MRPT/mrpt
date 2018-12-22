@@ -776,7 +776,8 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 			// Subsampling?
 			if (doReduceLargeImgs && imgShow->getWidth() > 650)
 			{
-				auxImgForSubSampling = imgShow->scaleHalf();
+				auxImgForSubSampling =
+					imgShow->scaleHalf(mrpt::img::IMG_INTERP_NN);
 				imgShow = &auxImgForSubSampling;
 			}
 
@@ -840,7 +841,8 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 				// Subsampling?
 				if (doReduceLargeImgs && imgShow->getWidth() > 650)
 				{
-					auxImgForSubSampling = imgShow->scaleHalf();
+					auxImgForSubSampling =
+						imgShow->scaleHalf(mrpt::img::IMG_INTERP_NN);
 					imgShow = &auxImgForSubSampling;
 				}
 
@@ -881,7 +883,8 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 				// Subsampling?
 				if (doReduceLargeImgs && imgShow->getWidth() > 650)
 				{
-					auxImgForSubSampling = imgShow->scaleHalf();
+					auxImgForSubSampling =
+						imgShow->scaleHalf(mrpt::img::IMG_INTERP_NN);
 					imgShow = &auxImgForSubSampling;
 				}
 
@@ -923,7 +926,8 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 				// Subsampling?
 				if (doReduceLargeImgs && imgShow->getWidth() > 650)
 				{
-					auxImgForSubSampling = imgShow->scaleHalf();
+					auxImgForSubSampling =
+						imgShow->scaleHalf(mrpt::img::IMG_INTERP_NN);
 					imgShow = &auxImgForSubSampling;
 				}
 
@@ -974,7 +978,8 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 				// Subsampling?
 				if (doReduceLargeImgs && imgShow->getWidth() > 650)
 				{
-					auxImgForSubSampling = imgShow->scaleHalf();
+					auxImgForSubSampling =
+						imgShow->scaleHalf(mrpt::img::IMG_INTERP_NN);
 					imgShow = &auxImgForSubSampling;
 				}
 

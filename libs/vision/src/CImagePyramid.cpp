@@ -41,9 +41,9 @@ void buildPyramid_templ(
 	else
 	{
 		// No need to convert to grayscale OR image already is grayscale:
+		// Fast copy -> "move", destroying source.
 		if (FASTLOAD)
-			obj.images[0].copyFastFrom(
-				img);  // Fast copy -> "move", destroying source.
+			obj.images[0] = std::move(img);
 		else
 			obj.images[0] = img;  // Normal copy
 	}
@@ -51,10 +51,8 @@ void buildPyramid_templ(
 	// Rest of octaves, if any:
 	for (size_t o = 1; o < nOctaves; o++)
 	{
-		if (smooth_halves)
-			obj.images[o - 1].scaleHalfSmooth(obj.images[o]);
-		else
-			obj.images[o - 1].scaleHalf(obj.images[o]);
+		obj.images[o - 1].scaleHalf(
+			obj.images[o], smooth_halves ? IMG_INTERP_LINEAR : IMG_INTERP_NN);
 	}
 }
 

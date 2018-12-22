@@ -271,9 +271,9 @@ void COpenGLViewport::render(
 					// Prepare image data types:
 					const GLenum img_type = GL_UNSIGNED_BYTE;
 					const int nBytesPerPixel = img->isColor() ? 3 : 1;
-					const bool is_RGB_order = (!::strcmp(
-						img->getChannelsOrder(),
-						"RGB"));  // Reverse RGB <-> BGR order?
+					// Reverse RGB <-> BGR order?
+					const bool is_RGB_order =
+						(img->getChannelsOrder() == std::string("RGB"));
 					const GLenum img_format =
 						nBytesPerPixel == 3 ? (is_RGB_order ? GL_RGB : GL_BGR)
 											: GL_LUMINANCE;
@@ -284,7 +284,7 @@ void COpenGLViewport::render(
 						img->getRowStride() / nBytesPerPixel);
 					glDrawPixels(
 						img_w, img_h, img_format, img_type,
-						img->get_unsafe(0, 0));
+						img->ptrLine<uint8_t>(0));
 					glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);  // Reset
 					CRenderizable::checkOpenGLError();
 				}
@@ -886,7 +886,7 @@ void COpenGLViewport::internal_setImageView_fast(
 	if (!is_fast)
 		*my_img = img;
 	else
-		my_img->copyFastFrom(*const_cast<mrpt::img::CImage*>(&img));
+		*my_img = std::move(*const_cast<mrpt::img::CImage*>(&img));
 }
 
 /** Evaluates the bounding box of this object (including possible children) in

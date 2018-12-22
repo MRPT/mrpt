@@ -8,14 +8,11 @@
    +---------------------------------------------------------------------------+
  */
 
-/**
-  This file is intended for examples in the MRPT distribution to locate needed
-  data files independently of where the user decides to build the library.
-*/
+#pragma once
 
-#ifndef MRPT_EXAMPLES_CONFIG_H
-#define MRPT_EXAMPLES_CONFIG_H
+#include <string>
 
-#define MRPT_EXAMPLES_BASE_DIRECTORY "${CMAKE_MRPT_EXAMPLES_BASE_DIRECTORY}/"
-
-#endif
+namespace mrpt
+{
+    extern std::string UNITTEST_BASEDIR;
+}

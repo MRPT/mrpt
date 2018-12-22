@@ -12,18 +12,13 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/serialization/CArchive.h>
 #include <gtest/gtest.h>
+#include <test_mrpt_common.h>
 
 using namespace mrpt;
 using namespace mrpt::nav;
 using namespace mrpt::io;
 using namespace mrpt::serialization;
 using namespace std;
-
-// Defined in tests/test_main.cpp
-namespace mrpt
-{
-extern std::string MRPT_GLOBAL_UNITTEST_SRC_DIR;
-}
 
 const mrpt::rtti::TRuntimeClassId* lstClasses[] = {
 	CLASS_ID(CLogFileRecord),
@@ -90,8 +85,7 @@ TEST(SerializeTestObs, WriteReadToOctectVectors)
 TEST(NavTests, NavLogLoadFromTestFile)
 {
 	const string navlog_file =
-		MRPT_GLOBAL_UNITTEST_SRC_DIR +
-		string("/tests/serialize_test_data.reactivenavlog");
+		UNITTEST_BASEDIR + string("/tests/serialize_test_data.reactivenavlog");
 	if (!mrpt::system::fileExists(navlog_file))
 	{
 		cerr << "WARNING: Skipping test due to missing file: " << navlog_file

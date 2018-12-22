@@ -402,13 +402,13 @@ bool CFaceDetection::checkIfFacePlaneCov(CObservation3DRangeScan* face)
 		{
 			CArrayDouble<3> aux;
 
+			// Don't take in account dark pixels
 			if (region.get_unsafe(j, k) &&
 				(((!confidence) ||
 				  ((confidence) &&
-				   (*(face->confidenceImage.get_unsafe(k, j, 0)) >
+				   (face->confidenceImage.at<uint8_t>(k, j) >
 					m_options.confidenceThreshold) &&
-				   (*(face->intensityImage.get_unsafe(k, j)) >
-					50)))))  // Don't take in account dark pixels
+				   (face->intensityImage.at<uint8_t>(k, j) > 50)))))
 			{
 				int position = faceWidth * j + k;
 				aux[0] = face->points3D_x[position];

@@ -153,8 +153,6 @@ void CLandmarksConfig::updateConfiguration(
 		m_ui->radiusHarris->value();
 	mapDefination->likelihoodOpts.SIFT_feat_options.harrisOptions.min_distance =
 		m_ui->min_distanceHarris->value();
-	mapDefination->likelihoodOpts.SIFT_feat_options.harrisOptions.tile_image =
-		m_ui->tile_imageHarris->isChecked();
 
 	mapDefination->likelihoodOpts.SIFT_feat_options.FASTOptions.threshold =
 		m_ui->thresholdFASTOptions->value();
@@ -304,8 +302,6 @@ void CLandmarksConfig::setLikelihoodOpt(
 		likelihoodOpt.SIFT_feat_options.harrisOptions.radius);
 	m_ui->min_distanceHarris->setValue(
 		likelihoodOpt.SIFT_feat_options.harrisOptions.min_distance);
-	m_ui->tile_imageHarris->setChecked(
-		likelihoodOpt.SIFT_feat_options.harrisOptions.tile_image);
 
 	m_ui->thresholdFASTOptions->setValue(
 		likelihoodOpt.SIFT_feat_options.FASTOptions.threshold);

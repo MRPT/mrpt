@@ -53,7 +53,7 @@ void CFeatureExtraction::extractFeaturesORB(
 
 	// Make sure we operate on a gray-scale version of the image:
 	const CImage inImg_gray(inImg, FAST_REF_OR_CONVERT_TO_GRAY);
-	const Mat cvImg = cv::cvarrToMat(inImg_gray.getAs<IplImage>());
+	const Mat cvImg = inImg_gray.asCvMat<Mat>(SHALLOW_COPY);
 
 // The detector and descriptor
 #if MRPT_OPENCV_VERSION_NUM < 0x300
@@ -250,7 +250,7 @@ void CFeatureExtraction::internal_computeORBDescriptors(
 		kp.size = in_features[k]->scale;
 	}  // end-for
 
-	Mat cvImg(cv::cvarrToMat(inImg_gray.getAs<IplImage>()));
+	Mat cvImg = inImg_gray.asCvMat<Mat>(SHALLOW_COPY);
 	Mat cv_descs;
 
 #if MRPT_OPENCV_VERSION_NUM < 0x300

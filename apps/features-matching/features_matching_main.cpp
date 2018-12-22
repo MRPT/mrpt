@@ -28,7 +28,7 @@ using namespace std;
 #include "../common/sample_image1.h"
 #include "../common/sample_image2.h"
 
-string file1, file2;
+static string file1, file2;
 
 bool DemoFeatures()
 {
@@ -70,19 +70,15 @@ bool DemoFeatures()
 			"8: FASTER-10\n"
 			"9: FASTER-12\n";
 
-	cout << endl << "Select the number for the desired method [3: SIFT]:";
+	cout << endl << "Select the number for the desired method [8: FASTER-10]:";
 
 	string sel_method;
 	std::getline(cin, sel_method);
 
 	if (sel_method.empty())
-	{
-		fext.options.featsType = featSIFT;
-	}
+		fext.options.featsType = featFASTER10;
 	else
-	{
 		fext.options.featsType = TFeatureType(atoi(sel_method.c_str()));
-	}
 
 	// Compute descriptors:
 	auto desc_to_compute = TDescriptorType(-1);
@@ -90,28 +86,28 @@ bool DemoFeatures()
 	if (fext.options.featsType != featSIFT &&
 		fext.options.featsType != featSURF)
 	{
-		cout << endl << "Descriptors:" << endl;
-		cout << "-1: None" << endl;
-		cout << "0: Patch correlation" << endl;
-		cout << "1: SIFT" << endl;
-		cout << "2: SURF" << endl;
-		cout << "4: Intensity-domain spin image descriptors" << endl;
-		cout << "8: Polar image descriptor" << endl;
-		cout << "16: Log-Polar image descriptor" << endl;
+		cout << R"(
+Descriptors:
+-1: None
+0: Patch correlation
+1: SIFT
+2: SURF
+4: Intensity-domain spin image descriptors
+8: Polar image descriptor
+16: Log-Polar image descriptor
+32: ORB
+64: BLD
+128: LATCH)";
 
-		cout << endl << "Select the number for the desired method [1: SIFT]:";
+		cout << endl << "Select the number for the desired method [0: Patch]:";
 
-		string sel_method;
-		std::getline(cin, sel_method);
+		string desc_method;
+		std::getline(cin, desc_method);
 
-		if (sel_method.empty())
-		{
-			desc_to_compute = descSIFT;
-		}
+		if (desc_method.empty())
+			desc_to_compute = TDescriptorType(0);
 		else
-		{
-			desc_to_compute = TDescriptorType(atoi(sel_method.c_str()));
-		}
+			desc_to_compute = TDescriptorType(atoi(desc_method.c_str()));
 	}
 
 	// Max. num of features:
@@ -148,8 +144,6 @@ bool DemoFeatures()
 		buf.assignMemoryNotOwn(sample_image2, sizeof(sample_image2));
 		archiveFrom(buf) >> img2;
 	}
-
-	// img2.rotateImage(DEG2RAD(20),img2.getWidth()/2,img2.getHeight()/2);
 
 	// Only extract patchs if we are using it: descAny means take the patch:
 	if (desc_to_compute != descAny)
@@ -364,12 +358,12 @@ bool DemoFeatures()
 
 				while (auxImg1.getWidth() < 100 && auxImg1.getHeight() < 100)
 					auxImg1.scaleImage(
-						auxImg1.getWidth() * 2, auxImg1.getHeight() * 2,
-						IMG_INTERP_NN);
+						auxImg1, auxImg1.getWidth() * 2,
+						auxImg1.getHeight() * 2, IMG_INTERP_NN);
 				while (auxImg2.getWidth() < 100 && auxImg2.getHeight() < 100)
 					auxImg2.scaleImage(
-						auxImg2.getWidth() * 2, auxImg2.getHeight() * 2,
-						IMG_INTERP_NN);
+						auxImg2, auxImg2.getWidth() * 2,
+						auxImg2.getHeight() * 2, IMG_INTERP_NN);
 				winptr2D_descr1->showImage(auxImg1);
 				winptr2D_descr2->showImage(auxImg2);
 			}
@@ -414,8 +408,6 @@ bool DemoFeatures()
 			{
 				img2_show_base.cross(
 					feats2[i2]->x, feats2[i2]->y, TColor::red(), '+', 7);
-				// img2_show.drawCircle(feats2[i2]->x,feats2[i2]->y,7,
-				// TColor::blue );
 
 				img2_show_base.textOut(
 					feats2[i2]->x + 10, feats2[i2]->y - 10,
@@ -440,14 +432,14 @@ bool DemoFeatures()
 		// win1: Show only the current feature:
 		for (unsigned anim_loops = 36; anim_loops > 0; anim_loops -= 2)
 		{
-			img1_show = img1;
+			img1_show = img1.makeDeepCopy();
 
 			img1_show.cross(
 				feats1[i1]->x, feats1[i1]->y, TColor::red(), '+', 7);
 			img1_show.drawCircle(
 				feats1[i1]->x, feats1[i1]->y, 7 + anim_loops, TColor::blue());
 
-			img2_show = img2_show_base;
+			img2_show = img2_show_base.makeDeepCopy();
 			for (unsigned int i2 = 0; i2 < feats2.size(); i2++)
 			{
 				if (distances[i2] < min_dist + 0.1 * dist_std)

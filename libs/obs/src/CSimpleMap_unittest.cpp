@@ -9,12 +9,7 @@
 
 #include <mrpt/maps/CSimpleMap.h>
 #include <gtest/gtest.h>
-
-// Defined in tests/test_main.cpp
-namespace mrpt
-{
-extern std::string MRPT_GLOBAL_UNITTEST_SRC_DIR;
-}
+#include <test_mrpt_common.h>
 
 TEST(CSimpleMap, ParseFileInFormat_v1_5)
 {
@@ -24,7 +19,7 @@ TEST(CSimpleMap, ParseFileInFormat_v1_5)
 #endif
 
 	const std::string fil =
-		mrpt::MRPT_GLOBAL_UNITTEST_SRC_DIR +
+		mrpt::UNITTEST_BASEDIR +
 		std::string("/share/mrpt/datasets/localization_demo.simplemap.gz");
 
 	mrpt::maps::CSimpleMap sm;

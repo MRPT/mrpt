@@ -94,11 +94,12 @@ bool find_chessboard_corners_multiple(
 	// thresholding!
 	int block_size = cvRound(MIN(img.getWidth(), img.getHeight()) * 0.2) | 1;
 
-	cvAdaptiveThreshold(
-		img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), 255,
+	cv::adaptiveThreshold(
+		img.asCvMat<cv::Mat>(SHALLOW_COPY),
+		thresh_img.asCvMat<cv::Mat>(SHALLOW_COPY), 255,
 		CV_ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY, block_size, 0);
 
-	cvCopy(thresh_img.getAs<IplImage>(), thresh_img_save.getAs<IplImage>());
+	thresh_img_save = thresh_img.makeDeepCopy();
 
 	// PART 1: FIND LARGEST PATTERN
 	//-----------------------------------------------------------------------
@@ -115,7 +116,7 @@ bool find_chessboard_corners_multiple(
 	{
 		// Calling "cvCopy" again is much faster than rerunning
 		// "cvAdaptiveThreshold"
-		cvCopy(thresh_img_save.getAs<IplImage>(), thresh_img.getAs<IplImage>());
+		thresh_img = thresh_img_save.makeDeepCopy();
 
 		// Dilate squares:
 		last_dilation = do_special_dilation(
@@ -126,9 +127,9 @@ bool find_chessboard_corners_multiple(
 		// line around the image edge. Otherwise FindContours will miss those
 		// clipped rectangle contours. The border color will be the image mean,
 		// because otherwise we risk screwing up filters like cvSmooth()
-		cvRectangle(
-			thresh_img.getAs<IplImage>(), cvPoint(0, 0),
-			cvPoint(thresh_img.getWidth() - 1, thresh_img.getHeight() - 1),
+		cv::rectangle(
+			thresh_img.asCvMat<cv::Mat>(SHALLOW_COPY), cv::Point(0, 0),
+			cv::Point(thresh_img.getWidth() - 1, thresh_img.getHeight() - 1),
 			CV_RGB(255, 255, 255), 3, 8);
 
 		// Generate quadrangles in the following function
@@ -179,28 +180,6 @@ bool find_chessboard_corners_multiple(
 				num_quads_by_cluster[i] =
 					std::count(assignments.begin(), assignments.end(), i);
 
-#if VIS
-			{
-				static mrpt::gui::CDisplayWindow win;
-				win.setWindowTitle(format(
-					"All quads (%u) | %u clusters",
-					(unsigned)quad_centers.size(), (unsigned)nClusters));
-				CImage im;
-				img.colorImage(im);
-				for (size_t i = 0; i < quad_centers.size(); i++)
-				{
-					static const TColor colors[4] = {
-						TColor(255, 0, 0), TColor(0, 0, 255),
-						TColor(255, 0, 255), TColor(0, 255, 0)};
-					im.cross(
-						quad_centers[i][0], quad_centers[i][1],
-						colors[assignments[i] % 4], '+', 10);
-				}
-				win.showImage(im);
-				win.waitForKey();
-			}
-#endif  // VIS
-
 			// Take a look at the promising clusters:
 			// -----------------------------------------
 			for (size_t i = 0; i < nClusters; i++)
@@ -243,36 +222,6 @@ bool find_chessboard_corners_multiple(
 
 					if (count == expected_quads_count)
 					{
-#if VIS
-						{
-							static mrpt::gui::CDisplayWindow win;
-							win.setWindowTitle(format(
-								"Candidate group #%i (%i)", (int)group_idx,
-								(int)quad_group.size()));
-							CImage im;
-							img.colorImage(im);
-							for (size_t i = 0; i < quad_group.size(); i++)
-							{
-								static const TColor colors[4] = {
-									TColor(255, 0, 0), TColor(0, 0, 255),
-									TColor(255, 0, 255), TColor(0, 255, 0)};
-								const double x =
-									0.25 * (quad_group[i]->corners[0]->pt.x +
-											quad_group[i]->corners[1]->pt.x +
-											quad_group[i]->corners[2]->pt.x +
-											quad_group[i]->corners[3]->pt.x);
-								const double y =
-									0.25 * (quad_group[i]->corners[0]->pt.y +
-											quad_group[i]->corners[1]->pt.y +
-											quad_group[i]->corners[2]->pt.y +
-											quad_group[i]->corners[3]->pt.y);
-								im.cross(x, y, colors[group_idx % 4], '+', 10);
-							}
-							win.showImage(im);
-							win.waitForKey();
-						}
-#endif  // VIS
-
 						// The following function labels all corners of every
 						// quad
 						// with a row and column entry.

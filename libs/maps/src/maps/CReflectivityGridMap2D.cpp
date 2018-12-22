@@ -314,7 +314,7 @@ void CReflectivityGridMap2D::getAsImage(
 {
 	if (!forceRGB)
 	{  // 8bit gray-scale
-		img.resize(m_size_x, m_size_y, 1, true);
+		img.resize(m_size_x, m_size_y, CH_GRAY);
 		const cell_t* srcPtr = &m_map[0];
 		unsigned char* destPtr;
 		for (unsigned int y = 0; y < m_size_y; y++)
@@ -331,7 +331,7 @@ void CReflectivityGridMap2D::getAsImage(
 	}
 	else
 	{  // 24bit RGB:
-		img.resize(m_size_x, m_size_y, 3, true);
+		img.resize(m_size_x, m_size_y, CH_RGB);
 		const cell_t* srcPtr = &m_map[0];
 		unsigned char* destPtr;
 		for (unsigned int y = 0; y < m_size_y; y++)
@@ -367,8 +367,8 @@ void CReflectivityGridMap2D::getAs3DObject(
 	outObj->setPlaneCorners(m_x_min, m_x_max, m_y_min, m_y_max);
 
 	// Create the color & transparecy (alpha) images:
-	CImage imgColor(m_size_x, m_size_y, 1);
-	CImage imgTrans(m_size_x, m_size_y, 1);
+	CImage imgColor(m_size_x, m_size_y, CH_GRAY);
+	CImage imgTrans(m_size_x, m_size_y, CH_GRAY);
 
 	const cell_t* srcPtr = &m_map[0];
 	unsigned char* destPtr_color;

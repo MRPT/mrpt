@@ -17,12 +17,7 @@
 #include <mrpt/math/CHistogram.h>
 #include <mrpt/config.h>
 #include <gtest/gtest.h>
-
-// Defined in tests/test_main.cpp
-namespace mrpt
-{
-extern std::string MRPT_GLOBAL_UNITTEST_SRC_DIR;
-}
+#include <test_mrpt_common.h>
 
 using namespace mrpt;
 using namespace std;
@@ -203,8 +198,8 @@ TEST(CObservation3DRangeScan, Project3D_filterMax)
 
 TEST(CObservation3DRangeScan, LoadAndCheckFloorPoints)
 {
-	const string rawlog_fil = MRPT_GLOBAL_UNITTEST_SRC_DIR +
-							  string("/tests/test-3d-obs-ground.rawlog");
+	const string rawlog_fil =
+		UNITTEST_BASEDIR + string("/tests/test-3d-obs-ground.rawlog");
 	if (!mrpt::system::fileExists(rawlog_fil))
 	{
 		GTEST_FAIL() << "ERROR: test due to missing file: " << rawlog_fil

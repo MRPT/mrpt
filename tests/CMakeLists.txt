@@ -19,7 +19,7 @@ if (UNIX)
 endif()
 
 
-add_definitions(-DCMAKE_MRPT_GLOBAL_UNITTEST_SRC_DIR="${MRPT_SOURCE_DIR}")
+add_definitions(-DCMAKE_UNITTEST_BASEDIR="${MRPT_SOURCE_DIR}")
 
 # Allow tests to include sources from examples directory:
 include_directories("${MRPT_SOURCE_DIR}")
@@ -112,3 +112,10 @@ foreach(_TSTLIB ${LST_LIB_TESTS})
 	set_target_properties(run_tests_${_TSTLIB} PROPERTIES FOLDER "unit tests")
 
 endforeach(_TSTLIB)
+
+# Special dependencies:
+if (TARGET test_mrpt_img)
+    if(CMAKE_MRPT_HAS_OPENCV)
+	target_link_libraries(test_mrpt_img ${OpenCV_LIBRARIES})
+    endif()
+endif()

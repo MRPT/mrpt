@@ -128,9 +128,10 @@ cv::Mat Tracker::trackThemAll(
 	//  for the display
 	// ----------------------------------------------------------------
 	if (DO_HIST_EQUALIZE_IN_GRAYSCALE && !theImg.isColor())
-		theImg.equalizeHistInPlace();
+		theImg.equalizeHist(theImg);
+
 	// Convert to color so we can draw color marks, etc.
-	theImg.colorImageInPlace();
+	theImg = theImg.colorImage();
 
 	{  // FPS:
 		static CTicTac tictac;
@@ -213,7 +214,5 @@ cv::Mat Tracker::trackThemAll(
 
 	// converting the cv::Mat to a QImage and changing the resolution of the
 	// output images
-	cv::Mat cvImg1 = cv::cvarrToMat(theImg.getAs<IplImage>());
-
-	return cvImg1;
+	return theImg.asCvMat<cv::Mat>(mrpt::img::SHALLOW_COPY);
 }
