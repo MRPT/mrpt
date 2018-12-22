@@ -46,9 +46,10 @@ void CFeatureExtraction::internal_computePolarImageDescriptors(
 		// Overwrite scale with the descriptor scale:
 		(*it)->scale = radius;
 
-		cvLinearPolar(  // Use version sent to OpenCV
-			in_img.getAs<IplImage>(), linpolar_frame.getAs<IplImage>(),
-			cvPoint2D32f((*it)->x, (*it)->y), radius,
+		cv::linearPolar(
+			in_img.asCvMat<cv::Mat>(SHALLOW_COPY),
+			linpolar_frame.asCvMat<cv::Mat>(SHALLOW_COPY),
+			cv::Point2f((*it)->x, (*it)->y), radius,
 			CV_INTER_LINEAR + CV_WARP_FILL_OUTLIERS);
 
 		// Get the image as a matrix and save as patch:

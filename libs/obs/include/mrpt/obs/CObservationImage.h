@@ -42,9 +42,6 @@ class CObservationImage : public CObservation
 	 *
 	 */
 	CObservationImage() = default;
-#ifdef MRPT_HAS_OPENCV
-	CObservationImage(const IplImage* ipl);
-#endif
 	/** The pose of the camera on the robot
 	 */
 	mrpt::poses::CPose3D cameraPose;
@@ -59,10 +56,10 @@ class CObservationImage : public CObservation
 	 * of this observation. */
 	mrpt::img::CImage image;
 
-	/** Computes the rectified (un-distorted) image, using the embeded
-	 * distortion parameters.
+	/** Computes the un-distorted image, using the embeded camera
+	 * intrinsic & distortion parameters.
 	 */
-	void getRectifiedImage(mrpt::img::CImage& out_img) const;
+	void getUndistortedImage(mrpt::img::CImage& out_img) const;
 
 	// See base class docs
 	void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override

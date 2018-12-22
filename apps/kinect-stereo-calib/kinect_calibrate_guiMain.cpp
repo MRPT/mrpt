@@ -1723,12 +1723,11 @@ void kinect_calibrate_guiDialog::ProcessNewGrabbedObs()
 
 			// Display stuff --------------------
 			CImage img_to_show;
-			img_to_show.copyFastFrom(
-				m_last_obs->intensityImage);  // (Destroys org img)
+			// (Destroys org img)
+			img_to_show = std::move(m_last_obs->intensityImage);
 
 			if (!img_to_show.isColor() && cbNormalize->IsChecked())
-				// img_to_show.normalize();
-				img_to_show.equalizeHistInPlace();
+				img_to_show.equalizeHist(img_to_show);
 
 			// Do live detect & draw chessboard in parallel:
 			if (m_findcorners_thread_data.ready_for_new_images)
@@ -1757,7 +1756,7 @@ void kinect_calibrate_guiDialog::ProcessNewGrabbedObs()
 
 			// Makes an RGB color even if it was grayscale so we can draw color
 			// stuff:
-			img_to_show.colorImageInPlace();
+			img_to_show = img_to_show.colorImage();
 
 			// Draw detected corners "persistently" during some instants:
 			static bool at_least_detected_once = false;
@@ -1958,8 +1957,8 @@ void kinect_calibrate_guiDialog::ProcessNewSelectedImageListBox()
 
 				if (cbCalibNormalize->IsChecked())
 				{
-					if (!il.isColor()) il.equalizeHistInPlace();
-					if (!ir.isColor()) ir.equalizeHistInPlace();
+					if (!il.isColor()) il.equalizeHist(il);
+					if (!ir.isColor()) ir.equalizeHist(ir);
 				}
 			}
 
@@ -1981,8 +1980,8 @@ void kinect_calibrate_guiDialog::ProcessNewSelectedImageListBox()
 				// ======= Reprojected corners =======
 				case 2:
 				{
-					il.colorImageInPlace();
-					ir.colorImageInPlace();
+					il = il.colorImage();
+					ir = ir.colorImage();
 
 					il.drawChessboardCorners(
 						m_calib_images[sel].left.projectedPoints_distorted,
@@ -1997,17 +1996,13 @@ void kinect_calibrate_guiDialog::ProcessNewSelectedImageListBox()
 				// ======= Undistorted image =======
 				case 3:
 				{
-					il.rectifyImageInPlace(
-						m_calib_result.cam_params.leftCamera);
-					ir.rectifyImageInPlace(
-						m_calib_result.cam_params.rightCamera);
+					il.undistort(il, m_calib_result.cam_params.leftCamera);
+					ir.undistort(ir, m_calib_result.cam_params.rightCamera);
 				}
 				break;
 				// ======= Rectified images =======
 				case 4:
 				{
-					//					projectedPoints_distorted
-					//					m_calib_images[sel].left.
 				}
 				break;
 
@@ -2054,8 +2049,8 @@ void kinect_calibrate_guiDialog::ProcessNewSelectedImageListBox()
 				trg_sz_r.y = szView.y;
 			}
 
-			il.scaleImage(trg_sz_l.x, trg_sz_l.y, IMG_INTERP_AREA);
-			ir.scaleImage(trg_sz_r.x, trg_sz_r.y, IMG_INTERP_AREA);
+			il.scaleImage(il, trg_sz_l.x, trg_sz_l.y, IMG_INTERP_AREA);
+			ir.scaleImage(ir, trg_sz_r.x, trg_sz_r.y, IMG_INTERP_AREA);
 
 			this->m_view_left->AssignImage(il);
 			this->m_view_right->AssignImage(ir);

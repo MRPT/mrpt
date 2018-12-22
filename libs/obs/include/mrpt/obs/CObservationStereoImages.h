@@ -44,21 +44,6 @@ class CObservationStereoImages : public mrpt::obs::CObservation
    public:
 	CObservationStereoImages() = default;
 
-#ifdef MRPT_HAS_OPENCV
-	/** Constructor from "IplImage*" images, which could be NULL.
-	 *  The fields hasImageDisparity and hasImageRight will be set to
-	 * true/false depending on them being !=nullptr.
-	 * Note that the IplImage's will be COPIED, so it's still the caller's
-	 * reponsibility to free the original images,
-	 *  unless ownMemory is set to true: in that case the IplImage pointers are
-	 * copied and those IplImage's will be automatically freed by this object.
-	 *
-	 */
-	CObservationStereoImages(
-		IplImage* iplImageLeft, IplImage* iplImageRight,
-		IplImage* iplImageDisparity = nullptr, bool ownMemory = false);
-#endif
-
 	/** @name Main observation data members
 		@{ */
 

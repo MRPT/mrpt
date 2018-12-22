@@ -74,8 +74,7 @@ namespace mrpt::vision
 class CStereoRectifyMap
 {
    public:
-	/** Default ctor */
-	CStereoRectifyMap();
+	CStereoRectifyMap() = default;
 
 	/** @name Rectify map preparation and setting/getting of parameters
 		@{ */
@@ -153,7 +152,7 @@ class CStereoRectifyMap
 	bool isEnabledResizeOutput() const { return m_resize_output; }
 	/** Only when \a isEnabledResizeOutput() returns true, this gets the target
 	 * size  \sa enableResizeOutput */
-	mrpt::img::TImageSize getResizeOutputSize() const
+	inline mrpt::img::TImageSize getResizeOutputSize() const
 	{
 		return m_resize_output_value;
 	}
@@ -233,19 +232,6 @@ class CStereoRectifyMap
 		mrpt::img::CImage& out_left_image,
 		mrpt::img::CImage& out_right_image) const;
 
-	/** Overloaded version for in-place rectification: replace input images with
-	 * their rectified versions
-	 * If \a use_internal_mem_cache is set to \a true (recommended), will reuse
-	 * over and over again the same
-	 * auxiliary images (kept internally to this object) needed for in-place
-	 * rectification.
-	 * The only reason not to enable this cache is when multiple threads can
-	 * invoke this method simultaneously.
-	 */
-	void rectify(
-		mrpt::img::CImage& left_image, mrpt::img::CImage& right_image,
-		const bool use_internal_mem_cache = true) const;
-
 	/** Overloaded version for in-place rectification of image pairs stored in a
 	 * mrpt::obs::CObservationStereoImages.
 	 *  Upon return, the new camera intrinsic parameters will be already stored
@@ -267,25 +253,15 @@ class CStereoRectifyMap
 		mrpt::obs::CObservationStereoImages& stereo_image_observation,
 		const bool use_internal_mem_cache = true) const;
 
-	/** Just like rectify() but directly works with OpenCV's "IplImage*", which
-	 * must be passed as "void*" to avoid header dependencies
-	 *  Output images CANNOT coincide with the input images. */
-	void rectify_IPL(
-		const void* in_left_image, const void* in_right_image,
-		void* out_left_image, void* out_right_image) const;
-
 	/** @} */
 
    private:
 	double m_alpha{-1};
 	bool m_resize_output{false};
 	bool m_enable_both_centers_coincide{false};
-	mrpt::img::TImageSize m_resize_output_value;
+	mrpt::img::TImageSize m_resize_output_value{0, 0};
 	mrpt::img::TInterpolationMethod m_interpolation_method{
 		mrpt::img::IMG_INTERP_LINEAR};
-
-	/** Memory caches for in-place rectification speed-up. */
-	mutable mrpt::img::CImage m_cache1, m_cache2;
 
 	std::vector<int16_t> m_dat_mapx_left, m_dat_mapx_right;
 	std::vector<uint16_t> m_dat_mapy_left, m_dat_mapy_right;

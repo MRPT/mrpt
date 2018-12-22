@@ -188,7 +188,7 @@ void Test_SwissRanger()
 			gl_img_intensity->assignImage(obs.intensityImage);
 
 			CImage undistortImg;
-			obs.intensityImage.rectifyImage(undistortImg, obs.cameraParams);
+			obs.intensityImage.undistort(undistortImg, obs.cameraParams);
 			gl_img_intensity_rect->assignImage(undistortImg);
 			win3D.unlockAccess3DScene();
 		}

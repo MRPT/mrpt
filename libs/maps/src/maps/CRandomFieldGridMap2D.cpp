@@ -2522,7 +2522,7 @@ void CRandomFieldGridMap2D::insertObservation_GMRF(
 		m_gmrf.addConstraint(
 			*m_mrf_factors_activeObs[cellIdx].rbegin());  // add to graph
 	}
-	catch (std::exception e)
+	catch (const std::exception& e)
 	{
 		cerr << "Exception while Inserting new Observation: " << e.what()
 			 << endl;

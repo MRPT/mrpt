@@ -454,8 +454,7 @@ void CDisplayWindow::showImageAndPoints(
 	MRPT_START
 	ASSERT_(x.size() == y.size());
 
-	CImage imgColor(1, 1, 3);
-	img.colorImage(imgColor);  // Create a colorimage
+	CImage imgColor = img.colorImage();  // Create a colorimage
 	for (size_t i = 0; i < x.size(); i++)
 	{
 		imgColor.cross(round(x[i]), round(y[i]), color, '+');
@@ -491,9 +490,7 @@ void CDisplayWindow::plot(const CVectorFloat& x, const CVectorFloat& y)
 	const int oy = 40;
 
 	// Suboptimal but...
-	CImage imgColor(1, 1, 3);
-
-	imgColor.resize(640, 480, 3, false);
+	CImage imgColor(640, 480, mrpt::img::CH_RGB);
 	// Draw axis:
 	imgColor.filledRectangle(0, 0, 640, 480, TColor(255, 255, 255));
 	imgColor.line(40, 40, 560, 40, TColor::black(), 3);
@@ -544,9 +541,7 @@ void CDisplayWindow::plot(const CVectorFloat& y)
 	const int oy = 40;
 
 	// Suboptimal but...
-	CImage imgColor(1, 1, 3);
-
-	imgColor.resize(640, 480, 3, false);
+	CImage imgColor(640, 480, mrpt::img::CH_RGB);
 	// Draw axis:
 	imgColor.filledRectangle(0, 0, 640, 480, TColor::white());
 	imgColor.line(40, 40, 560, 40, TColor::black(), 3);

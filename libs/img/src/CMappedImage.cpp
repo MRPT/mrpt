@@ -90,9 +90,9 @@ double CMappedImage::getPixel(double x, double y) const
 		case IMG_INTERP_NN:
 		{
 			// The closest pixel:
-			const int px0 = mrpt::round(px);
-			const int py0 = mrpt::round(py);
-			return static_cast<double>(*m_img->get_unsafe(px0, py0));
+			const unsigned int px0 = mrpt::round(px);
+			const unsigned int py0 = mrpt::round(py);
+			return static_cast<double>((*m_img).at<uint8_t>(px0, py0));
 		}
 		break;
 		case IMG_INTERP_LINEAR:
@@ -105,10 +105,14 @@ double CMappedImage::getPixel(double x, double y) const
 			const int py0 = (int)floor(py);
 			const int py1 = (int)ceil(py);
 
-			const auto P11 = static_cast<double>(*m_img->get_unsafe(px0, py0));
-			const auto P12 = static_cast<double>(*m_img->get_unsafe(px0, py1));
-			const auto P21 = static_cast<double>(*m_img->get_unsafe(px1, py0));
-			const auto P22 = static_cast<double>(*m_img->get_unsafe(px1, py1));
+			const auto P11 =
+				static_cast<double>((*m_img).at<uint8_t>(px0, py0));
+			const auto P12 =
+				static_cast<double>((*m_img).at<uint8_t>(px0, py1));
+			const auto P21 =
+				static_cast<double>((*m_img).at<uint8_t>(px1, py0));
+			const auto P22 =
+				static_cast<double>((*m_img).at<uint8_t>(px1, py1));
 
 			const double R1 = P11 * (px1 - px) /* /(px1-px0)*/ +
 							  P21 * (px - px0) /* /(px1-px0) */;
@@ -120,11 +124,6 @@ double CMappedImage::getPixel(double x, double y) const
 		break;
 
 		case IMG_INTERP_CUBIC:
-		{
-			THROW_EXCEPTION("TO DO!");
-		}
-		break;
-
 		case IMG_INTERP_AREA:
 		default:
 			THROW_EXCEPTION(

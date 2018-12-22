@@ -194,7 +194,7 @@ void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC& dc)
 		dc.GetSize(&w, &h);
 
 		// Save image directly from OpenGL
-		CImage frame(w, h, 3, false);
+		CImage frame(w, h, CH_RGB);
 		glReadBuffer(GL_FRONT);
 		glReadPixels(0, 0, w, h, GL_BGR_EXT, GL_UNSIGNED_BYTE, frame(0, 0));
 
@@ -1464,7 +1464,7 @@ void _DSceneViewerFrame::OnMenuItem14Selected(wxCommandEvent& event)
 	dc.GetSize(&w, &h);
 
 	// Save image directly from OpenGL
-	CImage frame(w, h, 3, false);
+	CImage frame(w, h, CH_RGB);
 	glReadBuffer(GL_FRONT);
 	glReadPixels(0, 0, w, h, GL_BGR_EXT, GL_UNSIGNED_BYTE, frame(0, 0));
 
@@ -1936,7 +1936,7 @@ void _DSceneViewerFrame::OnMenuItemHighResRender(wxCommandEvent& event)
 			const long height = atoi(sH.c_str());
 
 			CFBORender render(width, height, true /* skip Glut extra window */);
-			CImage frame(width, height, 3, false);
+			CImage frame(width, height, CH_RGB);
 
 			render.setBackgroundColor(mrpt::img::TColorf(
 				m_canvas->getClearColorR(), m_canvas->getClearColorG(),

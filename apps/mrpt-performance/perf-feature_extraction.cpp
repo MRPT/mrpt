@@ -152,6 +152,30 @@ double feature_extraction_test_SURF(int N, int h)
 }
 
 // ------------------------------------------------------
+//				Benchmark: ORB
+// ------------------------------------------------------
+double feature_extraction_test_ORB(int N, int h)
+{
+	CTicTac tictac;
+
+	// Generate a random image
+	CImage img;
+	getTestImage(0, img);
+
+	CFeatureExtraction fExt;
+	CFeatureList feats;
+	fExt.options.featsType = featORB;
+	// fExt.options.ORBOptions.n_levels...
+
+	tictac.Tic();
+	for (int i = 0; i < N; i++) fExt.detectFeatures(img, feats);
+
+	const double T = tictac.Tac() / N;
+
+	return T;
+}
+
+// ------------------------------------------------------
 //				Benchmark: FAST
 // ------------------------------------------------------
 double feature_extraction_test_FAST(int N, int h)
@@ -169,7 +193,7 @@ double feature_extraction_test_FAST(int N, int h)
 	fExt.options.FASTOptions.threshold = 20;
 	fExt.options.patchSize = 0;
 
-	img.grayscaleInPlace();
+	img = img.grayscale();
 
 	tictac.Tic();
 	for (int i = 0; i < N; i++) fExt.detectFeatures(img, featsFAST);
@@ -187,8 +211,8 @@ double feature_extraction_test_FAST(int N, int h)
 	{                                                                       \
 		CImage img;                                                         \
 		getTestImage(0, img);                                               \
-		img.grayscaleInPlace();                                             \
-		img.scaleImage(W, H);                                               \
+		img = img.grayscale();                                              \
+		img.scaleImage(img, W, H, mrpt::img::IMG_INTERP_LINEAR);            \
 		TSimpleFeatureList corners;                                         \
 		const int threshold = 20;                                           \
 		std::vector<size_t> feats_index_by_row;                             \
@@ -254,12 +278,11 @@ double feature_extraction_test_FASTER(int N, int threshold)
 	CFeatureExtraction fExt;
 	CFeatureList feats;
 
-	fExt.options.featsType = TYP;  // FASTER_N==9 ? featFASTER9 : (FASTER_N==10
-	// ? featFASTER10 : featFASTER12 );
-	fExt.options.FASTOptions.threshold = threshold;  // 20;
+	fExt.options.featsType = TYP;
+	fExt.options.FASTOptions.threshold = threshold;
 	fExt.options.patchSize = 0;
 
-	img.grayscaleInPlace();
+	img = img.grayscale();
 
 	tictac.Tic();
 	for (int i = 0; i < N; i++) fExt.detectFeatures(img, feats, 0, MAX_N_FEATS);
@@ -284,6 +307,8 @@ void register_tests_feature_extraction()
 #endif
 	lstTests.emplace_back(
 		"feature_extraction [640x480]: SURF", feature_extraction_test_SURF, 10);
+	lstTests.emplace_back(
+		"feature_extraction [640x480]: ORB", feature_extraction_test_ORB, 10);
 	lstTests.emplace_back(
 		"feature_extraction [640x480]: FAST", feature_extraction_test_FAST,
 		100);

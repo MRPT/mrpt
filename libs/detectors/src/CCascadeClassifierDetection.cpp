@@ -122,13 +122,12 @@ void CCascadeClassifierDetection::detectObjects_Impl(
 	const CImage img_gray(*img, FAST_REF_OR_CONVERT_TO_GRAY);
 
 	// Convert to IplImage and copy it
-	const auto* image = img_gray.getAs<IplImage>();
+	const cv::Mat& image = img_gray.asCvMatRef();
 
 	// Detect objects
 	CASCADE->detectMultiScale(
-		cv::cvarrToMat(image), objects, m_options.scaleFactor,
-		m_options.minNeighbors, m_options.flags,
-		Size(m_options.minSize, m_options.minSize));
+		image, objects, m_options.scaleFactor, m_options.minNeighbors,
+		m_options.flags, Size(m_options.minSize, m_options.minSize));
 
 	unsigned int N = objects.size();
 	// detected.resize( N );

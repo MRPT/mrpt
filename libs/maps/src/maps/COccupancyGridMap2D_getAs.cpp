@@ -33,7 +33,7 @@ void COccupancyGridMap2D::getAsImage(
 	{
 		if (!forceRGB)
 		{  // 8bit gray-scale
-			img.resize(size_x, size_y, 1, true);  // verticalFlip);
+			img.resize(size_x, size_y, mrpt::img::CH_GRAY);
 			const cellType* srcPtr = &map[0];
 			unsigned char* destPtr;
 			for (unsigned int y = 0; y < size_y; y++)
@@ -50,7 +50,7 @@ void COccupancyGridMap2D::getAsImage(
 		}
 		else
 		{  // 24bit RGB:
-			img.resize(size_x, size_y, 3, true);  // verticalFlip);
+			img.resize(size_x, size_y, mrpt::img::CH_RGB);
 			const cellType* srcPtr = &map[0];
 			unsigned char* destPtr;
 			for (unsigned int y = 0; y < size_y; y++)
@@ -74,7 +74,7 @@ void COccupancyGridMap2D::getAsImage(
 		// TRICOLOR: 0, 0.5, 1
 		if (!forceRGB)
 		{  // 8bit gray-scale
-			img.resize(size_x, size_y, 1, true);  // verticalFlip);
+			img.resize(size_x, size_y, mrpt::img::CH_GRAY);
 			const cellType* srcPtr = &map[0];
 			unsigned char* destPtr;
 			for (unsigned int y = 0; y < size_y; y++)
@@ -98,7 +98,7 @@ void COccupancyGridMap2D::getAsImage(
 		}
 		else
 		{  // 24bit RGB:
-			img.resize(size_x, size_y, 3, true);  // verticalFlip);
+			img.resize(size_x, size_y, mrpt::img::CH_RGB);
 			const cellType* srcPtr = &map[0];
 			unsigned char* destPtr;
 			for (unsigned int y = 0; y < size_y; y++)
@@ -134,20 +134,12 @@ void COccupancyGridMap2D::getAsImageFiltered(
 {
 	getAsImage(img, verticalFlip, forceRGB);
 
-// Do filtering to improve the noisy peaks in grids:
-// ----------------------------------------------------
-#if 0
-	CTicTac  t;
-#endif
+	// Do filtering to improve the noisy peaks in grids:
 	if (insertionOptions.CFD_features_gaussian_size != 0)
-		img.filterGaussianInPlace(
-			round(insertionOptions.CFD_features_gaussian_size));
+		img.filterGaussian(
+			img, round(insertionOptions.CFD_features_gaussian_size));
 	if (insertionOptions.CFD_features_median_size != 0)
-		img.filterMedianInPlace(
-			round(insertionOptions.CFD_features_median_size));
-#if 0
-	cout << "[COccupancyGridMap2D::getAsImageFiltered] Filtered in: " << t.Tac()*1000 << " ms" << endl;
-#endif
+		img.filterMedian(img, round(insertionOptions.CFD_features_median_size));
 }
 
 /*---------------------------------------------------------------
@@ -168,8 +160,8 @@ void COccupancyGridMap2D::getAs3DObject(
 	outObj->setLocation(0, 0, insertionOptions.mapAltitude);
 
 	// Create the color & transparecy (alpha) images:
-	CImage imgColor(size_x, size_y, 1);
-	CImage imgTrans(size_x, size_y, 1);
+	CImage imgColor(size_x, size_y, mrpt::img::CH_GRAY);
+	CImage imgTrans(size_x, size_y, mrpt::img::CH_GRAY);
 
 	const cellType* srcPtr = &map[0];
 

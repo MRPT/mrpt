@@ -61,9 +61,6 @@ void vision::openCV_cross_correlation(
 	MRPT_START
 
 #if MRPT_HAS_OPENCV
-	double mini;
-	CvPoint min_point, max_point;
-
 	bool entireImg =
 		(x_search_ini < 0 || y_search_ini < 0 || x_search_size < 0 ||
 		 y_search_size < 0);
@@ -78,10 +75,8 @@ void vision::openCV_cross_correlation(
 	else
 	{
 		ASSERT_(!img.isColor() && !patch_img.isColor());
-		im.setFromIplImageReadOnly(
-			const_cast<IplImage*>(img.getAs<IplImage>()));
-		patch_im.setFromIplImageReadOnly(
-			const_cast<IplImage*>(patch_img.getAs<IplImage>()));
+		im = img.makeShallowCopy();
+		patch_im = patch_img.makeShallowCopy();
 	}
 
 	const int im_w = im.getWidth();
@@ -104,15 +99,11 @@ void vision::openCV_cross_correlation(
 
 	ASSERT_((x_search_ini + x_search_size + patch_w) <= im_w);
 	ASSERT_((y_search_ini + y_search_size + patch_h) <= im_h);
-	IplImage* result = cvCreateImage(
-		cvSize(x_search_size + 1, y_search_size + 1), IPL_DEPTH_32F, 1);
-
 	CImage img_region_to_search;
 
 	if (entireImg)
 	{
-		// Just a pointer to the original img:
-		img_region_to_search.setFromImageReadOnly(im);
+		img_region_to_search = im.makeShallowCopy();
 	}
 	else
 	{
@@ -124,37 +115,22 @@ void vision::openCV_cross_correlation(
 			patch_h + y_search_size);
 	}
 
+	cv::Mat result(cvSize(x_search_size + 1, y_search_size + 1), CV_32FC1);
+
 	// Compute cross correlation:
-	cvMatchTemplate(
-		img_region_to_search.getAs<IplImage>(), patch_im.getAs<IplImage>(),
-		result, CV_TM_CCORR_NORMED);
+	cv::matchTemplate(
+		img_region_to_search.asCvMat<cv::Mat>(SHALLOW_COPY),
+		patch_im.asCvMat<cv::Mat>(SHALLOW_COPY), result, CV_TM_CCORR_NORMED);
 
 	// Find the max point:
-	cvMinMaxLoc(result, &mini, &max_val, &min_point, &max_point, nullptr);
+	double mini;
+	cv::Point min_point, max_point;
+
+	cv::minMaxLoc(
+		result, &mini, &max_val, &min_point, &max_point, cv::noArray());
 	x_max = max_point.x + x_search_ini + (mrpt::round(patch_w - 1) >> 1);
 	y_max = max_point.y + y_search_ini + (mrpt::round(patch_h - 1) >> 1);
 
-	// Free memory:
-	cvReleaseImage(&result);
-
-#else
-	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
-#endif
-
-	MRPT_END
-}
-
-/*-------------------------------------------------------------
-							flip
--------------------------------------------------------------*/
-void vision::flip(CImage& img)
-{
-	MRPT_START
-
-#if MRPT_HAS_OPENCV
-	cvFlip(img.getAs<IplImage>());  // More params exists, they could be added
-	// in the future?
-	img.setOriginTopLeft(true);
 #else
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
@@ -432,8 +408,7 @@ float vision::computeMainOrientation(
 void vision::normalizeImage(const CImage& image, CImage& nimage)
 {
 	ASSERT_(image.getChannelCount() == 1);
-	nimage.resize(
-		image.getWidth(), image.getHeight(), 1, image.isOriginTopLeft());
+	nimage.resize(image.getWidth(), image.getHeight(), image.getChannelCount());
 
 	CMatrixFloat im, nim;
 	nim.resize(image.getHeight(), image.getWidth());
@@ -663,70 +638,21 @@ size_t vision::matchFeatures(
 						THROW_EXCEPTION(
 							"MRPT has been compiled without OpenCV");
 #else
-						IplImage *aux1, *aux2;
-						if ((*itList1)->patch.isColor() &&
-							(*itList2)->patch.isColor())
-						{
-							const IplImage* preAux1 =
-								(*itList1)->patch.getAs<IplImage>();
-							const IplImage* preAux2 =
-								(*itList2)->patch.getAs<IplImage>();
+						const CImage aux1(
+							(*itList1)->patch, FAST_REF_OR_CONVERT_TO_GRAY);
+						const CImage aux2(
+							(*itList2)->patch, FAST_REF_OR_CONVERT_TO_GRAY);
+						const auto h = aux1.getHeight(), w = aux1.getWidth();
 
-							aux1 = cvCreateImage(
-								cvSize(
-									(*itList1)->patch.getHeight(),
-									(*itList1)->patch.getWidth()),
-								IPL_DEPTH_8U, 1);
-							aux2 = cvCreateImage(
-								cvSize(
-									(*itList2)->patch.getHeight(),
-									(*itList2)->patch.getWidth()),
-								IPL_DEPTH_8U, 1);
-
-							cvCvtColor(preAux1, aux1, CV_BGR2GRAY);
-							cvCvtColor(preAux2, aux2, CV_BGR2GRAY);
-						}
-						else
-						{
-							aux1 = const_cast<IplImage*>(
-								(*itList1)->patch.getAs<IplImage>());
-							aux2 = const_cast<IplImage*>(
-								(*itList2)->patch.getAs<IplImage>());
-						}
-
-						// OLD CODE (for checking purposes)
-						//					for( unsigned int ii = 0; ii <
-						//(unsigned
-						// int)aux1->imageSize; ++ii )
-						//						m1 += aux1->imageData[ii];
-						//					m1 /= (double)aux1->imageSize;
-
-						//					for( unsigned int ii = 0; ii <
-						//(unsigned
-						// int)aux2->imageSize; ++ii )
-						//						m2 += aux2->imageData[ii];
-						//					m2 /= (double)aux2->imageSize;
-
-						//					for( unsigned int ii = 0; ii <
-						//(unsigned
-						// int)aux1->imageSize; ++ii )
-						//						res += fabs(
-						// fabs((double)aux1->imageData[ii]-m1) -
-						// fabs((double)aux2->imageData[ii]-m2) );
-
-						// NEW CODE
 						double res = 0;
-						for (unsigned int ii = 0;
-							 ii < (unsigned int)aux1->height; ++ii)  // Rows
-							for (unsigned int jj = 0;
-								 jj < (unsigned int)aux1->width; ++jj)  // Cols
-								res += fabs(
-									(double)(aux1->imageData
-												 [ii * aux1->widthStep + jj]) -
-									((double)(aux2->imageData
-												  [ii * aux2->widthStep +
-												   jj])));
-						res = res / (255.0f * aux1->width * aux1->height);
+						for (unsigned int ii = 0; ii < h; ++ii)
+							for (unsigned int jj = 0; jj < w; ++jj)
+								res += std::abs(
+									static_cast<double>(
+										aux1.at<uint8_t>(jj, ii)) -
+									static_cast<double>(
+										aux2.at<uint8_t>(jj, ii)));
+						res = res / (255.0 * w * h);
 
 						if (res < minSAD1)
 						{
@@ -796,13 +722,6 @@ size_t vision::matchFeatures(
 				if (distCorrs[auxIdx] > minVal)
 				{
 					// We've found a better match
-					//                    cout << "Better match found: [R] " <<
-					//                    idxLeftList[auxIdx] << " was with [L]
-					//                    " << auxIdx << "(" << distCorrs[
-					//                    auxIdx ] << ")";
-					//                    cout << " now is with [L] " <<
-					//                    minLeftIdx << "(" << minVal << ")" <<
-					//                    endl;
 					distCorrs[minLeftIdx] = minVal;
 					idxLeftList[minLeftIdx] = minRightIdx;
 					idxRightList[minRightIdx] = minLeftIdx;
@@ -810,15 +729,9 @@ size_t vision::matchFeatures(
 					distCorrs[auxIdx] = 1.0;
 					idxLeftList[auxIdx] = FEAT_FREE;
 				}  // end-if
-				//                else
-				//                    cout << "Conflict but not better match" <<
-				//                    endl;
 			}  // end-if
 			else
 			{
-				//		        cout << "New match found: [R] " << minRightIdx
-				//<<
-				//" with [L] " << minLeftIdx << "(" << minVal << ")" << endl;
 				idxRightList[minRightIdx] = minLeftIdx;
 				idxLeftList[minLeftIdx] = minRightIdx;
 				distCorrs[minLeftIdx] = minVal;
@@ -845,15 +758,6 @@ size_t vision::matchFeatures(
 			{
 				projectMatchedFeature(
 					list1[vCnt], list2[idxLeftList[vCnt]], p3D, params);
-				//                double aux  = options.baseline/disp;
-				//                double x3D  = (list1[vCnt]->x-options.cx)*aux;
-				//                double y3D  = (list1[vCnt]->y-options.cy)*aux;
-				//                double z3D  = options.fx*aux;
-
-				//                dp1 = sqrt( x3D*x3D + y3D*y3D + z3D*z3D );
-				//                dp2 = sqrt(
-				//                (x3D-options.baseline)*(x3D-options.baseline)
-				//                + y3D*y3D + z3D*z3D );
 				dp1 = sqrt(p3D.x * p3D.x + p3D.y * p3D.y + p3D.z * p3D.z);
 				dp2 = sqrt(
 					(p3D.x - params.baseline) * (p3D.x - params.baseline) +
@@ -946,34 +850,27 @@ void vision::generateMask(
 	}  // end-for
 }  // end generateMask
 
-/*-------------------------------------------------------------
-						computeSAD
--------------------------------------------------------------*/
-double vision::computeSAD(const CImage& patch1, const CImage& patch2)
+double vision::computeSAD(const CImage& p1, const CImage& p2)
 {
 	MRPT_START
 #if MRPT_HAS_OPENCV
-	const auto* im1 = patch1.getAs<IplImage>();
-	const auto* im2 = patch2.getAs<IplImage>();
-
-	ASSERT_(im1->width == im2->width && im1->height == im2->height);
+	ASSERT_(p1.getSize() == p2.getSize());
+	const auto w = p1.getWidth(), h = p1.getHeight();
 	double res = 0.0;
-	for (unsigned int ii = 0; ii < (unsigned int)im1->height; ++ii)  // Rows
-		for (unsigned int jj = 0; jj < (unsigned int)im1->width; ++jj)  // Cols
-			res += fabs(
-				(double)(im1->imageData[ii * im1->widthStep + jj]) -
-				((double)(im2->imageData[ii * im2->widthStep + jj])));
-	return res / (255.0f * im1->width * im1->height);
+	for (unsigned int ii = 0; ii < h; ++ii)
+		for (unsigned int jj = 0; jj < w; ++jj)
+			res += std::abs(
+				static_cast<double>(p1.at<uint8_t>(jj, ii)) -
+				static_cast<double>(p2.at<uint8_t>(jj, ii)));
+
+	return res / (255.0 * w * h);
 #else
 	THROW_EXCEPTION(
 		"MRPT compiled without OpenCV, can't compute SAD of images!")
 #endif
 	MRPT_END
-}  // end computeSAD
+}
 
-/*-------------------------------------------------------------
-					addFeaturesToImage
--------------------------------------------------------------*/
 void vision::addFeaturesToImage(
 	const CImage& inImg, const CFeatureList& theList, CImage& outImg)
 {

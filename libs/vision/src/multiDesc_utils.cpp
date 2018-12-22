@@ -1563,17 +1563,13 @@ int vision::computeMoreDescriptors(
 	//**************************************************************************
 	// Pre-smooth the image with sigma = sg1 (typically 0.5)
 	//**************************************************************************
+	const cv::Mat inImg1 = image.asCvMat<cv::Mat>(SHALLOW_COPY);
 	cv::Mat tempImg1;
-	IplImage aux1;
-
-	const cv::Mat inImg1 =
-		cv::cvarrToMat(image.getAs<IplImage>(), false /*dont copy data*/);
 
 	cv::GaussianBlur(
 		inImg1, tempImg1, cvSize(0, 0), opts.sg1 /*sigmaX*/,
 		opts.sg1 /*sigmaY*/);
-	aux1 = tempImg1;
-	CImage smLeftImg(&aux1);
+	CImage smLeftImg(tempImg1, SHALLOW_COPY);
 	//--------------------------------------------------------------------------
 
 	unsigned int a = opts.basePSize;
@@ -1625,19 +1621,16 @@ int vision::computeMoreDescriptors(
 					tPatch, inputFeat->x - hpSize, inputFeat->y - hpSize,
 					npSize, npSize);
 
-			cv::Mat out_mat_patch;
 			// The size is a+2xa+2 because we have to compute the gradient
 			// (magnitude and orientation) in every pixel within the axa patch
 			// so we need
 			// one more row and column. For instance, for a 23x23 patch we need
 			// a 25x25 patch.
+			CImage rsPatch;
 			cv::resize(
-				cv::cvarrToMat(tPatch.getAs<IplImage>(), false), out_mat_patch,
-				cv::Size(a + 2, a + 2));
-			auto aux_img = IplImage(out_mat_patch);
-			CImage rsPatch(&aux_img);
+				tPatch.asCvMat<cv::Mat>(SHALLOW_COPY),
+				rsPatch.asCvMat<cv::Mat>(SHALLOW_COPY), cv::Size(a + 2, a + 2));
 
-			//            cout << " ::: Patch extracted and resized" << endl;
 			vector<double> auxOriVector;
 			if (!vision::computeMainOrientations(
 					rsPatch, a / 2 + 1, a / 2 + 1, a, auxOriVector, opts.sg2))
@@ -1704,25 +1697,17 @@ int vision::computeMoreDescriptors(
 				tPatch, inputFeat->x - hpSize, inputFeat->y - hpSize, npSize,
 				npSize);
 
-			cv::Mat out_mat_patch;
 			// The size is a+2xa+2 because we have to compute the gradient
 			// (magnitude and orientation) in every pixel within the axa patch
 			// so we need
 			// one more row and column. For instance, for a 23x23 patch we need
 			// a 25x25 patch.
-			cv::resize(
-				cv::cvarrToMat(tPatch.getAs<IplImage>(), false), out_mat_patch,
-				cv::Size(a + 2, a + 2));
-			auto aux_img = IplImage(out_mat_patch);
-			CImage rsPatch(&aux_img);
-
-			//            cout << " ::: Patch extracted and resized" << endl;
+			CImage rsPatch;
+			tPatch.scaleImage(rsPatch, a + 2, a + 2);
 
 			vector<double> auxOriVector;
 			vision::computeMainOrientations(
 				rsPatch, a / 2 + 1, a / 2 + 1, a, auxOriVector, opts.sg2);
-
-			//            cout << " ::: Orientation computed" << endl;
 
 			vector<vector<int32_t>> auxDescVector;
 			vector<vector<int32_t>> auxCoefVector;
@@ -1730,12 +1715,9 @@ int vision::computeMoreDescriptors(
 			auxCoefVector.resize(auxOriVector.size());
 			for (unsigned int m = 0; m < auxOriVector.size(); ++m)
 			{
-				//                cout << " :: Descriptor for orientation " <<
-				//                auxOriVector[m];
 				computeHistogramOfOrientations(
 					rsPatch, a / 2 + 1, a / 2 + 1, a, auxOriVector[m],
 					auxDescVector[m], opts, auxCoefVector[m]);
-				//                cout << " ...done" << endl;
 			}  // end-for
 			outputFeat->multiOrientations.push_back(auxOriVector);
 			outputFeat->descriptors.multiSIFTDescriptors.push_back(
@@ -1835,23 +1817,17 @@ void vision::computeMultiResolutionDescriptors(
 	// Pre-smooth the image with sigma = sg1 (typically 0.5)
 	//**************************************************************************
 	tlogger.enter("smooth");
-	cv::Mat tempImg1, tempImg2;
-	IplImage aux1, aux2;
 
-	const cv::Mat inImg1 = cv::cvarrToMat(imageLeft.getAs<IplImage>());
-	const cv::Mat inImg2 = cv::cvarrToMat(imageRight.getAs<IplImage>());
-
+	CImage smLeftImg;
 	cv::GaussianBlur(
-		inImg1, tempImg1, cvSize(0, 0), opts.sg1 /*sigmaX*/,
-		opts.sg1 /*sigmaY*/);
-	aux1 = tempImg1;
-	CImage smLeftImg(&aux1);
+		imageLeft.asCvMatRef(), smLeftImg.asCvMatRef(), cvSize(0, 0),
+		opts.sg1 /*sigmaX*/, opts.sg1 /*sigmaY*/);
 
+	CImage smRightImg;
 	cv::GaussianBlur(
-		inImg2, tempImg2, cvSize(0, 0), opts.sg1 /*sigmaX*/,
-		opts.sg1 /*sigmaY*/);
-	aux2 = tempImg2;
-	CImage smRightImg(&aux2);
+		imageRight.asCvMatRef(), smRightImg.asCvMatRef(), cvSize(0, 0),
+		opts.sg1 /*sigmaX*/, opts.sg1 /*sigmaY*/);
+
 	tlogger.leave("smooth");
 	//--------------------------------------------------------------------------
 
@@ -1946,11 +1922,9 @@ void vision::computeMultiResolutionDescriptors(
 			// so we need
 			// one more row and column. For instance, for a 23x23 patch we need
 			// a 25x25 patch.
-			cv::resize(
-				cv::cvarrToMat(tPatch.getAs<IplImage>(), false), out_mat_patch,
-				cv::Size(a + 2, a + 2));
-			auto aux_img = IplImage(out_mat_patch);
-			CImage rsPatch(&aux_img);
+			CImage rsPatch;
+			tPatch.scaleImage(rsPatch, a + 2, a + 2);
+
 			tlogger.leave("extract & resize");
 
 			tlogger.enter("main orientations");
@@ -1986,11 +1960,8 @@ void vision::computeMultiResolutionDescriptors(
 				tPatch, itMatch->second->x - hpSize,
 				itMatch->second->y - hpSize, npSize, npSize);
 
-			cv::resize(
-				cv::cvarrToMat(tPatch.getAs<IplImage>(), false), out_mat_patch,
-				cv::Size(a + 2, a + 2));
-			auto aux_img2 = IplImage(out_mat_patch);
-			CImage rsPatch2(&aux_img2);
+			CImage rsPatch2;
+			tPatch.scaleImage(rsPatch2, a + 2, a + 2);
 			tlogger.leave("extract & resize");
 
 			tlogger.enter("main orientations");
@@ -2073,13 +2044,6 @@ bool vision::computeMultiResolutionDescriptors(
 		CImage tPatch(npSize, npSize);
 
 		// LEFT IMAGE:
-		//        if( feat->x+hpSize > image.getWidth()-1 || feat->y+hpSize >
-		//        image.getHeight()-1 || feat->x-hpSize < 0 || feat->y-hpSize <
-		//        0 )
-		//            cout << "(" << feat->x << "," << feat->y << ") and hpSize:
-		//            " << hpSize << " with scales ";
-		//            cout << opts.scales << " imSize: " << image.getWidth() <<
-		//            "x" << image.getHeight() << endl;
 		image.extract_patch(
 			tPatch, feat->x - hpSize, feat->y - hpSize, npSize, npSize);
 
@@ -2089,11 +2053,8 @@ bool vision::computeMultiResolutionDescriptors(
 		// need
 		// one more row and column. For instance, for a 23x23 patch we need a
 		// 25x25 patch.
-		cv::resize(
-			cv::cvarrToMat(tPatch.getAs<IplImage>(), false), out_mat_patch,
-			cv::Size(a + 2, a + 2));
-		auto aux_img = IplImage(out_mat_patch);
-		CImage rsPatch(&aux_img);
+		CImage rsPatch;
+		tPatch.scaleImage(rsPatch, a + 2, a + 2);
 
 		// Compute the main orientations for the axa patch, taking into account
 		// that the actual patch has a size of a+2xa+2
@@ -2151,23 +2112,13 @@ vector<bool> vision::computeMultiResolutionDescriptors(
 	CImage smLeftImg;
 	if (opts.blurImage)
 	{
-		//**************************************************************************
 		// Pre-smooth the image with sigma = sg1 (typically 0.5)
-		//**************************************************************************
-		cv::Mat tempImg;
-		IplImage aux;
-
-		const cv::Mat inImg = cv::cvarrToMat(image.getAs<IplImage>());
-
 		cv::GaussianBlur(
-			inImg, tempImg, cvSize(0, 0), opts.sg1 /*sigmaX*/,
-			opts.sg1 /*sigmaY*/);
-		aux = tempImg;
-		smLeftImg.loadFromIplImage(&aux);
-		//--------------------------------------------------------------------------
+			image.asCvMatRef(), smLeftImg.asCvMatRef(), cvSize(0, 0),
+			opts.sg1 /*sigmaX*/, opts.sg1 /*sigmaY*/);
 	}
 	else
-		smLeftImg = image;
+		smLeftImg = image.makeShallowCopy();
 
 	TMultiResDescOptions auxOpts = opts;
 	auxOpts.blurImage = false;
@@ -2199,17 +2150,11 @@ void vision::computeMultiOrientations(
 	// Pre-smooth the image with sigma = sg1 (typically 0.5)
 	//**************************************************************************
 	tlogger.enter("smooth");
-	cv::Mat tempImg1;
-	IplImage aux1;
-
-	const cv::Mat inImg1 = cv::cvarrToMat(image.getAs<IplImage>(), false);
-
+	CImage smLeftImg;
 	cv::GaussianBlur(
-		inImg1, tempImg1, cvSize(0, 0), opts.sg1 /*sigmaX*/,
-		opts.sg1 /*sigmaY*/);
-	aux1 = tempImg1;
-	CImage smLeftImg(&aux1);
-	//--------------------------------------------------------------------------
+		image.asCvMatRef(), smLeftImg.asCvMatRef(), cvSize(0, 0),
+		opts.sg1 /*sigmaX*/, opts.sg1 /*sigmaY*/);
+	tlogger.leave("smooth");
 
 	unsigned int a = opts.basePSize;
 
@@ -2259,17 +2204,13 @@ void vision::computeMultiOrientations(
 			smLeftImg.extract_patch(
 				tPatch, (*it)->x - hpSize, (*it)->y - hpSize, npSize, npSize);
 
-			cv::Mat out_mat_patch;
 			// The size is a+2xa+2 because we have to compute the gradient
 			// (magnitude and orientation) in every pixel within the axa patch
 			// so we need
 			// one more row and column. For instance, for a 23x23 patch we need
 			// a 25x25 patch.
-			cv::resize(
-				cv::cvarrToMat(tPatch.getAs<IplImage>(), false), out_mat_patch,
-				cv::Size(a + 2, a + 2));
-			auto aux_img = IplImage(out_mat_patch);
-			CImage rsPatch(&aux_img);
+			CImage rsPatch;
+			tPatch.scaleImage(rsPatch, a + 2, a + 2);
 			tlogger.leave("extract & resize");
 
 			tlogger.enter("main orientations");

@@ -414,8 +414,8 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 
 						for (size_t r = 0; r < H; r++)
 						{
-							unsigned char const* ptr_lin =
-								obs->confidenceImage.get_unsafe(0, r, 0);
+							auto ptr_lin =
+								obs->confidenceImage.ptrLine<uint8_t>(r);
 							for (size_t c = 0; c < W; c++, i++)
 							{
 								unsigned char conf = *ptr_lin++;
@@ -450,7 +450,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 					if (obs->hasIntensityImage)
 						im = obs->intensityImage;
 					else
-						im.resize(10, 10, CH_GRAY, true);
+						im.resize(10, 10, CH_GRAY);
 					wxImage* img = mrpt::gui::MRPTImage2wxImage(im);
 					if (img->IsOk()) bmp3Dobs_int->SetBitmap(wxBitmap(*img));
 					bmp3Dobs_int->Refresh();
@@ -473,7 +473,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 							false /* it's in range [0,255] */);
 					}
 					else
-						auxImg.resize(10, 10, CH_GRAY, true);
+						auxImg.resize(10, 10, CH_GRAY);
 
 					wxImage* img = mrpt::gui::MRPTImage2wxImage(auxImg);
 					if (img->IsOk()) bmp3Dobs_depth->SetBitmap(wxBitmap(*img));

@@ -229,7 +229,8 @@ bool CImageGrabber_OpenCV::getObservation(
 		{
 			// Fill the output class:
 			out_observation.timestamp = mrpt::system::now();
-			out_observation.image.setFromMatNoCopy(capImg);
+			out_observation.image =
+				mrpt::img::CImage(capImg, mrpt::img::SHALLOW_COPY);
 			return true;
 		}
 		cerr << "[CImageGrabber_OpenCV] WARNING: Ignoring error #" << nTries + 1

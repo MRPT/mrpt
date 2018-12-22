@@ -10,7 +10,7 @@
 #pragma once
 
 #include <mrpt/img/CImage.h>
-#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/vision/utils.h>
 #include <mrpt/vision/CFeature.h>
 #include <mrpt/vision/TSimpleFeature.h>
@@ -76,7 +76,7 @@ namespace mrpt::vision
  * \sa mrpt::vision::CFeature
  * \ingroup mrptvision_features
  */
-class CFeatureExtraction
+class CFeatureExtraction : public mrpt::system::CTimeLogger
 {
    public:
 	enum TSIFTImplementation
@@ -146,9 +146,6 @@ class CFeatureExtraction
 			// function
 			int radius;  // size of the block of pixels used
 			float min_distance;  // minimum distance between features
-			bool tile_image;  // splits the image into 8 tiles and search for
-			// the best points in all of them (distribute the
-			// features over all the image)
 		} harrisOptions;
 
 		/** BCD Options */
@@ -295,12 +292,9 @@ class CFeatureExtraction
 		} LATCHOptions;
 	};
 
-	TOptions options;  //!< Set all the parameters of the desired method here
-	//! before calling "detectFeatures"
-
-	/** Virtual destructor.
-	 */
-	virtual ~CFeatureExtraction();
+	/** Set all the parameters of the desired method here before calling
+	 * detectFeatures() */
+	TOptions options;
 
 	/** Extract features from the image based on the method defined in TOptions.
 	 * \param img (input) The image from where to extract the images.
@@ -343,21 +337,6 @@ class CFeatureExtraction
 	void computeDescriptors(
 		const mrpt::img::CImage& in_img, CFeatureList& inout_features,
 		TDescriptorType in_descriptor_list) const;
-
-#if 0  // Delete? see comments in .cpp
-			/** Extract more features from the image (apart from the provided ones) based on the method defined in TOptions.
-			* \param img (input) The image from where to extract the images.
-			* \param inList (input) The actual features in the image.
-			* \param outList (output) The list of new features (containing a patch for each one of them if options.patchsize > 0).
-			* \param nDesiredFeatures (op. input) Number of features to be extracted. Default: all possible.
-			*
-			*  \sa The more powerful class: mrpt::vision::CGenericFeatureTracker
-			*/
-			void  findMoreFeatures( const mrpt::img::CImage &img,
-									const CFeatureList &inList,
-									CFeatureList &outList,
-									unsigned int nDesiredFeats = 0) const;
-#endif
 
 	/** @name Static methods with low-level detector functionality
 		@{ */
@@ -587,9 +566,7 @@ class CFeatureExtraction
 	 */
 	void extractFeaturesFAST(
 		const mrpt::img::CImage& img, CFeatureList& feats,
-		unsigned int init_ID = 0, unsigned int nDesiredFeatures = 0,
-		const TImageROI& ROI = TImageROI(),
-		const mrpt::math::CMatrixBool* mask = nullptr) const;
+		unsigned int init_ID = 0, unsigned int nDesiredFeatures = 0) const;
 
 	/** Edward's "FASTER & Better" detector, N=9,10,12 */
 	void extractFeaturesFASTER_N(

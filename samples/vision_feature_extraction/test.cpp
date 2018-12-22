@@ -594,7 +594,6 @@ void TestExtractFeaturesTile()
 	cout << "Extracting Harris features (tiled)... [f_harris_tiled.txt]";
 
 	fExt.options.featsType = featHarris;
-	fExt.options.harrisOptions.tile_image = true;
 
 	tictac.Tic();
 	fExt.detectFeatures(img, featsHarris);
@@ -606,8 +605,6 @@ void TestExtractFeaturesTile()
 	wind1.showTiledImageAndPoints(img, featsHarris);
 
 	cout << "Extracting Harris features... [f_harris.txt]";
-
-	fExt.options.harrisOptions.tile_image = false;
 
 	tictac.Tic();
 	fExt.detectFeatures(img, featsHarris);

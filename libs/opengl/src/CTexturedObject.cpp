@@ -103,8 +103,8 @@ void CTexturedObject::assignImage_fast(CImage& img, CImage& imgAlpha)
 	unloadTexture();
 
 	// Make a copy:
-	m_textureImage.copyFastFrom(img);
-	m_textureImageAlpha.copyFastFrom(imgAlpha);
+	m_textureImage = std::move(img);
+	m_textureImageAlpha = std::move(imgAlpha);
 
 	m_enableTransparency = true;
 
@@ -123,7 +123,7 @@ void CTexturedObject::assignImage_fast(CImage& img)
 	unloadTexture();
 
 	// Make a copy:
-	m_textureImage.copyFastFrom(img);
+	m_textureImage = std::move(img);
 
 	m_enableTransparency = false;
 
@@ -221,8 +221,10 @@ void CTexturedObject::loadTextureInOpenGL() const
 		while (m_textureImage.getHeight() > (unsigned int)texSize ||
 			   m_textureImage.getWidth() > (unsigned int)texSize)
 		{
-			m_textureImage = m_textureImage.scaleHalf();
-			m_textureImageAlpha = m_textureImageAlpha.scaleHalf();
+			m_textureImage =
+				m_textureImage.scaleHalf(mrpt::img::IMG_INTERP_LINEAR);
+			m_textureImageAlpha =
+				m_textureImageAlpha.scaleHalf(mrpt::img::IMG_INTERP_LINEAR);
 		}
 
 		const int width = m_textureImage.getWidth();
@@ -290,9 +292,9 @@ void CTexturedObject::loadTextureInOpenGL() const
 
 				// Prepare image data types:
 				const GLenum img_type = GL_UNSIGNED_BYTE;
-				const bool is_RGB_order = (!::strcmp(
-					m_textureImage.getChannelsOrder(),
-					"RGB"));  // Reverse RGB <-> BGR order?
+				// Reverse RGB <-> BGR order?
+				const bool is_RGB_order =
+					(m_textureImage.getChannelsOrder() == std::string("RGB"));
 				const GLenum img_format = (is_RGB_order ? GL_RGBA : GL_BGRA);
 
 				// Send image data to OpenGL:
@@ -316,9 +318,9 @@ void CTexturedObject::loadTextureInOpenGL() const
 				// Prepare image data types:
 				const GLenum img_type = GL_UNSIGNED_BYTE;
 				const int nBytesPerPixel = m_textureImage.isColor() ? 3 : 1;
-				const bool is_RGB_order = (!::strcmp(
-					m_textureImage.getChannelsOrder(),
-					"RGB"));  // Reverse RGB <-> BGR order?
+				// Reverse RGB <-> BGR order?
+				const bool is_RGB_order =
+					(m_textureImage.getChannelsOrder() == std::string("RGB"));
 				const GLenum img_format = nBytesPerPixel == 3
 											  ? (is_RGB_order ? GL_RGB : GL_BGR)
 											  : GL_LUMINANCE;
@@ -331,7 +333,7 @@ void CTexturedObject::loadTextureInOpenGL() const
 				glTexImage2D(
 					GL_TEXTURE_2D, 0 /*level*/, 3 /* RGB components */, width,
 					height, 0 /*border*/, img_format, img_type,
-					m_textureImage.get_unsafe(0, 0));
+					m_textureImage.ptrLine<uint8_t>(0));
 				glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);  // Reset
 
 				// No need to hide a fill border:

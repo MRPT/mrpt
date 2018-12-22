@@ -81,8 +81,8 @@ void TestImageConversion()
 		timlog.leave("grayscale2");
 	}
 
-	CImage imgSmall2(imgGray.scaleHalfSmooth());
-	CImage imgSmallRGB(img.scaleHalf());  // Smooth() );
+	CImage imgSmall2 = imgGray.scaleHalf(IMG_INTERP_LINEAR);
+	CImage imgSmallRGB = img.scaleHalf(IMG_INTERP_LINEAR);
 
 	// Test some draw capabilities:
 	// ---------------------------------

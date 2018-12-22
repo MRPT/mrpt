@@ -11,18 +11,13 @@
 #include <mrpt/system/filesystem.h>
 #include <gtest/gtest.h>
 #include <iostream>
-
-// Defined in tests/test_main.cpp
-namespace mrpt
-{
-extern std::string MRPT_GLOBAL_UNITTEST_SRC_DIR;
-}
+#include <test_mrpt_common.h>
 
 TEST(CPointsMapXYZI, loadFromKittiVelodyneFile)
 {
 	using namespace std;
-	const string kitti_fil = mrpt::MRPT_GLOBAL_UNITTEST_SRC_DIR +
-							 string("/tests/kitti_00_000000.bin.gz");
+	const string kitti_fil =
+		mrpt::UNITTEST_BASEDIR + string("/tests/kitti_00_000000.bin.gz");
 	if (!mrpt::system::fileExists(kitti_fil))
 	{
 		cerr << "WARNING: Skipping test due to missing file: " << kitti_fil

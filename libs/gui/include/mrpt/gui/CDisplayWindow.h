@@ -91,8 +91,7 @@ class CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 		const bool& showIDs = false)
 	{
 		MRPT_START
-		mrpt::img::CImage imgColor(1, 1, CH_RGB);
-		img.colorImage(imgColor);  // Create a colorimage
+		mrpt::img::CImage imgColor = img.colorImage();
 		imgColor.drawFeatures(list, color, showIDs);
 		showImage(imgColor);
 		MRPT_END
@@ -110,8 +109,7 @@ class CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 	{
 		MRPT_START
 		using mrpt::img::TColor;
-		mrpt::img::CImage imgColor(1, 1, 3);
-		img.colorImage(imgColor);  // Create a colorimage
+		mrpt::img::CImage imgColor = img.colorImage();
 
 		// Print the 4 tile lines
 		unsigned int w = imgColor.getWidth();

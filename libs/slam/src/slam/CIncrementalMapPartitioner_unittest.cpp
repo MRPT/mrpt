@@ -9,16 +9,11 @@
 
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <gtest/gtest.h>
+#include <test_mrpt_common.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
 using namespace std;
-
-// Defined in tests/test_main.cpp
-namespace mrpt
-{
-extern std::string MRPT_GLOBAL_UNITTEST_SRC_DIR;
-}
 
 // TEST =================
 TEST(CIncrementalMapPartitioner, test_dataset) { MRPT_TODO("Write me"); }

@@ -164,7 +164,7 @@ void CFBORender::getFrame(const COpenGLScene& scene, CImage& buffer)
 		buffer.getHeight() != static_cast<size_t>(m_height) ||
 		buffer.getChannelCount() != 3 || buffer.isOriginTopLeft() != false)
 	{
-		buffer.resize(m_width, m_height, 3, false);
+		buffer.resize(m_width, m_height, mrpt::img::CH_RGB);
 	}
 
 	// Go on.

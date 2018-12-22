@@ -28,8 +28,6 @@ void CFeatureExtraction::extractFeaturesKLT(
 	const mrpt::img::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
 	unsigned int nDesiredFeatures, const TImageROI& ROI) const
 {
-	//#define VERBOSE_TIMING
-
 #ifdef VERBOSE_TIMING
 	CTicTac tictac;
 #endif
@@ -41,21 +39,18 @@ void CFeatureExtraction::extractFeaturesKLT(
 	// -----------------------------------------------------------------
 	// Create OpenCV Local Variables
 	// -----------------------------------------------------------------
-	int count = 0;
-	int nPts;
-
 #ifdef VERBOSE_TIMING
 	tictac.Tic();
 #endif
-	const cv::Mat img(cv::cvarrToMat(inImg.getAs<IplImage>()));
+	const cv::Mat img = inImg.asCvMat<cv::Mat>(SHALLOW_COPY);
 
 #ifdef VERBOSE_TIMING
 	cout << "[KLT] Attach: " << tictac.Tac() * 1000.0f << endl;
 #endif
 	const CImage inImg_gray(inImg, FAST_REF_OR_CONVERT_TO_GRAY);
-	const cv::Mat cGrey(cv::cvarrToMat(inImg_gray.getAs<IplImage>()));
+	const cv::Mat cGrey = inImg_gray.asCvMat<cv::Mat>(SHALLOW_COPY);
 
-	nDesiredFeatures <= 0 ? nPts = MAX_COUNT : nPts = nDesiredFeatures;
+	const auto nPts = (nDesiredFeatures <= 0) ? MAX_COUNT : nDesiredFeatures;
 
 #ifdef VERBOSE_TIMING
 	tictac.Tic();
@@ -64,7 +59,7 @@ void CFeatureExtraction::extractFeaturesKLT(
 #ifdef VERBOSE_TIMING
 	cout << "[KLT] Create: " << tictac.Tac() * 1000.0f << endl;
 #endif
-	count = nPts;  // Number of points to find
+	const auto count = nPts;  // Number of points to find
 
 	// -----------------------------------------------------------------
 	// Select good features with subpixel accuracy (USING HARRIS OR KLT)

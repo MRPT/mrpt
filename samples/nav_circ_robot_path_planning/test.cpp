@@ -9,7 +9,7 @@
 
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/nav/planners/PlannerSimple2D.h>
-#include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/system/filesystem.h>
@@ -111,8 +111,9 @@ void TestPathPlanning()
 	printf("Done\n");
 
 #if MRPT_HAS_WXWIDGETS
-	mrpt::gui::CDisplayWindow win("Computed path");
-	win.showImage(img.scaleHalf().scaleHalf());
+	mrpt::gui::CDisplayWindow3D win("Computed path");
+	win.setImageView(img);
+	win.repaint();
 
 	win.waitForKey();
 #endif

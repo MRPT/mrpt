@@ -249,7 +249,7 @@ void CFeatureLines::extractLines(
 
 	using namespace cv;
 	using namespace std;
-	const Mat image = cv::cvarrToMat(img_in.getAs<IplImage>());
+	const Mat image = img_in.asCvMat<Mat>(mrpt::img::SHALLOW_COPY);
 
 	// Canny edge detector
 	cv::Mat canny_img;
@@ -325,9 +325,6 @@ void CFeatureLines::extractLines(
 		image.convertTo(image_lines, CV_8UC1, 1.0 / 2);
 		for (auto line = begin(segments); line != end(segments); ++line)
 		{
-			// cout << "line: " << (*line)[0] << " " << (*line)[1] << " " <<
-			// (*line)[2] << " " << (*line)[3] << " \n";
-			// image.convertTo(image_lines, CV_8UC1, 1.0 / 2);
 			cv::line(
 				image_lines, cv::Point((*line)[0], (*line)[1]),
 				cv::Point((*line)[2], (*line)[3]), cv::Scalar(255, 0, 255), 1);
@@ -340,10 +337,7 @@ void CFeatureLines::extractLines(
 					((*line)[0] + (*line)[2]) / 2,
 					((*line)[1] + (*line)[3]) / 2),
 				0, 1.2, cv::Scalar(200, 0, 0), 3);
-			// cv::imshow("lines", image_lines); cv::moveWindow("lines",
-			// 20,100+700);  cv::waitKey(0);
 		}
-		// cv::imwrite("/home/efernand/lines.png", image_lines);
 		cv::imshow("lines", image_lines);
 		cv::moveWindow("lines", 20, 100 + 700);
 		cv::waitKey(0);
