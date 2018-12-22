@@ -27,7 +27,7 @@ void COccupancyGridMapFeatureExtractor::uncached_extractFeatures(
 	MRPT_START
 
 	// get the gridmap as an image:
-	CImage img(1, 1, 1);
+	CImage img;
 	grid.getAsImageFiltered(img, true /*vertical flip*/, false /* force RGB */);
 
 	// Detect features:

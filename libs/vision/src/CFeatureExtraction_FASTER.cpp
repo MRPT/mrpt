@@ -13,6 +13,7 @@
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
+#include <numeric>  // iota
 
 #if MRPT_HAS_OPENCV
 #include "faster_corner_prototypes.h"
@@ -32,12 +33,12 @@ void CFeatureExtraction::detectFeatures_SSE2_FASTER9(
 	std::vector<size_t>* out_feats_index_by_row)
 {
 #if MRPT_HAS_OPENCV
-	const auto* IPL = img.getAs<IplImage>();
-	ASSERTDEB_(IPL && IPL->nChannels == 1);
+	ASSERT_(!img.isColor());
 	if (!append_to_list) corners.clear();
 
 	fast_corner_detect_9(
-		IPL, corners, threshold, octave, out_feats_index_by_row);
+		img.asCvMat<cv::Mat>(SHALLOW_COPY), corners, threshold, octave,
+		out_feats_index_by_row);
 #else
 	THROW_EXCEPTION("MRPT built without OpenCV support!");
 #endif
@@ -48,12 +49,12 @@ void CFeatureExtraction::detectFeatures_SSE2_FASTER10(
 	std::vector<size_t>* out_feats_index_by_row)
 {
 #if MRPT_HAS_OPENCV
-	const auto* IPL = img.getAs<IplImage>();
-	ASSERTDEB_(IPL && IPL->nChannels == 1);
+	ASSERT_(!img.isColor());
 	if (!append_to_list) corners.clear();
 
 	fast_corner_detect_10(
-		IPL, corners, threshold, octave, out_feats_index_by_row);
+		img.asCvMat<cv::Mat>(SHALLOW_COPY), corners, threshold, octave,
+		out_feats_index_by_row);
 #else
 	THROW_EXCEPTION("MRPT built without OpenCV support!");
 #endif
@@ -64,12 +65,12 @@ void CFeatureExtraction::detectFeatures_SSE2_FASTER12(
 	std::vector<size_t>* out_feats_index_by_row)
 {
 #if MRPT_HAS_OPENCV
-	const auto* IPL = img.getAs<IplImage>();
-	ASSERTDEB_(IPL && IPL->nChannels == 1);
+	ASSERT_(!img.isColor());
 	if (!append_to_list) corners.clear();
 
 	fast_corner_detect_12(
-		IPL, corners, threshold, octave, out_feats_index_by_row);
+		img.asCvMat<cv::Mat>(SHALLOW_COPY), corners, threshold, octave,
+		out_feats_index_by_row);
 #else
 	THROW_EXCEPTION("MRPT built without OpenCV support!");
 #endif
@@ -91,8 +92,7 @@ void CFeatureExtraction::extractFeaturesFASTER_N(
 #if MRPT_HAS_OPENCV
 	// Make sure we operate on a gray-scale version of the image:
 	const CImage inImg_gray(inImg, FAST_REF_OR_CONVERT_TO_GRAY);
-
-	const auto* IPL = inImg_gray.getAs<IplImage>();
+	cv::Mat img = inImg_gray.asCvMat<cv::Mat>(SHALLOW_COPY);
 
 	TSimpleFeatureList corners;
 	TFeatureType type_of_this_feature;
@@ -101,23 +101,22 @@ void CFeatureExtraction::extractFeaturesFASTER_N(
 	{
 		case 9:
 			fast_corner_detect_9(
-				IPL, corners, options.FASTOptions.threshold, 0, nullptr);
+				img, corners, options.FASTOptions.threshold, 0, nullptr);
 			type_of_this_feature = featFASTER9;
 			break;
 		case 10:
 			fast_corner_detect_10(
-				IPL, corners, options.FASTOptions.threshold, 0, nullptr);
+				img, corners, options.FASTOptions.threshold, 0, nullptr);
 			type_of_this_feature = featFASTER10;
 			break;
 		case 12:
 			fast_corner_detect_12(
-				IPL, corners, options.FASTOptions.threshold, 0, nullptr);
+				img, corners, options.FASTOptions.threshold, 0, nullptr);
 			type_of_this_feature = featFASTER12;
 			break;
 		default:
 			THROW_EXCEPTION(
 				"Only the 9,10,12 FASTER detectors are implemented.")
-			break;
 	};
 
 	// *All* the features have been extracted.
@@ -128,23 +127,21 @@ void CFeatureExtraction::extractFeaturesFASTER_N(
 	//      indices "sorted_indices" than sorting directly the actual list of
 	//      features "corners"
 	std::vector<size_t> sorted_indices(N);
-	for (size_t i = 0; i < N; i++) sorted_indices[i] = i;
+	std::iota(sorted_indices.begin(), sorted_indices.end(), 0);
 
 	// Use KLT response
-	if (options.FASTOptions.use_KLT_response ||
-		nDesiredFeatures != 0  // If the user wants us to limit the number of
-		// features, we need to do it according to some
-		// quality measure
-	)
+	// If the user wants us to limit the number of features, we need to do it
+	// according to some quality measure
+	if (options.FASTOptions.use_KLT_response || nDesiredFeatures != 0)
 	{
-		const int KLT_half_win = 4;
-		const int max_x = inImg_gray.getWidth() - 1 - KLT_half_win;
-		const int max_y = inImg_gray.getHeight() - 1 - KLT_half_win;
+		const auto KLT_half_win = 4;
+		const auto max_x = inImg_gray.getWidth() - 1 - KLT_half_win;
+		const auto max_y = inImg_gray.getHeight() - 1 - KLT_half_win;
 
 		for (size_t i = 0; i < N; i++)
 		{
-			const int x = corners[i].pt.x;
-			const int y = corners[i].pt.y;
+			const auto x = static_cast<unsigned int>(corners[i].pt.x);
+			const auto y = static_cast<unsigned int>(corners[i].pt.y);
 			if (x > KLT_half_win && y > KLT_half_win && x <= max_x &&
 				y <= max_y)
 				corners[i].response =
@@ -191,8 +188,8 @@ void CFeatureExtraction::extractFeaturesFASTER_N(
 			? 1
 			: (unsigned int)(1 + inImg.getHeight() * occupied_grid_cell_size_inv);
 
-	mrpt::math::CMatrixBool occupied_sections(
-		grid_lx, grid_ly);  // See the comments above for an explanation.
+	// See the comments above for an explanation.
+	mrpt::math::CMatrixBool occupied_sections(grid_lx, grid_ly);
 	occupied_sections.fillAll(false);
 
 	unsigned int nMax =
@@ -209,7 +206,7 @@ void CFeatureExtraction::extractFeaturesFASTER_N(
 
 	while (cont != nMax && i != N)
 	{
-		// Take the next feature fromt the ordered list of good features:
+		// Take the next feature from the ordered list of good features:
 		const TSimpleFeature& feat = corners[sorted_indices[i]];
 		i++;
 

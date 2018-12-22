@@ -347,8 +347,9 @@ void xRawLogViewerFrame::OnMenuRectifyImages(wxCommandEvent& event)
 								obsIm->image.getExternalStorageFileAbsolutePath(
 									p);
 
-								obsIm->image.rectifyImageInPlace(
-									obsIm->cameraParams);
+								mrpt::img::CImage im;
+								obsIm->image.undistort(im, obsIm->cameraParams);
+								obsIm->image = im;
 
 								// Set distortion parameters to zero ->
 								// indicating that the image is now rectified
@@ -385,8 +386,9 @@ void xRawLogViewerFrame::OnMenuRectifyImages(wxCommandEvent& event)
 							string p;
 							obsIm->image.getExternalStorageFileAbsolutePath(p);
 
-							obsIm->image.rectifyImageInPlace(
-								obsIm->cameraParams);
+							mrpt::img::CImage im;
+							obsIm->image.undistort(im, obsIm->cameraParams);
+							obsIm->image = im;
 
 							// Set distortion parameters to zero -> indicating
 							// that the image is now rectified

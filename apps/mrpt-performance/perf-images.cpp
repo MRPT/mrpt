@@ -48,7 +48,7 @@ double image_test_1(int w, int img_quality)
 			THROW_EXCEPTION("Invalid 'w'!");
 	}
 
-	CImage img(w, h, 3);
+	CImage img(w, h, mrpt::img::CH_RGB);
 
 	for (int i = 0; i < 5000; i++)
 		img.line(
@@ -95,7 +95,7 @@ double image_saveload(int iFormat, int to_shm)
 	}
 
 	const int w = 800, h = 600;
-	CImage img(w, h, 3);
+	CImage img(w, h, mrpt::img::CH_RGB);
 	for (int i = 0; i < 5000; i++)
 		img.line(
 			getRandomGenerator().drawUniform(0, w - 1),
@@ -150,7 +150,7 @@ double image_saveload(int iFormat, int to_shm)
 
 double image_test_2(int w, int h)
 {
-	CImage img(w, h, 3), img2;
+	CImage img(w, h, mrpt::img::CH_RGB), img2;
 
 #if MRPT_HAS_OPENCV
 //	int oldVal = cvUseOptimized(1);
@@ -182,14 +182,15 @@ double image_test_2(int w, int h)
 template <int IMG_CHANNELS>
 double image_halfsample(int w, int h)
 {
-	CImage img(w, h, IMG_CHANNELS), img2;
+	CImage img(w, h, mrpt::img::CH_RGB), img2;
 
 	CTicTac tictac;
 
 	const size_t N = 300;
 
 	tictac.Tic();
-	for (size_t i = 0; i < N; i++) img.scaleHalf(img2);
+	for (size_t i = 0; i < N; i++)
+		img.scaleHalf(img2, mrpt::img::IMG_INTERP_NN);
 
 	return tictac.Tac() / N;
 }
@@ -197,14 +198,15 @@ double image_halfsample(int w, int h)
 template <int IMG_CHANNELS>
 double image_halfsample_smooth(int w, int h)
 {
-	CImage img(w, h, IMG_CHANNELS), img2;
+	CImage img(w, h, mrpt::img::CH_RGB), img2;
 
 	CTicTac tictac;
 
 	const size_t N = 300;
 
 	tictac.Tic();
-	for (size_t i = 0; i < N; i++) img.scaleHalfSmooth(img2);
+	for (size_t i = 0; i < N; i++)
+		img.scaleHalf(img2, mrpt::img::IMG_INTERP_LINEAR);
 
 	return tictac.Tac() / N;
 }
@@ -333,7 +335,7 @@ double stereoimage_rectify_prepare_map(int, int)
 	return tictac.Tac() / N;
 }
 
-template <int IMG_CHANNELS, int w, int h, int w2, int h2>
+template <TImageChannels IMG_CHANNELS, int w, int h, int w2, int h2>
 double stereoimage_rectify(int, int)
 {
 	const CImage imgL(w, h, IMG_CHANNELS), imgR(w, h, IMG_CHANNELS);

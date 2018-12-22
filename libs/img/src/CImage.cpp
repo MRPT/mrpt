@@ -28,6 +28,8 @@
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
 
+#include "CImage_impl.h"
+
 #if MRPT_HAS_MATLAB
 #include <mexplus/mxarray.h>
 #endif
@@ -45,10 +47,16 @@ using namespace std;
 IMPLEMENTS_SERIALIZABLE(CImage, CSerializable, mrpt::img)
 
 bool CImage::DISABLE_ZIP_COMPRESSION = false;
-bool CImage::DISABLE_JPEG_COMPRESSION = false;
+bool CImage::DISABLE_JPEG_COMPRESSION = true;
 int CImage::SERIALIZATION_JPEG_QUALITY = 95;
 
 static std::string IMAGES_PATH_BASE(".");
+
+CExceptionExternalImageNotFound::CExceptionExternalImageNotFound(
+	const std::string& s)
+	: std::runtime_error(s)
+{
+}
 
 const std::string& CImage::getImagesPathBase() { return IMAGES_PATH_BASE; }
 void CImage::setImagesPathBase(const std::string& path)
@@ -64,252 +72,177 @@ mrpt::img::CTimeLogger alloc_tims;
 #endif
 
 #if MRPT_HAS_OPENCV
-static int32_t pixelDepth2CvDepth(PixelDepth d)
+static int interpolationMethod2Cv(TInterpolationMethod i)
 {
+	// clang-format off
+	switch (i)
+	{
+	    case IMG_INTERP_NN:     return cv::INTER_NEAREST;
+	    case IMG_INTERP_LINEAR: return cv::INTER_LINEAR;
+	    case IMG_INTERP_CUBIC:  return cv::INTER_CUBIC;
+	    case IMG_INTERP_AREA:   return cv::INTER_AREA;
+	};
+	// clang-format on
+	return -1;
+}
+
+template <typename RET = uint32_t>
+RET pixelDepth2CvDepth(PixelDepth d)
+{
+	// clang-format off
 	switch (d)
 	{
-		case PixelDepth::D8U:
-			return IPL_DEPTH_8U;
-		case PixelDepth::D8S:
-			return IPL_DEPTH_8S;
-		case PixelDepth::D16U:
-			return IPL_DEPTH_16U;
-		case PixelDepth::D16S:
-			return IPL_DEPTH_16S;
-		case PixelDepth::D32S:
-			return IPL_DEPTH_32S;
-		case PixelDepth::D32F:
-			return IPL_DEPTH_32F;
-		case PixelDepth::D64F:
-			return IPL_DEPTH_64F;
+	    case PixelDepth::D8U:  return static_cast<RET>(CV_8U);
+	    case PixelDepth::D8S:  return static_cast<RET>(CV_8S);
+	    case PixelDepth::D16U: return static_cast<RET>(CV_16U);
+	    case PixelDepth::D16S: return static_cast<RET>(CV_16S);
+	    case PixelDepth::D32S: return static_cast<RET>(CV_32S);
+	    case PixelDepth::D32F: return static_cast<RET>(CV_32F);
+	    case PixelDepth::D64F: return static_cast<RET>(CV_64F);
 	}
-	return -1;
+	// clang-format on
+	return std::numeric_limits<RET>::max();
 }
 
 static PixelDepth cvDepth2PixelDepth(int64_t d)
 {
+	// clang-format off
 	switch (d)
 	{
-		case IPL_DEPTH_8U:
-			return PixelDepth::D8U;
-		case IPL_DEPTH_8S:
-			return PixelDepth::D8S;
-		case IPL_DEPTH_16U:
-			return PixelDepth::D16U;
-		case IPL_DEPTH_16S:
-			return PixelDepth::D16S;
-		case IPL_DEPTH_32S:
-			return PixelDepth::D32S;
-		case IPL_DEPTH_32F:
-			return PixelDepth::D32F;
-		case IPL_DEPTH_64F:
-			return PixelDepth::D64F;
+	    case CV_8U:  return PixelDepth::D8U;
+	    case CV_8S:  return PixelDepth::D8S;
+	    case CV_16U: return PixelDepth::D16U;
+	    case CV_16S: return PixelDepth::D16S;
+	    case CV_32S: return PixelDepth::D32S;
+	    case CV_32F: return PixelDepth::D32F;
+	    case CV_64F: return PixelDepth::D64F;
 	}
+	// clang-format on
 	return PixelDepth::D8U;
 }
 #endif
 
-/*---------------------------------------------------------------
-					Constructor
----------------------------------------------------------------*/
+// Default ctor
+CImage::CImage() : m_impl(mrpt::make_impl<CImage::Impl>()) {}
+
+// Ctor with size
 CImage::CImage(
-	unsigned int width, unsigned int height, TImageChannels nChannels,
-	bool originTopLeft)
-	: img(nullptr), m_imgIsReadOnly(false), m_imgIsExternalStorage(false)
+	unsigned int width, unsigned int height, TImageChannels nChannels)
+	: CImage()
 {
 	MRPT_START
-	changeSize(width, height, nChannels, originTopLeft);
-	MRPT_END
-}
-/*---------------------------------------------------------------
-			Default	Constructor
----------------------------------------------------------------*/
-CImage::CImage()
-
-{
-#if MRPT_HAS_OPENCV
-	MRPT_START
-	changeSize(1, 1, CH_RGB, true);
-	MRPT_END
-#endif
-}
-
-/*---------------------------------------------------------------
-					Copy constructor
----------------------------------------------------------------*/
-CImage::CImage(const CImage& o)
-	: img(nullptr), m_imgIsReadOnly(false), m_imgIsExternalStorage(false)
-{
-	MRPT_START
-	*this = o;
+	resize(width, height, nChannels);
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-					Copy operator
----------------------------------------------------------------*/
-CImage& CImage::operator=(const CImage& o)
-{
-	MRPT_START
-	if (this == &o) return *this;
-	releaseIpl();
-	m_imgIsExternalStorage = o.m_imgIsExternalStorage;
-	m_imgIsReadOnly = false;
-
-	if (!o.m_imgIsExternalStorage)
-	{  // A normal image
-#if MRPT_HAS_OPENCV
-		ASSERTMSG_(
-			o.img != nullptr,
-			"Source image in = operator has nullptr IplImage*");
-		img = cvCloneImage(o.img);
-#endif
-	}
-	else
-	{  // An externally stored image:
-		m_externalFile = o.m_externalFile;
-	}
-	return *this;
-	MRPT_END
-}
-
-/*---------------------------------------------------------------
-				swap
----------------------------------------------------------------*/
 void CImage::swap(CImage& o)
 {
-	std::swap(img, o.img);
-	std::swap(m_imgIsReadOnly, o.m_imgIsReadOnly);
+	std::swap(m_impl, o.m_impl);
 	std::swap(m_imgIsExternalStorage, o.m_imgIsExternalStorage);
 	std::swap(m_externalFile, o.m_externalFile);
 }
 
-/*---------------------------------------------------------------
-				copyFromForceLoad
-
-Copies from another image, and, if that one is externally
-stored, the image file will be actually loaded into memory
-in "this" object.
----------------------------------------------------------------*/
 void CImage::copyFromForceLoad(const CImage& o)
 {
-	if (o.isExternallyStored())
-	{
-		// Load from that file:
-		if (!this->loadFromFile(o.getExternalStorageFileAbsolutePath()))
-			THROW_TYPED_EXCEPTION_FMT(
-				mrpt::img::CExceptionExternalImageNotFound,
-				"Error loading externally-stored image from: %s",
-				o.getExternalStorageFileAbsolutePath().c_str());
-	}
-	else
-	{  // It's not external storage.
-		*this = o;
-	}
+	*this = o;
+	forceLoad();
 }
 
-/*---------------------------------------------------------------
-				copyFastFrom
----------------------------------------------------------------*/
-void CImage::copyFastFrom(CImage& o)
+CImage::CImage(const cv::Mat& img, copy_type_t copy_type) : CImage()
 {
-	MRPT_START
-	if (this == &o) return;
-	if (o.m_imgIsExternalStorage)
-	{
-		// Just copy the reference to the ext. file:
-		*this = o;
-	}
-	else
-	{  // Normal copy
 #if MRPT_HAS_OPENCV
-		if (!o.img) THROW_EXCEPTION("Origin image is empty! (o.img==nullptr)");
+	MRPT_START
+	if (copy_type == DEEP_COPY)
+		m_impl->img = img.clone();
+	else
+		m_impl->img = img;
+	MRPT_END
 #endif
-		// Erase current image:
-		releaseIpl();
-
-		// Make the transfer of just the pointer:
-		img = o.img;
-		m_imgIsReadOnly = o.m_imgIsReadOnly;
-		m_imgIsExternalStorage = o.m_imgIsExternalStorage;
-		m_externalFile = o.m_externalFile;
-
-		o.img = nullptr;
-		o.m_imgIsReadOnly = false;
-		o.m_imgIsExternalStorage = false;
-	}
-
-	MRPT_END
 }
 
+CImage::CImage(const CImage& img, copy_type_t copy_type)
+	:
 #if MRPT_HAS_OPENCV
-/*---------------------------------------------------------------
-					Constructor from IplImage
----------------------------------------------------------------*/
-CImage::CImage(const IplImage* iplImage)
-	: img(nullptr), m_imgIsReadOnly(false), m_imgIsExternalStorage(false)
-{
-	MRPT_START
-
-	if (!iplImage)
-		changeSize(1, 1, 1, true);
-	else
-		img = cvCloneImage(iplImage);
-	MRPT_END
-}
-
-CImage::CImage(const cv::Mat& mat)
-	: img(nullptr), m_imgIsReadOnly(false), m_imgIsExternalStorage(false)
-{
-	MRPT_START
-	IplImage temp(mat);
-	img = cvCloneImage(&temp);
-	MRPT_END
-}
+	  CImage(img.m_impl->img, copy_type)
+#else
+	  CImage()
 #endif
+{
+}
 
-/*---------------------------------------------------------------
-					Destructor
----------------------------------------------------------------*/
-CImage::~CImage() { releaseIpl(); }
-/*---------------------------------------------------------------
-					changeSize
----------------------------------------------------------------*/
-void CImage::changeSize(
-	unsigned int width, unsigned int height, TImageChannels nChannels,
-	bool originTopLeft, PixelDepth depth)
+CImage CImage::makeDeepCopy() const
+{
+#if MRPT_HAS_OPENCV
+	CImage ret(*this);
+	ret.m_impl->img = m_impl->img.clone();
+	return ret;
+#else
+	THROW_EXCEPTION("Operation not supported: build MRPT against OpenCV!");
+#endif
+}
+
+void CImage::asCvMat(cv::Mat& out_img, copy_type_t copy_type) const
+{
+#if MRPT_HAS_OPENCV
+	if (copy_type == DEEP_COPY)
+		out_img = m_impl->img.clone();
+	else
+		out_img = m_impl->img;
+#endif
+}
+
+cv::Mat& CImage::asCvMatRef()
+{
+#if MRPT_HAS_OPENCV
+	makeSureImageIsLoaded();
+	return m_impl->img;
+#else
+	THROW_EXCEPTION("Operation not supported: build MRPT against OpenCV!");
+#endif
+}
+
+const cv::Mat& CImage::asCvMatRef() const
+{
+#if MRPT_HAS_OPENCV
+	makeSureImageIsLoaded();
+	return m_impl->img;
+#else
+	THROW_EXCEPTION("Operation not supported: build MRPT against OpenCV!");
+#endif
+}
+
+void CImage::resize(
+	std::size_t width, std::size_t height, TImageChannels nChannels,
+	PixelDepth depth)
 {
 	MRPT_START
 
 #if MRPT_HAS_OPENCV
-	// If we're resizing to exactly the current size, do nothing and avoid
-	// wasting mem allocs/deallocs!
-	if (img)
+	// Dont call makeSureImageIsLoaded() here,
+	// since it will throw if resize() is called from a ctor, where it's legit
+	// for the img to be uninitialized.
+
+	// If we're resizing to exactly the current size, do nothing:
 	{
-		makeSureImageIsLoaded();  // For delayed loaded images stored externally
-		IplImage* ipl = img;
-		if (static_cast<unsigned int>(ipl->width) == width &&
-			static_cast<unsigned int>(ipl->height) == height &&
-			ipl->nChannels == nChannels &&
-			ipl->origin == (originTopLeft ? 0 : 1) &&
-			ipl->depth == pixelDepth2CvDepth(depth))
+		_IplImage ipl = m_impl->img;
+
+		if (static_cast<unsigned int>(ipl.width) == width &&
+			static_cast<unsigned int>(ipl.height) == height &&
+			ipl.nChannels == nChannels &&
+			static_cast<unsigned int>(ipl.depth) == pixelDepth2CvDepth(depth))
 		{
-			return;  // nothing to do, we're already right with the current
-			// IplImage!
+			// Nothing to do:
+			return;
 		}
 	}
-
-	// Delete current img
-	releaseIpl();
 
 #if IMAGE_ALLOC_PERFLOG
 	const std::string sLog = mrpt::format("cvCreateImage %ux%u", width, height);
 	alloc_tims.enter(sLog.c_str());
 #endif
-
-	img = cvCreateImage(
-		cvSize(width, height), pixelDepth2CvDepth(depth), nChannels);
-	img->origin = originTopLeft ? 0 : 1;
+	m_impl->img = cv::Mat(
+		static_cast<int>(height), static_cast<int>(width),
+		pixelDepth2CvDepth<int>(depth) + ((nChannels - 1) << CV_CN_SHIFT));
 
 #if IMAGE_ALLOC_PERFLOG
 	alloc_tims.leave(sLog.c_str());
@@ -318,7 +251,6 @@ void CImage::changeSize(
 #else
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
-
 	MRPT_END
 }
 
@@ -326,55 +258,46 @@ PixelDepth CImage::getPixelDepth() const
 {
 	MRPT_START
 #if MRPT_HAS_OPENCV
-	ASSERT_(img);
-	return cvDepth2PixelDepth(img->depth);
+	return cvDepth2PixelDepth(m_impl->img.depth());
 #else
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-					loadFromFile
----------------------------------------------------------------*/
 bool CImage::loadFromFile(const std::string& fileName, int isColor)
 {
 	MRPT_START
 
 #if MRPT_HAS_OPENCV
-	IplImage* newImg = cvLoadImage(fileName.c_str(), isColor);
-	if (newImg != nullptr)
-	{
-		releaseIpl();
-		img = newImg;
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	m_imgIsExternalStorage = false;
+#ifdef HAVE_OPENCV_IMGCODECS
+	m_impl->img =
+		cv::imread(fileName, isColor ? cv::IMREAD_COLOR : cv::IMREAD_GRAYSCALE);
+#else
+	m_impl->img = IplImage* newImg = cvLoadImage(fileName.c_str(), isColor);
+#endif
+	return !m_impl->img.empty();
 #else
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-					saveToFile
----------------------------------------------------------------*/
 bool CImage::saveToFile(const std::string& fileName, int jpeg_quality) const
 {
 	MRPT_START
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img != nullptr);
+	ASSERT_(!m_impl->img.empty());
 
 #ifdef HAVE_OPENCV_IMGCODECS
 	const std::vector<int> params = {CV_IMWRITE_JPEG_QUALITY, jpeg_quality};
-	return cv::imwrite(fileName, cv::cvarrToMat(img), params);
+	return cv::imwrite(fileName, m_impl->img, params);
 #else
 	int p[3] = {CV_IMWRITE_JPEG_QUALITY, jpeg_quality, 0};
-	return (0 != cvSaveImage(fileName.c_str(), img, p));
+	_IplImage ipl = m_impl->img;
+	return (0 != cvSaveImage(fileName.c_str(), &ipl, p));
 #endif
 #else
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
@@ -382,71 +305,20 @@ bool CImage::saveToFile(const std::string& fileName, int jpeg_quality) const
 	MRPT_END
 }
 
+void CImage::internal_fromIPL(const IplImage* iplImage, copy_type_t c)
+{
+	MRPT_START
 #if MRPT_HAS_OPENCV
-void CImage::loadFromIplImage(const IplImage* iplImage)
-{
-	MRPT_START
 	ASSERT_(iplImage != nullptr);
-	releaseIpl();
-	if (iplImage)
-	{
-		img = cvCloneImage(iplImage);
-	}
-	MRPT_END
-}
-
-void CImage::setFromMatNoCopy(cv::Mat& newimg)
-{
-	MRPT_START
-	releaseIpl();
-
-	// don't free the img memory, since we are transfering ownership:
-	newimg.addref();
-	// Create a new IplImage structure:
-	img = new IplImage(newimg);
-
-	m_imgIsReadOnly = true;
-	m_imgIsExternalStorage = false;
-	MRPT_END
-}
-
-void CImage::setFromIplImageReadOnly(IplImage* iplImage)
-{
-	MRPT_START
-	ASSERTMSG_(iplImage != this->img, "Trying to assign read-only to itself.");
-	ASSERT_(iplImage != nullptr);
-	releaseIpl();
-
-	img = iplImage;
-	m_imgIsReadOnly = true;
-	m_imgIsExternalStorage = false;
-	MRPT_END
-}
+	clear();
+	m_impl->img =
+		cv::cvarrToMat(iplImage, c == DEEP_COPY ? true : false /*copyData*/);
+#else
+	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
-
-/*---------------------------------------------------------------
-					setFromIplImage
----------------------------------------------------------------*/
-#if MRPT_HAS_OPENCV
-void CImage::setFromIplImage(IplImage* iplImage)
-{
-	MRPT_START
-
-	releaseIpl();
-	if (iplImage)
-	{
-		img = iplImage;
-	}
-	m_imgIsReadOnly = false;
-	m_imgIsExternalStorage = false;
-
 	MRPT_END
 }
-#endif
 
-/*---------------------------------------------------------------
-					loadFromMemoryBuffer
----------------------------------------------------------------*/
 void CImage::loadFromMemoryBuffer(
 	unsigned int width, unsigned int height, bool color,
 	unsigned char* rawpixels, bool swapRedBlue)
@@ -454,9 +326,11 @@ void CImage::loadFromMemoryBuffer(
 	MRPT_START
 
 #if MRPT_HAS_OPENCV
-	resize(width, height, color ? 3 : 1, true);
-	m_imgIsReadOnly = false;
+	resize(width, height, color ? CH_RGB : CH_GRAY);
 	m_imgIsExternalStorage = false;
+
+	_IplImage ii(m_impl->img);
+	IplImage* img = &ii;
 
 	if (color && swapRedBlue)
 	{
@@ -506,11 +380,8 @@ void CImage::loadFromMemoryBuffer(
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-					operator()
----------------------------------------------------------------*/
 unsigned char* CImage::operator()(
-	unsigned int col, unsigned int row, unsigned int channel) const
+	unsigned int ucol, unsigned int urow, unsigned int uchannel) const
 {
 #if MRPT_HAS_OPENCV
 
@@ -519,22 +390,24 @@ unsigned char* CImage::operator()(
 #endif
 
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	IplImage* ipl = (img);
+	const auto col = static_cast<int>(ucol);
+	const auto row = static_cast<int>(urow);
+	const auto channel = static_cast<int>(uchannel);
 
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
-	ASSERT_(ipl);
-	if (row >= (unsigned int)ipl->height || col >= (unsigned int)ipl->width ||
-		channel >= (unsigned int)ipl->nChannels)
+	ASSERT_(m_impl && !m_impl->img.empty());
+	if (row >= m_impl->img.rows || col >= m_impl->img.cols ||
+		channel >= m_impl->img.channels())
 	{
 		THROW_EXCEPTION(format(
 			"Pixel coordinates/channel out of bounds: row=%u/%u col=%u/%u "
 			"chan=%u/%u",
-			row, ipl->height, col, ipl->width, channel, ipl->nChannels));
+			row, m_impl->img.rows, col, m_impl->img.cols, channel,
+			m_impl->img.channels()));
 	}
 #endif
-
-	return (unsigned char*)&ipl
-		->imageData[row * ipl->widthStep + col * ipl->nChannels + channel];
+	auto p = (&m_impl->img.at<uint8_t>(row, col)) + channel;
+	return const_cast<unsigned char*>(p);
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
 	MRPT_END
 #endif
@@ -544,20 +417,21 @@ unsigned char* CImage::operator()(
 #endif
 }
 
-/*---------------------------------------------------------------
-					get_unsafe()
----------------------------------------------------------------*/
-unsigned char* CImage::get_unsafe(
-	unsigned int col, unsigned int row, unsigned int channel) const
+uint8_t* CImage::internal_get(int col, int row, uint8_t channel) const
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	IplImage* ipl = (img);
-	return (unsigned char*)&ipl
-		->imageData[row * ipl->widthStep + col * ipl->nChannels + channel];
+	auto p = (&m_impl->img.at<uint8_t>(row, col)) + channel;
+	return const_cast<uint8_t*>(p);
 #else
 	return nullptr;
 #endif
+}
+
+uint8_t* CImage::get_unsafe(
+	unsigned int col, unsigned int row, uint8_t channel) const
+{
+	return internal_get(col, row, channel);
 }
 
 uint8_t CImage::serializeGetVersion() const
@@ -585,24 +459,24 @@ void CImage::serializeTo(mrpt::serialization::CArchive& out) const
 		}
 		else
 		{  // Normal image loaded in memory:
-			ASSERT_(img != nullptr);
+			ASSERT_(m_impl);
 
-			const bool hasColor = isColor();
+			const bool hasColor = m_impl->img.empty() ? false : isColor();
 
 			out << hasColor;
 
 			// Version >2: Color->JPEG, GrayScale->BYTE's array!
+			const int32_t width = m_impl->img.cols;
+			const int32_t height = m_impl->img.rows;
 			if (!hasColor)
 			{
 				// GRAY-SCALE: Raw bytes:
 				// Version 3: ZIP compression!
 				// Version 4: Skip zip if the image size <= 16Kb
-				int32_t width = img->width;
-				int32_t height = img->height;
-				int32_t origin = img->origin;
-				int32_t imageSize = img->imageSize;
+				int32_t origin = 0;  // not used mrpt v1.9.9
+				uint32_t imageSize = height * m_impl->img.step[0];
 				// Version 10: depth
-				int32_t depth = img->depth;
+				int32_t depth = m_impl->img.depth();
 
 				out << width << height << origin << imageSize
 					<< int32_t(cvDepth2PixelDepth(depth));
@@ -618,12 +492,9 @@ void CImage::serializeTo(mrpt::serialization::CArchive& out) const
 				{
 					std::vector<unsigned char> tempBuf;
 					mrpt::io::zip::compress(
-						img->imageData,  // Data
-						img->imageSize,  // Size
-						tempBuf);
+						m_impl->img.data, imageSize, tempBuf);
 
-					auto zipDataLen = (int32_t)tempBuf.size();
-
+					auto zipDataLen = static_cast<int32_t>(tempBuf.size());
 					out << zipDataLen;
 
 					out.WriteBuffer(&tempBuf[0], tempBuf.size());
@@ -631,7 +502,8 @@ void CImage::serializeTo(mrpt::serialization::CArchive& out) const
 				}
 				else
 				{
-					out.WriteBuffer(img->imageData, img->imageSize);
+					if (imageSize > 0 && m_impl->img.data != nullptr)
+						out.WriteBuffer(m_impl->img.data, imageSize);
 				}
 			}
 			else
@@ -639,8 +511,6 @@ void CImage::serializeTo(mrpt::serialization::CArchive& out) const
 				// COLOR: High quality JPEG image
 
 				// v7: If size is 0xN or Nx0, don't call "saveToStreamAsJPEG"!!
-				const int32_t width = img->width;
-				const int32_t height = img->height;
 
 				// v8: If DISABLE_JPEG_COMPRESSION
 				if (!CImage::DISABLE_JPEG_COMPRESSION)
@@ -672,11 +542,9 @@ void CImage::serializeTo(mrpt::serialization::CArchive& out) const
 					out << neg_width << neg_height;
 
 					// Dump raw image data:
-					const auto* ipl = static_cast<const IplImage*>(img);
-					const size_t bytes_per_row = ipl->width * 3;
+					const auto bytes_per_row = width * 3;
 
-					out.WriteBuffer(
-						&ipl->imageData[0], bytes_per_row * ipl->height);
+					out.WriteBuffer(m_impl->img.data, bytes_per_row * height);
 				}
 			}
 		}  // end m_imgIsExternalStorage=false
@@ -700,7 +568,8 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		}
 	}
 #else
-	releaseIpl();  // First, free current image.
+	// First, free current image.
+	clear();
 
 	switch (version)
 	{
@@ -717,8 +586,8 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 
 			in >> width >> height >> nChannels >> originTopLeft >> imgLength;
 
-			changeSize(width, height, nChannels, originTopLeft != 0);
-			in.ReadBuffer(img->imageData, imgLength);
+			resize(width, height, static_cast<TImageChannels>(nChannels));
+			in.ReadBuffer(m_impl->img.data, imgLength);
 		}
 		break;
 		case 1:
@@ -727,13 +596,9 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			mrpt::io::CMemoryStream aux;
 			uint32_t nBytes;
 			in >> nBytes;
-
 			aux.changeSize(nBytes + 10);
-
 			in.ReadBuffer(aux.getRawBufferData(), nBytes);
-
 			aux.Seek(0);
-
 			loadFromStreamAsJPEG(aux);
 		}
 		break;
@@ -775,13 +640,19 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 						in >> tempdepth;
 						depth = PixelDepth(tempdepth);
 					}
-					changeSize(width, height, 1, origin == 0, depth);
-					ASSERT_(imageSize == img->imageSize);
+					resize(
+						static_cast<uint32_t>(width),
+						static_cast<uint32_t>(height), CH_GRAY, depth);
+					ASSERT_(
+						static_cast<uint32_t>(imageSize) ==
+						static_cast<uint32_t>(width) *
+							static_cast<uint32_t>(height) *
+							m_impl->img.step[0]);
 
 					if (version == 2)
 					{
 						// RAW BYTES:
-						in.ReadBuffer(img->imageData, imageSize);
+						in.ReadBuffer(m_impl->img.data, imageSize);
 					}
 					else
 					{
@@ -808,7 +679,7 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 						size_t outDataBufferSize = imageSize;
 						size_t outDataActualSize;
 						mrpt::io::zip::decompress(
-							in, zipDataLen, img->imageData,
+						    in, zipDataLen, m_impl->img.data,
 							outDataBufferSize, outDataActualSize);
 						ASSERT_(outDataActualSize == outDataBufferSize);
 #else
@@ -819,7 +690,8 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 						else
 						{
 							// Raw bytes:
-							in.ReadBuffer(img->imageData, img->imageSize);
+							if (imageSize)
+								in.ReadBuffer(m_impl->img.data, imageSize);
 						}
 					}
 				}
@@ -846,15 +718,14 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 								const int32_t real_w = -width;
 								const int32_t real_h = -height;
 
-								this->changeSize(real_w, real_h, 3, true);
+								resize(real_w, real_h, CH_RGB);
 
-								const IplImage* ipl = img;
-								const size_t bytes_per_row = ipl->width * 3;
-								for (int y = 0; y < ipl->height; y++)
+								auto& img = m_impl->img;
+								const size_t bytes_per_row = img.cols * 3;
+								for (int y = 0; y < img.rows; y++)
 								{
 									const size_t nRead = in.ReadBuffer(
-										&ipl->imageData[y * ipl->widthStep],
-										bytes_per_row);
+										img.ptr<void>(y), bytes_per_row);
 									if (nRead != bytes_per_row)
 										THROW_EXCEPTION(
 											"Error: Truncated data stream "
@@ -865,7 +736,7 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 							{
 								// it's a 0xN or Nx0 image: just resize and load
 								// nothing:
-								this->changeSize(width, height, 3, true);
+								resize(width, height, CH_RGB);
 							}
 						}
 					}
@@ -909,106 +780,83 @@ mxArray* CImage::writeToMatlab() const
 #endif
 }
 
-/*---------------------------------------------------------------
-					getSize
----------------------------------------------------------------*/
 void CImage::getSize(TImageSize& s) const
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img != nullptr);
-	s.x = img->width;
-	s.y = img->height;
+	s.x = m_impl->img.cols;
+	s.y = m_impl->img.rows;
+#else
+	THROW_EXCEPTION("MRPT built without MATLAB/Mex support");
 #endif
 }
 
-/*---------------------------------------------------------------
-					getWidth
----------------------------------------------------------------*/
 size_t CImage::getWidth() const
 {
 #if MRPT_HAS_OPENCV
-	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img != nullptr);
-	return img->width;
+	if (m_imgIsExternalStorage) makeSureImageIsLoaded();
+	return m_impl->img.cols;
 #else
 	return 0;
 #endif
 }
 
-/*---------------------------------------------------------------
-					getRowStride
----------------------------------------------------------------*/
+std::string CImage::getChannelsOrder() const
+{
+#if MRPT_HAS_OPENCV
+	makeSureImageIsLoaded();  // For delayed loaded images stored externally
+	IplImage ipl(m_impl->img);
+	return std::string(ipl.channelSeq);
+#else
+	THROW_EXCEPTION("MRPT built without MATLAB/Mex support");
+#endif
+}
+
 size_t CImage::getRowStride() const
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img != nullptr);
-	return img->widthStep;
+	return m_impl->img.step[0];
 #else
-	return 0;
+	THROW_EXCEPTION("MRPT built without MATLAB/Mex support");
 #endif
 }
 
-/*---------------------------------------------------------------
-					getWidth
----------------------------------------------------------------*/
 size_t CImage::getHeight() const
 {
 #if MRPT_HAS_OPENCV
-	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img != nullptr);
-	return img->height;
+	if (m_imgIsExternalStorage) makeSureImageIsLoaded();
+	return m_impl->img.rows;
 #else
 	return 0;
 #endif
 }
 
-/*---------------------------------------------------------------
-					isColor
----------------------------------------------------------------*/
 bool CImage::isColor() const
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img != nullptr);
-	return img->nChannels > 1;
+	return m_impl->img.channels() == 3;
 #else
-	return false;
+	THROW_EXCEPTION("MRPT built without MATLAB/Mex support");
 #endif
 }
 
-/*---------------------------------------------------------------
-					getChannelCount
----------------------------------------------------------------*/
 TImageChannels CImage::getChannelCount() const
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img != nullptr);
-	return static_cast<unsigned int>(img->nChannels);
+	return static_cast<TImageChannels>(m_impl->img.channels());
 #else
-	return 0;
+	THROW_EXCEPTION("MRPT built without MATLAB/Mex support");
 #endif
 }
 
-/*---------------------------------------------------------------
-					isOriginTopLeft
----------------------------------------------------------------*/
 bool CImage::isOriginTopLeft() const
 {
-#if MRPT_HAS_OPENCV
-	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img != nullptr);
-	return img->origin == 0;
-#else
-	THROW_EXCEPTION("MRPT compiled without OpenCV");
-#endif
+	return true;  // As of mrpt v1.9.9
 }
 
-/*---------------------------------------------------------------
-					getAsFloat
----------------------------------------------------------------*/
 float CImage::getAsFloat(
 	unsigned int col, unsigned int row, unsigned int channel) const
 {
@@ -1017,9 +865,6 @@ float CImage::getAsFloat(
 	return (*(*this)(col, row, channel)) / 255.0f;
 }
 
-/*---------------------------------------------------------------
-					getAsFloat
----------------------------------------------------------------*/
 float CImage::getAsFloat(unsigned int col, unsigned int row) const
 {
 	// Is a RGB image??
@@ -1052,9 +897,6 @@ float CImage::getMaxAsFloat() const
 	return maxPixel;
 }
 
-/*---------------------------------------------------------------
-					grayscale
----------------------------------------------------------------*/
 CImage CImage::grayscale() const
 {
 	CImage ret;
@@ -1064,197 +906,112 @@ CImage CImage::grayscale() const
 
 // Auxiliary function for both ::grayscale() and ::grayscaleInPlace()
 #if MRPT_HAS_OPENCV
-IplImage* ipl_to_grayscale(const IplImage* img_src)
+static bool my_img_to_grayscale(const cv::Mat& src, cv::Mat& dest)
 {
-	IplImage* img_dest =
-		cvCreateImage(cvSize(img_src->width, img_src->height), IPL_DEPTH_8U, 1);
-	img_dest->origin = img_src->origin;
+	if (dest.size() != src.size() || dest.type() != src.type())
+		dest = cv::Mat(src.rows, src.cols, CV_8UC1);
 
 // If possible, use SSE optimized version:
 #if MRPT_HAS_SSE3
-	if (is_aligned<16>(img_src->imageData) && (img_src->width & 0xF) == 0 &&
-		img_src->widthStep == img_src->width * img_src->nChannels &&
-		img_dest->widthStep == img_dest->width * img_dest->nChannels)
+	if (is_aligned<16>(src.data) && (src.cols & 0xF) == 0 &&
+		static_cast<int>(src.step[0]) == src.cols * src.channels() &&
+		static_cast<int>(dest.step[0]) == dest.cols * dest.channels())
 	{
-		ASSERT_(is_aligned<16>(img_dest->imageData));
+		ASSERT_(is_aligned<16>(dest.data));
 		image_SSSE3_bgr_to_gray_8u(
-			(const uint8_t*)img_src->imageData, (uint8_t*)img_dest->imageData,
-			img_src->width, img_src->height);
-		return img_dest;
+			src.ptr<uint8_t>(), dest.ptr<uint8_t>(), src.cols, src.rows);
+		return true;
 	}
 #endif
 
 	// OpenCV Method:
-	cvCvtColor(img_src, img_dest, CV_BGR2GRAY);
-	return img_dest;
+	cv::cvtColor(src, dest, CV_BGR2GRAY);
+	return false;
 }
 #endif
 
-/*---------------------------------------------------------------
-					grayscale
----------------------------------------------------------------*/
-void CImage::grayscale(CImage& ret) const
+bool CImage::grayscale(CImage& ret) const
 {
 #if MRPT_HAS_OPENCV
 	// The image is already grayscale??
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	const IplImage* ipl = img;
-	ASSERT_(ipl);
-	if (ipl->nChannels == 1)
+	if (m_impl->img.channels() == 1)
 	{
-		ret = *this;
-		return;
+		ret = *this;  // shallow copy
+		return true;
 	}
 	else
 	{
 		// Convert to a single luminance channel image
-		ret.setFromIplImage(ipl_to_grayscale(ipl));
+		cv::Mat src = m_impl->img;
+		// Detect in-place op and make deep copy:
+		if (src.data == ret.m_impl->img.data) src = src.clone();
+
+		return my_img_to_grayscale(src, ret.m_impl->img);
 	}
+#else
+	THROW_EXCEPTION("Operation not supported: build MRPT against OpenCV!");
 #endif
 }
 
-/*---------------------------------------------------------------
-					grayscaleInPlace
----------------------------------------------------------------*/
-void CImage::grayscaleInPlace()
+bool CImage::scaleHalf(CImage& out, TInterpolationMethod interp) const
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	const IplImage* ipl = img;
-	ASSERT_(ipl);
-	if (ipl->nChannels == 1) return;  // Already done.
-
-	setFromIplImage(ipl_to_grayscale(ipl));
-#endif
-}
-
-/*---------------------------------------------------------------
-					scaleHalf
----------------------------------------------------------------*/
-void CImage::scaleHalf(CImage& out) const
-{
-#if MRPT_HAS_OPENCV
-	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img != nullptr);
 	// Get this image size:
-	const IplImage* img_src = img;
-	const int w = img_src->width;
-	const int h = img_src->height;
+	auto& img = m_impl->img;
+	const int w = img.cols, h = img.rows;
 
 	// Create target image:
-	IplImage* img_dest =
-		cvCreateImage(cvSize(w >> 1, h >> 1), IPL_DEPTH_8U, img_src->nChannels);
-	img_dest->origin = img_src->origin;
-	memcpy(img_dest->colorModel, img_src->colorModel, 4);
-	memcpy(img_dest->channelSeq, img_src->channelSeq, 4);
-	img_dest->dataOrder = img_src->dataOrder;
+	out.resize(w >> 1, h >> 1, getChannelCount());
+	auto& img_out = out.m_impl->img;
 
-// If possible, use SSE optimized version:
+	// If possible, use SSE optimized version:
+	if (is_aligned<16>(img.data) && is_aligned<16>(img_out.data) &&
+		(w & 0xF) == 0 &&
+		static_cast<int>(img.step[0]) == img.cols * img.channels() &&
+		static_cast<int>(img_out.step[0]) == img_out.cols * img_out.channels())
+	{
 #if MRPT_HAS_SSE3
-	if (img_src->nChannels == 3 && is_aligned<16>(img_src->imageData) &&
-		is_aligned<16>(img_dest->imageData) && (w & 0xF) == 0 &&
-		img_src->widthStep == img_src->width * img_src->nChannels &&
-		img_dest->widthStep == img_dest->width * img_dest->nChannels)
-	{
-		image_SSSE3_scale_half_3c8u(
-			(const uint8_t*)img_src->imageData, (uint8_t*)img_dest->imageData,
-			w, h);
-		out.setFromIplImage(img_dest);
-		return;
-	}
+		if (img.channels() == 3 && interp == IMG_INTERP_NN)
+		{
+			image_SSSE3_scale_half_3c8u(img.data, img_out.data, w, h);
+			return true;
+		}
 #endif
-
 #if MRPT_HAS_SSE2
-	if (img_src->nChannels == 1 && is_aligned<16>(img_src->imageData) &&
-		is_aligned<16>(img_dest->imageData) && (w & 0xF) == 0 &&
-		img_src->widthStep == img_src->width * img_src->nChannels &&
-		img_dest->widthStep == img_dest->width * img_dest->nChannels)
-	{
-		image_SSE2_scale_half_1c8u(
-			(const uint8_t*)img_src->imageData, (uint8_t*)img_dest->imageData,
-			w, h);
-
-		out.setFromIplImage(img_dest);
-		return;
-	}
+		if (img.channels() == 1)
+		{
+			if (interp == IMG_INTERP_NN)
+			{
+				image_SSE2_scale_half_1c8u(img.data, img_out.data, w, h);
+				return true;
+			}
+			else if (interp == IMG_INTERP_LINEAR)
+			{
+				image_SSE2_scale_half_smooth_1c8u(img.data, img_out.data, w, h);
+				return true;
+			}
+		}
 #endif
+	}
 
 	// Fall back to slow method:
-	cvResize(img_src, img_dest, IMG_INTERP_NN);
-	out.setFromIplImage(img_dest);
+	cv::resize(
+		img, img_out, img_out.size(), 0, 0, interpolationMethod2Cv(interp));
+	return false;
+#else
+	THROW_EXCEPTION("Operation not supported: build MRPT against OpenCV!");
 #endif
 }
 
-/*---------------------------------------------------------------
-					scaleHalfSmooth
----------------------------------------------------------------*/
-void CImage::scaleHalfSmooth(CImage& out) const
-{
-#if MRPT_HAS_OPENCV
-	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img != nullptr);
-	// Get this image size:
-	const IplImage* img_src = img;
-	const int w = img_src->width;
-	const int h = img_src->height;
-
-	// Create target image:
-	IplImage* img_dest =
-		cvCreateImage(cvSize(w >> 1, h >> 1), IPL_DEPTH_8U, img_src->nChannels);
-	img_dest->origin = img_src->origin;
-	memcpy(img_dest->colorModel, img_src->colorModel, 4);
-	memcpy(img_dest->channelSeq, img_src->channelSeq, 4);
-	img_dest->dataOrder = img_src->dataOrder;
-
-// If possible, use SSE optimized version:
-#if MRPT_HAS_SSE2
-	if (img_src->nChannels == 1 && is_aligned<16>(img_src->imageData) &&
-		is_aligned<16>(img_dest->imageData) && (w & 0xF) == 0 &&
-		img_src->widthStep == img_src->width * img_src->nChannels &&
-		img_dest->widthStep == img_dest->width * img_dest->nChannels)
-	{
-		image_SSE2_scale_half_smooth_1c8u(
-			(const uint8_t*)img_src->imageData, (uint8_t*)img_dest->imageData,
-			w, h);
-
-		out.setFromIplImage(img_dest);
-		return;
-	}
-#endif
-
-	// Fall back to slow method:
-	cvResize(img_src, img_dest, IMG_INTERP_LINEAR);
-	out.setFromIplImage(img_dest);
-#endif
-}
-
-/*---------------------------------------------------------------
-					scaleDouble
----------------------------------------------------------------*/
-void CImage::scaleDouble(CImage& out) const
+void CImage::scaleDouble(CImage& out, TInterpolationMethod interp) const
 {
 	out = *this;
 	const TImageSize siz = this->getSize();
-	out.scaleImage(siz.x * 2, siz.y * 2);
+	out.scaleImage(out, siz.x * 2, siz.y * 2, interp);
 }
 
-/*---------------------------------------------------------------
-				getChannelsOrder
----------------------------------------------------------------*/
-const char* CImage::getChannelsOrder() const
-{
-#if MRPT_HAS_OPENCV
-	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img);
-	return img->channelSeq;
-#else
-	THROW_EXCEPTION("MRPT compiled without OpenCV");
-#endif
-}
-
-/*---------------------------------------------------------------
-			loadFromMemoryBuffer
----------------------------------------------------------------*/
 void CImage::loadFromMemoryBuffer(
 	unsigned int width, unsigned int height, unsigned int bytesPerRow,
 	unsigned char* red, unsigned char* green, unsigned char* blue)
@@ -1262,15 +1019,13 @@ void CImage::loadFromMemoryBuffer(
 #if MRPT_HAS_OPENCV
 	MRPT_START
 
-	// Fill in the IPL structure:
-	changeSize(width, height, 3, true);
+	resize(width, height, CH_RGB, PixelDepth::D8U);
 
 	// Copy the image data:
 	for (unsigned int y = 0; y < height; y++)
 	{
 		// The target pixels:
-		unsigned char* dest =
-			(unsigned char*)img->imageData + img->widthStep * y;
+		auto* dest = m_impl->img.ptr<uint8_t>(y);
 
 		// Source channels:
 		unsigned char* srcR = red + bytesPerRow * y;
@@ -1289,21 +1044,6 @@ void CImage::loadFromMemoryBuffer(
 #endif
 }
 
-/*---------------------------------------------------------------
-					setOriginTopLeft
----------------------------------------------------------------*/
-void CImage::setOriginTopLeft(bool val)
-{
-#if MRPT_HAS_OPENCV
-	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img);
-	img->origin = val ? 0 : 1;
-#endif
-}
-
-/*---------------------------------------------------------------
-					setPixel
----------------------------------------------------------------*/
 void CImage::setPixel(int x, int y, size_t color)
 {
 #if MRPT_HAS_OPENCV
@@ -1313,34 +1053,24 @@ void CImage::setPixel(int x, int y, size_t color)
 #endif
 
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
+	auto& img = m_impl->img;
 
-	IplImage* ipl = img;
-
-#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
-	ASSERT_(ipl);
-#endif
 	ASSERT_(this->getPixelDepth() == mrpt::img::PixelDepth::D8U);
 
-	if (x >= 0 && y >= 0 && y < ipl->height && x < ipl->width)
+	if (x >= 0 && y >= 0 && y < img.rows && x < img.cols)
 	{
 		// The pixel coordinates is valid:
-		if (ipl->nChannels == 1)
+		if (img.channels() == 1)
 		{
-			*((unsigned char*)&ipl->imageData[y * ipl->widthStep + x]) =
-				(unsigned char)color;
+			img.ptr<uint8_t>(y)[x] = static_cast<uint8_t>(color);
 		}
 		else
 		{
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
-			ASSERT_(ipl->nChannels == 3);
-			if (ipl->dataOrder != 0)
-				THROW_EXCEPTION(
-					"Please, use interleaved images like normal people!!! :-)");
+			ASSERT_(img.channels() == 3);
 #endif
-			auto* dest =
-				(unsigned char*)&ipl->imageData[y * ipl->widthStep + 3 * x];
-			auto* src = (unsigned char*)&color;
-
+			auto* dest = &img.ptr<uint8_t>(y)[3 * x];
+			const auto* src = reinterpret_cast<uint8_t*>(&color);
 			// Copy the color:
 			*dest++ = *src++;  // R
 			*dest++ = *src++;  // G
@@ -1355,110 +1085,68 @@ void CImage::setPixel(int x, int y, size_t color)
 #endif
 }
 
-/*---------------------------------------------------------------
-					line
----------------------------------------------------------------*/
 void CImage::line(
 	int x0, int y0, int x1, int y1, const mrpt::img::TColor color,
-	unsigned int width, TPenStyle penStyle)
+	unsigned int width, [[maybe_unused]] TPenStyle penStyle)
 {
 #if MRPT_HAS_OPENCV
-	MRPT_UNUSED_PARAM(penStyle);
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	IplImage* ipl = img;
-	ASSERT_(ipl);
 
-	cvLine(
-		ipl, cvPoint(x0, y0), cvPoint(x1, y1),
-		CV_RGB(color.R, color.G, color.B), width);
+	cv::line(
+		m_impl->img, cv::Point(x0, y0), cv::Point(x1, y1),
+		CV_RGB(color.R, color.G, color.B), static_cast<int>(width));
 #endif
 }
 
-/*---------------------------------------------------------------
-					drawCircle
----------------------------------------------------------------*/
 void CImage::drawCircle(
 	int x, int y, int radius, const mrpt::img::TColor& color,
 	unsigned int width)
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	IplImage* ipl = img;
-	ASSERT_(ipl);
-
-	cvCircle(
-		ipl, cvPoint(x, y), radius, CV_RGB(color.R, color.G, color.B), width);
+	cv::circle(
+		m_impl->img, cv::Point(x, y), radius, CV_RGB(color.R, color.G, color.B),
+		static_cast<int>(width));
 #endif
-}  // end
+}
 
-/*---------------------------------------------------------------
-										   update_patch
---------------------------------------------------------------*/
+void CImage::drawImage(int x, int y, const mrpt::img::CImage& img)
+{
+#if MRPT_HAS_OPENCV
+	makeSureImageIsLoaded();
+	img.makeSureImageIsLoaded();
+
+	cv::Rect roi(cv::Point(x, y), cv::Size(img.getWidth(), img.getHeight()));
+	cv::Mat dest = m_impl->img(roi);
+	img.m_impl->img.copyTo(dest);
+#endif
+}
+
 void CImage::update_patch(
 	const CImage& patch, const unsigned int col_, const unsigned int row_)
 {
 #if MRPT_HAS_OPENCV
-	IplImage* ipl_int = img;
-	IplImage* ipl_ext = patch.img;
-	ASSERT_(ipl_int);
-	ASSERT_(ipl_ext);
-	// We check that patch do not jut out of the image.
-	if (row_ + ipl_ext->height > getHeight() ||
-		col_ + ipl_ext->width > getWidth())
-	{
-		THROW_EXCEPTION("Error : Patch jut out of image");
-	}
-	for (unsigned int i = 0; i < patch.getHeight(); i++)
-	{
-		memcpy(
-			&ipl_int->imageData
-				 [(i + row_) * ipl_int->widthStep + col_ * ipl_int->nChannels],
-			&ipl_ext->imageData[i * ipl_ext->widthStep], ipl_ext->widthStep);
-	}
+	makeSureImageIsLoaded();  // For delayed loaded images stored externally
+	const auto& src = m_impl->img;
+	auto& dest = patch.m_impl->img;
+
+	src(cv::Rect(col_, row_, dest.cols, dest.rows)).copyTo(dest);
 #endif
 }
 
-/*---------------------------------------------------------------
-					extract_patch
----------------------------------------------------------------*/
 void CImage::extract_patch(
 	CImage& patch, const unsigned int col_, const unsigned int row_,
 	const unsigned int col_num, const unsigned int row_num) const
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
+	const auto& src = m_impl->img;
+	auto& dest = patch.m_impl->img;
 
-	IplImage* ipl_int = img;
-	ASSERT_(ipl_int);
-
-	if ((ipl_int->width < (int)(col_ + col_num)) ||
-		(ipl_int->height < (int)(row_ + row_num)))
-	{
-		THROW_EXCEPTION(format(
-			"Trying to extract patch out of image boundaries: Image "
-			"size=%ix%i, Patch size=%ux%u, extraction location=(%u,%u)",
-			ipl_int->width, ipl_int->height, col_num, row_num, col_, row_))
-	}
-
-	patch.resize(col_num, row_num, img->nChannels, true);
-	IplImage* ipl_ext = patch.img;
-	ASSERT_(ipl_ext);
-
-	for (unsigned int i = 0; i < row_num; i++)
-	{
-		memcpy(
-			&ipl_ext->imageData[i * ipl_ext->widthStep],
-			&ipl_int->imageData
-				 [(i + row_) * ipl_int->widthStep + col_ * ipl_int->nChannels],
-			ipl_ext->widthStep);
-	}
-
+	src(cv::Rect(col_, row_, col_num, row_num)).copyTo(dest);
 #endif
 }
 
-/*---------------------------------------------------------------
-					correlate
----------------------------------------------------------------*/
 float CImage::correlate(
 	const CImage& img2, int width_init, int height_init) const
 {
@@ -1512,193 +1200,35 @@ float CImage::correlate(
 #endif
 }
 
-/*---------------------------------------------------------------
-				cross_correlation
----------------------------------------------------------------*/
-void CImage::cross_correlation(
-	const CImage& patch_img, size_t& x_max, size_t& y_max, double& max_val,
-	int x_search_ini, int y_search_ini, int x_search_size, int y_search_size,
-	CImage* out_corr_image) const
-{
-	MRPT_START
-
-	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-
-#if MRPT_HAS_OPENCV
-	double mini;
-	CvPoint min_point, max_point;
-
-	bool entireImg =
-		(x_search_ini < 0 || y_search_ini < 0 || x_search_size < 0 ||
-		 y_search_size < 0);
-
-	const IplImage *im, *patch_im;
-
-	if (this->isColor() && patch_img.isColor())
-	{
-		const IplImage* im_ = img;
-		const IplImage* patch_im_ = patch_img.img;
-
-		IplImage* aux = cvCreateImage(cvGetSize(im_), 8, 1);
-		IplImage* aux2 = cvCreateImage(cvGetSize(patch_im_), 8, 1);
-		cvCvtColor(im_, aux, CV_BGR2GRAY);
-		cvCvtColor(patch_im_, aux2, CV_BGR2GRAY);
-		im = aux;
-		patch_im = aux2;
-	}
-	else
-	{
-		im = this->getAs<IplImage>();
-		patch_im = patch_img.getAs<IplImage>();
-	}
-
-	if (entireImg)
-	{
-		x_search_size = im->width - patch_im->width;
-		y_search_size = im->height - patch_im->height;
-	}
-
-	// JLBC: Perhaps is better to raise the exception always??
-	if ((x_search_ini + x_search_size + patch_im->width - 1) > im->width)
-		x_search_size -=
-			(x_search_ini + x_search_size + patch_im->width - 1) - im->width;
-
-	if ((y_search_ini + y_search_size + patch_im->height - 1) > im->height)
-		y_search_size -=
-			(y_search_ini + y_search_size + patch_im->height - 1) - im->height;
-
-	ASSERT_((x_search_ini + x_search_size + patch_im->width - 1) <= im->width);
-	ASSERT_(
-		(y_search_ini + y_search_size + patch_im->height - 1) <= im->height);
-	IplImage* result = cvCreateImage(
-		cvSize(x_search_size + 1, y_search_size + 1), IPL_DEPTH_32F, 1);
-
-	const IplImage* ipl_ext;
-
-	if (!entireImg)
-	{
-		IplImage* aux = cvCreateImage(
-			cvSize(
-				patch_im->width + x_search_size,
-				patch_im->height + y_search_size),
-			IPL_DEPTH_8U, 1);
-		for (unsigned int i = 0; i < (unsigned int)y_search_size; i++)
-		{
-			memcpy(
-				&aux->imageData[i * aux->widthStep],
-				&im->imageData
-					 [(i + y_search_ini) * im->widthStep +
-					  x_search_ini * im->nChannels],
-				aux->width * aux->nChannels);  // widthStep);  <-- JLBC:
-			// widthstep SHOULD NOT be used
-			// as the length of each row (the
-			// last one may be shorter!!)
-		}
-		ipl_ext = aux;
-	}
-	else
-	{
-		ipl_ext = im;
-	}
-
-	// Compute cross correlation:
-	cvMatchTemplate(ipl_ext, patch_im, result, CV_TM_CCORR_NORMED);
-	// cvMatchTemplate(ipl_ext,patch_im,result,CV_TM_CCOEFF_NORMED);
-
-	// Find the max point:
-	cvMinMaxLoc(result, &mini, &max_val, &min_point, &max_point, nullptr);
-	x_max = max_point.x + x_search_ini + (round(patch_im->width - 1) / 2);
-	y_max = max_point.y + y_search_ini + (round(patch_im->height - 1) / 2);
-
-	// Free memory:
-	if (!entireImg)
-	{
-		auto* aux = const_cast<IplImage*>(ipl_ext);
-		cvReleaseImage(&aux);
-		ipl_ext = nullptr;
-	}
-
-	// Leave output image?
-	if (out_corr_image)
-		out_corr_image->setFromIplImage(result);
-	else
-		cvReleaseImage(&result);
-#else
-	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
-#endif
-
-	MRPT_END
-}
-
-/*---------------------------------------------------------------
-					normalize
----------------------------------------------------------------*/
 void CImage::normalize()
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	auto* ipl = getAs<IplImage>();  // Source Image
-	ASSERT_(ipl);
-	ASSERTMSG_(
-		ipl->nChannels == 1,
-		"CImage::normalize() only defined for grayscale images.");
-
-	uint8_t min_ = 255, max_ = 1;
-	for (int y = 0; y < ipl->height; y++)
-	{
-		const auto* ptr = reinterpret_cast<const uint8_t*>(
-			ipl->imageData + y * ipl->widthStep);
-		for (int x = 0; x < ipl->width; x++)
-		{
-			const uint8_t val = *ptr++;
-			if (min_ > val) min_ = val;
-			if (max_ < val) max_ = val;
-		}
-	}
-
-	// Compute scale factor & build convert look-up-table:
-	const double s = 255.0 / ((double)max_ - (double)min_);
-	uint8_t lut[256];
-	for (int v = 0; v < 256; v++) lut[v] = static_cast<uint8_t>((v - min_) * s);
-
-	// Apply LUT:
-	for (int y = 0; y < ipl->height; y++)
-	{
-		auto* ptr =
-			reinterpret_cast<uint8_t*>(ipl->imageData + y * ipl->widthStep);
-		for (int x = 0; x < ipl->width; x++)
-		{
-			*ptr = lut[*ptr];
-			ptr++;
-		}
-	}
+	cv::normalize(m_impl->img, m_impl->img, 255, 0, cv::NORM_MINMAX);
 #endif
 }
 
-/*---------------------------------------------------------------
-					getAsMatrix
----------------------------------------------------------------*/
 void CImage::getAsMatrix(
 	CMatrixFloat& outMatrix, bool doResize, int x_min, int y_min, int x_max,
-	int y_max) const
+	int y_max, bool normalize_01) const
 {
 #if MRPT_HAS_OPENCV
 	MRPT_START
-
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img);
+
+	const auto& img = m_impl->img;
 
 	// Set sizes:
-	if (x_max == -1) x_max = img->width - 1;
-	if (y_max == -1) y_max = img->height - 1;
+	if (x_max == -1) x_max = img.cols - 1;
+	if (y_max == -1) y_max = img.rows - 1;
 
-	ASSERT_(x_min >= 0 && x_min < img->width && x_min < x_max);
-	ASSERT_(y_min >= 0 && y_min < img->height && y_min < y_max);
+	ASSERT_(x_min >= 0 && x_min < img.cols && x_min < x_max);
+	ASSERT_(y_min >= 0 && y_min < img.rows && y_min < y_max);
 
 	int lx = (x_max - x_min + 1);
 	int ly = (y_max - y_min + 1);
 
-	if (doResize || (int)outMatrix.rows() < ly || (int)outMatrix.cols() < lx)
+	if (doResize || outMatrix.rows() < ly || outMatrix.cols() < lx)
 		outMatrix.setSize(y_max - y_min + 1, x_max - x_min + 1);
 
 	if (isColor())
@@ -1706,14 +1236,14 @@ void CImage::getAsMatrix(
 		// Luminance: Y = 0.3R + 0.59G + 0.11B
 		for (int y = 0; y < ly; y++)
 		{
-			unsigned char* pixels = this->get_unsafe(x_min, y_min + y, 0);
-			float aux;
+			const uint8_t* pixels = ptr<uint8_t>(x_min, y_min + y);
 			for (int x = 0; x < lx; x++)
 			{
-				aux = *pixels++ * 0.3f * (1.0f / 255);
-				aux += *pixels++ * 0.59f * (1.0f / 255);
-				aux += *pixels++ * 0.11f * (1.0f / 255);
-				outMatrix.set_unsafe(y, x, aux);
+				float aux = *pixels++ * 0.3f;
+				aux += *pixels++ * 0.59f;
+				aux += *pixels++ * 0.11f;
+				if (normalize_01) aux *= (1.0f / 255);
+				outMatrix.coeffRef(y, x) = aux;
 			}
 		}
 	}
@@ -1721,9 +1251,13 @@ void CImage::getAsMatrix(
 	{
 		for (int y = 0; y < ly; y++)
 		{
-			unsigned char* pixels = this->get_unsafe(x_min, y_min + y, 0);
+			const uint8_t* pixels = ptr<uint8_t>(x_min, y_min + y);
 			for (int x = 0; x < lx; x++)
-				outMatrix.set_unsafe(y, x, (*pixels++) * (1.0f / 255));
+			{
+				float aux = (*pixels++);
+				if (normalize_01) aux *= (1.0f / 255);
+				outMatrix.coeffRef(y, x) = aux;
+			}
 		}
 	}
 
@@ -1731,51 +1265,44 @@ void CImage::getAsMatrix(
 #endif
 }
 
-/*---------------------------------------------------------------
-					getAsRGBMatrices
----------------------------------------------------------------*/
 void CImage::getAsRGBMatrices(
-	mrpt::math::CMatrixFloat& outMatrixR, mrpt::math::CMatrixFloat& outMatrixG,
-	mrpt::math::CMatrixFloat& outMatrixB, bool doResize, int x_min, int y_min,
-	int x_max, int y_max) const
+	mrpt::math::CMatrixFloat& R, mrpt::math::CMatrixFloat& G,
+	mrpt::math::CMatrixFloat& B, bool doResize, int x_min, int y_min, int x_max,
+	int y_max) const
 {
 #if MRPT_HAS_OPENCV
 	MRPT_START
 
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img);
+	const auto& img = m_impl->img;
 
 	// Set sizes:
-	if (x_max == -1) x_max = img->width - 1;
-	if (y_max == -1) y_max = img->height - 1;
+	if (x_max == -1) x_max = img.cols - 1;
+	if (y_max == -1) y_max = img.rows - 1;
 
-	ASSERT_(x_min >= 0 && x_min < img->width && x_min < x_max);
-	ASSERT_(y_min >= 0 && y_min < img->height && y_min < y_max);
+	ASSERT_(x_min >= 0 && x_min < img.cols && x_min < x_max);
+	ASSERT_(y_min >= 0 && y_min < img.rows && y_min < y_max);
 
 	int lx = (x_max - x_min + 1);
 	int ly = (y_max - y_min + 1);
 
-	if (doResize || (int)outMatrixR.rows() < ly || (int)outMatrixR.cols() < lx)
-		outMatrixR.setSize(y_max - y_min + 1, x_max - x_min + 1);
-	if (doResize || (int)outMatrixG.rows() < ly || (int)outMatrixG.cols() < lx)
-		outMatrixG.setSize(y_max - y_min + 1, x_max - x_min + 1);
-	if (doResize || (int)outMatrixB.rows() < ly || (int)outMatrixB.cols() < lx)
-		outMatrixB.setSize(y_max - y_min + 1, x_max - x_min + 1);
+	if (doResize || R.rows() < ly || R.cols() < lx) R.setSize(ly, lx);
+	if (doResize || G.rows() < ly || G.cols() < lx) G.setSize(ly, lx);
+	if (doResize || B.rows() < ly || B.cols() < lx) B.setSize(ly, lx);
 
 	if (isColor())
 	{
 		for (int y = 0; y < ly; y++)
 		{
-			unsigned char* pixels = this->get_unsafe(x_min, y_min + y, 0);
-			float aux;
+			const uint8_t* pixels = ptr<uint8_t>(x_min, y_min + y);
 			for (int x = 0; x < lx; x++)
 			{
+				float aux = *pixels++ * (1.0f / 255);
+				R.coeffRef(y, x) = aux;
 				aux = *pixels++ * (1.0f / 255);
-				outMatrixR.set_unsafe(y, x, aux);
+				G.coeffRef(y, x) = aux;
 				aux = *pixels++ * (1.0f / 255);
-				outMatrixG.set_unsafe(y, x, aux);
-				aux = *pixels++ * (1.0f / 255);
-				outMatrixB.set_unsafe(y, x, aux);
+				B.coeffRef(y, x) = aux;
 			}
 		}
 	}
@@ -1783,12 +1310,12 @@ void CImage::getAsRGBMatrices(
 	{
 		for (int y = 0; y < ly; y++)
 		{
-			unsigned char* pixels = this->get_unsafe(x_min, y_min + y, 0);
+			const uint8_t* pixels = ptr<uint8_t>(x_min, y_min + y);
 			for (int x = 0; x < lx; x++)
 			{
-				outMatrixR.set_unsafe(y, x, (*pixels) * (1.0f / 255));
-				outMatrixG.set_unsafe(y, x, (*pixels) * (1.0f / 255));
-				outMatrixB.set_unsafe(y, x, (*pixels++) * (1.0f / 255));
+				R.coeffRef(y, x) = (*pixels) * (1.0f / 255);
+				G.coeffRef(y, x) = (*pixels) * (1.0f / 255);
+				B.coeffRef(y, x) = (*pixels++) * (1.0f / 255);
 			}
 		}
 	}
@@ -1797,9 +1324,6 @@ void CImage::getAsRGBMatrices(
 #endif
 }
 
-/*---------------------------------------------------------------
-					cross_correlation_FFT
----------------------------------------------------------------*/
 void CImage::cross_correlation_FFT(
 	const CImage& in_img, CMatrixFloat& out_corr, int u_search_ini,
 	int v_search_ini, int u_search_size, int v_search_size, float biasThisImg,
@@ -1808,28 +1332,27 @@ void CImage::cross_correlation_FFT(
 	MRPT_START
 
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img);
 
 	// Set limits:
 	if (u_search_ini == -1) u_search_ini = 0;
 	if (v_search_ini == -1) v_search_ini = 0;
-	if (u_search_size == -1) u_search_size = getWidth();
-	if (v_search_size == -1) v_search_size = getHeight();
+	if (u_search_size == -1) u_search_size = static_cast<int>(getWidth());
+	if (v_search_size == -1) v_search_size = static_cast<int>(getHeight());
 
 	int u_search_end = u_search_ini + u_search_size - 1;
 	int v_search_end = v_search_ini + v_search_size - 1;
 
-	ASSERT_(u_search_end < (int)getWidth());
-	ASSERT_(v_search_end < (int)getHeight());
+	ASSERT_(u_search_end < static_cast<int>(getWidth()));
+	ASSERT_(v_search_end < static_cast<int>(getHeight()));
 
 	// Find smallest valid size:
 	size_t x, y;
-	size_t actual_lx = max(u_search_size, (int)in_img.getWidth());
-	size_t actual_ly = max(v_search_size, (int)in_img.getHeight());
-	size_t lx = mrpt::round2up(actual_lx);
-	size_t ly = mrpt::round2up(actual_ly);
-
-	//	printf("ly=%u lx=%u\n",ly,lx);
+	size_t actual_lx =
+		std::max(static_cast<size_t>(u_search_size), in_img.getWidth());
+	size_t actual_ly =
+		std::max(static_cast<size_t>(v_search_size), in_img.getHeight());
+	size_t lx = mrpt::round2up<size_t>(actual_lx);
+	size_t ly = mrpt::round2up<size_t>(actual_ly);
 
 	CMatrix i1(ly, lx), i2(ly, lx);
 
@@ -1849,16 +1372,10 @@ void CImage::cross_correlation_FFT(
 	i2.array() -= biasThisImg;
 	i1.array() -= biasInImg;
 
-	// Fill the "padded zeros" with copies of the images:
-	//	SAVE_MATRIX(i1); SAVE_MATRIX(i2);
-
 	// FFT:
 	CMatrix I1_R, I1_I, I2_R, I2_I, ZEROS(ly, lx);
 	math::dft2_complex(i1, ZEROS, I1_R, I1_I);
 	math::dft2_complex(i2, ZEROS, I2_R, I2_I);
-
-	//	SAVE_MATRIX(I1_R); SAVE_MATRIX(I1_I);
-	//	SAVE_MATRIX(I2_R); SAVE_MATRIX(I2_I);
 
 	// Compute the COMPLEX division of I2 by I1:
 	for (y = 0; y < ly; y++)
@@ -1875,9 +1392,6 @@ void CImage::cross_correlation_FFT(
 			I2_I.set_unsafe(y, x, (ii2 * r1 - r2 * ii1) / den);
 		}
 
-	//	I2_R.saveToTextFile("DIV_R.txt");
-	//	I2_I.saveToTextFile("DIV_I.txt");
-
 	// IFFT:
 	CMatrix res_R, res_I;
 	math::idft2_complex(I2_R, I2_I, res_R, res_I);
@@ -1890,28 +1404,25 @@ void CImage::cross_correlation_FFT(
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-					getAsMatrixTiled
----------------------------------------------------------------*/
 void CImage::getAsMatrixTiled(CMatrix& outMatrix) const
 {
 #if MRPT_HAS_OPENCV
 	MRPT_START
 
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img);
+	const auto& img = m_impl->img;
 
 	// The size of the matrix:
-	size_t matrix_lx = outMatrix.cols();
-	size_t matrix_ly = outMatrix.rows();
+	const auto matrix_lx = outMatrix.cols();
+	const auto matrix_ly = outMatrix.rows();
 
 	if (isColor())
 	{
 		// Luminance: Y = 0.3R + 0.59G + 0.11B
 		for (unsigned int y = 0; y < matrix_ly; y++)
 		{
-			unsigned char* min_pixels = (*this)(0, y % img->height, 0);
-			unsigned char* max_pixels = min_pixels + img->width * 3;
+			unsigned char* min_pixels = (*this)(0, y % img.rows, 0);
+			unsigned char* max_pixels = min_pixels + img.cols * 3;
 			unsigned char* pixels = min_pixels;
 			float aux;
 			for (unsigned int x = 0; x < matrix_lx; x++)
@@ -1928,8 +1439,8 @@ void CImage::getAsMatrixTiled(CMatrix& outMatrix) const
 	{
 		for (unsigned int y = 0; y < matrix_ly; y++)
 		{
-			unsigned char* min_pixels = (*this)(0, y % img->height, 0);
-			unsigned char* max_pixels = min_pixels + img->width;
+			unsigned char* min_pixels = (*this)(0, y % img.rows, 0);
+			unsigned char* max_pixels = min_pixels + img.cols;
 			unsigned char* pixels = min_pixels;
 			for (unsigned int x = 0; x < matrix_lx; x++)
 			{
@@ -1943,53 +1454,31 @@ void CImage::getAsMatrixTiled(CMatrix& outMatrix) const
 #endif
 }
 
-/*---------------------------------------------------------------
-					setExternalStorage
----------------------------------------------------------------*/
+void CImage::clear()
+{
+	// Reset to defaults:
+	*this = CImage();
+}
+
 void CImage::setExternalStorage(const std::string& fileName) noexcept
 {
-	releaseIpl();
+	clear();
 	m_externalFile = fileName;
 	m_imgIsExternalStorage = true;
 }
 
-/*---------------------------------------------------------------
-					unload
----------------------------------------------------------------*/
 void CImage::unload() const noexcept
 {
-	if (m_imgIsExternalStorage)
-		const_cast<CImage*>(this)->releaseIpl(
-			true);  // Do NOT mark the image as NON external
-}
-
-/*---------------------------------------------------------------
-					releaseIpl
----------------------------------------------------------------*/
-void CImage::releaseIpl(bool thisIsExternalImgUnload) noexcept
-{
 #if MRPT_HAS_OPENCV
-	if (img && !m_imgIsReadOnly)
-	{
-		IplImage* ptr = img;
-		cvReleaseImage(&ptr);
-	}
-	img = nullptr;
-	m_imgIsReadOnly = false;
-	if (!thisIsExternalImgUnload)
-	{
-		m_imgIsExternalStorage = false;
-		m_externalFile = string();
-	}
+	if (m_imgIsExternalStorage) const_cast<cv::Mat&>(m_impl->img) = cv::Mat();
 #endif
 }
 
-/*---------------------------------------------------------------
-			makeSureImageIsLoaded
----------------------------------------------------------------*/
 void CImage::makeSureImageIsLoaded() const
 {
-	if (img != nullptr) return;  // OK, continue
+#if MRPT_HAS_OPENCV
+	if (!m_impl->img.empty()) return;  // OK, continue
+#endif
 
 	if (m_imgIsExternalStorage)
 	{
@@ -2013,12 +1502,13 @@ void CImage::makeSureImageIsLoaded() const
 				wholeFile.c_str());
 	}
 	else
-		THROW_EXCEPTION("img is nullptr in a non-externally stored image.");
+	{
+		THROW_EXCEPTION(
+			"Trying to access uninitialized image in a non externally-stored "
+			"image.");
+	}
 }
 
-/*---------------------------------------------------------------
-			getExternalStorageFileAbsolutePath
----------------------------------------------------------------*/
 void CImage::getExternalStorageFileAbsolutePath(std::string& out_path) const
 {
 	ASSERT_(m_externalFile.size() > 2);
@@ -2040,347 +1530,163 @@ void CImage::getExternalStorageFileAbsolutePath(std::string& out_path) const
 	}
 }
 
-/*---------------------------------------------------------------
-			flipVertical
----------------------------------------------------------------*/
-void CImage::flipVertical(bool also_swapRB)
+void CImage::flipVertical()
 {
 #if MRPT_HAS_OPENCV
-	IplImage* ptr = img;
-	int options = CV_CVTIMG_FLIP;
-	if (also_swapRB) options |= CV_CVTIMG_SWAP_RB;
-	cvConvertImage(ptr, ptr, options);
+	makeSureImageIsLoaded();
+	cv::flip(m_impl->img, m_impl->img, 0 /* x-axis */);
 #endif
 }
 
 void CImage::flipHorizontal()
 {
 #if MRPT_HAS_OPENCV
-	IplImage* ptr = img;
-	cvFlip(ptr, nullptr, 1);
+	makeSureImageIsLoaded();
+	cv::flip(m_impl->img, m_impl->img, 1 /* y-axis */);
 #endif
 }
 
-/*---------------------------------------------------------------
-			swapRB
----------------------------------------------------------------*/
 void CImage::swapRB()
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img != nullptr);
-	IplImage* ptr = img;
-	cvConvertImage(ptr, ptr, CV_CVTIMG_SWAP_RB);
+	cv::cvtColor(m_impl->img, m_impl->img, cv::COLOR_RGB2BGR);
 #endif
 }
 
-/*---------------------------------------------------------------
-				rectifyImageInPlace
----------------------------------------------------------------*/
 void CImage::rectifyImageInPlace(void* mapX, void* mapY)
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img != nullptr);
 
-	auto* srcImg = getAs<IplImage>();  // Source Image
-	IplImage* outImg =
-		cvCreateImage(cvGetSize(srcImg), srcImg->depth, srcImg->nChannels);
+	auto& srcImg = m_impl->img;
+	cv::Mat outImg(srcImg.rows, srcImg.cols, srcImg.type());
 
-	cv::Mat *_mapX, *_mapY;
-	_mapX = static_cast<cv::Mat*>(mapX);
-	_mapY = static_cast<cv::Mat*>(mapY);
+	auto mapXm = static_cast<cv::Mat*>(mapX);
+	auto mapYm = static_cast<cv::Mat*>(mapX);
 
-	IplImage _mapXX = *_mapX;
-	IplImage _mapYY = *_mapY;
+	cv::remap(srcImg, outImg, *mapXm, *mapYm, cv::INTER_CUBIC);
 
-	cvRemap(srcImg, outImg, &_mapXX, &_mapYY, CV_INTER_CUBIC);
-
-	releaseIpl();
-	img = outImg;
+	clear();
+	srcImg = outImg;
 #endif
 }
 
-/*---------------------------------------------------------------
-				rectifyImageInPlace
----------------------------------------------------------------*/
-void CImage::rectifyImageInPlace(const mrpt::img::TCamera& cameraParams)
-{
-#if MRPT_HAS_OPENCV
-	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img != nullptr);
-	// MRPT -> OpenCV Input Transformation
-	auto* srcImg = getAs<IplImage>();  // Source Image
-	IplImage* outImg;  // Output Image
-	outImg = cvCreateImage(cvGetSize(srcImg), srcImg->depth, srcImg->nChannels);
-
-	double aux1[3][3], aux2[1][5];
-	const CMatrixDouble33& cameraMatrix = cameraParams.intrinsicParams;
-
-	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 3; j++) aux1[i][j] = cameraMatrix(i, j);
-	for (int i = 0; i < 5; i++) aux2[0][i] = cameraParams.dist[i];
-
-	CvMat inMat = cvMat(cameraMatrix.rows(), cameraMatrix.cols(), CV_64F, aux1);
-	CvMat distM = cvMat(1, 5, CV_64F, aux2);
-
-	// Remove distortion
-	cvUndistort2(srcImg, outImg, &inMat, &distM);
-
-	// Assign the output image to the IPLImage pointer within the CImage
-	releaseIpl();
-	img = outImg;
-#endif
-}
-
-/*---------------------------------------------------------------
-					rectifyImage
----------------------------------------------------------------*/
-void CImage::rectifyImage(
+void CImage::undistort(
 	CImage& out_img, const mrpt::img::TCamera& cameraParams) const
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img != nullptr);
-	// MRPT -> OpenCV Input Transformation
-	const auto* srcImg = getAs<IplImage>();  // Source Image
-	IplImage* outImg;  // Output Image
-	outImg = cvCreateImage(cvGetSize(srcImg), srcImg->depth, srcImg->nChannels);
 
-	double aux1[3][3], aux2[1][5];
-	const CMatrixDouble33& cameraMatrix = cameraParams.intrinsicParams;
+	ASSERTMSG_(
+		out_img.m_impl->img.data != m_impl->img.data,
+		"In-place undistort() not supported");
+
+	auto& srcImg = const_cast<cv::Mat&>(m_impl->img);
+	// This will avoid re-alloc if size already matches.
+	out_img.resize(srcImg.cols, srcImg.rows, getChannelCount());
+
+	const auto& intrMat = cameraParams.intrinsicParams;
+	const auto& dist = cameraParams.dist;
+
+	cv::Mat distM(1, 5, CV_64F, const_cast<double*>(&dist[0]));
+	cv::Mat inMat(3, 3, CV_64F);
 
 	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 3; j++) aux1[i][j] = cameraMatrix(i, j);
-	for (int i = 0; i < 5; i++) aux2[0][i] = cameraParams.dist[i];
+		for (int j = 0; j < 3; j++) inMat.at<double>(i, j) = intrMat(i, j);
 
-	CvMat inMat = cvMat(cameraMatrix.rows(), cameraMatrix.cols(), CV_64F, aux1);
-	CvMat distM = cvMat(1, 5, CV_64F, aux2);
+	cv::undistort(srcImg, out_img.m_impl->img, inMat, distM);
 
-	// Remove distortion
-	cvUndistort2(srcImg, outImg, &inMat, &distM);
-
-	// OpenCV -> MRPT Output Transformation
-	out_img.loadFromIplImage(outImg);
-
-	// Release Output Image
-	cvReleaseImage(&outImg);
 #endif
-}  // end CImage::rectifyImage
+}
 
-/*---------------------------------------------------------------
-					filterMedian
----------------------------------------------------------------*/
 void CImage::filterMedian(CImage& out_img, int W) const
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img != nullptr);
-	// MRPT -> OpenCV Input Transformation
-	const auto* srcImg = getAs<IplImage>();  // Source Image
-	IplImage* outImg;  // Output Image
-	outImg = cvCreateImage(cvGetSize(srcImg), srcImg->depth, srcImg->nChannels);
 
-	// Filter
-	cvSmooth(srcImg, outImg, CV_MEDIAN, W);
+	auto srcImg = const_cast<cv::Mat&>(m_impl->img);
+	if (this == &out_img)
+		srcImg = srcImg.clone();
+	else
+		out_img.resize(srcImg.cols, srcImg.rows, getChannelCount());
 
-	outImg->origin = srcImg->origin;
-
-	// OpenCV -> MRPT Output Transformation
-	out_img.loadFromIplImage(outImg);
-
-	// Release Output Image
-	cvReleaseImage(&outImg);
+	cv::medianBlur(srcImg, out_img.m_impl->img, W);
 #endif
 }
 
-/*---------------------------------------------------------------
-					filterMedian
----------------------------------------------------------------*/
-void CImage::filterMedianInPlace(int W)
+void CImage::filterGaussian(CImage& out_img, int W, int H, double sigma) const
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img != nullptr);
-	// MRPT -> OpenCV Input Transformation
-	auto* srcImg = getAs<IplImage>();  // Source Image
-	IplImage* outImg;  // Output Image
-	outImg = cvCreateImage(cvGetSize(srcImg), srcImg->depth, srcImg->nChannels);
+	auto srcImg = const_cast<cv::Mat&>(m_impl->img);
+	if (this == &out_img)
+		srcImg = srcImg.clone();
+	else
+		out_img.resize(srcImg.cols, srcImg.rows, getChannelCount());
 
-	// Filter
-	cvSmooth(srcImg, outImg, CV_MEDIAN, W);
-
-	outImg->origin = srcImg->origin;
-
-	// Assign the output image to the IPLImage pointer within the CImage
-	releaseIpl();
-	img = outImg;
+	cv::GaussianBlur(srcImg, out_img.m_impl->img, cv::Size(W, H), sigma);
 #endif
 }
 
-/*---------------------------------------------------------------
-					filterGaussian
----------------------------------------------------------------*/
-void CImage::filterGaussian(CImage& out_img, int W, int H) const
-{
-#if MRPT_HAS_OPENCV
-	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img != nullptr);
-	// MRPT -> OpenCV Input Transformation
-	const auto* srcImg = getAs<IplImage>();  // Source Image
-	IplImage* outImg;  // Output Image
-	outImg = cvCreateImage(cvGetSize(srcImg), srcImg->depth, srcImg->nChannels);
-
-	// Filter
-	cvSmooth(srcImg, outImg, CV_GAUSSIAN, W, H);
-
-	outImg->origin = srcImg->origin;
-
-	// OpenCV -> MRPT Output Transformation
-	out_img.loadFromIplImage(outImg);
-
-	// Release Output Image
-	cvReleaseImage(&outImg);
-#endif
-}
-
-/*---------------------------------------------------------------
-					filterGaussianInPlace
----------------------------------------------------------------*/
-void CImage::filterGaussianInPlace(int W, int H)
-{
-#if MRPT_HAS_OPENCV
-	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img != nullptr);
-	// MRPT -> OpenCV Input Transformation
-	auto* srcImg = getAs<IplImage>();  // Source Image
-	IplImage* outImg;  // Output Image
-	outImg = cvCreateImage(cvGetSize(srcImg), srcImg->depth, srcImg->nChannels);
-
-	// Filter
-	cvSmooth(srcImg, outImg, CV_GAUSSIAN, W, H);
-
-	outImg->origin = srcImg->origin;
-
-	// Assign the output image to the IPLImage pointer within the CImage
-	releaseIpl();
-	img = outImg;
-#endif
-}
-
-/*---------------------------------------------------------------
-					scaleImage
----------------------------------------------------------------*/
-void CImage::scaleImage(
-	unsigned int width, unsigned int height, TInterpolationMethod interp)
-{
-#if MRPT_HAS_OPENCV
-	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img != nullptr);
-	auto* srcImg = getAs<IplImage>();  // Source Image
-
-	if (static_cast<unsigned int>(srcImg->width) == width &&
-		static_cast<unsigned int>(srcImg->height) == height)
-		return;
-
-	IplImage* outImg;  // Output Image
-	outImg =
-		cvCreateImage(cvSize(width, height), srcImg->depth, srcImg->nChannels);
-
-	// Resize:
-	cvResize(srcImg, outImg, (int)interp);
-
-	outImg->origin = srcImg->origin;
-
-	// Assign the output image to the IPLImage pointer within the CImage
-	releaseIpl();
-	img = outImg;
-#endif
-}
-
-/*---------------------------------------------------------------
-					scaleImage
----------------------------------------------------------------*/
 void CImage::scaleImage(
 	CImage& out_img, unsigned int width, unsigned int height,
 	TInterpolationMethod interp) const
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img != nullptr);
-	const auto* srcImg = getAs<IplImage>();  // Source Image
 
-	if (static_cast<unsigned int>(srcImg->width) == width &&
-		static_cast<unsigned int>(srcImg->height) == height)
+	auto srcImg = m_impl->img;
+	// Detect in-place operation and make a deep copy if needed:
+	if (out_img.m_impl->img.data == srcImg.data) srcImg = srcImg.clone();
+
+	// Already done?
+	if (out_img.getWidth() == width && out_img.getHeight() == height)
 	{
-		// already at the required size:
-		out_img = *this;
+		out_img.m_impl->img = srcImg;
 		return;
 	}
-
-	IplImage* outImg;  // Output Image
-	outImg =
-		cvCreateImage(cvSize(width, height), srcImg->depth, srcImg->nChannels);
+	out_img.resize(width, height, getChannelCount());
 
 	// Resize:
-	cvResize(srcImg, outImg, (int)interp);
-	outImg->origin = srcImg->origin;
-
-	// Assign:
-	out_img.setFromIplImage(outImg);
+	cv::resize(
+		srcImg, out_img.m_impl->img, out_img.m_impl->img.size(), 0, 0,
+		interpolationMethod2Cv(interp));
 #endif
 }
 
-/*---------------------------------------------------------------
-					rotateImage
----------------------------------------------------------------*/
 void CImage::rotateImage(
-	double angle_radians, unsigned int center_x, unsigned int center_y,
-	double scale)
+	CImage& out_img, double ang, unsigned int cx, unsigned int cy,
+	double scale) const
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img != nullptr);
 
-	auto* srcImg = getAs<IplImage>();  // Source Image
-	IplImage* outImg;  // Output Image
-	outImg = cvCreateImage(cvGetSize(srcImg), srcImg->depth, srcImg->nChannels);
+	auto srcImg = m_impl->img;
+	// Detect in-place operation and make a deep copy if needed:
+	if (out_img.m_impl->img.data == srcImg.data) srcImg = srcImg.clone();
+
+	out_img.resize(getWidth(), getHeight(), getChannelCount());
 
 	// Based on the blog entry:
 	// http://blog.weisu.org/2007/12/opencv-image-rotate-and-zoom-rotation.html
 
 	// Apply rotation & scale:
-	float m[6];
-	CvMat M = cvMat(2, 3, CV_32F, m);
+	double m[2 * 3] = {scale * cos(ang), -scale * sin(ang), 1.0 * cx,
+					   scale * sin(ang), scale * cos(ang),  1.0 * cy};
+	cv::Mat M(2, 3, CV_64F, m);
 
-	m[0] = (float)(scale * cos(angle_radians));
-	m[1] = (float)(scale * sin(angle_radians));
-	m[3] = -m[1];
-	m[4] = m[0];
-	m[2] = center_x;
-	m[5] = center_y;
+	double dx = (srcImg.cols - 1) * 0.5;
+	double dy = (srcImg.rows - 1) * 0.5;
+	m[2] -= m[0] * dx + m[1] * dy;
+	m[5] -= m[3] * dx + m[4] * dy;
 
-	cvGetQuadrangleSubPix(srcImg, outImg, &M);
-
-	outImg->origin = srcImg->origin;
-
-	// Assign the output image to the IPLImage pointer within the CImage
-	releaseIpl();
-	img = outImg;
-
+	cv::warpAffine(
+		srcImg, out_img.m_impl->img, M, out_img.m_impl->img.size(),
+		cv::INTER_LINEAR + cv::WARP_INVERSE_MAP, cv::BORDER_REPLICATE);
 #endif
 }
 
-/** Draw onto this image the detected corners of a chessboard. The length of
- * cornerCoords must be the product of the two check_sizes.
- *
- * \param cornerCoords [IN] The pixel coordinates of all the corners.
- * \param check_size_x [IN] The number of squares, in the X direction
- * \param check_size_y [IN] The number of squares, in the Y direction
- *
- * \return false if the length of cornerCoords is inconsistent (nothing is drawn
- * then).
- */
 bool CImage::drawChessboardCorners(
 	std::vector<TPixelCoordf>& cornerCoords, unsigned int check_size_x,
 	unsigned int check_size_y, unsigned int lines_width, unsigned int r)
@@ -2389,7 +1695,7 @@ bool CImage::drawChessboardCorners(
 
 	if (cornerCoords.size() != check_size_x * check_size_y) return false;
 
-	auto* ipl = this->getAs<IplImage>();
+	auto& img = m_impl->img;
 
 	unsigned int x, y, i;
 	CvPoint prev_pt = cvPoint(0, 0);
@@ -2406,6 +1712,9 @@ bool CImage::drawChessboardCorners(
 	line_colors[7] = CV_RGB(255, 0, 255);
 
 	CCanvas::selectTextFont("10x20");
+
+	IplImage iplp(img);
+	IplImage* ipl = &iplp;
 
 	for (y = 0, i = 0; y < check_size_y; y++)
 	{
@@ -2442,185 +1751,69 @@ bool CImage::drawChessboardCorners(
 #endif
 }
 
-/** Replaces this grayscale image with a RGB version of it.
- * \sa grayscaleInPlace
- */
+CImage CImage::colorImage() const
+{
+	CImage ret;
+	colorImage(ret);
+	return ret;
+}
+
 void CImage::colorImage(CImage& ret) const
 {
 #if MRPT_HAS_OPENCV
 	if (this->isColor())
 	{
-		ret = *this;
+		if (&ret != this) ret = *this;
 		return;
 	}
 
-	const auto* srcImg = getAs<IplImage>();  // Source Image
-	IplImage* outImg = cvCreateImage(cvGetSize(srcImg), srcImg->depth, 3);
+	auto srcImg = m_impl->img;
+	// Detect in-place op. and make deep copy:
+	if (srcImg.data == ret.m_impl->img.data) srcImg = srcImg.clone();
 
-	cvCvtColor(srcImg, outImg, CV_GRAY2BGR);
+	ret.resize(getWidth(), getHeight(), CH_RGB);
 
-	outImg->origin = srcImg->origin;
-
-	// Assign the output image to the IPLImage pointer within the CImage
-	ret.setFromIplImage(outImg);
+	cv::cvtColor(srcImg, ret.m_impl->img, cv::COLOR_GRAY2BGR);
 #endif
 }
 
-/** Replaces this grayscale image with a RGB version of it.
- * \sa grayscaleInPlace
- */
-void CImage::colorImageInPlace()
+void CImage::joinImagesHorz(const CImage& img1, const CImage& img2)
 {
 #if MRPT_HAS_OPENCV
-	if (this->isColor()) return;
+	ASSERT_(img1.getHeight() == img2.getHeight());
 
-	auto* srcImg = getAs<IplImage>();  // Source Image
-	IplImage* outImg;  // Output Image
-	outImg = cvCreateImage(cvGetSize(srcImg), srcImg->depth, 3);
+	auto im1 = img1.m_impl->img, im2 = img2.m_impl->img, img = m_impl->img;
+	ASSERT_(im1.type() == im2.type());
 
-	cvCvtColor(srcImg, outImg, CV_GRAY2BGR);
+	this->resize(im1.cols + im2.cols, im1.rows, getChannelCount());
 
-	outImg->origin = srcImg->origin;
-
-	// Assign the output image to the IPLImage pointer within the CImage
-	releaseIpl();
-	img = outImg;
-#endif
-}
-
-/*---------------------------------------------------------------
-					joinImagesHorz
----------------------------------------------------------------*/
-void CImage::joinImagesHorz(const CImage& im1, const CImage& im2)
-{
-#if MRPT_HAS_OPENCV
-	ASSERT_(im1.getHeight() == im2.getHeight());
-
-	const auto* _im1 = im1.getAs<IplImage>();
-	const auto* _im2 = im2.getAs<IplImage>();
-
-	ASSERT_(_im1->depth == _im2->depth && _im1->nChannels == _im2->nChannels);
-
-	IplImage* out = cvCreateImage(
-		cvSize(_im1->width + _im2->width, _im1->height), _im1->depth,
-		_im1->nChannels);
-
-	cvSetImageROI(out, cvRect(0, 0, _im1->width, _im1->height));
-	cvCopy(_im1, out);
-	cvSetImageROI(out, cvRect(_im1->width, 0, _im2->width, _im2->height));
-	cvCopy(_im2, out);
-	cvSetImageROI(out, cvRect(0, 0, out->width, out->height));
-
-	IplImage* out2;
-	if ((int)_im1->nChannels != (int)this->getChannelCount())  // Convert the
-	// input to the
-	// output channel
-	// format
-	{
-		out2 = cvCreateImage(
-			cvSize(_im1->width + _im2->width, _im1->height), _im1->depth,
-			this->getChannelCount());
-		cvCvtColor(out, out2, CV_GRAY2BGR);
-		this->setFromIplImageReadOnly(out2);
-	}
-	else  // Assign the output image to the IPLImage pointer within the CImage
-		this->setFromIplImageReadOnly(out);
-
+	im1.copyTo(img(cv::Rect(0, 0, im1.cols, im1.rows)));
+	im2.copyTo(img(cv::Rect(im1.cols, 0, im2.cols, im2.rows)));
 #endif
 }  // end
 
-/*---------------------------------------------------------------
-					equalizeHist
----------------------------------------------------------------*/
-void CImage::equalizeHist(CImage& outImg) const
+void CImage::equalizeHist(CImage& out_img) const
 {
 #if MRPT_HAS_OPENCV
 	// Convert to a single luminance channel image
-	const auto* srcImg = getAs<IplImage>();  // Source Image
-	ASSERT_(srcImg != nullptr);
-	outImg.changeSize(srcImg->width, srcImg->height, 1, isOriginTopLeft());
+	auto srcImg = m_impl->img;
+	if (this != &out_img)
+		out_img.resize(srcImg.cols, srcImg.rows, getChannelCount());
+	auto outImg = out_img.m_impl->img;
 
-	if (srcImg->nChannels == 1)
-	{  // Grayscale:
-		cvEqualizeHist(srcImg, outImg.getAs<IplImage>());
-	}
+	if (srcImg.channels() == 1)
+		cv::equalizeHist(srcImg, outImg);
 	else
-	{  // Color:
-		IplImage* hsv = cvCreateImage(cvGetSize(srcImg), 8, 3);
-		IplImage* h = cvCreateImage(cvGetSize(srcImg), 8, 1);
-		IplImage* s = cvCreateImage(cvGetSize(srcImg), 8, 1);
-		IplImage* v = cvCreateImage(cvGetSize(srcImg), 8, 1);
-
-		cvCvtColor(srcImg, hsv, CV_BGR2HSV);
-		cvSplit(hsv, h, s, v, nullptr);
-
-		cvEqualizeHist(v, v);
-
-		cvMerge(h, s, v, nullptr, hsv);
-		cvCvtColor(hsv, outImg.getAs<IplImage>(), CV_HSV2BGR);
-
-		cvReleaseImage(&hsv);
-		cvReleaseImage(&h);
-		cvReleaseImage(&s);
-		cvReleaseImage(&v);
-	}
-
+		THROW_EXCEPTION("Operation only supported for grayscale images");
 #endif
 }
-
-/*---------------------------------------------------------------
-					equalizeHistInPlace
----------------------------------------------------------------*/
-void CImage::equalizeHistInPlace()
-{
-#if MRPT_HAS_OPENCV
-	// Convert to a single luminance channel image
-	auto* srcImg = getAs<IplImage>();  // Source Image
-	ASSERT_(srcImg != nullptr);
-
-	IplImage* outImg =
-		cvCreateImage(cvGetSize(srcImg), srcImg->depth, srcImg->nChannels);
-	outImg->origin = srcImg->origin;
-
-	if (srcImg->nChannels == 1)
-	{  // Grayscale:
-		cvEqualizeHist(srcImg, outImg);
-	}
-	else
-	{  // Color:
-		IplImage* hsv = cvCreateImage(cvGetSize(srcImg), 8, 3);
-		IplImage* h = cvCreateImage(cvGetSize(srcImg), 8, 1);
-		IplImage* s = cvCreateImage(cvGetSize(srcImg), 8, 1);
-		IplImage* v = cvCreateImage(cvGetSize(srcImg), 8, 1);
-
-		cvCvtColor(srcImg, hsv, CV_BGR2HSV);
-		cvSplit(hsv, h, s, v, nullptr);
-
-		cvEqualizeHist(v, v);
-
-		cvMerge(h, s, v, nullptr, hsv);
-		cvCvtColor(hsv, outImg, CV_HSV2BGR);
-
-		cvReleaseImage(&hsv);
-		cvReleaseImage(&h);
-		cvReleaseImage(&s);
-		cvReleaseImage(&v);
-	}
-
-	// Assign the output image to the IPLImage pointer within the CImage
-	releaseIpl();
-	img = outImg;
-
-#endif
-}
-
 template <unsigned int HALF_WIN_SIZE>
 void image_KLT_response_template(
-	const uint8_t* in, const int widthStep, int x, int y, int32_t& _gxx,
-	int32_t& _gyy, int32_t& _gxy)
+	const uint8_t* in, const int widthStep, unsigned int x, unsigned int y,
+	int32_t& _gxx, int32_t& _gyy, int32_t& _gxy)
 {
-	const unsigned int min_x = x - HALF_WIN_SIZE;
-	const unsigned int min_y = y - HALF_WIN_SIZE;
+	const auto min_x = x - HALF_WIN_SIZE;
+	const auto min_y = y - HALF_WIN_SIZE;
 
 	int32_t gxx = 0;
 	int32_t gxy = 0;
@@ -2633,10 +1826,12 @@ void image_KLT_response_template(
 	{
 		const uint8_t* ptr = in + widthStep * yy + min_x;
 		unsigned int xx = min_x;
-		for (unsigned int ix = WIN_SIZE; ix; --ix, ++xx)
+		for (unsigned int ix = WIN_SIZE; ix; --ix, ++xx, ++ptr)
 		{
-			const int32_t dx = ptr[+1] - ptr[-1];
-			const int32_t dy = ptr[+widthStep] - ptr[-widthStep];
+			const int32_t dx =
+				static_cast<int32_t>(ptr[+1]) - static_cast<int32_t>(ptr[-1]);
+			const int32_t dy = static_cast<int32_t>(ptr[+widthStep]) -
+							   static_cast<int32_t>(ptr[-widthStep]);
 			gxx += dx * dx;
 			gxy += dx * dy;
 			gyy += dy * dy;
@@ -2652,15 +1847,11 @@ float CImage::KLT_response(
 	const unsigned int half_window_size) const
 {
 #if MRPT_HAS_OPENCV
-	const auto* srcImg = this->getAs<IplImage>();
-	ASSERT_(srcImg != nullptr);
-	ASSERTMSG_(
-		srcImg->nChannels == 1,
-		"KLT_response only works with grayscale images.");
 
-	const unsigned int img_w = srcImg->width;
-	const unsigned int img_h = srcImg->height;
-	const int widthStep = srcImg->widthStep;
+	const auto& im1 = m_impl->img;
+	const auto img_w = static_cast<unsigned int>(im1.cols),
+			   img_h = static_cast<unsigned int>(im1.rows);
+	const int widthStep = im1.step[0];
 
 	// If any of those predefined values worked, do the generic way:
 	const unsigned int min_x = x - half_window_size;
@@ -2679,8 +1870,7 @@ float CImage::KLT_response(
 	int32_t gxy = 0;
 	int32_t gyy = 0;
 
-	const auto* img_data = reinterpret_cast<const uint8_t*>(
-		srcImg->imageData);  //*VERY IMPORTANT*: Use unsigned
+	const auto* img_data = im1.ptr<uint8_t>(0);
 	switch (half_window_size)
 	{
 		case 2:
@@ -2751,11 +1941,11 @@ float CImage::KLT_response(
 		default:
 			for (unsigned int yy = min_y; yy <= max_y; yy++)
 			{
-				const uint8_t* ptr = img_data + widthStep * yy + min_x;
+				const uint8_t* p = img_data + widthStep * yy + min_x;
 				for (unsigned int xx = min_x; xx <= max_x; xx++)
 				{
-					const int32_t dx = ptr[+1] - ptr[-1];
-					const int32_t dy = ptr[+widthStep] - ptr[-widthStep];
+					const int32_t dx = p[+1] - p[-1];
+					const int32_t dy = p[+widthStep] - p[-widthStep];
 					gxx += dx * dx;
 					gxy += dx * dy;
 					gyy += dy * dy;
@@ -2779,31 +1969,6 @@ float CImage::KLT_response(
 	return 0.5f * (t - std::sqrt(t * t - 4.0f * de));
 #else
 	return 0;
-#endif
-}
-
-/** Marks the channel ordering in a color image (this doesn't actually modify
- * the image data, just the format description)
- */
-void CImage::setChannelsOrder_RGB()
-{
-#if MRPT_HAS_OPENCV
-	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img);
-	strcpy(img->channelSeq, "RGB");
-#else
-	THROW_EXCEPTION("MRPT compiled without OpenCV");
-#endif
-}
-
-void CImage::setChannelsOrder_BGR()
-{
-#if MRPT_HAS_OPENCV
-	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	ASSERT_(img);
-	strcpy(img->channelSeq, "BGR");
-#else
-	THROW_EXCEPTION("MRPT compiled without OpenCV");
 #endif
 }
 
@@ -2866,20 +2031,18 @@ bool CImage::loadTGA(
 	stream.close();
 
 	// Move data to images:
-	out_RGB.resize(width, height, CH_RGB, true);
-	out_alpha.resize(width, height, CH_GRAY, true);
+	out_RGB.resize(width, height, CH_RGB);
+	out_alpha.resize(width, height, CH_GRAY);
 
 	size_t idx = 0;
-	for (unsigned int r = 0; r < height; r++)
+	for (int r = 0; r < height; r++)
 	{
-		unsigned int actual_row = origin_is_low_corner ? (height - 1 - r) : r;
-		IplImage* ipl = out_RGB.img;
-		auto* data =
-			(unsigned char*)&ipl->imageData[actual_row * ipl->widthStep];
+		const auto actual_row = origin_is_low_corner ? (height - 1 - r) : r;
+		auto& img = out_RGB.m_impl->img;
+		auto data = img.ptr<uint8_t>(actual_row);
 
-		IplImage* ipl_alpha = out_alpha.img;
-		auto* data_alpha =
-			(unsigned char*)&ipl->imageData[actual_row * ipl_alpha->widthStep];
+		auto& img_alpha = out_alpha.m_impl->img;
+		auto data_alpha = img_alpha.ptr<uint8_t>(actual_row);
 
 		for (unsigned int c = 0; c < width; c++)
 		{

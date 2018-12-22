@@ -297,8 +297,8 @@ void MainWindow::on_button_generate_clicked()
 				}
 				while (auxImg1.getWidth() < 100 && auxImg1.getHeight() < 100)
 					auxImg1.scaleImage(
-						auxImg1.getWidth() * 2, auxImg1.getHeight() * 2,
-						IMG_INTERP_NN);
+						auxImg1, auxImg1.getWidth() * 2,
+						auxImg1.getHeight() * 2, IMG_INTERP_NN);
 
 				if (currentInputIndex == 1 || currentInputIndex == 4 ||
 					(currentInputIndex == 2 && rawlog_type == 1))
@@ -306,11 +306,11 @@ void MainWindow::on_button_generate_clicked()
 					while (auxImg2.getWidth() < 100 &&
 						   auxImg2.getHeight() < 100)
 						auxImg2.scaleImage(
-							auxImg2.getWidth() * 2, auxImg2.getHeight() * 2,
-							IMG_INTERP_NN);
+							auxImg2, auxImg2.getWidth() * 2,
+							auxImg2.getHeight() * 2, IMG_INTERP_NN);
 				}
 
-				cv::Mat cvImg1 = cv::cvarrToMat(auxImg1.getAs<IplImage>());
+				cv::Mat cvImg1 = auxImg1.asCvMatRef();
 				cv::Mat temp1(cvImg1.cols, cvImg1.rows, cvImg1.type());
 				cvtColor(cvImg1, temp1, CV_GRAY2RGB);
 				QImage dest1 = QImage(
@@ -325,7 +325,7 @@ void MainWindow::on_button_generate_clicked()
 				if (currentInputIndex == 1 || currentInputIndex == 4 ||
 					(currentInputIndex == 2 && rawlog_type == 1))
 				{
-					cv::Mat cvImg2 = cv::cvarrToMat(auxImg2.getAs<IplImage>());
+					cv::Mat& cvImg2 = auxImg2.asCvMatRef();
 					cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
 					cvtColor(cvImg2, temp2, CV_GRAY2RGB);
 					QImage dest2 = QImage(
@@ -1020,8 +1020,7 @@ void MainWindow::readRawlogFiles(string rawlog)
 						{
 							auto obsIm = SF->getObservationByIndexAs<
 								CObservationImage::Ptr>(k);
-							Mat cvImg =
-								cv::cvarrToMat(obsIm->image.getAs<IplImage>());
+							// JL? Mat cvImg = obsIm->image.asCvMatRef();
 						}
 					}
 				}  // end of etSensoryFrame case
@@ -1047,7 +1046,9 @@ void MainWindow::readRawlogFiles(string rawlog)
 						rawlog_type = 1;
 
 						CImage image_c = obsSt->imageLeft;
-						Mat cvImg1 = cv::cvarrToMat(image_c.getAs<IplImage>());
+						// JLBC?
+						// Mat cvImg1 =
+						// cv::cvarrToMat(image_c.getAs<IplImage>());
 					}
 					else if (IS_CLASS(o, CObservationImage))
 					{
@@ -1239,19 +1240,12 @@ void MainWindow::fillDetectorInfo()
 		harris_opts.k = param2_edit->text().toFloat();
 		harris_opts.sigma = param3_edit->text().toFloat();
 		harris_opts.radius = param4_edit->text().toFloat();
-		// string temp_str = param5_edit->text().toStdString();
-		// bool temp_bool = temp_str.compare("true") ? false : true;
-		// harris_opts.tile_image = temp_bool;
 		harris_opts.tile_image = param1_boolean->isChecked();
 
-		fext.options.harrisOptions.threshold = harris_opts.threshold;  // 0.005;
-		fext.options.harrisOptions.k = harris_opts.k;  // default sensitivity
-		fext.options.harrisOptions.sigma =
-			harris_opts.sigma;  // default from matlab smoothing filter
-		fext.options.harrisOptions.radius =
-			harris_opts.radius;  // default block size
-		// fext.options.harrisOptions.min_distance = 100;
-		fext.options.harrisOptions.tile_image = harris_opts.tile_image;
+		fext.options.harrisOptions.threshold = harris_opts.threshold;
+		fext.options.harrisOptions.k = harris_opts.k;
+		fext.options.harrisOptions.sigma = harris_opts.sigma;
+		fext.options.harrisOptions.radius = harris_opts.radius;
 	}
 
 	else if (detector_selected == 2)  // SIFT Detector
@@ -1262,8 +1256,6 @@ void MainWindow::fillDetectorInfo()
 
 		fext.options.SIFTOptions.threshold = SIFT_opts.threshold;
 		fext.options.SIFTOptions.edgeThreshold = SIFT_opts.edge_threshold;
-		// fext.options.SIFTOptions.implementation =
-		// CFeatureExtraction::CSBinary;
 	}
 	else if (detector_selected == 3)  // 3= SURF Detector
 	{
@@ -1271,9 +1263,6 @@ void MainWindow::fillDetectorInfo()
 		SURF_opts.hessianThreshold = param1_edit->text().toInt();
 		SURF_opts.nLayersPerOctave = param2_edit->text().toInt();
 		SURF_opts.nOctaves = param3_edit->text().toInt();
-		// string temp_str = param4_edit->text().toStdString();
-		// bool temp_bool = temp_str.compare("true") == 0;
-		// SURF_opts.rotation_invariant = temp_bool;
 		SURF_opts.rotation_invariant = param1_boolean->isChecked();
 
 		fext.options.SURFOptions.hessianThreshold = SURF_opts.hessianThreshold;
@@ -1289,14 +1278,8 @@ void MainWindow::fillDetectorInfo()
 	{
 		fast_opts.threshold = param1_edit->text().toFloat();
 		fast_opts.min_distance = param2_edit->text().toFloat();
-		// string temp_str = param3_edit->text().toStdString();
-		// bool temp_bool = temp_str.compare("true") == 0;
-		// fast_opts.use_KLT_response = temp_bool;
 		fast_opts.use_KLT_response = param1_boolean->isChecked();
 
-		// temp_str = param4_edit->text().toStdString();
-		// temp_bool = temp_str.compare("true") == 0;
-		// fast_opts.non_max_suppresion = temp_bool;
 		fast_opts.non_max_suppresion = param2_boolean->isChecked();
 
 		if (detector_selected == 4)
@@ -1552,7 +1535,7 @@ void MainWindow::on_detector_button_clicked()
 	/// save to file
 	featsImage1.saveToTextFile("./KeyPoints1.txt");
 
-	cvImg1 = cv::cvarrToMat(img1.getAs<IplImage>());
+	cvImg1 = img1.asCvMat<cv::Mat>(SHALLOW_COPY);
 
 	/// converting to color images to draw markers in correct color
 	cv::Mat temp1(cvImg1.cols, cvImg1.rows, cvImg1.type());
@@ -1590,7 +1573,7 @@ void MainWindow::on_detector_button_clicked()
 		featsImage2.saveToTextFile("./KeyPoints2.txt");
 
 		// img2.loadFromFile(file_path2);
-		cv::Mat cvImg2 = cv::cvarrToMat(img2.getAs<IplImage>());
+		cv::Mat cvImg2 = img2.asCvMatRef();
 
 		/// converting to color to draw coloured markers
 		cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
@@ -2135,7 +2118,7 @@ void MainWindow::displayImagesWithoutDetector()
 	resolution_x = img1.getWidth();
 	resolution_y = img1.getHeight();
 
-	cv::Mat cvImg1 = cv::cvarrToMat(img1.getAs<IplImage>());
+	cv::Mat cvImg1 = img1.asCvMatRef();
 
 	// fillDetectorInfo(); no need to call
 	/// clearing this is important
@@ -2175,7 +2158,7 @@ void MainWindow::displayImagesWithoutDetector()
 	{
 		img2.loadFromFile(file_path2);
 
-		cv::Mat cvImg2 = cv::cvarrToMat(img2.getAs<IplImage>());
+		cv::Mat cvImg2 = img2.asCvMatRef();
 
 		/// clearing this is important
 		featsImage2.clear();
@@ -2245,7 +2228,7 @@ void MainWindow::on_sample_clicked()
 	ReadInputFormat();
 
 	img1.loadFromFile(file_path1);
-	cv::Mat cvImg1 = cv::cvarrToMat(img1.getAs<IplImage>());
+	cv::Mat cvImg1 = img1.asCvMatRef();
 
 	cv::Mat temp1(cvImg1.cols, cvImg1.rows, cvImg1.type());
 	if (temp1.channels() == 3)
@@ -2265,7 +2248,7 @@ void MainWindow::on_sample_clicked()
 	if (currentInputIndex == 1)
 	{
 		img2.loadFromFile(file_path2);
-		cv::Mat cvImg2 = cv::cvarrToMat(img2.getAs<IplImage>());
+		cv::Mat cvImg2 = img2.asCvMatRef();
 		cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
 
 		if (temp2.channels() == 3)
@@ -2594,8 +2577,8 @@ Point MainWindow::trackKeyPoint(
 	CFeatureList feat_test;
 	fext.detectFeatures(img_test, feat_test, 0, numFeats);
 
-	cv::Mat cvImg_org = cv::cvarrToMat(img_org.getAs<IplImage>());
-	cv::Mat cvImg_test = cv::cvarrToMat(img_test.getAs<IplImage>());
+	cv::Mat cvImg_org = img_org.asCvMatRef();
+	cv::Mat cvImg_test = img_test.asCvMatRef();
 
 	Mat cvImg_org_gray, cvImg_test_gray;
 	cvtColor(cvImg_org, cvImg_org_gray, CV_RGB2GRAY);
@@ -4214,8 +4197,7 @@ void MainWindow::Mouse_Pressed()
 			// featsImage2.clear();
 			// fext.detectFeatures(img2, featsImage2, 0, numFeats);
 			// featsImage2.saveToTextFile("./KeyPoints2.txt");
-			cv::Mat cvImg2 = cv::cvarrToMat(img2.getAs<IplImage>());
-
+			cv::Mat cvImg2 = img2.asCvMatRef();
 			cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
 			if (temp2.channels() == 3)
 				cvtColor(cvImg2, temp2, CV_BGR2RGB);
@@ -4325,7 +4307,7 @@ void MainWindow::Mouse_Pressed()
 
 			/// PLOT THE BEST MATCHING FEATURE IN THE SECOND IMAGE
 			int temp_idx = min_dist_indexes[pos];
-			cv::Mat cvImg2 = cv::cvarrToMat(img2.getAs<IplImage>());
+			cv::Mat cvImg2 = img2.asCvMatRef();
 
 			/// converting to colour image to show markers in color for
 			/// grayscale images too

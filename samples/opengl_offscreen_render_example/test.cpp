@@ -46,7 +46,7 @@ int TestOffscreenRender(int argc, char* argv[])
 	archiveFrom(f) >> scene;
 
 	CFBORender render(width, height);
-	CImage frame(width, height, 3, false);
+	CImage frame(width, height, CH_RGB);
 
 	// here you can put your preferred camera rendering position
 	{

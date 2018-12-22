@@ -404,12 +404,10 @@ void CMetricMapBuilderRBPF::drawCurrentEstimationToImage(CCanvas* img)
 
 	// Adapt the canvas size:
 	bool alreadyCopiedImage = false;
+	auto g = currentMetricMapEstimation->m_gridMaps[0];
 	{
 		auto* obj = dynamic_cast<CImage*>(img);
-		if (obj)
-			obj->resize(
-				currentMetricMapEstimation->m_gridMaps[0]->getSizeX(),
-				currentMetricMapEstimation->m_gridMaps[0]->getSizeY(), 1, true);
+		if (obj) obj->resize(g->getSizeX(), g->getSizeY(), mrpt::img::CH_GRAY);
 	}
 	if (!alreadyCopiedImage)
 	{
@@ -417,17 +415,16 @@ void CMetricMapBuilderRBPF::drawCurrentEstimationToImage(CCanvas* img)
 
 		// grid map as bitmap:
 		// ----------------------------------
-		currentMetricMapEstimation->m_gridMaps[0]->getAsImage(imgGrid);
+		g->getAsImage(imgGrid);
 
 		img->drawImage(0, 0, imgGrid);
 		imgHeight = imgGrid.getHeight();
 	}
 
 	int x1 = 0, x2 = 0, y1 = 0, y2 = 0;
-	float x_min = currentMetricMapEstimation->m_gridMaps[0]->getXMin();
-	float y_min = currentMetricMapEstimation->m_gridMaps[0]->getYMin();
-	float resolution =
-		currentMetricMapEstimation->m_gridMaps[0]->getResolution();
+	float x_min = g->getXMin();
+	float y_min = g->getYMin();
+	float resolution = g->getResolution();
 
 	// Paths hypothesis:
 	// ----------------------------------

@@ -113,7 +113,7 @@ class COpenNI2Generic::CDevice
 
 	inline void resize(mrpt::img::CImage& rgb, int w, int h)
 	{
-		rgb.resize(w, h, CH_RGB, true);
+		rgb.resize(w, h, mrpt::img::CH_RGB);
 	}
 	inline void resize(mrpt::math::CMatrix& depth, int w, int h)
 	{

@@ -101,14 +101,6 @@ wxImage* MRPTImage2wxImage(const mrpt::img::CImage& img);
  */
 wxBitmap* MRPTImage2wxBitmap(const mrpt::img::CImage& img);
 
-#if MRPT_HAS_OPENCV
-/** Create a wxImage from a IPL image. The new object must be freed by the user
- * when not required anymore.
- * \sa IplImage2wxImage
- */
-wxImage* IplImage2wxImage(void* img);
-#endif
-
 /** Create a MRPT image from a wxImage. The new object must be freed by the user
  * when not required anymore.
  *  It is recommended to use wxImage2MRPTImagePtr instead since smart pointers

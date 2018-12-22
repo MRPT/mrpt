@@ -3,7 +3,7 @@ build*
 install*
 *.layout
 CMakeFiles/
-CMakeLists.txt.user
+CMakeLists.txt.user*
 SOURCE_DATE_EPOCH
 *.backup
 

@@ -46,7 +46,7 @@ void CFeatureExtraction::extractFeaturesAKAZE(
 
 #if MRPT_OPENCV_VERSION_NUM >= 0x300
 
-	const Mat theImg = cvarrToMat(inImg_gray.getAs<IplImage>());
+	Mat theImg = inImg_gray.asCvMat<Mat>(SHALLOW_COPY);
 	Ptr<AKAZE> akaze = AKAZE::create(
 		options.AKAZEOptions.descriptor_type,
 		options.AKAZEOptions.descriptor_size,

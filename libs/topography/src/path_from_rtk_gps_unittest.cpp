@@ -11,18 +11,13 @@
 #include <mrpt/poses/CPose3DInterpolator.h>
 #include <mrpt/system/filesystem.h>
 #include <gtest/gtest.h>
+#include <test_mrpt_common.h>
 
 using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::poses;
 using namespace mrpt::topography;
 using namespace std;
-
-// Defined in tests/test_main.cpp
-namespace mrpt
-{
-extern std::string MRPT_GLOBAL_UNITTEST_SRC_DIR;
-}
 
 TEST(TopographyReconstructPathFrom3RTK, sampleDataset)
 {
@@ -31,8 +26,7 @@ TEST(TopographyReconstructPathFrom3RTK, sampleDataset)
 	mrpt::obs::CRawlog rawlog;
 
 	const string dataset_fil =
-		MRPT_GLOBAL_UNITTEST_SRC_DIR +
-		string("/share/mrpt/datasets/test_rtk_path.rawlog");
+		UNITTEST_BASEDIR + string("/share/mrpt/datasets/test_rtk_path.rawlog");
 	if (!mrpt::system::fileExists(dataset_fil))
 	{
 		cerr << "WARNING: Skipping test due to missing file: " << dataset_fil

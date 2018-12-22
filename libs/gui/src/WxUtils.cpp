@@ -21,256 +21,65 @@ using namespace mrpt;
 using namespace mrpt::gui;
 using namespace std;
 
-//------------------------------------------------------------------------
-// An auxiliary function for passing MRPT images to wxWidgets images.
-//   The returned object MUST be deleted by hand!
-//------------------------------------------------------------------------
 wxImage* mrpt::gui::MRPTImage2wxImage(const mrpt::img::CImage& img)
 {
 #if MRPT_HAS_OPENCV
-	auto* image = const_cast<IplImage*>(img.getAs<IplImage>());
-	bool free_image_at_end = false;
+	using namespace std::string_literals;
+
+	mrpt::img::CImage new_image(img, mrpt::img::SHALLOW_COPY);
 
 	// If the image is GRAYSCALE, we need to convert it into RGB, so do it
 	// manually:
-	if (image->nChannels == 1)
+	if (!new_image.isColor())
 	{
-		IplImage* new_image =
-			cvCreateImage(cvSize(image->width, image->height), image->depth, 3);
-		new_image->origin = image->origin;
-		cvCvtColor(image, new_image, CV_GRAY2RGB);
-		image = new_image;  // Use this new image instead
-		free_image_at_end = true;
+		new_image = new_image.colorImage();
 	}
 
-	int options = 0;
-	if (image->origin == 1) options |= CV_CVTIMG_FLIP;
-	if (image->nChannels == 3 && image->channelSeq[0] == 'B' &&
-		image->channelSeq[2] == 'R')
-		options |= CV_CVTIMG_SWAP_RB;
-	if (options)
+	if (new_image.getChannelsOrder() == "BGR"s)
 	{
-		IplImage* the_input_img = image;
-
-		image = cvCreateImage(
-			cvSize(the_input_img->width, the_input_img->height),
-			the_input_img->depth, 3);
-		if (the_input_img->width && the_input_img->height)
-			cvConvertImage(the_input_img, image, options);  // convert image
-
-		if (free_image_at_end) cvReleaseImage(&the_input_img);
-		free_image_at_end = true;  // for "image"
+		auto im = new_image.makeDeepCopy();
+		im.swapRB();
+		new_image = im;
 	}
 
-	int row_in_bytes = image->width * image->nChannels;
-	auto* data = (unsigned char*)malloc(row_in_bytes * image->height);
+	const int row_in_bytes =
+		new_image.getWidth() *
+		(new_image.getChannelCount() == mrpt::img::CH_RGB ? 3 : 1);
+	uint8_t* data =
+		static_cast<uint8_t*>(malloc(row_in_bytes * new_image.getHeight()));
+
+	const int w = new_image.getWidth(), h = new_image.getHeight(),
+			  rs = new_image.getRowStride();
 
 	// Copy row by row only if necesary:
-	if (row_in_bytes != image->widthStep)
+	if (row_in_bytes != rs)
 	{
-		unsigned char* trg = data;
-		char* src = image->imageData;
-		for (int y = 0; y < image->height;
-			 y++, src += image->widthStep, trg += row_in_bytes)
+		auto* trg = data;
+		const auto* src = new_image.ptrLine<uint8_t>(0);
+		for (int y = 0; y < h; y++, src += rs, trg += row_in_bytes)
 			memcpy(trg, src, row_in_bytes);
 	}
 	else
 	{
-		memcpy(data, image->imageData, row_in_bytes * image->height);
-	}
-
-	int w = image->width;
-	int h = image->height;
-
-	if (free_image_at_end)
-	{
-		cvReleaseImage(&image);
+		memcpy(data, new_image.ptrLine<uint8_t>(0), row_in_bytes * h);
 	}
 
 	// create and return the object
-	return new wxImage(
-		w, h, data, false);  // memory "imgData" will be freed by the object.
-
-#else
-	int x, y, lx = img.getWidth(), ly = img.getHeight();
-	unsigned char* imgData = (unsigned char*)malloc(3 * lx * ly);
-	unsigned char* imgPtr = imgData;
-
-	if (img.isColor())
-	{
-		// Is COLOR
-		if (img.isOriginTopLeft())
-		{
-			for (y = 0; y < ly; y++)
-			{
-				for (x = 0; x < lx; x++)
-				{
-					*(imgPtr++) = *img(x, y, 2);
-					*(imgPtr++) = *img(x, y, 1);
-					*(imgPtr++) = *img(x, y, 0);
-				}
-			}
-		}
-		else
-		{
-			for (y = ly - 1; y >= 0; y--)
-			{
-				for (x = 0; x < lx; x++)
-				{
-					*(imgPtr++) = *img(x, y, 2);
-					*(imgPtr++) = *img(x, y, 1);
-					*(imgPtr++) = *img(x, y, 0);
-				}
-			}
-		}
-	}
-	else
-	{
-		// Is Grayscale:
-		if (img.isOriginTopLeft())
-		{
-			for (y = 0; y < ly; y++)
-			{
-				for (x = 0; x < lx; x++)
-				{
-					unsigned char c = *img(x, y);
-					*(imgPtr++) = c;
-					*(imgPtr++) = c;
-					*(imgPtr++) = c;
-				}
-			}
-		}
-		else
-		{
-			for (y = ly - 1; y >= 0; y--)
-			{
-				for (x = 0; x < lx; x++)
-				{
-					unsigned char c = *img(x, y);
-					*(imgPtr++) = c;
-					*(imgPtr++) = c;
-					*(imgPtr++) = c;
-				}
-			}
-		}
-	}
-	return new wxImage(
-		lx, ly, imgData,
-		false);  // memory "imgData" will be freed by the object.
+	return new wxImage(w, h, data, false /* false=transfer mem ownership */);
 #endif
 }
 
-//------------------------------------------------------------------------
-// An auxiliary function for passing MRPT images to wxWidgets images.
-//   The returned object MUST be deleted by hand!
-//------------------------------------------------------------------------
 wxBitmap* mrpt::gui::MRPTImage2wxBitmap(const mrpt::img::CImage& img)
 {
 #if MRPT_HAS_OPENCV
-	auto* image = const_cast<IplImage*>(img.getAs<IplImage>());
-	bool free_image_at_end = false;
-
-	// If the image is GRAYSCALE, we need to convert it into RGB, so do it
-	// manually:
-	if (image->nChannels == 1)
-	{
-		IplImage* new_image =
-			cvCreateImage(cvSize(image->width, image->height), image->depth, 3);
-		new_image->origin = image->origin;
-		cvCvtColor(image, new_image, CV_GRAY2RGB);
-		image = new_image;  // Use this new image instead
-		free_image_at_end = true;
-	}
-
-	int options = 0;
-	if (image->origin == 1) options |= CV_CVTIMG_FLIP;
-	if (image->nChannels == 3 && image->channelSeq[0] == 'B' &&
-		image->channelSeq[2] == 'R')
-		options |= CV_CVTIMG_SWAP_RB;
-	if (options)
-	{
-		IplImage* the_input_img = image;
-
-		image = cvCreateImage(
-			cvSize(the_input_img->width, the_input_img->height),
-			the_input_img->depth, 3);
-		cvConvertImage(the_input_img, image, options);  // convert image
-
-		if (free_image_at_end) cvReleaseImage(&the_input_img);
-		free_image_at_end = true;  // for "image"
-	}
-
-	int row_in_bytes = image->width * image->nChannels;
-	auto* data = (unsigned char*)malloc(row_in_bytes * image->height);
-
-	// Copy row by row only if necesary:
-	if (row_in_bytes != image->widthStep)
-	{
-		unsigned char* trg = data;
-		char* src = image->imageData;
-		for (int y = 0; y < image->height;
-			 y++, src += image->widthStep, trg += row_in_bytes)
-			memcpy(trg, src, row_in_bytes);
-	}
-	else
-	{
-		memcpy(data, image->imageData, row_in_bytes * image->height);
-	}
-
-	int w = image->width;
-	int h = image->height;
-
-	if (free_image_at_end)
-	{
-		cvReleaseImage(&image);
-	}
-
-	// create and return the object
-	return new wxBitmap(wxImage(w, h, data, false));
+	auto* i = MRPTImage2wxImage(img);
+	auto ret = new wxBitmap(*i);
+	delete i;
+	return ret;
 #else
 	THROW_EXCEPTION("MRPT compiled without OpenCV");
 #endif
 }
-
-#if MRPT_HAS_OPENCV
-wxImage* mrpt::gui::IplImage2wxImage(void* img)
-{
-	auto* image = static_cast<IplImage*>(img);
-
-	ASSERT_(image);
-	ASSERT_(image->nChannels == 3);
-
-	// require conversion ?
-	int options = 0;
-	if (image->origin == 1) options |= CV_CVTIMG_FLIP;
-	if (image->channelSeq[0] == 'B' && image->channelSeq[2] == 'R')
-		options |= CV_CVTIMG_SWAP_RB;
-	if (options)
-		cvConvertImage(image, image, options);  // convert image "in place"
-
-	int row_bytes =
-		image->width * image->nChannels * ((image->depth & 255) >> 3);
-
-	auto* imageData = (unsigned char*)malloc(row_bytes * image->height);
-	ASSERT_(imageData);
-
-	// copy row by row only if necesary
-	if (row_bytes != image->widthStep)
-	{
-		for (int y = 0; y < image->height; y++)
-			memcpy(
-				(imageData + y * row_bytes),
-				(image->imageData + y * image->widthStep), row_bytes);
-	}
-	else
-	{
-		memcpy(imageData, image->imageData, row_bytes * image->height);
-	}
-
-	// create and return the object
-	return new wxImage(image->width, image->height, imageData, false);
-}
-#endif
 
 //------------------------------------------------------------------------
 // Convert wxImage -> MRPTImage

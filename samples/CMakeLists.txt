@@ -157,7 +157,6 @@ if(BUILD_EXAMPLES)
 		opengl_textured_triangles_example
 		# -------
 		img_basic_example
-		img_correlation_example
 		img_convolution_fft
 		img_fft_example
 		img_gauss_filtering_example

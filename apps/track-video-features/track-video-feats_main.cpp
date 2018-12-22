@@ -89,21 +89,21 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
 	tracker->extra_params["add_new_features"] =
 		1;  // track, AND ALSO, add new features
 	tracker->extra_params["add_new_feat_min_separation"] = 32;
-	tracker->extra_params["minimum_KLT_response_to_add"] = 10;
+	tracker->extra_params["minimum_KLT_response_to_add"] = 75;
 	tracker->extra_params["add_new_feat_max_features"] = 350;
-	tracker->extra_params["add_new_feat_patch_size"] = 11;
+	tracker->extra_params["add_new_feat_patch_size"] = 0;
 
 	tracker->extra_params["update_patches_every"] = 0;  // Don't update patches.
 
-	tracker->extra_params["check_KLT_response_every"] =
-		5;  // Re-check the KLT-response to assure features are in good points.
-	tracker->extra_params["minimum_KLT_response"] = 5;
+	// Re-check the KLT-response to assure features are in good points.
+	tracker->extra_params["check_KLT_response_every"] = 1;
+	tracker->extra_params["minimum_KLT_response"] = 50;
 
 	// Specific params for "CFeatureTracker_KL"
 	// ------------------------------------------------------
-	tracker->extra_params["window_width"] = 5;
-	tracker->extra_params["window_height"] = 5;
-	// tracker->extra_params["LK_levels"] = 3;
+	tracker->extra_params["window_width"] = 15;
+	tracker->extra_params["window_height"] = 15;
+	tracker->extra_params["LK_levels"] = 3;
 	// tracker->extra_params["LK_max_iters"] = 10;
 	// tracker->extra_params["LK_epsilon"] = 0.1;
 	// tracker->extra_params["LK_max_tracking_error"] = 150;
@@ -156,21 +156,18 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
 
 		if (IS_CLASS(obs, CObservationImage))
 		{
-			CObservationImage::Ptr o =
-				std::dynamic_pointer_cast<CObservationImage>(obs);
-			theImg.copyFastFrom(o->image);
+			auto o = std::dynamic_pointer_cast<CObservationImage>(obs);
+			theImg = std::move(o->image);
 		}
 		else if (IS_CLASS(obs, CObservationStereoImages))
 		{
-			CObservationStereoImages::Ptr o =
-				std::dynamic_pointer_cast<CObservationStereoImages>(obs);
-			theImg.copyFastFrom(o->imageLeft);
+			auto o = std::dynamic_pointer_cast<CObservationStereoImages>(obs);
+			theImg = std::move(o->imageLeft);
 		}
 		else if (IS_CLASS(obs, CObservation3DRangeScan))
 		{
-			CObservation3DRangeScan::Ptr o =
-				std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);
-			if (o->hasIntensityImage) theImg.copyFastFrom(o->intensityImage);
+			auto o = std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);
+			if (o->hasIntensityImage) theImg = std::move(o->intensityImage);
 		}
 		else
 		{
@@ -179,8 +176,7 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
 
 		// Make sure the image is loaded (for the case it came from a rawlog
 		// file)
-		if (theImg.isExternallyStored())
-			theImg.loadFromFile(theImg.getExternalStorageFileAbsolutePath());
+		theImg.forceLoad();
 
 		// Take the resolution upon first valid frame.
 		if (!hasResolution)
@@ -224,9 +220,9 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
 		//  for the display
 		// ----------------------------------------------------------------
 		if (DO_HIST_EQUALIZE_IN_GRAYSCALE && !theImg.isColor())
-			theImg.equalizeHistInPlace();
+			theImg.equalizeHist(theImg);
 		// Convert to color so we can draw color marks, etc.
-		theImg.colorImageInPlace();
+		theImg = theImg.colorImage();
 
 		double extra_tim_to_wait = 0;
 

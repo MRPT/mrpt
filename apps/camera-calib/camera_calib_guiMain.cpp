@@ -776,13 +776,15 @@ void camera_calib_guiDialog::refreshDisplayedImage()
 			// Not calibrated yet:
 			imgRect = imgOrgColor;
 			imgRect.scaleImage(
-				imgSizes.x * zoomVal, imgSizes.y * zoomVal, IMG_INTERP_NN);
+				imgRect, imgSizes.x * zoomVal, imgSizes.y * zoomVal,
+				IMG_INTERP_NN);
 		}
 		else
 		{
-			imgOrgColor.rectifyImage(imgRect, camera_params);
+			imgOrgColor.undistort(imgRect, camera_params);
 			imgRect.scaleImage(
-				imgSizes.x * zoomVal, imgSizes.y * zoomVal, IMG_INTERP_NN);
+				imgRect, imgSizes.x * zoomVal, imgSizes.y * zoomVal,
+				IMG_INTERP_NN);
 
 			// Draw reprojected:
 			for (auto& k : it->second.projectedPoints_undistorted)
@@ -795,7 +797,8 @@ void camera_calib_guiDialog::refreshDisplayedImage()
 
 		// Zoom images:
 		imgOrgColor.scaleImage(
-			imgSizes.x * zoomVal, imgSizes.y * zoomVal, IMG_INTERP_NN);
+			imgOrgColor, imgSizes.x * zoomVal, imgSizes.y * zoomVal,
+			IMG_INTERP_NN);
 
 		imgSizes = imgOrgColor.getSize();
 

@@ -899,16 +899,16 @@ XMLSTR ToXMLStringTool::toXMLUnSafe(XMLSTR dest, XMLCSTR source)
 		{
 			case 4:
 				*(dest++) = *(source++);
-			/*FALLTHROUGH*/
+				[[fallthrough]];
 			case 3:
 				*(dest++) = *(source++);
-			/*FALLTHROUGH*/
+				[[fallthrough]];
 			case 2:
 				*(dest++) = *(source++);
-			/*FALLTHROUGH*/
+				[[fallthrough]];
 			case 1:
 				*(dest++) = *(source++);
-				/*FALLTHROUGH*/
+				break;
 		}
 #endif
 	out_of_loop1:;

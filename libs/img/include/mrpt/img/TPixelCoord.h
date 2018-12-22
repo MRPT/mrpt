@@ -43,6 +43,10 @@ struct TPixelCoord
 
 	TPixelCoord() = default;
 	TPixelCoord(const int _x, const int _y) : x(_x), y(_y) {}
+	inline bool operator==(const TPixelCoord& o)
+	{
+		return x == o.x && y == o.y;
+	}
 	int x{0}, y{0};
 };
 

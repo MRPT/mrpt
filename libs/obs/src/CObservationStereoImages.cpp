@@ -25,31 +25,6 @@ using namespace mrpt::img;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationStereoImages, CObservation, mrpt::obs)
 
-#if MRPT_HAS_OPENCV
-/*---------------------------------------------------------------
-					Constructor
- ---------------------------------------------------------------*/
-CObservationStereoImages::CObservationStereoImages(
-	IplImage* iplImageLeft, IplImage* iplImageRight,
-	IplImage* iplImageDisparity, bool ownMemory)
-	: imageLeft(UNINITIALIZED_IMAGE),
-	  imageRight(UNINITIALIZED_IMAGE),
-	  imageDisparity(UNINITIALIZED_IMAGE),
-	  hasImageDisparity(iplImageDisparity != nullptr),
-	  hasImageRight(iplImageRight != nullptr)
-{
-	if (iplImageLeft)
-		ownMemory ? imageLeft.setFromIplImage(iplImageLeft)
-				  : imageLeft.loadFromIplImage(iplImageLeft);
-	if (iplImageRight)
-		ownMemory ? imageRight.setFromIplImage(iplImageRight)
-				  : imageRight.loadFromIplImage(iplImageRight);
-	if (iplImageDisparity)
-		ownMemory ? imageDisparity.setFromIplImage(iplImageDisparity)
-				  : imageDisparity.loadFromIplImage(iplImageDisparity);
-}
-#endif
-
 uint8_t CObservationStereoImages::serializeGetVersion() const { return 6; }
 void CObservationStereoImages::serializeTo(
 	mrpt::serialization::CArchive& out) const

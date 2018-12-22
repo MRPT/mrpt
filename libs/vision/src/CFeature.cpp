@@ -16,6 +16,7 @@
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/vision/CFeature.h>
 #include <mrpt/vision/types.h>
+#include <mrpt/vision/utils.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/system/os.h>
@@ -490,7 +491,8 @@ float CFeature::patchCorrelationTo(const CFeature& oFeature) const
 	ASSERT_(patch.getHeight() > 0 && patch.getWidth() > 0);
 	size_t x_max, y_max;
 	double max_val;
-	patch.cross_correlation(oFeature.patch, x_max, y_max, max_val);
+	mrpt::vision::openCV_cross_correlation(
+		patch, oFeature.patch, x_max, y_max, max_val);
 
 	return 0.5 -
 		   0.5 * max_val;  // Value as "distance" in the range [0,1], best = 0

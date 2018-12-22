@@ -194,11 +194,11 @@ struct TSimpleFeatureList_templ
 		m_feats.push_back(FEATURE(x, y));
 	}
 
-	inline FEATURE& operator[](const unsigned int index)
+	inline FEATURE& operator[](const std::size_t index)
 	{
 		return m_feats[index];
 	}
-	inline const FEATURE& operator[](const unsigned int index) const
+	inline const FEATURE& operator[](const std::size_t index) const
 	{
 		return m_feats[index];
 	}

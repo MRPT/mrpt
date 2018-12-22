@@ -11,12 +11,7 @@
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/system/filesystem.h>
 #include <gtest/gtest.h>
-
-// Defined in tests/test_main.cpp
-namespace mrpt
-{
-extern std::string MRPT_GLOBAL_UNITTEST_SRC_DIR;
-}
+#include <test_mrpt_common.h>
 
 TEST(NavTests, PTGs_tests)
 {
@@ -24,8 +19,8 @@ TEST(NavTests, PTGs_tests)
 	using namespace mrpt;
 	using namespace mrpt::nav;
 
-	const string sFil = mrpt::MRPT_GLOBAL_UNITTEST_SRC_DIR +
-						string("/tests/PTGs_for_tests.ini");
+	const string sFil =
+		mrpt::UNITTEST_BASEDIR + string("/tests/PTGs_for_tests.ini");
 	if (!mrpt::system::fileExists(sFil))
 	{
 		cerr << "**WARNING* Skipping tests since file cannot be found: '"

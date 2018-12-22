@@ -1050,8 +1050,8 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 			stObs->timestamp = (obsL.timestamp != INVALID_TIMESTAMP)
 								   ? obsL.timestamp
 								   : mrpt::system::now();
-			stObs->imageLeft.copyFastFrom(obsL.image);
-			stObs->imageRight.copyFastFrom(obsR.image);
+			stObs->imageLeft = std::move(obsL.image);
+			stObs->imageRight = std::move(obsR.image);
 			capture_ok = true;
 		}
 	}
@@ -1124,28 +1124,27 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 	{
 		if (obs)
 		{
-			if (obs->image.isColor()) obs->image.grayscaleInPlace();
+			if (obs->image.isColor()) obs->image = obs->image.grayscale();
 		}
 		else if (stObs)
 		{
-			if (stObs->imageLeft.isColor()) stObs->imageLeft.grayscaleInPlace();
+			if (stObs->imageLeft.isColor())
+				stObs->imageLeft = stObs->imageLeft.grayscale();
 			if (stObs->hasImageRight && stObs->imageRight.isColor())
-				stObs->imageRight.grayscaleInPlace();
+				stObs->imageRight = stObs->imageRight.grayscale();
 			if (stObs->hasImageDisparity && stObs->imageDisparity.isColor())
-				stObs->imageDisparity
-					.grayscaleInPlace();  // Shouldn't happen, but...
+				stObs->imageDisparity = stObs->imageDisparity.grayscale();
 		}
 		else if (obs3D)
 		{
 			if (obs3D->hasIntensityImage && obs3D->intensityImage.isColor())
-				obs3D->intensityImage.grayscaleInPlace();
+				obs3D->intensityImage = obs3D->intensityImage.grayscale();
 		}
 	}
 	// External storage?
-	bool delayed_insertion_in_obs_queue =
-		false;  // If true, we'll return nothing, but the observation will be
+	// If true, we'll return nothing, but the observation will be
 	// inserted from the thread.
-
+	bool delayed_insertion_in_obs_queue = false;
 	if (!m_path_for_external_images.empty())
 	{
 		if (stObs)  // If we have grabbed an stereo observation ...

@@ -63,10 +63,9 @@ bool mrpt::vision::findChessboardCorners(
 	int find_chess_flags = cv::CALIB_CB_ADAPTIVE_THRESH;
 	if (normalize_image) find_chess_flags |= cv::CALIB_CB_NORMALIZE_IMAGE;
 
+	cv::Mat cvImg = img.asCvMat<cv::Mat>(SHALLOW_COPY);
 	if (!useScaramuzzaMethod)
 	{
-		cv::Mat cvImg = cv::cvarrToMat(img.getAs<IplImage>());
-
 		vector<cv::Point2f> pointbuf;
 
 		// Standard OpenCV's function:
@@ -92,10 +91,10 @@ bool mrpt::vision::findChessboardCorners(
 
 	if (corners_found)
 	{
+		IplImage iplImg(cvImg);
 		// Refine corners:
 		cvFindCornerSubPix(
-			img.getAs<IplImage>(), &corners_list[0], corners_count,
-			cvSize(5, 5),  // window
+			&iplImg, &corners_list[0], corners_count, cvSize(5, 5),  // window
 			cvSize(-1, -1),
 			cvTermCriteria(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 10, 0.01f));
 
@@ -139,6 +138,8 @@ void mrpt::vision::findMultipleChessboardsCorners(
 #if MRPT_HAS_OPENCV
 	// Grayscale version:
 	const CImage img(in_img, FAST_REF_OR_CONVERT_TO_GRAY);
+	const cv::Mat img_m = img.asCvMat<cv::Mat>(SHALLOW_COPY);
+	const IplImage img_ipl(img_m);
 
 	std::vector<std::vector<CvPoint2D32f>> corners_list;
 
@@ -157,8 +158,8 @@ void mrpt::vision::findMultipleChessboardsCorners(
 			ASSERT_(corners_list[i].size() == check_size_x * check_size_y);
 
 			cvFindCornerSubPix(
-				img.getAs<IplImage>(), &corners_list[i][0],
-				check_size_x * check_size_y, cvSize(5, 5),  // window
+				&img_ipl, &corners_list[i][0], check_size_x * check_size_y,
+				cvSize(5, 5),  // window
 				cvSize(-1, -1),
 				cvTermCriteria(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 10, 0.01f));
 

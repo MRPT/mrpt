@@ -21,7 +21,6 @@ using namespace mrpt::img;
 using namespace mrpt::system;
 using namespace std;
 
-CFeatureExtraction::~CFeatureExtraction() = default;
 struct sort_pred
 {
 	bool operator()(
@@ -42,139 +41,7 @@ void CFeatureExtraction::detectFeatures(
 	switch (options.featsType)
 	{
 		case featHarris:
-			MRPT_TODO(
-				"Refactor: check if OpenCV's tile method can be directly "
-				"called to save space here?")
-			if (options.harrisOptions.tile_image)
-			{
-				mrpt::system::CTicTac tictac;
-
-				if (!(ROI.xMax == 0 && ROI.xMin == 0 && ROI.yMax == 0 &&
-					  ROI.yMin == 0))  // ROI must be not active for this option
-					std::cout << "Warning: Image ROI is not taken into "
-								 "account, as harrisOptions.tile is set to YES"
-							  << std::endl;
-
-				TImageROI newROI;
-
-				unsigned int wd = img.getWidth();
-				unsigned int hg = img.getHeight();
-
-				unsigned int tt =
-					0;  // Total number of features detected in the whole image
-				std::vector<std::vector<unsigned int>> tam(8);
-				std::vector<CFeatureList> aux_feats(
-					8);  // 2x4 tiles into the image -> 8 sets of features
-
-				for (unsigned int k = 0; k < 4;
-					 k++)  // Search over the 2x4 tiled image
-				{
-					// Resize the inner vector
-					tam[k].resize(2);
-					tam[k + 4].resize(2);
-
-					// First row
-					newROI.xMin = k * wd / 4.f;
-					newROI.yMin = 0;
-					newROI.xMax = wd / 4.f + k * wd / 4.f - 1;
-					newROI.yMax = hg / 2.f - 1;
-
-					tictac.Tic();
-					extractFeaturesKLT(
-						img, aux_feats[k], init_ID, nDesiredFeatures, newROI);
-					cout << "Tiempo en extraer una tile: "
-						 << tictac.Tac() * 1000.0f << endl;
-
-					tam[k][0] = k;
-					tam[k][1] = aux_feats[k].size();
-
-					// Second row
-					newROI.xMin = k * wd / 4;
-					newROI.yMin = hg / 2;
-					newROI.xMax = wd / 4 + k * wd / 4 - 1;
-					newROI.yMax = hg - 1;
-
-					tictac.Tic();
-					extractFeaturesKLT(
-						img, aux_feats[k + 4], init_ID, nDesiredFeatures,
-						newROI);
-					cout << "Tiempo en extraer una tile: "
-						 << tictac.Tac() * 1000.0f << endl;
-
-					tam[k + 4][0] = k + 4;
-					tam[k + 4][1] = aux_feats[k + 4].size();
-
-					tt += aux_feats[k].size() + aux_feats[k + 4].size();
-				}
-
-				// Merge all the features
-				unsigned int new_nDesiredFeatures =
-					nDesiredFeatures <= 0 ? 300 : nDesiredFeatures;
-				unsigned int o_n_per_tile = floor(new_nDesiredFeatures / 8.0f);
-				feats.clear();
-				if (tt > new_nDesiredFeatures)  // We have found too many
-				// features, we have to select
-				// them
-				{
-					// Order the size vector
-					std::sort(tam.begin(), tam.end(), sort_pred());
-
-					if (tam[0][1] > o_n_per_tile)  // The smallest subset
-					{
-						// Everything goes right -> Get o_n_per_tile features
-						// from each tile.
-						for (unsigned int m = 0; m < 8; m++)
-							for (unsigned int k = 0; k < o_n_per_tile; k++)
-								feats.push_back(aux_feats[m][k]);
-					}
-					else
-					{
-						std::vector<std::vector<unsigned int>>::iterator
-							itVector;
-						unsigned int n_per_tile = o_n_per_tile;
-
-						for (itVector = tam.begin(); itVector != tam.end();
-							 itVector++)
-						{
-							if ((*itVector)[1] <
-								n_per_tile)  // Size of the subset
-							{
-								// We have to distribute the features among the
-								// tiles
-								for (unsigned int k = 0; k < (*itVector)[1];
-									 k++)
-								{
-									feats.push_back(
-										aux_feats[(*itVector)[0]][k]);
-									n_per_tile += (n_per_tile - (*itVector)[1]);
-								}  // end for
-							}  // end if
-							else
-							{
-								for (unsigned int k = 0; k < n_per_tile; k++)
-								{
-									feats.push_back(
-										aux_feats[(*itVector)[0]][k]);
-									n_per_tile = o_n_per_tile;
-								}  // end for
-							}  // end else
-						}  // end for 'itVector'
-					}  // end else
-				}  // end if tt > nDesiredFeatures
-				else  // We have found less features than the desired
-				{
-					CFeatureList::iterator itList;
-					for (unsigned int m = 0; m < 8; m++)
-						for (itList = aux_feats[m].begin();
-							 itList != aux_feats[m].end(); itList++)
-							feats.push_back(*itList);
-					;
-				}
-
-			}  // end if
-
-			else
-				extractFeaturesKLT(img, feats, init_ID, nDesiredFeatures, ROI);
+			extractFeaturesKLT(img, feats, init_ID, nDesiredFeatures, ROI);
 			break;
 
 		case featKLT:
@@ -194,7 +61,7 @@ void CFeatureExtraction::detectFeatures(
 			break;
 
 		case featFAST:
-			extractFeaturesFAST(img, feats, init_ID, nDesiredFeatures, ROI);
+			extractFeaturesFAST(img, feats, init_ID, nDesiredFeatures);
 			break;
 
 		case featFASTER9:
@@ -323,7 +190,6 @@ CFeatureExtraction::TOptions::TOptions(const TFeatureType _featsType)
 		0.005f;  // 0.01f; The lower this is, more features will be found
 	harrisOptions.sigma = 3.0f;
 	harrisOptions.min_distance = 5;  // 10;
-	harrisOptions.tile_image = false;
 
 	// KLT Options
 	KLTOptions.min_distance = 5;  // 10;

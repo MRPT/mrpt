@@ -190,7 +190,6 @@ void TestMatchFeatures(bool showMatches)
 	cout << "***************************************************" << endl;
 
 	// Match features:
-	size_t nMatches;
 	TMatchingOptions opt;
 
 	//	// HARRIS
@@ -198,7 +197,7 @@ void TestMatchFeatures(bool showMatches)
 	double T = 0.0;
 	cout << "Matching HARRIS features" << endl;
 	tictac.Tic();
-	nMatches = matchFeatures(featsHarris_L, featsHarris_R, mHarris);
+	auto nMatches = matchFeatures(featsHarris_L, featsHarris_R, mHarris);
 	T = tictac.Tac();
 	cout << "[NCC] Matches found: " << mHarris.size() << " in " << T * 1000.0f
 		 << " ms " << endl;

@@ -28,10 +28,8 @@ using namespace std;
  ************************************************************************************************/
 void CFeatureExtraction::extractFeaturesFAST(
 	const mrpt::img::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
-	unsigned int nDesiredFeatures, const TImageROI& ROI,
-	const CMatrixBool* mask) const
+	unsigned int nDesiredFeatures) const
 {
-	MRPT_UNUSED_PARAM(ROI);
 	MRPT_START
 
 #if MRPT_HAS_OPENCV
@@ -41,33 +39,7 @@ void CFeatureExtraction::extractFeaturesFAST(
 
 	// Make sure we operate on a gray-scale version of the image:
 	const CImage inImg_gray(inImg, FAST_REF_OR_CONVERT_TO_GRAY);
-
-	// JL: Instead of
-	//	int aux = options.FASTOptions.threshold; ....
-	//  It's better to use an adaptive threshold, controlled from our caller
-	//  outside.
-
-	const Mat theImg = cvarrToMat(inImg_gray.getAs<IplImage>());
-
-	cv::Mat cvMask;
-	if (options.useMask)
-	{
-		cout << "using mask" << endl;
-		size_t maskW = mask->cols(), maskH = mask->rows();
-		ASSERT_(
-			maskW == inImg_gray.getWidth() && maskH == inImg_gray.getHeight());
-
-		// Convert Mask into CV type
-		cvMask = cv::Mat::ones(maskH, maskW, CV_8UC1);
-		for (int ii = 0; ii < int(maskW); ++ii)
-			for (int jj = 0; jj < int(maskH); ++jj)
-			{
-				if (!mask->get_unsafe(jj, ii))
-				{
-					cvMask.at<char>(ii, jj) = (char)0;
-				}
-			}
-	}
+	const Mat theImg = inImg_gray.asCvMat<cv::Mat>(SHALLOW_COPY);
 
 #if MRPT_OPENCV_VERSION_NUM < 0x300
 	FastFeatureDetector fastDetector(
@@ -220,7 +192,6 @@ void CFeatureExtraction::extractFeaturesFAST(
 		feats.push_back(ft);
 		++cont;
 	}
-	// feats.resize( cont );  // JL: really needed???
 
 #endif
 	MRPT_END

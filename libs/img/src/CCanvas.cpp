@@ -14,6 +14,7 @@
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/core/round.h>
+#include <mrpt/core/bit_cast.h>
 #include <mrpt/io/zip.h>
 #include <map>
 
@@ -262,7 +263,11 @@ void CCanvas::drawImage(int x, int y, const mrpt::img::CImage& img)
 	{
 		for (int xx = 0; xx < img_lx; xx++)
 			for (int yy = 0; yy < img_ly; yy++)
-				setPixel(x + xx, y + yy, *((int*)img(xx, yy)));
+			{
+				auto ptr = img(xx, yy);
+				const int p = ptr[0] | (ptr[1] << 8) | (ptr[2] << 16);
+				setPixel(x + xx, y + yy, p);
+			}
 	}
 	else
 	{

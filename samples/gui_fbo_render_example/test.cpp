@@ -71,7 +71,7 @@ void TestDisplay3D()
 	int c = 0, width = 640, height = 480;
 
 	CFBORender render(width, height);
-	CImage frame(width, height, 3, false);
+	CImage frame(width, height, CH_RGB);
 
 	{
 		CCamera& camera = render.getCamera(scene);
@@ -96,7 +96,7 @@ void TestDisplay3D()
 		if (++c > 100)
 		{
 			width = 800, height = 600;
-			frame.resize(width, height, 3, false);
+			frame.resize(width, height, CH_RGB);
 			render.resize(width, height);
 		}
 

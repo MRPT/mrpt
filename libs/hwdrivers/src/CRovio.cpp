@@ -353,11 +353,7 @@ bool CRovio::captureImageAsync(CImage& picture, bool rectified)
 
 		CMemoryStream stream(&resp[0], resp.size());
 		picture.loadFromStreamAsJPEG(stream);
-		if (rectified)  // Comprobar que las matrices existen y son
-			// correctas********************
-			picture.rectifyImageInPlace(options.cameraParams);
-		// picture.saveToFile("0000.jpg");
-		// cout<<"Response:\n"<<response<<endl;
+		if (rectified) picture.undistort(picture, options.cameraParams);
 		return true;
 	}
 	catch (const std::exception& e)

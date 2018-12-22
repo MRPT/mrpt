@@ -91,19 +91,17 @@ void CFeatureExtraction::internal_computeSpinImageDescriptors(
 		py0 = max(0, py0);
 		py1 = min(img_h - 1, py1);
 
-		uint8_t pix_val;
-		uint8_t* aux_pix_ptr;
-
 		for (int px = px0; px <= px1; px++)
 		{
 			for (int py = py0; py <= py1; py++)
 			{
+				uint8_t pix_val;
 				// get the pixel color [0,255]
 				if (!img_color)
-					pix_val = *in_img.get_unsafe(px, py, 0);
+					pix_val = in_img.at<uint8_t>(px, py);
 				else
 				{
-					aux_pix_ptr = in_img.get_unsafe(px, py, 0);
+					auto aux_pix_ptr = in_img.ptr<uint8_t>(px, py);
 					pix_val =
 						(aux_pix_ptr[0] + aux_pix_ptr[1] + aux_pix_ptr[2]) / 3;
 				}
@@ -119,15 +117,6 @@ void CFeatureExtraction::internal_computeSpinImageDescriptors(
 				// const double density_circular_area = 1.0/ (M_2PI *
 				// (center_bin_dist+0.5) * square(k_idx2dis) );
 
-#if 0
-				// "normal" histogram
-				const int bin_int = k_int2idx * pix_val;
-
-				if (center_bin_dist<static_cast<int>(HIST_N_DIS))  // this accounts for the "square" or "circle" shapes of the area to account for
-				{
-					hist2d(bin_int,center_bin_dist) +=1; // * density_circular_area;
-				}
-#else
 				// Apply a "soft-histogram", so each pixel counts into several
 				// bins,
 				//  weighted by a exponential function to model a Gaussian
@@ -176,40 +165,18 @@ void CFeatureExtraction::internal_computeSpinImageDescriptors(
 							// Gaussian kernel:
 							double v = _2var_dist * square(pix_dist_cur_dist) +
 									   _2var_int * square(pix_val_cur_val);
-							//								_2var_dist *
-							// square(pix_dist
-							//-
-							// bin_dist*k_idx2dis ) +
-							//								_2var_int  *
-							// square(pix_val-(bin_int*k_idx2int));
 
-							hist2d.get_unsafe(bin_int, bin_dist) +=
-								exp(v);  // * density_circular_area;
+							hist2d.get_unsafe(bin_int, bin_dist) += exp(v);
 						}
 					}
 					// hist2d(bin_int,bin_dist) *= ;
 				}  // in range
-#endif
 
 			}  // end py
 		}  // end px
 
 		// Normalize:
 		hist2d.normalize(0, 1);  // [0,1]
-
-#if 0
-		{	// Debug
-			static int n=0;
-			CMatrixDouble AA(hist2d);
-			AA.normalize(0,1);
-			CImage  aux_img( AA );
-			aux_img.saveToFile( format("spin_feat_%04i.png",n) );
-			CImage  aux_img2 = in_img;
-			aux_img2.drawCircle((*it)->x,(*it)->y,20,TColor(255,0,0));
-			aux_img2.saveToFile( format("spin_feat_%04i_map.png",n) );
-			n++;
-		}
-#endif
 
 		// Save the histogram as a vector:
 		unsigned idx = 0;

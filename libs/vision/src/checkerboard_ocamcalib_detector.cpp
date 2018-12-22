@@ -85,28 +85,9 @@ bool do_special_dilation(
 	IplConvKernel* kernel_diag2, IplConvKernel* kernel_horz,
 	IplConvKernel* kernel_vert)
 {
-#if 0
-	// MARTIN's Code
-	// Use both a rectangular and a cross kernel. In this way, a more
-	// homogeneous dilation is performed, which is crucial for small,
-	// distorted checkers. Use the CROSS kernel first, since its action
-	// on the image is more subtle
-	if (dilations >= 1)
-		cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel_cross, 1);
-	if (dilations >= 2)
-		cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel_rect, 1);
-	if (dilations >= 3)
-		cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel_cross, 1);
-	if (dilations >= 4)
-		cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel_rect, 1);
-	if (dilations >= 5)
-		cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel_cross, 1);
-	if (dilations >= 6)
-		cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel_rect, 1);
-
-	return dilations==6; // Last dilation?
-#else
-	auto* ipl = thresh_img.getAs<IplImage>();
+	cv::Mat m = thresh_img.asCvMat<cv::Mat>(SHALLOW_COPY);
+	IplImage i(m);
+	IplImage* ipl = &i;
 
 	bool isLast = false;
 
@@ -115,128 +96,126 @@ bool do_special_dilation(
 		case 37:
 			cvDilate(ipl, ipl, kernel_cross, 1);
 			isLast = true;
-		// fall through
+			[[fallthrough]];
 		case 36:
 			cvErode(ipl, ipl, kernel_rect, 1);
-		// fall through
+			[[fallthrough]];
 		case 35:
 			cvDilate(ipl, ipl, kernel_vert, 1);
-		// fall through
+			[[fallthrough]];
 		case 34:
 			cvDilate(ipl, ipl, kernel_vert, 1);
-		// fall through
+			[[fallthrough]];
 		case 33:
 			cvDilate(ipl, ipl, kernel_vert, 1);
-		// fall through
+			[[fallthrough]];
 		case 32:
 			cvDilate(ipl, ipl, kernel_vert, 1);
-		// fall through
+			[[fallthrough]];
 		case 31:
 			cvDilate(ipl, ipl, kernel_vert, 1);
 			break;
 
 		case 30:
 			cvDilate(ipl, ipl, kernel_cross, 1);
-		// fall through
+			[[fallthrough]];
 		case 29:
 			cvErode(ipl, ipl, kernel_rect, 1);
-		// fall through
+			[[fallthrough]];
 		case 28:
 			cvDilate(ipl, ipl, kernel_horz, 1);
-		// fall through
+			[[fallthrough]];
 		case 27:
 			cvDilate(ipl, ipl, kernel_horz, 1);
-		// fall through
+			[[fallthrough]];
 		case 26:
 			cvDilate(ipl, ipl, kernel_horz, 1);
-		// fall through
+			[[fallthrough]];
 		case 25:
 			cvDilate(ipl, ipl, kernel_horz, 1);
-		// fall through
+			[[fallthrough]];
 		case 24:
 			cvDilate(ipl, ipl, kernel_horz, 1);
 			break;
 
 		case 23:
 			cvDilate(ipl, ipl, kernel_diag2, 1);
-		// fall through
+			[[fallthrough]];
 		case 22:
 			cvDilate(ipl, ipl, kernel_diag1, 1);
-		// fall through
+			[[fallthrough]];
 		case 21:
 			cvDilate(ipl, ipl, kernel_diag2, 1);
-		// fall through
+			[[fallthrough]];
 		case 20:
 			cvDilate(ipl, ipl, kernel_diag1, 1);
-		// fall through
+			[[fallthrough]];
 		case 19:
 			cvDilate(ipl, ipl, kernel_diag2, 1);
-		// fall through
+			[[fallthrough]];
 		case 18:
 			cvDilate(ipl, ipl, kernel_diag1, 1);
 			break;
 
 		case 17:
 			cvDilate(ipl, ipl, kernel_diag2, 1);
-		// fall through
+			[[fallthrough]];
 		case 16:
 			cvDilate(ipl, ipl, kernel_diag2, 1);
-		// fall through
+			[[fallthrough]];
 		case 15:
 			cvDilate(ipl, ipl, kernel_diag2, 1);
-		// fall through
+			[[fallthrough]];
 		case 14:
 			cvDilate(ipl, ipl, kernel_diag2, 1);
 			break;
 
 		case 13:
 			cvDilate(ipl, ipl, kernel_diag1, 1);
-		// fall through
+			[[fallthrough]];
 		case 12:
 			cvDilate(ipl, ipl, kernel_diag1, 1);
-		// fall through
+			[[fallthrough]];
 		case 11:
 			cvDilate(ipl, ipl, kernel_diag1, 1);
-		// fall through
+			[[fallthrough]];
 		case 10:
 			cvDilate(ipl, ipl, kernel_diag1, 1);
 			break;
 
 		case 9:
 			cvDilate(ipl, ipl, kernel_cross, 1);
-		// fall through
+			[[fallthrough]];
 		case 8:
 			cvErode(ipl, ipl, kernel_rect, 1);
-		// fall through
+			[[fallthrough]];
 		case 7:
 			cvDilate(ipl, ipl, kernel_cross, 1);
-		// fall through
+			[[fallthrough]];
 		case 6:
 			cvDilate(ipl, ipl, kernel_diag2, 1);
 			isLast = true;
-		// fall through
+			[[fallthrough]];
 		case 5:
 			cvDilate(ipl, ipl, kernel_diag1, 1);
-		// fall through
+			[[fallthrough]];
 		case 4:
 			cvDilate(ipl, ipl, kernel_rect, 1);
-		// fall through
+			[[fallthrough]];
 		case 3:
 			cvErode(ipl, ipl, kernel_cross, 1);
-		// fall through
+			[[fallthrough]];
 		case 2:
 			cvDilate(ipl, ipl, kernel_rect, 1);
-		// fall through
+			[[fallthrough]];
 		case 1:
 			cvDilate(ipl, ipl, kernel_cross, 1);
-		// fall through
+			[[fallthrough]];
 		case 0: /* first try: do nothing to the image */
 			break;
 	};
 
 	return isLast;
-
-#endif
 }
 
 //===========================================================================
@@ -316,18 +295,12 @@ int cvFindChessboardCorners3(
 	// thresholding!
 	block_size = cvRound(MIN(img.getWidth(), img.getHeight()) * 0.2) | 1;
 
-	cvAdaptiveThreshold(
-		img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), 255,
+	cv::adaptiveThreshold(
+		img.asCvMat<cv::Mat>(SHALLOW_COPY),
+		thresh_img.asCvMat<cv::Mat>(SHALLOW_COPY), 255,
 		CV_ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY, block_size, 0);
 
-	cvCopy(thresh_img.getAs<IplImage>(), thresh_img_save.getAs<IplImage>());
-
-// VISUALIZATION--------------------------------------------------------------
-#if VIS
-	// mrpt::system::deleteFiles("./DBG_*.png");
-	img.saveToFile("./DBG_OrigImg.png");
-#endif
-	// END------------------------------------------------------------------------
+	thresh_img_save = thresh_img.makeDeepCopy();
 
 	// PART 1: FIND LARGEST PATTERN
 	//-----------------------------------------------------------------------
@@ -344,25 +317,20 @@ int cvFindChessboardCorners3(
 	{
 		// Calling "cvCopy" again is much faster than rerunning
 		// "cvAdaptiveThreshold"
-		cvCopy(thresh_img_save.getAs<IplImage>(), thresh_img.getAs<IplImage>());
+		thresh_img = thresh_img_save.makeDeepCopy();
 
 		// Dilate squares:
 		last_dilation = do_special_dilation(
 			thresh_img, dilations, kernel_cross, kernel_rect, kernel_diag1,
 			kernel_diag2, kernel_horz, kernel_vert);
 
-#if VIS
-		thresh_img.saveToFile(
-			mrpt::format("./DBG_dilation=%i.png", (int)dilations));
-#endif
-
 		// In order to find rectangles that go to the edge, we draw a white
 		// line around the image edge. Otherwise FindContours will miss those
 		// clipped rectangle contours. The border color will be the image mean,
 		// because otherwise we risk screwing up filters like cvSmooth()
-		cvRectangle(
-			thresh_img.getAs<IplImage>(), cvPoint(0, 0),
-			cvPoint(thresh_img.getWidth() - 1, thresh_img.getHeight() - 1),
+		cv::rectangle(
+			thresh_img.asCvMat<cv::Mat>(SHALLOW_COPY), cv::Point(0, 0),
+			cv::Point(thresh_img.getWidth() - 1, thresh_img.getHeight() - 1),
 			CV_RGB(255, 255, 255), 3, 8);
 
 		// Generate quadrangles in the following function
@@ -375,69 +343,6 @@ int cvFindChessboardCorners3(
 		// quadrangle in the immediate vicinity fulfilling certain
 		// prerequisites
 		mrFindQuadNeighbors2(quads, dilations);
-
-// VISUALIZATION--------------------------------------------------------------
-#if VIS
-		IplImage* imageCopy22 =
-			cvCreateImage(cvGetSize(thresh_img.getAs<IplImage>()), 8, 3);
-		{
-			// cvNamedWindow( "all found quads per dilation run", 1 );
-			IplImage* imageCopy2 =
-				cvCreateImage(cvGetSize(thresh_img.getAs<IplImage>()), 8, 1);
-			cvCopy(thresh_img.getAs<IplImage>(), imageCopy2);
-			cvCvtColor(imageCopy2, imageCopy22, CV_GRAY2BGR);
-
-			for (int kkk = 0; kkk < quad_count; kkk++)
-			{
-				const CvCBQuad::Ptr& print_quad = quads[kkk];
-				CvPoint pt[4];
-				pt[0].x = (int)print_quad->corners[0]->pt.x;
-				pt[0].y = (int)print_quad->corners[0]->pt.y;
-				pt[1].x = (int)print_quad->corners[1]->pt.x;
-				pt[1].y = (int)print_quad->corners[1]->pt.y;
-				pt[2].x = (int)print_quad->corners[2]->pt.x;
-				pt[2].y = (int)print_quad->corners[2]->pt.y;
-				pt[3].x = (int)print_quad->corners[3]->pt.x;
-				pt[3].y = (int)print_quad->corners[3]->pt.y;
-				cvLine(imageCopy22, pt[0], pt[1], CV_RGB(255, 255, 0), 1, 8);
-				cvLine(imageCopy22, pt[1], pt[2], CV_RGB(255, 255, 0), 1, 8);
-				cvLine(imageCopy22, pt[2], pt[3], CV_RGB(255, 255, 0), 1, 8);
-				cvLine(imageCopy22, pt[3], pt[0], CV_RGB(255, 255, 0), 1, 8);
-			}
-			static int cnt = 0;
-			cnt++;
-			cvSaveImage(
-				mrpt::format("./DBG_dilation=%i_quads.png", (int)dilations)
-					.c_str(),
-				imageCopy22);
-
-			// cvNamedWindow( "quads with neighbors", 1 );
-			IplImage* imageCopy3 =
-				cvCreateImage(cvGetSize(thresh_img.getAs<IplImage>()), 8, 3);
-			cvCopy(imageCopy22, imageCopy3);
-			CvPoint pt;
-			int scale = 0;
-			int line_type = CV_AA;
-			CvScalar color = {{0, 0, 255}};
-			for (int kkk = 0; kkk < quad_count; kkk++)
-			{
-				const CvCBQuad::Ptr& print_quad2 = quads[kkk];
-				for (int kkkk = 0; kkkk < 4; kkkk++)
-				{
-					if (print_quad2->neighbors[kkkk])
-					{
-						pt.x = (int)(print_quad2->corners[kkkk]->pt.x);
-						pt.y = (int)(print_quad2->corners[kkkk]->pt.y);
-						cvCircle(imageCopy3, pt, 3, color, 1, line_type, scale);
-					}
-				}
-			}
-			cvSaveImage(
-				mrpt::format("./DBG_allFoundNeighbors_%05i.png", cnt).c_str(),
-				imageCopy3);
-		}
-#endif
-		// END------------------------------------------------------------------------
 
 		// The connected quads will be organized in groups. The following loop
 		// increases a "group_idx" identifier.
@@ -478,73 +383,6 @@ int cvFindChessboardCorners3(
 				// made.
 				mrLabelQuadGroup(quad_group, pattern_size, true);
 
-// VISUALIZATION--------------------------------------------------------------
-#if VIS
-				// display all corners in INCREASING ROW AND COLUMN ORDER
-				// cvNamedWindow( "Corners in increasing order", 1 );
-				IplImage* imageCopy11 = cvCreateImage(
-					cvGetSize(thresh_img.getAs<IplImage>()), 8, 3);
-				cvCopy(imageCopy22, imageCopy11);
-				// Assume min and max rows here, since we are outside of the
-				// relevant function
-				int min_row = -15;
-				int max_row = 15;
-				int min_column = -15;
-				int max_column = 15;
-				for (int i = min_row; i <= max_row; i++)
-				{
-					for (int j = min_column; j <= max_column; j++)
-					{
-						for (size_t k = 0; k < count; k++)
-						{
-							for (size_t l = 0; l < 4; l++)
-							{
-								if (((quad_group[k])->corners[l]->row == i) &&
-									((quad_group[k])->corners[l]->column == j))
-								{
-									// draw the row and column numbers
-									char str[255];
-									sprintf(str, "%i/%i", i, j);
-									CvFont font;
-									cvInitFont(
-										&font, CV_FONT_HERSHEY_SIMPLEX, 0.2,
-										0.2, 0, 1);
-									CvPoint ptt;
-									ptt.x =
-										(int)quad_group[k]->corners[l]->pt.x;
-									ptt.y =
-										(int)quad_group[k]->corners[l]->pt.y;
-									// Mark central corners with a different
-									// color than
-									// border corners
-									if ((quad_group[k])
-											->corners[l]
-											->needsNeighbor == false)
-									{
-										cvPutText(
-											imageCopy11, str, ptt, &font,
-											CV_RGB(0, 255, 0));
-									}
-									else
-									{
-										cvPutText(
-											imageCopy11, str, ptt, &font,
-											CV_RGB(255, 0, 0));
-									}
-									// cvShowImage( "Corners in increasing
-									// order", imageCopy11);
-								}
-							}
-						}
-					}
-				}
-				static int cnt = 0;
-				cvSaveImage(
-					format("./DBG_CornersIncreasingOrder_%05i.png", cnt++)
-						.c_str(),
-					imageCopy11);
-// cvWaitKey(0);
-#endif
 				// END------------------------------------------------------------------------
 
 				// Allocate memory
@@ -570,8 +408,6 @@ int cvFindChessboardCorners3(
 	// "CvPoint2D32f *out_corners":
 	// Return true on success in finding all the quads.
 	found = myQuads2Points(output_quad_group, pattern_size, out_corners);
-	// found = mrWriteCorners( output_quad_group, max_count, pattern_size,
-	// min_number_of_corners);
 
 	if (found != -1 && found != 1)
 	{
@@ -593,130 +429,23 @@ int cvFindChessboardCorners3(
 
 			// Calling "cvCopy" again is much faster than rerunning
 			// "cvAdaptiveThreshold"
-			cvCopy(
-				thresh_img_save.getAs<IplImage>(),
-				thresh_img.getAs<IplImage>());
+			thresh_img = thresh_img_save.makeDeepCopy();
 
 			// Dilate squares:
 			last_dilation = do_special_dilation(
 				thresh_img, dilations, kernel_cross, kernel_rect, kernel_diag1,
 				kernel_diag2, kernel_horz, kernel_vert);
 
-			cvRectangle(
-				thresh_img.getAs<IplImage>(), cvPoint(0, 0),
-				cvPoint(thresh_img.getWidth() - 1, thresh_img.getHeight() - 1),
+			cv::rectangle(
+				thresh_img.asCvMat<cv::Mat>(SHALLOW_COPY), cv::Point(0, 0),
+				cv::Point(
+					thresh_img.getWidth() - 1, thresh_img.getHeight() - 1),
 				CV_RGB(255, 255, 255), 3, 8);
-
-// VISUALIZATION--------------------------------------------------------------
-#if VIS
-			// cvNamedWindow( "PART2: Starting Point", 1 );
-			IplImage* imageCopy23 =
-				cvCreateImage(cvGetSize(thresh_img.getAs<IplImage>()), 8, 3);
-			cvCvtColor(thresh_img.getAs<IplImage>(), imageCopy23, CV_GRAY2BGR);
-
-			CvPoint pt[4];
-			for (size_t kkk = 0; kkk < max_count; kkk++)
-			{
-				const CvCBQuad::Ptr& print_quad2 = output_quad_group[kkk];
-				for (size_t kkkk = 0; kkkk < 4; kkkk++)
-				{
-					pt[kkkk].x = (int)print_quad2->corners[kkkk]->pt.x;
-					pt[kkkk].y = (int)print_quad2->corners[kkkk]->pt.y;
-				}
-				// draw a filled polygon
-				cvFillConvexPoly(
-					imageCopy23, pt, 4,
-					CV_RGB(255 * 0.1, 255 * 0.25, 255 * 0.6));
-			}
-			// indicate the dilation run
-			char str[255];
-			sprintf(str, "Dilation Run No.: %i", dilations);
-			CvFont font;
-			cvInitFont(&font, CV_FONT_HERSHEY_SIMPLEX, 0.5, 0.5, 0, 2);
-			// cvPutText(imageCopy23, str, cvPoint(20,20), &font,
-			// CV_RGB(0,255,0));
-
-			// cvShowImage( "PART2: Starting Point", imageCopy23);
-			cvSaveImage("./DBG_part2Start.png", imageCopy23);
-// cvWaitKey(0);
-#endif
-			// END------------------------------------------------------------------------
 
 			quad_count = icvGenerateQuads(
 				quads, corners, thresh_img, flags, dilations, false);
 			if (quad_count <= 0) continue;
 
-// VISUALIZATION--------------------------------------------------------------
-#if VIS
-			// draw on top of previous image
-			for (int kkk = 0; kkk < quad_count; kkk++)
-			{
-				const CvCBQuad::Ptr& print_quad = quads[kkk];
-
-				CvPoint pt[4];
-				pt[0].x = (int)print_quad->corners[0]->pt.x;
-				pt[0].y = (int)print_quad->corners[0]->pt.y;
-				pt[1].x = (int)print_quad->corners[1]->pt.x;
-				pt[1].y = (int)print_quad->corners[1]->pt.y;
-				pt[2].x = (int)print_quad->corners[2]->pt.x;
-				pt[2].y = (int)print_quad->corners[2]->pt.y;
-				pt[3].x = (int)print_quad->corners[3]->pt.x;
-				pt[3].y = (int)print_quad->corners[3]->pt.y;
-				cvLine(imageCopy23, pt[0], pt[1], CV_RGB(255, 0, 0), 1, 8);
-				cvLine(imageCopy23, pt[1], pt[2], CV_RGB(255, 0, 0), 1, 8);
-				cvLine(imageCopy23, pt[2], pt[3], CV_RGB(255, 0, 0), 1, 8);
-				cvLine(imageCopy23, pt[3], pt[0], CV_RGB(255, 0, 0), 1, 8);
-				// compute center of print_quad
-				//				int x1 = (pt[0].x + pt[1].x)/2;
-				//				int y1 = (pt[0].y + pt[1].y)/2;
-				//				int x2 = (pt[2].x + pt[3].x)/2;
-				//				int y2 = (pt[2].y + pt[3].y)/2;
-
-				// int x3 = (x1 + x2)/2;
-				// int y3 = (y1 + y2)/2;
-				// indicate the quad number in the image
-				// char str[255];
-				// sprintf(str,"%i",kkk);
-				// CvFont font;
-				// cvInitFont(&font, CV_FONT_HERSHEY_SIMPLEX, 0.5, 0.5, 0, 1);
-				// cvPutText(imageCopy23, str, cvPoint(x3,y3), &font,
-				// CV_RGB(0,255,255));
-			}
-
-			for (size_t kkk = 0; kkk < max_count; kkk++)
-			{
-				const CvCBQuad::Ptr& print_quad = output_quad_group[kkk];
-
-				CvPoint pt[4];
-				pt[0].x = (int)print_quad->corners[0]->pt.x;
-				pt[0].y = (int)print_quad->corners[0]->pt.y;
-				pt[1].x = (int)print_quad->corners[1]->pt.x;
-				pt[1].y = (int)print_quad->corners[1]->pt.y;
-				pt[2].x = (int)print_quad->corners[2]->pt.x;
-				pt[2].y = (int)print_quad->corners[2]->pt.y;
-				pt[3].x = (int)print_quad->corners[3]->pt.x;
-				pt[3].y = (int)print_quad->corners[3]->pt.y;
-				// compute center of print_quad
-				//				int x1 = (pt[0].x + pt[1].x)/2;
-				//				int y1 = (pt[0].y + pt[1].y)/2;
-				//				int x2 = (pt[2].x + pt[3].x)/2;
-				//				int y2 = (pt[2].y + pt[3].y)/2;
-				//
-				//				int x3 = (x1 + x2)/2;
-				//				int y3 = (y1 + y2)/2;
-				// indicate the quad number in the image
-				//				char str[255];
-				//				sprintf(str,"%i",kkk);
-				// CvFont font;
-				// cvInitFont(&font, CV_FONT_HERSHEY_SIMPLEX, 0.5, 0.5, 0, 1);
-				// cvPutText(imageCopy23, str, cvPoint(x3,y3), &font,
-				// CV_RGB(0,0,0));
-			}
-
-			// cvShowImage( "PART2: Starting Point", imageCopy23);
-			cvSaveImage("./DBG_part2StartAndNewQuads.png", imageCopy23);
-// cvWaitKey(0);
-#endif
 			// END------------------------------------------------------------------------
 
 			// MARTIN's Code
@@ -734,78 +463,6 @@ int cvFindChessboardCorners3(
 			{
 				feedBack = mrAugmentBestRun(
 					quads, dilations, output_quad_group, max_dilation_run_ID);
-
-// VISUALIZATION--------------------------------------------------------------
-#if VIS
-				if (feedBack == -1)
-				{
-					CvCBQuad::Ptr remember_quad;
-					for (size_t kkk = max_count; kkk < max_count + 1; kkk++)
-					{
-						CvCBQuad::Ptr print_quad = output_quad_group[kkk];
-						remember_quad = print_quad;
-						CvPoint pt[4];
-						pt[0].x = (int)print_quad->corners[0]->pt.x;
-						pt[0].y = (int)print_quad->corners[0]->pt.y;
-						pt[1].x = (int)print_quad->corners[1]->pt.x;
-						pt[1].y = (int)print_quad->corners[1]->pt.y;
-						pt[2].x = (int)print_quad->corners[2]->pt.x;
-						pt[2].y = (int)print_quad->corners[2]->pt.y;
-						pt[3].x = (int)print_quad->corners[3]->pt.x;
-						pt[3].y = (int)print_quad->corners[3]->pt.y;
-						cvLine(
-							imageCopy23, pt[0], pt[1], CV_RGB(255, 0, 0), 2, 8);
-						cvLine(
-							imageCopy23, pt[1], pt[2], CV_RGB(255, 0, 0), 2, 8);
-						cvLine(
-							imageCopy23, pt[2], pt[3], CV_RGB(255, 0, 0), 2, 8);
-						cvLine(
-							imageCopy23, pt[3], pt[0], CV_RGB(255, 0, 0), 2, 8);
-					}
-
-					cvWaitKey(0);
-					// also draw the corner to which it is connected
-					// Remember it is not yet completely linked!!!
-					for (size_t kkk = 0; kkk < max_count; kkk++)
-					{
-						const CvCBQuad::Ptr& print_quad =
-							output_quad_group[kkk];
-
-						for (size_t kkkk = 0; kkkk < 4; kkkk++)
-						{
-							if (print_quad->neighbors[kkkk] == remember_quad)
-							{
-								CvPoint pt[4];
-								pt[0].x = (int)print_quad->corners[0]->pt.x;
-								pt[0].y = (int)print_quad->corners[0]->pt.y;
-								pt[1].x = (int)print_quad->corners[1]->pt.x;
-								pt[1].y = (int)print_quad->corners[1]->pt.y;
-								pt[2].x = (int)print_quad->corners[2]->pt.x;
-								pt[2].y = (int)print_quad->corners[2]->pt.y;
-								pt[3].x = (int)print_quad->corners[3]->pt.x;
-								pt[3].y = (int)print_quad->corners[3]->pt.y;
-								cvLine(
-									imageCopy23, pt[0], pt[1],
-									CV_RGB(255, 0, 0), 2, 8);
-								cvLine(
-									imageCopy23, pt[1], pt[2],
-									CV_RGB(255, 0, 0), 2, 8);
-								cvLine(
-									imageCopy23, pt[2], pt[3],
-									CV_RGB(255, 0, 0), 2, 8);
-								cvLine(
-									imageCopy23, pt[3], pt[0],
-									CV_RGB(255, 0, 0), 2, 8);
-							}
-						}
-					}
-					// cvShowImage( "PART2: Starting Point", imageCopy23);
-					cvSaveImage(
-						"./DBG_part2StartAndSelectedQuad.png", imageCopy23);
-					// cvWaitKey(0);
-				}
-#endif
-				// END------------------------------------------------------------------------
 
 				// if we have found a new matching quad
 				if (feedBack == -1)
@@ -888,11 +545,7 @@ double median(const std::vector<double>& vec)
 void icvCleanFoundConnectedQuads(
 	std::vector<CvCBQuad::Ptr>& quad_group, const CvSize& pattern_size)
 {
-#if CV_MAJOR_VERSION == 1
-	CvMemStorage* temp_storage = nullptr;
-#else
 	cv::MemStorage temp_storage;  // JL: "Modernized" to use C++ STL stuff.
-#endif
 
 	CvPoint2D32f center = cvPoint2D32f(0, 0);
 
@@ -908,11 +561,7 @@ void icvCleanFoundConnectedQuads(
 
 	// Create an array of quadrangle centers
 	vector<CvPoint2D32f> centers(nQuads);
-#if CV_MAJOR_VERSION == 1
-	temp_storage = cvCreateMemStorage(0);
-#else
 	temp_storage = cv::MemStorage(cvCreateMemStorage(0));
-#endif
 
 	// make also the list of squares areas, so we can discriminate by
 	// too-large/small quads:
@@ -1058,11 +707,6 @@ void icvCleanFoundConnectedQuads(
 		quad_group.erase(quad_group.begin() + min_box_area_index);
 		centers.erase(centers.begin() + min_box_area_index);
 	}
-
-// done.
-#if CV_MAJOR_VERSION == 1
-	cvReleaseMemStorage(&temp_storage);
-#endif
 }
 
 //===========================================================================
@@ -2239,13 +1883,9 @@ int icvGenerateQuads(
 	// Initializations
 	int quad_count = 0;
 
-// Create temporary storage for contours and the sequence of pointers to
-// found quadrangles
-#if CV_MAJOR_VERSION == 1
-	CvMemStorage* temp_storage = cvCreateMemStorage(0);
-#else
+	// Create temporary storage for contours and the sequence of pointers to
+	// found quadrangles
 	cv::MemStorage temp_storage = cv::MemStorage(cvCreateMemStorage(0));
-#endif
 
 	CvSeq* src_contour = nullptr;
 	CvSeq* root;  // cv::Seq<> root;  //
@@ -2260,9 +1900,11 @@ int icvGenerateQuads(
 	root = cvCreateSeq(0, sizeof(CvSeq), sizeof(CvSeq*), temp_storage);
 
 	// Initialize contour retrieving routine
+	cv::Mat im_mat = image.asCvMat<cv::Mat>(SHALLOW_COPY);
+	IplImage im_ipl(im_mat);
 	scanner = cvStartFindContours(
-		const_cast<IplImage*>(image.getAs<IplImage>()), temp_storage,
-		sizeof(CvContourEx), CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE);
+		&im_ipl, temp_storage, sizeof(CvContourEx), CV_RETR_CCOMP,
+		CV_CHAIN_APPROX_SIMPLE);
 
 	// Get all the contours one by one
 	while ((src_contour = cvFindNextContour(scanner)) != nullptr)
@@ -2406,10 +2048,6 @@ int icvGenerateQuads(
 	}
 
 	cvClearSeq(root);
-
-#if CV_MAJOR_VERSION == 1
-	cvReleaseMemStorage(&temp_storage);
-#endif
 
 	return quad_count;
 }

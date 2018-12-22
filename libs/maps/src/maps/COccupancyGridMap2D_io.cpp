@@ -330,7 +330,6 @@ bool COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
 	MRPT_START
 
 	CImage img1, img2;
-	CImage img(10, 10, 3, true);
 	unsigned int i, n, Ay1, Ay2;
 	unsigned int px, py;
 
@@ -358,7 +357,7 @@ bool COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
 
 	// Compute the size of the composite image:
 	// ---------------------------------------------
-	img.resize(lx1 + lx2 + 1, max(ly1, ly2), 3, true);
+	CImage img(lx1 + lx2 + 1, max(ly1, ly2), mrpt::img::CH_RGB);
 	img.filledRectangle(
 		0, 0, img.getWidth() - 1, img.getHeight() - 1,
 		TColor::black());  // background: black

@@ -10,24 +10,19 @@
 #include <mrpt/hwdrivers/CVelodyneScanner.h>
 #include <mrpt/system/filesystem.h>
 #include <gtest/gtest.h>
+#include <test_mrpt_common.h>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace std;
-
-// Defined in tests/test_main.cpp
-namespace mrpt
-{
-extern std::string MRPT_GLOBAL_UNITTEST_SRC_DIR;
-}
 
 #include <mrpt/config.h>
 #if MRPT_HAS_LIBPCAP
 
 TEST(CVelodyneScanner, sample_vlp16_dataset)
 {
-	const string fil = MRPT_GLOBAL_UNITTEST_SRC_DIR +
-					   string("/tests/sample_velodyne_vlp16_gps.pcap");
+	const string fil =
+		UNITTEST_BASEDIR + string("/tests/sample_velodyne_vlp16_gps.pcap");
 
 	if (!mrpt::system::fileExists(fil))
 	{
@@ -66,8 +61,8 @@ TEST(CVelodyneScanner, sample_vlp16_dataset)
 
 TEST(CVelodyneScanner, sample_hdl32_dataset)
 {
-	const string fil = MRPT_GLOBAL_UNITTEST_SRC_DIR +
-					   string("/tests/sample_velodyne_hdl32.pcap");
+	const string fil =
+		UNITTEST_BASEDIR + string("/tests/sample_velodyne_hdl32.pcap");
 
 	if (!mrpt::system::fileExists(fil))
 	{

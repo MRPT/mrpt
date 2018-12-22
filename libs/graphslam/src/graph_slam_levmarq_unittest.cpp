@@ -12,12 +12,7 @@
 #include <gtest/gtest.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
-
-// Defined in tests/test_main.cpp
-namespace mrpt
-{
-extern std::string MRPT_GLOBAL_UNITTEST_SRC_DIR;
-}
+#include <test_mrpt_common.h>
 
 using namespace mrpt;
 using namespace mrpt::random;
@@ -167,7 +162,7 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
 		if (files_it == inout_graph_files.end())
 			return;  // No tests for this type
 
-		const string prefix = MRPT_GLOBAL_UNITTEST_SRC_DIR + string("/tests/");
+		const string prefix = UNITTEST_BASEDIR + string("/tests/");
 		for (const auto& tst : files_it->second)
 		{
 			std::cout << "Testing graph type `" << type << "`, in_file=`"
