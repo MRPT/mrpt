@@ -279,6 +279,7 @@ void COpenGLViewport::render(
 											: GL_LUMINANCE;
 
 					// Send image data to OpenGL:
+					glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 					glPixelStorei(
 						GL_UNPACK_ROW_LENGTH,
 						img->getRowStride() / nBytesPerPixel);
