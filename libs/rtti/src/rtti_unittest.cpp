@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/rtti/CObject.h>
+#include <mrpt/core/aligned_allocator.h>
 #include <gtest/gtest.h>
 
 namespace MyNS
@@ -15,8 +16,11 @@ namespace MyNS
 class MyDerived1 : public mrpt::rtti::CObject
 {
    public:
+	int m_value{0};
+
 	MyDerived1() = default;
-	DEFINE_MRPT_OBJECT(MyDerived1);
+	MyDerived1(int v) : m_value(v) {}
+	DEFINE_MRPT_OBJECT(MyDerived1)
 };
 }  // namespace MyNS
 
@@ -56,4 +60,35 @@ TEST(rtti, Factory)
 	do_register();
 	mrpt::rtti::CObject::Ptr p = mrpt::rtti::classFactoryPtr("MyDerived1");
 	EXPECT_TRUE(p);
+}
+
+TEST(rtti, CreateSmartPointerTypes)
+{
+	using T = MyNS::MyDerived1;
+	{
+		auto p = T::Create();
+		EXPECT_TRUE(p);
+		EXPECT_EQ(p->m_value, 0);
+	}
+	{
+		auto p = T::Create(123);
+		EXPECT_TRUE(p);
+		EXPECT_EQ(p->m_value, 123);
+	}
+	{
+		auto p = T::CreateUnique();
+		EXPECT_TRUE(p);
+		EXPECT_EQ(p->m_value, 0);
+	}
+	{
+		auto p = T::CreateUnique(123);
+		EXPECT_TRUE(p);
+		EXPECT_EQ(p->m_value, 123);
+	}
+	{
+		mrpt::aligned_allocator_cpp11<T> alloc;
+		auto p = T::CreateAlloc(alloc, 123);
+		EXPECT_TRUE(p);
+		EXPECT_EQ(p->m_value, 123);
+	}
 }
