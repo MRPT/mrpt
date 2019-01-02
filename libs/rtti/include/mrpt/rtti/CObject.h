@@ -117,24 +117,26 @@ struct CLASSINIT
 	}
 };
 
-/** The virtual base class of all MRPT classes with a unified RTTI system.
- *   For each class named <code>CMyClass</code>, a new type
- * <code>CMyClass::Ptr</code> is defined as a smart pointer (`std::shared_ptr`)
- * suitable for keeping reference-counting smart pointers to objects of the
- * class.
+/** Virtual base to provide a compiler-independent RTTI system.
+ *
+ * Each class named `Foo` will have associated smart pointer types:
+ * - `Foo::Ptr` => `std::shared_ptr<Foo>` (the most commonly-used one)
+ * - `Foo::ConstPtr` => `std::shared_ptr<const Foo>`
+ * - `Foo::UniquePtr` => `std::unique_ptr<Foo>`
+ * - `Foo::ConstUniquePtr` => `std::unique_ptr<const Foo>`
  *
  * It is recommended to use MRPT-defined `mrpt::make_aligned_shared<>` instead
  * of `std::make_shared<>` to create objects, to avoid memory alignment
  * problems caused by classes containing Eigen vectors or matrices. Example:
  * \code
- * CFoo::Ptr o = mrpt::make_aligned_shared<CFoo>();
+ * Foo::Ptr o = mrpt::make_aligned_shared<Foo>();
  * \endcode
- * Or using the shorter auxiliary static method `::Create()` to keep
- * compatibility
- * with MRPT 1.5.* code bases:
+ * Or using the shorter auxiliary static method `::Create()` for conciseness or
+ * to keep compatibility with MRPT 1.5.* code bases:
  * \code
- * CFoo::Ptr o = CFoo::Create();
+ * Foo::Ptr o = Foo::Create();
  * \endcode
+ * If a special memory allocator is needed, use `Foo::CreateAlloc(alloc,...);`.
  * \sa  mrpt::rtti::CObject
  * \ingroup mrpt_rtti_grp
  */
@@ -147,6 +149,8 @@ class CObject
    public:
 	using Ptr = std::shared_ptr<CObject>;
 	using ConstPtr = std::shared_ptr<const CObject>;
+	using UniquePtr = std::unique_ptr<CObject>;
+	using ConstUniquePtr = std::unique_ptr<const CObject>;
 	static const mrpt::rtti::TRuntimeClassId& GetRuntimeClassIdStatic();
 	/** Returns information about the class of an object in runtime. */
 	virtual const mrpt::rtti::TRuntimeClassId* GetRuntimeClass() const
@@ -154,9 +158,7 @@ class CObject
 		return CLASS_ID(CObject);
 	}
 
-	/** Returns a copy of the object, indepently of its class, as a smart
-	 * pointer (the newly created object will exist as long as any copy of this
-	 * smart pointer). */
+	/** Makes a deep copy of the object and returns a smart pointer to it */
 	inline mrpt::rtti::CObject::Ptr duplicateGetSmartPtr() const;
 
 	/** Returns a deep copy (clone) of the object, indepently of its class. */
@@ -201,6 +203,12 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 	{                                                                     \
 		return mrpt::make_aligned_shared<class_name>(                     \
 			std::forward<Args>(args)...);                                 \
+	}                                                                     \
+	template <typename Alloc, typename... Args>                           \
+	static Ptr CreateAlloc(const Alloc& alloc, Args&&... args)            \
+	{                                                                     \
+		return std::allocate_shared<class_name>(                          \
+			alloc, std::forward<Args>(args)...);                          \
 	}                                                                     \
 	template <typename... Args>                                           \
 	static UniquePtr CreateUnique(Args&&... args)                         \
@@ -259,7 +267,7 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 	virtual const mrpt::rtti::TRuntimeClassId* GetRuntimeClass()         \
 		const override;                                                  \
 	static const mrpt::rtti::TRuntimeClassId& GetRuntimeClassIdStatic(); \
-/*! @}  */
+	/*! @}  */
 
 /** This must be inserted as implementation of some required members for
  *  virtual CObject classes:
@@ -282,10 +290,10 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 		return NameSpace::class_name::runtimeClassId;                          \
 	}
 
-/** Register all pending classes - to be called just before de-serializing an
- * object, for example.
- * After calling this method, pending_class_registers_modified is set to false
- * until pending_class_registers() is invoked.
+/** Register all pending classes - to be called just before
+ * de-serializing an object, for example. After calling this method,
+ * pending_class_registers_modified is set to false until
+ * pending_class_registers() is invoked.
  */
 void registerAllPendingClasses();
 
@@ -300,9 +308,9 @@ mrpt::rtti::CObject::Ptr classFactoryPtr(const std::string& className);
 
 }  // namespace rtti
 
-/** Converts a polymorphic smart pointer Base::Ptr to Derived::Ptr, in a way
- * compatible with MRPT >=1.5.4 and MRPT 2.x series.
- * \ingroup mrpt_rtti_grp
+/** Converts a polymorphic smart pointer Base::Ptr to Derived::Ptr, in a
+ * way compatible with MRPT >=1.5.4 and MRPT 2.x series. \ingroup
+ * mrpt_rtti_grp
  */
 template <typename CAST_TO>
 struct ptr_cast
