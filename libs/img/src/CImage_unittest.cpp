@@ -12,6 +12,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/system/memory.h>
 #include <CTraitsTest.h>
 #include <gtest/gtest.h>
 #include <test_mrpt_common.h>
@@ -25,6 +26,15 @@ using namespace std::string_literals;
 const auto tstImgFileColor =
 	mrpt::UNITTEST_BASEDIR + "/samples/img_basic_example/frame_color.jpg"s;
 
+MRPT_TODO("make CImage rows to be 16-byte aligned (custom mem alloc?)");
+// Expect image rows to be aligned:
+static void expect_rows_aligned(
+	const mrpt::img::CImage& a, const std::string& s = std::string())
+{
+	for (unsigned int y = 0; y < 10; y++)
+		EXPECT_TRUE(mrpt::system::is_aligned<4>(a.ptrLine<uint8_t>(y))) << s;
+}
+
 TEST(CImage, CtorDefault)
 {
 	mrpt::img::CImage img;
@@ -32,6 +42,18 @@ TEST(CImage, CtorDefault)
 }
 
 #if MRPT_HAS_OPENCV
+
+static void CtorSized_gray(unsigned int w, unsigned int h)
+{
+	using namespace mrpt::img;
+	CImage img(w, h, CH_GRAY);
+	EXPECT_EQ(img.getWidth(), w);
+	EXPECT_EQ(img.getHeight(), 48U);
+	EXPECT_EQ(img.getChannelCount(), 1U);
+	EXPECT_EQ(img.getPixelDepth(), PixelDepth::D8U);
+	EXPECT_FALSE(img.isColor());
+	expect_rows_aligned(img, mrpt::format("CtorSized_gray w=%u h=%u", w, h));
+}
 
 TEST(CImage, CtorSized)
 {
@@ -43,14 +65,11 @@ TEST(CImage, CtorSized)
 		EXPECT_EQ(img.getChannelCount(), 3U);
 		EXPECT_EQ(img.getPixelDepth(), PixelDepth::D8U);
 		EXPECT_TRUE(img.isColor());
+		expect_rows_aligned(img);
 	}
+	for (unsigned w = 64; w < 70; w++)
 	{
-		CImage img(64, 48, CH_GRAY);
-		EXPECT_EQ(img.getWidth(), 64U);
-		EXPECT_EQ(img.getHeight(), 48U);
-		EXPECT_EQ(img.getChannelCount(), 1U);
-		EXPECT_EQ(img.getPixelDepth(), PixelDepth::D8U);
-		EXPECT_FALSE(img.isColor());
+		CtorSized_gray(w, 48);
 	}
 }
 
@@ -192,6 +211,8 @@ TEST(CImage, ConvertGray)
 		EXPECT_EQ(b.getWidth(), a.getWidth());
 		EXPECT_EQ(b.getHeight(), a.getHeight());
 		EXPECT_FALSE(b.isColor());
+
+		expect_rows_aligned(b);
 	}
 }
 
@@ -230,6 +251,8 @@ TEST(CImage, HalfAndDouble)
 	a.at<uint8_t>(1, 0) = 0x80;
 	a.at<uint8_t>(1, 1) = 0x80;
 
+	expect_rows_aligned(a);
+
 	// Half:
 	{
 		const CImage imgH = a.scaleHalf(mrpt::img::IMG_INTERP_NN);
@@ -237,6 +260,8 @@ TEST(CImage, HalfAndDouble)
 		EXPECT_EQ(imgH.getHeight(), a.getHeight() / 2);
 		EXPECT_EQ(imgH.isColor(), a.isColor());
 		EXPECT_EQ(imgH.at<uint8_t>(0, 0), a.at<uint8_t>(0, 0));
+
+		expect_rows_aligned(imgH);
 	}
 	// Double:
 	{
@@ -244,6 +269,8 @@ TEST(CImage, HalfAndDouble)
 		EXPECT_EQ(imgD.getWidth(), a.getWidth() * 2);
 		EXPECT_EQ(imgD.getHeight(), a.getHeight() * 2);
 		EXPECT_EQ(imgD.isColor(), a.isColor());
+
+		expect_rows_aligned(imgD);
 	}
 }
 TEST(CImage, getChannelsOrder)
@@ -309,6 +336,8 @@ TEST(CImage, ScaleImage)
 	CImage a;
 	bool load_ok = a.loadFromFile(tstImgFileColor);
 	EXPECT_TRUE(load_ok);
+
+	expect_rows_aligned(a);
 
 	{
 		CImage b;
