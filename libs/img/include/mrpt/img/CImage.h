@@ -486,8 +486,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 
 	/** @name Copy, move & swap operations
 		@{ */
-	[[deprecated("Use makeShallowCopy() instead")]]  //
-	inline void
+	[[deprecated("Use makeShallowCopy() instead")]] inline void
 		setFromImageReadOnly(const CImage& o)
 	{
 		*this = o.makeShallowCopy();

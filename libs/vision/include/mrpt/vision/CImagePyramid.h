@@ -54,10 +54,8 @@ namespace mrpt::vision
 class CImagePyramid
 {
    public:
-	/** Default constructor, does nothing */
-	CImagePyramid();
-	/** Destructor, frees the stored images. */
-	~CImagePyramid();
+	CImagePyramid() = default;
+	~CImagePyramid() = default;
 
 	/** Fills the vector \a images with the different octaves built from the
 	 * input image.
@@ -68,9 +66,11 @@ class CImagePyramid
 	 * pixel block when downsampling.
 	 *  \param[in] convert_grayscale If true, the pyramid is built in grayscale
 	 * even for color input images.
+	 * \return true if SSE2-optimized versions of CImage::scaleHalf() was used
+	 * to build **all** the scales in the pyramid.
 	 * \sa buildPyramidFast
 	 */
-	void buildPyramid(
+	bool buildPyramid(
 		const mrpt::img::CImage& img, const size_t nOctaves,
 		const bool smooth_halves = true, const bool convert_grayscale = false);
 
@@ -79,7 +79,7 @@ class CImagePyramid
 	 *   for the 1st octave in \a images[0], emptying the input image.
 	 * \sa buildPyramid
 	 */
-	void buildPyramidFast(
+	bool buildPyramidFast(
 		mrpt::img::CImage& img, const size_t nOctaves,
 		const bool smooth_halves = true, const bool convert_grayscale = false);
 
@@ -87,6 +87,8 @@ class CImagePyramid
 	 *  - images[0]: 1st octave (full-size)
 	 *  - images[1]: 2nd octave (1/2 size)
 	 *  - images[2]: 3rd octave (1/4 size)
+	 *  - ...
+	 *  - images[i]: (i+1)-th octave (1/2^i size)
 	 */
 	std::vector<mrpt::img::CImage> images;
 };

@@ -14,15 +14,9 @@ using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::img;
 
-CImagePyramid::CImagePyramid() = default;
-CImagePyramid::~CImagePyramid()
-{
-	// Nothing especial to do, mem. is automatically freed.
-}
-
 // Template that generalizes the two user entry-points below:
 template <bool FASTLOAD>
-void buildPyramid_templ(
+bool buildPyramid_templ(
 	CImagePyramid& obj, mrpt::img::CImage& img, const size_t nOctaves,
 	const bool smooth_halves, const bool convert_grayscale)
 {
@@ -49,26 +43,29 @@ void buildPyramid_templ(
 	}
 
 	// Rest of octaves, if any:
+	bool all_used_sse2 = true;
 	for (size_t o = 1; o < nOctaves; o++)
 	{
-		obj.images[o - 1].scaleHalf(
+		bool ret = obj.images[o - 1].scaleHalf(
 			obj.images[o], smooth_halves ? IMG_INTERP_LINEAR : IMG_INTERP_NN);
+		all_used_sse2 = all_used_sse2 && ret;
 	}
+	return all_used_sse2;
 }
 
-void CImagePyramid::buildPyramid(
+bool CImagePyramid::buildPyramid(
 	const mrpt::img::CImage& img, const size_t nOctaves,
 	const bool smooth_halves, const bool convert_grayscale)
 {
-	buildPyramid_templ<false>(
+	return buildPyramid_templ<false>(
 		*this, *const_cast<mrpt::img::CImage*>(&img), nOctaves, smooth_halves,
 		convert_grayscale);
 }
 
-void CImagePyramid::buildPyramidFast(
+bool CImagePyramid::buildPyramidFast(
 	mrpt::img::CImage& img, const size_t nOctaves, const bool smooth_halves,
 	const bool convert_grayscale)
 {
-	buildPyramid_templ<true>(
+	return buildPyramid_templ<true>(
 		*this, img, nOctaves, smooth_halves, convert_grayscale);
 }
