@@ -10,7 +10,7 @@
 #pragma once
 
 // By including this file you make sure of #including all the relevant OpenCV
-// headers, from OpenCV 1.0 up to the latest version.
+// headers for OpenCV 2.x or 3.x
 
 #include <mrpt/config.h>
 
@@ -22,23 +22,35 @@
 #error "MRPT requires OpenCV 2.4.0 or newer"
 #endif
 
-#if MRPT_OPENCV_VERSION_NUM > 0x300
-#include <opencv2/core/fast_math.hpp>
-#endif
 #include <opencv2/opencv_modules.hpp>
-// Core:
+
+// C++ API:
+#if MRPT_OPENCV_VERSION_NUM >= 0x300
+// C++ API - opencv 3
+#include <opencv2/core/fast_math.hpp>
 #include <opencv2/core.hpp>
-#include <opencv2/core/core_c.h>
-// Highgui:
 #include <opencv2/highgui.hpp>
-#include <opencv2/highgui/highgui_c.h>
-// imgproc:
 #include <opencv2/imgproc.hpp>
-#include <opencv2/imgproc/imgproc_c.h>
-// features2d:
 #include <opencv2/features2d.hpp>
-// tracking:
 #include <opencv2/video/tracking.hpp>
+#include <opencv2/video/tracking_c.h>  // Only exists in opencv3
+#include <opencv2/calib3d.hpp>
+#include <opencv2/objdetect.hpp>
+#else
+// C++ API - opencv 2.4
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/features2d/features2d.hpp>
+#include <opencv2/calib3d/calib3d.hpp>
+#include <opencv2/objdetect/objdetect.hpp>
+#endif
+
+// C API:
+#include <opencv2/core/core_c.h>
+#include <opencv2/highgui/highgui_c.h>
+#include <opencv2/imgproc/imgproc_c.h>
+
 /// start added by Raghavender Sahdev
 #ifdef HAVE_OPENCV_XFEATURES2D
 #include <opencv2/xfeatures2d.hpp>
@@ -50,14 +62,9 @@
 #include <opencv2/plot.hpp>
 #endif
 /// end added by Raghavender Sahdev
+
 #ifdef HAVE_OPENCV_IMGCODECS
 #include <opencv2/imgcodecs.hpp>
 #endif
-
-#if MRPT_OPENCV_VERSION_NUM >= 0x300
-#include <opencv2/video/tracking_c.h>
-#endif
-#include <opencv2/calib3d.hpp>
-#include <opencv2/objdetect.hpp>
 
 #endif  // MRPT_HAS_OPENCV
