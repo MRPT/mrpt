@@ -351,6 +351,8 @@ void CImage::saveToStreamAsJPEG(CStream& out, const int jpeg_quality) const
 
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 
+	MRPT_TODO("Port to cv::encode()");
+
 	struct jpeg_compress_struct cinfo;
 	struct jpeg_error_mgr jerr;
 
@@ -452,6 +454,8 @@ void CImage::loadFromStreamAsJPEG(CStream& in)
 {
 #if MRPT_HAS_OPENCV
 	MRPT_START
+
+	MRPT_TODO("Port to cv::imdecode()");
 
 	struct jpeg_decompress_struct cinfo;
 	struct jpeg_error_mgr jerr;
