@@ -350,7 +350,7 @@ struct COutputLoggerStreamWrapper
 #define INTERNAL_MRPT_LOG_ONCE(_LVL, _STRING) \
 	do                                        \
 	{                                         \
-		static once_flag = false;             \
+		static bool once_flag = false;        \
 		if (!once_flag)                       \
 		{                                     \
 			once_flag = true;                 \
