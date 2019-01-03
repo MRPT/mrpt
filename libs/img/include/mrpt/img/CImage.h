@@ -482,7 +482,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 
 	/** Compute the KLT response at a given pixel (x,y) - Only for grayscale
 	 * images (for efficiency it avoids converting to grayscale internally).
-	 *  See KLT_response_optimized for more details on the internal
+	 *  See KLT_response() for more details on the internal
 	 * optimizations of this method, but this graph shows a general view:
 	 *  <img src="KLT_response_performance_SSE2.png" >
 	 */
