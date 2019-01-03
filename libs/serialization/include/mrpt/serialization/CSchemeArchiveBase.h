@@ -85,7 +85,13 @@ class CSchemeArchiveBase
 	{
 		pimpl->setParent(this);
 	}
+	// Note: Due to the definition of this one, the compiler should not
+	// automatically define copy ctor, so we define it next.
+	// It's better to have the dtor defined here since we'll have derived
+	// classes.
 	virtual ~CSchemeArchiveBase() = default;
+	CSchemeArchiveBase(CSchemeArchiveBase&& o) : pimpl(std::move(o.pimpl)) {}
+
 	CSchemeArchiveBase& operator=(const int32_t val)
 	{
 		return (*pimpl).operator=(val);
