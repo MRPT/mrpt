@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/system/TParameters.h>
+#include <mrpt/core/exceptions.h>
 #include <iostream>
 
 using namespace std;
@@ -55,25 +56,16 @@ void TestParameters()
 	}
 }
 
-// ------------------------------------------------------
-//						MAIN
-// ------------------------------------------------------
 int main()
 {
 	try
 	{
 		TestParameters();
-
 		return 0;
 	}
 	catch (const std::exception& e)
 	{
-		std::cout << "MRPT exception caught: " << e.what() << std::endl;
-		return -1;
-	}
-	catch (...)
-	{
-		printf("Untyped exception!!");
+		std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
 		return -1;
 	}
 }

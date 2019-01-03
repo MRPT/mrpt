@@ -71,7 +71,7 @@ int main(int argc, char** argv)
 	}
 	catch (const std::exception& e)
 	{
-		std::cout << "Exception: " << e.what() << std::endl;
+		std::cerr << "MRPT error: " << e.what() << std::endl;
 		return -1;
 	}
 }

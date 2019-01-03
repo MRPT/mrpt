@@ -9,11 +9,9 @@
 
 #define NODELETS_TEST_VERBOSE
 #include "NodeletsTest_impl.cpp"
+#include <mrpt/core/exceptions.h>
 #include <iostream>
 
-// ------------------------------------------------------
-//						MAIN
-// ------------------------------------------------------
 int main()
 {
 	try
@@ -24,11 +22,6 @@ int main()
 	catch (const std::exception& e)
 	{
 		std::cerr << "MRPT exception caught: " << e.what() << std::endl;
-		return -1;
-	}
-	catch (...)
-	{
-		std::cerr << "Untyped exception!!";
 		return -1;
 	}
 }

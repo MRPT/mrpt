@@ -12,6 +12,7 @@
 //! [example-http-get]
 
 #include <mrpt/comms/net_utils.h>
+#include <mrpt/core/exceptions.h>
 #include <iostream>
 
 using namespace mrpt;
@@ -46,9 +47,6 @@ void Test_HTTP_get()
 }
 //! [example-http-get]
 
-// ------------------------------------------------------
-//						MAIN
-// ------------------------------------------------------
 int main(int argc, char** argv)
 {
 	try
@@ -56,17 +54,11 @@ int main(int argc, char** argv)
 		if (argc > 1) url = string(argv[1]);
 
 		Test_HTTP_get();
-
 		return 0;
 	}
 	catch (const std::exception& e)
 	{
-		std::cout << "Exception: " << e.what() << std::endl;
-		return -1;
-	}
-	catch (...)
-	{
-		printf("Untyped exception!");
+		std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
 		return -1;
 	}
 }
