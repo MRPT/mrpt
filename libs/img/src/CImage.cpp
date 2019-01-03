@@ -103,6 +103,23 @@ RET pixelDepth2CvDepth(PixelDepth d)
 	// clang-format on
 	return std::numeric_limits<RET>::max();
 }
+template <typename RET = uint32_t>
+RET pixelDepth2IPLCvDepth(PixelDepth d)
+{
+	// clang-format off
+	switch (d)
+	{
+	    case PixelDepth::D8U:  return static_cast<RET>(IPL_DEPTH_8U);
+	    case PixelDepth::D8S:  return static_cast<RET>(IPL_DEPTH_8S);
+	    case PixelDepth::D16U: return static_cast<RET>(IPL_DEPTH_16U);
+	    case PixelDepth::D16S: return static_cast<RET>(IPL_DEPTH_16S);
+	    case PixelDepth::D32S: return static_cast<RET>(IPL_DEPTH_32S);
+	    case PixelDepth::D32F: return static_cast<RET>(IPL_DEPTH_32F);
+	    case PixelDepth::D64F: return static_cast<RET>(IPL_DEPTH_64F);
+	}
+	// clang-format on
+	return std::numeric_limits<RET>::max();
+}
 
 static PixelDepth cvDepth2PixelDepth(int64_t d)
 {
@@ -240,10 +257,18 @@ void CImage::resize(
 	const std::string sLog = mrpt::format("cvCreateImage %ux%u", width, height);
 	alloc_tims.enter(sLog.c_str());
 #endif
-	m_impl->img = cv::Mat(
-		static_cast<int>(height), static_cast<int>(width),
-		pixelDepth2CvDepth<int>(depth) + ((nChannels - 1) << CV_CN_SHIFT));
+	MRPT_TODO("Think of 16-byte alignment...");
 
+	// **IMPORTANT** Use IplImage-interfaced API (insteaf of cv::Mat) to ensure
+	// 4-byte alignment of image rows.
+	// cvCreateImage: cvCreateImageHeader() + cvCreateData()
+	IplImage* img = static_cast<IplImage*>(cvAlloc(sizeof(IplImage)));
+	cvInitImageHeader(
+		img, cvSize(width, height), pixelDepth2IPLCvDepth(depth), nChannels,
+		IPL_ORIGIN_TL, 8);
+	cvCreateData(img);
+
+	m_impl->img = cv::cvarrToMat(img);
 #if IMAGE_ALLOC_PERFLOG
 	alloc_tims.leave(sLog.c_str());
 #endif
@@ -271,13 +296,17 @@ bool CImage::loadFromFile(const std::string& fileName, int isColor)
 
 #if MRPT_HAS_OPENCV
 	m_imgIsExternalStorage = false;
-#ifdef HAVE_OPENCV_IMGCODECS
-	m_impl->img =
-		cv::imread(fileName, isColor ? cv::IMREAD_COLOR : cv::IMREAD_GRAYSCALE);
-#else
-	m_impl->img = IplImage* newImg = cvLoadImage(fileName.c_str(), isColor);
-#endif
-	return !m_impl->img.empty();
+
+	// **IMPORTANT** Use IplImage-interfaced API (insteaf of cv::Mat) to ensure
+	// 4-byte alignment of image rows.
+
+	MRPT_TODO("Port to cv::imdecode()? Think of 16-byte alignment...");
+	MRPT_TODO("add flag to reuse current img buffer");
+	m_impl->img = cv::Mat();
+	IplImage* newImg = cvLoadImage(fileName.c_str(), isColor);
+	if (!newImg) return false;
+	m_impl->img = cv::cvarrToMat(newImg);
+	return true;
 #else
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif

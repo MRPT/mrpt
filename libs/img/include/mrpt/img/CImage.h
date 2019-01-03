@@ -131,6 +131,8 @@ class CExceptionExternalImageNotFound : public std::runtime_error
  *  \endcode
  * - To set a CImage from an OpenCV `cv::Mat` use
  *CImage::CImage(cv::Mat,copy_type_t).
+ * - Unless set from an external cv::Mat object, CImage ensures that all image
+ *rows start at 4-byte aligned memory.
  *
  * Some functions are implemented in MRPT with highly optimized SSE2/SSE3
  *routines, in suitable platforms and compilers. To see the list of
@@ -604,7 +606,8 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 		return reinterpret_cast<T*>(internal_get(col, row, channel));
 	}
 
-	/** Returns a pointer to the first pixel of the given line. \sa ptr, at
+	/** Returns a pointer to the first pixel of the given line. It is guaranteed
+	 * to be 4-byte aligned memory. \sa ptr, at
 	 */
 	template <typename T>
 	const T* ptrLine(unsigned int row) const
