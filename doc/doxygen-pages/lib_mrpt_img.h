@@ -29,9 +29,12 @@ Find below some examples of use.
 
 The class mrpt::img::CImage represents a wrapper around OpenCV images, plus
 extra functionality such as on-the-fly loading of images stored in disk upon
-first usage. The internal `IplImage` or `cv::Mat` is always available so
+first usage. The `cv::Mat` object is always available so
 OpenCV's functions can be still used to operate on MRPT images.
 
+MRPT replaces OpenCV's default `cv::Mat` memory allocator with a custom version
+that guarantees that all image rows start at a 16-byte aligned memory address,
+enabling faster SIMD algorithms.
 
 
 */
