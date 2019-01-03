@@ -135,7 +135,7 @@ int main()
 	}
 	catch (const std::exception& e)
 	{
-		std::cout << "MRPT exception caught: " << e.what() << std::endl;
+		std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
 		return -1;
 	}
 	catch (...)

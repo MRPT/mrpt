@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/system/CFileSystemWatcher.h>
+#include <mrpt/core/exceptions.h>
 #include <cstdio>
 #include <iostream>
 
@@ -50,25 +51,16 @@ void TestWatch()
 	}
 }
 
-// ------------------------------------------------------
-//						MAIN
-// ------------------------------------------------------
 int main()
 {
 	try
 	{
 		TestWatch();
-
 		return 0;
 	}
 	catch (const std::exception& e)
 	{
-		std::cout << "MRPT exception caught: " << e.what() << std::endl;
-		return -1;
-	}
-	catch (...)
-	{
-		printf("Untyped exception!!");
+		std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
 		return -1;
 	}
 }

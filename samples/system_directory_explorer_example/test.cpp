@@ -9,6 +9,7 @@
 
 #include <mrpt/system/CDirectoryExplorer.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/core/exceptions.h>
 #include <iostream>
 #include <string>
 
@@ -90,12 +91,7 @@ int main()
 	}
 	catch (const std::exception& e)
 	{
-		std::cout << "MRPT exception caught: " << e.what() << std::endl;
-		return -1;
-	}
-	catch (...)
-	{
-		printf("Untyped exception!!");
+		std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
 		return -1;
 	}
 }
