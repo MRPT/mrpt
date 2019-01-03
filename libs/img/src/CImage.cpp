@@ -1077,13 +1077,13 @@ static bool my_img_to_grayscale(const cv::Mat& src, cv::Mat& dest)
 
 // If possible, use SSE optimized version:
 #if MRPT_HAS_SSE3
-	if (is_aligned<16>(src.data) && (src.cols & 0xF) == 0 &&
-		static_cast<int>(src.step[0]) == src.cols * src.channels() &&
-		static_cast<int>(dest.step[0]) == dest.cols * dest.channels())
+	if (is_aligned<16>(src.data) && ((src.step[0] & 0x0f) == 0) &&
+	    ((dest.step[0] & 0x0f) == 0))
 	{
 		ASSERT_(is_aligned<16>(dest.data));
 		image_SSSE3_bgr_to_gray_8u(
-			src.ptr<uint8_t>(), dest.ptr<uint8_t>(), src.cols, src.rows);
+		    src.ptr<uint8_t>(), dest.ptr<uint8_t>(), src.cols, src.rows,
+		    src.step[0], dest.step[0]);
 		return true;
 	}
 #endif
@@ -1132,14 +1132,13 @@ bool CImage::scaleHalf(CImage& out, TInterpolationMethod interp) const
 
 	// If possible, use SSE optimized version:
 	if (is_aligned<16>(img.data) && is_aligned<16>(img_out.data) &&
-		(w & 0xF) == 0 &&
-		static_cast<int>(img.step[0]) == img.cols * img.channels() &&
-		static_cast<int>(img_out.step[0]) == img_out.cols * img_out.channels())
+	    ((img.step[0] & 0x0f) == 0) && ((img_out.step[0] & 0x0f) == 0))
 	{
 #if MRPT_HAS_SSE3
 		if (img.channels() == 3 && interp == IMG_INTERP_NN)
 		{
-			image_SSSE3_scale_half_3c8u(img.data, img_out.data, w, h);
+			image_SSSE3_scale_half_3c8u(
+			    img.data, img_out.data, w, h, img.step[0], img_out.step[0]);
 			return true;
 		}
 #endif
@@ -1148,12 +1147,14 @@ bool CImage::scaleHalf(CImage& out, TInterpolationMethod interp) const
 		{
 			if (interp == IMG_INTERP_NN)
 			{
-				image_SSE2_scale_half_1c8u(img.data, img_out.data, w, h);
+				image_SSE2_scale_half_1c8u(
+				    img.data, img_out.data, w, h, img.step[0], img_out.step[0]);
 				return true;
 			}
 			else if (interp == IMG_INTERP_LINEAR)
 			{
-				image_SSE2_scale_half_smooth_1c8u(img.data, img_out.data, w, h);
+				image_SSE2_scale_half_smooth_1c8u(
+				    img.data, img_out.data, w, h, img.step[0], img_out.step[0]);
 				return true;
 			}
 		}
