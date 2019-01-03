@@ -46,11 +46,39 @@ using namespace std;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CImage, CSerializable, mrpt::img)
 
-bool CImage::DISABLE_ZIP_COMPRESSION = false;
-bool CImage::DISABLE_JPEG_COMPRESSION = true;
-int CImage::SERIALIZATION_JPEG_QUALITY = 95;
-
+static bool DISABLE_ZIP_COMPRESSION_value = false;
+static bool DISABLE_JPEG_COMPRESSION_value = true;
+static int SERIALIZATION_JPEG_QUALITY_value = 95;
+static std::size_t ROW_MEM_ALIGNMENT_value = 16;
 static std::string IMAGES_PATH_BASE(".");
+
+void CImage::ROW_MEM_ALIGNMENT(std::size_t a)
+{
+	ASSERTMSG_(a > 0 && (a & (a - 1)) == 0, "alignment must be a power of 2");
+	ROW_MEM_ALIGNMENT_value = a;
+}
+std::size_t CImage::ROW_MEM_ALIGNMENT() { return ROW_MEM_ALIGNMENT_value; }
+void CImage::DISABLE_ZIP_COMPRESSION(bool val)
+{
+	DISABLE_ZIP_COMPRESSION_value = val;
+}
+bool CImage::DISABLE_ZIP_COMPRESSION() { return DISABLE_ZIP_COMPRESSION_value; }
+void CImage::DISABLE_JPEG_COMPRESSION(bool val)
+{
+	DISABLE_JPEG_COMPRESSION_value = val;
+}
+bool CImage::DISABLE_JPEG_COMPRESSION()
+{
+	return DISABLE_JPEG_COMPRESSION_value;
+}
+void CImage::SERIALIZATION_JPEG_QUALITY(int q)
+{
+	SERIALIZATION_JPEG_QUALITY_value = q;
+}
+int CImage::SERIALIZATION_JPEG_QUALITY()
+{
+	return SERIALIZATION_JPEG_QUALITY_value;
+}
 
 CExceptionExternalImageNotFound::CExceptionExternalImageNotFound(
 	const std::string& s)
@@ -137,10 +165,107 @@ static PixelDepth cvDepth2PixelDepth(int64_t d)
 	// clang-format on
 	return PixelDepth::D8U;
 }
-#endif
+
+// Custom memory allocator for cv::Mat matrices in MRPT:
+// The goal is to ensure that all image **rows** start at 16-byte aligned
+// memory, to enable the application of SSE* code.
+// JLBC, 3/Jan/2019
+class mrpt_MatAllocator : public cv::MatAllocator
+{
+   public:
+	static mrpt_MatAllocator& Instance()
+	{
+		static mrpt_MatAllocator o;
+		return o;
+	}
+
+	cv::UMatData* allocate(
+		int dims, const int* sizes, int type, void* data0, size_t* step,
+		int /*flags*/, cv::UMatUsageFlags /*usageFlags*/) const override
+	{
+		using namespace cv;
+		// Start with the size of each "pixel" (typ: 1 or 3)
+		size_t total = CV_ELEM_SIZE(type);
+
+		for (int i = dims - 1; i >= 0; i--)
+		{
+			if (step)
+			{
+				// If we are using user-provided data buffer, respect its
+				// step:
+				if (data0 && step[i] != CV_AUTOSTEP)
+				{
+					CV_Assert(total <= step[i]);
+					total = step[i];
+				}
+				else
+				{
+					step[i] = total;
+				}
+			}
+			total *= sizes[i];
+			// In the "dim-1" dimension (rows), ensure we have a
+			// multiple of 16:
+			if (i == dims - 1)
+			{
+				if ((total & (ROW_MEM_ALIGNMENT_value - 1)) != 0)
+				{
+					total = (total & ~(ROW_MEM_ALIGNMENT_value - 1)) +
+							ROW_MEM_ALIGNMENT_value;
+					// "total" will become step[0] in the next "for" iter
+				}
+			}
+		}
+		uchar* data = data0 ? static_cast<uchar*>(data0)
+							: static_cast<uchar*>(cv::fastMalloc(total));
+		UMatData* u = new UMatData(this);
+		u->data = u->origdata = data;
+		u->size = total;
+		if (data0) u->flags |= UMatData::USER_ALLOCATED;
+
+		return u;
+	}
+
+	bool allocate(
+		cv::UMatData* u, int /*accessFlags*/,
+		cv::UMatUsageFlags /*usageFlags*/) const override
+	{
+		if (!u) return false;
+		return true;
+	}
+
+	void deallocate(cv::UMatData* u) const override
+	{
+		if (!u) return;
+
+		CV_Assert(u->urefcount == 0);
+		CV_Assert(u->refcount == 0);
+		if (!(u->flags & cv::UMatData::USER_ALLOCATED))
+		{
+			cv::fastFree(u->origdata);
+			u->origdata = nullptr;
+		}
+		delete u;
+	}
+};
+
+#endif  // MRPT_HAS_OPENCV
 
 // Default ctor
-CImage::CImage() : m_impl(mrpt::make_impl<CImage::Impl>()) {}
+CImage::CImage() : m_impl(mrpt::make_impl<CImage::Impl>())
+{
+#if MRPT_HAS_OPENCV
+	static bool init_cv_alloc = false;
+
+	// Replace default OpenCV memory allocator with MRPT custom version
+	// to enable memory pooling and/or 16-byte aligned rows in images.
+	if (!init_cv_alloc)
+	{
+		init_cv_alloc = true;
+		InstallOpenCVAlignedAllocator();
+	}
+#endif
+}
 
 // Ctor with size
 CImage::CImage(
@@ -236,17 +361,17 @@ void CImage::resize(
 
 #if MRPT_HAS_OPENCV
 	// Dont call makeSureImageIsLoaded() here,
-	// since it will throw if resize() is called from a ctor, where it's legit
-	// for the img to be uninitialized.
+	// since it will throw if resize() is called from a ctor, where it's
+	// legit for the img to be uninitialized.
 
 	// If we're resizing to exactly the current size, do nothing:
 	{
 		_IplImage ipl = m_impl->img;
 
-		if (static_cast<unsigned int>(ipl.width) == width &&
-			static_cast<unsigned int>(ipl.height) == height &&
+		if (static_cast<unsigned>(ipl.width) == width &&
+			static_cast<unsigned>(ipl.height) == height &&
 			ipl.nChannels == nChannels &&
-			static_cast<unsigned int>(ipl.depth) == pixelDepth2CvDepth(depth))
+			static_cast<unsigned>(ipl.depth) == pixelDepth2IPLCvDepth(depth))
 		{
 			// Nothing to do:
 			return;
@@ -257,18 +382,12 @@ void CImage::resize(
 	const std::string sLog = mrpt::format("cvCreateImage %ux%u", width, height);
 	alloc_tims.enter(sLog.c_str());
 #endif
-	MRPT_TODO("Think of 16-byte alignment...");
 
-	// **IMPORTANT** Use IplImage-interfaced API (insteaf of cv::Mat) to ensure
-	// 4-byte alignment of image rows.
-	// cvCreateImage: cvCreateImageHeader() + cvCreateData()
-	IplImage* img = static_cast<IplImage*>(cvAlloc(sizeof(IplImage)));
-	cvInitImageHeader(
-		img, cvSize(width, height), pixelDepth2IPLCvDepth(depth), nChannels,
-		IPL_ORIGIN_TL, 8);
-	cvCreateData(img);
+	// Use custom allocator to ensure mem aligned rows:
+	m_impl->img = cv::Mat(
+		static_cast<int>(height), static_cast<int>(width),
+		pixelDepth2CvDepth<int>(depth) + ((nChannels - 1) << CV_CN_SHIFT));
 
-	m_impl->img = cv::cvarrToMat(img);
 #if IMAGE_ALLOC_PERFLOG
 	alloc_tims.leave(sLog.c_str());
 #endif
@@ -296,16 +415,30 @@ bool CImage::loadFromFile(const std::string& fileName, int isColor)
 
 #if MRPT_HAS_OPENCV
 	m_imgIsExternalStorage = false;
-
-	// **IMPORTANT** Use IplImage-interfaced API (insteaf of cv::Mat) to ensure
-	// 4-byte alignment of image rows.
-
-	MRPT_TODO("Port to cv::imdecode()? Think of 16-byte alignment...");
+#ifdef HAVE_OPENCV_IMGCODECS
+	MRPT_TODO("Port to cv::imdecode()?");
 	MRPT_TODO("add flag to reuse current img buffer");
-	m_impl->img = cv::Mat();
+
+	m_impl->img = cv::imread(fileName, static_cast<cv::ImreadModes>(isColor));
+#else
 	IplImage* newImg = cvLoadImage(fileName.c_str(), isColor);
 	if (!newImg) return false;
 	m_impl->img = cv::cvarrToMat(newImg);
+#endif
+	if (m_impl->img.empty()) return false;
+
+	// Our custom cvMat allocator should ensure that the loaded image
+	// has aligned rows:
+	if ((m_impl->img.step[0] & (ROW_MEM_ALIGNMENT_value - 1)) != 0)
+	{
+		std::cerr << "[CImage::loadFromFile()] Performance warning: OpenCV "
+					 "load returned an unaligned image. Making a copy.\n";
+		// Make a copy to ensure alignment (via our custom mem allocator):
+		cv::Mat c(m_impl->img.size(), m_impl->img.type());
+		m_impl->img.copyTo(c);
+		m_impl->img = std::move(c);
+	}
+
 	return true;
 #else
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
@@ -511,8 +644,8 @@ void CImage::serializeTo(mrpt::serialization::CArchive& out) const
 					<< int32_t(cvDepth2PixelDepth(depth));
 
 				// Version 5: Use CImage::DISABLE_ZIP_COMPRESSION
-				bool imageStoredAsZip =
-					!CImage::DISABLE_ZIP_COMPRESSION && (imageSize > 16 * 1024);
+				bool imageStoredAsZip = !CImage::DISABLE_ZIP_COMPRESSION() &&
+										(imageSize > 16 * 1024);
 
 				out << imageStoredAsZip;
 
@@ -539,10 +672,11 @@ void CImage::serializeTo(mrpt::serialization::CArchive& out) const
 			{
 				// COLOR: High quality JPEG image
 
-				// v7: If size is 0xN or Nx0, don't call "saveToStreamAsJPEG"!!
+				// v7: If size is 0xN or Nx0, don't call
+				// "saveToStreamAsJPEG"!!
 
 				// v8: If DISABLE_JPEG_COMPRESSION
-				if (!CImage::DISABLE_JPEG_COMPRESSION)
+				if (!CImage::DISABLE_JPEG_COMPRESSION())
 				{
 					// normal behavior: compress images:
 					out << width << height;
@@ -552,7 +686,7 @@ void CImage::serializeTo(mrpt::serialization::CArchive& out) const
 						// Save to temporary memory stream:
 						mrpt::io::CMemoryStream aux;
 						saveToStreamAsJPEG(
-							aux, CImage::SERIALIZATION_JPEG_QUALITY);
+							aux, CImage::SERIALIZATION_JPEG_QUALITY());
 
 						const auto nBytes =
 							static_cast<uint32_t>(aux.getTotalBytesCount());
@@ -713,7 +847,8 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 						ASSERT_(outDataActualSize == outDataBufferSize);
 #else
 							THROW_EXCEPTION(
-								"ZIP image deserialization not implemented");
+								"ZIP image deserialization not "
+								"implemented");
 #endif
 						}
 						else
@@ -763,8 +898,8 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 							}
 							else
 							{
-								// it's a 0xN or Nx0 image: just resize and load
-								// nothing:
+								// it's a 0xN or Nx0 image: just resize and
+								// load nothing:
 								resize(width, height, CH_RGB);
 							}
 						}
@@ -1214,9 +1349,10 @@ float CImage::correlate(
 		for (j = 0; j < img2.getWidth(); j++)
 		{
 			x1 = *(*this)(j + width_init, i + height_init) -
-				 m1;  //(double)(ipl1->imageData[i*ipl1->widthStep + j]) - m1;
-			x2 = *img2(j, i) -
-				 m2;  //(double)(ipl2->imageData[i*ipl2->widthStep + j]) - m2;
+				 m1;  //(double)(ipl1->imageData[i*ipl1->widthStep
+					  //+ j]) - m1;
+			x2 = *img2(j, i) - m2;  //(double)(ipl2->imageData[i*ipl2->widthStep
+									//+ j]) - m2;
 			sxx += x1 * x1;
 			syy += x2 * x2;
 			sxy += x1 * x2;
@@ -1533,7 +1669,8 @@ void CImage::makeSureImageIsLoaded() const
 	else
 	{
 		THROW_EXCEPTION(
-			"Trying to access uninitialized image in a non externally-stored "
+			"Trying to access uninitialized image in a non "
+			"externally-stored "
 			"image.");
 	}
 }
@@ -1766,7 +1903,8 @@ bool CImage::drawChessboardCorners(
 			if (r > 0) cvCircle(ipl, pt, r + 1, color);
 			prev_pt = pt;
 
-			// Text label with the corner index in the first and last corners:
+			// Text label with the corner index in the first and last
+			// corners:
 			if (i == 0 || i == cornerCoords.size() - 1)
 				CCanvas::textOut(
 					pt.x + 5, pt.y - 5, mrpt::format("%u", i),
@@ -1888,7 +2026,8 @@ float CImage::KLT_response(
 	const unsigned int min_y = y - half_window_size;
 	const unsigned int max_y = y + half_window_size;
 
-	// Since min_* are "unsigned", checking "<" will detect negative numbers:
+	// Since min_* are "unsigned", checking "<" will detect negative
+	// numbers:
 	ASSERTMSG_(
 		min_x < img_w && max_x < img_w && min_y < img_h && max_y < img_h,
 		"Window is out of image bounds");
@@ -1991,7 +2130,8 @@ float CImage::KLT_response(
 	// Return the minimum eigenvalue of:
 	//    ( gxx  gxy )
 	//    ( gxy  gyy )
-	// See, for example: mrpt::math::detail::eigenVectorsMatrix_special_2x2():
+	// See, for example:
+	// mrpt::math::detail::eigenVectorsMatrix_special_2x2():
 	const float t = Gxx + Gyy;  // Trace
 	const float de = Gxx * Gyy - Gxy * Gxy;  // Det
 	// The smallest eigenvalue is:
@@ -2086,6 +2226,16 @@ bool CImage::loadTGA(
 #else
 	return false;
 #endif  // MRPT_HAS_OPENCV
+}
+
+void CImage::InstallOpenCVAlignedAllocator()
+{
+#if MRPT_HAS_OPENCV
+	auto& alloc = mrpt_MatAllocator::Instance();
+	cv::Mat::setDefaultAllocator(&alloc);
+#else
+	THROW_EXCEPTION("Operation not supported: build MRPT against OpenCV!");
+#endif
 }
 
 std::ostream& mrpt::img::operator<<(std::ostream& o, const TPixelCoordf& p)

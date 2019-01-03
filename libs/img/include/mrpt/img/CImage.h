@@ -154,7 +154,6 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	DECLARE_MEX_CONVERSION
 
    public:
-	// ================================================================
 	/** @name Constructors & destructor
 		@{ */
 
@@ -230,7 +229,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 
 	/** @} */
 
-	/** @name Serialization format global flags
+	/** @name Behavior-changing global flags
 		@{ */
 
 	/** By default, when storing images through the CSerializable interface,
@@ -238,19 +237,26 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	 * this flag can be turn on to disable ZIP compression and gain speed versus
 	 * occupied space.
 	 *  (Default = false) */
-	static bool DISABLE_ZIP_COMPRESSION;
+	static void DISABLE_ZIP_COMPRESSION(bool val);
+	static bool DISABLE_ZIP_COMPRESSION();
 
 	/** By default, when storing images through the CSerializable interface, RGB
 	 * images are JPEG-compressed to save space. If for some reason you prefer
 	 * storing RAW image data, disable this feature by setting this flag to
 	 * true.
 	 *  (Default = true) */
-	static bool DISABLE_JPEG_COMPRESSION;
+	static void DISABLE_JPEG_COMPRESSION(bool val);
+	static bool DISABLE_JPEG_COMPRESSION();
 
 	/** Unless DISABLE_JPEG_COMPRESSION=true, this sets the JPEG quality (range
 	 * 1-100) of serialized RGB images.
 	 *  (Default = 95) */
-	static int SERIALIZATION_JPEG_QUALITY;
+	static void SERIALIZATION_JPEG_QUALITY(int q);
+	static int SERIALIZATION_JPEG_QUALITY();
+
+	/** Memory alignment of all image rows (Default = 16) */
+	static void ROW_MEM_ALIGNMENT(std::size_t a);
+	static std::size_t ROW_MEM_ALIGNMENT();
 
 	/** @} */
 
@@ -1018,7 +1024,14 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	void colorImage(CImage& ret) const;
 
 	/** @} */
-	// ================================================================
+
+	/** Install the MRPT custom memory allocator for cv::Mat images, which
+	 * guarantees 16 (or higher)-byte memory aligned for each image row.
+	 * This method is automatically called upon the first time an CImage object
+	 * is ever constructed, but it is exposed for convenience of the user just
+	 * in case the allocator needs to be re-installed again.
+	 */
+	static void InstallOpenCVAlignedAllocator();
 
    protected:
 	/** @name Data members

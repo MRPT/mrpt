@@ -13,6 +13,8 @@
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/system/memory.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/random.h>
 #include <CTraitsTest.h>
 #include <gtest/gtest.h>
 #include <test_mrpt_common.h>
@@ -26,13 +28,42 @@ using namespace std::string_literals;
 const auto tstImgFileColor =
 	mrpt::UNITTEST_BASEDIR + "/samples/img_basic_example/frame_color.jpg"s;
 
-MRPT_TODO("make CImage rows to be 16-byte aligned (custom mem alloc?)");
 // Expect image rows to be aligned:
 static void expect_rows_aligned(
 	const mrpt::img::CImage& a, const std::string& s = std::string())
 {
-	for (unsigned int y = 0; y < 10; y++)
-		EXPECT_TRUE(mrpt::system::is_aligned<4>(a.ptrLine<uint8_t>(y))) << s;
+	for (unsigned int y = 0; y < a.getHeight(); y++)
+		EXPECT_TRUE(mrpt::system::is_aligned<16>(a.ptrLine<uint8_t>(y))) << s;
+}
+
+// Generate random img:
+static void fillImagePseudoRandom(uint32_t seed, mrpt::img::CImage& img)
+{
+	mrpt::random::Randomize(seed);
+	auto& rnd = mrpt::random::getRandomGenerator();
+
+	for (unsigned y = 0; y < img.getHeight(); y++)
+	{
+		for (unsigned x = 0; x < img.getWidth(); x++)
+		{
+			const uint8_t c = static_cast<uint8_t>(rnd.drawUniform32bit());
+			img.at<uint8_t>(x, y) = c;
+		}
+	}
+}
+
+// Expect images to be identical:
+static bool expect_identical(
+	const mrpt::img::CImage& a, const mrpt::img::CImage& b,
+	const std::string& s = std::string())
+{
+	for (unsigned int y = 0; y < a.getHeight(); y++)
+		for (unsigned int x = 0; x < a.getWidth(); x++)
+		{
+			EXPECT_EQ(a.at<uint8_t>(x, y), b.at<uint8_t>(x, y)) << s;
+			if (a.at<uint8_t>(x, y) != b.at<uint8_t>(x, y)) return false;
+		}
+	return true;
 }
 
 TEST(CImage, CtorDefault)
@@ -70,6 +101,26 @@ TEST(CImage, CtorSized)
 	for (unsigned w = 64; w < 70; w++)
 	{
 		CtorSized_gray(w, 48);
+	}
+}
+
+TEST(CImage, DeepCopyStillMemAligned)
+{
+	using namespace mrpt::img;
+	unsigned h = 70;
+	for (unsigned w = 64; w < 70; w++)
+	{
+		CImage a(w, h, CH_GRAY);
+		EXPECT_EQ(a.getWidth(), w);
+		EXPECT_EQ(a.getHeight(), h);
+		expect_rows_aligned(
+			a, mrpt::format("DeepCopyStillMemAligned (a) w=%u h=%u", w, h));
+
+		CImage b = a.makeDeepCopy();
+		EXPECT_EQ(b.getWidth(), w);
+		EXPECT_EQ(b.getHeight(), h);
+		expect_rows_aligned(
+			b, mrpt::format("DeepCopyStillMemAligned (b) w=%u h=%u", w, h));
 	}
 }
 
@@ -412,12 +463,46 @@ TEST(CImage, KLT_response)
 		CImage a(100, 90, CH_GRAY);
 		a.filledRectangle(0, 0, 99, 99, TColor(0x10));
 		a.filledRectangle(40, 30, 41, 31, TColor(0x20));
-		a.saveToFile("a.png");
 
 		for (int w = 2; w < 12; w++)
 		{
 			const auto resp = a.KLT_response(40, 30, w);
 			EXPECT_GT(resp, 0.5f);
+		}
+	}
+}
+
+TEST(CImage, LoadAndSave)
+{
+	using namespace mrpt::img;
+	using namespace std::string_literals;
+
+	for (unsigned h = 7; h < 20; h += 17)
+	{
+		for (unsigned w = 10; w < 33; w++)
+		{
+			CImage a(w, h, CH_GRAY);
+			fillImagePseudoRandom(w * h, a);
+
+			const auto f = mrpt::system::getTempFileName() + ".png"s;
+
+			const auto tstName =
+				mrpt::format("From: LoadAndSave test w=%u h=%u", w, h);
+
+			bool saved_ok = a.saveToFile(f);
+			EXPECT_TRUE(saved_ok) << tstName;
+
+			CImage b;
+			bool load_ok = b.loadFromFile(f);
+			EXPECT_TRUE(load_ok) << tstName;
+
+			expect_rows_aligned(b, tstName);
+			if (!expect_identical(a, b, tstName))
+			{
+				GTEST_FAIL() << "a:\n"
+							 << a.asCvMatRef() << "\nb:\n"
+							 << b.asCvMatRef() << "\n";
+			}
 		}
 	}
 }
