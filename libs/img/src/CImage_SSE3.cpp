@@ -37,40 +37,36 @@
  *  - <b>Invoked from:</b> mrpt::img::CImage::scaleHalf()
  */
 void image_SSSE3_scale_half_3c8u(
-    const uint8_t* in, uint8_t* out, int w, int h, size_t step_in,
-    size_t step_out)
+	const uint8_t* in, uint8_t* out, int w, int h, size_t step_in,
+	size_t step_out)
 {
-	alignas(MRPT_MAX_ALIGN_BYTES) const unsigned long long mask0[2] = {
-		0x0D0C080706020100ull, 0x808080808080800Eull};  // Long words are in
-	// inverse order due to
-	// little endianness
-	alignas(MRPT_MAX_ALIGN_BYTES) const unsigned long long mask1[2] = {
-		0x8080808080808080ull, 0x0E0A090804030280ull};
-	alignas(MRPT_MAX_ALIGN_BYTES) const unsigned long long mask2[2] = {
-		0x0C0B0A0605040080ull, 0x8080808080808080ull};
-	alignas(MRPT_MAX_ALIGN_BYTES) const unsigned long long mask3[2] = {
-		0x808080808080800Full, 0x8080808080808080ull};
+	// clang-format off
+#if defined(_MSC_VER)
+#pragma warning( disable : 4309 ) // Yes, we know 0x80 is a "negative char"
+#endif
+	const __m128i m0 = _mm_set_epi8(0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x0E, 0x0D, 0x0C, 0x08, 0x07, 0x06, 0x02, 0x01, 0x00);
+	const __m128i m1 = _mm_set_epi8(0x0E, 0x0A, 0x09, 0x08, 0x04, 0x03, 0x02, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80);
+	const __m128i m2 = _mm_set_epi8(0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x0C, 0x0B, 0x0A, 0x06, 0x05, 0x04, 0x00, 0x80);
+	const __m128i m3 = _mm_set_epi8(0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x0F);
 
-	const __m128i m0 = _mm_load_si128((const __m128i*)mask0);
-	const __m128i m1 = _mm_load_si128((const __m128i*)mask1);
-	const __m128i m2 = _mm_load_si128((const __m128i*)mask2);
-	const __m128i m3 = _mm_load_si128((const __m128i*)mask3);
+	// clang-format on
+#if defined(_MSC_VER)
+#pragma warning(default : 4309)
+#endif
 
 	const int sw = w >> 4;  // This are the number of 3*16 blocks in each row
 	const int sh = h >> 1;
 
 	for (int i = 0; i < sh; i++)
 	{
-		const uint8_t* inp = in;
+		const __m128i* inp = reinterpret_cast<const __m128i*>(in);
 		uint8_t* outp = out;
 
 		for (int j = 0; j < sw; j++)
 		{
 			// 16-byte blocks #0,#1,#2:
-			__m128i d0 = _mm_load_si128((const __m128i*)inp);
-			inp += 16;
-			__m128i d1 = _mm_load_si128((const __m128i*)inp);
-			inp += 16;
+			__m128i d0 = _mm_load_si128(inp++);
+			__m128i d1 = _mm_load_si128(inp++);
 
 			// First 16 bytes:
 			__m128i shuf0 = _mm_shuffle_epi8(d0, m0);
@@ -78,15 +74,14 @@ void image_SSSE3_scale_half_3c8u(
 
 			__m128i res0 = _mm_or_si128(shuf0, shuf1);
 
-			_mm_store_si128((__m128i*)outp, res0);  // aligned output
+			_mm_storeu_si128((__m128i*)outp, res0);  // aligned output
 			outp += 16;
 
 			// Last 8 bytes:
-			__m128i d2 = _mm_load_si128((const __m128i*)in);
-			in += 16;
+			__m128i d2 = _mm_load_si128(inp++);
 
 			_mm_storel_epi64(  // Write lower 8 bytes only
-			    (__m128i*)outp,
+				(__m128i*)outp,
 				_mm_or_si128(
 					_mm_shuffle_epi8(d2, m2), _mm_shuffle_epi8(d1, m3)));
 			outp += 8;
@@ -100,112 +95,78 @@ void image_SSSE3_scale_half_3c8u(
 // image_SSSE3_bgr_to_gray_8u():
 template <bool IS_RGB>
 void private_image_SSSE3_rgb_or_bgr_to_gray_8u(
-    const uint8_t* in, uint8_t* out, int w, int h, size_t step_in,
-    size_t step_out)
+	const uint8_t* in, uint8_t* out, int w, int h, size_t step_in,
+	size_t step_out)
 {
-	// Masks:                 0  1   2  3   4  5   6  7   8 9    A  B   C  D  E
-	// F
-	BUILD_128BIT_CONST(
-		mask0, 80, 00, 80, 03, 80, 06, 80, 09, 80, 0C, 80, 0F, 80, 80, 80,
-		80)  // reds[0-7] from D0
-	BUILD_128BIT_CONST(
-		mask1, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 02, 80,
-		05)  // reds[0-7] from D1
+	// clang-format off
+#if defined(_MSC_VER)
+#pragma warning( disable : 4309 ) // Yes, we know 0x80 is a "negative char"
+#endif
 
-	BUILD_128BIT_CONST(
-		mask2, 80, 01, 80, 04, 80, 07, 80, 0A, 80, 0D, 80, 80, 80, 80, 80,
-		80)  // greens[0-7] from D0
-	BUILD_128BIT_CONST(
-		mask3, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 00, 80, 03, 80,
-		06)  // greens[0-7] from D1
-
-	BUILD_128BIT_CONST(
-		mask4, 80, 02, 80, 05, 80, 08, 80, 0B, 80, 0E, 80, 80, 80, 80, 80,
-		80)  // blues[0-7] from D0
-	BUILD_128BIT_CONST(
-		mask5, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 01, 80, 04, 80,
-		07)  // blues[0-7] from D1
-
-	BUILD_128BIT_CONST(
-		mask6, 80, 08, 80, 0B, 80, 0E, 80, 80, 80, 80, 80, 80, 80, 80, 80,
-		80)  // reds[8-15] from D1
-	BUILD_128BIT_CONST(
-		mask7, 80, 80, 80, 80, 80, 80, 80, 01, 80, 04, 80, 07, 80, 0A, 80,
-		0D)  // reds[8-15] from D2
-
-	BUILD_128BIT_CONST(
-		mask8, 80, 09, 80, 0C, 80, 0F, 80, 80, 80, 80, 80, 80, 80, 80, 80,
-		80)  // greens[8-15] from D1
-	BUILD_128BIT_CONST(
-		mask9, 80, 80, 80, 80, 80, 80, 80, 02, 80, 05, 80, 08, 80, 0B, 80,
-		0E)  // greens[8-15] from D2
-
-	BUILD_128BIT_CONST(
-		mask10, 80, 0A, 80, 0D, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80,
-		80)  // blues[8-15] from D1
-	BUILD_128BIT_CONST(
-		mask11, 80, 80, 80, 80, 80, 00, 80, 03, 80, 06, 80, 09, 80, 0C, 80,
-		0F)  // blues[8-15] from D2
-
-	BUILD_128BIT_CONST(
-		mask_to_low, 01, 03, 05, 07, 09, 0B, 0D, 0F, 80, 80, 80, 80, 80, 80, 80,
-		80)
-
+	// Masks:                            0       1    2    3     4      5     6    7     8      9     A     B      C    D    E     F
+	// reds[0-7] from D0
+	const __m128i mask0 = _mm_setr_epi8(0x80, 0x00, 0x80, 0x03, 0x80, 0x06, 0x80, 0x09, 0x80, 0x0C, 0x80, 0x0F, 0x80, 0x80, 0x80, 0x80);
+	// reds[0-7] from D1
+	const __m128i mask1 = _mm_setr_epi8(0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x02, 0x80, 0x05);
+	// greens[0-7] from D0
+	const __m128i mask2 = _mm_setr_epi8(0x80, 0x01, 0x80, 0x04, 0x80, 0x07, 0x80, 0x0A, 0x80, 0x0D, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80);
+	// greens[0-7] from D1
+	const __m128i mask3 = _mm_setr_epi8(0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x00, 0x80, 0x03, 0x80, 0x06);
+	// blues[0-7] from D0
+	const __m128i mask4 = _mm_setr_epi8(0x80, 0x02, 0x80, 0x05, 0x80, 0x08, 0x80, 0x0B, 0x80, 0x0E, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80);
+	// blues[0-7] from D1
+	const __m128i mask5 = _mm_setr_epi8(0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x01, 0x80, 0x04, 0x80, 0x07);
+	// reds[8-15] from D1
+	const __m128i mask6 = _mm_setr_epi8(0x80, 0x08, 0x80, 0x0B, 0x80, 0x0E, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80);
+	// reds[8-15] from D2
+	const __m128i mask7 = _mm_setr_epi8(0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x01, 0x80, 0x04, 0x80, 0x07, 0x80, 0x0A, 0x80, 0x0D);
+	// greens[8-15] from D1
+	const __m128i mask8 = _mm_setr_epi8(0x80, 0x09, 0x80, 0x0C, 0x80, 0x0F, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80);
+	// greens[8-15] from D2
+	const __m128i mask9 = _mm_setr_epi8(0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x02, 0x80, 0x05, 0x80, 0x08, 0x80, 0x0B, 0x80, 0x0E);
+	// blues[8-15] from D1
+	const __m128i mask10 = _mm_setr_epi8(0x80, 0x0A, 0x80, 0x0D, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80);
+	// blues[8-15] from D2
+	const __m128i mask11 = _mm_setr_epi8(0x80, 0x80, 0x80, 0x80, 0x80, 0x00, 0x80, 0x03, 0x80, 0x06, 0x80, 0x09, 0x80, 0x0C, 0x80, 0x0F);
 	// Conversion factors for RGB->Y
-	BUILD_128BIT_CONST(
-		val_red, 00, 1D, 00, 1D, 00, 1D, 00, 1D, 00, 1D, 00, 1D, 00, 1D, 00, 1D)
-	BUILD_128BIT_CONST(
-		val_green, 00, 96, 00, 96, 00, 96, 00, 96, 00, 96, 00, 96, 00, 96, 00,
-		96)
-	BUILD_128BIT_CONST(
-		val_blue, 00, 4D, 00, 4D, 00, 4D, 00, 4D, 00, 4D, 00, 4D, 00, 4D, 00,
-		4D)
+	const __m128i VAL_R = _mm_setr_epi8(0x00, 0x1D, 0x00, 0x1D, 0x00, 0x1D, 0x00, 0x1D, 0x00, 0x1D, 0x00, 0x1D, 0x00, 0x1D, 0x00, 0x1D);
+	const __m128i VAL_G = _mm_setr_epi8(0x00, 0x96, 0x00, 0x96, 0x00, 0x96, 0x00, 0x96, 0x00, 0x96, 0x00, 0x96, 0x00, 0x96, 0x00, 0x96);
+	const __m128i VAL_B = _mm_setr_epi8(0x00, 0x4D, 0x00, 0x4D, 0x00, 0x4D, 0x00, 0x4D, 0x00, 0x4D, 0x00, 0x4D, 0x00, 0x4D, 0x00, 0x4D);
+	// mask:
+	const __m128i mask_low = _mm_setr_epi8(0x01, 0x03, 0x05, 0x07, 0x09, 0x0B, 0x0D, 0x0F, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80);
 
-	const __m128i m0 =
-		_mm_load_si128(IS_RGB ? (const __m128i*)mask4 : (const __m128i*)mask0);
-	const __m128i m1 =
-		_mm_load_si128(IS_RGB ? (const __m128i*)mask5 : (const __m128i*)mask1);
-	const __m128i m2 = _mm_load_si128((const __m128i*)mask2);
-	const __m128i m3 = _mm_load_si128((const __m128i*)mask3);
-	const __m128i m4 =
-		_mm_load_si128(IS_RGB ? (const __m128i*)mask0 : (const __m128i*)mask4);
-	const __m128i m5 =
-		_mm_load_si128(IS_RGB ? (const __m128i*)mask1 : (const __m128i*)mask5);
+	// clang-format on
+#if defined(_MSC_VER)
+#pragma warning(default : 4309)
+#endif
 
-	const __m128i m6 =
-		_mm_load_si128(IS_RGB ? (const __m128i*)mask10 : (const __m128i*)mask6);
-	const __m128i m7 =
-		_mm_load_si128(IS_RGB ? (const __m128i*)mask11 : (const __m128i*)mask7);
-	const __m128i m8 = _mm_load_si128((const __m128i*)mask8);
-	const __m128i m9 = _mm_load_si128((const __m128i*)mask9);
-	const __m128i m10 =
-		_mm_load_si128(IS_RGB ? (const __m128i*)mask6 : (const __m128i*)mask10);
-	const __m128i m11 =
-		_mm_load_si128(IS_RGB ? (const __m128i*)mask7 : (const __m128i*)mask11);
-
-	const __m128i mask_low = _mm_load_si128((const __m128i*)mask_to_low);
-
-	const __m128i VAL_R = _mm_load_si128((const __m128i*)val_red);
-	const __m128i VAL_G = _mm_load_si128((const __m128i*)val_green);
-	const __m128i VAL_B = _mm_load_si128((const __m128i*)val_blue);
+	const __m128i m0 = IS_RGB ? mask4 : mask0;
+	const __m128i m1 = IS_RGB ? mask5 : mask1;
+	const __m128i m2 = mask2;
+	const __m128i m3 = mask3;
+	const __m128i m4 = IS_RGB ? mask0 : mask4;
+	const __m128i m5 = IS_RGB ? mask1 : mask5;
+	const __m128i m6 = IS_RGB ? mask10 : mask6;
+	const __m128i m7 = IS_RGB ? mask11 : mask7;
+	const __m128i m8 = mask8;
+	const __m128i m9 = mask9;
+	const __m128i m10 = IS_RGB ? mask6 : mask10;
+	const __m128i m11 = IS_RGB ? mask7 : mask11;
 
 	const int sw = w >> 4;  // This are the number of 3*16 blocks in each row
 	const int sh = h;
 
 	for (int i = 0; i < sh; i++)
 	{
-		const uint8_t* inp = in;
+		const __m128i* inp = reinterpret_cast<const __m128i*>(in);
 		uint8_t* outp = out;
 
 		for (int j = 0; j < sw; j++)
 		{
 			// We process RGB data in blocks of 3 x 16byte blocks:
-			const __m128i d0 = _mm_load_si128((const __m128i*)inp);
-			inp += 16;
-			const __m128i d1 = _mm_load_si128((const __m128i*)inp);
-			inp += 16;
-			const __m128i d2 = _mm_load_si128((const __m128i*)inp);
-			inp += 16;
+			const __m128i d0 = _mm_load_si128(inp++);
+			const __m128i d1 = _mm_load_si128(inp++);
+			const __m128i d2 = _mm_load_si128(inp++);
 
 			// First 8 bytes of gray levels:
 			{
@@ -230,7 +191,8 @@ void private_image_SSSE3_rgb_or_bgr_to_gray_8u(
 						_mm_mulhi_epu16(BLUES_0_7, VAL_B)));
 
 				_mm_storel_epi64(
-				    (__m128i*)outp, _mm_shuffle_epi8(GRAYS_0_7, mask_low));
+					reinterpret_cast<__m128i*>(outp),
+					_mm_shuffle_epi8(GRAYS_0_7, mask_low));
 				outp += 8;
 			}
 
@@ -250,11 +212,12 @@ void private_image_SSSE3_rgb_or_bgr_to_gray_8u(
 						_mm_mulhi_epu16(BLUES_8_15, VAL_B)));
 
 				_mm_storel_epi64(
-				    (__m128i*)outp, _mm_shuffle_epi8(GRAYS_8_15, mask_low));
+					reinterpret_cast<__m128i*>(outp),
+					_mm_shuffle_epi8(GRAYS_8_15, mask_low));
 				outp += 8;
 			}
 		}
-		in += 2 * step_in;  // Skip one row
+		in += step_in;
 		out += step_out;
 	}
 
@@ -271,11 +234,11 @@ void private_image_SSSE3_rgb_or_bgr_to_gray_8u(
  * mrpt::img::CImage::grayscaleInPlace()
  */
 void image_SSSE3_bgr_to_gray_8u(
-    const uint8_t* in, uint8_t* out, int w, int h, size_t step_in,
-    size_t step_out)
+	const uint8_t* in, uint8_t* out, int w, int h, size_t step_in,
+	size_t step_out)
 {
 	private_image_SSSE3_rgb_or_bgr_to_gray_8u<false>(
-	    in, out, w, h, step_in, step_out);
+		in, out, w, h, step_in, step_out);
 }
 
 /** Convert a RGB image (3cu8) into a GRAYSCALE (1c8u) image, using
@@ -289,11 +252,11 @@ void image_SSSE3_bgr_to_gray_8u(
  * mrpt::img::CImage::grayscaleInPlace()
  */
 void image_SSSE3_rgb_to_gray_8u(
-    const uint8_t* in, uint8_t* out, int w, int h, size_t step_in,
-    size_t step_out)
+	const uint8_t* in, uint8_t* out, int w, int h, size_t step_in,
+	size_t step_out)
 {
 	private_image_SSSE3_rgb_or_bgr_to_gray_8u<true>(
-	    in, out, w, h, step_in, step_out);
+		in, out, w, h, step_in, step_out);
 }
 
 /**  @} */
