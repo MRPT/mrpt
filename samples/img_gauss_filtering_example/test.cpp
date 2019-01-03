@@ -53,7 +53,6 @@ int main()
 	try
 	{
 		Test_GaussWindows();
-
 		return 0;
 	}
 	catch (const std::exception& e)

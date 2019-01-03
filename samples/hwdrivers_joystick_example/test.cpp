@@ -10,6 +10,7 @@
 #include <mrpt/hwdrivers/CJoystick.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
+#include <mrpt/core/exceptions.h>
 
 #include <cstdio>
 #include <iostream>
@@ -61,9 +62,6 @@ void TestJoystick()
 	}
 }
 
-// ------------------------------------------------------
-//						MAIN
-// ------------------------------------------------------
 int main()
 {
 	try
@@ -74,12 +72,7 @@ int main()
 	}
 	catch (const std::exception& e)
 	{
-		std::cout << "MRPT exception caught: " << e.what() << std::endl;
-		return -1;
-	}
-	catch (...)
-	{
-		printf("Untyped exception!!");
+		std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
 		return -1;
 	}
 }

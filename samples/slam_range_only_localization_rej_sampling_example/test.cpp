@@ -101,7 +101,7 @@ int main()
 	}
 	catch (exception& e)
 	{
-		cout << "EXCEPCTION: " << e.what() << endl;
+		std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
 		return -1;
 	}
 	catch (...)
