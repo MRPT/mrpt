@@ -30,7 +30,7 @@ void TestImageConversion()
 {
 	// BMP -> JPEG conversion tester:
 	// --------------------------------
-	CImage img, img2;
+	CImage img;
 	CTicTac tictac;
 	CTimeLogger timlog;
 
@@ -95,10 +95,10 @@ void TestImageConversion()
 	COV(0, 0) = 100;
 	COV(1, 1) = 50;
 	COV(0, 1) = COV(1, 0) = -30;
-	imgSmall.ellipseGaussian(&COV, 600.0f, 50.0f, 2, TColor(255, 255, 0), 4);
-	imgGray.ellipseGaussian(&COV, 100.0f, 100.0f, 2, TColor(0, 0, 255), 4);
+	imgSmall.ellipseGaussian(&COV, 600.0, 50.0, 2, TColor(255, 255, 0), 4);
+	imgGray.ellipseGaussian(&COV, 100.0, 100.0, 2, TColor(0, 0, 255), 4);
 
-	imgSmall.drawImage(400, 500, imgGray);
+	imgGray.drawImage(50, 40, imgSmall2);
 
 	// Show the windows now:
 	// ------------------------------------------------------
@@ -115,8 +115,8 @@ void TestImageConversion()
 	win4.waitForKey();
 
 	tictac.Tic();
-	img2.saveToFile("frame_out.jpg");
-	printf("jpeg file saved in %.03fms\n", 1000.0f * tictac.Tac());
+	imgGray.saveToFile("frame_out.jpg");
+	printf("jpeg file saved in %.03fms\n", 1000.0 * tictac.Tac());
 
 	imgSmall2.saveToFile("frame_out_small.png");
 
