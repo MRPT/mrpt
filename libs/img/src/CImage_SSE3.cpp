@@ -31,13 +31,14 @@
  * ignoring the other 3
  *  - <b>Input format:</b> uint8_t, 3 channels (RGB or BGR)
  *  - <b>Output format:</b> uint8_t, 3 channels (RGB or BGR)
- *  - <b>Preconditions:</b> in & out aligned to 16bytes, w = k*16 (w=width in
- * pixels), widthStep=w*3
+ *  - <b>Preconditions:</b> in & out aligned to 16bytes, step = k*16
  *  - <b>Notes:</b>
  *  - <b>Requires:</b> SSSE3
  *  - <b>Invoked from:</b> mrpt::img::CImage::scaleHalf()
  */
-void image_SSSE3_scale_half_3c8u(const uint8_t* in, uint8_t* out, int w, int h)
+void image_SSSE3_scale_half_3c8u(
+    const uint8_t* in, uint8_t* out, int w, int h, size_t step_in,
+    size_t step_out)
 {
 	alignas(MRPT_MAX_ALIGN_BYTES) const unsigned long long mask0[2] = {
 		0x0D0C080706020100ull, 0x808080808080800Eull};  // Long words are in
@@ -58,17 +59,18 @@ void image_SSSE3_scale_half_3c8u(const uint8_t* in, uint8_t* out, int w, int h)
 	const int sw = w >> 4;  // This are the number of 3*16 blocks in each row
 	const int sh = h >> 1;
 
-	int odd_row = 0;
-
 	for (int i = 0; i < sh; i++)
 	{
+		const uint8_t* inp = in;
+		uint8_t* outp = out;
+
 		for (int j = 0; j < sw; j++)
 		{
 			// 16-byte blocks #0,#1,#2:
-			__m128i d0 = _mm_load_si128((const __m128i*)in);
-			in += 16;
-			__m128i d1 = _mm_load_si128((const __m128i*)in);
-			in += 16;
+			__m128i d0 = _mm_load_si128((const __m128i*)inp);
+			inp += 16;
+			__m128i d1 = _mm_load_si128((const __m128i*)inp);
+			inp += 16;
 
 			// First 16 bytes:
 			__m128i shuf0 = _mm_shuffle_epi8(d0, m0);
@@ -76,24 +78,21 @@ void image_SSSE3_scale_half_3c8u(const uint8_t* in, uint8_t* out, int w, int h)
 
 			__m128i res0 = _mm_or_si128(shuf0, shuf1);
 
-			if ((odd_row & 0x1) != 0)
-				_mm_storeu_si128((__m128i*)out, res0);  // unaligned output
-			else
-				_mm_store_si128((__m128i*)out, res0);  // aligned output
-			out += 16;
+			_mm_store_si128((__m128i*)outp, res0);  // aligned output
+			outp += 16;
 
 			// Last 8 bytes:
 			__m128i d2 = _mm_load_si128((const __m128i*)in);
 			in += 16;
 
 			_mm_storel_epi64(  // Write lower 8 bytes only
-				(__m128i*)out,
+			    (__m128i*)outp,
 				_mm_or_si128(
 					_mm_shuffle_epi8(d2, m2), _mm_shuffle_epi8(d1, m3)));
-			odd_row++;
-			out += 8;
+			outp += 8;
 		}
-		in += 3 * w;
+		in += 2 * step_in;  // Skip one row
+		out += step_out;
 	}
 }
 
@@ -101,7 +100,8 @@ void image_SSSE3_scale_half_3c8u(const uint8_t* in, uint8_t* out, int w, int h)
 // image_SSSE3_bgr_to_gray_8u():
 template <bool IS_RGB>
 void private_image_SSSE3_rgb_or_bgr_to_gray_8u(
-	const uint8_t* in, uint8_t* out, int w, int h)
+    const uint8_t* in, uint8_t* out, int w, int h, size_t step_in,
+    size_t step_out)
 {
 	// Masks:                 0  1   2  3   4  5   6  7   8 9    A  B   C  D  E
 	// F
@@ -194,15 +194,18 @@ void private_image_SSSE3_rgb_or_bgr_to_gray_8u(
 
 	for (int i = 0; i < sh; i++)
 	{
+		const uint8_t* inp = in;
+		uint8_t* outp = out;
+
 		for (int j = 0; j < sw; j++)
 		{
 			// We process RGB data in blocks of 3 x 16byte blocks:
-			const __m128i d0 = _mm_load_si128((const __m128i*)in);
-			in += 16;
-			const __m128i d1 = _mm_load_si128((const __m128i*)in);
-			in += 16;
-			const __m128i d2 = _mm_load_si128((const __m128i*)in);
-			in += 16;
+			const __m128i d0 = _mm_load_si128((const __m128i*)inp);
+			inp += 16;
+			const __m128i d1 = _mm_load_si128((const __m128i*)inp);
+			inp += 16;
+			const __m128i d2 = _mm_load_si128((const __m128i*)inp);
+			inp += 16;
 
 			// First 8 bytes of gray levels:
 			{
@@ -227,8 +230,8 @@ void private_image_SSSE3_rgb_or_bgr_to_gray_8u(
 						_mm_mulhi_epu16(BLUES_0_7, VAL_B)));
 
 				_mm_storel_epi64(
-					(__m128i*)out, _mm_shuffle_epi8(GRAYS_0_7, mask_low));
-				out += 8;
+				    (__m128i*)outp, _mm_shuffle_epi8(GRAYS_0_7, mask_low));
+				outp += 8;
 			}
 
 			// Second 8 bytes of gray levels:
@@ -247,10 +250,12 @@ void private_image_SSSE3_rgb_or_bgr_to_gray_8u(
 						_mm_mulhi_epu16(BLUES_8_15, VAL_B)));
 
 				_mm_storel_epi64(
-					(__m128i*)out, _mm_shuffle_epi8(GRAYS_8_15, mask_low));
-				out += 8;
+				    (__m128i*)outp, _mm_shuffle_epi8(GRAYS_8_15, mask_low));
+				outp += 8;
 			}
 		}
+		in += 2 * step_in;  // Skip one row
+		out += step_out;
 	}
 
 }  // end private_image_SSSE3_rgb_or_bgr_to_gray_8u()
@@ -259,32 +264,36 @@ void private_image_SSSE3_rgb_or_bgr_to_gray_8u(
  * Y=77*R+150*G+29*B
  *  - <b>Input format:</b> uint8_t, 3 channels (BGR order)
  *  - <b>Output format:</b> uint8_t, 1 channel
- *  - <b>Preconditions:</b> in & out aligned to 16bytes, w = k*16 (w=width in
- * pixels), widthStep=w*3 and w*1
+ *  - <b>Preconditions:</b> in & out aligned to 16bytes, step = k*16
  *  - <b>Notes:</b>
  *  - <b>Requires:</b> SSSE3
  *  - <b>Invoked from:</b> mrpt::img::CImage::grayscale(),
  * mrpt::img::CImage::grayscaleInPlace()
  */
-void image_SSSE3_bgr_to_gray_8u(const uint8_t* in, uint8_t* out, int w, int h)
+void image_SSSE3_bgr_to_gray_8u(
+    const uint8_t* in, uint8_t* out, int w, int h, size_t step_in,
+    size_t step_out)
 {
-	private_image_SSSE3_rgb_or_bgr_to_gray_8u<false>(in, out, w, h);
+	private_image_SSSE3_rgb_or_bgr_to_gray_8u<false>(
+	    in, out, w, h, step_in, step_out);
 }
 
 /** Convert a RGB image (3cu8) into a GRAYSCALE (1c8u) image, using
  * Y=77*R+150*G+29*B
  *  - <b>Input format:</b> uint8_t, 3 channels (RGB order)
  *  - <b>Output format:</b> uint8_t, 1 channel
- *  - <b>Preconditions:</b> in & out aligned to 16bytes, w = k*16 (w=width in
- * pixels), widthStep=w*3 and w*1
+ *  - <b>Preconditions:</b> in & out aligned to 16bytes, step = k*16
  *  - <b>Notes:</b>
  *  - <b>Requires:</b> SSSE3
  *  - <b>Invoked from:</b> mrpt::img::CImage::grayscale(),
  * mrpt::img::CImage::grayscaleInPlace()
  */
-void image_SSSE3_rgb_to_gray_8u(const uint8_t* in, uint8_t* out, int w, int h)
+void image_SSSE3_rgb_to_gray_8u(
+    const uint8_t* in, uint8_t* out, int w, int h, size_t step_in,
+    size_t step_out)
 {
-	private_image_SSSE3_rgb_or_bgr_to_gray_8u<true>(in, out, w, h);
+	private_image_SSSE3_rgb_or_bgr_to_gray_8u<true>(
+	    in, out, w, h, step_in, step_out);
 }
 
 /**  @} */
