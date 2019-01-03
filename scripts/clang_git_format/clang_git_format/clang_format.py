@@ -115,6 +115,7 @@ class ClangFormat(object):
         """Validate clang-format is the expected version
         """
         cf_version = callo([self.clang_path, "--version"])
+        logger.warn("Using clang-format version: %s" % cf_version)
 
         # JLBC: Disable version checks and just use the version we find:
         return True
