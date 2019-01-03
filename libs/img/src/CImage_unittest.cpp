@@ -407,6 +407,24 @@ TEST(CImage, ScaleImage)
 		EXPECT_EQ(a.getHeight(), 240U);
 	}
 	{
+		CImage ag = a.grayscale();
+		CImage b;
+		ag.scaleHalf(b, IMG_INTERP_LINEAR);
+		EXPECT_EQ(b.getWidth(), 160U);
+		EXPECT_EQ(b.getHeight(), 120U);
+		EXPECT_EQ(ag.getWidth(), 320U);
+		EXPECT_EQ(ag.getHeight(), 240U);
+	}
+	{
+		CImage ag = a.grayscale();
+		CImage b;
+		ag.scaleHalf(b, IMG_INTERP_NN);
+		EXPECT_EQ(b.getWidth(), 160U);
+		EXPECT_EQ(b.getHeight(), 120U);
+		EXPECT_EQ(ag.getWidth(), 320U);
+		EXPECT_EQ(ag.getHeight(), 240U);
+	}
+	{
 		CImage b;
 		a.scaleHalf(b, IMG_INTERP_LINEAR);
 		EXPECT_EQ(b.getWidth(), 160U);
