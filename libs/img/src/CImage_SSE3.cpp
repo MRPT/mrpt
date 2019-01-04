@@ -18,6 +18,7 @@
 #if MRPT_HAS_SSE3
 
 #include <mrpt/img/CImage.h>
+#include <mrpt/system/memory.h>
 #include <mrpt/core/SSE_types.h>
 #include <mrpt/core/SSE_macros.h>
 #include "CImage_SSEx.h"
@@ -237,6 +238,11 @@ void image_SSSE3_bgr_to_gray_8u(
 	const uint8_t* in, uint8_t* out, int w, int h, size_t step_in,
 	size_t step_out)
 {
+	ASSERT_(mrpt::system::is_aligned<16>(in));
+	ASSERT_(mrpt::system::is_aligned<16>(out));
+	ASSERTMSG_((step_in & 0x0f) == 0, "step of input image must be 16*k");
+	ASSERTMSG_((step_out & 0x0f) == 0, "step of output image must be 16*k");
+
 	private_image_SSSE3_rgb_or_bgr_to_gray_8u<false>(
 		in, out, w, h, step_in, step_out);
 }
@@ -255,6 +261,11 @@ void image_SSSE3_rgb_to_gray_8u(
 	const uint8_t* in, uint8_t* out, int w, int h, size_t step_in,
 	size_t step_out)
 {
+	ASSERT_(mrpt::system::is_aligned<16>(in));
+	ASSERT_(mrpt::system::is_aligned<16>(out));
+	ASSERTMSG_((step_in & 0x0f) == 0, "step of input image must be 16*k");
+	ASSERTMSG_((step_out & 0x0f) == 0, "step of output image must be 16*k");
+
 	private_image_SSSE3_rgb_or_bgr_to_gray_8u<true>(
 		in, out, w, h, step_in, step_out);
 }
