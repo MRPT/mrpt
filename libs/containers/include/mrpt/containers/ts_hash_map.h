@@ -127,12 +127,13 @@ class ts_hash_map
 			// an iterator pointing to "end()".
 			do
 			{
-				if (++m_idx_inner >= (int)NUM_HAS_TABLE_COLLISIONS_ALLOWED)
+				if (++m_idx_inner >=
+					static_cast<int>(NUM_HAS_TABLE_COLLISIONS_ALLOWED))
 				{
 					m_idx_inner = 0;
 					m_idx_outer++;
 				}
-			} while (m_idx_outer < (int)m_parent->m_vec.size() &&
+			} while (m_idx_outer < static_cast<int>(m_parent->m_vec.size()) &&
 					 !(*m_vec)[m_idx_outer][m_idx_inner].used);
 		}
 	};
