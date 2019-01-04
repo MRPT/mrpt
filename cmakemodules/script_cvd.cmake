@@ -5,6 +5,7 @@ ExternalProject_Add(libcvd
 	CMAKE_ARGS
 		-DCMAKE_POSITION_INDEPENDENT_CODE=ON
 		-DCVD_SSE2=${CMAKE_MRPT_HAS_SSE2}
+		-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
 		-DCVD_TESTS=OFF
 		-DCVD_PROGS=OFF
 		-DCVD_EXAMPLES=OFF
@@ -19,5 +20,5 @@ set(CVD_INCLUDE_DIRS "${CVD_DIR}" "${CVD_BIN_DIR}/include")
 if(MSVC)
 	set(CVD_LIB "${CVD_BIN_DIR}/$<CONFIG>/CVD$<$<CONFIG:Debug>:_debug>.lib")
 else()
-	set(CVD_LIB "${CVD_BIN_DIR}/libCVD.a")
+	set(CVD_LIB "${CVD_BIN_DIR}/libCVD$<$<CONFIG:Debug>:_debug>.a")
 endif()
