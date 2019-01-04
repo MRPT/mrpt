@@ -92,14 +92,12 @@ endif()
 
 # ------------------------------------------
 # We want libraries to be named "libXXX"
-#  in all compilers, and and "libXXX-dbg" in MSVC
+#  in all compilers, and "-dbg" for debug
 # ------------------------------------------
 if(MSVC)
 	set(MRPT_LIB_PREFIX "lib")  # Libs are: "libXXX"
-	set(CMAKE_DEBUG_POSTFIX  "-dbg")
-else()
-	set(CMAKE_DEBUG_POSTFIX "")
 endif()
+set(CMAKE_DEBUG_POSTFIX  "-dbg")
 
 # In case of Makefiles if the user does not setup CMAKE_BUILD_TYPE, assume it's Release:
 if (${CMAKE_GENERATOR} MATCHES ".*Makefiles")
