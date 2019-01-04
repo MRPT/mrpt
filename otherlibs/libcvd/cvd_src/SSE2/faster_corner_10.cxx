@@ -16,7 +16,7 @@ namespace CVD
     template <bool Aligned> void faster_corner_detect_10(const BasicImage<byte>& I, std::vector<ImageRef>& corners, const int barrier)
     {
 	const int w = I.size().x;
-	const int stride = 3*w;
+	const int stride = I.row_stride();
 
 	const __m128i barriers = _mm_set1_epi8((byte)barrier);
 

@@ -49,7 +49,7 @@ namespace CVD
     template <bool Aligned> void faster_corner_detect_12(const BasicImage<byte>& I, std::vector<ImageRef>& corners, int barrier)
     {
 	const int w = I.size().x;
-	const int stride = 3*w;
+	const int stride = I.row_stride();
 	typedef std::list<const byte*> Passed;
 	Passed passed;
 

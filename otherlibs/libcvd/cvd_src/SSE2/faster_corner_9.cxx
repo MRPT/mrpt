@@ -18,8 +18,7 @@ namespace CVD
     template <bool Aligned> void faster_corner_detect_9(const BasicImage<byte>& I, std::vector<ImageRef>& corners, const int barrier)
     {
 	const int w = I.size().x;
-	const int stride = 3*w;
-	const int rowStride = I.row_stride();
+	const int stride = I.row_stride();
 
 	const __m128i barriers = _mm_set1_epi8((byte)barrier);
 
@@ -32,7 +31,7 @@ namespace CVD
 	    for(int x=3; x < 16; x++)
 	    {
 	    	const byte* p = prow + x;
-	    	if(is_corner_9<Less>(p, rowStride, barrier) || is_corner_9<Greater>(p, rowStride, barrier))
+			if(is_corner_9<Less>(p, stride, barrier) || is_corner_9<Greater>(p, stride, barrier))
 		    corners.emplace_back(x, y);
 	    }
 
@@ -240,7 +239,7 @@ namespace CVD
 	    }
 
 	    for(int x=xend; x < I.size().x - 3; x++)
-	    	if(is_corner_9<Less>(&I[y][x], rowStride, barrier) || is_corner_9<Greater>(&I[y][x], rowStride, barrier))
+			if(is_corner_9<Less>(&I[y][x], stride, barrier) || is_corner_9<Greater>(&I[y][x], stride, barrier))
 		    corners.emplace_back(x, y);
 	}
     }
