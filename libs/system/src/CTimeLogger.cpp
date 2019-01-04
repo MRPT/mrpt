@@ -136,16 +136,19 @@ void CTimeLogger::getStats(std::map<std::string, TCallStats>& out_stats) const
 
 std::string CTimeLogger::getStatsAsText(const size_t column_width) const
 {
-	std::string stats_text;
-	std::string name_tmp = m_name.size() ? " " + m_name + ": " : " ";
-	std::string mrpt_string = "MRPT CTimeLogger report ";
+	using std::string;
+	using namespace std::string_literals;
 
-	std::string top_header(name_tmp + mrpt_string);
+	string stats_text;
+	string name_tmp = m_name.size() != 0 ? " "s + m_name + ": "s : " "s;
+	string mrpt_string = "MRPT CTimeLogger report "s;
+
+	string top_header(name_tmp + mrpt_string);
 	// append dashes to the header to reach column_width
 	{
-		int space_to_fill = top_header.size() < column_width
-								? (column_width - top_header.size()) / 2
-								: 2;
+		const auto space_to_fill = top_header.size() < column_width
+									   ? (column_width - top_header.size()) / 2
+									   : 2;
 		std::string dashes_half(space_to_fill, '-');
 		top_header = dashes_half + top_header + dashes_half;
 		if (dashes_half.size() % 2)
@@ -159,13 +162,46 @@ std::string CTimeLogger::getStatsAsText(const size_t column_width) const
 		"MAX.T TOTAL ");
 	std::string bottom_header(column_width, '-');
 
-	stats_text += top_header + "\n";
-	stats_text += middle_header + "\n";
-	stats_text += bottom_header + "\n";
+	stats_text += top_header + "\n"s;
+	stats_text += middle_header + "\n"s;
+	stats_text += bottom_header + "\n"s;
 
-	// for all the timed sections
-	for (const auto i : m_data)
+	// for all the timed sections: sort by inserting into a std::map
+	using NameAndCallData = std::map<std::string, TCallData>;
+	NameAndCallData stat_strs;
+	for (const auto& i : m_data) stat_strs[i.first] = i.second;
+
+	// format tree-like patterns like:
+	//  ----------
+	//  foobar
+	//  foobar.a
+	//  foobar.b
+	//  ----------
+	//  like:
+	//  ----------
+	//  foobar
+	//  +-> a
+	//  +-> b
+	//  ----------
+	std::string last_parent;
+	for (const auto& i : stat_strs)
 	{
+		string line = i.first;  // make a copy
+
+		const auto dot_pos = line.find(".");
+		if (dot_pos == std::string::npos)
+		{
+			last_parent = line;
+		}
+		else
+		{
+			const auto parent_pos = line.find(last_parent);
+			if (parent_pos != std::string::npos)
+			{
+				line = "+-> "s + line.substr(dot_pos);
+			}
+		}
+
 		const string sMinT = unitsFormat(i.second.min_t, 1, false);
 		const string sMaxT = unitsFormat(i.second.max_t, 1, false);
 		const string sTotalT = unitsFormat(i.second.mean_t, 1, false);
@@ -173,9 +209,9 @@ std::string CTimeLogger::getStatsAsText(const size_t column_width) const
 			i.second.n_calls ? i.second.mean_t / i.second.n_calls : 0, 1,
 			false);
 
-		stats_text += format(
+		stats_text += mrpt::format(
 			"%s %7u %6s%c %6s%c %6s%c %6s%c\n",
-			aux_format_string_multilines(i.first, 39).c_str(),
+			aux_format_string_multilines(line, 39).c_str(),
 			static_cast<unsigned int>(i.second.n_calls), sMinT.c_str(),
 			i.second.has_time_units ? 's' : ' ', sMeanT.c_str(),
 			i.second.has_time_units ? 's' : ' ', sMaxT.c_str(),
