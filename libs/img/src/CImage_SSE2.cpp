@@ -21,6 +21,7 @@
 // ---------------------------------------------------------------------------
 
 #include <mrpt/img/CImage.h>
+#include <mrpt/system/memory.h>
 #include <mrpt/core/SSE_types.h>
 #include <mrpt/core/SSE_macros.h>
 #include "CImage_SSEx.h"
@@ -43,6 +44,11 @@ void image_SSE2_scale_half_1c8u(
 	const uint8_t* in, uint8_t* out, int w, int h, size_t step_in,
 	size_t step_out)
 {
+	ASSERT_(mrpt::system::is_aligned<16>(in));
+	ASSERT_(mrpt::system::is_aligned<16>(out));
+	ASSERTMSG_((step_in & 0x0f) == 0, "step of input image must be 16*k");
+	ASSERTMSG_((step_out & 0x0f) == 0, "step of output image must be 16*k");
+
 	// clang-format off
 #if defined(_MSC_VER)
 #pragma warning( disable : 4309 ) // Yes, we know 0x80 is a "negative char"
@@ -86,6 +92,11 @@ void image_SSE2_scale_half_smooth_1c8u(
 	const uint8_t* in, uint8_t* out, int w, int h, size_t step_in,
 	size_t step_out)
 {
+	ASSERT_(mrpt::system::is_aligned<16>(in));
+	ASSERT_(mrpt::system::is_aligned<16>(out));
+	ASSERTMSG_((step_in & 0x0f) == 0, "step of input image must be 16*k");
+	ASSERTMSG_((step_out & 0x0f) == 0, "step of output image must be 16*k");
+
 	// clang-format off
 #if defined(_MSC_VER)
 #pragma warning( disable : 4309 ) // Yes, we know 0x80 is a "negative char"
@@ -103,7 +114,7 @@ void image_SSE2_scale_half_smooth_1c8u(
 	for (int i = 0; i < sh; i++)
 	{
 		auto inp = reinterpret_cast<const __m128i*>(in);
-		auto nextRow = reinterpret_cast<const __m128i*>(in + w);
+		auto nextRow = reinterpret_cast<const __m128i*>(in + step_in);
 		uint8_t* outp = out;
 
 		for (int j = 0; j < sw; j++)
