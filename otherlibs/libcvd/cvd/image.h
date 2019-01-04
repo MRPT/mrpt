@@ -217,8 +217,8 @@ template<class T> class BasicImageIterator
 		{ }
 
 		//Prevent automatic conversion from a pointer (ie Image::iterator)
-		explicit BasicImageIterator(T* end) 
-		:ptr(end),is_end(true),row_increment(0),total_width(0)
+		explicit BasicImageIterator(T* endptr)
+		:ptr(endptr),is_end(true),row_increment(0),total_width(0)
 		{ }
 
 	protected:
