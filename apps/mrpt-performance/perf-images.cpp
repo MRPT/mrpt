@@ -260,12 +260,14 @@ double image_KLTscore(int WIN, int N)
 	return R;
 }
 
-template <bool DO_SMOOTH, bool CONVERT_GRAY>
+template <bool DO_SMOOTH, bool CONVERT_GRAY, bool SOURCE_GRAY>
 double image_buildPyramid(int N, int NOCTS)
 {
 	// Get a real image for testing:
 	CImage img;
 	getTestImage(0, img);
+
+	if (SOURCE_GRAY) img = img.grayscale();
 
 	mrpt::vision::CImagePyramid pyr;
 	// Run once in advance not to count the memory reservation:
@@ -542,30 +544,37 @@ void register_tests_image()
 		"images: KLT score (WIN=16 33x33)", image_KLTscore, 16, 1e6);
 
 	lstTests.emplace_back(
-		"images: buildPyramid 640x480,4 levs,no smooth,no gray",
-		image_buildPyramid<false, false>, 500, 4);
+		"images: buildPyramid 640x480,4 levs,no smooth,rgb->rgb",
+		image_buildPyramid<false, false, false>, 500, 4);
 	lstTests.emplace_back(
-		"images: buildPyramid 640x480,4 levs,   smooth,no gray",
-		image_buildPyramid<true, false>, 500, 4);
+		"images: buildPyramid 640x480,4 levs,   smooth,rgb->rgb",
+		image_buildPyramid<true, false, false>, 500, 4);
 	lstTests.emplace_back(
-		"images: buildPyramid 640x480,4 levs,no smooth,   gray",
-		image_buildPyramid<false, true>, 500, 4);
+		"images: buildPyramid 640x480,4 levs,no smooth,rgb->gray",
+		image_buildPyramid<false, true, false>, 500, 4);
 	lstTests.emplace_back(
-		"images: buildPyramid 640x480,4 levs,   smooth,   gray",
-		image_buildPyramid<true, true>, 500, 4);
+		"images: buildPyramid 640x480,4 levs,   smooth,rgb->gray",
+		image_buildPyramid<true, true, false>, 500, 4);
 
 	lstTests.emplace_back(
-		"images: buildPyramid 640x480,8 levs,no smooth,no gray",
-		image_buildPyramid<false, false>, 500, 8);
+		"images: buildPyramid 640x480,8 levs,no smooth,rgb->rgb",
+		image_buildPyramid<false, false, false>, 500, 8);
 	lstTests.emplace_back(
-		"images: buildPyramid 640x480,8 levs,   smooth,no gray",
-		image_buildPyramid<true, false>, 500, 8);
+		"images: buildPyramid 640x480,8 levs,   smooth,rgb->rgb",
+		image_buildPyramid<true, false, false>, 500, 8);
 	lstTests.emplace_back(
-		"images: buildPyramid 640x480,8 levs,no smooth,   gray",
-		image_buildPyramid<false, true>, 500, 8);
+		"images: buildPyramid 640x480,8 levs,no smooth,rgb->gray",
+		image_buildPyramid<false, true, false>, 500, 8);
 	lstTests.emplace_back(
-		"images: buildPyramid 640x480,8 levs,   smooth,   gray",
-		image_buildPyramid<true, true>, 500, 8);
+		"images: buildPyramid 640x480,8 levs,   smooth,rgb->gray",
+		image_buildPyramid<true, true, false>, 500, 8);
+
+	lstTests.emplace_back(
+		"images: buildPyramid 640x480,4 levs,no smooth,gray",
+		image_buildPyramid<false, false, true>, 500, 4);
+	lstTests.emplace_back(
+		"images: buildPyramid 640x480,4 levs,   smooth,gray",
+		image_buildPyramid<true, false, true>, 500, 4);
 
 	lstTests.emplace_back(
 		"stereo: prepare rectify map 640x480 RGB",
