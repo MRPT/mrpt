@@ -48,14 +48,23 @@ void CFeatureExtraction::extractFeaturesAKAZE(
 
 	Mat theImg = inImg_gray.asCvMat<Mat>(SHALLOW_COPY);
 	Ptr<AKAZE> akaze = AKAZE::create(
+#if MRPT_OPENCV_VERSION_NUM >= 0x400
 		static_cast<cv::AKAZE::DescriptorType>(
 			options.AKAZEOptions.descriptor_type),
+#else
+		options.AKAZEOptions.descriptor_type,
+#endif
 		options.AKAZEOptions.descriptor_size,
 		options.AKAZEOptions.descriptor_channels,
 		options.AKAZEOptions.threshold, options.AKAZEOptions.nOctaves,
 		options.AKAZEOptions.nOctaveLayers,
+#if MRPT_OPENCV_VERSION_NUM >= 0x400
 		static_cast<cv::KAZE::DiffusivityType>(
-			options.AKAZEOptions.diffusivity));
+			options.AKAZEOptions.diffusivity)
+#else
+		options.AKAZEOptions.diffusivity
+#endif
+	);
 
 	akaze->detect(theImg, cv_feats);
 
