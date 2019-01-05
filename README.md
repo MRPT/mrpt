@@ -92,6 +92,8 @@ for Windows instructions or to learn all the details.
 sudo apt install build-essential pkg-config cmake libwxgtk3.0-dev \
 libopencv-dev libeigen3-dev libgtest-dev
 ```
+  MRPT builds against OpenCV 2.4.x, 3.x, 4.x, but it is recommended to use 3.0 or later.
+
 
   * Install additional dependencies to enable all MRPT features:
 
