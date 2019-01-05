@@ -49,9 +49,15 @@ void CFeatureExtraction::internal_computeLogPolarImageDescriptors(
 		(*it)->scale = radius;
 
 		// Use OpenCV to convert:
+#if MRPT_OPENCV_VERSION_NUM < 0x300
+		const cv::Mat& in = in_img.asCvMatRef();
+		cv::Mat& out = logpolar_frame.asCvMatRef();
+		cvLogPolar(
+			&in, &out,
+#else
 		cv::logPolar(
-			in_img.asCvMat<cv::Mat>(SHALLOW_COPY),
-			logpolar_frame.asCvMat<cv::Mat>(SHALLOW_COPY),
+			in_img.asCvMatRef(), logpolar_frame.asCvMatRef(),
+#endif
 			cv::Point2f((*it)->x, (*it)->y), rho_scale,
 			CV_INTER_LINEAR + CV_WARP_FILL_OUTLIERS);
 

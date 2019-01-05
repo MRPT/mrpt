@@ -50,7 +50,7 @@ void CFeatureExtraction::extractFeaturesSURF(
 	using namespace cv;
 
 	const CImage img_grayscale(inImg, FAST_REF_OR_CONVERT_TO_GRAY);
-	const Mat img = cvarrToMat(img_grayscale.getAs<IplImage>());
+	const Mat& img = img_grayscale.asCvMatRef();
 
 	vector<KeyPoint> cv_feats;  // OpenCV keypoint output vector
 	Mat cv_descs;  // OpenCV descriptor output
@@ -163,7 +163,7 @@ void CFeatureExtraction::internal_computeSurfDescriptors(
 	if (in_features.empty()) return;
 
 	const CImage img_grayscale(inImg, FAST_REF_OR_CONVERT_TO_GRAY);
-	const Mat img = cvarrToMat(img_grayscale.getAs<IplImage>());
+	const Mat& img = img_grayscale.asCvMatRef();
 
 	vector<KeyPoint> cv_feats;  // OpenCV keypoint output vector
 	Mat cv_descs;  // OpenCV descriptor output

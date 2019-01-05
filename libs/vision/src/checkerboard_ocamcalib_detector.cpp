@@ -329,7 +329,7 @@ int cvFindChessboardCorners3(
 		// clipped rectangle contours. The border color will be the image mean,
 		// because otherwise we risk screwing up filters like cvSmooth()
 		cv::rectangle(
-			thresh_img.asCvMat<cv::Mat>(SHALLOW_COPY), cv::Point(0, 0),
+			thresh_img.asCvMatRef(), cv::Point(0, 0),
 			cv::Point(thresh_img.getWidth() - 1, thresh_img.getHeight() - 1),
 			CV_RGB(255, 255, 255), 3, 8);
 
@@ -437,7 +437,7 @@ int cvFindChessboardCorners3(
 				kernel_diag2, kernel_horz, kernel_vert);
 
 			cv::rectangle(
-				thresh_img.asCvMat<cv::Mat>(SHALLOW_COPY), cv::Point(0, 0),
+				thresh_img.asCvMatRef(), cv::Point(0, 0),
 				cv::Point(
 					thresh_img.getWidth() - 1, thresh_img.getHeight() - 1),
 				CV_RGB(255, 255, 255), 3, 8);

@@ -437,8 +437,8 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 					if (px >= 0 && px < imgSize.width && py >= 0 &&
 						py < imgSize.height)
 						cv::circle(
-							dat.img_rectified.asCvMat<cv::Mat>(SHALLOW_COPY),
-							cv::Point(px, py), 4, CV_RGB(0, 0, 255));
+							dat.img_rectified.asCvMatRef(), cv::Point(px, py),
+							4, CV_RGB(0, 0, 255));
 				}
 
 				// Accumulate error:

@@ -10,7 +10,7 @@
 #pragma once
 
 // By including this file you make sure of #including all the relevant OpenCV
-// headers for OpenCV 2.x or 3.x
+// headers for OpenCV 2.4, 3.x, 4.x
 
 #include <mrpt/config.h>
 
@@ -44,6 +44,7 @@
 #include <opencv2/features2d/features2d.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/objdetect/objdetect.hpp>
+#include <opencv2/video/tracking.hpp>
 #endif
 
 // C API:

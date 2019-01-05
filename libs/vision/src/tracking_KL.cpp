@@ -77,11 +77,12 @@ void CFeatureTracker_KL::trackFeatures_impl_templ(
 			points_prev[i].y = featureList.getFeatureY(i);
 		}
 
+		const cv::Mat& prev = prev_gray.asCvMatRef();
+		const cv::Mat& cur = cur_gray.asCvMatRef();
+
 		cv::calcOpticalFlowPyrLK(
-			prev_gray.asCvMat<cv::Mat>(SHALLOW_COPY),
-			cur_gray.asCvMat<cv::Mat>(SHALLOW_COPY), points_prev, points_cur,
-			status, track_error, cv::Size(window_width, window_height),
-			LK_levels,
+			prev, cur, points_prev, points_cur, status, track_error,
+			cv::Size(window_width, window_height), LK_levels,
 			cv::TermCriteria(
 				cv::TermCriteria::MAX_ITER | cv::TermCriteria::EPS,
 				LK_max_iters, LK_epsilon));

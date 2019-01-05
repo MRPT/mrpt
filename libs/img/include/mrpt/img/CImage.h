@@ -132,7 +132,7 @@ class CExceptionExternalImageNotFound : public std::runtime_error
  * - To set a CImage from an OpenCV `cv::Mat` use
  *CImage::CImage(cv::Mat,copy_type_t).
  * - Unless set from an external cv::Mat object, CImage ensures that all image
- *rows start at 4-byte aligned memory.
+ *rows start at 16-byte aligned memory (this requires OpenCV>=3.0).
  *
  * Some functions are implemented in MRPT with highly optimized SSE2/SSE3
  *routines, in suitable platforms and compilers. To see the list of
@@ -613,7 +613,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	}
 
 	/** Returns a pointer to the first pixel of the given line. It is guaranteed
-	 * to be 4-byte aligned memory. \sa ptr, at
+	 * to be 16-byte aligned memory. \sa ptr, at, InstallOpenCVAlignedAllocator
 	 */
 	template <typename T>
 	const T* ptrLine(unsigned int row) const
@@ -1030,6 +1030,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	 * This method is automatically called upon the first time an CImage object
 	 * is ever constructed, but it is exposed for convenience of the user just
 	 * in case the allocator needs to be re-installed again.
+	 * \note This feature requires OpenCV>=3.0
 	 */
 	static void InstallOpenCVAlignedAllocator();
 

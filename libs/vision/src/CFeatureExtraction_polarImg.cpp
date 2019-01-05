@@ -46,9 +46,15 @@ void CFeatureExtraction::internal_computePolarImageDescriptors(
 		// Overwrite scale with the descriptor scale:
 		(*it)->scale = radius;
 
+#if MRPT_OPENCV_VERSION_NUM < 0x300
+		const cv::Mat& in = in_img.asCvMatRef();
+		cv::Mat& out = linpolar_frame.asCvMatRef();
+		cvLinearPolar(
+			&in, &out,
+#else
 		cv::linearPolar(
-			in_img.asCvMat<cv::Mat>(SHALLOW_COPY),
-			linpolar_frame.asCvMat<cv::Mat>(SHALLOW_COPY),
+			in_img.asCvMatRef(), linpolar_frame.asCvMatRef(),
+#endif
 			cv::Point2f((*it)->x, (*it)->y), radius,
 			CV_INTER_LINEAR + CV_WARP_FILL_OUTLIERS);
 
