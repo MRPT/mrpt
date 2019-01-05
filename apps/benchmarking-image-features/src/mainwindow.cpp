@@ -176,6 +176,7 @@ void MainWindow::on_button_generate_clicked()
 			featureMatchingInfo[i1] = new QLabel();
 			featureMatchingInfo[i1]->setText(QString::fromStdString(info_temp));
 
+#ifdef HAVE_OPENCV_PLOT
 			/// computing the plot of the descriptor distances for each
 			/// iteration of the for loop with 'i1' index
 			Mat xData, yData, display;
@@ -189,7 +190,6 @@ void MainWindow::on_button_generate_clicked()
 				xData.at<double>(i) = i;
 				yData.at<double>(i) = distances.row(i).x();
 			}
-#ifdef HAVE_OPENCV_PLOT
 #if MRPT_OPENCV_VERSION_NUM >= 0x330
 			plot = plot::Plot2d::create(xData, yData);
 #else
@@ -206,7 +206,7 @@ void MainWindow::on_button_generate_clicked()
 			plot->setPlotLineColor(Scalar(255, 0, 0));
 			plot->setPlotBackgroundColor(Scalar(255, 255, 255));
 			plot->setPlotGridColor(Scalar(255, 255, 0));
-#endif
+
 			cv::Mat temp1(display.cols, display.rows, display.type());
 			cvtColor(display, temp1, CV_RGB2BGR);
 
@@ -219,6 +219,7 @@ void MainWindow::on_button_generate_clicked()
 			images1_plots_distances[i1] = new QLabel;
 			images1_plots_distances[i1]->setPixmap(
 				QPixmap::fromImage(qimage_1_plots_distances[i1]));
+#endif  // HAVE_OPENCV_PLOT
 		}
 
 		/// Display the current descriptor in its window and the best descriptor
@@ -361,6 +362,7 @@ void MainWindow::on_button_generate_clicked()
 				else if (descriptor_selected == 7)
 					v1 = featsImage1[i1]->descriptors.LATCH;
 
+#ifdef HAVE_OPENCV_PLOT
 				Mat xData, yData, display;
 				Ptr<plot::Plot2d> plot;
 				int len;
@@ -394,7 +396,6 @@ void MainWindow::on_button_generate_clicked()
 					min_y = -1;
 				}
 
-#ifdef HAVE_OPENCV_PLOT
 #if MRPT_OPENCV_VERSION_NUM >= 0x330
 				plot = plot::Plot2d::create(xData, yData);
 #else
@@ -406,7 +407,6 @@ void MainWindow::on_button_generate_clicked()
 				plot->setMaxY(max_y);
 				plot->setMinY(min_y);
 				plot->render(display);
-#endif
 				cv::Mat temp1(display.cols, display.rows, display.type());
 				cvtColor(display, temp1, CV_RGB2BGR);
 
@@ -452,7 +452,6 @@ void MainWindow::on_button_generate_clicked()
 						else
 							yData.at<double>(i) = v2_surf.at(i);
 					}
-#ifdef HAVE_OPENCV_PLOT
 #if MRPT_OPENCV_VERSION_NUM >= 0x330
 					plot = plot::Plot2d::create(xData, yData);
 #else
@@ -464,7 +463,6 @@ void MainWindow::on_button_generate_clicked()
 					plot->setMaxY(max_y);
 					plot->setMinY(min_y);
 					plot->render(display);
-#endif
 					cv::Mat temp2(display.cols, display.rows, display.type());
 					cvtColor(display, temp2, CV_RGB2BGR);
 
@@ -477,6 +475,7 @@ void MainWindow::on_button_generate_clicked()
 					images2[i1] = new QLabel;
 					images2[i1]->setPixmap(QPixmap::fromImage(qimage_2[i1]));
 				}
+#endif
 			}
 			break;
 			default:
