@@ -117,9 +117,7 @@ void CFeatureExtraction::extractFeaturesSIFT(
 
 			vector<KeyPoint> cv_feats;  // The OpenCV output feature list
 
-			const IplImage* cGrey = img_grayscale.getAs<IplImage>();
-
-			Mat theImg = cvarrToMat(cGrey);
+			const Mat& theImg = img_grayscale.asCvMatRef();
 			SIFTDetector.detect(theImg, cv_feats);
 
 			Mat desc;

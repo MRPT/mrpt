@@ -166,6 +166,7 @@ static PixelDepth cvDepth2PixelDepth(int64_t d)
 	return PixelDepth::D8U;
 }
 
+#if MRPT_OPENCV_VERSION_NUM >= 0x300
 // Custom memory allocator for cv::Mat matrices in MRPT:
 // The goal is to ensure that all image **rows** start at 16-byte aligned
 // memory, to enable the application of SSE* code.
@@ -248,13 +249,14 @@ class mrpt_MatAllocator : public cv::MatAllocator
 		delete u;
 	}
 };
+#endif  // MRPT_OPENCV_VERSION_NUM>=0x300
 
 #endif  // MRPT_HAS_OPENCV
 
 // Default ctor
 CImage::CImage() : m_impl(mrpt::make_impl<CImage::Impl>())
 {
-#if MRPT_HAS_OPENCV
+#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x300
 	static bool init_cv_alloc = false;
 
 	// Replace default OpenCV memory allocator with MRPT custom version
@@ -427,6 +429,7 @@ bool CImage::loadFromFile(const std::string& fileName, int isColor)
 #endif
 	if (m_impl->img.empty()) return false;
 
+#if MRPT_OPENCV_VERSION_NUM >= 0x300
 	// Our custom cvMat allocator should ensure that the loaded image
 	// has aligned rows:
 	if ((m_impl->img.step[0] & (ROW_MEM_ALIGNMENT_value - 1)) != 0)
@@ -438,6 +441,7 @@ bool CImage::loadFromFile(const std::string& fileName, int isColor)
 		m_impl->img.copyTo(c);
 		m_impl->img = std::move(c);
 	}
+#endif
 
 	return true;
 #else
@@ -2232,11 +2236,9 @@ bool CImage::loadTGA(
 
 void CImage::InstallOpenCVAlignedAllocator()
 {
-#if MRPT_HAS_OPENCV
+#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x300
 	auto& alloc = mrpt_MatAllocator::Instance();
 	cv::Mat::setDefaultAllocator(&alloc);
-#else
-	THROW_EXCEPTION("Operation not supported: build MRPT against OpenCV!");
 #endif
 }
 

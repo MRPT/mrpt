@@ -32,8 +32,10 @@ const auto tstImgFileColor =
 static void expect_rows_aligned(
 	const mrpt::img::CImage& a, const std::string& s = std::string())
 {
+#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x300
 	for (unsigned int y = 0; y < a.getHeight(); y++)
 		EXPECT_TRUE(mrpt::system::is_aligned<16>(a.ptrLine<uint8_t>(y))) << s;
+#endif
 }
 
 // Generate random img:
