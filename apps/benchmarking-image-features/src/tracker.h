@@ -36,6 +36,7 @@
 #include <ctime>
 #include <sstream>
 #include <fstream>
+#include <list>
 #include <string>
 
 /// MRPT includes
