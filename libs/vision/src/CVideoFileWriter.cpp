@@ -47,11 +47,7 @@ bool CVideoFileWriter::open(
 
 	if (fourcc.empty())
 	{
-#ifdef _WIN32
-		cc = CV_FOURCC_DEFAULT;  // Default CV_FOURCC_PROMPT;
-#else
 		cc = CV_FOURCC_DEFAULT;  // Default
-#endif
 	}
 	else if (fourcc.size() == 4)
 	{

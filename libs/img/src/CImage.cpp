@@ -180,9 +180,15 @@ class mrpt_MatAllocator : public cv::MatAllocator
 		return o;
 	}
 
+#if MRPT_OPENCV_VERSION_NUM >= 0x400
+	using AccessFlag = cv::AccessFlag;
+#else
+	using AccessFlag = int;
+#endif
+
 	cv::UMatData* allocate(
 		int dims, const int* sizes, int type, void* data0, size_t* step,
-		int /*flags*/, cv::UMatUsageFlags /*usageFlags*/) const override
+		AccessFlag /*flags*/, cv::UMatUsageFlags /*usageFlags*/) const override
 	{
 		using namespace cv;
 		// Start with the size of each "pixel" (typ: 1 or 3)
@@ -228,7 +234,7 @@ class mrpt_MatAllocator : public cv::MatAllocator
 	}
 
 	bool allocate(
-		cv::UMatData* u, int /*accessFlags*/,
+		cv::UMatData* u, AccessFlag /*accessFlags*/,
 		cv::UMatUsageFlags /*usageFlags*/) const override
 	{
 		if (!u) return false;
@@ -458,7 +464,7 @@ bool CImage::saveToFile(const std::string& fileName, int jpeg_quality) const
 	ASSERT_(!m_impl->img.empty());
 
 #ifdef HAVE_OPENCV_IMGCODECS
-	const std::vector<int> params = {CV_IMWRITE_JPEG_QUALITY, jpeg_quality};
+	const std::vector<int> params = {cv::IMWRITE_JPEG_QUALITY, jpeg_quality};
 	return cv::imwrite(fileName, m_impl->img, params);
 #else
 	int p[3] = {CV_IMWRITE_JPEG_QUALITY, jpeg_quality, 0};

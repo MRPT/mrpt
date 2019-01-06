@@ -34,6 +34,7 @@
 #include <opencv2/features2d.hpp>
 #include <opencv2/video/tracking.hpp>
 #include <opencv2/video/tracking_c.h>  // Only exists in opencv3
+#include <opencv2/videoio.hpp>
 #include <opencv2/calib3d.hpp>
 #include <opencv2/objdetect.hpp>
 #else
@@ -51,6 +52,7 @@
 #include <opencv2/core/core_c.h>
 #include <opencv2/highgui/highgui_c.h>
 #include <opencv2/imgproc/imgproc_c.h>
+#include <opencv2/videoio/videoio_c.h>
 
 /// start added by Raghavender Sahdev
 #ifdef HAVE_OPENCV_XFEATURES2D
