@@ -186,8 +186,7 @@ void CFeatureExtraction::extractFeaturesSIFT(
 			cv::Ptr<cv::xfeatures2d::SIFT> sift = cv::xfeatures2d::SIFT::create(
 				nDesiredFeatures, 3, options.SIFTOptions.threshold,
 				options.SIFTOptions.edgeThreshold, 1.6);  // gb
-			const IplImage* cGrey = img_grayscale.getAs<IplImage>();
-			Mat theImg = cvarrToMat(cGrey);
+			const Mat& theImg = img_grayscale.asCvMatRef();
 			// SIFTDetector.detect(theImg, cv_feats);
 			sift->detect(theImg, cv_feats);  // gb
 			Mat desc;

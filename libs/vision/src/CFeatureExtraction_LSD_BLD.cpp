@@ -56,9 +56,8 @@ void CFeatureExtraction::extractFeaturesLSD(
 
 	// Make sure we operate on a gray-scale version of the image:
 	const CImage inImg_gray(inImg, FAST_REF_OR_CONVERT_TO_GRAY);
-
-	const Mat theImg = cvarrToMat(inImg_gray.getAs<IplImage>());
-	/* create a random binary mask */
+	const Mat& theImg = inImg_gray.asCvMatRef();
+	/* create a binary mask */
 	cv::Mat mask = Mat::ones(theImg.size(), CV_8UC1);
 
 	Ptr<LSDDetector> bd = LSDDetector::createLSDDetector();
@@ -189,7 +188,7 @@ void CFeatureExtraction::internal_computeBLDLineDescriptors(
 	if (in_features.empty()) return;
 
 	const CImage img_grayscale(in_img, FAST_REF_OR_CONVERT_TO_GRAY);
-	const Mat img = cvarrToMat(img_grayscale.getAs<IplImage>());
+	const Mat& img = img_grayscale.asCvMatRef();
 
 	vector<KeyPoint> cv_feats;  // OpenCV keypoint output vector
 	Mat cv_descs;  // OpenCV descriptor output

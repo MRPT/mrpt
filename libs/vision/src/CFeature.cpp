@@ -262,51 +262,7 @@ void CFeature::dumpToTextStream(std::ostream& out) const
 		"Coordinates:                    (%.2f,%.2f) px\n", x, y);
 	out << mrpt::format("PatchSize:                      %d\n", patchSize);
 	out << mrpt::format("Type:                           ");
-	switch (type)
-	{
-		case -1:
-			out << mrpt::format("Not defined\n");
-			break;
-		case 0:
-			out << mrpt::format("KLT\n");
-			break;
-		case 1:
-			out << mrpt::format("Harris\n");
-			break;
-		case 2:
-			out << mrpt::format("BCD\n");
-			break;
-		case 3:
-			out << mrpt::format("SIFT\n");
-			break;
-		case 4:
-			out << mrpt::format("SURF\n");
-			break;
-		case 5:
-			out << mrpt::format("Beacon\n");
-			break;
-		case 6:
-			out << mrpt::format("FAST\n");
-			break;
-		case 7:
-			out << mrpt::format("FASTER-9\n");
-			break;
-		case 8:
-			out << mrpt::format("FASTER-10\n");
-			break;
-		case 9:
-			out << mrpt::format("FASTER-12\n");
-			break;
-		case 10:
-			out << mrpt::format("ORB\n");
-			break;
-		case 11:
-			out << mrpt::format("AKAZE\n");
-			break;
-		case 12:
-			out << mrpt::format("LSD");
-			break;
-	}
+	out << mrpt::typemeta::TEnumType<decltype(type)>::value2name(type) << "\n";
 	out << mrpt::format("Status:                         ");
 	switch (track_status)
 	{

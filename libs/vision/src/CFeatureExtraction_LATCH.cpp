@@ -75,7 +75,7 @@ void CFeatureExtraction::internal_computeLATCHDescriptors(
 		kp.size = in_features[k]->scale;
 	}  // end-for
 
-	Mat cvImg(cv::cvarrToMat(inImg_gray.getAs<IplImage>()));
+	const Mat& cvImg = inImg_gray.asCvMatRef();
 	Mat cv_descs;  // OpenCV descriptor output
 
 	Ptr<xfeatures2d::LATCH> latch = xfeatures2d::LATCH::create(
