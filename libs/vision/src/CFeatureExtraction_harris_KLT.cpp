@@ -90,7 +90,7 @@ void CFeatureExtraction::extractFeaturesKLT(
 			 << nDesiredFeatures << " points could be extracted in the image."
 			 << endl;
 
-	if (options.FIND_SUBPIXEL)
+	if (options.FIND_SUBPIXEL && !points.empty())
 	{
 #ifdef VERBOSE_TIMING
 		tictac.Tic();

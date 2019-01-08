@@ -396,7 +396,7 @@ inline void trackFeatures_addNewFeats_simple_list(
 		if (min_dist_sqr > threshold_sqr_dist_to_add_new)
 		{
 			// OK: accept it
-			featureList.push_back_fast(feat.pt.x, feat.pt.y);  // (x,y)
+			featureList.emplace_back(feat.pt.x, feat.pt.y);
 			kdtree.mark_as_outdated();
 
 			// Fill out the rest of data:

@@ -52,11 +52,10 @@ enum TFeatureType
 	/** Kanade-Lucas-Tomasi feature [SHI'94] */
 	featKLT = 0,
 	/** Harris border and corner detector [HARRIS] */
-	featHarris,
-	/** Binary corder detector */
-	featBCD,
+	featHarris = 1,
+	/* featBCD = 2, ==> deprecated in MRPT 2.0 */
 	/** Scale Invariant Feature Transform [LOWE'04] */
-	featSIFT,
+	featSIFT = 3,
 	/** Speeded Up Robust Feature [BAY'06] */
 	featSURF,
 	/** A especial case: this is not an image feature, but a 2D/3D beacon (used
@@ -701,7 +700,6 @@ using namespace mrpt::vision;
 MRPT_FILL_ENUM(featNotDefined);
 MRPT_FILL_ENUM(featKLT);
 MRPT_FILL_ENUM(featHarris);
-MRPT_FILL_ENUM(featBCD);
 MRPT_FILL_ENUM(featSIFT);
 MRPT_FILL_ENUM(featSURF);
 MRPT_FILL_ENUM(featBeacon);
