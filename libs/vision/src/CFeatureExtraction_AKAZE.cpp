@@ -59,8 +59,7 @@ void CFeatureExtraction::extractFeaturesAKAZE(
 		options.AKAZEOptions.threshold, options.AKAZEOptions.nOctaves,
 		options.AKAZEOptions.nOctaveLayers,
 #if MRPT_OPENCV_VERSION_NUM >= 0x400
-		static_cast<cv::KAZE::DiffusivityType>(
-			options.AKAZEOptions.diffusivity)
+		static_cast<cv::KAZE::DiffusivityType>(options.AKAZEOptions.diffusivity)
 #else
 		options.AKAZEOptions.diffusivity
 #endif
