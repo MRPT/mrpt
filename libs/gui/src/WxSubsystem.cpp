@@ -729,7 +729,8 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 						auto* sem =
 							reinterpret_cast<std::promise<void>*>(msg->voidPtr);
 
-						auto* dlg = new CDialogAskUserForCamera();
+						auto dlg = std::make_unique<CDialogAskUserForCamera>();
+
 						// Signal that the window is ready:
 						sem->set_value();
 
@@ -743,15 +744,14 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 						mrpt::gui::detail::TReturnAskUserOpenCamera ret;
 
 						// Parse selection as a config text block:
+						mrpt::config::CConfigFileMemory c;
 						dlg->panel->writeConfigFromVideoSourcePanel(
-							"CONFIG", &ret.selectedConfig);
+							"CONFIG", &c);
+						c.getContent(ret.selectedConfig);
 						ret.accepted_by_user = wasOk;
 
-						promise->set_value(ret);
-
-						delete dlg;
-
-						sem->set_value();
+						promise->set_value(std::move(ret));
+						dlg->Close();
 					}
 					break;
 
