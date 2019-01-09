@@ -49,5 +49,5 @@ TEST(CPose3DInterpolator, interp)
 			.array()
 			.abs()
 			.sum(),
-		1e-4);
+		2e-4);
 }
