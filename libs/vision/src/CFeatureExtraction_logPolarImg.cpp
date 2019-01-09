@@ -20,14 +20,14 @@ using namespace mrpt::img;
 using namespace mrpt::system;
 using namespace std;
 
-/************************************************************************************************
-								computeLogPolarImageDescriptors
-************************************************************************************************/
 void CFeatureExtraction::internal_computeLogPolarImageDescriptors(
-	const mrpt::img::CImage& in_img, CFeatureList& in_features) const
+	const mrpt::img::CImage& in_img, CFeatureList& in_features)
 {
 	MRPT_START
 #if MRPT_HAS_OPENCV
+
+	mrpt::system::CTimeLoggerEntry tle(
+		profiler, "internal_computeLogPolarImageDescriptors");
 
 	ASSERT_(options.LogPolarImagesOptions.radius > 1);
 	ASSERT_(options.LogPolarImagesOptions.num_angles > 1);

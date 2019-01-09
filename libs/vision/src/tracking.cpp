@@ -251,123 +251,6 @@ inline void trackFeatures_addNewFeats_simple_list(
 	const double threshold_sqr_dist_to_add_new, const size_t patchSize,
 	const CImage& cur_gray, TFeatureID& max_feat_ID_at_input)
 {
-#if 0
-				// Brute-force version:
-				const int max_manhatan_dist = std::sqrt(2*threshold_sqr_dist_to_add_new);
-
-				for (size_t i=0;i<nNewToCheck && featureList.size()<maxNumFeatures;i++)
-				{
-					const TSimpleFeature &feat = new_feats[ sorted_indices[i] ];
-					if (feat.response<minimum_KLT_response_to_add) break; // continue;
-
-					// Check the min-distance:
-					int manh_dist = std::numeric_limits<int>::max();
-					for (size_t j=0;j<featureList.size();j++)
-					{
-						const TSimpleFeature &existing = featureList[j];
-						const int d = std::abs(existing.pt.x-feat.pt.x)+std::abs(existing.pt.y-feat.pt.y);
-						mrpt::keep_min(manh_dist, d);
-					}
-
-					if (manh_dist<max_manhatan_dist)
-						continue; // Already occupied! skip.
-
-					// OK: accept it
-					featureList.push_back_fast(feat.pt.x,feat.pt.y);  // (x,y)
-					//featureList.mark_kdtree_as_outdated();
-
-					// Fill out the rest of data:
-					TSimpleFeature &newFeat = featureList.back();
-
-					newFeat.ID			= ++max_feat_ID_at_input;
-					newFeat.response	= feat.response;
-					newFeat.octave		= 0;
-					/** Inactive: right after detection, and before being tried to track */
-					newFeat.track_status = status_IDLE;
-				}
-#elif 0
-	// Version with an occupancy grid:
-	const int grid_cell_log2 = round(
-		std::log(std::sqrt(threshold_sqr_dist_to_add_new) * 0.5) /
-		std::log(2.0));
-
-	int grid_lx = 1 + (cur_gray.getWidth() >> grid_cell_log2);
-	int grid_ly = 1 + (cur_gray.getHeight() >> grid_cell_log2);
-
-	mrpt::math::CMatrixBool& occupied_sections =
-		featureList.getOccupiedSectionsMatrix();
-
-	occupied_sections.setSize(
-		grid_lx, grid_ly);  // See the comments above for an explanation.
-	occupied_sections.fillAll(false);
-
-	for (size_t i = 0; i < featureList.size(); i++)
-	{
-		const TSimpleFeature& feat = featureList[i];
-		const int section_idx_x = feat.pt.x >> grid_cell_log2;
-		const int section_idx_y = feat.pt.y >> grid_cell_log2;
-
-		if (!section_idx_x || !section_idx_y || section_idx_x >= grid_lx - 1 ||
-			section_idx_y >= grid_ly - 1)
-			continue;  // This may be too radical, but speeds up the logic
-		// below...
-
-		// Mark sections as occupied
-		bool* ptr1 =
-			&occupied_sections.get_unsafe(section_idx_x - 1, section_idx_y - 1);
-		bool* ptr2 =
-			&occupied_sections.get_unsafe(section_idx_x - 1, section_idx_y);
-		bool* ptr3 =
-			&occupied_sections.get_unsafe(section_idx_x - 1, section_idx_y + 1);
-		ptr1[0] = ptr1[1] = ptr1[2] = true;
-		ptr2[0] = ptr2[1] = ptr2[2] = true;
-		ptr3[0] = ptr3[1] = ptr3[2] = true;
-	}
-
-	for (size_t i = 0; i < nNewToCheck && featureList.size() < maxNumFeatures;
-		 i++)
-	{
-		const TSimpleFeature& feat = new_feats[sorted_indices[i]];
-		if (feat.response < minimum_KLT_response_to_add) break;  // continue;
-
-		// Check the min-distance:
-		const int section_idx_x = feat.pt.x >> grid_cell_log2;
-		const int section_idx_y = feat.pt.y >> grid_cell_log2;
-
-		if (!section_idx_x || !section_idx_y || section_idx_x >= grid_lx - 2 ||
-			section_idx_y >= grid_ly - 2)
-			continue;  // This may be too radical, but speeds up the logic
-		// below...
-
-		if (occupied_sections(section_idx_x, section_idx_y))
-			continue;  // Already occupied! skip.
-
-		// Mark section as occupied
-		bool* ptr1 =
-			&occupied_sections.get_unsafe(section_idx_x - 1, section_idx_y - 1);
-		bool* ptr2 =
-			&occupied_sections.get_unsafe(section_idx_x - 1, section_idx_y);
-		bool* ptr3 =
-			&occupied_sections.get_unsafe(section_idx_x - 1, section_idx_y + 1);
-
-		ptr1[0] = ptr1[1] = ptr1[2] = true;
-		ptr2[0] = ptr2[1] = ptr2[2] = true;
-		ptr3[0] = ptr3[1] = ptr3[2] = true;
-
-		// OK: accept it
-		featureList.push_back_fast(feat.pt.x, feat.pt.y);  // (x,y)
-		// featureList.mark_kdtree_as_outdated();
-
-		// Fill out the rest of data:
-		TSimpleFeature& newFeat = featureList.back();
-
-		newFeat.ID = ++max_feat_ID_at_input;
-		newFeat.response = feat.response;
-		newFeat.octave = 0;
-		/** Inactive: right after detection, and before being tried to track */
-		newFeat.track_status = status_IDLE;
-	}
-#else
 	MRPT_UNUSED_PARAM(patchSize);
 	MRPT_UNUSED_PARAM(cur_gray);
 	// Version with KD-tree
@@ -410,8 +293,6 @@ inline void trackFeatures_addNewFeats_simple_list(
 			newFeat.track_status = status_IDLE;
 		}
 	}
-
-#endif
 }  // end of trackFeatures_addNewFeats<>
 
 template <>

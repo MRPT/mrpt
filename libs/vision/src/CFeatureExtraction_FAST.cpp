@@ -22,15 +22,13 @@ using namespace mrpt::img;
 using namespace mrpt::math;
 using namespace std;
 
-/************************************************************************************************
- *								extractFeaturesFAST
- **
- ************************************************************************************************/
 void CFeatureExtraction::extractFeaturesFAST(
 	const mrpt::img::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
-	unsigned int nDesiredFeatures) const
+	unsigned int nDesiredFeatures)
 {
 	MRPT_START
+
+	mrpt::system::CTimeLoggerEntry tle(profiler, "extractFeaturesFAST");
 
 #if MRPT_HAS_OPENCV
 	using namespace cv;

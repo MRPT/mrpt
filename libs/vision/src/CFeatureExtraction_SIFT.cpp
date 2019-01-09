@@ -35,13 +35,12 @@ using namespace std;
 using namespace cv;
 #endif
 
-/************************************************************************************************
- *								extractFeaturesSIFT *
- ************************************************************************************************/
 void CFeatureExtraction::extractFeaturesSIFT(
 	const CImage& img, CFeatureList& feats, unsigned int init_ID,
-	unsigned int nDesiredFeatures, const TImageROI& ROI) const
+	unsigned int nDesiredFeatures, const TImageROI& ROI)
 {
+	mrpt::system::CTimeLoggerEntry tle(profiler, "extractFeaturesSIFT");
+
 	bool usingROI = false;
 	if (ROI.xMin != 0 || ROI.xMax != 0 || ROI.yMin != 0 || ROI.yMax != 0)
 		usingROI = true;  // A ROI has been defined
@@ -100,102 +99,34 @@ void CFeatureExtraction::extractFeaturesSIFT(
 		//***********************************************************************************************
 		case OpenCV:
 		{
-#if defined(HAVE_OPENCV_NONFREE) || \
-	defined(HAVE_OPENCV_XFEATURES2D)  // MRPT_HAS_OPENCV_NONFREE
+#if defined(HAVE_OPENCV_NONFREE) || defined(HAVE_OPENCV_XFEATURES2D)
 
 #if MRPT_OPENCV_VERSION_NUM < 0x300
-
 			SiftFeatureDetector SIFTDetector(
-				options.SIFTOptions
-					.threshold,  // SIFT::DetectorParams::GET_DEFAULT_THRESHOLD(),
-				options.SIFTOptions
-					.edgeThreshold  // SIFT::DetectorParams::GET_DEFAULT_EDGE_THRESHOLD()
-				// );
-			);
+				options.SIFTOptions.threshold,
+				options.SIFTOptions.edgeThreshold);
 
 			SiftDescriptorExtractor SIFTDescriptor;
-
 			vector<KeyPoint> cv_feats;  // The OpenCV output feature list
-
 			const Mat& theImg = img_grayscale.asCvMatRef();
 			SIFTDetector.detect(theImg, cv_feats);
-
 			Mat desc;
 			SIFTDescriptor.compute(theImg, cv_feats, desc);
-
-			// fromOpenCVToMRPT( theImg, cv_feats, desc, nDesiredFeatures,
-			// outList );
-			const size_t N = cv_feats.size();
-			unsigned int nMax = nDesiredFeatures != 0 && N > nDesiredFeatures
-									? nDesiredFeatures
-									: N;
-			const int offset = (int)this->options.patchSize / 2 + 1;
-			const size_t size_2 = options.patchSize / 2;
-			const size_t imgH = img.getHeight();
-			const size_t imgW = img.getWidth();
-			unsigned int i = 0;
-			unsigned int cont = 0;
-			TFeatureID nextID = init_ID;
-			feats.clear();
-			while (cont != nMax && i != N)
-			{
-				const int xBorderInf = (int)floor(cv_feats[i].pt.x - size_2);
-				const int xBorderSup = (int)floor(cv_feats[i].pt.x + size_2);
-				const int yBorderInf = (int)floor(cv_feats[i].pt.y - size_2);
-				const int yBorderSup = (int)floor(cv_feats[i].pt.y + size_2);
-
-				if (options.patchSize == 0 ||
-					((xBorderSup < (int)imgW) && (xBorderInf > 0) &&
-					 (yBorderSup < (int)imgH) && (yBorderInf > 0)))
-				{
-					CFeature::Ptr ft = mrpt::make_aligned_shared<CFeature>();
-					ft->type = featSIFT;
-					ft->ID = nextID++;
-					ft->x = cv_feats[i].pt.x;
-					ft->y = cv_feats[i].pt.y;
-					ft->response = cv_feats[i].response;
-					ft->orientation = cv_feats[i].angle;
-					ft->scale = cv_feats[i].size;
-					ft->patchSize =
-						options.patchSize;  // The size of the feature patch
-					ft->descriptors.SIFT.resize(128);
-					memcpy(
-						&(ft->descriptors.SIFT[0]), &desc.data[128 * i],
-						128 *
-							sizeof(ft->descriptors.SIFT[0]));  // The descriptor
-
-					if (options.patchSize > 0)
-					{
-						img.extract_patch(
-							ft->patch, round(ft->x) - offset,
-							round(ft->y) - offset, options.patchSize,
-							options.patchSize);  // Image patch surronding the
-						// feature
-					}
-					feats.push_back(ft);
-					++cont;
-				}
-				++i;
-			}
-			feats.resize(cont);
 #else
 			// MRPT_OPENCV_VERSION_NUM >= 0x300
 			using namespace cv;
 			vector<KeyPoint> cv_feats;
 
-			cv::Ptr<cv::xfeatures2d::SIFT> sift = cv::xfeatures2d::SIFT::create(
-				nDesiredFeatures, 3, options.SIFTOptions.threshold,
-				options.SIFTOptions.edgeThreshold, 1.6);  // gb
+			auto sift = cv::xfeatures2d::SIFT::create(
+				nDesiredFeatures, options.SIFTOptions.octaveLayers,
+				options.SIFTOptions.threshold,
+				options.SIFTOptions.edgeThreshold, 1.6);
 			const Mat& theImg = img_grayscale.asCvMatRef();
-			// SIFTDetector.detect(theImg, cv_feats);
-			sift->detect(theImg, cv_feats);  // gb
 			Mat desc;
-			// SIFTDescriptor.compute(theImg, cv_feats, desc);
-			sift->compute(theImg, cv_feats, desc);
-
-			// fromOpenCVToMRPT( theImg, cv_feats, desc, nDesiredFeatures,
-			// outList );
+			sift->detectAndCompute(theImg, noArray() /*mask*/, cv_feats, desc);
+#endif
 			const size_t N = cv_feats.size();
+			// std::cout << "N:" << N << "\n";
 			unsigned int nMax = nDesiredFeatures != 0 && N > nDesiredFeatures
 									? nDesiredFeatures
 									: N;
@@ -249,7 +180,6 @@ void CFeatureExtraction::extractFeaturesSIFT(
 				++i;
 			}
 			feats.resize(cont);
-#endif
 #else
 			THROW_EXCEPTION(
 				"This method requires OpenCV >= 2.1.1 with nonfree module")
@@ -266,8 +196,11 @@ void CFeatureExtraction::extractFeaturesSIFT(
 
 // Compute SIFT descriptors on a set of already localized points
 void CFeatureExtraction::internal_computeSiftDescriptors(
-	const CImage& in_img, CFeatureList& in_features) const
+	const CImage& in_img, CFeatureList& in_features)
 {
+	mrpt::system::CTimeLoggerEntry tle(
+		profiler, "internal_computeSiftDescriptors");
+
 	ASSERT_(in_features.size() > 0);
 	switch (options.SIFTOptions.implementation)
 	{

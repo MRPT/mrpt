@@ -26,12 +26,10 @@ using namespace std;
  ************************************************************************************************/
 void CFeatureExtraction::extractFeaturesKLT(
 	const mrpt::img::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
-	unsigned int nDesiredFeatures, const TImageROI& ROI) const
+	unsigned int nDesiredFeatures, const TImageROI& ROI)
 {
-#ifdef VERBOSE_TIMING
-	CTicTac tictac;
-#endif
 	MRPT_START
+	CTimeLoggerEntry tle(profiler, "extractFeaturesKLT");
 
 #if MRPT_HAS_OPENCV
 	const unsigned int MAX_COUNT = 300;
@@ -39,26 +37,15 @@ void CFeatureExtraction::extractFeaturesKLT(
 	// -----------------------------------------------------------------
 	// Create OpenCV Local Variables
 	// -----------------------------------------------------------------
-#ifdef VERBOSE_TIMING
-	tictac.Tic();
-#endif
-	const cv::Mat img = inImg.asCvMat<cv::Mat>(SHALLOW_COPY);
+	profiler.enter("extractFeaturesKLT.img2gray");
 
-#ifdef VERBOSE_TIMING
-	cout << "[KLT] Attach: " << tictac.Tac() * 1000.0f << endl;
-#endif
 	const CImage inImg_gray(inImg, FAST_REF_OR_CONVERT_TO_GRAY);
-	const cv::Mat cGrey = inImg_gray.asCvMat<cv::Mat>(SHALLOW_COPY);
+	const cv::Mat& cGrey = inImg_gray.asCvMatRef();
+
+	profiler.leave("extractFeaturesKLT.img2gray");
 
 	const auto nPts = (nDesiredFeatures <= 0) ? MAX_COUNT : nDesiredFeatures;
 
-#ifdef VERBOSE_TIMING
-	tictac.Tic();
-#endif
-
-#ifdef VERBOSE_TIMING
-	cout << "[KLT] Create: " << tictac.Tac() * 1000.0f << endl;
-#endif
 	const auto count = nPts;  // Number of points to find
 
 	// -----------------------------------------------------------------
@@ -66,10 +53,9 @@ void CFeatureExtraction::extractFeaturesKLT(
 	// -----------------------------------------------------------------
 	const bool use_harris = (options.featsType == featHarris);
 
-#ifdef VERBOSE_TIMING
-	tictac.Tic();
-#endif
 	std::vector<cv::Point2f> points;
+	profiler.enter("extractFeaturesKLT.goodFeaturesToTrack");
+
 	cv::goodFeaturesToTrack(
 		cGrey, points, nPts,
 		(double)options.harrisOptions.threshold,  // for rejecting weak local
@@ -81,9 +67,8 @@ void CFeatureExtraction::extractFeaturesKLT(
 		3,  // blocksize
 		use_harris, /* harris */
 		options.harrisOptions.k);
-#ifdef VERBOSE_TIMING
-	cout << "[KLT] Find feats: " << tictac.Tac() * 1000.0f << endl;
-#endif
+
+	profiler.leave("extractFeaturesKLT.goodFeaturesToTrack");
 
 	if (nDesiredFeatures > 0 && count < nPts)
 		cout << "\n[WARNING][selectGoodFeaturesKLT]: Only " << count << " of "
@@ -92,25 +77,16 @@ void CFeatureExtraction::extractFeaturesKLT(
 
 	if (options.FIND_SUBPIXEL && !points.empty())
 	{
-#ifdef VERBOSE_TIMING
-		tictac.Tic();
-#endif
+		profiler.enter("extractFeaturesKLT.cornerSubPix");
 		// Subpixel interpolation
 		cv::cornerSubPix(
 			cGrey, points, cv::Size(3, 3), cv::Size(-1, -1),
 			cv::TermCriteria(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 10, 0.05));
 
-#ifdef VERBOSE_TIMING
-		cout << "[KLT] subpixel: " << tictac.Tac() * 1000.0f << endl;
-#endif
+		profiler.leave("extractFeaturesKLT.cornerSubPix");
 	}
 
-// -----------------------------------------------------------------
-// Fill output structure
-// -----------------------------------------------------------------
-#ifdef VERBOSE_TIMING
-	tictac.Tic();
-#endif
+	CTimeLoggerEntry tle2(profiler, "extractFeaturesKLT.fillFeatsStruct");
 
 	feats.clear();
 	unsigned int borderFeats = 0;
@@ -159,10 +135,6 @@ void CFeatureExtraction::extractFeaturesKLT(
 
 		i++;
 	}  // end while
-
-#ifdef VERBOSE_TIMING
-	cout << "[KLT] Create output: " << tictac.Tac() * 1000.0f << endl;
-#endif
 
 #else
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");

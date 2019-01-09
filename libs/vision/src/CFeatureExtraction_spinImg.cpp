@@ -19,14 +19,12 @@ using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace std;
 
-/************************************************************************************************
- *								computeSpinImageDescriptors
- **
- ************************************************************************************************/
 void CFeatureExtraction::internal_computeSpinImageDescriptors(
-	const CImage& in_img, CFeatureList& in_features) const
+	const CImage& in_img, CFeatureList& in_features)
 {
 	MRPT_START
+	mrpt::system::CTimeLoggerEntry tle(
+		profiler, "internal_computeSpinImageDescriptors");
 
 	ASSERT_(options.SpinImagesOptions.radius > 1);
 

@@ -76,9 +76,12 @@ namespace mrpt::vision
  * \sa mrpt::vision::CFeature
  * \ingroup mrptvision_features
  */
-class CFeatureExtraction : public mrpt::system::CTimeLogger
+class CFeatureExtraction
 {
    public:
+	/** Timelogger: disabled by default */
+	mrpt::system::CTimeLogger profiler{false};
+
 	enum TSIFTImplementation
 	{
 		LoweBinary = 0 /* obsolete */,
@@ -165,16 +168,18 @@ class CFeatureExtraction : public mrpt::system::CTimeLogger
 			/** Default = true */
 			bool nonmax_suppression{true};
 			/** (default=false) If true, use CImage::KLT_response to compute the
-			 * response at each point instead of the FAST "standard response".
+			 * response at each point.
 			 */
 			bool use_KLT_response{false};
+			/** Used if use_KLT_response==true */
+			int KLT_response_half_win_size{4};
 		} FASTOptions;
 
 		/** ORB Options */
 		struct TORBOptions
 		{
 			TORBOptions() = default;
-			size_t n_levels{8};
+			size_t n_levels{1};
 			size_t min_distance{0};
 			float scale_factor{1.2f};
 			bool extract_patch{false};
@@ -185,6 +190,7 @@ class CFeatureExtraction : public mrpt::system::CTimeLogger
 		{
 			TSIFTOptions() = default;
 			TSIFTImplementation implementation{OpenCV};  //!< Default: OpenCV
+			int octaveLayers{3};
 			double threshold{0.04};  //!< default= 0.04
 			double edgeThreshold{10};  //!< default= 10
 		} SIFTOptions;
@@ -308,7 +314,7 @@ class CFeatureExtraction : public mrpt::system::CTimeLogger
 	void detectFeatures(
 		const mrpt::img::CImage& img, CFeatureList& feats,
 		const unsigned int init_ID = 0, const unsigned int nDesiredFeatures = 0,
-		const TImageROI& ROI = TImageROI()) const;
+		const TImageROI& ROI = TImageROI());
 
 	/** Compute one (or more) descriptors for the given set of interest
 	 * points onto the image, which may have been filled out manually or
@@ -334,7 +340,7 @@ class CFeatureExtraction : public mrpt::system::CTimeLogger
 	 */
 	void computeDescriptors(
 		const mrpt::img::CImage& in_img, CFeatureList& inout_features,
-		TDescriptorType in_descriptor_list) const;
+		TDescriptorType in_descriptor_list);
 
 	/** @name Static methods with low-level detector functionality
 		@{ */
@@ -404,7 +410,7 @@ class CFeatureExtraction : public mrpt::system::CTimeLogger
 	CFeatureExtraction::TOptions::SIFTOptions.
 	*/
 	void internal_computeSiftDescriptors(
-		const mrpt::img::CImage& in_img, CFeatureList& in_features) const;
+		const mrpt::img::CImage& in_img, CFeatureList& in_features);
 
 	/** Compute the SURF descriptor of the provided features into the input
 	 * image
@@ -413,7 +419,7 @@ class CFeatureExtraction : public mrpt::system::CTimeLogger
 	 * whose descriptors are going to be computed.
 	 */
 	void internal_computeSurfDescriptors(
-		const mrpt::img::CImage& in_img, CFeatureList& in_features) const;
+		const mrpt::img::CImage& in_img, CFeatureList& in_features);
 
 	/** Compute the ORB descriptor of the provided features into the input
 	 * image \param in_img (input) The image from where to compute the
@@ -421,7 +427,7 @@ class CFeatureExtraction : public mrpt::system::CTimeLogger
 	 * whose descriptors are going to be computed.
 	 */
 	void internal_computeORBDescriptors(
-		const mrpt::img::CImage& in_img, CFeatureList& in_features) const;
+		const mrpt::img::CImage& in_img, CFeatureList& in_features);
 
 	/** Compute the intensity-domain spin images descriptor of the provided
 	 * features into the input image
@@ -434,7 +440,7 @@ class CFeatureExtraction : public mrpt::system::CTimeLogger
 	 * method.
 	 */
 	void internal_computeSpinImageDescriptors(
-		const mrpt::img::CImage& in_img, CFeatureList& in_features) const;
+		const mrpt::img::CImage& in_img, CFeatureList& in_features);
 
 	/** Compute a polar-image descriptor of the provided features into the
 	 * input image \param in_img (input) The image from where to compute the
@@ -446,7 +452,7 @@ class CFeatureExtraction : public mrpt::system::CTimeLogger
 	 * method.
 	 */
 	void internal_computePolarImageDescriptors(
-		const mrpt::img::CImage& in_img, CFeatureList& in_features) const;
+		const mrpt::img::CImage& in_img, CFeatureList& in_features);
 
 	/** Compute a log-polar image descriptor of the provided features into
 	 * the input image \param in_img (input) The image from where to compute
@@ -458,7 +464,7 @@ class CFeatureExtraction : public mrpt::system::CTimeLogger
 	 * method.
 	 */
 	void internal_computeLogPolarImageDescriptors(
-		const mrpt::img::CImage& in_img, CFeatureList& in_features) const;
+		const mrpt::img::CImage& in_img, CFeatureList& in_features);
 	/** Compute a BLD descriptor of the provided features into the input
 	 * image \param in_img (input) The image from where to compute the
 	 * descriptors. \param in_features (input/output) The list of features
@@ -469,7 +475,7 @@ class CFeatureExtraction : public mrpt::system::CTimeLogger
 	 * method.
 	 */
 	void internal_computeBLDLineDescriptors(
-		const mrpt::img::CImage& in_img, CFeatureList& in_features) const;
+		const mrpt::img::CImage& in_img, CFeatureList& in_features);
 	/** Compute a LATCH descriptor of the provided features into the input
 	 * image \param in_img (input) The image from where to compute the
 	 * descriptors. \param in_features (input/output) The list of features
@@ -480,7 +486,7 @@ class CFeatureExtraction : public mrpt::system::CTimeLogger
 	 * method.
 	 */
 	void internal_computeLATCHDescriptors(
-		const mrpt::img::CImage& in_img, CFeatureList& in_features) const;
+		const mrpt::img::CImage& in_img, CFeatureList& in_features);
 
 	/** Extract features from the image based on the KLT method.
 	 * \param img The image from where to extract the images.
@@ -491,7 +497,7 @@ class CFeatureExtraction : public mrpt::system::CTimeLogger
 	void extractFeaturesKLT(
 		const mrpt::img::CImage& img, CFeatureList& feats,
 		unsigned int init_ID = 0, unsigned int nDesiredFeatures = 0,
-		const TImageROI& ROI = TImageROI()) const;
+		const TImageROI& ROI = TImageROI());
 
 	// ------------------------------------------------------------------------------------
 	//											SIFT
@@ -506,7 +512,7 @@ class CFeatureExtraction : public mrpt::system::CTimeLogger
 	void extractFeaturesSIFT(
 		const mrpt::img::CImage& img, CFeatureList& feats,
 		unsigned int init_ID = 0, unsigned int nDesiredFeatures = 0,
-		const TImageROI& ROI = TImageROI()) const;
+		const TImageROI& ROI = TImageROI());
 
 	// ------------------------------------------------------------------------------------
 	//											ORB
@@ -520,7 +526,7 @@ class CFeatureExtraction : public mrpt::system::CTimeLogger
 	void extractFeaturesORB(
 		const mrpt::img::CImage& img, CFeatureList& feats,
 		const unsigned int init_ID = 0, const unsigned int nDesiredFeatures = 0,
-		const TImageROI& ROI = TImageROI()) const;
+		const TImageROI& ROI = TImageROI());
 
 	// ------------------------------------------------------------------------------------
 	//											SURF
@@ -534,12 +540,12 @@ class CFeatureExtraction : public mrpt::system::CTimeLogger
 	void extractFeaturesSURF(
 		const mrpt::img::CImage& img, CFeatureList& feats,
 		unsigned int init_ID = 0, unsigned int nDesiredFeatures = 0,
-		const TImageROI& ROI = TImageROI()) const;
+		const TImageROI& ROI = TImageROI());
 
 	// ------------------------------------------------------------------------------------
 	//											FAST
 	// ------------------------------------------------------------------------------------
-	/** Extract features from the image based on the FAST method.
+	/** Extract features from the image based on the FAST method (OpenCV impl.)
 	 * \param img The image from where to extract the images.
 	 * \param feats The list of extracted features.
 	 * \param nDesiredFeatures Number of features to be extracted. Default:
@@ -547,13 +553,13 @@ class CFeatureExtraction : public mrpt::system::CTimeLogger
 	 */
 	void extractFeaturesFAST(
 		const mrpt::img::CImage& img, CFeatureList& feats,
-		unsigned int init_ID = 0, unsigned int nDesiredFeatures = 0) const;
+		unsigned int init_ID = 0, unsigned int nDesiredFeatures = 0);
 
-	/** Edward's "FASTER & Better" detector, N=9,10,12 */
+	/** Edward's "FASTER & Better" detector, N=9,10,12. (libCVD impl.) */
 	void extractFeaturesFASTER_N(
 		const int N, const mrpt::img::CImage& img, CFeatureList& feats,
 		unsigned int init_ID = 0, unsigned int nDesiredFeatures = 0,
-		const TImageROI& ROI = TImageROI()) const;
+		const TImageROI& ROI = TImageROI());
 
 	// # added by Raghavender Sahdev
 	//-------------------------------------------------------------------------------------
@@ -568,7 +574,7 @@ class CFeatureExtraction : public mrpt::system::CTimeLogger
 	void extractFeaturesAKAZE(
 		const mrpt::img::CImage& inImg, CFeatureList& feats,
 		unsigned int init_ID, unsigned int nDesiredFeatures,
-		const TImageROI& ROI = TImageROI()) const;
+		const TImageROI& ROI = TImageROI());
 
 	//-------------------------------------------------------------------------------------
 	//                               LSD
@@ -582,18 +588,7 @@ class CFeatureExtraction : public mrpt::system::CTimeLogger
 	void extractFeaturesLSD(
 		const mrpt::img::CImage& inImg, CFeatureList& feats,
 		unsigned int init_ID, unsigned int nDesiredFeatures,
-		const TImageROI& ROI = TImageROI()) const;
-
-	/** Converts a sequence of openCV features into an MRPT feature list.
-	 * \param features The sequence of features.
-	 * \param list [in-out] The list of MRPT features.
-	 * \param init_ID [in][optional] The initial ID for the features
-	 * (default = 0). \param ROI [in][optional] The initial ID for the
-	 * features (default = empty ROI -> not used).
-	 */
-	void convertCvSeqInCFeatureList(
-		void* features, CFeatureList& list, unsigned int init_ID = 0,
-		const TImageROI& ROI = TImageROI()) const;
+		const TImageROI& ROI = TImageROI());
 
 };  // end of class
 }  // namespace mrpt::vision

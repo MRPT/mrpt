@@ -42,9 +42,12 @@ using namespace std;
 
 void CFeatureExtraction::extractFeaturesLSD(
 	const mrpt::img::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
-	unsigned int nDesiredFeatures, const TImageROI& ROI) const
+	unsigned int nDesiredFeatures, const TImageROI& ROI)
 {
 	MRPT_START
+
+	mrpt::system::CTimeLoggerEntry tle(profiler, "extractFeaturesLSD");
+
 #if (!HAVE_OPENCV_WITH_LSD)
 	THROW_EXCEPTION(
 		"This function requires OpenCV modules: xfeatures2d, line_descriptor");
@@ -173,16 +176,17 @@ void CFeatureExtraction::extractFeaturesLSD(
 	MRPT_END
 }
 
-/************************************************************************************************
- *						internal_computeBLDDescriptors
- ************************************************************************************************/
 void CFeatureExtraction::internal_computeBLDLineDescriptors(
-	const mrpt::img::CImage& in_img, CFeatureList& in_features) const
+	const mrpt::img::CImage& in_img, CFeatureList& in_features)
 {
 #if (!HAVE_OPENCV_WITH_LSD)
 	THROW_EXCEPTION(
 		"This function requires OpenCV modules: xfeatures2d, line_descriptor");
 #else
+
+	mrpt::system::CTimeLoggerEntry tle(
+		profiler, "internal_computeBLDLineDescriptors");
+
 	using namespace cv;
 
 	if (in_features.empty()) return;
