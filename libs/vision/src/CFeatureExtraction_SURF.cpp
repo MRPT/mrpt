@@ -39,14 +39,13 @@ using namespace std;
 #define HAVE_OPENCV_WITH_SURF 0
 #endif
 
-/************************************************************************************************
- *								extractFeaturesSURF *
- ************************************************************************************************/
 void CFeatureExtraction::extractFeaturesSURF(
 	const mrpt::img::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
-	unsigned int nDesiredFeatures, const TImageROI& ROI) const
+	unsigned int nDesiredFeatures, const TImageROI& ROI)
 {
 #if HAVE_OPENCV_WITH_SURF
+	mrpt::system::CTimeLoggerEntry tle(profiler, "extractFeaturesSURF");
+
 	using namespace cv;
 
 	const CImage img_grayscale(inImg, FAST_REF_OR_CONVERT_TO_GRAY);
@@ -151,14 +150,13 @@ void CFeatureExtraction::extractFeaturesSURF(
 #endif  // MRPT_HAS_OPENCV
 }  // end extractFeaturesSURF
 
-/************************************************************************************************
- *						internal_computeSurfDescriptors
- ************************************************************************************************/
 void CFeatureExtraction::internal_computeSurfDescriptors(
-	const mrpt::img::CImage& inImg, CFeatureList& in_features) const
+	const mrpt::img::CImage& inImg, CFeatureList& in_features)
 {
 #if HAVE_OPENCV_WITH_SURF
 	using namespace cv;
+	mrpt::system::CTimeLoggerEntry tle(
+		profiler, "internal_computeSurfDescriptors");
 
 	if (in_features.empty()) return;
 

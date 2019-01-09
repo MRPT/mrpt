@@ -36,8 +36,10 @@ struct sort_pred
  ************************************************************************************************/
 void CFeatureExtraction::detectFeatures(
 	const CImage& img, CFeatureList& feats, const unsigned int init_ID,
-	const unsigned int nDesiredFeatures, const TImageROI& ROI) const
+	const unsigned int nDesiredFeatures, const TImageROI& ROI)
 {
+	CTimeLoggerEntry tle(profiler, "detectFeatures");
+
 	switch (options.featsType)
 	{
 		case featHarris:
@@ -96,9 +98,10 @@ void CFeatureExtraction::detectFeatures(
 ************************************************************************************************/
 void CFeatureExtraction::computeDescriptors(
 	const CImage& in_img, CFeatureList& inout_features,
-	TDescriptorType in_descriptor_list) const
+	TDescriptorType in_descriptor_list)
 {
 	MRPT_START
+	CTimeLoggerEntry tle(profiler, "computeDescriptors");
 
 	int nDescComputed = 0;
 

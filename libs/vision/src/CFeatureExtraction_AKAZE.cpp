@@ -30,10 +30,12 @@ using namespace std;
 
 void CFeatureExtraction::extractFeaturesAKAZE(
 	const mrpt::img::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
-	unsigned int nDesiredFeatures, const TImageROI& ROI) const
+	unsigned int nDesiredFeatures, const TImageROI& ROI)
 {
 	MRPT_UNUSED_PARAM(ROI);
 	MRPT_START
+	mrpt::system::CTimeLoggerEntry tle(profiler, "extractFeaturesAKAZE");
+
 #if MRPT_HAS_OPENCV
 #if MRPT_OPENCV_VERSION_NUM < 0x300
 	THROW_EXCEPTION("This function requires OpenCV > 3.0.0");

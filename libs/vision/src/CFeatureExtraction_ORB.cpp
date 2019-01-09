@@ -21,17 +21,15 @@ using namespace mrpt::system;
 using namespace mrpt::img;
 using namespace std;
 
-/************************************************************************************************
- *								extractFeaturesORB
- **
- ************************************************************************************************/
 void CFeatureExtraction::extractFeaturesORB(
 	const mrpt::img::CImage& inImg, CFeatureList& feats,
 	const unsigned int init_ID, const unsigned int nDesiredFeatures,
-	const TImageROI& ROI) const
+	const TImageROI& ROI)
 {
 	MRPT_UNUSED_PARAM(ROI);
 	MRPT_START
+
+	mrpt::system::CTimeLoggerEntry tle(profiler, "extractFeaturesORB");
 
 #if MRPT_HAS_OPENCV
 	using namespace cv;
@@ -53,9 +51,11 @@ void CFeatureExtraction::extractFeaturesORB(
 
 	// Make sure we operate on a gray-scale version of the image:
 	const CImage inImg_gray(inImg, FAST_REF_OR_CONVERT_TO_GRAY);
-	const Mat cvImg = inImg_gray.asCvMat<Mat>(SHALLOW_COPY);
+	const Mat& cvImg = inImg_gray.asCvMatRef();
 
-// The detector and descriptor
+	// The detector and descriptor
+	profiler.enter("extractFeaturesORB.openCV_detectAndCompute");
+
 #if MRPT_OPENCV_VERSION_NUM < 0x300
 	Ptr<Feature2D> orb = Algorithm::create<Feature2D>("Feature2D.ORB");
 	orb->operator()(cvImg, Mat(), cv_feats, cv_descs, use_precomputed_feats);
@@ -68,6 +68,9 @@ void CFeatureExtraction::extractFeaturesORB(
 	orb->detectAndCompute(
 		cvImg, Mat(), cv_feats, cv_descs, use_precomputed_feats);
 #endif
+	profiler.leave("extractFeaturesORB.openCV_detectAndCompute");
+
+	CTimeLoggerEntry tle2(profiler, "extractFeaturesORB.fillFeatsStruct");
 
 	const size_t n_feats = cv_feats.size();
 
@@ -231,10 +234,12 @@ void CFeatureExtraction::extractFeaturesORB(
 }
 
 void CFeatureExtraction::internal_computeORBDescriptors(
-	const CImage& in_img, CFeatureList& in_features) const
+	const CImage& in_img, CFeatureList& in_features)
 {
 #if MRPT_HAS_OPENCV
 	using namespace cv;
+	mrpt::system::CTimeLoggerEntry tle(
+		profiler, "internal_computeORBDescriptors");
 
 	const size_t n_feats = in_features.size();
 	const CImage inImg_gray(in_img, FAST_REF_OR_CONVERT_TO_GRAY);
@@ -250,18 +255,20 @@ void CFeatureExtraction::internal_computeORBDescriptors(
 		kp.size = in_features[k]->scale;
 	}  // end-for
 
-	Mat cvImg = inImg_gray.asCvMat<Mat>(SHALLOW_COPY);
+	const Mat& cvImg = inImg_gray.asCvMatRef();
 	Mat cv_descs;
 
 #if MRPT_OPENCV_VERSION_NUM < 0x300
 	Ptr<Feature2D> orb = Algorithm::create<Feature2D>("Feature2D.ORB");
 	orb->operator()(
-		cvImg, Mat(), cv_feats, cv_descs, true /* use_precomputed_feats */);
+		cvImg, cv::noArray(), cv_feats, cv_descs,
+		true /* use_precomputed_feats */);
 #else
 	Ptr<cv::ORB> orb = cv::ORB::create(
 		n_feats, options.ORBOptions.scale_factor, options.ORBOptions.n_levels);
 	orb->detectAndCompute(
-		cvImg, Mat(), cv_feats, cv_descs, true /* use_precomputed_feats */);
+		cvImg, cv::noArray(), cv_feats, cv_descs,
+		true /* use_precomputed_feats */);
 #endif
 
 	// add descriptor to CFeatureList

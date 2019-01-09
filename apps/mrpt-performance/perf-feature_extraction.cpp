@@ -11,6 +11,7 @@
 #include <mrpt/vision/CFeatureExtraction.h>
 
 #include "common.h"
+#include <iomanip>
 
 using namespace mrpt::vision;
 using namespace mrpt::poses;
@@ -22,16 +23,20 @@ extern void getTestImage(unsigned int img_index, mrpt::img::CImage& out_img);
 template <TFeatureType FEAT_TYPE>
 double benchmark_detectFeatures(int N, [[maybe_unused]] int h)
 {
-	CTicTac tictac;
 	// Generate a random image
 	CImage img;
 	getTestImage(0, img);
 	CFeatureExtraction fExt;
-	CFeatureList fs;
+	fExt.profiler.enable();
 	fExt.options.featsType = FEAT_TYPE;
-	tictac.Tic();
-	for (int i = 0; i < N; i++) fExt.detectFeatures(img, fs);
-	return tictac.Tac() / N;
+	for (int i = 0; i < N; i++)
+	{
+		CFeatureList fs;
+		fExt.detectFeatures(img, fs);
+		if (i == (N - 1))
+			std::cout << "(" << std::setw(4) << fs.size() << " found)\n";
+	}
+	return fExt.profiler.getMeanTime("detectFeatures");
 }
 
 // ------------------------------------------------------
@@ -68,31 +73,26 @@ GENERATE_BENCHMARK_FASTERS(
 	benchmark_detectFeatures_FAST12, detectFeatures_SSE2_FASTER12)
 
 // ------------------------------------------------------
-//				Benchmark: Spin descriptor
+//				Benchmark: descriptor
 // ------------------------------------------------------
-double benchmark_detectFeatures_Spin_desc(int N, int h)
+template <TDescriptorType DESCRIPTOR_TYPE>
+double benchmark_computeDescriptor(int N, int num_feats)
 {
-	CTicTac tictac;
-
-	// Generate a random image
 	CImage img;
 	getTestImage(0, img);
 
 	CFeatureExtraction fExt;
-	CFeatureList featsHarris;
+	fExt.profiler.enable();
+	fExt.options.featsType = featFASTER9;
 
-	fExt.options.SpinImagesOptions.radius = 13;
-	fExt.options.SpinImagesOptions.hist_size_distance = 10;
-	fExt.options.SpinImagesOptions.hist_size_intensity = 10;
-
-	fExt.detectFeatures(img, featsHarris);
-
-	tictac.Tic();
 	for (int i = 0; i < N; i++)
-		fExt.computeDescriptors(img, featsHarris, descSpinImages);
+	{
+		CFeatureList fs;
+		fExt.detectFeatures(img, fs, 0 /*id*/, num_feats);
+		fExt.computeDescriptors(img, fs, DESCRIPTOR_TYPE);
+	}
 
-	const double T = tictac.Tac() / N;
-	return T;
+	return fExt.profiler.getMeanTime("computeDescriptors");
 }
 
 // ------------------------------------------------------
@@ -128,6 +128,7 @@ double benchmark_detectFeatures_FASTER(int N, int threshold)
 // ------------------------------------------------------
 void register_tests_feature_extraction()
 {
+	// Detectors:
 	lstTests.emplace_back(
 		"feature_extraction [640x480]: Harris (OpenCV)",
 		benchmark_detectFeatures<featHarris>, 30);
@@ -147,8 +148,14 @@ void register_tests_feature_extraction()
 		"feature_extraction [640x480]: FAST (OpenCV)",
 		benchmark_detectFeatures<featFAST>, 100);
 	lstTests.emplace_back(
-		"feature_extraction [640x480]: Spin desc. (OpenCV)",
-		benchmark_detectFeatures_Spin_desc, 30);
+		"feature_extraction [640x480]: FASTER-9 (libCVD)",
+		benchmark_detectFeatures<featFASTER9>, 100);
+	lstTests.emplace_back(
+		"feature_extraction [640x480]: FASTER-10 (libCVD)",
+		benchmark_detectFeatures<featFASTER10>, 100);
+	lstTests.emplace_back(
+		"feature_extraction [640x480]: FASTER-12 (libCVD)",
+		benchmark_detectFeatures<featFASTER12>, 100);
 	MRPT_TODO("AKAZE crashes inside OpenCV. Disabled for now (Jan 2019)");
 #if 0
 	lstTests.emplace_back(
@@ -247,4 +254,18 @@ void register_tests_feature_extraction()
 		"feature_extraction [1024x768]: "
 		"detectFeatures_SSE2_FASTER12()+row-index (libcvd)",
 		benchmark_detectFeatures_FAST12<1024, 768, true>, 1000);
+
+	// Descriptors:
+	lstTests.emplace_back(
+		"feature_computeDescriptor [640x480,N=100]: ORB (OpenCV)",
+		benchmark_computeDescriptor<descORB>, 30, 100);
+	lstTests.emplace_back(
+		"feature_computeDescriptor [640x480,N=100]: Spin (OpenCV)",
+		benchmark_computeDescriptor<descSpinImages>, 30, 100);
+	lstTests.emplace_back(
+		"feature_computeDescriptor [640x480,N=100]: SURF (OpenCV)",
+		benchmark_computeDescriptor<descSURF>, 6, 100);
+	lstTests.emplace_back(
+		"feature_computeDescriptor [640x480,N=100]: SIFT (OpenCV)",
+		benchmark_computeDescriptor<descSIFT>, 6, 100);
 }

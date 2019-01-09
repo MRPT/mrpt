@@ -25,10 +25,13 @@ using namespace std;
 // Code contributed to OpenCV 1.1.1 long time ago. Removed from MRPT now.
 
 void CFeatureExtraction::internal_computePolarImageDescriptors(
-	const mrpt::img::CImage& in_img, CFeatureList& in_features) const
+	const mrpt::img::CImage& in_img, CFeatureList& in_features)
 {
 	MRPT_START
 #if MRPT_HAS_OPENCV
+
+	mrpt::system::CTimeLoggerEntry tle(
+		profiler, "internal_computePolarImageDescriptors");
 
 	ASSERT_(options.PolarImagesOptions.radius > 1);
 	ASSERT_(options.PolarImagesOptions.bins_angle > 1);

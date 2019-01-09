@@ -45,7 +45,7 @@ using TLandmarkLocationsVec = std::vector<mrpt::math::TPoint3D>;
  * algorithm, which is independent of additional descriptors a feature may also
  * have
  */
-enum TFeatureType
+enum TFeatureType : int8_t
 {
 	/** Non-defined feature (also used for Occupancy features) */
 	featNotDefined = -1,
@@ -89,7 +89,7 @@ enum TFeatureType
  * CFeatureExtraction::computeDescriptors to indicate which descriptors are to
  * be computed for features.
  */
-enum TDescriptorType
+enum TDescriptorType : uint16_t
 {
 	/** Used in some methods to mean "any of the present descriptors" */
 	descAny = 0,
@@ -110,7 +110,7 @@ enum TDescriptorType
 	// Remember: If new values are added, also update MRPT_FILL_ENUM below!
 };
 
-enum TFeatureTrackStatus
+enum TFeatureTrackStatus : uint8_t
 {
 	// Init value
 	/** Inactive (right after detection, and before being tried to track) */
