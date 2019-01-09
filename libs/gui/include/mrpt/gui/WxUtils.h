@@ -280,7 +280,7 @@ namespace detail
 {
 struct TReturnAskUserOpenCamera
 {
-	mrpt::config::CConfigFileMemory selectedConfig;
+	std::string selectedConfig;
 	bool accepted_by_user;
 };
 }  // namespace detail
