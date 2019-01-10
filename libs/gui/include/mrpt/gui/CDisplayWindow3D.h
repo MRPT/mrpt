@@ -33,8 +33,7 @@ class CMyGLCanvas_DisplayWindow3D;
  *
  *  A short-cut for displaying 2D images (using the OpenGL rendering hardware)
  * is available
- *  through \a setImageView() and \a setImageView_fast(). Internally, these
- * methods call methods
+ *  through \a setImageView() . Internally, these methods call methods
  *  in the "main" viewport of the window (see \a COpenGLViewport).
  *
  *  Since the 3D rendering is performed in a detached thread, especial care
@@ -370,7 +369,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	 *  Internally, the texture is drawn using a mrpt::opengl::CTexturedPlane
 	 *  The viewport can be reverted to behave like a normal viewport by
 	 * calling setNormalMode()
-	 * \sa setImageView_fast, COpenGLViewport
+	 * \sa COpenGLViewport
 	 * \note This method already locks/unlocks the 3D scene of the window, so
 	 * the user must NOT call get3DSceneAndLock() / unlockAccess3DScene()
 	 * before/after calling it.
@@ -384,7 +383,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	 * the user must NOT call get3DSceneAndLock() / unlockAccess3DScene()
 	 * before/after calling it.
 	 */
-	void setImageView_fast(mrpt::img::CImage& img);
+	void setImageView(mrpt::img::CImage&& img);
 
    protected:
 	/** Set the rendering FPS (users don't call this, the method is for internal

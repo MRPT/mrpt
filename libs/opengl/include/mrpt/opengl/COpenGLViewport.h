@@ -83,7 +83,6 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	 *  Internally, the texture is drawn using a mrpt::opengl::CTexturedPlane
 	 *  The viewport can be reverted to behave like a normal viewport by
 	 * calling setNormalMode()
-	 * \sa setImageView_fast
 	 */
 	void setImageView(const mrpt::img::CImage& img);
 
@@ -91,7 +90,7 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	 * making a copy, so it's faster but empties the input image.
 	 * \sa setImageView
 	 */
-	void setImageView_fast(mrpt::img::CImage& img);
+	void setImageView(mrpt::img::CImage&& img);
 
 	/** Reset the viewport to normal mode: rendering its own objects.
 	 * \sa setCloneView, setNormalMode
@@ -415,7 +414,7 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	 */
 	opengl::CListOpenGLObjects m_objects;
 
-	void internal_setImageView_fast(const mrpt::img::CImage& img, bool is_fast);
+	void internal_enableImageView();
 
 	// OpenGL global settings:
 	bool m_OpenGL_enablePolygonNicest{true};

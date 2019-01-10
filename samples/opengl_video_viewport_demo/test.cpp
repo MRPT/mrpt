@@ -91,7 +91,7 @@ void TestOpenGLVideo()
 				win.repaint();
 
 				win2.get3DSceneAndLock();
-				gl_view_aux->setImageView_fast(o->image);
+				gl_view_aux->setImageView(std::move(o->image));
 				win2.unlockAccess3DScene();
 				win2.repaint();
 			}
