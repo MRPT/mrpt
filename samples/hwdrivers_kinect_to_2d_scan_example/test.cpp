@@ -264,7 +264,7 @@ void Test_Kinect()
 				img.setFromMatrix(range2D);
 
 				win3D.get3DSceneAndLock();
-				viewRange->setImageView_fast(img);
+				viewRange->setImageView(std::move(img));
 				win3D.unlockAccess3DScene();
 				do_refresh = true;
 			}

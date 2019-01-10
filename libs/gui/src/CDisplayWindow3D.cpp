@@ -1021,11 +1021,11 @@ void CDisplayWindow3D::setImageView(const mrpt::img::CImage& img)
 	m_csAccess3DScene.unlock();
 }
 
-void CDisplayWindow3D::setImageView_fast(mrpt::img::CImage& img)
+void CDisplayWindow3D::setImageView(mrpt::img::CImage&& img)
 {
 	m_csAccess3DScene.lock();
 	mrpt::opengl::COpenGLViewport::Ptr view = m_3Dscene->getViewport("main");
-	view->setImageView_fast(img);
+	view->setImageView(std::move(img));
 	m_csAccess3DScene.unlock();
 }
 

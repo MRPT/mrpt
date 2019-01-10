@@ -866,28 +866,21 @@ void COpenGLViewport::setNormalMode()
 
 void COpenGLViewport::setImageView(const mrpt::img::CImage& img)
 {
-	internal_setImageView_fast(img, false);
+	internal_enableImageView();
+	*m_imageview_img = img;
 }
-void COpenGLViewport::setImageView_fast(mrpt::img::CImage& img)
+void COpenGLViewport::setImageView(mrpt::img::CImage&& img)
 {
-	internal_setImageView_fast(img, true);
+	internal_enableImageView();
+	*m_imageview_img = std::move(img);
 }
 
-void COpenGLViewport::internal_setImageView_fast(
-	const mrpt::img::CImage& img, bool is_fast)
+void COpenGLViewport::internal_enableImageView()
 {
 	// If this is the first time, we have to create the quad object:
 	if (!m_isImageView || !m_imageview_img)
-		m_imageview_img = mrpt::make_aligned_shared<mrpt::img::CImage>();
+		m_imageview_img = mrpt::img::CImage::Create();
 	m_isImageView = true;
-
-	// Update texture image:
-	mrpt::img::CImage* my_img = m_imageview_img.get();
-
-	if (!is_fast)
-		*my_img = img;
-	else
-		*my_img = std::move(*const_cast<mrpt::img::CImage*>(&img));
 }
 
 /** Evaluates the bounding box of this object (including possible children) in
