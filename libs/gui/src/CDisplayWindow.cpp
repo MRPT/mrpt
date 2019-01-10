@@ -457,7 +457,7 @@ void CDisplayWindow::showImageAndPoints(
 	CImage imgColor = img.colorImage();  // Create a colorimage
 	for (size_t i = 0; i < x.size(); i++)
 	{
-		imgColor.cross(round(x[i]), round(y[i]), color, '+');
+		imgColor.drawMark(round(x[i]), round(y[i]), color, '+');
 
 		if (showNumbers)
 		{
@@ -516,7 +516,7 @@ void CDisplayWindow::plot(const CVectorFloat& x, const CVectorFloat& y)
 	{
 		float tpx = (*itx - x[0]) / px + ox;
 		float tpy = (*ity - *itymn) / py + oy;
-		imgColor.cross(tpx, tpy, TColor(255, 0, 0), 'x');
+		imgColor.drawMark(tpx, tpy, TColor(255, 0, 0), 'x');
 		if (itx != x.begin())
 			imgColor.line(tpxA, tpyA, tpx, tpy, TColor(0, 0, 255), 3);
 		tpxA = tpx;
@@ -568,7 +568,7 @@ void CDisplayWindow::plot(const CVectorFloat& y)
 	{
 		float tpx = k / px + ox;
 		float tpy = (*ity - *itymn) / py + oy;
-		imgColor.cross(tpx, tpy, TColor::red(), 'x');
+		imgColor.drawMark(tpx, tpy, TColor::red(), 'x');
 		if (k > 0) imgColor.line(tpxA, tpyA, tpx, tpy, TColor::blue(), 3);
 		tpxA = tpx;
 		tpyA = tpy;

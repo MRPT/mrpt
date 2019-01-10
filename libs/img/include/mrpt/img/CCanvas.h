@@ -189,18 +189,18 @@ class CCanvas
 	 */
 	virtual void drawImage(int x, int y, const mrpt::img::CImage& img);
 
-	/** Draw a cross.
+	/** Draw a mark.
 	 * \param x0 The point x coordinate
 	 * \param y0 The point y coordinate
 	 * \param color The color of the cross
 	 * \param size The size of the cross
-	 * \param type The cross type. It could be: 'x', '+' or ':'(like '+' but
-	 * clear at the center dot)
+	 * \param type The cross type. It could be: 'x', '+', ':'(like '+' but
+	 * clear at the center dot), or 's' (square)
 	 * \param width The desired width of the cross (this is IGNORED yet)
 	 */
-	void cross(
-		int x0, int y0, const mrpt::img::TColor color, char type,
-		unsigned int size = 5, unsigned int width = 1);
+	void drawMark(
+		int x0, int y0, const mrpt::img::TColor color, char type, int size = 5,
+		unsigned int width = 1);
 
 	/** Draws an image as a bitmap at a given position, with some custom scale
 	 * and rotation changes.
@@ -305,7 +305,7 @@ class CCanvas
 		{
 			const int x = round(list.getFeatureX(i));
 			const int y = round(list.getFeatureY(i));
-			this->cross(x, y, color, '+', cross_size);
+			drawMark(x, y, color, '+', cross_size);
 		}
 	}
 
@@ -320,13 +320,14 @@ class CCanvas
 	template <class FEATURELIST>
 	void drawFeatures(
 		const FEATURELIST& list, const TColor& color = TColor::red(),
-		const bool showIDs = false, const bool showResponse = false)
+		const bool showIDs = false, const bool showResponse = false,
+		const bool showScale = false, const char marker = '+')
 	{
 		for (size_t i = 0; i < list.size(); ++i)
 		{
 			const int x = round(list.getFeatureX(i));
 			const int y = round(list.getFeatureY(i));
-			this->cross(x, y, color, '+');
+			drawMark(x, y, color, marker);
 			if (showIDs)
 				this->textOut(
 					x, y,
@@ -341,7 +342,15 @@ class CCanvas
 						static_cast<unsigned int>(list.getFeatureResponse(i))),
 					TColor::red());
 			if (!list.isPointFeature(i))
+			{
 				this->drawCircle(x, y, list.getScale(i), TColor::red());
+			}
+			else if (showScale)
+			{
+				this->textOut(
+					x, y + 20, format("S:%.01f", list.getScale(i)),
+					TColor::red());
+			}
 		}
 	}
 };  // End of class

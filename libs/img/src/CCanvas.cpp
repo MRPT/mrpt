@@ -304,11 +304,8 @@ void CCanvas::drawImage(
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-						cross
----------------------------------------------------------------*/
-void CCanvas::cross(
-	int x0, int y0, const mrpt::img::TColor color, char type, unsigned int size,
+void CCanvas::drawMark(
+	int x0, int y0, const mrpt::img::TColor color, char type, int size,
 	unsigned int width)
 {
 	switch (type)
@@ -316,6 +313,12 @@ void CCanvas::cross(
 		case '+':
 			line(x0 - size, y0, x0 + size, y0, color, width);
 			line(x0, y0 - size, x0, y0 + size, color, width);
+			break;
+		case 's':
+			line(x0 - size, y0 - size, x0 + size, y0 - size, color, width);
+			line(x0 + size, y0 - size, x0 + size, y0 + size, color, width);
+			line(x0 - size, y0 + size, x0 + size, y0 + size, color, width);
+			line(x0 - size, y0 - size, x0 - size, y0 + size, color, width);
 			break;
 		case 'x':
 			line(x0 - size, y0 - size, x0 + size, y0 + size, color, width);

@@ -61,6 +61,7 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
 
 	bool SHOW_FEAT_IDS = true;
 	bool SHOW_RESPONSES = true;
+	bool SHOW_SCALE = true;
 	bool SHOW_FEAT_TRACKS = true;
 
 	const double SAVE_VIDEO_FPS =
@@ -226,8 +227,16 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
 		// ----------------------------------------------------------------
 		if (DO_HIST_EQUALIZE_IN_GRAYSCALE && !theImg.isColor())
 			theImg.equalizeHist(theImg);
+
+		tracker->getProfiler().enter("Display");
+
 		// Convert to color so we can draw color marks, etc.
-		theImg = theImg.colorImage();
+		{
+			mrpt::system::CTimeLoggerEntry tle(
+				tracker->getProfiler(), "Display.to_color");
+
+			theImg = theImg.colorImage();
+		}
 
 		double extra_tim_to_wait = 0;
 
@@ -236,10 +245,12 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
 			const double T = tictac.Tac();
 			tictac.Tic();
 			const double fps = 1.0 / (std::max(1e-5, T));
-			// theImg.filledRectangle(1,1,175,25,TColor(0,0,0));
 
 			const int current_adapt_thres =
 				tracker->getDetectorAdaptiveThreshold();
+
+			mrpt::system::CTimeLoggerEntry tle(
+				tracker->getProfiler(), "Display.textOut");
 
 			theImg.selectTextFont("6x13B");
 			theImg.textOut(
@@ -268,7 +279,8 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
 		if (SHOW_FEAT_TRACKS)
 		{
 			// Update new feature coords:
-			tracker->getProfiler().enter("drawFeatureTracks");
+			mrpt::system::CTimeLoggerEntry tle(
+				tracker->getProfiler(), "Display.drawFeatureTracks");
 
 			std::set<TFeatureID> observed_IDs;
 
@@ -299,8 +311,6 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
 				}
 			}
 
-			tracker->getProfiler().leave("drawFeatureTracks");
-
 			// Purge old data:
 			for (auto it = feat_tracks.begin(); it != feat_tracks.end();)
 			{
@@ -318,18 +328,27 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
 
 		// Draw Tracked feats:
 		{
+			mrpt::system::CTimeLoggerEntry tle(
+				tracker->getProfiler(), "Display.drawFeatures");
+
 			theImg.selectTextFont("5x7");
-			tracker->getProfiler().enter("drawFeatures");
 			theImg.drawFeatures(
-				trackedFeats, TColor(0, 0, 255), SHOW_FEAT_IDS, SHOW_RESPONSES);
-			tracker->getProfiler().leave("drawFeatures");
+				trackedFeats, TColor::blue(), SHOW_FEAT_IDS, SHOW_RESPONSES,
+				SHOW_SCALE, '+' /* marker */);
 		}
 
 		// Update window:
-		win->get3DSceneAndLock();
-		gl_view->setImageView(theImg);
-		win->unlockAccess3DScene();
-		win->repaint();
+		{
+			mrpt::system::CTimeLoggerEntry tle(
+				tracker->getProfiler(), "Display.updateView");
+
+			win->get3DSceneAndLock();
+			gl_view->setImageView(theImg);
+			win->unlockAccess3DScene();
+			win->repaint();
+		}
+
+		tracker->getProfiler().leave("Display");
 
 		// Save debug output video:
 		// ----------------------------------
