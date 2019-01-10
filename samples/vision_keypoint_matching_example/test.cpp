@@ -309,9 +309,9 @@ void TestMatchingComparative()
 
 	CFeatureList::iterator it1, it2;
 	for (it1 = list1.begin(); it1 != list1.end(); ++it1)
-		im1.cross((*it1)->x, (*it1)->y, TColor::red(), '+');
+		im1.drawMark((*it1)->x, (*it1)->y, TColor::red(), '+');
 	for (it2 = list2.begin(); it2 != list2.end(); ++it2)
-		im2.cross((*it2)->x, (*it2)->y, TColor::red(), '+');
+		im2.drawMark((*it2)->x, (*it2)->y, TColor::red(), '+');
 
 	CDisplayWindow win, win2;
 	win.setPos(0, 0);
