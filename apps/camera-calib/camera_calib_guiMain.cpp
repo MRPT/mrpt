@@ -807,7 +807,7 @@ void camera_calib_guiDialog::refreshDisplayedImage()
 		// Draw the board:
 		for (unsigned int k = 0; k < it->second.detected_corners.size(); k++)
 		{
-			imgCheck.cross(
+			imgCheck.drawMark(
 				it->second.detected_corners[k].x * zoomVal,
 				it->second.detected_corners[k].y * zoomVal, TColor::blue(), '+',
 				3);
@@ -819,7 +819,7 @@ void camera_calib_guiDialog::refreshDisplayedImage()
 		imgCheck.drawCircle(10, 10, 4, TColor(0, 255, 64));
 		imgCheck.textOut(18, 4, "Reprojected corners", TColor::white());
 
-		imgCheck.cross(10, 30, TColor::blue(), '+', 3);
+		imgCheck.drawMark(10, 30, TColor::blue(), '+', 3);
 		imgCheck.textOut(18, 24, "Detected corners", TColor::white());
 
 		this->bmpOriginal->AssignImage(imgCheck);

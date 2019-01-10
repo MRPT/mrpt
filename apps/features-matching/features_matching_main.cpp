@@ -406,7 +406,7 @@ Descriptors:
 		{
 			if (distances[i2] < min_dist + 0.1 * dist_std)
 			{
-				img2_show_base.cross(
+				img2_show_base.drawMark(
 					feats2[i2]->x, feats2[i2]->y, TColor::red(), '+', 7);
 
 				img2_show_base.textOut(
@@ -419,7 +419,7 @@ Descriptors:
 			}
 			else
 			{
-				img2_show_base.cross(
+				img2_show_base.drawMark(
 					feats2[i2]->x, feats2[i2]->y, TColor::gray(), '+', 3);
 			}
 		}
@@ -434,7 +434,7 @@ Descriptors:
 		{
 			img1_show = img1.makeDeepCopy();
 
-			img1_show.cross(
+			img1_show.drawMark(
 				feats1[i1]->x, feats1[i1]->y, TColor::red(), '+', 7);
 			img1_show.drawCircle(
 				feats1[i1]->x, feats1[i1]->y, 7 + anim_loops, TColor::blue());

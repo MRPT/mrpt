@@ -96,11 +96,11 @@ void TestPathPlanning()
 			gridmap.x2idx(it->x), gridmap.getSizeY() - 1 - gridmap.y2idx(it->y),
 			R, TColor(0, 0, 255));
 
-	img.cross(
+	img.drawMark(
 		gridmap.x2idx(origin.x()),
 		gridmap.getSizeY() - 1 - gridmap.y2idx(origin.y()),
 		TColor(0x20, 0x20, 0x20), '+', 10);
-	img.cross(
+	img.drawMark(
 		gridmap.x2idx(target.x()),
 		gridmap.getSizeY() - 1 - gridmap.y2idx(target.y()),
 		TColor(0x50, 0x50, 0x50), 'x', 10);
