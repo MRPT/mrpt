@@ -83,21 +83,26 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
 	// -------------------------------------------------------------
 	// To see all the existing params and documentation, see
 	// mrpt::vision::CGenericFeatureTracker
-	tracker->extra_params["remove_lost_features"] =
-		1;  // automatically remove out-of-image and badly tracked features
+	// automatically remove out-of-image and badly tracked features
+	tracker->extra_params["remove_lost_features"] = 1;
 
-	tracker->extra_params["add_new_features"] =
-		1;  // track, AND ALSO, add new features
-	tracker->extra_params["add_new_feat_min_separation"] = 32;
-	tracker->extra_params["minimum_KLT_response_to_add"] = 75;
+	// track, AND ALSO, add new features
+	tracker->extra_params["add_new_features"] = 1;
+	tracker->extra_params["desired_num_features_adapt"] = 500;
+	tracker->extra_params["add_new_feat_min_separation"] = 30;
 	tracker->extra_params["add_new_feat_max_features"] = 350;
+	// FAST9,10,12:
+	tracker->extra_params["add_new_features_FAST_version"] = 10;
+
+	// Don't use patches
 	tracker->extra_params["add_new_feat_patch_size"] = 0;
+	tracker->extra_params["update_patches_every"] = 0;
 
-	tracker->extra_params["update_patches_every"] = 0;  // Don't update patches.
-
-	// Re-check the KLT-response to assure features are in good points.
+	// KLT-response to ensure good features:
+	tracker->extra_params["minimum_KLT_response_to_add"] = 70;
 	tracker->extra_params["check_KLT_response_every"] = 1;
-	tracker->extra_params["minimum_KLT_response"] = 50;
+	tracker->extra_params["minimum_KLT_response"] = 30;
+	tracker->extra_params["KLT_response_half_win"] = 8;
 
 	// Specific params for "CFeatureTracker_KL"
 	// ------------------------------------------------------

@@ -76,23 +76,25 @@ struct TParameters
 	 */
 	inline T operator[](const std::string& s) const
 	{
+		using namespace std::string_literals;
 		auto it = base.find(s);
 		if (base.end() == it)
 			throw std::logic_error(
-				std::string("Parameter '") + s +
-				std::string("' is not present.").c_str());
+				("Parameter '"s + s + "' is not present."s).c_str());
 		return it->second;
 	}
 	/** A const version of the [] operator and with a default value in case the
 	 * parameter is not set (for usage as read-only).
 	 */
-	inline T getWithDefaultVal(const std::string& s, const T& defaultVal) const
+	template <typename RET>
+	inline RET getWithDefaultVal(
+		const std::string& s, const RET& defaultVal) const
 	{
 		auto it = base.find(s);
 		if (base.end() == it)
 			return defaultVal;
 		else
-			return it->second;
+			return static_cast<RET>(it->second);
 	}
 	/** The write (non-const) version of the [] operator. */
 	inline T& operator[](const std::string& s) { return base[s]; }
