@@ -29,8 +29,8 @@ bool mrpt::obs::carmen_log_parse_line(
 	std::vector<mrpt::obs::CObservation::Ptr>& out_observations,
 	const mrpt::system::TTimeStamp& time_start_log)
 {
-	static TParametersString
-		global_log_params;  // global parameters loaded in previous calls.
+	/** global parameters loaded in previous calls. */
+	static TParametersString global_log_params;
 
 	out_observations.clear();  // empty output container
 
@@ -175,29 +175,30 @@ bool mrpt::obs::carmen_log_parse_line(
 			{
 				double maxRange = 81.0;
 				double resolutionDeg = 0.5;
+				using namespace std::string_literals;
 
 				if (line[0] == 'F')
 				{  // front:
 					maxRange = atof(
 						global_log_params
-							.getWithDefaultVal("robot_front_laser_max", "81.0")
+							.getWithDefaultVal("robot_front_laser_max", "81.0"s)
 							.c_str());
 					resolutionDeg =
 						atof(global_log_params
 								 .getWithDefaultVal(
-									 "laser_front_laser_resolution", "0.5")
+									 "laser_front_laser_resolution", "0.5"s)
 								 .c_str());
 				}
 				else if (line[0] == 'R')
 				{  // rear:
 					maxRange = atof(
 						global_log_params
-							.getWithDefaultVal("robot_rear_laser_max", "81.0")
+							.getWithDefaultVal("robot_rear_laser_max", "81.0"s)
 							.c_str());
 					resolutionDeg =
 						atof(global_log_params
 								 .getWithDefaultVal(
-									 "laser_rear_laser_resolution", "0.5")
+									 "laser_rear_laser_resolution", "0.5"s)
 								 .c_str());
 				}
 				obsLaser->maxRange = maxRange;

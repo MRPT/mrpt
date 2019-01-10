@@ -209,12 +209,8 @@ inline void trackFeatures_addNewFeats<CFeatureList>(
 
 		if (!featureList.empty())
 		{
-			// m_timlog.enter("[CGenericFeatureTracker] add new
-			// features.kdtree");
 			min_dist_sqr =
 				featureList.kdTreeClosestPoint2DsqrError(feat.pt.x, feat.pt.y);
-			// m_timlog.leave("[CGenericFeatureTracker] add new
-			// features.kdtree");
 		}
 
 		if (min_dist_sqr > threshold_sqr_dist_to_add_new &&
@@ -268,12 +264,8 @@ inline void trackFeatures_addNewFeats_simple_list(
 
 		if (!featureList.empty())
 		{
-			// m_timlog.enter("[CGenericFeatureTracker] add new
-			// features.kdtree");
 			min_dist_sqr =
 				kdtree.kdTreeClosestPoint2DsqrError(feat.pt.x, feat.pt.y);
-			// m_timlog.leave("[CGenericFeatureTracker] add new
-			// features.kdtree");
 		}
 
 		if (min_dist_sqr > threshold_sqr_dist_to_add_new)
@@ -456,8 +448,7 @@ template <typename FEATLIST>
 void CGenericFeatureTracker::internal_trackFeatures(
 	const CImage& old_img, const CImage& new_img, FEATLIST& featureList)
 {
-	m_timlog.enter(
-		"[CGenericFeatureTracker::trackFeatures] Complete iteration");
+	mrpt::system::CTimeLoggerEntry tleg(m_timlog, "CGenericFeatureTracker");
 
 	const size_t img_width = new_img.getWidth();
 	const size_t img_height = new_img.getHeight();
@@ -469,38 +460,38 @@ void CGenericFeatureTracker::internal_trackFeatures(
 
 	// Grayscale images
 	// =========================================
-	m_timlog.enter("[CGenericFeatureTracker] Convert grayscale");
+	m_timlog.enter("CGenericFeatureTracker.to_grayscale");
 
 	const CImage prev_gray(old_img, FAST_REF_OR_CONVERT_TO_GRAY);
 	const CImage cur_gray(new_img, FAST_REF_OR_CONVERT_TO_GRAY);
 
-	m_timlog.leave("[CGenericFeatureTracker] Convert grayscale");
+	m_timlog.leave("CGenericFeatureTracker.to_grayscale");
 
 	// =================================
 	// (1st STEP)  Do the actual tracking
 	// =================================
 	m_newly_detected_feats.clear();
 
-	m_timlog.enter("[CGenericFeatureTracker] trackFeatures_impl");
+	m_timlog.enter("CGenericFeatureTracker.trackFeatures_impl");
 
 	trackFeatures_impl(prev_gray, cur_gray, featureList);
 
-	m_timlog.leave("[CGenericFeatureTracker] trackFeatures_impl");
+	m_timlog.leave("CGenericFeatureTracker.trackFeatures_impl");
 
 	// ========================================================
 	// (2nd STEP) For successfully followed features, check their KLT response??
 	// ========================================================
 	const int check_KLT_response_every =
-		extra_params.getWithDefaultVal("check_KLT_response_every", 0);
+		extra_params.getWithDefaultVal("check_KLT_response_every", 1);
 	const float minimum_KLT_response =
-		extra_params.getWithDefaultVal("minimum_KLT_response", 5);
+		extra_params.getWithDefaultVal("minimum_KLT_response", 30.f);
 	const unsigned int KLT_response_half_win =
-		extra_params.getWithDefaultVal("KLT_response_half_win", 4);
+		extra_params.getWithDefaultVal("KLT_response_half_win", 8U);
 
 	if (check_KLT_response_every > 0 &&
 		++m_check_KLT_counter >= size_t(check_KLT_response_every))
 	{
-		m_timlog.enter("[CGenericFeatureTracker] check KLT responses");
+		m_timlog.enter("CGenericFeatureTracker.check_KLT_responses");
 		m_check_KLT_counter = 0;
 
 		const unsigned int max_x = img_width - KLT_response_half_win;
@@ -510,7 +501,7 @@ void CGenericFeatureTracker::internal_trackFeatures(
 			featureList, cur_gray, minimum_KLT_response, KLT_response_half_win,
 			max_x, max_y);
 
-		m_timlog.leave("[CGenericFeatureTracker] check KLT responses");
+		m_timlog.leave("CGenericFeatureTracker.check_KLT_responses");
 
 	}  // end check_KLT_response_every
 
@@ -523,7 +514,7 @@ void CGenericFeatureTracker::internal_trackFeatures(
 
 	if (remove_lost_features)
 	{
-		m_timlog.enter("[CGenericFeatureTracker] removal of OOB");
+		m_timlog.enter("CGenericFeatureTracker.OOB_remove");
 
 		static const int MIN_DIST_MARGIN_TO_STOP_TRACKING = 10;
 
@@ -531,7 +522,7 @@ void CGenericFeatureTracker::internal_trackFeatures(
 			featureList, img_width, img_height,
 			MIN_DIST_MARGIN_TO_STOP_TRACKING);
 
-		m_timlog.leave("[CGenericFeatureTracker] removal of OOB");
+		m_timlog.leave("CGenericFeatureTracker.OOB_remove");
 
 		last_execution_extra_info.num_deleted_feats = nRemoved;
 	}
@@ -549,43 +540,66 @@ void CGenericFeatureTracker::internal_trackFeatures(
 	if (update_patches_every > 0 &&
 		++m_update_patches_counter >= size_t(update_patches_every))
 	{
-		m_timlog.enter("[CGenericFeatureTracker] update patches");
+		mrpt::system::CTimeLoggerEntry tle(
+			m_timlog, "CGenericFeatureTracker.update_patches");
+
 		m_update_patches_counter = 0;
 
 		// Update the patch for each valid feature:
 		detail::trackFeatures_updatePatch(featureList, cur_gray);
 
-		m_timlog.leave("[CGenericFeatureTracker] update patches");
 	}  // end if update_patches_every
 
 	// ========================================================
 	// (5th STEP) Do detection of new features??
 	// ========================================================
 	const bool add_new_features =
-		extra_params.getWithDefaultVal("add_new_features", 0) != 0;
+		extra_params.getWithDefaultVal("add_new_features", 1) != 0;
 	const double threshold_dist_to_add_new =
 		extra_params.getWithDefaultVal("add_new_feat_min_separation", 15);
 
 	// Additional operation: if "add_new_features==true", find new features and
-	// add them in
-	//  areas spare of valid features:
+	// add them in areas spare of valid features:
 	if (add_new_features)
 	{
-		m_timlog.enter("[CGenericFeatureTracker] add new features");
+		mrpt::system::CTimeLoggerEntry tle(
+			m_timlog, "CGenericFeatureTracker.add_new_features");
 
 		// Look for new features and save in "m_newly_detected_feats", if
 		// they're not already computed:
 		if (m_newly_detected_feats.empty())
 		{
 			// Do the detection
-			CFeatureExtraction::detectFeatures_SSE2_FASTER12(
-				cur_gray, m_newly_detected_feats, m_detector_adaptive_thres);
+			const int fast_v = extra_params.getWithDefaultVal(
+				"add_new_features_FAST_version", 10);
+
+			switch (fast_v)
+			{
+				case 9:
+					CFeatureExtraction::detectFeatures_SSE2_FASTER9(
+						cur_gray, m_newly_detected_feats,
+						m_detector_adaptive_thres);
+					break;
+				case 10:
+					CFeatureExtraction::detectFeatures_SSE2_FASTER10(
+						cur_gray, m_newly_detected_feats,
+						m_detector_adaptive_thres);
+					break;
+				case 12:
+					CFeatureExtraction::detectFeatures_SSE2_FASTER12(
+						cur_gray, m_newly_detected_feats,
+						m_detector_adaptive_thres);
+					break;
+				default:
+					THROW_EXCEPTION(
+						"Invalid value for `add_new_features_FAST_version`: "
+						"valid are 9,10,12");
+			}
 		}
 
+		// Extra out info.
 		const size_t N = m_newly_detected_feats.size();
-
-		last_execution_extra_info.raw_FAST_feats_detected =
-			N;  // Extra out info.
+		last_execution_extra_info.raw_FAST_feats_detected = N;
 
 		// Update the adaptive threshold.
 		const size_t desired_num_features = extra_params.getWithDefaultVal(
@@ -628,12 +642,11 @@ void CGenericFeatureTracker::internal_trackFeatures(
 		const double threshold_sqr_dist_to_add_new =
 			square(threshold_dist_to_add_new);
 		const size_t maxNumFeatures =
-			extra_params.getWithDefaultVal("add_new_feat_max_features", 100);
+			extra_params.getWithDefaultVal("add_new_feat_max_features", 100U);
 		const size_t patchSize =
-			extra_params.getWithDefaultVal("add_new_feat_patch_size", 11);
-
+			extra_params.getWithDefaultVal("add_new_feat_patch_size", 0U);
 		const float minimum_KLT_response_to_add =
-			extra_params.getWithDefaultVal("minimum_KLT_response_to_add", 10);
+			extra_params.getWithDefaultVal("minimum_KLT_response_to_add", 70.f);
 
 		// Do it:
 		detail::trackFeatures_addNewFeats(
@@ -641,12 +654,7 @@ void CGenericFeatureTracker::internal_trackFeatures(
 			maxNumFeatures, minimum_KLT_response_to_add,
 			threshold_sqr_dist_to_add_new, patchSize, cur_gray,
 			max_feat_ID_at_input);
-
-		m_timlog.leave("[CGenericFeatureTracker] add new features");
 	}
-
-	m_timlog.leave(
-		"[CGenericFeatureTracker::trackFeatures] Complete iteration");
 
 }  // end of CGenericFeatureTracker::trackFeatures
 
