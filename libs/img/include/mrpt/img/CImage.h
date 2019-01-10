@@ -1015,13 +1015,16 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	bool grayscale(CImage& ret) const;
 
 	/** Returns a color (RGB) version of the grayscale image, or a shallow copy
-	 * of itself if it is already a color image. \sa grayscale
+	 * of itself if it is already a color image.
+	 * \param desired_row_mem_align Default if =0. Otherwise, can be 1,2,4,8.
+	 * Specifies the row memory alignment of the returned image.
+	 * \sa grayscale
 	 */
-	CImage colorImage() const;
+	CImage colorImage(std::size_t desired_row_mem_align = 0) const;
 
 	/** \overload.
 	 * In-place is supported by setting `ret=*this`. */
-	void colorImage(CImage& ret) const;
+	void colorImage(CImage& ret, std::size_t desired_row_mem_align = 0) const;
 
 	/** @} */
 
@@ -1033,6 +1036,11 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	 * \note This feature requires OpenCV>=3.0
 	 */
 	static void InstallOpenCVAlignedAllocator();
+
+	/** By looking at row_stride and image width, finds the **smallest**
+	 * possible value for row alignment in bytes. Useful for interfacing OpenGL
+	 * functions. */
+	std::size_t guessRowAlignment() const;
 
    protected:
 	/** @name Data members
