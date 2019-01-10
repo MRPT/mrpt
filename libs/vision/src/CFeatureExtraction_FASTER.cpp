@@ -76,23 +76,20 @@ void CFeatureExtraction::detectFeatures_SSE2_FASTER12(
 #endif
 }
 
-/************************************************************************************************
- *								extractFeaturesFASTER
- **
- ************************************************************************************************/
 // N_fast = 9, 10, 12
 void CFeatureExtraction::extractFeaturesFASTER_N(
 	const int N_fast, const mrpt::img::CImage& inImg, CFeatureList& feats,
-	unsigned int init_ID, unsigned int nDesiredFeatures,
-	const TImageROI& ROI) const
+	unsigned int init_ID, unsigned int nDesiredFeatures, const TImageROI& ROI)
 {
 	MRPT_UNUSED_PARAM(ROI);
 	MRPT_START
 
+	CTimeLoggerEntry tle(profiler, "extractFeaturesFASTER_N");
+
 #if MRPT_HAS_OPENCV
 	// Make sure we operate on a gray-scale version of the image:
 	const CImage inImg_gray(inImg, FAST_REF_OR_CONVERT_TO_GRAY);
-	cv::Mat img = inImg_gray.asCvMat<cv::Mat>(SHALLOW_COPY);
+	const cv::Mat& img = inImg_gray.asCvMatRef();
 
 	TSimpleFeatureList corners;
 	TFeatureType type_of_this_feature;
@@ -119,6 +116,8 @@ void CFeatureExtraction::extractFeaturesFASTER_N(
 				"Only the 9,10,12 FASTER detectors are implemented.")
 	};
 
+	CTimeLoggerEntry tle2(profiler, "extractFeaturesFASTER_N.fillFeatsStruct");
+
 	// *All* the features have been extracted.
 	const size_t N = corners.size();
 
@@ -134,7 +133,8 @@ void CFeatureExtraction::extractFeaturesFASTER_N(
 	// according to some quality measure
 	if (options.FASTOptions.use_KLT_response || nDesiredFeatures != 0)
 	{
-		const auto KLT_half_win = 4;
+		const auto KLT_half_win =
+			options.FASTOptions.KLT_response_half_win_size;
 		const auto max_x = inImg_gray.getWidth() - 1 - KLT_half_win;
 		const auto max_y = inImg_gray.getHeight() - 1 - KLT_half_win;
 

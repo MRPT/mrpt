@@ -1452,12 +1452,15 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
 	// wait for user selection:
 	auto future = dlgSelection.get_future();
 	future.wait();
+	const auto& ret = future.get();
 
 	// If the user didn't accept the dialog, return now:
-	if (!future.get().accepted_by_user) return CCameraSensor::Ptr();
+	if (!ret.accepted_by_user) return CCameraSensor::Ptr();
+
+	mrpt::config::CConfigFileMemory selectedConfig(ret.selectedConfig);
 
 	CCameraSensor::Ptr cam = mrpt::make_aligned_shared<CCameraSensor>();
-	cam->loadConfig(future.get().selectedConfig, "CONFIG");
+	cam->loadConfig(selectedConfig, "CONFIG");
 	cam->initialize();  // This will raise an exception if neccesary
 
 	return cam;

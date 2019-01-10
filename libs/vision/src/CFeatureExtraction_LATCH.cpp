@@ -45,13 +45,14 @@ using namespace std;
 #define HAVE_OPENCV_WITH_LATCH 0
 #endif
 
-/************************************************************************************************
- *						internal_computeLATCHDescriptors
- ************************************************************************************************/
 void CFeatureExtraction::internal_computeLATCHDescriptors(
-	const mrpt::img::CImage& in_img, CFeatureList& in_features) const
+	const mrpt::img::CImage& in_img, CFeatureList& in_features)
 {
 	MRPT_START
+
+	mrpt::system::CTimeLoggerEntry tle(
+		profiler, "internal_computeLATCHDescriptors");
+
 #if (!HAVE_OPENCV_WITH_LATCH)
 	THROW_EXCEPTION(
 		"This function requires OpenCV modules: xfeatures2d,line_descriptor");
@@ -75,7 +76,7 @@ void CFeatureExtraction::internal_computeLATCHDescriptors(
 		kp.size = in_features[k]->scale;
 	}  // end-for
 
-	Mat cvImg(cv::cvarrToMat(inImg_gray.getAs<IplImage>()));
+	const Mat& cvImg = inImg_gray.asCvMatRef();
 	Mat cv_descs;  // OpenCV descriptor output
 
 	Ptr<xfeatures2d::LATCH> latch = xfeatures2d::LATCH::create(

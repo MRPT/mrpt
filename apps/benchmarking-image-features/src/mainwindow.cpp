@@ -1222,15 +1222,10 @@ void MainWindow::fillDetectorInfo()
 		klt_opts.radius = param2_edit->text().toInt();
 		klt_opts.threshold = param3_edit->text().toFloat();
 		string temp_str = param4_edit->text().toStdString();
-		// bool temp_bool = temp_str.compare("true") == 0;
-		// klt_opts.tile_image = temp_bool;
-
-		klt_opts.tile_image = param1_boolean->isChecked();
 
 		fext.options.KLTOptions.min_distance = klt_opts.min_distance;
 		fext.options.KLTOptions.radius = klt_opts.radius;
 		fext.options.KLTOptions.threshold = klt_opts.threshold;
-		fext.options.KLTOptions.tile_image = klt_opts.tile_image;
 	}
 	else if (detector_selected == 1)  // Harris Features
 	{
@@ -1239,7 +1234,6 @@ void MainWindow::fillDetectorInfo()
 		harris_opts.k = param2_edit->text().toFloat();
 		harris_opts.sigma = param3_edit->text().toFloat();
 		harris_opts.radius = param4_edit->text().toFloat();
-		harris_opts.tile_image = param1_boolean->isChecked();
 
 		fext.options.harrisOptions.threshold = harris_opts.threshold;
 		fext.options.harrisOptions.k = harris_opts.k;
