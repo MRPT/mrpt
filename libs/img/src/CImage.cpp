@@ -1930,14 +1930,14 @@ bool CImage::drawChessboardCorners(
 #endif
 }
 
-CImage CImage::colorImage() const
+CImage CImage::colorImage(std::size_t desired_row_mem_align) const
 {
 	CImage ret;
-	colorImage(ret);
+	colorImage(ret, desired_row_mem_align);
 	return ret;
 }
 
-void CImage::colorImage(CImage& ret) const
+void CImage::colorImage(CImage& ret, std::size_t desired_row_mem_align) const
 {
 #if MRPT_HAS_OPENCV
 	if (this->isColor())
@@ -1946,6 +1946,10 @@ void CImage::colorImage(CImage& ret) const
 		return;
 	}
 
+	const auto prev_align = CImage::ROW_MEM_ALIGNMENT();
+	if (desired_row_mem_align != 0)
+		CImage::ROW_MEM_ALIGNMENT(desired_row_mem_align);
+
 	auto srcImg = m_impl->img;
 	// Detect in-place op. and make deep copy:
 	if (srcImg.data == ret.m_impl->img.data) srcImg = srcImg.clone();
@@ -1953,6 +1957,8 @@ void CImage::colorImage(CImage& ret) const
 	ret.resize(getWidth(), getHeight(), CH_RGB);
 
 	cv::cvtColor(srcImg, ret.m_impl->img, cv::COLOR_GRAY2BGR);
+
+	if (desired_row_mem_align != 0) CImage::ROW_MEM_ALIGNMENT(prev_align);
 #endif
 }
 
@@ -2245,6 +2251,30 @@ void CImage::InstallOpenCVAlignedAllocator()
 #if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x300
 	auto& alloc = mrpt_MatAllocator::Instance();
 	cv::Mat::setDefaultAllocator(&alloc);
+#endif
+}
+
+std::size_t CImage::guessRowAlignment() const
+{
+#if MRPT_HAS_OPENCV
+	const size_t rs = getRowStride();
+	const size_t w = m_impl->img.cols;
+	const size_t chs = static_cast<size_t>(getChannelCount());
+	const auto bytes_per_row = chs * w;
+
+	for (std::size_t align_bits = 0; align_bits < 5; align_bits++)
+	{
+		const auto align_value = (1U << align_bits);
+		auto guess_rs = bytes_per_row;
+		if ((guess_rs & (align_value - 1)) != 0)
+			guess_rs = (guess_rs & ~(align_value - 1)) + align_value;
+
+		if (guess_rs == rs) return align_value;
+	}
+
+	THROW_EXCEPTION("Could not guess row memory alignment!");
+#else
+	return 0;
 #endif
 }
 
