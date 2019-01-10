@@ -30,18 +30,14 @@ void fast_corner_detect(
 	// reerve enough corners for every pixel
 	outputs.reserve(I.cols * I.rows);
 	F(img, outputs, barrier);
+	corners.reserve(corners.size() + outputs.size());
 	for (auto& output : outputs)
-	{
-		corners.push_back_fast(output.x << octave, output.y << octave);
-	}
+		corners.emplace_back(output.x << octave, output.y << octave);
 	if (out_feats_index_by_row)
 	{
 		auto& counters = *out_feats_index_by_row;
 		counters.assign(I.rows, 0);
-		for (auto& output : outputs)
-		{
-			counters[output.y]++;
-		}
+		for (auto& output : outputs) counters[output.y]++;
 	}
 }
 

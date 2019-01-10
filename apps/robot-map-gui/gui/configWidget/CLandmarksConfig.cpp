@@ -22,7 +22,6 @@ CLandmarksConfig::CLandmarksConfig()
 	m_ui->TFeatureType->addItem("featNotDefined", TFeatureType::featNotDefined);
 	m_ui->TFeatureType->addItem("featKLT", TFeatureType::featKLT);
 	m_ui->TFeatureType->addItem("featHarris", TFeatureType::featHarris);
-	m_ui->TFeatureType->addItem("featBCD", TFeatureType::featBCD);
 	m_ui->TFeatureType->addItem("featSIFT", TFeatureType::featSIFT);
 	m_ui->TFeatureType->addItem("featSURF", TFeatureType::featSURF);
 	m_ui->TFeatureType->addItem("featBeacon", TFeatureType::featBeacon);
@@ -140,8 +139,6 @@ void CLandmarksConfig::updateConfiguration(
 		m_ui->thresholdKLTOptions->value();
 	mapDefination->likelihoodOpts.SIFT_feat_options.KLTOptions.min_distance =
 		m_ui->min_distanceKLTOptions->value();
-	mapDefination->likelihoodOpts.SIFT_feat_options.KLTOptions.tile_image =
-		m_ui->tile_imageKLTOptions->isChecked();
 
 	mapDefination->likelihoodOpts.SIFT_feat_options.harrisOptions.threshold =
 		m_ui->thresholdHarris->value();
@@ -291,8 +288,6 @@ void CLandmarksConfig::setLikelihoodOpt(
 		likelihoodOpt.SIFT_feat_options.KLTOptions.threshold);
 	m_ui->min_distanceKLTOptions->setValue(
 		likelihoodOpt.SIFT_feat_options.KLTOptions.min_distance);
-	m_ui->tile_imageKLTOptions->setChecked(
-		likelihoodOpt.SIFT_feat_options.KLTOptions.tile_image);
 
 	m_ui->thresholdHarris->setValue(
 		likelihoodOpt.SIFT_feat_options.harrisOptions.threshold);

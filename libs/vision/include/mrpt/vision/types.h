@@ -45,18 +45,17 @@ using TLandmarkLocationsVec = std::vector<mrpt::math::TPoint3D>;
  * algorithm, which is independent of additional descriptors a feature may also
  * have
  */
-enum TFeatureType
+enum TFeatureType : int8_t
 {
 	/** Non-defined feature (also used for Occupancy features) */
 	featNotDefined = -1,
 	/** Kanade-Lucas-Tomasi feature [SHI'94] */
 	featKLT = 0,
 	/** Harris border and corner detector [HARRIS] */
-	featHarris,
-	/** Binary corder detector */
-	featBCD,
+	featHarris = 1,
+	/* featBCD = 2, ==> deprecated in MRPT 2.0 */
 	/** Scale Invariant Feature Transform [LOWE'04] */
-	featSIFT,
+	featSIFT = 3,
 	/** Speeded Up Robust Feature [BAY'06] */
 	featSURF,
 	/** A especial case: this is not an image feature, but a 2D/3D beacon (used
@@ -90,7 +89,7 @@ enum TFeatureType
  * CFeatureExtraction::computeDescriptors to indicate which descriptors are to
  * be computed for features.
  */
-enum TDescriptorType
+enum TDescriptorType : uint16_t
 {
 	/** Used in some methods to mean "any of the present descriptors" */
 	descAny = 0,
@@ -111,7 +110,7 @@ enum TDescriptorType
 	// Remember: If new values are added, also update MRPT_FILL_ENUM below!
 };
 
-enum TFeatureTrackStatus
+enum TFeatureTrackStatus : uint8_t
 {
 	// Init value
 	/** Inactive (right after detection, and before being tried to track) */
@@ -701,7 +700,6 @@ using namespace mrpt::vision;
 MRPT_FILL_ENUM(featNotDefined);
 MRPT_FILL_ENUM(featKLT);
 MRPT_FILL_ENUM(featHarris);
-MRPT_FILL_ENUM(featBCD);
 MRPT_FILL_ENUM(featSIFT);
 MRPT_FILL_ENUM(featSURF);
 MRPT_FILL_ENUM(featBeacon);

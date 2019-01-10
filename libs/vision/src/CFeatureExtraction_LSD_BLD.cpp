@@ -42,9 +42,12 @@ using namespace std;
 
 void CFeatureExtraction::extractFeaturesLSD(
 	const mrpt::img::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
-	unsigned int nDesiredFeatures, const TImageROI& ROI) const
+	unsigned int nDesiredFeatures, const TImageROI& ROI)
 {
 	MRPT_START
+
+	mrpt::system::CTimeLoggerEntry tle(profiler, "extractFeaturesLSD");
+
 #if (!HAVE_OPENCV_WITH_LSD)
 	THROW_EXCEPTION(
 		"This function requires OpenCV modules: xfeatures2d, line_descriptor");
@@ -56,9 +59,8 @@ void CFeatureExtraction::extractFeaturesLSD(
 
 	// Make sure we operate on a gray-scale version of the image:
 	const CImage inImg_gray(inImg, FAST_REF_OR_CONVERT_TO_GRAY);
-
-	const Mat theImg = cvarrToMat(inImg_gray.getAs<IplImage>());
-	/* create a random binary mask */
+	const Mat& theImg = inImg_gray.asCvMatRef();
+	/* create a binary mask */
 	cv::Mat mask = Mat::ones(theImg.size(), CV_8UC1);
 
 	Ptr<LSDDetector> bd = LSDDetector::createLSDDetector();
@@ -174,22 +176,23 @@ void CFeatureExtraction::extractFeaturesLSD(
 	MRPT_END
 }
 
-/************************************************************************************************
- *						internal_computeBLDDescriptors
- ************************************************************************************************/
 void CFeatureExtraction::internal_computeBLDLineDescriptors(
-	const mrpt::img::CImage& in_img, CFeatureList& in_features) const
+	const mrpt::img::CImage& in_img, CFeatureList& in_features)
 {
 #if (!HAVE_OPENCV_WITH_LSD)
 	THROW_EXCEPTION(
 		"This function requires OpenCV modules: xfeatures2d, line_descriptor");
 #else
+
+	mrpt::system::CTimeLoggerEntry tle(
+		profiler, "internal_computeBLDLineDescriptors");
+
 	using namespace cv;
 
 	if (in_features.empty()) return;
 
 	const CImage img_grayscale(in_img, FAST_REF_OR_CONVERT_TO_GRAY);
-	const Mat img = cvarrToMat(img_grayscale.getAs<IplImage>());
+	const Mat& img = img_grayscale.asCvMatRef();
 
 	vector<KeyPoint> cv_feats;  // OpenCV keypoint output vector
 	Mat cv_descs;  // OpenCV descriptor output

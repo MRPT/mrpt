@@ -189,9 +189,9 @@ struct TSimpleFeatureList_templ
 	inline void reserve(size_t N) { m_feats.reserve(N); }
 	inline void push_back(const FEATURE& f) { m_feats.push_back(f); }
 	inline void push_back_fast(const FEATURE& f) { m_feats.push_back(f); }
-	inline void push_back_fast(const int x, const int y)
+	inline void emplace_back(const int x, const int y)
 	{
-		m_feats.push_back(FEATURE(x, y));
+		m_feats.emplace_back(x, y);
 	}
 
 	inline FEATURE& operator[](const std::size_t index)

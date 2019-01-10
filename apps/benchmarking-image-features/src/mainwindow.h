@@ -358,7 +358,6 @@ class MainWindow : public QMainWindow
 		float sigma;  //!< default value = 1.5
 		float radius;  //!< default value = 3
 		float min_distance;  //!< default value = 100, not asked from user
-		bool tile_image;  //!< default value = true
 	} harris_opts;
 
 	/** SIFT Options */

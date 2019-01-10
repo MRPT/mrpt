@@ -36,8 +36,10 @@ struct sort_pred
  ************************************************************************************************/
 void CFeatureExtraction::detectFeatures(
 	const CImage& img, CFeatureList& feats, const unsigned int init_ID,
-	const unsigned int nDesiredFeatures, const TImageROI& ROI) const
+	const unsigned int nDesiredFeatures, const TImageROI& ROI)
 {
+	CTimeLoggerEntry tle(profiler, "detectFeatures");
+
 	switch (options.featsType)
 	{
 		case featHarris:
@@ -50,10 +52,6 @@ void CFeatureExtraction::detectFeatures(
 
 		case featSIFT:
 			extractFeaturesSIFT(img, feats, init_ID, nDesiredFeatures, ROI);
-			break;
-
-		case featBCD:
-			extractFeaturesBCD(img, feats, init_ID, nDesiredFeatures, ROI);
 			break;
 
 		case featSURF:
@@ -100,9 +98,10 @@ void CFeatureExtraction::detectFeatures(
 ************************************************************************************************/
 void CFeatureExtraction::computeDescriptors(
 	const CImage& in_img, CFeatureList& inout_features,
-	TDescriptorType in_descriptor_list) const
+	TDescriptorType in_descriptor_list)
 {
 	MRPT_START
+	CTimeLoggerEntry tle(profiler, "computeDescriptors");
 
 	int nDescComputed = 0;
 
@@ -155,117 +154,6 @@ void CFeatureExtraction::computeDescriptors(
 	MRPT_END
 }
 
-/************************************************************************************************
- *								extractFeaturesBCD *
- ************************************************************************************************/
-void CFeatureExtraction::extractFeaturesBCD(
-	const CImage& img, CFeatureList& feats, unsigned int init_ID,
-	unsigned int nDesiredFeatures, const TImageROI& ROI) const
-{
-	MRPT_UNUSED_PARAM(img);
-	MRPT_UNUSED_PARAM(feats);
-	MRPT_UNUSED_PARAM(init_ID);
-	MRPT_UNUSED_PARAM(nDesiredFeatures);
-	MRPT_UNUSED_PARAM(ROI);
-
-	THROW_EXCEPTION("Not implemented yet!");
-}  // end extractFeaturesBCD
-
-/*------------------------------------------------------------
-					TOptions()
--------------------------------------------------------------*/
-CFeatureExtraction::TOptions::TOptions(const TFeatureType _featsType)
-	: featsType(_featsType)  // Default Method: Kanade-Lucas-Tomasi
-{
-	// General options
-	patchSize = 21;  // Patch size
-	FIND_SUBPIXEL = true;  // Find subpixel
-	useMask = false;  // Use mask for finding features
-	addNewFeatures = false;  // Add to existing feature list
-
-	// Harris Options
-	harrisOptions.k = 0.04f;
-	harrisOptions.radius = 3;  // 15;
-	harrisOptions.threshold =
-		0.005f;  // 0.01f; The lower this is, more features will be found
-	harrisOptions.sigma = 3.0f;
-	harrisOptions.min_distance = 5;  // 10;
-
-	// KLT Options
-	KLTOptions.min_distance = 5;  // 10;
-	KLTOptions.threshold = 0.1f;  // 0.005 ; 0.01f;
-	KLTOptions.radius = 15;  // 3;
-	KLTOptions.tile_image = false;
-
-	// SIFT Options
-	SIFTOptions.implementation = Hess;  // Default implementation: Hess
-
-	// SURF Options
-
-	// BCD Options
-
-	// FAST:
-	FASTOptions.threshold = 20;
-	FASTOptions.nonmax_suppression = true;
-	FASTOptions.use_KLT_response = false;
-	FASTOptions.min_distance = 5;
-
-	// ORB:
-	ORBOptions.extract_patch = false;
-	ORBOptions.min_distance = 0;
-	ORBOptions.n_levels = 8;
-	ORBOptions.scale_factor = 1.2f;
-
-	// SpinImages Options:
-	SpinImagesOptions.hist_size_distance = 10;
-	SpinImagesOptions.hist_size_intensity = 10;
-	SpinImagesOptions.radius = 20;
-	SpinImagesOptions.std_dist = 0.4f;
-	SpinImagesOptions.std_intensity = 10;
-
-	// TPolarImagesOptions
-	PolarImagesOptions.bins_angle = 8;
-	PolarImagesOptions.bins_distance = 6;
-	PolarImagesOptions.radius = 20;
-
-	// LogPolarImagesOptions
-	LogPolarImagesOptions.radius = 30;
-	LogPolarImagesOptions.num_angles =
-		16;  // Log-Polar image patch will have dimensions WxH, with:
-	// W=num_angles,  H= rho_scale * log(radius)
-	LogPolarImagesOptions.rho_scale = 5;
-
-	// added by Raghavender Sahdev
-	// AKAZEOptions
-	AKAZEOptions.diffusivity = 1;  // KAZE::DIFF_PM_G2 maps to 1;
-	// http://docs.opencv.org/trunk/d3/d61/classcv_1_1KAZE.html
-	AKAZEOptions.nOctaveLayers = 4;
-	AKAZEOptions.nOctaves = 4;
-	AKAZEOptions.threshold = 0.001f;
-	AKAZEOptions.descriptor_channels = 3;
-	AKAZEOptions.descriptor_size = 0;
-	AKAZEOptions.descriptor_type =
-		5;  // AKAZE::DESCRIPTOR_MLDB maps to 5 in open cv;
-	// http://docs.opencv.org/trunk/d8/d30/classcv_1_1AKAZE.html
-
-	// LSD Options
-	LSDOptions.scale = 2;
-	LSDOptions.nOctaves = 1;
-
-	// BLD Options
-	// BLDOptions.ksize_ = 11;
-	BLDOptions.numOfOctave = 1;
-	BLDOptions.widthOfBand = 7;
-	BLDOptions.reductionRatio = 2;
-
-	LATCHOptions.bytes = 32;
-	LATCHOptions.half_ssd_size = 3;
-	LATCHOptions.rotationInvariance = true;
-}
-
-/*---------------------------------------------------------------
-					dumpToTextStream
-  ---------------------------------------------------------------*/
 void CFeatureExtraction::TOptions::dumpToTextStream(std::ostream& out) const
 {
 	out << mrpt::format(
