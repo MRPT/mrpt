@@ -28,16 +28,6 @@ using namespace std::string_literals;
 const auto tstImgFileColor =
 	mrpt::UNITTEST_BASEDIR + "/samples/img_basic_example/frame_color.jpg"s;
 
-// Expect image rows to be aligned:
-static void expect_rows_aligned(
-	const mrpt::img::CImage& a, const std::string& s = std::string())
-{
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x300
-	for (unsigned int y = 0; y < a.getHeight(); y++)
-		EXPECT_TRUE(mrpt::system::is_aligned<16>(a.ptrLine<uint8_t>(y))) << s;
-#endif
-}
-
 // Generate random img:
 static void fillImagePseudoRandom(uint32_t seed, mrpt::img::CImage& img)
 {
@@ -85,7 +75,6 @@ static void CtorSized_gray(unsigned int w, unsigned int h)
 	EXPECT_EQ(img.getChannelCount(), 1U);
 	EXPECT_EQ(img.getPixelDepth(), PixelDepth::D8U);
 	EXPECT_FALSE(img.isColor());
-	expect_rows_aligned(img, mrpt::format("CtorSized_gray w=%u h=%u", w, h));
 }
 
 TEST(CImage, CtorSized)
@@ -98,31 +87,10 @@ TEST(CImage, CtorSized)
 		EXPECT_EQ(img.getChannelCount(), 3U);
 		EXPECT_EQ(img.getPixelDepth(), PixelDepth::D8U);
 		EXPECT_TRUE(img.isColor());
-		expect_rows_aligned(img);
 	}
 	for (unsigned w = 64; w < 70; w++)
 	{
 		CtorSized_gray(w, 48);
-	}
-}
-
-TEST(CImage, DeepCopyStillMemAligned)
-{
-	using namespace mrpt::img;
-	unsigned h = 70;
-	for (unsigned w = 64; w < 70; w++)
-	{
-		CImage a(w, h, CH_GRAY);
-		EXPECT_EQ(a.getWidth(), w);
-		EXPECT_EQ(a.getHeight(), h);
-		expect_rows_aligned(
-			a, mrpt::format("DeepCopyStillMemAligned (a) w=%u h=%u", w, h));
-
-		CImage b = a.makeDeepCopy();
-		EXPECT_EQ(b.getWidth(), w);
-		EXPECT_EQ(b.getHeight(), h);
-		expect_rows_aligned(
-			b, mrpt::format("DeepCopyStillMemAligned (b) w=%u h=%u", w, h));
 	}
 }
 
@@ -264,8 +232,6 @@ TEST(CImage, ConvertGray)
 		EXPECT_EQ(b.getWidth(), a.getWidth());
 		EXPECT_EQ(b.getHeight(), a.getHeight());
 		EXPECT_FALSE(b.isColor());
-
-		expect_rows_aligned(b);
 	}
 }
 
@@ -304,8 +270,6 @@ TEST(CImage, HalfAndDouble)
 	a.at<uint8_t>(1, 0) = 0x80;
 	a.at<uint8_t>(1, 1) = 0x80;
 
-	expect_rows_aligned(a);
-
 	// Half:
 	{
 		const CImage imgH = a.scaleHalf(mrpt::img::IMG_INTERP_NN);
@@ -313,8 +277,6 @@ TEST(CImage, HalfAndDouble)
 		EXPECT_EQ(imgH.getHeight(), a.getHeight() / 2);
 		EXPECT_EQ(imgH.isColor(), a.isColor());
 		EXPECT_EQ(imgH.at<uint8_t>(0, 0), a.at<uint8_t>(0, 0));
-
-		expect_rows_aligned(imgH);
 	}
 	// Double:
 	{
@@ -322,8 +284,6 @@ TEST(CImage, HalfAndDouble)
 		EXPECT_EQ(imgD.getWidth(), a.getWidth() * 2);
 		EXPECT_EQ(imgD.getHeight(), a.getHeight() * 2);
 		EXPECT_EQ(imgD.isColor(), a.isColor());
-
-		expect_rows_aligned(imgD);
 	}
 }
 TEST(CImage, getChannelsOrder)
@@ -389,8 +349,6 @@ TEST(CImage, ScaleImage)
 	CImage a;
 	bool load_ok = a.loadFromFile(tstImgFileColor);
 	EXPECT_TRUE(load_ok);
-
-	expect_rows_aligned(a);
 
 	{
 		CImage b;
@@ -516,7 +474,6 @@ TEST(CImage, LoadAndSave)
 			bool load_ok = b.loadFromFile(f);
 			EXPECT_TRUE(load_ok) << tstName;
 
-			expect_rows_aligned(b, tstName);
 			if (!expect_identical(a, b, tstName))
 			{
 				GTEST_FAIL() << "a:\n"
