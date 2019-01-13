@@ -12,9 +12,11 @@
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/containers/ts_hash_map.h>
-#include <vector>
-#include <stack>
+#include <deque>
 #include <map>
+#include <optional>
+#include <stack>
+#include <vector>
 
 namespace mrpt::system
 {
@@ -44,6 +46,7 @@ class CTimeLogger : public mrpt::system::COutputLogger
 	CTicTac m_tictac;
 	bool m_enabled;
 	std::string m_name;
+	bool m_keep_whole_history{false};
 
 	//! Data of all the calls:
 	struct TCallData
@@ -54,6 +57,7 @@ class CTimeLogger : public mrpt::system::COutputLogger
 		double min_t{0}, max_t{0}, mean_t{0}, last_t{0};
 		std::stack<double, std::vector<double>> open_calls;
 		bool has_time_units{true};
+		std::optional<std::deque<double>> whole_history{};
 	};
 
    protected:
@@ -70,22 +74,22 @@ class CTimeLogger : public mrpt::system::COutputLogger
 	 * overall execution time (in seconds) \sa getStats */
 	struct TCallStats
 	{
-		size_t n_calls;
-		double min_t, max_t, mean_t, total_t, last_t;
+		size_t n_calls{0};
+		double min_t{0}, max_t{0}, mean_t{0}, total_t{0}, last_t{0};
 	};
 
 	CTimeLogger(
-		bool enabled = true,
-		const std::string& name = "");  //! Default constructor
+	    bool enabled = true, const std::string& name = "",
+	    const bool keep_whole_history = false);
 	/** Destructor */
 	~CTimeLogger() override;
 
 	// We must define these 4 because of the definition of a virtual dtor
 	// (compiler will not generate the defaults)
-	CTimeLogger(const CTimeLogger& o);
-	CTimeLogger& operator=(const CTimeLogger& o);
-	CTimeLogger(CTimeLogger&& o);
-	CTimeLogger& operator=(CTimeLogger&& o);
+	CTimeLogger(const CTimeLogger& o) = default;
+	CTimeLogger& operator=(const CTimeLogger& o) = default;
+	CTimeLogger(CTimeLogger&& o) = default;
+	CTimeLogger& operator=(CTimeLogger&& o) = default;
 
 	/** Dump all stats to a multi-line text string. \sa dumpAllStats,
 	 * saveToCVSFile */
@@ -103,11 +107,19 @@ class CTimeLogger : public mrpt::system::COutputLogger
 	void enable(bool enabled = true) { m_enabled = enabled; }
 	void disable() { m_enabled = false; }
 	bool isEnabled() const { return m_enabled; }
+
+	void enableKeepWholeHistory(bool enable = true)
+	{
+		m_keep_whole_history = enable;
+	}
+	bool isEnabledKeepWholeHistory() const { return m_keep_whole_history; }
+
 	/** Dump all stats to a Comma Separated Values (CSV) file. \sa dumpAllStats
 	 */
 	void saveToCSVFile(const std::string& csv_file) const;
 	void registerUserMeasure(const char* event_name, const double value);
 
+	const std::string& getName() const { return m_name; }
 	void setName(const std::string& name) { m_name = name; }
 	/** Start of a named section \sa enter */
 	inline void enter(const char* func_name)
@@ -151,6 +163,18 @@ struct CTimeLoggerEntry
 	~CTimeLoggerEntry();
 	CTimeLogger& m_logger;
 	const char* m_section_name;
+};
+
+/** A helper class to save CSV stats upon self destruction, for example, at the
+ * end of a program run. The target file will be named after timelogger's name.
+ * \ingroup mrpt_system_grp
+ */
+struct CTimeLoggerSaveAtDtor
+{
+	mrpt::system::CTimeLogger& m_tm;
+
+	CTimeLoggerSaveAtDtor(mrpt::system::CTimeLogger& tm) : m_tm(tm) {}
+	~CTimeLoggerSaveAtDtor();
 };
 
 /** @name Auxiliary stuff for the global profiler used in MRPT_START / MRPT_END

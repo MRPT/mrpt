@@ -37,7 +37,7 @@ struct MyGlobalProfiler : public mrpt::system::CTimeLogger
 	MyGlobalProfiler& operator=(const MyGlobalProfiler&) = delete;
 	MyGlobalProfiler& operator=(MyGlobalProfiler&&) = delete;
 };
-MyGlobalProfiler global_profiler;
+static MyGlobalProfiler global_profiler;
 
 namespace mrpt::system
 {
@@ -53,8 +53,12 @@ void global_profiler_leave(const char* func_name) noexcept
 }  // namespace mrpt::system
 
 CTimeLogger::CTimeLogger(
-	bool enabled /*=true*/, const std::string& name /*=""*/)
-	: COutputLogger("CTimeLogger"), m_tictac(), m_enabled(enabled), m_name(name)
+    bool enabled, const std::string& name, const bool keep_whole_history)
+    : COutputLogger("CTimeLogger"),
+      m_tictac(),
+      m_enabled(enabled),
+      m_name(name),
+      m_keep_whole_history(keep_whole_history)
 {
 	m_tictac.Tic();
 }
@@ -64,37 +68,6 @@ CTimeLogger::~CTimeLogger()
 	// Dump all stats:
 	if (!m_data.empty())  // If logging is disabled, do nothing...
 		dumpAllStats();
-}
-
-CTimeLogger::CTimeLogger(const CTimeLogger& o)
-	: COutputLogger(o),
-	  m_enabled(o.m_enabled),
-	  m_name(o.m_name),
-	  m_data(o.m_data)
-{
-}
-CTimeLogger& CTimeLogger::operator=(const CTimeLogger& o)
-{
-	COutputLogger::operator=(o);
-	m_enabled = o.m_enabled;
-	m_name = o.m_name;
-	m_data = o.m_data;
-	return *this;
-}
-CTimeLogger::CTimeLogger(CTimeLogger&& o)
-	: COutputLogger(o),
-	  m_enabled(o.m_enabled),
-	  m_name(o.m_name),
-	  m_data(o.m_data)
-{
-}
-CTimeLogger& CTimeLogger::operator=(CTimeLogger&& o)
-{
-	COutputLogger::operator=(o);
-	m_enabled = o.m_enabled;
-	m_name = o.m_name;
-	m_data = o.m_data;
-	return *this;
 }
 
 void CTimeLogger::clear(bool deep_clear)
@@ -122,7 +95,7 @@ std::string aux_format_string_multilines(const std::string& s, const size_t len)
 void CTimeLogger::getStats(std::map<std::string, TCallStats>& out_stats) const
 {
 	out_stats.clear();
-	for (const auto e : m_data)
+	for (const auto& e : m_data)
 	{
 		TCallStats& cs = out_stats[e.first];
 		cs.min_t = e.second.min_t;
@@ -228,15 +201,27 @@ std::string CTimeLogger::getStatsAsText(const size_t column_width) const
 void CTimeLogger::saveToCSVFile(const std::string& csv_file) const
 {
 	std::string s;
-	s += "FUNCTION, #CALLS, LAST.T, MIN.T, MEAN.T, MAX.T, TOTAL.T\n";
+	s += "FUNCTION, #CALLS, LAST.T, MIN.T, MEAN.T, MAX.T, TOTAL.T [, "
+	     "WHOLE_HISTORY]\n";
 	for (const auto& i : m_data)
 	{
 		s += format(
-			"\"%s\",\"%7u\",\"%e\",\"%e\",\"%e\",\"%e\",\"%e\"\n",
+		    "\"%s\",\"%7u\",\"%e\",\"%e\",\"%e\",\"%e\",\"%e\"",
 			i.first.c_str(), static_cast<unsigned int>(i.second.n_calls),
 			i.second.last_t, i.second.min_t,
 			i.second.n_calls ? i.second.mean_t / i.second.n_calls : 0,
 			i.second.max_t, i.second.mean_t);
+
+		if (i.second.whole_history)
+		{
+			const auto& wh = i.second.whole_history.value();
+			for (const double v : wh)
+			{
+				s += ", ";
+				s += std::to_string(v);
+			}
+		}
+		s += "\n";
 	}
 	std::ofstream(csv_file) << s;
 }
@@ -279,6 +264,14 @@ double CTimeLogger::do_leave(const char* func_name)
 		{
 			mrpt::keep_min(d.min_t, At);
 			mrpt::keep_max(d.max_t, At);
+		}
+		if (m_keep_whole_history)
+		{
+			// Init the first time:
+			if (!d.whole_history)
+				d.whole_history = decltype(d.whole_history)::value_type();
+			// Append to history:
+			d.whole_history.value().push_back(At);
 		}
 		return At;
 	}
@@ -336,3 +329,12 @@ CTimeLoggerEntry::CTimeLoggerEntry(
 	m_logger.enter(m_section_name);
 }
 CTimeLoggerEntry::~CTimeLoggerEntry() { m_logger.leave(m_section_name); }
+
+CTimeLoggerSaveAtDtor::~CTimeLoggerSaveAtDtor()
+{
+	using namespace std::string_literals;
+	const auto name = m_tm.getName() + ".csv"s;
+	m_tm.logStr(
+	    LVL_INFO, "[CTimeLoggerSaveAtDtor] Saving stats to: `"s + name + "`"s);
+	m_tm.saveToCSVFile(name);
+}
