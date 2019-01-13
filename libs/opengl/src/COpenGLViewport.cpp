@@ -269,19 +269,6 @@ void COpenGLViewport::render(
 					glPixelZoom(vw / float(ortho_w), -vh / float(ortho_h));
 
 					// Prepare image data types:
-					auto row_align = img->guessRowAlignment();
-					if (row_align > 8)
-					{
-						// Not supported by OpenGL: we need to make a copy of
-						// the image!
-						const auto prev_align =
-							mrpt::img::CImage::ROW_MEM_ALIGNMENT();
-						mrpt::img::CImage::ROW_MEM_ALIGNMENT(1);
-						*img = img->makeDeepCopy();
-						mrpt::img::CImage::ROW_MEM_ALIGNMENT(prev_align);
-						row_align = 1;
-					}
-
 					const GLenum img_type = GL_UNSIGNED_BYTE;
 					const int nBytesPerPixel = img->isColor() ? 3 : 1;
 					// Reverse RGB <-> BGR order?
@@ -292,7 +279,7 @@ void COpenGLViewport::render(
 											: GL_LUMINANCE;
 
 					// Send image data to OpenGL:
-					glPixelStorei(GL_UNPACK_ALIGNMENT, row_align);
+					glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 					glPixelStorei(GL_UNPACK_ROW_LENGTH, img->getWidth());
 					glDrawPixels(
 						img_w, img_h, img_format, img_type,

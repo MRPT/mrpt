@@ -41,6 +41,8 @@ void image_SSSE3_scale_half_3c8u(
 	const uint8_t* in, uint8_t* out, int w, int h, size_t step_in,
 	size_t step_out)
 {
+	MRPT_TODO("Fix: allow unaligned");
+
 	// clang-format off
 #if defined(_MSC_VER)
 #pragma warning( disable : 4309 ) // Yes, we know 0x80 is a "negative char"
@@ -99,6 +101,8 @@ void private_image_SSSE3_rgb_or_bgr_to_gray_8u(
 	const uint8_t* in, uint8_t* out, int w, int h, size_t step_in,
 	size_t step_out)
 {
+	MRPT_TODO("Fix: allow unaligned");
+
 	// clang-format off
 #if defined(_MSC_VER)
 #pragma warning( disable : 4309 ) // Yes, we know 0x80 is a "negative char"
@@ -238,6 +242,8 @@ void image_SSSE3_bgr_to_gray_8u(
 	const uint8_t* in, uint8_t* out, int w, int h, size_t step_in,
 	size_t step_out)
 {
+	MRPT_TODO("Fix: allow unaligned");
+
 	ASSERT_(mrpt::system::is_aligned<16>(in));
 	ASSERT_(mrpt::system::is_aligned<16>(out));
 	ASSERTMSG_((step_in & 0x0f) == 0, "step of input image must be 16*k");

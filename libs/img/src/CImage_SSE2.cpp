@@ -44,6 +44,8 @@ void image_SSE2_scale_half_1c8u(
 	const uint8_t* in, uint8_t* out, int w, int h, size_t step_in,
 	size_t step_out)
 {
+	MRPT_TODO("Fix: allow unaligned");
+
 	ASSERT_(mrpt::system::is_aligned<16>(in));
 	ASSERT_(mrpt::system::is_aligned<16>(out));
 	ASSERTMSG_((step_in & 0x0f) == 0, "step of input image must be 16*k");
@@ -92,6 +94,8 @@ void image_SSE2_scale_half_smooth_1c8u(
 	const uint8_t* in, uint8_t* out, int w, int h, size_t step_in,
 	size_t step_out)
 {
+	MRPT_TODO("Fix: allow unaligned");
+
 	ASSERT_(mrpt::system::is_aligned<16>(in));
 	ASSERT_(mrpt::system::is_aligned<16>(out));
 	ASSERTMSG_((step_in & 0x0f) == 0, "step of input image must be 16*k");
