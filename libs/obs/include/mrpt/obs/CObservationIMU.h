@@ -30,10 +30,16 @@ enum TIMUDataIndex
 	IMU_Z_ACC,
 	/** yaw angular velocity (local/vehicle frame) (rad/sec) */
 	IMU_YAW_VEL,
+	/** angular velocity - z (local/vehicle frame) (rad/sec) */
+	IMU_WZ = IMU_YAW_VEL,
 	/** pitch angular velocity (local/vehicle frame) (rad/sec) */
 	IMU_PITCH_VEL,
+	/** angular velocity - y (local/vehicle frame) (rad/sec) */
+	IMU_WY = IMU_PITCH_VEL,
 	/** roll angular velocity (local/vehicle frame) (rad/sec) */
 	IMU_ROLL_VEL,
+	/** angular velocity - x (local/vehicle frame) (rad/sec) */
+	IMU_WX = IMU_ROLL_VEL,
 	/** x-axis velocity (global/navigation frame) (m/sec) */
 	IMU_X_VEL,
 	/** y-axis velocity (global/navigation  frame) (m/sec) */
