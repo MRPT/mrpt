@@ -19,8 +19,6 @@ class CTicTac
    public:
 	/** Default constructor. Implicitly calls Tic() */
 	CTicTac() noexcept;
-	CTicTac(const CTicTac&) = delete;
-	CTicTac& operator=(const CTicTac&) = delete;
 	/** Starts the stopwatch. \sa Tac() */
 	void Tic() noexcept;
 	/** Stops the stopwatch.  \return Returns the ellapsed time in seconds.
