@@ -37,3 +37,22 @@ extern "C"
 #include <smmintrin.h>
 #endif
 #endif
+
+// Helpers:
+#if MRPT_HAS_SSE2
+template <bool ALIGNED>
+__m128i mm_load_si128(__m128i const* ptr);
+
+template <>
+inline __m128i mm_load_si128<true>(__m128i const* ptr)
+{
+	return _mm_load_si128(ptr);
+}
+
+template <>
+inline __m128i mm_load_si128<false>(__m128i const* ptr)
+{
+	return _mm_loadu_si128(ptr);
+}
+
+#endif

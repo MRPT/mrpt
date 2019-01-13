@@ -71,7 +71,6 @@ void image_SSE2_scale_half_1c8u(
 		{
 			auto inp = reinterpret_cast<const __m128i*>(in);
 			uint8_t* outp = out;
-
 			const __m128i x = _mm_and_si128(_mm_load_si128(inp++), m);
 			auto o = reinterpret_cast<__m128i*>(outp);
 			_mm_storel_epi64(o, _mm_packus_epi16(x, x));
