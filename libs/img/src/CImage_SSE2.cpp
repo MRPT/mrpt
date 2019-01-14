@@ -51,16 +51,13 @@ void image_SSE2_scale_half_1c8u(
 	ASSERTMSG_((step_in & 0x0f) == 0, "step of input image must be 16*k");
 	ASSERTMSG_((step_out & 0x0f) == 0, "step of output image must be 16*k");
 
+	SSE_DISABLE_WARNINGS
 	// clang-format off
-#if defined(_MSC_VER)
-#pragma warning( disable : 4309 ) // Yes, we know 0x80 is a "negative char"
-#endif
+
 	const __m128i m = _mm_set_epi8(0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff);
 
 	// clang-format on
-#if defined(_MSC_VER)
-#pragma warning(default : 4309)
-#endif
+	SSE_RESTORE_SIGN_WARNINGS
 
 	int sw = w >> 4;
 	int sh = h >> 1;
@@ -100,16 +97,13 @@ void image_SSE2_scale_half_smooth_1c8u(
 	ASSERTMSG_((step_in & 0x0f) == 0, "step of input image must be 16*k");
 	ASSERTMSG_((step_out & 0x0f) == 0, "step of output image must be 16*k");
 
+	SSE_DISABLE_WARNINGS
 	// clang-format off
-#if defined(_MSC_VER)
-#pragma warning( disable : 4309 ) // Yes, we know 0x80 is a "negative char"
-#endif
+
 	const __m128i m = _mm_set_epi8(0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff);
 
 	// clang-format on
-#if defined(_MSC_VER)
-#pragma warning(default : 4309)
-#endif
+	SSE_RESTORE_SIGN_WARNINGS
 
 	int sw = w >> 4;
 	int sh = h >> 1;

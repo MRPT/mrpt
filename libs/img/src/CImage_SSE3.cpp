@@ -43,19 +43,16 @@ void image_SSSE3_scale_half_3c8u(
 {
 	MRPT_TODO("Fix: allow unaligned");
 
+	SSE_DISABLE_WARNINGS
 	// clang-format off
-#if defined(_MSC_VER)
-#pragma warning( disable : 4309 ) // Yes, we know 0x80 is a "negative char"
-#endif
+
 	const __m128i m0 = _mm_set_epi8(0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x0E, 0x0D, 0x0C, 0x08, 0x07, 0x06, 0x02, 0x01, 0x00);
 	const __m128i m1 = _mm_set_epi8(0x0E, 0x0A, 0x09, 0x08, 0x04, 0x03, 0x02, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80);
 	const __m128i m2 = _mm_set_epi8(0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x0C, 0x0B, 0x0A, 0x06, 0x05, 0x04, 0x00, 0x80);
 	const __m128i m3 = _mm_set_epi8(0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x0F);
 
 	// clang-format on
-#if defined(_MSC_VER)
-#pragma warning(default : 4309)
-#endif
+	SSE_RESTORE_SIGN_WARNINGS
 
 	const int sw = w >> 4;  // This are the number of 3*16 blocks in each row
 	const int sh = h >> 1;
@@ -103,10 +100,8 @@ void private_image_SSSE3_rgb_or_bgr_to_gray_8u(
 {
 	MRPT_TODO("Fix: allow unaligned");
 
+	SSE_DISABLE_WARNINGS
 	// clang-format off
-#if defined(_MSC_VER)
-#pragma warning( disable : 4309 ) // Yes, we know 0x80 is a "negative char"
-#endif
 
 	// Masks:                            0       1    2    3     4      5     6    7     8      9     A     B      C    D    E     F
 	// reds[0-7] from D0
@@ -141,9 +136,7 @@ void private_image_SSSE3_rgb_or_bgr_to_gray_8u(
 	const __m128i mask_low = _mm_setr_epi8(0x01, 0x03, 0x05, 0x07, 0x09, 0x0B, 0x0D, 0x0F, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80);
 
 	// clang-format on
-#if defined(_MSC_VER)
-#pragma warning(default : 4309)
-#endif
+	SSE_RESTORE_SIGN_WARNINGS
 
 	const __m128i m0 = IS_RGB ? mask4 : mask0;
 	const __m128i m1 = IS_RGB ? mask5 : mask1;
