@@ -54,12 +54,12 @@ void global_profiler_leave(const char* func_name) noexcept
 }  // namespace mrpt::system
 
 CTimeLogger::CTimeLogger(
-    bool enabled, const std::string& name, const bool keep_whole_history)
-    : COutputLogger("CTimeLogger"),
-      m_tictac(),
-      m_enabled(enabled),
-      m_name(name),
-      m_keep_whole_history(keep_whole_history)
+	bool enabled, const std::string& name, const bool keep_whole_history)
+	: COutputLogger("CTimeLogger"),
+	  m_tictac(),
+	  m_enabled(enabled),
+	  m_name(name),
+	  m_keep_whole_history(keep_whole_history)
 {
 	m_tictac.Tic();
 }
@@ -203,11 +203,11 @@ void CTimeLogger::saveToCSVFile(const std::string& csv_file) const
 {
 	std::string s;
 	s += "FUNCTION, #CALLS, LAST.T, MIN.T, MEAN.T, MAX.T, TOTAL.T [, "
-	     "WHOLE_HISTORY]\n";
+		 "WHOLE_HISTORY]\n";
 	for (const auto& i : m_data)
 	{
 		s += format(
-		    "\"%s\",\"%7u\",\"%e\",\"%e\",\"%e\",\"%e\",\"%e\"",
+			"\"%s\",\"%7u\",\"%e\",\"%e\",\"%e\",\"%e\",\"%e\"",
 			i.first.c_str(), static_cast<unsigned int>(i.second.n_calls),
 			i.second.last_t, i.second.min_t,
 			i.second.n_calls ? i.second.mean_t / i.second.n_calls : 0,
@@ -338,6 +338,6 @@ CTimeLoggerSaveAtDtor::~CTimeLoggerSaveAtDtor()
 	name = fileNameStripInvalidChars(name);
 
 	m_tm.logStr(
-	    LVL_INFO, "[CTimeLoggerSaveAtDtor] Saving stats to: `"s + name + "`"s);
+		LVL_INFO, "[CTimeLoggerSaveAtDtor] Saving stats to: `"s + name + "`"s);
 	m_tm.saveToCSVFile(name);
 }
