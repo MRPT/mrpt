@@ -49,15 +49,8 @@ IMPLEMENTS_SERIALIZABLE(CImage, CSerializable, mrpt::img)
 static bool DISABLE_ZIP_COMPRESSION_value = false;
 static bool DISABLE_JPEG_COMPRESSION_value = true;
 static int SERIALIZATION_JPEG_QUALITY_value = 95;
-static std::size_t ROW_MEM_ALIGNMENT_value = 16;
 static std::string IMAGES_PATH_BASE(".");
 
-void CImage::ROW_MEM_ALIGNMENT(std::size_t a)
-{
-	ASSERTMSG_(a > 0 && (a & (a - 1)) == 0, "alignment must be a power of 2");
-	ROW_MEM_ALIGNMENT_value = a;
-}
-std::size_t CImage::ROW_MEM_ALIGNMENT() { return ROW_MEM_ALIGNMENT_value; }
 void CImage::DISABLE_ZIP_COMPRESSION(bool val)
 {
 	DISABLE_ZIP_COMPRESSION_value = val;
@@ -115,7 +108,7 @@ static int interpolationMethod2Cv(TInterpolationMethod i)
 }
 
 template <typename RET = uint32_t>
-RET pixelDepth2CvDepth(PixelDepth d)
+constexpr RET pixelDepth2CvDepth(PixelDepth d)
 {
 	// clang-format off
 	switch (d)
@@ -166,114 +159,10 @@ static PixelDepth cvDepth2PixelDepth(int64_t d)
 	return PixelDepth::D8U;
 }
 
-#if MRPT_OPENCV_VERSION_NUM >= 0x300
-// Custom memory allocator for cv::Mat matrices in MRPT:
-// The goal is to ensure that all image **rows** start at 16-byte aligned
-// memory, to enable the application of SSE* code.
-// JLBC, 3/Jan/2019
-class mrpt_MatAllocator : public cv::MatAllocator
-{
-   public:
-	static mrpt_MatAllocator& Instance()
-	{
-		static mrpt_MatAllocator o;
-		return o;
-	}
-
-#if MRPT_OPENCV_VERSION_NUM >= 0x400
-	using AccessFlag = cv::AccessFlag;
-#else
-	using AccessFlag = int;
-#endif
-
-	cv::UMatData* allocate(
-		int dims, const int* sizes, int type, void* data0, size_t* step,
-		AccessFlag /*flags*/, cv::UMatUsageFlags /*usageFlags*/) const override
-	{
-		using namespace cv;
-		// Start with the size of each "pixel" (typ: 1 or 3)
-		size_t total = CV_ELEM_SIZE(type);
-
-		for (int i = dims - 1; i >= 0; i--)
-		{
-			if (step)
-			{
-				// If we are using user-provided data buffer, respect its
-				// step:
-				if (data0 && step[i] != CV_AUTOSTEP)
-				{
-					CV_Assert(total <= step[i]);
-					total = step[i];
-				}
-				else
-				{
-					step[i] = total;
-				}
-			}
-			total *= sizes[i];
-			// In the "dim-1" dimension (rows), ensure we have a
-			// multiple of 16:
-			if (i == dims - 1)
-			{
-				if ((total & (ROW_MEM_ALIGNMENT_value - 1)) != 0)
-				{
-					total = (total & ~(ROW_MEM_ALIGNMENT_value - 1)) +
-							ROW_MEM_ALIGNMENT_value;
-					// "total" will become step[0] in the next "for" iter
-				}
-			}
-		}
-		uchar* data = data0 ? static_cast<uchar*>(data0)
-							: static_cast<uchar*>(cv::fastMalloc(total));
-		UMatData* u = new UMatData(this);
-		u->data = u->origdata = data;
-		u->size = total;
-		if (data0) u->flags |= UMatData::USER_ALLOCATED;
-
-		return u;
-	}
-
-	bool allocate(
-		cv::UMatData* u, AccessFlag /*accessFlags*/,
-		cv::UMatUsageFlags /*usageFlags*/) const override
-	{
-		if (!u) return false;
-		return true;
-	}
-
-	void deallocate(cv::UMatData* u) const override
-	{
-		if (!u) return;
-
-		CV_Assert(u->urefcount == 0);
-		CV_Assert(u->refcount == 0);
-		if (!(u->flags & cv::UMatData::USER_ALLOCATED))
-		{
-			cv::fastFree(u->origdata);
-			u->origdata = nullptr;
-		}
-		delete u;
-	}
-};
-#endif  // MRPT_OPENCV_VERSION_NUM>=0x300
-
 #endif  // MRPT_HAS_OPENCV
 
 // Default ctor
-CImage::CImage() : m_impl(mrpt::make_impl<CImage::Impl>())
-{
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x300
-	static bool init_cv_alloc = false;
-
-	// Replace default OpenCV memory allocator with MRPT custom version
-	// to enable memory pooling and/or 16-byte aligned rows in images.
-	if (!init_cv_alloc)
-	{
-		init_cv_alloc = true;
-		InstallOpenCVAlignedAllocator();
-	}
-#endif
-}
+CImage::CImage() : m_impl(mrpt::make_impl<CImage::Impl>()) {}
 
 // Ctor with size
 CImage::CImage(
@@ -391,7 +280,9 @@ void CImage::resize(
 	alloc_tims.enter(sLog.c_str());
 #endif
 
-	// Use custom allocator to ensure mem aligned rows:
+	static_assert(
+		pixelDepth2CvDepth<int>(PixelDepth::D8U) + CV_8UC(3) == CV_8UC3);
+
 	m_impl->img = cv::Mat(
 		static_cast<int>(height), static_cast<int>(width),
 		pixelDepth2CvDepth<int>(depth) + ((nChannels - 1) << CV_CN_SHIFT));
@@ -434,20 +325,6 @@ bool CImage::loadFromFile(const std::string& fileName, int isColor)
 	m_impl->img = cv::cvarrToMat(newImg);
 #endif
 	if (m_impl->img.empty()) return false;
-
-#if MRPT_OPENCV_VERSION_NUM >= 0x300
-	// Our custom cvMat allocator should ensure that the loaded image
-	// has aligned rows:
-	if ((m_impl->img.step[0] & (ROW_MEM_ALIGNMENT_value - 1)) != 0)
-	{
-		std::cerr << "[CImage::loadFromFile()] Performance warning: OpenCV "
-					 "load returned an unaligned image. Making a copy.\n";
-		// Make a copy to ensure alignment (via our custom mem allocator):
-		cv::Mat c(m_impl->img.size(), m_impl->img.type());
-		m_impl->img.copyTo(c);
-		m_impl->img = std::move(c);
-	}
-#endif
 
 	return true;
 #else
@@ -1087,17 +964,14 @@ static bool my_img_to_grayscale(const cv::Mat& src, cv::Mat& dest)
 
 // If possible, use SSE optimized version:
 #if MRPT_HAS_SSE3
-	if (is_aligned<16>(src.data) && ((src.step[0] & 0x0f) == 0) &&
-		((dest.step[0] & 0x0f) == 0))
+	if ((src.step[0] & 0x0f) == 0 && (dest.step[0] & 0x0f) == 0)
 	{
-		ASSERT_(is_aligned<16>(dest.data));
 		image_SSSE3_bgr_to_gray_8u(
 			src.ptr<uint8_t>(), dest.ptr<uint8_t>(), src.cols, src.rows,
 			src.step[0], dest.step[0]);
 		return true;
 	}
 #endif
-
 	// OpenCV Method:
 	cv::cvtColor(src, dest, CV_BGR2GRAY);
 	return false;
@@ -1141,35 +1015,31 @@ bool CImage::scaleHalf(CImage& out, TInterpolationMethod interp) const
 	auto& img_out = out.m_impl->img;
 
 	// If possible, use SSE optimized version:
-	if (is_aligned<16>(img.data) && is_aligned<16>(img_out.data) &&
-		((img.step[0] & 0x0f) == 0) && ((img_out.step[0] & 0x0f) == 0))
-	{
 #if MRPT_HAS_SSE3
-		if (img.channels() == 3 && interp == IMG_INTERP_NN)
+	if (img.channels() == 3 && interp == IMG_INTERP_NN)
+	{
+		image_SSSE3_scale_half_3c8u(
+			img.data, img_out.data, w, h, img.step[0], img_out.step[0]);
+		return true;
+	}
+#endif
+#if MRPT_HAS_SSE2
+	if (img.channels() == 1)
+	{
+		if (interp == IMG_INTERP_NN)
 		{
-			image_SSSE3_scale_half_3c8u(
+			image_SSE2_scale_half_1c8u(
 				img.data, img_out.data, w, h, img.step[0], img_out.step[0]);
 			return true;
 		}
-#endif
-#if MRPT_HAS_SSE2
-		if (img.channels() == 1)
+		else if (interp == IMG_INTERP_LINEAR)
 		{
-			if (interp == IMG_INTERP_NN)
-			{
-				image_SSE2_scale_half_1c8u(
-					img.data, img_out.data, w, h, img.step[0], img_out.step[0]);
-				return true;
-			}
-			else if (interp == IMG_INTERP_LINEAR)
-			{
-				image_SSE2_scale_half_smooth_1c8u(
-					img.data, img_out.data, w, h, img.step[0], img_out.step[0]);
-				return true;
-			}
+			image_SSE2_scale_half_smooth_1c8u(
+				img.data, img_out.data, w, h, img.step[0], img_out.step[0]);
+			return true;
 		}
-#endif
 	}
+#endif
 
 	// Fall back to slow method:
 	cv::resize(
@@ -1930,14 +1800,14 @@ bool CImage::drawChessboardCorners(
 #endif
 }
 
-CImage CImage::colorImage(std::size_t desired_row_mem_align) const
+CImage CImage::colorImage() const
 {
 	CImage ret;
-	colorImage(ret, desired_row_mem_align);
+	colorImage(ret);
 	return ret;
 }
 
-void CImage::colorImage(CImage& ret, std::size_t desired_row_mem_align) const
+void CImage::colorImage(CImage& ret) const
 {
 #if MRPT_HAS_OPENCV
 	if (this->isColor())
@@ -1946,10 +1816,6 @@ void CImage::colorImage(CImage& ret, std::size_t desired_row_mem_align) const
 		return;
 	}
 
-	const auto prev_align = CImage::ROW_MEM_ALIGNMENT();
-	if (desired_row_mem_align != 0)
-		CImage::ROW_MEM_ALIGNMENT(desired_row_mem_align);
-
 	auto srcImg = m_impl->img;
 	// Detect in-place op. and make deep copy:
 	if (srcImg.data == ret.m_impl->img.data) srcImg = srcImg.clone();
@@ -1957,8 +1823,6 @@ void CImage::colorImage(CImage& ret, std::size_t desired_row_mem_align) const
 	ret.resize(getWidth(), getHeight(), CH_RGB);
 
 	cv::cvtColor(srcImg, ret.m_impl->img, cv::COLOR_GRAY2BGR);
-
-	if (desired_row_mem_align != 0) CImage::ROW_MEM_ALIGNMENT(prev_align);
 #endif
 }
 
@@ -2244,38 +2108,6 @@ bool CImage::loadTGA(
 #else
 	return false;
 #endif  // MRPT_HAS_OPENCV
-}
-
-void CImage::InstallOpenCVAlignedAllocator()
-{
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x300
-	auto& alloc = mrpt_MatAllocator::Instance();
-	cv::Mat::setDefaultAllocator(&alloc);
-#endif
-}
-
-std::size_t CImage::guessRowAlignment() const
-{
-#if MRPT_HAS_OPENCV
-	const size_t rs = getRowStride();
-	const size_t w = m_impl->img.cols;
-	const size_t chs = static_cast<size_t>(getChannelCount());
-	const auto bytes_per_row = chs * w;
-
-	for (std::size_t align_bits = 0; align_bits < 5; align_bits++)
-	{
-		const auto align_value = (1U << align_bits);
-		auto guess_rs = bytes_per_row;
-		if ((guess_rs & (align_value - 1)) != 0)
-			guess_rs = (guess_rs & ~(align_value - 1)) + align_value;
-
-		if (guess_rs == rs) return align_value;
-	}
-
-	THROW_EXCEPTION("Could not guess row memory alignment!");
-#else
-	return 0;
-#endif
 }
 
 std::ostream& mrpt::img::operator<<(std::ostream& o, const TPixelCoordf& p)
