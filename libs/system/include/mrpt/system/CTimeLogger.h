@@ -79,8 +79,8 @@ class CTimeLogger : public mrpt::system::COutputLogger
 	};
 
 	CTimeLogger(
-	    bool enabled = true, const std::string& name = "",
-	    const bool keep_whole_history = false);
+		bool enabled = true, const std::string& name = "",
+		const bool keep_whole_history = false);
 	/** Destructor */
 	~CTimeLogger() override;
 
