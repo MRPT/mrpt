@@ -28,21 +28,12 @@
  *  @{
  */
 
-/** Subsample each 2x2 pixel block into 1x1 pixel, taking the first pixel &
- * ignoring the other 3
- *  - <b>Input format:</b> uint8_t, 3 channels (RGB or BGR)
- *  - <b>Output format:</b> uint8_t, 3 channels (RGB or BGR)
- *  - <b>Preconditions:</b> in & out aligned to 16bytes, step = k*16
- *  - <b>Notes:</b>
- *  - <b>Requires:</b> SSSE3
- *  - <b>Invoked from:</b> mrpt::img::CImage::scaleHalf()
- */
-void image_SSSE3_scale_half_3c8u(
+// This is the actual function behind image_SSSE3_scale_half_3c8u():
+template <bool MemIsAligned>
+void impl_image_SSSE3_scale_half_3c8u(
 	const uint8_t* in, uint8_t* out, int w, int h, size_t step_in,
 	size_t step_out)
 {
-	MRPT_TODO("Fix: allow unaligned");
-
 	SSE_DISABLE_WARNINGS
 	// clang-format off
 
@@ -54,8 +45,9 @@ void image_SSSE3_scale_half_3c8u(
 	// clang-format on
 	SSE_RESTORE_SIGN_WARNINGS
 
-	const int sw = w >> 4;  // This are the number of 3*16 blocks in each row
-	const int sh = h >> 1;
+	const int sw = w / 16;  // This are the number of 3*16 blocks in each row
+	const int sh = h / 2;
+	const int rest_w = w - (16 * w);
 
 	for (int i = 0; i < sh; i++)
 	{
@@ -65,8 +57,8 @@ void image_SSSE3_scale_half_3c8u(
 		for (int j = 0; j < sw; j++)
 		{
 			// 16-byte blocks #0,#1,#2:
-			__m128i d0 = _mm_load_si128(inp++);
-			__m128i d1 = _mm_load_si128(inp++);
+			__m128i d0 = mm_load_si128<MemIsAligned>(inp++);
+			__m128i d1 = mm_load_si128<MemIsAligned>(inp++);
 
 			// First 16 bytes:
 			__m128i shuf0 = _mm_shuffle_epi8(d0, m0);
@@ -74,32 +66,74 @@ void image_SSSE3_scale_half_3c8u(
 
 			__m128i res0 = _mm_or_si128(shuf0, shuf1);
 
-			_mm_storeu_si128((__m128i*)outp, res0);  // aligned output
+			_mm_storeu_si128(
+				reinterpret_cast<__m128i*>(outp), res0);  // aligned output
 			outp += 16;
 
 			// Last 8 bytes:
-			__m128i d2 = _mm_load_si128(inp++);
+			__m128i d2 = mm_load_si128<MemIsAligned>(inp++);
 
-			_mm_storel_epi64(  // Write lower 8 bytes only
-				(__m128i*)outp,
+			// Write lower 8 bytes only
+			_mm_storel_epi64(
+				reinterpret_cast<__m128i*>(outp),
 				_mm_or_si128(
 					_mm_shuffle_epi8(d2, m2), _mm_shuffle_epi8(d1, m3)));
 			outp += 8;
 		}
+
+		// Extra pixels? (w mod 16 != 0)
+		if (rest_w != 0)
+		{
+			const uint8_t* in_rest = in + 3 * 16 * sw;
+			for (int p = 0; p < rest_w / 2; p++)
+			{
+				outp[0] = in_rest[0];
+				outp[1] = in_rest[1];
+				outp[2] = in_rest[2];
+				in_rest += 6;
+				outp += 3;
+			}
+		}
+
 		in += 2 * step_in;  // Skip one row
 		out += step_out;
 	}
 }
 
-// This is the actual function behind both: image_SSSE3_rgb_to_gray_8u() and
-// image_SSSE3_bgr_to_gray_8u():
-template <bool IS_RGB>
-void private_image_SSSE3_rgb_or_bgr_to_gray_8u(
+/** Subsample each 2x2 pixel block into 1x1 pixel, taking the first pixel &
+ * ignoring the other 3
+ *  - <b>Input format:</b> uint8_t, 3 channels (RGB or BGR)
+ *  - <b>Output format:</b> uint8_t, 3 channels (RGB or BGR)
+ *  - <b>Preconditions:</b> in & out may be aligned to 16bytes (faster) or not,
+ * step may be k*16 (faster) or not.
+ *  - <b>Notes:</b>
+ *  - <b>Requires:</b> SSSE3
+ *  - <b>Invoked from:</b> mrpt::img::CImage::scaleHalf()
+ */
+void image_SSSE3_scale_half_3c8u(
 	const uint8_t* in, uint8_t* out, int w, int h, size_t step_in,
 	size_t step_out)
 {
-	MRPT_TODO("Fix: allow unaligned");
+	if (mrpt::system::is_aligned<16>(in) && mrpt::system::is_aligned<16>(out) &&
+		is_multiple<16>(step_in) && is_multiple<16>(step_out))
+	{
+		impl_image_SSSE3_scale_half_3c8u<true>(
+			in, out, w, h, step_in, step_out);
+	}
+	else
+	{
+		impl_image_SSSE3_scale_half_3c8u<false>(
+			in, out, w, h, step_in, step_out);
+	}
+}
 
+// This is the actual function behind both: image_SSSE3_rgb_to_gray_8u() and
+// image_SSSE3_bgr_to_gray_8u():
+template <bool IS_RGB, bool MemIsAligned>
+void impl_image_SSSE3_rgb_or_bgr_to_gray_8u(
+	const uint8_t* in, uint8_t* out, int w, int h, size_t step_in,
+	size_t step_out)
+{
 	SSE_DISABLE_WARNINGS
 	// clang-format off
 
@@ -162,9 +196,9 @@ void private_image_SSSE3_rgb_or_bgr_to_gray_8u(
 		for (int j = 0; j < sw; j++)
 		{
 			// We process RGB data in blocks of 3 x 16byte blocks:
-			const __m128i d0 = _mm_load_si128(inp++);
-			const __m128i d1 = _mm_load_si128(inp++);
-			const __m128i d2 = _mm_load_si128(inp++);
+			const __m128i d0 = mm_load_si128<MemIsAligned>(inp++);
+			const __m128i d1 = mm_load_si128<MemIsAligned>(inp++);
+			const __m128i d2 = mm_load_si128<MemIsAligned>(inp++);
 
 			// First 8 bytes of gray levels:
 			{
@@ -219,13 +253,14 @@ void private_image_SSSE3_rgb_or_bgr_to_gray_8u(
 		out += step_out;
 	}
 
-}  // end private_image_SSSE3_rgb_or_bgr_to_gray_8u()
+}  // end impl_image_SSSE3_rgb_or_bgr_to_gray_8u()
 
 /** Convert a RGB image (3cu8) into a GRAYSCALE (1c8u) image, using
  * Y=77*R+150*G+29*B
  *  - <b>Input format:</b> uint8_t, 3 channels (BGR order)
  *  - <b>Output format:</b> uint8_t, 1 channel
- *  - <b>Preconditions:</b> in & out aligned to 16bytes, step = k*16
+ *  - <b>Preconditions:</b> in & out aligned to 16bytes (faster) or not, step =
+ * k*16
  *  - <b>Notes:</b>
  *  - <b>Requires:</b> SSSE3
  *  - <b>Invoked from:</b> mrpt::img::CImage::grayscale(),
@@ -235,22 +270,27 @@ void image_SSSE3_bgr_to_gray_8u(
 	const uint8_t* in, uint8_t* out, int w, int h, size_t step_in,
 	size_t step_out)
 {
-	MRPT_TODO("Fix: allow unaligned");
-
-	ASSERT_(mrpt::system::is_aligned<16>(in));
-	ASSERT_(mrpt::system::is_aligned<16>(out));
 	ASSERTMSG_((step_in & 0x0f) == 0, "step of input image must be 16*k");
 	ASSERTMSG_((step_out & 0x0f) == 0, "step of output image must be 16*k");
 
-	private_image_SSSE3_rgb_or_bgr_to_gray_8u<false>(
-		in, out, w, h, step_in, step_out);
+	if (mrpt::system::is_aligned<16>(in) && mrpt::system::is_aligned<16>(out))
+	{
+		impl_image_SSSE3_rgb_or_bgr_to_gray_8u<false, true>(
+			in, out, w, h, step_in, step_out);
+	}
+	else
+	{
+		impl_image_SSSE3_rgb_or_bgr_to_gray_8u<false, false>(
+			in, out, w, h, step_in, step_out);
+	}
 }
 
 /** Convert a RGB image (3cu8) into a GRAYSCALE (1c8u) image, using
  * Y=77*R+150*G+29*B
  *  - <b>Input format:</b> uint8_t, 3 channels (RGB order)
  *  - <b>Output format:</b> uint8_t, 1 channel
- *  - <b>Preconditions:</b> in & out aligned to 16bytes, step = k*16
+ *  - <b>Preconditions:</b> in & out aligned to 16bytes (faster) or not, step =
+ * k*16
  *  - <b>Notes:</b>
  *  - <b>Requires:</b> SSSE3
  *  - <b>Invoked from:</b> mrpt::img::CImage::grayscale(),
@@ -260,13 +300,19 @@ void image_SSSE3_rgb_to_gray_8u(
 	const uint8_t* in, uint8_t* out, int w, int h, size_t step_in,
 	size_t step_out)
 {
-	ASSERT_(mrpt::system::is_aligned<16>(in));
-	ASSERT_(mrpt::system::is_aligned<16>(out));
 	ASSERTMSG_((step_in & 0x0f) == 0, "step of input image must be 16*k");
 	ASSERTMSG_((step_out & 0x0f) == 0, "step of output image must be 16*k");
 
-	private_image_SSSE3_rgb_or_bgr_to_gray_8u<true>(
-		in, out, w, h, step_in, step_out);
+	if (mrpt::system::is_aligned<16>(in) && mrpt::system::is_aligned<16>(out))
+	{
+		impl_image_SSSE3_rgb_or_bgr_to_gray_8u<true, true>(
+			in, out, w, h, step_in, step_out);
+	}
+	else
+	{
+		impl_image_SSSE3_rgb_or_bgr_to_gray_8u<true, false>(
+			in, out, w, h, step_in, step_out);
+	}
 }
 
 /**  @} */

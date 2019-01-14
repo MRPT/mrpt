@@ -23,11 +23,11 @@
 #elif defined(__GNUC__)
 #define SSE_DISABLE_WARNINGS       \
 	_Pragma("GCC diagnostic push") \
-	    _Pragma("GCC diagnostic ignored \"-Wsign-conversion\"")
+		_Pragma("GCC diagnostic ignored \"-Wsign-conversion\"")
 #elif defined(__clang__)
 #define SSE_DISABLE_WARNINGS         \
 	_Pragma("clang diagnostic push") \
-	    _Pragma("clang diagnostic ignored \"-Wsign-conversion\"")
+		_Pragma("clang diagnostic ignored \"-Wsign-conversion\"")
 #endif
 
 #if defined(_MSC_VER)

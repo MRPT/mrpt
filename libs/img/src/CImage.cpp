@@ -108,7 +108,7 @@ static int interpolationMethod2Cv(TInterpolationMethod i)
 }
 
 template <typename RET = uint32_t>
-RET pixelDepth2CvDepth(PixelDepth d)
+constexpr RET pixelDepth2CvDepth(PixelDepth d)
 {
 	// clang-format off
 	switch (d)
@@ -279,6 +279,9 @@ void CImage::resize(
 	const std::string sLog = mrpt::format("cvCreateImage %ux%u", width, height);
 	alloc_tims.enter(sLog.c_str());
 #endif
+
+	static_assert(
+		pixelDepth2CvDepth<int>(PixelDepth::D8U) + CV_8UC(3) == CV_8UC3);
 
 	m_impl->img = cv::Mat(
 		static_cast<int>(height), static_cast<int>(width),
@@ -961,15 +964,17 @@ static bool my_img_to_grayscale(const cv::Mat& src, cv::Mat& dest)
 
 // If possible, use SSE optimized version:
 #if MRPT_HAS_SSE3
-	image_SSSE3_bgr_to_gray_8u(
-	    src.ptr<uint8_t>(), dest.ptr<uint8_t>(), src.cols, src.rows,
-	    src.step[0], dest.step[0]);
-	return true;
-#else
+	if ((src.step[0] & 0x0f) == 0 && (dest.step[0] & 0x0f) == 0)
+	{
+		image_SSSE3_bgr_to_gray_8u(
+			src.ptr<uint8_t>(), dest.ptr<uint8_t>(), src.cols, src.rows,
+			src.step[0], dest.step[0]);
+		return true;
+	}
+#endif
 	// OpenCV Method:
 	cv::cvtColor(src, dest, CV_BGR2GRAY);
 	return false;
-#endif
 }
 #endif
 
@@ -1014,7 +1019,7 @@ bool CImage::scaleHalf(CImage& out, TInterpolationMethod interp) const
 	if (img.channels() == 3 && interp == IMG_INTERP_NN)
 	{
 		image_SSSE3_scale_half_3c8u(
-		    img.data, img_out.data, w, h, img.step[0], img_out.step[0]);
+			img.data, img_out.data, w, h, img.step[0], img_out.step[0]);
 		return true;
 	}
 #endif
@@ -1030,7 +1035,7 @@ bool CImage::scaleHalf(CImage& out, TInterpolationMethod interp) const
 		else if (interp == IMG_INTERP_LINEAR)
 		{
 			image_SSE2_scale_half_smooth_1c8u(
-			    img.data, img_out.data, w, h, img.step[0], img_out.step[0]);
+				img.data, img_out.data, w, h, img.step[0], img_out.step[0]);
 			return true;
 		}
 	}

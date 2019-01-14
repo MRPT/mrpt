@@ -606,7 +606,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 		return reinterpret_cast<T*>(internal_get(col, row, channel));
 	}
 
-    /** Returns a pointer to the first pixel of the given line.\sa ptr, at */
+	/** Returns a pointer to the first pixel of the given line.\sa ptr, at */
 	template <typename T>
 	const T* ptrLine(unsigned int row) const
 	{
@@ -1007,14 +1007,14 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	bool grayscale(CImage& ret) const;
 
 	/** Returns a color (RGB) version of the grayscale image, or a shallow copy
-     * of itself if it is already a color image.
+	 * of itself if it is already a color image.
 	 * \sa grayscale
 	 */
-    CImage colorImage() const;
+	CImage colorImage() const;
 
 	/** \overload.
 	 * In-place is supported by setting `ret=*this`. */
-    void colorImage(CImage& ret) const;
+	void colorImage(CImage& ret) const;
 
 	/** @} */
 

@@ -358,53 +358,65 @@ TEST(CImage, ScaleImage)
 		EXPECT_EQ(a.getWidth(), 320U);
 		EXPECT_EQ(a.getHeight(), 240U);
 	}
+
+	for (int pass = 0; pass < 2; pass++)
 	{
-		CImage b;
-		a.scaleHalf(b, IMG_INTERP_NN);
-		EXPECT_EQ(b.getWidth(), 160U);
-		EXPECT_EQ(b.getHeight(), 120U);
-		EXPECT_EQ(a.getWidth(), 320U);
-		EXPECT_EQ(a.getHeight(), 240U);
-	}
-	{
-		CImage ag = a.grayscale();
-		CImage b;
-		ag.scaleHalf(b, IMG_INTERP_LINEAR);
-		EXPECT_EQ(b.getWidth(), 160U);
-		EXPECT_EQ(b.getHeight(), 120U);
-		EXPECT_EQ(ag.getWidth(), 320U);
-		EXPECT_EQ(ag.getHeight(), 240U);
-	}
-	{
-		CImage ag = a.grayscale();
-		CImage b;
-		ag.scaleHalf(b, IMG_INTERP_NN);
-		EXPECT_EQ(b.getWidth(), 160U);
-		EXPECT_EQ(b.getHeight(), 120U);
-		EXPECT_EQ(ag.getWidth(), 320U);
-		EXPECT_EQ(ag.getHeight(), 240U);
-	}
+		CImage c;
+		if (pass == 0)
+			c = a.makeDeepCopy();
+		else
+			a.scaleImage(c, 311, 211);
+		const auto cw = c.getWidth(), ch = c.getHeight();
+
+		{
+			CImage b;
+			c.scaleHalf(b, IMG_INTERP_NN);
+			EXPECT_EQ(b.getWidth(), cw / 2);
+			EXPECT_EQ(b.getHeight(), ch / 2);
+			EXPECT_EQ(c.getWidth(), cw);
+			EXPECT_EQ(c.getHeight(), ch);
+		}
+		{
+			CImage ag = c.grayscale();
+			CImage b;
+			ag.scaleHalf(b, IMG_INTERP_LINEAR);
+			EXPECT_EQ(b.getWidth(), cw / 2);
+			EXPECT_EQ(b.getHeight(), ch / 2);
+			EXPECT_EQ(ag.getWidth(), cw);
+			EXPECT_EQ(ag.getHeight(), ch);
+		}
+		{
+			CImage ag = c.grayscale();
+			CImage b;
+			ag.scaleHalf(b, IMG_INTERP_NN);
+			EXPECT_EQ(b.getWidth(), cw / 2);
+			EXPECT_EQ(b.getHeight(), ch / 2);
+			EXPECT_EQ(ag.getWidth(), cw);
+			EXPECT_EQ(ag.getHeight(), ch);
+		}
+	}  // two passes
+
 	{
 		CImage b;
 		a.scaleHalf(b, IMG_INTERP_LINEAR);
-		EXPECT_EQ(b.getWidth(), 160U);
-		EXPECT_EQ(b.getHeight(), 120U);
+		EXPECT_EQ(b.getWidth(), a.getWidth() / 2);
+		EXPECT_EQ(b.getHeight(), a.getHeight() / 2);
 		EXPECT_EQ(a.getWidth(), 320U);
 		EXPECT_EQ(a.getHeight(), 240U);
 	}
 	{
 		CImage b;
 		a.scaleDouble(b, IMG_INTERP_NN);
-		EXPECT_EQ(b.getWidth(), 640U);
-		EXPECT_EQ(b.getHeight(), 480U);
+		EXPECT_EQ(b.getWidth(), a.getWidth() * 2);
+		EXPECT_EQ(b.getHeight(), a.getHeight() * 2);
 		EXPECT_EQ(a.getWidth(), 320U);
 		EXPECT_EQ(a.getHeight(), 240U);
 	}
 	{
 		CImage b;
 		a.scaleDouble(b, IMG_INTERP_LINEAR);
-		EXPECT_EQ(b.getWidth(), 640U);
-		EXPECT_EQ(b.getHeight(), 480U);
+		EXPECT_EQ(b.getWidth(), a.getWidth() * 2);
+		EXPECT_EQ(b.getHeight(), a.getHeight() * 2);
 		EXPECT_EQ(a.getWidth(), 320U);
 		EXPECT_EQ(a.getHeight(), 240U);
 	}
