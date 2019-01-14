@@ -577,7 +577,7 @@ namespace CVD
 				try{
 						text=!(p.find("pnm.raw")->second.get<bool>());
 				}
-				catch(std::bad_cast c){
+				catch(const std::bad_cast&){
 						cerr << "Warning pnm.raw is not a bool.\n";
 				}
 			}

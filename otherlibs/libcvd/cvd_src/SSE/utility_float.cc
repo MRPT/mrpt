@@ -4,7 +4,6 @@
 
 #include <xmmintrin.h>
 
-#include <algorithm>
 
 using namespace std;
 

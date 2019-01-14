@@ -377,10 +377,10 @@ namespace V4L { // V4L
 		if (state == 0)
 			return;
 		if(0 != ioctl(state->fd, VIDIOC_STREAMOFF, &state->refbuf.type))
-			throw Exceptions::V4LBuffer::DeviceSetup(dev, "V4L2: VIDIOC_STREAMOFF");
+			cerr << "Error closing RawV4LBuffer: "  << Exceptions::V4LBuffer::DeviceSetup(dev, "V4L2: VIDIOC_STREAMOFF").what << endl; 
 		for (size_t i=0; i<state->frames.size(); i++) {
 			if (0 != munmap(state->frames[i].data, state->frames[i].length))
-				throw Exceptions::V4LBuffer::DeviceSetup(dev, "V4L2: munmap failed");
+				cerr << "Error closing RawV4LBuffer: " << Exceptions::V4LBuffer::DeviceSetup(dev, "V4L2: munmap failed").what << endl;
 		}
 		close(state->fd);
 		delete state;
@@ -428,15 +428,17 @@ namespace V4L { // V4L
 
 	bool RawV4LBuffer::pendingFrame() {
 		fd_set fdsetRead;
-		fd_set fdsetOther;
+		fd_set fdsetWrite;
+		fd_set fdsetExcept;
 		struct timeval tv;
  
 		FD_ZERO(&fdsetRead);
 		FD_SET(state->fd,&fdsetRead);
-		FD_ZERO(&fdsetOther);
+		FD_ZERO(&fdsetWrite);
+		FD_ZERO(&fdsetExcept);
 		tv.tv_sec=0;
 		tv.tv_usec=0;
-		if (select(state->fd+1,&fdsetRead,&fdsetOther,&fdsetOther,&tv)>0)
+		if (select(state->fd+1,&fdsetRead,&fdsetWrite,&fdsetExcept,&tv)>0)
 				return true;
 		return false;
 	}

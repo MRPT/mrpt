@@ -2,8 +2,6 @@
 #include "cvd_src/utility_helpers.h"
 #include <emmintrin.h>
 
-#include <algorithm>
-
 namespace CVD {
 
 #ifndef WIN32  // this is not used at all?

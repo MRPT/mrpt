@@ -557,23 +557,10 @@ template <class T> void flipVertical( Image<T> & in )
 }
 
 /// flips an image horizontally in place.
-template <class T> void flipHorizontal( Image<T> & in )
+template <class T> void flipHorizontal( SubImage<T> && in )
 {
-  int w = in.size().x;
-  int h = in.size().y;
-  T * buffer = new T[w];
-  T * left = in.data();
-  T * right = left + w;
-  int row = 0;
-  while(row < h)
-  {
-    std::copy(left, right, buffer);
-    std::reverse_copy(buffer, buffer+w-1, left);
-    row++;
-    left += w;
-    right += w;
-  }
-  delete[] buffer;
+  for(int r=0; r < in.size().y; r++)
+  	std::reverse(in[r], in[r]+in.size().x);
 }
 
 

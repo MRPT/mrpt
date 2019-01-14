@@ -185,8 +185,9 @@ namespace CVD {
 	std::string read_path(std::istream& in)
 	{
 		std::string word;
-		while (isgraph(in.peek()))
-			word += in.get();
+		int c;
+		while ((c=in.get()) != -1)
+			word += (char)c;
 		return word;
 	}
 

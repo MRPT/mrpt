@@ -286,7 +286,7 @@ namespace CVD
 					if(i.data() == j.data())
 					{
 						Image<E> b(j.size());
-						morpholog(i, s, a, b);
+						morphology(i, s, a, b);
 						j=b;
 					}
 					else
