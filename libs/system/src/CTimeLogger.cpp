@@ -11,6 +11,7 @@
 
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/system/filesystem.h>
 #include <mrpt/core/bits_math.h>
 #include <iostream>
 #include <fstream>
@@ -333,7 +334,9 @@ CTimeLoggerEntry::~CTimeLoggerEntry() { m_logger.leave(m_section_name); }
 CTimeLoggerSaveAtDtor::~CTimeLoggerSaveAtDtor()
 {
 	using namespace std::string_literals;
-	const auto name = m_tm.getName() + ".csv"s;
+	auto name = m_tm.getName() + ".csv"s;
+	name = fileNameStripInvalidChars(name);
+
 	m_tm.logStr(
 	    LVL_INFO, "[CTimeLoggerSaveAtDtor] Saving stats to: `"s + name + "`"s);
 	m_tm.saveToCSVFile(name);
