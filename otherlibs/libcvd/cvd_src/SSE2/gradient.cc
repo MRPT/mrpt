@@ -63,6 +63,7 @@ namespace CVD {
             curr += 16;
             out += 16;
         }
+        _mm_empty();
     }
 
     void gradient(const BasicImage<byte>& im, BasicImage<short[2]>& out)

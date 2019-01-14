@@ -1,4 +1,4 @@
-template <class C> static inline bool is_corner_9(const byte* p, const int w, const int barrier) {
+template <class C> inline bool is_corner_9(const byte* p, const int w, const int barrier) {
     const int w3 = 3*w;
     const int t = C::prep_t(*p, barrier);
     if (!C::eval(p[-1-w3],t)) { // ???????????????-

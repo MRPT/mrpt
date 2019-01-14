@@ -404,7 +404,7 @@ WritePimpl::WritePimpl(std::ostream& out, int xsize, int ysize, const string& t,
 			quality = p.find("jpeg.quality")->second.get<int>();
 			quality = max(0,min(100,quality));
 		}
-		catch(std::bad_cast c)
+		catch(const std::bad_cast&)
 		{
 			cerr << "Warning jpeg.quality is not an int.\n";
 		}

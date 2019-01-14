@@ -11,13 +11,13 @@ using namespace std;
 #include "cvd_src/SSE2/faster_corner_utilities.h"
 namespace CVD
 {
-    #include "cvd_src/corner_10.h"
+    #include "cvd_src/corner_10.h"    
 
     template <bool Aligned> void faster_corner_detect_10(const BasicImage<byte>& I, std::vector<ImageRef>& corners, const int barrier)
     {
-	const int w = I.size().x;
-	const int stride = I.row_stride();
-
+	const int row_stride = I.row_stride();
+	const int stride = 3*row_stride;
+ 
 	const __m128i barriers = _mm_set1_epi8((byte)barrier);
 
 	int xend = I.size().x - 3;
@@ -27,8 +27,8 @@ namespace CVD
 	{
 	    for(int x=3; x < 16; x++)
 	    	if(is_corner_10<Less>(&I[y][x], I.row_stride(), barrier) || is_corner_10<Greater>(&I[y][x], I.row_stride(), barrier))
-		    corners.emplace_back(x, y);
-
+		    corners.push_back(ImageRef(x, y));
+	    
 	    for(int x=16; x < xend; x+=16)
 	    {
 	    	const byte* p = &I[y][x];
@@ -46,13 +46,13 @@ namespace CVD
 		    CHECK_BARRIER(lo, hi, top, ans_b);
 		    CHECK_BARRIER(lo, hi, bottom, ans_e);
 		    if (!(ans_b | ans_e))
-			continue;
+			continue;	 
 		}
 
 		unsigned int ans_m, ans_p, possible;
 		{
-		    __m128i ul = _mm_loadu_si128((const __m128i*)(p-2-2*w));
-		    __m128i lr = _mm_loadu_si128((const __m128i*)(p+2+2*w));
+		    __m128i ul = _mm_loadu_si128((const __m128i*)(p-2-2*row_stride));
+		    __m128i lr = _mm_loadu_si128((const __m128i*)(p+2+2*row_stride));
 		    CHECK_BARRIER(lo, hi, ul, ans_m);
 		    CHECK_BARRIER(lo, hi, lr, ans_p);
 		    possible = (ans_m & ans_b) | (ans_e & ans_p);
@@ -62,8 +62,8 @@ namespace CVD
 
 		unsigned int ans_o, ans_n;
 		{
-		    __m128i ll = _mm_loadu_si128((const __m128i*)(p-2+2*w));
-		    __m128i ur = _mm_loadu_si128((const __m128i*)(p+2-2*w));
+		    __m128i ll = _mm_loadu_si128((const __m128i*)(p-2+2*row_stride));
+		    __m128i ur = _mm_loadu_si128((const __m128i*)(p+2-2*row_stride));
 		    CHECK_BARRIER(lo, hi, ll, ans_o);
 		    CHECK_BARRIER(lo, hi, ur, ans_n);
 		    possible &= ans_o | (ans_b & ans_n);
@@ -71,7 +71,7 @@ namespace CVD
 		    if (!possible)
 			continue;
 		}
-
+     
 		unsigned int ans_h, ans_k;
 		{
 		    __m128i left = _mm_loadu_si128((const __m128i*)(p-3));
@@ -83,7 +83,7 @@ namespace CVD
 		    if (!possible)
 			continue;
 		}
-
+		
 		unsigned int ans_a, ans_c;
 		{
 		    __m128i a = _mm_loadu_si128((const __m128i*)(p-1-stride));
@@ -113,8 +113,8 @@ namespace CVD
 
 		unsigned int ans_g, ans_i;
 		{
-		    __m128i g = _mm_loadu_si128((const __m128i*)(p-3-w));
-		    __m128i ii = _mm_loadu_si128((const __m128i*)(p-3+w));
+		    __m128i g = _mm_loadu_si128((const __m128i*)(p-3-row_stride));
+		    __m128i ii = _mm_loadu_si128((const __m128i*)(p-3+row_stride));
 		    CHECK_BARRIER(lo, hi, g, ans_g);
 		    CHECK_BARRIER(lo, hi, ii, ans_i);
 		    possible &= ans_g | (ans_f & ans_p & ans_k);
@@ -125,8 +125,8 @@ namespace CVD
 
 		unsigned int ans_j, ans_l;
 		{
-		    __m128i jj = _mm_loadu_si128((const __m128i*)(p+3-w));
-		    __m128i l = _mm_loadu_si128((const __m128i*)(p+3+w));
+		    __m128i jj = _mm_loadu_si128((const __m128i*)(p+3-row_stride));
+		    __m128i l = _mm_loadu_si128((const __m128i*)(p+3+row_stride));
 		    CHECK_BARRIER(lo, hi, jj, ans_j);
 		    CHECK_BARRIER(lo, hi, l, ans_l);
 		    const unsigned int ans_ghi = ans_g & ans_h & ans_i;
@@ -140,46 +140,46 @@ namespace CVD
 		//if(possible & 0x0f) //Does this make it faster?
 		{
 		    if(possible & (1<< 0))
-		      corners.emplace_back(x + 0, y);
+		      corners.push_back(ImageRef(x + 0, y));
 		    if(possible & (1<< 1))
-		      corners.emplace_back(x + 1, y);
+		      corners.push_back(ImageRef(x + 1, y));
 		    if(possible & (1<< 2))
-		      corners.emplace_back(x + 2, y);
+		      corners.push_back(ImageRef(x + 2, y));
 		    if(possible & (1<< 3))
-		      corners.emplace_back(x + 3, y);
+		      corners.push_back(ImageRef(x + 3, y));
 		    if(possible & (1<< 4))
-		      corners.emplace_back(x + 4, y);
+		      corners.push_back(ImageRef(x + 4, y));
 		    if(possible & (1<< 5))
-		      corners.emplace_back(x + 5, y);
+		      corners.push_back(ImageRef(x + 5, y));
 		    if(possible & (1<< 6))
-		      corners.emplace_back(x + 6, y);
+		      corners.push_back(ImageRef(x + 6, y));
 		    if(possible & (1<< 7))
-		      corners.emplace_back(x + 7, y);
+		      corners.push_back(ImageRef(x + 7, y));
 		}
 		//if(possible & 0xf0) //Does this mak( ,  fast)r?
 		{
 		    if(possible & (1<< 8))
-		      corners.emplace_back(x + 8, y);
+		      corners.push_back(ImageRef(x + 8, y));
 		    if(possible & (1<< 9))
-		      corners.emplace_back(x + 9, y);
+		      corners.push_back(ImageRef(x + 9, y));
 		    if(possible & (1<<10))
-		      corners.emplace_back(x +10, y);
+		      corners.push_back(ImageRef(x +10, y));
 		    if(possible & (1<<11))
-		      corners.emplace_back(x +11, y);
+		      corners.push_back(ImageRef(x +11, y));
 		    if(possible & (1<<12))
-		      corners.emplace_back(x +12, y);
+		      corners.push_back(ImageRef(x +12, y));
 		    if(possible & (1<<13))
-		      corners.emplace_back(x +13, y);
+		      corners.push_back(ImageRef(x +13, y));
 		    if(possible & (1<<14))
-		      corners.emplace_back(x +14, y);
+		      corners.push_back(ImageRef(x +14, y));
 		    if(possible & (1<<15))
-		      corners.emplace_back(x +15, y);
+		      corners.push_back(ImageRef(x +15, y));
 		}
 	    }
 
 	    for(int x=xend; x < I.size().x - 3; x++)
 	    	if(is_corner_10<Less>(&I[y][x], I.row_stride(), barrier) || is_corner_10<Greater>(&I[y][x], I.row_stride(), barrier))
-		    corners.emplace_back(x, y);
+		    corners.push_back(ImageRef(x, y));
 	}
     }
 
