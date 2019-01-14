@@ -339,7 +339,7 @@ std::string mrpt::system::fileNameStripInvalidChars(
 		for (unsigned int i = 0; !invalid && i < nForbid; i++)
 			if (c == forbid[i]) invalid = true;
 
-		if (invalid) c = '_';
+		if (invalid) c = replacement_to_invalid_chars;
 	}
 	return ret;
 }
