@@ -131,8 +131,6 @@ class CExceptionExternalImageNotFound : public std::runtime_error
  *  \endcode
  * - To set a CImage from an OpenCV `cv::Mat` use
  *CImage::CImage(cv::Mat,copy_type_t).
- * - Unless set from an external cv::Mat object, CImage ensures that all image
- *rows start at 16-byte aligned memory (this requires OpenCV>=3.0).
  *
  * Some functions are implemented in MRPT with highly optimized SSE2/SSE3
  *routines, in suitable platforms and compilers. To see the list of
@@ -253,10 +251,6 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	 *  (Default = 95) */
 	static void SERIALIZATION_JPEG_QUALITY(int q);
 	static int SERIALIZATION_JPEG_QUALITY();
-
-	/** Memory alignment of all image rows (Default = 16) */
-	static void ROW_MEM_ALIGNMENT(std::size_t a);
-	static std::size_t ROW_MEM_ALIGNMENT();
 
 	/** @} */
 
@@ -612,9 +606,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 		return reinterpret_cast<T*>(internal_get(col, row, channel));
 	}
 
-	/** Returns a pointer to the first pixel of the given line. It is guaranteed
-	 * to be 16-byte aligned memory. \sa ptr, at, InstallOpenCVAlignedAllocator
-	 */
+	/** Returns a pointer to the first pixel of the given line.\sa ptr, at */
 	template <typename T>
 	const T* ptrLine(unsigned int row) const
 	{
@@ -1016,31 +1008,15 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 
 	/** Returns a color (RGB) version of the grayscale image, or a shallow copy
 	 * of itself if it is already a color image.
-	 * \param desired_row_mem_align Default if =0. Otherwise, can be 1,2,4,8.
-	 * Specifies the row memory alignment of the returned image.
 	 * \sa grayscale
 	 */
-	CImage colorImage(std::size_t desired_row_mem_align = 0) const;
+	CImage colorImage() const;
 
 	/** \overload.
 	 * In-place is supported by setting `ret=*this`. */
-	void colorImage(CImage& ret, std::size_t desired_row_mem_align = 0) const;
+	void colorImage(CImage& ret) const;
 
 	/** @} */
-
-	/** Install the MRPT custom memory allocator for cv::Mat images, which
-	 * guarantees 16 (or higher)-byte memory aligned for each image row.
-	 * This method is automatically called upon the first time an CImage object
-	 * is ever constructed, but it is exposed for convenience of the user just
-	 * in case the allocator needs to be re-installed again.
-	 * \note This feature requires OpenCV>=3.0
-	 */
-	static void InstallOpenCVAlignedAllocator();
-
-	/** By looking at row_stride and image width, finds the **smallest**
-	 * possible value for row alignment in bytes. Useful for interfacing OpenGL
-	 * functions. */
-	std::size_t guessRowAlignment() const;
 
    protected:
 	/** @name Data members

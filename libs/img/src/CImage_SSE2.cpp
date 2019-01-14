@@ -31,85 +31,67 @@
  *  @{
  */
 
-/** Subsample each 2x2 pixel block into 1x1 pixel, taking the first pixel &
- * ignoring the other 3
- *  - <b>Input format:</b> uint8_t, 1 channel
- *  - <b>Output format:</b> uint8_t, 1 channel
- *  - <b>Preconditions:</b> in & out aligned to 16bytes, step = k*16
- *  - <b>Notes:</b>
- *  - <b>Requires:</b> SSE2
- *  - <b>Invoked from:</b> mrpt::img::CImage::scaleHalf()
- */
-void image_SSE2_scale_half_1c8u(
+template <bool MemIsAligned>
+void impl_image_SSE2_scale_half_1c8u(
 	const uint8_t* in, uint8_t* out, int w, int h, size_t step_in,
 	size_t step_out)
 {
-	ASSERT_(mrpt::system::is_aligned<16>(in));
-	ASSERT_(mrpt::system::is_aligned<16>(out));
-	ASSERTMSG_((step_in & 0x0f) == 0, "step of input image must be 16*k");
-	ASSERTMSG_((step_out & 0x0f) == 0, "step of output image must be 16*k");
-
+	SSE_DISABLE_WARNINGS
 	// clang-format off
-#if defined(_MSC_VER)
-#pragma warning( disable : 4309 ) // Yes, we know 0x80 is a "negative char"
-#endif
+
 	const __m128i m = _mm_set_epi8(0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff);
 
 	// clang-format on
-#if defined(_MSC_VER)
-#pragma warning(default : 4309)
-#endif
+	SSE_RESTORE_SIGN_WARNINGS
 
-	int sw = w >> 4;
-	int sh = h >> 1;
+	const int sw = w / 16;
+	const int sh = h / 2;
+	const int rest_w = w - (16 * w);
 
 	for (int i = 0; i < sh; i++)
 	{
+		auto inp = reinterpret_cast<const __m128i*>(in);
+		uint8_t* outp = out;
 		for (int j = 0; j < sw; j++)
 		{
-			auto inp = reinterpret_cast<const __m128i*>(in);
-			uint8_t* outp = out;
-
-			const __m128i x = _mm_and_si128(_mm_load_si128(inp++), m);
+			const __m128i x =
+				_mm_and_si128(mm_load_si128<MemIsAligned>(inp++), m);
 			auto o = reinterpret_cast<__m128i*>(outp);
 			_mm_storel_epi64(o, _mm_packus_epi16(x, x));
 			outp += 8;
 		}
+		// Extra pixels? (w mod 16 != 0)
+		if (rest_w != 0)
+		{
+			const uint8_t* in_rest = in + 16 * sw;
+			for (int p = 0; p < rest_w / 2; p++)
+			{
+				*outp++ = in_rest[0];
+				in_rest += 2;
+			}
+		}
+
 		in += 2 * step_in;  // Skip one row
 		out += step_out;
 	}
 }
 
-/** Average each 2x2 pixels into 1x1 pixel (arithmetic average)
- *  - <b>Input format:</b> uint8_t, 1 channel
- *  - <b>Output format:</b> uint8_t, 1 channel
- *  - <b>Preconditions:</b> in & out aligned to 16bytes, step = k*16
- *  - <b>Notes:</b>
- *  - <b>Requires:</b> SSE2
- *  - <b>Invoked from:</b> mrpt::img::CImage::scaleHalfSmooth()
- */
-void image_SSE2_scale_half_smooth_1c8u(
+template <bool MemIsAligned>
+void impl_image_SSE2_scale_half_smooth_1c8u(
 	const uint8_t* in, uint8_t* out, int w, int h, size_t step_in,
 	size_t step_out)
 {
-	ASSERT_(mrpt::system::is_aligned<16>(in));
-	ASSERT_(mrpt::system::is_aligned<16>(out));
-	ASSERTMSG_((step_in & 0x0f) == 0, "step of input image must be 16*k");
-	ASSERTMSG_((step_out & 0x0f) == 0, "step of output image must be 16*k");
-
+	SSE_DISABLE_WARNINGS
 	// clang-format off
-#if defined(_MSC_VER)
-#pragma warning( disable : 4309 ) // Yes, we know 0x80 is a "negative char"
-#endif
+
 	const __m128i m = _mm_set_epi8(0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff);
 
 	// clang-format on
-#if defined(_MSC_VER)
-#pragma warning(default : 4309)
-#endif
+	SSE_RESTORE_SIGN_WARNINGS
 
-	int sw = w >> 4;
-	int sh = h >> 1;
+	const int sw = w / 16;
+	const int sh = h / 2;
+	const int rest_w = w - (16 * w);
 
 	for (int i = 0; i < sh; i++)
 	{
@@ -119,8 +101,8 @@ void image_SSE2_scale_half_smooth_1c8u(
 
 		for (int j = 0; j < sw; j++)
 		{
-			__m128i here = _mm_load_si128(inp++);
-			__m128i next = _mm_load_si128(nextRow++);
+			__m128i here = mm_load_si128<MemIsAligned>(inp++);
+			__m128i next = mm_load_si128<MemIsAligned>(nextRow++);
 			here = _mm_avg_epu8(here, next);
 			next = _mm_and_si128(_mm_srli_si128(here, 1), m);
 			here = _mm_and_si128(here, m);
@@ -129,8 +111,74 @@ void image_SSE2_scale_half_smooth_1c8u(
 				reinterpret_cast<__m128i*>(outp), _mm_packus_epi16(here, here));
 			outp += 8;
 		}
+
+		// Extra pixels? (w mod 16 != 0)
+		if (rest_w != 0)
+		{
+			const uint8_t* ir = in + 16 * sw;
+			const uint8_t* irr = in + step_in;
+			for (int p = 0; p < rest_w / 2; p++)
+			{
+				*outp++ = (ir[0] + ir[1] + irr[0] + irr[1]) / 4;
+				ir += 2;
+				irr += 2;
+			}
+		}
+
 		in += 2 * step_in;  // Skip one row
 		out += step_out;
+	}
+}
+
+/** Subsample each 2x2 pixel block into 1x1 pixel, taking the first pixel &
+ * ignoring the other 3
+ *  - <b>Input format:</b> uint8_t, 1 channel
+ *  - <b>Output format:</b> uint8_t, 1 channel
+ *  - <b>Preconditions:</b> in & out aligned to 16bytes (faster) or not, step =
+ * k*16 (faster) or not
+ *  - <b>Notes:</b>
+ *  - <b>Requires:</b> SSE2
+ *  - <b>Invoked from:</b> mrpt::img::CImage::scaleHalf()
+ */
+void image_SSE2_scale_half_1c8u(
+	const uint8_t* in, uint8_t* out, int w, int h, size_t step_in,
+	size_t step_out)
+{
+	if (mrpt::system::is_aligned<16>(in) && mrpt::system::is_aligned<16>(out) &&
+		is_multiple<16>(step_in) && is_multiple<16>(step_out))
+	{
+		impl_image_SSE2_scale_half_1c8u<true>(in, out, w, h, step_in, step_out);
+	}
+	else
+	{
+		impl_image_SSE2_scale_half_1c8u<false>(
+			in, out, w, h, step_in, step_out);
+	}
+}
+
+/** Average each 2x2 pixels into 1x1 pixel (arithmetic average)
+ *  - <b>Input format:</b> uint8_t, 1 channel
+ *  - <b>Output format:</b> uint8_t, 1 channel
+ *  - <b>Preconditions:</b> in & out aligned to 16bytes (faster) or not, step =
+ * k*16 (faster) or not
+ *  - <b>Notes:</b>
+ *  - <b>Requires:</b> SSE2
+ *  - <b>Invoked from:</b> mrpt::img::CImage::scaleHalfSmooth()
+ */
+void image_SSE2_scale_half_smooth_1c8u(
+	const uint8_t* in, uint8_t* out, int w, int h, size_t step_in,
+	size_t step_out)
+{
+	if (mrpt::system::is_aligned<16>(in) && mrpt::system::is_aligned<16>(out) &&
+		is_multiple<16>(step_in) && is_multiple<16>(step_out))
+	{
+		impl_image_SSE2_scale_half_smooth_1c8u<true>(
+			in, out, w, h, step_in, step_out);
+	}
+	else
+	{
+		impl_image_SSE2_scale_half_smooth_1c8u<false>(
+			in, out, w, h, step_in, step_out);
 	}
 }
 

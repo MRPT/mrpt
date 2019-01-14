@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/config.h>
+#include <cstdint>
 
 // See documentation in the .cpp files CImage_SSE*.cpp
 
