@@ -134,6 +134,9 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 		const double x, const double y, const double z, const double yaw = 0,
 		const double pitch = 0, const double roll = 0);
 
+	/** Returns the identity transformation */
+	static CPose3D Identity() { return CPose3D(); }
+
 	/** Constructor from a 4x4 homogeneous matrix - the passed matrix can be
 	 * actually of any size larger than or equal 3x4, since only those first
 	 * values are used (the last row of a homogeneous 4x4 matrix are always

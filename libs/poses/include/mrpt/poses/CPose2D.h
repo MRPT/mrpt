@@ -60,6 +60,9 @@ class CPose2D : public CPose<CPose2D>, public mrpt::serialization::CSerializable
 	/** Constructor from an initial value of the pose.*/
 	CPose2D(const double x, const double y, const double phi);
 
+	/** Returns the identity transformation */
+	static CPose2D Identity() { return CPose2D(); }
+
 	/** Constructor from a CPoint2D object. */
 	explicit CPose2D(const CPoint2D&);
 
