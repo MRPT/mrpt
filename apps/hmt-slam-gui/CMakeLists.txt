@@ -34,16 +34,11 @@ if(CMAKE_MRPT_HAS_WXWIDGETS AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 	# Add the required libraries for linking:
 	include_directories( ${wxWidgets_INCLUDE_DIRS} )
 	target_link_libraries(${PROJECT_NAME} ${wxWidgets_LIBRARIES} )
-
-	target_link_libraries(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
+	target_link_libraries(${PROJECT_NAME} ${MRPT_LINKER_LIBS} )
 
 	#   FabMap module for HMT-SLAM? (optional)
 	if(FabMap_FOUND)
 		target_link_libraries(${PROJECT_NAME} ${FabMap_LIBRARIES})
-	endif()
-
-	if(UNIX)
-		target_link_libraries(${PROJECT_NAME} mrpt-hmtslam )
 	endif()
 
 	target_link_libraries(${PROJECT_NAME} mrptwxthings)

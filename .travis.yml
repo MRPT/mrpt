@@ -21,22 +21,22 @@ env:
 jobs:
   include:
     - stage: Build libs (stage 1/2)
-      env: STAGE=1 TASK="build" DEPS="full" BUILD_TARGET="mrpt-hwdrivers"
+      env: STAGE=1 TASK="build" DEPS="full" BUILD_TARGET="hwdrivers"
       compiler: gcc
-    - env: STAGE=1 TASK="build" DEPS="full" BUILD_TARGET="mrpt-hwdrivers"
+    - env: STAGE=1 TASK="build" DEPS="full" BUILD_TARGET="hwdrivers"
       compiler: clang
-    - env: STAGE=1 TASK="build" DEPS="headless" BUILD_TARGET="mrpt-hwdrivers"
+    - env: STAGE=1 TASK="build" DEPS="headless" BUILD_TARGET="hwdrivers"
       compiler: gcc
-    - env: STAGE=1 TASK="build" DEPS="minimal" BUILD_TARGET="mrpt-hwdrivers"
+    - env: STAGE=1 TASK="build" DEPS="minimal" BUILD_TARGET="hwdrivers"
       compiler: gcc
     - stage: Build libs (stage 2/2)
-      env: STAGE=2 TASK="build" DEPS="full" BUILD_TARGET="mrpt-hmtslam"
+      env: STAGE=2 TASK="build" DEPS="full" BUILD_TARGET="hmtslam"
       compiler: gcc
-    - env: STAGE=2 TASK="build" DEPS="full" BUILD_TARGET="mrpt-hmtslam"
+    - env: STAGE=2 TASK="build" DEPS="full" BUILD_TARGET="hmtslam"
       compiler: clang
-    - env: STAGE=2 TASK="build" DEPS="headless" BUILD_TARGET="mrpt-hmtslam"
+    - env: STAGE=2 TASK="build" DEPS="headless" BUILD_TARGET="hmtslam"
       compiler: gcc
-    - env: STAGE=2 TASK="build" DEPS="minimal" BUILD_TARGET="mrpt-hmtslam"
+    - env: STAGE=2 TASK="build" DEPS="minimal" BUILD_TARGET="hmtslam"
       compiler: gcc
     - stage: Tests, Examples, apps
       env: STAGE=3 TASK="test" DEPS="full"

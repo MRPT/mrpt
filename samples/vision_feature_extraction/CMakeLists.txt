@@ -23,7 +23,7 @@ set(EXECUTABLE_OUTPUT_PATH ".")
 foreach(dep vision;gui)
 	# if not building from inside MRPT source tree, find it as a cmake
 	# imported project:
-	if (NOT TARGET mrpt-${dep})
+	if (NOT TARGET mrpt::${dep})
 		find_package(mrpt-${dep} REQUIRED)
 	endif()
 endforeach()
@@ -48,7 +48,7 @@ endif()
 
 # Add the required libraries for linking:
 foreach(dep vision;gui)
-	target_link_libraries(${sampleName} mrpt-${dep})
+	target_link_libraries(${sampleName} mrpt::${dep})
 endforeach()
 
 # Set optimized building:

@@ -75,13 +75,13 @@ if(BUILD_mrpt-math)
 	endif()
 
 	# eigen3:
-	target_link_libraries(mrpt-math PUBLIC Eigen3::Eigen)
+	target_link_libraries(math PUBLIC Eigen3::Eigen)
 
 
 	if (NOT "${SuiteSparse_LIBRARIES}" STREQUAL "")
-		target_link_libraries(mrpt-math PRIVATE ${SuiteSparse_LIBRARIES})
+		target_link_libraries(math PRIVATE ${SuiteSparse_LIBRARIES})
 	endif ()
 	if (NOT "${SuiteSparse_LIBRARIES}" STREQUAL "")
-		target_include_directories(mrpt-math PUBLIC ${SuiteSparse_INCLUDE_DIRS})
+		target_include_directories(math PUBLIC ${SuiteSparse_INCLUDE_DIRS})
 	endif ()
 endif()

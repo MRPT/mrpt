@@ -669,8 +669,21 @@ if (CMAKE_MRPT_USE_DEB_POSTFIXS AND CMAKE_BUILD_TYPE STREQUAL "Debug")
 	set(IS_DEBIAN_DBG_PKG 1)
 endif ()
 
+# Write MRPT-version file (the global one, each mrpt-xxxx also has its own):
+configure_file(
+	"${CMAKE_SOURCE_DIR}/parse-files/mrpt-config.cmake"
+	"${CMAKE_BINARY_DIR}/mrpt-config.cmake"
+	COPYONLY)
+write_basic_package_version_file(
+	"${CMAKE_BINARY_DIR}/mrpt-config-version.cmake"
+	VERSION ${CMAKE_MRPT_FULL_VERSION}
+	COMPATIBILITY SameMajorVersion
+)
+
+
 # Build list of files to install, packages, etc.
 include(cmakemodules/script_install_commands.cmake REQUIRED)
+
 
 # Summary
 include(cmakemodules/script_show_final_summary.cmake REQUIRED)

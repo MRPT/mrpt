@@ -28,7 +28,7 @@ define_mrpt_lib(
 
 if(BUILD_mrpt-vision)
 	if(CMAKE_MRPT_HAS_OPENCV)
-		add_dependencies(mrpt-vision libcvd)
+		add_dependencies(vision libcvd)
 	endif()
 
 	# Ignore precompiled headers in faster sources:
@@ -37,7 +37,7 @@ if(BUILD_mrpt-vision)
 	endif ()
 
 	if(CMAKE_MRPT_HAS_OPENCV)
-		target_link_libraries(mrpt-vision PRIVATE ${OpenCV_LIBRARIES} ${CVD_LIB})
+		target_link_libraries(vision PRIVATE ${OpenCV_LIBRARIES} ${CVD_LIB})
 	endif()
 
 endif()

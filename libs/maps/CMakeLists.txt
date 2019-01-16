@@ -30,16 +30,16 @@ define_mrpt_lib(
 
 if(BUILD_mrpt-maps)
 	if (CMAKE_MRPT_HAS_PCL)
-		target_link_libraries(mrpt-maps PRIVATE ${PCL_LIBRARIES})
+		target_link_libraries(maps PRIVATE ${PCL_LIBRARIES})
 	endif()
 
 	if(CMAKE_MRPT_HAS_LIBLAS)
-		target_link_libraries(mrpt-maps PRIVATE ${LAS_LIBS})
+		target_link_libraries(maps PRIVATE ${LAS_LIBS})
 	endif()
 
 	if (CMAKE_MRPT_HAS_VTK)
         include(${VTK_USE_FILE})
-		target_link_libraries(mrpt-maps PRIVATE ${VTK_LIBRARIES})
+		target_link_libraries(maps PRIVATE ${VTK_LIBRARIES})
 	endif()
 
 	if (CMAKE_MRPT_HAS_OCTOMAP)
@@ -47,9 +47,9 @@ if(BUILD_mrpt-maps)
 			link_directories("${OCTOMAP_LIBRARY_DIRS}")
 		endif()
 		if(TARGET "EP_octomap")
-			add_dependencies(mrpt-maps EP_octomap)
+			add_dependencies(maps EP_octomap)
 		endif()
-		target_link_libraries(mrpt-maps PUBLIC ${OCTOMAP_LIBRARIES})
+		target_link_libraries(maps PUBLIC ${OCTOMAP_LIBRARIES})
 	endif()
 
 endif()
