@@ -10,6 +10,6 @@ define_mrpt_lib(
 
 if(BUILD_mrpt-topography)
 	if(CMAKE_MRPT_HAS_WXWIDGETS)
-		target_link_libraries(mrpt-topography PRIVATE ${wxWidgets_LIBRARIES})
+		target_link_libraries(topography PRIVATE ${wxWidgets_LIBRARIES})
 	endif()
 endif()

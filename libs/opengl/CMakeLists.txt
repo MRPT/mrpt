@@ -57,7 +57,7 @@ define_mrpt_lib(
 	)
 
 if(BUILD_mrpt-opengl)
-	add_dependencies(mrpt-opengl libcvd)
+	add_dependencies(opengl libcvd)
 	include_directories(${CVD_INCLUDE_DIRS})
 
 	# Ignore precompiled headers in some sources:
@@ -75,17 +75,17 @@ if(BUILD_mrpt-opengl)
 
 	if (MSVC)
 		# Avoid duplicated export symbol warnings in MSVC SRC glut version
-		set_target_properties(mrpt-opengl PROPERTIES LINK_FLAGS "/ignore:4197")
+		set_target_properties(opengl PROPERTIES LINK_FLAGS "/ignore:4197")
 	endif()
 
 	# Link against gl, glu, glut:
-	target_link_libraries(mrpt-opengl PUBLIC ${MRPT_OPENGL_LIBS} ${MRPT_3DS_LIBS} ${CVD_LIB})
+	target_link_libraries(opengl PUBLIC ${MRPT_OPENGL_LIBS} ${MRPT_3DS_LIBS} ${CVD_LIB})
 
 	# Link against assimp:
 	if (CMAKE_MRPT_HAS_ASSIMP)
 		if(TARGET "EP_assimp")
-			add_dependencies(mrpt-opengl EP_assimp)
+			add_dependencies(opengl EP_assimp)
 		endif()
-		target_link_libraries(mrpt-opengl PRIVATE ${ASSIMP_LIBRARIES})
+		target_link_libraries(opengl PRIVATE ${ASSIMP_LIBRARIES})
 	endif ()
 endif()

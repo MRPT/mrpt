@@ -15,9 +15,12 @@
 MRPT defines exported projects that can be imported as usual in modern CMake:
 
 ```
-# Find MRPT libraries:
+# Find MRPT libraries, one by one:
 find_package(mrpt-poses)
 find_package(mrpt-gui)
+# Or the alternative:
+#find_package(MRPT 1.9.9 COMPONENTS poses gui OPTIONAL_COMPONENTS vision)
+
 
 # Define your own targets:
 add_executable(myapp  main.cpp)
@@ -25,8 +28,8 @@ add_executable(myapp  main.cpp)
 # Link against MRPT: this will also add all required flags,
 # include directories, etc.
 target_link_libraries(myapp
-  mrpt-poses
-  mrpt-gui
+  mrpt::poses
+  mrpt::gui
 )
 ```
 

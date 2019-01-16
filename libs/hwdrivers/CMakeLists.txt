@@ -166,7 +166,7 @@ if(BUILD_mrpt-hwdrivers)
 	if(CMAKE_MRPT_HAS_NITE2)
 		# link_directories() was added in the configuration script under /cmakemodules/*_ni.cmake
 		include_directories(${NITE2_INCLUDE_DIR})
-		target_link_libraries(mrpt-hwdrivers PRIVATE ${NITE2_LIB_FILE_RELEASE})
+		target_link_libraries(hwdrivers PRIVATE ${NITE2_LIB_FILE_RELEASE})
 	endif()
 
 	# Ignore precompiled headers in xSens sources:
@@ -187,54 +187,54 @@ if(BUILD_mrpt-hwdrivers)
 	endif()
 
 	if(CMAKE_MRPT_HAS_OPENCV)
-		target_link_libraries(mrpt-hwdrivers PRIVATE ${OpenCV_LIBRARIES})
+		target_link_libraries(hwdrivers PRIVATE ${OpenCV_LIBRARIES})
 	endif()
 
 	if(CMAKE_MRPT_HAS_LIBPCAP)
-		target_link_libraries(mrpt-hwdrivers PRIVATE ${PCAP_LIBRARY})
+		target_link_libraries(hwdrivers PRIVATE ${PCAP_LIBRARY})
 
 		# Windows:
 		# Set wpcap.dll as DELAYLOAD, so users without that driver can use binaries compiled with wpcap support:
 		if (MSVC)
-			set_property(TARGET mrpt-hwdrivers APPEND_STRING PROPERTY LINK_FLAGS " /DELAYLOAD:\"wpcap.dll\"")
+			set_property(TARGET hwdrivers APPEND_STRING PROPERTY LINK_FLAGS " /DELAYLOAD:\"wpcap.dll\"")
 		endif ()
 	endif()
 
 	# XSens MT4 required libs:
 	if (BUILD_XSENS_MT4)
-		target_link_libraries(mrpt-hwdrivers PRIVATE ${XSENS4_LIBS})
+		target_link_libraries(hwdrivers PRIVATE ${XSENS4_LIBS})
 	endif ()
 
 	if(CMAKE_MRPT_HAS_OPENNI2)
-		target_link_libraries(mrpt-hwdrivers PRIVATE ${OPENNI2_LIBRARIES})
+		target_link_libraries(hwdrivers PRIVATE ${OPENNI2_LIBRARIES})
 	endif()
 
 	if(CMAKE_MRPT_HAS_SWISSRANGE)
-		target_link_libraries(mrpt-hwdrivers PRIVATE ${MRPT_SWR_LIBS})
+		target_link_libraries(hwdrivers PRIVATE ${MRPT_SWR_LIBS})
 	endif()
 
 	if(CMAKE_MRPT_HAS_DUO3D)
-		target_link_libraries(mrpt-hwdrivers PRIVATE  "${DUO3D_LIB_DIR}/DUOLib.lib" "${DUO3D_LIB_DIR}/Dense3D.lib")
+		target_link_libraries(hwdrivers PRIVATE  "${DUO3D_LIB_DIR}/DUOLib.lib" "${DUO3D_LIB_DIR}/Dense3D.lib")
 	endif()
 
 	# Seems to be required to link against prebuilt libavcodec, etc.
 	if (MSVC)
 		#set_target_properties()
-		set_property(TARGET mrpt-hwdrivers APPEND_STRING PROPERTY LINK_FLAGS " /SAFESEH:NO")
+		set_property(TARGET hwdrivers APPEND_STRING PROPERTY LINK_FLAGS " /SAFESEH:NO")
 
-		set_target_properties(mrpt-hwdrivers PROPERTIES LINK_FLAGS "/DELAYLOAD:wlanapi.dll")
+		set_target_properties(hwdrivers PROPERTIES LINK_FLAGS "/DELAYLOAD:wlanapi.dll")
 	endif()
 
 	if(CMAKE_MRPT_HAS_FREENECT)
 		# Add linking against these libs:
 		if(NOT "${FREENECT_LIBS}" STREQUAL "")
-			target_link_libraries(mrpt-hwdrivers PRIVATE ${FREENECT_LIBS})
+			target_link_libraries(hwdrivers PRIVATE ${FREENECT_LIBS})
 
 			# Windows:
 			# Set libusb0.dll as DELAYLOAD, so users without that driver
 			# still can use binaries compiled with libusb support:
 			if (MSVC)
-				set_property(TARGET mrpt-hwdrivers APPEND_STRING PROPERTY LINK_FLAGS " /DELAYLOAD:\"libusb0.dll\"")
+				set_property(TARGET hwdrivers APPEND_STRING PROPERTY LINK_FLAGS " /DELAYLOAD:\"libusb0.dll\"")
 			endif ()
 		endif()
 
@@ -252,39 +252,39 @@ if(BUILD_mrpt-hwdrivers)
 	endif()
 
 	if(NOT "${LIBUSB10_LIBS}" STREQUAL "")
-		target_link_libraries(mrpt-hwdrivers PRIVATE ${LIBUSB10_LIBS})
+		target_link_libraries(hwdrivers PRIVATE ${LIBUSB10_LIBS})
 	endif()
 
 	# build with link on Phidget21 lib
 	if(CMAKE_MRPT_HAS_PHIDGET)
 		include_directories(${PHIDGETS_INCLUDE_DIR})
-		target_link_libraries(mrpt-hwdrivers PRIVATE ${PHIDGETS_LIBRARIES})
+		target_link_libraries(hwdrivers PRIVATE ${PHIDGETS_LIBRARIES})
 	endif()
 
 	if(CMAKE_MRPT_HAS_LIBDC1394_2)
-		target_link_libraries(mrpt-hwdrivers PRIVATE ${LIBDC1394_2_LIBRARIES})
+		target_link_libraries(hwdrivers PRIVATE ${LIBDC1394_2_LIBRARIES})
 	endif()
 
 	# Link to National Instrument libraries:
 	if(MRPT_HAS_NI_DAQmxBASE)
 		# link_directories() was added in the configuration script under /cmakemodules/*_ni.cmake
 		include_directories(${NI_DAQmxBASE_INCLUDE_DIR})
-		target_link_libraries(mrpt-hwdrivers PRIVATE ${NI_DAQmxBASE_LIB_FILE})
+		target_link_libraries(hwdrivers PRIVATE ${NI_DAQmxBASE_LIB_FILE})
 	endif()
 	if(MRPT_HAS_NI_DAQmx)
 		# link_directories() was added in the configuration script under /cmakemodules/*_ni.cmake
 		include_directories(${NI_DAQmx_INCLUDE_DIR})
-		target_link_libraries(mrpt-hwdrivers PRIVATE ${NI_DAQmx_LIB_FILE})
+		target_link_libraries(hwdrivers PRIVATE ${NI_DAQmx_LIB_FILE})
 	endif()
 
 	# Link to PGR FlyCapture2 libraries:
 	if(CMAKE_MRPT_HAS_FLYCAPTURE2)
 		# link_directories() was added in the configuration script under /cmakemodules/*_ni.cmake
 		include_directories(${PGR_FLYCAPTURE2_INCLUDE_DIR})
-		target_link_libraries(mrpt-hwdrivers PRIVATE ${PGR_FLYCAPTURE2_LIB_FILE_RELEASE})
+		target_link_libraries(hwdrivers PRIVATE ${PGR_FLYCAPTURE2_LIB_FILE_RELEASE})
 		# Windows: Set dll as DELAYLOAD, so users without that driver can use precompiled binaries:
 		if(MSVC)
-			set_property(TARGET mrpt-hwdrivers APPEND_STRING PROPERTY LINK_FLAGS " /DELAYLOAD:\"FLYCAPTURE2.DLL\"")
+			set_property(TARGET hwdrivers APPEND_STRING PROPERTY LINK_FLAGS " /DELAYLOAD:\"FLYCAPTURE2.DLL\"")
 		endif()
 	endif()
 
@@ -292,15 +292,15 @@ if(BUILD_mrpt-hwdrivers)
 	if(CMAKE_MRPT_HAS_TRICLOPS)
 		# link_directories() was added in the configuration script under /cmakemodules/*_ni.cmake
 		include_directories(${PGR_TRICLOPS_INCLUDE_DIR})
-		target_link_libraries(mrpt-hwdrivers PRIVATE ${PGR_TRICLOPS_LIB_FILE_RELEASE})
-		target_link_libraries(mrpt-hwdrivers PRIVATE ${PGR_FC2BRIDGE_LIB_FILE_RELEASE})
-		#target_link_libraries(mrpt-hwdrivers PRIVATE  ${PGR_PNMUTILS_LIB_FILE_RELEASE}) # Not used in mrpt
+		target_link_libraries(hwdrivers PRIVATE ${PGR_TRICLOPS_LIB_FILE_RELEASE})
+		target_link_libraries(hwdrivers PRIVATE ${PGR_FC2BRIDGE_LIB_FILE_RELEASE})
+		#target_link_libraries(hwdrivers PRIVATE  ${PGR_PNMUTILS_LIB_FILE_RELEASE}) # Not used in mrpt
 		# Windows: Set dll as DELAYLOAD, so users without that driver can use precompiled binaries:
 		if(MSVC)
 			get_filename_component(PGR_TRICLOPS_LIBNAME ${PGR_TRICLOPS_LIB_FILE_RELEASE} NAME_WE)
 			get_filename_component(PGR_FC2BRIDGE_LIBNAME ${PGR_FC2BRIDGE_LIB_FILE_RELEASE} NAME_WE)
-			set_property(TARGET mrpt-hwdrivers APPEND_STRING PROPERTY LINK_FLAGS " /DELAYLOAD:\"${PGR_TRICLOPS_LIBNAME}.DLL\"")
-			set_property(TARGET mrpt-hwdrivers APPEND_STRING PROPERTY LINK_FLAGS " /DELAYLOAD:\"${PGR_FC2BRIDGE_LIBNAME}.DLL\"")
+			set_property(TARGET hwdrivers APPEND_STRING PROPERTY LINK_FLAGS " /DELAYLOAD:\"${PGR_TRICLOPS_LIBNAME}.DLL\"")
+			set_property(TARGET hwdrivers APPEND_STRING PROPERTY LINK_FLAGS " /DELAYLOAD:\"${PGR_FC2BRIDGE_LIBNAME}.DLL\"")
 		endif()
 	endif()
 
@@ -317,7 +317,7 @@ if(BUILD_mrpt-hwdrivers)
 
 	# Build with link on SVS lib
 	if(CMAKE_MRPT_HAS_SVS)
-		target_link_libraries(mrpt-hwdrivers PRIVATE dcap svs svscalc svscap)
+		target_link_libraries(hwdrivers PRIVATE dcap svs svscalc svscap)
 	endif()
 
 	# Remove the "--pedantic" flag for the file "CFFMPEG_InputStream.cpp" since headers
@@ -349,6 +349,6 @@ if(BUILD_mrpt-hwdrivers)
 	endif()
 
 	if(CMAKE_MRPT_HAS_WXWIDGETS)
-		target_link_libraries(mrpt-hwdrivers PRIVATE ${wxWidgets_LIBRARIES})
+		target_link_libraries(hwdrivers PRIVATE ${wxWidgets_LIBRARIES})
 	endif()
 endif()

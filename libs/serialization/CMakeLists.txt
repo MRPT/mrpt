@@ -23,5 +23,5 @@ define_mrpt_lib(
 	)
 
 if(BUILD_mrpt-serialization)
-	target_link_libraries(mrpt-serialization PRIVATE ${tst_json_dep})
+	target_link_libraries(serialization PRIVATE ${tst_json_dep})
 endif( )

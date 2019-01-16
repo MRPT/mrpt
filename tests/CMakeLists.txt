@@ -84,13 +84,20 @@ foreach(_TSTLIB ${LST_LIB_TESTS})
 	get_property(extra_deps GLOBAL PROPERTY "${_TSTLIB}_UNIT_TEST_EXTRA_DEPS")
 	set(lst_deps ${lst_deps} ${extra_deps})
 
-	set(lst_deps ${_TSTLIB_DASH} ${lst_deps}) # The order in this list is very important for linking!
+	# The order in this list is very important for linking!
+	# Otherwise, one may have the weird linking error:
+	# "error adding symbols: DSO missing from command line"
+	set(lst_deps ${_TSTLIB_DASH} ${lst_deps})
 	foreach(_DEPLIB ${lst_deps})
 		# Include dirs:
-		string(REGEX REPLACE "mrpt-(.*)" "\\1" _DEPLIB_DASH ${_DEPLIB})
-		# This link command automatically imports all required "include directories"
-		# and other PUBLIC dependencies of the linked target:
-		target_link_libraries(test_${_TSTLIB} ${_DEPLIB})
+		if (_DEPLIB MATCHES "^mrpt-?:*(.*)")
+			string(REGEX REPLACE "mrpt-?:*(.*)" "\\1" _DEPLIB_DASH ${_DEPLIB})
+			# This link command automatically imports all required "include directories"
+			# and other PUBLIC dependencies of the linked target:
+			target_link_libraries(test_${_TSTLIB} mrpt::${_DEPLIB_DASH})
+		else()
+			target_link_libraries(test_${_TSTLIB} ${_DEPLIB})
+		endif()
 	endforeach(_DEPLIB)
 
 	# Run it:

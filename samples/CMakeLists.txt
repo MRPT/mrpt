@@ -25,10 +25,10 @@ if(BUILD_EXAMPLES)
 		set(CMAKE_EXAMPLE_DEPS_STRIP "")
 		foreach(DEP ${CMAKE_EXAMPLE_DEPS})
 			# Only for "mrpt-XXX" libs:
-			string(REGEX REPLACE "mrpt-(.*)" "\\1" STRIP_DEP ${DEP})
-			if(NOT "${STRIP_DEP}" STREQUAL "")
+			if (DEP MATCHES "^mrpt-?:*(.*)")
+				string(REGEX REPLACE "mrpt-?:*(.*)" "\\1" STRIP_DEP ${DEP})
 				list(APPEND CMAKE_EXAMPLE_DEPS_STRIP ${STRIP_DEP})
-			endif(NOT "${STRIP_DEP}" STREQUAL "")
+			endif()
 		endforeach(DEP)
 
 		foreach(CMAKE_MRPT_EXAMPLE_NAME ${LIST_EXAMPLES_IN_THIS_DIR})

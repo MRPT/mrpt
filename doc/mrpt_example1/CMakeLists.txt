@@ -13,12 +13,17 @@ endif()
 #    need to specify the top-most libraries your code depend on.
 # --------------------------------------------------------------------------
 find_package(mrpt-poses REQUIRED)
+message(STATUS "mrpt-poses_VERSION: ${mrpt-poses_VERSION}")
+# or:
+#find_package(MRPT COMPONENTS poses) # OPTIONAL_COMPONENTS math)
+#message(STATUS "MRPT_VERSION: ${MRPT_VERSION}")
+#message(STATUS "MRPT_LIBRARIES: ${MRPT_LIBRARIES}")
 
 # Declare the target (an executable)
 add_executable(mrpt_example1
 	test.cpp
 	)
-target_link_libraries(mrpt_example1 mrpt-poses)
+target_link_libraries(mrpt_example1 mrpt::poses)
 
 # Set optimized building:
 if(CMAKE_COMPILER_IS_GNUCXX AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
