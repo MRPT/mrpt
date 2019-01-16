@@ -19,7 +19,7 @@
 
 #if defined(_MSC_VER)
 #define SSE_DISABLE_WARNINGS \
-	_Pragma("warning(push))") _Pragma("warning(disable : 4309)")
+	__pragma(warning(push)) __pragma(warning(disable : 4309))
 #elif defined(__GNUC__)
 #define SSE_DISABLE_WARNINGS       \
 	_Pragma("GCC diagnostic push") \
@@ -31,7 +31,7 @@
 #endif
 
 #if defined(_MSC_VER)
-#define SSE_RESTORE_SIGN_WARNINGS _Pragma("warning(pop)")
+#define SSE_RESTORE_SIGN_WARNINGS __pragma(warning(pop))
 #elif defined(__GNUC__)
 #define SSE_RESTORE_SIGN_WARNINGS _Pragma("GCC diagnostic pop")
 #elif defined(__clang__)
