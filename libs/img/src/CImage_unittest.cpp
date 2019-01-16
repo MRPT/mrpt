@@ -49,6 +49,8 @@ static bool expect_identical(
 	const mrpt::img::CImage& a, const mrpt::img::CImage& b,
 	const std::string& s = std::string())
 {
+	EXPECT_EQ(a.getWidth(), b.getWidth());
+	EXPECT_EQ(a.getHeight(), b.getHeight());
 	for (unsigned int y = 0; y < a.getHeight(); y++)
 		for (unsigned int x = 0; x < a.getWidth(); x++)
 		{
@@ -460,6 +462,24 @@ TEST(CImage, KLT_response)
 			EXPECT_GT(resp, 0.5f);
 		}
 	}
+}
+
+TEST(CImage, LoadAndComparePseudoRnd)
+{
+	using namespace mrpt::img;
+	using namespace std::string_literals;
+
+	const auto tstimg =
+		mrpt::UNITTEST_BASEDIR + "/tests/test_pseudorandom_img_seed70.png"s;
+
+	CImage a;
+	bool load_ok = a.loadFromFile(tstimg);
+	EXPECT_TRUE(load_ok) << "Cannot load: " << tstimg;
+
+	CImage b(10, 7, CH_GRAY);
+	fillImagePseudoRandom(70, b);
+
+	expect_identical(a, b, "LoadAndComparePseudoRnd"s);
 }
 
 TEST(CImage, LoadAndSave)
