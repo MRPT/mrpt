@@ -62,7 +62,9 @@ add_executable(${PROJECT_NAME}
 
 # Add the required libraries for linking:
 target_link_libraries(${PROJECT_NAME} ${MRPT_LINKER_LIBS_RELorDEB} )
-target_link_libraries(${PROJECT_NAME} mrpt-hwdrivers${MRPT_LINKER_LIBS_POSTFIX} ${RAWLOGGRABBER_PLUGIN_LIBS} )
+if (NOT "${RAWLOGGRABBER_PLUGIN_LIBS}" STREQUAL "")
+target_link_libraries(${PROJECT_NAME} ${RAWLOGGRABBER_PLUGIN_LIBS} )
+endif()
 
 # Dependencies on MRPT libraries:
 #  Just mention the top-level dependency, the rest will be detected automatically,

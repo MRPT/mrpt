@@ -23,7 +23,7 @@ set(EXECUTABLE_OUTPUT_PATH ".")
 foreach(dep gui)
 	# if not building from inside MRPT source tree, find it as a cmake
 	# imported project:
-	if (NOT TARGET mrpt-${dep})
+	if (NOT TARGET mrpt::${dep})
 		find_package(mrpt-${dep} REQUIRED)
 	endif()
 endforeach()

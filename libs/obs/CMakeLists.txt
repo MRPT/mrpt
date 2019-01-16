@@ -20,7 +20,7 @@ list(APPEND obs_EXTRA_SRCS_NAME
 
 # Minimal XMLParser:
 include_directories("${MRPT_LIBS_ROOT}/db/src/")  # Notice the "src", not "include": these are private hdrs
-# No need to compile XML sources here (already in mrpt-db), will be exported and linked from mrpt-db, 
+# No need to compile XML sources here (already in mrpt-db), will be exported and linked from mrpt-db,
 # even if their interface is in a private .h file.
 
 #---------------------------------------------
@@ -39,7 +39,7 @@ define_mrpt_lib(
 if(BUILD_mrpt-obs)
 	if (CMAKE_MRPT_HAS_YAMLCPP)
 		# ${LIBYAMLCPP_INCLUDE_DIRS}
-		target_link_libraries(mrpt-obs PRIVATE ${LIBYAMLCPP_LIBRARIES})
+		target_link_libraries(obs PRIVATE ${LIBYAMLCPP_LIBRARIES})
 	endif()
 
 endif(BUILD_mrpt-obs)

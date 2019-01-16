@@ -3,12 +3,18 @@
 # ----------------------------------------------------------------------------
 
 # MRPTConfig.cmake: backwards-compatible file as it was named in mrpt v1.x
-if(WIN32)
-	install(FILES "${MRPT_SOURCE_DIR}/parse-files/MRPTConfig.cmake" DESTINATION ./ )
-else()
-	if (NOT IS_DEBIAN_DBG_PKG)
-		install(FILES "${MRPT_SOURCE_DIR}/parse-files/MRPTConfig.cmake" DESTINATION ${libmrpt_common_dev_INSTALL_PREFIX}share/mrpt )
-	endif(NOT IS_DEBIAN_DBG_PKG)
+if (NOT IS_DEBIAN_DBG_PKG)
+	if(WIN32)
+		set(cfg_ver_destdir "./")
+	else()
+		set(cfg_ver_destdir "${libmrpt_common_dev_INSTALL_PREFIX}share/mrpt")
+	endif()
+	install(
+	FILES
+		"${MRPT_SOURCE_DIR}/parse-files/mrpt-config.cmake"
+		"${CMAKE_BINARY_DIR}/mrpt-config-version.cmake"
+	DESTINATION
+		${cfg_ver_destdir})
 endif()
 
 # Docs, examples and the rest of files:

@@ -34,9 +34,6 @@ if(CMAKE_MRPT_HAS_WXWIDGETS)
 	# Add the required libraries for linking:
 	target_link_libraries(${PROJECT_NAME} ${wxWidgets_LIBRARIES} )
 	target_link_libraries(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
-
-	target_link_libraries(${PROJECT_NAME} mrpt-kinematics)
-
 	target_link_libraries(${PROJECT_NAME} mrptwxthings)
 	add_dependencies(${PROJECT_NAME} mrptwxthings)
 
