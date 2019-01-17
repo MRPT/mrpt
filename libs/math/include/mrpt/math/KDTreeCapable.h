@@ -723,6 +723,9 @@ class KDTreeCapable
 			static_cast<float>(p0.z), N, outIdx, outDistSqr);
 	}
 
+	inline void kdTreeEnsureIndexBuilt3D() { rebuild_kdTree_3D(); }
+	inline void kdTreeEnsureIndexBuilt2D() { rebuild_kdTree_2D(); }
+
 	/* @} */
 
    protected:
