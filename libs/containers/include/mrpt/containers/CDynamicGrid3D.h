@@ -13,6 +13,7 @@
 #include <cstdint>
 #include <cmath>
 #include <cstddef>
+#include <stdexcept>
 
 namespace mrpt::containers
 {
@@ -21,15 +22,19 @@ namespace mrpt::containers
  * \tparam T The type of each voxel in the grid.
  * \ingroup mrpt_containers_grp
  */
-template <class T>
+template <class T, class coord_t = double>
 class CDynamicGrid3D
 {
    public:
+	using grid_data_t = std::vector<T>;
+	using iterator = typename grid_data_t::iterator;
+	using const_iterator = typename grid_data_t::const_iterator;
+
 	/** Constructor */
 	CDynamicGrid3D(
-		double x_min = -1.0, double x_max = 1.0, double y_min = -1.0,
-		double y_max = +1.0, double z_min = -1.0, double z_max = 1.0,
-		double resolution_xy = 0.5, double resolution_z = 0.5)
+		coord_t x_min = -1.0, coord_t x_max = 1.0, coord_t y_min = -1.0,
+		coord_t y_max = +1.0, coord_t z_min = -1.0, coord_t z_max = 1.0,
+		coord_t resolution_xy = 0.5, coord_t resolution_z = 0.5)
 		: m_map()
 	{
 		setSize(
@@ -41,9 +46,9 @@ class CDynamicGrid3D
 	 * \sa setSize
 	 */
 	virtual void resize(
-		double new_x_min, double new_x_max, double new_y_min, double new_y_max,
-		double new_z_min, double new_z_max, const T& defaultValueNewCells,
-		double additionalMarginMeters = 2.0)
+		coord_t new_x_min, coord_t new_x_max, coord_t new_y_min,
+		coord_t new_y_max, coord_t new_z_min, coord_t new_z_max,
+		const T& defaultValueNewCells, coord_t additionalMarginMeters = 2)
 	{
 		// Is resize really necesary?
 		if (new_x_min >= m_x_min && new_y_min >= m_y_min &&
@@ -113,13 +118,13 @@ class CDynamicGrid3D
 		size_t new_size_x_times_y = new_size_x * new_size_y;
 
 		// Reserve new memory:
-		typename std::vector<T> new_map;
+		grid_data_t new_map;
 		new_map.resize(
 			new_size_x * new_size_y * new_size_z, defaultValueNewCells);
 
 		// Copy previous rows:
 		size_t x, y, z;
-		typename std::vector<T>::iterator itSrc, itDst;
+		iterator itSrc, itDst;
 		for (z = 0; z < m_size_z; z++)
 		{
 			for (y = 0; y < m_size_y; y++)
@@ -168,13 +173,13 @@ class CDynamicGrid3D
 	 * \sa resize, fill
 	 */
 	virtual void setSize(
-		const double x_min, const double x_max, const double y_min,
-		const double y_max, const double z_min, const double z_max,
-		const double resolution_xy, const double resolution_z_ = -1.0,
+		const coord_t x_min, const coord_t x_max, const coord_t y_min,
+		const coord_t y_max, const coord_t z_min, const coord_t z_max,
+		const coord_t resolution_xy, const coord_t resolution_z_ = -1.0,
 		const T* fill_value = nullptr)
 	{
-		const double resolution_z =
-			resolution_z_ > 0.0 ? resolution_z_ : resolution_xy;
+		const coord_t resolution_z =
+			resolution_z_ > 0 ? resolution_z_ : resolution_xy;
 
 		// Adjust sizes to adapt them to full sized cells acording to the
 		// resolution:
@@ -240,7 +245,7 @@ class CDynamicGrid3D
 	/** Returns a pointer to the contents of a voxel given by its coordinates,
 	 * or nullptr if it is out of the map extensions.
 	 */
-	inline T* cellByPos(double x, double y, double z)
+	inline T* cellByPos(coord_t x, coord_t y, coord_t z)
 	{
 		const size_t cidx =
 			cellAbsIndexFromCXCYCZ(x2idx(x), y2idx(y), z2idx(z));
@@ -248,12 +253,28 @@ class CDynamicGrid3D
 		return &m_map[cidx];
 	}
 	/** \overload */
-	inline const T* cellByPos(double x, double y, double z) const
+	inline const T* cellByPos(coord_t x, coord_t y, coord_t z) const
 	{
 		const size_t cidx =
 			cellAbsIndexFromCXCYCZ(x2idx(x), y2idx(y), z2idx(z));
 		if (cidx == INVALID_VOXEL_IDX) return nullptr;
 		return &m_map[cidx];
+	}
+
+	/** Like cellByPos() but returns a reference
+	 * \exception std::out_of_range if out of grid limits. */
+	inline T& cellRefByPos(coord_t x, coord_t y, coord_t z)
+	{
+		T* c = cellByPos(x, y, z);
+		if (!c) throw std::out_of_range("cellRefByPos: Out of grid limits");
+		return *c;
+	}
+	/** \overload */
+	inline const T& cellRefByPos(coord_t x, coord_t y, coord_t z) const
+	{
+		const T* c = cellByPos(x, y, z);
+		if (!c) throw std::out_of_range("cellRefByPos: Out of grid limits");
+		return *c;
 	}
 
 	/** Returns a pointer to the contents of a voxel given by its voxel indexes,
@@ -281,41 +302,52 @@ class CDynamicGrid3D
 	inline size_t getSizeY() const { return m_size_y; }
 	inline size_t getSizeZ() const { return m_size_z; }
 	inline size_t getVoxelCount() const { return m_size_x_times_y * m_size_z; }
-	inline double getXMin() const { return m_x_min; }
-	inline double getXMax() const { return m_x_max; }
-	inline double getYMin() const { return m_y_min; }
-	inline double getYMax() const { return m_y_max; }
-	inline double getZMin() const { return m_z_min; }
-	inline double getZMax() const { return m_z_max; }
-	inline double getResolutionXY() const { return m_resolution_xy; }
-	inline double getResolutionZ() const { return m_resolution_z; }
+	inline coord_t getXMin() const { return m_x_min; }
+	inline coord_t getXMax() const { return m_x_max; }
+	inline coord_t getYMin() const { return m_y_min; }
+	inline coord_t getYMax() const { return m_y_max; }
+	inline coord_t getZMin() const { return m_z_min; }
+	inline coord_t getZMax() const { return m_z_max; }
+	inline coord_t getResolutionXY() const { return m_resolution_xy; }
+	inline coord_t getResolutionZ() const { return m_resolution_z; }
 	/** Transform a coordinate values into voxel indexes */
-	inline int x2idx(double x) const
+	inline int x2idx(coord_t x) const
 	{
 		return static_cast<int>((x - m_x_min) / m_resolution_xy);
 	}
-	inline int y2idx(double y) const
+	inline int y2idx(coord_t y) const
 	{
 		return static_cast<int>((y - m_y_min) / m_resolution_xy);
 	}
-	inline int z2idx(double z) const
+	inline int z2idx(coord_t z) const
 	{
 		return static_cast<int>((z - m_z_min) / m_resolution_z);
 	}
 
 	/** Transform a voxel index into a coordinate value of the voxel central
 	 * point */
-	inline double idx2x(int cx) const { return m_x_min + (cx)*m_resolution_xy; }
-	inline double idx2y(int cy) const { return m_y_min + (cy)*m_resolution_xy; }
-	inline double idx2z(int cz) const { return m_z_min + (cz)*m_resolution_z; }
+	inline coord_t idx2x(int cx) const
+	{
+		return m_x_min + (cx)*m_resolution_xy;
+	}
+	inline coord_t idx2y(int cy) const
+	{
+		return m_y_min + (cy)*m_resolution_xy;
+	}
+	inline coord_t idx2z(int cz) const { return m_z_min + (cz)*m_resolution_z; }
+
+	inline iterator begin() { return m_map.begin(); }
+	inline iterator end() { return m_map.end(); }
+	inline const_iterator begin() const { return m_map.begin(); }
+	inline const_iterator end() const { return m_map.end(); }
 
    protected:
 	/** The cells */
-	mutable std::vector<T> m_map;
+	mutable grid_data_t m_map;
 	/** Used only from logically const method that really need to modify the
 	 * object */
 	inline std::vector<T>& m_map_castaway_const() const { return m_map; }
-	double m_x_min, m_x_max, m_y_min, m_y_max, m_z_min, m_z_max,
+	coord_t m_x_min, m_x_max, m_y_min, m_y_max, m_z_min, m_z_max,
 		m_resolution_xy, m_resolution_z;
 	size_t m_size_x, m_size_y, m_size_z, m_size_x_times_y;
 	/** Serialization of all parameters, except the contents of each voxel
