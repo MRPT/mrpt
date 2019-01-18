@@ -12,6 +12,8 @@
 #include <nanoflann.hpp>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <memory>  // unique_ptr
+#include <array>
+#include <mutex>
 
 namespace mrpt::math
 {
@@ -83,6 +85,13 @@ class KDTreeCapable
 
 	/// Constructor
 	inline KDTreeCapable() = default;
+	KDTreeCapable(const KDTreeCapable&) : KDTreeCapable() {}
+	KDTreeCapable& operator=(const KDTreeCapable&)
+	{
+		kdtree_mark_as_outdated();
+		return *this;
+	}
+
 	/// CRTP helper method
 	inline const Derived& derived() const
 	{
@@ -732,6 +741,7 @@ class KDTreeCapable
 	/** To be called by child classes when KD tree data changes. */
 	inline void kdtree_mark_as_outdated() const
 	{
+		std::scoped_lock lck(m_kdtree_mtx);
 		m_kdtree_is_uptodate = false;
 	}
 
@@ -763,15 +773,15 @@ class KDTreeCapable
 		/** nullptr or the up-to-date index */
 		std::unique_ptr<kdtree_index_t> index;
 
-		std::vector<num_t> query_point;
+		std::array<num_t, 3> query_point{0, 0, 0};
 		/** Dimensionality. typ: 2,3 */
 		size_t m_dim = _DIM;
 		size_t m_num_points = 0;
 	};
 
+	mutable std::mutex m_kdtree_mtx;
 	mutable TKDTreeDataHolder<2> m_kdtree2d_data;
 	mutable TKDTreeDataHolder<3> m_kdtree3d_data;
-	mutable TKDTreeDataHolder<> m_kdtreeNd_data;
 	/** whether the KD tree needs to be rebuilt or not. */
 	mutable bool m_kdtree_is_uptodate{false};
 
@@ -779,13 +789,13 @@ class KDTreeCapable
 	/// asking the child class for the data points.
 	void rebuild_kdTree_2D() const
 	{
+		std::scoped_lock lck(m_kdtree_mtx);
 		using tree2d_t = typename TKDTreeDataHolder<2>::kdtree_index_t;
 
 		if (!m_kdtree_is_uptodate)
 		{
 			m_kdtree2d_data.clear();
 			m_kdtree3d_data.clear();
-			m_kdtreeNd_data.clear();
 		}
 
 		if (!m_kdtree2d_data.index)
@@ -796,7 +806,6 @@ class KDTreeCapable
 			const size_t N = derived().kdtree_get_point_count();
 			m_kdtree2d_data.m_num_points = N;
 			m_kdtree2d_data.m_dim = 2;
-			m_kdtree2d_data.query_point.resize(2);
 			if (N)
 			{
 				m_kdtree2d_data.index.reset(new tree2d_t(
@@ -813,13 +822,13 @@ class KDTreeCapable
 	/// asking the child class for the data points.
 	void rebuild_kdTree_3D() const
 	{
+		std::scoped_lock lck(m_kdtree_mtx);
 		using tree3d_t = typename TKDTreeDataHolder<3>::kdtree_index_t;
 
 		if (!m_kdtree_is_uptodate)
 		{
 			m_kdtree2d_data.clear();
 			m_kdtree3d_data.clear();
-			m_kdtreeNd_data.clear();
 		}
 
 		if (!m_kdtree3d_data.index)
@@ -830,7 +839,6 @@ class KDTreeCapable
 			const size_t N = derived().kdtree_get_point_count();
 			m_kdtree3d_data.m_num_points = N;
 			m_kdtree3d_data.m_dim = 3;
-			m_kdtree3d_data.query_point.resize(3);
 			if (N)
 			{
 				m_kdtree3d_data.index.reset(new tree3d_t(
