@@ -48,13 +48,14 @@ namespace mrpt::serialization
 				"Error: serialized container %s<%s>'s preambles is wrong: "    \
 				"'%s'",                                                        \
 				#CONTAINER, mrpt::typemeta::TTypeName<T>::get().c_str(),       \
-				pref.c_str())                                                  \
+				pref.c_str());                                                 \
 		in >> stored_T;                                                        \
 		if (stored_T !=                                                        \
 			std::string(mrpt::typemeta::TTypeName<T>::get().c_str()))          \
 			THROW_EXCEPTION_FMT(                                               \
 				"Error: serialized container %s< %s != %s >", #CONTAINER,      \
-				stored_T.c_str(), mrpt::typemeta::TTypeName<T>::get().c_str()) \
+				stored_T.c_str(),                                              \
+				mrpt::typemeta::TTypeName<T>::get().c_str());                  \
 		uint32_t n;                                                            \
 		in >> n;                                                               \
 		obj.resize(n);                                                         \
@@ -119,7 +120,7 @@ CArchive& operator>>(CArchive& in, T& obj)
 			containerName<T>().c_str(),
 			mrpt::typemeta::TTypeName<typename T::key_type>::get().c_str(),
 			mrpt::typemeta::TTypeName<typename T::mapped_type>::get().c_str(),
-			pref.c_str()))
+			pref.c_str()));
 	in >> stored_K;
 	if (stored_K !=
 		std::string(
@@ -127,7 +128,7 @@ CArchive& operator>>(CArchive& in, T& obj)
 		THROW_EXCEPTION(format(
 			"Error: serialized container %s key type %s != %s",
 			containerName<T>().c_str(), stored_K.c_str(),
-			mrpt::typemeta::TTypeName<typename T::key_type>::get().c_str()))
+			mrpt::typemeta::TTypeName<typename T::key_type>::get().c_str()));
 	in >> stored_V;
 	if (stored_V !=
 		std::string(
@@ -135,7 +136,7 @@ CArchive& operator>>(CArchive& in, T& obj)
 		THROW_EXCEPTION(format(
 			"Error: serialized container %s value type %s != %s",
 			containerName<T>().c_str(), stored_V.c_str(),
-			mrpt::typemeta::TTypeName<typename T::mapped_type>::get().c_str()))
+			mrpt::typemeta::TTypeName<typename T::mapped_type>::get().c_str()));
 	uint32_t n;
 	in >> n;
 	for (uint32_t i = 0; i < n; i++)
@@ -176,14 +177,14 @@ CArchive& operator>>(CArchive& in, T& obj)
 				"Error: serialized container %s<%s>'s preamble is wrong: "     \
 				"'%s'",                                                        \
 				#CONTAINER, mrpt::typemeta::TTypeName<K>::get().c_str(),       \
-				pref.c_str()))                                                 \
+				pref.c_str()));                                                \
 		in >> stored_K;                                                        \
 		if (stored_K !=                                                        \
 			std::string(mrpt::typemeta::TTypeName<K>::get().c_str()))          \
 			THROW_EXCEPTION(format(                                            \
 				"Error: serialized container %s key type %s != %s",            \
 				#CONTAINER, stored_K.c_str(),                                  \
-				mrpt::typemeta::TTypeName<K>::get().c_str()))                  \
+				mrpt::typemeta::TTypeName<K>::get().c_str()));                 \
 		uint32_t n;                                                            \
 		in >> n;                                                               \
 		for (uint32_t i = 0; i < n; i++)                                       \
@@ -255,17 +256,17 @@ CArchive& operator>>(CArchive& in, std::pair<T1, T2>& obj)
 		THROW_EXCEPTION(format(
 			"Error: serialized std::pair<%s,%s>'s preamble is wrong: '%s'",
 			mrpt::typemeta::TTypeName<T1>::get().c_str(),
-			mrpt::typemeta::TTypeName<T2>::get().c_str(), pref.c_str()))
+			mrpt::typemeta::TTypeName<T2>::get().c_str(), pref.c_str()));
 	in >> stored_K;
 	if (stored_K != std::string(mrpt::typemeta::TTypeName<T1>::get().c_str()))
 		THROW_EXCEPTION(format(
 			"Error: serialized std::pair first type %s != %s", stored_K.c_str(),
-			mrpt::typemeta::TTypeName<T1>::get().c_str()))
+			mrpt::typemeta::TTypeName<T1>::get().c_str()));
 	in >> stored_V;
 	if (stored_V != std::string(mrpt::typemeta::TTypeName<T2>::get().c_str()))
 		THROW_EXCEPTION(format(
 			"Error: serialized std::pair second type %s != %s",
-			stored_V.c_str(), mrpt::typemeta::TTypeName<T2>::get().c_str()))
+			stored_V.c_str(), mrpt::typemeta::TTypeName<T2>::get().c_str()));
 	in >> obj.first >> obj.second;
 	return in;
 }

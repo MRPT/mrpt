@@ -398,7 +398,7 @@ void CFeature::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		}
 		break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -487,7 +487,7 @@ float CFeature::descriptorDistanceTo(
 			descriptorToUse = descLATCH;
 		else
 			THROW_EXCEPTION(
-				"Feature has no descriptors and descriptorToUse=descAny")
+				"Feature has no descriptors and descriptorToUse=descAny");
 	}
 
 	switch (descriptorToUse)
@@ -1154,7 +1154,7 @@ void CFeatureList::loadFromTextFile(const std::string& filename)
 			THROW_EXCEPTION(format(
 				"%s:%d: Error parsing features text file (%s).",
 				filename.c_str(), (int)parser.getCurrentLineNumber(),
-				msg.c_str()))
+				msg.c_str()));
 		}
 	}
 

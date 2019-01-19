@@ -218,7 +218,7 @@ class CConfigFileBase
 		{
 			// Parse the text into a vector:
 			if (!outMatrix.fromMatlabStringFormat(aux))
-				THROW_EXCEPTION_FMT("Error parsing matrix: '%s'", aux.c_str())
+				THROW_EXCEPTION_FMT("Error parsing matrix: '%s'", aux.c_str());
 		}
 	}
 
@@ -267,7 +267,7 @@ class CConfigFileBase
 			{
 				THROW_EXCEPTION_FMT(
 					"Invalid value '%s' for enum type while reading key='%s'.",
-					sVal.c_str(), name.c_str())
+					sVal.c_str(), name.c_str());
 			}
 		}
 		MRPT_END

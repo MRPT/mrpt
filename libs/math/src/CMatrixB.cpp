@@ -41,7 +41,7 @@ void CMatrixB::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			in >> size_bool;
 			if (size_bool != sizeof(m_Val[0][0]))
 				THROW_EXCEPTION(
-					"Error: size of 'bool' is different in serialized data!")
+					"Error: size of 'bool' is different in serialized data!");
 
 			uint32_t nRows, nCols;
 
@@ -56,7 +56,7 @@ void CMatrixB::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		}
 		break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

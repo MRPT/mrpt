@@ -66,7 +66,7 @@ void CPTG_DiffDrive_alpha::serializeFrom(
 			in >> cte_a0v >> cte_a0w;
 			break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

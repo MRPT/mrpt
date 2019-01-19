@@ -184,7 +184,7 @@ void CColorBar::serializeFrom(
 				m_label_format >> m_label_font_size >> m_disable_depth_test;
 			break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	CRenderizableDisplayList::notifyChange();
 }

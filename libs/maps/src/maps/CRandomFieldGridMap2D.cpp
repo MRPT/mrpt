@@ -2459,7 +2459,7 @@ void CRandomFieldGridMap2D::updateMapEstimation()
 			break;
 		default:
 			THROW_EXCEPTION(
-				"insertObservation() isn't implemented for selected 'mapType'")
+				"insertObservation() isn't implemented for selected 'mapType'");
 	};
 }
 
@@ -2492,7 +2492,7 @@ void CRandomFieldGridMap2D::insertIndividualReading(
 			break;
 		default:
 			THROW_EXCEPTION(
-				"insertObservation() isn't implemented for selected 'mapType'")
+				"insertObservation() isn't implemented for selected 'mapType'");
 	};
 }
 

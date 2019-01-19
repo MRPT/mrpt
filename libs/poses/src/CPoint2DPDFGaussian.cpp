@@ -64,7 +64,7 @@ void CPoint2DPDFGaussian::serializeFrom(
 		}
 		break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 void CPoint2DPDFGaussian::serializeTo(
@@ -90,7 +90,7 @@ void CPoint2DPDFGaussian::serializeFrom(
 		}
 		break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	}
 }
 

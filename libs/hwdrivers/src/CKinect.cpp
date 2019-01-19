@@ -118,7 +118,7 @@ CKinect::CKinect()
 
 #if !MRPT_HAS_KINECT
 	THROW_EXCEPTION(
-		"MRPT was compiled without support for Kinect. Please, rebuild it.")
+		"MRPT was compiled without support for Kinect. Please, rebuild it.");
 #endif
 }
 
@@ -388,7 +388,7 @@ void CKinect::open()
 	// Open the given device number:
 	if (freenect_open_device(f_ctx, f_dev_ptr, m_user_device_number) < 0)
 		THROW_EXCEPTION_FMT(
-			"Error opening Kinect sensor with index: %d", m_user_device_number)
+			"Error opening Kinect sensor with index: %d", m_user_device_number);
 
 	// Setup:
 	if (m_initial_tilt_angle != 360)  // 360 means no motor command.
@@ -721,7 +721,7 @@ void CKinect::setPathForExternalImages(const std::string& directory)
 	//	{
 	//		THROW_EXCEPTION_FMT("Error: Cannot create the directory for
 	// externally
-	// saved images: %s",directory.c_str() )
+	// saved images: %s",directory.c_str() );
 	//	}
 	//	m_path_for_external_images = directory;
 }

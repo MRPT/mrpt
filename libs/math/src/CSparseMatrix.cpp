@@ -164,10 +164,10 @@ void CSparseMatrix::insert_entry(
 	if (!isTriplet())
 		THROW_EXCEPTION(
 			"insert_entry() is only available for sparse matrix in 'triplet' "
-			"format.")
+			"format.");
 	if (!cs_entry(&sparse_matrix, row, col, val))
 		THROW_EXCEPTION(
-			"Error inserting element in sparse matrix (out of mem?)")
+			"Error inserting element in sparse matrix (out of mem?)");
 }
 
 /** Copy operator from another existing object */
@@ -265,7 +265,7 @@ void CSparseMatrix::compressFromTriplet()
 	if (!isTriplet())
 		THROW_EXCEPTION(
 			"compressFromTriplet(): Matrix is already in column-compressed "
-			"format.")
+			"format.");
 
 	cs* sm = cs_compress(&this->sparse_matrix);
 	copy_fast(sm);

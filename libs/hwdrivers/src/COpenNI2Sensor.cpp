@@ -104,7 +104,7 @@ void COpenNI2Sensor::initialize()
 				{
 					THROW_EXCEPTION(mrpt::format(
 						"Failed to find sensor_id from serial number(%d).",
-						m_serial_number))
+						m_serial_number));
 				}
 			}
 			else
@@ -113,7 +113,7 @@ void COpenNI2Sensor::initialize()
 		if (isOpen(m_user_device_number) == false)
 		{
 			THROW_EXCEPTION(mrpt::format(
-				"Failed to open OpenNI2 device(%d).", m_user_device_number))
+				"Failed to open OpenNI2 device(%d).", m_user_device_number));
 		}
 		/* If camera parameter is not read from ini file, we get the parameters
 		 * from OpenNI2. */
@@ -377,7 +377,7 @@ void COpenNI2Sensor::setPathForExternalImages(const std::string& directory)
 	//	{
 	//		THROW_EXCEPTION_FMT("Error: Cannot create the directory for
 	// externally
-	// saved images: %s",directory.c_str() )
+	// saved images: %s",directory.c_str() );
 	//	}
 	//	m_path_for_external_images = directory;
 }

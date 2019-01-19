@@ -125,7 +125,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 	else
 		THROW_EXCEPTION(
 			"Metric maps must be of classes COccupancyGridMap2D or "
-			"CMultiMetricMap")
+			"CMultiMetricMap");
 
 	ASSERTMSG_(
 		m1->getResolution() == m2->getResolution(),

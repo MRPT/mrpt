@@ -80,7 +80,7 @@ void CVehicleVelCmd_DiffDriven::serializeFrom(
 			in >> lin_vel >> ang_vel;
 			break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

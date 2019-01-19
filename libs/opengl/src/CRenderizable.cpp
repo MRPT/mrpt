@@ -224,7 +224,7 @@ void CRenderizable::readFromStreamRender(mrpt::serialization::CArchive& in)
 					"Can't parse CRenderizable standard data field: corrupt "
 					"data stream or format in a newer MRPT format? "
 					"(serialization version=%u)",
-					static_cast<unsigned int>(serialization_version))
+					static_cast<unsigned int>(serialization_version));
 		};
 	}
 	else

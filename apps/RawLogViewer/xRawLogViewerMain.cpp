@@ -1644,9 +1644,6 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 		ID_MENUITEM9, wxEVT_COMMAND_MENU_SELECTED,
 		(wxObjectEventFunction)&xRawLogViewerFrame::OnShowImagesAsVideo);
 	Connect(
-		ID_MENUITEM28, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuVisualOdometry);
-	Connect(
 		ID_MENUITEM71, wxEVT_COMMAND_MENU_SELECTED,
 		(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuMono2Stereo);
 	Connect(
@@ -2954,7 +2951,7 @@ void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent& event)
 					acts->getBestMovementEstimation();
 				if (!action)
 					THROW_EXCEPTION_FMT(
-						"No odometry action found in rawlog entry %i!", i)
+						"No odometry action found in rawlog entry %i!", i);
 
 				CPose2D poseIncrement = action->poseChange->getMeanVal();
 

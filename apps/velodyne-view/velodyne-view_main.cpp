@@ -95,7 +95,7 @@ void thread_grabbing(TThreadParam& p)
 			if (!f_out_rawlog.open(arg_out_rawlog.getValue()))
 				THROW_EXCEPTION_FMT(
 					"Error creating output rawlog file: %s",
-					arg_out_rawlog.getValue().c_str())
+					arg_out_rawlog.getValue().c_str());
 		}
 		auto arch = mrpt::serialization::archiveFrom(f_out_rawlog);
 

@@ -73,7 +73,8 @@ COpenNI2Generic::COpenNI2Generic()
 	{
 #if MRPT_HAS_OPENNI2
 		THROW_EXCEPTION(mrpt::format(
-			"After initialization:\n %s\n", openni::OpenNI::getExtendedError()))
+			"After initialization:\n %s\n",
+			openni::OpenNI::getExtendedError()));
 #endif
 	}
 }
@@ -102,7 +103,7 @@ COpenNI2Generic::COpenNI2Generic(
 #if MRPT_HAS_OPENNI2
 			THROW_EXCEPTION(mrpt::format(
 				"After initialization:\n %s\n",
-				openni::OpenNI::getExtendedError()))
+				openni::OpenNI::getExtendedError()));
 #endif
 		}
 	}
@@ -267,7 +268,7 @@ void COpenNI2Generic::open(unsigned sensor_id)
 	if ((int)sensor_id >= getNumDevices())
 	{
 		THROW_EXCEPTION(
-			"Sensor index is higher than the number of connected devices.")
+			"Sensor index is higher than the number of connected devices.");
 	}
 	showLog(mrpt::format("[%s]\n", __FUNCTION__));
 	showLog(mrpt::format(" open[%d] ...\n", sensor_id));
@@ -402,7 +403,7 @@ void COpenNI2Generic::close(unsigned sensor_id)
 	if ((int)sensor_id >= getNumDevices())
 	{
 		THROW_EXCEPTION(
-			"Sensor index is higher than the number of connected devices.")
+			"Sensor index is higher than the number of connected devices.");
 	}
 	vDevices[sensor_id]->close();
 #else
@@ -433,7 +434,7 @@ void COpenNI2Generic::getNextFrameRGB(
 	if ((int)sensor_id >= getNumDevices())
 	{
 		THROW_EXCEPTION(
-			"Sensor index is higher than the number of connected devices.")
+			"Sensor index is higher than the number of connected devices.");
 	}
 	if (vDevices[sensor_id]->getNextFrameRGB(
 			rgb_img, timestamp, there_is_obs, hardware_error) == false)
@@ -475,7 +476,7 @@ void COpenNI2Generic::getNextFrameD(
 	if ((int)sensor_id >= getNumDevices())
 	{
 		THROW_EXCEPTION(
-			"Sensor index is higher than the number of connected devices.")
+			"Sensor index is higher than the number of connected devices.");
 	}
 	if (vDevices[sensor_id]->getNextFrameD(
 			depth_img, timestamp, there_is_obs, hardware_error) == false)
@@ -515,7 +516,7 @@ void COpenNI2Generic::getNextFrameRGBD(
 	if ((int)sensor_id >= getNumDevices())
 	{
 		THROW_EXCEPTION(
-			"Sensor index is higher than the number of connected devices.")
+			"Sensor index is higher than the number of connected devices.");
 	}
 	if (vDevices[sensor_id]->getNextFrameRGBD(
 			out_obs, there_is_obs, hardware_error) == false)

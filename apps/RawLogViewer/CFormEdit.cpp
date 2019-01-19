@@ -1036,7 +1036,7 @@ void CFormEdit::executeOperationOnRawlog(
 			{
 				THROW_EXCEPTION(
 					"File is a 'CRawlog' object. Please save it as a sequence "
-					"of actions/observations.")
+					"of actions/observations.");
 			}
 			else if (newObj->GetRuntimeClass() == CLASS_ID(CSensoryFrame))
 			{

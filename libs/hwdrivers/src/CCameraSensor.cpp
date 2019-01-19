@@ -106,7 +106,7 @@ void CCameraSensor::initialize()
 			m_state = CGenericSensor::ssError;
 			THROW_EXCEPTION(
 				"[CCameraSensor::initialize] ERROR: Couldn't open OpenCV "
-				"camera.")
+				"camera.");
 		}
 	}
 	else if (m_grabber_type == "dc1394")
@@ -125,7 +125,7 @@ void CCameraSensor::initialize()
 			m_state = CGenericSensor::ssError;
 			THROW_EXCEPTION(
 				"[CCameraSensor::initialize] ERROR: Couldn't open dc1394 "
-				"camera.")
+				"camera.");
 		}
 	}
 	else if (m_grabber_type == "bumblebee_dc1394")
@@ -160,7 +160,7 @@ void CCameraSensor::initialize()
 		{
 			m_state = CGenericSensor::ssError;
 			THROW_EXCEPTION_FMT(
-				"Error opening FFmpeg stream: %s", m_ffmpeg_url.c_str())
+				"Error opening FFmpeg stream: %s", m_ffmpeg_url.c_str());
 		}
 	}
 	else if (m_grabber_type == "swissranger")
@@ -264,7 +264,7 @@ void CCameraSensor::initialize()
 		{
 			m_state = CGenericSensor::ssError;
 			THROW_EXCEPTION_FMT(
-				"Error opening rawlog file: %s", m_rawlog_file.c_str())
+				"Error opening rawlog file: %s", m_rawlog_file.c_str());
 		}
 		// File open OK.
 		// Localize the external images directory of this rawlog, if it exists:
@@ -345,7 +345,7 @@ void CCameraSensor::initialize()
 	}
 	else
 		THROW_EXCEPTION_FMT(
-			"Unknown 'grabber_type' found: %s", m_grabber_type.c_str())
+			"Unknown 'grabber_type' found: %s", m_grabber_type.c_str());
 
 	// Change state:
 	cout << "[CCameraSensor::initialize] Done!" << endl;
@@ -1078,7 +1078,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 	{
 		THROW_EXCEPTION(
 			"There is no initialized camera driver: has 'initialize()' been "
-			"called?")
+			"called?");
 	}
 
 	ASSERT_(capture_ok);
@@ -1375,7 +1375,7 @@ void CCameraSensor::setSoftwareTriggerLevel(bool level)
 	else
 	{
 		THROW_EXCEPTION(
-			"Software trigger is not implemented for this camera type")
+			"Software trigger is not implemented for this camera type");
 	}
 }
 
@@ -1389,7 +1389,7 @@ void CCameraSensor::setPathForExternalImages(const std::string& directory)
 		THROW_EXCEPTION_FMT(
 			"Error: Cannot create the directory for externally saved images: "
 			"%s",
-			directory.c_str())
+			directory.c_str());
 	}
 	m_path_for_external_images = directory;
 }

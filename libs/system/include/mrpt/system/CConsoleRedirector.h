@@ -60,7 +60,7 @@ class CConsoleRedirector : public std::streambuf
 		if (append_file) openMode |= std::ios_base::app;
 		m_of.open(out_file.c_str(), openMode);
 		if (!m_of.is_open())
-			THROW_EXCEPTION_FMT("Error opening file: %s", out_file.c_str())
+			THROW_EXCEPTION_FMT("Error opening file: %s", out_file.c_str());
 
 		if (bufferSize)
 		{

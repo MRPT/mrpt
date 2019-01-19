@@ -67,7 +67,7 @@ CSwissRanger3DCamera::CSwissRanger3DCamera()
 #if !MRPT_HAS_SWISSRANGE
 	THROW_EXCEPTION(
 		"MRPT was compiled without support for SwissRanger 3D cameras! Rebuild "
-		"it.")
+		"it.");
 #endif
 }
 
@@ -605,7 +605,7 @@ void CSwissRanger3DCamera::setPathForExternalImages(
 		THROW_EXCEPTION_FMT(
 			"Error: Cannot create the directory for externally saved images: "
 			"%s",
-			directory.c_str())
+			directory.c_str());
 	}
 	m_path_for_external_images = directory;
 }

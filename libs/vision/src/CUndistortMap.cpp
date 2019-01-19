@@ -60,7 +60,7 @@ void CUndistortMap::undistort(
 	MRPT_START
 	if (m_dat_mapx.empty())
 		THROW_EXCEPTION(
-			"Error: setFromCamParams() must be called prior to undistort().")
+			"Error: setFromCamParams() must be called prior to undistort().");
 
 #if MRPT_HAS_OPENCV
 	using namespace cv;
@@ -89,7 +89,7 @@ void CUndistortMap::undistort(mrpt::img::CImage& in_out_img) const
 	MRPT_START
 	if (m_dat_mapx.empty())
 		THROW_EXCEPTION(
-			"Error: setFromCamParams() must be called prior to undistort().")
+			"Error: setFromCamParams() must be called prior to undistort().");
 
 #if MRPT_HAS_OPENCV
 	cv::Mat mapx(

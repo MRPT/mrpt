@@ -41,7 +41,7 @@ CCascadeClassifierDetection::CCascadeClassifierDetection()
 #if !MRPT_HAS_OPENCV || MRPT_OPENCV_VERSION_NUM < 0x200
 	THROW_EXCEPTION(
 		"CCascadeClassifierDetection class requires MRPT built against OpenCV "
-		">=2.0")
+		">=2.0");
 #endif
 }
 
