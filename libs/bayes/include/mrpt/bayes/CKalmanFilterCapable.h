@@ -511,7 +511,7 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 		MRPT_START
 		THROW_EXCEPTION(
 			"Inverse sensor model required but not implemented in derived "
-			"class.")
+			"class.");
 		MRPT_END
 	}
 

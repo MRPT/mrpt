@@ -30,21 +30,21 @@ using namespace Fc2Triclops;
 #include <opencv2/imgproc/imgproc_c.h>
 #endif
 
-#define CHECK_FC2_ERROR(_err)                                    \
-	{                                                            \
-		if (_err != PGRERROR_OK)                                 \
-		{                                                        \
-			THROW_EXCEPTION_FMT(                                 \
-				"FlyCapture2 error:\n%s", _err.GetDescription()) \
-		}                                                        \
+#define CHECK_FC2_ERROR(_err)                                     \
+	{                                                             \
+		if (_err != PGRERROR_OK)                                  \
+		{                                                         \
+			THROW_EXCEPTION_FMT(                                  \
+				"FlyCapture2 error:\n%s", _err.GetDescription()); \
+		}                                                         \
 	}
-#define CHECK_TRICLOPS_ERROR(_err)                                    \
-	{                                                                 \
-		if (_err != TriclopsErrorOk)                                  \
-		{                                                             \
-			THROW_EXCEPTION_FMT(                                      \
-				"Triclops Error:\n'%s'", triclopsErrorToString(_err)) \
-		}                                                             \
+#define CHECK_TRICLOPS_ERROR(_err)                                     \
+	{                                                                  \
+		if (_err != TriclopsErrorOk)                                   \
+		{                                                              \
+			THROW_EXCEPTION_FMT(                                       \
+				"Triclops Error:\n'%s'", triclopsErrorToString(_err)); \
+		}                                                              \
 	}
 #define FC2_CAM reinterpret_cast<FlyCapture2::Camera*>(m_camera)
 #define FC2_CAM_INFO reinterpret_cast<FlyCapture2::CameraInfo*>(m_camera_info)
@@ -123,7 +123,7 @@ T fc2_defstr2num(const std::string& str)
 		if (mrpt::system::strCmpI(fc2_vals[i].str, s.c_str()))
 			return fc2_vals[i].val;
 	}
-	THROW_EXCEPTION_FMT("Error: Unknown FlyCapture2 constant: %s", s.c_str())
+	THROW_EXCEPTION_FMT("Error: Unknown FlyCapture2 constant: %s", s.c_str());
 }
 
 template <typename T>
@@ -135,7 +135,7 @@ const char* fc2_defnum2str(const T& val)
 		return fc2_vals[i].str;
 	else
 		THROW_EXCEPTION_FMT(
-			"Error: Unknown FlyCapture2 enum: %i", static_cast<int>(val))
+			"Error: Unknown FlyCapture2 enum: %i", static_cast<int>(val));
 }
 #endif
 
@@ -298,7 +298,7 @@ void CImageGrabber_FlyCapture2::open(
 			THROW_EXCEPTION(mrpt::format(
 				"Error: camera_index to open is '%u', but only '%u' "
 				"cameras were detected in the system.",
-				m_options.camera_index, numCameras))
+				m_options.camera_index, numCameras));
 
 		fe = busMgr.GetCameraFromIndex(m_options.camera_index, &guid);
 		CHECK_FC2_ERROR(fe)
@@ -358,7 +358,8 @@ void CImageGrabber_FlyCapture2::open(
 					"Camera mode '%s' + '%s' is not supported by this "
 					"camera. Current mode is %d, current rate is %d.",
 					m_options.videomode.c_str(), m_options.framerate.c_str(),
-					static_cast<int>(curVidMode), static_cast<int>(curVidRate)))
+					static_cast<int>(curVidMode),
+					static_cast<int>(curVidRate)));
 			}
 
 			fe = FC2_CAM->SetVideoModeAndFrameRate(vidMode, vidRate);
@@ -901,6 +902,6 @@ bool CImageGrabber_FlyCapture2::getObservation(
 	}
 #else
 	THROW_EXCEPTION(
-		"MRPT compiled without support for FlyCapture2, Triclops or OpenCV")
+		"MRPT compiled without support for FlyCapture2, Triclops or OpenCV");
 #endif
 }

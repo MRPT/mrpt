@@ -225,7 +225,6 @@ class xRawLogViewerFrame : public wxFrame
 	void OnMenuRegenerateGPSTimestamps(wxCommandEvent& event);
 	void OnMenuShiftTimestampsByLabel(wxCommandEvent& event);
 	void OnMenuShowTips(wxCommandEvent& event);
-	void OnMenuVisualOdometry(wxCommandEvent& event);
 	void OnbtnEditCommentsClick(wxCommandEvent& event);
 	void OnMenuInsertComment(wxCommandEvent& event);
 	void OnMenuDrawGPSPath(wxCommandEvent& event);

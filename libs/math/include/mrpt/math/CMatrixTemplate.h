@@ -213,7 +213,7 @@ class CMatrixTemplate
 				"length %lu",
 				static_cast<long unsigned>(m_Rows),
 				static_cast<long unsigned>(m_Cols),
-				static_cast<long unsigned>(N)))
+				static_cast<long unsigned>(N)));
 		size_t idx = 0;
 		for (size_t i = 0; i < m_Rows; i++)
 			for (size_t j = 0; j < m_Cols; j++)
@@ -236,7 +236,7 @@ class CMatrixTemplate
 				"length %lu",
 				static_cast<long unsigned>(m_Rows),
 				static_cast<long unsigned>(m_Cols),
-				static_cast<long unsigned>(N)))
+				static_cast<long unsigned>(N)));
 		typename V::const_iterator it = theVector.begin();
 		for (size_t i = 0; i < m_Rows; i++)
 			for (size_t j = 0; j < m_Cols; j++)
@@ -275,7 +275,7 @@ class CMatrixTemplate
 			THROW_EXCEPTION(format(
 				"Mismatch between matrix size %lu x %lu and array of "
 				"length %lu",
-				m_Rows, m_Cols, N))
+				m_Rows, m_Cols, N));
 		}
 		size_t idx = 0;
 		for (size_t i = 0; i < m_Rows; i++)

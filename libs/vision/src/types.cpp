@@ -34,7 +34,7 @@ void TSequenceFeatureObservations::saveToTextFile(
 
 	ofstream f(filName.c_str());
 	if (!f.is_open())
-		THROW_EXCEPTION_FMT("Can't open file: %s", filName.c_str())
+		THROW_EXCEPTION_FMT("Can't open file: %s", filName.c_str());
 
 	if (!skipFirstCommentLine)
 		f << "% FRAME_ID  FEAT_ID   X         Y     \n"
@@ -56,7 +56,7 @@ void TSequenceFeatureObservations::loadFromTextFile(const std::string& filName)
 
 	ifstream f(filName.c_str());
 	if (!f.is_open())
-		THROW_EXCEPTION_FMT("Can't open file: %s", filName.c_str())
+		THROW_EXCEPTION_FMT("Can't open file: %s", filName.c_str());
 
 	unsigned int linNum = 0;
 	while (!f.fail())
@@ -77,7 +77,7 @@ void TSequenceFeatureObservations::loadFromTextFile(const std::string& filName)
 		if (!(s >> camID >> featID >> px.x >> px.y))
 			THROW_EXCEPTION(format(
 				"%s:%u: Error parsing line: '%s'", filName.c_str(), linNum,
-				lin.c_str()))
+				lin.c_str()));
 
 		BASE::push_back(TFeatureObservation(featID, camID, px));
 	}

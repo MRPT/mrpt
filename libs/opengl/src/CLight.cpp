@@ -74,7 +74,7 @@ void CLight::readFromStream(mrpt::serialization::CArchive& in)
 				quadratic_attenuation >> spot_exponent >> spot_cutoff;
 			break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

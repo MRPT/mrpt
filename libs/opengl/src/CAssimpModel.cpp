@@ -128,7 +128,7 @@ void CAssimpModel::serializeFrom(
 		}
 		break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	CRenderizableDisplayList::notifyChange();
 }
@@ -514,7 +514,7 @@ void load_textures(
 {
 	if (scene->HasTextures())
 		THROW_EXCEPTION(
-			"Support for meshes with embedded textures is not implemented")
+			"Support for meshes with embedded textures is not implemented");
 
 	textureIdMap.clear();
 

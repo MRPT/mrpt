@@ -394,7 +394,7 @@ bool CFFMPEG_InputStream::retrieveFrame(mrpt::img::CImage& out_img)
 				if (ctx->pFrameRGB->linesize[0] !=
 					((m_grab_as_grayscale ? 1 : 3) * ctx->pCodecCtx->width))
 					THROW_EXCEPTION(
-						"FIXME: linesize!=width case not handled yet.")
+						"FIXME: linesize!=width case not handled yet.");
 
 				out_img.loadFromMemoryBuffer(
 					ctx->pCodecCtx->width, ctx->pCodecCtx->height,

@@ -58,7 +58,7 @@ void CMemoryStream::resize(uint64_t newSize)
 	if (m_read_only)
 		THROW_EXCEPTION(
 			"[CMemoryStream::resize] Cannot change memory block size since it "
-			"was set with 'assign'")
+			"was set with 'assign'");
 
 	if (!newSize)
 	{  // Free buffer:

@@ -169,7 +169,7 @@ void CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
 		vector<string> lstStrChanns;
 		mrpt::system::tokenize(sChanns, " \t,", lstStrChanns);
 		if (lstStrChanns.empty())
-			THROW_EXCEPTION_FMT("List of channels for task %u is empty!", i)
+			THROW_EXCEPTION_FMT("List of channels for task %u is empty!", i);
 
 		MY_LOAD_HERE_CONFIG_VAR(
 			sTask + string(".samplesPerSecond"), double, t.samplesPerSecond,
@@ -378,7 +378,7 @@ void CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
 				THROW_EXCEPTION_FMT(
 					"Unknown channel type '%s'! See the docs of "
 					"CNationalInstrumentsDAQ",
-					lstStrChann.c_str())
+					lstStrChann.c_str());
 			}
 		}  // end for each "k" channel in channel "i"
 	}  // end for "i", each task
@@ -431,7 +431,7 @@ int daqmx_defstr2num(const std::string& str)
 	{
 		if (strCmpI(daqmx_vals[i].str, s.c_str())) return daqmx_vals[i].val;
 	}
-	THROW_EXCEPTION_FMT("Error: Unknown DAQmx constant: %s", s.c_str())
+	THROW_EXCEPTION_FMT("Error: Unknown DAQmx constant: %s", s.c_str());
 }
 #endif
 

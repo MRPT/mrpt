@@ -67,7 +67,7 @@ bool mrpt::obs::carmen_log_parse_line(
 			  accuracy >> remission_mode))
 			THROW_EXCEPTION_FMT(
 				"Error parsing line from CARMEN log (params):\n'%s'\n",
-				line.c_str())
+				line.c_str());
 
 		size_t nRanges;
 		S >> nRanges;
@@ -92,7 +92,7 @@ bool mrpt::obs::carmen_log_parse_line(
 		if (!(S >> remmision_count))
 			THROW_EXCEPTION_FMT(
 				"Error parsing line from CARMEN log (remmision_count):\n'%s'\n",
-				line.c_str())
+				line.c_str());
 
 		vector<double> remission;
 		remission.resize(remmision_count);
@@ -103,7 +103,7 @@ bool mrpt::obs::carmen_log_parse_line(
 				THROW_EXCEPTION_FMT(
 					"Error parsing line from CARMEN log (remmision "
 					"vals):\n'%s'\n",
-					line.c_str())
+					line.c_str());
 		}
 
 		mrpt::math::TPose2D globalLaserPose;
@@ -114,7 +114,7 @@ bool mrpt::obs::carmen_log_parse_line(
 			  globalRobotPose.phi))
 			THROW_EXCEPTION_FMT(
 				"Error parsing line from CARMEN log (poses):\n'%s'\n",
-				line.c_str())
+				line.c_str());
 
 		// Compute pose of laser on the robot:
 		obsLaser->sensorPose =
@@ -169,41 +169,41 @@ bool mrpt::obs::carmen_log_parse_line(
 		if (!(S >> obsLaser->sensorLabel >> nRanges))
 			THROW_EXCEPTION_FMT(
 				"Error parsing line from CARMEN log (params):\n'%s'\n",
-				line.c_str())
+				line.c_str());
 
-			// Params:
-			{
-				double maxRange = 81.0;
-				double resolutionDeg = 0.5;
-				using namespace std::string_literals;
+		// Params:
+		{
+			double maxRange = 81.0;
+			double resolutionDeg = 0.5;
+			using namespace std::string_literals;
 
-				if (line[0] == 'F')
-				{  // front:
-					maxRange = atof(
-						global_log_params
-							.getWithDefaultVal("robot_front_laser_max", "81.0"s)
-							.c_str());
-					resolutionDeg =
-						atof(global_log_params
-								 .getWithDefaultVal(
-									 "laser_front_laser_resolution", "0.5"s)
-								 .c_str());
-				}
-				else if (line[0] == 'R')
-				{  // rear:
-					maxRange = atof(
-						global_log_params
-							.getWithDefaultVal("robot_rear_laser_max", "81.0"s)
-							.c_str());
-					resolutionDeg =
-						atof(global_log_params
-								 .getWithDefaultVal(
-									 "laser_rear_laser_resolution", "0.5"s)
-								 .c_str());
-				}
-				obsLaser->maxRange = maxRange;
-				obsLaser->aperture = DEG2RAD(resolutionDeg) * nRanges;
+			if (line[0] == 'F')
+			{  // front:
+				maxRange = atof(
+					global_log_params
+						.getWithDefaultVal("robot_front_laser_max", "81.0"s)
+						.c_str());
+				resolutionDeg =
+					atof(global_log_params
+							 .getWithDefaultVal(
+								 "laser_front_laser_resolution", "0.5"s)
+							 .c_str());
 			}
+			else if (line[0] == 'R')
+			{  // rear:
+				maxRange =
+					atof(global_log_params
+							 .getWithDefaultVal("robot_rear_laser_max", "81.0"s)
+							 .c_str());
+				resolutionDeg =
+					atof(global_log_params
+							 .getWithDefaultVal(
+								 "laser_rear_laser_resolution", "0.5"s)
+							 .c_str());
+			}
+			obsLaser->maxRange = maxRange;
+			obsLaser->aperture = DEG2RAD(resolutionDeg) * nRanges;
+		}
 
 		obsLaser->resizeScan(nRanges);
 
@@ -228,7 +228,7 @@ bool mrpt::obs::carmen_log_parse_line(
 			  globalRobotPose.phi))
 			THROW_EXCEPTION_FMT(
 				"Error parsing line from CARMEN log (poses):\n'%s'\n",
-				line.c_str())
+				line.c_str());
 
 		// Compute pose of laser on the robot:
 		obsLaser->sensorPose =
@@ -273,7 +273,7 @@ bool mrpt::obs::carmen_log_parse_line(
 		if (!(S >> key >> val))
 			THROW_EXCEPTION_FMT(
 				"Error parsing line from CARMEN log (PARAM):\n'%s'\n",
-				line.c_str())
+				line.c_str());
 
 		if (!key.empty() && !val.empty())
 

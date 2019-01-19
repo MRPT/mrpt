@@ -146,7 +146,7 @@ void CFeatureExtraction::extractFeaturesSURF(
 #else
 	THROW_EXCEPTION(
 		"Method not available: MRPT compiled without OpenCV, or against a "
-		"version of OpenCV without SURF")
+		"version of OpenCV without SURF");
 #endif  // MRPT_HAS_OPENCV
 }  // end extractFeaturesSURF
 
@@ -233,6 +233,6 @@ void CFeatureExtraction::internal_computeSurfDescriptors(
 #else
 	THROW_EXCEPTION(
 		"Method not available: MRPT compiled without OpenCV, or against a "
-		"version of OpenCV without SURF")
+		"version of OpenCV without SURF");
 #endif  // MRPT_HAS_OPENCV
 }  // end internal_computeSurfDescriptors

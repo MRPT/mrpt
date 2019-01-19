@@ -866,7 +866,7 @@ double vision::computeSAD(const CImage& p1, const CImage& p2)
 	return res / (255.0 * w * h);
 #else
 	THROW_EXCEPTION(
-		"MRPT compiled without OpenCV, can't compute SAD of images!")
+		"MRPT compiled without OpenCV, can't compute SAD of images!");
 #endif
 	MRPT_END
 }

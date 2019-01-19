@@ -325,7 +325,7 @@ void CAngularObservationMesh::serializeFrom(
 			in >> pitchBounds >> scanSet >> mWireframe >> mEnableTransparency;
 			break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	meshUpToDate = false;
 }

@@ -193,7 +193,7 @@ void CArrow::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		}
 		break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	CRenderizableDisplayList::notifyChange();
 }
@@ -232,7 +232,7 @@ void CArrow::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 		}
 		break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	}
 }
 void CArrow::getBoundingBox(

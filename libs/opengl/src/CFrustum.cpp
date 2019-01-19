@@ -158,7 +158,7 @@ void CFrustum::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 				m_planes_color.A;
 			break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	CRenderizableDisplayList::notifyChange();
 }

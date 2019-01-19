@@ -345,7 +345,7 @@ void CPose3DQuat::serializeFrom(
 		}
 		break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 /** Serialize CSerializable Object to CSchemeArchiveBase derived object*/
@@ -381,7 +381,7 @@ void CPose3DQuat::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 		}
 		break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	}
 }
 /*---------------------------------------------------------------

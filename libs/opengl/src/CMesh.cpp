@@ -435,7 +435,7 @@ void CMesh::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			trianglesUpToDate = false;
 			break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	trianglesUpToDate = false;
 	CRenderizableDisplayList::notifyChange();
