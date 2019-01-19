@@ -34,6 +34,7 @@
 #include <iterator>
 #include <algorithm>
 #include <type_traits>  // is_base_of()
+#include <optional>
 #include <memory>
 
 namespace mrpt
@@ -358,9 +359,13 @@ class CNetworkOfPoses
 	 *
 	 * \sa node, root
 	 */
-	inline void dijkstra_nodes_estimate()
+	inline void dijkstra_nodes_estimate(
+		std::optional<std::reference_wrapper<std::map<TNodeID, size_t>>>
+			topological_distances = std::nullopt)
 	{
-		detail::graph_ops<self_t>::graph_of_poses_dijkstra_init(this);
+		detail::graph_ops<self_t>::graph_of_poses_dijkstra_init(
+			this, topological_distances ? &topological_distances.value().get()
+										: nullptr);
 	}
 
 	/** Look for duplicated edges (even in opposite directions) between all
