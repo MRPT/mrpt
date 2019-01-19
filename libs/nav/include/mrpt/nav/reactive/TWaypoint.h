@@ -36,6 +36,13 @@ namespace mrpt
 
 		double  allowed_distance; //!< [Must be set by the user] How close should the robot get to this waypoint for it to be considered reached.
 
+		/** (Default=1.0) Desired robot speed at the target, as a ratio of the full robot speed. 
+		  * That is: speed_ratio=1 means that the user wants the robot to navigate to the target 
+		  * and smoothly continue to the next one when reached. speed_ratio=0 on the other hand means
+		  * that the robot should approach this waypoint slowing down and end up totally stopped.
+		  */
+		double  speed_ratio;
+
 		/** [Default=true] Whether it is allowed to the navigator to proceed to a more advanced waypoint 
 		  * in the sequence if it determines that it is easier to skip this one (e.g. it seems blocked by dynamic obstacles).
 		  * This value is ignored for the last waypoint in a sequence, since it is always considered to be the 
@@ -45,7 +52,7 @@ namespace mrpt
 
 		bool isValid() const; //!< Check whether all the minimum mandatory fields have been filled by the user.
 		TWaypoint(); //!< Ctor with default values
-		TWaypoint(double target_x, double target_y, double allowed_distance, bool allow_skip = true, double target_heading_ = INVALID_NUM);
+		TWaypoint(double target_x, double target_y, double allowed_distance, bool allow_skip = true, double target_heading_ = INVALID_NUM, double  speed_ratio_ = 1.0);
 		std::string getAsText() const; //!< get in human-readable format
 
 		static const double INVALID_NUM; //!< The default value of fields (used to detect non-set values)
