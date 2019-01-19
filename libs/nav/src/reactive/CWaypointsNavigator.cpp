@@ -340,7 +340,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 				ti.targetAllowedDistance = wp.allowed_distance;
 				ti.targetIsRelative = false;
 				ti.targetIsIntermediaryWaypoint = !is_final_wp;
-				ti.targetDesiredRelSpeed = (is_final_wp || (wp.target_heading != TWaypoint::INVALID_NUM)) ? params_waypoints_navigator.rel_speed_for_stop_waypoints : 1.;
+				ti.targetDesiredRelSpeed = wp.speed_ratio;
 
 				// For backwards compat. with single-target code, write single target info too for the first, next, waypoint:
 				if (wp_idx == wps.waypoint_index_current_goal) {
@@ -422,7 +422,6 @@ void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::loadFromConfigFi
 	MRPT_LOAD_CONFIG_VAR(max_distance_to_allow_skip_waypoint, double, c, s);
 	MRPT_LOAD_CONFIG_VAR(min_timesteps_confirm_skip_waypoints, int, c, s);
 	MRPT_LOAD_CONFIG_VAR_DEGREES(waypoint_angle_tolerance, c, s);
-	MRPT_LOAD_CONFIG_VAR(rel_speed_for_stop_waypoints, double, c, s);
 	MRPT_LOAD_CONFIG_VAR(multitarget_look_ahead, int, c, s);
 }
 
@@ -431,7 +430,6 @@ void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::saveToConfigFile
 	MRPT_SAVE_CONFIG_VAR_COMMENT(max_distance_to_allow_skip_waypoint, "Max distance to `foresee` waypoints [meters]. (<0: unlimited)");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(min_timesteps_confirm_skip_waypoints, "Min timesteps a `future` waypoint must be seen as reachable to become the active one.");
 	MRPT_SAVE_CONFIG_VAR_DEGREES_COMMENT("waypoint_angle_tolerance", waypoint_angle_tolerance, "Angular error tolerance for waypoints with an assigned heading [deg] (Default: 5 deg)");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(rel_speed_for_stop_waypoints, "[0,1] Relative speed when aiming at a stop-point waypoint (Default=0.10)");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(multitarget_look_ahead, ">=0 number of waypoints to forward to the underlying navigation engine, to ease obstacles avoidance when a waypoint is blocked (Default=0 : none)");
 }
 
@@ -439,7 +437,6 @@ CWaypointsNavigator::TWaypointsNavigatorParams::TWaypointsNavigatorParams() :
     max_distance_to_allow_skip_waypoint(-1.0),
     min_timesteps_confirm_skip_waypoints(1),
     waypoint_angle_tolerance( mrpt::utils::DEG2RAD(5.0) ),
-    rel_speed_for_stop_waypoints(0.10),
     multitarget_look_ahead(0)
 {
 }

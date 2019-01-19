@@ -29,6 +29,7 @@
 	- \ref mrpt_nav_grp
 		- Add virtual method CAbstractPTGBasedReactive::getHoloMethod()
 		- New method CAbstractPTGBasedReactive::enableRethrowNavExceptions() to rethrow exceptions during navigation.
+		- Waypoints now have a field `speed_ratio` which is directly forwarded to the low-level reactive navigator.
 	- BUG FIXES:
 		- Fix missing "-ldl" linker flag.
 		- Fix building against wxWidgets 3.1.1 in Windows (zlib link error).

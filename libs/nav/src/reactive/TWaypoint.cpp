@@ -26,15 +26,17 @@ TWaypoint::TWaypoint() :
 	target_heading(INVALID_NUM),
 	target_frame_id("map"),
 	allowed_distance(INVALID_NUM),
+	speed_ratio(1.0),
 	allow_skip(true)
 {
 }
 
-TWaypoint::TWaypoint(double target_x, double target_y, double allowed_distance_, bool allow_skip_, double target_heading_) :
+TWaypoint::TWaypoint(double target_x, double target_y, double allowed_distance_, bool allow_skip_, double target_heading_, double speed_ratio_) :
 	target(target_x,target_y),
 	target_heading(target_heading_),
 	target_frame_id("map"),
 	allowed_distance(allowed_distance_),
+	speed_ratio(speed_ratio_),
 	allow_skip(allow_skip_)
 {
 }
@@ -63,7 +65,7 @@ std::string TWaypoint::getAsText() const
 	else s+=" (**allowed_distance not set!!**) ";
 
 	s+= (allow_skip ? " allow_skip: YES" : " allow_skip: NO ");
-
+	s+= mrpt::format(" speed_ratio: %.01f", speed_ratio);
 	return s;
 }
 
@@ -224,6 +226,7 @@ void TWaypointSequence::save(mrpt::utils::CConfigFileBase &c, const std::string 
 		c.write(s, mrpt::format("wp%03u_target_y", i), wp.target.y, NP);
 		c.write(s, mrpt::format("wp%03u_target_frame_id", i), wp.target_frame_id, NP);
 		c.write(s, mrpt::format("wp%03u_target_heading", i), wp.target_heading, NP);
+		c.write(s, mrpt::format("wp%03u_speed_ratio", i), wp.speed_ratio, NP);
 	}
 }
 
@@ -245,6 +248,6 @@ void TWaypointSequence::load(const mrpt::utils::CConfigFileBase &c, const std::s
 		wp.target_frame_id = c.read_string(s, mrpt::format("wp%03u_target_frame_id", i), "map", false);
 		double hd = c.read_double(s, mrpt::format("wp%03u_target_heading", i), mrpt::nav::TWaypoint::INVALID_NUM);
 		wp.target_heading = (hd > 100) ? mrpt::nav::TWaypoint::INVALID_NUM : hd;
+		wp.speed_ratio = c.read_double(s, mrpt::format("wp%03u_speed_ratio", i), 0, true);
 	}
 }
-
