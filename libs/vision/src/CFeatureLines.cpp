@@ -343,6 +343,6 @@ void CFeatureLines::extractLines(
 		cv::waitKey(0);
 	}
 #else
-	THROW_EXCEPTION("Requires building MRPT with OpenCV support")
+	THROW_EXCEPTION("Requires building MRPT with OpenCV support");
 #endif
 }

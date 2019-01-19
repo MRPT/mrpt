@@ -318,7 +318,7 @@ class CSparseMatrix
 		if (!isTriplet())
 			THROW_EXCEPTION(
 				"insert_entry() is only available for sparse matrix in "
-				"'triplet' format.")
+				"'triplet' format.");
 		const size_t nR = M.rows();
 		const size_t nC = M.cols();
 		for (size_t r = 0; r < nR; r++)

@@ -298,7 +298,7 @@ void CColouredPointsMap::serializeFrom(
 		}
 		break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -702,7 +702,7 @@ bool CColouredPointsMap::savePCDFile(
 #else
 	MRPT_UNUSED_PARAM(filename);
 	MRPT_UNUSED_PARAM(save_as_binary);
-	THROW_EXCEPTION("Operation not available: MRPT was built without PCL")
+	THROW_EXCEPTION("Operation not available: MRPT was built without PCL");
 #endif
 }
 

@@ -33,7 +33,7 @@ static void do_rectify(
 
 	if (!me.isSet())
 		THROW_EXCEPTION(
-			"Error: setFromCamParams() must be called prior to rectify().")
+			"Error: setFromCamParams() must be called prior to rectify().");
 
 	const uint32_t ncols = me.getCameraParams().leftCamera.ncols;
 	const uint32_t nrows = me.getCameraParams().leftCamera.nrows;

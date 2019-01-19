@@ -151,7 +151,7 @@ void OctetVectorToObject(
 	{                                                                          \
 		THROW_EXCEPTION(mrpt::format(                                          \
 			"Schema deserializing class `%s` but expected `%s`",               \
-			read_typename.c_str(), expected_typename.c_str()))                 \
+			read_typename.c_str(), expected_typename.c_str()));                \
 	}
 
 /** This declaration must be inserted in all CSerializable classes definition,

@@ -182,7 +182,7 @@ void CFeatureExtraction::extractFeaturesSIFT(
 			feats.resize(cont);
 #else
 			THROW_EXCEPTION(
-				"This method requires OpenCV >= 2.1.1 with nonfree module")
+				"This method requires OpenCV >= 2.1.1 with nonfree module");
 #endif
 			break;
 		}  // end case OpenCV

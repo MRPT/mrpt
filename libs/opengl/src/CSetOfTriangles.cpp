@@ -136,7 +136,7 @@ void CSetOfTriangles::serializeFrom(
 		}
 		break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	polygonsUpToDate = false;
 	CRenderizableDisplayList::notifyChange();

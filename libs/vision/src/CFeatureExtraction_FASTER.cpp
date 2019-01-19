@@ -113,7 +113,7 @@ void CFeatureExtraction::extractFeaturesFASTER_N(
 			break;
 		default:
 			THROW_EXCEPTION(
-				"Only the 9,10,12 FASTER detectors are implemented.")
+				"Only the 9,10,12 FASTER detectors are implemented.");
 	};
 
 	CTimeLoggerEntry tle2(profiler, "extractFeaturesFASTER_N.fillFeatsStruct");

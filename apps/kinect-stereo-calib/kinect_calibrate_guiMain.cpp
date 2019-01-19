@@ -2371,10 +2371,10 @@ void kinect_calibrate_guiDialog::OnbtnListLoadClick(wxCommandEvent& event)
 
 			if (!scd.left.img_original.loadFromFile(file_img_l))
 				THROW_EXCEPTION_FMT(
-					"Error loading image: %s", file_img_l.c_str())
+					"Error loading image: %s", file_img_l.c_str());
 			if (!scd.right.img_original.loadFromFile(file_img_r))
 				THROW_EXCEPTION_FMT(
-					"Error loading image: %s", file_img_r.c_str())
+					"Error loading image: %s", file_img_r.c_str());
 
 			UpdateListOfImages();
 		}

@@ -230,7 +230,7 @@ void CHeightGridMap2D::serializeFrom(
 		}
 		break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -378,7 +378,7 @@ size_t CHeightGridMap2D::countObservedCells() const
 		break;
 		default:
 			THROW_EXCEPTION(
-				"countObservedCells() not implemented for this mapType (!?)")
+				"countObservedCells() not implemented for this mapType (!?)");
 	};
 }
 

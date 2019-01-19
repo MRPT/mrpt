@@ -69,7 +69,7 @@ void CSimpleDatabase::serializeFrom(
 		}
 		break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -112,7 +112,7 @@ void CSimpleDatabaseTable::serializeFrom(
 		}
 		break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -139,7 +139,7 @@ CSimpleDatabaseTable::Ptr CSimpleDatabase::getTable(
 	auto it = m_tables.find(tableName);
 	if (it != m_tables.end()) return it->second;
 
-	THROW_EXCEPTION_FMT("Table '%s' was not found", tableName.c_str())
+	THROW_EXCEPTION_FMT("Table '%s' was not found", tableName.c_str());
 
 	MRPT_END
 }
@@ -496,7 +496,7 @@ void CSimpleDatabase::dropTable(const std::string& tableName)
 
 	auto it = m_tables.find(tableName);
 	if (it == m_tables.end())
-		THROW_EXCEPTION_FMT("Table '%s' was not found", tableName.c_str())
+		THROW_EXCEPTION_FMT("Table '%s' was not found", tableName.c_str());
 
 	m_tables.erase(it);
 
@@ -515,15 +515,15 @@ void CSimpleDatabase::renameTable(
 
 	auto it = m_tables.find(tableName);
 	if (it == m_tables.end())
-		THROW_EXCEPTION_FMT("Table '%s' was not found", tableName.c_str())
+		THROW_EXCEPTION_FMT("Table '%s' was not found", tableName.c_str());
 
-		{
-			auto itNew = m_tables.find(newTableName);
-			if (itNew != m_tables.end())
-				THROW_EXCEPTION_FMT(
-					"A table with the name '%s' already exists",
-					newTableName.c_str())
-		}
+	{
+		auto itNew = m_tables.find(newTableName);
+		if (itNew != m_tables.end())
+			THROW_EXCEPTION_FMT(
+				"A table with the name '%s' already exists",
+				newTableName.c_str());
+	}
 
 	CSimpleDatabaseTable::Ptr tb = it->second;
 

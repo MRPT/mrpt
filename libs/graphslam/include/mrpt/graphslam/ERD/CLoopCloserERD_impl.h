@@ -1982,7 +1982,7 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization()
 			if (!obj)
 			{
 				THROW_EXCEPTION_FMT(
-					"Partition: %s was not found", partition_obj_name.c_str())
+					"Partition: %s was not found", partition_obj_name.c_str());
 			}
 			map_partitions_obj->removeObject(obj);
 		}

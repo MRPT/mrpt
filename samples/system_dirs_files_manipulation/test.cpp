@@ -100,7 +100,7 @@ void renameDirContents()
 		if (!success)
 		{
 			THROW_EXCEPTION(
-				"There was an error creating the directory: " + dir_name)
+				"There was an error creating the directory: " + dir_name);
 		}
 	}
 

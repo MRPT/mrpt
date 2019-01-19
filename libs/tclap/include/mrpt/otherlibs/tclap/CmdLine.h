@@ -269,7 +269,7 @@ class CmdLine : public CmdLineInterface
 ///////////////////////////////////////////////////////////////////////////////
 
 inline CmdLine::CmdLine(const std::string& m,
-				        char delim,
+						char delim,
 						const std::string& v,
 						bool help )
 : _progName("not_set_yet"),
@@ -354,9 +354,9 @@ inline void CmdLine::xorAdd( std::vector<Arg*>& ors )
 
 inline void CmdLine::xorAdd( Arg& a, Arg& b )
 {
-    std::vector<Arg*> ors;
-    ors.push_back( &a );
-    ors.push_back( &b );
+	std::vector<Arg*> ors;
+	ors.push_back( &a );
+	ors.push_back( &b );
 	xorAdd( ors );
 }
 
@@ -370,7 +370,7 @@ inline void CmdLine::add( Arg* a )
 	for(auto & it : _argList)
 		if ( *a == *it )
 			throw( SpecificationException(
-			       	"Argument with same flag/name already exists!",
+					"Argument with same flag/name already exists!",
 					a->longID() ) );
 
 	a->addToList( _argList );
@@ -387,23 +387,23 @@ inline bool CmdLine::parse(int argc, char** argv)
 
 	// this step is necessary so that we have easy access to mutable strings.
 	std::vector<std::string> args;
-  	for (int i = 1; i < argc; i++)
+	for (int i = 1; i < argc; i++)
 		args.emplace_back(argv[i]);
 
 	int requiredCount = 0;
 
-  	for (int i = 0; static_cast<unsigned int>(i) < args.size(); i++)
+	for (int i = 0; static_cast<unsigned int>(i) < args.size(); i++)
 	{
 		bool matched = false;
 		for (auto & it : _argList)
-        {
+		{
 			if ( it->processArg( &i, args ) )
 			{
 				requiredCount += _xorHandler.check( it );
 				matched = true;
 				break;
 			}
-        }
+		}
 
 		// checks to see if the argument is an empty combined switch ...
 		// and if so, then we've actually matched it
@@ -412,8 +412,8 @@ inline bool CmdLine::parse(int argc, char** argv)
 
 		if ( !matched && !Arg::ignoreRest() )
 			throw(CmdLineParseException("Couldn't find match for argument",
-			                             args[i]));
-    }
+										 args[i]));
+	}
 
 	if ( requiredCount < _numRequired )
 		throw(CmdLineParseException("One or more required arguments missing!"));
@@ -424,11 +424,11 @@ inline bool CmdLine::parse(int argc, char** argv)
 	return true; // Ok
 
 	}
-	catch ( ActionDoneException e )
+	catch ( const ActionDoneException & )
 	{
 		return false; // Done
 	}
-	catch ( ArgException e )
+	catch ( ArgException &e )
 	{
 		_output->failure(*this,e);
 		return false; // Error

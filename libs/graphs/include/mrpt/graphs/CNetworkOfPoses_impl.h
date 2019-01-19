@@ -239,7 +239,7 @@ struct graph_ops
 				in >> g->nodes >> g->edges >> g->root;
 				break;
 			default:
-				MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(stored_version)
+				MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(stored_version);
 		}
 	}
 

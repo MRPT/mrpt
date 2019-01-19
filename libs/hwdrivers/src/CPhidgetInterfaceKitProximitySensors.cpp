@@ -48,7 +48,7 @@ CPhidgetInterfaceKitProximitySensors::CPhidgetInterfaceKitProximitySensors()
 #else
 	THROW_EXCEPTION(
 		"MRPT Was compiled without the CPhidget support. Recompile MRPT to use "
-		"this class")
+		"this class");
 #endif
 }
 

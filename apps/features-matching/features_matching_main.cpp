@@ -124,7 +124,7 @@ Descriptors:
 	if (!file1.empty())
 	{
 		if (!img1.loadFromFile(file1))
-			THROW_EXCEPTION_FMT("Error loading file: %s", file1.c_str())
+			THROW_EXCEPTION_FMT("Error loading file: %s", file1.c_str());
 	}
 	else
 	{
@@ -136,7 +136,7 @@ Descriptors:
 	if (!file2.empty())
 	{
 		if (!img2.loadFromFile(file2))
-			THROW_EXCEPTION_FMT("Error loading file: %s", file2.c_str())
+			THROW_EXCEPTION_FMT("Error loading file: %s", file2.c_str());
 	}
 	else
 	{

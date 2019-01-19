@@ -129,7 +129,7 @@ IMPLEMENTS_SERIALIZABLE(Plane, CSerializable, mrpt::pbmap)
 //
 //		} break;
 //	default:
-//		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+//		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 //  };
 //}
 
@@ -210,7 +210,7 @@ void Plane::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		}
 		break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

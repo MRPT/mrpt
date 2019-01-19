@@ -53,7 +53,7 @@ void TestLaser2Imgs()
 	// Set your rawlog file name
 	if (!mrpt::system::fileExists(RAWLOG_FILE))
 		THROW_EXCEPTION_FMT(
-			"Rawlog file does not exist: %s", RAWLOG_FILE.c_str())
+			"Rawlog file does not exist: %s", RAWLOG_FILE.c_str());
 
 	CActionCollection::Ptr action;
 	CSensoryFrame::Ptr observations;

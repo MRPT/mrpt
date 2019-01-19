@@ -342,7 +342,7 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::readFromStream(
 		}
 		break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	}
 }
 
@@ -433,7 +433,7 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::TRenderingOptions::readFromStream(
 		}
 		break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	}
 }
 

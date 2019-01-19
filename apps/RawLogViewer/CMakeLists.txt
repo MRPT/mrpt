@@ -28,7 +28,6 @@ if(CMAKE_MRPT_HAS_WXWIDGETS)
 	 main_gps_ops.cpp
 	 main_images_ops.cpp
 	 main_imports_exports.cpp
-	 main_vodometry.cpp
 	 main_artwork.cpp
 	 main_convert_ops.cpp
 	 main_show_selected_object.cpp

@@ -611,7 +611,7 @@ void CIMUXSens_MT4::initialize()
 			if (portInfoArray.empty())
 				THROW_EXCEPTION(
 					"CIMUXSens_MT4: No 'portname' was specified and no XSens "
-					"device was found after scanning the system!")
+					"device was found after scanning the system!");
 
 			if (m_verbose)
 				cout << "[CIMUXSens_MT4] Found " << portInfoArray.size()

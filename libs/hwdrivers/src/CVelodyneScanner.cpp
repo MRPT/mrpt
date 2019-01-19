@@ -182,7 +182,7 @@ void CVelodyneScanner::loadConfig_sensorSpecific(
 		THROW_EXCEPTION(mrpt::format(
 			"Unrecognized `model` parameter: `%u` . Known values are: %s",
 			static_cast<unsigned int>(m_model),
-			TModelPropertiesFactory::getListKnownModels().c_str()))
+			TModelPropertiesFactory::getListKnownModels().c_str()));
 	}
 
 	// Optional HTTP-based settings:
@@ -1009,7 +1009,7 @@ bool CVelodyneScanner::internal_read_PCAP_packet(
 	}  // loop back and try again
 #else
 	THROW_EXCEPTION(
-		"MRPT needs to be built against libpcap to enable this functionality")
+		"MRPT needs to be built against libpcap to enable this functionality");
 #endif
 }
 

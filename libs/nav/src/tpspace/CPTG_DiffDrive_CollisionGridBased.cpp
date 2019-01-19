@@ -922,7 +922,7 @@ void CPTG_DiffDrive_CollisionGridBased::internal_readFromStream(
 				m_resolution >> m_trajectory;
 			break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

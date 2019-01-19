@@ -54,7 +54,7 @@ void CPTG_DiffDrive_CC::serializeFrom(
 			in >> K;
 			break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

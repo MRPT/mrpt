@@ -105,7 +105,7 @@ inline std::string exception_to_str(const std::exception& e)
  * Defines a unified way of reporting exceptions
  * \sa MRPT_TRY_START, MRPT_TRY_END, THROW_EXCEPTION_FMT
  */
-#define THROW_EXCEPTION(msg) THROW_TYPED_EXCEPTION(msg, std::logic_error);
+#define THROW_EXCEPTION(msg) THROW_TYPED_EXCEPTION(msg, std::logic_error)
 
 #define THROW_EXCEPTION_FMT(_FORMAT_STRING, ...) \
 	THROW_EXCEPTION(mrpt::format(_FORMAT_STRING, __VA_ARGS__))
@@ -172,7 +172,7 @@ inline std::string exception_to_str(const std::exception& e)
 
 #define ASRT_FAIL(__CONDITIONSTR, __A, __B, __ASTR, __BSTR) \
 	THROW_EXCEPTION(                                        \
-		mrpt::internal::asrt_fail(__CONDITIONSTR, __A, __B, __ASTR, __BSTR))
+		mrpt::internal::asrt_fail(__CONDITIONSTR, __A, __B, __ASTR, __BSTR));
 
 /** Assert comparing two values, reporting their actual values upon failure */
 #define ASSERT_EQUAL_(__A, __B)                                          \
@@ -260,6 +260,7 @@ inline std::string exception_to_str(const std::exception& e)
  * the call stack after an exception, including a "clean up" piece of code to be
  * run before throwing the exceptions.
  * \sa MRPT_TRY_END,MRPT_TRY_START
+ *
  */
 #define MRPT_TRY_END_WITH_CLEAN_UP(stuff) \
 	}                                     \

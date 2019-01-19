@@ -85,7 +85,7 @@ void CKinematicChain::serializeFrom(
 		}
 		break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -253,7 +253,7 @@ mrpt::serialization::CArchive& mrpt::kinematics::operator>>(
 			in >> o.theta >> o.d >> o.a >> o.alpha >> o.is_prismatic;
 			break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	}
 	return in;
 }

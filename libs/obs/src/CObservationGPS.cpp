@@ -230,7 +230,7 @@ void CObservationGPS::serializeFrom(
 				{
 					THROW_EXCEPTION(
 						"Reading TOPCON_SATS is broken: non-trivial POD data "
-						"read.")
+						"read.");
 					// was: MRPT_READ_POD(in, SATS_datum.USIs);
 					// gnss::Message_TOPCON_SATS& SATS_datum = *datum;
 				}
@@ -238,7 +238,7 @@ void CObservationGPS::serializeFrom(
 		}
 		break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 
 	if (originalReceivedTimestamp == INVALID_TIMESTAMP)

@@ -216,7 +216,7 @@ void CGPSInterface::setSerialPortName(const std::string& COM_port)
 	if (m_data_stream_is_external)
 		THROW_EXCEPTION(
 			"Cannot change serial port name: an external stream has been "
-			"already bound manually.")
+			"already bound manually.");
 
 	if (m_data_stream)
 	{
@@ -224,7 +224,7 @@ void CGPSInterface::setSerialPortName(const std::string& COM_port)
 		auto serial = dynamic_cast<mrpt::comms::CSerialPort*>(m_data_stream);
 		if (serial && serial->isOpen())
 			THROW_EXCEPTION(
-				"Cannot change serial port name when it is already open")
+				"Cannot change serial port name when it is already open");
 	}
 
 	// OK:

@@ -780,7 +780,7 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 									if (nRead != bytes_per_row)
 										THROW_EXCEPTION(
 											"Error: Truncated data stream "
-											"while parsing raw image?")
+											"while parsing raw image?");
 								}
 							}
 							else
@@ -808,7 +808,7 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		}
 		break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 #endif
 }

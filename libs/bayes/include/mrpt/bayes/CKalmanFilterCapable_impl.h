@@ -118,7 +118,7 @@ void CKalmanFilterCapable<
 							  << (dfv_dxv - dfv_dxv_gt) << "\n";
 					THROW_EXCEPTION(
 						"ERROR: User analytical transition Jacobians are wrong "
-						"(More details dumped to cerr)")
+						"(More details dumped to cerr)");
 				}
 			}
 		}
@@ -334,7 +334,7 @@ void CKalmanFilterCapable<
 								  << Hx - Hx_gt << "\n";
 						THROW_EXCEPTION(
 							"ERROR: User analytical observation Hx Jacobians "
-							"are wrong (More details dumped to cerr)")
+							"are wrong (More details dumped to cerr)");
 					}
 					if ((Hy - Hy_gt).array().abs().sum() >
 						KF_options.debug_verify_analytic_jacobians_threshold)
@@ -347,7 +347,7 @@ void CKalmanFilterCapable<
 								  << Hy - Hy_gt << "\n";
 						THROW_EXCEPTION(
 							"ERROR: User analytical observation Hy Jacobians "
-							"are wrong (More details dumped to cerr)")
+							"are wrong (More details dumped to cerr)");
 					}
 				}
 			}
@@ -794,7 +794,7 @@ void CKalmanFilterCapable<
 													"components in the "
 													"observation (matrix R). "
 													"Select another KF "
-													"algorithm.")
+													"algorithm.");
 							}
 #endif
 							// R:

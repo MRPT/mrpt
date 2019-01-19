@@ -109,7 +109,7 @@ void CVehicleVelCmd_Holo::serializeFrom(
 			in >> vel >> dir_local >> ramp_time >> rot_speed;
 			break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

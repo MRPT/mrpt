@@ -192,7 +192,7 @@ void CObservation2DRangeScan::serializeFrom(
 		}
 		break;
 		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 
 	m_cachedMap.reset();
