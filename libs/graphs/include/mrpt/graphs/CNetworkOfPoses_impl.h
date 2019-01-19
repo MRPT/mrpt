@@ -759,7 +759,8 @@ struct graph_ops
 	//	Note that "global" coordinates are with respect to the node with the ID
 	// specified in \a root.
 	// --------------------------------------------------------------------------------
-	static void graph_of_poses_dijkstra_init(graph_t* g)
+	static void graph_of_poses_dijkstra_init(
+		graph_t* g, std::map<TNodeID, size_t>* topological_distances = nullptr)
 	{
 		MRPT_START;
 		using namespace std;
@@ -781,6 +782,7 @@ struct graph_ops
 		struct VisitorComputePoses : public dijkstra_t::tree_graph_t::Visitor
 		{
 			graph_t* m_g;  // The original graph
+			std::map<TNodeID, size_t>* m_topo_dists{nullptr};
 
 			VisitorComputePoses(graph_t* g) : m_g(g) {}
 			void OnVisitNode(
@@ -791,6 +793,9 @@ struct graph_ops
 			{
 				MRPT_UNUSED_PARAM(depth_level);
 				const TNodeID child_id = edge_to_child.id;
+
+				// topological distance:
+				if (m_topo_dists) (*m_topo_dists)[child_id] = depth_level;
 
 				// Compute the pose of "child_id" as parent_pose (+)
 				// edge_delta_pose,
@@ -836,7 +841,11 @@ struct graph_ops
 
 		// Run the visit thru all nodes in the tree:
 		VisitorComputePoses myVisitor(g);
+		myVisitor.m_topo_dists = topological_distances;
 		treeView.visitBreadthFirst(treeView.root, myVisitor);
+
+		// The distance of "root" is zero (it's not visited in the loop above!):
+		if (topological_distances) (*topological_distances)[g->root] = 0;
 
 		// Fill the NODE_ANNOTATIONS part again
 		if (!empty_node_annots)
