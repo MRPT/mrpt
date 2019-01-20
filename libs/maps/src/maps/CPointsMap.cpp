@@ -785,9 +785,7 @@ void CPointsMap::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 		obj->loadFromPointsMap(this);
 		obj->setColor(renderOptions.color);
 		obj->setPointSize(renderOptions.point_size);
-		obj->enableColorFromZ(true);
-
-		obj->setGradientColors(TColorf(0.0, 0, 0), renderOptions.color);
+		obj->enableColorFromZ(false);
 		outObj->insert(obj);
 	}
 	else
