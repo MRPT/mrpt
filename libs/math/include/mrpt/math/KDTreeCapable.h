@@ -14,6 +14,7 @@
 #include <memory>  // unique_ptr
 #include <array>
 #include <mutex>
+#include <atomic>
 
 namespace mrpt::math
 {
@@ -757,12 +758,14 @@ class KDTreeCapable
 	mutable TKDTreeDataHolder<2> m_kdtree2d_data;
 	mutable TKDTreeDataHolder<3> m_kdtree3d_data;
 	/** whether the KD tree needs to be rebuilt or not. */
-	mutable bool m_kdtree_is_uptodate{false};
+	mutable std::atomic_bool m_kdtree_is_uptodate{false};
 
 	/// Rebuild, if needed the KD-tree for 2D (nDims=2), 3D (nDims=3), ...
 	/// asking the child class for the data points.
 	void rebuild_kdTree_2D() const
 	{
+		if (m_kdtree_is_uptodate) return;
+
 		std::scoped_lock lck(m_kdtree_mtx);
 		using tree2d_t = typename TKDTreeDataHolder<2>::kdtree_index_t;
 
@@ -796,6 +799,7 @@ class KDTreeCapable
 	/// asking the child class for the data points.
 	void rebuild_kdTree_3D() const
 	{
+		if (m_kdtree_is_uptodate) return;
 		std::scoped_lock lck(m_kdtree_mtx);
 		using tree3d_t = typename TKDTreeDataHolder<3>::kdtree_index_t;
 
