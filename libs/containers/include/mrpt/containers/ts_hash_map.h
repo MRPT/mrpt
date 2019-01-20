@@ -25,13 +25,10 @@ struct ts_map_entry
 };
 
 /** hash function used by ts_hash_map. Uses dbj2 method */
-void reduced_hash(const std::string& value, uint8_t& hash);
-/** hash function used by ts_hash_map. Uses dbj2 method */
-void reduced_hash(const std::string& value, uint16_t& hash);
-/** hash function used by ts_hash_map. Uses dbj2 method */
-void reduced_hash(const std::string& value, uint32_t& hash);
-/** hash function used by ts_hash_map. Uses dbj2 method */
-void reduced_hash(const std::string& value, uint64_t& hash);
+void reduced_hash(const std::string_view& value, uint8_t& hash);
+void reduced_hash(const std::string_view& value, uint16_t& hash);
+void reduced_hash(const std::string_view& value, uint32_t& hash);
+void reduced_hash(const std::string_view& value, uint64_t& hash);
 
 /** A thread-safe (ts) container which minimally emulates a std::map<>'s [] and
  * find() methods but which is implemented as a linear vector indexed by a hash
