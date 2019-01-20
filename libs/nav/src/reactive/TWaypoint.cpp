@@ -248,6 +248,6 @@ void TWaypointSequence::load(const mrpt::utils::CConfigFileBase &c, const std::s
 		wp.target_frame_id = c.read_string(s, mrpt::format("wp%03u_target_frame_id", i), "map", false);
 		double hd = c.read_double(s, mrpt::format("wp%03u_target_heading", i), mrpt::nav::TWaypoint::INVALID_NUM);
 		wp.target_heading = (hd > 100) ? mrpt::nav::TWaypoint::INVALID_NUM : hd;
-		wp.speed_ratio = c.read_double(s, mrpt::format("wp%03u_speed_ratio", i), 0, true);
+		wp.speed_ratio = c.read_double(s, mrpt::format("wp%03u_speed_ratio", i), 1.0, false);
 	}
 }
