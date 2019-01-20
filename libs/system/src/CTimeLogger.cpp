@@ -11,6 +11,7 @@
 
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/system/datetime.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/core/bits_math.h>
 #include <iostream>
@@ -98,7 +99,7 @@ void CTimeLogger::getStats(std::map<std::string, TCallStats>& out_stats) const
 	out_stats.clear();
 	for (const auto& e : m_data)
 	{
-		TCallStats& cs = out_stats[e.first];
+		TCallStats& cs = out_stats[std::string(e.first)];
 		cs.min_t = e.second.min_t;
 		cs.max_t = e.second.max_t;
 		cs.total_t = e.second.mean_t;
@@ -141,7 +142,7 @@ std::string CTimeLogger::getStatsAsText(const size_t column_width) const
 	stats_text += bottom_header + "\n"s;
 
 	// for all the timed sections: sort by inserting into a std::map
-	using NameAndCallData = std::map<std::string, TCallData>;
+	using NameAndCallData = std::map<std::string_view, TCallData>;
 	NameAndCallData stat_strs;
 	for (const auto& i : m_data) stat_strs[i.first] = i.second;
 
@@ -160,7 +161,7 @@ std::string CTimeLogger::getStatsAsText(const size_t column_width) const
 	std::string last_parent;
 	for (const auto& i : stat_strs)
 	{
-		string line = i.first;  // make a copy
+		string line = string(i.first);  // make a copy
 
 		const auto dot_pos = line.find(".");
 		if (dot_pos == std::string::npos)
@@ -207,8 +208,8 @@ void CTimeLogger::saveToCSVFile(const std::string& csv_file) const
 	for (const auto& i : m_data)
 	{
 		s += format(
-			"\"%s\",\"%7u\",\"%e\",\"%e\",\"%e\",\"%e\",\"%e\"",
-			i.first.c_str(), static_cast<unsigned int>(i.second.n_calls),
+			"\"%.*s\",%7u,%e,%e,%e,%e,%e", static_cast<int>(i.first.size()),
+			i.first.data(), static_cast<unsigned int>(i.second.n_calls),
 			i.second.last_t, i.second.min_t,
 			i.second.n_calls ? i.second.mean_t / i.second.n_calls : 0,
 			i.second.max_t, i.second.mean_t);
@@ -232,22 +233,20 @@ void CTimeLogger::dumpAllStats(const size_t column_width) const
 	MRPT_LOG_INFO_STREAM("dumpAllStats:\n" << getStatsAsText(column_width));
 }
 
-void CTimeLogger::do_enter(const char* func_name)
+void CTimeLogger::do_enter(const std::string_view& func_name)
 {
-	const string s = func_name;
-	TCallData& d = m_data[s];
+	TCallData& d = m_data[std::string(func_name)];
 
 	d.n_calls++;
 	d.open_calls.push(0);  // Dummy value, it'll be written below
 	d.open_calls.top() = m_tictac.Tac();  // to avoid possible delays.
 }
 
-double CTimeLogger::do_leave(const char* func_name)
+double CTimeLogger::do_leave(const std::string_view& func_name)
 {
 	const double tim = m_tictac.Tac();
 
-	const string s = func_name;
-	TCallData& d = m_data[s];
+	TCallData& d = m_data[std::string(func_name)];
 
 	if (!d.open_calls.empty())
 	{
@@ -281,13 +280,12 @@ double CTimeLogger::do_leave(const char* func_name)
 }
 
 void CTimeLogger::registerUserMeasure(
-	const char* event_name, const double value)
+	const std::string_view& event_name, const double value, const bool is_time)
 {
 	if (!m_enabled) return;
-	const string s = event_name;
-	TCallData& d = m_data[s];
+	TCallData& d = m_data[std::string(event_name)];
 
-	d.has_time_units = false;
+	d.has_time_units = is_time;
 	d.last_t = value;
 	d.mean_t += value;
 	if (++d.n_calls == 1)
@@ -302,9 +300,7 @@ void CTimeLogger::registerUserMeasure(
 	}
 }
 
-CTimeLogger::TCallData::TCallData()
-
-	= default;
+CTimeLogger::TCallData::TCallData() = default;
 
 double CTimeLogger::getMeanTime(const std::string& name) const
 {
@@ -324,12 +320,18 @@ double CTimeLogger::getLastTime(const std::string& name) const
 }
 
 CTimeLoggerEntry::CTimeLoggerEntry(
-	const CTimeLogger& logger, const char* section_name)
+	const CTimeLogger& logger, const std::string_view& section_name)
 	: m_logger(const_cast<CTimeLogger&>(logger)), m_section_name(section_name)
 {
-	m_logger.enter(m_section_name);
+	m_entry = mrpt::Clock::now();
 }
-CTimeLoggerEntry::~CTimeLoggerEntry() { m_logger.leave(m_section_name); }
+CTimeLoggerEntry::~CTimeLoggerEntry()
+{
+	const auto leave = mrpt::Clock::now();
+	const double dt = mrpt::system::timeDifference(m_entry, leave);
+
+	m_logger.registerUserMeasure(m_section_name, dt, true);
+}
 
 CTimeLoggerSaveAtDtor::~CTimeLoggerSaveAtDtor()
 {

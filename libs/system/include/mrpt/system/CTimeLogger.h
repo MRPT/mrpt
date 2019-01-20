@@ -23,17 +23,24 @@ namespace mrpt::system
 /** A versatile "profiler" that logs the time spent within each pair of calls to
  * enter(X)-leave(X), among other stats.
  *  The results can be dumped to cout or to Visual Studio's output panel.
- *  Recursive methods are supported with no problems, that is, calling "enter(X)
- * enter(X) ... leave(X) leave(X)".
- *  `enter()`/`leave()` are thread-safe.
+ * This class can be also used to monitorize min/mean/max/total stats of any
+ * user-provided parameters via the method CTimeLogger::registerUserMeasure().
  *
- *  This class can be also used to monitorize min/mean/max/total stats of any
- * user-provided parameters via the method CTimeLogger::registerUserMeasure()
+ * Optional recording of **all** data can be enabled via
+ * enableKeepWholeHistory() (use with caution!).
  *
  * Cost of the profiler itself (measured on MSVC2015, Windows 10, Intel i5-2310
  * 2.9GHz):
  * - `enter()`: average 445 ns
  * - `leave()`: average 316 ns
+ *
+ *  Recursive methods are supported with no problems, that is, calling "enter(X)
+ * enter(X) ... leave(X) leave(X)".
+ *  `enter()`/`leave()` are thread-safe, in the sense of they being safe to be
+ * called from different threads. However, calling `enter()`/`leave()` for the
+ * same user-supplied "section name", from different threads, is not allowed. In
+ * the latter case (and, actually, in general since it's safer against
+ * exceptions), use the RAII helper class CTimeLoggerEntry.
  *
  * \sa CTimeLoggerEntry
  *
@@ -61,13 +68,16 @@ class CTimeLogger : public mrpt::system::COutputLogger
 	};
 
    protected:
+	constexpr static unsigned int HASH_SIZE_IN_BYTES = 1;
+	constexpr static unsigned int HASH_ALLOWED_COLLISIONS = 10;
+	// Note: we CANNOT store a std::string_view here due to literals life scope.
 	using TDataMap = mrpt::containers::ts_hash_map<
-		std::string, TCallData, 1 /* bytes hash */,
-		10 /* allowed hash collisions */>;
+		std::string, TCallData, HASH_SIZE_IN_BYTES, HASH_ALLOWED_COLLISIONS>;
+
 	TDataMap m_data;
 
-	void do_enter(const char* func_name);
-	double do_leave(const char* func_name);
+	void do_enter(const std::string_view& func_name);
+	double do_leave(const std::string_view& func_name);
 
    public:
 	/** Data of each call section: # of calls, minimum, maximum, average and
@@ -117,18 +127,21 @@ class CTimeLogger : public mrpt::system::COutputLogger
 	/** Dump all stats to a Comma Separated Values (CSV) file. \sa dumpAllStats
 	 */
 	void saveToCSVFile(const std::string& csv_file) const;
-	void registerUserMeasure(const char* event_name, const double value);
+	void registerUserMeasure(
+		const std::string_view& event_name, const double value,
+		const bool is_time = false);
 
 	const std::string& getName() const { return m_name; }
 	void setName(const std::string& name) { m_name = name; }
+
 	/** Start of a named section \sa enter */
-	inline void enter(const char* func_name)
+	inline void enter(const std::string_view& func_name)
 	{
 		if (m_enabled) do_enter(func_name);
 	}
 	/** End of a named section \return The ellapsed time, in seconds or 0 if
 	 * disabled. \sa enter */
-	inline double leave(const char* func_name)
+	inline double leave(const std::string_view& func_name)
 	{
 		return m_enabled ? do_leave(func_name) : 0;
 	}
@@ -159,10 +172,16 @@ class CTimeLogger : public mrpt::system::COutputLogger
  */
 struct CTimeLoggerEntry
 {
-	CTimeLoggerEntry(const CTimeLogger& logger, const char* section_name);
+	CTimeLoggerEntry(
+		const CTimeLogger& logger, const std::string_view& section_name);
 	~CTimeLoggerEntry();
 	CTimeLogger& m_logger;
-	const char* m_section_name;
+
+   private:
+	// Note we cannot store the string_view since we have no guarantees of the
+	// life-time of the provided string buffer.
+	const std::string m_section_name;
+	mrpt::Clock::time_point m_entry;
 };
 
 /** A helper class to save CSV stats upon self destruction, for example, at the
