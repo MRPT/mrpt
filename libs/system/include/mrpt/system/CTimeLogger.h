@@ -127,6 +127,8 @@ class CTimeLogger : public mrpt::system::COutputLogger
 	/** Dump all stats to a Comma Separated Values (CSV) file. \sa dumpAllStats
 	 */
 	void saveToCSVFile(const std::string& csv_file) const;
+	/** Dump all stats to a Matlab/Octave (.m) file. \sa dumpAllStats */
+	void saveToMFile(const std::string& m_file) const;
 	void registerUserMeasure(
 		const std::string_view& event_name, const double value,
 		const bool is_time = false);

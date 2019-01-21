@@ -15,6 +15,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/core/bits_math.h>
 #include <iostream>
+#include <algorithm>
 #include <fstream>
 
 using namespace mrpt;
@@ -228,6 +229,62 @@ void CTimeLogger::saveToCSVFile(const std::string& csv_file) const
 	std::ofstream(csv_file) << s;
 }
 
+void CTimeLogger::saveToMFile(const std::string& file) const
+{
+	using std::string;
+	using namespace std::string_literals;
+
+	string s;
+	s += "function [s] = "s + mrpt::system::extractFileName(file) +
+	     "()\n"
+	     "s = struct();\n"
+	     "s.whole = struct();\n\n"s;
+
+	std::string s_names = "s.names={"s;
+	std::string s_counts = "s.count=["s;
+	std::string s_mins = "s.min=["s;
+	std::string s_maxs = "s.max=["s;
+	std::string s_means = "s.mean=["s;
+
+	for (const auto& i : m_data)
+	{
+		s_names += "'"s + i.first + "',"s;
+		s_counts += std::to_string(i.second.n_calls) + ","s;
+		s_mins += mrpt::format("%e,", i.second.min_t);
+		s_maxs += mrpt::format("%e,", i.second.max_t);
+		s_means += mrpt::format("%e,", i.second.mean_t);
+
+		if (i.second.whole_history)
+		{
+			string clean_name =
+			    mrpt::system::fileNameStripInvalidChars(i.first);
+			std::replace(clean_name.begin(), clean_name.end(), '.', '_');
+			std::replace(clean_name.begin(), clean_name.end(), '-', '_');
+			std::replace(clean_name.begin(), clean_name.end(), '+', '_');
+			std::replace(clean_name.begin(), clean_name.end(), '*', '_');
+
+			s += "s.whole."s + clean_name + "=[";
+			const auto& wh = i.second.whole_history.value();
+			for (const double v : wh) s += mrpt::format("%e,", v);
+			s += "];\n";
+		}
+	}
+	s_names += "};\n"s;
+	s_counts += "];\n"s;
+	s_mins += "];\n"s;
+	s_maxs += "];\n"s;
+	s_means += "];\n"s;
+
+	s += s_names;
+	s += s_counts;
+	s += s_mins;
+	s += s_maxs;
+	s += s_means;
+
+	s += "\n"s;
+	std::ofstream(file) << s;
+}
+
 void CTimeLogger::dumpAllStats(const size_t column_width) const
 {
 	MRPT_LOG_INFO_STREAM("dumpAllStats:\n" << getStatsAsText(column_width));
@@ -298,6 +355,14 @@ void CTimeLogger::registerUserMeasure(
 		mrpt::keep_min(d.min_t, value);
 		mrpt::keep_max(d.max_t, value);
 	}
+	if (m_keep_whole_history)
+	{
+		// Init the first time:
+		if (!d.whole_history)
+			d.whole_history = decltype(d.whole_history)::value_type();
+		// Append to history:
+		d.whole_history.value().push_back(value);
+	}
 }
 
 CTimeLogger::TCallData::TCallData() = default;
@@ -336,10 +401,10 @@ CTimeLoggerEntry::~CTimeLoggerEntry()
 CTimeLoggerSaveAtDtor::~CTimeLoggerSaveAtDtor()
 {
 	using namespace std::string_literals;
-	auto name = m_tm.getName() + ".csv"s;
+	auto name = m_tm.getName() + ".m"s;
 	name = fileNameStripInvalidChars(name);
 
 	m_tm.logStr(
 		LVL_INFO, "[CTimeLoggerSaveAtDtor] Saving stats to: `"s + name + "`"s);
-	m_tm.saveToCSVFile(name);
+	m_tm.saveToMFile(name);
 }
