@@ -111,6 +111,11 @@ class CPoseInterpolatorBase
 	{
 		return m_path.find(t);
 	}
+	pose_t& at(const mrpt::Clock::time_point& t) { return m_path.at(t); }
+	const pose_t& at(const mrpt::Clock::time_point& t) const
+	{
+		return m_path.at(t);
+	}
 	/** @} */
 
 	/** Inserts a new pose in the sequence.
