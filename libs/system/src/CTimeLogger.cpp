@@ -236,9 +236,9 @@ void CTimeLogger::saveToMFile(const std::string& file) const
 
 	string s;
 	s += "function [s] = "s + mrpt::system::extractFileName(file) +
-	     "()\n"
-	     "s = struct();\n"
-	     "s.whole = struct();\n\n"s;
+		 "()\n"
+		 "s = struct();\n"
+		 "s.whole = struct();\n\n"s;
 
 	std::string s_names = "s.names={"s;
 	std::string s_counts = "s.count=["s;
@@ -257,7 +257,7 @@ void CTimeLogger::saveToMFile(const std::string& file) const
 		if (i.second.whole_history)
 		{
 			string clean_name =
-			    mrpt::system::fileNameStripInvalidChars(i.first);
+				mrpt::system::fileNameStripInvalidChars(i.first);
 			std::replace(clean_name.begin(), clean_name.end(), '.', '_');
 			std::replace(clean_name.begin(), clean_name.end(), '-', '_');
 			std::replace(clean_name.begin(), clean_name.end(), '+', '_');
