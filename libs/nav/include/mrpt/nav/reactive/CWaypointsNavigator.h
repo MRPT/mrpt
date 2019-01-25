@@ -116,9 +116,6 @@ class CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
 		/** [rad] Angular error tolerance for waypoints with an assigned heading
 		 * (Default: 5 deg) */
 		double waypoint_angle_tolerance;
-		/** [0,1] Relative speed when aiming at a stop-point waypoint
-		 * (Default=0.10) */
-		double rel_speed_for_stop_waypoints{0.10};
 		/** >=0 number of waypoints to forward to the underlying navigation
 		 * engine, to ease obstacles avoidance when a waypoint is blocked
 		 * (Default=0 : none). */

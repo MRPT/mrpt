@@ -404,12 +404,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 					ti.targetAllowedDistance = wp.allowed_distance;
 					ti.targetIsRelative = false;
 					ti.targetIsIntermediaryWaypoint = !is_final_wp;
-					ti.targetDesiredRelSpeed =
-						(is_final_wp ||
-						 (wp.target_heading != TWaypoint::INVALID_NUM))
-							? params_waypoints_navigator
-								  .rel_speed_for_stop_waypoints
-							: 1.;
+					ti.targetDesiredRelSpeed = wp.speed_ratio;
 
 					// For backwards compat. with single-target code, write
 					// single target info too for the first, next, waypoint:
@@ -498,7 +493,6 @@ void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::
 	MRPT_LOAD_CONFIG_VAR(max_distance_to_allow_skip_waypoint, double, c, s);
 	MRPT_LOAD_CONFIG_VAR(min_timesteps_confirm_skip_waypoints, int, c, s);
 	MRPT_LOAD_CONFIG_VAR_DEGREES(waypoint_angle_tolerance, c, s);
-	MRPT_LOAD_CONFIG_VAR(rel_speed_for_stop_waypoints, double, c, s);
 	MRPT_LOAD_CONFIG_VAR(multitarget_look_ahead, int, c, s);
 }
 
@@ -517,10 +511,6 @@ void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::
 		"waypoint_angle_tolerance", waypoint_angle_tolerance,
 		"Angular error tolerance for waypoints with an assigned heading [deg] "
 		"(Default: 5 deg)");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(
-		rel_speed_for_stop_waypoints,
-		"[0,1] Relative speed when aiming at a stop-point waypoint "
-		"(Default=0.10)");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(
 		multitarget_look_ahead,
 		">=0 number of waypoints to forward to the underlying navigation "

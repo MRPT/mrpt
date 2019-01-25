@@ -40,6 +40,13 @@ struct TWaypoint
 	 * waypoint for it to be considered reached. */
 	double allowed_distance;
 
+	/** (Default=1.0) Desired robot speed at the target, as a ratio of the full robot speed. 
+	  * That is: speed_ratio=1 means that the user wants the robot to navigate to the target 
+	  * and smoothly continue to the next one when reached. speed_ratio=0 on the other hand means
+	  * that the robot should approach this waypoint slowing down and end up totally stopped.
+	  */
+	double  speed_ratio;
+
 	/** [Default=true] Whether it is allowed to the navigator to proceed to a
 	 * more advanced waypoint
 	 * in the sequence if it determines that it is easier to skip this one
@@ -57,7 +64,7 @@ struct TWaypoint
 	TWaypoint();
 	TWaypoint(
 		double target_x, double target_y, double allowed_distance,
-		bool allow_skip = true, double target_heading_ = INVALID_NUM);
+		bool allow_skip = true, double target_heading_ = INVALID_NUM, double  speed_ratio_ = 1.0);
 	/** get in human-readable format */
 	std::string getAsText() const;
 
