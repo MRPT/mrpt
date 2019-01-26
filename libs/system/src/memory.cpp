@@ -21,6 +21,10 @@
 #include <mach/task.h>
 #endif
 
+#ifdef MRPT_OS_LINUX
+#include <unistd.h>  // sysconf()
+#endif
+
 #ifdef _WIN32
 #include <windows.h>
 // Windows:
@@ -127,26 +131,22 @@ unsigned long mrpt::system::getMemoryUsage()
 #endif
 
 #ifdef MRPT_OS_LINUX
-	// Linux:
-	// int page_size = getpagesize();
-
-	FILE* f = ::fopen("/proc/self/stat", "r");
+	FILE* f = ::fopen("/proc/self/statm", "r");
 	if (!f) return 0;
 
-	// Note: some of these scanf specifiers would normally be 'long' versions if
-	// not for the fact that we are using suppression (gcc warns).  see 'man
-	// proc' for scanf specifiers and meanings.
-	if (!::fscanf(
-			f,
-			"%*d %*s %*c %*d %*d %*d %*d %*d %*u %*u %*u %*u %*u %*u %*u %*d "
-			"%*d %*d %*d %*d %*d %*u %lu",
-			&MEM))
+	unsigned long mem_pages = 0;
+	// see 'man proc' for docs on this
+	if (!::fscanf(f, "%*d %*d %*d %*d %*d %lu %*d", &mem_pages))
 	{
-		// Error parsing:
+		// Error parsing.
 		MEM = 0;
 	}
 	::fclose(f);
-//::system("cat /proc/self/statm");
+
+	// Multiply by the page size:
+	static const long pagesize = ::sysconf(_SC_PAGE_SIZE);
+	MEM = static_cast<decltype(MEM)>(pagesize) * mem_pages;
+
 #endif
 
 #ifdef __APPLE__
