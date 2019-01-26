@@ -72,7 +72,8 @@ class CPointsMapXYZI : public CPointsMap
 	}
 
 	/** Loads from a Kitti dataset Velodyne scan binary file.
-	 * The file can be gz compressed.
+	 * The file can be gz compressed (only enabled if the filename ends in ".gz"
+	 * to prevent spurious false autodetection of gzip files).
 	 * \return true on success */
 	bool loadFromKittiVelodyneFile(const std::string& filename);
 

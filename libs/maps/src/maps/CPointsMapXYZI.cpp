@@ -13,9 +13,11 @@
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/core/bits_mem.h>
 #include <mrpt/system/os.h>
+#include <mrpt/system/filesystem.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/serialization/aligned_serialization.h>
 #include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileInputStream.h>
 #include <iostream>
 
 #include "CPointsMap_crtp_common.h"
@@ -432,7 +434,22 @@ bool CPointsMapXYZI::loadFromKittiVelodyneFile(const std::string& filename)
 {
 	try
 	{
-		mrpt::io::CFileGZInputStream f(filename);
+		mrpt::io::CFileGZInputStream f_gz;
+		mrpt::io::CFileInputStream f_normal;
+		mrpt::io::CStream* f = nullptr;
+
+		if (std::string("gz") == mrpt::system::extractFileExtension(filename))
+		{
+			if (f_gz.open(filename)) f = &f_gz;
+		}
+		else
+		{
+			if (f_normal.open(filename)) f = &f_normal;
+		}
+		if (!f)
+			THROW_EXCEPTION_FMT(
+				"Could not open thefile: `%s`", filename.c_str());
+
 		this->clear();
 		this->reserve(10000);
 
@@ -440,7 +457,7 @@ bool CPointsMapXYZI::loadFromKittiVelodyneFile(const std::string& filename)
 		{
 			constexpr std::size_t nToRead = sizeof(float) * 4;
 			float xyzi[4];
-			std::size_t nRead = f.Read(&xyzi, nToRead);
+			std::size_t nRead = f->Read(&xyzi, nToRead);
 			if (nRead == 0)
 				break;  // EOF
 			else if (nRead == nToRead)
