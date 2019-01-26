@@ -35,6 +35,18 @@ class CObservationPointCloud : public CObservation
 	DEFINE_SERIALIZABLE(CObservationPointCloud)
 
    public:
+	enum class ExternalStorageFormat : uint8_t
+	{
+		None = 0,  //!< is always stored in memory
+		MRPT_Serialization,  //!< Uses mrpt-serialization binary file
+		KittiBinFile  //!< Uses Kitti .bin file format
+	};
+
+   protected:
+	ExternalStorageFormat m_externally_stored{ExternalStorageFormat::None};
+	std::string m_external_file;
+
+   public:
 	CObservationPointCloud() = default;
 
 	explicit CObservationPointCloud(const CObservation3DRangeScan& o);
@@ -52,6 +64,27 @@ class CObservationPointCloud : public CObservation
 	void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override;
 	void setSensorPose(const mrpt::poses::CPose3D& p) override;
 	void getDescriptionAsText(std::ostream& o) const override;
+
+	/** @name Delayed-load manual control methods.
+		@{ */
+	// See base class docs.
+	void load() const override;
+	void unload() override;
+	/** @} */
+
+	/** \name Point cloud external storage functions
+	 * @{ */
+	inline bool isExternallyStored() const
+	{
+		return m_externally_stored != ExternalStorageFormat::None;
+	}
+	inline const std::string& getExternalStorageFile() const
+	{
+		return m_external_file;
+	}
+	void setAsExternalStorage(
+		const std::string& fileName, const ExternalStorageFormat fmt);
+	/** @} */
 
 };  // End of class def.
 
