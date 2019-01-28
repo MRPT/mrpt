@@ -145,6 +145,8 @@ void CWaypointsNavigator::waypoints_navigationStep()
 		}
 		wps.last_robot_pose = m_curPoseVel.pose; // save for next iters
 
+		decltype(m_pending_events) new_events;
+
 		if (wps.waypoint_index_current_goal >= 0)
 		{
 			auto &wp = wps.waypoints[wps.waypoint_index_current_goal];
@@ -219,7 +221,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 						ev.event_wp_reached = true;
 						ev.event_wp_reached_index = wps.waypoint_index_current_goal;
 						ev.event_wp_reached_reached = true /* reason: really reached*/;
-						m_pending_events.push_front(ev);
+						new_events.push_back(ev);
 					}
 
 					// Was this the final goal??
@@ -288,11 +290,14 @@ void CWaypointsNavigator::waypoints_navigationStep()
 						ev.event_wp_reached = true;
 						ev.event_wp_reached_index = k;
 						ev.event_wp_reached_reached = false /* reason: skipped */;
-						m_pending_events.push_front(ev);
+						new_events.push_back(ev);
 					}
 				}
 			}
 		}
+
+		// Insert at the beginning, for these events to be dispatched *before* any "end of nav" event:
+		m_pending_events.insert(m_pending_events.begin(), new_events.begin(), new_events.end());
 
 		// Still not started and no better guess? Start with the first waypoint:
 		if (wps.waypoint_index_current_goal<0)
