@@ -67,7 +67,7 @@ std::string TWaypoint::getAsText() const
 
 	s += (allow_skip ? " allow_skip: YES" : " allow_skip: NO ");
 
-	s+= mrpt::format(" speed_ratio: %.01f", speed_ratio);
+	s += mrpt::format(" speed_ratio: %.01f", speed_ratio);
 	return s;
 }
 
@@ -278,6 +278,7 @@ void TWaypointSequence::load(
 			s, mrpt::format("wp%03u_target_heading", i),
 			mrpt::nav::TWaypoint::INVALID_NUM);
 		wp.target_heading = (hd > 100) ? mrpt::nav::TWaypoint::INVALID_NUM : hd;
-		wp.speed_ratio = c.read_double(s, mrpt::format("wp%03u_speed_ratio", i), 1.0, false);
+		wp.speed_ratio =
+			c.read_double(s, mrpt::format("wp%03u_speed_ratio", i), 1.0, false);
 	}
 }
