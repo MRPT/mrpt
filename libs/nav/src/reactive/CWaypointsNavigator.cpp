@@ -157,7 +157,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 			wps.last_robot_pose = m_curPoseVel.pose;  // save for next iters
 
 			decltype(m_pending_events) new_events;
-			
+
 			if (wps.waypoint_index_current_goal >= 0)
 			{
 				auto& wp = wps.waypoints[wps.waypoint_index_current_goal];
@@ -348,9 +348,11 @@ void CWaypointsNavigator::waypoints_navigationStep()
 				}
 			}
 
-			// Insert at the beginning, for these events to be dispatched *before* any "end of nav" event:
-			m_pending_events.insert(m_pending_events.begin(), new_events.begin(), new_events.end());
-			
+			// Insert at the beginning, for these events to be dispatched
+			// *before* any "end of nav" event:
+			m_pending_events.insert(
+				m_pending_events.begin(), new_events.begin(), new_events.end());
+
 			// Still not started and no better guess? Start with the first
 			// waypoint:
 			if (wps.waypoint_index_current_goal < 0)
