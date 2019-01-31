@@ -19,13 +19,6 @@ using mxArray = struct mxArray_tag;
 
 namespace mrpt::serialization
 {
-// /** Used in mrpt::serialization::CSerializable */
-// std::string notImplementedErrorString(const std::string& class_name)
-// {
-// 	return class_name +
-// 			" : class does not support schema based serialization";
-// }
-
 /** The virtual base class which provides a unified interface for all persistent
  *objects in MRPT.
  *  Many important properties of this class are inherited from
