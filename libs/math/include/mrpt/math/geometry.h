@@ -223,13 +223,13 @@ inline double getAngle(const TLine3D& r1, const TPlane& p2)
 	return getAngle(p2, r1);
 }
 /**
- * Computes the angle between two 3D lines or segments (implicit constructor
- * will be used if passing a segment instead of a line).
+ * Computes the accute relative angle (range: [-PI/2,PI/2]) between two lines.
+ * \note Implicit constructor allows passing a segment as argument too.
  */
 double getAngle(const TLine3D& r1, const TLine3D& r2);
 /**
- * Computes the angle between two 2D lines or segments (implicit constructor
- * will be used if passing a segment instead of a line).
+ * Computes the relative angle (range: [-PI,PI]) of line 2 wrt line 1.
+ * \note Implicit constructor allows passing a segment as argument too.
  */
 double getAngle(const TLine2D& r1, const TLine2D& r2);
 /** @}

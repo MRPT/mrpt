@@ -34,6 +34,45 @@ TEST(Geometry, Line2DIntersect)
 	EXPECT_NEAR(i.y, 0.5, 1e-9);
 }
 
+TEST(Geometry, Line2DAngle)
+{
+	const TLine2D l1(TPoint2D(0, 0), TPoint2D(1, 0));
+	const TLine2D l2(TPoint2D(-1, -1), TPoint2D(5, 5));
+
+	// Angles in 2D do have sign:
+	EXPECT_NEAR(mrpt::RAD2DEG(mrpt::math::getAngle(l1, l2)), +45.0, 1e-5);
+	EXPECT_NEAR(mrpt::RAD2DEG(mrpt::math::getAngle(l2, l1)), -45.0, 1e-5);
+
+	EXPECT_NEAR(mrpt::RAD2DEG(mrpt::math::getAngle(l1, l1)), 0.0, 1e-5);
+	EXPECT_NEAR(mrpt::RAD2DEG(mrpt::math::getAngle(l2, l2)), 0.0, 1e-5);
+
+	const TLine2D l3(TPoint2D(1, 0), TPoint2D(0, 0));
+	EXPECT_NEAR(RAD2DEG(std::abs(mrpt::math::getAngle(l1, l3))), 180.0, 1e-5);
+	EXPECT_NEAR(RAD2DEG(std::abs(mrpt::math::getAngle(l3, l1))), 180.0, 1e-5);
+}
+
+TEST(Geometry, Line3DAngle)
+{
+	const TLine3D l1(TPoint3D(0, 0, 0), TPoint3D(1, 0, 0));
+	const TLine3D l2(TPoint3D(-1, -1, 0), TPoint3D(5, 5, 0));
+
+	// Angles in 3D don't have sign:
+	EXPECT_NEAR(mrpt::RAD2DEG(mrpt::math::getAngle(l1, l2)), 45.0, 1e-5);
+	EXPECT_NEAR(mrpt::RAD2DEG(mrpt::math::getAngle(l2, l1)), 45.0, 1e-5);
+
+	EXPECT_NEAR(mrpt::RAD2DEG(mrpt::math::getAngle(l1, l1)), 0.0, 1e-5);
+	EXPECT_NEAR(mrpt::RAD2DEG(mrpt::math::getAngle(l2, l2)), 0.0, 1e-5);
+
+	const TLine3D l3(TPoint3D(1, 0, 0), TPoint3D(0, 0, 0));
+	EXPECT_NEAR(RAD2DEG(std::abs(mrpt::math::getAngle(l1, l3))), 180.0, 1e-5);
+	EXPECT_NEAR(RAD2DEG(std::abs(mrpt::math::getAngle(l3, l1))), 180.0, 1e-5);
+
+	const TLine3D l4(
+		TPoint3D(0, 0, 0), TPoint3D(cos(DEG2RAD(30.0)), sin(DEG2RAD(30.0)), 0));
+	EXPECT_NEAR(mrpt::RAD2DEG(mrpt::math::getAngle(l1, l4)), 30.0, 1e-5);
+	EXPECT_NEAR(mrpt::RAD2DEG(mrpt::math::getAngle(l4, l1)), 30.0, 1e-5);
+}
+
 TEST(Geometry, Segment2DIntersect)
 {
 	{
