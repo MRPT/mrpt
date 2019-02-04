@@ -105,7 +105,7 @@ void CDirectoryExplorer::explore(
 				FindClose(h);
 				THROW_EXCEPTION_FMT(
 					"Cannot get stat for file: '%s'",
-					newEntry.wholePath.c_str())
+					newEntry.wholePath.c_str());
 			}
 
 			newEntry.modTime = statDat.st_mtime;
