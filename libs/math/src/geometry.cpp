@@ -909,19 +909,9 @@ double math::getAngle(const TLine3D& r1, const TLine3D& r2)
 
 double math::getAngle(const TLine2D& r1, const TLine2D& r2)
 {
-	double c = 0, n1 = 0, n2 = 0;
-	for (size_t i = 0; i < 2; i++)
-	{
-		c += r1.coefs[i] * r2.coefs[i];
-		n1 += r1.coefs[i] * r1.coefs[i];
-		n2 += r2.coefs[i] * r2.coefs[i];
-	}
-	double s = sqrt(n1 * n2);
-	if (s < geometryEpsilon) throw std::logic_error("Invalid line(s)");
-	if (abs(s) < abs(c))
-		return (c / s < 0) ? M_PI : 0;
-	else
-		return acos(c / sqrt(n1 * n2));
+	const double ang1 = std::atan2(-r1.coefs[0], r1.coefs[1]);
+	const double ang2 = std::atan2(-r2.coefs[0], r2.coefs[1]);
+	return mrpt::math::wrapToPi(ang2 - ang1);
 }
 
 // Auxiliary method
