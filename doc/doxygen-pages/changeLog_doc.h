@@ -25,9 +25,8 @@ port existing code to MRPT 2.0: \ref porting_mrpt2
 over.
 	- Backwards compatible headers for "maps" and "observations" in mrpt::slam
 are removed. They moved to their own namespaces in MRPT v1.3.0 (Jan 2015).
-	- All pointer typedefs are now in their respective classes.
-	- Using a variant type from the mapbox variant library, and added
-serialization with variants(To be replaced by std::variant eventually).
+	- All pointer typedefs are now in their respective classes: FooPtr -> Foo::Ptr
+	- Add support for serialization with std::variant
 - <b>Detailed list of changes:</b>
 	- Changes in applications:
 		- RawLogViewer:
