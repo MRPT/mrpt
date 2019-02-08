@@ -73,6 +73,8 @@ mrpt::nav::CRobot2NavInterface are now invoked *after* `navigationStep()` to
 avoid problems if user code invokes the navigator API to change its state.
 			- Added methods to load/save mrpt::nav::TWaypointSequence to
 configuration files.
+			- Waypoints now have a field `speed_ratio` which is directly
+forwarded to the low-level reactive navigator.
 		- \ref mrpt_comms_grp [NEW IN MRPT 2.0.0]
 			- This new module has been created to hold all serial devices &
 networking classes, with minimal dependencies.
