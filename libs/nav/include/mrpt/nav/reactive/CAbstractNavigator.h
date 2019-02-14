@@ -121,11 +121,33 @@ namespace mrpt
 			IDLE=0,
 			NAVIGATING,
 			SUSPENDED,
-			NAV_ERROR
+			NAV_ERROR //!< In this case, use getErrorReason()
 		};
 
 		/** Returns the current navigator state. */
 		inline TState getCurrentState() const { return m_navigationState; }
+
+		/** Explains the reason for the navigation error. */
+		enum TErrorCode {
+			ERR_NONE=0,
+			ERR_EMERGENCY_STOP,
+			ERR_CANNOT_REACH_TARGET,
+			ERR_OTHER
+		};
+		struct NAV_IMPEXP TErrorReason
+		{
+			TErrorReason() : error_code(ERR_NONE) {}
+
+			TErrorCode error_code;
+			/** Human friendly description of the error */
+			std::string error_msg;
+		};
+
+		/** In case of state=NAV_ERROR, this returns the reason for the error.
+		  * Error state is reseted everytime a new navigation starts with
+		  * a call to navigate(), or when resetNavError() is called.
+		  */
+		inline const TErrorReason & getErrorReason() const { return m_navErrorReason; }
 
 		/** Sets a user-provided frame transformer object; used only if providing targets in a frame ID
 		  * different than the one in which robot odometry is given (both IDs default to `"map"`).
@@ -169,6 +191,7 @@ namespace mrpt
 
 	private:
 		TState  m_lastNavigationState; //!< Last internal state of navigator:
+		TErrorReason m_navErrorReason;
 		bool    m_navigationEndEventSent; //!< Will be false until the navigation end is sent, and it is reset with each new command
 		int m_counter_check_target_is_blocked;
 		bool m_rethrow_exceptions;
