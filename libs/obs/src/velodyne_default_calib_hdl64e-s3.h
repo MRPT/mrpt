@@ -6,7 +6,10 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-const char* velodyne_default_calib_HDL64E_S3 = R"==(
+
+// Note: we had to split this string into parts for MSVC to digest it... (sigh)
+
+const char* velodyne_default_calib_HDL64E_S3_part1 = R"==(
 lasers:
 - {dist_correction: 1.4139490000000001, dist_correction_x: 1.4198446999999998, dist_correction_y: 1.4058145,
   focal_distance: 10.5, focal_slope: 1.85, horiz_offset_correction: 0.025999999, laser_id: 0,
@@ -182,6 +185,8 @@ lasers:
   focal_distance: 0.25, focal_slope: 0.94999999, horiz_offset_correction: -0.025999999,
   laser_id: 47, rot_correction: -0.08707280959256145, vert_correction: -0.33026751989087316,
   vert_offset_correction: 0.15545268}
+)==";
+const char* velodyne_default_calib_HDL64E_S3_part2 = R"==(
 - {dist_correction: 1.4612433999999999, dist_correction_x: 1.5250436, dist_correction_y: 1.4817635999999998,
   focal_distance: 13.0, focal_slope: 1.0, horiz_offset_correction: 0.025999999, laser_id: 48,
   rot_correction: -0.006799911150716457, vert_correction: -0.26851710773019805, vert_offset_correction: 0.15124829}
@@ -235,3 +240,7 @@ lasers:
 num_lasers: 64
 distance_resolution: 0.002
 )==";
+
+const std::string velodyne_default_calib_HDL64E_S3 =
+	std::string(velodyne_default_calib_HDL64E_S3_part1) +
+	std::string(velodyne_default_calib_HDL64E_S3_part2);
