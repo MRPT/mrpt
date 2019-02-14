@@ -143,7 +143,11 @@ void CAbstractNavigator::resetNavError()
 	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
 
 	MRPT_LOG_DEBUG("CAbstractNavigator::resetNavError() called.");
-	if (m_navigationState == NAV_ERROR) m_navigationState = IDLE;
+	if (m_navigationState == NAV_ERROR)
+	{
+		m_navigationState = IDLE;
+		m_navErrorReason = TErrorReason();
+	}
 }
 
 void CAbstractNavigator::setFrameTF(
@@ -263,6 +267,13 @@ void CAbstractNavigator::doEmergencyStop(const std::string& msg)
 	{
 	}
 	m_navigationState = NAV_ERROR;
+	// don't overwrite an error msg from a caller:
+	if (m_navErrorReason.error_code == ERR_NONE)
+	{
+		m_navErrorReason.error_code = ERR_EMERGENCY_STOP;
+		m_navErrorReason.error_msg =
+			std::string("doEmergencyStop called for: ") + msg;
+	}
 	MRPT_LOG_ERROR(msg);
 }
 
@@ -299,6 +310,7 @@ void CAbstractNavigator::processNavigateCommand(const TNavigationParams* params)
 
 	// new state:
 	m_navigationState = NAVIGATING;
+	m_navErrorReason = TErrorReason();
 
 	// Reset the bad navigation alarm:
 	m_badNavAlarm_minDistTarget = std::numeric_limits<double>::max();
@@ -351,6 +363,10 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds()
 				m_curPoseVel.pose_frame_id))
 		{
 			m_navigationState = NAV_ERROR;
+			m_navErrorReason.error_code = ERR_EMERGENCY_STOP;
+			m_navErrorReason.error_msg = std::string(
+				"ERROR calling m_robot.getCurrentPoseAndSpeeds, stopping robot "
+				"and finishing navigation");
 			try
 			{
 				this->stop(true /*emergency*/);
@@ -588,6 +604,9 @@ void CAbstractNavigator::performNavigationStepNavigating(
 						"Timeout approaching the target. Aborting navigation.");
 
 					m_navigationState = NAV_ERROR;
+					m_navErrorReason.error_code = ERR_CANNOT_REACH_TARGET;
+					m_navErrorReason.error_msg = std::string(
+						"Timeout approaching the target. Aborting navigation.");
 
 					m_pending_events.emplace_back(std::bind(
 						&CRobot2NavInterface::sendWaySeemsBlockedEvent,
@@ -641,12 +660,27 @@ void CAbstractNavigator::performNavigationStepNavigating(
 	}
 	catch (const std::exception& e)
 	{
+		m_navigationState = NAV_ERROR;
+		if (m_navErrorReason.error_code == ERR_NONE)
+		{
+			m_navErrorReason.error_code = ERR_OTHER;
+			m_navErrorReason.error_msg =
+				std::string("Exception: ") + std::string(e.what());
+		}
+
 		MRPT_LOG_ERROR_FMT(
 			"[CAbstractNavigator::navigationStep] Exception:\n %s", e.what());
 		if (m_rethrow_exceptions) throw;
 	}
 	catch (...)
 	{
+		m_navigationState = NAV_ERROR;
+		if (m_navErrorReason.error_code == ERR_NONE)
+		{
+			m_navErrorReason.error_code = ERR_OTHER;
+			m_navErrorReason.error_msg = "Untyped exception";
+		}
+
 		MRPT_LOG_ERROR(
 			"[CAbstractNavigator::navigationStep] Untyped exception!");
 		if (m_rethrow_exceptions) throw;
