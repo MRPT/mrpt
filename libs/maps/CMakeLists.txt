@@ -49,7 +49,7 @@ if(BUILD_mrpt-maps)
 		if(TARGET "EP_octomap")
 			add_dependencies(maps EP_octomap)
 		endif()
-		target_link_libraries(maps PUBLIC ${OCTOMAP_LIBRARIES})
+		target_link_libraries(maps PRIVATE ${OCTOMAP_LIBRARIES})
 	endif()
 
 endif()
