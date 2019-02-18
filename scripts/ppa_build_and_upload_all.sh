@@ -2,6 +2,8 @@
 # Build all Ubuntu PPA packages and upload them.
 # JLBC, 2013
 
+set -e
+
 # Check:
 if [ -f version_prefix.txt ];
 then
@@ -29,4 +31,3 @@ bash $MRPTDIR/scripts/upload_all_mrpt_ppa_no_sse3.sh
 
 
 exit 0
-
