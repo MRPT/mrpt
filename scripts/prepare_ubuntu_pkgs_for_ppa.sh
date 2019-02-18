@@ -85,7 +85,10 @@ do
 
 	echo "Now, let's build the source Deb package with 'debuild -S -sa':"
 	cd ..
-	debuild -S -sa
+	# -S: source package
+	# -sa: force inclusion of sources
+	# -d: don't check dependencies in this system
+	debuild -S -sa -d
 
 	# Make a copy of all these packages:
 	cd ..
