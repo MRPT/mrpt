@@ -2,8 +2,6 @@
 set(CMAKE_MRPT_HAS_OCTOMAP 0)
 set(CMAKE_MRPT_HAS_OCTOMAP_SYSTEM 0)
 
-set(EMBEDDED_OCTOMAP_DIR "${MRPT_BINARY_DIR}/otherlibs/octomap")
-
 # Try to locate the pkg via CMake:
 find_package(OCTOMAP QUIET)
 if (OCTOMAP_FOUND)
