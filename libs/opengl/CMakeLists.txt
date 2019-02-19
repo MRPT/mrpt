@@ -79,7 +79,7 @@ if(BUILD_mrpt-opengl)
 	endif()
 
 	# Link against gl, glu, glut:
-	target_link_libraries(opengl PUBLIC ${MRPT_OPENGL_LIBS} ${MRPT_3DS_LIBS} )
+	target_link_libraries(opengl PRIVATE ${MRPT_OPENGL_LIBS})
 	target_link_libraries(opengl PRIVATE ${CVD_LIB})
 
 	# Link against assimp:
