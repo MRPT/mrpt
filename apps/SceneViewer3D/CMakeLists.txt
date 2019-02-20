@@ -18,7 +18,6 @@ if(CMAKE_MRPT_HAS_WXWIDGETS AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 		_DSceneViewerApp.cpp _DSceneViewerApp.h
 		_DSceneViewerMain.cpp _DSceneViewerMain.h
 		CDialogOptions.cpp   CDialogOptions.h
-		CAboutBox.cpp        CAboutBox.h
 		CDlgCamTracking.cpp  CDlgCamTracking.h
 		CDlgPLYOptions.cpp   CDlgPLYOptions.h
 	)
@@ -35,7 +34,7 @@ if(CMAKE_MRPT_HAS_WXWIDGETS AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 	include_directories( ${wxWidgets_INCLUDE_DIRS} )
 	target_link_libraries(${PROJECT_NAME} ${wxWidgets_LIBRARIES} )
 
-	target_link_libraries(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
+	target_link_libraries(${PROJECT_NAME} ${MRPT_LINKER_LIBS} ${MRPT_OPENGL_LIBS})
 
 	target_link_libraries(${PROJECT_NAME} mrptwxthings)
 	add_dependencies(${PROJECT_NAME} mrptwxthings)

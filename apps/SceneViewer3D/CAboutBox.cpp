@@ -70,7 +70,7 @@ CAboutBox::CAboutBox(wxWindow* parent, wxWindowID id)
 		this, ID_STATICTEXT1, _("Title"), wxDefaultPosition, wxDefaultSize, 0,
 		_T("ID_STATICTEXT1"));
 	wxFont lbProgNameFont(
-		22, wxSWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false,
+		22, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false,
 		_T("Times New Roman"), wxFONTENCODING_DEFAULT);
 	lbProgName->SetFont(lbProgNameFont);
 	FlexGridSizer2->Add(
@@ -113,24 +113,24 @@ CAboutBox::CAboutBox(wxWindow* parent, wxWindowID id)
 		wxTE_MULTILINE | wxTE_READONLY | wxTE_AUTO_URL, wxDefaultValidator,
 		_T("ID_TEXTCTRL4"));
 	wxFont TextCtrl2Font(
-		10, wxSWISS, wxFONTSTYLE_NORMAL, wxNORMAL, false, _T("Courier New"),
-		wxFONTENCODING_DEFAULT);
+		10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false,
+		_T("Courier New"), wxFONTENCODING_DEFAULT);
 	TextCtrl2->SetFont(TextCtrl2Font);
 	lbInfo = new wxTextCtrl(
 		Notebook1, ID_TEXTCTRL1, wxEmptyString, wxPoint(4, 24),
 		wxSize(545, 222), wxTE_MULTILINE | wxTE_READONLY | wxTE_AUTO_URL,
 		wxDefaultValidator, _T("ID_TEXTCTRL1"));
 	wxFont lbInfoFont(
-		10, wxSWISS, wxFONTSTYLE_NORMAL, wxNORMAL, false, _T("Courier New"),
-		wxFONTENCODING_DEFAULT);
+		10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false,
+		_T("Courier New"), wxFONTENCODING_DEFAULT);
 	lbInfo->SetFont(lbInfoFont);
 	lbLicense = new wxTextCtrl(
 		Notebook1, ID_TEXTCTRL2, _(""), wxDefaultPosition, wxDefaultSize,
 		wxTE_MULTILINE | wxTE_READONLY | wxTE_AUTO_URL, wxDefaultValidator,
 		_T("ID_TEXTCTRL2"));
 	wxFont lbLicenseFont(
-		10, wxSWISS, wxFONTSTYLE_NORMAL, wxNORMAL, false, _T("Courier New"),
-		wxFONTENCODING_DEFAULT);
+		10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false,
+		_T("Courier New"), wxFONTENCODING_DEFAULT);
 	lbLicense->SetFont(lbLicenseFont);
 	TextCtrl1 = new wxTextCtrl(
 		Notebook1, ID_TEXTCTRL3,
@@ -140,8 +140,8 @@ CAboutBox::CAboutBox(wxWindow* parent, wxWindowID id)
 		wxTE_MULTILINE | wxTE_READONLY | wxTE_AUTO_URL, wxDefaultValidator,
 		_T("ID_TEXTCTRL3"));
 	wxFont TextCtrl1Font(
-		10, wxSWISS, wxFONTSTYLE_NORMAL, wxNORMAL, false, _T("Courier New"),
-		wxFONTENCODING_DEFAULT);
+		10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false,
+		_T("Courier New"), wxFONTENCODING_DEFAULT);
 	TextCtrl1->SetFont(TextCtrl1Font);
 	Notebook1->AddPage(TextCtrl2, _("Keyboard and mouse commands"), false);
 	Notebook1->AddPage(lbInfo, _("Information"), false);

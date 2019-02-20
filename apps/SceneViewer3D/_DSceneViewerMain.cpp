@@ -1832,7 +1832,6 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 }
 
 struct visitor_export_PLY
-	: public unary_function<mrpt::opengl::CRenderizable::Ptr, void>
 {
 	const string& filename;
 	unsigned int& count;
