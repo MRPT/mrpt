@@ -1,6 +1,7 @@
 #include "cvd/utility.h"
 #include "cvd_src/utility_helpers.h"
 #include <emmintrin.h>
+#include <algorithm> // min()
 
 namespace CVD {
 
@@ -22,7 +23,7 @@ namespace CVD {
 	    *(diff++) = _mm_sub_epi32(*(a++), load_si128<Aligned_b>(b++));
 	}
     }
-    
+
     template <bool Aligned_b> void double_differences(const __m128d* a, const __m128d* b, __m128d* diff, size_t count)
     {
 	while (count--) {
@@ -65,7 +66,7 @@ namespace CVD {
     }
 
     template <bool Aligned_b> long long byte_sum_squared_differences(const __m128i* a, const __m128i* b, size_t count) {
-	unsigned long sums_store[4] = {0};	
+	unsigned long sums_store[4] = {0};
 	const size_t BLOCK = 1<<15;
 	long long ssd = 0;
 	while (count) {
@@ -91,7 +92,7 @@ namespace CVD {
 	return ssd;
     }
 
-    template <bool Aligned_b> inline double double_sum_squared_differences(const __m128d* a, const __m128d* b, size_t count) 
+    template <bool Aligned_b> inline double double_sum_squared_differences(const __m128d* a, const __m128d* b, size_t count)
     {
 	double sums_store[2];
 	const size_t BLOCK = 1<<10;
@@ -110,7 +111,7 @@ namespace CVD {
 	return ssd;
     }
 
-    
+
     struct SSE2_funcs {
 	template <class T1, class T2> static inline void unaligned_differences(const T1* a, const T1* b, T2* diff, size_t count) {
 	    differences<T1,T2>(a,b,diff,count);
@@ -134,7 +135,7 @@ namespace CVD {
 	template <class T1, class T2> static inline void unaligned_add_mul_add(const T1* a, const T1* b, const T1& c, T2* out, size_t count) {
 	    add_multiple_of_sum<T1,T2>(a,b,c,out,count);
 	}
-	
+
 	static inline void aligned_add_mul_add(const double* a, const double* b, const double& c, double* out, size_t count)
 	{
 	    if (is_aligned<16>(b))
@@ -142,7 +143,7 @@ namespace CVD {
 	    else
 		double_add_multiple_of_sum<false>((const __m128d*)a, (const __m128d*)b, c, (__m128d*)out, count>>1);
 	}
-	
+
 	template <class T1, class T2> static inline void unaligned_assign_mul(const T1* a, const T1& c, T2* out, size_t count) {
 	    assign_multiple<T1,T2>(a,c,out,count);
 	}
@@ -154,11 +155,11 @@ namespace CVD {
 	    else
 		double_assign_multiple<false>((const __m128d*)a, c, (__m128d*)out, count>>1);
 	}
-	
+
 	template <class T1> static inline double unaligned_inner_product(const T1* a, const T1* b, size_t count) {
 	    return inner_product<T1>(a,b,count);
 	}
-	
+
 	static inline double aligned_inner_product(const double* a, const double* b, size_t count)
 	{
 	    if (is_aligned<16>(b))
@@ -170,12 +171,12 @@ namespace CVD {
 	template <class T1> static inline double unaligned_ssd(const T1* a, const T1* b, size_t count) {
 	    return sum_squared_differences<T1>(a,b,count);
 	}
-	
+
 	static inline long long unaligned_ssd(const byte* a, const byte* b, size_t count) {
 	    return SumSquaredDifferences<long long, int, byte>::sum_squared_differences(a,b,count);
 	}
 
-	static inline double aligned_ssd(const double* a, const double* b, size_t count) 
+	static inline double aligned_ssd(const double* a, const double* b, size_t count)
 	{
 	    if (is_aligned<16>(b))
 		return double_sum_squared_differences<true>((const __m128d*)a, (const __m128d*)b, count>>1);
@@ -183,13 +184,13 @@ namespace CVD {
 		return double_sum_squared_differences<false>((const __m128d*)a, (const __m128d*)b, count>>1);
 	}
 
-	static inline long long aligned_ssd(const byte* a, const byte* b, size_t count) 
+	static inline long long aligned_ssd(const byte* a, const byte* b, size_t count)
 	{
-	    if (is_aligned<16>(b)) 
+	    if (is_aligned<16>(b))
 		return byte_sum_squared_differences<true>((const __m128i*)a, (const __m128i*)b, count>>4);
 	    else
 		return byte_sum_squared_differences<false>((const __m128i*)a, (const __m128i*)b, count>>4);
-	}	
+	}
     };
 
     void differences(const int32_t* a, const int32_t* b, int32_t* diff, size_t size)
@@ -224,7 +225,7 @@ namespace CVD {
 
     long long sum_squared_differences(const byte* a, const byte* b, size_t count)
     {
-	return maybe_aligned_ssd<SSE2_funcs, long long, byte, 16, 16>(a,b,count); 
+	return maybe_aligned_ssd<SSE2_funcs, long long, byte, 16, 16>(a,b,count);
     }
-    
+
 }

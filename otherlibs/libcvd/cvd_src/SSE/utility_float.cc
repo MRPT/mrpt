@@ -1,9 +1,8 @@
 #include "cvd/utility.h"
 #include "cvd_src/utility_helpers.h"
 
-
 #include <xmmintrin.h>
-
+#include <algorithm> // min
 
 using namespace std;
 

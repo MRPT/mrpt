@@ -21,7 +21,7 @@ namespace CVD {
         __m128i zero = _mm_loadu_si128((const __m128i*)zeros);
         while (total--) {
             __m128i up = _mm_load_si128((const __m128i*)(curr-w));
-            __m128i down = _mm_load_si128((const __m128i*)(curr+w));            
+            __m128i down = _mm_load_si128((const __m128i*)(curr+w));
             __m128i hor_left, hor_right;
             {
                 __m128i hor = _mm_load_si128((const __m128i*)curr);
@@ -63,7 +63,7 @@ namespace CVD {
             curr += 16;
             out += 16;
         }
-        _mm_empty();
+        //_mm_empty();
     }
 
     void gradient(const BasicImage<byte>& im, BasicImage<short[2]>& out)
