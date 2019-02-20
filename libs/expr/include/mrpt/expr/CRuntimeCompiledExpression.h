@@ -13,7 +13,6 @@
 #include <map>
 #include <string>
 #include <memory>
-#include "mrpt-expr_export.h"
 
 namespace exprtk
 {
@@ -56,12 +55,11 @@ namespace expr
  * \note (`MRPT_EXPR_VERBOSE` new in MRPT 1.5.7)
  * \ingroup mrpt_base_grp
  */
-class MRPT_EXPR_EXPORT CRuntimeCompiledExpression
+class CRuntimeCompiledExpression
 {
    public:
 	/** Default ctor */
 	CRuntimeCompiledExpression();
-	~CRuntimeCompiledExpression();
 
 	/** Initializes the object by compiling an expression.
 	 * \exception std::runtime_error On any syntax error or undefined symbol
