@@ -28,6 +28,7 @@
 #include <mrpt/system/datetime.h>
 #include <mrpt/gui/CWxGLCanvasBase.h>
 #include <mrpt/gui/WxUtils.h>
+#include <optional>
 
 class CDlgCamTracking;
 class CMyGLCanvas : public mrpt::gui::CWxGLCanvasBase
