@@ -244,6 +244,7 @@ void CMyGLCanvas_DisplayWindow3D::OnPostRenderSwapBuffers(
 		auto frame = CImage::Create(w, h, mrpt::img::CH_RGB);
 		glReadBuffer(GL_FRONT);
 		glReadPixels(0, 0, w, h, GL_BGR_EXT, GL_UNSIGNED_BYTE, (*frame)(0, 0));
+		frame->flipVertical();
 
 		if (!grabFile.empty())
 		{
