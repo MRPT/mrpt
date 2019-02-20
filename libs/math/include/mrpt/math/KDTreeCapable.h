@@ -717,7 +717,7 @@ class KDTreeCapable
 	/** To be called by child classes when KD tree data changes. */
 	inline void kdtree_mark_as_outdated() const
 	{
-		std::scoped_lock lck(m_kdtree_mtx);
+		std::lock_guard<std::mutex> lck(m_kdtree_mtx);
 		m_kdtree_is_uptodate = false;
 	}
 
@@ -766,7 +766,7 @@ class KDTreeCapable
 	{
 		if (m_kdtree_is_uptodate) return;
 
-		std::scoped_lock lck(m_kdtree_mtx);
+		std::lock_guard<std::mutex> lck(m_kdtree_mtx);
 		using tree2d_t = typename TKDTreeDataHolder<2>::kdtree_index_t;
 
 		if (!m_kdtree_is_uptodate)
@@ -800,7 +800,7 @@ class KDTreeCapable
 	void rebuild_kdTree_3D() const
 	{
 		if (m_kdtree_is_uptodate) return;
-		std::scoped_lock lck(m_kdtree_mtx);
+		std::lock_guard<std::mutex> lck(m_kdtree_mtx);
 		using tree3d_t = typename TKDTreeDataHolder<3>::kdtree_index_t;
 
 		if (!m_kdtree_is_uptodate)
