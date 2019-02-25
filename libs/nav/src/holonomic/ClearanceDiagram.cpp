@@ -146,16 +146,16 @@ double ClearanceDiagram::getClearance(
 	// than at path start.
 	for (const auto& e : rc_k)
 	{
-		if (!integrate_over_path)
+		if (integrate_over_path)
 		{
-			// dont integrate: forget past part:
-			res = 0;
-			avr_count = 0;
+			res = e.second;
+			avr_count = 1;
 		}
-		// Keep min clearance along straight path:
-		res += e.second;
-		avr_count++;
-
+		else
+		{
+			res += e.second;
+			avr_count++;
+		}
 		if (e.first > dist) break;  // target dist reached.
 	}
 
