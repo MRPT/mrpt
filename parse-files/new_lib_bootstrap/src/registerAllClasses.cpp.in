@@ -16,7 +16,6 @@
 
 
 using namespace mrpt::@name@;
-using namespace mrpt::utils;
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_@name@
 {

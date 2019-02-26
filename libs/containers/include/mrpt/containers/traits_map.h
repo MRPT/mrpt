@@ -31,7 +31,7 @@ struct map_traits_stdmap
 	using map = std::map<KEY, VALUE, _LessPred, _Alloc>;
 };
 
-/**  Traits for using a mrpt::utils::map_as_vector<> (dense, fastest
+/**  Traits for using a mrpt::containers::map_as_vector<> (dense, fastest
  * representation) \sa map_traits_stdmap  */
 struct map_traits_map_as_vector
 {

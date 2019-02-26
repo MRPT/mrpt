@@ -94,7 +94,7 @@ class CArchive
 		// big endian: convert.
 		const size_t nread = ReadBuffer(ptr, ElementCount * sizeof(T));
 		for (size_t i = 0; i < ElementCount; i++)
-			mrpt::utils::reverseBytesInPlace(ptr[i]);
+			mrpt::reverseBytesInPlace(ptr[i]);
 		return nread;
 #endif
 	}

@@ -268,8 +268,8 @@ inline std::string exception_to_str(const std::exception& e)
 	catch (...) { {stuff} THROW_STACKED_EXCEPTION; }
 
 #if MRPT_ENABLE_EMBEDDED_GLOBAL_PROFILER
-#define MRPT_PROFILE_FUNC_START               \
-	::mrpt::utils::CProfilerProxy BOOST_JOIN( \
+#define MRPT_PROFILE_FUNC_START                \
+	::mrpt::system::CProfilerProxy BOOST_JOIN( \
 		__dum_var, __LINE__)(__CURRENT_FUNCTION_NAME__);
 #else
 #define MRPT_PROFILE_FUNC_START
