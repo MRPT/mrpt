@@ -58,8 +58,8 @@ void mrpt_send_to_zmq(
 	for (unsigned int iPkt = 0; iPkt < nPkts; ++iPkt)
 	{
 		// Prepare a msg part:
-		mrpt::utils::internal::TFreeFnDataForZMQ* fd =
-			new mrpt::utils::internal::TFreeFnDataForZMQ();
+		mrpt::serialization::internal::TFreeFnDataForZMQ* fd =
+			new mrpt::serialization::internal::TFreeFnDataForZMQ();
 		if (!fd) throw std::bad_alloc();
 		fd->buf = buf;
 		fd->do_free =
@@ -74,7 +74,7 @@ void mrpt_send_to_zmq(
 		zmq_msg_t message;
 		if (0 != zmq_msg_init_data(
 					 &message, pkt_data, nBytesThisPkt,
-					 &mrpt::utils::internal::free_fn_for_zmq, fd))
+					 &mrpt::serialization::internal::free_fn_for_zmq, fd))
 			throw std::runtime_error(
 				"[mrpt_send_to_zmq] Error in zmq_msg_init_data()");
 		// Send:

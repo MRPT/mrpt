@@ -28,9 +28,9 @@ namespace mrpt::math
  * \tparam HAS_REMAP Is true, an inverse mapping between column indices and
  * "user IDs" is kept.
  * \tparam INDEX_REMAP_MAP_IMPL Ignore if HAS_REMAP=false. Defaults to
- * "mrpt::utils::map_as_vector<size_t,size_t>" for amortized O(1). Can be set to
- * "std::map<size_t,size_t>" in very sparse systems to save memory at the cost
- * of a O(log N) access time when using the remap indices.
+ * "mrpt::containers::map_as_vector<size_t,size_t>" for amortized O(1). Can be
+ * set to "std::map<size_t,size_t>" in very sparse systems to save memory at the
+ * cost of a O(log N) access time when using the remap indices.
  *
  * \ingroup mrpt_math_grp
  */

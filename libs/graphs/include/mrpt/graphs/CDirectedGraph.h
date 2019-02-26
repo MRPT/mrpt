@@ -273,7 +273,7 @@ class CDirectedGraph
 	 * each node in the graph.
 	 *  Possible values for the template argument MAP_NODEID_SET_NODEIDS are:
 	 *    - std::map<TNodeID, std::set<TNodeID> >
-	 *    - mrpt::utils::map_as_vector<TNodeID, std::set<TNodeID> >
+	 *    - mrpt::containers::map_as_vector<TNodeID, std::set<TNodeID> >
 	 * \sa getNeighborsOf
 	 */
 	template <class MAP_NODEID_SET_NODEIDS>

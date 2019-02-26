@@ -28,8 +28,6 @@ using namespace mrpt::math;
 using namespace mrpt::serialization::metaprogramming;
 using namespace std;
 
-//// using namespace mrpt::utils::metaprogramming;
-
 IMPLEMENTS_SERIALIZABLE(COpenGLViewport, CSerializable, mrpt::opengl)
 
 //#define OPENGLVIEWPORT_ENABLE_TIMEPROFILING
