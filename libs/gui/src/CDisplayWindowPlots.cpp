@@ -355,7 +355,7 @@ void CWindowDialogPlots::plot(
 	bool isContinuous = true;
 	int lineColor[] = {0, 0, 255};
 	int lineWidth = 1;
-	int lineStyle = wxSOLID;
+	wxPenStyle lineStyle = wxPENSTYLE_SOLID;
 
 	// parse string:
 	if (string::npos != lineFormat.find("."))
@@ -365,12 +365,12 @@ void CWindowDialogPlots::plot(
 	if (string::npos != lineFormat.find("-"))
 	{
 		isContinuous = true;
-		lineStyle = wxSOLID;
+		lineStyle = wxPENSTYLE_SOLID;
 	}
 	if (string::npos != lineFormat.find(":"))
 	{
 		isContinuous = true;
-		lineStyle = wxLONG_DASH;
+		lineStyle = wxPENSTYLE_LONG_DASH;
 	}
 
 	if (string::npos != lineFormat.find("r"))
@@ -517,7 +517,7 @@ void CWindowDialogPlots::plotEllipse(
 	bool isContinuous = true;
 	int lineColor[] = {0, 0, 255};
 	int lineWidth = 1;
-	int lineStyle = wxSOLID;
+	wxPenStyle lineStyle = wxPENSTYLE_SOLID;
 
 	// parse string:
 	if (string::npos != lineFormat.find("."))
@@ -527,12 +527,12 @@ void CWindowDialogPlots::plotEllipse(
 	if (string::npos != lineFormat.find("-"))
 	{
 		isContinuous = true;
-		lineStyle = wxSOLID;
+		lineStyle = wxPENSTYLE_SOLID;
 	}
 	if (string::npos != lineFormat.find(":"))
 	{
 		isContinuous = true;
-		lineStyle = wxLONG_DASH;
+		lineStyle = wxPENSTYLE_LONG_DASH;
 	}
 
 	if (string::npos != lineFormat.find("r"))
