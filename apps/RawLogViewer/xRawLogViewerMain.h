@@ -592,8 +592,6 @@ class xRawLogViewerFrame : public wxFrame
 	mpFXYVector *lyScan2D, *lyRangeBearingLandmarks;
 	mpFXYVector *lyAction2D_XY, *lyAction2D_PHI;
 
-	wxImageList* imgList;  // Image list for the tree view:
-
 	wxFileHistory m_fileHistory;
 
 	std::map<std::string, TInfoPerSensorLabel> listOfSensorLabels;

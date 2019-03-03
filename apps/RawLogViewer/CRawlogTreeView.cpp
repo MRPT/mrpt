@@ -62,14 +62,6 @@ CRawlogTreeView::CRawlogTreeView(
 }
 
 /* ------------------------------------------------------------
-						Destructor
-   ------------------------------------------------------------ */
-CRawlogTreeView::~CRawlogTreeView()
-{
-	if (m_imageList) delete m_imageList;
-}
-
-/* ------------------------------------------------------------
 						setRawlogSource
    ------------------------------------------------------------ */
 void CRawlogTreeView::setRawlogSource(CRawlog* rawlog)

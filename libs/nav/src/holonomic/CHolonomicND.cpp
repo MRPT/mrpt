@@ -143,8 +143,8 @@ void CHolonomicND::gapsEstimator(
 
 	// Find the maximum distances to obstacles:
 	// ----------------------------------------------------------
-	float overall_max_dist = std::numeric_limits<float>::min(),
-		  overall_min_dist = std::numeric_limits<float>::max();
+	double overall_max_dist = std::numeric_limits<float>::min(),
+		   overall_min_dist = std::numeric_limits<float>::max();
 	for (size_t i = 1; i < (n - 1); i++)
 	{
 		mrpt::keep_max(overall_max_dist, obstacles[i]);

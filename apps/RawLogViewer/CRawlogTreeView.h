@@ -47,12 +47,13 @@ class CRawlogTreeView : public wxScrolledWindow
 		const wxSize& size = wxDefaultSize, long style = wxVSCROLL,
 		const wxString& name = wxT("rawlogTreeView"));
 
-	~CRawlogTreeView() override;
-
 	/** Draws the rawlog items */
 	void OnDraw(wxDC& dc) override;
 
-	void AssignImageList(wxImageList* imageList) { m_imageList = imageList; }
+	void AssignImageList(std::shared_ptr<wxImageList> imageList)
+	{
+		m_imageList = imageList;
+	}
 	/** Sets the rawlog to be rendered in the control (It's kept as a pointer,
 	 * so the original object cannot be destroyed).
 	 *  It automatically calls "reloadFromRawlog".
@@ -88,7 +89,7 @@ class CRawlogTreeView : public wxScrolledWindow
 	/** A reference to the rawlog to be rendered. */
 	mrpt::obs::CRawlog* m_rawlog{nullptr};
 	/** We own this pointer */
-	wxImageList* m_imageList{nullptr};
+	std::shared_ptr<wxImageList> m_imageList;
 	/** Selected row, or -1 if none */
 	int m_selectedItem{-1};
 	/** File name */
