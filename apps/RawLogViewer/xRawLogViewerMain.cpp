@@ -1730,7 +1730,8 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 
 	// "Manually" added code:
 	// ----------------------------
-	imgList = new wxImageList(16, 16, true, 0);
+	// Image list for the tree view:
+	auto imgList = std::make_shared<wxImageList>(16, 16, true, 0);
 	imgList->Add(wxIcon(tree_icon1_xpm));
 	imgList->Add(wxIcon(tree_icon2_xpm));
 	imgList->Add(wxIcon(tree_icon3_xpm));
