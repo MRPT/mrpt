@@ -1,10 +1,10 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
 /*---------------------------------------------------------------
@@ -14,7 +14,7 @@
 	See example config files in
 	 https://github.com/MRPT/mrpt/tree/master/share/mrpt/config_files/icp-slam-live/
 	or docs in
-	 http://www.mrpt.org/list-of-mrpt-apps/application-icp-slam-live/
+	 https://www.mrpt.org/list-of-mrpt-apps/application-icp-slam-live/
   ---------------------------------------------------------------*/
 
 #include <mrpt/hwdrivers/CGenericSensor.h>

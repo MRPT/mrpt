@@ -1,7 +1,7 @@
 /* +---------------------------------------------------------------------------+
    |                 The Mobile Robot Programming Toolkit (MRPT)               |
    |                                                                           |
-   |                          http://www.mrpt.org/                             |
+   |                          https://www.mrpt.org/                            |
    |                                                                           |
    | Copyright (c) 2005-2013, Individual contributors, see AUTHORS file        |
    | Copyright (c) 2005-2013, MAPIR group, University of Malaga                |

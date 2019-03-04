@@ -1,10 +1,10 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
 #include "system-precomp.h"  // Precompiled headers
@@ -526,15 +526,15 @@ void mrpt::system::setConsoleColor(TConsoleColor color, bool changeStdErr)
 const char* sLicenseTextF =
 	"                     Mobile Robot Programming Toolkit (MRPT)              "
 	"  \n"
-	"                          http://www.mrpt.org/                            "
+	"                          https://www.mrpt.org/                            "
 	"  \n"
 	"                                                                          "
 	"  \n"
 	" Copyright (c) 2005-%Y, Individual contributors, see AUTHORS file         "
 	"\n"
-	" See: http://www.mrpt.org/Authors - All rights reserved.                  "
+	" See: https://www.mrpt.org/Authors - All rights reserved.                  "
 	" \n"
-	" Released under BSD License. See details in http://www.mrpt.org/License   "
+	" Released under BSD License. See details in https://www.mrpt.org/License   "
 	" \n";
 
 const std::string& mrpt::system::getMRPTLicense()

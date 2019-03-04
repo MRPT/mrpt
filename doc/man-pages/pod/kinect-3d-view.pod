@@ -20,7 +20,7 @@ Please report bugs at https://github.com/MRPT/mrpt/issues
 
 =head1 SEE ALSO
 
-The application wiki page at http://www.mrpt.org/Kinect_and_MRPT
+The application wiki page at https://www.mrpt.org/Kinect_and_MRPT
 
 =head1 AUTHORS
 

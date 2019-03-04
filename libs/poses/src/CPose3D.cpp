@@ -1,10 +1,10 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
 #include "poses-precomp.h"  // Precompiled headers
@@ -948,7 +948,7 @@ void CPose3D::ln_jacob(mrpt::math::CMatrixFixedNumeric<double, 6, 12>& J) const
 	//          derivs wrt:     R_col1 R_col2  R_col3   |       t
 	//
 	// (Will be explained better in:
-	// http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty )
+	// https://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty )
 	//
 	{
 		CMatrixFixedNumeric<double, 3, 9> M(UNINITIALIZED_MATRIX);

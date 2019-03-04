@@ -1,10 +1,10 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
 #include "slam-precomp.h"  // Precompiled headers
@@ -17,7 +17,7 @@
    picked by the metric given by the user (maha vs. match. lik.)
 
    Related papers:
-	- Matching likelihood. See:  http://www.mrpt.org/Paper:Matching_Likelihood
+	- Matching likelihood. See:  https://www.mrpt.org/Paper:Matching_Likelihood
 
 	- JCBB: Joint Compatibility Branch & Bound [Neira, Tardos 2001]
 

@@ -15,7 +15,7 @@ URL: https://www.mrpt.org/
 # following commands to generate the tarball:
 #  svn export http://babel.isa.uma.es/mrpt-browse-code/mrpt-0.7.0 mrpt-0.7.0
 #  tar -czvf mrpt-0.7.0-20090529svn1047.tar.gz mrpt-0.70
-Source: http://archive.mrpt.org/fedora-packages/mrpt-0.9.5-20110916svn2655.tar.gz
+Source: https://archive.mrpt.org/fedora-packages/mrpt-0.9.5-20110916svn2655.tar.gz
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 

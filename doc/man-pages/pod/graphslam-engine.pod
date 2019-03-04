@@ -153,7 +153,7 @@ parts of the class execution.
 File contains the constructed graph in the VERTEX/EDGE format. The latter can
 be visualized using the MRPT graph-slam application for verification reasons.
 
-For more information on this, see: http://www.mrpt.org/Graph-SLAM_maps
+For more information on this, see: https://www.mrpt.org/Graph-SLAM_maps
 http://www.mrpt.org/list-of-mrpt-apps/application-graph-slam/
 
 =item * output_scene.3DScene
@@ -256,7 +256,7 @@ or 3DRangeScans.
 
 =back
 
-For more information on this see http://reference.mrpt.org/devel/classmrpt_1_1graphslam_1_1deciders_1_1_c_node_registration_decider.html
+For more information on this see https://reference.mrpt.org/devel/classmrpt_1_1graphslam_1_1deciders_1_1_c_node_registration_decider.html
 
 =head3 EDGE REGISTRATION DECIDERS
 
@@ -295,7 +295,7 @@ based on the following two papers:
 
 =back
 
-For more information on this see http://reference.mrpt.org/devel/classmrpt_1_1graphslam_1_1deciders_1_1_c_edge_registration_decider.html
+For more information on this see https://reference.mrpt.org/devel/classmrpt_1_1graphslam_1_1deciders_1_1_c_edge_registration_decider.html
 
 =head2 OPTIMIZERS
 
@@ -307,7 +307,7 @@ inheriting from this class see CLevMarqGSO.
 As a naming convention, all the implemented graphslam optimizer classes
 are suffixed with the GSO acronym.
 
-For more information on this see http://reference.mrpt.org/devel/classmrpt_1_1graphslam_1_1optimizers_1_1_c_graph_slam_optimizer.html
+For more information on this see https://reference.mrpt.org/devel/classmrpt_1_1graphslam_1_1optimizers_1_1_c_graph_slam_optimizer.html
 
 =head1 BUGS
 
@@ -317,9 +317,9 @@ Please report bugs at https://github.com/MRPT/mrpt/issues
 
 =over 4
 
-=item * Application wiki page - http://www.mrpt.org/Applications
+=item * Application wiki page - https://www.mrpt.org/Applications
 
-=item * mrpt::graphslam lib documentation page - http://reference.mrpt.org/devel/namespacemrpt_1_1graphslam.html
+=item * mrpt::graphslam lib documentation page - https://reference.mrpt.org/devel/namespacemrpt_1_1graphslam.html
 
 =item * Application demo video - https://www.youtube.com/watch?v=Pv0yvlzrcXk
 

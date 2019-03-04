@@ -1,10 +1,10 @@
 /* +---------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
+   |                          https://www.mrpt.org/                            |
    |                                                                           |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   | See: https://www.mrpt.org/Authors - All rights reserved.                  |
+   | Released under BSD License. See details in https://www.mrpt.org/License   |
    +---------------------------------------------------------------------------+ */
 
 /** \defgroup mrpt_opengl_grp [mrpt-opengl]
@@ -25,7 +25,7 @@ A good starting point to explore this library is the base class for all the
 A 3D scene is represented by an object of the type mrpt::opengl::COpenGLScene,
 which in turn can contain one or several "viewports" in such a way that the
 rendering area is divided into several spaces, each displaying the same or different
-objects. See the tutorial online: http://www.mrpt.org/Tutorial_3D_Scenes
+objects. See the tutorial online: https://www.mrpt.org/Tutorial_3D_Scenes
 
 See the full list of classes in mrpt::opengl.
 

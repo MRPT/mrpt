@@ -84,7 +84,7 @@ Please report bugs at https://github.com/MRPT/mrpt/issues
 
 =head1 SEE ALSO
 
-The application wiki page at http://www.mrpt.org/Applications
+The application wiki page at https://www.mrpt.org/Applications
 
 =head1 AUTHORS
 

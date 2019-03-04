@@ -114,7 +114,7 @@
 								<growablerows>0</growablerows>
 								<object class="sizeritem">
 									<object class="wxTextCtrl" name="ID_TEXTCTRL6" variable="edCustomCamConfig" member="yes">
-										<value>// Configuration block for the CCameraSensor object.&#x0A;// Check out its documentation at:&#x0A;// http://reference.mrpt.org/devel/classmrpt__1__1hwdrivers__1__1__c__camera__sensor.html&#x0A;&#x0A;[CONFIG]&#x0A;grabber__type = opencv &#x0A;cv__camera__index = 0&#x0A;cv__camera__type = CAMERA__CV__AUTODETECT&#x0A;&#x0A;</value>
+										<value>// Configuration block for the CCameraSensor object.&#x0A;// Check out its documentation at:&#x0A;// https://reference.mrpt.org/devel/classmrpt__1__1hwdrivers__1__1__c__camera__sensor.html&#x0A;&#x0A;[CONFIG]&#x0A;grabber__type = opencv &#x0A;cv__camera__index = 0&#x0A;cv__camera__type = CAMERA__CV__AUTODETECT&#x0A;&#x0A;</value>
 										<font>
 											<size>7</size>
 											<sysfont>wxSYS_OEM_FIXED_FONT</sysfont>

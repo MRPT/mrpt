@@ -35,7 +35,7 @@ srba-slam {--se2|--se3} {--lm-2d|--lm-3d} --obs [StereoCamera|...]
 =head1 DESCRIPTION
 
 B<srba-slam> is a command-line application for offline processing 
-of robotic/vision datasets. See also the manual online: http://www.mrpt.org/srba
+of robotic/vision datasets. See also the manual online: https://www.mrpt.org/srba
 
    --eval-connectivity
      At end, make stats on the graph connectivity
@@ -178,7 +178,7 @@ Please report bugs at https://github.com/MRPT/mrpt/issues
 
 =head1 SEE ALSO
 
-The application wiki page at http://www.mrpt.org/Applications
+The application wiki page at https://www.mrpt.org/Applications
 
 =head1 AUTHORS
 

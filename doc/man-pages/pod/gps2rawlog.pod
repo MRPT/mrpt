@@ -36,7 +36,7 @@ Please report bugs at https://github.com/MRPT/mrpt/issues
 =head1 SEE ALSO
 
 The GUI program RawLogViewer, and the application wiki pages
-at http://www.mrpt.org/
+at https://www.mrpt.org/
 
 =head1 AUTHORS
 

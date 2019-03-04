@@ -1,10 +1,10 @@
 /* +---------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
+   |                          https://www.mrpt.org/                            |
    |                                                                           |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   | See: https://www.mrpt.org/Authors - All rights reserved.                  |
+   | Released under BSD License. See details in https://www.mrpt.org/License   |
    +---------------------------------------------------------------------------+ */
 
 
@@ -23,7 +23,7 @@ This library implements:
   - A complex reactive navigator: Using space transformations (PTGs) to drive a robot using
     an internal simpler holonomic algorithm. See mrpt::nav::CReactiveNavigationSystem
   - A number of different PTGs: See mrpt::nav::CParameterizedTrajectoryGenerator
-  - See the full list of classes in mrpt::nav, or the online page http://www.mrpt.org/list-of-mrpt-apps/application-reactivenavigationdemo/ for a working application (see MRPT/apps/ReactiveNavigationDemo).
+  - See the full list of classes in mrpt::nav, or the online page https://www.mrpt.org/list-of-mrpt-apps/application-reactivenavigationdemo/ for a working application (see MRPT/apps/ReactiveNavigationDemo).
 
 * Planned / hybrid navigation:
   * See mrpt::nav

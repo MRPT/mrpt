@@ -1,10 +1,10 @@
 /* +---------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
+   |                          https://www.mrpt.org/                            |
    |                                                                           |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   | See: https://www.mrpt.org/Authors - All rights reserved.                  |
+   | Released under BSD License. See details in https://www.mrpt.org/License   |
    +---------------------------------------------------------------------------+ */
 
 /** \defgroup mrpt_obs_grp [mrpt-obs]
@@ -25,7 +25,7 @@ monocular and stereo images, GPS data, odometry, etc. A concept very related to 
 is a mrpt::obs::CSensoryFrame, a set of observations which were collected approximately at the same instant. </li>
 
 <li><b>Rawlogs (datasets):</b> A robotics dataset can be loaded, edited and explored by means 
-of the class mrpt::obs::CRawlog. See also: http://www.mrpt.org/Rawlog_Format </li>
+of the class mrpt::obs::CRawlog. See also: https://www.mrpt.org/Rawlog_Format </li>
 
 <li><b>Actions:</b> For convenience in many Bayesian filtering algorithms, robot actions 
 (like 2D displacement characterized by an odometry increment) can be represented by means

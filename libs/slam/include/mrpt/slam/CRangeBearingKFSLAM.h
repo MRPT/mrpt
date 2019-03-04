@@ -1,10 +1,10 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 #pragma once
 
@@ -38,10 +38,10 @@ namespace mrpt::slam
  *
  *   The following Wiki page describes an front-end application based on this
  * class:
- *     http://www.mrpt.org/Application:kf-slam
+ *     https://www.mrpt.org/Application:kf-slam
  *
  *  For the theory behind this implementation, see the technical report in:
- *     http://www.mrpt.org/6D-SLAM
+ *     https://www.mrpt.org/6D-SLAM
  *
  * \sa An implementation for 2D only: CRangeBearingKFSLAM2D
  * \ingroup metric_slam_grp

@@ -1,10 +1,10 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 #pragma once
 
@@ -86,7 +86,7 @@ class CActionRobotMovement2D : public CAction
 		/** Options for the gaussian model, which generates a CPosePDFGaussian
 		 * object in poseChange
 		 * See docs in :
-		 * http://www.mrpt.org/tutorials/programming/odometry-and-motion-models/probabilistic_motion_models/
+		 * https://www.mrpt.org/tutorials/programming/odometry-and-motion-models/probabilistic_motion_models/
 		 */
 		struct TOptions_GaussianModel
 		{
@@ -96,7 +96,7 @@ class CActionRobotMovement2D : public CAction
 		/** Options for the Thrun's model, which generates a CPosePDFParticles
 		 * object in poseChange
 		 * See docs in :
-		 * http://www.mrpt.org/tutorials/programming/odometry-and-motion-models/probabilistic_motion_models/
+		 * https://www.mrpt.org/tutorials/programming/odometry-and-motion-models/probabilistic_motion_models/
 		 */
 		struct TOptions_ThrunModel
 		{

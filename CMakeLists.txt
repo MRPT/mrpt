@@ -6,7 +6,7 @@
 #   for generating the documentation, etc. are also updated.
 #
 #  For compiling instructions for all compilers and platforms, see
-#   http://www.mrpt.org/Building_and_Installing_Instructions
+#   https://www.mrpt.org/Building_and_Installing_Instructions
 #
 #  2007-2018, Jose Luis Blanco <jlblanco@ual.es>
 #

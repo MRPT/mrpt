@@ -2,7 +2,7 @@
  * Copyright (C) 2010  Hauke Strasdat
  *                     Imperial College London
  * Copyright (c) 2005-2019, Individual contributors, see AUTHORS file
- *   See: http://www.mrpt.org/Authors - All rights reserved.
+ *   See: https://www.mrpt.org/Authors - All rights reserved.
  *
  * bundle_adjuster.h is part of RobotVision.
  *
@@ -71,7 +71,7 @@ struct JacData
 /** The projective camera 2x6 Jacobian \f$ \frac{\partial h(f,p)}{\partial p}
  * \f$ (wrt the 6D camera pose)
  * \note Jacobians as described in
- * http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
+ * https://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
  * (Appendix A)
  */
 template <bool POSES_ARE_INVERSE>
@@ -159,7 +159,7 @@ void frameJac(
 
 /** Jacobians wrt the point
  * \note Jacobians as described in
- * http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
+ * https://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
  * (Appendix A)
  */
 template <bool POSES_ARE_INVERSE>

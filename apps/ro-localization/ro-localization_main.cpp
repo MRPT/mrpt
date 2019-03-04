@@ -1,10 +1,10 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
 /*---------------------------------------------------------------------------------
@@ -14,7 +14,7 @@
  DESCRIPTION: Localization with PF, with an extended model to
 			  cope with unknown, dynamic biases in the beacon
 			  ranges. Refer to the paper:
- http://www.mrpt.org/paperuwb-particle-filter-localization/
+ https://www.mrpt.org/paperuwb-particle-filter-localization/
  Demo config file:
  https://github.com/MRPT/mrpt/blob/master/share/mrpt/config_files/ro-localization/UWB_localization_demo.ini
 

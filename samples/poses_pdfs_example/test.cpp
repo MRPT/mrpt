@@ -1,10 +1,10 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
 /**
@@ -131,7 +131,7 @@ void TestPoseComposition()
 	 * Appending the pose is equivalent to a position/rotation change with
 	 * regards to the body-fixed frame of reference
 	 * For more information refer to:
-	 * http://reference.mrpt.org/stable/_c_poses2_d_sequence_8h_source.html
+	 * https://reference.mrpt.org/stable/_c_poses2_d_sequence_8h_source.html
 	 */
 	seq.appendPose(y);
 	cout << "last= " << seq.absolutePoseAfterAll() << endl;

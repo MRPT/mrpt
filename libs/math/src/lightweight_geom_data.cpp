@@ -1,10 +1,10 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
 #include "math-precomp.h"  // Precompiled headers
@@ -242,7 +242,7 @@ void TPose3D::getAsQuaternion(
 	// Compute 4x3 Jacobian: for details, see technical report:
 	//   Parameterizations of SE(3) transformations: equivalences, compositions
 	//   and uncertainty, J.L. Blanco (2010).
-	//   http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
+	//   https://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
 	if (out_dq_dr)
 	{
 		alignas(MRPT_MAX_ALIGN_BYTES) const double nums[4 * 3] = {
@@ -329,7 +329,7 @@ void TPose3D::SO3_to_yaw_pitch_roll(
 		// Gimbal lock between yaw and roll. This one is arbitrarily forced to
 		// be zero.
 		// Check
-		// http://reference.mrpt.org/devel/classmrpt_1_1poses_1_1_c_pose3_d.html.
+		// https://reference.mrpt.org/devel/classmrpt_1_1poses_1_1_c_pose3_d.html.
 		// If cos(pitch)==0, the homogeneous matrix is:
 		// When sin(pitch)==1:
 		//  /0  cysr-sycr cycr+sysr x\   /0  sin(r-y) cos(r-y)  x\.

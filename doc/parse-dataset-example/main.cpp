@@ -13,7 +13,7 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-// This program requires the MRPT libraries ( http://www.mrpt.org/ )
+// This program requires the MRPT libraries ( https://www.mrpt.org/ )
 
 // Serialization, etc.
 #include <mrpt/io/CFileGZInputStream.h>

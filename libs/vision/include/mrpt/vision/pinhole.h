@@ -1,10 +1,10 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
 #pragma once
@@ -30,7 +30,7 @@ namespace pinhole
  * to project.
  * \param cameraPose [IN] The pose of the camera in the world.
  * \param intrinsicParams [IN] The 3x3 calibration matrix. See
- * http://www.mrpt.org/Camera_Parameters
+ * https://www.mrpt.org/Camera_Parameters
  * \param projectedPoints [OUT] The list of image coordinates (in pixels) for
  * the projected points. At output this list is resized to the same number of
  * input points.
@@ -99,9 +99,9 @@ inline void projectPoint_no_distortion(
  * to project.
  * \param cameraPose [IN] The pose of the camera in the world.
  * \param intrinsicParams [IN] The 3x3 calibration matrix. See
- * http://www.mrpt.org/Camera_Parameters
+ * https://www.mrpt.org/Camera_Parameters
  * \param distortionParams [IN] The 4-length vector with the distortion
- * parameters [k1 k2 p1 p2]. See http://www.mrpt.org/Camera_Parameters
+ * parameters [k1 k2 p1 p2]. See https://www.mrpt.org/Camera_Parameters
  * \param projectedPoints [OUT] The list of image coordinates (in pixels) for
  * the projected points. At output this list is resized to the same number of
  * input points.
@@ -128,7 +128,7 @@ void projectPoints_with_distortion(
  * +Z=optical axis, +X=righthand in the image plane, +Y=downward in the image
  * plane.
  * \param in_cam_params [IN] The camera parameters. See
- * http://www.mrpt.org/Camera_Parameters
+ * https://www.mrpt.org/Camera_Parameters
  * \param out_projectedPoints [OUT] The projected point, in pixel units.
  * \param accept_points_behind [IN] See the note below.
  *
@@ -160,9 +160,9 @@ void projectPoints_with_distortion(
  * \param dstUndistortedPixels [OUT] The computed pixel coordinates without
  * distortion.
  * \param intrinsicParams [IN] The 3x3 calibration matrix. See
- * http://www.mrpt.org/Camera_Parameters
+ * https://www.mrpt.org/Camera_Parameters
  * \param distortionParams [IN] The 4-length vector with the distortion
- * parameters [k1 k2 p1 p2]. See http://www.mrpt.org/Camera_Parameters
+ * parameters [k1 k2 p1 p2]. See https://www.mrpt.org/Camera_Parameters
  * \sa undistort_point
  */
 void undistort_points(

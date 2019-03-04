@@ -1,15 +1,15 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
 /*
   Application  : kinect-3d-slam
-  Web page     : http://www.mrpt.org/Kinect_and_MRPT
+  Web page     : https://www.mrpt.org/Kinect_and_MRPT
 
   Purpose      : Demonstrate grabbing from CKinect, multi-threading, live 3D
 				  rendering and features tracking.
@@ -196,7 +196,7 @@ void Test_Kinect()
 	// Set of parameters common to any tracker implementation:
 	// To see all the existing params and documentation, see
 	// mrpt::vision::CGenericFeatureTracker
-	//  http://reference.mrpt.org/devel/structmrpt_1_1vision_1_1_c_generic_feature_tracker.html
+	//  https://reference.mrpt.org/devel/structmrpt_1_1vision_1_1_c_generic_feature_tracker.html
 	tracker->extra_params["add_new_features"] =
 		1;  // track, AND ALSO, add new features
 	tracker->extra_params["add_new_feat_min_separation"] = 25;

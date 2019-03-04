@@ -1,6 +1,6 @@
 /* +---------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
+   |                          https://www.mrpt.org/                            |
    +---------------------------------------------------------------------------+ */
 #ifndef  MRPT_VERSION_H
 #define  MRPT_VERSION_H

@@ -1,10 +1,10 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 #include "CAboutBox.h"
 
@@ -191,7 +191,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 		cout << "Jose Luis Blanco\n";
 		cout << "\n";
 		cout << "For bug reports or to collaborate:\n";
-		cout << "    http://www.mrpt.org/    \n\n";
+		cout << "    https://www.mrpt.org/    \n\n";
 
 		cout << "MRPT version:           " << MRPT_getVersion() << endl;
 		cout << "MRPT source timestamp:  " << MRPT_getCompilationDate() << endl;

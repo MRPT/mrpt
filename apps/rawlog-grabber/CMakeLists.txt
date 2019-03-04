@@ -13,7 +13,7 @@ project(rawlog-grabber)
 
 
 # Allow optional rawlog-grabber (compile-time) plug-ins:
-#  Described in: http://www.mrpt.org/list-of-mrpt-apps/application-rawlog-grabber
+#  Described in: https://www.mrpt.org/list-of-mrpt-apps/application-rawlog-grabber
 #  Plug-in directory must contain:
 #    DIR/register.cpp  - with function "void rawlog_grabber_plugin_register()"
 #    DIR/rawloggrabber_plugin.h  - with includes to all necesary classes.
