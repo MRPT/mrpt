@@ -237,6 +237,8 @@ void project3DPointsFromDepthImageInto(
 			// For each local point:
 			const size_t nPts = pca.size();
 			const auto& iimg = src_obs.intensityImage;
+			const uint8_t* img_data = iimg.ptrLine<uint8_t>(0);
+			const auto img_stride = iimg.getRowStride();
 			for (size_t i = 0; i < nPts; i++)
 			{
 				int img_idx_x,
@@ -274,15 +276,16 @@ void project3DPointsFromDepthImageInto(
 				{
 					if (hasColorIntensityImg)
 					{
-						const auto* c = iimg.ptr<uint8_t>(img_idx_x, img_idx_y);
-						pCol.R = c[2];
-						pCol.G = c[1];
-						pCol.B = c[0];
+						const auto px_idx =
+						    img_stride * img_idx_y + 3 * img_idx_x;
+						pCol.R = img_data[px_idx + 2];
+						pCol.G = img_data[px_idx + 1];
+						pCol.B = img_data[px_idx + 0];
 					}
 					else
 					{
-						const auto c = iimg.at<uint8_t>(img_idx_x, img_idx_y);
-						pCol.R = pCol.G = pCol.B = c;
+						const auto px_idx = img_stride * img_idx_y + img_idx_x;
+						pCol.R = pCol.G = pCol.B = img_data[px_idx];
 					}
 				}
 				else
