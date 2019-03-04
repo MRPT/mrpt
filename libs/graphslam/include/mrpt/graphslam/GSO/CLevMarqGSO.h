@@ -1,10 +1,10 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
 #pragma once
@@ -103,12 +103,12 @@ namespace mrpt::graphslam::optimizers
  *  \note For a detailed description of the optimization parameters of the
  *  Levenberg-Marquardt scheme, refer to
  *
- http://reference.mrpt.org/devel/group__mrpt__graphslam__grp.html#ga022f4a70be5ec7c432f46374e4bb9d66
+ https://reference.mrpt.org/devel/group__mrpt__graphslam__grp.html#ga022f4a70be5ec7c432f46374e4bb9d66
  *
  *  \note For a detailed description of the graph visualization parameters
  *  refer to
  *
- http://reference.mrpt.org/devel/group__mrpt__opengl__grp.html#ga30efc9f6fcb49801e989d174e0f65a61
+ https://reference.mrpt.org/devel/group__mrpt__opengl__grp.html#ga30efc9f6fcb49801e989d174e0f65a61
 
  *
  * \ingroup mrpt_graphslam_grp

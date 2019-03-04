@@ -1,10 +1,10 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 #pragma once
 
@@ -49,7 +49,7 @@ class CLSLAM_RBPF_2DLASER;
  *Transactions on Robotics (TRO), Vol. 24, No. 2, April 2008.
  *		- ...
  *
- *  More information in the wiki page: http://www.mrpt.org/HMT-SLAM . A complete
+ *  More information in the wiki page: https://www.mrpt.org/HMT-SLAM . A complete
  *working application can be found in "MRPT/apps/hmt-slam".
  *
  *  The complete state of the SLAM framework is serializable, so it can be saved

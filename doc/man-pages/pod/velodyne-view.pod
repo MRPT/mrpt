@@ -84,7 +84,7 @@ Please report bugs at https://github.com/MRPT/mrpt/issues
 
 =head1 SEE ALSO
 
-The application webpage at http://www.mrpt.org/list-of-mrpt-apps/application-velodyne-view/
+The application webpage at https://www.mrpt.org/list-of-mrpt-apps/application-velodyne-view/
 
 =head1 AUTHORS
 

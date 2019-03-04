@@ -1,10 +1,10 @@
 /* +---------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
+   |                          https://www.mrpt.org/                            |
    |                                                                           |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   | See: https://www.mrpt.org/Authors - All rights reserved.                  |
+   | Released under BSD License. See details in https://www.mrpt.org/License   |
    +---------------------------------------------------------------------------+ */
 
 #include <GL/freeglut.h>
@@ -61,7 +61,7 @@ struct tag_cursorCacheEntry {
 /*
  * Note: The arrangement of the table below depends on the fact that
  * the "normal" GLUT_CURSOR_* values start a 0 and are consecutive.
- */ 
+ */
 static cursorCacheEntry cursorCache[] = {
     { XC_arrow,               None }, /* GLUT_CURSOR_RIGHT_ARROW */
     { XC_top_left_arrow,      None }, /* GLUT_CURSOR_LEFT_ARROW */
@@ -139,7 +139,7 @@ void fgSetCursor ( SFG_Window *window, int cursorID )
 #elif TARGET_HOST_WIN32 || TARGET_HOST_WINCE
 
 #ifndef GCL_HCURSOR  // Added by JLBC for MRPT
-			#define GCL_HCURSOR (-12)	
+			#define GCL_HCURSOR (-12)
 #endif
 
     /*

@@ -1,10 +1,10 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
 #include "slam-precomp.h"  // Precompiled headers
@@ -12,7 +12,7 @@
 // ----------------------------------------------------------------------------------------
 // For the theory behind this implementation, see the technical report in:
 //
-//            http://www.mrpt.org/6D-SLAM
+//            https://www.mrpt.org/6D-SLAM
 // ----------------------------------------------------------------------------------------
 
 #include <mrpt/slam/CRangeBearingKFSLAM.h>
@@ -1257,7 +1257,7 @@ void CRangeBearingKFSLAM::saveMapAndPath2DRepresentationAsMATLABFile(
 	os::fprintf(f, "%%                        ~ MRPT ~\n");
 	os::fprintf(
 		f, "%%  Jose Luis Blanco Claraco, University of Malaga @ 2008\n");
-	os::fprintf(f, "%%      http://www.mrpt.org/     \n");
+	os::fprintf(f, "%%      https://www.mrpt.org/     \n");
 	os::fprintf(
 		f,
 		"%%--------------------------------------------------------------------"

@@ -1,10 +1,10 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
 /** An implementation of Hybrid Metric Topological SLAM (HMT-SLAM).
@@ -20,7 +20,7 @@
  *		    in  IEEE Transactions on Robotics (TRO), Vol. 24, No. 2, April 2008.
  *		- ...
  *
- *  More information in the wiki page: http://www.mrpt.org/HMT-SLAM
+ *  More information in the wiki page: https://www.mrpt.org/HMT-SLAM
  *
  */
 

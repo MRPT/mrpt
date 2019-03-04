@@ -1,10 +1,10 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 #pragma once
 
@@ -41,7 +41,7 @@ namespace mrpt::maps
  *
  * The cells keep the log-odd representation of probabilities instead of the
  *probabilities themselves.
- *  More details can be found at http://www.mrpt.org/Occupancy_Grids
+ *  More details can be found at https://www.mrpt.org/Occupancy_Grids
  *
  * The algorithm for updating the grid from a laser scanner can optionally take
  *into account the progressive widening of the beams, as

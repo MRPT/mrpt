@@ -8,7 +8,7 @@ endif()
 
 # --------------------------------------------------------------------------
 #   The list of "libs" which can be included can be found in:
-#     http://www.mrpt.org/Libraries
+#     https://www.mrpt.org/Libraries
 #
 #   The dependencies of a library are automatically added, so you only
 #    need to specify the top-most libraries your code depend on.

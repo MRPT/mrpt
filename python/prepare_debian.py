@@ -121,7 +121,7 @@ control_content = [
     'Depends: libmrpt-base1.3, libmrpt-slam1.3, libmrpt-obs1.3, libmrpt-maps1.3, libmrpt-nav1.3, libmrpt-opengl1.3, libmrpt-gui1.3, libboost-python1.54, libc6',
     'Section: devel',
     'Priority: optional',
-    'Homepage: http://www.mrpt.org',
+    'Homepage: https://www.mrpt.org',
     'Description: MRPT python bindings.',
     ' This package contains the python bindings for',
     ' the Mobile Robot Programming Toolkit (MRPT).',

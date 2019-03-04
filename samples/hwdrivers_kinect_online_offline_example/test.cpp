@@ -1,16 +1,16 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
 /*
   Example  : kinect-online-offline-demo
   Web page :
-  http://www.mrpt.org/Switching_between_reading_live_Kinect_RGBD_dataset_for_debugging
+  https://www.mrpt.org/Switching_between_reading_live_Kinect_RGBD_dataset_for_debugging
 
   Purpose  : Demonstrate how to programmatically switch between online Kinect
 			  grabbing and offline parsing a Rawlog dataset. Refer to the launch
@@ -359,7 +359,7 @@ void Test_KinectOnlineOffline(
 			// There are several methods to do this.
 			//  Switch the #if's to select among the options:
 			// See also:
-			// http://www.mrpt.org/Generating_3D_point_clouds_from_RGB_D_observations
+			// https://www.mrpt.org/Generating_3D_point_clouds_from_RGB_D_observations
 			// -------------------------------------------------------
 			if (newObs->hasRangeImage)
 			{

@@ -1,10 +1,10 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 #pragma once
 
@@ -76,7 +76,7 @@ class CPose3DQuatPDF
 	 *  To see the mathematical derivation of the formulas, refer to the
 	 * technical report here:
 	 *   -
-	 * http://www.mrpt.org/Probability_Density_Distributions_Over_Spatial_Representations
+	 * https://www.mrpt.org/Probability_Density_Distributions_Over_Spatial_Representations
 	 */
 	static void jacobiansPoseComposition(
 		const CPose3DQuat& x, const CPose3DQuat& u,

@@ -1,10 +1,10 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h"  // Precomp header
@@ -331,7 +331,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 			{
 				// ---------------------------------
 				//  		Widen rays
-				// Algorithm in: http://www.mrpt.org/Occupancy_Grids
+				// Algorithm in: https://www.mrpt.org/Occupancy_Grids
 				// ---------------------------------
 				if (o->rightToLeft ^ sensorIsBottomwards)
 				{
@@ -855,7 +855,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 #endif
 			// ---------------------------------
 			//  		Widen rays
-			// Algorithm in: http://www.mrpt.org/Occupancy_Grids
+			// Algorithm in: https://www.mrpt.org/Occupancy_Grids
 			// FIXME: doesn't support many different poses in one measurement
 			// ---------------------------------
 			A = laserPose.phi();

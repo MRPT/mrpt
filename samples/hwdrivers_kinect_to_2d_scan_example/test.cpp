@@ -1,15 +1,15 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
 /*
   Example  : kinect-to-2d-laser-demo
-  Web page : http://www.mrpt.org/Example_Kinect_To_2D_laser_scan (includes video
+  Web page : https://www.mrpt.org/Example_Kinect_To_2D_laser_scan (includes video
   demo)
 
   Purpose  : Demonstrate grabbing from CKinect, multi-threading

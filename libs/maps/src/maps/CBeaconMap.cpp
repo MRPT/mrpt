@@ -1,10 +1,10 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h"  // Precomp header
@@ -377,10 +377,10 @@ bool CBeaconMap::internal_insertObservation(
 		/* ===============================================================================================================
 		   Refer to the papers:
 		   - IROS 2008, "Efficient Probabilistic Range-Only SLAM",
-			   http://www.mrpt.org/paper-ro-slam-with-sog/
+			   https://www.mrpt.org/paper-ro-slam-with-sog/
 
 		   - ICRA 2008, "A Pure Probabilistic Approach to Range-Only SLAM",
-			   http://www.mrpt.org/tutorials/slam-algorithms/rangeonly_slam/
+			   https://www.mrpt.org/tutorials/slam-algorithms/rangeonly_slam/
 		  ===============================================================================================================
 		  */
 

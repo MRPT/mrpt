@@ -1,10 +1,10 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 #pragma once
 
@@ -17,7 +17,7 @@ namespace mrpt::opengl
 {
 /** A virtual base class that implements the capability of importing 3D point
  * clouds and faces from a file in the Stanford PLY format.
- * \sa http://www.mrpt.org/Support_for_the_Stanford_3D_models_file_format_PLY
+ * \sa https://www.mrpt.org/Support_for_the_Stanford_3D_models_file_format_PLY
  * \sa PLY_Exporter
  * \ingroup mrpt_base_grp
  */
@@ -76,7 +76,7 @@ class PLY_Importer
 
 /** A virtual base class that implements the capability of exporting 3D point
  * clouds and faces to a file in the Stanford PLY format.
- * \sa http://www.mrpt.org/Support_for_the_Stanford_3D_models_file_format_PLY
+ * \sa https://www.mrpt.org/Support_for_the_Stanford_3D_models_file_format_PLY
  * \sa PLY_Importer
  * \ingroup mrpt_base_grp
  */

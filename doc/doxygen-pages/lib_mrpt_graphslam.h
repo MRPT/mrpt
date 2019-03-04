@@ -1,10 +1,10 @@
 /* +---------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
+   |                          https://www.mrpt.org/                            |
    |                                                                           |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   | See: https://www.mrpt.org/Authors - All rights reserved.                  |
+   | Released under BSD License. See details in https://www.mrpt.org/License   |
    +---------------------------------------------------------------------------+ */
 
 /** \defgroup mrpt_graphslam_grp [mrpt-graphslam]
@@ -16,7 +16,7 @@
 <hr>
 
 Graph-SLAM: See the namespace mrpt::graphslam. 
-For an introduction to graph-slam maps refer to the summary in http://www.mrpt.org/Graph-SLAM_maps
+For an introduction to graph-slam maps refer to the summary in https://www.mrpt.org/Graph-SLAM_maps
 
 
 */

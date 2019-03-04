@@ -1,10 +1,10 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 #pragma once
 
@@ -49,7 +49,7 @@ enum TICPCovarianceMethod
  *    PDF as output. See mrpt::tfest::se2_l2_robust()
  *
  * For further details on the implemented methods, check the web:
- *   http://www.mrpt.org/Iterative_Closest_Point_(ICP)_and_other_matching_algorithms
+ *   https://www.mrpt.org/Iterative_Closest_Point_(ICP)_and_other_matching_algorithms
  *
  *  For a paper explaining some of the basic equations, see for example:
  *   J. Martinez, J. Gonzalez, J. Morales, A. Mandow, A. Garcia-Cerezo,
@@ -79,7 +79,7 @@ class CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 		/** @name Algorithms selection
 			@{ */
 		/** The algorithm to use (default: icpClassic). See
-		 * http://www.mrpt.org/tutorials/programming/scan-matching-and-icp/ for
+		 * https://www.mrpt.org/tutorials/programming/scan-matching-and-icp/ for
 		 * details */
 		TICPAlgorithm ICP_algorithm{icpClassic};
 		/** The method to use for covariance estimation (Default:

@@ -1,10 +1,10 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
 #pragma once
@@ -210,7 +210,7 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
 	 * "output_graph" if not
 	 * set by the user
 	 *
-	 * \sa save3DScene, http://www.mrpt.org/Robotics_file_formats
+	 * \sa save3DScene, https://www.mrpt.org/Robotics_file_formats
 	 */
 	void saveGraph(const std::string* fname_in = nullptr) const;
 	/**\brief Wrapper method around the COpenGLScene::saveToFile method.
@@ -347,7 +347,7 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
 	 * timestamps are not needed.
 	 *
 	 * \sa readGTFile,
-	 * http://www.mrpt.org/Collection_of_Kinect_RGBD_datasets_with_ground_truth_CVPR_TUM_2011
+	 * https://www.mrpt.org/Collection_of_Kinect_RGBD_datasets_with_ground_truth_CVPR_TUM_2011
 	 */
 	static void readGTFileRGBD_TUM(
 		const std::string& fname_GT,

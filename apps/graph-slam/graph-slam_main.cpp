@@ -1,10 +1,10 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
 /*---------------------------------------------------------------
@@ -14,7 +14,7 @@
 
 	See the "--help" output for list of supported operations and
 	 further instructions, the man-page or online docs at:
-		 http://www.mrpt.org/list-of-mrpt-apps/application-graph-slam
+		 https://www.mrpt.org/list-of-mrpt-apps/application-graph-slam
  ---------------------------------------------------------------*/
 #include <mrpt/graphs.h>
 #include <mrpt/graphslam/levmarq.h>

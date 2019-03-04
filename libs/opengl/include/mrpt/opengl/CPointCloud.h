@@ -1,10 +1,10 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 #pragma once
 
@@ -25,7 +25,7 @@ namespace mrpt::opengl
  *   This class uses smart optimizations while rendering to efficiently draw
  * clouds of millions of points,
  *   as described in this page:
- * http://www.mrpt.org/Efficiently_rendering_point_clouds_of_millions_of_points
+ * https://www.mrpt.org/Efficiently_rendering_point_clouds_of_millions_of_points
  *
  *  \sa opengl::CPlanarLaserScan, opengl::COpenGLScene,
  * opengl::CPointCloudColoured, mrpt::maps::CPointsMap

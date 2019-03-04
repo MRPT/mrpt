@@ -1,10 +1,10 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 #pragma once
 
@@ -42,7 +42,7 @@ namespace tfest
  * on return a 3x3 covariance matrix with the NORMALIZED optimal estimate
  * uncertainty. This matrix must be multiplied by \f$\sigma^2_p\f$, the variance
  * of matched points in \f$x\f$ and \f$y\f$ (see paper
- * http://www.mrpt.org/Paper:Occupancy_Grid_Matching)
+ * https://www.mrpt.org/Paper:Occupancy_Grid_Matching)
  * \return True if there are at least two correspondences, or false if one or
  * none, thus we cannot establish any correspondence.
  * \sa robustRigidTransformation

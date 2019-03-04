@@ -1,10 +1,10 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
 #include "poses-precomp.h"  // Precompiled headers
@@ -145,7 +145,7 @@ void CPose3DPDF::jacobiansPoseComposition(
 	CMatrixDouble66& df_du)
 {
 	// See this techical report:
-	// http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
+	// https://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
 
 	// Direct equations (for the covariances) in yaw-pitch-roll are too complex.
 	//  Make a way around them and consider instead this path:

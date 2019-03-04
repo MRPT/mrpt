@@ -18,7 +18,7 @@ observations from a rawlog file and generates a number of files describing the e
 
 See the application description page for more information:
  
-     http://www.mrpt.org/    app_particleFilterLocalization.html
+     https://www.mrpt.org/    app_particleFilterLocalization.html
 
 --------------
  COMPILING
@@ -26,7 +26,7 @@ See the application description page for more information:
 Under Linux, invoke "make" at this directory. In windows build this from the global MRPT solution.
 
 For more information check out: 
-    http://www.mrpt.org/    install.html
+    https://www.mrpt.org/    install.html
 
 --------------
   CHANGE LOG

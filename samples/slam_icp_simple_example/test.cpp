@@ -1,10 +1,10 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
 /**
@@ -217,7 +217,7 @@ void TestICP()
 	 * user-set parameters for the icp algorithm.
 	 * For a full list of the available options check the online tutorials
 	 * page:
-	 * http://www.mrpt.org/Iterative_Closest_Point_(ICP)_and_other_matching_algorithms
+	 * https://www.mrpt.org/Iterative_Closest_Point_(ICP)_and_other_matching_algorithms
 	 */
 
 	//	select which algorithm version to use

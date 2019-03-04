@@ -1,10 +1,10 @@
 /* +---------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
+   |                          https://www.mrpt.org/                            |
    |                                                                           |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   | See: https://www.mrpt.org/Authors - All rights reserved.                  |
+   | Released under BSD License. See details in https://www.mrpt.org/License   |
    +---------------------------------------------------------------------------+ */
 
 /** \defgroup mrpt_pbmap_grp [mrpt-pbmap]
@@ -24,7 +24,7 @@ A method for PbMap place recognition (useful for re-localization or loop closure
 Refer to the <b><a href="pbmap-guide.pdf" >PbMap Guide (PDF)</a></b>.
 
 See:
-- Online web with papers, tutorials, etc: http://www.mrpt.org/pbmap
+- Online web with papers, tutorials, etc: https://www.mrpt.org/pbmap
 - Namespace mrpt::pbmap
 
 

@@ -1,10 +1,10 @@
 /* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          http://www.mrpt.org/                          |
+   |                          https://www.mrpt.org/                         |
    |                                                                        |
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                |
-   | Released under BSD License. See details in http://www.mrpt.org/License |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
 #pragma once
@@ -69,9 +69,9 @@ using TCalibrationImageList = std::map<std::string, TImageCalibData>;
  * \param check_squares_length_Y_meters [IN] This will typically be equal to
  * check_squares_length_X_meters.
  * \param intrinsicParams [OUT] The 3x3 intrinsic parameters matrix. See
- * http://www.mrpt.org/Camera_Parameters
+ * https://www.mrpt.org/Camera_Parameters
  * \param distortionParams [OUT] The 1x4 vector of distortion parameters: k1 k2
- * p1 p2. See http://www.mrpt.org/Camera_Parameters
+ * p1 p2. See https://www.mrpt.org/Camera_Parameters
  * \param normalize_image [IN] Select OpenCV flag
  * \param out_MSE  [OUT] If set to !=nullptr, the mean square error of the
  * reprojection will be stored here (in pixel units).
