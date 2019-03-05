@@ -327,7 +327,7 @@ void rgb_cb(freenect_device* dev, void* img_data, uint32_t timestamp)
 
 #if MRPT_HAS_OPENCV
 		const cv::Mat src_img_bayer(
-		    frMode.height, frMode.width, CV_8UC1, img_data, frMode.width);
+			frMode.height, frMode.width, CV_8UC1, img_data, frMode.width);
 
 		cv::Mat& dst_img_RGB = obs.intensityImage.asCvMatRef();
 

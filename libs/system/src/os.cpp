@@ -526,15 +526,18 @@ void mrpt::system::setConsoleColor(TConsoleColor color, bool changeStdErr)
 const char* sLicenseTextF =
 	"                     Mobile Robot Programming Toolkit (MRPT)              "
 	"  \n"
-	"                          https://www.mrpt.org/                            "
+	"                          https://www.mrpt.org/                           "
+	" "
 	"  \n"
 	"                                                                          "
 	"  \n"
 	" Copyright (c) 2005-%Y, Individual contributors, see AUTHORS file         "
 	"\n"
-	" See: https://www.mrpt.org/Authors - All rights reserved.                  "
+	" See: https://www.mrpt.org/Authors - All rights reserved.                 "
+	" "
 	" \n"
-	" Released under BSD License. See details in https://www.mrpt.org/License   "
+	" Released under BSD License. See details in https://www.mrpt.org/License  "
+	" "
 	" \n";
 
 const std::string& mrpt::system::getMRPTLicense()
