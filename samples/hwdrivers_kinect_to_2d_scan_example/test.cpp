@@ -9,8 +9,8 @@
 
 /*
   Example  : kinect-to-2d-laser-demo
-  Web page : https://www.mrpt.org/Example_Kinect_To_2D_laser_scan (includes video
-  demo)
+  Web page : https://www.mrpt.org/Example_Kinect_To_2D_laser_scan (includes
+  video demo)
 
   Purpose  : Demonstrate grabbing from CKinect, multi-threading
 			 and converting the 3D range data into an equivalent

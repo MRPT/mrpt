@@ -190,10 +190,10 @@ void Test_Kinect()
 	auto gl_voxels = mrpt::opengl::COctoMapVoxels::Create();
 
 	const double aspect_ratio =
-	    480.0 / 640.0;  // kinect.rows() / double( kinect.cols() );
+		480.0 / 640.0;  // kinect.rows() / double( kinect.cols() );
 
 	opengl::COpenGLViewport::Ptr viewRange,
-	    viewInt;  // Extra viewports for the RGB & D images.
+		viewInt;  // Extra viewports for the RGB & D images.
 	{
 		mrpt::opengl::COpenGLScene::Ptr& scene = win3D.get3DSceneAndLock();
 
@@ -205,25 +205,25 @@ void Test_Kinect()
 		scene->insert(mrpt::opengl::stock_objects::CornerXYZ());
 
 		const int VW_WIDTH =
-		    250;  // Size of the viewport into the window, in pixel units.
+			250;  // Size of the viewport into the window, in pixel units.
 		const int VW_HEIGHT = aspect_ratio * VW_WIDTH;
 		const int VW_GAP = 30;
 
 		// Create the Opengl objects for the planar images, as textured
 		// planes, each in a separate viewport:
 		win3D.addTextMessage(
-		    30, -25 - 1 * (VW_GAP + VW_HEIGHT), "Range data", TColorf(1, 1, 1),
-		    1, MRPT_GLUT_BITMAP_HELVETICA_12);
+			30, -25 - 1 * (VW_GAP + VW_HEIGHT), "Range data", TColorf(1, 1, 1),
+			1, MRPT_GLUT_BITMAP_HELVETICA_12);
 		viewRange = scene->createViewport("view2d_range");
 		viewRange->setViewportPosition(
-		    5, -10 - 1 * (VW_GAP + VW_HEIGHT), VW_WIDTH, VW_HEIGHT);
+			5, -10 - 1 * (VW_GAP + VW_HEIGHT), VW_WIDTH, VW_HEIGHT);
 
 		win3D.addTextMessage(
-		    30, -25 - 2 * (VW_GAP + VW_HEIGHT), "Intensity data",
-		    TColorf(1, 1, 1), 2, MRPT_GLUT_BITMAP_HELVETICA_12);
+			30, -25 - 2 * (VW_GAP + VW_HEIGHT), "Intensity data",
+			TColorf(1, 1, 1), 2, MRPT_GLUT_BITMAP_HELVETICA_12);
 		viewInt = scene->createViewport("view2d_int");
 		viewInt->setViewportPosition(
-		    5, -10 - 2 * (VW_GAP + VW_HEIGHT), VW_WIDTH, VW_HEIGHT);
+			5, -10 - 2 * (VW_GAP + VW_HEIGHT), VW_WIDTH, VW_HEIGHT);
 
 		win3D.unlockAccess3DScene();
 		win3D.repaint();
@@ -235,9 +235,9 @@ void Test_Kinect()
 	while (win3D.isOpen() && !thrPar.quit)
 	{
 		CObservation3DRangeScan::Ptr possiblyNewObs =
-		    std::atomic_load(&thrPar.new_obs);
+			std::atomic_load(&thrPar.new_obs);
 		if (possiblyNewObs && possiblyNewObs->timestamp != INVALID_TIMESTAMP &&
-		    (!last_obs || possiblyNewObs->timestamp != last_obs->timestamp))
+			(!last_obs || possiblyNewObs->timestamp != last_obs->timestamp))
 		{
 			// It IS a new observation:
 			last_obs = possiblyNewObs;
@@ -255,7 +255,7 @@ void Test_Kinect()
 				static CMatrixFloat range2D;  // Static to save time allocating
 				// the matrix in every iteration
 				range2D = last_obs->rangeImage *
-				          (1.0f / 5.0f);  // kinect.getMaxRange());
+						  (1.0f / 5.0f);  // kinect.getMaxRange());
 
 				img.setFromMatrix(range2D);
 
@@ -270,7 +270,7 @@ void Test_Kinect()
 			{
 				win3D.get3DSceneAndLock();
 				viewInt->setImageView(
-				    last_obs->intensityImage);  // This is not "_fast" since the
+					last_obs->intensityImage);  // This is not "_fast" since the
 				// intensity image is used below
 				// in the coloured point cloud.
 				win3D.unlockAccess3DScene();
@@ -296,7 +296,7 @@ void Test_Kinect()
 				{
 					mrpt::maps::CColouredOctoMap octoMap(0.10);
 					octoMap.setVoxelColourMethod(
-					    mrpt::maps::CColouredOctoMap::INTEGRATE);
+						mrpt::maps::CColouredOctoMap::INTEGRATE);
 					octoMap.insertObservationPtr(last_obs);
 
 					win3D.get3DSceneAndLock();
@@ -310,8 +310,8 @@ void Test_Kinect()
 			// Estimated grabbing rate:
 			win3D.get3DSceneAndLock();
 			win3D.addTextMessage(
-			    -100, -20, format("%.02f Hz", thrPar.Hz), TColorf(1, 1, 1), 100,
-			    MRPT_GLUT_BITMAP_HELVETICA_18);
+				-100, -20, format("%.02f Hz", thrPar.Hz), TColorf(1, 1, 1), 100,
+				MRPT_GLUT_BITMAP_HELVETICA_18);
 			win3D.unlockAccess3DScene();
 
 			// Do we have accelerometer data?
@@ -319,13 +319,13 @@ void Test_Kinect()
 			{
 				win3D.get3DSceneAndLock();
 				win3D.addTextMessage(
-				    10, 60,
-				    format(
-				        "Acc: x=%.02f y=%.02f z=%.02f",
-				        last_obs_imu->rawMeasurements[IMU_X_ACC],
-				        last_obs_imu->rawMeasurements[IMU_Y_ACC],
-				        last_obs_imu->rawMeasurements[IMU_Z_ACC]),
-				    TColorf(0, 0, 1), "mono", 10, mrpt::opengl::FILL, 102);
+					10, 60,
+					format(
+						"Acc: x=%.02f y=%.02f z=%.02f",
+						last_obs_imu->rawMeasurements[IMU_X_ACC],
+						last_obs_imu->rawMeasurements[IMU_Y_ACC],
+						last_obs_imu->rawMeasurements[IMU_Z_ACC]),
+					TColorf(0, 0, 1), "mono", 10, mrpt::opengl::FILL, 102);
 				win3D.unlockAccess3DScene();
 				do_refresh = true;
 			}
@@ -343,55 +343,55 @@ void Test_Kinect()
 
 			switch (key)
 			{
-			    // Some of the keys are processed in this thread:
-			    case 'o':
-				    win3D.setCameraZoom(win3D.getCameraZoom() * 1.2);
+				// Some of the keys are processed in this thread:
+				case 'o':
+					win3D.setCameraZoom(win3D.getCameraZoom() * 1.2);
 					win3D.repaint();
-				    break;
-			    case 'i':
-				    win3D.setCameraZoom(win3D.getCameraZoom() / 1.2);
+					break;
+				case 'i':
+					win3D.setCameraZoom(win3D.getCameraZoom() / 1.2);
 					win3D.repaint();
-				    break;
-			    case '9':
+					break;
+				case '9':
 				{
-				    // Save latest image (intensity or IR) to disk:
-				    static int cnt = 0;
+					// Save latest image (intensity or IR) to disk:
+					static int cnt = 0;
 					if (last_obs->hasIntensityImage)
 					{
 						const std::string s =
-						    mrpt::format("kinect_image_%04i.png", cnt++);
+							mrpt::format("kinect_image_%04i.png", cnt++);
 						std::cout << "Writing intensity/IR image to disk: " << s
-						          << std::endl;
+								  << std::endl;
 						if (!last_obs->intensityImage.saveToFile(s))
 							std::cerr << "(error writing file!)\n";
 					}
-			    }
+				}
 				break;
-			    case 'p':
-			    {
-				    VIEW_AS_OCTOMAP = !VIEW_AS_OCTOMAP;
+				case 'p':
+				{
+					VIEW_AS_OCTOMAP = !VIEW_AS_OCTOMAP;
 					gl_points->setVisibility(!VIEW_AS_OCTOMAP);
 					gl_voxels->setVisibility(VIEW_AS_OCTOMAP);
-			    }
+				}
 				break;
 
 				// ...and the rest in the kinect thread:
-			    default:
-				    thrPar.pushed_key = key;
-				    break;
+				default:
+					thrPar.pushed_key = key;
+					break;
 			};
 		}
 
 		win3D.get3DSceneAndLock();
 		win3D.addTextMessage(
-		    10, 10,
-		    format("'o'/'i'-zoom out/in, 'w'-tilt up,'s'-tilt down, mouse: "
-		           "orbit 3D,'c':Switch RGB/IR,'9':Save image, 'p': "
-		           "points/octomap, ESC: quit"),
-		    TColorf(0, 0, 1), "mono", 10, mrpt::opengl::FILL, 110);
+			10, 10,
+			format("'o'/'i'-zoom out/in, 'w'-tilt up,'s'-tilt down, mouse: "
+				   "orbit 3D,'c':Switch RGB/IR,'9':Save image, 'p': "
+				   "points/octomap, ESC: quit"),
+			TColorf(0, 0, 1), "mono", 10, mrpt::opengl::FILL, 110);
 		win3D.addTextMessage(
-		    10, 35, format("Tilt angle: %.01f deg", thrPar.tilt_ang_deg),
-		    TColorf(0, 0, 1), "mono", 10, mrpt::opengl::FILL, 111);
+			10, 35, format("Tilt angle: %.01f deg", thrPar.tilt_ang_deg),
+			TColorf(0, 0, 1), "mono", 10, mrpt::opengl::FILL, 111);
 		win3D.unlockAccess3DScene();
 
 		std::this_thread::sleep_for(1ms);

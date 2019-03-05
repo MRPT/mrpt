@@ -277,7 +277,7 @@ void project3DPointsFromDepthImageInto(
 					if (hasColorIntensityImg)
 					{
 						const auto px_idx =
-						    img_stride * img_idx_y + 3 * img_idx_x;
+							img_stride * img_idx_y + 3 * img_idx_x;
 						pCol.R = img_data[px_idx + 2];
 						pCol.G = img_data[px_idx + 1];
 						pCol.B = img_data[px_idx + 0];
