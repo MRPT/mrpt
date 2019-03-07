@@ -102,6 +102,7 @@ TEST(CImage, GetSetPixel)
 	CImage img(20, 10, CH_GRAY);
 	img.setPixel(10, 2, TColor(0x80, 0x80, 0x80));
 	EXPECT_EQ(img.at<uint8_t>(10, 2), 0x80);
+	EXPECT_EQ(*img(10, 2), 0x80);
 
 	img.setPixel(11, 2, TColor(0x0, 0x0, 0x0));
 	EXPECT_EQ(img.at<uint8_t>(11, 2), 0x00);
@@ -448,14 +449,11 @@ TEST(CImage, Serialize)
 }
 
 MRPT_TODO("Why does this fail on arm64?");
-TEST(
-	CImage,
 #if defined(__aarch64__)
-	DISABLED_KLT_response
+TEST(CImage, DISABLED_KLT_response)
 #else
-	KLT_response
+TEST(CImage, KLT_response)
 #endif
-)
 {
 	using namespace mrpt::img;
 
@@ -520,6 +518,57 @@ TEST(CImage, LoadAndSave)
 							 << a.asCvMatRef() << "\nb:\n"
 							 << b.asCvMatRef() << "\n";
 			}
+		}
+	}
+}
+
+TEST(CImage, DifferentAccessMethodsColor)
+{
+	using namespace mrpt::img;
+	CImage a;
+	bool load_ok = a.loadFromFile(tstImgFileColor);
+	EXPECT_TRUE(load_ok);
+	EXPECT_TRUE(a.isColor());
+
+	for (unsigned r = 0; r < 3; r++)
+	{
+		for (unsigned c = 0; c < 3; c++)
+		{
+			for (int ch = 0; ch < 3; ch++)
+			{
+				EXPECT_EQ(*a(c, r, ch), a.at<uint8_t>(c, r, ch))
+					<< "ch=" << ch << "\n";
+				EXPECT_EQ(*a(c, r, ch), *a.ptr<uint8_t>(c, r, ch))
+					<< "ch=" << ch << "\n";
+				EXPECT_EQ(*a(c, r, ch), a.ptrLine<uint8_t>(r)[c * 3 + ch])
+					<< "(c,r,ch)=(" << c << "," << r << "," << ch << ")"
+					<< "\n a(c, r, ch)=" << static_cast<void*>(a(c, r, ch))
+					<< "\n &a.ptrLine<uint8_t>(r)[c * 3 + ch] = "
+					<< static_cast<void*>(&a.ptrLine<uint8_t>(r)[c * 3 + ch])
+					<< "\n a(0, r, ch)=" << static_cast<void*>(a(0, r, ch))
+					<< "\n a.ptrLine<uint8_t>(r) = "
+					<< static_cast<void*>(a.ptrLine<uint8_t>(r)) << "\n";
+			}
+		}
+	}
+}
+
+TEST(CImage, DifferentAccessMethodsGray)
+{
+	using namespace mrpt::img;
+	CImage a;
+	bool load_ok = a.loadFromFile(tstImgFileColor);
+	EXPECT_TRUE(load_ok);
+	a = a.grayscale();
+	EXPECT_FALSE(a.isColor());
+
+	for (unsigned r = 5; r < 7; r++)
+	{
+		for (unsigned c = 10; c < 12; c++)
+		{
+			EXPECT_EQ(*a(c, r), a.at<uint8_t>(c, r));
+			EXPECT_EQ(*a(c, r), *a.ptr<uint8_t>(c, r));
+			EXPECT_EQ(*a(c, r), a.ptrLine<uint8_t>(r)[c]);
 		}
 	}
 }

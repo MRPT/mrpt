@@ -455,7 +455,8 @@ unsigned char* CImage::operator()(
 			m_impl->img.channels()));
 	}
 #endif
-	auto p = (&m_impl->img.at<uint8_t>(row, col)) + channel;
+	auto p =
+		(&m_impl->img.at<uint8_t>(row, m_impl->img.channels() * col)) + channel;
 	return const_cast<unsigned char*>(p);
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
 	MRPT_END
@@ -470,7 +471,8 @@ uint8_t* CImage::internal_get(int col, int row, uint8_t channel) const
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	auto p = (&m_impl->img.at<uint8_t>(row, col)) + channel;
+	auto p =
+		(&m_impl->img.at<uint8_t>(row, m_impl->img.channels() * col)) + channel;
 	return const_cast<uint8_t*>(p);
 #else
 	return nullptr;
