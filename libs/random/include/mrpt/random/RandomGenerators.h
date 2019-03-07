@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <type_traits>  // remove_reference
+#include <limits>  // numeric_limits
 #include <mrpt/random/random_shuffle.h>
 
 // Frwd decl:
@@ -32,6 +33,31 @@ namespace mrpt
  */
 namespace random
 {
+/** Portable MT19937 random generator, C++11 UniformRandomBitGenerator
+ * compliant.
+ *
+ * It is ensured to generate the same numbers on any compiler and system.
+ * \ingroup mrpt_random_grp
+ */
+class Generator_MT19937
+{
+   public:
+	using result_type = uint32_t;
+	static result_type min() { return std::numeric_limits<result_type>::min(); }
+	static result_type max() { return std::numeric_limits<result_type>::max(); }
+
+	result_type operator()();
+
+	void seed(const uint32_t seed);
+
+   private:
+	uint32_t m_MT[624];
+	uint32_t m_index{0};
+	bool m_seed_initialized{false};
+
+	void generateNumbers();
+};
+
 /** A thred-safe pseudo random number generator, based on an internal MT19937
  * randomness generator.
  * The base algorithm for randomness is platform-independent. See
@@ -48,13 +74,11 @@ class CRandomGenerator
 {
    protected:
 	/** Data used internally by the MT19937 PRNG algorithm. */
-	std::mt19937_64 m_MT19937;
+	Generator_MT19937 m_MT19937;
 
 	std::normal_distribution<double> m_normdistribution;
 	std::uniform_int_distribution<uint32_t> m_uint32;
 	std::uniform_int_distribution<uint64_t> m_uint64;
-
-	void MT19937_initializeGenerator(const uint32_t& seed);
 
    public:
 	/** @name Initialization
