@@ -14,6 +14,9 @@ if(CMAKE_MRPT_HAS_ZLIB)
 	endif()
 endif()
 
+set_property(GLOBAL PROPERTY mrpt_io_UNIT_TEST_EXTRA_DEPS mrpt-random)
+
+
 define_mrpt_lib(
 	io 		# Lib name
 	# Dependencies:
