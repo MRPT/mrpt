@@ -730,9 +730,9 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 
 	gl_TPSpace_TP_obstacles = mrpt::opengl::CSetOfObjects::Create();
 	gl_TPSpace_clearance =
-	    mrpt::opengl::CMesh::Create(true, -5.0f, 5.0f, -5.0f, 5.0f);
+		mrpt::opengl::CMesh::Create(true, -5.0f, 5.0f, -5.0f, 5.0f);
 	gl_TPSpace_clearance_interp =
-	    mrpt::opengl::CMesh::Create(true, -5.0f, 5.0f, -5.0f, 5.0f);
+		mrpt::opengl::CMesh::Create(true, -5.0f, 5.0f, -5.0f, 5.0f);
 	gl_TPSpace_clearance_interp->setVisibility(false);
 
 	gl_view_TPSpace->insert(gl_TPSpace_TP_obstacles);

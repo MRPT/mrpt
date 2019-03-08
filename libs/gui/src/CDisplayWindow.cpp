@@ -331,7 +331,7 @@ void CWindowDialog::OnMenuSave(wxCommandEvent& event)
 	wxFileDialog dialog(
 		this, wxT("Save image as..."), wxT("."), wxT("image.png"),
 		wxT("PNG image files (*.png)|*.png"),
-	    wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
 	if (wxID_OK == dialog.ShowModal())
 	{
