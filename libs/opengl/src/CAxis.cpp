@@ -100,17 +100,17 @@ void CAxis::render_dl() const
 
 	char n[50];
 	const std::array<mrpt::math::TPoint3Df, 3> init_trans = {
-	    {{m_xmin, .0f, ml}, {.0f, m_ymin, ml}, {.0f, .0f, m_zmin}}};
+		{{m_xmin, .0f, ml}, {.0f, m_ymin, ml}, {.0f, .0f, m_zmin}}};
 	const std::array<std::array<float, 2>, 3> xyz_ranges = {
-	    {{m_xmin, m_xmax}, {m_ymin, m_ymax}, {m_zmin, m_zmax}}};
+		{{m_xmin, m_xmax}, {m_ymin, m_ymax}, {m_zmin, m_zmax}}};
 	const std::array<mrpt::math::TPoint3Df, 3> tick0 = {
-	    {{0, -ml, -ml}, {-ml, .0f, -ml}, {-ml, .0f, .0f}}};
+		{{0, -ml, -ml}, {-ml, .0f, -ml}, {-ml, .0f, .0f}}};
 	const std::array<mrpt::math::TPoint3Df, 3> tick1 = {
-	    {{0, ml, -ml}, {ml, .0f, -ml}, {ml, .0f, .0f}}};
+		{{0, ml, -ml}, {ml, .0f, -ml}, {ml, .0f, .0f}}};
 	const std::array<mrpt::math::TPoint3Df, 3> endMark = {
-	    {{m_xmax + 1.0f * m_frequency, 0, 0},
-	     {0, m_ymax + .5f * m_frequency, 0},
-	     {0, 0, m_zmax + 0.5f * m_frequency}}};
+		{{m_xmax + 1.0f * m_frequency, 0, 0},
+		 {0, m_ymax + .5f * m_frequency, 0},
+		 {0, 0, m_zmax + 0.5f * m_frequency}}};
 	const std::array<const char*, 3> axis2name = {{"+X", "+Y", "+Z"}};
 
 	for (int axis = 0; axis < 3; axis++)
@@ -121,7 +121,7 @@ void CAxis::render_dl() const
 		const auto& tf = init_trans[axis];
 		glTranslatef(tf.x, tf.y, tf.z);
 		for (float i = xyz_ranges[axis][0]; i <= xyz_ranges[axis][1];
-		     i = i + m_frequency)
+			 i = i + m_frequency)
 		{
 			// Dont draw the "0" more than once
 			if (axis == 0 || std::abs(i) > 1e-4)
@@ -140,8 +140,8 @@ void CAxis::render_dl() const
 				checkOpenGLError();
 			}
 			glTranslatef(
-			    axis == 0 ? m_frequency : 0, axis == 1 ? m_frequency : 0,
-			    axis == 2 ? m_frequency : 0);
+				axis == 0 ? m_frequency : 0, axis == 1 ? m_frequency : 0,
+				axis == 2 ? m_frequency : 0);
 		}
 
 		glPopMatrix();
@@ -151,7 +151,7 @@ void CAxis::render_dl() const
 		glRotatef(m_textRot[0][1], 0, 1, 0);
 		glRotatef(m_textRot[0][2], 1, 0, 0);
 		gl_utils::glDrawText(
-		    axis2name[axis], m_textScale * 1.2, mrpt::opengl::NICE);
+			axis2name[axis], m_textScale * 1.2, mrpt::opengl::NICE);
 		glPopMatrix();
 	}
 
@@ -180,11 +180,11 @@ void CAxis::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
-	    case 0:
-	    case 1:
-	    case 2:
+		case 0:
+		case 1:
+		case 2:
 		{
-		    readFromStreamRender(in);
+			readFromStreamRender(in);
 			in >> m_xmin >> m_ymin >> m_zmin;
 			in >> m_xmax >> m_ymax >> m_zmax;
 			in >> m_frequency >> m_lineWidth;
@@ -202,16 +202,16 @@ void CAxis::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 				m_textScale = 0.25f;
 			}
 			if (version >= 2) in >> m_markLen;
-	    }
+		}
 		break;
-	    default:
-		    MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default:
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	CRenderizableDisplayList::notifyChange();
 }
 
 void CAxis::getBoundingBox(
-    mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const
+	mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const
 {
 	bb_min.x = m_xmin;
 	bb_min.y = m_ymin;
@@ -259,7 +259,7 @@ void CAxis::setTextScale(float f)
 }
 float CAxis::getTextScale() const { return m_textScale; }
 void CAxis::setAxisLimits(
-    float xmin, float ymin, float zmin, float xmax, float ymax, float zmax)
+	float xmin, float ymin, float zmin, float xmax, float ymax, float zmax)
 {
 	m_xmin = xmin;
 	m_ymin = ymin;
@@ -270,7 +270,7 @@ void CAxis::setAxisLimits(
 	CRenderizableDisplayList::notifyChange();
 }
 void CAxis::setTextLabelOrientation(
-    int axis, float yaw_deg, float pitch_deg, float roll_deg)
+	int axis, float yaw_deg, float pitch_deg, float roll_deg)
 {
 	ASSERT_(axis >= 0 && axis < 3);
 	m_textRot[axis][0] = yaw_deg;
@@ -278,7 +278,7 @@ void CAxis::setTextLabelOrientation(
 	m_textRot[axis][2] = roll_deg;
 }
 void CAxis::getTextLabelOrientation(
-    int axis, float& yaw_deg, float& pitch_deg, float& roll_deg) const
+	int axis, float& yaw_deg, float& pitch_deg, float& roll_deg) const
 {
 	ASSERT_(axis >= 0 && axis < 3);
 	yaw_deg = m_textRot[axis][0];
