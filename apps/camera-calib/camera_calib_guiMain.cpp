@@ -124,12 +124,8 @@ END_EVENT_TABLE()
 
 camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent, wxWindowID id)
 {
-// Load my custom icons:
-#if wxCHECK_VERSION(2, 8, 0)
+	// Load my custom icons:
 	wxArtProvider::Push(new MyArtProvider);
-#else
-	wxArtProvider::PushProvider(new MyArtProvider);
-#endif
 
 	//(*Initialize(camera_calib_guiDialog)
 	wxStaticBoxSizer* StaticBoxSizer2;

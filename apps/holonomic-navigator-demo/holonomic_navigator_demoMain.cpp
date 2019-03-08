@@ -115,12 +115,8 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 	  m_curCursorPos(0, 0),
 	  m_cursorPickState(cpsNone)
 {
-// Load my custom icons:
-#if wxCHECK_VERSION(2, 8, 0)
+	// Load my custom icons:
 	wxArtProvider::Push(new MyArtProvider);
-#else
-	wxArtProvider::PushProvider(new MyArtProvider);
-#endif
 
 	//(*Initialize(holonomic_navigator_demoFrame)
 	wxFlexGridSizer* FlexGridSizer4;
