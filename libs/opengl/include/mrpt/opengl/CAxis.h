@@ -37,6 +37,7 @@ class CAxis : public CRenderizableDisplayList
 	bool m_marks[3];
 	float m_textScale{0.25f};
 	float m_textRot[3][3];  // {x,y,z},{yaw,pitch,roll}
+	float m_markLen{0.07};
 
    public:
 	void setAxisLimits(
@@ -58,6 +59,9 @@ class CAxis : public CRenderizableDisplayList
 
 	void enableTickMarks(bool v = true);
 	void enableTickMarks(bool show_x, bool show_y, bool show_z);
+	/** As a ratio of "marks frequency" (default: 0.05) */
+	void setTickMarksLength(float len);
+	float getTickMarksLength(float len) { return m_markLen; }
 
 	/** Render */
 	void render_dl() const override;
