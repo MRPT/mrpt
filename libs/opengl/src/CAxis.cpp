@@ -53,6 +53,12 @@ CAxis::CAxis(
 	m_textRot[2][2] = 90.f;
 }
 
+void CAxis::setTickMarksLength(float len)
+{
+	m_markLen = len;
+	CRenderizableDisplayList::notifyChange();
+}
+
 void CAxis::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
@@ -89,90 +95,63 @@ void CAxis::render_dl() const
 	glDisable(GL_BLEND);
 	checkOpenGLError();
 
-	// Draw the "tick marks":
+	// Draw the "tick marks" for X,Y,Z
+	const float ml = m_markLen * m_frequency;
+
 	char n[50];
-	if (m_marks[0])
+	const std::array<mrpt::math::TPoint3Df, 3> init_trans = {
+	    {{m_xmin, .0f, ml}, {.0f, m_ymin, ml}, {.0f, .0f, m_zmin}}};
+	const std::array<std::array<float, 2>, 3> xyz_ranges = {
+	    {{m_xmin, m_xmax}, {m_ymin, m_ymax}, {m_zmin, m_zmax}}};
+	const std::array<mrpt::math::TPoint3Df, 3> tick0 = {
+	    {{0, -ml, -ml}, {-ml, .0f, -ml}, {-ml, .0f, .0f}}};
+	const std::array<mrpt::math::TPoint3Df, 3> tick1 = {
+	    {{0, ml, -ml}, {ml, .0f, -ml}, {ml, .0f, .0f}}};
+	const std::array<mrpt::math::TPoint3Df, 3> endMark = {
+	    {{m_xmax + 1.0f * m_frequency, 0, 0},
+	     {0, m_ymax + .5f * m_frequency, 0},
+	     {0, 0, m_zmax + 0.5f * m_frequency}}};
+	const std::array<const char*, 3> axis2name = {{"+X", "+Y", "+Z"}};
+
+	for (int axis = 0; axis < 3; axis++)
 	{
-		// X axis
+		if (!m_marks[axis]) continue;
+
 		glPushMatrix();
-		glTranslatef(m_xmin, .0f, .05f);
-		for (float i = m_xmin; i <= m_xmax; i = i + m_frequency)
+		const auto& tf = init_trans[axis];
+		glTranslatef(tf.x, tf.y, tf.z);
+		for (float i = xyz_ranges[axis][0]; i <= xyz_ranges[axis][1];
+		     i = i + m_frequency)
 		{
-			os::sprintf(n, 50, "%.02f", i);
-			glPushMatrix();
-			glRotatef(m_textRot[0][0], 0, 0, 1);
-			glRotatef(m_textRot[0][1], 0, 1, 0);
-			glRotatef(m_textRot[0][2], 1, 0, 0);
-			gl_utils::glDrawText(n, m_textScale, mrpt::opengl::FILL);
-			glPopMatrix();
-			glTranslatef(m_frequency, 0, 0);
+			// Dont draw the "0" more than once
+			if (axis == 0 || std::abs(i) > 1e-4)
+			{
+				os::sprintf(n, 50, "%.02f", i);
+				glPushMatrix();
+				glRotatef(m_textRot[0][0], 0, 0, 1);
+				glRotatef(m_textRot[0][1], 0, 1, 0);
+				glRotatef(m_textRot[0][2], 1, 0, 0);
+				gl_utils::glDrawText(n, m_textScale, mrpt::opengl::FILL);
+				glBegin(GL_LINES);
+				glVertex3f(tick0[axis].x, tick0[axis].y, tick0[axis].z);
+				glVertex3f(tick1[axis].x, tick1[axis].y, tick1[axis].z);
+				glEnd();
+				glPopMatrix();
+				checkOpenGLError();
+			}
+			glTranslatef(
+			    axis == 0 ? m_frequency : 0, axis == 1 ? m_frequency : 0,
+			    axis == 2 ? m_frequency : 0);
 		}
 
 		glPopMatrix();
 		glPushMatrix();
-		glTranslatef(m_xmax + 1.0f * m_frequency, 0, 0);
+		glTranslatef(endMark[axis].x, endMark[axis].y, endMark[axis].z);
 		glRotatef(m_textRot[0][0], 0, 0, 1);
 		glRotatef(m_textRot[0][1], 0, 1, 0);
 		glRotatef(m_textRot[0][2], 1, 0, 0);
-		gl_utils::glDrawText("+X", m_textScale * 1.2, mrpt::opengl::NICE);
-		glPopMatrix();
-	}
-	if (m_marks[1])
-	{
-		// Y axis
-		glPushMatrix();
-		glTranslatef(.0f, m_ymin, .05f);
-		for (float i = m_ymin; i <= m_ymax; i = i + m_frequency)
-		{
-			if (std::abs(i) > 1e-4)
-			{  // Dont draw the "0" more than once
-				os::sprintf(n, 50, "%.02f", i);
-				glPushMatrix();
-				glRotatef(m_textRot[1][0], 0, 0, 1);
-				glRotatef(m_textRot[1][1], 0, 1, 0);
-				glRotatef(m_textRot[1][2], 1, 0, 0);
-				gl_utils::glDrawText(n, m_textScale, mrpt::opengl::FILL);
-				glPopMatrix();
-			}
-			glTranslatef(0, m_frequency, 0);
-		}
-
-		glPopMatrix();
-		glPushMatrix();
-		glTranslatef(0, m_ymax + .5f * m_frequency, 0);
-		glRotatef(m_textRot[1][0], 0, 0, 1);
-		glRotatef(m_textRot[1][1], 0, 1, 0);
-		glRotatef(m_textRot[1][2], 1, 0, 0);
-		gl_utils::glDrawText("+Y", m_textScale * 1.2, mrpt::opengl::NICE);
-		glPopMatrix();
-	}
-	if (m_marks[2])
-	{
-		// Z axis
-		glPushMatrix();
-		glTranslatef(.0f, .0f, m_zmin);
-		for (float i = m_zmin; i <= m_zmax; i = i + m_frequency)
-		{
-			if (std::abs(i) > 1e-4)
-			{  // Dont draw the "0" more than once
-				glPushMatrix();
-				glRotatef(m_textRot[2][0], 0, 0, 1);
-				glRotatef(m_textRot[2][1], 0, 1, 0);
-				glRotatef(m_textRot[2][2], 1, 0, 0);
-				os::sprintf(n, 50, "%.02f", i);
-				gl_utils::glDrawText(n, m_textScale, mrpt::opengl::FILL);
-				glPopMatrix();
-			}
-			glTranslatef(0, 0, m_frequency);
-		}
-
-		glPopMatrix();
-		glPushMatrix();
-		glTranslatef(0, 0, m_zmax + 0.5f * m_frequency);
-		glRotatef(m_textRot[2][0], 0, 0, 1);
-		glRotatef(m_textRot[2][1], 0, 1, 0);
-		glRotatef(m_textRot[2][2], 1, 0, 0);
-		gl_utils::glDrawText("+Z", m_textScale * 1.2, mrpt::opengl::NICE);
+		gl_utils::glDrawText(
+		    axis2name[axis], m_textScale * 1.2, mrpt::opengl::NICE);
 		glPopMatrix();
 	}
 
@@ -182,7 +161,7 @@ void CAxis::render_dl() const
 #endif
 }
 
-uint8_t CAxis::serializeGetVersion() const { return 1; }
+uint8_t CAxis::serializeGetVersion() const { return 2; }
 void CAxis::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
@@ -193,16 +172,19 @@ void CAxis::serializeTo(mrpt::serialization::CArchive& out) const
 	out << m_marks[0] << m_marks[1] << m_marks[2] << m_textScale;
 	for (auto i : m_textRot)
 		for (int j = 0; j < 3; j++) out << i[j];
+	// v2:
+	out << m_markLen;
 }
 
 void CAxis::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
-		case 0:
-		case 1:
+	    case 0:
+	    case 1:
+	    case 2:
 		{
-			readFromStreamRender(in);
+		    readFromStreamRender(in);
 			in >> m_xmin >> m_ymin >> m_zmin;
 			in >> m_xmax >> m_ymax >> m_zmax;
 			in >> m_frequency >> m_lineWidth;
@@ -219,16 +201,17 @@ void CAxis::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 				for (bool& m_mark : m_marks) m_mark = v;
 				m_textScale = 0.25f;
 			}
-		}
+			if (version >= 2) in >> m_markLen;
+	    }
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+	    default:
+		    MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	CRenderizableDisplayList::notifyChange();
 }
 
 void CAxis::getBoundingBox(
-	mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const
+    mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const
 {
 	bb_min.x = m_xmin;
 	bb_min.y = m_ymin;
@@ -276,7 +259,7 @@ void CAxis::setTextScale(float f)
 }
 float CAxis::getTextScale() const { return m_textScale; }
 void CAxis::setAxisLimits(
-	float xmin, float ymin, float zmin, float xmax, float ymax, float zmax)
+    float xmin, float ymin, float zmin, float xmax, float ymax, float zmax)
 {
 	m_xmin = xmin;
 	m_ymin = ymin;
@@ -287,7 +270,7 @@ void CAxis::setAxisLimits(
 	CRenderizableDisplayList::notifyChange();
 }
 void CAxis::setTextLabelOrientation(
-	int axis, float yaw_deg, float pitch_deg, float roll_deg)
+    int axis, float yaw_deg, float pitch_deg, float roll_deg)
 {
 	ASSERT_(axis >= 0 && axis < 3);
 	m_textRot[axis][0] = yaw_deg;
@@ -295,7 +278,7 @@ void CAxis::setTextLabelOrientation(
 	m_textRot[axis][2] = roll_deg;
 }
 void CAxis::getTextLabelOrientation(
-	int axis, float& yaw_deg, float& pitch_deg, float& roll_deg) const
+    int axis, float& yaw_deg, float& pitch_deg, float& roll_deg) const
 {
 	ASSERT_(axis >= 0 && axis < 3);
 	yaw_deg = m_textRot[axis][0];
