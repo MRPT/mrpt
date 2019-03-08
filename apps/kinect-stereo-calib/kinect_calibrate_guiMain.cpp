@@ -187,12 +187,8 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(
 {
 	m_grabstate = gsIdle;
 
-// Load my custom icons:
-#if wxCHECK_VERSION(2, 8, 0)
+	// Load my custom icons:
 	wxArtProvider::Push(new MyArtProvider);
-#else
-	wxArtProvider::PushProvider(new MyArtProvider);
-#endif
 
 	//(*Initialize(kinect_calibrate_guiDialog)
 	wxFlexGridSizer* FlexGridSizer30;

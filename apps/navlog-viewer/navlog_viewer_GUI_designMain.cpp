@@ -135,12 +135,8 @@ class MyArtProvider : public wxArtProvider
 navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(
 	wxWindow* parent, wxWindowID id)
 {
-// Load my custom icons:
-#if wxCHECK_VERSION(2, 8, 0)
+	// Load my custom icons:
 	wxArtProvider::Push(new MyArtProvider);
-#else
-	wxArtProvider::PushProvider(new MyArtProvider);
-#endif
 
 	//(*Initialize(navlog_viewer_GUI_designDialog)
 	wxStaticBoxSizer* StaticBoxSizer2;

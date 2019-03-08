@@ -106,12 +106,8 @@ END_EVENT_TABLE()
 
 hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent, wxWindowID id)
 {
-// Load my custom icons:
-#if wxCHECK_VERSION(2, 8, 0)
+	// Load my custom icons:
 	wxArtProvider::Push(new CMyArtProvider);
-#else
-	wxArtProvider::PushProvider(new CMyArtProvider);
-#endif
 
 	//(*Initialize(hmt_slam_guiFrame)
 	wxMenuItem* MenuItem2;

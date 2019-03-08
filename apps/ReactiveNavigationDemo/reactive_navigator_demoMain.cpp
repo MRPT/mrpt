@@ -150,12 +150,8 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	  m_curCursorPos(0, 0),
 	  m_cursorPickState(cpsNone)
 {
-// Load my custom icons:
-#if wxCHECK_VERSION(2, 8, 0)
+	// Load my custom icons:
 	wxArtProvider::Push(new MyArtProvider);
-#else
-	wxArtProvider::PushProvider(new MyArtProvider);
-#endif
 
 	//(*Initialize(reactive_navigator_demoframe)
 	wxFlexGridSizer* FlexGridSizer4;
