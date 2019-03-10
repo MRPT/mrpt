@@ -109,11 +109,11 @@ void SE_traits<3>::jacobian_dDinvP1invP2_depsilon(
 {
 	// The rotation matrix of the overall error expression:
 	const CPose3D DinvP1invP2 = Dinv + (-P1) + P2;
-	const CMatrixDouble33& R = DinvP1invP2.getRotationMatrix();
+	//	const CMatrixDouble33& R = DinvP1invP2.getRotationMatrix();
 
-	// Common part: d_Ln(R)_dR:
-	CMatrixFixedNumeric<double, 3, 9> dLnRot_dRot(UNINITIALIZED_MATRIX);
-	CPose3D::ln_rot_jacob(R, dLnRot_dRot);
+	// Common part: d_PseudoLn(T)_dT:
+	CMatrixFixedNumeric<double, 6, 12> dLnT_dT(UNINITIALIZED_MATRIX);
+	SE_traits<3>::jacob_pseudo_ln(DinvP1invP2, dLnT_dT);
 
 	// See section 10.3.10 of Tech. report:
 	// "A tutorial on SE(3) transformation parameterizations and on-manifold
@@ -133,6 +133,21 @@ void SE_traits<3>::jacobian_dDinvP1invP2_depsilon(
 
 	MRPT_TODO("Implement me!");
 	THROW_EXCEPTION("Implement me!");
+}
+
+/** Logarithm for pseudo_ln(). See section 10.3.11 of tech. report.
+ * http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
+ */
+void SE_traits<3>::jacob_pseudo_ln(
+	const CPose3D& P, mrpt::math::CMatrixFixedNumeric<double, 6, 12>& J)
+{
+	J.setZero();
+	const CMatrixDouble33& R = P.getRotationMatrix();
+	mrpt::math::CMatrixFixedNumeric<double, 3, 9> Jrot;
+
+	CPose3D::ln_rot_jacob(R, Jrot);
+	J.block<3, 9>(0, 0) = Jrot;
+	J(3, 9) = J(4, 10) = J(5, 11) = 1.0;
 }
 
 void SE_traits<2>::jacobian_dP1DP2inv_depsilon(
