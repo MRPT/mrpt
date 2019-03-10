@@ -71,7 +71,7 @@ struct SE_traits<3>
 	static void jacobian_dP1DP2inv_depsilon(
 		const CPose3D& P1DP2inv, matrix_VxV_t* df_de1, matrix_VxV_t* df_de2);
 
-	/** Return one or both of the following 3x3 Jacobians, useful in graph-slam
+	/** Return one or both of the following 6x6 Jacobians, useful in graph-slam
 	 * problems:
 	 *   \f[  \frac{\partial pseudoLn(D^{-1} P_1^{-1} P_2}{\partial \epsilon_1}
 	 * \f]
