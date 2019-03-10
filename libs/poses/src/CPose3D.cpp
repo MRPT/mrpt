@@ -882,8 +882,9 @@ inline CMatrixDouble33 ddeltaRt_dR(const CPose3D& P)
 	return CMatrixDouble33(vals);
 }
 
-inline void dVinvt_dR(const CPose3D& P, CMatrixFixedNumeric<double, 3, 9>& J)
+static CMatrixFixedNumeric<double, 3, 9> dVinvt_dR(const CPose3D& P)
 {
+	CMatrixFixedNumeric<double, 3, 9> J;
 	CArrayDouble<3> a;
 	CMatrixDouble33 B(UNINITIALIZED_MATRIX);
 
@@ -934,11 +935,13 @@ inline void dVinvt_dR(const CPose3D& P, CMatrixFixedNumeric<double, 3, 9>& J)
 		B += -(theta * cot - 2) / (8 * oned2) * ddeltaRt_dR(P);
 	}
 	M3x9(a, B, J);
+	return J;
 }
 }  // namespace mrpt::poses
 
-void CPose3D::ln_jacob(mrpt::math::CMatrixFixedNumeric<double, 6, 12>& J) const
+mrpt::math::CMatrixDouble6_12 CPose3D::ln_jacob() const
 {
+	mrpt::math::CMatrixDouble6_12 J;
 	J.zeros();
 	// Jacobian structure 6x12:
 	// (3rows, for t)       [       d_Vinvt_dR (3x9)    |  Vinv (3x3)  ]
@@ -950,16 +953,8 @@ void CPose3D::ln_jacob(mrpt::math::CMatrixFixedNumeric<double, 6, 12>& J) const
 	// (Will be explained better in:
 	// https://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty )
 	//
-	{
-		CMatrixFixedNumeric<double, 3, 9> M(UNINITIALIZED_MATRIX);
-		ln_rot_jacob(m_ROT, M);
-		J.insertMatrix(3, 0, M);
-	}
-	{
-		CMatrixFixedNumeric<double, 3, 9> M(UNINITIALIZED_MATRIX);
-		dVinvt_dR(*this, M);
-		J.insertMatrix(0, 0, M);
-	}
+	J.insertMatrix(3, 0, ln_rot_jacob(m_ROT));
+	J.insertMatrix(0, 0, dVinvt_dR(*this));
 
 	const CMatrixDouble33& R = m_ROT;
 	CArrayDouble<3> omega;
@@ -1002,11 +997,13 @@ void CPose3D::ln_jacob(mrpt::math::CMatrixFixedNumeric<double, 6, 12>& J) const
 		V_inv += Omega2;
 	}
 	J.insertMatrix(0, 9, V_inv);
+	return J;
 }
 
-void CPose3D::ln_rot_jacob(
-	const CMatrixDouble33& R, CMatrixFixedNumeric<double, 3, 9>& M)
+CMatrixFixedNumeric<double, 3, 9> CPose3D::ln_rot_jacob(
+    const CMatrixDouble33& R)
 {
+	CMatrixFixedNumeric<double, 3, 9> M;
 	const double d = 0.5 * (R(0, 0) + R(1, 1) + R(2, 2) - 1);
 	CArrayDouble<3> a;
 	CMatrixDouble33 B(UNINITIALIZED_MATRIX);
@@ -1025,33 +1022,33 @@ void CPose3D::ln_rot_jacob(
 		B.unit(3, -theta / (2 * sq));
 	}
 	M3x9(a, B, M);
+	return M;
 }
 
 // Section 10.3.3 in tech report
 // http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
-void CPose3D::jacob_dexpeD_de(
-	const CPose3D& D, Eigen::Matrix<double, 12, 6>& jacob)
+mrpt::math::CMatrixDouble12_6 CPose3D::jacob_dexpeD_de(const CPose3D& D)
 {
+	mrpt::math::CMatrixDouble12_6 jacob;
 	jacob.block<9, 3>(0, 0).setZero();
 	jacob.block<3, 3>(9, 0).setIdentity();
 	for (int i = 0; i < 3; i++)
 	{
-		Eigen::Block<Eigen::Matrix<double, 12, 6>, 3, 3, false> trg_blc =
-			jacob.block<3, 3>(3 * i, 3);
+		auto trg_blc = jacob.block<3, 3>(3 * i, 3);
 		mrpt::math::skew_symmetric3_neg(D.m_ROT.block<3, 1>(0, i), trg_blc);
 	}
 	{
-		Eigen::Block<Eigen::Matrix<double, 12, 6>, 3, 3, false> trg_blc =
-			jacob.block<3, 3>(9, 3);
+		auto trg_blc = jacob.block<3, 3>(9, 3);
 		mrpt::math::skew_symmetric3_neg(D.m_coords, trg_blc);
 	}
+	return jacob;
 }
 
 // Section 10.3.4 in tech report
 // http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
-void CPose3D::jacob_dDexpe_de(
-	const CPose3D& D, Eigen::Matrix<double, 12, 6>& jacob)
+mrpt::math::CMatrixDouble12_6 CPose3D::jacob_dDexpe_de(const CPose3D& D)
 {
+	mrpt::math::CMatrixDouble12_6 jacob;
 	jacob.setZero();
 	jacob.block<3, 3>(9, 0) = D.m_ROT;
 
@@ -1063,13 +1060,15 @@ void CPose3D::jacob_dDexpe_de(
 
 	jacob.block<3, 1>(0, 4) = -D.m_ROT.col(2);
 	jacob.block<3, 1>(3, 3) = D.m_ROT.col(2);
+	return jacob;
 }
 
 // Eq. 10.3.7 in tech report
 // http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
-void CPose3D::jacob_dAexpeD_de(
-	const CPose3D& A, const CPose3D& D, Eigen::Matrix<double, 12, 6>& jacob)
+mrpt::math::CMatrixDouble12_6 CPose3D::jacob_dAexpeD_de(
+    const CPose3D& A, const CPose3D& D)
 {
+	mrpt::math::CMatrixDouble12_6 jacob;
 	jacob.block<9, 3>(0, 0).setZero();
 	jacob.block<3, 3>(9, 0) = A.getRotationMatrix();
 	Eigen::Matrix<double, 3, 3> aux;
@@ -1081,6 +1080,7 @@ void CPose3D::jacob_dAexpeD_de(
 	}
 	mrpt::math::skew_symmetric3_neg(D.m_coords, aux);
 	jacob.block<3, 3>(9, 3) = A.m_ROT * aux;
+	return jacob;
 }
 
 void CPose3D::setToNaN()

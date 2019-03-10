@@ -690,15 +690,14 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 	/** Jacobian of the logarithm of the 3x4 matrix defined by this pose.
 	 * \sa ln
 	 */
-	void ln_jacob(mrpt::math::CMatrixFixedNumeric<double, 6, 12>& J) const;
+	mrpt::math::CMatrixDouble6_12 ln_jacob() const;
 
 	/** Static function to compute the Jacobian of the SO(3) Logarithm function,
 	 * evaluated at a given 3x3 rotation matrix R.
 	 * \sa ln, ln_jacob
 	 */
-	static void ln_rot_jacob(
-		const mrpt::math::CMatrixDouble33& R,
-		mrpt::math::CMatrixFixedNumeric<double, 3, 9>& M);
+	static mrpt::math::CMatrixDouble39 ln_rot_jacob(
+	    const mrpt::math::CMatrixDouble33& R);
 
 	/** Take the logarithm of the 3x3 rotation matrix, generating the
 	 * corresponding vector in the Lie Algebra */
@@ -708,24 +707,21 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 	 * \note Section 10.3.3 in tech report
 	 * http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
 	 */
-	static void jacob_dexpeD_de(
-		const CPose3D& D, Eigen::Matrix<double, 12, 6>& jacob);
+	static mrpt::math::CMatrixDouble12_6 jacob_dexpeD_de(const CPose3D& D);
 
 	/** The Jacobian d (D * e^eps) / d eps , with eps=increment in Lie Algebra.
 	 * \note Section 10.3.4 in tech report
 	 * http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
 	 */
-	static void jacob_dDexpe_de(
-		const CPose3D& D, Eigen::Matrix<double, 12, 6>& jacob);
+	static mrpt::math::CMatrixDouble12_6 jacob_dDexpe_de(const CPose3D& D);
 
 	/** The Jacobian d (A * e^eps * D) / d eps , with eps=increment in Lie
 	 * Algebra.
 	 * \note Eq. 10.3.7 in tech report
 	 * http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
 	 */
-	static void jacob_dAexpeD_de(
-		const CPose3D& A, const CPose3D& D,
-		Eigen::Matrix<double, 12, 6>& jacob);
+	static mrpt::math::CMatrixDouble12_6 jacob_dAexpeD_de(
+	    const CPose3D& A, const CPose3D& D);
 
 	/** @} */
 

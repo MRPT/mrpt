@@ -27,16 +27,7 @@ static const std::vector<mrpt::poses::CPose3D> ptc = {
     {1.0, 2.0, 3.0, DEG2RAD(10.0), DEG2RAD(.0), DEG2RAD(.0)},
     {1.0, 2.0, 3.0, DEG2RAD(.0), DEG2RAD(1.0), DEG2RAD(.0)},
     {1.0, 2.0, 3.0, DEG2RAD(.0), DEG2RAD(.0), DEG2RAD(1.0)},
-    {1.0, 2.0, 3.0, DEG2RAD(80.0), DEG2RAD(5.0), DEG2RAD(5.0)},
-    {1.0, 2.0, 3.0, DEG2RAD(-20.0), DEG2RAD(-30.0), DEG2RAD(-40.0)},
-    {1.0, 2.0, 3.0, DEG2RAD(-45.0), DEG2RAD(10.0), DEG2RAD(70.0)},
-    {1.0, 2.0, 3.0, DEG2RAD(40.0), DEG2RAD(-5.0), DEG2RAD(25.0)},
-    {1.0, 2.0, 3.0, DEG2RAD(40.0), DEG2RAD(20.0), DEG2RAD(-15.0)},
     {-6.0, 2.0, 3.0, DEG2RAD(40.0), DEG2RAD(20.0), DEG2RAD(15.0)},
-    {6.0, -5.0, 3.0, DEG2RAD(40.0), DEG2RAD(20.0), DEG2RAD(15.0)},
-    {6.0, 2.0, -9.0, DEG2RAD(40.0), DEG2RAD(20.0), DEG2RAD(15.0)},
-    {0.0, 8.0, 5.0, DEG2RAD(-45.0), DEG2RAD(10.0), DEG2RAD(70.0)},
-    {1.0, 0.0, 5.0, DEG2RAD(-45.0), DEG2RAD(10.0), DEG2RAD(70.0)},
     {1.0, 8.0, 0.0, DEG2RAD(-45.0), DEG2RAD(10.0), DEG2RAD(70.0)}};
 
 template <class POSE_TYPE>
@@ -199,7 +190,7 @@ class SE_traits_tests : public ::testing::Test
 
 		// Theoretical results:
 		CMatrixFixedNumeric<double, DIMS, DIMS> J1, J2;
-		SE_TYPE::jacobian_dDinvP1invP2_depsilon(Pdinv, P1, P2, &J1, &J2);
+		SE_TYPE::jacobian_dDinvP1invP2_depsilon(Pdinv, P1, P2, J1, J2);
 
 		// Numerical approx:
 		CMatrixFixedNumeric<double, DIMS, DIMS> num_J1, num_J2;
