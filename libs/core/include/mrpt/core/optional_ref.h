@@ -8,16 +8,15 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <optional>
+#include <utility>
+
 namespace mrpt
 {
-/** Like calling a std::vector<>'s clear() method, but really forcing
- * deallocating the memory.
+/** Shorter name for std::optional<std::reference_wrapper<T>>
  * \ingroup mrpt_core_grp
  */
-template <class VECTOR_T>
-inline void vector_strong_clear(VECTOR_T& v)
-{
-	VECTOR_T dummy;
-	dummy.swap(v);
-}
+template <class T>
+using optional_ref = std::optional<std::reference_wrapper<T>>;
+
 }  // namespace mrpt
