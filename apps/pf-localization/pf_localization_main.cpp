@@ -1114,9 +1114,10 @@ void do_pf_localization(
 
 		// Avr. error:
 		double covergenceErrorMean, covergenceErrorsMin, covergenceErrorsMax;
-		math::confidenceIntervals(
-			covergenceErrors, covergenceErrorMean, covergenceErrorsMin,
-			covergenceErrorsMax, STATS_CONF_INTERVAL);
+		if (!covergenceErrors.empty())
+			math::confidenceIntervals(
+				covergenceErrors, covergenceErrorMean, covergenceErrorsMin,
+				covergenceErrorsMax, STATS_CONF_INTERVAL);
 
 		// Save overall results:
 		{
