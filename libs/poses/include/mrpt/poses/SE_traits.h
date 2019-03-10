@@ -59,6 +59,12 @@ struct SE_traits<3>
 	 * translation is left unmodified. */
 	static void pseudo_ln(const CPose3D& P, array_t& x);
 
+	/** Logarithm for pseudo_ln(). See section 10.3.11 of tech. report.
+	 * http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
+	 */
+	static void jacob_pseudo_ln(
+		const CPose3D& P, mrpt::math::CMatrixFixedNumeric<double, 6, 12>& J);
+
 	/** Return one or both of the following 6x6 Jacobians, useful in graph-slam
 	 * problems:
 	 *   \f[  \frac{\partial pseudoLn(P_1 D P_2^{-1}) }{\partial \epsilon_1}
