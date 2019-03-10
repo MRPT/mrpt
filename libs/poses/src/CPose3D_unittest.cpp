@@ -26,12 +26,8 @@ class Pose3DTests : public ::testing::Test
    protected:
 	void SetUp() override {}
 	void TearDown() override {}
-	void test_inverse(
-		double x1, double y1, double z1, double yaw1, double pitch1,
-		double roll1)
+	void test_inverse(const CPose3D& p1)
 	{
-		const CPose3D p1(x1, y1, z1, yaw1, pitch1, roll1);
-
 		const auto HM = p1.getHomogeneousMatrixVal<CMatrixDouble44>();
 		CMatrixDouble44 HMi;
 		p1.getInverseHomogeneousMatrix(HMi);
@@ -67,14 +63,8 @@ class Pose3DTests : public ::testing::Test
 			<< HMi << endl;
 	}
 
-	void test_compose(
-		double x1, double y1, double z1, double yaw1, double pitch1,
-		double roll1, double x2, double y2, double z2, double yaw2,
-		double pitch2, double roll2)
+	void test_compose(const CPose3D& p1, const CPose3D& p2)
 	{
-		const CPose3D p1(x1, y1, z1, yaw1, pitch1, roll1);
-		const CPose3D p2(x2, y2, z2, yaw2, pitch2, roll2);
-
 		const CPose3D p1_c_p2 = p1 + p2;
 		const CPose3D p1_i_p2 = p1 - p2;
 
@@ -159,14 +149,8 @@ class Pose3DTests : public ::testing::Test
 		EXPECT_FLOAT_EQ(p2d.phi(), p3d.yaw()) << "p2d: " << p2d << endl;
 	}
 
-	void test_composeFrom(
-		double x1, double y1, double z1, double yaw1, double pitch1,
-		double roll1, double x2, double y2, double z2, double yaw2,
-		double pitch2, double roll2)
+	void test_composeFrom(const CPose3D& p1, const CPose3D& p2)
 	{
-		const CPose3D p1(x1, y1, z1, yaw1, pitch1, roll1);
-		const CPose3D p2(x2, y2, z2, yaw2, pitch2, roll2);
-
 		const CPose3D p1_plus_p2 = p1 + p2;
 
 		{
@@ -221,11 +205,8 @@ class Pose3DTests : public ::testing::Test
 		}
 	}
 
-	void test_composePoint(
-		double x1, double y1, double z1, double yaw1, double pitch1,
-		double roll1, double x, double y, double z)
+	void test_composePoint(const CPose3D& p1, double x, double y, double z)
 	{
-		const CPose3D p1(x1, y1, z1, yaw1, pitch1, roll1);
 		const CPoint3D p(x, y, z);
 		CPoint3D p1_plus_p = p1 + p;
 
@@ -300,10 +281,8 @@ class Pose3DTests : public ::testing::Test
 	}
 
 	void test_composePointJacob(
-		double x1, double y1, double z1, double yaw1, double pitch1,
-		double roll1, double x, double y, double z, bool use_aprox = false)
+	    const CPose3D& p1, double x, double y, double z, bool use_aprox = false)
 	{
-		const CPose3D p1(x1, y1, z1, yaw1, pitch1, roll1);
 		const CPoint3D p(x, y, z);
 
 		CMatrixFixedNumeric<double, 3, 3> df_dpoint;
@@ -363,12 +342,8 @@ class Pose3DTests : public ::testing::Test
 			<< df_dpose - num_df_dpose << endl;
 	}
 
-	void test_ExpLnEqual(
-		double x1, double y1, double z1, double yaw1, double pitch1,
-		double roll1)
+	void test_ExpLnEqual(const CPose3D& p1)
 	{
-		const CPose3D p1(x1, y1, z1, yaw1, pitch1, roll1);
-
 		const CPose3D p2 = CPose3D::exp(p1.ln());
 		EXPECT_NEAR(
 			(p1.getAsVectorVal() - p2.getAsVectorVal()).array().abs().sum(), 0,
@@ -377,10 +352,8 @@ class Pose3DTests : public ::testing::Test
 	}
 
 	void test_invComposePointJacob(
-		double x1, double y1, double z1, double yaw1, double pitch1,
-		double roll1, double x, double y, double z)
+	    const CPose3D& p1, double x, double y, double z)
 	{
-		const CPose3D p1(x1, y1, z1, yaw1, pitch1, roll1);
 		const CPoint3D p(x, y, z);
 
 		CMatrixFixedNumeric<double, 3, 3> df_dpoint;
@@ -615,12 +588,8 @@ class Pose3DTests : public ::testing::Test
 	}
 
 	// Jacobian of Ln(T) wrt T
-	void check_jacob_LnT_T(
-		double x1, double y1, double z1, double yaw1, double pitch1,
-		double roll1)
+	void check_jacob_LnT_T(const CPose3D& p)
 	{
-		const CPose3D p(x1, y1, z1, yaw1, pitch1, roll1);
-
 		CMatrixFixedNumeric<double, 6, 12> theor_jacob;
 		p.ln_jacob(theor_jacob);
 
@@ -662,12 +631,8 @@ class Pose3DTests : public ::testing::Test
 
 	// Test Jacobian: d exp(e)*D / d e
 	// 10.3.3 in tech report
-	void test_Jacob_dexpeD_de(
-		double x1, double y1, double z1, double yaw1, double pitch1,
-		double roll1)
+	void test_Jacob_dexpeD_de(const CPose3D& p)
 	{
-		const CPose3D p(x1, y1, z1, yaw1, pitch1, roll1);
-
 		Eigen::Matrix<double, 12, 6> theor_jacob;
 		CPose3D::jacob_dexpeD_de(p, theor_jacob);
 
@@ -708,12 +673,8 @@ class Pose3DTests : public ::testing::Test
 
 	// Test Jacobian: d D*exp(e) / d e
 	// 10.3.4 in tech report
-	void test_Jacob_dDexpe_de(
-		double x1, double y1, double z1, double yaw1, double pitch1,
-		double roll1)
+	void test_Jacob_dDexpe_de(const CPose3D& p)
 	{
-		const CPose3D p(x1, y1, z1, yaw1, pitch1, roll1);
-
 		Eigen::Matrix<double, 12, 6> theor_jacob;
 		CPose3D::jacob_dDexpe_de(p, theor_jacob);
 
@@ -761,14 +722,8 @@ class Pose3DTests : public ::testing::Test
 	// Test Jacobian: d A*exp(e)*D / d e
 	// 10.3.7 in tech report
 	// http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
-	void test_Jacob_dAexpeD_de(
-		double x1, double y1, double z1, double yaw1, double pitch1,
-		double roll1, double x2, double y2, double z2, double yaw2,
-		double pitch2, double roll2)
+	void test_Jacob_dAexpeD_de(const CPose3D& A, const CPose3D& D)
 	{
-		const CPose3D A(x1, y1, z1, yaw1, pitch1, roll1);
-		const CPose3D D(x2, y2, z2, yaw2, pitch2, roll2);
-
 		Eigen::Matrix<double, 12, 6> theor_jacob;
 		CPose3D::jacob_dAexpeD_de(A, D, theor_jacob);
 
@@ -852,166 +807,125 @@ TEST_F(Pose3DTests, OperatorBracket)
 
 // List of "random" poses to test with (x,y,z,yaw,pitch,roll) (angles in
 // degrees)
-const double ptc[][6] = {  // ptc = poses_test_cases
-	{.0, .0, .0, .0, .0, .0},
-	{1.0, 2.0, 3.0, .0, .0, .0},
-	{1.0, 2.0, 3.0, 10.0, .0, .0},
-	{1.0, 2.0, 3.0, .0, 1.0, .0},
-	{1.0, 2.0, 3.0, .0, .0, 1.0},
-	{1.0, 2.0, 3.0, 80.0, 5.0, 5.0},
-	{1.0, 2.0, 3.0, -20.0, -30.0, -40.0},
-	{1.0, 2.0, 3.0, -45.0, 10.0, 70.0},
-	{1.0, 2.0, 3.0, 40.0, -5.0, 25.0},
-	{1.0, 2.0, 3.0, 40.0, 20.0, -15.0},
-	{-6.0, 2.0, 3.0, 40.0, 20.0, 15.0},
-	{6.0, -5.0, 3.0, 40.0, 20.0, 15.0},
-	{6.0, 2.0, -9.0, 40.0, 20.0, 15.0},
-	{0.0, 8.0, 5.0, -45.0, 10.0, 70.0},
-	{1.0, 0.0, 5.0, -45.0, 10.0, 70.0},
-	{1.0, 8.0, 0.0, -45.0, 10.0, 70.0}};
-const size_t num_ptc = sizeof(ptc) / sizeof(ptc[0]);
+static const std::vector<mrpt::poses::CPose3D> ptc = {
+    {.0, .0, .0, DEG2RAD(.0), DEG2RAD(.0), DEG2RAD(.0)},
+    {1.0, 2.0, 3.0, DEG2RAD(.0), DEG2RAD(.0), DEG2RAD(.0)},
+    {1.0, 2.0, 3.0, DEG2RAD(10.0), DEG2RAD(.0), DEG2RAD(.0)},
+    {1.0, 2.0, 3.0, DEG2RAD(.0), DEG2RAD(1.0), DEG2RAD(.0)},
+    {1.0, 2.0, 3.0, DEG2RAD(.0), DEG2RAD(.0), DEG2RAD(1.0)},
+    {1.0, 2.0, 3.0, DEG2RAD(80.0), DEG2RAD(5.0), DEG2RAD(5.0)},
+    {1.0, 2.0, 3.0, DEG2RAD(-20.0), DEG2RAD(-30.0), DEG2RAD(-40.0)},
+    {1.0, 2.0, 3.0, DEG2RAD(-45.0), DEG2RAD(10.0), DEG2RAD(70.0)},
+    {1.0, 2.0, 3.0, DEG2RAD(40.0), DEG2RAD(-5.0), DEG2RAD(25.0)},
+    {1.0, 2.0, 3.0, DEG2RAD(40.0), DEG2RAD(20.0), DEG2RAD(-15.0)},
+    {-6.0, 2.0, 3.0, DEG2RAD(40.0), DEG2RAD(20.0), DEG2RAD(15.0)},
+    {6.0, -5.0, 3.0, DEG2RAD(40.0), DEG2RAD(20.0), DEG2RAD(15.0)},
+    {6.0, 2.0, -9.0, DEG2RAD(40.0), DEG2RAD(20.0), DEG2RAD(15.0)},
+    {0.0, 8.0, 5.0, DEG2RAD(-45.0), DEG2RAD(10.0), DEG2RAD(70.0)},
+    {1.0, 0.0, 5.0, DEG2RAD(-45.0), DEG2RAD(10.0), DEG2RAD(70.0)},
+    {1.0, 8.0, 0.0, DEG2RAD(-45.0), DEG2RAD(10.0), DEG2RAD(70.0)}};
 
 // More complex tests:
 TEST_F(Pose3DTests, InverseHM)
 {
-	for (const auto& i : ptc)
-		test_inverse(
-			i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]));
+	for (const auto& p : ptc) test_inverse(p);
 }
 
 TEST_F(Pose3DTests, Compose)
 {
-	for (const auto& i : ptc)
-		for (const auto& j : ptc)
-			test_compose(
-				i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]),
-				j[0], j[1], j[2], DEG2RAD(j[3]), DEG2RAD(j[4]), DEG2RAD(j[5]));
+	for (const auto& p1 : ptc)
+		for (const auto& p2 : ptc) test_compose(p1, p2);
 }
 TEST_F(Pose3DTests, composeFrom)
 {
-	for (const auto& i : ptc)
-		for (const auto& j : ptc)
-			test_composeFrom(
-				i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]),
-				j[0], j[1], j[2], DEG2RAD(j[3]), DEG2RAD(j[4]), DEG2RAD(j[5]));
+	for (const auto& p1 : ptc)
+		for (const auto& p2 : ptc) test_composeFrom(p1, p2);
 }
 
 TEST_F(Pose3DTests, ToFromCPose2D)
 {
-	for (const auto& i : ptc) test_to_from_2d(i[0], i[1], DEG2RAD(i[3]));
+	for (const auto& p : ptc) test_to_from_2d(p.x(), p.y(), p.yaw());
 }
 
 TEST_F(Pose3DTests, ComposeAndInvComposeWithPoint)
 {
-	for (const auto& i : ptc)
+	for (const auto& p : ptc)
 	{
-		test_composePoint(
-			i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]), 10,
-			11, 12);
-		test_composePoint(
-			i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]), -5,
-			1, 2);
-		test_composePoint(
-			i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]), 5,
-			-1, 2);
-		test_composePoint(
-			i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]), 5, 1,
-			-2);
+		test_composePoint(p, 10, 11, 12);
+		test_composePoint(p, -5, 1, 2);
+		test_composePoint(p, 5, -1, 2);
+		test_composePoint(p, 5, 1, -2);
 	}
 }
 
 TEST_F(Pose3DTests, ComposePointJacob)
 {
-	for (const auto& i : ptc)
+	for (const auto& p : ptc)
 	{
-		test_composePointJacob(
-			i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]), 10,
-			11, 12);
-		test_composePointJacob(
-			i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]), -5,
-			1, 2);
+		test_composePointJacob(p, 10, 11, 12);
+		test_composePointJacob(p, -5, 1, 2);
 	}
 }
 
 TEST_F(Pose3DTests, ComposePointJacobApprox)
 {  // Test approximated Jacobians for very small rotations
 	test_composePointJacob(
-		1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 10, 11, 12, true);
+	    mrpt::poses::CPose3D(1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0)),
+	    10, 11, 12, true);
 	test_composePointJacob(
-		1.0, 2.0, 3.0, DEG2RAD(0.1), DEG2RAD(0), DEG2RAD(0), 10, 11, 12, true);
+	    mrpt::poses::CPose3D(
+	        1.0, 2.0, 3.0, DEG2RAD(0.1), DEG2RAD(0), DEG2RAD(0)),
+	    10, 11, 12, true);
 	test_composePointJacob(
-		1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(0.1), DEG2RAD(0), 10, 11, 12, true);
+	    mrpt::poses::CPose3D(
+	        1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(0.1), DEG2RAD(0)),
+	    10, 11, 12, true);
 	test_composePointJacob(
-		1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0.1), 10, 11, 12, true);
+	    mrpt::poses::CPose3D(
+	        1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0.1)),
+	    10, 11, 12, true);
 }
 
 TEST_F(Pose3DTests, InvComposePointJacob)
 {
-	for (const auto& i : ptc)
+	for (const auto& p : ptc)
 	{
-		test_invComposePointJacob(
-			i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]), 10,
-			11, 12);
-		test_invComposePointJacob(
-			i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]), -5,
-			1, 2);
-		test_invComposePointJacob(
-			i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]), 5,
-			-1, 2);
-		test_invComposePointJacob(
-			i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]), 5, 1,
-			-2);
+		test_invComposePointJacob(p, 10, 11, 12);
+		test_invComposePointJacob(p, -5, 1, 2);
+		test_invComposePointJacob(p, 5, -1, 2);
+		test_invComposePointJacob(p, 5, 1, -2);
 	}
 }
 
 TEST_F(Pose3DTests, ComposePointJacob_se3)
 {
-	for (const auto& i : ptc)
+	for (const auto& p : ptc)
 	{
-		test_composePointJacob_se3(
-			CPose3D(
-				i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5])),
-			TPoint3D(0, 0, 0));
-		test_composePointJacob_se3(
-			CPose3D(
-				i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5])),
-			TPoint3D(10, 11, 12));
-		test_composePointJacob_se3(
-			CPose3D(
-				i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5])),
-			TPoint3D(-5.0, -15.0, 8.0));
+		test_composePointJacob_se3(p, TPoint3D(0, 0, 0));
+		test_composePointJacob_se3(p, TPoint3D(10, 11, 12));
+		test_composePointJacob_se3(p, TPoint3D(-5.0, -15.0, 8.0));
 	}
 }
 TEST_F(Pose3DTests, InvComposePointJacob_se3)
 {
-	for (const auto& i : ptc)
+	for (const auto& p : ptc)
 	{
-		test_invComposePointJacob_se3(
-			CPose3D(
-				i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5])),
-			TPoint3D(0, 0, 0));
-		test_invComposePointJacob_se3(
-			CPose3D(
-				i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5])),
-			TPoint3D(10, 11, 12));
-		test_invComposePointJacob_se3(
-			CPose3D(
-				i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5])),
-			TPoint3D(-5.0, -15.0, 8.0));
+		test_invComposePointJacob_se3(p, TPoint3D(0, 0, 0));
+		test_invComposePointJacob_se3(p, TPoint3D(10, 11, 12));
+		test_invComposePointJacob_se3(p, TPoint3D(-5.0, -15.0, 8.0));
 	}
 }
 
 TEST_F(Pose3DTests, ExpLnEqual)
 {
-	for (const auto& i : ptc)
-		test_ExpLnEqual(
-			i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]));
+	for (const auto& p : ptc) test_ExpLnEqual(p);
 }
 
 TEST_F(Pose3DTests, Jacob_dExpe_de_at_0) { check_jacob_expe_e_at_0(); }
 TEST_F(Pose3DTests, Jacob_dLnT_dT)
 {
-	check_jacob_LnT_T(0, 0, 0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0));
+	check_jacob_LnT_T(
+	    mrpt::poses::CPose3D(0, 0, 0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0)));
 	// JL NOTE:
 	//  This function cannot be properly tested numerically, since the logm()
 	//  implementation
@@ -1023,23 +937,16 @@ TEST_F(Pose3DTests, Jacob_dLnT_dT)
 
 TEST_F(Pose3DTests, Jacob_dexpeD_de)
 {
-	for (const auto& i : ptc)
-		test_Jacob_dexpeD_de(
-			i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]));
+	for (const auto& p : ptc) test_Jacob_dexpeD_de(p);
 }
 
 TEST_F(Pose3DTests, Jacob_dDexpe_de)
 {
-	for (const auto& i : ptc)
-		test_Jacob_dDexpe_de(
-			i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]));
+	for (const auto& p : ptc) test_Jacob_dDexpe_de(p);
 }
 
 TEST_F(Pose3DTests, Jacob_dAexpeD_de)
 {
-	for (const auto& i : ptc)
-		for (const auto& j : ptc)
-			test_Jacob_dAexpeD_de(
-				i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]),
-				j[0], j[1], j[2], DEG2RAD(j[3]), DEG2RAD(j[4]), DEG2RAD(j[5]));
+	for (const auto& p1 : ptc)
+		for (const auto& p2 : ptc) test_Jacob_dAexpeD_de(p1, p2);
 }
