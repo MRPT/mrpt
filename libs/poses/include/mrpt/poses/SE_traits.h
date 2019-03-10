@@ -12,6 +12,7 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/core/optional_ref.h>
 
 namespace mrpt::poses
 {
@@ -62,8 +63,7 @@ struct SE_traits<3>
 	/** Logarithm for pseudo_ln(). See section 10.3.11 of tech. report.
 	 * http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
 	 */
-	static void jacob_pseudo_ln(
-		const CPose3D& P, mrpt::math::CMatrixFixedNumeric<double, 6, 12>& J);
+	static mrpt::math::CMatrixDouble6_12 jacob_pseudo_ln(const CPose3D& P);
 
 	/** Return one or both of the following 6x6 Jacobians, useful in graph-slam
 	 * problems:
@@ -87,8 +87,9 @@ struct SE_traits<3>
 	 * linearized manifold for P1 and P2.
 	 */
 	static void jacobian_dDinvP1invP2_depsilon(
-		const CPose3D& Dinv, const CPose3D& P1, const CPose3D& P2,
-		matrix_VxV_t* df_de1, matrix_VxV_t* df_de2);
+	    const CPose3D& Dinv, const CPose3D& P1, const CPose3D& P2,
+	    mrpt::optional_ref<matrix_VxV_t> df_de1,
+	    mrpt::optional_ref<matrix_VxV_t> df_de2);
 
 };  // end SE_traits
 
@@ -150,8 +151,9 @@ struct SE_traits<2>
 	 * linearized manifold for P1 and P2.
 	 */
 	static void jacobian_dDinvP1invP2_depsilon(
-		const CPose2D& Dinv, const CPose2D& P1, const CPose2D& P2,
-		matrix_VxV_t* df_de1, matrix_VxV_t* df_de2);
+	    const CPose2D& Dinv, const CPose2D& P1, const CPose2D& P2,
+	    mrpt::optional_ref<matrix_VxV_t> df_de1,
+	    mrpt::optional_ref<matrix_VxV_t> df_de2);
 
 };  // end SE_traits
 

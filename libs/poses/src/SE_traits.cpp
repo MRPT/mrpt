@@ -42,8 +42,7 @@ void SE_traits<3>::jacobian_dP1DP2inv_depsilon(
 		P1DP2inv.getRotationMatrix();  // The rotation matrix.
 
 	// Common part: d_Ln(R)_dR:
-	CMatrixFixedNumeric<double, 3, 9> dLnRot_dRot(UNINITIALIZED_MATRIX);
-	CPose3D::ln_rot_jacob(R, dLnRot_dRot);
+	CMatrixFixedNumeric<double, 3, 9> dLnRot_dRot = CPose3D::ln_rot_jacob(R);
 
 	if (df_de1)
 	{
@@ -105,49 +104,45 @@ void SE_traits<3>::jacobian_dP1DP2inv_depsilon(
 
 void SE_traits<3>::jacobian_dDinvP1invP2_depsilon(
 	const CPose3D& Dinv, const CPose3D& P1, const CPose3D& P2,
-	matrix_VxV_t* df_de1, matrix_VxV_t* df_de2)
+    mrpt::optional_ref<matrix_VxV_t> df_de1,
+    mrpt::optional_ref<matrix_VxV_t> df_de2)
 {
 	// The rotation matrix of the overall error expression:
 	const CPose3D DinvP1invP2 = Dinv + (-P1) + P2;
-	//	const CMatrixDouble33& R = DinvP1invP2.getRotationMatrix();
 
 	// Common part: d_PseudoLn(T)_dT:
-	CMatrixFixedNumeric<double, 6, 12> dLnT_dT(UNINITIALIZED_MATRIX);
-	SE_traits<3>::jacob_pseudo_ln(DinvP1invP2, dLnT_dT);
+	const auto dLnT_dT = SE_traits<3>::jacob_pseudo_ln(DinvP1invP2);
 
 	// See section 10.3.10 of Tech. report:
 	// "A tutorial on SE(3) transformation parameterizations and on-manifold
 	// optimization"
 	if (df_de1)
 	{
-		matrix_VxV_t& J1 = *df_de1;
+		matrix_VxV_t& J1 = df_de1.value().get();
 
-		// right-bottom part = dLnRot_dRot * aux
-		// J1.block(3, 3, 3, 3) = (dLnRot_dRot * aux).eval();
+		const auto dP1e_de = CPose3D::jacob_dDexpe_de(P1);
+
+		J1 = dLnT_dT * dP1e_de;
 	}
 	if (df_de2)
 	{
-		// right-bottom part = dLnRot_dRot * aux
-		// J2.block(3, 3, 3, 3) = (dLnRot_dRot * aux).eval();
+		matrix_VxV_t& J2 = df_de2.value().get();
+		const auto dAe_de = CPose3D::jacob_dDexpe_de(DinvP1invP2);
+		J2 = dLnT_dT * dAe_de;
 	}
-
-	MRPT_TODO("Implement me!");
-	THROW_EXCEPTION("Implement me!");
 }
 
 /** Logarithm for pseudo_ln(). See section 10.3.11 of tech. report.
  * http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
  */
-void SE_traits<3>::jacob_pseudo_ln(
-	const CPose3D& P, mrpt::math::CMatrixFixedNumeric<double, 6, 12>& J)
+mrpt::math::CMatrixDouble6_12 SE_traits<3>::jacob_pseudo_ln(const CPose3D& P)
 {
+	mrpt::math::CMatrixDouble6_12 J;
 	J.setZero();
 	const CMatrixDouble33& R = P.getRotationMatrix();
-	mrpt::math::CMatrixFixedNumeric<double, 3, 9> Jrot;
-
-	CPose3D::ln_rot_jacob(R, Jrot);
-	J.block<3, 9>(0, 0) = Jrot;
+	J.block<3, 9>(0, 0) = CPose3D::ln_rot_jacob(R);
 	J(3, 9) = J(4, 10) = J(5, 11) = 1.0;
+	return J;
 }
 
 void SE_traits<2>::jacobian_dP1DP2inv_depsilon(
@@ -184,7 +179,9 @@ void SE_traits<2>::jacobian_dP1DP2inv_depsilon(
 
 void SE_traits<2>::jacobian_dDinvP1invP2_depsilon(
 	const CPose2D& Dinv, const CPose2D& P1, const CPose2D& P2,
-	matrix_VxV_t* df_de1, matrix_VxV_t* df_de2)
+    mrpt::optional_ref<matrix_VxV_t> df_de1,
+    mrpt::optional_ref<matrix_VxV_t> df_de2)
+
 {
 	using mrpt::math::TPoint2D;
 	const double phi1 = P1.phi();
@@ -200,29 +197,31 @@ void SE_traits<2>::jacobian_dDinvP1invP2_depsilon(
 
 	if (df_de1)
 	{
-		(*df_de1)(0, 0) = -ci;
-		(*df_de1)(0, 1) = -si;
-		(*df_de1)(0, 2) = -si * dt.x + ci * dt.y;
-		(*df_de1)(1, 0) = si;
-		(*df_de1)(1, 1) = -ci;
-		(*df_de1)(1, 2) = -ci * dt.x - si * dt.y;
-		(*df_de1)(2, 0) = 0;
-		(*df_de1)(2, 1) = 0;
-		(*df_de1)(2, 2) = -1;
-		(*df_de1) = K * (*df_de1);
+		auto& J1 = df_de1.value().get();
+		J1(0, 0) = -ci;
+		J1(0, 1) = -si;
+		J1(0, 2) = -si * dt.x + ci * dt.y;
+		J1(1, 0) = si;
+		J1(1, 1) = -ci;
+		J1(1, 2) = -ci * dt.x - si * dt.y;
+		J1(2, 0) = 0;
+		J1(2, 1) = 0;
+		J1(2, 2) = -1;
+		J1 = K * J1;
 	}
 
 	if (df_de2)
 	{
-		(*df_de2)(0, 0) = ci;
-		(*df_de2)(0, 1) = si;
-		(*df_de2)(0, 2) = 0;
-		(*df_de2)(1, 0) = -si;
-		(*df_de2)(1, 1) = ci;
-		(*df_de2)(1, 2) = 0;
-		(*df_de2)(2, 0) = 0;
-		(*df_de2)(2, 1) = 0;
-		(*df_de2)(2, 2) = 1;
-		(*df_de2) = K * (*df_de2);
+		auto& J2 = df_de2.value().get();
+		J2(0, 0) = ci;
+		J2(0, 1) = si;
+		J2(0, 2) = 0;
+		J2(1, 0) = -si;
+		J2(1, 1) = ci;
+		J2(1, 2) = 0;
+		J2(2, 0) = 0;
+		J2(2, 1) = 0;
+		J2(2, 2) = 1;
+		J2 = K * J2;
 	}
 }

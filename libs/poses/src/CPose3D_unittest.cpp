@@ -590,8 +590,7 @@ class Pose3DTests : public ::testing::Test
 	// Jacobian of Ln(T) wrt T
 	void check_jacob_LnT_T(const CPose3D& p)
 	{
-		CMatrixFixedNumeric<double, 6, 12> theor_jacob;
-		p.ln_jacob(theor_jacob);
+		const CMatrixFixedNumeric<double, 6, 12> theor_jacob = p.ln_jacob();
 
 		CMatrixDouble numJacobs;
 		{
@@ -633,8 +632,8 @@ class Pose3DTests : public ::testing::Test
 	// 10.3.3 in tech report
 	void test_Jacob_dexpeD_de(const CPose3D& p)
 	{
-		Eigen::Matrix<double, 12, 6> theor_jacob;
-		CPose3D::jacob_dexpeD_de(p, theor_jacob);
+		const mrpt::math::CMatrixDouble12_6 theor_jacob =
+		    CPose3D::jacob_dexpeD_de(p);
 
 		CMatrixDouble numJacobs;
 		{
@@ -675,8 +674,8 @@ class Pose3DTests : public ::testing::Test
 	// 10.3.4 in tech report
 	void test_Jacob_dDexpe_de(const CPose3D& p)
 	{
-		Eigen::Matrix<double, 12, 6> theor_jacob;
-		CPose3D::jacob_dDexpe_de(p, theor_jacob);
+		const mrpt::math::CMatrixDouble12_6 theor_jacob =
+		    CPose3D::jacob_dDexpe_de(p);
 
 		CMatrixDouble numJacobs;
 		{
@@ -724,8 +723,8 @@ class Pose3DTests : public ::testing::Test
 	// http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
 	void test_Jacob_dAexpeD_de(const CPose3D& A, const CPose3D& D)
 	{
-		Eigen::Matrix<double, 12, 6> theor_jacob;
-		CPose3D::jacob_dAexpeD_de(A, D, theor_jacob);
+		mrpt::math::CMatrixDouble12_6 theor_jacob =
+		    CPose3D::jacob_dAexpeD_de(A, D);
 
 		CMatrixDouble numJacobs;
 		{
