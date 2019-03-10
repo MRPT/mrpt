@@ -705,10 +705,17 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 	mrpt::math::CArrayDouble<3> ln_rotation() const;
 
 	/** The Jacobian d (e^eps * D) / d eps , with eps=increment in Lie Algebra.
-	 * \note Eq. 10.3.5 in tech report
+	 * \note Section 10.3.3 in tech report
 	 * http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
 	 */
 	static void jacob_dexpeD_de(
+		const CPose3D& D, Eigen::Matrix<double, 12, 6>& jacob);
+
+	/** The Jacobian d (D * e^eps) / d eps , with eps=increment in Lie Algebra.
+	 * \note Section 10.3.4 in tech report
+	 * http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
+	 */
+	static void jacob_dDexpe_de(
 		const CPose3D& D, Eigen::Matrix<double, 12, 6>& jacob);
 
 	/** The Jacobian d (A * e^eps * D) / d eps , with eps=increment in Lie

@@ -107,6 +107,30 @@ void SE_traits<3>::jacobian_dDinvP1invP2_depsilon(
 	const CPose3D& Dinv, const CPose3D& P1, const CPose3D& P2,
 	matrix_VxV_t* df_de1, matrix_VxV_t* df_de2)
 {
+	// The rotation matrix of the overall error expression:
+	const CPose3D DinvP1invP2 = Dinv + (-P1) + P2;
+	const CMatrixDouble33& R = DinvP1invP2.getRotationMatrix();
+
+	// Common part: d_Ln(R)_dR:
+	CMatrixFixedNumeric<double, 3, 9> dLnRot_dRot(UNINITIALIZED_MATRIX);
+	CPose3D::ln_rot_jacob(R, dLnRot_dRot);
+
+	// See section 10.3.10 of Tech. report:
+	// "A tutorial on SE(3) transformation parameterizations and on-manifold
+	// optimization"
+	if (df_de1)
+	{
+		matrix_VxV_t& J1 = *df_de1;
+
+		// right-bottom part = dLnRot_dRot * aux
+		// J1.block(3, 3, 3, 3) = (dLnRot_dRot * aux).eval();
+	}
+	if (df_de2)
+	{
+		// right-bottom part = dLnRot_dRot * aux
+		// J2.block(3, 3, 3, 3) = (dLnRot_dRot * aux).eval();
+	}
+
 	MRPT_TODO("Implement me!");
 	THROW_EXCEPTION("Implement me!");
 }

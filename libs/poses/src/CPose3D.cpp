@@ -1027,7 +1027,7 @@ void CPose3D::ln_rot_jacob(
 	M3x9(a, B, M);
 }
 
-// Eq. 10.3.5 in tech report
+// Section 10.3.3 in tech report
 // http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
 void CPose3D::jacob_dexpeD_de(
 	const CPose3D& D, Eigen::Matrix<double, 12, 6>& jacob)
@@ -1045,6 +1045,24 @@ void CPose3D::jacob_dexpeD_de(
 			jacob.block<3, 3>(9, 3);
 		mrpt::math::skew_symmetric3_neg(D.m_coords, trg_blc);
 	}
+}
+
+// Section 10.3.4 in tech report
+// http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
+void CPose3D::jacob_dDexpe_de(
+	const CPose3D& D, Eigen::Matrix<double, 12, 6>& jacob)
+{
+	jacob.setZero();
+	jacob.block<3, 3>(9, 0) = D.m_ROT;
+
+	jacob.block<3, 1>(3, 5) = -D.m_ROT.col(0);
+	jacob.block<3, 1>(6, 4) = D.m_ROT.col(0);
+
+	jacob.block<3, 1>(0, 5) = D.m_ROT.col(1);
+	jacob.block<3, 1>(6, 3) = -D.m_ROT.col(1);
+
+	jacob.block<3, 1>(0, 4) = -D.m_ROT.col(2);
+	jacob.block<3, 1>(3, 3) = D.m_ROT.col(2);
 }
 
 // Eq. 10.3.7 in tech report

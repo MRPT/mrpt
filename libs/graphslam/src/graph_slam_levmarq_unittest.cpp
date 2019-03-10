@@ -241,6 +241,6 @@ using GraphTester3DInf = GraphTester<CNetworkOfPoses3DInf>;
 MRPT_TODO("Re-enable tests after https://github.com/MRPT/mrpt/issues/770");
 
 GRAPHS_TESTS(GraphTester2D)
-// GRAPHS_TESTS(GraphTester3D)
+GRAPHS_TESTS(GraphTester3D)
 GRAPHS_TESTS(GraphTester2DInf)
 // GRAPHS_TESTS(GraphTester3DInf)

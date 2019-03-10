@@ -651,8 +651,6 @@ class Pose3DTests : public ::testing::Test
 			<< theor_jacob - numJacobs << endl;
 	}
 
-	// tech report:
-	//
 	static void func_jacob_expe_D(
 		const CArrayDouble<6>& eps, const CPose3D& D, CArrayDouble<12>& Y)
 	{
@@ -685,6 +683,52 @@ class Pose3DTests : public ::testing::Test
 				std::function<void(
 					const CArrayDouble<6>& eps, const CPose3D& D,
 					CArrayDouble<12>& Y)>(&func_jacob_expe_D),
+				x_incrs, p, numJacobs);
+		}
+
+		EXPECT_NEAR((numJacobs - theor_jacob).array().abs().maxCoeff(), 0, 1e-3)
+			<< "Pose: " << p << endl
+			<< "Pose matrix:\n"
+			<< p.getHomogeneousMatrixVal<CMatrixDouble44>() << "Num. Jacob:\n"
+			<< numJacobs << endl
+			<< "Theor. Jacob:\n"
+			<< theor_jacob << endl
+			<< "ERR:\n"
+			<< theor_jacob - numJacobs << endl;
+	}
+
+	static void func_jacob_D_expe(
+		const CArrayDouble<6>& eps, const CPose3D& D, CArrayDouble<12>& Y)
+	{
+		CPose3D incr;
+		CPose3D::exp(eps, incr);
+		const CPose3D expe_D = D + incr;
+		expe_D.getAs12Vector(Y);
+	}
+
+	// Test Jacobian: d D*exp(e) / d e
+	// 10.3.4 in tech report
+	void test_Jacob_dDexpe_de(
+		double x1, double y1, double z1, double yaw1, double pitch1,
+		double roll1)
+	{
+		const CPose3D p(x1, y1, z1, yaw1, pitch1, roll1);
+
+		Eigen::Matrix<double, 12, 6> theor_jacob;
+		CPose3D::jacob_dDexpe_de(p, theor_jacob);
+
+		CMatrixDouble numJacobs;
+		{
+			CArrayDouble<6> x_mean;
+			x_mean.setZero();
+
+			CArrayDouble<6> x_incrs;
+			x_incrs.assign(1e-6);
+			mrpt::math::estimateJacobian(
+				x_mean,
+				std::function<void(
+					const CArrayDouble<6>& eps, const CPose3D& D,
+					CArrayDouble<12>& Y)>(&func_jacob_D_expe),
 				x_incrs, p, numJacobs);
 		}
 
@@ -981,6 +1025,13 @@ TEST_F(Pose3DTests, Jacob_dexpeD_de)
 {
 	for (const auto& i : ptc)
 		test_Jacob_dexpeD_de(
+			i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]));
+}
+
+TEST_F(Pose3DTests, Jacob_dDexpe_de)
+{
+	for (const auto& i : ptc)
+		test_Jacob_dDexpe_de(
 			i[0], i[1], i[2], DEG2RAD(i[3]), DEG2RAD(i[4]), DEG2RAD(i[5]));
 }
 
