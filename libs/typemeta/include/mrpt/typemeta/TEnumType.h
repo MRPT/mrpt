@@ -10,6 +10,7 @@
 
 #include <map>
 #include <stdexcept>
+#include <string>
 
 namespace mrpt
 {

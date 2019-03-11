@@ -38,7 +38,7 @@ if(BUILD_mrpt-maps)
 	endif()
 
 	if (CMAKE_MRPT_HAS_VTK)
-        include(${VTK_USE_FILE})
+		include(${VTK_USE_FILE})
 		target_link_libraries(maps PRIVATE ${VTK_LIBRARIES})
 	endif()
 
@@ -52,4 +52,5 @@ if(BUILD_mrpt-maps)
 		target_link_libraries(maps PRIVATE ${OCTOMAP_LIBRARIES})
 	endif()
 
+	target_link_libraries(maps PRIVATE ${MRPT_OPENGL_LIBS})
 endif()

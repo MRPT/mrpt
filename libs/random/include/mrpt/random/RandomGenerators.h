@@ -43,8 +43,14 @@ class Generator_MT19937
 {
    public:
 	using result_type = uint32_t;
-	static result_type min() { return std::numeric_limits<result_type>::min(); }
-	static result_type max() { return std::numeric_limits<result_type>::max(); }
+	static constexpr result_type min()
+	{
+		return std::numeric_limits<result_type>::min();
+	}
+	static constexpr result_type max()
+	{
+		return std::numeric_limits<result_type>::max();
+	}
 
 	result_type operator()();
 
