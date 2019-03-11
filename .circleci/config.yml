@@ -60,7 +60,19 @@ jobs:
           command: bash travis/check_style.sh
           environment:
             TASK: lint_all
-
+  macos:
+    macos:
+      xcode: "10.2.0"
+    working_directory: /Users/distiller/project
+    steps:
+      - checkout
+      - run: brew install cmake
+      - run: brew install boost
+      - run: brew install nasm
+      - run: cmake -DBUILD_EXAMPLES=On -DBUILD_TESTING=On -DENABLE_COVERAGE=On -DDISABLE_PYTHON_BINDINGS=On -DEIGEN_USE_EMBEDDED_VERSION=On -H. -Bbuild      
+      - run: make -j4 -C build tests_build_all
+      - run: make -j4 CTEST_OUTPUT_ON_FAILURE=1 test -C build
+      - run: make -j4 -C build
 workflows:
   version: 2
   build:
@@ -70,3 +82,4 @@ workflows:
       - minimal
       - clang
       - clang-format-lint
+      - macos

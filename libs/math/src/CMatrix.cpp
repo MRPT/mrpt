@@ -25,7 +25,7 @@ uint8_t CMatrix::serializeGetVersion() const { return 0; }
 void CMatrix::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// First, write the number of rows and columns:
-	out << (uint32_t)rows() << (uint32_t)cols();
+	out << static_cast<uint32_t>(rows()) << static_cast<uint32_t>(cols());
 
 	if (rows() > 0 && cols() > 0)
 		for (Index i = 0; i < rows(); i++)
@@ -59,8 +59,8 @@ void CMatrix::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 void CMatrix::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
 {
 	SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
-	out["nrows"] = this->rows();
-	out["ncols"] = this->cols();
+	out["nrows"] = static_cast<uint32_t>(this->rows());
+	out["ncols"] = static_cast<uint32_t>(this->cols());
 	out["data"] = this->inMatlabFormat();
 }
 /** Serialize CSchemeArchiveBase derived object to CSerializable Object*/

@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <algorithm>  // max()
 #include <cmath>  // floor(),isnan(),...
 #include <stdexcept>
 

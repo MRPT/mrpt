@@ -15,6 +15,8 @@
 
 #include <mrpt/typemeta/xassert.h>
 
+#include <string>
+
 namespace mrpt
 {
 namespace typemeta

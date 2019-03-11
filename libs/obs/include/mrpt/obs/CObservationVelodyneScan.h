@@ -200,7 +200,7 @@ class CObservationVelodyneScan : public CObservation
 		/** The list of point indices (in x,y,z,...) generated for each laserID
 		 * (ring number). Generated only if `generatePointsForLaserID`=true in
 		 * `TGeneratePointCloudParameters`*/
-		std::vector<std::vector<std::size_t>> pointsForLaserID;
+		std::vector<std::vector<uint64_t>> pointsForLaserID;
 
 		inline std::size_t size() const { return x.size(); }
 		void reserve(std::size_t n);
