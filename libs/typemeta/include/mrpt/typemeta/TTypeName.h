@@ -11,12 +11,16 @@
 #include <cstdint>
 #include <mrpt/typemeta/static_string.h>
 
+#ifdef __APPLE__
+#include <memory>
+#else
 // frwd decl for TTypeName specialization:
 namespace std
 {
 template <class T>
 class shared_ptr;
 }
+#endif
 
 namespace mrpt
 {

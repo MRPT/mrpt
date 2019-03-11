@@ -669,7 +669,7 @@ int mrpt::system::executeCommand(
 	stringstream sout;
 	int exit_code = -1;
 
-#ifdef MRPT_OS_LINUX
+#ifndef _WIN32
 	// Run Popen
 	FILE* in;
 	char buff[512];
