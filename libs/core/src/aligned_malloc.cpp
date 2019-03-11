@@ -24,6 +24,12 @@ void* mrpt::aligned_malloc(size_t size, size_t alignment)
 	if ((size % alignment) != 0) size = ((size / alignment) + 1) * alignment;
 #ifdef _MSC_VER
 	return _aligned_malloc(size, alignment);
+#elif __APPLE__
+	void* p;
+	if (::posix_memalign(&p, alignment, size) != 0) {
+		p = 0;
+	}
+	return p;
 #else
 	return ::aligned_alloc(alignment, size);
 #endif
