@@ -12,6 +12,7 @@
 #include <mrpt/core/common.h>  // remove MSVC warnings
 #include <array>
 #include <stdexcept>
+#include <string_view>
 
 namespace mrpt::containers
 {
