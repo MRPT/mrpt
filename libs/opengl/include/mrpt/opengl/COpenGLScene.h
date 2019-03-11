@@ -229,19 +229,6 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 		MRPT_END
 	}
 
-	/** Recursive depth-first visit all objects in all viewports of the scene,
-	 * calling the user-supplied function
-	 *  The passed function must accept a first argument of type "const
-	 * mrpt::opengl::CRenderizable::Ptr &"
-	 *  and a second one of type EXTRA_PARAM
-	 */
-	template <typename FUNCTOR, typename EXTRA_PARAM>
-	inline void visitAllObjects(
-		FUNCTOR functor, const EXTRA_PARAM& userParam) const
-	{
-		visitAllObjects(std::bind2nd(functor, userParam));
-	}
-
    protected:
 	bool m_followCamera{false};
 
