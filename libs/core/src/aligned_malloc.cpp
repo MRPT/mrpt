@@ -26,7 +26,8 @@ void* mrpt::aligned_malloc(size_t size, size_t alignment)
 	return _aligned_malloc(size, alignment);
 #elif __APPLE__
 	void* p;
-	if (::posix_memalign(&p, alignment, size) != 0) {
+	if (::posix_memalign(&p, alignment, size) != 0)
+	{
 		p = 0;
 	}
 	return p;
