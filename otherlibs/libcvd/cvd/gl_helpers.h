@@ -18,7 +18,7 @@
 #include <windows.h>
 #endif
 
-#ifdef _OSX
+#ifdef __APPLE__
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 #else

@@ -46,12 +46,7 @@ void mrpt::system::changeCurrentThreadPriority(TThreadPriority priority)
 	// TThreadPriority is defined to agree with numbers expected by Win32 API:
 	SetThreadPriority(GetCurrentThread(), priority);
 #else
-	const pthread_t tid =
-#ifdef MRPT_OS_APPLE
-		reinterpret_cast<long unsigned int>(pthread_self());
-#else
-		pthread_self();
-#endif
+	const pthread_t tid = pthread_self();
 
 	int ret, policy;
 	struct sched_param param
