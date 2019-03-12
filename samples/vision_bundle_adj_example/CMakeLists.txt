@@ -48,7 +48,7 @@ endif()
 
 # Add the required libraries for linking:
 foreach(dep vision-lgpl;gui)
-	target_link_libraries(${sampleName} mrpt-${dep})
+	target_link_libraries(${sampleName} mrpt::${dep})
 endforeach()
 
 # Set optimized building:
