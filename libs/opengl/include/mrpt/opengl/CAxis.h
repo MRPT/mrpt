@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <array>
 
 namespace mrpt::opengl
 {
@@ -34,10 +35,10 @@ class CAxis : public CRenderizableDisplayList
 	float m_frequency;
 	float m_lineWidth;
 	/** draw marks for X,Y,Z */
-	bool m_marks[3];
+	std::array<bool, 3> m_marks;
 	float m_textScale{0.25f};
 	float m_textRot[3][3];  // {x,y,z},{yaw,pitch,roll}
-	float m_markLen{0.07};
+	float m_markLen{0.07f};
 
    public:
 	void setAxisLimits(
