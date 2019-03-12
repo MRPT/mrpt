@@ -37,7 +37,7 @@ CAxis::CAxis(
 	  m_lineWidth(lineWidth)
 
 {
-	for (bool& m_mark : m_marks) m_mark = marks;
+	m_marks.fill(marks);
 
 	// x:180, 0, 90
 	m_textRot[0][0] = 180.f;
@@ -198,7 +198,7 @@ void CAxis::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			{
 				bool v;
 				in >> v;
-				for (bool& m_mark : m_marks) m_mark = v;
+				m_marks.fill(v);
 				m_textScale = 0.25f;
 			}
 			if (version >= 2) in >> m_markLen;
@@ -241,7 +241,7 @@ void CAxis::setLineWidth(float w)
 float CAxis::getLineWidth() const { return m_lineWidth; }
 void CAxis::enableTickMarks(bool v)
 {
-	for (bool& m_mark : m_marks) m_mark = v;
+	m_marks.fill(v);
 	CRenderizableDisplayList::notifyChange();
 }
 void CAxis::enableTickMarks(bool show_x, bool show_y, bool show_z)
