@@ -42,7 +42,7 @@ void thread_server()
 			mrpt::system::LVL_ERROR
 #endif
 		);
-		std::unique_ptr<CClientTCPSocket> client = server.accept(2000);
+		std::unique_ptr<CClientTCPSocket> client = server.accept(5000);
 
 		if (client)
 		{
@@ -56,7 +56,7 @@ void thread_server()
 
 			client->sendMessage(msg);
 
-			std::this_thread::sleep_for(50ms);
+			std::this_thread::sleep_for(2000ms);
 		}
 
 #ifdef SOCKET_TEST_VERBOSE
@@ -93,9 +93,9 @@ void thread_client()
 #ifdef SOCKET_TEST_VERBOSE
 		printf("[Client] Connected. Waiting for a message...\n");
 #endif
-		//		cout << "pending: " << sock.getReadPendingBytes() << endl;
-		//		std::this_thread::sleep_for(4000ms);
-		//		cout << "pending: " << sock.getReadPendingBytes() << endl;
+		// cout << "pending: " << sock.getReadPendingBytes() << endl;
+		// std::this_thread::sleep_for(500ms);
+		// cout << "pending: " << sock.getReadPendingBytes() << endl;
 
 		CMessage msg;
 		bool ok = sock.receiveMessage(msg, 2000, 2000);
@@ -136,7 +136,6 @@ void thread_client()
 	catch (...)
 	{
 		cerr << "[thread_client] Runtime error!" << endl;
-		;
 	}
 }
 
@@ -148,7 +147,7 @@ void SocketsTest()
 	using namespace std::chrono_literals;
 
 	std::thread(thread_server).detach();
-	std::this_thread::sleep_for(100ms);
+	std::this_thread::sleep_for(20ms);
 
 	std::thread(thread_client).detach();
 	std::this_thread::sleep_for(1000ms);
