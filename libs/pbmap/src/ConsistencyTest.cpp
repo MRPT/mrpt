@@ -530,7 +530,7 @@ Eigen::Matrix4f ConsistencyTest::getRTwithModel(
 		_updatedSE3(4) = updatedSE3(4);
 		_updatedSE3(5) = updatedSE3(5);
 		mrpt::math::CMatrixDouble44 CMatUpdate;
-		mrpt::poses::CPose3D::exp(_updatedSE3).getHomogeneousMatrix(CMatUpdate);
+		mrpt::poses::Lie::SE<3>::exp(_updatedSE3).getHomogeneousMatrix(CMatUpdate);
 		Eigen::Matrix4f updatePose;
 		updatePose << CMatUpdate(0, 0), CMatUpdate(0, 1), CMatUpdate(0, 2),
 			CMatUpdate(0, 3), CMatUpdate(1, 0), CMatUpdate(1, 1),

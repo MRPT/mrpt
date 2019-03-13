@@ -10,7 +10,7 @@
 
 #include <mrpt/system/datetime.h>
 #include <mrpt/core/aligned_std_map.h>
-#include <mrpt/poses/SE_traits.h>
+#include <mrpt/poses/Lie/SE.h>
 #include <string>
 #include <map>
 
@@ -51,10 +51,10 @@ class FrameTransformerInterface
 {
    public:
 	/** This will be mapped to CPose2D (DIM=2) or CPose3D (DIM=3) */
-	using pose_t = typename SE_traits<DIM>::pose_t;
+	using pose_t = typename Lie::SE<DIM>::type;
 	/** This will be mapped to mrpt::math::TPose2D (DIM=2) or
 	 * mrpt::math::TPose3D (DIM=3) */
-	using lightweight_pose_t = typename SE_traits<DIM>::lightweight_pose_t;
+	using light_type = typename Lie::SE<DIM>::light_type;
 
 	FrameTransformerInterface();
 	virtual ~FrameTransformerInterface();
@@ -73,7 +73,7 @@ class FrameTransformerInterface
 	 */
 	virtual FrameLookUpStatus lookupTransform(
 		const std::string& target_frame, const std::string& source_frame,
-		lightweight_pose_t& child_wrt_parent,
+	    light_type& child_wrt_parent,
 		const mrpt::system::TTimeStamp query_time = INVALID_TIMESTAMP,
 		/** Timeout */
 		const double timeout_secs = .0) = 0;
@@ -103,7 +103,7 @@ class FrameTransformer : public FrameTransformerInterface<DIM>
 	// See base docs
 	FrameLookUpStatus lookupTransform(
 		const std::string& target_frame, const std::string& source_frame,
-		typename base_t::lightweight_pose_t& child_wrt_parent,
+	    typename base_t::light_type& child_wrt_parent,
 		const mrpt::system::TTimeStamp query_time = INVALID_TIMESTAMP,
 		const double timeout_secs = .0) override;
 
@@ -115,7 +115,7 @@ class FrameTransformer : public FrameTransformerInterface<DIM>
 		/** Timeout */
 		const double timeout_secs = .0)
 	{
-		typename base_t::lightweight_pose_t p;
+		typename base_t::light_type p;
 		FrameLookUpStatus ret = lookupTransform(
 			target_frame, source_frame, p, query_time, timeout_secs);
 		child_wrt_parent = typename base_t::pose_t(p);

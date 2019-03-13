@@ -10,6 +10,7 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPoint3D.h>
+#include <mrpt/poses/Lie/SE.h>
 #include <mrpt/math/num_jacobian.h>
 #include <CTraitsTest.h>
 #include <gtest/gtest.h>
@@ -344,7 +345,7 @@ class Pose3DTests : public ::testing::Test
 
 	void test_ExpLnEqual(const CPose3D& p1)
 	{
-		const CPose3D p2 = CPose3D::exp(p1.ln());
+		const CPose3D p2 = Lie::SE<3>::exp(Lie::SE<3>::log(p1));
 		EXPECT_NEAR(
 			(p1.getAsVectorVal() - p2.getAsVectorVal()).array().abs().sum(), 0,
 			1e-5)
@@ -431,7 +432,7 @@ class Pose3DTests : public ::testing::Test
 	static void func_compose_point_se3(
 		const CArrayDouble<6>& x, const CArrayDouble<3>& P, CArrayDouble<3>& Y)
 	{
-		CPose3D q = CPose3D::exp(x);
+		CPose3D q = Lie::SE<3>::exp(x);
 		const CPoint3D p(P[0], P[1], P[2]);
 		const CPoint3D pp = q + p;
 		for (int i = 0; i < 3; i++) Y[i] = pp[i];
@@ -440,7 +441,7 @@ class Pose3DTests : public ::testing::Test
 	static void func_invcompose_point_se3(
 		const CArrayDouble<6>& x, const CArrayDouble<3>& P, CArrayDouble<3>& Y)
 	{
-		CPose3D q = CPose3D::exp(x);
+		CPose3D q = Lie::SE<3>::exp(x);
 		const CPoint3D p(P[0], P[1], P[2]);
 		const CPoint3D pp = p - q;
 		for (int i = 0; i < 3; i++) Y[i] = pp[i];
@@ -526,7 +527,7 @@ class Pose3DTests : public ::testing::Test
 		const CArrayDouble<6>& x, const double& dummy, CArrayDouble<12>& Y)
 	{
 		MRPT_UNUSED_PARAM(dummy);
-		const CPose3D p = CPose3D::exp(x);
+		const CPose3D p = Lie::SE<3>::exp(x);
 		// const CMatrixDouble44 R =
 		// p.getHomogeneousMatrixVal<CMatrixDouble44>();
 		p.getAs12Vector(Y);
@@ -584,13 +585,13 @@ class Pose3DTests : public ::testing::Test
 		R = Rsvd.matrixU() * Rsvd.matrixV().transpose();
 		p.setRotationMatrix(R);
 
-		Y = p.ln();
+		Y = Lie::SE<3>::log(p);
 	}
 
 	// Jacobian of Ln(T) wrt T
 	void check_jacob_LnT_T(const CPose3D& p)
 	{
-		const CMatrixFixedNumeric<double, 6, 12> theor_jacob = p.ln_jacob();
+		const auto theor_jacob = Lie::SE<3>::jacob_dlogv_dv(p);
 
 		CMatrixDouble numJacobs;
 		{
@@ -622,8 +623,7 @@ class Pose3DTests : public ::testing::Test
 	static void func_jacob_expe_D(
 		const CArrayDouble<6>& eps, const CPose3D& D, CArrayDouble<12>& Y)
 	{
-		CPose3D incr;
-		CPose3D::exp(eps, incr);
+		const CPose3D incr = Lie::SE<3>::exp(eps);
 		const CPose3D expe_D = incr + D;
 		expe_D.getAs12Vector(Y);
 	}
@@ -632,8 +632,7 @@ class Pose3DTests : public ::testing::Test
 	// 10.3.3 in tech report
 	void test_Jacob_dexpeD_de(const CPose3D& p)
 	{
-		const mrpt::math::CMatrixDouble12_6 theor_jacob =
-		    CPose3D::jacob_dexpeD_de(p);
+		const auto theor_jacob = Lie::SE<3>::jacob_dexpeD_de(p);
 
 		CMatrixDouble numJacobs;
 		{
@@ -664,8 +663,7 @@ class Pose3DTests : public ::testing::Test
 	static void func_jacob_D_expe(
 		const CArrayDouble<6>& eps, const CPose3D& D, CArrayDouble<12>& Y)
 	{
-		CPose3D incr;
-		CPose3D::exp(eps, incr);
+		const CPose3D incr = Lie::SE<3>::exp(eps);
 		const CPose3D expe_D = D + incr;
 		expe_D.getAs12Vector(Y);
 	}
@@ -674,8 +672,7 @@ class Pose3DTests : public ::testing::Test
 	// 10.3.4 in tech report
 	void test_Jacob_dDexpe_de(const CPose3D& p)
 	{
-		const mrpt::math::CMatrixDouble12_6 theor_jacob =
-		    CPose3D::jacob_dDexpe_de(p);
+		const auto theor_jacob = Lie::SE<3>::jacob_dDexpe_de(p);
 
 		CMatrixDouble numJacobs;
 		{
@@ -712,8 +709,7 @@ class Pose3DTests : public ::testing::Test
 		const CArrayDouble<6>& eps, const TParams_func_jacob_Aexpe_D& params,
 		CArrayDouble<12>& Y)
 	{
-		CPose3D incr;
-		CPose3D::exp(eps, incr);
+		const CPose3D incr = Lie::SE<3>::exp(eps);
 		const CPose3D res = params.A + incr + params.D;
 		res.getAs12Vector(Y);
 	}
@@ -723,8 +719,7 @@ class Pose3DTests : public ::testing::Test
 	// http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
 	void test_Jacob_dAexpeD_de(const CPose3D& A, const CPose3D& D)
 	{
-		mrpt::math::CMatrixDouble12_6 theor_jacob =
-		    CPose3D::jacob_dAexpeD_de(A, D);
+		const auto theor_jacob = Lie::SE<3>::jacob_dAexpeD_de(A, D);
 
 		CMatrixDouble numJacobs;
 		{

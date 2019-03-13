@@ -1,0 +1,183 @@
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          https://www.mrpt.org/                         |
+   |                                                                        |
+   | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
+   | See: https://www.mrpt.org/Authors - All rights reserved.               |
+   | Released under BSD License. See: https://www.mrpt.org/License          |
+   +------------------------------------------------------------------------+ */
+#pragma once
+
+#include <mrpt/poses/poses_frwds.h>
+#include <mrpt/math/CArrayNumeric.h>
+#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/core/optional_ref.h>
+
+/** \defgroup mrpt_poses_lie_grp Lie Algebra methods for SO(2),SO(3),SE(2),SE(3)
+ * \ingroup poses_grp */
+
+namespace mrpt::poses::Lie
+{
+/** \addtogroup mrpt_poses_lie_grp
+ *  @{ */
+
+/** Traits for SE(n), rigid-body transformations in R^n space.
+ * \ingroup mrpt_poses_lie_grp
+ */
+template <unsigned int n>
+struct SE;
+
+/** Traits for SE(3), rigid-body transformations in R^3 space.
+ * \ingroup mrpt_poses_lie_grp
+ */
+template <>
+struct SE<3>
+{
+	constexpr static size_t DOFs = 6;
+	using tangent_vector = mrpt::math::CArrayDouble<DOFs>;
+	using type = CPose3D;
+	using light_type = mrpt::math::TPose3D;
+
+	/** Type for Jacobian: tangent space -> SO(n) matrix */
+	using tang2mat_jacob = mrpt::math::CMatrixDouble12_6;
+
+	/** Type for Jacobian: SO(n) matrix -> tangent space */
+	using mat2tang_jacob = mrpt::math::CMatrixDouble6_12;
+
+	/** Type for Jacobians between SO(n) transformations */
+	using matrix_VxV = mrpt::math::CMatrixDouble66;
+
+	/** Retraction to SE(3), a **pseudo-exponential** map \f$ x \rightarrow
+	 * PseudoExp(x^\wedge) \f$ and its Jacobian.
+	 * - Input: 6-len vector in Lie algebra se(3) [x,y,z, rx,ry,rz]
+	 * - Output: translation and rotation in SE(3) as CPose3D
+	 * Note that this method implements retraction via a **pseudo-exponential**,
+	 * where only the rotational part undergoes a real matrix exponential,
+	 * while the translation is left unmodified. This is done for computational
+	 * efficiency, and does not change the results of optimizations as long
+	 * as the corresponding local coordinates (pseudo-logarithm) are used as
+	 * well.
+	 *
+	 * See section 9.4.2 in \cite blanco_se3_tutorial
+	 */
+	static type exp(const tangent_vector& x);
+
+	/** SE(3) **pseudo-logarithm** map \f$ \mathbf{R} \rightarrow
+	 * \log(\mathbf{R}^\vee)\f$
+	 * - Input: translation and rotation in SE(3) as CPose3D
+	 * - Output: 6-len vector in Lie algebra se(3) [x,y,z, rx,ry,rz]
+	 *
+	 * See exp() for the explanation about the "pseudo" name.
+	 * For the formulas, see section 9.4.2 in \cite blanco_se3_tutorial
+	 */
+	static tangent_vector log(const type& P);
+
+	/** Jacobian for the pseudo-exponential exp().
+	 * See 10.3.1 in \cite blanco_se3_tutorial
+	 *
+	 * - Input: 6-len vector in Lie algebra se(3)
+	 * - Jacobian: Jacobian of the 3x4 matrix (stacked as a column major
+	 * 12-vector) wrt the vector in the tangent space.
+	 */
+	static tang2mat_jacob jacob_dexpe_de(const tangent_vector& x);
+
+	/** Jacobian for the pseudo-logarithm log()
+	 * See 10.3.11 in \cite blanco_se3_tutorial
+	 *
+	 * - Input: a SE(3) pose as a CPose3D object
+	 * - Jacobian: Jacobian of the tangent space vector wrt the 3x4 matrix
+	 * elements (stacked as a column major 12-vector).
+	 */
+	static mat2tang_jacob jacob_dlogv_dv(const type& P);
+
+	/** Jacobian d (e^eps * D) / d eps , with eps=increment in Lie Algebra.
+	 * \note Section 10.3.3 in \cite blanco_se3_tutorial
+	 */
+	static mrpt::math::CMatrixDouble12_6 jacob_dexpeD_de(const CPose3D& D);
+
+	/** Jacobian d (D * e^eps) / d eps , with eps=increment in Lie Algebra.
+	 * \note Section 10.3.4 in \cite blanco_se3_tutorial
+	 */
+	static mrpt::math::CMatrixDouble12_6 jacob_dDexpe_de(const CPose3D& D);
+
+	/** Jacobian d (A * e^eps * D) / d eps , with eps=increment in Lie
+	 * Algebra.
+	 * \note Eq. 10.3.7 in \cite blanco_se3_tutorial
+	 */
+	static mrpt::math::CMatrixDouble12_6 jacob_dAexpeD_de(
+	    const CPose3D& A, const CPose3D& D);
+
+	/** One or both of the following 6x6 Jacobians, useful in graph-slam
+	 * problems:
+	 * \f[  \frac{\partial pseudoLn(P_1 D P_2^{-1}) }{\partial \epsilon_1} \f]
+	 * \f[  \frac{\partial pseudoLn(P_1 D P_2^{-1}) }{\partial \epsilon_2} \f]
+	 * With \f$ \epsilon_1 \f$ and \f$ \epsilon_2 \f$ increments in the
+	 * linearized manifold for P1 and P2.
+	 */
+	static void jacob_dP1DP2inv_de1e2(
+	    const type& P1DP2inv,
+	    mrpt::optional_ref<matrix_VxV> df_de1 = std::nullopt,
+	    mrpt::optional_ref<matrix_VxV> df_de2 = std::nullopt);
+
+	/** Return one or both of the following 6x6 Jacobians, useful in
+	 * graph-slam problems:
+	 * \f[ \frac{\partial pseudoLn(D^{-1} P_1^{-1} P_2}{\partial \epsilon_1} \f]
+	 * \f[  \frac{\partial pseudoLn(D^{-1} P_1^{-1} P_2}{\partial \epsilon_1}\f]
+	 * With \f$ \epsilon_1 \f$ and \f$ \epsilon_2 \f$ increments in the
+	 * linearized manifold for P1 and P2.
+	 * \note Section 10.3.10 in \cite blanco_se3_tutorial
+	 */
+	static void jacob_dDinvP1invP2_de1e2(
+	    const type& Dinv, const type& P1, const type& P2,
+	    mrpt::optional_ref<matrix_VxV> df_de1 = std::nullopt,
+	    mrpt::optional_ref<matrix_VxV> df_de2 = std::nullopt);
+};
+
+/** Traits for SE(2), rigid-body transformations in R^2 space.
+ * \ingroup mrpt_poses_lie_grp
+ */
+template <>
+struct SE<2>
+{
+	constexpr static size_t DOFs = 3;
+	using tangent_vector = mrpt::math::CArrayDouble<DOFs>;
+	using type = CPose2D;
+	using light_type = mrpt::math::TPose2D;
+
+	/** Type for Jacobians between SO(n) transformations */
+	using matrix_VxV = mrpt::math::CMatrixDouble33;
+
+	/** Exponential map in SE(2)
+	 */
+	static type exp(const tangent_vector& x);
+
+	/** Logarithm map in SE(2), output = [X,Y, Ln(ROT)] */
+	static tangent_vector log(const type& P);
+
+	/** One or both of the following 6x6 Jacobians, useful in graph-slam
+	 * problems:
+	 * \f[  \frac{\partial pseudoLn(P_1 D P_2^{-1}) }{\partial \epsilon_1} \f]
+	 * \f[  \frac{\partial pseudoLn(P_1 D P_2^{-1}) }{\partial \epsilon_2} \f]
+	 * With \f$ \epsilon_1 \f$ and \f$ \epsilon_2 \f$ increments in the
+	 * linearized manifold for P1 and P2.
+	 */
+	static void jacob_dP1DP2inv_de1e2(
+	    const type& P1DP2inv,
+	    mrpt::optional_ref<matrix_VxV> df_de1 = std::nullopt,
+	    mrpt::optional_ref<matrix_VxV> df_de2 = std::nullopt);
+
+	/** Return one or both of the following 6x6 Jacobians, useful in
+	 * graph-slam problems:
+	 * \f[ \frac{\partial pseudoLn(D^{-1} P_1^{-1} P_2}{\partial \epsilon_1} \f]
+	 * \f[  \frac{\partial pseudoLn(D^{-1} P_1^{-1} P_2}{\partial \epsilon_1}\f]
+	 * With \f$ \epsilon_1 \f$ and \f$ \epsilon_2 \f$ increments in the
+	 * linearized manifold for P1 and P2.
+	 */
+	static void jacob_dDinvP1invP2_de1e2(
+	    const type& Dinv, const type& P1, const type& P2,
+	    mrpt::optional_ref<matrix_VxV> df_de1 = std::nullopt,
+	    mrpt::optional_ref<matrix_VxV> df_de2 = std::nullopt);
+};
+
+}  // namespace mrpt::poses::Lie

@@ -18,7 +18,6 @@ class CPoint3D;
 class CPose2D;
 class CPose3D;
 class CPose3DQuat;
-class CPose3DRotVec;
 
 // PDFs:
 class CPointPDF;

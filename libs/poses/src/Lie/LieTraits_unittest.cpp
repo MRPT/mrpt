@@ -10,7 +10,7 @@
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/SE_traits.h>
+#include <mrpt/poses/Lie/SE.h>
 #include <mrpt/math/num_jacobian.h>
 #include <gtest/gtest.h>
 
@@ -36,27 +36,26 @@ class SE_traits_tests : public ::testing::Test
    protected:
 	void SetUp() override {}
 	void TearDown() override {}
-	using SE_TYPE = mrpt::poses::SE_traits<POSE_TYPE::rotation_dimensions>;
+	using SE_TYPE = mrpt::poses::Lie::SE<POSE_TYPE::rotation_dimensions>;
 
 	struct TParams
 	{
-		typename SE_TYPE::pose_t P1, D, P2;
+		typename SE_TYPE::type P1, D, P2;
 	};
 
 	static void func_numeric_P1DP2inv(
-		const CArrayDouble<2 * SE_TYPE::VECTOR_SIZE>& x, const TParams& params,
-		CArrayDouble<SE_TYPE::VECTOR_SIZE>& Y)
+		const CArrayDouble<2 * SE_TYPE::DOFs>& x, const TParams& params,
+		CArrayDouble<SE_TYPE::DOFs>& Y)
 	{
-		typename SE_TYPE::array_t eps1, eps2;
-		for (size_t i = 0; i < SE_TYPE::VECTOR_SIZE; i++)
+		typename SE_TYPE::tangent_vector eps1, eps2;
+		for (size_t i = 0; i < SE_TYPE::DOFs; i++)
 		{
 			eps1[i] = x[0 + i];
-			eps2[i] = x[SE_TYPE::VECTOR_SIZE + i];
+			eps2[i] = x[SE_TYPE::DOFs + i];
 		}
 
-		POSE_TYPE incr1, incr2;
-		SE_TYPE::exp(eps1, incr1);
-		SE_TYPE::exp(eps2, incr2);
+		const POSE_TYPE incr1 = SE_TYPE::exp(eps1);
+		const POSE_TYPE incr2 = SE_TYPE::exp(eps2);
 
 		const POSE_TYPE P1 = incr1 + params.P1;
 		const POSE_TYPE P2 = incr2 + params.P2;
@@ -71,7 +70,7 @@ class SE_traits_tests : public ::testing::Test
 		const POSE_TYPE P1DP2inv(P1DP2inv_);
 
 		// Pseudo-logarithm:
-		SE_TYPE::pseudo_ln(P1DP2inv, Y);
+		Y = SE_TYPE::log(P1DP2inv);
 	}
 
 	void test_jacobs_P1DP2inv(
@@ -88,11 +87,11 @@ class SE_traits_tests : public ::testing::Test
 		const CPose3D P1DP2inv_(CMatrixDouble44((P1hm * Pdhm) * HM_P2inv));
 		const POSE_TYPE P1DP2inv(P1DP2inv_);  // Convert to 2D if needed
 
-		static const int DIMS = SE_TYPE::VECTOR_SIZE;
+		static const int DIMS = SE_TYPE::DOFs;
 
 		// Theoretical results:
 		CMatrixFixedNumeric<double, DIMS, DIMS> J1, J2;
-		SE_TYPE::jacobian_dP1DP2inv_depsilon(P1DP2inv, &J1, &J2);
+		SE_TYPE::jacob_dP1DP2inv_de1e2(P1DP2inv, J1, J2);
 
 		// Numerical approx:
 		CMatrixFixedNumeric<double, DIMS, DIMS> num_J1, num_J2;
@@ -111,9 +110,8 @@ class SE_traits_tests : public ::testing::Test
 			mrpt::math::estimateJacobian(
 				x_mean,
 				std::function<void(
-					const CArrayDouble<2 * SE_TYPE::VECTOR_SIZE>& x,
-					const TParams& params,
-			        CArrayDouble<SE_TYPE::VECTOR_SIZE>& Y)>(
+					const CArrayDouble<2 * SE_TYPE::DOFs>& x,
+			        const TParams& params, CArrayDouble<SE_TYPE::DOFs>& Y)>(
 			        &func_numeric_P1DP2inv),
 				x_incrs, params, numJacobs);
 
@@ -147,19 +145,18 @@ class SE_traits_tests : public ::testing::Test
 	}
 
 	static void func_numeric_DinvP1InvP2(
-	    const CArrayDouble<2 * SE_TYPE::VECTOR_SIZE>& x, const TParams& params,
-	    CArrayDouble<SE_TYPE::VECTOR_SIZE>& Y)
+	    const CArrayDouble<2 * SE_TYPE::DOFs>& x, const TParams& params,
+	    CArrayDouble<SE_TYPE::DOFs>& Y)
 	{
-		typename SE_TYPE::array_t eps1, eps2;
-		for (size_t i = 0; i < SE_TYPE::VECTOR_SIZE; i++)
+		typename SE_TYPE::tangent_vector eps1, eps2;
+		for (size_t i = 0; i < SE_TYPE::DOFs; i++)
 		{
 			eps1[i] = x[0 + i];
-			eps2[i] = x[SE_TYPE::VECTOR_SIZE + i];
+			eps2[i] = x[SE_TYPE::DOFs + i];
 		}
 
-		POSE_TYPE incr1, incr2;
-		SE_TYPE::exp(eps1, incr1);
-		SE_TYPE::exp(eps2, incr2);
+		const POSE_TYPE incr1 = SE_TYPE::exp(eps1);
+		const POSE_TYPE incr2 = SE_TYPE::exp(eps2);
 
 		const POSE_TYPE P1 = params.P1 + incr1;
 		const POSE_TYPE P2 = params.P2 + incr2;
@@ -175,7 +172,7 @@ class SE_traits_tests : public ::testing::Test
 		const POSE_TYPE DinvP1invP2(DinvP1invP2_);
 
 		// Pseudo-logarithm:
-		SE_TYPE::pseudo_ln(DinvP1invP2, Y);
+		Y = SE_TYPE::log(DinvP1invP2);
 	}
 
 	void test_jacobs_DinvP1InvP2(
@@ -186,11 +183,11 @@ class SE_traits_tests : public ::testing::Test
 		const POSE_TYPE P2(P2_);
 		const POSE_TYPE Pdinv = -Pd;
 
-		static const int DIMS = SE_TYPE::VECTOR_SIZE;
+		static const int DIMS = SE_TYPE::DOFs;
 
 		// Theoretical results:
 		CMatrixFixedNumeric<double, DIMS, DIMS> J1, J2;
-		SE_TYPE::jacobian_dDinvP1invP2_depsilon(Pdinv, P1, P2, J1, J2);
+		SE_TYPE::jacob_dDinvP1invP2_de1e2(Pdinv, P1, P2, J1, J2);
 
 		// Numerical approx:
 		CMatrixFixedNumeric<double, DIMS, DIMS> num_J1, num_J2;
@@ -209,9 +206,8 @@ class SE_traits_tests : public ::testing::Test
 			mrpt::math::estimateJacobian(
 			    x_mean,
 			    std::function<void(
-			        const CArrayDouble<2 * SE_TYPE::VECTOR_SIZE>& x,
-			        const TParams& params,
-			        CArrayDouble<SE_TYPE::VECTOR_SIZE>& Y)>(
+			        const CArrayDouble<2 * SE_TYPE::DOFs>& x,
+			        const TParams& params, CArrayDouble<SE_TYPE::DOFs>& Y)>(
 			        &func_numeric_DinvP1InvP2),
 			    x_incrs, params, numJacobs);
 

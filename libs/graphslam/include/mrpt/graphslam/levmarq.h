@@ -99,7 +99,7 @@ void optimize_graph_spa_levmarq(
 	array_O_zeros.fill(0);  // Auxiliary var with all zeros
 
 	// The size of things here (because size matters...)
-	constexpr auto DIMS_POSE = gst::SE_TYPE::VECTOR_SIZE;
+	constexpr auto DIMS_POSE = gst::SE_TYPE::DOFs;
 
 	// Read extra params:
 	const bool verbose = 0 != extra_params.getWithDefaultVal("verbose", 0);
@@ -244,7 +244,7 @@ void optimize_graph_spa_levmarq(
 	CVectorDouble grad(nFreeNodes * DIMS_POSE);
 	grad.setZero();
 	using map_ID2matrix_VxV_t =
-		mrpt::aligned_std_map<TNodeID, typename gst::matrix_VxV_t>;
+		mrpt::aligned_std_map<TNodeID, typename gst::matrix_VxV>;
 
 	double lambda = initial_lambda;  // Will be actually set on first iteration.
 	double v = 1;  // was 2, changed since it's modified in the first pass.
@@ -376,15 +376,15 @@ void optimize_graph_spa_levmarq(
 					// Take references to both Jacobians (wrt pose "i" and pose
 					// "j"), taking into account the possible
 					// switch in their order:
-					const typename gst::matrix_VxV_t& J1 =
+					const typename gst::matrix_VxV& J1 =
 						itJacobPair->second.first;
-					const typename gst::matrix_VxV_t& J2 =
+					const typename gst::matrix_VxV& J2 =
 						itJacobPair->second.second;
 
 					// Is "i" a free (to be optimized) node? -> Ji^t * Inf *  Ji
 					if (is_i_free_node)
 					{
-						typename gst::matrix_VxV_t JtJ(
+						typename gst::matrix_VxV JtJ(
 							mrpt::math::UNINITIALIZED_MATRIX);
 						detail::AuxErrorEval<typename gst::edge_t, gst>::
 							multiplyJtLambdaJ(
@@ -394,7 +394,7 @@ void optimize_graph_spa_levmarq(
 					// Is "j" a free (to be optimized) node? -> Jj^t * Inf *  Jj
 					if (is_j_free_node)
 					{
-						typename gst::matrix_VxV_t JtJ(
+						typename gst::matrix_VxV JtJ(
 							mrpt::math::UNINITIALIZED_MATRIX);
 						detail::AuxErrorEval<typename gst::edge_t, gst>::
 							multiplyJtLambdaJ(
@@ -404,7 +404,7 @@ void optimize_graph_spa_levmarq(
 					// Are both "i" and "j" free nodes? -> Ji^t * Inf *  Jj
 					if (is_i_free_node && is_j_free_node)
 					{
-						typename gst::matrix_VxV_t JtJ(
+						typename gst::matrix_VxV JtJ(
 							mrpt::math::UNINITIALIZED_MATRIX);
 						detail::AuxErrorEval<typename gst::edge_t, gst>::
 							multiplyJ1tLambdaJ2(
