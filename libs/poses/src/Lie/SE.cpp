@@ -64,8 +64,8 @@ SE<3>::mat2tang_jacob SE<3>::jacob_dlogv_dv(const SE<3>::type& P)
 	mrpt::math::CMatrixDouble6_12 J;
 	J.setZero();
 	const CMatrixDouble33& R = P.getRotationMatrix();
-	J.block<3, 9>(0, 0) = SO<3>::jacob_dlogv_dv(R);
-	J(3, 9) = J(4, 10) = J(5, 11) = 1.0;
+	J.block<3, 9>(3, 0) = SO<3>::jacob_dlogv_dv(R);
+	J(0, 9) = J(1, 10) = J(2, 11) = 1.0;
 	return J;
 }
 
