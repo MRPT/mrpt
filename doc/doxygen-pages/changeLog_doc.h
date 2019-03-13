@@ -25,7 +25,8 @@ port existing code to MRPT 2.0: \ref porting_mrpt2
 over.
 	- Backwards compatible headers for "maps" and "observations" in mrpt::slam
 are removed. They moved to their own namespaces in MRPT v1.3.0 (Jan 2015).
-	- All pointer typedefs are now in their respective classes: FooPtr -> Foo::Ptr
+	- All pointer typedefs are now in their respective classes: FooPtr ->
+Foo::Ptr
 	- Add support for serialization with std::variant
 - <b>Detailed list of changes:</b>
 	- Changes in applications:
@@ -97,6 +98,11 @@ ExternalProject)
 			- mrpt::obs::T3DPointsProjectionParams and
 mrpt::obs::CObservation3DRangeScan::project3DPointsFromDepthImageInto now
 together support organized PCL point clouds.
+		- \ref mrpt_poses_grp  [NEW IN MRPT 2.0.0]
+			- Reorganized all Lie Algebra methods into \ref mrpt_poses_lie_grp
+			- Removed CPose3DRotVec, since its conceptual design is identical to
+Lie tangent space vectors.
+
 	- BUG FIXES:
 		- Fix reactive navigator inconsistent state if navigation API is called
 from within rnav callbacks.

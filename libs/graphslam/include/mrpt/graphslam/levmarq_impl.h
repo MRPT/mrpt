@@ -277,7 +277,7 @@ double computeJacobiansAndErrors(
 			std::pair<mrpt::graphs::TPairNodeIDs, typename gst::TPairJacobs>
 				newMapEntry;
 		newMapEntry.first = ids;
-		gst::SE_TYPE::jacobian_dDinvP1invP2_depsilon(
+		gst::SE_TYPE::jacob_dDinvP1invP2_de1e2(
 			-(*EDGE_POSE), *P1, *P2, &newMapEntry.second.first,
 			&newMapEntry.second.second);
 

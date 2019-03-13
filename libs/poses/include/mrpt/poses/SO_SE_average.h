@@ -18,12 +18,12 @@ namespace mrpt::poses
  *  @{ */
 
 /** Computes weighted and un-weighted averages of SO(2) or SO(3) orientations
- * \sa SE_average, SE_traits<2>, SE_traits<3>, CPose3D, CPose2D */
+ * \sa SE_average, Lie::SE<>, Lie::SO<3>, CPose3D, CPose2D */
 template <size_t DOF>
 class SO_average;
 
 /** Computes weighted and un-weighted averages of SE(2) or SE(3) poses
- * \sa SO_average, SE_traits<2>, SE_traits<3>, CPose3D, CPose2D */
+ * \sa SO_average, Lie::SE<>, Lie::SO<3>, SE<3>, CPose3D, CPose2D */
 template <size_t DOF>
 class SE_average;
 

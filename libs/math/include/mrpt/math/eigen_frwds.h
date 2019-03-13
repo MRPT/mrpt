@@ -72,6 +72,7 @@ using CMatrixDouble41 = CMatrixFixedNumeric<double, 4, 1>;
 using CMatrixDouble6_12 = CMatrixFixedNumeric<double, 6, 12>;
 using CMatrixDouble12_6 = CMatrixFixedNumeric<double, 12, 6>;
 using CMatrixDouble39 = CMatrixFixedNumeric<double, 3, 9>;
+using CMatrixDouble93 = CMatrixFixedNumeric<double, 9, 3>;
 
 using CMatrixFloat22 = CMatrixFixedNumeric<float, 2, 2>;
 using CMatrixFloat23 = CMatrixFixedNumeric<float, 2, 3>;

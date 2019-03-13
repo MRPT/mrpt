@@ -20,7 +20,7 @@
 #include <mrpt/poses/CPose2D.h>  // for CPose2D
 #include <mrpt/poses/CPose3D.h>  // for CPose3D
 #include <mrpt/poses/CPose3DQuat.h>  // for CPose3DQuat
-#include <mrpt/poses/CPose3DRotVec.h>  // for CPose3DR...
+#include <mrpt/poses/Lie/SO.h>
 #include <mrpt/serialization/CArchive.h>
 #include <algorithm>  // for move
 #include <cmath>  // for fabs
@@ -39,8 +39,6 @@
 #include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/core/bits_math.h>  // for square
 #include <mrpt/math/utils_matlab.h>
-#include <mrpt/otherlibs/sophus/so3.hpp>
-#include <mrpt/otherlibs/sophus/se3.hpp>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -121,17 +119,6 @@ CPose3D::CPose3D(const CPose3DQuat& p)
 	m_coords[1] = p.y();
 	m_coords[2] = p.z();
 	p.quat().rotationMatrixNoResize(m_ROT);
-}
-
-/** Constructor from a rotation vector-based full pose. */
-CPose3D::CPose3D(const CPose3DRotVec& p)
-	: m_ROT(UNINITIALIZED_MATRIX), m_ypr_uptodate(false)
-{
-	m_coords[0] = p.m_coords[0];
-	m_coords[1] = p.m_coords[1];
-	m_coords[2] = p.m_coords[2];
-
-	this->setRotationMatrix(this->exp_rotation(p.m_rotvec));
 }
 
 uint8_t CPose3D::serializeGetVersion() const { return 2; }
@@ -282,38 +269,9 @@ void CPose3D::setFromValues(
 	rebuildRotationMatrix();
 }
 
-/*---------------------------------------------------------------
- Set the pose from 3D point and yaw/pitch/roll angles, in radians.
----------------------------------------------------------------*/
 void CPose3D::rebuildRotationMatrix()
 {
-#ifdef HAVE_SINCOS
-	double cy, sy;
-	::sincos(m_yaw, &sy, &cy);
-	double cp, sp;
-	::sincos(m_pitch, &sp, &cp);
-	double cr, sr;
-	::sincos(m_roll, &sr, &cr);
-#else
-	const double cy = cos(m_yaw);
-	const double sy = sin(m_yaw);
-	const double cp = cos(m_pitch);
-	const double sp = sin(m_pitch);
-	const double cr = cos(m_roll);
-	const double sr = sin(m_roll);
-#endif
-
-	alignas(MRPT_MAX_ALIGN_BYTES)
-		const double rot_vals[] = {cy * cp,
-								   cy * sp * sr - sy * cr,
-								   cy * sp * cr + sy * sr,
-								   sy * cp,
-								   sy * sp * sr + cy * cr,
-								   sy * sp * cr - cy * sr,
-								   -sp,
-								   cp * sr,
-								   cp * cr};
-	m_ROT.loadFromArray(rot_vals);
+	m_ROT = Lie::SO<3>::fromYPR(m_yaw, m_pitch, m_roll);
 }
 
 /*---------------------------------------------------------------
@@ -788,299 +746,6 @@ void CPose3D::inverseComposePoint(
 			-1, 0, 0, 0, -lz, ly, 0, -1, 0, lz, 0, -lx, 0, 0, -1, -ly, lx, 0};
 		out_jacobian_df_dse3->loadFromArray(nums);
 	}
-}
-
-CPose3D CPose3D::exp(
-	const mrpt::math::CArrayNumeric<double, 6>& mu, bool pseudo_exponential)
-{
-	CPose3D P(UNINITIALIZED_POSE);
-	CPose3D::exp(mu, P, pseudo_exponential);
-	return P;
-}
-
-void CPose3D::exp(
-	const mrpt::math::CArrayNumeric<double, 6>& mu, CPose3D& out_pose,
-	bool pseudo_exponential)
-{
-	if (pseudo_exponential)
-	{
-		auto R = Sophus::SO3<double>::exp(mu.block<3, 1>(3, 0));
-		out_pose.setRotationMatrix(R.matrix());
-		out_pose.x(mu[0]);
-		out_pose.y(mu[1]);
-		out_pose.z(mu[2]);
-	}
-	else
-	{
-		auto R = Sophus::SE3<double>::exp(mu);
-		out_pose = CPose3D(CMatrixDouble44(R.matrix()));
-	}
-}
-
-CArrayDouble<3> CPose3D::ln_rotation() const
-{
-	Sophus::SO3<double> R(this->m_ROT);
-	const auto& r = R.log();
-	CArrayDouble<3> ret;
-	for (int i = 0; i < 3; i++) ret[i] = r[i];
-	return ret;
-}
-
-CMatrixDouble33 CPose3D::exp_rotation(
-	const mrpt::math::CArrayNumeric<double, 3>& w)
-{
-	auto R = Sophus::SO3<double>::exp(w);
-	return R.matrix();
-}
-
-void CPose3D::ln(CArrayDouble<6>& result) const
-{
-	const Sophus::SE3<double> RT(m_ROT, m_coords);
-	result = RT.log();
-}
-
-/* The following code fragments are based on formulas originally reported in the
- * TooN and RobotVision packages */
-namespace mrpt::poses
-{
-template <class VEC3, class MAT33>
-inline void deltaR(const MAT33& R, VEC3& v)
-{
-	v[0] = R(2, 1) - R(1, 2);
-	v[1] = R(0, 2) - R(2, 0);
-	v[2] = R(1, 0) - R(0, 1);
-}
-
-template <typename VEC3, typename MAT3x3, typename MAT3x9>
-inline void M3x9(const VEC3& a, const MAT3x3& B, MAT3x9& RES)
-{
-	alignas(MRPT_MAX_ALIGN_BYTES) const double vals[] = {
-		a[0],	 -B(0, 2), B(0, 1),  B(0, 2),  a[0],	-B(0, 0), -B(0, 1),
-		B(0, 0),  a[0],		a[1],	 -B(1, 2), B(1, 1), B(1, 2),  a[1],
-		-B(1, 0), -B(1, 1), B(1, 0),  a[1],		a[2],	-B(2, 2), B(2, 1),
-		B(2, 2),  a[2],		-B(2, 0), -B(2, 1), B(2, 0), a[2]};
-	RES.loadFromArray(vals);
-}
-
-inline CMatrixDouble33 ddeltaRt_dR(const CPose3D& P)
-{
-	const CMatrixDouble33& R = P.getRotationMatrix();
-	const CArrayDouble<3>& t = P.m_coords;
-
-	CArrayDouble<3> abc;
-	deltaR(R, abc);
-	double a = abc[0];
-	double b = abc[1];
-	double c = abc[2];
-
-	alignas(MRPT_MAX_ALIGN_BYTES) const double vals[] = {
-		-b * t[1] - c * t[2],	 2 * b * t[0] - a * t[1],
-		2 * c * t[0] - a * t[2],  -b * t[0] + 2 * a * t[1],
-		-a * t[0] - c * t[2],	 2 * c * t[1] - b * t[2],
-		-c * t[0] + 2 * a * t[2], -c * t[1] + 2 * b * t[2],
-		-a * t[0] - b * t[1]};
-	return CMatrixDouble33(vals);
-}
-
-static CMatrixFixedNumeric<double, 3, 9> dVinvt_dR(const CPose3D& P)
-{
-	CMatrixFixedNumeric<double, 3, 9> J;
-	CArrayDouble<3> a;
-	CMatrixDouble33 B(UNINITIALIZED_MATRIX);
-
-	const CMatrixDouble33& R = P.getRotationMatrix();
-	const CArrayDouble<3>& t = P.m_coords;
-
-	const double d = 0.5 * (R(0, 0) + R(1, 1) + R(2, 2) - 1);
-
-	if (d > 0.9999)
-	{
-		a[0] = a[1] = a[2] = 0;
-		B.zeros();
-	}
-	else
-	{
-		const double theta = acos(d);
-		const double theta2 = square(theta);
-		const double oned2 = (1 - square(d));
-		const double sq = std::sqrt(oned2);
-		const double cot = 1. / tan(0.5 * theta);
-		const double csc2 = square(1. / sin(0.5 * theta));
-
-		CMatrixDouble33 skewR(UNINITIALIZED_MATRIX);
-		CArrayDouble<3> vr;
-		deltaR(R, vr);
-		mrpt::math::skew_symmetric3(vr, skewR);
-
-		CArrayDouble<3> skewR_t;
-		skewR.multiply_Ab(t, skewR_t);
-
-		skewR_t *= -(d * theta - sq) / (8 * pow(sq, 3));
-		a = skewR_t;
-
-		CMatrixDouble33 skewR2(UNINITIALIZED_MATRIX);
-		skewR2.multiply_AB(skewR, skewR);
-
-		CArrayDouble<3> skewR2_t;
-		skewR2.multiply_Ab(t, skewR2_t);
-		skewR2_t *=
-			(((theta * sq - d * theta2) * (0.5 * theta * cot - 1)) -
-			 theta * sq * ((0.25 * theta * cot) + 0.125 * theta2 * csc2 - 1)) /
-			(4 * theta2 * square(oned2));
-		a += skewR2_t;
-
-		mrpt::math::skew_symmetric3(t, B);
-		B *= -0.5 * theta / (2 * sq);
-
-		B += -(theta * cot - 2) / (8 * oned2) * ddeltaRt_dR(P);
-	}
-	M3x9(a, B, J);
-	return J;
-}
-}  // namespace mrpt::poses
-
-mrpt::math::CMatrixDouble6_12 CPose3D::ln_jacob() const
-{
-	mrpt::math::CMatrixDouble6_12 J;
-	J.zeros();
-	// Jacobian structure 6x12:
-	// (3rows, for t)       [       d_Vinvt_dR (3x9)    |  Vinv (3x3)  ]
-	//                      [  -------------------------+------------- ]
-	// (3rows, for \omega)  [       d_lnR_dR   (3x9)    |    0 (3x3)   ]
-	//
-	//          derivs wrt:     R_col1 R_col2  R_col3   |       t
-	//
-	// (Will be explained better in:
-	// https://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty )
-	//
-	J.insertMatrix(3, 0, ln_rot_jacob(m_ROT));
-	J.insertMatrix(0, 0, dVinvt_dR(*this));
-
-	const CMatrixDouble33& R = m_ROT;
-	CArrayDouble<3> omega;
-	CMatrixDouble33 Omega(UNINITIALIZED_MATRIX);
-
-	CMatrixDouble33 V_inv(UNINITIALIZED_MATRIX);
-	V_inv.unit(3, 1.0);  // Start with the identity_3
-
-	const double d = 0.5 * (R(0, 0) + R(1, 1) + R(2, 2) - 1);
-	if (d > 0.99999)
-	{
-		mrpt::poses::deltaR(R, omega);
-		omega *= 0.5;
-		mrpt::math::skew_symmetric3(omega, Omega);
-		CMatrixDouble33 Omega2(UNINITIALIZED_MATRIX);
-		Omega2.multiply_AAt(Omega);
-		Omega2 *= 1.0 / 12.0;
-
-		Omega *= 0.5;
-
-		V_inv -= Omega;
-		V_inv -= Omega2;
-	}
-	else
-	{
-		mrpt::poses::deltaR(R, omega);
-
-		const double theta = acos(d);
-		omega *= theta / (2 * std::sqrt(1 - d * d));
-
-		mrpt::math::skew_symmetric3(omega, Omega);
-
-		CMatrixDouble33 Omega2(UNINITIALIZED_MATRIX);
-		Omega2.multiply_AAt(Omega);
-
-		Omega2 *= (1 - theta / (2 * std::tan(theta * 0.5))) / square(theta);
-		Omega *= 0.5;
-
-		V_inv -= Omega;
-		V_inv += Omega2;
-	}
-	J.insertMatrix(0, 9, V_inv);
-	return J;
-}
-
-CMatrixFixedNumeric<double, 3, 9> CPose3D::ln_rot_jacob(
-    const CMatrixDouble33& R)
-{
-	CMatrixFixedNumeric<double, 3, 9> M;
-	const double d = 0.5 * (R(0, 0) + R(1, 1) + R(2, 2) - 1);
-	CArrayDouble<3> a;
-	CMatrixDouble33 B(UNINITIALIZED_MATRIX);
-	if (d > 0.99999)
-	{
-		a[0] = a[1] = a[2] = 0;
-		B.unit(3, -0.5);
-	}
-	else
-	{
-		const double theta = acos(d);
-		const double d2 = square(d);
-		const double sq = std::sqrt(1 - d2);
-		deltaR(R, a);
-		a *= (d * theta - sq) / (4 * (sq * sq * sq));
-		B.unit(3, -theta / (2 * sq));
-	}
-	M3x9(a, B, M);
-	return M;
-}
-
-// Section 10.3.3 in tech report
-// http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
-mrpt::math::CMatrixDouble12_6 CPose3D::jacob_dexpeD_de(const CPose3D& D)
-{
-	mrpt::math::CMatrixDouble12_6 jacob;
-	jacob.block<9, 3>(0, 0).setZero();
-	jacob.block<3, 3>(9, 0).setIdentity();
-	for (int i = 0; i < 3; i++)
-	{
-		auto trg_blc = jacob.block<3, 3>(3 * i, 3);
-		mrpt::math::skew_symmetric3_neg(D.m_ROT.block<3, 1>(0, i), trg_blc);
-	}
-	{
-		auto trg_blc = jacob.block<3, 3>(9, 3);
-		mrpt::math::skew_symmetric3_neg(D.m_coords, trg_blc);
-	}
-	return jacob;
-}
-
-// Section 10.3.4 in tech report
-// http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
-mrpt::math::CMatrixDouble12_6 CPose3D::jacob_dDexpe_de(const CPose3D& D)
-{
-	mrpt::math::CMatrixDouble12_6 jacob;
-	jacob.setZero();
-	jacob.block<3, 3>(9, 0) = D.m_ROT;
-
-	jacob.block<3, 1>(3, 5) = -D.m_ROT.col(0);
-	jacob.block<3, 1>(6, 4) = D.m_ROT.col(0);
-
-	jacob.block<3, 1>(0, 5) = D.m_ROT.col(1);
-	jacob.block<3, 1>(6, 3) = -D.m_ROT.col(1);
-
-	jacob.block<3, 1>(0, 4) = -D.m_ROT.col(2);
-	jacob.block<3, 1>(3, 3) = D.m_ROT.col(2);
-	return jacob;
-}
-
-// Eq. 10.3.7 in tech report
-// http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
-mrpt::math::CMatrixDouble12_6 CPose3D::jacob_dAexpeD_de(
-    const CPose3D& A, const CPose3D& D)
-{
-	mrpt::math::CMatrixDouble12_6 jacob;
-	jacob.block<9, 3>(0, 0).setZero();
-	jacob.block<3, 3>(9, 0) = A.getRotationMatrix();
-	Eigen::Matrix<double, 3, 3> aux;
-	for (int i = 0; i < 3; i++)
-	{
-		mrpt::math::skew_symmetric3_neg(
-			D.getRotationMatrix().block<3, 1>(0, i), aux);
-		jacob.block<3, 3>(3 * i, 3) = A.m_ROT * aux;
-	}
-	mrpt::math::skew_symmetric3_neg(D.m_coords, aux);
-	jacob.block<3, 3>(9, 3) = A.m_ROT * aux;
-	return jacob;
 }
 
 void CPose3D::setToNaN()

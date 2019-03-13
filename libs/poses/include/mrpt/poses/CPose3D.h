@@ -19,7 +19,6 @@ DECLARE_MEXPLUS_FROM(mrpt::poses::CPose3D)
 namespace mrpt::poses
 {
 class CPose3DQuat;
-class CPose3DRotVec;
 
 /** A class used to store a 3D pose (a 3D translation + a rotation in 3D).
  *   The 6D transformation in SE(3) stored in this class is kept in two
@@ -72,12 +71,10 @@ class CPose3DRotVec;
  * This class and CPose3DQuat are very similar, and they can be converted to the
  * each other automatically via transformation constructors.
  *
- * There are Lie algebra methods: \a exp and \a ln (see the methods for
- * documentation).
+ * For Lie algebra methods, see mrpt::poses::Lie.
  *
  * \note Read also: "A tutorial on SE(3) transformation parameterizations and
- * on-manifold optimization", (Technical report), 2010-2014.
- * [PDF](http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf)
+ * on-manifold optimization", in \cite blanco_se3_tutorial
  *
  * \ingroup poses_grp
  * \sa CPoseOrPoint,CPoint3D, mrpt::math::CQuaternion
@@ -189,9 +186,6 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 
 	/** Constructor from a CPose3DQuat. */
 	explicit CPose3D(const CPose3DQuat&);
-
-	/** Constructor from a CPose3DRotVec. */
-	explicit CPose3D(const CPose3DRotVec& p);
 
 	/** Fast constructor that leaves all the data uninitialized - call with
 	 * UNINITIALIZED_POSE as argument */
@@ -649,81 +643,6 @@ class CPose3D : public CPose<CPose3D>, public mrpt::serialization::CSerializable
 	double distanceEuclidean6D(const CPose3D& o) const;
 
 	/** @} */  // modif. components
-
-	/** @name Lie Algebra methods
-		@{ */
-
-	/** Exponentiate a Vector in the SE(3) Lie Algebra to generate a new CPose3D
-	 * (static method).
-	 * \param pseudo_exponential If set to true, XYZ are copied from the first
-	 * three elements in the vector instead of using the proper Lie Algebra
-	 * formulas (this is actually the common practice in robotics literature).
-	 */
-	static CPose3D exp(
-		const mrpt::math::CArrayNumeric<double, 6>& vect,
-		bool pseudo_exponential = false);
-
-	/** \overload */
-	static void exp(
-		const mrpt::math::CArrayNumeric<double, 6>& vect, CPose3D& out_pose,
-		bool pseudo_exponential = false);
-
-	/** Exponentiate a vector in the Lie algebra to generate a new SO(3) (a 3x3
-	 * rotation matrix). */
-	static mrpt::math::CMatrixDouble33 exp_rotation(
-		const mrpt::math::CArrayNumeric<double, 3>& vect);
-
-	/** Take the logarithm of the 3x4 matrix defined by this pose, generating
-	 * the corresponding vector in the SE(3) Lie Algebra.
-	 * \sa ln_jacob
-	 */
-	void ln(mrpt::math::CArrayDouble<6>& out_ln) const;
-
-	/// \overload
-	inline mrpt::math::CArrayDouble<6> ln() const
-	{
-		mrpt::math::CArrayDouble<6> ret;
-		ln(ret);
-		return ret;
-	}
-
-	/** Jacobian of the logarithm of the 3x4 matrix defined by this pose.
-	 * \sa ln
-	 */
-	mrpt::math::CMatrixDouble6_12 ln_jacob() const;
-
-	/** Static function to compute the Jacobian of the SO(3) Logarithm function,
-	 * evaluated at a given 3x3 rotation matrix R.
-	 * \sa ln, ln_jacob
-	 */
-	static mrpt::math::CMatrixDouble39 ln_rot_jacob(
-	    const mrpt::math::CMatrixDouble33& R);
-
-	/** Take the logarithm of the 3x3 rotation matrix, generating the
-	 * corresponding vector in the Lie Algebra */
-	mrpt::math::CArrayDouble<3> ln_rotation() const;
-
-	/** The Jacobian d (e^eps * D) / d eps , with eps=increment in Lie Algebra.
-	 * \note Section 10.3.3 in tech report
-	 * http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
-	 */
-	static mrpt::math::CMatrixDouble12_6 jacob_dexpeD_de(const CPose3D& D);
-
-	/** The Jacobian d (D * e^eps) / d eps , with eps=increment in Lie Algebra.
-	 * \note Section 10.3.4 in tech report
-	 * http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
-	 */
-	static mrpt::math::CMatrixDouble12_6 jacob_dDexpe_de(const CPose3D& D);
-
-	/** The Jacobian d (A * e^eps * D) / d eps , with eps=increment in Lie
-	 * Algebra.
-	 * \note Eq. 10.3.7 in tech report
-	 * http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
-	 */
-	static mrpt::math::CMatrixDouble12_6 jacob_dAexpeD_de(
-	    const CPose3D& A, const CPose3D& D);
-
-	/** @} */
 
 	void setToNaN() override;
 
