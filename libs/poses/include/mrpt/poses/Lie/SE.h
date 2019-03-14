@@ -45,8 +45,11 @@ struct SE<3>
 	/** Type for Jacobian: SO(n) matrix -> tangent space */
 	using mat2tang_jacob = mrpt::math::CMatrixDouble6_12;
 
-	/** Type for Jacobians between SO(n) transformations */
-	using matrix_VxV = mrpt::math::CMatrixDouble66;
+	/** Type for Jacobians between so(n) vectors on the tangent space */
+	using matrix_TxT = mrpt::math::CMatrixDouble66;
+
+	/** Type for Jacobians between SO(n) 3x4 (sub)matrices in the manifold */
+	using matrix_MxM = mrpt::math::CMatrixFixedNumeric<double, 12, 12>;
 
 	/** Retraction to SE(3), a **pseudo-exponential** map \f$ x \rightarrow
 	 * PseudoExp(x^\wedge) \f$ and its Jacobian.
@@ -108,6 +111,18 @@ struct SE<3>
 	static mrpt::math::CMatrixDouble12_6 jacob_dAexpeD_de(
 	    const CPose3D& A, const CPose3D& D);
 
+	/** Jacobian of the pose composition A*B for SE(3) 3x4 (sub)matrices,
+	 * with respect to A.
+	 * \note See section 7.3.1 of in \cite blanco_se3_tutorial
+	 */
+	static matrix_MxM jacob_dAB_dA(const type& A, const type& B);
+
+	/** Jacobian of the pose composition A*B for SE(3) 3x4 (sub)matrices,
+	 * with respect to B.
+	 * \note See section 7.3.1 of in \cite blanco_se3_tutorial
+	 */
+	static matrix_MxM jacob_dAB_dB(const type& A, const type& B);
+
 	/** One or both of the following 6x6 Jacobians, useful in graph-slam
 	 * problems:
 	 * \f[  \frac{\partial pseudoLn(P_1 D P_2^{-1}) }{\partial \epsilon_1} \f]
@@ -117,8 +132,8 @@ struct SE<3>
 	 */
 	static void jacob_dP1DP2inv_de1e2(
 	    const type& P1DP2inv,
-	    mrpt::optional_ref<matrix_VxV> df_de1 = std::nullopt,
-	    mrpt::optional_ref<matrix_VxV> df_de2 = std::nullopt);
+	    mrpt::optional_ref<matrix_TxT> df_de1 = std::nullopt,
+	    mrpt::optional_ref<matrix_TxT> df_de2 = std::nullopt);
 
 	/** Return one or both of the following 6x6 Jacobians, useful in
 	 * graph-slam problems:
@@ -130,8 +145,8 @@ struct SE<3>
 	 */
 	static void jacob_dDinvP1invP2_de1e2(
 	    const type& Dinv, const type& P1, const type& P2,
-	    mrpt::optional_ref<matrix_VxV> df_de1 = std::nullopt,
-	    mrpt::optional_ref<matrix_VxV> df_de2 = std::nullopt);
+	    mrpt::optional_ref<matrix_TxT> df_de1 = std::nullopt,
+	    mrpt::optional_ref<matrix_TxT> df_de2 = std::nullopt);
 };
 
 /** Traits for SE(2), rigid-body transformations in R^2 space.
@@ -146,7 +161,7 @@ struct SE<2>
 	using light_type = mrpt::math::TPose2D;
 
 	/** Type for Jacobians between SO(n) transformations */
-	using matrix_VxV = mrpt::math::CMatrixDouble33;
+	using matrix_TxT = mrpt::math::CMatrixDouble33;
 
 	/** Exponential map in SE(2)
 	 */
@@ -157,15 +172,15 @@ struct SE<2>
 
 	/** One or both of the following 6x6 Jacobians, useful in graph-slam
 	 * problems:
-	 * \f[  \frac{\partial pseudoLn(P_1 D P_2^{-1}) }{\partial \epsilon_1} \f]
-	 * \f[  \frac{\partial pseudoLn(P_1 D P_2^{-1}) }{\partial \epsilon_2} \f]
-	 * With \f$ \epsilon_1 \f$ and \f$ \epsilon_2 \f$ increments in the
-	 * linearized manifold for P1 and P2.
+	 * \f[  \frac{\partial pseudoLn(P_1 D P_2^{-1}) }{\partial \epsilon_1}
+	 * \f] \f[  \frac{\partial pseudoLn(P_1 D P_2^{-1}) }{\partial
+	 * \epsilon_2} \f] With \f$ \epsilon_1 \f$ and \f$ \epsilon_2 \f$
+	 * increments in the linearized manifold for P1 and P2.
 	 */
 	static void jacob_dP1DP2inv_de1e2(
 	    const type& P1DP2inv,
-	    mrpt::optional_ref<matrix_VxV> df_de1 = std::nullopt,
-	    mrpt::optional_ref<matrix_VxV> df_de2 = std::nullopt);
+	    mrpt::optional_ref<matrix_TxT> df_de1 = std::nullopt,
+	    mrpt::optional_ref<matrix_TxT> df_de2 = std::nullopt);
 
 	/** Return one or both of the following 6x6 Jacobians, useful in
 	 * graph-slam problems:
@@ -176,8 +191,8 @@ struct SE<2>
 	 */
 	static void jacob_dDinvP1invP2_de1e2(
 	    const type& Dinv, const type& P1, const type& P2,
-	    mrpt::optional_ref<matrix_VxV> df_de1 = std::nullopt,
-	    mrpt::optional_ref<matrix_VxV> df_de2 = std::nullopt);
+	    mrpt::optional_ref<matrix_TxT> df_de1 = std::nullopt,
+	    mrpt::optional_ref<matrix_TxT> df_de2 = std::nullopt);
 };
 
 }  // namespace mrpt::poses::Lie
