@@ -57,7 +57,7 @@ struct SO<3>
 	/** Returns the 3x3 SO(3) rotation matrix from yaw, pitch, roll angles.
 	 * See CPose3D for the axis conventions and a picture. */
 	static type fromYPR(
-	    const double yaw, const double pitch, const double roll);
+		const double yaw, const double pitch, const double roll);
 
 	/** Returns vee(R-R'), which is an approximation to 2*vee(logmat(R)) for
 	 * small rotations. */

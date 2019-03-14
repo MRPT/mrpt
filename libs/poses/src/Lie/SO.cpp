@@ -58,7 +58,7 @@ SO<3>::tangent_vector SO<3>::log(const SO<3>::type& R)
 }
 
 SO<3>::type SO<3>::fromYPR(
-    const double yaw, const double pitch, const double roll)
+	const double yaw, const double pitch, const double roll)
 {
 #ifdef HAVE_SINCOS
 	double cy, sy;

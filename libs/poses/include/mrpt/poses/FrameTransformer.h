@@ -73,7 +73,7 @@ class FrameTransformerInterface
 	 */
 	virtual FrameLookUpStatus lookupTransform(
 		const std::string& target_frame, const std::string& source_frame,
-	    light_type& child_wrt_parent,
+		light_type& child_wrt_parent,
 		const mrpt::system::TTimeStamp query_time = INVALID_TIMESTAMP,
 		/** Timeout */
 		const double timeout_secs = .0) = 0;
@@ -103,7 +103,7 @@ class FrameTransformer : public FrameTransformerInterface<DIM>
 	// See base docs
 	FrameLookUpStatus lookupTransform(
 		const std::string& target_frame, const std::string& source_frame,
-	    typename base_t::light_type& child_wrt_parent,
+		typename base_t::light_type& child_wrt_parent,
 		const mrpt::system::TTimeStamp query_time = INVALID_TIMESTAMP,
 		const double timeout_secs = .0) override;
 
