@@ -696,7 +696,7 @@ LAYOUT_FILE            = DoxygenLayout_MRPT.xml
 # LATEX_BIB_STYLE. To use this feature you need bibtex and perl available in the
 # search path. See also \cite for info how to create references.
 
-CITE_BIB_FILES         = $VISION_CITATION_FILES doc/bibliography.bib
+CITE_BIB_FILES         = $VISION_CITATION_FILES $CUR_DIR/doc/bibliography.bib
 
 #---------------------------------------------------------------------------
 # Configuration options related to warning and progress messages
