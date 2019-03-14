@@ -80,7 +80,7 @@ mrpt::math::CMatrixDouble12_6 SE<3>::jacob_dexpeD_de(const CPose3D& D)
 	{
 		auto trg_blc = jacob.block<3, 3>(3 * i, 3);
 		mrpt::math::skew_symmetric3_neg(
-		    D.getRotationMatrix().block<3, 1>(0, i), trg_blc);
+			D.getRotationMatrix().block<3, 1>(0, i), trg_blc);
 	}
 	{
 		auto trg_blc = jacob.block<3, 3>(9, 3);
@@ -112,7 +112,7 @@ mrpt::math::CMatrixDouble12_6 SE<3>::jacob_dDexpe_de(const CPose3D& D)
 // Eq. 10.3.7 in tech report
 // http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
 mrpt::math::CMatrixDouble12_6 SE<3>::jacob_dAexpeD_de(
-    const CPose3D& A, const CPose3D& D)
+	const CPose3D& A, const CPose3D& D)
 {
 	const auto& Arot = A.getRotationMatrix();
 
@@ -123,7 +123,7 @@ mrpt::math::CMatrixDouble12_6 SE<3>::jacob_dAexpeD_de(
 	for (int i = 0; i < 3; i++)
 	{
 		mrpt::math::skew_symmetric3_neg(
-		    D.getRotationMatrix().block<3, 1>(0, i), aux);
+			D.getRotationMatrix().block<3, 1>(0, i), aux);
 		jacob.block<3, 3>(3 * i, 3) = Arot * aux;
 	}
 	mrpt::math::skew_symmetric3_neg(D.m_coords, aux);
@@ -132,8 +132,8 @@ mrpt::math::CMatrixDouble12_6 SE<3>::jacob_dAexpeD_de(
 }
 
 void SE<3>::jacob_dP1DP2inv_de1e2(
-    const CPose3D& P1DP2inv, mrpt::optional_ref<matrix_TxT> df_de1,
-    mrpt::optional_ref<matrix_TxT> df_de2)
+	const CPose3D& P1DP2inv, mrpt::optional_ref<matrix_TxT> df_de1,
+	mrpt::optional_ref<matrix_TxT> df_de2)
 {
 	const CMatrixDouble33& R =
 		P1DP2inv.getRotationMatrix();  // The rotation matrix.
@@ -201,8 +201,8 @@ void SE<3>::jacob_dP1DP2inv_de1e2(
 
 void SE<3>::jacob_dDinvP1invP2_de1e2(
 	const CPose3D& Dinv, const CPose3D& P1, const CPose3D& P2,
-    mrpt::optional_ref<matrix_TxT> df_de1,
-    mrpt::optional_ref<matrix_TxT> df_de2)
+	mrpt::optional_ref<matrix_TxT> df_de1,
+	mrpt::optional_ref<matrix_TxT> df_de2)
 {
 	using namespace mrpt::math;
 
@@ -222,10 +222,8 @@ void SE<3>::jacob_dDinvP1invP2_de1e2(
 		matrix_TxT& J1 = df_de1.value().get();
 
 		const CMatrixFixedNumeric<double, 12, 12> J1a =
-		    SE<3>::jacob_dAB_dA(Dinv, P1inv + P2);
+			SE<3>::jacob_dAB_dA(Dinv, P1inv + P2);
 		const CMatrixDouble12_6 J1b = -SE<3>::jacob_dDexpe_de(Dinv);
-
-		std::cout << "TRACE J1:\n" << J1a << "\n";
 
 		J1 = dLnT_dT * J1a * J1b;
 	}
@@ -238,14 +236,14 @@ void SE<3>::jacob_dDinvP1invP2_de1e2(
 }
 
 SE<3>::matrix_MxM SE<3>::jacob_dAB_dA(
-    const SE<3>::type& A, const SE<3>::type& B)
+	const SE<3>::type& A, const SE<3>::type& B)
 {
 	using namespace mrpt::math;
 
 	matrix_MxM J = matrix_MxM::Zero();
 	// J_wrt_A = kron(B',eye(3));
 	const auto B_HM =
-	    B.getHomogeneousMatrixVal<CMatrixDouble44>().transpose().eval();
+		B.getHomogeneousMatrixVal<CMatrixDouble44>().transpose().eval();
 	for (int c = 0; c < 4; c++)
 		for (int r = 0; r < 4; r++)
 			for (int q = 0; q < 3; q++) J(c * 3 + q, r * 3 + q) = B_HM(r, c);
@@ -254,7 +252,7 @@ SE<3>::matrix_MxM SE<3>::jacob_dAB_dA(
 }
 
 SE<3>::matrix_MxM SE<3>::jacob_dAB_dB(
-    const SE<3>::type& A, const SE<3>::type& B)
+	const SE<3>::type& A, const SE<3>::type& B)
 {
 	matrix_MxM J = matrix_MxM::Zero();
 
@@ -281,8 +279,8 @@ SE<2>::tangent_vector SE<2>::log(const SE<2>::type& P)
 }
 
 void SE<2>::jacob_dP1DP2inv_de1e2(
-    const CPose2D& P1DP2inv, mrpt::optional_ref<matrix_TxT> df_de1,
-    mrpt::optional_ref<matrix_TxT> df_de2)
+	const CPose2D& P1DP2inv, mrpt::optional_ref<matrix_TxT> df_de1,
+	mrpt::optional_ref<matrix_TxT> df_de2)
 {
 	if (df_de1)
 	{
@@ -315,9 +313,8 @@ void SE<2>::jacob_dP1DP2inv_de1e2(
 
 void SE<2>::jacob_dDinvP1invP2_de1e2(
 	const CPose2D& Dinv, const CPose2D& P1, const CPose2D& P2,
-    mrpt::optional_ref<matrix_TxT> df_de1,
-    mrpt::optional_ref<matrix_TxT> df_de2)
-
+	mrpt::optional_ref<matrix_TxT> df_de1,
+	mrpt::optional_ref<matrix_TxT> df_de2)
 {
 	using mrpt::math::TPoint2D;
 	const double phi1 = P1.phi();

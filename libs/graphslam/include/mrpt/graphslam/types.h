@@ -40,7 +40,7 @@ struct graphslam_traits
 	using SE_TYPE = mrpt::poses::Lie::SE<edge_poses_type::rotation_dimensions>;
 	using matrix_TxT = typename SE_TYPE::matrix_TxT;
 	using Array_O =
-	    typename SE_TYPE::tangent_vector;  // An array of the correct size
+		typename SE_TYPE::tangent_vector;  // An array of the correct size
 	// for an "observation" (i.e. a
 	// relative pose in an edge)
 	using TPairJacobs = std::pair<matrix_TxT, matrix_TxT>;

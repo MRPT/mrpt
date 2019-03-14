@@ -109,7 +109,7 @@ struct SE<3>
 	 * \note Eq. 10.3.7 in \cite blanco_se3_tutorial
 	 */
 	static mrpt::math::CMatrixDouble12_6 jacob_dAexpeD_de(
-	    const CPose3D& A, const CPose3D& D);
+		const CPose3D& A, const CPose3D& D);
 
 	/** Jacobian of the pose composition A*B for SE(3) 3x4 (sub)matrices,
 	 * with respect to A.
@@ -131,9 +131,9 @@ struct SE<3>
 	 * linearized manifold for P1 and P2.
 	 */
 	static void jacob_dP1DP2inv_de1e2(
-	    const type& P1DP2inv,
-	    mrpt::optional_ref<matrix_TxT> df_de1 = std::nullopt,
-	    mrpt::optional_ref<matrix_TxT> df_de2 = std::nullopt);
+		const type& P1DP2inv,
+		mrpt::optional_ref<matrix_TxT> df_de1 = std::nullopt,
+		mrpt::optional_ref<matrix_TxT> df_de2 = std::nullopt);
 
 	/** Return one or both of the following 6x6 Jacobians, useful in
 	 * graph-slam problems:
@@ -144,9 +144,9 @@ struct SE<3>
 	 * \note Section 10.3.10 in \cite blanco_se3_tutorial
 	 */
 	static void jacob_dDinvP1invP2_de1e2(
-	    const type& Dinv, const type& P1, const type& P2,
-	    mrpt::optional_ref<matrix_TxT> df_de1 = std::nullopt,
-	    mrpt::optional_ref<matrix_TxT> df_de2 = std::nullopt);
+		const type& Dinv, const type& P1, const type& P2,
+		mrpt::optional_ref<matrix_TxT> df_de1 = std::nullopt,
+		mrpt::optional_ref<matrix_TxT> df_de2 = std::nullopt);
 };
 
 /** Traits for SE(2), rigid-body transformations in R^2 space.
@@ -178,9 +178,9 @@ struct SE<2>
 	 * increments in the linearized manifold for P1 and P2.
 	 */
 	static void jacob_dP1DP2inv_de1e2(
-	    const type& P1DP2inv,
-	    mrpt::optional_ref<matrix_TxT> df_de1 = std::nullopt,
-	    mrpt::optional_ref<matrix_TxT> df_de2 = std::nullopt);
+		const type& P1DP2inv,
+		mrpt::optional_ref<matrix_TxT> df_de1 = std::nullopt,
+		mrpt::optional_ref<matrix_TxT> df_de2 = std::nullopt);
 
 	/** Return one or both of the following 6x6 Jacobians, useful in
 	 * graph-slam problems:
@@ -190,9 +190,9 @@ struct SE<2>
 	 * linearized manifold for P1 and P2.
 	 */
 	static void jacob_dDinvP1invP2_de1e2(
-	    const type& Dinv, const type& P1, const type& P2,
-	    mrpt::optional_ref<matrix_TxT> df_de1 = std::nullopt,
-	    mrpt::optional_ref<matrix_TxT> df_de2 = std::nullopt);
+		const type& Dinv, const type& P1, const type& P2,
+		mrpt::optional_ref<matrix_TxT> df_de1 = std::nullopt,
+		mrpt::optional_ref<matrix_TxT> df_de2 = std::nullopt);
 };
 
 }  // namespace mrpt::poses::Lie

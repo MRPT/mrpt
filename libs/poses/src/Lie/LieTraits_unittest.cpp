@@ -22,13 +22,13 @@ using namespace std;
 // List of "random" poses to test with (x,y,z,yaw,pitch,roll) (angles in
 // degrees)
 static const std::vector<mrpt::poses::CPose3D> ptc = {
-    {.0, .0, .0, DEG2RAD(.0), DEG2RAD(.0), DEG2RAD(.0)},
-    {1.0, 2.0, 3.0, DEG2RAD(.0), DEG2RAD(.0), DEG2RAD(.0)},
-    {1.0, 2.0, 3.0, DEG2RAD(10.0), DEG2RAD(.0), DEG2RAD(.0)},
-    {1.0, 2.0, 3.0, DEG2RAD(.0), DEG2RAD(1.0), DEG2RAD(.0)},
-    {1.0, 2.0, 3.0, DEG2RAD(.0), DEG2RAD(.0), DEG2RAD(1.0)},
-    {-6.0, 2.0, 3.0, DEG2RAD(40.0), DEG2RAD(20.0), DEG2RAD(15.0)},
-    {1.0, 8.0, 0.0, DEG2RAD(-45.0), DEG2RAD(10.0), DEG2RAD(70.0)}};
+	{.0, .0, .0, DEG2RAD(.0), DEG2RAD(.0), DEG2RAD(.0)},
+	{1.0, 2.0, 3.0, DEG2RAD(.0), DEG2RAD(.0), DEG2RAD(.0)},
+	{1.0, 2.0, 3.0, DEG2RAD(10.0), DEG2RAD(.0), DEG2RAD(.0)},
+	{1.0, 2.0, 3.0, DEG2RAD(.0), DEG2RAD(1.0), DEG2RAD(.0)},
+	{1.0, 2.0, 3.0, DEG2RAD(.0), DEG2RAD(.0), DEG2RAD(1.0)},
+	{-6.0, 2.0, 3.0, DEG2RAD(40.0), DEG2RAD(20.0), DEG2RAD(15.0)},
+	{1.0, 8.0, 0.0, DEG2RAD(-45.0), DEG2RAD(10.0), DEG2RAD(70.0)}};
 
 template <class POSE_TYPE>
 class SE_traits_tests : public ::testing::Test
@@ -74,7 +74,7 @@ class SE_traits_tests : public ::testing::Test
 	}
 
 	void test_jacobs_P1DP2inv(
-	    const CPose3D& P1_, const CPose3D& Pd_, const CPose3D& P2_)
+		const CPose3D& P1_, const CPose3D& Pd_, const CPose3D& P2_)
 	{
 		const POSE_TYPE P1(P1_);
 		const POSE_TYPE Pd(Pd_);
@@ -111,8 +111,8 @@ class SE_traits_tests : public ::testing::Test
 				x_mean,
 				std::function<void(
 					const CArrayDouble<2 * SE_TYPE::DOFs>& x,
-			        const TParams& params, CArrayDouble<SE_TYPE::DOFs>& Y)>(
-			        &func_numeric_P1DP2inv),
+					const TParams& params, CArrayDouble<SE_TYPE::DOFs>& Y)>(
+					&func_numeric_P1DP2inv),
 				x_incrs, params, numJacobs);
 
 			numJacobs.extractMatrix(0, 0, num_J1);
@@ -145,8 +145,8 @@ class SE_traits_tests : public ::testing::Test
 	}
 
 	static void func_numeric_DinvP1InvP2(
-	    const CArrayDouble<2 * SE_TYPE::DOFs>& x, const TParams& params,
-	    CArrayDouble<SE_TYPE::DOFs>& Y)
+		const CArrayDouble<2 * SE_TYPE::DOFs>& x, const TParams& params,
+		CArrayDouble<SE_TYPE::DOFs>& Y)
 	{
 		typename SE_TYPE::tangent_vector eps1, eps2;
 		for (size_t i = 0; i < SE_TYPE::DOFs; i++)
@@ -168,7 +168,7 @@ class SE_traits_tests : public ::testing::Test
 		Pd.getInverseHomogeneousMatrix(Pd_inv_hm);
 
 		const CPose3D DinvP1invP2_(
-		    CMatrixDouble44(Pd_inv_hm * P1_inv_hm * P2hm));
+			CMatrixDouble44(Pd_inv_hm * P1_inv_hm * P2hm));
 		const POSE_TYPE DinvP1invP2(DinvP1invP2_);
 
 		// Pseudo-logarithm:
@@ -176,7 +176,7 @@ class SE_traits_tests : public ::testing::Test
 	}
 
 	void test_jacobs_DinvP1InvP2(
-	    const CPose3D& P1_, const CPose3D& Pd_, const CPose3D& P2_)
+		const CPose3D& P1_, const CPose3D& Pd_, const CPose3D& P2_)
 	{
 		const POSE_TYPE P1(P1_);
 		const POSE_TYPE Pd(Pd_);
@@ -204,12 +204,12 @@ class SE_traits_tests : public ::testing::Test
 			x_incrs.assign(1e-4);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
-			    x_mean,
-			    std::function<void(
-			        const CArrayDouble<2 * SE_TYPE::DOFs>& x,
-			        const TParams& params, CArrayDouble<SE_TYPE::DOFs>& Y)>(
-			        &func_numeric_DinvP1InvP2),
-			    x_incrs, params, numJacobs);
+				x_mean,
+				std::function<void(
+					const CArrayDouble<2 * SE_TYPE::DOFs>& x,
+					const TParams& params, CArrayDouble<SE_TYPE::DOFs>& Y)>(
+					&func_numeric_DinvP1InvP2),
+				x_incrs, params, numJacobs);
 
 			numJacobs.extractMatrix(0, 0, num_J1);
 			numJacobs.extractMatrix(0, DIMS, num_J2);
@@ -218,26 +218,26 @@ class SE_traits_tests : public ::testing::Test
 		const double max_eror = 1e-3;
 
 		EXPECT_NEAR(0, (num_J1 - J1).array().abs().sum(), max_eror)
-		    << "p1: " << P1 << endl
-		    << "d: " << Pd << endl
-		    << "p2: " << P2 << endl
-		    << "Numeric J1:\n"
-		    << num_J1 << endl
-		    << "Implemented J1:\n"
-		    << J1 << endl
-		    << "Error:\n"
-		    << J1 - num_J1 << endl;
+			<< std::setprecision(3) << "p1: " << P1 << endl
+			<< "d: " << Pd << endl
+			<< "p2: " << P2 << endl
+			<< "Numeric J1:\n"
+			<< num_J1 << endl
+			<< "Implemented J1:\n"
+			<< J1 << endl
+			<< "Error:\n"
+			<< J1 - num_J1 << endl;
 
 		EXPECT_NEAR(0, (num_J2 - J2).array().abs().sum(), max_eror)
-		    << "p1: " << P1 << endl
-		    << "d: " << Pd << endl
-		    << "p2: " << P2 << endl
-		    << "Numeric J2:\n"
-		    << num_J2 << endl
-		    << "Implemented J2:\n"
-		    << J2 << endl
-		    << "Error:\n"
-		    << J2 - num_J2 << endl;
+			<< "p1: " << P1 << endl
+			<< "d: " << Pd << endl
+			<< "p2: " << P2 << endl
+			<< "Numeric J2:\n"
+			<< num_J2 << endl
+			<< "Implemented J2:\n"
+			<< J2 << endl
+			<< "Error:\n"
+			<< J2 - num_J2 << endl;
 	}
 
 	void tests_jacobs_P1DP2inv()

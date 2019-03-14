@@ -57,7 +57,7 @@ void FrameTransformer<DIM>::sendTransform(
 template <int DIM>
 FrameLookUpStatus FrameTransformer<DIM>::lookupTransform(
 	const std::string& target_frame, const std::string& source_frame,
-    typename base_t::light_type& child_wrt_parent,
+	typename base_t::light_type& child_wrt_parent,
 	const mrpt::system::TTimeStamp query_time, const double timeout_secs)
 {
 	ASSERTMSG_(
