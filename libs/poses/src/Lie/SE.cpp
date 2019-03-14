@@ -132,8 +132,8 @@ mrpt::math::CMatrixDouble12_6 SE<3>::jacob_dAexpeD_de(
 }
 
 void SE<3>::jacob_dP1DP2inv_de1e2(
-    const CPose3D& P1DP2inv, mrpt::optional_ref<matrix_VxV> df_de1,
-    mrpt::optional_ref<matrix_VxV> df_de2)
+    const CPose3D& P1DP2inv, mrpt::optional_ref<matrix_TxT> df_de1,
+    mrpt::optional_ref<matrix_TxT> df_de2)
 {
 	const CMatrixDouble33& R =
 		P1DP2inv.getRotationMatrix();  // The rotation matrix.
@@ -143,7 +143,7 @@ void SE<3>::jacob_dP1DP2inv_de1e2(
 
 	if (df_de1)
 	{
-		matrix_VxV& J1 = df_de1.value().get();
+		matrix_TxT& J1 = df_de1.value().get();
 		// This Jacobian has the structure:
 		//           [   I_3    |      -[d_t]_x      ]
 		//  Jacob1 = [ ---------+------------------- ]
@@ -179,7 +179,7 @@ void SE<3>::jacob_dP1DP2inv_de1e2(
 		//  Jacob2 = [ ---------+------------------- ]
 		//           [   0_3x3  |   dLnR_dR * (...)  ]
 		//
-		matrix_VxV& J2 = df_de2.value().get();
+		matrix_TxT& J2 = df_de2.value().get();
 		J2.zeros();
 
 		for (int i = 0; i < 3; i++)
@@ -201,13 +201,17 @@ void SE<3>::jacob_dP1DP2inv_de1e2(
 
 void SE<3>::jacob_dDinvP1invP2_de1e2(
 	const CPose3D& Dinv, const CPose3D& P1, const CPose3D& P2,
-    mrpt::optional_ref<matrix_VxV> df_de1,
-    mrpt::optional_ref<matrix_VxV> df_de2)
+    mrpt::optional_ref<matrix_TxT> df_de1,
+    mrpt::optional_ref<matrix_TxT> df_de2)
 {
+	using namespace mrpt::math;
+
 	// The rotation matrix of the overall error expression:
-	const CPose3D DinvP1invP2 = Dinv + (-P1) + P2;
+	const CPose3D P1inv = -P1;
+	const CPose3D DinvP1invP2 = Dinv + P1inv + P2;
 
 	// Common part: d_PseudoLn(T)_dT:
+	// (6x12 matrix)
 	const auto dLnT_dT = SE<3>::jacob_dlogv_dv(DinvP1invP2);
 
 	// See section 10.3.10 of Tech. report:
@@ -215,18 +219,46 @@ void SE<3>::jacob_dDinvP1invP2_de1e2(
 	// optimization"
 	if (df_de1)
 	{
-		matrix_VxV& J1 = df_de1.value().get();
+		matrix_TxT& J1 = df_de1.value().get();
 
-		const auto dP1e_de = SE<3>::jacob_dDexpe_de(P1);
+		const CMatrixFixedNumeric<double, 12, 12> J1a =
+		    SE<3>::jacob_dAB_dA(Dinv, P1inv + P2);
+		const CMatrixDouble12_6 J1b = -SE<3>::jacob_dDexpe_de(Dinv);
 
-		J1 = dLnT_dT * dP1e_de;
+		std::cout << "TRACE J1:\n" << J1a << "\n";
+
+		J1 = dLnT_dT * J1a * J1b;
 	}
 	if (df_de2)
 	{
-		matrix_VxV& J2 = df_de2.value().get();
+		matrix_TxT& J2 = df_de2.value().get();
 		const auto dAe_de = SE<3>::jacob_dDexpe_de(DinvP1invP2);
 		J2 = dLnT_dT * dAe_de;
 	}
+}
+
+SE<3>::matrix_MxM SE<3>::jacob_dAB_dA(
+    const SE<3>::type& A, const SE<3>::type& B)
+{
+	using namespace mrpt::math;
+
+	matrix_MxM J = matrix_MxM::Zero();
+	// J_wrt_A = kron(B',eye(3));
+	const auto B_HM =
+	    B.getHomogeneousMatrixVal<CMatrixDouble44>().transpose().eval();
+	for (int c = 0; c < 4; c++)
+		for (int r = 0; r < 4; r++)
+			for (int q = 0; q < 3; q++) J(c * 3 + q, r * 3 + q) = B_HM(r, c);
+
+	return J;
+}
+
+SE<3>::matrix_MxM SE<3>::jacob_dAB_dB(
+    const SE<3>::type& A, const SE<3>::type& B)
+{
+	matrix_MxM J = matrix_MxM::Zero();
+
+	return J;
 }
 
 // ====== SE(2) ===========
@@ -249,12 +281,12 @@ SE<2>::tangent_vector SE<2>::log(const SE<2>::type& P)
 }
 
 void SE<2>::jacob_dP1DP2inv_de1e2(
-    const CPose2D& P1DP2inv, mrpt::optional_ref<matrix_VxV> df_de1,
-    mrpt::optional_ref<matrix_VxV> df_de2)
+    const CPose2D& P1DP2inv, mrpt::optional_ref<matrix_TxT> df_de1,
+    mrpt::optional_ref<matrix_TxT> df_de2)
 {
 	if (df_de1)
 	{
-		matrix_VxV& J1 = df_de1.value().get();
+		matrix_TxT& J1 = df_de1.value().get();
 		// This Jacobian has the structure:
 		//           [   I_2    |  -[d_t]_x      ]
 		//  Jacob1 = [ ---------+--------------- ]
@@ -271,7 +303,7 @@ void SE<2>::jacob_dP1DP2inv_de1e2(
 		//  Jacob2 = [ ---------+------- ]
 		//           [     0    |    -1  ]
 		//
-		matrix_VxV& J2 = df_de2.value().get();
+		matrix_TxT& J2 = df_de2.value().get();
 
 		const double ccos = cos(P1DP2inv.phi());
 		const double csin = sin(P1DP2inv.phi());
@@ -283,8 +315,8 @@ void SE<2>::jacob_dP1DP2inv_de1e2(
 
 void SE<2>::jacob_dDinvP1invP2_de1e2(
 	const CPose2D& Dinv, const CPose2D& P1, const CPose2D& P2,
-    mrpt::optional_ref<matrix_VxV> df_de1,
-    mrpt::optional_ref<matrix_VxV> df_de2)
+    mrpt::optional_ref<matrix_TxT> df_de1,
+    mrpt::optional_ref<matrix_TxT> df_de2)
 
 {
 	using mrpt::math::TPoint2D;
