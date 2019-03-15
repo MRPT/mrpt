@@ -358,7 +358,7 @@ bool CRawlog::readActionObservationPair(
 	{
 		std::cerr << "[CRawlog::readActionObservationPair] Found exception:"
 				  << std::endl
-		          << mrpt::exception_to_str(e) << std::endl;
+				  << mrpt::exception_to_str(e) << std::endl;
 		return false;
 	}
 	catch (...)
@@ -420,7 +420,7 @@ bool CRawlog::getActionObservationPairOrObservation(
 	{
 		std::cerr << "[CRawlog::readActionObservationPair] Found exception:"
 				  << std::endl
-		          << mrpt::exception_to_str(e) << std::endl;
+				  << mrpt::exception_to_str(e) << std::endl;
 		return false;
 	}
 	catch (...)
