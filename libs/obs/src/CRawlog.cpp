@@ -254,7 +254,7 @@ bool CRawlog::loadFromRawLogFile(
 		}
 		catch (const std::exception& e)
 		{
-			std::cerr << e.what() << std::endl;
+			std::cerr << mrpt::exception_to_str(e) << std::endl;
 			keepReading = false;
 		}
 		catch (...)
@@ -295,8 +295,9 @@ bool CRawlog::saveToRawLogFile(const std::string& fileName) const
 		for (const auto& m_seqOfActOb : m_seqOfActObs) f << *m_seqOfActOb;
 		return true;
 	}
-	catch (...)
+	catch (const std::exception& e)
 	{
+		std::cerr << mrpt::exception_to_str(e) << std::endl;
 		return false;
 	}
 }
@@ -357,7 +358,7 @@ bool CRawlog::readActionObservationPair(
 	{
 		std::cerr << "[CRawlog::readActionObservationPair] Found exception:"
 				  << std::endl
-				  << e.what() << std::endl;
+		          << mrpt::exception_to_str(e) << std::endl;
 		return false;
 	}
 	catch (...)
@@ -419,7 +420,7 @@ bool CRawlog::getActionObservationPairOrObservation(
 	{
 		std::cerr << "[CRawlog::readActionObservationPair] Found exception:"
 				  << std::endl
-				  << e.what() << std::endl;
+		          << mrpt::exception_to_str(e) << std::endl;
 		return false;
 	}
 	catch (...)
@@ -530,8 +531,9 @@ bool CRawlog::getActionObservationPair(
 
 		return true;
 	}
-	catch (std::exception&)
+	catch (const std::exception& e)
 	{
+		std::cerr << mrpt::exception_to_str(e) << std::endl;
 		return false;
 	}
 	catch (...)
