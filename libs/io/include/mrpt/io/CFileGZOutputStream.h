@@ -10,6 +10,7 @@
 
 #include <mrpt/io/CStream.h>
 #include <mrpt/core/pimpl.h>
+#include <mrpt/core/optional_ref.h>
 
 namespace mrpt::io
 {
@@ -52,7 +53,9 @@ class CFileGZOutputStream : public CStream
 	 * \param compress_level 0:no compression, 1:fastest, 9:best
 	 * \return true on success, false on any error.
 	 */
-	bool open(const std::string& fileName, int compress_level = 1);
+	bool open(
+		const std::string& fileName, int compress_level = 1,
+		mrpt::optional_ref<std::string> error_msg = std::nullopt);
 	/** Close the file */
 	void close();
 	/** Returns true if the file was open without errors. */

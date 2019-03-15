@@ -10,6 +10,7 @@
 
 #include <mrpt/io/CStream.h>
 #include <mrpt/core/pimpl.h>
+#include <mrpt/core/optional_ref.h>
 
 namespace mrpt::io
 {
@@ -50,7 +51,9 @@ class CFileGZInputStream : public CStream
 	 * \param fileName The file to be open in this stream
 	 * \return false if there's an error opening the file, true otherwise
 	 */
-	bool open(const std::string& fileName);
+	bool open(
+		const std::string& fileName,
+		mrpt::optional_ref<std::string> error_msg = std::nullopt);
 	/** Closes the file */
 	void close();
 	/** Returns true if the file was open without errors. */
