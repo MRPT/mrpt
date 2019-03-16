@@ -40,8 +40,8 @@ class IsStreamable {
  private:
   template <class TT>
   static auto test(int)
-      -> decltype(std::declval<std::stringstream&>() << std::declval<TT>(),
-                  std::true_type());
+	  -> decltype(std::declval<std::stringstream&>() << std::declval<TT>(),
+				  std::true_type());
 
   template <class>
   static auto test(...) -> std::false_type;
@@ -54,7 +54,7 @@ template <class T>
 class ArgToStream {
  public:
   static void impl(std::stringstream& stream, T&& arg) {
-    stream << std::forward<T>(arg);
+	stream << std::forward<T>(arg);
   }
 };
 
@@ -66,19 +66,19 @@ inline void FormatStream(std::stringstream& stream, char const* text) {
 // Following: http://en.cppreference.com/w/cpp/language/parameter_pack
 template <class T, typename... Args>
 void FormatStream(std::stringstream& stream, char const* text, T&& arg,
-                  Args&&... args) {
+				  Args&&... args) {
   static_assert(IsStreamable<T>::value,
-                "One of the args has no ostream overload!");
+				"One of the args has no ostream overload!");
   for (; *text != '\0'; ++text) {
-    if (*text == '%') {
-      ArgToStream<T&&>::impl(stream, std::forward<T>(arg));
-      FormatStream(stream, text + 1, std::forward<Args>(args)...);
-      return;
-    }
-    stream << *text;
+	if (*text == '%') {
+	  ArgToStream<T&&>::impl(stream, std::forward<T>(arg));
+	  FormatStream(stream, text + 1, std::forward<Args>(args)...);
+	  return;
+	}
+	stream << *text;
   }
   stream << "\nFormat-Warning: There are " << sizeof...(Args) + 1
-         << " args unused.";
+		 << " args unused.";
   return;
 }
 
@@ -101,42 +101,42 @@ inline std::string FormatString() { return std::string(); }
 
 namespace Sophus {
 void ensureFailed(char const* function, char const* file, int line,
-                  char const* description);
+				  char const* description);
 }
 
 #define SOPHUS_ENSURE(expr, ...)                                            \
   ((expr) ? ((void)0)                                                       \
-          : ::Sophus::ensureFailed(                                         \
-                SOPHUS_FUNCTION, __FILE__, __LINE__,                        \
-                Sophus::details::FormatString(##__VA_ARGS__)                \
-                    .c_str()))
+		  : ::Sophus::ensureFailed(                                         \
+				SOPHUS_FUNCTION, __FILE__, __LINE__,                        \
+				Sophus::details::FormatString(##__VA_ARGS__)                \
+					.c_str()))
 #else
 namespace Sophus {
 template <class... Args>
 SOPHUS_FUNC void defaultEnsure(char const* function, char const* file, int line,
-                               char const* description, Args&&... args) {
+							   char const* description, Args&&... args) {
   std::printf("Sophus ensure failed in function '%s', file '%s', line %d.\n",
-              function, file, line);
+			  function, file, line);
 #ifdef __CUDACC__
   std::printf("%s", description);
 #else
   std::cout << details::FormatString(description, std::forward<Args>(args)...)
-            << std::endl;
+			<< std::endl;
   std::abort();
 #endif
 }
 }  // namespace Sophus
 #define SOPHUS_ENSURE(expr, ...)                                       \
   ((expr) ? ((void)0)                                                  \
-          : Sophus::defaultEnsure(SOPHUS_FUNCTION, __FILE__, __LINE__, \
-                                  ##__VA_ARGS__))
+		  : Sophus::defaultEnsure(SOPHUS_FUNCTION, __FILE__, __LINE__, \
+								  ##__VA_ARGS__))
 #endif
 
 namespace Sophus {
 
 template <class Scalar>
 struct Constants {
-  SOPHUS_FUNC static Scalar epsilon() { return Scalar(1e-10); }
+  SOPHUS_FUNC static Scalar epsilon() { return Scalar(1e-3); }
 
   SOPHUS_FUNC static Scalar pi() { return Scalar(M_PI); }
 };
@@ -144,7 +144,7 @@ struct Constants {
 template <>
 struct Constants<float> {
   SOPHUS_FUNC static float constexpr epsilon() {
-    return static_cast<float>(1e-5);
+	return static_cast<float>(1e-5);
   }
 
   SOPHUS_FUNC static float constexpr pi() { return static_cast<float>(M_PI); }
@@ -173,23 +173,23 @@ class optional {
   explicit operator bool() const { return is_valid_; }
 
   T const* operator->() const {
-    SOPHUS_ENSURE(is_valid_, "must be valid");
-    return &type_;
+	SOPHUS_ENSURE(is_valid_, "must be valid");
+	return &type_;
   }
 
   T* operator->() {
-    SOPHUS_ENSURE(is_valid_, "must be valid");
-    return &type_;
+	SOPHUS_ENSURE(is_valid_, "must be valid");
+	return &type_;
   }
 
   T const& operator*() const {
-    SOPHUS_ENSURE(is_valid_, "must be valid");
-    return type_;
+	SOPHUS_ENSURE(is_valid_, "must be valid");
+	return type_;
   }
 
   T& operator*() {
-    SOPHUS_ENSURE(is_valid_, "must be valid");
-    return type_;
+	SOPHUS_ENSURE(is_valid_, "must be valid");
+	return type_;
   }
 
  private:
