@@ -43,6 +43,12 @@ class SE_traits_tests : public ::testing::Test
 		typename SE_TYPE::type P1, D, P2;
 	};
 
+	template <unsigned int MAT_LEN>
+	struct TParamsMat
+	{
+		CArrayDouble<MAT_LEN> Avec, Bvec;
+	};
+
 	static void func_numeric_P1DP2inv(
 		const CArrayDouble<2 * SE_TYPE::DOFs>& x, const TParams& params,
 		CArrayDouble<SE_TYPE::DOFs>& Y)
@@ -240,6 +246,108 @@ class SE_traits_tests : public ::testing::Test
 			<< J2 - num_J2 << endl;
 	}
 
+	static void func_numeric_dAB_dA(
+	    const CArrayDouble<SE_TYPE::MANIFOLD_DIM>& x,
+	    const TParamsMat<SE_TYPE::MANIFOLD_DIM>& params,
+	    CArrayDouble<SE_TYPE::MANIFOLD_DIM>& Y)
+	{
+		POSE_TYPE A, B;
+		A.setFrom12Vector(params.Avec + x);
+		B.setFrom12Vector(params.Bvec);
+		(A + B).getAs12Vector(Y);
+	}
+
+	static void func_numeric_dAB_dB(
+	    const CArrayDouble<SE_TYPE::MANIFOLD_DIM>& x,
+	    const TParamsMat<SE_TYPE::MANIFOLD_DIM>& params,
+	    CArrayDouble<SE_TYPE::MANIFOLD_DIM>& Y)
+	{
+		POSE_TYPE A, B;
+		A.setFrom12Vector(params.Avec);
+		B.setFrom12Vector(params.Bvec + x);
+		(A + B).getAs12Vector(Y);
+	}
+
+	void test_jacobs_AB(const CPose3D& A_, const CPose3D& B_)
+	{
+		const POSE_TYPE A(A_);
+		const POSE_TYPE B(B_);
+
+		constexpr auto N = SE_TYPE::MANIFOLD_DIM;
+
+		// Theoretical results:
+		const auto dAB_A = SE_TYPE::jacob_dAB_dA(A, B);
+		const auto dAB_B = SE_TYPE::jacob_dAB_dB(A, B);
+
+		// Numerical approx: dAB_A
+		CMatrixFixedNumeric<double, N, N> num_dAB_A;
+		{
+			CArrayDouble<N> x_mean;
+			x_mean.assign(0);
+
+			TParamsMat<N> params;
+			A.getAs12Vector(params.Avec);
+			B.getAs12Vector(params.Bvec);
+
+			CArrayDouble<N> x_incrs;
+			x_incrs.assign(1e-4);
+			CMatrixDouble numJacobs;
+			mrpt::math::estimateJacobian(
+			    x_mean,
+			    std::function<void(
+			        const CArrayDouble<N>& x, const TParamsMat<N>& params,
+			        CArrayDouble<N>& Y)>(&func_numeric_dAB_dA),
+			    x_incrs, params, numJacobs);
+
+			num_dAB_A = numJacobs;
+		}
+
+		// Numerical approx: dAB_B
+		CMatrixFixedNumeric<double, N, N> num_dAB_B;
+		{
+			CArrayDouble<N> x_mean;
+			x_mean.assign(0);
+
+			TParamsMat<N> params;
+			A.getAs12Vector(params.Avec);
+			B.getAs12Vector(params.Bvec);
+
+			CArrayDouble<N> x_incrs;
+			x_incrs.assign(1e-4);
+			CMatrixDouble numJacobs;
+			mrpt::math::estimateJacobian(
+			    x_mean,
+			    std::function<void(
+			        const CArrayDouble<N>& x, const TParamsMat<N>& params,
+			        CArrayDouble<N>& Y)>(&func_numeric_dAB_dB),
+			    x_incrs, params, numJacobs);
+
+			num_dAB_B = numJacobs;
+		}
+
+		const double max_eror = 1e-3;
+
+		EXPECT_NEAR(0, (num_dAB_A - dAB_A).array().abs().sum(), max_eror)
+		    << std::setprecision(3) << "A: " << A << endl
+		    << "B: " << B << endl
+		    << "Numeric dAB_A:\n"
+		    << num_dAB_A << endl
+		    << "Implemented dAB_A:\n"
+		    << dAB_A << endl
+		    << "Error:\n"
+		    << dAB_A - num_dAB_A << endl;
+
+		EXPECT_NEAR(0, (num_dAB_B - dAB_B).array().abs().sum(), max_eror)
+		    << std::setprecision(3) << "A: " << A << endl
+		    << "B: " << B << endl
+		    << "Numeric dAB_B:\n"
+		    << num_dAB_B << endl
+		    << "Implemented dAB_B:\n"
+		    << dAB_B << endl
+		    << "Error:\n"
+		    << dAB_B - num_dAB_B << endl;
+	}
+
 	void tests_jacobs_P1DP2inv()
 	{
 		for (const auto& p1 : ptc)
@@ -253,13 +361,20 @@ class SE_traits_tests : public ::testing::Test
 			for (const auto& p2 : ptc)
 				for (const auto& pd : ptc) test_jacobs_DinvP1InvP2(p1, pd, p2);
 	}
+
+	void tests_jacobs_dAB_dAB()
+	{
+		for (const auto& p1 : ptc)
+			for (const auto& p2 : ptc) test_jacobs_AB(p1, p2);
+	}
 };
 
 using SE3_traits_tests = SE_traits_tests<mrpt::poses::CPose3D>;
 using SE2_traits_tests = SE_traits_tests<mrpt::poses::CPose2D>;
 
 TEST_F(SE3_traits_tests, SE3_jacobs_P1DP2inv) { tests_jacobs_P1DP2inv(); }
-TEST_F(SE2_traits_tests, SE2_jacobs_P1DP2inv) { tests_jacobs_P1DP2inv(); }
-
 TEST_F(SE3_traits_tests, SE3_jacobs_DinvP1InvP2) { tests_jacobs_DinvP1InvP2(); }
+TEST_F(SE3_traits_tests, SE3_jacobs_dAB_dAB) { tests_jacobs_dAB_dAB(); }
+
+TEST_F(SE2_traits_tests, SE2_jacobs_P1DP2inv) { tests_jacobs_P1DP2inv(); }
 TEST_F(SE2_traits_tests, SE2_jacobs_DinvP1InvP2) { tests_jacobs_DinvP1InvP2(); }
