@@ -241,12 +241,12 @@ SE<3>::matrix_MxM SE<3>::jacob_dAB_dA(
 	using namespace mrpt::math;
 
 	matrix_MxM J = matrix_MxM::Zero();
-	// J_wrt_A = kron(B',eye(3));
+	// J_wrt_A = kron(B,eye(3));
 	const auto B_HM =
 		B.getHomogeneousMatrixVal<CMatrixDouble44>().transpose().eval();
 	for (int c = 0; c < 4; c++)
 		for (int r = 0; r < 4; r++)
-			for (int q = 0; q < 3; q++) J(c * 3 + q, r * 3 + q) = B_HM(r, c);
+			for (int q = 0; q < 3; q++) J(r * 3 + q, c * 3 + q) = B_HM(r, c);
 
 	return J;
 }
@@ -255,7 +255,9 @@ SE<3>::matrix_MxM SE<3>::jacob_dAB_dB(
 	const SE<3>::type& A, const SE<3>::type& B)
 {
 	matrix_MxM J = matrix_MxM::Zero();
-
+	// J_wrt_B = kron(eye(3),A_rot);
+	const auto& AR = A.getRotationMatrix();
+	for (int c = 0; c < 4; c++) J.block<3, 3>(c * 3, c * 3) = AR;
 	return J;
 }
 

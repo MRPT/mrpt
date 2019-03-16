@@ -34,7 +34,10 @@ struct SE;
 template <>
 struct SE<3>
 {
+	/** Number of actual degrees of freedom for this transformation */
 	constexpr static size_t DOFs = 6;
+	/** Dimensionality of the matrix manifold (3x4=12 upper part of the 4x4) */
+	constexpr static size_t MANIFOLD_DIM = 3 * 4;
 	using tangent_vector = mrpt::math::CArrayDouble<DOFs>;
 	using type = CPose3D;
 	using light_type = mrpt::math::TPose3D;
@@ -155,7 +158,10 @@ struct SE<3>
 template <>
 struct SE<2>
 {
+	/** Number of actual degrees of freedom for this transformation */
 	constexpr static size_t DOFs = 3;
+	/** Dimensionality of the matrix manifold (3x3=9) */
+	constexpr static size_t MANIFOLD_DIM = 3 * 3;
 	using tangent_vector = mrpt::math::CArrayDouble<DOFs>;
 	using type = CPose2D;
 	using light_type = mrpt::math::TPose2D;
