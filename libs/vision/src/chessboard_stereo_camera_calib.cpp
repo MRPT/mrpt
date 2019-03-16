@@ -16,6 +16,7 @@
 #include <mrpt/vision/chessboard_stereo_camera_calib.h>
 #include <mrpt/vision/pinhole.h>
 #include <mrpt/poses/CPose3DQuat.h>
+#include <mrpt/poses/Lie/SE.h>
 #include <mrpt/math/robust_kernels.h>
 #include <mrpt/math/wrap2pi.h>
 #include <algorithm>  // reverse()

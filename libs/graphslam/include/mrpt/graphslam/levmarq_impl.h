@@ -60,9 +60,7 @@ struct AuxPoseOPlus<CPose3D, gst>
 	static inline void sumIncr(CPose3D& p, const typename gst::Array_O& delta)
 	{
 		// exp_delta_i = Exp_SE( delta_i )
-		typename gst::graph_t::constraint_t::type_value exp_delta_pose(
-			UNINITIALIZED_POSE);
-		gst::SE_TYPE::exp(delta, exp_delta_pose);
+		auto exp_delta_pose = gst::SE_TYPE::exp(delta);
 		p = p + exp_delta_pose;
 	}
 };
@@ -75,9 +73,7 @@ struct AuxPoseOPlus<CPose3DPDFGaussianInf, gst>
 	static inline void sumIncr(POSE& p, const typename gst::Array_O& delta)
 	{
 		// exp_delta_i = Exp_SE( delta_i )
-		typename gst::graph_t::constraint_t::type_value exp_delta_pose(
-			UNINITIALIZED_POSE);
-		gst::SE_TYPE::exp(delta, exp_delta_pose);
+		auto exp_delta_pose = gst::SE_TYPE::exp(delta);
 		p = p + exp_delta_pose;
 	}
 };
@@ -94,10 +90,10 @@ struct AuxErrorEval<CPose2D, gst>
 {
 	template <class POSE, class VEC, class EDGE_ITERATOR>
 	static inline void computePseudoLnError(
-		const POSE& DinvP1invP2, VEC& err, const EDGE_ITERATOR& edge)
+		const POSE& DinvP1invP2, VEC& err,
+		[[maybe_unused]] const EDGE_ITERATOR& edge)
 	{
-		MRPT_UNUSED_PARAM(edge);
-		gst::SE_TYPE::pseudo_ln(DinvP1invP2, err);
+		err = gst::SE_TYPE::log(DinvP1invP2);
 	}
 
 	template <class MAT, class EDGE_ITERATOR>
@@ -132,10 +128,10 @@ struct AuxErrorEval<CPose3D, gst>
 {
 	template <class POSE, class VEC, class EDGE_ITERATOR>
 	static inline void computePseudoLnError(
-		const POSE& DinvP1invP2, VEC& err, const EDGE_ITERATOR& edge)
+		const POSE& DinvP1invP2, VEC& err,
+		[[maybe_unused]] const EDGE_ITERATOR& edge)
 	{
-		MRPT_UNUSED_PARAM(edge);
-		gst::SE_TYPE::pseudo_ln(DinvP1invP2, err);
+		err = gst::SE_TYPE::log(DinvP1invP2);
 	}
 
 	template <class MAT, class EDGE_ITERATOR>
@@ -169,9 +165,10 @@ struct AuxErrorEval<CPosePDFGaussianInf, gst>
 {
 	template <class POSE, class VEC, class EDGE_ITERATOR>
 	static inline void computePseudoLnError(
-		const POSE& DinvP1invP2, VEC& err, const EDGE_ITERATOR& edge)
+		const POSE& DinvP1invP2, VEC& err,
+		[[maybe_unused]] const EDGE_ITERATOR& edge)
 	{
-		gst::SE_TYPE::pseudo_ln(DinvP1invP2, err);
+		err = gst::SE_TYPE::log(DinvP1invP2);
 	}
 
 	template <class MAT, class EDGE_ITERATOR>
@@ -201,10 +198,10 @@ struct AuxErrorEval<CPose3DPDFGaussianInf, gst>
 {
 	template <class POSE, class VEC, class EDGE_ITERATOR>
 	static inline void computePseudoLnError(
-		const POSE& DinvP1invP2, VEC& err, const EDGE_ITERATOR& edge)
+		const POSE& DinvP1invP2, VEC& err,
+		[[maybe_unused]] const EDGE_ITERATOR& edge)
 	{
-		MRPT_UNUSED_PARAM(edge);
-		gst::SE_TYPE::pseudo_ln(DinvP1invP2, err);
+		err = gst::SE_TYPE::log(DinvP1invP2);
 	}
 
 	template <class MAT, class EDGE_ITERATOR>
@@ -278,8 +275,8 @@ double computeJacobiansAndErrors(
 				newMapEntry;
 		newMapEntry.first = ids;
 		gst::SE_TYPE::jacob_dDinvP1invP2_de1e2(
-			-(*EDGE_POSE), *P1, *P2, &newMapEntry.second.first,
-			&newMapEntry.second.second);
+			-(*EDGE_POSE), *P1, *P2, newMapEntry.second.first,
+			newMapEntry.second.second);
 
 		// And insert into map of jacobians:
 		lstJacobians.insert(lstJacobians.end(), newMapEntry);
