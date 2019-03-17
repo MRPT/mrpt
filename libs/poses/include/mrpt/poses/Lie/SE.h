@@ -36,9 +36,13 @@ struct SE<3>
 {
 	/** Number of actual degrees of freedom for this transformation */
 	constexpr static size_t DOFs = 6;
+
 	/** Dimensionality of the matrix manifold (3x4=12 upper part of the 4x4) */
 	constexpr static size_t MANIFOLD_DIM = 3 * 4;
+
 	using tangent_vector = mrpt::math::CArrayDouble<DOFs>;
+	using manifold_vector = mrpt::math::CArrayDouble<MANIFOLD_DIM>;
+
 	using type = CPose3D;
 	using light_type = mrpt::math::TPose3D;
 
@@ -78,6 +82,13 @@ struct SE<3>
 	 * For the formulas, see section 9.4.2 in \cite blanco_se3_tutorial
 	 */
 	static tangent_vector log(const type& P);
+
+	/** Returns a vector with all manifold matrix elements in column-major
+	 * order. For SE(3), it is a 3x4=12 vector. */
+	static manifold_vector asManifoldVector(const type& pose);
+
+	/** The inverse operation of asManifoldVector() */
+	static type fromManifoldVector(const manifold_vector& v);
 
 	/** Jacobian for the pseudo-exponential exp().
 	 * See 10.3.1 in \cite blanco_se3_tutorial
@@ -160,21 +171,50 @@ struct SE<2>
 {
 	/** Number of actual degrees of freedom for this transformation */
 	constexpr static size_t DOFs = 3;
-	/** Dimensionality of the matrix manifold (3x3=9) */
-	constexpr static size_t MANIFOLD_DIM = 3 * 3;
+
+	/** Dimensionality of the matrix manifold; this should be 3x3=9 for SE(2),
+	 * but for efficiency, we define it as simply 3 and use the (x,y,phi)
+	 * representation as well as the "manifold". This is done for API
+	 * consistency with SE(3), where the actual matrix is used instead. */
+	constexpr static size_t MANIFOLD_DIM = 3;
+
 	using tangent_vector = mrpt::math::CArrayDouble<DOFs>;
+	using manifold_vector = mrpt::math::CArrayDouble<MANIFOLD_DIM>;
+
 	using type = CPose2D;
 	using light_type = mrpt::math::TPose2D;
 
 	/** Type for Jacobians between SO(n) transformations */
 	using matrix_TxT = mrpt::math::CMatrixDouble33;
 
-	/** Exponential map in SE(2)
-	 */
+	/** In SE(3), this type represents Jacobians between SO(n) (sub)matrices in
+	 * the manifold, but in SE(2) it simply models Jacobians between (x,y,phi)
+	 * vectors. */
+	using matrix_MxM = mrpt::math::CMatrixDouble33;
+
+	/** Exponential map in SE(2), takes [x,y,phi] and returns a CPose2D */
 	static type exp(const tangent_vector& x);
 
-	/** Logarithm map in SE(2), output = [X,Y, Ln(ROT)] */
+	/** Logarithm map in SE(2), takes a CPose2D and returns [X,Y, phi] */
 	static tangent_vector log(const type& P);
+
+	/** Returns a vector with all manifold matrix elements in column-major
+	 * order. For SE(2), though, it directly returns the vector [x,y,phi] for
+	 * efficiency in comparison to 3x3 homogeneous coordinates. */
+	static manifold_vector asManifoldVector(const type& pose);
+
+	/** The inverse operation of asManifoldVector() */
+	static type fromManifoldVector(const manifold_vector& v);
+
+	/** Jacobian of the pose composition A*B for SE(2) with respect to A.
+	 * \note See section XXX of \cite blanco_se3_tutorial
+	 */
+	static matrix_MxM jacob_dAB_dA(const type& A, const type& B);
+
+	/** Jacobian of the pose composition A*B for SE(2) with respect to B.
+	 * \note See section XXX of \cite blanco_se3_tutorial
+	 */
+	static matrix_MxM jacob_dAB_dB(const type& A, const type& B);
 
 	/** One or both of the following 6x6 Jacobians, useful in graph-slam
 	 * problems:

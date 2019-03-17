@@ -41,6 +41,18 @@ SE<3>::tangent_vector SE<3>::log(const SE<3>::type& P)
 	return v;
 }
 
+SE<3>::manifold_vector SE<3>::asManifoldVector(const SE<3>::type& pose)
+{
+	manifold_vector v;
+	pose.getAs12Vector(v);
+	return v;
+}
+
+SE<3>::type SE<3>::fromManifoldVector(const SE<3>::manifold_vector& v)
+{
+	return type(v);
+}
+
 // See 10.3.1 in \cite blanco_se3_tutorial
 SE<3>::tang2mat_jacob SE<3>::jacob_dexpe_de(const SE<3>::tangent_vector& x)
 {
@@ -271,6 +283,44 @@ SE<2>::tangent_vector SE<2>::log(const SE<2>::type& P)
 	x[1] = P.y();
 	x[2] = P.phi();
 	return x;
+}
+
+SE<2>::manifold_vector SE<2>::asManifoldVector(const SE<2>::type& pose)
+{
+	manifold_vector v;
+	v[0] = pose.x();
+	v[1] = pose.y();
+	v[2] = pose.phi();
+	return v;
+}
+
+SE<2>::type SE<2>::fromManifoldVector(const SE<2>::manifold_vector& v)
+{
+	return type(v[0], v[1], v[2]);
+}
+
+SE<2>::matrix_MxM SE<2>::jacob_dAB_dA(
+	const SE<2>::type& A, const SE<2>::type& B)
+{
+	const auto bx = B.x(), by = B.y();
+	const auto cphia = A.phi_cos(), sphia = A.phi_sin();
+
+	matrix_MxM J = matrix_MxM::Identity();
+	J(0, 2) = -bx * sphia - by * cphia;
+	J(1, 2) = +bx * cphia - by * sphia;
+	return J;
+}
+
+SE<2>::matrix_MxM SE<2>::jacob_dAB_dB(
+	const SE<2>::type& A, const SE<2>::type& B)
+{
+	matrix_MxM J = matrix_MxM::Identity();
+	const auto cphia = A.phi_cos(), sphia = A.phi_sin();
+	J(0, 0) = cphia;
+	J(0, 1) = -sphia;
+	J(1, 0) = sphia;
+	J(1, 1) = cphia;
+	return J;
 }
 
 void SE<2>::jacob_dP1DP2inv_de1e2(
