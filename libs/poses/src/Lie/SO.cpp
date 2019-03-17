@@ -11,8 +11,9 @@
 
 #include <mrpt/config.h>  // for HAVE_SINCOS
 #include <mrpt/poses/Lie/SO.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/wrap2pi.h>
-#include <mrpt/otherlibs/sophus/so3.hpp>
+#include <mrpt/math/CQuaternion.h>
 #include <cmath>
 
 using namespace mrpt;
@@ -25,8 +26,14 @@ using namespace mrpt::poses::Lie;
 // ====== SO(3) ===========
 SO<3>::type SO<3>::exp(const SO<3>::tangent_vector& x)
 {
-	auto R = Sophus::SO3<double>::exp(x);
-	return R.matrix();
+	MRPT_START
+
+	mrpt::math::CQuaternionDouble q;
+	q.fromRodriguesVector(x);
+	SO<3>::type R;
+	q.rotationMatrixNoResize(R);
+	return R;
+	MRPT_END
 }
 
 SO<3>::tang2mat_jacob SO<3>::jacob_dexpe_de(const SO<3>::tangent_vector& x)
@@ -50,10 +57,60 @@ SO<3>::tang2mat_jacob SO<3>::jacob_dexpe_de(const SO<3>::tangent_vector& x)
 
 SO<3>::tangent_vector SO<3>::log(const SO<3>::type& R)
 {
-	Sophus::SO3<double> Rot(R);
-	const auto& r = Rot.log();
+	// Based on original code from Sophus:
+	// Copyright: 2011-2017 Hauke Strasdat
+	//            2012-2017 Steven Lovegrove
+	// License: Expat
+
+	// From: Sophus::SO3<>::log()
+
+	using std::abs;
+	using std::atan;
+	using std::sqrt;
+
+	mrpt::math::CQuaternionDouble q;
+	mrpt::poses::CPose3D(R, CArrayDouble<3>()).getAsQuaternion(q);
+
+	const auto squared_n = q.x() * q.x() + q.y() * q.y() + q.z() * q.z();
+	const auto n = sqrt(squared_n);
+	const auto w = q.r();
+
+	double two_atan_nbyw_by_n;
+
+	// Atan-based log thanks to
+	//
+	// C. Hertzberg et al.:
+	// "Integrating Generic Sensor Fusion Algorithms with Sound State
+	// Representation through Encapsulation of Manifolds"
+	// Information Fusion, 2011
+
+	if (n < 1e-7)
+	{
+		// If quaternion is normalized and n=0, then w should be 1;
+		// w=0 should never happen here!
+		ASSERTMSG_(abs(w) >= 1e-7, "Quaternion should be normalized!");
+		two_atan_nbyw_by_n = 2.0 / w - 2.0 * (squared_n) / (w * w * w);
+	}
+	else
+	{
+		if (abs(w) < 1e-7)
+		{
+			if (w > 0)
+				two_atan_nbyw_by_n = M_PI / n;
+			else
+				two_atan_nbyw_by_n = -M_PI / n;
+		}
+		else
+		{
+			two_atan_nbyw_by_n = 2.0 * atan(n / w) / n;
+		}
+	}
+
 	tangent_vector ret;
-	for (int i = 0; i < 3; i++) ret[i] = r[i];
+	ret[0] = two_atan_nbyw_by_n * q.x();
+	ret[1] = two_atan_nbyw_by_n * q.y();
+	ret[2] = two_atan_nbyw_by_n * q.z();
+
 	return ret;
 }
 

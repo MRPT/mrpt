@@ -14,7 +14,6 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/math/geometry.h>
-#include <mrpt/otherlibs/sophus/so3.hpp>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -26,13 +25,7 @@ using namespace mrpt::poses::Lie;
 // ====== SE(3) ===========
 SE<3>::type SE<3>::exp(const SE<3>::tangent_vector& x)
 {
-	CPose3D p(UNINITIALIZED_POSE);
-	auto R = Sophus::SO3<double>::exp(x.tail<3>());
-	p.setRotationMatrix(R.matrix());
-	p.x(x[0]);
-	p.y(x[1]);
-	p.z(x[2]);
-	return p;
+	return CPose3D(Lie::SO<3>::exp(x.tail<3>()), x.head<3>());
 }
 
 SE<3>::tangent_vector SE<3>::log(const SE<3>::type& P)
