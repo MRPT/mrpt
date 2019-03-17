@@ -35,7 +35,7 @@ class CArrayNumeric : public Eigen::Matrix<T, N, 1>
 	/** Initialization from a vector-like source, that is, anything implementing
 	 * operator[]. */
 	template <class Derived>
-	explicit CArrayNumeric(const Eigen::MatrixBase<Derived>& obj)
+	CArrayNumeric(const Eigen::MatrixBase<Derived>& obj)
 		: Eigen::Matrix<T, N, 1>(obj)
 	{
 	}
