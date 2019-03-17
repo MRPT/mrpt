@@ -251,10 +251,9 @@ class SE_traits_tests : public ::testing::Test
 		const TParamsMat<SE_TYPE::MANIFOLD_DIM>& params,
 		CArrayDouble<SE_TYPE::MANIFOLD_DIM>& Y)
 	{
-		POSE_TYPE A, B;
-		A.setFrom12Vector(params.Avec + x);
-		B.setFrom12Vector(params.Bvec);
-		(A + B).getAs12Vector(Y);
+		const POSE_TYPE A = SE_TYPE::fromManifoldVector(params.Avec + x);
+		const POSE_TYPE B = SE_TYPE::fromManifoldVector(params.Bvec);
+		Y = SE_TYPE::asManifoldVector(A + B);
 	}
 
 	static void func_numeric_dAB_dB(
@@ -262,10 +261,9 @@ class SE_traits_tests : public ::testing::Test
 		const TParamsMat<SE_TYPE::MANIFOLD_DIM>& params,
 		CArrayDouble<SE_TYPE::MANIFOLD_DIM>& Y)
 	{
-		POSE_TYPE A, B;
-		A.setFrom12Vector(params.Avec);
-		B.setFrom12Vector(params.Bvec + x);
-		(A + B).getAs12Vector(Y);
+		const POSE_TYPE A = SE_TYPE::fromManifoldVector(params.Avec);
+		const POSE_TYPE B = SE_TYPE::fromManifoldVector(params.Bvec + x);
+		Y = SE_TYPE::asManifoldVector(A + B);
 	}
 
 	void test_jacobs_AB(const CPose3D& A_, const CPose3D& B_)
@@ -286,8 +284,8 @@ class SE_traits_tests : public ::testing::Test
 			x_mean.assign(0);
 
 			TParamsMat<N> params;
-			A.getAs12Vector(params.Avec);
-			B.getAs12Vector(params.Bvec);
+			params.Avec = SE_TYPE::asManifoldVector(A);
+			params.Bvec = SE_TYPE::asManifoldVector(B);
 
 			CArrayDouble<N> x_incrs;
 			x_incrs.assign(1e-4);
@@ -309,8 +307,8 @@ class SE_traits_tests : public ::testing::Test
 			x_mean.assign(0);
 
 			TParamsMat<N> params;
-			A.getAs12Vector(params.Avec);
-			B.getAs12Vector(params.Bvec);
+			params.Avec = SE_TYPE::asManifoldVector(A);
+			params.Bvec = SE_TYPE::asManifoldVector(B);
 
 			CArrayDouble<N> x_incrs;
 			x_incrs.assign(1e-4);
@@ -378,3 +376,4 @@ TEST_F(SE3_traits_tests, SE3_jacobs_dAB_dAB) { tests_jacobs_dAB_dAB(); }
 
 TEST_F(SE2_traits_tests, SE2_jacobs_P1DP2inv) { tests_jacobs_P1DP2inv(); }
 TEST_F(SE2_traits_tests, SE2_jacobs_DinvP1InvP2) { tests_jacobs_DinvP1InvP2(); }
+TEST_F(SE2_traits_tests, SE2_jacobs_dAB_dAB) { tests_jacobs_dAB_dAB(); }
