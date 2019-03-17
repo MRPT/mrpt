@@ -29,11 +29,6 @@ Files: otherlibs/wxThings/*
 Copyright: 2000-2002, John Labenki
 License: WXwindows
 
-Files: libs/poses/include/mrpt/otherlibs/sophus/*
-Copyright: 2011-2017 Hauke Strasdat
-           2012-2017 Steven Lovegrove
-License: Expat
-
 Files: libs/core/include/mrpt/core/bit_cast.h
 Copyright: 2016, The Chromium Authors
 License: BSD-3-clause

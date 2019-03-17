@@ -247,9 +247,9 @@ class SE_traits_tests : public ::testing::Test
 	}
 
 	static void func_numeric_dAB_dA(
-	    const CArrayDouble<SE_TYPE::MANIFOLD_DIM>& x,
-	    const TParamsMat<SE_TYPE::MANIFOLD_DIM>& params,
-	    CArrayDouble<SE_TYPE::MANIFOLD_DIM>& Y)
+		const CArrayDouble<SE_TYPE::MANIFOLD_DIM>& x,
+		const TParamsMat<SE_TYPE::MANIFOLD_DIM>& params,
+		CArrayDouble<SE_TYPE::MANIFOLD_DIM>& Y)
 	{
 		POSE_TYPE A, B;
 		A.setFrom12Vector(params.Avec + x);
@@ -258,9 +258,9 @@ class SE_traits_tests : public ::testing::Test
 	}
 
 	static void func_numeric_dAB_dB(
-	    const CArrayDouble<SE_TYPE::MANIFOLD_DIM>& x,
-	    const TParamsMat<SE_TYPE::MANIFOLD_DIM>& params,
-	    CArrayDouble<SE_TYPE::MANIFOLD_DIM>& Y)
+		const CArrayDouble<SE_TYPE::MANIFOLD_DIM>& x,
+		const TParamsMat<SE_TYPE::MANIFOLD_DIM>& params,
+		CArrayDouble<SE_TYPE::MANIFOLD_DIM>& Y)
 	{
 		POSE_TYPE A, B;
 		A.setFrom12Vector(params.Avec);
@@ -293,11 +293,11 @@ class SE_traits_tests : public ::testing::Test
 			x_incrs.assign(1e-4);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
-			    x_mean,
-			    std::function<void(
-			        const CArrayDouble<N>& x, const TParamsMat<N>& params,
-			        CArrayDouble<N>& Y)>(&func_numeric_dAB_dA),
-			    x_incrs, params, numJacobs);
+				x_mean,
+				std::function<void(
+					const CArrayDouble<N>& x, const TParamsMat<N>& params,
+					CArrayDouble<N>& Y)>(&func_numeric_dAB_dA),
+				x_incrs, params, numJacobs);
 
 			num_dAB_A = numJacobs;
 		}
@@ -316,11 +316,11 @@ class SE_traits_tests : public ::testing::Test
 			x_incrs.assign(1e-4);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
-			    x_mean,
-			    std::function<void(
-			        const CArrayDouble<N>& x, const TParamsMat<N>& params,
-			        CArrayDouble<N>& Y)>(&func_numeric_dAB_dB),
-			    x_incrs, params, numJacobs);
+				x_mean,
+				std::function<void(
+					const CArrayDouble<N>& x, const TParamsMat<N>& params,
+					CArrayDouble<N>& Y)>(&func_numeric_dAB_dB),
+				x_incrs, params, numJacobs);
 
 			num_dAB_B = numJacobs;
 		}
@@ -328,24 +328,24 @@ class SE_traits_tests : public ::testing::Test
 		const double max_eror = 1e-3;
 
 		EXPECT_NEAR(0, (num_dAB_A - dAB_A).array().abs().sum(), max_eror)
-		    << std::setprecision(3) << "A: " << A << endl
-		    << "B: " << B << endl
-		    << "Numeric dAB_A:\n"
-		    << num_dAB_A << endl
-		    << "Implemented dAB_A:\n"
-		    << dAB_A << endl
-		    << "Error:\n"
-		    << dAB_A - num_dAB_A << endl;
+			<< std::setprecision(3) << "A: " << A << endl
+			<< "B: " << B << endl
+			<< "Numeric dAB_A:\n"
+			<< num_dAB_A << endl
+			<< "Implemented dAB_A:\n"
+			<< dAB_A << endl
+			<< "Error:\n"
+			<< dAB_A - num_dAB_A << endl;
 
 		EXPECT_NEAR(0, (num_dAB_B - dAB_B).array().abs().sum(), max_eror)
-		    << std::setprecision(3) << "A: " << A << endl
-		    << "B: " << B << endl
-		    << "Numeric dAB_B:\n"
-		    << num_dAB_B << endl
-		    << "Implemented dAB_B:\n"
-		    << dAB_B << endl
-		    << "Error:\n"
-		    << dAB_B - num_dAB_B << endl;
+			<< std::setprecision(3) << "A: " << A << endl
+			<< "B: " << B << endl
+			<< "Numeric dAB_B:\n"
+			<< num_dAB_B << endl
+			<< "Implemented dAB_B:\n"
+			<< dAB_B << endl
+			<< "Error:\n"
+			<< dAB_B - num_dAB_B << endl;
 	}
 
 	void tests_jacobs_P1DP2inv()
