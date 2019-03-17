@@ -605,8 +605,10 @@ void optimize_graph_spa_levmarq(
 					auto it_old_value = graph.nodes.find(it);
 					old_poses_backup[it] =
 						it_old_value->second;  // back up the old pose as a copy
-					detail::AuxPoseOPlus<typename gst::edge_t, gst>::sumIncr(
-						it_old_value->second, exp_delta);
+
+					// Update estimate:
+					it_old_value->second =
+						it_old_value->second + gst::SE_TYPE::exp(exp_delta);
 				}
 			}
 

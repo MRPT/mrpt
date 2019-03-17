@@ -28,7 +28,14 @@ static const std::vector<mrpt::poses::CPose3D> ptc = {
 	{1.0, 2.0, 3.0, DEG2RAD(.0), DEG2RAD(1.0), DEG2RAD(.0)},
 	{1.0, 2.0, 3.0, DEG2RAD(.0), DEG2RAD(.0), DEG2RAD(1.0)},
 	{-6.0, 2.0, 3.0, DEG2RAD(40.0), DEG2RAD(20.0), DEG2RAD(15.0)},
-	{1.0, 8.0, 0.0, DEG2RAD(-45.0), DEG2RAD(10.0), DEG2RAD(70.0)}};
+	{1.0, 8.0, 0.0, DEG2RAD(-45.0), DEG2RAD(10.0), DEG2RAD(70.0)},
+	{1.0, 2.0, 3.0, DEG2RAD(89.0), DEG2RAD(.5), DEG2RAD(1.0)},
+	{1.0, -2.0, 0.4, DEG2RAD(-89.0), DEG2RAD(.5), DEG2RAD(1.0)},
+	{1.0, 2.0, 3.0, DEG2RAD(.1), DEG2RAD(89.0), DEG2RAD(1.0)},
+	{1.0, -2.0, 0.4, DEG2RAD(.1), DEG2RAD(-88.0), DEG2RAD(1.0)},
+	{1.0, 2.0, 3.0, DEG2RAD(.1), DEG2RAD(.9), DEG2RAD(178.0)},
+	{1.0, -2.0, 0.4, DEG2RAD(.1), DEG2RAD(.9), DEG2RAD(-179.1)},
+};
 
 template <class POSE_TYPE>
 class SE_traits_tests : public ::testing::Test

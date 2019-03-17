@@ -33,7 +33,8 @@ const std::map<std::string, in_out_filenames> inout_graph_files{
 	  {"graphslam_SE2pdf_in.graph", "graphslam_SE2pdf_out_good.graph"}}},
 	{"GraphTester3D",
 	 {{"graphslam_SE3_in_torus3D-first100.graph",
-	   "graphslam_SE3_out_good_torus3D-first100.graph"}}}};
+	   "graphslam_SE3_out_good_torus3D-first100.graph"},
+	  {"graphslam_SE2_in2.graph", "graphslam_SE2_out_good2.graph"}}}};
 
 template <class my_graph_t>
 class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,

@@ -76,7 +76,7 @@ SE<3>::mat2tang_jacob SE<3>::jacob_dlogv_dv(const SE<3>::type& P)
 
 // Section 10.3.3 in tech report
 // http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
-mrpt::math::CMatrixDouble12_6 SE<3>::jacob_dexpeD_de(const CPose3D& D)
+SE<3>::tang2mat_jacob SE<3>::jacob_dexpeD_de(const CPose3D& D)
 {
 	mrpt::math::CMatrixDouble12_6 jacob;
 	jacob.block<9, 3>(0, 0).setZero();
@@ -96,7 +96,7 @@ mrpt::math::CMatrixDouble12_6 SE<3>::jacob_dexpeD_de(const CPose3D& D)
 
 // Section 10.3.4 in tech report
 // http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
-mrpt::math::CMatrixDouble12_6 SE<3>::jacob_dDexpe_de(const CPose3D& D)
+SE<3>::tang2mat_jacob SE<3>::jacob_dDexpe_de(const CPose3D& D)
 {
 	mrpt::math::CMatrixDouble12_6 jacob;
 	const auto& dRot = D.getRotationMatrix();
@@ -116,7 +116,7 @@ mrpt::math::CMatrixDouble12_6 SE<3>::jacob_dDexpe_de(const CPose3D& D)
 
 // Eq. 10.3.7 in tech report
 // http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
-mrpt::math::CMatrixDouble12_6 SE<3>::jacob_dAexpeD_de(
+SE<3>::tang2mat_jacob SE<3>::jacob_dAexpeD_de(
 	const CPose3D& A, const CPose3D& D)
 {
 	const auto& Arot = A.getRotationMatrix();
@@ -266,6 +266,7 @@ SE<3>::matrix_MxM SE<3>::jacob_dAB_dB(
 	return J;
 }
 
+// See .h for documentation
 // ====== SE(2) ===========
 SE<2>::type SE<2>::exp(const SE<2>::tangent_vector& x)
 {
@@ -281,7 +282,7 @@ SE<2>::tangent_vector SE<2>::log(const SE<2>::type& P)
 	SE<2>::tangent_vector x;
 	x[0] = P.x();
 	x[1] = P.y();
-	x[2] = P.phi();
+	x[2] = mrpt::math::wrapToPi(P.phi());
 	return x;
 }
 
@@ -290,13 +291,13 @@ SE<2>::manifold_vector SE<2>::asManifoldVector(const SE<2>::type& pose)
 	manifold_vector v;
 	v[0] = pose.x();
 	v[1] = pose.y();
-	v[2] = pose.phi();
+	v[2] = mrpt::math::wrapToPi(pose.phi());
 	return v;
 }
 
 SE<2>::type SE<2>::fromManifoldVector(const SE<2>::manifold_vector& v)
 {
-	return type(v[0], v[1], v[2]);
+	return type(v[0], v[1], mrpt::math::wrapToPi(v[2]));
 }
 
 SE<2>::matrix_MxM SE<2>::jacob_dAB_dA(
@@ -356,50 +357,37 @@ void SE<2>::jacob_dP1DP2inv_de1e2(
 	}
 }
 
+SE<2>::tang2mat_jacob SE<2>::jacob_dDexpe_de(const SE<2>::type& D)
+{
+	const auto c = D.phi_cos(), s = D.phi_sin();
+
+	// clang-format off
+	return (tang2mat_jacob() <<
+	        c, -s, 0,
+	        s,  c, 0,
+	        0,  0, 1
+	        ).finished();
+	// clang-format on
+}
+
 void SE<2>::jacob_dDinvP1invP2_de1e2(
 	const CPose2D& Dinv, const CPose2D& P1, const CPose2D& P2,
 	mrpt::optional_ref<matrix_TxT> df_de1,
 	mrpt::optional_ref<matrix_TxT> df_de2)
 {
-	using mrpt::math::TPoint2D;
-	const double phi1 = P1.phi();
-
-	const TPoint2D dt(P2.x() - P1.x(), P2.y() - P1.y());
-	const double si = std::sin(phi1), ci = std::cos(phi1);
-
-	CMatrixDouble22 RotDinv;
-	Dinv.getRotationMatrix(RotDinv);
-	CMatrixDouble33 K;  // zeros
-	K.block<2, 2>(0, 0) = RotDinv;
-	K(2, 2) = 1.0;
+	const CPose2D P1inv = -P1;
+	const CPose2D P1invP2 = P1inv + P2;
+	const CPose2D DinvP1invP2 = Dinv + P1invP2;
 
 	if (df_de1)
 	{
 		auto& J1 = df_de1.value().get();
-		J1(0, 0) = -ci;
-		J1(0, 1) = -si;
-		J1(0, 2) = -si * dt.x + ci * dt.y;
-		J1(1, 0) = si;
-		J1(1, 1) = -ci;
-		J1(1, 2) = -ci * dt.x - si * dt.y;
-		J1(2, 0) = 0;
-		J1(2, 1) = 0;
-		J1(2, 2) = -1;
-		J1 = K * J1;
+		J1 = jacob_dAB_dA(Dinv, P1invP2) * (-jacob_dDexpe_de(Dinv));
 	}
 
 	if (df_de2)
 	{
 		auto& J2 = df_de2.value().get();
-		J2(0, 0) = ci;
-		J2(0, 1) = si;
-		J2(0, 2) = 0;
-		J2(1, 0) = -si;
-		J2(1, 1) = ci;
-		J2(1, 2) = 0;
-		J2(2, 0) = 0;
-		J2(2, 1) = 0;
-		J2(2, 2) = 1;
-		J2 = K * J2;
+		J2 = SE<2>::jacob_dDexpe_de(DinvP1invP2);
 	}
 }

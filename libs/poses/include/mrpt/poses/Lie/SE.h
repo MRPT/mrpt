@@ -29,6 +29,8 @@ template <unsigned int n>
 struct SE;
 
 /** Traits for SE(3), rigid-body transformations in R^3 space.
+ * See indidual members for documentation, or \cite blanco_se3_tutorial for a
+ * general overview.
  * \ingroup mrpt_poses_lie_grp
  */
 template <>
@@ -111,19 +113,18 @@ struct SE<3>
 	/** Jacobian d (e^eps * D) / d eps , with eps=increment in Lie Algebra.
 	 * \note Section 10.3.3 in \cite blanco_se3_tutorial
 	 */
-	static mrpt::math::CMatrixDouble12_6 jacob_dexpeD_de(const CPose3D& D);
+	static tang2mat_jacob jacob_dexpeD_de(const CPose3D& D);
 
 	/** Jacobian d (D * e^eps) / d eps , with eps=increment in Lie Algebra.
 	 * \note Section 10.3.4 in \cite blanco_se3_tutorial
 	 */
-	static mrpt::math::CMatrixDouble12_6 jacob_dDexpe_de(const CPose3D& D);
+	static tang2mat_jacob jacob_dDexpe_de(const CPose3D& D);
 
 	/** Jacobian d (A * e^eps * D) / d eps , with eps=increment in Lie
 	 * Algebra.
 	 * \note Eq. 10.3.7 in \cite blanco_se3_tutorial
 	 */
-	static mrpt::math::CMatrixDouble12_6 jacob_dAexpeD_de(
-		const CPose3D& A, const CPose3D& D);
+	static tang2mat_jacob jacob_dAexpeD_de(const CPose3D& A, const CPose3D& D);
 
 	/** Jacobian of the pose composition A*B for SE(3) 3x4 (sub)matrices,
 	 * with respect to A.
@@ -164,6 +165,8 @@ struct SE<3>
 };
 
 /** Traits for SE(2), rigid-body transformations in R^2 space.
+ * See indidual members for documentation, or \cite blanco_se3_tutorial for a
+ * general overview.
  * \ingroup mrpt_poses_lie_grp
  */
 template <>
@@ -173,7 +176,7 @@ struct SE<2>
 	constexpr static size_t DOFs = 3;
 
 	/** Dimensionality of the matrix manifold; this should be 3x3=9 for SE(2),
-	 * but for efficiency, we define it as simply 3 and use the (x,y,phi)
+	 * but for efficiency, we define it as simply 3x1=3 and use the (x,y,phi)
 	 * representation as well as the "manifold". This is done for API
 	 * consistency with SE(3), where the actual matrix is used instead. */
 	constexpr static size_t MANIFOLD_DIM = 3;
@@ -192,6 +195,11 @@ struct SE<2>
 	 * vectors. */
 	using matrix_MxM = mrpt::math::CMatrixDouble33;
 
+	/** Type for Jacobian: tangent space -> SO(n) matrix */
+	using tang2mat_jacob = mrpt::math::CMatrixDouble33;
+	/** Type for Jacobian: SO(n) matrix -> tangent space */
+	using mat2tang_jacob = mrpt::math::CMatrixDouble33;
+
 	/** Exponential map in SE(2), takes [x,y,phi] and returns a CPose2D */
 	static type exp(const tangent_vector& x);
 
@@ -207,33 +215,40 @@ struct SE<2>
 	static type fromManifoldVector(const manifold_vector& v);
 
 	/** Jacobian of the pose composition A*B for SE(2) with respect to A.
-	 * \note See section XXX of \cite blanco_se3_tutorial
+	 * \note See appendix B of \cite blanco_se3_tutorial
 	 */
 	static matrix_MxM jacob_dAB_dA(const type& A, const type& B);
 
 	/** Jacobian of the pose composition A*B for SE(2) with respect to B.
-	 * \note See section XXX of \cite blanco_se3_tutorial
+	 * \note See appendix B of \cite blanco_se3_tutorial
 	 */
 	static matrix_MxM jacob_dAB_dB(const type& A, const type& B);
 
-	/** One or both of the following 6x6 Jacobians, useful in graph-slam
+	/** Jacobian d (D * e^eps) / d eps , with eps=increment in Lie Algebra.
+	 * \note See appendix B in \cite blanco_se3_tutorial
+	 */
+	static tang2mat_jacob jacob_dDexpe_de(const type& D);
+
+	/** One or both of the following 3x3 Jacobians, useful in graph-slam
 	 * problems:
 	 * \f[  \frac{\partial pseudoLn(P_1 D P_2^{-1}) }{\partial \epsilon_1}
 	 * \f] \f[  \frac{\partial pseudoLn(P_1 D P_2^{-1}) }{\partial
 	 * \epsilon_2} \f] With \f$ \epsilon_1 \f$ and \f$ \epsilon_2 \f$
 	 * increments in the linearized manifold for P1 and P2.
+	 * \note See appendix B in \cite blanco_se3_tutorial
 	 */
 	static void jacob_dP1DP2inv_de1e2(
 		const type& P1DP2inv,
 		mrpt::optional_ref<matrix_TxT> df_de1 = std::nullopt,
 		mrpt::optional_ref<matrix_TxT> df_de2 = std::nullopt);
 
-	/** Return one or both of the following 6x6 Jacobians, useful in
+	/** Return one or both of the following 3x3 Jacobians, useful in
 	 * graph-slam problems:
 	 * \f[ \frac{\partial pseudoLn(D^{-1} P_1^{-1} P_2}{\partial \epsilon_1} \f]
 	 * \f[  \frac{\partial pseudoLn(D^{-1} P_1^{-1} P_2}{\partial \epsilon_1}\f]
 	 * With \f$ \epsilon_1 \f$ and \f$ \epsilon_2 \f$ increments in the
 	 * linearized manifold for P1 and P2.
+	 * \note See appendix B in \cite blanco_se3_tutorial
 	 */
 	static void jacob_dDinvP1invP2_de1e2(
 		const type& Dinv, const type& P1, const type& P2,
