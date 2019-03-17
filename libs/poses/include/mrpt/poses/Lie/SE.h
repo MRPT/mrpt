@@ -138,18 +138,6 @@ struct SE<3>
 	 */
 	static matrix_MxM jacob_dAB_dB(const type& A, const type& B);
 
-	/** One or both of the following 6x6 Jacobians, useful in graph-slam
-	 * problems:
-	 * \f[  \frac{\partial pseudoLn(P_1 D P_2^{-1}) }{\partial \epsilon_1} \f]
-	 * \f[  \frac{\partial pseudoLn(P_1 D P_2^{-1}) }{\partial \epsilon_2} \f]
-	 * With \f$ \epsilon_1 \f$ and \f$ \epsilon_2 \f$ increments in the
-	 * linearized manifold for P1 and P2.
-	 */
-	static void jacob_dP1DP2inv_de1e2(
-		const type& P1DP2inv,
-		mrpt::optional_ref<matrix_TxT> df_de1 = std::nullopt,
-		mrpt::optional_ref<matrix_TxT> df_de2 = std::nullopt);
-
 	/** Return one or both of the following 6x6 Jacobians, useful in
 	 * graph-slam problems:
 	 * \f[ \frac{\partial pseudoLn(D^{-1} P_1^{-1} P_2}{\partial \epsilon_1} \f]
@@ -228,19 +216,6 @@ struct SE<2>
 	 * \note See appendix B in \cite blanco_se3_tutorial
 	 */
 	static tang2mat_jacob jacob_dDexpe_de(const type& D);
-
-	/** One or both of the following 3x3 Jacobians, useful in graph-slam
-	 * problems:
-	 * \f[  \frac{\partial pseudoLn(P_1 D P_2^{-1}) }{\partial \epsilon_1}
-	 * \f] \f[  \frac{\partial pseudoLn(P_1 D P_2^{-1}) }{\partial
-	 * \epsilon_2} \f] With \f$ \epsilon_1 \f$ and \f$ \epsilon_2 \f$
-	 * increments in the linearized manifold for P1 and P2.
-	 * \note See appendix B in \cite blanco_se3_tutorial
-	 */
-	static void jacob_dP1DP2inv_de1e2(
-		const type& P1DP2inv,
-		mrpt::optional_ref<matrix_TxT> df_de1 = std::nullopt,
-		mrpt::optional_ref<matrix_TxT> df_de2 = std::nullopt);
 
 	/** Return one or both of the following 3x3 Jacobians, useful in
 	 * graph-slam problems:
