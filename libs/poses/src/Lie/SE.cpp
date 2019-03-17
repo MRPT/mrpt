@@ -136,74 +136,6 @@ SE<3>::tang2mat_jacob SE<3>::jacob_dAexpeD_de(
 	return jacob;
 }
 
-void SE<3>::jacob_dP1DP2inv_de1e2(
-	const CPose3D& P1DP2inv, mrpt::optional_ref<matrix_TxT> df_de1,
-	mrpt::optional_ref<matrix_TxT> df_de2)
-{
-	const CMatrixDouble33& R =
-		P1DP2inv.getRotationMatrix();  // The rotation matrix.
-
-	// Common part: d_Ln(R)_dR:
-	const CMatrixDouble39 dLnRot_dRot = SO<3>::jacob_dlogv_dv(R);
-
-	if (df_de1)
-	{
-		matrix_TxT& J1 = df_de1.value().get();
-		// This Jacobian has the structure:
-		//           [   I_3    |      -[d_t]_x      ]
-		//  Jacob1 = [ ---------+------------------- ]
-		//           [   0_3x3  |   dLnR_dR * (...)  ]
-		//
-		J1.zeros();
-		J1(0, 0) = 1;
-		J1(1, 1) = 1;
-		J1(2, 2) = 1;
-
-		J1(0, 4) = P1DP2inv.z();
-		J1(0, 5) = -P1DP2inv.y();
-		J1(1, 3) = -P1DP2inv.z();
-		J1(1, 5) = P1DP2inv.x();
-		J1(2, 3) = P1DP2inv.y();
-		J1(2, 4) = -P1DP2inv.x();
-
-		alignas(MRPT_MAX_ALIGN_BYTES) const double aux_vals[] = {
-			0, R(2, 0), -R(1, 0), -R(2, 0), 0, R(0, 0), R(1, 0), -R(0, 0), 0,
-			// -----------------------
-			0, R(2, 1), -R(1, 1), -R(2, 1), 0, R(0, 1), R(1, 1), -R(0, 1), 0,
-			// -----------------------
-			0, R(2, 2), -R(1, 2), -R(2, 2), 0, R(0, 2), R(1, 2), -R(0, 2), 0};
-		const CMatrixFixedNumeric<double, 9, 3> aux(aux_vals);
-
-		// right-bottom part = dLnRot_dRot * aux
-		J1.block(3, 3, 3, 3) = (dLnRot_dRot * aux).eval();
-	}
-	if (df_de2)
-	{
-		// This Jacobian has the structure:
-		//           [    -R    |      0_3x3         ]
-		//  Jacob2 = [ ---------+------------------- ]
-		//           [   0_3x3  |   dLnR_dR * (...)  ]
-		//
-		matrix_TxT& J2 = df_de2.value().get();
-		J2.zeros();
-
-		for (int i = 0; i < 3; i++)
-			for (int j = 0; j < 3; j++)
-				J2.set_unsafe(i, j, -R.get_unsafe(i, j));
-
-		alignas(MRPT_MAX_ALIGN_BYTES) const double aux_vals[] = {
-			0, R(0, 2), -R(0, 1), 0, R(1, 2), -R(1, 1), 0, R(2, 2), -R(2, 1),
-			// -----------------------
-			-R(0, 2), 0, R(0, 0), -R(1, 2), 0, R(1, 0), -R(2, 2), 0, R(2, 0),
-			// -----------------------
-			R(0, 1), -R(0, 0), 0, R(1, 1), -R(1, 0), 0, R(2, 1), -R(2, 0), 0};
-		const CMatrixFixedNumeric<double, 9, 3> aux(aux_vals);
-
-		// right-bottom part = dLnRot_dRot * aux
-		J2.block(3, 3, 3, 3) = (dLnRot_dRot * aux).eval();
-	}
-}
-
 void SE<3>::jacob_dDinvP1invP2_de1e2(
 	const CPose3D& Dinv, const CPose3D& P1, const CPose3D& P2,
 	mrpt::optional_ref<matrix_TxT> df_de1,
@@ -322,39 +254,6 @@ SE<2>::matrix_MxM SE<2>::jacob_dAB_dB(
 	J(1, 0) = sphia;
 	J(1, 1) = cphia;
 	return J;
-}
-
-void SE<2>::jacob_dP1DP2inv_de1e2(
-	const CPose2D& P1DP2inv, mrpt::optional_ref<matrix_TxT> df_de1,
-	mrpt::optional_ref<matrix_TxT> df_de2)
-{
-	if (df_de1)
-	{
-		matrix_TxT& J1 = df_de1.value().get();
-		// This Jacobian has the structure:
-		//           [   I_2    |  -[d_t]_x      ]
-		//  Jacob1 = [ ---------+--------------- ]
-		//           [   0      |   1            ]
-		//
-		J1.unit(DOFs, 1.0);
-		J1(0, 2) = -P1DP2inv.y();
-		J1(1, 2) = P1DP2inv.x();
-	}
-	if (df_de2)
-	{
-		// This Jacobian has the structure:
-		//           [    -R    |    0   ]
-		//  Jacob2 = [ ---------+------- ]
-		//           [     0    |    -1  ]
-		//
-		matrix_TxT& J2 = df_de2.value().get();
-
-		const double ccos = cos(P1DP2inv.phi());
-		const double csin = sin(P1DP2inv.phi());
-
-		const double vals[] = {-ccos, csin, 0, -csin, -ccos, 0, 0, 0, -1};
-		J2 = CMatrixFixedNumeric<double, 3, 3>(vals);
-	}
 }
 
 SE<2>::tang2mat_jacob SE<2>::jacob_dDexpe_de(const SE<2>::type& D)

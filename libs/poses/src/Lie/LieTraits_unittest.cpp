@@ -56,107 +56,6 @@ class SE_traits_tests : public ::testing::Test
 		CArrayDouble<MAT_LEN> Avec, Bvec;
 	};
 
-	static void func_numeric_P1DP2inv(
-		const CArrayDouble<2 * SE_TYPE::DOFs>& x, const TParams& params,
-		CArrayDouble<SE_TYPE::DOFs>& Y)
-	{
-		typename SE_TYPE::tangent_vector eps1, eps2;
-		for (size_t i = 0; i < SE_TYPE::DOFs; i++)
-		{
-			eps1[i] = x[0 + i];
-			eps2[i] = x[SE_TYPE::DOFs + i];
-		}
-
-		const POSE_TYPE incr1 = SE_TYPE::exp(eps1);
-		const POSE_TYPE incr2 = SE_TYPE::exp(eps2);
-
-		const POSE_TYPE P1 = incr1 + params.P1;
-		const POSE_TYPE P2 = incr2 + params.P2;
-		const POSE_TYPE& Pd = params.D;
-
-		CMatrixDouble44 HM_P2inv, P1hm, Pdhm;
-		P1.getHomogeneousMatrix(P1hm);
-		Pd.getHomogeneousMatrix(Pdhm);
-		P2.getInverseHomogeneousMatrix(HM_P2inv);
-
-		const CPose3D P1DP2inv_(CMatrixDouble44(P1hm * Pdhm * HM_P2inv));
-		const POSE_TYPE P1DP2inv(P1DP2inv_);
-
-		// Pseudo-logarithm:
-		Y = SE_TYPE::log(P1DP2inv);
-	}
-
-	void test_jacobs_P1DP2inv(
-		const CPose3D& P1_, const CPose3D& Pd_, const CPose3D& P2_)
-	{
-		const POSE_TYPE P1(P1_);
-		const POSE_TYPE Pd(Pd_);
-		const POSE_TYPE P2(P2_);
-
-		CMatrixDouble44 HM_P2inv, P1hm, Pdhm;
-		P1.getHomogeneousMatrix(P1hm);
-		Pd.getHomogeneousMatrix(Pdhm);
-		P2.getInverseHomogeneousMatrix(HM_P2inv);
-		const CPose3D P1DP2inv_(CMatrixDouble44((P1hm * Pdhm) * HM_P2inv));
-		const POSE_TYPE P1DP2inv(P1DP2inv_);  // Convert to 2D if needed
-
-		static const int DIMS = SE_TYPE::DOFs;
-
-		// Theoretical results:
-		CMatrixFixedNumeric<double, DIMS, DIMS> J1, J2;
-		SE_TYPE::jacob_dP1DP2inv_de1e2(P1DP2inv, J1, J2);
-
-		// Numerical approx:
-		CMatrixFixedNumeric<double, DIMS, DIMS> num_J1, num_J2;
-		{
-			CArrayDouble<2 * DIMS> x_mean;
-			for (int i = 0; i < DIMS + DIMS; i++) x_mean[i] = 0;
-
-			TParams params;
-			params.P1 = P1;
-			params.D = Pd;
-			params.P2 = P2;
-
-			CArrayDouble<DIMS + DIMS> x_incrs;
-			x_incrs.assign(1e-4);
-			CMatrixDouble numJacobs;
-			mrpt::math::estimateJacobian(
-				x_mean,
-				std::function<void(
-					const CArrayDouble<2 * SE_TYPE::DOFs>& x,
-					const TParams& params, CArrayDouble<SE_TYPE::DOFs>& Y)>(
-					&func_numeric_P1DP2inv),
-				x_incrs, params, numJacobs);
-
-			numJacobs.extractMatrix(0, 0, num_J1);
-			numJacobs.extractMatrix(0, DIMS, num_J2);
-		}
-
-		const double max_eror = 1e-3;
-
-		EXPECT_NEAR(0, (num_J1 - J1).array().abs().sum(), max_eror)
-			<< "p1: " << P1 << endl
-			<< "d: " << Pd << endl
-			<< "p2: " << P2 << endl
-			<< "Numeric J1:\n"
-			<< num_J1 << endl
-			<< "Implemented J1:\n"
-			<< J1 << endl
-			<< "Error:\n"
-			<< J1 - num_J1 << endl;
-
-		EXPECT_NEAR(0, (num_J2 - J2).array().abs().sum(), max_eror)
-			<< "p1: " << P1 << endl
-			<< "d: " << Pd << endl
-			<< "p2: " << P2 << endl
-			<< "Numeric J2:\n"
-			<< num_J2 << endl
-			<< "Implemented J2:\n"
-			<< J2 << endl
-			<< "Error:\n"
-			<< J2 - num_J2 << endl;
-	}
-
 	static void func_numeric_DinvP1InvP2(
 		const CArrayDouble<2 * SE_TYPE::DOFs>& x, const TParams& params,
 		CArrayDouble<SE_TYPE::DOFs>& Y)
@@ -353,13 +252,6 @@ class SE_traits_tests : public ::testing::Test
 			<< dAB_B - num_dAB_B << endl;
 	}
 
-	void tests_jacobs_P1DP2inv()
-	{
-		for (const auto& p1 : ptc)
-			for (const auto& p2 : ptc)
-				for (const auto& pd : ptc) test_jacobs_P1DP2inv(p1, pd, p2);
-	}
-
 	void tests_jacobs_DinvP1InvP2()
 	{
 		for (const auto& p1 : ptc)
@@ -377,10 +269,8 @@ class SE_traits_tests : public ::testing::Test
 using SE3_traits_tests = SE_traits_tests<mrpt::poses::CPose3D>;
 using SE2_traits_tests = SE_traits_tests<mrpt::poses::CPose2D>;
 
-TEST_F(SE3_traits_tests, SE3_jacobs_P1DP2inv) { tests_jacobs_P1DP2inv(); }
 TEST_F(SE3_traits_tests, SE3_jacobs_DinvP1InvP2) { tests_jacobs_DinvP1InvP2(); }
 TEST_F(SE3_traits_tests, SE3_jacobs_dAB_dAB) { tests_jacobs_dAB_dAB(); }
 
-TEST_F(SE2_traits_tests, SE2_jacobs_P1DP2inv) { tests_jacobs_P1DP2inv(); }
 TEST_F(SE2_traits_tests, SE2_jacobs_DinvP1InvP2) { tests_jacobs_DinvP1InvP2(); }
 TEST_F(SE2_traits_tests, SE2_jacobs_dAB_dAB) { tests_jacobs_dAB_dAB(); }
