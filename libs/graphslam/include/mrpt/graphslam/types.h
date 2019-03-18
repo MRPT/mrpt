@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/graphs/CNetworkOfPoses.h>
-#include <mrpt/poses/SE_traits.h>
+#include <mrpt/poses/Lie/SE.h>
 #include <mrpt/core/aligned_std_map.h>
 #include <functional>
 
@@ -37,13 +37,13 @@ struct graphslam_traits
 	using edge_map_entry_t = typename graph_t::edges_map_t::value_type;
 	using edge_t = typename graph_t::constraint_t;
 	using edge_poses_type = typename edge_t::type_value;
-	using SE_TYPE =
-		mrpt::poses::SE_traits<edge_poses_type::rotation_dimensions>;
-	using matrix_VxV_t = typename SE_TYPE::matrix_VxV_t;
-	using Array_O = typename SE_TYPE::array_t;  // An array of the correct size
+	using SE_TYPE = mrpt::poses::Lie::SE<edge_poses_type::rotation_dimensions>;
+	using matrix_TxT = typename SE_TYPE::matrix_TxT;
+	using Array_O =
+		typename SE_TYPE::tangent_vector;  // An array of the correct size
 	// for an "observation" (i.e. a
 	// relative pose in an edge)
-	using TPairJacobs = std::pair<matrix_VxV_t, matrix_VxV_t>;
+	using TPairJacobs = std::pair<matrix_TxT, matrix_TxT>;
 	using map_pairIDs_pairJacobs_t =
 		mrpt::aligned_std_multimap<mrpt::graphs::TPairNodeIDs, TPairJacobs>;
 

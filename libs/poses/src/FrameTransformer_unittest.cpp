@@ -20,8 +20,7 @@ void run_tf_test1(const mrpt::poses::CPose2D& A2B_)
 	FrameTransformer<DIM> tf;
 
 	// Pub:
-	const typename FrameTransformer<DIM>::pose_t real_A2B =
-		typename FrameTransformer<DIM>::pose_t(A2B_);
+	const auto real_A2B = (typename FrameTransformer<DIM>::pose_t)(A2B_);
 	tf.sendTransform("A", "B", real_A2B);
 
 	// Read:

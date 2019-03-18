@@ -12,6 +12,7 @@
 #include <mrpt/vision/CDifodo.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/core/round.h>
+#include <mrpt/poses/Lie/SE.h>
 
 using namespace mrpt;
 using namespace mrpt::vision;
@@ -631,8 +632,10 @@ void CDifodo::computeWeights()
 
 	// Alternative way to compute the log
 	CMatrixDouble44 mat_aux = acu_trans.cast<double>();
-	poses::CPose3D aux(mat_aux);
-	CArrayDouble<6> kai_level_acu((aux.ln() * fps).matrix());
+
+	const CArrayDouble<6> kai_level_acu(
+		poses::Lie::SE<3>::log(poses::CPose3D(mat_aux)) * fps);
+
 	kai_level -= kai_level_acu.cast<float>();
 
 	// Parameters for the measurement error
@@ -901,8 +904,9 @@ void CDifodo::filterLevelSolution()
 		acu_trans = transformations[i] * acu_trans;
 
 	CMatrixDouble44 mat_aux = acu_trans.cast<double>();
-	poses::CPose3D aux(mat_aux);
-	CArrayDouble<6> kai_level_acu(aux.ln() * fps);
+	const CArrayDouble<6> kai_level_acu(
+		poses::Lie::SE<3>::log(poses::CPose3D(mat_aux)) * fps);
+
 	kai_loc_sub -= kai_level_acu.cast<float>();
 
 	// Matrix<float, 4, 4> log_trans = fps*acu_trans.log();
@@ -931,9 +935,9 @@ void CDifodo::filterLevelSolution()
 
 	// Compute the rigid transformation
 	mrpt::math::CArrayDouble<6> aux_vel(kai_loc_fil.cast<double>() / fps);
-	poses::CPose3D aux1, aux2;
+	const poses::CPose3D aux2 = mrpt::poses::Lie::SE<3>::exp(aux_vel);
+
 	CMatrixDouble44 trans;
-	aux2 = aux1.exp(aux_vel);
 	aux2.getHomogeneousMatrix(trans);
 	transformations[level] = trans.cast<float>();
 }
@@ -950,8 +954,9 @@ void CDifodo::poseUpdate()
 	// Compute the new estimates in the local and absolutes reference frames
 	//---------------------------------------------------------------------
 	CMatrixDouble44 mat_aux = acu_trans.cast<double>();
-	poses::CPose3D aux(mat_aux);
-	CArrayDouble<6> kai_level_acu(aux.ln() * fps);
+
+	const CArrayDouble<6> kai_level_acu(
+		poses::Lie::SE<3>::log(poses::CPose3D(mat_aux)) * fps);
 	kai_loc = kai_level_acu.cast<float>();
 
 	//---------------------------------------------------------------------------------------------

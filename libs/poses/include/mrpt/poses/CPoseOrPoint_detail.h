@@ -60,14 +60,6 @@ struct T3DTypeHelper<CPose3DQuat>
 		is_3D_val = 1
 	};
 };
-template <>
-struct T3DTypeHelper<CPose3DRotVec>
-{
-	enum
-	{
-		is_3D_val = 1
-	};
-};
 
 template <class DERIVEDCLASS, int IS3D>
 struct pose_point_impl;  // generic template, specialized below:

@@ -239,6 +239,8 @@ export HHC_INVOKING_CODE
 export MRPT_USE_SEARCHENGINE
 export genLATEX
 export genRTF
+export CUR_DIR
+
 
 printf "Generating DOXYGEN project..."
 envsubst < doxygen_project.txt.in > doxygen_project.txt
