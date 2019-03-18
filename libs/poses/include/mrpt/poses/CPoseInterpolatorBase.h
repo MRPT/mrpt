@@ -10,7 +10,8 @@
 
 #include <mrpt/core/Clock.h>
 #include <mrpt/typemeta/TEnumType.h>
-#include <mrpt/poses/SE_traits.h>
+#include <mrpt/poses/Lie/SE.h>
+#include <mrpt/poses/Lie/Euclidean.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/poses/poses_frwds.h>
 
@@ -57,11 +58,11 @@ class CPoseInterpolatorBase
 	 * @{ */
 
 	/** TPose2D or TPose3D */
-	using pose_t = typename mrpt::poses::SE_traits<DIM>::lightweight_pose_t;
+	using pose_t = typename Lie::SE<DIM>::light_type;
 	/** CPose2D or CPose3D */
-	using cpose_t = typename mrpt::poses::SE_traits<DIM>::pose_t;
+	using cpose_t = typename Lie::SE<DIM>::type;
 	/** TPoint2D or TPoint3D */
-	using point_t = typename mrpt::poses::SE_traits<DIM>::point_t;
+	using point_t = typename Lie::Euclidean<DIM>::light_type;
 
 	using TTimePosePair = std::pair<mrpt::Clock::time_point, pose_t>;
 	using TPath = std::map<mrpt::Clock::time_point, pose_t>;

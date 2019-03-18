@@ -30,7 +30,11 @@ const std::map<std::string, in_out_filenames> inout_graph_files{
 	  {"graphslam_SE2_in3.graph", "graphslam_SE2_out_good3.graph"}}},
 	{"GraphTester2DInf",
 	 {{"graphslam_SE2_in.graph", "graphslam_SE2_out_good.graph"},
-	  {"graphslam_SE2pdf_in.graph", "graphslam_SE2pdf_out_good.graph"}}}};
+	  {"graphslam_SE2pdf_in.graph", "graphslam_SE2pdf_out_good.graph"}}},
+	{"GraphTester3D",
+	 {{"graphslam_SE3_in_torus3D-first100.graph",
+	   "graphslam_SE3_out_good_torus3D-first100.graph"},
+	  {"graphslam_SE2_in2.graph", "graphslam_SE2_out_good2.graph"}}}};
 
 template <class my_graph_t>
 class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
@@ -238,9 +242,7 @@ using GraphTester3DInf = GraphTester<CNetworkOfPoses3DInf>;
 		test_optimize_compare_known_solution(#_TYPE); \
 	}
 
-MRPT_TODO("Re-enable tests after https://github.com/MRPT/mrpt/issues/770");
-
 GRAPHS_TESTS(GraphTester2D)
-// GRAPHS_TESTS(GraphTester3D)
+GRAPHS_TESTS(GraphTester3D)
 GRAPHS_TESTS(GraphTester2DInf)
-// GRAPHS_TESTS(GraphTester3DInf)
+GRAPHS_TESTS(GraphTester3DInf)

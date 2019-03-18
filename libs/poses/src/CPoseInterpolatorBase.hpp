@@ -17,6 +17,8 @@
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/system/datetime.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose3D.h>
 #include <fstream>
 
 namespace mrpt::poses
@@ -318,7 +320,7 @@ bool CPoseInterpolatorBase<DIM>::loadFromTextFile(const std::string& s)
 	ASSERT_(M.cols() == pose_t::static_size + 1);
 
 	// load into the path:
-    const size_t N = M.rows();
+	const size_t N = M.rows();
 	pose_t p;
 	for (size_t i = 0; i < N; i++)
 	{

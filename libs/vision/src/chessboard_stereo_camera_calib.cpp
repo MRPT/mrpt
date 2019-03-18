@@ -16,6 +16,7 @@
 #include <mrpt/vision/chessboard_stereo_camera_calib.h>
 #include <mrpt/vision/pinhole.h>
 #include <mrpt/poses/CPose3DQuat.h>
+#include <mrpt/poses/Lie/SE.h>
 #include <mrpt/math/robust_kernels.h>
 #include <mrpt/math/wrap2pi.h>
 #include <algorithm>  // reverse()
@@ -873,7 +874,7 @@ void mrpt::vision::add_lm_increment(
 
 		// Use the Lie Algebra methods for the increment:
 		const CArrayDouble<6> incr(&eps[6 * i]);
-		const CPose3D incrPose = CPose3D::exp(incr);
+		const CPose3D incrPose = Lie::SE<3>::exp(incr);
 
 		// new_pose =  old_pose  [+] delta
 		//         = exp(delta) (+) old_pose
@@ -884,7 +885,7 @@ void mrpt::vision::add_lm_increment(
 	{
 		// Use the Lie Algebra methods for the increment:
 		const CArrayDouble<6> incr(&eps[6 * N]);
-		const CPose3D incrPose = CPose3D::exp(incr);
+		const CPose3D incrPose = Lie::SE<3>::exp(incr);
 
 		// new_pose =  old_pose  [+] delta
 		//         = exp(delta) (+) old_pose
@@ -933,9 +934,9 @@ void numeric_jacob_eval_function(
 {
 	// Recover the state out from "x":
 	const CArrayDouble<6> incr_l(&x[0]);
-	const CPose3D incrPose_l = CPose3D::exp(incr_l);
+	const CPose3D incrPose_l = Lie::SE<3>::exp(incr_l);
 	const CArrayDouble<6> incr_rl(&x[6]);
-	const CPose3D incrPose_rl = CPose3D::exp(incr_rl);
+	const CPose3D incrPose_rl = Lie::SE<3>::exp(incr_rl);
 
 	// [fx fy cx cy k1 k2 k3 t1 t2]
 	TStereoCamera cam_params;
@@ -1008,7 +1009,7 @@ void eval_deps_D_p(
 	const CArrayDouble<6>& eps, const TPoint3D& D_p, CArrayDouble<3>& out)
 {
 	const CArrayDouble<6> incr(&eps[0]);
-	const CPose3D incrPose = CPose3D::exp(incr);
+	const CPose3D incrPose = Lie::SE<3>::exp(incr);
 	TPoint3D D_p_out;
 	incrPose.composePoint(D_p, D_p_out);
 	for (int i = 0; i < 3; i++) out[i] = D_p_out[i];
@@ -1025,7 +1026,7 @@ void eval_dA_eps_D_p(
 	CArrayDouble<3>& out)
 {
 	const CArrayDouble<6> incr(&eps[0]);
-	const CPose3D incrPose = CPose3D::exp(incr);
+	const CPose3D incrPose = Lie::SE<3>::exp(incr);
 	const CPose3D A_eps_D = dat.A + (incrPose + dat.D);
 	TPoint3D pt;
 	A_eps_D.composePoint(dat.p, pt);

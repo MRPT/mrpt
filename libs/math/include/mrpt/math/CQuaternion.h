@@ -115,28 +115,33 @@ class CQuaternion : public CArrayNumeric<T, 4>
 	template <class ARRAYLIKE3>
 	void fromRodriguesVector(const ARRAYLIKE3& v)
 	{
-		if (v.size() != 3) THROW_EXCEPTION("Vector v must have a length=3");
-
-		const T x = v[0];
-		const T y = v[1];
-		const T z = v[2];
-		const T angle = std::sqrt(x * x + y * y + z * z);
-		if (angle < 1e-7)
+		MRPT_START
+		ASSERT_(v.size() == 3);
+		const T x = v[0], y = v[1], z = v[2];
+		const T theta_sq = x * x + y * y + z * z, theta = std::sqrt(theta_sq);
+		T r, i;
+		if (theta < 1e-6)
 		{
-			(*this)[0] = 1;
-			(*this)[1] = static_cast<T>(0.5) * x;
-			(*this)[2] = static_cast<T>(0.5) * y;
-			(*this)[3] = static_cast<T>(0.5) * z;
+			// Taylor series approximation:
+			const T theta_po4 = theta_sq * theta_sq;
+			i = T(0.5) - T(1.0 / 48.0) * theta_sq + T(1.0 / 3840.0) * theta_po4;
+			r = T(1.0) - T(0.5) * theta_sq + T(1.0 / 384.0) * theta_po4;
 		}
 		else
 		{
-			const T s = (::sin(angle / 2)) / angle;
-			const T c = ::cos(angle / 2);
-			(*this)[0] = c;
-			(*this)[1] = x * s;
-			(*this)[2] = y * s;
-			(*this)[3] = z * s;
+			i = (std::sin(theta / 2)) / theta;
+			r = std::cos(theta / 2);
 		}
+		(*this)[0] = r;
+		(*this)[1] = x * i;
+		(*this)[2] = y * i;
+		(*this)[3] = z * i;
+		ASSERTMSG_(
+			normSqr() - 1.0 < 1e-6,
+			mrpt::format(
+				"fromRodriguesVector() failed, tangent_vector=[%g %g %g]", v[0],
+				v[1], v[2]));
+		MRPT_END
 	}
 
 	/** @name Lie Algebra methods
