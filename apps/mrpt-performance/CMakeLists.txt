@@ -35,6 +35,7 @@ add_executable(${PROJECT_NAME}
 	perf-pointmaps.cpp
 	perf-poses.cpp
 	perf-pose-interp.cpp
+	perf-octomap.cpp
 	perf-random.cpp
 	perf-scan_matching.cpp
 	perf-CObservation3DRangeScan.cpp
