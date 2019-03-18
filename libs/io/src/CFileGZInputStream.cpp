@@ -13,6 +13,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/core/exceptions.h>
 #include <cstring>  // strerror
+#include <cerrno>
 
 #include <zlib.h>
 
