@@ -22,6 +22,7 @@
 #include <mrpt/pbmap/ConsistencyTest.h>
 #include <mrpt/pbmap/SubgraphMatcher.h>
 #include <mrpt/pbmap/PbMapLocaliser.h>
+#include <mrpt/poses/Lie/SE.h>
 
 using namespace std;
 using namespace Eigen;
