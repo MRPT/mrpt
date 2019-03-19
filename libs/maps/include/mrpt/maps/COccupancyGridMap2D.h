@@ -15,6 +15,7 @@
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/tfest/TMatchingPair.h>
 #include <mrpt/maps/CLogOddsGridMap2D.h>
+#include <mrpt/maps/CLogOddsGridMapLUT.h>
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/poses/poses_frwds.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
