@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/stock_observations.h>
 #include <mrpt/maps/COctoMap.h>
 #include <mrpt/random.h>
 
@@ -40,7 +41,7 @@ double octomap_insert2Dscan(int resolution_cm, int num_reps)
 	auto& rnd = mrpt::random::getRandomGenerator();
 
 	mrpt::obs::CObservation2DRangeScan scan1;
-	loadExample2DRangeScan(scan1);
+	stock_observations::example2DRangeScan(scan1);
 
 	const double L = 2.0;  // [meters]
 

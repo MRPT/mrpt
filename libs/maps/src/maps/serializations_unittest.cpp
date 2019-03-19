@@ -34,6 +34,7 @@ TEST_CLASS_MOVE_COPY_CTORS(CWirelessPowerGridMap2D);
 TEST_CLASS_MOVE_COPY_CTORS(CHeightGridMap2D);
 TEST_CLASS_MOVE_COPY_CTORS(CReflectivityGridMap2D);
 TEST_CLASS_MOVE_COPY_CTORS(COccupancyGridMap2D);
+TEST_CLASS_MOVE_COPY_CTORS(COccupancyGridMap3D);
 TEST_CLASS_MOVE_COPY_CTORS(CSimplePointsMap);
 TEST_CLASS_MOVE_COPY_CTORS(CRandomFieldGridMap3D);
 TEST_CLASS_MOVE_COPY_CTORS(CWeightedPointsMap);
@@ -55,6 +56,7 @@ TEST(SerializeTestMaps, WriteReadToMem)
 		CLASS_ID(CHeightGridMap2D),
 		CLASS_ID(CReflectivityGridMap2D),
 		CLASS_ID(COccupancyGridMap2D),
+		CLASS_ID(COccupancyGridMap3D),
 		CLASS_ID(CSimplePointsMap),
 		CLASS_ID(CRandomFieldGridMap3D),
 		CLASS_ID(CWeightedPointsMap),

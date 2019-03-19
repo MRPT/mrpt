@@ -8,30 +8,17 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/serialization/CSerializable.h>
-#include <mrpt/system/datetime.h>
+#include <mrpt/obs/obs_frwds.h>
 
-namespace mrpt::obs
-{
-/** Declares a class for storing a robot action. It is used in
- * mrpt::obs::CRawlog,
- *    for logs storage and particle filter based simulations.
- *  See derived classes for implementations.
- *
- * \sa CActionCollection, CRawlog
+/** A few stock observations for easy reuse in unit tests, examples, etc.
  * \ingroup mrpt_obs_grp
  */
-class CAction : public mrpt::serialization::CSerializable
+namespace mrpt::obs::stock_observations
 {
-	DEFINE_VIRTUAL_SERIALIZABLE(CAction)
+/** Example 2D lidar scans (form a venerable SICK LMS200).
+ * Implemented indices: 0,1.
+ * \ingroup mrpt_obs_grp
+ */
+void example2DRangeScan(mrpt::obs::CObservation2DRangeScan& s, int i = 0);
 
-	/** Default ctor */
-	CAction() = default;
-	~CAction() override = default;
-
-	/** The associated time-stamp.*/
-	mrpt::system::TTimeStamp timestamp{INVALID_TIMESTAMP};
-
-};  // End of class def.
-
-}  // namespace mrpt::obs
+}  // namespace mrpt::obs::stock_observations
