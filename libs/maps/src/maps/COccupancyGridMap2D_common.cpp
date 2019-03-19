@@ -118,10 +118,6 @@ COccupancyGridMap2D::COccupancyGridMap2D(
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-						Destructor
-  ---------------------------------------------------------------*/
-COccupancyGridMap2D::~COccupancyGridMap2D() { freeMap(); }
 void COccupancyGridMap2D::copyMapContentFrom(const COccupancyGridMap2D& o)
 {
 	freeMap();
