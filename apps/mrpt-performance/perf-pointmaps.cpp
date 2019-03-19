@@ -10,6 +10,7 @@
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/poses/CPose2D.h>
+#include <mrpt/obs/stock_observations.h>
 #include <mrpt/random.h>
 
 #include "common.h"
@@ -31,7 +32,7 @@ double pointmap_test_0(int a1, int a2)
 
 	// prepare the laser scan:
 	CObservation2DRangeScan scan1;
-	loadExample2DRangeScan(scan1);
+	stock_observations::example2DRangeScan(scan1);
 
 	CSimplePointsMap pt_map;
 
@@ -59,7 +60,7 @@ double pointmap_test_1(int a1, int a2)
 
 	// prepare the laser scan:
 	CObservation2DRangeScan scan1;
-	loadExample2DRangeScan(scan1);
+	stock_observations::example2DRangeScan(scan1);
 
 	CSimplePointsMap pt_map;
 
@@ -111,7 +112,7 @@ double pointmap_test_2(int a1, int a2)
 
 	// prepare the laser scan:
 	CObservation2DRangeScan scan1;
-	loadExample2DRangeScan(scan1);
+	stock_observations::example2DRangeScan(scan1);
 
 	CTicTac tictac;
 	const unsigned N_TIMES = 20;
@@ -152,7 +153,7 @@ double pointmap_test_3(int a1, int a2)
 
 	// prepare the laser scan:
 	CObservation2DRangeScan scan1;
-	loadExample2DRangeScan(scan1);
+	stock_observations::example2DRangeScan(scan1);
 
 	CSimplePointsMap pt_map;
 
@@ -191,7 +192,7 @@ double pointmap_test_4(int a1, int a2)
 
 	// prepare the laser scan:
 	CObservation2DRangeScan scan1;
-	loadExample2DRangeScan(scan1);
+	stock_observations::example2DRangeScan(scan1);
 
 	CSimplePointsMap pt_map;
 	CSimplePointsMap pt_map2;
@@ -229,7 +230,7 @@ double pointmap_test_5(int a1, int a2)
 
 	// prepare the laser scan:
 	CObservation2DRangeScan scan1;
-	loadExample2DRangeScan(scan1);
+	stock_observations::example2DRangeScan(scan1);
 
 	CSimplePointsMap pt_map;
 

@@ -64,8 +64,6 @@ struct TestData
 // Common data & functions available to all performance modules:
 extern std::list<TestData> lstTests;
 
-extern void loadExample2DRangeScan(mrpt::obs::CObservation2DRangeScan& s);
-
 void dummy_do_nothing_with_string(const std::string& s);
 void getTestImage(unsigned int img_index, mrpt::img::CImage& out_img);
 
