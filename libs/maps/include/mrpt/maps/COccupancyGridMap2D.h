@@ -16,21 +16,13 @@
 #include <mrpt/tfest/TMatchingPair.h>
 #include <mrpt/maps/CLogOddsGridMap2D.h>
 #include <mrpt/maps/CLogOddsGridMapLUT.h>
+#include <mrpt/maps/OccupancyGridCellType.h>
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/poses/poses_frwds.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/obs/CObservation2DRangeScanWithUncertainty.h>
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/typemeta/TEnumType.h>
-
-#include <mrpt/config.h>
-#if (                                                \
-	!defined(OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS) &&   \
-	!defined(OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS)) || \
-	(defined(OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS) &&   \
-	 defined(OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS))
-#error One of OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS or OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS must be defined.
-#endif
 
 namespace mrpt::maps
 {
@@ -58,32 +50,23 @@ namespace mrpt::maps
  *
  * \ingroup mrpt_maps_grp
  **/
-class COccupancyGridMap2D : public CMetricMap,
-// Inherit from the corresponding specialization of CLogOddsGridMap2D<>:
-#ifdef OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
-							public CLogOddsGridMap2D<int8_t>
-#else
-							public CLogOddsGridMap2D<int16_t>
-#endif
+class COccupancyGridMap2D
+	: public CMetricMap,
+	  public CLogOddsGridMap2D<OccGridCellTraits::cellType>
 {
 	DEFINE_SERIALIZABLE(COccupancyGridMap2D)
    public:
-/** The type of the map cells: */
-#ifdef OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
-	using cellType = int8_t;
-	using cellTypeUnsigned = uint8_t;
-#else
-	using cellType = int16_t;
-	using cellTypeUnsigned = uint16_t;
-#endif
+	/** The type of the map cells: */
+	using cellType = OccGridCellTraits::cellType;
+	using cellTypeUnsigned = OccGridCellTraits::cellTypeUnsigned;
 
 	/** Discrete to float conversion factors: The min/max values of the integer
 	 * cell type, eg.[0,255] or [0,65535] */
-	static const cellType OCCGRID_CELLTYPE_MIN =
+	static constexpr cellType OCCGRID_CELLTYPE_MIN =
 		CLogOddsGridMap2D<cellType>::CELLTYPE_MIN;
-	static const cellType OCCGRID_CELLTYPE_MAX =
+	static constexpr cellType OCCGRID_CELLTYPE_MAX =
 		CLogOddsGridMap2D<cellType>::CELLTYPE_MAX;
-	static const cellType OCCGRID_P2LTABLE_SIZE =
+	static constexpr cellType OCCGRID_P2LTABLE_SIZE =
 		CLogOddsGridMap2D<cellType>::P2LTABLE_SIZE;
 
 	/** (Default:1.0) Can be set to <1 if a more fine raytracing is needed in
@@ -224,23 +207,17 @@ class COccupancyGridMap2D : public CMetricMap,
 	 * information apported by some observation */
 	struct TUpdateCellsInfoChangeOnly
 	{
-		TUpdateCellsInfoChangeOnly(
-			bool enabled_ = false, double I_change_ = 0, int cellsUpdated_ = 0)
-			: enabled(enabled_),
-			  I_change(I_change_),
-			  cellsUpdated(cellsUpdated_)
+		TUpdateCellsInfoChangeOnly() = default;
 
-		{
-		}
 		/** If set to false (default), this struct is not used. Set to true only
 		 * when measuring the info of an observation. */
-		bool enabled;
+		bool enabled{false};
 		/** The cummulative change in Information: This is updated only from the
 		 * "updateCell" method. */
-		double I_change;
+		double I_change{0};
 		/** The cummulative updated cells count: This is updated only from the
 		 * "updateCell" method. */
-		int cellsUpdated;
+		int cellsUpdated{0};
 		/** In this mode, some laser rays can be skips to speep-up */
 		int laserRaysSkip{1};
 	} updateInfoChangeOnly;
@@ -252,8 +229,6 @@ class COccupancyGridMap2D : public CMetricMap,
 	COccupancyGridMap2D(
 		float min_x = -20.0f, float max_x = 20.0f, float min_y = -20.0f,
 		float max_y = 20.0f, float resolution = 0.05f);
-	/** Destructor */
-	~COccupancyGridMap2D() override;
 
 	/** Change the size of gridmap, erasing all its previous contents.
 	 * \param x_min The "x" coordinates of left most side of grid.
