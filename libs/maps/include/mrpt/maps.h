@@ -27,6 +27,7 @@ MRPT_WARNING(
 #include <mrpt/maps/CHeightGridMap2D_MRF.h>
 #include <mrpt/maps/CReflectivityGridMap2D.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/COccupancyGridMap3D.h>
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/CWeightedPointsMap.h>

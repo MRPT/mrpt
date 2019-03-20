@@ -66,8 +66,6 @@ class COccupancyGridMap2D
 		CLogOddsGridMap2D<cellType>::CELLTYPE_MIN;
 	static constexpr cellType OCCGRID_CELLTYPE_MAX =
 		CLogOddsGridMap2D<cellType>::CELLTYPE_MAX;
-	static constexpr cellType OCCGRID_P2LTABLE_SIZE =
-		CLogOddsGridMap2D<cellType>::P2LTABLE_SIZE;
 
 	/** (Default:1.0) Can be set to <1 if a more fine raytracing is needed in
 	 * sonarSimulator() and laserScanSimulator(), or >1 to speed it up. */
@@ -95,7 +93,7 @@ class COccupancyGridMap2D
 	 * likelihood values for LF method among others, at a high cost in memory
 	 * (see TLikelihoodOptions::enableLikelihoodCache). */
 	std::vector<double> precomputedLikelihood;
-	bool precomputedLikelihoodToBeRecomputed{true};
+	bool m_likelihoodCacheOutDated{true};
 
 	/** Used for Voronoi calculation.Same struct as "map", but contains a "0" if
 	 * not a basis point. */
@@ -461,9 +459,7 @@ class COccupancyGridMap2D
 	class TInsertionOptions : public mrpt::config::CLoadableOptions
 	{
 	   public:
-		/** Initilization of default parameters
-		 */
-		TInsertionOptions();
+		TInsertionOptions() = default;
 
 		/** This method load the options from a ".ini" file.
 		 *   Only those parameters found in the given "section" and having
@@ -510,7 +506,7 @@ class COccupancyGridMap2D
 		/** The tolerance in rads in pitch & roll for a laser scan to be
 		 * considered horizontal, then processed by calls to this class
 		 * (default=0). */
-		float horizontalTolerance;
+		float horizontalTolerance{mrpt::DEG2RAD(0.05f)};
 		/** Gaussian sigma of the filter used in getAsImageFiltered (for
 		 * features detection) (Default=1) (0:Disabled)  */
 		float CFD_features_gaussian_size{1};
