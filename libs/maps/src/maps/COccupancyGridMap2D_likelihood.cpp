@@ -558,14 +558,14 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
 	if (likelihoodOptions.enableLikelihoodCache)
 	{
 		// Reset the precomputed likelihood values map
-		if (precomputedLikelihoodToBeRecomputed)
+		if (m_likelihoodCacheOutDated)
 		{
 			if (!map.empty())
 				precomputedLikelihood.assign(map.size(), LIK_LF_CACHE_INVALID);
 			else
 				precomputedLikelihood.clear();
 
-			precomputedLikelihoodToBeRecomputed = false;
+			m_likelihoodCacheOutDated = false;
 		}
 	}
 

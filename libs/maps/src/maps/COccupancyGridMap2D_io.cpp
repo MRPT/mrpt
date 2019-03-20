@@ -195,7 +195,7 @@ void COccupancyGridMap2D::serializeFrom(
 			}
 
 			// For the precomputed likelihood trick:
-			precomputedLikelihoodToBeRecomputed = true;
+			m_likelihoodCacheOutDated = true;
 
 			if (version >= 1)
 			{
@@ -280,7 +280,7 @@ bool COccupancyGridMap2D::loadFromBitmap(
 	MRPT_START
 
 	// For the precomputed likelihood trick:
-	precomputedLikelihoodToBeRecomputed = true;
+	m_likelihoodCacheOutDated = true;
 
 	size_t bmpWidth = imgFl.getWidth();
 	size_t bmpHeight = imgFl.getHeight();
@@ -514,9 +514,6 @@ bool COccupancyGridMap2D::saveAsEMFTwoMapsWithCorrespondences(
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-					auxParticleFilterCleanUp
- ---------------------------------------------------------------*/
 void COccupancyGridMap2D::saveMetricMapRepresentationToFile(
 	const std::string& filNamePrefix) const
 {

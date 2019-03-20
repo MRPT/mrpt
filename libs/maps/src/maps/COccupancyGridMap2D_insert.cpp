@@ -53,7 +53,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 	// This is required to indicate the grid map has changed!
 	// resetFeaturesCache();
 	// For the precomputed likelihood trick:
-	precomputedLikelihoodToBeRecomputed = true;
+	m_likelihoodCacheOutDated = true;
 
 	if (robotPose)
 	{
@@ -1307,15 +1307,6 @@ bool COccupancyGridMap2D::internal_insertObservation(
 	}
 
 	//	MRPT_END
-}
-
-/*---------------------------------------------------------------
-	Initilization of values, don't needed to be called directly.
-  ---------------------------------------------------------------*/
-COccupancyGridMap2D::TInsertionOptions::TInsertionOptions()
-	: horizontalTolerance(DEG2RAD(0.05))
-
-{
 }
 
 /*---------------------------------------------------------------

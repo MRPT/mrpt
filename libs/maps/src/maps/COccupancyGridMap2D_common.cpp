@@ -29,9 +29,7 @@ using namespace std;
 MAP_DEFINITION_REGISTER(
 	"COccupancyGridMap2D,occupancyGrid", mrpt::maps::COccupancyGridMap2D)
 
-COccupancyGridMap2D::TMapDefinition::TMapDefinition()
-
-	= default;
+COccupancyGridMap2D::TMapDefinition::TMapDefinition() = default;
 
 void COccupancyGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(
 	const mrpt::config::CConfigFileBase& source,
@@ -133,7 +131,7 @@ void COccupancyGridMap2D::copyMapContentFrom(const COccupancyGridMap2D& o)
 	m_basis_map.clear();
 	m_voronoi_diagram.clear();
 
-	precomputedLikelihoodToBeRecomputed = true;
+	m_likelihoodCacheOutDated = true;
 	m_is_empty = o.m_is_empty;
 }
 
@@ -150,7 +148,7 @@ void COccupancyGridMap2D::setSize(
 	ASSERT_BELOWEQ_(default_value, 1.0f);
 
 	freeMap();
-	precomputedLikelihoodToBeRecomputed = true;
+	m_likelihoodCacheOutDated = true;
 
 	// Adjust sizes to adapt them to full sized cells acording to the
 	// resolution:
@@ -224,7 +222,7 @@ void COccupancyGridMap2D::resizeGrid(
 		return;
 
 	// For the precomputed likelihood trick:
-	precomputedLikelihoodToBeRecomputed = true;
+	m_likelihoodCacheOutDated = true;
 
 	// Add an additional margin:
 	if (additionalMargin)
@@ -328,7 +326,7 @@ void COccupancyGridMap2D::freeMap()
 	size_x = size_y = 0;
 
 	// For the precomputed likelihood trick:
-	precomputedLikelihoodToBeRecomputed = true;
+	m_likelihoodCacheOutDated = true;
 
 	m_is_empty = true;
 
@@ -435,7 +433,7 @@ void COccupancyGridMap2D::internal_clear()
 	setSize(-10, 10, -10, 10, getResolution());
 	// resetFeaturesCache();
 	// For the precomputed likelihood trick:
-	precomputedLikelihoodToBeRecomputed = true;
+	m_likelihoodCacheOutDated = true;
 }
 
 /*---------------------------------------------------------------
@@ -446,7 +444,7 @@ void COccupancyGridMap2D::fill(float default_value)
 	cellType defValue = p2l(default_value);
 	for (auto it = map.begin(); it < map.end(); ++it) *it = defValue;
 	// For the precomputed likelihood trick:
-	precomputedLikelihoodToBeRecomputed = true;
+	m_likelihoodCacheOutDated = true;
 	// resetFeaturesCache();
 }
 
