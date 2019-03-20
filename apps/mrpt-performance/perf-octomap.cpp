@@ -41,14 +41,14 @@ double octomap_insert2Dscan(int resolution_cm, int num_reps)
 	auto& rnd = mrpt::random::getRandomGenerator();
 
 	mrpt::obs::CObservation2DRangeScan scan1;
-	stock_observations::example2DRangeScan(scan1);
+	mrpt::obs::stock_observations::example2DRangeScan(scan1);
 
 	const double L = 2.0;  // [meters]
 
 	mrpt::maps::COctoMap map(resolution_cm * 0.01);
 
 	mrpt::system::CTicTac tictac;
-	for (unsigned n = 0; n < num_reps; n++)
+	for (int n = 0; n < num_reps; n++)
 	{
 		mrpt::poses::CPose3D robot_pose(
 			rnd.drawUniform(-L, L), rnd.drawUniform(-L, L),

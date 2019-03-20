@@ -145,6 +145,7 @@ int main(int argc, char** argv)
 		register_tests_pose_interp();
 		register_tests_matrices();
 		register_tests_grids();
+		register_tests_grid3D();
 		register_tests_pointmaps();
 		register_tests_random();
 		register_tests_math();

@@ -31,6 +31,7 @@ void register_tests_poses();
 void register_tests_pose_interp();
 void register_tests_matrices();
 void register_tests_grids();
+void register_tests_grid3D();
 void register_tests_pointmaps();
 void register_tests_random();
 void register_tests_math();

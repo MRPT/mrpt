@@ -40,19 +40,12 @@ class COccupancyGridMap3D
 	using voxelType = OccGridCellTraits::cellType;
 	using voxelTypeUnsigned = OccGridCellTraits::cellTypeUnsigned;
 
-	/** (Default:1.0) Can be set to <1 if a more fine raytracing is needed in
-	 * sonarSimulator() and laserScanSimulator(), or >1 to speed it up. */
-	// static double RAYTRACE_STEP_SIZE_IN_CELL_UNITS;
    protected:
 	// friend class CMultiMetricMap;
 	// friend class CMultiMetricMapPDF;
 
 	/** Lookup tables for log-odds */
 	static CLogOddsGridMapLUT<voxelType>& get_logodd_lut();
-
-	/** Store of voxel occupancy values. Order: row by row, from left to right
-	 */
-	// std::vector<voxelType> map;
 
 	/** True upon construction; used by isEmpty() */
 	bool m_is_empty{true};
@@ -133,6 +126,11 @@ class COccupancyGridMap3D
 	{
 		return get_logodd_lut().p2l(p);
 	}
+
+	/** Performs the Bayesian fusion of a new observation of a cell  \sa
+	 * updateInfoChangeOnly, updateCell_fast_occupied, updateCell_fast_free */
+	void updateCell(int cx_idx, int cy_idx, int cz_idx, float v);
+
 	/** Change the contents [0,1] (0:occupied, 1:free) of a voxel, given its
 	 * index. */
 	inline void setCellFreeness(
