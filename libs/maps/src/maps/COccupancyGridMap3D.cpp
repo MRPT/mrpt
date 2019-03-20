@@ -155,46 +155,35 @@ void COccupancyGridMap3D::fill(float default_value)
 	// m_likelihoodCacheOutDated = true;
 }
 
-#if 0
-void COccupancyGridMap3D::updateCell(int x, int y, float v)
+void COccupancyGridMap3D::updateCell(int x, int y, int z, float v)
 {
-	// Tip: if x<0, (unsigned)(x) will also be >>> size_x ;-)
-	if (static_cast<unsigned int>(x) >= size_x ||
-	    static_cast<unsigned int>(y) >= size_y)
-		return;
+	if (m_grid.isOutOfBounds(x, y, z)) return;
 
 	// Get the current contents of the cell:
-	cellType& theCell = map[x + y * size_x];
+	auto* cp = m_grid.cellByIndex(x, y, z);
+	ASSERT_(cp != nullptr);
+	voxelType& theCell = *cp;
 
 	// Compute the new Bayesian-fused value of the cell:
-	if (updateInfoChangeOnly.enabled)
+	// The observation: will be >0 for free, <0 for occupied.
+	const voxelType obs = p2l(v);
+	if (obs > 0)
 	{
-		float old = l2p(theCell);
-		float new_v = 1 / (1 + (1 - v) * (1 - old) / (old * v));
-		updateInfoChangeOnly.cellsUpdated++;
-		updateInfoChangeOnly.I_change += 1 - (H(new_v) + H(1 - new_v)) / MAX_H;
+		// Saturate
+		if (theCell > (CLogOddsGridMap3D<voxelType>::CELLTYPE_MAX - obs))
+			theCell = CLogOddsGridMap3D<voxelType>::CELLTYPE_MAX;
+		else
+			theCell += obs;
 	}
 	else
 	{
-		cellType obs =
-		    p2l(v);  // The observation: will be >0 for free, <0 for occupied.
-		if (obs > 0)
-		{
-			if (theCell > (OCCGRID_CELLTYPE_MAX - obs))
-				theCell = OCCGRID_CELLTYPE_MAX;  // Saturate
-			else
-				theCell += obs;
-		}
+		// Saturate
+		if (theCell < (CLogOddsGridMap3D<voxelType>::CELLTYPE_MIN - obs))
+			theCell = CLogOddsGridMap3D<voxelType>::CELLTYPE_MIN;
 		else
-		{
-			if (theCell < (OCCGRID_CELLTYPE_MIN - obs))
-				theCell = OCCGRID_CELLTYPE_MIN;  // Saturate
-			else
-				theCell += obs;
-		}
+			theCell += obs;
 	}
 }
-#endif
 
 void COccupancyGridMap3D::determineMatching2D(
 	const mrpt::maps::CMetricMap* otherMap2,
