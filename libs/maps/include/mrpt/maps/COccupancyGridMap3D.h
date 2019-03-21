@@ -166,10 +166,25 @@ class COccupancyGridMap3D
 	}
 
 	/** Increases the freeness of a ray segment, and the occupancy of the voxel
-	 * at its end point (unless endIsOccupied=false). */
+	 * at its end point (unless endIsOccupied=false).
+	 * Normally, users would prefer the higher-level method
+	 * CMetricMap::insertObservation()
+	 */
 	void insertRay(
 		const mrpt::math::TPoint3D& sensor, const mrpt::math::TPoint3D& end,
 		bool endIsOccupied = true);
+
+	/** Calls insertRay() for each point in the point cloud, using as sensor
+	 * central point (the origin of all rays), the given `sensorCenter`.
+	 * \param[in] maxValidRange If a point has larger distance from
+	 * `sensorCenter` than `maxValidRange`, it will be considered a non-echo,
+	 * and NO occupied voxel will be created at the end of the segment.
+	 * \sa insertionOptions parameters are observed in this method.
+	 */
+	void insertPointCloud(
+	    const mrpt::math::TPoint3D& sensorCenter,
+	    const mrpt::maps::CPointsMap& pts,
+	    const float maxValidRange = std::numeric_limits<float>::max());
 
 	/** \sa renderingOptions */
 	void getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels& gl_obj) const;
