@@ -810,10 +810,6 @@ void export_maps()
 				&CMultiMetricMapPDF::TPredictionParams::
 					ICPGlobalAlign_MinQuality)
 			.def_readwrite(
-				"update_gridMapLikelihoodOptions",
-				&CMultiMetricMapPDF::TPredictionParams::
-					update_gridMapLikelihoodOptions)
-			.def_readwrite(
 				"KLD_params",
 				&CMultiMetricMapPDF::TPredictionParams::KLD_params)
 			.def_readwrite(

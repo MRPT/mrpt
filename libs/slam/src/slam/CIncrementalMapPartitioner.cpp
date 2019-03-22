@@ -128,7 +128,7 @@ uint32_t CIncrementalMapPartitioner::addMapFrame(
 	// Create new new metric map:
 	m_individualMaps.push_back(CMultiMetricMap::Create());
 	auto& newMetricMap = m_individualMaps.back();
-	newMetricMap->setListOfMaps(&options.metricmap);
+	newMetricMap->setListOfMaps(options.metricmap);
 
 	// Build robo-centric map for each keyframe:
 	frame.insertObservationsInto(newMetricMap.get());

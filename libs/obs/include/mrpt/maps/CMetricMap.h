@@ -302,9 +302,9 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 	{
 		return nullptr;
 	}
-	virtual mrpt::maps::CSimplePointsMap* getAsSimplePointsMap()
+	mrpt::maps::CSimplePointsMap* getAsSimplePointsMap()
 	{
-		return nullptr;
+		return const_cast<CSimplePointsMap*>(getAsSimplePointsMap());
 	}
 
 };  // End of class def.

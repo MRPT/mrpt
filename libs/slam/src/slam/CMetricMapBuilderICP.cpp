@@ -12,9 +12,11 @@
 #include <mrpt/slam/CICP.h>
 #include <mrpt/slam/CMetricMapBuilderICP.h>
 #include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/img/CEnhancedMetaFile.h>
 
@@ -135,7 +137,8 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 
 	MRPT_START
 
-	if (metricMap.m_pointsMaps.empty() && metricMap.m_gridMaps.empty())
+	if (metricMap.countMapsByClass<mrpt::maps::CPointsMap>() == 0 &&
+		metricMap.countMapsByClass<mrpt::maps::COccupancyGridMap2D>() == 0)
 		throw std::runtime_error(
 			"Neither grid maps nor points map: Have you called initialize() "
 			"after setting ICP_options.mapInitializers?");
@@ -236,18 +239,18 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 
 		// Select the map to match with ....
 		CMetricMap* matchWith = nullptr;
-		if (ICP_options.matchAgainstTheGrid && !metricMap.m_gridMaps.empty())
+		if (auto pGrid = metricMap.mapByClass<COccupancyGridMap2D>();
+			ICP_options.matchAgainstTheGrid && pGrid)
 		{
-			matchWith = static_cast<CMetricMap*>(metricMap.m_gridMaps[0].get());
+			matchWith = static_cast<CMetricMap*>(pGrid.get());
 			MRPT_LOG_DEBUG("processObservation(): matching against gridmap.");
 		}
 		else
 		{
-			ASSERTMSG_(
-				metricMap.m_pointsMaps.size(),
-				"No points map in multi-metric map.");
-			matchWith =
-				static_cast<CMetricMap*>(metricMap.m_pointsMaps[0].get());
+			auto pPts = metricMap.mapByClass<CPointsMap>();
+			ASSERTMSG_(pPts, "No points map in multi-metric map.");
+
+			matchWith = static_cast<CMetricMap*>(pPts.get());
 			MRPT_LOG_DEBUG("processObservation(): matching against point map.");
 		}
 		ASSERT_(matchWith != nullptr);
@@ -258,20 +261,21 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 
 			// --------------------------------------------------------------------------------------
 			// Any other observation:
-			//  1) If the observation generates points in a point map, do ICP
-			//  2) In any case, insert the observation if the minimum distance
-			//  has been satisfaced.
+			//  1) If the observation generates points in a point map,
+			//  do ICP 2) In any case, insert the observation if the
+			//  minimum distance has been satisfaced.
 			// --------------------------------------------------------------------------------------
 			CSimplePointsMap sensedPoints;
 			sensedPoints.insertionOptions.minDistBetweenLaserPoints = 0.02f;
 			sensedPoints.insertionOptions.also_interpolate = false;
 
 			// Create points representation of the observation:
-			// Insert only those planar range scans in the altitude of the grid
-			// map:
+			// Insert only those planar range scans in the altitude of
+			// the grid map:
 			if (ICP_options.matchAgainstTheGrid &&
-				!metricMap.m_gridMaps.empty() &&
-				metricMap.m_gridMaps[0]->insertionOptions.useMapAltitude)
+				0 != metricMap.countMapsByClass<COccupancyGridMap2D>() &&
+				metricMap.mapByClass<COccupancyGridMap2D>(0)
+					->insertionOptions.useMapAltitude)
 			{
 				// Use grid altitude:
 				if (IS_CLASS(obs, CObservation2DRangeScan))
@@ -279,7 +283,7 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 					CObservation2DRangeScan::Ptr obsLaser =
 						std::dynamic_pointer_cast<CObservation2DRangeScan>(obs);
 					if (std::abs(
-							metricMap.m_gridMaps[0]
+							metricMap.mapByClass<COccupancyGridMap2D>(0)
 								->insertionOptions.mapAltitude -
 							obsLaser->sensorPose.z()) < 0.01)
 						can_do_icp = sensedPoints.insertObservationPtr(obs);
@@ -298,8 +302,8 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 			if (can_do_icp)
 			{
 				// We DO HAVE points with this observation:
-				// Execute ICP over the current points map and the sensed
-				// points:
+				// Execute ICP over the current points map and the
+				// sensed points:
 				// ----------------------------------------------------------------------
 				CICP ICP;
 				float runningTime;
@@ -310,7 +314,8 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 					matchWith,  // Map 1
 					&sensedPoints,  // Map 2
 					mrpt::poses::CPose2D(
-						initialEstimatedRobotPose),  // a first gross estimation
+						initialEstimatedRobotPose),  // a first gross
+													 // estimation
 					// of map 2 relative to map
 					// 1.
 					&runningTime,  // Running time
@@ -367,9 +372,10 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 
 		// ----------------------------------------------------------
 		//				CRITERION TO DECIDE MAP UPDATE:
-		//   A distance large-enough from the last update for each sensor, AND
-		//    either: (i) this was a good match or (ii) this is the first time
-		//    for this sensor.
+		//   A distance large-enough from the last update for each
+		//   sensor, AND
+		//    either: (i) this was a good match or (ii) this is the
+		//    first time for this sensor.
 		// ----------------------------------------------------------
 		const bool firstTimeForThisSensor =
 			m_distSinceLastInsertion.find(obs->sensorLabel) ==
@@ -387,11 +393,11 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 		if (options.alwaysInsertByClass.contains(obs->GetRuntimeClass()))
 			update = true;
 
-		// We need to always insert ALL the observations at the beginning until
-		// the first one
-		//  that actually insert some points into the map used as a reference,
-		//  since otherwise
-		//  we'll not be able to do ICP against an empty map!!
+		// We need to always insert ALL the observations at the
+		// beginning until the first one
+		//  that actually insert some points into the map used as a
+		//  reference, since otherwise we'll not be able to do ICP
+		//  against an empty map!!
 		if (matchWith && matchWith->isEmpty()) update = true;
 
 		MRPT_LOG_DEBUG_STREAM(
@@ -411,7 +417,7 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 
 			// Create new entry:
 			m_distSinceLastInsertion[obs->sensorLabel].last_update =
-				currentKnownRobotPose;
+				currentKnownRobotPose.asTPose();
 
 			// Reset distance counters:
 			resetRobotDisplacementCounters(currentKnownRobotPose);
@@ -426,7 +432,8 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 				metricMap.insertObservationPtr(obs, &estimatedPose3D);
 			if (!anymap_update)
 				MRPT_LOG_WARN_STREAM(
-					"**No map was updated** after inserting an observation of "
+					"**No map was updated** after inserting an "
+					"observation of "
 					"type `"
 					<< obs->GetRuntimeClass()->className << "`");
 
@@ -535,7 +542,7 @@ void CMetricMapBuilderICP::initialize(
 	std::lock_guard<std::mutex> lock_cs(critZoneChangingMap);
 
 	// Create metric maps:
-	metricMap.setListOfMaps(&ICP_options.mapInitializers);
+	metricMap.setListOfMaps(ICP_options.mapInitializers);
 
 	// copy map:
 	SF_Poses_seq = initialMap;
@@ -547,11 +554,12 @@ void CMetricMapBuilderICP::initialize(
 	//{
 	//	metricMap.m_pointsMaps[0]->insertionOptions.fuseWithExisting =
 	// false;
-	//	metricMap.m_pointsMaps[0]->insertionOptions.minDistBetweenLaserPoints =
+	//	metricMap.m_pointsMaps[0]->insertionOptions.minDistBetweenLaserPoints
+	//=
 	// 0.05f;
-	//	metricMap.m_pointsMaps[0]->insertionOptions.disableDeletion			=
+	//	metricMap.m_pointsMaps[0]->insertionOptions.disableDeletion =
 	// true;
-	//	metricMap.m_pointsMaps[0]->insertionOptions.isPlanarMap				=
+	//	metricMap.m_pointsMaps[0]->insertionOptions.isPlanarMap =
 	// true;
 	//	metricMap.m_pointsMaps[0]->insertionOptions.matchStaticPointsOnly =
 	// true;
@@ -584,17 +592,16 @@ void CMetricMapBuilderICP::initialize(
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-						getCurrentMapPoints
-  ---------------------------------------------------------------*/
 void CMetricMapBuilderICP::getCurrentMapPoints(
 	std::vector<float>& x, std::vector<float>& y)
 {
 	// Critical section: We are using our global metric map
 	enterCriticalSection();
 
-	ASSERT_(metricMap.m_pointsMaps.size() > 0);
-	metricMap.m_pointsMaps[0]->getAllPoints(x, y);
+	auto pPts = metricMap.mapByClass<CPointsMap>(0);
+
+	ASSERT_(pPts);
+	pPts->getAllPoints(x, y);
 
 	// Exit critical zone.
 	leaveCriticalSection();
@@ -632,17 +639,14 @@ void CMetricMapBuilderICP::saveCurrentEstimationToImage(
 	CImage img;
 	const size_t nPoses = m_estRobotPath.size();
 
-	ASSERT_(metricMap.m_gridMaps.size() > 0);
-
 	if (!formatEMF_BMP) THROW_EXCEPTION("Not implemented yet for BMP!");
 
 	// grid map as bitmap:
-	// ----------------------------------
-	metricMap.m_gridMaps[0]->getAsImage(img);
+	auto pGrid = metricMap.mapByClass<COccupancyGridMap2D>();
+	if (pGrid) pGrid->getAsImage(img);
 
 	// Draw paths (using vectorial plots!) over the EMF file:
 	// -------------------------------------------------
-	//	float					SCALE = 1000;
 	CEnhancedMetaFile EMF(file, 1000);
 
 	EMF.drawImage(0, 0, img);
@@ -654,8 +658,8 @@ void CMetricMapBuilderICP::saveCurrentEstimationToImage(
 	int x1, x2, y1, y2;
 
 	// First point: (0,0)
-	x2 = metricMap.m_gridMaps[0]->x2idx(0.0f);
-	y2 = metricMap.m_gridMaps[0]->y2idx(0.0f);
+	x2 = pGrid->x2idx(0.0f);
+	y2 = pGrid->y2idx(0.0f);
 
 	// Draw path in the bitmap:
 	for (size_t j = 0; j < nPoses; j++)
@@ -665,8 +669,8 @@ void CMetricMapBuilderICP::saveCurrentEstimationToImage(
 		y1 = y2;
 
 		// Coordinates -> pixels
-		x2 = metricMap.m_gridMaps[0]->x2idx(m_estRobotPath[j].x);
-		y2 = metricMap.m_gridMaps[0]->y2idx(m_estRobotPath[j].y);
+		x2 = pGrid->x2idx(m_estRobotPath[j].x);
+		y2 = pGrid->y2idx(m_estRobotPath[j].y);
 
 		// Draw line:
 		EMF.line(
@@ -692,14 +696,14 @@ void CMetricMapBuilderICP::resetRobotDisplacementCounters(
 
 void CMetricMapBuilderICP::TDist::updateDistances(const mrpt::poses::CPose2D& p)
 {
-	mrpt::poses::CPose2D Ap = p - this->last_update;
+	const auto Ap = p - mrpt::poses::CPose2D(this->last_update);
 	lin = Ap.norm();
 	ang = std::abs(Ap.phi());
 }
 
 void CMetricMapBuilderICP::TDist::updatePose(const mrpt::poses::CPose2D& p)
 {
-	this->last_update = p;
+	this->last_update = p.asTPose();
 	lin = 0;
 	ang = 0;
 }

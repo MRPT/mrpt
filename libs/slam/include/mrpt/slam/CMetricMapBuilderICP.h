@@ -11,6 +11,7 @@
 #include <mrpt/slam/CMetricMapBuilder.h>
 #include <mrpt/slam/CICP.h>
 #include <mrpt/poses/CRobot2DPoseEstimator.h>
+#include <map>
 
 namespace mrpt::slam
 {
@@ -179,14 +180,14 @@ class CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
 		TDist() = default;
 		double lin{0};  // meters
 		double ang{0};  // degrees
-		mrpt::poses::CPose2D last_update;
+		mrpt::math::TPose2D last_update;
 
 		void updateDistances(const mrpt::poses::CPose2D& p);
 		void updatePose(const mrpt::poses::CPose2D& p);
 	};
 	TDist m_distSinceLastICP;
 	/** Indexed by sensor label. */
-	mrpt::aligned_std_map<std::string, TDist> m_distSinceLastInsertion;
+	std::map<std::string, TDist> m_distSinceLastInsertion;
 	bool m_there_has_been_an_odometry;
 
 	void accumulateRobotDisplacementCounters(

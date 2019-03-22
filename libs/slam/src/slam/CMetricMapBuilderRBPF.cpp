@@ -13,7 +13,8 @@
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/img/CEnhancedMetaFile.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
-#include <mrpt/math/utils.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/core/round.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -31,8 +32,8 @@ CMetricMapBuilderRBPF::CMetricMapBuilderRBPF(
 	const TConstructionOptions& initializationOptions)
 	: mapPDF(
 		  initializationOptions.PF_options,
-		  &initializationOptions.mapsInitializers,
-		  &initializationOptions.predictionOptions),
+		  initializationOptions.mapsInitializers,
+		  initializationOptions.predictionOptions),
 	  m_PF_options(initializationOptions.PF_options),
 	  insertionLinDistance(initializationOptions.insertionLinDistance),
 	  insertionAngDistance(initializationOptions.insertionAngDistance),
@@ -53,9 +54,6 @@ CMetricMapBuilderRBPF::CMetricMapBuilderRBPF()
 	MRPT_LOG_WARN("Empty constructor invoked!\n");
 }
 
-/*---------------------------------------------------------------
-					 Copy operator
-  ---------------------------------------------------------------*/
 CMetricMapBuilderRBPF& CMetricMapBuilderRBPF::operator=(
 	const CMetricMapBuilderRBPF& src)
 {
@@ -382,10 +380,9 @@ void CMetricMapBuilderRBPF::drawCurrentEstimationToImage(CCanvas* img)
 
 	MRPT_START
 
-	const mrpt::maps::CMultiMetricMap* currentMetricMapEstimation =
-		mapPDF.getCurrentMostLikelyMetricMap();
+	const auto* curMap = mapPDF.getCurrentMostLikelyMetricMap();
 
-	ASSERT_(currentMetricMapEstimation->m_gridMaps.size() > 0);
+	ASSERT_(curMap->countMapsByClass<COccupancyGridMap2D>() > 0);
 
 	// Find which is the most likely path index:
 	unsigned int bestPath = 0;
@@ -404,7 +401,7 @@ void CMetricMapBuilderRBPF::drawCurrentEstimationToImage(CCanvas* img)
 
 	// Adapt the canvas size:
 	bool alreadyCopiedImage = false;
-	auto g = currentMetricMapEstimation->m_gridMaps[0];
+	auto g = curMap->mapByClass<COccupancyGridMap2D>(0);
 	{
 		auto* obj = dynamic_cast<CImage*>(img);
 		if (obj) obj->resize(g->getSizeX(), g->getSizeY(), mrpt::img::CH_GRAY);

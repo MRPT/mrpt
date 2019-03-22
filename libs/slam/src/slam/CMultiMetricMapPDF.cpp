@@ -44,14 +44,9 @@ IMPLEMENTS_SERIALIZABLE(CRBPFParticleData, CSerializable, mrpt::maps)
   ---------------------------------------------------------------*/
 CMultiMetricMapPDF::CMultiMetricMapPDF(
 	const bayes::CParticleFilter::TParticleFilterOptions& opts,
-	const mrpt::maps::TSetOfMetricMapInitializers* mapsInitializers,
-	const TPredictionParams* predictionOptions)
-	: averageMap(mapsInitializers),
-
-	  SFs(),
-	  SF2robotPath(),
-	  options()
-
+	const mrpt::maps::TSetOfMetricMapInitializers& mapsInitializers,
+	const TPredictionParams& predictionOptions)
+	: averageMap(mapsInitializers), SFs(), SF2robotPath(), options()
 {
 	m_particles.resize(opts.sampleSize);
 	for (auto& m_particle : m_particles)
@@ -65,7 +60,7 @@ CMultiMetricMapPDF::CMultiMetricMapPDF(
 	clear(nullPose);
 
 	// If provided, copy the whole set of params now:
-	if (predictionOptions != nullptr) options = *predictionOptions;
+	options = predictionOptions;
 }
 
 /*---------------------------------------------------------------
@@ -284,30 +279,28 @@ const CMultiMetricMap* CMultiMetricMapPDF::getAveragedMetricMapEstimation()
 	return &averageMap;
 }
 
-/*---------------------------------------------------------------
-						getWeightedAveragedMap
- ---------------------------------------------------------------*/
 void CMultiMetricMapPDF::rebuildAverageMap()
 {
 	float min_x = 1e6, max_x = -1e6, min_y = 1e6, max_y = -1e6;
-	CParticleList::iterator part;
 
 	if (averageMapIsUpdated) return;
 
 	// ---------------------------------------------------------
 	//					GRID
 	// ---------------------------------------------------------
-	for (part = m_particles.begin(); part != m_particles.end(); ++part)
+	for (auto& p : m_particles)
 	{
-		ASSERT_(part->d->mapTillNow.m_gridMaps.size() > 0);
+		ASSERT_(p->d->mapTillNow.countMapByClass<COccupancyGridMap2D>() > 0);
 
-		min_x = min(min_x, part->d->mapTillNow.m_gridMaps[0]->getXMin());
-		max_x = max(max_x, part->d->mapTillNow.m_gridMaps[0]->getXMax());
-		min_y = min(min_y, part->d->mapTillNow.m_gridMaps[0]->getYMin());
-		max_y = max(max_y, part->d->mapTillNow.m_gridMaps[0]->getYMax());
+		auto& grid = p->d->mapTillNow.mapByClass<COccupancyGridMap2D>(0);
+
+		min_x = min(min_x, grid->getXMin());
+		max_x = max(max_x, grid->getXMax());
+		min_y = min(min_y, grid->getYMin());
+		max_y = max(max_y, grid->getYMax());
 	}
 
-	// Asure all maps have the same dimensions:
+	// Ensure all maps have the same dimensions:
 	for (part = m_particles.begin(); part != m_particles.end(); ++part)
 		part->d->mapTillNow.m_gridMaps[0]->resizeGrid(
 			min_x, max_x, min_y, max_y, 0.5f, false);
@@ -596,14 +589,6 @@ void CMultiMetricMapPDF::saveCurrentPathEstimationToTextFile(
 
 /*---------------------------------------------------------------
 				TPredictionParams
-  ---------------------------------------------------------------*/
-CMultiMetricMapPDF::TPredictionParams::TPredictionParams()
-	: update_gridMapLikelihoodOptions(), KLD_params(), icp_params()
-{
-}
-
-/*---------------------------------------------------------------
-					dumpToTextStream
   ---------------------------------------------------------------*/
 void CMultiMetricMapPDF::TPredictionParams::dumpToTextStream(
 	std::ostream& out) const

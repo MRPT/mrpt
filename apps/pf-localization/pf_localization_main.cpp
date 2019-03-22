@@ -230,7 +230,7 @@ void do_pf_localization(
 
 	// Load the set of metric maps to consider in the experiments:
 	CMultiMetricMap metricMap;
-	metricMap.setListOfMaps(&mapList);
+	metricMap.setListOfMaps(mapList);
 	mapList.dumpToConsole();
 
 	getRandomGenerator().randomize();
@@ -870,7 +870,7 @@ void do_pf_localization(
 						// several are
 						// present.
 						COccupancyGridMap2D::Ptr gridmap =
-							metricMap.getMapByClass<COccupancyGridMap2D>();
+							metricMap.mapByClass<COccupancyGridMap2D>();
 						if (obs_scan && gridmap)  // We have both, go on:
 						{
 							// Simulate scan + uncertainty:

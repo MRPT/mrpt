@@ -92,7 +92,7 @@ void CDocument::saveAsText(const std::string& fileName) const
 const std::string& CDocument::getFileName() const { return m_fileName; }
 void CDocument::setListOfMaps(TSetOfMetricMapInitializers& mapCfg)
 {
-	m_metricmap.setListOfMaps(&mapCfg);
+	m_metricmap.setListOfMaps(mapCfg);
 	updateMetricMap();
 }
 

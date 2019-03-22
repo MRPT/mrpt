@@ -182,9 +182,9 @@ class COccupancyGridMap3D
 	 * \sa insertionOptions parameters are observed in this method.
 	 */
 	void insertPointCloud(
-	    const mrpt::math::TPoint3D& sensorCenter,
-	    const mrpt::maps::CPointsMap& pts,
-	    const float maxValidRange = std::numeric_limits<float>::max());
+		const mrpt::math::TPoint3D& sensorCenter,
+		const mrpt::maps::CPointsMap& pts,
+		const float maxValidRange = std::numeric_limits<float>::max());
 
 	/** \sa renderingOptions */
 	void getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels& gl_obj) const;

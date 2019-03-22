@@ -179,8 +179,8 @@ void do_grid_align()
 	}
 
 	// Create the map with a points & grid-map within:
-	the_map1.setListOfMaps(&map1_inits);
-	the_map2.setListOfMaps(&map2_inits);
+	the_map1.setListOfMaps(map1_inits);
+	the_map2.setListOfMaps(map2_inits);
 
 	ASSERT_(the_map1.m_gridMaps.size() >= 1);
 	ASSERT_(the_map2.m_gridMaps.size() >= 1);

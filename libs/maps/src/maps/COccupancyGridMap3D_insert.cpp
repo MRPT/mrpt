@@ -71,8 +71,8 @@ void COccupancyGridMap3D::internal_insertObservationScan2D(
 }
 
 void COccupancyGridMap3D::insertPointCloud(
-    const mrpt::math::TPoint3D& sensorPt, const mrpt::maps::CPointsMap& pts,
-    const float maxValidRange)
+	const mrpt::math::TPoint3D& sensorPt, const mrpt::maps::CPointsMap& pts,
+	const float maxValidRange)
 {
 	MRPT_START
 
@@ -82,7 +82,7 @@ void COccupancyGridMap3D::insertPointCloud(
 
 	// Process points one by one as rays:
 	for (std::size_t idx = 0; idx < xs.size();
-	     idx += insertionOptions.decimation)
+		 idx += insertionOptions.decimation)
 	{
 		insertRay(sensorPt, mrpt::math::TPoint3D(xs[idx], ys[idx], zs[idx]));
 	}
@@ -101,7 +101,7 @@ void COccupancyGridMap3D::internal_insertObservationScan3D(
 	mrpt::obs::T3DPointsProjectionParams pp;
 	pp.takeIntoAccountSensorPoseOnRobot = true;
 	const_cast<mrpt::obs::CObservation3DRangeScan&>(o)
-	    .project3DPointsFromDepthImageInto(pts, pp);
+		.project3DPointsFromDepthImageInto(pts, pp);
 
 	const auto sensorPose3D = robotPose + o.sensorPose;
 	const auto sensorPt = mrpt::math::TPoint3D(sensorPose3D.asTPose());

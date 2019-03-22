@@ -45,5 +45,7 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_maps)
 	registerClass(CLASS_ID(CPlanarLaserScan));
 
 	registerClass(CLASS_ID(CObservationPointCloud));
+	registerClass(CLASS_ID(CMultiMetricMap));
+
 #endif
 }
