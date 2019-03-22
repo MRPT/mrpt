@@ -272,7 +272,7 @@ void MapBuilding_RBPF()
 			CRBPFParticleData* part_d = m_particle.d.get();
 			CMultiMetricMap& mmap = part_d->mapTillNow;
 			mrpt::maps::COccupancyGridMap2D::Ptr it_grid =
-				mmap.getMapByClass<mrpt::maps::COccupancyGridMap2D>();
+				mmap.mapByClass<mrpt::maps::COccupancyGridMap2D>();
 			ASSERTMSG_(
 				it_grid,
 				"No gridmap in multimetric map definition, but metric map "

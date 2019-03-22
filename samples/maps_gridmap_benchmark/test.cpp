@@ -44,7 +44,7 @@ void BenchmarkGridmaps()
 	// Create gridmap:
 	mapInit.loadFromConfigFile(
 		mrpt::config::CConfigFile(iniFile), "METRIC_MAPS");
-	metricMap.setListOfMaps(&mapInit);
+	metricMap.setListOfMaps(mapInit);
 
 	// prepare the laser scan:
 	CObservation2DRangeScan scan1;

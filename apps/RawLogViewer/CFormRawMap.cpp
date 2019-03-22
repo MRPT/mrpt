@@ -616,7 +616,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
 
 	TSetOfMetricMapInitializers lstMaps;
 	lstMaps.loadFromConfigFile(configSrc, "map");
-	theMap.setListOfMaps(&lstMaps);
+	theMap.setListOfMaps(lstMaps);
 
 	CPointsMap::Ptr thePntsMap;
 
@@ -1064,7 +1064,7 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent&)
 
 	TSetOfMetricMapInitializers lstMaps;
 	lstMaps.loadFromConfigFile(configSrc, "map");
-	theMap.setListOfMaps(&lstMaps);
+	theMap.setListOfMaps(lstMaps);
 
 	// -------------------------------------------
 	// Run path reconstruction:

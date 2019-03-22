@@ -878,19 +878,6 @@ class CPointsMap : public CMetricMap,
 	 */
 	void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
 
-	/** If the map is a simple points map or it's a multi-metric map that
-	 * contains EXACTLY one simple points map, return it.
-	 * Otherwise, return NULL
-	 */
-	const mrpt::maps::CSimplePointsMap* getAsSimplePointsMap() const override
-	{
-		return nullptr;
-	}
-	mrpt::maps::CSimplePointsMap* getAsSimplePointsMap() override
-	{
-		return nullptr;
-	}
-
 	/** This method returns the largest distance from the origin to any of the
 	 * points, such as a sphere centered at the origin with this radius cover
 	 * ALL the points in the map (the results are buffered, such as, if the map

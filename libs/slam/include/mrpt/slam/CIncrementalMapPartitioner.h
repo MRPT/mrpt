@@ -11,6 +11,7 @@
 
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/math/CMatrixD.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/CSimpleMap.h>

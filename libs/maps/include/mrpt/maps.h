@@ -35,6 +35,8 @@ MRPT_WARNING(
 #include <mrpt/maps/COctoMap.h>
 #include <mrpt/maps/CColouredOctoMap.h>
 
+#include <mrpt/maps/CMultiMetricMap.h>
+
 //#include <mrpt/maps/PCL_adapters.h>  // NOTE: This file must be included from
 // the user code only if he has already #include'd PCL headers.
 

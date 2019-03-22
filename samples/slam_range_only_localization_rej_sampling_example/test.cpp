@@ -37,7 +37,7 @@ void TestRS()
 	CMultiMetricMap map;
 	mrpt::maps::TSetOfMetricMapInitializers mapInit;
 	mapInit.loadFromConfigFile(CConfigFile("_demo_map.ini"), "MetricMap");
-	map.setListOfMaps(&mapInit);
+	map.setListOfMaps(mapInit);
 
 	// Create a dummy observation:
 	mrpt::obs::CObservationBeaconRanges obs;

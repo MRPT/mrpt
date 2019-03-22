@@ -85,7 +85,7 @@ int main(int argc, char** argv)
 			CConfigFile(configFile), METRIC_MAP_CONFIG_SECTION);
 
 		CMultiMetricMap metricMap;
-		metricMap.setListOfMaps(&mapCfg);
+		metricMap.setListOfMaps(mapCfg);
 
 		// Build metric maps:
 		cout << "Building metric maps...";

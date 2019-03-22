@@ -138,7 +138,7 @@ void TestParticlesLocalization()
 	CMultiMetricMap metricMap;
 	TSetOfMetricMapInitializers mapList;
 	mapList.loadFromConfigFile(*iniFile, "MetricMap");
-	metricMap.setListOfMaps(&mapList);
+	metricMap.setListOfMaps(mapList);
 	mapList.dumpToConsole();
 	pfOptions.dumpToConsole();
 
