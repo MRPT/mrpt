@@ -36,10 +36,13 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/CPointsMap.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/topography.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;
@@ -619,19 +622,10 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
 	theMap.setListOfMaps(lstMaps);
 
 	CPointsMap::Ptr thePntsMap;
-
-	if (!theMap.m_pointsMaps.empty())
-	{
-		CSimplePointsMap::Ptr sMap;
-		sMap = theMap.m_pointsMaps[0];
-		thePntsMap = std::dynamic_pointer_cast<CPointsMap>(sMap);
-	}
-	else if (theMap.m_colourPointsMap)
-	{
-		CColouredPointsMap::Ptr colorMap;
-		colorMap = theMap.m_colourPointsMap;
-		thePntsMap = std::dynamic_pointer_cast<CPointsMap>(colorMap);
-	}
+	if (auto p = theMap.mapByClass<CSimplePointsMap>(); p)
+		thePntsMap = std::dynamic_pointer_cast<CPointsMap>(p);
+	else if (auto p2 = theMap.mapByClass<CColouredPointsMap>(); p2)
+		thePntsMap = std::dynamic_pointer_cast<CPointsMap>(p2);
 
 	wxBusyCursor waitCursor;
 
@@ -1050,8 +1044,6 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent&)
 	WX_START_TRY
 
 	// Go: generate the map:
-	size_t i;
-
 	size_t first = edFirst->GetValue();
 	size_t last = edLast->GetValue();
 	size_t decimate = slDecimate->GetValue();
@@ -1081,19 +1073,10 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent&)
 	wxBusyCursor waitCursor;
 
 	CPointsMap::Ptr thePntsMap;
-
-	if (!theMap.m_pointsMaps.empty())
-	{
-		CSimplePointsMap::Ptr sMap;
-		sMap = theMap.m_pointsMaps[0];
-		thePntsMap = std::dynamic_pointer_cast<CPointsMap>(sMap);
-	}
-	else if (theMap.m_colourPointsMap)
-	{
-		CColouredPointsMap::Ptr colorMap;
-		colorMap = theMap.m_colourPointsMap;
-		thePntsMap = std::dynamic_pointer_cast<CPointsMap>(colorMap);
-	}
+	if (auto p = theMap.mapByClass<CSimplePointsMap>(); p)
+		thePntsMap = std::dynamic_pointer_cast<CPointsMap>(p);
+	else if (auto p2 = theMap.mapByClass<CColouredPointsMap>(); p2)
+		thePntsMap = std::dynamic_pointer_cast<CPointsMap>(p2);
 
 	// An (aprox) estimate of the final size of the map (great improve in
 	// speed!)
@@ -1114,7 +1097,7 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent&)
 	progDia2.SetSize(400, progDia2.GetSize().GetHeight());
 	wxTheApp->Yield();  // Let the app. process messages
 
-	for (i = first; !abort && i <= last; i++)
+	for (size_t i = first; !abort && i <= last; i++)
 	{
 		switch (rawlog.getType(i))
 		{

@@ -24,14 +24,10 @@ using namespace mrpt::io;
 using namespace mrpt::system;
 using namespace mrpt::serialization;
 using namespace std;
+using namespace std::string_literals;
 
 const string rgbd_test_rawlog_file =
-#ifdef MRPT_DATASET_DIR
-	MRPT_DATASET_DIR "/tests_rgbd.rawlog";
-#else
-	""
-#endif
-;
+	mrpt::system::getShareMRPTDir() + "datasets/tests_rgbd.rawlog"s;
 
 void generateRandomMaskImage(
 	mrpt::math::CMatrix& m, const unsigned int nrows, const unsigned int ncols)

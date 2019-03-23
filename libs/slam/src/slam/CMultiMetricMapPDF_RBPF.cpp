@@ -21,8 +21,10 @@
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFGrid.h>
 #include <mrpt/obs/CObservationBeaconRanges.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/CLandmarksMap.h>
+#include <mrpt/maps/CBeaconMap.h>
 
 #include <mrpt/slam/PF_aux_structs.h>
 
@@ -284,18 +286,17 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 			CPosePDFGaussian icpEstimation;
 
 			// Configure the matchings that will take place in the ICP process:
-			if (partIt->d->mapTillNow.m_pointsMaps.size())
-			{
-				ASSERT_(partIt->d->mapTillNow.m_pointsMaps.size() == 1);
-				// partIt->d->mapTillNow.m_pointsMaps[0]->insertionOptions.matchStaticPointsOnly
-				// = false;
-			}
+			auto partMap = partIt->d->mapTillNow;
+			const auto numPtMaps = partMap.countMapsByClass<CSimplePointsMap>();
+
+			ASSERT_(numPtMaps == 0 || numPtMaps == 1);
 
 			CMetricMap* map_to_align_to = nullptr;
 
 			if (options.pfOptimalProposal_mapSelection == 0)  // Grid map
 			{
-				ASSERT_(!partIt->d->mapTillNow.m_gridMaps.empty());
+				auto grid = partMap.mapByClass<COccupancyGridMap2D>();
+				ASSERT_(grid);
 
 				// Build local map of points.
 				if (!built_map_points)
@@ -303,18 +304,18 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 					built_map_points = true;
 
 					localMapPoints.insertionOptions.minDistBetweenLaserPoints =
-						0.02f;  // 3.0f *
-					// m_particles[0].d->mapTillNow.m_gridMaps[0]->getResolution();;
+						0.02f;
 					localMapPoints.insertionOptions.isPlanarMap = true;
 					sf->insertObservationsInto(&localMapPoints);
 				}
 
-				map_to_align_to = partIt->d->mapTillNow.m_gridMaps[0].get();
+				map_to_align_to = grid.get();
 			}
-			else if (options.pfOptimalProposal_mapSelection == 3)  // Map of
-			// points
+			// Map of points
+			else if (options.pfOptimalProposal_mapSelection == 3)
 			{
-				ASSERT_(!partIt->d->mapTillNow.m_pointsMaps.empty());
+				auto ptsMap = partMap.mapByClass<CSimplePointsMap>();
+				ASSERT_(ptsMap);
 
 				// Build local map of points.
 				if (!built_map_points)
@@ -322,17 +323,17 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 					built_map_points = true;
 
 					localMapPoints.insertionOptions.minDistBetweenLaserPoints =
-						0.02f;  // 3.0f *
-					// m_particles[0].d->mapTillNow.m_gridMaps[0]->getResolution();;
+						0.02f;
 					localMapPoints.insertionOptions.isPlanarMap = true;
 					sf->insertObservationsInto(&localMapPoints);
 				}
 
-				map_to_align_to = partIt->d->mapTillNow.m_pointsMaps[0].get();
+				map_to_align_to = ptsMap.get();
 			}
 			else
 			{
-				ASSERT_(partIt->d->mapTillNow.m_landmarksMap);
+				auto lmMap = partMap.mapByClass<CLandmarksMap>();
+				ASSERT_(lmMap);
 
 				// Build local map of LMs.
 				if (!built_map_lms)
@@ -341,7 +342,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 					sf->insertObservationsInto(&localMapLandmarks);
 				}
 
-				map_to_align_to = partIt->d->mapTillNow.m_landmarksMap.get();
+				map_to_align_to = lmMap.get();
 			}
 
 			ASSERT_(map_to_align_to != nullptr);
@@ -423,17 +424,13 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 		}
 		else if (options.pfOptimalProposal_mapSelection == 2)
 		{
-			// --------------------------------------------------------
 			//     Perform optimal sampling with the beacon map:
-			//  Described in paper...
+			//  Described in paper: IROS 2008
 			// --------------------------------------------------------
-			/** \todo Add paper ref!
-			 */
-			ASSERT_(partIt->d->mapTillNow.m_beaconMap);
-			CBeaconMap::Ptr beacMap = partIt->d->mapTillNow.m_beaconMap;
+			auto beacMap = partIt->d->mapTillNow.mapByClass<CBeaconMap>();
 
-			updateStageAlreadyDone =
-				true;  // We'll also update the weight of the particle here
+			// We'll also update the weight of the particle here
+			updateStageAlreadyDone = true;
 
 			// =====================================================================
 			// SUMMARY:

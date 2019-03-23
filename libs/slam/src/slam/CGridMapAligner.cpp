@@ -887,8 +887,8 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 			//        the estimation with ICP.
 			// --------------------------------------------------------------------
 			if (multimap1 && multimap2 &&
-			    multimap1->countMapsByClass<CSimplePointsMap>() != 0 &&
-			    multimap2->countMapsByClass<CSimplePointsMap>() != 0)
+				multimap1->countMapsByClass<CSimplePointsMap>() != 0 &&
+				multimap2->countMapsByClass<CSimplePointsMap>() != 0)
 			{
 				auto pnts1 = multimap1->mapByClass<CSimplePointsMap>();
 				auto pnts2 = multimap2->mapByClass<CSimplePointsMap>();
