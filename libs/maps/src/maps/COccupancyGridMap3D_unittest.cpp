@@ -57,6 +57,6 @@ TEST(COccupancyGridMap3DTests, insertScan3D)
 		grid.insertObservation(obs.get());
 
 		// A cell in front of the laser should have a high "freeness"
-		EXPECT_GT(grid.getFreenessByPos(0.2, 0.2, -0.1), 0.53f);
+		EXPECT_GT(grid.getFreenessByPos(0.2, 0.2, 0.1), 0.53f);
 	}
 }
