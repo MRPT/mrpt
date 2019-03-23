@@ -11,8 +11,12 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/slam/CMetricMapBuilderICP.h>
 #include <mrpt/maps/CMultiMetricMap.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/obs/CRawlog.h>
+#include <mrpt/system/filesystem.h>
 
 #include "common.h"
 
@@ -28,9 +32,11 @@ using namespace std;
 // ------------------------------------------------------
 double icp_test_1(int a1, int a2)
 {
-#ifdef MRPT_DATASET_DIR
-	const string rawlog_file = MRPT_DATASET_DIR
-		"/2006-01ENE-21-SENA_Telecom Faculty_one_loop_only.rawlog";
+	using namespace std::string_literals;
+	const std::string rawlog_file =
+		mrpt::system::getShareMRPTDir() +
+		"datasets/2006-01ENE-21-SENA_Telecom Faculty_one_loop_only.rawlog"s;
+
 	if (!mrpt::system::fileExists(rawlog_file)) return 1;
 
 	CTicTac tictac;
@@ -45,13 +51,13 @@ double icp_test_1(int a1, int a2)
 
 	if (use_grid)
 	{
-		COccupancyGridMap2D::TMapDefinition def;
+		mrpt::maps::COccupancyGridMap2D::TMapDefinition def;
 		def.resolution = 0.05f;
 		metricMapsOpts.push_back(def);
 	}
 	else
 	{
-		CSimplePointsMap::TMapDefinition def;
+		mrpt::maps::CSimplePointsMap::TMapDefinition def;
 		def.insertionOpts.minDistBetweenLaserPoints = 0.03f;
 		metricMapsOpts.push_back(def);
 	}
@@ -91,7 +97,7 @@ double icp_test_1(int a1, int a2)
 	CActionCollection::Ptr action;
 	CSensoryFrame::Ptr observations;
 
-	auto arch = archiveFrom(rawlogFile);
+	auto arch = mrpt::serialization::archiveFrom(rawlogFile);
 	for (;;)
 	{
 		// Load action/observation pair from the rawlog:
@@ -119,9 +125,6 @@ double icp_test_1(int a1, int a2)
 	if (!step) step++;
 
 	return tictac.Tac() / step;
-#else
-	return 1;
-#endif
 }
 
 // ------------------------------------------------------
