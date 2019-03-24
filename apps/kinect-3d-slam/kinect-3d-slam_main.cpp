@@ -27,16 +27,16 @@ accurate.
 
 */
 
-#include <mrpt/hwdrivers/CKinect.h>
-#include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/vision/tracking.h>
-#include <mrpt/tfest/se3.h>
-#include <mrpt/system/filesystem.h>
 #include <mrpt/config/CConfigFile.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/maps/CColouredPointsMap.h>
-#include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/stock_objects.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/tfest/se3.h>
+#include <mrpt/vision/tracking.h>
 
 using namespace mrpt;
 using namespace mrpt::vision;

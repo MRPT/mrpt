@@ -7,17 +7,17 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/math/ransac_applications.h>
+#include <mrpt/containers/copy_container_typecasting.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
-#include <mrpt/random.h>
-#include <mrpt/system/CTicTac.h>
-#include <mrpt/containers/copy_container_typecasting.h>
-#include <mrpt/poses/CPose3D.h>
+#include <mrpt/math/ransac_applications.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPointCloud.h>
-#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/opengl/CTexturedPlane.h>
+#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/random.h>
+#include <mrpt/system/CTicTac.h>
 #include <iostream>
 
 using namespace mrpt;

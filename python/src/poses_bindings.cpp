@@ -11,13 +11,13 @@
 /* MRPT */
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DPDF.h>
+#include <mrpt/poses/CPose3DPDFGaussian.h>
+#include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFParticles.h>
-#include <mrpt/poses/CPose3DPDF.h>
-#include <mrpt/poses/CPose3DPDFGaussian.h>
-#include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/serialization/CArchive.h>
 
 /* STD */

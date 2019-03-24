@@ -9,11 +9,14 @@
 #pragma once
 
 #include <mrpt/core/aligned_allocator.h>
+#include <mrpt/core/exceptions.h>  // ASSERT_()
+#include <mrpt/core/format.h>
 #include <mrpt/math/math_frwds.h>  // forward declarations
 #include <algorithm>  // swap()
 #include <array>
-#include <type_traits>
 #include <cstring>  // memset()
+#include <type_traits>
+#include <vector>
 
 namespace mrpt::math
 {

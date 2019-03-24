@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/core/bits_math.h>
 #include <gtest/gtest.h>
+#include <mrpt/core/bits_math.h>
 
 TEST(bits_math, sign)
 {

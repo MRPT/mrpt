@@ -17,8 +17,8 @@
 #pragma once
 
 // Includes
-#include "KmUtils.h"
 #include <iostream>
+#include "KmUtils.h"
 
 // Sets preferences for how much logging is done and where it is outputted, when
 // k-means is run.

@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <map>
 
 namespace mrpt::opengl

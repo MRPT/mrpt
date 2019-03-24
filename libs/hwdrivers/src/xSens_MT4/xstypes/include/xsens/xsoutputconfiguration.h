@@ -9,9 +9,9 @@
 #ifndef XSOUTPUTCONFIGURATION_H
 #define XSOUTPUTCONFIGURATION_H
 
-#include "xstypesconfig.h"
 #include "pstdint.h"
 #include "xsdataidentifier.h"
+#include "xstypesconfig.h"
 
 #define XS_MAX_OUTPUTCONFIGURATIONS (32)
 

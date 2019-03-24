@@ -9,14 +9,14 @@
 
 #include "system-precomp.h"  // Precompiled headers
 
-#include <mrpt/system/string_utils.h>
-#include <mrpt/system/os.h>  // strncmp(),...
 #include <mrpt/core/format.h>
-#include <cstring>
-#include <vector>
-#include <deque>
+#include <mrpt/system/os.h>  // strncmp(),...
+#include <mrpt/system/string_utils.h>
 #include <algorithm>
 #include <cmath>  // abs
+#include <cstring>
+#include <deque>
+#include <vector>
 
 using std::string;
 

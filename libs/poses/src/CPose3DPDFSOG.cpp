@@ -9,11 +9,11 @@
 
 #include "poses-precomp.h"  // Precompiled headers
 
-#include <mrpt/poses/CPose3DPDFSOG.h>
-#include <mrpt/system/os.h>
-#include <mrpt/serialization/CArchive.h>
 #include <mrpt/math/matrix_serialization.h>
+#include <mrpt/poses/CPose3DPDFSOG.h>
 #include <mrpt/poses/SO_SE_average.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;

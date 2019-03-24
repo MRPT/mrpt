@@ -8,18 +8,18 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/random.h>
-#include <mrpt/poses/CPose2D.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/poses/CPosePDFSOG.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/math/geometry.h>
-#include <mrpt/system/CTimeLogger.h>
-#include <mrpt/system/CTicTac.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/stock_objects.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPosePDFSOG.h>
+#include <mrpt/random.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/tfest/se2.h>
-#include <mrpt/maps/CSimplePointsMap.h>
 #include <iostream>
 
 // Method explained in paper:

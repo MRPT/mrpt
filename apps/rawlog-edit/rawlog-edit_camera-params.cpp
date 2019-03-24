@@ -7,12 +7,12 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "rawlog-edit-declarations.h"
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/img/TCamera.h>
 #include <mrpt/img/TStereoCamera.h>
-#include <mrpt/config/CConfigFile.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
+#include "rawlog-edit-declarations.h"
 
 using namespace mrpt;
 using namespace mrpt::obs;

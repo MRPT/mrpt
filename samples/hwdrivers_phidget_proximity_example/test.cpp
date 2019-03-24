@@ -7,10 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers/CPhidgetInterfaceKitProximitySensors.h>
 #include <mrpt/config/CConfigFile.h>
-#include <mrpt/system/CTicTac.h>
+#include <mrpt/hwdrivers/CPhidgetInterfaceKitProximitySensors.h>
 #include <mrpt/obs/CObservationRange.h>
+#include <mrpt/system/CTicTac.h>
 #include <iostream>
 #include <thread>
 

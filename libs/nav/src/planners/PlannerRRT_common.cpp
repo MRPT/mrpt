@@ -9,9 +9,9 @@
 
 #include "nav-precomp.h"  // Precomp header
 
+#include <mrpt/math/CPolygon.h>
 #include <mrpt/nav/planners/PlannerRRT_common.h>
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_CollisionGridBased.h>
-#include <mrpt/math/CPolygon.h>
 
 using namespace mrpt::nav;
 using namespace mrpt::math;

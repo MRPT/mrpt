@@ -7,9 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/io/CTextFileLinesParser.h>
-#include <mrpt/core/common.h>
 #include <gtest/gtest.h>
+#include <mrpt/core/common.h>
+#include <mrpt/io/CTextFileLinesParser.h>
 
 MRPT_TODO("implement tests!");
 TEST(CTextFileLinesParser, parse) {}

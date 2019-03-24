@@ -9,15 +9,15 @@
 
 #include "opengl-precomp.h"  // Precompiled header
 
-#include <mrpt/opengl/COpenGLViewport.h>
 #include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/opengl/COpenGLViewport.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CTexturedPlane.h>
-#include <mrpt/system/CTimeLogger.h>
-#include <mrpt/serialization/CArchive.h>
-#include <mrpt/serialization/stl_serialization.h>
-#include <mrpt/serialization/metaprogramming_serialization.h>
 #include <mrpt/opengl/gl_utils.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/metaprogramming_serialization.h>
+#include <mrpt/serialization/stl_serialization.h>
+#include <mrpt/system/CTimeLogger.h>
 
 #include "opengl_internals.h"
 

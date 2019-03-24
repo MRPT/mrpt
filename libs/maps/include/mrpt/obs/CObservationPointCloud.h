@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include <mrpt/obs/CObservation.h>
 #include <mrpt/maps/CPointsMap.h>
+#include <mrpt/obs/CObservation.h>
 
 namespace mrpt::obs
 {

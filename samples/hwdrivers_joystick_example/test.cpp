@@ -7,10 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <mrpt/core/exceptions.h>
 #include <mrpt/hwdrivers/CJoystick.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
-#include <mrpt/core/exceptions.h>
 
 #include <cstdio>
 #include <iostream>

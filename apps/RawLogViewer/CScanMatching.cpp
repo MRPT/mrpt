@@ -12,30 +12,30 @@
 #include <wx/artprov.h>
 #include <wx/bitmap.h>
 #include <wx/font.h>
-#include <wx/intl.h>
 #include <wx/image.h>
+#include <wx/intl.h>
 #include <wx/string.h>
 //*)
 
 #include <wx/app.h>
+#include <wx/busyinfo.h>
 #include <wx/log.h>
 #include <wx/msgdlg.h>
 #include <wx/progdlg.h>
-#include <wx/busyinfo.h>
 
-#include "xRawLogViewerMain.h"
 #include <mrpt/gui/CMyRedirector.h>
+#include "xRawLogViewerMain.h"
 
 // General global variables:
-#include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/maps/COccupancyGridMap2D.h>
-#include <mrpt/poses/CPosePDFSOG.h>
-#include <mrpt/slam/CICP.h>
 #include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
+#include <mrpt/opengl/CEllipsoid.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
-#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/poses/CPosePDFSOG.h>
+#include <mrpt/slam/CICP.h>
 
 #include <mrpt/gui/WxUtils.h>
 

@@ -11,14 +11,14 @@
 #include <QWidget>
 
 #include "CBaseConfig.h"
-#include "TypeOfConfig.h"
 #include "CGeneralConfig.h"
+#include "TypeOfConfig.h"
 
 #include <memory>
 
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/maps/TMetricMapInitializer.h>
 #include <mrpt/maps/CMultiMetricMap.h>
+#include <mrpt/maps/TMetricMapInitializer.h>
+#include <mrpt/opengl/CSetOfObjects.h>
 
 class QListWidgetItem;
 class CGeneralConfig;

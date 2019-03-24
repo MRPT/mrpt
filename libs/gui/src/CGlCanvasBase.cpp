@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "gui-precomp.h"  // Precompiled headers
+
 #include <mrpt/gui/CGlCanvasBase.h>
 #include <mrpt/system/CTicTac.h>
 
@@ -18,9 +19,9 @@
 #endif
 
 #ifdef __APPLE__
+#include <GLUT/glut.h>
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
-#include <GLUT/glut.h>
 #else
 #include <GL/gl.h>
 #include <GL/glu.h>

@@ -8,12 +8,12 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/core/common.h>  // MRPT_IS_X86_AMD64
+#include <mrpt/poses/poses_frwds.h>
+#include <cstdint>
+#include <iosfwd>
 #include <string>
 #include <vector>
-#include <iosfwd>
-#include <cstdint>
-#include <mrpt/poses/poses_frwds.h>
-#include <mrpt/core/common.h>  // MRPT_IS_X86_AMD64
 
 namespace mrpt::tfest
 {

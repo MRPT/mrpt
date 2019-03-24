@@ -8,11 +8,11 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/poses/CPosePDF.h>
-#include <mrpt/poses/CPoseRandomSampler.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CParticleFilterData.h>
 #include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/poses/CPosePDF.h>
+#include <mrpt/poses/CPoseRandomSampler.h>
 
 namespace mrpt::poses
 {

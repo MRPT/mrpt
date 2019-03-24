@@ -9,11 +9,11 @@
 
 #pragma once
 
-#include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CObserver.h>
+#include <mrpt/system/CTicTac.h>
 
-#include <string>
 #include <map>
+#include <string>
 
 namespace mrpt::graphslam
 {

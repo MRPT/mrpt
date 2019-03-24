@@ -10,8 +10,8 @@
 #include "camera_calib_guiApp.h"
 
 //(*AppHeaders
-#include "camera_calib_guiMain.h"
 #include <wx/image.h>
+#include "camera_calib_guiMain.h"
 //*)
 
 #include <wx/log.h>

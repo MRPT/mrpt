@@ -9,9 +9,9 @@
 
 #include "nav-precomp.h"  // Precomp header
 
+#include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/nav/reactive/CReactiveNavigationSystem.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/config/CConfigFileMemory.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;

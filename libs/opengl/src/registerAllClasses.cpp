@@ -10,8 +10,8 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #define MRPT_NO_WARN_BIG_HDR
-#include <mrpt/opengl.h>
 #include <mrpt/core/initializer.h>
+#include <mrpt/opengl.h>
 
 using namespace mrpt::opengl;
 

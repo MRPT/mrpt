@@ -8,14 +8,14 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <wx/app.h>
 #include <wx/string.h>
 #include <wx/textctrl.h>
-#include <wx/app.h>
 #include <wx/thread.h>
-#include <streambuf>
-#include <iostream>
 #include <cstdio>
 #include <functional>
+#include <iostream>
+#include <streambuf>
 
 #include "wx28-fixes.h"
 

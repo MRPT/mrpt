@@ -13,8 +13,8 @@
 #include <mrpt/comms/CSerialPort.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 
-#include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/obs/CObservationGasSensors.h>
 #include <memory>  // unique_ptr
 
 namespace mrpt::hwdrivers

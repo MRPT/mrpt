@@ -17,23 +17,23 @@
 	 https://www.mrpt.org/list-of-mrpt-apps/application-icp-slam-live/
   ---------------------------------------------------------------*/
 
-#include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/obs/CObservation2DRangeScan.h>
-#include <mrpt/slam/CMetricMapBuilderICP.h>
 #include <mrpt/config/CConfigFile.h>
+#include <mrpt/core/round.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
-#include <mrpt/system/os.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/opengl/COpenGLScene.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/stock_objects.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
-#include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/core/round.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/opengl/CPlanarLaserScan.h>
+#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/slam/CMetricMapBuilderICP.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::opengl;

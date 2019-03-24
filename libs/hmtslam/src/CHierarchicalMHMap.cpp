@@ -10,8 +10,8 @@
 #include "hmtslam-precomp.h"  // Precomp header
 
 #include <mrpt/db/CSimpleDatabase.h>
-#include <mrpt/serialization/CArchive.h>
 #include <mrpt/poses/CPoint2D.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::poses;
 using namespace mrpt::slam;

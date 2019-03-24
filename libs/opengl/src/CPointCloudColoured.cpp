@@ -9,10 +9,10 @@
 
 #include "opengl-precomp.h"  // Precompiled header
 
-#include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/core/round.h>  // round()
-#include <mrpt/serialization/CArchive.h>
 #include <mrpt/math/ops_containers.h>  // for << ops
+#include <mrpt/opengl/CPointCloudColoured.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
 
 #include "opengl_internals.h"

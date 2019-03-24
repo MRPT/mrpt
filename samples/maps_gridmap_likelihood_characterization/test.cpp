@@ -7,14 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/system/CTicTac.h>
 #include <mrpt/config/CConfigFile.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/poses/CPose2D.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
-#include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/maps/COccupancyGridMap2D.h>
-#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <iostream>
 
 using namespace mrpt;

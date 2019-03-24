@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/img/TStereoCamera.h>
 #include <mrpt/img/CImage.h>
+#include <mrpt/img/TStereoCamera.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/poses/CPose3DQuat.h>
 

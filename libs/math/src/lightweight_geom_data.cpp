@@ -10,14 +10,14 @@
 #include "math-precomp.h"  // Precompiled headers
 
 #include <mrpt/core/exceptions.h>
-#include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/math/CQuaternion.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CQuaternion.h>
 #include <mrpt/math/geometry.h>  // distance()
-#include <mrpt/math/ops_containers.h>
 #include <mrpt/math/homog_matrices.h>
-#include <mrpt/serialization/stl_serialization.h>
+#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/ops_containers.h>
 #include <mrpt/serialization/CArchive.h>  // impl of << operator
+#include <mrpt/serialization/stl_serialization.h>
 
 using namespace std;  // For min/max, etc...
 using namespace mrpt::serialization;  // CArchive, << operator for STL

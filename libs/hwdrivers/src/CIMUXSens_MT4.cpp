@@ -10,8 +10,8 @@
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
 #include <mrpt/hwdrivers/CIMUXSens_MT4.h>
-#include <mrpt/obs/CObservationIMU.h>
 #include <mrpt/obs/CObservationGPS.h>
+#include <mrpt/obs/CObservationIMU.h>
 
 #include <iostream>
 #include <thread>
@@ -29,25 +29,25 @@ and is intended for use only by Xsens Technologies BV and
 	   IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 	   PARTICULAR PURPOSE.
  */
-#include <xsens/xsresultvalue.h>
-#include <xsens/xsbytearray.h>
-#include <xsens/xsmessagearray.h>
-#include <xsens/xsdeviceid.h>
-#include <xsens/xsportinfo.h>
-#include <xsens/xsoutputmode.h>
-#include <xsens/xsoutputsettings.h>
-#include <xsens/xsoutputconfigurationarray.h>
+#include <xsens/enumerateusbdevices.h>
+#include <xsens/int_xsdatapacket.h>
+#include <xsens/legacydatapacket.h>
 #include <xsens/protocolhandler.h>
-#include <xsens/usbinterface.h>
 #include <xsens/serialinterface.h>
 #include <xsens/streaminterface.h>
-#include <xsens/xsportinfoarray.h>
+#include <xsens/usbinterface.h>
+#include <xsens/xsbytearray.h>
 #include <xsens/xsdatapacket.h>
+#include <xsens/xsdeviceid.h>
+#include <xsens/xsmessagearray.h>
+#include <xsens/xsoutputconfigurationarray.h>
+#include <xsens/xsoutputmode.h>
+#include <xsens/xsoutputsettings.h>
+#include <xsens/xsportinfo.h>
+#include <xsens/xsportinfoarray.h>
+#include <xsens/xsresultvalue.h>
 #include <xsens/xsstatusflag.h>
 #include <xsens/xstime.h>
-#include <xsens/legacydatapacket.h>
-#include <xsens/int_xsdatapacket.h>
-#include <xsens/enumerateusbdevices.h>
 
 class DeviceClass
 {

@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/system/COutputLogger.h>
 #include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/system/COutputLogger.h>
 #include <mrpt/typemeta/TEnumType.h>
 
 namespace mrpt

@@ -10,8 +10,8 @@
 
 #include <mrpt/img/TColor.h>
 #include <mrpt/math/lightweight_geom_data.h>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace mrpt::opengl
 {

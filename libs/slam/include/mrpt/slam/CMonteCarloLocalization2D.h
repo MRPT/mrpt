@@ -8,10 +8,10 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/obs/obs_frwds.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/slam/PF_implementations_data.h>
 #include <mrpt/slam/TMonteCarloLocalizationParams.h>
-#include <mrpt/obs/obs_frwds.h>
 
 namespace mrpt
 {

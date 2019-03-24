@@ -33,6 +33,9 @@
 
 #pragma once
 
+#include "rplidar_cmd.h"
+#include "rplidar_driver.h"
+
 namespace rp::standalone::rplidar
 {
 class RPlidarDriverSerialImpl : public RPlidarDriver

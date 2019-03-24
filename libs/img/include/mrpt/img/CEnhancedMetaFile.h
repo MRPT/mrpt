@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/img/CCanvas.h>
 #include <mrpt/core/safe_pointers.h>
+#include <mrpt/img/CCanvas.h>
 
 namespace mrpt::img
 {

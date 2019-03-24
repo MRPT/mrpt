@@ -32,6 +32,16 @@
  */
 
 #pragma once
+
+#ifndef _WIN32
+#include <pthread.h>
+#include <sys/time.h>
+#else
+#include <windows.h>
+#endif
+#include <cassert>
+#include <iostream>
+
 namespace rp::hal
 {
 class Event

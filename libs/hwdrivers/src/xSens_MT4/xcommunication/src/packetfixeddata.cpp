@@ -6,8 +6,8 @@
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
-#include <xsens/xsdataformat.h>
 #include "packetfixeddata.h"
+#include <xsens/xsdataformat.h>
 
 #ifdef LOG_PACKET
 #include "xslog.h"

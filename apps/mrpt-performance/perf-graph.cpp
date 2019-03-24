@@ -7,11 +7,11 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <mrpt/containers/traits_map.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/graphs/dijkstra.h>
 #include <mrpt/random.h>
 #include <mrpt/system/CTimeLogger.h>
-#include <mrpt/containers/traits_map.h>
 
 #include "common.h"
 

@@ -8,12 +8,12 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
-#include <string>
+#include <mrpt/serialization/CSerializable.h>
 #include <memory>
 #include <optional>
 #include <sstream>
+#include <string>
 
 namespace mrpt::serialization
 {

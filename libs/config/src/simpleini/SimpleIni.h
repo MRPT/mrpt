@@ -22,16 +22,16 @@
 #pragma warning(disable : 4127 4503 4702 4786)
 #endif
 
-#include <string>
-#include <map>
-#include <list>
+#include <mrpt/core/common.h>
+#include <mrpt/expr/CRuntimeCompiledExpression.h>
+#include <mrpt/system/string_utils.h>
 #include <algorithm>
-#include <functional>
 #include <cstdio>
 #include <cstring>
-#include <mrpt/core/common.h>
-#include <mrpt/system/string_utils.h>
-#include <mrpt/expr/CRuntimeCompiledExpression.h>
+#include <functional>
+#include <list>
+#include <map>
+#include <string>
 
 #define SI_SUPPORT_IOSTREAMS
 

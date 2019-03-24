@@ -9,13 +9,13 @@
 
 #include "vision-precomp.h"  // Precompiled headers
 
-#include <mrpt/vision/types.h>
+#include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/system/string_utils.h>
-#include <mrpt/containers/stl_containers_utils.h>
-#include <iostream>
+#include <mrpt/vision/types.h>
 #include <iomanip>
+#include <iostream>
 
 using namespace std;
 using namespace mrpt;

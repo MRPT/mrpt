@@ -10,10 +10,10 @@
 #define XSSYNCSETTINGS_H
 
 #include "pstdint.h"
-#include "xstypesconfig.h"
-#include "xssyncline.h"
 #include "xssyncfunction.h"
+#include "xssyncline.h"
 #include "xssyncpolarity.h"
+#include "xstypesconfig.h"
 
 struct XsSyncSetting;
 

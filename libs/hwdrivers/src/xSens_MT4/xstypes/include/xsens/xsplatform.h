@@ -14,15 +14,16 @@
 #ifdef _WIN32
 /// microsoft / windows
 #include <windows.h>
+
 #include <stdio.h>
 #define XsIoHandle HANDLE
 
 #else
 /// gcc / linux
-#include <termios.h>
-#include <string.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <string.h>
+#include <termios.h>
 #include "pstdint.h"
 #define _strnicmp strncasecmp
 typedef int32_t XsIoHandle;

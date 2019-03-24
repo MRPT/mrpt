@@ -9,9 +9,9 @@
 
 #include "expr-precomp.h"  // Precompiled headers
 
+#include <mrpt/core/exceptions.h>
 #include <mrpt/expr/CRuntimeCompiledExpression.h>
 #include <mrpt/system/string_utils.h>
-#include <mrpt/core/exceptions.h>
 #include <cmath>  // M_PI
 #include <cstdlib>
 #include <iostream>

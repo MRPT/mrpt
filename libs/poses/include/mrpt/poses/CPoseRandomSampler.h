@@ -8,12 +8,12 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/CPose2D.h>
-#include <mrpt/poses/CPosePDF.h>
-#include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/math_frwds.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DPDF.h>
+#include <mrpt/poses/CPosePDF.h>
 #include <memory>  // unique_ptr
 
 namespace mrpt::poses

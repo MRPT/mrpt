@@ -10,8 +10,8 @@
 
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/CSimpleMap.h>
-#include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
+#include <mrpt/poses/CPosePDFParticles.h>
 
 #include <mrpt/poses/CPoseRandomSampler.h>
 

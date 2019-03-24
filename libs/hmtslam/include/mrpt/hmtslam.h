@@ -9,11 +9,11 @@
 
 #pragma once
 
-#include <mrpt/hmtslam/CHMTSLAM.h>
-#include <mrpt/hmtslam/CHierarchicalMapMHPartition.h>
-#include <mrpt/hmtslam/CHierarchicalMHMap.h>
-#include <mrpt/hmtslam/CLocalMetricHypothesis.h>
-#include <mrpt/hmtslam/CTopLCDetectorBase.h>
-#include <mrpt/hmtslam/CRobotPosesGraph.h>
-#include <mrpt/hmtslam/CHMHMapNode.h>
 #include <mrpt/hmtslam/CHMHMapArc.h>
+#include <mrpt/hmtslam/CHMHMapNode.h>
+#include <mrpt/hmtslam/CHMTSLAM.h>
+#include <mrpt/hmtslam/CHierarchicalMHMap.h>
+#include <mrpt/hmtslam/CHierarchicalMapMHPartition.h>
+#include <mrpt/hmtslam/CLocalMetricHypothesis.h>
+#include <mrpt/hmtslam/CRobotPosesGraph.h>
+#include <mrpt/hmtslam/CTopLCDetectorBase.h>

@@ -9,9 +9,9 @@
 
 #include "maps-precomp.h"  // Precomp header
 
-#include <mrpt/maps/CPointCloudFilterByDistance.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/core/aligned_std_vector.h>
+#include <mrpt/maps/CPointCloudFilterByDistance.h>
 
 using namespace mrpt::maps;
 

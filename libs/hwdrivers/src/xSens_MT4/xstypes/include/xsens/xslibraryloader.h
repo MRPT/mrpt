@@ -9,8 +9,8 @@
 #ifndef XSLIBRARYLOADER_H
 #define XSLIBRARYLOADER_H
 
-#include "xstypesconfig.h"
 #include "xsstring.h"
+#include "xstypesconfig.h"
 
 struct XsLibraryLoader;
 

@@ -7,9 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <gtest/gtest.h>
 #include <mrpt/maps/CPointCloudFilterByDistance.h>
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <gtest/gtest.h>
 
 void run_pc_filter_test(
 	const double map2_x_off, const double map2_tim_off,

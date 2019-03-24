@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/random/RandomGenerators.h>
 #include <gtest/gtest.h>
+#include <mrpt/random/RandomGenerators.h>
 
 TEST(Random, Randomize)
 {

@@ -9,10 +9,10 @@
 
 #include "poses-precomp.h"  // Precompiled headers
 
-#include <mrpt/poses/CPoint3D.h>
-#include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPoint2D.h>
+#include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <limits>

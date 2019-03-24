@@ -9,8 +9,8 @@
 
 #include "maps-precomp.h"  // Precomp header
 
-#include <octomap/octomap.h>
 #include <octomap/ColorOcTree.h>
+#include <octomap/octomap.h>
 
 #include <mrpt/maps/CColouredOctoMap.h>
 #include <mrpt/maps/CPointsMap.h>
@@ -21,9 +21,9 @@
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 
+#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/system/filesystem.h>
 #include <sstream>
-#include <mrpt/io/CFileOutputStream.h>
 
 #include "COctoMapBase_impl.h"
 

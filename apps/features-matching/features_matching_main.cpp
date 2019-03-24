@@ -7,13 +7,13 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/vision/CFeatureExtraction.h>
+#include <mrpt/containers/copy_container_typecasting.h>
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/containers/copy_container_typecasting.h>
+#include <mrpt/vision/CFeatureExtraction.h>
 
 using namespace mrpt::math;
 using namespace mrpt::gui;

@@ -8,10 +8,10 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/opengl/CPolyhedron.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CAngularObservationMesh.h>
+#include <mrpt/opengl/CAxis.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CPolyhedron.h>
 #include <iostream>
 
 using namespace std;

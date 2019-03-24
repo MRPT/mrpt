@@ -9,14 +9,14 @@
 
 #include "poses-precomp.h"  // Precompiled headers
 
+#include <mrpt/math/distributions.h>
+#include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFParticles.h>
-#include <mrpt/system/os.h>
-#include <mrpt/random.h>
-#include <mrpt/math/wrap2pi.h>
-#include <mrpt/math/distributions.h>
-#include <mrpt/serialization/CArchive.h>
 #include <mrpt/poses/SO_SE_average.h>
+#include <mrpt/random.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::bayes;

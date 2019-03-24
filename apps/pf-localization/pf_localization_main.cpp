@@ -18,38 +18,38 @@
 
 #include <mrpt/slam/CMonteCarloLocalization2D.h>
 
-#include <mrpt/config/CConfigFile.h>
-#include <mrpt/math/ops_vectors.h>  // << for vector<>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/poses/CPose2D.h>
-#include <mrpt/poses/CPose2DInterpolator.h>
 #include <mrpt/bayes/CParticleFilter.h>
-#include <mrpt/random.h>
-#include <mrpt/serialization/CArchive.h>
-#include <mrpt/obs/CActionRobotMovement2D.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/gui/CDisplayWindowPlots.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/maps/CMultiMetricMap.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/math/data_utils.h>
+#include <mrpt/math/distributions.h>
+#include <mrpt/math/ops_vectors.h>  // << for vector<>
+#include <mrpt/math/utils.h>
 #include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/maps/CSimpleMap.h>
-#include <mrpt/maps/COccupancyGridMap2D.h>
-#include <mrpt/maps/CMultiMetricMap.h>
-#include <mrpt/system/os.h>
-#include <mrpt/system/vector_loadsave.h>
-#include <mrpt/math/distributions.h>
-#include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/math/utils.h>
-#include <mrpt/system/CTicTac.h>
-#include <mrpt/io/CFileOutputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
-#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/opengl/CDisk.h>
+#include <mrpt/opengl/CEllipsoid.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPointCloud.h>
-#include <mrpt/opengl/CEllipsoid.h>
-#include <mrpt/opengl/CDisk.h>
 #include <mrpt/opengl/stock_objects.h>
-#include <mrpt/gui/CDisplayWindowPlots.h>
-#include <mrpt/math/data_utils.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose2DInterpolator.h>
+#include <mrpt/random.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/vector_loadsave.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;

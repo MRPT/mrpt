@@ -23,29 +23,29 @@
  ---------------------------------------------------------------------------------
  */
 
+#include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/config/CConfigFile.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/CFileStream.h>
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/system/os.h>
+#include <mrpt/math/CMatrix.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/bayes/CParticleFilter.h>
-#include <mrpt/random.h>
-#include <mrpt/serialization/CArchive.h>
-#include <mrpt/opengl/CSphere.h>
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CDisk.h>
 #include <mrpt/opengl/CEllipsoid.h>
-#include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/maps/CLandmarksMap.h>
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CSphere.h>
+#include <mrpt/random.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;

@@ -8,11 +8,11 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/system/COutputLogger.h>
-#include <mrpt/math/types_math.h>
-#include <mrpt/math/num_jacobian.h>
 #include <mrpt/containers/printf_vector.h>
+#include <mrpt/math/num_jacobian.h>
 #include <mrpt/math/ops_containers.h>
+#include <mrpt/math/types_math.h>
+#include <mrpt/system/COutputLogger.h>
 #include <functional>
 
 namespace mrpt::math

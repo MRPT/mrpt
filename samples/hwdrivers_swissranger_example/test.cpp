@@ -7,16 +7,16 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers/CSwissRanger3DCamera.h>
 #include <mrpt/gui.h>
-#include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/hwdrivers/CSwissRanger3DCamera.h>
+#include <mrpt/img/TColor.h>
 #include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/CTexturedPlane.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/system/CTicTac.h>
-#include <mrpt/img/TColor.h>
 #include <iostream>
 
 using namespace mrpt;

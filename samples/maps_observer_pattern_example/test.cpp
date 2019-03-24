@@ -7,10 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/system/CObserver.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/stock_observations.h>
-#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/system/CObserver.h>
 #include <iostream>
 
 using namespace mrpt::obs;

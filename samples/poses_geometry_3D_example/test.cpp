@@ -7,9 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/CPoint3D.h>
 #include <mrpt/system/CTicTac.h>
 #include <iostream>
 

@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/system/crc.h>
 #include <gtest/gtest.h>
+#include <mrpt/system/crc.h>
 
 // Load data from constant file and check for exact match.
 TEST(crc, crc32)

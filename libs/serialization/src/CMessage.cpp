@@ -10,11 +10,11 @@
 #include "serialization-precomp.h"  // Precompiled headers
 
 #include <mrpt/core/exceptions.h>
-#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/serialization/CMessage.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/serialization/archiveFrom_std_streams.h>
-#include <sstream>
 #include <cstring>  // memcpy()
+#include <sstream>
 
 using namespace mrpt::serialization;
 

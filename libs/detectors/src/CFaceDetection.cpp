@@ -7,24 +7,24 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "detectors-precomp.h"  // Precompiled headers
 #include <mrpt/gui.h>
 #include <mrpt/maps/CColouredPointsMap.h>
+#include "detectors-precomp.h"  // Precompiled headers
 
 #include <mrpt/detectors/CFaceDetection.h>
-#include <mrpt/opengl/CPointCloudColoured.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CSphere.h>
-#include <mrpt/opengl/CArrow.h>
-#include <mrpt/opengl/CSetOfLines.h>
-#include <mrpt/opengl/CAxis.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/CMatrixTemplate.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_containers.h>
+#include <mrpt/opengl/CArrow.h>
+#include <mrpt/opengl/CAxis.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CPointCloudColoured.h>
+#include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/CSphere.h>
 
-#include <mrpt/slam/CMetricMapsAlignmentAlgorithm.h>
 #include <mrpt/slam/CICP.h>
+#include <mrpt/slam/CMetricMapsAlignmentAlgorithm.h>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>

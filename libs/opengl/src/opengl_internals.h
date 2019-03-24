@@ -20,15 +20,15 @@
 #if defined(_MSC_VER)
 #pragma warning(disable : 4505)
 #endif
-#include <windows.h>
 #include <GL/glew.h>
+#include <windows.h>
 #endif  // _WIN32
 
 #ifdef __APPLE__
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
 #include <GLUT/glut.h>
+#include <OpenGL/gl.h>
 #include <OpenGL/glext.h>
+#include <OpenGL/glu.h>
 #else
 #include <GL/gl.h>
 #include <GL/glu.h>

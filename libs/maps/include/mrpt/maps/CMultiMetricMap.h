@@ -8,12 +8,12 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/maps/CMetricMap.h>
-#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/typemeta/TEnumType.h>
 #include <mrpt/containers/deepcopy_poly_ptr.h>
+#include <mrpt/maps/CMetricMap.h>
 #include <mrpt/obs/obs_frwds.h>
+#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/typemeta/TEnumType.h>
 
 namespace mrpt::maps
 {

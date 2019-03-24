@@ -12,14 +12,14 @@
 #include <wx/artprov.h>
 #include <wx/bitmap.h>
 #include <wx/font.h>
-#include <wx/intl.h>
 #include <wx/image.h>
+#include <wx/intl.h>
 #include <wx/string.h>
 //*)
 
-#include "robotic_arm_kinematicsMain.h"
 #include <mrpt/gui/CMyRedirector.h>
 #include <mrpt/gui/WxUtils.h>
+#include "robotic_arm_kinematicsMain.h"
 
 #include <mrpt/system/os.h>
 

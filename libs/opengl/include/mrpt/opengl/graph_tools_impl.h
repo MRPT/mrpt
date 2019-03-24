@@ -8,14 +8,14 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/img/TColor.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CSimpleLine.h>
-#include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/poses/CPoint3D.h>
-#include <mrpt/img/TColor.h>
 
 namespace mrpt::opengl::graph_tools
 {

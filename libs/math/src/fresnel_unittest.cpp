@@ -7,9 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <gtest/gtest.h>
 #include <mrpt/math/fresnel.h>
 #include <mrpt/system/os.h>
-#include <gtest/gtest.h>
 #include <cmath>
 
 TEST(fresnel, fresnelc)

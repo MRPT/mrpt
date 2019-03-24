@@ -8,8 +8,9 @@
    +------------------------------------------------------------------------+ */
 
 #include "nav-precomp.h"  // Precomp header
-#include <mrpt/nav/tpspace/CPTG_DiffDrive_C.h>
+
 #include <mrpt/math/wrap2pi.h>
+#include <mrpt/nav/tpspace/CPTG_DiffDrive_C.h>
 #include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;

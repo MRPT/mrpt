@@ -7,11 +7,11 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/serialization/CSerializable.h>
-#include <mrpt/serialization/CArchive.h>
-#include <mrpt/serialization/stl_serialization.h>
-#include <mrpt/io/CMemoryStream.h>
 #include <gtest/gtest.h>
+#include <mrpt/io/CMemoryStream.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/serialization/stl_serialization.h>
 #include <memory>  // shared_ptr
 
 using namespace mrpt::serialization;

@@ -7,12 +7,12 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/graphs/dijkstra.h>
-#include <mrpt/graphs/CNetworkOfPoses.h>
-#include <mrpt/gui/CDisplayWindowPlots.h>
-#include <mrpt/system/CTicTac.h>
-#include <mrpt/random.h>
 #include <mrpt/core/aligned_std_map.h>
+#include <mrpt/graphs/CNetworkOfPoses.h>
+#include <mrpt/graphs/dijkstra.h>
+#include <mrpt/gui/CDisplayWindowPlots.h>
+#include <mrpt/random.h>
+#include <mrpt/system/CTicTac.h>
 #include <iostream>
 
 using namespace mrpt;

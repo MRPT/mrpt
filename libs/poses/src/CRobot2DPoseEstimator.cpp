@@ -9,13 +9,13 @@
 
 #include "poses-precomp.h"  // Precompiled headers
 
+#include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CRobot2DPoseEstimator.h>
 #include <mrpt/system/datetime.h>
-#include <mrpt/math/wrap2pi.h>
-#include <mutex>
 #include <iostream>
+#include <mutex>
 
 using namespace mrpt;
 using namespace mrpt::poses;

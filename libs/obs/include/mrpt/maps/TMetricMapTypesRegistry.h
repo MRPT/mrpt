@@ -10,9 +10,9 @@
 #pragma once
 
 #include <mrpt/obs/obs_frwds.h>
+#include <functional>
 #include <map>
 #include <string>
-#include <functional>
 
 namespace mrpt
 {

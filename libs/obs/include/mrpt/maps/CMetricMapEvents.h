@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/system/mrptEvent.h>
 #include <mrpt/poses/poses_frwds.h>
+#include <mrpt/system/mrptEvent.h>
 
 namespace mrpt
 {

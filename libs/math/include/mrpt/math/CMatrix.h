@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/serialization/CSerializable.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/serialization/CSerializable.h>
 
 namespace mrpt::math
 {

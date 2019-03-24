@@ -9,13 +9,13 @@
 
 #include "tfest-precomp.h"  // Precompiled headers
 
-#include <mrpt/tfest/se2.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/poses/CPoint2DPDFGaussian.h>
-#include <mrpt/random.h>
-#include <mrpt/math/geometry.h>
 #include <mrpt/math/distributions.h>
+#include <mrpt/math/geometry.h>
+#include <mrpt/poses/CPoint2DPDFGaussian.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/random.h>
 #include <mrpt/system/CTimeLogger.h>
+#include <mrpt/tfest/se2.h>
 #include <iostream>
 
 using namespace mrpt;

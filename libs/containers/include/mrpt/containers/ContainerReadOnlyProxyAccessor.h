@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <cstdlib>  // size_t
 #include <mrpt/core/exceptions.h>
+#include <cstdlib>  // size_t
 
 namespace mrpt::containers
 {

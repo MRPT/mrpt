@@ -8,14 +8,14 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/CSetOfLines.h>
-#include <mrpt/opengl/CSimpleLine.h>
+#include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CSimpleLine.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/system/TParameters.h>
-#include <mrpt/graphs/CNetworkOfPoses.h>
 
 namespace mrpt::graphs::detail
 {

@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/poses/CPosePDF.h>
-#include <mrpt/poses/CPose2DGridTemplate.h>
 #include <mrpt/core/bits_math.h>  // DEG2RAD()
+#include <mrpt/poses/CPose2DGridTemplate.h>
+#include <mrpt/poses/CPosePDF.h>
 
 namespace mrpt::poses
 {

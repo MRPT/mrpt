@@ -10,13 +10,13 @@
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
 #include <mrpt/comms/net_utils.h>
-#include <mrpt/hwdrivers/CServoeNeck.h>
-#include <mrpt/serialization/CMessage.h>
-#include <mrpt/serialization/CArchive.h>
 #include <mrpt/core/bits_math.h>
-#include <thread>
-#include <cstdint>
+#include <mrpt/hwdrivers/CServoeNeck.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CMessage.h>
 #include <cmath>
+#include <cstdint>
+#include <thread>
 
 using namespace mrpt;
 using namespace mrpt::comms;

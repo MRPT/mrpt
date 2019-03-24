@@ -8,14 +8,14 @@
    +------------------------------------------------------------------------+ */
 
 #include "nav-precomp.h"  // Precomp header
-#include <mrpt/nav/tpspace/CPTG_Holo_Blend.h>
-#include <mrpt/math/types_math.h>
-#include <mrpt/serialization/CArchive.h>
+
 #include <mrpt/core/round.h>
-#include <mrpt/system/CTimeLogger.h>
-#include <mrpt/math/poly_roots.h>
 #include <mrpt/kinematics/CVehicleVelCmd_Holo.h>
+#include <mrpt/math/poly_roots.h>
+#include <mrpt/math/types_math.h>
+#include <mrpt/nav/tpspace/CPTG_Holo_Blend.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/CTimeLogger.h>
 
 using namespace mrpt::nav;
 using namespace mrpt::system;

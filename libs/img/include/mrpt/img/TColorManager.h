@@ -9,10 +9,10 @@
 #pragma once
 
 #include <mrpt/img/TColor.h>
-#include <utility>
-#include <set>
 #include <cstdlib>
 #include <iostream>
+#include <set>
+#include <utility>
 
 namespace mrpt::img
 {

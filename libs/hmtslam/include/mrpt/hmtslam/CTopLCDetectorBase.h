@@ -10,8 +10,8 @@
 
 #include <mrpt/hmtslam/HMT_SLAM_common.h>
 
-#include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/poses/CPose3DPDF.h>
 
 namespace mrpt::hmtslam
 {

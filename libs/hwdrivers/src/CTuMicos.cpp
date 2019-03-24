@@ -9,13 +9,13 @@
 
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
+#include <mrpt/core/bits_math.h>
 #include <mrpt/hwdrivers/CTuMicos.h>
 #include <mrpt/system/string_utils.h>
-#include <mrpt/core/bits_math.h>
-#include <cstring>
 #include <cstdio>
-#include <thread>
+#include <cstring>
 #include <iostream>
+#include <thread>
 
 using namespace std;
 using namespace mrpt;

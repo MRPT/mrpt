@@ -10,11 +10,11 @@
 
 #include <mrpt/serialization/CSerializable.h>
 #include <cstdint>
-#include <vector>
-#include <string>
-#include <stdexcept>
-#include <string_view>
 #include <memory>
+#include <stdexcept>
+#include <string>
+#include <string_view>
+#include <vector>
 
 namespace mrpt::serialization
 {

@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include <mrpt/obs/CObservation.h>
 #include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/obs/CObservation.h>
 
 namespace mrpt::maps
 {

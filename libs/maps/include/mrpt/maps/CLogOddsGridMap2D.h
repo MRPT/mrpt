@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include <mrpt/maps/logoddscell_traits.h>
 #include <mrpt/maps/CLogOddsGridMapLUT.h>
+#include <mrpt/maps/logoddscell_traits.h>
 
 namespace mrpt::maps
 {

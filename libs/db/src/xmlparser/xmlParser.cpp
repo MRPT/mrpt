@@ -21,8 +21,8 @@
 #include <memory.h>
 #include <cassert>
 #include <cstdio>
-#include <cstring>
 #include <cstdlib>
+#include <cstring>
 
 XMLCSTR XMLNode::getVersion() { return _CXML("v2.39"); }
 void freeXMLString(XMLSTR t)

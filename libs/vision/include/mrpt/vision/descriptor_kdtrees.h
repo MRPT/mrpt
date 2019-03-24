@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include <mrpt/vision/types.h>
 #include <mrpt/vision/CFeature.h>
+#include <mrpt/vision/types.h>
 
 namespace mrpt
 {

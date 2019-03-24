@@ -7,10 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/core/exceptions.h>
 #include <gtest/gtest.h>
-#include <sstream>
+#include <mrpt/core/exceptions.h>
 #include <algorithm>  // count()
+#include <sstream>
 
 TEST(exception, stackedExceptionBasic)
 {

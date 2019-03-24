@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/io/CStream.h>
-#include <mrpt/core/pimpl.h>
 #include <mrpt/core/optional_ref.h>
+#include <mrpt/core/pimpl.h>
+#include <mrpt/io/CStream.h>
 
 namespace mrpt::io
 {

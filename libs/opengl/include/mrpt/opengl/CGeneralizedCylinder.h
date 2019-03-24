@@ -8,12 +8,12 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/opengl/CRenderizableDisplayList.h>
-#include <mrpt/opengl/CPolyhedron.h>
-#include <mrpt/opengl/CSetOfTriangles.h>
-#include <mrpt/math/geometry.h>
-#include <mrpt/math/CMatrixTemplate.h>
 #include <mrpt/core/aligned_std_vector.h>
+#include <mrpt/math/CMatrixTemplate.h>
+#include <mrpt/math/geometry.h>
+#include <mrpt/opengl/CPolyhedron.h>
+#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CSetOfTriangles.h>
 
 namespace mrpt::opengl
 {

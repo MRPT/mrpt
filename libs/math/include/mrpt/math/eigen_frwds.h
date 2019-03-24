@@ -10,6 +10,7 @@
 
 // Eigen forward declarations:
 #include <mrpt/config.h>
+#include <cstddef>  // size_t
 
 // Minimum Eigen fwrd-decls:
 namespace Eigen

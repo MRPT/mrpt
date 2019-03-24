@@ -19,13 +19,13 @@
 
 #if MRPT_HAS_PCL
 
-#include <pcl/visualization/cloud_viewer.h>
-#include <pcl/visualization/pcl_visualizer.h>
-#include <mrpt/pbmap/Plane.h>
-#include <mrpt/pbmap/PlaneInferredInfo.h>
 #include <mrpt/pbmap/PbMap.h>
 #include <mrpt/pbmap/PbMapLocaliser.h>
+#include <mrpt/pbmap/Plane.h>
+#include <mrpt/pbmap/PlaneInferredInfo.h>
 #include <mrpt/pbmap/SemanticClustering.h>
+#include <pcl/visualization/cloud_viewer.h>
+#include <pcl/visualization/pcl_visualizer.h>
 #include <set>
 
 using PointT = pcl::PointXYZRGBA;

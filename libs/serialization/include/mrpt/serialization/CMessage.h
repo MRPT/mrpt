@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/serialization/CSerializable.h>
 #include <cstdint>
 #include <vector>
-#include <mrpt/serialization/CSerializable.h>
 
 namespace mrpt::serialization
 {

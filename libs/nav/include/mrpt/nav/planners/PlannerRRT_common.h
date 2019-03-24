@@ -9,14 +9,14 @@
 
 #pragma once
 
+#include <mrpt/graphs/TNodeID.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/system/CTimeLogger.h>
-#include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/graphs/TNodeID.h>
-#include <string>
 #include <cstdlib>  // size_t
+#include <string>
 
 namespace mrpt::nav
 {

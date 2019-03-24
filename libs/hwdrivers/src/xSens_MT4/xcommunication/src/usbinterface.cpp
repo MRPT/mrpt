@@ -6,9 +6,9 @@
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
-#include <xsens/xsthread.h>
-#include <xsens/xsportinfo.h>
 #include "usbinterface.h"
+#include <xsens/xsportinfo.h>
+#include <xsens/xsthread.h>
 #include <cerrno>
 
 #ifdef USE_WINUSB
@@ -20,8 +20,8 @@
 #ifndef _WIN32
 #include <cstring>  // strcpy
 #else
-#include <winbase.h>
 #include <io.h>
+#include <winbase.h>
 #endif
 
 #ifndef _CRT_SECURE_NO_DEPRECATE

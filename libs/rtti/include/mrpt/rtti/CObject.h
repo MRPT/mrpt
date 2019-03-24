@@ -8,11 +8,11 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/core/safe_pointers.h>
 #include <mrpt/core/aligned_allocator.h>
+#include <mrpt/core/safe_pointers.h>
 #include <mrpt/typemeta/static_string.h>  // literal()
-#include <vector>
 #include <memory>
+#include <vector>
 
 namespace mrpt
 {

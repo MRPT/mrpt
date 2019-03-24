@@ -9,10 +9,10 @@
 
 #pragma once
 
-#include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/obs/CObservationVelodyneScan.h>
-#include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/hwdrivers/CGenericSensor.h>
+#include <mrpt/obs/CObservationGPS.h>
+#include <mrpt/obs/CObservationVelodyneScan.h>
 #include <mrpt/typemeta/TEnumType.h>
 
 namespace mrpt::hwdrivers

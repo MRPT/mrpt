@@ -9,14 +9,14 @@
 
 #include "maps-precomp.h"  // Precomp header
 
-#include <mrpt/obs/CObservationPointCloud.h>
-#include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
-#include <mrpt/system/filesystem.h>
 #include <mrpt/maps/CPointsMapXYZI.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/filesystem.h>
 #include <iostream>
 
 using namespace mrpt::obs;

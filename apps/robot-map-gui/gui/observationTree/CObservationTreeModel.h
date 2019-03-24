@@ -9,8 +9,8 @@
    */
 #pragma once
 #include <QAbstractTableModel>
-#include <QItemSelection>
 #include <QDebug>
+#include <QItemSelection>
 
 #include "CRootNode.h"
 

@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers/CSickLaserSerial.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
+#include <mrpt/hwdrivers/CSickLaserSerial.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/system/os.h>

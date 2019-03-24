@@ -23,9 +23,9 @@
 
 #include "vision-lgpl-precomp.h"  // Precompiled headers
 
+#include <mrpt/math/robust_kernels.h>
 #include <mrpt/vision/bundle_adjustment.h>
 #include <mrpt/vision/pinhole.h>
-#include <mrpt/math/robust_kernels.h>
 #include "ba_internals.h"
 
 using namespace std;

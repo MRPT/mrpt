@@ -8,13 +8,13 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/system/COutputLogger.h>
-#include <mrpt/obs/CRawlog.h>
-#include <mrpt/poses/CPose2D.h>
-#include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
+#include <mrpt/obs/CRawlog.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/system/COutputLogger.h>
 
 namespace mrpt::detectors
 {

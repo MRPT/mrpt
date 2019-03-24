@@ -10,9 +10,9 @@
 #include "PanelDOF.h"
 
 //(*InternalHeaders(PanelDOF)
+#include <wx/intl.h>
 #include <wx/settings.h>
 #include <wx/string.h>
-#include <wx/intl.h>
 //*)
 
 #include "robotic_arm_kinematicsMain.h"

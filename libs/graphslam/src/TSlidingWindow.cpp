@@ -11,8 +11,8 @@
 #include "graphslam-precomp.h"  // Precompiled headers
 
 #include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/serialization/CArchive.h>
 #include <mrpt/graphslam/misc/TSlidingWindow.h>
+#include <mrpt/serialization/CArchive.h>
 
 #include <algorithm>
 #include <numeric>

@@ -9,10 +9,10 @@
 
 #pragma once
 
-#include <string>  // std::string, to_string()
-#include <stdexcept>  // logic_error
 #include <mrpt/core/common.h>
 #include <mrpt/core/format.h>
+#include <stdexcept>  // logic_error
+#include <string>  // std::string, to_string()
 
 namespace mrpt::internal
 {

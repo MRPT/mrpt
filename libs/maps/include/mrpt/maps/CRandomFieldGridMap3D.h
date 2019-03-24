@@ -9,13 +9,13 @@
 
 #pragma once
 
-#include <mrpt/containers/CDynamicGrid3D.h>
-#include <mrpt/math/types_math.h>
-#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/system/COutputLogger.h>
+#include <mrpt/containers/CDynamicGrid3D.h>
 #include <mrpt/graphs/ScalarFactorGraph.h>
 #include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/types_math.h>
+#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/system/COutputLogger.h>
 
 // Fwdr decl:
 class vtkStructuredGrid;

@@ -12,8 +12,8 @@
 #include <mrpt/io/CStream.h>
 #include <mrpt/system/os.h>
 #include <cstdint>
-#include <string>
 #include <cstring>  // strlen()
+#include <string>
 
 namespace mrpt
 {

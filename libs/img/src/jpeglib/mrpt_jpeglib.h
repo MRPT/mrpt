@@ -1158,6 +1158,6 @@ struct jpeg_color_quantizer
  */
 
 #ifdef JPEG_INTERNALS
-#include "jpegint.h" /* fetch private declarations */
 #include "jerror.h" /* fetch error codes too */
+#include "jpegint.h" /* fetch private declarations */
 #endif

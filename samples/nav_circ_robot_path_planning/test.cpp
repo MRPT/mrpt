@@ -7,14 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/nav/planners/PlannerSimple2D.h>
-#include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/system/CTicTac.h>
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/serialization/CArchive.h>
 #include <mrpt/poses/CPose2D.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/filesystem.h>
 #include <iostream>
 
 using namespace mrpt;

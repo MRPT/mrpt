@@ -11,9 +11,9 @@
 #define CLOGVIEW_H
 
 //(*Headers(CLogView)
+#include <wx/button.h>
 #include <wx/dialog.h>
 #include <wx/sizer.h>
-#include <wx/button.h>
 #include <wx/textctrl.h>
 //*)
 

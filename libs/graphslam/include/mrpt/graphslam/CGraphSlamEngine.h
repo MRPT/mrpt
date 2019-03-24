@@ -9,33 +9,33 @@
 
 #pragma once
 
-#include <mrpt/maps/CSimpleMap.h>
-#include <mrpt/maps/COccupancyGridMap2D.h>
-#include <mrpt/maps/COctoMap.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
-#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/img/TColor.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/COctoMap.h>
+#include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/obs/CAction.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/obs_utils.h>
+#include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/io/CFileOutputStream.h>
-#include <mrpt/img/TColor.h>
 #include <mrpt/system/COutputLogger.h>
 
-#include <mrpt/graphslam/misc/CEdgeCounter.h>
-#include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>
 #include <mrpt/graphslam/interfaces/CEdgeRegistrationDecider.h>
 #include <mrpt/graphslam/interfaces/CGraphSlamOptimizer.h>
+#include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>
+#include <mrpt/graphslam/misc/CEdgeCounter.h>
 
-#include <memory>
-#include <string>
 #include <map>
+#include <memory>
 #include <set>
+#include <string>
 
 namespace mrpt::graphslam
 {

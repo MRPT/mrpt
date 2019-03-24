@@ -11,20 +11,20 @@
 #define robotic_arm_KINEMATICSMAIN_H
 
 //(*Headers(robotic_arm_kinematicsFrame)
-#include <wx/sizer.h>
-#include <wx/notebook.h>
-#include <wx/htmllbox.h>
 #include <wx/button.h>
+#include <wx/frame.h>
+#include <wx/htmllbox.h>
+#include <wx/listbox.h>
 #include <wx/menu.h>
+#include <wx/notebook.h>
 #include <wx/panel.h>
+#include <wx/radiobox.h>
+#include <wx/sizer.h>
 #include <wx/slider.h>
 #include <wx/statline.h>
-#include <wx/frame.h>
-#include "MyGLCanvas.h"
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
-#include <wx/radiobox.h>
-#include <wx/listbox.h>
+#include "MyGLCanvas.h"
 //*)
 
 #include "PanelDOF.h"

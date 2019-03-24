@@ -9,11 +9,11 @@
 
 #include "poses-precomp.h"  // Precompiled headers
 
+#include <mrpt/math/geometry.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/Lie/SE.h>
 #include <mrpt/poses/Lie/SO.h>
-#include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/CPose2D.h>
-#include <mrpt/math/geometry.h>
 
 using namespace mrpt;
 using namespace mrpt::math;

@@ -13,6 +13,8 @@
 #error "This file can't be included from outside of CGraphPartitioner.h"
 #endif
 
+#include <iostream>  // cout
+
 namespace mrpt::graphs
 {
 /*---------------------------------------------------------------

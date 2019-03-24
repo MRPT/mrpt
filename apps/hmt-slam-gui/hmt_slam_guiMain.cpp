@@ -8,24 +8,24 @@
    +------------------------------------------------------------------------+ */
 
 #include "hmt_slam_guiMain.h"
-#include "MyArtProvider.h"
-#include <mrpt/gui/about_box.h>
 #include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/gui/about_box.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/serialization/CArchive.h>
+#include "MyArtProvider.h"
 
 #include <wx/msgdlg.h>
 
 //(*InternalHeaders(hmt_slam_guiFrame)
-#include <wx/settings.h>
-#include <wx/string.h>
-#include <wx/intl.h>
-#include <wx/font.h>
-#include <wx/tglbtn.h>
+#include <wx/artprov.h>
 #include <wx/bitmap.h>
+#include <wx/font.h>
 #include <wx/icon.h>
 #include <wx/image.h>
-#include <wx/artprov.h>
+#include <wx/intl.h>
+#include <wx/settings.h>
+#include <wx/string.h>
+#include <wx/tglbtn.h>
 //*)
 
 #include <mrpt/system/filesystem.h>

@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <gtest/gtest.h>
+#include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <test_mrpt_common.h>
 
 using namespace mrpt;

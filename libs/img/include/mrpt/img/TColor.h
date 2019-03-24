@@ -8,10 +8,10 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/serialization/serialization_frwds.h>
 #include <cstdint>
 #include <iosfwd>
 #include <iostream>
-#include <mrpt/serialization/serialization_frwds.h>
 
 namespace mrpt::img
 {

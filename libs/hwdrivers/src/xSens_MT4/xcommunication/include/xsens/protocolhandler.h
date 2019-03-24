@@ -9,8 +9,8 @@
 #ifndef PROTOCOLHANDLER_H
 #define PROTOCOLHANDLER_H
 
-#include "xcommunicationconfig.h"
 #include "iprotocolhandler.h"
+#include "xcommunicationconfig.h"
 
 //--------------------------------------------------------------------------------
 class ProtocolHandler : public virtual IProtocolHandler

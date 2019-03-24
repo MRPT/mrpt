@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "vision-precomp.h"  // Precompiled headers
+
 #include <mrpt/vision/CStereoRectifyMap.h>
 
 // Universal include for all versions of OpenCV

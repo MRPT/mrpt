@@ -9,8 +9,8 @@
 
 #include "hmtslam-precomp.h"  // Precomp header
 
-#include <mrpt/hmtslam.h>
 #include <mrpt/core/initializer.h>
+#include <mrpt/hmtslam.h>
 
 using namespace mrpt::hmtslam;
 

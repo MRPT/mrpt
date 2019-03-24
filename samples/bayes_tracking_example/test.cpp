@@ -15,12 +15,12 @@
 #include <mrpt/bayes/CParticleFilterData.h>
 
 #include <mrpt/gui/CDisplayWindowPlots.h>
+#include <mrpt/math/distributions.h>
+#include <mrpt/math/wrap2pi.h>
+#include <mrpt/obs/CObservationBearingRange.h>
+#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/random.h>
 #include <mrpt/system/os.h>
-#include <mrpt/math/wrap2pi.h>
-#include <mrpt/math/distributions.h>
-#include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/obs/CObservationBearingRange.h>
 #include <iostream>
 
 using namespace mrpt;

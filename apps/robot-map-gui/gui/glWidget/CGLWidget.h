@@ -13,13 +13,13 @@
 #include "CRobotPose.h"
 
 #include "mrpt/gui/CQtGlCanvasBase.h"
-#include "mrpt/opengl/CSetOfObjects.h"
-#include "mrpt/opengl/CSetOfLines.h"
-#include "mrpt/opengl/CPointCloud.h"
-#include "mrpt/maps/CSimpleMap.h"
 #include "mrpt/maps/CMultiMetricMap.h"
-#include "mrpt/opengl/CPlanarLaserScan.h"
+#include "mrpt/maps/CSimpleMap.h"
 #include "mrpt/opengl/CGridPlaneXY.h"
+#include "mrpt/opengl/CPlanarLaserScan.h"
+#include "mrpt/opengl/CPointCloud.h"
+#include "mrpt/opengl/CSetOfLines.h"
+#include "mrpt/opengl/CSetOfObjects.h"
 
 class CDocument;
 

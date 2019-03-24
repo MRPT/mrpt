@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/core/round.h>
 #include <gtest/gtest.h>
+#include <mrpt/core/round.h>
 
 TEST(round, longRound) { EXPECT_EQ(mrpt::round_long(4.8), 5); }

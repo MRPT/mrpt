@@ -10,16 +10,16 @@
 #include <mrpt/graphs.h>
 //#include <mrpt/graphslam/levmarq.h>
 #include <mrpt/gui.h>
-#include <mrpt/system/CObserver.h>
-#include <mrpt/opengl/gl_utils.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CSimpleLine.h>
-#include <mrpt/opengl/CSetOfLines.h>
-#include <mrpt/opengl/stock_objects.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/gl_utils.h>
 #include <mrpt/opengl/graph_tools.h>
+#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/CObserver.h>
 
 using namespace mrpt;
 using namespace mrpt::graphs;

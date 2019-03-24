@@ -10,8 +10,8 @@
 #pragma once
 
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/nav/planners/TMoveTree.h>
 #include <mrpt/nav/planners/PlannerRRT_common.h>
+#include <mrpt/nav/planners/TMoveTree.h>
 #include <numeric>
 
 namespace mrpt::nav

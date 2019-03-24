@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <string>
-#include <stdexcept>
 #include <iosfwd>
+#include <stdexcept>
+#include <string>
 
 namespace mrpt::config
 {

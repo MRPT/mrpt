@@ -7,13 +7,13 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/random.h>
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
-#include <mrpt/obs/stock_observations.h>
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/config/CConfigFile.h>
+#include <mrpt/obs/stock_observations.h>
+#include <mrpt/random.h>
 #include <mrpt/system/CTicTac.h>
 #include <iostream>
 

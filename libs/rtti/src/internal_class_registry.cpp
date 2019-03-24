@@ -11,11 +11,11 @@
 
 #include <mrpt/rtti/CObject.h>
 
-#include <map>
-#include <cstdarg>
-#include <mutex>
 #include <atomic>
+#include <cstdarg>
 #include <iostream>
+#include <map>
+#include <mutex>
 
 #include "internal_class_registry.h"
 

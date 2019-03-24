@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/graphs/CNetworkOfPoses.h>
 
 #include <string>
 

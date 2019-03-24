@@ -10,18 +10,18 @@
 #define CFORMPLAYVIDEO_H
 
 //(*Headers(CFormPlayVideo)
-#include <wx/sizer.h>
-#include <wx/stattext.h>
-#include <wx/textctrl.h>
-#include <wx/checkbox.h>
-#include <wx/spinctrl.h>
-#include <wx/radiobut.h>
-#include <wx/slider.h>
-#include <wx/panel.h>
 #include <wx/bmpbuttn.h>
 #include <wx/button.h>
-#include <wx/dialog.h>
+#include <wx/checkbox.h>
 #include <wx/combobox.h>
+#include <wx/dialog.h>
+#include <wx/panel.h>
+#include <wx/radiobut.h>
+#include <wx/sizer.h>
+#include <wx/slider.h>
+#include <wx/spinctrl.h>
+#include <wx/stattext.h>
+#include <wx/textctrl.h>
 //*)
 
 #include <mrpt/img/CImage.h>

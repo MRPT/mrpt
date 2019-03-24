@@ -9,8 +9,8 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
-#include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/math/CMatrix.h>
+#include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/serialization/CArchive.h>
 #if MRPT_HAS_MATLAB
 #include <mexplus/mxarray.h>

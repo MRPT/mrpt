@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <vector>
 #include <stdexcept>
+#include <vector>
 
 namespace mrpt::containers
 {

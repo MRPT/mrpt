@@ -8,13 +8,13 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/opengl/CRenderizableDisplayList.h>
-#include <mrpt/opengl/CSetOfTriangles.h>
-#include <mrpt/math/CMatrixTemplate.h>
-#include <mrpt/math/CMatrixB.h>
-#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/maps/CPointsMap.h>
+#include <mrpt/math/CMatrixB.h>
+#include <mrpt/math/CMatrixTemplate.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/CSetOfTriangles.h>
 
 #include <mrpt/math/geometry.h>
 

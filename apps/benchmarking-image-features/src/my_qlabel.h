@@ -17,10 +17,10 @@
 #ifndef BENCHMARKINGIMAGEFEATURES_GUI_MY_QLABEL_H
 #define BENCHMARKINGIMAGEFEATURES_GUI_MY_QLABEL_H
 
-#include <QLabel>
-#include <QMouseEvent>
 #include <QDebug>
 #include <QEvent>
+#include <QLabel>
+#include <QMouseEvent>
 
 class my_qlabel : public QLabel
 {

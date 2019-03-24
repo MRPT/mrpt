@@ -11,10 +11,10 @@
 #include <mrpt/maps.h>
 #include <mrpt/obs/CObservationPointCloud.h>
 
+#include <CTraitsTest.h>
+#include <gtest/gtest.h>
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/serialization/CArchive.h>
-#include <gtest/gtest.h>
-#include <CTraitsTest.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;

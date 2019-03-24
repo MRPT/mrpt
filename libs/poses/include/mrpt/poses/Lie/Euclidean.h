@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/CArrayNumeric.h>
+#include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/poses/poses_frwds.h>
 
 namespace mrpt::poses::Lie

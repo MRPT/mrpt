@@ -8,13 +8,13 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/system/datetime.h>
-#include <mrpt/opengl/opengl_frwds.h>
-#include <mrpt/img/TColor.h>
 #include <mrpt/config/CConfigFileBase.h>
-#include <vector>
+#include <mrpt/img/TColor.h>
+#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/opengl/opengl_frwds.h>
+#include <mrpt/system/datetime.h>
 #include <string>
+#include <vector>
 
 namespace mrpt::nav
 {

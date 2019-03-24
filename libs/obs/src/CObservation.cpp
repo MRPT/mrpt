@@ -9,10 +9,10 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
+#include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
-#include <mrpt/math/lightweight_geom_data.h>
 
 #include <mrpt/poses/CPose3D.h>
 #include <iomanip>

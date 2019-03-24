@@ -9,12 +9,12 @@
 #pragma once
 
 // nanoflann library:
-#include <nanoflann.hpp>
 #include <mrpt/math/lightweight_geom_data.h>
-#include <memory>  // unique_ptr
 #include <array>
-#include <mutex>
 #include <atomic>
+#include <memory>  // unique_ptr
+#include <mutex>
+#include <nanoflann.hpp>
 
 namespace mrpt::math
 {

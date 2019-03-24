@@ -8,11 +8,11 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>
-#include <mrpt/poses/CPose3D.h>
 #include <mrpt/obs/VelodyneCalibration.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <vector>
 
 namespace mrpt

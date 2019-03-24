@@ -9,9 +9,9 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
-#include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/metaprogramming_serialization.h>
 

@@ -9,9 +9,9 @@
 #pragma once
 
 #include <mrpt/maps/CPointsMap.h>
-#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/obs/obs_frwds.h>
+#include <mrpt/serialization/CSerializable.h>
 
 namespace mrpt
 {

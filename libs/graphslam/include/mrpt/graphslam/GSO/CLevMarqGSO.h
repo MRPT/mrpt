@@ -9,21 +9,21 @@
 
 #pragma once
 
-#include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/img/TColor.h>
+#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 
-#include <mrpt/graphslam/levmarq.h>
 #include <mrpt/graphslam/interfaces/CGraphSlamOptimizer.h>
+#include <mrpt/graphslam/levmarq.h>
 
-#include <iostream>
-#include <string>
-#include <map>
 #include <cmath>
+#include <iostream>
+#include <map>
+#include <string>
 
 namespace mrpt::graphslam::optimizers
 {

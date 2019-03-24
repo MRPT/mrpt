@@ -24,8 +24,8 @@
 #ifndef _WIN32_WCE
 #include <stddef.h>
 #endif
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 #endif
 #ifdef NO_ERRNO_H
 #ifdef _WIN32_WCE

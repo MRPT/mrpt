@@ -23,19 +23,19 @@
 
 */
 
-#include <mrpt/slam/data_association.h>
-#include <mrpt/math/distributions.h>  // for chi2inv
 #include <mrpt/math/data_utils.h>
-#include <mrpt/poses/CPointPDFGaussian.h>
+#include <mrpt/math/distributions.h>  // for chi2inv
 #include <mrpt/poses/CPoint2DPDFGaussian.h>
+#include <mrpt/poses/CPointPDFGaussian.h>
+#include <mrpt/slam/data_association.h>
 
 #include <memory>
-#include <set>
-#include <numeric>  // accumulate
 #include <memory>  // unique_ptr
+#include <numeric>  // accumulate
+#include <set>
 
-#include <nanoflann.hpp>  // For kd-tree's
 #include <mrpt/math/KDTreeCapable.h>  // For kd-tree's
+#include <nanoflann.hpp>  // For kd-tree's
 
 using namespace std;
 using namespace mrpt;

@@ -9,17 +9,17 @@
 
 #pragma once
 
-#include <mrpt/typemeta/TEnumType.h>
-#include <mrpt/system/os.h>  // for console color constants
-#include <mrpt/system/CTicTac.h>
 #include <mrpt/core/Clock.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/os.h>  // for console color constants
+#include <mrpt/typemeta/TEnumType.h>
 
-#include <string>
-#include <deque>
 #include <array>
-#include <sstream>
-#include <iosfwd>
+#include <deque>
 #include <functional>
+#include <iosfwd>
+#include <sstream>
+#include <string>
 
 namespace mrpt::system
 {

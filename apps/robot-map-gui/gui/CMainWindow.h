@@ -13,8 +13,8 @@
 
 #include <memory>
 
-#include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/opengl/CSetOfObjects.h>
 
 /** This class implements GUI of main window and connection with other classes
  */

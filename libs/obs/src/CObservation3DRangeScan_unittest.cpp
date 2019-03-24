@@ -7,16 +7,16 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <gtest/gtest.h>
+#include <mrpt/config.h>
+#include <mrpt/containers/copy_container_typecasting.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/math/CHistogram.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/system/filesystem.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/containers/copy_container_typecasting.h>
-#include <mrpt/math/CHistogram.h>
-#include <mrpt/config.h>
-#include <gtest/gtest.h>
+#include <mrpt/system/filesystem.h>
 #include <test_mrpt_common.h>
 
 using namespace mrpt;

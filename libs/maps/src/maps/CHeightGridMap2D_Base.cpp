@@ -10,10 +10,10 @@
 #include "maps-precomp.h"  // Precomp header
 
 #include <mrpt/maps/CHeightGridMap2D_Base.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
-#include <mrpt/maps/CSimplePointsMap.h>
 
 using namespace mrpt::maps;
 using namespace std;

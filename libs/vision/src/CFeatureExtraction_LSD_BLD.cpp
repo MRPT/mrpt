@@ -14,10 +14,11 @@
   ---------------------------------------------------------------*/
 
 #include "vision-precomp.h"  // Precompiled headers
-#include <mrpt/system/os.h>
-#include <mrpt/vision/CFeatureExtraction.h>  // important import
+
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/otherlibs/do_opencv_includes.h>
+#include <mrpt/system/os.h>
+#include <mrpt/vision/CFeatureExtraction.h>  // important import
 
 #ifdef HAVE_OPENCV_XFEATURES2D
 #include <opencv2/xfeatures2d.hpp>

@@ -8,12 +8,12 @@
    +---------------------------------------------------------------------------+
    */
 #include "CViewerContainer.h"
-#include "ui_CViewerContainer.h"
 #include "CGLWidget.h"
 #include "gui/observationTree/CRangeScanNode.h"
+#include "ui_CViewerContainer.h"
 
-#include <QTextEdit>
 #include <QDebug>
+#include <QTextEdit>
 
 CViewerContainer::CViewerContainer(QWidget* parent)
 	: QWidget(parent),

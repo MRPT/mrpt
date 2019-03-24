@@ -7,18 +7,18 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/io/CFileGZInputStream.h>
+#include <gtest/gtest.h>
 #include <mrpt/config/CConfigFile.h>
-#include <mrpt/slam/CMonteCarloLocalization2D.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/maps/CMultiMetricMap.h>
-#include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/obs/CRawlog.h>
+#include <mrpt/random.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/slam/CMonteCarloLocalization2D.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
-#include <mrpt/serialization/CArchive.h>
-#include <mrpt/random.h>
-#include <gtest/gtest.h>
 #include <test_mrpt_common.h>
 
 using namespace mrpt;

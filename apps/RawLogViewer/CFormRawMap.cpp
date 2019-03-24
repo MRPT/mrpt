@@ -11,38 +11,38 @@
 
 #include "xRawLogViewerMain.h"
 
-#include <wx/msgdlg.h>
-#include <wx/filedlg.h>
-#include <wx/progdlg.h>
 #include <wx/app.h>
+#include <wx/filedlg.h>
+#include <wx/msgdlg.h>
+#include <wx/progdlg.h>
 
 //(*InternalHeaders(CFormRawMap)
 #include <wx/artprov.h>
 #include <wx/bitmap.h>
 #include <wx/font.h>
-#include <wx/intl.h>
 #include <wx/image.h>
+#include <wx/intl.h>
 #include <wx/string.h>
 //*)
 
 #include <wx/numdlg.h>
 
 // General global variables:
-#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CSetOfLines.h>
-#include <mrpt/system/os.h>
-#include <mrpt/system/filesystem.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/maps/CColouredPointsMap.h>
-#include <mrpt/obs/CObservationOdometry.h>
-#include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/math/geometry.h>
-#include <mrpt/topography.h>
+#include <mrpt/obs/CObservationOdometry.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
+#include <mrpt/topography.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;

@@ -8,14 +8,14 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <cstdarg>
-#include <cstdio>
-#include <cmath>
-#include <iosfwd>
-#include <vector>
-#include <limits>  // numeric_limits
 #include <mrpt/core/exceptions.h>
 #include <mrpt/math/eigen_frwds.h>
+#include <cmath>
+#include <cstdarg>
+#include <cstdio>
+#include <iosfwd>
+#include <limits>  // numeric_limits
+#include <vector>
 
 namespace mrpt
 {

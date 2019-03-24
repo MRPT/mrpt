@@ -7,11 +7,11 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CBox.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSphere.h>
-#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/system/os.h>
 #include <iostream>
 

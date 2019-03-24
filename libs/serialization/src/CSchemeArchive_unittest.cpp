@@ -7,12 +7,12 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/serialization/CArchive.h>
-#include <mrpt/serialization/CSchemeArchiveBase.h>
-#include <mrpt/serialization/CSchemeArchive.h>
-#include <mrpt/poses/CPose2D.h>
-#include <sstream>
 #include <gtest/gtest.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CSchemeArchive.h>
+#include <mrpt/serialization/CSchemeArchiveBase.h>
+#include <sstream>
 
 // Check if we have jsoncpp to enable those tests:
 #include <mrpt/config.h>

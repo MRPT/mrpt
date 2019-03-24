@@ -10,8 +10,8 @@
 #include "navlog_viewer_GUI_designApp.h"
 
 //(*AppHeaders
-#include "navlog_viewer_GUI_designMain.h"
 #include <wx/image.h>
+#include "navlog_viewer_GUI_designMain.h"
 //*)
 #include <wx/cmdline.h>
 #ifdef MRPT_OS_LINUX

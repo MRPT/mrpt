@@ -7,9 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/system/datetime.h>
-#include <mrpt/core/Clock.h>
 #include <gtest/gtest.h>
+#include <mrpt/core/Clock.h>
+#include <mrpt/system/datetime.h>
 
 #include <thread>
 

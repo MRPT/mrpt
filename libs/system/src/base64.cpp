@@ -10,8 +10,8 @@
 #include "system-precomp.h"  // Precompiled headers
 
 #include <mrpt/core/common.h>
-#include <mrpt/system/string_utils.h>
 #include <mrpt/core/round.h>  // round()
+#include <mrpt/system/string_utils.h>
 #include <iostream>
 
 using namespace mrpt::system;

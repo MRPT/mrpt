@@ -10,14 +10,14 @@
 #ifndef CPosePDFParticlesExtended_H
 #define CPosePDFParticlesExtended_H
 
-#include <mrpt/poses/CPosePDF.h>
-#include <mrpt/maps/CMultiMetricMap.h>
-#include <mrpt/bayes/CProbabilityParticle.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/bayes/CParticleFilterData.h>
+#include <mrpt/bayes/CProbabilityParticle.h>
+#include <mrpt/maps/CMultiMetricMap.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/poses/CPosePDF.h>
 
 namespace mrpt
 {

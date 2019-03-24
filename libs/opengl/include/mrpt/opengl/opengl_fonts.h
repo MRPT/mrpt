@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include <mrpt/img/TColor.h>
 #include <mrpt/core/common.h>  // disable warnings
+#include <mrpt/img/TColor.h>
 #include <string>
 
 namespace mrpt::opengl

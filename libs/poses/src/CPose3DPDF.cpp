@@ -13,13 +13,13 @@
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFGaussianInf.h>
-#include <mrpt/poses/CPose3DPDFSOG.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
+#include <mrpt/poses/CPose3DPDFSOG.h>
 #include <mrpt/poses/CPose3DQuatPDF.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFGaussianInf.h>
-#include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/poses/CPosePDFParticles.h>
+#include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::poses;

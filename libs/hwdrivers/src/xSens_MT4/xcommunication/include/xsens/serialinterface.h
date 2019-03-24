@@ -9,11 +9,11 @@
 #ifndef SERIALINTERFACE_H
 #define SERIALINTERFACE_H
 
-#include "streaminterface.h"
-#include <xsens/xsplatform.h>
-#include <xsens/xsmessage.h>
 #include <xsens/xsbaud.h>
 #include <xsens/xscontrolline.h>
+#include <xsens/xsmessage.h>
+#include <xsens/xsplatform.h>
+#include "streaminterface.h"
 
 struct XsPortInfo;
 

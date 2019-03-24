@@ -7,11 +7,11 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/random.h>
-#include <mrpt/math/transform_gaussian.h>
 #include <CTraitsTest.h>
 #include <gtest/gtest.h>
+#include <mrpt/math/transform_gaussian.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/random.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;

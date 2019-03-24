@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "rawlog-edit-declarations.h"
 #include <mrpt/vision/CStereoRectifyMap.h>
+#include "rawlog-edit-declarations.h"
 
 using namespace mrpt;
 using namespace mrpt::obs;

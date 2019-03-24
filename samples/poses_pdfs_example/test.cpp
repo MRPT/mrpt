@@ -12,8 +12,8 @@
  * Shows the common PDF and 2D/3D pose manipulation operations.
  */
 
-#include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/poses/CPoint3D.h>
+#include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPoses2DSequence.h>
 #include <mrpt/system/CTicTac.h>

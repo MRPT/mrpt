@@ -6,9 +6,9 @@
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
-#include <mrpt/poses/CPose3DQuat.h>
-#include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/random.h>
 #include <mrpt/tfest.h>
 

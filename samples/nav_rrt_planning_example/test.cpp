@@ -7,14 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/nav.h>
-#include <mrpt/maps/CSimpleMap.h>
-#include <mrpt/system/filesystem.h>  // directoryExists(), ...
-#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/config/CConfigFile.h>
-#include <mrpt/random.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/nav.h>
+#include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/filesystem.h>  // directoryExists(), ...
 
 #include <iostream>
 

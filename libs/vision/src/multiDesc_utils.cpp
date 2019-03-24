@@ -8,39 +8,33 @@
    +------------------------------------------------------------------------+ */
 #include "vision-precomp.h"  // Precompiled headers
 
-#include <mrpt/vision/multiDesc_utils.h>
-#include <mrpt/vision/utils.h>
-#include <mrpt/vision/pinhole.h>
-#include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/vision/CFeature.h>
+#include <mrpt/vision/CFeatureExtraction.h>
+#include <mrpt/vision/multiDesc_utils.h>
+#include <mrpt/vision/pinhole.h>
+#include <mrpt/vision/utils.h>
 
 #include <mrpt/poses/CPoint3D.h>
 //#include <mrpt/maps/CLandmarksMap.h>
-#include <mrpt/obs/CObservationVisualLandmarks.h>
-#include <mrpt/obs/CObservationStereoImages.h>
+#include <mrpt/math/geometry.h>
+#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/ops_vectors.h>
+#include <mrpt/math/utils.h>
 #include <mrpt/obs/CObservationBearingRange.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/system/os.h>
+#include <mrpt/obs/CObservationStereoImages.h>
+#include <mrpt/obs/CObservationVisualLandmarks.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CTimeLogger.h>
-#include <mrpt/math/utils.h>
-#include <mrpt/math/ops_vectors.h>
-#include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/math/geometry.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
 #include <algorithm>  // max_element
 
-#ifdef _WIN32
-#include <process.h>
-#include <windows.h>  // TODO: This is temporary!!!
-#endif
-
 using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::img;
-// using namespace mrpt::maps;
 using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace std;

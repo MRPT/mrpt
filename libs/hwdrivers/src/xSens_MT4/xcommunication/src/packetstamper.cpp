@@ -6,8 +6,8 @@
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
-#include <xsens/xsdatapacket.h>
 #include "packetstamper.h"
+#include <xsens/xsdatapacket.h>
 
 /*! \class PacketStamper
 	\brief Supplies functionality for timestamping data packets.

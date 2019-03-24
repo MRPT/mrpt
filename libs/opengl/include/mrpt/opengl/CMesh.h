@@ -9,10 +9,10 @@
 
 #pragma once
 
-#include <mrpt/opengl/CRenderizableDisplayList.h>
-#include <mrpt/math/CMatrix.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/img/color_maps.h>
+#include <mrpt/math/CMatrix.h>
+#include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
 
 namespace mrpt::opengl

@@ -9,10 +9,10 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
+#include <mrpt/containers/stl_containers_utils.h>
+#include <mrpt/core/round.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
 #include <mrpt/poses/CPose3DInterpolator.h>
-#include <mrpt/core/round.h>
-#include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <iostream>

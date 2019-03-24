@@ -9,6 +9,7 @@
 
 #include "img-precomp.h"  // Precompiled headers
 
+#include <mrpt/core/round.h>  // for round()
 #include <mrpt/img/CImage.h>
 #include <mrpt/io/CFileInputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
@@ -17,12 +18,11 @@
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/fourier.h>
 #include <mrpt/math/utils.h>  // for roundup()
-#include <mrpt/core/round.h>  // for round()
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CTimeLogger.h>
-#include <mrpt/system/memory.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/memory.h>
 #include <iostream>
 
 // Universal include for all versions of OpenCV

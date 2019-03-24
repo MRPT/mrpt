@@ -8,11 +8,11 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/poses/CPose2D.h>
-#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CObservationComment.h>
-#include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/poses/CPose2D.h>
 
 namespace mrpt::obs
 {

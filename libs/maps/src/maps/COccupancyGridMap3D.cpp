@@ -9,12 +9,12 @@
 
 #include "maps-precomp.h"  // Precomp header
 
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/maps/COccupancyGridMap3D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/opengl/COctoMapVoxels.h>
-#include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/serialization/CArchive.h>
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;

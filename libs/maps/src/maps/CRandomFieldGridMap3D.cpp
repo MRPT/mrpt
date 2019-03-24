@@ -9,21 +9,21 @@
 
 #include "maps-precomp.h"  // Precomp header
 
-#include <mrpt/maps/CRandomFieldGridMap3D.h>
+#include <mrpt/config.h>
 #include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/maps/CRandomFieldGridMap3D.h>
 #include <mrpt/system/CTicTac.h>
 #include <fstream>
-#include <mrpt/config.h>
 
 #if MRPT_HAS_VTK
-#include <vtkStructuredGrid.h>
+#include <vtkCellArray.h>
 #include <vtkDoubleArray.h>
 #include <vtkPointData.h>
-#include <vtkVersion.h>
-#include <vtkCellArray.h>
 #include <vtkPoints.h>
-#include <vtkXMLStructuredGridWriter.h>
 #include <vtkSmartPointer.h>
+#include <vtkStructuredGrid.h>
+#include <vtkVersion.h>
+#include <vtkXMLStructuredGridWriter.h>
 #endif
 
 using namespace mrpt;

@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <cstdint>
 #include <mrpt/config.h>
+#include <cstdint>
 #if (                                                \
 	!defined(OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS) &&   \
 	!defined(OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS)) || \

@@ -7,10 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/containers/circular_buffer.h>
-#include <mrpt/random.h>
-#include <mrpt/core/common.h>
 #include <CTraitsTest.h>
+#include <mrpt/containers/circular_buffer.h>
+#include <mrpt/core/common.h>
+#include <mrpt/random.h>
 
 #include <gtest/gtest.h>
 

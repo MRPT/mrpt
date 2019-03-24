@@ -11,9 +11,9 @@
 
 #include <mrpt/img/CImage.h>
 #include <mrpt/system/CTimeLogger.h>
-#include <mrpt/vision/utils.h>
 #include <mrpt/vision/CFeature.h>
 #include <mrpt/vision/TSimpleFeature.h>
+#include <mrpt/vision/utils.h>
 
 namespace mrpt::vision
 {

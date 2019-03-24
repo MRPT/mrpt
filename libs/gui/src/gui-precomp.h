@@ -12,8 +12,8 @@
 #include <mrpt/config.h>
 #if MRPT_ENABLE_PRECOMPILED_HDRS
 
-#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 
 #endif

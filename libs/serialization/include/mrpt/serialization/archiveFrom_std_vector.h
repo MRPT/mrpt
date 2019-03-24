@@ -9,9 +9,9 @@
 #pragma once
 
 #include <mrpt/serialization/CArchive.h>
-#include <vector>
 #include <cstdint>
 #include <cstring>
+#include <vector>
 
 namespace mrpt::serialization
 {

@@ -6,19 +6,20 @@
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
-#include "xcommunicationconfig.h"
 #include "enumerateusbdevices.h"
+#include "xcommunicationconfig.h"
 
 #ifdef _WIN32
 #include <windows.h>
-#include <string.h>
-#include <setupapi.h>
+
 #include <devguid.h>
 #include <regstr.h>
+#include <setupapi.h>
+#include <string.h>
 #else
+#include <dirent.h>
 #include <cstdlib>
 #include <cstring>
-#include <dirent.h>
 #include "xslibusb.h"
 #endif
 

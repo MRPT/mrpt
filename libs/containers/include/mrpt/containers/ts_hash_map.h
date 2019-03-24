@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/core/integer_select.h>
 #include <mrpt/core/common.h>  // remove MSVC warnings
+#include <mrpt/core/integer_select.h>
 #include <array>
 #include <stdexcept>
 #include <string_view>

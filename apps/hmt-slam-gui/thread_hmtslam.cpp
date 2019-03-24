@@ -11,9 +11,9 @@
 
 #include <wx/msgdlg.h>
 
-#include <mrpt/system/filesystem.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/filesystem.h>
 #include <memory>
 
 using namespace std;

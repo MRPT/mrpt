@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include <mrpt/maps/CRandomFieldGridMap2D.h>
 #include <mrpt/maps/CHeightGridMap2D_Base.h>
+#include <mrpt/maps/CRandomFieldGridMap2D.h>
 
 namespace mrpt::maps
 {

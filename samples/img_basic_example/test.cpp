@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/gui/CDisplayWindow.h>
-#include <mrpt/system/CTimeLogger.h>
-#include <mrpt/system/CTicTac.h>
 #include <mrpt/math/CMatrix.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <iostream>
 
 using namespace mrpt;

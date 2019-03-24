@@ -13,8 +13,8 @@
  * href="group__mrpt__pbmap__grp.html" >mrpt-pbmap</a>
  */
 
-#include "pbmap-precomp.h"  // Precompiled headers
 #include <mrpt/pbmap/SubgraphMatcher.h>
+#include "pbmap-precomp.h"  // Precompiled headers
 
 //#define _VERBOSE 1
 

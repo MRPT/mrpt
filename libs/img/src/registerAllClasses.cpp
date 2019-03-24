@@ -9,10 +9,10 @@
 
 #include "img-precomp.h"
 
+#include <mrpt/core/initializer.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/img/TCamera.h>
 #include <mrpt/img/TStereoCamera.h>
-#include <mrpt/core/initializer.h>
 
 using namespace mrpt::img;
 

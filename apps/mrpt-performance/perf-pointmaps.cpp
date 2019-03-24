@@ -7,10 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/poses/CPose2D.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/stock_observations.h>
+#include <mrpt/poses/CPose2D.h>
 #include <mrpt/random.h>
 
 #include "common.h"

@@ -11,38 +11,38 @@
 #define HOLONOMIC_NAVIGATOR_DEMOMAIN_H
 
 //(*Headers(reactive_navigator_demoframe)
-#include <wx/notebook.h>
-#include <wx/sizer.h>
-#include <wx/stattext.h>
-#include <wx/radiobox.h>
-#include <wx/menu.h>
-#include <wx/textctrl.h>
-#include <wx/checkbox.h>
-#include <wx/things/toggle.h>
-#include <wx/splitter.h>
-#include "MyGLCanvas.h"
-#include <wx/panel.h>
-#include <wx/choice.h>
 #include <wx/button.h>
+#include <wx/checkbox.h>
+#include <wx/choice.h>
 #include <wx/frame.h>
-#include <wx/timer.h>
+#include <wx/menu.h>
+#include <wx/notebook.h>
+#include <wx/panel.h>
+#include <wx/radiobox.h>
+#include <wx/sizer.h>
+#include <wx/splitter.h>
+#include <wx/stattext.h>
 #include <wx/statusbr.h>
+#include <wx/textctrl.h>
+#include <wx/things/toggle.h>
+#include <wx/timer.h>
+#include "MyGLCanvas.h"
 //*)
 
-#include <mrpt/nav.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/CDisk.h>
-#include <mrpt/opengl/CSimpleLine.h>
-#include <mrpt/opengl/CSetOfLines.h>
-#include <mrpt/opengl/CPointCloud.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>  // It's in the lib mrpt-maps
-#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/nav.h>
+#include <mrpt/opengl/CDisk.h>
+#include <mrpt/opengl/CPlanarLaserScan.h>  // It's in the lib mrpt-maps
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CSimpleLine.h>
 
 #include <memory>  // unique_ptr<>
 
-#include <mrpt/kinematics/CVehicleSimul_DiffDriven.h>
 #include <mrpt/gui/CMyRedirector.h>
+#include <mrpt/kinematics/CVehicleSimul_DiffDriven.h>
 
 // JLBC: Unix X headers have these funny things...
 #ifdef Button1

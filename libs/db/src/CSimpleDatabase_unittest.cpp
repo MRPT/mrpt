@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/db/CSimpleDatabase.h>
-#include <mrpt/core/exceptions.h>
 #include <gtest/gtest.h>
+#include <mrpt/core/exceptions.h>
+#include <mrpt/db/CSimpleDatabase.h>
 
 TEST(CSimpleDatabase, test1) { MRPT_TODO("Implement unit tests!"); }

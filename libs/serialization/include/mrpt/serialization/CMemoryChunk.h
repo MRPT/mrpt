@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CSerializable.h>
 
 namespace mrpt
 {

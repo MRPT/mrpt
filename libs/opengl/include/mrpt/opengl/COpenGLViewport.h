@@ -8,14 +8,14 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/opengl/CCamera.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/CLight.h>
-#include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/opengl/CCamera.h>
+#include <mrpt/opengl/CLight.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/opengl_frwds.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/CObservable.h>
 #include <mrpt/system/mrptEvent.h>
 

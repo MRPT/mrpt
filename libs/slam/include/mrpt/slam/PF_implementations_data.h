@@ -8,10 +8,10 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CParticleFilterData.h>
 #include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPoseRandomSampler.h>

@@ -9,15 +9,15 @@
 
 #pragma once
 
-#include <mrpt/obs/CObservationGPS.h>
-#include <mrpt/poses/CPoint3D.h>
 #include <mrpt/comms/CSerialPort.h>
-#include <mrpt/system/COutputLogger.h>
-#include <mrpt/io/CFileOutputStream.h>
-#include <mrpt/typemeta/TEnumType.h>
-#include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/containers/circular_buffer.h>
+#include <mrpt/hwdrivers/CGenericSensor.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/obs/obs_frwds.h>
+#include <mrpt/poses/CPoint3D.h>
+#include <mrpt/system/COutputLogger.h>
+#include <mrpt/typemeta/TEnumType.h>
 
 namespace mrpt::hwdrivers
 {

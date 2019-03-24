@@ -9,8 +9,8 @@
 
 #include <mrpt/db/CSimpleDatabase.h>
 #include <mrpt/io/CFileStream.h>
-#include <mrpt/system/CTicTac.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/CTicTac.h>
 #include <cstdio>
 #include <iostream>
 

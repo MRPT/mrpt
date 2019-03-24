@@ -8,21 +8,22 @@
    +------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h"  // Precomp header
+
+#include <mrpt/core/round.h>  // round()
+#include <mrpt/img/color_maps.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/maps/CGasConcentrationGridMap2D.h>
-#include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/ops_containers.h>
-#include <mrpt/system/CTicTac.h>
-#include <mrpt/img/color_maps.h>
-#include <mrpt/core/round.h>  // round()
-#include <mrpt/io/CFileGZOutputStream.h>
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/system/datetime.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/system/os.h>
+#include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/opengl/CArrow.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/datetime.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;

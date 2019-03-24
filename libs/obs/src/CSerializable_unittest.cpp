@@ -10,9 +10,9 @@
 #define MRPT_NO_WARN_BIG_HDR  // Yes, we really want to include all classes.
 #include <mrpt/obs.h>
 
-#include <mrpt/io/CMemoryStream.h>
-#include <gtest/gtest.h>
 #include <CTraitsTest.h>
+#include <gtest/gtest.h>
+#include <mrpt/io/CMemoryStream.h>
 #include <sstream>
 
 using namespace mrpt;

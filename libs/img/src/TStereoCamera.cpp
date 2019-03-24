@@ -9,8 +9,8 @@
 
 #include "img-precomp.h"  // Precompiled headers
 
-#include <mrpt/img/TStereoCamera.h>
 #include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/img/TStereoCamera.h>
 #include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::img;

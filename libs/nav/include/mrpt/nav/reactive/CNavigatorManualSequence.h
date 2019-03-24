@@ -9,8 +9,8 @@
 #pragma once
 
 #include <mrpt/nav/reactive/CAbstractNavigator.h>
-#include <map>
 #include <mrpt/system/CTicTac.h>
+#include <map>
 
 namespace mrpt::nav
 {

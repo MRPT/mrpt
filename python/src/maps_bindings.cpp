@@ -11,13 +11,13 @@
 /* MRPT */
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/maps/CMultiMetricMapPDF.h>
-#include <mrpt/maps/TMetricMapInitializer.h>
-#include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/maps/metric_map_types.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/maps/TMetricMapInitializer.h>
+#include <mrpt/maps/metric_map_types.h>
+#include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/system/datetime.h>
-#include <mrpt/opengl/CSetOfObjects.h>
 
 /* std */
 #include <cstdint>

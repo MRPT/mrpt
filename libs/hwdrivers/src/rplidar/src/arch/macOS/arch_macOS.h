@@ -34,14 +34,14 @@
 #pragma once
 
 // libc dep
-#include <stdio.h>
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
 #include <assert.h>
 #include <math.h>
-#include <time.h>
 #include <stdarg.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 
 // libc++ dep
 #include <iostream>
@@ -50,15 +50,15 @@
 // POSIX specific
 extern "C"
 {
-#include <unistd.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <pthread.h>
+#include <sys/ioctl.h>
+#include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
 #include <time.h>
+#include <unistd.h>
 }
 
 #include "arch/macOS/timer.h"

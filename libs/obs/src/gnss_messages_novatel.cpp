@@ -10,8 +10,8 @@
 #include "obs-precomp.h"  // Precompiled headers
 
 #include <mrpt/obs/gnss_messages_novatel.h>
-#include <map>
 #include <iostream>
+#include <map>
 
 using namespace std;
 using namespace mrpt::obs::gnss;

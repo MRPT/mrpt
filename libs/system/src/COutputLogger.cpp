@@ -9,15 +9,15 @@
 
 #include "system-precomp.h"  // Precompiled headers
 
+#include <mrpt/core/exceptions.h>
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/system/datetime.h>
-#include <mrpt/core/exceptions.h>
-#include <cstdio>
-#include <sstream>
-#include <iostream>
-#include <fstream>
-#include <vector>
 #include <cstdarg>  // for logFmt
+#include <cstdio>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <vector>
 
 #ifdef _MSC_VER
 #define WIN32_LEAN_AND_MEAN

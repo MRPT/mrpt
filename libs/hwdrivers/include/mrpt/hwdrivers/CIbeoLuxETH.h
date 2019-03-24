@@ -8,11 +8,11 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/CPoint3D.h>
-#include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/comms/CClientTCPSocket.h>
+#include <mrpt/hwdrivers/CGenericSensor.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/poses/CPoint3D.h>
+#include <mrpt/poses/CPose3D.h>
 
 #include <thread>
 

@@ -10,14 +10,14 @@
 
 #include <mrpt/bayes/CParticleFilterCapable.h>
 
-#include <mrpt/hmtslam/HMT_SLAM_common.h>
+#include <mrpt/bayes/CParticleFilterData.h>
+#include <mrpt/core/aligned_std_map.h>
 #include <mrpt/hmtslam/CHMHMapNode.h>
+#include <mrpt/hmtslam/HMT_SLAM_common.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
-#include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/opengl/opengl_frwds.h>
-#include <mrpt/core/aligned_std_map.h>
-#include <mrpt/bayes/CParticleFilterData.h>
+#include <mrpt/slam/CIncrementalMapPartitioner.h>
 
 #include <list>
 #include <mutex>

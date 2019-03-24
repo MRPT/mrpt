@@ -8,20 +8,20 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/img/CImage.h>
 #include <mrpt/containers/CDynamicGrid.h>
-#include <mrpt/maps/CMetricMap.h>
-#include <mrpt/tfest/TMatchingPair.h>
+#include <mrpt/core/safe_pointers.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/maps/CLogOddsGridMap2D.h>
 #include <mrpt/maps/CLogOddsGridMapLUT.h>
+#include <mrpt/maps/CMetricMap.h>
 #include <mrpt/maps/OccupancyGridCellType.h>
-#include <mrpt/core/safe_pointers.h>
-#include <mrpt/poses/poses_frwds.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/obs/CObservation2DRangeScanWithUncertainty.h>
 #include <mrpt/obs/obs_frwds.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/poses_frwds.h>
+#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/tfest/TMatchingPair.h>
 #include <mrpt/typemeta/TEnumType.h>
 
 namespace mrpt::maps

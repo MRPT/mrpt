@@ -8,12 +8,12 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/serialization/CArchive.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/CMatrixD.h>
+#include <mrpt/serialization/CArchive.h>
 
-#include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixTemplateNumeric.h>
 
 /** \file matrix_serialization.h
  * This file implements matrix/vector text and binary serialization */

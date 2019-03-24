@@ -11,8 +11,8 @@
 #include <wx/stdpaths.h>
 
 //(*AppHeaders
-#include "xRawLogViewerMain.h"
 #include <wx/image.h>
+#include "xRawLogViewerMain.h"
 //*)
 #include <wx/log.h>
 

@@ -11,23 +11,23 @@
 #define CDLGCALIBWIZARDONLINE_H
 
 //(*Headers(CDlgCalibWizardOnline)
-#include <wx/spinctrl.h>
+#include <mrpt/gui/WxUtils.h>
+#include <wx/button.h>
 #include <wx/checkbox.h>
 #include <wx/dialog.h>
+#include <wx/radiobox.h>
 #include <wx/sizer.h>
-#include <wx/button.h>
-#include <mrpt/gui/WxUtils.h>
+#include <wx/spinctrl.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
-#include <wx/radiobox.h>
 #include <wx/timer.h>
 
 #include <wx/choice.h>
 //*)
 
-#include <mrpt/vision/chessboard_camera_calib.h>
-#include <mrpt/hwdrivers/CCameraSensor.h>
 #include <mrpt/gui/CMyRedirector.h>
+#include <mrpt/hwdrivers/CCameraSensor.h>
+#include <mrpt/vision/chessboard_camera_calib.h>
 
 class CDlgCalibWizardOnline : public wxDialog
 {

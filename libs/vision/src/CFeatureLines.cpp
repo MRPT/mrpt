@@ -10,8 +10,8 @@
 
 #include "vision-precomp.h"  // Precompiled headers
 
-#include <mrpt/vision/CFeatureLines.h>
 #include <mrpt/core/exceptions.h>
+#include <mrpt/vision/CFeatureLines.h>
 #include <mrpt/vision/utils.h>
 
 // Universal include for all versions of OpenCV

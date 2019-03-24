@@ -13,18 +13,18 @@
  * rotation) for aligning the 2 sets of laser scans and plots the
  */
 
+#include <mrpt/gui.h>
 #include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/math/utils.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/stock_observations.h>
-#include <mrpt/slam/CICP.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/gui.h>
-#include <mrpt/math/utils.h>
+#include <mrpt/slam/CICP.h>
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::slam;

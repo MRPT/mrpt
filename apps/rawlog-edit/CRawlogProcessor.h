@@ -10,11 +10,11 @@
 #ifndef RAWLOG_PROCESSOR_H
 #define RAWLOG_PROCESSOR_H
 
-#include <mrpt/obs/CRawlog.h>
 #include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/obs/CRawlog.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
-#include <mrpt/serialization/CArchive.h>
 
 // Aparently, TCLAP headers can't be included in more than one source file
 //  or duplicated linking symbols appear! -> Use forward declarations instead:

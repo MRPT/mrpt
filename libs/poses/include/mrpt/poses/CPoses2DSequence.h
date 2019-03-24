@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/serialization/CSerializable.h>
-#include <mrpt/core/aligned_std_vector.h>
 
 namespace mrpt::poses
 {

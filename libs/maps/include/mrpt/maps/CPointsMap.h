@@ -8,19 +8,19 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/maps/CMetricMap.h>
-#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/core/safe_pointers.h>
 #include <mrpt/core/aligned_std_vector.h>
-#include <mrpt/math/KDTreeCapable.h>
-#include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>
-#include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/opengl/PLY_import_export.h>
-#include <mrpt/obs/obs_frwds.h>
-#include <mrpt/opengl/pointcloud_adapters.h>
+#include <mrpt/core/safe_pointers.h>
 #include <mrpt/img/color_maps.h>
+#include <mrpt/maps/CMetricMap.h>
+#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/KDTreeCapable.h>
+#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>
+#include <mrpt/obs/obs_frwds.h>
+#include <mrpt/opengl/PLY_import_export.h>
+#include <mrpt/opengl/pointcloud_adapters.h>
+#include <mrpt/serialization/CSerializable.h>
 
 // Add for declaration of mexplus::from template specialization
 DECLARE_MEXPLUS_FROM(mrpt::maps::CPointsMap)

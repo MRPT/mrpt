@@ -9,11 +9,11 @@
 #include "rtti-precomp.h"  // Precompiled headers
 
 #include <mrpt/rtti/CListOfClasses.h>
-#include <sstream>
 #include <algorithm>
-#include <functional>
 #include <cctype>
+#include <functional>
 #include <locale>
+#include <sstream>
 
 using namespace mrpt::rtti;
 

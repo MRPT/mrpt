@@ -31,8 +31,12 @@
  *
  */
 
-#include "sdkcommon.h"
+#if defined(_WIN32)
+#include <windows.h>
+#endif
+
 #include "hal/thread.h"
+#include "sdkcommon.h"
 
 #if defined(_WIN32)
 #include "arch/win32/winthread.hpp"

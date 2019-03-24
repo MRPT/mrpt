@@ -9,9 +9,9 @@
 
 #include <mrpt/gui.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/math/utils.h>
-#include <mrpt/math/ops_vectors.h>
 #include <mrpt/math/ops_matrices.h>
+#include <mrpt/math/ops_vectors.h>
+#include <mrpt/math/utils.h>
 #include <mrpt/system/CTicTac.h>
 #include <iostream>
 

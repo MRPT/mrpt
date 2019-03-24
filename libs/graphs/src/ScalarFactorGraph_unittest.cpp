@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/graphs/ScalarFactorGraph.h>
 #include <gtest/gtest.h>
+#include <mrpt/graphs/ScalarFactorGraph.h>
 
 using namespace mrpt;
 using namespace mrpt::graphs;

@@ -8,12 +8,12 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/kinematics/CVehicleVelCmd.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/obs/obs_frwds.h>  // CSimplePointsMap
-#include <mrpt/system/CTicTac.h>
 #include <mrpt/system/COutputLogger.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/system/datetime.h>
-#include <mrpt/kinematics/CVehicleVelCmd.h>
 
 namespace mrpt::nav
 {

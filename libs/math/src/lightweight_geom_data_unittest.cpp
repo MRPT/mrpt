@@ -7,9 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/math/lightweight_geom_data.h>
 #include <CTraitsTest.h>
 #include <gtest/gtest.h>
+#include <mrpt/math/lightweight_geom_data.h>
 
 using namespace mrpt;
 using namespace mrpt::math;

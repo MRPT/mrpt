@@ -7,11 +7,11 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <CTraitsTest.h>
+#include <gtest/gtest.h>
 #include <mrpt/math/CQuaternion.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
-#include <gtest/gtest.h>
-#include <CTraitsTest.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;

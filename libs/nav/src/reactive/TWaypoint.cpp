@@ -10,9 +10,9 @@
 #include "nav-precomp.h"  // Precomp header
 
 #include <mrpt/nav/reactive/TWaypoint.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/CDisk.h>
 #include <mrpt/opengl/CArrow.h>
+#include <mrpt/opengl/CDisk.h>
+#include <mrpt/opengl/CSetOfObjects.h>
 #include <limits>
 
 using namespace mrpt::nav;

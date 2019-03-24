@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/system/CFileSystemWatcher.h>
 #include <mrpt/core/exceptions.h>
+#include <mrpt/system/CFileSystemWatcher.h>
 #include <cstdio>
 #include <iostream>
 

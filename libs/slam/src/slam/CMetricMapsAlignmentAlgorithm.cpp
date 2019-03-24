@@ -9,10 +9,10 @@
 
 #include "slam-precomp.h"  // Precompiled headers
 
-#include <mrpt/slam/CMetricMapsAlignmentAlgorithm.h>
+#include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/poses/CPose3DPDFGaussian.h>
+#include <mrpt/slam/CMetricMapsAlignmentAlgorithm.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::maps;

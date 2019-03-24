@@ -7,20 +7,20 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/slam/CICP.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/opengl/CAngularObservationMesh.h>
-#include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPose3DPDF.h>
+#include <mrpt/poses/CPosePDF.h>
+#include <mrpt/slam/CICP.h>
 
-#include <mrpt/opengl/COpenGLScene.h>
+#include <gtest/gtest.h>
+#include <mrpt/obs/stock_observations.h>
+#include <mrpt/opengl/CDisk.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CSphere.h>
-#include <mrpt/opengl/CDisk.h>
 #include <mrpt/opengl/stock_objects.h>
-#include <mrpt/obs/stock_observations.h>
-#include <gtest/gtest.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;

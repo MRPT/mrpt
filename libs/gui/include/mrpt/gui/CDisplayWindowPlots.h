@@ -9,10 +9,10 @@
 #pragma once
 
 #include <mrpt/gui/CBaseGUIWindow.h>
+#include <mrpt/gui/gui_frwds.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/img/CImage.h>
-#include <mrpt/gui/gui_frwds.h>
 
 namespace mrpt::gui
 {

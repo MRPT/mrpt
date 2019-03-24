@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <list>
 #include <algorithm>
+#include <list>
 
 namespace mrpt::containers
 {

@@ -10,8 +10,8 @@
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
+#include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/random/RandomGenerators.h>
 

@@ -8,12 +8,12 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/maps/CMetricMap.h>
-#include <mrpt/maps/CBeacon.h>
-#include <mrpt/serialization/CSerializable.h>
-#include <mrpt/math/CMatrix.h>
 #include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/maps/CBeacon.h>
+#include <mrpt/maps/CMetricMap.h>
+#include <mrpt/math/CMatrix.h>
 #include <mrpt/obs/obs_frwds.h>
+#include <mrpt/serialization/CSerializable.h>
 
 namespace mrpt::maps
 {

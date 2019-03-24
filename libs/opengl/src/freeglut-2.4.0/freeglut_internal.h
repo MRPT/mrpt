@@ -38,9 +38,10 @@
 /* Somehow all Win32 include headers depend on this one: */
 #if TARGET_HOST_WIN32
 #include <windows.h>
-#include <windowsx.h>
-#include <mmsystem.h>
+
 #include <TCHAR.H>
+#include <mmsystem.h>
+#include <windowsx.h>
 #endif
 
 #if defined(_MSC_VER)
@@ -50,10 +51,10 @@
 /* Those files should be available on every platform. */
 #include <GL/gl.h>
 #include <GL/glu.h>
-#include <stdio.h>
-#include <string.h>
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #if HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
@@ -74,8 +75,8 @@
 /* The system-dependant include files should go here: */
 #if TARGET_HOST_UNIX_X11
 #include <GL/glx.h>
-#include <X11/Xlib.h>
 #include <X11/Xatom.h>
+#include <X11/Xlib.h>
 #include <X11/keysym.h>
 
 #ifdef HAVE_X11_EXTENSIONS_XF86VMODE_H
@@ -173,8 +174,7 @@ struct tagSFG_Time
  * An enumeration containing the state of the GLUT execution:
  * initializing, running, or stopping
  */
-typedef enum
-{
+typedef enum {
 	GLUT_EXEC_STATE_INIT,
 	GLUT_EXEC_STATE_RUNNING,
 	GLUT_EXEC_STATE_STOP
