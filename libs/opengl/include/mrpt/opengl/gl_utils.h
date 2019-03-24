@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/opengl/opengl_fonts.h>
-#include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/img/TPixelCoord.h>
+#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/opengl_fonts.h>
 
 namespace mrpt
 {

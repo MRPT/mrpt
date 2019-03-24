@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/core/format.h>
 #include <gtest/gtest.h>
+#include <mrpt/core/format.h>
 
 // Load data from constant file and check for exact match.
 TEST(FormatTest, LargeStrings)

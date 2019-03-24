@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/containers/list_searchable.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <set>
 
 #define COMMON_TOPOLOG_HYP static_cast<THypothesisID>(0)

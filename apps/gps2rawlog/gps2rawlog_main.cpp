@@ -16,9 +16,9 @@
 // ===========================================================================
 
 #include <mrpt/hwdrivers/CGPSInterface.h>
-#include <mrpt/system/filesystem.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 
 #include <mrpt/otherlibs/tclap/CmdLine.h>

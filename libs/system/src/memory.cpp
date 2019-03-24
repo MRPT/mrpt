@@ -9,12 +9,12 @@
 
 #include "system-precomp.h"  // Precompiled headers
 
-#include <cstdio>  // for size_t, fclose, fopen, fscanf, FILE
-#include <cstdlib>  // for free, realloc
-#include <exception>  // for exception
 #include <mrpt/config.h>  // for MRPT_OS_LINUX
 #include <mrpt/core/exceptions.h>  // for MRPT_END, MRPT_START, MRPT_UNUSE...
 #include <mrpt/system/memory.h>
+#include <cstdio>  // for size_t, fclose, fopen, fscanf, FILE
+#include <cstdlib>  // for free, realloc
+#include <exception>  // for exception
 
 #ifdef __APPLE__
 #include <mach/mach_init.h>

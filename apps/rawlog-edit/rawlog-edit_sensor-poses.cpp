@@ -7,9 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "rawlog-edit-declarations.h"
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/core/aligned_std_map.h>
+#include "rawlog-edit-declarations.h"
 
 using namespace mrpt;
 using namespace mrpt::obs;

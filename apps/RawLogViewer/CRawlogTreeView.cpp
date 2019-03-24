@@ -9,17 +9,17 @@
 
 #include "CRawlogTreeView.h"
 
+#include <mrpt/gui/wx28-fixes.h>
 #include <wx/artprov.h>
 #include <wx/bitmap.h>
+#include <wx/dcbuffer.h>
+#include <wx/dcclient.h>
 #include <wx/font.h>
-#include <wx/intl.h>
 #include <wx/image.h>
+#include <wx/imaglist.h>
+#include <wx/intl.h>
 #include <wx/string.h>
 #include <wx/window.h>
-#include <wx/dcclient.h>
-#include <wx/imaglist.h>
-#include <wx/dcbuffer.h>
-#include <mrpt/gui/wx28-fixes.h>
 
 IMPLEMENT_DYNAMIC_CLASS(CRawlogTreeView, wxScrolledWindow)
 

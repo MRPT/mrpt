@@ -7,9 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/math/geometry.h>
-#include <mrpt/math/CPolygon.h>
 #include <gtest/gtest.h>
+#include <mrpt/math/CPolygon.h>
+#include <mrpt/math/geometry.h>
 #include <algorithm>
 
 using namespace mrpt;

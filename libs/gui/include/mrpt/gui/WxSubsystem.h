@@ -8,65 +8,64 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/opengl/opengl_fonts.h>
 #include <mrpt/config.h>
+#include <mrpt/gui/gui_frwds.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/types_math.h>
-#include <mrpt/gui/gui_frwds.h>
+#include <mrpt/opengl/opengl_fonts.h>
+#include <future>
+#include <map>
 #include <mutex>
 #include <queue>
-#include <map>
 #include <thread>
-#include <future>
 
 #if MRPT_HAS_WXWIDGETS
 
-#include <wx/sizer.h>
-#include <wx/statbmp.h>
-#include <wx/menu.h>
-#include <wx/toolbar.h>
-#include <wx/frame.h>
-#include <wx/timer.h>
-#include <wx/statusbr.h>
-#include <wx/msgdlg.h>
+#include <wx/app.h>
 #include <wx/artprov.h>
 #include <wx/bitmap.h>
-#include <wx/intl.h>
-#include <wx/image.h>
-#include <wx/string.h>
-#include <wx/msgdlg.h>
-#include <wx/filedlg.h>
-#include <wx/progdlg.h>
-#include <wx/imaglist.h>
 #include <wx/busyinfo.h>
-#include <wx/log.h>
-#include <wx/textdlg.h>
-#include <wx/dirdlg.h>
 #include <wx/colordlg.h>
 #include <wx/dcmemory.h>
-#include <wx/app.h>
+#include <wx/dirdlg.h>
+#include <wx/filedlg.h>
+#include <wx/frame.h>
+#include <wx/image.h>
+#include <wx/imaglist.h>
+#include <wx/intl.h>
+#include <wx/log.h>
+#include <wx/menu.h>
+#include <wx/msgdlg.h>
 #include <wx/pen.h>
+#include <wx/progdlg.h>
+#include <wx/sizer.h>
+#include <wx/statbmp.h>
+#include <wx/statusbr.h>
+#include <wx/string.h>
+#include <wx/textdlg.h>
+#include <wx/timer.h>
+#include <wx/toolbar.h>
 
 // The wxMathPlot library
 #include <mrpt/otherlibs/mathplot/mathplot.h>
 
 #if 0
 // The wxFreeChart library
-#include <wx/chartpanel.h>
 #include <wx/bars/barplot.h>
+#include <wx/chartpanel.h>
 
-#include <wx/axis/numberaxis.h>
 #include <wx/axis/categoryaxis.h>
 #include <wx/axis/dateaxis.h>
+#include <wx/axis/numberaxis.h>
 
-#include <wx/xy/xyhistorenderer.h>
 #include <wx/xy/xydataset.h>
+#include <wx/xy/xyhistorenderer.h>
 #include <wx/xy/xylinerenderer.h>
 #include <wx/xy/xyplot.h>
 #include <wx/xy/xysimpledataset.h>
 
-#include <wx/xyz/xyzdataset.h>
 #include <wx/xyz/bubbleplot.h>
+#include <wx/xyz/xyzdataset.h>
 
 #include <wx/category/categorydataset.h>
 #include <wx/category/categorysimpledataset.h>

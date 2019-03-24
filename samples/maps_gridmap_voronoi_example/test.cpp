@@ -7,11 +7,11 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/system/filesystem.h>
-#include <mrpt/maps/CSimpleMap.h>
-#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/random.h>
+#include <mrpt/system/filesystem.h>
 #include <iostream>
 
 using namespace mrpt;

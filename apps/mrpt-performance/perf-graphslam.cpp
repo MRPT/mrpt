@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 
 // Reuse code from unit test:
-#include "../../libs/graphslam/src/graph_slam_levmarq_test_common.h"
-
 #include "common.h"
+
+#include "../../libs/graphslam/src/graph_slam_levmarq_test_common.h"
 
 using namespace mrpt;
 using namespace mrpt::math;

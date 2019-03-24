@@ -6,9 +6,9 @@
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
+#include "mtwsdidata.h"
 #include <xsens/xsrange.h>
 #include <xsens/xsrssi.h>
-#include "mtwsdidata.h"
 
 /*!
 	\class MtwSdiData

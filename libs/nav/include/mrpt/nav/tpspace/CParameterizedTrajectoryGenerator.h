@@ -8,16 +8,16 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/wrap2pi.h>
-#include <mrpt/serialization/CSerializable.h>
-#include <mrpt/core/round.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/core/round.h>
+#include <mrpt/kinematics/CVehicleVelCmd.h>
 #include <mrpt/math/CPolygon.h>
-#include <cstdint>
+#include <mrpt/math/wrap2pi.h>
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
 #include <mrpt/poses/CPose2D.h>
-#include <mrpt/kinematics/CVehicleVelCmd.h>
+#include <mrpt/serialization/CSerializable.h>
+#include <cstdint>
 
 namespace mrpt
 {

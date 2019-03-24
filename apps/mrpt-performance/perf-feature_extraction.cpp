@@ -10,8 +10,8 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/vision/CFeatureExtraction.h>
 
-#include "common.h"
 #include <iomanip>
+#include "common.h"
 
 using namespace mrpt::vision;
 using namespace mrpt::poses;

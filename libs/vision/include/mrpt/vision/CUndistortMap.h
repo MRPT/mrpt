@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/img/TCamera.h>
 #include <mrpt/img/CImage.h>
+#include <mrpt/img/TCamera.h>
 
 namespace mrpt::vision
 {

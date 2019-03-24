@@ -9,11 +9,11 @@
 
 #pragma once
 
-#include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/comms/CSerialPort.h>
-#include <mrpt/poses/CPose3D.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CObservationSkeleton.h>
+#include <mrpt/poses/CPose3D.h>
 
 namespace mrpt::hwdrivers
 {

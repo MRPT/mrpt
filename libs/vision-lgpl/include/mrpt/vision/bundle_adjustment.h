@@ -23,10 +23,10 @@
 
 #pragma once
 
-#include <mrpt/vision/types.h>
 #include <mrpt/img/TCamera.h>
-#include <mrpt/system/TParameters.h>
 #include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/system/TParameters.h>
+#include <mrpt/vision/types.h>
 
 #include <array>
 #include <functional>

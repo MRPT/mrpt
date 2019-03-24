@@ -7,16 +7,16 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <gtest/gtest.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/maps/COccupancyGridMap3D.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/obs/stock_observations.h>
 #include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/obs/stock_observations.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <test_mrpt_common.h>
-#include <gtest/gtest.h>
 
 TEST(COccupancyGridMap3DTests, insert2DScan)
 {

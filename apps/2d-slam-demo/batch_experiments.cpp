@@ -9,9 +9,9 @@
 
 #include "slamdemoApp.h"
 
-#include "slamdemoMain.h"
 #include <wx/image.h>
 #include <wx/msgdlg.h>
+#include "slamdemoMain.h"
 
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/math/wrap2pi.h>

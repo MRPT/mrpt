@@ -8,19 +8,19 @@
    +---------------------------------------------------------------------------+
    */
 
+#include <mrpt/core/exceptions.h>
+#include <mrpt/io/CFileInputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/system/datetime.h>
-#include <mrpt/system/string_utils.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
-#include <mrpt/core/exceptions.h>
-#include <mrpt/io/CFileOutputStream.h>
-#include <mrpt/io/CFileInputStream.h>
+#include <mrpt/system/string_utils.h>
 
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace mrpt::poses::internal
 {

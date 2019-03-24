@@ -9,9 +9,9 @@
 #ifndef XSDEVICEID_H
 #define XSDEVICEID_H
 
-#include "xstypesconfig.h"
 #include "pstdint.h"
 #include "xsstring.h"
+#include "xstypesconfig.h"
 #ifdef __cplusplus
 extern "C"
 {

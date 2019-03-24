@@ -9,19 +9,19 @@
 
 #include "slam-precomp.h"  // Precompiled headers
 
-#include <mrpt/slam/CRangeBearingKFSLAM2D.h>
-#include <mrpt/slam/data_association.h>
-#include <mrpt/poses/CPosePDF.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/math/wrap2pi.h>
+#include <mrpt/obs/CActionRobotMovement3D.h>
+#include <mrpt/poses/CPosePDF.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/slam/CRangeBearingKFSLAM2D.h>
+#include <mrpt/slam/data_association.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
 
-#include <mrpt/opengl/stock_objects.h>
-#include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/stock_objects.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::maps;

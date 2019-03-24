@@ -7,12 +7,12 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/random.h>
-#include <mrpt/math/kmeans.h>
 #include <mrpt/core/aligned_std_vector.h>
-#include <mrpt/system/CTicTac.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/math/CArrayNumeric.h>
+#include <mrpt/math/kmeans.h>
+#include <mrpt/random.h>
+#include <mrpt/system/CTicTac.h>
 #include <iostream>
 
 using namespace mrpt::math;

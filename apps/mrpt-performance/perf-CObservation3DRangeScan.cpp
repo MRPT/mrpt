@@ -7,12 +7,12 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/random.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/serialization/CArchive.h>
 
 #include "common.h"
 

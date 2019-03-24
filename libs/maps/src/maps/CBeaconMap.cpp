@@ -9,23 +9,23 @@
 
 #include "maps-precomp.h"  // Precomp header
 
-#include <mrpt/maps/CBeaconMap.h>
-#include <mrpt/obs/CObservationBeaconRanges.h>
-#include <mrpt/random.h>
-#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/bayes/CParticleFilter.h>
+#include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/core/round.h>  // round()
-#include <mrpt/math/geometry.h>
-#include <mrpt/bayes/CParticleFilterCapable.h>
-#include <mrpt/bayes/CParticleFilter.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/maps/CBeaconMap.h>
 #include <mrpt/math/data_utils.h>  // averageLogLikelihood()
+#include <mrpt/math/geometry.h>
+#include <mrpt/obs/CObservationBeaconRanges.h>
+#include <mrpt/random.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
-#include <mrpt/serialization/CArchive.h>
 
+#include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
 
 using namespace mrpt;

@@ -10,9 +10,9 @@
 #include "maps-precomp.h"  // Precomp header
 
 #include <mrpt/maps/COccupancyGridMap3D.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/poses/CPose3D.h>
 
 using namespace mrpt::maps;

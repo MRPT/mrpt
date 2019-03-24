@@ -10,9 +10,9 @@
 #include "maps-precomp.h"  // Precompiled headers
 
 #include <mrpt/config/CConfigFile.h>
-#include <mrpt/poses/CPoint2D.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/poses/CPoint2D.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/metaprogramming_serialization.h>
 

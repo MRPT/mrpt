@@ -7,12 +7,12 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <gtest/gtest.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/num_jacobian.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/Lie/SE.h>
-#include <mrpt/math/num_jacobian.h>
-#include <gtest/gtest.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;

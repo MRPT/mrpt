@@ -9,12 +9,12 @@
 
 #include "vision-precomp.h"  // Precompiled headers
 
-#include <mrpt/system/filesystem.h>
 #include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/system/filesystem.h>
 
+#include <mrpt/vision/chessboard_camera_calib.h>
 #include <mrpt/vision/chessboard_find_corners.h>
 #include <mrpt/vision/pinhole.h>
-#include <mrpt/vision/chessboard_camera_calib.h>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>

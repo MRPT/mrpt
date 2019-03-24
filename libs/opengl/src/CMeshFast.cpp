@@ -9,10 +9,10 @@
 
 #include "opengl-precomp.h"  // Precompiled header
 
-#include <mrpt/poses/CPose3D.h>
+#include <mrpt/img/color_maps.h>
 #include <mrpt/opengl/CMeshFast.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
-#include <mrpt/img/color_maps.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CArchive.h>
 
 #include "opengl_internals.h"

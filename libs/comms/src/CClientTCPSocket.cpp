@@ -9,32 +9,32 @@
 
 #include "comms-precomp.h"  // Precompiled headers
 
-#include <mrpt/core/exceptions.h>
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/comms/net_utils.h>
+#include <mrpt/core/exceptions.h>
 #include <cstring>
 
 #ifdef _WIN32
 // Windows
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
-#include <winsock2.h>
 #include <winerror.h>
+#include <winsock2.h>
 #if defined(_MSC_VER)
 #pragma comment(lib, "WS2_32.LIB")
 #endif
 #else
 // Linux, Apple
 #define INVALID_SOCKET (-1)
-#include <sys/socket.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <cerrno>
-#include <sys/types.h>
-#include <sys/ioctl.h>
-#include <netdb.h>
 #include <arpa/inet.h>
+#include <fcntl.h>
+#include <netdb.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <cerrno>
 #endif
 
 using namespace mrpt::comms;

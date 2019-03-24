@@ -20,10 +20,10 @@
 #if MRPT_HAS_PCL
 
 #include <mrpt/serialization/CSerializable.h>
-#include <pcl/point_types.h>
 #include <pcl/common/pca.h>
-#include <set>
+#include <pcl/point_types.h>
 #include <map>
+#include <set>
 
 #define USE_COMPLETNESS_HEURISTICS 1
 #define USE_INFERRED_STRUCTURE 1

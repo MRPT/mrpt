@@ -9,11 +9,11 @@
 #pragma once
 
 #include <mrpt/core/round.h>
-#include <vector>
-#include <cstdint>
 #include <cmath>
 #include <cstddef>
+#include <cstdint>
 #include <stdexcept>
+#include <vector>
 
 namespace mrpt::containers
 {

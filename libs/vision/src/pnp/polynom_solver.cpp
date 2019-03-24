@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "vision-precomp.h"  // Precompiled headers
 #include "polynom_solver.h"
+#include "vision-precomp.h"  // Precompiled headers
 
 #include <cmath>
 #include <iostream>

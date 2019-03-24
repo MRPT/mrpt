@@ -7,9 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <gtest/gtest.h>
 #include <mrpt/typemeta/TTypeName.h>
 #include <mrpt/typemeta/TTypeName_stl.h>
-#include <gtest/gtest.h>
 #include <iostream>
 #include <memory>  // shared_ptr
 

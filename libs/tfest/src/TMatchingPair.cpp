@@ -9,14 +9,14 @@
 
 #include "tfest-precomp.h"  // Precompiled headers
 
-#include <mrpt/tfest/TMatchingPair.h>
+#include <mrpt/core/format.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/system/os.h>
-#include <mrpt/core/format.h>
-#include <iostream>
-#include <fstream>
-#include <numeric>  // accumulate()
+#include <mrpt/tfest/TMatchingPair.h>
 #include <cstdio>
+#include <fstream>
+#include <iostream>
+#include <numeric>  // accumulate()
 
 using namespace mrpt;
 using namespace mrpt::math;

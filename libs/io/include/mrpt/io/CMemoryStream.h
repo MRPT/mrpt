@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/io/CStream.h>
 #include <mrpt/core/safe_pointers.h>
+#include <mrpt/io/CStream.h>
 
 namespace mrpt
 {

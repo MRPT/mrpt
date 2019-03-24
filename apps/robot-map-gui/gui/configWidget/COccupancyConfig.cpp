@@ -8,8 +8,8 @@
    +---------------------------------------------------------------------------+
    */
 #include "COccupancyConfig.h"
-#include "ui_COccupancyConfig.h"
 #include "TypeOfConfig.h"
+#include "ui_COccupancyConfig.h"
 
 #include <mrpt/io/CFileOutputStream.h>
 

@@ -9,8 +9,8 @@
 
 #include "img-precomp.h"  // Precompiled headers
 
-#include <mrpt/img/TCamera.h>
 #include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/img/TCamera.h>
 #include <mrpt/math/matrix_serialization.h>  // For "<<" ">>" operators.
 #include <mrpt/math/utils_matlab.h>
 

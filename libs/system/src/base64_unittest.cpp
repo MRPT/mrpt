@@ -7,9 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/system/string_utils.h>
-#include <mrpt/random.h>
 #include <gtest/gtest.h>
+#include <mrpt/random.h>
+#include <mrpt/system/string_utils.h>
 
 using namespace mrpt;
 using namespace mrpt::random;

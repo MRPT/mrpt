@@ -16,21 +16,21 @@
 
 #if MRPT_HAS_ASSIMP
 #if defined(MRPT_ASSIMP_VERSION_MAJOR) && MRPT_ASSIMP_VERSION_MAJOR < 3
-#include <assimp.h>
-#include <aiScene.h>
 #include <aiPostProcess.h>
+#include <aiScene.h>
+#include <assimp.h>
 #else
 #include <assimp/cimport.h>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
 #include <assimp/DefaultLogger.hpp>
 #include <assimp/LogStream.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
 #endif
 #endif
 
-#include "opengl_internals.h"
-#include <mrpt/system/filesystem.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/filesystem.h>
+#include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;

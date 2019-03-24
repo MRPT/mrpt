@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/io/zip.h>
 #include <gtest/gtest.h>
+#include <mrpt/io/zip.h>
 
 using namespace mrpt;
 using namespace mrpt::io;

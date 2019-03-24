@@ -17,8 +17,8 @@
 
 #if MRPT_HAS_PCL
 
-#include <mrpt/pbmap/Plane.h>
 #include <mrpt/pbmap/Miscellaneous.h>
+#include <mrpt/pbmap/Plane.h>
 #include <pcl/common/time.h>
 #include <pcl/filters/voxel_grid.h>
 #include <cassert>

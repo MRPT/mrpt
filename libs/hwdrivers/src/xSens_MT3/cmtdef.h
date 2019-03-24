@@ -10,8 +10,8 @@
 #ifndef _CMTDEF_H_2006_05_01
 #define _CMTDEF_H_2006_05_01
 
-#include <cstdint>
 #include <mrpt/core/exceptions.h>
+#include <cstdint>
 #include <ctime>
 
 #ifdef _WIN32

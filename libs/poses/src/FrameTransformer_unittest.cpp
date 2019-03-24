@@ -7,10 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/poses/FrameTransformer.h>
+#include <gtest/gtest.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
-#include <gtest/gtest.h>
+#include <mrpt/poses/FrameTransformer.h>
 
 template <int DIM>
 void run_tf_test1(const mrpt::poses::CPose2D& A2B_)

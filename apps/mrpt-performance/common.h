@@ -10,13 +10,13 @@
 #ifndef MRPTPERFAPP_COMMON_H
 #define MRPTPERFAPP_COMMON_H
 
+#include <mrpt/core/bits_math.h>
 #include <mrpt/img/CImage.h>
+#include <mrpt/obs/obs_frwds.h>  // CObservation2DRangeScan
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CTimeLogger.h>
-#include <mrpt/core/bits_math.h>
-#include <mrpt/obs/obs_frwds.h>  // CObservation2DRangeScan
-#include <list>
 #include <functional>
+#include <list>
 
 using namespace mrpt;
 using namespace mrpt::img;

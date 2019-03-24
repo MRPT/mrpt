@@ -9,8 +9,8 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
-#include <mrpt/obs/stock_observations.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/stock_observations.h>
 #include <array>
 
 using namespace mrpt::obs;

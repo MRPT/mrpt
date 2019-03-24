@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/system/filesystem.h>
 #include <gtest/gtest.h>
+#include <mrpt/system/filesystem.h>
 
 using namespace mrpt;
 using namespace std;

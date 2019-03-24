@@ -8,62 +8,62 @@
    +------------------------------------------------------------------------+ */
 
 #include "xRawLogViewerMain.h"
+#include "CFormBatchSensorPose.h"
+#include "CFormChangeSensorPositions.h"
+#include "CFormEdit.h"
 #include "CFormMotionModel.h"
 #include "CFormPlayVideo.h"
 #include "CFormRawMap.h"
-#include "CFormEdit.h"
-#include "CScanMatching.h"
-#include "CFormChangeSensorPositions.h"
+#include "CIniEditor.h"
 #include "COdometryParams.h"
 #include "CScanAnimation.h"
-#include "CFormBatchSensorPose.h"
-#include "CIniEditor.h"
+#include "CScanMatching.h"
 
-#include <wx/msgdlg.h>
-#include <wx/filedlg.h>
-#include <wx/progdlg.h>
-#include <wx/imaglist.h>
 #include <wx/busyinfo.h>
-#include <wx/log.h>
-#include <wx/textdlg.h>
 #include <wx/dirdlg.h>
-#include <wx/tipdlg.h>
+#include <wx/filedlg.h>
+#include <wx/imaglist.h>
+#include <wx/log.h>
+#include <wx/msgdlg.h>
+#include <wx/progdlg.h>
 #include <wx/statbox.h>
+#include <wx/textdlg.h>
+#include <wx/tipdlg.h>
 
 #include "xRawLogViewerApp.h"
 
+#include <mrpt/containers/stl_containers_utils.h>
+#include <mrpt/core/aligned_std_map.h>
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/gui/about_box.h>
-#include <mrpt/vision/CVideoFileWriter.h>
-#include <mrpt/containers/stl_containers_utils.h>
-#include <mrpt/system/CTicTac.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/system/memory.h>
-#include <mrpt/system/CDirectoryExplorer.h>
-#include <mrpt/poses/CPosePDFParticles.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/obs/CRawlog.h>
+#include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/maps/CColouredPointsMap.h>
-#include <mrpt/slam/CICP.h>
-#include <mrpt/system/datetime.h>
 #include <mrpt/math/ops_matrices.h>  // << ops
 #include <mrpt/math/ops_vectors.h>  // << ops
 #include <mrpt/math/wrap2pi.h>
-#include <mrpt/core/aligned_std_map.h>
+#include <mrpt/obs/CRawlog.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPosePDFParticles.h>
+#include <mrpt/slam/CICP.h>
+#include <mrpt/system/CDirectoryExplorer.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/datetime.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/memory.h>
+#include <mrpt/vision/CVideoFileWriter.h>
 
-#include <mrpt/obs/CObservationComment.h>
-#include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
-#include <mrpt/obs/CObservationBeaconRanges.h>
-#include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/obs/CObservationGasSensors.h>
+#include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/obs/CObservationBearingRange.h>
+#include <mrpt/obs/CObservationComment.h>
+#include <mrpt/obs/CObservationGasSensors.h>
+#include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CObservationRange.h>
+#include <mrpt/obs/CObservationStereoImages.h>
 
 #include <mrpt/serialization/CArchive.h>
 #include <iomanip>
@@ -71,18 +71,18 @@
 //(*InternalHeaders(xRawLogViewerFrame)
 #include <wx/artprov.h>
 #include <wx/bitmap.h>
-#include <wx/tglbtn.h>
 #include <wx/font.h>
-#include <wx/intl.h>
 #include <wx/image.h>
+#include <wx/intl.h>
 #include <wx/string.h>
+#include <wx/tglbtn.h>
 //*)
 
-#include <wx/tooltip.h>
-#include <wx/config.h>
 #include <wx/choicdlg.h>
 #include <wx/choice.h>
+#include <wx/config.h>
 #include <wx/image.h>
+#include <wx/tooltip.h>
 
 #include "imgs/tree_icon1.xpm"
 #include "imgs/tree_icon2.xpm"

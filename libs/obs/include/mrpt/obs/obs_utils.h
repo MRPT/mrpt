@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CObservation.h>
+#include <mrpt/obs/CSensoryFrame.h>
 
 namespace mrpt::obs::utils
 {

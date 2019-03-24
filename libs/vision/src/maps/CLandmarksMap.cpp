@@ -9,24 +9,24 @@
 
 #include "vision-precomp.h"  // Precompiled headers
 
-#include <mrpt/math/geometry.h>
 #include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/math/geometry.h>
 
-#include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/maps/CLandmark.h>
-#include <mrpt/obs/CObservationImage.h>
-#include <mrpt/obs/CObservationStereoImages.h>
+#include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
-#include <mrpt/obs/CObservationGPS.h>
-#include <mrpt/poses/CPointPDFGaussian.h>
-#include <mrpt/obs/CObservationRobotPose.h>
 #include <mrpt/obs/CObservationBeaconRanges.h>
+#include <mrpt/obs/CObservationGPS.h>
+#include <mrpt/obs/CObservationImage.h>
+#include <mrpt/obs/CObservationRobotPose.h>
+#include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/obs/CObservationVisualLandmarks.h>
-#include <mrpt/system/os.h>
+#include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/random.h>
+#include <mrpt/system/os.h>
 
-#include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/COpenGLScene.h>
 
 using namespace mrpt;

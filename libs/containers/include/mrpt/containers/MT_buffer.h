@@ -8,10 +8,10 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <vector>
 #include <cstdint>
-#include <thread>
 #include <mutex>
+#include <thread>
+#include <vector>
 
 namespace mrpt::containers
 {

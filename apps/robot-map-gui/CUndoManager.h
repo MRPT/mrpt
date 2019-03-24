@@ -10,9 +10,8 @@
 #pragma once
 #include <functional>
 
-#include "mrpt/poses/CPose3DPDF.h"
-#include "mrpt/poses/CPose3DPDF.h"
 #include "mrpt/obs/CSensoryFrame.h"
+#include "mrpt/poses/CPose3DPDF.h"
 
 using UserAction = std::function<void()>;
 

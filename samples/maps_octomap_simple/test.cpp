@@ -7,20 +7,20 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/maps/COctoMap.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/COctoMapVoxels.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/stock_observations.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/COctoMapVoxels.h>
 #include <mrpt/system/os.h>
-#include <mrpt/gui/CDisplayWindow3D.h>
 #include <iostream>
 
 //#define HAS_SYSTEM_OCTOMAP
 
 #ifdef HAS_SYSTEM_OCTOMAP
-#include <octomap/octomap.h>
 #include <octomap/OcTree.h>
+#include <octomap/octomap.h>
 #endif
 
 using namespace mrpt;

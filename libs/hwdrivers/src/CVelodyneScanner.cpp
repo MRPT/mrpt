@@ -9,13 +9,13 @@
 
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
+#include <mrpt/comms/net_utils.h>
+#include <mrpt/core/reverse_bytes.h>
+#include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/hwdrivers/CVelodyneScanner.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/comms/net_utils.h>
-#include <mrpt/hwdrivers/CGPSInterface.h>
-#include <mrpt/system/filesystem.h>
 #include <mrpt/system/datetime.h>  // timeDifference
-#include <mrpt/core/reverse_bytes.h>
+#include <mrpt/system/filesystem.h>
 #include <thread>
 
 // socket's hdrs:
@@ -35,18 +35,18 @@ using socklen_t = int;
 
 #else
 #define INVALID_SOCKET (-1)
-#include <sys/time.h>  // gettimeofday()
-#include <sys/socket.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <cerrno>
-#include <sys/types.h>
-#include <sys/ioctl.h>
-#include <netdb.h>
 #include <arpa/inet.h>
+#include <fcntl.h>
+#include <netdb.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <poll.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <sys/time.h>  // gettimeofday()
+#include <sys/types.h>
+#include <unistd.h>
+#include <cerrno>
 #endif
 
 #if MRPT_HAS_LIBPCAP

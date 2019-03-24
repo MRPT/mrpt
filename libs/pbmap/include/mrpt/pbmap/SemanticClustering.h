@@ -22,9 +22,9 @@
 
 #include <mrpt/pbmap/PbMap.h>
 #include <mrpt/pbmap/Plane.h>
-#include <vector>
-#include <set>
 #include <map>
+#include <set>
+#include <vector>
 
 static std::vector<unsigned> DEFAULT_VECTOR_U;
 
@@ -113,9 +113,9 @@ class SemanticClustering
 		//    cout << it->first << " " << it->second << endl;
 		//}
 		// cout << endl;
-
-		cout << "connectivity_matrix matrix\n" << connectivity_matrix << endl;
-	};
+		// std::cout << "connectivity_matrix matrix\n" << connectivity_matrix <<
+		// endl;
+	}
 
 	/*!
 	 * Build the co-visibility matrix
@@ -128,16 +128,13 @@ class SemanticClustering
 		// Set the Vicinity (planes of the current group and its neighbors)
 		neighborGroups = vicinity[currentSemanticGroup];
 		neighborGroups.push_back(currentSemanticGroup);
-		cout << "neighborGroups: ";
 		for (unsigned i = 0; i < neighborGroups.size(); i++)
 		{
-			cout << neighborGroups[i] << " ";
 			neigSize += groups[neighborGroups[i]].size();
 			planesVicinity_order.insert(
 				planesVicinity_order.end(), groups[neighborGroups[i]].begin(),
 				groups[neighborGroups[i]].end());
 		}
-		cout << endl;
 
 		// Fill the matrix
 		assert(neigSize <= mPbMap.vPlanes.size());
@@ -161,26 +158,7 @@ class SemanticClustering
 				}
 			}
 		}
-		cout << "Planes in the vicinity: ";
-		for (unsigned i = 0; i < planesVicinity_order.size(); i++)
-			cout << planesVicinity_order[i] << " ";
-		cout << endl;
-
-		// for(unsigned i=0; i < planesVicinity_order.size(); i++)
-		//{
-		//  cout << "\nNeighbors of " << planesVicinity_order[i] << " obs " <<
-		//  mPbMap.vPlanes[planesVicinity_order[i]].numObservations << ":\n";
-		//  for(map<unsigned,unsigned>::iterator
-		//  it=mPbMap.vPlanes[planesVicinity_order[i]].neighborPlanes.begin();
-		//        it !=
-		//        mPbMap.vPlanes[planesVicinity_order[i]].neighborPlanes.end();
-		//        it++)
-		//    cout << it->first << " " << it->second << endl;
-		//}
-		// cout << endl;
-
-		cout << "connectivity_matrix matrix\n" << connectivity_matrix << endl;
-	};
+	}
 
 	/*!
 	 * Arrange the semantic groups
@@ -197,7 +175,6 @@ class SemanticClustering
 				newGroups[neighborGroups[i]] = DEFAULT_VECTOR_U;
 			for (int i = 0; i < group_diff; i++)
 				newGroups[groups.size() + i] = DEFAULT_VECTOR_U;
-			//          groups[groups.size()] = DEFAULT_VECTOR_U;
 		}
 		else if (group_diff < 0)  // Discard old groups
 		{
@@ -211,17 +188,9 @@ class SemanticClustering
 		}
 		// cout << "Size new groups " << newGroups.size();
 		std::vector<unsigned> group_limits(1, 0);
-		// cout << "group_limits_: ";
-		//  for(unsigned i=0; i < group_limits.size(); i++)
-		//    cout << group_limits[i] << " ";
-		// cout << endl;
 		for (unsigned i = 0; i < neighborGroups.size(); i++)
 			group_limits.push_back(
 				group_limits.back() + groups[neighborGroups[i]].size());
-		// cout << "group_limits: ";
-		//  for(unsigned i=0; i < group_limits.size(); i++)
-		//    cout << group_limits[i] << " ";
-		// cout << endl;
 
 		// Re-assign plane's semanticGroup and groups
 		for (unsigned i = 0; i < parts.size(); i++)
@@ -452,15 +421,8 @@ class SemanticClustering
 				currentSemanticGroup = it->first;
 				current_group_votes = it->second;
 			}
-		// cout << "Updated currentSemanticGroup " << currentSemanticGroup <<
-		// endl;
-		//
-		// cout << "Planes' semantics2: ";
-		// for(unsigned i=0; i < mPbMap.vPlanes.size(); i++)
-		//  cout << mPbMap.vPlanes[i].semanticGroup << " ";
-		// cout << endl;
 		return parts.size();
-	};
+	}
 };
 }  // namespace mrpt::pbmap
 #endif

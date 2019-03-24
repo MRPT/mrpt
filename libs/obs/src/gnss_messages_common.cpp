@@ -9,8 +9,8 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
-#include <mrpt/obs/gnss_messages.h>  // Must include all message classes so we can implemente the class factory here
 #include <mrpt/io/CMemoryStream.h>
+#include <mrpt/obs/gnss_messages.h>  // Must include all message classes so we can implemente the class factory here
 #include <mrpt/serialization/CArchive.h>
 #include <map>
 

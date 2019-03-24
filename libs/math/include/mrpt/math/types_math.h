@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include <vector>  // For <Eigen/StdVector>
 #include <deque>  // For <Eigen/StdDeque>
+#include <vector>  // For <Eigen/StdVector>
 
 // needed here for a few basic types used in Eigen MRPT's plugin:
 #include <mrpt/math/math_frwds.h>
@@ -19,8 +19,8 @@
 // Include the Eigen3 library headers, including
 //  MRPT's extensions:
 // --------------------------------------------------
-#include <fstream>  // These headers are assumed by <mrpt/math/eigen_plugins.h>:
 #include <ctime>
+#include <fstream>  // These headers are assumed by <mrpt/math/eigen_plugins.h>:
 #include <stdexcept>
 #ifdef EIGEN_MATRIXBASE_H
 #	error **FATAL ERROR**: MRPT headers must be included before <Eigen/Dense> headers.
@@ -29,8 +29,8 @@
 #define EIGEN_USE_NEW_STDVECTOR
 #endif
 #include <Eigen/Dense>
-#include <Eigen/StdVector>
 #include <Eigen/StdDeque>
+#include <Eigen/StdVector>
 
 #if !EIGEN_VERSION_AT_LEAST(2, 90, 0)
 #error MRPT needs version 3.0.0-beta of Eigen or newer

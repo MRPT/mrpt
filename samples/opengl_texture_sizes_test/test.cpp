@@ -7,10 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/img/CImage.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/opengl/CTexturedPlane.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/opengl/CText.h>
+#include <mrpt/opengl/CTexturedPlane.h>
 #include <iostream>
 
 #include <mrpt/examples_config.h>

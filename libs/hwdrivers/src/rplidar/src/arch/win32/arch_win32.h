@@ -52,11 +52,11 @@
 #define _RICHEDIT_VER 0x0200
 #endif
 
+#include <direct.h>
+#include <process.h>
 #include <stddef.h>
 #include <stdio.h>
-#include <windows.h>
 #include <stdlib.h>  //for memcpy etc..
-#include <process.h>
-#include <direct.h>
+#include <windows.h>
 
 #include "timer.h"

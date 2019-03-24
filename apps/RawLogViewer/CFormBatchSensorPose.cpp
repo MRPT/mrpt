@@ -9,20 +9,20 @@
 #include "CFormBatchSensorPose.h"
 
 //(*InternalHeaders(CFormBatchSensorPose)
-#include <wx/string.h>
-#include <wx/intl.h>
-#include <wx/font.h>
-#include <wx/bitmap.h>
-#include <wx/image.h>
 #include <wx/artprov.h>
+#include <wx/bitmap.h>
+#include <wx/font.h>
+#include <wx/image.h>
+#include <wx/intl.h>
+#include <wx/string.h>
 //*)
 
-#include <wx/filedlg.h>
-#include <wx/progdlg.h>
-#include <wx/imaglist.h>
-#include <wx/busyinfo.h>
 #include <wx/app.h>
+#include <wx/busyinfo.h>
+#include <wx/filedlg.h>
+#include <wx/imaglist.h>
 #include <wx/msgdlg.h>
+#include <wx/progdlg.h>
 
 #include "xRawLogViewerMain.h"
 // General global variables:

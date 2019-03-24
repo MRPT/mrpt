@@ -7,15 +7,15 @@
 	 http://
   -----------------------------------------------------------------------------*/
 
-#include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/config/CConfigFile.h>
-#include <mrpt/io/CFileGZOutputStream.h>
-#include <mrpt/img/CImage.h>
 #include <mrpt/core/round.h>
+#include <mrpt/hwdrivers/CGenericSensor.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/slam/CActionCollection.h>
 #include <mrpt/slam/CSensoryFrame.h>
-#include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 
 // Matlab MEX interface headers
 #include <mexplus.h>

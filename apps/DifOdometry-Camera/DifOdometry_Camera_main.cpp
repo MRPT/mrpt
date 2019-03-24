@@ -7,10 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "DifOdometry_Camera.h"
-#include <mrpt/system/os.h>
-#include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/config/CConfigFile.h>
+#include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/system/os.h>
+#include "DifOdometry_Camera.h"
 
 using namespace std;
 using namespace mrpt;

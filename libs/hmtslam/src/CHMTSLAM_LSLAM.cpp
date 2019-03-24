@@ -9,16 +9,16 @@
 
 #include "hmtslam-precomp.h"  // Precomp header
 
-#include <mrpt/system/CTicTac.h>
 #include <mrpt/containers/stl_containers_utils.h>
-#include <mrpt/random.h>
-#include <mrpt/math/distributions.h>
 #include <mrpt/hmtslam/CRobotPosesGraph.h>
+#include <mrpt/math/distributions.h>
+#include <mrpt/random.h>
+#include <mrpt/system/CTicTac.h>
 
 #include <mrpt/io/CFileOutputStream.h>
 
-#include <mrpt/system/os.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
+#include <mrpt/system/os.h>
 
 #include <limits>
 #include <memory>

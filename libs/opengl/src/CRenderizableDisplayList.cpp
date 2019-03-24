@@ -11,8 +11,8 @@
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mutex>
 #include <cstdlib>  // atexit()
+#include <mutex>
 
 #include "opengl_internals.h"
 

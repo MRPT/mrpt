@@ -9,11 +9,11 @@
 
 #include "nav-precomp.h"  // Precomp header
 
-#include <mrpt/nav/reactive/CNavigatorManualSequence.h>
 #include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/system/string_utils.h>
 #include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>
 #include <mrpt/kinematics/CVehicleVelCmd_Holo.h>
+#include <mrpt/nav/reactive/CNavigatorManualSequence.h>
+#include <mrpt/system/string_utils.h>
 
 using namespace mrpt::nav;
 

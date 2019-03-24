@@ -9,16 +9,16 @@
 
 #include "slam-precomp.h"  // Precompiled headers
 
-#include <mrpt/slam/CICP.h>
-#include <mrpt/slam/CMetricMapBuilderICP.h>
-#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/img/CEnhancedMetaFile.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/slam/CICP.h>
+#include <mrpt/slam/CMetricMapBuilderICP.h>
 #include <mrpt/system/CTicTac.h>
-#include <mrpt/img/CEnhancedMetaFile.h>
 
 using namespace std;
 using namespace mrpt::slam;

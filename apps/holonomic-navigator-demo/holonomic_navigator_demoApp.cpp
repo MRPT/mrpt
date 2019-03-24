@@ -10,8 +10,8 @@
 #include "holonomic_navigator_demoApp.h"
 
 //(*AppHeaders
-#include "holonomic_navigator_demoMain.h"
 #include <wx/image.h>
+#include "holonomic_navigator_demoMain.h"
 //*)
 
 IMPLEMENT_APP(holonomic_navigator_demoApp)

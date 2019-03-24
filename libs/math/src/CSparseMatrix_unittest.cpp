@@ -7,10 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/math/CSparseMatrix.h>
-#include <mrpt/random.h>
 #include <CTraitsTest.h>
 #include <gtest/gtest.h>
+#include <mrpt/math/CSparseMatrix.h>
+#include <mrpt/random.h>
 
 using namespace mrpt;
 using namespace mrpt::math;

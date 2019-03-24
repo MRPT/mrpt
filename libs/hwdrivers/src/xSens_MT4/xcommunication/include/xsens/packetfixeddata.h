@@ -9,8 +9,8 @@
 #ifndef PACKETFIXEDDATA_H
 #define PACKETFIXEDDATA_H
 
-#include <xsens/xsscrdata.h>
 #include <xsens/xsdeviceid.h>
+#include <xsens/xsscrdata.h>
 
 #ifndef NOT_FOR_PUBLIC_RELEASE
 struct XsControl;  // required by DLL for supporting advanced features

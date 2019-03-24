@@ -22,22 +22,22 @@
 #include "wx/defs.h"
 
 //(*Headers(kinect_calibrate_guiDialog)
+#include <mrpt/gui/WxUtils.h>
 #include <wx/bmpbuttn.h>
-#include <wx/grid.h>
-#include <wx/spinctrl.h>
+#include <wx/button.h>
 #include <wx/checkbox.h>
 #include <wx/dialog.h>
-#include <wx/sizer.h>
+#include <wx/grid.h>
+#include <wx/listbox.h>
 #include <wx/notebook.h>
-#include <wx/button.h>
 #include <wx/panel.h>
-#include "MyGLCanvas.h"
-#include <mrpt/gui/WxUtils.h>
+#include <wx/radiobox.h>
+#include <wx/sizer.h>
+#include <wx/spinctrl.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
-#include <wx/radiobox.h>
 #include <wx/timer.h>
-#include <wx/listbox.h>
+#include "MyGLCanvas.h"
 //*)
 
 #include <wx/config.h>  // wxConfig

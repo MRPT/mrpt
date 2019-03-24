@@ -63,11 +63,11 @@ license is as follows:
 
 #include "img-precomp.h"  // Precompiled headers
 
-#include <mrpt/img/CImage.h>
 #include <mrpt/core/exceptions.h>
-#include <unordered_map>
-#include <string>
+#include <mrpt/img/CImage.h>
 #include <cstring>
+#include <string>
+#include <unordered_map>
 
 #if MRPT_HAS_OPENCV
 struct XPMColorMapData

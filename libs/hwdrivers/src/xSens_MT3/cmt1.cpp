@@ -37,9 +37,9 @@
 #include <mrpt/config.h>  // For HAVE_MALLOC_H
 
 #ifndef _WIN32
-#include <unistd.h>  // close
-#include <sys/ioctl.h>  // ioctl
 #include <fcntl.h>  // open, O_RDWR
+#include <sys/ioctl.h>  // ioctl
+#include <unistd.h>  // close
 #include <cstring>  // strcpy
 
 /* Jerome Monceaux : bilock@gmail.com
@@ -51,8 +51,8 @@
 #include <malloc/malloc.h>
 #endif
 
-#include <cstdarg>  // va_start, etc...
 #include <sys/param.h>
+#include <cstdarg>  // va_start, etc...
 // We have to redefine PATH_MAX from 4096 to CMT_MAX_FILENAME_LENGTH to mainain
 // compatibility
 // The PATH_MAX definition is used by realpath() to determine the maximum path
@@ -64,8 +64,8 @@
 #define PATH_MAX CMT_MAX_FILENAME_LENGTH
 #include <cstdlib>
 #else
-#include <stdio.h>  // fseek
 #include <io.h>
+#include <stdio.h>  // fseek
 #endif
 
 #ifndef _CRT_SECURE_NO_DEPRECATE

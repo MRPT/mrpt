@@ -11,16 +11,16 @@
 #define HMTMAPVIEWERMAIN_H
 
 //(*Headers(hmtMapViewerFrame)
-#include <wx/toolbar.h>
-#include <wx/sizer.h>
+#include <wx/choice.h>
+#include <wx/frame.h>
 #include <wx/menu.h>
 #include <wx/panel.h>
+#include <wx/sizer.h>
 #include <wx/splitter.h>
-#include <wx/statusbr.h>
-#include <wx/frame.h>
 #include <wx/stattext.h>
+#include <wx/statusbr.h>
 #include <wx/textctrl.h>
-#include <wx/choice.h>
+#include <wx/toolbar.h>
 #include <wx/treectrl.h>
 //*)
 #include <wx/timer.h>

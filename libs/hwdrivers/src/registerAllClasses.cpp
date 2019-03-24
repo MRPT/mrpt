@@ -10,8 +10,8 @@
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
 #define MRPT_NO_WARN_BIG_HDR
-#include <mrpt/hwdrivers.h>
 #include <mrpt/core/initializer.h>
+#include <mrpt/hwdrivers.h>
 
 using namespace mrpt::hwdrivers;
 

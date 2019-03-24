@@ -9,13 +9,13 @@
 
 #include "poses-precomp.h"  // Precompiled headers
 
-#include <mrpt/poses/CPointPDFSOG.h>
-#include <mrpt/poses/CPosePDF.h>
-#include <mrpt/poses/CPose3D.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
-#include <mrpt/random.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/matrix_serialization.h>
+#include <mrpt/poses/CPointPDFSOG.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPosePDF.h>
+#include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
 

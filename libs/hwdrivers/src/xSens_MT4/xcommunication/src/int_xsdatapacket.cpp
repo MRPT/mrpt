@@ -6,15 +6,15 @@
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
-#include <xsens/xstypesconfig.h>
 #include "int_xsdatapacket.h"
-#include "legacydatapacket.h"
-#include "packetfixeddata.h"
-#include "mtwsdidata.h"
 #include <xsens/xsbusid.h>
 #include <xsens/xsdatapacket.h>
-#include <xsens/xsmessage.h>
 #include <xsens/xsgpspvtdata.h>
+#include <xsens/xsmessage.h>
+#include <xsens/xstypesconfig.h>
+#include "legacydatapacket.h"
+#include "mtwsdidata.h"
+#include "packetfixeddata.h"
 
 // lint -esym(1512, XsDataPacket)
 /*! \internal

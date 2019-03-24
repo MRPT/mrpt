@@ -18,27 +18,27 @@
 
 #include <mrpt/slam/CMetricMapBuilderRBPF.h>
 
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/obs/CObservationWirelessPower.h>
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
-#include <mrpt/io/CFileOutputStream.h>
-#include <mrpt/config/CConfigFile.h>
-#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/random.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/memory.h>
 #include <mrpt/system/os.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/maps/COccupancyGridMap2D.h>
-#include <mrpt/opengl/CSetOfLines.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CEllipsoid.h>
-#include <mrpt/opengl/stock_objects.h>
-#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;

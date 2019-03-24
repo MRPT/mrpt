@@ -11,14 +11,14 @@
 #include <wx/msgdlg.h>
 
 //(*InternalHeaders(robotic_arm_kinematicsFrame)
-#include <wx/settings.h>
-#include <wx/string.h>
-#include <wx/intl.h>
-#include <wx/font.h>
+#include <wx/artprov.h>
 #include <wx/bitmap.h>
+#include <wx/font.h>
 #include <wx/icon.h>
 #include <wx/image.h>
-#include <wx/artprov.h>
+#include <wx/intl.h>
+#include <wx/settings.h>
+#include <wx/string.h>
 //*)
 #include <mrpt/gui/wx28-fixes.h>
 
@@ -34,8 +34,8 @@
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/serialization/CArchive.h>
 
-#include "imgs/main_icon.xpm"
 #include "../wx-common/mrpt_logo.xpm"
+#include "imgs/main_icon.xpm"
 
 // A custom Art provider for customizing the icons:
 class MyArtProvider : public wxArtProvider

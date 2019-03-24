@@ -9,13 +9,13 @@
 
 #include "maps-precomp.h"  // Precomp header
 
-#include <mrpt/system/os.h>
-#include <mrpt/math/CMatrix.h>
-#include <mrpt/serialization/CArchive.h>
-#include <mrpt/img/CEnhancedMetaFile.h>
 #include <mrpt/core/round.h>  // round()
+#include <mrpt/img/CEnhancedMetaFile.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/math/CMatrix.h>
 #include <mrpt/random.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;

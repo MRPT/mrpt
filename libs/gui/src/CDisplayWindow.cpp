@@ -9,10 +9,10 @@
 
 #include "gui-precomp.h"  // Precompiled headers
 
-#include <mrpt/gui/CDisplayWindow.h>
-#include <mrpt/system/os.h>
-#include <mrpt/img/CImage.h>
 #include <mrpt/core/round.h>
+#include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/system/os.h>
 
 #include <mrpt/gui/WxSubsystem.h>
 #include <mrpt/gui/WxUtils.h>

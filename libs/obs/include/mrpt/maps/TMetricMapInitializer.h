@@ -10,9 +10,9 @@
 #pragma once
 
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/rtti/CObject.h>  // For TRuntimeClassId
 #include <mrpt/maps/TMetricMapTypesRegistry.h>
 #include <mrpt/maps/metric_map_types.h>
+#include <mrpt/rtti/CObject.h>  // For TRuntimeClassId
 #include <deque>
 
 namespace mrpt::maps

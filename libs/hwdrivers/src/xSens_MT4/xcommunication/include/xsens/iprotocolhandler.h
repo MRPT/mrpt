@@ -9,9 +9,9 @@
 #ifndef IPROTOCOLHANDLER_H
 #define IPROTOCOLHANDLER_H
 
-#include "messagelocation.h"
-#include <xsens/xsmessage.h>
 #include <xsens/xsbytearray.h>
+#include <xsens/xsmessage.h>
+#include "messagelocation.h"
 
 //--------------------------------------------------------------------------------
 /*! \brief Interface class for protocol handlers

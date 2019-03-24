@@ -16,12 +16,12 @@
 
 #if MRPT_HAS_PCL
 
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/pbmap/PbMapLocaliser.h>
 #include <mrpt/pbmap/SubgraphMatcher.h>
 #include <mrpt/pbmap/heuristicParams.h>
-#include <mrpt/config/CConfigFile.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/common/time.h>
+#include <pcl/io/pcd_io.h>
 #include <fstream>
 #include <iostream>
 

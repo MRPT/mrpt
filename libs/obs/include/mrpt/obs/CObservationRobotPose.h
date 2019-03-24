@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
+#include <mrpt/serialization/CSerializable.h>
 
 namespace mrpt::obs
 {

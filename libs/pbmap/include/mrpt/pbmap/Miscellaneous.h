@@ -18,15 +18,15 @@
 #include <mrpt/config.h>
 #if MRPT_HAS_PCL
 
+#include <mrpt/math/ops_containers.h>
 #include <mrpt/math/types_math.h>  // Eigen
-#include <map>
-#include <string>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 #include <iostream>
 #include <iterator>
+#include <map>
+#include <string>
 #include <vector>
-#include <pcl/point_types.h>
-#include <pcl/point_cloud.h>
-#include <mrpt/math/ops_containers.h>
 
 namespace mrpt::pbmap
 {

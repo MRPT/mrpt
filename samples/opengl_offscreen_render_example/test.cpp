@@ -7,9 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl/CFBORender.h>
-#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/img/CImage.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/opengl/CFBORender.h>
 #include <mrpt/serialization/CArchive.h>
 #include <iostream>
 

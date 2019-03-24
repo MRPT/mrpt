@@ -7,17 +7,17 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/system/os.h>
-#include <mrpt/system/filesystem.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
-#include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/serialization/CArchive.h>
 #include <mrpt/random.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 

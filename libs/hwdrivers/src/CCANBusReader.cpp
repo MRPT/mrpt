@@ -12,15 +12,15 @@
 
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
-#include <mrpt/system/crc.h>
+#include <mrpt/hwdrivers/CCANBusReader.h>
 #include <mrpt/system/CTicTac.h>
+#include <mrpt/system/crc.h>
 #include <mrpt/system/os.h>
 #include <cstdio>  // printf
 #include <cstring>  // memset
-#include <mrpt/hwdrivers/CCANBusReader.h>
 
-#include <thread>
 #include <iostream>
+#include <thread>
 
 IMPLEMENTS_GENERIC_SENSOR(CCANBusReader, mrpt::hwdrivers)
 

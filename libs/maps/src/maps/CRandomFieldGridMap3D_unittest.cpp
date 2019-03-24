@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/maps/CRandomFieldGridMap3D.h>
 #include <gtest/gtest.h>
+#include <mrpt/maps/CRandomFieldGridMap3D.h>
 
 TEST(CRandomFieldGridMap3D, insertCheckMapBounds)
 {

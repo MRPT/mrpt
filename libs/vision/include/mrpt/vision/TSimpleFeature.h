@@ -8,13 +8,12 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/img/TPixelCoord.h>
 #include <mrpt/core/round.h>
-#include <mrpt/math/KDTreeCapable.h>
+#include <mrpt/img/TPixelCoord.h>
 #include <mrpt/math/CMatrixTemplate.h>  // mrpt::math::CMatrixBool
 #include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/KDTreeCapable.h>
 #include <mrpt/vision/types.h>
-#include <mrpt/core/round.h>
 #include <functional>
 
 namespace mrpt::vision

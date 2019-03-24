@@ -9,20 +9,20 @@
 
 #include "xRawLogViewerMain.h"
 
-#include <mrpt/system/datetime.h>
 #include <mrpt/math/ops_matrices.h>  // << ops
 #include <mrpt/math/ops_vectors.h>  // << ops
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
+#include <mrpt/system/datetime.h>
 
 #include <mrpt/gui/CMyRedirector.h>
 
 #define MRPT_NO_WARN_BIG_HDR  // It's ok to include ALL hdrs here.
 #include <mrpt/obs.h>
 
-#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 
 #include <iomanip>

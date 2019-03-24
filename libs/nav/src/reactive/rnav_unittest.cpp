@@ -7,14 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <gtest/gtest.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/kinematics/CVehicleSimul_DiffDriven.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/nav/reactive/CReactiveNavigationSystem.h>
 #include <mrpt/nav/reactive/CReactiveNavigationSystem3D.h>
 #include <mrpt/nav/reactive/CRobot2NavInterfaceForSimulator.h>
-#include <mrpt/maps/COccupancyGridMap2D.h>
-#include <mrpt/kinematics/CVehicleSimul_DiffDriven.h>
-#include <mrpt/config/CConfigFile.h>
 #include <mrpt/system/filesystem.h>
-#include <gtest/gtest.h>
 
 using mrpt::math::TPoint2D;
 

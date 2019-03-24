@@ -9,10 +9,10 @@
 
 #pragma once
 
-#include <mrpt/obs/CActionCollection.h>
-#include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/obs/CObservation.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
+#include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CObservation.h>
+#include <mrpt/obs/CSensoryFrame.h>
 
 #include "CRegistrationDeciderOrOptimizer.h"
 

@@ -13,11 +13,11 @@
 
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
-#include <mrpt/system/CTicTac.h>
-#include <mrpt/math/geometry.h>
-#include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>
+#include <mrpt/math/geometry.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/stl_serialization.h>
+#include <mrpt/system/CTicTac.h>
 #include <iostream>
 
 using namespace mrpt::nav;

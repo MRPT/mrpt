@@ -8,14 +8,14 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/slam/CMetricMapBuilder.h>
-#include <mrpt/maps/CMultiMetricMapPDF.h>
-#include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/img/CCanvas.h>
+#include <mrpt/maps/CMultiMetricMap.h>
+#include <mrpt/maps/CMultiMetricMapPDF.h>
+#include <mrpt/slam/CMetricMapBuilder.h>
 
 namespace mrpt::slam
 {

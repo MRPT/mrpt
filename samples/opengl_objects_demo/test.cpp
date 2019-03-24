@@ -389,10 +389,6 @@ void TestOpenGLObjects()
 		obj->setLocation(off_x, 0, 0);
 
 		mrpt::math::CMatrixFloat Zs(40, 40);  // Height
-		//		mrpt::math::CMatrixFloat  Us,Vs; // Texture
-		//		Us.resize(Zs.size());
-		//		Vs.resize(Zs.size());
-
 		for (size_t i = 0; i < Zs.rows(); i++)
 			for (size_t j = 0; j < Zs.cols(); j++)
 			{

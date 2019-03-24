@@ -7,11 +7,11 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <gtest/gtest.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/nav/reactive/CLogFileRecord.h>
-#include <mrpt/system/filesystem.h>
 #include <mrpt/serialization/CArchive.h>
-#include <gtest/gtest.h>
+#include <mrpt/system/filesystem.h>
 #include <test_mrpt_common.h>
 
 using namespace mrpt;

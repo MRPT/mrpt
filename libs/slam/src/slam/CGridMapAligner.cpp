@@ -9,22 +9,22 @@
 
 #include "slam-precomp.h"  // Precompiled headers
 
-#include <mrpt/slam/CGridMapAligner.h>
-#include <mrpt/random.h>
-#include <mrpt/poses/CPoint2DPDFGaussian.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/poses/CPose3DPDFGaussian.h>
-#include <mrpt/math/ops_containers.h>
+#include <mrpt/img/CEnhancedMetaFile.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/geometry.h>
+#include <mrpt/math/ops_containers.h>
+#include <mrpt/poses/CPoint2DPDFGaussian.h>
+#include <mrpt/poses/CPose3DPDFGaussian.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/random.h>
+#include <mrpt/slam/CGridMapAligner.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/img/CEnhancedMetaFile.h>
 
+#include <mrpt/maps/CLandmarksMap.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/slam/CICP.h>
-#include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/tfest/se2.h>
 
 using namespace mrpt::math;

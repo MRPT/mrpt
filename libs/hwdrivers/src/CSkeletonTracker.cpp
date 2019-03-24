@@ -12,13 +12,13 @@
 #include <mrpt/hwdrivers/CSkeletonTracker.h>
 
 // opengl includes
-#include <mrpt/opengl/CSphere.h>
-#include <mrpt/opengl/CSimpleLine.h>
+#include <mrpt/opengl/CBox.h>
+#include <mrpt/opengl/CCylinder.h>
 #include <mrpt/opengl/CGridPlaneXZ.h>
 #include <mrpt/opengl/CSetOfLines.h>
-#include <mrpt/opengl/CBox.h>
+#include <mrpt/opengl/CSimpleLine.h>
+#include <mrpt/opengl/CSphere.h>
 #include <mrpt/opengl/CText.h>
-#include <mrpt/opengl/CCylinder.h>
 #include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/poses/CPoint3D.h>

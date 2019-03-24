@@ -8,13 +8,13 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/maps/CMetricMap.h>
 #include <mrpt/maps/CLogOddsGridMap3D.h>
 #include <mrpt/maps/CLogOddsGridMapLUT.h>
+#include <mrpt/maps/CMetricMap.h>
 #include <mrpt/maps/OccupancyGridCellType.h>
 #include <mrpt/opengl/opengl_frwds.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/typemeta/TEnumType.h>
 
 namespace mrpt::maps

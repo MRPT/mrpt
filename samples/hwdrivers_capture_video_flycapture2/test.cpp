@@ -7,13 +7,12 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/hwdrivers/CImageGrabber_FlyCapture2.h>
 #include <mrpt/io/CFileGZOutputStream.h>
-#include <mrpt/system/CTicTac.h>
-#include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/system/os.h>
 #include <mrpt/system/CTicTac.h>
+#include <mrpt/system/os.h>
 #include <iostream>
 
 using namespace mrpt::hwdrivers;

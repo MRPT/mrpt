@@ -14,15 +14,15 @@
 
 #include <mrpt/slam/CICP.h>
 
-#include <mrpt/poses/CPose3DPDF.h>
-#include <mrpt/obs/CObservation2DRangeScan.h>
-#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CSphere.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/opengl/CAngularObservationMesh.h>
 #include <mrpt/opengl/CDisk.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CSphere.h>
 #include <mrpt/opengl/stock_objects.h>
+#include <mrpt/poses/CPose3DPDF.h>
 #include <iostream>
 
 using namespace std;

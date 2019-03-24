@@ -11,8 +11,8 @@
 
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
-#include <mrpt/system/filesystem.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/filesystem.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::hmtslam;

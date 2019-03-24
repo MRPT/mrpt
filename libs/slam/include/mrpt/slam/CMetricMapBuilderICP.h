@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/slam/CMetricMapBuilder.h>
-#include <mrpt/slam/CICP.h>
 #include <mrpt/poses/CRobot2DPoseEstimator.h>
+#include <mrpt/slam/CICP.h>
+#include <mrpt/slam/CMetricMapBuilder.h>
 #include <map>
 
 namespace mrpt::slam

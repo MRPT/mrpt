@@ -9,9 +9,9 @@
 #ifndef XSSDIDATA_H
 #define XSSDIDATA_H
 
+#include "xsquaternion.h"
 #include "xstypesconfig.h"
 #include "xsvector3.h"
-#include "xsquaternion.h"
 
 struct XsSdiData;
 

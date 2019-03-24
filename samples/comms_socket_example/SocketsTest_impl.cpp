@@ -7,15 +7,15 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/comms/CServerTCPSocket.h>
 #include <mrpt/comms/CClientTCPSocket.h>
+#include <mrpt/comms/CServerTCPSocket.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CMessage.h>
 #include <mrpt/system/scheduler.h>  // changeCurrentThreadPriority()
-#include <mrpt/poses/CPose3D.h>
-#include <cstdio>  // printf()
-#include <thread>
 #include <chrono>
+#include <cstdio>  // printf()
 #include <iostream>
+#include <thread>
 
 bool sockets_test_passed_ok = false;
 // Test payload:

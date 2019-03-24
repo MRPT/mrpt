@@ -20,8 +20,8 @@
 
 #include <mrpt/serialization/CSerializable.h>
 
-#include <mrpt/pbmap/Plane.h>
 #include <mrpt/pbmap/Miscellaneous.h>  // For type PointT;
+#include <mrpt/pbmap/Plane.h>
 
 //#include <boost/thread/thread.hpp>
 

@@ -8,11 +8,11 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/math_frwds.h>  // forward declarations
 #include <mrpt/math/eigen_frwds.h>  // forward declarations
+#include <mrpt/math/math_frwds.h>  // forward declarations
 
-#include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixTemplateNumeric.h>
 
 #include <mrpt/math/ops_containers.h>  // Many generic operations
 

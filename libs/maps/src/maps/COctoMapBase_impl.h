@@ -9,11 +9,11 @@
 
 // This file is to be included from <mrpt/maps/COctoMapBase.h>
 #include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/maps/CPointsMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
-#include <mrpt/maps/CPointsMap.h>
 #include <mrpt/serialization/CArchive.h>
 
 namespace mrpt::maps

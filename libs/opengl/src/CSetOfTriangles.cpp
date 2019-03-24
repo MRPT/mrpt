@@ -9,10 +9,10 @@
 
 #include "opengl-precomp.h"  // Precompiled header
 
-#include <mrpt/opengl/CSetOfTriangles.h>
-#include "opengl_internals.h"
 #include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/opengl/CSetOfTriangles.h>
 #include <mrpt/serialization/CArchive.h>
+#include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;

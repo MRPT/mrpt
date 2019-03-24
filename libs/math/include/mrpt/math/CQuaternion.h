@@ -9,10 +9,10 @@
 
 #pragma once
 
-#include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <mrpt/math/CArrayNumeric.h>
-#include <mrpt/core/exceptions.h>
 #include <mrpt/core/bits_math.h>  // square()
+#include <mrpt/core/exceptions.h>
+#include <mrpt/math/CArrayNumeric.h>
+#include <mrpt/math/CMatrixTemplateNumeric.h>
 
 namespace mrpt::math
 {

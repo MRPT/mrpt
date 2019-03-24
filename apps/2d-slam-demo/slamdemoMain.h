@@ -11,23 +11,23 @@
 #define SLAMDEMOMAIN_H
 
 //(*Headers(slamdemoFrame)
-#include <wx/grid.h>
-#include <wx/toolbar.h>
-#include <wx/sizer.h>
-#include <wx/notebook.h>
-#include <wx/menu.h>
 #include <mrpt/otherlibs/mathplot/mathplot.h>
-#include <wx/panel.h>
-#include <wx/statusbr.h>
 #include <wx/frame.h>
+#include <wx/grid.h>
+#include <wx/menu.h>
+#include <wx/notebook.h>
+#include <wx/panel.h>
+#include <wx/sizer.h>
 #include <wx/stattext.h>
+#include <wx/statusbr.h>
 #include <wx/timer.h>
+#include <wx/toolbar.h>
 //*)
 
-#include <mrpt/slam/CRangeBearingKFSLAM2D.h>
-#include <mrpt/maps/CLandmarksMap.h>
-#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/gui/WxUtils.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/maps/CLandmarksMap.h>
+#include <mrpt/slam/CRangeBearingKFSLAM2D.h>
 
 class slamdemoApp;
 

@@ -10,8 +10,8 @@
 #pragma once
 
 #include <mrpt/img/CImage.h>
-#include <vector>
 #include <array>
+#include <vector>
 
 namespace mrpt
 {

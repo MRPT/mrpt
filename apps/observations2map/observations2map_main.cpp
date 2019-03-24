@@ -15,14 +15,14 @@
 	See README.txt for instructions.
   ---------------------------------------------------------------*/
 
-#include <mrpt/system/os.h>
-#include <mrpt/maps/CSimpleMap.h>
-#include <mrpt/maps/CMultiMetricMap.h>
-#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/maps/CMultiMetricMap.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;

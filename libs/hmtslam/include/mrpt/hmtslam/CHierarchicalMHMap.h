@@ -8,11 +8,11 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/hmtslam/CHMHMapNode.h>
 #include <mrpt/hmtslam/CHMHMapArc.h>
+#include <mrpt/hmtslam/CHMHMapNode.h>
 #include <mrpt/hmtslam/CHierarchicalMapMHPartition.h>
-#include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/maps/CMultiMetricMap.h>
+#include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/serialization/CSerializable.h>
 
 namespace mrpt::hmtslam

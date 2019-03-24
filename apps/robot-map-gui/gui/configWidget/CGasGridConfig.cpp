@@ -8,8 +8,8 @@
    +---------------------------------------------------------------------------+
    */
 #include "CGasGridConfig.h"
-#include "ui_CGasGridConfig.h"
 #include "TypeOfConfig.h"
+#include "ui_CGasGridConfig.h"
 
 using namespace mrpt;
 using namespace maps;

@@ -11,9 +11,9 @@
 #include "hmt_slam_guiMain.h"
 
 //(*InternalHeaders(CDlgLog)
-#include <wx/string.h>
-#include <wx/intl.h>
 #include <wx/font.h>
+#include <wx/intl.h>
+#include <wx/string.h>
 
 #include <memory>
 //*)

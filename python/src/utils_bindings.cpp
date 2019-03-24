@@ -9,14 +9,14 @@
 #include "bindings.h"
 
 /* MRPT */
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/img/TColor.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/rtti/CObject.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/serialization/CSerializable.h>
-#include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/config/CConfigFile.h>
-#include <mrpt/config/CLoadableOptions.h>
 
 /* STD */
 #include <cstdint>

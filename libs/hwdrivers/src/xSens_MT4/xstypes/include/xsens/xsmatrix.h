@@ -9,8 +9,8 @@
 #ifndef XSMATRIX_H
 #define XSMATRIX_H
 
-#include "xsmath.h"
 #include <stddef.h>
+#include "xsmath.h"
 
 struct XsMatrix;
 struct XsEuler;

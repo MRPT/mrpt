@@ -11,10 +11,10 @@
 
 #include <mrpt/hwdrivers/COpenNI2Generic.h>
 #include <mrpt/hwdrivers/COpenNI2Sensor.h>
-#include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/img/TStereoCamera.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/poses/CPose3DQuat.h>
+#include <mrpt/system/CTimeLogger.h>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>

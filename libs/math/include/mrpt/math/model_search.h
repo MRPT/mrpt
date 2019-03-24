@@ -11,7 +11,6 @@
 
 #include <cstdint>
 #include <set>
-#include <set>
 
 namespace mrpt::math
 {

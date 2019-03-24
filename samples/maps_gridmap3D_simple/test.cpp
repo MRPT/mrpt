@@ -7,13 +7,13 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/maps/COccupancyGridMap3D.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/COctoMapVoxels.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/stock_observations.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/COctoMapVoxels.h>
 #include <mrpt/system/os.h>
-#include <mrpt/gui/CDisplayWindow3D.h>
 #include <iostream>
 
 // ------------------------------------------------------

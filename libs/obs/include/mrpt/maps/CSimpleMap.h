@@ -8,11 +8,11 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/poses/CPosePDF.h>
-#include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/obs/obs_frwds.h>
+#include <mrpt/poses/CPose3DPDF.h>
+#include <mrpt/poses/CPosePDF.h>
+#include <mrpt/serialization/CSerializable.h>
 
 namespace mrpt::maps
 {

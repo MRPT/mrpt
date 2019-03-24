@@ -9,11 +9,11 @@
 
 #include "maps-precomp.h"  // Precomp header
 
+#include <mrpt/core/round.h>  // round()
 #include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/math/transform_gaussian.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservationRange.h>
-#include <mrpt/core/round.h>  // round()
-#include <mrpt/math/transform_gaussian.h>
 
 #include <mrpt/random.h>
 

@@ -9,11 +9,11 @@
 
 #include "maps-precomp.h"  // Precomp header
 
+#include <mrpt/core/round.h>  // round()
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/core/round.h>  // round()
 #include <mrpt/system/memory.h>  // alloca()
 
 #if HAVE_ALLOCA_H

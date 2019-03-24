@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <vector>
 #include <iostream>
 #include <iterator>
+#include <vector>
 
 namespace mrpt::slam::detail
 {

@@ -9,11 +9,11 @@
 
 #include "rawlog-edit-declarations.h"
 
-#include <mrpt/topography.h>
-#include <mrpt/obs/CObservationGPS.h>
-#include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/img/color_maps.h>
 #include <mrpt/math/interp_fit.h>
+#include <mrpt/obs/CObservationGPS.h>
+#include <mrpt/obs/CObservationGasSensors.h>
+#include <mrpt/topography.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;

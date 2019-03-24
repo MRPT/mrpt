@@ -8,11 +8,11 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <vector>
-#include <map>
-#include <cstdint>
 #include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/serialization/serialization_frwds.h>
+#include <cstdint>
+#include <map>
+#include <vector>
 
 namespace mrpt::nav
 {

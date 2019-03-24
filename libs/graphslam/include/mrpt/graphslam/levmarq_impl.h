@@ -8,6 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <vector>
+
 namespace mrpt
 {
 namespace graphslam

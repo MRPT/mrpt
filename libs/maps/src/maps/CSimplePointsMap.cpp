@@ -9,9 +9,9 @@
 
 #include "maps-precomp.h"  // Precomp header
 
+#include <mrpt/core/bits_mem.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/core/bits_mem.h>
 
 #include "CPointsMap_crtp_common.h"
 

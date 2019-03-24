@@ -10,8 +10,8 @@
 #include "math-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/CAtan2LookUpTable.h>
-#include <vector>
 #include <cmath>
+#include <vector>
 
 using namespace mrpt::math;
 

@@ -8,10 +8,10 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/system/COutputLogger.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <set>
+#include <mrpt/system/COutputLogger.h>
 #include <functional>
+#include <set>
 
 namespace mrpt::math
 {

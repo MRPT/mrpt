@@ -8,11 +8,11 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/obs/gnss_messages_type_list.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/datetime.h>
-#include <iosfwd>
 #include <cstring>  // memset()
-#include <mrpt/obs/gnss_messages_type_list.h>
+#include <iosfwd>
 
 namespace mrpt
 {

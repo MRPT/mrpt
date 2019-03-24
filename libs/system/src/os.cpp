@@ -9,45 +9,45 @@
 
 #include "system-precomp.h"  // Precompiled headers
 
-#include <mrpt/system/os.h>
-#include <mrpt/core/format.h>
 #include <mrpt/core/exceptions.h>
+#include <mrpt/core/format.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 
 #ifndef HAVE_TIMEGM
 #endif  // HAVE_TIMEGM
 
-#include <cstring>
-#include <cfloat>
-#include <iostream>
 #include <algorithm>
 #include <cctype>
-#include <ctime>
+#include <cfloat>
 #include <cstdio>
+#include <cstring>
+#include <ctime>
+#include <iostream>
 
 #ifdef _WIN32
-#include <conio.h>
 #include <windows.h>
-#include <tlhelp32.h>
-#include <sys/utime.h>
-#include <io.h>
+
+#include <conio.h>
 #include <direct.h>
+#include <io.h>
+#include <sys/utime.h>
+#include <tlhelp32.h>
 #else
-#include <pthread.h>
-#include <termios.h>
 #include <poll.h>
-#include <unistd.h>
+#include <pthread.h>
 #include <sys/select.h>
 #include <sys/time.h>
-#include <ctime>
+#include <termios.h>
 #include <unistd.h>
 #include <utime.h>
 #include <cerrno>
+#include <ctime>
 //	#include <signal.h>
 #endif
 
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 
 #ifdef MRPT_OS_LINUX
 #define _access access
@@ -146,10 +146,10 @@ time_t mrpt::system::os::timegm(struct tm* tm)
 ---------------------------------------------------------------*/
 #include <mrpt/version.h>
 #include <cerrno>
-#include <limits>
 #include <climits>
-#include <ctime>
 #include <cstdlib>
+#include <ctime>
+#include <limits>
 
 string mrpt::system::MRPT_getCompilationDate()
 {

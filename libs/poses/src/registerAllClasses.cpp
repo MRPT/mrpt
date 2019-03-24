@@ -11,34 +11,31 @@
 
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPoint3D.h>
-#include <mrpt/poses/CPose2D.h>
-#include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/CPose3DQuat.h>
-#include <mrpt/poses/CPoses2DSequence.h>
-#include <mrpt/poses/CPoses3DSequence.h>
-#include <mrpt/poses/CPose2DInterpolator.h>
-#include <mrpt/poses/CPose3DInterpolator.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/poses/CPosePDFGaussianInf.h>
-#include <mrpt/poses/CPosePDFParticles.h>
-#include <mrpt/poses/CPosePDFGrid.h>
-#include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/poses/CPointPDF.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/poses/CPointPDFParticles.h>
 #include <mrpt/poses/CPointPDFSOG.h>
-#include <mrpt/poses/CPosePDF.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose2DInterpolator.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DInterpolator.h>
 #include <mrpt/poses/CPose3DPDF.h>
-#include <mrpt/poses/CPose3DQuatPDF.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFGaussianInf.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/poses/CPose3DPDFSOG.h>
+#include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/poses/CPose3DQuatPDF.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussianInf.h>
-#include <mrpt/poses/CPose2DInterpolator.h>
-#include <mrpt/poses/CPose3DInterpolator.h>
+#include <mrpt/poses/CPosePDF.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPosePDFGaussianInf.h>
+#include <mrpt/poses/CPosePDFGrid.h>
+#include <mrpt/poses/CPosePDFParticles.h>
+#include <mrpt/poses/CPosePDFSOG.h>
+#include <mrpt/poses/CPoses2DSequence.h>
+#include <mrpt/poses/CPoses3DSequence.h>
 
 #include <mrpt/core/initializer.h>
 

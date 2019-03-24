@@ -14,15 +14,15 @@
  * documentation of the functions
  */
 
+#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPosePDF.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/system/datetime.h>
+#include <mrpt/system/filesystem.h>
 
-#include <string>
-#include <sstream>
 #include <iostream>
+#include <sstream>
+#include <string>
 
 using namespace mrpt;
 using namespace mrpt::poses;

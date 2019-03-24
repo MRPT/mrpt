@@ -9,17 +9,17 @@
 
 #pragma once
 
-#include <mrpt/vision/CFeature.h>
-#include <mrpt/img/CImage.h>
-#include <mrpt/math/utils.h>
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/tfest/TMatchingPair.h>
-#include <mrpt/poses/CPose3D.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/maps/CLandmarksMap.h>
+#include <mrpt/math/utils.h>
 #include <mrpt/obs/CObservationVisualLandmarks.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/tfest/TMatchingPair.h>
+#include <mrpt/vision/CFeature.h>
 
-#include <mrpt/vision/types.h>
 #include <mrpt/vision/chessboard_camera_calib.h>
+#include <mrpt/vision/types.h>
 
 namespace mrpt::vision
 {

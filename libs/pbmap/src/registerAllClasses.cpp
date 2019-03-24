@@ -7,9 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "pbmap-precomp.h"  // precomp. hdr
-#include <mrpt/pbmap.h>
 #include <mrpt/core/initializer.h>
+#include <mrpt/pbmap.h>
+#include "pbmap-precomp.h"  // precomp. hdr
 
 using namespace mrpt::pbmap;
 

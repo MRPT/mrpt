@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/opengl/CRenderizableDisplayList.h>
 
 namespace mrpt::opengl
 {

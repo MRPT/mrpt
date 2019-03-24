@@ -9,8 +9,8 @@
 #include "bindings.h"
 
 /* MRPT */
-#include <mrpt/nav/planners/PlannerSimple2D.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/nav/planners/PlannerSimple2D.h>
 #include <mrpt/poses/CPose2D.h>
 
 /* namespaces */

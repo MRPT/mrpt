@@ -9,8 +9,8 @@
 
 #include "obs-precomp.h"  // Precomp header
 
-#include <mrpt/maps/TMetricMapInitializer.h>
 #include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/maps/TMetricMapInitializer.h>
 #include <mrpt/serialization/CArchive.h>
 
 using namespace std;

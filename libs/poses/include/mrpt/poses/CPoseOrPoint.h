@@ -8,10 +8,10 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/math_frwds.h>  // matrices frwd decls
-#include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/math/homog_matrices.h>
 #include <mrpt/math/CArrayNumeric.h>
+#include <mrpt/math/homog_matrices.h>
+#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/math_frwds.h>  // matrices frwd decls
 #include <mrpt/serialization/CSerializable.h>
 
 #include <mrpt/poses/CPoseOrPoint_detail.h>

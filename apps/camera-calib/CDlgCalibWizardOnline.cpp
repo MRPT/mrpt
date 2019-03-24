@@ -13,10 +13,10 @@
 #include <mrpt/vision/chessboard_find_corners.h>
 
 //(*InternalHeaders(CDlgCalibWizardOnline)
+#include <wx/font.h>
+#include <wx/intl.h>
 #include <wx/settings.h>
 #include <wx/string.h>
-#include <wx/intl.h>
-#include <wx/font.h>
 //*)
 #include <mrpt/gui/wx28-fixes.h>
 

@@ -7,13 +7,13 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/config/CConfigFile.h>
+#include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 
-#include <thread>
 #include <iostream>
+#include <thread>
 
 using namespace mrpt;
 using namespace mrpt::obs;

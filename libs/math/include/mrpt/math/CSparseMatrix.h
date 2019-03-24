@@ -8,10 +8,10 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/math_frwds.h>
-#include <mrpt/math/CSparseMatrixTemplate.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CSparseMatrixTemplate.h>
+#include <mrpt/math/math_frwds.h>
 #include <cstring>  // memcpy
 #include <stdexcept>
 

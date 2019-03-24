@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/filesystem.h>  // for ASSERT_FILE_EXISTS_
 #include <mrpt/vision/chessboard_stereo_camera_calib.h>
 #include <iostream>

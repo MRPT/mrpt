@@ -9,8 +9,8 @@
 
 #include "math-precomp.h"  // Precompiled headers
 
-#include <mrpt/math/CHistogram.h>
 #include <mrpt/core/exceptions.h>
+#include <mrpt/math/CHistogram.h>
 #include <mrpt/math/utils.h>  // linspace()
 
 using namespace mrpt;

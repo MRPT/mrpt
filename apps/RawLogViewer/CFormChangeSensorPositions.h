@@ -10,19 +10,19 @@
 #define CFORMCHANGESENSORPOSITIONS_H
 
 //(*Headers(CFormChangeSensorPositions)
-#include <wx/notebook.h>
-#include <wx/sizer.h>
-#include <wx/stattext.h>
-#include <wx/radiobox.h>
-#include <wx/textctrl.h>
+#include <wx/button.h>
 #include <wx/checkbox.h>
+#include <wx/combobox.h>
+#include <wx/dialog.h>
+#include <wx/notebook.h>
+#include <wx/panel.h>
+#include <wx/radiobox.h>
+#include <wx/radiobut.h>
+#include <wx/sizer.h>
 #include <wx/spinctrl.h>
 #include <wx/statline.h>
-#include <wx/radiobut.h>
-#include <wx/panel.h>
-#include <wx/button.h>
-#include <wx/dialog.h>
-#include <wx/combobox.h>
+#include <wx/stattext.h>
+#include <wx/textctrl.h>
 //*)
 
 #include <wx/combobox.h>

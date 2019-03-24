@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include "gnss_messages_common.h"
 #include <mrpt/math/CMatrixFixedNumeric.h>
+#include "gnss_messages_common.h"
 
 namespace mrpt::obs::gnss
 {

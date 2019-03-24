@@ -8,11 +8,11 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationIMU.h>
 #include <mrpt/typemeta/TEnumType.h>
-#include <mrpt/gui/CDisplayWindow.h>
 
 // MRPT implements a common interface to Kinect disregarding the
 //  actual underlying library. These macros defined in "mrpt/config.h"

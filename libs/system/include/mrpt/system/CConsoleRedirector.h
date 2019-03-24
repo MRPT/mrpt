@@ -8,10 +8,10 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <streambuf>
-#include <iostream>
-#include <fstream>
 #include <cstdio>  // EOF
+#include <fstream>
+#include <iostream>
+#include <streambuf>
 
 namespace mrpt::system
 {

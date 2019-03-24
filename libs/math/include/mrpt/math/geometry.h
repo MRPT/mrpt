@@ -8,10 +8,10 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CSparseMatrixTemplate.h>
+#include <mrpt/math/lightweight_geom_data.h>
 
 #include <mrpt/math/math_frwds.h>  // forward declarations
 #include <mrpt/math/wrap2pi.h>

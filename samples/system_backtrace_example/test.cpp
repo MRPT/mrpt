@@ -8,8 +8,8 @@
    +---------------------------------------------------------------------------+
    */
 
-#include <mrpt/system/backtrace.h>
 #include <mrpt/core/exceptions.h>
+#include <mrpt/system/backtrace.h>
 #include <iostream>
 
 class Foo

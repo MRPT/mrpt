@@ -8,15 +8,15 @@
    +------------------------------------------------------------------------+ */
 
 #include "DifOdometry_Datasets.h"
-#include <mrpt/system/filesystem.h>
+#include <mrpt/opengl/CBox.h>
+#include <mrpt/opengl/CEllipsoid.h>
 #include <mrpt/opengl/CFrustum.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CBox.h>
-#include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/CSetOfLines.h>
-#include <mrpt/opengl/CEllipsoid.h>
 #include <mrpt/opengl/stock_objects.h>
+#include <mrpt/system/filesystem.h>
 #include "legend.xpm"
 
 using namespace Eigen;

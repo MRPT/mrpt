@@ -9,8 +9,8 @@
 
 #include "opengl-precomp.h"  // Precompiled header
 
-#include <mrpt/opengl/CEllipsoidInverseDepth2D.h>
 #include <mrpt/math/matrix_serialization.h>  // for << >> ops of matrices
+#include <mrpt/opengl/CEllipsoidInverseDepth2D.h>
 #include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;

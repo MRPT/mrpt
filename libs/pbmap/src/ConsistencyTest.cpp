@@ -18,10 +18,10 @@
 #include <mrpt/math/CArrayNumeric.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/ransac.h>
-#include <mrpt/poses/CPose3D.h>
 #include <mrpt/pbmap/ConsistencyTest.h>
-#include <mrpt/pbmap/SubgraphMatcher.h>
 #include <mrpt/pbmap/PbMapLocaliser.h>
+#include <mrpt/pbmap/SubgraphMatcher.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/Lie/SE.h>
 
 using namespace std;

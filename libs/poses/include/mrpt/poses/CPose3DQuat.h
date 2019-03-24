@@ -8,12 +8,12 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/poses/CPose.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/CQuaternion.h>
-#include <mrpt/poses/CPoint3D.h>
-#include <mrpt/poses/poses_frwds.h>
 #include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/poses/CPoint3D.h>
+#include <mrpt/poses/CPose.h>
+#include <mrpt/poses/poses_frwds.h>
 
 namespace mrpt::poses
 {

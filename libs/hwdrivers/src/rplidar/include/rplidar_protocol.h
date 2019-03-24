@@ -33,6 +33,8 @@
 
 #pragma once
 
+#include "rptypes.h"
+
 // RP-Lidar Input Packets
 
 #define RPLIDAR_CMD_SYNC_BYTE 0xA5

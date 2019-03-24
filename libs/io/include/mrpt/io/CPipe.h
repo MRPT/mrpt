@@ -9,8 +9,8 @@
 #pragma once
 
 #include <mrpt/io/CStream.h>
-#include <string>
 #include <memory>  // for unique_ptr<>
+#include <string>
 
 namespace mrpt::io
 {

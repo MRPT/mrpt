@@ -10,9 +10,9 @@
 #include "detectors-precomp.h"  // Precompiled headers
 
 #include <mrpt/detectors/CCascadeClassifierDetection.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
-#include <mrpt/obs/CObservation3DRangeScan.h>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>

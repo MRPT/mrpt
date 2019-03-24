@@ -11,8 +11,8 @@
 #include <mrpt/core/Clock.h>
 #include <mrpt/core/exceptions.h>
 #include <cstdint>
-#include <string>
 #include <iosfwd>
+#include <string>
 
 namespace mrpt::system
 {

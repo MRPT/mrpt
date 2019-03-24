@@ -7,16 +7,16 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/random.h>
-#include <mrpt/system/CTicTac.h>
-#include <mrpt/poses/CPoseRandomSampler.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/math/utils.h>
 #include <mrpt/math/distributions.h>
+#include <mrpt/math/utils.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CObservationBeaconRanges.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPoseRandomSampler.h>
+#include <mrpt/random.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
 
 #include "CPosePDFParticlesExtended.h"

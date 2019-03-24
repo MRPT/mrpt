@@ -9,12 +9,12 @@
 
 #include "slam-precomp.h"  // Precompiled headers
 
-#include <mrpt/slam/CMetricMapBuilderRBPF.h>
-#include <mrpt/obs/CObservationStereoImages.h>
-#include <mrpt/img/CEnhancedMetaFile.h>
-#include <mrpt/obs/CActionRobotMovement3D.h>
-#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/core/round.h>
+#include <mrpt/img/CEnhancedMetaFile.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/obs/CActionRobotMovement3D.h>
+#include <mrpt/obs/CObservationStereoImages.h>
+#include <mrpt/slam/CMetricMapBuilderRBPF.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;

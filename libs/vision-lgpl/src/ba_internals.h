@@ -22,10 +22,10 @@
  */
 #pragma once
 
-#include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/CArrayNumeric.h>
-#include <mrpt/poses/CPose3D.h>
 #include <mrpt/core/aligned_std_vector.h>
+#include <mrpt/math/CArrayNumeric.h>
+#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/vision/types.h>
 
 #include <array>

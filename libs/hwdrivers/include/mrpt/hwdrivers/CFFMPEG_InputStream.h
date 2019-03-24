@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include <mrpt/img/CImage.h>
 #include <mrpt/core/pimpl.h>
+#include <mrpt/img/CImage.h>
 
 /*---------------------------------------------------------------
 	Class

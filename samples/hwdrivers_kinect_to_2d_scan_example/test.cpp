@@ -17,17 +17,17 @@
 			 2D planar scan.
 */
 
-#include <mrpt/hwdrivers/CKinect.h>
-#include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/system/CTicTac.h>
 #include <mrpt/config/CConfigFile.h>
-#include <mrpt/opengl/CPointCloudColoured.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/hwdrivers/CKinect.h>
+#include <mrpt/img/TColor.h>
 #include <mrpt/opengl/CFrustum.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CPlanarLaserScan.h>
+#include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/stock_objects.h>
-#include <mrpt/img/TColor.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/filesystem.h>
 #include <iostream>
 
 using namespace mrpt;

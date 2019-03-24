@@ -7,14 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/vision/CDifodo.h>
-#include <mrpt/math/types_math.h>  // Eigen (with MRPT "plugin" in BaseMatrix<>)
 #include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/img/CImage.h>
-#include <mrpt/obs/CRawlog.h>
-#include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/gui.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/math/types_math.h>  // Eigen (with MRPT "plugin" in BaseMatrix<>)
+#include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/obs/CRawlog.h>
+#include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/vision/CDifodo.h>
 #include <iostream>
 
 class CDifodoDatasets : public mrpt::vision::CDifodo

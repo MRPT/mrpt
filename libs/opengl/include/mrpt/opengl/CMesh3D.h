@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/img/color_maps.h>
+#include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <Eigen/Dense>
 
 using Eigen::Array;

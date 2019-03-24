@@ -10,10 +10,10 @@
 #include "config-precomp.h"  // Precompiled headers
 
 #include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/system/string_utils.h>
-#include <mrpt/system/os.h>
-#include <mrpt/core/format.h>
 #include <mrpt/core/exceptions.h>
+#include <mrpt/core/format.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/string_utils.h>
 #include <cmath>  // abs()
 
 using namespace std;

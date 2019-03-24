@@ -9,18 +9,18 @@
 
 #include "hmtslam-precomp.h"  // Precomp header
 
-#include <mrpt/hmtslam/CRobotPosesGraph.h>
-#include <mrpt/opengl/CDisk.h>
-#include <mrpt/opengl/CText.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CSphere.h>
-#include <mrpt/opengl/CSimpleLine.h>
-#include <mrpt/system/os.h>
-#include <mrpt/poses/CPose3DPDFParticles.h>
-#include <mrpt/math/ops_containers.h>
-#include <mrpt/random.h>
 #include <mrpt/graphslam/levmarq.h>
+#include <mrpt/hmtslam/CRobotPosesGraph.h>
+#include <mrpt/math/ops_containers.h>
+#include <mrpt/opengl/CDisk.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CSimpleLine.h>
+#include <mrpt/opengl/CSphere.h>
+#include <mrpt/opengl/CText.h>
+#include <mrpt/poses/CPose3DPDFParticles.h>
+#include <mrpt/random.h>
+#include <mrpt/system/os.h>
 
 using namespace std;
 using namespace mrpt;

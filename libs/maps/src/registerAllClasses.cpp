@@ -10,9 +10,9 @@
 #include "maps-precomp.h"
 
 #define MRPT_NO_WARN_BIG_HDR
+#include <mrpt/core/initializer.h>
 #include <mrpt/maps.h>
 #include <mrpt/obs/CObservationPointCloud.h>
-#include <mrpt/core/initializer.h>
 
 using namespace mrpt::maps;
 using namespace mrpt::obs;

@@ -8,13 +8,12 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/comms/CInterfaceFTDI.h>
-#include <mrpt/system/os.h>
 #include <mrpt/system/datetime.h>
+#include <mrpt/system/os.h>
 
 #include <cstdio>
 #include <iostream>
 #include <thread>
-#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::comms;

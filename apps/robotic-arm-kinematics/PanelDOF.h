@@ -11,9 +11,9 @@
 #define PANELDOF_H
 
 //(*Headers(PanelDOF)
-#include <wx/sizer.h>
 #include <wx/htmllbox.h>
 #include <wx/panel.h>
+#include <wx/sizer.h>
 #include <wx/slider.h>
 #include <wx/textctrl.h>
 //*)

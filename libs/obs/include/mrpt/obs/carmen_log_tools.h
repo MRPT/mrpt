@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include <mrpt/system/datetime.h>
 #include <mrpt/obs/CObservation.h>
+#include <mrpt/system/datetime.h>
 
 namespace mrpt::obs
 {

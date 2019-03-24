@@ -31,8 +31,10 @@
  *
  */
 
-#include "sdkcommon.h"
+#include <windows.h>
+
 #include "net_serial.h"
+#include "sdkcommon.h"
 
 namespace rp
 {

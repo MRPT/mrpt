@@ -10,16 +10,16 @@
 #define CFORMMOTIONMODEL_H
 
 //(*Headers(CFormMotionModel)
+#include <wx/button.h>
+#include <wx/checkbox.h>
+#include <wx/dialog.h>
+#include <wx/hyperlink.h>
 #include <wx/notebook.h>
+#include <wx/panel.h>
+#include <wx/radiobut.h>
 #include <wx/sizer.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
-#include <wx/checkbox.h>
-#include <wx/radiobut.h>
-#include <wx/panel.h>
-#include <wx/hyperlink.h>
-#include <wx/button.h>
-#include <wx/dialog.h>
 //*)
 
 // The "custom class" mpWindow, from the wxMathPlot libray by David Schalig

@@ -12,8 +12,8 @@
 #include <mrpt/core/initializer.h>
 
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/CMatrixB.h>
+#include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/math/CSplineInterpolator1D.h>
 

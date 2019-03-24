@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "DifOdometry_Datasets.h"
 #include <mrpt/config/CConfigFile.h>
+#include "DifOdometry_Datasets.h"
 
 using namespace std;
 using namespace mrpt;

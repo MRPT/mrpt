@@ -7,15 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/random.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/slam/CMetricMapBuilderICP.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/serialization/CArchive.h>
 #include <mrpt/obs/CRawlog.h>
+#include <mrpt/random.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/slam/CMetricMapBuilderICP.h>
 #include <mrpt/system/filesystem.h>
 
 #include "common.h"

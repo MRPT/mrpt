@@ -20,10 +20,10 @@
 extern "C"
 {
 #define _MSC_STDINT_H_  // We already have pstdint.h in MRPT
-#include <libavformat/avformat.h>
 #include <libavcodec/avcodec.h>
-#include <libswscale/swscale.h>
+#include <libavformat/avformat.h>
 #include <libavutil/imgutils.h>
+#include <libswscale/swscale.h>
 }
 #endif
 

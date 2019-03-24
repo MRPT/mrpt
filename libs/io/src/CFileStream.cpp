@@ -10,8 +10,8 @@
 #include "io-precomp.h"  // Precompiled headers
 
 #include <mrpt/io/CFileStream.h>
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 #include <string>  // std::getline()
 
 using namespace mrpt::io;

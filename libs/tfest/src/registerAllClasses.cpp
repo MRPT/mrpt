@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "tfest-precomp.h"
 #include <mrpt/tfest.h>
+#include "tfest-precomp.h"
 
 #include <mrpt/core/initializer.h>
 

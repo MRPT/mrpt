@@ -7,10 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <gtest/gtest.h>
+#include <mrpt/core/bits_math.h>  // DEG2RAD
 #include <mrpt/math/CAtan2LookUpTable.h>
 #include <mrpt/random.h>
-#include <mrpt/core/bits_math.h>  // DEG2RAD
-#include <gtest/gtest.h>
 #include <cmath>
 
 template <class LUT_CLASS>

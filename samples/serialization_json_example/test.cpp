@@ -12,8 +12,8 @@
 #include <sstream>  // stringstream
 
 //! [example]
-#include <mrpt/serialization/CSchemeArchive.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/serialization/CSchemeArchive.h>
 
 #include <iostream>  // cout
 

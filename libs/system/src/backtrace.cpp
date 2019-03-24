@@ -17,15 +17,16 @@
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+
 #include <DbgHelp.h>
 #else
-#include <execinfo.h>
-#include <dlfcn.h>  // dladdr()
 #include <cxxabi.h>  // __cxa_demangle()
+#include <dlfcn.h>  // dladdr()
+#include <execinfo.h>
 #include <cstdlib>
-#include <string>
-#include <sstream>
 #include <iostream>
+#include <sstream>
+#include <string>
 #endif
 
 void mrpt::system::getCallStackBackTrace(TCallStackBackTrace& out_bt)

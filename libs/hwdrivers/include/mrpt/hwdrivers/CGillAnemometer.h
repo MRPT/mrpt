@@ -8,10 +8,10 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/comms/CSerialPort.h>
-#include <mrpt/obs/CObservationWindSensor.h>
 #include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/hwdrivers/CGenericSensor.h>
+#include <mrpt/obs/CObservationWindSensor.h>
 
 namespace mrpt::hwdrivers
 {

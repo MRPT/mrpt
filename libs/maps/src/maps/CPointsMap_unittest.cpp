@@ -7,12 +7,12 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/maps/CWeightedPointsMap.h>
+#include <gtest/gtest.h>
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/maps/CPointsMapXYZI.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/maps/CWeightedPointsMap.h>
 #include <mrpt/poses/CPoint2D.h>
-#include <gtest/gtest.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;

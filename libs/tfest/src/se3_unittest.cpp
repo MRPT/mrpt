@@ -7,12 +7,12 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/tfest.h>
-#include <mrpt/random.h>
+#include <gtest/gtest.h>
 #include <mrpt/math/ops_vectors.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
-#include <gtest/gtest.h>
+#include <mrpt/random.h>
+#include <mrpt/tfest.h>
 
 using namespace mrpt;
 using namespace mrpt::tfest;

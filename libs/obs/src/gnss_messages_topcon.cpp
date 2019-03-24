@@ -9,8 +9,8 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
-#include <mrpt/obs/gnss_messages_topcon.h>
 #include <mrpt/math/matrix_serialization.h>  // for << of matrices
+#include <mrpt/obs/gnss_messages_topcon.h>
 
 using namespace std;
 using namespace mrpt::obs::gnss;

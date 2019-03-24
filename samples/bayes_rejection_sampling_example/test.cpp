@@ -7,11 +7,11 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/system/CTicTac.h>
 #include <mrpt/bayes.h>
-#include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPoint2D.h>
+#include <mrpt/poses/CPose2D.h>
 #include <mrpt/random.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
 #include <iostream>
 

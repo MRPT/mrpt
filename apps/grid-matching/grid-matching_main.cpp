@@ -7,31 +7,31 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/io/CFileStream.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/gui.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
-#include <mrpt/config/CConfigFile.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/poses/CPosePDFParticles.h>
-#include <mrpt/poses/CPoint2D.h>
-#include <mrpt/math/ops_containers.h>
-#include <mrpt/math/wrap2pi.h>
-#include <mrpt/slam/CGridMapAligner.h>
+#include <mrpt/io/CFileStream.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/math/ops_containers.h>
+#include <mrpt/math/wrap2pi.h>
 #include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/maps/CMultiMetricMap.h>
-#include <mrpt/gui.h>
-#include <mrpt/system/datetime.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/system/vector_loadsave.h>
-#include <mrpt/system/os.h>
-#include <mrpt/random.h>
-#include <mrpt/otherlibs/tclap/CmdLine.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/otherlibs/tclap/CmdLine.h>
+#include <mrpt/poses/CPoint2D.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPosePDFParticles.h>
+#include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/slam/CGridMapAligner.h>
+#include <mrpt/system/datetime.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/vector_loadsave.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;

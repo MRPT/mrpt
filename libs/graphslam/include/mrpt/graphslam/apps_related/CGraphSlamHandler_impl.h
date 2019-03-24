@@ -9,10 +9,10 @@
 
 #pragma once
 
-#include "CGraphSlamHandler.h"
 #include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/serialization/CArchive.h>
 #include <mrpt/obs/CRawlog.h>
+#include <mrpt/serialization/CArchive.h>
+#include "CGraphSlamHandler.h"
 
 template <class GRAPH_T>
 CGraphSlamHandler<GRAPH_T>::CGraphSlamHandler(

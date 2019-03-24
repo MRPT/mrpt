@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/ransac.h>
 #include <mrpt/math/geometry.h>
+#include <mrpt/math/ransac.h>
 
 namespace mrpt::math
 {

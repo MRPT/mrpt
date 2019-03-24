@@ -7,21 +7,21 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hmt_slam_guiMain.h"
 #include <mrpt/opengl.h>
+#include "hmt_slam_guiMain.h"
 
 #include <wx/msgdlg.h>
 
 //(*InternalHeaders(hmt_slam_guiFrame)
-#include <wx/settings.h>
-#include <wx/string.h>
-#include <wx/intl.h>
-#include <wx/font.h>
-#include <wx/tglbtn.h>
+#include <wx/artprov.h>
 #include <wx/bitmap.h>
+#include <wx/font.h>
 #include <wx/icon.h>
 #include <wx/image.h>
-#include <wx/artprov.h>
+#include <wx/intl.h>
+#include <wx/settings.h>
+#include <wx/string.h>
+#include <wx/tglbtn.h>
 //*)
 
 #include <mrpt/system/string_utils.h>

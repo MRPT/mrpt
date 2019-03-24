@@ -10,8 +10,8 @@
 #include "vision-precomp.h"  // Precompiled headers
 
 #include <mrpt/system/memory.h>
-#include <mrpt/vision/tracking.h>
 #include <mrpt/vision/CFeatureExtraction.h>
+#include <mrpt/vision/tracking.h>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>

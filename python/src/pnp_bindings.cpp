@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include <Python.h>
-#include <boost/python.hpp>
 #include <numpy/arrayobject.h>
+#include <boost/python.hpp>
 using namespace boost::python;
 
 #include <Eigen/Core>
@@ -22,8 +22,8 @@ using namespace Eigen;
 mrpt::vision::pnp::CPnP pnp_algos;
 
 #if MRPT_HAS_OPENCV
-#include <opencv2/opencv.hpp>
 #include <opencv2/core/eigen.hpp>
+#include <opencv2/opencv.hpp>
 using namespace cv;
 #endif
 

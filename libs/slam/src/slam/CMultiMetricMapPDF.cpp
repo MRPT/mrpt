@@ -9,21 +9,21 @@
 
 #include "slam-precomp.h"  // Precompiled headers
 
+#include <mrpt/io/CFileStream.h>
 #include <mrpt/random.h>
 #include <mrpt/system/CTicTac.h>
-#include <mrpt/io/CFileStream.h>
 #include <mrpt/system/os.h>
 
+#include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/maps/CMultiMetricMapPDF.h>
-#include <mrpt/obs/CActionRobotMovement2D.h>
-#include <mrpt/obs/CActionRobotMovement3D.h>
-#include <mrpt/obs/CActionCollection.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/poses/CPosePDFGrid.h>
-#include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/maps/CLandmarksMap.h>
+#include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CActionRobotMovement2D.h>
+#include <mrpt/obs/CActionRobotMovement3D.h>
+#include <mrpt/obs/CObservationBeaconRanges.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPosePDFGrid.h>
 #include <mrpt/serialization/CArchive.h>
 
 #include <mrpt/slam/PF_aux_structs.h>

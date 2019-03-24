@@ -7,16 +7,16 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/img/CImage.h>
-#include <mrpt/img/TColor.h>
-#include <mrpt/serialization/CArchive.h>
-#include <mrpt/io/CMemoryStream.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <mrpt/system/memory.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/random.h>
 #include <CTraitsTest.h>
 #include <gtest/gtest.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/img/TColor.h>
+#include <mrpt/io/CMemoryStream.h>
+#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/random.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/memory.h>
 #include <test_mrpt_common.h>
 
 // Universal include for all versions of OpenCV

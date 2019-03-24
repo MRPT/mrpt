@@ -10,10 +10,10 @@
 #include "poses-precomp.h"  // Precompiled headers
 
 #include <mrpt/config.h>  // for HAVE_SINCOS
-#include <mrpt/poses/Lie/SO.h>
-#include <mrpt/poses/CPose3D.h>
-#include <mrpt/math/wrap2pi.h>
 #include <mrpt/math/CQuaternion.h>
+#include <mrpt/math/wrap2pi.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/Lie/SO.h>
 #include <cmath>
 
 using namespace mrpt;

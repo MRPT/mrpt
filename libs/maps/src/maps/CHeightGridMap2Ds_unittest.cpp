@@ -7,9 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/maps/CHeightGridMap2D_MRF.h>
-#include <mrpt/maps/CHeightGridMap2D.h>
 #include <gtest/gtest.h>
+#include <mrpt/maps/CHeightGridMap2D.h>
+#include <mrpt/maps/CHeightGridMap2D_MRF.h>
 
 template <class MAP>
 void do_test_insertCheckMapBounds()

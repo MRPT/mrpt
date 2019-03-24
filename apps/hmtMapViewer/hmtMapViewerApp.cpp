@@ -10,11 +10,11 @@
 #include "hmtMapViewerApp.h"
 
 //(*AppHeaders
-#include "hmtMapViewerMain.h"
 #include <wx/image.h>
+#include "hmtMapViewerMain.h"
 //*)
-#include <wx/stdpaths.h>
 #include <wx/log.h>
+#include <wx/stdpaths.h>
 
 IMPLEMENT_APP(hmtMapViewerApp)
 
@@ -22,9 +22,9 @@ IMPLEMENT_APP(hmtMapViewerApp)
 std::string global_fileToOpen;
 
 #include <mrpt/config/CConfigFile.h>
-#include <mrpt/system/filesystem.h>
 #include <mrpt/hmtslam/CHMTSLAM.h>
 #include <mrpt/hmtslam/CRobotPosesGraph.h>
+#include <mrpt/system/filesystem.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
