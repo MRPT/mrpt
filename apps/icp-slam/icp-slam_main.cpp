@@ -32,6 +32,8 @@
 #include <mrpt/system/memory.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>  // This class lives in the lib [mrpt-maps] and must be included by hand
 #include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -399,17 +401,15 @@ void MapBuilding_ICP(
 
 				// The maps:
 				{
-					opengl::CSetOfObjects::Ptr obj =
-						mrpt::make_aligned_shared<opengl::CSetOfObjects>();
+					auto obj = opengl::CSetOfObjects::Create();
 					mostLikMap->getAs3DObject(obj);
 					view->insert(obj);
 
 					// Only the point map:
-					opengl::CSetOfObjects::Ptr ptsMap =
-						mrpt::make_aligned_shared<opengl::CSetOfObjects>();
-					if (mostLikMap->m_pointsMaps.size())
+					auto ptsMap = opengl::CSetOfObjects::Create();
+					if (auto pMap = mostLikMap->mapByClass<CPointsMap>(); pMap)
 					{
-						mostLikMap->m_pointsMaps[0]->getAs3DObject(ptsMap);
+						pMap->getAs3DObject(ptsMap);
 						view_map->insert(ptsMap);
 					}
 				}

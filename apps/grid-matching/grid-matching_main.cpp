@@ -19,6 +19,7 @@
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/slam/CGridMapAligner.h>
 #include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/gui.h>
@@ -182,11 +183,11 @@ void do_grid_align()
 	the_map1.setListOfMaps(map1_inits);
 	the_map2.setListOfMaps(map2_inits);
 
-	ASSERT_(the_map1.m_gridMaps.size() >= 1);
-	ASSERT_(the_map2.m_gridMaps.size() >= 1);
+	COccupancyGridMap2D::Ptr grid1 = the_map1.mapByClass<COccupancyGridMap2D>();
+	COccupancyGridMap2D::Ptr grid2 = the_map2.mapByClass<COccupancyGridMap2D>();
 
-	COccupancyGridMap2D::Ptr grid1 = the_map1.m_gridMaps[0];
-	COccupancyGridMap2D::Ptr grid2 = the_map2.m_gridMaps[0];
+	ASSERT_(grid1);
+	ASSERT_(grid2);
 
 	// ---------------------------------------------
 	//				Options: RANSAC

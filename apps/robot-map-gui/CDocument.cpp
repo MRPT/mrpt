@@ -13,6 +13,12 @@
 #include "mrpt/io/CFileGZOutputStream.h"
 #include "mrpt/io/CFileOutputStream.h"
 #include "mrpt/config/CConfigFile.h"
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/maps/CGasConcentrationGridMap2D.h>
+#include <mrpt/maps/CBeaconMap.h>
+#include <mrpt/maps/CLandmarksMap.h>
+#include <mrpt/serialization/CArchive.h>
 
 const std::string METRIC_MAP_CONFIG_SECTION = "MappingApplication";
 

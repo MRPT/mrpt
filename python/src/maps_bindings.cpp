@@ -12,7 +12,9 @@
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/maps/CMultiMetricMapPDF.h>
 #include <mrpt/maps/TMetricMapInitializer.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/metric_map_types.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/opengl/CSetOfObjects.h>
@@ -300,7 +302,7 @@ CSimplePointsMap::Ptr CMultiMetricMap_getAsSimplePointsMap(
 	CMultiMetricMap& self)
 {
 	CSimplePointsMap::Ptr points_map(new CSimplePointsMap);
-	CSimplePointsMap* points_map_ptr = self.getAsSimplePointsMap();
+	const CSimplePointsMap* points_map_ptr = self.getAsSimplePointsMap();
 	*points_map = *points_map_ptr;
 	return points_map;
 }
@@ -725,7 +727,7 @@ void export_maps()
 
 		scope s = class_<CMultiMetricMap, bases<CMetricMap>>(
 					  "CMultiMetricMap",
-					  init<optional<TSetOfMetricMapInitializers*>>())
+					  init<optional<TSetOfMetricMapInitializers>>())
 					  .def(
 						  "getAs3DObject", &CMultiMetricMap_getAs3DObject,
 						  "Returns a 3D object representing the map.")

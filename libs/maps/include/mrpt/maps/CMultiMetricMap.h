@@ -98,8 +98,7 @@ class TSetOfMetricMapInitializers;
  * \code
  * mrpt::maps::CMultiMetricMap theMap;
  * {
- *  mrpt::maps::CSimplePointsMap::Ptr ptMap =
- *mrpt::make_aligned_shared<mrpt::maps::CSimplePointsMap>();
+ *  auto ptMap = mrpt::maps::CSimplePointsMap::Create();
  *  theMap.maps.push_back(ptMap);
  * }
  * \endcode
@@ -113,10 +112,6 @@ class TSetOfMetricMapInitializers;
  * \note [New in MRPT 1.3.0]: `enableInsertion_{pointsMap,...}` have been also
  *removed.
  *  Use the `enableObservationInsertion` property of each map declaration.
- *
- * \note [New in MRPT 1.3.0]: Plain list of maps is exposed in `maps` member.
- *Proxies named `m_pointsMaps`,`m_gridMaps`, etc.
- *  are provided for backwards-compatibility and for their utility.
  *
  * \note This class belongs to [mrpt-slam] instead of [mrpt-maps] due to the
  *dependency on map classes in mrpt-vision.

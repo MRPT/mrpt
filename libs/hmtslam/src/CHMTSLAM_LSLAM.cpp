@@ -496,13 +496,12 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 			newArea->m_nodeType = "Area";
 			newArea->m_label = generateUniqueAreaLabel();
 
-			CMultiMetricMap::Ptr emptyMap = std::make_shared<CMultiMetricMap>(
-				&m_options.defaultMapsInitializers);
+			auto emptyMap =
+				CMultiMetricMap::Create(m_options.defaultMapsInitializers);
 			newArea->m_annotations.setMemoryReference(
 				NODE_ANNOTATION_METRIC_MAPS, emptyMap, LMH->m_ID);
 
-			CRobotPosesGraph::Ptr emptyPoseGraph =
-				mrpt::make_aligned_shared<CRobotPosesGraph>();
+			auto emptyPoseGraph = CRobotPosesGraph::Create();
 			newArea->m_annotations.setMemoryReference(
 				NODE_ANNOTATION_POSES_GRAPH, emptyPoseGraph, LMH->m_ID);
 

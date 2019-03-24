@@ -25,6 +25,7 @@
 //*)
 
 #include <mrpt/slam/CRangeBearingKFSLAM2D.h>
+#include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/gui/WxUtils.h>
 

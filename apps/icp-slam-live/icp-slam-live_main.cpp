@@ -30,7 +30,10 @@
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/core/round.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::opengl;
@@ -471,9 +474,9 @@ void MapBuilding_ICP_Live(const string& INI_FILENAME)
 				// Only the point map:
 				opengl::CSetOfObjects::Ptr ptsMap =
 					mrpt::make_aligned_shared<opengl::CSetOfObjects>();
-				if (mostLikMap->m_pointsMaps.size())
+				if (auto p = mostLikMap->mapByClass<CPointsMap>(); p)
 				{
-					mostLikMap->m_pointsMaps[0]->getAs3DObject(ptsMap);
+					p->getAs3DObject(ptsMap);
 					view_map->insert(ptsMap);
 				}
 			}
