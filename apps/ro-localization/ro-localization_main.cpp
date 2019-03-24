@@ -27,6 +27,8 @@
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/CFileStream.h>
+#include <mrpt/math/CMatrix.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
@@ -37,13 +39,13 @@
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
-
 #include <mrpt/opengl/CSphere.h>
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CDisk.h>
 #include <mrpt/opengl/CEllipsoid.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/maps/CLandmarksMap.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;
@@ -145,25 +147,6 @@ void TestParticlesLocalization()
 	// Init random & serialization:
 	getRandomGenerator().randomize();
 
-	/*	if( MAP_FILE!="NOT FOUND!" )
-		{
-			// Load map
-			// -----------------------------
-			CSimpleMap					simpleMap;
-			printf("Loading '.simplemap' file...");
-			CFileStream(MAP_FILE.c_str(),fomRead) >> simpleMap;
-			printf("Ok\n");
-
-			// Build metric map:
-			// ------------------------------
-			printf("Building metric map from '.simplemap'...");
-			metricMap.loadFromProbabilisticPosesAndObservations(simpleMap);
-			printf("Ok\n");
-
-			ASSERT_(metricMap.m_gridMaps.size()>0);
-		}
-	*/
-
 	// --------------------------------------------------------------------
 	//					EXPERIMENT REPETITIONS LOOP
 	// --------------------------------------------------------------------
@@ -181,8 +164,8 @@ void TestParticlesLocalization()
 
 	// Number of beacons in the fixed, reference map:
 	size_t nBeaconsInMap = 0;
-	if (metricMap.m_landmarksMap)
-		nBeaconsInMap = metricMap.m_landmarksMap->size();
+	auto beacMap = metricMap.mapByClass<CLandmarksMap>();
+	if (beacMap) nBeaconsInMap = beacMap->size();
 
 	CMatrixDouble franco_matrix(rawlogEntries, 3);
 	CMatrixDouble particle_matrix(rawlogEntries, 12 + nBeaconsInMap);
@@ -248,11 +231,9 @@ void TestParticlesLocalization()
 			mrpt::system::createDirectory(OUT_DIR);
 
 			// Save the landmarks for plot in matlab:
-			if (metricMap.m_landmarksMap)
-			{
-				metricMap.m_landmarksMap->saveToMATLABScript2D(
+			if (beacMap)
+				beacMap->saveToMATLABScript2D(
 					format("%s/plot_landmarks_map.m", OUT_DIR.c_str()));
-			}
 
 			CPose2D odometryEstimation(
 				iniFile->read_float("OdometryEstimation", "odometry_X", 0),
@@ -359,15 +340,13 @@ void TestParticlesLocalization()
 			}
 
 			// The beacons
-			if (metricMap.m_landmarksMap)
+			if (beacMap)
 			{
-				for (size_t k = 0; k < metricMap.m_landmarksMap->size(); k++)
+				for (size_t k = 0; k < beacMap->size(); k++)
 				{
-					opengl::CSphere::Ptr parts =
-						mrpt::make_aligned_shared<opengl::CSphere>();
+					auto parts = opengl::CSphere::Create();
 					parts->setColor(1, 0, 0);
-					parts->setLocation(
-						metricMap.m_landmarksMap->landmarks.get(k)->pose_mean);
+					parts->setLocation(beacMap->landmarks.get(k)->pose_mean);
 					parts->setRadius(0.2f);
 
 					parts->setName(format(" B%i", int(k + 1)));
@@ -484,7 +463,7 @@ void TestParticlesLocalization()
 						for (size_t q = 0; q < nBeaconsInMap; q++)
 						{
 							mrpt::maps::CLandmark* lm =
-								metricMap.m_landmarksMap->landmarks.get(q);
+								beacMap->landmarks.get(q);
 							// Real range
 							double R_real =
 								sensorPose.distanceTo(lm->pose_mean);
@@ -548,25 +527,6 @@ void TestParticlesLocalization()
 					size_t(meanState.state.size()), size_t(nBeaconsInMap));
 				for (size_t l = 0; l < nBeaconsInMap; l++)
 					particle_matrix(step, 12 + l) = meanState.state[l];
-					//----------------------------------------------
-
-					//// Generate text files for matlab:
-					//// ------------------------------------
-					// pdf.saveToTextFile(format("%s/particles_%03u.txt",OUT_DIR.c_str(),step));
-
-					/*{
-						CObservation2DRangeScan		*o =
-					(CObservation2DRangeScan*)
-					observations->getObservationByClass(
-					CLASS_ID(CObservation2DRangeScan)); if (o)
-						{
-							MRPT_OS::sprintf(auxDirStr,1000,"%s/observation_scan_%03u.txt",OUT_DIR,step);
-							FILE	*f=MRPT_OS::fopen(auxDirStr,"wt");
-							for (unsigned int i=0;i<o->scan.size();i++)
-								fprintf(f,"%.03f ",o->scan[i]);
-							fclose(f);
-						}
-					}*/
 
 #ifdef STORE_3D
 				// Generate 3D scene:
@@ -586,8 +546,7 @@ void TestParticlesLocalization()
 					opengl::CPointCloud::Ptr parts;
 
 					if (!obj)
-						parts =
-							mrpt::make_aligned_shared<opengl::CPointCloud>();
+						parts = opengl::CPointCloud::Create();
 					else
 						parts = std::dynamic_pointer_cast<CPointCloud>(obj);
 #else
@@ -649,8 +608,7 @@ void TestParticlesLocalization()
 					obj = sceneTR->getByName("laser");
 					opengl::CPointCloud::Ptr scanPts;
 					if (!obj)
-						scanPts =
-							mrpt::make_aligned_shared<opengl::CPointCloud>();
+						scanPts = opengl::CPointCloud::Create();
 					else
 						scanPts = std::dynamic_pointer_cast<CPointCloud>(obj);
 
@@ -674,16 +632,14 @@ void TestParticlesLocalization()
 					CObservationBeaconRanges::Ptr dist =
 						observations
 							->getObservationByClass<CObservationBeaconRanges>();
-					if (metricMap.m_landmarksMap && dist &&
-						!dist->sensedData.empty())
+					if (beacMap && dist && !dist->sensedData.empty())
 					{
 						for (auto& k : dist->sensedData)
 						{
 							string beacon_name =
 								format("ring%u", unsigned(k.beaconID));
 							const mrpt::maps::CLandmark* lm =
-								metricMap.m_landmarksMap->landmarks
-									.getByBeaconID(k.beaconID);
+								beacMap->landmarks.getByBeaconID(k.beaconID);
 							if (lm)
 							{
 #ifdef SHOW_REAL_TIME_3D
@@ -845,7 +801,7 @@ void TestParticlesLocalization()
 						CObservationGPS::Ptr o =
 							observations
 								->getObservationByClass<CObservationGPS>();
-						if (o && metricMap.m_landmarksMap)
+						if (o && beacMap)
 						{
 							opengl::CRenderizable::Ptr obj =
 								sceneTR->getByName("gps");
@@ -869,33 +825,27 @@ void TestParticlesLocalization()
 										mrpt::obs::gnss::Message_NMEA_GGA>();
 								x = DEG2RAD(
 										(gga.fields.longitude_degrees -
-										 metricMap.m_landmarksMap
-											 ->likelihoodOptions.GPSOrigin
+										 beacMap->likelihoodOptions.GPSOrigin
 											 .longitude)) *
 									6371000 * 1.03;
 								y = DEG2RAD(
 										(gga.fields.latitude_degrees -
-										 metricMap.m_landmarksMap
-											 ->likelihoodOptions.GPSOrigin
+										 beacMap->likelihoodOptions.GPSOrigin
 											 .latitude)) *
 									6371000 * 1.15;
 								sphere->setLocation(
-									(x * cos(metricMap.m_landmarksMap
-												 ->likelihoodOptions.GPSOrigin
-												 .ang) +
-									 y * sin(metricMap.m_landmarksMap
-												 ->likelihoodOptions.GPSOrigin
-												 .ang) +
-									 metricMap.m_landmarksMap->likelihoodOptions
-										 .GPSOrigin.x_shift),
-									(-x * sin(metricMap.m_landmarksMap
-												  ->likelihoodOptions.GPSOrigin
-												  .ang) +
-									 y * cos(metricMap.m_landmarksMap
-												 ->likelihoodOptions.GPSOrigin
-												 .ang) +
-									 metricMap.m_landmarksMap->likelihoodOptions
-										 .GPSOrigin.y_shift),
+									(x * cos(beacMap->likelihoodOptions
+												 .GPSOrigin.ang) +
+									 y * sin(beacMap->likelihoodOptions
+												 .GPSOrigin.ang) +
+									 beacMap->likelihoodOptions.GPSOrigin
+										 .x_shift),
+									(-x * sin(beacMap->likelihoodOptions
+												  .GPSOrigin.ang) +
+									 y * cos(beacMap->likelihoodOptions
+												 .GPSOrigin.ang) +
+									 beacMap->likelihoodOptions.GPSOrigin
+										 .y_shift),
 									0);
 							}
 							CMatrix r(2, 2);
@@ -937,33 +887,27 @@ void TestParticlesLocalization()
 										mrpt::obs::gnss::Message_NMEA_GGA>();
 								x = DEG2RAD(
 										(gga.fields.longitude_degrees -
-										 metricMap.m_landmarksMap
-											 ->likelihoodOptions.GPSOrigin
+										 beacMap->likelihoodOptions.GPSOrigin
 											 .longitude)) *
 									6371000 * 1.03;  //*9000000;
 								y = DEG2RAD(
 										(gga.fields.latitude_degrees -
-										 metricMap.m_landmarksMap
-											 ->likelihoodOptions.GPSOrigin
+										 beacMap->likelihoodOptions.GPSOrigin
 											 .latitude)) *
 									6371000 * 1.15;  //*12000000;
 								sphere->setLocation(
-									(x * cos(metricMap.m_landmarksMap
-												 ->likelihoodOptions.GPSOrigin
-												 .ang) +
-									 y * sin(metricMap.m_landmarksMap
-												 ->likelihoodOptions.GPSOrigin
-												 .ang) +
-									 metricMap.m_landmarksMap->likelihoodOptions
-										 .GPSOrigin.x_shift),
-									(-x * sin(metricMap.m_landmarksMap
-												  ->likelihoodOptions.GPSOrigin
-												  .ang) +
-									 y * cos(metricMap.m_landmarksMap
-												 ->likelihoodOptions.GPSOrigin
-												 .ang) +
-									 metricMap.m_landmarksMap->likelihoodOptions
-										 .GPSOrigin.y_shift),
+									(x * cos(beacMap->likelihoodOptions
+												 .GPSOrigin.ang) +
+									 y * sin(beacMap->likelihoodOptions
+												 .GPSOrigin.ang) +
+									 beacMap->likelihoodOptions.GPSOrigin
+										 .x_shift),
+									(-x * sin(beacMap->likelihoodOptions
+												  .GPSOrigin.ang) +
+									 y * cos(beacMap->likelihoodOptions
+												 .GPSOrigin.ang) +
+									 beacMap->likelihoodOptions.GPSOrigin
+										 .y_shift),
 									0);
 							}
 							sphere->setRadius(0.5);

@@ -15,8 +15,8 @@
 #include <mrpt/bayes/CProbabilityParticle.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
-
 #include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/bayes/CParticleFilterData.h>
 #include <mrpt/obs/CSensoryFrame.h>
 
 namespace mrpt

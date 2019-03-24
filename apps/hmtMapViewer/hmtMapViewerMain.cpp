@@ -799,15 +799,15 @@ void hmtMapViewerFrame::updateLocalMapView()
 					// ---------------------------------------------------------
 					// Bounding boxes for grid maps:
 					// ---------------------------------------------------------
-					if (obj_mmap->m_gridMaps.size())
+					if (auto grid = obj_mmap->mapByClass<COccupancyGridMap2D>();
+						grid)
 					{
-						float x_min = obj_mmap->m_gridMaps[0]->getXMin();
-						float x_max = obj_mmap->m_gridMaps[0]->getXMax();
-						float y_min = obj_mmap->m_gridMaps[0]->getYMin();
-						float y_max = obj_mmap->m_gridMaps[0]->getYMax();
+						float x_min = grid->getXMin();
+						float x_max = grid->getXMax();
+						float y_min = grid->getYMin();
+						float y_max = grid->getYMax();
 
-						opengl::CSetOfLines::Ptr objBB =
-							mrpt::make_aligned_shared<opengl::CSetOfLines>();
+						auto objBB = opengl::CSetOfLines::Create();
 						objBB->setColor(0, 0, 1);
 						objBB->setLineWidth(4.0f);
 

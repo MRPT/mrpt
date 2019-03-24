@@ -32,6 +32,7 @@
 #include <mrpt/random.h>
 #include <mrpt/obs/CObservationComment.h>
 #include <mrpt/gui/about_box.h>
+#include <mrpt/opengl/COpenGLScene.h>
 
 #include <memory>
 #include <mrpt/serialization/CArchive.h>

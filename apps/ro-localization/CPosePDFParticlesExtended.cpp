@@ -921,7 +921,7 @@ double CPosePDFParticlesExtended::auxiliarComputeObservationLikelihood(
 	else
 	{
 		ASSERT_(pdf->options.metricMaps.size() > particleIndexForMap);
-		map = pdf->options.metricMaps[particleIndexForMap];  //->m_gridMaps[0];
+		map = pdf->options.metricMaps[particleIndexForMap];
 	}
 
 	// For each observation:

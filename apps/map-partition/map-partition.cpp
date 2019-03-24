@@ -22,6 +22,8 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/gui.h>
 
 using namespace mrpt;

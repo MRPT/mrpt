@@ -425,7 +425,7 @@ void CHMTSLAM::initializeEmptyMap()
 
 		firstArea->m_hypotheses = LMH_hyps;
 		CMultiMetricMap::Ptr emptyMap =
-			CMultiMetricMap::Create(&m_options.defaultMapsInitializers);
+			CMultiMetricMap::Create(m_options.defaultMapsInitializers);
 
 		firstArea->m_nodeType = "Area";
 		firstArea->m_label = generateUniqueAreaLabel();

@@ -862,9 +862,9 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 	// Build the map of points to align:
 	CSimplePointsMap localMapPoints;
 
-	ASSERT_(LMH->m_particles[0].d->metricMaps.m_gridMaps.size() > 0);
-	// float	minDistBetweenPointsInLocalMaps = 0.02f; //3.0f *
-	// m_particles[0].d->metricMaps.m_gridMaps[0]->getResolution();
+	ASSERT_(
+		LMH->m_particles[0]
+			.d->metricMaps.countMapsByClass<COccupancyGridMap2D>() > 0);
 
 	// Build local map:
 	localMapPoints.clear();
@@ -895,11 +895,12 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 
 			// Select map to use with ICP:
 			CMetricMap* mapalign;
+			auto& mMap = part.d->metricMaps;
 
-			if (!part.d->metricMaps.m_pointsMaps.empty())
-				mapalign = part.d->metricMaps.m_pointsMaps[0].get();
-			else if (!part.d->metricMaps.m_gridMaps.empty())
-				mapalign = part.d->metricMaps.m_gridMaps[0].get();
+			if (auto pPts = mMap.mapByClass<CSimplePointsMap>(); pPts)
+				mapalign = pPts.get();
+			else if (auto pGrid = mMap.mapByClass<COccupancyGridMap2D>(); pGrid)
+				mapalign = pGrid.get();
 			else
 				THROW_EXCEPTION(
 					"There is no point or grid map. At least one needed for "
@@ -911,16 +912,6 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 				&icpInfo);
 
 			icpEstimation.copyFrom(*alignEst);
-
-#if 0
-			// HACK:
-			CPose3D Ap = finalEstimatedPoseGauss.mean - ith_last_pose;
-			double  Ap_dist = Ap.norm();
-			finalEstimatedPoseGauss.cov.zeros();
-			finalEstimatedPoseGauss.cov(0,0) = square( fabs(Ap_dist)*0.01 );
-			finalEstimatedPoseGauss.cov(1,1) = square( fabs(Ap_dist)*0.01 );
-			finalEstimatedPoseGauss.cov(2,2) = square( fabs(Ap.yaw())*0.02 );
-#endif
 
 			// Generate gaussian-distributed 2D-pose increments according to
 			// "finalEstimatedPoseGauss":

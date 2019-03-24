@@ -9,6 +9,7 @@
 
 #include <mrpt/random.h>
 #include <mrpt/maps/CMultiMetricMap.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/stock_observations.h>
 #include <mrpt/obs/CRawlog.h>
@@ -50,8 +51,9 @@ void BenchmarkGridmaps()
 	CObservation2DRangeScan scan1;
 	stock_observations::example2DRangeScan(scan1);
 
-	ASSERT_(metricMap.m_gridMaps.size());
-	COccupancyGridMap2D::Ptr gridMap = metricMap.m_gridMaps[0];
+	COccupancyGridMap2D::Ptr gridMap =
+		metricMap.mapByClass<COccupancyGridMap2D>();
+	ASSERT_(gridMap);
 	COccupancyGridMap2D gridMapCopy(*gridMap);
 
 	int i, N;
