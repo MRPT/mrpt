@@ -181,14 +181,17 @@ namespace mrpt
 
 			static const size_t INVALID_VOXEL_IDX = size_t(-1);
 
+			inline bool isOutOfBounds(const int cx, const int cy, const int cz) const {
+				return (cx<0 || cx >= static_cast<int>(m_size_x)) ||
+				(cy<0 || cy >= static_cast<int>(m_size_y)) ||
+				(cz<0 || cz >= static_cast<int>(m_size_z));
+			}
+
 			/** Gets the absolute index of a voxel in the linear container m_map[] from its cx,cy,cz indices, or -1 if out of map bounds (in any dimension). \sa x2idx(), y2idx(), z2idx() */
 			inline size_t cellAbsIndexFromCXCYCZ(const int cx, const int cy, const int cz) const {
-				if (cx<0 || cx >= static_cast<int>(m_size_x)) return INVALID_VOXEL_IDX;
-				if (cy<0 || cy >= static_cast<int>(m_size_y)) return INVALID_VOXEL_IDX;
-				if (cz<0 || cz >= static_cast<int>(m_size_z)) return INVALID_VOXEL_IDX;
+				if (isOutOfBounds(cx,cy,cz)) return INVALID_VOXEL_IDX;
 				return cx + cy*m_size_x + cz * m_size_x_times_y;
 			}
-				
 
 			/** Returns a pointer to the contents of a voxel given by its coordinates, or NULL if it is out of the map extensions.
 				*/
