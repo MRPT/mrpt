@@ -215,61 +215,66 @@ TEST(CObservation3DRangeScan, LoadAndCheckFloorPoints)
 	auto obs = sf.getObservationByClass<mrpt::obs::CObservation3DRangeScan>();
 
 	// Depth -> 3D points:
-	mrpt::maps::CSimplePointsMap pts;
 	mrpt::obs::T3DPointsProjectionParams pp;
-	obs->project3DPointsFromDepthImageInto(pts, pp);
-	// rotate to account for the sensor pose:
-	pts.changeCoordinatesReference(obs->sensorPose);
-
+	pp.takeIntoAccountSensorPoseOnRobot = true;
 	mrpt::math::CHistogram hist(-0.15, 0.15, 30);
 	std::vector<double> ptsz;
-	mrpt::containers::copy_container_typecasting(
-		pts.getPointsBufferRef_z(), ptsz);
-	hist.add(ptsz);
-
 	std::vector<double> bin_x, bin_count;
-	hist.getHistogram(bin_x, bin_count);
 
-	/*
-	Hist[0] x=-0.15 count= 0
-	Hist[1] x=-0.139655 count= 0
-	Hist[2] x=-0.12931 count= 0
-	Hist[3] x=-0.118966 count= 0
-	Hist[4] x=-0.108621 count= 0
-	Hist[5] x=-0.0982759 count= 0
-	Hist[6] x=-0.087931 count= 0
-	Hist[7] x=-0.0775862 count= 0
-	Hist[8] x=-0.0672414 count= 0
-	Hist[9] x=-0.0568966 count= 0
-	Hist[10] x=-0.0465517 count= 1
-	Hist[11] x=-0.0362069 count= 47
-	Hist[12] x=-0.0258621 count= 942
-	Hist[13] x=-0.0155172 count= 5593
-	Hist[14] x=-0.00517241 count= 12903
-	Hist[15] x=0.00517241 count= 9116
-	Hist[16] x=0.0155172 count= 4666
-	Hist[17] x=0.0258621 count= 2677
-	Hist[18] x=0.0362069 count= 595
-	Hist[19] x=0.0465517 count= 4
-	Hist[20] x=0.0568966 count= 0
-	Hist[21] x=0.0672414 count= 0
-	Hist[22] x=0.0775862 count= 0
-	Hist[23] x=0.087931 count= 0
-	Hist[24] x=0.0982759 count= 0
-	Hist[25] x=0.108621 count= 0
-	Hist[26] x=0.118966 count= 0
-	Hist[27] x=0.12931 count= 0
-	Hist[28] x=0.139655 count= 0
-	Hist[29] x=0.15 count= 0
-	//for (unsigned int i=0;i<bin_x.size();i++)
-	//std::cout << "Hist[" << i << "] x=" << bin_x[i] << " count= " <<
-	bin_count[i] << std::endl;
-	*/
+	// decimation=1
+	{
+		mrpt::maps::CSimplePointsMap pts;
+		obs->project3DPointsFromDepthImageInto(pts, pp);
 
-	EXPECT_LE(bin_count[11], 100);
-	EXPECT_LE(bin_count[12], 1000);
-	EXPECT_GE(bin_count[14], 12000);
-	EXPECT_LE(bin_count[18], 700);
-	EXPECT_LE(bin_count[19], 20);
+		mrpt::containers::copy_container_typecasting(
+			pts.getPointsBufferRef_z(), ptsz);
+		hist.add(ptsz);
+		hist.getHistogram(bin_x, bin_count);
+
+		/*
+		//for (unsigned int i=0;i<bin_x.size();i++)
+		//std::cout << "Hist[" << i << "] x=" << bin_x[i] << " count= " <<
+		bin_count[i] << std::endl;
+		*/
+
+		EXPECT_LE(bin_count[11], 100);
+		EXPECT_LE(bin_count[12], 1000);
+		EXPECT_GE(bin_count[14], 12000);
+		EXPECT_LE(bin_count[18], 700);
+		EXPECT_LE(bin_count[19], 20);
+	}
+
+	// decimation=8
+	{
+		mrpt::maps::CSimplePointsMap pts;
+		pp.decimation = 8;
+		obs->project3DPointsFromDepthImageInto(pts, pp);
+
+		mrpt::containers::copy_container_typecasting(
+			pts.getPointsBufferRef_z(), ptsz);
+		hist.clear();
+		hist.add(ptsz);
+		hist.getHistogram(bin_x, bin_count);
+
+		// for (unsigned int i = 0; i < bin_x.size(); i++)
+		//	std::cout << "Hist[" << i << "] x=" << bin_x[i]
+		//   << " count= " << bin_count[i] << std::endl;
+		/*
+		Hist[11] x=-0.0362069 count= 0
+		Hist[12] x=-0.0258621 count= 7
+		Hist[13] x=-0.0155172 count= 24
+		Hist[14] x=-0.00517241 count= 130
+		Hist[15] x=0.00517241 count= 234
+		Hist[16] x=0.0155172 count= 129
+		Hist[17] x=0.0258621 count= 85
+		Hist[18] x=0.0362069 count= 32
+		Hist[19] x=0.0465517 count= 3
+		 */
+		EXPECT_LE(bin_count[11], 2);
+		EXPECT_LE(bin_count[12], 10);
+		EXPECT_GE(bin_count[14], 100);
+		EXPECT_LE(bin_count[18], 40);
+		EXPECT_LE(bin_count[19], 5);
+	}
 }
 #endif
