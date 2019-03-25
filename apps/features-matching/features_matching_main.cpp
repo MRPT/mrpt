@@ -12,6 +12,7 @@
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/math/data_utils.h>
+#include <mrpt/obs/stock_observations.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/vision/CFeatureExtraction.h>
 
@@ -24,9 +25,6 @@ using namespace mrpt::io;
 using namespace mrpt::vision;
 using namespace mrpt;
 using namespace std;
-
-#include "../common/sample_image1.h"
-#include "../common/sample_image2.h"
 
 static string file1, file2;
 
@@ -127,11 +125,7 @@ Descriptors:
 			THROW_EXCEPTION_FMT("Error loading file: %s", file1.c_str());
 	}
 	else
-	{
-		CMemoryStream buf;
-		buf.assignMemoryNotOwn(sample_image1, sizeof(sample_image1));
-		archiveFrom(buf) >> img1;
-	}
+		mrpt::obs::stock_observations::exampleImage(img1, 1);
 
 	if (!file2.empty())
 	{
@@ -139,11 +133,7 @@ Descriptors:
 			THROW_EXCEPTION_FMT("Error loading file: %s", file2.c_str());
 	}
 	else
-	{
-		CMemoryStream buf;
-		buf.assignMemoryNotOwn(sample_image2, sizeof(sample_image2));
-		archiveFrom(buf) >> img2;
-	}
+		mrpt::obs::stock_observations::exampleImage(img2, 1);
 
 	// Only extract patchs if we are using it: descAny means take the patch:
 	if (desc_to_compute != descAny)

@@ -15,8 +15,6 @@ project(features-matching)
 # Define the executable target:
 add_executable(${PROJECT_NAME}
 	features_matching_main.cpp
-	../common/sample_image1.h
-	../common/sample_image2.h
 	 ${MRPT_VERSION_RC_FILE}
 )
 
