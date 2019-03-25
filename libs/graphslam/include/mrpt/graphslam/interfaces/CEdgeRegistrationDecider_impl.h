@@ -28,7 +28,7 @@ void CEdgeRegistrationDecider<GRAPH_T>::registerNewEdge(
 	const constraint_t& rel_edge)
 {
 	MRPT_LOG_DEBUG_STREAM(
-	    "Registering new edge: " << from << " => " << to << "\n"
+		"Registering new edge: " << from << " => " << to << "\n"
 								 << "\tRelative Edge: "
 								 << rel_edge.getMeanVal().asString()
 								 << "\tNorm: " << rel_edge.getMeanVal().norm());
