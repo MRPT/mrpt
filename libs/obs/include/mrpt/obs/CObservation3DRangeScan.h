@@ -47,6 +47,11 @@ struct T3DPointsProjectionParams
 	/** (Default:false) set to true if you want an organized point cloud */
 	bool MAKE_ORGANIZED{false};
 
+	/** (Default:1) If !=1, split the range image in blocks of DxD
+	 * (D=decimation), and only generates one point per block, with the minimum
+	 * valid range. */
+	uint8_t decimation{1};
+
 	T3DPointsProjectionParams() = default;
 };
 /** Used in CObservation3DRangeScan::convertTo2DScan() */
