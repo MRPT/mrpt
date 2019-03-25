@@ -81,7 +81,7 @@ double grid3d_test_insert2DScan(int res_cm, int a2)
 	return tictac.Tac() / N;
 }
 
-double grid3d_test_insert3DScan(int res_cm, int numReps)
+double grid3d_test_insert3DScan(int res_cm, int DECIM)
 {
 	auto& rn = mrpt::random::getRandomGenerator();
 	rn.randomize(333);
@@ -104,7 +104,9 @@ double grid3d_test_insert3DScan(int res_cm, int numReps)
 		mrpt::math::TPoint3D(-3.0, -5.0, -2.0),
 		mrpt::math::TPoint3D(10.0, 5.0, 2.0), 0.01f * res_cm);
 
-	const long N = numReps;
+	gridmap.insertionOptions.decimation_3d_range = DECIM;
+
+	const long N = 10;
 	CTicTac tictac;
 	for (long i = 0; i < N; i++)
 	{
@@ -138,15 +140,22 @@ void register_tests_grid3D()
 	lstTests.emplace_back("gridmap3D: resize", grid3d_resize);
 
 	// clang-format off
-
 	lstTests.emplace_back("gridmap3D: insert 2Dscan (voxels=5cm)", grid3d_test_insert2DScan, 5);
 	lstTests.emplace_back("gridmap3D: insert 2Dscan (voxels=10cm)", grid3d_test_insert2DScan, 10);
 	lstTests.emplace_back("gridmap3D: insert 2Dscan (voxels=15cm)", grid3d_test_insert2DScan, 15);
 	lstTests.emplace_back("gridmap3D: insert 2Dscan (voxels=20cm)", grid3d_test_insert2DScan, 20);
 
-	lstTests.emplace_back("gridmap3D: insert 3Dscan (voxels=5cm)", grid3d_test_insert3DScan, 5,10);
-	lstTests.emplace_back("gridmap3D: insert 3Dscan (voxels=10cm)", grid3d_test_insert3DScan, 10,10);
-	lstTests.emplace_back("gridmap3D: insert 3Dscan (voxels=15cm)", grid3d_test_insert3DScan, 15,10);
-	lstTests.emplace_back("gridmap3D: insert 3Dscan (voxels=20cm)", grid3d_test_insert3DScan, 20,10);
+
+#define TESTS_3DSCAN_FOR_DECIM(DECIM_)	\
+	lstTests.emplace_back("gridmap3D: insert 3Dscan (voxels=5cm, DECIM=" #DECIM_ ")", grid3d_test_insert3DScan, 5, DECIM_); \
+	lstTests.emplace_back("gridmap3D: insert 3Dscan (voxels=10cm, DECIM=" #DECIM_ ")", grid3d_test_insert3DScan, 10, DECIM_); \
+	lstTests.emplace_back("gridmap3D: insert 3Dscan (voxels=15cm, DECIM=" #DECIM_ ")", grid3d_test_insert3DScan, 15, DECIM_); \
+	lstTests.emplace_back("gridmap3D: insert 3Dscan (voxels=20cm, DECIM=" #DECIM_ ")", grid3d_test_insert3DScan, 20, DECIM_)
 	// clang-format on
+
+	TESTS_3DSCAN_FOR_DECIM(1);
+	TESTS_3DSCAN_FOR_DECIM(8);
+	TESTS_3DSCAN_FOR_DECIM(16);
+
+#undef TESTS_3DSCAN_FOR_DECIM
 }

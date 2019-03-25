@@ -100,6 +100,8 @@ void COccupancyGridMap3D::internal_insertObservationScan3D(
 	mrpt::maps::CSimplePointsMap pts;
 	mrpt::obs::T3DPointsProjectionParams pp;
 	pp.takeIntoAccountSensorPoseOnRobot = true;
+	pp.decimation = insertionOptions.decimation_3d_range;
+
 	const_cast<mrpt::obs::CObservation3DRangeScan&>(o)
 		.project3DPointsFromDepthImageInto(pts, pp);
 
