@@ -391,7 +391,7 @@ void COccupancyGridMap3D::serializeTo(mrpt::serialization::CArchive& out) const
 	out << insertionOptions.maxDistanceInsertion
 		<< insertionOptions.maxOccupancyUpdateCertainty
 		<< insertionOptions.maxFreenessUpdateCertainty
-		<< insertionOptions.decimation;
+		<< insertionOptions.decimation << insertionOptions.decimation_3d_range;
 
 	// Likelihood:
 	out.WriteAs<int32_t>(likelihoodOptions.likelihoodMethod);
@@ -442,7 +442,8 @@ void COccupancyGridMap3D::serializeFrom(
 			in >> insertionOptions.maxDistanceInsertion >>
 				insertionOptions.maxOccupancyUpdateCertainty >>
 				insertionOptions.maxFreenessUpdateCertainty >>
-				insertionOptions.decimation;
+				insertionOptions.decimation >>
+				insertionOptions.decimation_3d_range;
 
 			// Likelihood:
 			in.ReadAsAndCastTo<int32_t, TLikelihoodMethod>(

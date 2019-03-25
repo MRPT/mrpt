@@ -227,7 +227,14 @@ class COccupancyGridMap3D
 		/** A value in the range [0.5,1] for updating a free voxel. (default=0
 		 * means use the same than maxOccupancyUpdateCertainty) */
 		float maxFreenessUpdateCertainty{.0f};
-		/** Specify the decimation of the range scan (default=1: take all) */
+		/** Specify the decimation of 3D range scans.
+		 * "N" means keeping the minimum range of each block of "NxN" range
+		 * pixels.
+		 * (default=8)
+		 */
+		uint16_t decimation_3d_range{8};
+
+		/** Decimation for insertPointCloud() or 2D range scans (Default: 1) */
 		uint16_t decimation{1};
 	};
 
