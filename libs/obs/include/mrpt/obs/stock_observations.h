@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/img/CImage.h>
 #include <mrpt/obs/obs_frwds.h>
 
 /** A few stock observations for easy reuse in unit tests, examples, etc.
@@ -20,5 +21,11 @@ namespace mrpt::obs::stock_observations
  * \ingroup mrpt_obs_grp
  */
 void example2DRangeScan(mrpt::obs::CObservation2DRangeScan& s, int i = 0);
+
+/** Example images (an 800x640 image pair from a Bumblebee 1)
+ * Implemented indices: 0,1.
+ * \ingroup mrpt_obs_grp
+ */
+void exampleImage(mrpt::img::CImage& im, int i = 0);
 
 }  // namespace mrpt::obs::stock_observations

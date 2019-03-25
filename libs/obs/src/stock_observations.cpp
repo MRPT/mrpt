@@ -9,9 +9,14 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
+#include <mrpt/io/CMemoryStream.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/stock_observations.h>
+#include <mrpt/serialization/CArchive.h>
 #include <array>
+
+#include "sample_image1.h"
+#include "sample_image2.h"
 
 using namespace mrpt::obs;
 
@@ -165,4 +170,21 @@ void stock_observations::example2DRangeScan(
 	s.loadFromVectors(
 		SCAN_RANGES.at(i).size(), &SCAN_RANGES.at(i).at(0),
 		&SCAN_VALID.at(i).at(0));
+}
+
+void stock_observations::exampleImage(mrpt::img::CImage& im, int i)
+{
+	mrpt::io::CMemoryStream buf;
+	switch (i)
+	{
+		case 0:
+			buf.assignMemoryNotOwn(sample_image1, sizeof(sample_image1));
+			break;
+		case 1:
+			buf.assignMemoryNotOwn(sample_image2, sizeof(sample_image2));
+			break;
+		default:
+			THROW_EXCEPTION("Out of bound index in exampleImage()");
+	}
+	mrpt::serialization::archiveFrom(buf) >> im;
 }

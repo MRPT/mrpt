@@ -48,26 +48,9 @@ void dummy_do_nothing_with_string(const std::string& s)
 	S = s;
 }
 
-// Benchmark of sample images:
-#include "../common/sample_image1.h"
-#include "../common/sample_image2.h"
-
 void getTestImage(unsigned int img_index, mrpt::img::CImage& out_img)
 {
-	CMemoryStream buf;
-	switch (img_index)
-	{
-		case 0:  // RIGHT image of a stereo pair at lab 2.3.7 in Malaga
-			// (640x480)
-			buf.assignMemoryNotOwn(sample_image1, sizeof(sample_image1));
-			break;
-		case 1:  // LEFT image of a stereo pair at lab 2.3.7 in Malaga (640x480)
-			buf.assignMemoryNotOwn(sample_image2, sizeof(sample_image2));
-			break;
-		default:
-			THROW_EXCEPTION("Sample image index out of range!");
-	}
-	archiveFrom(buf) >> out_img;
+	mrpt::obs::stock_observations::exampleImage(out_img, img_index);
 }
 
 #include "run_build_tables.h"
