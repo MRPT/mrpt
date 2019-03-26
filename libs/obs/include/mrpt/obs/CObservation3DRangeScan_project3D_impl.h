@@ -60,8 +60,8 @@ namespace detail {
 		pca.resize(idx);  // Actual number of valid pts
 	}
 
-    template <typename POINTMAP, bool isDepth>
-    inline void range2XYZ_LUT(
+	template <typename POINTMAP, bool isDepth>
+	inline void range2XYZ_LUT(
 	    mrpt::utils::PointCloudAdapter<POINTMAP>& pca,
 	    mrpt::obs::CObservation3DRangeScan& src_obs,
 	    const mrpt::obs::T3DPointsProjectionParams& pp,
@@ -304,7 +304,7 @@ namespace detail {
 	    const mrpt::math::CMatrix& rangeImage,
 	    mrpt::utils::PointCloudAdapter<POINTMAP>& pca,
 	    std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
-	    const mrpt::obs::TRangeImageFilterParams& fp, bool MAKE_ORGANIZED,
+	    const mrpt::obs::TRangeImageFilterParams& fp, bool MAKE_DENSE,
 	    const int DECIM)
 	{
 		TRangeImageFilter rif(fp);
@@ -320,7 +320,7 @@ namespace detail {
 					const auto ky = *kys++, kz = *kzs++;
 					if (!rif.do_range_filter(r, c, D))
 					{
-						if (MAKE_ORGANIZED) pca.setInvalidPoint(idx++);
+						if (!MAKE_DENSE) pca.setInvalidPoint(idx++);
 						continue;
 					}
 					pca.setPointXYZ(idx, D /*x*/, ky * D /*y*/, kz * D /*z*/);
@@ -351,7 +351,7 @@ namespace detail {
 						}
 					if (!valid_pt)
 					{
-						if (MAKE_ORGANIZED) pca.setInvalidPoint(idx++);
+						if (!MAKE_DENSE) pca.setInvalidPoint(idx++);
 						continue;
 					}
 					const auto eq_r = rd * DECIM + DECIM / 2,
