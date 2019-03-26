@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/typemeta/TTypeName.h>
 #include <mrpt/serialization/serialization_frwds.h>
+#include <mrpt/typemeta/TTypeName.h>
 namespace mrpt::opengl
 {
 /** Each of the possible lights of a 3D scene \sa COpenGLViewport

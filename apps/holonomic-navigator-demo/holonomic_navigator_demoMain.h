@@ -11,28 +11,28 @@
 #define HOLONOMIC_NAVIGATOR_DEMOMAIN_H
 
 //(*Headers(holonomic_navigator_demoFrame)
+#include <wx/frame.h>
+#include <wx/menu.h>
 #include <wx/notebook.h>
+#include <wx/panel.h>
+#include <wx/radiobox.h>
 #include <wx/sizer.h>
 #include <wx/stattext.h>
-#include <wx/radiobox.h>
-#include <wx/menu.h>
+#include <wx/statusbr.h>
 #include <wx/textctrl.h>
 #include <wx/things/toggle.h>
-#include "MyGLCanvas.h"
-#include <wx/panel.h>
-#include <wx/frame.h>
 #include <wx/timer.h>
-#include <wx/statusbr.h>
+#include "MyGLCanvas.h"
 //*)
 
-#include <mrpt/nav.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/CDisk.h>
-#include <mrpt/opengl/CSimpleLine.h>
-#include <mrpt/opengl/CSetOfLines.h>
-#include <mrpt/opengl/CPointCloud.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>  // It's in the lib mrpt-maps
 #include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/nav.h>
+#include <mrpt/opengl/CDisk.h>
+#include <mrpt/opengl/CPlanarLaserScan.h>  // It's in the lib mrpt-maps
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CSimpleLine.h>
 #include <memory>  // unique_ptr
 
 // JLBC: Unix X headers have these funny things...

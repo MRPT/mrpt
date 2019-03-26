@@ -8,19 +8,19 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/core/integer_select.h>
 #include <mrpt/img/CImage.h>
+#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CPolygon.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/TRangeImageFilter.h>
-#include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/CPose2D.h>
-#include <mrpt/math/CPolygon.h>
-#include <mrpt/math/CMatrix.h>
-#include <mrpt/typemeta/TEnumType.h>
 #include <mrpt/opengl/pointcloud_adapters.h>
-#include <mrpt/core/integer_select.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/serialization/serialization_frwds.h>
+#include <mrpt/typemeta/TEnumType.h>
 
 namespace mrpt
 {
@@ -46,6 +46,11 @@ struct T3DPointsProjectionParams
 	bool USE_SSE2{true};
 	/** (Default:false) set to true if you want an organized point cloud */
 	bool MAKE_ORGANIZED{false};
+
+	/** (Default:1) If !=1, split the range image in blocks of DxD
+	 * (D=decimation), and only generates one point per block, with the minimum
+	 * valid range. */
+	uint8_t decimation{1};
 
 	T3DPointsProjectionParams() = default;
 };

@@ -16,8 +16,8 @@
 #if MRPT_HAS_LIBDC1394_2
 #include <dc1394/control.h>
 #include <dc1394/conversions.h>
-#include <dc1394/utils.h>
 #include <dc1394/register.h>
+#include <dc1394/utils.h>
 #endif
 
 using namespace std;

@@ -8,10 +8,10 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/poses/CPose2D.h>
-#include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/system/datetime.h>
 #include <mrpt/kinematics/CVehicleVelCmd.h>
+#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/system/datetime.h>
 
 namespace mrpt::kinematics
 {

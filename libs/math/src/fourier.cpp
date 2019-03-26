@@ -9,9 +9,9 @@
 
 #include "math-precomp.h"  // Precompiled headers
 
+#include <mrpt/core/bits_math.h>
 #include <mrpt/math/fourier.h>
 #include <algorithm>
-#include <mrpt/core/bits_math.h>
 #include <cmath>
 
 using namespace mrpt;

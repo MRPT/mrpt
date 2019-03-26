@@ -31,12 +31,13 @@
  *
  */
 
-#include "sdkcommon.h"
 #include "hal/abs_rxtx.h"
-#include "hal/thread.h"
-#include "hal/locker.h"
 #include "hal/event.h"
+#include "hal/locker.h"
+#include "hal/thread.h"
 #include "rplidar_driver_serial.h"
+#include "rptypes.h"
+#include "sdkcommon.h"
 
 #ifndef min
 #define min(a, b) (((a) < (b)) ? (a) : (b))

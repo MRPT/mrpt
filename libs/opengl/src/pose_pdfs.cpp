@@ -10,19 +10,19 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CEllipsoid.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/stock_objects.h>
 
-#include <mrpt/poses/CPosePDFSOG.h>
+#include <mrpt/poses/CPointPDFParticles.h>
+#include <mrpt/poses/CPointPDFSOG.h>
+#include <mrpt/poses/CPose3DPDFParticles.h>
+#include <mrpt/poses/CPose3DPDFSOG.h>
+#include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFParticles.h>
-#include <mrpt/poses/CPointPDFSOG.h>
-#include <mrpt/poses/CPointPDFParticles.h>
-#include <mrpt/poses/CPose3DPDFSOG.h>
-#include <mrpt/poses/CPose3DPDFParticles.h>
-#include <mrpt/poses/CPose3DQuatPDFGaussian.h>
+#include <mrpt/poses/CPosePDFSOG.h>
 
 using namespace mrpt;
 using namespace mrpt::math;

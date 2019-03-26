@@ -80,6 +80,8 @@ forwarded to the low-level reactive navigator.
 			- This new module has been created to hold all serial devices &
 networking classes, with minimal dependencies.
 		- \ref mrpt_maps_grp
+			- mrpt::maps::CMultiMetricMap has been greatly simplified and now it
+is actually defined in the mrpt-maps library.
 			- New map type: mrpt::maps::CPointsMapXYZI for pointclouds with an
 intensity channel.
 			- New observation class: mrpt::obs::CObservationPointCloud

@@ -8,23 +8,22 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <mrpt/math/CArrayNumeric.h>
-#include <mrpt/math/num_jacobian.h>
-#include <mrpt/math/utils.h>
-#include <mrpt/math/num_jacobian.h>
 #include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/system/CTimeLogger.h>
-#include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/containers/stl_containers_utils.h>
-#include <mrpt/system/COutputLogger.h>
 #include <mrpt/containers/stl_containers_utils.h>  // find_in_vector
-#include <mrpt/system/CTicTac.h>
+#include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/io/CFileOutputStream.h>
-#include <mrpt/typemeta/TEnumType.h>
+#include <mrpt/math/CArrayNumeric.h>
+#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/num_jacobian.h>
+#include <mrpt/math/utils.h>
+#include <mrpt/system/COutputLogger.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/vector_loadsave.h>
+#include <mrpt/typemeta/TEnumType.h>
 
 namespace mrpt
 {

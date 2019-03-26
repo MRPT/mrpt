@@ -9,11 +9,11 @@
 
 #include "nav-precomp.h"  // Precomp header
 
-#include <mrpt/nav/holonomic/CHolonomicFullEval.h>
-#include <mrpt/serialization/CArchive.h>
 #include <mrpt/core/round.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_containers.h>
+#include <mrpt/nav/holonomic/CHolonomicFullEval.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <cmath>
 

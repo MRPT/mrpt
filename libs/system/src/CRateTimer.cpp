@@ -9,8 +9,8 @@
 
 #include "system-precomp.h"  // Precompiled headers
 
-#include <mrpt/system/CRateTimer.h>
 #include <mrpt/core/exceptions.h>
+#include <mrpt/system/CRateTimer.h>
 #include <chrono>
 #include <thread>
 

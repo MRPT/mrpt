@@ -11,11 +11,11 @@
 
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CTexturedPlane.h>
-#include <mrpt/serialization/CArchive.h>
 #include <mrpt/opengl/gl_utils.h>
+#include <mrpt/serialization/CArchive.h>
 
-#include "opengl_internals.h"
 #include <algorithm>
+#include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;

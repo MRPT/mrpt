@@ -9,10 +9,10 @@
 
 #include "vision-precomp.h"  // Precompiled headers
 
-#include <mrpt/vision/CDifodo.h>
-#include <mrpt/system/CTicTac.h>
 #include <mrpt/core/round.h>
 #include <mrpt/poses/Lie/SE.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/vision/CDifodo.h>
 
 using namespace mrpt;
 using namespace mrpt::vision;

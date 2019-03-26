@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "detectors-precomp.h"  // Precompiled headers
 #include <mrpt/detectors.h>
+#include "detectors-precomp.h"  // Precompiled headers
 
 #include <mrpt/core/initializer.h>
 

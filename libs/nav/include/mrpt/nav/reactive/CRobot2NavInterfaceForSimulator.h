@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/nav/reactive/CRobot2NavInterface.h>
-#include <mrpt/kinematics/CVehicleSimul_Holo.h>
 #include <mrpt/kinematics/CVehicleSimul_DiffDriven.h>
+#include <mrpt/kinematics/CVehicleSimul_Holo.h>
+#include <mrpt/nav/reactive/CRobot2NavInterface.h>
 
 namespace mrpt::nav
 {

@@ -23,8 +23,9 @@
 #else
 
 #include <windows.h>
-#include <wlanapi.h>
+
 #include <objbase.h>
+#include <wlanapi.h>
 #include <wtypes.h>
 #pragma comment(lib, "Wlanapi.lib")
 

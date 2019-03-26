@@ -9,10 +9,10 @@
 
 #include "io-precomp.h"  // Precompiled headers
 
-#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/core/exceptions.h>
-#include <cstring>  // strerror
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <cerrno>
+#include <cstring>  // strerror
 
 #include <zlib.h>
 

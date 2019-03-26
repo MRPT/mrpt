@@ -9,28 +9,28 @@
 
 #pragma once
 
-#include <mrpt/math/CMatrix.h>
-#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/img/TColor.h>
-#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/math/CMatrix.h>
 #include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/slam/CICP.h>
+#include <mrpt/slam/CIncrementalMapPartitioner.h>
 
+#include <mrpt/graphs/CHypothesisNotFoundException.h>
+#include <mrpt/graphs/THypothesis.h>
 #include <mrpt/graphslam/interfaces/CRangeScanEdgeRegistrationDecider.h>
+#include <mrpt/graphslam/misc/TNodeProps.h>
 #include <mrpt/graphslam/misc/TSlidingWindow.h>
 #include <mrpt/graphslam/misc/TUncertaintyPath.h>
-#include <mrpt/graphslam/misc/TNodeProps.h>
-#include <mrpt/graphs/THypothesis.h>
-#include <mrpt/graphs/CHypothesisNotFoundException.h>
 
 #include <map>
-#include <vector>
-#include <string>
 #include <set>
+#include <string>
 #include <utility>
+#include <vector>
 
 namespace mrpt::graphslam::deciders
 {

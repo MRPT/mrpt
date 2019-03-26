@@ -36,46 +36,46 @@
 #define MAX_DESC 500
 
 /// Qt includes
-#include <QMainWindow>
-#include <QObject>
-#include <QWidget>
 #include <QApplication>
-#include <QtWidgets>
 #include <QButtonGroup>
-#include <QLabel>
-#include <QPushButton>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
 #include <QCheckBox>
-#include <QRadioButton>
-#include <QLineEdit>
-#include <QMessageBox>
-#include <QGroupBox>
-#include <QListWidget>
 #include <QComboBox>
-#include <QFileDialog>
-#include <QMap>
-#include <QtGui>
-#include <QVector>
-#include <QMouseEvent>
 #include <QEvent>
-#include <QThread>
-#include <QtCore>
-#include <QProgressBar>
+#include <QFileDialog>
 #include <QFutureWatcher>
+#include <QGroupBox>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QListWidget>
+#include <QMainWindow>
+#include <QMap>
+#include <QMessageBox>
+#include <QMouseEvent>
+#include <QObject>
+#include <QProgressBar>
+#include <QPushButton>
+#include <QRadioButton>
+#include <QThread>
+#include <QVBoxLayout>
+#include <QVector>
+#include <QWidget>
 #include <QtConcurrent/QtConcurrent>
 #include <QtConcurrent/QtConcurrentRun>
+#include <QtCore>
+#include <QtGui>
+#include <QtWidgets>
 
 /// standard c++ includes
+#include <dirent.h>
 #include <cstdio>
 #include <cstdlib>
-#include <string>
-#include <sstream>
 #include <fstream>
-#include <iostream>
-#include <dirent.h>
 #include <functional>  // bind
+#include <iostream>
 #include <mutex>  // scoped_lock
+#include <sstream>
+#include <string>
 
 /// opencv includes
 #include <mrpt/otherlibs/do_opencv_includes.h>
@@ -85,9 +85,9 @@
 
 /// vision tasks includes
 #include "my_qlabel.h"
+#include "place_recognition.h"
 #include "tracker.h"
 #include "visual_odometry.h"
-#include "place_recognition.h"
 
 using namespace mrpt::vision;
 using namespace mrpt::math;

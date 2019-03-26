@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include <mrpt/core/aligned_std_map.h>
 #include <mrpt/containers/map_as_vector.h>
+#include <mrpt/core/aligned_std_map.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>  // For mrpt::math::CMatrixDouble
 
 namespace mrpt::math

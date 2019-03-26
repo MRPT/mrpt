@@ -8,12 +8,12 @@
    +---------------------------------------------------------------------------+
    */
 #include "CObservationTree.h"
-#include "CObservationTreeModel.h"
 #include "CNode.h"
+#include "CObservationTreeModel.h"
 
 #include <QContextMenuEvent>
-#include <QMenu>
 #include <QDebug>
+#include <QMenu>
 
 CObservationTree::CObservationTree(QWidget* parent) : QTreeView(parent) {}
 void CObservationTree::setModel(QAbstractItemModel* model)

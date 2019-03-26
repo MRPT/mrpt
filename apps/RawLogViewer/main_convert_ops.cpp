@@ -9,21 +9,21 @@
 
 #include "xRawLogViewerMain.h"
 
-#include <wx/choicdlg.h>
-#include <wx/progdlg.h>
 #include <wx/app.h>
+#include <wx/choicdlg.h>
 #include <wx/msgdlg.h>
+#include <wx/progdlg.h>
 #include <wx/textdlg.h>
 
 // General global variables:
-#include <mrpt/obs/CObservationImage.h>
-#include <mrpt/obs/CObservationStereoImages.h>
-#include <mrpt/obs/CObservationOdometry.h>
-#include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/system/filesystem.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/obs/CObservationImage.h>
+#include <mrpt/obs/CObservationOdometry.h>
+#include <mrpt/obs/CObservationStereoImages.h>
+#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/filesystem.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;

@@ -9,9 +9,9 @@
 
 #pragma once
 
+#include <mrpt/bayes/CKalmanFilterCapable.h>
+#include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CParticleFilterData.h>
 #include <mrpt/bayes/CProbabilityParticle.h>
-#include <mrpt/bayes/CKalmanFilterCapable.h>
-#include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/bayes/CRejectionSamplingCapable.h>

@@ -9,13 +9,13 @@
 
 #include "poses-precomp.h"  // Precompiled headers
 
-#include <mrpt/poses/CPoseRandomSampler.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/poses/CPosePDFParticles.h>
-#include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/poses/CPose3DPDFSOG.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPosePDFParticles.h>
+#include <mrpt/poses/CPosePDFSOG.h>
+#include <mrpt/poses/CPoseRandomSampler.h>
 #include <mrpt/random.h>
 
 using namespace mrpt;

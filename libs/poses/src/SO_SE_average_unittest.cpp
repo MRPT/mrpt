@@ -7,9 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/poses/SO_SE_average.h>
-#include <mrpt/math/wrap2pi.h>
 #include <gtest/gtest.h>
+#include <mrpt/math/wrap2pi.h>
+#include <mrpt/poses/SO_SE_average.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;

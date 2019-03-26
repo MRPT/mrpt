@@ -31,10 +31,10 @@
  *
  */
 
-#include "arch/linux/arch_linux.h"
 #include "arch/linux/net_serial.h"
-#include <termios.h>
 #include <sys/select.h>
+#include <termios.h>
+#include "arch/linux/arch_linux.h"
 
 namespace rp
 {

@@ -16,19 +16,19 @@
  ---------------------------------------------------------------*/
 
 #include <mrpt/config/CConfigFile.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
-#include <mrpt/system/os.h>
-#include <mrpt/system/string_utils.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/slam/CRangeBearingKFSLAM.h>
-#include <mrpt/slam/CRangeBearingKFSLAM2D.h>
-#include <mrpt/obs/CRawlog.h>
 #include <mrpt/math/ops_containers.h>
-#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/obs/CRawlog.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/stock_objects.h>
+#include <mrpt/slam/CRangeBearingKFSLAM.h>
+#include <mrpt/slam/CRangeBearingKFSLAM2D.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/string_utils.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;

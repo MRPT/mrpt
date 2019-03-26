@@ -9,11 +9,11 @@
 
 #include "config-precomp.h"  // Precompiled headers
 
-#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/config/CConfigFileMemory.h>
-#include <iostream>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/core/format.h>
+#include <iostream>
 
 using namespace mrpt::config;
 

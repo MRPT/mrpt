@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/io/CMemoryStream.h>
 #include <gtest/gtest.h>
+#include <mrpt/io/CMemoryStream.h>
 
 MRPT_TODO("implement tests!");
 TEST(CMemoryStream, readwrite) {}

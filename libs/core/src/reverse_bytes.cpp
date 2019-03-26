@@ -10,8 +10,8 @@
 #include "core-precomp.h"  // Precompiled headers
 
 #include <mrpt/core/reverse_bytes.h>
-#include <cstring>
 #include <cstdlib>
+#include <cstring>
 
 // These #defines from:
 // https://github.com/boostorg/endian/blob/master/include/boost/endian/detail/intrinsic.hpp

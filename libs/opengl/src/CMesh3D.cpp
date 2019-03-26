@@ -9,8 +9,8 @@
 
 #include "opengl-precomp.h"  // Precompiled header
 
-#include <mrpt/opengl/CMesh3D.h>
 #include <mrpt/img/color_maps.h>
+#include <mrpt/opengl/CMesh3D.h>
 #include <mrpt/serialization/CArchive.h>
 
 #include "opengl_internals.h"

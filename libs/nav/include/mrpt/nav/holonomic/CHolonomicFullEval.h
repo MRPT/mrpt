@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include "CAbstractHolonomicReactiveMethod.h"
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>
+#include "CAbstractHolonomicReactiveMethod.h"
 
 namespace mrpt::nav
 {

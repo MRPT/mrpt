@@ -12,13 +12,13 @@
 //   [MRPT]/samples/ransac-data-association/
 // ------------------------------------------------------
 
-#include <mrpt/random.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/math/geometry.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFSOG.h>
-#include <mrpt/math/geometry.h>
+#include <mrpt/random.h>
 #include <mrpt/tfest/se2.h>
-#include <mrpt/maps/CSimplePointsMap.h>
 
 #include <gtest/gtest.h>
 

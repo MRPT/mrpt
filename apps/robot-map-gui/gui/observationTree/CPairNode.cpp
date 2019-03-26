@@ -9,8 +9,8 @@
    */
 #include "CPairNode.h"
 
-#include "CPosesNode.h"
 #include "CObservationsNode.h"
+#include "CPosesNode.h"
 
 using namespace mrpt;
 using namespace mrpt::maps;

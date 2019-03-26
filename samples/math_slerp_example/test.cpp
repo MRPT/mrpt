@@ -12,12 +12,12 @@
  * Execute a Spherical Linear Interpolation given 2 poses.
  */
 
-#include <mrpt/math/slerp.h>
-#include <mrpt/system/CTicTac.h>
-#include <mrpt/img/TColor.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/img/TColor.h>
+#include <mrpt/math/slerp.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
+#include <mrpt/system/CTicTac.h>
 #include <iostream>
 
 using namespace std;

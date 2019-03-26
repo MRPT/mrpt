@@ -9,9 +9,9 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
+#include <mrpt/math/ops_vectors.h>  // << of std::vector()
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/math/ops_vectors.h>  // << of std::vector()
 #include <iostream>
 #if MRPT_HAS_MATLAB
 #include <mexplus/mxarray.h>

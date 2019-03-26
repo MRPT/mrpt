@@ -26,11 +26,11 @@
 
 #include "hmtslam-precomp.h"  // Precomp header
 
-#include <mrpt/io/CFileStream.h>
 #include <mrpt/config/CConfigFile.h>
+#include <mrpt/io/CFileStream.h>
+#include <mrpt/io/CMemoryStream.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/io/CMemoryStream.h>
 
 #include <mrpt/system/os.h>
 
@@ -425,7 +425,7 @@ void CHMTSLAM::initializeEmptyMap()
 
 		firstArea->m_hypotheses = LMH_hyps;
 		CMultiMetricMap::Ptr emptyMap =
-			CMultiMetricMap::Create(&m_options.defaultMapsInitializers);
+			CMultiMetricMap::Create(m_options.defaultMapsInitializers);
 
 		firstArea->m_nodeType = "Area";
 		firstArea->m_label = generateUniqueAreaLabel();

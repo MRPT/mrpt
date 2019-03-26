@@ -9,9 +9,9 @@
 
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
-#include <mrpt/system/os.h>
-#include <mrpt/hwdrivers/CPhidgetInterfaceKitProximitySensors.h>
 #include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/hwdrivers/CPhidgetInterfaceKitProximitySensors.h>
+#include <mrpt/system/os.h>
 
 #include <algorithm>
 #include <iostream>

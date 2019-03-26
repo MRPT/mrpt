@@ -9,8 +9,8 @@
 
 #include "obs-precomp.h"  // Precomp header
 
-#include <mrpt/maps/TMetricMapInitializer.h>
 #include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/maps/TMetricMapInitializer.h>
 #include <mrpt/serialization/CArchive.h>
 
 using namespace std;
@@ -78,8 +78,7 @@ void TSetOfMetricMapInitializers::loadFromConfigFile(
 
 	TMetricMapTypesRegistry& mmr = TMetricMapTypesRegistry::Instance();
 
-	const TMetricMapTypesRegistry::TListRegisteredMaps& allMapKinds =
-		mmr.getAllRegistered();
+	const auto& allMapKinds = mmr.getAllRegistered();
 	for (const auto& allMapKind : allMapKinds)
 	{
 		//  ; Creation of maps:
@@ -124,7 +123,6 @@ void TSetOfMetricMapInitializers::dumpToTextStream(std::ostream& out) const
 	out << "===============================================================\n\n"
 		   "      Set of internal maps for 'CMultiMetricMap' object\n\n"
 		   "=================================================================\n"
-		   // Show each map:
 		   "Showing next the "
 		<< this->size() << " internal maps:\n\n";
 

@@ -9,14 +9,14 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
-#include <mrpt/serialization/CArchive.h>
 #include <mrpt/maps/CMetricMap.h>
-#include <mrpt/poses/CPosePDF.h>
-#include <mrpt/poses/CPoint3D.h>
-#include <mrpt/poses/CPose3D.h>
-#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/poses/CPoint3D.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPosePDF.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::obs;
 using namespace mrpt::maps;

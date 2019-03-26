@@ -9,11 +9,11 @@
 
 #include "nav-precomp.h"  // Precomp header
 
+#include <mrpt/core/round.h>
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/opengl/CMesh.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/core/round.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <limits>
 

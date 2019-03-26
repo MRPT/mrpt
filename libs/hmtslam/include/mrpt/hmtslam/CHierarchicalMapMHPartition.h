@@ -8,14 +8,14 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/hmtslam/CLocalMetricHypothesis.h>
 #include <mrpt/hmtslam/CHMHMapArc.h>
 #include <mrpt/hmtslam/CHMHMapNode.h>
+#include <mrpt/hmtslam/CLocalMetricHypothesis.h>
 
-#include <mrpt/poses/CPose3DPDFSOG.h>
-#include <mrpt/poses/CPose3DPDFGaussian.h>
-#include <mrpt/system/COutputLogger.h>
 #include <mrpt/opengl/opengl_frwds.h>
+#include <mrpt/poses/CPose3DPDFGaussian.h>
+#include <mrpt/poses/CPose3DPDFSOG.h>
+#include <mrpt/system/COutputLogger.h>
 
 #include <map>
 

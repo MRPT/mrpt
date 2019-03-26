@@ -9,37 +9,38 @@
 
 #include "system-precomp.h"  // Precompiled headers
 
+#include <mrpt/core/exceptions.h>  // for MRPT_END, MRPT_START, e
+#include <mrpt/core/format.h>
 #include <mrpt/system/CDirectoryExplorer.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>  // for sprintf
-#include <mrpt/core/format.h>
-#include <mrpt/core/exceptions.h>  // for MRPT_END, MRPT_START, e
 
+#include <algorithm>
+#include <cstdio>
 #include <cstring>
 #include <string>
 #include <vector>
-#include <cstdio>
-#include <algorithm>
 
 #ifdef _WIN32
-#include <conio.h>
 #include <windows.h>
-#include <process.h>
-#include <tlhelp32.h>
-#include <sys/utime.h>
-#include <io.h>
+
+#include <conio.h>
 #include <direct.h>
+#include <io.h>
+#include <process.h>
+#include <sys/utime.h>
+#include <tlhelp32.h>
 #else
-#include <termios.h>
 #include <sys/time.h>
-#include <ctime>
+#include <termios.h>
 #include <unistd.h>
 #include <utime.h>
 #include <cerrno>
+#include <ctime>
 #endif
 
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 
 #if !defined(_MSC_VER)
 #define _access access

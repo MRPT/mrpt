@@ -36,32 +36,32 @@ const int INVALID_CLICK_COORDS = -99999;
 #endif
 
 #ifndef WX_PRECOMP
-#include "wx/object.h"
-#include "wx/font.h"
 #include "wx/colour.h"
+#include "wx/cursor.h"
+#include "wx/dcclient.h"
+#include "wx/font.h"
+#include "wx/intl.h"
+#include "wx/log.h"
+#include "wx/object.h"
 #include "wx/settings.h"
 #include "wx/sizer.h"
-#include "wx/log.h"
-#include "wx/intl.h"
-#include "wx/dcclient.h"
-#include "wx/cursor.h"
 #endif
 
 #include <mrpt/otherlibs/mathplot/mathplot.h>
 
 #include <wx/bmpbuttn.h>
+#include <wx/image.h>
 #include <wx/module.h>
 #include <wx/msgdlg.h>
-#include <wx/image.h>
 #include <wx/tipwin.h>
 
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES  // (For VS to define M_PI, etc. in cmath)
 #endif
+#include <algorithm>  // For std::min()/max()
 #include <cmath>
 #include <cstdio>  // used only for debug
 #include <ctime>  // used for representation of x axes involving date
-#include <algorithm>  // For std::min()/max()
 
 // #include "pixel.xpm"
 

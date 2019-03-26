@@ -11,13 +11,13 @@
 // building them with eigen3 eats a lot of RAM and may be a problem while
 // compiling in small systems.
 
-#include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/CArrayNumeric.h>
+#include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/ops_matrices.h>
 //#include <mrpt/math/utils.h>
+#include <gtest/gtest.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/random.h>
-#include <gtest/gtest.h>
 
 using namespace mrpt;
 using namespace mrpt::math;

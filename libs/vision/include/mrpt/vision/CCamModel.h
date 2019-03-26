@@ -9,10 +9,10 @@
 #pragma once
 
 #include <mrpt/img/TCamera.h>
+#include <mrpt/math/CArrayNumeric.h>
+#include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/system/os.h>
 #include <mrpt/vision/utils.h>
-#include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/math/CArrayNumeric.h>
 
 namespace mrpt::vision
 {

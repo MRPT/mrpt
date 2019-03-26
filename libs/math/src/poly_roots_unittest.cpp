@@ -7,9 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/math/poly_roots.h>
-#include <mrpt/core/format.h>
 #include <gtest/gtest.h>
+#include <mrpt/core/format.h>
+#include <mrpt/math/poly_roots.h>
 #include <cmath>
 
 using namespace std;

@@ -11,14 +11,14 @@
 
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CParticleFilterData.h>
-#include <mrpt/random.h>
 #include <mrpt/obs/CActionCollection.h>
-#include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
+#include <mrpt/obs/CActionRobotMovement3D.h>
+#include <mrpt/random.h>
 #include <mrpt/slam/TKLDParams.h>
 
-#include <mrpt/math/distributions.h>  // chi2inv
 #include <mrpt/math/data_utils.h>  // averageLogLikelihood()
+#include <mrpt/math/distributions.h>  // chi2inv
 
 #include <mrpt/slam/PF_implementations_data.h>
 

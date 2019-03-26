@@ -9,28 +9,28 @@
 
 #pragma once
 
-#include <mrpt/poses/CPose3D.h>
-#include <mrpt/obs/CObservation.h>
-#include <mrpt/system/COutputLogger.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
+#include <mrpt/obs/CObservation.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/system/COutputLogger.h>
 
+#include <mrpt/hwdrivers/CDUO3DCamera.h>
 #include <mrpt/hwdrivers/CFFMPEG_InputStream.h>
+#include <mrpt/hwdrivers/CImageGrabber_FlyCapture2.h>
 #include <mrpt/hwdrivers/CImageGrabber_OpenCV.h>
 #include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
-#include <mrpt/hwdrivers/CImageGrabber_FlyCapture2.h>
-#include <mrpt/hwdrivers/CStereoGrabber_Bumblebee_libdc1394.h>
-#include <mrpt/hwdrivers/CSwissRanger3DCamera.h>
 #include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/hwdrivers/COpenNI2Sensor.h>
-#include <mrpt/hwdrivers/CDUO3DCamera.h>
+#include <mrpt/hwdrivers/CStereoGrabber_Bumblebee_libdc1394.h>
+#include <mrpt/hwdrivers/CSwissRanger3DCamera.h>
 
-#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/hwdrivers/CStereoGrabber_SVS.h>
+#include <mrpt/io/CFileGZInputStream.h>
 
 #include <mrpt/gui/CDisplayWindow.h>
-#include <memory>  // unique_ptr
 #include <functional>
+#include <memory>  // unique_ptr
 
 namespace mrpt::hwdrivers
 {

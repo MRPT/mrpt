@@ -9,13 +9,13 @@
 
 #include "io-precomp.h"  // Precompiled headers
 
-#include <mrpt/io/CStream.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/reverse_bytes.h>
-#include <iostream>
+#include <mrpt/io/CStream.h>
 #include <cstdarg>
-#include <vector>
 #include <cstring>  // strlen()
+#include <iostream>
+#include <vector>
 
 //#include "internal_class_registry.h"
 

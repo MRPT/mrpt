@@ -9,11 +9,11 @@
 
 #include "vision-lgpl-precomp.h"  // Precompiled headers
 
-#include <mrpt/vision/bundle_adjustment.h>
-#include <mrpt/system/CTimeLogger.h>
+#include <mrpt/core/aligned_std_map.h>
 #include <mrpt/math/CSparseMatrix.h>
 #include <mrpt/math/ops_containers.h>
-#include <mrpt/core/aligned_std_map.h>
+#include <mrpt/system/CTimeLogger.h>
+#include <mrpt/vision/bundle_adjustment.h>
 
 #include <memory>  // unique_ptr
 

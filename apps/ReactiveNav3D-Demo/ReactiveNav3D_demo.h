@@ -7,15 +7,15 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <mrpt/core/round.h>
+#include <mrpt/gui.h>
+#include <mrpt/kinematics/CVehicleSimul_DiffDriven.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/nav/reactive/CReactiveNavigationSystem3D.h>
 #include <mrpt/nav/reactive/CRobot2NavInterfaceForSimulator.h>
 #include <mrpt/opengl.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/system/CObserver.h>
-#include <mrpt/maps/COccupancyGridMap2D.h>
-#include <mrpt/kinematics/CVehicleSimul_DiffDriven.h>
-#include <mrpt/gui.h>
-#include <mrpt/core/round.h>
 #include "map2_1.xpm"
 #include "map2_2.xpm"
 #include "map2_3.xpm"

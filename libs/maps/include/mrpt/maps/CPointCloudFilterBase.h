@@ -9,8 +9,8 @@
 #pragma once
 
 #include <mrpt/system/datetime.h>
-#include <vector>
 #include <memory>
+#include <vector>
 
 namespace mrpt
 {

@@ -8,15 +8,15 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <memory>  // shared_ptr
-#include <unordered_map>
-#include <mutex>
-#include <list>
-#include <any>
-#include <iostream>
-#include <functional>
 #include <mrpt/typemeta/TTypeName.h>
 #include <mrpt/typemeta/TTypeName_stl.h>
+#include <any>
+#include <functional>
+#include <iostream>
+#include <list>
+#include <memory>  // shared_ptr
+#include <mutex>
+#include <unordered_map>
 
 namespace mrpt
 {

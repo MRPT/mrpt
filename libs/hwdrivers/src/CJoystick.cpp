@@ -15,6 +15,7 @@
 
 #ifdef _WIN32
 #include <windows.h>
+
 #include <mmsystem.h>
 
 #if !defined(__GNUC__)
@@ -24,17 +25,16 @@
 
 #if defined(MRPT_OS_LINUX) || defined(__APPLE__)
 // Linux
+#include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/time.h>
 #include <sys/types.h>
-#include <cstdlib>
-#include <fcntl.h>
 #include <unistd.h>
-#include <cstdio>
 #include <cerrno>
-#include <cstring>
-#include <cstdlib>
 #include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #if defined(MRPT_OS_LINUX) && defined(HAVE_LINUX_INPUT_H)
 #include <linux/input.h>

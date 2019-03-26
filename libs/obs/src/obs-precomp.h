@@ -12,8 +12,8 @@
 #if MRPT_ENABLE_PRECOMPILED_HDRS
 
 // Observations:
-#include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CAction.h>
+#include <mrpt/obs/CObservation.h>
 
 // Very basic classes for maps:
 #include <mrpt/maps/CMetricMap.h>

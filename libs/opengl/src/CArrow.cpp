@@ -9,9 +9,9 @@
 
 #include "opengl-precomp.h"  // Precompiled header
 
-#include <mrpt/opengl/CArrow.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/geometry.h>
+#include <mrpt/opengl/CArrow.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
 

@@ -9,33 +9,33 @@
 
 #include "system-precomp.h"  // Precompiled headers
 
-#include <mrpt/system/scheduler.h>
-#include <mrpt/core/exceptions.h>
 #include <mrpt/config.h>
+#include <mrpt/core/exceptions.h>
+#include <mrpt/system/scheduler.h>
 
 #ifdef MRPT_OS_WINDOWS
 #include <windows.h>
+
 #include <process.h>
 #include <tlhelp32.h>
 #else
 #include <pthread.h>
-#include <unistd.h>
 #include <sys/select.h>
 #include <sys/time.h>
-#include <ctime>
 #include <unistd.h>
 #include <utime.h>
 #include <cerrno>
 #include <csignal>
 #include <cstring>  // strerror()
+#include <ctime>
 #endif
 
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #ifdef MRPT_OS_APPLE
-#include <sys/sysctl.h>
 #include <mach/mach_init.h>
 #include <mach/thread_act.h>
+#include <sys/sysctl.h>
 #endif
 
 #include <iostream>

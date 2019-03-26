@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/random.h>
 #include <mrpt/core/round.h>
+#include <mrpt/random.h>
 
 #include "common.h"
 

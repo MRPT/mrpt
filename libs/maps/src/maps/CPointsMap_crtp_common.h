@@ -9,8 +9,8 @@
 #pragma once
 
 #include <mrpt/core/round.h>
-#include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 
 namespace mrpt::maps::detail
 {

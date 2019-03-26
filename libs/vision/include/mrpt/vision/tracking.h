@@ -11,11 +11,11 @@
 
 #include <mrpt/vision/types.h>
 
-#include <mrpt/vision/CFeature.h>
-#include <mrpt/vision/TSimpleFeature.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/TParameters.h>
+#include <mrpt/vision/CFeature.h>
+#include <mrpt/vision/TSimpleFeature.h>
 #include <memory>  // for unique_ptr
 
 namespace mrpt::vision

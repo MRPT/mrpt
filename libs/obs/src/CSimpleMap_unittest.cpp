@@ -7,8 +7,8 @@
 | Released under BSD License. See: https://www.mrpt.org/License          |
 +------------------------------------------------------------------------+ */
 
-#include <mrpt/maps/CSimpleMap.h>
 #include <gtest/gtest.h>
+#include <mrpt/maps/CSimpleMap.h>
 #include <test_mrpt_common.h>
 
 TEST(CSimpleMap, ParseFileInFormat_v1_5)

@@ -15,8 +15,8 @@
 //        and do it only after including MRPT headers...
 
 // Make sure the essential PCL headers are included:
-#include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 
 namespace mrpt::opengl
 {

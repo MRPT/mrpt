@@ -8,11 +8,11 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/nav/reactive/TCandidateMovementPTG.h>
-#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/rtti/CObject.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/expr/CRuntimeCompiledExpression.h>
+#include <mrpt/nav/reactive/TCandidateMovementPTG.h>
+#include <mrpt/rtti/CObject.h>
 
 namespace mrpt::nav
 {

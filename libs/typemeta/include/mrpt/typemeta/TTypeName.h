@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <cstdint>
 #include <mrpt/typemeta/static_string.h>
+#include <cstdint>
 
 #ifdef __APPLE__
 #include <memory>

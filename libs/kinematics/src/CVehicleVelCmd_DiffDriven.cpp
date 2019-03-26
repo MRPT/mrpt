@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "kinematics-precomp.h"  // Precompiled header
+
 #include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>
 #include <mrpt/serialization/CArchive.h>
 

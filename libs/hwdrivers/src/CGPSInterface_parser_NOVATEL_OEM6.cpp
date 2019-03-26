@@ -9,11 +9,11 @@
 
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
-#include <mrpt/system/os.h>
-#include <mrpt/system/filesystem.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/system/crc.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 #include <iostream>
 
 using namespace mrpt::hwdrivers;

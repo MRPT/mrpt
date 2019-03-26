@@ -11,8 +11,8 @@
 
 #include <mrpt/hwdrivers/CSwissRanger3DCamera.h>
 
-#include <mrpt/system/string_utils.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/system/string_utils.h>
 
 IMPLEMENTS_GENERIC_SENSOR(CSwissRanger3DCamera, mrpt::hwdrivers)
 
@@ -25,12 +25,12 @@ IMPLEMENTS_GENERIC_SENSOR(CSwissRanger3DCamera, mrpt::hwdrivers)
 #include <libMesaSR.h>
 
 #ifdef MRPT_OS_LINUX
-#include <termios.h>
 #include <stdio.h>
+#include <termios.h>
 #include <unistd.h>
 
-#include <linux/sockios.h>
 #include <asm/ioctls.h>
+#include <linux/sockios.h>
 #include <sys/select.h>
 #endif
 #endif

@@ -8,13 +8,13 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/gui.h>
-#include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
-#include <mrpt/vision/CImagePyramid.h>
-#include <mrpt/vision/types.h>
-#include <mrpt/vision/CFeatureExtraction.h>
-#include <mrpt/vision/TSimpleFeature.h>
 #include <mrpt/img/TColor.h>
+#include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/vision/CFeatureExtraction.h>
+#include <mrpt/vision/CImagePyramid.h>
+#include <mrpt/vision/TSimpleFeature.h>
+#include <mrpt/vision/types.h>
 #include <iostream>
 
 using namespace std;

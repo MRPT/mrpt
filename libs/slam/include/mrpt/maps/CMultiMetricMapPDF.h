@@ -10,8 +10,8 @@
 
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/CSimpleMap.h>
-#include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
+#include <mrpt/poses/CPosePDFParticles.h>
 
 #include <mrpt/poses/CPoseRandomSampler.h>
 
@@ -36,9 +36,9 @@ class CRBPFParticleData : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CRBPFParticleData)
    public:
-	CRBPFParticleData(
-		const TSetOfMetricMapInitializers* mapsInitializers = nullptr)
-		: mapTillNow(mapsInitializers), robotPath()
+	CRBPFParticleData() = default;
+	CRBPFParticleData(const TSetOfMetricMapInitializers& mapsInit)
+		: mapTillNow(mapsInit), robotPath()
 	{
 	}
 
@@ -111,7 +111,7 @@ class CMultiMetricMapPDF
 	struct TPredictionParams : public mrpt::config::CLoadableOptions
 	{
 		/** Default settings method */
-		TPredictionParams();
+		TPredictionParams() = default;
 
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
@@ -140,12 +140,6 @@ class CMultiMetricMapPDF
 		 */
 		float ICPGlobalAlign_MinQuality{0.70f};
 
-		/** [update stage] If the likelihood is computed through the occupancy
-		 * grid map, then this structure is passed to the map when updating the
-		 * particles weights in the update stage.
-		 */
-		COccupancyGridMap2D::TLikelihoodOptions update_gridMapLikelihoodOptions;
-
 		mrpt::slam::TKLDParams KLD_params;
 
 		/** ICP parameters, used only when "PF_algorithm=2" in the particle
@@ -154,14 +148,13 @@ class CMultiMetricMapPDF
 
 	} options;
 
-	/** Constructor
-	 */
+	/** Constructor */
+	CMultiMetricMapPDF() = default;
+
 	CMultiMetricMapPDF(
-		const bayes::CParticleFilter::TParticleFilterOptions& opts =
-			bayes::CParticleFilter::TParticleFilterOptions(),
-		const mrpt::maps::TSetOfMetricMapInitializers* mapsInitializers =
-			nullptr,
-		const TPredictionParams* predictionOptions = nullptr);
+		const bayes::CParticleFilter::TParticleFilterOptions& opts,
+		const mrpt::maps::TSetOfMetricMapInitializers& mapsInitializers,
+		const TPredictionParams& predictionOptions);
 
 	/** Clear all elements of the maps, and restore all paths to a single
 	 * starting pose */

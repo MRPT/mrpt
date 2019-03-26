@@ -12,7 +12,6 @@
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::nav;
 

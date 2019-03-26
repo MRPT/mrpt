@@ -7,13 +7,13 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/system/filesystem.h>  // for ASSERT_FILE_EXISTS_
 #include <mrpt/hwdrivers/CCameraSensor.h>
-#include <mrpt/vision/CStereoRectifyMap.h>
 #include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/system/CTimeLogger.h>
+#include <mrpt/system/filesystem.h>  // for ASSERT_FILE_EXISTS_
+#include <mrpt/vision/CStereoRectifyMap.h>
 #include <iostream>
 
 using namespace mrpt;

@@ -9,13 +9,13 @@
 
 #pragma once
 
-#include <mrpt/maps/CMetricMap.h>
 #include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/core/pimpl.h>
 #include <mrpt/core/safe_pointers.h>
+#include <mrpt/maps/CMetricMap.h>
+#include <mrpt/obs/obs_frwds.h>
 #include <mrpt/opengl/COctoMapVoxels.h>
 #include <mrpt/opengl/COpenGLScene.h>
-#include <mrpt/obs/obs_frwds.h>
-#include <mrpt/core/pimpl.h>
 
 namespace mrpt::maps
 {

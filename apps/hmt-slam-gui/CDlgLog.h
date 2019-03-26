@@ -11,15 +11,15 @@
 #define CDLGLOG_H
 
 //(*Headers(CDlgLog)
+#include <wx/button.h>
 #include <wx/dialog.h>
 #include <wx/sizer.h>
-#include <wx/button.h>
 #include <wx/textctrl.h>
 #include <wx/timer.h>
 //*)
 
-#include <memory>  // unique_ptr
 #include <mrpt/gui/CMyRedirector.h>
+#include <memory>  // unique_ptr
 
 class CDlgLog : public wxDialog
 {

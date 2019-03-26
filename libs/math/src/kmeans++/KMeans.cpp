@@ -12,10 +12,10 @@
 
 // Includes
 #include "KMeans.h"
-#include "KmTree.h"
-#include <sstream>
 #include <ctime>
+#include <sstream>
 #include <vector>
+#include "KmTree.h"
 using namespace std;
 
 // Logging

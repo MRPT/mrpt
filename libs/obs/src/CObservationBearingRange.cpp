@@ -9,11 +9,11 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
-#include <mrpt/serialization/CArchive.h>
-#include <mrpt/obs/CObservationBearingRange.h>
-#include <mrpt/system/os.h>
 #include <mrpt/math/matrix_serialization.h>  // for << ops
 #include <mrpt/math/wrap2pi.h>
+#include <mrpt/obs/CObservationBearingRange.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/os.h>
 #include <set>
 
 using namespace mrpt::obs;

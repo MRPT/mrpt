@@ -8,10 +8,10 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/CProbabilityDensityFunction.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPosePDF.h>
+#include <mrpt/serialization/CSerializable.h>
 
 namespace mrpt::poses
 {

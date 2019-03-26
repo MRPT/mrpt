@@ -13,9 +13,9 @@
 #include <mrpt/hwdrivers/CSICKTim561Eth_2050101.h>
 #include <mrpt/system/string_utils.h>
 
+#include <cstring>
 #include <iostream>
 #include <sstream>
-#include <cstring>
 
 #define APPERTURE 4.712385  // in radian <=> 270
 

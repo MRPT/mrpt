@@ -7,9 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/typemeta/static_string.h>
-#include <mrpt/typemeta/num_to_string.h>
 #include <gtest/gtest.h>
+#include <mrpt/typemeta/num_to_string.h>
+#include <mrpt/typemeta/static_string.h>
 
 using namespace mrpt::typemeta;
 

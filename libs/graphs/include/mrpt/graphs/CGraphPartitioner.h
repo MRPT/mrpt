@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/system/COutputLogger.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/ops_matrices.h>
+#include <mrpt/system/COutputLogger.h>
 
 namespace mrpt
 {

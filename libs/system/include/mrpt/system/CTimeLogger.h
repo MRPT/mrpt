@@ -8,10 +8,10 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/system/CTicTac.h>
-#include <mrpt/system/COutputLogger.h>
-#include <mrpt/core/exceptions.h>
 #include <mrpt/containers/ts_hash_map.h>
+#include <mrpt/core/exceptions.h>
+#include <mrpt/system/COutputLogger.h>
+#include <mrpt/system/CTicTac.h>
 #include <deque>
 #include <map>
 #include <optional>

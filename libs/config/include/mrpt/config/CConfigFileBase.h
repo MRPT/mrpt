@@ -8,12 +8,12 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <string>
-#include <vector>
-#include <type_traits>
-#include <mrpt/system/string_utils.h>  // tokenize
-#include <mrpt/core/exceptions.h>
 #include <mrpt/core/bits_math.h>  // DEG2RAD()
+#include <mrpt/core/exceptions.h>
+#include <mrpt/system/string_utils.h>  // tokenize
+#include <string>
+#include <type_traits>
+#include <vector>
 
 namespace mrpt
 {

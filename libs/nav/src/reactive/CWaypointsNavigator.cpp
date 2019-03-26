@@ -9,9 +9,9 @@
 
 #include "nav-precomp.h"  // Precomp header
 
+#include <mrpt/math/wrap2pi.h>
 #include <mrpt/nav/reactive/CWaypointsNavigator.h>
 #include <mrpt/poses/CPose2D.h>
-#include <mrpt/math/wrap2pi.h>
 
 using namespace mrpt::nav;
 using namespace std;

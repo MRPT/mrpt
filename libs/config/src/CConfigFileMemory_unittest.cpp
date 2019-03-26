@@ -7,12 +7,12 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/config/CConfigFileMemory.h>
-#include <mrpt/config/CConfigFile.h>
-#include <mrpt/system/filesystem.h>
 #include <gtest/gtest.h>
-#include <fstream>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/system/filesystem.h>
 #include <cstdlib>
+#include <fstream>
 
 TEST(CConfigFileMemory, readwrite)
 {

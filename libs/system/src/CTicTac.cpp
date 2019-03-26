@@ -17,8 +17,8 @@
 
 #include <mrpt/core/exceptions.h>
 #include <mrpt/system/CTicTac.h>
-#include <cstring>
 #include <cassert>
+#include <cstring>
 
 #include <type_traits>
 

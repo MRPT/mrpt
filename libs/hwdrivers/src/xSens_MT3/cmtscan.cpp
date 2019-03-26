@@ -33,14 +33,15 @@
 
 #ifdef _WIN32
 #include <windows.h>
-#include <string.h>
-#include <setupapi.h>
+
 #include <devguid.h>
 #include <regstr.h>
+#include <setupapi.h>
+#include <string.h>
 #else
+#include <dirent.h>
 #include <cstdlib>
 #include <cstring>
-#include <dirent.h>
 #endif
 
 #include "cmt3.h"

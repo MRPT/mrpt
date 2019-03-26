@@ -14,8 +14,8 @@
 #include <cstdint>
 
 #include <iostream>
-#include <string>
 #include <sstream>
+#include <string>
 
 namespace mrpt::graphs::detail
 {

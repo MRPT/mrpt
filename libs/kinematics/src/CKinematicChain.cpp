@@ -10,11 +10,11 @@
 #include "kinematics-precomp.h"  // Precompiled headers
 
 #include <mrpt/kinematics/CKinematicChain.h>
+#include <mrpt/opengl/CCylinder.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/CCylinder.h>
-#include <mrpt/opengl/stock_objects.h>
 
 using namespace mrpt;
 using namespace mrpt::math;

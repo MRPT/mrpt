@@ -9,12 +9,12 @@
 #ifndef XSPORTINFO_H
 #define XSPORTINFO_H
 
-#include "xstypesconfig.h"
-#include "pstdint.h"
-#include "xsdeviceid.h"
-#include "xsbaud.h"
-#include "xsstring.h"
 #include <stdio.h>
+#include "pstdint.h"
+#include "xsbaud.h"
+#include "xsdeviceid.h"
+#include "xsstring.h"
+#include "xstypesconfig.h"
 
 #ifdef __cplusplus
 extern "C"

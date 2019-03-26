@@ -9,9 +9,9 @@
 
 #include "io-precomp.h"  // Precompiled headers
 
-#include <mrpt/io/vector_loadsave.h>
 #include <mrpt/io/CFileInputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/io/vector_loadsave.h>
 
 using namespace mrpt;
 using namespace mrpt::io;

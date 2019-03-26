@@ -16,9 +16,9 @@
 
 #include <mrpt/pbmap.h>
 
-#include <mrpt/serialization/CArchive.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/serialization/CArchive.h>
 #include <pcl/io/io.h>
 #include <pcl/io/pcd_io.h>
 

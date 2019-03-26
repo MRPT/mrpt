@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <list>
 #include <mrpt/graphs/TNodeID.h>
+#include <list>
 #include <sstream>
 
 namespace mrpt::graphs

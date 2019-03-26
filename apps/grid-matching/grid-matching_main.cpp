@@ -7,30 +7,31 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/io/CFileStream.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/gui.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
-#include <mrpt/config/CConfigFile.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/poses/CPosePDFParticles.h>
-#include <mrpt/poses/CPoint2D.h>
+#include <mrpt/io/CFileStream.h>
+#include <mrpt/maps/CMultiMetricMap.h>
+#include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/math/wrap2pi.h>
-#include <mrpt/slam/CGridMapAligner.h>
-#include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/maps/CMultiMetricMap.h>
-#include <mrpt/gui.h>
-#include <mrpt/system/datetime.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/system/vector_loadsave.h>
-#include <mrpt/system/os.h>
-#include <mrpt/random.h>
-#include <mrpt/otherlibs/tclap/CmdLine.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/otherlibs/tclap/CmdLine.h>
+#include <mrpt/poses/CPoint2D.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPosePDFParticles.h>
+#include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/slam/CGridMapAligner.h>
+#include <mrpt/system/datetime.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/vector_loadsave.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -179,14 +180,14 @@ void do_grid_align()
 	}
 
 	// Create the map with a points & grid-map within:
-	the_map1.setListOfMaps(&map1_inits);
-	the_map2.setListOfMaps(&map2_inits);
+	the_map1.setListOfMaps(map1_inits);
+	the_map2.setListOfMaps(map2_inits);
 
-	ASSERT_(the_map1.m_gridMaps.size() >= 1);
-	ASSERT_(the_map2.m_gridMaps.size() >= 1);
+	COccupancyGridMap2D::Ptr grid1 = the_map1.mapByClass<COccupancyGridMap2D>();
+	COccupancyGridMap2D::Ptr grid2 = the_map2.mapByClass<COccupancyGridMap2D>();
 
-	COccupancyGridMap2D::Ptr grid1 = the_map1.m_gridMaps[0];
-	COccupancyGridMap2D::Ptr grid2 = the_map2.m_gridMaps[0];
+	ASSERT_(grid1);
+	ASSERT_(grid2);
 
 	// ---------------------------------------------
 	//				Options: RANSAC

@@ -8,16 +8,16 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/system/os.h>
-#include <mrpt/system/CTicTac.h>
-#include <mrpt/system/CObserver.h>
-#include <mrpt/opengl/gl_utils.h>
-#include <mrpt/opengl/stock_objects.h>
-#include <mrpt/opengl/CText.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CBox.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSphere.h>
+#include <mrpt/opengl/CText.h>
+#include <mrpt/opengl/gl_utils.h>
+#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/system/CObserver.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/os.h>
 #include <iostream>
 
 using namespace std;

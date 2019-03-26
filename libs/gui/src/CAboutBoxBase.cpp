@@ -9,11 +9,11 @@
 
 #include "gui-precomp.h"  // Precompiled headers
 
-#include "CAboutBoxBase.h"
 #include <mrpt/config.h>
-#include <mrpt/system/os.h>
 #include <mrpt/core/format.h>
 #include <mrpt/math/types_math.h>  // for Eigen version
+#include <mrpt/system/os.h>
+#include "CAboutBoxBase.h"
 
 using namespace mrpt;
 using namespace mrpt::system;

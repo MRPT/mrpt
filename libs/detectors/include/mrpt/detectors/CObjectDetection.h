@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include <mrpt/detectors/CDetectableObject.h>
 #include <mrpt/config/CConfigFile.h>
+#include <mrpt/detectors/CDetectableObject.h>
 #include <mrpt/img/CImage.h>
 
 namespace mrpt::detectors

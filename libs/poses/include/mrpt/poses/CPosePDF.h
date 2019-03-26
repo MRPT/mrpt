@@ -8,10 +8,10 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/serialization/CSerializable.h>
-#include <mrpt/poses/CPose2D.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CProbabilityDensityFunction.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/serialization/CSerializable.h>
 
 namespace mrpt::poses
 {

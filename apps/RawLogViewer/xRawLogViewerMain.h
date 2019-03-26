@@ -11,40 +11,40 @@
 #define XRAWLOGVIEWERMAIN_H
 
 //(*Headers(xRawLogViewerFrame)
-#include "CRawlogTreeView.h"
-#include <wx/notebook.h>
-#include <wx/sizer.h>
-#include <wx/stattext.h>
+#include <wx/button.h>
+#include <wx/combobox.h>
+#include <wx/frame.h>
 #include <wx/menu.h>
+#include <wx/notebook.h>
+#include <wx/panel.h>
+#include <wx/sizer.h>
+#include <wx/slider.h>
+#include <wx/splitter.h>
+#include <wx/statbmp.h>
+#include <wx/statline.h>
+#include <wx/stattext.h>
+#include <wx/statusbr.h>
 #include <wx/textctrl.h>
 #include <wx/things/toggle.h>
-#include <wx/splitter.h>
-#include <wx/statline.h>
-#include "MyGLCanvas.h"
-#include <wx/slider.h>
-#include <wx/panel.h>
-#include <wx/statbmp.h>
-#include <wx/button.h>
-#include <wx/frame.h>
 #include <wx/timer.h>
-#include <wx/combobox.h>
-#include <wx/statusbr.h>
+#include "CRawlogTreeView.h"
+#include "MyGLCanvas.h"
 //*)
 
-#include <wx/bitmap.h>
-#include <wx/image.h>
 #include <wx/artprov.h>
+#include <wx/bitmap.h>
 #include <wx/combobox.h>
+#include <wx/image.h>
 
+#include <wx/docview.h>
 #include <map>
 #include <string>
-#include <wx/docview.h>
 
 // General global variables:
-#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
+#include <mrpt/serialization/CSerializable.h>
 
 #include <mrpt/gui/WxUtils.h>
 

@@ -9,8 +9,8 @@
 
 #include "vision-precomp.h"  // Precompiled headers
 
-#include <mrpt/vision/pinhole.h>
 #include <mrpt/poses/CPose3DQuat.h>
+#include <mrpt/vision/pinhole.h>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>

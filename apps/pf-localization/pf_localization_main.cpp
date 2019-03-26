@@ -18,40 +18,38 @@
 
 #include <mrpt/slam/CMonteCarloLocalization2D.h>
 
-#include <mrpt/config/CConfigFile.h>
-#include <mrpt/math/ops_vectors.h>  // << for vector<>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/poses/CPose2D.h>
-#include <mrpt/poses/CPose2DInterpolator.h>
 #include <mrpt/bayes/CParticleFilter.h>
-#include <mrpt/random.h>
-
-#include <mrpt/obs/CActionRobotMovement2D.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/gui/CDisplayWindowPlots.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/maps/CMultiMetricMap.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/math/data_utils.h>
+#include <mrpt/math/distributions.h>
+#include <mrpt/math/ops_vectors.h>  // << for vector<>
+#include <mrpt/math/utils.h>
 #include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/maps/CSimpleMap.h>
-#include <mrpt/maps/COccupancyGridMap2D.h>
-#include <mrpt/maps/CMultiMetricMap.h>
-
-#include <mrpt/system/os.h>
-#include <mrpt/system/vector_loadsave.h>
-#include <mrpt/math/distributions.h>
-#include <mrpt/math/utils.h>
-#include <mrpt/system/CTicTac.h>
-#include <mrpt/io/CFileOutputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
-#include <mrpt/io/CFileGZInputStream.h>
-
+#include <mrpt/opengl/CDisk.h>
+#include <mrpt/opengl/CEllipsoid.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPointCloud.h>
-#include <mrpt/opengl/CEllipsoid.h>
-#include <mrpt/opengl/CDisk.h>
 #include <mrpt/opengl/stock_objects.h>
-
-#include <mrpt/gui/CDisplayWindowPlots.h>
-#include <mrpt/math/data_utils.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose2DInterpolator.h>
+#include <mrpt/random.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/vector_loadsave.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -230,7 +228,7 @@ void do_pf_localization(
 
 	// Load the set of metric maps to consider in the experiments:
 	CMultiMetricMap metricMap;
-	metricMap.setListOfMaps(&mapList);
+	metricMap.setListOfMaps(mapList);
 	mapList.dumpToConsole();
 
 	getRandomGenerator().randomize();
@@ -270,10 +268,11 @@ void do_pf_localization(
 			// It's a ".gridmap":
 			// -------------------------
 			printf("Loading gridmap from '.gridmap'...");
-			ASSERT_(metricMap.m_gridMaps.size() == 1);
+			auto grid = metricMap.mapByClass<COccupancyGridMap2D>();
+			ASSERT_(grid);
 			{
 				CFileGZInputStream f(MAP_FILE);
-				archiveFrom(f) >> (*metricMap.m_gridMaps[0]);
+				archiveFrom(f) >> (*grid);
 			}
 			printf("Ok\n");
 		}
@@ -319,9 +318,9 @@ void do_pf_localization(
 
 	// Gridmap / area of initial uncertainty:
 	COccupancyGridMap2D::TEntropyInfo gridInfo;
-	if (metricMap.m_gridMaps.size())
+	if (auto grid = metricMap.mapByClass<COccupancyGridMap2D>(); grid)
 	{
-		metricMap.m_gridMaps[0]->computeEntropy(gridInfo);
+		grid->computeEntropy(gridInfo);
 		printf(
 			"The gridmap has %.04fm2 observed area, %u observed cells\n",
 			gridInfo.effectiveMappedArea,
@@ -408,23 +407,8 @@ void do_pf_localization(
 				ASSERT_(fileExists(sOUT_DIR_3D));
 				deleteFiles(format("%s/*.*", sOUT_DIR_3D.c_str()));
 
-				if (!metricMap.m_gridMaps.empty())
-				{
-					metricMap.m_gridMaps[0]->saveAsBitmapFile(
-						format("%s/gridmap.png", sOUT_DIR.c_str()));
-					CFileOutputStream(
-						format("%s/gridmap_limits.txt", sOUT_DIR.c_str()))
-						.printf(
-							"%f %f %f %f", metricMap.m_gridMaps[0]->getXMin(),
-							metricMap.m_gridMaps[0]->getXMax(),
-							metricMap.m_gridMaps[0]->getYMin(),
-							metricMap.m_gridMaps[0]->getYMax());
-				}
-
-				// Save the landmarks for plot in matlab:
-				if (metricMap.m_landmarksMap)
-					metricMap.m_landmarksMap->saveToMATLABScript2D(
-						format("%s/plot_landmarks_map.m", sOUT_DIR.c_str()));
+				using namespace std::string_literals;
+				metricMap.saveMetricMapRepresentationToFile(sOUT_DIR + "/map"s);
 			}
 
 			int M = PARTICLE_COUNT;
@@ -448,9 +432,9 @@ void do_pf_localization(
 			if (!cfg.read_bool(
 					sect, "init_PDF_mode", false, /*Fail if not found*/ true))
 				pdf.resetUniformFreeSpace(
-					metricMap.m_gridMaps[0].get(), 0.7f, PARTICLE_COUNT,
-					init_PDF_min_x, init_PDF_max_x, init_PDF_min_y,
-					init_PDF_max_y,
+					metricMap.mapByClass<COccupancyGridMap2D>().get(), 0.7f,
+					PARTICLE_COUNT, init_PDF_min_x, init_PDF_max_x,
+					init_PDF_min_y, init_PDF_max_y,
 					DEG2RAD(cfg.read_float(sect, "init_PDF_min_phi_deg", -180)),
 					DEG2RAD(cfg.read_float(sect, "init_PDF_max_phi_deg", 180)));
 			else
@@ -870,7 +854,7 @@ void do_pf_localization(
 						// several are
 						// present.
 						COccupancyGridMap2D::Ptr gridmap =
-							metricMap.getMapByClass<COccupancyGridMap2D>();
+							metricMap.mapByClass<COccupancyGridMap2D>();
 						if (obs_scan && gridmap)  // We have both, go on:
 						{
 							// Simulate scan + uncertainty:

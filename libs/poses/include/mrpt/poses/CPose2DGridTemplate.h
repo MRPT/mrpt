@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/serialization/CSerializable.h>
-#include <mrpt/core/round.h>  // for round()
 #include <mrpt/core/bits_math.h>  // for DEG2RAD()
+#include <mrpt/core/round.h>  // for round()
+#include <mrpt/serialization/CSerializable.h>
 
 namespace mrpt::poses
 {

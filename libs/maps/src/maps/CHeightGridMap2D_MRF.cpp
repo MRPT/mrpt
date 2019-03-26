@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h"  // Precomp header
+
 #include <mrpt/maps/CHeightGridMap2D_MRF.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>

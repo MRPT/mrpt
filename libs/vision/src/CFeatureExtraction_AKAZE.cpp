@@ -17,9 +17,9 @@
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
 
+#include <mrpt/io/CMemoryStream.h>
 #include <mrpt/system/os.h>
 #include <mrpt/vision/CFeatureExtraction.h>  // important import
-#include <mrpt/io/CMemoryStream.h>
 
 using namespace mrpt::vision;
 using namespace mrpt::img;

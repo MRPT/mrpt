@@ -9,8 +9,8 @@
 #ifndef XSINT64ARRAY_H
 #define XSINT64ARRAY_H
 
-#include "xsarray.h"
 #include "pstdint.h"
+#include "xsarray.h"
 
 #ifdef __cplusplus
 extern "C"

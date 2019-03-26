@@ -8,18 +8,18 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/vision/CFeatureExtraction.h>
-#include <mrpt/maps/CMetricMap.h>
-#include <mrpt/maps/CLandmark.h>
-#include <mrpt/obs/CObservationImage.h>
-#include <mrpt/obs/CObservation2DRangeScan.h>
-#include <mrpt/obs/CObservationGPS.h>
-#include <mrpt/obs/CObservationBearingRange.h>
-#include <mrpt/serialization/CSerializable.h>
-#include <mrpt/math/CMatrix.h>
-#include <mrpt/containers/CDynamicGrid.h>
 #include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/containers/CDynamicGrid.h>
+#include <mrpt/maps/CLandmark.h>
+#include <mrpt/maps/CMetricMap.h>
+#include <mrpt/math/CMatrix.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservationBearingRange.h>
+#include <mrpt/obs/CObservationGPS.h>
+#include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/obs_frwds.h>
+#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/vision/CFeatureExtraction.h>
 
 namespace mrpt
 {

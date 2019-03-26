@@ -9,11 +9,11 @@
 
 #pragma once
 
-#include <mrpt/detectors/CObjectDetection.h>
 #include <mrpt/detectors/CCascadeClassifierDetection.h>
-#include <mrpt/system/CTimeLogger.h>
+#include <mrpt/detectors/CObjectDetection.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/obs_frwds.h>
+#include <mrpt/system/CTimeLogger.h>
 
 #include <future>
 

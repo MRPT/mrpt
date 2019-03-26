@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
 #include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
 #include <mrpt/system/CTicTac.h>
 #include <iostream>
 

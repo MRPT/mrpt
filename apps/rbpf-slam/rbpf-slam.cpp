@@ -18,24 +18,27 @@
 
 #include <mrpt/slam/CMetricMapBuilderRBPF.h>
 
-#include <mrpt/obs/CActionRobotMovement2D.h>
-#include <mrpt/obs/CActionRobotMovement3D.h>
-#include <mrpt/obs/CRawlog.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
-#include <mrpt/config/CConfigFile.h>
-#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/obs/CActionRobotMovement2D.h>
+#include <mrpt/obs/CActionRobotMovement3D.h>
+#include <mrpt/obs/CObservationGasSensors.h>
+#include <mrpt/obs/CObservationWirelessPower.h>
+#include <mrpt/obs/CRawlog.h>
+#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/random.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/memory.h>
 #include <mrpt/system/os.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
-
-#include <mrpt/opengl/CSetOfLines.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CEllipsoid.h>
-#include <mrpt/opengl/stock_objects.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -272,7 +275,7 @@ void MapBuilding_RBPF()
 			CRBPFParticleData* part_d = m_particle.d.get();
 			CMultiMetricMap& mmap = part_d->mapTillNow;
 			mrpt::maps::COccupancyGridMap2D::Ptr it_grid =
-				mmap.getMapByClass<mrpt::maps::COccupancyGridMap2D>();
+				mmap.mapByClass<mrpt::maps::COccupancyGridMap2D>();
 			ASSERTMSG_(
 				it_grid,
 				"No gridmap in multimetric map definition, but metric map "
@@ -439,8 +442,9 @@ void MapBuilding_RBPF()
 
 					const CMultiMetricMap* avrMap =
 						mapBuilder.mapPDF.getAveragedMetricMapEstimation();
-					ASSERT_(avrMap->m_gridMaps.size() > 0);
-					COccupancyGridMap2D::Ptr grid = avrMap->m_gridMaps[0];
+					COccupancyGridMap2D::Ptr grid =
+						avrMap->mapByClass<COccupancyGridMap2D>();
+					ASSERT_(grid);
 					grid->computeEntropy(entropy);
 
 					grid->saveAsBitmapFile(
@@ -476,7 +480,7 @@ void MapBuilding_RBPF()
 					mostLikMap->saveMetricMapRepresentationToFile(format(
 						"%s/mapbuilt_%05u_", OUT_DIR_MAPS.c_str(), step));
 
-					if (mostLikMap->m_gridMaps.size() > 0)
+					if (mostLikMap->countMapsByClass<COccupancyGridMap2D>() > 0)
 					{
 						CImage img;
 						mapBuilder.drawCurrentEstimationToImage(&img);
@@ -685,16 +689,8 @@ void MapBuilding_RBPF()
 	// Save gridmap extend (if exists):
 	const CMultiMetricMap* mostLikMap =
 		mapBuilder.mapPDF.getCurrentMostLikelyMetricMap();
-	if (mostLikMap->m_gridMaps.size() > 0)
-	{
-		CMatrix auxMat(1, 4);
-		auxMat(0, 0) = mostLikMap->m_gridMaps[0]->getXMin();
-		auxMat(0, 1) = mostLikMap->m_gridMaps[0]->getXMax();
-		auxMat(0, 2) = mostLikMap->m_gridMaps[0]->getYMin();
-		auxMat(0, 3) = mostLikMap->m_gridMaps[0]->getYMax();
-		auxMat.saveToTextFile(
-			format("%s/finalGridmapSize.txt", OUT_DIR), MATRIX_FORMAT_FIXED);
-	}
+	mostLikMap->saveMetricMapRepresentationToFile(
+		format("%s/finalMap", OUT_DIR));
 
 	// Save the most likely path of the particle set
 	FILE* f_pathPart;

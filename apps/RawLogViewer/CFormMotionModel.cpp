@@ -14,24 +14,24 @@
 #include <wx/string.h>
 //*)
 
-#include "xRawLogViewerMain.h"
-#include <wx/msgdlg.h>
-#include <wx/filedlg.h>
-#include <wx/app.h>
-#include <wx/progdlg.h>
-#include <wx/imaglist.h>
-#include <wx/busyinfo.h>
-#include <wx/log.h>
-#include <wx/textdlg.h>
 #include <mrpt/gui/wx28-fixes.h>
+#include <wx/app.h>
+#include <wx/busyinfo.h>
+#include <wx/filedlg.h>
+#include <wx/imaglist.h>
+#include <wx/log.h>
+#include <wx/msgdlg.h>
+#include <wx/progdlg.h>
+#include <wx/textdlg.h>
+#include "xRawLogViewerMain.h"
 
 // General global variables:
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
-#include <mrpt/system/filesystem.h>
 #include <mrpt/obs/CActionCollection.h>
-#include <mrpt/serialization/CArchive.h>
 #include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/filesystem.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;

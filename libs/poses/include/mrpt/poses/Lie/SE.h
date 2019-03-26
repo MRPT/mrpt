@@ -8,11 +8,11 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/poses/poses_frwds.h>
+#include <mrpt/core/optional_ref.h>
 #include <mrpt/math/CArrayNumeric.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/core/optional_ref.h>
+#include <mrpt/poses/poses_frwds.h>
 
 /** \defgroup mrpt_poses_lie_grp Lie Algebra methods for SO(2),SO(3),SE(2),SE(3)
  * \ingroup poses_grp */

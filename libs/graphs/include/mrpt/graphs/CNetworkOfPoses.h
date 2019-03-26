@@ -17,25 +17,25 @@
 
 #include <mrpt/graphs/CDirectedGraph.h>
 #include <mrpt/graphs/CDirectedTree.h>
-#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/graphs/THypothesis.h>
+#include <mrpt/graphs/TMRSlamNodeAnnotations.h>
+#include <mrpt/graphs/TNodeAnnotations.h>
+#include <mrpt/graphs/dijkstra.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
-#include <mrpt/system/TParameters.h>
-#include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/math/utils.h>
-#include <mrpt/poses/poses_frwds.h>
-#include <mrpt/system/os.h>
 #include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/graphs/dijkstra.h>
-#include <mrpt/graphs/TNodeAnnotations.h>
-#include <mrpt/graphs/TMRSlamNodeAnnotations.h>
-#include <mrpt/graphs/THypothesis.h>
+#include <mrpt/poses/poses_frwds.h>
+#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/serialization/stl_serialization.h>
+#include <mrpt/system/TParameters.h>
+#include <mrpt/system/os.h>
 
-#include <iterator>
 #include <algorithm>
-#include <type_traits>  // is_base_of()
-#include <optional>
+#include <iterator>
 #include <memory>
+#include <optional>
+#include <type_traits>  // is_base_of()
 
 namespace mrpt
 {
@@ -1042,5 +1042,5 @@ MRPT_DECLARE_TTYPENAME(mrpt::containers::map_traits_map_as_vector)
 #include "CNetworkOfPoses_impl.h"
 
 // Visualization related template classes
-#include <mrpt/graphs/CVisualizer.h>
 #include <mrpt/graphs/CMRVisualizer.h>
+#include <mrpt/graphs/CVisualizer.h>

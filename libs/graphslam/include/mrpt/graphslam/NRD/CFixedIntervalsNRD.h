@@ -9,11 +9,11 @@
 
 #pragma once
 
+#include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/obs/CActionCollection.h>
-#include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/config/CConfigFileBase.h>
 
 #include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>
 

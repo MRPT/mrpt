@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include <mrpt/math/types_math.h>  // Eigen
 #include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/types_math.h>  // Eigen
 #include <mrpt/poses/CPose3D.h>
 //#include <unsupported/Eigen/MatrixFunctions>
 

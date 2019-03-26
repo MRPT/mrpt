@@ -9,9 +9,9 @@
 
 #include "hmtslam-precomp.h"  // Precomp header
 
-#include <mrpt/system/CTicTac.h>
-#include <mrpt/random.h>
 #include <mrpt/io/CFileStream.h>
+#include <mrpt/random.h>
+#include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
 
 #include <thread>

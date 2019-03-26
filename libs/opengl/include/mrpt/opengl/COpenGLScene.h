@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/COpenGLViewport.h>
+#include <mrpt/opengl/CRenderizable.h>
 
 namespace mrpt
 {

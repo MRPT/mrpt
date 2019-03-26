@@ -9,8 +9,8 @@
 
 #include "db-precomp.h"
 
-#include <mrpt/db/CSimpleDatabase.h>
 #include <mrpt/core/initializer.h>
+#include <mrpt/db/CSimpleDatabase.h>
 using namespace mrpt::db;
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_db)

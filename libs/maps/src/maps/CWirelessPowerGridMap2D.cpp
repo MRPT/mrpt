@@ -9,14 +9,14 @@
 
 #include "maps-precomp.h"  // Precomp header
 
+#include <mrpt/core/round.h>
+#include <mrpt/img/color_maps.h>
 #include <mrpt/maps/CWirelessPowerGridMap2D.h>
 #include <mrpt/obs/CObservationWirelessPower.h>
-#include <mrpt/system/os.h>
-#include <mrpt/core/round.h>
-#include <mrpt/system/CTicTac.h>
-#include <mrpt/img/color_maps.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;

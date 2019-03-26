@@ -15,19 +15,19 @@
 			 and live 3D rendering.
 */
 
-#include <mrpt/hwdrivers/CKinect.h>
-#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/config/CConfigFile.h>
-#include <mrpt/system/CTicTac.h>
-#include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/maps/CColouredOctoMap.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/stock_objects.h>
-#include <mrpt/opengl/CPointCloudColoured.h>
-#include <mrpt/opengl/COctoMapVoxels.h>
-#include <mrpt/system/filesystem.h>
+#include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationIMU.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/COctoMapVoxels.h>
+#include <mrpt/opengl/CPointCloudColoured.h>
+#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/filesystem.h>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;

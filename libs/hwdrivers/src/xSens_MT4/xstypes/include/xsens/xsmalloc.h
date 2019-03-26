@@ -9,8 +9,8 @@
 #ifndef XSMALLOC_H
 #define XSMALLOC_H
 
-#include "xstypesconfig.h"
 #include <stddef.h>
+#include "xstypesconfig.h"
 
 #ifdef __cplusplus
 extern "C"

@@ -86,7 +86,7 @@ NamespaceIndentation: None
 DerivePointerAlignment: false
 #PointerAlignment: Left
 ReflowComments:  true # Should be true, otherwise clang-format doesn't touch comments
-SortIncludes:    false # TODO - Compilation errors on this!
+SortIncludes:    true
 #SpaceAfterCStyleCast: false
 SpaceBeforeAssignmentOperators: true
 #SpaceBeforeParens: ControlStatements

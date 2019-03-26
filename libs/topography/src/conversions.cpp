@@ -9,11 +9,11 @@
 
 #include "topography-precomp.h"  // Precompiled headers
 
-#include <mrpt/topography/conversions.h>
+#include <mrpt/math/geometry.h>
+#include <mrpt/math/utils.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/math/utils.h>
-#include <mrpt/math/geometry.h>
+#include <mrpt/topography/conversions.h>
 
 using namespace std;
 using namespace mrpt;

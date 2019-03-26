@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include "CAbstractHolonomicReactiveMethod.h"
 #include <mrpt/config/CLoadableOptions.h>
+#include "CAbstractHolonomicReactiveMethod.h"
 
 namespace mrpt::nav
 {

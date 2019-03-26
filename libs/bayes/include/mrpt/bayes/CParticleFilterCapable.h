@@ -9,9 +9,9 @@
 #pragma once
 
 #include <mrpt/bayes/CParticleFilter.h>
-#include <vector>
-#include <cstdlib>
 #include <cstdint>
+#include <cstdlib>
+#include <vector>
 
 namespace mrpt::bayes
 {

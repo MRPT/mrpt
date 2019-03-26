@@ -7,13 +7,13 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/img/TStereoCamera.h>
-#include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/random.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/vision/CImagePyramid.h>
 #include <mrpt/vision/CStereoRectifyMap.h>
-#include <mrpt/random.h>
 
 #include "common.h"
 

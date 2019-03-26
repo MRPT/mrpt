@@ -10,12 +10,12 @@
 #pragma once
 
 // For 3D log files
-#include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/stock_objects.h>
-#include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CText3D.h>
+#include <mrpt/opengl/stock_objects.h>
 
 namespace mrpt::nav
 {

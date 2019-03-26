@@ -33,7 +33,10 @@
 
 #pragma once
 
+#include <cstddef>  // size_t (JLBC for MRPT)
+
 #ifdef _WIN32
+#include <windows.h>
 
 // fake stdint.h for VC only
 

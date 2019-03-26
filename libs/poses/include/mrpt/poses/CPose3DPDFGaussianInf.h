@@ -8,10 +8,10 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/math/CMatrixD.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/poses/CPosePDF.h>
-#include <mrpt/math/CMatrixD.h>
 
 namespace mrpt::poses
 {

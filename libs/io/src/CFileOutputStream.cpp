@@ -9,8 +9,8 @@
 
 #include "io-precomp.h"  // Precompiled headers
 
-#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/core/exceptions.h>
+#include <mrpt/io/CFileOutputStream.h>
 
 using namespace mrpt::io;
 using namespace std;

@@ -28,6 +28,7 @@ add_executable(${PROJECT_NAME}
 	perf-graph.cpp
 	perf-graphslam.cpp
 	perf-gridmaps.cpp
+	perf-gridmap3D.cpp
 	perf-icp.cpp
 	perf-images.cpp
 	perf-math.cpp

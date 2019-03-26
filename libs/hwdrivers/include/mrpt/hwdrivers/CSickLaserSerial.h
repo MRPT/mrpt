@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
 #include <mrpt/comms/CSerialPort.h>
+#include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
 namespace mrpt::hwdrivers

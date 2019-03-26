@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <vector>
 #include <mrpt/math/eigen_frwds.h>
+#include <vector>
 
 namespace mrpt::math
 {

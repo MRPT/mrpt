@@ -8,22 +8,22 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/bayes/CKalmanFilterCapable.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/bayes/CKalmanFilterCapable.h>
+#include <mrpt/math/CMatrixTemplateNumeric.h>
 
-#include <mrpt/core/safe_pointers.h>
 #include <mrpt/containers/bimap.h>
+#include <mrpt/core/safe_pointers.h>
 
-#include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/obs/CActionCollection.h>
-#include <mrpt/obs/CObservationBearingRange.h>
-#include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/poses/CPose3DPDFGaussian.h>
-#include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/maps/CLandmark.h>
 #include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CObservationBearingRange.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/poses/CPose3DPDFGaussian.h>
+#include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/slam/data_association.h>
 

@@ -8,13 +8,13 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/serialization/CArchive.h>
-#include <mrpt/system/COutputLogger.h>
-#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/math/CPolygon.h>
-#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/COutputLogger.h>
 
 namespace mrpt::hwdrivers
 {

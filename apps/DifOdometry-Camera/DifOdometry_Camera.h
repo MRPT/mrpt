@@ -7,13 +7,13 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/vision/CDifodo.h>
 #include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/img/CImage.h>
-#include <mrpt/system/CTicTac.h>
 #include <mrpt/core/round.h>
-#include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/vision/CDifodo.h>
 #include <iostream>
 
 #if defined(MRPT_OS_LINUX) && !defined(linux)

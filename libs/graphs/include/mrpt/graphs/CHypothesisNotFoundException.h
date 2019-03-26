@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <cstdint>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/graphs/TNodeID.h>
+#include <cstdint>
 #include <stdexcept>
 #include <string>
 

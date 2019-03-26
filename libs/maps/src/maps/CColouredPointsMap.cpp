@@ -9,14 +9,14 @@
 
 #include "maps-precomp.h"  // Precomp header
 
-#include <mrpt/maps/CColouredPointsMap.h>
-#include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/core/bits_mem.h>
 #include <mrpt/img/color_maps.h>
-#include <mrpt/system/os.h>
+#include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/serialization/aligned_serialization.h>
+#include <mrpt/system/os.h>
 
 #include "CPointsMap_crtp_common.h"
 

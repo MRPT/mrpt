@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/core/aligned_allocator.h>
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
-#include <mrpt/core/aligned_allocator.h>
 
 namespace mrpt::poses
 {

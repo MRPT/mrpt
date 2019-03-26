@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/hwdrivers/CNTRIPClient.h>
 #include <mrpt/comms/CSerialPort.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
+#include <mrpt/hwdrivers/CNTRIPClient.h>
 #include <mrpt/system/CTicTac.h>
 #include <fstream>
 

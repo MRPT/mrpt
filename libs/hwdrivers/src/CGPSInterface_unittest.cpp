@@ -7,9 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <gtest/gtest.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/io/CMemoryStream.h>
-#include <gtest/gtest.h>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;

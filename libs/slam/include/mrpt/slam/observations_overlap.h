@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/obs/obs_frwds.h>
 #include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/obs/obs_frwds.h>
 
 namespace mrpt::slam
 {

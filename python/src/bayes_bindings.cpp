@@ -11,10 +11,10 @@
 /* MRPT */
 #include <mrpt/config/CLoadableOptions.h>
 
-#include <mrpt/bayes/CProbabilityParticle.h>
+#include <mrpt/bayes/CKalmanFilterCapable.h>
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
-#include <mrpt/bayes/CKalmanFilterCapable.h>
+#include <mrpt/bayes/CProbabilityParticle.h>
 
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>

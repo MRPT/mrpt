@@ -9,16 +9,16 @@
 
 #include "xRawLogViewerMain.h"
 
-#include <wx/msgdlg.h>
-#include <wx/filedlg.h>
 #include <wx/app.h>
-#include <wx/progdlg.h>
-#include <wx/imaglist.h>
 #include <wx/busyinfo.h>
-#include <wx/log.h>
-#include <wx/textdlg.h>
 #include <wx/choicdlg.h>
 #include <wx/dirdlg.h>
+#include <wx/filedlg.h>
+#include <wx/imaglist.h>
+#include <wx/log.h>
+#include <wx/msgdlg.h>
+#include <wx/progdlg.h>
+#include <wx/textdlg.h>
 
 // General global variables:
 #include <mrpt/obs/CObservationImage.h>

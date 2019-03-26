@@ -10,9 +10,9 @@
 #include "maps-precomp.h"
 
 #define MRPT_NO_WARN_BIG_HDR
+#include <mrpt/core/initializer.h>
 #include <mrpt/maps.h>
 #include <mrpt/obs/CObservationPointCloud.h>
-#include <mrpt/core/initializer.h>
 
 using namespace mrpt::maps;
 using namespace mrpt::obs;
@@ -30,6 +30,7 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_maps)
 	registerClass(CLASS_ID(CWeightedPointsMap));
 	registerClass(CLASS_ID(CPointsMapXYZI));
 	registerClass(CLASS_ID(COccupancyGridMap2D));
+	registerClass(CLASS_ID(COccupancyGridMap3D));
 	registerClass(CLASS_ID(CGasConcentrationGridMap2D));
 	registerClass(CLASS_ID(CWirelessPowerGridMap2D));
 	registerClass(CLASS_ID(CRandomFieldGridMap3D));
@@ -44,5 +45,7 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_maps)
 	registerClass(CLASS_ID(CPlanarLaserScan));
 
 	registerClass(CLASS_ID(CObservationPointCloud));
+	registerClass(CLASS_ID(CMultiMetricMap));
+
 #endif
 }

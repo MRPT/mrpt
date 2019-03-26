@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "vision-precomp.h"  // Precompiled headers
+
 #include <mrpt/vision/CImagePyramid.h>
 
 using namespace mrpt;

@@ -8,11 +8,11 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/containers/deepcopy_poly_ptr.h>
+#include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/obs/CAction.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPosePDF.h>
-#include <mrpt/containers/deepcopy_poly_ptr.h>
-#include <mrpt/math/lightweight_geom_data.h>
 
 namespace mrpt::obs
 {

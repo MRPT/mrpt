@@ -8,11 +8,11 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <vector>
 #include <mrpt/math/types_math.h>  // Eigen must be included first via MRPT to enable the plugin system
+#include <mrpt/otherlibs/do_opencv_includes.h>
 #include <Eigen/Dense>
 #include <Eigen/SVD>
-#include <mrpt/otherlibs/do_opencv_includes.h>
+#include <vector>
 
 namespace mrpt::vision::pnp
 {

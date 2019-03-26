@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
+#include <mrpt/obs/CObservationStereoImages.h>
 
 #include <mrpt/config.h>
 

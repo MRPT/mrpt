@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/math/geometry.h>
+#include <mrpt/opengl/CRenderizableDisplayList.h>
 
 namespace mrpt::opengl
 {

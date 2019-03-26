@@ -10,8 +10,8 @@
 #include "reactive_navigator_demoApp.h"
 
 //(*AppHeaders
-#include "reactive_navigator_demoMain.h"
 #include <wx/image.h>
+#include "reactive_navigator_demoMain.h"
 //*)
 
 IMPLEMENT_APP(reactive_navigator_demoApp)

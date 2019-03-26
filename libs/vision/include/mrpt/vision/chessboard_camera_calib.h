@@ -10,8 +10,8 @@
 #pragma once
 
 #include <mrpt/img/CImage.h>
-#include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/vision/types.h>
 
 namespace mrpt::vision

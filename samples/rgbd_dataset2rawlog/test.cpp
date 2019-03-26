@@ -31,12 +31,12 @@ Output files:
 
    ------------------------------------------------------ */
 
-#include <mrpt/system/filesystem.h>
-#include <mrpt/io/CTextFileLinesParser.h>
 #include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CTextFileLinesParser.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationIMU.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/filesystem.h>
 #include <iostream>
 
 using namespace std;

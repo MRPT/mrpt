@@ -9,12 +9,12 @@
 
 #include "maps-precomp.h"  // Precomp header
 
+#include <mrpt/core/round.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/system/os.h>
-#include <mrpt/core/round.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CTexturedPlane.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;

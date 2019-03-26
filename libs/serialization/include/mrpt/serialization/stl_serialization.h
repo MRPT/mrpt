@@ -8,16 +8,16 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/typemeta/TTypeName_stl.h>  // TTypeName<> for STL templates, needed for serialization of STL templates
-#include <mrpt/serialization/metaprogramming_serialization.h>
 #include <mrpt/serialization/CArchive.h>
-#include <vector>
+#include <mrpt/serialization/metaprogramming_serialization.h>
+#include <mrpt/typemeta/TTypeName_stl.h>  // TTypeName<> for STL templates, needed for serialization of STL templates
+#include <algorithm>  // for_each()
 #include <array>
 #include <deque>
-#include <set>
-#include <map>
 #include <list>
-#include <algorithm>  // for_each()
+#include <map>
+#include <set>
+#include <vector>
 
 namespace mrpt::serialization
 {

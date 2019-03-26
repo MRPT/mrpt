@@ -8,10 +8,10 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/comms/CSerialPort.h>
+#include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CObservationCANBusJ1939.h>
 #include <mrpt/system/COutputLogger.h>
-#include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/comms/CSerialPort.h>
 
 namespace mrpt::hwdrivers
 {

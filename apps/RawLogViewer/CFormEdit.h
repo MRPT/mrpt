@@ -12,16 +12,16 @@
 #include <wx/listbox.h>
 
 //(*Headers(CFormEdit)
+#include <wx/button.h>
+#include <wx/checkbox.h>
+#include <wx/checklst.h>
+#include <wx/dialog.h>
+#include <wx/radiobut.h>
 #include <wx/sizer.h>
+#include <wx/slider.h>
+#include <wx/spinctrl.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
-#include <wx/checklst.h>
-#include <wx/checkbox.h>
-#include <wx/spinctrl.h>
-#include <wx/radiobut.h>
-#include <wx/slider.h>
-#include <wx/button.h>
-#include <wx/dialog.h>
 //*)
 
 #include <wx/combobox.h>

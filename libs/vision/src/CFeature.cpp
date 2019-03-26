@@ -10,16 +10,15 @@
 
 #include "vision-precomp.h"  // Precompiled headers
 
-#include <mrpt/io/CTextFileLinesParser.h>
-#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/CFileInputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/io/CTextFileLinesParser.h>
+#include <mrpt/math/data_utils.h>
 #include <mrpt/serialization/stl_serialization.h>
+#include <mrpt/system/os.h>
 #include <mrpt/vision/CFeature.h>
 #include <mrpt/vision/types.h>
 #include <mrpt/vision/utils.h>
-#include <mrpt/serialization/stl_serialization.h>
-#include <mrpt/math/data_utils.h>
-#include <mrpt/system/os.h>
 #include <iostream>
 
 using namespace mrpt;

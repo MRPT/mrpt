@@ -9,8 +9,8 @@
 
 #include "system-precomp.h"  // Precompiled headers
 
-#include <mrpt/system/crc.h>
 #include <mrpt/core/exceptions.h>
+#include <mrpt/system/crc.h>
 
 uint16_t mrpt::system::compute_CRC16(
 	const std::vector<uint8_t>& data, const uint16_t gen_pol)

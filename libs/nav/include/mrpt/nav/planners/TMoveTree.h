@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include <mrpt/graphs/CDirectedTree.h>
 #include <mrpt/containers/traits_map.h>
+#include <mrpt/graphs/CDirectedTree.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/CPose2D.h>
 

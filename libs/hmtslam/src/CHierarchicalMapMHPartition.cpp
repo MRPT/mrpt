@@ -9,18 +9,18 @@
 
 #include "hmtslam-precomp.h"  // Precomp header
 
-#include <mrpt/hmtslam/CRobotPosesGraph.h>
-#include <mrpt/opengl/CDisk.h>
-#include <mrpt/opengl/CText.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CSphere.h>
-#include <mrpt/opengl/CSimpleLine.h>
-#include <mrpt/system/os.h>
-#include <mrpt/poses/CPose3DPDFParticles.h>
-#include <mrpt/math/ops_containers.h>
-#include <mrpt/random.h>
 #include <mrpt/graphslam/levmarq.h>
+#include <mrpt/hmtslam/CRobotPosesGraph.h>
+#include <mrpt/math/ops_containers.h>
+#include <mrpt/opengl/CDisk.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CSimpleLine.h>
+#include <mrpt/opengl/CSphere.h>
+#include <mrpt/opengl/CText.h>
+#include <mrpt/poses/CPose3DPDFParticles.h>
+#include <mrpt/random.h>
+#include <mrpt/system/os.h>
 
 using namespace std;
 using namespace mrpt;
@@ -1594,12 +1594,13 @@ double CHierarchicalMapMHPartition::computeOverlapProbabilityBetweenNodes(
 	CMultiMetricMap::Ptr hMap1 = from->m_annotations.getAs<CMultiMetricMap>(
 		NODE_ANNOTATION_METRIC_MAPS, hypothesisID, false);
 
-	ASSERT_(hMap1->m_gridMaps.size() > 0);
+	auto grid = hMap1->mapByClass<COccupancyGridMap2D>();
+	ASSERT_(grid);
 
-	r1_x_min = hMap1->m_gridMaps[0]->getXMin();
-	r1_x_max = hMap1->m_gridMaps[0]->getXMax();
-	r1_y_min = hMap1->m_gridMaps[0]->getYMin();
-	r1_y_max = hMap1->m_gridMaps[0]->getYMax();
+	r1_x_min = grid->getXMin();
+	r1_x_max = grid->getXMax();
+	r1_y_min = grid->getYMin();
+	r1_y_max = grid->getYMax();
 
 	if (r1_x_max - r1_x_min > 2 * margin_to_substract)
 	{
@@ -1616,12 +1617,13 @@ double CHierarchicalMapMHPartition::computeOverlapProbabilityBetweenNodes(
 	CMultiMetricMap::Ptr hMap2 = to->m_annotations.getAs<CMultiMetricMap>(
 		NODE_ANNOTATION_METRIC_MAPS, hypothesisID, false);
 
-	ASSERT_(hMap2->m_gridMaps.size() > 0);
+	auto grid2 = hMap2->mapByClass<COccupancyGridMap2D>();
+	ASSERT_(grid2);
 
-	r2_x_min = hMap2->m_gridMaps[0]->getXMin();
-	r2_x_max = hMap2->m_gridMaps[0]->getXMax();
-	r2_y_min = hMap2->m_gridMaps[0]->getYMin();
-	r2_y_max = hMap2->m_gridMaps[0]->getYMax();
+	r2_x_min = grid2->getXMin();
+	r2_x_max = grid2->getXMax();
+	r2_y_min = grid2->getYMin();
+	r2_y_max = grid2->getYMax();
 
 	if (r2_x_max - r2_x_min > 2 * margin_to_substract)
 	{

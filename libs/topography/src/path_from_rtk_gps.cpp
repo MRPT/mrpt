@@ -9,22 +9,22 @@
 
 #include "topography-precomp.h"  // Precompiled headers
 
-#include <mrpt/tfest/se3.h>
-#include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/math/data_utils.h>
-#include <mrpt/topography/data_types.h>
+#include <mrpt/obs/CObservationGPS.h>
+#include <mrpt/tfest/se3.h>
 #include <mrpt/topography/conversions.h>
+#include <mrpt/topography/data_types.h>
 #include <mrpt/topography/path_from_rtk_gps.h>
 
 #include <memory>
 
 #if MRPT_HAS_WXWIDGETS
 #include <wx/app.h>
-#include <wx/msgdlg.h>
-#include <wx/string.h>
-#include <wx/progdlg.h>
 #include <wx/busyinfo.h>
 #include <wx/log.h>
+#include <wx/msgdlg.h>
+#include <wx/progdlg.h>
+#include <wx/string.h>
 #endif  // MRPT_HAS_WXWIDGETS
 
 using namespace std;

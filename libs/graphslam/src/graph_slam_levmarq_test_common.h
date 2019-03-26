@@ -7,11 +7,11 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/graphslam/types.h>
-#include <mrpt/graphslam/levmarq.h>
 #include <mrpt/graphs.h>
-#include <mrpt/random.h>
+#include <mrpt/graphslam/levmarq.h>
+#include <mrpt/graphslam/types.h>
 #include <mrpt/io/CMemoryStream.h>
+#include <mrpt/random.h>
 
 using namespace mrpt;
 using namespace mrpt::random;

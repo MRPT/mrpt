@@ -7,10 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/poses/CPose2DInterpolator.h>
-#include <mrpt/system/datetime.h>
 #include <CTraitsTest.h>
 #include <gtest/gtest.h>
+#include <mrpt/poses/CPose2DInterpolator.h>
+#include <mrpt/system/datetime.h>
 
 template class mrpt::CTraitsTest<mrpt::poses::CPose2DInterpolator>;
 

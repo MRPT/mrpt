@@ -9,9 +9,9 @@
 
 #include "tfest-precomp.h"  // Precompiled headers
 
-#include <mrpt/tfest/se2.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/random.h>
+#include <mrpt/tfest/se2.h>
 
 #if MRPT_HAS_SSE2
 #include <mrpt/core/SSE_types.h>

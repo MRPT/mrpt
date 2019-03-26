@@ -10,9 +10,9 @@
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
 #include <mrpt/hwdrivers/CNationalInstrumentsDAQ.h>
-#include <iterator>  // advance()
-#include <iostream>
 #include <mrpt/serialization/CArchive.h>
+#include <iostream>
+#include <iterator>  // advance()
 
 // If we have both, DAQmx & DAQmxBase, prefer DAQmx:
 #define MRPT_HAS_SOME_NIDAQMX (MRPT_HAS_NIDAQMXBASE || MRPT_HAS_NIDAQMX)

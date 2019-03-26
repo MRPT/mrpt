@@ -9,8 +9,8 @@
 #ifndef XSVERSION_H
 #define XSVERSION_H
 
-#include "xstypesconfig.h"
 #include "xsstring.h"
+#include "xstypesconfig.h"
 
 typedef struct XsVersion XsVersion;
 

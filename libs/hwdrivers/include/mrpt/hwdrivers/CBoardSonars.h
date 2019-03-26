@@ -9,8 +9,8 @@
 #pragma once
 
 #include <mrpt/comms/CInterfaceFTDI.h>
-#include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CObservationRange.h>
 
 namespace mrpt::hwdrivers

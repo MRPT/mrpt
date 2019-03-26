@@ -8,14 +8,14 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/serialization/CSerializable.h>
-#include <mrpt/rtti/CListOfClasses.h>
-#include <mrpt/system/COutputLogger.h>
 #include <mrpt/maps/CMultiMetricMap.h>
-#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/maps/CSimpleMap.h>
-#include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/poses/CPose3DPDF.h>
+#include <mrpt/rtti/CListOfClasses.h>
+#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/system/COutputLogger.h>
 
 #include <mutex>
 

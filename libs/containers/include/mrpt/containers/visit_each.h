@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <type_traits>
 #include <array>
 #include <functional>  // invoke
+#include <type_traits>
 
 namespace mrpt
 {

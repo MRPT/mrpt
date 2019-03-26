@@ -7,16 +7,18 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/io/CFileGZInputStream.h>
+#include <gtest/gtest.h>
 #include <mrpt/config/CConfigFile.h>
-#include <mrpt/slam/CMonteCarloLocalization2D.h>
+#include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/maps/CMultiMetricMap.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/obs/CRawlog.h>
+#include <mrpt/random.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/slam/CMonteCarloLocalization2D.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
-#include <mrpt/random.h>
-#include <gtest/gtest.h>
 #include <test_mrpt_common.h>
 
 using namespace mrpt;
@@ -99,7 +101,7 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 
 	// Load the set of metric maps to consider in the experiments:
 	CMultiMetricMap metricMap;
-	metricMap.setListOfMaps(&mapList);
+	metricMap.setListOfMaps(mapList);
 
 	getRandomGenerator().randomize();
 
@@ -123,14 +125,6 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 			ASSERT_(simpleMap.size() > 0);
 			// Build metric map:
 			metricMap.loadFromProbabilisticPosesAndObservations(simpleMap);
-		}
-		else if (!mapExt.compare("gridmap"))
-		{
-			// It's a ".gridmap":
-			// -------------------------
-			ASSERT_(metricMap.m_gridMaps.size() == 1);
-			CFileGZInputStream f(MAP_FILE);
-			mrpt::serialization::archiveFrom(f) >> (*metricMap.m_gridMaps[0]);
 		}
 		else
 		{
@@ -177,8 +171,10 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 			if (!iniFile.read_bool(
 					iniSectionName, "init_PDF_mode", false,
 					/*Fail if not found*/ true))
+			{
+				auto grid = metricMap.mapByClass<COccupancyGridMap2D>();
 				pdf.resetUniformFreeSpace(
-					metricMap.m_gridMaps[0].get(), 0.7f, PARTICLE_COUNT,
+					grid.get(), 0.7f, PARTICLE_COUNT,
 					iniFile.read_float(
 						iniSectionName, "init_PDF_min_x", 0, true),
 					iniFile.read_float(
@@ -191,6 +187,7 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 						iniSectionName, "init_PDF_min_phi_deg", -180)),
 					DEG2RAD(iniFile.read_float(
 						iniSectionName, "init_PDF_max_phi_deg", 180)));
+			}
 			else
 				pdf.resetUniform(
 					iniFile.read_float(

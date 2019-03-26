@@ -7,21 +7,21 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hmt_slam_guiMain.h"
 #include <mrpt/opengl.h>
+#include "hmt_slam_guiMain.h"
 
 #include <wx/msgdlg.h>
 
 //(*InternalHeaders(hmt_slam_guiFrame)
-#include <wx/settings.h>
-#include <wx/string.h>
-#include <wx/intl.h>
-#include <wx/font.h>
-#include <wx/tglbtn.h>
+#include <wx/artprov.h>
 #include <wx/bitmap.h>
+#include <wx/font.h>
 #include <wx/icon.h>
 #include <wx/image.h>
-#include <wx/artprov.h>
+#include <wx/intl.h>
+#include <wx/settings.h>
+#include <wx/string.h>
+#include <wx/tglbtn.h>
 //*)
 
 #include <mrpt/system/string_utils.h>
@@ -148,15 +148,15 @@ void hmt_slam_guiFrame::updateLocalMapView()
 					// ---------------------------------------------------------
 					// Bounding boxes for grid maps:
 					// ---------------------------------------------------------
-					if (obj_mmap->m_gridMaps.size())
+					if (auto grid = obj_mmap->mapByClass<COccupancyGridMap2D>();
+						grid)
 					{
-						float x_min = obj_mmap->m_gridMaps[0]->getXMin();
-						float x_max = obj_mmap->m_gridMaps[0]->getXMax();
-						float y_min = obj_mmap->m_gridMaps[0]->getYMin();
-						float y_max = obj_mmap->m_gridMaps[0]->getYMax();
+						float x_min = grid->getXMin();
+						float x_max = grid->getXMax();
+						float y_min = grid->getYMin();
+						float y_max = grid->getYMax();
 
-						opengl::CSetOfLines::Ptr objBB =
-							mrpt::make_aligned_shared<opengl::CSetOfLines>();
+						auto objBB = opengl::CSetOfLines::Create();
 						objBB->setColor(0, 0, 1);
 						objBB->setLineWidth(4.0f);
 

@@ -11,10 +11,10 @@
 #include <mrpt/serialization/CSerializable.h>
 
 #include <mrpt/hmtslam/HMT_SLAM_common.h>
-#include <mrpt/poses/CPose3DPDFParticles.h>
-#include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/maps/CMultiMetricMap.h>
+#include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/poses/CPose3DPDFParticles.h>
 
 namespace mrpt::hmtslam
 {

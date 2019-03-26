@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/math_frwds.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/math_frwds.h>
 
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/ops_vectors.h>

@@ -7,9 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <mrpt/core/exceptions.h>
 #include <mrpt/hwdrivers/CNTRIPClient.h>
 #include <mrpt/system/os.h>
-#include <mrpt/core/exceptions.h>
 #include <cstdio>
 #include <iostream>
 

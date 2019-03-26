@@ -9,6 +9,8 @@
 #pragma once
 #include <sstream>
 
+namespace mrpt::graphslam::deciders
+{
 template <class GRAPH_T>
 void CEdgeRegistrationDecider<GRAPH_T>::getDescriptiveReport(
 	std::string* report_str) const
@@ -16,7 +18,7 @@ void CEdgeRegistrationDecider<GRAPH_T>::getDescriptiveReport(
 	std::stringstream ss("");
 	parent::getDescriptiveReport(report_str);
 
-	ss << "Edge Registration Decider Strategy [ERD]: " << endl;
+	ss << "Edge Registration Decider Strategy [ERD]: \n";
 	*report_str += ss.str();
 }
 
@@ -26,8 +28,9 @@ void CEdgeRegistrationDecider<GRAPH_T>::registerNewEdge(
 	const constraint_t& rel_edge)
 {
 	MRPT_LOG_DEBUG_STREAM(
-		"Registering new edge: " << from << " => " << to << endl
+		"Registering new edge: " << from << " => " << to << "\n"
 								 << "\tRelative Edge: "
 								 << rel_edge.getMeanVal().asString()
 								 << "\tNorm: " << rel_edge.getMeanVal().norm());
 }
+}  // namespace mrpt::graphslam::deciders

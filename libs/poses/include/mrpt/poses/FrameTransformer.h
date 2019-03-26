@@ -8,11 +8,11 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/system/datetime.h>
 #include <mrpt/core/aligned_std_map.h>
 #include <mrpt/poses/Lie/SE.h>
-#include <string>
+#include <mrpt/system/datetime.h>
 #include <map>
+#include <string>
 
 namespace mrpt::poses
 {

@@ -10,11 +10,11 @@
 #include "gridmapSimulApp.h"
 
 //(*AppHeaders
-#include "gridmapSimulMain.h"
 #include <wx/image.h>
+#include "gridmapSimulMain.h"
 //*)
-#include <wx/stdpaths.h>
 #include <wx/log.h>
+#include <wx/stdpaths.h>
 
 IMPLEMENT_APP(gridmapSimulApp)
 

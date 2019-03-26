@@ -10,8 +10,8 @@
 #pragma once
 
 #include <mrpt/img/TCamera.h>
-#include <mrpt/vision/utils.h>
 #include <mrpt/poses/poses_frwds.h>
+#include <mrpt/vision/utils.h>
 
 namespace mrpt
 {

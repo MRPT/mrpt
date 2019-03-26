@@ -9,10 +9,10 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
-#include <mrpt/random.h>
-#include <mrpt/serialization/CArchive.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
+#include <mrpt/random.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;

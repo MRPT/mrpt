@@ -9,9 +9,9 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
+#include <mrpt/math/matrix_serialization.h>  // for << of matrices
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/math/matrix_serialization.h>  // for << of matrices
 #include <iomanip>
 
 using namespace std;

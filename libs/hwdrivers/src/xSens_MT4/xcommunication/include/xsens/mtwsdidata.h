@@ -10,9 +10,9 @@
 #define MTWSDIDATA_H
 
 #include <xsens/pstdint.h>
-#include <xsens/xsvector3.h>
-#include <xsens/xsquaternion.h>
 #include <xsens/xsdeviceid.h>
+#include <xsens/xsquaternion.h>
+#include <xsens/xsvector3.h>
 
 struct XsRange;
 

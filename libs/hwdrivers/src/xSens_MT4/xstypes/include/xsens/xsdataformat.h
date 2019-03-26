@@ -9,9 +9,9 @@
 #ifndef XSDATAFORMAT_H
 #define XSDATAFORMAT_H
 
-#include "xstypesconfig.h"
 #include "xsoutputmode.h"
 #include "xsoutputsettings.h"
+#include "xstypesconfig.h"
 
 /*! \brief A structure for storing data formats. */
 struct XsDataFormat

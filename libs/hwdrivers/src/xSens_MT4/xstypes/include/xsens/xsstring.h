@@ -9,8 +9,8 @@
 #ifndef XSSTRING_H
 #define XSSTRING_H
 
-#include "xstypesconfig.h"
 #include "xsarray.h"
+#include "xstypesconfig.h"
 #ifndef XSENS_NO_WCHAR
 #include <wchar.h>
 #if !defined(XSENS_NO_STL) && defined(__cplusplus) && defined(WIN32)
@@ -20,9 +20,9 @@
 #include <string.h>
 
 #ifdef __cplusplus
-#include <string>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string>
 extern "C"
 {
 #endif

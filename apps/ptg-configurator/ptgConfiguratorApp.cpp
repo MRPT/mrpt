@@ -10,8 +10,8 @@
 #include "ptgConfiguratorApp.h"
 
 //(*AppHeaders
-#include "ptgConfiguratorMain.h"
 #include <wx/image.h>
+#include "ptgConfiguratorMain.h"
 //*)
 #include <wx/cmdline.h>
 #ifdef MRPT_OS_LINUX

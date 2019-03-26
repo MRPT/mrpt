@@ -9,9 +9,9 @@
 
 #include "io-precomp.h"  // Precompiled headers
 
-#include <mrpt/io/CMemoryStream.h>
 #include <mrpt/io/CFileInputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/io/CMemoryStream.h>
 #include <algorithm>  // min,max
 #include <cstring>  // memcpy
 

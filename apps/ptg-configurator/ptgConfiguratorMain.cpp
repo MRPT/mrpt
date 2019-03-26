@@ -8,27 +8,27 @@
    +------------------------------------------------------------------------+ */
 
 #include "ptgConfiguratorMain.h"
-#include <wx/msgdlg.h>
 #include <mrpt/gui/about_box.h>
+#include <wx/msgdlg.h>
 
 //(*InternalHeaders(ptgConfiguratorframe)
 #include <wx/artprov.h>
 #include <wx/bitmap.h>
-#include <wx/settings.h>
 #include <wx/font.h>
-#include <wx/intl.h>
 #include <wx/image.h>
+#include <wx/intl.h>
+#include <wx/settings.h>
 #include <wx/string.h>
 //*)
 #ifdef MRPT_OS_LINUX
 #include <dlfcn.h>
 #endif
 
-#include <mrpt/system/string_utils.h>
 #include <mrpt/gui/WxUtils.h>
-#include "imgs/main_icon.xpm"
-#include "../wx-common/mrpt_logo.xpm"
 #include <mrpt/gui/wx28-fixes.h>
+#include <mrpt/system/string_utils.h>
+#include "../wx-common/mrpt_logo.xpm"
+#include "imgs/main_icon.xpm"
 
 // A custom Art provider for customizing the icons:
 class MyArtProvider : public wxArtProvider
@@ -50,15 +50,15 @@ wxBitmap MyArtProvider::CreateBitmap(
 	return wxNullBitmap;
 }
 
-#include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
-#include <mrpt/poses/CPose2D.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CAxis.h>
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/config/CConfigFilePrefixer.h>
 #include <mrpt/math/geometry.h>
-#include <mrpt/system/os.h>
+#include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
+#include <mrpt/opengl/CAxis.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/poses/CPose2D.h>
 #include <mrpt/system/CTicTac.h>
+#include <mrpt/system/os.h>
 
 mrpt::nav::CParameterizedTrajectoryGenerator* ptg = nullptr;
 
