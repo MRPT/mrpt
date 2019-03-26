@@ -17,8 +17,8 @@
 #include "kinect_calibrate_guiApp.h"
 
 //(*AppHeaders
-#include "kinect_calibrate_guiMain.h"
 #include <wx/image.h>
+#include "kinect_calibrate_guiMain.h"
 //*)
 
 IMPLEMENT_APP(kinect_calibrate_guiApp)

@@ -16,30 +16,30 @@
 */
 
 #include "kinect_calibrate_guiMain.h"
+#include <mrpt/gui/about_box.h>
 #include <wx/msgdlg.h>
 #include <wx/progdlg.h>
-#include <mrpt/gui/about_box.h>
 
 //(*InternalHeaders(kinect_calibrate_guiDialog)
+#include <wx/artprov.h>
+#include <wx/bitmap.h>
+#include <wx/font.h>
+#include <wx/image.h>
+#include <wx/intl.h>
 #include <wx/settings.h>
 #include <wx/string.h>
-#include <wx/intl.h>
-#include <wx/font.h>
-#include <wx/bitmap.h>
-#include <wx/image.h>
-#include <wx/artprov.h>
 //*)
 
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/gui/WxUtils.h>
 #include <mrpt/hwdrivers/CKinect.h>
-#include <mrpt/vision/chessboard_find_corners.h>
-#include <mrpt/vision/chessboard_stereo_camera_calib.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/system/CTicTac.h>
+#include <mrpt/io/CMemoryStream.h>
 #include <mrpt/io/vector_loadsave.h>
 #include <mrpt/poses/CPose3DQuat.h>
-#include <mrpt/io/CMemoryStream.h>
-#include <mrpt/gui/WxUtils.h>
-#include <mrpt/config/CConfigFile.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/vision/chessboard_find_corners.h>
+#include <mrpt/vision/chessboard_stereo_camera_calib.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;
@@ -50,8 +50,8 @@ using namespace mrpt::hwdrivers;
 using namespace std;
 
 #include "../wx-common/mrpt_logo.xpm"
-#include "imgs/kinect.xpm"
 #include "imgs/kinect-covered-projector.h"
+#include "imgs/kinect.xpm"
 
 // A custom Art provider for customizing the icons:
 class MyArtProvider : public wxArtProvider

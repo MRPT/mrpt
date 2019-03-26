@@ -9,5 +9,5 @@
 #pragma once
 
 #include "gnss_messages_ascii_nmea.h"
-#include "gnss_messages_topcon.h"
 #include "gnss_messages_novatel.h"
+#include "gnss_messages_topcon.h"

@@ -7,12 +7,12 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/CPose3DQuat.h>
-#include <mrpt/math/num_jacobian.h>
-#include <mrpt/random.h>
 #include <CTraitsTest.h>
 #include <gtest/gtest.h>
+#include <mrpt/math/num_jacobian.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DQuat.h>
+#include <mrpt/random.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;

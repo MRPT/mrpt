@@ -8,22 +8,22 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/graphs/TNodeAnnotations.h>
 #include <mrpt/graphs/dijkstra.h>
 #include <mrpt/io/CTextFileLinesParser.h>
-#include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/CArrayNumeric.h>
-#include <mrpt/math/wrap2pi.h>
-#include <mrpt/math/ops_matrices.h>  // multiply_*()
+#include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/matrix_serialization.h>
-#include <mrpt/system/string_utils.h>
+#include <mrpt/math/ops_matrices.h>  // multiply_*()
+#include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DPDFGaussian.h>
+#include <mrpt/poses/CPose3DPDFGaussianInf.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFGaussianInf.h>
-#include <mrpt/poses/CPose3DPDFGaussian.h>
-#include <mrpt/poses/CPose3DPDFGaussianInf.h>
-#include <mrpt/graphs/TNodeAnnotations.h>
+#include <mrpt/system/string_utils.h>
 
 namespace mrpt::graphs::detail
 {

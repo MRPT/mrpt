@@ -9,8 +9,8 @@
 
 #include "img-precomp.h"  // Precompiled headers
 
-#include <mrpt/img/CMappedImage.h>
 #include <mrpt/core/round.h>
+#include <mrpt/img/CMappedImage.h>
 
 using namespace mrpt;
 using namespace mrpt::img;

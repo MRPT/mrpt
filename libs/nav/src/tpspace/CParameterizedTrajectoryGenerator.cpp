@@ -9,11 +9,11 @@
 
 #include "nav-precomp.h"  // Precomp header
 
-#include <mrpt/serialization/CArchive.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
+#include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
-#include <mrpt/opengl/CSetOfLines.h>
 
 using namespace mrpt::nav;
 

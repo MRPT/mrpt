@@ -12,8 +12,8 @@
 #include <mrpt/hwdrivers/CGyroKVHDSP3000.h>
 #include <mrpt/obs/CObservationIMU.h>
 
-#include <thread>
 #include <iostream>
+#include <thread>
 
 IMPLEMENTS_GENERIC_SENSOR(CGyroKVHDSP3000, mrpt::hwdrivers)
 

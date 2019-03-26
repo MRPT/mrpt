@@ -9,14 +9,14 @@
 
 #pragma once
 
-#include <mrpt/containers/CDynamicGrid.h>
-#include <mrpt/img/CImage.h>
-#include <mrpt/serialization/CSerializable.h>
-#include <mrpt/math/CMatrixD.h>
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/typemeta/TEnumType.h>
-#include <mrpt/maps/CMetricMap.h>
+#include <mrpt/containers/CDynamicGrid.h>
 #include <mrpt/graphs/ScalarFactorGraph.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/maps/CMetricMap.h>
+#include <mrpt/math/CMatrixD.h>
+#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/typemeta/TEnumType.h>
 
 #include <list>
 

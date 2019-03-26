@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/poses/CPose.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/CQuaternion.h>
+#include <mrpt/poses/CPose.h>
 #include <mrpt/system/string_utils.h>
 
 // Add for declaration of mexplus::from template specialization

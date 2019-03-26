@@ -10,8 +10,8 @@
 
 #include <mrpt/core/common.h>
 #include <mrpt/system/COutputLogger.h>
-#include <string>
 #include <memory>  // unique_ptr
+#include <string>
 
 namespace mrpt::comms
 {

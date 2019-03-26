@@ -9,9 +9,9 @@
 
 #include "vision-precomp.h"  // Precompiled headers
 
-#include <mrpt/serialization/CArchive.h>
 #include <mrpt/maps/CLandmark.h>
 #include <mrpt/obs/CObservation.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
 
 using namespace mrpt::obs;

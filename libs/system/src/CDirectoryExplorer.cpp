@@ -13,30 +13,30 @@
 #ifdef _MSC_VER
 #include <sys/utime.h>
 #endif
-#include <io.h>
 #include <windows.h>
+
 #include <direct.h>
+#include <io.h>
 #else
-#include <sys/types.h>
 #include <dirent.h>
+#include <sys/types.h>
 #include <unistd.h>
-#include <ctime>
 #include <utime.h>
-#include <unistd.h>
 #include <cerrno>
 #include <cstring>
+#include <ctime>
 #endif
 
-#include <queue>
-#include <algorithm>
-#include <iostream>
-#include <cstdio>
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <algorithm>
+#include <cstdio>
+#include <iostream>
+#include <queue>
 
+#include <mrpt/core/exceptions.h>
 #include <mrpt/system/CDirectoryExplorer.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/core/exceptions.h>
 
 using namespace mrpt::system;
 using namespace std;

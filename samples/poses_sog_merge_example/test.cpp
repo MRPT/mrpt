@@ -7,12 +7,12 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/poses/CPosePDFSOG.h>
-#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/system/os.h>
+#include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/os.h>
 #include <iostream>
 
 using namespace mrpt;

@@ -8,10 +8,10 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/gui.h>
-#include <mrpt/math/CMatrix.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/system/CTicTac.h>
+#include <mrpt/math/CMatrix.h>
 #include <mrpt/math/fourier.h>
+#include <mrpt/system/CTicTac.h>
 #include <iostream>
 
 using namespace mrpt;

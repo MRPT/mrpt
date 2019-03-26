@@ -8,13 +8,13 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/bayes/CProbabilityParticle.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
-#include <mrpt/core/exceptions.h>
+#include <mrpt/bayes/CProbabilityParticle.h>
 #include <mrpt/core/bits_math.h>
+#include <mrpt/core/exceptions.h>
+#include <algorithm>
 #include <cmath>
 #include <deque>
-#include <algorithm>
 
 namespace mrpt::bayes
 {

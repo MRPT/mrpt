@@ -8,17 +8,17 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/containers/traits_map.h>
 #include <mrpt/graphs/CDirectedGraph.h>
 #include <mrpt/graphs/CDirectedTree.h>
-#include <mrpt/containers/traits_map.h>
 #include <mrpt/math/utils.h>
 
-#include <limits>
-#include <iostream>  // TODO - remove me
-#include <vector>
-#include <utility>
 #include <exception>
 #include <functional>
+#include <iostream>  // TODO - remove me
+#include <limits>
+#include <utility>
+#include <vector>
 
 namespace mrpt::graphs
 {

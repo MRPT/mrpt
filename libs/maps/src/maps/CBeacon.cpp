@@ -14,12 +14,12 @@
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/serialization/CArchive.h>
 
-#include <mrpt/system/os.h>
 #include <mrpt/math/geometry.h>
-#include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CText.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;

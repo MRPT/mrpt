@@ -11,25 +11,25 @@
 #include <wx/msgdlg.h>
 
 //(*InternalHeaders(hmtMapViewerFrame)
+#include <wx/artprov.h>
+#include <wx/bitmap.h>
+#include <wx/font.h>
+#include <wx/image.h>
+#include <wx/intl.h>
 #include <wx/settings.h>
 #include <wx/string.h>
-#include <wx/intl.h>
-#include <wx/font.h>
-#include <wx/bitmap.h>
-#include <wx/image.h>
-#include <wx/artprov.h>
 //*)
 
-#include <wx/msgdlg.h>
-#include <wx/filedlg.h>
-#include <wx/progdlg.h>
-#include <wx/imaglist.h>
 #include <wx/busyinfo.h>
-#include <wx/log.h>
-#include <wx/textdlg.h>
-#include <wx/dirdlg.h>
 #include <wx/colordlg.h>
 #include <wx/dcmemory.h>
+#include <wx/dirdlg.h>
+#include <wx/filedlg.h>
+#include <wx/imaglist.h>
+#include <wx/log.h>
+#include <wx/msgdlg.h>
+#include <wx/progdlg.h>
+#include <wx/textdlg.h>
 
 #include <mrpt/gui/CMyRedirector.h>
 
@@ -42,17 +42,17 @@ extern std::string global_fileToOpen;
 #error "OpenGL required: set wxUSE_GLCANVAS to 1 and rebuild wxWidgets"
 #endif
 
-#include <mrpt/gui/CWxGLCanvasBase.h>
 #include <mrpt/config/CConfigFile.h>
+#include <mrpt/gui/CWxGLCanvasBase.h>
 #include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/filesystem.h>
 
 #include <mrpt/hmtslam/CHMTSLAM.h>
 #include <mrpt/hmtslam/CRobotPosesGraph.h>
@@ -799,15 +799,15 @@ void hmtMapViewerFrame::updateLocalMapView()
 					// ---------------------------------------------------------
 					// Bounding boxes for grid maps:
 					// ---------------------------------------------------------
-					if (obj_mmap->m_gridMaps.size())
+					if (auto grid = obj_mmap->mapByClass<COccupancyGridMap2D>();
+						grid)
 					{
-						float x_min = obj_mmap->m_gridMaps[0]->getXMin();
-						float x_max = obj_mmap->m_gridMaps[0]->getXMax();
-						float y_min = obj_mmap->m_gridMaps[0]->getYMin();
-						float y_max = obj_mmap->m_gridMaps[0]->getYMax();
+						float x_min = grid->getXMin();
+						float x_max = grid->getXMax();
+						float y_min = grid->getYMin();
+						float y_max = grid->getYMax();
 
-						opengl::CSetOfLines::Ptr objBB =
-							mrpt::make_aligned_shared<opengl::CSetOfLines>();
+						auto objBB = opengl::CSetOfLines::Create();
 						objBB->setColor(0, 0, 1);
 						objBB->setLineWidth(4.0f);
 

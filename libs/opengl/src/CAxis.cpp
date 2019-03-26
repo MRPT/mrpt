@@ -10,9 +10,9 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CAxis.h>
+#include <mrpt/opengl/gl_utils.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
-#include <mrpt/opengl/gl_utils.h>
 
 #include "opengl_internals.h"
 

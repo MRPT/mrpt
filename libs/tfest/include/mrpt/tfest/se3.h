@@ -8,11 +8,11 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/math_frwds.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/math_frwds.h>
 #include <mrpt/poses/CPose3DQuat.h>
-#include <mrpt/tfest/TMatchingPair.h>
 #include <mrpt/poses/poses_frwds.h>
+#include <mrpt/tfest/TMatchingPair.h>
 #include <mrpt/tfest/indiv-compat-decls.h>
 
 namespace mrpt::tfest

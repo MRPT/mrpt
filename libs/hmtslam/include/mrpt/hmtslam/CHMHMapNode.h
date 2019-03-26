@@ -9,12 +9,12 @@
 #pragma once
 
 #include <mrpt/core/safe_pointers.h>
-#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/hmtslam/HMT_SLAM_common.h>
+#include <mrpt/obs/CSensoryFrame.h>
 
-#include <mrpt/serialization/CSerializable.h>
-#include <mrpt/hmtslam/CMHPropertiesValuesList.h>
 #include <mrpt/graphs/TNodeID.h>
+#include <mrpt/hmtslam/CMHPropertiesValuesList.h>
+#include <mrpt/serialization/CSerializable.h>
 #include <map>
 
 namespace mrpt::hmtslam

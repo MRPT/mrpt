@@ -8,12 +8,13 @@
    +------------------------------------------------------------------------+ */
 
 #include "opengl-precomp.h"  // Precompiled header
-#include <mrpt/opengl/CPolyhedron.h>
-#include <mrpt/math/CMatrixTemplate.h>
+
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/poses/CPose3D.h>
+#include <mrpt/math/CMatrixTemplate.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_containers.h>  // dotProduct()
+#include <mrpt/opengl/CPolyhedron.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>

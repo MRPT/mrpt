@@ -9,10 +9,10 @@
 
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
-#include <mrpt/system/os.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/comms/CClientTCPSocket.h>
+#include <mrpt/hwdrivers/CGPSInterface.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 
 #include <iostream>
 #include <list>

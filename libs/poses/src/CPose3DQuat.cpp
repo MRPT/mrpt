@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "poses-precomp.h"  // Precompiled headers
+
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/serialization/CArchive.h>

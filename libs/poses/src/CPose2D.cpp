@@ -9,14 +9,14 @@
 
 #include "poses-precomp.h"  // Precompiled headers
 
-#include <mrpt/poses/CPose2D.h>
+#include <mrpt/config.h>  // HAVE_SINCOS
+#include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/CPoint2D.h>
-#include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPoint3D.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
-#include <mrpt/math/wrap2pi.h>
-#include <mrpt/config.h>  // HAVE_SINCOS
 #include <limits>
 
 using namespace mrpt;

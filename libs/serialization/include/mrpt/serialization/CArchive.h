@@ -8,18 +8,18 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <cstdint>
 #include <mrpt/config.h>  // MRPT_IS_BIG_ENDIAN
+#include <mrpt/core/Clock.h>
 #include <mrpt/core/is_shared_ptr.h>
 #include <mrpt/core/reverse_bytes.h>
-#include <mrpt/core/Clock.h>
 #include <mrpt/serialization/CSerializable.h>
-#include <vector>
+#include <mrpt/typemeta/TTypeName.h>
+#include <cstdint>
+#include <stdexcept>
 #include <string>
 #include <type_traits>  // remove_reference_t, is_polymorphic
-#include <stdexcept>
-#include <mrpt/typemeta/TTypeName.h>
 #include <variant>
+#include <vector>
 
 // See: https://gcc.gnu.org/viewcvs/gcc?view=revision&revision=258854
 #if defined(__clang__) && (__GLIBCXX__ <= 20180419)

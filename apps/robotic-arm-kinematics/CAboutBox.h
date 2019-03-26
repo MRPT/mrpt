@@ -10,14 +10,14 @@
 #define CABOUTBOX_H
 
 //(*Headers(CAboutBox)
-#include <wx/notebook.h>
-#include <wx/sizer.h>
-#include <wx/stattext.h>
-#include <wx/textctrl.h>
-#include <wx/statline.h>
-#include <wx/statbmp.h>
 #include <wx/button.h>
 #include <wx/dialog.h>
+#include <wx/notebook.h>
+#include <wx/sizer.h>
+#include <wx/statbmp.h>
+#include <wx/statline.h>
+#include <wx/stattext.h>
+#include <wx/textctrl.h>
 //*)
 
 class CAboutBox : public wxDialog

@@ -15,12 +15,14 @@
 	See README.txt for instructions.
   ---------------------------------------------------------------*/
 
-#include <mrpt/system/os.h>
-#include <mrpt/maps/CSimpleMap.h>
-#include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/maps/CMultiMetricMap.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -85,7 +87,7 @@ int main(int argc, char** argv)
 			CConfigFile(configFile), METRIC_MAP_CONFIG_SECTION);
 
 		CMultiMetricMap metricMap;
-		metricMap.setListOfMaps(&mapCfg);
+		metricMap.setListOfMaps(mapCfg);
 
 		// Build metric maps:
 		cout << "Building metric maps...";
@@ -99,15 +101,17 @@ int main(int argc, char** argv)
 		metricMap.saveMetricMapRepresentationToFile(outprefix);
 
 		// grid maps:
-		size_t i;
-		for (i = 0; i < metricMap.m_gridMaps.size(); i++)
+		for (unsigned int i = 0;
+			 i < metricMap.countMapsByClass<COccupancyGridMap2D>(); i++)
 		{
-			string str = format(
-				"%s_gridmap_no%02u.gridmap", outprefix.c_str(), (unsigned)i);
+			using namespace std::string_literals;
+			const auto str = outprefix + "_gridmap_no"s +
+							 mrpt::format("%02u", i) + ".gridmap"s;
 			cout << "Saving gridmap #" << i << " to " << str << endl;
 
 			CFileGZOutputStream fo(str);
-			mrpt::serialization::archiveFrom(fo) << *metricMap.m_gridMaps[i];
+			mrpt::serialization::archiveFrom(fo)
+				<< *metricMap.mapByClass<COccupancyGridMap2D>(i);
 
 			cout << "done." << endl;
 		}

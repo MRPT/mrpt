@@ -8,8 +8,9 @@
    +------------------------------------------------------------------------+ */
 
 #include "opengl-precomp.h"  // Precompiled header
-#include <mrpt/opengl/CCylinder.h>
+
 #include <mrpt/math/geometry.h>
+#include <mrpt/opengl/CCylinder.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
 #include "opengl_internals.h"

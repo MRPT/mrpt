@@ -9,19 +9,19 @@
 
 #include "slam-precomp.h"  // Precompiled headers
 
-#include <mrpt/slam/CIncrementalMapPartitioner.h>
-#include <mrpt/maps/CMultiMetricMap.h>
-#include <mrpt/slam/observations_overlap.h>
-#include <mrpt/poses/CPosePDFParticles.h>
-#include <mrpt/poses/CPose3DPDFParticles.h>
-#include <mrpt/graphs/CGraphPartitioner.h>
-#include <mrpt/system/CTicTac.h>
 #include <mrpt/config/CConfigFilePrefixer.h>
-#include <mrpt/serialization/stl_serialization.h>
+#include <mrpt/graphs/CGraphPartitioner.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/CSphere.h>
 #include <mrpt/opengl/CSimpleLine.h>
+#include <mrpt/opengl/CSphere.h>
+#include <mrpt/poses/CPose3DPDFParticles.h>
+#include <mrpt/poses/CPosePDFParticles.h>
+#include <mrpt/serialization/stl_serialization.h>
+#include <mrpt/slam/CIncrementalMapPartitioner.h>
+#include <mrpt/slam/observations_overlap.h>
+#include <mrpt/system/CTicTac.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::obs;
@@ -128,7 +128,7 @@ uint32_t CIncrementalMapPartitioner::addMapFrame(
 	// Create new new metric map:
 	m_individualMaps.push_back(CMultiMetricMap::Create());
 	auto& newMetricMap = m_individualMaps.back();
-	newMetricMap->setListOfMaps(&options.metricmap);
+	newMetricMap->setListOfMaps(options.metricmap);
 
 	// Build robo-centric map for each keyframe:
 	frame.insertObservationsInto(newMetricMap.get());

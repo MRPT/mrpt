@@ -11,10 +11,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/datetime.h>
 
-namespace mrpt
-{
-/** \ingroup mrpt_obs_grp */
-namespace obs
+namespace mrpt::obs
 {
 /** Declares a class for storing a robot action. It is used in
  * mrpt::obs::CRawlog,
@@ -37,5 +34,4 @@ class CAction : public mrpt::serialization::CSerializable
 
 };  // End of class def.
 
-}  // namespace obs
-}  // namespace mrpt
+}  // namespace mrpt::obs

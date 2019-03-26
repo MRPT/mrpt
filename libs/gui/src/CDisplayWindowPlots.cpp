@@ -11,10 +11,10 @@
 
 #include <mrpt/config.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
-#include <mrpt/system/os.h>
-#include <mrpt/img/CImage.h>
 #include <mrpt/gui/WxSubsystem.h>
 #include <mrpt/gui/WxUtils.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/system/os.h>
 
 #include <mrpt/math/utils.h>
 

@@ -9,12 +9,12 @@
 
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
-#include <mrpt/hwdrivers/CHokuyoURG.h>
-#include <mrpt/comms/CSerialPort.h>
 #include <mrpt/comms/CClientTCPSocket.h>
-#include <mrpt/system/os.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>  // in library mrpt-maps
+#include <mrpt/comms/CSerialPort.h>
+#include <mrpt/hwdrivers/CHokuyoURG.h>
 #include <mrpt/opengl/CAxis.h>
+#include <mrpt/opengl/CPlanarLaserScan.h>  // in library mrpt-maps
+#include <mrpt/system/os.h>
 
 IMPLEMENTS_GENERIC_SENSOR(CHokuyoURG, mrpt::hwdrivers)
 

@@ -9,10 +9,9 @@
 
 #include "img-precomp.h"  // Precompiled headers
 
-#include <mrpt/serialization/CArchive.h>
 #include <mrpt/img/TColor.h>
-#include <mrpt/system/os.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt::img;
 using mrpt::serialization::CArchive;

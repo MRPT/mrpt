@@ -7,9 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/rtti/CObject.h>
-#include <mrpt/core/aligned_allocator.h>
 #include <gtest/gtest.h>
+#include <mrpt/core/aligned_allocator.h>
+#include <mrpt/rtti/CObject.h>
 
 namespace MyNS
 {

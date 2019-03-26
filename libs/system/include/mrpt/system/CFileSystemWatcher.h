@@ -9,9 +9,9 @@
 #pragma once
 
 #include <mrpt/system/os.h>
-#include <thread>
 #include <mutex>
 #include <queue>
+#include <thread>
 
 namespace mrpt::system
 {

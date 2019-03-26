@@ -8,10 +8,10 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/poses/CPosePDF.h>
+#include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/math_frwds.h>
-#include <mrpt/core/aligned_std_vector.h>
+#include <mrpt/poses/CPosePDF.h>
 #include <ostream>
 
 namespace mrpt::poses

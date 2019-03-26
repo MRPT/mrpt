@@ -7,10 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 #pragma once
+#include <mrpt/system/CTicTac.h>
+#include <cmath>
 #include <map>
 #include <vector>
-#include <cmath>
-#include <mrpt/system/CTicTac.h>
 
 namespace mrpt::graphs
 {

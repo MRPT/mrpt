@@ -9,9 +9,9 @@
 #pragma once
 
 #include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/serialization/CArchive.h>
 #include <iomanip>  // for setprecision(), etc.
 #include <iterator>  // std::ostream_iterator
-#include <mrpt/serialization/CArchive.h>
 
 // Many of the functions originally in this file are now in ops_containers.h
 #include <mrpt/math/ops_containers.h>

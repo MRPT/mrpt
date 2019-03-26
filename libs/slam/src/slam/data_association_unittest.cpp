@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/slam/data_association.h>
 #include <gtest/gtest.h>
+#include <mrpt/slam/data_association.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;

@@ -9,8 +9,8 @@
 
 #include "serialization-precomp.h"  // Precompiled headers
 
-#include <mrpt/serialization/CSchemeArchive.h>
 #include <mrpt/core/exceptions.h>
+#include <mrpt/serialization/CSchemeArchive.h>
 
 // Check if we have jsoncpp to enable those tests:
 #include <mrpt/config.h>

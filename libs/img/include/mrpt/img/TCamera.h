@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <array>
 

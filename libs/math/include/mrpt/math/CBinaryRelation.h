@@ -11,9 +11,9 @@
 #include <mrpt/math/CMatrixTemplate.h>
 #include <mrpt/math/matrix_adaptors.h>
 
-#include <set>
-#include <iterator>
 #include <algorithm>
+#include <iterator>
+#include <set>
 #include <utility>
 
 namespace mrpt

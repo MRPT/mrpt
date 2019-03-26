@@ -11,8 +11,8 @@
 
 #include <mrpt/containers/ts_hash_map.h>
 #include <mrpt/core/byte_manip.h>  // MAKEWORD16B(), etc.
-#include <cstring>
 #include <cstdlib>
+#include <cstring>
 
 void mrpt::containers::reduced_hash(
 	const std::string_view& value, uint64_t& out_hash)

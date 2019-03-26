@@ -11,8 +11,8 @@
 #define _CMTMESSAGE_H_2006_05_24
 
 #ifndef _CMT_MONOLITHIC
-#include "cmtdef.h"
 #include "cmt1.h"
+#include "cmtdef.h"
 #endif
 
 namespace xsens

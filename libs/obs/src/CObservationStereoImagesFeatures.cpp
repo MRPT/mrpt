@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
+
 #include <mrpt/obs/CObservationStereoImagesFeatures.h>
 #include <mrpt/serialization/CArchive.h>
 #include <fstream>

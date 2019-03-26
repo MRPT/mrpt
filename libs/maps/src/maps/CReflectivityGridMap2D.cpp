@@ -9,14 +9,14 @@
 
 #include "maps-precomp.h"  // Precomp header
 
+#include <mrpt/core/round.h>  // round()
 #include <mrpt/maps/CReflectivityGridMap2D.h>
 #include <mrpt/obs/CObservationReflectivity.h>
-#include <mrpt/poses/CPose2D.h>
-#include <mrpt/core/round.h>  // round()
-#include <mrpt/system/os.h>
-#include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CTexturedPlane.h>
+#include <mrpt/poses/CPose2D.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;

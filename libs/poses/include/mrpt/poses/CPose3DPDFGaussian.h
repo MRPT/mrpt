@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DPDF.h>
 
 namespace mrpt
 {

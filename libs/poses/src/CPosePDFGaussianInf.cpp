@@ -9,17 +9,17 @@
 
 #include "poses-precomp.h"  // Precompiled headers
 
-#include <mrpt/poses/CPosePDFGaussianInf.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/poses/CPose3DPDF.h>
-#include <mrpt/poses/CPose3DPDFGaussianInf.h>
-#include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/wrap2pi.h>
-#include <mrpt/system/os.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DPDF.h>
+#include <mrpt/poses/CPose3DPDFGaussianInf.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPosePDFGaussianInf.h>
+#include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
-#include <mrpt/random.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;

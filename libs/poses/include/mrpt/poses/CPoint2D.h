@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/poses/CPoint.h>
 #include <mrpt/math/CArrayNumeric.h>
+#include <mrpt/poses/CPoint.h>
 
 namespace mrpt::poses
 {

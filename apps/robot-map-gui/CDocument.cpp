@@ -9,10 +9,16 @@
    */
 #include "CDocument.h"
 
+#include <mrpt/maps/CBeaconMap.h>
+#include <mrpt/maps/CGasConcentrationGridMap2D.h>
+#include <mrpt/maps/CLandmarksMap.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/serialization/CArchive.h>
+#include "mrpt/config/CConfigFile.h"
 #include "mrpt/io/CFileGZInputStream.h"
 #include "mrpt/io/CFileGZOutputStream.h"
 #include "mrpt/io/CFileOutputStream.h"
-#include "mrpt/config/CConfigFile.h"
 
 const std::string METRIC_MAP_CONFIG_SECTION = "MappingApplication";
 
@@ -92,7 +98,7 @@ void CDocument::saveAsText(const std::string& fileName) const
 const std::string& CDocument::getFileName() const { return m_fileName; }
 void CDocument::setListOfMaps(TSetOfMetricMapInitializers& mapCfg)
 {
-	m_metricmap.setListOfMaps(&mapCfg);
+	m_metricmap.setListOfMaps(mapCfg);
 	updateMetricMap();
 }
 

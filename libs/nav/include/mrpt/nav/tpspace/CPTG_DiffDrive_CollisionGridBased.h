@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/containers/CDynamicGrid.h>
 #include <mrpt/math/CPolygon.h>
+#include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/typemeta/TEnumType.h>
 
 namespace mrpt

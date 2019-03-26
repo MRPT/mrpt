@@ -9,12 +9,12 @@
 
 #include "poses-precomp.h"  // Precompiled headers
 
-#include <mrpt/poses/FrameTransformer.h>  // for FrameTransformer, FrameTran...
+#include <mrpt/core/exceptions.h>  // for ASSERTMSG_
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
-#include <string>  // for string
+#include <mrpt/poses/FrameTransformer.h>  // for FrameTransformer, FrameTran...
 #include <mrpt/system/datetime.h>  // for TTimeStamp, INVALID_TIMESTAMP
-#include <mrpt/core/exceptions.h>  // for ASSERTMSG_
+#include <string>  // for string
 
 using namespace mrpt::poses;
 

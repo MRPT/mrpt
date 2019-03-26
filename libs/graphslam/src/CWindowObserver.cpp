@@ -10,9 +10,9 @@
 // Implementation file for CWindowObserver class
 #include "graphslam-precomp.h"  // Precompiled headers
 
-#include <mrpt/opengl/COpenGLViewport.h>
 #include <mrpt/graphslam/misc/CWindowObserver.h>
 #include <mrpt/gui/CBaseGUIWindow.h>
+#include <mrpt/opengl/COpenGLViewport.h>
 #include <mrpt/opengl/gl_utils.h>
 
 using namespace mrpt::graphslam;

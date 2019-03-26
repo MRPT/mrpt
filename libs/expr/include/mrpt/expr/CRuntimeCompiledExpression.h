@@ -11,8 +11,8 @@
 #include <mrpt/core/pimpl.h>
 
 #include <map>
-#include <string>
 #include <memory>
+#include <string>
 #include "mrpt-expr_export.h"
 
 namespace exprtk

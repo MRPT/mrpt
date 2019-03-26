@@ -15,8 +15,8 @@
 #include <mrpt/otherlibs/do_opencv_includes.h>
 
 #if MRPT_HAS_SVS
-#include <svsclass.h>
 #include <dcs.h>
+#include <svsclass.h>
 #endif
 
 using namespace std;

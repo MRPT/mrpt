@@ -8,24 +8,24 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/system/COutputLogger.h>
 #include <mrpt/containers/CThreadSafeQueue.h>
+#include <mrpt/system/COutputLogger.h>
 
-#include <mrpt/hmtslam/HMT_SLAM_common.h>
-#include <mrpt/hmtslam/CLocalMetricHypothesis.h>
+#include <mrpt/core/aligned_std_map.h>
 #include <mrpt/hmtslam/CHierarchicalMHMap.h>
-#include <mrpt/hmtslam/CTopLCDetector_GridMatching.h>
+#include <mrpt/hmtslam/CLocalMetricHypothesis.h>
 #include <mrpt/hmtslam/CTopLCDetector_FabMap.h>
-#include <mrpt/slam/CICP.h>
+#include <mrpt/hmtslam/CTopLCDetector_GridMatching.h>
+#include <mrpt/hmtslam/HMT_SLAM_common.h>
 #include <mrpt/maps/CPointsMap.h>
-#include <mrpt/slam/TKLDParams.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/serialization/CMessage.h>
-#include <mrpt/core/aligned_std_map.h>
+#include <mrpt/slam/CICP.h>
+#include <mrpt/slam/TKLDParams.h>
 
-#include <thread>
 #include <queue>
+#include <thread>
 
 namespace mrpt
 {

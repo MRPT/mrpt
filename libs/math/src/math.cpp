@@ -9,17 +9,17 @@
 
 #include "math-precomp.h"  // Precompiled headers
 
+#include <mrpt/math/data_utils.h>
+#include <mrpt/math/distributions.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/math/interp_fit.hpp>
-#include <mrpt/math/data_utils.h>
-#include <mrpt/math/distributions.h>
 
-#include <mrpt/system/string_utils.h>
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/ops_matrices.h>
-#include <cmath>  // erf(), ...
+#include <mrpt/system/string_utils.h>
 #include <algorithm>
+#include <cmath>  // erf(), ...
 #include <iostream>
 
 using namespace mrpt;

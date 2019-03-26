@@ -9,9 +9,9 @@
 
 #include "io-precomp.h"  // Precompiled headers
 
+#include <mrpt/core/exceptions.h>
 #include <mrpt/io/CTextFileLinesParser.h>
 #include <mrpt/system/string_utils.h>
-#include <mrpt/core/exceptions.h>
 #include <sstream>
 
 using namespace mrpt::io;

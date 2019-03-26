@@ -13,8 +13,8 @@
 
 #include "CWindowManager.h"
 
-#include <string>
 #include <map>
+#include <string>
 
 namespace mrpt::graphslam::detail
 {

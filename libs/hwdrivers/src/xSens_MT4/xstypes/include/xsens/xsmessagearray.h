@@ -9,8 +9,8 @@
 #ifndef XSMESSAGEARRAY_H
 #define XSMESSAGEARRAY_H
 
-#include "xsarray.h"
 #include "pstdint.h"
+#include "xsarray.h"
 
 #ifdef __cplusplus
 #include "xsmessage.h"

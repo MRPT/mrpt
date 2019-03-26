@@ -17,12 +17,12 @@
 // Linux implementation: refer to
 //  http://www.easysw.com/~mike/serial/serial.html
 
+#include <fcntl.h> /* File control definitions */
+#include <sys/time.h>  // gettimeofday
+#include <unistd.h> /* UNIX standard function definitions */
+#include <cerrno> /* Error number definitions */
 #include <cstdio> /* Standard input/output definitions */
 #include <cstring> /* String function definitions */
-#include <unistd.h> /* UNIX standard function definitions */
-#include <fcntl.h> /* File control definitions */
-#include <cerrno> /* Error number definitions */
-#include <sys/time.h>  // gettimeofday
 
 #include <termios.h> /* POSIX terminal control definitions */
 
@@ -41,8 +41,8 @@
 #include <windows.h>
 #endif
 
-#include <thread>
 #include <iostream>
+#include <thread>
 
 using namespace mrpt;
 using namespace mrpt::comms;

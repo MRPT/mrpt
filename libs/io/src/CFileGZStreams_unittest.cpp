@@ -7,14 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <gtest/gtest.h>
 #include <mrpt/core/format.h>
-#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/random/RandomGenerators.h>
 #include <mrpt/system/filesystem.h>
-#include <gtest/gtest.h>
-#include <algorithm>  // std::equal
 #include <test_mrpt_common.h>
+#include <algorithm>  // std::equal
 
 const size_t tst_data_len = 1000U;
 

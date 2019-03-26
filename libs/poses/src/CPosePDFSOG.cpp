@@ -9,16 +9,16 @@
 
 #include "poses-precomp.h"  // Precompiled headers
 
-#include <mrpt/poses/CPosePDFSOG.h>
-#include <mrpt/poses/CPosePDFParticles.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/system/os.h>
-#include <mrpt/math/distributions.h>
 #include <mrpt/math/CMatrixD.h>
-#include <mrpt/math/wrap2pi.h>
+#include <mrpt/math/distributions.h>
 #include <mrpt/math/matrix_serialization.h>
-#include <mrpt/serialization/CArchive.h>
+#include <mrpt/math/wrap2pi.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPosePDFParticles.h>
+#include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/poses/SO_SE_average.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/os.h>
 #include <iostream>
 
 using namespace mrpt;

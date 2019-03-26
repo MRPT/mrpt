@@ -7,13 +7,13 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "vision-precomp.h"  // Precompiled headers
-#include <cstring>
 #include <cmath>
+#include <cstring>
 #include <iostream>
+#include "vision-precomp.h"  // Precompiled headers
 
-#include "polynom_solver.h"
 #include "p3p.h"
+#include "polynom_solver.h"
 
 void mrpt::vision::pnp::p3p::init_inverse_parameters()
 {

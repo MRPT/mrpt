@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/slam/CMetricMapsAlignmentAlgorithm.h>
 #include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/slam/CMetricMapsAlignmentAlgorithm.h>
 #include <mrpt/typemeta/TEnumType.h>
 
 namespace mrpt::slam

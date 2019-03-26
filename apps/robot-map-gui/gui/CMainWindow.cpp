@@ -8,31 +8,31 @@
    +------------------------------------------------------------------------+ */
 
 #include "CMainWindow.h"
-#include "ui_CMainWindow.h"
 #include "CDocument.h"
 #include "CUndoManager.h"
+#include "ui_CMainWindow.h"
 
-#include "observationTree/CObservationTreeModel.h"
+#include "gui/observationTree/CPosesNode.h"
 #include "observationTree/CObservationImageNode.h"
 #include "observationTree/CObservationStereoImageNode.h"
+#include "observationTree/CObservationTreeModel.h"
 #include "observationTree/CObservationsNode.h"
 #include "observationTree/CPairNode.h"
-#include "gui/observationTree/CPosesNode.h"
 
+#include <QAction>
+#include <QDebug>
+#include <QErrorMessage>
+#include <QFileDialog>
 #include <QMenu>
 #include <QMenuBar>
-#include <QAction>
-#include <QFileDialog>
 #include <QTreeWidgetItem>
-#include <QErrorMessage>
-#include <QDebug>
 
+#include <mrpt/core/bits_math.h>
 #include "mrpt/gui/CQtGlCanvasBase.h"
-#include "mrpt/poses/CPose3D.h"
 #include "mrpt/gui/about_box.h"
 #include "mrpt/gui/error_box.h"
 #include "mrpt/math/wrap2pi.h"
-#include <mrpt/core/bits_math.h>
+#include "mrpt/poses/CPose3D.h"
 
 using mrpt::DEG2RAD;
 using mrpt::RAD2DEG;

@@ -8,14 +8,14 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/typemeta/TTypeName.h>
 #include <mrpt/core/aligned_allocator.h>
 #include <mrpt/core/aligned_std_map.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/graphs/TNodeID.h>
-#include <set>
-#include <map>
+#include <mrpt/typemeta/TTypeName.h>
 #include <fstream>
+#include <map>
+#include <set>
 
 namespace mrpt
 {

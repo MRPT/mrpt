@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/obs/CObservationIMU.h>
+#include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/vision/CStereoRectifyMap.h>
 
 namespace mrpt::hwdrivers

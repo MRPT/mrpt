@@ -9,10 +9,10 @@
 
 #include "opengl-precomp.h"  // Precompiled header
 
-#include <mrpt/opengl/CEllipsoid.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/matrix_serialization.h>
+#include <mrpt/opengl/CEllipsoid.h>
 #include <mrpt/serialization/CArchive.h>
 
 #include "opengl_internals.h"

@@ -9,13 +9,13 @@
 #include "bindings.h"
 
 /* MRPT */
+#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
-#include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
 
 /* macros */
 #define MAKE_FIXED_DOUBLE_MATRIX(rows, cols)                                \

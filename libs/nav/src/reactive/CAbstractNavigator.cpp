@@ -9,9 +9,9 @@
 
 #include "nav-precomp.h"  // Precomp header
 
-#include <mrpt/nav/reactive/CAbstractNavigator.h>
-#include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/nav/reactive/CAbstractNavigator.h>
 #include <limits>
 #include <typeinfo>
 

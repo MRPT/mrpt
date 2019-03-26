@@ -10,12 +10,12 @@
 
 #include <mrpt/config.h>
 
-#include <cstdlib>
+#include <mrpt/core/common.h>
 #include <cstdarg>
 #include <cstdint>
 #include <cstdio>  // FILE
+#include <cstdlib>
 #include <string>
-#include <mrpt/core/common.h>
 
 namespace mrpt::system
 {

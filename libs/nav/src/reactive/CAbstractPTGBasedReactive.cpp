@@ -9,20 +9,20 @@
 
 #include "nav-precomp.h"  // Precomp header
 
-#include <mrpt/nav/reactive/CAbstractPTGBasedReactive.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/math/wrap2pi.h>
-#include <mrpt/math/geometry.h>
-#include <mrpt/math/ops_containers.h>  // sum()
-#include <mrpt/containers/printf_vector.h>
 #include <mrpt/containers/copy_container_typecasting.h>
+#include <mrpt/containers/printf_vector.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/maps/CPointCloudFilterByDistance.h>
+#include <mrpt/math/geometry.h>
+#include <mrpt/math/ops_containers.h>  // sum()
+#include <mrpt/math/wrap2pi.h>
+#include <mrpt/nav/reactive/CAbstractPTGBasedReactive.h>
 #include <mrpt/serialization/CArchive.h>
-#include <limits>
-#include <iomanip>
+#include <mrpt/system/filesystem.h>
 #include <array>
+#include <iomanip>
+#include <limits>
 
 using namespace mrpt;
 using namespace mrpt::io;

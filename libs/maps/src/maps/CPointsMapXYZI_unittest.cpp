@@ -7,11 +7,11 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <gtest/gtest.h>
 #include <mrpt/maps/CPointsMapXYZI.h>
 #include <mrpt/system/filesystem.h>
-#include <gtest/gtest.h>
-#include <iostream>
 #include <test_mrpt_common.h>
+#include <iostream>
 
 TEST(CPointsMapXYZI, loadFromKittiVelodyneFile)
 {

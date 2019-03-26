@@ -9,21 +9,22 @@
 
 #include "slam-precomp.h"  // Precompiled headers
 
-#include <mrpt/slam/CGridMapAligner.h>
-#include <mrpt/random.h>
-#include <mrpt/poses/CPoint2DPDFGaussian.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/poses/CPose3DPDFGaussian.h>
-#include <mrpt/math/ops_containers.h>
+#include <mrpt/img/CEnhancedMetaFile.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/geometry.h>
+#include <mrpt/math/ops_containers.h>
+#include <mrpt/poses/CPoint2DPDFGaussian.h>
+#include <mrpt/poses/CPose3DPDFGaussian.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/random.h>
+#include <mrpt/slam/CGridMapAligner.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/img/CEnhancedMetaFile.h>
 
-#include <mrpt/maps/COccupancyGridMap2D.h>
-#include <mrpt/maps/CMultiMetricMap.h>
-#include <mrpt/slam/CICP.h>
 #include <mrpt/maps/CLandmarksMap.h>
+#include <mrpt/maps/CMultiMetricMap.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/slam/CICP.h>
 #include <mrpt/tfest/se2.h>
 
 using namespace mrpt::math;
@@ -109,11 +110,11 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 		multimap1 = static_cast<const CMultiMetricMap*>(mm1);
 		multimap2 = static_cast<const CMultiMetricMap*>(mm2);
 
-		ASSERT_(multimap1->m_gridMaps.size() && multimap1->m_gridMaps[0]);
-		ASSERT_(multimap2->m_gridMaps.size() && multimap2->m_gridMaps[0]);
+		ASSERT_(multimap1->countMapsByClass<COccupancyGridMap2D>());
+		ASSERT_(multimap2->countMapsByClass<COccupancyGridMap2D>());
 
-		m1 = multimap1->m_gridMaps[0].get();
-		m2 = multimap2->m_gridMaps[0].get();
+		m1 = multimap1->mapByClass<COccupancyGridMap2D>().get();
+		m2 = multimap2->mapByClass<COccupancyGridMap2D>().get();
 	}
 	else if (
 		IS_CLASS(mm1, COccupancyGridMap2D) &&
@@ -126,6 +127,9 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 		THROW_EXCEPTION(
 			"Metric maps must be of classes COccupancyGridMap2D or "
 			"CMultiMetricMap");
+
+	ASSERT_(m1);
+	ASSERT_(m2);
 
 	ASSERTMSG_(
 		m1->getResolution() == m2->getResolution(),
@@ -882,12 +886,12 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 			//  Now: If we had a multi-metric map, use the points map to improve
 			//        the estimation with ICP.
 			// --------------------------------------------------------------------
-			if (multimap1 && multimap2 && !multimap1->m_pointsMaps.empty() &&
-				!multimap2->m_pointsMaps.empty() &&
-				multimap1->m_pointsMaps[0] && multimap2->m_pointsMaps[0])
+			if (multimap1 && multimap2 &&
+				multimap1->countMapsByClass<CSimplePointsMap>() != 0 &&
+				multimap2->countMapsByClass<CSimplePointsMap>() != 0)
 			{
-				CSimplePointsMap::Ptr pnts1 = multimap1->m_pointsMaps[0];
-				CSimplePointsMap::Ptr pnts2 = multimap2->m_pointsMaps[0];
+				auto pnts1 = multimap1->mapByClass<CSimplePointsMap>();
+				auto pnts2 = multimap2->mapByClass<CSimplePointsMap>();
 
 				CICP icp;
 				CICP::TReturnInfo icpInfo;
@@ -895,9 +899,6 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 				icp.options.maxIterations = 20;
 				icp.options.smallestThresholdDist = 0.05f;
 				icp.options.thresholdDist = 0.75f;
-
-				// cout << "Points: " << pnts1->size() << " " << pnts2->size()
-				// << endl;
 
 				// Invoke ICP once for each mode in the SOG:
 				size_t cnt = 0;

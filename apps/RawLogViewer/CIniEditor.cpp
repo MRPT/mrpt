@@ -11,9 +11,9 @@
 #include "xRawLogViewerMain.h"
 
 //(*InternalHeaders(CIniEditor)
-#include <wx/settings.h>
 #include <wx/font.h>
 #include <wx/intl.h>
+#include <wx/settings.h>
 #include <wx/string.h>
 //*)
 

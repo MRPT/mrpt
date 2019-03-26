@@ -9,16 +9,16 @@
 
 #include "hmtslam-precomp.h"  // Precomp header
 
+#include <mrpt/opengl/CArrow.h>
+#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CSimpleLine.h>
+#include <mrpt/opengl/CSphere.h>
+#include <mrpt/opengl/CText.h>
+#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/system/os.h>
-#include <mrpt/poses/CPose3DPDFParticles.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CEllipsoid.h>
-#include <mrpt/opengl/CSimpleLine.h>
-#include <mrpt/opengl/CText.h>
-#include <mrpt/opengl/CSphere.h>
-#include <mrpt/opengl/CArrow.h>
-#include <mrpt/opengl/stock_objects.h>
 
 #include <mrpt/hmtslam/CRobotPosesGraph.h>
 

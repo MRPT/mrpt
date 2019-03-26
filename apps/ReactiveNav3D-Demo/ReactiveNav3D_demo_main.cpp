@@ -7,10 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <iostream>
-#include "ReactiveNav3D_demo.h"
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/config/CConfigFileMemory.h>
+#include <iostream>
+#include "ReactiveNav3D_demo.h"
 
 using namespace std;
 using namespace mrpt::config;

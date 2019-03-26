@@ -8,12 +8,12 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/serialization/CSerializable.h>
-#include <mrpt/math/eigen_frwds.h>
+#include <mrpt/core/pimpl.h>
 #include <mrpt/img/CCanvas.h>
 #include <mrpt/img/TCamera.h>
 #include <mrpt/img/TPixelCoord.h>
-#include <mrpt/core/pimpl.h>
+#include <mrpt/math/eigen_frwds.h>
+#include <mrpt/serialization/CSerializable.h>
 
 // Forwards decls:
 // clang-format off

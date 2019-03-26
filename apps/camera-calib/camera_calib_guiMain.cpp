@@ -17,9 +17,9 @@
 #include "CDlgPoseEst.h"
 
 //(*InternalHeaders(camera_calib_guiDialog)
-#include <wx/settings.h>
 #include <wx/font.h>
 #include <wx/intl.h>
+#include <wx/settings.h>
 #include <wx/string.h>
 //*)
 
@@ -28,15 +28,15 @@
 #include <wx/progdlg.h>
 
 #include <mrpt/gui/WxUtils.h>
-#include <mrpt/system/filesystem.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
+#include <mrpt/system/filesystem.h>
 
 #include <fstream>
 #include <iostream>
 
-#include <Eigen/Dense>
 #include <mrpt/vision/pnp_algos.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -57,8 +57,8 @@ mrpt::img::TCamera camera_params;
 
 // END VARIABLES  ============================
 
-#include "imgs/icono_main.xpm"
 #include "../wx-common/mrpt_logo.xpm"
+#include "imgs/icono_main.xpm"
 
 // A custom Art provider for customizing the icons:
 class MyArtProvider : public wxArtProvider

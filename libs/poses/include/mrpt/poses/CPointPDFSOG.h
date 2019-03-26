@@ -8,10 +8,10 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/poses/CPointPDF.h>
-#include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/CMatrixD.h>
+#include <mrpt/poses/CPointPDF.h>
+#include <mrpt/poses/CPointPDFGaussian.h>
 
 namespace mrpt::poses
 {

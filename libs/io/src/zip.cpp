@@ -17,12 +17,12 @@
 #include <windows.h>
 #endif
 
-#include <mrpt/io/zip.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/io/vector_loadsave.h>
+#include <mrpt/io/zip.h>
 
-#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/CFileInputStream.h>
 #include <mrpt/system/filesystem.h>
 #include <chrono>

@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <cstdlib>
 #include <cmath>
+#include <cstdlib>
 
 namespace mrpt::math
 {

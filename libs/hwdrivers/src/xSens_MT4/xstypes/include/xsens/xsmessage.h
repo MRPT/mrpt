@@ -9,10 +9,10 @@
 #ifndef XSMESSAGE_H
 #define XSMESSAGE_H
 
-#include "xstypesconfig.h"
 #include "pstdint.h"
 #include "xsbytearray.h"
 #include "xsdataidentifier.h"
+#include "xstypesconfig.h"
 #include "xsxbusmessageid.h"
 
 struct XsMessage;

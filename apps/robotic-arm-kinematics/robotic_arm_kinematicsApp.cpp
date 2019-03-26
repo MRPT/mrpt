@@ -10,8 +10,8 @@
 #include "robotic_arm_kinematicsApp.h"
 
 //(*AppHeaders
-#include "robotic_arm_kinematicsMain.h"
 #include <wx/image.h>
+#include "robotic_arm_kinematicsMain.h"
 //*)
 
 IMPLEMENT_APP(robotic_arm_kinematicsApp)

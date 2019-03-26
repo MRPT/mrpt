@@ -7,9 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <gtest/gtest.h>
 #include <mrpt/nav/planners/nav_plan_geometry_utils.h>
 #include <cmath>
-#include <gtest/gtest.h>
 
 TEST(NavTests, NavGeomUtils_collision_straight_circ_robot)
 {

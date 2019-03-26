@@ -9,13 +9,13 @@
 
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
-#include <mrpt/hwdrivers/CNTRIPClient.h>
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/comms/net_utils.h>
-#include <mrpt/math/wrap2pi.h>
-#include <mrpt/core/format.h>
-#include <mrpt/system/string_utils.h>
 #include <mrpt/core/bits_math.h>
+#include <mrpt/core/format.h>
+#include <mrpt/hwdrivers/CNTRIPClient.h>
+#include <mrpt/math/wrap2pi.h>
+#include <mrpt/system/string_utils.h>
 #include <iostream>
 
 using namespace mrpt;

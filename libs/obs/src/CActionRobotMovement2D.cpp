@@ -9,13 +9,13 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
+#include <mrpt/math/point_poses2vectors.h>
+#include <mrpt/math/wrap2pi.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
-#include <mrpt/serialization/CArchive.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/random.h>
-#include <mrpt/math/point_poses2vectors.h>
-#include <mrpt/math/wrap2pi.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::obs;
 using namespace mrpt::poses;

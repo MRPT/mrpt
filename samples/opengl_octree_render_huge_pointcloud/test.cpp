@@ -8,10 +8,10 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/img/TColor.h>
+#include <mrpt/math/geometry.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/random.h>
-#include <mrpt/math/geometry.h>
-#include <mrpt/img/TColor.h>
 #include <iostream>
 
 using namespace std;

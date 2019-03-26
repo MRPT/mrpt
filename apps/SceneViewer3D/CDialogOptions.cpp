@@ -11,22 +11,22 @@
 
 #include <wx/app.h>
 
-#include <wx/string.h>
-#include <wx/intl.h>
-#include <wx/bitmap.h>
-#include <wx/icon.h>
-#include <wx/image.h>
 #include <wx/artprov.h>
-#include <wx/msgdlg.h>
-#include <wx/filedlg.h>
-#include <wx/progdlg.h>
-#include <wx/imaglist.h>
+#include <wx/bitmap.h>
 #include <wx/busyinfo.h>
-#include <wx/log.h>
-#include <wx/textdlg.h>
-#include <wx/dirdlg.h>
 #include <wx/colordlg.h>
 #include <wx/dcmemory.h>
+#include <wx/dirdlg.h>
+#include <wx/filedlg.h>
+#include <wx/icon.h>
+#include <wx/image.h>
+#include <wx/imaglist.h>
+#include <wx/intl.h>
+#include <wx/log.h>
+#include <wx/msgdlg.h>
+#include <wx/progdlg.h>
+#include <wx/string.h>
+#include <wx/textdlg.h>
 
 #include "CDialogOptions.h"
 #include "_DSceneViewerMain.h"

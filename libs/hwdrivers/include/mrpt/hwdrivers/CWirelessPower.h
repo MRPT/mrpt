@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CObservationWirelessPower.h>
-#include <mrpt/config/CConfigFileBase.h>
 
 namespace mrpt::hwdrivers
 {

@@ -15,9 +15,9 @@
 #include <liblas/writer.hpp>
 
 #include <mrpt/maps/CPointsMap.h>
-#include <string>
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <string>
 
 namespace mrpt
 {

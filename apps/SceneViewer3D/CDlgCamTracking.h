@@ -11,13 +11,13 @@
 #define CDLGCAMTRACKING_H
 
 //(*Headers(CDlgCamTracking)
-#include <wx/sizer.h>
-#include <wx/menu.h>
-#include <wx/textctrl.h>
-#include <wx/checkbox.h>
-#include <wx/grid.h>
 #include <wx/button.h>
+#include <wx/checkbox.h>
 #include <wx/dialog.h>
+#include <wx/grid.h>
+#include <wx/menu.h>
+#include <wx/sizer.h>
+#include <wx/textctrl.h>
 //*)
 
 #include <mrpt/poses/CPose3DInterpolator.h>

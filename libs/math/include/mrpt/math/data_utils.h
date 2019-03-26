@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/wrap2pi.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/ops_matrices.h>
+#include <mrpt/math/wrap2pi.h>
 
 namespace mrpt
 {

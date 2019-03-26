@@ -8,11 +8,11 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/containers/deepcopy_poly_ptr.h>
 #include <mrpt/obs/CAction.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
-#include <mrpt/serialization/CSerializable.h>
-#include <mrpt/containers/deepcopy_poly_ptr.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
+#include <mrpt/serialization/CSerializable.h>
 
 namespace mrpt::obs
 {

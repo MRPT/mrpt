@@ -16,19 +16,19 @@
  */
 
 #include <mrpt/gui.h>
-#include <mrpt/random.h>
-#include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/CPoint3D.h>
-#include <mrpt/system/CTicTac.h>
 #include <mrpt/opengl/CAngularObservationMesh.h>
 #include <mrpt/opengl/CAxis.h>
-#include <mrpt/opengl/CDisk.h>
 #include <mrpt/opengl/CCylinder.h>
-#include <mrpt/opengl/CSphere.h>
-#include <mrpt/opengl/CPolyhedron.h>
-#include <mrpt/opengl/CTexturedPlane.h>
+#include <mrpt/opengl/CDisk.h>
 #include <mrpt/opengl/CEllipsoid.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CPolyhedron.h>
+#include <mrpt/opengl/CSphere.h>
+#include <mrpt/opengl/CTexturedPlane.h>
+#include <mrpt/poses/CPoint3D.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/random.h>
+#include <mrpt/system/CTicTac.h>
 #include <iostream>
 
 #define COLORR 1.0f

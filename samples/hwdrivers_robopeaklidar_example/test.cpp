@@ -10,8 +10,8 @@
 #include <mrpt/hwdrivers/CRoboPeakLidar.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/system/CTicTac.h>
-#include <mrpt/system/string_utils.h>
 #include <mrpt/system/os.h>
+#include <mrpt/system/string_utils.h>
 #include <iostream>
 
 using namespace mrpt;

@@ -9,8 +9,8 @@
 
 #include "rawlog-edit-declarations.h"
 
-#include <mrpt/topography.h>
 #include <mrpt/obs/CObservationGPS.h>
+#include <mrpt/topography.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;

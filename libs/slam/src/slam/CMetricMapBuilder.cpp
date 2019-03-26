@@ -9,14 +9,14 @@
 
 #include "slam-precomp.h"  // Precompiled headers
 
-#include <mrpt/system/filesystem.h>
-#include <mrpt/slam/CMetricMapBuilder.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/io/CFileInputStream.h>
-#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CFileInputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/slam/CMetricMapBuilder.h>
+#include <mrpt/system/filesystem.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::maps;

@@ -7,10 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
-#include <mrpt/config/CConfigFile.h>
-#include <mrpt/system/filesystem.h>
 #include <gtest/gtest.h>
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
+#include <mrpt/system/filesystem.h>
 #include <test_mrpt_common.h>
 
 TEST(NavTests, PTGs_tests)

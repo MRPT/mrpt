@@ -27,10 +27,10 @@
 #include <cstdio>
 #endif
 
-#include <cstring>  // for NULL, memcpy
+#include <mrpt/core/exceptions.h>  // for THROW_EXCEPTION, ASSERT_
 #include <mrpt/system/CFileSystemWatcher.h>
 #include <mrpt/system/filesystem.h>  // for directoryExists()
-#include <mrpt/core/exceptions.h>  // for THROW_EXCEPTION, ASSERT_
+#include <cstring>  // for NULL, memcpy
 
 using namespace mrpt::system;
 using namespace std;

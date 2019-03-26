@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <nanoflann.hpp>
-#include <mrpt/core/exceptions.h>
 #include <gtest/gtest.h>
+#include <mrpt/core/exceptions.h>
+#include <nanoflann.hpp>
 
 TEST(nanoflann, test1) { MRPT_TODO("Write me!"); }

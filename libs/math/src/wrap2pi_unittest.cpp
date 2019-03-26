@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/math/wrap2pi.h>
 #include <gtest/gtest.h>
+#include <mrpt/math/wrap2pi.h>
 
 using namespace mrpt;
 using namespace std;

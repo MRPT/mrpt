@@ -17,22 +17,22 @@
 			  of the grabbing thread in Test_KinectOnlineOffline()
 */
 
-#include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/gui.h>
-#include <mrpt/maps/CColouredPointsMap.h>
-#include <mrpt/system/CTimeLogger.h>
+#include <mrpt/hwdrivers/CKinect.h>
+#include <mrpt/img/TColor.h>
 #include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/opengl/CPointCloudColoured.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/opengl/CFrustum.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CPlanarLaserScan.h>
+#include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/stock_objects.h>
-#include <mrpt/system/CTicTac.h>
-#include <mrpt/img/TColor.h>
 #include <mrpt/serialization/CArchive.h>
-#include <memory>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <iostream>
+#include <memory>
 
 // Demonstrate MRPT RGB+D --> PCL point cloud conversion:
 #if MRPT_HAS_PCL

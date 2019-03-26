@@ -8,13 +8,13 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/system/datetime.h>
-#include <mrpt/poses/CPointPDFGaussian.h>
-#include <mrpt/poses/CPoint3D.h>
-#include <mrpt/vision/CFeature.h>
 #include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/poses/CPoint3D.h>
+#include <mrpt/poses/CPointPDFGaussian.h>
+#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/system/datetime.h>
+#include <mrpt/vision/CFeature.h>
 
 #include <memory>
 

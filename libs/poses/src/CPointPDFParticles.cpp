@@ -9,11 +9,11 @@
 
 #include "poses-precomp.h"  // Precompiled headers
 
-#include <mrpt/serialization/CArchive.h>
-#include <mrpt/poses/CPointPDFParticles.h>
-#include <mrpt/poses/CPoint3D.h>
-#include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/ops_containers.h>  // maximum()
+#include <mrpt/poses/CPoint3D.h>
+#include <mrpt/poses/CPointPDFParticles.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
 
 using namespace mrpt;

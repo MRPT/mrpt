@@ -10,10 +10,10 @@
 #define CINIEDITOR_H
 
 //(*Headers(CIniEditor)
-#include <wx/sizer.h>
-#include <wx/textctrl.h>
 #include <wx/button.h>
 #include <wx/dialog.h>
+#include <wx/sizer.h>
+#include <wx/textctrl.h>
 //*)
 
 class CIniEditor : public wxDialog

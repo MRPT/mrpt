@@ -7,19 +7,19 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/detectors.h>
-#include <mrpt/hwdrivers/CCameraSensor.h>
-#include <mrpt/maps/CColouredPointsMap.h>
-#include <mrpt/obs/CRawlog.h>
-#include <mrpt/gui.h>
-#include <mrpt/opengl/CPointCloudColoured.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/stock_objects.h>
-#include <mrpt/math/ops_containers.h>
-#include <iostream>
 #include <mrpt/core/exceptions.h>
+#include <mrpt/detectors.h>
 #include <mrpt/examples_config.h>
+#include <mrpt/gui.h>
+#include <mrpt/hwdrivers/CCameraSensor.h>
 #include <mrpt/img/TColor.h>
+#include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/math/ops_containers.h>
+#include <mrpt/obs/CRawlog.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CPointCloudColoured.h>
+#include <mrpt/opengl/stock_objects.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::maps;

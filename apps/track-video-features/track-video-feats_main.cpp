@@ -17,14 +17,14 @@
 			 as real-time visualization of all that stuff.
   ---------------------------------------------------------------*/
 
-#include <mrpt/vision/tracking.h>
-#include <mrpt/vision/CVideoFileWriter.h>
-#include <mrpt/system/filesystem.h>
 #include <mrpt/gui/CDisplayWindow3D.h>  // For visualization windows
 #include <mrpt/hwdrivers/CCameraSensor.h>  // For capture of video from videos/cameras
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/system/os.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
+#include <mrpt/vision/CVideoFileWriter.h>
+#include <mrpt/vision/tracking.h>
 
 using namespace std;
 using namespace mrpt;

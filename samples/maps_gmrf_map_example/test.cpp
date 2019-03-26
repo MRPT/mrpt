@@ -7,11 +7,11 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/maps/CGasConcentrationGridMap2D.h>
 #include <mrpt/gui.h>
-#include <mrpt/random.h>
-#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/maps/CGasConcentrationGridMap2D.h>
 #include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/random.h>
 #include <iostream>
 
 using namespace mrpt;

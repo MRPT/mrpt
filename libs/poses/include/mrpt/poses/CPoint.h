@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/poses/CPoseOrPoint.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/poses/CPoseOrPoint.h>
 
 namespace mrpt::poses
 {

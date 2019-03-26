@@ -8,10 +8,10 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/core/aligned_std_vector.h>
+#include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CSerializable.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/core/aligned_std_vector.h>
 
 namespace mrpt
 {

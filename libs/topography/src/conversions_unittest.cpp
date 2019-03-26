@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/topography.h>
 #include <gtest/gtest.h>
+#include <mrpt/topography.h>
 
 using namespace mrpt;
 using namespace mrpt::math;

@@ -9,14 +9,14 @@
 
 #include "maps-precomp.h"  // Precomp header
 
-#include <octomap/octomap.h>
-#include <octomap/OcTree.h>
 #include <mrpt/maps/COctoMap.h>
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
+#include <octomap/OcTree.h>
+#include <octomap/octomap.h>
 
 #include "COctoMapBase_impl.h"
 

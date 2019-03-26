@@ -9,9 +9,9 @@
 #ifndef XSMATH_H
 #define XSMATH_H
 
-#include "xstypesconfig.h"
-#include "xstypedefs.h"
 #include "pstdint.h"
+#include "xstypedefs.h"
+#include "xstypesconfig.h"
 
 #ifdef __cplusplus
 extern "C"

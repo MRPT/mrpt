@@ -9,10 +9,10 @@
 
 #include "gui-precomp.h"  // Precompiled headers
 
-#include <iostream>
 #include <mrpt/gui/CBaseGUIWindow.h>
-#include <mrpt/system/os.h>
 #include <mrpt/gui/WxSubsystem.h>
+#include <mrpt/system/os.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::gui;

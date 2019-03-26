@@ -9,13 +9,13 @@
 #ifndef IOINTERFACE_H
 #define IOINTERFACE_H
 
-#include "xcommunicationconfig.h"
-#include <xsens/xsplatform.h>
-#include <xsens/xsmessage.h>
-#include <xsens/xstime.h>
-#include <xsens/xsfilepos.h>
 #include <xsens/xsbytearray.h>
+#include <xsens/xsfilepos.h>
+#include <xsens/xsmessage.h>
+#include <xsens/xsplatform.h>
 #include <xsens/xsresultvalue.h>
+#include <xsens/xstime.h>
+#include "xcommunicationconfig.h"
 
 #include <stdlib.h>
 

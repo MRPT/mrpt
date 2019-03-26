@@ -9,8 +9,8 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
-#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/metaprogramming_serialization.h>
 #include <mrpt/system/os.h>

@@ -8,18 +8,18 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/nav/reactive/CWaypointsNavigator.h>
-#include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
-#include <mrpt/nav/reactive/CLogFileRecord.h>
+#include <mrpt/maps/CPointCloudFilterBase.h>
+#include <mrpt/math/CPolygon.h>
+#include <mrpt/math/filters.h>
 #include <mrpt/nav/holonomic/CAbstractHolonomicReactiveMethod.h>
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
-#include <mrpt/nav/reactive/TCandidateMovementPTG.h>
+#include <mrpt/nav/reactive/CLogFileRecord.h>
 #include <mrpt/nav/reactive/CMultiObjectiveMotionOptimizerBase.h>
+#include <mrpt/nav/reactive/CWaypointsNavigator.h>
+#include <mrpt/nav/reactive/TCandidateMovementPTG.h>
+#include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/datetime.h>
-#include <mrpt/math/filters.h>
-#include <mrpt/math/CPolygon.h>
-#include <mrpt/maps/CPointCloudFilterBase.h>
 #include <memory>  // unique_ptr
 
 namespace mrpt::nav

@@ -9,8 +9,8 @@
 
 #include "system-precomp.h"  // Precompiled headers
 
-#include <mrpt/system/CObserver.h>
 #include <mrpt/system/CObservable.h>
+#include <mrpt/system/CObserver.h>
 
 using namespace mrpt::system;
 using namespace std;

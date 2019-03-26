@@ -7,11 +7,11 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers/COpenNI2Sensor.h>
 #include <mrpt/gui.h>
-#include <mrpt/system/CTicTac.h>
-#include <mrpt/opengl.h>
+#include <mrpt/hwdrivers/COpenNI2Sensor.h>
 #include <mrpt/img/TColor.h>
+#include <mrpt/opengl.h>
+#include <mrpt/system/CTicTac.h>
 #include <iostream>
 
 using namespace mrpt;

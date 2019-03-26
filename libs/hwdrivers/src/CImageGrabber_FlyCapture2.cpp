@@ -10,24 +10,24 @@
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
 #include <mrpt/hwdrivers/CImageGrabber_FlyCapture2.h>
-#include <mrpt/system/string_utils.h>
 #include <mrpt/system/datetime.h>
+#include <mrpt/system/string_utils.h>
 
 #if MRPT_HAS_FLYCAPTURE2
 #include <FlyCapture2.h>
 using namespace FlyCapture2;
 #endif
 #if MRPT_HAS_TRICLOPS
-#include <triclops.h>
 #include <fc2triclops.h>
+#include <triclops.h>
 using namespace Fc2Triclops;
 #endif
 
 #if MRPT_HAS_OPENCV
+#include <opencv2/imgproc/imgproc_c.h>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/imgproc/imgproc_c.h>
 #endif
 
 #define CHECK_FC2_ERROR(_err)                                     \

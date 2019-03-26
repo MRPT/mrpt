@@ -10,13 +10,13 @@
 #ifndef MRPTPERFAPP_COMMON_H
 #define MRPTPERFAPP_COMMON_H
 
+#include <mrpt/core/bits_math.h>
 #include <mrpt/img/CImage.h>
+#include <mrpt/obs/obs_frwds.h>  // CObservation2DRangeScan
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CTimeLogger.h>
-#include <mrpt/core/bits_math.h>
-#include <mrpt/obs/obs_frwds.h>  // CObservation2DRangeScan
-#include <list>
 #include <functional>
+#include <list>
 
 using namespace mrpt;
 using namespace mrpt::img;
@@ -31,6 +31,7 @@ void register_tests_poses();
 void register_tests_pose_interp();
 void register_tests_matrices();
 void register_tests_grids();
+void register_tests_grid3D();
 void register_tests_pointmaps();
 void register_tests_random();
 void register_tests_math();
@@ -63,8 +64,6 @@ struct TestData
 
 // Common data & functions available to all performance modules:
 extern std::list<TestData> lstTests;
-
-extern void loadExample2DRangeScan(mrpt::obs::CObservation2DRangeScan& s);
 
 void dummy_do_nothing_with_string(const std::string& s);
 void getTestImage(unsigned int img_index, mrpt::img::CImage& out_img);

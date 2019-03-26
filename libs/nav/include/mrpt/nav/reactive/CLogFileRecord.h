@@ -8,16 +8,16 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/serialization/CSerializable.h>
-#include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/io/CMemoryStream.h>
-#include <mrpt/system/TParameters.h>
 #include <mrpt/core/aligned_std_vector.h>
+#include <mrpt/io/CMemoryStream.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/system/TParameters.h>
 
+#include <mrpt/kinematics/CVehicleVelCmd.h>
 #include <mrpt/nav/holonomic/CHolonomicLogFileRecord.h>
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
-#include <mrpt/kinematics/CVehicleVelCmd.h>
 
 namespace mrpt::nav
 {

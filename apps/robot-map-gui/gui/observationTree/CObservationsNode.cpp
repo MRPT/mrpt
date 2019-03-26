@@ -9,10 +9,10 @@
    */
 #include "CObservationsNode.h"
 
-#include "CRangeScanNode.h"
+#include "CBaseObservationNode.h"
 #include "CObservationImageNode.h"
 #include "CObservationStereoImageNode.h"
-#include "CBaseObservationNode.h"
+#include "CRangeScanNode.h"
 
 #include "mrpt/obs/CObservation2DRangeScan.h"
 #include "mrpt/obs/CObservationImage.h"

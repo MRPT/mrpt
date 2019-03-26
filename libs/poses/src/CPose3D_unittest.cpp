@@ -7,13 +7,13 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/poses/CPose2D.h>
-#include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/CPoint3D.h>
-#include <mrpt/poses/Lie/SE.h>
-#include <mrpt/math/num_jacobian.h>
 #include <CTraitsTest.h>
 #include <gtest/gtest.h>
+#include <mrpt/math/num_jacobian.h>
+#include <mrpt/poses/CPoint3D.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/Lie/SE.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;

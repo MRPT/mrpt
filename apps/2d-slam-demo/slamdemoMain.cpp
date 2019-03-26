@@ -7,34 +7,35 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "slamdemoApp.h"
 #include "slamdemoMain.h"
+#include <wx/filedlg.h>
+#include <wx/msgdlg.h>
 #include "CDlgParams.h"
 #include "CLogView.h"
-#include <wx/msgdlg.h>
-#include <wx/filedlg.h>
+#include "slamdemoApp.h"
 
 //(*InternalHeaders(slamdemoFrame)
-#include <wx/string.h>
-#include <wx/intl.h>
-#include <wx/font.h>
+#include <wx/artprov.h>
 #include <wx/bitmap.h>
+#include <wx/font.h>
 #include <wx/icon.h>
 #include <wx/image.h>
-#include <wx/artprov.h>
+#include <wx/intl.h>
+#include <wx/string.h>
 //*)
 #include <mrpt/gui/wx28-fixes.h>
 
+#include <mrpt/gui/about_box.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/math/wrap2pi.h>
-#include <mrpt/system/vector_loadsave.h>
-#include <mrpt/serialization/CArchive.h>
-#include <mrpt/random.h>
 #include <mrpt/obs/CObservationComment.h>
-#include <mrpt/gui/about_box.h>
-
-#include <memory>
+#include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/vector_loadsave.h>
+
+#include <mrpt/serialization/CArchive.h>
+#include <memory>
 
 using namespace std;
 using namespace mrpt;
@@ -50,15 +51,15 @@ using namespace mrpt::math;
 using namespace mrpt::poses;
 
 #include "../wx-common/mrpt_logo.xpm"
-#include "imgs/icono_main.xpm"
 #include "imgs/icon_batch.xpm"
 #include "imgs/icon_config.xpm"
-#include "imgs/icon_help.xpm"
 #include "imgs/icon_exit.xpm"
+#include "imgs/icon_help.xpm"
 #include "imgs/icon_play.xpm"
 #include "imgs/icon_reset.xpm"
 #include "imgs/icon_step.xpm"
 #include "imgs/icon_stop.xpm"
+#include "imgs/icono_main.xpm"
 
 static const double RAD2DEGSQ = square(180 / M_PI);
 

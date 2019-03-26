@@ -11,9 +11,9 @@
 
 //(*Headers(CFormBatchSensorPose)
 #include <wx/bmpbuttn.h>
+#include <wx/button.h>
 #include <wx/dialog.h>
 #include <wx/sizer.h>
-#include <wx/button.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
 //*)

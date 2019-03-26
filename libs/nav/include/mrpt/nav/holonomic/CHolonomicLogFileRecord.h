@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/CMatrixD.h>
+#include <mrpt/serialization/CSerializable.h>
 
 namespace mrpt::nav
 {

@@ -9,17 +9,17 @@
 #pragma once
 
 #include <mrpt/core/bits_math.h>
-#include <mrpt/typemeta/TTypeName.h>
-#include <mrpt/math/math_frwds.h>  // forward declarations
-#include <mrpt/math/lightweight_geom_data_frwds.h>  // forward declarations
-#include <mrpt/math/eigen_frwds.h>  // forward declarations
-#include <mrpt/math/wrap2pi.h>
-#include <mrpt/core/format.h>
 #include <mrpt/core/exceptions.h>
-#include <vector>
+#include <mrpt/core/format.h>
+#include <mrpt/math/eigen_frwds.h>  // forward declarations
+#include <mrpt/math/lightweight_geom_data_frwds.h>  // forward declarations
+#include <mrpt/math/math_frwds.h>  // forward declarations
+#include <mrpt/math/wrap2pi.h>
+#include <mrpt/serialization/serialization_frwds.h>
+#include <mrpt/typemeta/TTypeName.h>
 #include <stdexcept>
 #include <type_traits>
-#include <mrpt/serialization/serialization_frwds.h>
+#include <vector>
 
 namespace mrpt
 {

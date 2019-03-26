@@ -10,8 +10,8 @@
 #include "math-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/CSparseMatrix.h>
-#include <string>
 #include <iostream>
+#include <string>
 
 using std::cout;
 using std::endl;

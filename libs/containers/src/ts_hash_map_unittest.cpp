@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/containers/ts_hash_map.h>
 #include <gtest/gtest.h>
+#include <mrpt/containers/ts_hash_map.h>
 
 template <typename T>
 void simple_test_hash_string()

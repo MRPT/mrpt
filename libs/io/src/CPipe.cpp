@@ -9,8 +9,8 @@
 
 #include "io-precomp.h"  // Precompiled headers
 
-#include <mrpt/io/CPipe.h>
 #include <mrpt/core/exceptions.h>
+#include <mrpt/io/CPipe.h>
 
 #ifdef _WIN32
 #include <windows.h>

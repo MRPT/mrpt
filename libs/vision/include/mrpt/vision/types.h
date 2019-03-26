@@ -8,13 +8,13 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/core/aligned_std_vector.h>
-#include <mrpt/core/aligned_std_map.h>
-#include <mrpt/img/CImage.h>
 #include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/core/aligned_std_map.h>
+#include <mrpt/core/aligned_std_vector.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/tfest/TMatchingPair.h>
 #include <mrpt/typemeta/TEnumType.h>
-#include <mrpt/math/lightweight_geom_data.h>
 
 namespace mrpt::vision
 {

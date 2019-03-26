@@ -11,8 +11,8 @@
 
 #include <xsens/xstime.h>
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #ifdef _WIN32
 #include <windows.h>
 //#	include <sys/types.h>
@@ -20,13 +20,13 @@
 #include <termios.h>
 // these are not required by level 1, but to keep the higher levels
 // platform-independent they are put here
-#include <string.h>
 #include <stddef.h>
+#include <string.h>
 #define _strnicmp strncasecmp
 #endif
 
-#include "streaminterface.h"
 #include <stdio.h>
+#include "streaminterface.h"
 
 struct XsPortInfo;
 

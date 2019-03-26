@@ -9,15 +9,15 @@
 
 #pragma once
 
-#include <mrpt/obs/CObservationRawDAQ.h>
-#include <mrpt/system/COutputLogger.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/io/CPipe.h>
+#include <mrpt/obs/CObservationRawDAQ.h>
+#include <mrpt/system/COutputLogger.h>
 
+#include <atomic>
 #include <list>
 #include <memory>
 #include <thread>
-#include <atomic>
 
 namespace mrpt::hwdrivers
 {

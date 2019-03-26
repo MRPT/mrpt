@@ -9,10 +9,10 @@
 
 #include "poses-precomp.h"  // Precompiled headers
 
-#include <mrpt/serialization/CArchive.h>
+#include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DQuatPDF.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
-#include <mrpt/poses/CPose3DPDFGaussian.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt::poses;
 using namespace mrpt::math;

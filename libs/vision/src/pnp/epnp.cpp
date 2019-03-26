@@ -7,9 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "vision-precomp.h"  // Precompiled headers
 #include <mrpt/config.h>
 #include <iostream>
+#include "vision-precomp.h"  // Precompiled headers
 
 #if MRPT_HAS_OPENCV
 #include <mrpt/otherlibs/do_opencv_includes.h>

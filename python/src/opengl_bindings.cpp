@@ -9,18 +9,18 @@
 #include "bindings.h"
 
 /* MRPT */
-#include <mrpt/opengl/CRenderizable.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/CSetOfObjects.h>
 
-#include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPoint3D.h>
-#include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DPDF.h>
 
 #include <mrpt/math/CMatrix.h>
 

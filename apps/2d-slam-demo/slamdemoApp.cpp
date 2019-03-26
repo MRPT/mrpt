@@ -10,16 +10,16 @@
 #include "slamdemoApp.h"
 
 //(*AppHeaders
-#include "slamdemoMain.h"
 #include <wx/image.h>
+#include "slamdemoMain.h"
 //*)
 #include <wx/msgdlg.h>
 
 IMPLEMENT_APP(slamdemoApp)
 
 #include <mrpt/otherlibs/tclap/CmdLine.h>
-#include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 
 using namespace std;
 

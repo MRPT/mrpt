@@ -9,11 +9,11 @@
 
 #pragma once
 
+#include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/maps/CPointsMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/maps/CPointsMap.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/slam/CICP.h>
 

@@ -9,15 +9,15 @@
 
 #include "bayes-precomp.h"  // Precompiled headers
 
-#include <cmath>  // for exp
 #include <mrpt/bayes/CParticleFilter.h>  // for CParticleFilter::TPar...
 #include <mrpt/bayes/CParticleFilterCapable.h>  // for CParticleFilterCapable
 #include <mrpt/config/CConfigFileBase.h>  // for CConfigFileBase, MRPT...
+#include <mrpt/core/bits_math.h>  // square()
+#include <mrpt/system/COutputLogger.h>  // for COutputLogger, MRPT_L...
+#include <cmath>  // for exp
 #include <cstddef>  // for size_t
 #include <exception>  // for exception
 #include <string>  // for string, allocator
-#include <mrpt/system/COutputLogger.h>  // for COutputLogger, MRPT_L...
-#include <mrpt/core/bits_math.h>  // square()
 
 namespace mrpt
 {

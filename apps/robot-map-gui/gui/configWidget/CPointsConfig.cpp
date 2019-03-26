@@ -8,8 +8,8 @@
    +---------------------------------------------------------------------------+
    */
 #include "CPointsConfig.h"
-#include "ui_CPointsConfig.h"
 #include "TypeOfConfig.h"
+#include "ui_CPointsConfig.h"
 
 CPointsConfig::CPointsConfig()
 	: CBaseConfig(), m_ui(std::make_unique<Ui::CPointsConfig>())

@@ -11,13 +11,13 @@
 #include <mrpt/typemeta/TTypeName.h>
 #include <mrpt/typemeta/num_to_string.h>
 #include <mrpt/typemeta/static_string.h>
-#include <chrono>
-#include <list>
-#include <vector>
-#include <deque>
-#include <set>
-#include <map>
 #include <array>
+#include <chrono>
+#include <deque>
+#include <list>
+#include <map>
+#include <set>
+#include <vector>
 
 /** \file This file extends TTypeName.h for STL C++ types. */
 

@@ -9,8 +9,8 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
-#include <mrpt/serialization/CArchive.h>
 #include <mrpt/obs/CObservationBatteryState.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
 
 using namespace mrpt::obs;

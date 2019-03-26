@@ -9,8 +9,8 @@
 #ifndef XSBYTEARRAY_H
 #define XSBYTEARRAY_H
 
-#include "xsarray.h"
 #include "pstdint.h"
+#include "xsarray.h"
 
 #ifdef __cplusplus
 #include "xsstring.h"

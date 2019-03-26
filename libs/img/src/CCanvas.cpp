@@ -9,23 +9,23 @@
 
 #include "img-precomp.h"  // Precompiled headers
 
+#include <mrpt/core/bit_cast.h>
+#include <mrpt/core/round.h>
 #include <mrpt/img/CCanvas.h>
 #include <mrpt/img/CImage.h>
+#include <mrpt/io/zip.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
-#include <mrpt/core/round.h>
-#include <mrpt/core/bit_cast.h>
-#include <mrpt/io/zip.h>
 #include <map>
 
 // Include the MRPT bitmap fonts:
+#include "mrpt_font_10x20.h"
 #include "mrpt_font_5x7.h"
 #include "mrpt_font_6x13.h"
 #include "mrpt_font_6x13B.h"
 #include "mrpt_font_6x13O.h"
 #include "mrpt_font_9x15.h"
 #include "mrpt_font_9x15B.h"
-#include "mrpt_font_10x20.h"
 
 // Japanese fonts?
 #if MRPT_HAS_ASIAN_FONTS

@@ -11,11 +11,11 @@
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 
+#include <mrpt/img/TColor.h>
 #include <mrpt/maps/CMetricMap.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
-#include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/img/TColor.h>
 
 namespace mrpt
 {

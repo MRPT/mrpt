@@ -8,15 +8,15 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/graphslam/types.h>
-#include <mrpt/system/TParameters.h>
 #include <mrpt/containers/stl_containers_utils.h>  // find_in_vector()
 #include <mrpt/core/aligned_std_map.h>
-#include <mrpt/graphslam/levmarq_impl.h>  // Aux classes
-#include <mrpt/system/CTimeLogger.h>
+#include <mrpt/graphslam/types.h>
 #include <mrpt/math/CSparseMatrix.h>
-
+#include <mrpt/system/CTimeLogger.h>
+#include <mrpt/system/TParameters.h>
 #include <memory>
+
+#include <mrpt/graphslam/levmarq_impl.h>  // Aux classes
 
 namespace mrpt::graphslam
 {

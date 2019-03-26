@@ -10,8 +10,8 @@
 #include "math-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/fresnel.h>
-#include <cmath>
 #include <cfloat>
+#include <cmath>
 
 // Based on code (public domain) in http://www.mymathlib.com/functions/
 

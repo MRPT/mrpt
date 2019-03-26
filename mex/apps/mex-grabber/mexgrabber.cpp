@@ -18,13 +18,13 @@
 	 https://www.mrpt.org/list-of-mrpt-apps/application-MEX-grabber
   -----------------------------------------------------------------------------*/
 
-#include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/config/CConfigFile.h>
-#include <mrpt/io/CFileGZOutputStream.h>
-#include <mrpt/img/CImage.h>
 #include <mrpt/core/round.h>
-#include <mrpt/system/os.h>
+#include <mrpt/hwdrivers/CGenericSensor.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 
 // Matlab MEX interface headers
 #include <mexplus.h>
@@ -33,8 +33,8 @@
 MRPT_TODO(
 	"This won't be necessary when CObservation2DRangeScan::writeToMatlab is "
 	"fully functional")
-#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 
 #include <mutex>
 #include <thread>

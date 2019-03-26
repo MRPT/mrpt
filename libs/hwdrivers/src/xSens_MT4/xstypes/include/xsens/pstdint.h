@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 
 #ifndef _PSTDINT_H_INCLUDED
-#include <stddef.h>
 #include <limits.h>
+#include <stddef.h>
 
 /*
  *  For gcc with _STDINT_H, fill in the PRINTF_INT*_MODIFIER macros, and
@@ -639,8 +639,8 @@ typedef ptrdiff_t intptr_t;
  *  defined more than once.
  */
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #define glue3_aux(x, y, z) x##y##z

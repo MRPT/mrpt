@@ -14,10 +14,10 @@ bool nodelets_test_passed_ok = false;
 //! [example-nodelets]
 #include <mrpt/comms/nodelets.h>
 #include <mrpt/poses/CPose3D.h>
-#include <cstdio>  // printf()
-#include <thread>
 #include <chrono>
+#include <cstdio>  // printf()
 #include <iostream>
+#include <thread>
 
 // Test payload:
 const mrpt::poses::CPose3D p_tx(1.0, 2.0, 3.0, 0.2, 0.4, 0.6);

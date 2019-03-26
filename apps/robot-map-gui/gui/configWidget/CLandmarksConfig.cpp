@@ -8,8 +8,8 @@
    +---------------------------------------------------------------------------+
    */
 #include "CLandmarksConfig.h"
-#include "ui_CLandmarksConfig.h"
 #include "TypeOfConfig.h"
+#include "ui_CLandmarksConfig.h"
 
 using namespace mrpt;
 using namespace maps;

@@ -9,11 +9,11 @@
 #ifndef opengl_COctreePointRenderer_H
 #define opengl_COctreePointRenderer_H
 
+#include <mrpt/core/aligned_std_deque.h>
+#include <mrpt/opengl/CBox.h>
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/CBox.h>
 #include <mrpt/opengl/gl_utils.h>
-#include <mrpt/core/aligned_std_deque.h>
 
 namespace mrpt
 {

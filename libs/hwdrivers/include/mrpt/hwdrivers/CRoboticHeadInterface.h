@@ -10,11 +10,11 @@
 #pragma once
 
 #include <mrpt/comms/CInterfaceFTDI.h>
-#include <mrpt/serialization/CMessage.h>
-#include <mrpt/math/CMatrixTemplate.h>
-#include <mrpt/system/COutputLogger.h>
 #include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/math/CMatrixTemplate.h>
 #include <mrpt/obs/CObservationRange.h>
+#include <mrpt/serialization/CMessage.h>
+#include <mrpt/system/COutputLogger.h>
 
 namespace mrpt::hwdrivers
 {

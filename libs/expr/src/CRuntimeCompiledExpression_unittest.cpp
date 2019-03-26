@@ -7,9 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/expr/CRuntimeCompiledExpression.h>
 #include <CTraitsTest.h>
 #include <gtest/gtest.h>
+#include <mrpt/expr/CRuntimeCompiledExpression.h>
 
 template class mrpt::CTraitsTest<mrpt::expr::CRuntimeCompiledExpression>;
 

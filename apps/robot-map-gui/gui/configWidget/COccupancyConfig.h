@@ -10,8 +10,8 @@
 #pragma once
 #include "CBaseConfig.h"
 
-#include <memory>
 #include <mrpt/maps/COccupancyGridMap2D.h>
+#include <memory>
 
 namespace Ui
 {

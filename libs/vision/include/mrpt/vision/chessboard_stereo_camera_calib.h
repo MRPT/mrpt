@@ -11,8 +11,8 @@
 
 #include <mrpt/img/CImage.h>
 #include <mrpt/img/TStereoCamera.h>
-#include <mrpt/vision/types.h>
 #include <mrpt/vision/chessboard_camera_calib.h>
+#include <mrpt/vision/types.h>
 
 namespace mrpt::vision
 {

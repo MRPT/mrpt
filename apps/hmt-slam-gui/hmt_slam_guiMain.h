@@ -14,21 +14,21 @@
 #include "CDlgLog.h"
 
 //(*Headers(hmt_slam_guiFrame)
-#include <wx/sizer.h>
-#include <wx/notebook.h>
 #include <wx/button.h>
-#include <wx/menu.h>
-#include <wx/panel.h>
-#include <wx/splitter.h>
-#include <wx/statusbr.h>
-#include <wx/statline.h>
-#include <wx/frame.h>
-#include "MyGLCanvas.h"
-#include <wx/stattext.h>
-#include <wx/textctrl.h>
 #include <wx/choice.h>
-#include <wx/treectrl.h>
+#include <wx/frame.h>
+#include <wx/menu.h>
+#include <wx/notebook.h>
+#include <wx/panel.h>
+#include <wx/sizer.h>
+#include <wx/splitter.h>
+#include <wx/statline.h>
+#include <wx/stattext.h>
+#include <wx/statusbr.h>
+#include <wx/textctrl.h>
 #include <wx/things/toggle.h>
+#include <wx/treectrl.h>
+#include "MyGLCanvas.h"
 //*)
 
 #include <mrpt/gui/WxUtils.h>
@@ -40,8 +40,8 @@
 #undef Button3
 #endif
 
-#include <memory>  // unique_ptr
 #include <mrpt/hmtslam.h>
+#include <memory>  // unique_ptr
 
 class CDlgLog;
 

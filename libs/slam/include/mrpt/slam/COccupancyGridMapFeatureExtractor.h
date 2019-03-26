@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CLandmarksMap.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/vision/CFeatureExtraction.h>
 
 #include <mrpt/system/CObserver.h>

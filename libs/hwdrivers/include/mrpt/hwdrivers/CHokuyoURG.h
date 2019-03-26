@@ -8,10 +8,10 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/poses/CPose3D.h>
-#include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
 #include <mrpt/containers/circular_buffer.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
+#include <mrpt/poses/CPose3D.h>
 
 namespace mrpt::hwdrivers
 {

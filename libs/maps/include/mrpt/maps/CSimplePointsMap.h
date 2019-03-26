@@ -9,9 +9,9 @@
 #pragma once
 
 #include <mrpt/maps/CPointsMap.h>
-#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/obs/obs_frwds.h>
+#include <mrpt/serialization/CSerializable.h>
 
 namespace mrpt
 {
@@ -108,17 +108,9 @@ class CSimplePointsMap : public CPointsMap
 
    public:
 	/** @} */
-	// --------------------------------------------
 
-	/** If the map is a simple points map or it's a multi-metric map that
-	 * contains EXACTLY one simple points map, return it.
-	 * Otherwise, return NULL
-	 */
+	// See base docs
 	const mrpt::maps::CSimplePointsMap* getAsSimplePointsMap() const override
-	{
-		return this;
-	}
-	mrpt::maps::CSimplePointsMap* getAsSimplePointsMap() override
 	{
 		return this;
 	}

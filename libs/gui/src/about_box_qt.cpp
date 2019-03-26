@@ -9,8 +9,8 @@
 
 #include "gui-precomp.h"  // Precompiled headers
 
-#include <mrpt/gui/about_box.h>
 #include <mrpt/core/exceptions.h>
+#include <mrpt/gui/about_box.h>
 
 #if MRPT_HAS_Qt5
 #include "CAboutBoxQt.h"

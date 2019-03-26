@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 #pragma once
-#include <mrpt/serialization/CArchive.h>
 #include <mrpt/core/aligned_std_vector.h>
+#include <mrpt/serialization/CArchive.h>
 namespace mrpt::serialization
 {
 CArchive& operator>>(CArchive& s, mrpt::aligned_std_vector<float>& a);

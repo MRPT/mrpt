@@ -9,9 +9,9 @@
 
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
-#include <mrpt/system/os.h>
-#include <mrpt/system/filesystem.h>
 #include <mrpt/hwdrivers/CDUO3DCamera.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 
 #include <mrpt/otherlibs/do_opencv_includes.h>
 

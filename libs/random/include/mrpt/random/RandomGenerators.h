@@ -8,15 +8,15 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <stdexcept>
-#include <random>
-#include <limits>
-#include <vector>
+#include <mrpt/random/random_shuffle.h>
 #include <algorithm>
 #include <cstddef>
-#include <type_traits>  // remove_reference
+#include <limits>
 #include <limits>  // numeric_limits
-#include <mrpt/random/random_shuffle.h>
+#include <random>
+#include <stdexcept>
+#include <type_traits>  // remove_reference
+#include <vector>
 
 // Frwd decl:
 namespace Eigen

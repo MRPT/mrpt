@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/typemeta/TEnumType.h>
 #include <gtest/gtest.h>
+#include <mrpt/typemeta/TEnumType.h>
 
 // Example declaration of "enum class"
 enum class TestColors

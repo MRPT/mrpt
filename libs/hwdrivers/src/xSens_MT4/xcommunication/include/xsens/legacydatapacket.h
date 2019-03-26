@@ -10,11 +10,11 @@
 #define LEGACYDATAPACKET_H
 
 #include <xsens/pstdint.h>
-#include <xsens/xstypedefs.h>
 #include <xsens/xsdataformat.h>
 #include <xsens/xsdeviceid.h>
-#include <xsens/xstimestamp.h>
 #include <xsens/xsmessage.h>
+#include <xsens/xstimestamp.h>
+#include <xsens/xstypedefs.h>
 
 //! Indicates that a data item is not available in the packet
 #define XS_DATA_ITEM_NOT_AVAILABLE 65535

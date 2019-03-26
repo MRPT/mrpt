@@ -7,10 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/topography.h>
+#include <gtest/gtest.h>
 #include <mrpt/poses/CPose3DInterpolator.h>
 #include <mrpt/system/filesystem.h>
-#include <gtest/gtest.h>
+#include <mrpt/topography.h>
 #include <test_mrpt_common.h>
 
 using namespace mrpt;

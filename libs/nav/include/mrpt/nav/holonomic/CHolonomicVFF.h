@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/config/CLoadableOptions.h>
 #include "CAbstractHolonomicReactiveMethod.h"
 #include "CHolonomicLogFileRecord.h"
-#include <mrpt/config/CLoadableOptions.h>
 
 namespace mrpt::nav
 {

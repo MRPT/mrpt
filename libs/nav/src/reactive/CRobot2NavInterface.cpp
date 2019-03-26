@@ -7,9 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "nav-precomp.h"  // Precomp header
-#include <mrpt/system/COutputLogger.h>
 #include <mrpt/nav/reactive/CRobot2NavInterface.h>
+#include <mrpt/system/COutputLogger.h>
+#include "nav-precomp.h"  // Precomp header
 
 using namespace mrpt::nav;
 

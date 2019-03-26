@@ -9,8 +9,8 @@
 
 #include "comms-precomp.h"  // Precompiled headers
 
-#include <mrpt/comms/CServerTCPSocket.h>
 #include <mrpt/comms/CClientTCPSocket.h>
+#include <mrpt/comms/CServerTCPSocket.h>
 #include <mrpt/core/exceptions.h>
 
 #ifdef _WIN32
@@ -22,17 +22,17 @@
 #else
 // Linux & Apple
 // Platform specific headers:
+#include <fcntl.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include <fcntl.h>
 #include <cerrno>
 //#include <iostream>
-#include <sys/types.h>
-#include <sys/ioctl.h>
-#include <netdb.h>
 #include <arpa/inet.h>
+#include <netdb.h>
 #include <netinet/in.h>
+#include <sys/ioctl.h>
 #include <sys/socket.h>
+#include <sys/types.h>
 #endif
 
 using namespace mrpt;

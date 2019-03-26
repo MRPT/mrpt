@@ -265,6 +265,7 @@ if(BUILD_EXAMPLES)
 	# === Depending on: maps, gui ===
 	set(LIST_EXAMPLES_IN_THIS_DIR
 		maps_laser_projection_in_images_example
+		maps_gridmap3D_simple
 		maps_observer_pattern_example
 		maps_octomap_simple
 		maps_gmrf_map_example

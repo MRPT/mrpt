@@ -41,18 +41,18 @@ documentation and/or software.
 
 #include "system-precomp.h"  // Precompiled headers
 
-#include <mrpt/system/md5.h>
 #include <mrpt/core/common.h>  // MSVC warnings
 #include <mrpt/core/exceptions.h>  // ASSERT_
+#include <mrpt/system/md5.h>
 
 using namespace mrpt::system;
 using namespace std;
 
-#include <string>
-#include <cstring>
-#include <iostream>
 #include <cstdint>
 #include <cstdio>
+#include <cstring>
+#include <iostream>
+#include <string>
 
 // a small class for calculating MD5 hashes of strings or byte arrays
 // it is not meant to be fast or secure

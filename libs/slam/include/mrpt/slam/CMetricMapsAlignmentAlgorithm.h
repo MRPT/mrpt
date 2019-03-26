@@ -9,9 +9,9 @@
 #pragma once
 
 #include <mrpt/maps/CPointsMap.h>
-#include <mrpt/poses/poses_frwds.h>
-#include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPose3DPDF.h>
+#include <mrpt/poses/CPosePDF.h>
+#include <mrpt/poses/poses_frwds.h>
 
 #include <mrpt/system/COutputLogger.h>
 

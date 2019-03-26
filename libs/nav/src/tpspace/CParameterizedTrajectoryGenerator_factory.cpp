@@ -9,9 +9,9 @@
 
 #include "nav-precomp.h"  // Precomp header
 
+#include <mrpt/config/CConfigFilePrefixer.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/system/string_utils.h>
-#include <mrpt/config/CConfigFilePrefixer.h>
 
 using namespace mrpt::nav;
 

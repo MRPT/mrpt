@@ -9,10 +9,10 @@
 
 #pragma once
 
+#include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/system/COutputLogger.h>
-#include <mrpt/hwdrivers/CGenericSensor.h>
 
 namespace mrpt::hwdrivers
 {

@@ -7,15 +7,15 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <mrpt/bayes/CParticleFilterCapable.h>
+#include <mrpt/math/data_utils.h>
+#include <mrpt/math/ops_vectors.h>
+#include <mrpt/math/utils.h>
+#include <mrpt/random.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/vector_loadsave.h>
-#include <mrpt/random.h>
-#include <mrpt/math/utils.h>
-#include <mrpt/math/ops_vectors.h>
-#include <mrpt/math/data_utils.h>
-#include <mrpt/bayes/CParticleFilterCapable.h>
-#include <map>
 #include <iostream>
+#include <map>
 
 using namespace mrpt::bayes;
 using namespace mrpt::math;

@@ -9,13 +9,13 @@
 
 #pragma once
 
-#include <mrpt/img/CImage.h>
-#include <mrpt/containers/CDynamicGrid.h>
-#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/maps/CMetricMap.h>
+#include <mrpt/containers/CDynamicGrid.h>
+#include <mrpt/img/CImage.h>
 #include <mrpt/maps/CLogOddsGridMap2D.h>
+#include <mrpt/maps/CMetricMap.h>
 #include <mrpt/obs/obs_frwds.h>
+#include <mrpt/serialization/CSerializable.h>
 
 namespace mrpt::maps
 {

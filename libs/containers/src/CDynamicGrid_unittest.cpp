@@ -7,9 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <CTraitsTest.h>
 #include <mrpt/containers/CDynamicGrid.h>
 #include <mrpt/core/common.h>
-#include <CTraitsTest.h>
 
 #include <gtest/gtest.h>
 

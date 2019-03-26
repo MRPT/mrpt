@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/typemeta/xassert.h>
 #include <gtest/gtest.h>
+#include <mrpt/typemeta/xassert.h>
 
 constexpr int foo_i_below_10(unsigned i) { return MRPT_X_ASSERT(i < 10), 0; }
 TEST(XAssert, build_time)

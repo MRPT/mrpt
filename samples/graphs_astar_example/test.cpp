@@ -10,8 +10,8 @@
 
 #include <mrpt/graphs/CAStarAlgorithm.h>
 #include <cstdio>
-#include <cstring>
 #include <cstdlib>
+#include <cstring>
 #include <iostream>
 
 using namespace std;

@@ -9,8 +9,8 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
-#include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>
 
 using namespace std;
 using namespace mrpt::obs;

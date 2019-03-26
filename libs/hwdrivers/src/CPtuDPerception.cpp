@@ -9,14 +9,14 @@
 
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
-#include <mrpt/hwdrivers/CPtuDPerception.h>
-#include <mrpt/system/string_utils.h>
-#include <mrpt/system/os.h>
 #include <mrpt/core/bits_math.h>
+#include <mrpt/hwdrivers/CPtuDPerception.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/string_utils.h>
 
 #include <cstring>
-#include <thread>
 #include <iostream>
+#include <thread>
 
 using namespace std;
 using namespace mrpt;

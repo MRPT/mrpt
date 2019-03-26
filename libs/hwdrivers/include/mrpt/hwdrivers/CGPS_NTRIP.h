@@ -10,8 +10,8 @@
 #pragma once
 
 #include <mrpt/hwdrivers/CGPSInterface.h>
-#include <mrpt/hwdrivers/CNTRIPEmitter.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
+#include <mrpt/hwdrivers/CNTRIPEmitter.h>
 
 namespace mrpt::hwdrivers
 {

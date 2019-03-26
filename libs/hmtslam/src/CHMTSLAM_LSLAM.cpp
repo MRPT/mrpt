@@ -9,16 +9,16 @@
 
 #include "hmtslam-precomp.h"  // Precomp header
 
-#include <mrpt/system/CTicTac.h>
 #include <mrpt/containers/stl_containers_utils.h>
-#include <mrpt/random.h>
-#include <mrpt/math/distributions.h>
 #include <mrpt/hmtslam/CRobotPosesGraph.h>
+#include <mrpt/math/distributions.h>
+#include <mrpt/random.h>
+#include <mrpt/system/CTicTac.h>
 
 #include <mrpt/io/CFileOutputStream.h>
 
-#include <mrpt/system/os.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
+#include <mrpt/system/os.h>
 
 #include <limits>
 #include <memory>
@@ -496,13 +496,12 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 			newArea->m_nodeType = "Area";
 			newArea->m_label = generateUniqueAreaLabel();
 
-			CMultiMetricMap::Ptr emptyMap = std::make_shared<CMultiMetricMap>(
-				&m_options.defaultMapsInitializers);
+			auto emptyMap =
+				CMultiMetricMap::Create(m_options.defaultMapsInitializers);
 			newArea->m_annotations.setMemoryReference(
 				NODE_ANNOTATION_METRIC_MAPS, emptyMap, LMH->m_ID);
 
-			CRobotPosesGraph::Ptr emptyPoseGraph =
-				mrpt::make_aligned_shared<CRobotPosesGraph>();
+			auto emptyPoseGraph = CRobotPosesGraph::Create();
 			newArea->m_annotations.setMemoryReference(
 				NODE_ANNOTATION_POSES_GRAPH, emptyPoseGraph, LMH->m_ID);
 

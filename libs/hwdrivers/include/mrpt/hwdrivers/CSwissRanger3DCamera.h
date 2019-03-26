@@ -9,8 +9,8 @@
 #pragma once
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservationImage.h>
 
 #include <mrpt/gui/CDisplayWindow.h>
 

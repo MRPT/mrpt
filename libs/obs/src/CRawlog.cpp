@@ -9,12 +9,12 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
-#include <mrpt/system/filesystem.h>
-#include <mrpt/obs/CRawlog.h>
-#include <mrpt/io/CFileInputStream.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CFileInputStream.h>
+#include <mrpt/obs/CRawlog.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/filesystem.h>
 
 using namespace mrpt;
 using namespace mrpt::io;

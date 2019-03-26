@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/CPose2D.h>
 #include <mrpt/math/types_math.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose3D.h>
 
 namespace mrpt::poses
 {

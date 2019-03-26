@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "graphslam-precomp.h"  // Precompiled headers
 #include <mrpt/graphslam/misc/CEdgeCounter.h>
+#include "graphslam-precomp.h"  // Precompiled headers
 
 // implementation file of CEdgeCounter class
 using namespace mrpt::graphslam::detail;

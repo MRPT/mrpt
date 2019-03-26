@@ -9,16 +9,16 @@
 
 #pragma once
 
-#include <mrpt/obs/CActionCollection.h>
-#include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/obs/CObservation.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
+#include <mrpt/graphslam/misc/CWindowManager.h>
+#include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CObservation.h>
+#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/system/CTimeLogger.h>
-#include <mrpt/graphslam/misc/CWindowManager.h>
 
-#include <string>
 #include <map>
+#include <string>
 
 namespace mrpt::graphslam
 {

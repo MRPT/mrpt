@@ -9,9 +9,9 @@
 
 #include "tfest-precomp.h"  // Precompiled headers
 
-#include <mrpt/tfest/se3.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
+#include <mrpt/tfest/se3.h>
 
 using namespace mrpt;
 using namespace mrpt::tfest;

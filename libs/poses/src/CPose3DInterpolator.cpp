@@ -10,8 +10,8 @@
 #include "poses-precomp.h"  // Precompiled headers
 
 #include <mrpt/poses/CPose3DInterpolator.h>
-#include "CPoseInterpolatorBase.hpp"  // templ impl
 #include <mrpt/serialization/stl_serialization.h>
+#include "CPoseInterpolatorBase.hpp"  // templ impl
 
 using namespace mrpt::poses;
 

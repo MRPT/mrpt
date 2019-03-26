@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/expr/CRuntimeCompiledExpression.h>
+#include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 
 namespace mrpt::nav
 {

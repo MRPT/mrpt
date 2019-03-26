@@ -12,9 +12,9 @@
 
 #include <mrpt/math/lightweight_geom_data.h>  // forward declarations
 
-#include <functional>
 #include <algorithm>
 #include <cmath>
+#include <functional>
 
 /** \addtogroup container_ops_grp Vector and matrices mathematical operations
  * and other utilities
@@ -42,8 +42,8 @@
  */
 
 #include <algorithm>
-#include <numeric>
 #include <functional>
+#include <numeric>
 
 #include <mrpt/math/CHistogram.h>  // Used in ::histogram()
 

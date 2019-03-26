@@ -9,10 +9,10 @@
 
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
-#include <mrpt/serialization/CMessage.h>
-#include <mrpt/system/os.h>
 #include <mrpt/hwdrivers/CBoardSonars.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CMessage.h>
+#include <mrpt/system/os.h>
 
 #include <thread>
 

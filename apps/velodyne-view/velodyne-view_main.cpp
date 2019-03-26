@@ -15,16 +15,16 @@
 			 multi-threading and live 3D rendering.
 */
 
-#include <mrpt/hwdrivers/CVelodyneScanner.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/maps/CColouredPointsMap.h>
-#include <mrpt/system/CTicTac.h>
+#include <mrpt/hwdrivers/CVelodyneScanner.h>
 #include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
-#include <mrpt/system/os.h>  // MRPT_getVersion()
+#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/otherlibs/tclap/CmdLine.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/os.h>  // MRPT_getVersion()
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;

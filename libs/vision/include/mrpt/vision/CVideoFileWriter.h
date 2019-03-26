@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/vision/utils.h>
-#include <mrpt/img/CImage.h>
 #include <mrpt/core/safe_pointers.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/vision/utils.h>
 
 namespace mrpt::vision
 {

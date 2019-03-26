@@ -11,12 +11,12 @@
 
 /* BOOST */
 #include <boost/python.hpp>
-#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include <boost/python/suite/indexing/indexing_suite.hpp>
+#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 
 /* std */
-#include <vector>
 #include <deque>
+#include <vector>
 
 /* macros */
 #define STRINGIFY(str) #str

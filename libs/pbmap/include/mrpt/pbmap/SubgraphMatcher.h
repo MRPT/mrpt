@@ -18,9 +18,9 @@
 #include <mrpt/config.h>
 #if MRPT_HAS_PCL
 
-#include <mrpt/pbmap/heuristicParams.h>
 #include <mrpt/pbmap/PbMap.h>
 #include <mrpt/pbmap/Subgraph.h>
+#include <mrpt/pbmap/heuristicParams.h>
 
 namespace mrpt::pbmap
 {

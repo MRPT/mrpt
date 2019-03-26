@@ -9,13 +9,13 @@
 
 #include "poses-precomp.h"  // Precompiled headers
 
-#include <mrpt/poses/CPosePDFGrid.h>
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPosePDFGrid.h>
 #include <mrpt/poses/CPosePDFParticles.h>
-#include <mrpt/serialization/CArchive.h>
-#include <mrpt/random.h>
-#include <mrpt/system/os.h>
 #include <mrpt/poses/SO_SE_average.h>
+#include <mrpt/random.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/os.h>
 #include <fstream>
 
 using namespace std;

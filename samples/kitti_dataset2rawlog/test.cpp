@@ -30,13 +30,13 @@ Output files:
 
   ------------------------------------------------------ */
 
-#include <mrpt/system/filesystem.h>
-#include <mrpt/system/string_utils.h>
-#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/img/TCamera.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/CTextFileLinesParser.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/string_utils.h>
 #include <iostream>
 
 using namespace std;

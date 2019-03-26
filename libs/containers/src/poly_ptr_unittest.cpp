@@ -7,10 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <gtest/gtest.h>
 #include <mrpt/containers/deepcopy_ptr.h>
 #include <mrpt/core/common.h>  // TODO
 #include <mrpt/poses/CPose2D.h>
-#include <gtest/gtest.h>
 
 using namespace mrpt;
 using namespace std;

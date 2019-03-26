@@ -8,8 +8,9 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/maps/COccupancyGridMap2D.h>
-#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/stock_observations.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/random.h>
@@ -105,7 +106,7 @@ double grid_test_5_6(int a1, int a2)
 
 	// prepare the laser scan:
 	CObservation2DRangeScan scan1;
-	loadExample2DRangeScan(scan1);
+	stock_observations::example2DRangeScan(scan1);
 
 	COccupancyGridMap2D gridmap(-20, 20, -20, 20, 0.05f);
 	gridmap.insertionOptions.wideningBeamsWithDistance = a1 != 0;
@@ -140,7 +141,7 @@ double grid_test_8(int a1, int a2)
 
 	// prepare the laser scan:
 	CObservation2DRangeScan scan1;
-	loadExample2DRangeScan(scan1);
+	stock_observations::example2DRangeScan(scan1);
 
 	COccupancyGridMap2D gridmap(-20, 20, -20, 20, 0.05f);
 
@@ -170,7 +171,7 @@ double grid_test_9(int a1, int a2)
 
 	// prepare the laser scan:
 	CObservation2DRangeScan scan1;
-	loadExample2DRangeScan(scan1);
+	stock_observations::example2DRangeScan(scan1);
 
 	CSimplePointsMap gridmap;
 	CSimplePointsMap pt_map2;

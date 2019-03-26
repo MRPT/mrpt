@@ -20,9 +20,9 @@
 #include <termios.h>
 // these are not required by level 1, but to keep the higher levels
 // platform-independent they are put here
+#include <cstddef>
 #include <cstdlib>
 #include <cstring>
-#include <cstddef>
 #define _strnicmp strncasecmp
 #endif
 

@@ -111,9 +111,9 @@ extern "C"
 #define xsGetThreadPriority(thrd) GetThreadPriority(thrd)
 
 #else
+#include <errno.h>
 #include <pthread.h>
 #include <semaphore.h>
-#include <errno.h>
 //#define XSENS_USE_POSIX_LOCKING 1
 
 /*!	\addtogroup enums Global enumerations

@@ -8,13 +8,13 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/serialization/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/poses/CPoint3D.h>
-#include <mrpt/poses/CPointPDFParticles.h>
-#include <mrpt/poses/CPointPDFGaussian.h>
-#include <mrpt/poses/CPointPDFSOG.h>
 #include <mrpt/obs/CObservation.h>  // INVALID_BEACON_ID
+#include <mrpt/poses/CPoint3D.h>
+#include <mrpt/poses/CPointPDFGaussian.h>
+#include <mrpt/poses/CPointPDFParticles.h>
+#include <mrpt/poses/CPointPDFSOG.h>
+#include <mrpt/serialization/CSerializable.h>
 
 #include <mrpt/opengl/CSetOfObjects.h>
 

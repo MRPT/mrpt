@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/gui.h>
-#include <mrpt/system/CObserver.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/system/CObserver.h>
 #include <iostream>
 
 using namespace mrpt;

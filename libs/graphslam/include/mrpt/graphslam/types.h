@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/core/aligned_std_map.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/poses/Lie/SE.h>
-#include <mrpt/core/aligned_std_map.h>
 #include <functional>
 
 namespace mrpt

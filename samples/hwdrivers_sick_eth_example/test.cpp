@@ -12,8 +12,8 @@
 */
 
 #include <mrpt/gui.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>  // [mrpt-maps]
 #include <mrpt/hwdrivers/CLMS100eth.h>
+#include <mrpt/opengl/CPlanarLaserScan.h>  // [mrpt-maps]
 #include <iostream>
 
 using namespace mrpt;

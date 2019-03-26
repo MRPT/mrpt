@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
 #include <mrpt/comms/CClientTCPSocket.h>
+#include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
 
 namespace mrpt::hwdrivers
 {

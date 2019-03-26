@@ -15,18 +15,18 @@
 // and access to the contained "image" instead of "imageLeft".
 // -----------------------------------------------------------------------------------------------------------------------
 
+#include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/system/os.h>
-#include <mrpt/obs/CRawlog.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CActionCollection.h>
-#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
-#include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/obs/CRawlog.h>
+#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 #include <iostream>
 
 using namespace mrpt;

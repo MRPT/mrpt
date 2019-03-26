@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "hwdrivers-precomp.h"  // Precompiled headers
+
 #include <mrpt/hwdrivers/CRaePID.h>
 #include <mrpt/system/datetime.h>
 

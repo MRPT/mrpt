@@ -9,8 +9,8 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
-#include <mrpt/obs/CObservation2DRangeScanWithUncertainty.h>
 #include <mrpt/math/distributions.h>
+#include <mrpt/obs/CObservation2DRangeScanWithUncertainty.h>
 
 using namespace mrpt::obs;
 

@@ -11,34 +11,34 @@
 
 #include <mrpt/gui/CMyRedirector.h>
 
-#include <wx/msgdlg.h>
-#include <wx/filedlg.h>
-#include <wx/progdlg.h>
 #include <wx/busyinfo.h>
-#include <wx/textdlg.h>
 #include <wx/dirdlg.h>
+#include <wx/filedlg.h>
 #include <wx/image.h>
+#include <wx/msgdlg.h>
+#include <wx/progdlg.h>
+#include <wx/textdlg.h>
 
 // General global variables:
-#include <mrpt/system/CDirectoryExplorer.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/system/string_utils.h>
-#include <mrpt/system/os.h>
-#include <mrpt/math/data_utils.h>
-#include <mrpt/io/CTextFileLinesParser.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CTextFileLinesParser.h>
 #include <mrpt/io/vector_loadsave.h>
+#include <mrpt/math/data_utils.h>
+#include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservationBearingRange.h>
+#include <mrpt/obs/CObservationGasSensors.h>
+#include <mrpt/obs/CObservationIMU.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationOdometry.h>
-#include <mrpt/obs/CObservationGasSensors.h>
-#include <mrpt/obs/CObservationBearingRange.h>
-#include <mrpt/obs/CObservationIMU.h>
-#include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/obs/CActionCollection.h>
-#include <mrpt/obs/CObservationWirelessPower.h>
 #include <mrpt/obs/CObservationRFID.h>
+#include <mrpt/obs/CObservationWirelessPower.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/system/CDirectoryExplorer.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/string_utils.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;

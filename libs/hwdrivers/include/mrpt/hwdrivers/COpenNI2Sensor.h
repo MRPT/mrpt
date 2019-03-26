@@ -8,10 +8,10 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/hwdrivers/COpenNI2Generic.h>
-#include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/typemeta/TEnumType.h>
 #include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/hwdrivers/CGenericSensor.h>
+#include <mrpt/hwdrivers/COpenNI2Generic.h>
+#include <mrpt/typemeta/TEnumType.h>
 
 namespace mrpt::hwdrivers
 {

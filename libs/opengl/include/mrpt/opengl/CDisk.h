@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/math/geometry.h>
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/math/geometry.h>
 
 namespace mrpt::opengl
 {
