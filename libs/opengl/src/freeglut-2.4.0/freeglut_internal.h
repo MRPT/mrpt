@@ -174,7 +174,8 @@ struct tagSFG_Time
  * An enumeration containing the state of the GLUT execution:
  * initializing, running, or stopping
  */
-typedef enum {
+typedef enum
+{
 	GLUT_EXEC_STATE_INIT,
 	GLUT_EXEC_STATE_RUNNING,
 	GLUT_EXEC_STATE_STOP
