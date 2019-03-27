@@ -12,8 +12,9 @@
 // compiling in small systems.
 
 #include <gtest/gtest.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/random.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -25,7 +26,7 @@ TEST(Matrices, loadFromArray)
 	alignas(MRPT_MAX_ALIGN_BYTES)
 		const double nums[3 * 4] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
 
-	CMatrixFixedNumeric<double, 3, 4> mat;
+	CMatrixFixed<double, 3, 4> mat;
 	mat.loadFromArray(nums);
 
 	for (int r = 0; r < 3; r++)
@@ -38,9 +39,10 @@ alignas(MRPT_MAX_ALIGN_BYTES) static double test_nums[3 * 4] = {
 TEST(Matrices, CMatrixFixedNumeric_loadWithEigenMap)
 {
 	// Row major
-	const CMatrixFixedNumeric<double, 3, 4> mat = Eigen::Map<
-		CMatrixFixedNumeric<double, 3, 4>::Base, MRPT_MAX_ALIGN_BYTES>(
-		test_nums);
+	const auto mat = CMatrixFixed<double, 3, 4>(
+		Eigen::Map<
+			Eigen::Matrix<double, 3, 4, Eigen::RowMajor>, MRPT_MAX_ALIGN_BYTES>(
+			test_nums));
 
 	for (int r = 0; r < 3; r++)
 		for (int c = 0; c < 4; c++) EXPECT_EQ(test_nums[4 * r + c], mat(r, c));

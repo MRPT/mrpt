@@ -63,15 +63,15 @@ struct loadFromRangeImpl
 		sensorPose3D.getHomogeneousMatrix(lric.HM);
 
 		// For quicker access as "float" numbers:
-		float m00 = lric.HM.get_unsafe(0, 0);
-		float m01 = lric.HM.get_unsafe(0, 1);
-		float m03 = lric.HM.get_unsafe(0, 3);
-		float m10 = lric.HM.get_unsafe(1, 0);
-		float m11 = lric.HM.get_unsafe(1, 1);
-		float m13 = lric.HM.get_unsafe(1, 3);
-		float m20 = lric.HM.get_unsafe(2, 0);
-		float m21 = lric.HM.get_unsafe(2, 1);
-		float m23 = lric.HM.get_unsafe(2, 3);
+		float m00 = lric.HM(0, 0);
+		float m01 = lric.HM(0, 1);
+		float m03 = lric.HM(0, 3);
+		float m10 = lric.HM(1, 0);
+		float m11 = lric.HM(1, 1);
+		float m13 = lric.HM(1, 3);
+		float m20 = lric.HM(2, 0);
+		float m21 = lric.HM(2, 1);
+		float m23 = lric.HM(2, 3);
 
 		float lx_1, ly_1, lz_1, lx = 0, ly = 0,
 								lz = 0;  // Punto anterior y actual:
@@ -403,18 +403,18 @@ struct loadFromRangeImpl
 		mrpt::maps::CPointsMap::TLaserRange3DInsertContext lric(rangeScan);
 		sensorPose3D.getHomogeneousMatrix(lric.HM);
 		// For quicker access to values as "float" instead of "doubles":
-		float m00 = lric.HM.get_unsafe(0, 0);
-		float m01 = lric.HM.get_unsafe(0, 1);
-		float m02 = lric.HM.get_unsafe(0, 2);
-		float m03 = lric.HM.get_unsafe(0, 3);
-		float m10 = lric.HM.get_unsafe(1, 0);
-		float m11 = lric.HM.get_unsafe(1, 1);
-		float m12 = lric.HM.get_unsafe(1, 2);
-		float m13 = lric.HM.get_unsafe(1, 3);
-		float m20 = lric.HM.get_unsafe(2, 0);
-		float m21 = lric.HM.get_unsafe(2, 1);
-		float m22 = lric.HM.get_unsafe(2, 2);
-		float m23 = lric.HM.get_unsafe(2, 3);
+		float m00 = lric.HM(0, 0);
+		float m01 = lric.HM(0, 1);
+		float m02 = lric.HM(0, 2);
+		float m03 = lric.HM(0, 3);
+		float m10 = lric.HM(1, 0);
+		float m11 = lric.HM(1, 1);
+		float m12 = lric.HM(1, 2);
+		float m13 = lric.HM(1, 3);
+		float m20 = lric.HM(2, 0);
+		float m21 = lric.HM(2, 1);
+		float m22 = lric.HM(2, 2);
+		float m23 = lric.HM(2, 3);
 
 		float lx_1, ly_1, lz_1, lx = 0, ly = 0,
 								lz = 0;  // Punto anterior y actual:

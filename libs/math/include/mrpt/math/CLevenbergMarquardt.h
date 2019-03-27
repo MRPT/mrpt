@@ -9,9 +9,10 @@
 #pragma once
 
 #include <mrpt/containers/printf_vector.h>
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/math/num_jacobian.h>
 #include <mrpt/math/ops_containers.h>
-#include <mrpt/math/types_math.h>
 #include <mrpt/system/COutputLogger.h>
 #include <functional>
 
@@ -30,12 +31,12 @@ namespace mrpt::math
  * functor. Default type is a vector of NUMTYPE.
  * \ingroup mrpt_math_grp
  */
-template <typename VECTORTYPE = Eigen::VectorXd, class USERPARAM = VECTORTYPE>
+template <typename VECTORTYPE = CVectorDouble, class USERPARAM = VECTORTYPE>
 class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 {
    public:
 	using NUMTYPE = typename VECTORTYPE::Scalar;
-	using matrix_t = Eigen::Matrix<NUMTYPE, Eigen::Dynamic, Eigen::Dynamic>;
+	using matrix_t = CMatrixDynamic<NUMTYPE>;
 	using vector_t = VECTORTYPE;
 
 	CLevenbergMarquardtTempl()
@@ -126,13 +127,14 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 
 		// Compute the jacobian and the Hessian:
 		mrpt::math::estimateJacobian(x, functor, increments, userParam, J);
-		out_info.H.multiply_AtA(J);
+		out_info.H.matProductOf_AtA(J);
 
 		const size_t H_len = out_info.H.cols();
 
 		// Compute the gradient:
 		functor(x, userParam, f_x);
-		J.multiply_Atb(f_x, g);
+		// g <- J' * f_x
+		g.matProductOf_Atb(J, f_x);
 
 		// Start iterations:
 		bool found = math::norm_inf(g) <= e1;
@@ -155,12 +157,10 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 		if (returnPath)
 		{
 			out_info.path.setSize(maxIter, N + 1);
-			out_info.path.block(iter, 0, 1, N) = x.transpose();
+			for (size_t i = 0; i < N; i++) out_info.path(iter, i) = x[i];
 		}
 		else
-			out_info.path = Eigen::Matrix<
-				NUMTYPE, Eigen::Dynamic,
-				Eigen::Dynamic>();  // Empty matrix
+			out_info.path = matrix_t();  // Empty matrix
 
 		while (!found && ++iter < maxIter)
 		{
@@ -168,16 +168,17 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 			matrix_t H = out_info.H;
 			for (size_t k = 0; k < H_len; k++) H(k, k) += lambda;
 
-			H.inv_fast(AUX);
-			AUX.multiply_Ab(g, h_lm);
+			AUX = H.inverse_LLt();
+			// AUX.matProductOf_Ab(g,h_lm);	h_lm <- AUX*g
+			h_lm.matProductOf_Ab(AUX, g);
 			h_lm *= NUMTYPE(-1.0);
 
 			double h_lm_n2 = math::norm(h_lm);
 			double x_n2 = math::norm(x);
 
-			logFmt(
-				mrpt::system::LVL_DEBUG, "Iter:%u x=%s\n", (unsigned)iter,
-				mrpt::containers::sprintf_vector(" %f", x).c_str());
+			MRPT_LOG_DEBUG_STREAM(
+				"Iter:" << iter
+						<< " x=" << mrpt::containers::sprintf_vector(" %f", x));
 
 			if (h_lm_n2 < e2 * (x_n2 + e2))
 			{
@@ -202,9 +203,8 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 				VECTORTYPE tmp(h_lm);
 				tmp *= lambda;
 				tmp -= g;
-				tmp.array() *= h_lm.array();
-				double denom = tmp.sum();
-				double l = (F_x - F_xnew) / denom;
+				const double denom = tmp.dot(h_lm);
+				const double l = (F_x - F_xnew) / denom;
 
 				if (l > 0)  // There is an improvement:
 				{
@@ -215,8 +215,8 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 
 					math::estimateJacobian(
 						x, functor, increments, userParam, J);
-					out_info.H.multiply_AtA(J);
-					J.multiply_Atb(f_x, g);
+					out_info.H.matProductOf_AtA(J);
+					g.matProductOf_Atb(J, f_x);
 
 					found = math::norm_inf(g) <= e1;
 					if (found)
@@ -237,7 +237,8 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 
 				if (returnPath)
 				{
-					out_info.path.block(iter, 0, 1, x.size()) = x.transpose();
+					for (size_t i = 0; i < N; i++)
+						out_info.path(iter, i) = x[i];
 					out_info.path(iter, x.size()) = F_x;
 				}
 			}

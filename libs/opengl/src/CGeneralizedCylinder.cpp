@@ -15,7 +15,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
-
+#include <Eigen/Dense>
 #include "opengl_internals.h"
 
 using namespace mrpt;
@@ -103,7 +103,7 @@ void CGeneralizedCylinder::render_dl() const
 }
 
 inline void createMesh(
-	const CMatrixTemplate<TPoint3D>& pointsMesh, size_t R, size_t C,
+	const CMatrixDynamic<TPoint3D>& pointsMesh, size_t R, size_t C,
 	vector<CGeneralizedCylinder::TQuadrilateral>& mesh)
 {
 	mesh.reserve(R * C);
@@ -114,14 +114,14 @@ inline void createMesh(
 				pointsMesh(i + 1, j + 1), pointsMesh(i + 1, j));
 }
 
-/*void transformMesh(const CPose3D &pose,const CMatrixTemplate<TPoint3D>
-&in,CMatrixTemplate<TPoint3D> &out)	{
+/*void transformMesh(const CPose3D &pose,const CMatrixDynamic<TPoint3D>
+&in,CMatrixDynamic<TPoint3D> &out)	{
 	size_t R=in.rows();
 	size_t C=in.cols();
 	out.setSize(R,C);
 	for (size_t i=0;i<R;i++) for (size_t j=0;j<C;j++)	{
-		TPoint3D pIn=in.get_unsafe(i,j);
-		TPoint3D &pOut=out.get_unsafe(i,j);
+		TPoint3D pIn=in(i,j);
+		TPoint3D &pOut=out(i,j);
 		pose.composePoint(pIn.x,pIn.y,pIn.z,pOut.x,pOut.y,pOut.z);
 	}
 }*/
@@ -143,10 +143,10 @@ void CGeneralizedCylinder::updateMesh() const
 	mesh.clear();
 	if (A > 1 && G > 1)
 	{
-		pointsMesh = CMatrixTemplate<TPoint3D>(A, G);
+		pointsMesh = CMatrixDynamic<TPoint3D>(A, G);
 		for (size_t i = 0; i < A; i++)
 			for (size_t j = 0; j < G; j++)
-				axis[i].composePoint(genX[j], pointsMesh.get_unsafe(i, j));
+				axis[i].composePoint(genX[j], pointsMesh(i, j));
 		createMesh(pointsMesh, A - 1, G - 1, mesh);
 	}
 	meshUpToDate = true;
@@ -239,20 +239,21 @@ void CGeneralizedCylinder::getClosedSection(
 {
 	if (index1 > index2) swap(index1, index2);
 	if (index2 >= axis.size() - 1) throw std::logic_error("Out of range");
-	CMatrixTemplate<TPoint3D> ROIpoints;
 	if (!meshUpToDate) updateMesh();
-	pointsMesh.extractRows(index1, index2 + 1, ROIpoints);
+	auto ROIpoints = CMatrixDynamic<TPoint3D>(
+		pointsMesh.asEigen().block(index1, 0, index2 + 1, pointsMesh.cols()));
+
 	// At this point, ROIpoints contains a matrix of TPoints in which the number
 	// of rows equals (index2-index1)+2 and there is a column
 	// for each vertex in the generatrix.
 	if (!closed)
 	{
-		vector<TPoint3D> vec;
-		ROIpoints.extractCol(0, vec);
+		CVectorDynamic<TPoint3D> vec(ROIpoints.rows());
+		vec.asEigen() = ROIpoints.col(0);
 		ROIpoints.appendCol(vec);
 	}
 	vector<TPoint3D> vertices;
-	ROIpoints.getAsVector(vertices);
+	ROIpoints.asVector(vertices);
 	size_t nr = ROIpoints.rows() - 1;
 	size_t nc = ROIpoints.cols() - 1;
 	vector<vector<uint32_t>> faces;
@@ -272,7 +273,7 @@ void CGeneralizedCylinder::getClosedSection(
 	for (size_t i = 0; i < nr + 1; i++) tmp[i] = i * (nc + 1);
 	faces.push_back(tmp);
 	for (size_t i = 0; i < nr + 1; i++) tmp[i] = i * (nc + 2) - 1;
-	poly = mrpt::make_aligned_shared<CPolyhedron>(vertices, faces);
+	poly = CPolyhedron::Create(vertices, faces);
 }
 
 void CGeneralizedCylinder::removeVisibleSectionAtStart()

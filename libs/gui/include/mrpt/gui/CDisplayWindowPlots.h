@@ -11,7 +11,8 @@
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/gui/gui_frwds.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
 namespace mrpt::gui
@@ -147,37 +148,18 @@ class CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
 	 * \tparam VECTOR Can be std::vector<float/double> or
 	 *mrpt::dynamicsize_vector<float/double> or a column/row Eigen::Matrix<>
 	 */
-	template <typename T1, typename T2>
+	template <typename VEC1, typename VEC2, typename = typename VEC2::Scalar>
 	inline void plot(
-		const std::vector<T1>& x, const std::vector<T2>& y,
+		const VEC1& x, const VEC2& y,
 		const std::string& lineFormat = std::string("b-"),
 		const std::string& plotName = std::string("plotXY"))
 	{
 		this->internal_plot_interface(x, y, lineFormat, plotName);
 	}
-	//! \overload
-	template <typename T1, typename Derived2>
+	//! \overload (for std::vector)
+	template <typename T>
 	inline void plot(
-		const std::vector<T1>& x, const Eigen::MatrixBase<Derived2>& y,
-		const std::string& lineFormat = std::string("b-"),
-		const std::string& plotName = std::string("plotXY"))
-	{
-		this->internal_plot_interface(x, y, lineFormat, plotName);
-	}
-	//! \overload
-	template <typename Derived1, typename T2>
-	inline void plot(
-		const Eigen::MatrixBase<Derived1>& x, const std::vector<T2>& y,
-		const std::string& lineFormat = std::string("b-"),
-		const std::string& plotName = std::string("plotXY"))
-	{
-		this->internal_plot_interface(x, y, lineFormat, plotName);
-	}
-	//! \overload
-	template <typename Derived1, typename Derived2>
-	inline void plot(
-		const Eigen::MatrixBase<Derived1>& x,
-		const Eigen::MatrixBase<Derived2>& y,
+		const std::vector<T>& x, const std::vector<T>& y,
 		const std::string& lineFormat = std::string("b-"),
 		const std::string& plotName = std::string("plotXY"))
 	{
@@ -185,19 +167,9 @@ class CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
 	}
 
 	//! \overload
-	template <typename T>
+	template <typename VEC>
 	void plot(
-		const std::vector<T>& y,
-		const std::string& lineFormat = std::string("b-"),
-		const std::string& plotName = std::string("plotXY"))
-	{
-		this->internal_plot_interface(y, lineFormat, plotName);
-	}
-	//! \overload
-	template <typename Derived>
-	void plot(
-		const Eigen::MatrixBase<Derived>& y,
-		const std::string& lineFormat = std::string("b-"),
+		const VEC& y, const std::string& lineFormat = std::string("b-"),
 		const std::string& plotName = std::string("plotXY"))
 	{
 		this->internal_plot_interface(y, lineFormat, plotName);
@@ -237,8 +209,7 @@ class CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
 	template <typename T>
 	void plotEllipse(
 		const T mean_x, const T mean_y,
-		const mrpt::math::CMatrixTemplateNumeric<T>& cov22,
-		const float quantiles,
+		const mrpt::math::CMatrixDynamic<T>& cov22, const float quantiles,
 		const std::string& lineFormat = std::string("b-"),
 		const std::string& plotName = std::string("plotEllipse"),
 		bool showName = false);
@@ -247,8 +218,7 @@ class CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
 	template <typename T>
 	void plotEllipse(
 		const T mean_x, const T mean_y,
-		const mrpt::math::CMatrixFixedNumeric<T, 2, 2>& cov22,
-		const float quantiles,
+		const mrpt::math::CMatrixFixed<T, 2, 2>& cov22, const float quantiles,
 		const std::string& lineFormat = std::string("b-"),
 		const std::string& plotName = std::string("plotEllipse"),
 		bool showName = false);

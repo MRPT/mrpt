@@ -26,9 +26,10 @@ void CMatrixD::serializeTo(mrpt::serialization::CArchive& out) const
 	// First, write the number of rows and columns:
 	out << static_cast<uint32_t>(rows()) << static_cast<uint32_t>(cols());
 
+	// Since mrpt-1.9.9, dynamic matrices are stored as a contiguous vector:
 	if (rows() > 0 && cols() > 0)
-		for (Index i = 0; i < rows(); i++)
-			out.WriteBufferFixEndianness<Scalar>(&coeff(i, 0), cols());
+		out.WriteBufferFixEndianness<value_type>(
+			&(*this)(0, 0), cols() * rows());
 }
 void CMatrixD::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
@@ -44,8 +45,8 @@ void CMatrixD::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			setSize(nRows, nCols);
 
 			if (nRows > 0 && nCols > 0)
-				for (Index i = 0; i < rows(); i++)
-					in.ReadBufferFixEndianness<Scalar>(&coeffRef(i, 0), nCols);
+				in.ReadBufferFixEndianness<value_type>(
+					&(*this)(0, 0), nRows * nCols);
 		}
 		break;
 		default:

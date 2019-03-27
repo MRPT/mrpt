@@ -7,20 +7,20 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/opengl/CAngularObservationMesh.h>
-#include <mrpt/poses/CPose3DPDF.h>
-#include <mrpt/poses/CPosePDF.h>
-#include <mrpt/slam/CICP.h>
-
 #include <gtest/gtest.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/stock_observations.h>
+#include <mrpt/opengl/CAngularObservationMesh.h>
 #include <mrpt/opengl/CDisk.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CSphere.h>
 #include <mrpt/opengl/stock_objects.h>
+#include <mrpt/poses/CPose3DPDF.h>
+#include <mrpt/poses/CPosePDF.h>
+#include <mrpt/slam/CICP.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -225,7 +225,7 @@ TEST_F(ICPTests, RayTracingICP3D)
 	// Checks:
 	EXPECT_NEAR(
 		0,
-		(mean.getAsVectorVal() - SCAN2_POSE_ERROR.getAsVectorVal())
+		(mean.asVectorVal() - SCAN2_POSE_ERROR.asVectorVal())
 			.array()
 			.abs()
 			.mean(),

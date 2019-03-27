@@ -14,8 +14,10 @@
 #include <mrpt/img/CCanvas.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/io/zip.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
+#include <Eigen/Dense>
 #include <map>
 
 // Include the MRPT bitmap fonts:
@@ -113,10 +115,6 @@ void init_fonts_list()
 	}
 }
 
-/*---------------------------------------------------------------
-						Constructor
----------------------------------------------------------------*/
-CCanvas::CCanvas() : m_selectedFont("9x15") {}
 /*---------------------------------------------------------------
 						line
 ---------------------------------------------------------------*/
@@ -447,4 +445,48 @@ void CCanvas::textOut(
 	}
 
 	MRPT_END
+}
+
+void CCanvas::ellipseGaussian(
+	const mrpt::math::CMatrixFixed<double, 2, 2>& cov2D, const double mean_x,
+	const double mean_y, double confIntervalStds,
+	const mrpt::img::TColor& color, unsigned int width, int nEllipsePoints)
+{
+	MRPT_START
+	int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+	double ang;
+	mrpt::math::CMatrixFixed<double, 2, 2> eigVec, eigVals;
+	std::vector<double> eVals;
+	int i;
+
+	// Compute the eigen-vectors & values:
+	cov2D.eig(eigVec, eVals);
+	eigVals.setDiagonal(eVals);
+
+	eigVals.asEigen() = eigVals.array().sqrt().matrix();
+
+	mrpt::math::CMatrixFixed<double, 2, 2> M;
+	M.asEigen() = eigVals.asEigen() * eigVec.transpose();
+
+	// Compute the points of the 2D ellipse:
+	for (i = 0, ang = 0; i < nEllipsePoints;
+		 i++, ang += (M_2PI / (nEllipsePoints - 1)))
+	{
+		double ccos = cos(ang);
+		double ssin = sin(ang);
+
+		x2 = round(
+			mean_x + confIntervalStds * (ccos * M(0, 0) + ssin * M(1, 0)));
+		y2 = round(
+			mean_y + confIntervalStds * (ccos * M(0, 1) + ssin * M(1, 1)));
+
+		if (i > 0) line(x1, y1, x2, y2, color, width);
+
+		x1 = x2;
+		y1 = y2;
+	}  // end for points on ellipse
+
+	MRPT_END_WITH_CLEAN_UP(std::cout << "Covariance matrix leading to error is:"
+									 << std::endl
+									 << cov2D << std::endl;);
 }

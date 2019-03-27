@@ -12,6 +12,7 @@
 #include <mrpt/math/ops_vectors.h>  // << of std::vector()
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/serialization/CArchive.h>
+#include <Eigen/Dense>
 #include <iostream>
 #if MRPT_HAS_MATLAB
 #include <mexplus/mxarray.h>
@@ -50,20 +51,21 @@ void CObservationImage::serializeFrom(
 			}
 			else
 			{
-				CMatrix intrinsicParams, distortionParams;
+				CMatrixF intrinsicParams, distortionParams;
 				in >> distortionParams >> intrinsicParams;
 
 				if (distortionParams.rows() == 1 &&
 					distortionParams.cols() == 5)
 				{
-					const CMatrixDouble15 p = distortionParams.cast<double>();
+					CMatrixDouble15 p;
+					p = distortionParams.cast_double();
 					cameraParams.setDistortionParamsVector(p);
 				}
 				else
 					cameraParams.dist.fill(0);
 
-				cameraParams.intrinsicParams =
-					intrinsicParams.block(0, 0, 3, 3).cast<double>();
+				cameraParams.intrinsicParams = mrpt::math::CMatrixDouble33(
+					intrinsicParams.block<3, 3>(0, 0).cast<double>());
 			}
 
 			in >> image;

@@ -60,10 +60,10 @@ class CPose3DPDFParticles
 	 * of the PDF), computed as a weighted average over all m_particles. \sa
 	 * getCovariance */
 	void getMean(CPose3D& mean_pose) const override;
+
 	/** Returns an estimate of the pose covariance matrix (6x6 cov matrix) and
 	 * the mean, both at once. \sa getMean */
-	void getCovarianceAndMean(
-		mrpt::math::CMatrixDouble66& cov, CPose3D& mean_point) const override;
+	std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const override;
 
 	/** Returns the pose of the i'th particle */
 	mrpt::math::TPose3D getParticlePose(int i) const;

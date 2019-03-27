@@ -10,6 +10,7 @@
 
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/img/CImage.h>
+#include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/system/os.h>
 #include <vector>
 

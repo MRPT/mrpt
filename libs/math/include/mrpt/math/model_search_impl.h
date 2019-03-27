@@ -13,6 +13,7 @@
 #include "model_search.h"
 #endif
 
+#include <cmath>
 #include <limits>
 
 namespace mrpt::math
@@ -75,7 +76,7 @@ bool ModelSearch::ransacSingleModel(
 			// Update the estimation of maxIter to pick dataset with no outliers
 			// at propability p
 			double f = ninliers / static_cast<double>(nSamples);
-			double p = 1 - pow(f, static_cast<double>(p_kernelSize));
+			double p = 1 - std::pow(f, static_cast<double>(p_kernelSize));
 			const double eps = std::numeric_limits<double>::epsilon();
 			p = std::max(eps, p);  // Avoid division by -Inf
 			p = std::min(1 - eps, p);  // Avoid division by 0.

@@ -15,6 +15,7 @@
 #include <mrpt/nav/holonomic/CHolonomicFullEval.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
+#include <Eigen/Dense>  // col(),...
 #include <cmath>
 
 using namespace mrpt;

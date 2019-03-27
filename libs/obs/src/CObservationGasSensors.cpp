@@ -9,9 +9,11 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
+#include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+#include <fstream>
 #include <iostream>
 
 using namespace mrpt::obs;

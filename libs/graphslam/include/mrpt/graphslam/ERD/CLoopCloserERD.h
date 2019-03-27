@@ -12,7 +12,7 @@
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/img/TColor.h>
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -604,8 +604,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 
 	bool computeDominantEigenVector(
 		const mrpt::math::CMatrixDouble& consist_matrix,
-		mrpt::math::dynamic_vector<double>* eigvec,
-		bool use_power_method = false);
+		mrpt::math::CVectorDouble* eigvec, bool use_power_method = false);
 	/**\brief Return the pair-wise consistency between the observations of the
 	 * given nodes.
 	 *

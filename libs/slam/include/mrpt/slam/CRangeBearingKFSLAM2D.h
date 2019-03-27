@@ -11,7 +11,7 @@
 #include <mrpt/bayes/CKalmanFilterCapable.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/opengl/opengl_frwds.h>
 
 #include <mrpt/containers/bimap.h>
@@ -170,7 +170,7 @@ class CRangeBearingKFSLAM2D
 		}
 
 		// Predictions from the map:
-		mrpt::math::CMatrixTemplateNumeric<kftype> Y_pred_means, Y_pred_covs;
+		mrpt::math::CMatrixDynamic<kftype> Y_pred_means, Y_pred_covs;
 		std::vector<size_t> predictions_IDs;
 
 		/** Map from the 0-based index within the last observation and the

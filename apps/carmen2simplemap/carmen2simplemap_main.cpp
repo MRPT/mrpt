@@ -23,18 +23,17 @@
 // ===========================================================================
 
 #include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/obs/CObservationOdometry.h>
+#include <mrpt/obs/carmen_log_tools.h>
+#include <mrpt/otherlibs/tclap/CmdLine.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
-
-#include <mrpt/maps/CSimpleMap.h>
-#include <mrpt/obs/CObservationOdometry.h>
-#include <mrpt/obs/carmen_log_tools.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/serialization/CArchive.h>
-
-#include <mrpt/otherlibs/tclap/CmdLine.h>
+#include <fstream>
 
 using namespace mrpt;
 using namespace mrpt::poses;

@@ -10,11 +10,12 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/img/color_maps.h>
+#include <mrpt/math/ops_containers.h>
 #include <mrpt/opengl/CMesh.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CArchive.h>
-
+#include <Eigen/Dense>
 #include "opengl_internals.h"
 
 using namespace mrpt;
@@ -345,8 +346,7 @@ void CMesh::assignImage(const CImage& img)
 	m_textureImage = img;
 
 	// Delete content in Z
-	Z.setSize(img.getHeight(), img.getWidth());
-	Z.assign(0);
+	Z.setZero(img.getHeight(), img.getWidth());
 
 	m_modified_Image = true;
 	m_enableTransparency = false;
@@ -360,7 +360,7 @@ void CMesh::assignImage(const CImage& img)
 }
 
 void CMesh::assignImageAndZ(
-	const CImage& img, const mrpt::math::CMatrixTemplateNumeric<float>& in_Z)
+	const CImage& img, const mrpt::math::CMatrixDynamic<float>& in_Z)
 {
 	MRPT_START
 
@@ -478,7 +478,7 @@ void CMesh::updateColorsMatrix() const
 		C = Z;
 
 		// If mask is empty -> Normalize the whole mesh
-		if (mask.empty()) C.normalize(0.01f, 0.99f);
+		if (mask.empty()) mrpt::math::normalize(C, 0.01f, 0.99f);
 
 		// Else -> Normalize color ignoring masked-out cells:
 		else
@@ -512,7 +512,7 @@ void CMesh::updateColorsMatrix() const
 	trianglesUpToDate = false;
 }
 
-void CMesh::setZ(const mrpt::math::CMatrixTemplateNumeric<float>& in_Z)
+void CMesh::setZ(const mrpt::math::CMatrixDynamic<float>& in_Z)
 {
 	Z = in_Z;
 	m_modified_Z = true;
@@ -524,7 +524,7 @@ void CMesh::setZ(const mrpt::math::CMatrixTemplateNumeric<float>& in_Z)
 	CRenderizableDisplayList::notifyChange();
 }
 
-void CMesh::setMask(const mrpt::math::CMatrixTemplateNumeric<float>& in_mask)
+void CMesh::setMask(const mrpt::math::CMatrixDynamic<float>& in_mask)
 {
 	mask = in_mask;
 	trianglesUpToDate = false;
@@ -532,8 +532,8 @@ void CMesh::setMask(const mrpt::math::CMatrixTemplateNumeric<float>& in_mask)
 }
 
 void CMesh::setUV(
-	const mrpt::math::CMatrixTemplateNumeric<float>& in_U,
-	const mrpt::math::CMatrixTemplateNumeric<float>& in_V)
+	const mrpt::math::CMatrixDynamic<float>& in_U,
+	const mrpt::math::CMatrixDynamic<float>& in_V)
 {
 	U = in_U;
 	V = in_V;

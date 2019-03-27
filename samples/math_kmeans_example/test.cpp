@@ -9,7 +9,7 @@
 
 #include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
-#include <mrpt/math/CArrayNumeric.h>
+#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/kmeans.h>
 #include <mrpt/random.h>
 #include <mrpt/system/CTicTac.h>
@@ -26,8 +26,8 @@ using namespace std;
 // ------------------------------------------------------
 void TestKMeans()
 {
-	typedef CArrayDouble<2> CPointType;
-	// typedef CArrayFloat<2>  CPointType;
+	typedef CVectorFixedDouble<2> CPointType;
+	// typedef CVectorFixedFloat<2>  CPointType;
 
 	getRandomGenerator().randomize();
 	CTicTac tictac;

@@ -18,6 +18,7 @@
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+#include <Eigen/Dense>
 
 #include <sstream>
 
@@ -104,7 +105,8 @@ void ffff(
 #endif
 
 void aux_posequat2poseypr(
-	const CArrayDouble<7>& x, const double& dummy, CArrayDouble<6>& y)
+	const CVectorFixedDouble<7>& x, const double& dummy,
+	CVectorFixedDouble<6>& y)
 {
 	MRPT_UNUSED_PARAM(dummy);
 	y[0] = x[0];
@@ -167,27 +169,24 @@ void CPose3DPDFGaussian::copyFrom(const CPose3DQuatPDFGaussian& o)
 #endif
 
 		double yaw, pitch, roll;
-		CMatrixFixedNumeric<double, 3, 4> dr_dq_sub_aux(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 4> dr_dq_sub_aux(UNINITIALIZED_MATRIX);
 
 		o.mean.quat().rpy_and_jacobian(roll, pitch, yaw, &dr_dq_sub_aux, false);
 
 		CMatrixDouble44 dnorm_dq(UNINITIALIZED_MATRIX);
 		o.mean.quat().normalizationJacobian(dnorm_dq);
 
-		CMatrixFixedNumeric<double, 3, 4> dr_dq_sub(UNINITIALIZED_MATRIX);
-		dr_dq_sub.multiply(dr_dq_sub_aux, dnorm_dq);
+		CMatrixFixed<double, 3, 4> dr_dq_sub(UNINITIALIZED_MATRIX);
+		dr_dq_sub.asEigen() = dr_dq_sub_aux * dnorm_dq;
 
 		// Set the mean:
 		this->mean.setFromValues(
 			o.mean.x(), o.mean.y(), o.mean.z(), yaw, pitch, roll);
 
 		// Cov:
-		CMatrixDouble44 cov_Q(UNINITIALIZED_MATRIX);
-		CMatrixDouble33 cov_T(UNINITIALIZED_MATRIX);
-		CMatrixFixedNumeric<double, 3, 4> cov_TQ(UNINITIALIZED_MATRIX);
-		o.cov.extractMatrix(3, 3, cov_Q);
-		o.cov.extractMatrix(0, 0, cov_T);
-		o.cov.extractMatrix(0, 3, cov_TQ);
+		const CMatrixDouble44 cov_Q = o.cov.blockCopy<4, 4>(3, 3);
+		const CMatrixDouble33 cov_T = o.cov.blockCopy<3, 3>(0, 0);
+		const CMatrixFixed<double, 3, 4> cov_TQ = o.cov.blockCopy<3, 4>(0, 3);
 
 		// [        S_T       |   S_TQ * H^t    ]
 		// [ -----------------+---------------- ]
@@ -197,22 +196,20 @@ void CPose3DPDFGaussian::copyFrom(const CPose3DQuatPDFGaussian& o)
 		this->cov.insertMatrix(0, 0, cov_T);
 
 		// diagonals:
-		CMatrixFixedNumeric<double, 3, 3> cov_TR(UNINITIALIZED_MATRIX);
-		cov_TR.multiply_ABt(cov_TQ, dr_dq_sub);
-		this->cov.insertMatrix(0, 3, cov_TR);
-		this->cov.insertMatrixTranspose(3, 0, cov_TR);
+		const Eigen::Matrix3d cov_TR = cov_TQ.asEigen() * dr_dq_sub.transpose();
+		this->cov.block<3, 3>(0, 3) = cov_TR;
+		this->cov.block<3, 3>(3, 0) = cov_TR.transpose();
 
 		// bottom-right:
-		CMatrixDouble33 cov_r(UNINITIALIZED_MATRIX);
-		dr_dq_sub.multiply_HCHt(cov_Q, cov_r);
+		CMatrixDouble33 cov_r = mrpt::math::multiply_HCHt(dr_dq_sub, cov_Q);
 		this->cov.insertMatrix(3, 3, cov_r);
 	}
 	else
 	{
 		// Use UT transformation:
 		//   f: R^7 => R^6
-		const CArrayDouble<7> x_mean(o.mean);
-		CArrayDouble<6> y_mean;
+		const CVectorFixedDouble<7> x_mean(o.mean);
+		CVectorFixedDouble<6> y_mean;
 		static const bool elements_do_wrapPI[6] = {
 			false, false, false, true, true, true};  // xyz yaw pitch roll
 
@@ -264,16 +261,16 @@ void CPose3DPDFGaussian::copyFrom(const CPosePDF& o)
 	o.getCovarianceAndMean(C, p);
 	mean = CPose3D(p);
 
-	cov.zeros();
-	cov.get_unsafe(0, 0) = C.get_unsafe(0, 0);
-	cov.get_unsafe(1, 1) = C.get_unsafe(1, 1);
-	cov.get_unsafe(3, 3) = C.get_unsafe(2, 2);
+	cov.setZero();
+	cov(0, 0) = C(0, 0);
+	cov(1, 1) = C(1, 1);
+	cov(3, 3) = C(2, 2);
 
-	cov.get_unsafe(0, 1) = cov.get_unsafe(1, 0) = C.get_unsafe(0, 1);
+	cov(0, 1) = cov(1, 0) = C(0, 1);
 
-	cov.get_unsafe(0, 3) = cov.get_unsafe(3, 0) = C.get_unsafe(0, 2);
+	cov(0, 3) = cov(3, 0) = C(0, 2);
 
-	cov.get_unsafe(1, 3) = cov.get_unsafe(3, 1) = C.get_unsafe(1, 2);
+	cov(1, 3) = cov(3, 1) = C(1, 2);
 }
 
 /*---------------------------------------------------------------
@@ -315,8 +312,8 @@ void CPose3DPDFGaussian::changeCoordinatesReference(
 		this->mean,  // u
 		df_dx, df_du);
 
-	// this->cov = H1*this->cov*~H1 + H2* 0 *~H2;
-	df_du.multiply_HCHt(OLD_COV, cov);
+	// this->cov = H1*this->cov*H1' + H2* 0 *H2';
+	cov = mrpt::math::multiply_HCHt(df_du, OLD_COV);
 
 	// MEAN:
 	this->mean.composeFrom(newReferenceBase, this->mean);
@@ -387,8 +384,8 @@ void CPose3DPDFGaussian::bayesianFusion(
 		CMatrixD	x1(3,1),x2(3,1),x(3,1);
 		CMatrixD	C1( p1->cov );
 		CMatrixD	C2( p2->cov );
-		CMatrixD	C1_inv = C1.inv();
-		CMatrixD	C2_inv = C2.inv();
+		CMatrixD	C1_inv = C1.inverse_LLt();
+		CMatrixD	C2_inv = C2.inverse_LLt();
 		CMatrixD	C;
 
 		x1(0,0) = p1->mean.x; x1(1,0) = p1->mean.y; x1(2,0) = p1->mean.phi;
@@ -397,7 +394,7 @@ void CPose3DPDFGaussian::bayesianFusion(
 		C = !(C1_inv + C2_inv);
 
 		this->cov = C;
-		this->assureSymmetry();
+		this->enforceCovSymmetry();
 
 		x = C * ( C1_inv*x1 + C2_inv*x2 );
 
@@ -439,8 +436,8 @@ void CPose3DPDFGaussian::operator+=(const CPose3D& Ap)
 		Ap,  // u
 		df_dx, df_du);
 
-	// this->cov = H1*this->cov*~H1 + H2*Ap.cov*~H2;
-	df_dx.multiply_HCHt(OLD_COV, cov);
+	// this->cov = H1*this->cov*H1' + H2*Ap.cov*H2';
+	cov = mrpt::math::multiply_HCHt(df_dx, OLD_COV);
 	// df_du: Nothing to do, since COV(Ap) = zeros
 
 	// MEAN:
@@ -549,16 +546,12 @@ double CPose3DPDFGaussian::evaluateNormalizedPDF(const CPose3D& x) const
 	*/
 }
 
-/*---------------------------------------------------------------
-						assureSymmetry
- ---------------------------------------------------------------*/
-void CPose3DPDFGaussian::assureSymmetry()
+void CPose3DPDFGaussian::enforceCovSymmetry()
 {
 	// Differences, when they exist, appear in the ~15'th significant
 	//  digit, so... just take one of them arbitrarily!
-	for (unsigned int i = 0; i < cov.rows() - 1; i++)
-		for (unsigned int j = i + 1; j < cov.rows(); j++)
-			cov.get_unsafe(i, j) = cov.get_unsafe(j, i);
+	for (int i = 0; i < cov.rows() - 1; i++)
+		for (int j = i + 1; j < cov.rows(); j++) cov(i, j) = cov(j, i);
 }
 
 /*---------------------------------------------------------------
@@ -574,18 +567,18 @@ double CPose3DPDFGaussian::mahalanobisDistanceTo(
 
 	for (int i = 0; i < 6; i++)
 	{
-		if (COV_.get_unsafe(i, i) == 0)
+		if (COV_(i, i) == 0)
 		{
-			if (MU.get_unsafe(i, 0) != 0)
+			if (MU(i, 0) != 0)
 				return std::numeric_limits<double>::infinity();
 			else
-				COV_.get_unsafe(i, i) = 1;  // Any arbitrary value since
+				COV_(i, i) = 1;  // Any arbitrary value since
 			// MU(i)=0, and this value doesn't
 			// affect the result.
 		}
 	}
 
-	return std::sqrt(MU.multiply_HtCH_scalar(COV_.inv()));
+	return std::sqrt(mrpt::math::multiply_HtCH_scalar(MU, COV_.inverse_LLt()));
 
 	MRPT_END
 }
@@ -614,9 +607,9 @@ void CPose3DPDFGaussian::getCovSubmatrix2D(CMatrixDouble& out_cov) const
 		for (int j = i; j < 3; j++)
 		{
 			int b = j == 2 ? 3 : j;
-			double f = cov.get_unsafe(a, b);
-			out_cov.set_unsafe(i, j, f);
-			out_cov.set_unsafe(j, i, f);
+			double f = cov(a, b);
+			out_cov(i, j) = f;
+			out_cov(j, i) = f;
 		}
 	}
 }

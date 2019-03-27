@@ -59,22 +59,20 @@ void CPose3DPDFSOG::getMean(CPose3D& p) const
 	}
 }
 
-/*---------------------------------------------------------------
-						getCovarianceAndMean
- ---------------------------------------------------------------*/
-void CPose3DPDFSOG::getCovarianceAndMean(
-	mrpt::math::CMatrixDouble66& estCovOut, CPose3D& mean) const
+std::tuple<mrpt::math::CMatrixDouble66, CPose3D>
+	CPose3DPDFSOG::getCovarianceAndMean() const
 {
-	size_t N = m_modes.size();
+	const size_t N = m_modes.size();
 
+	// Get mean:
+	CPose3D mean;
 	getMean(mean);
-	mrpt::math::CMatrixDouble66 estCov;
 
+	// Get cov:
+	mrpt::math::CMatrixDouble66 estCov;
 	if (N)
 	{
-		// 1) Get the mean:
 		double sumW = 0;
-		mrpt::math::CMatrixDouble estMean(mean);
 
 		mrpt::math::CMatrixDouble66 MMt;
 		mrpt::math::CMatrixDouble61 estMean_i;
@@ -83,7 +81,7 @@ void CPose3DPDFSOG::getCovarianceAndMean(
 			double w;
 			sumW += w = exp(m.log_w);
 			estMean_i = mrpt::math::CMatrixDouble61(m.val.mean);
-			MMt.multiply_AAt(estMean_i);
+			MMt.matProductOf_AAt(estMean_i);
 			MMt += m.val.cov;
 			MMt *= w;
 			estCov += MMt;  // w * ( (it)->val.cov +
@@ -93,7 +91,7 @@ void CPose3DPDFSOG::getCovarianceAndMean(
 		if (sumW != 0) estCov *= (1.0 / sumW);
 	}
 
-	estCovOut = estCov;
+	return {estCov, mean};
 }
 
 uint8_t CPose3DPDFSOG::serializeGetVersion() const { return 2; }
@@ -199,78 +197,14 @@ void CPose3DPDFSOG::bayesianFusion(const CPose3DPDF& p1_, const CPose3DPDF& p2_)
 	ASSERT_(p2_.GetRuntimeClass() == CLASS_ID(CPose3DPDFSOG));
 
 	THROW_EXCEPTION("TODO!!!");
-#if 0
-/*
-	CPose3DPDFSOG		*p1 = (CPose3DPDFSOG*)&p1_;
-	CPose3DPDFSOG		*p2 = (CPose3DPDFSOG*)&p2_;
 
-	// Compute the new kernel means, covariances, and weights after multiplying to the Gaussian "p2":
-	CPosePDFGaussian	auxGaussianProduct,auxSOG_Kernel_i;
-	TGaussianMode		newKernel;
-
-
-
-	CMatrixD				covInv( p2->cov.inv() );
-	CMatrixD				eta(3,1);
-	eta(0,0) = p2->mean.x;
-	eta(1,0) = p2->mean.y;
-	eta(2,0) = p2->mean.phi;
-	eta = covInv * eta;
-
-	// Normal distribution canonical form constant:
-	// See: http://www-static.cc.gatech.edu/~wujx/paper/Gaussian.pdf
-	double				a = -0.5*( 3*log(M_2PI) - log( covInv.det() ) + (~eta * p2->cov * eta)(0,0) );
-
-	this->m_modes.clear();
-	for (std::deque<TGaussianMode>::iterator it =p1->m_modes.begin();it!=p1->m_modes.end();++it)
-	{
-		auxSOG_Kernel_i.mean = it->mean;
-		auxSOG_Kernel_i.cov  = it->cov;
-		auxGaussianProduct.bayesianFusion( auxSOG_Kernel_i, *p2 );
-
-		// ----------------------------------------------------------------------
-		// The new weight is given by:
-		//
-		//   w'_i = w_i * exp( a + a_i - a' )
-		//
-		//      a = -1/2 ( dimensionality * log(2pi) - log(det(Cov^-1)) + (Cov^-1 * mu)^t * Cov^-1 * (Cov^-1 * mu) )
-		//
-		// ----------------------------------------------------------------------
-		newKernel.mean = auxGaussianProduct.mean;
-		newKernel.cov  = auxGaussianProduct.cov;
-
-		CMatrixD		covInv_i( auxSOG_Kernel_i.cov.inv() );
-		CMatrixD		eta_i(3,1);
-		eta_i(0,0) = auxSOG_Kernel_i.mean.x;
-		eta_i(1,0) = auxSOG_Kernel_i.mean.y;
-		eta_i(2,0) = auxSOG_Kernel_i.mean.phi;
-		eta_i = covInv_i * eta_i;
-
-		CMatrixD		new_covInv_i( newKernel.cov.inv() );
-		CMatrixD		new_eta_i(3,1);
-		new_eta_i(0,0) = newKernel.mean.x;
-		new_eta_i(1,0) = newKernel.mean.y;
-		new_eta_i(2,0) = newKernel.mean.phi;
-		new_eta_i = new_covInv_i * new_eta_i;
-
-		double		a_i	    = -0.5*( 3*log(M_2PI) - log( new_covInv_i.det() ) + (~eta_i * auxSOG_Kernel_i.cov * eta_i)(0,0) );
-		double		new_a_i = -0.5*( 3*log(M_2PI) - log( new_covInv_i.det() ) + (~new_eta_i * newKernel.cov * new_eta_i)(0,0) );
-
-		newKernel.w	   = it->w * exp( a + a_i - new_a_i );
-
-		// Add to the results (in "this") the new kernel:
-		this->m_modes.push_back( newKernel );
-	}
-*/
-	normalizeWeights();
-#endif
 	MRPT_END
 }
 
 /*---------------------------------------------------------------
-						assureSymmetry
+						enforceCovSymmetry
  ---------------------------------------------------------------*/
-void CPose3DPDFSOG::assureSymmetry()
+void CPose3DPDFSOG::enforceCovSymmetry()
 {
 	MRPT_START
 	// Differences, when they exist, appear in the ~15'th significant

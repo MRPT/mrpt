@@ -88,8 +88,8 @@ void CVectorField3D::render_dl() const
 		glColor4ub(
 			m_point_color.R, m_point_color.G, m_point_color.B, m_point_color.A);
 
-		for (unsigned int i = 0; i < x_p.cols(); i++)
-			for (unsigned int j = 0; j < x_p.rows(); j++)
+		for (int i = 0; i < x_p.cols(); i++)
+			for (int j = 0; j < x_p.rows(); j++)
 			{
 				glVertex3f(x_p(j, i), y_p(j, i), z_p(j, i));
 			}
@@ -102,8 +102,8 @@ void CVectorField3D::render_dl() const
 	{
 		glColor4ub(
 			m_field_color.R, m_field_color.G, m_field_color.B, m_field_color.A);
-		for (unsigned int i = 0; i < x_vf.cols(); i++)
-			for (unsigned int j = 0; j < x_vf.rows(); j++)
+		for (int i = 0; i < x_vf.cols(); i++)
+			for (int j = 0; j < x_vf.rows(); j++)
 			{
 				glVertex3f(x_p(j, i), y_p(j, i), z_p(j, i));
 				glVertex3f(
@@ -113,8 +113,8 @@ void CVectorField3D::render_dl() const
 	}
 	else
 	{
-		for (unsigned int i = 0; i < x_vf.cols(); i++)
-			for (unsigned int j = 0; j < x_vf.rows(); j++)
+		for (int i = 0; i < x_vf.cols(); i++)
+			for (int j = 0; j < x_vf.rows(); j++)
 			{
 				// Compute color
 				const float module = sqrt(
@@ -226,8 +226,8 @@ void CVectorField3D::getBoundingBox(
 	bb_max.y = -10e10;
 	bb_max.z = -10e10;
 
-	for (unsigned int i = 0; i < x_p.cols(); i++)
-		for (unsigned int j = 0; j < x_p.rows(); j++)
+	for (int i = 0; i < x_p.cols(); i++)
+		for (int j = 0; j < x_p.rows(); j++)
 		{
 			// Minimum values
 			if (x_p(j, i) < bb_min.x) bb_min.x = x_p(j, i);

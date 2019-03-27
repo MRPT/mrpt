@@ -119,7 +119,6 @@ void TestRandomGenerators()
 		Mean[0] = 3;
 		Mean[1] = 2;
 
-		// CMatrixDouble cov(2,2);
 		CMatrixDouble22 cov;
 		cov.fromMatlabStringFormat("[7.5 -7;-7 8]");
 

@@ -13,6 +13,7 @@
 #include <mrpt/poses/CPose3DQuatPDF.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/serialization/CArchive.h>
+#include <Eigen/Dense>
 
 using namespace mrpt::poses;
 using namespace mrpt::math;
@@ -68,12 +69,12 @@ void CPose3DQuatPDF::jacobiansPoseComposition(
 	x.quat().normalizationJacobian(norm_jacob_x);
 
 	// df_dx ===================================================
-	df_dx.zeros();
+	df_dx.setZero();
 
 	// first part 3x7:  df_{qr} / dp
-	df_dx.set_unsafe(0, 0, 1);
-	df_dx.set_unsafe(1, 1, 1);
-	df_dx.set_unsafe(2, 2, 1);
+	df_dx(0, 0) = 1;
+	df_dx(1, 1) = 1;
+	df_dx(2, 2) = 1;
 
 	alignas(MRPT_MAX_ALIGN_BYTES)
 		const double vals2[3 * 4] = {2 * (-qz * ay + qy * az),
@@ -92,8 +93,8 @@ void CPose3DQuatPDF::jacobiansPoseComposition(
 									 2 * (qx * ax + qy * ay)};
 
 	// df_dx(0:3,3:7) = vals2 * NORM_JACOB
-	df_dx.block(0, 3, 3, 4).noalias() =
-		(CMatrixFixedNumeric<double, 3, 4>(vals2) * norm_jacob_x).eval();
+	df_dx.block<3, 4>(0, 3).noalias() =
+		(CMatrixFixed<double, 3, 4>(vals2) * norm_jacob_x).eval();
 
 	// second part:
 	{
@@ -101,25 +102,25 @@ void CPose3DQuatPDF::jacobiansPoseComposition(
 			q2r, -q2x, -q2y, -q2z, q2x, q2r, q2z,  -q2y,
 			q2y, -q2z, q2r,  q2x,  q2z, q2y, -q2x, q2r};
 
-		df_dx.block(3, 3, 4, 4).noalias() =
-			(norm_jacob * CMatrixFixedNumeric<double, 4, 4>(aux44_data)).eval();
+		df_dx.block<4, 4>(3, 3).noalias() =
+			(norm_jacob * CMatrixFixed<double, 4, 4>(aux44_data)).asEigen();
 	}
 
 	// df_du ===================================================
-	df_du.zeros();
+	df_du.setZero();
 
 	// first part 3x3:  df_{qr} / da
-	df_du.set_unsafe(0, 0, 1 - 2 * (qy2 + qz2));
-	df_du.set_unsafe(0, 1, 2 * (qx * qy - qr * qz));
-	df_du.set_unsafe(0, 2, 2 * (qr * qy + qx * qz));
+	df_du(0, 0) = 1 - 2 * (qy2 + qz2);
+	df_du(0, 1) = 2 * (qx * qy - qr * qz);
+	df_du(0, 2) = 2 * (qr * qy + qx * qz);
 
-	df_du.set_unsafe(1, 0, 2 * (qr * qz + qx * qy));
-	df_du.set_unsafe(1, 1, 1 - 2 * (qx2 + qz2));
-	df_du.set_unsafe(1, 2, 2 * (qy * qz - qr * qx));
+	df_du(1, 0) = 2 * (qr * qz + qx * qy);
+	df_du(1, 1) = 1 - 2 * (qx2 + qz2);
+	df_du(1, 2) = 2 * (qy * qz - qr * qx);
 
-	df_du.set_unsafe(2, 0, 2 * (qx * qz - qr * qy));
-	df_du.set_unsafe(2, 1, 2 * (qr * qx + qy * qz));
-	df_du.set_unsafe(2, 2, 1 - 2 * (qx2 + qy2));
+	df_du(2, 0) = 2 * (qx * qz - qr * qy);
+	df_du(2, 1) = 2 * (qr * qx + qy * qz);
+	df_du(2, 2) = 1 - 2 * (qx2 + qy2);
 
 	// Second part:
 	{
@@ -127,8 +128,8 @@ void CPose3DQuatPDF::jacobiansPoseComposition(
 			qr, -qx, -qy, -qz, qx, qr,  -qz, qy,
 			qy, qz,  qr,  -qx, qz, -qy, qx,  qr};
 
-		df_du.block(3, 3, 4, 4).noalias() =
-			(norm_jacob * CMatrixFixedNumeric<double, 4, 4>(aux44_data)).eval();
+		df_du.block<4, 4>(3, 3).noalias() =
+			(norm_jacob * CMatrixFixed<double, 4, 4>(aux44_data)).asEigen();
 	}
 
 	if (out_x_oplus_u) *out_x_oplus_u = x_plus_u;

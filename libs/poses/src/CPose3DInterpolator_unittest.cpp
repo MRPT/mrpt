@@ -12,6 +12,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DInterpolator.h>
 #include <mrpt/system/datetime.h>
+#include <Eigen/Dense>
 
 template class mrpt::CTraitsTest<mrpt::poses::CPose3DInterpolator>;
 

@@ -2197,12 +2197,9 @@ void CPointsMap::loadFromVelodyneScan(
 	mrpt::math::CMatrixDouble44 HM;
 	sensorGlobalPose.getHomogeneousMatrix(HM);
 
-	const double m00 = HM.get_unsafe(0, 0), m01 = HM.get_unsafe(0, 1),
-				 m02 = HM.get_unsafe(0, 2), m03 = HM.get_unsafe(0, 3);
-	const double m10 = HM.get_unsafe(1, 0), m11 = HM.get_unsafe(1, 1),
-				 m12 = HM.get_unsafe(1, 2), m13 = HM.get_unsafe(1, 3);
-	const double m20 = HM.get_unsafe(2, 0), m21 = HM.get_unsafe(2, 1),
-				 m22 = HM.get_unsafe(2, 2), m23 = HM.get_unsafe(2, 3);
+	const double m00 = HM(0, 0), m01 = HM(0, 1), m02 = HM(0, 2), m03 = HM(0, 3);
+	const double m10 = HM(1, 0), m11 = HM(1, 1), m12 = HM(1, 2), m13 = HM(1, 3);
+	const double m20 = HM(2, 0), m21 = HM(2, 1), m22 = HM(2, 2), m23 = HM(2, 3);
 
 	// Copy points:
 	for (size_t i = 0; i < nScanPts; i++)

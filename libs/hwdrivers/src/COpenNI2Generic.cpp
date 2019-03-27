@@ -464,7 +464,7 @@ void COpenNI2Generic::getNextFrameRGB(
  *
  */
 void COpenNI2Generic::getNextFrameD(
-	mrpt::math::CMatrix& depth_img, mrpt::system::TTimeStamp& timestamp,
+	mrpt::math::CMatrixF& depth_img, mrpt::system::TTimeStamp& timestamp,
 	bool& there_is_obs, bool& hardware_error, unsigned sensor_id)
 {
 #if MRPT_HAS_OPENNI2
@@ -862,7 +862,7 @@ bool COpenNI2Generic::CDevice::getNextFrameRGB(
 }
 
 bool COpenNI2Generic::CDevice::getNextFrameD(
-	mrpt::math::CMatrix& img, mrpt::system::TTimeStamp& timestamp,
+	mrpt::math::CMatrixF& img, mrpt::system::TTimeStamp& timestamp,
 	bool& there_is_obs, bool& hardware_error)
 {
 	MRPT_START
@@ -876,7 +876,7 @@ bool COpenNI2Generic::CDevice::getNextFrameD(
 	{
 		return false;
 	}
-	copyFrame<openni::DepthPixel, mrpt::math::CMatrix>(frame, img);
+	copyFrame<openni::DepthPixel, mrpt::math::CMatrixF>(frame, img);
 
 	return true;
 	MRPT_END

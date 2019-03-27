@@ -14,8 +14,8 @@ namespace mrpt::math
 // forward declaration!
 /*! Returns the size of the matrix in the i'th dimension: 1=rows, 2=columns
  * (MATLAB-compatible function)
- *  \note Template argument MATRIXLIKE can be: mrpt::math::CMatrixTemplate,
- * mrpt::math::CMatrixTemplateNumeric, mrpt::math::CMatrixFixedNumeric
+ *  \note Template argument MATRIXLIKE can be: mrpt::math::CMatrixDynamic,
+ * mrpt::math::CMatrixDynamic, mrpt::math::CMatrixFixed
  */
 template <class MATRIXLIKE>
 inline size_t size(const MATRIXLIKE& m, const int dim)

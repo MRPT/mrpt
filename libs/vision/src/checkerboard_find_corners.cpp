@@ -183,8 +183,7 @@ void mrpt::vision::findMultipleChessboardsCorners(
 			const mrpt::math::TPoint3D Ax = pt_x1 - pt_0;  // z=0
 			const mrpt::math::TPoint3D Ay = pt_y1 - pt_0;  // z=0
 
-			const Eigen::Matrix<double, 3, 1> Az =
-				mrpt::math::crossProduct3D(Ax, Ay);
+			const auto Az = mrpt::math::crossProduct3D(Ax, Ay);
 			if (Az[2] > 0)
 			{
 				// Invert all rows (X):

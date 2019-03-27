@@ -126,12 +126,12 @@ void PbMap::MergeWith(PbMap& pbm, Eigen::Matrix4f& T)
 		//    source!!!
 
 		// Transform normal and ppal direction
-		plane.v3normal = T.block(0, 0, 3, 3) * plane.v3normal;
-		plane.v3PpalDir = T.block(0, 0, 3, 3) * plane.v3PpalDir;
+		plane.v3normal = T.block<3, 3>(0, 0) * plane.v3normal;
+		plane.v3PpalDir = T.block<3, 3>(0, 0) * plane.v3PpalDir;
 
 		// Transform centroid
 		plane.v3center =
-			T.block(0, 0, 3, 3) * plane.v3center + T.block(0, 3, 3, 1);
+			T.block<3, 3>(0, 0) * plane.v3center + T.block(0, 3, 3, 1);
 
 		// Transform convex hull points
 		pcl::transformPointCloud(

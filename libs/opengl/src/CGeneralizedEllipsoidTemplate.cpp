@@ -26,7 +26,7 @@ namespace mrpt::opengl::detail
 {
 template <>
 void renderGeneralizedEllipsoidTemplate<2>(
-	const std::vector<mrpt::math::CMatrixFixedNumeric<float, 2, 1>>& pts,
+	const std::vector<mrpt::math::CMatrixFixed<float, 2, 1>>& pts,
 	const float lineWidth, const uint32_t slices, const uint32_t stacks)
 {
 #if MRPT_HAS_OPENGL_GLUT
@@ -60,7 +60,7 @@ void renderGeneralizedEllipsoidTemplate<2>(
   ---------------------------------------------------------------*/
 template <>
 void renderGeneralizedEllipsoidTemplate<3>(
-	const std::vector<mrpt::math::CMatrixFixedNumeric<float, 3, 1>>& pts,
+	const std::vector<mrpt::math::CMatrixFixed<float, 3, 1>>& pts,
 	const float lineWidth, const uint32_t slices, const uint32_t stacks)
 {
 #if MRPT_HAS_OPENGL_GLUT
@@ -145,9 +145,9 @@ void renderGeneralizedEllipsoidTemplate<3>(
   ---------------------------------------------------------------*/
 template <>
 void generalizedEllipsoidPoints<2>(
-	const mrpt::math::CMatrixFixedNumeric<double, 2, 2>& U,
-	const mrpt::math::CMatrixFixedNumeric<double, 2, 1>& mean,
-	std::vector<mrpt::math::CMatrixFixedNumeric<float, 2, 1>>& out_params_pts,
+	const mrpt::math::CMatrixFixed<double, 2, 2>& U,
+	const mrpt::math::CMatrixFixed<double, 2, 1>& mean,
+	std::vector<mrpt::math::CMatrixFixed<float, 2, 1>>& out_params_pts,
 	const uint32_t numSegments, const uint32_t numSegments_unused)
 {
 	MRPT_UNUSED_PARAM(numSegments_unused);
@@ -161,27 +161,24 @@ void generalizedEllipsoidPoints<2>(
 
 		out_params_pts.resize(out_params_pts.size() + 1);
 
-		Eigen::Matrix<float, 2, 1>& pt = out_params_pts.back();
+		auto& pt = out_params_pts.back();
 
-		pt[0] = mean[0] + ccos * U.get_unsafe(0, 0) + ssin * U.get_unsafe(0, 1);
-		pt[1] = mean[1] + ccos * U.get_unsafe(1, 0) + ssin * U.get_unsafe(1, 1);
+		pt[0] = mean[0] + ccos * U(0, 0) + ssin * U(0, 1);
+		pt[1] = mean[1] + ccos * U(1, 0) + ssin * U(1, 1);
 	}
 }
 
 inline void aux_add3DpointWithEigenVectors(
 	const double x, const double y, const double z,
-	std::vector<mrpt::math::CMatrixFixedNumeric<float, 3, 1>>& pts,
-	const mrpt::math::CMatrixFixedNumeric<double, 3, 3>& M,
-	const mrpt::math::CMatrixFixedNumeric<double, 3, 1>& mean)
+	std::vector<mrpt::math::CMatrixFixed<float, 3, 1>>& pts,
+	const mrpt::math::CMatrixFixed<double, 3, 3>& M,
+	const mrpt::math::CMatrixFixed<double, 3, 1>& mean)
 {
 	pts.resize(pts.size() + 1);
-	mrpt::math::CMatrixFixedNumeric<float, 3, 1>& pt = pts.back();
-	pt[0] = mean[0] + x * M.get_unsafe(0, 0) + y * M.get_unsafe(0, 1) +
-			z * M.get_unsafe(0, 2);
-	pt[1] = mean[1] + x * M.get_unsafe(1, 0) + y * M.get_unsafe(1, 1) +
-			z * M.get_unsafe(1, 2);
-	pt[2] = mean[2] + x * M.get_unsafe(2, 0) + y * M.get_unsafe(2, 1) +
-			z * M.get_unsafe(2, 2);
+	mrpt::math::CMatrixFixed<float, 3, 1>& pt = pts.back();
+	pt[0] = mean[0] + x * M(0, 0) + y * M(0, 1) + z * M(0, 2);
+	pt[1] = mean[1] + x * M(1, 0) + y * M(1, 1) + z * M(1, 2);
+	pt[2] = mean[2] + x * M(2, 0) + y * M(2, 1) + z * M(2, 2);
 }
 
 /*---------------------------------------------------------------
@@ -189,9 +186,9 @@ inline void aux_add3DpointWithEigenVectors(
   ---------------------------------------------------------------*/
 template <>
 void generalizedEllipsoidPoints<3>(
-	const mrpt::math::CMatrixFixedNumeric<double, 3, 3>& U,
-	const mrpt::math::CMatrixFixedNumeric<double, 3, 1>& mean,
-	std::vector<mrpt::math::CMatrixFixedNumeric<float, 3, 1>>& pts,
+	const mrpt::math::CMatrixFixed<double, 3, 3>& U,
+	const mrpt::math::CMatrixFixed<double, 3, 1>& mean,
+	std::vector<mrpt::math::CMatrixFixed<float, 3, 1>>& pts,
 	const uint32_t slices, const uint32_t stacks)
 {
 	MRPT_START

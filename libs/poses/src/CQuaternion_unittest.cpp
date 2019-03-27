@@ -10,12 +10,13 @@
 #include <CTraitsTest.h>
 #include <gtest/gtest.h>
 #include <mrpt/math/CQuaternion.h>
+#include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::poses;
-
 using namespace mrpt::math;
 using namespace std;
 
@@ -37,8 +38,8 @@ class QuaternionTests : public ::testing::Test
 
 		EXPECT_NEAR(
 			0,
-			std::abs((CPose3D(q1, 0, 0, 0).getAsVectorVal() -
-					  CPose3D(q1r, 0, 0, 0).getAsVectorVal())
+			std::abs((CPose3D(q1, 0, 0, 0).asVectorVal() -
+					  CPose3D(q1r, 0, 0, 0).asVectorVal())
 						 .sum()),
 			1e-6);
 	}
@@ -96,13 +97,13 @@ class QuaternionTests : public ::testing::Test
 
 	void test_ExpAndLnMatches(double v0, double v1, double v2)
 	{
-		CArrayDouble<3> v;
+		CVectorFixedDouble<3> v;
 		v[0] = v0;
 		v[1] = v1;
 		v[2] = v2;
 
 		const CQuaternionDouble q1 = CQuaternionDouble::exp(v);
-		auto q1_ln = q1.ln<CArrayDouble<3>>();
+		auto q1_ln = q1.ln<CVectorFixedDouble<3>>();
 
 		// q1_ln should be == v
 		EXPECT_NEAR(0, (q1_ln - v).array().abs().sum(), 1e-10)
@@ -133,8 +134,7 @@ TEST_F(QuaternionTests, crossProduct)
 
 	EXPECT_NEAR(
 		0,
-		std::abs((p3.getAsVectorVal() - CPose3D(q3, 0, 0, 0).getAsVectorVal())
-					 .sum()),
+		std::abs((p3.asVectorVal() - CPose3D(q3, 0, 0, 0).asVectorVal()).sum()),
 		1e-6)
 		<< "q1 = " << q1 << endl
 		<< "q1 as CPose3D = " << CPose3D(q1, 0, 0, 0) << endl

@@ -9,7 +9,7 @@
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
-#include <mrpt/math/CArrayNumeric.h>
+#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/transform_gaussian.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/opengl/CEllipsoid.h>
@@ -19,6 +19,7 @@
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/system/CTicTac.h>
+#include <Eigen/Dense>
 #include <iostream>
 
 using namespace mrpt;
@@ -30,11 +31,12 @@ using namespace std;
 // Example non-linear function for SUT
 //   f: R^5   => R^3
 void myFun1(
-	const CArrayDouble<5>& x, const double& user_param, CArrayDouble<3>& y)
+	const CVectorFixedDouble<3>& x, const double& user_param,
+	CVectorFixedDouble<3>& y)
 {
-	y[0] = cos(x[0]) * exp(x[1]) + x[4];
+	y[0] = cos(x[0]) * exp(x[1]) + x[0];
 	y[1] = x[1] / (1 + square(x[0]));
-	y[2] = x[4] / (1 + square(x[3])) + sin(x[1] * x[0]);
+	y[2] = x[2] / (1 + square(x[2])) + sin(x[1] * x[0]);
 }
 
 /* ------------------------------------------------------------------------
@@ -43,20 +45,20 @@ void myFun1(
 void Test_SUT()
 {
 	// Inputs:
-	const double x0[] = {1.8, 0.7, 0.9, -5.6, 8.9};
+	const double x0[] = {1.8, 0.7, 0.9};
+	// clang-format off
 	const double x0cov[] = {
-		0.049400,  0.011403,  -0.006389, 0.008132,  -0.008595,
-		0.011403,  0.026432,  0.005382,  0.008622,  -0.017399,
-		-0.006389, 0.005382,  0.063268,  -0.019310, -0.017868,
-		0.008132,  0.008622,  -0.019310, 0.028474,  0.003507,
-		-0.008595, -0.017399, -0.017868, 0.003507,  0.17398};
+	    0.049400,  0.011403,  -0.006389,
+	    0.011403,  0.026432,  0.005382,
+	    -0.006389, 0.005382,  0.063268};
+	// clang-format on
 
-	const CArrayDouble<5> x_mean(x0);
-	const CMatrixFixedNumeric<double, 5, 5> x_cov(x0cov);
+	const CVectorFixedDouble<3> x_mean(x0);
+	const CMatrixFixed<double, 3, 3> x_cov(x0cov);
 	const double dumm = 0;
 
 	// Outputs:
-	CArrayDouble<3> y_mean;
+	CVectorFixedDouble<3> y_mean;
 	CMatrixDouble33 y_cov;
 
 	// Do SUT:
@@ -96,7 +98,7 @@ void Test_SUT()
 	// Do Montecarlo for comparison:
 	N = 10;
 
-	mrpt::aligned_std_vector<CArrayDouble<3>> MC_samples;
+	mrpt::aligned_std_vector<CVectorFixedDouble<3>> MC_samples;
 
 	tictac.Tic();
 	for (size_t i = 0; i < N; i++)
@@ -116,8 +118,7 @@ void Test_SUT()
 		extractColumnFromVectorOfVectors(i, MC_samples, MC_y[i]);
 
 	{
-		opengl::CEllipsoid::Ptr el =
-			mrpt::make_aligned_shared<opengl::CEllipsoid>();
+		auto el = opengl::CEllipsoid::Create();
 		el->enableDrawSolid3D(false);
 		el->setLocation(y_mean[0], y_mean[1], y_mean[2]);
 		el->setCovMatrix(y_cov);
@@ -133,7 +134,7 @@ void Test_SUT()
 	// Do Linear for comparison:
 	N = 100;
 
-	CArrayDouble<5> x_incrs;
+	CVectorFixedDouble<3> x_incrs;
 	x_incrs.fill(1e-6);
 
 	tictac.Tic();
@@ -151,8 +152,7 @@ void Test_SUT()
 	cout << "y_cov: " << endl << y_cov << endl;
 
 	{
-		opengl::CEllipsoid::Ptr el =
-			mrpt::make_aligned_shared<opengl::CEllipsoid>();
+		auto el = opengl::CEllipsoid::Create();
 		el->enableDrawSolid3D(false);
 		el->setLocation(y_mean[0], y_mean[1], y_mean[2]);
 		el->setCovMatrix(y_cov);
@@ -179,7 +179,7 @@ void Test_SUT()
 
 		std::vector<double> X;
 		std::vector<double> H = mrpt::math::histogram(
-			MC_y[i], MC_y[i].minimum(), MC_y[i].maximum(), 40, true, &X);
+			MC_y[i], MC_y[i].minCoeff(), MC_y[i].maxCoeff(), 40, true, &X);
 
 		winHistos[i]->plot(X, H, "b");
 		winHistos[i]->axis_fit();
@@ -195,7 +195,8 @@ void Test_SUT()
 // -----------------------------------------------------------
 
 void aux_posequat2poseypr(
-	const CArrayDouble<7>& x, const double& dummy, CArrayDouble<6>& y)
+	const CVectorFixedDouble<7>& x, const double& dummy,
+	CVectorFixedDouble<6>& y)
 {
 	const CPose3DQuat p(
 		x[0], x[1], x[2],
@@ -213,10 +214,10 @@ void TestCalibrate_pose2quat()
 		CPose3D(1.0, 2.0, 3.0, DEG2RAD(-30), DEG2RAD(10), DEG2RAD(60)));
 	// o.mean = CPose3D(1.0,2.0,3.0, DEG2RAD(00),DEG2RAD(90),DEG2RAD(0));
 
-	CMatrixFixedNumeric<double, 7, 1> v;
+	CMatrixFixed<double, 7, 1> v;
 	mrpt::random::getRandomGenerator().drawGaussian1DMatrix(v);
 	v *= 1e-3;
-	o.cov.multiply_AAt(v);  // COV = v*vt
+	o.cov.matProductOf_AAt(v);  // COV = v*vt
 	for (int i = 0; i < 7; i++) o.cov(i, i) += 0.01;
 
 	o.cov(0, 1) = o.cov(1, 0) = 0.007;
@@ -225,14 +226,14 @@ void TestCalibrate_pose2quat()
 
 	// Use UT transformation:
 	//   f: R^7 => R^6
-	const CArrayDouble<7> x_mean(o.mean);
-	CArrayDouble<6> y_mean;
+	const CVectorFixedDouble<7> x_mean(o.mean);
+	CVectorFixedDouble<6> y_mean;
 	static const bool elements_do_wrapPI[6] = {
 		false, false, false, true, true, true};  // xyz yaw pitch roll
 
 	static const double dummy = 0;
 	// MonteCarlo:
-	CArrayDouble<6> MC_y_mean;
+	CVectorFixedDouble<6> MC_y_mean;
 	CMatrixDouble66 MC_y_cov;
 	mrpt::math::transform_gaussian_montecarlo(
 		x_mean, o.cov, aux_posequat2poseypr,

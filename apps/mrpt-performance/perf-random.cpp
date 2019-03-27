@@ -7,8 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
+#include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/random.h>
 
 #include "common.h"
@@ -133,11 +134,11 @@ double random_test_8(int a1, int a2)
 {
 	CRandomGenerator rg;
 
-	CMatrixFixedNumeric<double, DIM, DIM> R;
+	CMatrixFixed<double, DIM, DIM> R;
 	rg.drawGaussian1DMatrix(R, 0.0, 1.0);
 
-	CMatrixFixedNumeric<double, DIM, DIM> COV;
-	COV.multiply_AAt(R);
+	CMatrixFixed<double, DIM, DIM> COV;
+	COV.matProductOf_AAt(R);
 
 	const size_t NSAMPS = 1000;
 
@@ -157,11 +158,11 @@ double random_test_9(int a1, int a2)
 {
 	CRandomGenerator rg;
 
-	CMatrixTemplateNumeric<double> R(a1, a1);
+	CMatrixDynamic<double> R(a1, a1);
 	rg.drawGaussian1DMatrix(R, 0.0, 1.0);
 
-	CMatrixTemplateNumeric<double> COV;
-	COV.multiply_AAt(R);
+	CMatrixDynamic<double> COV;
+	COV.matProductOf_AAt(R);
 	const size_t NSAMPS = 1000;
 
 	// test 9:

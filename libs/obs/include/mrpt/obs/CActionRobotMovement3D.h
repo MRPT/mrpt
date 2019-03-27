@@ -37,19 +37,19 @@ class CActionRobotMovement3D : public CAction
 		emVisualOdometry
 	};
 
-	CActionRobotMovement3D();
+	CActionRobotMovement3D() = default;
 
 	/** The 3D pose change probabilistic estimation. It can be converted to/from
 	 * these alternative classes:
 	 * - mrpt::poses::CPose3DQuatPDFGaussian
 	 */
-	mrpt::poses::CPose3DPDFGaussian poseChange;
+	mrpt::poses::CPose3DPDFGaussian poseChange{};
 
 	/** This is the raw odometry reading, and only is used when
 	 * "estimationMethod" is "TEstimationMethod::emOdometry" */
-	mrpt::poses::CPose3D rawOdometryIncrementReading;
-	/** This fields indicates the way this estimation was obtained.
-	 */
+	mrpt::poses::CPose3D rawOdometryIncrementReading{};
+
+	/** This fields indicates the way this estimation was obtained */
 	TEstimationMethod estimationMethod{emOdometry};
 
 	enum TDrawSampleMotionModel
@@ -106,13 +106,13 @@ class CActionRobotMovement3D : public CAction
 	/** Each "true" entry means that the corresponding "velocities" element
 	 * contains valid data - There are 6 entries.
 	 */
-	std::vector<bool> hasVelocities;
+	std::vector<bool> hasVelocities{false, false, false, false, false, false};
 
 	/** The velocity of the robot in each of 6D:
 	 * v_x,v_y,v_z,v_yaw,v_pitch,v_roll (linear in meters/sec and angular in
 	 * rad/sec).
 	 */
-	mrpt::math::CVectorFloat velocities;
+	mrpt::math::CVectorFloat velocities{6};
 
 };  // End of class def.
 

@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/img/TCamera.h>
-#include <mrpt/math/CArrayNumeric.h>
+#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/system/os.h>
 #include <mrpt/vision/utils.h>
@@ -205,34 +205,34 @@ class CCamModel : public mrpt::config::CLoadableOptions
 		T x_ = 1 / pIn[0];
 		T x_2 = square(x_);
 		// First two jacobians...
-		mrpt::math::CMatrixFixedNumeric<T, 3, 3> J21;
+		mrpt::math::CMatrixFixed<T, 3, 3> J21;
 		T tmpK = 2 * (cam.k1() + tmp.R * (2 * cam.k2() + 3 * tmp.R * cam.k3()));
 		T tmpKx = tmpK * tmp.x_;
 		T tmpKy = tmpK * tmp.y_;
 		T yx2 = -pIn[1] * x_2;
 		T zx2 = -pIn[2] * x_2;
-		J21.set_unsafe(0, 0, yx2);
-		J21.set_unsafe(0, 1, x_);
-		J21.set_unsafe(0, 2, 0);
-		J21.set_unsafe(1, 0, zx2);
-		J21.set_unsafe(1, 1, 0);
-		J21.set_unsafe(1, 2, x_);
-		J21.set_unsafe(2, 0, tmpKx * yx2 + tmpKy * zx2);
-		J21.set_unsafe(2, 1, tmpKx * x_);
-		J21.set_unsafe(2, 2, tmpKy * x_);
+		J21(0, 0) = yx2;
+		J21(0, 1) = x_;
+		J21(0, 2) = 0;
+		J21(1, 0) = zx2;
+		J21(1, 1) = 0;
+		J21(1, 2) = x_;
+		J21(2, 0) = tmpKx * yx2 + tmpKy * zx2;
+		J21(2, 1) = tmpKx * x_;
+		J21(2, 2) = tmpKy * x_;
 		// Last two jacobians...
 		T pxpy = 2 * (cam.p1() * tmp.x_ + cam.p2() * tmp.y_);
 		T p1y = cam.p1() * tmp.y_;
 		T p2x = cam.p2() * tmp.x_;
-		mrpt::math::CMatrixFixedNumeric<T, 2, 3> J43;
+		mrpt::math::CMatrixFixed<T, 2, 3> J43;
 		T fx = cam.fx(), fy = cam.fy();
-		J43.set_unsafe(0, 0, fx * (tmp.K + 2 * p1y + 6 * p2x));
-		J43.set_unsafe(0, 1, fx * pxpy);
-		J43.set_unsafe(0, 2, fx * tmp.x_);
-		J43.set_unsafe(1, 0, fy * pxpy);
-		J43.set_unsafe(1, 1, fy * (tmp.K + 6 * p1y + 2 * p2x));
-		J43.set_unsafe(1, 2, fy * tmp.y_);
-		mOut.multiply(J43, J21);
+		J43(0, 0) = fx * (tmp.K + 2 * p1y + 6 * p2x);
+		J43(0, 1) = fx * pxpy;
+		J43(0, 2) = fx * tmp.x_;
+		J43(1, 0) = fy * pxpy;
+		J43(1, 1) = fy * (tmp.K + 6 * p1y + 2 * p2x);
+		J43(1, 2) = fy * tmp.y_;
+		mOut.matProductOf_AB(J43, J21);
 		// cout<<"J21:\n"<<J21<<"\nJ43:\n"<<J43<<"\nmOut:\n"<<mOut;
 	}
 
@@ -242,33 +242,33 @@ class CCamModel : public mrpt::config::CLoadableOptions
 	// once,
 	// and not in each iteration.
 	// They are mostly useless outside the scope of this function.
-	mrpt::math::CMatrixFixedNumeric<double, 2, 2> firstInverseJacobian() const
+	mrpt::math::CMatrixFixed<double, 2, 2> firstInverseJacobian() const
 	{
-		mrpt::math::CMatrixFixedNumeric<double, 2, 2> res;
-		res.set_unsafe(0, 1, 0);
-		res.set_unsafe(1, 0, 0);
+		mrpt::math::CMatrixFixed<double, 2, 2> res;
+		res(0, 1) = 0;
+		res(1, 0) = 0;
 		return res;
 	}
-	mrpt::math::CMatrixFixedNumeric<double, 4, 2> secondInverseJacobian() const
+	mrpt::math::CMatrixFixed<double, 4, 2> secondInverseJacobian() const
 	{
-		mrpt::math::CMatrixFixedNumeric<double, 4, 2> res;
-		res.set_unsafe(0, 0, 1);
-		res.set_unsafe(0, 1, 0);
-		res.set_unsafe(1, 0, 0);
-		res.set_unsafe(1, 1, 1);
+		mrpt::math::CMatrixFixed<double, 4, 2> res;
+		res(0, 0) = 1;
+		res(0, 1) = 0;
+		res(1, 0) = 0;
+		res(1, 1) = 1;
 		return res;
 	}
-	mrpt::math::CMatrixFixedNumeric<double, 3, 4> thirdInverseJacobian() const
+	mrpt::math::CMatrixFixed<double, 3, 4> thirdInverseJacobian() const
 	{
-		mrpt::math::CMatrixFixedNumeric<double, 3, 4> res;
-		res.set_unsafe(0, 1, 0);
-		res.set_unsafe(0, 2, 0);
-		res.set_unsafe(1, 0, 0);
-		res.set_unsafe(1, 2, 0);
-		res.set_unsafe(2, 0, 0);
-		res.set_unsafe(2, 1, 0);
-		res.set_unsafe(2, 2, 1);
-		res.set_unsafe(2, 3, 0);
+		mrpt::math::CMatrixFixed<double, 3, 4> res;
+		res(0, 1) = 0;
+		res(0, 2) = 0;
+		res(1, 0) = 0;
+		res(1, 2) = 0;
+		res(2, 0) = 0;
+		res(2, 1) = 0;
+		res(2, 2) = 1;
+		res(2, 3) = 0;
 		return res;
 	}
 
@@ -284,13 +284,13 @@ class CCamModel : public mrpt::config::CLoadableOptions
 		// faster, but makes it incapable of being used in more than one thread
 		// simultaneously!
 		using mrpt::square;
-		static mrpt::math::CMatrixFixedNumeric<double, 2, 2> J1(
+		static mrpt::math::CMatrixFixed<double, 2, 2> J1(
 			firstInverseJacobian());
-		static mrpt::math::CMatrixFixedNumeric<double, 4, 2> J2(
+		static mrpt::math::CMatrixFixed<double, 4, 2> J2(
 			secondInverseJacobian());
-		static mrpt::math::CMatrixFixedNumeric<double, 3, 4> J3(
+		static mrpt::math::CMatrixFixed<double, 3, 4> J3(
 			thirdInverseJacobian());
-		static mrpt::math::CMatrixFixedNumeric<double, 2, 3> J4;  // This is not
+		static mrpt::math::CMatrixFixed<double, 2, 3> J4;  // This is not
 		// initialized
 		// in a
 		// special
@@ -298,8 +298,8 @@ class CCamModel : public mrpt::config::CLoadableOptions
 		// although
 		// declaring
 		// it
-		mrpt::math::CArrayNumeric<double, 4> tmp1;
-		mrpt::math::CArrayNumeric<double, 2> tmp2;  // This would be a
+		mrpt::math::CVectorFixed<double, 4> tmp1;
+		mrpt::math::CVectorFixed<double, 2> tmp2;  // This would be a
 		// array<double,3>, but to
 		// avoid copying, we let
 		// "R2" lie in tmp1.
@@ -311,8 +311,8 @@ class CCamModel : public mrpt::config::CLoadableOptions
 		// First step: intrinsic matrix.
 		tmp1[0] = (pIn[0] - cx) * ifx;
 		tmp1[1] = (pIn[1] - cy) * ify;
-		J1.set_unsafe(0, 0, ifx);
-		J1.set_unsafe(1, 1, ify);
+		J1(0, 0) = ifx;
+		J1(1, 1) = ify;
 		// Second step: adding temporary variables, related to the distortion.
 		tmp1[2] = square(tmp1[0]) + square(tmp1[1]);
 		double sK1 = square(K1);
@@ -320,38 +320,38 @@ class CCamModel : public mrpt::config::CLoadableOptions
 		double K123 = -K1 * sK1 + 2 * K1 * K2 - K3;  //-K1^3+2K1K2-K3
 		// tmp1[3]=1-K1*tmp1[2]+K12*square(tmp1[2]);
 		tmp1[3] = 1 + tmp1[2] * (-K1 + tmp1[2] * (K12 + tmp1[2] * K123));
-		J2.set_unsafe(2, 0, 2 * tmp1[0]);
-		J2.set_unsafe(2, 1, 2 * tmp1[1]);
+		J2(2, 0) = 2 * tmp1[0];
+		J2(2, 1) = 2 * tmp1[1];
 		double jTemp = -2 * K1 + 4 * tmp1[2] * K12 + 6 * square(tmp1[2]) * K123;
-		J2.set_unsafe(3, 0, tmp1[0] * jTemp);
-		J2.set_unsafe(3, 1, tmp1[1] * jTemp);
+		J2(3, 0) = tmp1[0] * jTemp;
+		J2(3, 1) = tmp1[1] * jTemp;
 		// Third step: radial distortion. Really simple, since most work has
 		// been done in the previous step.
 		tmp2[0] = tmp1[0] * tmp1[3];
 		tmp2[1] = tmp1[1] * tmp1[3];
-		J3.set_unsafe(0, 0, tmp1[3]);
-		J3.set_unsafe(0, 3, tmp1[0]);
-		J3.set_unsafe(1, 1, tmp1[3]);
-		J3.set_unsafe(1, 3, tmp1[1]);
+		J3(0, 0) = tmp1[3];
+		J3(0, 3) = tmp1[0];
+		J3(1, 1) = tmp1[3];
+		J3(1, 3) = tmp1[1];
 		// Fourth step: tangential distorion. A little more complicated, but not
 		// much more.
 		double prod = tmp2[0] * tmp2[1];
 		// References to tmp1[2] are not errors! That element is "R2".
 		pOut[0] = tmp2[0] - p1 * prod - p2 * (tmp1[2] + 2 * square(tmp2[0]));
 		pOut[1] = tmp2[1] - p1 * (tmp1[2] + 2 * square(tmp2[1])) - p2 * prod;
-		J4.set_unsafe(0, 0, 1 - p1 * tmp2[1] - 4 * p2 * tmp2[0]);
-		J4.set_unsafe(0, 1, -p1 * tmp2[0]);
-		J4.set_unsafe(0, 2, -p2);
-		J4.set_unsafe(1, 0, -p2 * tmp2[1]);
-		J4.set_unsafe(1, 1, 1 - 4 * p1 * tmp2[1] - p2 * tmp2[0]);
-		J4.set_unsafe(1, 2, -p1);
+		J4(0, 0) = 1 - p1 * tmp2[1] - 4 * p2 * tmp2[0];
+		J4(0, 1) = -p1 * tmp2[0];
+		J4(0, 2) = -p2;
+		J4(1, 0) = -p2 * tmp2[1];
+		J4(1, 1) = 1 - 4 * p1 * tmp2[1] - p2 * tmp2[0];
+		J4(1, 2) = -p1;
 		// As fast as possible, and without more temporaries, let the jacobian
 		// be J4*J3*J2*J1;
 		jOut.multiply_ABC(J4, J3, J2);  // Note that using the other order is
 		// not possible due to matrix sizes
 		// (jOut may, and most probably will, be
 		// fixed).
-		jOut.multiply(jOut, J1);
+		jOut.matProductOf_AB(jOut, J1);
 	}
 
 };  // end class

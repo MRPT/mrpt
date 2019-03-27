@@ -70,18 +70,13 @@ class CPose3DQuatPDFGaussianInf : public CPose3DQuatPDF
 
 	inline const CPose3DQuat& getPoseMean() const { return mean; }
 	inline CPose3DQuat& getPoseMean() { return mean; }
-	/** Returns an estimate of the pose, (the mean, or mathematical expectation
-	 * of the PDF)  \sa getCovariance */
+
 	void getMean(CPose3DQuat& mean_pose) const override { mean_pose = mean; }
 	bool isInfType() const override { return true; }
-	/** Returns an estimate of the pose covariance matrix (7x7 cov matrix) and
-	 * the mean, both at once. \sa getMean */
-	void getCovarianceAndMean(
-		mrpt::math::CMatrixDouble77& cov,
-		CPose3DQuat& mean_point) const override
+
+	std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const override
 	{
-		cov_inv.inv(cov);
-		mean_point = mean;
+		return {cov_inv.inverse_LLt(), mean};
 	}
 
 	/** Returns the information (inverse covariance) matrix (a STATE_LEN x

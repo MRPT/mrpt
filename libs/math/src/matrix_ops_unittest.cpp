@@ -12,9 +12,11 @@
 // compiling in small systems.
 
 #include <gtest/gtest.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
+#include <mrpt/math/ops_matrices.h>
 #include <mrpt/random.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -26,7 +28,7 @@ using namespace std;
 TEST(Matrices, setSize)
 {
 	{
-		CMatrixFixedNumeric<double, 6, 6> M;
+		CMatrixFixed<double, 6, 6> M;
 		EXPECT_TRUE((M.array() == 0).all());
 	}
 	{
@@ -35,27 +37,27 @@ TEST(Matrices, setSize)
 	}
 	{
 		CMatrixDouble M(5, 5);
-		M.setSize(6, 5);
+		M.setSize(6, 5, true /* set new entries to zero*/);
 		EXPECT_TRUE((M.array() == 0).all());
 	}
 	{
 		CMatrixDouble M(5, 5);
-		M.setSize(10, 5);
+		M.setSize(10, 5, true /* set new entries to zero*/);
 		EXPECT_TRUE((M.array() == 0).all());
 	}
 	{
 		CMatrixDouble M(5, 5);
-		M.setSize(5, 6);
+		M.setSize(5, 6, true /* set new entries to zero*/);
 		EXPECT_TRUE((M.array() == 0).all());
 	}
 	{
 		CMatrixDouble M(5, 5);
-		M.setSize(6, 6);
+		M.setSize(6, 6, true /* set new entries to zero*/);
 		EXPECT_TRUE((M.array() == 0).all());
 	}
 	{
 		CMatrixDouble M(5, 5);
-		M.setSize(10, 10);
+		M.setSize(10, 10, true /* set new entries to zero*/);
 		EXPECT_TRUE((M.array() == 0).all());
 	}
 }
@@ -68,14 +70,14 @@ TEST(Matrices, extractSubmatrixSymmetricalBlocks)
 			1, 2, 3, 4, 5, 6, 7, 8, 8, 9, 10, 11, 12, 13, 14, 15,
 			1, 2, 3, 4, 5, 6, 7, 8, 8, 9, 10, 11, 12, 13, 14, 15,
 			1, 2, 3, 4, 5, 6, 7, 8, 8, 9, 10, 11, 12, 13, 14, 15};
-		const CMatrixFixedNumeric<double, 8, 8> M(vals);
+		const CMatrixFixed<double, 8, 8> M(vals);
 
 		std::vector<size_t> vs;
 		vs.push_back(1);
 		vs.push_back(3);
 
 		CMatrixDouble E;
-		M.extractSubmatrixSymmetricalBlocks(2, vs, E);
+		mrpt::math::extractSubmatrixSymmetricalBlocks<2>(M, vs, E);
 
 		const double valsE[] = {3, 4, 7, 8, 10, 11, 14, 15,
 								3, 4, 7, 8, 10, 11, 14, 15};
@@ -93,7 +95,7 @@ TEST(Matrices, extractSubmatrixSymmetrical)
 			1, 2, 3, 4, 5, 6, 7, 8, 8, 9, 10, 11, 12, 13, 14, 15,
 			1, 2, 3, 4, 5, 6, 7, 8, 8, 9, 10, 11, 12, 13, 14, 15,
 			1, 2, 3, 4, 5, 6, 7, 8, 8, 9, 10, 11, 12, 13, 14, 15};
-		const CMatrixFixedNumeric<double, 8, 8> M(vals);
+		const CMatrixFixed<double, 8, 8> M(vals);
 
 		std::vector<size_t> vs;
 		vs.push_back(2);
@@ -102,7 +104,7 @@ TEST(Matrices, extractSubmatrixSymmetrical)
 		vs.push_back(7);
 
 		CMatrixDouble E;
-		M.extractSubmatrixSymmetrical(vs, E);
+		mrpt::math::extractSubmatrixSymmetrical(M, vs, E);
 
 		const double valsE[] = {3, 4, 7, 8, 10, 11, 14, 15,
 								3, 4, 7, 8, 10, 11, 14, 15};

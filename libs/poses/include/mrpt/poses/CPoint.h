@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/poses/CPoseOrPoint.h>
 
 namespace mrpt::poses
@@ -20,8 +20,8 @@ namespace mrpt::poses
  * \sa CPoseOrPoint, CPose
  * \ingroup poses_grp
  */
-template <class DERIVEDCLASS>
-class CPoint : public CPoseOrPoint<DERIVEDCLASS>
+template <class DERIVEDCLASS, std::size_t DIM>
+class CPoint : public CPoseOrPoint<DERIVEDCLASS, DIM>
 {
 	DERIVEDCLASS& derived() { return *static_cast<DERIVEDCLASS*>(this); }
 	const DERIVEDCLASS& derived() const
@@ -55,21 +55,6 @@ class CPoint : public CPoseOrPoint<DERIVEDCLASS>
 			derived().m_coords[i] *= s;
 	}
 
-	/** Return the pose or point as a 1x2 or 1x3 vector [x y] or [x y z] */
-	inline void getAsVector(mrpt::math::CVectorDouble& v) const
-	{
-		v.resize(DERIVEDCLASS::static_size);
-		for (int i = 0; i < DERIVEDCLASS::static_size; i++)
-			v[i] = static_cast<const DERIVEDCLASS*>(this)->m_coords[i];
-	}
-	//! \overload
-	inline mrpt::math::CVectorDouble getAsVector() const
-	{
-		mrpt::math::CVectorDouble v;
-		getAsVector(v);
-		return v;
-	}
-
 	/** Returns the corresponding 4x4 homogeneous transformation matrix for the
 	 * point(translation) or pose (translation+orientation).
 	 * \sa getInverseHomogeneousMatrix
@@ -77,29 +62,18 @@ class CPoint : public CPoseOrPoint<DERIVEDCLASS>
 	template <class MATRIX44>
 	void getHomogeneousMatrix(MATRIX44& out_HM) const
 	{
-		out_HM.unit(4, 1.0);
-		out_HM.get_unsafe(0, 3) = static_cast<const DERIVEDCLASS*>(this)->x();
-		out_HM.get_unsafe(1, 3) = static_cast<const DERIVEDCLASS*>(this)->y();
+		out_HM.setIdentity(4);
+		out_HM(0, 3) = static_cast<const DERIVEDCLASS*>(this)->x();
+		out_HM(1, 3) = static_cast<const DERIVEDCLASS*>(this)->y();
 		if (DERIVEDCLASS::is3DPoseOrPoint())
-			out_HM.get_unsafe(2, 3) =
-				static_cast<const DERIVEDCLASS*>(this)->m_coords[2];
+			out_HM(2, 3) = static_cast<const DERIVEDCLASS*>(this)->m_coords[2];
 	}
 
 	/** Returns a human-readable textual representation of the object (eg:
 	 * "[0.02 1.04]" )
 	 * \sa fromString
 	 */
-	void asString(std::string& s) const
-	{
-		s = (!DERIVEDCLASS::is3DPoseOrPoint())
-				? mrpt::format(
-					  "[%f %f]", static_cast<const DERIVEDCLASS*>(this)->x(),
-					  static_cast<const DERIVEDCLASS*>(this)->y())
-				: mrpt::format(
-					  "[%f %f %f]", static_cast<const DERIVEDCLASS*>(this)->x(),
-					  static_cast<const DERIVEDCLASS*>(this)->y(),
-					  static_cast<const DERIVEDCLASS*>(this)->m_coords[2]);
-	}
+	void asString(std::string& s) const;
 	inline std::string asString() const
 	{
 		std::string s;
@@ -112,16 +86,7 @@ class CPoint : public CPoseOrPoint<DERIVEDCLASS>
 	 * \sa asString
 	 * \exception std::exception On invalid format
 	 */
-	void fromString(const std::string& s)
-	{
-		mrpt::math::CMatrixDouble m;
-		if (!m.fromMatlabStringFormat(s))
-			THROW_EXCEPTION("Malformed expression in ::fromString");
-		ASSERT_EQUAL_(m.rows(), 1);
-		ASSERT_EQUAL_(m.cols(), DERIVEDCLASS::static_size);
-		for (int i = 0; i < DERIVEDCLASS::static_size; i++)
-			derived().m_coords[i] = m(0, i);
-	}
+	void fromString(const std::string& s);
 
 	inline const double& operator[](unsigned int i) const
 	{
@@ -132,19 +97,10 @@ class CPoint : public CPoseOrPoint<DERIVEDCLASS>
 
 };  // End of class def.
 
-/** Dumps a point as a string [x,y] or [x,y,z]  */
-template <class DERIVEDCLASS>
-std::ostream& operator<<(std::ostream& o, const CPoint<DERIVEDCLASS>& p)
-{
-	o << "(" << p[0] << "," << p[1];
-	if (p.is3DPoseOrPoint()) o << "," << p[2];
-	o << ")";
-	return o;
-}
-
 /** Used by STL algorithms */
-template <class DERIVEDCLASS>
-bool operator<(const CPoint<DERIVEDCLASS>& a, const CPoint<DERIVEDCLASS>& b)
+template <class DERIVEDCLASS, std::size_t DIM>
+bool operator<(
+	const CPoint<DERIVEDCLASS, DIM>& a, const CPoint<DERIVEDCLASS, DIM>& b)
 {
 	if (a.x() < b.x())
 		return true;
@@ -159,16 +115,18 @@ bool operator<(const CPoint<DERIVEDCLASS>& a, const CPoint<DERIVEDCLASS>& b)
 	}
 }
 
-template <class DERIVEDCLASS>
-bool operator==(const CPoint<DERIVEDCLASS>& p1, const CPoint<DERIVEDCLASS>& p2)
+template <class DERIVEDCLASS, std::size_t DIM>
+bool operator==(
+	const CPoint<DERIVEDCLASS, DIM>& p1, const CPoint<DERIVEDCLASS, DIM>& p2)
 {
 	for (int i = 0; i < DERIVEDCLASS::static_size; i++)
 		if (p1[i] != p2[i]) return false;  //-V550
 	return true;
 }
 
-template <class DERIVEDCLASS>
-bool operator!=(const CPoint<DERIVEDCLASS>& p1, const CPoint<DERIVEDCLASS>& p2)
+template <class DERIVEDCLASS, std::size_t DIM>
+bool operator!=(
+	const CPoint<DERIVEDCLASS, DIM>& p1, const CPoint<DERIVEDCLASS, DIM>& p2)
 {
 	for (int i = 0; i < DERIVEDCLASS::static_size; i++)
 		if (p1[i] != p2[i]) return true;  //-V550

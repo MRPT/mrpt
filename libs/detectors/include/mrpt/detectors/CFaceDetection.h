@@ -11,10 +11,10 @@
 
 #include <mrpt/detectors/CCascadeClassifierDetection.h>
 #include <mrpt/detectors/CObjectDetection.h>
+#include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/system/CTimeLogger.h>
-
 #include <future>
 
 namespace mrpt
@@ -183,9 +183,9 @@ class CFaceDetection : public CObjectDetection
 		const std::vector<mrpt::math::TPoint3D>& points);
 
 	void experimental_viewFacePointsAndEigenVects(
-		const std::vector<mrpt::math::CArrayDouble<3>>& pointsVector,
+		const std::vector<mrpt::math::CVectorFixedDouble<3>>& pointsVector,
 		const mrpt::math::CMatrixDouble& eigenVect,
-		const mrpt::math::CVectorDouble& eigenVal);
+		const std::vector<double>& eigenVal);
 
 	void experimental_viewRegions(
 		const std::vector<mrpt::math::TPoint3D> regions[9],
@@ -194,13 +194,13 @@ class CFaceDetection : public CObjectDetection
 	// Segmentation methods
 	void experimental_segmentFace(
 		const mrpt::obs::CObservation3DRangeScan& face,
-		mrpt::math::CMatrixTemplate<bool>& region);
+		mrpt::math::CMatrixDynamic<bool>& region);
 
 	// Histogram methods
 	void experimental_calcHist(
 		const mrpt::img::CImage& face, const size_t& c1, const size_t& r1,
 		const size_t& c2, const size_t& r2,
-		mrpt::math::CMatrixTemplate<unsigned int>& hist);
+		mrpt::math::CMatrixDynamic<unsigned int>& hist);
 
 };  // End of class
 }  // namespace detectors

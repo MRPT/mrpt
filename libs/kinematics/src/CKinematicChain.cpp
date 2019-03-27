@@ -125,7 +125,7 @@ void CKinematicChain::recomputeAllPoses(
 									  cos(alpha)};
 
 		const CMatrixDouble33 R(r_vals);
-		const CArrayDouble<3> t(t_vals);
+		const CVectorFixedDouble<3> t(t_vals);
 
 		CPose3D link(R, t);
 

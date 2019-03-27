@@ -8,7 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/serialization/CArchive.h>
 #include <iomanip>  // for setprecision(), etc.
 #include <iterator>  // std::ostream_iterator
@@ -18,10 +19,6 @@
 
 namespace mrpt::math
 {
-// Frwd. decl.
-template <typename T, std::size_t N>
-class CArrayNumeric;
-
 /** \addtogroup container_ops_grp
  *  @{ */
 
@@ -133,23 +130,23 @@ std::ostream& operator<<(std::ostream& out, std::vector<T>* d)
 	return out;
 }
 
-/** Binary dump of a CArrayNumeric<T,N> to a stream. */
+/** Binary dump of a CVectorFixed<T,N> to a stream. */
 template <typename T, size_t N>
 mrpt::serialization::CArchive& operator<<(
-	mrpt::serialization::CArchive& ostrm, const CArrayNumeric<T, N>& a)
+	mrpt::serialization::CArchive& ostrm, const CVectorFixed<T, N>& a)
 {
-	ostrm << mrpt::typemeta::TTypeName<CArrayNumeric<T, N>>::get();
+	ostrm << mrpt::typemeta::TTypeName<CVectorFixed<T, N>>::get();
 	if (N) ostrm.WriteBufferFixEndianness<T>(&a[0], N);
 	return ostrm;
 }
 
-/** Binary read of a CArrayNumeric<T,N> from a stream. */
+/** Binary read of a CVectorFixed<T,N> from a stream. */
 template <typename T, size_t N>
 mrpt::serialization::CArchive& operator>>(
-	mrpt::serialization::CArchive& istrm, CArrayNumeric<T, N>& a)
+	mrpt::serialization::CArchive& istrm, CVectorFixed<T, N>& a)
 {
 	static const std::string namExpect =
-		mrpt::typemeta::TTypeName<CArrayNumeric<T, N>>::get();
+		mrpt::typemeta::TTypeName<CVectorFixed<T, N>>::get();
 	std::string nam;
 	istrm >> nam;
 	ASSERTMSG_(

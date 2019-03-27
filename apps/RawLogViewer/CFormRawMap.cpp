@@ -1012,9 +1012,7 @@ void CFormRawMap::OnbtnGeneratePathsClick(wxCommandEvent&)
 	progDia.Update((int)nComputationSteps);
 
 	// Add a layer with a covariance with the last pose:
-	CMatrixDouble33 COV;
-	CPose2D meanPose;
-	pdfParts.getCovarianceAndMean(COV, meanPose);
+	const auto [COV, meanPose] = pdfParts.getCovarianceAndMean();
 
 	mpCovarianceEllipse* lyCov =
 		new mpCovarianceEllipse(COV(0, 0), COV(1, 1), COV(0, 1));
@@ -1349,7 +1347,7 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
 
 		// Standard matrix used for all the sensors on the vehicle:
 		CMatrixDouble COV_sensor_local;
-		COV_sensor_local.zeros(6, 6);
+		COV_sensor_local.setZero(6, 6);
 
 		{
 			CConfigFileMemory cfg;

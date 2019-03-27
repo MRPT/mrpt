@@ -8,12 +8,11 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrix.h>
 #include <mrpt/math/CMatrixD.h>
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixF.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/serialization/CArchive.h>
-
-#include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
 
 /** \file matrix_serialization.h
  * This file implements matrix/vector text and binary serialization */
@@ -25,14 +24,13 @@ namespace mrpt::math
 /** @name Operators for binary streaming of MRPT matrices
 	@{ */
 
-/** Read operator from a CStream. The format is compatible with that of CMatrix
+/** Read operator from a CStream. The format is compatible with that of CMatrixF
  * & CMatrixD */
 template <size_t NROWS, size_t NCOLS>
 mrpt::serialization::CArchive& operator>>(
-	mrpt::serialization::CArchive& in,
-	CMatrixFixedNumeric<float, NROWS, NCOLS>& M)
+	mrpt::serialization::CArchive& in, CMatrixFixed<float, NROWS, NCOLS>& M)
 {
-	CMatrix aux;
+	CMatrixF aux;
 	in.ReadObject(&aux);
 	ASSERTMSG_(
 		M.cols() == aux.cols() && M.rows() == aux.rows(),
@@ -43,12 +41,11 @@ mrpt::serialization::CArchive& operator>>(
 	M = aux;
 	return in;
 }
-/** Read operator from a CStream. The format is compatible with that of CMatrix
+/** Read operator from a CStream. The format is compatible with that of CMatrixF
  * & CMatrixD */
 template <size_t NROWS, size_t NCOLS>
 mrpt::serialization::CArchive& operator>>(
-	mrpt::serialization::CArchive& in,
-	CMatrixFixedNumeric<double, NROWS, NCOLS>& M)
+	mrpt::serialization::CArchive& in, CMatrixFixed<double, NROWS, NCOLS>& M)
 {
 	CMatrixD aux;
 	in.ReadObject(&aux);
@@ -63,24 +60,26 @@ mrpt::serialization::CArchive& operator>>(
 }
 
 /** Write operator for writing into a CStream. The format is compatible with
- * that of CMatrix & CMatrixD */
+ * that of CMatrixF & CMatrixD */
 template <size_t NROWS, size_t NCOLS>
 mrpt::serialization::CArchive& operator<<(
 	mrpt::serialization::CArchive& out,
-	const CMatrixFixedNumeric<float, NROWS, NCOLS>& M)
+	const CMatrixFixed<float, NROWS, NCOLS>& M)
 {
-	CMatrix aux = CMatrixFloat(M);
+	CMatrixF aux;
+	aux = M;
 	out.WriteObject(&aux);
 	return out;
 }
 /** Write operator for writing into a CStream. The format is compatible with
- * that of CMatrix & CMatrixD */
+ * that of CMatrixF & CMatrixD */
 template <size_t NROWS, size_t NCOLS>
 mrpt::serialization::CArchive& operator<<(
 	mrpt::serialization::CArchive& out,
-	const CMatrixFixedNumeric<double, NROWS, NCOLS>& M)
+	const CMatrixFixed<double, NROWS, NCOLS>& M)
 {
-	CMatrixD aux = CMatrixDouble(M);
+	CMatrixD aux;
+	aux = M;
 	out.WriteObject(&aux);
 	return out;
 }
@@ -89,28 +88,6 @@ mrpt::serialization::CArchive& operator<<(
 
 /** @name Operators for text streaming of MRPT matrices
 	@{ */
-
-/** Dumps the matrix to a text ostream, adding a final "\n" to Eigen's default
- * output. */
-template <typename T, size_t NROWS, size_t NCOLS>
-inline std::ostream& operator<<(
-	std::ostream& s, const CMatrixFixedNumeric<T, NROWS, NCOLS>& m)
-{
-	Eigen::IOFormat fmt;
-	fmt.matSuffix = "\n";
-	return s << m.format(fmt);
-}
-
-/** Dumps the matrix to a text ostream, adding a final "\n" to Eigen's default
- * output. */
-template <typename T>
-inline std::ostream& operator<<(
-	std::ostream& s, const CMatrixTemplateNumeric<T>& m)
-{
-	Eigen::IOFormat fmt;
-	fmt.matSuffix = "\n";
-	return s << m.format(fmt);
-}
 
 /** Binary serialization of symmetric matrices, saving the space of duplicated
  * values. \sa serializeSymmetricMatrixTo() */

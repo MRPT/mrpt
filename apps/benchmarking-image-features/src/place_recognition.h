@@ -71,10 +71,12 @@ class PlaceRecognition
 	//! dataset for descriptors SIFT,
 	//! ORB,BLD,LATCH
 
-	int* training_word_labels_org;  //!< this holds the training labels
+	std::vector<int> training_word_labels_org;
+	//!< this holds the training labels
 	//! associated with each word in
 	//! training_words_org / training_words_org2
 	//! variables
+
 	int total_vocab_size_org;  //!< the total number of words/descriptors
 	//! extracted from the training dataset
 
@@ -169,7 +171,8 @@ class PlaceRecognition
 	 * image
 	 */
 	void computeLabels(
-		vector<string> file_paths, int counts[NUM_CLASSES], int* labels);
+		vector<string> file_paths, int counts[NUM_CLASSES],
+		std::vector<int>& labels);
 
 	/**
 	 * predictLabel this function predicts the class based on the features
@@ -188,7 +191,8 @@ class PlaceRecognition
 	 */
 	int predictLabel(
 		CFeatureList* feats_testing, vector<float>* training_words,
-		int* training_word_labels, int total_vocab_size, int current_image);
+		std::vector<int>& training_word_labels, int total_vocab_size,
+		int current_image);
 
 	/**
 	 * predictLabel2 this function predicts the class based on the features
@@ -208,7 +212,8 @@ class PlaceRecognition
 	 */
 	int predictLabel2(
 		CFeatureList* feats_testing, vector<uint8_t>* training_words,
-		int* training_word_labels, int total_vocab_size, int current_image);
+		std::vector<int>& training_word_labels, int total_vocab_size,
+		int current_image);
 
 	/**
 	 * findMax function finds the element that occurs maximum number of times in
@@ -220,7 +225,7 @@ class PlaceRecognition
 	 * @return returns the class from labels which has the maximum number of
 	 * occurrences
 	 */
-	int findMax(int* labels, int feats_size);
+	int findMax(const std::vector<int>& labels);
 
 	/**
 	 * findClassName function simply finds the Place name associated with the

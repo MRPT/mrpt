@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/poses/poses_frwds.h>

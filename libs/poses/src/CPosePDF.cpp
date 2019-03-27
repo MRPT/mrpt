@@ -44,13 +44,13 @@ void CPosePDF::jacobiansPoseComposition(
 			[ 0, 1,  cos(phi_x)*x_u-sin(phi_x)*y_u ]
 			[ 0, 0,                              1 ]
 		*/
-		df_dx.unit(3, 1.0);
+		df_dx.setIdentity();
 
 		const double xu = u.x();
 		const double yu = u.y();
 
-		df_dx.get_unsafe(0, 2) = -spx * xu - cpx * yu;
-		df_dx.get_unsafe(1, 2) = cpx * xu - spx * yu;
+		df_dx(0, 2) = -spx * xu - cpx * yu;
+		df_dx(1, 2) = cpx * xu - spx * yu;
 	}
 
 	if (compute_df_du)
@@ -62,13 +62,12 @@ void CPosePDF::jacobiansPoseComposition(
 			[         0  ,          0  ,  1  ]
 		*/
 		// This is the homogeneous matrix of "x":
-		df_du.get_unsafe(0, 2) = df_du.get_unsafe(1, 2) =
-			df_du.get_unsafe(2, 0) = df_du.get_unsafe(2, 1) = 0;
-		df_du.get_unsafe(2, 2) = 1;
+		df_du(0, 2) = df_du(1, 2) = df_du(2, 0) = df_du(2, 1) = 0;
+		df_du(2, 2) = 1;
 
-		df_du.get_unsafe(0, 0) = cpx;
-		df_du.get_unsafe(0, 1) = -spx;
-		df_du.get_unsafe(1, 0) = spx;
-		df_du.get_unsafe(1, 1) = cpx;
+		df_du(0, 0) = cpx;
+		df_du(0, 1) = -spx;
+		df_du(1, 0) = spx;
+		df_du(1, 1) = cpx;
 	}
 }

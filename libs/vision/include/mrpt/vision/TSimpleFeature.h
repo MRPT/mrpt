@@ -10,8 +10,8 @@
 
 #include <mrpt/core/round.h>
 #include <mrpt/img/TPixelCoord.h>
-#include <mrpt/math/CMatrixTemplate.h>  // mrpt::math::CMatrixBool
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixDynamic.h>  // mrpt::math::CMatrixBool
+#include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/KDTreeCapable.h>
 #include <mrpt/vision/types.h>
 #include <functional>

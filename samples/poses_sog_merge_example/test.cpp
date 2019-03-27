@@ -34,7 +34,7 @@ void Test_SoG_Merge()
 	CPosePDFSOG::TGaussianMode m;
 	m.mean = CPose2D(1.1, -0.1, DEG2RAD(-2));
 
-	m.cov.unit();
+	m.cov.setIdentity();
 	m.cov(0, 0) = m.cov(1, 1) = square(0.1);
 	m.cov(2, 2) = square(DEG2RAD(2));
 	m.log_w = 0;

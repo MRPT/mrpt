@@ -19,9 +19,9 @@
 
 #include <mrpt/gui/CMyRedirector.h>
 #include <mrpt/gui/WxUtils.h>
-#include "robotic_arm_kinematicsMain.h"
-
 #include <mrpt/system/os.h>
+#include <Eigen/Dense>  // for version
+#include "robotic_arm_kinematicsMain.h"
 
 using namespace mrpt;
 using namespace mrpt::system;

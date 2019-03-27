@@ -10,6 +10,7 @@
 #include "poses-precomp.h"  // Precompiled headers
 
 #include <mrpt/poses/SO_SE_average.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -17,9 +18,8 @@ using namespace mrpt::math;
 using namespace mrpt::poses;
 
 // -----------   SO_average<2> --------------------
-SO_average<2>::SO_average()
+SO_average<2>::SO_average() = default;
 
-	= default;
 void SO_average<2>::clear()
 {
 	m_count = .0;
@@ -60,18 +60,22 @@ void SO_average<3>::clear()
 	m_count = .0;
 	m_accum_rot.setZero();
 }
-void SO_average<3>::append(const Eigen::Matrix3d& M) { append(M, 1.0); }
-void SO_average<3>::append(const Eigen::Matrix3d& M, const double weight)
+void SO_average<3>::append(const mrpt::math::CMatrixDouble33& M)
+{
+	append(M, 1.0);
+}
+void SO_average<3>::append(
+	const mrpt::math::CMatrixDouble33& M, const double weight)
 {
 	m_count += weight;
-	m_accum_rot += weight * M;
+	m_accum_rot.asEigen() += weight * M.asEigen();
 }
 // See: eq. (3.7) in "MEANS AND AVERAGING IN THE GROUP OF ROTATIONS", MAHER
 // MOAKHER, 2002.
-Eigen::Matrix3d SO_average<3>::get_average() const
+mrpt::math::CMatrixDouble33 SO_average<3>::get_average() const
 {
 	ASSERT_ABOVE_(m_count, 0);
-	const Eigen::Matrix3d MtM = m_accum_rot.transpose() * m_accum_rot;
+	const Eigen::Matrix3d MtM = m_accum_rot.transpose() * m_accum_rot.asEigen();
 
 	Eigen::JacobiSVD<Eigen::Matrix3d> svd(MtM, Eigen::ComputeFullU);
 	const Eigen::Vector3d vs = svd.singularValues();
@@ -79,23 +83,23 @@ Eigen::Matrix3d SO_average<3>::get_average() const
 	errno = 0;
 	const double d1 = 1.0 / sqrt(vs[0]);
 	const double d2 = 1.0 / sqrt(vs[1]);
-	const double d3 = mrpt::sign(m_accum_rot.determinant()) / sqrt(vs[2]);
+	const double d3 = mrpt::sign(m_accum_rot.det()) / sqrt(vs[2]);
 	if (errno != 0)
 	{
 		if (enable_exception_on_undeterminate)
 			throw std::runtime_error(
 				"[SO_average<3>::get_average()] Undetermined average value");
 		else
-			return Eigen::Matrix3d::Identity();
+			return mrpt::math::CMatrixDouble33::Identity();
 	}
 
-	Eigen::Matrix3d D = Eigen::Matrix3d::Zero();
+	mrpt::math::CMatrixDouble33 D = mrpt::math::CMatrixDouble33::Zero();
 	D(0, 0) = d1;
 	D(1, 1) = d2;
 	D(2, 2) = d3;
-	Eigen::Matrix3d ret =
-		m_accum_rot * svd.matrixU() * D * svd.matrixU().transpose();
-	return ret;
+	return mrpt::math::CMatrixDouble33(
+		m_accum_rot.asEigen() * svd.matrixU() * D.asEigen() *
+		svd.matrixU().transpose());
 }
 
 // -----------   SE_average<2> --------------------

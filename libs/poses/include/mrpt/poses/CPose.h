@@ -20,8 +20,8 @@ namespace mrpt::poses
  * \sa CPoseOrPoint, CPoint
  * \ingroup poses_grp
  */
-template <class DERIVEDCLASS>
-class CPose : public CPoseOrPoint<DERIVEDCLASS>
+template <class DERIVEDCLASS, std::size_t DIM>
+class CPose : public CPoseOrPoint<DERIVEDCLASS, DIM>
 {
 };  // End of class def.
 

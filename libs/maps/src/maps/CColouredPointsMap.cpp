@@ -741,7 +741,7 @@ struct pointmap_traits<CColouredPointsMap>
 		MRPT_UNUSED_PARAM(gx);
 		MRPT_UNUSED_PARAM(gy);
 		// Relative height of the point wrt the sensor:
-		const float rel_z = gz - lric.HM.get_unsafe(2, 3);  // m23;
+		const float rel_z = gz - lric.HM(2, 3);  // m23;
 
 		// Variable renaming:
 		float& pR = lric.fVars[0];
@@ -916,7 +916,7 @@ struct pointmap_traits<CColouredPointsMap>
 		const uint8_t& simple_3d_to_color_relation = lric.bVars[2];
 
 		// Relative height of the point wrt the sensor:
-		const float rel_z = gz - lric.HM.get_unsafe(2, 3);  // m23;
+		const float rel_z = gz - lric.HM(2, 3);  // m23;
 
 		// Compute color:
 		switch (me.colorScheme.scheme)

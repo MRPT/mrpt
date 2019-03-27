@@ -50,7 +50,7 @@ void CPTG_RobotShape_Circular::add_robotShape_to_setOfLines(
 	const double R = m_robotRadius;
 	const int N = 17;
 	// Transform coordinates:
-	mrpt::math::CVectorDouble shap_x(N), shap_y(N), shap_z(N);
+	std::vector<double> shap_x(N), shap_y(N), shap_z(N);
 	for (int i = 0; i < N; i++)
 	{
 		origin.composePoint(
@@ -60,9 +60,9 @@ void CPTG_RobotShape_Circular::add_robotShape_to_setOfLines(
 	// Draw a "radius" to identify the "forward" orientation (phi=0)
 	gl_shape.appendLine(
 		origin.x(), origin.y(), .0, shap_x[0], shap_y[0], shap_z[0]);
-	for (int i = 1; i <= shap_x.size(); i++)
+	for (unsigned int i = 1; i <= shap_x.size(); i++)
 	{
-		const int idx = i % shap_x.size();
+		const unsigned int idx = i % shap_x.size();
 		gl_shape.appendLineStrip(shap_x[idx], shap_y[idx], shap_z[idx]);
 	}
 	// Draw a "cross" to identify the robot center

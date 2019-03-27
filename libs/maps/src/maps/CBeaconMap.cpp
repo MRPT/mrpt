@@ -18,15 +18,15 @@
 #include <mrpt/math/data_utils.h>  // averageLogLikelihood()
 #include <mrpt/math/geometry.h>
 #include <mrpt/obs/CObservationBeaconRanges.h>
-#include <mrpt/random.h>
-#include <mrpt/serialization/CArchive.h>
-#include <mrpt/system/os.h>
-#include <mrpt/system/string_utils.h>
-
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/stock_objects.h>
+#include <mrpt/random.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/string_utils.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -236,7 +236,7 @@ double CBeaconMap::internal_computeObservationLikelihood(
 					case CBeacon::pdfGauss:
 					{
 						// Compute the Jacobian H and varZ
-						CMatrixFixedNumeric<double, 1, 3> H;
+						CMatrixFixed<double, 1, 3> H;
 						float varZ, varR = square(likelihoodOptions.rangeStd);
 						float Ax =
 							beac->m_locationGauss.mean.x() - sensor3D.x();
@@ -249,10 +249,11 @@ double CBeaconMap::internal_computeObservationLikelihood(
 						H(0, 2) = Az;
 						float expectedRange =
 							sensor3D.distanceTo(beac->m_locationGauss.mean);
-						H *= 1.0 / expectedRange;  // sqrt(Ax*Ax+Ay*Ay+Az*Az);
+						H.asEigen() *=
+							1.0 / expectedRange;  // sqrt(Ax*Ax+Ay*Ay+Az*Az);
 
-						varZ =
-							H.multiply_HCHt_scalar(beac->m_locationGauss.cov);
+						varZ = mrpt::math::multiply_HCHt_scalar(
+							H, beac->m_locationGauss.cov);
 
 						varZ += varR;
 
@@ -294,10 +295,12 @@ double CBeaconMap::internal_computeObservationLikelihood(
 							H(0, 2) = Az;
 							double expectedRange =
 								sensor3D.distanceTo(it->val.mean);
-							H *= 1.0 /
-								 expectedRange;  // sqrt(Ax*Ax+Ay*Ay+Az*Az);
+							H.asEigen() *=
+								1.0 /
+								expectedRange;  // sqrt(Ax*Ax+Ay*Ay+Az*Az);
 
-							varZ = H.multiply_HCHt_scalar(it->val.cov);
+							varZ = mrpt::math::multiply_HCHt_scalar(
+								H, it->val.cov);
 							varZ += varR;
 
 							// Compute the mean expected range (add bias!):
@@ -574,9 +577,8 @@ bool CBeaconMap::internal_insertObservation(
 
 							// Is the moment to turn into a Gaussian??
 							// -------------------------------------------
-							CPoint3D MEAN;
-							CMatrixDouble33 COV;
-							beac->m_locationMC.getCovarianceAndMean(COV, MEAN);
+							auto [COV, MEAN] =
+								beac->m_locationMC.getCovarianceAndMean();
 
 							double D1 = sqrt(COV(0, 0));
 							double D2 = sqrt(COV(1, 1));
@@ -647,14 +649,16 @@ bool CBeaconMap::internal_insertObservation(
 								H(0, 0) = Ax;
 								H(0, 1) = Ay;
 								H(0, 2) = Az;
-								H *= 1.0 /
-									 expectedRange;  // sqrt(Ax*Ax+Ay*Ay+Az*Az);
-								varZ = H.multiply_HCHt_scalar(
-									beac->m_locationGauss.cov);
+								H.asEigen() *=
+									1.0 /
+									expectedRange;  // sqrt(Ax*Ax+Ay*Ay+Az*Az);
+								varZ = mrpt::math::multiply_HCHt_scalar(
+									H, beac->m_locationGauss.cov);
 								varZ += varR;
 
-								CMatrixDouble31 K;
-								K.multiply_ABt(beac->m_locationGauss.cov, H);
+								Eigen::Vector3d K =
+									beac->m_locationGauss.cov.asEigen() *
+									H.transpose();
 								K *= 1.0 / varZ;
 
 								// Update stage of the EKF:
@@ -663,10 +667,10 @@ bool CBeaconMap::internal_insertObservation(
 								beac->m_locationGauss.mean.z_incr(K(2, 0) * y);
 
 								beac->m_locationGauss.cov =
-									(Eigen::Matrix<double, 3, 3>::Identity() -
-									 K * H) *
-									beac->m_locationGauss.cov;
-								// beac->m_locationGauss.cov.force_symmetry();
+									((Eigen::Matrix<double, 3, 3>::Identity() -
+									  K * H.asEigen()) *
+									 beac->m_locationGauss.cov.asEigen())
+										.eval();
 							}
 						}
 						break;
@@ -700,11 +704,12 @@ bool CBeaconMap::internal_insertObservation(
 								H(0, 0) = Ax;
 								H(0, 1) = Ay;
 								H(0, 2) = Az;
-								H *= 1.0 / expectedRange;
-								varZ = H.multiply_HCHt_scalar(mode.val.cov);
+								H.asEigen() *= 1.0 / expectedRange;
+								varZ = mrpt::math::multiply_HCHt_scalar(
+									H, mode.val.cov);
 								varZ += varR;
-								CMatrixDouble31 K;
-								K.multiply(mode.val.cov, H.transpose());
+								Eigen::Vector3d K =
+									mode.val.cov.asEigen() * H.transpose();
 								K *= 1.0 / varZ;
 
 								// Update stage of the EKF:
@@ -712,9 +717,9 @@ bool CBeaconMap::internal_insertObservation(
 								mode.val.mean.y_incr(K(1, 0) * y);
 								mode.val.mean.z_incr(K(2, 0) * y);
 
-								mode.val.cov =
-									(Eigen::Matrix3d::Identity() - K * H) *
-									mode.val.cov;
+								mode.val.cov = (Eigen::Matrix3d::Identity() -
+												K * H.asEigen()) *
+											   mode.val.cov.asEigen();
 
 								// Update the weight of this mode:
 								// ----------------------------------
@@ -742,10 +747,8 @@ bool CBeaconMap::internal_insertObservation(
 							// Should we pass this beacon to a single Gaussian
 							// mode?
 							// -----------------------------------------------------------
-							CPoint3D curMean;
-							CMatrixDouble33 curCov;
-							beac->m_locationSOG.getCovarianceAndMean(
-								curCov, curMean);
+							const auto [curCov, curMean] =
+								beac->m_locationSOG.getCovarianceAndMean();
 
 							double D1 = sqrt(curCov(0, 0));
 							double D2 = sqrt(curCov(1, 1));
@@ -1249,12 +1252,9 @@ void CBeaconMap::saveToTextFile(const string& fil) const
 	FILE* f = os::fopen(fil.c_str(), "wt");
 	ASSERT_(f != nullptr);
 
-	CPoint3D p;
-	CMatrixDouble33 C;
-
 	for (const auto& m_beacon : m_beacons)
 	{
-		m_beacon.getCovarianceAndMean(C, p);
+		const auto [C, p] = m_beacon.getCovarianceAndMean();
 
 		float D3 = C.det();
 		float D2 = C(0, 0) * C(1, 1) - square(C(0, 1));

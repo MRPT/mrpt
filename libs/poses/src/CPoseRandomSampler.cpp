@@ -17,6 +17,7 @@
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/poses/CPoseRandomSampler.h>
 #include <mrpt/random.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -122,17 +123,14 @@ void CPoseRandomSampler::setPosePDF(const CPosePDF* pdf)
 
 		m_fastdraw_gauss_M_2D = gPdf->mean;
 
-		/** Computes the eigenvalues/eigenvector decomposition of this matrix,
-		 *    so that: M = Z · D · Z<sup>T</sup>, where columns in Z are the
-		 *	  eigenvectors and the diagonal matrix D contains the eigenvalues
-		 *    as diagonal elements, sorted in <i>ascending</i> order.
-		 */
-		CMatrixDouble33 D;
-		cov.eigenVectors(m_fastdraw_gauss_Z3, D);
+		std::vector<double> eigVals;
+		cov.eig_symmetric(m_fastdraw_gauss_Z3, eigVals);
 
 		// Scale eigenvectors with eigenvalues:
-		D = D.array().sqrt().matrix();
-		m_fastdraw_gauss_Z3.multiply(m_fastdraw_gauss_Z3, D);
+		mrpt::math::CMatrixDouble33 D;
+		D.setDiagonal(eigVals);
+		D = D.asEigen().array().sqrt().matrix();
+		m_fastdraw_gauss_Z3.matProductOf_AB(m_fastdraw_gauss_Z3, D);
 	}
 	else if (IS_CLASS(m_pdf2D.get(), CPosePDFParticles))
 	{
@@ -165,17 +163,16 @@ void CPoseRandomSampler::setPosePDF(const CPose3DPDF* pdf)
 
 		m_fastdraw_gauss_M_3D = gPdf->mean;
 
-		/** Computes the eigenvalues/eigenvector decomposition of this matrix,
-		 *    so that: M = Z · D · Z<sup>T</sup>, where columns in Z are the
-		 *	  eigenvectors and the diagonal matrix D contains the eigenvalues
-		 *    as diagonal elements, sorted in <i>ascending</i> order.
-		 */
-		CMatrixDouble66 D;
-		cov.eigenVectors(m_fastdraw_gauss_Z6, D);
+		std::vector<double> eigVals;
+		cov.eig_symmetric(m_fastdraw_gauss_Z6, eigVals);
 
 		// Scale eigenvectors with eigenvalues:
-		D = D.array().sqrt().matrix();
-		m_fastdraw_gauss_Z6.multiply(m_fastdraw_gauss_Z6, D);
+		mrpt::math::CMatrixDouble66 D;
+		D.setDiagonal(eigVals);
+
+		// Scale eigenvectors with eigenvalues:
+		D = D.asEigen().array().sqrt().matrix();
+		m_fastdraw_gauss_Z6.matProductOf_AB(m_fastdraw_gauss_Z6, D);
 	}
 	else if (IS_CLASS(m_pdf3D.get(), CPose3DPDFParticles))
 	{
@@ -270,7 +267,7 @@ void CPoseRandomSampler::do_sample_2D(CPose2D& p) const
 		{
 			double rnd = getRandomGenerator().drawGaussian1D_normalized();
 			for (size_t d = 0; d < 3; d++)
-				rndVector[d] += (m_fastdraw_gauss_Z3.get_unsafe(d, i) * rnd);
+				rndVector[d] += (m_fastdraw_gauss_Z3(d, i) * rnd);
 		}
 
 		p.x(m_fastdraw_gauss_M_2D.x() + rndVector[0]);
@@ -320,7 +317,7 @@ void CPoseRandomSampler::do_sample_3D(CPose3D& p) const
 		{
 			double rnd = getRandomGenerator().drawGaussian1D_normalized();
 			for (size_t d = 0; d < 6; d++)
-				rndVector[d] += (m_fastdraw_gauss_Z6.get_unsafe(d, i) * rnd);
+				rndVector[d] += (m_fastdraw_gauss_Z6(d, i) * rnd);
 		}
 
 		p.setFromValues(
@@ -437,4 +434,20 @@ CPose3D& CPoseRandomSampler::getSamplingMean3D(CPose3D& out_mean) const
 
 	return out_mean;
 	MRPT_END
+}
+
+void CPoseRandomSampler::getOriginalPDFCov2D(
+	mrpt::math::CMatrixDouble& cov3x3) const
+{
+	mrpt::math::CMatrixDouble33 M;
+	this->getOriginalPDFCov2D(M);
+	cov3x3 = mrpt::math::CMatrixDouble(M);
+}
+
+void CPoseRandomSampler::getOriginalPDFCov3D(
+	mrpt::math::CMatrixDouble& cov6x6) const
+{
+	mrpt::math::CMatrixDouble66 M;
+	this->getOriginalPDFCov3D(M);
+	cov6x6 = mrpt::math::CMatrixDouble(M);
 }

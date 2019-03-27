@@ -269,10 +269,9 @@ Descriptors:
 		// Show Distances;
 		winPlots.plot(distances, ".4k", "all_dists");
 
-		double min_dist = 0, max_dist = 0;
-		size_t min_dist_idx = 0, max_dist_idx = 0;
-		distances.minimum_maximum(
-			min_dist, max_dist, &min_dist_idx, &max_dist_idx);
+		std::size_t min_dist_idx = 0, max_dist_idx = 0;
+		const double min_dist = distances.minCoeff(min_dist_idx);
+		const double max_dist = distances.maxCoeff(max_dist_idx);
 
 		const double dist_std = mrpt::math::stddev(distances);
 

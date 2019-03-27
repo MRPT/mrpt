@@ -11,7 +11,7 @@
 
 #include <mrpt/img/CImage.h>
 #include <mrpt/img/color_maps.h>
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 
 namespace mrpt::opengl
@@ -47,23 +47,23 @@ class CMeshFast : public CRenderizableDisplayList
 	bool m_isImage{false};
 
 	/** X(x,y): X-coordinate of the point (x,y) */
-	mutable math::CMatrix X;
+	mutable math::CMatrixF X;
 	/** Y(x,y): Y-coordinate of the point (x,y) */
-	mutable math::CMatrix Y;
+	mutable math::CMatrixF Y;
 	/** Z(x,y): Z-coordinate of the point (x,y) */
-	mutable math::CMatrix Z;
+	mutable math::CMatrixF Z;
 
 	/** Grayscale Color [0,1] for each cell, updated by updateColorsMatrix */
-	mutable math::CMatrix C;
+	mutable math::CMatrixF C;
 	/** Red Component of the Color [0,1] for each cell, updated by
 	 * updateColorsMatrix */
-	mutable math::CMatrix C_r;
+	mutable math::CMatrixF C_r;
 	/** Green Component of the  Color [0,1] for each cell, updated by
 	 * updateColorsMatrix */
-	mutable math::CMatrix C_g;
+	mutable math::CMatrixF C_g;
 	/** Blue Component of the  Color [0,1] for each cell, updated by
 	 * updateColorsMatrix */
-	mutable math::CMatrix C_b;
+	mutable math::CMatrixF C_b;
 
 	/** Used when m_colorFromZ is true */
 	mrpt::img::TColormap m_colorMap{mrpt::img::cmJET};
@@ -128,7 +128,7 @@ class CMeshFast : public CRenderizableDisplayList
 
 	/** This method sets the matrix of heights for each position (cell) in the
 	 * mesh grid */
-	void setZ(const mrpt::math::CMatrixTemplateNumeric<float>& in_Z);
+	void setZ(const mrpt::math::CMatrixDynamic<float>& in_Z);
 
 	/** Returns a reference to the internal Z matrix, allowing changing it
 	 * efficiently */
@@ -204,7 +204,7 @@ class CMeshFast : public CRenderizableDisplayList
 	 */
 	void assignImageAndZ(
 		const mrpt::img::CImage& img,
-		const mrpt::math::CMatrixTemplateNumeric<float>& in_Z);
+		const mrpt::math::CMatrixDynamic<float>& in_Z);
 
 	/** Adjust grid limits according to the image aspect ratio, maintaining the
 	 * X limits and resizing in the Y direction.

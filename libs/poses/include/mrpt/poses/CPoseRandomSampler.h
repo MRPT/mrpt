@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
@@ -130,12 +130,7 @@ class CPoseRandomSampler
 
 	/** Retrieves the 3x3 covariance of the original PDF in \f$ [ x ~ y ~ \phi ]
 	 * \f$. */
-	inline void getOriginalPDFCov2D(mrpt::math::CMatrixDouble& cov3x3) const
-	{
-		mrpt::math::CMatrixDouble33 M;
-		this->getOriginalPDFCov2D(M);
-		cov3x3 = mrpt::math::CMatrixDouble(M);
-	}
+	void getOriginalPDFCov2D(mrpt::math::CMatrixDouble& cov3x3) const;
 
 	/** Retrieves the 6x6 covariance of the original PDF in \f$ [ x ~ y ~ z ~
 	 * yaw ~ pitch ~ roll ] \f$. */
@@ -143,12 +138,7 @@ class CPoseRandomSampler
 
 	/** Retrieves the 6x6 covariance of the original PDF in \f$ [ x ~ y ~ z ~
 	 * yaw ~ pitch ~ roll ] \f$. */
-	inline void getOriginalPDFCov3D(mrpt::math::CMatrixDouble& cov6x6) const
-	{
-		mrpt::math::CMatrixDouble66 M;
-		this->getOriginalPDFCov3D(M);
-		cov6x6 = mrpt::math::CMatrixDouble(M);
-	}
+	void getOriginalPDFCov3D(mrpt::math::CMatrixDouble& cov6x6) const;
 
 };  // End of class def.
 }  // namespace mrpt::poses

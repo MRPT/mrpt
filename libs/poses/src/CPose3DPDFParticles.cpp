@@ -65,17 +65,20 @@ void CPose3DPDFParticles::getMean(CPose3D& p) const
 	MRPT_END
 }
 
-void CPose3DPDFParticles::getCovarianceAndMean(
-	CMatrixDouble66& cov, CPose3D& mean) const
+std::tuple<CMatrixDouble66, CPose3D> CPose3DPDFParticles::getCovarianceAndMean()
+	const
 {
 	MRPT_START
+
+	CMatrixDouble66 cov;
+	CPose3D mean;
 
 	getMean(mean);  // First! the mean value:
 
 	// Now the covariance:
-	cov.zeros();
-	CVectorDouble vars;
-	vars.assign(6, 0.0);  // The diagonal of the final covariance matrix
+	cov.setZero();
+	CVectorFixedDouble<6> vars;
+	vars.setZero();  // The diagonal of the final covariance matrix
 
 	// Elements off the diagonal of the covariance matrix:
 	double std_xy = 0, std_xz = 0, std_xya = 0, std_xp = 0, std_xr = 0;
@@ -93,7 +96,7 @@ void CPose3DPDFParticles::getCovarianceAndMean(
 	if (mean_roll < 0) mean_roll += M_2PI;
 
 	// Enought information to estimate the covariance?
-	if (m_particles.size() < 2) return;
+	if (m_particles.size() < 2) return {cov, mean};
 
 	// Sum all weight values:
 	double W = 0;
@@ -171,6 +174,7 @@ void CPose3DPDFParticles::getCovarianceAndMean(
 
 	cov(5, 4) = cov(4, 5) = std_pr;
 
+	return {cov, mean};
 	MRPT_END
 }
 

@@ -79,8 +79,8 @@ void CVectorField2D::render_dl() const
 	const float x_cell_size = (xMax - xMin) / (xcomp.cols() - 1);
 	const float y_cell_size = (yMax - yMin) / (ycomp.rows() - 1);
 
-	for (unsigned int i = 0; i < xcomp.cols(); i++)
-		for (unsigned int j = 0; j < xcomp.rows(); j++)
+	for (int i = 0; i < xcomp.cols(); i++)
+		for (int j = 0; j < xcomp.rows(); j++)
 		{
 			glVertex3f(xMin + i * x_cell_size, yMin + j * y_cell_size, 0);
 		}
@@ -90,8 +90,8 @@ void CVectorField2D::render_dl() const
 	glBegin(GL_LINES);
 	glColor4ub(
 		m_field_color.R, m_field_color.G, m_field_color.B, m_field_color.A);
-	for (unsigned int i = 0; i < xcomp.cols(); i++)
-		for (unsigned int j = 0; j < xcomp.rows(); j++)
+	for (int i = 0; i < xcomp.cols(); i++)
+		for (int j = 0; j < xcomp.rows(); j++)
 		{
 			glVertex3f(xMin + i * x_cell_size, yMin + j * y_cell_size, 0);
 			glVertex3f(
@@ -103,8 +103,8 @@ void CVectorField2D::render_dl() const
 	glBegin(GL_TRIANGLES);
 	glColor4ub(
 		m_field_color.R, m_field_color.G, m_field_color.B, m_field_color.A);
-	for (unsigned int i = 0; i < xcomp.cols(); i++)
-		for (unsigned int j = 0; j < xcomp.rows(); j++)
+	for (int i = 0; i < xcomp.cols(); i++)
+		for (int j = 0; j < xcomp.rows(); j++)
 		{
 			const float tri_side =
 				0.25 *
@@ -196,8 +196,8 @@ void CVectorField2D::getBoundingBox(
 	const float x_cell_size = (xMax - xMin) / (xcomp.cols() - 1);
 	const float y_cell_size = (yMax - yMin) / (ycomp.rows() - 1);
 
-	for (unsigned int i = 0; i < xcomp.cols(); i++)
-		for (unsigned int j = 0; j < xcomp.rows(); j++)
+	for (int i = 0; i < xcomp.cols(); i++)
+		for (int j = 0; j < xcomp.rows(); j++)
 		{
 			const float tri_side =
 				0.25 *

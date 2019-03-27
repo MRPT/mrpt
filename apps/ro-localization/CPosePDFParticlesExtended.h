@@ -15,7 +15,7 @@
 #include <mrpt/bayes/CProbabilityParticle.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/poses/CPosePDF.h>
 
@@ -166,8 +166,7 @@ class CPosePDFParticlesExtended
 	/** Returns an estimate of the pose covariance matrix (3x3 cov.matrix  for
 	 * x,y,phi variables)
 	 */
-	void getCovarianceAndMean(
-		mrpt::math::CMatrixDouble33& C, CPose2D& p) const override;
+	std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const override;
 
 	/** Returns the pose of the i'th particle.
 	 */

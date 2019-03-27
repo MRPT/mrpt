@@ -256,10 +256,8 @@ void TestOpenGLObjects()
 	{  // (range,bearing) -> (x,y)
 		const double cov_params_dat[] = {0.2, 0, 0, 0.1};
 		const double mean_params_dat[] = {3.0, 0.5};
-		mrpt::math::CMatrixFixedNumeric<double, 2, 2> cov_params(
-			cov_params_dat);
-		mrpt::math::CMatrixFixedNumeric<double, 2, 1> mean_params(
-			mean_params_dat);
+		mrpt::math::CMatrixFixed<double, 2, 2> cov_params(cov_params_dat);
+		mrpt::math::CMatrixFixed<double, 2, 1> mean_params(mean_params_dat);
 
 		{
 			opengl::CEllipsoidRangeBearing2D::Ptr obj =
@@ -279,10 +277,8 @@ void TestOpenGLObjects()
 	{  // (range,bearing) -> (x,y)
 		const double cov_params_dat[] = {0.2, 0.09, 0.09, 0.1};
 		const double mean_params_dat[] = {5.0, -0.5};
-		mrpt::math::CMatrixFixedNumeric<double, 2, 2> cov_params(
-			cov_params_dat);
-		mrpt::math::CMatrixFixedNumeric<double, 2, 1> mean_params(
-			mean_params_dat);
+		mrpt::math::CMatrixFixed<double, 2, 2> cov_params(cov_params_dat);
+		mrpt::math::CMatrixFixed<double, 2, 1> mean_params(mean_params_dat);
 
 		{
 			opengl::CEllipsoidRangeBearing2D::Ptr obj =
@@ -317,10 +313,8 @@ void TestOpenGLObjects()
 		const double cov_params_dat[] = {square(rho_std), 0, 0,
 										 square(DEG2RAD(2))};
 		const double mean_params_dat[] = {rho_mean, DEG2RAD(70)};
-		mrpt::math::CMatrixFixedNumeric<double, 2, 2> cov_params(
-			cov_params_dat);
-		mrpt::math::CMatrixFixedNumeric<double, 2, 1> mean_params(
-			mean_params_dat);
+		mrpt::math::CMatrixFixed<double, 2, 2> cov_params(cov_params_dat);
+		mrpt::math::CMatrixFixed<double, 2, 1> mean_params(mean_params_dat);
 
 		{
 			opengl::CEllipsoidInverseDepth2D::Ptr obj =
@@ -356,10 +350,8 @@ void TestOpenGLObjects()
 										 square(DEG2RAD(2)), 0, 0, 0,
 										 square(DEG2RAD(2))};
 		const double mean_params_dat[] = {rho_mean, DEG2RAD(30), DEG2RAD(-45)};
-		mrpt::math::CMatrixFixedNumeric<double, 3, 3> cov_params(
-			cov_params_dat);
-		mrpt::math::CMatrixFixedNumeric<double, 3, 1> mean_params(
-			mean_params_dat);
+		mrpt::math::CMatrixFixed<double, 3, 3> cov_params(cov_params_dat);
+		mrpt::math::CMatrixFixed<double, 3, 1> mean_params(mean_params_dat);
 
 		{
 			opengl::CEllipsoidInverseDepth3D::Ptr obj =

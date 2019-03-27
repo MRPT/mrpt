@@ -302,7 +302,7 @@ class CDynamicGrid
 		if (m_map.empty()) return;
 		const T* c = &m_map[0];
 		for (size_t cy = 0; cy < m_size_y; cy++)
-			for (size_t cx = 0; cx < m_size_x; cx++) m.set_unsafe(cy, cx, *c++);
+			for (size_t cx = 0; cx < m_size_x; cx++) m(cy, cx) = *c++;
 	}
 
 	/** The user must implement this in order to provide "saveToTextFile" a way

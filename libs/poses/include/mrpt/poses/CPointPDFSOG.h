@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrix.h>
 #include <mrpt/math/CMatrixD.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/poses/CPointPDF.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
 
@@ -55,7 +55,7 @@ class CPointPDFSOG : public CPointPDF
 	/** Assures the symmetry of the covariance matrix (eventually certain
 	 * operations in the math-coprocessor lead to non-symmetric matrixes!)
 	 */
-	void assureSymmetry();
+	void enforceCovSymmetry();
 
 	/** The list of SOG modes */
 	CListGaussianModes m_modes;
@@ -108,14 +108,10 @@ class CPointPDFSOG : public CPointPDF
 	size_t size() const { return m_modes.size(); }
 	/** Return whether there is any Gaussian mode. */
 	bool empty() const { return m_modes.empty(); }
-	/** Returns an estimate of the point, (the mean, or mathematical expectation
-	 * of the PDF) \sa getCovariance   */
+
 	void getMean(CPoint3D& mean_point) const override;
 
-	/** Returns an estimate of the point covariance matrix (3x3 cov matrix) and
-	 * the mean, both at once. \sa getMean */
-	void getCovarianceAndMean(
-		mrpt::math::CMatrixDouble33& cov, CPoint3D& mean_point) const override;
+	std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const override;
 
 	/** Normalize the weights in m_modes such as the maximum log-weight is 0 */
 	void normalizeWeights();

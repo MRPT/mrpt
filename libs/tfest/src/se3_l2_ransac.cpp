@@ -40,14 +40,13 @@ bool tfest::se3_l2_robust(
 	// -------------------------------------------
 	// Thresholds
 	// -------------------------------------------
-	Eigen::Matrix<double, 7, 1> th;
-	th[0] =  // X (meters)
-		th[1] =  // Y (meters)
-		th[2] = params.ransac_threshold_lin;  // Z (meters)
-	th[3] =  // YAW (degrees)
-		th[4] =  // PITCH (degrees)
-		th[5] = params.ransac_threshold_ang;  // ROLL (degrees)
-	th[6] = params.ransac_threshold_scale;  // SCALE
+	CVectorFixedDouble<7> th;
+	// x,y,z [m]
+	th[0] = th[1] = th[2] = params.ransac_threshold_lin;
+	// yaw,pitch, roll [deg]
+	th[3] = th[4] = th[5] = params.ransac_threshold_ang;
+	// scale:
+	th[6] = params.ransac_threshold_scale;
 
 	// -------------------------------------------
 	// RANSAC parameters
