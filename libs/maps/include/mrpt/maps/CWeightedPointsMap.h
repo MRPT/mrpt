@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/maps/CPointsMap.h>
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/serialization/CSerializable.h>

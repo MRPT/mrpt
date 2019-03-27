@@ -9,7 +9,7 @@
 
 #include "opengl-precomp.h"  // Precompiled header
 
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
 #include <mrpt/serialization/CArchive.h>
 #include "opengl_internals.h"
@@ -217,7 +217,7 @@ conform a plane; either, a line.
 		mat[3*i+1]=y[i];
 		mat[3*i+2]=z[i];
 	}
-	CMatrixTemplateNumeric<float> M=CMatrixTemplateNumeric<float>(3,3,mat);
+	CMatrixDynamic<float> M=CMatrixDynamic<float>(3,3,mat);
 	float d2=0;
 	float mat2[6];
 	switch (M.rank())	{
@@ -228,7 +228,7 @@ pass through (0,0,0).
 searching for verifies y=0 and z=0, we
 			//only need to compute A (x=-1/A). We do this using Cramer's method.
 			for (int i=0;i<9;i+=3) mat[i]=1;
-			d2=(CMatrixTemplateNumeric<float>(3,3,mat)).det();
+			d2=(CMatrixDynamic<float>(3,3,mat)).det();
 			if (d2==0) return false;
 			else dist=M.det()/d2;
 			break;
@@ -241,7 +241,7 @@ searching for verifies y=0 and z=0, we
 				mat2[3*i+1]=y[i+1]-y[0];
 				mat2[3*i+2]=z[i+1]-z[0];
 			}
-			if (CMatrixTemplateNumeric<float>(2,3,mat2).rank()==2) dist=0;
+			if (CMatrixDynamic<float>(2,3,mat2).rank()==2) dist=0;
 			else return false;
 			break;
 		default:

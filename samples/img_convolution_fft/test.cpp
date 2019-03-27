@@ -9,7 +9,7 @@
 
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/fourier.h>
 #include <mrpt/system/CTicTac.h>
 #include <iostream>
@@ -31,7 +31,7 @@ void TestImageConvolutionFFT()
 {
 	CTicTac tictac;
 	CImage img;
-	CMatrix imgCorr;
+	CMatrixF imgCorr;
 
 	// ====================  1  ===================
 	if (!img.loadFromFile(myDataDir + string("test_image.jpg")))
@@ -41,7 +41,7 @@ void TestImageConvolutionFFT()
 		"Computing %ux%u image convolution ...", (unsigned)img.getWidth(),
 		(unsigned)img.getHeight());
 
-	CMatrix res_R, res_I;
+	CMatrixF res_R, res_I;
 
 	double meanTime = 0;
 
@@ -58,7 +58,7 @@ void TestImageConvolutionFFT()
 		size_t lx = mrpt::round2up(actual_lx);
 		size_t ly = mrpt::round2up(actual_ly);
 
-		CMatrix i1(ly, lx), i2;
+		CMatrixF i1(ly, lx), i2;
 		// Get as matrixes, padded with zeros up to power-of-two sizes:
 		img.getAsMatrix(i1, false);
 
@@ -67,11 +67,11 @@ void TestImageConvolutionFFT()
 		i2.setSize(ly, lx);
 
 		if (nTimes == 0)
-			printf("\nMax real:%f Min real:%f\n", i1.maximum(), i1.minimum());
+			printf("\nMax real:%f Min real:%f\n", i1.maxCoeff(), i1.minCoeff());
 
 		// FFT:
-		CMatrix I1_R, I1_I, I2_R, I2_I;
-		CMatrix ZEROS(ly, lx);
+		CMatrixF I1_R, I1_I, I2_R, I2_I;
+		CMatrixF ZEROS(ly, lx);
 		math::dft2_complex(i1, ZEROS, I1_R, I1_I);
 		math::dft2_complex(i2, ZEROS, I2_R, I2_I);
 
@@ -79,13 +79,13 @@ void TestImageConvolutionFFT()
 		for (y = 0; y < ly; y++)
 			for (x = 0; x < lx; x++)
 			{
-				float r1 = I1_R.get_unsafe(y, x);
-				float r2 = I2_R.get_unsafe(y, x);
-				float i1 = I1_I.get_unsafe(y, x);
-				float i2 = I2_I.get_unsafe(y, x);
+				float r1 = I1_R(y, x);
+				float r2 = I2_R(y, x);
+				float i1 = I1_I(y, x);
+				float i2 = I2_I(y, x);
 
-				I2_R.set_unsafe(y, x, r1 * r2 - i1 * i2);
-				I2_I.set_unsafe(y, x, r2 * i1 + r1 * i2);
+				I2_R(y, x) = r1 * r2 - i1 * i2;
+				I2_I(y, x) = r2 * i1 + r1 * i2;
 			}
 
 		// IFFT:
@@ -94,16 +94,15 @@ void TestImageConvolutionFFT()
 
 		meanTime += tictac.Tac();
 		printf(" Done,%.06fms\n", tictac.Tac() * 1000.0f);
-		printf("Max real:%f Min real:%f\n", res_R.maximum(), res_R.minimum());
+		printf("Max real:%f Min real:%f\n", res_R.maxCoeff(), res_R.minCoeff());
 	}
 
 	printf("Mean time: %.06fms\n", 1000.0f * meanTime / N);
 
 	CDisplayWindow winR("real");
 
-	res_R.adjustRange(0, 1);
-
-	CImage imgR(res_R, true);
+	CImage imgR;
+	imgR.setFromMatrix(res_R, false /*it is not normalized */);
 	winR.showImage(imgR);
 	winR.waitForKey();
 

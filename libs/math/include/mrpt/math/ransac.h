@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/system/COutputLogger.h>
 #include <functional>
 #include <set>
@@ -32,22 +32,22 @@ class RANSAC_Template : public mrpt::system::COutputLogger
 	/** The type of the function passed to mrpt::math::ransac - See the
 	 * documentation for that method for more info. */
 	using TRansacFitFunctor = std::function<void(
-		const CMatrixTemplateNumeric<NUMTYPE>& allData,
+		const CMatrixDynamic<NUMTYPE>& allData,
 		const std::vector<size_t>& useIndices,
-		std::vector<CMatrixTemplateNumeric<NUMTYPE>>& fitModels)>;
+		std::vector<CMatrixDynamic<NUMTYPE>>& fitModels)>;
 
 	/** The type of the function passed to mrpt::math::ransac  - See the
 	 * documentation for that method for more info. */
 	using TRansacDistanceFunctor = std::function<void(
-		const CMatrixTemplateNumeric<NUMTYPE>& allData,
-		const std::vector<CMatrixTemplateNumeric<NUMTYPE>>& testModels,
+		const CMatrixDynamic<NUMTYPE>& allData,
+		const std::vector<CMatrixDynamic<NUMTYPE>>& testModels,
 		const NUMTYPE distanceThreshold, unsigned int& out_bestModelIndex,
 		std::vector<size_t>& out_inlierIndices)>;
 
 	/** The type of the function passed to mrpt::math::ransac  - See the
 	 * documentation for that method for more info. */
 	using TRansacDegenerateFunctor = std::function<bool(
-		const CMatrixTemplateNumeric<NUMTYPE>& allData,
+		const CMatrixDynamic<NUMTYPE>& allData,
 		const std::vector<size_t>& useIndices)>;
 
 	/** An implementation of the RANSAC algorithm for robust fitting of models
@@ -64,14 +64,13 @@ class RANSAC_Template : public mrpt::system::COutputLogger
 	 * COutputLogger settings.
 	 */
 	bool execute(
-		const CMatrixTemplateNumeric<NUMTYPE>& data,
-		const TRansacFitFunctor& fit_func,
+		const CMatrixDynamic<NUMTYPE>& data, const TRansacFitFunctor& fit_func,
 		const TRansacDistanceFunctor& dist_func,
 		const TRansacDegenerateFunctor& degen_func,
 		const double distanceThreshold,
 		const unsigned int minimumSizeSamplesToFit,
 		std::vector<size_t>& out_best_inliers,
-		CMatrixTemplateNumeric<NUMTYPE>& out_best_model,
+		CMatrixDynamic<NUMTYPE>& out_best_model,
 		const double prob_good_sample = 0.999,
 		const size_t maxIter = 2000) const;
 

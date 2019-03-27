@@ -305,7 +305,7 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 	mrpt::maps::CSimplePointsMap* getAsSimplePointsMap()
 	{
 		return const_cast<CSimplePointsMap*>(
-		    const_cast<const CMetricMap*>(this)->getAsSimplePointsMap());
+			const_cast<const CMetricMap*>(this)->getAsSimplePointsMap());
 	}
 
 };  // End of class def.

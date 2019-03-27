@@ -11,13 +11,13 @@
 // building them with eigen3 eats a lot of RAM and may be a problem while
 // compiling in small systems.
 
-#include <mrpt/math/CArrayNumeric.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/ops_matrices.h>
-//#include <mrpt/math/utils.h>
 #include <gtest/gtest.h>
+#include <mrpt/math/CMatrixFixed.h>
+#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/geometry.h>
+#include <mrpt/math/ops_matrices.h>
 #include <mrpt/random.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -36,7 +36,7 @@ TEST(Matrices, inv_4x4_fix)
 		-0.214383515646621, -0.161495561253269, 1.303923696836841,
 		0.261535721431038};
 	CMatrixDouble44 A(dat_A);
-	CMatrixDouble44 C = A.inv();
+	CMatrixDouble44 C = A.inverse();
 	const double dat_AInv[] = {
 		-0.741952742824035, 0.493481687552705, -0.134764164880760,
 		0.083693424291000,  0.638324207063440, 0.519344439204238,
@@ -45,8 +45,31 @@ TEST(Matrices, inv_4x4_fix)
 		-0.025568212209135, 0.068123300450057, -0.297834184749986,
 		0.158964059763645};
 	CMatrixDouble44 AInv(dat_AInv);
-	CHECK_AND_RET_ERROR(
-		(AInv - C).array().abs().sum() > 1e-4, "Error in inv, 4x4 fix")
+	CHECK_AND_RET_ERROR((AInv - C).sum_abs() > 1e-4, "Error in inv, 4x4 fix")
+}
+
+TEST(Matrices, inv_LLt_4x4_fix)
+{
+	const double dat_A[] = {
+		// clang-format off
+	    5.340050636150691, -5.233909093073407, -0.716270110219391,  2.459687431594893,
+	   -5.233909093073407,  9.825652319628178,  5.408354798920869, -0.568364497163277,
+	   -0.716270110219391,  5.408354798920869,  7.221045225242777,  1.571113904458352,
+	    2.459687431594893, -0.568364497163277,  1.571113904458352,  2.339742034936232
+		// clang-format on
+	};
+	CMatrixDouble44 A(dat_A);
+	CMatrixDouble44 C = A.inverse_LLt();
+	const double dat_AInv[] = {
+		// clang-format off
+	    2.1041492047454131,  1.1944136386884630, -0.3135215860855067, -1.7113463206284218,
+	    1.1944136386884630,  0.9132606154380595, -0.3988774167033647, -0.7659551448058749,
+	   -0.3135215860855067, -0.3988774167033647,  0.4163286875558479, -0.0468609127642805,
+	   -1.7113463206284218, -0.7659551448058749, -0.0468609127642805,  2.0718776191839314
+		// clang-format on
+	};
+	CMatrixDouble44 AInv(dat_AInv);
+	CHECK_AND_RET_ERROR((AInv - C).sum_abs() > 1e-4, "Error in inv, 4x4 fix")
 }
 
 TEST(Matrices, inv_6x6_fix)
@@ -65,8 +88,7 @@ TEST(Matrices, inv_6x6_fix)
 		0.000000000000000,   1.000000000000000,   0.000000000000000,
 		1.000000000000000,   0.000000000000000,   1.000000000000000};
 	CMatrixDouble66 A(dat_A);
-	CMatrixDouble66 C;
-	A.inv(C);
+	const CMatrixDouble66 C = A.inverse();
 	const double dat_AInv[] = {
 		-0.000303131460181, -0.002689371550382, 1.383348917627708,
 		0.000000000000000,  0.000000000000000,  0.000000000000000,
@@ -83,7 +105,7 @@ TEST(Matrices, inv_6x6_fix)
 	CMatrixDouble66 AInv(dat_AInv);
 	CHECK_AND_RET_ERROR(
 		std::isnan(C(0, 0)) || !std::isfinite(C(0, 0)) ||
-			(AInv - C).array().abs().sum() > 1e-4,
+			(AInv - C).sum_abs() > 1e-4,
 		"Error in inv, 6x6 fix")
 }
 
@@ -103,7 +125,7 @@ TEST(Matrices, inv_6x6_dyn)
 		0.000000000000000,   1.000000000000000,   0.000000000000000,
 		1.000000000000000,   0.000000000000000,   1.000000000000000};
 	CMatrixDouble A(6, 6, dat_A);
-	CMatrixDouble C = A.inv();
+	CMatrixDouble C = A.inverse();
 	const double dat_AInv[] = {
 		-0.000303131460181, -0.002689371550382, 1.383348917627708,
 		0.000000000000000,  0.000000000000000,  0.000000000000000,
@@ -120,7 +142,7 @@ TEST(Matrices, inv_6x6_dyn)
 	CMatrixDouble AInv(6, 6, dat_AInv);
 	CHECK_AND_RET_ERROR(
 		std::isnan(C(0, 0)) || !std::isfinite(C(0, 0)) ||
-			(AInv - C).array().abs().sum() > 1e-4,
+			(AInv - C).sum_abs() > 1e-4,
 		"Error in inv, 6x6 dyn")
 }
 
@@ -131,9 +153,8 @@ TEST(Matrices, transpose)
 	const CMatrixDouble A(2, 3, dat_A);
 	const CMatrixDouble At(3, 2, dat_At);
 
-	EXPECT_EQ(A.t(), At);
-	EXPECT_EQ(~A, At);
-	EXPECT_EQ(A.t().t(), A);
+	EXPECT_EQ(A.transpose(), At.asEigen());
+	EXPECT_EQ(A.transpose().transpose(), A.asEigen());
 }
 
 TEST(Matrices, multiply_A_skew3)
@@ -145,20 +166,19 @@ TEST(Matrices, multiply_A_skew3)
 		const CMatrixDouble S = CMatrixDouble(mrpt::math::skew_symmetric3(v));
 
 		CMatrixDouble R;
-		R.multiply_A_skew3(A, v);
-		EXPECT_EQ(R, (A * S).eval());
+		mrpt::math::multiply_A_skew3(A, v, R);
+		EXPECT_EQ(R.asEigen(), A.asEigen() * S.asEigen());
 	}
 	{
 		const double dat_A[] = {1, 2, 3, 4, 5, 6};
 		const double dat_v[] = {1, 2, 3};
-		const CMatrixFixedNumeric<double, 2, 3> A(dat_A);
-		const CArrayDouble<3> v(dat_v);
-		const CMatrixFixedNumeric<double, 3, 3> S =
-			mrpt::math::skew_symmetric3(v);
+		const CMatrixFixed<double, 2, 3> A(dat_A);
+		const CVectorFixedDouble<3> v(dat_v);
+		const CMatrixFixed<double, 3, 3> S = mrpt::math::skew_symmetric3(v);
 
-		CMatrixFixedNumeric<double, 2, 3> R;
-		R.multiply_A_skew3(A, v);
-		EXPECT_TRUE(R == A * S);
+		CMatrixFixed<double, 2, 3> R;
+		mrpt::math::multiply_A_skew3(A, v, R);
+		EXPECT_EQ(R.asEigen(), A.asEigen() * S.asEigen());
 	}
 }
 
@@ -171,20 +191,19 @@ TEST(Matrices, multiply_skew3_A)
 		const CMatrixDouble S = CMatrixDouble(mrpt::math::skew_symmetric3(v));
 
 		CMatrixDouble R;
-		R.multiply_skew3_A(v, A);
-		EXPECT_TRUE(R == S * A);
+		mrpt::math::multiply_skew3_A(v, A, R);
+		EXPECT_EQ(R.asEigen(), S.asEigen() * A.asEigen());
 	}
 	{
 		const double dat_A[] = {1, 2, 3, 4, 5, 6};
 		const double dat_v[] = {1, 2, 3};
-		const CMatrixFixedNumeric<double, 3, 2> A(dat_A);
-		const CArrayDouble<3> v(dat_v);
-		const CMatrixFixedNumeric<double, 3, 3> S =
-			mrpt::math::skew_symmetric3(v);
+		const CMatrixFixed<double, 3, 2> A(dat_A);
+		const CVectorFixedDouble<3> v(dat_v);
+		const CMatrixFixed<double, 3, 3> S = mrpt::math::skew_symmetric3(v);
 
-		CMatrixFixedNumeric<double, 3, 2> R;
-		R.multiply_skew3_A(v, A);
-		EXPECT_TRUE(R == S * A);
+		CMatrixFixed<double, 3, 2> R;
+		mrpt::math::multiply_skew3_A(v, A, R);
+		EXPECT_EQ(R.asEigen(), S.asEigen() * A.asEigen());
 	}
 }
 
@@ -210,32 +229,26 @@ TEST(Matrices, fromMatlabStringFormat)
 	CMatrixDouble M1, M2, M3, M4, M5, M6;
 
 	if (!M1.fromMatlabStringFormat(mat1) ||
-		(CMatrixFixedNumeric<double, 2, 3>(vals1) - M1).array().abs().sum() >
-			1e-4)
+		(CMatrixFixed<double, 2, 3>(vals1) - M1).array().abs().sum() > 1e-4)
 		GTEST_FAIL() << mat1;
 
 	{
-		CMatrixFixedNumeric<double, 2, 3> M1b;
+		CMatrixDouble M1b;
 		if (!M1b.fromMatlabStringFormat(mat1) ||
-			(CMatrixFixedNumeric<double, 2, 3>(vals1) - M1b)
-					.array()
-					.abs()
-					.sum() > 1e-4)
+			(CMatrixFixed<double, 2, 3>(vals1) - M1b).array().abs().sum() >
+				1e-4)
 			GTEST_FAIL() << mat1;
 	}
 
 	if (!M2.fromMatlabStringFormat(mat2) || M2.cols() != 2 || M2.rows() != 3 ||
-		(CMatrixFixedNumeric<double, 3, 2>(vals2) - M2).array().abs().sum() >
-			1e-4)
+		(CMatrixFixed<double, 3, 2>(vals2) - M2).array().abs().sum() > 1e-4)
 		GTEST_FAIL() << mat2;
 
 	{
-		CMatrixFixedNumeric<double, 3, 2> M2b;
+		CMatrixDouble M2b;
 		if (!M2b.fromMatlabStringFormat(mat2) ||
-			(CMatrixFixedNumeric<double, 3, 2>(vals2) - M2b)
-					.array()
-					.abs()
-					.sum() > 1e-4)
+			(CMatrixDouble(CMatrixFixed<double, 3, 2>(vals2)) - M2b).sum_abs() >
+				1e-4)
 			GTEST_FAIL() << mat2;
 	}
 
@@ -247,9 +260,9 @@ TEST(Matrices, fromMatlabStringFormat)
 			GTEST_FAIL() << "CVectorDouble:" << mat3;
 	}
 	{
-		CArrayDouble<1> m;
+		CVectorDouble m;
 		if (!m.fromMatlabStringFormat(mat3))
-			GTEST_FAIL() << "CArrayDouble<1>:" << mat3;
+			GTEST_FAIL() << "CVectorFixedDouble<1>:" << mat3;
 	}
 
 	{
@@ -258,25 +271,29 @@ TEST(Matrices, fromMatlabStringFormat)
 			GTEST_FAIL() << "CVectorDouble:" << mat31;
 	}
 	{
-		CArrayDouble<3> m;
+		CVectorFixedDouble<3> m;
 		if (!m.fromMatlabStringFormat(mat31))
-			GTEST_FAIL() << "CArrayDouble<3>:" << mat31;
+			GTEST_FAIL() << "CVectorFixedDouble<3>:" << mat31;
 	}
 
 	{
-		Eigen::Matrix<double, 1, 3> m;
+		CMatrixDouble m;
 		if (!m.fromMatlabStringFormat(mat13))
 			GTEST_FAIL() << "Matrix<double,1,3>:" << mat13;
 	}
 	{
-		Eigen::Matrix<double, 1, Eigen::Dynamic> m;
-		if (!m.fromMatlabStringFormat(mat13) || m.size() != 3)
-			GTEST_FAIL() << "Matrix<double,1,Dynamic>:" << mat13;
+		CVectorDouble m;
+		bool ok = m.fromMatlabStringFormat(mat31);
+		const auto len = m.size();
+		EXPECT_EQ(m.rows(), 3) << "Matrix<double,1,Dynamic>:" << mat31;
+		EXPECT_TRUE(ok) << "Matrix<double,1,Dynamic>:" << mat31;
+		EXPECT_EQ(m.rows(), 3) << "Matrix<double,1,Dynamic>:" << mat31;
+		EXPECT_EQ(m.cols(), 1) << "Matrix<double,1,Dynamic>:" << mat31;
+		EXPECT_EQ(len, 3) << "Matrix<double,1,Dynamic>:" << mat31;
 	}
 
 	// This one MUST BE detected as WRONG:
-	if (M4.fromMatlabStringFormat(mat4, nullptr /*dont dump errors to cerr*/))
-		GTEST_FAIL() << mat4;
+	if (M4.fromMatlabStringFormat(mat4)) GTEST_FAIL() << mat4;
 
 	if (!M5.fromMatlabStringFormat(mat5) || M5.rows() != 0 || M5.cols() != 0)
 		GTEST_FAIL() << mat5;
@@ -284,7 +301,7 @@ TEST(Matrices, fromMatlabStringFormat)
 	if (!M6.fromMatlabStringFormat(mat6)) GTEST_FAIL() << mat6;
 
 	// Check correct values loaded:
-	CMatrixDouble RES = M1 * M2;
+	CMatrixDouble RES = CMatrixDouble(M1 * M2);
 
-	EXPECT_NEAR(0, (M6 - M1 * M2).array().square().sum(), 1e-3);
+	EXPECT_NEAR(0, (M6 - RES).array().square().sum(), 1e-3);
 }

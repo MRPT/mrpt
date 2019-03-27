@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
-#include <vector>
 
 namespace mrpt::obs
 {
@@ -21,11 +21,11 @@ class CObservation2DRangeScanWithUncertainty
    public:
 	/** The observation with the mean ranges in the scan field */
 	CObservation2DRangeScan rangeScan;
-	/** The same ranges than in rangeScan.scan[], for convenience as an Eigen
-	 * container, and with `double` precision */
-	Eigen::VectorXd rangesMean;
+	/** The same ranges than in rangeScan.scan[], for convenience as a math
+	 * vector container, and with `double` precision */
+	mrpt::math::CVectorDouble rangesMean;
 	/** The covariance matrix for all the ranges in rangeScan.scan[] */
-	Eigen::MatrixXd rangesCovar;
+	mrpt::math::CMatrixDouble rangesCovar;
 
 	struct TEvalParams
 	{

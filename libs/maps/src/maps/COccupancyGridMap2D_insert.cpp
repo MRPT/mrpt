@@ -114,8 +114,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 		//  Use the z-axis direction of the transformed Z axis of the sensor
 		//  coordinates:
 		bool sensorIsBottomwards =
-			sensorPose3D.getHomogeneousMatrixVal<CMatrixDouble44>().get_unsafe(
-				2, 2) < 0;
+			sensorPose3D.getHomogeneousMatrixVal<CMatrixDouble44>()(2, 2) < 0;
 
 		if (reallyInsert)
 		{

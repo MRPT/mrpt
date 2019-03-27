@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <gtest/gtest.h>
-#include <mrpt/math/types_math.h>
+#include <mrpt/math/CVectorDynamic.h>
 
 using namespace mrpt;
 using namespace mrpt::math;

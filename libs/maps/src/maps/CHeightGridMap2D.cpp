@@ -317,8 +317,8 @@ void CHeightGridMap2D::getAs3DObject(
 			{
 				const THeightGridmapCell* c = cellByIndex(x, y);
 				ASSERTDEB_(c);
-				Z.set_unsafe(x, y, c->h);
-				mask.set_unsafe(x, y, c->w ? 1 : 0);
+				Z(x, y) = c->h;
+				mask(x, y) = c->w ? 1 : 0;
 			}
 		}
 		mesh->setZ(Z);

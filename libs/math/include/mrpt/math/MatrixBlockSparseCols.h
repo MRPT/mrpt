@@ -11,7 +11,7 @@
 
 #include <mrpt/containers/map_as_vector.h>
 #include <mrpt/core/aligned_std_map.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>  // For mrpt::math::CMatrixDouble
+#include <mrpt/math/CMatrixDynamic.h>  // For mrpt::math::CMatrixDouble
 
 namespace mrpt::math
 {
@@ -187,7 +187,7 @@ struct MatrixBlockSparseCols
 	{
 		const size_t nCols = m_cols.size();
 		const size_t nRows = findCurrentNumberOfRows();
-		out.zeros(nRows, nCols);
+		out.setZero(nRows, nCols);
 		for (size_t j = 0; j < nCols; j++)
 			for (typename col_t::const_iterator itRow = m_cols[j].begin();
 				 itRow != m_cols[j].end(); ++itRow)

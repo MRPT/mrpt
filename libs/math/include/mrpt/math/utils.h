@@ -9,7 +9,9 @@
 #pragma once
 
 #include <mrpt/core/exceptions.h>
-#include <mrpt/math/eigen_frwds.h>
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CVectorDynamic.h>
+#include <mrpt/math/math_frwds.h>
 #include <cmath>
 #include <cstdarg>
 #include <cstdio>
@@ -123,7 +125,8 @@ void normalize(const VEC1& v, VEC2& out_v)
 	total = std::sqrt(total);
 	if (total)
 	{
-		out_v = v * (1.0 / total);
+		out_v = v;
+		out_v *= (1.0 / total);
 	}
 	else
 		out_v.assign(v.size(), 0);
@@ -131,7 +134,7 @@ void normalize(const VEC1& v, VEC2& out_v)
 
 /** Extract a column from a vector of vectors, and store it in another vector.
  *  - Input data can be: std::vector<mrpt::math::CVectorDouble>,
- * std::deque<std::list<double> >, std::list<CArrayDouble<5> >, etc. etc.
+ * std::deque<std::list<double> >, std::list<CVectorFixedDouble<5> >, etc. etc.
  *  - Output is the sequence:  data[0][idx],data[1][idx],data[2][idx], etc..
  *
  *  For the sake of generality, this function does NOT check the limits in
@@ -197,14 +200,13 @@ std::string MATLAB_plotCovariance2D(
  * \endcode
  * \note This operator performs the appropiate type castings, if required.
  */
-template <typename EIGEN_VECTOR, typename At, size_t N>
-EIGEN_VECTOR& loadVector(EIGEN_VECTOR& v, At (&theArray)[N])
+template <typename VECTOR_T, typename At, size_t N>
+VECTOR_T& loadVector(VECTOR_T& v, At (&theArray)[N])
 {
 	static_assert(N != 0, "N!=0");
-	v.derived().resize(N);
+	v.resize(N);
 	for (size_t i = 0; i < N; i++)
-		(v.derived())[i] =
-			static_cast<typename EIGEN_VECTOR::Scalar>(theArray[i]);
+		v[i] = static_cast<typename VECTOR_T::Scalar>(theArray[i]);
 	return v;
 }
 //! \overload

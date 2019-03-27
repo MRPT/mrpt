@@ -10,10 +10,10 @@
 #include "math-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/CSplineInterpolator1D.h>  // for CSplineInterpolator1D
-#include <mrpt/math/types_math.h>  // for dynamic_vector, CVector...
+#include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/serialization/CSerializable.h>  // for CSerializable, CSeriali...
 #include <mrpt/serialization/stl_serialization.h>  // for operator<<, operator>>
-#include <map>  // for _Rb_tree_const_iterator
+#include <map>
 #include <mrpt/math/interp_fit.hpp>  // for spline
 
 using namespace mrpt;

@@ -12,7 +12,7 @@
 #include <mrpt/core/round.h>  // round()
 #include <mrpt/img/CEnhancedMetaFile.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
@@ -521,7 +521,7 @@ void COccupancyGridMap2D::saveMetricMapRepresentationToFile(
 	saveAsBitmapFile(fil);
 
 	fil = filNamePrefix + std::string("_limits.txt");
-	CMatrix LIMITS(1, 4);
+	CMatrixF LIMITS(1, 4);
 	LIMITS(0, 0) = x_min;
 	LIMITS(0, 1) = x_max;
 	LIMITS(0, 2) = y_min;

@@ -114,18 +114,18 @@ void CDifodoDatasets::loadConfiguration(
 		depth[i].resize(rows_i, cols_i);
 		depth_inter[i].resize(rows_i, cols_i);
 		depth_old[i].resize(rows_i, cols_i);
-		depth[i].assign(0.0f);
-		depth_old[i].assign(0.0f);
+		depth[i].fill(0.0f);
+		depth_old[i].fill(0.0f);
 		xx[i].resize(rows_i, cols_i);
 		xx_inter[i].resize(rows_i, cols_i);
 		xx_old[i].resize(rows_i, cols_i);
-		xx[i].assign(0.0f);
-		xx_old[i].assign(0.0f);
+		xx[i].fill(0.0f);
+		xx_old[i].fill(0.0f);
 		yy[i].resize(rows_i, cols_i);
 		yy_inter[i].resize(rows_i, cols_i);
 		yy_old[i].resize(rows_i, cols_i);
-		yy[i].assign(0.0f);
-		yy_old[i].assign(0.0f);
+		yy[i].fill(0.0f);
+		yy_old[i].fill(0.0f);
 		transformations[i].resize(4, 4);
 
 		if (cols_i <= cols)
@@ -264,8 +264,8 @@ void CDifodoDatasets::initializeScene()
 	scene->insert(traj_points_gt);
 
 	// Ellipsoid showing covariance
-	math::CMatrixFloat33 cov3d = 20.f * est_cov.topLeftCorner(3, 3);
-	CEllipsoid::Ptr ellip = mrpt::make_aligned_shared<CEllipsoid>();
+	const auto cov3d = math::CMatrixFloat33(20.f * est_cov.block<3, 3>(0, 0));
+	auto ellip = CEllipsoid::Create();
 	ellip->setCovMatrix(cov3d);
 	ellip->setQuantiles(2.0);
 	ellip->setColor(1.0, 1.0, 1.0, 0.5);
@@ -342,7 +342,7 @@ void CDifodoDatasets::updateScene()
 	}
 
 	// Ellipsoid showing covariance
-	math::CMatrixFloat33 cov3d = 20.f * est_cov.topLeftCorner(3, 3);
+	const auto cov3d = math::CMatrixFloat33(20.f * est_cov.block<3, 3>(0, 0));
 	CEllipsoid::Ptr ellip = scene->getByClass<CEllipsoid>(0);
 	ellip->setCovMatrix(cov3d);
 	ellip->setPose(cam_pose + rel_lenspose);
@@ -369,7 +369,7 @@ void CDifodoDatasets::loadFrame()
 	CObservation3DRangeScan::Ptr obs3D =
 		std::dynamic_pointer_cast<CObservation3DRangeScan>(alfa);
 	obs3D->load();
-	const CMatrix range = obs3D->rangeImage;
+	const CMatrixF range = obs3D->rangeImage;
 	const unsigned int height = range.rows();
 	const unsigned int width = range.cols();
 
@@ -551,7 +551,7 @@ void CDifodoDatasets::writeTrajectoryFile()
 {
 	// Don't take into account those iterations with consecutive equal depth
 	// images
-	if (abs(dt.sumAll()) > 0)
+	if (abs(dt.sum()) > 0)
 	{
 		mrpt::math::CQuaternionDouble quat;
 		CPose3D auxpose, transf;
@@ -566,9 +566,9 @@ void CDifodoDatasets::writeTrajectoryFile()
 		f_res << cam_pose[0] << " ";
 		f_res << cam_pose[1] << " ";
 		f_res << cam_pose[2] << " ";
-		f_res << quat(2) << " ";
-		f_res << quat(3) << " ";
-		f_res << -quat(1) << " ";
-		f_res << -quat(0) << endl;
+		f_res << quat[2] << " ";
+		f_res << quat[3] << " ";
+		f_res << -quat[1] << " ";
+		f_res << -quat[0] << endl;
 	}
 }

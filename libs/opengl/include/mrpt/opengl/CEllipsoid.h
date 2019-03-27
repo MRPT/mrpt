@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/math/CMatrixD.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 
 namespace mrpt::opengl
@@ -84,10 +84,9 @@ class CEllipsoid : public CRenderizableDisplayList
 	 */
 	template <typename T>
 	void setCovMatrix(
-		const mrpt::math::CMatrixFixedNumeric<T, 3, 3>& m,
-		int resizeToSize = -1)
+		const mrpt::math::CMatrixFixed<T, 3, 3>& m, int resizeToSize = -1)
 	{
-		setCovMatrix(mrpt::math::CMatrixTemplateNumeric<T>(m), resizeToSize);
+		setCovMatrix(mrpt::math::CMatrixDynamic<T>(m), resizeToSize);
 	}
 
 	/**  Set the 2x2 or 3x3 covariance matrix that will determine the aspect of
@@ -95,9 +94,9 @@ class CEllipsoid : public CRenderizableDisplayList
 	 * matrix of the given size)
 	 */
 	template <typename T>
-	void setCovMatrix(const mrpt::math::CMatrixFixedNumeric<T, 2, 2>& m)
+	void setCovMatrix(const mrpt::math::CMatrixFixed<T, 2, 2>& m)
 	{
-		setCovMatrix(mrpt::math::CMatrixTemplateNumeric<T>(m));
+		setCovMatrix(mrpt::math::CMatrixDynamic<T>(m));
 	}
 
 	mrpt::math::CMatrixDouble getCovMatrix() const

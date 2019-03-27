@@ -8,8 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
+#include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/math/math_frwds.h>
 
 namespace mrpt::math
@@ -32,30 +33,39 @@ class CProbabilityDensityFunction
 	/** The type of the state the PDF represents */
 	using type_value = TDATA;
 	using self_t = CProbabilityDensityFunction<TDATA, STATE_LEN>;
+	/** Covariance matrix type */
+	using cov_mat_t = mrpt::math::CMatrixFixed<double, STATE_LEN, STATE_LEN>;
+	/** Information matrix type */
+	using inf_mat_t = cov_mat_t;
 
 	/** Returns the mean, or mathematical expectation of the probability density
 	 * distribution (PDF).
 	 * \sa getCovarianceAndMean, getInformationMatrix
 	 */
-	virtual void getMean(TDATA& mean_point) const = 0;
+	virtual void getMean(type_value& mean_point) const = 0;
 
 	/** Returns an estimate of the pose covariance matrix (STATE_LENxSTATE_LEN
 	 * cov matrix) and the mean, both at once.
 	 * \sa getMean, getInformationMatrix
 	 */
-	virtual void getCovarianceAndMean(
-		mrpt::math::CMatrixFixedNumeric<double, STATE_LEN, STATE_LEN>& cov,
-		TDATA& mean_point) const = 0;
+	virtual std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const = 0;
+
+	/// \overload
+	virtual void getCovarianceAndMean(cov_mat_t& c, TDATA& mean) const final
+	{
+		const auto [C, M] = getCovarianceAndMean();
+		c = C;
+		mean = M;
+	}
 
 	/** Returns an estimate of the pose covariance matrix (STATE_LENxSTATE_LEN
 	 * cov matrix) and the mean, both at once.
 	 * \sa getMean, getInformationMatrix
 	 */
 	inline void getCovarianceDynAndMean(
-		mrpt::math::CMatrixDouble& cov, TDATA& mean_point) const
+		mrpt::math::CMatrixDouble& cov, type_value& mean_point) const
 	{
-		mrpt::math::CMatrixFixedNumeric<double, STATE_LEN, STATE_LEN> C(
-			mrpt::math::UNINITIALIZED_MATRIX);
+		cov_mat_t C(mrpt::math::UNINITIALIZED_MATRIX);
 		this->getCovarianceAndMean(C, mean_point);
 		cov = C;  // Convert to dynamic size matrix
 	}
@@ -64,9 +74,9 @@ class CProbabilityDensityFunction
 	 * distribution (PDF).
 	 * \sa getCovariance, getInformationMatrix
 	 */
-	inline TDATA getMeanVal() const
+	inline type_value getMeanVal() const
 	{
-		TDATA p;
+		type_value p;
 		getMean(p);
 		return p;
 	}
@@ -85,9 +95,7 @@ class CProbabilityDensityFunction
 	 * covariance matrix)
 	 * \sa getMean, getCovarianceAndMean, getInformationMatrix
 	 */
-	inline void getCovariance(
-		mrpt::math::CMatrixFixedNumeric<double, STATE_LEN, STATE_LEN>& cov)
-		const
+	inline void getCovariance(cov_mat_t& cov) const
 	{
 		TDATA p;
 		this->getCovarianceAndMean(cov, p);
@@ -97,11 +105,9 @@ class CProbabilityDensityFunction
 	 * covariance matrix)
 	 * \sa getMean, getInformationMatrix
 	 */
-	inline mrpt::math::CMatrixFixedNumeric<double, STATE_LEN, STATE_LEN>
-		getCovariance() const
+	inline cov_mat_t getCovariance() const
 	{
-		mrpt::math::CMatrixFixedNumeric<double, STATE_LEN, STATE_LEN> cov(
-			mrpt::math::UNINITIALIZED_MATRIX);
+		cov_mat_t cov(mrpt::math::UNINITIALIZED_MATRIX);
 		TDATA p;
 		this->getCovarianceAndMean(cov, p);
 		return cov;
@@ -121,16 +127,9 @@ class CProbabilityDensityFunction
 	 * covariance, then invert it.
 	 * \sa getMean, getCovarianceAndMean
 	 */
-	virtual void getInformationMatrix(
-		mrpt::math::CMatrixFixedNumeric<double, STATE_LEN, STATE_LEN>& inf)
-		const
+	virtual void getInformationMatrix(inf_mat_t& inf) const
 	{
-		mrpt::math::CMatrixFixedNumeric<double, STATE_LEN, STATE_LEN> cov(
-			mrpt::math::UNINITIALIZED_MATRIX);
-		TDATA p;
-		this->getCovarianceAndMean(cov, p);
-		cov.inv_fast(
-			inf);  // Destroy source cov matrix, since we don't need it anymore.
+		inf = getCovariance().inverse_LLt();
 	}
 
 	/** Save PDF's particles to a text file. See derived classes for more
@@ -157,7 +156,7 @@ class CProbabilityDensityFunction
 		for (size_t i = 0; i < N; i++)
 		{
 			this->drawSingleSample(pnt);
-			pnt.getAsVector(outSamples[i]);
+			outSamples[i] = mrpt::math::CVectorDouble(pnt.asVectorVal());
 		}
 	}
 

@@ -10,6 +10,7 @@
 #include "poses-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/matrix_serialization.h>
+#include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
@@ -19,6 +20,7 @@
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -118,7 +120,7 @@ void CPose3DPDFGaussianInf::copyFrom(const CPose3DPDF& o)
 		// Convert to gaussian pdf:
 		CMatrixDouble66 cov(UNINITIALIZED_MATRIX);
 		o.getCovarianceAndMean(cov, mean);
-		cov.inv_fast(this->cov_inv);
+		this->cov_inv = cov.inverse_LLt();
 	}
 }
 
@@ -132,7 +134,7 @@ void CPose3DPDFGaussianInf::copyFrom(const CPosePDF& o)
 		mean = CPose3D(ptr->mean);
 
 		// 3x3 inv_cov -> 6x6 inv_cov
-		cov_inv.zeros();
+		cov_inv.setZero();
 		cov_inv(0, 0) = ptr->cov_inv(0, 0);
 		cov_inv(1, 1) = ptr->cov_inv(1, 1);
 		cov_inv(3, 3) = ptr->cov_inv(2, 2);
@@ -194,8 +196,7 @@ void CPose3DPDFGaussianInf::drawSingleSample(CPose3D& outPart) const
 	MRPT_UNUSED_PARAM(outPart);
 	MRPT_START
 
-	CMatrixDouble66 cov(UNINITIALIZED_MATRIX);
-	this->cov_inv.inv(cov);
+	const CMatrixDouble66 cov = cov_inv.inverse_LLt();
 
 	CVectorDouble v;
 	getRandomGenerator().drawGaussianMultivariate(v, cov);
@@ -216,8 +217,7 @@ void CPose3DPDFGaussianInf::drawManySamples(
 {
 	MRPT_START
 
-	CMatrixDouble66 cov(UNINITIALIZED_MATRIX);
-	this->cov_inv.inv(cov);
+	CMatrixDouble66 cov = this->cov_inv.inverse_LLt();
 
 	getRandomGenerator().drawGaussianMultivariateMany(outSamples, N, cov);
 
@@ -274,9 +274,9 @@ void CPose3DPDFGaussianInf::operator+=(const CPose3D& Ap)
 		Ap,  // u
 		df_dx, df_du);
 
-	// this->cov = H1*this->cov*~H1 + H2*Ap.cov*~H2;
+	// this->cov = H1*this->cov*H1' + H2*Ap.cov*H2';
 	// cov_inv   = ... => The same than above!
-	df_dx.multiply_HCHt(OLD_COV_INV, cov_inv);
+	cov_inv = mrpt::math::multiply_HCHt(df_dx, OLD_COV_INV);
 	// df_du: Nothing to do, since COV(Ap) = zeros
 
 	// MEAN:
@@ -296,7 +296,7 @@ void CPose3DPDFGaussianInf::operator+=(const CPose3DPDFGaussianInf& Ap)
 	a += b;
 
 	this->mean = a.mean;
-	a.cov.inv(this->cov_inv);
+	cov_inv = a.cov.inverse_LLt();
 }
 
 /*---------------------------------------------------------------
@@ -312,7 +312,7 @@ void CPose3DPDFGaussianInf::operator-=(const CPose3DPDFGaussianInf& Ap)
 	a -= b;
 
 	this->mean = a.mean;
-	a.cov.inv(this->cov_inv);
+	cov_inv = a.cov.inverse_LLt();
 }
 
 /*---------------------------------------------------------------
@@ -334,15 +334,15 @@ double CPose3DPDFGaussianInf::evaluateNormalizedPDF(const CPose3D& x) const
 }
 
 /*---------------------------------------------------------------
-						assureSymmetry
+						enforceCovSymmetry
  ---------------------------------------------------------------*/
-void CPose3DPDFGaussianInf::assureSymmetry()
+void CPose3DPDFGaussianInf::enforceCovSymmetry()
 {
 	// Differences, when they exist, appear in the ~15'th significant
 	//  digit, so... just take one of them arbitrarily!
 	for (int i = 0; i < cov_inv.rows() - 1; i++)
 		for (int j = i + 1; j < cov_inv.rows(); j++)
-			cov_inv.get_unsafe(i, j) = cov_inv.get_unsafe(j, i);
+			cov_inv(i, j) = cov_inv(j, i);
 }
 
 /*---------------------------------------------------------------
@@ -353,26 +353,26 @@ double CPose3DPDFGaussianInf::mahalanobisDistanceTo(
 {
 	MRPT_START
 
-	const CMatrixDouble66 cov = this->cov_inv.inv();
-	const CMatrixDouble66 cov2 = theOther.cov_inv.inv();
+	const CMatrixDouble66 cov = this->cov_inv.inverse_LLt();
+	const CMatrixDouble66 cov2 = theOther.cov_inv.inverse_LLt();
 
 	CMatrixDouble66 COV_ = cov + cov2;
 	CMatrixDouble61 MU = CMatrixDouble61(theOther.mean) - CMatrixDouble61(mean);
 
 	for (int i = 0; i < 6; i++)
 	{
-		if (COV_.get_unsafe(i, i) == 0)
+		if (COV_(i, i) == 0)
 		{
-			if (MU.get_unsafe(i, 0) != 0)
+			if (MU(i, 0) != 0)
 				return std::numeric_limits<double>::infinity();
 			else
-				COV_.get_unsafe(i, i) = 1;  // Any arbitrary value since
+				COV_(i, i) = 1;  // Any arbitrary value since
 			// MU(i)=0, and this value doesn't
 			// affect the result.
 		}
 	}
 
-	return std::sqrt(MU.multiply_HtCH_scalar(COV_.inv()));
+	return std::sqrt(mrpt::math::multiply_HtCH_scalar(MU, COV_.inverse_LLt()));
 
 	MRPT_END
 }
@@ -401,9 +401,9 @@ void CPose3DPDFGaussianInf::getInvCovSubmatrix2D(CMatrixDouble& out_cov) const
 		for (int j = i; j < 3; j++)
 		{
 			int b = j == 2 ? 3 : j;
-			double f = cov_inv.get_unsafe(a, b);
-			out_cov.set_unsafe(i, j, f);
-			out_cov.set_unsafe(j, i, f);
+			double f = cov_inv(a, b);
+			out_cov(i, j) = f;
+			out_cov(j, i) = f;
 		}
 	}
 }

@@ -13,14 +13,14 @@ bool nodelets_test_passed_ok = false;
 
 //! [example-nodelets]
 #include <mrpt/comms/nodelets.h>
-#include <mrpt/poses/CPose3D.h>
+#include <mrpt/math/lightweight_geom_data.h>
 #include <chrono>
 #include <cstdio>  // printf()
 #include <iostream>
 #include <thread>
 
 // Test payload:
-const mrpt::poses::CPose3D p_tx(1.0, 2.0, 3.0, 0.2, 0.4, 0.6);
+const mrpt::math::TPose3D p_tx(1.0, 2.0, 3.0, 0.2, 0.4, 0.6);
 
 // Create the topic directory. Only once per process, and must be shared
 // by all nodelets/threads.
@@ -57,17 +57,17 @@ void thread_publisher()
 	}
 }
 
-void onNewMsg(const mrpt::poses::CPose3D& p)
+void onNewMsg(const mrpt::math::TPose3D& p)
 {
 #ifdef NODELETS_TEST_VERBOSE
-	std::cout << "sub2: rx CPose3D" << p.asString() << std::endl;
+	std::cout << "sub2: rx TPose3D" << p.asString() << std::endl;
 #endif
 }
 
-void onNewMsg2(int idx, const mrpt::poses::CPose3D& p)
+void onNewMsg2(int idx, const mrpt::math::TPose3D& p)
 {
 #ifdef NODELETS_TEST_VERBOSE
-	std::cout << "onNewMsg2: idx=" << idx << " rx CPose3D" << p.asString()
+	std::cout << "onNewMsg2: idx=" << idx << " rx TPose3D" << p.asString()
 			  << std::endl;
 #endif
 }
@@ -90,29 +90,29 @@ void thread_subscriber()
 		// Create a subscriber with a lambda:
 		Subscriber::Ptr sub1 =
 			dir->getTopic("/robot/odom")
-				->createSubscriber<mrpt::poses::CPose3D>(
-					[](const mrpt::poses::CPose3D& p_rx) -> void {
+				->createSubscriber<mrpt::math::TPose3D>(
+					[](const mrpt::math::TPose3D& p_rx) -> void {
 #ifdef NODELETS_TEST_VERBOSE
-						std::cout << "sub1: rx CPose3D" << p_rx.asString()
+						std::cout << "sub1: rx TPose3D" << p_rx.asString()
 								  << std::endl;
 #endif
 						nodelets_test_passed_ok = (p_rx == p_tx);
 					});
 
 		// Create a subscriber with a regular function via std::function:
-		auto sub2 = dir->getTopic("/robot/odom")
-						->createSubscriber<mrpt::poses::CPose3D>(
-							std::function<void(const mrpt::poses::CPose3D&)>(
-								&onNewMsg));
+		auto sub2 =
+			dir->getTopic("/robot/odom")
+				->createSubscriber<mrpt::math::TPose3D>(
+					std::function<void(const mrpt::math::TPose3D&)>(&onNewMsg));
 
 		// Create a subscriber with a regular function:
 		auto sub3 = dir->getTopic("/robot/odom")
-						->createSubscriber<mrpt::poses::CPose3D>(&onNewMsg);
+						->createSubscriber<mrpt::math::TPose3D>(&onNewMsg);
 
 		// Create a subscriber with std::bind:
 		using namespace std::placeholders;
 		auto sub4 = dir->getTopic("/robot/odom")
-						->createSubscriber<mrpt::poses::CPose3D>(
+						->createSubscriber<mrpt::math::TPose3D>(
 							[](auto&& arg1) { return onNewMsg2(123, arg1); });
 
 		// wait for messages to arrive.

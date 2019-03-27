@@ -12,7 +12,7 @@
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/img/TStereoCamera.h>
-#include <mrpt/math/CMatrixTemplate.h>
+#include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/tfest/TMatchingPair.h>
@@ -159,17 +159,6 @@ void deleteRepeatedFeats(CFeatureList& list);
  */
 void rowChecking(
 	CFeatureList& leftList, CFeatureList& rightList, float threshold = 1.0);
-
-/** Computes the dispersion of the features in the image
- * \param list [IN]    Input list of features
- * \param std	[OUT]   2 element vector containing the standard deviations in
- * the 'x' and 'y' coordinates.
- * \param mean	[OUT]   2 element vector containing the mean in the 'x' and
- * 'y' coordinates.
- */
-void getDispersion(
-	const CFeatureList& list, mrpt::math::CVectorFloat& std,
-	mrpt::math::CVectorFloat& mean);
 
 /** Computes the mean squared distance between a set of 3D correspondences
  * ...

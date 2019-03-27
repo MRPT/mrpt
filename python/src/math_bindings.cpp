@@ -9,7 +9,7 @@
 #include "bindings.h"
 
 /* MRPT */
-#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPoint3D.h>
@@ -122,13 +122,13 @@ MAKE_GETITEM(TPose3DQuat, double)
 MAKE_SETITEM(TPose3DQuat, double)
 // end of TPose3DQuat
 
-// CMatrix
+// CMatrixF
 MAKE_FIXED_DOUBLE_MATRIX_GETSET(3, 3)
 MAKE_FIXED_DOUBLE_MATRIX_GETSET(6, 6)
 
 // TODO: add conversion from/to list for convenience
 
-// end of CMatrix
+// end of CMatrixF
 
 // Explicit instantiations:
 namespace mrpt
@@ -245,7 +245,7 @@ void export_math()
 			.def("__str__", &TPose3DQuat_asString);
 	}
 
-	// CMatrixFixedNumeric
+	// CMatrixFixed
 	{
 		MAKE_FIXED_DOUBLE_MATRIX(3, 3)
 		MAKE_FIXED_DOUBLE_MATRIX(6, 6)

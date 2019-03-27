@@ -9,18 +9,18 @@
 
 #include "hmtslam-precomp.h"  // Precomp header
 
-#include <mrpt/hmtslam/CRobotPosesGraph.h>
-#include <mrpt/math/wrap2pi.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/slam/CICP.h>
-
 #include <mrpt/bayes/CParticleFilter.h>
+#include <mrpt/hmtslam/CRobotPosesGraph.h>
 #include <mrpt/io/CFileStream.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/math/utils.h>
+#include <mrpt/math/wrap2pi.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/random.h>
+#include <mrpt/slam/CICP.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::slam;

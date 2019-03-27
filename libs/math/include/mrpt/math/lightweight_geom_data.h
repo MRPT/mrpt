@@ -11,7 +11,7 @@
 #include <mrpt/core/bits_math.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/format.h>
-#include <mrpt/math/eigen_frwds.h>  // forward declarations
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/lightweight_geom_data_frwds.h>  // forward declarations
 #include <mrpt/math/math_frwds.h>  // forward declarations
 #include <mrpt/math/wrap2pi.h>
@@ -21,10 +21,11 @@
 #include <type_traits>
 #include <vector>
 
-namespace mrpt
+namespace mrpt::math
 {
-namespace math
-{
+template <class T>
+class CQuaternion;
+
 /** Base type of all TPoseXX and TPointXX classes in mrpt::math.
  * Useful for type traits. No virtual methods at all. */
 struct TPoseOrPoint
@@ -100,7 +101,7 @@ struct TPoint2D : public TPoseOrPoint
 	/**
 	 * Transformation into vector.
 	 */
-	void getAsVector(std::vector<double>& v) const
+	void asVector(std::vector<double>& v) const
 	{
 		v.resize(2);
 		v[0] = x;
@@ -249,7 +250,7 @@ struct TPose2D : public TPoseOrPoint
 	/**
 	 * Transformation into vector.
 	 */
-	void getAsVector(std::vector<double>& v) const
+	void asVector(std::vector<double>& v) const
 	{
 		v.resize(3);
 		v[0] = x;
@@ -460,7 +461,7 @@ struct TPoint3D : public TPoseOrPoint
 	 * Transformation into vector.
 	 */
 	template <class VECTORLIKE>
-	void getAsVector(VECTORLIKE& v) const
+	void asVector(VECTORLIKE& v) const
 	{
 		v.resize(3);
 		v[0] = x;
@@ -687,7 +688,7 @@ struct TPose3D : public TPoseOrPoint
 	/**
 	 * Gets the pose as a vector of doubles.
 	 */
-	void getAsVector(std::vector<double>& v) const
+	void asVector(std::vector<double>& v) const
 	{
 		v.resize(6);
 		v[0] = x;
@@ -726,8 +727,7 @@ struct TPose3D : public TPoseOrPoint
 	 */
 	void getAsQuaternion(
 		mrpt::math::CQuaternion<double>& q,
-		mrpt::math::CMatrixFixedNumeric<double, 4, 3>* out_dq_dr =
-			nullptr) const;
+		mrpt::math::CMatrixFixed<double, 4, 3>* out_dq_dr = nullptr) const;
 
 	void composePoint(const TPoint3D l, TPoint3D& g) const;
 	void inverseComposePoint(const TPoint3D g, TPoint3D& l) const;
@@ -827,7 +827,7 @@ struct TPose3DQuat : public TPoseOrPoint
 	/** Pose's spatial coordinates norm. */
 	double norm() const { return sqrt(square(x) + square(y) + square(z)); }
 	/** Gets the pose as a vector of doubles. */
-	void getAsVector(std::vector<double>& v) const
+	void asVector(std::vector<double>& v) const
 	{
 		v.resize(7);
 		for (size_t i = 0; i < 7; i++) v[i] = (*this)[i];
@@ -2180,7 +2180,7 @@ struct TTwist2D
 		}
 	}
 	/** Transformation into vector */
-	void getAsVector(std::vector<double>& v) const
+	void asVector(std::vector<double>& v) const
 	{
 		v.resize(3);
 		v[0] = vx;
@@ -2225,6 +2225,10 @@ struct TTwist3D
 	{
 		static_size = 6
 	};
+
+	constexpr std::size_t rows() const { return 6; }
+	constexpr std::size_t cols() const { return 1; }
+
 	/** Velocity components: X,Y (m/s) */
 	double vx{.0}, vy{.0}, vz{.0};
 	/** Angular velocity (rad/s) */
@@ -2238,7 +2242,7 @@ struct TTwist3D
 	}
 	/** Default fast constructor. Initializes to zeros  */
 	TTwist3D() = default;
-	/** Coordinate access using operator[]. Order: vx,vy,vphi */
+	/** Coordinate access using operator[]. Order: vx,vy,vz, wx, wy, wz */
 	double& operator[](size_t i)
 	{
 		switch (i)
@@ -2259,7 +2263,7 @@ struct TTwist3D
 				throw std::out_of_range("index out of range");
 		}
 	}
-	/** Coordinate access using operator[]. Order: vx,vy,vphi */
+	/// \overload
 	constexpr const double& operator[](size_t i) const
 	{
 		switch (i)
@@ -2280,11 +2284,42 @@ struct TTwist3D
 				throw std::out_of_range("index out of range");
 		}
 	}
-	/** Transformation into vector */
-	void getAsVector(std::vector<double>& v) const
+
+	/** (i,0) access operator (provided for API compatibility with matrices).
+	 * \sa operator[] */
+	double& operator()(int row, int col)
+	{
+		ASSERT_EQUAL_(col, 0);
+		return (*this)[row];
+	}
+	/// \overload
+	constexpr const double& operator()(int row, int col) const
+	{
+		ASSERT_EQUAL_(col, 0);
+		return (*this)[row];
+	}
+
+	/** Transformation into vector [vx vy vz wx wy wz] */
+	template <typename VECTORLIKE>
+	void asVector(VECTORLIKE& v) const
 	{
 		v.resize(6);
 		for (int i = 0; i < 6; i++) v[i] = (*this)[i];
+	}
+	template <typename VECTORLIKE>
+	VECTORLIKE asVector() const
+	{
+		VECTORLIKE v;
+		asVector(v);
+		return v;
+	}
+
+	/** Sets from a vector [vx vy vz wx wy wz] */
+	template <typename VECTORLIKE>
+	void fromVector(const VECTORLIKE& v)
+	{
+		ASSERT_EQUAL_(v.size(), 6);
+		for (int i = 0; i < 6; i++) (*this)[i] = v[i];
 	}
 	bool operator==(const TTwist3D& o) const;
 	bool operator!=(const TTwist3D& o) const;
@@ -2381,9 +2416,9 @@ mrpt::serialization::CArchive& operator<<(
 
 /** @} */  // end of grouping
 
-}  // end of namespace math
+}  // namespace mrpt::math
 
-namespace typemeta
+namespace mrpt::typemeta
 {
 // Specialization must occur in the same namespace
 MRPT_DECLARE_TTYPENAME_NO_NAMESPACE(TPoint2D, mrpt::math)
@@ -2402,5 +2437,4 @@ MRPT_DECLARE_TTYPENAME_NO_NAMESPACE(TObject3D, mrpt::math)
 MRPT_DECLARE_TTYPENAME_NO_NAMESPACE(TTwist2D, mrpt::math)
 MRPT_DECLARE_TTYPENAME_NO_NAMESPACE(TTwist3D, mrpt::math)
 
-}  // namespace typemeta
-}  // namespace mrpt
+}  // namespace mrpt::typemeta

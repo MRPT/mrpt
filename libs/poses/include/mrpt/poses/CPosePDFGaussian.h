@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/poses/CPosePDF.h>
 
 namespace mrpt::poses
@@ -34,7 +34,7 @@ class CPosePDFGaussian : public CPosePDF
 	/** Assures the symmetry of the covariance matrix (eventually certain
 	 * operations in the math-coprocessor lead to non-symmetric matrixes!)
 	 */
-	void assureSymmetry();
+	void enforceCovSymmetry();
 
    public:
 	/** @name Data fields
@@ -66,21 +66,12 @@ class CPosePDFGaussian : public CPosePDF
 	explicit CPosePDFGaussian(const CPosePDF& o) { copyFrom(o); }
 	/** Copy constructor, including transformations between other PDFs */
 	explicit CPosePDFGaussian(const CPose3DPDF& o) { copyFrom(o); }
-	/** Returns an estimate of the pose, (the mean, or mathematical expectation
-	 * of the PDF).
-	 * \sa getCovariance
-	 */
+
 	void getMean(CPose2D& mean_pose) const override { mean_pose = mean; }
-	/** Returns an estimate of the pose covariance matrix (3x3 cov matrix) and
-	 * the mean, both at once.
-	 * \sa getMean
-	 */
-	void getCovarianceAndMean(
-		mrpt::math::CMatrixDouble33& out_cov,
-		CPose2D& mean_point) const override
+
+	std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const override
 	{
-		mean_point = mean;
-		out_cov = this->cov;
+		return {cov, mean};
 	}
 
 	/** Copy operator, translating if necesary (for example, between particles

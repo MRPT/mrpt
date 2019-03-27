@@ -84,11 +84,11 @@ void mrpt::vision::pinhole::projectPoints_with_distortion(
 	//   0 1 2
 	//   3 4 5
 	//   6 7 8
-	CVectorDouble proj_matrix(9);
-	proj_matrix[0] = intrinsicParams.get_unsafe(0, 0);
-	proj_matrix[4] = intrinsicParams.get_unsafe(1, 1);
-	proj_matrix[2] = intrinsicParams.get_unsafe(0, 2);
-	proj_matrix[5] = intrinsicParams.get_unsafe(1, 2);
+	std::vector<double> proj_matrix(9);
+	proj_matrix[0] = intrinsicParams(0, 0);
+	proj_matrix[4] = intrinsicParams(1, 1);
+	proj_matrix[2] = intrinsicParams(0, 2);
+	proj_matrix[5] = intrinsicParams(1, 2);
 
 	// Do the projection:
 	cv::Mat object_points = cv::Mat(N, 1, CV_64FC3, &objPoints[0]);
@@ -373,7 +373,7 @@ void mrpt::vision::pinhole::projectPoint_with_distortion(
 //	const double cx = intrinsicParams(0,2);
 //	const double cy = intrinsicParams(1,2);
 //
-//	CMatrixFixedNumeric<double,43,43> dx, dy;
+//	CMatrixFixed<double,43,43> dx, dy;
 //
 //	// Compute the undistortion params according to Heittilä code.
 //	// Generate a regular meshgrid of size 43x43 and distort them

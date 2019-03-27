@@ -374,7 +374,7 @@ int main(int argc, char** argv)
 				}
 
 				act.poseChange.mean = noisyIncPose;
-				act.poseChange.cov.eye();
+				act.poseChange.cov.setIdentity();
 
 				act.poseChange.cov(0, 0) = act.poseChange.cov(1, 1) =
 					act.poseChange.cov(2, 2) = square(odometryNoiseXY_std);

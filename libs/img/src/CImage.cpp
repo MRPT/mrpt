@@ -15,7 +15,7 @@
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/io/zip.h>
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/fourier.h>
 #include <mrpt/math/utils.h>  // for roundup()
 #include <mrpt/serialization/CArchive.h>
@@ -1402,7 +1402,7 @@ void CImage::cross_correlation_FFT(
 	size_t lx = mrpt::round2up<size_t>(actual_lx);
 	size_t ly = mrpt::round2up<size_t>(actual_ly);
 
-	CMatrix i1(ly, lx), i2(ly, lx);
+	CMatrixF i1(ly, lx), i2(ly, lx);
 
 	// We fill the images with the bias, such as when we substract the bias
 	// later on,
@@ -1417,11 +1417,11 @@ void CImage::cross_correlation_FFT(
 	in_img.getAsMatrix(i1, false);
 
 	// Remove the bias now:
-	i2.array() -= biasThisImg;
-	i1.array() -= biasInImg;
+	i2 -= biasThisImg;
+	i1 -= biasInImg;
 
 	// FFT:
-	CMatrix I1_R, I1_I, I2_R, I2_I, ZEROS(ly, lx);
+	CMatrixF I1_R, I1_I, I2_R, I2_I, ZEROS(ly, lx);
 	math::dft2_complex(i1, ZEROS, I1_R, I1_I);
 	math::dft2_complex(i2, ZEROS, I2_R, I2_I);
 
@@ -1429,19 +1429,19 @@ void CImage::cross_correlation_FFT(
 	for (y = 0; y < ly; y++)
 		for (x = 0; x < lx; x++)
 		{
-			float r1 = I1_R.get_unsafe(y, x);
-			float r2 = I2_R.get_unsafe(y, x);
+			float r1 = I1_R(y, x);
+			float r2 = I2_R(y, x);
 
-			float ii1 = I1_I.get_unsafe(y, x);
-			float ii2 = I2_I.get_unsafe(y, x);
+			float ii1 = I1_I(y, x);
+			float ii2 = I2_I(y, x);
 
 			float den = square(r1) + square(ii1);
-			I2_R.set_unsafe(y, x, (r1 * r2 + ii1 * ii2) / den);
-			I2_I.set_unsafe(y, x, (ii2 * r1 - r2 * ii1) / den);
+			I2_R(y, x) = (r1 * r2 + ii1 * ii2) / den;
+			I2_I(y, x) = (ii2 * r1 - r2 * ii1) / den;
 		}
 
 	// IFFT:
-	CMatrix res_R, res_I;
+	CMatrixF res_R, res_I;
 	math::idft2_complex(I2_R, I2_I, res_R, res_I);
 
 	out_corr.setSize(actual_ly, actual_lx);
@@ -1452,7 +1452,7 @@ void CImage::cross_correlation_FFT(
 	MRPT_END
 }
 
-void CImage::getAsMatrixTiled(CMatrix& outMatrix) const
+void CImage::getAsMatrixTiled(CMatrixFloat& outMatrix) const
 {
 #if MRPT_HAS_OPENCV
 	MRPT_START
@@ -1467,32 +1467,32 @@ void CImage::getAsMatrixTiled(CMatrix& outMatrix) const
 	if (isColor())
 	{
 		// Luminance: Y = 0.3R + 0.59G + 0.11B
-		for (unsigned int y = 0; y < matrix_ly; y++)
+		for (CMatrixFloat::Index y = 0; y < matrix_ly; y++)
 		{
 			unsigned char* min_pixels = (*this)(0, y % img.rows, 0);
 			unsigned char* max_pixels = min_pixels + img.cols * 3;
 			unsigned char* pixels = min_pixels;
 			float aux;
-			for (unsigned int x = 0; x < matrix_lx; x++)
+			for (CMatrixFloat::Index x = 0; x < matrix_lx; x++)
 			{
 				aux = *pixels++ * 0.30f;
 				aux += *pixels++ * 0.59f;
 				aux += *pixels++ * 0.11f;
-				outMatrix.set_unsafe(y, x, aux);
+				outMatrix(y, x) = aux;
 				if (pixels >= max_pixels) pixels = min_pixels;
 			}
 		}
 	}
 	else
 	{
-		for (unsigned int y = 0; y < matrix_ly; y++)
+		for (CMatrixFloat::Index y = 0; y < matrix_ly; y++)
 		{
 			unsigned char* min_pixels = (*this)(0, y % img.rows, 0);
 			unsigned char* max_pixels = min_pixels + img.cols;
 			unsigned char* pixels = min_pixels;
-			for (unsigned int x = 0; x < matrix_lx; x++)
+			for (CMatrixFloat::Index x = 0; x < matrix_lx; x++)
 			{
-				outMatrix.set_unsafe(y, x, *pixels++);
+				outMatrix(y, x) = *pixels++;
 				if (pixels >= max_pixels) pixels = min_pixels;
 			}
 		}

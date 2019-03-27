@@ -1227,7 +1227,7 @@ void CFormChangeSensorPositions::OnbtnApplyCameraParamsClick(
 
 	// Put the camara data:
 	camIntrinsic.setSize(3, 3);
-	camIntrinsic.zeros();
+	camIntrinsic.setZero();
 	camIntrinsic(2, 2) = 1;
 	camIntrinsic(0, 0) = atof(string(edFX->GetValue().mb_str()).c_str());
 	camIntrinsic(1, 1) = atof(string(edFY->GetValue().mb_str()).c_str());

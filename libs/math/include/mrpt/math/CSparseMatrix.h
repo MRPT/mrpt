@@ -8,9 +8,11 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/config.h>  //MRPT_HAS_SUITESPARSE
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CSparseMatrixTemplate.h>
+#include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/math/math_frwds.h>
 #include <cstring>  // memcpy
 #include <stdexcept>
@@ -71,7 +73,7 @@ struct CExceptionNotDefPos : public std::runtime_error
  *         \code
  *             CMatrixDouble data(100,100); // or
  *             CMatrixFloat  data(100,100); // or
- *             CMatrixFixedNumeric<double,4,6>  data; // etc...
+ *             CMatrixFixed<double,4,6>  data; // etc...
  *             CSparseMatrix  SM(data);
  *         \endcode
  *    </li>
@@ -89,8 +91,8 @@ struct CExceptionNotDefPos : public std::runtime_error
  * \note See also his book "Direct methods for sparse linear systems".
  *http://books.google.es/books?id=TvwiyF8vy3EC&pg=PA12&lpg=PA12&dq=cs_compress&source=bl&ots=od9uGJ793j&sig=Wa-fBk4sZkZv3Y0Op8FNH8PvCUs&hl=es&ei=UjA0TJf-EoSmsQay3aXPAw&sa=X&oi=book_result&ct=result&resnum=8&ved=0CEQQ6AEwBw#v=onepage&q&f=false
  *
- * \sa mrpt::math::MatrixBlockSparseCols, mrpt::math::CMatrixFixedNumeric,
- *mrpt::math::CMatrixTemplateNumeric, etc.
+ * \sa mrpt::math::MatrixBlockSparseCols, mrpt::math::CMatrixFixed,
+ *mrpt::math::CMatrixDynamic, etc.
  * \ingroup mrpt_math_grp
  */
 class CSparseMatrix
@@ -111,7 +113,7 @@ class CSparseMatrix
 		{
 			col_list.push_back(row_list.size());
 			for (int r = 0; r < nRow; ++r)
-				if (C.get_unsafe(r, c) != 0)
+				if (C(r, c) != 0)
 				{
 					row_list.push_back(r);
 					content_list.push_back(C(r, c));
@@ -203,7 +205,7 @@ class CSparseMatrix
 	/** Constructor from a dense matrix of any kind existing in MRPT, creating a
 	 * "column-compressed" sparse matrix. */
 	template <typename T, size_t N, size_t M>
-	inline explicit CSparseMatrix(const CMatrixFixedNumeric<T, N, M>& MAT)
+	inline explicit CSparseMatrix(const CMatrixFixed<T, N, M>& MAT)
 	{
 		construct_from_mrpt_mat(MAT);
 	}
@@ -211,7 +213,7 @@ class CSparseMatrix
 	/** Constructor from a dense matrix of any kind existing in MRPT, creating a
 	 * "column-compressed" sparse matrix. */
 	template <typename T>
-	inline explicit CSparseMatrix(const CMatrixTemplateNumeric<T>& MAT)
+	inline explicit CSparseMatrix(const CMatrixDynamic<T>& MAT)
 	{
 		construct_from_mrpt_mat(MAT);
 	}
@@ -245,7 +247,7 @@ class CSparseMatrix
 	/** this = A*B */
 	void multiply_AB(const CSparseMatrix& A, const CSparseMatrix& B);
 	/** out_res = this * b */
-	void multiply_Ab(
+	void matProductOf_Ab(
 		const mrpt::math::CVectorDouble& b,
 		mrpt::math::CVectorDouble& out_res) const;
 
@@ -265,7 +267,7 @@ class CSparseMatrix
 		const mrpt::math::CVectorDouble& other) const
 	{
 		mrpt::math::CVectorDouble res;
-		multiply_Ab(other, res);
+		matProductOf_Ab(other, res);
 		return res;
 	}
 	inline void operator+=(const CSparseMatrix& other)
@@ -323,7 +325,7 @@ class CSparseMatrix
 		const size_t nC = M.cols();
 		for (size_t r = 0; r < nR; r++)
 			for (size_t c = 0; c < nC; c++)
-				insert_entry_fast(row + r, col + c, M.get_unsafe(r, c));
+				insert_entry_fast(row + r, col + c, M(r, c));
 		// If needed, extend the size of the matrix:
 		sparse_matrix.m = std::max(sparse_matrix.m, int(row + nR));
 		sparse_matrix.n = std::max(sparse_matrix.n, int(col + nC));
@@ -483,7 +485,7 @@ class CSparseMatrix
 
 		/** Return the vector from a back-substitution step that solves: Ux=b.
 		 * Vectors can be Eigen::VectorXd or mrpt::math::CVectorDouble   */
-		void backsub(const Eigen::VectorXd& b, Eigen::VectorXd& result_x) const;
+		void backsub(const CVectorDouble& b, CVectorDouble& result_x) const;
 
 		/** overload for double pointers which assume the user has reserved the
 		 * output memory for \a result */

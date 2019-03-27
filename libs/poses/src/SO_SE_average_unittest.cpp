@@ -10,10 +10,10 @@
 #include <gtest/gtest.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/SO_SE_average.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::poses;
-
 using namespace mrpt::math;
 using namespace std;
 
@@ -81,7 +81,7 @@ void run_test_so3_avrg(
 			0, 0, 0, angs[3 * i + 0], angs[3 * i + 1], angs[3 * i + 2]);
 		so_avr.append(rot.getRotationMatrix());
 	}
-	Eigen::Matrix3d calc_avr = so_avr.get_average();
+	const auto calc_avr = so_avr.get_average();
 	EXPECT_NEAR((correct_avr - calc_avr).array().abs().sum(), .0, 1e-5);
 }
 

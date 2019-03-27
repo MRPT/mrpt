@@ -7,14 +7,13 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "slamdemoApp.h"
-
-#include <wx/image.h>
-#include <wx/msgdlg.h>
-#include "slamdemoMain.h"
-
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/math/wrap2pi.h>
+#include <wx/image.h>
+#include <wx/msgdlg.h>
+#include <fstream>
+#include "slamdemoApp.h"
+#include "slamdemoMain.h"
 
 using namespace std;
 using namespace mrpt;

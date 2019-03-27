@@ -10,7 +10,8 @@
 #include <iostream>
 #include "vision-precomp.h"  // Precompiled headers
 
-#include <mrpt/math/types_math.h>  // Eigen must be included first via MRPT to enable the plugin system
+//#include <mrpt/math/types_math.h>  // Eigen must be included first via MRPT to
+// enable the plugin system
 #include <Eigen/Dense>
 #include <Eigen/SVD>
 #include <Eigen/StdVector>

@@ -10,7 +10,7 @@
 #include "vision-precomp.h"  // Precompiled headers
 
 #include <mrpt/io/CFileOutputStream.h>
-#include <mrpt/math/types_math.h>
+#include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/vision/CCamModel.h>
 #include <mrpt/vision/pinhole.h>
 
@@ -251,7 +251,7 @@ void CCamModel::jacobian_project_with_distortion(
 	// dh_du(1,0) = -2*ux*uy*cam.k1()/pow(f,1.5);
 
 	// Jacobian dh_dy = dh_du * du_dy   (Result is 2x3)
-	dh_dy.multiply(dh_du, du_dy);
+	dh_dy.matProductOf_AB(dh_du, du_dy);
 }
 
 /* Jacobian of the unprojection of a pixel (with distortion) back into a 3D
@@ -293,7 +293,7 @@ void CCamModel::jacobian_unproject_with_distortion(
 	du_dh(1, 1) += (1 / f1_2);
 
 	// Jacobian dy_dh = dy_du * du_dh   (Result is 3x2)
-	dy_dh.multiply(dy_du, du_dh);
+	dy_dh.matProductOf_AB(dy_du, du_dh);
 }
 
 void CCamModel::loadFromConfigFile(
@@ -317,7 +317,7 @@ void CCamModel::loadFromConfigFile(
 
 	cam.setIntrinsicParamsFromValues(fx, fy, cx, cy);
 
-	CVectorDouble DD;
+	mrpt::math::CVectorDouble DD;
 	source.read_vector(section, "dist_params", CVectorDouble(), DD, true);
 	ASSERT_(DD.size() == 4 || DD.size() == 5);
 

@@ -14,7 +14,7 @@
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/maps/CGasConcentrationGridMap2D.h>
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/opengl/CArrow.h>
@@ -693,7 +693,7 @@ bool CGasConcentrationGridMap2D::simulateAdvection(
 	int cell_i_cx, cell_i_cy;
 	float mu_phi, mu_r, mu_modwind;
 	const size_t N = m_map.size();
-	mrpt::math::CMatrix A(N, N);
+	mrpt::math::CMatrixF A(N, N);
 	A.fill(0.0);
 	// std::vector<double> row_sum(N,0.0);
 	auto* row_sum = (double*)calloc(N, sizeof(double));

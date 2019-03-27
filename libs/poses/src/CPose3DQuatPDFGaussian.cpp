@@ -19,6 +19,7 @@
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -78,21 +79,7 @@ CPose3DQuatPDFGaussian::CPose3DQuatPDFGaussian(const CPose3DPDFGaussian& o)
 	this->copyFrom(o);
 }
 
-/*---------------------------------------------------------------
-						getMean
-  Returns an estimate of the pose, (the mean, or mathematical expectation of the
- PDF)
- ---------------------------------------------------------------*/
 void CPose3DQuatPDFGaussian::getMean(CPose3DQuat& p) const { p = mean; }
-/*---------------------------------------------------------------
-						getCovarianceAndMean
- ---------------------------------------------------------------*/
-void CPose3DQuatPDFGaussian::getCovarianceAndMean(
-	CMatrixDouble77& C, CPose3DQuat& p) const
-{
-	C = cov;
-	p = mean;
-}
 
 uint8_t CPose3DQuatPDFGaussian::serializeGetVersion() const { return 0; }
 void CPose3DQuatPDFGaussian::serializeTo(
@@ -133,7 +120,8 @@ void CPose3DQuatPDFGaussian::copyFrom(const CPosePDF& o)
 }
 
 void aux_poseypr2posequat(
-	const CArrayDouble<6>& x, const double& dummy, CArrayDouble<7>& y)
+	const CVectorFixedDouble<6>& x, const double& dummy,
+	CVectorFixedDouble<7>& y)
 {
 	MRPT_UNUSED_PARAM(dummy);
 	y[0] = x[0];
@@ -153,7 +141,7 @@ void CPose3DQuatPDFGaussian::copyFrom(const CPose3DPDFGaussian& o)
 {
 	if (!USE_SUT_EULER2QUAT_CONVERSION_value)
 	{  // Use Jacobians
-		CMatrixFixedNumeric<double, 4, 3> dq_dr_sub(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 4, 3> dq_dr_sub(UNINITIALIZED_MATRIX);
 
 		// Mean:
 		mean.x(o.mean.x());
@@ -162,46 +150,18 @@ void CPose3DQuatPDFGaussian::copyFrom(const CPose3DPDFGaussian& o)
 
 		o.mean.getAsQuaternion(mean.quat(), &dq_dr_sub);
 
-// Cov:
-#if 1
-		CMatrixFixedNumeric<double, 7, 6> dq_dr;
-		dq_dr.get_unsafe(0, 0) = dq_dr.get_unsafe(1, 1) =
-			dq_dr.get_unsafe(2, 2) = 1;
+		// Cov:
+		CMatrixFixed<double, 7, 6> dq_dr;
+		dq_dr(0, 0) = dq_dr(1, 1) = dq_dr(2, 2) = 1;
 		dq_dr.insertMatrix(3, 3, dq_dr_sub);
 		// Now for the covariance:
-		dq_dr.multiply_HCHt(o.cov, this->cov);
-#else
-		CMatrixDouble33 cov_R(UNINITIALIZED_MATRIX);
-		CMatrixDouble33 cov_T(UNINITIALIZED_MATRIX);
-		CMatrixDouble33 cov_TR(UNINITIALIZED_MATRIX);
-		o.cov.extractMatrix(3, 3, cov_R);
-		o.cov.extractMatrix(0, 0, cov_T);
-		o.cov.extractMatrix(0, 3, cov_TR);
-
-		// [        S_T       |   S_TR * H^t    ]
-		// [ -----------------+---------------- ]
-		// [  (S_TR * H^t)^t  |  H * S_R * H^t  ]
-
-		// top-left:
-		this->cov.insertMatrix(0, 0, cov_T);
-
-		// diagonals:
-		CMatrixFixedNumeric<double, 3, 4> cov_TQ(UNINITIALIZED_MATRIX);
-		cov_TQ.multiply_ABt(cov_TR, dq_dr_sub);
-		this->cov.insertMatrix(0, 3, cov_TQ);
-		this->cov.insertMatrixTranspose(3, 0, cov_TQ);
-
-		// bottom-right:
-		CMatrixDouble44 cov_q(UNINITIALIZED_MATRIX);
-		dq_dr_sub.multiply_HCHt(cov_R, cov_q);
-		this->cov.insertMatrix(3, 3, cov_q);
-#endif
+		this->cov = mrpt::math::multiply_HCHt(dq_dr, o.cov);
 	}
 	else
 	{
 		// Use UT transformation:
 		//   f: R^6 => R^7
-		const CArrayDouble<6> x_mean(o.mean);
+		const CVectorFixedDouble<6> x_mean(o.mean);
 
 		static const double dummy = 0;
 		mrpt::math::transform_gaussian_unscented(
@@ -260,10 +220,9 @@ void CPose3DQuatPDFGaussian::changeCoordinatesReference(
 		&this->mean  // Output:  newReferenceBaseQuat + this->mean;
 	);
 
-	// this->cov = H1*this->cov*~H1 + H2*Ap.cov*~H2;
-	// df_dx: not used, since its COV are all zeros... // df_dx.multiply_HCHt(
-	// OLD_COV, cov );
-	df_du.multiply_HCHt(OLD_COV, cov);
+	// this->cov = H1*this->cov*H1' + H2*Ap.cov*H2';
+	// df_dx: not used, since its COV are all zeros...
+	cov = mrpt::math::multiply_HCHt(df_du, OLD_COV);
 
 	MRPT_END
 }
@@ -303,19 +262,19 @@ void CPose3DQuatPDFGaussian::inverse(CPose3DQuatPDF& o) const
 	auto& out = dynamic_cast<CPose3DQuatPDFGaussian&>(o);
 
 	// COV:
-	CMatrixFixedNumeric<double, 3, 7> df_dpose(UNINITIALIZED_MATRIX);
+	CMatrixFixed<double, 3, 7> df_dpose(UNINITIALIZED_MATRIX);
 	double lx, ly, lz;
 	mean.inverseComposePoint(0, 0, 0, lx, ly, lz, nullptr, &df_dpose);
 
-	CMatrixFixedNumeric<double, 7, 7> jacob;
+	CMatrixFixed<double, 7, 7> jacob;
 	jacob.insertMatrix(0, 0, df_dpose);
-	jacob.set_unsafe(3, 3, 1);
-	jacob.set_unsafe(4, 4, -1);
-	jacob.set_unsafe(5, 5, -1);
-	jacob.set_unsafe(6, 6, -1);
+	jacob(3, 3) = 1;
+	jacob(4, 4) = -1;
+	jacob(5, 5) = -1;
+	jacob(6, 6) = -1;
 
 	// C(0:2,0:2): H C H^t
-	jacob.multiply_HCHt(this->cov, out.cov);
+	out.cov = mrpt::math::multiply_HCHt(jacob, this->cov);
 
 	// Mean:
 	out.mean.x(lx);
@@ -340,8 +299,8 @@ void CPose3DQuatPDFGaussian::operator+=(const CPose3DQuat& Ap)
 		&this->mean  // Output: this->mean + Ap;
 	);
 
-	// this->cov = H1*this->cov*~H1 + H2*Ap.cov*~H2;
-	df_dx.multiply_HCHt(OLD_COV, cov);
+	// this->cov = H1*this->cov*H1' + H2*Ap.cov*H2';
+	cov = mrpt::math::multiply_HCHt(df_dx, OLD_COV);
 	// df_du: Nothing to do, since COV(Ap) = zeros
 }
 
@@ -361,9 +320,9 @@ void CPose3DQuatPDFGaussian::operator+=(const CPose3DQuatPDFGaussian& Ap)
 		&this->mean  // Output:  this->mean + Ap.mean;
 	);
 
-	// this->cov = H1*this->cov*~H1 + H2*Ap.cov*~H2;
-	df_dx.multiply_HCHt(OLD_COV, cov);
-	df_du.multiply_HCHt(Ap.cov, cov, true);  // Accumulate result
+	// this->cov = H1*this->cov*H1' + H2*Ap.cov*H2';
+	cov = mrpt::math::multiply_HCHt(df_dx, OLD_COV);
+	cov += mrpt::math::multiply_HCHt(df_du, Ap.cov);
 }
 
 /*---------------------------------------------------------------
@@ -396,15 +355,14 @@ double CPose3DQuatPDFGaussian::evaluateNormalizedPDF(const CPose3DQuat& x) const
 }
 
 /*---------------------------------------------------------------
-						assureSymmetry
+						enforceCovSymmetry
  ---------------------------------------------------------------*/
-void CPose3DQuatPDFGaussian::assureSymmetry()
+void CPose3DQuatPDFGaussian::enforceCovSymmetry()
 {
 	// Differences, when they exist, appear in the ~15'th significant
 	//  digit, so... just take one of them arbitrarily!
 	for (int i = 0; i < cov.rows() - 1; i++)
-		for (int j = i + 1; j < cov.rows(); j++)
-			cov.get_unsafe(i, j) = cov.get_unsafe(j, i);
+		for (int j = i + 1; j < cov.rows(); j++) cov(i, j) = cov(j, i);
 }
 
 /*---------------------------------------------------------------

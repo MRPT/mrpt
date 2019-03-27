@@ -30,7 +30,7 @@ const string rgbd_test_rawlog_file =
 	mrpt::system::getShareMRPTDir() + "datasets/tests_rgbd.rawlog"s;
 
 void generateRandomMaskImage(
-	mrpt::math::CMatrix& m, const unsigned int nrows, const unsigned int ncols)
+	mrpt::math::CMatrixF& m, const unsigned int nrows, const unsigned int ncols)
 {
 	m.resize(nrows, ncols);
 	for (unsigned r = 0; r < nrows; r++)
@@ -54,7 +54,7 @@ double obs3d_test_depth_to_3d(int a, int b)
 	pp.USE_SSE2 = (a & 0x02) != 0;
 
 	TRangeImageFilterParams fp;
-	mrpt::math::CMatrix minF, maxF;
+	mrpt::math::CMatrixF minF, maxF;
 	if (b & 0x01)
 	{
 		generateRandomMaskImage(
@@ -100,7 +100,7 @@ double obs3d_test_depth_to_2d_scan(int useMinFilter, int useMaxFilter)
 	sp.sensorLabel = "mysensor";
 
 	TRangeImageFilterParams fp;
-	mrpt::math::CMatrix minF, maxF;
+	mrpt::math::CMatrixF minF, maxF;
 	if (useMinFilter)
 	{
 		generateRandomMaskImage(

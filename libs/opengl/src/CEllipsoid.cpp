@@ -9,17 +9,16 @@
 
 #include "opengl-precomp.h"  // Precompiled header
 
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/opengl/CEllipsoid.h>
 #include <mrpt/serialization/CArchive.h>
-
+#include <Eigen/Dense>
 #include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-
 using namespace mrpt::math;
 using namespace std;
 
@@ -67,8 +66,8 @@ void CEllipsoid::render_dl() const
 			unsigned int i;
 
 			// Compute the new vectors for the ellipsoid:
-			CMatrixDouble M;
-			M.noalias() = double(m_quantiles) * m_eigVal * m_eigVec.adjoint();
+			auto M = CMatrixDouble(m_eigVal.asEigen() * m_eigVec.transpose());
+			M *= double(m_quantiles);
 
 			glBegin(GL_LINE_LOOP);
 
@@ -79,10 +78,8 @@ void CEllipsoid::render_dl() const
 				double ccos = cos(ang);
 				double ssin = sin(ang);
 
-				const float x =
-					ccos * M.get_unsafe(0, 0) + ssin * M.get_unsafe(1, 0);
-				const float y =
-					ccos * M.get_unsafe(0, 1) + ssin * M.get_unsafe(1, 1);
+				const float x = ccos * M(0, 0) + ssin * M(1, 0);
+				const float y = ccos * M(0, 1) + ssin * M(1, 1);
 
 				glVertex2f(x, y);
 			}  // end for points on ellipse
@@ -192,9 +189,9 @@ void CEllipsoid::serializeFrom(
 			readFromStreamRender(in);
 			if (version == 0)
 			{
-				CMatrix c;
+				CMatrixF c;
 				in >> c;
-				m_cov = c.cast<double>();
+				m_cov = c.cast_double();
 			}
 			else
 			{
@@ -290,23 +287,25 @@ void CEllipsoid::setCovMatrix(
 	{
 		// All zeros:
 		m_prevComputedCov = m_cov;
-		m_eigVec.zeros(3, 3);
-		m_eigVal.zeros(3, 3);
+		m_eigVec.setZero(3, 3);
+		m_eigVal.setZero(3, 3);
 	}
 	else
 	{
 		// Not null matrix: compute the eigen-vectors & values:
 		m_prevComputedCov = m_cov;
-		if (m_cov.eigenVectors(m_eigVec, m_eigVal))
+		std::vector<double> eigvals;
+		if (m_cov.eig_symmetric(m_eigVec, eigvals))
 		{
-			m_eigVal = m_eigVal.array().sqrt().matrix();
 			// Do the scale at render to avoid recomputing the m_eigVal for
 			// different m_quantiles
+			m_eigVal.setDiagonal(eigvals);
+			m_eigVal.array() = m_eigVal.array().sqrt().matrix();
 		}
 		else
 		{
-			m_eigVec.zeros(3, 3);
-			m_eigVal.zeros(3, 3);
+			m_eigVec.setZero(3, 3);
+			m_eigVal.setZero(3, 3);
 		}
 	}
 

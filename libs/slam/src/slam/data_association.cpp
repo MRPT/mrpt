@@ -9,6 +9,20 @@
 
 #include "slam-precomp.h"  // Precompiled headers
 
+#include <mrpt/math/KDTreeCapable.h>  // For kd-tree's
+#include <mrpt/math/data_utils.h>
+#include <mrpt/math/distributions.h>  // for chi2inv
+#include <mrpt/math/ops_matrices.h>  // extractSubmatrix
+#include <mrpt/poses/CPoint2DPDFGaussian.h>
+#include <mrpt/poses/CPointPDFGaussian.h>
+#include <mrpt/slam/data_association.h>
+#include <Eigen/Dense>
+#include <memory>
+#include <memory>  // unique_ptr
+#include <nanoflann.hpp>  // For kd-tree's
+#include <numeric>  // accumulate
+#include <set>
+
 /*
    For all data association algorithms, the individual compatibility is
    estabished by
@@ -22,20 +36,6 @@
 	- JCBB: Joint Compatibility Branch & Bound [Neira, Tardos 2001]
 
 */
-
-#include <mrpt/math/data_utils.h>
-#include <mrpt/math/distributions.h>  // for chi2inv
-#include <mrpt/poses/CPoint2DPDFGaussian.h>
-#include <mrpt/poses/CPointPDFGaussian.h>
-#include <mrpt/slam/data_association.h>
-
-#include <memory>
-#include <memory>  // unique_ptr
-#include <numeric>  // accumulate
-#include <set>
-
-#include <mrpt/math/KDTreeCapable.h>  // For kd-tree's
-#include <nanoflann.hpp>  // For kd-tree's
 
 using namespace std;
 using namespace mrpt;
@@ -62,9 +62,9 @@ struct TAuxDataRecursiveJCBB
  */
 template <typename T, TDataAssociationMetric METRIC>
 double joint_pdf_metric(
-	const CMatrixTemplateNumeric<T>& Z_observations_mean,
-	const CMatrixTemplateNumeric<T>& Y_predictions_mean,
-	const CMatrixTemplateNumeric<T>& Y_predictions_cov,
+	const CMatrixDynamic<T>& Z_observations_mean,
+	const CMatrixDynamic<T>& Y_predictions_mean,
+	const CMatrixDynamic<T>& Y_predictions_cov,
 	const TAuxDataRecursiveJCBB& info, const TDataAssociationResults& aux_data)
 {
 	MRPT_UNUSED_PARAM(aux_data);
@@ -90,8 +90,9 @@ double joint_pdf_metric(
 	// Extract submatrix of the covariances involved here:
 	//  COV = PREDICTIONS_COV(INDX,INDX) + OBSERVATIONS_COV(INDX2,INDX2)
 	// ----------------------------------------------------------------------
-	Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> COV;
-	Y_predictions_cov.extractSubmatrixSymmetricalBlocks(
+	CMatrixDynamic<T> COV;
+	mrpt::math::extractSubmatrixSymmetricalBlocksDyn(
+		Y_predictions_cov,
 		info.length_O,  // dims of cov. submatrices
 		indices_pred, COV);
 
@@ -105,16 +106,15 @@ double joint_pdf_metric(
 	for (auto it = info.currentAssociation.begin();
 		 it != info.currentAssociation.end(); ++it)
 	{
-		const T* pred_i_mean = Y_predictions_mean.get_unsafe_row(it->second);
-		const T* obs_i_mean = Z_observations_mean.get_unsafe_row(it->first);
+		const T* pred_i_mean = &Y_predictions_mean(it->second, 0);
+		const T* obs_i_mean = &Z_observations_mean(it->first, 0);
 
 		for (unsigned int k = 0; k < info.length_O; k++)
 			*dst_ptr++ = pred_i_mean[k] - obs_i_mean[k];
 	}
 
 	// Compute mahalanobis distance squared:
-	CMatrixTemplateNumeric<T> COV_inv;
-	COV.inv_fast(COV_inv);
+	const CMatrixDynamic<T> COV_inv = COV.inverse_LLt();
 
 	const double d2 = mrpt::math::multiply_HCHt_scalar(innovations, COV_inv);
 
@@ -154,9 +154,9 @@ bool isCloser<metricML>(const double v1, const double v2)
 */
 template <typename T, TDataAssociationMetric METRIC>
 void JCBB_recursive(
-	const mrpt::math::CMatrixTemplateNumeric<T>& Z_observations_mean,
-	const mrpt::math::CMatrixTemplateNumeric<T>& Y_predictions_mean,
-	const mrpt::math::CMatrixTemplateNumeric<T>& Y_predictions_cov,
+	const mrpt::math::CMatrixDynamic<T>& Z_observations_mean,
+	const mrpt::math::CMatrixDynamic<T>& Y_predictions_mean,
+	const mrpt::math::CMatrixDynamic<T>& Y_predictions_cov,
 	TDataAssociationResults& results, const TAuxDataRecursiveJCBB& info,
 	const observation_index_t curObsIdx)
 {
@@ -362,7 +362,7 @@ void mrpt::slam::data_association_full_covariance(
 	results.indiv_distances.fill(
 		metric == metricMaha ? 1000 /*A very large Sq. Maha. Dist. */
 							 : -1000 /*A very small log-likelihoo   */);
-	results.indiv_compatibility.fillAll(false);
+	results.indiv_compatibility.fill(false);
 
 	CMatrixDouble pred_i_cov(length_O, length_O);
 
@@ -376,14 +376,14 @@ void mrpt::slam::data_association_full_covariance(
 			for (size_t i = 0; i < nPredictions; ++i)
 			{
 				// Evaluate sqr. mahalanobis distance of obs_j -> pred_i:
-				const size_t pred_cov_idx =
-					i * length_O;  // Extract the submatrix from the diagonal:
-				Y_predictions_cov.extractMatrix(
-					pred_cov_idx, pred_cov_idx, length_O, length_O, pred_i_cov);
+				// Extract the submatrix from the diagonal:
+				const size_t pred_cov_idx = i * length_O;
+				pred_i_cov = Y_predictions_cov.asEigen().block(
+					pred_cov_idx, pred_cov_idx, length_O, length_O);
 
 				for (size_t k = 0; k < length_O; k++)
-					diff_means_i_j[k] = Z_observations_mean.get_unsafe(j, k) -
-										Y_predictions_mean.get_unsafe(i, k);
+					diff_means_i_j[k] =
+						Z_observations_mean(j, k) - Y_predictions_mean(i, k);
 
 				double d2, ml;
 				// mrpt::math::productIntegralAndMahalanobisTwoGaussians(diff_means_i_j,pred_i_cov,obs_j_cov,
@@ -408,7 +408,7 @@ void mrpt::slam::data_association_full_covariance(
 		{
 			// Use a kd-tree and compute only the N closest ones:
 			for (size_t k = 0; k < length_O; k++)
-				kd_queryPoint[k] = Z_observations_mean.get_unsafe(j, k);
+				kd_queryPoint[k] = Z_observations_mean(j, k);
 
 			kd_tree->query(
 				&kd_queryPoint[0], N_KD_RESULTS, &kd_result_indices[0],
@@ -422,14 +422,14 @@ void mrpt::slam::data_association_full_covariance(
 				// "predictions_mean"
 
 				// Build the PDF of the prediction:
-				const size_t pred_cov_idx =
-					i * length_O;  // Extract the submatrix from the diagonal:
-				Y_predictions_cov.extractMatrix(
-					pred_cov_idx, pred_cov_idx, length_O, length_O, pred_i_cov);
+				// Extract the submatrix from the diagonal:
+				const size_t pred_cov_idx = i * length_O;
+				pred_i_cov = Y_predictions_cov.asEigen().block(
+					pred_cov_idx, pred_cov_idx, length_O, length_O);
 
 				for (size_t k = 0; k < length_O; k++)
-					diff_means_i_j[k] = Z_observations_mean.get_unsafe(j, k) -
-										Y_predictions_mean.get_unsafe(i, k);
+					diff_means_i_j[k] =
+						Z_observations_mean(j, k) - Y_predictions_mean(i, k);
 
 				double d2, ml;
 				//				mrpt::math::productIntegralAndMahalanobisTwoGaussians(diff_means_i_j,pred_i_cov,obs_j_cov,
@@ -488,9 +488,9 @@ void mrpt::slam::data_association_full_covariance(
 
 				for (prediction_index_t i = 0; i < nPredictions; ++i)
 				{
-					if (results.indiv_compatibility.get_unsafe(i, j))
+					if (results.indiv_compatibility(i, j))
 					{
-						double d2 = results.indiv_distances.get_unsafe(i, j);
+						double d2 = results.indiv_distances(i, j);
 						if (metric == metricML) d2 = -d2;
 						ICs.insert(make_pair(d2, i));
 					}
@@ -608,8 +608,8 @@ void mrpt::slam::data_association_independent_predictions(
 	for (size_t i = 0; i < nPredictions; i++)
 	{
 		const size_t idx = i * length_O;
-		Y_predictions_cov_stacked.extractSubmatrix(
-			idx, idx + length_O - 1, 0, length_O - 1, COV_i);
+		COV_i =
+			Y_predictions_cov_stacked.extractMatrix(length_O, length_O, idx, 0);
 		Y_predictions_cov_full.insertMatrix(idx, idx, COV_i);
 	}
 

@@ -125,7 +125,7 @@ class CLevMarqGSO
 	using constraint_t = typename GRAPH_T::constraint_t;
 	/** type of underlying poses (2D/3D)*/
 	using pose_t = typename GRAPH_T::constraint_t::type_value;
-	using InfMat = mrpt::math::CMatrixFixedNumeric<
+	using InfMat = mrpt::math::CMatrixFixed<
 		double, constraint_t::state_length, constraint_t::state_length>;
 	using grandpa = mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_T>;
 	using parent = mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_T>;

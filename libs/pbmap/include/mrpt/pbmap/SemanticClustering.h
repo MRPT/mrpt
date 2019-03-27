@@ -56,7 +56,7 @@ class SemanticClustering
 	std::map<unsigned, std::vector<unsigned>>
 		vicinity;  //[group][neighborGroup]
 
-	mrpt::math::CMatrix connectivity_matrix;
+	mrpt::math::CMatrixF connectivity_matrix;
 
 	std::vector<unsigned> planesVicinity_order;
 
@@ -85,7 +85,7 @@ class SemanticClustering
 		// Fill the matrix
 		assert(neigSize <= mPbMap.vPlanes.size());
 		connectivity_matrix.resize(neigSize, neigSize);
-		connectivity_matrix.zeros();
+		connectivity_matrix.setZero();
 		for (unsigned i = 0; i < planesVicinity_order.size(); i++)
 		{
 			unsigned plane_i = planesVicinity_order[i];
@@ -139,7 +139,7 @@ class SemanticClustering
 		// Fill the matrix
 		assert(neigSize <= mPbMap.vPlanes.size());
 		connectivity_matrix.resize(neigSize, neigSize);
-		connectivity_matrix.zeros();
+		connectivity_matrix.setZero();
 		for (unsigned i = 0; i < planesVicinity_order.size(); i++)
 		{
 			unsigned plane_i = planesVicinity_order[i];
@@ -366,7 +366,7 @@ class SemanticClustering
 			parts;  // Vector of vectors to keep the
 		// KFs index of the different
 		// partitions (submaps)
-		mrpt::graphs::CGraphPartitioner<mrpt::math::CMatrix>::
+		mrpt::graphs::CGraphPartitioner<mrpt::math::CMatrixF>::
 			RecursiveSpectralPartition(
 				connectivity_matrix, parts, 0.8, false, true, true, 1);
 

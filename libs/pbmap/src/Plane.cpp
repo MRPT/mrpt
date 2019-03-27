@@ -1036,9 +1036,9 @@ bool Plane::isSamePlane(
 	const float& parallelDistThres, const float& proxThreshold)
 {
 	Plane plane = plane_;
-	plane.v3normal = Rt.block(0, 0, 3, 3) * plane_.v3normal;
+	plane.v3normal = Rt.block<3, 3>(0, 0) * plane_.v3normal;
 	plane.v3center =
-		Rt.block(0, 0, 3, 3) * plane_.v3center + Rt.block(0, 3, 3, 1);
+		Rt.block<3, 3>(0, 0) * plane_.v3center + Rt.block(0, 3, 3, 1);
 	pcl::transformPointCloud(
 		*plane_.polygonContourPtr, *plane.polygonContourPtr, Rt);
 
@@ -1179,11 +1179,11 @@ void Plane::mergePlane2(Plane& same_plane_patch)
 void Plane::transform(Eigen::Matrix4f& Rt)
 {
 	// Transform normal and ppal direction
-	v3normal = Rt.block(0, 0, 3, 3) * v3normal;
-	v3PpalDir = Rt.block(0, 0, 3, 3) * v3PpalDir;
+	v3normal = Rt.block<3, 3>(0, 0) * v3normal;
+	v3PpalDir = Rt.block<3, 3>(0, 0) * v3PpalDir;
 
 	// Transform centroid
-	v3center = Rt.block(0, 0, 3, 3) * v3center + Rt.block(0, 3, 3, 1);
+	v3center = Rt.block<3, 3>(0, 0) * v3center + Rt.block(0, 3, 3, 1);
 
 	d = -(v3normal.dot(v3center));
 

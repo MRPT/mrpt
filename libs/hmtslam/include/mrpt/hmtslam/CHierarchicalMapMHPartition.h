@@ -8,16 +8,14 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/core/aligned_std_map.h>
 #include <mrpt/hmtslam/CHMHMapArc.h>
 #include <mrpt/hmtslam/CHMHMapNode.h>
 #include <mrpt/hmtslam/CLocalMetricHypothesis.h>
-
 #include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFSOG.h>
 #include <mrpt/system/COutputLogger.h>
-
-#include <map>
 
 namespace mrpt
 {
@@ -241,12 +239,8 @@ class CHierarchicalMapMHPartition : public mrpt::system::COutputLogger
 	 * \sa computeCoordinatesTransformationBetweenNodes
 	 */
 	void computeGloballyConsistentNodeCoordinates(
-		std::map<
-			CHMHMapNode::TNodeID, mrpt::poses::CPose3DPDFGaussian,
-			std::less<CHMHMapNode::TNodeID>,
-			Eigen::aligned_allocator<std::pair<
-				const CHMHMapNode::TNodeID, mrpt::poses::CPose3DPDFGaussian>>>&
-			nodePoses,
+		mrpt::aligned_std_map<
+			CHMHMapNode::TNodeID, mrpt::poses::CPose3DPDFGaussian>& nodePoses,
 		const CHMHMapNode::TNodeID& idReferenceNode,
 		const THypothesisID& hypothesisID,
 		const unsigned int& numberOfIterations = 2) const;

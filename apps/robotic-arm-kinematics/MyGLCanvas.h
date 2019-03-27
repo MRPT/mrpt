@@ -11,6 +11,7 @@
 #define MYGLCANVAS_H
 
 #include <mrpt/gui/CWxGLCanvasBase.h>
+#include <wx/panel.h>
 
 using namespace mrpt::gui;
 

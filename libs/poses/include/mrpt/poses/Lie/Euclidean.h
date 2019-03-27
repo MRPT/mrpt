@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CArrayNumeric.h>
+#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/poses/poses_frwds.h>
 
@@ -24,7 +24,7 @@ template <unsigned int N>
 struct EuclideanBase
 {
 	constexpr static size_t DOFs = N;
-	using tangent_vector = mrpt::math::CArrayDouble<DOFs>;
+	using tangent_vector = mrpt::math::CVectorFixedDouble<DOFs>;
 };
 
 template <>

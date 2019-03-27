@@ -10,6 +10,7 @@
 #pragma once
 #include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/math/data_utils.h>
+#include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/obs/obs_utils.h>
 #include <mrpt/opengl/CEllipsoid.h>
@@ -588,7 +589,7 @@ void CLoopCloserERD<GRAPH_T>::evalPWConsistenciesMatrix(
 
 	// evaluate the pair-wise consistency matrix
 	// compute dominant eigenvector
-	dynamic_vector<double> u;
+	CVectorDouble u;
 	bool valid_lambda_ratio =
 		this->computeDominantEigenVector(consist_matrix, &u, false);
 	if (!valid_lambda_ratio) return;
@@ -598,7 +599,7 @@ void CLoopCloserERD<GRAPH_T>::evalPWConsistenciesMatrix(
 	// discretize the indicator vector - maximize the dot product of
 	// w_unit .* u
 	ASSERTDEB_(u.size());
-	dynamic_vector<double> w(u.size(), 0);  // discretized  indicator vector
+	CVectorDouble w(u.size(), 0);  // discretized  indicator vector
 	double dot_product = 0;
 	for (int i = 0; i != w.size(); ++i)
 	{
@@ -606,9 +607,10 @@ void CLoopCloserERD<GRAPH_T>::evalPWConsistenciesMatrix(
 		stringstream ss;
 
 		// make the necessary change and see if the dot product increases
-		w(i) = 1;
+		w[i] = 1;
 		double potential_dot_product =
-			((w.transpose() * u) / w.squaredNorm()).value();
+			((w.asEigen().transpose() * u.asEigen()) / mrpt::square(w.norm()))
+				.value();
 		ss << mrpt::format(
 			"current: %f | potential_dot_product: %f", dot_product,
 			potential_dot_product);
@@ -620,7 +622,7 @@ void CLoopCloserERD<GRAPH_T>::evalPWConsistenciesMatrix(
 		else
 		{
 			ss << " ==>  REJECT";
-			w(i) = 0;  // revert the change
+			w[i] = 0;  // revert the change
 		}
 		ss << endl;
 		// MRPT_LOG_DEBUG_STREAM(ss.str());
@@ -629,11 +631,11 @@ void CLoopCloserERD<GRAPH_T>::evalPWConsistenciesMatrix(
 	// mrpt::system::pause();
 
 	// Current hypothesis is to be registered.
-	if (!w.isZero())
+	if (!w.asEigen().isZero())
 	{
 		for (int wi = 0; wi != w.size(); ++wi)
 		{
-			if (w(wi) == 1)
+			if (w[wi] == 1)
 			{
 				// search through the potential hypotheses, find the one with
 				// the
@@ -862,7 +864,7 @@ void CLoopCloserERD<GRAPH_T>::generateHypotsPool(
 template <class GRAPH_T>
 bool CLoopCloserERD<GRAPH_T>::computeDominantEigenVector(
 	const mrpt::math::CMatrixDouble& consist_matrix,
-	mrpt::math::dynamic_vector<double>* eigvec, bool use_power_method)
+	mrpt::math::CVectorDouble* eigvec, bool use_power_method)
 {
 	MRPT_START;
 	using namespace mrpt;
@@ -883,14 +885,15 @@ bool CLoopCloserERD<GRAPH_T>::computeDominantEigenVector(
 	}
 	else
 	{  // call to eigenVectors method
-		CMatrixDouble eigvecs, eigvals;
-		consist_matrix.eigenVectors(eigvecs, eigvals);
+		CMatrixDouble eigvecs;
+		std::vector<double> eigvals;
+		consist_matrix.eig(eigvecs, eigvals);
 
 		// assert that the eivenvectors, eigenvalues, consistency matrix are of
 		// the same size
 		ASSERTDEBMSG_(
 			eigvecs.size() == eigvals.size() &&
-				consist_matrix.size() == eigvals.size(),
+				consist_matrix.cols() == eigvals.size(),
 			mrpt::format(
 				"Size of eigvecs \"%lu\","
 				"eigvalues \"%lu\","
@@ -899,15 +902,12 @@ bool CLoopCloserERD<GRAPH_T>::computeDominantEigenVector(
 				static_cast<unsigned long>(eigvals.size()),
 				static_cast<unsigned long>(consist_matrix.size())));
 
-		eigvecs.extractCol(eigvecs.cols() - 1, *eigvec);
-		lambda1 = eigvals(eigvals.rows() - 1, eigvals.cols() - 1);
-		lambda2 = eigvals(eigvals.rows() - 2, eigvals.cols() - 2);
-	}
+		// copy. I don't care about the sign of the eigenvector element
+		for (int i = 0; i != eigvec->size(); ++i)
+			(*eigvec)[i] = std::abs(eigvecs(i, eigvecs.cols() - 1));
 
-	// I don't care about the sign of the eigenvector element
-	for (int i = 0; i != eigvec->size(); ++i)
-	{
-		(*eigvec)(i) = abs((*eigvec)(i));
+		lambda1 = eigvals[eigvals.size() - 1];
+		lambda2 = eigvals[eigvals.size() - 2];
 	}
 
 	// check the ratio of the two eigenvalues - reject hypotheses set if ratio
@@ -1176,8 +1176,8 @@ double CLoopCloserERD<GRAPH_T>::generatePWConsistencyElement(
 		<< hypot_b2_a1->getEdge() << endl);
 
 	// get the vector of the corresponding transformation - [x, y, phi] form
-	dynamic_vector<double> T;
-	res_transform.getMeanVal().getAsVector(T);
+	typename pose_t::vector_t T;
+	res_transform.getMeanVal().asVector(T);
 
 	// information matrix
 	CMatrixDouble33 cov_mat;
@@ -1187,7 +1187,7 @@ double CLoopCloserERD<GRAPH_T>::generatePWConsistencyElement(
 	// There must be a minus in the exponent and the covariance matrix instead
 	// of
 	// the information matrix.
-	double exponent = (-T.transpose() * cov_mat * T).value();
+	double exponent = -mrpt::math::multiply_HtCH_scalar(T, cov_mat);
 	double consistency_elem = exp(exponent);
 
 	// cout << "T = " << endl << T << endl;
@@ -1539,7 +1539,7 @@ void CLoopCloserERD<GRAPH_T>::getMinUncertaintyPath(
 
 		if (inf_mat == CMatrixDouble33() || std::isnan(inf_mat(0, 0)))
 		{
-			inf_mat.unit();
+			inf_mat.setIdentity();
 			curr_edge.cov_inv = inf_mat;
 		}
 
@@ -1579,7 +1579,7 @@ void CLoopCloserERD<GRAPH_T>::getMinUncertaintyPath(
 
 		if (inf_mat == CMatrixDouble33() || std::isnan(inf_mat(0, 0)))
 		{
-			inf_mat.unit();
+			inf_mat.setIdentity();
 			curr_edge.cov_inv = inf_mat;
 		}
 
@@ -1640,8 +1640,8 @@ bool CLoopCloserERD<GRAPH_T>::mahalanobisDistanceOdometryToICPEdge(
 	// mean difference
 	pose_t initial_estim =
 		this->m_graph->nodes.at(to) - this->m_graph->nodes.at(from);
-	dynamic_vector<double> mean_diff;
-	(rel_edge.getMeanVal() - initial_estim).getAsVector(mean_diff);
+	typename pose_t::vector_t mean_diff;
+	(rel_edge.getMeanVal() - initial_estim).asVector(mean_diff);
 
 	// covariance matrix
 	CMatrixDouble33 cov_mat;

@@ -2354,7 +2354,7 @@ void xRawLogViewerFrame::rebuildTreeView()
 		}
 
 		// Process element:
-		s;
+		s.clear();
 		switch (rawlog.getType(i))
 		{
 			case CRawlog::etActionCollection:
@@ -3468,9 +3468,9 @@ void wxStaticBitmapPopup::OnPopupSaveImage(wxCommandEvent& event)
 					{
 						static CImage auxImg;
 						// Convert to range [0,255]
-						mrpt::math::CMatrix normalized_range = obs->rangeImage;
-						const float max_rang =
-							std::max(obs->maxRange, normalized_range.maximum());
+						mrpt::math::CMatrixF normalized_range = obs->rangeImage;
+						const float max_rang = std::max(
+							obs->maxRange, normalized_range.maxCoeff());
 						if (max_rang > 0) normalized_range *= 255. / max_rang;
 						auxImg.setFromMatrix(
 							normalized_range,
@@ -4747,7 +4747,7 @@ void xRawLogViewerFrame::OnMenuItem47Selected(wxCommandEvent& event)
 
 			CPose2D estMean(odo_x, odo_y, odo_phi);
 			CMatrixDouble33 estCov;
-			estCov.unit(3, 1e-6);
+			estCov.setDiagonal(3, 1e-6);
 
 			CActionRobotMovement2D newAct;
 			newAct.estimationMethod = CActionRobotMovement2D::emScan2DMatching;
@@ -5055,7 +5055,7 @@ void xRawLogViewerFrame::OnMenuModifyICPActionsUncertainty(
 							CPosePDFGaussian::Ptr aux =
 								std::dynamic_pointer_cast<CPosePDFGaussian>(
 									actMov->poseChange.get_ptr());
-							aux->cov.zeros();
+							aux->cov.setZero();
 							aux->cov(0, 0) = aux->cov(1, 1) = std_xy2;
 							aux->cov(2, 2) = std_phi2;
 
@@ -5274,7 +5274,7 @@ void xRawLogViewerFrame::OnMenuChangePosesBatch(wxCommandEvent& event)
 
 			CMatrixDouble33& I =
 				desiredCamParams[label].cameraParams.intrinsicParams;
-			I.zeros(3, 3);
+			I.setZero(3, 3);
 			I(2, 2) = 1;
 			I(0, 0) = calib[0];
 			I(1, 1) = calib[1];

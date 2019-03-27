@@ -1,4 +1,4 @@
-#  See "DeclareMRPTLib.cmake"
+﻿#  See "DeclareMRPTLib.cmake"
 list(APPEND math_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/math/*.cpp" "${MRPT_LIBS_ROOT}/math/*.h")
 list(APPEND math_EXTRA_SRCS_NAME 	"math" "math")
 
@@ -76,7 +76,11 @@ if(BUILD_mrpt-math)
 
 	# eigen3:
 	target_link_libraries(math PUBLIC Eigen3::Eigen)
-
+	if (MSVC)
+		# This is to prevent the error (in Debug builds):
+		# LNK1189：library limit of 65535 objects exceeded
+		target_compile_options(math PRIVATE /Ob2)
+	endif()
 
 	if (NOT "${SuiteSparse_LIBRARIES}" STREQUAL "")
 		target_link_libraries(math PRIVATE ${SuiteSparse_LIBRARIES})

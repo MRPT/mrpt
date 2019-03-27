@@ -9,6 +9,7 @@
 
 #include "nav-precomp.h"  // Precomp header
 
+#include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/serialization/CArchive.h>

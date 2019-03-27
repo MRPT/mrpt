@@ -11,13 +11,13 @@
 
 #include <mrpt/opengl/gl_utils.h>  // Include these before windows.h!!
 #include <mrpt/system/os.h>
+#include <Eigen/Dense>
+#include <map>
 #include "opengl_internals.h"
 
 #if MRPT_HAS_OPENGL_GLUT
 #include <cvd/gl_helpers.h>
 #endif
-
-#include <map>
 
 using namespace std;
 using namespace mrpt;
@@ -137,6 +137,18 @@ void gl_utils::renderSetOfObjects(const CListOpenGLObjects& objectsToRender)
 #endif
 }
 
+void gl_utils::TRenderInfo::projectPoint(
+	float x, float y, float z, float& proj_x, float& proj_y,
+	float& proj_z_depth) const
+{
+	const Eigen::Matrix<float, 4, 1, Eigen::ColMajor> proj =
+		full_matrix.asEigen() *
+		Eigen::Matrix<float, 4, 1, Eigen::ColMajor>(x, y, z, 1);
+	proj_x = proj[3] ? proj[0] / proj[3] : 0;
+	proj_y = proj[3] ? proj[1] / proj[3] : 0;
+	proj_z_depth = proj[2];
+}
+
 /*---------------------------------------------------------------
 					checkOpenGLError
   ---------------------------------------------------------------*/
@@ -227,10 +239,12 @@ void gl_utils::getCurrentRenderingInfo(TRenderInfo& ri)
 	// Get the inverse camera position:
 	GLfloat mat_proj[16];
 	glGetFloatv(GL_PROJECTION_MATRIX, mat_proj);
+	// ColMajor -> RowMajor:
 	ri.proj_matrix = Eigen::Matrix<float, 4, 4, Eigen::ColMajor>(mat_proj);
 
 	// Extract the camera position:
-	Eigen::Matrix<float, 4, 1> cam_pose_hm = ri.proj_matrix.inverse().col(3);
+	const auto HMinv = ri.proj_matrix.inverse();
+	const auto cam_pose_hm = HMinv.col(3).eval();
 	if (cam_pose_hm[3] != 0)
 	{
 		ri.camera_position.x = cam_pose_hm[0] / cam_pose_hm[3];

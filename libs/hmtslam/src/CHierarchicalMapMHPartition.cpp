@@ -9,6 +9,7 @@
 
 #include "hmtslam-precomp.h"  // Precomp header
 
+#include <mrpt/core/aligned_allocator.h>
 #include <mrpt/graphslam/levmarq.h>
 #include <mrpt/hmtslam/CRobotPosesGraph.h>
 #include <mrpt/math/ops_containers.h>
@@ -401,7 +402,7 @@ void CHierarchicalMapMHPartition::saveAreasDiagramWithEllipsedForMATLAB(
 		{
 			const CHMHMapNode			*node = getNodeByID( it->first );
 			CPosePDFGaussian	posePDF = it->second;
-			CMatrix				C( posePDF.cov );
+			CMatrixF				C( posePDF.cov );
 			CPose2D				pose( posePDF.mean );
 
 			if (C.det()==0)
@@ -1119,20 +1120,15 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 		outScene.insert(obj);
 	}
 
-	using TMapID2PosePDF = std::map<
-		CHMHMapNode::TNodeID, CPose3DPDFGaussian,
-		std::less<CHMHMapNode::TNodeID>,
-		Eigen::aligned_allocator<
-			std::pair<const CHMHMapNode::TNodeID, CPose3DPDFGaussian>>>;
-	TMapID2PosePDF nodesPoses;  // The ref. pose of each area
+	using TMapID2PosePDF =
+		mrpt::aligned_std_map<CHMHMapNode::TNodeID, CPose3DPDFGaussian>;
+	// The ref. pose of each area
+	TMapID2PosePDF nodesPoses;
 	TMapID2PosePDF::iterator it;
 
-	using TMapID2Pose2D = std::map<
-		CHMHMapNode::TNodeID, CPose2D, std::less<CHMHMapNode::TNodeID>,
-		Eigen::aligned_allocator<
-			std::pair<const CHMHMapNode::TNodeID, CPose2D>>>;
-	TMapID2Pose2D
-		nodesMeanPoses;  // The mean pose of the observations in the area
+	using TMapID2Pose2D = mrpt::aligned_std_map<CHMHMapNode::TNodeID, CPose2D>;
+	// The mean pose of the observations in the area
+	TMapID2Pose2D nodesMeanPoses;
 	TMapID2Pose2D::iterator it2;
 
 	// Only those nodes in the "hypothesisID" are computed.
@@ -1315,15 +1311,9 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-			computeGloballyConsistentNodeCoordinates
-  ---------------------------------------------------------------*/
 void CHierarchicalMapMHPartition::computeGloballyConsistentNodeCoordinates(
-	std::map<
-		CHMHMapNode::TNodeID, CPose3DPDFGaussian,
-		std::less<CHMHMapNode::TNodeID>,
-		Eigen::aligned_allocator<std::pair<
-			const CHMHMapNode::TNodeID, CPose3DPDFGaussian>>>& nodePoses,
+	mrpt::aligned_std_map<
+		CHMHMapNode::TNodeID, mrpt::poses::CPose3DPDFGaussian>& nodePoses,
 	const CHMHMapNode::TNodeID& idReferenceNode,
 	const THypothesisID& hypothesisID,
 	const unsigned int& numberOfIterations) const

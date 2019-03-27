@@ -18,6 +18,7 @@
 #include <thread>
 
 bool sockets_test_passed_ok = false;
+
 // Test payload:
 const mrpt::poses::CPose3D p_tx(1.0, 2.0, 3.0, 0.2, 0.4, 0.6);
 
@@ -149,6 +150,7 @@ void SocketsTest()
 	std::thread(thread_server).detach();
 	std::this_thread::sleep_for(20ms);
 
-	std::thread(thread_client).detach();
-	std::this_thread::sleep_for(1000ms);
+	std::thread t2(thread_client);
+	std::this_thread::sleep_for(200ms);
+	t2.join();
 }

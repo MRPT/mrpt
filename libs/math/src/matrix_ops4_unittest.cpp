@@ -12,16 +12,20 @@
 // compiling in small systems.
 
 #include <gtest/gtest.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
+#include <mrpt/math/CVectorDynamic.h>
+#include <mrpt/math/ops_containers.h>
+#include <mrpt/math/ops_matrices.h>
 #include <mrpt/random.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace std;
 
-TEST(Matrices, meanAndStd)
+TEST(Matrices, meanAndStdColumns)
 {
 	/* meanAndStd: Computes a row with the mean values of each column in the
 	   matrix and
@@ -48,24 +52,24 @@ TEST(Matrices, meanAndStd)
 		2.6694845663, 1.7205860530, 2.1518695071, 2.1110960664, 1.6731209980,
 		2.5655678993, 2.9541115932, 2.1854562572, 2.4463194915, 2.7170092067,
 		3.0742063088, 1.8710847505, 2.8907499694, 1.6731209980, 3.9093678727};
-	CMatrixFixedNumeric<double, 10, 10> A(dat_A);
+	CMatrixFixed<double, 10, 10> A(dat_A);
 
 	// Compute mean & std of each column:
 	CVectorDouble result_mean, result_std;
-	A.meanAndStd(result_mean, result_std);
+	mrpt::math::meanAndStdColumns(A, result_mean, result_std);
 
 	// Result from MATLAB:
 	const double dat_good_M[] = {
 		2.246424086, 2.718547419, 1.899166596, 2.192679825, 2.073010093,
 		2.938742050, 1.648159507, 2.570463898, 1.909148862, 2.628699435};
-	const Eigen::Matrix<double, 10, 1> good_M(dat_good_M);
+	const CVectorDouble good_M(dat_good_M);
 	const double dat_good_S[] = {
 		0.428901371, 0.720352792, 0.468999497, 0.684910097, 0.546595053,
 		0.604303301, 0.328759015, 0.582584159, 0.382009344, 0.644788760};
-	const Eigen::Matrix<double, 10, 1> good_S(dat_good_S);
+	const CVectorDouble good_S(dat_good_S);
 
-	EXPECT_NEAR((result_mean - good_M).array().abs().sum(), 0, 1e-4);
-	EXPECT_NEAR((result_std - good_S).array().abs().sum(), 0, 1e-4);
+	EXPECT_NEAR((result_mean - good_M).sum_abs(), 0, 1e-4);
+	EXPECT_NEAR((result_std - good_S).sum_abs(), 0, 1e-4);
 }
 
 TEST(Matrices, meanAndStdAll)
@@ -95,11 +99,11 @@ TEST(Matrices, meanAndStdAll)
 		2.6694845663, 1.7205860530, 2.1518695071, 2.1110960664, 1.6731209980,
 		2.5655678993, 2.9541115932, 2.1854562572, 2.4463194915, 2.7170092067,
 		3.0742063088, 1.8710847505, 2.8907499694, 1.6731209980, 3.9093678727};
-	CMatrixFixedNumeric<double, 10, 10> A(dat_A);
+	CMatrixDouble A(10, 10, dat_A);
 
 	// Compute mean & std of each column:
 	double result_mean, result_std;
-	A.meanAndStdAll(result_mean, result_std);
+	mrpt::math::meanAndStd(A, result_mean, result_std);
 
 	// Result from MATLAB:
 	const double good_M = 2.282504177034;
@@ -119,33 +123,14 @@ TEST(Matrices, laplacian)
 	const CMatrixDouble W(6, 6, W_vals);
 
 	CMatrixDouble L;
-	W.laplacian(L);
+	mrpt::math::laplacian(W, L);
 
 	const double real_laplacian_vals[6 * 6] = {
 		2, -1, 0,  0, -1, 0,  -1, 3,  -1, 0,  -1, 0, 0, -1, 2, -1, 0, 0,
 		0, 0,  -1, 3, -1, -1, -1, -1, 0,  -1, 3,  0, 0, 0,  0, -1, 0, 1};
 	const CMatrixDouble GT_L(6, 6, real_laplacian_vals);
 
-	EXPECT_NEAR((GT_L - L).array().abs().sum(), 0, 1e-4);
-}
-
-TEST(Matrices, largestEigenvector)
-{
-	{
-		const double dat_C1[] = {13.737245, 10.248641, -5.839599, 11.108320,
-								 10.248641, 14.966139, -5.259922, 11.662222,
-								 -5.839599, -5.259922, 9.608822,  -4.342505,
-								 11.108320, 11.662222, -4.342505, 12.121940};
-		const CMatrixDouble44 C1(dat_C1);
-
-		const double dat_REAL_EIGVEC[] = {0.54800, 0.57167, -0.29604, 0.53409};
-		const Eigen::Matrix<double, 4, 1> REAL_EIGVEC(dat_REAL_EIGVEC);
-		// const double REAL_LARGEST_EIGENVALUE =  38.40966;
-
-		mrpt::math::CVectorDouble lev;
-		C1.largestEigenvector(lev, 1e-3, 20);
-		EXPECT_NEAR((REAL_EIGVEC - lev).array().abs().sum(), 0, 1e-3);
-	}
+	EXPECT_NEAR((GT_L - L).sum_abs(), 0, 1e-4);
 }
 
 TEST(Matrices, loadFromTextFile)
@@ -211,9 +196,10 @@ TEST(Matrices, loadFromTextFile)
 	{
 		const std::string s1 =
 			"1 2 3\n"
+			"0 1 0\n"
 			"4 5 6\n";
 		std::stringstream s(s1);
-		CMatrixFixedNumeric<double, 2, 3> M;
+		CMatrixDouble33 M;
 		bool retval = false;
 		try
 		{
@@ -225,7 +211,7 @@ TEST(Matrices, loadFromTextFile)
 			std::cerr << e.what() << std::endl;
 		}
 		EXPECT_TRUE(retval) << "string:\n" << s1 << endl;
-		EXPECT_EQ(M.rows(), 2);
+		EXPECT_EQ(M.rows(), 3);
 		EXPECT_EQ(M.cols(), 3);
 	}
 	{
@@ -233,7 +219,7 @@ TEST(Matrices, loadFromTextFile)
 			"1 2 3\n"
 			"4 5\n";
 		std::stringstream s(s1);
-		CMatrixFixedNumeric<double, 2, 3> M;
+		CMatrixDouble M;
 		bool retval = false;
 		try
 		{
@@ -265,7 +251,7 @@ TEST(Matrices, loadFromTextFile)
 	{
 		const std::string s1 = "  \n";
 		std::stringstream s(s1);
-		CMatrixFixedNumeric<double, 2, 3> M;
+		CMatrixDouble M;
 		bool retval = false;
 		try
 		{
@@ -283,7 +269,7 @@ TEST(Matrices, loadFromTextFile)
 			"1 2 3\n"
 			"1 2 3";
 		std::stringstream s(s1);
-		CMatrixFixedNumeric<double, 2, 3> M;
+		CMatrixDouble22 M;
 		bool retval = false;
 		try
 		{

@@ -20,15 +20,6 @@
 #include <wx/tglbtn.h>
 //*)
 
-#include <wx/busyinfo.h>
-#include <wx/dirdlg.h>
-#include <wx/filedlg.h>
-#include <wx/log.h>
-#include <wx/msgdlg.h>
-#include <wx/statbox.h>
-#include <wx/textdlg.h>
-#include <wx/tipdlg.h>
-
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/config/CConfigFilePrefixer.h>
 #include <mrpt/containers/printf_vector.h>
@@ -44,7 +35,16 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
+#include <wx/busyinfo.h>
+#include <wx/dirdlg.h>
+#include <wx/filedlg.h>
+#include <wx/log.h>
+#include <wx/msgdlg.h>
+#include <wx/statbox.h>
+#include <wx/textdlg.h>
+#include <wx/tipdlg.h>
 #include <algorithm>  // replace()
+#include <fstream>
 
 extern std::string global_fileToOpen;
 
@@ -1822,9 +1822,9 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabExportPaths(
 		vals_timoff_sendVelCmd;  // time: tim_start_iteration
 
 	const int MAX_CMDVEL_COMPONENTS = 15;
-	using cmdvel_vector_t = Eigen::Matrix<double, 1, MAX_CMDVEL_COMPONENTS>;
-	mrpt::aligned_std_map<double, cmdvel_vector_t>
-		cmdvels;  // time: tim_send_cmd_vel
+	using cmdvel_vector_t = mrpt::math::CVectorDouble;
+	// map: time -> tim_send_cmd_vel
+	mrpt::aligned_std_map<double, cmdvel_vector_t> cmdvels;
 
 	double tim_start_iteration = .0;
 
@@ -1905,9 +1905,10 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabExportPaths(
 			}
 
 			auto& p = cmdvels[tim_send_cmd_vel];
+			p.resize(MAX_CMDVEL_COMPONENTS);
 			p.setZero();
 			for (size_t k = 0; k < logptr->cmd_vel->getVelCmdLength(); k++)
-				p(k) = logptr->cmd_vel->getVelCmdElement(k);
+				p[k] = logptr->cmd_vel->getVelCmdElement(k);
 		}
 
 	}  // end for each timestep

@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 
@@ -40,18 +40,18 @@ class CVectorField3D : public CRenderizableDisplayList
 	DEFINE_SERIALIZABLE(CVectorField3D)
    protected:
 	/** X component of the vector field */
-	mrpt::math::CMatrix x_vf;
+	mrpt::math::CMatrixF x_vf;
 	/** Y component of the vector field */
-	mrpt::math::CMatrix y_vf;
+	mrpt::math::CMatrixF y_vf;
 	/** Z component of the vector field */
-	mrpt::math::CMatrix z_vf;
+	mrpt::math::CMatrixF z_vf;
 
 	/** X coordinate of the points at which the vector field is plotted */
-	mrpt::math::CMatrix x_p;
+	mrpt::math::CMatrixF x_p;
 	/** Y coordinate of the points at which the vector field is plotted */
-	mrpt::math::CMatrix y_p;
+	mrpt::math::CMatrixF y_p;
 	/** Z coordinate of the points at which the vector field is plotted */
-	mrpt::math::CMatrix z_p;
+	mrpt::math::CMatrixF z_p;
 
 	/** By default it is 1.0 */
 	float m_LineWidth{1.0};

@@ -258,8 +258,8 @@ void Test_Kinect()
 				// Normalize the image
 				static CMatrixFloat range2D;  // Static to save time allocating
 				// the matrix in every iteration
-				range2D = last_obs->rangeImage *
-						  (1.0 / 5.0);  // kinect.getMaxRange());
+				range2D = last_obs->rangeImage;
+				range2D *= (1.0 / last_obs->maxRange);
 
 				img.setFromMatrix(range2D);
 

@@ -22,12 +22,12 @@ using namespace std;
  ---------------------------------------------------------------*/
 template <typename NUMTYPE>
 bool RANSAC_Template<NUMTYPE>::execute(
-	const CMatrixTemplateNumeric<NUMTYPE>& data,
-	const TRansacFitFunctor& fit_func, const TRansacDistanceFunctor& dist_func,
+	const CMatrixDynamic<NUMTYPE>& data, const TRansacFitFunctor& fit_func,
+	const TRansacDistanceFunctor& dist_func,
 	const TRansacDegenerateFunctor& degen_func, const double distanceThreshold,
 	const unsigned int minimumSizeSamplesToFit,
 	std::vector<size_t>& out_best_inliers,
-	CMatrixTemplateNumeric<NUMTYPE>& out_best_model, const double p,
+	CMatrixDynamic<NUMTYPE>& out_best_model, const double p,
 	const size_t maxIter) const
 {
 	MRPT_START
@@ -61,7 +61,7 @@ bool RANSAC_Template<NUMTYPE>::execute(
 		// a degenerate configuration.
 		bool degenerate = true;
 		size_t count = 1;
-		std::vector<CMatrixTemplateNumeric<NUMTYPE>> MODELS;
+		std::vector<CMatrixDynamic<NUMTYPE>> MODELS;
 
 		while (degenerate)
 		{
@@ -188,7 +188,3 @@ bool RANSAC_Template<NUMTYPE>::execute(
 // Template instantiation:
 template class mrpt::math::RANSAC_Template<float>;
 template class mrpt::math::RANSAC_Template<double>;
-
-#ifdef HAVE_LONG_DOUBLE
-template class mrpt::math::RANSAC_Template<long double>;
-#endif

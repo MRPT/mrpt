@@ -10,7 +10,7 @@
 
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/math/CMatrixB.h>
-#include <mrpt/math/CMatrixTemplate.h>
+#include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/opengl/CSetOfLines.h>
@@ -312,7 +312,7 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 	/** Whether the object may present transparencies or not. */
 	bool mEnableTransparency{true};
 	/** Mutable object with the mesh's points. */
-	mutable mrpt::math::CMatrixTemplate<mrpt::math::TPoint3D> actualMesh;
+	mutable mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D> actualMesh;
 	/** Scan validity matrix. */
 	mutable mrpt::math::CMatrixB validityMatrix;
 	/** Observation pitch range. When containing exactly two elements, they
@@ -423,7 +423,7 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 	 * Retrieves the full mesh, along with the validity matrix.
 	 */
 	void getActualMesh(
-		mrpt::math::CMatrixTemplate<mrpt::math::TPoint3D>& pts,
+		mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D>& pts,
 		mrpt::math::CMatrixBool& validity) const
 	{
 		if (!meshUpToDate) updateMesh();

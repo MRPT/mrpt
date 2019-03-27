@@ -95,7 +95,7 @@ class CICPCriteriaNRD
 	using pose_t = typename GRAPH_T::constraint_t::type_value;
 	using global_pose_t = typename GRAPH_T::global_pose_t;
 
-	using InfMat = mrpt::math::CMatrixFixedNumeric<
+	using InfMat = mrpt::math::CMatrixFixed<
 		double, constraint_t::state_length, constraint_t::state_length>;
 	/**\brief Typedef for accessing methods of the RangeScanRegistrationDecider
 	 * parent class.
