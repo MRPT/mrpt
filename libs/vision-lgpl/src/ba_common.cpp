@@ -24,6 +24,7 @@
 #include "vision-lgpl-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/robust_kernels.h>
+#include <mrpt/poses/Lie/SE.h>
 #include <mrpt/vision/bundle_adjustment.h>
 #include <mrpt/vision/pinhole.h>
 #include "ba_internals.h"
@@ -347,7 +348,7 @@ void mrpt::vision::add_se3_deltas_to_frames(
 
 		// Use the Lie Algebra methods for the increment:
 		const CArrayDouble<6> incr(delta_val);
-		const CPose3D incrPose = CPose3D::exp(incr);
+		const CPose3D incrPose = Lie::SE<3>::exp(incr);
 
 		// new_pose =  old_pose  [+] delta
 		//         = exp(delta) (+) old_pose

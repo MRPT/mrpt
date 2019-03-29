@@ -12,6 +12,9 @@
 #include "detectors-precomp.h"  // Precompiled headers
 
 #include <mrpt/detectors/CFaceDetection.h>
+#include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/CMatrixTemplate.h>
 #include <mrpt/math/geometry.h>
@@ -22,7 +25,6 @@
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CSphere.h>
-
 #include <mrpt/slam/CICP.h>
 #include <mrpt/slam/CMetricMapsAlignmentAlgorithm.h>
 
