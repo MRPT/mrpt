@@ -106,19 +106,19 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 		"${CMAKE_SOURCE_DIR}/libs/${name}/src/*.cpp"
 		"${CMAKE_SOURCE_DIR}/libs/${name}/src/*.c"
 		"${CMAKE_SOURCE_DIR}/libs/${name}/src/*.cxx"
-#		"${CMAKE_SOURCE_DIR}/libs/${name}/src/*.h"
-#		"${CMAKE_SOURCE_DIR}/libs/${name}/include/mrpt/${name}/*.h"
-#		"${CMAKE_SOURCE_DIR}/libs/${name}/include/mrpt/${name}/*.hpp"
-#		"${CMAKE_SOURCE_DIR}/doc/doxygen-pages/lib_mrpt_${name}.h"
+		"${CMAKE_SOURCE_DIR}/libs/${name}/src/*.h"
+		"${CMAKE_SOURCE_DIR}/libs/${name}/include/mrpt/${name}/*.h"
+		"${CMAKE_SOURCE_DIR}/libs/${name}/include/mrpt/${name}/*.hpp"
+		"${CMAKE_SOURCE_DIR}/doc/doxygen-pages/lib_mrpt_${name}.h"
 		)
 	list(APPEND ${name}_EXTRA_SRCS_NAME
 		"${name}"
 		"${name}"
 		"${name}"
-#		"${name} Internal Headers"
-#		"${name} Public Headers"
-#		"${name} Public Headers"
-#		"Documentation"
+		"${name} Internal Headers"
+		"${name} Public Headers"
+		"${name} Public Headers"
+		"${name} docs Headers"
 		)
 	# Only add these ones for "normal" libraries:
 	if (NOT ${headers_only})
@@ -190,10 +190,12 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 	if (NOT ${headers_only})
 		# A libray target:
 		add_library(${name}
-			${all_${name}_srcs}      # sources
 			${MRPT_VERSION_RC_FILE}  # Only !="" in Win32: the .rc file with version info
 			)
 
+		# Add sources as and headers as PRIVATE sources:
+		target_sources(${name} PRIVATE ${all_${name}_srcs})
+		
 		# private include dirs for this lib:
 		target_include_directories(${name} PRIVATE
 				$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/libs/${name}/src/> # To include ${name}-precomp.h
@@ -214,8 +216,12 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 	else()
 		# A hdr-only library: needs no real compiling
 		add_library(${name} INTERFACE)
+		
+		REMOVE_MATCHING_FILES_FROM_LIST(".*.h" all_${name}_srcs)
+		
 		# List of hdr files (for editing in IDEs,etc.):
 		target_sources(${name} INTERFACE ${all_${name}_srcs})
+		
 		set(iftype INTERFACE)
 	endif ()
 
