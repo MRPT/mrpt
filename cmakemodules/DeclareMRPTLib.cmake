@@ -190,12 +190,10 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 	if (NOT ${headers_only})
 		# A libray target:
 		add_library(${name}
+			${all_${name}_srcs}
 			${MRPT_VERSION_RC_FILE}  # Only !="" in Win32: the .rc file with version info
 			)
 
-		# Add sources as and headers as PRIVATE sources:
-		target_sources(${name} PRIVATE ${all_${name}_srcs})
-		
 		# private include dirs for this lib:
 		target_include_directories(${name} PRIVATE
 				$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/libs/${name}/src/> # To include ${name}-precomp.h
