@@ -50,7 +50,7 @@ struct TNodeProps
 
 	friend std::ostream& operator<<(std::ostream& o, const TNodeProps& obj)
 	{
-		o << obj.getAsString() << endl;
+		o << obj.getAsString() << std::endl;
 		return o;
 	}
 };
