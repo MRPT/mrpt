@@ -31,7 +31,7 @@ IF %ERRORLEVEL% NEQ 0 GOTO BAD_RETCODE
 
 REM 3) Do unit tests:
 REM ----------------------------------------------
-cmake --build . --config Release --target test
+cmake --build . --config Release --target test_legacy
 IF %ERRORLEVEL% NEQ 0 GOTO BAD_RETCODE
 
 REM 4) All seem OK. Build all.
