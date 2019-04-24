@@ -546,14 +546,15 @@ public:
 		}
 
 		//Read config params which describe the robot shape
-		num_levels = ini.read_int("ROBOT_CONFIG","HEIGHT_LEVELS", 1, true);
+		const auto sect = "CReactiveNavigationSystem3D";
+		num_levels = ini.read_int(sect,"HEIGHT_LEVELS", 1, true);
 		robotShape.resize(num_levels);
 		for (unsigned int i=1;i<=num_levels;i++)
 		{
-			robotShape.setHeight(i-1, ini.read_double("ROBOT_CONFIG",format("LEVEL%d_HEIGHT",i), 1.0, true) );
-			robotShape.setRadius(i-1, ini.read_double("ROBOT_CONFIG",format("LEVEL%d_RADIUS",i), 0.5, false) );
-			ini.read_vector("ROBOT_CONFIG",format("LEVEL%d_VECTORX",i), std::vector<double> (0), xaux, false);
-			ini.read_vector("ROBOT_CONFIG",format("LEVEL%d_VECTORY",i), std::vector<double> (0), yaux, false);
+			robotShape.setHeight(i-1, ini.read_double(sect,format("LEVEL%d_HEIGHT",i), 1.0, true) );
+			robotShape.setRadius(i-1, ini.read_double(sect,format("LEVEL%d_RADIUS",i), 0.5, false) );
+			ini.read_vector(sect,format("LEVEL%d_VECTORX",i), std::vector<double> (0), xaux, false);
+			ini.read_vector(sect,format("LEVEL%d_VECTORY",i), std::vector<double> (0), yaux, false);
 			ASSERT_(xaux.size() == yaux.size());
 			for (unsigned int j=0;j<xaux.size();j++)
 			{
@@ -563,12 +564,9 @@ public:
 
 		//Read other params associated with the robot model and its navigation
 		//CRobot2NavInterface_DiffDriven::loadConfigFile(ini, "ReactiveParams");
-		float tau = 0.f; //ini.read_float("ReactiveParams","ROBOTMODEL_TAU", 0, true);
-		float delay = 0.f; //ini.read_float("ReactiveParams","ROBOTMODEL_DELAY", 0, true);
-		float x_ini = ini.read_float("ReactiveParams","X0", 0, true);
-		float y_ini = ini.read_float("ReactiveParams","Y0", 0, true);
-		float phi_ini = DEG2RAD(ini.read_float("ReactiveParams","PHI0", 0, true));
-		robotSim.setDelayModelParams(tau, delay);
+		float x_ini = ini.read_float("MAP_CONFIG","X0", 0, true);
+		float y_ini = ini.read_float("MAP_CONFIG","Y0", 0, true);
+		float phi_ini = DEG2RAD(ini.read_float("MAP_CONFIG","PHI0", 0, true));
 		robotSim.resetStatus();
 		robotSim.setOdometryErrors(0);
 		robotSim.setCurrentGTPose(mrpt::math::TPose2D(x_ini, y_ini, phi_ini));
