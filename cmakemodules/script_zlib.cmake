@@ -13,7 +13,7 @@ else()
 			set(MRPT_ZLIB_LIBS ${ZLIB_LIBRARIES}) # APPEND_MRPT_LIBS(z)
 
 			set(CMAKE_MRPT_HAS_ZLIB_SYSTEM 1)
-			set(CMAKE_MRPT_HAS_ZLIB_SYSTEM_IS_WX 1)
+			set(CMAKE_MRPT_HAS_ZLIB_SYSTEM_IS_WX 0)
 	else()
 			# If we are using wxWidgets we dont need this... for now check if this is MinGW on Windows...
 			if (WIN32 AND CMAKE_MRPT_HAS_WXWIDGETS)
