@@ -14,7 +14,7 @@
 
 <hr>
 <a name="1.5.7">
-<h2>Version 1.5.7: (Under development) </h2></a>
+<h2>Version 1.5.7: Released 24/APR/2019  </h2></a>
 - <b>Detailed list of changes:</b>
 	- \ref mrpt_base_grp
 		- The following features have been finally ported to C++11. User code now requires, at least, C++11 enabled:
@@ -33,6 +33,7 @@
 	- BUG FIXES:
 		- Fix missing "-ldl" linker flag.
 		- Fix building against wxWidgets 3.1.1 in Windows (zlib link error).
+		- Fix potential segfault in 3D reactive navigator.
 
 <hr>
 <a name="1.5.6">
