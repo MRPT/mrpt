@@ -322,6 +322,16 @@ void CReactiveNavigationSystem3D::loggingGetWSObstaclesAndShape(CLogFileRecord &
 bool CReactiveNavigationSystem3D::checkCollisionWithLatestObstacles(const mrpt::math::TPose2D &relative_robot_pose) const
 {
 	const size_t nSlices = m_robotShape.size();
+	if (m_WS_Obstacles_inlevels.size() != m_robotShape.size())
+	{
+		MRPT_LOG_WARN("checkCollisionWithLatestObstacles() skipped: no previous obstacles.");
+		return false;
+	}
+	if (m_ptgmultilevel.empty())
+	{
+		MRPT_LOG_WARN("checkCollisionWithLatestObstacles() skipped: no PTGs.");
+		return false;
+	}
 
 	for (size_t idxH = 0; idxH < nSlices; ++idxH)
 	{
@@ -331,7 +341,8 @@ bool CReactiveNavigationSystem3D::checkCollisionWithLatestObstacles(const mrpt::
 
 		for (size_t i = 0; i < 1 /* assume all PTGs share the same robot shape! */; i++)
 		{
-			const auto ptg = this->m_ptgmultilevel[i].PTGs[idxH];
+			ASSERT_EQUAL_(m_ptgmultilevel[i].PTGs.size(), nSlices);
+			const auto ptg = m_ptgmultilevel[i].PTGs[idxH];
 			ASSERT_(ptg != nullptr);
 
 			const double R = ptg->getMaxRobotRadius();
