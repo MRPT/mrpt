@@ -30,8 +30,8 @@ Copyright: 2000-2002, John Labenki
 License: WXwindows
 
 Files: libs/base/include/mrpt/otherlibs/sophus/*
-Copyright: 2011-2017 Hauke Strasdat
-           2012-2017 Steven Lovegrove
+Copyright: 2011-2017, Hauke Strasdat
+           2012-2017, Steven Lovegrove
 License: Expat
 
 Files: libs/base/include/mrpt/utils/msvc_inttypes.h
@@ -51,8 +51,8 @@ Comment: BSD-3 license sent by the author through personal communication.
 Files: libs/gui/src/mathplots/*
 Copyright: 2003, David Schalig
            2003-2007, Davide Rondini
-		   2007 Val Greene
-		   2007 Jose Luis Blanco
+           2007, Val Greene
+           2007, Jose Luis Blanco
 License: WXwindows
 
 Files: libs/hwdrivers/src/xSens_*/*
@@ -63,7 +63,7 @@ Comment: Permission is granted by Xsens Technologies to distribute this code as
 
 Files: libs/base/src/utils/md5.cpp
 Copyright: 1991-1992, RSA Data Security, Inc.
-           2009 Frank Thilo <thilo@unix-ag.org>
+           2009, Frank Thilo <thilo@unix-ag.org>
 License: rsa-license
 
 Files: libs/base/include/mrpt/otherlibs/exprtk.hpp
