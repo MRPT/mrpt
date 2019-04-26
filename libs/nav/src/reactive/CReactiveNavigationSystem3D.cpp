@@ -346,7 +346,9 @@ bool CReactiveNavigationSystem3D::checkCollisionWithLatestObstacles(
 	const size_t nSlices = m_robotShape.size();
 	if (m_WS_Obstacles_inlevels.size() != m_robotShape.size())
 	{
-		MRPT_LOG_WARN("checkCollisionWithLatestObstacles() skipped: no previous obstacles.");
+		MRPT_LOG_WARN(
+			"checkCollisionWithLatestObstacles() skipped: no previous "
+			"obstacles.");
 		return false;
 	}
 	if (m_ptgmultilevel.empty())
