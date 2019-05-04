@@ -68,6 +68,7 @@ class navlog_viewer_GUI_designDialog : public wxFrame  // wxDialog
 	//*)
 	void OntimMouseXY(wxTimerEvent& event);
 	void OnmnuMatlabExportPaths(wxCommandEvent& event);
+	void OnmnuSaveCurrentObstacles(wxCommandEvent& event);
 
 	//(*Identifiers(navlog_viewer_GUI_designDialog)
 	static const long ID_BUTTON1;
@@ -101,6 +102,7 @@ class navlog_viewer_GUI_designDialog : public wxFrame  // wxDialog
 	static const long ID_MENUITEM3;
 	//*)
 	static const long ID_TIMER3;
+	static const long ID_MENUITEM100;
 
 	//(*Declarations(navlog_viewer_GUI_designDialog)
 	wxButton* btnStop;

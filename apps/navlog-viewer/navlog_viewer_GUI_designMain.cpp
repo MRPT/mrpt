@@ -100,9 +100,8 @@ const long navlog_viewer_GUI_designDialog::ID_MENUITEM2 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_MENUITEM1 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_MENUITEM3 = wxNewId();
 //*)
-
+const long navlog_viewer_GUI_designDialog::ID_MENUITEM100 = wxNewId();
 const long ID_MENUITEM_SAVE_MATLAB_PATH = wxNewId();
-
 const long navlog_viewer_GUI_designDialog::ID_TIMER3 = wxNewId();
 
 BEGIN_EVENT_TABLE(navlog_viewer_GUI_designDialog, wxFrame)
@@ -136,6 +135,8 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(
 {
 	// Load my custom icons:
 	wxArtProvider::Push(new MyArtProvider);
+
+	wxMenuItem* mnuSaveCurrentObstacles;
 
 	//(*Initialize(navlog_viewer_GUI_designDialog)
 	wxStaticBoxSizer* StaticBoxSizer2;
@@ -354,6 +355,10 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(
 		(&mnuMoreOps), ID_MENUITEM2, _("See PTG params..."), wxEmptyString,
 		wxITEM_NORMAL);
 	mnuMoreOps.Append(mnuSeePTGParams);
+	mnuSaveCurrentObstacles = new wxMenuItem(
+		(&mnuMoreOps), ID_MENUITEM100, _("Save current obstacle map..."),
+		wxEmptyString, wxITEM_NORMAL);
+	mnuMoreOps.Append(mnuSaveCurrentObstacles);
 	mnuMatlabPlots = new wxMenuItem(
 		(&mnuMoreOps), ID_MENUITEM1, _("Export map plot to MATLAB..."),
 		wxEmptyString, wxITEM_NORMAL);
@@ -421,6 +426,10 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(
 		(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::
 			OnmnuSaveScoreMatrixSelected);
 	//*)
+	Connect(
+		ID_MENUITEM100, wxEVT_COMMAND_MENU_SELECTED,
+		(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::
+			OnmnuSaveCurrentObstacles);
 
 	{
 		wxMenuItem* mnuMatlabExportPaths;
@@ -1745,6 +1754,30 @@ void navlog_viewer_GUI_designDialog::OnmnuSaveScoreMatrixSelected(
 			dirs_scores->saveToTextFile(sFil, mrpt::math::MATRIX_FORMAT_FIXED);
 		}
 	}
+
+	WX_END_TRY
+}
+
+void navlog_viewer_GUI_designDialog::OnmnuSaveCurrentObstacles(
+	wxCommandEvent& event)
+{
+	WX_START_TRY
+
+	const int log_idx = this->slidLog->GetValue();
+	if (log_idx >= int(m_logdata.size())) return;
+	auto logptr = std::dynamic_pointer_cast<CLogFileRecord>(m_logdata[log_idx]);
+	const CLogFileRecord& log = *logptr;
+
+	wxFileDialog dialog(
+		this, _("Save current obstacle point cloud...") /*caption*/,
+		_(".") /* defaultDir */, _("obstacles.txt") /* defaultFilename */,
+		_("MATLAB/Octave plain text file (*.txt)|*.txt") /* wildcard */,
+		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+	if (dialog.ShowModal() != wxID_OK) return;
+
+	const string filName(dialog.GetPath().mb_str());
+
+	log.WS_Obstacles_original.save2D_to_text_file(filName);
 
 	WX_END_TRY
 }
