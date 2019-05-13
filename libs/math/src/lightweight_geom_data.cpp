@@ -840,10 +840,15 @@ double TPlane::distance(const TLine3D& line) const
 }
 void TPlane::getNormalVector(double (&vector)[3]) const
 {
-	vector[0] = coefs[0];
-	vector[1] = coefs[1];
-	vector[2] = coefs[2];
+	for (int i = 0; i < 3; i++) vector[i] = coefs[i];
 }
+TVector3D TPlane::getNormalVector() const
+{
+	TVector3D v;
+	for (int i = 0; i < 3; i++) v[i] = coefs[i];
+	return v;
+}
+
 void TPlane::unitarize()
 {
 	double s = sqrt(squareNorm<3, double>(coefs));
@@ -903,6 +908,18 @@ TPlane::TPlane(const TPoint3D& p1, const TLine3D& r2)
 	if (abs(coefs[0]) < getEpsilon() && abs(coefs[1]) < getEpsilon() &&
 		abs(coefs[2]) < getEpsilon())
 		throw logic_error("Point is contained in the line");
+	coefs[3] = -coefs[0] * p1.x - coefs[1] * p1.y - coefs[2] * p1.z;
+}
+TPlane::TPlane(const TPoint3D& p1, const TVector3D& normal)
+{
+	const double normal_norm = normal.norm();
+	ASSERT_ABOVE_(normal_norm, getEpsilon());
+
+	// Ensure we have a unit vector:
+	const auto n = normal * (1. / normal_norm);
+	coefs[0] = n.x;
+	coefs[1] = n.y;
+	coefs[2] = n.z;
 	coefs[3] = -coefs[0] * p1.x - coefs[1] * p1.y - coefs[2] * p1.z;
 }
 TPlane::TPlane(const TLine3D& r1, const TLine3D& r2)
