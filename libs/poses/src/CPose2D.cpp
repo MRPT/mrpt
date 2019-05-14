@@ -215,6 +215,12 @@ void CPose2D::composePoint(
 {
 	this->composePoint(l.x, l.y, l.z, g.x, g.y, g.z);
 }
+mrpt::math::TPoint3D CPose2D::composePoint(const mrpt::math::TPoint3D& l) const
+{
+	mrpt::math::TPoint3D g;
+	composePoint(l, g);
+	return g;
+}
 
 void CPose2D::composePoint(
 	double lx, double ly, double lz, double& gx, double& gy, double& gz) const
@@ -235,6 +241,18 @@ void CPose2D::inverseComposePoint(
 
 	lx = Ax * m_cosphi + Ay * m_sinphi;
 	ly = -Ax * m_sinphi + Ay * m_cosphi;
+}
+void CPose2D::inverseComposePoint(
+	const mrpt::math::TPoint2D& g, mrpt::math::TPoint2D& l) const
+{
+	inverseComposePoint(g.x, g.y, l.x, l.y);
+}
+mrpt::math::TPoint2D CPose2D::inverseComposePoint(
+	const mrpt::math::TPoint2D& g) const
+{
+	mrpt::math::TPoint2D l;
+	inverseComposePoint(g, l);
+	return l;
 }
 
 /*---------------------------------------------------------------

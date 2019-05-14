@@ -736,8 +736,10 @@ struct TPose3D : public TPoseOrPoint
 		mrpt::math::CMatrixFixedNumeric<double, 4, 3>* out_dq_dr =
 			nullptr) const;
 
-	void composePoint(const TPoint3D l, TPoint3D& g) const;
-	void inverseComposePoint(const TPoint3D g, TPoint3D& l) const;
+	void composePoint(const TPoint3D& l, TPoint3D& g) const;
+	TPoint3D composePoint(const TPoint3D& l) const;
+	void inverseComposePoint(const TPoint3D& g, TPoint3D& l) const;
+	TPoint3D inverseComposePoint(const TPoint3D& g) const;
 	void composePose(const TPose3D other, TPose3D& result) const;
 	void getRotationMatrix(mrpt::math::CMatrixDouble33& R) const;
 	void getHomogeneousMatrix(mrpt::math::CMatrixDouble44& HG) const;
