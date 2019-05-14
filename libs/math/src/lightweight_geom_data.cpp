@@ -253,7 +253,7 @@ void TPose3D::getAsQuaternion(
 		out_dq_dr->loadFromArray(nums);
 	}
 }
-void TPose3D::composePoint(const TPoint3D l, TPoint3D& g) const
+void TPose3D::composePoint(const TPoint3D& l, TPoint3D& g) const
 {
 	CMatrixDouble33 R;
 	this->getRotationMatrix(R);
@@ -264,7 +264,14 @@ void TPose3D::composePoint(const TPoint3D l, TPoint3D& g) const
 
 	g = res;
 }
-void TPose3D::inverseComposePoint(const TPoint3D g, TPoint3D& l) const
+TPoint3D TPose3D::composePoint(const TPoint3D& l) const
+{
+	TPoint3D g;
+	composePoint(l, g);
+	return g;
+}
+
+void TPose3D::inverseComposePoint(const TPoint3D& g, TPoint3D& l) const
 {
 	CMatrixDouble44 H;
 	this->getInverseHomogeneousMatrix(H);
@@ -275,6 +282,13 @@ void TPose3D::inverseComposePoint(const TPoint3D g, TPoint3D& l) const
 
 	l = res;
 }
+TPoint3D TPose3D::inverseComposePoint(const TPoint3D& g) const
+{
+	TPoint3D l;
+	inverseComposePoint(g, l);
+	return l;
+}
+
 void TPose3D::getRotationMatrix(mrpt::math::CMatrixDouble33& R) const
 {
 	const double cy = cos(yaw);
