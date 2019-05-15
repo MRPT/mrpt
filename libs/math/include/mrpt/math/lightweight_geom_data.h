@@ -1339,15 +1339,10 @@ struct TPlane
 	 * Unitarize normal vector.
 	 */
 	void unitarize();
-	void getAsPose3D(mrpt::math::TPose3D& outPose);
-	/**
-	 * Unitarize, then get normal vector.
-	 */
-	void getUnitaryNormalVector(double (&vec)[3])
-	{
-		unitarize();
-		getNormalVector(vec);
-	}
+	void getAsPose3D(mrpt::math::TPose3D& outPose) const;
+	void getAsPose3DForcingOrigin(const TPoint3D& center, TPose3D& pose) const;
+	/** Get normal vector */
+	void getUnitaryNormalVector(double (&vec)[3]) const;
 	/** Defines a plane which contains these three points.
 	 * \throw std::logic_error if the points are linearly dependants.
 	 */
@@ -1377,7 +1372,6 @@ struct TPlane
 	{
 		for (size_t i = 0; i < 4; i++) coefs[i] = vec[i];
 	}
-	void getAsPose3DForcingOrigin(const TPoint3D& newOrigin, TPose3D& pose);
 };
 
 using TPlane3D = TPlane;

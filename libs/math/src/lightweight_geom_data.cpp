@@ -863,6 +863,14 @@ TVector3D TPlane::getNormalVector() const
 	return v;
 }
 
+void TPlane::getUnitaryNormalVector(double (&vec)[3]) const
+{
+	const double s = sqrt(squareNorm<3, double>(coefs));
+	ASSERT_ABOVE_(s, getEpsilon());
+	const double k = 1.0 / s;
+	for (int i = 0; i < 3; i++) vec[i] = coefs[i] * k;
+}
+
 void TPlane::unitarize()
 {
 	double s = sqrt(squareNorm<3, double>(coefs));
@@ -870,7 +878,7 @@ void TPlane::unitarize()
 }
 
 // Returns a 6D pose such as its XY plane coincides with the plane
-void TPlane::getAsPose3D(mrpt::math::TPose3D& outPose)
+void TPlane::getAsPose3D(mrpt::math::TPose3D& outPose) const
 {
 	double normal[3];
 	getUnitaryNormalVector(normal);
@@ -884,15 +892,16 @@ void TPlane::getAsPose3D(mrpt::math::TPose3D& outPose)
 		}
 	outPose.fromHomogeneousMatrix(AXIS);
 }
-void TPlane::getAsPose3DForcingOrigin(const TPoint3D& newOrigin, TPose3D& pose)
+void TPlane::getAsPose3DForcingOrigin(
+	const TPoint3D& center, TPose3D& pose) const
 {
-	if (!contains(newOrigin))
+	if (!contains(center))
 		throw std::logic_error("Base point is not in the plane.");
 	double normal[3];
 	getUnitaryNormalVector(normal);
 	CMatrixDouble44 AXIS;
 	generateAxisBaseFromDirectionAndAxis(normal, 2, AXIS);
-	for (size_t i = 0; i < 3; i++) AXIS.set_unsafe(i, 3, newOrigin[i]);
+	for (size_t i = 0; i < 3; i++) AXIS.set_unsafe(i, 3, center[i]);
 	pose.fromHomogeneousMatrix(AXIS);
 }
 TPlane::TPlane(const TPoint3D& p1, const TPoint3D& p2, const TPoint3D& p3)
