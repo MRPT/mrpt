@@ -289,14 +289,18 @@ class CDynamicGrid3D
 		return &m_map[cidx];
 	}
 
-	/** Returns a pointer to the contents of a voxel given by its voxel indexes,
-	 * or nullptr if it is out of the map extensions.
+	/** Returns a pointer to the contents of a voxel given by its absolute voxel
+	 *  index, or nullptr if it is out of range.
 	 */
-	inline const T* cellByIndex(
-		unsigned int cx, unsigned int cy, unsigned int cz) const
+	inline const T* cellByIndex(size_t cidx) const
 	{
-		const size_t cidx = cellAbsIndexFromCXCYCZ(cx, cy, cz);
-		if (cidx == INVALID_VOXEL_IDX) return nullptr;
+		if (cidx > m_map.size()) return nullptr;
+		return &m_map[cidx];
+	}
+	/// \overload
+	inline T* cellByIndex(size_t cidx)
+	{
+		if (cidx > m_map.size()) return nullptr;
 		return &m_map[cidx];
 	}
 
