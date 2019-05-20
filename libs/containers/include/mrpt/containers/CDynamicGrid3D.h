@@ -289,7 +289,7 @@ class CDynamicGrid3D
 		return &m_map[cidx];
 	}
 	inline const T* cellByIndex(
-	    unsigned int cx, unsigned int cy, unsigned int cz) const
+		unsigned int cx, unsigned int cy, unsigned int cz) const
 	{
 		const size_t cidx = cellAbsIndexFromCXCYCZ(cx, cy, cz);
 		if (cidx == INVALID_VOXEL_IDX) return nullptr;

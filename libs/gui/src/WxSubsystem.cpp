@@ -43,51 +43,65 @@ using namespace std;
 std::mutex WxSubsystem::CWXMainFrame::cs_windowCount;
 int WxSubsystem::CWXMainFrame::m_windowCount = 0;
 
-std::queue<WxSubsystem::TRequestToWxMainThread*>*
-	WxSubsystem::listPendingWxRequests = nullptr;
-std::mutex* WxSubsystem::cs_listPendingWxRequests = nullptr;
-
 volatile WxSubsystem::CWXMainFrame* WxSubsystem::CWXMainFrame::oneInstance =
 	nullptr;
 bool isConsoleApp_value = true;
 bool WxSubsystem::isConsoleApp() { return isConsoleApp_value; }
-WxSubsystem::CAuxWxSubsystemShutdowner WxSubsystem::global_wxsubsystem_shutdown;
 
-// Auxiliary class implementation:
-WxSubsystem::CAuxWxSubsystemShutdowner::CAuxWxSubsystemShutdowner() = default;
-WxSubsystem::CAuxWxSubsystemShutdowner::~CAuxWxSubsystemShutdowner()
+namespace mrpt::gui
 {
-	if (WxSubsystem::isConsoleApp())
+/** An auxiliary global object used just to launch a final request to the
+ * wxSubsystem for shutdown:
+ */
+class WxSys
+{
+   private:
+	WxSys() = default;
+
+   public:
+	static WxSys& Instance()
 	{
-#ifdef WXSUBSYSTEM_VERBOSE
-		printf("[~CAuxWxSubsystemShutdowner] Sending 999...\n");
-#endif
-		// Shut down:
-		try
-		{
-			auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
-			REQ->OPCODE = 999;
-			WxSubsystem::pushPendingWxRequest(REQ);
+		static WxSys s;
+		return s;
+	}
 
-			// std::this_thread::sleep_for(100ms); // JL: I found no better way
-			// of doing this, sorry :-(  See
-			// WxSubsystem::waitWxShutdownsIfNoWindows()
-			WxSubsystem::waitWxShutdownsIfNoWindows();
-		}
-		catch (...)
+	~WxSys()
+	{
+		if (WxSubsystem::isConsoleApp())
 		{
-		}  // Just in case we got an out-of-mem error.
-	}  // is console app.
+#ifdef WXSUBSYSTEM_VERBOSE
+			printf("[~WxSys] Sending 999...\n");
+#endif
+			// Shut down:
+			try
+			{
+				auto REQ = std::make_shared<WxSubsystem::TWxRequest>();
+				REQ->OPCODE = 999;
+				WxSubsystem::pushPendingWxRequest(REQ);
+
+				// std::this_thread::sleep_for(100ms); // JL: I found no better
+				// way of doing this, sorry :-(  See
+				// WxSubsystem::waitWxShutdownsIfNoWindows()
+				WxSubsystem::waitWxShutdownsIfNoWindows();
+			}
+			catch (...)
+			{
+			}  // Just in case we got an out-of-mem error.
+		}  // is console app.
 
 #ifdef WXSUBSYSTEM_VERBOSE
-	printf("[~CAuxWxSubsystemShutdowner] Deleting static objects.\n");
+		printf("[~WxSys] Deleting static objects.\n");
 #endif
-	// This is the final point where all dynamic memory must be deleted:
-	// delete &WxSubsystem::GetWxMainThreadInstance(); // may cause crashes at
-	// app end...
-	delete WxSubsystem::listPendingWxRequests;
-	delete WxSubsystem::cs_listPendingWxRequests;
-}
+		// This is the final point where all dynamic memory must be deleted:
+		// delete &WxSubsystem::GetWxMainThreadInstance(); // may cause crashes
+		// at app end...
+	}
+
+	std::queue<WxSubsystem::TWxRequest::ConstPtr> pendingRequests;
+	std::mutex cs_pendingRequests;
+};
+
+}  // namespace mrpt::gui
 
 // ---------------------------------------------------------------------------------------
 // Auxiliary dialog class for the "ask user to open a camera":
@@ -188,10 +202,6 @@ WxSubsystem::CWXMainFrame::~CWXMainFrame()
 #endif
 	delete m_theTimer;
 	oneInstance = nullptr;
-
-	// Purge all pending requests:
-	TRequestToWxMainThread* msg;
-	while (nullptr != (msg = popPendingWxRequest())) delete[] msg;
 }
 
 int WxSubsystem::CWXMainFrame::notifyWindowCreation()
@@ -233,21 +243,17 @@ int WxSubsystem::CWXMainFrame::notifyWindowDestruction()
 /** Thread-safe method to return the next pending request, or nullptr if there
  * is none (After usage, FREE the memory!)
  */
-WxSubsystem::TRequestToWxMainThread* WxSubsystem::popPendingWxRequest()
+WxSubsystem::TWxRequest::ConstPtr WxSubsystem::popPendingWxRequest()
 {
-	if (!cs_listPendingWxRequests)
-	{
-		cs_listPendingWxRequests = new std::mutex();
-		listPendingWxRequests = new std::queue<TRequestToWxMainThread*>;
-	}
-
-	std::lock_guard<std::mutex> locker(*cs_listPendingWxRequests);
+	auto& wx = WxSys::Instance();
+	std::lock_guard<std::mutex> locker(wx.cs_pendingRequests);
 
 	// Is empty?
-	if (listPendingWxRequests->empty()) return nullptr;
+	if (wx.pendingRequests.empty()) return nullptr;
 
-	TRequestToWxMainThread* ret = listPendingWxRequests->front();
-	listPendingWxRequests->pop();  // Remove from the queue
+	auto ret = WxSys::Instance().pendingRequests.front();
+	// Remove from the queue
+	WxSys::Instance().pendingRequests.pop();
 
 	return ret;
 }
@@ -255,27 +261,21 @@ WxSubsystem::TRequestToWxMainThread* WxSubsystem::popPendingWxRequest()
 /** Thread-safe method to insert a new pending request (The memory must be
  * dinamically allocated with "new T[1]", will be freed by receiver.)
  */
-void WxSubsystem::pushPendingWxRequest(
-	WxSubsystem::TRequestToWxMainThread* data)
+void WxSubsystem::pushPendingWxRequest(const TWxRequest::ConstPtr& data)
 {
+	auto& wx = WxSys::Instance();
+
 	if (!WxSubsystem::CWXMainFrame::oneInstance)
 	{
 #ifdef WXSUBSYSTEM_VERBOSE
 		cout << "[WxSubsystem::pushPendingWxRequest] IGNORING request since "
 				"app seems already closed.\n";
 #endif
-		delete[] data;
 		return;  // wx subsystem already closed, ignore.
 	}
 
-	if (!cs_listPendingWxRequests)
-	{
-		cs_listPendingWxRequests = new std::mutex();
-		listPendingWxRequests = new std::queue<TRequestToWxMainThread*>;
-	}
-
-	std::lock_guard<std::mutex> locker(*cs_listPendingWxRequests);
-	listPendingWxRequests->push(data);
+	std::lock_guard<std::mutex> locker(wx.cs_pendingRequests);
+	wx.pendingRequests.push(data);
 }
 
 /** This method processes the pending requests from the main MRPT application
@@ -288,7 +288,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 	bool app_closed = false;
 	try
 	{
-		TRequestToWxMainThread* msg;
+		TWxRequest::ConstPtr msg;
 
 #ifdef WXSUBSYSTEM_VERBOSE
 		cout << "[OnTimerProcessRequests] Entering" << endl;
@@ -775,8 +775,6 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 
 			}  // end switch OPCODE
 
-			// Free the memory:
-			delete[] msg;
 		}  // end while
 	}
 	catch (...)
@@ -1059,7 +1057,7 @@ WxSubsystem::TWxMainThreadData& WxSubsystem::GetWxMainThreadInstance()
 {
 	// static TWxMainThreadData dat;
 	// Create as dynamic memory, since it'll be deleted in
-	// CAuxWxSubsystemShutdowner:
+	// WxSys:
 	static TWxMainThreadData* dat = nullptr;
 	static bool first_creat = true;
 	if (!dat && first_creat)
