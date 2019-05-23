@@ -10,11 +10,18 @@
 
 /** \defgroup mrpt_maps_grp [mrpt-maps]
 
+Map representations for localization and SLAM.
+
 <small> <a href="index.html#libs">Back to list of all libraries</a> | <a
 href="modules.html" >See all modules</a> </small> <br>
 
-<h2>Library <code>mrpt-maps</code></h2>
-<hr>
+# Library `mrpt-maps`
+
+This library is part of MRPT and can be installed in Debian-based systems with:
+
+		sudo apt install libmrpt-maps-dev
+
+See: \ref mrpt_from_cmake
 
 This library includes (almost) all the maps usable for localization or mapping
 in the rest of MRPT classes.
