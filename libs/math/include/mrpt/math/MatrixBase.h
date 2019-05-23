@@ -16,7 +16,7 @@ namespace mrpt::math
  *
  * See MatrixVectorBase
  *
- * \sa CMatrixTemplateNumeric
+ * \sa CMatrixFixed
  * \ingroup mrpt_math_grp
  */
 template <typename Scalar, class Derived>

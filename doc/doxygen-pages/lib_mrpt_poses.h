@@ -8,39 +8,22 @@
    +---------------------------------------------------------------------------+
  */
 
-/** \defgroup mrpt_math_grp [mrpt-math]
+// clang-format off
 
-Math C++ library: vectors and matrices, probability distributions, statistics,
-geometry, etc.
+/** \defgroup mrpt_poses_grp [mrpt-poses]
 
-[TOC]
+SE(2)/SE(3) poses and probability distributions
 
-# Library `mrpt-math`
-<small> [New in MRPT 2.0.0] </small>
+<small> <a href="index.html#libs">Back to list of all libraries</a> | <a href="modules.html" >See all modules</a> </small>
+<br>
+
+# Library `mrpt-poses`
 
 This library is part of MRPT and can be installed in Debian-based systems with:
 
-		sudo apt install libmrpt-math-dev
+		sudo apt install libmrpt-poses-dev
 
 See: \ref mrpt_from_cmake
-
-The main classes and concepts associated with this library:
-
- - \ref mrpt_math_vectors_matrices_grp: Vectors and matrices (compatible with
-the Eigen library).
- - \ref mrpt_math_lwgeom_grp: TPose2D, TPose3D, TPoint3D, TLine3D, geometry
-functions, etc. (See also: \ref mrpt_poses_grp)
-
-Other important elements:
- - \ref filtering_grp
- - \ref fresnel_integrals_grp
- - \ref fourier_grp
- - \ref gausspdf_transform_grp
- - \ref interpolation_grp
- - \ref kdtree_grp
- - \ref polynomial_roots
- - \ref ransac_grp
- - \ref stats_grp
 
 
 
