@@ -168,6 +168,9 @@ class CPose2D : public CPose<CPose2D, 3>,
 	void composePoint(
 		const mrpt::math::TPoint2D& l, mrpt::math::TPoint2D& g) const;
 
+	/// \overload
+	mrpt::math::TPoint3D composePoint(const mrpt::math::TPoint3D& l) const;
+
 	/** overload \f$ G = P \oplus L \f$ with G and L being 3D points and P this
 	 * 2D pose (the "z" coordinate remains unmodified) */
 	void composePoint(
@@ -182,11 +185,11 @@ class CPose2D : public CPose<CPose2D, 3>,
 	void inverseComposePoint(
 		const double gx, const double gy, double& lx, double& ly) const;
 	/** \overload */
-	inline void inverseComposePoint(
-		const mrpt::math::TPoint2D& g, mrpt::math::TPoint2D& l) const
-	{
-		inverseComposePoint(g.x, g.y, l.x, l.y);
-	}
+	void inverseComposePoint(
+		const mrpt::math::TPoint2D& g, mrpt::math::TPoint2D& l) const;
+	/** \overload */
+	mrpt::math::TPoint2D inverseComposePoint(
+		const mrpt::math::TPoint2D& g) const;
 
 	/** The operator \f$ u' = this \oplus u \f$ is the pose/point compounding
 	 * operator. */

@@ -295,6 +295,15 @@ class CPose3D : public CPose<CPose3D, 6>,
 			local_point.x, local_point.y, local_point.z, global_point.x,
 			global_point.y, global_point.z);
 	}
+	/** \overload Returns global point: "this \oplus l" */
+	inline mrpt::math::TPoint3D composePoint(
+		const mrpt::math::TPoint3D& l) const
+	{
+		mrpt::math::TPoint3D g;
+		composePoint(l, g);
+		return g;
+	}
+
 	/** This version of the method assumes that the resulting point has no Z
 	 * component (use with caution!) */
 	inline void composePoint(
@@ -342,6 +351,14 @@ class CPose3D : public CPose<CPose3D, 6>,
 		const mrpt::math::TPoint3D& g, mrpt::math::TPoint3D& l) const
 	{
 		inverseComposePoint(g.x, g.y, g.z, l.x, l.y, l.z);
+	}
+	/** \overload Returns local point: `g` as seen from `this` pose */
+	inline mrpt::math::TPoint3D inverseComposePoint(
+		const mrpt::math::TPoint3D& g) const
+	{
+		mrpt::math::TPoint3D l;
+		inverseComposePoint(g, l);
+		return l;
 	}
 
 	/** overload for 2D points \exception If the z component of the result is

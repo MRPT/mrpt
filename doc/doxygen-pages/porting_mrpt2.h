@@ -92,8 +92,8 @@
  * templatized `using`. Example:
  *       \code
  *       // Old: MRPT 1.* code
- *       #include <mrpt/core/aligned_std_vector.h>
- *       mrpt::aligned_std_vector<Foo>  v;
+ *       #include <mrpt/utils/stl_containers_utils.h>
+ *       mrpt::aligned_containers<Foo>::vector_t m_all_poses v;
  *
  *       // New: MRPT 2.* code
  *       #include <mrpt/core/aligned_std_vector.h>

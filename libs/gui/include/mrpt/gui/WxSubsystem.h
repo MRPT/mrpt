@@ -115,18 +115,6 @@ class WxSubsystem
 	 */
 	static bool isConsoleApp();
 
-	/** An auxiliary global object used just to launch a final request to the
-	 * wxSubsystem for shutdown:
-	 */
-	class CAuxWxSubsystemShutdowner
-	{
-	   public:
-		CAuxWxSubsystemShutdowner();
-		~CAuxWxSubsystemShutdowner();
-	};
-
-	static CAuxWxSubsystemShutdowner global_wxsubsystem_shutdown;
-
 	/** The main frame of the wxWidgets application
 	 */
 	class CWXMainFrame : public wxFrame
@@ -186,12 +174,15 @@ class WxSubsystem
 
 	/** The data structure for each inter-thread request:
 	 */
-	struct TRequestToWxMainThread
+	struct TWxRequest
 	{
-		TRequestToWxMainThread() = default;
+		TWxRequest() = default;
 
-		/** Only one of source* can be non-nullptr, indicating the class that
-		 * generated the request. */
+		using Ptr = std::shared_ptr<TWxRequest>;
+		using ConstPtr = std::shared_ptr<const TWxRequest>;
+
+		/** Only one of source* can be non-nullptr, indicating the class
+		 * that generated the request. */
 		mrpt::gui::CDisplayWindow* source2D{nullptr};
 
 		/** Only one of source* can be non-nullptr, indicating the class that
@@ -288,12 +279,16 @@ class WxSubsystem
 	/** Thread-safe method to return the next pending request, or nullptr if
 	 * there is none (After usage, FREE the memory!)
 	 */
-	static TRequestToWxMainThread* popPendingWxRequest();
+	static TWxRequest::ConstPtr popPendingWxRequest();
 
 	/** Thread-safe method to insert a new pending request (The memory must be
 	 * dinamically allocated with "new T[1]", will be freed by receiver.)
 	 */
-	static void pushPendingWxRequest(TRequestToWxMainThread* data);
+	static void pushPendingWxRequest(const TWxRequest::ConstPtr& data);
+	inline static void pushPendingWxRequest(const TWxRequest::Ptr& data)
+	{
+		pushPendingWxRequest(std::const_pointer_cast<const TWxRequest>(data));
+	}
 
 	/** Thread-safe method to create one single instance of the main wxWidgets
 	 * thread: it will create the thread only if it is not running yet.
@@ -302,11 +297,6 @@ class WxSubsystem
 
 	static wxBitmap getMRPTDefaultIcon();
 
-   private:
-	/** Do not access directly to this, use the thread-safe functions
-	 */
-	static std::queue<TRequestToWxMainThread*>* listPendingWxRequests;
-	static std::mutex* cs_listPendingWxRequests;
 #endif
 };  // End of class def.
 
