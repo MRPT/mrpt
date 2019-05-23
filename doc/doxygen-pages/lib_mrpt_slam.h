@@ -5,16 +5,28 @@
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file        |
    | See: https://www.mrpt.org/Authors - All rights reserved.                  |
    | Released under BSD License. See details in https://www.mrpt.org/License   |
-   +---------------------------------------------------------------------------+ */
+   +---------------------------------------------------------------------------+
+ */
 
+// clang-format off
 
 /** \defgroup mrpt_slam_grp [mrpt-slam]
+
+SLAM and PF-localization algorithms
 
 <small> <a href="index.html#libs">Back to list of all libraries</a> | <a href="modules.html" >See all modules</a> </small>
 <br>
 
-<h2>Library <code>mrpt-slam</code></h2>
-<hr>
+[TOC]
+
+# Library `mrpt-slam`
+<small> [New in MRPT 2.0.0] </small>
+
+This library is part of MRPT and can be installed in Debian-based systems with:
+
+		sudo apt install libmrpt-slam-dev
+
+See: \ref mrpt_from_cmake
 
 Interesting stuff in this library:
 
@@ -29,9 +41,8 @@ Interesting stuff in this library:
 - Data association: The NN and the JCBB algorithms, as very generic templates. See data_association.h
 
 
-
-See the full list of classes in mrpt::slam. 
-Note that there are many classes 
+See the full list of classes in mrpt::slam.
+Note that there are many classes
 in that namespace not in the library mrpt-slam, but in libraries mrpt-slam depends
 on. However, in you set mrpt-slam as a dependence of your project, you can be safe
 all mrpt::slam classes will be available to you.
@@ -40,4 +51,3 @@ See also: For Graph-SLAM, see the namespace mrpt::graphslam in the library mrpt-
 
 
 */
-

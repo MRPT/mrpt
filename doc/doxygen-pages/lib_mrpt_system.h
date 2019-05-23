@@ -23,8 +23,9 @@ with:
 
 		sudo apt install libmrpt-system-dev
 
-Refer to the list of submodules for details.
+See: \ref mrpt_from_cmake
 
+Refer to the list of submodules for details.
 
 ## Name-based argument passing
 
