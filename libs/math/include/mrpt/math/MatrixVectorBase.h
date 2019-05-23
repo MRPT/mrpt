@@ -49,7 +49,7 @@ enum TMatrixTextFileFormat
  * - CMatrixFixed and CVectorFixed, for `Scalar`: `float`, `double`, and sizes
  * from 2x2 to 6x6 and 2 to 6, respectively.
  *
- * \sa CMatrixTemplateNumeric
+ * \sa CMatrixFixed
  * \ingroup mrpt_math_grp
  */
 template <typename Scalar, class Derived>
@@ -106,14 +106,6 @@ class MatrixVectorBase
 	/** @name Operations that DO require `#include <Eigen/Dense>` in user code
 	 * @{ */
 
-	/** const blockCopy(): Returns a *copy* of the given block */
-	template <int BLOCK_ROWS, int BLOCK_COLS>
-	CMatrixFixed<Scalar, BLOCK_ROWS, BLOCK_COLS> blockCopy(
-		int start_row = 0, int start_col = 0) const
-	{
-		return mvbDerived().template extractMatrix<BLOCK_ROWS, BLOCK_COLS>(
-			start_row, start_col);
-	}
 	/** non-const block(): Returns an Eigen::Block reference to the block */
 	template <int BLOCK_ROWS, int BLOCK_COLS>
 	auto block(int start_row = 0, int start_col = 0)
@@ -223,6 +215,15 @@ class MatrixVectorBase
 
 	Scalar& coeffRef(int r, int c) { return mvbDerived()(r, c); }
 	const Scalar& coeff(int r, int c) const { return mvbDerived()(r, c); }
+
+	/** const blockCopy(): Returns a *copy* of the given block */
+	template <int BLOCK_ROWS, int BLOCK_COLS>
+	CMatrixFixed<Scalar, BLOCK_ROWS, BLOCK_COLS> blockCopy(
+		int start_row = 0, int start_col = 0) const
+	{
+		return mvbDerived().template extractMatrix<BLOCK_ROWS, BLOCK_COLS>(
+			start_row, start_col);
+	}
 
 	/** Minimum value in the matrix/vector */
 	Scalar minCoeff() const;

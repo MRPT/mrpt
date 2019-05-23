@@ -19,6 +19,8 @@
  *
  * **Mandatory changes**
  *  - Your project must use C++17. Using CMake this is now done automatically when linking your targets against MRPT imported targes. See: \ref mrpt_from_cmake.
+ *  - Matrices and classes no longer inherits from Eigen classes. See: \ref mrpt_math_vectors_matrices_grp
+ *     - `mrpt::math::CMatrix` -->  `mrpt::math::CMatrixF`
  *  - **Smart pointers** are now standard [`std::shared_ptr<>`](http://en.cppreference.com/w/cpp/memory/shared_ptr) instead of those based on `stlplus`. Required changes:
  *     - `ptr.clear()`  --> `ptr.reset()`. Also, notice that the former `stlplus` semantics of `clear()` deleting **all** copies
  * of the object, as hold by different smart pointers, is no longer maintained. There is no longer such a possibility, since the

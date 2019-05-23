@@ -33,7 +33,7 @@ namespace mrpt::math
  * - Use asEigen() to get an `Eigen::Map<>` object and to access full Algebra
  *functionality.
  *
- * \sa CMatrixTemplateNumeric
+ * \sa CMatrixFixed
  * \ingroup mrpt_math_grp
  */
 template <class T>
