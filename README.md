@@ -1,26 +1,8 @@
 <h1 align="center">The MRPT project</h1>
 
-<table>
- <tr>
-  <td>gcc/clang</td>
-  <td><a href="https://travis-ci.org/MRPT/mrpt" alt="Travis:gcc,clang"><img src="https://travis-ci.org/MRPT/mrpt.png?branch=master" /></a><br/><a href="https://circleci.com/gh/MRPT/mrpt"><img src="https://circleci.com/gh/MRPT/mrpt.svg?style=svg"></a> </td>
-  <td>MSVC</td>
-  <td><a href="https://ci.appveyor.com/project/jlblancoc/mrpt" alt="AppVeyor:msvc"><img src="https://ci.appveyor.com/api/projects/status/yjs4lpj02f6a1ylg?svg=true" /></a></td>
-  <td><a href="https://codecov.io/gh/MRPT/mrpt" alt="codecov"><img src="https://codecov.io/gh/MRPT/mrpt/branch/master/graph/badge.svg" /></a></td>
-  <td><a href="https://gitter.im/MRPT/mrpt" alt="Gitter"><img src="https://badges.gitter.im/Join%20Chat.svg" /></a></td>
-  <td><a href="https://www.codetriage.com/mrpt/mrpt" alt="Open Source Helpers"><img src="https://www.codetriage.com/mrpt/mrpt/badges/users.svg" /></a></td>
- </tr>
- <tr>
-  <td>GH</td>
-  <td><a href="https://github.com/MRPT/mrpt/releases" alt="GitHub"><img src="https://img.shields.io/github/downloads/mrpt/mrpt/total.svg" /></a></td>
-  <td>SF(datasets)</td>
-  <td><a href="https://sourceforge.net/projects/mrpt/files/" alt="SourceForge"><img src="https://img.shields.io/sourceforge/dt/mrpt.svg" /></a></td>
-  <td>Stable</td>
-  <td><a href="https://github.com/MRPT/mrpt/releases" alt="Releases"><img src="https://img.shields.io/github/release/MRPT/mrpt.svg" /></a></td>
+gcc/clang: <a href="https://circleci.com/gh/MRPT/mrpt"><img src="https://circleci.com/gh/MRPT/mrpt.svg?style=svg"></a> MSVC: <a href="https://ci.appveyor.com/project/jlblancoc/mrpt" alt="AppVeyor:msvc"><img src="https://ci.appveyor.com/api/projects/status/yjs4lpj02f6a1ylg?svg=true" /></a> Last stable release: <a href="https://github.com/MRPT/mrpt/releases" alt="Releases"><img src="https://img.shields.io/github/release/MRPT/mrpt.svg" /></a> <a href="https://gitter.im/MRPT/mrpt" alt="Gitter"><img src="https://badges.gitter.im/Join%20Chat.svg" /></a>
 
-</tr>
-</table>
-
+<a href="https://codecov.io/gh/MRPT/mrpt" alt="codecov"><img src="https://codecov.io/gh/MRPT/mrpt/branch/master/graph/badge.svg" /></a>  GH downloads: <a href="https://github.com/MRPT/mrpt/releases" alt="GitHub"><img src="https://img.shields.io/github/downloads/mrpt/mrpt/total.svg" /></a> SF downloads (datasets): <a href="https://sourceforge.net/projects/mrpt/files/" alt="SourceForge"><img src="https://img.shields.io/sourceforge/dt/mrpt.svg" /></a>
 
 ## 1. Introduction
 <img align="right" src="https://mrpt.github.io/imgs/mrpt-videos-mix2.gif">
@@ -89,7 +71,7 @@ for Windows instructions or to learn all the details.
   * Install minimum recommended dependencies:
 
 ```bash
-sudo apt install build-essential pkg-config cmake libwxgtk3.0-dev \
+sudo apt install build-essential pkg-config cmake libwxgtk3.0-dev libwxgtk3.0-gtk3-dev \
 libopencv-dev libeigen3-dev libgtest-dev
 ```
   MRPT builds against OpenCV 2.4.x, 3.x, 4.x, but it is recommended to use 3.0 or later.

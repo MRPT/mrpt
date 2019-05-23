@@ -1,11 +1,12 @@
-/* +------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          https://www.mrpt.org/                         |
-   |                                                                        |
-   | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file     |
-   | See: https://www.mrpt.org/Authors - All rights reserved.               |
-   | Released under BSD License. See: https://www.mrpt.org/License          |
-   +------------------------------------------------------------------------+ */
+/* +---------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
+   |                          http://www.mrpt.org/                             |
+   |                                                                           |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   +---------------------------------------------------------------------------+
+ */
 
 #include <mrpt/core/round.h>
 #include <mrpt/gui.h>
@@ -23,22 +24,21 @@
 using namespace mrpt;
 using namespace mrpt::nav;
 using namespace mrpt::opengl;
-using namespace mrpt::system;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::gui;
-using namespace mrpt::img;
+using namespace mrpt::system;
 using namespace mrpt::poses;
 using namespace mrpt::kinematics;
 
 class MyObserver : public mrpt::system::CObserver
 {
    protected:
-	void OnEvent(const mrptEvent& e) override
+	void OnEvent(const mrptEvent& e)
 	{
 		if (e.isOfType<mrptEventMouseDown>())
 		{
-			mouse_click = true;
+			mouse_click = 1;
 		}
 	}
 
@@ -154,11 +154,11 @@ class CRobotKinects
 			if ((kinectrelpose.distance3DTo(x[i], y[i], z[i]) < m_min_range) ||
 				(kinectrelpose.distance3DTo(x[i], y[i], z[i]) > m_max_range))
 			{
-				deletion.push_back(true);
+				deletion.push_back(1);
 			}
 			else
 			{
-				deletion.push_back(false);
+				deletion.push_back(0);
 			}
 		}
 		m_points.applyDeletionMask(deletion);
@@ -296,9 +296,9 @@ class CShortTermMemory
 			sqrt(square(incrx) + square(incry)) > 2.6 * obsgrids[0].getXMax())
 		// The displacement is too big so the grid is reset
 		{
-			for (auto& obsgrid : obsgrids)
+			for (unsigned int i = 0; i < obsgrids.size(); i++)
 			{
-				obsgrid.setSize(
+				obsgrids[i].setSize(
 					obsgrids[0].getXMin(), obsgrids[0].getXMax(),
 					obsgrids[0].getYMin(), obsgrids[0].getXMax(),
 					obsgrids[0].getResolution(), 0.5);
@@ -320,36 +320,37 @@ class CShortTermMemory
 			vector<float> cells_newval;
 
 			// For each of the "n" grids
-			for (auto& obsgrid : obsgrids)
+			for (unsigned int n = 0; n < obsgrids.size(); n++)
 			{
 				cells_newval.clear();
 
 				// Cell values are stored
-				for (unsigned int i = 0; i < obsgrid.getSizeX(); i++)
+				for (unsigned int i = 0; i < obsgrids[n].getSizeX(); i++)
 				{
-					for (unsigned int j = 0; j < obsgrid.getSizeY(); j++)
+					for (unsigned int j = 0; j < obsgrids[n].getSizeY(); j++)
 					{
-						xcel = obsgrid.idx2x(i) + despxmeters;
-						ycel = obsgrid.idx2y(j) + despymeters;
-						if ((abs(xcel) > obsgrid.getXMax()) ||
-							(abs(ycel) > obsgrid.getYMax()))
+						xcel = obsgrids[n].idx2x(i) + despxmeters;
+						ycel = obsgrids[n].idx2y(j) + despymeters;
+						if ((abs(xcel) > obsgrids[n].getXMax()) ||
+							(abs(ycel) > obsgrids[n].getYMax()))
 							cells_newval.push_back(-1);
 						else
 							cells_newval.push_back(
-								obsgrid.getCell(i + despx, j + despy));
+								obsgrids[n].getCell(i + despx, j + despy));
 					}
 				}
 
 				// Cell values are updated in their new "positions"
-				for (unsigned int i = 0; i < obsgrid.getSizeX(); i++)
+				for (unsigned int i = 0; i < obsgrids[n].getSizeX(); i++)
 				{
-					for (unsigned int j = 0; j < obsgrid.getSizeY(); j++)
+					for (unsigned int j = 0; j < obsgrids[n].getSizeY(); j++)
 					{
-						if (cells_newval[j + obsgrid.getSizeY() * i] == -1)
-							obsgrid.setCell(i, j, 0.5);
+						if (cells_newval[j + obsgrids[n].getSizeY() * i] == -1)
+							obsgrids[n].setCell(i, j, 0.5);
 						else
-							obsgrid.setCell(
-								i, j, cells_newval[j + obsgrid.getSizeY() * i]);
+							obsgrids[n].setCell(
+								i, j,
+								cells_newval[j + obsgrids[n].getSizeY() * i]);
 					}
 				}
 			}
@@ -371,8 +372,8 @@ class CShortTermMemory
 		float aux_xpass;
 		float incr_grid_reactive =
 			0.2 / obsgrids[0].getResolution();  // This number marks distance in
-		// meters (but it's transformed
-		// into an index)
+												// meters (but it's transformed
+												// into an index)
 		mrpt::math::TPoint3D paux;
 		unsigned int index;
 		unsigned int lim_visionxn =
@@ -388,12 +389,12 @@ class CShortTermMemory
 
 		float level_height = 0.0;
 		vector<bool> obs_in;
-		obs_in.resize(square(num_col), false);
+		obs_in.resize(square(num_col), 0);
 		grid_points.clear();
 
 		for (unsigned int n = 0; n < obsgrids.size(); n++)
 		{
-			obs_in.assign(square(num_col), false);
+			obs_in.assign(square(num_col), 0);
 
 			// Vector obs_in is filled with 0 or 1 depending on the presence of
 			// any obstacle at each cell (of the grid)
@@ -417,7 +418,7 @@ class CShortTermMemory
 				{
 					index = obsgrids[n].x2idx(paux.x) +
 							num_col * obsgrids[n].y2idx(paux.y);
-					obs_in[index] = true;
+					obs_in[index] = 1;
 				}
 			}
 
@@ -523,27 +524,27 @@ class CMyReactInterface
 		obstacles.clear();
 
 		// Laser scans
-		for (auto& laser : lasers)
+		for (unsigned int i = 0; i < lasers.size(); i++)
 		{
-			maps[laser.m_level - 1].laserScanSimulator(
-				laser.m_scan, new_pose, 0.5f, laser.m_segments,
-				laser.m_scan.stdError, 1, 0);
+			maps[lasers[i].m_level - 1].laserScanSimulator(
+				lasers[i].m_scan, new_pose, 0.5f, lasers[i].m_segments,
+				lasers[i].m_scan.stdError, 1, 0);
 
-			obstacles.insertObservation(&laser.m_scan);
+			obstacles.insertObservation(&lasers[i].m_scan);
 		}
 		timestamp = mrpt::system::now();
 
 		// Depth scans
-		for (auto& kinect : kinects)
+		for (unsigned int i = 0; i < kinects.size(); i++)
 		{
-			kinectrelpose.x(kinect.m_xrel);
-			kinectrelpose.y(kinect.m_yrel);
-			kinectrelpose.z(kinect.m_zrel);
-			kinectrelpose.setYawPitchRoll(kinect.m_phi, 0, 0);
-			kinect.KinectScan(
+			kinectrelpose.x(kinects[i].m_xrel);
+			kinectrelpose.y(kinects[i].m_yrel);
+			kinectrelpose.z(kinects[i].m_zrel);
+			kinectrelpose.setYawPitchRoll(kinects[i].m_phi, 0, 0);
+			kinects[i].KinectScan(
 				maps, robotShape.getHeights(), robotpose3d, kinectrelpose);
 			obstacles.insertAnotherMap(
-				&kinect.m_points, CPose3D(0, 0, 0, 0, 0, 0));
+				&kinects[i].m_points, CPose3D(0, 0, 0, 0, 0, 0));
 		}
 
 		// Process depth scans in the STM
@@ -561,18 +562,17 @@ class CMyReactInterface
 		return true;
 	}
 
-	void loadMaps(const config::CConfigFileBase& ini)
+	void loadMaps(const mrpt::config::CConfigFileBase& ini)
 	{
 		COccupancyGridMap2D grid;
-		CImage myImg;
+		mrpt::img::CImage myImg;
 		// int family = ini.read_int("MAP_CONFIG","FAMILY", 1, true);
 		float resolution =
 			ini.read_float("MAP_CONFIG", "MAP_RESOLUTION", 0.02f, true);
 		// int num_maps = ini.read_int("MAP_CONFIG","NUM_MAPS", 1, true);
 
 		// Maps are loaded here. Different maps can be loaded changing these
-		// lines
-		// and including them above (#define...)
+		// lines  and including them above (#define...)
 		myImg.loadFromXPM(map2_1_xpm);
 		grid.loadFromBitmap(myImg, resolution);
 		maps.push_back(grid);
@@ -586,7 +586,7 @@ class CMyReactInterface
 		std::cout << std::endl << "Maps have been loaded successfully.";
 	}
 
-	void loadConfiguration(const config::CConfigFileBase& ini)
+	void loadConfiguration(const mrpt::config::CConfigFileBase& ini)
 	{
 		unsigned int num_lasers, num_kinects, num_levels;
 		std::vector<double> lasercoord, xaux, yaux;
@@ -649,24 +649,23 @@ class CMyReactInterface
 		}
 
 		// Read config params which describe the robot shape
-		num_levels = ini.read_int("ROBOT_CONFIG", "HEIGHT_LEVELS", 1, true);
+		const auto sect = "CReactiveNavigationSystem3D";
+		num_levels = ini.read_int(sect, "HEIGHT_LEVELS", 1, true);
 		robotShape.resize(num_levels);
 		for (unsigned int i = 1; i <= num_levels; i++)
 		{
 			robotShape.setHeight(
 				i - 1,
-				ini.read_double(
-					"ROBOT_CONFIG", format("LEVEL%d_HEIGHT", i), 1.0, true));
+				ini.read_double(sect, format("LEVEL%d_HEIGHT", i), 1.0, true));
 			robotShape.setRadius(
 				i - 1,
-				ini.read_double(
-					"ROBOT_CONFIG", format("LEVEL%d_RADIUS", i), 0.5, false));
+				ini.read_double(sect, format("LEVEL%d_RADIUS", i), 0.5, false));
 			ini.read_vector(
-				"ROBOT_CONFIG", format("LEVEL%d_VECTORX", i),
-				std::vector<double>(0), xaux, false);
+				sect, format("LEVEL%d_VECTORX", i), std::vector<double>(0),
+				xaux, false);
 			ini.read_vector(
-				"ROBOT_CONFIG", format("LEVEL%d_VECTORY", i),
-				std::vector<double>(0), yaux, false);
+				sect, format("LEVEL%d_VECTORY", i), std::vector<double>(0),
+				yaux, false);
 			ASSERT_(xaux.size() == yaux.size());
 			for (unsigned int j = 0; j < xaux.size(); j++)
 			{
@@ -677,43 +676,36 @@ class CMyReactInterface
 		// Read other params associated with the robot model and its navigation
 		// CRobot2NavInterface_DiffDriven::loadConfigFile(ini,
 		// "ReactiveParams");
-		float tau =
-			0.f;  // ini.read_float("ReactiveParams","ROBOTMODEL_TAU", 0, true);
-		float delay =
-			0.f;  // ini.read_float("ReactiveParams","ROBOTMODEL_DELAY", 0,
-		// true);
-		float x_ini = ini.read_float("ReactiveParams", "X0", 0, true);
-		float y_ini = ini.read_float("ReactiveParams", "Y0", 0, true);
-		float phi_ini =
-			DEG2RAD(ini.read_float("ReactiveParams", "PHI0", 0, true));
-		robotSim.setDelayModelParams(tau, delay);
+		float x_ini = ini.read_float("MAP_CONFIG", "X0", 0, true);
+		float y_ini = ini.read_float("MAP_CONFIG", "Y0", 0, true);
+		float phi_ini = DEG2RAD(ini.read_float("MAP_CONFIG", "PHI0", 0, true));
 		robotSim.resetStatus();
-		robotSim.setOdometryErrors(false);
+		robotSim.setOdometryErrors(0);
 		robotSim.setCurrentGTPose(mrpt::math::TPose2D(x_ini, y_ini, phi_ini));
 
 		// Read the "short term memory" parameters
-		stm.is_active = ini.read_bool("STM_CONFIG", "Stm_active", false, true);
+		stm.is_active = ini.read_bool("STM_CONFIG", "Stm_active", 0, 1);
 		float grid_length =
-			ini.read_float("STM_CONFIG", "Obs_grid_length", 0.8f, true);
+			ini.read_float("STM_CONFIG", "Obs_grid_length", 0.8f, 1);
 		float grid_resolution =
-			ini.read_float("STM_CONFIG", "Obs_grid_resolution", 0.1f, true);
+			ini.read_float("STM_CONFIG", "Obs_grid_resolution", 0.1f, 1);
 		stm.vision_limit =
-			ini.read_float("STM_CONFIG", "Vision_limit", 0.6f, true);
+			ini.read_float("STM_CONFIG", "Vision_limit", 0.6f, 1);
 		stm.likelihood_incr =
-			ini.read_float("STM_CONFIG", "Pos_likelihood_incr", 0.55f, true);
+			ini.read_float("STM_CONFIG", "Pos_likelihood_incr", 0.55f, 1);
 		stm.likelihood_decr =
-			ini.read_float("STM_CONFIG", "Neg_likelihood_incr", 0.45f, true);
+			ini.read_float("STM_CONFIG", "Neg_likelihood_incr", 0.45f, 1);
 		stm.occupancy_threshold =
-			ini.read_float("STM_CONFIG", "Occupancy_threshold", 0.8f, true);
+			ini.read_float("STM_CONFIG", "Occupancy_threshold", 0.8f, 1);
 
 		if (stm.is_active)
 		{
 			stm.robot_ingrid.x = 0;
 			stm.robot_ingrid.y = 0;
 			stm.obsgrids.resize(num_levels);
-			for (auto& obsgrid : stm.obsgrids)
+			for (unsigned int i = 0; i < stm.obsgrids.size(); i++)
 			{
-				obsgrid.setSize(
+				stm.obsgrids[i].setSize(
 					-grid_length, grid_length, -grid_length, grid_length,
 					grid_resolution, 0.5);
 			}
@@ -736,26 +728,25 @@ class CMyReactInterface
 
 		// Maps are inserted
 		{
-			CSetOfObjects::Ptr gl_grid =
-				mrpt::make_aligned_shared<CSetOfObjects>();
-			for (auto& map : maps)
+			auto gl_grid = CSetOfObjects::Create();
+			for (unsigned int i = 0; i < maps.size(); i++)
 			{
-				map.getAs3DObject(gl_grid);
+				maps[i].getAs3DObject(gl_grid);
 				scene->insert(gl_grid);
 			}
 		}
 
 		// A CornerXYZ object is inserted as an absolute frame of reference
 		{
-			CSetOfObjects::Ptr obj = opengl::stock_objects::CornerXYZ();
+			auto obj = opengl::stock_objects::CornerXYZ();
 			obj->setLocation(0, 0, 0);
 			scene->insert(obj);
 		}
 
 		////A reference grid is inserted
 		//{
-		//	CGridPlaneXY::Ptr obj =
-		// mrpt::make_aligned_shared<opengl::CGridPlaneXY>(-16,16,-16,16,0,1);
+		//	auto obj =
+		// opengl::CGridPlaneXY::Create(-16,16,-16,16,0,1);
 		//	obj->setColor(0.4,0.4,0.4);
 		//	obj->setLocation(0,0,0);
 		//	obj->setName("gridref");
@@ -764,8 +755,7 @@ class CMyReactInterface
 
 		// The target is inserted
 		{
-			CDisk::Ptr obj =
-				mrpt::make_aligned_shared<opengl::CDisk>(0.4f, 0.3f);
+			auto obj = opengl::CDisk::Create(0.4f, 0.3f);
 			obj->setLocation(0, 0, 0);
 			obj->setColor(0.2, 0.3, 0.9);
 			scene->insert(obj);
@@ -786,8 +776,7 @@ class CMyReactInterface
 				}
 
 				robotpose3d.z(h);
-				CPolyhedron::Ptr obj;
-				obj = opengl::CPolyhedron::CreateCustomPrism(
+				auto obj = opengl::CPolyhedron::CreateCustomPrism(
 					robotShape.polygon(i), robotShape.getHeight(i));
 				obj->setName(format("Level%d", i + 1));
 				obj->setPose(robotpose3d);
@@ -812,7 +801,7 @@ class CMyReactInterface
 			for (unsigned int i = 0; i < lasers.size(); i++)
 			{
 				gl_scan.push_back(gl_scanind);
-				gl_scan[i] = mrpt::make_aligned_shared<CPlanarLaserScan>();
+				gl_scan[i] = CPlanarLaserScan::Create();
 
 				gl_scan[i]->enableLine(true);
 				gl_scan[i]->enableSurface(false);
@@ -834,7 +823,7 @@ class CMyReactInterface
 			for (unsigned int i = 0; i < kinects.size(); i++)
 			{
 				obj.push_back(indobj);
-				obj[i] = mrpt::make_aligned_shared<opengl::CPointCloud>();
+				obj[i] = opengl::CPointCloud::Create();
 				obj[i]->setPose(robotpose3d);
 				obj[i]->setName(format("Kinect%d", i + 1));
 				scene->insert(obj[i]);
@@ -851,7 +840,7 @@ class CMyReactInterface
 
 		// Virtual obstacles from STM are inserted
 		{
-			CPointCloud::Ptr obj = mrpt::make_aligned_shared<CPointCloud>();
+			auto obj = CPointCloud::Create();
 			obj->setPose(robotpose3d);
 			obj->setPointSize(5.0);
 			obj->setColor(0, 1, 0);
@@ -870,7 +859,8 @@ class CMyReactInterface
 		legend.append("--------------------------------------------\n");
 		legend.append(format("\n        %.02fFPS", window.getRenderingFPS()));
 
-		window.addTextMessage(5, 180, legend, TColorf(1, 1, 1), "Arial", 13);
+		window.addTextMessage(
+			5, 180, legend, mrpt::img::TColorf(1, 1, 1), "Arial", 13);
 		window.repaint();
 	}
 
@@ -879,6 +869,7 @@ class CMyReactInterface
 		scene = window.get3DSceneAndLock();
 		CPose3D robotpose3d = CPose3D(CPose2D(robotSim.getCurrentGTPose()));
 		CRenderizable::Ptr obj;
+
 		// The robot pose is updated
 		{
 			float h = 0;
@@ -952,7 +943,8 @@ class CMyReactInterface
 		legend.append("--------------------------------------------\n");
 		legend.append(format("\n        %.02fFPS", window.getRenderingFPS()));
 
-		window.addTextMessage(5, 180, legend, TColorf(1, 1, 1), "Arial", 13);
+		window.addTextMessage(
+			5, 180, legend, mrpt::img::TColorf(1, 1, 1), "Arial", 13);
 		window.repaint();
 	}
 

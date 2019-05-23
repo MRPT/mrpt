@@ -805,7 +805,6 @@ void CPTG_Holo_Blend::internal_construct_exprs()
 	symbols["V_MAX"] = &V_MAX;
 	symbols["W_MAX"] = &W_MAX;
 	symbols["T_ramp_max"] = &T_ramp_max;
-	symbols["T_ramp_max"] = &T_ramp_max;
 
 	m_expr_v.register_symbol_table(symbols);
 	m_expr_w.register_symbol_table(symbols);

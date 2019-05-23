@@ -17,6 +17,7 @@
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/serialization/serialization_frwds.h>
 #include <mrpt/typemeta/TTypeName.h>
+#include <array>
 #include <stdexcept>
 #include <type_traits>
 #include <vector>
@@ -539,6 +540,12 @@ struct TPoint3D : public TPoseOrPoint
 	static constexpr size_t size() { return 3; }
 };
 
+/** Useful type alias for 3-vectors */
+using TVector3D = TPoint3D;
+
+/** Useful type alias for 2-vectors */
+using TVector2D = TPoint2D;
+
 /** XYZ point (double) + Intensity(u8) \sa mrpt::math::TPoint3D */
 struct TPointXYZIu8
 {
@@ -729,8 +736,10 @@ struct TPose3D : public TPoseOrPoint
 		mrpt::math::CQuaternion<double>& q,
 		mrpt::math::CMatrixFixed<double, 4, 3>* out_dq_dr = nullptr) const;
 
-	void composePoint(const TPoint3D l, TPoint3D& g) const;
-	void inverseComposePoint(const TPoint3D g, TPoint3D& l) const;
+	void composePoint(const TPoint3D& l, TPoint3D& g) const;
+	TPoint3D composePoint(const TPoint3D& l) const;
+	void inverseComposePoint(const TPoint3D& g, TPoint3D& l) const;
+	TPoint3D inverseComposePoint(const TPoint3D& g) const;
 	void composePose(const TPose3D other, TPose3D& result) const;
 	void getRotationMatrix(mrpt::math::CMatrixDouble33& R) const;
 	void getHomogeneousMatrix(mrpt::math::CMatrixDouble44& HG) const;
@@ -1151,10 +1160,8 @@ inline bool operator!=(const TSegment3D& s1, const TSegment3D& s2)
 struct TLine2D
 {
    public:
-	/**
-	 * Line coefficients, stored as an array: \f$\left[A,B,C\right]\f$.
-	 */
-	double coefs[3] = {0, 0, 0};
+	/** Line coefficients, stored as an array: \f$\left[A,B,C\right]\f$ */
+	std::array<double, 3> coefs{{0, 0, 0}};
 	/**
 	 * Evaluate point in the line's equation.
 	 */
@@ -1237,17 +1244,11 @@ struct TLine2D
 struct TLine3D
 {
    public:
-	/**
-	 * Base point.
-	 */
+	/** Base point */
 	TPoint3D pBase;
-	/**
-	 * Director vector.
-	 */
-	double director[3] = {.0, .0, .0};
-	/**
-	 * Check whether a point is inside the line.
-	 */
+	/** Director vector */
+	std::array<double, 3> director{{.0, .0, .0}};
+	/** Check whether a point is inside the line */
 	bool contains(const TPoint3D& point) const;
 	/**
 	 * Distance between the line and a point.
@@ -1302,13 +1303,9 @@ struct TLine3D
 struct TPlane
 {
    public:
-	/**
-	 * Plane coefficients, stored as an array: \f$\left[A,B,C,D\right]\f$
-	 */
-	double coefs[4] = {.0, .0, .0, .0};
-	/**
-	 * Evaluate a point in the plane's equation.
-	 */
+	/** Plane coefficients, stored as an array: \f$\left[A,B,C,D\right]\f$ */
+	std::array<double, 4> coefs{{.0, .0, .0, .0}};
+	/** Evaluate a point in the plane's equation */
 	double evaluatePoint(const TPoint3D& point) const;
 	/**
 	 * Check whether a point is contained into the plane.
@@ -1334,45 +1331,37 @@ struct TPlane
 	 * plane.
 	 */
 	double distance(const TLine3D& line) const;
-	/**
-	 * Get plane's normal vector.
-	 */
+	/** Get plane's normal vector */
 	void getNormalVector(double (&vec)[3]) const;
+	/// \overload
+	TVector3D getNormalVector() const;
 	/**
 	 * Unitarize normal vector.
 	 */
 	void unitarize();
-	void getAsPose3D(mrpt::math::TPose3D& outPose);
-	/**
-	 * Unitarize, then get normal vector.
-	 */
-	void getUnitaryNormalVector(double (&vec)[3])
-	{
-		unitarize();
-		getNormalVector(vec);
-	}
-	/**
-	 * Gets a plane which contains these three points.
+	void getAsPose3D(mrpt::math::TPose3D& outPose) const;
+	void getAsPose3DForcingOrigin(const TPoint3D& center, TPose3D& pose) const;
+	/** Get normal vector */
+	void getUnitaryNormalVector(double (&vec)[3]) const;
+	/** Defines a plane which contains these three points.
 	 * \throw std::logic_error if the points are linearly dependants.
 	 */
 	TPlane(const TPoint3D& p1, const TPoint3D& p2, const TPoint3D& p3);
-	/**
-	 * Gets a plane which contains this point and this line.
+	/** Defines a plane given a point and a normal vector (must not be unit).
+	 * \throw std::logic_error if the normal vector is null
+	 */
+	TPlane(const TPoint3D& p1, const TVector3D& normal);
+	/** Defines a plane which contains this point and this line.
 	 * \throw std::logic_error if the point is inside the line.
 	 */
 	TPlane(const TPoint3D& p1, const TLine3D& r2);
-	/**
-	 * Gets a plane which contains the two lines.
+	/** Defines a plane which contains the two lines.
 	 * \throw std::logic_error if the lines do not cross.
 	 */
 	TPlane(const TLine3D& r1, const TLine3D& r2);
-	/**
-	 * Fast default constructor. Initializes to garbage.
-	 */
+	/** Fast default constructor. Initializes to garbage. */
 	TPlane() = default;
-	/**
-	 * Constructor from plane coefficients.
-	 */
+	/** Constructor from plane coefficients */
 	constexpr TPlane(double A, double B, double C, double D) : coefs{A, B, C, D}
 	{
 	}
@@ -1383,7 +1372,6 @@ struct TPlane
 	{
 		for (size_t i = 0; i < 4; i++) coefs[i] = vec[i];
 	}
-	void getAsPose3DForcingOrigin(const TPoint3D& newOrigin, TPose3D& pose);
 };
 
 using TPlane3D = TPlane;

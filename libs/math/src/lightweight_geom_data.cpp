@@ -255,7 +255,7 @@ void TPose3D::getAsQuaternion(
 		out_dq_dr->loadFromArray(nums);
 	}
 }
-void TPose3D::composePoint(const TPoint3D l, TPoint3D& g) const
+void TPose3D::composePoint(const TPoint3D& l, TPoint3D& g) const
 {
 	CMatrixDouble33 R;
 	this->getRotationMatrix(R);
@@ -266,7 +266,14 @@ void TPose3D::composePoint(const TPoint3D l, TPoint3D& g) const
 
 	g = res;
 }
-void TPose3D::inverseComposePoint(const TPoint3D g, TPoint3D& l) const
+TPoint3D TPose3D::composePoint(const TPoint3D& l) const
+{
+	TPoint3D g;
+	composePoint(l, g);
+	return g;
+}
+
+void TPose3D::inverseComposePoint(const TPoint3D& g, TPoint3D& l) const
 {
 	CMatrixDouble44 H;
 	this->getInverseHomogeneousMatrix(H);
@@ -277,6 +284,13 @@ void TPose3D::inverseComposePoint(const TPoint3D g, TPoint3D& l) const
 
 	l = res;
 }
+TPoint3D TPose3D::inverseComposePoint(const TPoint3D& g) const
+{
+	TPoint3D l;
+	inverseComposePoint(g, l);
+	return l;
+}
+
 void TPose3D::getRotationMatrix(mrpt::math::CMatrixDouble33& R) const
 {
 	const double cy = cos(yaw);
@@ -843,10 +857,23 @@ double TPlane::distance(const TLine3D& line) const
 }
 void TPlane::getNormalVector(double (&vector)[3]) const
 {
-	vector[0] = coefs[0];
-	vector[1] = coefs[1];
-	vector[2] = coefs[2];
+	for (int i = 0; i < 3; i++) vector[i] = coefs[i];
 }
+TVector3D TPlane::getNormalVector() const
+{
+	TVector3D v;
+	for (int i = 0; i < 3; i++) v[i] = coefs[i];
+	return v;
+}
+
+void TPlane::getUnitaryNormalVector(double (&vec)[3]) const
+{
+	const double s = sqrt(squareNorm<3, double>(coefs));
+	ASSERT_ABOVE_(s, getEpsilon());
+	const double k = 1.0 / s;
+	for (int i = 0; i < 3; i++) vec[i] = coefs[i] * k;
+}
+
 void TPlane::unitarize()
 {
 	double s = sqrt(squareNorm<3, double>(coefs));
@@ -854,7 +881,7 @@ void TPlane::unitarize()
 }
 
 // Returns a 6D pose such as its XY plane coincides with the plane
-void TPlane::getAsPose3D(mrpt::math::TPose3D& outPose)
+void TPlane::getAsPose3D(mrpt::math::TPose3D& outPose) const
 {
 	double normal[3];
 	getUnitaryNormalVector(normal);
@@ -868,15 +895,16 @@ void TPlane::getAsPose3D(mrpt::math::TPose3D& outPose)
 		}
 	outPose.fromHomogeneousMatrix(AXIS);
 }
-void TPlane::getAsPose3DForcingOrigin(const TPoint3D& newOrigin, TPose3D& pose)
+void TPlane::getAsPose3DForcingOrigin(
+	const TPoint3D& center, TPose3D& pose) const
 {
-	if (!contains(newOrigin))
+	if (!contains(center))
 		throw std::logic_error("Base point is not in the plane.");
 	double normal[3];
 	getUnitaryNormalVector(normal);
 	CMatrixDouble44 AXIS;
 	generateAxisBaseFromDirectionAndAxis(normal, 2, AXIS);
-	for (size_t i = 0; i < 3; i++) AXIS(i, 3) = newOrigin[i];
+	for (size_t i = 0; i < 3; i++) AXIS(i, 3) = center[i];
 	pose.fromHomogeneousMatrix(AXIS);
 }
 TPlane::TPlane(const TPoint3D& p1, const TPoint3D& p2, const TPoint3D& p3)
@@ -906,6 +934,18 @@ TPlane::TPlane(const TPoint3D& p1, const TLine3D& r2)
 	if (abs(coefs[0]) < getEpsilon() && abs(coefs[1]) < getEpsilon() &&
 		abs(coefs[2]) < getEpsilon())
 		throw logic_error("Point is contained in the line");
+	coefs[3] = -coefs[0] * p1.x - coefs[1] * p1.y - coefs[2] * p1.z;
+}
+TPlane::TPlane(const TPoint3D& p1, const TVector3D& normal)
+{
+	const double normal_norm = normal.norm();
+	ASSERT_ABOVE_(normal_norm, getEpsilon());
+
+	// Ensure we have a unit vector:
+	const auto n = normal * (1. / normal_norm);
+	coefs[0] = n.x;
+	coefs[1] = n.y;
+	coefs[2] = n.z;
 	coefs[3] = -coefs[0] * p1.x - coefs[1] * p1.y - coefs[2] * p1.z;
 }
 TPlane::TPlane(const TLine3D& r1, const TLine3D& r2)

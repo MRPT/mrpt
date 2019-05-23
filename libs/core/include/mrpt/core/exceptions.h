@@ -37,14 +37,15 @@ inline std::string exception_line_msg(
 inline void impl_excep_to_str(
 	const std::exception& e, std::string& ret, int lvl = 0)
 {
+	using namespace std::string_literals;
 	std::string err{e.what()};
-	if (!err.empty() && *err.rbegin() != '\n') err += "\n";
-	ret = err + ret;
+	if (!err.empty() && *err.rbegin() != '\n') err += "\n"s;
+	ret = "["s + std::to_string(lvl) + "] "s + err + ret;
 	try
 	{
 		std::rethrow_if_nested(e);
 		// We traversed the entire call stack:
-		ret = std::string("==== MRPT exception ====\n") + ret;
+		ret = std::string("==== MRPT exception backtrace ====\n") + ret;
 	}
 	catch (const std::exception& er)
 	{
