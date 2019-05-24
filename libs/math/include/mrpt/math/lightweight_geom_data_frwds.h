@@ -8,15 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-/*! \file lightweight_geom_data_frwds.h
- * Forward declarations of all mrpt::math classes related to poses and points.
- */
-namespace mrpt::math
-{
-struct TPoint2D;
-struct TPoint3D;
-struct TPose2D;
-struct TPose3D;
-struct TPose3DQuat;
-struct TPoseOrPoint;
-}  // namespace mrpt::math
+#include <mrpt/core/common.h>
+MRPT_WARNING(
+	"Deprecated header <mrpt/math/lightweight_geom_data_frwds.h>, use "
+	"<mrpt/math/TPoseOrPoint.h> instead");
+
+#include <mrpt/math/TPoseOrPoint.h>

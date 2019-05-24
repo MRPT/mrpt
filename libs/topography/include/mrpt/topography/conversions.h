@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/lightweight_geom_data.h>
-
+#include <mrpt/math/TPoint3D.h>
 #include <mrpt/topography/data_types.h>
+#include <vector>
 
 namespace mrpt
 {

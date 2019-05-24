@@ -9,7 +9,8 @@
 #pragma once
 
 #include <mrpt/math/CVectorDynamic.h>
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/TLine2D.h>
+#include <mrpt/math/TPlane.h>
 #include <mrpt/math/ransac.h>
 
 namespace mrpt::math

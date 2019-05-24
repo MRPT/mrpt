@@ -12,7 +12,9 @@
 #include <mrpt/graphs/dijkstra.h>
 #include <mrpt/io/CTextFileLinesParser.h>
 #include <mrpt/math/CVectorFixed.h>
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/TPose2D.h>
+#include <mrpt/math/TPose3D.h>
+#include <mrpt/math/TPose3DQuat.h>
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/math/ops_matrices.h>  // multiply_*()
 #include <mrpt/math/wrap2pi.h>

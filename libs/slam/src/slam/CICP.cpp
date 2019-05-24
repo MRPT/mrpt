@@ -10,6 +10,7 @@
 #include "slam-precomp.h"  // Precompiled headers
 
 #include <mrpt/config/CConfigFileBase.h>  // MRPT_LOAD_*()
+#include <mrpt/math/TPose2D.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/CPose2D.h>

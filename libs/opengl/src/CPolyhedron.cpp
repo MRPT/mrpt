@@ -11,6 +11,8 @@
 
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CMatrixF.h>
+#include <mrpt/math/TLine3D.h>
+#include <mrpt/math/TObject3D.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_containers.h>  // dotProduct()
 #include <mrpt/opengl/CPolyhedron.h>

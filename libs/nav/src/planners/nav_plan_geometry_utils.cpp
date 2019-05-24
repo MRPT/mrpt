@@ -9,6 +9,7 @@
 
 #include "nav-precomp.h"  // Precompiled headers
 
+#include <mrpt/core/exceptions.h>
 #include <mrpt/math/poly_roots.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/nav/planners/nav_plan_geometry_utils.h>

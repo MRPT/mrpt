@@ -11,7 +11,7 @@
 
 #include <mrpt/graphs/TNodeID.h>
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/TPoint3D.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/system/CTimeLogger.h>

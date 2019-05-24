@@ -13,6 +13,7 @@
 #include <mrpt/hwdrivers/CFFMPEG_InputStream.h>
 #include <mrpt/hwdrivers/CRovio.h>
 #include <mrpt/io/CMemoryStream.h>
+#include <mrpt/math/TPose2D.h>
 #include <mrpt/obs/CObservationImage.h>
 
 #include <thread>

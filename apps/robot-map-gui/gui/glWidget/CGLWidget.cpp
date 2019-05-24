@@ -9,22 +9,22 @@
    */
 #include "CGLWidget.h"
 
-#include "mrpt/config/CConfigFile.h"
-#include "mrpt/gui/CGlCanvasBase.h"
-#include "mrpt/io/CFileGZInputStream.h"
-#include "mrpt/io/CFileGZOutputStream.h"
-#include "mrpt/maps/TMetricMapInitializer.h"
-#include "mrpt/math/geometry.h"
-#include "mrpt/opengl/CPointCloud.h"
-#include "mrpt/opengl/CTexturedPlane.h"
-#include "mrpt/opengl/stock_objects.h"
-
-#include "CDocument.h"
-
-#include "cmath"
-
+#include <mrpt/config/CConfigFile.h>
+#include <mrpt/gui/CGlCanvasBase.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/maps/TMetricMapInitializer.h>
+#include <mrpt/math/TLine3D.h>
+#include <mrpt/math/TObject3D.h>
+#include <mrpt/math/geometry.h>
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CTexturedPlane.h>
+#include <mrpt/opengl/stock_objects.h>
 #include <QApplication>
 #include <QMouseEvent>
+#include <cmath>
+
+#include "CDocument.h"
 
 // Include libraries in linking (needed for Windows)
 #include <mrpt/config.h>

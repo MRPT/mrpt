@@ -9,7 +9,6 @@
 #pragma once
 
 #include <mrpt/core/Clock.h>
-#include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/poses/Lie/Euclidean.h>
 #include <mrpt/poses/Lie/SE.h>
 #include <mrpt/poses/poses_frwds.h>

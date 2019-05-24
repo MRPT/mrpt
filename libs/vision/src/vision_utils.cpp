@@ -11,7 +11,6 @@
 
 #include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/math/geometry.h>
-#include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/ops_vectors.h>
 #include <mrpt/math/utils.h>

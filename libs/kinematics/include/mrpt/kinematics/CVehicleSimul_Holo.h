@@ -10,6 +10,7 @@
 
 #include <mrpt/kinematics/CVehicleSimulVirtualBase.h>
 #include <mrpt/kinematics/CVehicleVelCmd_Holo.h>
+#include <mrpt/math/TTwist2D.h>
 
 namespace mrpt::kinematics
 {
