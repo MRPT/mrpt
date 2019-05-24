@@ -17,17 +17,9 @@
 #include <wx/string.h>
 //*)
 
-#include <wx/app.h>
-#include <wx/busyinfo.h>
-#include <wx/log.h>
-#include <wx/msgdlg.h>
-#include <wx/progdlg.h>
-
-#include <mrpt/gui/CMyRedirector.h>
-#include "xRawLogViewerMain.h"
-
-// General global variables:
 #include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/gui/CMyRedirector.h>
+#include <mrpt/gui/WxUtils.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
@@ -36,8 +28,12 @@
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/slam/CICP.h>
-
-#include <mrpt/gui/WxUtils.h>
+#include <wx/app.h>
+#include <wx/busyinfo.h>
+#include <wx/log.h>
+#include <wx/msgdlg.h>
+#include <wx/progdlg.h>
+#include "xRawLogViewerMain.h"
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -731,9 +727,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 			poseEst->getCovarianceAndMean(estCov, estMean);
 
 			m_gl_map_new->setPose(CPose3D(estMean));
-			const mrpt::math::CMatrixFixedNumeric<double, 2, 2> C =
-				estCov.block<2, 2>(0, 0);
-			gl_ellipse->setCovMatrix(C);
+			gl_ellipse->setCovMatrix(estCov.extractMatrix<2, 2>(0, 0));
 
 			m_plot3D->Refresh();
 

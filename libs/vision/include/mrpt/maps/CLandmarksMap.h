@@ -12,7 +12,7 @@
 #include <mrpt/containers/CDynamicGrid.h>
 #include <mrpt/maps/CLandmark.h>
 #include <mrpt/maps/CMetricMap.h>
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/obs/CObservationGPS.h>

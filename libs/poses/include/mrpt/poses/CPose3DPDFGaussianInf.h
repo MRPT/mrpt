@@ -46,7 +46,7 @@ class CPose3DPDFGaussianInf : public CPose3DPDF
 	/** Assures the symmetry of the covariance matrix (eventually certain
 	 * operations in the math-coprocessor lead to non-symmetric matrixes!)
 	 */
-	void assureSymmetry();
+	void enforceCovSymmetry();
 
    public:
 	/** @name Data fields
@@ -81,19 +81,13 @@ class CPose3DPDFGaussianInf : public CPose3DPDF
 	/** Constructor from a 6D pose PDF described as a Quaternion */
 	explicit CPose3DPDFGaussianInf(const CPose3DQuatPDFGaussian& o);
 
-	/** Returns an estimate of the pose, (the mean, or mathematical expectation
-	 * of the PDF).
-	 * \sa getCovariance */
 	void getMean(CPose3D& mean_pose) const override { mean_pose = mean; }
+
 	bool isInfType() const override { return true; }
-	/** Returns an estimate of the pose covariance matrix (6x6 cov matrix) and
-	 * the mean, both at once.
-	 * \sa getMean  */
-	void getCovarianceAndMean(
-		mrpt::math::CMatrixDouble66& cov, CPose3D& mean_point) const override
+
+	std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const override
 	{
-		mean_point = this->mean;
-		this->cov_inv.inv(cov);
+		return {cov_inv.inverse_LLt(), this->mean};
 	}
 
 	/** Returns the information (inverse covariance) matrix (a STATE_LEN x

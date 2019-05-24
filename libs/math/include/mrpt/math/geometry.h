@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CSparseMatrixTemplate.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
@@ -670,7 +670,7 @@ void createPlaneFromPoseAndNormal(
  * \sa generateAxisBaseFromDirectionAndAxis()
  */
 void generateAxisBaseFromDirectionAndAxis(
-	const double (&vec)[3], char coord, CMatrixDouble44& matrix);
+	const double (&vec)[3], uint8_t coord, CMatrixDouble44& matrix);
 /** @}
  */
 
@@ -824,20 +824,15 @@ inline void crossProduct3D(
 	ASSERT_(v0.size() == 3);
 	ASSERT_(v1.size() == 3);
 	v_out.resize(3);
-	v_out[0] = v0[1] * v1[2] - v0[2] * v1[1];
-	v_out[1] = -v0[0] * v1[2] + v0[2] * v1[0];
-	v_out[2] = v0[0] * v1[1] - v0[1] * v1[0];
+	crossProduct3D<std::vector<T>, std::vector<T>, std::vector<T>>(
+		v0, v1, v_out);
 }
-
 //! overload (returning a vector of size 3 by value).
 template <class VEC1, class VEC2>
-inline Eigen::Matrix<double, 3, 1> crossProduct3D(
-	const VEC1& v0, const VEC2& v1)
+inline VEC1 crossProduct3D(const VEC1& v0, const VEC2& v1)
 {
-	Eigen::Matrix<double, 3, 1> vOut;
-	vOut[0] = v0[1] * v1[2] - v0[2] * v1[1];
-	vOut[1] = v0[2] * v1[0] - v0[0] * v1[2];
-	vOut[2] = v0[0] * v1[1] - v0[1] * v1[0];
+	VEC1 vOut;
+	crossProduct3D<VEC1, VEC2, VEC1>(v0, v1, vOut);
 	return vOut;
 }
 
@@ -855,15 +850,15 @@ inline void skew_symmetric3(const VECTOR& v, MATRIX& M)
 {
 	ASSERT_(v.size() == 3);
 	M.setSize(3, 3);
-	M.set_unsafe(0, 0, 0);
-	M.set_unsafe(0, 1, -v[2]);
-	M.set_unsafe(0, 2, v[1]);
-	M.set_unsafe(1, 0, v[2]);
-	M.set_unsafe(1, 1, 0);
-	M.set_unsafe(1, 2, -v[0]);
-	M.set_unsafe(2, 0, -v[1]);
-	M.set_unsafe(2, 1, v[0]);
-	M.set_unsafe(2, 2, 0);
+	M(0, 0) = 0;
+	M(0, 1) = -v[2];
+	M(0, 2) = v[1];
+	M(1, 0) = v[2];
+	M(1, 1) = 0;
+	M(1, 2) = -v[0];
+	M(2, 0) = -v[1];
+	M(2, 1) = v[0];
+	M(2, 2) = 0;
 }
 //! \overload
 template <class VECTOR>
@@ -888,16 +883,16 @@ template <class VECTOR, class MATRIX>
 inline void skew_symmetric3_neg(const VECTOR& v, MATRIX& M)
 {
 	ASSERT_(v.size() == 3);
-	M.setSize(3, 3);
-	M.set_unsafe(0, 0, 0);
-	M.set_unsafe(0, 1, v[2]);
-	M.set_unsafe(0, 2, -v[1]);
-	M.set_unsafe(1, 0, -v[2]);
-	M.set_unsafe(1, 1, 0);
-	M.set_unsafe(1, 2, v[0]);
-	M.set_unsafe(2, 0, v[1]);
-	M.set_unsafe(2, 1, -v[0]);
-	M.set_unsafe(2, 2, 0);
+	ASSERT_(M.rows() == 3 && M.cols() == 3);
+	M(0, 0) = 0;
+	M(0, 1) = v[2];
+	M(0, 2) = -v[1];
+	M(1, 0) = -v[2];
+	M(1, 1) = 0;
+	M(1, 2) = v[0];
+	M(2, 0) = v[1];
+	M(2, 1) = -v[0];
+	M(2, 2) = 0;
 }
 //! \overload
 template <class VECTOR>
@@ -1110,7 +1105,7 @@ bool RectanglesIntersection(
 	*
 	*    \f[ v^3 = v^1 \times v^2  \f]
   *
-  * \return The 3x3 matrix (CMatrixTemplateNumeric<T>), containing one vector
+  * \return The 3x3 matrix (CMatrixDynamic<T>), containing one vector
   per column.
   * \except Throws an std::exception on invalid input (i.e. null direction
   vector)
@@ -1118,45 +1113,7 @@ bool RectanglesIntersection(
   *
   * (JLB @ 18-SEP-2007)
   */
-template <class T>
-CMatrixTemplateNumeric<T> generateAxisBaseFromDirection(T dx, T dy, T dz)
-{
-	MRPT_START
-
-	if (dx == 0 && dy == 0 && dz == 0)
-		THROW_EXCEPTION("Invalid input: Direction vector is (0,0,0);");
-
-	CMatrixTemplateNumeric<T> P(3, 3);
-
-	// 1st vector:
-	T n_xy = square(dx) + square(dy);
-	T n = sqrt(n_xy + square(dz));
-	n_xy = sqrt(n_xy);
-	P(0, 0) = dx / n;
-	P(1, 0) = dy / n;
-	P(2, 0) = dz / n;
-
-	// 2nd perpendicular vector:
-	if (fabs(dx) > 1e-4 || fabs(dy) > 1e-4)
-	{
-		P(0, 1) = -dy / n_xy;
-		P(1, 1) = dx / n_xy;
-		P(2, 1) = 0;
-	}
-	else
-	{
-		// Any vector in the XY plane will work:
-		P(0, 1) = 1;
-		P(1, 1) = 0;
-		P(2, 1) = 0;
-	}
-
-	// 3rd perpendicular vector: cross product of the two last vectors:
-	P.col(2) = crossProduct3D(P.col(0), P.col(1));
-
-	return P;
-	MRPT_END
-}
+CMatrixDouble33 generateAxisBaseFromDirection(double dx, double dy, double dz);
 
 /** @} */  // end of misc. geom. methods
 

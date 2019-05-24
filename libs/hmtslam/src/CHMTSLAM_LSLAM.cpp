@@ -384,7 +384,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 		DEBUG_STEP);
 	if (DEBUG_STEP == 3)
 	{
-		CMatrix A(3, 3);
+		CMatrixF A(3, 3);
 		DEBUG_STEP = DEBUG_STEP + 0;
 	}
 	if (false)
@@ -821,7 +821,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 							//  Delta_b_c = Delta_b_a (+) Delta_a_c
 							CPose3DPDFGaussian Delta_b_c(Delta_b_a + Delta_a_c);
 							Delta_b_c.cov
-								.zeros();  // *********** DEBUG !!!!!!!!!!!
+								.setZero();  // *********** DEBUG !!!!!!!!!!!
 							Delta_b_c.cov(0, 0) = Delta_b_c.cov(1, 1) =
 								square(0.04);
 							Delta_b_c.cov(3, 3) = square(DEG2RAD(1));
@@ -1104,8 +1104,8 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 											false);
 
 								newDelta = Anew_old + *oldDelta;
-								newDelta.cov
-									.zeros();  // *********** DEBUG !!!!!!!!!!!
+								newDelta.cov.setZero();  // *********** DEBUG
+														 // !!!!!!!!!!!
 								newDelta.cov(0, 0) = newDelta.cov(1, 1) =
 									square(0.04);
 								newDelta.cov(3, 3) = square(DEG2RAD(1));
@@ -1154,8 +1154,8 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 
 								newDelta = *oldDelta + Aold_new;
 
-								newDelta.cov
-									.zeros();  // *********** DEBUG !!!!!!!!!!!
+								newDelta.cov.setZero();  // *********** DEBUG
+														 // !!!!!!!!!!!
 								newDelta.cov(0, 0) = newDelta.cov(1, 1) =
 									square(0.04);
 								newDelta.cov(3, 3) = square(DEG2RAD(1));
@@ -1366,7 +1366,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 			CPose3DPDFGaussian relPoseGauss;
 			relPoseGauss.copyFrom(relPoseParts);
 
-			relPoseGauss.cov.zeros();  // *********** DEBUG !!!!!!!!!!!
+			relPoseGauss.cov.setZero();  // *********** DEBUG !!!!!!!!!!!
 			relPoseGauss.cov(0, 0) = relPoseGauss.cov(1, 1) = square(0.04);
 			relPoseGauss.cov(3, 3) = square(DEG2RAD(1));
 

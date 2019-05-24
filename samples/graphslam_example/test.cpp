@@ -56,7 +56,7 @@ template <class GRAPH>
 struct EdgeAdders<GRAPH, false>
 {
 	static const int DIM = GRAPH::edge_t::type_value::static_size;
-	typedef CMatrixFixedNumeric<double, DIM, DIM> cov_t;
+	typedef CMatrixFixed<double, DIM, DIM> cov_t;
 
 	static void addEdge(
 		TNodeID from, TNodeID to,
@@ -80,7 +80,7 @@ template <class GRAPH>
 struct EdgeAdders<GRAPH, true>
 {
 	static const int DIM = GRAPH::edge_t::type_value::static_size;
-	typedef CMatrixFixedNumeric<double, DIM, DIM> cov_t;
+	typedef CMatrixFixed<double, DIM, DIM> cov_t;
 
 	static void addEdge(
 		TNodeID from, TNodeID to,
@@ -165,7 +165,7 @@ struct ExampleDemoGraphSLAM
 		 */
 		typedef EdgeAdders<my_graph_t> edge_adder_t;
 		typename edge_adder_t::cov_t inf_matrix;
-		inf_matrix.unit(
+		inf_matrix.setDiagonal(
 			edge_adder_t::cov_t::RowsAtCompileTime,
 			square(1.0 / STD4EDGES_COV_MATRIX));
 
@@ -186,7 +186,7 @@ struct ExampleDemoGraphSLAM
 		// Add an additional edge to deform the graph?
 		if (add_extra_tightening_edge)
 		{
-			// inf_matrix.unit(square(1.0/(STD4EDGES_COV_MATRIX)));
+			// inf_matrix.setIdentity(square(1.0/(STD4EDGES_COV_MATRIX)));
 			edge_adder_t::addEdge(
 				0, N_VERTEX / 2, real_node_poses, graph, inf_matrix);
 

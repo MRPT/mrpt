@@ -9,6 +9,7 @@
 
 #include "opengl-precomp.h"  // Precompiled header
 
+#include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>

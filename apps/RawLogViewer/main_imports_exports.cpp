@@ -39,6 +39,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::obs;
@@ -333,7 +334,7 @@ void xRawLogViewerFrame::OnImportSequenceOfImages(wxCommandEvent& event)
 
 				// Default camera parameters:
 				im->cameraParams.dist.fill(0);
-				im->cameraParams.intrinsicParams.zeros();
+				im->cameraParams.intrinsicParams.setZero();
 				im->cameraParams.intrinsicParams(0, 0) = 300;  // fx
 				im->cameraParams.intrinsicParams(1, 1) = 300;  // fy
 				im->cameraParams.intrinsicParams(0, 2) =
@@ -1850,7 +1851,7 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
 			const CMatrixDouble33 H(dat_H);
 
 			// Transform covariance with Jacobian:
-			const CMatrixDouble33 C_ypr = H * C_xy * H.transpose();
+			const CMatrixDouble33 C_ypr = mrpt::math::multiply_HCHt(H, C_xy);
 
 			// Create obs:
 			CObservationBearingRange::TMeasurement meas;

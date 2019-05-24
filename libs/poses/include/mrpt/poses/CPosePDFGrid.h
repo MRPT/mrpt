@@ -47,13 +47,11 @@ class CPosePDFGrid : public CPosePDF, public CPose2DGridTemplate<double>
 	void normalize();
 	/** Assigns the same value to all the cells in the grid, so the sum 1. */
 	void uniformDistribution();
-	/** Returns an estimate of the pose, (the mean, or mathematical expectation
-	 * of the PDF). \sa getCovariance */
+
 	void getMean(CPose2D& mean_pose) const override;
-	/** Returns an estimate of the pose covariance matrix (3x3 cov matrix) and
-	 * the mean, both at once. \sa getMean */
-	void getCovarianceAndMean(
-		mrpt::math::CMatrixDouble33& cov, CPose2D& mean_point) const override;
+
+	std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const override;
+
 	/** Save the contents of the 3D grid in one file, as a vertical
 	 * concatenation of rectangular matrix for the different "PHI" discrete
 	 * levels, and the size in X,Y,and PHI in another file named

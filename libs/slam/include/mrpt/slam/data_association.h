@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrixTemplate.h>  // mrpt::math::CMatrixBool
+#include <mrpt/math/CMatrixDynamic.h>  // mrpt::math::CMatrixBool
 #include <mrpt/poses/CPoint2DPDFGaussian.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/typemeta/TEnumType.h>

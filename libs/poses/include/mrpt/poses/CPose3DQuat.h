@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CQuaternion.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/poses/CPoint3D.h>
@@ -42,14 +42,14 @@ namespace mrpt::poses
  * version of this class,  mrpt::math::CQuaternion, CPoseOrPoint
  * \ingroup poses_grp
  */
-class CPose3DQuat : public CPose<CPose3DQuat>,
+class CPose3DQuat : public CPose<CPose3DQuat, 7>,
 					public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CPose3DQuat)
 	DEFINE_SCHEMA_SERIALIZABLE()
    public:
 	/** The translation vector [x,y,z] */
-	mrpt::math::CArrayDouble<3> m_coords;
+	mrpt::math::CVectorFixedDouble<3> m_coords;
 	/** The quaternion. */
 	mrpt::math::CQuaternionDouble m_quat;
 
@@ -59,9 +59,12 @@ class CPose3DQuat : public CPose<CPose3DQuat>,
 	/** Read-only access to the quaternion representing the 3D rotation. */
 	inline const mrpt::math::CQuaternionDouble& quat() const { return m_quat; }
 	/** Read/Write access to the translation vector in R^3. */
-	inline mrpt::math::CArrayDouble<3>& xyz() { return m_coords; }
+	inline mrpt::math::CVectorFixedDouble<3>& xyz() { return m_coords; }
 	/** Read-only access to the translation vector in R^3. */
-	inline const mrpt::math::CArrayDouble<3>& xyz() const { return m_coords; }
+	inline const mrpt::math::CVectorFixedDouble<3>& xyz() const
+	{
+		return m_coords;
+	}
 	/** Default constructor, initialize translation to zeros and quaternion to
 	 * no rotation. */
 	inline CPose3DQuat() : m_quat()
@@ -118,19 +121,8 @@ class CPose3DQuat : public CPose<CPose3DQuat>,
 	 * \sa getInverseHomogeneousMatrix
 	 */
 	void getHomogeneousMatrix(mrpt::math::CMatrixDouble44& out_HM) const;
-	/** Returns a 1x7 vector with [x y z qr qx qy qz] */
-	void getAsVector(mrpt::math::CVectorDouble& v) const;
-	/// \overload
-	void getAsVector(mrpt::math::CArrayDouble<7>& v) const
-	{
-		v[0] = m_coords[0];
-		v[1] = m_coords[1];
-		v[2] = m_coords[2];
-		v[3] = m_quat[0];
-		v[4] = m_quat[1];
-		v[5] = m_quat[2];
-		v[6] = m_quat[3];
-	}
+	/** Returns a 7x1 vector with [x y z qr qx qy qz]' */
+	void asVector(vector_t& v) const;
 
 	/**  Makes \f$ this = A \oplus B \f$  this method is slightly more efficient
 	 * than "this= A + B;" since it avoids the temporary object.
@@ -152,9 +144,9 @@ class CPose3DQuat : public CPose<CPose3DQuat>,
 	void composePoint(
 		const double lx, const double ly, const double lz, double& gx,
 		double& gy, double& gz,
-		mrpt::math::CMatrixFixedNumeric<double, 3, 3>* out_jacobian_df_dpoint =
+		mrpt::math::CMatrixFixed<double, 3, 3>* out_jacobian_df_dpoint =
 			nullptr,
-		mrpt::math::CMatrixFixedNumeric<double, 3, 7>* out_jacobian_df_dpose =
+		mrpt::math::CMatrixFixed<double, 3, 7>* out_jacobian_df_dpose =
 			nullptr) const;
 
 	/**  Computes the 3D point L such as \f$ L = G \ominus this \f$.
@@ -163,9 +155,9 @@ class CPose3DQuat : public CPose<CPose3DQuat>,
 	void inverseComposePoint(
 		const double gx, const double gy, const double gz, double& lx,
 		double& ly, double& lz,
-		mrpt::math::CMatrixFixedNumeric<double, 3, 3>* out_jacobian_df_dpoint =
+		mrpt::math::CMatrixFixed<double, 3, 3>* out_jacobian_df_dpoint =
 			nullptr,
-		mrpt::math::CMatrixFixedNumeric<double, 3, 7>* out_jacobian_df_dpose =
+		mrpt::math::CMatrixFixed<double, 3, 7>* out_jacobian_df_dpose =
 			nullptr) const;
 
 	/**  Computes the 3D point G such as \f$ G = this \oplus L \f$.
@@ -263,20 +255,8 @@ class CPose3DQuat : public CPose<CPose3DQuat>,
 	 * \sa asString
 	 * \exception std::exception On invalid format
 	 */
-	void fromString(const std::string& s)
-	{
-		mrpt::math::CMatrixDouble m;
-		if (!m.fromMatlabStringFormat(s))
-			THROW_EXCEPTION("Malformed expression in ::fromString");
-		ASSERTMSG_(m.rows() == 1 && m.cols() == 7, "Expected vector length=7");
-		m_coords[0] = m.get_unsafe(0, 0);
-		m_coords[1] = m.get_unsafe(0, 1);
-		m_coords[2] = m.get_unsafe(0, 2);
-		m_quat[0] = m.get_unsafe(0, 3);
-		m_quat[1] = m.get_unsafe(0, 4);
-		m_quat[2] = m.get_unsafe(0, 5);
-		m_quat[3] = m.get_unsafe(0, 6);
-	}
+	void fromString(const std::string& s);
+
 	/** Same as fromString, but without requiring the square brackets in the
 	 * string */
 	void fromStringRaw(const std::string& s);
@@ -340,9 +320,8 @@ class CPose3DQuat : public CPose<CPose3DQuat>,
 	void sphericalCoordinates(
 		const mrpt::math::TPoint3D& point, double& out_range, double& out_yaw,
 		double& out_pitch,
-		mrpt::math::CMatrixFixedNumeric<double, 3, 3>* out_jacob_dryp_dpoint =
-			nullptr,
-		mrpt::math::CMatrixFixedNumeric<double, 3, 7>* out_jacob_dryp_dpose =
+		mrpt::math::CMatrixFixed<double, 3, 3>* out_jacob_dryp_dpoint = nullptr,
+		mrpt::math::CMatrixFixed<double, 3, 7>* out_jacob_dryp_dpose =
 			nullptr) const;
 
    public:
@@ -648,9 +627,6 @@ class CPose3DQuat : public CPose<CPose3DQuat>,
 	}
 
 	/** @} */
-	//! See ops_containers.h
-	using mrpt_autotype = CPose3DQuat;
-	// DECLARE_MRPT_CONTAINER_TYPES
 
 	void setToNaN() override;
 

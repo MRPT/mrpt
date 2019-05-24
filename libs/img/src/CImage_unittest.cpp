@@ -12,7 +12,7 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/img/TColor.h>
 #include <mrpt/io/CMemoryStream.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>

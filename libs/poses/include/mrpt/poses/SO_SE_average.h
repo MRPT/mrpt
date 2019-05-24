@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/types_math.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 
@@ -88,24 +88,24 @@ class SO_average<3>
 	/** Resets the accumulator */
 	void clear();
 	/** Adds a new orientation to the computation \sa get_average */
-	void append(const Eigen::Matrix3d& M);
+	void append(const mrpt::math::CMatrixDouble33& M);
 	/** Adds a new orientation to the weighted-average computation \sa
 	 * get_average */
-	void append(const Eigen::Matrix3d& M, const double weight);
+	void append(const mrpt::math::CMatrixDouble33& M, const double weight);
 	/** Returns the average orientation.
 	 * \exception std::logic_error If no data point were inserted.
 	 * \exception std::runtime_error Upon undeterminate average value (ie there
 	 * was a problem with the SVD) and \a enable_exception_on_undeterminate is
 	 * set to true (otherwise, the 0 orientation would be returned)
 	 * \sa append */
-	Eigen::Matrix3d get_average() const;
+	mrpt::math::CMatrixDouble33 get_average() const;
 	/** (Default=false) Set to true if you want to raise an exception on
 	 * undetermined average values. */
 	bool enable_exception_on_undeterminate{false};
 
    private:
 	double m_count{0};
-	Eigen::Matrix3d m_accum_rot;
+	mrpt::math::CMatrixDouble33 m_accum_rot;
 };  // end SO_average<3>
 
 /** Computes weighted and un-weighted averages of SE(2) poses.

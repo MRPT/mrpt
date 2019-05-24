@@ -10,7 +10,7 @@
 #pragma once
 
 #include <mrpt/img/CImage.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/vision/types.h>
 

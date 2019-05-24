@@ -11,6 +11,7 @@
 #include <gtest/gtest.h>
 #include <mrpt/math/CSparseMatrix.h>
 #include <mrpt/random.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -41,7 +42,7 @@ void generateRandomSparseMatrix(
 void do_test_init_to_unit(size_t N)
 {
 	CMatrixDouble dense1;
-	dense1.unit(N, 1.0);
+	dense1.setIdentity(N);
 
 	CSparseMatrix SM(dense1);
 
@@ -188,7 +189,10 @@ void op_sparse_multiply_AB(
 void op_dense_multiply_AB(
 	const CMatrixDouble& M1, const CMatrixDouble& M2, CMatrixDouble& res)
 {
-	res = M1 * M2;
+	if (M1.isSquare() && M2.isSquare())
+		res = M1 * M2;
+	else
+		res = M1.asEigen() * M2.asEigen();
 }
 
 TEST(SparseMatrix, Op_Multiply_AB)
@@ -228,6 +232,6 @@ TEST(SparseMatrix, CholeskyDecomp)
 	CMatrixDouble Ud;  // Upper triangle
 	D.chol(Ud);
 
-	const double err = ((Ud.transpose()) - L).array().abs().mean();
+	const double err = (Ud.transpose() - L.asEigen()).array().abs().mean();
 	EXPECT_TRUE(err < 1e-8);
 }

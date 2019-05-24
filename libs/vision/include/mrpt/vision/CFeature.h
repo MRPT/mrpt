@@ -10,7 +10,7 @@
 #pragma once
 
 #include <mrpt/img/CImage.h>
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/KDTreeCapable.h>
 
 #include <mrpt/vision/types.h>
@@ -122,9 +122,9 @@ class CFeature : public mrpt::serialization::CSerializable
 		//! range bins in the 2D histogram) of the
 		//! original matrix from which SpinImg was
 		//! extracted as a vector.
-		mrpt::math::CMatrix
+		mrpt::math::CMatrixF
 			PolarImg;  //!< A polar image centered at the interest point
-		mrpt::math::CMatrix
+		mrpt::math::CMatrixF
 			LogPolarImg;  //!< A log-polar image centered at the interest point
 		bool polarImgsNoRotation{
 			false};  //!< If set to true (manually, default=false)
@@ -299,7 +299,7 @@ class CFeature : public mrpt::serialization::CSerializable
 	 * "descriptorPolarImgDistanceTo"
 	 */
 	static float internal_distanceBetweenPolarImages(
-		const mrpt::math::CMatrix& desc1, const mrpt::math::CMatrix& desc2,
+		const mrpt::math::CMatrixF& desc1, const mrpt::math::CMatrixF& desc2,
 		float& minDistAngle, bool normalize_distances, bool dont_shift_angle);
 
 };  // end of class

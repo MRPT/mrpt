@@ -23,11 +23,11 @@
 #pragma once
 
 #include <mrpt/core/aligned_std_vector.h>
-#include <mrpt/math/CArrayNumeric.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixFixed.h>
+#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/vision/types.h>
-
+#include <Eigen/Dense>
 #include <array>
 
 // Declarations shared between ba_*.cpp files, but which are private to MRPT
@@ -35,9 +35,10 @@
 
 namespace mrpt::vision
 {
-using mrpt::math::CArrayDouble;  // Allow these "using"s since these headers are
+using mrpt::math::CVectorFixedDouble;  // Allow these "using"s since these
+									   // headers are
 // internal to mrpt
-using mrpt::math::CMatrixFixedNumeric;
+using mrpt::math::CMatrixFixed;
 using std::vector;
 
 #define VERBOSE_COUT \
@@ -60,8 +61,8 @@ struct JacData
 	TLandmarkID point_id;
 
 	// Jacobians of the observation wrt the camera pose & the point:
-	mrpt::math::CMatrixFixedNumeric<double, ObsDim, FrameDof> J_frame;
-	mrpt::math::CMatrixFixedNumeric<double, ObsDim, PointDof> J_point;
+	mrpt::math::CMatrixFixed<double, ObsDim, FrameDof> J_frame;
+	mrpt::math::CMatrixFixed<double, ObsDim, PointDof> J_point;
 	bool J_frame_valid, J_point_valid;
 
 	MRPT_MAKE_ALIGNED_OPERATOR_NEW  // Needed by any struct having
@@ -79,7 +80,7 @@ void frameJac(
 	const mrpt::img::TCamera& camera_params,
 	const mrpt::poses::CPose3D& cam_pose,
 	const mrpt::math::TPoint3D& landmark_global,
-	mrpt::math::CMatrixFixedNumeric<double, 2, 6>& out_J)
+	mrpt::math::CMatrixFixed<double, 2, 6>& out_J)
 {
 	using mrpt::square;
 
@@ -123,8 +124,7 @@ void frameJac(
 
 		const double jac_proj_vals[] = {fx_z, 0,	-fx_z2 * x,
 										0,	fy_z, -fy_z2 * y};
-		const mrpt::math::CMatrixFixedNumeric<double, 2, 3> jac_proj(
-			jac_proj_vals);
+		const mrpt::math::CMatrixFixed<double, 2, 3> jac_proj(jac_proj_vals);
 
 		const double p_x = cam_pose.x();
 		const double p_y = cam_pose.y();
@@ -152,8 +152,8 @@ void frameJac(
 			tz * R(1, 2) - ty * R(2, 2) + R(1, 2) * p_z - R(2, 2) * p_y,
 			tx * R(2, 2) - tz * R(0, 2) - R(0, 2) * p_z + R(2, 2) * p_x,
 			ty * R(0, 2) - tx * R(1, 2) + R(0, 2) * p_y - R(1, 2) * p_x};
-		const mrpt::math::CMatrixFixedNumeric<double, 3, 6> vals(aux_vals);
-		out_J.multiply_AB(jac_proj, vals);
+		const mrpt::math::CMatrixFixed<double, 3, 6> vals(aux_vals);
+		out_J = jac_proj * vals;
 	}
 }
 
@@ -167,7 +167,7 @@ void pointJac(
 	const mrpt::img::TCamera& camera_params,
 	const mrpt::poses::CPose3D& cam_pose,
 	const mrpt::math::TPoint3D& landmark_global,
-	mrpt::math::CMatrixFixedNumeric<double, 2, 3>& out_J)
+	mrpt::math::CMatrixFixed<double, 2, 3>& out_J)
 {
 	using namespace mrpt::math;
 
@@ -192,9 +192,9 @@ void pointJac(
 		camera_params.fx() * _z,		 0,
 		-camera_params.fx() * l.x * _z2, 0,
 		camera_params.fy() * _z,		 -camera_params.fy() * l.y * _z2};
-	const mrpt::math::CMatrixFixedNumeric<double, 2, 3> tmp(tmp_vals);
+	const mrpt::math::CMatrixFixed<double, 2, 3> tmp(tmp_vals);
 
-	out_J.multiply_AB(tmp, dp_point);
+	out_J = tmp * dp_point;
 }
 
 // === Compute sparse Jacobians ====
@@ -253,10 +253,10 @@ void ba_build_gradient_Hessians(
 	const TSequenceFeatureObservations& observations,
 	const std::vector<std::array<double, 2>>& residual_vec,
 	const mrpt::aligned_std_vector<JacData<6, 3, 2>>& jac_data_vec,
-	mrpt::aligned_std_vector<mrpt::math::CMatrixFixedNumeric<double, 6, 6>>& U,
-	mrpt::aligned_std_vector<CArrayDouble<6>>& eps_frame,
-	mrpt::aligned_std_vector<mrpt::math::CMatrixFixedNumeric<double, 3, 3>>& V,
-	mrpt::aligned_std_vector<CArrayDouble<3>>& eps_point,
+	mrpt::aligned_std_vector<mrpt::math::CMatrixFixed<double, 6, 6>>& U,
+	mrpt::aligned_std_vector<CVectorFixedDouble<6>>& eps_frame,
+	mrpt::aligned_std_vector<mrpt::math::CMatrixFixed<double, 3, 3>>& V,
+	mrpt::aligned_std_vector<CVectorFixedDouble<3>>& eps_point,
 	const size_t num_fix_frames, const size_t num_fix_points,
 	const vector<double>* kernel_1st_deriv);
 }  // namespace mrpt::vision

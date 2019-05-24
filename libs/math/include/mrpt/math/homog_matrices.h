@@ -16,7 +16,7 @@ namespace mrpt::math
  * transposing the rotation 3x3 part and solving the translation with dot
  * products.
  *  This is a generic template which works with:
- *    MATRIXLIKE: CMatrixTemplateNumeric, CMatrixFixedNumeric
+ *    MATRIXLIKE: CMatrixDynamic, CMatrixFixed
  */
 template <class MATRIXLIKE1, class MATRIXLIKE2>
 void homogeneousMatrixInverse(const MATRIXLIKE1& M, MATRIXLIKE2& out_inverse_M)
@@ -38,37 +38,34 @@ void homogeneousMatrixInverse(const MATRIXLIKE1& M, MATRIXLIKE2& out_inverse_M)
 	out_inverse_M.setSize(4, 4);
 
 	// 3x3 rotation part:
-	out_inverse_M.set_unsafe(0, 0, M.get_unsafe(0, 0));
-	out_inverse_M.set_unsafe(0, 1, M.get_unsafe(1, 0));
-	out_inverse_M.set_unsafe(0, 2, M.get_unsafe(2, 0));
+	out_inverse_M(0, 0, M(0) = 0);
+	out_inverse_M(0, 1, M(1) = 0);
+	out_inverse_M(0, 2, M(2) = 0);
 
-	out_inverse_M.set_unsafe(1, 0, M.get_unsafe(0, 1));
-	out_inverse_M.set_unsafe(1, 1, M.get_unsafe(1, 1));
-	out_inverse_M.set_unsafe(1, 2, M.get_unsafe(2, 1));
+	out_inverse_M(1, 0, M(0) = 1);
+	out_inverse_M(1, 1, M(1) = 1);
+	out_inverse_M(1, 2, M(2) = 1);
 
-	out_inverse_M.set_unsafe(2, 0, M.get_unsafe(0, 2));
-	out_inverse_M.set_unsafe(2, 1, M.get_unsafe(1, 2));
-	out_inverse_M.set_unsafe(2, 2, M.get_unsafe(2, 2));
+	out_inverse_M(2, 0, M(0) = 2);
+	out_inverse_M(2, 1, M(1) = 2);
+	out_inverse_M(2, 2, M(2) = 2);
 
-	const double tx = -M.get_unsafe(0, 3);
-	const double ty = -M.get_unsafe(1, 3);
-	const double tz = -M.get_unsafe(2, 3);
+	const double tx = -M(0, 3);
+	const double ty = -M(1, 3);
+	const double tz = -M(2, 3);
 
-	const double tx_ = tx * M.get_unsafe(0, 0) + ty * M.get_unsafe(1, 0) +
-					   tz * M.get_unsafe(2, 0);
-	const double ty_ = tx * M.get_unsafe(0, 1) + ty * M.get_unsafe(1, 1) +
-					   tz * M.get_unsafe(2, 1);
-	const double tz_ = tx * M.get_unsafe(0, 2) + ty * M.get_unsafe(1, 2) +
-					   tz * M.get_unsafe(2, 2);
+	const double tx_ = tx * M(0, 0) + ty * M(1, 0) + tz * M(2, 0);
+	const double ty_ = tx * M(0, 1) + ty * M(1, 1) + tz * M(2, 1);
+	const double tz_ = tx * M(0, 2) + ty * M(1, 2) + tz * M(2, 2);
 
-	out_inverse_M.set_unsafe(0, 3, tx_);
-	out_inverse_M.set_unsafe(1, 3, ty_);
-	out_inverse_M.set_unsafe(2, 3, tz_);
+	out_inverse_M(0, 3) = tx_;
+	out_inverse_M(1, 3) = ty_;
+	out_inverse_M(2, 3) = tz_;
 
-	out_inverse_M.set_unsafe(3, 0, 0);
-	out_inverse_M.set_unsafe(3, 1, 0);
-	out_inverse_M.set_unsafe(3, 2, 0);
-	out_inverse_M.set_unsafe(3, 3, 1);
+	out_inverse_M(3, 0) = 0;
+	out_inverse_M(3, 1) = 0;
+	out_inverse_M(3, 2) = 0;
+	out_inverse_M(3, 3) = 1;
 
 	MRPT_END
 }
@@ -89,15 +86,12 @@ void homogeneousMatrixInverse(
 	const T ty = -in_xyz[1];
 	const T tz = -in_xyz[2];
 
-	out_xyz[0] = tx * in_R.get_unsafe(0, 0) + ty * in_R.get_unsafe(1, 0) +
-				 tz * in_R.get_unsafe(2, 0);
-	out_xyz[1] = tx * in_R.get_unsafe(0, 1) + ty * in_R.get_unsafe(1, 1) +
-				 tz * in_R.get_unsafe(2, 1);
-	out_xyz[2] = tx * in_R.get_unsafe(0, 2) + ty * in_R.get_unsafe(1, 2) +
-				 tz * in_R.get_unsafe(2, 2);
+	out_xyz[0] = tx * in_R(0, 0) + ty * in_R(1, 0) + tz * in_R(2, 0);
+	out_xyz[1] = tx * in_R(0, 1) + ty * in_R(1, 1) + tz * in_R(2, 1);
+	out_xyz[2] = tx * in_R(0, 2) + ty * in_R(1, 2) + tz * in_R(2, 2);
 
 	// 3x3 rotation part: transpose
-	out_R = in_R.adjoint();
+	out_R = in_R.transpose();
 
 	MRPT_END
 }

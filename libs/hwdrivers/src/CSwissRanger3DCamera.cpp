@@ -405,7 +405,7 @@ void CSwissRanger3DCamera::getNextObservation(
 
 					for (size_t y = 0; y < img->height; y++)
 						for (size_t x = 0; x < img->width; x++)
-							obs.rangeImage.set_unsafe(y, x, K * (*data_ptr++));
+							obs.rangeImage(y, x) = K * (*data_ptr++);
 				}
 
 				if (this->m_save_3d)
@@ -458,7 +458,7 @@ void CSwissRanger3DCamera::getNextObservation(
 						reinterpret_cast<const uint16_t*>(img->data);
 					for (size_t y = 0; y < img->height; y++)
 					{
-						uint8_t* row = obs.intensityImage.get_unsafe(0, y, 0);
+						uint8_t* row = obs.intensityImage(0, y, 0);
 						for (size_t x = 0; x < img->width; x++)
 							// Convert 16u -> 8u
 							(*row++) = table_16u_to_8u[*data_ptr++];
@@ -500,7 +500,7 @@ void CSwissRanger3DCamera::getNextObservation(
 						reinterpret_cast<const uint16_t*>(img->data);
 					for (size_t y = 0; y < img->height; y++)
 					{
-						uint8_t* row = obs.confidenceImage.get_unsafe(0, y, 0);
+						uint8_t* row = obs.confidenceImage(0, y, 0);
 						for (size_t x = 0; x < img->width; x++)
 							(*row++) = (*data_ptr++) >> 8;  // Convert 16u -> 8u
 					}

@@ -13,10 +13,9 @@
 #include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/containers/stl_containers_utils.h>  // find_in_vector
 #include <mrpt/core/aligned_std_vector.h>
-#include <mrpt/io/CFileOutputStream.h>
-#include <mrpt/math/CArrayNumeric.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
+#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/num_jacobian.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/system/COutputLogger.h>
@@ -221,10 +220,10 @@ template <
 class CKalmanFilterCapable : public mrpt::system::COutputLogger
 {
    public:
-	static inline size_t get_vehicle_size() { return VEH_SIZE; }
-	static inline size_t get_observation_size() { return OBS_SIZE; }
-	static inline size_t get_feature_size() { return FEAT_SIZE; }
-	static inline size_t get_action_size() { return ACT_SIZE; }
+	static constexpr size_t get_vehicle_size() { return VEH_SIZE; }
+	static constexpr size_t get_observation_size() { return OBS_SIZE; }
+	static constexpr size_t get_feature_size() { return FEAT_SIZE; }
+	static constexpr size_t get_action_size() { return ACT_SIZE; }
 	inline size_t getNumberOfLandmarksInTheMap() const
 	{
 		return detail::getNumberOfLandmarksInMap(*this);
@@ -237,36 +236,26 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 		CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>;
 
 	// ---------- Many useful typedefs to short the notation a bit... --------
-	using KFVector = Eigen::Matrix<KFTYPE, Eigen::Dynamic, 1>;
-	using KFMatrix = mrpt::math::CMatrixTemplateNumeric<KFTYPE>;
+	using KFVector = mrpt::math::CVectorDynamic<KFTYPE>;
+	using KFMatrix = mrpt::math::CMatrixDynamic<KFTYPE>;
 
-	using KFMatrix_VxV =
-		mrpt::math::CMatrixFixedNumeric<KFTYPE, VEH_SIZE, VEH_SIZE>;
-	using KFMatrix_OxO =
-		mrpt::math::CMatrixFixedNumeric<KFTYPE, OBS_SIZE, OBS_SIZE>;
-	using KFMatrix_FxF =
-		mrpt::math::CMatrixFixedNumeric<KFTYPE, FEAT_SIZE, FEAT_SIZE>;
-	using KFMatrix_AxA =
-		mrpt::math::CMatrixFixedNumeric<KFTYPE, ACT_SIZE, ACT_SIZE>;
+	using KFMatrix_VxV = mrpt::math::CMatrixFixed<KFTYPE, VEH_SIZE, VEH_SIZE>;
+	using KFMatrix_OxO = mrpt::math::CMatrixFixed<KFTYPE, OBS_SIZE, OBS_SIZE>;
+	using KFMatrix_FxF = mrpt::math::CMatrixFixed<KFTYPE, FEAT_SIZE, FEAT_SIZE>;
+	using KFMatrix_AxA = mrpt::math::CMatrixFixed<KFTYPE, ACT_SIZE, ACT_SIZE>;
 
-	using KFMatrix_VxO =
-		mrpt::math::CMatrixFixedNumeric<KFTYPE, VEH_SIZE, OBS_SIZE>;
-	using KFMatrix_VxF =
-		mrpt::math::CMatrixFixedNumeric<KFTYPE, VEH_SIZE, FEAT_SIZE>;
-	using KFMatrix_FxV =
-		mrpt::math::CMatrixFixedNumeric<KFTYPE, FEAT_SIZE, VEH_SIZE>;
-	using KFMatrix_FxO =
-		mrpt::math::CMatrixFixedNumeric<KFTYPE, FEAT_SIZE, OBS_SIZE>;
-	using KFMatrix_OxF =
-		mrpt::math::CMatrixFixedNumeric<KFTYPE, OBS_SIZE, FEAT_SIZE>;
-	using KFMatrix_OxV =
-		mrpt::math::CMatrixFixedNumeric<KFTYPE, OBS_SIZE, VEH_SIZE>;
+	using KFMatrix_VxO = mrpt::math::CMatrixFixed<KFTYPE, VEH_SIZE, OBS_SIZE>;
+	using KFMatrix_VxF = mrpt::math::CMatrixFixed<KFTYPE, VEH_SIZE, FEAT_SIZE>;
+	using KFMatrix_FxV = mrpt::math::CMatrixFixed<KFTYPE, FEAT_SIZE, VEH_SIZE>;
+	using KFMatrix_FxO = mrpt::math::CMatrixFixed<KFTYPE, FEAT_SIZE, OBS_SIZE>;
+	using KFMatrix_OxF = mrpt::math::CMatrixFixed<KFTYPE, OBS_SIZE, FEAT_SIZE>;
+	using KFMatrix_OxV = mrpt::math::CMatrixFixed<KFTYPE, OBS_SIZE, VEH_SIZE>;
 
-	using KFArray_VEH = mrpt::math::CArrayNumeric<KFTYPE, VEH_SIZE>;
-	using KFArray_ACT = mrpt::math::CArrayNumeric<KFTYPE, ACT_SIZE>;
-	using KFArray_OBS = mrpt::math::CArrayNumeric<KFTYPE, OBS_SIZE>;
+	using KFArray_VEH = mrpt::math::CVectorFixed<KFTYPE, VEH_SIZE>;
+	using KFArray_ACT = mrpt::math::CVectorFixed<KFTYPE, ACT_SIZE>;
+	using KFArray_OBS = mrpt::math::CVectorFixed<KFTYPE, OBS_SIZE>;
 	using vector_KFArray_OBS = mrpt::aligned_std_vector<KFArray_OBS>;
-	using KFArray_FEAT = mrpt::math::CArrayNumeric<KFTYPE, FEAT_SIZE>;
+	using KFArray_FEAT = mrpt::math::CVectorFixed<KFTYPE, FEAT_SIZE>;
 
 	inline size_t getStateVectorLength() const { return m_xkk.size(); }
 	inline KFVector& internal_getXkk() { return m_xkk; }
@@ -288,8 +277,8 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	 */
 	inline void getLandmarkCov(size_t idx, KFMatrix_FxF& feat_cov) const
 	{
-		m_pkk.extractMatrix(
-			VEH_SIZE + idx * FEAT_SIZE, VEH_SIZE + idx * FEAT_SIZE, feat_cov);
+		feat_cov = m_pkk.block<FEAT_SIZE, FEAT_SIZE>(
+			VEH_SIZE + idx * FEAT_SIZE, VEH_SIZE + idx * FEAT_SIZE);
 	}
 
    protected:

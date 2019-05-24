@@ -1,11 +1,3 @@
-# Eigen library plugins:
-# ===================================================
-set(EIGEN_MATRIXBASE_PLUGIN "<mrpt/math/eigen_plugins.h>" CACHE STRING "Eigen plugin header")
-set(EIGEN_MATRIXBASE_PLUGIN_POST_IMPL "<mrpt/math/eigen_plugins_impl.h>" CACHE STRING "Eigen plugin implementation header")
-
-mark_as_advanced(EIGEN_MATRIXBASE_PLUGIN)
-mark_as_advanced(EIGEN_MATRIXBASE_PLUGIN_POST_IMPL)
-
 # By default: Use system version
 find_package(Eigen3 QUIET NO_MODULE)
 

@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/types_math.h>
+#include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <deque>
@@ -94,9 +94,9 @@ class ScalarFactorGraph : public mrpt::system::COutputLogger
 	void updateEstimation(
 		/** Output increment of the current estimate. Caller must add this
 		   vector to current state vector to obtain the optimal estimation. */
-		Eigen::VectorXd& solved_x_inc,
+		mrpt::math::CVectorDouble& solved_x_inc,
 		/** If !=nullptr, the variances of each estimate will be stored here. */
-		Eigen::VectorXd* solved_variances = nullptr);
+		mrpt::math::CVectorDouble* solved_variances = nullptr);
 
 	bool isProfilerEnabled() const { return m_enable_profiler; }
 	void enableProfiler(bool enable = true) { m_enable_profiler = enable; }

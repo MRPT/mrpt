@@ -15,8 +15,8 @@
 
 #include "pbmap-precomp.h"  // Precompiled headers
 
-#include <mrpt/math/CArrayNumeric.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixFixed.h>
+#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/ransac.h>
 #include <mrpt/pbmap/ConsistencyTest.h>
 #include <mrpt/pbmap/PbMapLocaliser.h>
@@ -27,7 +27,7 @@
 using namespace std;
 using namespace Eigen;
 using namespace mrpt::pbmap;
-using namespace mrpt::math;  // CMatrix*
+using namespace mrpt::math;  // CMatrixF*
 using namespace mrpt;
 
 ConsistencyTest::ConsistencyTest(PbMap& PBM_source, PbMap& PBM_target)
@@ -178,7 +178,7 @@ Eigen::Matrix4f ConsistencyTest::initPose(
 	// Form SE3 transformation matrix. This matrix maps the model into the
 	// current data reference frame
 	Eigen::Matrix4f rigidTransf;
-	rigidTransf.block(0, 0, 3, 3) = Rotation;
+	rigidTransf.block<3, 3>(0, 0) = Rotation;
 	rigidTransf.block(0, 3, 3, 1) = translation;
 	rigidTransf.row(3) << 0, 0, 0, 1;
 	return rigidTransf;
@@ -317,7 +317,7 @@ Eigen::Matrix4f ConsistencyTest::estimatePose(
 	// Form SE3 transformation matrix. This matrix maps the model into the
 	// current data reference frame
 	Eigen::Matrix4f rigidTransf;
-	rigidTransf.block(0, 0, 3, 3) = Rotation;
+	rigidTransf.block<3, 3>(0, 0) = Rotation;
 	rigidTransf.block(0, 3, 3, 1) = translation;
 	rigidTransf.row(3) << 0, 0, 0, 1;
 	return rigidTransf;
@@ -397,12 +397,12 @@ bool ConsistencyTest::estimatePoseWithCovariance(
 	// Form SE3 transformation matrix. This matrix maps the model into the
 	// current data reference frame
 	//  Eigen::Matrix4f rigidTransf;
-	rigidTransf.block(0, 0, 3, 3) = Rotation;
+	rigidTransf.block<3, 3>(0, 0) = Rotation;
 	rigidTransf.block(0, 3, 3, 1) = translation;
 	rigidTransf.row(3) << 0, 0, 0, 1;
 
 	//  Eigen::Matrix<float,6,6> covarianceM = Eigen::Matrix<float,6,6>::Zero();
-	covarianceM.block(0, 0, 3, 3) = hessian;  // The first diagonal 3x3 block
+	covarianceM.block<3, 3>(0, 0) = hessian;  // The first diagonal 3x3 block
 	// corresponds to the translation
 	// part
 	covarianceM.block(3, 3, 3, 3) = normalCovariances;  // Rotation block
@@ -466,7 +466,7 @@ Eigen::Matrix4f ConsistencyTest::initPose2D(
 	// Form SE3 transformation matrix. This matrix maps the model into the
 	// current data reference frame
 	Eigen::Matrix4f rigidTransf;
-	rigidTransf.block(0, 0, 3, 3) = Rotation;
+	rigidTransf.block<3, 3>(0, 0) = Rotation;
 	rigidTransf.block(0, 3, 3, 1) = translation;
 	rigidTransf.row(3) << 0, 0, 0, 1;
 	return rigidTransf;
@@ -523,13 +523,8 @@ Eigen::Matrix4f ConsistencyTest::getRTwithModel(
 
 		Eigen::Matrix<float, 6, 1> updatedSE3 =
 			(m6Hessian.inverse() * v6Error).transpose();
-		mrpt::math::CArrayNumeric<double, 6> _updatedSE3;
-		_updatedSE3(0) = updatedSE3(0);
-		_updatedSE3(1) = updatedSE3(1);
-		_updatedSE3(2) = updatedSE3(2);
-		_updatedSE3(3) = updatedSE3(3);
-		_updatedSE3(4) = updatedSE3(4);
-		_updatedSE3(5) = updatedSE3(5);
+		const auto _updatedSE3 =
+			mrpt::math::CVectorFixed<double, 6>(updatedSE3);
 		mrpt::math::CMatrixDouble44 CMatUpdate;
 		mrpt::poses::Lie::SE<3>::exp(_updatedSE3)
 			.getHomogeneousMatrix(CMatUpdate);
@@ -877,7 +872,7 @@ Eigen::Matrix4f ConsistencyTest::estimatePoseRANSAC(
 //	for (size_t i=0;i<N;i++)
 //	{
 //		const double d = plane.distance( TPoint3D(
-// allData.get_unsafe(0,i),allData.get_unsafe(1,i),allData.get_unsafe(2,i) ) );
+// allData(0,i),allData(1,i),allData(2,i) ) );
 //		if (d<distanceThreshold)
 //			out_inlierIndices.push_back(i);
 //	}

@@ -27,6 +27,7 @@
 
 #include <mrpt/gui/about_box.h>
 #include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/obs/CObservationComment.h>
 #include <mrpt/opengl/COpenGLScene.h>
@@ -1374,8 +1375,7 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 		dyn_dhn(1, 0) = sphi_0sa;
 		dyn_dhn(1, 1) = hr * cphi_0sa;
 
-		CMatrixDouble22 COV;  // COV = H * NOISE * H^T
-		dyn_dhn.multiply_HCHt(NOISE, COV);
+		const CMatrixDouble22 COV = mrpt::math::multiply_HCHt(dyn_dhn, NOISE);
 
 		cov->SetQuantiles(3);
 		cov->SetCoordinateBase(lm_xy.x(), lm_xy.y());

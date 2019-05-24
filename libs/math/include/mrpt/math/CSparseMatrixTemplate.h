@@ -327,7 +327,7 @@ class CSparseMatrixTemplate
 	 * position.
 	 */
 	template <typename VECTOR>
-	void getAsVector(VECTOR& vec) const
+	void asVector(VECTOR& vec) const
 	{
 		size_t N = objectList.size();
 		vec.resize(0);

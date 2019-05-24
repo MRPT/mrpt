@@ -24,6 +24,6 @@ void CObjectDetection::detectObjects(
 {
 	mrpt::obs::CObservationImage o;
 	o.timestamp = mrpt::system::now();
-	o.image.setFromImageReadOnly(*img);
+	o.image = img->makeShallowCopy();
 	this->detectObjects_Impl(&o, detected);
 }

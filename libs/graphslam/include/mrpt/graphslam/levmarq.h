@@ -95,9 +95,6 @@ void optimize_graph_spa_levmarq(
 	// Typedefs to make life easier:
 	using gst = graphslam_traits<GRAPH_T>;
 
-	typename gst::Array_O array_O_zeros;
-	array_O_zeros.fill(0);  // Auxiliary var with all zeros
-
 	// The size of things here (because size matters...)
 	constexpr auto DIMS_POSE = gst::SE_TYPE::DOFs;
 
@@ -276,8 +273,8 @@ void optimize_graph_spa_levmarq(
 			// that is: g_i is the "dot-product" of the i'th (transposed)
 			// block-column of J and the vector of errors "errs"
 			profiler.enter("optimize_graph_spa_levmarq.grad");
-			mrpt::aligned_std_vector<typename gst::Array_O> grad_parts(
-				nFreeNodes, array_O_zeros);
+
+			grad.setZero();
 
 			// "lstJacobians" is sorted in the same order than
 			// "lstObservationData":
@@ -303,29 +300,32 @@ void optimize_graph_spa_levmarq(
 					const size_t idx2 = obsIdx2fnIdx[idx_obs].second;
 
 					if (idx1 != string::npos)
+					{
+						typename gst::Array_O grad_idx1;
 						detail::AuxErrorEval<typename gst::edge_t, gst>::
 							multiply_Jt_W_err(
 								itJ->second.first /* J */,
 								lstObservationData[idx_obs].edge /* W */,
-								errs[idx_obs] /* err */,
-								grad_parts[idx1] /* out */
+								errs[idx_obs] /* err */, grad_idx1 /* out */
 							);
+						for (unsigned int i = 0; i < DIMS_POSE; i++)
+							grad[DIMS_POSE * idx1 + i] += grad_idx1[i];
+					}
 
 					if (idx2 != string::npos)
+					{
+						typename gst::Array_O grad_idx2;
 						detail::AuxErrorEval<typename gst::edge_t, gst>::
 							multiply_Jt_W_err(
 								itJ->second.second /* J */,
 								lstObservationData[idx_obs].edge /* W */,
-								errs[idx_obs] /* err */,
-								grad_parts[idx2] /* out */
+								errs[idx_obs] /* err */, grad_idx2 /* out */
 							);
+						for (unsigned int i = 0; i < DIMS_POSE; i++)
+							grad[DIMS_POSE * idx2 + i] += grad_idx2[i];
+					}
 				}
 			}
-
-			// build the gradient as a single vector:
-			::memcpy(
-				&grad[0], &grad_parts[0],
-				nFreeNodes * DIMS_POSE * sizeof(grad[0]));  // Ohh yeahh!
 			profiler.leave("optimize_graph_spa_levmarq.grad");
 
 			// End condition #1
@@ -414,7 +414,7 @@ void optimize_graph_spa_levmarq(
 						if (Hij_upper_triang)  // H_map[col][row]
 							H_map[idx_j][idx_i] += JtJ;
 						else
-							H_map[idx_i][idx_j] += JtJ.transpose();
+							H_map[idx_i][idx_j].sum_At(JtJ);
 					}
 				}
 			}
@@ -436,8 +436,7 @@ void optimize_graph_spa_levmarq(
 						{
 							for (size_t k = 0; k < DIMS_POSE; k++)
 								mrpt::keep_max(
-									H_diagonal_max,
-									it->second.get_unsafe(k, k));
+									H_diagonal_max, it->second(k, k));
 						}
 					}
 				lambda = tau * H_diagonal_max;
@@ -492,13 +491,12 @@ void optimize_graph_spa_levmarq(
 						// c=r: add lambda from LM
 						sp_H.insert_entry_fast(
 							j_offset + r, i_offset + r,
-							it->second.get_unsafe(r, r) + lambda);
+							it->second(r, r) + lambda);
 						// c>r:
 						for (size_t c = r + 1; c < DIMS_POSE; c++)
 						{
 							sp_H.insert_entry_fast(
-								j_offset + r, i_offset + c,
-								it->second.get_unsafe(r, c));
+								j_offset + r, i_offset + c, it->second(r, c));
 						}
 					}
 				}

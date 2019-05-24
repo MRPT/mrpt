@@ -11,6 +11,7 @@
 
 #include <mrpt/core/bits_math.h>
 #include <mrpt/math/fourier.h>
+#include <Eigen/Dense>
 #include <algorithm>
 #include <cmath>
 
@@ -989,7 +990,7 @@ void math::dft2_real(
 	for (i = 0; i < dim1; i++)
 	{
 		a[i] = new FFT_TYPE[dim2];
-		for (j = 0; j < dim2; j++) a[i][j] = in_data.get_unsafe(i, j);
+		for (j = 0; j < dim2; j++) a[i][j] = in_data(i, j);
 	}
 
 	t = new FFT_TYPE[2 * dim1 + 20];
@@ -1012,20 +1013,20 @@ void math::dft2_real(
 	for (i = 1; i < dim1; i++)
 		for (j = 1; j < dim2 / 2; j++)
 		{
-			out_real.set_unsafe(i, j, (float)a[i][j * 2]);
-			out_real.set_unsafe(dim1 - i, dim2 - j, (float)a[i][j * 2]);
-			out_imag.set_unsafe(i, j, (float)-a[i][j * 2 + 1]);
-			out_imag.set_unsafe(dim1 - i, dim2 - j, (float)a[i][j * 2 + 1]);
+			out_real(i, j) = (float)a[i][j * 2];
+			out_real(dim1 - i, dim2 - j) = (float)a[i][j * 2];
+			out_imag(i, j) = (float)-a[i][j * 2 + 1];
+			out_imag(dim1 - i, dim2 - j) = (float)a[i][j * 2 + 1];
 		}
 	// a[0][2*k2] = R[0][k2] = R[0][n2-k2],
 	// a[0][2*k2+1] = I[0][k2] = -I[0][n2-k2],
 	//     0<k2<n2/2,
 	for (j = 1; j < dim2 / 2; j++)
 	{
-		out_real.set_unsafe(0, j, (float)a[0][j * 2]);
-		out_real.set_unsafe(0, dim2 - j, (float)a[0][j * 2]);
-		out_imag.set_unsafe(0, j, (float)-a[0][j * 2 + 1]);
-		out_imag.set_unsafe(0, dim2 - j, (float)a[0][j * 2 + 1]);
+		out_real(0, j) = (float)a[0][j * 2];
+		out_real(0, dim2 - j) = (float)a[0][j * 2];
+		out_imag(0, j) = (float)-a[0][j * 2 + 1];
+		out_imag(0, dim2 - j) = (float)a[0][j * 2 + 1];
 	}
 
 	// a[k1][0] = R[k1][0] = R[n1-k1][0],
@@ -1035,24 +1036,24 @@ void math::dft2_real(
 	//    0<k1<n1/2,
 	for (i = 1; i < dim1 / 2; i++)
 	{
-		out_real.set_unsafe(i, 0, (float)a[i][0]);
-		out_real.set_unsafe(dim1 - i, 0, (float)a[i][0]);
-		out_imag.set_unsafe(i, 0, (float)-a[i][1]);
-		out_imag.set_unsafe(dim1 - i, 0, (float)a[i][1]);
-		out_real.set_unsafe(i, dim2 / 2, (float)a[dim1 - i][1]);
-		out_real.set_unsafe(dim1 - i, dim2 / 2, (float)a[dim1 - i][1]);
-		out_imag.set_unsafe(i, dim2 / 2, (float)a[dim1 - i][0]);
-		out_imag.set_unsafe(dim1 - i, dim2 / 2, (float)-a[dim1 - i][0]);
+		out_real(i, 0) = (float)a[i][0];
+		out_real(dim1 - i, 0) = (float)a[i][0];
+		out_imag(i, 0) = (float)-a[i][1];
+		out_imag(dim1 - i, 0) = (float)a[i][1];
+		out_real(i, dim2 / 2) = (float)a[dim1 - i][1];
+		out_real(dim1 - i, dim2 / 2) = (float)a[dim1 - i][1];
+		out_imag(i, dim2 / 2) = (float)a[dim1 - i][0];
+		out_imag(dim1 - i, dim2 / 2) = (float)-a[dim1 - i][0];
 	}
 
 	// a[0][0] = R[0][0],
 	// a[0][1] = R[0][n2/2],
 	// a[n1/2][0] = R[n1/2][0],
 	// a[n1/2][1] = R[n1/2][n2/2]
-	out_real.set_unsafe(0, 0, (float)a[0][0]);
-	out_real.set_unsafe(0, dim2 / 2, (float)a[0][1]);
-	out_real.set_unsafe(dim1 / 2, 0, (float)a[dim1 / 2][0]);
-	out_real.set_unsafe(dim1 / 2, dim2 / 2, (float)a[dim1 / 2][1]);
+	out_real(0, 0) = (float)a[0][0];
+	out_real(0, dim2 / 2) = (float)a[0][1];
+	out_real(dim1 / 2, 0) = (float)a[dim1 / 2][0];
+	out_real(dim1 / 2, dim2 / 2) = (float)a[dim1 / 2][1];
 
 	// Free temporary memory:
 	for (i = 0; i < dim1; i++) delete[] a[i];
@@ -1101,8 +1102,8 @@ void math::idft2_real(
 	for (i = 1; i < dim1; i++)
 		for (j = 1; j < dim2 / 2; j++)
 		{
-			a[i][2 * j] = in_real.get_unsafe(i, j);
-			a[i][2 * j + 1] = -in_imag.get_unsafe(i, j);
+			a[i][2 * j] = in_real(i, j);
+			a[i][2 * j + 1] = -in_imag(i, j);
 		}
 
 	// a[0][2*j2] = R[0][j2] = R[0][n2-j2],
@@ -1110,8 +1111,8 @@ void math::idft2_real(
 	//    0<j2<n2/2,
 	for (j = 1; j < dim2 / 2; j++)
 	{
-		a[0][2 * j] = in_real.get_unsafe(0, j);
-		a[0][2 * j + 1] = -in_imag.get_unsafe(0, j);
+		a[0][2 * j] = in_real(0, j);
+		a[0][2 * j + 1] = -in_imag(0, j);
 	}
 
 	// a[j1][0] = R[j1][0] = R[n1-j1][0],
@@ -1121,20 +1122,20 @@ void math::idft2_real(
 	//    0<j1<n1/2,
 	for (i = 1; i < dim1 / 2; i++)
 	{
-		a[i][0] = in_real.get_unsafe(i, 0);
-		a[i][1] = -in_imag.get_unsafe(i, 0);
-		a[dim1 - i][1] = in_real.get_unsafe(i, dim2 / 2);
-		a[dim1 - i][0] = in_imag.get_unsafe(i, dim2 / 2);
+		a[i][0] = in_real(i, 0);
+		a[i][1] = -in_imag(i, 0);
+		a[dim1 - i][1] = in_real(i, dim2 / 2);
+		a[dim1 - i][0] = in_imag(i, dim2 / 2);
 	}
 
 	// a[0][0] = R[0][0],
 	// a[0][1] = R[0][n2/2],
 	// a[n1/2][0] = R[n1/2][0],
 	// a[n1/2][1] = R[n1/2][n2/2]
-	a[0][0] = in_real.get_unsafe(0, 0);
-	a[0][1] = in_real.get_unsafe(0, dim2 / 2);
-	a[dim1 / 2][0] = in_real.get_unsafe(dim1 / 2, 0);
-	a[dim1 / 2][1] = in_real.get_unsafe(dim1 / 2, dim2 / 2);
+	a[0][0] = in_real(0, 0);
+	a[0][1] = in_real(0, dim2 / 2);
+	a[dim1 / 2][0] = in_real(dim1 / 2, 0);
+	a[dim1 / 2][1] = in_real(dim1 / 2, dim2 / 2);
 
 	t = new FFT_TYPE[2 * dim1 + 20];
 	ip = new int[(int)ceil(20 + 2 + sqrt((FFT_TYPE)max(dim1, dim2 / 2)))];
@@ -1152,8 +1153,7 @@ void math::idft2_real(
 	FFT_TYPE scale = 2.0f / (dim1 * dim2);
 
 	for (i = 0; i < dim1; i++)
-		for (j = 0; j < dim2; j++)
-			out_data.set_unsafe(i, j, (float)(a[i][j] * scale));
+		for (j = 0; j < dim2; j++) out_data(i, j) = (float)(a[i][j] * scale);
 
 	// Free temporary memory:
 	for (i = 0; i < dim1; i++) delete[] a[i];
@@ -1206,18 +1206,16 @@ static void myGeneralDFT(
 					w_r = cos(phase);
 					w_i = sin(phase);
 
-					R += w_r * in_real.get_unsafe(n1, n2) -
-						 w_i * in_imag.get_unsafe(n1, n2);
-					I += w_i * in_real.get_unsafe(n1, n2) +
-						 w_r * in_imag.get_unsafe(n1, n2);
+					R += w_r * in_real(n1, n2) - w_i * in_imag(n1, n2);
+					I += w_i * in_real(n1, n2) + w_r * in_imag(n1, n2);
 
 					phase += ang2 * k2;
 				}  // end for k2
 			}  // end for k1
 
 			// Save result:
-			out_real.set_unsafe(k1, k2, R * scale);
-			out_imag.set_unsafe(k1, k2, I * scale);
+			out_real(k1, k2) = R * scale;
+			out_imag(k1, k2) = I * scale;
 
 		}  // end for k2
 	}  // end for k1
@@ -1292,8 +1290,8 @@ void math::dft2_complex(
 		for (i = 0; i < dim1; i++)
 			for (j = 0; j < dim2; j++)
 			{
-				a[i][2 * j + 0] = in_real.get_unsafe(i, j);
-				a[i][2 * j + 1] = in_imag.get_unsafe(i, j);
+				a[i][2 * j + 0] = in_real(i, j);
+				a[i][2 * j + 1] = in_imag(i, j);
 			}
 
 		// Do the job!
@@ -1311,8 +1309,8 @@ void math::dft2_complex(
 		for (i = 0; i < dim1; i++)
 			for (j = 0; j < dim2; j++)
 			{
-				out_real.set_unsafe(i, j, (float)a[i][j * 2 + 0]);
-				out_imag.set_unsafe(i, j, (float)a[i][j * 2 + 1]);
+				out_real(i, j) = (float)a[i][j * 2 + 0];
+				out_imag(i, j) = (float)a[i][j * 2 + 1];
 			}
 
 	}  // end FFT
@@ -1399,8 +1397,8 @@ void math::idft2_complex(
 		for (i = 0; i < dim1; i++)
 			for (j = 0; j < dim2; j++)
 			{
-				a[i][2 * j + 0] = in_real.get_unsafe(i, j);
-				a[i][2 * j + 1] = in_imag.get_unsafe(i, j);
+				a[i][2 * j + 0] = in_real(i, j);
+				a[i][2 * j + 1] = in_imag(i, j);
 			}
 
 		// Do the job!
@@ -1420,17 +1418,17 @@ void math::idft2_complex(
 		for (i = 0; i < dim1; i++)
 			for (j = 0; j < dim2; j++)
 			{
-				//				out_real.set_unsafe(i,j,(float)(a[i][j*2+0]*scale));
-				//				out_imag.set_unsafe(i,j,(float)(a[i][j*2+1]*scale));
-				out_real.set_unsafe(i, j, (float)(a[i][j * 2 + 0]));
-				out_imag.set_unsafe(i, j, (float)(a[i][j * 2 + 1]));
+				//				out_real(i,j)=(float)(a[i][j*2+0]*scale);
+				//				out_imag(i,j)=(float)(a[i][j*2+1]*scale);
+				out_real(i, j) = (float)(a[i][j * 2 + 0]);
+				out_imag(i, j) = (float)(a[i][j * 2 + 1]);
 			}
 
-		out_real *= scale;
-		out_imag *= scale;
+		out_real.asEigen() *= scale;
+		out_imag.asEigen() *= scale;
 
 		// The element (0,0) is purely real!
-		out_imag.set_unsafe(0, 0, 0);
+		out_imag(0, 0) = 0;
 
 	}  // end FFT
 	else
@@ -1472,15 +1470,15 @@ void mrpt::math::cross_correlation_FFT(
 	for (y = 0; y < ly; y++)
 		for (x = 0; x < lx; x++)
 		{
-			float r1 = I1_R.get_unsafe(y, x);
-			float r2 = I2_R.get_unsafe(y, x);
+			float r1 = I1_R(y, x);
+			float r2 = I2_R(y, x);
 
-			float ii1 = I1_I.get_unsafe(y, x);
-			float ii2 = I2_I.get_unsafe(y, x);
+			float ii1 = I1_I(y, x);
+			float ii2 = I2_I(y, x);
 
 			float den = square(r1) + square(ii1);
-			I2_R.set_unsafe(y, x, (r1 * r2 + ii1 * ii2) / den);
-			I2_I.set_unsafe(y, x, (ii2 * r1 - r2 * ii1) / den);
+			I2_R(y, x) = (r1 * r2 + ii1 * ii2) / den;
+			I2_I(y, x) = (ii2 * r1 - r2 * ii1) / den;
 		}
 
 	// IFFT:

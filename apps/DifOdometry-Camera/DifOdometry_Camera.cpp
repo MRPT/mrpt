@@ -8,7 +8,6 @@
    +------------------------------------------------------------------------+ */
 
 #include "DifOdometry_Camera.h"
-#include <mrpt/math/types_math.h>  // Eigen (with MRPT "plugin" in BaseMatrix<>)
 #include <mrpt/opengl/CBox.h>
 #include <mrpt/opengl/CEllipsoid.h>
 #include <mrpt/opengl/CFrustum.h>
@@ -18,6 +17,7 @@
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/system/filesystem.h>
+#include <Eigen/Dense>
 
 using namespace Eigen;
 using namespace std;
@@ -67,18 +67,18 @@ void CDifodoCamera::loadConfiguration(const mrpt::config::CConfigFileBase& ini)
 		depth[i].resize(rows_i, cols_i);
 		depth_inter[i].resize(rows_i, cols_i);
 		depth_old[i].resize(rows_i, cols_i);
-		depth[i].assign(0.0f);
-		depth_old[i].assign(0.0f);
+		depth[i].fill(0.0f);
+		depth_old[i].fill(0.0f);
 		xx[i].resize(rows_i, cols_i);
 		xx_inter[i].resize(rows_i, cols_i);
 		xx_old[i].resize(rows_i, cols_i);
-		xx[i].assign(0.0f);
-		xx_old[i].assign(0.0f);
+		xx[i].fill(0.0f);
+		xx_old[i].fill(0.0f);
 		yy[i].resize(rows_i, cols_i);
 		yy_inter[i].resize(rows_i, cols_i);
 		yy_old[i].resize(rows_i, cols_i);
-		yy[i].assign(0.0f);
-		yy_old[i].assign(0.0f);
+		yy[i].fill(0.0f);
+		yy_old[i].fill(0.0f);
 		transformations[i].resize(4, 4);
 
 		if (cols_i <= cols)
@@ -295,7 +295,9 @@ void CDifodoCamera::initializeScene()
 	scene->insert(traj_points_odo);
 
 	// Ellipsoid showing covariance
-	math::CMatrixFloat33 cov3d = 20.f * est_cov.topLeftCorner(3, 3);
+	math::CMatrixFloat33 cov3d = est_cov.extractMatrix<3, 3>(0, 0);
+	cov3d *= 20.f;
+
 	CEllipsoid::Ptr ellip = mrpt::make_aligned_shared<CEllipsoid>();
 	ellip->setCovMatrix(cov3d);
 	ellip->setQuantiles(2.0);
@@ -356,7 +358,7 @@ void CDifodoCamera::updateScene()
 	traj_points_odo->insertPoint(cam_pose.x(), cam_pose.y(), cam_pose.z());
 
 	// Ellipsoid showing covariance
-	math::CMatrixFloat33 cov3d = 20.f * est_cov.topLeftCorner(3, 3);
+	const auto cov3d = math::CMatrixFloat33(20.f * est_cov.block<3, 3>(0, 0));
 	CEllipsoid::Ptr ellip = scene->getByClass<CEllipsoid>(0);
 	ellip->setCovMatrix(cov3d);
 	ellip->setPose(cam_pose + rel_lenspose);
@@ -409,8 +411,8 @@ void CDifodoCamera::writeTrajectoryFile()
 	f_res << cam_pose[0] << " ";
 	f_res << cam_pose[1] << " ";
 	f_res << cam_pose[2] << " ";
-	f_res << quat(2) << " ";
-	f_res << quat(3) << " ";
-	f_res << -quat(1) << " ";
-	f_res << -quat(0) << endl;
+	f_res << quat[2] << " ";
+	f_res << quat[3] << " ";
+	f_res << -quat[1] << " ";
+	f_res << -quat[0] << endl;
 }

@@ -178,8 +178,7 @@ void TestCamera3DFaceDetection(CCameraSensor::Ptr cam)
 									 k++, i++)
 								{
 									unsigned char c =
-										*(face.confidenceImage.get_unsafe(
-											k, j, 0));
+										*(face.confidenceImage(k, j, 0));
 									if (c > faceDetector.m_options
 												.confidenceThreshold)
 									{
@@ -233,7 +232,7 @@ void TestCamera3DFaceDetection(CCameraSensor::Ptr cam)
 		std::this_thread::sleep_for(2ms);
 	}
 
-	cout << "Fps mean: " << fps.sumAll() / fps.size() << endl;
+	cout << "Fps mean: " << fps.sum() / fps.size() << endl;
 
 	faceDetector.experimental_showMeasurements();
 

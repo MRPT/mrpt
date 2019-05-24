@@ -11,7 +11,7 @@
 
 #include <mrpt/img/CImage.h>
 #include <mrpt/img/color_maps.h>
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
 
@@ -51,21 +51,21 @@ class CMesh : public CRenderizableDisplayList
 	bool m_isImage{false};
 
 	/** Z(x,y): Z-coordinate of the point (x,y) */
-	math::CMatrix Z;
-	math::CMatrix mask;
+	math::CMatrixF Z;
+	math::CMatrixF mask;
 	/** Texture coordinates */
-	math::CMatrix U, V;
+	math::CMatrixF U, V;
 	/** Grayscale Color [0,1] for each cell, updated by updateColorsMatrix */
-	mutable math::CMatrix C;
+	mutable math::CMatrixF C;
 	/** Red Component of the Color [0,1] for each cell, updated by
 	 * updateColorsMatrix */
-	mutable math::CMatrix C_r;
+	mutable math::CMatrixF C_r;
 	/** Green Component of the  Color [0,1] for each cell, updated by
 	 * updateColorsMatrix */
-	mutable math::CMatrix C_g;
+	mutable math::CMatrixF C_g;
 	/** Blue Component of the  Color [0,1] for each cell, updated by
 	 * updateColorsMatrix */
-	mutable math::CMatrix C_b;
+	mutable math::CMatrixF C_b;
 
 	/** Used when m_colorFromZ is true */
 	mrpt::img::TColormap m_colorMap{mrpt::img::cmHOT};
@@ -136,7 +136,7 @@ class CMesh : public CRenderizableDisplayList
 
 	/** This method sets the matrix of heights for each position (cell) in the
 	 * mesh grid */
-	void setZ(const mrpt::math::CMatrixTemplateNumeric<float>& in_Z);
+	void setZ(const mrpt::math::CMatrixDynamic<float>& in_Z);
 
 	/** Returns a reference to the internal Z matrix, allowing changing it
 	 * efficiently */
@@ -146,12 +146,12 @@ class CMesh : public CRenderizableDisplayList
 	inline void getMask(mrpt::math::CMatrixFloat& out) const { out = mask; }
 	/** This method sets the boolean mask of valid heights for each position
 	 * (cell) in the mesh grid */
-	void setMask(const mrpt::math::CMatrixTemplateNumeric<float>& in_mask);
+	void setMask(const mrpt::math::CMatrixDynamic<float>& in_mask);
 
 	/** Sets the (u,v) texture coordinates (in range [0,1]) for each cell */
 	void setUV(
-		const mrpt::math::CMatrixTemplateNumeric<float>& in_U,
-		const mrpt::math::CMatrixTemplateNumeric<float>& in_V);
+		const mrpt::math::CMatrixDynamic<float>& in_U,
+		const mrpt::math::CMatrixDynamic<float>& in_V);
 
 	inline float getXMin() const { return xMin; }
 	inline float getXMax() const { return xMax; }
@@ -224,7 +224,7 @@ class CMesh : public CRenderizableDisplayList
 	 */
 	void assignImageAndZ(
 		const mrpt::img::CImage& img,
-		const mrpt::math::CMatrixTemplateNumeric<float>& in_Z);
+		const mrpt::math::CMatrixDynamic<float>& in_Z);
 
 	/** Adjust grid limits according to the image aspect ratio, maintaining the
 	 * X limits and resizing in the Y direction.

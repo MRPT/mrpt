@@ -5,23 +5,38 @@
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file        |
    | See: https://www.mrpt.org/Authors - All rights reserved.                  |
    | Released under BSD License. See details in https://www.mrpt.org/License   |
-   +---------------------------------------------------------------------------+ */
+   +---------------------------------------------------------------------------+
+ */
 
 /** \defgroup mrpt_pbmap_grp [mrpt-pbmap]
 
-<small> <a href="index.html#libs">Back to list of all libraries</a> | <a href="modules.html" >See all modules</a> </small>
-<br>
+Plane-based maps
 
-<h2>Library <code>mrpt-pbmap</code></h2>
-<hr>
+[TOC]
 
-This library implements the functionality to build Plane-based Maps (PbMaps) from a set of point clouds plus their corresponding poses, which might be given by e.g. the odometry of a robot.
+# Library `mrpt-pbmap`
 
-A PbMap consists of a set of planar entities (patches) described by geometric features (shape, relative position, etc.) and/or radiometric features (dominant color). It is organized as an annotated, undirected graph, where nodes stand for planar patches and edges connect neighbor planes when the distance between their closest points is under a threshold.
+This library is part of MRPT and can be installed in Debian-based systems with:
 
-A method for PbMap place recognition (useful for re-localization or loop closure) is also implemented. This method relies on an interpretation tree which applies geometric constraints to efficiently match sets of neighboring planes.
+		sudo apt install libmrpt-pbmap-dev
 
-Refer to the <b><a href="pbmap-guide.pdf" >PbMap Guide (PDF)</a></b>.
+See: \ref mrpt_from_cmake
+
+This library implements the functionality to build Plane-based Maps (PbMaps)
+from a set of point clouds plus their corresponding poses, which might be given
+by e.g. the odometry of a robot.
+
+A PbMap consists of a set of planar entities (patches) described by geometric
+features (shape, relative position, etc.) and/or radiometric features (dominant
+color). It is organized as an annotated, undirected graph, where nodes stand for
+planar patches and edges connect neighbor planes when the distance between their
+closest points is under a threshold.
+
+A method for PbMap place recognition (useful for re-localization or loop
+closure) is also implemented. This method relies on an interpretation tree which
+applies geometric constraints to efficiently match sets of neighboring planes.
+
+Refer to the [**PbMap Guide (PDF)**](pbmap-guide.pdf).
 
 See:
 - Online web with papers, tutorials, etc: https://www.mrpt.org/pbmap
@@ -29,4 +44,3 @@ See:
 
 
 */
-

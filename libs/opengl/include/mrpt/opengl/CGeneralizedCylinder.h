@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/core/aligned_std_vector.h>
-#include <mrpt/math/CMatrixTemplate.h>
+#include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/opengl/CPolyhedron.h>
 #include <mrpt/opengl/CRenderizableDisplayList.h>
@@ -104,7 +104,7 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 	mutable std::vector<TQuadrilateral> mesh;
 	/** Mutable object with the cylinder's points, used to avoid repeated
 	 * computations. */
-	mutable mrpt::math::CMatrixTemplate<mrpt::math::TPoint3D> pointsMesh;
+	mutable mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D> pointsMesh;
 	/**  Mutable flag which tells if recalculations are needed. */
 	mutable bool meshUpToDate{false};
 	/**

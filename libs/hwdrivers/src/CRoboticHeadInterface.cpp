@@ -101,7 +101,7 @@ void CRoboticHeadInterface::GetSoundLocation(int& ang)
 /*-------------------------------------------------------------
 						Get3SoundBuffer
 -------------------------------------------------------------*/
-void CRoboticHeadInterface::Get3SoundBuffer(CMatrixTemplate<int>& buf)
+void CRoboticHeadInterface::Get3SoundBuffer(CMatrixDynamic<int>& buf)
 {
 	buf.setSize(3, 500);  // 3 channel, 500 samples per channel
 	msg.type = 0x51;

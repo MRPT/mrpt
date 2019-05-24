@@ -23,6 +23,9 @@ with:
 
 		sudo apt install libmrpt-img-dev
 
+See: \ref mrpt_from_cmake
+
+
 Find below some examples of use.
 
 ## Image handling

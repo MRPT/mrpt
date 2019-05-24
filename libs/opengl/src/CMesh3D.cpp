@@ -17,7 +17,6 @@
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;
@@ -55,6 +54,7 @@ CMesh3D::CMesh3D(
 }
 
 CMesh3D::~CMesh3D() = default;
+
 void CMesh3D::loadMesh(
 	unsigned int num_verts, unsigned int num_faces, int* verts_per_face,
 	int* face_verts, float* vert_coords)
@@ -63,7 +63,7 @@ void CMesh3D::loadMesh(
 	m_num_faces = num_faces;
 
 	// Fill number of vertices for each face
-	m_is_quad = new bool[num_faces];
+	m_is_quad.resize(num_faces);
 	for (unsigned int i = 0; i < num_faces; i++)
 	{
 		if (verts_per_face[i] == 3)
@@ -80,7 +80,7 @@ void CMesh3D::loadMesh(
 	}
 
 	// Fill the vertices of each face
-	m_face_verts = new f_verts[num_faces];
+	m_face_verts.resize(num_faces);
 	unsigned int count = 0;
 	for (unsigned int f = 0; f < num_faces; f++)
 	{
@@ -94,7 +94,7 @@ void CMesh3D::loadMesh(
 	}
 
 	// Fill the 3D coordinates of the vertex
-	m_vert_coords = new coord3D[num_verts];
+	m_vert_coords.resize(num_verts);
 	for (unsigned int i = 0; i < num_verts; i++)
 	{
 		m_vert_coords[i][0] = vert_coords[3 * i];
@@ -105,7 +105,7 @@ void CMesh3D::loadMesh(
 	// Compute the mesh normals (if on)
 	if (m_computeNormals)
 	{
-		m_normals = new coord3D[num_faces];
+		m_normals.resize(num_faces);
 
 		for (unsigned int f = 0; f < num_faces; f++)
 		{
@@ -150,19 +150,20 @@ void CMesh3D::loadMesh(
 
 void CMesh3D::loadMesh(
 	unsigned int num_verts, unsigned int num_faces,
-	const Array<bool, 1, Dynamic>& is_quad,
-	const Array<int, 4, Dynamic>& face_verts,
-	const Array<float, 3, Dynamic>& vert_coords)
+	const mrpt::math::CMatrixDynamic<bool>& is_quad,
+	const mrpt::math::CMatrixDynamic<int>& face_verts,
+	const mrpt::math::CMatrixDynamic<float>& vert_coords)
 {
+	MRPT_TODO("Refactor: one STL container of faces & another vertices");
 	m_num_verts = num_verts;
 	m_num_faces = num_faces;
 
 	// Fill number of vertices for each face
-	m_is_quad = new bool[num_faces];
-	for (unsigned int i = 0; i < num_faces; i++) m_is_quad[i] = is_quad(i);
+	m_is_quad.resize(num_faces);
+	for (unsigned int i = 0; i < num_faces; i++) m_is_quad[i] = is_quad(i, 0);
 
 	// Fill the vertices of each face
-	m_face_verts = new f_verts[num_faces];
+	m_face_verts.resize(num_faces);
 	for (unsigned int f = 0; f < num_faces; f++)
 	{
 		m_face_verts[f][0] = face_verts(0, f);
@@ -175,7 +176,7 @@ void CMesh3D::loadMesh(
 	}
 
 	// Fill the 3D coordinates of the vertex
-	m_vert_coords = new coord3D[num_verts];
+	m_vert_coords.resize(num_verts);
 	for (unsigned int i = 0; i < num_verts; i++)
 	{
 		m_vert_coords[i][0] = vert_coords(0, i);
@@ -184,7 +185,7 @@ void CMesh3D::loadMesh(
 	}
 
 	// Compute the mesh normals (if on)
-	m_normals = new coord3D[num_faces];
+	m_normals.resize(num_faces);
 	if (m_computeNormals)
 		for (unsigned int f = 0; f < num_faces; f++)
 		{

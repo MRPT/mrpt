@@ -10,11 +10,12 @@
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/gui.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/math/types_math.h>  // Eigen (with MRPT "plugin" in BaseMatrix<>)
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/vision/CDifodo.h>
+#include <Eigen/Dense>
+#include <fstream>
 #include <iostream>
 
 class CDifodoDatasets : public mrpt::vision::CDifodo

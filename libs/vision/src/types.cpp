@@ -14,6 +14,7 @@
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/vision/types.h>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 

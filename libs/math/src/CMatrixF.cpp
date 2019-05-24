@@ -9,7 +9,7 @@
 
 #include "math-precomp.h"  // Precompiled headers
 
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
@@ -19,20 +19,21 @@ using namespace mrpt::math;
 using namespace mrpt::serialization;
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CMatrix, CSerializable, mrpt::math)
+IMPLEMENTS_SERIALIZABLE(CMatrixF, CSerializable, mrpt::math)
 
-uint8_t CMatrix::serializeGetVersion() const { return 0; }
-void CMatrix::serializeTo(mrpt::serialization::CArchive& out) const
+uint8_t CMatrixF::serializeGetVersion() const { return 0; }
+void CMatrixF::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// First, write the number of rows and columns:
 	out << static_cast<uint32_t>(rows()) << static_cast<uint32_t>(cols());
 
+	// Since mrpt-1.9.9, dynamic matrices are stored as a contiguous vector:
 	if (rows() > 0 && cols() > 0)
-		for (Index i = 0; i < rows(); i++)
-			out.WriteBufferFixEndianness<Scalar>(&coeff(i, 0), cols());
+		out.WriteBufferFixEndianness<value_type>(
+			&(*this)(0, 0), cols() * rows());
 }
 
-void CMatrix::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
+void CMatrixF::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -46,8 +47,8 @@ void CMatrix::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			setSize(nRows, nCols);
 
 			if (nRows > 0 && nCols > 0)
-				for (Index i = 0; i < rows(); i++)
-					in.ReadBufferFixEndianness<Scalar>(&coeffRef(i, 0), nCols);
+				in.ReadBufferFixEndianness<value_type>(
+					&(*this)(0, 0), nRows * nCols);
 		}
 		break;
 		default:
@@ -56,7 +57,7 @@ void CMatrix::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 }
 
 /** Serialize CSerializable Object to CSchemeArchiveBase derived object*/
-void CMatrix::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
+void CMatrixF::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
 {
 	SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
 	out["nrows"] = static_cast<uint32_t>(this->rows());
@@ -64,7 +65,7 @@ void CMatrix::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
 	out["data"] = this->inMatlabFormat();
 }
 /** Serialize CSchemeArchiveBase derived object to CSerializable Object*/
-void CMatrix::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
+void CMatrixF::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 {
 	uint8_t version;
 	SCHEMA_DESERIALIZE_DATATYPE_VERSION();

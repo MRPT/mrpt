@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/poses/CPoint.h>
 #include <mrpt/serialization/CSerializable.h>
 
@@ -27,14 +28,14 @@ namespace mrpt::poses
  * \ingroup poses_grp
  * \sa CPoseOrPoint,CPose, CPoint
  */
-class CPoint3D : public CPoint<CPoint3D>,
+class CPoint3D : public CPoint<CPoint3D, 3>,
 				 public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CPoint3D)
 	DEFINE_SCHEMA_SERIALIZABLE()
    public:
 	/** [x,y,z] */
-	mrpt::math::CArrayDouble<3> m_coords;
+	mrpt::math::CVectorFixedDouble<3> m_coords;
 
    public:
 	/** Constructor for initializing point coordinates. */
@@ -46,7 +47,7 @@ class CPoint3D : public CPoint<CPoint3D>,
 	}
 
 	/** Constructor from a XYZ 3-vector */
-	explicit inline CPoint3D(const mrpt::math::CArrayDouble<3>& xyz)
+	explicit inline CPoint3D(const mrpt::math::CVectorFixedDouble<3>& xyz)
 		: m_coords(xyz)
 	{
 	}
@@ -80,6 +81,9 @@ class CPoint3D : public CPoint<CPoint3D>,
 
 	/** Returns this point plus pose "b", i.e. result = this + b  */
 	CPose3D operator+(const CPose3D& b) const;
+
+	/** Return the pose or point as a 3x1 vector [x y z]' */
+	void asVector(vector_t& v) const { v = m_coords; }
 
 	enum
 	{
@@ -120,5 +124,8 @@ class CPoint3D : public CPoint<CPoint3D>,
 	void setToNaN() override;
 
 };  // End of class def.
+
+/** Dumps a point as a string (x,y,z) */
+std::ostream& operator<<(std::ostream& o, const CPoint3D& p);
 
 }  // namespace mrpt::poses

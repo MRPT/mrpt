@@ -143,7 +143,7 @@ void CFeatureExtraction::extractFeaturesORB(
 
 	mrpt::math::CMatrixBool occupied_sections(
 		grid_lx, grid_ly);  // See the comments above for an explanation.
-	occupied_sections.fillAll(false);
+	occupied_sections.fill(false);
 
 	const size_t n_max_feats = nDesiredFeatures > 0
 								   ? std::min(size_t(nDesiredFeatures), n_feats)
@@ -176,28 +176,20 @@ void CFeatureExtraction::extractFeaturesORB(
 		if (do_filter_min_dist)
 		{
 			// Check the min-distance:
-			const auto section_idx_x =
-				size_t(kp.pt.x * occupied_grid_cell_size_inv);
-			const auto section_idx_y =
-				size_t(kp.pt.y * occupied_grid_cell_size_inv);
+			const auto sect_ix = size_t(kp.pt.x * occupied_grid_cell_size_inv);
+			const auto sect_iy = size_t(kp.pt.y * occupied_grid_cell_size_inv);
 
-			if (occupied_sections(section_idx_x, section_idx_y))
+			if (occupied_sections(sect_ix, sect_iy))
 				continue;  // Already occupied! skip.
 
 			// Mark section as occupied
-			occupied_sections.set_unsafe(section_idx_x, section_idx_y, true);
-			if (section_idx_x > 0)
-				occupied_sections.set_unsafe(
-					section_idx_x - 1, section_idx_y, true);
-			if (section_idx_y > 0)
-				occupied_sections.set_unsafe(
-					section_idx_x, section_idx_y - 1, true);
-			if (section_idx_x < grid_lx - 1)
-				occupied_sections.set_unsafe(
-					section_idx_x + 1, section_idx_y, true);
-			if (section_idx_y < grid_ly - 1)
-				occupied_sections.set_unsafe(
-					section_idx_x, section_idx_y + 1, true);
+			occupied_sections(sect_ix, sect_iy) = true;
+			if (sect_ix > 0) occupied_sections(sect_ix - 1, sect_iy) = true;
+			if (sect_iy > 0) occupied_sections(sect_ix, sect_iy - 1) = true;
+			if (sect_ix < grid_lx - 1)
+				occupied_sections(sect_ix + 1, sect_iy) = true;
+			if (sect_iy < grid_ly - 1)
+				occupied_sections(sect_ix, sect_iy + 1) = true;
 		}
 
 		// All tests passed: add new feature:

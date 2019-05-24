@@ -22,7 +22,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDF.h>
 
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 
 // #include <mrpt/img/TColor.h>
 
@@ -103,7 +103,7 @@ void CEllipsoid_setFromPosePDF(CEllipsoid& self, CPose3DPDF& posePDF)
 	CPose3D meanPose;
 	CMatrixDouble66 COV;
 	posePDF.getCovarianceAndMean(COV, meanPose);
-	CMatrixDouble33 COV3 = COV.block(0, 0, 3, 3);
+	CMatrixDouble33 COV3 = COV.extractMatrix<3, 3>(0, 0);
 	self.setLocation(meanPose.x(), meanPose.y(), meanPose.z() + 0.001);
 	self.setCovMatrix(COV3, COV3(2, 2) == 0 ? 2 : 3);
 }

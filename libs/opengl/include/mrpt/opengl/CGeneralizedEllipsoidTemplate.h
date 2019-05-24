@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/matrix_serialization.h>  // for >> ops
-#include <mrpt/math/types_math.h>
+//#include <mrpt/math/types_math.h>
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/serialization/CArchive.h>  // for >> ops
 
@@ -22,34 +22,34 @@ namespace detail
 {
 template <int DIM>
 void renderGeneralizedEllipsoidTemplate(
-	const std::vector<mrpt::math::CMatrixFixedNumeric<float, DIM, 1>>& pts,
+	const std::vector<mrpt::math::CMatrixFixed<float, DIM, 1>>& pts,
 	const float lineWidth, const uint32_t slices, const uint32_t stacks);
 template <>
 void renderGeneralizedEllipsoidTemplate<2>(
-	const std::vector<mrpt::math::CMatrixFixedNumeric<float, 2, 1>>& pts,
+	const std::vector<mrpt::math::CMatrixFixed<float, 2, 1>>& pts,
 	const float lineWidth, const uint32_t slices, const uint32_t stacks);
 template <>
 void renderGeneralizedEllipsoidTemplate<3>(
-	const std::vector<mrpt::math::CMatrixFixedNumeric<float, 3, 1>>& pts,
+	const std::vector<mrpt::math::CMatrixFixed<float, 3, 1>>& pts,
 	const float lineWidth, const uint32_t slices, const uint32_t stacks);
 
 template <int DIM>
 void generalizedEllipsoidPoints(
-	const mrpt::math::CMatrixFixedNumeric<double, DIM, DIM>& U,
-	const mrpt::math::CMatrixFixedNumeric<double, DIM, 1>& mean,
-	std::vector<mrpt::math::CMatrixFixedNumeric<float, DIM, 1>>& out_params_pts,
+	const mrpt::math::CMatrixFixed<double, DIM, DIM>& U,
+	const mrpt::math::CMatrixFixed<double, DIM, 1>& mean,
+	std::vector<mrpt::math::CMatrixFixed<float, DIM, 1>>& out_params_pts,
 	const uint32_t slices, const uint32_t stacks);
 template <>
 void generalizedEllipsoidPoints<2>(
-	const mrpt::math::CMatrixFixedNumeric<double, 2, 2>& U,
-	const mrpt::math::CMatrixFixedNumeric<double, 2, 1>& mean,
-	std::vector<mrpt::math::CMatrixFixedNumeric<float, 2, 1>>& out_params_pts,
+	const mrpt::math::CMatrixFixed<double, 2, 2>& U,
+	const mrpt::math::CMatrixFixed<double, 2, 1>& mean,
+	std::vector<mrpt::math::CMatrixFixed<float, 2, 1>>& out_params_pts,
 	const uint32_t slices, const uint32_t stacks);
 template <>
 void generalizedEllipsoidPoints<3>(
-	const mrpt::math::CMatrixFixedNumeric<double, 3, 3>& U,
-	const mrpt::math::CMatrixFixedNumeric<double, 3, 1>& mean,
-	std::vector<mrpt::math::CMatrixFixedNumeric<float, 3, 1>>& out_params_pts,
+	const mrpt::math::CMatrixFixed<double, 3, 3>& U,
+	const mrpt::math::CMatrixFixed<double, 3, 1>& mean,
+	std::vector<mrpt::math::CMatrixFixed<float, 3, 1>>& out_params_pts,
 	const uint32_t slices, const uint32_t stacks);
 }  // namespace detail
 
@@ -73,12 +73,12 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 {
    public:
 	/** The type of fixed-size covariance matrices for this representation */
-	using cov_matrix_t = mrpt::math::CMatrixFixedNumeric<double, DIM, DIM>;
+	using cov_matrix_t = mrpt::math::CMatrixFixed<double, DIM, DIM>;
 	/** The type of fixed-size vector for this representation */
-	using mean_vector_t = mrpt::math::CMatrixFixedNumeric<double, DIM, 1>;
+	using mean_vector_t = mrpt::math::CMatrixFixed<double, DIM, 1>;
 
-	using array_parameter_t = mrpt::math::CMatrixFixedNumeric<float, DIM, 1>;
-	using array_point_t = mrpt::math::CMatrixFixedNumeric<float, DIM, 1>;
+	using array_parameter_t = mrpt::math::CMatrixFixed<float, DIM, 1>;
+	using array_point_t = mrpt::math::CMatrixFixed<float, DIM, 1>;
 
 	/**  Set the NxN covariance matrix that will determine the aspect of the
 	 * ellipsoid - Notice that the
@@ -184,7 +184,8 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 		{
 			// 2) Generate "standard" ellipsoid:
 			std::vector<array_parameter_t> params_pts;
-			const cov_matrix_t Uscaled = static_cast<double>(m_quantiles) * m_U;
+			cov_matrix_t Uscaled = m_U;
+			Uscaled *= static_cast<double>(m_quantiles);
 			detail::generalizedEllipsoidPoints<DIM>(
 				Uscaled, m_mean, params_pts, m_numSegments, m_numSegments);
 

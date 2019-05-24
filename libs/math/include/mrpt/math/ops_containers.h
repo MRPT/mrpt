@@ -8,13 +8,16 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/types_math.h>
-
+#include <mrpt/math/CHistogram.h>
 #include <mrpt/math/lightweight_geom_data.h>  // forward declarations
-
+#include <mrpt/math/math_frwds.h>
 #include <algorithm>
 #include <cmath>
 #include <functional>
+#include <numeric>
+#include <type_traits>
+
+#include "ops_vectors.h"
 
 /** \addtogroup container_ops_grp Vector and matrices mathematical operations
  * and other utilities
@@ -25,32 +28,31 @@
  * This file implements several operations that operate element-wise on
  * individual or pairs of containers.
  *  Containers here means any of: mrpt::math::CVectorTemplace,
- * mrpt::math::CArray, mrpt::math::CMatrixFixedNumeric,
- * mrpt::math::CMatrixTemplate.
+ * mrpt::math::CArray, mrpt::math::CMatrixFixed,
+ * mrpt::math::CMatrixDynamic.
  *
- *  In general, any container having a type "mrpt_autotype" self-referencing to
- * the type itself, and a dummy struct mrpt_container<>
- *   which is only used as a way to force the compiler to assure that BOTH
- * containers are valid ones in binary operators.
- *   This restrictions
- *   have been designed as a way to provide "polymorphism" at a template level,
- * so the "+,-,..." operators do not
- *   generate ambiguities for ANY type, and limiting them to MRPT containers.
- *
- *   In some cases, the containers provide specializations of some operations,
- * for increased performance.
  */
-
-#include <algorithm>
-#include <functional>
-#include <numeric>
-
-#include <mrpt/math/CHistogram.h>  // Used in ::histogram()
-
-#include "ops_vectors.h"
 
 namespace mrpt::math
 {
+/** ContainerType<T>::element_t exposes the value of any STL or Eigen container
+ */
+template <typename CONTAINER>
+struct ContainerType;
+
+/** Specialization for Eigen containers */
+template <typename Derived>
+struct ContainerType<Eigen::EigenBase<Derived>>
+{
+	using element_t = typename Derived::Scalar;
+};
+/** Specialization for MRPT containers */
+template <typename Scalar, typename Derived>
+struct ContainerType<mrpt::math::MatrixVectorBase<Scalar, Derived>>
+{
+	using element_t = Scalar;
+};
+
 /** Computes the normalized or normal histogram of a sequence of numbers given
  * the number of bins and the limits.
  *  In any case this is a "linear" histogram, i.e. for matrices, all the
@@ -95,11 +97,13 @@ void resizeLike(std::vector<T>& trg, const std::vector<T>& src)
  *  and even to store the cumsum of any matrix into any vector/array, but not
  * in opposite direction.
  * \sa sum */
-template <class CONTAINER1, class CONTAINER2, typename VALUE>
+template <class CONTAINER1, class CONTAINER2>
 inline void cumsum_tmpl(const CONTAINER1& in_data, CONTAINER2& out_cumsum)
 {
 	resizeLike(out_cumsum, in_data);
-	VALUE last = 0;
+	using T =
+		std::remove_const_t<std::remove_reference_t<decltype(in_data[0])>>;
+	T last = 0;
 	const size_t N = in_data.size();
 	for (size_t i = 0; i < N; i++) last = out_cumsum[i] = last + in_data[i];
 }
@@ -107,10 +111,7 @@ inline void cumsum_tmpl(const CONTAINER1& in_data, CONTAINER2& out_cumsum)
 template <class CONTAINER1, class CONTAINER2>
 inline void cumsum(const CONTAINER1& in_data, CONTAINER2& out_cumsum)
 {
-	cumsum_tmpl<
-		CONTAINER1, CONTAINER2,
-		typename mrpt::math::ContainerType<CONTAINER2>::element_t>(
-		in_data, out_cumsum);
+	cumsum_tmpl<CONTAINER1, CONTAINER2>(in_data, out_cumsum);
 }
 
 /** Computes the cumulative sum of all the elements
@@ -133,15 +134,26 @@ inline typename CONTAINER::Scalar norm(const CONTAINER& v)
 {
 	return v.norm();
 }
-template <class CONTAINER>
+template <class CONTAINER, int = CONTAINER::is_mrpt_type>
 inline typename CONTAINER::Scalar maximum(const CONTAINER& v)
 {
 	return v.maxCoeff();
 }
-template <class CONTAINER>
+template <class CONTAINER, int = CONTAINER::is_mrpt_type>
 inline typename CONTAINER::Scalar minimum(const CONTAINER& v)
 {
-	return v.minimum();
+	return v.minCoeff();
+}
+
+template <class Derived>
+inline typename Derived::Scalar maximum(const Eigen::MatrixBase<Derived>& v)
+{
+	return v.maxCoeff();
+}
+template <class Derived>
+inline typename Derived::Scalar minimum(const Eigen::MatrixBase<Derived>& v)
+{
+	return v.minCoeff();
 }
 
 template <typename T>
@@ -261,6 +273,20 @@ inline void minimum_maximum(
 	V.minimum_maximum(curMin, curMax);
 }
 
+/** Scales all elements such as the minimum & maximum values are shifted to the
+ * given values */
+template <class CONTAINER, typename Scalar>
+void normalize(CONTAINER& c, Scalar valMin, Scalar valMax)
+{
+	if (c.empty()) return;
+	const Scalar curMin = c.minCoeff();
+	const Scalar curMax = c.maxCoeff();
+	Scalar minMaxDelta = curMax - curMin;
+	if (minMaxDelta == 0) minMaxDelta = 1;
+	const Scalar minMaxDelta_ = (valMax - valMin) / minMaxDelta;
+	c.array() = (c.array() - curMin) * minMaxDelta_ + valMin;
+}
+
 /** Counts the number of elements that appear in both STL-like containers
  * (comparison through the == operator)
  *  It is assumed that no repeated elements appear within each of the
@@ -290,8 +316,9 @@ void adjustRange(
 	if (curRan != 0) m *= (maxVal - minVal) / curRan;
 }
 
-/** Computes the standard deviation of a vector
- * \param v The set of data
+/** Computes the standard deviation of a vector (or all elements of a matrix)
+ * \param v The set of data, either as a vector, or a matrix (arrangement of
+ * data is ignored in this function).
  * \param out_mean The output for the estimated mean
  * \param out_std The output for the estimated standard deviation
  * \param unbiased If set to true or false the std is normalized by "N-1" or
@@ -364,20 +391,19 @@ void meanAndCovVec(
 	// Second: Compute the covariance
 	//  Save only the above-diagonal part, then after averaging
 	//  duplicate that part to the other half.
-	out_cov.zeros(M, M);
+	out_cov.setZero(M, M);
 	for (size_t i = 0; i < N; i++)
 	{
 		for (size_t j = 0; j < M; j++)
-			out_cov.get_unsafe(j, j) += square(v[i][j] - out_mean[j]);
+			out_cov(j, j) += square(v[i][j] - out_mean[j]);
 
 		for (size_t j = 0; j < M; j++)
 			for (size_t k = j + 1; k < M; k++)
-				out_cov.get_unsafe(j, k) +=
+				out_cov(j, k) +=
 					(v[i][j] - out_mean[j]) * (v[i][k] - out_mean[k]);
 	}
 	for (size_t j = 0; j < M; j++)
-		for (size_t k = j + 1; k < M; k++)
-			out_cov.get_unsafe(k, j) = out_cov.get_unsafe(j, k);
+		for (size_t k = j + 1; k < M; k++) out_cov(k, j) = out_cov(j, k);
 	out_cov *= N_inv;
 }
 

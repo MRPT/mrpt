@@ -181,9 +181,9 @@ TCaptureOptions_DUO3D::TYMLReadResult
 		mrpt::format("_R%dx%d_", this->m_img_width, this->m_img_height));
 	if (found == std::string::npos)
 	{
-		m_stereo_camera.leftCamera.intrinsicParams.zeros();
+		m_stereo_camera.leftCamera.intrinsicParams.setZero();
 		m_stereo_camera.leftCamera.dist.fill(0);
-		m_stereo_camera.rightCamera.intrinsicParams.zeros();
+		m_stereo_camera.rightCamera.intrinsicParams.setZero();
 		m_stereo_camera.rightCamera.dist.fill(0);
 
 		return yrr_NAME_NON_CONSISTENT;
@@ -196,7 +196,7 @@ TCaptureOptions_DUO3D::TYMLReadResult
 	if (aux_mat.size() == Size(0, 0))
 	{
 		empty = true;
-		m_stereo_camera.leftCamera.intrinsicParams.zeros();
+		m_stereo_camera.leftCamera.intrinsicParams.setZero();
 	}
 	m_stereo_camera.leftCamera.setIntrinsicParamsFromValues(
 		aux_mat.at<double>(0, 0), aux_mat.at<double>(1, 1),
@@ -217,7 +217,7 @@ TCaptureOptions_DUO3D::TYMLReadResult
 	if (aux_mat.size() == Size(0, 0))
 	{
 		empty = true;
-		m_stereo_camera.rightCamera.intrinsicParams.zeros();
+		m_stereo_camera.rightCamera.intrinsicParams.setZero();
 	}
 	m_stereo_camera.rightCamera.setIntrinsicParamsFromValues(
 		aux_mat.at<double>(0, 0), aux_mat.at<double>(1, 1),

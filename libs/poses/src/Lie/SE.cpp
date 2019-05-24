@@ -14,6 +14,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/Lie/SE.h>
 #include <mrpt/poses/Lie/SO.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -60,7 +61,7 @@ SE<3>::tang2mat_jacob SE<3>::jacob_dexpe_de(const SE<3>::tangent_vector& x)
 	tang2mat_jacob J = tang2mat_jacob::Zero();
 	J.block<3, 3>(9, 0) = Eigen::Matrix3d::Identity();
 	const auto w = SO<3>::tangent_vector(x.tail<3>());
-	J.block<9, 3>(0, 3) = SO<3>::jacob_dexpe_de(w);
+	J.block<9, 3>(0, 3) = SO<3>::jacob_dexpe_de(w).asEigen();
 	return J;
 }
 
@@ -69,7 +70,7 @@ SE<3>::mat2tang_jacob SE<3>::jacob_dlogv_dv(const SE<3>::type& P)
 	mrpt::math::CMatrixDouble6_12 J;
 	J.setZero();
 	const CMatrixDouble33& R = P.getRotationMatrix();
-	J.block<3, 9>(3, 0) = SO<3>::jacob_dlogv_dv(R);
+	J.block<3, 9>(3, 0) = SO<3>::jacob_dlogv_dv(R).asEigen();
 	J(0, 9) = J(1, 10) = J(2, 11) = 1.0;
 	return J;
 }
@@ -85,7 +86,7 @@ SE<3>::tang2mat_jacob SE<3>::jacob_dexpeD_de(const CPose3D& D)
 	{
 		auto trg_blc = jacob.block<3, 3>(3 * i, 3);
 		mrpt::math::skew_symmetric3_neg(
-			D.getRotationMatrix().block<3, 1>(0, i), trg_blc);
+			D.getRotationMatrix().blockCopy<3, 1>(0, i), trg_blc);
 	}
 	{
 		auto trg_blc = jacob.block<3, 3>(9, 3);
@@ -101,7 +102,7 @@ SE<3>::tang2mat_jacob SE<3>::jacob_dDexpe_de(const CPose3D& D)
 	mrpt::math::CMatrixDouble12_6 jacob;
 	const auto& dRot = D.getRotationMatrix();
 	jacob.setZero();
-	jacob.block<3, 3>(9, 0) = dRot;
+	jacob.block<3, 3>(9, 0) = dRot.asEigen();
 
 	jacob.block<3, 1>(3, 5) = -dRot.col(0);
 	jacob.block<3, 1>(6, 4) = dRot.col(0);
@@ -123,16 +124,16 @@ SE<3>::tang2mat_jacob SE<3>::jacob_dAexpeD_de(
 
 	mrpt::math::CMatrixDouble12_6 jacob;
 	jacob.block<9, 3>(0, 0).setZero();
-	jacob.block<3, 3>(9, 0) = A.getRotationMatrix();
+	jacob.block<3, 3>(9, 0) = A.getRotationMatrix().asEigen();
 	Eigen::Matrix<double, 3, 3> aux;
 	for (int i = 0; i < 3; i++)
 	{
 		mrpt::math::skew_symmetric3_neg(
-			D.getRotationMatrix().block<3, 1>(0, i), aux);
-		jacob.block<3, 3>(3 * i, 3) = Arot * aux;
+			D.getRotationMatrix().blockCopy<3, 1>(0, i), aux);
+		jacob.block<3, 3>(3 * i, 3) = Arot.asEigen() * aux;
 	}
 	mrpt::math::skew_symmetric3_neg(D.m_coords, aux);
-	jacob.block<3, 3>(9, 3) = Arot * aux;
+	jacob.block<3, 3>(9, 3) = Arot.asEigen() * aux;
 	return jacob;
 }
 
@@ -158,11 +159,11 @@ void SE<3>::jacob_dDinvP1invP2_de1e2(
 	{
 		matrix_TxT& J1 = df_de1.value().get();
 
-		const CMatrixFixedNumeric<double, 12, 12> J1a =
+		const CMatrixFixed<double, 12, 12> J1a =
 			SE<3>::jacob_dAB_dA(Dinv, P1inv + P2);
-		const CMatrixDouble12_6 J1b = -SE<3>::jacob_dDexpe_de(Dinv);
+		const auto J1b = CMatrixDouble12_6(-SE<3>::jacob_dDexpe_de(Dinv));
 
-		J1 = dLnT_dT * J1a * J1b;
+		J1 = dLnT_dT.asEigen() * J1a.asEigen() * J1b.asEigen();
 	}
 	if (df_de2)
 	{
@@ -194,7 +195,7 @@ SE<3>::matrix_MxM SE<3>::jacob_dAB_dB(
 	matrix_MxM J = matrix_MxM::Zero();
 	// J_wrt_B = kron(eye(3),A_rot);
 	const auto& AR = A.getRotationMatrix();
-	for (int c = 0; c < 4; c++) J.block<3, 3>(c * 3, c * 3) = AR;
+	for (int c = 0; c < 4; c++) J.block<3, 3>(c * 3, c * 3) = AR.asEigen();
 	return J;
 }
 
@@ -261,11 +262,11 @@ SE<2>::tang2mat_jacob SE<2>::jacob_dDexpe_de(const SE<2>::type& D)
 	const auto c = D.phi_cos(), s = D.phi_sin();
 
 	// clang-format off
-	return (tang2mat_jacob() <<
+	return SE<2>::tang2mat_jacob((Eigen::Matrix3d() <<
 	        c, -s, 0,
 	        s,  c, 0,
 	        0,  0, 1
-	        ).finished();
+	        ).finished());
 	// clang-format on
 }
 
@@ -281,7 +282,7 @@ void SE<2>::jacob_dDinvP1invP2_de1e2(
 	if (df_de1)
 	{
 		auto& J1 = df_de1.value().get();
-		J1 = jacob_dAB_dA(Dinv, P1invP2) * (-jacob_dDexpe_de(Dinv));
+		J1 = jacob_dAB_dA(Dinv, P1invP2).asEigen() * (-jacob_dDexpe_de(Dinv));
 	}
 
 	if (df_de2)

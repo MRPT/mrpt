@@ -11,7 +11,7 @@
 #include <mrpt/graphs/TNodeAnnotations.h>
 #include <mrpt/graphs/dijkstra.h>
 #include <mrpt/io/CTextFileLinesParser.h>
-#include <mrpt/math/CArrayNumeric.h>
+#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/math/ops_matrices.h>  // multiply_*()
@@ -149,7 +149,7 @@ struct graph_ops
 	{
 		CPosePDFGaussianInf p;
 		p.mean = edge;
-		p.cov_inv.unit(3, 1.0);
+		p.cov_inv.setIdentity();
 		write_EDGE_line(edgeIDs, p, f);
 	}
 	static void write_EDGE_line(
@@ -158,7 +158,7 @@ struct graph_ops
 	{
 		CPose3DPDFGaussianInf p;
 		p.mean = edge;
-		p.cov_inv.unit(6, 1.0);
+		p.cov_inv.setIdentity();
 		write_EDGE_line(edgeIDs, p, f);
 	}
 
@@ -549,7 +549,7 @@ struct graph_ops
 						  Ap_cov_inv(3, 3)))
 					{
 						// Cov may be omitted in the file:
-						Ap_cov_inv.unit(6, 1.0);
+						Ap_cov_inv.setIdentity();
 
 						if (alreadyWarnedUnknowns.find("MISSING_3D") ==
 							alreadyWarnedUnknowns.end())
@@ -631,7 +631,7 @@ struct graph_ops
 						  Ap_cov_inv(3, 3)))
 					{
 						// Cov may be omitted in the file:
-						Ap_cov_inv.unit(6, 1.0);
+						Ap_cov_inv.setIdentity();
 
 						if (alreadyWarnedUnknowns.find("MISSING_3D") ==
 							alreadyWarnedUnknowns.end())
@@ -878,8 +878,7 @@ struct graph_ops
 	static inline double auxMaha2Dist(VEC& err, const CPosePDFGaussianInf& p)
 	{
 		math::wrapToPiInPlace(err[2]);
-		return mrpt::math::multiply_HCHt_scalar(
-			err, p.cov_inv);  // err^t*cov_inv*err
+		return mrpt::math::multiply_HtCH_scalar(err, p.cov_inv);
 	}
 	template <class VEC>
 	static inline double auxMaha2Dist(VEC& err, const CPose3DPDFGaussianInf& p)
@@ -887,17 +886,14 @@ struct graph_ops
 		math::wrapToPiInPlace(err[3]);
 		math::wrapToPiInPlace(err[4]);
 		math::wrapToPiInPlace(err[5]);
-		return mrpt::math::multiply_HCHt_scalar(
-			err, p.cov_inv);  // err^t*cov_inv*err
+		return mrpt::math::multiply_HtCH_scalar(err, p.cov_inv);
 	}
 	template <class VEC>
 	static inline double auxMaha2Dist(VEC& err, const CPosePDFGaussian& p)
 	{
 		math::wrapToPiInPlace(err[2]);
-		mrpt::math::CMatrixDouble33 COV_INV(mrpt::math::UNINITIALIZED_MATRIX);
-		p.cov.inv(COV_INV);
-		return mrpt::math::multiply_HCHt_scalar(
-			err, COV_INV);  // err^t*cov_inv*err
+		// err^t*cov_inv*err
+		return mrpt::math::multiply_HCHt_scalar(err, p.cov.inverse_LLt());
 	}
 	template <class VEC>
 	static inline double auxMaha2Dist(VEC& err, const CPose3DPDFGaussian& p)
@@ -905,10 +901,8 @@ struct graph_ops
 		math::wrapToPiInPlace(err[3]);
 		math::wrapToPiInPlace(err[4]);
 		math::wrapToPiInPlace(err[5]);
-		mrpt::math::CMatrixDouble66 COV_INV(mrpt::math::UNINITIALIZED_MATRIX);
-		p.cov.inv(COV_INV);
-		return mrpt::math::multiply_HCHt_scalar(
-			err, COV_INV);  // err^t*cov_inv*err
+		// err^t*cov_inv*err
+		return mrpt::math::multiply_HtCH_scalar(err, p.cov.inverse_LLt());
 	}
 	// These two are for simulating maha2 distances for non-PDF types: fallback
 	// to squared-norm:
@@ -1010,7 +1004,9 @@ struct graph_ops
 			//  We want to compute the squared Mahalanobis distance:
 			//       err^t * INV_COV * err
 			//
-			mrpt::math::CArrayDouble<constraint_t::type_value::static_size> err;
+			mrpt::math::CVectorFixedDouble<
+				constraint_t::type_value::static_size>
+				err;
 			for (size_t i = 0; i < constraint_t::type_value::static_size; i++)
 				err[i] = from_plus_delta.getPoseMean()[i] - to_mean[i];
 

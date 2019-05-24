@@ -25,6 +25,7 @@ extern "C"
 extern "C"
 {
 #include <pmmintrin.h>
+#include <tmmintrin.h>
 #if defined(__GNUC__)
 #include <immintrin.h>  // Meta-header
 #endif

@@ -14,6 +14,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/serialization/CSerializable.h>
+#include <Eigen/Dense>
 #include <iomanip>
 #include <limits>
 
@@ -38,9 +39,9 @@ CPose3DQuat::CPose3DQuat(const CPose3D& p)
 CPose3DQuat::CPose3DQuat(const CMatrixDouble44& M)
 	: m_quat(UNINITIALIZED_QUATERNION)
 {
-	m_coords[0] = M.get_unsafe(0, 3);
-	m_coords[1] = M.get_unsafe(1, 3);
-	m_coords[2] = M.get_unsafe(2, 3);
+	m_coords[0] = M(0, 3);
+	m_coords[1] = M(1, 3);
+	m_coords[2] = M(2, 3);
 	CPose3D p(M);
 	p.getAsQuaternion(m_quat);
 }
@@ -52,18 +53,16 @@ CPose3DQuat::CPose3DQuat(const CMatrixDouble44& M)
 void CPose3DQuat::getHomogeneousMatrix(CMatrixDouble44& out_HM) const
 {
 	m_quat.rotationMatrixNoResize(out_HM);
-	out_HM.get_unsafe(0, 3) = m_coords[0];
-	out_HM.get_unsafe(1, 3) = m_coords[1];
-	out_HM.get_unsafe(2, 3) = m_coords[2];
-	out_HM.get_unsafe(3, 0) = out_HM.get_unsafe(3, 1) =
-		out_HM.get_unsafe(3, 2) = 0;
-	out_HM.get_unsafe(3, 3) = 1;
+	out_HM(0, 3) = m_coords[0];
+	out_HM(1, 3) = m_coords[1];
+	out_HM(2, 3) = m_coords[2];
+	out_HM(3, 0) = out_HM(3, 1) = out_HM(3, 2) = 0;
+	out_HM(3, 3) = 1;
 }
 
 /** Returns a 1x7 vector with [x y z qr qx qy qz] */
-void CPose3DQuat::getAsVector(CVectorDouble& v) const
+void CPose3DQuat::asVector(vector_t& v) const
 {
-	v.resize(7);
 	v[0] = m_coords[0];
 	v[1] = m_coords[1];
 	v[2] = m_coords[2];
@@ -114,9 +113,8 @@ void CPose3DQuat::inverseComposeFrom(const CPose3DQuat& A, const CPose3DQuat& B)
  */
 void CPose3DQuat::composePoint(
 	const double lx, const double ly, const double lz, double& gx, double& gy,
-	double& gz,
-	mrpt::math::CMatrixFixedNumeric<double, 3, 3>* out_jacobian_df_dpoint,
-	mrpt::math::CMatrixFixedNumeric<double, 3, 7>* out_jacobian_df_dpose) const
+	double& gz, mrpt::math::CMatrixFixed<double, 3, 3>* out_jacobian_df_dpoint,
+	mrpt::math::CMatrixFixed<double, 3, 7>* out_jacobian_df_dpose) const
 {
 	if (out_jacobian_df_dpoint || out_jacobian_df_dpose)
 	{
@@ -171,9 +169,8 @@ void CPose3DQuat::composePoint(
 			CMatrixDouble44 norm_jacob(UNINITIALIZED_MATRIX);
 			this->quat().normalizationJacobian(norm_jacob);
 
-			out_jacobian_df_dpose->insertMatrix(
-				0, 3,
-				(CMatrixFixedNumeric<double, 3, 4>(vals) * norm_jacob).eval());
+			out_jacobian_df_dpose->asEigen().block<3, 4>(0, 3) =
+				(CMatrixFixed<double, 3, 4>(vals) * norm_jacob).eval();
 		}
 	}
 
@@ -189,9 +186,8 @@ void CPose3DQuat::composePoint(
  */
 void CPose3DQuat::inverseComposePoint(
 	const double gx, const double gy, const double gz, double& lx, double& ly,
-	double& lz,
-	mrpt::math::CMatrixFixedNumeric<double, 3, 3>* out_jacobian_df_dpoint,
-	mrpt::math::CMatrixFixedNumeric<double, 3, 7>* out_jacobian_df_dpose) const
+	double& lz, mrpt::math::CMatrixFixed<double, 3, 3>* out_jacobian_df_dpoint,
+	mrpt::math::CMatrixFixed<double, 3, 7>* out_jacobian_df_dpose) const
 {
 	if (out_jacobian_df_dpoint || out_jacobian_df_dpose)
 	{
@@ -304,8 +300,7 @@ void CPose3DQuat::inverseComposePoint(
 			this->quat().normalizationJacobian(norm_jacob);
 
 			out_jacobian_df_dpose->insertMatrix(
-				0, 3,
-				(CMatrixFixedNumeric<double, 3, 4>(vals) * norm_jacob).eval());
+				0, 3, (CMatrixFixed<double, 3, 4>(vals) * norm_jacob).eval());
 		}
 	}
 
@@ -391,16 +386,16 @@ void CPose3DQuat::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 void CPose3DQuat::sphericalCoordinates(
 	const TPoint3D& point, double& out_range, double& out_yaw,
 	double& out_pitch,
-	mrpt::math::CMatrixFixedNumeric<double, 3, 3>* out_jacob_dryp_dpoint,
-	mrpt::math::CMatrixFixedNumeric<double, 3, 7>* out_jacob_dryp_dpose) const
+	mrpt::math::CMatrixFixed<double, 3, 3>* out_jacob_dryp_dpoint,
+	mrpt::math::CMatrixFixed<double, 3, 7>* out_jacob_dryp_dpose) const
 {
 	const bool comp_jacobs =
 		out_jacob_dryp_dpoint != nullptr || out_jacob_dryp_dpose != nullptr;
 
 	// Pass to coordinates as seen from this 6D pose:
-	CMatrixFixedNumeric<double, 3, 3> jacob_dinv_dpoint,
+	CMatrixFixed<double, 3, 3> jacob_dinv_dpoint,
 		*ptr_ja1 = comp_jacobs ? &jacob_dinv_dpoint : nullptr;
-	CMatrixFixedNumeric<double, 3, 7> jacob_dinv_dpose,
+	CMatrixFixed<double, 3, 7> jacob_dinv_dpose,
 		*ptr_ja2 = comp_jacobs ? &jacob_dinv_dpose : nullptr;
 
 	TPoint3D local;
@@ -459,10 +454,9 @@ void CPose3DQuat::sphericalCoordinates(
 
 		const CMatrixDouble33 dryp_dlocalpoint(vals);
 		if (out_jacob_dryp_dpoint)
-			out_jacob_dryp_dpoint->multiply(
-				dryp_dlocalpoint, jacob_dinv_dpoint);
+			*out_jacob_dryp_dpoint = dryp_dlocalpoint * jacob_dinv_dpoint;
 		if (out_jacob_dryp_dpose)
-			out_jacob_dryp_dpose->multiply(dryp_dlocalpoint, jacob_dinv_dpose);
+			*out_jacob_dryp_dpose = dryp_dlocalpoint * jacob_dinv_dpose;
 	}
 }
 
@@ -541,4 +535,24 @@ TPose3DQuat CPose3DQuat::asTPose() const
 {
 	return TPose3DQuat(
 		x(), y(), z(), m_quat.r(), m_quat.x(), m_quat.y(), m_quat.z());
+}
+
+void CPose3DQuat::fromString(const std::string& s)
+{
+	mrpt::math::CMatrixDouble m;
+	if (!m.fromMatlabStringFormat(s))
+		THROW_EXCEPTION("Malformed expression in ::fromString");
+	ASSERTMSG_(m.rows() == 1 && m.cols() == 7, "Expected vector length=7");
+	m_coords[0] = m(0, 0);
+	m_coords[1] = m(0, 1);
+	m_coords[2] = m(0, 2);
+	m_quat[0] = m(0, 3);
+	m_quat[1] = m(0, 4);
+	m_quat[2] = m(0, 5);
+	m_quat[3] = m(0, 6);
+}
+
+void CPose3DQuat::fromStringRaw(const std::string& s)
+{
+	this->fromString("[" + s + "]");
 }

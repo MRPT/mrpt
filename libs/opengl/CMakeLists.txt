@@ -78,6 +78,11 @@ if(BUILD_mrpt-opengl)
 		set_target_properties(opengl PROPERTIES LINK_FLAGS "/ignore:4197")
 	endif()
 
+  # https://developer.apple.com/macos/whats-new/#deprecationofopenglandopencl
+  if (APPLE)
+		target_compile_definitions(opengl PRIVATE GL_SILENCE_DEPRECATION)
+	endif()
+
 	# Link against gl, glu, glut:
 	target_link_libraries(opengl PRIVATE ${MRPT_OPENGL_LIBS})
 	target_link_libraries(opengl PRIVATE ${CVD_LIB})

@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/topography.h>
+#include <Eigen/Dense>
 #include <iostream>
 
 using namespace mrpt;
@@ -63,7 +64,7 @@ void TestGPS_coords()
 	cout << "(p1.h-p0.h)*ENU_Z: "
 		 << (pt1.height - pt0.height) * mrpt::poses::CPose3D(pose_ENU)
 											.getRotationMatrix()
-											.block<3, 1>(0, 2)
+											.blockCopy<3, 1>(0, 2)
 											.transpose()
 		 << endl;
 

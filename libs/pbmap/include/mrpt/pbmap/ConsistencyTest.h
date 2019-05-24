@@ -18,7 +18,7 @@
 #include <mrpt/config.h>
 #if MRPT_HAS_PCL
 
-#include <mrpt/math/types_math.h>  // Eigen
+//#include <mrpt/math/types_math.h>  // Eigen
 #include <mrpt/pbmap/PbMap.h>
 
 namespace mrpt::pbmap
@@ -73,7 +73,7 @@ class ConsistencyTest
 		std::map<unsigned, unsigned>& matched_planes);
 
 	// Eigen::Matrix4f getAlignment( const
-	// mrpt::math::CMatrixFixedNumeric<float,3,8> &matched_planes );
+	// mrpt::math::CMatrixFixed<float,3,8> &matched_planes );
 
 	Eigen::Matrix4f estimatePoseRANSAC(
 		std::map<unsigned, unsigned>& matched_planes);
