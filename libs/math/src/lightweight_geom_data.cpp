@@ -13,7 +13,6 @@
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CQuaternion.h>
 #include <mrpt/math/CVectorDynamic.h>
-//#include <mrpt/math/eigen_extensions.h>
 #include <mrpt/math/geometry.h>  // distance()
 #include <mrpt/math/homog_matrices.h>
 #include <mrpt/math/lightweight_geom_data.h>
@@ -30,6 +29,16 @@ using mrpt::RAD2DEG;
 
 namespace mrpt::math
 {
+static_assert(std::is_trivially_copyable_v<TPoint2D>);
+static_assert(std::is_trivially_copyable_v<TPoint3D>);
+static_assert(std::is_trivially_copyable_v<TPose2D>);
+static_assert(std::is_trivially_copyable_v<TPose3D>);
+static_assert(std::is_trivially_copyable_v<TPlane3D>);
+static_assert(std::is_trivially_copyable_v<TLine2D>);
+static_assert(std::is_trivially_copyable_v<TLine3D>);
+static_assert(std::is_trivially_copyable_v<TTwist2D>);
+static_assert(std::is_trivially_copyable_v<TTwist3D>);
+
 TPoint2D::TPoint2D(const TPose2D& p) : x(p.x), y(p.y) {}
 TPoint2D::TPoint2D(const TPoint3D& p) : x(p.x), y(p.y) {}
 TPoint2D::TPoint2D(const TPose3D& p) : x(p.x), y(p.y) {}
