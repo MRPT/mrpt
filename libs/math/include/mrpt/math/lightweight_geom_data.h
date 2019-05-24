@@ -37,18 +37,29 @@ struct TPoseOrPoint
  * @{ */
 
 // Set of typedefs for lightweight geometric items.
+
+struct TPoint2D_data
+{
+	/** X,Y coordinates */
+	double x, y;
+};
+
 /**
  * Lightweight 2D point. Allows coordinate access using [] operator.
  * \sa mrpt::poses::CPoint2D
  */
-struct TPoint2D : public TPoseOrPoint
+struct TPoint2D : public TPoseOrPoint, public TPoint2D_data
 {
 	enum
 	{
 		static_size = 2
 	};
-	/** X,Y coordinates */
-	double x{.0}, y{.0};
+	/** Default constructor. Initializes to zeros  */
+	constexpr TPoint2D() : TPoint2D_data{0, 0} {}
+	/** Constructor from coordinates  */
+	constexpr TPoint2D(double xx, double yy) : TPoint2D_data{xx, yy} {}
+	constexpr TPoint2D(const TPoint2D_data& d) : TPoint2D_data{d.x, d.y} {}
+
 	/** Constructor from TPose2D, discarding phi.
 	 * \sa TPose2D
 	 */
@@ -64,14 +75,6 @@ struct TPoint2D : public TPoseOrPoint
 	 */
 	explicit TPoint2D(const TPose3D& p);
 
-	/**
-	 * Constructor from coordinates.
-	 */
-	constexpr TPoint2D(double xx, double yy) : x(xx), y(yy) {}
-	/**
-	 * Default fast constructor. Initializes to zeros.
-	 */
-	TPoint2D() = default;
 	/** Coordinate access using operator[]. Order: x,y */
 	double& operator[](size_t i)
 	{
@@ -367,25 +370,40 @@ struct TPoint3Df : public TPoseOrPoint
 	}
 };
 
+/** Trivially copiable underlying data for TPoint3D */
+struct TPoint3D_data
+{
+	/** X,Y,Z coordinates */
+	double x, y, z;
+};
+
 /**
  * Lightweight 3D point. Allows coordinate access using [] operator.
  * \sa mrpt::poses::CPoint3D, mrpt::math::TPoint3Df
  */
-struct TPoint3D : public TPoseOrPoint
+struct TPoint3D : public TPoseOrPoint, public TPoint3D_data
 {
 	enum
 	{
 		static_size = 3
 	};
-	/** X,Y,Z coordinates */
-	double x{.0}, y{.0}, z{.0};
 
+	/** Default constructor. Initializes to zeros. */
+	constexpr TPoint3D() : TPoint3D_data{0, 0, 0} {}
 	/** Constructor from coordinates.  */
-	constexpr TPoint3D(double xx, double yy, double zz) : x(xx), y(yy), z(zz) {}
-	/** Default fast constructor. Initializes to zeros. */
-	TPoint3D() = default;
+	constexpr TPoint3D(double xx, double yy, double zz)
+		: TPoint3D_data{xx, yy, zz}
+	{
+	}
+	constexpr TPoint3D(const TPoint3D_data& d) : TPoint3D_data{d.x, d.y, d.z} {}
+
 	/** Explicit constructor from coordinates.  */
-	explicit TPoint3D(const TPoint3Df& p) : x(p.x), y(p.y), z(p.z) {}
+	explicit TPoint3D(const TPoint3Df& p)
+	{
+		x = static_cast<double>(p.x);
+		y = static_cast<double>(p.y);
+		z = static_cast<double>(p.z);
+	}
 	/** Implicit constructor from TPoint2D. Zeroes the z.
 	 * \sa TPoint2D
 	 */
