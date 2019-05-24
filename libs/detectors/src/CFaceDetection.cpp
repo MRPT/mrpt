@@ -12,8 +12,8 @@
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/maps/CColouredPointsMap.h>
-#include <mrpt/math/CMatrix.h>
-#include <mrpt/math/CMatrixTemplate.h>
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/opengl/CArrow.h>
