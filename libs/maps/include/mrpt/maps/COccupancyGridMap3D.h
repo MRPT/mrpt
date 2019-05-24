@@ -273,7 +273,8 @@ class COccupancyGridMap3D
 			const std::string& section) override;
 		// See base docs
 		void saveToConfigFile(
-			mrpt::config::CConfigFileBase& c, const std::string& s) const;
+			mrpt::config::CConfigFileBase& c,
+			const std::string& s) const override;
 
 		/** The selected method to compute an observation likelihood */
 		TLikelihoodMethod likelihoodMethod{lmLikelihoodField_Thrun};
