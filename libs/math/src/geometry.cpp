@@ -9,14 +9,17 @@
 
 #include "math-precomp.h"  // Precompiled headers
 
-#include <mrpt/math/CArrayNumeric.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/math/CSparseMatrixTemplate.h>
+#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/data_utils.h>
+//#include <mrpt/math/eigen_extensions.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_containers.h>
+#include <Eigen/Dense>
+//#include <Eigen/LU>
 
 using namespace mrpt;
 using namespace std;
@@ -921,8 +924,8 @@ void createFromPoseAndAxis(const TPose3D& p, TLine3D& r, size_t axis)
 	p.getHomogeneousMatrix(m);
 	for (size_t i = 0; i < 3; i++)
 	{
-		r.pBase[i] = m.get_unsafe(i, 3);
-		r.director[i] = m.get_unsafe(i, axis);
+		r.pBase[i] = m(i, 3);
+		r.director[i] = m(i, axis);
 	}
 }
 // End of auxiliary method
@@ -949,10 +952,9 @@ void math::createFromPoseAndVector(
 	p.getHomogeneousMatrix(m);
 	for (size_t i = 0; i < 3; i++)
 	{
-		r.pBase[i] = m.get_unsafe(i, 3);
+		r.pBase[i] = m(i, 3);
 		r.director[i] = 0;
-		for (size_t j = 0; j < 3; j++)
-			r.director[i] += m.get_unsafe(i, j) * vector[j];
+		for (size_t j = 0; j < 3; j++) r.director[i] += m(i, j) * vector[j];
 	}
 }
 
@@ -984,7 +986,7 @@ bool math::conformAPlane(const std::vector<TPoint3D>& points)
 {
 	size_t N = points.size();
 	if (N < 3) return false;
-	CMatrixTemplateNumeric<double> mat(N - 1, 3);
+	CMatrixDouble mat(N - 1, 3);
 	const TPoint3D& orig = points[N - 1];
 	for (size_t i = 0; i < N - 1; i++)
 	{
@@ -993,7 +995,7 @@ bool math::conformAPlane(const std::vector<TPoint3D>& points)
 		mat(i, 1) = p.y - orig.y;
 		mat(i, 2) = p.z - orig.z;
 	}
-	return mat.rank(geometryEpsilon) == 2;
+	return mat.rank() == 2;
 }
 
 bool math::conformAPlane(const std::vector<TPoint3D>& points, TPlane& p)
@@ -1005,7 +1007,7 @@ bool math::areAligned(const std::vector<TPoint2D>& points)
 {
 	size_t N = points.size();
 	if (N < 2) return false;
-	CMatrixTemplateNumeric<double> mat(N - 1, 2);
+	CMatrixDouble mat(N - 1, 2);
 	const TPoint2D& orig = points[N - 1];
 	for (size_t i = 0; i < N - 1; i++)
 	{
@@ -1013,14 +1015,16 @@ bool math::areAligned(const std::vector<TPoint2D>& points)
 		mat(i, 0) = p.x - orig.x;
 		mat(i, 1) = p.y - orig.y;
 	}
-	return mat.rank(geometryEpsilon) == 1;
+	return mat.rank() == 1;
 }
 
 bool math::areAligned(const std::vector<TPoint2D>& points, TLine2D& r)
 {
 	if (!areAligned(points)) return false;
 	const TPoint2D& p0 = points[0];
-	for (size_t i = 1;; i++) try
+	for (size_t i = 1;; i++)
+	{
+		try
 		{
 			r = TLine2D(p0, points[i]);
 			return true;
@@ -1028,13 +1032,14 @@ bool math::areAligned(const std::vector<TPoint2D>& points, TLine2D& r)
 		catch (logic_error&)
 		{
 		}
+	}
 }
 
 bool math::areAligned(const std::vector<TPoint3D>& points)
 {
 	size_t N = points.size();
 	if (N < 2) return false;
-	CMatrixTemplateNumeric<double> mat(N - 1, 3);
+	CMatrixDouble mat(N - 1, 3);
 	const TPoint3D& orig = points[N - 1];
 	for (size_t i = 0; i < N - 1; i++)
 	{
@@ -1043,7 +1048,7 @@ bool math::areAligned(const std::vector<TPoint3D>& points)
 		mat(i, 1) = p.y - orig.y;
 		mat(i, 2) = p.z - orig.z;
 	}
-	return mat.rank(geometryEpsilon) == 1;
+	return mat.rank() == 1;
 }
 
 bool math::areAligned(const std::vector<TPoint3D>& points, TLine3D& r)
@@ -1070,7 +1075,7 @@ void math::project3D(
 	{
 		newLine.director[i] = 0;
 		for (size_t j = 0; j < 3; j++)
-			newLine.director[i] += mat.get_unsafe(i, j) * line.director[j];
+			newLine.director[i] += mat(i, j) * line.director[j];
 	}
 	newLine.unitarize();
 }
@@ -1084,7 +1089,7 @@ void math::project3D(
 	{
 		newPlane.coefs[i] = 0;
 		for (size_t j = 0; j < 3; j++)
-			newPlane.coefs[i] += mat.get_unsafe(i, j) * plane.coefs[j];
+			newPlane.coefs[i] += mat(i, j) * plane.coefs[j];
 	}
 	// VORSICHT! NO INTENTEN HACER ESTO EN SUS CASAS (nota: comentar sí o sí,
 	// más tarde)
@@ -2032,8 +2037,8 @@ void createPlaneFromPoseAndAxis(const TPose3D& pose, TPlane& plane, size_t axis)
 	pose.getHomogeneousMatrix(m);
 	for (size_t i = 0; i < 3; i++)
 	{
-		plane.coefs[i] = m.get_unsafe(i, axis);
-		plane.coefs[3] -= plane.coefs[i] * m.get_unsafe(i, 3);
+		plane.coefs[i] = m(i, axis);
+		plane.coefs[3] -= plane.coefs[i] * m(i, 3);
 	}
 }
 
@@ -2061,62 +2066,53 @@ void math::createPlaneFromPoseAndNormal(
 	for (size_t i = 0; i < 3; i++)
 	{
 		plane.coefs[i] = 0;
-		for (size_t j = 0; j < 3; j++)
-			plane.coefs[i] += normal[j] * m.get_unsafe(i, j);
-		plane.coefs[3] -= plane.coefs[i] * m.get_unsafe(i, 3);
+		for (size_t j = 0; j < 3; j++) plane.coefs[i] += normal[j] * m(i, j);
+		plane.coefs[3] -= plane.coefs[i] * m(i, 3);
 	}
 }
 
 void math::generateAxisBaseFromDirectionAndAxis(
-	const double (&vec)[3], char coord, CMatrixDouble44& matrix)
+	const double (&vec)[3], uint8_t coord, CMatrixDouble44& m)
 {
 	// Assumes vector is unitary.
 	// coord: 0=x, 1=y, 2=z.
-	char coord1 = (coord + 1) % 3;
-	char coord2 = (coord + 2) % 3;
-	matrix.setZero();
-	matrix(3, 3) = 1.0;
-	for (size_t i = 0; i < 3; i++) matrix.set_unsafe(i, coord, vec[i]);
-	matrix.set_unsafe(0, coord1, 0);
+	const uint8_t coord1 = (coord + 1) % 3;
+	const uint8_t coord2 = (coord + 2) % 3;
+	m.setZero();
+	m(3, 3) = 1.0;
+	for (size_t i = 0; i < 3; i++) m(i, coord) = vec[i];
+	m(0, coord1) = 0;
 	double h = hypot(vec[1], vec[2]);
 	if (h < geometryEpsilon)
 	{
-		matrix.set_unsafe(1, coord1, 1);
-		matrix.set_unsafe(2, coord1, 0);
+		m(1, coord1) = 1;
+		m(2, coord1) = 0;
 	}
 	else
 	{
-		matrix.set_unsafe(1, coord1, -vec[2] / h);
-		matrix.set_unsafe(2, coord1, vec[1] / h);
+		m(1, coord1) = -vec[2] / h;
+		m(2, coord1) = vec[1] / h;
 	}
-	matrix.set_unsafe(
-		0, coord2,
-		matrix.get_unsafe(1, coord) * matrix.get_unsafe(2, coord1) -
-			matrix.get_unsafe(2, coord) * matrix.get_unsafe(1, coord1));
-	matrix.set_unsafe(
-		1, coord2,
-		matrix.get_unsafe(2, coord) * matrix.get_unsafe(0, coord1) -
-			matrix.get_unsafe(0, coord) * matrix.get_unsafe(2, coord1));
-	matrix.set_unsafe(
-		2, coord2,
-		matrix.get_unsafe(0, coord) * matrix.get_unsafe(1, coord1) -
-			matrix.get_unsafe(1, coord) * matrix.get_unsafe(0, coord1));
+	m(0, coord2) = m(1, coord) * m(2, coord1) - m(2, coord) * m(1, coord1);
+	m(1, coord2) = m(2, coord) * m(0, coord1) - m(0, coord) * m(2, coord1);
+	m(2, coord2) = m(0, coord) * m(1, coord1) - m(1, coord) * m(0, coord1);
 }
 
 double math::getRegressionLine(const vector<TPoint2D>& points, TLine2D& line)
 {
-	CArrayDouble<2> means;
-	CMatrixTemplateNumeric<double> covars(2, 2), eigenVal(2, 2), eigenVec(2, 2);
+	CVectorFixedDouble<2> means;
+	CMatrixDouble22 covars;
 	covariancesAndMean(points, covars, means);
-	covars.eigenVectors(eigenVec, eigenVal);
-	size_t selected =
-		(eigenVal.get_unsafe(0, 0) >= eigenVal.get_unsafe(1, 1)) ? 0 : 1;
-	line.coefs[0] = -eigenVec.get_unsafe(1, selected);
-	line.coefs[1] = eigenVec.get_unsafe(0, selected);
+
+	std::vector<double> eigenVals;
+	CMatrixDouble22 eigenVecs;
+	covars.eig_symmetric(eigenVecs, eigenVals);
+
+	// size_t selected = (eigenVal[0] >= eigenVal[1]) ? 0 : 1;
+	line.coefs[0] = -eigenVecs(1, 1);  // 1: largest eigenVal
+	line.coefs[1] = eigenVecs(0, 1);
 	line.coefs[2] = -line.coefs[0] * means[0] - line.coefs[1] * means[1];
-	return sqrt(
-		eigenVal.get_unsafe(1 - selected, 1 - selected) /
-		eigenVal.get_unsafe(selected, selected));
+	return std::sqrt(eigenVals[0] / eigenVals[1]);
 }
 
 template <class T>
@@ -2125,56 +2121,49 @@ inline size_t getIndexOfMin(const T& e1, const T& e2, const T& e3)
 	return (e1 < e2) ? ((e1 < e3) ? 0 : 2) : ((e2 < e3) ? 1 : 2);
 }
 
-template <class T>
-inline size_t getIndexOfMax(const T& e1, const T& e2, const T& e3)
-{
-	return (e1 > e2) ? ((e1 > e3) ? 0 : 2) : ((e2 > e3) ? 1 : 2);
-}
-
 double math::getRegressionLine(const vector<TPoint3D>& points, TLine3D& line)
 {
-	CArrayDouble<3> means;
-	CMatrixTemplateNumeric<double> covars(3, 3), eigenVal(3, 3), eigenVec(3, 3);
+	CVectorFixedDouble<3> means;
+	CMatrixDouble33 covars;
 	covariancesAndMean(points, covars, means);
-	covars.eigenVectors(eigenVec, eigenVal);
-	size_t selected = getIndexOfMax(
-		eigenVal.get_unsafe(0, 0), eigenVal.get_unsafe(1, 1),
-		eigenVal.get_unsafe(2, 2));
+
+	std::vector<double> eigenVal;
+	CMatrixDouble33 eigenVec;
+	covars.eig_symmetric(eigenVec, eigenVal);
+
+	const size_t selected = 2;  // sorted: max eigenvalue
 	for (size_t i = 0; i < 3; i++)
 	{
 		line.pBase[i] = means[i];
-		line.director[i] = eigenVec.get_unsafe(i, selected);
+		line.director[i] = eigenVec(i, selected);
 	}
 	size_t i1 = (selected + 1) % 3, i2 = (selected + 2) % 3;
-	return sqrt(
-		(eigenVal.get_unsafe(i1, i1) + eigenVal.get_unsafe(i2, i2)) /
-		eigenVal.get_unsafe(selected, selected));
+	return std::sqrt((eigenVal[i1] + eigenVal[i2]) / eigenVal[selected]);
 }
 
 double math::getRegressionPlane(const vector<TPoint3D>& points, TPlane& plane)
 {
 	vector<double> means;
-	CMatrixDouble33 covars, eigenVal, eigenVec;
+	CMatrixDouble33 covars;
 	covariancesAndMean(points, covars, means);
 
-	covars.eigenVectors(eigenVec, eigenVal);
+	std::vector<double> eigenVal;
+	CMatrixDouble33 eigenVec;
+	covars.eig_symmetric(eigenVec, eigenVal);
+
 	for (size_t i = 0; i < 3; ++i)
-		if (eigenVal.get_unsafe(i, i) < 0 &&
-			fabs(eigenVal.get_unsafe(i, i)) < geometryEpsilon)
-			eigenVal.set_unsafe(i, i, 0);
-	size_t selected = getIndexOfMin(
-		eigenVal.get_unsafe(0, 0), eigenVal.get_unsafe(1, 1),
-		eigenVal.get_unsafe(2, 2));
+		if (eigenVal[i] < 0 && std::abs(eigenVal[i]) < geometryEpsilon)
+			eigenVal[i] = 0;
+
+	const size_t selected = 0;  // sorted: minimum eigenVal
 	plane.coefs[3] = 0;
 	for (size_t i = 0; i < 3; i++)
 	{
-		plane.coefs[i] = eigenVec.get_unsafe(i, selected);
+		plane.coefs[i] = eigenVec(i, selected);
 		plane.coefs[3] -= plane.coefs[i] * means[i];
 	}
 	size_t i1 = (selected + 1) % 3, i2 = (selected + 2) % 3;
-	return sqrt(
-		eigenVal.get_unsafe(selected, selected) /
-		(eigenVal.get_unsafe(i1, i1) + eigenVal.get_unsafe(i2, i2)));
+	return std::sqrt(eigenVal[selected] / (eigenVal[i1] + eigenVal[i2]));
 }
 
 void math::assemblePolygons(
@@ -2587,4 +2576,46 @@ bool math::traceRay(
 			dist = nDist;
 		}
 	return res;
+}
+
+CMatrixDouble33 mrpt::math::generateAxisBaseFromDirection(
+	double dx, double dy, double dz)
+{
+	MRPT_START
+
+	if (std::abs(dx) < 1e-10 && std::abs(dy) < 1e-10 && std::abs(dz) < 1e-10)
+		THROW_EXCEPTION("Invalid input: Direction vector is (0,0,0);");
+
+	CMatrixDouble33 P;
+
+	// 1st vector:
+	double n_xy = square(dx) + square(dy);
+	double n = sqrt(n_xy + square(dz));
+	n_xy = sqrt(n_xy);
+	P(0, 0) = dx / n;
+	P(1, 0) = dy / n;
+	P(2, 0) = dz / n;
+
+	// 2nd perpendicular vector:
+	if (fabs(dx) > 1e-4 || fabs(dy) > 1e-4)
+	{
+		P(0, 1) = -dy / n_xy;
+		P(1, 1) = dx / n_xy;
+		P(2, 1) = 0;
+	}
+	else
+	{
+		// Any vector in the XY plane will work:
+		P(0, 1) = 1;
+		P(1, 1) = 0;
+		P(2, 1) = 0;
+	}
+
+	// 3rd perpendicular vector: cross product of the two last vectors:
+	Eigen::Vector3d c2;
+	crossProduct3D(P.col(0), P.col(1), c2);
+	P.col(2) = c2;
+
+	return P;
+	MRPT_END
 }

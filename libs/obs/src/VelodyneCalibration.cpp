@@ -9,6 +9,7 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
+#include <mrpt/config.h>
 #include <mrpt/core/bits_math.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/obs/VelodyneCalibration.h>
@@ -17,14 +18,12 @@
 #include <iostream>
 #include <map>
 #include <sstream>
-
-#undef _UNICODE  // JLBC, for xmlParser
-#include "xmlparser/xmlParser.h"
-
-#include <mrpt/config.h>
 #if MRPT_HAS_YAMLCPP
 #include <yaml-cpp/yaml.h>
 #endif
+
+#undef _UNICODE  // JLBC, for xmlParser
+#include "xmlparser/xmlParser.h"
 
 // ======= Default calibration files ========================
 #include "velodyne_default_calib_HDL-32.h"

@@ -19,16 +19,16 @@
 #include <mrpt/math/utils.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
+#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/slam/CRangeBearingKFSLAM.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
-
-#include <mrpt/opengl/CEllipsoid.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/stock_objects.h>
+#include <Eigen/Dense>
 
 using namespace mrpt::slam;
 using namespace mrpt::obs;
@@ -73,7 +73,7 @@ void CRangeBearingKFSLAM::reset()
 
 	// Initial cov:  nullptr diagonal -> perfect knowledge.
 	m_pkk.setSize(get_vehicle_size(), get_vehicle_size());
-	m_pkk.zeros();
+	m_pkk.setZero();
 	// -----------------------
 
 	// Use SF-based matching (faster & easier for bearing-range observations
@@ -105,7 +105,7 @@ void CRangeBearingKFSLAM::getCurrentRobotPose(
 	out_robotPose.mean.m_quat[3] = m_xkk[6];
 
 	// and cov:
-	m_pkk.extractMatrix(0, 0, out_robotPose.cov);
+	out_robotPose.cov = m_pkk.blockCopy<7, 7>(0, 0);
 
 	MRPT_END
 }
@@ -152,7 +152,7 @@ void CRangeBearingKFSLAM::getCurrentState(
 	out_robotPose.mean.m_quat[3] = m_xkk[6];
 
 	// and cov:
-	m_pkk.extractMatrix(0, 0, out_robotPose.cov);
+	out_robotPose.cov = m_pkk.blockCopy<7, 7>(0, 0);
 
 	// Landmarks:
 	ASSERT_(((m_xkk.size() - get_vehicle_size()) % get_feature_size()) == 0);
@@ -291,7 +291,9 @@ void CRangeBearingKFSLAM::OnGetAction(KFArray_ACT& u) const
 	// Get odometry estimation:
 	const CPose3DQuat theIncr = getIncrementFromOdometry();
 
-	for (KFArray_ACT::Index i = 0; i < u.size(); i++) u[i] = theIncr[i];
+	for (KFArray_ACT::Index i = 0;
+		 i < static_cast<KFArray_ACT::Index>(u.size()); i++)
+		u[i] = theIncr[i];
 }
 
 /** This virtual function musts implement the prediction model of the Kalman
@@ -328,7 +330,7 @@ void CRangeBearingKFSLAM::OnTransitionModel(
 	robotPose += odoIncrement;
 
 	// Output:
-	for (size_t i = 0; i < xv.static_size; i++) xv[i] = robotPose[i];
+	for (size_t i = 0; i < xv.SizeAtCompileTime; i++) xv[i] = robotPose[i];
 
 	MRPT_END
 }
@@ -378,10 +380,10 @@ void CRangeBearingKFSLAM::OnTransitionNoise(KFMatrix_VxV& Q) const
 	if ((!act3D && !act2D) || options.force_ignore_odometry)
 	{
 		// Use constant Q:
-		Q.zeros();
+		Q.setZero();
 		ASSERT_(size_t(options.stds_Q_no_odo.size()) == size_t(Q.cols()));
 		for (size_t i = 0; i < get_vehicle_size(); i++)
-			Q.set_unsafe(i, i, square(options.stds_Q_no_odo[i]));
+			Q(i, i) = square(options.stds_Q_no_odo[i]);
 		return;
 	}
 	else
@@ -510,8 +512,8 @@ void CRangeBearingKFSLAM::OnObservationJacobians(
 	// Compute the jacobians, needed below:
 	// const CPose3DQuat  sensorPoseAbs= robotPose + sensorPoseOnRobot;
 	CPose3DQuat sensorPoseAbs(UNINITIALIZED_QUATERNION);
-	CMatrixFixedNumeric<kftype, 7, 7> H_senpose_vehpose(UNINITIALIZED_MATRIX);
-	CMatrixFixedNumeric<kftype, 7, 7> H_senpose_senrelpose(
+	CMatrixFixed<kftype, 7, 7> H_senpose_vehpose(UNINITIALIZED_MATRIX);
+	CMatrixFixed<kftype, 7, 7> H_senpose_senrelpose(
 		UNINITIALIZED_MATRIX);  // Not actually used
 
 	CPose3DQuatPDF::jacobiansPoseComposition(
@@ -536,7 +538,7 @@ void CRangeBearingKFSLAM::OnObservationJacobians(
 		&Hy, &Hx_sensor);
 
 	// Chain rule: Hx = d sensorpose / d vehiclepose   * Hx_sensor
-	Hx.multiply(Hx_sensor, H_senpose_vehpose);
+	Hx = Hx_sensor * H_senpose_vehpose;
 
 	MRPT_END
 }
@@ -571,7 +573,7 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
 	MRPT_START
 
 	// static const size_t vehicle_size = get_vehicle_size();
-	static const size_t obs_size = get_observation_size();
+	constexpr size_t obs_size = get_observation_size();
 
 	// Z: Observations
 	CObservationBearingRange::TMeasurementList::const_iterator itObs;
@@ -646,17 +648,16 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
 		// Build a Z matrix with the observations that need dat.assoc:
 		const size_t nObsDA = obs_idxs_needing_data_assoc.size();
 
-		CMatrixTemplateNumeric<kftype> Z_obs_means(nObsDA, obs_size);
+		CMatrixDynamic<kftype> Z_obs_means(nObsDA, obs_size);
 		for (size_t i = 0; i < nObsDA; i++)
 		{
 			const size_t idx = obs_idxs_needing_data_assoc[i];
 			for (unsigned k = 0; k < obs_size; k++)
-				Z_obs_means.get_unsafe(i, k) = Z[idx][k];
+				Z_obs_means(i, k) = Z[idx][k];
 		}
 
 		// Vehicle uncertainty
-		KFMatrix_VxV Pxx(UNINITIALIZED_MATRIX);
-		m_pkk.extractMatrix(0, 0, Pxx);
+		// KFMatrix_VxV Pxx = m_pkk.extractMatrix<7, 7>(0, 0);
 
 		// Build predictions:
 		// ---------------------------
@@ -672,7 +673,7 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
 		{
 			const size_t i = lm_indices_in_S[q];
 			for (size_t w = 0; w < obs_size; w++)
-				m_last_data_association.Y_pred_means.get_unsafe(q, w) =
+				m_last_data_association.Y_pred_means(q, w) =
 					all_predictions[i][w];
 			m_last_data_association.predictions_IDs.push_back(
 				i);  // for the conversion of indices...
@@ -683,6 +684,7 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
 		if (nPredictions)
 		{
 			CMatrixDouble Z_obs_cov = CMatrixDouble(R);
+			std::cout << "Z_obs_cov:\n" << Z_obs_cov << "\n";
 
 			mrpt::slam::data_association_full_covariance(
 				Z_obs_means,  // Z_obs_cov,
@@ -850,8 +852,8 @@ void CRangeBearingKFSLAM::OnInverseObservationModel(
 
 	// const CPose3DQuat  sensorPoseAbs= robotPose + sensorPoseOnRobot;
 	CPose3DQuat sensorPoseAbs(UNINITIALIZED_QUATERNION);
-	CMatrixFixedNumeric<kftype, 7, 7> dsensorabs_dvehpose(UNINITIALIZED_MATRIX);
-	CMatrixFixedNumeric<kftype, 7, 7> dsensorabs_dsenrelpose(
+	CMatrixFixed<kftype, 7, 7> dsensorabs_dvehpose(UNINITIALIZED_MATRIX);
+	CMatrixFixed<kftype, 7, 7> dsensorabs_dsenrelpose(
 		UNINITIALIZED_MATRIX);  // Not actually used
 
 	CPose3DQuatPDF::jacobiansPoseComposition(
@@ -913,12 +915,10 @@ void CRangeBearingKFSLAM::OnInverseObservationModel(
 		yn[0], yn[1], yn[2],  // yn in global coords
 		&jacob_dyn_dynrelsensor, &jacob_dyn_dsensorabs);
 
-	// dyn_dhn = jacob_dyn_dynrelsensor * dynlocal_dhn;
-	dyn_dhn.multiply_AB(jacob_dyn_dynrelsensor, dynlocal_dhn);
+	dyn_dhn = jacob_dyn_dynrelsensor * dynlocal_dhn;
 
 	// dyn_dxv =
-	dyn_dxv.multiply_AB(
-		jacob_dyn_dsensorabs, dsensorabs_dvehpose);  // dsensorabs_dsenrelpose);
+	dyn_dxv = jacob_dyn_dsensorabs * dsensorabs_dvehpose;
 
 	MRPT_END
 }
@@ -981,13 +981,10 @@ void CRangeBearingKFSLAM::getAs3DObject(
 	pointGauss.mean.x(m_xkk[0]);
 	pointGauss.mean.y(m_xkk[1]);
 	pointGauss.mean.z(m_xkk[2]);
-	CMatrixTemplateNumeric<kftype> COV;
-	m_pkk.extractMatrix(0, 0, 3, 3, COV);
-	pointGauss.cov = COV;
+	pointGauss.cov = m_pkk.blockCopy<3, 3>(0, 0);
 
 	{
-		opengl::CEllipsoid::Ptr ellip =
-			mrpt::make_aligned_shared<opengl::CEllipsoid>();
+		auto ellip = opengl::CEllipsoid::Create();
 
 		ellip->setPose(pointGauss.mean);
 		ellip->setCovMatrix(pointGauss.cov);
@@ -1009,14 +1006,13 @@ void CRangeBearingKFSLAM::getAs3DObject(
 			m_xkk[get_vehicle_size() + get_feature_size() * i + 1]);
 		pointGauss.mean.z(
 			m_xkk[get_vehicle_size() + get_feature_size() * i + 2]);
-		m_pkk.extractMatrix(
-			get_vehicle_size() + get_feature_size() * i,
-			get_vehicle_size() + get_feature_size() * i, get_feature_size(),
-			get_feature_size(), COV);
-		pointGauss.cov = COV;
 
-		opengl::CEllipsoid::Ptr ellip =
-			mrpt::make_aligned_shared<opengl::CEllipsoid>();
+		pointGauss.cov =
+			m_pkk.blockCopy<get_feature_size(), get_feature_size()>(
+				get_vehicle_size() + get_feature_size() * i,
+				get_vehicle_size() + get_feature_size() * i);
+
+		auto ellip = opengl::CEllipsoid::Create();
 
 		ellip->setName(format("%u", static_cast<unsigned int>(i)));
 		ellip->enableShowName(true);
@@ -1180,12 +1176,12 @@ double CRangeBearingKFSLAM::computeOffDiagonalBlocksApproximationError(
 	MRPT_START
 
 	// Compute the information matrix:
-	CMatrixTemplateNumeric<kftype> fullCov(m_pkk);
+	CMatrixDynamic<kftype> fullCov(m_pkk);
 	size_t i;
 	for (i = 0; i < get_vehicle_size(); i++)
 		fullCov(i, i) = max(fullCov(i, i), 1e-6);
 
-	CMatrixTemplateNumeric<kftype> H(fullCov.inv());
+	CMatrixDynamic<kftype> H(fullCov.inverse_LLt());
 	H.array().abs();  // Replace by absolute values:
 
 	double sumOffBlocks = 0;
@@ -1205,15 +1201,16 @@ double CRangeBearingKFSLAM::computeOffDiagonalBlocksApproximationError(
 			{
 				size_t col = get_vehicle_size() + i * get_feature_size();
 				size_t row = get_vehicle_size() + j * get_feature_size();
-				sumOffBlocks += 2 * H.block(row, col, 2, 2).sum();
+				sumOffBlocks += 2 * H.block<2, 2>(row, col).sum();
 			}
 		}
 	}
 
-	return sumOffBlocks / H.block(
-							   get_vehicle_size(), get_vehicle_size(),
-							   H.rows() - get_vehicle_size(),
-							   H.cols() - get_vehicle_size())
+	return sumOffBlocks / H.asEigen()
+							  .block(
+								  get_vehicle_size(), get_vehicle_size(),
+								  H.rows() - get_vehicle_size(),
+								  H.cols() - get_vehicle_size())
 							  .sum();  // Starting (7,7)-end
 	MRPT_END
 }
@@ -1382,9 +1379,7 @@ void CRangeBearingKFSLAM::OnPreComputingPredictions(
 	const double fov_pitch = obs->fieldOfView_pitch;
 
 	const double max_vehicle_loc_uncertainty =
-		4 * std::sqrt(
-				m_pkk.get_unsafe(0, 0) + m_pkk.get_unsafe(1, 1) +
-				m_pkk.get_unsafe(2, 2));
+		4 * std::sqrt(m_pkk(0, 0) + m_pkk(1, 1) + m_pkk(2, 2));
 #endif
 
 	out_LM_indices_to_predict.clear();

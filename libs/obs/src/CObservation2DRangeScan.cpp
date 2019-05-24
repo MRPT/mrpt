@@ -9,7 +9,7 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/poses/CPosePDF.h>
@@ -101,7 +101,7 @@ void CObservation2DRangeScan::serializeFrom(
 		case 2:
 		case 3:
 		{
-			CMatrix covSensorPose;
+			CMatrixF covSensorPose;
 			in >> aperture >> rightToLeft >> maxRange >> sensorPose >>
 				covSensorPose;
 			uint32_t N, i;
@@ -152,7 +152,7 @@ void CObservation2DRangeScan::serializeFrom(
 		{
 			uint32_t N;
 
-			CMatrix covSensorPose;
+			CMatrixF covSensorPose;
 			in >> aperture >> rightToLeft >> maxRange >> sensorPose;
 
 			if (version < 6)  // covSensorPose was removed in version 6

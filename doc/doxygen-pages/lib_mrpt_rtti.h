@@ -22,6 +22,8 @@ This library is part of MRPT and can be installed in Debian-based systems with:
 
 		sudo apt install libmrpt-rtti-dev
 
+See: \ref mrpt_from_cmake
+
 Any class with RTTI support has to be derived from mrpt::rtti::CObject, either
 directly or via a hierarchy of inheriting classes.
 Class factory by name enables deserialization of polymorphic classes in the

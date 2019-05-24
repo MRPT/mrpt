@@ -31,7 +31,7 @@
 #include <mrpt/io/CFileStream.h>
 #include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/obs/CObservationGPS.h>
@@ -103,7 +103,7 @@ void TestParticlesLocalization()
 	std::string GT_FILE =
 		iniFile->read_string("ro-localization", "groundTruthFile", "");
 
-	CMatrix aux(1, 1);
+	CMatrixF aux(1, 1);
 
 	float Pc_range_ini = 0.05f;
 	float Pc_range_end = 0.05f;
@@ -123,7 +123,7 @@ void TestParticlesLocalization()
 	ASSERT_FILE_EXISTS_(RAWLOG_FILE);
 
 	// Load GT:
-	CMatrix groundTruth;
+	CMatrixF groundTruth;
 	if (!GT_FILE.empty()) groundTruth.loadFromTextFile(GT_FILE);
 
 	// Real ranges estimated from GT:
@@ -532,9 +532,7 @@ void TestParticlesLocalization()
 				// Generate 3D scene:
 				// ------------------------------
 				{
-					CPose2D meanPose;
-					CMatrixDouble33 C;
-					pdf.getCovarianceAndMean(C, meanPose);
+					const auto [C, meanPose] = pdf.getCovarianceAndMean();
 
 #ifdef SHOW_REAL_TIME_3D
 					sceneTR = window.get3DSceneAndLock();
@@ -848,7 +846,7 @@ void TestParticlesLocalization()
 										 .y_shift),
 									0);
 							}
-							CMatrix r(2, 2);
+							CMatrixF r(2, 2);
 							r(1, 1) = 9;
 							r(0, 0) = 9;
 							sphere->setCovMatrix(r);

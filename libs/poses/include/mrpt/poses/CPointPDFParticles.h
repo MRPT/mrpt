@@ -10,7 +10,7 @@
 
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CParticleFilterData.h>
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/poses/CPointPDF.h>
 
@@ -46,14 +46,10 @@ class CPointPDFParticles
 
 	/** Returns the number of particles */
 	size_t size() const { return m_particles.size(); }
-	/** Returns an estimate of the point, (the mean, or mathematical expectation
-	 * of the PDF) \sa getCovariance */
+
 	void getMean(CPoint3D& mean_point) const override;
 
-	/** Returns an estimate of the point covariance matrix (3x3 cov matrix) and
-	 * the mean, both at once. \sa getMean  */
-	void getCovarianceAndMean(
-		mrpt::math::CMatrixDouble33& cov, CPoint3D& mean_point) const override;
+	std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const override;
 
 	/** Copy operator, translating if necesary (for example, between particles
 	 * and gaussian representations) */

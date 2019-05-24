@@ -7,18 +7,7 @@
    | Released under BSD License. See details in https://www.mrpt.org/License   |
    +---------------------------------------------------------------------------+ */
 
-
-#ifndef MRPT_CONFIG_H
-#define MRPT_CONFIG_H
-
-
-/** Tell Eigen libray to include MRPT's plugin for Eigen::MatrixBase
-  */
-#define EIGEN_MATRIXBASE_PLUGIN ${EIGEN_MATRIXBASE_PLUGIN}
-
-/** Implementation of the methods declared above, if needed
-  */
-#define EIGEN_MATRIXBASE_PLUGIN_POST_IMPL ${EIGEN_MATRIXBASE_PLUGIN_POST_IMPL}
+#pragma once
 
 /** If defined, security checks (ASSERT_'s) will be performed in many MRPT classes even
   *  if "_DEBUG" is not declared, which is then the default behavior.
@@ -294,4 +283,3 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #endif
 
 
-#endif

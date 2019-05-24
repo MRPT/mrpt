@@ -18,9 +18,9 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/system/os.h>
+#include <Eigen/Dense>
 
 using namespace mrpt::poses;
-
 using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace mrpt::system;
@@ -129,14 +129,13 @@ void CPoint2DPDFGaussian::changeCoordinatesReference(
 	const CPose3D& newReferenceBase)
 {
 	// Clip the 3x3 rotation matrix
-	const CMatrixDouble22 M =
-		newReferenceBase.getRotationMatrix().block(0, 0, 2, 2);
+	const auto M = newReferenceBase.getRotationMatrix().blockCopy<2, 2>();
 
 	// The mean:
 	mean = CPoint2D(newReferenceBase + mean);
 
 	// The covariance:
-	cov = M * cov * M.transpose();
+	cov = M.asEigen() * cov.asEigen() * M.transpose();
 }
 
 /*---------------------------------------------------------------
@@ -147,23 +146,19 @@ void CPoint2DPDFGaussian::bayesianFusion(
 {
 	MRPT_START
 
-	CMatrixDouble22 C1_inv;
-	p1.cov.inv(C1_inv);
+	const auto C1_inv = p1.cov.asEigen().inverse();
+	const auto C2_inv = p2.cov.asEigen().inverse();
 
-	CMatrixDouble22 C2_inv;
-	p2.cov.inv(C2_inv);
+	const Eigen::Matrix2d L = C1_inv + C2_inv;
 
-	CMatrixDouble22 L = C1_inv;
-	L += C2_inv;
-
-	L.inv(cov);  // The new cov.
+	cov.asEigen() = L.inverse();  // The new cov.
 
 	const Eigen::Vector2d x1{p1.mean.x(), p1.mean.y()};
 	const Eigen::Vector2d x2{p2.mean.x(), p2.mean.y()};
-	CMatrixDouble21 x = cov * (C1_inv * x1 + C2_inv * x2);
 
-	mean.x(x.get_unsafe(0, 0));
-	mean.y(x.get_unsafe(1, 0));
+	const Eigen::Vector2d x = cov.asEigen() * (C1_inv * x1 + C2_inv * x2);
+	mean.x(x[0]);
+	mean.y(x[1]);
 
 	MRPT_END
 }
@@ -181,17 +176,15 @@ double CPoint2DPDFGaussian::productIntegralWith(
 	//   Gaussians variables amounts to simply the evaluation of
 	//   a normal PDF at (0,0), with mean=M1-M2 and COV=COV1+COV2
 	// ---------------------------------------------------------------
-	CMatrixDouble22 C = cov + p.cov;  // Sum of covs:
+	// Sum of covs:
+	const auto C = cov.asEigen() + p.cov.asEigen();
+	const auto C_inv = C.inverse();
 
-	CMatrixDouble22 C_inv;
-	C.inv(C_inv);
+	const Eigen::Vector2d MU{mean.x() - p.mean.x(), mean.y() - p.mean.y()};
 
-	CMatrixDouble21 MU(UNINITIALIZED_MATRIX);  // Diff. of means
-	MU.get_unsafe(0, 0) = mean.x() - p.mean.x();
-	MU.get_unsafe(1, 0) = mean.y() - p.mean.y();
-
-	return std::pow(M_2PI, -0.5 * state_length) * (1.0 / std::sqrt(C.det())) *
-		   exp(-0.5 * MU.multiply_HtCH_scalar(C_inv));
+	return std::pow(M_2PI, -0.5 * state_length) *
+		   (1.0 / std::sqrt(C.determinant())) *
+		   exp(-0.5 * MU.transpose() * C_inv * MU);
 
 	MRPT_END
 }
@@ -250,13 +243,13 @@ double CPoint2DPDFGaussian::mahalanobisDistanceTo(
 	const CPoint2DPDFGaussian& other) const
 {
 	// The difference in means:
-	Eigen::Matrix<double, 2, 1> deltaX;
-	deltaX[0] = other.mean.x() - mean.x();
-	deltaX[1] = other.mean.y() - mean.y();
+	const Eigen::Vector2d deltaX{other.mean.x() - mean.x(),
+								 other.mean.y() - mean.y()};
 
 	// The inverse of the combined covs:
 	return std::sqrt(
-		deltaX.multiply_HtCH_scalar((other.cov + this->cov).inverse()));
+		deltaX.transpose() *
+		(other.cov.asEigen() + this->cov.asEigen()).inverse() * deltaX);
 }
 
 /** Returns the Mahalanobis distance from this PDF to some point */
@@ -264,10 +257,8 @@ double CPoint2DPDFGaussian::mahalanobisDistanceToPoint(
 	const double x, const double y) const
 {
 	// The difference in means:
-	Eigen::Matrix<double, 2, 1> deltaX;
-	deltaX[0] = x - mean.x();
-	deltaX[1] = y - mean.y();
+	const Eigen::Vector2d deltaX{x - mean.x(), y - mean.y()};
 
 	// The inverse of the combined covs:
-	return std::sqrt(deltaX.multiply_HtCH_scalar(this->cov.inverse()));
+	return std::sqrt(deltaX.transpose() * cov.asEigen().inverse() * deltaX);
 }

@@ -16,6 +16,7 @@ set_target_properties(test_legacy PROPERTIES FOLDER "unit tests")
 set_target_properties(tests_build_all PROPERTIES FOLDER "unit tests")
 if (UNIX)
 	add_custom_target(test_gdb)
+	add_custom_target(test_valgrind)
 endif()
 
 
@@ -110,9 +111,17 @@ foreach(_TSTLIB ${LST_LIB_TESTS})
 	if (UNIX)
 		# test_gdb
 		add_custom_target(run_tests_${_TSTLIB}_gdb
-		COMMAND "gdb" "-batch" "-ex" "\"run\"" "-ex" "\"bt\"" "-return-child-result" "${GENERATED_EXE}")
+			COMMAND "gdb" "-batch" "-ex" "\"run\"" "-ex" "\"bt\"" "-return-child-result" "${GENERATED_EXE}"
+			)
 		add_dependencies(run_tests_${_TSTLIB}_gdb test_${_TSTLIB})
 		add_dependencies(test_gdb run_tests_${_TSTLIB}_gdb)
+
+		# test_valgrind
+		add_custom_target(run_tests_${_TSTLIB}_valgrind
+			COMMAND "valgrind" "--error-exitcode=1" "${GENERATED_EXE}"
+			)
+		add_dependencies(run_tests_${_TSTLIB}_valgrind test_${_TSTLIB})
+		add_dependencies(test_valgrind run_tests_${_TSTLIB}_valgrind)
 	endif()
 
 	set_target_properties(test_${_TSTLIB} PROPERTIES FOLDER "unit tests")

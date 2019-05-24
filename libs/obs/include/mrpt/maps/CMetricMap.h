@@ -296,7 +296,7 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 
 	/** If the map is a simple points map or it's a multi-metric map that
 	 * contains EXACTLY one simple points map, return it.
-	 * Otherwise, return NULL
+	 * Otherwise, return nullptr
 	 */
 	virtual const mrpt::maps::CSimplePointsMap* getAsSimplePointsMap() const
 	{
@@ -304,7 +304,8 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 	}
 	mrpt::maps::CSimplePointsMap* getAsSimplePointsMap()
 	{
-		return const_cast<CSimplePointsMap*>(getAsSimplePointsMap());
+		return const_cast<CSimplePointsMap*>(
+			const_cast<const CMetricMap*>(this)->getAsSimplePointsMap());
 	}
 
 };  // End of class def.

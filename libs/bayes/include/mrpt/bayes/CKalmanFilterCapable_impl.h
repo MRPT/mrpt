@@ -13,6 +13,8 @@
 #endif
 
 #include <mrpt/containers/stl_containers_utils.h>
+#include <mrpt/math/ops_matrices.h>  // extractSubmatrixSymmetrical()
+#include <Eigen/Dense>
 
 namespace mrpt
 {
@@ -57,7 +59,8 @@ void CKalmanFilterCapable<
 
 	const size_t N_map = getNumberOfLandmarksInTheMap();
 
-	KFArray_VEH xv(&m_xkk[0]);  // Vehicle pose
+	// Vehicle pose
+	KFArray_VEH xv(&m_xkk[0]);
 
 	bool skipPrediction = false;  // Whether to skip the prediction step (in
 	// SLAM this is desired for the first
@@ -107,7 +110,7 @@ void CKalmanFilterCapable<
 			{
 				KFMatrix_VxV dfv_dxv_gt(mrpt::math::UNINITIALIZED_MATRIX);
 				OnTransitionJacobian(dfv_dxv_gt);
-				if ((dfv_dxv - dfv_dxv_gt).array().abs().sum() >
+				if ((dfv_dxv - dfv_dxv_gt).sum_abs() >
 					KF_options.debug_verify_analytic_jacobians_threshold)
 				{
 					std::cerr << "[KalmanFilter] ERROR: User analytical "
@@ -132,11 +135,10 @@ void CKalmanFilterCapable<
 		//  3.1:  Pxx submatrix
 		// ====================================
 		// Replace old covariance:
-		Eigen::Block<typename KFMatrix::Base, VEH_SIZE, VEH_SIZE>(m_pkk, 0, 0) =
-			Q + dfv_dxv *
-					Eigen::Block<typename KFMatrix::Base, VEH_SIZE, VEH_SIZE>(
-						m_pkk, 0, 0) *
-					dfv_dxv.transpose();
+		m_pkk.asEigen().template block<VEH_SIZE, VEH_SIZE>(0, 0) =
+			Q.asEigen() + dfv_dxv.asEigen() *
+							  m_pkk.template block<VEH_SIZE, VEH_SIZE>(0, 0) *
+							  dfv_dxv.asEigen().transpose();
 
 		// ====================================
 		//  3.2:  All Pxy_i
@@ -145,14 +147,13 @@ void CKalmanFilterCapable<
 		KFMatrix_VxF aux;
 		for (size_t i = 0; i < N_map; i++)
 		{
-			aux = dfv_dxv *
-				  Eigen::Block<typename KFMatrix::Base, VEH_SIZE, FEAT_SIZE>(
-					  m_pkk, 0, VEH_SIZE + i * FEAT_SIZE);
+			aux = dfv_dxv.asEigen() * m_pkk.template block<VEH_SIZE, FEAT_SIZE>(
+										  0, VEH_SIZE + i * FEAT_SIZE);
 
-			Eigen::Block<typename KFMatrix::Base, VEH_SIZE, FEAT_SIZE>(
-				m_pkk, 0, VEH_SIZE + i * FEAT_SIZE) = aux;
-			Eigen::Block<typename KFMatrix::Base, FEAT_SIZE, VEH_SIZE>(
-				m_pkk, VEH_SIZE + i * FEAT_SIZE, 0) = aux.transpose();
+			m_pkk.asEigen().template block<VEH_SIZE, FEAT_SIZE>(
+				0, VEH_SIZE + i * FEAT_SIZE) = aux.asEigen();
+			m_pkk.asEigen().template block<FEAT_SIZE, VEH_SIZE>(
+				VEH_SIZE + i * FEAT_SIZE, 0) = aux.asEigen().transpose();
 		}
 
 		// =============================================================
@@ -201,7 +202,7 @@ void CKalmanFilterCapable<
 	//  6. COMPUTE INNOVATION MATRIX "m_S"
 	// =============================================================
 	// Do the prediction of the observation covariances:
-	// Compute m_S:  m_S = H P ~H + R
+	// Compute m_S:  m_S = H P H' + R
 	//
 	// Build a big dh_dx Jacobian composed of the small block Jacobians.
 	// , but: it's actually a subset of the full Jacobian, since the
@@ -323,28 +324,28 @@ void CKalmanFilterCapable<
 					KFMatrix_OxV Hx_gt(mrpt::math::UNINITIALIZED_MATRIX);
 					KFMatrix_OxF Hy_gt(mrpt::math::UNINITIALIZED_MATRIX);
 					OnObservationJacobians(lm_idx, Hx_gt, Hy_gt);
-					if ((Hx - Hx_gt).array().abs().sum() >
+					if (KFMatrix(Hx - Hx_gt).sum_abs() >
 						KF_options.debug_verify_analytic_jacobians_threshold)
 					{
 						std::cerr << "[KalmanFilter] ERROR: User analytical "
 									 "observation Hx Jacobians are wrong: \n"
 								  << " Real Hx: \n"
-								  << Hx << "\n Analytical Hx:\n"
-								  << Hx_gt << "Diff:\n"
-								  << Hx - Hx_gt << "\n";
+								  << Hx.asEigen() << "\n Analytical Hx:\n"
+								  << Hx_gt.asEigen() << "Diff:\n"
+								  << (Hx.asEigen() - Hx_gt.asEigen()) << "\n";
 						THROW_EXCEPTION(
 							"ERROR: User analytical observation Hx Jacobians "
 							"are wrong (More details dumped to cerr)");
 					}
-					if ((Hy - Hy_gt).array().abs().sum() >
+					if (KFMatrix(Hy - Hy_gt).sum_abs() >
 						KF_options.debug_verify_analytic_jacobians_threshold)
 					{
 						std::cerr << "[KalmanFilter] ERROR: User analytical "
 									 "observation Hy Jacobians are wrong: \n"
 								  << " Real Hy: \n"
-								  << Hy << "\n Analytical Hx:\n"
-								  << Hy_gt << "Diff:\n"
-								  << Hy - Hy_gt << "\n";
+								  << Hy.asEigen() << "\n Analytical Hx:\n"
+								  << Hy_gt.asEigen() << "Diff:\n"
+								  << Hy.asEigen() - Hy_gt.asEigen() << "\n";
 						THROW_EXCEPTION(
 							"ERROR: User analytical observation Hy Jacobians "
 							"are wrong (More details dumped to cerr)");
@@ -356,7 +357,7 @@ void CKalmanFilterCapable<
 
 		m_timLogger.enter("KF:6.build m_S");
 
-		// Compute m_S:  m_S = H P ~H + R  (R will be added below)
+		// Compute m_S:  m_S = H P H' + R  (R will be added below)
 		//  exploiting the sparsity of H:
 		// Each block in m_S is:
 		//    Sij =
@@ -365,51 +366,49 @@ void CKalmanFilterCapable<
 
 		if (FEAT_SIZE > 0)
 		{  // SLAM-like problem:
-			const Eigen::Block<
-				const typename KFMatrix::Base, VEH_SIZE, VEH_SIZE>
-				Px(m_pkk, 0, 0);  // Covariance of the vehicle pose
+			// Covariance of the vehicle pose
+			const auto Px = m_pkk.template block<VEH_SIZE, VEH_SIZE>(0, 0);
 
 			for (size_t i = 0; i < N_pred; ++i)
 			{
 				const size_t lm_idx_i = m_predictLMidxs[i];
-				const Eigen::Block<
-					const typename KFMatrix::Base, FEAT_SIZE, VEH_SIZE>
-					Pxyi_t(
-						m_pkk, VEH_SIZE + lm_idx_i * FEAT_SIZE, 0);  // Pxyi^t
+				// Pxyi^t
+				const auto Pxyi_t = m_pkk.template block<FEAT_SIZE, VEH_SIZE>(
+					VEH_SIZE + lm_idx_i * FEAT_SIZE, 0);
 
 				// Only do j>=i (upper triangle), since m_S is symmetric:
 				for (size_t j = i; j < N_pred; ++j)
 				{
 					const size_t lm_idx_j = m_predictLMidxs[j];
 					// Sij block:
-					Eigen::Block<typename KFMatrix::Base, OBS_SIZE, OBS_SIZE>
-						Sij(m_S, OBS_SIZE * i, OBS_SIZE * j);
+					mrpt::math::CMatrixFixed<KFTYPE, OBS_SIZE, OBS_SIZE> Sij;
 
-					const Eigen::Block<
-						const typename KFMatrix::Base, VEH_SIZE, FEAT_SIZE>
-						Pxyj(m_pkk, 0, VEH_SIZE + lm_idx_j * FEAT_SIZE);
-					const Eigen::Block<
-						const typename KFMatrix::Base, FEAT_SIZE, FEAT_SIZE>
-						Pyiyj(
-							m_pkk, VEH_SIZE + lm_idx_i * FEAT_SIZE,
+					const auto Pxyj = m_pkk.template block<VEH_SIZE, FEAT_SIZE>(
+						0, VEH_SIZE + lm_idx_j * FEAT_SIZE);
+					const auto Pyiyj =
+						m_pkk.template block<FEAT_SIZE, FEAT_SIZE>(
+							VEH_SIZE + lm_idx_i * FEAT_SIZE,
 							VEH_SIZE + lm_idx_j * FEAT_SIZE);
 
-					Sij = m_Hxs[i] * Px * m_Hxs[j].transpose() +
-						  m_Hys[i] * Pxyi_t * m_Hxs[j].transpose() +
-						  m_Hxs[i] * Pxyj * m_Hys[j].transpose() +
-						  m_Hys[i] * Pyiyj * m_Hys[j].transpose();
+					// clang-format off
+					Sij = m_Hxs[i].asEigen() * Px     * m_Hxs[j].asEigen().transpose() +
+					      m_Hys[i].asEigen() * Pxyi_t * m_Hxs[j].asEigen().transpose() +
+					      m_Hxs[i].asEigen() * Pxyj   * m_Hys[j].asEigen().transpose() +
+					      m_Hys[i].asEigen() * Pyiyj  * m_Hys[j].asEigen().transpose();
+					// clang-format on
+
+					m_S.insertMatrix(OBS_SIZE * i, OBS_SIZE * j, Sij);
 
 					// Copy transposed to the symmetric lower-triangular part:
 					if (i != j)
-						Eigen::Block<
-							typename KFMatrix::Base, OBS_SIZE, OBS_SIZE>(
-							m_S, OBS_SIZE * j, OBS_SIZE * i) = Sij.transpose();
+						m_S.insertMatrixTransposed(
+							OBS_SIZE * j, OBS_SIZE * i, Sij);
 				}
 
 				// Sum the "R" term to the diagonal blocks:
 				const size_t obs_idx_off = i * OBS_SIZE;
-				Eigen::Block<typename KFMatrix::Base, OBS_SIZE, OBS_SIZE>(
-					m_S, obs_idx_off, obs_idx_off) += R;
+				m_S.asEigen().template block<OBS_SIZE, OBS_SIZE>(
+					obs_idx_off, obs_idx_off) += R.asEigen();
 			}
 		}
 		else
@@ -417,7 +416,9 @@ void CKalmanFilterCapable<
 			ASSERTDEB_(N_pred == 1);
 			ASSERTDEB_(m_S.cols() == OBS_SIZE);
 
-			m_S = m_Hxs[0] * m_pkk * m_Hxs[0].transpose() + R;
+			m_S = m_Hxs[0].asEigen() * m_pkk.asEigen() *
+					  m_Hxs[0].asEigen().transpose() +
+				  R.asEigen();
 		}
 
 		m_timLogger.leave("KF:6.build m_S");
@@ -515,7 +516,7 @@ void CKalmanFilterCapable<
 
 						// TODO: Use a Matrix view of "dh_dx_full" instead of
 						// creating a copy into "m_dh_dx_full_obs"
-						m_dh_dx_full_obs.zeros(
+						m_dh_dx_full_obs.setZero(
 							N_upd * OBS_SIZE,
 							VEH_SIZE + FEAT_SIZE * N_map);  // Init to zeros.
 						KFMatrix S_observed;  // The KF "m_S" matrix: A
@@ -556,17 +557,16 @@ void CKalmanFilterCapable<
 								//(assoc_idx_in_pred*OBS_SIZE,0, OBS_SIZE,
 								// row_len);
 
-								Eigen::Block<
-									typename KFMatrix::Base, OBS_SIZE,
-									VEH_SIZE>(
-									m_dh_dx_full_obs, S_idxs.size(), 0) =
-									m_Hxs[assoc_idx_in_pred];
-								Eigen::Block<
-									typename KFMatrix::Base, OBS_SIZE,
-									FEAT_SIZE>(
-									m_dh_dx_full_obs, S_idxs.size(),
-									VEH_SIZE + assoc_idx_in_map * FEAT_SIZE) =
-									m_Hys[assoc_idx_in_pred];
+								m_dh_dx_full_obs
+									.template block<OBS_SIZE, VEH_SIZE>(
+										S_idxs.size(), 0) =
+									m_Hxs[assoc_idx_in_pred].asEigen();
+								m_dh_dx_full_obs
+									.template block<OBS_SIZE, FEAT_SIZE>(
+										S_idxs.size(),
+										VEH_SIZE +
+											assoc_idx_in_map * FEAT_SIZE) =
+									m_Hys[assoc_idx_in_pred].asEigen();
 
 								// S_idxs.size() is used as counter for
 								// "m_dh_dx_full_obs".
@@ -585,7 +585,8 @@ void CKalmanFilterCapable<
 							}
 							// Extract the subset that is involved in this
 							// observation:
-							m_S.extractSubmatrixSymmetrical(S_idxs, S_observed);
+							mrpt::math::extractSubmatrixSymmetrical(
+								m_S, S_idxs, S_observed);
 						}
 						else
 						{  // Non-SLAM problems:
@@ -613,12 +614,13 @@ void CKalmanFilterCapable<
 
 						m_K.setSize(m_pkk.rows(), S_observed.cols());
 
-						// K = m_pkk * (~dh_dx) * m_S.inv() );
-						m_K.multiply_ABt(m_pkk, m_dh_dx_full_obs);
+						// K = m_pkk * (~dh_dx) * m_S.inverse_LLt() );
+						m_K.asEigen() = m_pkk.asEigen() *
+										m_dh_dx_full_obs.asEigen().transpose();
 
 						// Inverse of S_observed -> m_S_1
-						S_observed.inv(m_S_1);
-						m_K *= m_S_1;
+						m_S_1 = S_observed.inverse_LLt();
+						m_K.asEigen() *= m_S_1.asEigen();
 
 						m_timLogger.leave("KF:8.update stage:1.FULLKF:build K");
 
@@ -627,7 +629,7 @@ void CKalmanFilterCapable<
 						{
 							m_timLogger.enter(
 								"KF:8.update stage:2.FULLKF:update xkk");
-							m_xkk += m_K * ytilde;
+							m_xkk.asEigen() += (m_K * ytilde).eval();
 							m_timLogger.leave(
 								"KF:8.update stage:2.FULLKF:update xkk");
 						}
@@ -636,15 +638,11 @@ void CKalmanFilterCapable<
 							m_timLogger.enter(
 								"KF:8.update stage:2.FULLKF:iter.update xkk");
 
-							KFVector HAx_column;
-							m_dh_dx_full_obs.multiply_Ab(
-								m_xkk - xkk_0, HAx_column);
+							auto HAx_column =
+								KFVector(m_dh_dx_full_obs * (m_xkk - xkk_0));
 
 							m_xkk = xkk_0;
-							m_K.multiply_Ab(
-								(ytilde - HAx_column), m_xkk,
-								true /* Accumulate in output */
-							);
+							m_xkk.asEigen() += m_K * (ytilde - HAx_column);
 
 							m_timLogger.leave(
 								"KF:8.update stage:2.FULLKF:iter.update xkk");
@@ -663,7 +661,8 @@ void CKalmanFilterCapable<
 							// TODO: "Optimize this: sparsity!"
 
 							// K * m_dh_dx_full_obs
-							m_aux_K_dh_dx.multiply(m_K, m_dh_dx_full_obs);
+							m_aux_K_dh_dx.matProductOf_AB(
+								m_K, m_dh_dx_full_obs);
 
 							// m_aux_K_dh_dx  <-- I-m_aux_K_dh_dx
 							const size_t stat_len = m_aux_K_dh_dx.cols();
@@ -672,17 +671,15 @@ void CKalmanFilterCapable<
 								for (size_t c = 0; c < stat_len; c++)
 								{
 									if (r == c)
-										m_aux_K_dh_dx.get_unsafe(r, c) =
-											-m_aux_K_dh_dx.get_unsafe(r, c) +
-											kftype(1);
+										m_aux_K_dh_dx(r, c) =
+											-m_aux_K_dh_dx(r, c) + kftype(1);
 									else
-										m_aux_K_dh_dx.get_unsafe(r, c) =
-											-m_aux_K_dh_dx.get_unsafe(r, c);
+										m_aux_K_dh_dx(r, c) =
+											-m_aux_K_dh_dx(r, c);
 								}
 							}
 
-							m_pkk.multiply_result_is_symmetric(
-								m_aux_K_dh_dx, m_pkk);
+							m_pkk = m_aux_K_dh_dx * m_pkk;
 
 							m_timLogger.leave(
 								"KF:8.update stage:3.FULLKF:update Pkk");
@@ -798,16 +795,15 @@ void CKalmanFilterCapable<
 							}
 #endif
 							// R:
-							KFTYPE Sij = R.get_unsafe(j, j);
+							KFTYPE Sij = R(j, j);
 
 							// TERM 1:
 							for (size_t k = 0; k < VEH_SIZE; k++)
 							{
 								KFTYPE accum = 0;
 								for (size_t q = 0; q < VEH_SIZE; q++)
-									accum += Hx.get_unsafe(j, q) *
-											 m_pkk.get_unsafe(q, k);
-								Sij += Hx.get_unsafe(j, k) * accum;
+									accum += Hx(j, q) * m_pkk(q, k);
+								Sij += Hx(j, k) * accum;
 							}
 
 							// TERM 2:
@@ -816,9 +812,8 @@ void CKalmanFilterCapable<
 							{
 								KFTYPE accum = 0;
 								for (size_t q = 0; q < FEAT_SIZE; q++)
-									accum += Hy.get_unsafe(j, q) *
-											 m_pkk.get_unsafe(idx_off + q, k);
-								term2 += Hx.get_unsafe(j, k) * accum;
+									accum += Hy(j, q) * m_pkk(idx_off + q, k);
+								term2 += Hx(j, k) * accum;
 							}
 							Sij += 2 * term2;
 
@@ -827,15 +822,14 @@ void CKalmanFilterCapable<
 							{
 								KFTYPE accum = 0;
 								for (size_t q = 0; q < FEAT_SIZE; q++)
-									accum += Hy.get_unsafe(j, q) *
-											 m_pkk.get_unsafe(
-												 idx_off + q, idx_off + k);
-								Sij += Hy.get_unsafe(j, k) * accum;
+									accum += Hy(j, q) *
+											 m_pkk(idx_off + q, idx_off + k);
+								Sij += Hy(j, k) * accum;
 							}
 
 							// Compute the Kalman gain "Kij" for this
 							// observation element:
-							// -->  K = m_pkk * (~dh_dx) * m_S.inv() );
+							// -->  K = m_pkk * (~dh_dx) * m_S.inverse_LLt() );
 							size_t N = m_pkk.cols();
 							vector<KFTYPE> Kij(N);
 
@@ -846,13 +840,11 @@ void CKalmanFilterCapable<
 								// dhi_dxv term
 								size_t q;
 								for (q = 0; q < VEH_SIZE; q++)
-									K_tmp += m_pkk.get_unsafe(k, q) *
-											 Hx.get_unsafe(j, q);
+									K_tmp += m_pkk(k, q) * Hx(j, q);
 
 								// dhi_dyi term
 								for (q = 0; q < FEAT_SIZE; q++)
-									K_tmp += m_pkk.get_unsafe(k, idx_off + q) *
-											 Hy.get_unsafe(j, q);
+									K_tmp += m_pkk(k, idx_off + q) * Hy(j, q);
 
 								Kij[k] = K_tmp / Sij;
 							}  // end for k
@@ -901,261 +893,6 @@ void CKalmanFilterCapable<
 			case kfIKF:  // TODO !!
 			{
 				THROW_EXCEPTION("IKF scalar by scalar not implemented yet.");
-#if 0
-						KFMatrix h,Hx,Hy;
-
-						// Just one, or several update iterations??
-						size_t nKF_iterations = KF_options.IKF_iterations;
-
-						// To avoid wasting time, if we are doing 1 iteration only, do not reserve memory for this matrix:
-						KFMatrix		*saved_Pkk=nullptr;
-						if (nKF_iterations>1)
-						{
-							// Create a copy of Pkk for later restoring it at the beginning of each iteration:
-							saved_Pkk = new KFMatrix( m_pkk );
-						}
-
-						KFVector	xkk_0 = m_xkk; // First state vector at the beginning of IKF
-						KFVector	xkk_next_iter = m_xkk;  // for IKF only
-
-						// For each IKF iteration (or 1 for EKF)
-						for (size_t IKF_iteration=0;IKF_iteration<nKF_iterations;IKF_iteration++)
-						{
-							// Restore initial covariance matrix.
-							// The updated mean is stored in m_xkk and is improved with each estimation,
-							//  and so do the Jacobians which use that improving mean.
-							if (IKF_iteration>0)
-							{
-								m_pkk = *saved_Pkk;
-								xkk_next_iter = xkk_0;
-							}
-
-							// For each observed landmark/whole system state:
-							for (size_t obsIdx=0;obsIdx<Z.rows();obsIdx++)
-							{
-								// Known & mapped landmark?
-								bool   doit;
-								size_t idxInTheFilter=0;
-
-								if (data_association.empty())
-								{
-									doit = true;
-								}
-								else
-								{
-									doit = data_association[obsIdx] >= 0;
-									if (doit)
-										idxInTheFilter = data_association[obsIdx];
-								}
-
-								if ( doit )
-								{
-									// Already mapped: OK
-									const size_t idx_off      = VEH_SIZE + idxInTheFilter *FEAT_SIZE; // The offset in m_xkk & Pkk.
-									const size_t R_row_offset = obsIdx*OBS_SIZE;  // Offset row in R
-
-									// Compute just the part of the Jacobian that we need using the current updated m_xkk:
-									KFVector   ytilde; // Diff. observation - prediction
-									OnObservationModelAndJacobians(
-										Z,
-										data_association,
-										false, 			// Only a partial Jacobian
-										(int)obsIdx,  	// Which row from Z
-										ytilde,
-										Hx,
-										Hy );
-
-									ASSERTDEB_(ytilde.size() == OBS_SIZE )
-										ASSERTDEB_(Hx.rows() == OBS_SIZE )
-										ASSERTDEB_(Hx.cols() == VEH_SIZE )
-
-										if (FEAT_SIZE>0)
-										{
-											ASSERTDEB_(Hy.rows() == OBS_SIZE )
-												ASSERTDEB_(Hy.cols() == FEAT_SIZE )
-										}
-
-										// Compute the OxO matrix S_i for each observation:
-										// Si  = TERM1 + TERM2 + TERM2^t + TERM3 + R
-										//
-										// TERM1: dhi_dxv Pxx dhi_dxv^t
-										//          ^^
-										//         Hx:(OxV)
-										//
-										// TERM2: dhi_dyi Pyix dhi_dxv
-										//          ^^
-										//         Hy:(OxF)
-										//
-										// TERM3: dhi_dyi Pyiyi dhi_dyi^t
-										//
-										// i: obsIdx
-										// O: Observation size
-										// F: Feature size
-										// V: Vehicle state size
-										//
-
-										// R:
-										KFMatrix Si(OBS_SIZE,OBS_SIZE);
-										R.extractMatrix(R_row_offset,0, Si);
-
-										size_t k;
-										KFMatrix	term(OBS_SIZE,OBS_SIZE);
-
-										// TERM1: dhi_dxv Pxx dhi_dxv^t
-										Hx.multiply_HCHt(
-											m_pkk, 		// The cov. matrix
-											Si,			// The output
-											true,		// Yes, submatrix of m_pkk only
-											0, 			// Offset in m_pkk
-											true		// Yes, accum results in output.
-											);
-
-										// TERM2: dhi_dyi Pyix dhi_dxv
-										//  + its transpose:
-										KFMatrix	Pyix( FEAT_SIZE, VEH_SIZE );
-										m_pkk.extractMatrix(idx_off,0, Pyix);  // Extract cross cov. to Pyix
-
-										term.multiply_ABCt( Hy, Pyix, Hx ); //term = Hy * Pyix * ~Hx;
-										Si.add_AAt( term );  // Si += A + ~A
-
-										// TERM3: dhi_dyi Pyiyi dhi_dyi^t
-										Hy.multiply_HCHt(
-											m_pkk, 		// The cov. matrix
-											Si,			// The output
-											true,		// Yes, submatrix of m_pkk only
-											idx_off,    // Offset in m_pkk
-											true		// Yes, accum results in output.
-											);
-
-										// Compute the inverse of Si:
-										KFMatrix Si_1(OBS_SIZE,OBS_SIZE);
-
-										// Compute the Kalman gain "Ki" for this i'th observation:
-										// -->  Ki = m_pkk * (~dh_dx) * m_S.inv();
-										size_t N = m_pkk.cols();
-
-										KFMatrix Ki( N, OBS_SIZE );
-
-										for (k=0;k<N;k++)  // for each row of K
-										{
-											size_t q;
-
-											for (size_t c=0;c<OBS_SIZE;c++)  // for each column of K
-											{
-												KFTYPE	K_tmp = 0;
-
-												// dhi_dxv term
-												for (q=0;q<VEH_SIZE;q++)
-													K_tmp+= m_pkk.get_unsafe(k,q) * Hx.get_unsafe(c,q);
-
-												// dhi_dyi term
-												for (q=0;q<FEAT_SIZE;q++)
-													K_tmp+= m_pkk.get_unsafe(k,idx_off+q) * Hy.get_unsafe(c,q);
-
-												Ki.set_unsafe(k,c, K_tmp);
-											} // end for c
-										} // end for k
-
-										Ki.multiply(Ki, Si.inv() );  // K = (...) * m_S^-1
-
-
-										// Update the state vector m_xkk:
-										if (nKF_iterations==1)
-										{
-											// EKF:
-											//  x' = x + Kij * ytilde(ij)
-											for (k=0;k<N;k++)
-												for (size_t q=0;q<OBS_SIZE;q++)
-													m_xkk[k] += Ki.get_unsafe(k,q) * ytilde[q];
-										}
-										else
-										{
-											// IKF:
-											Eigen::Matrix<KFTYPE,Eigen::Dynamic,1> HAx(OBS_SIZE);
-											size_t o,q;
-											// HAx = H*(x0-xi)
-											for (o=0;o<OBS_SIZE;o++)
-											{
-												KFTYPE	tmp = 0;
-												for (q=0;q<VEH_SIZE;q++)
-													tmp += Hx.get_unsafe(o,q) * (xkk_0[q] - m_xkk[q]);
-
-												for (q=0;q<FEAT_SIZE;q++)
-													tmp += Hy.get_unsafe(o,q) * (xkk_0[idx_off+q] - m_xkk[idx_off+q]);
-
-												HAx[o] = tmp;
-											}
-
-											// Compute only once (ytilde[j] - HAx)
-											for (o=0;o<OBS_SIZE;o++)
-												HAx[o] = ytilde[o] - HAx[o];
-
-											//  x' = x_0 + Kij * ( ytilde(ij) - H*(x0-xi))   -> xi: i=this iteration
-											//  xkk_next_iter is initialized to xkk_0 at each IKF iteration.
-											for (k=0;k<N;k++)
-											{
-												KFTYPE	 tmp = xkk_next_iter[k];
-												//m_xkk[k] = xkk_0[k] + Kij[k] * (ytilde[j] - HAx );
-												for (o=0;o<OBS_SIZE;o++)
-													tmp += Ki.get_unsafe(k,o) * HAx[o];
-
-												xkk_next_iter[k] = tmp;
-											}
-										}
-
-										// Update the covariance Pkk:
-										// P' =  P - Kij * Sij * Kij^t
-										//if (IKF_iteration==(nKF_iterations-1))   // Just for the last IKF iteration
-										{
-											// m_pkk -= Ki * Si * ~Ki;
-											Ki.multiplyByMatrixAndByTransposeNonSymmetric(
-												Si,
-												m_pkk,   // Output
-												true,    // Accumulate
-												true);   // Substract instead of sum.
-
-											m_pkk.force_symmetry();
-
-											/*							for (k=0;k<N;k++)
-											{
-											for (size_t q=k;q<N;q++)  // Half matrix
-											{
-											m_pkk(k,q) -= Sij * Kij[k] * Kij[q];
-											// It is symmetric
-											m_pkk(q,k) = m_pkk(k,q);
-											}
-
-											#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
-											if (m_pkk(k,k)<0)
-											{
-											m_pkk.saveToTextFile("Pkk_err.txt");
-											mrpt::system::vectorToTextFile(Kij,"Kij.txt");
-											ASSERT_(m_pkk(k,k)>0)
-											}
-											#endif
-											}
-											*/
-										}
-
-								} // end if doit
-
-							} // end for each observed LM.
-
-							// Now, save the new iterated mean:
-							if (nKF_iterations>1)
-							{
-#if 0
-								cout << "IKF iter: " << IKF_iteration << " -> " << xkk_next_iter << endl;
-#endif
-								m_xkk = xkk_next_iter;
-							}
-
-						} // end for each IKF_iteration
-
-						// Copy of pkk not required anymore:
-						if (saved_Pkk) delete saved_Pkk;
-
-#endif
 			}
 			break;
 
@@ -1301,7 +1038,7 @@ void addNewLandmarks(
 			// Append to m_xkk:
 			size_t q;
 			size_t idx = obj.internal_getXkk().size();
-			obj.internal_getXkk().conservativeResize(
+			obj.internal_getXkk().resize(
 				obj.internal_getXkk().size() + FEAT_SIZE);
 
 			for (q = 0; q < FEAT_SIZE; q++)
@@ -1318,13 +1055,12 @@ void addNewLandmarks(
 
 			// Fill the Pxyn term:
 			// --------------------
-			typename KF::KFMatrix_VxV Pxx;
-			obj.internal_getPkk().extractMatrix(0, 0, Pxx);
-			typename KF::KFMatrix_FxV Pxyn;  // Pxyn = dyn_dxv * Pxx
-			Pxyn.multiply(dyn_dxv, Pxx);
+			auto Pxx = typename KF::KFMatrix_VxV(
+				obj.internal_getPkk().template block<VEH_SIZE, VEH_SIZE>(0, 0));
+			auto Pxyn = typename KF::KFMatrix_FxV(dyn_dxv * Pxx);
 
 			obj.internal_getPkk().insertMatrix(idx, 0, Pxyn);
-			obj.internal_getPkk().insertMatrixTranspose(0, idx, Pxyn);
+			obj.internal_getPkk().insertMatrix(0, idx, Pxyn.transpose());
 
 			// Fill the Pyiyn terms:
 			// --------------------
@@ -1332,30 +1068,27 @@ void addNewLandmarks(
 				(idx - VEH_SIZE) / FEAT_SIZE;  // Number of previous landmarks:
 			for (q = 0; q < nLMs; q++)
 			{
-				typename KF::KFMatrix_VxF P_x_yq(
-					mrpt::math::UNINITIALIZED_MATRIX);
-				obj.internal_getPkk().extractMatrix(
-					0, VEH_SIZE + q * FEAT_SIZE, P_x_yq);
+				auto P_x_yq = typename KF::KFMatrix_VxF(
+					obj.internal_getPkk().template block<VEH_SIZE, FEAT_SIZE>(
+						0, VEH_SIZE + q * FEAT_SIZE));
 
-				typename KF::KFMatrix_FxF P_cross(
-					mrpt::math::UNINITIALIZED_MATRIX);
-				P_cross.multiply(dyn_dxv, P_x_yq);
+				auto P_cross = typename KF::KFMatrix_FxF(dyn_dxv * P_x_yq);
 
 				obj.internal_getPkk().insertMatrix(
 					idx, VEH_SIZE + q * FEAT_SIZE, P_cross);
-				obj.internal_getPkk().insertMatrixTranspose(
-					VEH_SIZE + q * FEAT_SIZE, idx, P_cross);
+				obj.internal_getPkk().insertMatrix(
+					VEH_SIZE + q * FEAT_SIZE, idx, P_cross.transpose());
 			}  // end each previous LM(q)
 
 			// Fill the Pynyn term:
 			//  P_yn_yn =  (dyn_dxv * Pxx * ~dyn_dxv) + (dyn_dhn * R *
 			//  ~dyn_dhn);
 			// --------------------
-			typename KF::KFMatrix_FxF P_yn_yn(mrpt::math::UNINITIALIZED_MATRIX);
-			dyn_dxv.multiply_HCHt(Pxx, P_yn_yn);
+			typename KF::KFMatrix_FxF P_yn_yn =
+				mrpt::math::multiply_HCHt(dyn_dxv, Pxx);
 			if (use_dyn_dhn_jacobian)
-				dyn_dhn.multiply_HCHt(
-					R, P_yn_yn, true);  // Accumulate in P_yn_yn
+				// Accumulate in P_yn_yn
+				P_yn_yn += mrpt::math::multiply_HCHt(dyn_dhn, R);
 			else
 				P_yn_yn += dyn_dhn_R_dyn_dhnT;
 

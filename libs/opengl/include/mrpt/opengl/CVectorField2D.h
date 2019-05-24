@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 
@@ -35,9 +35,9 @@ class CVectorField2D : public CRenderizableDisplayList
 	DEFINE_SERIALIZABLE(CVectorField2D)
    protected:
 	/** X component of the vector field */
-	mrpt::math::CMatrix xcomp;
+	mrpt::math::CMatrixF xcomp;
 	/** Y component of the vector field */
-	mrpt::math::CMatrix ycomp;
+	mrpt::math::CMatrixF ycomp;
 
 	/** Grid bounds */
 	float xMin{-1.0}, xMax{1.0}, yMin{-1.0}, yMax{1.0};

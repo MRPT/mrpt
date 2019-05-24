@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/poses/CPose.h>
 #include <mrpt/serialization/CSerializable.h>
 
@@ -35,7 +36,8 @@ class CPose3D;
  * \sa CPoseOrPoint,CPoint2D
  * \ingroup poses_grp
  */
-class CPose2D : public CPose<CPose2D>, public mrpt::serialization::CSerializable
+class CPose2D : public CPose<CPose2D, 3>,
+				public mrpt::serialization::CSerializable
 {
    public:
 	DEFINE_SERIALIZABLE(CPose2D)
@@ -43,7 +45,7 @@ class CPose2D : public CPose<CPose2D>, public mrpt::serialization::CSerializable
 
    public:
 	/** [x,y] */
-	mrpt::math::CArrayDouble<2> m_coords;
+	mrpt::math::CVectorFixedDouble<2> m_coords;
 
    protected:
 	/** The orientation of the pose, in radians. */
@@ -120,9 +122,7 @@ class CPose2D : public CPose<CPose2D>, public mrpt::serialization::CSerializable
 	}
 
 	/** Returns a 1x3 vector with [x y phi] */
-	void getAsVector(mrpt::math::CVectorDouble& v) const;
-	/// \overload
-	void getAsVector(mrpt::math::CArrayDouble<3>& v) const;
+	void asVector(vector_t& v) const;
 
 	/** Returns the corresponding 4x4 homogeneous transformation matrix for the
 	 * point(translation) or pose (translation+orientation).

@@ -8,10 +8,12 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <cstddef>  // size_t
+
 namespace mrpt::poses
 {
 // Values:
-template <class DERIVEDCLASS>
+template <class DERIVEDCLASS, std::size_t DIM>
 class CPoseOrPoint;
 class CPoint2D;
 class CPoint3D;

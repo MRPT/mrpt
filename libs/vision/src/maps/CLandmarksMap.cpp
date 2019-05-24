@@ -10,10 +10,10 @@
 #include "vision-precomp.h"  // Precompiled headers
 
 #include <mrpt/io/CFileOutputStream.h>
-#include <mrpt/math/geometry.h>
-
 #include <mrpt/maps/CLandmark.h>
 #include <mrpt/maps/CLandmarksMap.h>
+#include <mrpt/math/geometry.h>
+#include <mrpt/math/ops_matrices.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/obs/CObservationGPS.h>
@@ -21,13 +21,13 @@
 #include <mrpt/obs/CObservationRobotPose.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/obs/CObservationVisualLandmarks.h>
-#include <mrpt/poses/CPointPDFGaussian.h>
-#include <mrpt/random.h>
-#include <mrpt/system/os.h>
-
 #include <mrpt/opengl/CEllipsoid.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/poses/CPointPDFGaussian.h>
+#include <mrpt/random.h>
+#include <mrpt/system/os.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -355,9 +355,9 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 
 		// Equivalent covariance from "i" to "j":
 		Cij = CMatrixDouble(o->pose.cov);
-		Cij_1 = Cij.inv();
+		Cij_1 = Cij.inverse_LLt();
 
-		double distMahaFlik2 = dij.multiply_HCHt_scalar(Cij_1);
+		double distMahaFlik2 = mrpt::math::multiply_HCHt_scalar(dij, Cij_1);
 		double ret =
 			-0.5 * (distMahaFlik2 / square(likelihoodOptions.extRobotPoseStd));
 
@@ -676,7 +676,7 @@ void CLandmarksMap::loadSiftFeaturesFromImageObservation(
 		D(2, 2) = square(width);
 
 		// Finally, compute the covariance!
-		landmark3DPositionPDF.cov = CMatrixDouble33(P * D * P.transpose());
+		landmark3DPositionPDF.cov = mrpt::math::multiply_HCHt(P, D);
 
 		// Save into the landmarks vector:
 		// --------------------------------------------
@@ -798,15 +798,15 @@ void CLandmarksMap::changeCoordinatesReference(const CPose3D& newOrg)
 	newOrg.getHomogeneousMatrix(HM);
 
 	// Build the rotation only transformation:
-	double R11 = HM.get_unsafe(0, 0);
-	double R12 = HM.get_unsafe(0, 1);
-	double R13 = HM.get_unsafe(0, 2);
-	double R21 = HM.get_unsafe(1, 0);
-	double R22 = HM.get_unsafe(1, 1);
-	double R23 = HM.get_unsafe(1, 2);
-	double R31 = HM.get_unsafe(2, 0);
-	double R32 = HM.get_unsafe(2, 1);
-	double R33 = HM.get_unsafe(2, 2);
+	double R11 = HM(0, 0);
+	double R12 = HM(0, 1);
+	double R13 = HM(0, 2);
+	double R21 = HM(1, 0);
+	double R22 = HM(1, 1);
+	double R23 = HM(1, 2);
+	double R31 = HM(2, 0);
+	double R32 = HM(2, 1);
+	double R33 = HM(2, 2);
 
 	double c11, c22, c33, c12, c13, c23;
 
@@ -881,15 +881,15 @@ void CLandmarksMap::changeCoordinatesReference(
 	newOrg.getHomogeneousMatrix(HM);
 
 	// Build the rotation only transformation:
-	double R11 = HM.get_unsafe(0, 0);
-	double R12 = HM.get_unsafe(0, 1);
-	double R13 = HM.get_unsafe(0, 2);
-	double R21 = HM.get_unsafe(1, 0);
-	double R22 = HM.get_unsafe(1, 1);
-	double R23 = HM.get_unsafe(1, 2);
-	double R31 = HM.get_unsafe(2, 0);
-	double R32 = HM.get_unsafe(2, 1);
-	double R33 = HM.get_unsafe(2, 2);
+	double R11 = HM(0, 0);
+	double R12 = HM(0, 1);
+	double R13 = HM(0, 2);
+	double R21 = HM(1, 0);
+	double R22 = HM(1, 1);
+	double R23 = HM(1, 2);
+	double R31 = HM(2, 0);
+	double R32 = HM(2, 1);
+	double R33 = HM(2, 2);
 
 	double c11, c22, c33, c12, c13, c23;
 
@@ -1195,16 +1195,13 @@ void CLandmarksMap::computeMatchingWith3DLandmarks(
 							// Equivalent covariance from "i" to "j":
 							Cij =
 								CMatrixDouble(pointPDF_k.cov + pointPDF_j.cov);
-							Cij_1 = Cij.inv();
+							Cij_1 = Cij.inverse_LLt();
 
-							distMahaFlik2 = dij.multiply_HCHt_scalar(
-								Cij_1);  //( dij * Cij_1 * (~dij) )(0,0);
+							distMahaFlik2 =
+								mrpt::math::multiply_HCHt_scalar(dij, Cij_1);
 
-							lik_dist =
-								exp(K_dist * distMahaFlik2);  // Likelihood
-							// regarding the
-							// spatial
-							// distance
+							lik_dist = exp(K_dist * distMahaFlik2);
+							// Likelihood regarding the spatial distance
 
 							if (lik_dist > 1e-2)
 							{
@@ -1520,7 +1517,7 @@ bool CLandmarksMap::saveToMATLABScript2D(
 	std::vector<float> X, Y, COS, SIN;
 	std::vector<float>::iterator x, y, Cos, Sin;
 	double ang;
-	CMatrixD cov(2, 2), eigVal, eigVec, M;
+	CMatrixDouble22 cov, eigVal, eigVec, M;
 
 	X.resize(ELLIPSE_POINTS);
 	Y.resize(ELLIPSE_POINTS);
@@ -1558,9 +1555,12 @@ bool CLandmarksMap::saveToMATLABScript2D(
 		cov(1, 1) = landmark.pose_cov_22;
 		cov(0, 1) = cov(1, 0) = landmark.pose_cov_12;
 
-		cov.eigenVectors(eigVec, eigVal);
+		std::vector<double> eigvals;
+		cov.eig_symmetric(eigVec, eigvals);
+		eigVal.setZero();
+		eigVal.setDiagonal(eigvals);
 		eigVal = eigVal.array().sqrt().matrix();
-		M = eigVal * eigVec.transpose();
+		M = eigVal.asEigen() * eigVec.transpose();
 
 		// Compute the points of the ellipsoid:
 		// ----------------------------------------------
@@ -2058,10 +2058,10 @@ double CLandmarksMap::computeLikelihood_SIFT_LandmarkMap(
 							// dij(0,2)*dij(0,2) ) << std::endl;
 							// Equivalent covariance from "i" to "j":
 							Cij = CMatrixDouble(lm1_pose.cov + lm2_pose.cov);
-							Cij_1 = Cij.inv();
+							Cij_1 = Cij.inverse_LLt();
 
-							distMahaFlik2 = dij.multiply_HCHt_scalar(
-								Cij_1);  //( dij * Cij_1 * (~dij) )(0,0);
+							distMahaFlik2 =
+								mrpt::math::multiply_HCHt_scalar(dij, Cij_1);
 
 							likByDist = exp(K_dist * distMahaFlik2);
 
@@ -2162,10 +2162,9 @@ double CLandmarksMap::computeLikelihood_SIFT_LandmarkMap(
 
 				// Equivalent covariance from "i" to "j":
 				Cij = CMatrixDouble(lm1_pose.cov + lm2_pose.cov);
-				Cij_1 = Cij.inv();
+				Cij_1 = Cij.inverse_LLt();
 
-				distMahaFlik2 = dij.multiply_HCHt_scalar(
-					Cij_1);  // ( dij * Cij_1 * (~dij) )(0,0);
+				distMahaFlik2 = mrpt::math::multiply_HCHt_scalar(dij, Cij_1);
 
 				dist = min(
 					(double)likelihoodOptions.SIFTnullCorrespondenceDistance,
@@ -2638,9 +2637,9 @@ float CLandmarksMap::compute3DMatchingRatio(
 	// The transformation:
 	CMatrixDouble44 pose3DMatrix;
 	otherMapPose.getHomogeneousMatrix(pose3DMatrix);
-	float Tx = pose3DMatrix.get_unsafe(0, 3);
-	float Ty = pose3DMatrix.get_unsafe(1, 3);
-	float Tz = pose3DMatrix.get_unsafe(2, 3);
+	float Tx = pose3DMatrix(0, 3);
+	float Ty = pose3DMatrix(1, 3);
+	float Tz = pose3DMatrix(2, 3);
 
 	// ---------------------------------------------------------------------------------------------------------------
 	// Is there any "contact" between the spheres that contain all the points
@@ -2697,8 +2696,8 @@ float CLandmarksMap::compute3DMatchingRatio(
 			d(0, 1) = D.y;
 			d(0, 2) = D.z;
 
-			float distMaha = sqrt(d.multiply_HCHt_scalar(
-				COV.inv()));  //(d*COV.inv()*(~d))(0,0) );
+			float distMaha =
+				sqrt(mrpt::math::multiply_HCHt_scalar(d, COV.inverse_LLt()));
 
 			if (distMaha < params.maxMahaDistForCorr)
 			{

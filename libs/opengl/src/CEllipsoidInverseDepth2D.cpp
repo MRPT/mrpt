@@ -12,6 +12,7 @@
 #include <mrpt/math/matrix_serialization.h>  // for << >> ops of matrices
 #include <mrpt/opengl/CEllipsoidInverseDepth2D.h>
 #include <mrpt/serialization/CArchive.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::opengl;

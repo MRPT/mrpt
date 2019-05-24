@@ -310,7 +310,7 @@ void CRandomFieldGridMap3D::updateMapEstimation()
 		!m_mrf_factors_activeObs.empty(),
 		"Cannot update a map with no observations!");
 
-	Eigen::VectorXd x_incr, x_var;
+	mrpt::math::CVectorDouble x_incr, x_var;
 	m_gmrf.updateEstimation(
 		x_incr, insertionOptions.GMRF_skip_variance ? nullptr : &x_var);
 

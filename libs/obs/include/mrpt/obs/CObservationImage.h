@@ -10,7 +10,7 @@
 
 #include <mrpt/img/CImage.h>
 #include <mrpt/img/TCamera.h>
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>

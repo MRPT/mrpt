@@ -116,10 +116,8 @@ void MainWindow::on_button_generate_clicked()
 	// ReadInputFormat();
 	CFeatureList featsImage2_2;
 
-	// float temp_dist1 = 0, temp_dist2 = 0;
-
-	double min_dist = 0, max_dist = 0;
 	size_t min_dist_idx = 0, max_dist_idx = 0;
+
 	numDesc1 = featsImage1.size();
 
 	/// the following for loop iterates over all descriptors in the first image
@@ -145,8 +143,8 @@ void MainWindow::on_button_generate_clicked()
 						featsImage1[i1]->patchCorrelationTo(*featsImage2[i2]);
 			}
 
-			distances.minimum_maximum(
-				min_dist, max_dist, &min_dist_idx, &max_dist_idx);
+			const double min_dist = distances.minCoeff(min_dist_idx);
+			const double max_dist = distances.maxCoeff(max_dist_idx);
 
 			const double dist_std = mrpt::math::stddev(distances);
 
@@ -188,7 +186,7 @@ void MainWindow::on_button_generate_clicked()
 			for (int i = 0; i < len; ++i)
 			{
 				xData.at<double>(i) = i;
-				yData.at<double>(i) = distances.row(i).x();
+				yData.at<double>(i) = distances(i, 0);
 			}
 #if MRPT_OPENCV_VERSION_NUM >= 0x330
 			plot = plot::Plot2d::create(xData, yData);

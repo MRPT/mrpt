@@ -135,13 +135,15 @@ void CFeatureExtraction::extractFeaturesFASTER_N(
 	{
 		const auto KLT_half_win =
 			options.FASTOptions.KLT_response_half_win_size;
-		const auto max_x = inImg_gray.getWidth() - 1 - KLT_half_win;
-		const auto max_y = inImg_gray.getHeight() - 1 - KLT_half_win;
+		const auto max_x =
+			static_cast<int>(inImg_gray.getWidth() - 1 - KLT_half_win);
+		const auto max_y =
+			static_cast<int>(inImg_gray.getHeight() - 1 - KLT_half_win);
 
 		for (size_t i = 0; i < N; i++)
 		{
-			const auto x = static_cast<unsigned int>(corners[i].pt.x);
-			const auto y = static_cast<unsigned int>(corners[i].pt.y);
+			const auto x = corners[i].pt.x;
+			const auto y = corners[i].pt.y;
 			if (x > KLT_half_win && y > KLT_half_win && x <= max_x &&
 				y <= max_y)
 				corners[i].response =
@@ -190,7 +192,7 @@ void CFeatureExtraction::extractFeaturesFASTER_N(
 
 	// See the comments above for an explanation.
 	mrpt::math::CMatrixBool occupied_sections(grid_lx, grid_ly);
-	occupied_sections.fillAll(false);
+	occupied_sections.fill(false);
 
 	unsigned int nMax =
 		(nDesiredFeatures != 0 && N > nDesiredFeatures) ? nDesiredFeatures : N;
@@ -223,28 +225,22 @@ void CFeatureExtraction::extractFeaturesFASTER_N(
 		if (do_filter_min_dist)
 		{
 			// Check the min-distance:
-			const auto section_idx_x =
+			const auto sect_ix =
 				size_t(feat.pt.x * occupied_grid_cell_size_inv);
-			const auto section_idx_y =
+			const auto sect_iy =
 				size_t(feat.pt.y * occupied_grid_cell_size_inv);
 
-			if (occupied_sections(section_idx_x, section_idx_y))
+			if (occupied_sections(sect_ix, sect_iy))
 				continue;  // Already occupied! skip.
 
 			// Mark section as occupied
-			occupied_sections.set_unsafe(section_idx_x, section_idx_y, true);
-			if (section_idx_x > 0)
-				occupied_sections.set_unsafe(
-					section_idx_x - 1, section_idx_y, true);
-			if (section_idx_y > 0)
-				occupied_sections.set_unsafe(
-					section_idx_x, section_idx_y - 1, true);
-			if (section_idx_x < grid_lx - 1)
-				occupied_sections.set_unsafe(
-					section_idx_x + 1, section_idx_y, true);
-			if (section_idx_y < grid_ly - 1)
-				occupied_sections.set_unsafe(
-					section_idx_x, section_idx_y + 1, true);
+			occupied_sections(sect_ix, sect_iy) = true;
+			if (sect_ix > 0) occupied_sections(sect_ix - 1, sect_iy) = true;
+			if (sect_iy > 0) occupied_sections(sect_ix, sect_iy - 1) = true;
+			if (sect_ix < grid_lx - 1)
+				occupied_sections(sect_ix + 1, sect_iy) = true;
+			if (sect_iy < grid_ly - 1)
+				occupied_sections(sect_ix, sect_iy + 1) = true;
 		}
 
 		// All tests passed: add new feature:

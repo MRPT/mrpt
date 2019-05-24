@@ -11,6 +11,7 @@
 
 #include <mrpt/graphs/ScalarFactorGraph.h>
 #include <mrpt/system/CTicTac.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::graphs;
@@ -80,9 +81,9 @@ bool ScalarFactorGraph::eraseConstraint(const FactorBase& c)
 void ScalarFactorGraph::updateEstimation(
 	/** Output increment of the current estimate. Caller must add this
 	   vector to current state vector to obtain the optimal estimation. */
-	Eigen::VectorXd& solved_x_inc,
+	mrpt::math::CVectorDouble& solved_x_inc,
 	/** If !=nullptr, the covariance of the estimate will be stored here. */
-	Eigen::VectorXd* solved_variances)
+	mrpt::math::CVectorDouble* solved_variances)
 {
 	ASSERTMSG_(m_numNodes > 0, "numNodes=0. Have you called initialize()?");
 
@@ -92,7 +93,7 @@ void ScalarFactorGraph::updateEstimation(
 
 	// Number of vertices:
 	const size_t n = m_numNodes;
-	solved_x_inc.setZero(n);
+	solved_x_inc.setZero(n, 1);
 
 	// Number of edges:
 	const size_t m1 = m_factors_unary.size(), m2 = m_factors_binary.size();

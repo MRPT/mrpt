@@ -238,20 +238,19 @@ bool tfest::se2_l2(
 		// -------------------------------------------------------
 		const double D = square(Ax) + square(Ay);
 
-		C->get_unsafe(0, 0) =
+		(*C)(0, 0) =
 			2.0 * N_inv + BETA * square((mean_x_b * Ay + mean_y_b * Ax) / D);
-		C->get_unsafe(1, 1) =
+		(*C)(1, 1) =
 			2.0 * N_inv + BETA * square((mean_x_b * Ax - mean_y_b * Ay) / D);
-		C->get_unsafe(2, 2) = BETA / D;
+		(*C)(2, 2) = BETA / D;
 
-		C->get_unsafe(0, 1) = C->get_unsafe(1, 0) =
-			-BETA * (mean_x_b * Ay + mean_y_b * Ax) *
-			(mean_x_b * Ax - mean_y_b * Ay) / square(D);
+		(*C)(0, 1) = (*C)(1, 0) = -BETA * (mean_x_b * Ay + mean_y_b * Ax) *
+								  (mean_x_b * Ax - mean_y_b * Ay) / square(D);
 
-		C->get_unsafe(0, 2) = C->get_unsafe(2, 0) =
+		(*C)(0, 2) = (*C)(2, 0) =
 			BETA * (mean_x_b * Ay + mean_y_b * Ax) / pow(D, 1.5);
 
-		C->get_unsafe(1, 2) = C->get_unsafe(2, 1) =
+		(*C)(1, 2) = (*C)(2, 1) =
 			BETA * (mean_y_b * Ay - mean_x_b * Ax) / pow(D, 1.5);
 	}
 

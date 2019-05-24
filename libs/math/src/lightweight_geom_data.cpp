@@ -10,14 +10,17 @@
 #include "math-precomp.h"  // Precompiled headers
 
 #include <mrpt/core/exceptions.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CQuaternion.h>
+#include <mrpt/math/CVectorDynamic.h>
+//#include <mrpt/math/eigen_extensions.h>
 #include <mrpt/math/geometry.h>  // distance()
 #include <mrpt/math/homog_matrices.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/serialization/CArchive.h>  // impl of << operator
 #include <mrpt/serialization/stl_serialization.h>
+#include <Eigen/Dense>
 
 using namespace std;  // For min/max, etc...
 using namespace mrpt::serialization;  // CArchive, << operator for STL
@@ -46,8 +49,8 @@ void TPoint2D::fromString(const std::string& s)
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 2, "Wrong size of vector in ::fromString");
-	x = m.get_unsafe(0, 0);
-	y = m.get_unsafe(0, 1);
+	x = m(0, 0);
+	y = m(0, 1);
 }
 
 TPose2D::TPose2D(const TPoint2D& p) : x(p.x), y(p.y), phi(0.0) {}
@@ -64,9 +67,9 @@ void TPose2D::fromString(const std::string& s)
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 3, "Wrong size of vector in ::fromString");
-	x = m.get_unsafe(0, 0);
-	y = m.get_unsafe(0, 1);
-	phi = DEG2RAD(m.get_unsafe(0, 2));
+	x = m(0, 0);
+	y = m(0, 1);
+	phi = DEG2RAD(m(0, 2));
 }
 mrpt::math::TPose2D mrpt::math::TPose2D::operator+(
 	const mrpt::math::TPose2D& b) const
@@ -106,9 +109,9 @@ void TTwist2D::fromString(const std::string& s)
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 3, "Wrong size of vector in ::fromString");
-	vx = m.get_unsafe(0, 0);
-	vy = m.get_unsafe(0, 1);
-	omega = DEG2RAD(m.get_unsafe(0, 2));
+	vx = m(0, 0);
+	vy = m(0, 1);
+	omega = DEG2RAD(m(0, 2));
 }
 // Transform the (vx,vy) components for a counterclockwise rotation of `ang`
 // radians
@@ -143,9 +146,8 @@ void TTwist3D::fromString(const std::string& s)
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 6, "Wrong size of vector in ::fromString");
-	for (int i = 0; i < 3; i++) (*this)[i] = m.get_unsafe(0, i);
-	for (int i = 0; i < 3; i++)
-		(*this)[3 + i] = DEG2RAD(m.get_unsafe(0, 3 + i));
+	for (int i = 0; i < 3; i++) (*this)[i] = m(0, i);
+	for (int i = 0; i < 3; i++) (*this)[3 + i] = DEG2RAD(m(0, 3 + i));
 }
 // Transform all 6 components for a change of reference frame from "A" to
 // another frame "B" whose rotation with respect to "A" is given by `rot`. The
@@ -192,9 +194,9 @@ void TPoint3D::fromString(const std::string& s)
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 3, "Wrong size of vector in ::fromString");
-	x = m.get_unsafe(0, 0);
-	y = m.get_unsafe(0, 1);
-	z = m.get_unsafe(0, 2);
+	x = m(0, 0);
+	y = m(0, 1);
+	z = m(0, 2);
 }
 
 TPose3D::TPose3D(const TPoint2D& p)
@@ -217,7 +219,7 @@ void TPose3D::asString(std::string& s) const
 }
 void TPose3D::getAsQuaternion(
 	mrpt::math::CQuaternion<double>& q,
-	mrpt::math::CMatrixFixedNumeric<double, 4, 3>* out_dq_dr) const
+	mrpt::math::CMatrixFixed<double, 4, 3>* out_dq_dr) const
 {
 	// See:
 	// http://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
@@ -376,7 +378,8 @@ void TPose3D::SO3_to_yaw_pitch_roll(
 
 void TPose3D::fromHomogeneousMatrix(const mrpt::math::CMatrixDouble44& HG)
 {
-	SO3_to_yaw_pitch_roll(HG.block<3, 3>(0, 0), yaw, pitch, roll);
+	SO3_to_yaw_pitch_roll(
+		CMatrixDouble33(HG.blockCopy<3, 3>(0, 0)), yaw, pitch, roll);
 	x = HG(0, 3);
 	y = HG(1, 3);
 	z = HG(2, 3);
@@ -386,13 +389,14 @@ void TPose3D::composePose(const TPose3D other, TPose3D& result) const
 	CMatrixDouble44 me_H, o_H;
 	this->getHomogeneousMatrix(me_H);
 	other.getHomogeneousMatrix(o_H);
-	result.fromHomogeneousMatrix(me_H * o_H);
+	result.fromHomogeneousMatrix(
+		CMatrixDouble44(me_H.asEigen() * o_H.asEigen()));
 }
 void TPose3D::getHomogeneousMatrix(mrpt::math::CMatrixDouble44& HG) const
 {
 	CMatrixDouble33 R;
 	getRotationMatrix(R);
-	HG.block<3, 3>(0, 0) = R;
+	HG.block<3, 3>(0, 0) = R.asEigen();
 	HG(0, 3) = x;
 	HG(1, 3) = y;
 	HG(2, 3) = z;
@@ -412,12 +416,12 @@ void TPose3D::fromString(const std::string& s)
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 6, "Wrong size of vector in ::fromString");
-	x = m.get_unsafe(0, 0);
-	y = m.get_unsafe(0, 1);
-	z = m.get_unsafe(0, 2);
-	yaw = DEG2RAD(m.get_unsafe(0, 3));
-	pitch = DEG2RAD(m.get_unsafe(0, 4));
-	roll = DEG2RAD(m.get_unsafe(0, 5));
+	x = m(0, 0);
+	y = m(0, 1);
+	z = m(0, 2);
+	yaw = DEG2RAD(m(0, 3));
+	pitch = DEG2RAD(m(0, 4));
+	roll = DEG2RAD(m(0, 5));
 }
 
 void TPose3DQuat::fromString(const std::string& s)
@@ -427,7 +431,7 @@ void TPose3DQuat::fromString(const std::string& s)
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 7, "Wrong size of vector in ::fromString");
-	for (int i = 0; i < m.cols(); i++) (*this)[i] = m.get_unsafe(0, i);
+	for (int i = 0; i < m.cols(); i++) (*this)[i] = m(0, i);
 }
 TPose3D operator-(const TPose3D& p)
 {
@@ -444,7 +448,7 @@ TPose3D operator-(const TPose3D& b, const TPose3D& a)
 	a.getInverseHomogeneousMatrix(Hainv);
 	b.getHomogeneousMatrix(Hb);
 	TPose3D ret;
-	ret.fromHomogeneousMatrix(Hainv * Hb);
+	ret.fromHomogeneousMatrix(CMatrixDouble44(Hainv.asEigen() * Hb.asEigen()));
 	return ret;
 }
 
@@ -577,11 +581,11 @@ double TSegment3D::distance(const TSegment3D& segment) const
 {
 	Eigen::Vector3d u, v, w;
 	TPoint3D diff_vect = point2 - point1;
-	diff_vect.getAsVector(u);
+	diff_vect.asVector(u);
 	diff_vect = segment.point2 - segment.point1;
-	diff_vect.getAsVector(v);
+	diff_vect.asVector(v);
 	diff_vect = point1 - segment.point1;
-	diff_vect.getAsVector(w);
+	diff_vect.asVector(w);
 	double a = u.dot(u);  // always >= 0
 	double b = u.dot(v);
 	double c = v.dot(v);  // always >= 0
@@ -650,8 +654,7 @@ double TSegment3D::distance(const TSegment3D& segment) const
 	tc = (fabs(tN) < 0.00000001 ? 0.0 : tN / tD);
 
 	// get the difference of the two closest points
-	CVectorDouble dP = w + (sc * u) - (tc * v);  // = S1(sc) - S2(tc)
-
+	const auto dP = (w + (sc * u) - (tc * v)).eval();
 	return dP.norm();  // return the closest distance
 }
 bool TSegment3D::contains(const TPoint3D& point) const
@@ -887,7 +890,7 @@ void TPlane::getAsPose3D(mrpt::math::TPose3D& outPose) const
 	for (size_t i = 0; i < 3; i++)
 		if (abs(coefs[i]) >= getEpsilon())
 		{
-			AXIS.set_unsafe(i, 3, -coefs[3] / coefs[i]);
+			AXIS(i, 3) = -coefs[3] / coefs[i];
 			break;
 		}
 	outPose.fromHomogeneousMatrix(AXIS);
@@ -901,7 +904,7 @@ void TPlane::getAsPose3DForcingOrigin(
 	getUnitaryNormalVector(normal);
 	CMatrixDouble44 AXIS;
 	generateAxisBaseFromDirectionAndAxis(normal, 2, AXIS);
-	for (size_t i = 0; i < 3; i++) AXIS.set_unsafe(i, 3, center[i]);
+	for (size_t i = 0; i < 3; i++) AXIS(i, 3) = center[i];
 	pose.fromHomogeneousMatrix(AXIS);
 }
 TPlane::TPlane(const TPoint3D& p1, const TPoint3D& p2, const TPoint3D& p3)

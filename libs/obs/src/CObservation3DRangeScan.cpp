@@ -19,7 +19,7 @@
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/math/CLevenbergMarquardt.h>
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/ops_containers.h>  // norm(), etc.
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/system/CTimeLogger.h>
@@ -100,7 +100,7 @@ struct CObservation3DRangeScan_Ranges_MemPoolParams
 };
 struct CObservation3DRangeScan_Ranges_MemPoolData
 {
-	mrpt::math::CMatrix rangeImage;
+	mrpt::math::CMatrixF rangeImage;
 };
 using TMyRangesMemPool = mrpt::system::CGenericMemoryPool<
 	CObservation3DRangeScan_Ranges_MemPoolParams,
@@ -435,10 +435,17 @@ void CObservation3DRangeScan::load() const
 			CMatrixFloat M;
 			M.loadFromTextFile(fil);
 			ASSERT_EQUAL_(M.rows(), 3);
+			const auto N = M.cols();
 
-			M.extractRow(0, const_cast<std::vector<float>&>(points3D_x));
-			M.extractRow(1, const_cast<std::vector<float>&>(points3D_y));
-			M.extractRow(2, const_cast<std::vector<float>&>(points3D_z));
+			auto& xs = const_cast<std::vector<float>&>(points3D_x);
+			auto& ys = const_cast<std::vector<float>&>(points3D_y);
+			auto& zs = const_cast<std::vector<float>&>(points3D_z);
+			xs.resize(N);
+			ys.resize(N);
+			zs.resize(N);
+			::memcpy(&xs[0], &M(0, 0), sizeof(float) * N);
+			::memcpy(&ys[0], &M(1, 0), sizeof(float) * N);
+			::memcpy(&zs[0], &M(2, 0), sizeof(float) * N);
 		}
 		else
 		{
@@ -456,13 +463,13 @@ void CObservation3DRangeScan::load() const
 		if (mrpt::system::strCmpI(
 				"txt", mrpt::system::extractFileExtension(fil, true)))
 		{
-			const_cast<CMatrix&>(rangeImage).loadFromTextFile(fil);
+			const_cast<CMatrixF&>(rangeImage).loadFromTextFile(fil);
 		}
 		else
 		{
 			mrpt::io::CFileGZInputStream fi(fil);
 			auto f = mrpt::serialization::archiveFrom(fi);
-			f >> const_cast<CMatrix&>(rangeImage);
+			f >> const_cast<CMatrixF&>(rangeImage);
 		}
 	}
 }
@@ -551,9 +558,9 @@ void CObservation3DRangeScan::points3D_convertToExternalStorage(
 		const size_t nPts = points3D_x.size();
 
 		CMatrixFloat M(3, nPts);
-		M.insertRow(0, points3D_x);
-		M.insertRow(1, points3D_y);
-		M.insertRow(2, points3D_z);
+		M.setRow(0, points3D_x);
+		M.setRow(1, points3D_y);
+		M.setRow(2, points3D_z);
 
 		M.saveToTextFile(real_absolute_file_path, MATRIX_FORMAT_FIXED);
 	}
@@ -739,7 +746,7 @@ double CObservation3DRangeScan::recoverCameraCalibrationParameters(
 
 	initial_x.resize(8);
 	CVectorDouble increments_x(initial_x.size());
-	increments_x.assign(1e-4);
+	increments_x.fill(1e-4);
 
 	CVectorDouble optimal_x;
 
@@ -778,7 +785,7 @@ void CObservation3DRangeScan::getZoneAsObs(
 	// Copy zone of range image
 	obs.hasRangeImage = hasRangeImage;
 	if (hasRangeImage)
-		rangeImage.extractSubmatrix(r1, r2, c1, c2, obs.rangeImage);
+		obs.rangeImage = rangeImage.asEigen().block(r2 - r1, c2 - c1, r1, c1);
 
 	// Copy zone of intensity image
 	obs.hasIntensityImage = hasIntensityImage;

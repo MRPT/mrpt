@@ -9,6 +9,7 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
+#include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/point_poses2vectors.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
@@ -16,6 +17,7 @@
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
+#include <Eigen/Dense>
 
 using namespace mrpt::obs;
 using namespace mrpt::poses;
@@ -462,7 +464,7 @@ void CActionRobotMovement2D::computeFromOdometry_modelGaussian(
 	aux->mean = odometryIncrement;
 
 	// The covariance:
-	J.multiply_HCHt(C_ODO, aux->cov);
+	aux->cov = mrpt::math::multiply_HCHt(J, C_ODO);
 }
 
 /*---------------------------------------------------------------
@@ -663,8 +665,6 @@ void CActionRobotMovement2D::prepareFastDrawSingleSample_modelGaussian() const
 
 	ASSERT_(IS_CLASS(poseChange, CPosePDFGaussian));
 
-	CMatrixDouble33 D;
-
 	const auto* gPdf = dynamic_cast<const CPosePDFGaussian*>(poseChange.get());
 	ASSERT_(gPdf != nullptr);
 	const CMatrixDouble33& cov = gPdf->cov;
@@ -676,10 +676,13 @@ void CActionRobotMovement2D::prepareFastDrawSingleSample_modelGaussian() const
 	 *	  eigenvectors and the diagonal matrix D contains the eigenvalues
 	 *    as diagonal elements, sorted in <i>ascending</i> order.
 	 */
-	cov.eigenVectors(m_fastDrawGauss_Z, D);
+	std::vector<double> eigvals;
+	cov.eig_symmetric(m_fastDrawGauss_Z, eigvals);
+	CMatrixDouble33 D;
+	D.setDiagonal(eigvals);
 
 	// Scale eigenvectors with eigenvalues:
-	D = D.array().sqrt().matrix();
+	D.asEigen() = D.array().sqrt().matrix();
 	m_fastDrawGauss_Z = m_fastDrawGauss_Z * D;
 
 	MRPT_END
@@ -700,7 +703,7 @@ void CActionRobotMovement2D::fastDrawSingleSample_modelGaussian(
 	{
 		float rnd = getRandomGenerator().drawGaussian1D_normalized();
 		for (size_t d = 0; d < 3; d++)
-			rndVector[d] += (m_fastDrawGauss_Z.get_unsafe(d, i) * rnd);
+			rndVector[d] += (m_fastDrawGauss_Z(d, i) * rnd);
 	}
 
 	outSample = CPose2D(

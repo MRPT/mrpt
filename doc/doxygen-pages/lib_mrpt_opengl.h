@@ -5,16 +5,26 @@
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file        |
    | See: https://www.mrpt.org/Authors - All rights reserved.                  |
    | Released under BSD License. See details in https://www.mrpt.org/License   |
-   +---------------------------------------------------------------------------+ */
+   +---------------------------------------------------------------------------+
+ */
+
+// clang-format off
 
 /** \defgroup mrpt_opengl_grp [mrpt-opengl]
+
+Visualization helpers for 3D rendering of all kind of primitives
 
 <small> <a href="index.html#libs">Back to list of all libraries</a> | <a href="modules.html" >See all modules</a> </small>
 <br>
 
-<h2>Library <code>mrpt-opengl</code></h2>
-<hr>
 
+# Library `mrpt-opengl`
+
+This library is part of MRPT and can be installed in Debian-based systems with:
+
+		sudo apt install libmrpt-opengl-dev
+
+See: \ref mrpt_from_cmake
 
 This library includes several data classes that represent objects that can be
 inserted into a 3D scene, which can be then rendered or streamed to disk or whatever.
@@ -91,4 +101,3 @@ Note: The following extra OpenGL classes are provided by other libraries:
 </div>
 
 */
-

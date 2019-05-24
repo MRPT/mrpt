@@ -11,8 +11,8 @@
 
 #include <mrpt/core/round.h>
 #include <mrpt/kinematics/CVehicleVelCmd_Holo.h>
+#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/poly_roots.h>
-#include <mrpt/math/types_math.h>
 #include <mrpt/nav/tpspace/CPTG_Holo_Blend.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTimeLogger.h>
@@ -324,7 +324,7 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(
 	// in each case: (1) t<T_ramp and (2) t>T_ramp
 
 	// Initial value:
-	Eigen::Vector3d q;  // [t vxf vyf]
+	mrpt::math::CVectorFixed<double, 3> q;  // [t vxf vyf]
 	q[0] = T_ramp_max * 1.1;
 	q[1] = V_MAX * x / sqrt(x * x + y * y);
 	q[2] = V_MAX * y / sqrt(x * x + y * y);
@@ -338,7 +338,7 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(
 		const double TR2_ = 1.0 / (2 * T_ramp);
 
 		// Eval residual:
-		Eigen::Vector3d r;
+		mrpt::math::CVectorFixed<double, 3> r;
 		if (q[0] >= T_ramp)
 		{
 			r[0] = 0.5 * T_ramp * (vxi + q[1]) + (q[0] - T_ramp) * q[1] - x;
@@ -357,7 +357,7 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(
 		//  dx/dt  dx/dvxf  dx/dvyf
 		//  dy/dt  dy/dvxf  dy/dvyf
 		//  dVF/dt  dVF/dvxf  dVF/dvyf
-		Eigen::Matrix3d J;
+		mrpt::math::CMatrixDouble33 J;
 		if (q[0] >= T_ramp)
 		{
 			J(0, 0) = q[1];
@@ -380,7 +380,7 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(
 		J(2, 1) = 2 * q[1];
 		J(2, 2) = 2 * q[2];
 
-		Eigen::Vector3d q_incr = J.householderQr().solve(r);
+		mrpt::math::CVectorFixed<double, 3> q_incr = J.lu_solve(r);
 		q -= q_incr;
 
 		err_mod = r.norm();

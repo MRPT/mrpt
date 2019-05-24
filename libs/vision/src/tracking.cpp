@@ -9,11 +9,10 @@
 
 #include "vision-precomp.h"  // Precompiled headers
 
+#include <mrpt/math/ops_matrices.h>
+#include <mrpt/otherlibs/do_opencv_includes.h>
 #include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/vision/tracking.h>
-
-// Universal include for all versions of OpenCV
-#include <mrpt/otherlibs/do_opencv_includes.h>
 
 using namespace mrpt;
 using namespace mrpt::vision;
@@ -771,7 +770,7 @@ void vision::filterBadCorrsByDistance(
 	MRPT_START
 
 	TMatchingPairList::iterator itPair;
-	CMatrix dist;
+	CMatrixF dist;
 	double v_mean, v_std;
 	unsigned int count = 0;
 
@@ -795,13 +794,7 @@ void vision::filterBadCorrsByDistance(
 			square(itPair->other_z - itPair->this_z));
 	}
 
-	dist.meanAndStdAll(v_mean, v_std);
-
-	cout << endl
-		 << "*****************************************************" << endl;
-	cout << "Mean: " << v_mean << " - STD: " << v_std << endl;
-	cout << endl
-		 << "*****************************************************" << endl;
+	mrpt::math::meanAndStd(dist, v_mean, v_std);
 
 	// Filter out bad points
 	unsigned int idx = 0;

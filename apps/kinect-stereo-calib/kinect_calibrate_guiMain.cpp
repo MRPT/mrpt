@@ -40,6 +40,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/vision/chessboard_find_corners.h>
 #include <mrpt/vision/chessboard_stereo_camera_calib.h>
+#include <fstream>
 
 using namespace mrpt;
 using namespace mrpt::obs;
@@ -2197,10 +2198,8 @@ void kinect_calibrate_guiDialog::OnbtnRunCalibClick(wxCommandEvent& event)
 
 			// Inverse variance of the estimates, in this order:
 			//  [fx fy cx cy k1 k2 k3 t1 t2].
-			const Eigen::Array<double, 9, 1>& lc_inf =
-				m_calib_result.left_params_inv_variance;
-			const Eigen::Array<double, 9, 1>& rc_inf =
-				m_calib_result.right_params_inv_variance;
+			const auto& lc_inf = m_calib_result.left_params_inv_variance;
+			const auto& rc_inf = m_calib_result.right_params_inv_variance;
 			const double std_detector = 0.2;  // pixels
 
 			cout << mrpt::format(

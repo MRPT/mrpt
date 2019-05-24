@@ -11,10 +11,7 @@
 
 #include <mrpt/img/color_maps.h>
 #include <mrpt/opengl/CRenderizableDisplayList.h>
-#include <Eigen/Dense>
-
-using Eigen::Array;
-using Eigen::Dynamic;
+#include <array>
 
 namespace mrpt::opengl
 {
@@ -36,8 +33,8 @@ class CMesh3D : public CRenderizableDisplayList
 {
 	DEFINE_SERIALIZABLE(CMesh3D)
 
-	using f_verts = int[4];
-	using coord3D = float[3];
+	using f_verts = std::array<int, 4>;
+	using coord3D = mrpt::math::TPoint3Df;
 
    protected:
 	bool m_enableTransparency;
@@ -55,15 +52,16 @@ class CMesh3D : public CRenderizableDisplayList
 	/** Number of faces of the mesh */
 	unsigned int m_num_faces;
 	/** Pointer storing whether a face is a quad (1) or a triangle (0) */
-	bool* m_is_quad;
+	std::vector<bool> m_is_quad;
 	/** Pointer storing the vertices that compose each face. Size: 4 x num_faces
 	 * (4 for the possible max number - quad) */
-	f_verts* m_face_verts;
+	std::vector<f_verts> m_face_verts;
+
 	/** Pointer storing the coordinates of the vertices. Size: 3 x num_vertices
 	 */
-	coord3D* m_vert_coords;
+	std::vector<coord3D> m_vert_coords;
 	/** Pointer storing the face normals. Size: 3 x num_faces */
-	coord3D* m_normals;
+	std::vector<coord3D> m_normals;
 
 	// Colors
 	/** Color of the edges (when shown) */
@@ -72,8 +70,8 @@ class CMesh3D : public CRenderizableDisplayList
 	float face_color[4];
 	/** Color of the vertices (when shown) */
 	float vert_color[4];
-	mrpt::img::TColormap m_colorMap{
-		mrpt::img::cmHOT};  // Not used yet. I leave it here in case
+	mrpt::img::TColormap m_colorMap{mrpt::img::cmHOT};
+	// Not used yet. I leave it here in case
 	// I want to use it in the future
 
    public:
@@ -125,21 +123,21 @@ class CMesh3D : public CRenderizableDisplayList
 	/** Load a 3D mesh. The arguments indicate:
 		- num_verts: Number of vertices of the mesh
 		- num_faces: Number of faces of the mesh
-		- is_quad: A binary array (Eigen) saying whether the face is a quad (1)
+		- is_quad: A binary array saying whether the face is a quad (1)
 	   or a triangle (0)
-		- face_verts: An array (Eigen) with the vertices of each face. For every
+		- face_verts: An array with the vertices of each face. For every
 	   column (face), each row contains the num of a vertex. The fourth does not
 	   need
 		  to be filled if the face is a triangle.
-		- vert_coords: An array (Eigen) with the coordinates of each vertex. For
+		- vert_coords: An array with the coordinates of each vertex. For
 	   every column (vertex), each row contains the xyz coordinates of the
 	   vertex.
 	 */
 	void loadMesh(
 		unsigned int num_verts, unsigned int num_faces,
-		const Array<bool, 1, Dynamic>& is_quad,
-		const Array<int, 4, Dynamic>& face_verts,
-		const Array<float, 3, Dynamic>& vert_coords);
+		const mrpt::math::CMatrixDynamic<bool>& is_quad,
+		const mrpt::math::CMatrixDynamic<int>& face_verts,
+		const mrpt::math::CMatrixDynamic<float>& vert_coords);
 
 	void setEdgeColor(float r, float g, float b, float a = 1.f);
 	void setFaceColor(float r, float g, float b, float a = 1.f);

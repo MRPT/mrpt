@@ -13,6 +13,7 @@
 #include <mrpt/img/TStereoCamera.h>
 #include <mrpt/vision/chessboard_camera_calib.h>
 #include <mrpt/vision/types.h>
+#include <array>
 
 namespace mrpt::vision
 {
@@ -126,8 +127,7 @@ struct TStereoCalibResults
 	 *  Those not estimated as indicated in TStereoCalibParams will be zeros
 	 * (i.e. an "infinite uncertainty")
 	 */
-	Eigen::Array<double, 9, 1> left_params_inv_variance,
-		right_params_inv_variance;
+	std::array<double, 9> left_params_inv_variance, right_params_inv_variance;
 };
 
 /**  A list of images, used in checkerBoardStereoCalibration

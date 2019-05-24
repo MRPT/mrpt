@@ -69,7 +69,7 @@ SO<3>::tangent_vector SO<3>::log(const SO<3>::type& R)
 	using std::sqrt;
 
 	mrpt::math::CQuaternionDouble q;
-	mrpt::poses::CPose3D(R, CArrayDouble<3>()).getAsQuaternion(q);
+	mrpt::poses::CPose3D(R, CVectorFixedDouble<3>()).getAsQuaternion(q);
 
 	const auto squared_n = q.x() * q.x() + q.y() * q.y() + q.z() * q.z();
 	const auto n = sqrt(squared_n);
@@ -163,12 +163,12 @@ SO<3>::mat2tang_jacob SO<3>::jacob_dlogv_dv(const SO<3>::type& R)
 	using namespace mrpt::math;
 
 	const double d = 0.5 * (R(0, 0) + R(1, 1) + R(2, 2) - 1);
-	CArrayDouble<3> a;
+	CVectorFixedDouble<3> a;
 	CMatrixDouble33 B(UNINITIALIZED_MATRIX);
 	if (d > 0.99999)
 	{
 		a[0] = a[1] = a[2] = 0;
-		B.unit(3, -0.5);
+		B.setDiagonal(3, -0.5);
 	}
 	else
 	{
@@ -177,7 +177,7 @@ SO<3>::mat2tang_jacob SO<3>::jacob_dlogv_dv(const SO<3>::type& R)
 		const double sq = std::sqrt(1 - d2);
 		a = SO<3>::vee_RmRt(R);
 		a *= (d * theta - sq) / (4 * (sq * sq * sq));
-		B.unit(3, -theta / (2 * sq));
+		B.setDiagonal(3, -theta / (2 * sq));
 	}
 	CMatrixDouble39 M(UNINITIALIZED_MATRIX);
 	M3x9(a, B, M);

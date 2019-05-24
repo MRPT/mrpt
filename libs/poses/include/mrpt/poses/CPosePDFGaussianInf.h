@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/poses/CPosePDF.h>
 
 namespace mrpt::poses
@@ -41,7 +41,7 @@ class CPosePDFGaussianInf : public CPosePDF
 	/** Assures the symmetry of the covariance matrix (eventually certain
 	 * operations in the math-coprocessor lead to non-symmetric matrixes!)
 	 */
-	void assureSymmetry();
+	void enforceCovSymmetry();
 
    public:
 	/** @name Data fields
@@ -78,14 +78,10 @@ class CPosePDFGaussianInf : public CPosePDF
 	 * \sa getCovariance */
 	void getMean(CPose2D& mean_pose) const override { mean_pose = mean; }
 	bool isInfType() const override { return true; }
-	/** Returns an estimate of the pose covariance matrix (3x3 cov matrix) and
-	 * the mean, both at once.
-	 * \sa getMean */
-	void getCovarianceAndMean(
-		mrpt::math::CMatrixDouble33& cov, CPose2D& mean_point) const override
+
+	std::tuple<cov_mat_t, type_value> getCovarianceAndMean() const override
 	{
-		mean_point = mean;
-		this->cov_inv.inv(cov);
+		return {cov_inv.inverse_LLt(), mean};
 	}
 
 	/** Returns the information (inverse covariance) matrix (a STATE_LEN x

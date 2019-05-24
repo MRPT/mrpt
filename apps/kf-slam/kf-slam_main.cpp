@@ -29,6 +29,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
+#include <fstream>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -178,14 +179,14 @@ struct kfslam_traits<CRangeBearingKFSLAM>
 			for (size_t i = 0; i < 6; i++)
 				fullCov(i, i) = max(fullCov(i, i), 1e-6);
 
-			CMatrix H(fullCov.inv());
+			CMatrixF H(fullCov.inverse_LLt());
 			H.saveToTextFile(OUT_DIR + string("/information_matrix_final.txt"));
 
 			// Replace by absolute values:
 			H = H.array().abs().matrix();
-			CMatrix H2(H);
-			H2.normalize(0, 1);
-			CImage imgF(H2, true);
+			CMatrixF H2(H);
+			CImage imgF;
+			imgF.setFromMatrix(H2, false /*it's not normalized*/);
 			imgF.saveToFile(OUT_DIR + string("/information_matrix_final.png"));
 
 			// ----------------------------------------
@@ -193,7 +194,7 @@ struct kfslam_traits<CRangeBearingKFSLAM>
 			//  E = SUM() / SUM(ALL ELEMENTS IN MATRIX)
 			// ----------------------------------------
 			vector<std::vector<uint32_t>> landmarksMembership, partsInObsSpace;
-			CMatrix ERRS(50, 3);
+			CMatrixF ERRS(50, 3);
 
 			for (int i = 0; i < ERRS.rows(); i++)
 			{
@@ -456,7 +457,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 			// Save mean pose:
 			if (!(step % SAVE_LOG_FREQUENCY))
 			{
-				const CVectorDouble p = robotPose.mean.getAsVectorVal();
+				const auto p = robotPose.mean.asVectorVal();
 				p.saveToTextFile(
 					OUT_DIR +
 					format("/robot_pose_%05u.txt", (unsigned int)step));

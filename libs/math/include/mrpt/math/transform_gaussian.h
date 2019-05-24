@@ -9,8 +9,8 @@
 #pragma once
 
 #include <mrpt/core/aligned_std_vector.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/math/num_jacobian.h>
@@ -82,7 +82,7 @@ void transform_gaussian_unscented(
 	size_t row = 1;
 	for (size_t i = 0; i < Nx; i++)
 	{
-		L.extractRowAsCol(i, delta);
+		for (size_t k = 0; k < Nx; k++) delta[k] = L(i, k);
 		X = x_mean;
 		X -= delta;
 		functor(X, fixed_param, Y[row++]);
@@ -144,6 +144,7 @@ void transform_gaussian_montecarlo(
  * increments "x_increments".
  * \sa The example in MRPT/samples/unscented_transform_test
  * \sa transform_gaussian_unscented, transform_gaussian_montecarlo
+ * \note This function requires `#include <Eigen/Dense>`
  */
 template <
 	class VECTORLIKE1, class MATLIKE1, class USERPARAM, class VECTORLIKE2,
@@ -159,7 +160,7 @@ void transform_gaussian_linear(
 	// Mean: simple propagation:
 	functor(x_mean, fixed_param, y_mean);
 	// Cov: COV = H C Ht
-	Eigen::Matrix<
+	CMatrixFixed<
 		double, VECTORLIKE3::RowsAtCompileTime, VECTORLIKE1::RowsAtCompileTime>
 		H;
 	mrpt::math::estimateJacobian(
@@ -168,7 +169,7 @@ void transform_gaussian_linear(
 			const VECTORLIKE1& x, const USERPARAM& fixed_param,
 			VECTORLIKE3& y)>(functor),
 		x_increments, fixed_param, H);
-	H.multiply_HCHt(x_cov, y_cov);
+	mrpt::math::multiply_HCHt(H, x_cov, y_cov);
 	MRPT_END
 }
 

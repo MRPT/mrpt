@@ -9,18 +9,19 @@
 
 #include "math-precomp.h"  // Precompiled headers
 
+#include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/math/distributions.h>
+//#include <mrpt/math/eigen_extensions.h>
+#include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/math/wrap2pi.h>
-#include <mrpt/math/interp_fit.hpp>
-
-#include <mrpt/math/CMatrixD.h>
-#include <mrpt/math/ops_matrices.h>
 #include <mrpt/system/string_utils.h>
+#include <Eigen/Dense>
 #include <algorithm>
 #include <cmath>  // erf(), ...
 #include <iostream>
+#include <mrpt/math/interp_fit.hpp>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -383,7 +384,6 @@ string math::MATLAB_plotCovariance2D(
 	std::vector<float> X, Y, COS, SIN;
 	std::vector<float>::iterator x, y, Cos, Sin;
 	double ang;
-	CMatrixD eigVal, eigVec, M;
 	string str;
 
 	X.resize(nEllipsePoints);
@@ -399,9 +399,12 @@ string math::MATLAB_plotCovariance2D(
 		*Sin = (float)sin(ang);
 	}
 
-	cov.eigenVectors(eigVec, eigVal);
+	Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eigensolver(cov.asEigen());
+	const auto eigVec = eigensolver.eigenvectors();
+	auto eigVal = eigensolver.eigenvalues();
+
 	eigVal = eigVal.array().sqrt().matrix();
-	M = eigVal * eigVec.adjoint();
+	Eigen::MatrixXd M = eigVal * eigVec.transpose();
 
 	// Compute the points of the ellipsoid:
 	// ----------------------------------------------
@@ -432,7 +435,7 @@ string math::MATLAB_plotCovariance2D(
 	return str;
 	MRPT_END_WITH_CLEAN_UP(std::cerr << "The matrix that led to error was: "
 									 << std::endl
-									 << cov << std::endl;)
+									 << cov.asEigen() << std::endl;)
 }
 
 double mrpt::math::interpolate2points(

@@ -21,20 +21,6 @@ using namespace mrpt::random;
 
 IMPLEMENTS_SERIALIZABLE(CActionRobotMovement3D, CAction, mrpt::obs)
 
-/*---------------------------------------------------------------
-						Constructor
-  ---------------------------------------------------------------*/
-CActionRobotMovement3D::CActionRobotMovement3D()
-	: poseChange(),
-	  rawOdometryIncrementReading(),
-
-	  motionModelConfiguration(),
-	  hasVelocities(6, false),
-	  velocities(6)
-{
-	velocities.assign(.0);
-}
-
 uint8_t CActionRobotMovement3D::serializeGetVersion() const { return 1; }
 void CActionRobotMovement3D::serializeTo(
 	mrpt::serialization::CArchive& out) const

@@ -16,8 +16,6 @@
 	 https://www.mrpt.org/list-of-mrpt-apps/application-pf-localization
   ---------------------------------------------------------------*/
 
-#include <mrpt/slam/CMonteCarloLocalization2D.h>
-
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
@@ -46,10 +44,12 @@
 #include <mrpt/poses/CPose2DInterpolator.h>
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/slam/CMonteCarloLocalization2D.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/vector_loadsave.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -566,9 +566,8 @@ void do_pf_localization(
 						// Show 3D?
 						if (SHOW_PROGRESS_3D_REAL_TIME)
 						{
-							CPose2D meanPose;
-							CMatrixDouble33 cov;
-							pdf.getCovarianceAndMean(cov, meanPose);
+							const auto [cov, meanPose] =
+								pdf.getCovarianceAndMean();
 
 							if (rawlogEntry >= 2)
 								getGroundTruth(
@@ -820,9 +819,8 @@ void do_pf_localization(
 							expectedPose.distanceTo(odometryEstimation));
 					}
 
-					CPosePDFGaussian current_pdf_gaussian;
-					pdf.getCovarianceAndMean(
-						current_pdf_gaussian.cov, current_pdf_gaussian.mean);
+					const auto [C, M] = pdf.getCovarianceAndMean();
+					const auto current_pdf_gaussian = CPosePDFGaussian(M, C);
 
 					// Text output:
 					// ----------------------------------------
@@ -903,15 +901,19 @@ void do_pf_localization(
 								win.plot(ranges_obs, "r-", "obs");
 
 								Eigen::VectorXd ci1 =
-									ssu_out.scanWithUncert.rangesMean +
+									ssu_out.scanWithUncert.rangesMean
+										.asEigen() +
 									3 * ssu_out.scanWithUncert.rangesCovar
+											.asEigen()
 											.diagonal()
 											.array()
 											.sqrt()
 											.matrix();
 								Eigen::VectorXd ci2 =
-									ssu_out.scanWithUncert.rangesMean -
+									ssu_out.scanWithUncert.rangesMean
+										.asEigen() -
 									3 * ssu_out.scanWithUncert.rangesCovar
+											.asEigen()
 											.diagonal()
 											.array()
 											.sqrt()
@@ -943,9 +945,7 @@ void do_pf_localization(
 							odometryEstimation.y(), odometryEstimation.phi());
 					}
 
-					CPose2D meanPose;
-					CMatrixDouble33 cov;
-					pdf.getCovarianceAndMean(cov, meanPose);
+					const auto [cov, meanPose] = pdf.getCovarianceAndMean();
 
 					if (!SAVE_STATS_ONLY && SCENE3D_FREQ > 0 &&
 						(step % SCENE3D_FREQ) == 0)
@@ -1097,7 +1097,8 @@ void do_pf_localization(
 		double repetitionTime = tictacGlobal.Tac();
 
 		// Avr. error:
-		double covergenceErrorMean, covergenceErrorsMin, covergenceErrorsMax;
+		double covergenceErrorMean = 0, covergenceErrorsMin = 0,
+			   covergenceErrorsMax = 0;
 		if (!covergenceErrors.empty())
 			math::confidenceIntervals(
 				covergenceErrors, covergenceErrorMean, covergenceErrorsMin,

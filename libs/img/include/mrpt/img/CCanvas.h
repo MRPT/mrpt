@@ -10,7 +10,7 @@
 
 #include <mrpt/core/exceptions.h>
 #include <mrpt/img/TColor.h>
-#include <mrpt/math/eigen_frwds.h>
+#include <mrpt/math/math_frwds.h>
 #include <cmath>  // sin() cos()
 
 namespace mrpt::img
@@ -42,16 +42,16 @@ class CCanvas
 {
    protected:
 	/** The selected font name. */
-	std::string m_selectedFont;
+	std::string m_selectedFont{"9x15"};
 
 	/** Direct access to character bitmaps. */
 	const uint32_t* m_selectedFontBitmaps{nullptr};
 
    public:
-	CCanvas();
+	CCanvas() = default;
+	virtual ~CCanvas() = default;
 
-	/** Definition of pen styles
-	 */
+	/** Definition of pen styles */
 	enum TPenStyle
 	{
 		psSolid = 0,
@@ -61,9 +61,6 @@ class CCanvas
 		psDashDotDot /* _.._.._  */
 	};
 
-	/** Dummy virtual destructor:
-	 */
-	virtual ~CCanvas() = default;
 	/** Changes the value of the pixel (x,y).
 	 *  Pixel coordinates starts at the left-top corner of the image, and start
 	 * in (0,0).
@@ -118,7 +115,6 @@ class CCanvas
 		int x0, int y0, int x1, int y1, const mrpt::img::TColor color,
 		unsigned int width = 1);
 
-	/*****************************************************AJOGD***************************************************/
 	/** Draws a triangle
 	 * \param x0 The triangle center x coordinate
 	 * \param y0 The triangle center y coordinate
@@ -131,7 +127,6 @@ class CCanvas
 	void triangle(
 		int x0, int y0, int size, const mrpt::img::TColor color,
 		bool inferior = true, unsigned int width = 1);
-	/************************************************************************************************************/
 
 	/** Draws a filled rectangle.
 	 * \param x0 The top-left x coordinate
@@ -247,48 +242,11 @@ class CCanvas
 	 * the ellipse shape.
 	 * \exception std::exception On an invalid matrix.
 	 */
-	template <class MATRIX2X2>
 	void ellipseGaussian(
-		const MATRIX2X2* cov2D, const double mean_x, const double mean_y,
-		double confIntervalStds = 2,
+		const mrpt::math::CMatrixFixed<double, 2, 2>& cov2D,
+		const double mean_x, const double mean_y, double confIntervalStds = 2,
 		const mrpt::img::TColor& color = mrpt::img::TColor(255, 255, 255),
-		unsigned int width = 1, int nEllipsePoints = 20)
-	{
-		MRPT_START
-		int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
-		double ang;
-		MATRIX2X2 eigVal, eigVec;
-		int i;
-
-		// Compute the eigen-vectors & values:
-		cov2D->eigenVectors(eigVec, eigVal);
-
-		eigVal = eigVal.array().sqrt().matrix();
-		MATRIX2X2 M;
-		M.multiply_ABt(eigVal, eigVec);
-
-		// Compute the points of the 2D ellipse:
-		for (i = 0, ang = 0; i < nEllipsePoints;
-			 i++, ang += (M_2PI / (nEllipsePoints - 1)))
-		{
-			double ccos = cos(ang);
-			double ssin = sin(ang);
-
-			x2 = round(
-				mean_x + confIntervalStds * (ccos * M(0, 0) + ssin * M(1, 0)));
-			y2 = round(
-				mean_y + confIntervalStds * (ccos * M(0, 1) + ssin * M(1, 1)));
-
-			if (i > 0) line(x1, y1, x2, y2, color, width);
-
-			x1 = x2;
-			y1 = y2;
-		}  // end for points on ellipse
-
-		MRPT_END_WITH_CLEAN_UP(
-			std::cout << "Covariance matrix leading to error is:" << std::endl
-					  << *cov2D << std::endl;);
-	}
+		unsigned int width = 1, int nEllipsePoints = 20);
 
 	/** Draws a set of marks onto the image, given a generic container of
 	 * entities having just "x" and "y" fields.

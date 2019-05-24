@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/img/CImage.h>
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
@@ -109,7 +109,7 @@ class CObservationRGBD360 : public CObservation
 	bool hasRangeImage{false};
 	/** If hasRangeImage=true, a matrix of floats with the range data as
 	 * captured by the camera (in meters) \sa range_is_depth */
-	mrpt::math::CMatrix rangeImages[NUM_SENSORS];
+	mrpt::math::CMatrixF rangeImages[NUM_SENSORS];
 
 	/** Similar to calling "rangeImage.setSize(H,W)" but this method provides
 	 * memory pooling to speed-up the memory allocation. */

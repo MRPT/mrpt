@@ -8,11 +8,13 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/gui.h>
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/ops_vectors.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/system/CTicTac.h>
+#include <Eigen/Dense>
 #include <iostream>
 
 using namespace mrpt;
@@ -61,9 +63,6 @@ void TestInitMatrix()
 	*/
 }
 
-// ------------------------------------------------------
-//				TestHCH
-// ------------------------------------------------------
 void TestHCH()
 {
 	CMatrixFloat H, C, RES;
@@ -76,89 +75,49 @@ void TestHCH()
 	C.loadFromTextFile(myDataDir + string("C.txt"));
 	cout << "ok" << endl;
 
-	// RES = H * C * ~H
-	H.multiply_HCHt(C, RES);
+	// RES = H * C * H'
+	mrpt::math::multiply_HCHt(H, C, RES);
 	cout << "Saving RES.txt ...";
 	RES.saveToTextFile("RES.txt");
 	cout << "ok" << endl;
 
 	// The same for a column vector:
 	H.loadFromTextFile(myDataDir + string("H_col.txt"));
-	cout << "H*C*(~H) = " << H.multiply_HCHt_scalar(C) << endl;
+	cout << "H*C*(H') = " << mrpt::math::multiply_HCHt_scalar(H, C) << endl;
 	cout << "Should be= 31.434 " << endl;
 
 	// The same for a row vector:
 	H.loadFromTextFile(myDataDir + string("H_row.txt"));
 	cout << "Loaded H: " << endl << H;
-	cout << "H*C*(~H) = " << H.multiply_HCHt_scalar(C) << endl;
+	cout << "H*C*(H') = " << mrpt::math::multiply_HCHt_scalar(H, C) << endl;
 	cout << "Should be= 31.434" << endl;
-
-	CMatrixFixedNumeric<double, 1, 5> Hfix;
-	Hfix.loadFromTextFile(myDataDir + string("H_row.txt"));
-	cout << "Again, loaded as a fixed matrix: " << endl << Hfix;
 }
 
-// ------------------------------------------------------
-//				TestMatrixs
-// ------------------------------------------------------
 void TestMatrixTemplate()
 {
 	CTicTac tictac;
-	CMatrixDouble M, Z, D, RES;
+	CMatrixDouble M;
 
 	// --------------------------------------
 	M.loadFromTextFile(myDataDir + string("matrixA.txt"));
 	cout << M << "\n";
 
-	M.eigenVectors(Z, D);
-	//	cout << "Z:\n" << Z << "D:\n" << D;
+	CMatrixDouble eigenVectors;
+	std::vector<double> eigenValues;
+	M.eig(eigenVectors, eigenValues);
+	cout << "eigenVectors:\n"
+		 << eigenVectors << "\n Eigenvalues:\n"
+		 << eigenValues;
 
-	int I, N = 1000;
-	tictac.Tic();
-	for (I = 0; I < N; I++) RES = Z * D * (~Z);
-	printf(
-		"Operation 'RES= Z * D * (~Z)' done in %.03fus\n",
-		1e6 * tictac.Tac() / N);
+	CMatrixDouble D;
+	D.setDiagonal(eigenValues);
 
-	//	cout << "RES (1):\n" << RES;
-
-	tictac.Tic();
-	for (I = 0; I < N; I++) Z.multiply_HCHt(D, RES);
-	printf(
-		"Operation 'Z.multiply_HCHt(D,RES)' done in %.03fus\n",
-		1e6f * tictac.Tac() / N);
-
-	//	cout << "RES (2):\n" << RES;
-
-	CMatrixDouble Q(M);
-	//	cout << "A:\n" << Q;
+	CMatrixDouble RES;
+	RES = M.asEigen() * D.asEigen() * M.transpose();
+	cout << "RES:\n" << RES;
 }
 
-// ------------------------------------------------------
-//				TestEigenvector
-// ------------------------------------------------------
-void TestEigenvector()
-{
-	CMatrixFloat A, eigen;  // Adjacency matrix
-
-	// -------
-	CMatrixFloat Z, D;
-	A.loadFromTextFile(myDataDir + string("matrixA.txt"));
-	printf("A matrix loaded:\n");
-	cout << A << "\n";
-
-	A.eigenVectors(Z, D);
-	cout << "Z:\n" << Z << "D:\n" << D;
-
-	D = D.array().sqrt().matrix();
-	Z = Z * D;
-	cout << "Z:\n" << Z;
-}
-
-// ------------------------------------------------------
-//				TestMatrixs
-// ------------------------------------------------------
-void TestMatrixs()
+void TestMatrices()
 {
 	CMatrixFloat m, l;
 	CTicTac tictac;
@@ -190,18 +149,9 @@ void TestMatrixs()
 	l.loadFromTextFile(myDataDir + string("matrix1.txt"));
 	t = tictac.Tac();
 	cout << "Read (text file) in " << 1e6 * t << "us:\n" << l << endl;
-
-	m.laplacian(l);
+	mrpt::math::laplacian(m, l);
 
 	cout << "Laplacian:\n" << l << endl;
-
-	CMatrixFloat Z, D;
-	m.eigenVectors(Z, D);
-
-	cout << "Eigenvectors: M = Z * D * Z':\n Z=\n" << Z << endl;
-	cout << "D=\n" << D << endl;
-
-	cout << "Z * D * Z'=\n" << Z * D * (~Z) << endl;
 }
 
 void TestCov()
@@ -209,7 +159,7 @@ void TestCov()
 	// Initialize a matrix from a C array:
 	const double numbers[] = {1, 2, 3, 10, 4, 5, 6, 14, 10, -5, -3, 1};
 	CMatrixDouble Mdyn(4, 3, numbers);
-	CMatrixFixedNumeric<double, 4, 3> Mfix(numbers);
+	CMatrixFixed<double, 4, 3> Mfix(numbers);
 
 	vector<CVectorDouble> samples(4);
 	for (size_t i = 0; i < 4; i++)
@@ -235,10 +185,9 @@ int main()
 	{
 		TestInitMatrix();
 		TestMatrixTemplate();
-		TestMatrixs();
+		TestMatrices();
 		TestHCH();
 		TestChol();
-		TestEigenvector();
 		TestCov();
 
 		return 0;

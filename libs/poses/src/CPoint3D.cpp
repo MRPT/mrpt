@@ -15,6 +15,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
+#include <iostream>
 #include <limits>
 
 using namespace mrpt;
@@ -116,15 +117,12 @@ CPoint3D CPoint3D::operator-(const CPose3D& b) const
 	b.getInverseHomogeneousMatrix(B_INV);
 
 	return CPoint3D(
-		B_INV.get_unsafe(0, 0) * m_coords[0] +
-			B_INV.get_unsafe(0, 1) * m_coords[1] +
-			B_INV.get_unsafe(0, 2) * m_coords[2] + B_INV.get_unsafe(0, 3),
-		B_INV.get_unsafe(1, 0) * m_coords[0] +
-			B_INV.get_unsafe(1, 1) * m_coords[1] +
-			B_INV.get_unsafe(1, 2) * m_coords[2] + B_INV.get_unsafe(1, 3),
-		B_INV.get_unsafe(2, 0) * m_coords[0] +
-			B_INV.get_unsafe(2, 1) * m_coords[1] +
-			B_INV.get_unsafe(2, 2) * m_coords[2] + B_INV.get_unsafe(2, 3));
+		B_INV(0, 0) * m_coords[0] + B_INV(0, 1) * m_coords[1] +
+			B_INV(0, 2) * m_coords[2] + B_INV(0, 3),
+		B_INV(1, 0) * m_coords[0] + B_INV(1, 1) * m_coords[1] +
+			B_INV(1, 2) * m_coords[2] + B_INV(1, 3),
+		B_INV(2, 0) * m_coords[0] + B_INV(2, 1) * m_coords[1] +
+			B_INV(2, 2) * m_coords[2] + B_INV(2, 3));
 }
 
 /*---------------------------------------------------------------
@@ -166,4 +164,10 @@ void CPoint3D::setToNaN()
 mrpt::math::TPoint3D CPoint3D::asTPoint() const
 {
 	return mrpt::math::TPoint3D(x(), y(), z());
+}
+
+std::ostream& mrpt::poses::operator<<(std::ostream& o, const CPoint3D& p)
+{
+	o << "(" << p[0] << "," << p[1] << "," << p[2] << ")";
+	return o;
 }

@@ -20,7 +20,7 @@ template <class GRAPH_T>
 CNodeRegistrationDecider<GRAPH_T>::CNodeRegistrationDecider()
 	: m_prev_registered_nodeID(INVALID_NODEID)
 {
-	m_init_inf_mat.unit();
+	m_init_inf_mat.setIdentity();
 	m_init_inf_mat *= 10000;
 	this->resetPDF(&this->m_since_prev_node_PDF);
 }

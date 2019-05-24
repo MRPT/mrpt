@@ -51,8 +51,8 @@ void TUncertaintyPath<GRAPH_T>::clear()
 	// clear the relative edge
 	curr_pose_pdf.mean = pose_t();
 	// by default the information matrix is set to the unit matrix
-	CMatrixDouble33 init_path_mat;
-	init_path_mat.unit();
+	auto init_path_mat = CMatrixDouble33::Identity();
+
 	// put a really large number - we are certain of this position
 	init_path_mat *= 10000;  // TODO - justify this..
 	curr_pose_pdf.cov_inv = init_path_mat;

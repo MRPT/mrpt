@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/system/COutputLogger.h>
 
@@ -29,7 +29,7 @@ namespace graphs
  * 888-905, Aug. 2000.</code><br>
  *
  * \tparam GRAPH_MATRIX The type of square matrices used to represent the
- * connectivity in a graph (e.g. mrpt::math::CMatrix)
+ * connectivity in a graph (e.g. mrpt::math::CMatrixF)
  * \tparam num_t The type of matrix elements, thresholds, etc. (typ: float or
  * double). Defaults to the type of matrix elements.
  *
@@ -67,7 +67,7 @@ class CGraphPartitioner : public mrpt::system::COutputLogger
 	 * \param minSizeClusters [IN] Default=1, Minimum size of partitions to be
 	 * accepted.
 	 *
-	 * \sa mrpt::math::CMatrix, SpectralBisection
+	 * \sa mrpt::math::CMatrixF, SpectralBisection
 	 *
 	 * \exception Throws a std::logic_error if an invalid matrix is passed.
 	 */
@@ -97,7 +97,7 @@ class CGraphPartitioner : public mrpt::system::COutputLogger
 	 * 0.5*(W<sub>ij</sub>+W<sub>ji</sub>). Set to false if matrix is known to
 	 * be simetric.
 	 *
-	 * \sa mrpt::math::CMatrix, RecursiveSpectralPartition
+	 * \sa mrpt::math::CMatrixF, RecursiveSpectralPartition
 	 *
 	 * \exception Throws a std::logic_error if an invalid matrix is passed.
 	 */
@@ -126,7 +126,7 @@ class CGraphPartitioner : public mrpt::system::COutputLogger
 	 * 0.5*(W<sub>ij</sub>+W<sub>ji</sub>). Set to false if matrix is known to
 	 * be simetric.
 	 *
-	 * \sa mrpt::math::CMatrix, RecursiveSpectralPartition
+	 * \sa mrpt::math::CMatrixF, RecursiveSpectralPartition
 	 *
 	 * \exception Throws a std::logic_error if an invalid matrix is passed.
 	 */

@@ -144,18 +144,18 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::
 		// For quicker access to values as "float" instead of "doubles":
 		mrpt::math::CMatrixDouble44 H;
 		robotPose3D.getHomogeneousMatrix(H);
-		const float m00 = H.get_unsafe(0, 0);
-		const float m01 = H.get_unsafe(0, 1);
-		const float m02 = H.get_unsafe(0, 2);
-		const float m03 = H.get_unsafe(0, 3);
-		const float m10 = H.get_unsafe(1, 0);
-		const float m11 = H.get_unsafe(1, 1);
-		const float m12 = H.get_unsafe(1, 2);
-		const float m13 = H.get_unsafe(1, 3);
-		const float m20 = H.get_unsafe(2, 0);
-		const float m21 = H.get_unsafe(2, 1);
-		const float m22 = H.get_unsafe(2, 2);
-		const float m23 = H.get_unsafe(2, 3);
+		const float m00 = H(0, 0);
+		const float m01 = H(0, 1);
+		const float m02 = H(0, 2);
+		const float m03 = H(0, 3);
+		const float m10 = H(1, 0);
+		const float m11 = H(1, 1);
+		const float m12 = H(1, 2);
+		const float m13 = H(1, 3);
+		const float m20 = H(2, 0);
+		const float m21 = H(2, 1);
+		const float m22 = H(2, 2);
+		const float m23 = H(2, 3);
 
 		mrpt::math::TPoint3Df pt;
 		for (size_t i = 0; i < sizeRangeScan; i++)

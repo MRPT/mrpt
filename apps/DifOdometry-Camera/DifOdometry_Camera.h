@@ -14,6 +14,7 @@
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/vision/CDifodo.h>
+#include <fstream>
 #include <iostream>
 
 #if defined(MRPT_OS_LINUX) && !defined(linux)

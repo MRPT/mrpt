@@ -9,8 +9,8 @@
 
 #include "opengl-precomp.h"  // Precompiled header
 
-#include <mrpt/math/CMatrix.h>
-#include <mrpt/math/CMatrixTemplate.h>
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_containers.h>  // dotProduct()
 #include <mrpt/opengl/CPolyhedron.h>
@@ -1314,7 +1314,7 @@ CPolyhedron::Ptr CPolyhedron::getDual() const
 		pl.coefs[2] = p.z;
 		pl.coefs[3] = -square(p.x) - square(p.y) - square(p.z);
 	}
-	CMatrixTemplate<bool> incidence(NV, NF);
+	CMatrixDynamic<bool> incidence(NV, NF);
 	vector<TPoint3D> vertices(NV);
 	for (size_t i = 0; i < NV; i++)
 	{
@@ -1336,7 +1336,7 @@ CPolyhedron::Ptr CPolyhedron::getDual() const
 			if (incidence(j, i)) faces[i].vertices.push_back(j);
 	// The following code ensures that the faces' vertex list is in the adequate
 	// order.
-	CMatrixTemplate<bool> arrayEF(NE, NV);
+	CMatrixDynamic<bool> arrayEF(NE, NV);
 	for (size_t i = 0; i < NE; i++)
 		for (size_t j = 0; j < NV; j++)
 			arrayEF(i, j) = faceContainsEdge(mFaces[j], mEdges[i]);

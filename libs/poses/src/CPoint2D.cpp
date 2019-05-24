@@ -13,6 +13,7 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
+#include <iostream>
 #include <limits>
 
 using namespace mrpt::poses;
@@ -94,4 +95,10 @@ void CPoint2D::setToNaN()
 mrpt::math::TPoint2D CPoint2D::asTPoint() const
 {
 	return mrpt::math::TPoint2D(x(), y());
+}
+
+std::ostream& mrpt::poses::operator<<(std::ostream& o, const CPoint2D& p)
+{
+	o << "(" << p[0] << "," << p[1] << ")";
+	return o;
 }

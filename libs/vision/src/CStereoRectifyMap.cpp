@@ -9,10 +9,9 @@
 
 #include "vision-precomp.h"  // Precompiled headers
 
-#include <mrpt/vision/CStereoRectifyMap.h>
-
-// Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
+#include <mrpt/vision/CStereoRectifyMap.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -21,6 +20,8 @@ using namespace mrpt::img;
 using namespace mrpt::math;
 
 #if MRPT_HAS_OPENCV
+#include <opencv2/core/eigen.hpp>
+
 static void do_rectify(
 	const CStereoRectifyMap& me, const cv::Mat& src_left,
 	const cv::Mat& src_right, cv::Mat& out_left, cv::Mat& out_right,
@@ -237,14 +238,20 @@ void CStereoRectifyMap::setFromCamParams(const mrpt::img::TStereoCamera& params)
 
 	// R1: Rotation of left camera after rectification:
 	// R2: idem for right cam:
-	const Eigen::Map<Eigen::Matrix3d> R1e(R1.ptr<double>());
-	const Eigen::Map<Eigen::Matrix3d> R2e(R2.ptr<double>());
-
-	CPose3D RR1, RR2;
-	RR1.setRotationMatrix(R1e);
-	RR2.setRotationMatrix(R2e);
-	m_rot_left = CPose3DQuat(RR1);
-	m_rot_right = CPose3DQuat(RR2);
+	{
+		Eigen::Matrix3d Re;
+		cv::cv2eigen(R1, Re);
+		CPose3D RR1;
+		RR1.setRotationMatrix(CMatrixDouble33(Re));
+		m_rot_left = CPose3DQuat(RR1);
+	}
+	{
+		Eigen::Matrix3d Re;
+		cv::cv2eigen(R2, Re);
+		CPose3D RR;
+		RR.setRotationMatrix(CMatrixDouble33(Re));
+		m_rot_right = CPose3DQuat(RR);
+	}
 
 	m_rectified_image_params.rightCameraPose = params.rightCameraPose;
 

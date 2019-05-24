@@ -21,6 +21,8 @@ This library is part of MRPT and can be installed in Debian-based systems with:
 
 		sudo apt install libmrpt-serialization-dev
 
+See: \ref mrpt_from_cmake
+
 ## Binary serialization (most efficient)
 
 Main classes and concepts associated with this library:

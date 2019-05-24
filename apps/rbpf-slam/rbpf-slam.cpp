@@ -557,13 +557,12 @@ void MapBuilding_RBPF()
 						mapBuilder.mapPDF.getEstimatedPosePDFAtTime(
 							k, poseParts);
 
-						CPose3D meanPose;
-						CMatrixDouble66 COV;
-						poseParts.getCovarianceAndMean(COV, meanPose);
+						const auto [COV, meanPose] =
+							poseParts.getCovarianceAndMean();
 
 						if (meanPose.distanceTo(lastMeanPose) > minDistBtwPoses)
 						{
-							CMatrixDouble33 COV3 = COV.block(0, 0, 3, 3);
+							CMatrixDouble33 COV3 = COV.blockCopy<3, 3>(0, 0);
 
 							minDistBtwPoses = 6 * sqrt(COV3(0, 0) + COV3(1, 1));
 

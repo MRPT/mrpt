@@ -5,35 +5,47 @@
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file        |
    | See: https://www.mrpt.org/Authors - All rights reserved.                  |
    | Released under BSD License. See details in https://www.mrpt.org/License   |
-   +---------------------------------------------------------------------------+ */
+   +---------------------------------------------------------------------------+
+ */
 
 /** \defgroup mrpt_gui_grp [mrpt-gui]
 
-<small> <a href="index.html#libs">Back to list of all libraries</a> | <a href="modules.html" >See all modules</a> </small>
-<br>
+GUI support: 2D plots (Matlab-like), 3D rendering viewports, etc.
 
-<h2>Library <code>mrpt-gui</code></h2>
-<hr>
+<small> <a href="index.html#libs">Back to list of all libraries</a> | <a
+href="modules.html" >See all modules</a> </small> <br>
 
-This library provides three classes that represent GUI windows, each having a 
+# Library `mrpt-gui`
+
+This C++ library is part of MRPT and can be installed in Debian-based systems
+with:
+
+		sudo apt install libmrpt-gui-dev
+
+See: \ref mrpt_from_cmake
+
+This library provides these classes that represent GUI windows, each having a
 specific specialized purpose:
 
-<ul>
-<li> <b> mrpt::gui::CDisplayWindow :</b> Displays 2D bitmap images, and optionally sets of points over them, etc.  </li>
-<li> <b> mrpt::gui::CDisplayWindow3D :</b> A powerful 3D rendering window capable of displaying a mrpt::opengl::COpenGLScene. 
-It features mouse navigation, Alt+Enter fullscreen switching, multiple viewports, etc. See this <a href="http://www.mrpt.org/Tutorial_3D_Scenes" >tutorial</a>.</li>
-<li> <b> mrpt::gui::CDisplayWindowPlots :</b> Displays one or more 2D vectorial graphs, in a manner very similar to MATLAB "plot" commands. </li>
-</ul>
+ - mrpt::gui::CDisplayWindow: Displays 2D bitmap images, and
+optionally sets of points over them, etc.
 
-All these window classes inherits from mrpt::gui::CBaseGUIWindow, which provides a set of methods
-and variables common to all the classes. 
-It allow moving/resizing the windows, polling for key strokes, etc. 
-Note events-driven applications can be also implemented since it also implements 
-the mrpt::system::CObservable pattern, emitting events as described in 
-the description of mrpt::gui::CBaseGUIWindow.
+ - mrpt::gui::CDisplayWindow3D: A powerful 3D rendering window capable of
+displaying a mrpt::opengl::COpenGLScene, or efficiently displaying 2D images
+using graphics card acceleration. It features mouse navigation, Alt+Enter
+fullscreen switching, multiple viewports, etc. See this <a
+href="http://www.mrpt.org/Tutorial_3D_Scenes" >tutorial</a>.
 
+ - mrpt::gui::CDisplayWindowPlots: Displays one or more 2D vectorial graphs,
+in a manner very similar to MATLAB "plot" commands.
+
+All these window classes inherits from mrpt::gui::CBaseGUIWindow, which provides
+a set of methods and variables common to all the classes. It allow
+moving/resizing the windows, polling for key strokes, etc. Note events-driven
+applications can be also implemented since it also implements the
+mrpt::system::CObservable pattern, emitting events as described in the
+description of mrpt::gui::CBaseGUIWindow.
 
 All the classes in this library are in the namespace mrpt::gui
 
 */
-

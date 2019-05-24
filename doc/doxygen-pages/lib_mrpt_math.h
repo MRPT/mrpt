@@ -22,15 +22,26 @@ This library is part of MRPT and can be installed in Debian-based systems with:
 
 		sudo apt install libmrpt-math-dev
 
-Main classes and concepts associated with this library:
+See: \ref mrpt_from_cmake
 
-Lightweight geometry entities: Write me!
+The main classes and concepts associated with this library:
 
-Comparison: lightweight vs. {CPose*, CPoint*}: (Move to a new doc page?)
- - Both can be serialized, but CPose* are CSerializable-based.
- - CPose* require aligned memory (they hold Eigen containers).
- - CPose* include a cache for precomputed cos/sin values, so they are preferable
-when doing many pose (+) point compositions.
- - Lightweight containers can be constexpr constructed, CPose* cannot.
+ - \ref mrpt_math_vectors_matrices_grp: Vectors and matrices (compatible with
+the Eigen library).
+ - \ref mrpt_math_lwgeom_grp: TPose2D, TPose3D, TPoint3D, TLine3D, geometry
+functions, etc. (See also: \ref mrpt_poses_grp)
+
+Other important elements:
+ - \ref filtering_grp
+ - \ref fresnel_integrals_grp
+ - \ref fourier_grp
+ - \ref gausspdf_transform_grp
+ - \ref interpolation_grp
+ - \ref kdtree_grp
+ - \ref polynomial_roots
+ - \ref ransac_grp
+ - \ref stats_grp
+
+
 
 */

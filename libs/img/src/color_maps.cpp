@@ -10,6 +10,7 @@
 #include "img-precomp.h"  // Precompiled headers
 
 #include <mrpt/img/color_maps.h>
+#include <Eigen/Dense>
 #include <mrpt/math/interp_fit.hpp>
 
 using namespace mrpt;

@@ -297,7 +297,7 @@ void mrpt::topography::path_from_rtk_gps(
 
 		D_cov *= 4 * square(std_0);
 
-		D_cov_1 = D_cov.inv();
+		D_cov_1 = D_cov.inverse_LLt();
 
 		// cout << D_cov.inMatlabFormat() << endl;
 

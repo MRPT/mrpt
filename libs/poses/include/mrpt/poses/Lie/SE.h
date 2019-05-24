@@ -9,8 +9,8 @@
 #pragma once
 
 #include <mrpt/core/optional_ref.h>
-#include <mrpt/math/CArrayNumeric.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixFixed.h>
+#include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/poses/poses_frwds.h>
 
@@ -42,8 +42,8 @@ struct SE<3>
 	/** Dimensionality of the matrix manifold (3x4=12 upper part of the 4x4) */
 	constexpr static size_t MANIFOLD_DIM = 3 * 4;
 
-	using tangent_vector = mrpt::math::CArrayDouble<DOFs>;
-	using manifold_vector = mrpt::math::CArrayDouble<MANIFOLD_DIM>;
+	using tangent_vector = mrpt::math::CVectorFixedDouble<DOFs>;
+	using manifold_vector = mrpt::math::CVectorFixedDouble<MANIFOLD_DIM>;
 
 	using type = CPose3D;
 	using light_type = mrpt::math::TPose3D;
@@ -58,7 +58,7 @@ struct SE<3>
 	using matrix_TxT = mrpt::math::CMatrixDouble66;
 
 	/** Type for Jacobians between SO(n) 3x4 (sub)matrices in the manifold */
-	using matrix_MxM = mrpt::math::CMatrixFixedNumeric<double, 12, 12>;
+	using matrix_MxM = mrpt::math::CMatrixFixed<double, 12, 12>;
 
 	/** Retraction to SE(3), a **pseudo-exponential** map \f$ x \rightarrow
 	 * PseudoExp(x^\wedge) \f$ and its Jacobian.
@@ -169,8 +169,8 @@ struct SE<2>
 	 * consistency with SE(3), where the actual matrix is used instead. */
 	constexpr static size_t MANIFOLD_DIM = 3;
 
-	using tangent_vector = mrpt::math::CArrayDouble<DOFs>;
-	using manifold_vector = mrpt::math::CArrayDouble<MANIFOLD_DIM>;
+	using tangent_vector = mrpt::math::CVectorFixedDouble<DOFs>;
+	using manifold_vector = mrpt::math::CVectorFixedDouble<MANIFOLD_DIM>;
 
 	using type = CPose2D;
 	using light_type = mrpt::math::TPose2D;

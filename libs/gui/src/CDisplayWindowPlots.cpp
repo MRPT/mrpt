@@ -894,7 +894,7 @@ void CDisplayWindowPlots::axis_fit(bool aspectRatioFix)
  ---------------------------------------------------------------*/
 template <typename T>
 void CDisplayWindowPlots::plotEllipse(
-	const T mean_x, const T mean_y, const CMatrixTemplateNumeric<T>& cov22,
+	const T mean_x, const T mean_y, const CMatrixDynamic<T>& cov22,
 	const float quantiles, const std::string& lineFormat,
 	const std::string& plotName, bool showName)
 {
@@ -954,12 +954,12 @@ void CDisplayWindowPlots::plotEllipse(
 
 // Explicit instantations:
 template void CDisplayWindowPlots::plotEllipse(
-	const float mean_x, const float mean_y,
-	const CMatrixTemplateNumeric<float>& cov22, const float quantiles,
-	const std::string& lineFormat, const std::string& plotName, bool showName);
+	const float mean_x, const float mean_y, const CMatrixDynamic<float>& cov22,
+	const float quantiles, const std::string& lineFormat,
+	const std::string& plotName, bool showName);
 template void CDisplayWindowPlots::plotEllipse(
 	const double mean_x, const double mean_y,
-	const CMatrixTemplateNumeric<double>& cov22, const float quantiles,
+	const CMatrixDynamic<double>& cov22, const float quantiles,
 	const std::string& lineFormat, const std::string& plotName, bool showName);
 
 /*---------------------------------------------------------------
@@ -967,7 +967,7 @@ template void CDisplayWindowPlots::plotEllipse(
  ---------------------------------------------------------------*/
 template <typename T>
 void CDisplayWindowPlots::plotEllipse(
-	const T mean_x, const T mean_y, const CMatrixFixedNumeric<T, 2, 2>& cov22,
+	const T mean_x, const T mean_y, const CMatrixFixed<T, 2, 2>& cov22,
 	const float quantiles, const std::string& lineFormat,
 	const std::string& plotName, bool showName)
 {
@@ -1027,11 +1027,11 @@ void CDisplayWindowPlots::plotEllipse(
 // Explicit instantations:
 template void CDisplayWindowPlots::plotEllipse(
 	const float mean_x, const float mean_y,
-	const CMatrixFixedNumeric<float, 2, 2>& cov22, const float quantiles,
+	const CMatrixFixed<float, 2, 2>& cov22, const float quantiles,
 	const std::string& lineFormat, const std::string& plotName, bool showName);
 template void CDisplayWindowPlots::plotEllipse(
 	const double mean_x, const double mean_y,
-	const CMatrixFixedNumeric<double, 2, 2>& cov22, const float quantiles,
+	const CMatrixFixed<double, 2, 2>& cov22, const float quantiles,
 	const std::string& lineFormat, const std::string& plotName, bool showName);
 
 /*---------------------------------------------------------------

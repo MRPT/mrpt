@@ -39,14 +39,14 @@ void TestPosePDFOperations()
 	p1.mean = CPoint3D(0, -0.12, 0);
 	p2.mean = CPoint3D(0, -0.1, 0);
 
-	p1.cov.zeros();
+	p1.cov.setZero();
 	p1.cov(0, 0) = 0.06f;
 	p1.cov(0, 1) = 0.002f;
 	p1.cov(1, 0) = 0.002f;
 	p1.cov(1, 1) = 0.02f;
 	p1.cov(2, 2) = 0.0002f;
 
-	p2.cov.zeros();
+	p2.cov.setZero();
 	p2.cov(0, 0) = 0.02f;
 	p2.cov(0, 1) = -0.004f;
 	p2.cov(1, 0) = -0.004f;

@@ -13,7 +13,7 @@
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/img/color_maps.h>
 #include <mrpt/maps/CMetricMap.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/KDTreeCapable.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>

@@ -1201,14 +1201,13 @@ void CGraphSlamEngine<GRAPH_T>::updateRangeImageViewport()
 	{
 		// TODO - make this a static class member - or at least a private member
 		// of the class
-		CMatrixFloat range2D;
+
 		mrpt::img::CImage img;
 
 		// load the image if not already loaded..
 		m_last_laser_scan3D->load();
-		range2D = m_last_laser_scan3D->rangeImage *
-				  (1.0f / 5.0);  // TODO - without the magic number?
-		img.setFromMatrix(range2D);
+		img.setFromMatrix(
+			m_last_laser_scan3D->rangeImage, false /* do normalize */);
 
 		COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 		COpenGLViewport::Ptr viewp_range = scene->getViewport("viewp_range");

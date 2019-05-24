@@ -120,7 +120,7 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 
 					if (1)
 					{
-						CMatrix  A;
+						CMatrixF  A;
 						bestLMH->m_robotPosesGraph.partitioner.getAdjacencyMatrix( A );
 						if (A.cols()>0)
 						{

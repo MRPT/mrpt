@@ -13,6 +13,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/random.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -49,7 +50,7 @@ class Pose3DQuatTests : public ::testing::Test
 
 		EXPECT_NEAR(
 			0,
-			(p1_c_p2.getAsVectorVal() - p_q1_c_q2.getAsVectorVal())
+			(p1_c_p2.asVectorVal() - p_q1_c_q2.asVectorVal())
 				.array()
 				.abs()
 				.sum(),
@@ -59,7 +60,7 @@ class Pose3DQuatTests : public ::testing::Test
 
 		EXPECT_NEAR(
 			0,
-			(p1_i_p2.getAsVectorVal() - p_q1_i_q2.getAsVectorVal())
+			(p1_i_p2.asVectorVal() - p_q1_i_q2.asVectorVal())
 				.array()
 				.abs()
 				.sum(),
@@ -73,10 +74,7 @@ class Pose3DQuatTests : public ::testing::Test
 			CPose3DQuat A = C + q2;
 			EXPECT_NEAR(
 				0,
-				(A.getAsVectorVal() - q1_c_q2.getAsVectorVal())
-					.array()
-					.abs()
-					.sum(),
+				(A.asVectorVal() - q1_c_q2.asVectorVal()).array().abs().sum(),
 				1e-6);
 		}
 		// Test + operator: trg same var
@@ -85,10 +83,7 @@ class Pose3DQuatTests : public ::testing::Test
 			A = A + q2;
 			EXPECT_NEAR(
 				0,
-				(A.getAsVectorVal() - q1_c_q2.getAsVectorVal())
-					.array()
-					.abs()
-					.sum(),
+				(A.asVectorVal() - q1_c_q2.asVectorVal()).array().abs().sum(),
 				1e-6);
 		}
 		// Test =+ operator
@@ -97,10 +92,7 @@ class Pose3DQuatTests : public ::testing::Test
 			A += q2;
 			EXPECT_NEAR(
 				0,
-				(A.getAsVectorVal() - q1_c_q2.getAsVectorVal())
-					.array()
-					.abs()
-					.sum(),
+				(A.asVectorVal() - q1_c_q2.asVectorVal()).array().abs().sum(),
 				1e-6);
 		}
 	}
@@ -118,7 +110,7 @@ class Pose3DQuatTests : public ::testing::Test
 
 		EXPECT_NEAR(
 			0,
-			(p1_plus_p.getAsVectorVal() - q1_plus_p.getAsVectorVal())
+			(p1_plus_p.asVectorVal() - q1_plus_p.asVectorVal())
 				.array()
 				.abs()
 				.sum(),
@@ -131,7 +123,8 @@ class Pose3DQuatTests : public ::testing::Test
 	}
 
 	static void func_compose_point(
-		const CArrayDouble<7 + 3>& x, const double& dummy, CArrayDouble<3>& Y)
+		const CVectorFixedDouble<7 + 3>& x, const double& dummy,
+		CVectorFixedDouble<3>& Y)
 	{
 		MRPT_UNUSED_PARAM(dummy);
 		CPose3DQuat q(
@@ -149,57 +142,63 @@ class Pose3DQuatTests : public ::testing::Test
 		const CPose3DQuat q1(CPose3D(x1, y1, z1, yaw1, pitch1, roll1));
 		const CPoint3D p(x, y, z);
 
-		CMatrixFixedNumeric<double, 3, 3> df_dpoint(UNINITIALIZED_MATRIX);
-		CMatrixFixedNumeric<double, 3, 7> df_dpose(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 3> df_dpoint(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 7> df_dpose(UNINITIALIZED_MATRIX);
 
 		TPoint3D l;
 		q1.composePoint(x, y, z, l.x, l.y, l.z, &df_dpoint, &df_dpose);
 
 		// Numerical approximation:
-		CMatrixFixedNumeric<double, 3, 3> num_df_dpoint(UNINITIALIZED_MATRIX);
-		CMatrixFixedNumeric<double, 3, 7> num_df_dpose(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 3> num_df_dpoint(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 7> num_df_dpose(UNINITIALIZED_MATRIX);
 		{
-			CArrayDouble<7 + 3> x_mean;
+			CVectorFixedDouble<7 + 3> x_mean;
 			for (int i = 0; i < 7; i++) x_mean[i] = q1[i];
 			x_mean[7 + 0] = x;
 			x_mean[7 + 1] = y;
 			x_mean[7 + 2] = z;
 
 			double DUMMY = 0;
-			CArrayDouble<7 + 3> x_incrs;
-			x_incrs.assign(1e-7);
+			CVectorFixedDouble<7 + 3> x_incrs;
+			x_incrs.fill(1e-7);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
 				x_mean,
 				std::function<void(
-					const CArrayDouble<7 + 3>& x, const double& dummy,
-					CArrayDouble<3>& Y)>(&func_compose_point),
+					const CVectorFixedDouble<7 + 3>& x, const double& dummy,
+					CVectorFixedDouble<3>& Y)>(&func_compose_point),
 				x_incrs, DUMMY, numJacobs);
 
-			numJacobs.extractMatrix(0, 0, num_df_dpose);
-			numJacobs.extractMatrix(0, 7, num_df_dpoint);
+			num_df_dpose = numJacobs.asEigen().block<3, 7>(0, 0);
+			num_df_dpoint = numJacobs.asEigen().block<3, 3>(0, 7);
 		}
 
 		// Compare:
-		EXPECT_NEAR(0, (df_dpoint - num_df_dpoint).array().abs().sum(), 3e-3)
+		EXPECT_NEAR(
+			0,
+			(df_dpoint.asEigen() - num_df_dpoint.asEigen()).array().abs().sum(),
+			3e-3)
 			<< "q1: " << q1 << endl
 			<< "p:  " << p << endl
 			<< "Numeric approximation of df_dpoint: " << endl
-			<< num_df_dpoint << endl
+			<< num_df_dpoint.asEigen() << endl
 			<< "Implemented method: " << endl
 			<< df_dpoint << endl
 			<< "Error: " << endl
-			<< df_dpoint - num_df_dpoint << endl;
+			<< df_dpoint.asEigen() - num_df_dpoint.asEigen() << endl;
 
-		EXPECT_NEAR(0, (df_dpose - num_df_dpose).array().abs().sum(), 3e-3)
+		EXPECT_NEAR(
+			0,
+			(df_dpose.asEigen() - num_df_dpose.asEigen()).array().abs().sum(),
+			3e-3)
 			<< "q1: " << q1 << endl
 			<< "p:  " << p << endl
 			<< "Numeric approximation of df_dpose: " << endl
-			<< num_df_dpose << endl
+			<< num_df_dpose.asEigen() << endl
 			<< "Implemented method: " << endl
-			<< df_dpose << endl
+			<< df_dpose.asEigen() << endl
 			<< "Error: " << endl
-			<< df_dpose - num_df_dpose << endl;
+			<< df_dpose.asEigen() - num_df_dpose.asEigen() << endl;
 	}
 
 	void test_invComposePoint(
@@ -217,7 +216,7 @@ class Pose3DQuatTests : public ::testing::Test
 
 		EXPECT_NEAR(
 			0,
-			(p_minus_p1.getAsVectorVal() - p_minus_q1.getAsVectorVal())
+			(p_minus_p1.asVectorVal() - p_minus_q1.asVectorVal())
 				.array()
 				.abs()
 				.sum(),
@@ -226,15 +225,15 @@ class Pose3DQuatTests : public ::testing::Test
 			<< "p_minus_q1: " << p_minus_q1 << endl;
 
 		EXPECT_NEAR(
-			0,
-			(p_rec.getAsVectorVal() - p.getAsVectorVal()).array().abs().sum(),
+			0, (p_rec.asVectorVal() - p.asVectorVal()).array().abs().sum(),
 			1e-5)
 			<< "p_rec: " << p_rec << endl
 			<< "p: " << p << endl;
 	}
 
 	static void func_inv_compose_point(
-		const CArrayDouble<7 + 3>& x, const double& dummy, CArrayDouble<3>& Y)
+		const CVectorFixedDouble<7 + 3>& x, const double& dummy,
+		CVectorFixedDouble<3>& Y)
 	{
 		MRPT_UNUSED_PARAM(dummy);
 		CPose3DQuat q(
@@ -254,8 +253,8 @@ class Pose3DQuatTests : public ::testing::Test
 		const CPose3DQuat q1(CPose3D(x1, y1, z1, yaw1, pitch1, roll1));
 		const CPoint3D p(x, y, z);
 
-		CMatrixFixedNumeric<double, 3, 3> df_dpoint(UNINITIALIZED_MATRIX);
-		CMatrixFixedNumeric<double, 3, 7> df_dpose(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 3> df_dpoint(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 7> df_dpose(UNINITIALIZED_MATRIX);
 
 		TPoint3D l;
 		q1.inverseComposePoint(x, y, z, l.x, l.y, l.z, &df_dpoint, &df_dpose);
@@ -285,54 +284,60 @@ class Pose3DQuatTests : public ::testing::Test
 		EXPECT_NEAR(theorical.z, l.z, 1e-5);
 
 		// Numerical approximation:
-		CMatrixFixedNumeric<double, 3, 3> num_df_dpoint(UNINITIALIZED_MATRIX);
-		CMatrixFixedNumeric<double, 3, 7> num_df_dpose(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 3> num_df_dpoint(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 7> num_df_dpose(UNINITIALIZED_MATRIX);
 		{
-			CArrayDouble<7 + 3> x_mean;
+			CVectorFixedDouble<7 + 3> x_mean;
 			for (int i = 0; i < 7; i++) x_mean[i] = q1[i];
 			x_mean[7 + 0] = x;
 			x_mean[7 + 1] = y;
 			x_mean[7 + 2] = z;
 
 			double DUMMY = 0;
-			CArrayDouble<7 + 3> x_incrs;
-			x_incrs.assign(1e-7);
+			CVectorFixedDouble<7 + 3> x_incrs;
+			x_incrs.fill(1e-7);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
 				x_mean,
 				std::function<void(
-					const CArrayDouble<7 + 3>& x, const double& dummy,
-					CArrayDouble<3>& Y)>(&func_inv_compose_point),
+					const CVectorFixedDouble<7 + 3>& x, const double& dummy,
+					CVectorFixedDouble<3>& Y)>(&func_inv_compose_point),
 				x_incrs, DUMMY, numJacobs);
 
-			numJacobs.extractMatrix(0, 0, num_df_dpose);
-			numJacobs.extractMatrix(0, 7, num_df_dpoint);
+			num_df_dpose = numJacobs.block<3, 7>(0, 0);
+			num_df_dpoint = numJacobs.block<3, 3>(0, 7);
 		}
 
 		// Compare:
-		EXPECT_NEAR(0, (df_dpoint - num_df_dpoint).array().abs().sum(), 3e-3)
+		EXPECT_NEAR(
+			0,
+			(df_dpoint.asEigen() - num_df_dpoint.asEigen()).array().abs().sum(),
+			3e-3)
 			<< "q1: " << q1 << endl
 			<< "from pose: " << CPose3D(x1, y1, z1, yaw1, pitch1, roll1) << endl
 			<< "p:  " << p << endl
 			<< "local:  " << l << endl
 			<< "Numeric approximation of df_dpoint: " << endl
-			<< num_df_dpoint << endl
+			<< num_df_dpoint.asEigen() << endl
 			<< "Implemented method: " << endl
-			<< df_dpoint << endl
+			<< df_dpoint.asEigen() << endl
 			<< "Error: " << endl
 			<< df_dpoint - num_df_dpoint << endl;
 
-		EXPECT_NEAR(0, (df_dpose - num_df_dpose).array().abs().sum(), 3e-3)
+		EXPECT_NEAR(
+			0,
+			(df_dpose.asEigen() - num_df_dpose.asEigen()).array().abs().sum(),
+			3e-3)
 			<< "q1: " << q1 << endl
 			<< "from pose: " << CPose3D(x1, y1, z1, yaw1, pitch1, roll1) << endl
 			<< "p:  " << p << endl
 			<< "local:  " << l << endl
 			<< "Numeric approximation of df_dpose: " << endl
-			<< num_df_dpose << endl
+			<< num_df_dpose.asEigen() << endl
 			<< "Implemented method: " << endl
-			<< df_dpose << endl
+			<< df_dpose.asEigen() << endl
 			<< "Error: " << endl
-			<< df_dpose - num_df_dpose << endl;
+			<< df_dpose.asEigen() - num_df_dpose.asEigen() << endl;
 	}
 
 	void test_fromYPRAndBack(
@@ -357,8 +362,7 @@ class Pose3DQuatTests : public ::testing::Test
 			<< q1.getHomogeneousMatrixVal<CMatrixDouble44>() << endl;
 
 		EXPECT_NEAR(
-			0, (p1.getAsVectorVal() - p1r.getAsVectorVal()).array().abs().sum(),
-			1e-5)
+			0, (p1.asVectorVal() - p1r.asVectorVal()).array().abs().sum(), 1e-5)
 			<< "p1: " << p1 << endl
 			<< "q1: " << q1 << endl
 			<< "p1r: " << p1r << endl;
@@ -475,7 +479,8 @@ class Pose3DQuatTests : public ::testing::Test
 	}
 
 	static void func_spherical_coords(
-		const CArrayDouble<7 + 3>& x, const double& dummy, CArrayDouble<3>& Y)
+		const CVectorFixedDouble<7 + 3>& x, const double& dummy,
+		CVectorFixedDouble<3>& Y)
 	{
 		MRPT_UNUSED_PARAM(dummy);
 		CPose3DQuat q(
@@ -492,61 +497,68 @@ class Pose3DQuatTests : public ::testing::Test
 		const CPose3DQuat q1(CPose3D(x1, y1, z1, yaw1, pitch1, roll1));
 		const TPoint3D p(x, y, z);
 
-		CMatrixFixedNumeric<double, 3, 3> df_dpoint(UNINITIALIZED_MATRIX);
-		CMatrixFixedNumeric<double, 3, 7> df_dpose(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 3> df_dpoint(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 7> df_dpose(UNINITIALIZED_MATRIX);
 
 		double hr, hy, hp;
 		q1.sphericalCoordinates(p, hr, hy, hp, &df_dpoint, &df_dpose);
 
 		// Numerical approximation:
-		CMatrixFixedNumeric<double, 3, 3> num_df_dpoint(UNINITIALIZED_MATRIX);
-		CMatrixFixedNumeric<double, 3, 7> num_df_dpose(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 3> num_df_dpoint(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 3, 7> num_df_dpose(UNINITIALIZED_MATRIX);
 		{
-			CArrayDouble<7 + 3> x_mean;
+			CVectorFixedDouble<7 + 3> x_mean;
 			for (int i = 0; i < 7; i++) x_mean[i] = q1[i];
 			x_mean[7 + 0] = x;
 			x_mean[7 + 1] = y;
 			x_mean[7 + 2] = z;
 
 			double DUMMY = 0;
-			CArrayDouble<7 + 3> x_incrs;
-			x_incrs.assign(1e-7);
+			CVectorFixedDouble<7 + 3> x_incrs;
+			x_incrs.fill(1e-7);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
 				x_mean,
 				std::function<void(
-					const CArrayDouble<7 + 3>& x, const double& dummy,
-					CArrayDouble<3>& Y)>(&func_spherical_coords),
+					const CVectorFixedDouble<7 + 3>& x, const double& dummy,
+					CVectorFixedDouble<3>& Y)>(&func_spherical_coords),
 				x_incrs, DUMMY, numJacobs);
 
-			numJacobs.extractMatrix(0, 0, num_df_dpose);
-			numJacobs.extractMatrix(0, 7, num_df_dpoint);
+			num_df_dpose = numJacobs.block<3, 7>(0, 0);
+			num_df_dpoint = numJacobs.block<3, 3>(0, 7);
 		}
 
 		// Compare:
-		EXPECT_NEAR(0, (df_dpoint - num_df_dpoint).array().abs().sum(), 3e-3)
+		EXPECT_NEAR(
+			0,
+			(df_dpoint.asEigen() - num_df_dpoint.asEigen()).array().abs().sum(),
+			3e-3)
 			<< "q1: " << q1 << endl
 			<< "p:  " << p << endl
 			<< "Numeric approximation of df_dpoint: " << endl
-			<< num_df_dpoint << endl
+			<< num_df_dpoint.asEigen() << endl
 			<< "Implemented method: " << endl
-			<< df_dpoint << endl
+			<< df_dpoint.asEigen() << endl
 			<< "Error: " << endl
-			<< df_dpoint - num_df_dpoint << endl;
+			<< df_dpoint.asEigen() - num_df_dpoint.asEigen() << endl;
 
-		EXPECT_NEAR(0, (df_dpose - num_df_dpose).array().abs().sum(), 3e-3)
+		EXPECT_NEAR(
+			0,
+			(df_dpose.asEigen() - num_df_dpose.asEigen()).array().abs().sum(),
+			3e-3)
 			<< "q1: " << q1 << endl
 			<< "p:  " << p << endl
 			<< "Numeric approximation of df_dpose: " << endl
-			<< num_df_dpose << endl
+			<< num_df_dpose.asEigen() << endl
 			<< "Implemented method: " << endl
-			<< df_dpose << endl
+			<< df_dpose.asEigen() << endl
 			<< "Error: " << endl
-			<< df_dpose - num_df_dpose << endl;
+			<< df_dpose.asEigen() - num_df_dpose.asEigen() << endl;
 	}
 
 	static void func_normalizeJacob(
-		const CArrayDouble<4>& x, const double& dummy, CArrayDouble<4>& Y)
+		const CVectorFixedDouble<4>& x, const double& dummy,
+		CVectorFixedDouble<4>& Y)
 	{
 		MRPT_UNUSED_PARAM(dummy);
 		CQuaternionDouble q;
@@ -561,38 +573,41 @@ class Pose3DQuatTests : public ::testing::Test
 		CQuaternionDouble q1;
 		pp.getAsQuaternion(q1);
 
-		CMatrixFixedNumeric<double, 4, 4> df_dpose(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 4, 4> df_dpose(UNINITIALIZED_MATRIX);
 		q1.normalizationJacobian(df_dpose);
 
 		// Numerical approximation:
-		CMatrixFixedNumeric<double, 4, 4> num_df_dpose(UNINITIALIZED_MATRIX);
+		CMatrixFixed<double, 4, 4> num_df_dpose(UNINITIALIZED_MATRIX);
 		{
-			CArrayDouble<4> x_mean;
+			CVectorFixedDouble<4> x_mean;
 			for (int i = 0; i < 4; i++) x_mean[i] = q1[i];
 
 			double DUMMY = 0;
-			CArrayDouble<4> x_incrs;
-			x_incrs.assign(1e-5);
+			CVectorFixedDouble<4> x_incrs;
+			x_incrs.fill(1e-5);
 			CMatrixDouble numJacobs;
 			mrpt::math::estimateJacobian(
 				x_mean,
 				std::function<void(
-					const CArrayDouble<4>& x, const double& dummy,
-					CArrayDouble<4>& Y)>(&func_normalizeJacob),
+					const CVectorFixedDouble<4>& x, const double& dummy,
+					CVectorFixedDouble<4>& Y)>(&func_normalizeJacob),
 				x_incrs, DUMMY, numJacobs);
 
-			numJacobs.extractMatrix(0, 0, num_df_dpose);
+			num_df_dpose = numJacobs.block<4, 4>(0, 0);
 		}
 
 		// Compare:
-		EXPECT_NEAR(0, (df_dpose - num_df_dpose).array().abs().sum(), 3e-3)
+		EXPECT_NEAR(
+			0,
+			(df_dpose.asEigen() - num_df_dpose.asEigen()).array().abs().sum(),
+			3e-3)
 			<< "q1: " << q1 << endl
 			<< "Numeric approximation of df_dpose: " << endl
-			<< num_df_dpose << endl
+			<< num_df_dpose.asEigen() << endl
 			<< "Implemented method: " << endl
-			<< df_dpose << endl
+			<< df_dpose.asEigen() << endl
 			<< "Error: " << endl
-			<< df_dpose - num_df_dpose << endl;
+			<< df_dpose.asEigen() - num_df_dpose.asEigen() << endl;
 	}
 };
 

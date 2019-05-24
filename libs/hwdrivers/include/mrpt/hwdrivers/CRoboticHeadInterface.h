@@ -11,7 +11,7 @@
 
 #include <mrpt/comms/CInterfaceFTDI.h>
 #include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/math/CMatrixTemplate.h>
+#include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/serialization/CMessage.h>
 #include <mrpt/system/COutputLogger.h>
@@ -105,7 +105,7 @@ class CRoboticHeadInterface : public mrpt::system::COutputLogger
 	 * each sound channel.
 	 *
 	 */
-	void Get3SoundBuffer(mrpt::math::CMatrixTemplate<int>& buf);
+	void Get3SoundBuffer(mrpt::math::CMatrixDynamic<int>& buf);
 
 	/** Move the head in:
 	   \code

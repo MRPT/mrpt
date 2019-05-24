@@ -326,8 +326,8 @@ void COpenNI2Sensor::getNextObservation(
 				// Normalize the image
 				mrpt::img::CImage img;
 				img.setFromMatrix(out_obs.rangeImage);
-				CMatrixFloat r =
-					out_obs.rangeImage * float(1.0 / this->m_maxRange);
+				CMatrixFloat r = out_obs.rangeImage;
+				r *= float(1.0 / this->m_maxRange);
 				m_win_range->showImage(img);
 			}
 		}

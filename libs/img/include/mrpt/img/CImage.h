@@ -12,7 +12,7 @@
 #include <mrpt/img/CCanvas.h>
 #include <mrpt/img/TCamera.h>
 #include <mrpt/img/TPixelCoord.h>
-#include <mrpt/math/eigen_frwds.h>
+#include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/serialization/CSerializable.h>
 
 // Forwards decls:
@@ -207,23 +207,6 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	/** Constructor from another CImage, making or not a deep copy of the data
 	 */
 	CImage(const CImage& img, copy_type_t copy_type);
-
-	/** Explicit constructor from a matrix, interpreted as grayscale
-	 * intensity values, in the range [0,1] (normalized=true) or [0,255]
-	 * (normalized=false)
-	 * \sa setFromMatrix
-	 */
-	template <typename Derived>
-	explicit inline CImage(
-		const Eigen::MatrixBase<Derived>& m, bool matrix_is_normalized)
-		: CImage()
-	{
-#if MRPT_HAS_OPENCV
-		this->setFromMatrix(m, matrix_is_normalized);
-#else
-		THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
-#endif
-	}
 
 	/** @} */
 
@@ -738,7 +721,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	 * the required number of times to fill the entire size of the matrix on
 	 * input.
 	 */
-	void getAsMatrixTiled(math::CMatrix& outMatrix) const;
+	void getAsMatrixTiled(mrpt::math::CMatrixFloat& outMatrix) const;
 
 	/** @} */
 
@@ -840,9 +823,8 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	 *	Matrix indexes are assumed to be in this order: M(row,column)
 	 * \sa getAsMatrix
 	 */
-	template <typename Derived>
-	void setFromMatrix(
-		const Eigen::MatrixBase<Derived>& m, bool matrix_is_normalized = true)
+	template <typename MAT>
+	void setFromMatrix(const MAT& m, bool matrix_is_normalized = true)
 	{
 		MRPT_START
 		const unsigned int lx = m.cols();
@@ -874,11 +856,10 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	 * Matrix indexes are assumed to be in this order: M(row,column)
 	 * \sa getAsRGBMatrices
 	 */
-	template <typename Derived>
+	template <typename MAT>
 	void setFromRGBMatrices(
-		const Eigen::MatrixBase<Derived>& r,
-		const Eigen::MatrixBase<Derived>& g,
-		const Eigen::MatrixBase<Derived>& b, bool matrix_is_normalized = true)
+		const MAT& r, const MAT& g, const MAT& b,
+		bool matrix_is_normalized = true)
 	{
 		MRPT_START
 		makeSureImageIsLoaded();  // For delayed loaded images stored externally

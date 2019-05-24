@@ -22,6 +22,7 @@
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/slam/observations_overlap.h>
 #include <mrpt/system/CTicTac.h>
+#include <Eigen/Dense>
 
 using namespace mrpt::slam;
 using namespace mrpt::obs;

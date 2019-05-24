@@ -39,7 +39,7 @@ template <typename U>
 class MatrixWrapper<U, false>
 {
    public:
-	using MatrixType = CMatrixTemplate<U>;
+	using MatrixType = CMatrixDynamic<U>;
 };
 
 template <typename T, typename U, bool UIsObject, typename FunctionType>
@@ -211,7 +211,7 @@ class ReverseAccessorIterator
 
 /** A vector-like wrapper for a Matrix for accessing the elements of a given row
  * with a [] operator.
- *  For usage with MRPT's CMatrixTemplate only (for MRPT numeric matrices, use
+ *  For usage with MRPT's CMatrixDynamic only (for MRPT numeric matrices, use
  * Eigen methods)
  * \sa
  * CMatrixColumnAccessor,CMatrixRowAccessorExtended,CConstMatrixRowAccessor,CConstMatrixRowAccessorExtended
@@ -283,7 +283,7 @@ inline CMatrixRowAccessor<MAT> getRowAccessor(MAT& m, size_t rowIdx)
 
 /** A vector-like wrapper for a Matrix for accessing the elements of a given row
  * with a [] operator, with offset and custom spacing.
- *  For usage with MRPT's CMatrixTemplate only (for MRPT numeric matrices, use
+ *  For usage with MRPT's CMatrixDynamic only (for MRPT numeric matrices, use
  * Eigen methods)
  * \sa
  * CMatrixColumnAccessorExtended,CMatrixRowAccessor,CConstMatrixRowAccessor,CConstMatrixRowAccessorExtended
@@ -361,7 +361,7 @@ inline CMatrixRowAccessorExtended<MAT> getRowAccessor(
 
 /** A vector-like wrapper for a const Matrix for accessing the elements of a
  * given row with a [] operator.
- *  For usage with MRPT's CMatrixTemplate only (for MRPT numeric matrices, use
+ *  For usage with MRPT's CMatrixDynamic only (for MRPT numeric matrices, use
  * Eigen methods)
  * \sa
  * CConstMatrixColumnAccessor,CMatrixRowAccessorExtended,CMatrixRowAccessor,CConstMatrixRowAccessorExtended
@@ -418,7 +418,7 @@ inline CConstMatrixRowAccessor<MAT> getRowAccessor(const MAT& m, size_t rowIdx)
 
 /** A vector-like wrapper for a const Matrix for accessing the elements of a
  * given row with a [] operator, with offset and custom spacing.
- *  For usage with MRPT's CMatrixTemplate only (for MRPT numeric matrices, use
+ *  For usage with MRPT's CMatrixDynamic only (for MRPT numeric matrices, use
  * Eigen methods)
  * \sa
  * CConstMatrixColumnAccessorExtended,CMatrixRowAccessor,CConstMatrixRowAccessor,CMatrixRowAccessorExtended

@@ -142,7 +142,7 @@ void CPose3D_from_ROS_Pose_msg(CPose3D& self, object pose_msg)
 // }
 //
 // void
-// CPosePDFWrap::getCovarianceAndMean(mrpt::math::CMatrixFixedNumeric<double,3ul,3ul>
+// CPosePDFWrap::getCovarianceAndMean(mrpt::math::CMatrixFixed<double,3ul,3ul>
 // &cov, mrpt::poses::CPose2D &mean_point) const
 // {
 //     this->get_override("getCovarianceAndMean")(cov, mean_point);
@@ -204,13 +204,13 @@ void CPose3D_from_ROS_Pose_msg(CPose3D& self, object pose_msg)
 //         this->get_override("getMean")(mean_point);
 //     }
 //
-//     void getCovariance(mrpt::math::CMatrixFixedNumeric<double,6ul,6ul> &cov)
+//     void getCovariance(mrpt::math::CMatrixFixed<double,6ul,6ul> &cov)
 //     const
 //     {
 //         this->get_override("getCovariance")(cov);
 //     }
 //
-//     void getCovarianceAndMean(mrpt::math::CMatrixFixedNumeric<double,6ul,6ul>
+//     void getCovarianceAndMean(mrpt::math::CMatrixFixed<double,6ul,6ul>
 //     &cov, mrpt::poses::CPose3D &mean_point) const
 //     {
 //         this->get_override("getCovarianceAndMean")(cov, mean_point);
@@ -446,10 +446,6 @@ void export_poses()
 				"Returns the mean, or mathematical expectation of the "
 				"probability density distribution (PDF).")
 			.def(
-				"getCovarianceAndMean", &CPosePDF::getCovarianceAndMean,
-				"Returns an estimate of the pose covariance matrix "
-				"(STATE_LENxSTATE_LEN cov matrix) and the mean, both at once.")
-			.def(
 				"saveToTextFile", &CPosePDF::saveToTextFile,
 				"Save PDF's particles to a text file. See derived classes for "
 				"more information about the format of generated files.")
@@ -554,7 +550,7 @@ void export_poses()
 
 		// dealing with overloading
 		void (CPose3DPDF::*getCovariance1)(
-			mrpt::math::CMatrixFixedNumeric<double, 6ul, 6ul> & cov) const =
+			mrpt::math::CMatrixFixed<double, 6ul, 6ul> & cov) const =
 			&CPose3DPDF::getCovariance;
 
 		class_<CPose3DPDF, boost::noncopyable>("CPose3DPDF", no_init)
@@ -571,10 +567,6 @@ void export_poses()
 				"getCovariance", getCovariance1,
 				"Returns an estimate of the pose covariance matrix "
 				"(STATE_LENxSTATE_LEN cov matrix).")
-			.def(
-				"getCovarianceAndMean", &CPose3DPDF::getCovarianceAndMean,
-				"Returns an estimate of the pose covariance matrix "
-				"(STATE_LENxSTATE_LEN cov matrix) and the mean, both at once.")
 			.def(
 				"saveToTextFile", &CPose3DPDF::saveToTextFile,
 				"Save PDF's particles to a text file. See derived classes for "
@@ -614,7 +606,7 @@ void export_poses()
 
 		// dealing with overloading
 		void (CPose3DPDF::*getCovariance1)(
-			mrpt::math::CMatrixFixedNumeric<double, 6ul, 6ul> & cov) const =
+			mrpt::math::CMatrixFixed<double, 6ul, 6ul> & cov) const =
 			&CPose3DPDFGaussian::getCovariance;
 
 		class_<CPose3DPDFGaussian, bases<CPose3DPDF>>(
@@ -629,11 +621,6 @@ void export_poses()
 				"getCovariance", getCovariance1,
 				"Returns an estimate of the pose covariance matrix "
 				"(STATE_LENxSTATE_LEN cov matrix).")
-			.def(
-				"getCovarianceAndMean",
-				&CPose3DPDFGaussian::getCovarianceAndMean,
-				"Returns an estimate of the pose covariance matrix "
-				"(STATE_LENxSTATE_LEN cov matrix) and the mean, both at once.")
 			.def(
 				"saveToTextFile", &CPose3DPDFGaussian::saveToTextFile,
 				"Save PDF's particles to a text file. See derived classes for "

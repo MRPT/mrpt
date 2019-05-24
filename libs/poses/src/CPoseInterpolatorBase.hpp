@@ -10,16 +10,17 @@
 
 #include <mrpt/poses/CPoseInterpolatorBase.h>
 
-#include <mrpt/serialization/stl_serialization.h>
+#include <mrpt/math/CMatrixD.h>
+//#include <mrpt/math/eigen_extensions.h>
 #include <mrpt/math/slerp.h>
 #include <mrpt/math/wrap2pi.h>
-#include <mrpt/math/interp_fit.hpp>
-#include <mrpt/math/CMatrixD.h>
-#include <mrpt/poses/CPose3DPDFParticles.h>
-#include <mrpt/system/datetime.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DPDFParticles.h>
+#include <mrpt/serialization/stl_serialization.h>
+#include <mrpt/system/datetime.h>
 #include <fstream>
+#include <mrpt/math/interp_fit.hpp>
 
 namespace mrpt::poses
 {

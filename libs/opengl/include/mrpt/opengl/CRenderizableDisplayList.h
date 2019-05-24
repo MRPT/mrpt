@@ -51,7 +51,7 @@ class CRenderizableDisplayList : public mrpt::opengl::CRenderizable
 
 	/** Must be called to notify that the object has changed (so, the display
 	 * list must be updated) */
-	EIGEN_STRONG_INLINE void notifyChange() const { m_dl_recreate = true; }
+	inline void notifyChange() const { m_dl_recreate = true; }
 	/** Derived classes must implement this method to the render the object. */
 	virtual void render_dl() const = 0;
 

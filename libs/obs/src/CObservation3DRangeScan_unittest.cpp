@@ -61,7 +61,7 @@ TEST(CObservation3DRangeScan, Project3D_noFilter)
 
 TEST(CObservation3DRangeScan, Project3D_filterMinMax1)
 {
-	mrpt::math::CMatrix fMax(TEST_RANGEIMG_HEIGHT, TEST_RANGEIMG_WIDTH),
+	mrpt::math::CMatrixF fMax(TEST_RANGEIMG_HEIGHT, TEST_RANGEIMG_WIDTH),
 		fMin(TEST_RANGEIMG_HEIGHT, TEST_RANGEIMG_WIDTH);
 	fMin(12, 12) = 11.5f;
 	fMax(12, 12) = 12.5f;  // pass
@@ -88,7 +88,7 @@ TEST(CObservation3DRangeScan, Project3D_filterMinMax1)
 
 TEST(CObservation3DRangeScan, Project3D_filterMinMaxAllBetween)
 {
-	mrpt::math::CMatrix fMax(TEST_RANGEIMG_HEIGHT, TEST_RANGEIMG_WIDTH),
+	mrpt::math::CMatrixF fMax(TEST_RANGEIMG_HEIGHT, TEST_RANGEIMG_WIDTH),
 		fMin(TEST_RANGEIMG_HEIGHT, TEST_RANGEIMG_WIDTH);
 	// Default filter=0.0f -> no filtering
 	for (int r = 10; r < 16; r++)
@@ -117,7 +117,7 @@ TEST(CObservation3DRangeScan, Project3D_filterMinMaxAllBetween)
 
 TEST(CObservation3DRangeScan, Project3D_filterMinMaxNoneBetween)
 {
-	mrpt::math::CMatrix fMax(TEST_RANGEIMG_HEIGHT, TEST_RANGEIMG_WIDTH),
+	mrpt::math::CMatrixF fMax(TEST_RANGEIMG_HEIGHT, TEST_RANGEIMG_WIDTH),
 		fMin(TEST_RANGEIMG_HEIGHT, TEST_RANGEIMG_WIDTH);
 	// Default filter=0.0f -> no filtering
 	for (int r = 10; r < 16; r++)
@@ -146,7 +146,7 @@ TEST(CObservation3DRangeScan, Project3D_filterMinMaxNoneBetween)
 
 TEST(CObservation3DRangeScan, Project3D_filterMin)
 {
-	mrpt::math::CMatrix fMin(TEST_RANGEIMG_HEIGHT, TEST_RANGEIMG_WIDTH);
+	mrpt::math::CMatrixF fMin(TEST_RANGEIMG_HEIGHT, TEST_RANGEIMG_WIDTH);
 	// Default filter=0.0f -> no filtering
 	for (int r = 10; r < 16; r++)
 		for (int c = 10; c < 16; c++)
@@ -170,7 +170,7 @@ TEST(CObservation3DRangeScan, Project3D_filterMin)
 
 TEST(CObservation3DRangeScan, Project3D_filterMax)
 {
-	mrpt::math::CMatrix fMax(TEST_RANGEIMG_HEIGHT, TEST_RANGEIMG_WIDTH);
+	mrpt::math::CMatrixF fMax(TEST_RANGEIMG_HEIGHT, TEST_RANGEIMG_WIDTH);
 	// Default filter=0.0f -> no filtering
 	for (int r = 10; r < 16; r++)
 		for (int c = 10; c < 16; c++)

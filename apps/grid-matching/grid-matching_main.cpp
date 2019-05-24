@@ -365,7 +365,7 @@ void do_grid_align()
 
 				float stdPhi = sqrt(estimateCOV(2, 2));
 
-				CMatrixDouble22 estimateCOV22 = estimateCOV.block(0, 0, 2, 2);
+				const auto estimateCOV22 = estimateCOV.extractMatrix<2, 2>();
 				float stdXY = sqrt(estimateCOV22.det());
 
 				float Axy = estimateMean.distance2DTo(GT_Ax, GT_Ay);
@@ -546,7 +546,7 @@ void do_grid_align()
 
 #ifdef SAVE_SOG_GRID
 					// Save grid evaluation of the SOG:
-					CMatrix gridLimits(1, 4);
+					CMatrixF gridLimits(1, 4);
 					gridLimits(0, 0) = estimateMean.x - 0.10f;
 					gridLimits(0, 1) = estimateMean.x + 0.10f,
 								  gridLimits(0, 2) = estimateMean.y - 0.10f;
@@ -644,7 +644,7 @@ void do_grid_align()
 					}
 
 					size_t best_match = 0;
-					dErrs.minimum(&best_match);
+					dErrs.minCoeff(best_match);
 					double MIN_DESCR_DIST = mrpt::math::minimum(D);
 					if (dErrs[best_match] < 0.20)
 					{
