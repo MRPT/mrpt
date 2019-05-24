@@ -12,6 +12,8 @@
 #include <mrpt/gui.h>
 #include <mrpt/kinematics/CVehicleSimul_DiffDriven.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/math/TLine3D.h>
+#include <mrpt/math/TObject3D.h>
 #include <mrpt/nav/reactive/CReactiveNavigationSystem3D.h>
 #include <mrpt/nav/reactive/CRobot2NavInterfaceForSimulator.h>
 #include <mrpt/opengl.h>

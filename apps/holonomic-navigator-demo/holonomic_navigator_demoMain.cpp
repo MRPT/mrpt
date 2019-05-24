@@ -24,6 +24,8 @@
 
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/math/TLine3D.h>
+#include <mrpt/math/TObject3D.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/serialization/CArchive.h>

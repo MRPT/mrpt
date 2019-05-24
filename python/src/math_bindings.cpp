@@ -10,7 +10,12 @@
 
 /* MRPT */
 #include <mrpt/math/CMatrixFixed.h>
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/TPoint2D.h>
+#include <mrpt/math/TPoint3D.h>
+#include <mrpt/math/TPose2D.h>
+#include <mrpt/math/TPose3D.h>
+#include <mrpt/math/TTwist2D.h>
+#include <mrpt/math/TTwist3D.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose2D.h>

@@ -24,6 +24,8 @@
 #include <mrpt/config/CConfigFilePrefixer.h>
 #include <mrpt/containers/printf_vector.h>
 #include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/math/TLine3D.h>
+#include <mrpt/math/TObject3D.h>
 #include <mrpt/math/geometry.h>  // intersect()
 #include <mrpt/math/utils.h>
 #include <mrpt/opengl/CDisk.h>

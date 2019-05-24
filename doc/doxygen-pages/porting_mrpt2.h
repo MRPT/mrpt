@@ -19,8 +19,16 @@
  *
  * **Mandatory changes**
  *  - Your project must use C++17. Using CMake this is now done automatically when linking your targets against MRPT imported targes. See: \ref mrpt_from_cmake.
+ *
  *  - Matrices and classes no longer inherits from Eigen classes. See: \ref mrpt_math_vectors_matrices_grp
  *     - `mrpt::math::CMatrix` -->  `mrpt::math::CMatrixF`
+ *
+ *  - The header `<mrpt/math/lightweight_geom_data.h>` is deprecated. Instead, use
+ *    - `<mrpt/math/TPose2D.h>`
+ *    - `<mrpt/math/TPose3D.h>`
+ *    - `<mrpt/math/TPoint2D.h>`
+ *    -  (and so on)
+ *
  *  - **Smart pointers** are now standard [`std::shared_ptr<>`](http://en.cppreference.com/w/cpp/memory/shared_ptr) instead of those based on `stlplus`. Required changes:
  *     - `ptr.clear()`  --> `ptr.reset()`. Also, notice that the former `stlplus` semantics of `clear()` deleting **all** copies
  * of the object, as hold by different smart pointers, is no longer maintained. There is no longer such a possibility, since the
@@ -53,7 +61,7 @@
  *        CObservation::Ptr obs = getObsFromSomewhere();
  *        CObservationGPS::Ptr gps = mrpt::ptr_cast<CObservationGPS>::from(obs);
  *        \endcode
- *  - Vectors and matrices are no longer **inheriting** from `Eigen::XXX` classes. Refer to docs in \ref mrpt_math_grp for more details.
+ *
  *  - Threads, semaphores and mutexes are now based on C++11 standard library.
  * Required changes:
  *    - `mrpt::synch::CCriticalSection cs;` --> `std::mutex cs;`
@@ -70,7 +78,9 @@
  * for Windows compilers. Important changes are:
  *    - `mrpt::math::randomGenerator` --> `mrpt::math::getRandomGenerator()`
  *    - `mrpt::global_settings` old static variables have been replaced by getter/setter functions.
+ *
  *  - `ASSERT_*` macros must now be ended with a semicolon, e.g. `ASSERT_(a>0);`
+ *
  *  - Serialization: See tutorial of the new module \ref mrpt_serialization_grp
  *    - To serialize an object to/from a CStream, you must now use CArchive:
  *        \code
@@ -81,6 +91,7 @@
  *        \endcode
  *    - The two methods `writeToStream()` and `readFromStream()` of old `CSerializable` classes must be replaced by the three methods:
  * `serializeGetVersion()`, `serializeTo()`, and `serializeTo()`. See tutorials in \ref mrpt_serialization_grp.
+ *
  *  - Implicit constructor to convert from mrpt::poses::CPose3D to mrpt::math::TPose3D has been removed, due to the refactoring
  * of mrpt::math and mrpt::poses into separate libraries. To convert CPose3D -> TPose3D, use the new method mrpt::poses::CPose3D::asTPose()
  *    \code
@@ -88,7 +99,8 @@
  *    mrpt::math::TPose3D p2 = p1;  // ERROR in mrpt 2.0 (built in MRPT 1.*)
  *    mrpt::math::TPose3D p3 = p1.asTPose(); // OK for mrpt 2.0
  *    \endcode
- *  - 16-bytes memory-aligned STL containers are now defined in separate headers, one for each container type, and based on
+ *
+ *  - 16-byte memory-aligned STL containers are now defined in separate headers, one for each container type, and based on
  * templatized `using`. Example:
  *       \code
  *       // Old: MRPT 1.* code

@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/TPoint2D.h>
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/serialization/CSerializable.h>

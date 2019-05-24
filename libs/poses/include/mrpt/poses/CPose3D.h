@@ -10,6 +10,8 @@
 
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CQuaternion.h>
+#include <mrpt/math/TPoint2D.h>
+#include <mrpt/math/TPoint3D.h>
 #include <mrpt/poses/CPose.h>
 #include <mrpt/system/string_utils.h>
 

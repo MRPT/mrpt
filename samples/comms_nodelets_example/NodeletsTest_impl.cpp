@@ -13,7 +13,7 @@ bool nodelets_test_passed_ok = false;
 
 //! [example-nodelets]
 #include <mrpt/comms/nodelets.h>
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/TPose3D.h>
 #include <chrono>
 #include <cstdio>  // printf()
 #include <iostream>

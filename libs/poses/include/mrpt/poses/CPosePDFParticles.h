@@ -10,7 +10,7 @@
 
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CParticleFilterData.h>
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/TPose2D.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPoseRandomSampler.h>
 

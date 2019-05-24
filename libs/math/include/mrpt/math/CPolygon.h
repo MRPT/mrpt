@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/TPolygon2D.h>
 #include <mrpt/serialization/CSerializable.h>
 
 namespace mrpt::math

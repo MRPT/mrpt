@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/math/CQuaternion.h>
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/TPose3D.h>
 
 namespace mrpt::math
 {

@@ -9,7 +9,12 @@
 
 #include <CTraitsTest.h>
 #include <gtest/gtest.h>
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/TPoint2D.h>
+#include <mrpt/math/TPoint3D.h>
+#include <mrpt/math/TPose2D.h>
+#include <mrpt/math/TPose3D.h>
+#include <mrpt/math/TPose3DQuat.h>
+#include <mrpt/math/TSegment2D.h>
 
 using namespace mrpt;
 using namespace mrpt::math;

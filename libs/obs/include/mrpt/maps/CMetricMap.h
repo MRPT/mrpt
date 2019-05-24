@@ -11,7 +11,6 @@
 #include <mrpt/maps/CMetricMapEvents.h>
 #include <mrpt/maps/TMetricMapInitializer.h>
 #include <mrpt/maps/metric_map_types.h>
-#include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/obs_frwds.h>

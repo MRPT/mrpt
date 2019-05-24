@@ -10,7 +10,7 @@
 
 #include <mrpt/comms/CSerialPort.h>
 #include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/TPose3D.h>
 
 namespace mrpt::hwdrivers
 {

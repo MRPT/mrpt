@@ -11,7 +11,8 @@
 #include <mrpt/core/optional_ref.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CVectorFixed.h>
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/TPose2D.h>
+#include <mrpt/math/TPose3D.h>
 #include <mrpt/poses/poses_frwds.h>
 
 /** \defgroup mrpt_poses_lie_grp Lie Algebra methods for SO(2),SO(3),SE(2),SE(3)

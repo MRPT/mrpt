@@ -9,6 +9,8 @@
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/img/TColor.h>
+#include <mrpt/math/TLine3D.h>
+#include <mrpt/math/TObject3D.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CBox.h>

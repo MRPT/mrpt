@@ -9,6 +9,7 @@
 
 #include "nav-precomp.h"  // Precomp header
 
+#include <mrpt/math/TSegment2D.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/nav/reactive/CWaypointsNavigator.h>
 #include <mrpt/poses/CPose2D.h>

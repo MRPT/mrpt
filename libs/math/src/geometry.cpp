@@ -14,12 +14,16 @@
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/math/CSparseMatrixTemplate.h>
 #include <mrpt/math/CVectorFixed.h>
+#include <mrpt/math/TLine2D.h>
+#include <mrpt/math/TLine3D.h>
+#include <mrpt/math/TObject2D.h>
+#include <mrpt/math/TObject3D.h>
+#include <mrpt/math/TPose2D.h>
+#include <mrpt/math/TPose3D.h>
 #include <mrpt/math/data_utils.h>
-//#include <mrpt/math/eigen_extensions.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_containers.h>
 #include <Eigen/Dense>
-//#include <Eigen/LU>
 
 using namespace mrpt;
 using namespace std;
