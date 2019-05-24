@@ -85,7 +85,7 @@ std::cout << "R:\n" << R << "\n";
 R.saveToTextFile("R.txt");
 ```
 
-## Example: matrix sum (Explicit call to Eigen)
+## Example: QR-based linear system solving (With explicit call to Eigen)
 
 ```
 #include <mrpt/math/CMatrixDynamic.h>
