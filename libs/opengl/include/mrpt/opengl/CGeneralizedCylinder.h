@@ -104,7 +104,7 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 	mutable std::vector<TQuadrilateral> mesh;
 	/** Mutable object with the cylinder's points, used to avoid repeated
 	 * computations. */
-	mutable mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D> pointsMesh;
+	mutable mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_data> pointsMesh;
 	/**  Mutable flag which tells if recalculations are needed. */
 	mutable bool meshUpToDate{false};
 	/**

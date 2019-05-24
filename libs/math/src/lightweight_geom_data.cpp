@@ -29,7 +29,9 @@ using mrpt::RAD2DEG;
 
 namespace mrpt::math
 {
+static_assert(std::is_trivial_v<TPoint2D_data>);
 static_assert(std::is_trivially_copyable_v<TPoint2D>);
+static_assert(std::is_trivial_v<TPoint3D_data>);
 static_assert(std::is_trivially_copyable_v<TPoint3D>);
 static_assert(std::is_trivially_copyable_v<TPose2D>);
 static_assert(std::is_trivially_copyable_v<TPose3D>);
@@ -39,9 +41,22 @@ static_assert(std::is_trivially_copyable_v<TLine3D>);
 static_assert(std::is_trivially_copyable_v<TTwist2D>);
 static_assert(std::is_trivially_copyable_v<TTwist3D>);
 
-TPoint2D::TPoint2D(const TPose2D& p) : x(p.x), y(p.y) {}
-TPoint2D::TPoint2D(const TPoint3D& p) : x(p.x), y(p.y) {}
-TPoint2D::TPoint2D(const TPose3D& p) : x(p.x), y(p.y) {}
+TPoint2D::TPoint2D(const TPose2D& p)
+{
+	x = p.x;
+	y = p.y;
+}
+TPoint2D::TPoint2D(const TPoint3D& p)
+{
+	x = p.x;
+	y = p.y;
+}
+TPoint2D::TPoint2D(const TPose3D& p)
+{
+	x = p.x;
+	y = p.y;
+}
+
 bool TPoint2D::operator<(const TPoint2D& p) const
 {
 	if (x < p.x)
@@ -180,9 +195,24 @@ bool TTwist3D::operator==(const TTwist3D& o) const
 		   wz == o.wz;
 }
 bool TTwist3D::operator!=(const TTwist3D& o) const { return !(*this == o); }
-TPoint3D::TPoint3D(const TPoint2D& p) : x(p.x), y(p.y), z(0.0) {}
-TPoint3D::TPoint3D(const TPose2D& p) : x(p.x), y(p.y), z(0.0) {}
-TPoint3D::TPoint3D(const TPose3D& p) : x(p.x), y(p.y), z(p.z) {}
+TPoint3D::TPoint3D(const TPoint2D& p)
+{
+	x = p.x;
+	y = p.y;
+	z = 0;
+}
+TPoint3D::TPoint3D(const TPose2D& p)
+{
+	x = p.x;
+	y = p.y;
+	z = 0;
+}
+TPoint3D::TPoint3D(const TPose3D& p)
+{
+	x = p.x;
+	y = p.y;
+	z = p.z;
+}
 bool TPoint3D::operator<(const TPoint3D& p) const
 {
 	if (x < p.x)
