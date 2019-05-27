@@ -257,6 +257,8 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 		MRPT_END
 	}
 
+	CMatrixDynamic& operator=(const CMatrixDynamic<T>& m) = default;
+
 	/** Assignment operator from another matrix (possibly of a different type)
 	 */
 	template <typename U>
