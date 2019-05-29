@@ -202,15 +202,9 @@ void CFeatureExtraction::internal_computeSiftDescriptors(
 		profiler, "internal_computeSiftDescriptors");
 
 	ASSERT_(in_features.size() > 0);
-	switch (options.SIFTOptions.implementation)
-	{
-		default:
-		{
-			cerr << "SIFT Extraction method not supported for features with "
-					"already known image coordinates"
-				 << endl;
-			break;
-		}
-	}  // end switch
+	// switch (options.SIFTOptions.implementation)
+	THROW_EXCEPTION(
+		"SIFT Extraction method not supported for features with already known "
+		"image coordinates");
 
 }  // end computeSiftDescriptors
