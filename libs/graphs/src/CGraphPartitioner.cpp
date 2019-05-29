@@ -364,4 +364,4 @@ template class CGraphPartitioner<mrpt::math::CMatrixDouble, double>;
 template class CGraphPartitioner<mrpt::math::CMatrixFloat, float>;
 template class CGraphPartitioner<mrpt::math::CMatrixD, double>;
 template class CGraphPartitioner<mrpt::math::CMatrixF, float>;
-}  // namespace mrpt::poses
+}  // namespace mrpt::graphs
