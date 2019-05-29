@@ -112,10 +112,13 @@ void mrpt::img::rgb2hsv(float r, float g, float b, float& h, float& s, float& v)
 					colormap
 -------------------------------------------------------------*/
 void mrpt::img::colormap(
-	const TColormap& color_map, const float color_index, float& r, float& g,
+	const TColormap& color_map, const float col_indx_in, float& r, float& g,
 	float& b)
 {
 	MRPT_START
+
+	const float color_index = std::min(1.0f, std::max(.0f, col_indx_in));
+
 	switch (color_map)
 	{
 		case cmJET:

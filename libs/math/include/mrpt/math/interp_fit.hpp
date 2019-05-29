@@ -18,7 +18,7 @@ T interpolate(const T& x, const VECTOR& ys, const T& x0, const T& x1)
 {
 	MRPT_START
 	ASSERT_(x1 > x0);
-	ASSERT_(!ys.size());
+	ASSERT_(ys.size() > 0);
 	const size_t N = ys.size();
 	if (x <= x0) return ys[0];
 	if (x >= x1) return ys[N - 1];
