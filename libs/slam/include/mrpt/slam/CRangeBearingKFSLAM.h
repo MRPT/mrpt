@@ -16,7 +16,7 @@
 #include <mrpt/maps/CLandmark.h>
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/math/CMatrixDynamic.h>
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/TPoint3D.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/obs/CSensoryFrame.h>

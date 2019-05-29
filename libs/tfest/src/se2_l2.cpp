@@ -9,6 +9,7 @@
 
 #include "tfest-precomp.h"  // Precompiled headers
 
+#include <mrpt/math/TPose2D.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/random.h>
 #include <mrpt/tfest/se2.h>

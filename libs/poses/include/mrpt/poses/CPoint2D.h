@@ -55,19 +55,10 @@ class CPoint2D : public CPoint<CPoint2D, 2>,
 	}
 
 	/** Implicit constructor from lightweight type. */
-	inline explicit CPoint2D(const mrpt::math::TPoint2D& o)
-	{
-		m_coords[0] = o.x;
-		m_coords[1] = o.y;
-	}
+	explicit CPoint2D(const mrpt::math::TPoint2D& o);
 
 	/** Explicit constructor from lightweight type (loses the z coord). */
-	inline explicit CPoint2D(const mrpt::math::TPoint3D& o)
-	{
-		m_coords[0] = o.x;
-		m_coords[1] = o.y;
-		m_coords[2] = 0;
-	}
+	explicit CPoint2D(const mrpt::math::TPoint3D& o);
 
 	mrpt::math::TPoint2D asTPoint() const;
 

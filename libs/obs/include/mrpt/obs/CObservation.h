@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/lightweight_geom_data_frwds.h>
+#include <mrpt/math/TPose3D.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/poses/poses_frwds.h>
 #include <mrpt/serialization/CSerializable.h>

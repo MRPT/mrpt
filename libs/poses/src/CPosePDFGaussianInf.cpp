@@ -9,6 +9,7 @@
 
 #include "poses-precomp.h"  // Precompiled headers
 
+#include <mrpt/math/TPose2D.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/wrap2pi.h>

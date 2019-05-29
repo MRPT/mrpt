@@ -9,6 +9,7 @@
 
 #include "opengl-precomp.h"  // Precompiled header
 
+#include <mrpt/math/TLine3D.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/COpenGLViewport.h>
 #include <mrpt/opengl/CSetOfObjects.h>

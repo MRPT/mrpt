@@ -13,11 +13,25 @@
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CQuaternion.h>
 #include <mrpt/math/CVectorDynamic.h>
-//#include <mrpt/math/eigen_extensions.h>
+#include <mrpt/math/TLine2D.h>
+#include <mrpt/math/TLine3D.h>
+#include <mrpt/math/TObject2D.h>
+#include <mrpt/math/TObject3D.h>
+#include <mrpt/math/TPlane.h>
+#include <mrpt/math/TPoint2D.h>
+#include <mrpt/math/TPoint3D.h>
+#include <mrpt/math/TPolygon2D.h>
+#include <mrpt/math/TPolygon3D.h>
+#include <mrpt/math/TPose2D.h>
+#include <mrpt/math/TPose3D.h>
+#include <mrpt/math/TPose3DQuat.h>
+#include <mrpt/math/TSegment2D.h>
+#include <mrpt/math/TSegment3D.h>
+#include <mrpt/math/TTwist2D.h>
+#include <mrpt/math/TTwist3D.h>
 #include <mrpt/math/geometry.h>  // distance()
 #include <mrpt/math/homog_matrices.h>
-#include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/math/ops_containers.h>
+#include <mrpt/math/ops_containers.h>  // squareNorm()
 #include <mrpt/serialization/CArchive.h>  // impl of << operator
 #include <mrpt/serialization/stl_serialization.h>
 #include <Eigen/Dense>
@@ -30,9 +44,34 @@ using mrpt::RAD2DEG;
 
 namespace mrpt::math
 {
-TPoint2D::TPoint2D(const TPose2D& p) : x(p.x), y(p.y) {}
-TPoint2D::TPoint2D(const TPoint3D& p) : x(p.x), y(p.y) {}
-TPoint2D::TPoint2D(const TPose3D& p) : x(p.x), y(p.y) {}
+static_assert(std::is_trivial_v<TPoint2D_data>);
+static_assert(std::is_trivially_copyable_v<TPoint2D>);
+static_assert(std::is_trivial_v<TPoint3D_data>);
+static_assert(std::is_trivially_copyable_v<TPoint3D>);
+static_assert(std::is_trivially_copyable_v<TPose2D>);
+static_assert(std::is_trivially_copyable_v<TPose3D>);
+static_assert(std::is_trivially_copyable_v<TPlane3D>);
+static_assert(std::is_trivially_copyable_v<TLine2D>);
+static_assert(std::is_trivially_copyable_v<TLine3D>);
+static_assert(std::is_trivially_copyable_v<TTwist2D>);
+static_assert(std::is_trivially_copyable_v<TTwist3D>);
+
+TPoint2D::TPoint2D(const TPose2D& p)
+{
+	x = p.x;
+	y = p.y;
+}
+TPoint2D::TPoint2D(const TPoint3D& p)
+{
+	x = p.x;
+	y = p.y;
+}
+TPoint2D::TPoint2D(const TPose3D& p)
+{
+	x = p.x;
+	y = p.y;
+}
+
 bool TPoint2D::operator<(const TPoint2D& p) const
 {
 	if (x < p.x)
@@ -95,6 +134,22 @@ mrpt::math::TPose2D mrpt::math::TPose2D::operator-(
 	const double new_phi = mrpt::math::wrapToPi(this->phi - b.phi);
 
 	return mrpt::math::TPose2D(new_x, new_y, new_phi);
+}
+TPoint2D TPose2D::composePoint(const TPoint2D l) const
+{
+	const double ccos = ::cos(phi), csin = ::sin(phi);
+	return {x + l.x * ccos - l.y * csin, y + l.x * csin + l.y * ccos};
+}
+mrpt::math::TPoint2D TPose2D::operator+(const mrpt::math::TPoint2D& b) const
+{
+	return this->composePoint(b);
+}
+
+mrpt::math::TPoint2D TPose2D::inverseComposePoint(const TPoint2D g) const
+{
+	const double Ax = g.x - x, Ay = g.y - y, ccos = ::cos(phi),
+				 csin = ::sin(phi);
+	return {Ax * ccos + Ay * csin, -Ax * csin + Ay * ccos};
 }
 
 // ----
@@ -171,9 +226,24 @@ bool TTwist3D::operator==(const TTwist3D& o) const
 		   wz == o.wz;
 }
 bool TTwist3D::operator!=(const TTwist3D& o) const { return !(*this == o); }
-TPoint3D::TPoint3D(const TPoint2D& p) : x(p.x), y(p.y), z(0.0) {}
-TPoint3D::TPoint3D(const TPose2D& p) : x(p.x), y(p.y), z(0.0) {}
-TPoint3D::TPoint3D(const TPose3D& p) : x(p.x), y(p.y), z(p.z) {}
+TPoint3D::TPoint3D(const TPoint2D& p)
+{
+	x = p.x;
+	y = p.y;
+	z = 0;
+}
+TPoint3D::TPoint3D(const TPose2D& p)
+{
+	x = p.x;
+	y = p.y;
+	z = 0;
+}
+TPoint3D::TPoint3D(const TPose3D& p)
+{
+	x = p.x;
+	y = p.y;
+	z = p.z;
+}
 bool TPoint3D::operator<(const TPoint3D& p) const
 {
 	if (x < p.x)
@@ -570,6 +640,11 @@ bool TSegment2D::operator<(const TSegment2D& s) const
 		return point2 < s.point2;
 }
 
+void TSegment3D::generate2DObject(TSegment2D& s) const
+{
+	s = TSegment2D(*this);
+}
+
 double TSegment3D::length() const { return math::distance(point1, point2); }
 double TSegment3D::distance(const TPoint3D& point) const
 {
@@ -757,6 +832,8 @@ TLine2D::TLine2D(const TLine3D& l)
 	coefs[1] = l.director[0];
 	coefs[2] = l.pBase.x * l.director[1] - l.pBase.y * l.director[0];
 }
+
+void TLine3D::generate2DObject(TLine2D& l) const { l = TLine2D(*this); }
 
 bool TLine3D::contains(const TPoint3D& point) const
 {
@@ -1203,6 +1280,11 @@ inline void TPolygon2D::createRegularPolygon(
 	for (size_t i = 0; i < numEdges; i++) poly[i] = pose.composePoint(poly[i]);
 }
 
+void TPolygon3D::generate2DObject(TPolygon2D& p) const
+{
+	p = TPolygon2D(*this);
+}
+
 double TPolygon3D::distance(const TPoint3D& point) const
 {
 	TPlane pl;
@@ -1381,6 +1463,31 @@ void TObject2D::getPolygons(
 		else
 			remainder.push_back(obj);
 }
+
+void TObject3D::generate2DObject(TObject2D& obj) const
+{
+	switch (type)
+	{
+		case GEOMETRIC_TYPE_POINT:
+			obj = TPoint2D(data.point);
+			break;
+		case GEOMETRIC_TYPE_SEGMENT:
+			obj = TSegment2D(data.segment);
+			break;
+		case GEOMETRIC_TYPE_LINE:
+			obj = TLine2D(data.line);
+			break;
+		case GEOMETRIC_TYPE_POLYGON:
+			obj = TPolygon2D(*(data.polygon));
+			break;
+		case GEOMETRIC_TYPE_PLANE:
+			throw std::logic_error("Too many dimensions");
+		default:
+			obj = TObject2D();
+			break;
+	}
+}
+
 void TObject3D::getPoints(
 	const std::vector<TObject3D>& objs, std::vector<TPoint3D>& pnts)
 {

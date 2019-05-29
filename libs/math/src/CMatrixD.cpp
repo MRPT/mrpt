@@ -10,7 +10,6 @@
 #include "math-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/CMatrixD.h>
-#include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
 

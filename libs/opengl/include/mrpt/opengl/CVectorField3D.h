@@ -10,7 +10,6 @@
 #pragma once
 
 #include <mrpt/math/CMatrixF.h>
-#include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 
 namespace mrpt::opengl

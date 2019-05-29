@@ -103,7 +103,7 @@ void CGeneralizedCylinder::render_dl() const
 }
 
 inline void createMesh(
-	const CMatrixDynamic<TPoint3D>& pointsMesh, size_t R, size_t C,
+	const CMatrixDynamic<TPoint3D_data>& pointsMesh, size_t R, size_t C,
 	vector<CGeneralizedCylinder::TQuadrilateral>& mesh)
 {
 	mesh.reserve(R * C);
@@ -113,18 +113,6 @@ inline void createMesh(
 				pointsMesh(i, j), pointsMesh(i, j + 1),
 				pointsMesh(i + 1, j + 1), pointsMesh(i + 1, j));
 }
-
-/*void transformMesh(const CPose3D &pose,const CMatrixDynamic<TPoint3D>
-&in,CMatrixDynamic<TPoint3D> &out)	{
-	size_t R=in.rows();
-	size_t C=in.cols();
-	out.setSize(R,C);
-	for (size_t i=0;i<R;i++) for (size_t j=0;j<C;j++)	{
-		TPoint3D pIn=in(i,j);
-		TPoint3D &pOut=out(i,j);
-		pose.composePoint(pIn.x,pIn.y,pIn.z,pOut.x,pOut.y,pOut.z);
-	}
-}*/
 
 bool CGeneralizedCylinder::traceRay(const CPose3D& o, double& dist) const
 {
@@ -143,10 +131,10 @@ void CGeneralizedCylinder::updateMesh() const
 	mesh.clear();
 	if (A > 1 && G > 1)
 	{
-		pointsMesh = CMatrixDynamic<TPoint3D>(A, G);
+		pointsMesh = CMatrixDynamic<TPoint3D_data>(A, G);
 		for (size_t i = 0; i < A; i++)
 			for (size_t j = 0; j < G; j++)
-				axis[i].composePoint(genX[j], pointsMesh(i, j));
+				pointsMesh(i, j) = axis[i].composePoint(genX[j]);
 		createMesh(pointsMesh, A - 1, G - 1, mesh);
 	}
 	meshUpToDate = true;
@@ -240,7 +228,7 @@ void CGeneralizedCylinder::getClosedSection(
 	if (index1 > index2) swap(index1, index2);
 	if (index2 >= axis.size() - 1) throw std::logic_error("Out of range");
 	if (!meshUpToDate) updateMesh();
-	auto ROIpoints = CMatrixDynamic<TPoint3D>(
+	auto ROIpoints = CMatrixDynamic<TPoint3D_data>(
 		pointsMesh.asEigen().block(index1, 0, index2 + 1, pointsMesh.cols()));
 
 	// At this point, ROIpoints contains a matrix of TPoints in which the number
@@ -248,7 +236,7 @@ void CGeneralizedCylinder::getClosedSection(
 	// for each vertex in the generatrix.
 	if (!closed)
 	{
-		CVectorDynamic<TPoint3D> vec(ROIpoints.rows());
+		CVectorDynamic<TPoint3D_data> vec(ROIpoints.rows());
 		vec.asEigen() = ROIpoints.col(0);
 		ROIpoints.appendCol(vec);
 	}

@@ -24,7 +24,6 @@
 
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/maps/CSimpleMap.h>
-#include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/carmen_log_tools.h>
 #include <mrpt/otherlibs/tclap/CmdLine.h>

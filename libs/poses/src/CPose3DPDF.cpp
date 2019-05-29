@@ -9,6 +9,7 @@
 
 #include "poses-precomp.h"  // Precompiled headers
 
+#include <mrpt/math/TPose3D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>

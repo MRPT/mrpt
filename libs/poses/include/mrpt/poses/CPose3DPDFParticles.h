@@ -10,6 +10,7 @@
 
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CParticleFilterData.h>
+#include <mrpt/math/TPose3D.h>
 #include <mrpt/poses/CPose3DPDF.h>
 
 namespace mrpt::poses

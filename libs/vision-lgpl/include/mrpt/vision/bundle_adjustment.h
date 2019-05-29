@@ -25,7 +25,6 @@
 
 #include <mrpt/img/TCamera.h>
 #include <mrpt/math/CVectorDynamic.h>
-#include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/system/TParameters.h>
 #include <mrpt/vision/types.h>
 #include <array>

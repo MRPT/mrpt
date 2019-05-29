@@ -15,7 +15,7 @@
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/KDTreeCapable.h>
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/TPoint3D.h>
 #include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/opengl/PLY_import_export.h>

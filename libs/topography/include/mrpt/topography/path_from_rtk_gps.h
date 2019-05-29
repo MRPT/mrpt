@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/core/aligned_std_map.h>
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/TPoint3D.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose3DInterpolator.h>

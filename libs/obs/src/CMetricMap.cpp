@@ -11,7 +11,6 @@
 
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/maps/CSimpleMap.h>
-#include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose3D.h>

@@ -9,7 +9,10 @@
 #pragma once
 
 // nanoflann library:
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/core/common.h>
+#include <mrpt/core/exceptions.h>
+#include <mrpt/math/TPoint2D.h>
+#include <mrpt/math/TPoint3D.h>
 #include <array>
 #include <atomic>
 #include <memory>  // unique_ptr

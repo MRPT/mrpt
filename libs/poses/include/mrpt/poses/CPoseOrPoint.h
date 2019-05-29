@@ -9,11 +9,10 @@
 #pragma once
 
 #include <mrpt/math/CVectorFixed.h>
+#include <mrpt/math/TPoint3D.h>
 #include <mrpt/math/homog_matrices.h>
-#include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/serialization/CSerializable.h>
-
 #include <mrpt/poses/CPoseOrPoint_detail.h>
+#include <mrpt/serialization/CSerializable.h>
 
 namespace mrpt
 {

@@ -21,7 +21,7 @@
 // ===========================================================================
 
 #include <mrpt/io/CFileGZOutputStream.h>
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/TPose2D.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>

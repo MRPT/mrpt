@@ -9,7 +9,8 @@
 
 #pragma once
 
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/TLine3D.h>
+#include <mrpt/math/TObject3D.h>
 #include <mrpt/obs/CObservation.h>
 
 namespace mrpt::maps

@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/math/CMatrixF.h>
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/TPoint3D.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/serialization/CSerializable.h>

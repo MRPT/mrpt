@@ -9,20 +9,19 @@
 #include "bindings.h"
 
 /* MRPT */
-#include <mrpt/config/CLoadableOptions.h>
-
 #include <mrpt/bayes/CKalmanFilterCapable.h>
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CProbabilityParticle.h>
-
+#include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/math/TPoint2D.h>
+#include <mrpt/math/TPoint3D.h>
+#include <mrpt/math/TPose2D.h>
+#include <mrpt/math/TPose3D.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
-
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
-
-#include <mrpt/math/lightweight_geom_data.h>
 
 /* namespaces */
 using namespace boost::python;

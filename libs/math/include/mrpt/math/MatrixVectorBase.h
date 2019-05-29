@@ -108,7 +108,7 @@ class MatrixVectorBase
 
 	/** non-const block(): Returns an Eigen::Block reference to the block */
 	template <int BLOCK_ROWS, int BLOCK_COLS>
-	auto block(int start_row = 0, int start_col = 0)
+	auto block(int start_row, int start_col)
 	{
 		internalAssertEigenDefined<Derived>();
 		return mvbDerived().asEigen().template block<BLOCK_ROWS, BLOCK_COLS>(

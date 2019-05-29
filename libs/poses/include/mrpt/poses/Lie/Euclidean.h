@@ -9,7 +9,8 @@
 #pragma once
 
 #include <mrpt/math/CVectorFixed.h>
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/TPoint2D.h>
+#include <mrpt/math/TPoint3D.h>
 #include <mrpt/poses/poses_frwds.h>
 
 namespace mrpt::poses::Lie

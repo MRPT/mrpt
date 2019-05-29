@@ -11,7 +11,7 @@
 #include <mrpt/config.h>
 #include <mrpt/gui/gui_frwds.h>
 #include <mrpt/math/CVectorDynamic.h>
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/TPoint2D.h>
 #include <mrpt/opengl/opengl_fonts.h>
 #include <future>
 #include <map>

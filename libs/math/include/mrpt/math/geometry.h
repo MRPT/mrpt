@@ -11,8 +11,11 @@
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CSparseMatrixTemplate.h>
-#include <mrpt/math/lightweight_geom_data.h>
-
+#include <mrpt/math/TLine2D.h>
+#include <mrpt/math/TPlane.h>
+#include <mrpt/math/TPolygon2D.h>
+#include <mrpt/math/TPolygon3D.h>
+#include <mrpt/math/TPose3D.h>
 #include <mrpt/math/math_frwds.h>  // forward declarations
 #include <mrpt/math/wrap2pi.h>
 

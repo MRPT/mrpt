@@ -9,6 +9,7 @@
 
 #include "slam-precomp.h"  // Precompiled headers
 
+#include <mrpt/math/TPose2D.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>

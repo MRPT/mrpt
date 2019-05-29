@@ -9,6 +9,7 @@
 
 #include "poses-precomp.h"  // Precompiled headers
 
+#include <mrpt/math/TPose3D.h>
 #include <mrpt/poses/CPoses3DSequence.h>
 #include <mrpt/serialization/CArchive.h>
 
