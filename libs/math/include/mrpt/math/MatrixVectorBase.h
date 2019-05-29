@@ -72,27 +72,27 @@ class MatrixVectorBase
 		std::fill(mvbDerived().begin(), mvbDerived().end(), val);
 	}
 
-	inline void setZero() { fill(0); }
-	inline void setZero(size_t nrows, size_t ncols)
+	inline void setConstant(const Scalar value) { fill(value); }
+	inline void setConstant(size_t nrows, size_t ncols, const Scalar value)
 	{
 		mvbDerived().resize(nrows, ncols);
-		fill(0);
+		fill(value);
 	}
 
-	static Derived Zero()
+	static Derived Constant(const Scalar value)
 	{
 		ASSERTMSG_(
 			Derived::RowsAtCompileTime > 0 && Derived::ColsAtCompileTime > 0,
-			"Zero() without arguments can be used only for fixed-size "
+			"Constant() without arguments can be used only for fixed-size "
 			"matrices/vectors");
 		Derived m;
-		m.setZero();
+		m.fill(value);
 		return m;
 	}
-	static Derived Zero(size_t nrows, size_t ncols)
+	static Derived Constant(size_t nrows, size_t ncols, const Scalar value)
 	{
 		Derived m;
-		m.setZero(nrows, ncols);
+		m.setConstant(nrows, ncols, value);
 		return m;
 	}
 
@@ -101,6 +101,19 @@ class MatrixVectorBase
 		mvbDerived().resize(N);
 		fill(value);
 	}
+
+	inline void setZero() { fill(0); }
+	inline void setZero(size_t nrows, size_t ncols)
+	{
+		setConstant(nrows, ncols, 0);
+	}
+
+	static Derived Zero() { return Constant(0); }
+	static Derived Zero(size_t nrows, size_t ncols)
+	{
+		return Constant(nrows, ncols, 0);
+	}
+
 	/** @} */
 
 	/** @name Operations that DO require `#include <Eigen/Dense>` in user code
