@@ -78,6 +78,13 @@ class MatrixVectorBase
 		mvbDerived().resize(nrows, ncols);
 		fill(value);
 	}
+	inline void setConstant(size_t nrows, const Scalar value)
+	{
+		ASSERTMSG_(
+			Derived::ColsAtCompileTime == 1,
+			"setConstant(n) can be used only for vectors, not matrices");
+		setConstant(nrows, 1, value);
+	}
 
 	static Derived Constant(const Scalar value)
 	{
@@ -106,6 +113,13 @@ class MatrixVectorBase
 	inline void setZero(size_t nrows, size_t ncols)
 	{
 		setConstant(nrows, ncols, 0);
+	}
+	inline void setZero(size_t nrows)
+	{
+		ASSERTMSG_(
+			Derived::ColsAtCompileTime == 1,
+			"setZero(n) can be used only for vectors, not matrices");
+		setConstant(nrows, 1, 0);
 	}
 
 	static Derived Zero() { return Constant(0); }
