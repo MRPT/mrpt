@@ -7,20 +7,21 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#pragma once
+#include "graphs-precomp.h"  // Precompiled headers
 
-#if !defined(CGRAPHPARTITIONER_H)
-#error "This file can't be included from outside of CGraphPartitioner.h"
-#endif
-
+#include <mrpt/graphs/CGraphPartitioner.h>
+#include <mrpt/math/CMatrixD.h>
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/ops_matrices.h>  // laplacian()
 #include <iostream>  // cout
 
-namespace mrpt::graphs
-{
+using namespace mrpt;
+using namespace mrpt::graphs;
+using namespace std;
+
 /*---------------------------------------------------------------
-					SpectralPartition
-  ---------------------------------------------------------------*/
+SpectralPartition
+---------------------------------------------------------------*/
 template <class GRAPH_MATRIX, typename num_t>
 void CGraphPartitioner<GRAPH_MATRIX, num_t>::SpectralBisection(
 	GRAPH_MATRIX& in_A, std::vector<uint32_t>& out_part1,
@@ -96,8 +97,8 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::SpectralBisection(
 }
 
 /*---------------------------------------------------------------
-					RecursiveSpectralPartition
-  ---------------------------------------------------------------*/
+RecursiveSpectralPartition
+---------------------------------------------------------------*/
 template <class GRAPH_MATRIX, typename num_t>
 void CGraphPartitioner<GRAPH_MATRIX, num_t>::RecursiveSpectralPartition(
 	GRAPH_MATRIX& in_A, std::vector<std::vector<uint32_t>>& out_parts,
@@ -223,8 +224,8 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::RecursiveSpectralPartition(
 }
 
 /*---------------------------------------------------------------
-						nCut
-  ---------------------------------------------------------------*/
+nCut
+---------------------------------------------------------------*/
 template <class GRAPH_MATRIX, typename num_t>
 num_t CGraphPartitioner<GRAPH_MATRIX, num_t>::nCut(
 	const GRAPH_MATRIX& in_A, const std::vector<uint32_t>& in_part1,
@@ -260,8 +261,8 @@ num_t CGraphPartitioner<GRAPH_MATRIX, num_t>::nCut(
 }
 
 /*---------------------------------------------------------------
-					exactBisection
-  ---------------------------------------------------------------*/
+exactBisection
+---------------------------------------------------------------*/
 template <class GRAPH_MATRIX, typename num_t>
 void CGraphPartitioner<GRAPH_MATRIX, num_t>::exactBisection(
 	GRAPH_MATRIX& in_A, std::vector<uint32_t>& out_part1,
@@ -355,4 +356,12 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::exactBisection(
 	}
 }
 
-}  // namespace mrpt::graphs
+// Explicit instantiations:
+namespace mrpt::graphs
+{
+// Explicit instantiations:
+template class CGraphPartitioner<mrpt::math::CMatrixDouble, double>;
+template class CGraphPartitioner<mrpt::math::CMatrixFloat, float>;
+template class CGraphPartitioner<mrpt::math::CMatrixD, double>;
+template class CGraphPartitioner<mrpt::math::CMatrixF, float>;
+}  // namespace mrpt::poses
