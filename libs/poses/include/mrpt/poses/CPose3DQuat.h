@@ -10,7 +10,7 @@
 
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CQuaternion.h>
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/TPose3DQuat.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose.h>
 #include <mrpt/poses/poses_frwds.h>

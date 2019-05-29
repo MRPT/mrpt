@@ -26,6 +26,8 @@
 
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/gui/wx28-fixes.h>
+#include <mrpt/math/TLine3D.h>
+#include <mrpt/math/TObject3D.h>
 #include <mrpt/system/string_utils.h>
 #include "../wx-common/mrpt_logo.xpm"
 #include "imgs/main_icon.xpm"

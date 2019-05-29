@@ -9,13 +9,12 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
+#include <mrpt/math/TPose2D.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservationOdometry.h>
-#include <mrpt/system/TParameters.h>
-
-#include <mrpt/system/string_utils.h>
-
 #include <mrpt/obs/carmen_log_tools.h>
+#include <mrpt/system/TParameters.h>
+#include <mrpt/system/string_utils.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;

@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/TTwist2D.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>

@@ -10,7 +10,8 @@
 
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/img/TColor.h>
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/TPoint2D.h>
+#include <mrpt/math/TPose2D.h>
 #include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/system/datetime.h>
 #include <string>

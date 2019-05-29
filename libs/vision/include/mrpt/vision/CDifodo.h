@@ -11,7 +11,7 @@
 
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CMatrixFixed.h>
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/TTwist3D.h>
 #include <mrpt/poses/CPose3D.h>
 
 namespace mrpt::vision

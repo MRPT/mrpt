@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/TPoint2D.h>
 
 namespace mrpt::nav
 {

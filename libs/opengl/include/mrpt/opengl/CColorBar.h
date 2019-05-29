@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/img/color_maps.h>
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/TPoint3D.h>
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 
 namespace mrpt::opengl

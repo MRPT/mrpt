@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/core/bits_math.h>  // keep_max(),...
 #include <mrpt/math/CHistogram.h>
-#include <mrpt/math/lightweight_geom_data.h>  // forward declarations
 #include <mrpt/math/math_frwds.h>
 #include <algorithm>
 #include <cmath>

@@ -10,7 +10,7 @@
 
 #include <mrpt/img/TCamera.h>
 #include <mrpt/math/CVectorFixed.h>
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/TPoint3D.h>
 #include <mrpt/system/os.h>
 #include <mrpt/vision/utils.h>
 

@@ -9,9 +9,8 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/math/CMatrixFixed.h>
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/TPose3D.h>
 #include <mrpt/math/slerp.h>
-//#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::math;

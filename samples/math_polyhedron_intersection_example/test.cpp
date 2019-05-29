@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/math/TObject3D.h>
 #include <mrpt/opengl/CAngularObservationMesh.h>
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CGridPlaneXY.h>

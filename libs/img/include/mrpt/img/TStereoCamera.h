@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/img/TCamera.h>
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/TPose3DQuat.h>
 
 namespace mrpt::img
 {

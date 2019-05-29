@@ -14,6 +14,7 @@
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/math/TPose2D.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_containers.h>

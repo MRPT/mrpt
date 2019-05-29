@@ -9,6 +9,9 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/math/CPolygon.h>
+#include <mrpt/math/TLine3D.h>
+#include <mrpt/math/TObject2D.h>
+#include <mrpt/math/TObject3D.h>
 #include <mrpt/math/geometry.h>
 #include <algorithm>
 

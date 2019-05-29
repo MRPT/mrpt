@@ -13,6 +13,8 @@
 #include <mrpt/core/round.h>
 #include <mrpt/kinematics/CVehicleVelCmd.h>
 #include <mrpt/math/CPolygon.h>
+#include <mrpt/math/TPose2D.h>
+#include <mrpt/math/TTwist2D.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
 #include <mrpt/poses/CPose2D.h>

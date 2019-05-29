@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/TPoint3D.h>
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/serialization/CSerializable.h>
 

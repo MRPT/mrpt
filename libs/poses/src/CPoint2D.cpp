@@ -9,6 +9,8 @@
 
 #include "poses-precomp.h"  // Precompiled headers
 
+#include <mrpt/math/TPoint2D.h>
+#include <mrpt/math/TPoint3D.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/serialization/CArchive.h>
@@ -101,4 +103,17 @@ std::ostream& mrpt::poses::operator<<(std::ostream& o, const CPoint2D& p)
 {
 	o << "(" << p[0] << "," << p[1] << ")";
 	return o;
+}
+
+CPoint2D::CPoint2D(const mrpt::math::TPoint2D& o)
+{
+	m_coords[0] = o.x;
+	m_coords[1] = o.y;
+}
+
+CPoint2D::CPoint2D(const mrpt::math::TPoint3D& o)
+{
+	m_coords[0] = o.x;
+	m_coords[1] = o.y;
+	m_coords[2] = 0;
 }
