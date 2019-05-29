@@ -59,16 +59,23 @@ class CPosePDFParticles
 	 * \param location The location to set all the m_particles.
 	 * \param particlesCount If this is set to 0 the number of m_particles
 	 * remains unchanged.
-	 *  \sa resetUniform, resetUniformFreeSpace, resetAroundSetOfPoses
+	 *  \sa resetUniform, CMonteCarloLocalization2D::resetUniformFreeSpace,
+	 * resetAroundSetOfPoses
 	 */
 	void resetDeterministic(
 		const mrpt::math::TPose2D& location, size_t particlesCount = 0);
 
 	/** Reset the PDF to an uniformly distributed one, inside of the defined
-	 * cube.
-	 * If particlesCount is set to -1 the number of m_particles remains
-	 * unchanged.
-	 *  \sa resetDeterministic, resetUniformFreeSpace, resetAroundSetOfPoses
+	 * 2D area `[x_min,x_max]x[y_min,y_max]` (in meters) and for
+	 * orientations `[phi_min, phi_max]` (in radians).
+	 *
+	 * \param particlesCount New particle count, or leave count unchanged if set
+	 * to -1 (default).
+	 *
+	 * \note Orientations can be outside of the [-pi,pi] range if so desired,
+	 *       but it must hold `phi_max>=phi_min`.
+	 * \sa resetDeterministic, CMonteCarloLocalization2D::resetUniformFreeSpace,
+	 * resetAroundSetOfPoses
 	 */
 	void resetUniform(
 		const double x_min, const double x_max, const double y_min,
@@ -89,7 +96,7 @@ class CPosePDFParticles
 	 * the three coordinates (meters, radians), so it can be understood as the
 	 * "initial uncertainty".
 	 *
-	 *  \sa resetDeterministic, resetUniformFreeSpace
+	 *  \sa resetDeterministic, CMonteCarloLocalization2D::resetUniformFreeSpace
 	 */
 	void resetAroundSetOfPoses(
 		const std::vector<mrpt::math::TPose2D>& list_poses,
