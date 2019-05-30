@@ -19,7 +19,7 @@
 #if MRPT_HAS_PCL
 
 #include <mrpt/graphs/CGraphPartitioner.h>
-
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/pbmap/PbMap.h>
 #include <mrpt/pbmap/Plane.h>
 #include <map>
