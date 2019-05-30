@@ -7,8 +7,8 @@ Group: Development/Libraries
 URL: https://www.mrpt.org/
 
 # Tarballs at http://babel.isa.uma.es/mrpt/src-repo/ are the same that those
-# at SourceForge (http://downloads.sourceforge.net/mrpt/mrpt-%{version}.tar.gz) 
-# but without the directory "otherlibs/sift-hess", which contains code with a 
+# at SourceForge (http://downloads.sourceforge.net/mrpt/mrpt-%{version}.tar.gz)
+# but without the directory "otherlibs/sift-hess", which contains code with a
 # patent pending for approval.
 
 # The source for this package was pulled from upstream's vcs.  Use the
@@ -33,25 +33,25 @@ BuildRequires: desktop-file-utils
 %description
 The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
 and open source C++ library aimed to help robotics researchers to design and
-implement algorithms in the fields of Simultaneous Localization and Mapping 
+implement algorithms in the fields of Simultaneous Localization and Mapping
 (SLAM), computer vision, and motion planning (obstacle avoidance).
 
-The libraries include classes for easily managing 3D(6D) geometry, 
-probability density functions (pdfs) over many predefined variables (points 
-and poses, landmarks, maps), Bayesian inference (Kalman filters, particle 
-filters), image processing, path planning and obstacle avoidance, 3D 
-visualization of all kind of maps (points, occupancy grids, landmarks,...), 
+The libraries include classes for easily managing 3D(6D) geometry,
+probability density functions (pdfs) over many predefined variables (points
+and poses, landmarks, maps), Bayesian inference (Kalman filters, particle
+filters), image processing, path planning and obstacle avoidance, 3D
+visualization of all kind of maps (points, occupancy grids, landmarks,...),
 etc.
 Gathering, manipulating and inspecting very large robotic datasets (Rawlogs)
-efficiently is another goal of MRPT, supported by several classes and 
+efficiently is another goal of MRPT, supported by several classes and
 applications.
 
-The MRPT is free software and is released under the GPL. 
+The MRPT is free software and is released under the GPL.
 
 
 # Subpackages "ann", "aria", "core", "hwdrivers", and "reactivenav" are provided
 # in order to minimize dependencies of future packages that might depend on a
-# subset only of all the MRPT libraries. The subpackage "libs" can be used as 
+# subset only of all the MRPT libraries. The subpackage "libs" can be used as
 # a shortcut for all the libraries.
 
 %package base
@@ -203,7 +203,7 @@ Requires: %{name}-graphslam = %{version}-%{release}
 %description libs
 The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
 and open source C++ library aimed to help robotics researchers to design and
-implement algorithms in the fields of Simultaneous Localization and Mapping 
+implement algorithms in the fields of Simultaneous Localization and Mapping
 (SLAM), computer vision, and motion planning (obstacle avoidance).
 
 This virtual package depends on all MRPT libraries.
@@ -217,11 +217,11 @@ Requires: %{name}-libs = %{version}-%{release}
 %description apps
 The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
 and open source C++ library aimed to help robotics researchers to design and
-implement algorithms in the fields of Simultaneous Localization and Mapping 
+implement algorithms in the fields of Simultaneous Localization and Mapping
 (SLAM), computer vision, and motion planning (obstacle avoidance).
 
-This package provides a set of console and GUI applications for manipulating 
-datasets, particle filtering localization and SLAM, grabbing data from 
+This package provides a set of console and GUI applications for manipulating
+datasets, particle filtering localization and SLAM, grabbing data from
 robotic sensors, etc.
 
 
@@ -234,10 +234,10 @@ Requires: pkgconfig
 %description devel
 The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
 and open source C++ library aimed to help robotics researchers to design and
-implement algorithms in the fields of Simultaneous Localization and Mapping 
+implement algorithms in the fields of Simultaneous Localization and Mapping
 (SLAM), computer vision, and motion planning (obstacle avoidance).
 
-This package provides the headers and required files to build third-party 
+This package provides the headers and required files to build third-party
 applications that use MRPT libraries.
 
 
@@ -247,7 +247,7 @@ Group: Documentation
 %description doc
 The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
 and open source C++ library aimed to help robotics researchers to design and
-implement algorithms in the fields of Simultaneous Localization and Mapping 
+implement algorithms in the fields of Simultaneous Localization and Mapping
 (SLAM), computer vision, and motion planning (obstacle avoidance).
 
 This package contains documentation, examples and the reference generated
@@ -264,7 +264,7 @@ with Doxygen.
 
 
 %build
-# The flag CMAKE_MRPT_IS_RPM_PACKAGE disables global "-mtune=native"
+# The flag CMAKE_MRPT_IS_RPM_PACKAGE disables global "-march=native"
 %cmake . -DCMAKE_MRPT_IS_RPM_PACKAGE=1
 make VERBOSE=1 %{?_smp_mflags}
 make documentation_html
@@ -272,7 +272,7 @@ make man_pages_all
 
 %check
 export LD_LIBRARY_PATH=$(pwd)/lib
-make test VERBOSE=1 ARGS="-VV" || echo "**Warning**: unit tests failed, check whether it was only due to SSE* stuff" 
+make test VERBOSE=1 ARGS="-VV" || echo "**Warning**: unit tests failed, check whether it was only due to SSE* stuff"
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -287,7 +287,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %doc README COPYING
 %{_libdir}/libmrpt-base.so.*
-# This directory is empty here but contains files in other sub-packages 
+# This directory is empty here but contains files in other sub-packages
 #  depending on mrpt-base:
 %dir %{_datadir}/mrpt
 %{_datadir}/mime/packages/*.xml
@@ -557,4 +557,3 @@ update-mime-database %{_datadir}/mime &> /dev/null || :
 
 * Sun Jan 4 2009 - Jose Luis Blanco <joseluisblancoc@gmail.com> 0.6.4-1
 - Initial packaging for Fedora.
-
