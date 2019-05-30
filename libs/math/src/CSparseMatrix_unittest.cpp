@@ -26,12 +26,12 @@ TEST(EigenAlignment, PrintAlignment)
 	// EIGEN_MAX_ALIGN_BYTES from eigen macros.h
 
 	std::cout << "MRPT_MAX_ALIGN_BYTES         : " << MRPT_MAX_ALIGN_BYTES
-	          << "\n"
-	             "EIGEN_MAX_ALIGN_BYTES        : "
-	          << EIGEN_MAX_ALIGN_BYTES
-	          << "\n"
-	             "EIGEN_MAX_STATIC_ALIGN_BYTES : "
-	          << EIGEN_MAX_STATIC_ALIGN_BYTES << "\n";
+			  << "\n"
+				 "EIGEN_MAX_ALIGN_BYTES        : "
+			  << EIGEN_MAX_ALIGN_BYTES
+			  << "\n"
+				 "EIGEN_MAX_STATIC_ALIGN_BYTES : "
+			  << EIGEN_MAX_STATIC_ALIGN_BYTES << "\n";
 
 	EXPECT_GE(MRPT_MAX_ALIGN_BYTES, EIGEN_MAX_ALIGN_BYTES);
 	EXPECT_GE(MRPT_MAX_ALIGN_BYTES, EIGEN_MAX_STATIC_ALIGN_BYTES);
