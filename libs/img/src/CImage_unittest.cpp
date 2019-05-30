@@ -448,12 +448,7 @@ TEST(CImage, Serialize)
 	EXPECT_EQ(am, bm);
 }
 
-MRPT_TODO("Why does this fail on arm64?");
-#if defined(__aarch64__)
-TEST(CImage, DISABLED_KLT_response)
-#else
 TEST(CImage, KLT_response)
-#endif
 {
 	using namespace mrpt::img;
 
