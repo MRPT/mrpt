@@ -133,8 +133,6 @@ struct TPose2D : public TPoseOrPoint,
 	 * \exception std::exception On invalid format
 	 */
 	void fromString(const std::string& s);
-
-	constexpr static size_t size() { return 3; }
 };
 
 /** Exact comparison between 2D poses, taking possible cycles into account */

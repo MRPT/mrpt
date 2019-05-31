@@ -55,6 +55,8 @@ struct ProvideStaticResize
 {
 	constexpr std::size_t rows() const { return Derived::static_size; }
 	constexpr std::size_t cols() const { return 1; }
+	constexpr std::size_t size() const { return Derived::static_size; }
+
 	/** throws if attempted to resize to incorrect length */
 	void resize(std::size_t n) { ASSERT_EQUAL_(n, Derived::static_size); }
 };

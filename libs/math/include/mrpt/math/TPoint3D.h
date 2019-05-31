@@ -87,7 +87,9 @@ struct TPoint3D_data
  * Lightweight 3D point. Allows coordinate access using [] operator.
  * \sa mrpt::poses::CPoint3D, mrpt::math::TPoint3Df
  */
-struct TPoint3D : public TPoseOrPoint, public TPoint3D_data
+struct TPoint3D : public TPoseOrPoint,
+				  public TPoint3D_data,
+				  public internal::ProvideStaticResize<TPoint3D>
 {
 	enum
 	{
@@ -261,7 +263,6 @@ struct TPoint3D : public TPoseOrPoint, public TPoint3D_data
 	 * \exception std::exception On invalid format
 	 */
 	void fromString(const std::string& s);
-	static constexpr size_t size() { return 3; }
 };
 
 /** Useful type alias for 3-vectors */
