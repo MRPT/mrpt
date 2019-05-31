@@ -20,7 +20,8 @@ namespace mrpt::math
  * coordinates). Allows coordinate access using [] operator.
  * \sa mrpt::poses::CPose3D
  */
-struct TPose3D : public TPoseOrPoint
+struct TPose3D : public TPoseOrPoint,
+				 public internal::ProvideStaticResize<TPose3D>
 {
 	enum
 	{

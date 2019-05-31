@@ -18,7 +18,8 @@ namespace mrpt::math
 /** Lightweight 3D point (float version).
  * \sa mrpt::poses::CPoint3D, mrpt::math::TPoint3D
  */
-struct TPoint3Df : public TPoseOrPoint
+struct TPoint3Df : public TPoseOrPoint,
+				   public internal::ProvideStaticResize<TPoint3Df>
 {
 	enum
 	{

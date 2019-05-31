@@ -16,7 +16,8 @@ namespace mrpt::math
  * coordinate access using [] operator.
  * \sa mrpt::poses::CPose3DQuat
  */
-struct TPose3DQuat : public TPoseOrPoint
+struct TPose3DQuat : public TPoseOrPoint,
+					 public internal::ProvideStaticResize<TPose3DQuat>
 {
 	enum
 	{

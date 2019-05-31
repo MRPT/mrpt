@@ -19,7 +19,8 @@ namespace mrpt::math
  * Lightweight 2D pose. Allows coordinate access using [] operator.
  * \sa mrpt::poses::CPose2D
  */
-struct TPose2D : public TPoseOrPoint
+struct TPose2D : public TPoseOrPoint,
+				 public internal::ProvideStaticResize<TPose2D>
 {
 	enum
 	{

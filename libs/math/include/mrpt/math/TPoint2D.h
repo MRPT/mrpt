@@ -28,7 +28,9 @@ struct TPoint2D_data
  * \sa mrpt::poses::CPoint2D
  * \ingroup geometry_grp
  */
-struct TPoint2D : public TPoseOrPoint, public TPoint2D_data
+struct TPoint2D : public TPoseOrPoint,
+				  public TPoint2D_data,
+				  public internal::ProvideStaticResize<TPoint2D>
 {
 	enum
 	{
