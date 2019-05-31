@@ -208,7 +208,8 @@ void laplacian(const MATIN& g, MATOUT& ret)
 	if (g.rows() != g.cols())
 		throw std::runtime_error("laplacian: Defined for square matrixes only");
 	const auto N = g.rows();
-	ret = -g;
+	ret = g;
+	ret *= -1;
 	for (typename MATIN::Index i = 0; i < N; i++)
 	{
 		typename MATIN::Scalar deg = 0;

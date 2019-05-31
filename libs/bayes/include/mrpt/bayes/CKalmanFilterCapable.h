@@ -277,7 +277,7 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	 */
 	inline void getLandmarkCov(size_t idx, KFMatrix_FxF& feat_cov) const
 	{
-		feat_cov = m_pkk.block<FEAT_SIZE, FEAT_SIZE>(
+		feat_cov = m_pkk.blockCopy<FEAT_SIZE, FEAT_SIZE>(
 			VEH_SIZE + idx * FEAT_SIZE, VEH_SIZE + idx * FEAT_SIZE);
 	}
 
