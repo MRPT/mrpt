@@ -197,6 +197,11 @@ CArchive& mrpt::serialization::operator<<(
 	return detail::writeStdVectorToStream(s, a);
 }
 CArchive& mrpt::serialization::operator<<(
+	CArchive& s, const mrpt::aligned_std_vector<float>& a)
+{
+	return detail::writeStdVectorToStream(s, a);
+}
+CArchive& mrpt::serialization::operator<<(
 	CArchive& s, const std::vector<double>& a)
 {
 	return detail::writeStdVectorToStream(s, a);
@@ -239,6 +244,11 @@ CArchive& mrpt::serialization::operator<<(
 
 // Read:
 CArchive& mrpt::serialization::operator>>(CArchive& s, std::vector<float>& a)
+{
+	return detail::readStdVectorToStream(s, a);
+}
+CArchive& mrpt::serialization::operator>>(
+	CArchive& s, mrpt::aligned_std_vector<float>& a)
 {
 	return detail::readStdVectorToStream(s, a);
 }

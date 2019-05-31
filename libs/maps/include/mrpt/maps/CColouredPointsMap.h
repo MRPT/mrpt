@@ -270,7 +270,7 @@ class CColouredPointsMap : public CPointsMap
 
    protected:
 	/** The color data */
-	std::vector<float> m_color_R, m_color_G, m_color_B;
+	mrpt::aligned_std_vector<float> m_color_R, m_color_G, m_color_B;
 
 	/** Minimum distance from where the points have been seen */
 	// std::vector<float>	m_min_dist;
