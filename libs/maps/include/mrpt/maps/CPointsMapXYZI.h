@@ -199,7 +199,7 @@ class CPointsMapXYZI : public CPointsMap
 
    protected:
 	/** The intensity/reflectance data */
-	std::vector<float> m_intensity;
+	mrpt::aligned_std_vector<float> m_intensity;
 
 	/** Clear the map, erasing all the points */
 	void internal_clear() override;

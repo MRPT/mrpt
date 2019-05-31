@@ -127,7 +127,7 @@ class CWeightedPointsMap : public CPointsMap
 
    protected:
 	/** The points weights */
-	std::vector<uint32_t> pointWeight;
+	mrpt::aligned_std_vector<uint32_t> pointWeight;
 
 	/** Clear the map, erasing all the points.
 	 */

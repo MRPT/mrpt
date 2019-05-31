@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/img/color_maps.h>
 #include <mrpt/maps/CMetricMap.h>
@@ -20,7 +21,6 @@
 #include <mrpt/opengl/PLY_import_export.h>
 #include <mrpt/opengl/pointcloud_adapters.h>
 #include <mrpt/serialization/CSerializable.h>
-#include <vector>
 
 // Add for declaration of mexplus::from template specialization
 DECLARE_MEXPLUS_FROM(mrpt::maps::CPointsMap)
@@ -528,19 +528,19 @@ class CPointsMap : public CMetricMap,
 
 	/** Provides a direct access to a read-only reference of the internal point
 	 * buffer. \sa getAllPoints */
-	inline const std::vector<float>& getPointsBufferRef_x() const
+	inline const mrpt::aligned_std_vector<float>& getPointsBufferRef_x() const
 	{
 		return m_x;
 	}
 	/** Provides a direct access to a read-only reference of the internal point
 	 * buffer. \sa getAllPoints */
-	inline const std::vector<float>& getPointsBufferRef_y() const
+	inline const mrpt::aligned_std_vector<float>& getPointsBufferRef_y() const
 	{
 		return m_y;
 	}
 	/** Provides a direct access to a read-only reference of the internal point
 	 * buffer. \sa getAllPoints */
-	inline const std::vector<float>& getPointsBufferRef_z() const
+	inline const mrpt::aligned_std_vector<float>& getPointsBufferRef_z() const
 	{
 		return m_z;
 	}
@@ -1101,7 +1101,7 @@ class CPointsMap : public CMetricMap,
 
    protected:
 	/** The point coordinates */
-	std::vector<float> m_x, m_y, m_z;
+	mrpt::aligned_std_vector<float> m_x, m_y, m_z;
 
 	/** Cache of sin/cos values for the latest 2D scan geometries. */
 	mrpt::obs::CSinCosLookUpTableFor2DScans m_scans_sincos_cache;
