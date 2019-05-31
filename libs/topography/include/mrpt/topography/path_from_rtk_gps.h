@@ -8,11 +8,11 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/core/aligned_std_map.h>
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose3DInterpolator.h>
+#include <map>
 
 namespace mrpt::topography
 {
@@ -30,7 +30,7 @@ struct TPathFromRTKInfo
 	std::map<mrpt::Clock::time_point, double> mahalabis_quality_measure;
 	/** The 6x6 covariance matrix for the uncertainty of each vehicle pose (may
 	 * be empty if there is no W_star info). */
-	mrpt::aligned_std_map<mrpt::Clock::time_point, mrpt::math::CMatrixDouble66>
+	std::map<mrpt::Clock::time_point, mrpt::math::CMatrixDouble66>
 		vehicle_uncertainty;
 	/** The reference covariance matrix used to compute vehicle_uncertainty. */
 	mrpt::math::CMatrixDouble W_star;

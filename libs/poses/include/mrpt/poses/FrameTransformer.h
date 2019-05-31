@@ -8,7 +8,6 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/core/aligned_std_map.h>
 #include <mrpt/poses/Lie/SE.h>
 #include <mrpt/system/datetime.h>
 #include <map>
@@ -143,8 +142,8 @@ class FrameTransformer : public FrameTransformerInterface<DIM>
 	};
 
 	// map: [parent] -> { [child] -> relPoseChildWRTParent }
-	using pose_tree_t = mrpt::aligned_std_map<
-		std::string, mrpt::aligned_std_map<std::string, TF_TreeEdge>>;
+	using pose_tree_t =
+		std::map<std::string, std::map<std::string, TF_TreeEdge>>;
 	pose_tree_t m_pose_edges_buffer;
 };
 

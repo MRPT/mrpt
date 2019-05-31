@@ -874,7 +874,7 @@ void CHierarchicalMapMHPartition::computeCoordinatesTransformationBetweenNodes(
 	CHMHMapNode::TNodeID lastNode, nextNode;
 	size_t pathLength;
 
-	using TPose3DList = mrpt::aligned_std_vector<CPose3D>;
+	using TPose3DList = std::vector<CPose3D>;
 	std::vector<TPose3DList> listSamples;
 	std::vector<TPose3DList>::iterator lstIt;
 	TPose3DList dummyList;
@@ -1120,13 +1120,12 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 		outScene.insert(obj);
 	}
 
-	using TMapID2PosePDF =
-		mrpt::aligned_std_map<CHMHMapNode::TNodeID, CPose3DPDFGaussian>;
+	using TMapID2PosePDF = std::map<CHMHMapNode::TNodeID, CPose3DPDFGaussian>;
 	// The ref. pose of each area
 	TMapID2PosePDF nodesPoses;
 	TMapID2PosePDF::iterator it;
 
-	using TMapID2Pose2D = mrpt::aligned_std_map<CHMHMapNode::TNodeID, CPose2D>;
+	using TMapID2Pose2D = std::map<CHMHMapNode::TNodeID, CPose2D>;
 	// The mean pose of the observations in the area
 	TMapID2Pose2D nodesMeanPoses;
 	TMapID2Pose2D::iterator it2;
@@ -1312,8 +1311,7 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 }
 
 void CHierarchicalMapMHPartition::computeGloballyConsistentNodeCoordinates(
-	mrpt::aligned_std_map<
-		CHMHMapNode::TNodeID, mrpt::poses::CPose3DPDFGaussian>& nodePoses,
+	std::map<CHMHMapNode::TNodeID, mrpt::poses::CPose3DPDFGaussian>& nodePoses,
 	const CHMHMapNode::TNodeID& idReferenceNode,
 	const THypothesisID& hypothesisID,
 	const unsigned int& numberOfIterations) const

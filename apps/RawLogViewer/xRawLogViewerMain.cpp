@@ -33,7 +33,6 @@
 #include "xRawLogViewerApp.h"
 
 #include <mrpt/containers/stl_containers_utils.h>
-#include <mrpt/core/aligned_std_map.h>
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/gui/about_box.h>
 #include <mrpt/io/CFileGZInputStream.h>
@@ -54,6 +53,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/memory.h>
 #include <mrpt/vision/CVideoFileWriter.h>
+#include <map>
 
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
@@ -5234,8 +5234,7 @@ void xRawLogViewerFrame::OnMenuChangePosesBatch(wxCommandEvent& event)
 		CConfigFileMemory cfg(string(dialog.edText->GetValue().mb_str()));
 
 		// make a list  "sensor_label -> sensor_pose" by parsing the ini-file:
-		using TSensor2PoseMap =
-			mrpt::aligned_std_map<std::string, mrpt::poses::CPose3D>;
+		using TSensor2PoseMap = std::map<std::string, mrpt::poses::CPose3D>;
 		TSensor2PoseMap desiredSensorPoses;
 		std::map<std::string, mrpt::obs::CObservationImage> desiredCamParams;
 

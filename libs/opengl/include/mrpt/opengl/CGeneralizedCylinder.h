@@ -8,12 +8,12 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/opengl/CPolyhedron.h>
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
+#include <vector>
 
 namespace mrpt::opengl
 {
@@ -96,7 +96,7 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
    protected:
 	/** Cylinder's axis. It's represented as a pose because it holds the angle
 	 * to get to the next pose. */
-	mrpt::aligned_std_vector<mrpt::poses::CPose3D> axis;
+	std::vector<mrpt::poses::CPose3D> axis;
 	/**  Object's generatrix, that is, profile which will be extruded. */
 	std::vector<mrpt::math::TPoint3D> generatrix;
 	/** Mutable object with mesh information, used to avoid repeated
@@ -161,7 +161,7 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 	/**
 	 * Get axis, including angular coordinates.
 	 */
-	inline void getAxis(mrpt::aligned_std_vector<mrpt::poses::CPose3D>& a) const
+	inline void getAxis(std::vector<mrpt::poses::CPose3D>& a) const
 	{
 		a = axis;
 	}
@@ -379,7 +379,7 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 	 */
 	void generatePoses(
 		const std::vector<mrpt::math::TPoint3D>& pIn,
-		mrpt::aligned_std_vector<mrpt::poses::CPose3D>& pOut);
+		std::vector<mrpt::poses::CPose3D>& pOut);
 	/**
 	 * Updates the mutable mesh.
 	 */

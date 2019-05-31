@@ -9,11 +9,11 @@
 
 #include "vision-lgpl-precomp.h"  // Precompiled headers
 
-#include <mrpt/core/aligned_std_map.h>
 #include <mrpt/math/CSparseMatrix.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/vision/bundle_adjustment.h>
+#include <map>
 
 #include <memory>  // unique_ptr
 
@@ -64,7 +64,7 @@ double mrpt::vision::bundle_adj_full(
 
 	// Typedefs for this specific BA problem:
 	using MyJacData = JacData<FrameDof, PointDof, ObsDim>;
-	using MyJacDataVec = mrpt::aligned_std_vector<MyJacData>;
+	using MyJacDataVec = std::vector<MyJacData>;
 
 	using Array_O = std::array<double, ObsDim>;
 	using Array_F = CVectorFixedDouble<FrameDof>;
@@ -154,10 +154,10 @@ double mrpt::vision::bundle_adj_full(
 	const size_t len_free_frames = FrameDof * num_free_frames;
 	const size_t len_free_points = PointDof * num_free_points;
 
-	mrpt::aligned_std_vector<Matrix_FxF> H_f(num_free_frames);
-	mrpt::aligned_std_vector<Array_F> eps_frame(num_free_frames, arrF_zeros);
-	mrpt::aligned_std_vector<Matrix_PxP> H_p(num_free_points);
-	mrpt::aligned_std_vector<Array_P> eps_point(num_free_points, arrP_zeros);
+	std::vector<Matrix_FxF> H_f(num_free_frames);
+	std::vector<Array_F> eps_frame(num_free_frames, arrF_zeros);
+	std::vector<Matrix_PxP> H_p(num_free_points);
+	std::vector<Array_P> eps_point(num_free_points, arrP_zeros);
 
 	profiler.enter("build_gradient_Hessians");
 	ba_build_gradient_Hessians(
@@ -214,17 +214,15 @@ double mrpt::vision::bundle_adj_full(
 			I_muFrame.setDiagonal(FrameDof, mu);
 			I_muPoint.setDiagonal(PointDof, mu);
 
-			mrpt::aligned_std_vector<Matrix_FxF> U_star(
-				num_free_frames, I_muFrame);
-			mrpt::aligned_std_vector<Matrix_PxP> V_inv(num_free_points);
+			std::vector<Matrix_FxF> U_star(num_free_frames, I_muFrame);
+			std::vector<Matrix_PxP> V_inv(num_free_points);
 
 			for (size_t i = 0; i < U_star.size(); ++i) U_star[i] += H_f[i];
 
 			for (size_t i = 0; i < H_p.size(); ++i)
 				V_inv[i] = (H_p[i] + I_muPoint).inverse_LLt();
 
-			using WMap = mrpt::aligned_std_map<
-				pair<TCameraPoseID, TLandmarkID>, Matrix_FxP>;
+			using WMap = std::map<pair<TCameraPoseID, TLandmarkID>, Matrix_FxP>;
 			WMap W, Y;
 
 			// For quick look-up of entries in W affecting a given point ID:
@@ -265,8 +263,7 @@ double mrpt::vision::bundle_adj_full(
 				++jac_iter;
 			}
 
-			mrpt::aligned_std_map<pair<TCameraPoseID, TLandmarkID>, Matrix_FxF>
-				YW_map;
+			std::map<pair<TCameraPoseID, TLandmarkID>, Matrix_FxF> YW_map;
 			for (size_t i = 0; i < H_f.size(); ++i)
 				YW_map[std::pair<TCameraPoseID, TLandmarkID>(i, i)] = U_star[i];
 

@@ -252,13 +252,12 @@ double mrpt::vision::reprojectionResiduals(
 void mrpt::vision::ba_build_gradient_Hessians(
 	const TSequenceFeatureObservations& observations,
 	const vector<std::array<double, 2>>& residual_vec,
-	const mrpt::aligned_std_vector<JacData<6, 3, 2>>& jac_data_vec,
-	mrpt::aligned_std_vector<CMatrixFixed<double, 6, 6>>& U,
-	mrpt::aligned_std_vector<CVectorFixedDouble<6>>& eps_frame,
-	mrpt::aligned_std_vector<CMatrixFixed<double, 3, 3>>& V,
-	mrpt::aligned_std_vector<CVectorFixedDouble<3>>& eps_point,
-	const size_t num_fix_frames, const size_t num_fix_points,
-	const vector<double>* kernel_1st_deriv)
+	const std::vector<JacData<6, 3, 2>>& jac_data_vec,
+	std::vector<CMatrixFixed<double, 6, 6>>& U,
+	std::vector<CVectorFixedDouble<6>>& eps_frame,
+	std::vector<CMatrixFixed<double, 3, 3>>& V,
+	std::vector<CVectorFixedDouble<3>>& eps_point, const size_t num_fix_frames,
+	const size_t num_fix_points, const vector<double>* kernel_1st_deriv)
 {
 	MRPT_START
 

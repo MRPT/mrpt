@@ -9,12 +9,12 @@
 
 #include "vision-precomp.h"  // Precompiled headers
 
-#include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/kmeans.h>
 #include <list>
+#include <vector>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
@@ -147,7 +147,7 @@ bool find_chessboard_corners_multiple(
 		// JL: To achieve multiple-checkerboard, take all the raw detected quads
 		// and
 		//  separate them in groups with k-means.
-		mrpt::aligned_std_vector<CVectorFixedDouble<2>> quad_centers;
+		std::vector<CVectorFixedDouble<2>> quad_centers;
 		quad_centers.resize(quads.size());
 		for (size_t i = 0; i < quads.size(); i++)
 		{

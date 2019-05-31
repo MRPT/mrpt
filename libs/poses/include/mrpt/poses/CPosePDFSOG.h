@@ -8,11 +8,11 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <ostream>
+#include <vector>
 
 namespace mrpt::poses
 {
@@ -62,7 +62,7 @@ class CPosePDFSOG : public CPosePDF
 		}
 	};
 
-	using CListGaussianModes = mrpt::aligned_std_vector<TGaussianMode>;
+	using CListGaussianModes = std::vector<TGaussianMode>;
 	using const_iterator = CListGaussianModes::const_iterator;
 	using iterator = CListGaussianModes::iterator;
 

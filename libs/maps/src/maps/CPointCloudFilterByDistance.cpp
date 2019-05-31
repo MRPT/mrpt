@@ -10,8 +10,8 @@
 #include "maps-precomp.h"  // Precomp header
 
 #include <mrpt/config/CConfigFileBase.h>
-#include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/maps/CPointCloudFilterByDistance.h>
+#include <vector>
 
 using namespace mrpt::maps;
 
@@ -83,7 +83,7 @@ void CPointCloudFilterByDistance::filter(
 	{
 		// Reference poses of each PC:
 		// Previous: prev_pc.pose
-		mrpt::aligned_std_vector<CPose3D> rel_poses;
+		std::vector<CPose3D> rel_poses;
 		for (int k = 0; k < options.previous_keyframes; ++k)
 		{
 			const CPose3D rel_pose = cur_pc_pose - prev_pc[k]->pose;

@@ -356,7 +356,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 
 			// The list of SOG modes & their corresponding sub-sets of
 			// matchings:
-			using TMapMatchingsToPoseMode = mrpt::aligned_std_map<
+			using TMapMatchingsToPoseMode = std::map<
 				mrpt::tfest::TMatchingPairList, CPosePDFSOG::TGaussianMode>;
 			TMapMatchingsToPoseMode sog_modes;
 
