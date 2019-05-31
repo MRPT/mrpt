@@ -9,7 +9,6 @@
 #pragma once
 
 #include <mrpt/core/aligned_allocator.h>
-#include <mrpt/core/aligned_std_map.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/graphs/TNodeID.h>
 #include <mrpt/typemeta/TTypeName.h>
@@ -88,7 +87,7 @@ class CDirectedGraph
 	/** Underlying type for edge_t = TYPE_EDGES + annotations */
 	using edge_underlying_t = TYPE_EDGES;
 	/** The type of the member \a edges */
-	using edges_map_t = mrpt::aligned_std_multimap<TPairNodeIDs, edge_t>;
+	using edges_map_t = std::multimap<TPairNodeIDs, edge_t>;
 	using iterator = typename edges_map_t::iterator;
 	using reverse_iterator = typename edges_map_t::reverse_iterator;
 	using const_iterator = typename edges_map_t::const_iterator;

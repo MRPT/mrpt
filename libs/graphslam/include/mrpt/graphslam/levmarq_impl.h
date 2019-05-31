@@ -156,7 +156,7 @@ double computeJacobiansAndErrors(
 	const std::vector<typename graphslam_traits<GRAPH_T>::observation_info_t>&
 		lstObservationData,
 	typename graphslam_traits<GRAPH_T>::map_pairIDs_pairJacobs_t& lstJacobians,
-	mrpt::aligned_std_vector<typename graphslam_traits<GRAPH_T>::Array_O>& errs)
+	std::vector<typename graphslam_traits<GRAPH_T>::Array_O>& errs)
 {
 	MRPT_UNUSED_PARAM(graph);
 	using gst = graphslam_traits<GRAPH_T>;

@@ -9,10 +9,10 @@
 #pragma once
 
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/core/aligned_std_map.h>
 #include <mrpt/maps/CPointCloudFilterBase.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/poses/CPose3D.h>
+#include <map>
 
 namespace mrpt::maps
 {
@@ -77,6 +77,6 @@ class CPointCloudFilterByDistance : public mrpt::maps::CPointCloudFilterBase
 		MRPT_MAKE_ALIGNED_OPERATOR_NEW
 	};
 
-	mrpt::aligned_std_map<mrpt::system::TTimeStamp, FrameInfo> m_last_frames;
+	std::map<mrpt::system::TTimeStamp, FrameInfo> m_last_frames;
 };
 }  // namespace mrpt::maps

@@ -108,7 +108,7 @@ struct TStereoCalibResults
 	/** Poses of the origin of coordinates of the pattern wrt the left camera
 	 * (i.e. the origin of coordinates, as seen from the different camera poses)
 	 */
-	mrpt::aligned_std_vector<mrpt::poses::CPose3D> left_cam_poses;
+	std::vector<mrpt::poses::CPose3D> left_cam_poses;
 	/** true if a checkerboard was correctly detected in both left/right images.
 	 * false if it wasn't, so the image pair didn't make it to the optimization.
 	 */

@@ -1859,7 +1859,7 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabExportPaths(
 	const int MAX_CMDVEL_COMPONENTS = 15;
 	using cmdvel_vector_t = mrpt::math::CVectorDouble;
 	// map: time -> tim_send_cmd_vel
-	mrpt::aligned_std_map<double, cmdvel_vector_t> cmdvels;
+	std::map<double, cmdvel_vector_t> cmdvels;
 
 	double tim_start_iteration = .0;
 

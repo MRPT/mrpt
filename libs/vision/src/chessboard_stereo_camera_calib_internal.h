@@ -25,7 +25,7 @@ struct lm_stat_t
 
 	// State being optimized:
 	//  N*left_cam_pose + right2left_pose + left_cam_params + right_cam_params
-	mrpt::aligned_std_vector<mrpt::poses::CPose3D>
+	std::vector<mrpt::poses::CPose3D>
 		left_cam_poses;  // Poses of the origin of coordinates of the pattern
 	// wrt the left camera
 	mrpt::poses::CPose3D right2left_pose;
@@ -67,8 +67,7 @@ struct TResidJacobElement
 	Eigen::Matrix<double, 4, 30> J;
 };
 
-using TResidualJacobianList =
-	std::vector<mrpt::aligned_std_vector<TResidJacobElement>>;
+using TResidualJacobianList = std::vector<std::vector<TResidJacobElement>>;
 
 // Auxiliary functions for the Lev-Marq algorithm:
 double recompute_errors_and_Jacobians(

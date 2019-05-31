@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/core/alignment_req.h>
+#include <mrpt/core/alignment_req.h>  // MRPT_MAX_ALIGN_BYTES
 #include <mrpt/core/exceptions.h>
 #include <mrpt/math/MatrixBase.h>
 #include <mrpt/math/math_frwds.h>  // Forward declarations

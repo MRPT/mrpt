@@ -9,11 +9,11 @@
 #pragma once
 
 #include <mrpt/containers/stl_containers_utils.h>  // find_in_vector()
-#include <mrpt/core/aligned_std_map.h>
 #include <mrpt/graphslam/types.h>
 #include <mrpt/math/CSparseMatrix.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/TParameters.h>
+#include <map>
 #include <memory>
 
 #include <mrpt/graphslam/levmarq_impl.h>  // Aux classes
@@ -208,7 +208,7 @@ void optimize_graph_spa_levmarq(
 	// inv(P_j) )
 	// Separated vectors for each edge. i \in [0,nObservations-1], in
 	// same order than lstObservationData
-	mrpt::aligned_std_vector<typename gst::Array_O> errs;
+	std::vector<typename gst::Array_O> errs;
 
 	// ===================================
 	// Compute Jacobians & errors
@@ -240,8 +240,7 @@ void optimize_graph_spa_levmarq(
 	// other important vars for the main loop:
 	CVectorDouble grad(nFreeNodes * DIMS_POSE);
 	grad.setZero();
-	using map_ID2matrix_TxT_t =
-		mrpt::aligned_std_map<TNodeID, typename gst::matrix_TxT>;
+	using map_ID2matrix_TxT_t = std::map<TNodeID, typename gst::matrix_TxT>;
 
 	double lambda = initial_lambda;  // Will be actually set on first iteration.
 	double v = 1;  // was 2, changed since it's modified in the first pass.
@@ -614,7 +613,7 @@ void optimize_graph_spa_levmarq(
 			// Compute Jacobians & errors with the new "graph.nodes" info:
 			// =============================================================
 			typename gst::map_pairIDs_pairJacobs_t new_lstJacobians;
-			mrpt::aligned_std_vector<typename gst::Array_O> new_errs;
+			std::vector<typename gst::Array_O> new_errs;
 
 			profiler.enter("optimize_graph_spa_levmarq.Jacobians&err");
 			double new_total_sqr_err = computeJacobiansAndErrors<GRAPH_T>(
