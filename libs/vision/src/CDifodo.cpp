@@ -347,7 +347,7 @@ void CDifodo::buildCoordinatesPyramidFast()
 									sum += aux_w * d_block(k);
 								}
 							}
-							depth[i](v, u) = sum / weight;
+							if (weight > 0) depth[i](v, u) = sum / weight;
 						}
 						else
 							depth[i](v, u) = 0.f;
