@@ -111,6 +111,23 @@ TEST(Matrices, EigenVal2x2dyn)
 	EXPECT_NEAR((C1_RR - C1).sum_abs(), 0, 1e-4);
 }
 
+TEST(Matrices, eig_symmetric)
+{
+	// Test by looking only at the lower triangular-part:
+	{
+		const double dat_C[] = {14.6271, 0, 5.8133, 16.8805};
+		CMatrixDouble22 C(dat_C);
+
+		CMatrixDouble22 eig_vecs;
+		std::vector<double> eig_vals;
+		C.eig_symmetric(eig_vecs, eig_vals);
+
+		EXPECT_EQ(eig_vals.size(), 2UL);
+		EXPECT_NEAR(eig_vals[0], 9.83232131811656, 1e-4);
+		EXPECT_NEAR(eig_vals[1], 21.67527868188344, 1e-4);
+	}
+}
+
 TEST(Matrices, EigenVal3x3dyn)
 {
 	const double dat_C1[] = {8, 6, 1, 6, 9, 4, 1, 4, 10};
