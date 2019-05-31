@@ -8,10 +8,10 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/core/aligned_std_deque.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CSerializable.h>
+#include <deque>
 
 namespace mrpt::obs
 {
@@ -50,7 +50,7 @@ class CObservation6DFeatures : public CObservation
 		// matrices
 	};
 	/** The list of observed features */
-	mrpt::aligned_std_deque<TMeasurement> sensedFeatures;
+	std::deque<TMeasurement> sensedFeatures;
 
 	/** The pose of the sensor on the robot/vehicle */
 	mrpt::poses::CPose3D sensorPose;

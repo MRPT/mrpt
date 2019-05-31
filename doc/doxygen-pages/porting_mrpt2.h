@@ -108,8 +108,8 @@
  *       mrpt::aligned_containers<Foo>::vector_t m_all_poses v;
  *
  *       // New: MRPT 2.* code
- *       #include <mrpt/core/aligned_std_vector.h>
- *       mrpt::aligned_std_vector<Foo> v;
+ *       #include <vector>
+ *       std::vector<Foo> v;
  *       \endcode
  *  - mrpt::system::TTimeStamp is now a C++11-compatible std::chrono clock
  * time_point. All existing backwards-compatible functions to handle dates and

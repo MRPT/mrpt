@@ -346,7 +346,7 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 	//  where X is the robot pose prior (as implemented in
 	//  the aux. function "particlesEvaluator_AuxPFOptimal"),
 	//  and also the "m_maxLikelihood" filled with the maximum lik. values.
-	mrpt::aligned_std_vector<mrpt::poses::CPose2D> newParticles;
+	std::vector<mrpt::poses::CPose2D> newParticles;
 	vector<double> newParticlesWeight;
 	vector<size_t> newParticlesDerivedFromIdx;
 

@@ -312,8 +312,7 @@ void CGeneralizedCylinder::updatePolys() const
 }
 
 void CGeneralizedCylinder::generatePoses(
-	const vector<TPoint3D>& pIn,
-	mrpt::aligned_std_vector<mrpt::poses::CPose3D>& pOut)
+	const vector<TPoint3D>& pIn, std::vector<mrpt::poses::CPose3D>& pOut)
 {
 	size_t N = pIn.size();
 	if (N == 0)

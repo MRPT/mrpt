@@ -24,7 +24,14 @@ inline void* aligned_calloc(size_t bytes, size_t alignment);
 /** Aligned allocator that is compatible with C++11.
  * Default alignment can be 16 (default), 32 (if __AVX__ is defined) or 64
  * (if __AVX2__ is defined).
- * See also: https://bitbucket.org/eigen/eigen/commits/f5b7700
+ * See: https://bitbucket.org/eigen/eigen/commits/f5b7700
+ *
+ * This was used (before May-2019) to provide custom STL aligned containers,
+ * but the new(n,m) addition to C++17 rendered this needless (at last!)
+ * See: http://eigen.tuxfamily.org/bz/show_bug.cgi?id=1409
+ *
+ * Anyway, this allocator class is left here just in case it is needed for
+ * something else.
  */
 template <class T, size_t AligmentBytes = MRPT_MAX_ALIGN_BYTES>
 class aligned_allocator_cpp11 : public std::allocator<T>

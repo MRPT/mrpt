@@ -12,7 +12,6 @@
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/containers/stl_containers_utils.h>  // find_in_vector
-#include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CVectorFixed.h>
@@ -23,6 +22,7 @@
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/vector_loadsave.h>
 #include <mrpt/typemeta/TEnumType.h>
+#include <vector>
 
 namespace mrpt
 {
@@ -254,7 +254,7 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	using KFArray_VEH = mrpt::math::CVectorFixed<KFTYPE, VEH_SIZE>;
 	using KFArray_ACT = mrpt::math::CVectorFixed<KFTYPE, ACT_SIZE>;
 	using KFArray_OBS = mrpt::math::CVectorFixed<KFTYPE, OBS_SIZE>;
-	using vector_KFArray_OBS = mrpt::aligned_std_vector<KFArray_OBS>;
+	using vector_KFArray_OBS = std::vector<KFArray_OBS>;
 	using KFArray_FEAT = mrpt::math::CVectorFixed<KFTYPE, FEAT_SIZE>;
 
 	inline size_t getStateVectorLength() const { return m_xkk.size(); }
@@ -611,9 +611,9 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	vector_KFArray_OBS m_all_predictions;
 	std::vector<size_t> m_predictLMidxs;
 	/** The vector of all partial Jacobians dh[i]_dx for each prediction */
-	mrpt::aligned_std_vector<KFMatrix_OxV> m_Hxs;
+	std::vector<KFMatrix_OxV> m_Hxs;
 	/** The vector of all partial Jacobians dh[i]_dy[i] for each prediction */
-	mrpt::aligned_std_vector<KFMatrix_OxF> m_Hys;
+	std::vector<KFMatrix_OxF> m_Hys;
 	KFMatrix m_S;
 	vector_KFArray_OBS m_Z;  // Each entry is one observation:
 	KFMatrix m_K;  // Kalman gain

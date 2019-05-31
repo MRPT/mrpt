@@ -9,12 +9,12 @@
 #pragma once
 
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/core/aligned_std_map.h>
-#include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/tfest/TMatchingPair.h>
 #include <mrpt/typemeta/TEnumType.h>
+#include <map>
+#include <vector>
 
 namespace mrpt::vision
 {
@@ -29,11 +29,10 @@ using TLandmarkID = uint64_t;
 using TCameraPoseID = uint64_t;
 
 /** A list of camera frames (6D poses) indexed by unique IDs. */
-using TFramePosesMap =
-	mrpt::aligned_std_map<TCameraPoseID, mrpt::poses::CPose3D>;
+using TFramePosesMap = std::map<TCameraPoseID, mrpt::poses::CPose3D>;
 /** A list of camera frames (6D poses), which assumes indexes are unique,
  * consecutive IDs. */
-using TFramePosesVec = mrpt::aligned_std_vector<mrpt::poses::CPose3D>;
+using TFramePosesVec = std::vector<mrpt::poses::CPose3D>;
 
 /** A list of landmarks (3D points) indexed by unique IDs. */
 using TLandmarkLocationsMap = std::map<TLandmarkID, mrpt::math::TPoint3D>;

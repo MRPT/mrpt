@@ -552,8 +552,8 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 	{
 		std::vector<double> yValues;
 		yaws.values(yValues);
-		mrpt::aligned_std_vector<float> scanValues;
-		mrpt::aligned_std_vector<char> valid;
+		std::vector<float> scanValues;
+		std::vector<char> valid;
 		size_t nV = yaws.amount();
 		scanValues.reserve(nV);
 		valid.reserve(nV);
