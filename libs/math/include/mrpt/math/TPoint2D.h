@@ -154,7 +154,7 @@ struct TPoint2D : public TPoseOrPoint,
 	 * \exception std::exception On invalid format
 	 */
 	void fromString(const std::string& s);
-	static size_t size() { return 2; }
+
 	/** Point norm. */
 	double norm() const { return sqrt(square(x) + square(y)); }
 };

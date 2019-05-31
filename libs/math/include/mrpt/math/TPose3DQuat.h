@@ -112,7 +112,6 @@ struct TPose3DQuat : public TPoseOrPoint,
 	 * \exception std::exception On invalid format
 	 */
 	void fromString(const std::string& s);
-	static size_t size() { return 7; }
 };
 
 }  // namespace mrpt::math
