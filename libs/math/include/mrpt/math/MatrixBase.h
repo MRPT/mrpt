@@ -116,6 +116,13 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 		for (typename Derived::Index i = 0; i < mbDerived().cols(); i++)
 			v[i] = mbDerived().coeff(rowIdx, i);
 	}
+	template <typename VECTOR_LIKE>
+	VECTOR_LIKE extractRow(int rowIdx) const
+	{
+		VECTOR_LIKE v;
+		extractRow(rowIdx, v);
+		return v;
+	}
 
 	template <typename VECTOR_LIKE>
 	void extractColumn(int colIdx, VECTOR_LIKE& v) const
@@ -124,6 +131,13 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 		v.resize(mbDerived().rows());
 		for (typename Derived::Index i = 0; i < mbDerived().rows(); i++)
 			v[i] = mbDerived().coeff(i, colIdx);
+	}
+	template <typename VECTOR_LIKE>
+	VECTOR_LIKE extractColumn(int colIdx) const
+	{
+		VECTOR_LIKE c;
+		extractColumn(colIdx, c);
+		return c;
 	}
 
 	/** @} */

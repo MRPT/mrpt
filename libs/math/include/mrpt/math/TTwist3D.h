@@ -15,15 +15,12 @@ namespace mrpt::math
 /** 3D twist: 3D velocity vector (vx,vy,vz) + angular velocity (wx,wy,wz)
  * \sa mrpt::math::TTwist2D, mrpt::math::TPose3D
  */
-struct TTwist3D
+struct TTwist3D : public internal::ProvideStaticResize<TTwist3D>
 {
 	enum
 	{
 		static_size = 6
 	};
-
-	constexpr std::size_t rows() const { return 6; }
-	constexpr std::size_t cols() const { return 1; }
 
 	/** Velocity components: X,Y (m/s) */
 	double vx{.0}, vy{.0}, vz{.0};

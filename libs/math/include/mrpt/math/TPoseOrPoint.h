@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/core/exceptions.h>
 #include <mrpt/serialization/serialization_frwds.h>
 #include <mrpt/typemeta/TTypeName.h>  // Used in all derived classes
 #include <iosfwd>  // std::ostream
@@ -45,6 +46,19 @@ class TPolygon3D;
 class TPolygon2D;
 struct TObject3D;
 struct TObject2D;
+
+namespace internal
+{
+/** Provided for STL and matrices/vectors compatibility */
+template <typename Derived>
+struct ProvideStaticResize
+{
+	constexpr std::size_t rows() const { return Derived::static_size; }
+	constexpr std::size_t cols() const { return 1; }
+	/** throws if attempted to resize to incorrect length */
+	void resize(std::size_t n) { ASSERT_EQUAL_(n, Derived::static_size); }
+};
+}  // namespace internal
 
 /** Text streaming function */
 template <
