@@ -8,7 +8,6 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/data_utils.h>
@@ -17,6 +16,7 @@
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/random.h>
 #include <functional>
+#include <vector>
 
 namespace mrpt::math
 {
@@ -74,7 +74,7 @@ void transform_gaussian_unscented(
 	// Propagate the samples X_i -> Y_i:
 	// We don't need to store the X sigma points: just use one vector to compute
 	// all the Y sigma points:
-	mrpt::aligned_std_vector<VECTORLIKE3> Y(1 + 2 * Nx);  // 2Nx+1 sigma points
+	std::vector<VECTORLIKE3> Y(1 + 2 * Nx);  // 2Nx+1 sigma points
 	VECTORLIKE1 X = x_mean;
 	functor(X, fixed_param, Y[0]);
 	VECTORLIKE1 delta;  // i'th row of L:
@@ -117,13 +117,13 @@ void transform_gaussian_montecarlo(
 		const VECTORLIKE1& x, const USERPARAM& fixed_param, VECTORLIKE3& y),
 	const USERPARAM& fixed_param, VECTORLIKE2& y_mean, MATLIKE2& y_cov,
 	const size_t num_samples = 1000,
-	mrpt::aligned_std_vector<VECTORLIKE3>* out_samples_y = nullptr)
+	std::vector<VECTORLIKE3>* out_samples_y = nullptr)
 {
 	MRPT_START
-	mrpt::aligned_std_vector<VECTORLIKE1> samples_x;
+	std::vector<VECTORLIKE1> samples_x;
 	mrpt::random::getRandomGenerator().drawGaussianMultivariateMany(
 		samples_x, num_samples, x_cov, &x_mean);
-	mrpt::aligned_std_vector<VECTORLIKE3> samples_y(num_samples);
+	std::vector<VECTORLIKE3> samples_y(num_samples);
 	for (size_t i = 0; i < num_samples; i++)
 		functor(samples_x[i], fixed_param, samples_y[i]);
 	mrpt::math::covariancesAndMean(samples_y, y_cov, y_mean);

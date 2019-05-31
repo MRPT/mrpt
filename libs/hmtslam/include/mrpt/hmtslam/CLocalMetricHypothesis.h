@@ -11,13 +11,13 @@
 #include <mrpt/bayes/CParticleFilterCapable.h>
 
 #include <mrpt/bayes/CParticleFilterData.h>
-#include <mrpt/core/aligned_std_map.h>
 #include <mrpt/hmtslam/CHMHMapNode.h>
 #include <mrpt/hmtslam/HMT_SLAM_common.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
+#include <map>
 
 #include <list>
 #include <mutex>
@@ -31,7 +31,7 @@ class CPose3DPDFParticles;
 
 namespace hmtslam
 {
-using TMapPoseID2Pose3D = mrpt::aligned_std_map<TPoseID, mrpt::poses::CPose3D>;
+using TMapPoseID2Pose3D = std::map<TPoseID, mrpt::poses::CPose3D>;
 
 class CHMTSLAM;
 class CLSLAM_RBPF_2DLASER;
@@ -273,14 +273,13 @@ class CLocalMetricHypothesis
 	mutable std::vector<double> m_maxLikelihood;
 
 	/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm. */
-	mutable mrpt::aligned_std_vector<mrpt::poses::CPose2D> m_movementDraws;
+	mutable std::vector<mrpt::poses::CPose2D> m_movementDraws;
 
 	/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm. */
 	mutable unsigned int m_movementDrawsIdx;
 
 	/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm. */
-	mutable mrpt::aligned_std_vector<mrpt::poses::CPose2D>
-		m_movementDrawMaximumLikelihood;
+	mutable std::vector<mrpt::poses::CPose2D> m_movementDrawMaximumLikelihood;
 
 };  // End of class def.
 

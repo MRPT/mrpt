@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/serialization/CSerializable.h>
+#include <vector>
 
 namespace mrpt::poses
 {
@@ -85,7 +85,7 @@ class CPoses2DSequence : public mrpt::serialization::CSerializable
 	 * thus each one is situated just at the end point of last one, where the
 	 * first one is referenced to (0,0,0deg)
 	 */
-	mrpt::aligned_std_vector<CPose2D> poses;
+	std::vector<CPose2D> poses;
 
 };  // End of class def.
 }  // namespace mrpt::poses

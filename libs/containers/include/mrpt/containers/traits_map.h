@@ -9,7 +9,6 @@
 #pragma once
 
 #include <mrpt/containers/map_as_vector.h>
-#include <mrpt/core/aligned_allocator.h>
 
 namespace mrpt::containers
 {
@@ -24,21 +23,15 @@ namespace mrpt::containers
  * map_traits_map_as_vector */
 struct map_traits_stdmap
 {
-	template <
-		class KEY, class VALUE, class _LessPred = std::less<KEY>,
-		class _Alloc =
-			mrpt::aligned_allocator_cpp11<std::pair<const KEY, VALUE>>>
-	using map = std::map<KEY, VALUE, _LessPred, _Alloc>;
+	template <class KEY, class VALUE>
+	using map = std::map<KEY, VALUE>;
 };
 
 /**  Traits for using a mrpt::containers::map_as_vector<> (dense, fastest
  * representation) \sa map_traits_stdmap  */
 struct map_traits_map_as_vector
 {
-	template <
-		class KEY, class VALUE, class _LessPred = std::less<KEY>,
-		class _Alloc =
-			mrpt::aligned_allocator_cpp11<std::pair<const KEY, VALUE>>>
+	template <class KEY, class VALUE>
 	using map = mrpt::containers::map_as_vector<KEY, VALUE>;
 };
 

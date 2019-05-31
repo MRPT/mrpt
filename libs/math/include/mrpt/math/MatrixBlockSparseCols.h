@@ -10,8 +10,8 @@
 #pragma once
 
 #include <mrpt/containers/map_as_vector.h>
-#include <mrpt/core/aligned_std_map.h>
 #include <mrpt/math/CMatrixDynamic.h>  // For mrpt::math::CMatrixDouble
+#include <map>
 
 namespace mrpt::math
 {
@@ -52,7 +52,7 @@ struct MatrixBlockSparseCols
 	};
 
 	/** Each compressed sparse column */
-	using col_t = mrpt::aligned_std_map<size_t, TEntry>;
+	using col_t = std::map<size_t, TEntry>;
 
    private:
 	/** -> cols[i]: i'th column.

@@ -7,13 +7,13 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/core/aligned_std_map.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/graphs/dijkstra.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/random.h>
 #include <mrpt/system/CTicTac.h>
 #include <iostream>
+#include <map>
 
 using namespace mrpt;
 using namespace mrpt::graphs;
@@ -34,8 +34,7 @@ typedef CDijkstra<CNetworkOfPoses2D>
 // adds a new edge to the graph. The edge is annotated with the relative
 // position of the two nodes
 void addEdge(
-	TNodeID from, TNodeID to,
-	const mrpt::aligned_std_map<TNodeID, CPose2D>& real_poses,
+	TNodeID from, TNodeID to, const std::map<TNodeID, CPose2D>& real_poses,
 	CNetworkOfPoses2D& graph_links)
 {
 	CPose2D p = real_poses.find(to)->second - real_poses.find(from)->second;
@@ -59,7 +58,7 @@ void TestDijkstra()
 	CTicTac tictac;
 	CNetworkOfPoses2D graph_links;
 	CNetworkOfPoses2D::global_poses_t optimal_poses, optimal_poses_dijkstra;
-	mrpt::aligned_std_map<TNodeID, CPose2D> real_poses;
+	std::map<TNodeID, CPose2D> real_poses;
 
 	getRandomGenerator().randomize(10);
 

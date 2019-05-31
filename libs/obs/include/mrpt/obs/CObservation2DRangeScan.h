@@ -9,13 +9,13 @@
 #pragma once
 
 #include <mrpt/containers/ContainerReadOnlyProxyAccessor.h>
-#include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/T2DScanProperties.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CSerializable.h>
+#include <vector>
 
 // Add for declaration of mexplus::from template specialization
 DECLARE_MEXPLUS_FROM(mrpt::obs::CObservation2DRangeScan)
@@ -60,13 +60,13 @@ class CObservation2DRangeScan : public CObservation
    private:
 	/** The range values of the scan, in meters. Must have same length than \a
 	 * validRange */
-	mrpt::aligned_std_vector<float> m_scan;
+	std::vector<float> m_scan;
 	/** The intensity values of the scan. If available, must have same length
 	 * than \a validRange */
-	mrpt::aligned_std_vector<int32_t> m_intensity;
+	std::vector<int32_t> m_intensity;
 	/** It's false (=0) on no reflected rays, referenced to elements in \a scan
 	 */
-	mrpt::aligned_std_vector<char> m_validRange;
+	std::vector<char> m_validRange;
 	/** Whether the intensity values are present or not. If not, space is saved
 	 * during serialization. */
 	bool m_has_intensity{false};
@@ -97,24 +97,21 @@ class CObservation2DRangeScan : public CObservation
 
 	/** The range values of the scan, in meters. Must have same length than \a
 	 * validRange */
-	mrpt::containers::ContainerReadOnlyProxyAccessor<
-		mrpt::aligned_std_vector<float>>
-		scan{m_scan};
+	mrpt::containers::ContainerReadOnlyProxyAccessor<std::vector<float>> scan{
+		m_scan};
 	float getScanRange(const size_t i) const;
 	void setScanRange(const size_t i, const float val);
 
 	/** The intensity values of the scan. If available, must have same length
 	 * than \a validRange */
-	mrpt::containers::ContainerReadOnlyProxyAccessor<
-		mrpt::aligned_std_vector<int32_t>>
+	mrpt::containers::ContainerReadOnlyProxyAccessor<std::vector<int32_t>>
 		intensity{m_intensity};
 	int32_t getScanIntensity(const size_t i) const;
 	void setScanIntensity(const size_t i, const int val);
 
 	/** It's false (=0) on no reflected rays, referenced to elements in \a scan
 	 */
-	mrpt::containers::ContainerReadOnlyProxyAccessor<
-		mrpt::aligned_std_vector<char>>
+	mrpt::containers::ContainerReadOnlyProxyAccessor<std::vector<char>>
 		validRange{m_validRange};
 	bool getScanRangeValidity(const size_t i) const;
 	void setScanRangeValidity(const size_t i, const bool val);

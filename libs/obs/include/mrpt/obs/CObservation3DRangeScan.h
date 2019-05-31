@@ -8,7 +8,6 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/core/integer_select.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/math/CMatrixF.h>
@@ -22,6 +21,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/serialization/serialization_frwds.h>
 #include <mrpt/typemeta/TEnumType.h>
+#include <vector>
 
 namespace mrpt
 {
@@ -780,7 +780,7 @@ class CObservation3DRangeScan : public CObservation
 	/** Look-up-table struct for project3DPointsFromDepthImageInto() */
 	struct TCached3DProjTables
 	{
-		mrpt::aligned_std_vector<float> Kzs, Kys;
+		std::vector<float> Kzs, Kys;
 		mrpt::img::TCamera prev_camParams;
 	};
 	/** 3D point cloud projection look-up-table \sa

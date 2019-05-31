@@ -9,11 +9,11 @@
 #ifndef opengl_COctreePointRenderer_H
 #define opengl_COctreePointRenderer_H
 
-#include <mrpt/core/aligned_std_deque.h>
 #include <mrpt/opengl/CBox.h>
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/gl_utils.h>
+#include <deque>
 
 namespace mrpt
 {
@@ -277,7 +277,7 @@ class COctreePointRenderer
 
 	bool m_octree_has_to_rebuild_all{true};
 	/** First one [0] is always the root node */
-	mrpt::aligned_std_deque<TNode> m_octree_nodes;
+	std::deque<TNode> m_octree_nodes;
 
 	// Counters of visible octrees for each render:
 	volatile mutable size_t m_visible_octree_nodes{0},

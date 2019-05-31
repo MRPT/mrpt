@@ -108,9 +108,9 @@ wxBitmap MyArtProvider::CreateBitmap(
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/system/CTicTac.h>
 
-#include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/serialization/CArchive.h>
+#include <vector>
 
 #include <mrpt/gui/WxUtils.h>
 
@@ -132,7 +132,7 @@ mrpt::kinematics::CVehicleSimul_DiffDriven the_robot;
 COccupancyGridMap2D the_grid;
 CJoystick joystick;
 
-mrpt::aligned_std_vector<mrpt::poses::CPose2D> robot_path_GT, robot_path_ODO;
+std::vector<mrpt::poses::CPose2D> robot_path_GT, robot_path_ODO;
 CPose2D lastOdo, pose_start;
 bool we_are_closing = false;
 long decimation = 1;
