@@ -163,7 +163,8 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 	bool eig(
 		Derived& eVecs, std::vector<Scalar>& eVals, bool sorted = true) const;
 
-	/** Read: eig() */
+	/** Read: eig()
+	 * \note This only uses the **lower-triangular** part of the matrix */
 	bool eig_symmetric(
 		Derived& eVecs, std::vector<Scalar>& eVals, bool sorted = true) const;
 
