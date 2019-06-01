@@ -268,7 +268,7 @@ void TestParticlesLocalization()
 
 // 3D World
 #ifdef STORE_3D
-			COpenGLScene::Ptr scene = mrpt::make_aligned_shared<COpenGLScene>();
+			COpenGLScene::Ptr scene = std::make_shared<COpenGLScene>();
 
 #ifdef SHOW_REAL_TIME_3D
 			CDisplayWindow3D window("ro-localization - Part of MRPT");
@@ -291,8 +291,7 @@ void TestParticlesLocalization()
 			// World Axis
 			{
 				opengl::CAxis::Ptr obj =
-					mrpt::make_aligned_shared<opengl::CAxis>(
-						-20, -10, -1, 20, 10, 4, 1);
+					std::make_shared<opengl::CAxis>(-20, -10, -1, 20, 10, 4, 1);
 				obj->enableTickMarks();
 				obj->setColor(0, 0, 0);
 #ifdef SHOW_REAL_TIME_3D
@@ -313,7 +312,7 @@ void TestParticlesLocalization()
 #ifdef SHOW_REAL_TIME_3D
 				{
 					opengl::CSetOfObjects::Ptr obj =
-						mrpt::make_aligned_shared<opengl::CSetOfObjects>();
+						std::make_shared<opengl::CSetOfObjects>();
 					grid2d.getAs3DObject(obj);
 					obj->setLocation(
 						initialPoseExperiment.x(), initialPoseExperiment.y(),
@@ -322,7 +321,7 @@ void TestParticlesLocalization()
 				}
 #endif
 				opengl::CSetOfObjects::Ptr obj =
-					mrpt::make_aligned_shared<opengl::CSetOfObjects>();
+					std::make_shared<opengl::CSetOfObjects>();
 				grid2d.getAs3DObject(obj);
 				scene->insert(obj);
 			}
@@ -330,7 +329,7 @@ void TestParticlesLocalization()
 			// Floor
 			{
 				opengl::CGridPlaneXY::Ptr obj =
-					mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
+					std::make_shared<opengl::CGridPlaneXY>(
 						-20, 20, -10, 10, 0, 0.5);
 				obj->setColor(0.4, 0.4, 0.4);
 #ifdef SHOW_REAL_TIME_3D
@@ -549,7 +548,7 @@ void TestParticlesLocalization()
 						parts = std::dynamic_pointer_cast<CPointCloud>(obj);
 #else
 					opengl::CPointCloud::Ptr parts =
-						mrpt::make_aligned_shared<opengl::CPointCloud>();
+						std::make_shared<opengl::CPointCloud>();
 					opengl::CRenderizable::Ptr obj;
 #endif
 
@@ -577,12 +576,12 @@ void TestParticlesLocalization()
 					obj = sceneTR->getByName("cov");
 					opengl::CEllipsoid::Ptr ellip;
 					if (!obj)
-						ellip = mrpt::make_aligned_shared<opengl::CEllipsoid>();
+						ellip = std::make_shared<opengl::CEllipsoid>();
 					else
 						ellip = std::dynamic_pointer_cast<CEllipsoid>(obj);
 #else
 					opengl::CEllipsoid::Ptr ellip =
-						mrpt::make_aligned_shared<opengl::CEllipsoid>();
+						std::make_shared<opengl::CEllipsoid>();
 #endif
 
 					ellip->setColor(1, 0, 0, 0.6);
@@ -646,15 +645,13 @@ void TestParticlesLocalization()
 								opengl::CDisk::Ptr sphere;
 
 								if (!obj)
-									sphere = mrpt::make_aligned_shared<
-										opengl::CDisk>();
+									sphere = std::make_shared<opengl::CDisk>();
 								else
 									sphere =
 										std::dynamic_pointer_cast<CDisk>(obj);
 #else
 								opengl::CSphere::Ptr sphere =
-									mrpt::make_aligned_shared<
-										opengl::CSphere>();
+									std::make_shared<opengl::CSphere>();
 								opengl::CRenderizable::Ptr obj;
 #endif
 
@@ -697,8 +694,7 @@ void TestParticlesLocalization()
 						opengl::CSphere::Ptr sphere;
 
 						if (!obj)
-							sphere =
-								mrpt::make_aligned_shared<opengl::CSphere>();
+							sphere = std::make_shared<opengl::CSphere>();
 						else
 							sphere =
 								std::dynamic_pointer_cast<opengl::CSphere>(obj);
@@ -732,15 +728,14 @@ void TestParticlesLocalization()
 						opengl::CSphere::Ptr sphere;
 
 						if (!obj)
-							sphere =
-								mrpt::make_aligned_shared<opengl::CSphere>();
+							sphere = std::make_shared<opengl::CSphere>();
 						else
 							sphere =
 								std::dynamic_pointer_cast<opengl::CSphere>(obj);
 
 #else
 						opengl::CSphere::Ptr sphere =
-							mrpt::make_aligned_shared<opengl::CSphere>();
+							std::make_shared<opengl::CSphere>();
 #endif
 						sphere->setColor(0, 0, 1);
 						sphere->setRadius(0.05f);
@@ -767,14 +762,13 @@ void TestParticlesLocalization()
 						opengl::CSphere::Ptr sphere;
 
 						if (!obj)
-							sphere =
-								mrpt::make_aligned_shared<opengl::CSphere>();
+							sphere = std::make_shared<opengl::CSphere>();
 						else
 							sphere =
 								std::dynamic_pointer_cast<opengl::CSphere>(obj);
 #else
 						opengl::CSphere::Ptr sphere =
-							mrpt::make_aligned_shared<opengl::CSphere>();
+							std::make_shared<opengl::CSphere>();
 #endif
 						sphere->setColor(0, 0, 0);
 						sphere->setRadius(0.10f);
@@ -807,8 +801,7 @@ void TestParticlesLocalization()
 							double x, y;
 
 							if (!obj)
-								sphere = mrpt::make_aligned_shared<
-									opengl::CEllipsoid>();
+								sphere = std::make_shared<opengl::CEllipsoid>();
 							else
 								sphere = std::dynamic_pointer_cast<
 									opengl::CEllipsoid>(obj);
@@ -869,8 +862,7 @@ void TestParticlesLocalization()
 							double x, y;
 
 							if (!obj)
-								sphere = mrpt::make_aligned_shared<
-									opengl::CSphere>();
+								sphere = std::make_shared<opengl::CSphere>();
 							else
 								sphere =
 									std::dynamic_pointer_cast<opengl::CSphere>(

@@ -105,7 +105,7 @@ void CFeatureExtraction::extractFeaturesSURF(
 	for (size_t i = 0; i < n_feats; i++)
 	{
 		// Get the OpenCV SURF point
-		CFeature::Ptr ft = mrpt::make_aligned_shared<CFeature>();
+		CFeature::Ptr ft = std::make_shared<CFeature>();
 		const KeyPoint& point = cv_feats[i];
 
 		const int xBorderInf = (int)floor(point.pt.x - options.patchSize / 2);

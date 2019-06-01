@@ -135,7 +135,7 @@ void CIbeoLuxETH::dataCollection()
 			case SaveData:
 				// Create new observation object pointer
 				CObservation3DRangeScan::Ptr newObs =
-					mrpt::make_aligned_shared<CObservation3DRangeScan>();
+					std::make_shared<CObservation3DRangeScan>();
 				newObs->hasPoints3D = true;
 				newObs->maxRange = 200.00;
 

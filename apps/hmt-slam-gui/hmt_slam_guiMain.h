@@ -50,8 +50,6 @@ class hmt_slam_guiFrame : public wxFrame
 	friend class CDlgLog;
 
    public:
-	MRPT_MAKE_ALIGNED_OPERATOR_NEW
-
    public:
 	hmt_slam_guiFrame(wxWindow* parent, wxWindowID id = -1);
 	~hmt_slam_guiFrame() override;

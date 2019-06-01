@@ -128,7 +128,6 @@ class CPosePDF : public mrpt::serialization::CSerializable,
 	}
 
    public:
-	MRPT_MAKE_ALIGNED_OPERATOR_NEW
 };  // End of class def.
 
 }  // namespace mrpt::poses

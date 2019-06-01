@@ -1772,8 +1772,7 @@ void CLoopCloserERD<GRAPH_T>::initMapPartitionsVisualization()
 		&m_lc_params.text_index_map_partitions);
 
 	// just add an empty CSetOfObjects in the scene - going to populate it later
-	CSetOfObjects::Ptr map_partitions_obj =
-		mrpt::make_aligned_shared<CSetOfObjects>();
+	CSetOfObjects::Ptr map_partitions_obj = std::make_shared<CSetOfObjects>();
 	map_partitions_obj->setName("map_partitions");
 
 	COpenGLScene::Ptr& scene = this->m_win->get3DSceneAndLock();
@@ -1864,7 +1863,7 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization()
 				"\tCreating a new CSetOfObjects partition object for partition "
 				"#"
 				<< partitionID);
-			curr_partition_obj = mrpt::make_aligned_shared<CSetOfObjects>();
+			curr_partition_obj = std::make_shared<CSetOfObjects>();
 			curr_partition_obj->setName(partition_obj_name);
 			if (m_lc_params.LC_check_curr_partition_only)
 			{
@@ -1874,7 +1873,7 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization()
 
 			// MRPT_LOG_DEBUG_STREAM("\t\tCreating a new CSphere balloon
 			// object");
-			CSphere::Ptr balloon_obj = mrpt::make_aligned_shared<CSphere>();
+			CSphere::Ptr balloon_obj = std::make_shared<CSphere>();
 			balloon_obj->setName(balloon_obj_name);
 			balloon_obj->setRadius(m_lc_params.balloon_radius);
 			balloon_obj->setColor_u8(m_lc_params.balloon_std_color);
@@ -1886,7 +1885,7 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization()
 			// MRPT_LOG_DEBUG_STREAM(
 			//"\t\tCreating set of lines that will connect to the Balloon");
 			CSetOfLines::Ptr connecting_lines_obj =
-				mrpt::make_aligned_shared<CSetOfLines>();
+				std::make_shared<CSetOfLines>();
 			connecting_lines_obj->setName("connecting_lines");
 			connecting_lines_obj->setColor_u8(
 				m_lc_params.connecting_lines_color);
@@ -2060,7 +2059,7 @@ void CLoopCloserERD<GRAPH_T>::initLaserScansVisualization()
 			this->m_win->get3DSceneAndLock();
 
 		mrpt::opengl::CPlanarLaserScan::Ptr laser_scan_viz =
-			mrpt::make_aligned_shared<mrpt::opengl::CPlanarLaserScan>();
+			std::make_shared<mrpt::opengl::CPlanarLaserScan>();
 		laser_scan_viz->enablePoints(true);
 		laser_scan_viz->enableLine(true);
 		laser_scan_viz->enableSurface(true);
@@ -2227,7 +2226,7 @@ void CLoopCloserERD<GRAPH_T>::initCurrCovarianceVisualization()
 		m_text_index_curr_node_covariance);
 
 	// covariance ellipsis
-	CEllipsoid::Ptr cov_ellipsis_obj = mrpt::make_aligned_shared<CEllipsoid>();
+	CEllipsoid::Ptr cov_ellipsis_obj = std::make_shared<CEllipsoid>();
 	cov_ellipsis_obj->setName("cov_ellipsis_obj");
 	cov_ellipsis_obj->setColor_u8(m_curr_node_covariance_color);
 	cov_ellipsis_obj->setLocation(0, 0, 0);

@@ -495,11 +495,11 @@ void MapBuilding_RBPF()
 				COpenGLScene::Ptr scene;
 				if (SAVE_3D_SCENE || SHOW_PROGRESS_IN_WINDOW)
 				{
-					scene = mrpt::make_aligned_shared<COpenGLScene>();
+					scene = std::make_shared<COpenGLScene>();
 
 					// The ground:
 					mrpt::opengl::CGridPlaneXY::Ptr groundPlane =
-						mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>(
+						std::make_shared<mrpt::opengl::CGridPlaneXY>(
 							-200, 200, -200, 200, 0, 5);
 					groundPlane->setColor(0.4, 0.4, 0.4);
 					scene->insert(groundPlane);
@@ -508,7 +508,7 @@ void MapBuilding_RBPF()
 					if (CAMERA_3DSCENE_FOLLOWS_ROBOT)
 					{
 						mrpt::opengl::CCamera::Ptr objCam =
-							mrpt::make_aligned_shared<mrpt::opengl::CCamera>();
+							std::make_shared<mrpt::opengl::CCamera>();
 						CPose3D robotPose;
 						curPDF.getMean(robotPose);
 
@@ -519,15 +519,14 @@ void MapBuilding_RBPF()
 					}
 					// Draw the map(s):
 					mrpt::opengl::CSetOfObjects::Ptr objs =
-						mrpt::make_aligned_shared<
-							mrpt::opengl::CSetOfObjects>();
+						std::make_shared<mrpt::opengl::CSetOfObjects>();
 					mostLikMap->getAs3DObject(objs);
 					scene->insert(objs);
 
 					// Draw the robot particles:
 					size_t M = mapBuilder.mapPDF.particlesCount();
 					mrpt::opengl::CSetOfLines::Ptr objLines =
-						mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
+						std::make_shared<mrpt::opengl::CSetOfLines>();
 					objLines->setColor(0, 1, 1);
 					for (size_t i = 0; i < M; i++)
 					{
@@ -567,7 +566,7 @@ void MapBuilding_RBPF()
 							minDistBtwPoses = 6 * sqrt(COV3(0, 0) + COV3(1, 1));
 
 							opengl::CEllipsoid::Ptr objEllip =
-								mrpt::make_aligned_shared<opengl::CEllipsoid>();
+								std::make_shared<opengl::CEllipsoid>();
 							objEllip->setLocation(
 								meanPose.x(), meanPose.y(),
 								meanPose.z() + 0.001);

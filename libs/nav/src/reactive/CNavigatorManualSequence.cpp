@@ -57,12 +57,12 @@ void CNavigatorManualSequence::loadConfigFile(
 		switch (nComps)
 		{
 			case 2:
-				krc.cmd_vel = mrpt::make_aligned_shared<
+				krc.cmd_vel = std::make_shared<
 					mrpt::kinematics::CVehicleVelCmd_DiffDriven>();
 				break;
 			case 4:
-				krc.cmd_vel = mrpt::make_aligned_shared<
-					mrpt::kinematics::CVehicleVelCmd_Holo>();
+				krc.cmd_vel =
+					std::make_shared<mrpt::kinematics::CVehicleVelCmd_Holo>();
 				break;
 			default:
 				THROW_EXCEPTION("Expected 2 or 4 velocity components!");

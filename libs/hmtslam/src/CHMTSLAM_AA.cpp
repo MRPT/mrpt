@@ -40,8 +40,7 @@ CHMTSLAM::TMessageLSLAMfromAA::Ptr CHMTSLAM::areaAbstraction(
 	ASSERT_(obj);
 
 	// The output results:
-	TMessageLSLAMfromAA::Ptr resMsg =
-		mrpt::make_aligned_shared<TMessageLSLAMfromAA>();
+	TMessageLSLAMfromAA::Ptr resMsg = std::make_shared<TMessageLSLAMfromAA>();
 
 	// Process msg:
 	THypothesisID LMH_ID = LMH->m_ID;
@@ -57,7 +56,7 @@ CHMTSLAM::TMessageLSLAMfromAA::Ptr CHMTSLAM::areaAbstraction(
 		// Get SF & pose pdf for the new pose.
 		const CSensoryFrame* sf;
 		CPose3DPDFParticles::Ptr posePDF =
-			mrpt::make_aligned_shared<CPose3DPDFParticles>();
+			std::make_shared<CPose3DPDFParticles>();
 
 		{
 			// std::lock_guard<std::mutex>	lock( LMH->m_lock ); // We are

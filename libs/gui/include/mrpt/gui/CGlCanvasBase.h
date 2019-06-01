@@ -249,7 +249,7 @@ class CGlCanvasBase
 		  clearColorA = 1.f;
 	bool useCameraFromScene = false;
 	mrpt::opengl::COpenGLScene::Ptr m_openGLScene =
-		mrpt::make_aligned_shared<mrpt::opengl::COpenGLScene>();
+		std::make_shared<mrpt::opengl::COpenGLScene>();
 	int m_mouseLastX = 0, m_mouseLastY = 0;
 	int m_mouseClickX = 0, m_mouseClickY = 0;
 	bool mouseClicked = false;

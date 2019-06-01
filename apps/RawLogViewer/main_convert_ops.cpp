@@ -108,7 +108,7 @@ void xRawLogViewerFrame::OnMenuCompactRawlog(wxCommandEvent& event)
 				if (onlyOnePerLabel && lastSF)
 				{
 					CSensoryFrame::Ptr newSF =
-						mrpt::make_aligned_shared<CSensoryFrame>();
+						std::make_shared<CSensoryFrame>();
 					set<string> knownLabels;
 
 					for (auto o = lastSF->begin(); o != lastSF->end(); ++o)
@@ -266,8 +266,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecimate(wxCommandEvent& event)
 			// ---------------------------
 
 			// Add observations to the accum. SF:
-			if (!accum_sf)
-				accum_sf = mrpt::make_aligned_shared<CSensoryFrame>();
+			if (!accum_sf) accum_sf = std::make_shared<CSensoryFrame>();
 
 			// Copy pointers to observations only (fast):
 			*accum_sf =
@@ -419,7 +418,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecFILE(wxCommandEvent& event)
 
 					// INSERT ACTIONS:
 					CActionCollection::Ptr actsCol =
-						mrpt::make_aligned_shared<CActionCollection>();
+						std::make_shared<CActionCollection>();
 					if (cummMovementInit)
 					{
 						CActionRobotMovement2D cummMovement;
@@ -749,7 +748,7 @@ void xRawLogViewerFrame::OnMenuConvertObservationOnly(wxCommandEvent& event)
 
 					// Generate "odometry obs":
 					CObservationOdometry::Ptr newO =
-						mrpt::make_aligned_shared<CObservationOdometry>();
+						std::make_shared<CObservationOdometry>();
 					newO->sensorLabel = "odometry";
 					newO->timestamp = actOdom->timestamp != INVALID_TIMESTAMP
 										  ? actOdom->timestamp

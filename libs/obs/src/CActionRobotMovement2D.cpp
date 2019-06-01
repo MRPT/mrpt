@@ -425,7 +425,7 @@ void CActionRobotMovement2D::computeFromOdometry_modelGaussian(
 {
 	// The Gaussian PDF:
 	// ---------------------------
-	poseChange = mrpt::make_aligned_shared<CPosePDFGaussian>();
+	poseChange = std::make_shared<CPosePDFGaussian>();
 	auto* aux = dynamic_cast<CPosePDFGaussian*>(poseChange.get());
 
 	// See https://www.mrpt.org/Probabilistic_Motion_Models

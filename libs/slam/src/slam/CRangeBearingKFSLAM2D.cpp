@@ -152,8 +152,7 @@ void CRangeBearingKFSLAM2D::processActionObservation(
 	// =============================================================
 	if (options.create_simplemap)
 	{
-		CPosePDFGaussian::Ptr auxPosePDF =
-			mrpt::make_aligned_shared<CPosePDFGaussian>();
+		CPosePDFGaussian::Ptr auxPosePDF = std::make_shared<CPosePDFGaussian>();
 		getCurrentRobotPose(*auxPosePDF);
 		m_SFs.insert(auxPosePDF, SF);
 	}

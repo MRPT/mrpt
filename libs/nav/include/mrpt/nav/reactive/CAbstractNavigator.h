@@ -383,7 +383,6 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 	mrpt::system::TTimeStamp m_badNavAlarm_lastMinDistTime;
 
    public:
-	MRPT_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 bool operator==(

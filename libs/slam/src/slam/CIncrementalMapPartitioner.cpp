@@ -385,8 +385,7 @@ void CIncrementalMapPartitioner::getAs3DScene(
 		mrpt::keep_max(bbmaxx, (int)ceil(i_mean.x()));
 		mrpt::keep_max(bbmaxy, (int)ceil(i_mean.y()));
 
-		opengl::CSphere::Ptr i_sph =
-			mrpt::make_aligned_shared<opengl::CSphere>();
+		opengl::CSphere::Ptr i_sph = std::make_shared<opengl::CSphere>();
 		i_sph->setRadius(0.02f);
 		i_sph->setColor(0, 0, 1);
 
@@ -420,7 +419,7 @@ void CIncrementalMapPartitioner::getAs3DScene(
 			if (SSO_ij > 0.01)
 			{
 				opengl::CSimpleLine::Ptr lin =
-					mrpt::make_aligned_shared<opengl::CSimpleLine>();
+					std::make_shared<opengl::CSimpleLine>();
 				lin->setLineCoords(
 					i_mean.x(), i_mean.y(), i_mean.z(), j_mean.x(), j_mean.y(),
 					j_mean.z());

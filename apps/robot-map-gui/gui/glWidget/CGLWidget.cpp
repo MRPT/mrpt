@@ -37,8 +37,7 @@ using namespace mrpt::opengl;
 
 CGlWidget::CGlWidget(bool is2D, QWidget* parent)
 	: CQtGlCanvasBase(parent),
-	  m_groundPlane(
-		  mrpt::make_aligned_shared<CGridPlaneXY>(-200, 200, -200, 200, 0, 5)),
+	  m_groundPlane(std::make_shared<CGridPlaneXY>(-200, 200, -200, 200, 0, 5)),
 	  m_doc(nullptr),
 	  m_miniMapSize(-1.0),
 	  m_minimapPercentSize(0.25),
@@ -47,9 +46,9 @@ CGlWidget::CGlWidget(bool is2D, QWidget* parent)
 	  m_selectedObsSize(15.0),
 	  m_selectedColor(mrpt::img::TColor::green()),
 	  m_isShowObs(false),
-	  m_visiblePoints(mrpt::make_aligned_shared<CSetOfObjects>()),
+	  m_visiblePoints(std::make_shared<CSetOfObjects>()),
 	  m_currentObs(opengl::stock_objects::CornerXYZSimple()),
-	  m_line(mrpt::make_aligned_shared<CSetOfLines>()),
+	  m_line(std::make_shared<CSetOfLines>()),
 	  m_is2D(is2D),
 	  m_showRobot(false),
 	  m_moveSelected(false),
@@ -195,7 +194,7 @@ void CGlWidget::setDocument(CDocument* doc)
 		 iter != m_doc->simplemap().end(); ++iter)
 	{
 		math::TPose3D pose = iter->first->getMeanVal().asTPose();
-		CRobotPose::Ptr robotPose = mrpt::make_aligned_shared<CRobotPose>(id);
+		CRobotPose::Ptr robotPose = std::make_shared<CRobotPose>(id);
 		robotPose->setPose(pose);
 		m_visiblePoints->insert(robotPose);
 		++id;
@@ -218,7 +217,7 @@ void CGlWidget::updateObservations()
 		 iter != m_doc->simplemap().end(); ++iter)
 	{
 		math::TPose3D pose = iter->first->getMeanVal().asTPose();
-		CRobotPose::Ptr robotPose = mrpt::make_aligned_shared<CRobotPose>(id);
+		CRobotPose::Ptr robotPose = std::make_shared<CRobotPose>(id);
 		robotPose->setPose(pose);
 		m_visiblePoints->insert(robotPose);
 		++id;

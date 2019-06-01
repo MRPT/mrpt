@@ -22,7 +22,7 @@ namespace mrpt::obs
  *  New observations can be added using:
  *
  * \code
- * CObservationXXX::Ptr	o = mrpt::make_aligned_shared<CObservationXXX>();
+ * CObservationXXX::Ptr	o = std::make_shared<CObservationXXX>();
  * // Create
  * a smart pointer containing an object of class "CObservationXXX"
  * o->(...)

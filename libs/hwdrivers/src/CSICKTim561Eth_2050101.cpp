@@ -513,7 +513,7 @@ void CSICKTim561Eth::doProcessSimple(
 void CSICKTim561Eth::doProcess()
 {
 	CObservation2DRangeScan::Ptr obs =
-		mrpt::make_aligned_shared<CObservation2DRangeScan>();
+		std::make_shared<CObservation2DRangeScan>();
 	try
 	{
 		bool isThereObservation, hwError;

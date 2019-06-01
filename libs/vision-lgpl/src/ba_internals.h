@@ -65,7 +65,7 @@ struct JacData
 	mrpt::math::CMatrixFixed<double, ObsDim, PointDof> J_point;
 	bool J_frame_valid, J_point_valid;
 
-	MRPT_MAKE_ALIGNED_OPERATOR_NEW  // Needed by any struct having
+	// Needed by any struct having
 	// Eigen::Matrix<> fields
 };
 

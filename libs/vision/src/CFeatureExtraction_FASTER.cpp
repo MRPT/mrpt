@@ -244,7 +244,7 @@ void CFeatureExtraction::extractFeaturesFASTER_N(
 		}
 
 		// All tests passed: add new feature:
-		CFeature::Ptr ft = mrpt::make_aligned_shared<CFeature>();
+		CFeature::Ptr ft = std::make_shared<CFeature>();
 		ft->type = type_of_this_feature;
 		ft->ID = nextID++;
 		ft->x = feat.pt.x;

@@ -294,7 +294,7 @@ void CHeightGridMap2D::getAs3DObject(
 
 	if (HEIGHTGRIDMAP_EXPORT3D_AS_MESH_value)
 	{
-		opengl::CMesh::Ptr mesh = mrpt::make_aligned_shared<opengl::CMesh>();
+		opengl::CMesh::Ptr mesh = std::make_shared<opengl::CMesh>();
 
 		mesh->setGridLimits(m_x_min, m_x_max, m_y_min, m_y_max);
 
@@ -330,7 +330,7 @@ void CHeightGridMap2D::getAs3DObject(
 	{
 		// As points:
 		mrpt::opengl::CPointCloudColoured::Ptr obj =
-			mrpt::make_aligned_shared<mrpt::opengl::CPointCloudColoured>();
+			std::make_shared<mrpt::opengl::CPointCloudColoured>();
 		obj->setPointSize(2);
 
 		// Find min/max:

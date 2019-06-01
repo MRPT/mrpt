@@ -298,7 +298,7 @@ void do_pf_localization(
 	CDisplayWindow3D::Ptr win3D;
 	if (SHOW_PROGRESS_3D_REAL_TIME)
 	{
-		win3D = mrpt::make_aligned_shared<CDisplayWindow3D>(
+		win3D = std::make_shared<CDisplayWindow3D>(
 			"pf-localization - The MRPT project", 1000, 600);
 		win3D->setCameraZoom(20);
 		win3D->setCameraAzimuthDeg(-45);
@@ -333,10 +333,10 @@ void do_pf_localization(
 	}
 
 	{
-		scene.insert(mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>(
+		scene.insert(std::make_shared<mrpt::opengl::CGridPlaneXY>(
 			-50, 50, -50, 50, 0, 5));
 
-		CSetOfObjects::Ptr gl_obj = mrpt::make_aligned_shared<CSetOfObjects>();
+		CSetOfObjects::Ptr gl_obj = std::make_shared<CSetOfObjects>();
 		metricMap.getAs3DObject(gl_obj);
 		scene.insert(gl_obj);
 
@@ -525,14 +525,13 @@ void do_pf_localization(
 					{
 						// SF: Just one observation:
 						// ------------------------------------------------------
-						observations =
-							mrpt::make_aligned_shared<CSensoryFrame>();
+						observations = std::make_shared<CSensoryFrame>();
 						observations->insert(obs);
 
 						// ActionCollection: Just one action with a dummy
 						// odometry
 						// ------------------------------------------------------
-						action = mrpt::make_aligned_shared<CActionCollection>();
+						action = std::make_shared<CActionCollection>();
 
 						CActionRobotMovement2D dummy_odom;
 
@@ -611,7 +610,7 @@ void do_pf_localization(
 									ptrScene->getByName("ground_lines");
 								if (!grid_ground)
 								{
-									grid_ground = mrpt::make_aligned_shared<
+									grid_ground = std::make_shared<
 										mrpt::opengl::CGridPlaneXY>(
 										-50, 50, -50, 50, 0, 5);
 									grid_ground->setName("ground_lines");
@@ -629,7 +628,7 @@ void do_pf_localization(
 									ptrScene->getByName("GT");
 								if (!GTpt)
 								{
-									GTpt = mrpt::make_aligned_shared<CDisk>();
+									GTpt = std::make_shared<CDisk>();
 									GTpt->setName("GT");
 									GTpt->setColor(0, 0, 0, 0.9);
 
@@ -659,8 +658,7 @@ void do_pf_localization(
 									ptrScene->getByName("parts_cov");
 								if (!ellip)
 								{
-									ellip =
-										mrpt::make_aligned_shared<CEllipsoid>();
+									ellip = std::make_shared<CEllipsoid>();
 									ellip->setName("parts_cov");
 									ellip->setColor(1, 0, 0, 0.6);
 
@@ -685,8 +683,7 @@ void do_pf_localization(
 									ptrScene->getByName("scan");
 								if (!scanPts)
 								{
-									scanPts = mrpt::make_aligned_shared<
-										CPointCloud>();
+									scanPts = std::make_shared<CPointCloud>();
 									scanPts->setName("scan");
 									scanPts->setColor(1, 0, 0, 0.9);
 									mrpt::ptr_cast<CPointCloud>::from(scanPts)
@@ -961,8 +958,8 @@ void do_pf_localization(
 							CRenderizable::Ptr GTpt = scene.getByName("GT");
 							if (!GTpt)
 							{
-								GTpt = mrpt::make_aligned_shared<CDisk>();
-								GTpt = mrpt::make_aligned_shared<CDisk>();
+								GTpt = std::make_shared<CDisk>();
+								GTpt = std::make_shared<CDisk>();
 								GTpt->setName("GT");
 								GTpt->setColor(0, 0, 0, 0.9);
 
@@ -991,7 +988,7 @@ void do_pf_localization(
 								scene.getByName("parts_cov");
 							if (!ellip)
 							{
-								ellip = mrpt::make_aligned_shared<CEllipsoid>();
+								ellip = std::make_shared<CEllipsoid>();
 								ellip->setName("parts_cov");
 								ellip->setColor(1, 0, 0, 0.6);
 
@@ -1015,8 +1012,7 @@ void do_pf_localization(
 								scene.getByName("scan");
 							if (!scanPts)
 							{
-								scanPts =
-									mrpt::make_aligned_shared<CPointCloud>();
+								scanPts = std::make_shared<CPointCloud>();
 								scanPts->setName("scan");
 								scanPts->setColor(1, 0, 0, 0.9);
 								mrpt::ptr_cast<CPointCloud>::from(scanPts)

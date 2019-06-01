@@ -102,12 +102,11 @@ void CSkeletonTracker::processPreviewNone()
 		if (!m_win)
 		{
 			string caption = string("Preview of ") + m_sensorLabel;
-			m_win = mrpt::make_aligned_shared<mrpt::gui::CDisplayWindow3D>(
+			m_win = std::make_shared<mrpt::gui::CDisplayWindow3D>(
 				caption, 800, 600);
 
 			COpenGLScene::Ptr& scene = m_win->get3DSceneAndLock();
-			scene->insert(
-				mrpt::make_aligned_shared<CGridPlaneXZ>(-3, 3, 0, 5, -1.5));
+			scene->insert(std::make_shared<CGridPlaneXZ>(-3, 3, 0, 5, -1.5));
 
 			// set camera parameters
 			m_win->setCameraElevationDeg(-90);
@@ -116,19 +115,18 @@ void CSkeletonTracker::processPreviewNone()
 			m_win->setCameraPointingToPoint(0, 0, 0);
 
 			// insert initial body
-			CSetOfObjects::Ptr body =
-				mrpt::make_aligned_shared<CSetOfObjects>();
+			CSetOfObjects::Ptr body = std::make_shared<CSetOfObjects>();
 			body->setName("body");
 			for (const auto& jointName : jointNames)
 			{
-				CSphere::Ptr sph = mrpt::make_aligned_shared<CSphere>(0.03f);
+				CSphere::Ptr sph = std::make_shared<CSphere>(0.03f);
 				sph->setColor(0, 1, 0);
 				sph->setName(jointName);
 				body->insert(sph);
 			}
 
 			// insert initial lines
-			CSetOfLines::Ptr lines = mrpt::make_aligned_shared<CSetOfLines>();
+			CSetOfLines::Ptr lines = std::make_shared<CSetOfLines>();
 			lines->setName("lines");
 			lines->setColor(0, 0, 1);
 			body->insert(lines);
@@ -160,13 +158,13 @@ void CSkeletonTracker::processPreviewNone()
 					const double ALPHA_CH = 0.8;
 
 					CSetOfObjects::Ptr dummy =
-						mrpt::make_aligned_shared<CSetOfObjects>();
+						std::make_shared<CSetOfObjects>();
 					dummy->setName("dummy");
 					dummy->setPose(math::TPose3D(0, 0, 0, 0, 0, DEG2RAD(-90)));
 					{
 						// head
 						CSphere::Ptr part =
-							mrpt::make_aligned_shared<CSphere>(HEAD_RADIUS);
+							std::make_shared<CSphere>(HEAD_RADIUS);
 						part->setColor(1, 1, 1, ALPHA_CH);
 						part->setPose(math::TPose3D(
 							0, 0, 0.5 * BODY_LENGTH + HEAD_RADIUS, 0, 0, 0));
@@ -174,9 +172,8 @@ void CSkeletonTracker::processPreviewNone()
 					}
 					{
 						// body
-						CCylinder::Ptr part =
-							mrpt::make_aligned_shared<CCylinder>(
-								BODY_RADIUS, BODY_RADIUS, BODY_LENGTH);
+						CCylinder::Ptr part = std::make_shared<CCylinder>(
+							BODY_RADIUS, BODY_RADIUS, BODY_LENGTH);
 						part->setColor(1, 1, 1, ALPHA_CH);
 						part->setPose(
 							math::TPose3D(0, 0, -BODY_LENGTH / 2, 0, 0, 0));
@@ -184,9 +181,8 @@ void CSkeletonTracker::processPreviewNone()
 					}
 					{
 						// left arm 0
-						CCylinder::Ptr part =
-							mrpt::make_aligned_shared<CCylinder>(
-								ARM_RADIUS, ARM_RADIUS, ARM_LENGTH);
+						CCylinder::Ptr part = std::make_shared<CCylinder>(
+							ARM_RADIUS, ARM_RADIUS, ARM_LENGTH);
 						part->setColor(1, 1, 1, ALPHA_CH);
 						part->setPose(math::TPose3D(
 							-BODY_RADIUS, 0, 0.5 * BODY_LENGTH - ARM_RADIUS, 0,
@@ -195,9 +191,8 @@ void CSkeletonTracker::processPreviewNone()
 					}
 					{
 						// left arm 1
-						CCylinder::Ptr part =
-							mrpt::make_aligned_shared<CCylinder>(
-								ARM_RADIUS, ARM_RADIUS, ARM_LENGTH);
+						CCylinder::Ptr part = std::make_shared<CCylinder>(
+							ARM_RADIUS, ARM_RADIUS, ARM_LENGTH);
 						part->setColor(1, 1, 1, ALPHA_CH);
 						part->setPose(math::TPose3D(
 							-BODY_RADIUS - ARM_LENGTH + ARM_RADIUS, 0,
@@ -206,9 +201,8 @@ void CSkeletonTracker::processPreviewNone()
 					}
 					{
 						// right arm 0
-						CCylinder::Ptr part =
-							mrpt::make_aligned_shared<CCylinder>(
-								ARM_RADIUS, ARM_RADIUS, ARM_LENGTH);
+						CCylinder::Ptr part = std::make_shared<CCylinder>(
+							ARM_RADIUS, ARM_RADIUS, ARM_LENGTH);
 						part->setColor(1, 1, 1, ALPHA_CH);
 						part->setPose(math::TPose3D(
 							BODY_RADIUS, 0, 0.5 * BODY_LENGTH - ARM_RADIUS, 0,
@@ -217,9 +211,8 @@ void CSkeletonTracker::processPreviewNone()
 					}
 					{
 						// right arm 1
-						CCylinder::Ptr part =
-							mrpt::make_aligned_shared<CCylinder>(
-								ARM_RADIUS, ARM_RADIUS, ARM_LENGTH);
+						CCylinder::Ptr part = std::make_shared<CCylinder>(
+							ARM_RADIUS, ARM_RADIUS, ARM_LENGTH);
 						part->setColor(1, 1, 1, ALPHA_CH);
 						part->setPose(math::TPose3D(
 							BODY_RADIUS + ARM_LENGTH - ARM_RADIUS, 0,
@@ -228,9 +221,8 @@ void CSkeletonTracker::processPreviewNone()
 					}
 					{
 						// left leg
-						CCylinder::Ptr part =
-							mrpt::make_aligned_shared<CCylinder>(
-								LEG_RADIUS, LEG_RADIUS, LEG_LENGTH);
+						CCylinder::Ptr part = std::make_shared<CCylinder>(
+							LEG_RADIUS, LEG_RADIUS, LEG_LENGTH);
 						part->setColor(1, 1, 1, ALPHA_CH);
 						part->setPose(math::TPose3D(
 							-BODY_RADIUS + LEG_RADIUS, 0,
@@ -239,9 +231,8 @@ void CSkeletonTracker::processPreviewNone()
 					}
 					{
 						// right leg
-						CCylinder::Ptr part =
-							mrpt::make_aligned_shared<CCylinder>(
-								LEG_RADIUS, LEG_RADIUS, LEG_LENGTH);
+						CCylinder::Ptr part = std::make_shared<CCylinder>(
+							LEG_RADIUS, LEG_RADIUS, LEG_LENGTH);
 						part->setColor(1, 1, 1, ALPHA_CH);
 						part->setPose(math::TPose3D(
 							BODY_RADIUS - LEG_RADIUS, 0,
@@ -303,12 +294,11 @@ void CSkeletonTracker::processPreview(
 		if (!m_win)
 		{
 			string caption = string("Preview of ") + m_sensorLabel;
-			m_win = mrpt::make_aligned_shared<mrpt::gui::CDisplayWindow3D>(
+			m_win = std::make_shared<mrpt::gui::CDisplayWindow3D>(
 				caption, 800, 600);
 
 			COpenGLScene::Ptr& scene = m_win->get3DSceneAndLock();
-			scene->insert(
-				mrpt::make_aligned_shared<CGridPlaneXZ>(-3, 3, 0, 5, -1.5));
+			scene->insert(std::make_shared<CGridPlaneXZ>(-3, 3, 0, 5, -1.5));
 
 			// set camera parameters
 			m_win->setCameraElevationDeg(-90);
@@ -317,19 +307,18 @@ void CSkeletonTracker::processPreview(
 			m_win->setCameraPointingToPoint(0, 0, 0);
 
 			// insert initial body
-			CSetOfObjects::Ptr body =
-				mrpt::make_aligned_shared<CSetOfObjects>();
+			CSetOfObjects::Ptr body = std::make_shared<CSetOfObjects>();
 			body->setName("body");
 			for (const auto& jointName : jointNames)
 			{
-				CSphere::Ptr sph = mrpt::make_aligned_shared<CSphere>(0.03f);
+				CSphere::Ptr sph = std::make_shared<CSphere>(0.03f);
 				sph->setColor(0, 1, 0);
 				sph->setName(jointName);
 				body->insert(sph);
 			}
 
 			// insert initial lines
-			CSetOfLines::Ptr lines = mrpt::make_aligned_shared<CSetOfLines>();
+			CSetOfLines::Ptr lines = std::make_shared<CSetOfLines>();
 			lines->setName("lines");
 			lines->setColor(0, 0, 1);
 			body->insert(lines);
@@ -489,7 +478,7 @@ void CSkeletonTracker::doProcess()
 			cout << "	[Skeleton tracker] User " << user.getId() << " tracked"
 				 << endl;
 			CObservationSkeleton::Ptr obs =
-				mrpt::make_aligned_shared<CObservationSkeleton>();
+				std::make_shared<CObservationSkeleton>();
 
 			// timestamp
 			const uint64_t nowUI = userTrackerFrame.getTimestamp();

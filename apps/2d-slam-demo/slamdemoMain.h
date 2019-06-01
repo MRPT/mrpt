@@ -207,7 +207,6 @@ class slamdemoFrame : public wxFrame
 
 	// This is needed in all classes having Eigen::Matrix'es or any other class
 	// containing them:
-	MRPT_MAKE_ALIGNED_OPERATOR_NEW
 
 	// Layers in GT plot -------------
 	mpFXYVector* m_lyGTMap;

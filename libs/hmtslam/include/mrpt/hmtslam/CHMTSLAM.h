@@ -152,7 +152,7 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 		 */
 		std::map<CHMHMapNode::TNodeID, TBI_info> loopClosureData;
 
-		// MRPT_MAKE_ALIGNED_OPERATOR_NEW
+		//
 	};
 
 	/** LSLAM thread input queue, messages of type CHMTSLAM::TMessageLSLAMfromAA

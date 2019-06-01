@@ -192,7 +192,7 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::saveMetricMapRepresentationToFile(
 	{
 		mrpt::opengl::COpenGLScene scene;
 		mrpt::opengl::CSetOfObjects::Ptr obj3D =
-			mrpt::make_aligned_shared<mrpt::opengl::CSetOfObjects>();
+			std::make_shared<mrpt::opengl::CSetOfObjects>();
 
 		this->getAs3DObject(obj3D);
 

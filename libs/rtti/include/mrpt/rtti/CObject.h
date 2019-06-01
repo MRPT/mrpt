@@ -125,11 +125,11 @@ struct CLASSINIT
  * - `Foo::UniquePtr` => `std::unique_ptr<Foo>`
  * - `Foo::ConstUniquePtr` => `std::unique_ptr<const Foo>`
  *
- * It is recommended to use MRPT-defined `mrpt::make_aligned_shared<>` instead
+ * It is recommended to use MRPT-defined `std::make_shared<>` instead
  * of `std::make_shared<>` to create objects, to avoid memory alignment
  * problems caused by classes containing Eigen vectors or matrices. Example:
  * \code
- * Foo::Ptr o = mrpt::make_aligned_shared<Foo>();
+ * Foo::Ptr o = std::make_shared<Foo>();
  * \endcode
  * Or using the shorter auxiliary static method `::Create()` for conciseness or
  * to keep compatibility with MRPT 1.5.* code bases:
@@ -201,8 +201,7 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 	template <typename... Args>                                           \
 	static Ptr Create(Args&&... args)                                     \
 	{                                                                     \
-		return mrpt::make_aligned_shared<class_name>(                     \
-			std::forward<Args>(args)...);                                 \
+		return std::make_shared<class_name>(std::forward<Args>(args)...); \
 	}                                                                     \
 	template <typename Alloc, typename... Args>                           \
 	static Ptr CreateAlloc(const Alloc& alloc, Args&&... args)            \
@@ -216,8 +215,7 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 		return std::make_unique<class_name>(std::forward<Args>(args)...); \
 	}                                                                     \
 	/*! @} */                                                             \
-   public:                                                                \
-	MRPT_MAKE_ALIGNED_OPERATOR_NEW
+   public:
 
 /** This must be inserted in all CObject classes implementation files
  */

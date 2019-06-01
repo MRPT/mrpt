@@ -232,7 +232,7 @@ void xRawLogViewerFrame::OnMenuMono2Stereo(wxCommandEvent& event)
 						std::dynamic_pointer_cast<CObservationImage>(obs_r);
 
 					CObservationStereoImages::Ptr new_obs =
-						mrpt::make_aligned_shared<CObservationStereoImages>();
+						std::make_shared<CObservationStereoImages>();
 
 					new_obs->timestamp =
 						mrpt::Clock::time_point(mrpt::Clock::duration(

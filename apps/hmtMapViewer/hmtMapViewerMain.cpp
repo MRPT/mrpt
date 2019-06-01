@@ -511,7 +511,7 @@ hmtMapViewerFrame::hmtMapViewerFrame(wxWindow* parent, wxWindowID id)
 	Panel6->SetMinSize(wxSize(200, 200));
 	m_canvas_HMAP->SetMinSize(wxSize(200, 200));
 	m_canvas_HMAP->getOpenGLSceneRef()->insert(
-		mrpt::make_aligned_shared<opengl::CGridPlaneXY>());
+		std::make_shared<opengl::CGridPlaneXY>());
 
 	FlexGridSizer6->Add(
 		m_canvas_HMAP, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
@@ -521,7 +521,7 @@ hmtMapViewerFrame::hmtMapViewerFrame(wxWindow* parent, wxWindowID id)
 	Panel7->SetMinSize(wxSize(200, 200));
 	m_canvas_LMH->SetMinSize(wxSize(200, 200));
 	m_canvas_LMH->getOpenGLSceneRef()->insert(
-		mrpt::make_aligned_shared<opengl::CGridPlaneXY>());
+		std::make_shared<opengl::CGridPlaneXY>());
 	FlexGridSizer7->Add(
 		m_canvas_LMH, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 
@@ -724,7 +724,7 @@ void hmtMapViewerFrame::updateLocalMapView()
 	{
 		// The 3D view:
 		opengl::CSetOfObjects::Ptr objs =
-			mrpt::make_aligned_shared<opengl::CSetOfObjects>();
+			std::make_shared<opengl::CSetOfObjects>();
 
 		// -------------------------------------------
 		// Draw a grid on the ground:
@@ -788,7 +788,7 @@ void hmtMapViewerFrame::updateLocalMapView()
 				if (nRound == 0)
 				{
 					opengl::CSetOfObjects::Ptr objMap =
-						mrpt::make_aligned_shared<opengl::CSetOfObjects>();
+						std::make_shared<opengl::CSetOfObjects>();
 					obj_mmap->getAs3DObject(objMap);
 					objMap->setPose(refPoseThisArea.mean);
 					objs->insert(objMap);
@@ -843,7 +843,7 @@ void hmtMapViewerFrame::updateLocalMapView()
 						refPoseThisArea.cov(1, 1) != 0)
 					{
 						opengl::CEllipsoid::Ptr ellip =
-							mrpt::make_aligned_shared<opengl::CEllipsoid>();
+							std::make_shared<opengl::CEllipsoid>();
 						ellip->setPose(refPoseThisArea.mean);
 						ellip->enableDrawSolid3D(false);
 

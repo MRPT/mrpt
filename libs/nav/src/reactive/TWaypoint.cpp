@@ -150,7 +150,7 @@ void TWaypointSequence::getAsOpenglVisualization(
 	unsigned int idx = 0;
 	for (const auto& p : waypoints)
 	{
-		auto gl_pt = mrpt::make_aligned_shared<mrpt::opengl::CDisk>(
+		auto gl_pt = std::make_shared<mrpt::opengl::CDisk>(
 			p.allow_skip ? params.outter_radius
 						 : params.outter_radius_non_skippable,
 			p.allow_skip ? params.inner_radius
@@ -167,7 +167,7 @@ void TWaypointSequence::getAsOpenglVisualization(
 
 		if (p.target_heading != TWaypoint::INVALID_NUM)
 		{
-			auto o = mrpt::make_aligned_shared<mrpt::opengl::CArrow>(
+			auto o = std::make_shared<mrpt::opengl::CArrow>(
 				0, 0, 0, params.heading_arrow_len, 0.0f, 0.0f);
 			o->setPose(mrpt::poses::CPose3D(
 				p.target.x, p.target.y, 0.02, p.target_heading, 0, 0));
@@ -189,7 +189,7 @@ void TWaypointStatusSequence::getAsOpenglVisualization(
 			const bool is_cur_goal = (int(idx) == waypoint_index_current_goal);
 
 			mrpt::opengl::CDisk::Ptr gl_pt =
-				mrpt::make_aligned_shared<mrpt::opengl::CDisk>(
+				std::make_shared<mrpt::opengl::CDisk>(
 					p.reached
 						? params.outter_radius_reached
 						: (p.allow_skip ? params.outter_radius
@@ -214,7 +214,7 @@ void TWaypointStatusSequence::getAsOpenglVisualization(
 
 			if (p.target_heading != TWaypoint::INVALID_NUM)
 			{
-				auto o = mrpt::make_aligned_shared<mrpt::opengl::CArrow>(
+				auto o = std::make_shared<mrpt::opengl::CArrow>(
 					0, 0, 0, params.heading_arrow_len, 0.0f, 0.0f);
 				o->setPose(mrpt::poses::CPose3D(
 					p.target.x, p.target.y, 0.02, p.target_heading, 0, 0));

@@ -82,7 +82,6 @@ struct Message_TOPCON_PZS : public gnss_message
 	void internal_readFromStream(mrpt::serialization::CArchive& in) override;
 
    public:
-	MRPT_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 /** TopCon mmGPS devices: SATS, a generic structure for statistics about tracked

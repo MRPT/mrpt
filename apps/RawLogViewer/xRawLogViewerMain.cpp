@@ -2216,7 +2216,7 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 					CPose2D::Ptr poseChange =
 						std::dynamic_pointer_cast<CPose2D>(newObj);
 					CActionCollection::Ptr temp =
-						mrpt::make_aligned_shared<CActionCollection>();
+						std::make_shared<CActionCollection>();
 					CActionRobotMovement2D action;
 					CActionRobotMovement2D::TMotionModelOptions options;
 					action.computeFromOdometry(*poseChange, options);

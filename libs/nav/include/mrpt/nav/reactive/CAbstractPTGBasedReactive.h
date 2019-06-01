@@ -92,8 +92,6 @@ namespace mrpt::nav
 class CAbstractPTGBasedReactive : public CWaypointsNavigator
 {
    public:
-	MRPT_MAKE_ALIGNED_OPERATOR_NEW
-
 	/** The struct for configuring navigation requests to
 	 * CAbstractPTGBasedReactive and derived classes. */
 	struct TNavigationParamsPTG

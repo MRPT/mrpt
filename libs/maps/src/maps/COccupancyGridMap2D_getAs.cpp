@@ -153,7 +153,7 @@ void COccupancyGridMap2D::getAs3DObject(
 	MRPT_START
 
 	opengl::CTexturedPlane::Ptr outObj =
-		mrpt::make_aligned_shared<opengl::CTexturedPlane>();
+		std::make_shared<opengl::CTexturedPlane>();
 
 	outObj->setPlaneCorners(x_min, x_max, y_min, y_max);
 

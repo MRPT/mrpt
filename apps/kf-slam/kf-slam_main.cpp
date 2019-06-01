@@ -373,7 +373,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 
 	if (SHOW_3D_LIVE)
 	{
-		win3d = mrpt::make_aligned_shared<mrpt::gui::CDisplayWindow3D>(
+		win3d = std::make_shared<mrpt::gui::CDisplayWindow3D>(
 			"KF-SLAM live view", 800, 500);
 
 		win3d->addTextMessage(
@@ -624,11 +624,10 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 			// Save 3D view of the filter state:
 			if (win3d || (SAVE_3D_SCENES && !(step % SAVE_LOG_FREQUENCY)))
 			{
-				COpenGLScene::Ptr scene3D =
-					mrpt::make_aligned_shared<COpenGLScene>();
+				COpenGLScene::Ptr scene3D = std::make_shared<COpenGLScene>();
 				{
 					opengl::CGridPlaneXY::Ptr grid =
-						mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
+						std::make_shared<opengl::CGridPlaneXY>(
 							-1000, 1000, -1000, 1000, 0, 5);
 					grid->setColor(0.4, 0.4, 0.4);
 					scene3D->insert(grid);
@@ -637,7 +636,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 				// Robot path:
 				{
 					opengl::CSetOfLines::Ptr linesPath =
-						mrpt::make_aligned_shared<opengl::CSetOfLines>();
+						std::make_shared<opengl::CSetOfLines>();
 					linesPath->setColor(1, 0, 0);
 
 					TPose3D init_pose;
@@ -684,7 +683,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 				if (GT_PATH.cols() == 6 || GT_PATH.cols() == 3)
 				{
 					opengl::CSetOfLines::Ptr GT_path =
-						mrpt::make_aligned_shared<opengl::CSetOfLines>();
+						std::make_shared<opengl::CSetOfLines>();
 					GT_path->setColor(0, 0, 0);
 					size_t N =
 						std::min((int)GT_PATH.rows(), (int)meanPath.size());
@@ -727,7 +726,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 						mapping.getLastDataAssociation();
 
 					mrpt::opengl::CSetOfLines::Ptr lins =
-						mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
+						std::make_shared<mrpt::opengl::CSetOfLines>();
 					lins->setLineWidth(1.2f);
 					lins->setColor(1, 1, 1);
 					for (auto it = da.results.associations.begin();
@@ -754,7 +753,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 				// The current state of KF-SLAM:
 				{
 					opengl::CSetOfObjects::Ptr objs =
-						mrpt::make_aligned_shared<opengl::CSetOfObjects>();
+						std::make_shared<opengl::CSetOfObjects>();
 					mapping.getAs3DObject(objs);
 					scene3D->insert(objs);
 				}

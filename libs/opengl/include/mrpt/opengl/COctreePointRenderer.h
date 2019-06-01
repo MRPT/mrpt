@@ -256,7 +256,6 @@ class COctreePointRenderer
 		}
 
 	   public:
-		MRPT_MAKE_ALIGNED_OPERATOR_NEW
 	};
 
 	struct TRenderQueueElement
@@ -738,7 +737,7 @@ class COctreePointRenderer
 			const TNode& node = m_octree_nodes[i];
 			if (!node.is_leaf) continue;
 			mrpt::opengl::CBox::Ptr gl_box =
-				mrpt::make_aligned_shared<mrpt::opengl::CBox>();
+				std::make_shared<mrpt::opengl::CBox>();
 			gl_box->setBoxCorners(
 				mrpt::math::TPoint3D(node.bb_min),
 				mrpt::math::TPoint3D(node.bb_max));

@@ -371,7 +371,7 @@ bool CBoardENoses::getObservation(mrpt::obs::CObservationGasSensors& obs)
 void CBoardENoses::doProcess()
 {
 	CObservationGasSensors::Ptr obs =
-		mrpt::make_aligned_shared<CObservationGasSensors>();
+		std::make_shared<CObservationGasSensors>();
 
 	if (getObservation(*obs))
 	{
