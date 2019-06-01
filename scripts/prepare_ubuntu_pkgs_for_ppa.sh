@@ -15,6 +15,7 @@ set -e
 
 # List of distributions to create PPA packages for:
 LST_DISTROS=(xenial bionic cosmic disco)
+LST_EBDEIGN=( 1       0        0       )
 
 
 # Checks
@@ -62,12 +63,20 @@ cp ${MRPT_EXTERN_DEBIAN_DIR}/changelog /tmp/my_changelog
 for IDX in ${IDXS};
 do
 	DEBIAN_DIST=${LST_DISTROS[$IDX]}
+	EMBED_EIGEN=${LST_EBDEIGN[$IDX]}
+	if [ $EMBED_EIGEN == "1" ];
+	then
+		EMBED_EIGEN_FLAG="-e"
+	else
+		EMBED_EIGEN_FLAG=""
+	fi
+
 
 	# -------------------------------------------------------------------
 	# Call the standard "prepare_debian.sh" script:
 	# -------------------------------------------------------------------
 	cd ${MRPTSRC}
-	bash scripts/prepare_debian.sh -s -u -h -d ${DEBIAN_DIST} -c "${MRPT_PKG_CUSTOM_CMAKE_PARAMS}"
+	bash scripts/prepare_debian.sh -s -u -h -d ${DEBIAN_DIST} ${EMBED_EIGEN_FLAG}  -c "${MRPT_PKG_CUSTOM_CMAKE_PARAMS}"
 
 	CUR_SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 	source $CUR_SCRIPT_DIR/prepare_debian_gen_snapshot_version.sh # populate MRPT_SNAPSHOT_VERSION

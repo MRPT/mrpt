@@ -59,6 +59,7 @@ Minimum compiler requisites:
     * clang-4 or newer.
     * Windows: Visual Studio 2017 version 15.3 or newer.
     * cmake >= 3.3 required (>=3.4 for Windows).
+    * Eigen >= 3.3 required.
   * mrpt 1.5.* and maintenance `mrpt-1.5` branch:
     * Ubuntu 14.04LTS Trusty: default gcc/clang versions
     * Windows: Visual Studio 2012
