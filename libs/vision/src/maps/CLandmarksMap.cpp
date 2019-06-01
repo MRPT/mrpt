@@ -2504,12 +2504,11 @@ void CLandmarksMap::saveMetricMapRepresentationToFile(
 	// 3D Scene:
 	opengl::COpenGLScene scene;
 	mrpt::opengl::CSetOfObjects::Ptr obj3D =
-		mrpt::make_aligned_shared<mrpt::opengl::CSetOfObjects>();
+		std::make_shared<mrpt::opengl::CSetOfObjects>();
 	getAs3DObject(obj3D);
 
 	opengl::CGridPlaneXY::Ptr objGround =
-		mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
-			-100, 100, -100, 100, 0, 1);
+		std::make_shared<opengl::CGridPlaneXY>(-100, 100, -100, 100, 0, 1);
 
 	scene.insert(obj3D);
 	scene.insert(objGround);
@@ -2534,8 +2533,7 @@ void CLandmarksMap::getAs3DObject(
 	CPointPDFGaussian pointGauss;
 	for (const auto& landmark : landmarks)
 	{
-		opengl::CEllipsoid::Ptr ellip =
-			mrpt::make_aligned_shared<opengl::CEllipsoid>();
+		opengl::CEllipsoid::Ptr ellip = std::make_shared<opengl::CEllipsoid>();
 
 		landmark.getPose(pointGauss);
 
@@ -2655,11 +2653,11 @@ float CLandmarksMap::compute3DMatchingRatio(
 	// Prepare:
 	poses3DOther.resize(nOther);
 	for (size_t i = 0; i < nOther; i++)
-		poses3DOther[i] = mrpt::make_aligned_shared<CPointPDFGaussian>();
+		poses3DOther[i] = std::make_shared<CPointPDFGaussian>();
 
 	poses3DThis.resize(nThis);
 	for (size_t i = 0; i < nThis; i++)
-		poses3DThis[i] = mrpt::make_aligned_shared<CPointPDFGaussian>();
+		poses3DThis[i] = std::make_shared<CPointPDFGaussian>();
 
 	// Save 3D poses of the other map with transformed coordinates:
 	for (itOther = otherMap->landmarks.begin(),

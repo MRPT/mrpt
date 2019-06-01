@@ -137,7 +137,7 @@ void CVisualizer<
 	const unsigned int nodes_point_color = viz_params->getWithDefaultVal(
 		"nodes_point_color", (unsigned int)0xA0A0A0);
 
-	CPointCloud::Ptr pnts = mrpt::make_aligned_shared<CPointCloud>();
+	CPointCloud::Ptr pnts = std::make_shared<CPointCloud>();
 	pnts->setColor(TColorf(TColor(nodes_point_color)));
 	pnts->setPointSize(nodes_point_size);
 
@@ -185,7 +185,7 @@ void CVisualizer<
 									   nodes_corner_scale, 1.0 /*line width*/)
 								 : stock_objects::CornerXYSimple(
 									   nodes_corner_scale, 1.0 /*line width*/))
-				: mrpt::make_aligned_shared<CSetOfObjects>();
+				: std::make_shared<CSetOfObjects>();
 		gl_corner->setPose(p);
 		if (show_ID_labels)
 		{  // don't show IDs twice!
@@ -234,7 +234,7 @@ void CVisualizer<
 			// Create a set of objects at that pose and do the rest in relative
 			// coords:
 			mrpt::opengl::CSetOfObjects::Ptr gl_rel_edge =
-				mrpt::make_aligned_shared<mrpt::opengl::CSetOfObjects>();
+				std::make_shared<mrpt::opengl::CSetOfObjects>();
 			gl_rel_edge->setPose(pSource);
 
 			const typename GRAPH_T::constraint_no_pdf_t& edge_pose =
@@ -280,7 +280,7 @@ void CVisualizer<
 	using namespace mrpt::poses;
 	ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
 
-	CSetOfLines::Ptr gl_edges = mrpt::make_aligned_shared<CSetOfLines>();
+	CSetOfLines::Ptr gl_edges = std::make_shared<CSetOfLines>();
 	const unsigned int edge_color =
 		viz_params->getWithDefaultVal("edge_color", (unsigned int)0x400000FF);
 	const double edge_width = viz_params->getWithDefaultVal("edge_width", 2.);

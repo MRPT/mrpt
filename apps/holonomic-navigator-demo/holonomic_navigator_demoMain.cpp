@@ -452,58 +452,56 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 	// -------------------------------
 	{
 		mrpt::opengl::CGridPlaneXY::Ptr obj =
-			mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>(
+			std::make_shared<mrpt::opengl::CGridPlaneXY>(
 				-50, 50, -50, 50, 0, 1);
 		obj->setColor_u8(TColor(30, 30, 30, 50));
 		openGLSceneRef->insert(obj);
 	}
 
-	gl_grid = mrpt::make_aligned_shared<mrpt::opengl::CSetOfObjects>();
+	gl_grid = std::make_shared<mrpt::opengl::CSetOfObjects>();
 	openGLSceneRef->insert(gl_grid);
 	this->updateMap3DView();
 
-	gl_robot = mrpt::make_aligned_shared<mrpt::opengl::CSetOfObjects>();
+	gl_robot = std::make_shared<mrpt::opengl::CSetOfObjects>();
 	{
 		mrpt::opengl::CCylinder::Ptr obj =
-			mrpt::make_aligned_shared<mrpt::opengl::CCylinder>(
-				0.2f, 0.1f, 0.9f);
+			std::make_shared<mrpt::opengl::CCylinder>(0.2f, 0.1f, 0.9f);
 		obj->setColor_u8(TColor::red());
 		gl_robot->insert(obj);
 	}
 	openGLSceneRef->insert(gl_robot);
 
-	gl_scan3D = mrpt::make_aligned_shared<mrpt::opengl::CPlanarLaserScan>();
+	gl_scan3D = std::make_shared<mrpt::opengl::CPlanarLaserScan>();
 	gl_scan3D->enableLine(false);
 	gl_scan3D->setPointsWidth(3.0);
 	gl_robot->insert(gl_scan3D);
 
-	gl_robot_sensor_range =
-		mrpt::make_aligned_shared<mrpt::opengl::CDisk>(0, 0);
+	gl_robot_sensor_range = std::make_shared<mrpt::opengl::CDisk>(0, 0);
 	gl_robot_sensor_range->setColor_u8(TColor(0, 0, 255, 90));
 	gl_robot_sensor_range->setLocation(0, 0, 0.01);
 	gl_robot->insert(gl_robot_sensor_range);
 
-	gl_robot_path = mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
+	gl_robot_path = std::make_shared<mrpt::opengl::CSetOfLines>();
 	gl_robot_path->setLineWidth(1);
 	gl_robot_path->setColor_u8(TColor(40, 40, 40, 200));
 	openGLSceneRef->insert(gl_robot_path);
 
-	gl_target = mrpt::make_aligned_shared<mrpt::opengl::CSetOfObjects>();
+	gl_target = std::make_shared<mrpt::opengl::CSetOfObjects>();
 	{
 		mrpt::opengl::CArrow::Ptr obj;
-		obj = mrpt::make_aligned_shared<mrpt::opengl::CArrow>(
+		obj = std::make_shared<mrpt::opengl::CArrow>(
 			1, 0, 0, 0.2f, 0, 0, 0.4f, 0.05f, 0.15f);
 		obj->setColor_u8(TColor(0, 0, 255));
 		gl_target->insert(obj);
-		obj = mrpt::make_aligned_shared<mrpt::opengl::CArrow>(
+		obj = std::make_shared<mrpt::opengl::CArrow>(
 			-1, 0, 0, -0.2f, 0, 0, 0.4f, 0.05f, 0.15f);
 		obj->setColor_u8(TColor(0, 0, 255));
 		gl_target->insert(obj);
-		obj = mrpt::make_aligned_shared<mrpt::opengl::CArrow>(
+		obj = std::make_shared<mrpt::opengl::CArrow>(
 			0, 1, 0, 0, 0.2f, 0, 0.4f, 0.05f, 0.15f);
 		obj->setColor_u8(TColor(0, 0, 255));
 		gl_target->insert(obj);
-		obj = mrpt::make_aligned_shared<mrpt::opengl::CArrow>(
+		obj = std::make_shared<mrpt::opengl::CArrow>(
 			0, -1, 0, 0, -0.2f, 0, 0.4f, 0.05f, 0.15f);
 		obj->setColor_u8(TColor(0, 0, 255));
 		gl_target->insert(obj);
@@ -511,23 +509,22 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 	}
 
 	{  // Sign of "picking a navigation target":
-		m_gl_placing_nav_target =
-			mrpt::make_aligned_shared<opengl::CSetOfObjects>();
+		m_gl_placing_nav_target = std::make_shared<opengl::CSetOfObjects>();
 
 		mrpt::opengl::CArrow::Ptr obj;
-		obj = mrpt::make_aligned_shared<mrpt::opengl::CArrow>(
+		obj = std::make_shared<mrpt::opengl::CArrow>(
 			1, 0, 0, 0.2f, 0, 0, 0.4f, 0.05f, 0.15f);
 		obj->setColor_u8(TColor(0, 0, 255));
 		m_gl_placing_nav_target->insert(obj);
-		obj = mrpt::make_aligned_shared<mrpt::opengl::CArrow>(
+		obj = std::make_shared<mrpt::opengl::CArrow>(
 			-1, 0, 0, -0.2f, 0, 0, 0.4f, 0.05f, 0.15f);
 		obj->setColor_u8(TColor(0, 0, 255));
 		m_gl_placing_nav_target->insert(obj);
-		obj = mrpt::make_aligned_shared<mrpt::opengl::CArrow>(
+		obj = std::make_shared<mrpt::opengl::CArrow>(
 			0, 1, 0, 0, 0.2f, 0, 0.4f, 0.05f, 0.15f);
 		obj->setColor_u8(TColor(0, 0, 255));
 		m_gl_placing_nav_target->insert(obj);
-		obj = mrpt::make_aligned_shared<mrpt::opengl::CArrow>(
+		obj = std::make_shared<mrpt::opengl::CArrow>(
 			0, -1, 0, 0, -0.2f, 0, 0.4f, 0.05f, 0.15f);
 		obj->setColor_u8(TColor(0, 0, 255));
 		m_gl_placing_nav_target->insert(obj);
@@ -535,10 +532,9 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 		openGLSceneRef->insert(m_gl_placing_nav_target);
 	}
 	{  // Sign of "replacing the robot":
-		m_gl_placing_robot = mrpt::make_aligned_shared<opengl::CSetOfObjects>();
+		m_gl_placing_robot = std::make_shared<opengl::CSetOfObjects>();
 		mrpt::opengl::CCylinder::Ptr obj =
-			mrpt::make_aligned_shared<mrpt::opengl::CCylinder>(
-				0.2f, 0.1f, 0.9f);
+			std::make_shared<mrpt::opengl::CCylinder>(0.2f, 0.1f, 0.9f);
 		obj->setColor_u8(TColor(255, 0, 0, 120));
 		m_gl_placing_robot->insert(obj);
 
@@ -559,24 +555,24 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 	auto openGLScanRef = m_plotScan->getOpenGLSceneRef();
 	{
 		mrpt::opengl::CGridPlaneXY::Ptr obj =
-			mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>(
+			std::make_shared<mrpt::opengl::CGridPlaneXY>(
 				-1, 1.001f, -1, 1.001f, 0, 1);
 		obj->setColor_u8(TColor(30, 30, 30, 50));
 		openGLScanRef->insert(obj);
 	}
 
-	gl_scan2D = mrpt::make_aligned_shared<mrpt::opengl::CPlanarLaserScan>();
+	gl_scan2D = std::make_shared<mrpt::opengl::CPlanarLaserScan>();
 	gl_scan2D->enableLine(false);
 	gl_scan2D->enableSurface(false);
 	gl_scan2D->setPointsWidth(3.0);
 	openGLScanRef->insert(gl_scan2D);
 
-	gl_line_direction = mrpt::make_aligned_shared<mrpt::opengl::CSimpleLine>();
+	gl_line_direction = std::make_shared<mrpt::opengl::CSimpleLine>();
 	gl_line_direction->setLineWidth(4);
 	gl_line_direction->setColor_u8(TColor(0, 0, 0));
 	openGLScanRef->insert(gl_line_direction);
 
-	gl_rel_target = mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
+	gl_rel_target = std::make_shared<mrpt::opengl::CPointCloud>();
 	gl_rel_target->setPointSize(7);
 	gl_rel_target->setColor_u8(TColor(0, 0, 255));
 	gl_rel_target->insertPoint(0, 0, 0);
@@ -584,7 +580,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 
 	openGLScanRef->insert(mrpt::opengl::stock_objects::CornerXYSimple(0.1f, 2));
 
-	gl_nd_gaps = mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
+	gl_nd_gaps = std::make_shared<mrpt::opengl::CSetOfLines>();
 	gl_nd_gaps->setLineWidth(2);
 	gl_nd_gaps->setColor_u8(TColor(204, 102, 51));
 	openGLScanRef->insert(gl_nd_gaps);

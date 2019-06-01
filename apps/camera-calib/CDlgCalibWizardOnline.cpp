@@ -378,7 +378,7 @@ void CDlgCalibWizardOnline::OntimCaptureTrigger(wxTimerEvent& event)
 				std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);
 
 			CObservationImage::Ptr obsImg =
-				mrpt::make_aligned_shared<CObservationImage>();
+				std::make_shared<CObservationImage>();
 			obsImg->timestamp = obs3D->timestamp;
 			ASSERT_(obs3D->hasIntensityImage);
 			obsImg->image = obs3D->intensityImage;

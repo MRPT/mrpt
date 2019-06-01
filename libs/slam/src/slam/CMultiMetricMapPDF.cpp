@@ -403,8 +403,7 @@ bool CMultiMetricMapPDF::insertObservation(CSensoryFrame& sf)
 	const size_t M = particlesCount();
 
 	// Insert into SFs:
-	CPose3DPDFParticles::Ptr posePDF =
-		mrpt::make_aligned_shared<CPose3DPDFParticles>();
+	CPose3DPDFParticles::Ptr posePDF = std::make_shared<CPose3DPDFParticles>();
 	getEstimatedPosePDF(*posePDF);
 
 	// Insert it into the SFs and the SF2robotPath list:

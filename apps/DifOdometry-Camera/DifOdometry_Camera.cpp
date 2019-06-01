@@ -241,7 +241,7 @@ void CDifodoCamera::initializeScene()
 	light0.setPosition(0, 0, 1, 1);
 
 	// Grid (ground)
-	CGridPlaneXY::Ptr ground = mrpt::make_aligned_shared<CGridPlaneXY>();
+	CGridPlaneXY::Ptr ground = std::make_shared<CGridPlaneXY>();
 	scene->insert(ground);
 
 	// Reference
@@ -252,14 +252,14 @@ void CDifodoCamera::initializeScene()
 	//------------------------------------------------------
 
 	// DifOdo camera
-	CBox::Ptr camera_odo = mrpt::make_aligned_shared<CBox>(
+	CBox::Ptr camera_odo = std::make_shared<CBox>(
 		math::TPoint3D(-0.02, -0.1, -0.01), math::TPoint3D(0.02, 0.1, 0.01));
 	camera_odo->setPose(cam_pose + rel_lenspose);
 	camera_odo->setColor(0, 1, 0);
 	scene->insert(camera_odo);
 
 	// Frustum
-	opengl::CFrustum::Ptr FOV = mrpt::make_aligned_shared<opengl::CFrustum>(
+	opengl::CFrustum::Ptr FOV = std::make_shared<opengl::CFrustum>(
 		0.3, 2, 57.3 * fovh, 57.3 * fovv, 1.f, true, false);
 	FOV->setColor(0.7, 0.7, 0.7);
 	FOV->setPose(cam_pose);
@@ -273,7 +273,7 @@ void CDifodoCamera::initializeScene()
 
 	// Camera points
 	CPointCloudColoured::Ptr cam_points =
-		mrpt::make_aligned_shared<CPointCloudColoured>();
+		std::make_shared<CPointCloudColoured>();
 	cam_points->setPointSize(2);
 	cam_points->enablePointSmooth(true);
 	cam_points->setPose(cam_pose);
@@ -283,12 +283,12 @@ void CDifodoCamera::initializeScene()
 	//-------------------------------------------------------------
 
 	// Dif Odometry
-	CSetOfLines::Ptr traj_lines_odo = mrpt::make_aligned_shared<CSetOfLines>();
+	CSetOfLines::Ptr traj_lines_odo = std::make_shared<CSetOfLines>();
 	traj_lines_odo->setLocation(0, 0, 0);
 	traj_lines_odo->setColor(0, 0.6, 0);
 	traj_lines_odo->setLineWidth(6);
 	scene->insert(traj_lines_odo);
-	CPointCloud::Ptr traj_points_odo = mrpt::make_aligned_shared<CPointCloud>();
+	CPointCloud::Ptr traj_points_odo = std::make_shared<CPointCloud>();
 	traj_points_odo->setColor(0, 0.6, 0);
 	traj_points_odo->setPointSize(4);
 	traj_points_odo->enablePointSmooth(true);
@@ -298,7 +298,7 @@ void CDifodoCamera::initializeScene()
 	math::CMatrixFloat33 cov3d = est_cov.extractMatrix<3, 3>(0, 0);
 	cov3d *= 20.f;
 
-	CEllipsoid::Ptr ellip = mrpt::make_aligned_shared<CEllipsoid>();
+	CEllipsoid::Ptr ellip = std::make_shared<CEllipsoid>();
 	ellip->setCovMatrix(cov3d);
 	ellip->setQuantiles(2.0);
 	ellip->setColor(1.0, 1.0, 1.0, 0.5);

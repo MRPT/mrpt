@@ -61,7 +61,7 @@ void CSimpleDatabase::serializeFrom(
 				in >> aux;
 
 				CSimpleDatabaseTable::Ptr newTb =
-					mrpt::make_aligned_shared<CSimpleDatabaseTable>();
+					std::make_shared<CSimpleDatabaseTable>();
 				in >> (*newTb);
 
 				m_tables[aux] = newTb;
@@ -183,8 +183,7 @@ string CSimpleDatabase::tablesName(size_t tableIndex) const
  ---------------------------------------------------------------*/
 CSimpleDatabaseTable::Ptr CSimpleDatabase::createTable(const string& name)
 {
-	CSimpleDatabaseTable::Ptr table =
-		mrpt::make_aligned_shared<CSimpleDatabaseTable>();
+	CSimpleDatabaseTable::Ptr table = std::make_shared<CSimpleDatabaseTable>();
 	m_tables[name] = table;
 	return table;
 }

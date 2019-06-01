@@ -252,7 +252,7 @@ CPhidgetInterfaceKitProximitySensors::~CPhidgetInterfaceKitProximitySensors()
 -------------------------------------------------------------*/
 void CPhidgetInterfaceKitProximitySensors::doProcess()
 {
-	CObservationRange::Ptr obs = mrpt::make_aligned_shared<CObservationRange>();
+	CObservationRange::Ptr obs = std::make_shared<CObservationRange>();
 
 	try
 	{

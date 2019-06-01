@@ -59,7 +59,6 @@ namespace mrpt::nav
 class CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 {
    public:
-	MRPT_MAKE_ALIGNED_OPERATOR_NEW
    public:
 	/** See docs in ctor of base class */
 	CReactiveNavigationSystem(

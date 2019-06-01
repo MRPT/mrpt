@@ -151,7 +151,7 @@ void TArcList::read(mrpt::serialization::CArchive& in)
 	BASE::clear();
 	for (i = 0; i < n; i++)
 	{
-		CHMHMapArc::Ptr theObj = mrpt::make_aligned_shared<CHMHMapArc>();
+		CHMHMapArc::Ptr theObj = std::make_shared<CHMHMapArc>();
 		in >> *theObj;
 		this->push_back(theObj);
 	}

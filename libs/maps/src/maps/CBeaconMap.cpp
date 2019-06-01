@@ -1102,7 +1102,7 @@ void CBeaconMap::saveMetricMapRepresentationToFile(
 	// 3D Scene:
 	opengl::COpenGLScene scene;
 	opengl::CSetOfObjects::Ptr obj3D =
-		mrpt::make_aligned_shared<opengl::CSetOfObjects>();
+		std::make_shared<opengl::CSetOfObjects>();
 
 	getAs3DObject(obj3D);
 	auto objGround = opengl::CGridPlaneXY::Create(

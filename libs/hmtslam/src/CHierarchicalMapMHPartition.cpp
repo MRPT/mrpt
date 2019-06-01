@@ -1114,7 +1114,7 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 	outScene.clear();
 	{
 		mrpt::opengl::CGridPlaneXY::Ptr obj =
-			mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>(
+			std::make_shared<mrpt::opengl::CGridPlaneXY>(
 				-500, 500, -500, 500, 0, 5);
 		obj->setColor(0.3, 0.3, 0.3);
 		outScene.insert(obj);
@@ -1181,7 +1181,7 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 		if (metricMap)  // ASSERT_(metricMap);
 		{
 			mrpt::opengl::CSetOfObjects::Ptr objTex =
-				mrpt::make_aligned_shared<mrpt::opengl::CSetOfObjects>();
+				std::make_shared<mrpt::opengl::CSetOfObjects>();
 			metricMap->getAs3DObject(objTex);
 			objTex->setPose(pose);
 			outScene.insert(objTex);
@@ -1202,7 +1202,7 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 
 		// The sphere of the node:
 		mrpt::opengl::CSphere::Ptr objSphere =
-			mrpt::make_aligned_shared<mrpt::opengl::CSphere>();
+			std::make_shared<mrpt::opengl::CSphere>();
 
 		objSphere->setName(node->m_label);
 		objSphere->setColor(0, 0, 1);
@@ -1218,7 +1218,7 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 
 		// The label with the name of the node:
 		mrpt::opengl::CText::Ptr objText =
-			mrpt::make_aligned_shared<mrpt::opengl::CText>();
+			std::make_shared<mrpt::opengl::CText>();
 		//	objText->m_str = node->m_label;
 		objText->setString(format("%li", (long int)node->getID()));
 		// objText->m_fontHeight = 20;
@@ -1245,7 +1245,7 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 				CPose3D auxPose(pose + SF_pose);
 
 				mrpt::opengl::CDisk::Ptr glObj =
-					mrpt::make_aligned_shared<mrpt::opengl::CDisk>();
+					std::make_shared<mrpt::opengl::CDisk>();
 
 				glObj->setColor(1, 0, 0);
 
@@ -1266,7 +1266,7 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 
 				// And a line up-to the node:
 				mrpt::opengl::CSimpleLine::Ptr objLine =
-					mrpt::make_aligned_shared<mrpt::opengl::CSimpleLine>();
+					std::make_shared<mrpt::opengl::CSimpleLine>();
 
 				objLine->setColor(1, 0, 0, 0.2);
 				objLine->setLineWidth(1.5);
@@ -1293,7 +1293,7 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 
 				// Draw the line:
 				mrpt::opengl::CSimpleLine::Ptr objLine =
-					mrpt::make_aligned_shared<mrpt::opengl::CSimpleLine>();
+					std::make_shared<mrpt::opengl::CSimpleLine>();
 
 				objLine->setColor(0, 1, 0, 0.5);
 				objLine->setLineWidth(5);

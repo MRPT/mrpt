@@ -93,7 +93,7 @@ void COccupancyGridMapFeatureExtractor::extractFeatures(
 	if (it == m_cache.end())
 	{
 		// We have to recompute the features:
-		CLandmarksMap::Ptr theMap = mrpt::make_aligned_shared<CLandmarksMap>();
+		CLandmarksMap::Ptr theMap = std::make_shared<CLandmarksMap>();
 
 		uncached_extractFeatures(
 			grid, *theMap, number_of_features, descriptors, feat_options);

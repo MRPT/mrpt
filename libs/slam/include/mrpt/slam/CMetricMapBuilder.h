@@ -141,7 +141,6 @@ class CMetricMapBuilder : public mrpt::system::COutputLogger
 	TOptions options;
 
    public:
-	MRPT_MAKE_ALIGNED_OPERATOR_NEW
 };  // End of class def.
 
 }  // namespace mrpt::slam

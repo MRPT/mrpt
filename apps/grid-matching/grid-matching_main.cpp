@@ -285,7 +285,7 @@ void do_grid_align()
 				if (NOISE_IN_POSE)
 				{
 					CPosePDFGaussian::Ptr newPDF =
-						mrpt::make_aligned_shared<CPosePDFGaussian>();
+						std::make_shared<CPosePDFGaussian>();
 					newPDF->copyFrom(*PDF);
 
 					// Change the pose:
@@ -422,10 +422,10 @@ void do_grid_align()
 					{
 						COpenGLScene scene3D;
 						opengl::CSetOfObjects::Ptr thePDF3D =
-							mrpt::make_aligned_shared<opengl::CSetOfObjects>();
+							std::make_shared<opengl::CSetOfObjects>();
 						pdf_SOG->getAs3DObject(thePDF3D);
 						opengl::CGridPlaneXY::Ptr gridXY =
-							mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
+							std::make_shared<opengl::CGridPlaneXY>(
 								-10, 10, -10, 10, 0, 1);
 						scene3D.insert(gridXY);
 						scene3D.insert(thePDF3D);
@@ -508,10 +508,10 @@ void do_grid_align()
 							// Save as 3D scene:
 							COpenGLScene scene;
 							CSetOfObjects::Ptr obj1 =
-								mrpt::make_aligned_shared<CSetOfObjects>();
+								std::make_shared<CSetOfObjects>();
 							the_map1.getAs3DObject(obj1);
 							CSetOfObjects::Ptr obj2 =
-								mrpt::make_aligned_shared<CSetOfObjects>();
+								std::make_shared<CSetOfObjects>();
 							the_map2.getAs3DObject(obj2);
 
 							obj2->setPose(x);
@@ -521,7 +521,7 @@ void do_grid_align()
 
 							// Add also the borders of the maps:
 							CSetOfLines::Ptr lines =
-								mrpt::make_aligned_shared<CSetOfLines>();
+								std::make_shared<CSetOfLines>();
 							lines->setLineWidth(3);
 							lines->setColor(0, 0, 1);
 

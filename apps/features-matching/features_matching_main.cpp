@@ -203,13 +203,11 @@ Descriptors:
 		case descLogPolarImages:
 		case descSpinImages:
 		{
-			winptr2D_descr1 =
-				mrpt::make_aligned_shared<CDisplayWindow>("Descriptor 1");
+			winptr2D_descr1 = std::make_shared<CDisplayWindow>("Descriptor 1");
 			winptr2D_descr1->setPos(550, 70 + img1.getHeight());
 			winptr2D_descr1->resize(220, 200);
 
-			winptr2D_descr2 =
-				mrpt::make_aligned_shared<CDisplayWindow>("Descriptor 2");
+			winptr2D_descr2 = std::make_shared<CDisplayWindow>("Descriptor 2");
 			winptr2D_descr2->setPos(760, 70 + img1.getHeight());
 			winptr2D_descr2->resize(220, 200);
 		}
@@ -218,12 +216,12 @@ Descriptors:
 		case descSURF:
 		{
 			winptrPlot_descr1 =
-				mrpt::make_aligned_shared<CDisplayWindowPlots>("Descriptor 1");
+				std::make_shared<CDisplayWindowPlots>("Descriptor 1");
 			winptrPlot_descr1->setPos(550, 70 + img1.getHeight());
 			winptrPlot_descr1->resize(220, 200);
 
 			winptrPlot_descr2 =
-				mrpt::make_aligned_shared<CDisplayWindowPlots>("Descriptor 2");
+				std::make_shared<CDisplayWindowPlots>("Descriptor 2");
 			winptrPlot_descr2->setPos(760, 70 + img1.getHeight());
 			winptrPlot_descr2->resize(220, 200);
 		}

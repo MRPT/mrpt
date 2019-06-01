@@ -188,7 +188,7 @@ void generatePolygon(
 	vector<math::TPolygon3D> convexPolys;
 	if (!math::splitInConvexComponents(p, convexPolys))
 		convexPolys.push_back(p);
-	poly = mrpt::make_aligned_shared<CPolyhedron>(convexPolys);
+	poly = std::make_shared<CPolyhedron>(convexPolys);
 }
 
 void CGeneralizedCylinder::getOrigin(CPolyhedron::Ptr& poly) const

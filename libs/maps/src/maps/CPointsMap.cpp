@@ -1586,7 +1586,7 @@ void internal_build_points_map_from_scan2D(
 	// Create on first call:
 	if (out_map) return;  // Already done!
 
-	out_map = mrpt::make_aligned_shared<CSimplePointsMap>();
+	out_map = std::make_shared<CSimplePointsMap>();
 
 	if (insertOps)
 		static_cast<CSimplePointsMap*>(out_map.get())->insertionOptions =

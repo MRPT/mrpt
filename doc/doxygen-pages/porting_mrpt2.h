@@ -42,7 +42,7 @@
  *    \code
  *    CFoo::Ptr o = CFoo::Create();
  *    \endcode
- *    in MRPT 2.0 to create a smart pointer, but can also use `std::make_shared<CFoo>()`, or `mrpt::make_aligned_shared<CFoo>()` if the
+ *    in MRPT 2.0 to create a smart pointer, but can also use `std::make_shared<CFoo>()`, or `std::make_shared<CFoo>()` if the
  * class must be memory-aligned (typically, if it contains Eigen matrices). The arguments of `Create()` are now [perfectly-forwarded](http://en.cppreference.com/w/cpp/utility/forward) to
  * the class ctor, so the parameter list must exactly match any of the available ctors.
  *  - Smart pointer typecasting now is done via C++11 standard functions:

@@ -34,7 +34,7 @@ CSetOfObjects::Ptr graph_visualize(
 	const bool is_3D_graph = constraint_t::is_3D();
 
 	// create opengl obejct to be filled.
-	CSetOfObjects::Ptr ret = mrpt::make_aligned_shared<CSetOfObjects>();
+	CSetOfObjects::Ptr ret = std::make_shared<CSetOfObjects>();
 
 	// graph visualization parameters
 	const bool show_ID_labels =
@@ -91,7 +91,7 @@ CSetOfObjects::Ptr graph_visualize(
 	// Draw nodes as thick points:
 	if (nodes_point_size > 0)
 	{
-		CPointCloud::Ptr pnts = mrpt::make_aligned_shared<CPointCloud>();
+		CPointCloud::Ptr pnts = std::make_shared<CPointCloud>();
 		pnts->setColor(
 			mrpt::img::TColorf(mrpt::img::TColor(nodes_point_color)));
 		pnts->setPointSize(nodes_point_size);
@@ -123,7 +123,7 @@ CSetOfObjects::Ptr graph_visualize(
 								 nodes_corner_scale, 1.0 /*line width*/)
 						   : stock_objects::CornerXYSimple(
 								 nodes_corner_scale, 1.0 /*line width*/))
-					: mrpt::make_aligned_shared<CSetOfObjects>();
+					: std::make_shared<CSetOfObjects>();
 			gl_corner->setPose(p);
 			if (show_ID_labels)  // don't show IDs twice!
 			{
@@ -184,7 +184,7 @@ CSetOfObjects::Ptr graph_visualize(
 
 	if (show_edges)
 	{
-		CSetOfLines::Ptr gl_edges = mrpt::make_aligned_shared<CSetOfLines>();
+		CSetOfLines::Ptr gl_edges = std::make_shared<CSetOfLines>();
 		const mrpt::img::TColor col8bit(
 			edge_color & 0xffffff, edge_color >> 24);
 

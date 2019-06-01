@@ -210,7 +210,7 @@ CPosePDF::Ptr CICP::ICP_Method_Classic(
 
 	// The gaussian PDF to estimate:
 	// ------------------------------------------------------
-	gaussPdf = mrpt::make_aligned_shared<CPosePDFGaussian>();
+	gaussPdf = std::make_shared<CPosePDFGaussian>();
 
 	// First gross approximation:
 	gaussPdf->mean = grossEst;
@@ -528,7 +528,7 @@ CPosePDF::Ptr CICP::ICP_Method_Classic(
 		mrpt::tfest::se2_l2_robust(
 			correspondences, options.normalizationStd, params, results);
 
-		SOG = mrpt::make_aligned_shared<CPosePDFSOG>();
+		SOG = std::make_shared<CPosePDFSOG>();
 		*SOG = results.transformation;
 
 		// And return the SOG:
@@ -987,7 +987,7 @@ CPose3DPDF::Ptr CICP::ICP3D_Method_Classic(
 
 	// The gaussian PDF to estimate:
 	// ------------------------------------------------------
-	gaussPdf = mrpt::make_aligned_shared<CPose3DPDFGaussian>();
+	gaussPdf = std::make_shared<CPose3DPDFGaussian>();
 
 	// First gross approximation:
 	gaussPdf->mean = grossEst;

@@ -46,7 +46,7 @@ class CObservation6DFeatures : public CObservation
 		/** Ctor with default values */
 		TMeasurement();
 
-		MRPT_MAKE_ALIGNED_OPERATOR_NEW  // Required because we contain Eigen
+		// Required because we contain Eigen
 		// matrices
 	};
 	/** The list of observed features */

@@ -39,10 +39,10 @@
 			"pointer", &class_name##Ptr_pointer,                             \
 			return_internal_reference<>());
 
-#define MAKE_CREATE(class_name)                          \
-	.def(                                                \
-		"Create", mrpt::make_aligned_shared<class_name>, \
-		"Create smart pointer from class.")              \
+#define MAKE_CREATE(class_name)                 \
+	.def(                                       \
+		"Create", std::make_shared<class_name>, \
+		"Create smart pointer from class.")     \
 		.staticmethod("Create")
 
 #define MAKE_VEC(class_name)                                       \

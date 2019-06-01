@@ -49,7 +49,7 @@ class CPosePDFSOG : public CPosePDF
 		double log_w{0};
 
 	   public:
-		MRPT_MAKE_ALIGNED_OPERATOR_NEW;
+		;
 
 		friend std::ostream& operator<<(
 			std::ostream& o, const TGaussianMode& mode)

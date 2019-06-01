@@ -104,7 +104,7 @@ void CActionRobotMovement3D::computeFromOdometry_model6DOF(
 	const mrpt::math::TPose3D nullPose(0, 0, 0, 0, 0, 0);
 
 	mrpt::poses::CPose3DPDF::Ptr poseChangeTemp =
-		mrpt::make_aligned_shared<CPose3DPDFParticles>();
+		std::make_shared<CPose3DPDFParticles>();
 	aux = dynamic_cast<CPose3DPDFParticles*>(poseChangeTemp.get());
 
 	// Set the number of particles:

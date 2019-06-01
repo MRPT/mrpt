@@ -105,8 +105,9 @@ void thread_grabbing(TThreadParam& p)
 		while (!hard_error && !p.quit)
 		{
 			// Grab new observation from the camera:
-			CObservation3DRangeScan::Ptr obs = mrpt::make_aligned_shared<
-				CObservation3DRangeScan>();  // Smart pointer to observation
+			CObservation3DRangeScan::Ptr obs =
+				std::make_shared<CObservation3DRangeScan>();  // Smart pointer
+															  // to observation
 			kinect.getNextObservation(*obs, there_is_obs, hard_error);
 
 			if (!hard_error && there_is_obs)
@@ -234,16 +235,16 @@ void Test_Kinect()
 	win3D.setCameraPointingToPoint(2.5, 0, 0);
 
 	mrpt::opengl::CPointCloudColoured::Ptr gl_points =
-		mrpt::make_aligned_shared<mrpt::opengl::CPointCloudColoured>();
+		std::make_shared<mrpt::opengl::CPointCloudColoured>();
 	gl_points->setPointSize(2.5);
 
 	mrpt::opengl::CSetOfObjects::Ptr gl_curFeats =
-		mrpt::make_aligned_shared<mrpt::opengl::CSetOfObjects>();
+		std::make_shared<mrpt::opengl::CSetOfObjects>();
 	mrpt::opengl::CSetOfObjects::Ptr gl_keyframes =
-		mrpt::make_aligned_shared<mrpt::opengl::CSetOfObjects>();
+		std::make_shared<mrpt::opengl::CSetOfObjects>();
 
 	mrpt::opengl::CPointCloudColoured::Ptr gl_points_map =
-		mrpt::make_aligned_shared<mrpt::opengl::CPointCloudColoured>();
+		std::make_shared<mrpt::opengl::CPointCloudColoured>();
 	gl_points_map->setPointSize(2.0);
 
 	const double aspect_ratio =
@@ -261,7 +262,7 @@ void Test_Kinect()
 		scene->insert(gl_points);
 		scene->insert(gl_curFeats);
 		scene->insert(gl_keyframes);
-		scene->insert(mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>());
+		scene->insert(std::make_shared<mrpt::opengl::CGridPlaneXY>());
 
 		scene->insert(gl_cur_cam_corner);
 
@@ -540,7 +541,7 @@ void Test_Kinect()
 				{
 					static double D = 0.02;
 					mrpt::opengl::CBox::Ptr box =
-						mrpt::make_aligned_shared<mrpt::opengl::CBox>(
+						std::make_shared<mrpt::opengl::CBox>(
 							TPoint3D(-D, -D, -D), TPoint3D(D, D, D));
 					box->setWireframe(true);
 					box->setName(format("%d", int(it->first)));

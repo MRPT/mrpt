@@ -291,8 +291,6 @@ class CGenericSensor
 	}
 
    public:
-	MRPT_MAKE_ALIGNED_OPERATOR_NEW
-
 };  // end of class
 
 static_assert(

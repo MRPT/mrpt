@@ -1262,7 +1262,7 @@ class and there are no plans for doing it.
 the logger - <a href="http://code.google.com/p/mrpt/source/detail?r=3382"
 >r3382</a>
 		- mrpt-srba: SEGFAULT in 32bit builds due to missing
-MRPT_MAKE_ALIGNED_OPERATOR_NEW - <a
+ - <a
 href="http://code.google.com/p/mrpt/source/detail?r=3429" >r3429</a>
 
  <br/>
@@ -1506,7 +1506,7 @@ href="http://code.google.com/p/mrpt/source/detail?r=3007" >r3007</a>
 				- New method
 mrpt::hwdrivers::CActivMediaRobotBase::areMotorsEnabled()
 				- mrpt::hwdrivers::CGenericSensor (and all derived classes) now
-allocate objects aligned in memory with MRPT_MAKE_ALIGNED_OPERATOR_NEW
+allocate objects aligned in memory with 
 				- New static method mrpt::hwdrivers::CGPSInterface::parse_NMEA()
 			- [mrpt-maps]
 				- Better integration of point cloud classes with PCL: - <a

@@ -234,7 +234,7 @@ void CDocument::addMapToRenderizableMaps(
 				std::dynamic_pointer_cast<CMetricMap>(map.get_ptr());
 			if (ptr.get())
 			{
-				auto obj = mrpt::make_aligned_shared<CSetOfObjects>();
+				auto obj = std::make_shared<CSetOfObjects>();
 				ptr->getAs3DObject(obj);
 				renderMaps.emplace(SType(type, index), obj);
 			}

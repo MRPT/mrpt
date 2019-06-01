@@ -70,7 +70,7 @@ void CHierarchicalMHMap::serializeFrom(
 			in >> n;
 			for (i = 0; i < n; i++)
 			{
-				CHMHMapNode::Ptr node = mrpt::make_aligned_shared<CHMHMapNode>(
+				CHMHMapNode::Ptr node = std::make_shared<CHMHMapNode>(
 					this);  // This insert the node in my internal list via the
 				// callback method
 				in >> *node;
@@ -83,7 +83,7 @@ void CHierarchicalMHMap::serializeFrom(
 				// This insert the node in my internal list via the callback
 				// method
 				CHMHMapNode::Ptr p1, p2;
-				CHMHMapArc::Ptr arc = mrpt::make_aligned_shared<CHMHMapArc>(
+				CHMHMapArc::Ptr arc = std::make_shared<CHMHMapArc>(
 					p1, p2, THypothesisIDSet(), this);
 				in >> *arc;
 			}
@@ -179,7 +179,7 @@ void CHierarchicalMHMap::loadFromXMLfile(std::string fileName)
 	for (j = 0; j < numnodes; j++)
 	{
 		CHMHMapNode::Ptr node;
-		node = mrpt::make_aligned_shared<CHMHMapNode>(this);
+		node = std::make_shared<CHMHMapNode>(this);
 		node->m_label = table->get(j, "nodename");
 		nodemap.insert(IDPair(atoi(table->get(j, "id").c_str()), node));
 		node->m_nodeType = table->get(j, "nodetype");
@@ -216,15 +216,14 @@ void CHierarchicalMHMap::loadFromXMLfile(std::string fileName)
 		std::cout << "added arc from " << nodefrom->m_label << " to "
 				  << nodeto->m_label << std::endl;
 
-		arc = mrpt::make_aligned_shared<CHMHMapArc>(nodefrom, nodeto, 0, this);
+		arc = std::make_shared<CHMHMapArc>(nodefrom, nodeto, 0, this);
 		arc->m_arcType = table->get(j, "arctype");
 		arc->m_hypotheses.insert(COMMON_TOPOLOG_HYP);
 
 		if (atoi(table->get(j, "bidirectional").c_str()) == 1)
 		{
 			printf("Creating bidirectional arc\n");
-			arcrev = mrpt::make_aligned_shared<CHMHMapArc>(
-				nodeto, nodefrom, 0, this);
+			arcrev = std::make_shared<CHMHMapArc>(nodeto, nodefrom, 0, this);
 			arcrev->m_arcType = table->get(j, "arctype");
 			arcrev->m_hypotheses.insert(COMMON_TOPOLOG_HYP);
 		}
@@ -246,7 +245,7 @@ void CHierarchicalMHMap::loadFromXMLfile(std::string fileName)
 		{
 			if (type == "placePose")
 			{
-				CPoint2D::Ptr o = mrpt::make_aligned_shared<CPoint2D>();
+				CPoint2D::Ptr o = std::make_shared<CPoint2D>();
 				o->fromString(value);
 
 				CHMHMapNode::Ptr node = getNodeByID(nodeanotmapit->second);

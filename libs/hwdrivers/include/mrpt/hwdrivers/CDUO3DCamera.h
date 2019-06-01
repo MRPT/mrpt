@@ -246,8 +246,6 @@ class CDUO3DCamera
 	void m_set_led(float value);
 
    public:
-	MRPT_MAKE_ALIGNED_OPERATOR_NEW
-
 };  // End of class
 
 static_assert(!std::is_copy_constructible_v<CDUO3DCamera>, "Copy Check");

@@ -73,8 +73,6 @@ class CPointCloudFilterByDistance : public mrpt::maps::CPointCloudFilterBase
 	{
 		mrpt::poses::CPose3D pose;
 		mrpt::maps::CSimplePointsMap::Ptr pc;
-
-		MRPT_MAKE_ALIGNED_OPERATOR_NEW
 	};
 
 	std::map<mrpt::system::TTimeStamp, FrameInfo> m_last_frames;
