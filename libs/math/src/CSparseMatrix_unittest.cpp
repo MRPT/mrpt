@@ -9,7 +9,6 @@
 
 #include <CTraitsTest.h>
 #include <gtest/gtest.h>
-#include <mrpt/core/alignment_req.h>
 #include <mrpt/math/CSparseMatrix.h>
 #include <mrpt/random.h>
 #include <Eigen/Dense>
@@ -19,23 +18,6 @@ using namespace mrpt::math;
 using namespace std;
 
 template class mrpt::CTraitsTest<mrpt::math::CSparseMatrix>;
-
-TEST(EigenAlignment, PrintAlignment)
-{
-	// MRPT_MAX_ALIGN_BYTES from: <mrpt/core/alignment_req.h>
-	// EIGEN_MAX_ALIGN_BYTES from eigen macros.h
-
-	std::cout << "MRPT_MAX_ALIGN_BYTES         : " << MRPT_MAX_ALIGN_BYTES
-			  << "\n"
-				 "EIGEN_MAX_ALIGN_BYTES        : "
-			  << EIGEN_MAX_ALIGN_BYTES
-			  << "\n"
-				 "EIGEN_MAX_STATIC_ALIGN_BYTES : "
-			  << EIGEN_MAX_STATIC_ALIGN_BYTES << "\n";
-
-	EXPECT_GE(MRPT_MAX_ALIGN_BYTES, EIGEN_MAX_ALIGN_BYTES);
-	EXPECT_GE(MRPT_MAX_ALIGN_BYTES, EIGEN_MAX_STATIC_ALIGN_BYTES);
-}
 
 void generateRandomSparseMatrix(
 	size_t N, size_t M, size_t nEntries, CSparseMatrix& MAT)

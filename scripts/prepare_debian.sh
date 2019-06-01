@@ -6,6 +6,7 @@ set -e   # end on error
 
 APPEND_SNAPSHOT_NUM=0
 IS_FOR_UBUNTU=0
+LEAVE_EMBEDDED_EIGEN=0
 SKIP_HEAVY_DOCS=0
 APPEND_LINUX_DISTRO=""
 VALUE_EXTRA_CMAKE_PARAMS=""
@@ -21,6 +22,9 @@ do
          d)
              APPEND_LINUX_DISTRO=$OPTARG
              ;;
+         e)
+            LEAVE_EMBEDDED_EIGEN=1
+            ;;
          c)
              VALUE_EXTRA_CMAKE_PARAMS=$OPTARG
              ;;
