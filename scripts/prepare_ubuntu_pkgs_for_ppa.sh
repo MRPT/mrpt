@@ -15,7 +15,7 @@ set -e
 
 # List of distributions to create PPA packages for:
 LST_DISTROS=(xenial bionic cosmic disco)
-LST_EBDEIGN=( 1       0        0       )
+LST_EBDEIGN=( 1       0       0     0  )
 
 
 # Checks
