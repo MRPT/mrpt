@@ -15,7 +15,6 @@ set -e
 
 # List of distributions to create PPA packages for:
 LST_DISTROS=(xenial bionic cosmic disco)
-LST_EBDEIGN=( 1       0       0     0  )
 
 
 # Checks
@@ -63,11 +62,6 @@ cp ${MRPT_EXTERN_DEBIAN_DIR}/changelog /tmp/my_changelog
 for IDX in ${IDXS};
 do
 	DEBIAN_DIST=${LST_DISTROS[$IDX]}
-	EMBED_EIGEN=${LST_EBDEIGN[$IDX]}
-	if [ $EMBED_EIGEN == "1" ];
-	then
-		MRPT_PKG_CUSTOM_CMAKE_PARAMS="${MRPT_PKG_CUSTOM_CMAKE_PARAMS} -DEIGEN_USE_EMBEDDED_VERSION=ON"
-	fi
 
 	# -------------------------------------------------------------------
 	# Call the standard "prepare_debian.sh" script:
