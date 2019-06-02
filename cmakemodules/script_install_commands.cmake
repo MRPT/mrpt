@@ -95,6 +95,7 @@ if (NOT IS_DEBIAN_DBG_PKG)
 		FILES
 			"${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/config.h"
 			"${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/version.h"
+			"${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/mrpt_paths_config.h"
 		DESTINATION
 			"${libmrpt_common_dev_INSTALL_PREFIX}include/mrpt/"
 		)

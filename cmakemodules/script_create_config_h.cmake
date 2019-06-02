@@ -9,12 +9,6 @@
 #   not overwritten if cmake generates code in the same path.
 # ----------------------------------------------------------------------------
 set(MRPT_CONFIG_FILE_INCLUDE_DIR "${CMAKE_BINARY_DIR}/include/mrpt-configuration/" CACHE PATH "Where to create the platform-dependant config.h")
-if(UNIX)
-	set(MRPT_CONFIG_FILE_INCLUDE_DIR "${CMAKE_BINARY_DIR}/include/mrpt-configuration/unix/" )
-endif(UNIX)
-if (WIN32)
-	set(MRPT_CONFIG_FILE_INCLUDE_DIR "${CMAKE_BINARY_DIR}/include/mrpt-configuration/win32/")
-endif(WIN32)
 
 file(MAKE_DIRECTORY  "${MRPT_CONFIG_FILE_INCLUDE_DIR}")
 file(MAKE_DIRECTORY  "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt")
