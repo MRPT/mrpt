@@ -66,11 +66,8 @@ do
 	EMBED_EIGEN=${LST_EBDEIGN[$IDX]}
 	if [ $EMBED_EIGEN == "1" ];
 	then
-		EMBED_EIGEN_FLAG="-e"
-	else
-		EMBED_EIGEN_FLAG=""
+		MRPT_PKG_CUSTOM_CMAKE_PARAMS="${MRPT_PKG_CUSTOM_CMAKE_PARAMS} -DEIGEN_USE_EMBEDDED_VERSION=ON"
 	fi
-
 
 	# -------------------------------------------------------------------
 	# Call the standard "prepare_debian.sh" script:
