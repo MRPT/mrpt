@@ -45,6 +45,7 @@
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/slam/CMonteCarloLocalization2D.h>
+#include <mrpt/slam/CMonteCarloLocalization3D.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
@@ -69,6 +70,7 @@ using namespace mrpt::serialization;
 using namespace std;
 
 // Forward declaration:
+template <bool PF_IS_3D, class MONTECARLO_TYPE>
 void do_pf_localization(
 	const std::string& iniFilename, const std::string& cmdline_rawlog_file);
 void getGroundTruth(
@@ -101,7 +103,17 @@ int main(int argc, char** argv)
 		std::string cmdline_rawlog_file;
 		if (argc == 3) cmdline_rawlog_file = std::string(argv[2]);
 
-		do_pf_localization(argv[1], cmdline_rawlog_file);
+		// Detect 2D vs 3D particle filter?
+		CConfigFile cfg(argv[1]);
+		const bool is_3D =
+			cfg.read_bool("LocalizationExperiment", "use_3D_poses", false);
+
+		if (is_3D)
+			do_pf_localization<true, CMonteCarloLocalization3D>(
+				argv[1], cmdline_rawlog_file);
+		else
+			do_pf_localization<false, CMonteCarloLocalization2D>(
+				argv[1], cmdline_rawlog_file);
 
 		return 0;
 	}
@@ -120,9 +132,26 @@ int main(int argc, char** argv)
 	}
 }
 
+template <class PDF>
+struct pf2gauss_t
+{
+};
+
+template <>
+struct pf2gauss_t<CMonteCarloLocalization2D>
+{
+	using type = CPosePDFGaussian;
+};
+template <>
+struct pf2gauss_t<CMonteCarloLocalization3D>
+{
+	using type = CPose3DPDFGaussian;
+};
+
 // ------------------------------------------------------
 //				do_pf_localization
 // ------------------------------------------------------
+template <bool PF_IS_3D, class MONTECARLO_TYPE>
 void do_pf_localization(
 	const std::string& ini_fil, const std::string& cmdline_rawlog_file)
 {
@@ -309,12 +338,25 @@ void do_pf_localization(
 	// the particles, etc..
 	COpenGLScene scene;
 
-	float init_PDF_min_x = 0, init_PDF_min_y = 0, init_PDF_max_x = 0,
-		  init_PDF_max_y = 0;
-	MRPT_LOAD_CONFIG_VAR(init_PDF_min_x, float, cfg, sect)
-	MRPT_LOAD_CONFIG_VAR(init_PDF_min_y, float, cfg, sect)
-	MRPT_LOAD_CONFIG_VAR(init_PDF_max_x, float, cfg, sect)
-	MRPT_LOAD_CONFIG_VAR(init_PDF_max_y, float, cfg, sect)
+	// PDF initialization uniform distribution limits:
+	const auto init_min = mrpt::math::TPose3D(
+		cfg.read_double(sect, "init_PDF_min_x", 0),
+		cfg.read_double(sect, "init_PDF_min_y", 0),
+		cfg.read_double(sect, "init_PDF_min_z", 0),
+		mrpt::DEG2RAD(cfg.read_double(sect, "init_PDF_min_yaw_deg", -180.0)),
+		mrpt::DEG2RAD(cfg.read_double(sect, "init_PDF_min_pitch_deg", 0)),
+		mrpt::DEG2RAD(cfg.read_double(sect, "init_PDF_min_roll_deg", 0)));
+
+	const auto init_max = mrpt::math::TPose3D(
+		cfg.read_double(sect, "init_PDF_max_x", 0),
+		cfg.read_double(sect, "init_PDF_max_y", 0),
+		cfg.read_double(sect, "init_PDF_max_z", 0),
+		mrpt::DEG2RAD(cfg.read_double(sect, "init_PDF_max_yaw_deg", +180.0)),
+		mrpt::DEG2RAD(cfg.read_double(sect, "init_PDF_max_pitch_deg", 0)),
+		mrpt::DEG2RAD(cfg.read_double(sect, "init_PDF_max_roll_deg", 0)));
+
+	std::cout << "Initial PDF limits:\n Min=" << init_min.asString()
+			  << "\n Max=" << init_max.asString() << "\n";
 
 	// Gridmap / area of initial uncertainty:
 	COccupancyGridMap2D::TEntropyInfo gridInfo;
@@ -328,8 +370,8 @@ void do_pf_localization(
 	}
 	else
 	{
-		gridInfo.effectiveMappedArea = (init_PDF_max_x - init_PDF_min_x) *
-									   (init_PDF_max_y - init_PDF_min_y);
+		gridInfo.effectiveMappedArea =
+			(init_max.x - init_min.x) * (init_max.y - init_min.y);
 	}
 
 	{
@@ -412,7 +454,8 @@ void do_pf_localization(
 			}
 
 			int M = PARTICLE_COUNT;
-			CMonteCarloLocalization2D pdf;
+
+			MONTECARLO_TYPE pdf;
 
 			// PDF Options:
 			pdf.options = pdfPredictionOptions;
@@ -431,19 +474,35 @@ void do_pf_localization(
 			tictac.Tic();
 			if (!cfg.read_bool(
 					sect, "init_PDF_mode", false, /*Fail if not found*/ true))
-				pdf.resetUniformFreeSpace(
-					metricMap.mapByClass<COccupancyGridMap2D>().get(), 0.7f,
-					PARTICLE_COUNT, init_PDF_min_x, init_PDF_max_x,
-					init_PDF_min_y, init_PDF_max_y,
-					DEG2RAD(cfg.read_float(sect, "init_PDF_min_phi_deg", -180)),
-					DEG2RAD(cfg.read_float(sect, "init_PDF_max_phi_deg", 180)));
+			{
+				// Reset uniform on free space:
+				if constexpr (PF_IS_3D)
+				{
+					THROW_EXCEPTION(
+						"init_PDF_mode=0 not supported for 3D particles");
+				}
+				else
+				{
+					pdf.resetUniformFreeSpace(
+						metricMap.mapByClass<COccupancyGridMap2D>().get(), 0.7f,
+						PARTICLE_COUNT, init_min.x, init_max.x, init_min.y,
+						init_max.y, init_min.yaw, init_max.yaw);
+				}
+			}
 			else
-				pdf.resetUniform(
-					init_PDF_min_x, init_PDF_max_x, init_PDF_min_y,
-					init_PDF_max_y,
-					DEG2RAD(cfg.read_float(sect, "init_PDF_min_phi_deg", -180)),
-					DEG2RAD(cfg.read_float(sect, "init_PDF_max_phi_deg", 180)),
-					PARTICLE_COUNT);
+			{
+				// Reset uniform:
+				if constexpr (PF_IS_3D)
+				{
+					pdf.resetUniform(init_min, init_max);
+				}
+				else
+				{
+					pdf.resetUniform(
+						init_min.x, init_max.x, init_min.y, init_max.y,
+						init_min.yaw, init_max.yaw, PARTICLE_COUNT);
+				}
+			}
 
 			printf(
 				"PDF of %u particles initialized in %.03fms\n", M,
@@ -452,7 +511,12 @@ void do_pf_localization(
 			// -----------------------------
 			//		Particle filter
 			// -----------------------------
-			CPose2D pdfEstimation, odometryEstimation = initial_odo;
+			CPose2D odometryEstimation = initial_odo;
+
+			using PDF_MEAN_TYPE = typename MONTECARLO_TYPE::type_value;
+
+			PDF_MEAN_TYPE pdfEstimation;
+
 			CMatrixDouble cov;
 			bool end = false;
 
@@ -555,6 +619,12 @@ void do_pf_localization(
 					cur_obs_timestamp =
 						observations->getObservationByIndex(0)->timestamp;
 
+				int cov_size;
+				if constexpr (PF_IS_3D)
+					cov_size = 3;
+				else
+					cov_size = 2;
+
 				if (step >= rawlog_offset)
 				{
 					// Do not execute the PF at "step=0", to let the initial PDF
@@ -646,8 +716,8 @@ void do_pf_localization(
 									ptrScene->getByName("particles");
 								if (parts) ptrScene->removeObject(parts);
 
-								auto p =
-									pdf.getAs3DObject<CSetOfObjects::Ptr>();
+								auto p = pdf.template getAs3DObject<
+									CSetOfObjects::Ptr>();
 								p->setName("particles");
 								ptrScene->insert(p);
 							}
@@ -674,7 +744,9 @@ void do_pf_localization(
 									meanPose.x(), meanPose.y(), 0.05);
 
 								mrpt::ptr_cast<CEllipsoid>::from(ellip)
-									->setCovMatrix(cov, 2);
+									->setCovMatrix(
+										mrpt::math::CMatrixDouble(cov),
+										cov_size);
 							}
 
 							// The laser scan:
@@ -817,7 +889,8 @@ void do_pf_localization(
 					}
 
 					const auto [C, M] = pdf.getCovarianceAndMean();
-					const auto current_pdf_gaussian = CPosePDFGaussian(M, C);
+					const auto current_pdf_gaussian =
+						typename pf2gauss_t<MONTECARLO_TYPE>::type(M, C);
 
 					// Text output:
 					// ----------------------------------------
@@ -863,7 +936,8 @@ void do_pf_localization(
 							// obs_scan->stdError = 0.07;
 							// obs_scan->maxRange = 10.0;
 
-							ssu_params.robotPose = current_pdf_gaussian;
+							ssu_params.robotPose =
+								CPosePDFGaussian(current_pdf_gaussian);
 							ssu_params.aperture = obs_scan->aperture;
 							ssu_params.rangeNoiseStd = obs_scan->stdError;
 							ssu_params.nRays = obs_scan->scan.size();
@@ -977,7 +1051,8 @@ void do_pf_localization(
 								scene.getByName("particles");
 							if (parts) scene.removeObject(parts);
 
-							auto p = pdf.getAs3DObject<CSetOfObjects::Ptr>();
+							auto p = pdf.template getAs3DObject<
+								CSetOfObjects::Ptr>();
 							p->setName("particles");
 							scene.insert(p);
 						}
@@ -1003,7 +1078,8 @@ void do_pf_localization(
 							ellip->setLocation(meanPose.x(), meanPose.y(), 0);
 
 							mrpt::ptr_cast<CEllipsoid>::from(ellip)
-								->setCovMatrix(cov, 2);
+								->setCovMatrix(
+									mrpt::math::CMatrixDouble(cov), cov_size);
 						}
 
 						// The laser scan:

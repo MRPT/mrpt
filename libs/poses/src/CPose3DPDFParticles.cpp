@@ -15,6 +15,7 @@
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/poses/SO_SE_average.h>
+#include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
 
@@ -321,4 +322,26 @@ void CPose3DPDFParticles::resetDeterministic(
 		p.d = location;
 		p.log_w = 0;
 	}
+}
+
+void CPose3DPDFParticles::resetUniform(
+	const mrpt::math::TPose3D& cmin, const mrpt::math::TPose3D& cmax,
+	const int particlesCount)
+{
+	MRPT_START
+	if (particlesCount > 0) m_particles.resize(particlesCount);
+
+	auto& rnd = mrpt::random::getRandomGenerator();
+
+	for (auto& p : m_particles)
+	{
+		p.d.x = rnd.drawUniform(cmin.x, cmax.x);
+		p.d.y = rnd.drawUniform(cmin.y, cmax.y);
+		p.d.z = rnd.drawUniform(cmin.z, cmax.z);
+		p.d.yaw = rnd.drawUniform(cmin.yaw, cmax.yaw);
+		p.d.pitch = rnd.drawUniform(cmin.pitch, cmax.pitch);
+		p.d.roll = rnd.drawUniform(cmin.roll, cmax.roll);
+		p.log_w = 0;
+	}
+	MRPT_END
 }

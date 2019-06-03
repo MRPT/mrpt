@@ -1448,9 +1448,8 @@ double CPointsMap::internal_computeObservationLikelihoodPointCloud3D(
 		mrpt::keep_min(closest_err, max_sqr_err);
 
 		sumSqrDist += static_cast<double>(closest_err);
-
-		sumSqrDist /= nPtsForAverage;
 	}
+	if (nPtsForAverage) sumSqrDist /= nPtsForAverage;
 
 	// Log-likelihood:
 	return -sumSqrDist / likelihoodOptions.sigma_dist;
