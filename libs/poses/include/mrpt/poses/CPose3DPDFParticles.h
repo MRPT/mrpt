@@ -69,8 +69,8 @@ class CPose3DPDFParticles
 	 * resetAroundSetOfPoses
 	 */
 	void resetUniform(
-	    const mrpt::math::TPose3D& corner_min,
-	    const mrpt::math::TPose3D& corner_max, const int particlesCount = -1);
+		const mrpt::math::TPose3D& corner_min,
+		const mrpt::math::TPose3D& corner_max, const int particlesCount = -1);
 
 	/** Returns an estimate of the pose, (the mean, or mathematical expectation
 	 * of the PDF), computed as a weighted average over all m_particles. \sa
