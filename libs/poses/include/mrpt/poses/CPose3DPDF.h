@@ -132,7 +132,7 @@ class CPose3DPDF : public mrpt::serialization::CSerializable,
 	template <class OPENGL_SETOFOBJECTSPTR>
 	inline OPENGL_SETOFOBJECTSPTR getAs3DObject() const
 	{
-		using SETOFOBJECTS = typename OPENGL_SETOFOBJECTSPTR::value_type;
+		using SETOFOBJECTS = typename OPENGL_SETOFOBJECTSPTR::element_type;
 		return SETOFOBJECTS::posePDF2opengl(*this);
 	}
 

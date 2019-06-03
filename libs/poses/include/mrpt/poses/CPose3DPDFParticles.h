@@ -53,9 +53,24 @@ class CPose3DPDFParticles
 	 * \param location The location to set all the m_particles.
 	 * \param particlesCount If this is set to 0 the number of m_particles
 	 * remains unchanged.
-	 *  \sa resetUniform, resetUniformFreeSpace */
+	 *  \sa resetUniform */
 	void resetDeterministic(
 		const mrpt::math::TPose3D& location, size_t particlesCount = 0);
+
+	/** Reset the PDF to an uniformly distributed one, inside of the defined
+	 * "cube".
+	 *
+	 * \param particlesCount New particle count, or leave count unchanged if set
+	 * to -1 (default).
+	 *
+	 * \note Orientations can be outside of the [-pi,pi] range if so desired,
+	 *       but it must hold `phi_max>=phi_min`.
+	 * \sa resetDeterministic
+	 * resetAroundSetOfPoses
+	 */
+	void resetUniform(
+	    const mrpt::math::TPose3D& corner_min,
+	    const mrpt::math::TPose3D& corner_max, const int particlesCount = -1);
 
 	/** Returns an estimate of the pose, (the mean, or mathematical expectation
 	 * of the PDF), computed as a weighted average over all m_particles. \sa
