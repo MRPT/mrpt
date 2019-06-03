@@ -239,7 +239,7 @@ int VelodyneView(int argc, char** argv)
 	win3D.setFOV(90);
 	win3D.setCameraPointingToPoint(0, 0, 0);
 	mrpt::opengl::CPointCloudColoured::Ptr gl_points =
-		std::make_shared<mrpt::opengl::CPointCloudColoured>();
+		mrpt::opengl::CPointCloudColoured::Create();
 	gl_points->setPointSize(2.5);
 
 	{
@@ -247,7 +247,7 @@ int VelodyneView(int argc, char** argv)
 
 		// Create the Opengl object for the point cloud:
 		scene->insert(gl_points);
-		scene->insert(std::make_shared<mrpt::opengl::CGridPlaneXY>());
+		scene->insert(mrpt::opengl::CGridPlaneXY::Create());
 		scene->insert(mrpt::opengl::stock_objects::CornerXYZ());
 
 		win3D.unlockAccess3DScene();

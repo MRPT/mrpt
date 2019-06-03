@@ -234,7 +234,7 @@ void CVisualizer<
 			// Create a set of objects at that pose and do the rest in relative
 			// coords:
 			mrpt::opengl::CSetOfObjects::Ptr gl_rel_edge =
-				std::make_shared<mrpt::opengl::CSetOfObjects>();
+				mrpt::opengl::CSetOfObjects::Create();
 			gl_rel_edge->setPose(pSource);
 
 			const typename GRAPH_T::constraint_no_pdf_t& edge_pose =

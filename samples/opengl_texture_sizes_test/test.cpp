@@ -74,13 +74,13 @@ void TextureSizes_test()
 	if (true)
 	{
 		opengl::CTexturedPlane::Ptr obj =
-			mrpt::make_aligned_shared<opengl::CTexturedPlane>(-3, 3, -3, 3);
+			opengl::CTexturedPlane::Create(-3, 3, -3, 3);
 		obj->assignImage(imgCol_N);
 		obj->setLocation(off_x, 0, 0);
 		theScene->insert(obj);
 
-		opengl::CText::Ptr gl_txt = mrpt::make_aligned_shared<opengl::CText>(
-			"Color texture, random size, w/o transp");
+		opengl::CText::Ptr gl_txt =
+			opengl::CText::Create("Color texture, random size, w/o transp");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -89,13 +89,13 @@ void TextureSizes_test()
 	if (true)
 	{
 		opengl::CTexturedPlane::Ptr obj =
-			mrpt::make_aligned_shared<opengl::CTexturedPlane>(-3, 3, -3, 3);
+			opengl::CTexturedPlane::Create(-3, 3, -3, 3);
 		obj->assignImage(imgCol_N, transpMask_N);
 		obj->setLocation(off_x, 0, 0);
 		theScene->insert(obj);
 
-		opengl::CText::Ptr gl_txt = mrpt::make_aligned_shared<opengl::CText>(
-			"Color texture, random size, with transp");
+		opengl::CText::Ptr gl_txt =
+			opengl::CText::Create("Color texture, random size, with transp");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -104,13 +104,13 @@ void TextureSizes_test()
 	if (true)
 	{
 		opengl::CTexturedPlane::Ptr obj =
-			mrpt::make_aligned_shared<opengl::CTexturedPlane>(-3, 3, -3, 3);
+			opengl::CTexturedPlane::Create(-3, 3, -3, 3);
 		obj->assignImage(imgBW_N);
 		obj->setLocation(off_x, 0, 0);
 		theScene->insert(obj);
 
-		opengl::CText::Ptr gl_txt = mrpt::make_aligned_shared<opengl::CText>(
-			"B/W texture, random size, w/o transp");
+		opengl::CText::Ptr gl_txt =
+			opengl::CText::Create("B/W texture, random size, w/o transp");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -119,13 +119,13 @@ void TextureSizes_test()
 	if (true)
 	{
 		opengl::CTexturedPlane::Ptr obj =
-			mrpt::make_aligned_shared<opengl::CTexturedPlane>(-3, 3, -3, 3);
+			opengl::CTexturedPlane::Create(-3, 3, -3, 3);
 		obj->assignImage(imgBW_N, transpMask_N);
 		obj->setLocation(off_x, 0, 0);
 		theScene->insert(obj);
 
-		opengl::CText::Ptr gl_txt = mrpt::make_aligned_shared<opengl::CText>(
-			"B/W texture, random size, with transp");
+		opengl::CText::Ptr gl_txt =
+			opengl::CText::Create("B/W texture, random size, with transp");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -134,13 +134,13 @@ void TextureSizes_test()
 	if (true)
 	{
 		opengl::CTexturedPlane::Ptr obj =
-			mrpt::make_aligned_shared<opengl::CTexturedPlane>(-3, 3, -3, 3);
+			opengl::CTexturedPlane::Create(-3, 3, -3, 3);
 		obj->assignImage(imgCol_2N);
 		obj->setLocation(off_x, 0, 0);
 		theScene->insert(obj);
 
-		opengl::CText::Ptr gl_txt = mrpt::make_aligned_shared<opengl::CText>(
-			"Color texture, 2^N size, w/o transp");
+		opengl::CText::Ptr gl_txt =
+			opengl::CText::Create("Color texture, 2^N size, w/o transp");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -149,13 +149,13 @@ void TextureSizes_test()
 	if (true)
 	{
 		opengl::CTexturedPlane::Ptr obj =
-			mrpt::make_aligned_shared<opengl::CTexturedPlane>(-3, 3, -3, 3);
+			opengl::CTexturedPlane::Create(-3, 3, -3, 3);
 		obj->assignImage(imgCol_2N, transpMask_2N);
 		obj->setLocation(off_x, 0, 0);
 		theScene->insert(obj);
 
-		opengl::CText::Ptr gl_txt = mrpt::make_aligned_shared<opengl::CText>(
-			"Color texture, 2^N size, with transp");
+		opengl::CText::Ptr gl_txt =
+			opengl::CText::Create("Color texture, 2^N size, with transp");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -164,13 +164,13 @@ void TextureSizes_test()
 	if (true)
 	{
 		opengl::CTexturedPlane::Ptr obj =
-			mrpt::make_aligned_shared<opengl::CTexturedPlane>(-3, 3, -3, 3);
+			opengl::CTexturedPlane::Create(-3, 3, -3, 3);
 		obj->assignImage(imgBW_2N);
 		obj->setLocation(off_x, 0, 0);
 		theScene->insert(obj);
 
-		opengl::CText::Ptr gl_txt = mrpt::make_aligned_shared<opengl::CText>(
-			"B/W texture, 2^N size, w/o transp");
+		opengl::CText::Ptr gl_txt =
+			opengl::CText::Create("B/W texture, 2^N size, w/o transp");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -179,13 +179,13 @@ void TextureSizes_test()
 	if (true)
 	{
 		opengl::CTexturedPlane::Ptr obj =
-			mrpt::make_aligned_shared<opengl::CTexturedPlane>(-3, 3, -3, 3);
+			opengl::CTexturedPlane::Create(-3, 3, -3, 3);
 		obj->assignImage(imgBW_2N, transpMask_2N);
 		obj->setLocation(off_x, 0, 0);
 		theScene->insert(obj);
 
-		opengl::CText::Ptr gl_txt = mrpt::make_aligned_shared<opengl::CText>(
-			"B/W texture, 2^N size, with transp");
+		opengl::CText::Ptr gl_txt =
+			opengl::CText::Create("B/W texture, 2^N size, with transp");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}

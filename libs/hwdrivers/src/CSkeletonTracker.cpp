@@ -102,8 +102,7 @@ void CSkeletonTracker::processPreviewNone()
 		if (!m_win)
 		{
 			string caption = string("Preview of ") + m_sensorLabel;
-			m_win = std::make_shared<mrpt::gui::CDisplayWindow3D>(
-				caption, 800, 600);
+			m_win = mrpt::gui::CDisplayWindow3D::Create(caption, 800, 600);
 
 			COpenGLScene::Ptr& scene = m_win->get3DSceneAndLock();
 			scene->insert(std::make_shared<CGridPlaneXZ>(-3, 3, 0, 5, -1.5));
@@ -294,8 +293,7 @@ void CSkeletonTracker::processPreview(
 		if (!m_win)
 		{
 			string caption = string("Preview of ") + m_sensorLabel;
-			m_win = std::make_shared<mrpt::gui::CDisplayWindow3D>(
-				caption, 800, 600);
+			m_win = mrpt::gui::CDisplayWindow3D::Create(caption, 800, 600);
 
 			COpenGLScene::Ptr& scene = m_win->get3DSceneAndLock();
 			scene->insert(std::make_shared<CGridPlaneXZ>(-3, 3, 0, 5, -1.5));

@@ -46,8 +46,7 @@ mrpt::gui::CDisplayWindow3D::Ptr win;  // This is global such as an exception
 // ------------------------------------------------------
 int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
 {
-	win = std::make_shared<mrpt::gui::CDisplayWindow3D>(
-		"Tracked features", 800, 600);
+	win = mrpt::gui::CDisplayWindow3D::Create("Tracked features", 800, 600);
 
 	mrpt::vision::CVideoFileWriter vidWritter;
 

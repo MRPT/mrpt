@@ -736,8 +736,7 @@ class COctreePointRenderer
 		{
 			const TNode& node = m_octree_nodes[i];
 			if (!node.is_leaf) continue;
-			mrpt::opengl::CBox::Ptr gl_box =
-				std::make_shared<mrpt::opengl::CBox>();
+			mrpt::opengl::CBox::Ptr gl_box = mrpt::opengl::CBox::Create();
 			gl_box->setBoxCorners(
 				mrpt::math::TPoint3D(node.bb_min),
 				mrpt::math::TPoint3D(node.bb_max));

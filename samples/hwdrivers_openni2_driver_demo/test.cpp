@@ -109,7 +109,7 @@ int main(int argc, char** argv)
 			win3D.setCameraPointingToPoint(2.5, 0, 0);
 
 			mrpt::opengl::CPointCloudColoured::Ptr gl_points =
-				mrpt::make_aligned_shared<mrpt::opengl::CPointCloudColoured>();
+				mrpt::opengl::CPointCloudColoured::Create();
 			gl_points->setPointSize(2.5);
 
 			opengl::COpenGLViewport::Ptr
@@ -120,8 +120,7 @@ int main(int argc, char** argv)
 
 				// Create the Opengl object for the point cloud:
 				scene->insert(gl_points);
-				scene->insert(
-					mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>());
+				scene->insert(mrpt::opengl::CGridPlaneXY::Create());
 				scene->insert(mrpt::opengl::stock_objects::CornerXYZ());
 
 				const double aspect_ratio = 480.0 / 640.0;
@@ -154,7 +153,7 @@ int main(int argc, char** argv)
 			{
 				//    cout << "Get new observation\n";
 				CObservation3DRangeScan::Ptr newObs =
-					mrpt::make_aligned_shared<CObservation3DRangeScan>();
+					CObservation3DRangeScan::Create();
 				rgbd_sensor.getNextObservation(*newObs, bObs, bError);
 
 				if (bObs && !bError && newObs &&

@@ -205,8 +205,7 @@ void COpenNI2_RGBD360::getNextObservation(
 					if (!m_win_range[sensor_id])
 					{
 						m_win_range[sensor_id] =
-							std::make_shared<mrpt::gui::CDisplayWindow>(
-								"Preview RANGE");
+							mrpt::gui::CDisplayWindow::Create("Preview RANGE");
 						m_win_range[sensor_id]->setPos(5, 5 + 250 * sensor_id);
 					}
 
@@ -226,7 +225,7 @@ void COpenNI2_RGBD360::getNextObservation(
 					if (!m_win_int[sensor_id])
 					{
 						m_win_int[sensor_id] =
-							std::make_shared<mrpt::gui::CDisplayWindow>(
+							mrpt::gui::CDisplayWindow::Create(
 								"Preview INTENSITY");
 						m_win_int[sensor_id]->setPos(330, 5 + 250 * sensor_id);
 					}

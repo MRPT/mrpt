@@ -433,7 +433,7 @@ void CICPCriteriaERD<GRAPH_T>::initializeVisuals()
 		COpenGLScene::Ptr scene = this->m_win->get3DSceneAndLock();
 
 		CPlanarLaserScan::Ptr laser_scan_viz =
-			std::make_shared<mrpt::opengl::CPlanarLaserScan>();
+			mrpt::opengl::CPlanarLaserScan::Create();
 		laser_scan_viz->enablePoints(true);
 		laser_scan_viz->enableLine(true);
 		laser_scan_viz->enableSurface(true);

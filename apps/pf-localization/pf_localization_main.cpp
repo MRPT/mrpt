@@ -375,8 +375,8 @@ void do_pf_localization(
 	}
 
 	{
-		scene.insert(std::make_shared<mrpt::opengl::CGridPlaneXY>(
-			-50, 50, -50, 50, 0, 5));
+		scene.insert(
+			mrpt::opengl::CGridPlaneXY::Create(-50, 50, -50, 50, 0, 5));
 
 		CSetOfObjects::Ptr gl_obj = std::make_shared<CSetOfObjects>();
 		metricMap.getAs3DObject(gl_obj);

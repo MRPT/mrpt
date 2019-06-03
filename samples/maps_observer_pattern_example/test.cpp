@@ -48,7 +48,7 @@ class MyObserver : public mrpt::system::CObserver
 // ------------------------------------------------------
 void TestObserverPattern()
 {
-	CSimplePointsMap::Ptr map1 = mrpt::make_aligned_shared<CSimplePointsMap>();
+	CSimplePointsMap::Ptr map1 = CSimplePointsMap::Create();
 
 	CObservation2DRangeScan obs = getScan();
 

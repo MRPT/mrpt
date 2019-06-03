@@ -296,7 +296,7 @@ CScanAnimation::CScanAnimation(
 
 	// Initialize 3D view:
 	auto openGLSceneRef = m_plot3D->getOpenGLSceneRef();
-	openGLSceneRef->insert(std::make_shared<mrpt::opengl::CGridPlaneXY>(
+	openGLSceneRef->insert(mrpt::opengl::CGridPlaneXY::Create(
 		-50, 50, -50, 50, 0 /* z */, 5 /* freq */));
 	openGLSceneRef->insert(mrpt::opengl::stock_objects::CornerXYZSimple(
 		1.0 /*scale*/, 3.0 /*line width*/));

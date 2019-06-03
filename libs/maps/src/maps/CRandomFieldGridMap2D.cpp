@@ -1589,7 +1589,7 @@ void CRandomFieldGridMap2D::getAs3DObject(
 
 	// Returns only the mean map
 	mrpt::opengl::CSetOfObjects::Ptr other_obj =
-		std::make_shared<mrpt::opengl::CSetOfObjects>();
+		mrpt::opengl::CSetOfObjects::Create();
 	getAs3DObject(outObj, other_obj);
 }
 

@@ -499,7 +499,7 @@ void MapBuilding_RBPF()
 
 					// The ground:
 					mrpt::opengl::CGridPlaneXY::Ptr groundPlane =
-						std::make_shared<mrpt::opengl::CGridPlaneXY>(
+						mrpt::opengl::CGridPlaneXY::Create(
 							-200, 200, -200, 200, 0, 5);
 					groundPlane->setColor(0.4, 0.4, 0.4);
 					scene->insert(groundPlane);
@@ -508,7 +508,7 @@ void MapBuilding_RBPF()
 					if (CAMERA_3DSCENE_FOLLOWS_ROBOT)
 					{
 						mrpt::opengl::CCamera::Ptr objCam =
-							std::make_shared<mrpt::opengl::CCamera>();
+							mrpt::opengl::CCamera::Create();
 						CPose3D robotPose;
 						curPDF.getMean(robotPose);
 
@@ -519,14 +519,14 @@ void MapBuilding_RBPF()
 					}
 					// Draw the map(s):
 					mrpt::opengl::CSetOfObjects::Ptr objs =
-						std::make_shared<mrpt::opengl::CSetOfObjects>();
+						mrpt::opengl::CSetOfObjects::Create();
 					mostLikMap->getAs3DObject(objs);
 					scene->insert(objs);
 
 					// Draw the robot particles:
 					size_t M = mapBuilder.mapPDF.particlesCount();
 					mrpt::opengl::CSetOfLines::Ptr objLines =
-						std::make_shared<mrpt::opengl::CSetOfLines>();
+						mrpt::opengl::CSetOfLines::Create();
 					objLines->setColor(0, 1, 1);
 					for (size_t i = 0; i < M; i++)
 					{

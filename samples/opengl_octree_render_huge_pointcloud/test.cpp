@@ -78,8 +78,7 @@ void TestOctreeRenderHugePointCloud()
 	COpenGLScene::Ptr& theScene = win.get3DSceneAndLock();
 
 	// CPointCloud
-	opengl::CPointCloud::Ptr gl_pointcloud =
-		mrpt::make_aligned_shared<opengl::CPointCloud>();
+	opengl::CPointCloud::Ptr gl_pointcloud = opengl::CPointCloud::Create();
 	theScene->insert(gl_pointcloud);
 
 	gl_pointcloud->setPointSize(3.0);
@@ -126,7 +125,7 @@ void TestOctreeRenderHugePointCloud()
 
 	// Draw the octree bounding boxes:
 	mrpt::opengl::CSetOfObjects::Ptr gl_bb =
-		mrpt::make_aligned_shared<mrpt::opengl::CSetOfObjects>();
+		mrpt::opengl::CSetOfObjects::Create();
 	gl_pointcloud->octree_get_graphics_boundingboxes(*gl_bb);
 	theScene->insert(gl_bb);
 

@@ -54,8 +54,7 @@ void TestOpenGLVideo()
 	COpenGLViewport::Ptr gl_view_aux;
 	{
 		COpenGLScene::Ptr& theScene = win2.get3DSceneAndLock();
-		theScene->insert(
-			mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>());
+		theScene->insert(mrpt::opengl::CGridPlaneXY::Create());
 
 		// Create small auxiliary viewport
 		gl_view_aux = theScene->createViewport("aux");

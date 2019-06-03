@@ -184,7 +184,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
 mrpt::opengl::CSetOfObjects::Ptr CPointsMap_getAs3DObject(CPointsMap& self)
 {
 	mrpt::opengl::CSetOfObjects::Ptr outObj =
-		std::make_shared<mrpt::opengl::CSetOfObjects>();
+		mrpt::opengl::CSetOfObjects::Create();
 	self.getAs3DObject(outObj);
 	return outObj;
 }
@@ -287,7 +287,7 @@ mrpt::opengl::CSetOfObjects::Ptr CMultiMetricMap_getAs3DObject(
 	CMultiMetricMap& self)
 {
 	mrpt::opengl::CSetOfObjects::Ptr outObj =
-		std::make_shared<mrpt::opengl::CSetOfObjects>();
+		mrpt::opengl::CSetOfObjects::Create();
 	self.getAs3DObject(outObj);
 	return outObj;
 }

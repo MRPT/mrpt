@@ -175,7 +175,7 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPointPDF& o)
 		ASSERT_(p != nullptr);
 
 		mrpt::opengl::CPointCloud::Ptr obj =
-			std::make_shared<mrpt::opengl::CPointCloud>();
+			mrpt::opengl::CPointCloud::Create();
 		const size_t N = p->size();
 
 		obj->resize(N);

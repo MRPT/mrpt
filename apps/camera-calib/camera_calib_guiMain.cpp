@@ -859,7 +859,7 @@ void camera_calib_guiDialog::OnlbFilesSelect(wxCommandEvent& event)
 void camera_calib_guiDialog::show3Dview()
 {
 	mrpt::opengl::COpenGLScene::Ptr scene =
-		std::make_shared<mrpt::opengl::COpenGLScene>();
+		mrpt::opengl::COpenGLScene::Create();
 
 	const unsigned int check_size_x = edSizeX->GetValue();
 	const unsigned int check_size_y = edSizeY->GetValue();

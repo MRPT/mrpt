@@ -62,8 +62,7 @@ void GravityDemo()
 	// ------------------------------------------------------
 	{
 		opengl::CGridPlaneXY::Ptr obj =
-			mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
-				-2000, 2000, -2000, 2000, 0, 100);
+			opengl::CGridPlaneXY::Create(-2000, 2000, -2000, 2000, 0, 100);
 		obj->setColor(0.3, 0.3, 0.3);
 		theScene->insert(obj);
 	}
@@ -90,8 +89,7 @@ void GravityDemo()
 
 		masses[i].mass =
 			exp(getRandomGenerator().drawUniform(MASS_MIN, MASS_MAX));
-		opengl::CSphere::Ptr& obj = masses[i].obj3d =
-			mrpt::make_aligned_shared<opengl::CSphere>();
+		opengl::CSphere::Ptr& obj = masses[i].obj3d = opengl::CSphere::Create();
 
 		obj->setColor(
 			getRandomGenerator().drawUniform(0.1, 0.9),

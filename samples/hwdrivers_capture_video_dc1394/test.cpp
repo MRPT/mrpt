@@ -77,7 +77,7 @@ void TestCapture_1394()
 		}
 
 		CObservationImage::Ptr obs =
-			mrpt::make_aligned_shared<CObservationImage>();  // Memory will be
+			CObservationImage::Create();  // Memory will be
 		// freed by
 		// SF destructor in each
 		// loop.

@@ -109,7 +109,7 @@ class CLandmark : public mrpt::serialization::CSerializable
 	 */
 	void createOneFeature()
 	{
-		features.assign(1, std::make_shared<mrpt::vision::CFeature>());
+		features.assign(1, mrpt::vision::CFeature::Create());
 	}
 
 	/** Default constructor

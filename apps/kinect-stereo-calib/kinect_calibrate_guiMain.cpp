@@ -1331,13 +1331,12 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(
 	// Prepare 3D scene: (of live view)
 	// ------------------------------------------
 	auto openGLSceneRef = m_plot3D->getOpenGLSceneRef();
-	openGLSceneRef = std::make_shared<mrpt::opengl::COpenGLScene>();
+	openGLSceneRef = mrpt::opengl::COpenGLScene::Create();
 
 	// Ground plane:
 	{
 		mrpt::opengl::CGridPlaneXY::Ptr obj =
-			std::make_shared<mrpt::opengl::CGridPlaneXY>(
-				-10, 10, -10, 10, 0, 1);
+			mrpt::opengl::CGridPlaneXY::Create(-10, 10, -10, 10, 0, 1);
 		obj->setColor_u8(TColor(200, 200, 200));
 		openGLSceneRef->insert(obj);
 	}
@@ -1346,7 +1345,7 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(
 	// mrpt::opengl::stock_objects::CornerXYZSimple(0.5,2) );
 
 	// 3D points:
-	m_gl_3d_points = std::make_shared<mrpt::opengl::CPointCloudColoured>();
+	m_gl_3d_points = mrpt::opengl::CPointCloudColoured::Create();
 	m_gl_3d_points->setPointSize(2);
 	openGLSceneRef->insert(m_gl_3d_points);
 
@@ -2855,13 +2854,12 @@ void kinect_calibrate_guiDialog::CalibUpdate3DViewCameras()
 	WX_START_TRY
 
 	mrpt::opengl::COpenGLScene::Ptr scene =
-		std::make_shared<mrpt::opengl::COpenGLScene>();
+		mrpt::opengl::COpenGLScene::Create();
 
 	// Ground plane:
 	{
 		mrpt::opengl::CGridPlaneXY::Ptr obj =
-			std::make_shared<mrpt::opengl::CGridPlaneXY>(
-				-10, 10, -10, 10, 0, 1);
+			mrpt::opengl::CGridPlaneXY::Create(-10, 10, -10, 10, 0, 1);
 		obj->setColor_u8(TColor(200, 200, 200));
 		scene->insert(obj);
 	}

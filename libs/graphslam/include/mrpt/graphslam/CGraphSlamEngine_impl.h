@@ -402,7 +402,7 @@ void CGraphSlamEngine<GRAPH_T>::initClass()
 	// COccupancyGridMap2D Initialization
 	{
 		mrpt::maps::COccupancyGridMap2D::Ptr gridmap =
-			std::make_shared<mrpt::maps::COccupancyGridMap2D>();
+			mrpt::maps::COccupancyGridMap2D::Create();
 
 		gridmap->setSize(
 			/* min_x = */ -20.0f,
@@ -424,8 +424,7 @@ void CGraphSlamEngine<GRAPH_T>::initClass()
 
 	// COctoMap Initialization
 	{
-		mrpt::maps::COctoMap::Ptr octomap =
-			std::make_shared<mrpt::maps::COctoMap>();
+		mrpt::maps::COctoMap::Ptr octomap = mrpt::maps::COctoMap::Create();
 
 		// TODO - adjust the insertionoptions...
 		// TODO - Read these from the .ini file
@@ -894,7 +893,7 @@ void CGraphSlamEngine<GRAPH_T>::getMap(
 
 	if (!map)
 	{
-		map = std::make_shared<mrpt::maps::COccupancyGridMap2D>();
+		map = mrpt::maps::COccupancyGridMap2D::Create();
 	}
 	ASSERTDEB_(map);
 

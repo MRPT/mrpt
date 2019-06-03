@@ -380,7 +380,7 @@ void MapBuilding_ICP(
 
 				// The ground:
 				mrpt::opengl::CGridPlaneXY::Ptr groundPlane =
-					std::make_shared<mrpt::opengl::CGridPlaneXY>(
+					mrpt::opengl::CGridPlaneXY::Create(
 						-200, 200, -200, 200, 0, 5);
 				groundPlane->setColor(0.4, 0.4, 0.4);
 				view->insert(groundPlane);

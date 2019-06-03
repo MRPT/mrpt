@@ -565,8 +565,8 @@ void load_textures(
 		const std::string fileloc =
 			mrpt::system::filePathSeparatorsToNative(basepath + filename);
 
-		ipt.img_rgb = std::make_shared<mrpt::img::CImage>();
-		ipt.img_alpha = std::make_shared<mrpt::img::CImage>();
+		ipt.img_rgb = mrpt::img::CImage::Create();
+		ipt.img_alpha = mrpt::img::CImage::Create();
 		mrpt::img::CImage* img_rgb = ipt.img_rgb.get();
 		mrpt::img::CImage* img_a = ipt.img_alpha.get();
 

@@ -58,11 +58,10 @@ void Test_SoG_Merge()
 
 	{
 		COpenGLScene scene;
-		CSetOfObjects::Ptr o = mrpt::make_aligned_shared<CSetOfObjects>();
+		CSetOfObjects::Ptr o = CSetOfObjects::Create();
 		pdf.getAs3DObject(o);
 		scene.insert(o);
-		scene.insert(
-			mrpt::make_aligned_shared<CGridPlaneXY>(-5, 5, -5, 5, 0, 1));
+		scene.insert(CGridPlaneXY::Create(-5, 5, -5, 5, 0, 1));
 
 		CFileGZOutputStream f("sog_before.3Dscene");
 		archiveFrom(f) << scene;
@@ -86,11 +85,10 @@ void Test_SoG_Merge()
 
 	{
 		COpenGLScene scene;
-		CSetOfObjects::Ptr o = mrpt::make_aligned_shared<CSetOfObjects>();
+		CSetOfObjects::Ptr o = CSetOfObjects::Create();
 		pdf.getAs3DObject(o);
 		scene.insert(o);
-		scene.insert(
-			mrpt::make_aligned_shared<CGridPlaneXY>(-5, 5, -5, 5, 0, 1));
+		scene.insert(CGridPlaneXY::Create(-5, 5, -5, 5, 0, 1));
 
 		CFileGZOutputStream f("sog_after.3Dscene");
 		archiveFrom(f) << scene;

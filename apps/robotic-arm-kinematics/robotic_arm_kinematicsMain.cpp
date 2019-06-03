@@ -688,10 +688,9 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 	// Initialize 3D scene:
 	{
 		mrpt::opengl::CGridPlaneXY::Ptr grid_10cm =
-			std::make_shared<mrpt::opengl::CGridPlaneXY>(-5, 5, -5, 5, 0, 0.1f);
+			mrpt::opengl::CGridPlaneXY::Create(-5, 5, -5, 5, 0, 0.1f);
 		mrpt::opengl::CGridPlaneXY::Ptr grid_1m =
-			std::make_shared<mrpt::opengl::CGridPlaneXY>(
-				-5, 5, -5, 5, 0.001f, 1);
+			mrpt::opengl::CGridPlaneXY::Create(-5, 5, -5, 5, 0.001f, 1);
 
 		grid_10cm->setColor_u8(mrpt::img::TColor(0xC0, 0xC0, 0xC0, 0xA0));
 		grid_1m->setColor_u8(mrpt::img::TColor(0xFF, 0xFF, 0xFF));
@@ -700,7 +699,7 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 		openGLSceneRef->insert(grid_1m);
 	}
 
-	m_gl_robot = std::make_shared<mrpt::opengl::CSetOfObjects>();
+	m_gl_robot = mrpt::opengl::CSetOfObjects::Create();
 	openGLSceneRef->insert(m_gl_robot);
 
 	this->Regenerate3DView();
@@ -711,20 +710,17 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 		gl_view->setViewportPosition(0, 0, 0.2, 0.3);
 		gl_view->setTransparent(true);
 		{
-			mrpt::opengl::CText::Ptr obj =
-				std::make_shared<mrpt::opengl::CText>("X");
+			mrpt::opengl::CText::Ptr obj = mrpt::opengl::CText::Create("X");
 			obj->setLocation(1.1, 0, 0);
 			gl_view->insert(obj);
 		}
 		{
-			mrpt::opengl::CText::Ptr obj =
-				std::make_shared<mrpt::opengl::CText>("Y");
+			mrpt::opengl::CText::Ptr obj = mrpt::opengl::CText::Create("Y");
 			obj->setLocation(0, 1.1, 0);
 			gl_view->insert(obj);
 		}
 		{
-			mrpt::opengl::CText::Ptr obj =
-				std::make_shared<mrpt::opengl::CText>("Z");
+			mrpt::opengl::CText::Ptr obj = mrpt::opengl::CText::Create("Z");
 			obj->setLocation(0, 0, 1.1);
 			gl_view->insert(obj);
 		}

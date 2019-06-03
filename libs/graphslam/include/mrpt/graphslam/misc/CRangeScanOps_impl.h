@@ -149,7 +149,7 @@ bool CRangeScanOps<GRAPH_T>::convert3DTo2DRangeScan(
 	// if it doesn't exist, create it
 	if (!*scan2D_out)
 	{
-		*scan2D_out = std::make_shared<mrpt::obs::CObservation2DRangeScan>();
+		*scan2D_out = mrpt::obs::CObservation2DRangeScan::Create();
 	}
 
 	if (scan3D_in->hasRangeImage)
