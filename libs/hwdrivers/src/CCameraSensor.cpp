@@ -1254,8 +1254,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 				if (m_preview_decimation > 1)
 					caption +=
 						format(" (decimation: %i)", m_preview_decimation);
-				m_preview_win1 =
-					std::make_shared<mrpt::gui::CDisplayWindow>(caption);
+				m_preview_win1 = mrpt::gui::CDisplayWindow::Create(caption);
 			}
 			if (stObs && !m_preview_win2)
 			{
@@ -1264,8 +1263,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 				if (m_preview_decimation > 1)
 					caption +=
 						format(" (decimation: %i)", m_preview_decimation);
-				m_preview_win2 =
-					std::make_shared<mrpt::gui::CDisplayWindow>(caption);
+				m_preview_win2 = mrpt::gui::CDisplayWindow::Create(caption);
 			}
 			// Monocular image or Left from a stereo pair:
 			if (m_preview_win1->isOpen())

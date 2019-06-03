@@ -462,7 +462,7 @@ void loadMapInto3DScene(COpenGLScene& scene)
 		}
 
 		mrpt::opengl::CGridPlaneXY::Ptr gridobj =
-			std::make_shared<mrpt::opengl::CGridPlaneXY>(
+			mrpt::opengl::CGridPlaneXY::Create(
 				minC.x - 20, maxC.x + 20, minC.y - 20, maxC.y + 20, minC.z - 2,
 				5);
 		gridobj->setColor(0.3, 0.3, 0.3, 1);
@@ -481,13 +481,13 @@ void loadMapInto3DScene(COpenGLScene& scene)
 	// The robot path:
 	{
 		mrpt::opengl::CSetOfLines::Ptr obj =
-			std::make_shared<mrpt::opengl::CSetOfLines>();
+			mrpt::opengl::CSetOfLines::Create();
 
 		obj->setColor(0, 1, 0, 0.5);
 		obj->setLineWidth(4);
 
 		mrpt::opengl::CSetOfLines::Ptr obj2 =
-			std::make_shared<mrpt::opengl::CSetOfLines>();
+			mrpt::opengl::CSetOfLines::Create();
 		obj2->setColor(1, 0, 0, 0.5);
 		obj2->setLineWidth(2);
 

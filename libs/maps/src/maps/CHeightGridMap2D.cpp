@@ -330,7 +330,7 @@ void CHeightGridMap2D::getAs3DObject(
 	{
 		// As points:
 		mrpt::opengl::CPointCloudColoured::Ptr obj =
-			std::make_shared<mrpt::opengl::CPointCloudColoured>();
+			mrpt::opengl::CPointCloudColoured::Create();
 		obj->setPointSize(2);
 
 		// Find min/max:

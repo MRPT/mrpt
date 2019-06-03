@@ -187,8 +187,7 @@ void C2DRangeFinderAbstract::processPreview(
 		if (!m_win)
 		{
 			string caption = string("Preview of ") + m_sensorLabel;
-			m_win = std::make_shared<mrpt::gui::CDisplayWindow3D>(
-				caption, 640, 480);
+			m_win = mrpt::gui::CDisplayWindow3D::Create(caption, 640, 480);
 			m_win->setCameraAzimuthDeg(180);
 			m_win->setCameraElevationDeg(90);
 			COpenGLScene::Ptr& theScene = m_win->get3DSceneAndLock();

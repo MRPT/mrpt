@@ -82,19 +82,19 @@ void Test_SwissRanger()
 	//	win3D.resize(400,200);
 
 	// mrpt::opengl::CPointCloud::Ptr gl_points =
-	// mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
+	// mrpt::opengl::CPointCloud::Create();
 	mrpt::opengl::CPointCloudColoured::Ptr gl_points =
-		mrpt::make_aligned_shared<mrpt::opengl::CPointCloudColoured>();
+		mrpt::opengl::CPointCloudColoured::Create();
 	gl_points->setPointSize(4.5);
 
 	mrpt::opengl::CTexturedPlane::Ptr gl_img_range =
-		mrpt::make_aligned_shared<mrpt::opengl::CTexturedPlane>(
+		mrpt::opengl::CTexturedPlane::Create(
 			0.5, -0.5, -0.5 * aspect_ratio, 0.5 * aspect_ratio);
 	mrpt::opengl::CTexturedPlane::Ptr gl_img_intensity =
-		mrpt::make_aligned_shared<mrpt::opengl::CTexturedPlane>(
+		mrpt::opengl::CTexturedPlane::Create(
 			0.5, -0.5, -0.5 * aspect_ratio, 0.5 * aspect_ratio);
 	mrpt::opengl::CTexturedPlane::Ptr gl_img_intensity_rect =
-		mrpt::make_aligned_shared<mrpt::opengl::CTexturedPlane>(
+		mrpt::opengl::CTexturedPlane::Create(
 			0.5, -0.5, -0.5 * aspect_ratio, 0.5 * aspect_ratio);
 
 	{
@@ -102,7 +102,7 @@ void Test_SwissRanger()
 
 		// Create the Opengl object for the point cloud:
 		scene->insert(gl_points);
-		scene->insert(mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>());
+		scene->insert(mrpt::opengl::CGridPlaneXY::Create());
 		scene->insert(mrpt::opengl::stock_objects::CornerXYZ());
 
 		const int VW_WIDTH = 200;

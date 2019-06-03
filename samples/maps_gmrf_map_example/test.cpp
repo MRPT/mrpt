@@ -65,7 +65,7 @@ void Example_GMRF()
 	gasmap.clear();  // for the connectivity to be taken into account.
 
 	mrpt::opengl::CPointCloud::Ptr gl_data =
-		mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
+		mrpt::opengl::CPointCloud::Create();
 	gl_data->setPointSize(3.0f);
 
 	for (int i = 0; i < 20; i++)
@@ -88,7 +88,7 @@ void Example_GMRF()
 
 	// 3D view:
 	mrpt::opengl::CSetOfObjects::Ptr glObj =
-		mrpt::make_aligned_shared<mrpt::opengl::CSetOfObjects>();
+		mrpt::opengl::CSetOfObjects::Create();
 	gasmap.getAs3DObject(glObj);
 
 	mrpt::gui::CDisplayWindow3D win("Map", 640, 480);

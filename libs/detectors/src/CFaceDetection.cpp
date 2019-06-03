@@ -1402,13 +1402,13 @@ void CFaceDetection::experimental_viewFacePointsScanned(
 	win3D.setCameraPointingToPoint(2.5, 0, 0);
 
 	mrpt::opengl::CPointCloudColoured::Ptr gl_points =
-		std::make_shared<mrpt::opengl::CPointCloudColoured>();
+		mrpt::opengl::CPointCloudColoured::Create();
 	gl_points->setPointSize(4.5);
 
 	mrpt::opengl::COpenGLScene::Ptr scene = win3D.get3DSceneAndLock();
 
 	scene->insert(gl_points);
-	scene->insert(std::make_shared<mrpt::opengl::CGridPlaneXY>());
+	scene->insert(mrpt::opengl::CGridPlaneXY::Create());
 
 	CColouredPointsMap pntsMap;
 
@@ -1490,7 +1490,7 @@ void CFaceDetection::experimental_viewFacePointsAndEigenVects(
 	win3D.setCameraPointingToPoint(2.5, 0, 0);
 
 	mrpt::opengl::CPointCloudColoured::Ptr gl_points =
-		std::make_shared<mrpt::opengl::CPointCloudColoured>();
+		mrpt::opengl::CPointCloudColoured::Create();
 	gl_points->setPointSize(4.5);
 
 	mrpt::opengl::COpenGLScene::Ptr scene = win3D.get3DSceneAndLock();
@@ -1529,14 +1529,14 @@ void CFaceDetection::experimental_viewFacePointsAndEigenVects(
 	// sgms.push_back( TSegment3D(center,center + E2*eigenVal[1]*100) );
 	// sgms.push_back( TSegment3D(center,center + E3*eigenVal[2]*100) );
 	// mrpt::opengl::CSetOfLines::Ptr lines =
-	// std::make_shared<mrpt::opengl::CSetOfLines>( sgms );
+	// mrpt::opengl::CSetOfLines::Create( sgms );
 	// lines->setColor(0,0,1,1);
 	// lines->setLineWidth( 10 );
 
 	// scene->insert( lines );
 
 	scene->insert(gl_points);
-	scene->insert(std::make_shared<mrpt::opengl::CGridPlaneXY>());
+	scene->insert(mrpt::opengl::CGridPlaneXY::Create());
 
 	CColouredPointsMap pntsMap;
 
@@ -1569,7 +1569,7 @@ void CFaceDetection::experimental_viewRegions(
 	win3D.setCameraPointingToPoint(2.5, 0, 0);
 
 	mrpt::opengl::CPointCloudColoured::Ptr gl_points =
-		std::make_shared<mrpt::opengl::CPointCloudColoured>();
+		mrpt::opengl::CPointCloudColoured::Create();
 	gl_points->setPointSize(6);
 
 	mrpt::opengl::COpenGLScene::Ptr scene = win3D.get3DSceneAndLock();
@@ -1598,16 +1598,16 @@ void CFaceDetection::experimental_viewRegions(
 	sgms.emplace_back(meanPos[2][0], meanPos[1][1]);
 	sgms.emplace_back(meanPos[1][1], meanPos[0][2]);
 	mrpt::opengl::CSetOfLines::Ptr lines =
-		std::make_shared<mrpt::opengl::CSetOfLines>(sgms);
+		mrpt::opengl::CSetOfLines::Create(sgms);
 	lines->setColor(0, 0, 1, 1);
 	lines->setLineWidth(10);
 
 	scene->insert(lines);
 
 	scene->insert(gl_points);
-	scene->insert(std::make_shared<mrpt::opengl::CGridPlaneXY>());
-	scene->insert(std::make_shared<mrpt::opengl::CAxis>(
-		-5, -5, -5, 5, 5, 5, 2.5, 3, true));
+	scene->insert(mrpt::opengl::CGridPlaneXY::Create());
+	scene->insert(
+		mrpt::opengl::CAxis::Create(-5, -5, -5, 5, 5, 5, 2.5, 3, true));
 
 	CColouredPointsMap pntsMap;
 

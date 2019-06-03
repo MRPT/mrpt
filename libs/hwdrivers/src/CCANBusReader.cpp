@@ -85,7 +85,7 @@ CCANBusReader::~CCANBusReader()
 void CCANBusReader::doProcess()
 {
 	mrpt::obs::CObservationCANBusJ1939::Ptr obs =
-		std::make_shared<mrpt::obs::CObservationCANBusJ1939>();
+		mrpt::obs::CObservationCANBusJ1939::Create();
 	bool thereIsObservation;
 	bool hardwareError;
 

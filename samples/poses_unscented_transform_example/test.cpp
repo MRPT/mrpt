@@ -81,13 +81,11 @@ void Test_SUT()
 
 	// 3D view:
 	mrpt::opengl::COpenGLScene::Ptr scene =
-		mrpt::make_aligned_shared<mrpt::opengl::COpenGLScene>();
-	scene->insert(mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
-		-10, 10, -10, 10, 0, 1));
+		mrpt::opengl::COpenGLScene::Create();
+	scene->insert(opengl::CGridPlaneXY::Create(-10, 10, -10, 10, 0, 1));
 
 	{
-		opengl::CEllipsoid::Ptr el =
-			mrpt::make_aligned_shared<opengl::CEllipsoid>();
+		opengl::CEllipsoid::Ptr el = opengl::CEllipsoid::Create();
 		el->enableDrawSolid3D(false);
 		el->setLocation(y_mean[0], y_mean[1], y_mean[2]);
 		el->setCovMatrix(y_cov);
@@ -173,9 +171,8 @@ void Test_SUT()
 
 	for (int i = 0; i < 3; i++)
 	{
-		winHistos[i] =
-			mrpt::make_aligned_shared<mrpt::gui::CDisplayWindowPlots>(
-				format("MC-based histogram of the %i dim", i), 300, 150);
+		winHistos[i] = mrpt::gui::CDisplayWindowPlots::Create(
+			format("MC-based histogram of the %i dim", i), 300, 150);
 
 		std::vector<double> X;
 		std::vector<double> H = mrpt::math::histogram(

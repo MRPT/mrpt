@@ -2504,7 +2504,7 @@ void CLandmarksMap::saveMetricMapRepresentationToFile(
 	// 3D Scene:
 	opengl::COpenGLScene scene;
 	mrpt::opengl::CSetOfObjects::Ptr obj3D =
-		std::make_shared<mrpt::opengl::CSetOfObjects>();
+		mrpt::opengl::CSetOfObjects::Create();
 	getAs3DObject(obj3D);
 
 	opengl::CGridPlaneXY::Ptr objGround =

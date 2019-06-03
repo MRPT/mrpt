@@ -890,8 +890,7 @@ void _DSceneViewerFrame::OnNewScene(wxCommandEvent& event)
 
 	{
 		mrpt::opengl::CGridPlaneXY::Ptr obj =
-			std::make_shared<mrpt::opengl::CGridPlaneXY>(
-				-50, 50, -50, 50, 0, 1);
+			mrpt::opengl::CGridPlaneXY::Create(-50, 50, -50, 50, 0, 1);
 		obj->setColor(0.3, 0.3, 0.3);
 		openGLSceneRef->insert(obj);
 	}
@@ -1202,7 +1201,7 @@ void _DSceneViewerFrame::OnInsert3DS(wxCommandEvent& event)
 		saveLastUsedDirectoryToCfgFile(fil);
 
 		mrpt::opengl::CAssimpModel::Ptr obj3D =
-			std::make_shared<mrpt::opengl::CAssimpModel>();
+			mrpt::opengl::CAssimpModel::Create();
 		obj3D->loadScene(fil);
 		obj3D->setPose(mrpt::math::TPose3D(
 			0, 0, 0, DEG2RAD(.0), DEG2RAD(0.), DEG2RAD(90.0)));
@@ -1749,8 +1748,7 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 			if (dlgPLY.cbXYGrid->GetValue())
 			{
 				mrpt::opengl::CGridPlaneXY::Ptr obj =
-					std::make_shared<mrpt::opengl::CGridPlaneXY>(
-						-50, 50, -50, 50, 0, 1);
+					mrpt::opengl::CGridPlaneXY::Create(-50, 50, -50, 50, 0, 1);
 				obj->setColor(0.3, 0.3, 0.3);
 				openGLSceneRef->insert(obj);
 			}
@@ -2149,7 +2147,7 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 		if (dlgPLY.cbXYGrid->GetValue())
 		{
 			mrpt::opengl::CGridPlaneXY::Ptr obj =
-				std::make_shared<mrpt::opengl::CGridPlaneXY>(
+				mrpt::opengl::CGridPlaneXY::Create(
 					bb_min.x, bb_max.x, bb_min.y, bb_max.y, 0,
 					scene_size * 0.02);
 			obj->setColor(0.3, 0.3, 0.3);

@@ -45,9 +45,7 @@ void TestSLERP()
 	// Modify the scene:
 	// ------------------------------------------------------
 	{
-		opengl::CGridPlaneXY::Ptr obj =
-			mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
-				-20, 20, -20, 20, 0, 1);
+		auto obj = opengl::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
 		obj->setColor(0.4, 0.4, 0.4);
 		theScene->insert(obj);
 	}

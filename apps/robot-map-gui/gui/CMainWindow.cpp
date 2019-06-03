@@ -477,8 +477,8 @@ void CMainWindow::updateDirection(
 
 	pose.setFromValues(
 		pose[0], pose[1], pose[2], DEG2RAD(yaw), DEG2RAD(pitch), DEG2RAD(roll));
-	auto newPosePDF = std::make_shared<mrpt::poses::CPose3DPDFGaussian>(
-		pose, posePDF->getCovariance());
+	auto newPosePDF =
+		mrpt::poses::CPose3DPDFGaussian::Create(pose, posePDF->getCovariance());
 
 	posesObsPair.first = newPosePDF;
 	m_document->move(index, posesObsPair);

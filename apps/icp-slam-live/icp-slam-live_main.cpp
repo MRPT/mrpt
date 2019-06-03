@@ -310,7 +310,7 @@ void MapBuilding_ICP_Live(const string& INI_FILENAME)
 #if MRPT_HAS_WXWIDGETS
 	if (SHOW_PROGRESS_3D_REAL_TIME)
 	{
-		win3D = std::make_shared<mrpt::gui::CDisplayWindow3D>(
+		win3D = mrpt::gui::CDisplayWindow3D::Create(
 			"icp-slam-live | Part of the MRPT project", 800, 600);
 		win3D->setCameraZoom(20);
 		win3D->setCameraAzimuthDeg(-45);
@@ -447,8 +447,7 @@ void MapBuilding_ICP_Live(const string& INI_FILENAME)
 
 			// The ground:
 			mrpt::opengl::CGridPlaneXY::Ptr groundPlane =
-				std::make_shared<mrpt::opengl::CGridPlaneXY>(
-					-200, 200, -200, 200, 0, 5);
+				mrpt::opengl::CGridPlaneXY::Create(-200, 200, -200, 200, 0, 5);
 			groundPlane->setColor(0.4, 0.4, 0.4);
 			view->insert(groundPlane);
 			view_map->insert(CRenderizable::Ptr(groundPlane));  // A copy

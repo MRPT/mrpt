@@ -200,6 +200,6 @@ void CImpinjRFID::closeReader()
 void CImpinjRFID::doProcess()
 {
 	mrpt::obs::CObservationRFID::Ptr obs =
-		std::make_shared<mrpt::obs::CObservationRFID>();
+		mrpt::obs::CObservationRFID::Create();
 	if (getObservation(*obs)) appendObservation(obs);
 }

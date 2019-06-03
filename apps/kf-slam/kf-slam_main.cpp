@@ -373,8 +373,8 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 
 	if (SHOW_3D_LIVE)
 	{
-		win3d = std::make_shared<mrpt::gui::CDisplayWindow3D>(
-			"KF-SLAM live view", 800, 500);
+		win3d =
+			mrpt::gui::CDisplayWindow3D::Create("KF-SLAM live view", 800, 500);
 
 		win3d->addTextMessage(
 			0.01, 0.96, "Red: Estimated path", TColorf(0.8f, 0.8f, 0.8f), 100,
@@ -726,7 +726,7 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 						mapping.getLastDataAssociation();
 
 					mrpt::opengl::CSetOfLines::Ptr lins =
-						std::make_shared<mrpt::opengl::CSetOfLines>();
+						mrpt::opengl::CSetOfLines::Create();
 					lins->setLineWidth(1.2f);
 					lins->setColor(1, 1, 1);
 					for (auto it = da.results.associations.begin();

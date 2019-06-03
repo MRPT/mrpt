@@ -91,18 +91,16 @@ void TestRANSACPlanes()
 	win = mrpt::gui::CDisplayWindow3D::Ptr(
 		new mrpt::gui::CDisplayWindow3D("RANSAC: 3D planes", 500, 500));
 
-	opengl::COpenGLScene::Ptr scene =
-		mrpt::make_aligned_shared<opengl::COpenGLScene>();
+	opengl::COpenGLScene::Ptr scene = opengl::COpenGLScene::Create();
 
-	scene->insert(mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
-		-20, 20, -20, 20, 0, 1));
+	scene->insert(opengl::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1));
 	scene->insert(opengl::stock_objects::CornerXYZ());
 
 	for (vector<pair<size_t, TPlane>>::iterator p = detectedPlanes.begin();
 		 p != detectedPlanes.end(); ++p)
 	{
 		opengl::CTexturedPlane::Ptr glPlane =
-			mrpt::make_aligned_shared<opengl::CTexturedPlane>(-10, 10, -10, 10);
+			opengl::CTexturedPlane::Create(-10, 10, -10, 10);
 
 		TPose3D glPlanePose;
 		p->second.getAsPose3D(glPlanePose);
@@ -117,8 +115,7 @@ void TestRANSACPlanes()
 	}
 
 	{
-		opengl::CPointCloud::Ptr points =
-			mrpt::make_aligned_shared<opengl::CPointCloud>();
+		opengl::CPointCloud::Ptr points = opengl::CPointCloud::Create();
 		points->setColor(0, 0, 1);
 		points->setPointSize(3);
 		points->enableColorFromZ();

@@ -61,8 +61,7 @@ void CNavigatorManualSequence::loadConfigFile(
 					mrpt::kinematics::CVehicleVelCmd_DiffDriven>();
 				break;
 			case 4:
-				krc.cmd_vel =
-					std::make_shared<mrpt::kinematics::CVehicleVelCmd_Holo>();
+				krc.cmd_vel = mrpt::kinematics::CVehicleVelCmd_Holo::Create();
 				break;
 			default:
 				THROW_EXCEPTION("Expected 2 or 4 velocity components!");

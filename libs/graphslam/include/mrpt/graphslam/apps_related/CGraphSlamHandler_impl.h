@@ -367,7 +367,7 @@ template <class GRAPH_T>
 void CGraphSlamHandler<GRAPH_T>::saveMap(const std::string& fname)
 {
 	mrpt::maps::COccupancyGridMap2D::Ptr map =
-		std::make_shared<mrpt::maps::COccupancyGridMap2D>();
+		mrpt::maps::COccupancyGridMap2D::Create();
 	m_engine->getMap(map);
 	// map->saveAsBitmapFile(fname); // doesn't work.
 	map->saveMetricMapRepresentationToFile(fname);
