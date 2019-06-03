@@ -58,11 +58,16 @@ class CActionRobotMovement3D : public CAction
 		mm6DOF
 	};
 
-	/** The parameter to be passed to "computeFromOdometry". */
+	/** The parameter to be passed to "computeFromOdometry".
+	 * Based ont he motion model:
+	 * A. L. Ballardini, A. Furlan, A. Galbiati, M. Matteucci, F. Sacchi, D.
+	 * G. Sorrenti, "An effective 6DoF motion model for 3D-6DoF Monte Carlo
+	 * Localization", 4th Workshop on Planning, Perception and Navigation for
+	 * Intelligent Vehicles, IROS, 2012
+	 */
 	struct TMotionModelOptions
 	{
-		/** Default values loader. */
-		TMotionModelOptions();
+		TMotionModelOptions() = default;
 
 		/** The model to be used. */
 		TDrawSampleMotionModel modelSelection{mm6DOF};
@@ -72,12 +77,17 @@ class CActionRobotMovement3D : public CAction
 			/** Options for the 6DOFModel model  which generates a
 			 * CPosePDFParticles object an then create from that
 			 * CPosePDFGaussian object  in poseChange */
-			uint32_t nParticlesCount;
-			float a1, a2, a3, a4, a5, a6, a7, a8, a9, a10;
+			uint32_t nParticlesCount{300};
+			float a1{0}, a2{0}, a3{0}, a4{0}, a5{0}, a6{0}, a7{0}, a8{0}, a9{0},
+			    a10{0};
+
 			/** An additional noise added to the 6DOF model (std. dev. in meters
 			 * and radians). */
-			float additional_std_XYZ, additional_std_angle;
-		} mm6DOFModel;
+			float additional_std_XYZ{0.001f},
+			    additional_std_angle{mrpt::DEG2RAD(0.05f)};
+		};
+
+		TOptions_6DOFModel mm6DOFModel;
 
 	} motionModelConfiguration;
 

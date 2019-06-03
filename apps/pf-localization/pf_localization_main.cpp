@@ -33,6 +33,7 @@
 #include <mrpt/math/utils.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
+#include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/opengl/CDisk.h>
@@ -213,15 +214,21 @@ void do_pf_localization(
 	SHOW_PROGRESS_3D_REAL_TIME = false;
 #endif
 
-	// Default odometry uncertainty parameters in "dummy_odom_params" depending
+	// Default odometry uncertainty parameters in "actOdom2D_params" depending
 	// on how fast the robot moves, etc...
 	//  Only used for observations-only rawlogs:
-	CActionRobotMovement2D::TMotionModelOptions dummy_odom_params;
-	dummy_odom_params.modelSelection = CActionRobotMovement2D::mmGaussian;
-	dummy_odom_params.gaussianModel.minStdXY =
+	CActionRobotMovement2D::TMotionModelOptions actOdom2D_params;
+	actOdom2D_params.modelSelection = CActionRobotMovement2D::mmGaussian;
+	actOdom2D_params.gaussianModel.minStdXY =
 		cfg.read_double("DummyOdometryParams", "minStdXY", 0.04);
-	dummy_odom_params.gaussianModel.minStdPHI =
+	actOdom2D_params.gaussianModel.minStdPHI =
 		DEG2RAD(cfg.read_double("DummyOdometryParams", "minStdPHI", 2.0));
+
+	CActionRobotMovement3D::TMotionModelOptions actOdom3D_params;
+	actOdom3D_params.mm6DOFModel.additional_std_XYZ =
+	    cfg.read_double("DummyOdometryParams", "additional_std_XYZ", 0.01);
+	actOdom3D_params.mm6DOFModel.additional_std_angle = DEG2RAD(
+	    cfg.read_double("DummyOdometryParams", "additional_std_angle", 0.1));
 
 	// PF-algorithm Options:
 	// ---------------------------
@@ -494,7 +501,7 @@ void do_pf_localization(
 				// Reset uniform:
 				if constexpr (PF_IS_3D)
 				{
-					pdf.resetUniform(init_min, init_max);
+					pdf.resetUniform(init_min, init_max, PARTICLE_COUNT);
 				}
 				else
 				{
@@ -507,6 +514,9 @@ void do_pf_localization(
 			printf(
 				"PDF of %u particles initialized in %.03fms\n", M,
 				1000 * tictac.Tac());
+
+			pdf.saveToTextFile(
+			    format("%s/particles_0_initial.txt", sOUT_DIR_PARTS.c_str()));
 
 			// -----------------------------
 			//		Particle filter
@@ -597,15 +607,30 @@ void do_pf_localization(
 						// ------------------------------------------------------
 						action = std::make_shared<CActionCollection>();
 
-						CActionRobotMovement2D dummy_odom;
+						if (PF_IS_3D)
+						{
+							CActionRobotMovement3D actOdom3D;
 
-						const CPose2D odo_incr =
-							pending_most_recent_odo - last_used_abs_odo;
-						last_used_abs_odo = pending_most_recent_odo;
+							const CPose3D odo_incr = CPose3D(
+							    pending_most_recent_odo - last_used_abs_odo);
+							last_used_abs_odo = pending_most_recent_odo;
 
-						dummy_odom.computeFromOdometry(
-							odo_incr, dummy_odom_params);
-						action->insert(dummy_odom);
+							actOdom3D.computeFromOdometry(
+							    odo_incr, actOdom3D_params);
+							action->insert(actOdom3D);
+						}
+						else
+						{
+							CActionRobotMovement2D actOdom2D;
+
+							const CPose2D odo_incr =
+							    pending_most_recent_odo - last_used_abs_odo;
+							last_used_abs_odo = pending_most_recent_odo;
+
+							actOdom2D.computeFromOdometry(
+							    odo_incr, actOdom2D_params);
+							action->insert(actOdom2D);
+						}
 					}
 				}
 				else
@@ -877,10 +902,10 @@ void do_pf_localization(
 						for (size_t k = 0; k < pdf.size(); k++)
 						{
 							const auto pk = pdf.getParticlePose(k);
-							locErr +=
-								(decltype(pk)(expectedPose.asTPose()) - pk)
-									.norm() *
-								exp(pdf.getW(k)) / sumW;
+							locErr += mrpt::hypot_fast(
+							              expectedPose.x() - pk.x,
+							              expectedPose.y() - pk.y) *
+							          exp(pdf.getW(k)) / sumW;
 						}
 						covergenceErrors.push_back(locErr);
 						indivConvergenceErrors.push_back(locErr);
