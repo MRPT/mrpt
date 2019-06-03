@@ -325,8 +325,8 @@ void CPose3DPDFParticles::resetDeterministic(
 }
 
 void CPose3DPDFParticles::resetUniform(
-    const mrpt::math::TPose3D& cmin, const mrpt::math::TPose3D& cmax,
-    const int particlesCount)
+	const mrpt::math::TPose3D& cmin, const mrpt::math::TPose3D& cmax,
+	const int particlesCount)
 {
 	MRPT_START
 	if (particlesCount > 0) m_particles.resize(particlesCount);
