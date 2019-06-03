@@ -11,16 +11,15 @@
 
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CParticleFilterData.h>
+#include <mrpt/math/data_utils.h>  // averageLogLikelihood()
+#include <mrpt/math/distributions.h>  // chi2inv
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/random.h>
-#include <mrpt/slam/TKLDParams.h>
-
-#include <mrpt/math/data_utils.h>  // averageLogLikelihood()
-#include <mrpt/math/distributions.h>  // chi2inv
-
 #include <mrpt/slam/PF_implementations_data.h>
+#include <mrpt/slam/TKLDParams.h>
+#include <cmath>
 
 /** \file PF_implementations.h
  *  This file contains the implementations of the template members declared in
@@ -369,11 +368,11 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 			const mrpt::math::TPose3D partPose =
 				getLastPose(i, pose_is_valid);  // Take the particle data:
 			auto partPose2 = mrpt::poses::CPose3D(partPose);
-			const double obs_log_likelihood =
+			const double obs_log_lik =
 				PF_SLAM_computeObservationLikelihoodForParticle(
 					PF_options, i, *sf, partPose2);
-			me->m_particles[i].log_w +=
-				obs_log_likelihood * PF_options.powFactor;
+			ASSERT_(!std::isnan(obs_log_lik) && std::isfinite(obs_log_lik));
+			me->m_particles[i].log_w += obs_log_lik * PF_options.powFactor;
 		}  // for each particle "i"
 
 		// Normalization of weights is done outside of this method
