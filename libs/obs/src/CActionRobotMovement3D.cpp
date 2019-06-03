@@ -72,27 +72,6 @@ void CActionRobotMovement3D::computeFromOdometry(
 }
 
 /*---------------------------------------------------------------
-						TMotionModelOptions
- ---------------------------------------------------------------*/
-CActionRobotMovement3D::TMotionModelOptions::TMotionModelOptions()
-	: mm6DOFModel()
-{
-	mm6DOFModel.nParticlesCount = 300;
-	mm6DOFModel.a1 = 0.05f;
-	mm6DOFModel.a2 = 0.05f;
-	mm6DOFModel.a3 = 0.05f;
-	mm6DOFModel.a4 = 0.05f;
-	mm6DOFModel.a5 = 0.05f;
-	mm6DOFModel.a6 = 0.05f;
-	mm6DOFModel.a7 = 0.05f;
-	mm6DOFModel.a8 = 0.05f;
-	mm6DOFModel.a9 = 0.05f;
-	mm6DOFModel.a10 = 0.05f;
-	mm6DOFModel.additional_std_XYZ = 0.001f;
-	mm6DOFModel.additional_std_angle = DEG2RAD(0.05f);
-}
-
-/*---------------------------------------------------------------
 				computeFromOdometry_model6DOF
 	---------------------------------------------------------------*/
 void CActionRobotMovement3D::computeFromOdometry_model6DOF(
@@ -148,9 +127,16 @@ void CActionRobotMovement3D::computeFromOdometry_model6DOF(
 		 Here sample() - sampling from zero mean Gaussian distribution
 
 		Calculate the spherical coordinates:
+		// Original:
 				x = trans_draw * sin( pitch1_draw ) * cos ( yaw1_draw )
 				y = trans_draw * sin( pitch1_draw ) * sin ( yaw1_draw )
 				z = trans_draw * cos( pitch1_draw )
+
+		// Corrected (?) by JLBC (Jun 2019)
+				x = trans_draw * cos( pitch1_draw ) * cos ( yaw1_draw )
+				y = trans_draw * cos( pitch1_draw ) * sin ( yaw1_draw )
+				z = -trans_draw * sin( pitch1_draw )
+
 		 roll = roll_draw
 		pitch = pitch1_draw + pitch2_draw
 			yaw = yaw1_draw + yaw2_draw
@@ -174,60 +160,52 @@ void CActionRobotMovement3D::computeFromOdometry_model6DOF(
 	float Apitch2 = odometryIncrement.pitch();
 	float Ayaw2 = odometryIncrement.yaw();
 
+	const auto stdxyz = motionModelConfiguration.mm6DOFModel.additional_std_XYZ;
+	auto& rnd = mrpt::random::getRandomGenerator();
+
 	// Draw samples:
 	for (size_t i = 0; i < o.mm6DOFModel.nParticlesCount; i++)
 	{
+		auto& ith_part = aux->m_particles[i].d;
 		float Ayaw1_draw =
 			Ayaw1 + (o.mm6DOFModel.a1 * Ayaw1 + o.mm6DOFModel.a2 * Atrans) *
-						getRandomGenerator().drawGaussian1D_normalized();
+		                rnd.drawGaussian1D_normalized();
 		float Apitch1_draw =
 			Apitch1 + (o.mm6DOFModel.a3 * odometryIncrement.z()) *
-						  getRandomGenerator().drawGaussian1D_normalized();
+		                  rnd.drawGaussian1D_normalized();
 		float Atrans_draw =
 			Atrans + (o.mm6DOFModel.a4 * Atrans + o.mm6DOFModel.a5 * Ayaw2 +
 					  o.mm6DOFModel.a6 * (Aroll + Apitch2)) *
-						 getRandomGenerator().drawGaussian1D_normalized();
+		                 rnd.drawGaussian1D_normalized();
 
-		float Aroll_draw =
-			Aroll + (o.mm6DOFModel.a7 * Aroll) *
-						getRandomGenerator().drawGaussian1D_normalized();
-		float Apitch2_draw =
-			Apitch2 + (o.mm6DOFModel.a8 * Apitch2) *
-						  getRandomGenerator().drawGaussian1D_normalized();
+		float Aroll_draw = Aroll + (o.mm6DOFModel.a7 * Aroll) *
+		                               rnd.drawGaussian1D_normalized();
+		float Apitch2_draw = Apitch2 + (o.mm6DOFModel.a8 * Apitch2) *
+		                                   rnd.drawGaussian1D_normalized();
 		float Ayaw2_draw =
 			Ayaw2 + (o.mm6DOFModel.a9 * Ayaw2 + o.mm6DOFModel.a10 * Atrans) *
-						getRandomGenerator().drawGaussian1D_normalized();
+		                rnd.drawGaussian1D_normalized();
 
 		// Output:
-		aux->m_particles[i].d.x =
-			Atrans_draw * sin(Apitch1_draw) * cos(Ayaw1_draw) +
-			motionModelConfiguration.mm6DOFModel.additional_std_XYZ *
-				getRandomGenerator().drawGaussian1D_normalized();
-		aux->m_particles[i].d.y =
-			Atrans_draw * sin(Apitch1_draw) * sin(Ayaw1_draw) +
-			motionModelConfiguration.mm6DOFModel.additional_std_XYZ *
-				getRandomGenerator().drawGaussian1D_normalized();
-		aux->m_particles[i].d.z =
-			Atrans_draw * cos(Apitch1_draw) +
-			motionModelConfiguration.mm6DOFModel.additional_std_XYZ *
-				getRandomGenerator().drawGaussian1D_normalized();
+		ith_part.x = Atrans_draw * cos(Apitch1_draw) * cos(Ayaw1_draw) +
+		             stdxyz * rnd.drawGaussian1D_normalized();
+		ith_part.y = Atrans_draw * cos(Apitch1_draw) * sin(Ayaw1_draw) +
+		             stdxyz * rnd.drawGaussian1D_normalized();
+		ith_part.z = -Atrans_draw * sin(Apitch1_draw) +
+		             stdxyz * rnd.drawGaussian1D_normalized();
 
-		double new_yaw =
-			Ayaw1_draw + Ayaw2_draw +
-			motionModelConfiguration.mm6DOFModel.additional_std_angle *
-				getRandomGenerator().drawGaussian1D_normalized();
-		double new_pitch =
-			Apitch1_draw + Apitch2_draw +
-			motionModelConfiguration.mm6DOFModel.additional_std_angle *
-				getRandomGenerator().drawGaussian1D_normalized();
-		double new_roll =
-			Aroll_draw +
-			motionModelConfiguration.mm6DOFModel.additional_std_angle *
-				getRandomGenerator().drawGaussian1D_normalized();
-
-		aux->m_particles[i].d.yaw = new_yaw;
-		aux->m_particles[i].d.pitch = new_pitch;
-		aux->m_particles[i].d.roll = new_roll;
+		ith_part.yaw =
+		    Ayaw1_draw + Ayaw2_draw +
+		    motionModelConfiguration.mm6DOFModel.additional_std_angle *
+		        rnd.drawGaussian1D_normalized();
+		ith_part.pitch =
+		    Apitch1_draw + Apitch2_draw +
+		    motionModelConfiguration.mm6DOFModel.additional_std_angle *
+		        rnd.drawGaussian1D_normalized();
+		ith_part.roll =
+		    Aroll_draw +
+		    motionModelConfiguration.mm6DOFModel.additional_std_angle *
+		        rnd.drawGaussian1D_normalized();
 	}
 
 	poseChange.copyFrom(*poseChangeTemp);
