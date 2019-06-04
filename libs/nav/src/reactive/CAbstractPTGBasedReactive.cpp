@@ -90,8 +90,8 @@ void CAbstractPTGBasedReactive::preDestructor()
 
 	// Just in case.
 	try {
-		// Call base class method, NOT the generic, virtual one, 
-		// to avoid problems if we are in the dtor, while the vtable 
+		// Call base class method, NOT the generic, virtual one,
+		// to avoid problems if we are in the dtor, while the vtable
 		// is being destroyed.
 		CAbstractNavigator::stop(false /*not emergency*/);
 	} catch (...) { }
@@ -945,8 +945,8 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	const bool is_slowdown =
 		this_is_PTG_continuation ?
 		m_lastSentVelCmd.was_slowdown
-		:
-		(cm.PTG->supportSpeedAtTarget() && TP_Target.target_k == move_k);
+		: (cm.PTG->supportSpeedAtTarget() && TP_Target.target_k == move_k &&
+		 target_d_norm < 0.99 * in_TPObstacles[move_k]);
 	cm.props["is_slowdown"] = is_slowdown ? 1:0;
 	cm.props["holo_stage_eval"] =
 		this_is_PTG_continuation ?
