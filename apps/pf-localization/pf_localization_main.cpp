@@ -78,6 +78,7 @@ void do_pf_localization(
 void getGroundTruth(
 	CPose2D& expectedPose, size_t rawlogEntry, const CMatrixDouble& GT,
 	const Clock::time_point& cur_time);
+void prepareGT(const CMatrixDouble& GT);
 
 // ------------------------------------------------------
 //						MAIN
@@ -329,6 +330,8 @@ void do_pf_localization(
 		printf("Loading ground truth file...");
 		GT.loadFromTextFile(GT_FILE);
 		printf("OK\n");
+
+		prepareGT(GT);
 	}
 	else
 		printf("Ground truth file: NO\n");
@@ -1064,7 +1067,7 @@ void do_pf_localization(
 					const auto [cov, meanPose] = pdf.getCovarianceAndMean();
 
 					if (!SAVE_STATS_ONLY && SCENE3D_FREQ > 0 &&
-						(step % SCENE3D_FREQ) == 0)
+						((step + 1) % SCENE3D_FREQ) == 0)
 					{
 						// Generate 3D scene:
 						// ------------------------------
@@ -1173,7 +1176,7 @@ void do_pf_localization(
 					}
 
 					if (!SAVE_STATS_ONLY && SCENE3D_FREQ != -1 &&
-						(step % SCENE3D_FREQ) == 0)
+						((step + 1) % SCENE3D_FREQ) == 0)
 					{
 						// Save 3D scene:
 						CFileGZOutputStream f(format(
@@ -1278,6 +1281,43 @@ void do_pf_localization(
 	}  // end of loop for different # of particles
 }
 
+static CPose2DInterpolator GT_path;
+
+void prepareGT(const CMatrixDouble& GT)
+{
+	// Either:
+	// - time x y phi
+	// or
+	// - time x y z yaw pitch roll
+	if (GT.cols() == 4 || GT.cols() == 7)
+	{
+		const bool GT_is_3D = (GT.cols() == 7);
+		bool GT_index_is_time = false;
+
+		// First column can be: timestamps, or rawlogentries:
+		//  Auto-figure it out:
+		if (GT.rows() > 2)
+		{
+			GT_index_is_time =
+				floor(GT(0, 0)) != GT(0, 0) && floor(GT(1, 0)) != GT(1, 0);
+		}
+
+		if (GT_index_is_time)
+		{
+			// Look for the timestamp:
+			using namespace std::chrono_literals;
+			GT_path.setMaxTimeInterpolation(200ms);
+
+			for (int i = 0; i < GT.rows(); i++)
+			{
+				GT_path.insert(
+					mrpt::Clock::fromDouble(GT(i, 0)),
+					TPose2D(GT(i, 1), GT(i, 2), GT(i, GT_is_3D ? 4 : 3)));
+			}
+		}
+	}
+}
+
 void getGroundTruth(
 	CPose2D& expectedPose, size_t rawlogEntry, const CMatrixDouble& GT,
 	const Clock::time_point& cur_time)
@@ -1286,11 +1326,10 @@ void getGroundTruth(
 	// - time x y phi
 	// or
 	// - time x y z yaw pitch roll
+
 	if (GT.cols() == 4 || GT.cols() == 7)
 	{
-		static bool first_step = true;
-		static bool GT_index_is_time;
-		const bool GT_is_3D = (GT.cols() == 7);
+		bool GT_index_is_time;
 
 		// First column can be: timestamps, or rawlogentries:
 		//  Auto-figure it out:
@@ -1307,18 +1346,8 @@ void getGroundTruth(
 		if (GT_index_is_time)
 		{
 			// Look for the timestamp:
-			static CPose2DInterpolator GT_path;
 			using namespace std::chrono_literals;
-			GT_path.setMaxTimeInterpolation(200ms);
-			if (first_step)
-			{
-				for (int i = 0; i < GT.rows(); i++)
-				{
-					GT_path.insert(
-						mrpt::Clock::fromDouble(GT(i, 0)),
-						TPose2D(GT(i, 1), GT(i, 2), GT(i, GT_is_3D ? 4 : 3)));
-				}
-			}
+
 			bool interp_ok = false;
 			GT_path.interpolate(cur_time, expectedPose, interp_ok);
 			if (!interp_ok)
@@ -1342,7 +1371,6 @@ void getGroundTruth(
 				expectedPose.phi(GT(k, 3));
 			}
 		}
-		first_step = false;
 	}
 	else if (GT.cols() == 3)
 	{
