@@ -50,12 +50,17 @@
 
 extern std::string global_fileToOpen;
 
-const double fy = 9,
-			 Ay = 12;  // Font size & line spaces for GUI-overlayed text lines
-#define ADD_WIN_TEXTMSG_COL(__MSG, __COL)                                      \
-	win1->addTextMessage(                                                      \
-		5.0, 5 + (lineY++) * Ay, __MSG, __COL, "mono", fy, mrpt::opengl::NICE, \
-		unique_id++);
+// Configure look:
+const auto glTxtFillStyle = mrpt::opengl::FILL;
+const auto glTxtFont = std::string("mono");
+const auto glTxtSize = 10;
+// Font size & line spaces for GUI-overlayed text lines
+
+const double Ay = glTxtSize + 3;
+#define ADD_WIN_TEXTMSG_COL(__MSG, __COL)                            \
+	win1->addTextMessage(                                            \
+		5.0, 5 + (lineY++) * Ay, __MSG, __COL, glTxtFont, glTxtSize, \
+		glTxtFillStyle, unique_id++, 1.5, 0.1, true /*shadow*/);
 
 #define ADD_WIN_TEXTMSG(__MSG) \
 	ADD_WIN_TEXTMSG_COL(__MSG, mrpt::img::TColorf(1, 1, 1))
@@ -1202,7 +1207,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			win->addTextMessage(
 				4, 4,
 				format("[%u]:%s", nPTG, log.infoPerPTG[nPTG].PTG_desc.c_str()),
-				TColorf(1.0f, 1.0f, 1.0f), "sans", 8, mrpt::opengl::NICE,
+				TColorf(1.0f, 1.0f, 1.0f), glTxtFont, glTxtSize, glTxtFillStyle,
 				0 /*id*/, 1.5, 0.1, true /*shadow*/);
 
 			{
@@ -1307,7 +1312,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				format("[%u]:%s", nPTG, log.infoPerPTG[nPTG].PTG_desc.c_str()),
 				is_selected_ptg ? TColorf(1.0f, 1.0f, 0.f)
 								: TColorf(1.0f, 1.0f, 1.0f),
-				"mono", 8, mrpt::opengl::NICE, 0 /*id*/, 1.5, 0.1,
+				glTxtFont, glTxtSize, glTxtFillStyle, 0 /*id*/, 1.5, 0.1,
 				true /*shadow*/);
 
 			// Chosen direction:
@@ -1381,9 +1386,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 							"TP_Target[0]=(%.02f,%.02f) k=%i ang=%.02f deg",
 							pI.TP_Targets[0].x, pI.TP_Targets[0].y, tp_target_k,
 							mrpt::RAD2DEG(ang)),
-						TColorf(1.0f, 1.0f, 1.0f), "mono", 8,
-						mrpt::opengl::NICE, 1 /*id*/, 1.5, 0.1,
-						false /*shadow*/);
+						TColorf(1.0f, 1.0f, 1.0f), glTxtFont, glTxtSize,
+						glTxtFillStyle, 1 /*id*/, 1.5, 0.1, false /*shadow*/);
 				}
 			}
 			if (cbList->IsChecked(m_cbIdx_ShowAllDebugFields))
@@ -1393,10 +1397,10 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				for (const auto& e : pI.evalFactors)
 				{
 					win->addTextMessage(
-						4, 5 + (lineY++) * 11,
+						4, 5 + (lineY++) * (glTxtSize + 3),
 						mrpt::format("%20s=%6.03f", e.first.c_str(), e.second),
-						mrpt::img::TColorf(1, 1, 1), "mono", 9,
-						mrpt::opengl::NICE, unique_id++, 1.5, 0.1, true);
+						mrpt::img::TColorf(1, 1, 1), glTxtFont, glTxtSize,
+						glTxtFillStyle, unique_id++, 1.5, 0.1, true);
 				}
 			}
 
