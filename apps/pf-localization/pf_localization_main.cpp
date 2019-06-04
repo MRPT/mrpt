@@ -454,8 +454,9 @@ void do_pf_localization(
 
 			if (!SAVE_STATS_ONLY)
 			{
-				sOUT_DIR =
-					format("%s_%03u", OUT_DIR_PREFIX.c_str(), repetition);
+				sOUT_DIR = format(
+					"%s_%03u_%07i", OUT_DIR_PREFIX.c_str(), repetition,
+					PARTICLE_COUNT);
 				sOUT_DIR_PARTS = format("%s/particles", sOUT_DIR.c_str());
 				sOUT_DIR_3D = format("%s/3D", sOUT_DIR.c_str());
 
