@@ -450,19 +450,19 @@ void do_pf_localization(
 			printf("OK\n");
 
 			// The experiment directory is:
-			string sOUT_DIR, sOUT_DIR_PARTS, sOUT_DIR_3D;
+			string sOUT_DIR_PARTS, sOUT_DIR_3D;
+			const auto sOUT_DIR = format(
+			    "%s_%03u_%07i", OUT_DIR_PREFIX.c_str(), repetition,
+			    PARTICLE_COUNT);
+			printf("Creating directory: %s\n", sOUT_DIR.c_str());
+			createDirectory(sOUT_DIR);
+			ASSERT_(fileExists(sOUT_DIR));
 
 			if (!SAVE_STATS_ONLY)
 			{
-				sOUT_DIR = format(
-					"%s_%03u_%07i", OUT_DIR_PREFIX.c_str(), repetition,
-					PARTICLE_COUNT);
 				sOUT_DIR_PARTS = format("%s/particles", sOUT_DIR.c_str());
 				sOUT_DIR_3D = format("%s/3D", sOUT_DIR.c_str());
 
-				printf("Creating directory: %s\n", sOUT_DIR.c_str());
-				createDirectory(sOUT_DIR);
-				ASSERT_(fileExists(sOUT_DIR));
 				deleteFiles(format("%s/*.*", sOUT_DIR.c_str()));
 
 				printf("Creating directory: %s\n", sOUT_DIR_PARTS.c_str());
@@ -1241,6 +1241,7 @@ void do_pf_localization(
 			};
 
 			running_tasks.emplace_back(runner, r, r + runs_per_thread);
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
 
 		// Wait for all threads to end:
@@ -1352,9 +1353,13 @@ void getGroundTruth(
 			bool interp_ok = false;
 			GT_path.interpolate(cur_time, expectedPose, interp_ok);
 			if (!interp_ok)
+			{
+				/*
 				cerr << format(
 					"GT time not found: %f\n",
 					mrpt::system::timestampTotime_t(cur_time));
+					*/
+			}
 		}
 		else
 		{

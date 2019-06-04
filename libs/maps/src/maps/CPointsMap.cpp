@@ -773,6 +773,7 @@ void CPointsMap::TRenderOptions::loadFromConfigFile(
 ---------------------------------------------------------------*/
 void CPointsMap::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 {
+	MRPT_START
 	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	if (renderOptions.colormap == mrpt::img::cmNONE)
@@ -796,6 +797,7 @@ void CPointsMap::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 			pMin.z, pMax.z, 2 /*z*/, renderOptions.colormap);
 		outObj->insert(obj);
 	}
+	MRPT_END
 }
 
 float CPointsMap::compute3DMatchingRatio(
@@ -921,6 +923,8 @@ void CPointsMap::boundingBox(
 	float& min_x, float& max_x, float& min_y, float& max_y, float& min_z,
 	float& max_z) const
 {
+	MRPT_START
+
 	const size_t nPoints = m_x.size();
 
 	if (!m_boundingBoxIsUpdated)
@@ -1033,6 +1037,7 @@ void CPointsMap::boundingBox(
 	max_y = m_bb_max_y;
 	min_z = m_bb_min_z;
 	max_z = m_bb_max_z;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
