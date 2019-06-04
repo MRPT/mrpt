@@ -1103,7 +1103,8 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	const bool is_slowdown =
 		this_is_PTG_continuation
 			? m_lastSentVelCmd.was_slowdown
-			: (cm.PTG->supportSpeedAtTarget() && TP_Target.target_k == move_k);
+			: (cm.PTG->supportSpeedAtTarget() && TP_Target.target_k == move_k &&
+			   target_d_norm < 0.99 * in_TPObstacles[move_k]);
 	cm.props["is_slowdown"] = is_slowdown ? 1 : 0;
 	cm.props["holo_stage_eval"] =
 		this_is_PTG_continuation
