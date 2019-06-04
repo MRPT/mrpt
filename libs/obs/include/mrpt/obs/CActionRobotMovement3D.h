@@ -79,12 +79,12 @@ class CActionRobotMovement3D : public CAction
 			 * CPosePDFGaussian object  in poseChange */
 			uint32_t nParticlesCount{300};
 			float a1{0}, a2{0}, a3{0}, a4{0}, a5{0}, a6{0}, a7{0}, a8{0}, a9{0},
-			    a10{0};
+				a10{0};
 
 			/** An additional noise added to the 6DOF model (std. dev. in meters
 			 * and radians). */
 			float additional_std_XYZ{0.001f},
-			    additional_std_angle{mrpt::DEG2RAD(0.05f)};
+				additional_std_angle{mrpt::DEG2RAD(0.05f)};
 		};
 
 		TOptions_6DOFModel mm6DOFModel;
