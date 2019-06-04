@@ -52,6 +52,7 @@
 #include <mrpt/system/os.h>
 #include <mrpt/system/vector_loadsave.h>
 #include <Eigen/Dense>
+#include <thread>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -71,7 +72,7 @@ using namespace mrpt::serialization;
 using namespace std;
 
 // Forward declaration:
-template <bool PF_IS_3D, class MONTECARLO_TYPE>
+template <class MONTECARLO_TYPE>
 void do_pf_localization(
 	const std::string& iniFilename, const std::string& cmdline_rawlog_file);
 void getGroundTruth(
@@ -110,10 +111,10 @@ int main(int argc, char** argv)
 			cfg.read_bool("LocalizationExperiment", "use_3D_poses", false);
 
 		if (is_3D)
-			do_pf_localization<true, CMonteCarloLocalization3D>(
+			do_pf_localization<CMonteCarloLocalization3D>(
 				argv[1], cmdline_rawlog_file);
 		else
-			do_pf_localization<false, CMonteCarloLocalization2D>(
+			do_pf_localization<CMonteCarloLocalization2D>(
 				argv[1], cmdline_rawlog_file);
 
 		return 0;
@@ -142,17 +143,19 @@ template <>
 struct pf2gauss_t<CMonteCarloLocalization2D>
 {
 	using type = CPosePDFGaussian;
+	static constexpr bool PF_IS_3D = false;
 };
 template <>
 struct pf2gauss_t<CMonteCarloLocalization3D>
 {
 	using type = CPose3DPDFGaussian;
+	static constexpr bool PF_IS_3D = true;
 };
 
 // ------------------------------------------------------
 //				do_pf_localization
 // ------------------------------------------------------
-template <bool PF_IS_3D, class MONTECARLO_TYPE>
+template <class MONTECARLO_TYPE>
 void do_pf_localization(
 	const std::string& ini_fil, const std::string& cmdline_rawlog_file)
 {
@@ -186,7 +189,7 @@ void do_pf_localization(
 	string MAP_FILE = cfg.read_string(sect, "map_file", "");
 	size_t rawlog_offset = cfg.read_int(sect, "rawlog_offset", 0);
 	string GT_FILE = cfg.read_string(sect, "ground_truth_path_file", "");
-	int NUM_REPS = cfg.read_int(sect, "experimentRepetitions", 1);
+	const auto NUM_REPS = cfg.read_uint64_t(sect, "experimentRepetitions", 1);
 	int SCENE3D_FREQ = cfg.read_int(sect, "3DSceneFrequency", 10);
 	bool SCENE3D_FOLLOW = cfg.read_bool(sect, "3DSceneFollowRobot", true);
 	unsigned int testConvergenceAt =
@@ -226,9 +229,9 @@ void do_pf_localization(
 
 	CActionRobotMovement3D::TMotionModelOptions actOdom3D_params;
 	actOdom3D_params.mm6DOFModel.additional_std_XYZ =
-	    cfg.read_double("DummyOdometryParams", "additional_std_XYZ", 0.01);
+		cfg.read_double("DummyOdometryParams", "additional_std_XYZ", 0.01);
 	actOdom3D_params.mm6DOFModel.additional_std_angle = DEG2RAD(
-	    cfg.read_double("DummyOdometryParams", "additional_std_angle", 0.1));
+		cfg.read_double("DummyOdometryParams", "additional_std_angle", 0.1));
 
 	// PF-algorithm Options:
 	// ---------------------------
@@ -258,7 +261,7 @@ void do_pf_localization(
 	// --------------------------------------------------------------------
 	//						EXPERIMENT PREPARATION
 	// --------------------------------------------------------------------
-	CTicTac tictac, tictacGlobal;
+	CTicTac tictac;
 	CSimpleMap simpleMap;
 	CParticleFilter::TParticleFilterStats PF_stats;
 
@@ -330,21 +333,6 @@ void do_pf_localization(
 	else
 		printf("Ground truth file: NO\n");
 
-	// Create 3D window if requested:
-	CDisplayWindow3D::Ptr win3D;
-	if (SHOW_PROGRESS_3D_REAL_TIME)
-	{
-		win3D = std::make_shared<CDisplayWindow3D>(
-			"pf-localization - The MRPT project", 1000, 600);
-		win3D->setCameraZoom(20);
-		win3D->setCameraAzimuthDeg(-45);
-		// win3D->waitForKey();
-	}
-
-	// Create the 3D scene and get the map only once, later we'll modify only
-	// the particles, etc..
-	COpenGLScene scene;
-
 	// PDF initialization uniform distribution limits:
 	const auto init_min = mrpt::math::TPose3D(
 		cfg.read_double(sect, "init_PDF_min_x", 0),
@@ -381,25 +369,6 @@ void do_pf_localization(
 			(init_max.x - init_min.x) * (init_max.y - init_min.y);
 	}
 
-	{
-		scene.insert(
-			mrpt::opengl::CGridPlaneXY::Create(-50, 50, -50, 50, 0, 5));
-
-		CSetOfObjects::Ptr gl_obj = std::make_shared<CSetOfObjects>();
-		metricMap.getAs3DObject(gl_obj);
-		scene.insert(gl_obj);
-
-		if (SHOW_PROGRESS_3D_REAL_TIME)
-		{
-			COpenGLScene::Ptr ptrScene = win3D->get3DSceneAndLock();
-
-			ptrScene->insert(gl_obj);
-			ptrScene->enableFollowCamera(true);
-
-			win3D->unlockAccess3DScene();
-		}
-	}
-
 	for (int PARTICLE_COUNT : particles_count)
 	{
 		printf(
@@ -408,21 +377,67 @@ void do_pf_localization(
 
 		// Global stats for all the experiment loops:
 		int nConvergenceTests = 0, nConvergenceOK = 0;
-		CVectorDouble covergenceErrors;
+		CVectorDouble convergenceErrors;
+		std::mutex convergenceErrors_mtx;
+
 		// --------------------------------------------------------------------
 		//					EXPERIMENT REPETITIONS LOOP
 		// --------------------------------------------------------------------
-		tictacGlobal.Tic();
-		for (int repetition = 0; repetition < NUM_REPS; repetition++)
-		{
+
+		// Generate list of repetition indices:
+		std::vector<unsigned int> rep_indices(NUM_REPS);
+		std::iota(rep_indices.begin(), rep_indices.end(), 0);
+
+		// Run each repetition in parallel:
+		// GCC 7 still has not implemented C++17 for_each(std::execution::par
+		// So: home-made parallel loops:
+
+		// std::for_each(std::execution::par, rep_indices.begin(),
+		// rep_indices.end(),
+		auto run_localization_code = [&](const size_t repetition) {
 			CVectorDouble indivConvergenceErrors, executionTimes, odoError;
-			cout << "\n--------------------------------------------------------"
+			cout << "\n----------------------------------------------------"
+					"----"
 					"-----\n"
 				 << "      RUNNING FOR " << PARTICLE_COUNT
 				 << " INITIAL PARTICLES  - Repetition " << 1 + repetition
 				 << " / " << NUM_REPS << "\n"
-				 << "----------------------------------------------------------"
+				 << "------------------------------------------------------"
+					"----"
 					"---\n\n";
+
+			// Create 3D window if requested:
+			CDisplayWindow3D::Ptr win3D;
+			if (SHOW_PROGRESS_3D_REAL_TIME)
+			{
+				win3D = std::make_shared<CDisplayWindow3D>(
+					"pf-localization - The MRPT project", 1000, 600);
+				win3D->setCameraZoom(20);
+				win3D->setCameraAzimuthDeg(-45);
+				// win3D->waitForKey();
+			}
+
+			// Create the 3D scene and get the map only once, later we'll modify
+			// only the particles, etc..
+			COpenGLScene scene;
+			{
+				scene.insert(
+					mrpt::opengl::CGridPlaneXY::Create(-50, 50, -50, 50, 0, 5));
+
+				CSetOfObjects::Ptr gl_obj = std::make_shared<CSetOfObjects>();
+				metricMap.getAs3DObject(gl_obj);
+				scene.insert(gl_obj);
+
+				if (SHOW_PROGRESS_3D_REAL_TIME)
+				{
+					COpenGLScene::Ptr ptrScene = win3D->get3DSceneAndLock();
+
+					ptrScene->insert(gl_obj);
+					ptrScene->enableFollowCamera(true);
+
+					win3D->unlockAccess3DScene();
+				}
+			}
 
 			// --------------------------
 			// Load the rawlog:
@@ -480,10 +495,11 @@ void do_pf_localization(
 			// -----------------------------
 			tictac.Tic();
 			if (!cfg.read_bool(
-					sect, "init_PDF_mode", false, /*Fail if not found*/ true))
+					sect, "init_PDF_mode", false,
+					/*Fail if not found*/ true))
 			{
 				// Reset uniform on free space:
-				if constexpr (PF_IS_3D)
+				if constexpr (pf2gauss_t<MONTECARLO_TYPE>::PF_IS_3D)
 				{
 					THROW_EXCEPTION(
 						"init_PDF_mode=0 not supported for 3D particles");
@@ -499,7 +515,7 @@ void do_pf_localization(
 			else
 			{
 				// Reset uniform:
-				if constexpr (PF_IS_3D)
+				if constexpr (pf2gauss_t<MONTECARLO_TYPE>::PF_IS_3D)
 				{
 					pdf.resetUniform(init_min, init_max, PARTICLE_COUNT);
 				}
@@ -516,7 +532,7 @@ void do_pf_localization(
 				1000 * tictac.Tac());
 
 			pdf.saveToTextFile(
-			    format("%s/particles_0_initial.txt", sOUT_DIR_PARTS.c_str()));
+				format("%s/particles_0_initial.txt", sOUT_DIR_PARTS.c_str()));
 
 			// -----------------------------
 			//		Particle filter
@@ -568,19 +584,19 @@ void do_pf_localization(
 					continue;
 				}
 
-				// Determine if we are reading a Act-SF or an Obs-only rawlog:
+				// Determine if we are reading a Act-SF or an Obs-only
+				// rawlog:
 				if (obs)
 				{
-					// It's an observation-only rawlog: build an auxiliary pair
-					// of action-SF, since
+					// It's an observation-only rawlog: build an auxiliary
+					// pair of action-SF, since
 					//  montecarlo-localization only accepts those pairs as
 					//  input:
 
 					// If it's an odometry reading, don't feed it to the PF.
 					// Instead,
-					// store its value for use as an "action" together with the
-					// next
-					// actual observation:
+					// store its value for use as an "action" together with
+					// the next actual observation:
 					if (IS_CLASS(obs, CObservationOdometry))
 					{
 						auto obs_odo =
@@ -607,16 +623,16 @@ void do_pf_localization(
 						// ------------------------------------------------------
 						action = std::make_shared<CActionCollection>();
 
-						if (PF_IS_3D)
+						if (pf2gauss_t<MONTECARLO_TYPE>::PF_IS_3D)
 						{
 							CActionRobotMovement3D actOdom3D;
 
 							const CPose3D odo_incr = CPose3D(
-							    pending_most_recent_odo - last_used_abs_odo);
+								pending_most_recent_odo - last_used_abs_odo);
 							last_used_abs_odo = pending_most_recent_odo;
 
 							actOdom3D.computeFromOdometry(
-							    odo_incr, actOdom3D_params);
+								odo_incr, actOdom3D_params);
 							action->insert(actOdom3D);
 						}
 						else
@@ -624,11 +640,11 @@ void do_pf_localization(
 							CActionRobotMovement2D actOdom2D;
 
 							const CPose2D odo_incr =
-							    pending_most_recent_odo - last_used_abs_odo;
+								pending_most_recent_odo - last_used_abs_odo;
 							last_used_abs_odo = pending_most_recent_odo;
 
 							actOdom2D.computeFromOdometry(
-							    odo_incr, actOdom2D_params);
+								odo_incr, actOdom2D_params);
 							action->insert(actOdom2D);
 						}
 					}
@@ -645,15 +661,15 @@ void do_pf_localization(
 						observations->getObservationByIndex(0)->timestamp;
 
 				int cov_size;
-				if constexpr (PF_IS_3D)
+				if (pf2gauss_t<MONTECARLO_TYPE>::PF_IS_3D)
 					cov_size = 3;
 				else
 					cov_size = 2;
 
 				if (step >= rawlog_offset)
 				{
-					// Do not execute the PF at "step=0", to let the initial PDF
-					// to be
+					// Do not execute the PF at "step=0", to let the initial
+					// PDF to be
 					//   reflected in the logs.
 					if (step > rawlog_offset)
 					{
@@ -819,8 +835,8 @@ void do_pf_localization(
 							}
 
 							/*COpenGLViewport::Ptr view2=
-							ptrScene->createViewport("small_view"); // Create,
-							or get existing one.
+							ptrScene->createViewport("small_view"); //
+							Create, or get existing one.
 							view2->setCloneView("main");
 							view2->setCloneCamera(false);
 							view2->setBorderSize(3);
@@ -839,8 +855,9 @@ void do_pf_localization(
 							win3D->unlockAccess3DScene();
 
 							// Move camera:
-							// win3D->setCameraPointingToPoint( curRobotPose.x,
-							// curRobotPose.y, curRobotPose.z );
+							// win3D->setCameraPointingToPoint(
+							// curRobotPose.x, curRobotPose.y,
+							// curRobotPose.z );
 
 							// Update:
 							win3D->forceRepaint();
@@ -903,11 +920,14 @@ void do_pf_localization(
 						{
 							const auto pk = pdf.getParticlePose(k);
 							locErr += mrpt::hypot_fast(
-							              expectedPose.x() - pk.x,
-							              expectedPose.y() - pk.y) *
-							          exp(pdf.getW(k)) / sumW;
+										  expectedPose.x() - pk.x,
+										  expectedPose.y() - pk.y) *
+									  exp(pdf.getW(k)) / sumW;
 						}
-						covergenceErrors.push_back(locErr);
+						convergenceErrors_mtx.lock();
+						convergenceErrors.push_back(locErr);
+						convergenceErrors_mtx.unlock();
+
 						indivConvergenceErrors.push_back(locErr);
 						odoError.push_back(
 							expectedPose.distanceTo(odometryEstimation));
@@ -1048,8 +1068,9 @@ void do_pf_localization(
 					{
 						// Generate 3D scene:
 						// ------------------------------
-						// MRPT_TODO("Someday I should clean up this mess, since
-						// two different 3D scenes are built -> refactor code")
+						// MRPT_TODO("Someday I should clean up this mess,
+						// since two different 3D scenes are built ->
+						// refactor code")
 
 						// The Ground Truth (GT):
 						if (GT.rows() > 0)
@@ -1189,17 +1210,48 @@ void do_pf_localization(
 			indivConvergenceErrors.saveToTextFile(sOUT_DIR + "/GT_error.txt");
 			odoError.saveToTextFile(sOUT_DIR + "/ODO_error.txt");
 			executionTimes.saveToTextFile(sOUT_DIR + "/exec_times.txt");
-		}  // for repetitions
+
+			if (win3D && NUM_REPS == 1) mrpt::system::pause();
+		};  // for repetitions
+
+		CTicTac tictacGlobal;
+		tictacGlobal.Tic();
+
+		const auto max_num_threads = std::thread::hardware_concurrency();
+		size_t runs_per_thread = NUM_REPS;
+		if (max_num_threads > 1)
+			runs_per_thread = static_cast<size_t>(
+				std::ceil((NUM_REPS) / static_cast<double>(max_num_threads)));
+
+		std::cout << "Running " << NUM_REPS << " repetitions, on max "
+				  << max_num_threads << " parallel threads: " << runs_per_thread
+				  << " runs/thread.\n";
+
+		std::vector<std::thread> running_tasks;
+		for (size_t r = 0; r < NUM_REPS; r += runs_per_thread)
+		{
+			auto runner = [&](size_t i_start, size_t i_end) {
+				if (i_end > NUM_REPS) i_end = NUM_REPS;  // sanity check
+				for (size_t i = i_start; i < i_end; i++)
+					run_localization_code(i);
+			};
+
+			running_tasks.emplace_back(runner, r, r + runs_per_thread);
+		}
+
+		// Wait for all threads to end:
+		for (auto& t : running_tasks)
+			if (t.joinable()) t.join();
 
 		double repetitionTime = tictacGlobal.Tac();
 
 		// Avr. error:
-		double covergenceErrorMean = 0, covergenceErrorsMin = 0,
-			   covergenceErrorsMax = 0;
-		if (!covergenceErrors.empty())
+		double covergenceErrorMean = 0, convergenceErrorsMin = 0,
+			   convergenceErrorsMax = 0;
+		if (!convergenceErrors.empty())
 			math::confidenceIntervals(
-				covergenceErrors, covergenceErrorMean, covergenceErrorsMin,
-				covergenceErrorsMax, STATS_CONF_INTERVAL);
+				convergenceErrors, covergenceErrorMean, convergenceErrorsMin,
+				convergenceErrorsMax, STATS_CONF_INTERVAL);
 
 		// Save overall results:
 		{
@@ -1210,21 +1262,20 @@ void do_pf_localization(
 			f.printf(
 				"%% Ratio_covergence_success  #particles  "
 				"average_time_per_execution  convergence_mean_error "
-				"convergence_error_conf_int_inf convergence_error_conf_int_sup "
+				"convergence_error_conf_int_inf "
+				"convergence_error_conf_int_sup "
 				"\n");
 			if (!nConvergenceTests) nConvergenceTests = 1;
 			f.printf(
 				"%f %u %f %f %f %f\n",
 				((double)nConvergenceOK) / nConvergenceTests, PARTICLE_COUNT,
 				repetitionTime / NUM_REPS, covergenceErrorMean,
-				covergenceErrorsMin, covergenceErrorsMax);
+				convergenceErrorsMin, convergenceErrorsMax);
 		}
 
 		printf("\n TOTAL EXECUTION TIME = %.06f sec\n", repetitionTime);
 
 	}  // end of loop for different # of particles
-
-	if (win3D) mrpt::system::pause();
 }
 
 void getGroundTruth(
