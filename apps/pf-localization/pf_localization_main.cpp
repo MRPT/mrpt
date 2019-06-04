@@ -452,8 +452,8 @@ void do_pf_localization(
 			// The experiment directory is:
 			string sOUT_DIR_PARTS, sOUT_DIR_3D;
 			const auto sOUT_DIR = format(
-			    "%s_%03u_%07i", OUT_DIR_PREFIX.c_str(), repetition,
-			    PARTICLE_COUNT);
+				"%s_%03u_%07i", OUT_DIR_PREFIX.c_str(), repetition,
+				PARTICLE_COUNT);
 			printf("Creating directory: %s\n", sOUT_DIR.c_str());
 			createDirectory(sOUT_DIR);
 			ASSERT_(fileExists(sOUT_DIR));
