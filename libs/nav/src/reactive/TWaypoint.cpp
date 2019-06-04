@@ -1,3 +1,4 @@
+
 /* +---------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
@@ -20,7 +21,7 @@ using namespace std;
 
 const double TWaypoint::INVALID_NUM = std::numeric_limits<double>::max();
 
-// TWaypoint  ========== 
+// TWaypoint  ==========
 TWaypoint::TWaypoint() :
 	target(INVALID_NUM,INVALID_NUM),
 	target_heading(INVALID_NUM),
@@ -43,9 +44,9 @@ TWaypoint::TWaypoint(double target_x, double target_y, double allowed_distance_,
 
 bool TWaypoint::isValid() const
 {
-	return 
-	(target.x!=INVALID_NUM) && 
-	(target.y!=INVALID_NUM) && 
+	return
+	(target.x!=INVALID_NUM) &&
+	(target.y!=INVALID_NUM) &&
 	(allowed_distance!=INVALID_NUM);
 }
 
@@ -70,13 +71,13 @@ std::string TWaypoint::getAsText() const
 }
 
 
-// TWaypointSequence ========== 
+// TWaypointSequence ==========
 TWaypointSequence::TWaypointSequence()
 {
 }
 
 // Gets navigation params as a human-readable format:
-std::string TWaypointSequence::getAsText() const 
+std::string TWaypointSequence::getAsText() const
 {
 	string s;
 	s+=mrpt::format("List of %u waypoints:\n", static_cast<unsigned int>(waypoints.size()) );
@@ -89,7 +90,7 @@ std::string TWaypointSequence::getAsText() const
 	return s;
 }
 
-// TWaypointStatus ========== 
+// TWaypointStatus ==========
 TWaypointStatus::TWaypointStatus() :
 	reached(false),
 	skipped(false),
@@ -102,7 +103,7 @@ TWaypointStatus & TWaypointStatus::operator =(const TWaypoint &wp)
 	TWaypoint::operator =(wp);
 	return *this;
 }
-std::string TWaypointStatus::getAsText() const 
+std::string TWaypointStatus::getAsText() const
 {
 	std::string s = TWaypoint::getAsText();
 	s += mrpt::format(" reached=%s", (reached ? "YES":"NO ") );;
@@ -110,7 +111,7 @@ std::string TWaypointStatus::getAsText() const
 }
 
 // TWaypointStatusSequence ======
-TWaypointStatusSequence::TWaypointStatusSequence() : 
+TWaypointStatusSequence::TWaypointStatusSequence() :
 	waypoints(),
 	timestamp_nav_started(INVALID_TIMESTAMP),
 	final_goal_reached(false),
