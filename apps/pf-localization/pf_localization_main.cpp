@@ -424,22 +424,18 @@ void do_pf_localization(
 			// only the particles, etc..
 			COpenGLScene scene;
 			{
-				scene.insert(
-					mrpt::opengl::CGridPlaneXY::Create(-50, 50, -50, 50, 0, 5));
+				mrpt::math::TPoint3D bbox_max(50, 50, 0), bbox_min(-50, -50, 0);
+				if (auto pts = metricMap.getAsSimplePointsMap(); pts)
+				{
+					pts->boundingBox(bbox_min, bbox_max);
+				}
+
+				scene.insert(mrpt::opengl::CGridPlaneXY::Create(
+					bbox_min.x, bbox_max.x, bbox_min.y, bbox_max.y, 0, 5));
 
 				CSetOfObjects::Ptr gl_obj = std::make_shared<CSetOfObjects>();
 				metricMap.getAs3DObject(gl_obj);
 				scene.insert(gl_obj);
-
-				if (SHOW_PROGRESS_3D_REAL_TIME)
-				{
-					COpenGLScene::Ptr ptrScene = win3D->get3DSceneAndLock();
-
-					ptrScene->insert(gl_obj);
-					ptrScene->enableFollowCamera(true);
-
-					win3D->unlockAccess3DScene();
-				}
 			}
 
 			// --------------------------
@@ -680,7 +676,7 @@ void do_pf_localization(
 						// Show 3D?
 						if (SHOW_PROGRESS_3D_REAL_TIME)
 						{
-							const auto[cov, meanPose] =
+							const auto [cov, meanPose] =
 								pdf.getCovarianceAndMean();
 
 							if (rawlogEntry >= 2)
@@ -688,7 +684,7 @@ void do_pf_localization(
 									expectedPose, rawlogEntry - 2, GT,
 									cur_obs_timestamp);
 
-							COpenGLScene::Ptr ptrScene =
+							COpenGLScene::Ptr ptrSceneWin =
 								win3D->get3DSceneAndLock();
 
 							win3D->setCameraPointingToPoint(
@@ -720,144 +716,45 @@ void do_pf_localization(
 								mrpt::img::TColorf(.8f, .8f, .8f), "mono", 15,
 								mrpt::opengl::NICE, 6003);
 
-							{
-								CRenderizable::Ptr grid_ground =
-									ptrScene->getByName("ground_lines");
-								if (!grid_ground)
-								{
-									grid_ground = std::make_shared<
-										mrpt::opengl::CGridPlaneXY>(
-										-50, 50, -50, 50, 0, 5);
-									grid_ground->setName("ground_lines");
-									ptrScene->insert(grid_ground);
-									ptrScene->insert(
-										stock_objects::CornerXYZSimple(
-											1.0f, 3.0f));
-								}
-							}
-
-							// The Ground Truth (GT):
-							if (GT.rows() > 0)
-							{
-								CRenderizable::Ptr GTpt =
-									ptrScene->getByName("GT");
-								if (!GTpt)
-								{
-									GTpt = std::make_shared<CDisk>();
-									GTpt->setName("GT");
-									GTpt->setColor(0, 0, 0, 0.9);
-
-									mrpt::ptr_cast<CDisk>::from(GTpt)
-										->setDiskRadius(0.04f);
-									ptrScene->insert(GTpt);
-								}
-
-								GTpt->setPose(expectedPose);
-							}
-
-							// The particles:
-							{
-								CRenderizable::Ptr parts =
-									ptrScene->getByName("particles");
-								if (parts) ptrScene->removeObject(parts);
-
-								auto p = pdf.template getAs3DObject<
-									CSetOfObjects::Ptr>();
-								p->setName("particles");
-								ptrScene->insert(p);
-							}
-
 							// The particles' cov:
 							{
 								CRenderizable::Ptr ellip =
-									ptrScene->getByName("parts_cov");
+									scene.getByName("parts_cov");
+								CEllipsoid::Ptr el;
 								if (!ellip)
 								{
-									ellip = std::make_shared<CEllipsoid>();
+									el = std::make_shared<CEllipsoid>();
+									ellip =
+										mrpt::ptr_cast<CRenderizable>::from(el);
 									ellip->setName("parts_cov");
 									ellip->setColor(1, 0, 0, 0.6);
-									ellip->enableDrawSolid3D(false);
 
-									mrpt::ptr_cast<CEllipsoid>::from(ellip)
-										->setLineWidth(2);
-									mrpt::ptr_cast<CEllipsoid>::from(ellip)
-										->setQuantiles(3);
-									mrpt::ptr_cast<CEllipsoid>::from(ellip)
-										->set2DsegmentsCount(60);
-									ptrScene->insert(ellip);
+									el->setLineWidth(2);
+									el->setQuantiles(3);
+									el->set2DsegmentsCount(60);
+									el->enableDrawSolid3D(false);
 									scene.insert(ellip);
 								}
-								ellip->setLocation(
-									meanPose.x(), meanPose.y(), 0.05);
-
-								mrpt::ptr_cast<CEllipsoid>::from(ellip)
-									->setCovMatrix(
-										mrpt::math::CMatrixDouble(cov),
-										cov_size);
-							}
-
-							// The laser scan:
-							{
-								CRenderizable::Ptr scanPts =
-									ptrScene->getByName("scan");
-								if (!scanPts)
+								else
 								{
-									scanPts = std::make_shared<CPointCloud>();
-									scanPts->setName("scan");
-									scanPts->setColor(1, 0, 0, 0.9);
-									mrpt::ptr_cast<CPointCloud>::from(scanPts)
-										->enableColorFromZ(false);
-									mrpt::ptr_cast<CPointCloud>::from(scanPts)
-										->setPointSize(4);
-									ptrScene->insert(scanPts);
+									el =
+										mrpt::ptr_cast<CEllipsoid>::from(ellip);
 								}
+								double ellipse_z;
+								if constexpr (pf2gauss_t<
+												  MONTECARLO_TYPE>::PF_IS_3D)
+									ellipse_z = meanPose.z();
+								else
+									ellipse_z = 0.05;
 
-								CSimplePointsMap map;
+								ellip->setLocation(
+									meanPose.x(), meanPose.y(), ellipse_z);
 
-								CPose3D robotPose3D(meanPose);
-
-								map.clear();
-								observations->insertObservationsInto(&map);
-
-								mrpt::ptr_cast<CPointCloud>::from(scanPts)
-									->loadFromPointsMap(&map);
-								mrpt::ptr_cast<CPointCloud>::from(scanPts)
-									->setPose(robotPose3D);
+								el->setCovMatrix(
+									mrpt::math::CMatrixDouble(cov), cov_size);
 							}
 
-							// The camera:
-							ptrScene->enableFollowCamera(true);
-
-							// Views:
-							COpenGLViewport::Ptr view1 =
-								ptrScene->getViewport("main");
-							{
-								CCamera& cam = view1->getCamera();
-								cam.setAzimuthDegrees(-90);
-								cam.setElevationDegrees(90);
-								cam.setPointingAt(meanPose);
-								cam.setZoomDistance(5);
-								cam.setOrthogonal();
-							}
-
-							/*COpenGLViewport::Ptr view2=
-							ptrScene->createViewport("small_view"); //
-							Create, or get existing one.
-							view2->setCloneView("main");
-							view2->setCloneCamera(false);
-							view2->setBorderSize(3);
-							{
-								CCamera  &cam = view1->getCamera();
-								cam.setAzimuthDegrees(-90);
-								cam.setElevationDegrees(90);
-								cam.setPointingAt( meanPose );
-								cam.setZoomDistance(15);
-								cam.setOrthogonal();
-
-								view2->setTransparent(false);
-								view2->setViewportPosition(0.59,0.01,0.4,0.3);
-							}*/
-
+							*ptrSceneWin = scene;
 							win3D->unlockAccess3DScene();
 
 							// Move camera:
@@ -939,7 +836,7 @@ void do_pf_localization(
 							expectedPose.distanceTo(odometryEstimation));
 					}
 
-					const auto[C, M] = pdf.getCovarianceAndMean();
+					const auto [C, M] = pdf.getCovarianceAndMean();
 					const auto current_pdf_gaussian =
 						typename pf2gauss_t<MONTECARLO_TYPE>::type(M, C);
 
@@ -1067,7 +964,7 @@ void do_pf_localization(
 							odometryEstimation.y(), odometryEstimation.phi());
 					}
 
-					const auto[cov, meanPose] = pdf.getCovarianceAndMean();
+					const auto [cov, meanPose] = pdf.getCovarianceAndMean();
 
 					if (!SAVE_STATS_ONLY && SCENE3D_FREQ > 0 &&
 						((step + 1) % SCENE3D_FREQ) == 0)
@@ -1107,31 +1004,6 @@ void do_pf_localization(
 								CSetOfObjects::Ptr>();
 							p->setName("particles");
 							scene.insert(p);
-						}
-
-						// The particles' cov:
-						{
-							CRenderizable::Ptr ellip =
-								scene.getByName("parts_cov");
-							if (!ellip)
-							{
-								ellip = std::make_shared<CEllipsoid>();
-								ellip->setName("parts_cov");
-								ellip->setColor(1, 0, 0, 0.6);
-
-								mrpt::ptr_cast<CEllipsoid>::from(ellip)
-									->setLineWidth(4);
-								mrpt::ptr_cast<CEllipsoid>::from(ellip)
-									->setQuantiles(3);
-								mrpt::ptr_cast<CEllipsoid>::from(ellip)
-									->set2DsegmentsCount(60);
-								scene.insert(ellip);
-							}
-							ellip->setLocation(meanPose.x(), meanPose.y(), 0);
-
-							mrpt::ptr_cast<CEllipsoid>::from(ellip)
-								->setCovMatrix(
-									mrpt::math::CMatrixDouble(cov), cov_size);
 						}
 
 						// The laser scan:
