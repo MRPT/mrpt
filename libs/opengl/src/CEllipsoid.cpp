@@ -207,7 +207,6 @@ void CEllipsoid::serializeFrom(
 			in >> m_lineWidth;
 
 			// Update cov. matrix cache:
-			m_prevComputedCov = m_cov;
 			setCovMatrix(m_cov);
 		}
 		break;
@@ -279,6 +278,8 @@ void CEllipsoid::setCovMatrix(
 
 	if (m_cov == m_prevComputedCov) return;  // Done.
 
+	m_prevComputedCov = m_cov;
+
 	CRenderizableDisplayList::notifyChange();
 
 	// Handle the special case of an ellipsoid of volume = 0
@@ -287,14 +288,12 @@ void CEllipsoid::setCovMatrix(
 	// don't remove!
 	{
 		// All zeros:
-		m_prevComputedCov = m_cov;
 		m_eigVec.setZero(3, 3);
 		m_eigVal.setZero(3, 3);
 	}
 	else
 	{
 		// Not null matrix: compute the eigen-vectors & values:
-		m_prevComputedCov = m_cov;
 		std::vector<double> eigvals;
 		if (m_cov.eig_symmetric(m_eigVec, eigvals))
 		{
