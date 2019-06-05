@@ -194,8 +194,13 @@ void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC& dc)
 
 		// Save image directly from OpenGL
 		CImage frame(w, h, CH_RGB);
+
+		glPixelStorei(GL_PACK_ALIGNMENT, 1);
+		glPixelStorei(GL_PACK_ROW_LENGTH, 0);
+
 		glReadBuffer(GL_FRONT);
 		glReadPixels(0, 0, w, h, GL_BGR_EXT, GL_UNSIGNED_BYTE, frame(0, 0));
+		frame.flipVertical();
 
 		string fileName(format(
 			"%s/screenshot_%07i.png", capturingDir.c_str(), captureCount++));
@@ -1459,8 +1464,13 @@ void _DSceneViewerFrame::OnMenuItem14Selected(wxCommandEvent& event)
 
 	// Save image directly from OpenGL
 	CImage frame(w, h, CH_RGB);
+
+	glPixelStorei(GL_PACK_ALIGNMENT, 1);
+	glPixelStorei(GL_PACK_ROW_LENGTH, 0);
+
 	glReadBuffer(GL_FRONT);
 	glReadPixels(0, 0, w, h, GL_BGR_EXT, GL_UNSIGNED_BYTE, frame(0, 0));
+	frame.flipVertical();
 
 	// Save:
 	wxString caption = wxT("Save snapshot to file");

@@ -242,6 +242,10 @@ void CMyGLCanvas_DisplayWindow3D::OnPostRenderSwapBuffers(
 		// Save image directly from OpenGL - It could also use 4 channels and
 		// save with GL_BGRA_EXT
 		auto frame = CImage::Create(w, h, mrpt::img::CH_RGB);
+
+		glPixelStorei(GL_PACK_ALIGNMENT, 1);
+		glPixelStorei(GL_PACK_ROW_LENGTH, 0);
+
 		glReadBuffer(GL_FRONT);
 		glReadPixels(0, 0, w, h, GL_BGR_EXT, GL_UNSIGNED_BYTE, (*frame)(0, 0));
 		frame->flipVertical();
