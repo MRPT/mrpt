@@ -602,6 +602,34 @@ if (NOT MSVC)
 	set_directory_properties(PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE) # Disable unity targets
 endif()
 
+# Detect Eigen Alignment to make MRPT compatible.
+# EIGEN_MAX_ALIGN_BYTES & EIGEN_MAX_STATIC_ALIGN_BYTES with selected compiler flags
+# ------------------------------------------------
+# DISABLED! Just go for the safer side: align=32 bytes
+#	get_directory_property(mrpt_root_dir_COMPILE_OPTIONS COMPILE_OPTIONS)
+#try_run(RUN_EIGEN_RETVAL BUILD_EIGEN_SUCCESS
+#	${CMAKE_BINARY_DIR}
+#	SOURCES "${CMAKE_SOURCE_DIR}/parse-files/eigen_detect_alignment.cpp"
+#	COMPILE_DEFINITIONS ""
+#	CMAKE_FLAGS
+#	-DINCLUDE_DIRECTORIES:STRING=${MRPT_EIGEN_INCLUDE_DIR}
+#	-DCMAKE_CXX_FLAGS:STRING="${CMAKE_CXX_FLAGS} ${mrpt_root_dir_COMPILE_OPTIONS}"
+#	OUTPUT_VARIABLE EIGEN_TEST_OUT)
+#if (BUILD_EIGEN_SUCCESS AND (RUN_EIGEN_RETVAL EQUAL 0))
+#	string(REGEX MATCH "EIGEN_MAX_ALIGN_BYTES[ ]+[0-9]+" EIGEN_MAX_ALIGN_BYTES "${EIGEN_TEST_OUT}")
+#	string(REGEX MATCH "[0-9]+" EIGEN_MAX_ALIGN_BYTES "${EIGEN_MAX_ALIGN_BYTES}")
+#	string(REGEX MATCH "EIGEN_MAX_STATIC_ALIGN_BYTES[ ]+[0-9]+" EIGEN_MAX_STATIC_ALIGN_BYTES "${EIGEN_TEST_OUT}")
+#	string(REGEX MATCH "[0-9]+" EIGEN_MAX_STATIC_ALIGN_BYTES "${EIGEN_MAX_STATIC_ALIGN_BYTES}")
+#else()
+#message(STATUS "Test Eigen build failed, falling back to default alignment (BUILD_EIGEN_SUCCESS=${BUILD_EIGEN_SUCCESS} RUN_EIGEN_RETVAL=${RUN_EIGEN_RETVAL} BUILD_EIGEN_OUT=${EIGEN_TEST_OUT})")
+	set(EIGEN_MAX_ALIGN_BYTES 32)
+	set(EIGEN_MAX_STATIC_ALIGN_BYTES 32)
+#endif()
+
+include(cmakemodules/script_create_config_h.cmake REQUIRED)   # Build config.h
+include(cmakemodules/script_create_version_h.cmake REQUIRED)  # Build version.h
+
+
 add_custom_target(all_mrpt_libs ALL) # all_mrpt_libs: target to build all mrpt-* modules
 
 # ----------------------------------------------------------------------------
@@ -671,34 +699,6 @@ write_basic_package_version_file(
 	VERSION ${CMAKE_MRPT_FULL_VERSION}
 	COMPATIBILITY SameMajorVersion
 )
-
-# Detect Eigen Alignment to make MRPT compatible.
-# EIGEN_MAX_ALIGN_BYTES & EIGEN_MAX_STATIC_ALIGN_BYTES with selected compiler flags
-# ------------------------------------------------
-# DISABLED! Just go for the safer side: align=32 bytes
-#	get_directory_property(mrpt_root_dir_COMPILE_OPTIONS COMPILE_OPTIONS)
-#try_run(RUN_EIGEN_RETVAL BUILD_EIGEN_SUCCESS
-#	${CMAKE_BINARY_DIR}
-#	SOURCES "${CMAKE_SOURCE_DIR}/parse-files/eigen_detect_alignment.cpp"
-#	COMPILE_DEFINITIONS ""
-#	CMAKE_FLAGS
-#	-DINCLUDE_DIRECTORIES:STRING=${MRPT_EIGEN_INCLUDE_DIR}
-#	-DCMAKE_CXX_FLAGS:STRING="${CMAKE_CXX_FLAGS} ${mrpt_root_dir_COMPILE_OPTIONS}"
-#	OUTPUT_VARIABLE EIGEN_TEST_OUT)
-#if (BUILD_EIGEN_SUCCESS AND (RUN_EIGEN_RETVAL EQUAL 0))
-#	string(REGEX MATCH "EIGEN_MAX_ALIGN_BYTES[ ]+[0-9]+" EIGEN_MAX_ALIGN_BYTES "${EIGEN_TEST_OUT}")
-#	string(REGEX MATCH "[0-9]+" EIGEN_MAX_ALIGN_BYTES "${EIGEN_MAX_ALIGN_BYTES}")
-#	string(REGEX MATCH "EIGEN_MAX_STATIC_ALIGN_BYTES[ ]+[0-9]+" EIGEN_MAX_STATIC_ALIGN_BYTES "${EIGEN_TEST_OUT}")
-#	string(REGEX MATCH "[0-9]+" EIGEN_MAX_STATIC_ALIGN_BYTES "${EIGEN_MAX_STATIC_ALIGN_BYTES}")
-#else()
-#message(STATUS "Test Eigen build failed, falling back to default alignment (BUILD_EIGEN_SUCCESS=${BUILD_EIGEN_SUCCESS} RUN_EIGEN_RETVAL=${RUN_EIGEN_RETVAL} BUILD_EIGEN_OUT=${EIGEN_TEST_OUT})")
-	set(EIGEN_MAX_ALIGN_BYTES 32)
-	set(EIGEN_MAX_STATIC_ALIGN_BYTES 32)
-#endif()
-
-
-include(cmakemodules/script_create_config_h.cmake REQUIRED)   # Build config.h
-include(cmakemodules/script_create_version_h.cmake REQUIRED)  # Build version.h
 
 # Build list of files to install, packages, etc.
 include(cmakemodules/script_install_commands.cmake REQUIRED)
