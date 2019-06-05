@@ -415,9 +415,7 @@ void do_pf_localization(
 			{
 				win3D = std::make_shared<CDisplayWindow3D>(
 					"pf-localization - The MRPT project", 1000, 600);
-				win3D->setCameraZoom(20);
 				win3D->setCameraAzimuthDeg(-45);
-				// win3D->waitForKey();
 			}
 
 			// Create the 3D scene and get the map only once, later we'll modify
@@ -432,6 +430,12 @@ void do_pf_localization(
 
 				scene.insert(mrpt::opengl::CGridPlaneXY::Create(
 					bbox_min.x, bbox_max.x, bbox_min.y, bbox_max.y, 0, 5));
+
+				if (win3D)
+					win3D->setCameraZoom(
+						2 *
+						std::max(
+							bbox_max.x - bbox_min.x, bbox_max.y - bbox_min.y));
 
 				CSetOfObjects::Ptr gl_obj = std::make_shared<CSetOfObjects>();
 				metricMap.getAs3DObject(gl_obj);
@@ -684,38 +688,6 @@ void do_pf_localization(
 									expectedPose, rawlogEntry - 2, GT,
 									cur_obs_timestamp);
 
-							COpenGLScene::Ptr ptrSceneWin =
-								win3D->get3DSceneAndLock();
-
-							win3D->setCameraPointingToPoint(
-								meanPose.x(), meanPose.y(), 0);
-
-							win3D->addTextMessage(
-								10, 10,
-								mrpt::format(
-									"timestamp: %s",
-									mrpt::system::dateTimeLocalToString(
-										cur_obs_timestamp)
-										.c_str()),
-								mrpt::img::TColorf(.8f, .8f, .8f), "mono", 15,
-								mrpt::opengl::NICE, 6001);
-
-							win3D->addTextMessage(
-								10, 33,
-								mrpt::format(
-									"#particles= %7u",
-									static_cast<unsigned int>(pdf.size())),
-								mrpt::img::TColorf(.8f, .8f, .8f), "mono", 15,
-								mrpt::opengl::NICE, 6002);
-
-							win3D->addTextMessage(
-								10, 55,
-								mrpt::format(
-									"mean pose (x y phi_deg)= %s",
-									meanPose.asString().c_str()),
-								mrpt::img::TColorf(.8f, .8f, .8f), "mono", 15,
-								mrpt::opengl::NICE, 6003);
-
 							// The particles' cov:
 							{
 								CRenderizable::Ptr ellip =
@@ -754,13 +726,40 @@ void do_pf_localization(
 									mrpt::math::CMatrixDouble(cov), cov_size);
 							}
 
+							COpenGLScene::Ptr ptrSceneWin =
+								win3D->get3DSceneAndLock();
+
+							win3D->setCameraPointingToPoint(
+								meanPose.x(), meanPose.y(), 0);
+
+							win3D->addTextMessage(
+								10, 10,
+								mrpt::format(
+									"timestamp: %s",
+									mrpt::system::dateTimeLocalToString(
+										cur_obs_timestamp)
+										.c_str()),
+								mrpt::img::TColorf(1, 1, 1), "mono", 15,
+								mrpt::opengl::FILL, 6001, 1.5, 0.1, true);
+
+							win3D->addTextMessage(
+								10, 33,
+								mrpt::format(
+									"#particles= %7u",
+									static_cast<unsigned int>(pdf.size())),
+								mrpt::img::TColorf(1, 1, 1), "mono", 15,
+								mrpt::opengl::FILL, 6002, 1.5, 0.1, true);
+
+							win3D->addTextMessage(
+								10, 55,
+								mrpt::format(
+									"mean pose (x y phi_deg)= %s",
+									meanPose.asString().c_str()),
+								mrpt::img::TColorf(1, 1, 1), "mono", 15,
+								mrpt::opengl::FILL, 6003, 1.5, 0.1, true);
+
 							*ptrSceneWin = scene;
 							win3D->unlockAccess3DScene();
-
-							// Move camera:
-							// win3D->setCameraPointingToPoint(
-							// curRobotPose.x, curRobotPose.y,
-							// curRobotPose.z );
 
 							// Update:
 							win3D->forceRepaint();
@@ -966,14 +965,11 @@ void do_pf_localization(
 
 					const auto [cov, meanPose] = pdf.getCovarianceAndMean();
 
-					if (!SAVE_STATS_ONLY && SCENE3D_FREQ > 0 &&
-						((step + 1) % SCENE3D_FREQ) == 0)
+					if ((!SAVE_STATS_ONLY && SCENE3D_FREQ > 0) ||
+						SHOW_PROGRESS_3D_REAL_TIME)
 					{
 						// Generate 3D scene:
 						// ------------------------------
-						// MRPT_TODO("Someday I should clean up this mess,
-						// since two different 3D scenes are built ->
-						// refactor code")
 
 						// The Ground Truth (GT):
 						if (GT.rows() > 0)
