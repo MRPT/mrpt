@@ -91,6 +91,11 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 /** jsoncpp is present */
 #define MRPT_HAS_JSONCPP ${CMAKE_MRPT_HAS_JSONCPP}
 
+/** These two values are detected in Eigen when building MRPT, so we have
+  the same settings given the user-provided flags  */
+#define MRPT_MAX_ALIGN_BYTES           ${EIGEN_MAX_ALIGN_BYTES}
+#define MRPT_MAX_STATIC_ALIGN_BYTES    ${EIGEN_MAX_STATIC_ALIGN_BYTES}
+
 /* Automatic definition of OS-macros */
 #if defined(_WIN32) || defined(_WIN32_)  || defined(WIN32) || defined(_WIN64)
     #define MRPT_OS_WINDOWS
@@ -281,5 +286,3 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #if !defined(MRPT_OS_WINDOWS) && !defined(MRPT_OS_LINUX) && !defined(MRPT_OS_APPLE)
 #error Neither OS detected from MRPT_OS_LINUX, MRPT_OS_APPLE or MRPT_OS_WINDOWS!
 #endif
-
-

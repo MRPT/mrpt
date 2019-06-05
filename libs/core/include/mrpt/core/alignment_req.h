@@ -10,10 +10,7 @@
 #pragma once
 
 // This is to match Eigen expectations on alignment of dynamic objects:
-#if defined(EIGEN_VECTORIZE_AVX512)
-#define MRPT_MAX_ALIGN_BYTES 64
-#elif defined(__AVX__)
-#define MRPT_MAX_ALIGN_BYTES 32
-#else
-#define MRPT_MAX_ALIGN_BYTES 16
-#endif
+#include <mrpt/config.h>
+
+// #define MRPT_MAX_ALIGN_BYTES          XXX
+// #define MRPT_MAX_STATIC_ALIGN_BYTES   XXX

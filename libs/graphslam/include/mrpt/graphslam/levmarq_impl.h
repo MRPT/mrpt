@@ -189,7 +189,7 @@ double computeJacobiansAndErrors(
 		errs.back() = gst::SE_TYPE::log(DinvP1invP2);
 
 		// Compute the jacobians:
-		alignas(MRPT_MAX_ALIGN_BYTES)
+		alignas(MRPT_MAX_STATIC_ALIGN_BYTES)
 			std::pair<mrpt::graphs::TPairNodeIDs, typename gst::TPairJacobs>
 				newMapEntry;
 		newMapEntry.first = ids;
