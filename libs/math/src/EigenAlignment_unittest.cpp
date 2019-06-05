@@ -21,6 +21,9 @@ TEST(EigenAlignment, PrintAlignment)
 
 	std::cout << "MRPT_MAX_ALIGN_BYTES         : " << MRPT_MAX_ALIGN_BYTES
 			  << "\n"
+				 "MRPT_MAX_STATIC_ALIGN_BYTES  : "
+			  << MRPT_MAX_STATIC_ALIGN_BYTES
+			  << "\n"
 				 "EIGEN_MAX_ALIGN_BYTES        : "
 			  << EIGEN_MAX_ALIGN_BYTES
 			  << "\n"
@@ -28,7 +31,7 @@ TEST(EigenAlignment, PrintAlignment)
 			  << EIGEN_MAX_STATIC_ALIGN_BYTES << "\n";
 
 	EXPECT_GE(MRPT_MAX_ALIGN_BYTES, EIGEN_MAX_ALIGN_BYTES);
-	EXPECT_GE(MRPT_MAX_ALIGN_BYTES, EIGEN_MAX_STATIC_ALIGN_BYTES);
+	EXPECT_GE(MRPT_MAX_STATIC_ALIGN_BYTES, EIGEN_MAX_STATIC_ALIGN_BYTES);
 }
 
 template <unsigned int INTER_SPACE>

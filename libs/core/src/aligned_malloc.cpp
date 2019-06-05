@@ -22,7 +22,8 @@ void* mrpt::aligned_calloc(size_t bytes, size_t alignment)
 void* mrpt::aligned_malloc(size_t size, size_t alignment)
 {
 	// size must be an integral multiple of alignment:
-	if ((size % alignment) != 0) size = ((size / alignment) + 1) * alignment;
+	if (alignment != 0 && (size % alignment) != 0)
+		size = ((size / alignment) + 1) * alignment;
 #ifdef _MSC_VER
 	return _aligned_malloc(size, alignment);
 #elif __APPLE__

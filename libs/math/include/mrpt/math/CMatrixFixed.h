@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/core/alignment_req.h>  // MRPT_MAX_ALIGN_BYTES
+#include <mrpt/core/alignment_req.h>  // MRPT_MAX_STATIC_ALIGN_BYTES
 #include <mrpt/core/exceptions.h>
 #include <mrpt/math/MatrixBase.h>
 #include <mrpt/math/math_frwds.h>  // Forward declarations
@@ -35,7 +35,7 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
    private:
 	/** RowMajor matrix data */
 	using vec_t = std::array<T, ROWS * COLS>;
-	alignas(MRPT_MAX_ALIGN_BYTES) vec_t m_data;
+	alignas(MRPT_MAX_STATIC_ALIGN_BYTES) vec_t m_data;
 
    public:
 	/** @name Matrix type definitions
@@ -247,7 +247,7 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
 	template <
 		typename EIGEN_MATRIX = eigen_t,
 		typename EIGEN_MAP = Eigen::Map<
-			EIGEN_MATRIX, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
+			EIGEN_MATRIX, MRPT_MAX_STATIC_ALIGN_BYTES, Eigen::InnerStride<1>>>
 	EIGEN_MAP asEigen()
 	{
 		static_assert(
@@ -261,7 +261,8 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
 	template <
 		typename EIGEN_MATRIX = eigen_t,
 		typename EIGEN_MAP = Eigen::Map<
-			const EIGEN_MATRIX, MRPT_MAX_ALIGN_BYTES, Eigen::InnerStride<1>>>
+			const EIGEN_MATRIX, MRPT_MAX_STATIC_ALIGN_BYTES,
+			Eigen::InnerStride<1>>>
 	EIGEN_MAP asEigen() const
 	{
 		static_assert(

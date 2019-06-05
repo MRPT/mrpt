@@ -381,7 +381,7 @@ void CPose3D::composePoint(
 		if (use_small_rot_approx)
 		{
 			// Linearized Jacobians around (yaw,pitch,roll)=(0,0,0):
-			alignas(MRPT_MAX_ALIGN_BYTES) const double nums[3 * 6] = {
+			alignas(MRPT_MAX_STATIC_ALIGN_BYTES) const double nums[3 * 6] = {
 				1, 0, 0, -ly, lz, 0, 0, 1, 0, lx, 0, -lz, 0, 0, 1, 0, -lx, ly};
 			out_jacobian_df_dpose->loadFromArray(nums);
 		}
@@ -405,7 +405,7 @@ void CPose3D::composePoint(
 			const double sr = sin(m_roll);
 #endif
 
-			alignas(MRPT_MAX_ALIGN_BYTES) const double nums[3 * 6] = {
+			alignas(MRPT_MAX_STATIC_ALIGN_BYTES) const double nums[3 * 6] = {
 				1,
 				0,
 				0,
@@ -442,7 +442,7 @@ void CPose3D::composePoint(
 	// Jacob: df/dse3
 	if (out_jacobian_df_dse3)
 	{
-		alignas(MRPT_MAX_ALIGN_BYTES) const double nums[3 * 6] = {
+		alignas(MRPT_MAX_STATIC_ALIGN_BYTES) const double nums[3 * 6] = {
 			1, 0, 0, 0, gz, -gy, 0, 1, 0, -gz, 0, gx, 0, 0, 1, gy, -gx, 0};
 		out_jacobian_df_dse3->loadFromArray(nums);
 	}
@@ -694,7 +694,7 @@ void CPose3D::inverseComposePoint(
 		const double Ay = gy - m_coords[1];
 		const double Az = gz - m_coords[2];
 
-		alignas(MRPT_MAX_ALIGN_BYTES) const double nums[3 * 6] = {
+		alignas(MRPT_MAX_STATIC_ALIGN_BYTES) const double nums[3 * 6] = {
 			-m_ROT(0, 0),
 			-m_ROT(1, 0),
 			-m_ROT(2, 0),
@@ -726,7 +726,7 @@ void CPose3D::inverseComposePoint(
 	// Jacob: df/dse3
 	if (out_jacobian_df_dse3)
 	{
-		alignas(MRPT_MAX_ALIGN_BYTES) const double nums[3 * 6] = {
+		alignas(MRPT_MAX_STATIC_ALIGN_BYTES) const double nums[3 * 6] = {
 			-1, 0, 0, 0, -lz, ly, 0, -1, 0, lz, 0, -lx, 0, 0, -1, -ly, lx, 0};
 		out_jacobian_df_dse3->loadFromArray(nums);
 	}

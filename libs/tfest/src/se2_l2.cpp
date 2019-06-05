@@ -113,7 +113,7 @@ bool tfest::se2_l2(
 		sum_ab_xyz = _mm_add_ps(sum_ab_xyz, _mm_mul_ps(a_xyxy, b_xyyx));
 	}
 
-	alignas(MRPT_MAX_ALIGN_BYTES) float sums_a[4], sums_b[4];
+	alignas(MRPT_MAX_STATIC_ALIGN_BYTES) float sums_a[4], sums_b[4];
 	_mm_store_ps(sums_a, sum_a_xyz);
 	_mm_store_ps(sums_b, sum_b_xyz);
 
@@ -132,7 +132,7 @@ bool tfest::se2_l2(
 	// means_a[1]: mean_y_a
 	// means_b[0]: mean_x_b
 	// means_b[1]: mean_y_b
-	alignas(MRPT_MAX_ALIGN_BYTES) float means_a[4], means_b[4];
+	alignas(MRPT_MAX_STATIC_ALIGN_BYTES) float means_a[4], means_b[4];
 	_mm_store_ps(means_a, sum_a_xyz);
 	_mm_store_ps(means_b, sum_b_xyz);
 
@@ -143,7 +143,7 @@ bool tfest::se2_l2(
 
 	//      Sxx   Syy     Sxy    Syx
 	//    xa*xb  ya*yb   xa*yb  xb*ya
-	alignas(MRPT_MAX_ALIGN_BYTES) float cross_sums[4];
+	alignas(MRPT_MAX_STATIC_ALIGN_BYTES) float cross_sums[4];
 	_mm_store_ps(cross_sums, sum_ab_xyz);
 
 	const float& Sxx = cross_sums[0];

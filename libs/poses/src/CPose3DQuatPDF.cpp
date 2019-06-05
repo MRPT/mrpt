@@ -76,7 +76,7 @@ void CPose3DQuatPDF::jacobiansPoseComposition(
 	df_dx(1, 1) = 1;
 	df_dx(2, 2) = 1;
 
-	alignas(MRPT_MAX_ALIGN_BYTES)
+	alignas(MRPT_MAX_STATIC_ALIGN_BYTES)
 		const double vals2[3 * 4] = {2 * (-qz * ay + qy * az),
 									 2 * (qy * ay + qz * az),
 									 2 * (-2 * qy * ax + qx * ay + qr * az),
@@ -98,7 +98,7 @@ void CPose3DQuatPDF::jacobiansPoseComposition(
 
 	// second part:
 	{
-		alignas(MRPT_MAX_ALIGN_BYTES) const double aux44_data[4 * 4] = {
+		alignas(MRPT_MAX_STATIC_ALIGN_BYTES) const double aux44_data[4 * 4] = {
 			q2r, -q2x, -q2y, -q2z, q2x, q2r, q2z,  -q2y,
 			q2y, -q2z, q2r,  q2x,  q2z, q2y, -q2x, q2r};
 
@@ -124,7 +124,7 @@ void CPose3DQuatPDF::jacobiansPoseComposition(
 
 	// Second part:
 	{
-		alignas(MRPT_MAX_ALIGN_BYTES) const double aux44_data[4 * 4] = {
+		alignas(MRPT_MAX_STATIC_ALIGN_BYTES) const double aux44_data[4 * 4] = {
 			qr, -qx, -qy, -qz, qx, qr,  -qz, qy,
 			qy, qz,  qr,  -qx, qz, -qy, qx,  qr};
 

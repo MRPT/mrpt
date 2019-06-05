@@ -134,7 +134,7 @@ SO<3>::type SO<3>::fromYPR(
 #endif
 
 	// clang-format off
-	alignas(MRPT_MAX_ALIGN_BYTES) const double rot_vals[] = {
+	alignas(MRPT_MAX_STATIC_ALIGN_BYTES) const double rot_vals[] = {
 	    cy * cp, cy * sp * sr - sy * cr, cy * sp * cr + sy * sr,
 	    sy * cp, sy * sp * sr + cy * cr, sy * sp * cr - cy * sr,
 	    -sp, cp * sr, cp * cr
@@ -149,7 +149,7 @@ template <typename VEC3, typename MAT3x3, typename MAT3x9>
 inline void M3x9(const VEC3& a, const MAT3x3& B, MAT3x9& RES)
 {
 	// clang-format off
-	alignas(MRPT_MAX_ALIGN_BYTES) const double vals[] = {
+	alignas(MRPT_MAX_STATIC_ALIGN_BYTES) const double vals[] = {
 	    a[0], -B(0, 2), B(0, 1), B(0, 2), a[0], -B(0, 0), -B(0, 1), B(0, 0), a[0],
 	    a[1], -B(1, 2), B(1, 1), B(1, 2), a[1], -B(1, 0), -B(1, 1), B(1, 0), a[1],
 	    a[2], -B(2, 2), B(2, 1), B(2, 2), a[2], -B(2, 0), -B(2, 1), B(2, 0), a[2]

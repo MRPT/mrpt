@@ -200,7 +200,7 @@ void CPosePDFGaussian::rotateCov(const double ang)
 	const double ccos = cos(ang);
 	const double ssin = sin(ang);
 
-	alignas(MRPT_MAX_ALIGN_BYTES)
+	alignas(MRPT_MAX_STATIC_ALIGN_BYTES)
 		const double rot_vals[] = {ccos, -ssin, 0., ssin, ccos, 0., 0., 0., 1.};
 
 	const CMatrixFixed<double, 3, 3> rot(rot_vals);
@@ -309,7 +309,7 @@ void CPosePDFGaussian::inverse(CPosePDF& o) const
 	const double ssin = ::sin(mean.phi());
 
 	// jacobian:
-	alignas(MRPT_MAX_ALIGN_BYTES) const double H_values[] = {
+	alignas(MRPT_MAX_STATIC_ALIGN_BYTES) const double H_values[] = {
 		-ccos, -ssin, mean.x() * ssin - mean.y() * ccos,
 		ssin,  -ccos, mean.x() * ccos + mean.y() * ssin,
 		0,	 0,	 -1};

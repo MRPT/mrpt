@@ -100,7 +100,6 @@ if (EXISTS ${EIGEN_VER_H})
 	if(${MRPT_EIGEN_VERSION} VERSION_LESS "3.3")
 		message(ERROR "Eigen ${MRPT_EIGEN_VERSION} detected, required >=3.3. Select EIGEN_USE_EMBEDDED_VERSION=ON.")
 	endif()
-
 endif ()
 
 # -- Install --

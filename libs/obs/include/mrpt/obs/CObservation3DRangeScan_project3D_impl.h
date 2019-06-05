@@ -422,7 +422,7 @@ inline void do_project_3d_pointcloud_SSE2(
 	// Use optimized version:
 	const int W_4 = W >> 2;  // /=4 , since we process 4 values at a time.
 	size_t idx = 0;
-	alignas(MRPT_MAX_ALIGN_BYTES) float xs[4], ys[4], zs[4];
+	alignas(MRPT_MAX_STATIC_ALIGN_BYTES) float xs[4], ys[4], zs[4];
 	const __m128 D_zeros = _mm_set_ps(.0f, .0f, .0f, .0f);
 	const __m128 xormask =
 		(fp.rangeCheckBetween) ? _mm_cmpneq_ps(D_zeros, D_zeros)

@@ -317,7 +317,7 @@ void TPose3D::getAsQuaternion(
 	//   https://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
 	if (out_dq_dr)
 	{
-		alignas(MRPT_MAX_ALIGN_BYTES) const double nums[4 * 3] = {
+		alignas(MRPT_MAX_STATIC_ALIGN_BYTES) const double nums[4 * 3] = {
 			-0.5 * q[3], 0.5 * (-csc + scs), -0.5 * q[1],
 			-0.5 * q[2], 0.5 * (-ssc - ccs), 0.5 * q[0],
 			0.5 * q[1],  0.5 * (ccc - sss),  0.5 * q[3],
@@ -370,7 +370,7 @@ void TPose3D::getRotationMatrix(mrpt::math::CMatrixDouble33& R) const
 	const double cr = cos(roll);
 	const double sr = sin(roll);
 
-	alignas(MRPT_MAX_ALIGN_BYTES)
+	alignas(MRPT_MAX_STATIC_ALIGN_BYTES)
 		const double rot_vals[] = {cy * cp,
 								   cy * sp * sr - sy * cr,
 								   cy * sp * cr + sy * sr,
