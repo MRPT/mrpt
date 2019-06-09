@@ -8,11 +8,11 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <fstream>
+#include <iosfwd>
+#include <sstream>
 #include <string>
 #include <vector>
-#include <iosfwd>
-#include <fstream>
-#include <sstream>
 
 namespace mrpt::io
 {
@@ -31,33 +31,31 @@ namespace mrpt::io
 template <typename MATRIX>
 void load_csv(const std::string& path, MATRIX& M)
 {
-    std::ifstream indata;
-    indata.open(path);
-    std::string                          line;
-    std::vector<typename MATRIX::Scalar> values;
-    uint                                 rows = 0;
-    while (std::getline(indata, line))
-    {
-	if (!line.empty() && line[0] == '#') continue;
-	std::stringstream lineStream(line);
-	std::string       cell;
-	while (std::getline(lineStream, cell, ','))
+	std::ifstream indata;
+	indata.open(path);
+	std::string line;
+	std::vector<typename MATRIX::Scalar> values;
+	uint rows = 0;
+	while (std::getline(indata, line))
 	{
-	    std::stringstream       cs(cell);
-	    typename MATRIX::Scalar val;
-	    cs >> val;
-	    values.push_back(val);
+		if (!line.empty() && line[0] == '#') continue;
+		std::stringstream lineStream(line);
+		std::string cell;
+		while (std::getline(lineStream, cell, ','))
+		{
+			std::stringstream cs(cell);
+			typename MATRIX::Scalar val;
+			cs >> val;
+			values.push_back(val);
+		}
+		++rows;
 	}
-	++rows;
-    }
-    // Convert from RowMajor if needed!
-    M = Eigen::Map<const Eigen::Matrix<
-        typename MATRIX::Scalar, MATRIX::RowsAtCompileTime,
-        MATRIX::ColsAtCompileTime, Eigen::RowMajor>>(
-        values.data(), rows, values.size() / rows);
+	// Convert from RowMajor if needed!
+	M = Eigen::Map<const Eigen::Matrix<
+		typename MATRIX::Scalar, MATRIX::RowsAtCompileTime,
+		MATRIX::ColsAtCompileTime, Eigen::RowMajor>>(
+		values.data(), rows, values.size() / rows);
 }
-
-
 
 /** @} */
 
