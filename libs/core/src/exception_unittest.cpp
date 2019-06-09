@@ -50,7 +50,7 @@ TEST(exception, stackedExceptionComplex)
 		const auto sExc = mrpt::exception_to_str(e);
 		// std::cerr << sExc;
 		const auto num_lines = std::count(sExc.begin(), sExc.end(), '\n');
-		EXPECT_EQ(num_lines, 5);
+		EXPECT_EQ(num_lines, 6);
 	}
 }
 

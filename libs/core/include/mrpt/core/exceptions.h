@@ -13,49 +13,13 @@
 #include <mrpt/core/format.h>
 #include <stdexcept>  // logic_error
 #include <string>  // std::string, to_string()
+#include <string_view>
 
 namespace mrpt::internal
 {
-template <typename T>
-inline std::string exception_line_msg(
-	const T& msg, const char* filename, unsigned int line,
-	const char* function_name)
-{
-	std::string s;
-	s += filename;
-	s += ":";
-	s += std::to_string(line);
-	s += ": [";
-	s += function_name;
-	s += "] ";
-	s += msg;
-	s += "\n";
-	return s;
-}
-
-/** Recursive implementation for mrpt::exception_to_str() */
-inline void impl_excep_to_str(
-	const std::exception& e, std::string& ret, int lvl = 0)
-{
-	using namespace std::string_literals;
-	std::string err{e.what()};
-	if (!err.empty() && *err.rbegin() != '\n') err += "\n"s;
-	ret = "["s + std::to_string(lvl) + "] "s + err + ret;
-	try
-	{
-		std::rethrow_if_nested(e);
-		// We traversed the entire call stack:
-		ret = std::string("==== MRPT exception backtrace ====\n") + ret;
-	}
-	catch (const std::exception& er)
-	{
-		// It's nested: recursive call
-		impl_excep_to_str(er, ret, lvl + 1);
-	}
-	catch (...)
-	{
-	}
-}
+std::string exception_line_msg(
+	const std::string_view& msg, const char* filename, unsigned int line,
+	const char* function_name);
 
 template <typename A, typename B>
 inline std::string asrt_fail(
@@ -76,7 +40,6 @@ inline std::string asrt_fail(
 	s += "\n";
 	return s;
 }
-
 }  // namespace mrpt::internal
 
 namespace mrpt
@@ -89,12 +52,7 @@ namespace mrpt
  * Uses C++11 throw_with_nested(), rethrow_if_nested().
  * \ingroup mrpt_core_grp
  */
-inline std::string exception_to_str(const std::exception& e)
-{
-	std::string descr;
-	mrpt::internal::impl_excep_to_str(e, descr);
-	return descr;
-}
+std::string exception_to_str(const std::exception& e);
 
 /** \def THROW_TYPED_EXCEPTION(msg,exceptionClass) */
 #define THROW_TYPED_EXCEPTION(msg, exceptionClass)           \
