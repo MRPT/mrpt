@@ -217,9 +217,8 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 	/*! @} */                                                             \
    public:
 
-/** This must be inserted in all CObject classes implementation files
- */
-#define IMPLEMENTS_MRPT_OBJECT(class_name, base, NameSpace)                   \
+#define INTERNAL_IMPLEMENTS_MRPT_OBJECT(                                      \
+	class_name, base, NameSpace, class_registry_name)                         \
 	mrpt::rtti::CObject* NameSpace::class_name::CreateObject()                \
 	{                                                                         \
 		return static_cast<mrpt::rtti::CObject*>(new NameSpace::class_name);  \
@@ -234,7 +233,7 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 		return NameSpace::class_name::runtimeClassId;                         \
 	}                                                                         \
 	const mrpt::rtti::TRuntimeClassId NameSpace::class_name::runtimeClassId = \
-		{#class_name, NameSpace::class_name::CreateObject,                    \
+		{class_registry_name, NameSpace::class_name::CreateObject,            \
 		 &class_name::_GetBaseClass};                                         \
 	const mrpt::rtti::TRuntimeClassId*                                        \
 		NameSpace::class_name::GetRuntimeClass() const                        \
@@ -248,6 +247,19 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 		return static_cast<mrpt::rtti::CObject*>(                             \
 			new NameSpace::class_name(*this));                                \
 	}
+
+/** This must be inserted in all CObject classes implementation files
+ */
+#define IMPLEMENTS_MRPT_OBJECT_NS_PREFIX(class_name, base, NameSpace) \
+	INTERNAL_IMPLEMENTS_MRPT_OBJECT(                                  \
+		class_name, base, NameSpace, #NameSpace "::" #class_name)
+
+/** Must be added to all CObject-derived classes implementation file.
+ * This version does NOT include the namespace in the name of the class when
+ * registering.
+ */
+#define IMPLEMENTS_MRPT_OBJECT(class_name, base, NameSpace) \
+	INTERNAL_IMPLEMENTS_MRPT_OBJECT(class_name, base, NameSpace, #class_name)
 
 /** This declaration must be inserted in virtual CObject classes
  * definition:
