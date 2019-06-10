@@ -248,7 +248,9 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 			new NameSpace::class_name(*this));                                \
 	}
 
-/** This must be inserted in all CObject classes implementation files
+/** This must be inserted in all CObject classes implementation files.
+ * This version registers calss ns1::Foo as "ns1::Foo", where are
+ * IMPLEMENTS_MRPT_OBJECT() makes it for some random name.
  */
 #define IMPLEMENTS_MRPT_OBJECT_NS_PREFIX(class_name, base, NameSpace) \
 	INTERNAL_IMPLEMENTS_MRPT_OBJECT(                                  \
@@ -282,23 +284,30 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 /** This must be inserted as implementation of some required members for
  *  virtual CObject classes:
  */
-#define IMPLEMENTS_VIRTUAL_MRPT_OBJECT(class_name, base_class_name, NameSpace) \
-	const mrpt::rtti::TRuntimeClassId* NameSpace::class_name::_GetBaseClass()  \
+#define INTERNAL_IMPLEMENTS_VIRTUAL_MRPT_OBJECT(                               \
+	class_name, base_name, NS, registered_name)                                \
+	const mrpt::rtti::TRuntimeClassId* NS::class_name::_GetBaseClass()         \
 	{                                                                          \
-		return CLASS_ID(base_class_name);                                      \
+		return CLASS_ID(base_name);                                            \
 	}                                                                          \
-	const mrpt::rtti::TRuntimeClassId NameSpace::class_name::runtimeClassId =  \
-		{#class_name, nullptr, &NameSpace::class_name::_GetBaseClass};         \
-	const mrpt::rtti::TRuntimeClassId*                                         \
-		NameSpace::class_name::GetRuntimeClass() const                         \
+	const mrpt::rtti::TRuntimeClassId NS::class_name::runtimeClassId = {       \
+		registered_name, nullptr, &NS::class_name::_GetBaseClass};             \
+	const mrpt::rtti::TRuntimeClassId* NS::class_name::GetRuntimeClass() const \
 	{                                                                          \
 		return CLASS_ID(class_name);                                           \
 	}                                                                          \
 	const mrpt::rtti::TRuntimeClassId&                                         \
-		NameSpace::class_name::GetRuntimeClassIdStatic()                       \
+		NS::class_name::GetRuntimeClassIdStatic()                              \
 	{                                                                          \
-		return NameSpace::class_name::runtimeClassId;                          \
+		return NS::class_name::runtimeClassId;                                 \
 	}
+
+#define IMPLEMENTS_VIRTUAL_MRPT_OBJECT_NS_PREFIX(class_name, base, NS) \
+	INTERNAL_IMPLEMENTS_VIRTUAL_MRPT_OBJECT(                           \
+		class_name, base, NS, #NS "::" #class_name)
+
+#define IMPLEMENTS_VIRTUAL_MRPT_OBJECT(class_name, base_class_name, NS) \
+	INTERNAL_IMPLEMENTS_VIRTUAL_MRPT_OBJECT(class_name, base, NS, #class_name)
 
 /** Register all pending classes - to be called just before
  * de-serializing an object, for example. After calling this method,
