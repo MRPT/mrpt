@@ -160,7 +160,17 @@ void OctetVectorToObject(
 		mrpt::serialization::CArchive& in, uint8_t serial_version) override; \
 /*! @} */
 
-/** This must be inserted in all CSerializable classes implementation files */
+/** To be added to all CSerializable-classes implementation files.
+ * This version registers the class name with the NameSpace prefix.
+ * \sa IMPLEMENTS_SERIALIZABLE
+ */
+#define IMPLEMENTS_SERIALIZABLE_NS_PREFIX(class_name, base, NameSpace) \
+	IMPLEMENTS_MRPT_OBJECT_NS_PREFIX(class_name, base, NameSpace)
+
+/** To be added to all CSerializable-classes implementation files.
+ * This version registers the class name with the NameSpace prefix.
+ * \sa IMPLEMENTS_SERIALIZABLE_NS_PREFIX
+ */
 #define IMPLEMENTS_SERIALIZABLE(class_name, base, NameSpace) \
 	IMPLEMENTS_MRPT_OBJECT(class_name, base, NameSpace)
 
