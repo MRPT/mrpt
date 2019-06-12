@@ -306,7 +306,7 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 	INTERNAL_IMPLEMENTS_VIRTUAL_MRPT_OBJECT(                           \
 		class_name, base, NS, #NS "::" #class_name)
 
-#define IMPLEMENTS_VIRTUAL_MRPT_OBJECT(class_name, base_class_name, NS) \
+#define IMPLEMENTS_VIRTUAL_MRPT_OBJECT(class_name, base, NS) \
 	INTERNAL_IMPLEMENTS_VIRTUAL_MRPT_OBJECT(class_name, base, NS, #class_name)
 
 /** Register all pending classes - to be called just before
