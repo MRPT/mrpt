@@ -159,7 +159,7 @@ class CTimeLogger : public mrpt::system::COutputLogger
  * construction and destruction of
  * this auxiliary object, making sure that leave() will be called upon
  * exceptions, etc.
- * Usage:
+ * Usage mode #1 (scoped):
  * \code
  *    CTimeLogger logger;
  *    // ...
@@ -169,7 +169,21 @@ class CTimeLogger : public mrpt::system::COutputLogger
  *       // do whatever
  *
  *    } // End of scope
+ *    // **DO NOT** call tle.stop() explicitly here, it's called by its dtor
  * \endcode
+ *
+ * Usage mode #2 (unscoped):
+ * \code
+ *    CTimeLogger logger;
+ *    // ...
+ *
+ *    CTimeLoggerEntry tle(logger,"operation-name");
+ *    // do whatever
+ *    tle.stop();
+ *
+ *    // tle dtor does nothing else, since you already called stop()
+ * \endcode
+ *
  * \ingroup mrpt_system_grp
  */
 struct CTimeLoggerEntry
@@ -178,12 +192,14 @@ struct CTimeLoggerEntry
 		const CTimeLogger& logger, const std::string_view& section_name);
 	~CTimeLoggerEntry();
 	CTimeLogger& m_logger;
+	void stop();  //!< for correct use, see docs for CTimeLoggerEntry
 
    private:
 	// Note we cannot store the string_view since we have no guarantees of the
 	// life-time of the provided string buffer.
 	const std::string m_section_name;
 	mrpt::Clock::time_point m_entry;
+	bool stopped_{false};
 };
 
 /** A helper class to save CSV stats upon self destruction, for example, at the
