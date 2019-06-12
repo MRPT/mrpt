@@ -390,13 +390,17 @@ CTimeLoggerEntry::CTimeLoggerEntry(
 {
 	m_entry = mrpt::Clock::now();
 }
-CTimeLoggerEntry::~CTimeLoggerEntry()
+void CTimeLoggerEntry::stop()
 {
+	if (stopped_) return;
 	const auto leave = mrpt::Clock::now();
 	const double dt = mrpt::system::timeDifference(m_entry, leave);
 
 	m_logger.registerUserMeasure(m_section_name, dt, true);
+	stopped_ = true;
 }
+
+CTimeLoggerEntry::~CTimeLoggerEntry() { stop(); }
 
 CTimeLoggerSaveAtDtor::~CTimeLoggerSaveAtDtor()
 {
