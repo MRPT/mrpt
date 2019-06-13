@@ -48,12 +48,13 @@ void CActionRobotMovement2D::serializeTo(
 		// The odometry data:
 		out << rawOdometryIncrementReading;
 		out.WriteAs<uint32_t>(motionModelConfiguration.modelSelection);
-		out << motionModelConfiguration.gaussianModel.a1
-			<< motionModelConfiguration.gaussianModel.a2
-			<< motionModelConfiguration.gaussianModel.a3
-			<< motionModelConfiguration.gaussianModel.a4
-			<< motionModelConfiguration.gaussianModel.minStdXY
-			<< motionModelConfiguration.gaussianModel.minStdPHI;
+		const auto& gm = motionModelConfiguration.gaussianModel;
+		out.WriteAs<float>(gm.a1);
+		out.WriteAs<float>(gm.a2);
+		out.WriteAs<float>(gm.a3);
+		out.WriteAs<float>(gm.a4);
+		out.WriteAs<float>(gm.minStdXY);
+		out.WriteAs<float>(gm.minStdPHI);
 
 		out << motionModelConfiguration.thrunModel.nParticlesCount
 			<< motionModelConfiguration.thrunModel.alfa1_rot_rot
@@ -109,12 +110,13 @@ void CActionRobotMovement2D::serializeFrom(
 				motionModelConfiguration.modelSelection =
 					static_cast<TDrawSampleMotionModel>(i);
 
-				in >> motionModelConfiguration.gaussianModel.a1 >>
-					motionModelConfiguration.gaussianModel.a2 >>
-					motionModelConfiguration.gaussianModel.a3 >>
-					motionModelConfiguration.gaussianModel.a4 >>
-					motionModelConfiguration.gaussianModel.minStdXY >>
-					motionModelConfiguration.gaussianModel.minStdPHI;
+				auto& gm = motionModelConfiguration.gaussianModel;
+				gm.a1 = in.ReadAs<float>();
+				gm.a2 = in.ReadAs<float>();
+				gm.a3 = in.ReadAs<float>();
+				gm.a4 = in.ReadAs<float>();
+				gm.minStdXY = in.ReadAs<float>();
+				gm.minStdPHI = in.ReadAs<float>();
 
 				in >> i;
 				motionModelConfiguration.thrunModel.nParticlesCount = i;
