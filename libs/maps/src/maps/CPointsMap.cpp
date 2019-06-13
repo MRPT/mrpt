@@ -2052,7 +2052,7 @@ bool CPointsMap::internal_insertObservation(
 		{
 			// Don't fuse: Simply add
 			insertionOptions.addToExistingPointsMap = true;
-			*this += *o->pointcloud;
+			this->insertAnotherMap(o->pointcloud.get(), o->sensorPose);
 		}
 		return true;
 	}
