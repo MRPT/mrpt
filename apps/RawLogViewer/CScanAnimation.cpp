@@ -13,6 +13,18 @@
 #include <wx/string.h>
 //*)
 
+#ifdef None  // X header conflict...
+#undef None
+#endif
+
+#include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservationPointCloud.h>
+#include <mrpt/obs/CObservationVelodyneScan.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CPlanarLaserScan.h>  // in library mrpt-maps
+#include <mrpt/opengl/stock_objects.h>
+
 #include <wx/app.h>
 #include <wx/busyinfo.h>
 #include <wx/log.h>
@@ -47,13 +59,6 @@ BEGIN_EVENT_TABLE(CScanAnimation, wxDialog)
 //(*EventTable(CScanAnimation)
 //*)
 END_EVENT_TABLE()
-
-#include <mrpt/maps/CColouredPointsMap.h>
-#include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/obs/CObservationVelodyneScan.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>  // in library mrpt-maps
-#include <mrpt/opengl/stock_objects.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -488,6 +493,40 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 					std::make_shared<CPointCloudColoured>();
 				gl_obj->setPointSize(3.0);
 				gl_obj->loadFromPointsMap(&pointMap);
+
+				TRenderObject ro;
+				ro.obj = gl_obj;
+				ro.timestamp = obs->timestamp;
+				m_gl_objects[sNameInMap] = ro;
+				m_plot3D->getOpenGLSceneRef()->insert(gl_obj);
+			}
+		}
+		else if (IS_CLASS(it, CObservationPointCloud))
+		{
+			auto obs = std::dynamic_pointer_cast<CObservationPointCloud>(it);
+			wereScans = true;
+			if (tim_last == INVALID_TIMESTAMP || tim_last < obs->timestamp)
+				tim_last = obs->timestamp;
+
+			// Already in the map with the same sensor label?
+			auto it_gl = m_gl_objects.find(sNameInMap);
+			if (it_gl != m_gl_objects.end())
+			{
+				// Update existing object:
+				TRenderObject& ro = it_gl->second;
+				auto gl_obj =
+					std::dynamic_pointer_cast<CPointCloudColoured>(ro.obj);
+				gl_obj->loadFromPointsMap(obs->pointcloud.get());
+				gl_obj->setPose(obs->sensorPose);
+				ro.timestamp = obs->timestamp;
+			}
+			else
+			{
+				// Create object:
+				auto gl_obj = std::make_shared<CPointCloudColoured>();
+				gl_obj->setPointSize(3.0);
+				gl_obj->loadFromPointsMap(obs->pointcloud.get());
+				gl_obj->setPose(obs->sensorPose);
 
 				TRenderObject ro;
 				ro.obj = gl_obj;
