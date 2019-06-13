@@ -395,29 +395,6 @@ void CActionRobotMovement2D::computeFromOdometry(
 }
 
 /*---------------------------------------------------------------
-						TMotionModelOptions
- ---------------------------------------------------------------*/
-CActionRobotMovement2D::TMotionModelOptions::TMotionModelOptions()
-	: gaussianModel(), thrunModel()
-{
-	gaussianModel.a1 = 0.01f;
-	gaussianModel.a2 = RAD2DEG(0.001f);
-	gaussianModel.a3 = DEG2RAD(1.0f);
-	gaussianModel.a4 = 0.05f;
-
-	gaussianModel.minStdXY = 0.01f;
-	gaussianModel.minStdPHI = DEG2RAD(0.2f);
-
-	thrunModel.nParticlesCount = 300;
-	thrunModel.alfa1_rot_rot = 0.05f;
-	thrunModel.alfa2_rot_trans = DEG2RAD(4.0f);
-	thrunModel.alfa3_trans_trans = 0.01f;
-	thrunModel.alfa4_trans_rot = RAD2DEG(0.0001f);
-	thrunModel.additional_std_XY = 0.001f;
-	thrunModel.additional_std_phi = DEG2RAD(0.05f);
-}
-
-/*---------------------------------------------------------------
 				computeFromOdometry_modelGaussian
   ---------------------------------------------------------------*/
 void CActionRobotMovement2D::computeFromOdometry_modelGaussian(

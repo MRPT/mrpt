@@ -77,25 +77,50 @@ class CActionRobotMovement2D : public CAction
 	struct TMotionModelOptions
 	{
 		/** Default values loader. */
-		TMotionModelOptions();
+		TMotionModelOptions() = default;
 
 		/** The model to be used. */
-		TDrawSampleMotionModel modelSelection{
-			CActionRobotMovement2D::mmGaussian};
+		TDrawSampleMotionModel modelSelection{mmGaussian};
 
 		/** Options for the gaussian model, which generates a CPosePDFGaussian
-		 * object in poseChange
-		 * See docs in :
+		 * object in poseChange using a closed-form linear Gaussian model.
+		 * See docs in:
 		 * https://www.mrpt.org/tutorials/programming/odometry-and-motion-models/probabilistic_motion_models/
 		 */
 		struct TOptions_GaussianModel
 		{
-			float a1, a2, a3, a4, minStdXY, minStdPHI;
-		} gaussianModel;
+			TOptions_GaussianModel() = default;
+			TOptions_GaussianModel(
+				double a1_, double a2_, double a3_, double a4_,
+				double minStdXY_, double minStdPHI_)
+				: a1(a1_),
+				  a2(a2_),
+				  a3(a3_),
+				  a4(a4_),
+				  minStdXY(minStdXY_),
+				  minStdPHI(minStdPHI_)
+			{
+			}
+
+			/** Ratio of uncertainty: [meter/meter] */
+			double a1{0.01};
+			/** Ratio of uncertainty: [meter/degree] */
+			double a2{mrpt::RAD2DEG(0.001)};
+			/** Ratio of uncertainty: [degree/meter] */
+			double a3{mrpt::DEG2RAD(1.0)};
+			/** Ratio of uncertainty: [degree/degree] */
+			double a4{0.05};
+			/** Additional uncertainty: [meters] */
+			double minStdXY{0.01};
+			/** Additional uncertainty: [degrees] */
+			double minStdPHI{mrpt::DEG2RAD(0.2)};
+		};
+
+		TOptions_GaussianModel gaussianModel;
 
 		/** Options for the Thrun's model, which generates a CPosePDFParticles
-		 * object in poseChange
-		 * See docs in :
+		 * object in poseChange using a MonteCarlo simulation.
+		 * See docs in:
 		 * https://www.mrpt.org/tutorials/programming/odometry-and-motion-models/probabilistic_motion_models/
 		 */
 		struct TOptions_ThrunModel
@@ -103,18 +128,22 @@ class CActionRobotMovement2D : public CAction
 			/** The default number of particles to generate in a internal
 			 * representation (anyway you can draw as many samples as you want
 			 * through CActionRobotMovement2D::drawSingleSample)  */
-			uint32_t nParticlesCount;
-			float alfa1_rot_rot;
-			float alfa2_rot_trans;
-			float alfa3_trans_trans;
-			float alfa4_trans_rot;
+			uint32_t nParticlesCount{300};
+			float alfa1_rot_rot{0.05f};
+			float alfa2_rot_trans{mrpt::DEG2RAD(4.0f)};
+			float alfa3_trans_trans{0.01f};
+			float alfa4_trans_rot{mrpt::RAD2DEG(0.0001f)};
 
 			/** An additional noise added to the thrun model (std. dev. in
 			 * meters and radians). */
-			float additional_std_XY, additional_std_phi;
-		} thrunModel;
+			float additional_std_XY{0.001f};
+			float additional_std_phi{mrpt::DEG2RAD(0.05f)};
+		};
 
-	} motionModelConfiguration;
+		TOptions_ThrunModel thrunModel;
+	};
+
+	TMotionModelOptions motionModelConfiguration;
 
 	/** Computes the PDF of the pose increment from an odometry reading and
 	 * according to the given motion model (speed and encoder ticks information
