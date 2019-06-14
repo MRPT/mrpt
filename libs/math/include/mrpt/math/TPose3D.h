@@ -164,8 +164,26 @@ struct TPose3D : public TPoseOrPoint,
 	TPoint3D inverseComposePoint(const TPoint3D& g) const;
 	void composePose(const TPose3D other, TPose3D& result) const;
 	void getRotationMatrix(mrpt::math::CMatrixDouble33& R) const;
+	inline mrpt::math::CMatrixDouble33 getRotationMatrix() const
+	{
+		mrpt::math::CMatrixDouble33 R;
+		getRotationMatrix(R);
+		return R;
+	}
 	void getHomogeneousMatrix(mrpt::math::CMatrixDouble44& HG) const;
+	inline mrpt::math::CMatrixDouble44 getHomogeneousMatrix() const
+	{
+		mrpt::math::CMatrixDouble44 H;
+		getHomogeneousMatrix(H);
+		return H;
+	}
 	void getInverseHomogeneousMatrix(mrpt::math::CMatrixDouble44& HG) const;
+	mrpt::math::CMatrixDouble44 getInverseHomogeneousMatrix() const
+	{
+		mrpt::math::CMatrixDouble44 H;
+		getInverseHomogeneousMatrix(H);
+		return H;
+	}
 	void fromHomogeneousMatrix(const mrpt::math::CMatrixDouble44& HG);
 	static void SO3_to_yaw_pitch_roll(
 		const mrpt::math::CMatrixDouble33& R, double& yaw, double& pitch,
