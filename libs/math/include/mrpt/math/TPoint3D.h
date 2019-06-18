@@ -170,13 +170,13 @@ struct TPoint3D : public TPoseOrPoint,
 	{
 		return square(p.x - x) + square(p.y - y) + square(p.z - z);
 	}
-	/**
-	 * Point norm.
-	 */
-	double norm() const { return sqrt(square(x) + square(y) + square(z)); }
-	/**
-	 * Point scale.
-	 */
+	/** Squared norm: |v|^2 = x^2+y^2+z^2 */
+	double sqrNorm() const { return x * x + y * y + z * z; }
+
+	/** Point norm: |v| = sqrt(x^2+y^2+z^2) */
+	double norm() const { return std::sqrt(sqrNorm()); }
+
+	/** Scale point/vector */
 	TPoint3D& operator*=(const double f)
 	{
 		x *= f;
