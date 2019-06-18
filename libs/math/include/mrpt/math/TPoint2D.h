@@ -155,8 +155,11 @@ struct TPoint2D : public TPoseOrPoint,
 	 */
 	void fromString(const std::string& s);
 
-	/** Point norm. */
-	double norm() const { return sqrt(square(x) + square(y)); }
+	/** Squared norm: |v|^2 = x^2+y^2 */
+	double sqrNorm() const { return x * x + y * y; }
+
+	/** Point norm: |v| = sqrt(x^2+y^2) */
+	double norm() const { return std::sqrt(sqrNorm()); }
 };
 
 /** Exact comparison between 2D points */
