@@ -98,6 +98,32 @@ struct IS_CLASS_impl
 	}
 };
 
+namespace internal
+{
+template <bool is_copy_ctrtible>
+struct CopyCtor;
+template <>
+struct CopyCtor<true>
+{
+	template <typename T>
+	static T* clone(const T& o)
+	{
+		return new T(o);
+	}
+};
+template <>
+struct CopyCtor<false>
+{
+	template <typename T>
+	static T* clone(const T& o)
+	{
+		throw std::runtime_error(
+			"clone(): Attempt to call copy ctor of non copy-constructible "
+			"class.");
+	}
+};
+}  // namespace internal
+
 /** Evaluates to true if the given pointer to an object (derived from
  * mrpt::rtti::CObject) is of the given class. */
 #define IS_CLASS(ptrObj, class_name) \
@@ -246,8 +272,8 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 		CLASS_ID(base));                                                      \
 	mrpt::rtti::CObject* NameSpace::class_name::clone() const                 \
 	{                                                                         \
-		return static_cast<mrpt::rtti::CObject*>(                             \
-			new NameSpace::class_name(*this));                                \
+		return mrpt::rtti::internal::CopyCtor<std::is_copy_constructible<     \
+			NameSpace::class_name>::value>::clone(*this);                     \
 	}
 
 /** This must be inserted in all CObject classes implementation files.
