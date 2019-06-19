@@ -99,7 +99,7 @@ class CParameterizedTrajectoryGenerator
 	 *
 	 * \exception std::logic_error On invalid or missing parameters.
 	 */
-	static CParameterizedTrajectoryGenerator* CreatePTG(
+	static CParameterizedTrajectoryGenerator::Ptr CreatePTG(
 		const std::string& ptgClassName,
 		const mrpt::config::CConfigFileBase& cfg, const std::string& sSection,
 		const std::string& sKeyPrefix);

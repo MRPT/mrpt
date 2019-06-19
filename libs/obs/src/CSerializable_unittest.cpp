@@ -73,17 +73,17 @@ const mrpt::rtti::TRuntimeClassId* lstClasses[] = {
 // bugs:
 TEST(Observations, WriteReadToMem)
 {
-	for (auto& lstClasse : lstClasses)
+	for (auto& cl : lstClasses)
 	{
 		try
 		{
 			CMemoryStream buf;
 			auto arch = mrpt::serialization::archiveFrom(buf);
 			{
-				auto* o =
-					static_cast<CSerializable*>(lstClasse->createObject());
+				auto o =
+					mrpt::ptr_cast<CSerializable>::from(cl->createObject());
 				arch << *o;
-				delete o;
+				o.reset();
 			}
 
 			CSerializable::Ptr recons;
@@ -93,7 +93,7 @@ TEST(Observations, WriteReadToMem)
 		catch (const std::exception& e)
 		{
 			GTEST_FAIL() << "Exception during serialization test for class '"
-						 << lstClasse->className << "':\n"
+						 << cl->className << "':\n"
 						 << e.what() << endl;
 		}
 	}
@@ -102,16 +102,16 @@ TEST(Observations, WriteReadToMem)
 // Also try to convert them to octect vectors:
 TEST(Observations, WriteReadToOctectVectors)
 {
-	for (auto& lstClasse : lstClasses)
+	for (auto& cl : lstClasses)
 	{
 		try
 		{
 			std::vector<uint8_t> buf;
 			{
-				auto* o =
-					static_cast<CSerializable*>(lstClasse->createObject());
-				mrpt::serialization::ObjectToOctetVector(o, buf);
-				delete o;
+				auto o =
+					mrpt::ptr_cast<CSerializable>::from(cl->createObject());
+				mrpt::serialization::ObjectToOctetVector(o.get(), buf);
+				o.reset();
 			}
 
 			CSerializable::Ptr recons;
@@ -120,7 +120,7 @@ TEST(Observations, WriteReadToOctectVectors)
 		catch (const std::exception& e)
 		{
 			GTEST_FAIL() << "Exception during serialization test for class '"
-						 << lstClasse->className << "':\n"
+						 << cl->className << "':\n"
 						 << e.what() << endl;
 		}
 	}

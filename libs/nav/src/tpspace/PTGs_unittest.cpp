@@ -33,7 +33,7 @@ TEST(NavTests, PTGs_tests)
 	const unsigned int PTG_COUNT =
 		cfg.read_int("PTG_UNIT_TESTS", "PTG_COUNT", 0, true);
 	EXPECT_TRUE(PTG_COUNT > 0);
-	vector<CParameterizedTrajectoryGenerator*> PTGs(PTG_COUNT);
+	vector<CParameterizedTrajectoryGenerator::Ptr> PTGs(PTG_COUNT);
 
 	for (unsigned int n = 0; n < PTG_COUNT; n++)
 	{
@@ -59,7 +59,7 @@ TEST(NavTests, PTGs_tests)
 	// ---------------------------------------------------------
 	for (unsigned int n = 0; n < PTG_COUNT; n++)
 	{
-		CParameterizedTrajectoryGenerator* ptg = PTGs[n];
+		CParameterizedTrajectoryGenerator::Ptr ptg = PTGs[n];
 
 		const std::string sPTGDesc = ptg->getDescription();
 		const double refDist = ptg->getRefDistance();
@@ -184,7 +184,4 @@ TEST(NavTests, PTGs_tests)
 			(unsigned int)num_tests_run);
 
 	}  // for each ptg
-
-	// Clean up:
-	for (unsigned int n = 0; n < PTG_COUNT; n++) delete PTGs[n];
 }

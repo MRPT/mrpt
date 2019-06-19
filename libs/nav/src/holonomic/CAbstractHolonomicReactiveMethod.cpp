@@ -60,13 +60,12 @@ CAbstractHolonomicReactiveMethod::Ptr CAbstractHolonomicReactiveMethod::Factory(
 			mrpt::rtti::findRegisteredClass(className);
 		if (!classId) return nullptr;
 
-		return CAbstractHolonomicReactiveMethod::Ptr(
-			dynamic_cast<CAbstractHolonomicReactiveMethod*>(
-				classId->createObject()));
+		return mrpt::ptr_cast<CAbstractHolonomicReactiveMethod>::from(
+			classId->createObject());
 	}
 	catch (...)
 	{
-		return nullptr;
+		return CAbstractHolonomicReactiveMethod::Ptr();
 	}
 }
 
