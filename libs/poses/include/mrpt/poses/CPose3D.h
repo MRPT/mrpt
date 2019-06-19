@@ -330,6 +330,14 @@ class CPose3D : public CPose<CPose3D, 6>,
 		gz = static_cast<float>(ggz);
 	}
 
+	/** Rotates a vector (i.e. like composePoint(), but ignoring translation) */
+	mrpt::math::TVector3D rotateVector(
+		const mrpt::math::TVector3D& local) const;
+
+	/** Inverse of rotateVector(), i.e. using the inverse rotation matrix */
+	mrpt::math::TVector3D inverseRotateVector(
+		const mrpt::math::TVector3D& global) const;
+
 	/**  Computes the 3D point L such as \f$ L = G \ominus this \f$.
 	 *  If pointers are provided, the corresponding Jacobians are returned.
 	 *  "out_jacobian_df_dse3" stands for the Jacobian with respect to the 6D
