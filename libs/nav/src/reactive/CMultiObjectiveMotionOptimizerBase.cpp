@@ -232,13 +232,12 @@ CMultiObjectiveMotionOptimizerBase::Ptr
 			mrpt::rtti::findRegisteredClass(className);
 		if (!classId) return nullptr;
 
-		return CMultiObjectiveMotionOptimizerBase::Ptr(
-			dynamic_cast<CMultiObjectiveMotionOptimizerBase*>(
-				classId->createObject()));
+		return mrpt::ptr_cast<CMultiObjectiveMotionOptimizerBase>::from(
+			classId->createObject());
 	}
 	catch (...)
 	{
-		return nullptr;
+		return CMultiObjectiveMotionOptimizerBase::Ptr();
 	}
 }
 

@@ -58,16 +58,16 @@ TEST(SerializeTestOpenGL, WriteReadToMem)
 		CLASS_ID(COctoMapVoxels)
 	};
 
-	for (auto& lstClasse : lstClasses)
+	for (auto& cl : lstClasses)
 	{
 		try
 		{
 			mrpt::io::CMemoryStream buf;
 			{
-				auto* o =
-					static_cast<CSerializable*>(lstClasse->createObject());
+				auto o =
+					mrpt::ptr_cast<CSerializable>::from(cl->createObject());
 				mrpt::serialization::archiveFrom(buf) << *o;
-				delete o;
+				o.reset();
 			}
 
 			CSerializable::Ptr recons;
@@ -77,7 +77,7 @@ TEST(SerializeTestOpenGL, WriteReadToMem)
 		catch (const std::exception& e)
 		{
 			GTEST_FAIL() << "Exception during serialization test for class '"
-						 << lstClasse->className << "':\n"
+						 << cl->className << "':\n"
 						 << e.what() << endl;
 		}
 	}
