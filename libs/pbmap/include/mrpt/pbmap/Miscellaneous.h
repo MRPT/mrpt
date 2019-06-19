@@ -57,7 +57,7 @@ Eigen::Matrix<dataType, 3, 1> compose(
 {
 	Eigen::Matrix<dataType, 3, 1> transformedPoint =
 		pose.template block<3, 3>(0, 0) * point +
-		pose.template block(0, 3, 3, 1);
+		pose.template block<3, 1>(0, 3);
 	return transformedPoint;
 }
 
