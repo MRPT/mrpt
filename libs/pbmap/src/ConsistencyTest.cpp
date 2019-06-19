@@ -784,9 +784,7 @@ Eigen::Matrix4f ConsistencyTest::estimatePoseRANSAC(
 		planeCorresp, ransacPlaneAlignment_fit, ransac3Dplane_distance,
 		ransac3Dplane_degenerate, 0.2,
 		3,  // Minimum set of points
-		inliers, best_model,
-		true,  // Verbose
-		0.99999);
+		inliers, best_model, 0.99999);
 
 	//  cout << "Computation time: " << tictac.Tac()*1000.0/TIMES << " ms" <<
 	//  endl;
