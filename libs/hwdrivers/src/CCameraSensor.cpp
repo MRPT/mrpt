@@ -1409,7 +1409,7 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
 	std::promise<mrpt::gui::detail::TReturnAskUserOpenCamera> dlgSelection;
 
 	// Create window:
-	auto REQ = std::make_shared<WxSubsystem::TWxRequest>();
+	auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 	REQ->OPCODE = 700;
 	REQ->sourceCameraSelectDialog = true;
 	REQ->voidPtr = reinterpret_cast<void*>(&semDlg);
