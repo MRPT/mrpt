@@ -448,6 +448,26 @@ void CPose3D::composePoint(
 	}
 }
 
+mrpt::math::TVector3D CPose3D::rotateVector(
+	const mrpt::math::TVector3D& l) const
+{
+	mrpt::math::TVector3D g;
+	g.x = m_ROT(0, 0) * l.x + m_ROT(0, 1) * l.y + m_ROT(0, 2) * l.z;
+	g.y = m_ROT(1, 0) * l.x + m_ROT(1, 1) * l.y + m_ROT(1, 2) * l.z;
+	g.z = m_ROT(2, 0) * l.x + m_ROT(2, 1) * l.y + m_ROT(2, 2) * l.z;
+	return g;
+}
+
+mrpt::math::TVector3D CPose3D::inverseRotateVector(
+	const mrpt::math::TVector3D& g) const
+{
+	mrpt::math::TVector3D l;
+	l.x = m_ROT(0, 0) * g.x + m_ROT(1, 0) * g.y + m_ROT(2, 0) * g.z;
+	l.y = m_ROT(0, 1) * g.x + m_ROT(1, 1) * g.y + m_ROT(2, 1) * g.z;
+	l.z = m_ROT(0, 2) * g.x + m_ROT(1, 2) * g.y + m_ROT(2, 2) * g.z;
+	return l;
+}
+
 // TODO: Use SSE2? OTOH, this forces mem align...
 #if MRPT_HAS_SSE2 && defined(MRPT_USE_SSE2)
 /*static inline __m128 transformSSE(const __m128* matrix, const __m128& in)
