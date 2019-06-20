@@ -72,7 +72,7 @@ TEST(SE2_SE3_avrg, SO2_average)
 
 void run_test_so3_avrg(
 	const double* angs, const size_t N,
-	const mrpt::math::CMatrixDouble33 correct_avr)
+	const mrpt::math::CMatrixDouble33& correct_avr)
 {
 	SO_average<3> so_avr;
 	for (size_t i = 0; i < N; i++)
