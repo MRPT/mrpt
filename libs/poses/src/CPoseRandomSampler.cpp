@@ -31,14 +31,7 @@ using namespace mrpt::random;
 CPoseRandomSampler::CPoseRandomSampler() = default;
 CPoseRandomSampler::CPoseRandomSampler(const CPoseRandomSampler& o)
 {
-	if (o.m_pdf2D)
-		m_pdf2D.reset(dynamic_cast<const CPosePDF*>(o.m_pdf2D->clone()));
-	if (o.m_pdf3D)
-		m_pdf3D.reset(dynamic_cast<const CPose3DPDF*>(o.m_pdf3D->clone()));
-	m_fastdraw_gauss_Z3 = o.m_fastdraw_gauss_Z3;
-	m_fastdraw_gauss_Z6 = o.m_fastdraw_gauss_Z6;
-	m_fastdraw_gauss_M_2D = o.m_fastdraw_gauss_M_2D;
-	m_fastdraw_gauss_M_3D = o.m_fastdraw_gauss_M_3D;
+	*this = o;
 }
 
 CPoseRandomSampler& CPoseRandomSampler::operator=(const CPoseRandomSampler& o)
@@ -46,10 +39,8 @@ CPoseRandomSampler& CPoseRandomSampler::operator=(const CPoseRandomSampler& o)
 	if (&o == this) return *this;
 	m_pdf2D.reset();
 	m_pdf3D.reset();
-	if (o.m_pdf2D)
-		m_pdf2D.reset(dynamic_cast<const CPosePDF*>(o.m_pdf2D->clone()));
-	if (o.m_pdf3D)
-		m_pdf3D.reset(dynamic_cast<const CPose3DPDF*>(o.m_pdf3D->clone()));
+	if (o.m_pdf2D) m_pdf2D.reset(dynamic_cast<CPosePDF*>(o.m_pdf2D->clone()));
+	if (o.m_pdf3D) m_pdf3D.reset(dynamic_cast<CPose3DPDF*>(o.m_pdf3D->clone()));
 	m_fastdraw_gauss_Z3 = o.m_fastdraw_gauss_Z3;
 	m_fastdraw_gauss_Z6 = o.m_fastdraw_gauss_Z6;
 	m_fastdraw_gauss_M_2D = o.m_fastdraw_gauss_M_2D;
