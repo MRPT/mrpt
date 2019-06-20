@@ -22,8 +22,16 @@ namespace mrpt::config
  * `read_{int,float,double,string,...}()` and `write()` to actually read and
  * write values.
  *
+ * It can also parse a YAML text block and expose its fields (up to the first
+ * level of hierarchy, as allowed by INI-like files). This can be used to port
+ * MRPT classes relying on INI files to using YAML files transparently.
+ * This feature required building MRPT with yaml-cpp, and is provided by
+ * CConfigFileMemory::setContentFromYAML().
+ *
  * See: \ref config_file_format
+ *
  * \ingroup mrpt_base_grp
+ * \note YAML support was introduced in MRPT 1.9.9
  */
 class CConfigFileMemory : public CConfigFileBase
 {
@@ -51,6 +59,9 @@ class CConfigFileMemory : public CConfigFileBase
 		getContent(s);
 		return s;
 	}
+
+	/** Empties the virtual "config file" */
+	void clear() override;
 
 	/** Returns a list with all the section names */
 	void getAllSections(std::vector<std::string>& sections) const override;
