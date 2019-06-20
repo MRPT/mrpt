@@ -193,7 +193,7 @@ class CArchive
 				THROW_EXCEPTION_FMT(
 					"Stored object has class '%s' which is not registered!",
 					strClassName.c_str());
-			obj.reset(dynamic_cast<CSerializable*>(classId->createObject()));
+			obj = mrpt::ptr_cast<CSerializable>::from(classId->createObject());
 		}
 		internal_ReadObject(
 			obj.get() /* may be nullptr */, strClassName, isOldFormat,
@@ -263,7 +263,7 @@ class CArchive
 				strClassName.c_str());
 		if (strClassName != "nullptr")
 		{
-			obj.reset(dynamic_cast<CSerializable*>(classId->createObject()));
+			obj = mrpt::ptr_cast<CSerializable>::from(classId->createObject());
 		}
 		internal_ReadObject(obj.get(), strClassName, isOldFormat, version);
 		if (!obj)

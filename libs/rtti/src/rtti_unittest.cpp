@@ -72,11 +72,11 @@ TEST(rtti, Factory)
 {
 	do_register();
 	{
-		mrpt::rtti::CObject::Ptr p = mrpt::rtti::classFactoryPtr("MyDerived1");
+		mrpt::rtti::CObject::Ptr p = mrpt::rtti::classFactory("MyDerived1");
 		EXPECT_TRUE(p);
 	}
 	{
-		auto p = mrpt::rtti::classFactoryPtr("MyNS::MyDerived2");
+		auto p = mrpt::rtti::classFactory("MyNS::MyDerived2");
 		EXPECT_TRUE(p);
 	}
 }

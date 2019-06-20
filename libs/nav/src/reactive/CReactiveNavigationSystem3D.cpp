@@ -19,16 +19,6 @@ using namespace mrpt::system;
 using namespace mrpt::nav;
 using namespace std;
 
-// ---------   CReactiveNavigationSystem3D::TPTGmultilevel -----------------
-// Ctor:
-CReactiveNavigationSystem3D::TPTGmultilevel::TPTGmultilevel() = default;
-// Dtor: free PTG memory
-CReactiveNavigationSystem3D::TPTGmultilevel::~TPTGmultilevel()
-{
-	for (auto& PTG : PTGs) delete PTG;
-	PTGs.clear();
-}
-
 /*---------------------------------------------------------------
 					Constructor
   ---------------------------------------------------------------*/
@@ -128,9 +118,8 @@ void CReactiveNavigationSystem3D::loadConfigFile(
 				"[loadConfigFile] Generating PTG#%u at level %u...", j, i);
 			const std::string sPTGName =
 				c.read_string(s, format("PTG%d_TYPE", j), "", true);
-			CParameterizedTrajectoryGenerator* ptgaux =
-				CParameterizedTrajectoryGenerator::CreatePTG(
-					sPTGName, c, s, format("PTG%d_", j));
+			auto ptgaux = CParameterizedTrajectoryGenerator::CreatePTG(
+				sPTGName, c, s, format("PTG%d_", j));
 			m_ptgmultilevel[j - 1].PTGs.push_back(ptgaux);
 		}
 	}
@@ -168,14 +157,14 @@ void CReactiveNavigationSystem3D::STEP1_InitPTGs()
 				{
 					auto* ptg =
 						dynamic_cast<mrpt::nav::CPTG_RobotShape_Polygonal*>(
-							m_ptgmultilevel[j].PTGs[i]);
+							m_ptgmultilevel[j].PTGs[i].get());
 					if (ptg) ptg->setRobotShape(m_robotShape.polygon(i));
 				}
 				// Circular robot shape?
 				{
 					auto* ptg =
 						dynamic_cast<mrpt::nav::CPTG_RobotShape_Circular*>(
-							m_ptgmultilevel[j].PTGs[i]);
+							m_ptgmultilevel[j].PTGs[i].get());
 					if (ptg)
 						ptg->setRobotShapeRadius(m_robotShape.getRadius(i));
 				}

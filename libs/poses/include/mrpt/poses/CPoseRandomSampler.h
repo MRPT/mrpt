@@ -44,9 +44,9 @@ class CPoseRandomSampler
    protected:
 	// Only ONE of these can be not-NULL at a time.
 	/** A local copy of the PDF */
-	std::unique_ptr<const CPosePDF> m_pdf2D;
+	CPosePDF::Ptr m_pdf2D;
 	/** A local copy of the PDF */
-	std::unique_ptr<const CPose3DPDF> m_pdf3D;
+	CPose3DPDF::Ptr m_pdf3D;
 
 	mrpt::math::CMatrixDouble33 m_fastdraw_gauss_Z3;
 	mrpt::math::CMatrixDouble66 m_fastdraw_gauss_Z6;

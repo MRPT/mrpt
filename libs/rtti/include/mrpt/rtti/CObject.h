@@ -11,6 +11,7 @@
 #include <mrpt/core/aligned_allocator.h>
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/typemeta/static_string.h>  // literal()
+#include <functional>
 #include <memory>
 #include <vector>
 
@@ -32,12 +33,12 @@ struct TRuntimeClassId
 	using Ptr = safe_ptr<TRuntimeClassId>;
 	const char* className;
 	/** Create an object of the related class, or nullptr if it is virtual. */
-	mrpt::rtti::CObject* (*ptrCreateObject)();
+	std::function<std::shared_ptr<CObject>(void)> ptrCreateObject;
 	/** Gets the base class runtime id. */
 	const TRuntimeClassId* (*getBaseClass)();
 
 	// Operations
-	mrpt::rtti::CObject* createObject() const;
+	std::shared_ptr<CObject> createObject() const;
 	bool derivedFrom(const TRuntimeClassId* pBaseClass) const;
 	bool derivedFrom(const char* pBaseClass_name) const;
 };
@@ -96,6 +97,32 @@ struct IS_CLASS_impl
 		return p->GetRuntimeClass() == CLASS_ID_impl<T>();
 	}
 };
+
+namespace internal
+{
+template <bool is_copy_ctrtible>
+struct CopyCtor;
+template <>
+struct CopyCtor<true>
+{
+	template <typename T>
+	static T* clone(const T& o)
+	{
+		return new T(o);
+	}
+};
+template <>
+struct CopyCtor<false>
+{
+	template <typename T>
+	static T* clone(const T& o)
+	{
+		throw std::runtime_error(
+			"clone(): Attempt to call copy ctor of non copy-constructible "
+			"class.");
+	}
+};
+}  // namespace internal
 
 /** Evaluates to true if the given pointer to an object (derived from
  * mrpt::rtti::CObject) is of the given class. */
@@ -196,8 +223,8 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 	static const mrpt::rtti::TRuntimeClassId& GetRuntimeClassIdStatic();  \
 	virtual const mrpt::rtti::TRuntimeClassId* GetRuntimeClass()          \
 		const override;                                                   \
-	static mrpt::rtti::CObject* CreateObject();                           \
 	virtual mrpt::rtti::CObject* clone() const override;                  \
+	static std::shared_ptr<CObject> CreateObject();                       \
 	template <typename... Args>                                           \
 	static Ptr Create(Args&&... args)                                     \
 	{                                                                     \
@@ -219,9 +246,10 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 
 #define INTERNAL_IMPLEMENTS_MRPT_OBJECT(                                      \
 	class_name, base, NameSpace, class_registry_name)                         \
-	mrpt::rtti::CObject* NameSpace::class_name::CreateObject()                \
+	mrpt::rtti::CObject::Ptr NameSpace::class_name::CreateObject()            \
 	{                                                                         \
-		return static_cast<mrpt::rtti::CObject*>(new NameSpace::class_name);  \
+		return std::static_pointer_cast<CObject>(                             \
+			std::make_shared<NameSpace::class_name>());                       \
 	}                                                                         \
 	const mrpt::rtti::TRuntimeClassId* NameSpace::class_name::_GetBaseClass() \
 	{                                                                         \
@@ -244,8 +272,8 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 		CLASS_ID(base));                                                      \
 	mrpt::rtti::CObject* NameSpace::class_name::clone() const                 \
 	{                                                                         \
-		return static_cast<mrpt::rtti::CObject*>(                             \
-			new NameSpace::class_name(*this));                                \
+		return mrpt::rtti::internal::CopyCtor<std::is_copy_constructible<     \
+			NameSpace::class_name>::value>::clone(*this);                     \
 	}
 
 /** This must be inserted in all CObject classes implementation files.
@@ -317,11 +345,8 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 void registerAllPendingClasses();
 
 /** Creates an object given by its registered name.
- * \sa findRegisteredClass(), registerClass(), classFactoryPtr() */
-mrpt::rtti::CObject* classFactory(const std::string& className);
-
-/** Like classFactory() but returns a smart pointer */
-mrpt::rtti::CObject::Ptr classFactoryPtr(const std::string& className);
+ * \sa findRegisteredClass(), registerClass() */
+mrpt::rtti::CObject::Ptr classFactory(const std::string& className);
 
 /** @}  */  // end of RTTI
 
