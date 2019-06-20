@@ -22,26 +22,28 @@ include(CMakePackageConfigHelpers)
 
 # Enforce C++17 in all dependent projects:
 function(mrpt_lib_target_requires_cpp17 _TARGET)
-	if(${CMAKE_VERSION} VERSION_LESS "3.8.0")
+	get_target_property(target_type ${_TARGET} TYPE)
+	if (${target_type} STREQUAL "INTERFACE_LIBRARY")
+		set(INTERF_TYPE "INTERFACE")
+	else()
+		set(INTERF_TYPE "PUBLIC")
+	endif()
+
+
+	if(NOT ${CMAKE_VERSION} VERSION_LESS "3.8.0")
+		# Modern, clean way to do this:
+		get_target_property(target_type ${_TARGET} TYPE)
+		target_compile_features(${_TARGET} ${INTERF_TYPE} cxx_std_17)
+
+		# At present (CMake 3.12 + MSVC 19.15.26732.1) it seems cxx_std_17
+		# does not enable C++17 in MSVC (!).
+		# target_compile_options(${_TARGET} ${INTERF_TYPE} "/std:c++17")
+	else()
 		# Support older cmake versions:
 		if (MSVC)
-			target_compile_options(${_TARGET} INTERFACE "/std:c++latest")
+			target_compile_options(${_TARGET} ${INTERF_TYPE} "/std:c++latest")
 		else()
-			target_compile_options(${_TARGET} INTERFACE "-std=c++17")
-		endif()
-	else()
-		if (NOT MSVC)
-			# Modern, clean way to do this:
-			get_target_property(target_type ${_TARGET} TYPE)
-			if (${target_type} STREQUAL "INTERFACE_LIBRARY")
-				target_compile_features(${_TARGET} INTERFACE cxx_std_17)
-			else()
-				target_compile_features(${_TARGET} PUBLIC cxx_std_17)
-			endif()
-		else()
-			# At present (CMake 3.12 + MSVC 19.15.26732.1) it seems cxx_std_17
-			# does not enable C++17 in MSVC (!).
-			target_compile_options(${_TARGET} INTERFACE "/std:c++17")
+			target_compile_options(${_TARGET} ${INTERF_TYPE} "-std=c++17")
 		endif()
 	endif()
 endfunction()
