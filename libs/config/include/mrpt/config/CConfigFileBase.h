@@ -80,6 +80,22 @@ class CConfigFileBase
 	/** Checks if a given section exists (name is case insensitive) */
 	bool sectionExists(const std::string& section_name) const;
 
+	/** Changes the contents of the virtual "config file" from a text block
+	 * containing a YAML configuration text. Refer to unit test
+	 * yaml2config_unittest.cpp for examples of use.
+	 * \sa getContentAsYAML()
+	 */
+	void setContentFromYAML(const std::string& yaml_block);
+
+	/** Returns a text block representing the contents of the config file in
+	 * YAML format.
+	 * \sa setContentFromYAML()
+	 */
+	std::string getContentAsYAML() const;
+
+	/** Empties the "config file" */
+	virtual void clear() = 0;
+
 	template <
 		typename enum_t,
 		typename = std::enable_if_t<std::is_enum<enum_t>::value>>

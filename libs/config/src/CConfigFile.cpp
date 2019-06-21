@@ -165,3 +165,5 @@ void CConfigFile::getAllKeys(
 	for (n = names.begin(), s = keys.begin(); n != names.end(); ++n, ++s)
 		*s = n->pItem;
 }
+
+void CConfigFile::clear() { m_impl->m_ini.Reset(); }

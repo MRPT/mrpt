@@ -16,6 +16,11 @@
 #include <mrpt/system/string_utils.h>
 #include <cmath>  // abs()
 
+#include <mrpt/config.h>
+#if MRPT_HAS_YAMLCPP
+#include <yaml-cpp/yaml.h>
+#endif
+
 using namespace std;
 using namespace mrpt::config;
 using namespace mrpt::system;
@@ -206,4 +211,95 @@ bool CConfigFileBase::sectionExists(const std::string& section_name) const
 		if (!mrpt::system::os::_strcmpi(section_name.c_str(), sect.c_str()))
 			return true;
 	return false;
+}
+
+void CConfigFileBase::setContentFromYAML(const std::string& yaml_block)
+{
+	MRPT_START
+#if MRPT_HAS_YAMLCPP
+	this->clear();
+
+	YAML::Node root = YAML::Load(yaml_block);
+
+	// Prepare all data here, then insert into the actual INI file at the end,
+	// to ensure that unscoped variables get first.
+	using key_values_t = std::map<std::string, std::string>;
+	key_values_t unscoped;
+	std::map<std::string, key_values_t> sections;
+
+	for (const auto& sect : root)
+	{
+		const auto sectName = sect.first.as<std::string>();
+		// YAML Type: sect.first.Type()
+
+		if (sect.second.size() >= 1)
+		{
+			// A section:
+			for (const auto& kv : sect.second)
+			{
+				const auto key = kv.first.as<std::string>();
+				const auto val = kv.second.as<std::string>();
+				sections[sectName].emplace(key, val);
+			}
+		}
+		else
+		{
+			// an unscoped key-value:
+			const auto key = sect.first.as<std::string>();
+			const auto val = sect.second.as<std::string>();
+			unscoped.emplace(key, val);
+		}
+	}
+
+	// 1st: unscoped:
+	for (const auto& kv : unscoped) this->write("", kv.first, kv.second);
+
+	for (const auto& sect : sections)
+		for (const auto& kv : sect.second)
+			this->write(sect.first, kv.first, kv.second);
+
+#else
+	THROW_EXCEPTION(
+		"This method requires building MRPT with yaml-cpp support.");
+#endif
+	MRPT_END
+}
+
+std::string CConfigFileBase::getContentAsYAML() const
+{
+	MRPT_START
+#if MRPT_HAS_YAMLCPP
+	YAML::Node n;
+
+	// Sections:
+	std::vector<std::string> lstSects;
+	getAllSections(lstSects);
+
+	// Unscoped: "" empty section name:
+	lstSects.insert(lstSects.begin(), std::string());
+
+	// Go thru values:
+	for (const auto& sect : lstSects)
+	{
+		std::vector<std::string> keys;
+		getAllKeys(sect, keys);
+		for (const auto& k : keys)
+		{
+			const auto val = this->readString(sect, k, "");
+			if (sect.empty())
+				n[k] = val;
+			else
+				n[sect][k] = val;
+		}
+	}
+
+	// Convert to string:
+	std::stringstream ss;
+	ss << n;
+	return ss.str();
+#else
+	THROW_EXCEPTION(
+		"This method requires building MRPT with yaml-cpp support.");
+#endif
+	MRPT_END
 }
