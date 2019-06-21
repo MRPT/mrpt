@@ -85,6 +85,9 @@ class CConfigFile : public CConfigFileBase
 	/** Returns a list with all the section names. */
 	void getAllSections(std::vector<std::string>& sections) const override;
 
+	/** Empties the "config file" */
+	void clear() override;
+
 	/** Returs a list with all the keys into a section. */
 	void getAllKeys(const std::string& section, std::vector<std::string>& keys)
 		const override;
