@@ -453,12 +453,9 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
 	# Use "modern" C99 ! ;-)
  	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 
-	if(NOT APPLE) # any reason for not using it in all platforms?
-	# Use the libstdc++ lib vs. libc++, to avoid some build errors in MacOS
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libstdc++")
-		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libstdc++")
-		set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -stdlib=libstdc++")
-	endif()
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
+	set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -stdlib=libc++")
 
 endif()
 
