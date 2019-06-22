@@ -33,12 +33,17 @@ struct TLine3D
 	 * Unitarize director vector.
 	 */
 	void unitarize();
-	/**
-	 * Get director vector.
-	 */
+	/** Get director vector */
 	void getDirectorVector(double (&vector)[3]) const
 	{
 		for (size_t i = 0; i < 3; i++) vector[i] = director[i];
+	}
+	/** Get director vector */
+	inline TVector3D getDirectorVector() const
+	{
+		TVector3D v;
+		for (int i = 0; i < 3; i++) v[i] = director[i];
+		return v;
 	}
 	/**
 	 * Unitarize and then get director vector.
