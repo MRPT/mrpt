@@ -182,9 +182,11 @@ void OctetVectorToObject(
 /** This must be inserted as implementation of some required members for
  *  virtual CSerializable classes:
  */
-#define IMPLEMENTS_VIRTUAL_SERIALIZABLE(    \
-	class_name, base_class_name, NameSpace) \
-	IMPLEMENTS_VIRTUAL_MRPT_OBJECT(class_name, base_class_name, NameSpace)
+#define IMPLEMENTS_VIRTUAL_SERIALIZABLE(class_name, base_class, NS) \
+	IMPLEMENTS_VIRTUAL_MRPT_OBJECT(class_name, base_class, NS)
+
+#define IMPLEMENTS_VIRTUAL_SERIALIZABLE_NS_PREFIX(class_name, base_class, NS) \
+	IMPLEMENTS_VIRTUAL_MRPT_OBJECT_NS_PREFIX(class_name, base_class, NS)
 
 /** This must be inserted if a custom conversion method for MEX API is
  * implemented in the class */

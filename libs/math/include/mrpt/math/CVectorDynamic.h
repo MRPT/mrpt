@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/core/aligned_std_vector.h>
+#include <mrpt/core/aligned_std_basicstring.h>
 #include <mrpt/core/exceptions.h>  // ASSERT_()
 #include <mrpt/math/MatrixVectorBase.h>
 #include <mrpt/math/math_frwds.h>
@@ -32,7 +32,7 @@ template <class T>
 class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
 {
    protected:
-	using vec_t = mrpt::aligned_std_vector<T>;
+	using vec_t = mrpt::aligned_std_basicstring<T>;
 	vec_t m_data;
 
    public:

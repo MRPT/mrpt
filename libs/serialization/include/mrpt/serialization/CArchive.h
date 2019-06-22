@@ -588,3 +588,17 @@ CArchiveStreamBase<STREAM> archiveFrom(STREAM& s)
 	return CArchiveStreamBase<STREAM>(s);
 }
 }  // namespace mrpt::serialization
+
+namespace mrpt::rtti
+{
+// for std::variant
+template <>
+struct CLASS_ID_impl<std::monostate>
+{
+	static constexpr const mrpt::rtti::TRuntimeClassId* get()
+	{
+		return nullptr;
+	}
+};
+
+}  // namespace mrpt::rtti

@@ -75,18 +75,22 @@ std::vector<const TRuntimeClassId*> getAllRegisteredClassesChildrenOf(
 const TRuntimeClassId* findRegisteredClass(const std::string& className);
 
 template <typename T>
-constexpr const mrpt::rtti::TRuntimeClassId* CLASS_ID_impl()
+struct CLASS_ID_impl
 {
-	return &T::GetRuntimeClassIdStatic();
-}
+	static constexpr const mrpt::rtti::TRuntimeClassId* get()
+	{
+		return &T::GetRuntimeClassIdStatic();
+	}
+};
+//(A specialization for variant's monostate is provided in CArchive.h)
 
 /** Access to runtime class ID for a defined class name.
  */
-#define CLASS_ID(T) mrpt::rtti::CLASS_ID_impl<T>()
+#define CLASS_ID(T) mrpt::rtti::CLASS_ID_impl<T>::get()
 // Convert these
-#define CLASS_ID_TEMPLATE(class_name, T) mrpt::rtti::CLASS_ID_impl<T>()
+#define CLASS_ID_TEMPLATE(class_name, T) mrpt::rtti::CLASS_ID_impl<T>::get()
 #define CLASS_ID_NAMESPACE(class_name, namespaceName) \
-	mrpt::rtti::CLASS_ID_impl<namespaceName::class_name>()
+	mrpt::rtti::CLASS_ID_impl<namespaceName::class_name>::get()
 
 template <typename T>
 struct IS_CLASS_impl
@@ -94,7 +98,7 @@ struct IS_CLASS_impl
 	template <typename PTR>
 	static bool check(const PTR& p)
 	{
-		return p->GetRuntimeClass() == CLASS_ID_impl<T>();
+		return p->GetRuntimeClass() == CLASS_ID_impl<T>::get();
 	}
 };
 
