@@ -316,7 +316,7 @@ void CFeatureLines::extractLines(
 	// convert cv->STL:
 	segments_out.resize(segments.size());
 	for (unsigned i = 0; i < segments.size(); i++)
-		for (int k = 0; i < 4; k++) segments_out[i][k] = segments[i][k];
+		for (size_t k = 0; k < segments_out[i].size(); k++) segments_out[i][k] = segments[i][k];
 
 	// Display 2D segments
 	if (display)
