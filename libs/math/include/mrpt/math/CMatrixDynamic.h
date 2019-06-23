@@ -65,12 +65,12 @@ public:
 		iteratorImpl(STORAGE ptr) : m_ptr(ptr) { }
 		self operator++() {
 			self i = *this;
-			i.m_ptr++;
+			m_ptr++;
 			return i;
 		}
 		self operator--() {
 			self i = *this;
-			i.m_ptr--;
+			m_ptr--;
 			return i;
 		}
 		self operator++(int) {
