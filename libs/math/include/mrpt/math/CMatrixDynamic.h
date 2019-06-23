@@ -152,12 +152,12 @@ public:
 			m_v.swap(x.m_v);
 		}
 		else if (!m_is_small && x.m_is_small) {
-			m_a = x.m_a;
+			std::copy(x.m_a.begin(), x.m_a.begin() + x.m_size, m_a.begin());
 			x.m_v.swap(m_v);
 		}
 		else {
 			m_v.swap(x.m_v);
-			x.m_a = x.m_a;
+			std::copy(m_a.begin(), m_a.begin() + m_size, x.m_a.begin());
 		}
 		std::swap(m_size, x.m_size);
 		std::swap(m_is_small, x.m_is_small);
