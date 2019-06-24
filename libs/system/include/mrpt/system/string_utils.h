@@ -51,6 +51,14 @@ void tokenize(
 	const std::string& inString, const std::string& inDelimiters,
 	OUT_CONTAINER& outTokens, bool skipBlankTokens = true) noexcept;
 
+// explicit instantiations declarations (to silent gcc warnings):
+extern template void tokenize<std::deque<std::string>>(
+	const std::string& inString, const std::string& inDelimiters,
+	std::deque<std::string>& outTokens, bool skipBlankTokens) noexcept;
+extern template void tokenize<std::vector<std::string>>(
+	const std::string& inString, const std::string& inDelimiters,
+	std::vector<std::string>& outTokens, bool skipBlankTokens) noexcept;
+
 /**  Removes leading and trailing spaces */
 std::string trim(const std::string& str);
 
