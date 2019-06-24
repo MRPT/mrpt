@@ -355,7 +355,7 @@ void CDifodoDatasets::loadFrame()
 {
 	CObservation::Ptr alfa = dataset.getAsObservation(rawlog_count);
 
-	while (!IS_CLASS(alfa, CObservation3DRangeScan))
+	while (!IS_CLASS(*alfa, CObservation3DRangeScan))
 	{
 		rawlog_count++;
 		if (dataset.size() <= rawlog_count)

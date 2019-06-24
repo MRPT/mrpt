@@ -57,7 +57,7 @@ DECLARE_OP_FUNCTION(op_generate_pcd)
 				static_cast<unsigned int>(m_rawlogEntry),
 				obs->sensorLabel.empty() ? "NOLABEL" : obs->sensorLabel.c_str(),
 				timestampTotime_t(obs->timestamp));
-			if (IS_CLASS(obs, CObservation3DRangeScan))
+			if (IS_CLASS(*obs, CObservation3DRangeScan))
 			{
 				CObservation3DRangeScan::Ptr obs3D =
 					std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);
@@ -69,14 +69,14 @@ DECLARE_OP_FUNCTION(op_generate_pcd)
 					CColouredPointsMap map;
 					map.insertionOptions.minDistBetweenLaserPoints = 0;
 
-					map.insertObservation(obs3D.get());
+					map.insertObservation(*obs3D);
 					if (!map.savePCDFile(label_time, false /* not bin format*/))
 						throw std::runtime_error(
 							string("ERROR: While saving file: ") + label_time);
 					entries_done++;
 				}
 			}
-			else if (IS_CLASS(obs, CObservation2DRangeScan))
+			else if (IS_CLASS(*obs, CObservation2DRangeScan))
 			{
 				CObservation2DRangeScan::Ptr obs2D =
 					std::dynamic_pointer_cast<CObservation2DRangeScan>(obs);
@@ -84,7 +84,7 @@ DECLARE_OP_FUNCTION(op_generate_pcd)
 				CSimplePointsMap map;
 				map.insertionOptions.minDistBetweenLaserPoints = 0;
 
-				map.insertObservation(obs2D.get());
+				map.insertObservation(*obs2D);
 				if (!map.savePCDFile(label_time, false /* not bin format*/))
 					throw std::runtime_error(
 						string("ERROR: While saving file: ") + label_time);

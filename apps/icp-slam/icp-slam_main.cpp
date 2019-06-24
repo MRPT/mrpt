@@ -273,7 +273,7 @@ void MapBuilding_ICP(
 			{
 				static CPose2D lastOdo;
 				static bool firstOdo = true;
-				if (IS_CLASS(observation, CObservationOdometry))
+				if (IS_CLASS(*observation, CObservationOdometry))
 				{
 					CObservationOdometry::Ptr o =
 						std::dynamic_pointer_cast<CObservationOdometry>(
@@ -297,7 +297,7 @@ void MapBuilding_ICP(
 				// Rawlog in "Observation-only" format:
 				if (isObsBasedRawlog)
 				{
-					if (IS_CLASS(observation, CObservation2DRangeScan))
+					if (IS_CLASS(*observation, CObservation2DRangeScan))
 					{
 						lst_current_laser_scans.push_back(
 							std::dynamic_pointer_cast<CObservation2DRangeScan>(

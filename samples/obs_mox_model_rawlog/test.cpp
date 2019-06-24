@@ -95,7 +95,7 @@ int main(int argc, char** argv)
 
 			if (o)  // ASSERT_(o);
 			{
-				if (IS_CLASS(o, CObservationGasSensors))
+				if (IS_CLASS(*o, CObservationGasSensors))
 				{
 					CObservationGasSensors::Ptr obs =
 						std::dynamic_pointer_cast<CObservationGasSensors>(o);

@@ -78,7 +78,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
    private:
 	void internal_clear() override;
 	bool internal_insertObservation(
-		const mrpt::obs::CObservation* obs,
+		const mrpt::obs::CObservation& obs,
 		const mrpt::poses::CPose3D* robotPose = nullptr) override;
 
    public:
@@ -120,7 +120,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 	 * \sa Used in particle filter algorithms, see: CMultiMetricMapPDF::update
 	 */
 	double internal_computeObservationLikelihood(
-		const mrpt::obs::CObservation* obs,
+		const mrpt::obs::CObservation& obs,
 		const mrpt::poses::CPose3D& takenFrom) override;
 
 	/** The color of landmark ellipsoids in CLandmarksMap::getAs3DObject */

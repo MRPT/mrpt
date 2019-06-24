@@ -119,7 +119,7 @@ void TestVideoBuildPyr()
 		CObservation::Ptr obs = cam->getNextFrame();
 		if (obs)
 		{
-			if (IS_CLASS(obs, CObservationImage))
+			if (IS_CLASS(*obs, CObservationImage))
 			{
 				// Get the observation object:
 				CObservationImage::Ptr o =

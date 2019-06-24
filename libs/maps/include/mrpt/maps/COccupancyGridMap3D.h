@@ -51,7 +51,7 @@ class COccupancyGridMap3D
 	bool m_is_empty{true};
 
 	/** See base class */
-	void OnPostSuccesfulInsertObs(const mrpt::obs::CObservation*) override;
+	void OnPostSuccesfulInsertObs(const mrpt::obs::CObservation&) override;
 
 	/** Clear the map: It set all voxels to their default occupancy value (0.5),
 	 * without changing the resolution (the grid extension is reset to the
@@ -68,7 +68,7 @@ class COccupancyGridMap3D
 	 * \sa insertionOptions, CObservation::insertObservationInto
 	 */
 	bool internal_insertObservation(
-		const mrpt::obs::CObservation* obs,
+		const mrpt::obs::CObservation& obs,
 		const mrpt::poses::CPose3D* robotPose = nullptr) override;
 
 	void internal_insertObservationScan2D(
@@ -382,11 +382,11 @@ class COccupancyGridMap3D
    private:
 	// See docs in base class
 	double internal_computeObservationLikelihood(
-		const mrpt::obs::CObservation* obs,
+		const mrpt::obs::CObservation& obs,
 		const mrpt::poses::CPose3D& takenFrom) override;
 	// See docs in base class
 	bool internal_canComputeObservationLikelihood(
-		const mrpt::obs::CObservation* obs) const override;
+		const mrpt::obs::CObservation& obs) const override;
 
 	MAP_DEFINITION_START(COccupancyGridMap3D)
 	/** See COccupancyGridMap3D::COccupancyGridMap3D */

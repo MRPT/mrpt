@@ -255,7 +255,7 @@ void CSensoryFrame::internal_buildAuxPointsMap(const void* options) const
 			"linking against mrpt-maps.\n");
 
 	for (const auto& it : *this)
-		if (IS_CLASS(it, CObservation2DRangeScan))
+		if (IS_CLASS(*it, CObservation2DRangeScan))
 			(*ptr_internal_build_points_map_from_scan2D)(
 				dynamic_cast<CObservation2DRangeScan&>(*it.get()), m_cachedMap,
 				options);

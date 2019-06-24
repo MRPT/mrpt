@@ -601,7 +601,7 @@ void do_pf_localization(
 					// Instead,
 					// store its value for use as an "action" together with
 					// the next actual observation:
-					if (IS_CLASS(obs, CObservationOdometry))
+					if (IS_CLASS(*obs, CObservationOdometry))
 					{
 						auto obs_odo =
 							std::dynamic_pointer_cast<CObservationOdometry>(

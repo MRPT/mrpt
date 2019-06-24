@@ -538,7 +538,7 @@ void CFormPlayVideo::OnbtnPlayClick(wxCommandEvent& event)
 
 			bool doDelay = false;
 
-			if (IS_CLASS(obj, CSensoryFrame))
+			if (IS_CLASS(*obj, CSensoryFrame))
 			{
 				doDelay = showSensoryFrame(obj.get(), nImgs);
 			}
@@ -1063,7 +1063,7 @@ void CFormPlayVideo::saveCamImage(int n)
 	wxString defaultDir(
 		(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()));
 
-	if (IS_CLASS(displayedImgs[n], CObservationImage))
+	if (IS_CLASS(*displayedImgs[n], CObservationImage))
 	{
 		CObservationImage::Ptr o =
 			std::dynamic_pointer_cast<CObservationImage>(displayedImgs[n]);
@@ -1081,7 +1081,7 @@ void CFormPlayVideo::saveCamImage(int n)
 
 		o->image.saveToFile(fil);
 	}
-	else if (IS_CLASS(displayedImgs[n], CObservationStereoImages))
+	else if (IS_CLASS(*displayedImgs[n], CObservationStereoImages))
 	{
 		CObservationStereoImages::Ptr o =
 			std::dynamic_pointer_cast<CObservationStereoImages>(

@@ -76,7 +76,7 @@ double grid3d_test_insert2DScan(int res_cm, int a2)
 			rn.drawUniform(-M_PI, M_PI));
 		mrpt::poses::CPose3D pose3D(pose);
 
-		gridmap.insertObservation(&scan1, &pose3D);
+		gridmap.insertObservation(scan1, &pose3D);
 	}
 	return tictac.Tac() / N;
 }
@@ -115,7 +115,7 @@ double grid3d_test_insert3DScan(int res_cm, int DECIM)
 			rn.drawUniform(-M_PI, M_PI));
 		mrpt::poses::CPose3D pose3D(pose);
 
-		gridmap.insertObservation(&obs1, &pose3D);
+		gridmap.insertObservation(obs1, &pose3D);
 	}
 	return tictac.Tac() / N;
 }

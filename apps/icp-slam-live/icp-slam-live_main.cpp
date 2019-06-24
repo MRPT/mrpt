@@ -351,7 +351,7 @@ void MapBuilding_ICP_Live(const string& INI_FILENAME)
 			// Keep the most recent laser scan:
 			for (auto it = obs_copy.rbegin();
 				 !observation && it != obs_copy.rend(); ++it)
-				if (it->second && IS_CLASS(it->second, CObservation2DRangeScan))
+				if (it->second && IS_CLASS(*it->second, CObservation2DRangeScan))
 					observation =
 						std::dynamic_pointer_cast<CObservation2DRangeScan>(
 							it->second);
@@ -361,7 +361,7 @@ void MapBuilding_ICP_Live(const string& INI_FILENAME)
 			{
 				for (auto it = obs_copy.begin(); it != obs_copy.end(); ++it)
 					if (it->second &&
-						IS_CLASS(it->second, CObservation2DRangeScan))
+						IS_CLASS(*it->second, CObservation2DRangeScan))
 						mrpt::serialization::archiveFrom(out_rawlog)
 							<< *it->second;
 			}

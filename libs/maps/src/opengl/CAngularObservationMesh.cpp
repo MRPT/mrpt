@@ -282,7 +282,7 @@ struct CAngularObservationMesh_fnctr
 	CAngularObservationMesh_fnctr(CPointsMap* p) : m(p) {}
 	inline void operator()(const CObservation2DRangeScan& obj)
 	{
-		m->insertObservation(&obj);
+		m->insertObservation(obj);
 	}
 };
 

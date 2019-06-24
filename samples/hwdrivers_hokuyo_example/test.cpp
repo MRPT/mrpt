@@ -145,7 +145,7 @@ void Test_HOKUYO()
 
 			mrpt::maps::CSimplePointsMap theMap;
 			theMap.insertionOptions.minDistBetweenLaserPoints = 0;
-			theMap.insertObservation(&obs);
+			theMap.insertObservation(obs);
 			// map.save2D_to_text_file("_out_scan.txt");
 
 			/*

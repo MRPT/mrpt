@@ -71,7 +71,7 @@ void CPlanarLaserScan::render_dl() const
 		m_cache_points.insertionOptions.minDistBetweenLaserPoints = 0;
 		m_cache_points.insertionOptions.isPlanarMap = false;
 
-		m_cache_points.insertObservation(&m_scan);
+		m_cache_points.insertObservation(m_scan);
 	}
 
 	size_t i, n;
@@ -198,7 +198,7 @@ void CPlanarLaserScan::getBoundingBox(
 		m_cache_points.insertionOptions.minDistBetweenLaserPoints = 0;
 		m_cache_points.insertionOptions.isPlanarMap = false;
 
-		m_cache_points.insertObservation(&m_scan);
+		m_cache_points.insertObservation(m_scan);
 	}
 
 	size_t n;

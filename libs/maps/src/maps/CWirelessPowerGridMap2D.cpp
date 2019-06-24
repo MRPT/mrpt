@@ -117,7 +117,7 @@ void CWirelessPowerGridMap2D::internal_clear()
 						insertObservation
   ---------------------------------------------------------------*/
 bool CWirelessPowerGridMap2D::internal_insertObservation(
-	const CObservation* obs, const CPose3D* robotPose)
+	const CObservation& obs, const CPose3D* robotPose)
 {
 	MRPT_START
 
@@ -139,13 +139,13 @@ bool CWirelessPowerGridMap2D::internal_insertObservation(
 		/********************************************************************
 					OBSERVATION TYPE: CObservationWirelessPower
 		********************************************************************/
-		const auto* o = static_cast<const CObservationWirelessPower*>(obs);
+		const auto& o = static_cast<const CObservationWirelessPower&>(obs);
 		float sensorReading;
 
 		// Compute the 3D sensor pose in world coordinates:
-		CPose2D sensorPose = CPose2D(robotPose3D + o->sensorPoseOnRobot);
+		CPose2D sensorPose = CPose2D(robotPose3D + o.sensorPoseOnRobot);
 
-		sensorReading = o->power;
+		sensorReading = o.power;
 
 		// Normalization:
 		sensorReading = (sensorReading - insertionOptions.R_min) /
@@ -181,7 +181,7 @@ bool CWirelessPowerGridMap2D::internal_insertObservation(
 						computeObservationLikelihood
   ---------------------------------------------------------------*/
 double CWirelessPowerGridMap2D::internal_computeObservationLikelihood(
-	const CObservation* obs, const CPose3D& takenFrom)
+	const CObservation& obs, const CPose3D& takenFrom)
 {
 	MRPT_UNUSED_PARAM(obs);
 	MRPT_UNUSED_PARAM(takenFrom);

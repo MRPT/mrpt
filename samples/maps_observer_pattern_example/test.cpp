@@ -57,13 +57,13 @@ void TestObserverPattern()
 	observer.observeBegin(*map1);
 
 	// Insert:
-	for (int i = 0; i < 3; i++) map1->insertObservation(&obs);
+	for (int i = 0; i < 3; i++) map1->insertObservation(obs);
 
 	// Clear:
 	map1->clear();
 
 	// Insert again:
-	map1->insertObservation(&obs);
+	map1->insertObservation(obs);
 
 	// Destroy
 	map1.reset();

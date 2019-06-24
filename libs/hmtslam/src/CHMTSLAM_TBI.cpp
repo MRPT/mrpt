@@ -217,7 +217,7 @@ CHMTSLAM::TMessageLSLAMfromTBI::Ptr CHMTSLAM::TBI_main_method(
 				// (i.e. image-based detectors)
 				if (pdf)
 				{
-					ASSERT_(IS_CLASS(pdf, CPose3DPDFSOG));
+					ASSERT_(IS_CLASS(*pdf, CPose3DPDFSOG));
 					CPose3DPDFSOG::Ptr SOG =
 						std::dynamic_pointer_cast<CPose3DPDFSOG>(pdf);
 

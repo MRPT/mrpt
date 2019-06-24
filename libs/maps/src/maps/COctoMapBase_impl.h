@@ -34,7 +34,7 @@ template <class OCTREE, class OCTREE_NODE>
 template <class octomap_point3d, class octomap_pointcloud>
 bool COctoMapBase<OCTREE, OCTREE_NODE>::
 	internal_build_PointCloud_for_observation(
-		const mrpt::obs::CObservation* obs,
+		const mrpt::obs::CObservation& obs,
 		const mrpt::poses::CPose3D* robotPose, octomap_point3d& sensorPt,
 		octomap_pointcloud& scan) const
 {
@@ -52,18 +52,18 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::
 		/********************************************************************
 				 OBSERVATION TYPE: CObservation2DRangeScan
 		 ********************************************************************/
-		const auto* o = static_cast<const CObservation2DRangeScan*>(obs);
+		const auto& o = static_cast<const CObservation2DRangeScan&>(obs);
 
 		// Build a points-map representation of the points from the scan
 		// (coordinates are wrt the robot base)
 
 		// Sensor_pose = robot_pose (+) sensor_pose_on_robot
 		CPose3D sensorPose(UNINITIALIZED_POSE);
-		sensorPose.composeFrom(robotPose3D, o->sensorPose);
+		sensorPose.composeFrom(robotPose3D, o.sensorPose);
 		sensorPt =
 			octomap::point3d(sensorPose.x(), sensorPose.y(), sensorPose.z());
 
-		const auto* scanPts = o->buildAuxPointsMap<mrpt::maps::CPointsMap>();
+		const auto* scanPts = o.buildAuxPointsMap<mrpt::maps::CPointsMap>();
 		const size_t nPts = scanPts->size();
 
 		// Transform 3D point cloud:
@@ -91,9 +91,9 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::
 	{
 		// Observations that can be converted into 3D point clouds:
 		const auto* o_scan3D =
-			dynamic_cast<const CObservation3DRangeScan*>(obs);
-		const auto* o_pc = dynamic_cast<const CObservationPointCloud*>(obs);
-		const auto* o_velo = dynamic_cast<const CObservationVelodyneScan*>(obs);
+			dynamic_cast<const CObservation3DRangeScan*>(&obs);
+		const auto* o_pc = dynamic_cast<const CObservationPointCloud*>(&obs);
+		const auto* o_velo = dynamic_cast<const CObservationVelodyneScan*>(&obs);
 
 		// No points?
 		if (o_scan3D && !o_scan3D->hasPoints3D) return false;
@@ -106,12 +106,12 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::
 
 		// Sensor_pose = robot_pose (+) sensor_pose_on_robot
 		CPose3D sensorPose(UNINITIALIZED_POSE);
-		obs->getSensorPose(sensorPose);
+		obs.getSensorPose(sensorPose);
 		sensorPose.composeFrom(robotPose3D, sensorPose);
 		sensorPt =
 			octomap::point3d(sensorPose.x(), sensorPose.y(), sensorPose.z());
 
-		obs->load();  // ensure points are loaded from an external source
+		obs.load();  // ensure points are loaded from an external source
 
 		// size:
 		std::size_t sizeRangeScan = 0;
@@ -212,7 +212,7 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::saveMetricMapRepresentationToFile(
 
 template <class OCTREE, class OCTREE_NODE>
 double COctoMapBase<OCTREE, OCTREE_NODE>::internal_computeObservationLikelihood(
-	const mrpt::obs::CObservation* obs, const mrpt::poses::CPose3D& takenFrom)
+	const mrpt::obs::CObservation& obs, const mrpt::poses::CPose3D& takenFrom)
 {
 	octomap::point3d sensorPt;
 	octomap::Pointcloud scan;

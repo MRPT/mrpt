@@ -422,7 +422,7 @@ void MapBuilding_RBPF()
 			CPose3DPDF::Ptr curPDFptr = mapBuilder.getCurrentPoseEstimation();
 			CPose3DPDFParticles curPDF;
 
-			if (IS_CLASS(curPDFptr, CPose3DPDFParticles))
+			if (IS_CLASS(*curPDFptr, CPose3DPDFParticles))
 			{
 				CPose3DPDFParticles::Ptr pp =
 					std::dynamic_pointer_cast<CPose3DPDFParticles>(curPDFptr);

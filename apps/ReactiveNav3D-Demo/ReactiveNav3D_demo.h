@@ -196,7 +196,7 @@ class CRobotKinects
 			m_maps[k].laserScanSimulator(
 				m_auxlaser, scanpose2d, 0.5f, acc_factor * m_columns,
 				m_std_error, 1, 0);
-			row_points.insertObservation(&m_auxlaser);
+			row_points.insertObservation(m_auxlaser);
 
 			for (unsigned int i = 0; i < m_rows; i++)
 			{
@@ -532,7 +532,7 @@ class CMyReactInterface
 				lasers[i].m_scan, new_pose, 0.5f, lasers[i].m_segments,
 				lasers[i].m_scan.stdError, 1, 0);
 
-			obstacles.insertObservation(&lasers[i].m_scan);
+			obstacles.insertObservation(lasers[i].m_scan);
 		}
 		timestamp = mrpt::system::now();
 

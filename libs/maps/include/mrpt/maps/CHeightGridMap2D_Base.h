@@ -75,7 +75,7 @@ class CHeightGridMap2D_Base
 
 	/** Internal method called by internal_insertObservation() */
 	bool dem_internal_insertObservation(
-		const mrpt::obs::CObservation* obs,
+		const mrpt::obs::CObservation& obs,
 		const mrpt::poses::CPose3D* robotPose = nullptr);
 };
 }  // namespace mrpt::maps

@@ -116,7 +116,7 @@ void CPosePDFGaussianInf::copyFrom(const CPosePDF& o)
 {
 	if (this == &o) return;  // It may be used sometimes
 
-	if (IS_CLASS(&o, CPosePDFGaussianInf))
+	if (IS_CLASS(o, CPosePDFGaussianInf))
 	{  // It's my same class:
 		const auto* ptr = dynamic_cast<const CPosePDFGaussianInf*>(&o);
 		mean = ptr->mean;
@@ -140,7 +140,7 @@ void CPosePDFGaussianInf::copyFrom(const CPose3DPDF& o)
 	// Convert to gaussian pdf:
 	mean = CPose2D(o.getMeanVal());
 
-	if (IS_CLASS(&o, CPose3DPDFGaussianInf))
+	if (IS_CLASS(o, CPose3DPDFGaussianInf))
 	{  // Cov is already in information form:
 		const auto* ptr = dynamic_cast<const CPose3DPDFGaussianInf*>(&o);
 		cov_inv(0, 0) = ptr->cov_inv(0, 0);

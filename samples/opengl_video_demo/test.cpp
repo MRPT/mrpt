@@ -82,7 +82,7 @@ void TestOpenGLVideo()
 		CObservation::Ptr obs = cam->getNextFrame();
 		if (obs)
 		{
-			if (IS_CLASS(obs, CObservationImage))
+			if (IS_CLASS(*obs, CObservationImage))
 			{
 				CObservationImage::Ptr o =
 					std::dynamic_pointer_cast<CObservationImage>(obs);

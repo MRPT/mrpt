@@ -74,7 +74,7 @@ void Test_UserTypes()
 			  << std::endl;
 	std::cout << "Is Bar?     => " << (IS_DERIVED(pObj, Bar) ? "Yes" : "No")
 			  << std::endl;
-	if (IS_CLASS(pObj, Bar))
+	if (IS_CLASS(*pObj, Bar))
 	{
 		auto pBar = mrpt::ptr_cast<Bar>::from(pObj);
 		pBar->specificBarMethod();
@@ -116,7 +116,7 @@ void Test_UserTypesFactory()
 	// Test factory:
 	{
 		mrpt::rtti::CObject::Ptr pObj = mrpt::rtti::classFactory("MyNS::Bar");
-		if (IS_CLASS(pObj, MyNS::Bar))
+		if (IS_CLASS(*pObj, MyNS::Bar))
 		{
 			auto pBar = mrpt::ptr_cast<MyNS::Bar>::from(pObj);
 			pBar->specificBarMethod();
