@@ -353,7 +353,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 	{
 		it->load();
 		// force generate 3D point clouds:
-		if (IS_CLASS(it, CObservation3DRangeScan))
+		if (IS_CLASS(*it, CObservation3DRangeScan))
 		{
 			CObservation3DRangeScan::Ptr o =
 				std::dynamic_pointer_cast<CObservation3DRangeScan>(it);
@@ -387,7 +387,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 	{
 		const std::string sNameInMap =
 			std::string(it->GetRuntimeClass()->className) + it->sensorLabel;
-		if (IS_CLASS(it, CObservation2DRangeScan))
+		if (IS_CLASS(*it, CObservation2DRangeScan))
 		{
 			CObservation2DRangeScan::Ptr obs =
 				std::dynamic_pointer_cast<CObservation2DRangeScan>(it);
@@ -419,7 +419,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 				m_plot3D->getOpenGLSceneRef()->insert(gl_obj);
 			}
 		}
-		else if (IS_CLASS(it, CObservation3DRangeScan))
+		else if (IS_CLASS(*it, CObservation3DRangeScan))
 		{
 			CObservation3DRangeScan::Ptr obs =
 				std::dynamic_pointer_cast<CObservation3DRangeScan>(it);
@@ -432,7 +432,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 				CColouredPointsMap::cmFromIntensityImage;
 			pointMap.insertionOptions.minDistBetweenLaserPoints = 0;
 
-			pointMap.insertObservation(obs.get());
+			pointMap.insertObservation(*obs);
 
 			// Already in the map with the same sensor label?
 			auto it_gl = m_gl_objects.find(sNameInMap);
@@ -462,7 +462,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 			// Add to list:
 			//				m_lstScans[obs->sensorLabel] = obs;
 		}
-		else if (IS_CLASS(it, CObservationVelodyneScan))
+		else if (IS_CLASS(*it, CObservationVelodyneScan))
 		{
 			CObservationVelodyneScan::Ptr obs =
 				std::dynamic_pointer_cast<CObservationVelodyneScan>(it);
@@ -501,7 +501,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 				m_plot3D->getOpenGLSceneRef()->insert(gl_obj);
 			}
 		}
-		else if (IS_CLASS(it, CObservationPointCloud))
+		else if (IS_CLASS(*it, CObservationPointCloud))
 		{
 			auto obs = std::dynamic_pointer_cast<CObservationPointCloud>(it);
 			wereScans = true;

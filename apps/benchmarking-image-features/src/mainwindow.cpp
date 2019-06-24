@@ -1026,7 +1026,7 @@ void MainWindow::readRawlogFiles(string rawlog)
 				{
 					CObservation::Ptr o = dataset.getAsObservation(i);
 
-					if (IS_CLASS(o, CObservationStereoImages))
+					if (IS_CLASS(*o, CObservationStereoImages))
 					{
 						CObservationStereoImages::Ptr obsSt =
 							std::dynamic_pointer_cast<CObservationStereoImages>(
@@ -1047,7 +1047,7 @@ void MainWindow::readRawlogFiles(string rawlog)
 						// Mat cvImg1 =
 						// cv::cvarrToMat(image_c.getAs<IplImage>());
 					}
-					else if (IS_CLASS(o, CObservationImage))
+					else if (IS_CLASS(*o, CObservationImage))
 					{
 						CObservationImage::Ptr obsIm =
 							std::dynamic_pointer_cast<CObservationImage>(o);

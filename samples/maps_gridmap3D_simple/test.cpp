@@ -31,7 +31,7 @@ void TestGridMap3D()
 	{
 		mrpt::obs::CObservation2DRangeScan scan1;
 		mrpt::obs::stock_observations::example2DRangeScan(scan1);
-		map.insertObservation(&scan1);
+		map.insertObservation(scan1);
 	}
 
 	mrpt::gui::CDisplayWindow3D win("GridMap3D demo", 640, 480);

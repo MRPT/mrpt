@@ -240,8 +240,8 @@ bool TUserOptionsChecker<GRAPH_t>::checkRegistrationDeciderExists(
 		// TODO - check this
 		// if decider is not suitable for the selected SLAM type, ignore.
 		pose_t p;
-		if ((!dec->is_slam_2d && IS_CLASS(&p, CPose2D)) ||
-			(!dec->is_slam_3d && IS_CLASS(&p, CPose3D)))
+		if ((!dec->is_slam_2d && IS_CLASS(p, CPose2D)) ||
+			(!dec->is_slam_3d && IS_CLASS(p, CPose3D)))
 		{
 			continue;
 		}
@@ -278,8 +278,8 @@ bool TUserOptionsChecker<GRAPH_t>::checkOptimizerExists(
 
 		// if optimizer is not suitable for the selected SLAM type, ignore.
 		pose_t p;
-		if ((!opt->is_slam_2d && IS_CLASS(&p, CPose2D)) &&
-			(!opt->is_slam_3d && IS_CLASS(&p, CPose3D)))
+		if ((!opt->is_slam_2d && IS_CLASS(p, CPose2D)) &&
+			(!opt->is_slam_3d && IS_CLASS(p, CPose3D)))
 		{
 			continue;
 		}

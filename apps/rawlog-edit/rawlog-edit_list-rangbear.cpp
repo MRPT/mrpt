@@ -54,7 +54,7 @@ DECLARE_OP_FUNCTION(op_list_rangebearing)
 
 		bool processOneObservation(CObservation::Ptr& obs) override
 		{
-			if (IS_CLASS(obs, CObservationBearingRange))
+			if (IS_CLASS(*obs, CObservationBearingRange))
 			{
 				const CObservationBearingRange::Ptr obsRB_ =
 					std::dynamic_pointer_cast<CObservationBearingRange>(obs);

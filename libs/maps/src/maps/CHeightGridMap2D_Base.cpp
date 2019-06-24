@@ -125,7 +125,7 @@ bool CHeightGridMap2D_Base::intersectLine3D(
 }
 
 bool CHeightGridMap2D_Base::dem_internal_insertObservation(
-	const mrpt::obs::CObservation* obs, const mrpt::poses::CPose3D* robotPose)
+	const mrpt::obs::CObservation& obs, const mrpt::poses::CPose3D* robotPose)
 {
 	using namespace mrpt::poses;
 	using namespace mrpt::obs;
@@ -144,12 +144,12 @@ bool CHeightGridMap2D_Base::dem_internal_insertObservation(
 		/********************************************************************
 					OBSERVATION TYPE: CObservation2DRangeScan
 		********************************************************************/
-		const auto* o = static_cast<const CObservation2DRangeScan*>(obs);
+		const auto& o = static_cast<const CObservation2DRangeScan&>(obs);
 
 		// Create points map, if not created yet:
 		CPointsMap::TInsertionOptions opts;
 		const auto* thePoints =
-			o->buildAuxPointsMap<mrpt::maps::CPointsMap>(&opts);
+			o.buildAuxPointsMap<mrpt::maps::CPointsMap>(&opts);
 
 		// And rotate to the robot pose:
 		thePointsMoved.changeCoordinatesReference(*thePoints, robotPose3D);
@@ -159,10 +159,10 @@ bool CHeightGridMap2D_Base::dem_internal_insertObservation(
 		/********************************************************************
 					OBSERVATION TYPE: CObservationVelodyneScan
 		********************************************************************/
-		const auto* o = static_cast<const CObservationVelodyneScan*>(obs);
+		const auto& o = static_cast<const CObservationVelodyneScan&>(obs);
 
 		// Create points map, if not created yet:
-		thePointsMoved.loadFromVelodyneScan(*o, &robotPose3D);
+		thePointsMoved.loadFromVelodyneScan(o, &robotPose3D);
 	}
 
 	// Factorized insertion of points, for different observation classes:

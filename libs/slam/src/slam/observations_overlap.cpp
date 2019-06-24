@@ -27,8 +27,8 @@ double mrpt::slam::observationsOverlap(
 	const mrpt::obs::CObservation* o1, const mrpt::obs::CObservation* o2,
 	const mrpt::poses::CPose3D* pose_o2_wrt_o1)
 {
-	if (IS_CLASS(o1, CObservation2DRangeScan) &&
-		IS_CLASS(o2, CObservation2DRangeScan))
+	if (IS_CLASS(*o1, CObservation2DRangeScan) &&
+		IS_CLASS(*o2, CObservation2DRangeScan))
 	{
 		const auto* this_obs = static_cast<const CObservation2DRangeScan*>(o1);
 		const auto* obs = static_cast<const CObservation2DRangeScan*>(o2);

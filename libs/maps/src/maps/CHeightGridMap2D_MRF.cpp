@@ -143,7 +143,7 @@ void CHeightGridMap2D_MRF::internal_clear()
 }
 
 bool CHeightGridMap2D_MRF::internal_insertObservation(
-	const CObservation* obs, const CPose3D* robotPose)
+	const CObservation& obs, const CPose3D* robotPose)
 {
 	return dem_internal_insertObservation(obs, robotPose);
 }
@@ -152,7 +152,7 @@ bool CHeightGridMap2D_MRF::internal_insertObservation(
 						computeObservationLikelihood
   ---------------------------------------------------------------*/
 double CHeightGridMap2D_MRF::internal_computeObservationLikelihood(
-	const CObservation* obs, const CPose3D& takenFrom)
+	const CObservation& obs, const CPose3D& takenFrom)
 {
 	MRPT_UNUSED_PARAM(obs);
 	MRPT_UNUSED_PARAM(takenFrom);

@@ -235,7 +235,7 @@ int main(int argc, char** argv)
 
 						out_arch << acts;
 					}
-					else if (IS_CLASS(it->second, CObservationOdometry))
+					else if (IS_CLASS(*it->second, CObservationOdometry))
 					{
 						CObservationOdometry::Ptr odom =
 							std::dynamic_pointer_cast<CObservationOdometry>(

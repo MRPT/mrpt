@@ -179,8 +179,7 @@ double
 	// For each observation:
 	double ret = 1;
 	for (const auto& it : observation)
-		ret += map->computeObservationLikelihood(
-			it.get(), x);  // Compute the likelihood:
+		ret += map->computeObservationLikelihood(*it, x);  // Compute the likelihood:
 
 	// Done!
 	return ret;

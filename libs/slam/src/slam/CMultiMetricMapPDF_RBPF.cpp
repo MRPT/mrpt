@@ -219,7 +219,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 		if (robotMovement2D)
 		{
 			robotActionSampler.setPosePDF(
-				robotMovement2D->poseChange.get_ptr());
+				*robotMovement2D->poseChange);
 			motionModelMeanIncr =
 				mrpt::poses::CPose3D(robotMovement2D->poseChange->getMeanVal());
 		}
@@ -494,7 +494,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 
 			for (const auto& itObs : *sf)
 			{
-				if (IS_CLASS(itObs, CObservationBeaconRanges))
+				if (IS_CLASS(*itObs, CObservationBeaconRanges))
 				{
 					const auto* obs =
 						static_cast<const CObservationBeaconRanges*>(
@@ -1020,6 +1020,6 @@ double CMultiMetricMapPDF::PF_SLAM_computeObservationLikelihoodForParticle(
 		&m_particles[particleIndexForMap].d->mapTillNow);
 	double ret = 0;
 	for (const auto& it : observation)
-		ret += map->computeObservationLikelihood((CObservation*)it.get(), x);
+		ret += map->computeObservationLikelihood(*it, x);
 	return ret;
 }

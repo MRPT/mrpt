@@ -108,14 +108,14 @@ DECLARE_OP_FUNCTION(op_camera_params)
 		{
 			if (strCmpI(obs->sensorLabel, target_label))
 			{
-				if (IS_CLASS(obs, CObservationImage))
+				if (IS_CLASS(*obs, CObservationImage))
 				{
 					CObservationImage::Ptr o =
 						std::dynamic_pointer_cast<CObservationImage>(obs);
 					o->cameraParams = new_cam_params;
 					m_changedCams++;
 				}
-				else if (IS_CLASS(obs, CObservationStereoImages))
+				else if (IS_CLASS(*obs, CObservationStereoImages))
 				{
 					CObservationStereoImages::Ptr o =
 						std::dynamic_pointer_cast<CObservationStereoImages>(

@@ -143,7 +143,7 @@ void CBeaconMap::serializeFrom(
 					computeObservationLikelihood
   ---------------------------------------------------------------*/
 double CBeaconMap::internal_computeObservationLikelihood(
-	const CObservation* obs, const CPose3D& robotPose3D)
+	const CObservation& obs, const CPose3D& robotPose3D)
 {
 	MRPT_START
 
@@ -157,7 +157,7 @@ double CBeaconMap::internal_computeObservationLikelihood(
 	   ===============================================================================================================
 	   */
 
-	if (CLASS_ID(CObservationBeaconRanges) == obs->GetRuntimeClass())
+	if (CLASS_ID(CObservationBeaconRanges) == obs.GetRuntimeClass())
 	{
 		/********************************************************************
 
@@ -167,26 +167,24 @@ double CBeaconMap::internal_computeObservationLikelihood(
 
 			********************************************************************/
 		double ret = 0;
-		const auto* o = static_cast<const CObservationBeaconRanges*>(obs);
-		deque<CObservationBeaconRanges::TMeasurement>::const_iterator it_obs;
+		const auto& o = static_cast<const CObservationBeaconRanges&>(obs);
 		const CBeacon* beac;
 		CPoint3D sensor3D;
 
-		for (it_obs = o->sensedData.begin(); it_obs != o->sensedData.end();
-			 ++it_obs)
+		for (auto &it_obs: o.sensedData)
 		{
 			// Look for the beacon in this map:
-			beac = getBeaconByID(it_obs->beaconID);
+			beac = getBeaconByID(it_obs.beaconID);
 
-			if (beac != nullptr && it_obs->sensedDistance > 0 &&
-				!std::isnan(it_obs->sensedDistance))
+			if (beac != nullptr && it_obs.sensedDistance > 0 &&
+				!std::isnan(it_obs.sensedDistance))
 			{
-				float sensedRange = it_obs->sensedDistance;
+				float sensedRange = it_obs.sensedDistance;
 
 				// FOUND: Compute the likelihood function:
 				// -----------------------------------------------------
 				// Compute the 3D position of the sensor:
-				sensor3D = robotPose3D + it_obs->sensorLocationOnRobot;
+				sensor3D = robotPose3D + it_obs.sensorLocationOnRobot;
 
 				// Depending on the PDF type of the beacon in the map:
 				switch (beac->m_typePDF)
@@ -329,9 +327,9 @@ double CBeaconMap::internal_computeObservationLikelihood(
 			else
 			{
 				// If not found, a uniform distribution:
-				if (o->maxSensorDistance != o->minSensorDistance)
+				if (o.maxSensorDistance != o.minSensorDistance)
 					ret += log(
-						1.0 / (o->maxSensorDistance - o->minSensorDistance));
+						1.0 / (o.maxSensorDistance - o.minSensorDistance));
 			}
 		}  // for each sensed beacon "it"
 
@@ -354,7 +352,7 @@ double CBeaconMap::internal_computeObservationLikelihood(
 						insertObservation
   ---------------------------------------------------------------*/
 bool CBeaconMap::internal_insertObservation(
-	const mrpt::obs::CObservation* obs, const CPose3D* robotPose)
+	const mrpt::obs::CObservation& obs, const CPose3D* robotPose)
 {
 	MRPT_START
 
@@ -371,7 +369,7 @@ bool CBeaconMap::internal_insertObservation(
 		// Default values are (0,0,0)
 	}
 
-	if (CLASS_ID(CObservationBeaconRanges) == obs->GetRuntimeClass())
+	if (CLASS_ID(CObservationBeaconRanges) == obs.GetRuntimeClass())
 	{
 		/********************************************************************
 						OBSERVATION TYPE: CObservationBeaconRanges
@@ -389,9 +387,9 @@ bool CBeaconMap::internal_insertObservation(
 
 		// Here we fuse OR create the beacon position PDF:
 		// --------------------------------------------------------
-		const auto* o = static_cast<const CObservationBeaconRanges*>(obs);
+		const auto& o = static_cast<const CObservationBeaconRanges&>(obs);
 
-		for (const auto& it : o->sensedData)
+		for (const auto& it : o.sensedData)
 		{
 			CPoint3D sensorPnt(robotPose3D + it.sensorLocationOnRobot);
 			float sensedRange = it.sensedDistance;

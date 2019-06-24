@@ -39,7 +39,7 @@ void thread_reader(CPipeReadEndPoint& read_pipe)
 		// pointers with ReadObject(&existingObj)
 		auto arch = mrpt::serialization::archiveFrom(read_pipe);
 		auto obj = arch.ReadObject();
-		if (IS_CLASS(obj, CPose3D))
+		if (IS_CLASS(*obj, CPose3D))
 		{
 			CPose3D::Ptr ptrPose = std::dynamic_pointer_cast<CPose3D>(obj);
 			cout << "RX pose: " << *ptrPose << endl;

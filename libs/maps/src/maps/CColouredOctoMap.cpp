@@ -147,7 +147,7 @@ void CColouredOctoMap::serializeFrom(
 				insertObservation
  ---------------------------------------------------------------*/
 bool CColouredOctoMap::internal_insertObservation(
-	const mrpt::obs::CObservation* obs, const CPose3D* robotPose)
+	const mrpt::obs::CObservation& obs, const CPose3D* robotPose)
 {
 	octomap::point3d sensorPt;
 	octomap::Pointcloud scan;
@@ -161,18 +161,18 @@ bool CColouredOctoMap::internal_insertObservation(
 		/********************************************************************
 				OBSERVATION TYPE: CObservation2DRangeScan
 		********************************************************************/
-		const auto* o = static_cast<const CObservation2DRangeScan*>(obs);
+		const auto& o = static_cast<const CObservation2DRangeScan&>(obs);
 
 		// Build a points-map representation of the points from the scan
 		// (coordinates are wrt the robot base)
 
 		// Sensor_pose = robot_pose (+) sensor_pose_on_robot
 		CPose3D sensorPose(UNINITIALIZED_POSE);
-		sensorPose.composeFrom(robotPose3D, o->sensorPose);
+		sensorPose.composeFrom(robotPose3D, o.sensorPose);
 		sensorPt =
 			octomap::point3d(sensorPose.x(), sensorPose.y(), sensorPose.z());
 
-		const auto* scanPts = o->buildAuxPointsMap<mrpt::maps::CPointsMap>();
+		const auto* scanPts = o.buildAuxPointsMap<mrpt::maps::CPointsMap>();
 		const size_t nPts = scanPts->size();
 
 		// Transform 3D point cloud:
@@ -203,9 +203,9 @@ bool CColouredOctoMap::internal_insertObservation(
 		/********************************************************************
 				OBSERVATION TYPE: CObservation3DRangeScan
 		********************************************************************/
-		const auto* o = static_cast<const CObservation3DRangeScan*>(obs);
+		const auto& o = static_cast<const CObservation3DRangeScan&>(obs);
 
-		o->load();  // Just to make sure the points are loaded from an external
+		o.load();  // Just to make sure the points are loaded from an external
 		// source, if that's the case...
 
 		// Project 3D points & color:
@@ -214,12 +214,12 @@ bool CColouredOctoMap::internal_insertObservation(
 		T3DPointsProjectionParams proj_params;
 		proj_params.PROJ3D_USE_LUT = true;
 		proj_params.robotPoseInTheWorld = robotPose;
-		const_cast<CObservation3DRangeScan*>(o)
-			->project3DPointsFromDepthImageInto(*pts, proj_params);
+		const_cast<CObservation3DRangeScan&>(o)
+			.project3DPointsFromDepthImageInto(*pts, proj_params);
 
 		// Sensor_pose = robot_pose (+) sensor_pose_on_robot
 		CPose3D sensorPose(UNINITIALIZED_POSE);
-		sensorPose.composeFrom(robotPose3D, o->sensorPose);
+		sensorPose.composeFrom(robotPose3D, o.sensorPose);
 		sensorPt =
 			octomap::point3d(sensorPose.x(), sensorPose.y(), sensorPose.z());
 

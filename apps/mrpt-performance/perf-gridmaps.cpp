@@ -120,7 +120,7 @@ double grid_test_5_6(int a1, int a2)
 			getRandomGenerator().drawUniform(-M_PI, M_PI));
 		CPose3D pose3D(pose);
 
-		gridmap.insertObservation(&scan1, &pose3D);
+		gridmap.insertObservation(scan1, &pose3D);
 	}
 	return tictac.Tac() / N;
 }
@@ -149,7 +149,7 @@ double grid_test_8(int a1, int a2)
 	const long N = 5000;
 
 	CPose3D pose3D(0, 0, 0);
-	gridmap.insertObservation(&scan1, &pose3D);
+	gridmap.insertObservation(scan1, &pose3D);
 
 	double R = 0;
 	CTicTac tictac;
@@ -159,7 +159,7 @@ double grid_test_8(int a1, int a2)
 			getRandomGenerator().drawUniform(-1.0, 1.0),
 			getRandomGenerator().drawUniform(-1.0, 1.0),
 			getRandomGenerator().drawUniform(-M_PI, M_PI));
-		R += gridmap.computeObservationLikelihood(&scan1, pose);
+		R += gridmap.computeObservationLikelihood(scan1, pose);
 	}
 	return tictac.Tac() / N;
 }
@@ -178,10 +178,10 @@ double grid_test_9(int a1, int a2)
 	pt_map2.insertionOptions.minDistBetweenLaserPoints = 0.03f;
 
 	CPose3D pose;
-	gridmap.insertObservation(&scan1, &pose);
+	gridmap.insertObservation(scan1, &pose);
 
 	CPose3D pose2(0.05, 0.04, 0, DEG2RAD(4), 0, 0);
-	pt_map2.insertObservation(&scan1, &pose2);
+	pt_map2.insertObservation(scan1, &pose2);
 
 	const CPose2D nullPose(0, 0, 0);
 	TMatchingPairList correspondences;

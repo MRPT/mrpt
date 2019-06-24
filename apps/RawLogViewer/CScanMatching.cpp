@@ -548,7 +548,7 @@ class CMyButtonsDisabler
 static void insert_obs_into_map(
 	const CSerializable::Ptr& obj, mrpt::maps::CMetricMap* theMap)
 {
-	if (IS_CLASS(obj, CSensoryFrame))
+	if (IS_CLASS(*obj, CSensoryFrame))
 	{
 		auto SF = std::dynamic_pointer_cast<CSensoryFrame>(obj);
 		SF->insertObservationsInto(theMap);
@@ -556,13 +556,13 @@ static void insert_obs_into_map(
 	else if (IS_DERIVED(obj, CObservation))
 	{
 		CObservationVelodyneScan::Ptr obs_velodyne;
-		if (IS_CLASS(obj, CObservationVelodyneScan))
+		if (IS_CLASS(*obj, CObservationVelodyneScan))
 		{
 			obs_velodyne = mrpt::ptr_cast<CObservationVelodyneScan>::from(obj);
 			obs_velodyne->generatePointCloud();
 		}
 		auto obs_ref = std::dynamic_pointer_cast<CObservation>(obj);
-		theMap->insertObservation(obs_ref.get());
+		theMap->insertObservation(*obs_ref);
 
 		// free mem:
 		if (obs_velodyne) obs_velodyne->point_cloud.clear_deep();

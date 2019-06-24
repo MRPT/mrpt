@@ -32,7 +32,7 @@ class CCascadeClassifierDetection : virtual public CObjectDetection
 	 */
 
 	void detectObjects_Impl(
-		const mrpt::obs::CObservation* obs,
+		const mrpt::obs::CObservation& obs,
 		vector_detectable_object& detected) override;
 
 	/** Cascade classifier object */

@@ -129,7 +129,7 @@ void CFaceDetection::init(const mrpt::config::CConfigFileBase& cfg)
 //							detectObjects
 //------------------------------------------------------------------------
 void CFaceDetection::detectObjects_Impl(
-	const mrpt::obs::CObservation* obs, vector_detectable_object& detected)
+	const mrpt::obs::CObservation& obs, vector_detectable_object& detected)
 {
 	MRPT_START
 
@@ -159,10 +159,10 @@ void CFaceDetection::detectObjects_Impl(
 			if (m_measure.takeTime) m_timeLog.enter("Check if real face time");
 		}
 
-		auto* o = static_cast<CObservation3DRangeScan*>(
-			const_cast<CObservation*>(obs));
+		auto& o = static_cast<CObservation3DRangeScan&>(
+			const_cast<CObservation&>(obs));
 
-		if (o->hasPoints3D)
+		if (o.hasPoints3D)
 		{
 			// Vector to save detected objects to delete if they aren't a face
 			vector<size_t> deleteDetected;
@@ -180,7 +180,7 @@ void CFaceDetection::detectObjects_Impl(
 				unsigned int c1 = rec->m_x;
 				unsigned int c2 = rec->m_x + rec->m_width;
 
-				o->getZoneAsObs(m_lastFaceDetected, r1, r2, c1, c2);
+				o.getZoneAsObs(m_lastFaceDetected, r1, r2, c1, c2);
 
 				if (m_options.multithread)
 				{

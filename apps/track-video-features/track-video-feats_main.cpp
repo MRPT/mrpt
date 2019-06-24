@@ -159,17 +159,17 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
 
 		CImage theImg;  // The grabbed image:
 
-		if (IS_CLASS(obs, CObservationImage))
+		if (IS_CLASS(*obs, CObservationImage))
 		{
 			auto o = std::dynamic_pointer_cast<CObservationImage>(obs);
 			theImg = std::move(o->image);
 		}
-		else if (IS_CLASS(obs, CObservationStereoImages))
+		else if (IS_CLASS(*obs, CObservationStereoImages))
 		{
 			auto o = std::dynamic_pointer_cast<CObservationStereoImages>(obs);
 			theImg = std::move(o->imageLeft);
 		}
-		else if (IS_CLASS(obs, CObservation3DRangeScan))
+		else if (IS_CLASS(*obs, CObservation3DRangeScan))
 		{
 			auto o = std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);
 			if (o->hasIntensityImage) theImg = std::move(o->intensityImage);

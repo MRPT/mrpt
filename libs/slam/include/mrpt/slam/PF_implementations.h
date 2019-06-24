@@ -123,7 +123,7 @@ bool PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 
 		ASSERT_(theResultingRobotMov.poseChange);
 		m_movementDrawer.setPosePDF(
-			theResultingRobotMov.poseChange.get_ptr());  // <--- Set mov. drawer
+			*theResultingRobotMov.poseChange);  // <--- Set mov. drawer
 		m_accumRobotMovement2DIsValid =
 			false;  // Reset odometry for next iteration
 	}
@@ -207,7 +207,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 			{
 				ASSERT_(robotMovement2D->poseChange);
 				m_movementDrawer.setPosePDF(
-					robotMovement2D->poseChange.get_ptr());
+					*robotMovement2D->poseChange);
 				motionModelMeanIncr = mrpt::poses::CPose3D(
 					robotMovement2D->poseChange->getMeanVal());
 			}

@@ -217,38 +217,38 @@ void CLandmarksMap::serializeFrom(
 					computeObservationLikelihood
   ---------------------------------------------------------------*/
 double CLandmarksMap::internal_computeObservationLikelihood(
-	const CObservation* obs, const CPose3D& robotPose3D)
+	const CObservation& obs, const CPose3D& robotPose3D)
 {
 	MRPT_START
 
-	if (CLASS_ID(CObservation2DRangeScan) == obs->GetRuntimeClass() &&
+	if (CLASS_ID(CObservation2DRangeScan) == obs.GetRuntimeClass() &&
 		insertionOptions.insert_Landmarks_from_range_scans)
 	{
 		/********************************************************************
 						OBSERVATION TYPE: CObservation2DRangeScan
 			********************************************************************/
-		const auto* o = static_cast<const CObservation2DRangeScan*>(obs);
+		const auto& o = static_cast<const CObservation2DRangeScan&>(obs);
 		CLandmarksMap auxMap;
-		CPose2D sensorPose2D(robotPose3D + o->sensorPose);
+		CPose2D sensorPose2D(robotPose3D + o.sensorPose);
 
 		auxMap.loadOccupancyFeaturesFrom2DRangeScan(
-			*o, &robotPose3D, likelihoodOptions.rangeScan2D_decimation);
+			o, &robotPose3D, likelihoodOptions.rangeScan2D_decimation);
 
 		// And compute its likelihood:
 		return computeLikelihood_RSLC_2007(&auxMap, sensorPose2D);
 	}  // end of likelihood of 2D range scan:
-	else if (CLASS_ID(CObservationStereoImages) == obs->GetRuntimeClass())
+	else if (CLASS_ID(CObservationStereoImages) == obs.GetRuntimeClass())
 	{
 		/********************************************************************
 						OBSERVATION TYPE: CObservationStereoImages
 				Lik. between "this" and "auxMap";
 			********************************************************************/
-		const auto* o = static_cast<const CObservationStereoImages*>(obs);
+		const auto& o = static_cast<const CObservationStereoImages&>(obs);
 
 		CLandmarksMap auxMap;
 		auxMap.insertionOptions = insertionOptions;
 		auxMap.loadSiftFeaturesFromStereoImageObservation(
-			*o, CLandmarksMap::_mapMaxID, likelihoodOptions.SIFT_feat_options);
+			o, CLandmarksMap::_mapMaxID, likelihoodOptions.SIFT_feat_options);
 		auxMap.changeCoordinatesReference(robotPose3D);
 
 		// ACCESS TO STATIC VARIABLE
@@ -264,7 +264,7 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 		return computeLikelihood_SIFT_LandmarkMap(&auxMap);
 
 	}  // end of likelihood of Stereo Images scan:
-	else if (CLASS_ID(CObservationBeaconRanges) == obs->GetRuntimeClass())
+	else if (CLASS_ID(CObservationBeaconRanges) == obs.GetRuntimeClass())
 	{
 		/********************************************************************
 
@@ -273,7 +273,7 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 				Lik. between "this" and "auxMap";
 
 			********************************************************************/
-		const auto* o = static_cast<const CObservationBeaconRanges*>(obs);
+		const auto& o = static_cast<const CObservationBeaconRanges&>(obs);
 
 		std::deque<CObservationBeaconRanges::TMeasurement>::const_iterator it;
 		TSequenceLandmarks::iterator lm_it;
@@ -281,7 +281,7 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 		CPoint3D point3D, beacon3D;
 		double ret = 0;  // 300;
 
-		for (it = o->sensedData.begin(); it != o->sensedData.end(); it++)
+		for (it = o.sensedData.begin(); it != o.sensedData.end(); it++)
 		{
 			// Look for the beacon in this map:
 			unsigned int sensedID = it->beaconID;
@@ -306,7 +306,7 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 
 					float sensorStd =
 						likelihoodOptions.beaconRangesUseObservationStd
-							? o->stdError
+							? o.stdError
 							: likelihoodOptions.beaconRangesStd;
 					ret +=
 						(-0.5f *
@@ -318,9 +318,9 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 			// If not found, uniform distribution:
 			if (!found)
 			{
-				if (o->maxSensorDistance != o->minSensorDistance)
+				if (o.maxSensorDistance != o.minSensorDistance)
 					ret += log(
-						1.0 / (o->maxSensorDistance - o->minSensorDistance));
+						1.0 / (o.maxSensorDistance - o.minSensorDistance));
 			}
 
 		}  // for each sensed beacon "it"
@@ -329,7 +329,7 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 		return ret;
 
 	}  // end of likelihood of CObservationBeaconRanges
-	else if (CLASS_ID(CObservationRobotPose) == obs->GetRuntimeClass())
+	else if (CLASS_ID(CObservationRobotPose) == obs.GetRuntimeClass())
 	{
 		/********************************************************************
 
@@ -338,23 +338,23 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 				Lik. between "this" and "robotPose";
 
 		********************************************************************/
-		const auto* o = static_cast<const CObservationRobotPose*>(obs);
+		const auto& o = static_cast<const CObservationRobotPose&>(obs);
 
 		// Compute the 3D position of the sensor:
-		CPose3D sensorPose3D = robotPose3D + o->sensorPose;
+		CPose3D sensorPose3D = robotPose3D + o.sensorPose;
 
 		// Compute the likelihood according to mahalanobis distance between
 		// poses:
 		CMatrixD dij(1, 6), Cij(6, 6), Cij_1;
-		dij(0, 0) = o->pose.mean.x() - sensorPose3D.x();
-		dij(0, 1) = o->pose.mean.y() - sensorPose3D.y();
-		dij(0, 2) = o->pose.mean.z() - sensorPose3D.z();
-		dij(0, 3) = wrapToPi(o->pose.mean.yaw() - sensorPose3D.yaw());
-		dij(0, 4) = wrapToPi(o->pose.mean.pitch() - sensorPose3D.pitch());
-		dij(0, 5) = wrapToPi(o->pose.mean.roll() - sensorPose3D.roll());
+		dij(0, 0) = o.pose.mean.x() - sensorPose3D.x();
+		dij(0, 1) = o.pose.mean.y() - sensorPose3D.y();
+		dij(0, 2) = o.pose.mean.z() - sensorPose3D.z();
+		dij(0, 3) = wrapToPi(o.pose.mean.yaw() - sensorPose3D.yaw());
+		dij(0, 4) = wrapToPi(o.pose.mean.pitch() - sensorPose3D.pitch());
+		dij(0, 5) = wrapToPi(o.pose.mean.roll() - sensorPose3D.roll());
 
 		// Equivalent covariance from "i" to "j":
-		Cij = CMatrixDouble(o->pose.cov);
+		Cij = CMatrixDouble(o.pose.cov);
 		Cij_1 = Cij.inverse_LLt();
 
 		double distMahaFlik2 = mrpt::math::multiply_HCHt_scalar(dij, Cij_1);
@@ -365,33 +365,33 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 		return ret;
 
 	}  // end of likelihood of CObservation
-	else if (CLASS_ID(CObservationGPS) == obs->GetRuntimeClass())
+	else if (CLASS_ID(CObservationGPS) == obs.GetRuntimeClass())
 	{
 		/********************************************************************
 
 						OBSERVATION TYPE: CObservationGPS
 
 		********************************************************************/
-		const auto* o = static_cast<const CObservationGPS*>(obs);
+		const auto& o = static_cast<const CObservationGPS&>(obs);
 		// Compute the 3D position of the sensor:
 		CPoint3D point3D = CPoint3D(robotPose3D);
 		CPoint3D GPSpose;
 		double x, y;
 		double earth_radius = 6378137;
 
-		if ((o->has_GGA_datum) &&
+		if ((o.has_GGA_datum) &&
 			(likelihoodOptions.GPSOrigin.min_sat <=
-			 o->getMsgByClass<gnss::Message_NMEA_GGA>().fields.satellitesUsed))
+			 o.getMsgByClass<gnss::Message_NMEA_GGA>().fields.satellitesUsed))
 		{
 			// Compose GPS robot position
 
 			x = DEG2RAD(
-					(o->getMsgByClass<gnss::Message_NMEA_GGA>()
+					(o.getMsgByClass<gnss::Message_NMEA_GGA>()
 						 .fields.longitude_degrees -
 					 likelihoodOptions.GPSOrigin.longitude)) *
 				earth_radius * 1.03;
 			y = DEG2RAD(
-					(o->getMsgByClass<gnss::Message_NMEA_GGA>()
+					(o.getMsgByClass<gnss::Message_NMEA_GGA>()
 						 .fields.latitude_degrees -
 					 likelihoodOptions.GPSOrigin.latitude)) *
 				earth_radius * 1.15;
@@ -404,19 +404,19 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 				 y * cos(likelihoodOptions.GPSOrigin.ang) +
 				 likelihoodOptions.GPSOrigin.y_shift));
 			GPSpose.z(
-				(o->getMsgByClass<gnss::Message_NMEA_GGA>()
+				(o.getMsgByClass<gnss::Message_NMEA_GGA>()
 					 .fields.altitude_meters -
 				 likelihoodOptions.GPSOrigin.altitude));
 			// std::cout<<"GPSpose calculo: "<<GPSpose.x<<","<<GPSpose.y<<"\n";
 
 			//-------------------------------//
 			// sigmaGPS =
-			// f(o->getMsgByClass<gnss::Message_NMEA_GGA>().fields.satellitesUsed)
+			// f(o.getMsgByClass<gnss::Message_NMEA_GGA>().fields.satellitesUsed)
 			// //funcion del numero de satelites
 			//-------------------------------//
 
 			// std::cout<<"datos de longitud y latitud:
-			// "<<o->getMsgByClass<gnss::Message_NMEA_GGA>().fields.longitude_degrees<<","<<o->getMsgByClass<gnss::Message_NMEA_GGA>().fields.latitude_degrees<<","<<"\n";
+			// "<<o.getMsgByClass<gnss::Message_NMEA_GGA>().fields.longitude_degrees<<","<<o.getMsgByClass<gnss::Message_NMEA_GGA>().fields.latitude_degrees<<","<<"\n";
 			// std::cout<<"x,y sin rotar: "<<x<<","<<y<<","<<"\n";
 			// std::cout<<"angulo: "<<likelihoodOptions.GPSOrigin.ang<<"\n";
 			// std::cout<<"desp x,y:
@@ -458,7 +458,7 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 						insertObservation
   ---------------------------------------------------------------*/
 bool CLandmarksMap::internal_insertObservation(
-	const CObservation* obs, const CPose3D* robotPose)
+	const CObservation& obs, const CPose3D* robotPose)
 {
 	MRPT_START
 
@@ -475,7 +475,7 @@ bool CLandmarksMap::internal_insertObservation(
 		// Default values are (0,0,0)
 	}
 
-	if (CLASS_ID(CObservationImage) == obs->GetRuntimeClass() &&
+	if (CLASS_ID(CObservationImage) == obs.GetRuntimeClass() &&
 		insertionOptions.insert_SIFTs_from_monocular_images)
 	{
 		/********************************************************************
@@ -483,12 +483,12 @@ bool CLandmarksMap::internal_insertObservation(
 						OBSERVATION TYPE: CObservationImage
 
 			********************************************************************/
-		const auto* o = static_cast<const CObservationImage*>(obs);
+		const auto& o = static_cast<const CObservationImage&>(obs);
 		CLandmarksMap tempMap;
 
 		// 1) Load the features in a temporary 3D landmarks map:
 		tempMap.loadSiftFeaturesFromImageObservation(
-			*o, insertionOptions.SIFT_feat_options);
+			o, insertionOptions.SIFT_feat_options);
 
 		// 2) This temp. map must be moved to its real position on the global
 		// reference coordinates:
@@ -504,7 +504,7 @@ bool CLandmarksMap::internal_insertObservation(
 		return true;
 	}
 	//	else
-	//	if ( CLASS_ID(CObservation2DRangeScan)==obs->GetRuntimeClass() &&
+	//	if ( CLASS_ID(CObservation2DRangeScan)==obs.GetRuntimeClass() &&
 	//		  insertionOptions.insert_Landmarks_from_range_scans)
 	//	{
 	/********************************************************************
@@ -524,19 +524,19 @@ bool CLandmarksMap::internal_insertObservation(
 			return true;
 		}       				*/
 	else if (
-		CLASS_ID(CObservationStereoImages) == obs->GetRuntimeClass() &&
+		CLASS_ID(CObservationStereoImages) == obs.GetRuntimeClass() &&
 		insertionOptions.insert_SIFTs_from_stereo_images)
 	{
 		/********************************************************************
 						OBSERVATION TYPE: CObservationStereoImages
 			********************************************************************/
-		const auto* o = static_cast<const CObservationStereoImages*>(obs);
+		const auto& o = static_cast<const CObservationStereoImages&>(obs);
 
 		// Change coordinates ref:
 		CLandmarksMap auxMap;
 		auxMap.insertionOptions = insertionOptions;
 		auxMap.loadSiftFeaturesFromStereoImageObservation(
-			*o, CLandmarksMap::_mapMaxID, insertionOptions.SIFT_feat_options);
+			o, CLandmarksMap::_mapMaxID, insertionOptions.SIFT_feat_options);
 		auxMap.changeCoordinatesReference(robotPose3D);
 
 		fuseWith(auxMap);
@@ -545,19 +545,19 @@ bool CLandmarksMap::internal_insertObservation(
 		// --------------------------------------------------------
 		return true;
 	}
-	else if (CLASS_ID(CObservationVisualLandmarks) == obs->GetRuntimeClass())
+	else if (CLASS_ID(CObservationVisualLandmarks) == obs.GetRuntimeClass())
 	{
 		/********************************************************************
 
 						OBSERVATION TYPE:  CObservationVisualLandmarks
 
 			********************************************************************/
-		const auto* o = static_cast<const CObservationVisualLandmarks*>(obs);
+		const auto& o = static_cast<const CObservationVisualLandmarks&>(obs);
 
 		// Change coordinates ref:
 		CLandmarksMap auxMap;
-		CPose3D acumTransform(robotPose3D + o->refCameraPose);
-		auxMap.changeCoordinatesReference(acumTransform, &o->landmarks);
+		CPose3D acumTransform(robotPose3D + o.refCameraPose);
+		auxMap.changeCoordinatesReference(acumTransform, &o.landmarks);
 
 		// Fuse with current:
 		fuseWith(auxMap, true);

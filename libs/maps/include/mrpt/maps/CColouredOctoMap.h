@@ -162,7 +162,7 @@ class CColouredOctoMap
 	void internal_clear() override;
 
 	bool internal_insertObservation(
-		const mrpt::obs::CObservation* obs,
+		const mrpt::obs::CObservation& obs,
 		const mrpt::poses::CPose3D* robotPose) override;
 
 	TColourUpdate m_colour_method{

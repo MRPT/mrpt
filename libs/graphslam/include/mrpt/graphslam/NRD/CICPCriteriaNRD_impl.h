@@ -52,19 +52,19 @@ bool CICPCriteriaNRD<GRAPH_T>::updateState(
 	if (observation)
 	{  // Observation-Only Rawlog
 		// delegate the action to the method responsible
-		if (IS_CLASS(observation, CObservation2DRangeScan))
+		if (IS_CLASS(*observation, CObservation2DRangeScan))
 		{  // 2D
 			mrpt::obs::CObservation2DRangeScan::Ptr curr_laser_scan =
 				std::dynamic_pointer_cast<CObservation2DRangeScan>(observation);
 			registered_new_node = updateState2D(curr_laser_scan);
 		}
-		else if (IS_CLASS(observation, CObservation3DRangeScan))
+		else if (IS_CLASS(*observation, CObservation3DRangeScan))
 		{  // 3D
 			CObservation3DRangeScan::Ptr curr_laser_scan =
 				std::dynamic_pointer_cast<CObservation3DRangeScan>(observation);
 			registered_new_node = updateState3D(curr_laser_scan);
 		}
-		else if (IS_CLASS(observation, CObservationOdometry))
+		else if (IS_CLASS(*observation, CObservationOdometry))
 		{  // odometry
 			// if it exists use the odometry information to reject wrong ICP
 			// matches

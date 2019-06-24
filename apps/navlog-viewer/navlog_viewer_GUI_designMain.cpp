@@ -554,7 +554,7 @@ void navlog_viewer_GUI_designDialog::loadLogfile(const std::string& filName)
 			m_logdata.push_back(obj);
 
 			// generate time stats:
-			if (IS_CLASS(obj, CLogFileRecord))
+			if (IS_CLASS(*obj, CLogFileRecord))
 			{
 				const CLogFileRecord::Ptr logptr =
 					std::dynamic_pointer_cast<CLogFileRecord>(obj);

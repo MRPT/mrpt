@@ -78,7 +78,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 				obs->getDescriptionAsText(cout);
 
 				// Special cases:
-				if (IS_CLASS(sel_obj, CObservation2DRangeScan))
+				if (IS_CLASS(*sel_obj, CObservation2DRangeScan))
 				{
 					CObservation2DRangeScan::Ptr obs_scan2d =
 						std::dynamic_pointer_cast<CObservation2DRangeScan>(
@@ -123,7 +123,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 				// The plot:
 				mrpt::maps::CSimplePointsMap dummMap;
 				dummMap.insertionOptions.minDistBetweenLaserPoints = 0;
-				dummMap.insertObservation(obs.get());
+				dummMap.insertObservation(*obs);
 
 				vector<float> Xs, Ys;
 				dummMap.getAllPoints(Xs, Ys);
@@ -384,7 +384,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 					{
 						pointMap.insertionOptions.minDistBetweenLaserPoints =
 							0;  // don't drop any point
-						pointMap.insertObservation(obs.get());  // This
+						pointMap.insertObservation(*obs);  // This
 						// transform
 						// points into
 						// vehicle-frame

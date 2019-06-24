@@ -351,7 +351,7 @@ void do_grid_align()
 				CMatrixDouble33 estimateCOV;
 
 				// Get the mean, or the best Gassian mean in the case of a SOG:
-				if (IS_CLASS(parts, CPosePDFSOG) && MOST_LIKELY_SOG_MODE_ONLY)
+				if (IS_CLASS(*parts, CPosePDFSOG) && MOST_LIKELY_SOG_MODE_ONLY)
 				{
 					CPosePDFSOG::Ptr pdf_SOG =
 						std::dynamic_pointer_cast<CPosePDFSOG>(parts);
@@ -382,7 +382,7 @@ void do_grid_align()
 				std::cout << "Estimate covariance::\n" << estimateCOV << "\n";
 
 				// Save particles:
-				if (IS_CLASS(parts, CPosePDFParticles))
+				if (IS_CLASS(*parts, CPosePDFParticles))
 				{
 					CPosePDFParticles::Ptr partsPdf =
 						std::dynamic_pointer_cast<CPosePDFParticles>(parts);
@@ -395,7 +395,7 @@ void do_grid_align()
 					std::cout << partsPdf->particlesCount() << " particles\n";
 					std::cout << "Covariance:\n\t " << estimateCOV << "\n";
 				}
-				else if (IS_CLASS(parts, CPosePDFSOG))
+				else if (IS_CLASS(*parts, CPosePDFSOG))
 				{
 					CPosePDFSOG::Ptr pdf_SOG =
 						std::dynamic_pointer_cast<CPosePDFSOG>(parts);
