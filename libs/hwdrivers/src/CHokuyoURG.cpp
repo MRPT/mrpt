@@ -27,16 +27,7 @@ using namespace std;
 
 const int MINIMUM_PACKETS_TO_SET_TIMESTAMP_REFERENCE = 10;
 
-CHokuyoURG::CHokuyoURG()
-	: m_sensorPose(0, 0, 0),
-	  m_rx_buffer(40000),
-
-	  m_com_port(""),
-	  m_ip_dir("")
-
-{
-	m_sensorLabel = "Hokuyo";
-}
+CHokuyoURG::CHokuyoURG() : m_rx_buffer(40000) { m_sensorLabel = "Hokuyo"; }
 
 CHokuyoURG::~CHokuyoURG()
 {
@@ -93,6 +84,13 @@ void CHokuyoURG::doProcessSimple(
 	m_state = ssWorking;
 	if (!receiveResponse(rcv_status0, rcv_status1))
 	{
+		if (!internal_notifyNoScanReceived())
+		{
+			m_state = ssError;
+			hardwareError = true;
+			return;
+		}
+
 		// No new data
 		return;
 	}
@@ -193,6 +191,7 @@ void CHokuyoURG::doProcessSimple(
 	C2DRangeFinderAbstract::processPreview(outObservation);
 
 	outThereIsObservation = true;
+	internal_notifyGoodScanNow();
 }
 
 /*-------------------------------------------------------------

@@ -96,7 +96,7 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	/** The motor speed (default=600rpm) */
 	int m_motorSpeed_rpm{0};
 	/** The sensor 6D pose: */
-	poses::CPose3D m_sensorPose;
+	poses::CPose3D m_sensorPose{0, 0, 0, 0, 0, 0};
 	/** Auxiliary buffer for readings */
 	mrpt::containers::circular_buffer<uint8_t> m_rx_buffer;
 
@@ -259,11 +259,11 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	/** If set to non-empty, the serial port will be attempted to be opened
 	 * automatically when this class is first used to request data from the
 	 * laser. */
-	std::string m_com_port;
+	std::string m_com_port{};
 
 	/** If set to non-empty and m_port_dir too, the program will try to connect
 	 * to a Hokuyo using Ethernet communication */
-	std::string m_ip_dir;
+	std::string m_ip_dir{};
 	/** If set to non-empty and m_ip_dir too, the program will try to connect to
 	 * a Hokuyo using Ethernet communication */
 	unsigned int m_port_dir{10940};

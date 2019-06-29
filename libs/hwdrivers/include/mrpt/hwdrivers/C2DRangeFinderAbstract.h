@@ -157,5 +157,27 @@ class C2DRangeFinderAbstract : public mrpt::system::COutputLogger,
 	 */
 	virtual bool turnOff() = 0;
 
+	/** Returns the empirical, filtered estimation for the period at which whole
+	 * scans are being returned from calls to doProcessSimple()
+	 * \note:  Units: seconds */
+	double getEstimatedScanPeriod() const { return m_estimated_scan_period; }
+
+   protected:
+	/** Must be called from doProcessSimple() implementations */
+	void internal_notifyGoodScanNow();
+
+	/** Must be called from doProcessSimple() implementations.
+	 * Returns true if ok, false if this seems strange and should
+	 * return an error condition to the user. */
+	bool internal_notifyNoScanReceived();
+
+   private:
+	/// Used in internal_notifyGoodScanNow()
+	mrpt::system::TTimeStamp m_last_good_scan{INVALID_TIMESTAMP};
+	/// Updated in internal_notifyGoodScanNow()
+	double m_estimated_scan_period{1.0};
+	/// Used in internal_notifyNoScanReceived()
+	int m_failure_waiting_scan_counter{0}, m_max_missed_scan_failures{10};
+
 };  // End of class
 }  // namespace mrpt::hwdrivers
