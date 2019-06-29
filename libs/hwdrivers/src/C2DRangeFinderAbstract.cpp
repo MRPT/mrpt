@@ -85,6 +85,33 @@ void C2DRangeFinderAbstract::doProcess()
 	}
 }
 
+void C2DRangeFinderAbstract::internal_notifyGoodScanNow()
+{
+	const auto new_t = mrpt::system::now();
+
+	if (m_last_good_scan != INVALID_TIMESTAMP)
+	{
+		m_estimated_scan_period =
+			0.9 * m_estimated_scan_period +
+			0.1 * mrpt::system::timeDifference(m_last_good_scan, new_t);
+	}
+	m_last_good_scan = new_t;
+	m_failure_waiting_scan_counter = 0;
+}
+
+// Returns true if ok, false if this seems to be an error
+bool C2DRangeFinderAbstract::internal_notifyNoScanReceived()
+{
+	const double dt =
+		mrpt::system::timeDifference(m_last_good_scan, mrpt::system::now());
+
+	if (dt > 1.50 * m_estimated_scan_period)
+		if (++m_failure_waiting_scan_counter >= m_max_missed_scan_failures)
+			return false;
+
+	return true;
+}
+
 /*-------------------------------------------------------------
 						loadExclusionAreas
 -------------------------------------------------------------*/
@@ -156,6 +183,10 @@ void C2DRangeFinderAbstract::loadCommonParams(
 		else
 			break;
 	}
+
+	// Max. missed scan failures:
+	m_max_missed_scan_failures = configSource.read_int(
+		iniSection, "maxMissedScansToDeclareError", m_max_missed_scan_failures);
 }
 
 /*-------------------------------------------------------------
