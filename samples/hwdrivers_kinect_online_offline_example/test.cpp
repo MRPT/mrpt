@@ -179,7 +179,7 @@ void thread_grabbing(TThreadParam& p)
 							string(e.what()));
 					}
 					ASSERT_(obs);
-				} while (!IS_CLASS(obs, CObservation3DRangeScan));
+				} while (!IS_CLASS(*obs, CObservation3DRangeScan));
 
 				// We have one observation:
 				CObservation3DRangeScan::Ptr obs3D =

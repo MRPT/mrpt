@@ -175,20 +175,20 @@ void Run_HMT_SLAM()
 		{
 			// Process the action and observations:
 			// --------------------------------------------
-			if (IS_CLASS(objFromRawlog, CActionCollection))
+			if (IS_CLASS(*objFromRawlog, CActionCollection))
 			{
 				mapping.pushAction(std::dynamic_pointer_cast<CActionCollection>(
 					objFromRawlog));  // Memory will be freed in mapping
 				// class
 			}
-			else if (IS_CLASS(objFromRawlog, CSensoryFrame))
+			else if (IS_CLASS(*objFromRawlog, CSensoryFrame))
 			{
 				mapping.pushObservations(
 					std::dynamic_pointer_cast<CSensoryFrame>(
 						objFromRawlog));  // Memory will be freed in mapping
 				// class
 			}
-			else if (IS_CLASS(objFromRawlog, CObservation))
+			else if (IS_CLASS(*objFromRawlog, CObservation))
 			{
 				mapping.pushObservation(std::dynamic_pointer_cast<CObservation>(
 					objFromRawlog));  // Memory will be freed in mapping

@@ -1531,12 +1531,12 @@ void _DSceneViewerFrame::OnmnuItemChangeMaxPointsPerOctreeNodeSelected(
 
 void func_clear_octrees(const mrpt::opengl::CRenderizable::Ptr& o)
 {
-	if (IS_CLASS(o, CPointCloud))
+	if (IS_CLASS(*o, CPointCloud))
 	{
 		CPointCloud::Ptr obj = std::dynamic_pointer_cast<CPointCloud>(o);
 		obj->octree_mark_as_outdated();
 	}
-	else if (IS_CLASS(o, CPointCloudColoured))
+	else if (IS_CLASS(*o, CPointCloudColoured))
 	{
 		CPointCloudColoured::Ptr obj =
 			std::dynamic_pointer_cast<CPointCloudColoured>(o);
@@ -1573,14 +1573,14 @@ void func_gather_stats(const mrpt::opengl::CRenderizable::Ptr& o)
 {
 	sceneStats.nObjects++;
 
-	if (IS_CLASS(o, CPointCloud))
+	if (IS_CLASS(*o, CPointCloud))
 	{
 		CPointCloud::Ptr obj = std::dynamic_pointer_cast<CPointCloud>(o);
 		sceneStats.nPoints += obj->size();
 		sceneStats.nOctreeVisible += obj->octree_get_visible_nodes();
 		sceneStats.nOctreeTotal += obj->octree_get_node_count();
 	}
-	else if (IS_CLASS(o, CPointCloudColoured))
+	else if (IS_CLASS(*o, CPointCloudColoured))
 	{
 		CPointCloudColoured::Ptr obj =
 			std::dynamic_pointer_cast<CPointCloudColoured>(o);
@@ -1628,14 +1628,14 @@ CSetOfObjects::Ptr aux_gl_octrees_bb;
 
 void func_get_octbb(const mrpt::opengl::CRenderizable::Ptr& o)
 {
-	if (IS_CLASS(o, CPointCloud))
+	if (IS_CLASS(*o, CPointCloud))
 	{
 		CPointCloud::Ptr obj = std::dynamic_pointer_cast<CPointCloud>(o);
 		CSetOfObjects::Ptr new_bb = std::make_shared<CSetOfObjects>();
 		obj->octree_get_graphics_boundingboxes(*new_bb);
 		aux_gl_octrees_bb->insert(new_bb);
 	}
-	else if (IS_CLASS(o, CPointCloudColoured))
+	else if (IS_CLASS(*o, CPointCloudColoured))
 	{
 		CPointCloudColoured::Ptr obj =
 			std::dynamic_pointer_cast<CPointCloudColoured>(o);
@@ -1845,12 +1845,12 @@ struct visitor_export_PLY
 
 	void operator()(const mrpt::opengl::CRenderizable::Ptr& obj)
 	{
-		if (IS_CLASS(obj, CPointCloud))
+		if (IS_CLASS(*obj, CPointCloud))
 		{
 			CPointCloud::Ptr o = std::dynamic_pointer_cast<CPointCloud>(obj);
 			o->saveToPlyFile(format("%s_%03u.ply", filename.c_str(), ++count));
 		}
-		else if (IS_CLASS(obj, CPointCloudColoured))
+		else if (IS_CLASS(*obj, CPointCloudColoured))
 		{
 			CPointCloudColoured::Ptr o =
 				std::dynamic_pointer_cast<CPointCloudColoured>(obj);

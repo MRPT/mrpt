@@ -1414,7 +1414,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 			m_latest_obstacles.insertionOptions.also_interpolate = false;
 
 			m_latest_obstacles.clear();  // erase old points
-			m_latest_obstacles.insertObservation(&simulatedScan);
+			m_latest_obstacles.insertObservation(simulatedScan);
 			// m_latest_obstacles is ref-copied into the robot2nav interface.
 		}
 
@@ -1491,7 +1491,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 	{
 		const size_t nObs = lfr.infoPerPTG[sel_PTG].TP_Obstacles.size();
 		if (lfr.infoPerPTG.size() > 0 &&
-			IS_CLASS(lfr.infoPerPTG[sel_PTG].HLFR, CLogFileRecord_ND))
+			IS_CLASS(*lfr.infoPerPTG[sel_PTG].HLFR, CLogFileRecord_ND))
 		{
 			CLogFileRecord_ND::Ptr log =
 				std::dynamic_pointer_cast<CLogFileRecord_ND>(

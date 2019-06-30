@@ -626,7 +626,7 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 		// (Format #2 rawlog file)
 
 		// odometry
-		if (IS_CLASS(observation, CObservationOdometry))
+		if (IS_CLASS(*observation, CObservationOdometry))
 		{
 			CObservationOdometry::Ptr obs_odometry =
 				std::dynamic_pointer_cast<CObservationOdometry>(observation);
@@ -634,7 +634,7 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 			m_curr_odometry_only_pose = pose_t(obs_odometry->odometry);
 			m_odometry_poses.push_back(m_curr_odometry_only_pose);
 		}
-		else if (IS_CLASS(observation, CObservation3DRangeScan))
+		else if (IS_CLASS(*observation, CObservation3DRangeScan))
 		{
 			m_last_laser_scan3D =
 				std::dynamic_pointer_cast<mrpt::obs::CObservation3DRangeScan>(
@@ -972,7 +972,7 @@ inline void CGraphSlamEngine<GRAPH_T>::computeMap() const
 			CPose3D scan_pose = getLSPoseForGridMapVisualization(curr_node);
 
 			// Add all to gridmap
-			gridmap->insertObservation(curr_laser_scan.get(), &scan_pose);
+			gridmap->insertObservation(*curr_laser_scan, &scan_pose);
 		}
 
 		m_map_is_cached = true;
@@ -1901,7 +1901,7 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 
 				// creating and inserting the observation in the CSetOfObjects
 				mrpt::maps::CSimplePointsMap m;
-				m.insertObservation(&scan_decimated);
+				m.insertObservation(scan_decimated);
 				m.getAs3DObject(scan_obj);
 
 				scan_obj->setName(scan_name.str());

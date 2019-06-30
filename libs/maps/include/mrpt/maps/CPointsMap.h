@@ -965,7 +965,7 @@ class CPointsMap : public CMetricMap,
 
 	// See docs in base class
 	double internal_computeObservationLikelihood(
-		const mrpt::obs::CObservation* obs,
+		const mrpt::obs::CObservation& obs,
 		const mrpt::poses::CPose3D& takenFrom) override;
 
 	double internal_computeObservationLikelihoodPointCloud3D(
@@ -1127,7 +1127,7 @@ class CPointsMap : public CMetricMap,
 	 * See mrpt::maps::CPointsMap for the enumeration of types of observations
 	 * which are accepted. */
 	bool internal_insertObservation(
-		const mrpt::obs::CObservation* obs,
+		const mrpt::obs::CObservation& obs,
 		const mrpt::poses::CPose3D* robotPose) override;
 
 	/** Helper method for ::copyFrom() */

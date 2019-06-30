@@ -99,7 +99,7 @@ class CObservation : public mrpt::serialization::CSerializable
 		METRICMAP* theMap,
 		const mrpt::poses::CPose3D* robotPose = nullptr) const
 	{
-		return theMap->insertObservation(this, robotPose);
+		return theMap->insertObservation(*this, robotPose);
 	}
 
 	/** A general method to retrieve the sensor pose on the robot.

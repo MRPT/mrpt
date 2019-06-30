@@ -152,21 +152,21 @@ void hmt_slam_guiFrame::thread_HMTSLAM()
 
 					// Process the action and observations:
 					// --------------------------------------------
-					if (IS_CLASS(objFromRawlog, CActionCollection))
+					if (IS_CLASS(*objFromRawlog, CActionCollection))
 					{
 						m_hmtslam->pushAction(
 							std::dynamic_pointer_cast<CActionCollection>(
 								objFromRawlog));  // Memory will be freed in
 						// mapping class
 					}
-					else if (IS_CLASS(objFromRawlog, CSensoryFrame))
+					else if (IS_CLASS(*objFromRawlog, CSensoryFrame))
 					{
 						m_hmtslam->pushObservations(
 							std::dynamic_pointer_cast<CSensoryFrame>(
 								objFromRawlog));  // Memory will be freed in
 						// mapping class
 					}
-					else if (IS_CLASS(objFromRawlog, CObservation))
+					else if (IS_CLASS(*objFromRawlog, CObservation))
 					{
 						m_hmtslam->pushObservation(
 							std::dynamic_pointer_cast<CObservation>(

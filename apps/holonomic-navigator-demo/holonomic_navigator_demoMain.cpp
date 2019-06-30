@@ -812,7 +812,7 @@ void holonomic_navigator_demoFrame::simulateOneStep(double time_step)
 	gl_nd_gaps->clear();
 
 	// Update 2D view graphs:
-	if (out_log && IS_CLASS(out_log, CLogFileRecord_ND))
+	if (out_log && IS_CLASS(*out_log, CLogFileRecord_ND))
 	{
 		CLogFileRecord_ND::Ptr log =
 			std::dynamic_pointer_cast<CLogFileRecord_ND>(out_log);

@@ -707,7 +707,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
 			{
 				// Always, process odometry:
 				const CObservation* obs = rawlog.getAsObservation(i).get();
-				if (IS_CLASS(obs, CObservationOdometry))
+				if (IS_CLASS(*obs, CObservationOdometry))
 				{
 					const auto* obsOdo =
 						static_cast<const CObservationOdometry*>(obs);
@@ -718,7 +718,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
 				{
 					CPose3D dumPose(curPose);
 					theMap.insertObservation(
-						rawlog.getAsObservation(i).get(), &dumPose);
+						*rawlog.getAsObservation(i), &dumPose);
 					last_tim = rawlog.getAsObservation(i)->timestamp;
 				}
 				addNewPathEntry = true;
@@ -1117,7 +1117,7 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent&)
 					size_t& dec_cnt = decim_count[o->sensorLabel];
 
 					if ((++dec_cnt % decimate) == 0)
-						theMap.insertObservation(o.get(), &p);
+						theMap.insertObservation(*o, &p);
 				}
 			}
 			break;

@@ -905,7 +905,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 		while (!obs && !stObs && !obs3D)
 		{
 			archiveFrom(*m_cap_rawlog) >> newObs;
-			if (IS_DERIVED(newObs, CObservation))
+			if (IS_DERIVED(*newObs, CObservation))
 			{
 				CObservation::Ptr o =
 					std::dynamic_pointer_cast<CObservation>(newObs);
@@ -913,16 +913,16 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 					m_rawlog_camera_sensor_label != o->sensorLabel)
 					continue;
 
-				if (IS_CLASS(o, CObservationImage))
+				if (IS_CLASS(*o, CObservationImage))
 					obs = std::dynamic_pointer_cast<CObservationImage>(o);
-				else if (IS_CLASS(o, CObservationStereoImages))
+				else if (IS_CLASS(*o, CObservationStereoImages))
 					stObs =
 						std::dynamic_pointer_cast<CObservationStereoImages>(o);
-				else if (IS_CLASS(o, CObservation3DRangeScan))
+				else if (IS_CLASS(*o, CObservation3DRangeScan))
 					obs3D =
 						std::dynamic_pointer_cast<CObservation3DRangeScan>(o);
 			}
-			else if (IS_CLASS(newObs, CSensoryFrame))
+			else if (IS_CLASS(*newObs, CSensoryFrame))
 			{
 				CSensoryFrame::Ptr sf =
 					std::dynamic_pointer_cast<CSensoryFrame>(newObs);
@@ -933,19 +933,19 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 						m_rawlog_camera_sensor_label != o->sensorLabel)
 						continue;
 
-					if (IS_CLASS(o, CObservationImage))
+					if (IS_CLASS(*o, CObservationImage))
 					{
 						obs = std::dynamic_pointer_cast<CObservationImage>(o);
 						break;
 					}
-					else if (IS_CLASS(o, CObservationStereoImages))
+					else if (IS_CLASS(*o, CObservationStereoImages))
 					{
 						stObs =
 							std::dynamic_pointer_cast<CObservationStereoImages>(
 								o);
 						break;
 					}
-					else if (IS_CLASS(o, CObservation3DRangeScan))
+					else if (IS_CLASS(*o, CObservation3DRangeScan))
 					{
 						obs3D =
 							std::dynamic_pointer_cast<CObservation3DRangeScan>(
@@ -1558,7 +1558,7 @@ void CCameraSensor::thread_save_images(unsigned int my_working_thread_index)
 			// Optional user-code hook:
 			if (m_hook_pre_save)
 			{
-				if (IS_DERIVED(i->second, CObservation))
+				if (IS_DERIVED(*i->second, CObservation))
 				{
 					mrpt::obs::CObservation::Ptr obs =
 						std::dynamic_pointer_cast<mrpt::obs::CObservation>(
@@ -1567,7 +1567,7 @@ void CCameraSensor::thread_save_images(unsigned int my_working_thread_index)
 				}
 			}
 
-			if (IS_CLASS(i->second, CObservationImage))
+			if (IS_CLASS(*i->second, CObservationImage))
 			{
 				CObservationImage::Ptr obs =
 					std::dynamic_pointer_cast<CObservationImage>(i->second);
@@ -1583,7 +1583,7 @@ void CCameraSensor::thread_save_images(unsigned int my_working_thread_index)
 					m_external_images_jpeg_quality);
 				obs->image.setExternalStorage(filName);
 			}
-			else if (IS_CLASS(i->second, CObservationStereoImages))
+			else if (IS_CLASS(*i->second, CObservationStereoImages))
 			{
 				CObservationStereoImages::Ptr stObs =
 					std::dynamic_pointer_cast<CObservationStereoImages>(

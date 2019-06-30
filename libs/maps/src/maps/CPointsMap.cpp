@@ -292,7 +292,7 @@ void CPointsMap::determineMatching2D(
 	ASSERT_ABOVE_(params.decimation_other_map_points, 0);
 	ASSERT_BELOW_(
 		params.offset_other_map_points, params.decimation_other_map_points);
-	ASSERT_(IS_DERIVED(otherMap2, CPointsMap));
+	ASSERT_(IS_DERIVED(*otherMap2, CPointsMap));
 	const auto* otherMap = static_cast<const CPointsMap*>(otherMap2);
 
 	const TPose2D otherMapPose(
@@ -1463,19 +1463,19 @@ double CPointsMap::internal_computeObservationLikelihoodPointCloud3D(
 }
 
 double CPointsMap::internal_computeObservationLikelihood(
-	const CObservation* obs, const CPose3D& takenFrom)
+	const CObservation& obs, const CPose3D& takenFrom)
 {
 	// This function depends on the observation type:
 	// -----------------------------------------------------
-	if (obs->GetRuntimeClass() == CLASS_ID(CObservation2DRangeScan))
+	if (IS_CLASS(obs, CObservation2DRangeScan))
 	{
 		// Observation is a laser range scan:
 		// -------------------------------------------
-		const auto* o = static_cast<const CObservation2DRangeScan*>(obs);
+		const auto& o = static_cast<const CObservation2DRangeScan&>(obs);
 
 		// Build (if not done before) the points map representation of this
 		// observation:
-		const auto* scanPoints = o->buildAuxPointsMap<CPointsMap>();
+		const auto* scanPoints = o.buildAuxPointsMap<CPointsMap>();
 
 		const size_t N = scanPoints->m_x.size();
 		if (!N || !this->size()) return -100;
@@ -1529,40 +1529,38 @@ double CPointsMap::internal_computeObservationLikelihood(
 				takenFrom, xs, ys, zs, N);
 		}
 	}
-	else if (obs->GetRuntimeClass() == CLASS_ID(CObservationVelodyneScan))
+	else if (IS_CLASS(obs, CObservationVelodyneScan))
 	{
-		const auto* o = dynamic_cast<const CObservationVelodyneScan*>(obs);
-		ASSERT_(o != nullptr);
+		const auto& o = dynamic_cast<const CObservationVelodyneScan&>(obs);
 
 		// Automatically generate pointcloud if needed:
-		if (!o->point_cloud.size())
-			const_cast<CObservationVelodyneScan*>(o)->generatePointCloud();
+		if (!o.point_cloud.size())
+			const_cast<CObservationVelodyneScan&>(o).generatePointCloud();
 
-		const size_t N = o->point_cloud.size();
+		const size_t N = o.point_cloud.size();
 		if (!N || !this->size()) return -100;
 
-		const CPose3D sensorAbsPose = takenFrom + o->sensorPose;
+		const CPose3D sensorAbsPose = takenFrom + o.sensorPose;
 
-		const float* xs = &o->point_cloud.x[0];
-		const float* ys = &o->point_cloud.y[0];
-		const float* zs = &o->point_cloud.z[0];
+		const float* xs = &o.point_cloud.x[0];
+		const float* ys = &o.point_cloud.y[0];
+		const float* zs = &o.point_cloud.z[0];
 
 		return internal_computeObservationLikelihoodPointCloud3D(
 			sensorAbsPose, xs, ys, zs, N);
 	}
-	else if (obs->GetRuntimeClass() == CLASS_ID(CObservationPointCloud))
+	else if (IS_CLASS(obs, CObservationPointCloud))
 	{
-		const auto* o = dynamic_cast<const CObservationPointCloud*>(obs);
-		ASSERT_(o != nullptr);
+		const auto& o = dynamic_cast<const CObservationPointCloud&>(obs);
 
-		const size_t N = o->pointcloud->size();
+		const size_t N = o.pointcloud->size();
 		if (!N || !this->size()) return -100;
 
-		const CPose3D sensorAbsPose = takenFrom + o->sensorPose;
+		const CPose3D sensorAbsPose = takenFrom + o.sensorPose;
 
-		auto xs = o->pointcloud->getPointsBufferRef_x();
-		auto ys = o->pointcloud->getPointsBufferRef_y();
-		auto zs = o->pointcloud->getPointsBufferRef_z();
+		auto xs = o.pointcloud->getPointsBufferRef_x();
+		auto ys = o.pointcloud->getPointsBufferRef_y();
+		auto zs = o.pointcloud->getPointsBufferRef_z();
 
 		return internal_computeObservationLikelihoodPointCloud3D(
 			sensorAbsPose, &xs[0], &ys[0], &zs[0], N);
@@ -1596,7 +1594,7 @@ void internal_build_points_map_from_scan2D(
 		static_cast<CSimplePointsMap*>(out_map.get())->insertionOptions =
 			*static_cast<const CPointsMap::TInsertionOptions*>(insertOps);
 
-	out_map->insertObservation(&obs, nullptr);
+	out_map->insertObservation(obs, nullptr);
 }
 
 struct TAuxLoadFunctor
@@ -1792,7 +1790,7 @@ void CPointsMap::base_copyFrom(const CPointsMap& obj)
   Insert the observation information into this map.
  ---------------------------------------------------------------*/
 bool CPointsMap::internal_insertObservation(
-	const CObservation* obs, const CPose3D* robotPose)
+	const CObservation& obs, const CPose3D* robotPose)
 {
 	MRPT_START
 
@@ -1816,13 +1814,13 @@ bool CPointsMap::internal_insertObservation(
 		 ********************************************************************/
 		mark_as_modified();
 
-		const auto* o = static_cast<const CObservation2DRangeScan*>(obs);
+		const auto& o = static_cast<const CObservation2DRangeScan&>(obs);
 		// Insert only HORIZONTAL scans??
 		bool reallyInsertIt;
 
 		if (insertionOptions.isPlanarMap)
 			reallyInsertIt =
-				o->isPlanarScan(insertionOptions.horizontalTolerance);
+				o.isPlanarScan(insertionOptions.horizontalTolerance);
 		else
 			reallyInsertIt = true;
 
@@ -1840,7 +1838,7 @@ bool CPointsMap::internal_insertObservation(
 				auxMap.insertionOptions.addToExistingPointsMap = false;
 
 				auxMap.loadFromRangeScan(
-					*o,  // The laser range scan observation
+					o,  // The laser range scan observation
 					&robotPose3D  // The robot pose
 				);
 
@@ -1892,7 +1890,7 @@ bool CPointsMap::internal_insertObservation(
 				// Don't fuse: Simply add
 				insertionOptions.addToExistingPointsMap = true;
 				loadFromRangeScan(
-					*o,  // The laser range scan observation
+					o,  // The laser range scan observation
 					&robotPose3D  // The robot pose
 				);
 			}
@@ -1910,7 +1908,7 @@ bool CPointsMap::internal_insertObservation(
 		 ********************************************************************/
 		mark_as_modified();
 
-		const auto* o = static_cast<const CObservation3DRangeScan*>(obs);
+		const auto& o = static_cast<const CObservation3DRangeScan&>(obs);
 		// Insert only HORIZONTAL scans??
 		bool reallyInsertIt;
 
@@ -1932,7 +1930,7 @@ bool CPointsMap::internal_insertObservation(
 				auxMap.insertionOptions.addToExistingPointsMap = false;
 
 				auxMap.loadFromRangeScan(
-					*o,  // The laser range scan observation
+					o,  // The laser range scan observation
 					&robotPose3D  // The robot pose
 				);
 
@@ -1949,7 +1947,7 @@ bool CPointsMap::internal_insertObservation(
 				// Don't fuse: Simply add
 				insertionOptions.addToExistingPointsMap = true;
 				loadFromRangeScan(
-					*o,  // The laser range scan observation
+					o,  // The laser range scan observation
 					&robotPose3D  // The robot pose
 				);
 			}
@@ -1967,27 +1965,27 @@ bool CPointsMap::internal_insertObservation(
 		 ********************************************************************/
 		mark_as_modified();
 
-		const auto* o = static_cast<const CObservationRange*>(obs);
+		const auto& o = static_cast<const CObservationRange&>(obs);
 
-		const double aper_2 = 0.5 * o->sensorConeApperture;
+		const double aper_2 = 0.5 * o.sensorConeApperture;
 
 		this->reserve(
-			this->size() + o->sensedData.size() * 30);  // faster push_back's.
+			this->size() + o.sensedData.size() * 30);  // faster push_back's.
 
-		for (auto it = o->begin(); it != o->end(); ++it)
+		for (auto it = o.begin(); it != o.end(); ++it)
 		{
 			const CPose3D sensorPose = robotPose3D + CPose3D(it->sensorPose);
 			const double rang = it->sensedDistance;
 
-			if (rang <= 0 || rang < o->minSensorDistance ||
-				rang > o->maxSensorDistance)
+			if (rang <= 0 || rang < o.minSensorDistance ||
+				rang > o.maxSensorDistance)
 				continue;
 
 			// Insert a few points with a given maximum separation between
 			// them:
-			const double arc_len = o->sensorConeApperture * rang;
+			const double arc_len = o.sensorConeApperture * rang;
 			const unsigned int nSteps = round(1 + arc_len / 0.05);
-			const double Aa = o->sensorConeApperture / double(nSteps);
+			const double Aa = o.sensorConeApperture / double(nSteps);
 			TPoint3D loc, glob;
 
 			for (double a1 = -aper_2; a1 < aper_2; a1 += Aa)
@@ -2012,11 +2010,11 @@ bool CPointsMap::internal_insertObservation(
 		 ********************************************************************/
 		mark_as_modified();
 
-		const auto* o = static_cast<const CObservationVelodyneScan*>(obs);
+		const auto& o = static_cast<const CObservationVelodyneScan&>(obs);
 
 		// Automatically generate pointcloud if needed:
-		if (!o->point_cloud.size())
-			const_cast<CObservationVelodyneScan*>(o)->generatePointCloud();
+		if (!o.point_cloud.size())
+			const_cast<CObservationVelodyneScan&>(o).generatePointCloud();
 
 		if (insertionOptions.fuseWithExisting)
 		{
@@ -2024,7 +2022,7 @@ bool CPointsMap::internal_insertObservation(
 			CSimplePointsMap auxMap;
 			auxMap.insertionOptions = insertionOptions;
 			auxMap.insertionOptions.addToExistingPointsMap = false;
-			auxMap.loadFromVelodyneScan(*o, &robotPose3D);
+			auxMap.loadFromVelodyneScan(o, &robotPose3D);
 			fuseWith(
 				&auxMap, insertionOptions.minDistBetweenLaserPoints, nullptr /* rather than &checkForDeletion which we don't need for 3D observations */);
 		}
@@ -2032,7 +2030,7 @@ bool CPointsMap::internal_insertObservation(
 		{
 			// Don't fuse: Simply add
 			insertionOptions.addToExistingPointsMap = true;
-			loadFromVelodyneScan(*o, &robotPose3D);
+			loadFromVelodyneScan(o, &robotPose3D);
 		}
 		return true;
 	}
@@ -2040,19 +2038,19 @@ bool CPointsMap::internal_insertObservation(
 	{
 		mark_as_modified();
 
-		const auto* o = static_cast<const CObservationPointCloud*>(obs);
-		ASSERT_(o->pointcloud);
+		const auto& o = static_cast<const CObservationPointCloud&>(obs);
+		ASSERT_(o.pointcloud);
 
 		if (insertionOptions.fuseWithExisting)
 		{
 			fuseWith(
-				o->pointcloud.get(), insertionOptions.minDistBetweenLaserPoints, nullptr /* rather than &checkForDeletion which we don't need for 3D observations */);
+				o.pointcloud.get(), insertionOptions.minDistBetweenLaserPoints, nullptr /* rather than &checkForDeletion which we don't need for 3D observations */);
 		}
 		else
 		{
 			// Don't fuse: Simply add
 			insertionOptions.addToExistingPointsMap = true;
-			this->insertAnotherMap(o->pointcloud.get(), o->sensorPose);
+			this->insertAnotherMap(o.pointcloud.get(), o.sensorPose);
 		}
 		return true;
 	}

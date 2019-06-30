@@ -218,7 +218,7 @@ int main(int argc, char** argv)
 					 it != copy_of_global_list_obs.end(); ++it)
 				{
 					// If we have an action, save the SF and start a new one:
-					if (IS_DERIVED(it->second, CAction))
+					if (IS_DERIVED(*it->second, CAction))
 					{
 						CAction::Ptr act =
 							std::dynamic_pointer_cast<CAction>(it->second);
@@ -235,7 +235,7 @@ int main(int argc, char** argv)
 
 						out_arch << acts;
 					}
-					else if (IS_CLASS(it->second, CObservationOdometry))
+					else if (IS_CLASS(*it->second, CObservationOdometry))
 					{
 						CObservationOdometry::Ptr odom =
 							std::dynamic_pointer_cast<CObservationOdometry>(
@@ -293,7 +293,7 @@ int main(int argc, char** argv)
 
 						out_arch << acts;
 					}
-					else if (IS_DERIVED(it->second, CObservation))
+					else if (IS_DERIVED(*it->second, CObservation))
 					{
 						CObservation::Ptr obs =
 							std::dynamic_pointer_cast<CObservation>(it->second);

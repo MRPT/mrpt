@@ -67,7 +67,7 @@ void TestOctoMap()
 	{
 		CObservation2DRangeScan scan1;
 		stock_observations::example2DRangeScan(scan1);
-		map.insertObservation(&scan1);
+		map.insertObservation(scan1);
 	}
 
 	mrpt::gui::CDisplayWindow3D win("OctoMap demo", 640, 480);

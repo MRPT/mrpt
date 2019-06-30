@@ -242,7 +242,7 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 		FUNCTOR functor, const CRenderizable::Ptr& o)
 	{
 		functor(o);
-		if (IS_CLASS(o, CSetOfObjects))
+		if (IS_CLASS(*o, CSetOfObjects))
 		{
 			CSetOfObjects::Ptr obj =
 				std::dynamic_pointer_cast<CSetOfObjects>(o);

@@ -143,7 +143,7 @@ void TestCamera3DFaceDetection(CCameraSensor::Ptr cam)
 		{
 			for (unsigned int i = 0; i < detected.size(); i++)
 			{
-				ASSERT_(IS_CLASS(detected[i], CDetectable3D));
+				ASSERT_(IS_CLASS(*detected[i], CDetectable3D));
 				CDetectable3D::Ptr obj =
 					std::dynamic_pointer_cast<CDetectable3D>(detected[i]);
 
@@ -255,7 +255,7 @@ void TestCameraFaceDetection()
 	mrpt::obs::CObservation::Ptr obs = cam->getNextFrame();
 	ASSERT_(obs);
 
-	if (IS_CLASS(obs, CObservation3DRangeScan))
+	if (IS_CLASS(*obs, CObservation3DRangeScan))
 	{
 		TestCamera3DFaceDetection(cam);
 		return;
@@ -283,7 +283,7 @@ void TestCameraFaceDetection()
 		}
 		ASSERT_(obs);
 
-		if (IS_CLASS(obs, CObservationImage))
+		if (IS_CLASS(*obs, CObservationImage))
 		{
 			vector_detectable_object detected;
 			faceDetector.detectObjects(obs, detected);
@@ -292,7 +292,7 @@ void TestCameraFaceDetection()
 				std::dynamic_pointer_cast<CObservationImage>(obs);
 			for (unsigned int i = 0; i < detected.size(); i++)
 			{
-				ASSERT_(IS_CLASS(detected[i], CDetectable2D));
+				ASSERT_(IS_CLASS(*detected[i], CDetectable2D));
 				CDetectable2D::Ptr obj =
 					std::dynamic_pointer_cast<CDetectable2D>(detected[i]);
 				o->image.rectangle(
@@ -302,7 +302,7 @@ void TestCameraFaceDetection()
 
 			win.showImage(o->image);
 		}
-		else if (IS_CLASS(obs, CObservationStereoImages))
+		else if (IS_CLASS(*obs, CObservationStereoImages))
 		{
 			vector_detectable_object detected;
 			faceDetector.detectObjects(obs, detected);
@@ -312,7 +312,7 @@ void TestCameraFaceDetection()
 
 			for (unsigned int i = 0; i < detected.size(); i++)
 			{
-				ASSERT_(IS_CLASS(detected[i], CDetectable2D));
+				ASSERT_(IS_CLASS(*detected[i], CDetectable2D));
 				CDetectable2D::Ptr obj =
 					std::dynamic_pointer_cast<CDetectable2D>(detected[i]);
 				o->imageRight.rectangle(
@@ -365,7 +365,7 @@ void TestImagesFaceDetection(int argc, char* argv[])
 
 		for (unsigned int i = 0; i < detected.size(); i++)
 		{
-			ASSERT_(IS_CLASS(detected[i], CDetectable2D));
+			ASSERT_(IS_CLASS(*detected[i], CDetectable2D));
 			CDetectable2D::Ptr obj =
 				std::dynamic_pointer_cast<CDetectable2D>(detected[i]);
 			img.rectangle(

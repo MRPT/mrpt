@@ -95,10 +95,10 @@ struct CLASS_ID_impl
 template <typename T>
 struct IS_CLASS_impl
 {
-	template <typename PTR>
-	static bool check(const PTR& p)
+	template <typename REF>
+	static bool check(const REF& p)
 	{
-		return p->GetRuntimeClass() == CLASS_ID_impl<T>::get();
+		return p.GetRuntimeClass() == CLASS_ID_impl<T>::get();
 	}
 };
 
@@ -128,16 +128,15 @@ struct CopyCtor<false>
 };
 }  // namespace internal
 
-/** Evaluates to true if the given pointer to an object (derived from
- * mrpt::rtti::CObject) is of the given class. */
-#define IS_CLASS(ptrObj, class_name) \
-	mrpt::rtti::IS_CLASS_impl<class_name>::check(ptrObj)
+/** True if the given reference to object (derived from mrpt::rtti::CObject) is
+ * of the given class. */
+#define IS_CLASS(obj, class_name) \
+	mrpt::rtti::IS_CLASS_impl<class_name>::check(obj)
 
-/** Evaluates to true if a pointer to an object (derived from
- * mrpt::rtti::CObject) is an instance of the given class OR any of its
- * derived classes. */
-#define IS_DERIVED(ptrObj, class_name) \
-	((ptrObj)->GetRuntimeClass()->derivedFrom(CLASS_ID(class_name)))
+/** True if the given reference to object (derived from mrpt::rtti::CObject) is
+ * an instance of the given class OR any of its derived classes. */
+#define IS_DERIVED(obj, class_name) \
+	((obj).GetRuntimeClass()->derivedFrom(CLASS_ID(class_name)))
 
 /** Auxiliary structure used for CObject-based RTTI. \ingroup mrpt_rtti_grp */
 struct CLASSINIT
@@ -357,8 +356,8 @@ mrpt::rtti::CObject::Ptr classFactory(const std::string& className);
 }  // namespace rtti
 
 /** Converts a polymorphic smart pointer Base::Ptr to Derived::Ptr, in a
- * way compatible with MRPT >=1.5.4 and MRPT 2.x series. \ingroup
- * mrpt_rtti_grp
+ * way compatible with MRPT >=1.5.4 and MRPT 2.x series.
+ * \ingroup mrpt_rtti_grp
  */
 template <typename CAST_TO>
 struct ptr_cast

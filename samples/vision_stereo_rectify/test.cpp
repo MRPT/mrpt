@@ -129,7 +129,7 @@ void TestStereoRectify(int argc, char** argv)
 		CObservation::Ptr obs = cam->getNextFrame();
 		if (obs)
 		{
-			if (IS_CLASS(obs, CObservationStereoImages))
+			if (IS_CLASS(*obs, CObservationStereoImages))
 			{
 				// Get the observation object:
 				CObservationStereoImages::Ptr o =

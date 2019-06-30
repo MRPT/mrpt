@@ -175,7 +175,7 @@ void CMultiMetricMap::serializeFrom(
 
 // Read docs in base class
 double CMultiMetricMap::internal_computeObservationLikelihood(
-	const CObservation* obs, const CPose3D& takenFrom)
+	const CObservation& obs, const CPose3D& takenFrom)
 {
 	MRPT_START
 	double ret_log_lik = 0;
@@ -190,7 +190,7 @@ double CMultiMetricMap::internal_computeObservationLikelihood(
 
 // Read docs in base class
 bool CMultiMetricMap::internal_canComputeObservationLikelihood(
-	const CObservation* obs) const
+	const CObservation& obs) const
 {
 	bool can_comp = false;
 	std::for_each(maps.begin(), maps.end(), [&](auto& ptr) {
@@ -200,7 +200,7 @@ bool CMultiMetricMap::internal_canComputeObservationLikelihood(
 }
 
 bool CMultiMetricMap::internal_insertObservation(
-	const CObservation* obs, const CPose3D* robotPose)
+	const CObservation& obs, const CPose3D* robotPose)
 {
 	int total_insert = 0;
 

@@ -42,7 +42,7 @@ bool CFixedIntervalsNRD<GRAPH_T>::updateState(
 	{  // FORMAT #2 - observation-only format
 		m_observation_only_rawlog = true;
 
-		if (IS_CLASS(observation, CObservationOdometry))
+		if (IS_CLASS(*observation, CObservationOdometry))
 		{
 			CObservationOdometry::Ptr obs_odometry =
 				std::dynamic_pointer_cast<CObservationOdometry>(observation);

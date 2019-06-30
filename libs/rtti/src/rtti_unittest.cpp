@@ -60,11 +60,11 @@ TEST(rtti, MyDerived1_CLASSID)
 	const auto cid_cobj = CLASS_ID(mrpt::rtti::CObject);
 	EXPECT_TRUE(cid_myd1->getBaseClass() == cid_cobj);
 
-	// RTTI IS_DERIVED()
+	// RTTI IS_DERIVED(*)
 	{
 		auto p = mrpt::rtti::CObject::Ptr(new MyNS::MyDerived1);
-		EXPECT_TRUE(IS_DERIVED(p, MyNS::MyDerived1));
-		EXPECT_TRUE(IS_DERIVED(p, mrpt::rtti::CObject));
+		EXPECT_TRUE(IS_DERIVED(*p, MyNS::MyDerived1));
+		EXPECT_TRUE(IS_DERIVED(*p, mrpt::rtti::CObject));
 	}
 }
 

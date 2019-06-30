@@ -231,7 +231,7 @@ class CArchive
 		CSerializable::Ptr& ptr,
 		std::enable_if_t<!mrpt::is_shared_ptr<T>::value>* = nullptr)
 	{
-		if (IS_CLASS(ptr, T)) return dynamic_cast<T&>(*ptr);
+		if (IS_CLASS(*ptr, T)) return dynamic_cast<T&>(*ptr);
 		return ReadVariant_helper<RET, R...>(ptr);
 	}
 

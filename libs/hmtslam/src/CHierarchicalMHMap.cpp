@@ -306,7 +306,7 @@ void CHierarchicalMHMap::dumpAsXMLfile(std::string fileName) const
 			tableannots->set(j, "annotation-type", ann->name.c_str());
 			ASSERT_(ann->value);
 			string str;
-			if (IS_CLASS(ann->value, CPoint2D))
+			if (IS_CLASS(*ann->value, CPoint2D))
 			{
 				CPoint2D::Ptr o =
 					std::dynamic_pointer_cast<CPoint2D>(ann->value);

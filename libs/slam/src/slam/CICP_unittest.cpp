@@ -51,8 +51,8 @@ class ICPTests : public ::testing::Test
 		stock_observations::example2DRangeScan(scan2, 1);
 
 		// Build the points maps from the scans:
-		m1.insertObservation(&scan1);
-		m2.insertObservation(&scan2);
+		m1.insertObservation(scan1);
+		m2.insertObservation(scan2);
 
 		// -----------------------------------------------------
 		ICP.options.ICP_algorithm = icp_method;

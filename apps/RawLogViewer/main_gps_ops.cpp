@@ -113,7 +113,7 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 
 				CObservation::Ptr o =
 					sf->getObservationBySensorLabel(the_label);
-				if (o && IS_CLASS(o, CObservationGPS))
+				if (o && IS_CLASS(*o, CObservationGPS))
 				{
 					obs = std::dynamic_pointer_cast<CObservationGPS>(o);
 				}
@@ -125,7 +125,7 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 				CObservation::Ptr o = rawlog.getAsObservation(i);
 
 				if (!os::_strcmpi(o->sensorLabel.c_str(), the_label.c_str()) &&
-					IS_CLASS(o, CObservationGPS))
+					IS_CLASS(*o, CObservationGPS))
 				{
 					obs = std::dynamic_pointer_cast<CObservationGPS>(o);
 				}
@@ -342,7 +342,7 @@ void xRawLogViewerFrame::OnMenuRegenerateGPSTimestamps(wxCommandEvent& event)
 			{
 				CObservation::Ptr o = rawlog.getAsObservation(i);
 
-				if (IS_CLASS(o, CObservationGPS) &&
+				if (IS_CLASS(*o, CObservationGPS) &&
 					find_in_vector(o->sensorLabel, the_labels) != string::npos)
 				{
 					CObservationGPS::Ptr obs =
@@ -474,7 +474,7 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
 			{
 				CObservation::Ptr o = rawlog.getAsObservation(i);
 
-				if (!ref_valid && IS_CLASS(o, CObservationGPS))
+				if (!ref_valid && IS_CLASS(*o, CObservationGPS))
 				{
 					CObservationGPS::Ptr ob =
 						std::dynamic_pointer_cast<CObservationGPS>(o);
@@ -488,7 +488,7 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
 
 				if (o->sensorLabel == gps1)
 				{
-					ASSERT_(IS_CLASS(o, CObservationGPS));
+					ASSERT_(IS_CLASS(*o, CObservationGPS));
 					CObservationGPS::Ptr obs =
 						std::dynamic_pointer_cast<CObservationGPS>(o);
 					if (obs->has_GGA_datum &&
@@ -499,7 +499,7 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
 
 				if (o->sensorLabel == gps2)
 				{
-					ASSERT_(IS_CLASS(o, CObservationGPS));
+					ASSERT_(IS_CLASS(*o, CObservationGPS));
 					CObservationGPS::Ptr obs =
 						std::dynamic_pointer_cast<CObservationGPS>(o);
 					if (obs->has_GGA_datum &&
@@ -617,7 +617,7 @@ void xRawLogViewerFrame::OnSummaryGPS(wxCommandEvent& event)
 			case CRawlog::etObservation:
 			{
 				CObservation::Ptr o = rawlog.getAsObservation(i);
-				if (IS_CLASS(o, CObservationGPS))
+				if (IS_CLASS(*o, CObservationGPS))
 				{
 					CObservationGPS::Ptr obs =
 						std::dynamic_pointer_cast<CObservationGPS>(o);
@@ -879,7 +879,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 				{
 					CObservation::Ptr o = rawlog.getAsObservation(i);
 
-					if (IS_CLASS(o, CObservationGPS))
+					if (IS_CLASS(*o, CObservationGPS))
 					{
 						CObservationGPS::Ptr obs =
 							std::dynamic_pointer_cast<CObservationGPS>(o);
@@ -1159,7 +1159,7 @@ void filter_delGPSNan(
 		for (auto it = SF->begin(); it != SF->end();)
 		{
 			bool del = false;
-			if (IS_CLASS(*it, CObservationGPS))
+			if (IS_CLASS(**it, CObservationGPS))
 			{
 				CObservationGPS::Ptr o =
 					std::dynamic_pointer_cast<CObservationGPS>(*it);

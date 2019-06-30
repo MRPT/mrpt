@@ -56,10 +56,10 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 	// See docs in base class
 	void internal_clear() override;
 	bool internal_insertObservation(
-		const mrpt::obs::CObservation* obs,
+		const mrpt::obs::CObservation& obs,
 		const mrpt::poses::CPose3D* robotPose = nullptr) override;
 	double internal_computeObservationLikelihood(
-		const mrpt::obs::CObservation* obs,
+		const mrpt::obs::CObservation& obs,
 		const mrpt::poses::CPose3D& takenFrom) override;
 
    public:

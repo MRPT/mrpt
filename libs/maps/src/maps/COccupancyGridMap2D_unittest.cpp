@@ -27,7 +27,7 @@ TEST(COccupancyGridMap2DTests, insert2DScan)
 	// Insert the scan in the grid map and check expected values:
 	{
 		COccupancyGridMap2D grid(-50.0f, 50.0f, -50.0f, 50.0f, 0.10f);
-		grid.insertObservation(&scan1);
+		grid.insertObservation(scan1);
 
 		EXPECT_GT(grid.getPos(0.5, 0), 0.51f);  // A cell in front of the laser
 		// should have a high "freeness"

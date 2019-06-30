@@ -52,7 +52,7 @@ DECLARE_OP_FUNCTION(op_export_enose_txt)
 		// Return false on any error.
 		bool processOneObservation(CObservation::Ptr& o) override
 		{
-			if (!IS_CLASS(o, CObservationGasSensors)) return true;
+			if (!IS_CLASS(*o, CObservationGasSensors)) return true;
 
 			const CObservationGasSensors* obs =
 				dynamic_cast<CObservationGasSensors*>(o.get());
