@@ -295,7 +295,7 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 				can_do_icp = sensedPoints.insertObservationPtr(obs);
 			}
 
-			if (IS_DERIVED(matchWith, CPointsMap) &&
+			if (IS_DERIVED(*matchWith, CPointsMap) &&
 				static_cast<CPointsMap*>(matchWith)->empty())
 				can_do_icp = false;  // The reference map is empty!
 

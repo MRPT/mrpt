@@ -905,7 +905,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 		while (!obs && !stObs && !obs3D)
 		{
 			archiveFrom(*m_cap_rawlog) >> newObs;
-			if (IS_DERIVED(newObs, CObservation))
+			if (IS_DERIVED(*newObs, CObservation))
 			{
 				CObservation::Ptr o =
 					std::dynamic_pointer_cast<CObservation>(newObs);
@@ -1558,7 +1558,7 @@ void CCameraSensor::thread_save_images(unsigned int my_working_thread_index)
 			// Optional user-code hook:
 			if (m_hook_pre_save)
 			{
-				if (IS_DERIVED(i->second, CObservation))
+				if (IS_DERIVED(*i->second, CObservation))
 				{
 					mrpt::obs::CObservation::Ptr obs =
 						std::dynamic_pointer_cast<mrpt::obs::CObservation>(

@@ -642,7 +642,7 @@ void COpenGLViewport::initializeAllTextures()
 #if MRPT_HAS_OPENGL_GLUT
 	for (auto& obj : m_objects)
 	{
-		if (IS_DERIVED(obj, CTexturedObject))
+		if (IS_DERIVED(*obj, CTexturedObject))
 			std::dynamic_pointer_cast<CTexturedObject>(obj)
 				->loadTextureInOpenGL();
 		else if (IS_CLASS(*obj, CSetOfObjects))
