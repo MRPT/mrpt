@@ -319,8 +319,8 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 			if (!found)
 			{
 				if (o.maxSensorDistance != o.minSensorDistance)
-					ret += log(
-						1.0 / (o.maxSensorDistance - o.minSensorDistance));
+					ret +=
+						log(1.0 / (o.maxSensorDistance - o.minSensorDistance));
 			}
 
 		}  // for each sensed beacon "it"

@@ -640,7 +640,7 @@ CRenderizable::Ptr COpenGLViewport::getByName(const string& str)
 void COpenGLViewport::initializeAllTextures()
 {
 #if MRPT_HAS_OPENGL_GLUT
-	for (auto &obj : m_objects)
+	for (auto& obj : m_objects)
 	{
 		if (IS_DERIVED(obj, CTexturedObject))
 			std::dynamic_pointer_cast<CTexturedObject>(obj)

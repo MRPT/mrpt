@@ -93,7 +93,8 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::
 		const auto* o_scan3D =
 			dynamic_cast<const CObservation3DRangeScan*>(&obs);
 		const auto* o_pc = dynamic_cast<const CObservationPointCloud*>(&obs);
-		const auto* o_velo = dynamic_cast<const CObservationVelodyneScan*>(&obs);
+		const auto* o_velo =
+			dynamic_cast<const CObservationVelodyneScan*>(&obs);
 
 		// No points?
 		if (o_scan3D && !o_scan3D->hasPoints3D) return false;

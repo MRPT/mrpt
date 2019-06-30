@@ -171,7 +171,7 @@ double CBeaconMap::internal_computeObservationLikelihood(
 		const CBeacon* beac;
 		CPoint3D sensor3D;
 
-		for (auto &it_obs: o.sensedData)
+		for (auto& it_obs : o.sensedData)
 		{
 			// Look for the beacon in this map:
 			beac = getBeaconByID(it_obs.beaconID);
@@ -328,8 +328,8 @@ double CBeaconMap::internal_computeObservationLikelihood(
 			{
 				// If not found, a uniform distribution:
 				if (o.maxSensorDistance != o.minSensorDistance)
-					ret += log(
-						1.0 / (o.maxSensorDistance - o.minSensorDistance));
+					ret +=
+						log(1.0 / (o.maxSensorDistance - o.minSensorDistance));
 			}
 		}  // for each sensed beacon "it"
 

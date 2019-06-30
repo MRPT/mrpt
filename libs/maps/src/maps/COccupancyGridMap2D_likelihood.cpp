@@ -89,7 +89,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_Consensus(
 
 	// This function depends on the observation type:
 	// -----------------------------------------------------
-	if (!IS_CLASS(obs,CObservation2DRangeScan))
+	if (!IS_CLASS(obs, CObservation2DRangeScan))
 	{
 		// THROW_EXCEPTION("This method is defined for 'CObservation2DRangeScan'
 		// classes only.");

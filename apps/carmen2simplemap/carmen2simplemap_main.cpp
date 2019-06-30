@@ -142,7 +142,9 @@ int main(int argc, char** argv)
 
 				for (const auto& importedObservation : importedObservations)
 				{
-					if (!IS_CLASS(*importedObservation, CObservationOdometry))  // Odometry was already used
+					if (!IS_CLASS(
+							*importedObservation,
+							CObservationOdometry))  // Odometry was already used
 					// as positioning...
 					{
 						SF->insert(importedObservation);
