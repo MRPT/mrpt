@@ -92,7 +92,7 @@ void CSetOfObjects::initializeAllTextures()
 	CListOpenGLObjects::iterator it;
 	for (auto& obj : m_objects)
 	{
-		if (IS_DERIVED(obj, CTexturedObject))
+		if (IS_DERIVED(*obj, CTexturedObject))
 			dynamic_cast<CTexturedObject&>(*obj).loadTextureInOpenGL();
 		else if (IS_CLASS(*obj, CSetOfObjects))
 			dynamic_cast<CSetOfObjects&>(*obj).initializeAllTextures();

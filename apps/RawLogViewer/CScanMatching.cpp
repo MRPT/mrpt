@@ -553,7 +553,7 @@ static void insert_obs_into_map(
 		auto SF = std::dynamic_pointer_cast<CSensoryFrame>(obj);
 		SF->insertObservationsInto(theMap);
 	}
-	else if (IS_DERIVED(obj, CObservation))
+	else if (IS_DERIVED(*obj, CObservation))
 	{
 		CObservationVelodyneScan::Ptr obs_velodyne;
 		if (IS_CLASS(*obj, CObservationVelodyneScan))

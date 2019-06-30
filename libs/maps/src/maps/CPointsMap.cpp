@@ -292,7 +292,7 @@ void CPointsMap::determineMatching2D(
 	ASSERT_ABOVE_(params.decimation_other_map_points, 0);
 	ASSERT_BELOW_(
 		params.offset_other_map_points, params.decimation_other_map_points);
-	ASSERT_(IS_DERIVED(otherMap2, CPointsMap));
+	ASSERT_(IS_DERIVED(*otherMap2, CPointsMap));
 	const auto* otherMap = static_cast<const CPointsMap*>(otherMap2);
 
 	const TPose2D otherMapPose(

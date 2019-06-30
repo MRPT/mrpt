@@ -386,7 +386,7 @@ bool CRawlog::getActionObservationPairOrObservation(
 			{
 				action = std::dynamic_pointer_cast<CActionCollection>(obj);
 			}
-			else if (IS_DERIVED(obj, CObservation))
+			else if (IS_DERIVED(*obj, CObservation))
 			{
 				observation = std::dynamic_pointer_cast<CObservation>(obj);
 				rawlogEntry++;
