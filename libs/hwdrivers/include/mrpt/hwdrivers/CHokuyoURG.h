@@ -253,6 +253,10 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	 */
 	bool ensureStreamIsOpen();
 
+	/** Called upon dtor, or when trying to recover from a disconnected sensor
+	 */
+	void closeStreamConnection();
+
 	/** Used to reduce artificially the interval of scan ranges. */
 	double m_reduced_fov{0};
 
