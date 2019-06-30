@@ -89,7 +89,7 @@ void CCascadeClassifierDetection::init(
 // ------------------------------------------------------
 
 void CCascadeClassifierDetection::detectObjects_Impl(
-	const CObservation* obs, vector_detectable_object& detected)
+	const CObservation& obs, vector_detectable_object& detected)
 {
 #if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x200
 	// Obtain image from generic observation
@@ -97,18 +97,18 @@ void CCascadeClassifierDetection::detectObjects_Impl(
 
 	if (IS_CLASS(obs, CObservationImage))
 	{
-		const auto* o = static_cast<const CObservationImage*>(obs);
-		img = &o->image;
+		const auto& o = static_cast<const CObservationImage&>(obs);
+		img = &o.image;
 	}
 	else if (IS_CLASS(obs, CObservationStereoImages))
 	{
-		const auto* o = static_cast<const CObservationStereoImages*>(obs);
-		img = &o->imageLeft;
+		const auto& o = static_cast<const CObservationStereoImages&>(obs);
+		img = &o.imageLeft;
 	}
 	else if (IS_CLASS(obs, CObservation3DRangeScan))
 	{
-		const auto* o = static_cast<const CObservation3DRangeScan*>(obs);
-		img = &o->intensityImage;
+		const auto& o = static_cast<const CObservation3DRangeScan&>(obs);
+		img = &o.intensityImage;
 	}
 	if (!img)
 	{

@@ -51,7 +51,7 @@ DECLARE_OP_FUNCTION(op_export_imu_txt)
 		// return false on any error.
 		bool processOneObservation(CObservation::Ptr& o) override
 		{
-			if (!IS_CLASS(o, CObservationIMU)) return true;
+			if (!IS_CLASS(*o, CObservationIMU)) return true;
 
 			const CObservationIMU* obs =
 				dynamic_cast<CObservationIMU*>(o.get());

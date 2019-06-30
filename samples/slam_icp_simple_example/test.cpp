@@ -55,8 +55,8 @@ void TestICP()
 	stock_observations::example2DRangeScan(scan2, 1);
 
 	// Build the points maps from the scans:
-	m1.insertObservation(&scan1);
-	m2.insertObservation(&scan2);
+	m1.insertObservation(scan1);
+	m2.insertObservation(scan2);
 
 #if MRPT_HAS_PCL
 	cout << "Saving map1.pcd and map2.pcd in PCL format...\n";

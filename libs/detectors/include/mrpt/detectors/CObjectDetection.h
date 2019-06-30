@@ -37,11 +37,11 @@ class CObjectDetection
 		const mrpt::obs::CObservation::Ptr obs,
 		vector_detectable_object& detected)
 	{
-		detectObjects_Impl(obs.get(), detected);
+		detectObjects_Impl(*obs, detected);
 	};
 
 	inline void detectObjects(
-		const mrpt::obs::CObservation* obs, vector_detectable_object& detected)
+		const mrpt::obs::CObservation& obs, vector_detectable_object& detected)
 	{
 		detectObjects_Impl(obs, detected);
 	};
@@ -51,7 +51,7 @@ class CObjectDetection
 
    protected:
 	virtual void detectObjects_Impl(
-		const mrpt::obs::CObservation* obs,
+		const mrpt::obs::CObservation& obs,
 		vector_detectable_object& detected) = 0;
 
 };  // End of class

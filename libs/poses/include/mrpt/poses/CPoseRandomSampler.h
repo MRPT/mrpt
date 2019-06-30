@@ -73,31 +73,13 @@ class CPoseRandomSampler
 	/** This method must be called to select the PDF from which to draw samples.
 	 * \sa drawSample
 	 */
-	void setPosePDF(const CPosePDF* pdf);
+	void setPosePDF(const CPosePDF& pdf);
 
 	/** This method must be called to select the PDF from which to draw samples.
 	 * \sa drawSample
 	 */
-	void setPosePDF(const CPosePDF::Ptr& pdf);
+	void setPosePDF(const CPose3DPDF& pdf);
 
-	/** This method must be called to select the PDF from which to draw samples.
-	 * \sa drawSample
-	 */
-	void setPosePDF(const CPosePDF& pdf) { setPosePDF(&pdf); }
-	/** This method must be called to select the PDF from which to draw samples.
-	 * \sa drawSample
-	 */
-	void setPosePDF(const CPose3DPDF* pdf);
-
-	/** This method must be called to select the PDF from which to draw samples.
-	 * \sa drawSample
-	 */
-	void setPosePDF(const CPose3DPDF::Ptr& pdf);
-
-	/** This method must be called to select the PDF from which to draw samples.
-	 * \sa drawSample
-	 */
-	void setPosePDF(const CPose3DPDF& pdf) { setPosePDF(&pdf); }
 	/** Generate a new sample from the selected PDF.
 	 * \return A reference to the same object passed as argument.
 	 * \sa setPosePDF

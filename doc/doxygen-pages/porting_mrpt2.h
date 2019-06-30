@@ -11,7 +11,7 @@
 /** \page porting_mrpt2 Porting code from MRPT 1.{3,4,5} to MRPT 2.*
  *
  * MRPT 2.0 includes several fundamental changes, most of them related to API
- * clean ups and the introduction of C++14 as the minimum supported version of
+ * clean ups and the introduction of C++17 as the minimum supported version of
  * the language.
  *
  * Existing user applications may need to be adapted to continue compiling and
@@ -72,8 +72,11 @@
  *    - Scheduler functions are now in a new header `<mrpt/system/scheduler.h>`, not in the old `<mrpt/system/threads.h`:
  *      - `mrpt::system::changeCurrentProcessPriority()`
  *      - `mrpt::system::changeCurrentThreadPriority()`
+ *
  *  - `mrpt::utils::CObject::duplicate()` has been removed, use the equivalent (redundant) `mrpt::utils::CObject::clone()`.
+ *
  *  - CSerialPort, `mrpt::utils::net`, sockets: have been moved to its own new module \ref mrpt_comms_grp under namespace `mrpt::comms`.
+ *
  *  - Static variables have been dropped in favor of global getter/setter functions. This allowed removing all DLL import/export macros
  * for Windows compilers. Important changes are:
  *    - `mrpt::math::randomGenerator` --> `mrpt::math::getRandomGenerator()`
@@ -100,23 +103,22 @@
  *    mrpt::math::TPose3D p3 = p1.asTPose(); // OK for mrpt 2.0
  *    \endcode
  *
- *  - 16-byte memory-aligned STL containers are now defined in separate headers, one for each container type, and based on
- * templatized `using`. Example:
- *       \code
- *       // Old: MRPT 1.* code
- *       #include <mrpt/utils/stl_containers_utils.h>
- *       mrpt::aligned_containers<Foo>::vector_t m_all_poses v;
+ *  - 16-byte memory-aligned STL containers are now not required, since C++17 already observes the required alignment by default.
  *
- *       // New: MRPT 2.* code
- *       #include <vector>
- *       std::vector<Foo> v;
- *       \endcode
  *  - mrpt::system::TTimeStamp is now a C++11-compatible std::chrono clock
  * time_point. All existing backwards-compatible functions to handle dates and
  * timestamps in MRPT remain, but C++11 chrono functions can be now also used
  * instead. mrpt::system::secondsToTimestamp() has been removed since it mixed
  * up a duration with time_point and may be prone to errors.
  *
+ *  - The RTTI macros `IS_CLASS()` and `IS_DERIVED()` now accept references to objects instead of pointers:
+ *    \code
+ *    if (IS_CLASS(ptrObj, ...)) // ERROR in mrpt 2.0 (built in MRPT 1.*)
+ *    if (IS_CLASS(*ptrObj, ...)) // OK for mrpt 2.0
+ *
+ *    if (IS_DERIVED(ptrObj, ...)) // ERROR in mrpt 2.0 (built in MRPT 1.*)
+ *    if (IS_DERIVED(*ptrObj, ...)) // OK for mrpt 2.0
+ *    \endcode
  *
  * **Optional changes**
  *   - Use the `Foo::ConstPtr` smart pointers when possible instead of its

@@ -64,14 +64,14 @@ bool CICPCriteriaERD<GRAPH_T>::updateState(
 
 	if (observation)
 	{  // observation-only rawlog format
-		if (IS_CLASS(observation, CObservation2DRangeScan))
+		if (IS_CLASS(*observation, CObservation2DRangeScan))
 		{
 			m_last_laser_scan2D =
 				std::dynamic_pointer_cast<mrpt::obs::CObservation2DRangeScan>(
 					observation);
 			m_is_using_3DScan = false;
 		}
-		if (IS_CLASS(observation, CObservation3DRangeScan))
+		if (IS_CLASS(*observation, CObservation3DRangeScan))
 		{
 			m_last_laser_scan3D =
 				std::dynamic_pointer_cast<mrpt::obs::CObservation3DRangeScan>(

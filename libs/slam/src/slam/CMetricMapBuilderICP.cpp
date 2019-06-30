@@ -146,7 +146,7 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 	ASSERT_(obs);
 
 	// Is it an odometry observation??
-	if (IS_CLASS(obs, CObservationOdometry))
+	if (IS_CLASS(*obs, CObservationOdometry))
 	{
 		MRPT_LOG_DEBUG("processObservation(): obs is CObservationOdometry");
 		m_there_has_been_an_odometry = true;
@@ -278,7 +278,7 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 					->insertionOptions.useMapAltitude)
 			{
 				// Use grid altitude:
-				if (IS_CLASS(obs, CObservation2DRangeScan))
+				if (IS_CLASS(*obs, CObservation2DRangeScan))
 				{
 					CObservation2DRangeScan::Ptr obsLaser =
 						std::dynamic_pointer_cast<CObservation2DRangeScan>(obs);
@@ -295,7 +295,7 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 				can_do_icp = sensedPoints.insertObservationPtr(obs);
 			}
 
-			if (IS_DERIVED(matchWith, CPointsMap) &&
+			if (IS_DERIVED(*matchWith, CPointsMap) &&
 				static_cast<CPointsMap*>(matchWith)->empty())
 				can_do_icp = false;  // The reference map is empty!
 

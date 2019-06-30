@@ -49,19 +49,19 @@ void TestCameraCaptureAsk()
 
 		CImage* img = nullptr;
 
-		if (IS_CLASS(obs, CObservationImage))
+		if (IS_CLASS(*obs, CObservationImage))
 		{
 			CObservationImage::Ptr o =
 				std::dynamic_pointer_cast<CObservationImage>(obs);
 			img = &o->image;
 		}
-		else if (IS_CLASS(obs, CObservationStereoImages))
+		else if (IS_CLASS(*obs, CObservationStereoImages))
 		{
 			CObservationStereoImages::Ptr o =
 				std::dynamic_pointer_cast<CObservationStereoImages>(obs);
 			img = &o->imageRight;
 		}
-		else if (IS_CLASS(obs, CObservation3DRangeScan))
+		else if (IS_CLASS(*obs, CObservation3DRangeScan))
 		{
 			CObservation3DRangeScan::Ptr o =
 				std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);

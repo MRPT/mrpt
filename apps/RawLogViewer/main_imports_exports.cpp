@@ -1280,7 +1280,7 @@ void xRawLogViewerFrame::OnGenGasTxt(wxCommandEvent& event)
 				{
 					CObservation::Ptr o =
 						rawlog.getAsObservation(i);  // get the observation
-					if (IS_CLASS(o, CObservationGasSensors))
+					if (IS_CLASS(*o, CObservationGasSensors))
 					{
 						obs = std::dynamic_pointer_cast<CObservationGasSensors>(
 							o);  // Get the GAS observation
@@ -1397,7 +1397,7 @@ void xRawLogViewerFrame::OnGenWifiTxt(wxCommandEvent& event)
 				{
 					CObservation::Ptr o =
 						rawlog.getAsObservation(i);  // get the observation
-					if (IS_CLASS(o, CObservationWirelessPower))
+					if (IS_CLASS(*o, CObservationWirelessPower))
 					{
 						obs = std::dynamic_pointer_cast<
 							CObservationWirelessPower>(
@@ -1514,7 +1514,7 @@ void xRawLogViewerFrame::OnGenRFIDTxt(wxCommandEvent& event)
 				{
 					CObservation::Ptr o =
 						rawlog.getAsObservation(i);  // get the observation
-					if (IS_CLASS(o, CObservationRFID))
+					if (IS_CLASS(*o, CObservationRFID))
 					{
 						obs = std::dynamic_pointer_cast<CObservationRFID>(
 							o);  // Get the GAS observation
@@ -2126,7 +2126,7 @@ void xRawLogViewerFrame::OnGenerateTextFileRangeBearing(wxCommandEvent& event)
 			{
 				CObservation::Ptr o = rawlog.getAsObservation(i);
 
-				if (IS_CLASS(o, CObservationBearingRange))
+				if (IS_CLASS(*o, CObservationBearingRange))
 				{
 					CObservationBearingRange::Ptr obs =
 						std::dynamic_pointer_cast<CObservationBearingRange>(o);

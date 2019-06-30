@@ -372,7 +372,7 @@ void CPosePDFParticlesExtended::prediction_and_update_pfStandardProposal(
 		// ---------------------
 		// Initialize random sample generator:
 		mrpt::poses::CPoseRandomSampler poseSamplesGen;
-		poseSamplesGen.setPosePDF(robotMovement->poseChange.get_ptr());
+		poseSamplesGen.setPosePDF(*robotMovement->poseChange);
 
 		CPose2D increment_i;
 		for (i = 0; i < M; i++)  // Update particle poses:
@@ -454,7 +454,7 @@ void CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 	// ----------------------------------------------------------------------
 	// Initialize random sample generator:
 	mrpt::poses::CPoseRandomSampler m_movementDrawer;
-	m_movementDrawer.setPosePDF(robotMovement->poseChange.get_ptr());
+	m_movementDrawer.setPosePDF(*robotMovement->poseChange);
 
 	CPose2D mean_movement;
 	robotMovement->poseChange->getMean(mean_movement);
@@ -946,7 +946,7 @@ double CPosePDFParticlesExtended::auxiliarComputeObservationLikelihood(
 		}
 
 		ret += map->computeObservationLikelihood(
-			obser, x->pose);  // Compute the likelihood:
+			*obser, x->pose);  // Compute the likelihood:
 	}
 
 	// cout << x->pose << format(": lik = %f",ret) << endl;

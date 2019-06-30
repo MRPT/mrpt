@@ -108,7 +108,7 @@ void CPose3DPDFGaussianInf::copyFrom(const CPose3DPDF& o)
 {
 	if (this == &o) return;  // It may be used sometimes
 
-	if (IS_CLASS(&o, CPose3DPDFGaussianInf))
+	if (IS_CLASS(o, CPose3DPDFGaussianInf))
 	{  // It's my same class:
 		const auto* ptr = dynamic_cast<const CPose3DPDFGaussianInf*>(&o);
 		ASSERT_(ptr != nullptr);
@@ -126,7 +126,7 @@ void CPose3DPDFGaussianInf::copyFrom(const CPose3DPDF& o)
 
 void CPose3DPDFGaussianInf::copyFrom(const CPosePDF& o)
 {
-	if (IS_CLASS(&o, CPosePDFGaussianInf))
+	if (IS_CLASS(o, CPosePDFGaussianInf))
 	{  // cov is already inverted, but it's a 2D pose:
 		const auto* ptr = dynamic_cast<const CPosePDFGaussianInf*>(&o);
 		ASSERT_(ptr != nullptr);

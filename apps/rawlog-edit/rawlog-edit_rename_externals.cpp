@@ -56,7 +56,7 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 			const string label_time = format(
 				"%s_%f", obs->sensorLabel.c_str(),
 				timestampTotime_t(obs->timestamp));
-			if (IS_CLASS(obs, CObservationStereoImages))
+			if (IS_CLASS(*obs, CObservationStereoImages))
 			{
 				CObservationStereoImages::Ptr obsSt =
 					std::dynamic_pointer_cast<CObservationStereoImages>(obs);
@@ -98,7 +98,7 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 				else
 					entries_skipped++;
 			}
-			else if (IS_CLASS(obs, CObservationImage))
+			else if (IS_CLASS(*obs, CObservationImage))
 			{
 				CObservationImage::Ptr obsIm =
 					std::dynamic_pointer_cast<CObservationImage>(obs);
@@ -119,7 +119,7 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 				else
 					entries_skipped++;
 			}
-			else if (IS_CLASS(obs, CObservation3DRangeScan))
+			else if (IS_CLASS(*obs, CObservation3DRangeScan))
 			{
 				CObservation3DRangeScan::Ptr obs3D =
 					std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);

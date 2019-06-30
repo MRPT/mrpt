@@ -135,7 +135,7 @@ DECLARE_OP_FUNCTION(op_stereo_rectify)
 
 			if (strCmpI(obs->sensorLabel, target_label))
 			{
-				if (IS_CLASS(obs, CObservationStereoImages))
+				if (IS_CLASS(*obs, CObservationStereoImages))
 				{
 					CObservationStereoImages::Ptr o =
 						std::dynamic_pointer_cast<CObservationStereoImages>(

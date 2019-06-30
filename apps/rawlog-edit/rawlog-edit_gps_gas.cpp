@@ -75,7 +75,7 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml)
 		// return false on any error.
 		bool processOneObservation(CObservation::Ptr& o) override
 		{
-			if (IS_CLASS(o, CObservationGPS))
+			if (IS_CLASS(*o, CObservationGPS))
 			{
 				obs = dynamic_cast<CObservationGPS*>(o.get());
 				if (!obs->has_GGA_datum)
@@ -85,7 +85,7 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml)
 				}
 				hasGPS = true;
 			}
-			else if (IS_CLASS(o, CObservationGasSensors))
+			else if (IS_CLASS(*o, CObservationGasSensors))
 			{
 				obsGas = dynamic_cast<CObservationGasSensors*>(o.get());
 				if (obsGas->m_readings.size() < 1)

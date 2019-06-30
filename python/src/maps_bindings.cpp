@@ -37,7 +37,7 @@ bool CMetricMap_insertObservation(
 	CMetricMap& self, const CObservation& obs,
 	const CPose3D& robotPose = CPose3D())
 {
-	return self.insertObservation(&obs, &robotPose);
+	return self.insertObservation(obs, &robotPose);
 }
 
 bool CMetricMap_insertObservationPtr(
@@ -69,7 +69,7 @@ COccupancyGridMap2D* COccupancyGridMap2D_copy(COccupancyGridMap2D& self)
 bool COccupancyGridMap2D_insertObservation(
 	COccupancyGridMap2D& self, CObservation& obs, CPose3D& pose)
 {
-	return self.insertObservation(&obs, &pose);
+	return self.insertObservation(obs, &pose);
 }
 
 object COccupancyGridMap2D_to_ROS_OccupancyGrid_msg1(

@@ -170,7 +170,7 @@ y<windGrid_direction.getSizeY(); y++ )
 						insertObservation
   ---------------------------------------------------------------*/
 bool CGasConcentrationGridMap2D::internal_insertObservation(
-	const CObservation* obs, const CPose3D* robotPose)
+	const CObservation& obs, const CPose3D* robotPose)
 {
 	MRPT_START
 
@@ -192,19 +192,19 @@ bool CGasConcentrationGridMap2D::internal_insertObservation(
 		/********************************************************************
 					OBSERVATION TYPE: CObservationGasSensors
 		********************************************************************/
-		const auto* o = static_cast<const CObservationGasSensors*>(obs);
+		const auto& o = static_cast<const CObservationGasSensors&>(obs);
 
-		if (o->sensorLabel.compare(insertionOptions.gasSensorLabel) == 0)
+		if (o.sensorLabel.compare(insertionOptions.gasSensorLabel) == 0)
 		{
 			float sensorReading;
 			CPose2D sensorPose;
 
-			if (o->sensorLabel.compare("MCEnose") == 0 ||
-				o->sensorLabel.compare("Full_MCEnose") == 0)
+			if (o.sensorLabel.compare("MCEnose") == 0 ||
+				o.sensorLabel.compare("Full_MCEnose") == 0)
 			{
-				ASSERT_(o->m_readings.size() > insertionOptions.enose_id);
+				ASSERT_(o.m_readings.size() > insertionOptions.enose_id);
 				const CObservationGasSensors::TObservationENose* it =
-					&o->m_readings[insertionOptions.enose_id];
+					&o.m_readings[insertionOptions.enose_id];
 
 				// Compute the 3D sensor pose in world coordinates:
 				sensorPose = CPose2D(
@@ -242,7 +242,7 @@ bool CGasConcentrationGridMap2D::internal_insertObservation(
 			else  //"GDM, RAE_PID, ENOSE_SIMUL
 			{
 				const CObservationGasSensors::TObservationENose* it =
-					&o->m_readings[0];
+					&o.m_readings[0];
 				// Compute the 3D sensor pose in world coordinates:
 				sensorPose = CPose2D(
 					CPose3D(robotPose2D) + CPose3D(it->eNosePoseOnTheRobot));
@@ -281,7 +281,7 @@ bool CGasConcentrationGridMap2D::internal_insertObservation(
 						computeObservationLikelihood
   ---------------------------------------------------------------*/
 double CGasConcentrationGridMap2D::internal_computeObservationLikelihood(
-	const CObservation* obs, const CPose3D& takenFrom)
+	const CObservation& obs, const CPose3D& takenFrom)
 {
 	MRPT_UNUSED_PARAM(obs);
 	MRPT_UNUSED_PARAM(takenFrom);

@@ -118,7 +118,7 @@ void theMainThing()
 			nullPose.y(y);
 			fprintf(
 				f, "%e ",
-				gridMap.computeObservationLikelihood(&obsScan, nullPose));
+				gridMap.computeObservationLikelihood(obsScan, nullPose));
 		}  // for y
 		fprintf(f, "\n");
 	}  // for x

@@ -127,7 +127,7 @@ void CMultiMetricMapPDF::clear(
 			// approximation (with loss of uncertainty).
 			mrpt::poses::CPose3D kf_pose;
 			bool kf_pose_set = false;
-			if (IS_CLASS(keyframe_pose, CPose3DPDFParticles))
+			if (IS_CLASS(*keyframe_pose, CPose3DPDFParticles))
 			{
 				const auto pdf_parts = dynamic_cast<const CPose3DPDFParticles*>(
 					keyframe_pose.get());
@@ -145,7 +145,7 @@ void CMultiMetricMapPDF::clear(
 			p.d->robotPath[i] = kf_pose.asTPose();
 			for (const auto& obs : *sfkeyframe_sf)
 			{
-				p.d->mapTillNow.insertObservation(&(*obs), &kf_pose);
+				p.d->mapTillNow.insertObservation(*obs, &kf_pose);
 			}
 		}
 	}

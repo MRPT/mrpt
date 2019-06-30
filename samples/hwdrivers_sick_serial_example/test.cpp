@@ -94,7 +94,7 @@ void TestPLS()
 			obs.sensorPose = CPose3D(0, 0, 0);
 			mrpt::maps::CSimplePointsMap theMap;
 			theMap.insertionOptions.minDistBetweenLaserPoints = 0;
-			theMap.insertObservation(&obs);
+			theMap.insertObservation(obs);
 
 #if MRPT_HAS_WXWIDGETS
 			std::vector<float> xs, ys, zs;

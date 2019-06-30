@@ -65,7 +65,7 @@ void CRawlog::addGenericObject(const CSerializable::Ptr& obj)
 void CRawlog::addObservationMemoryReference(
 	const CObservation::Ptr& observation)
 {
-	if (IS_CLASS(observation, CObservationComment))
+	if (IS_CLASS(*observation, CObservationComment))
 	{
 		CObservationComment::Ptr o =
 			std::dynamic_pointer_cast<CObservationComment>(observation);
@@ -214,7 +214,7 @@ bool CRawlog::loadFromRawLogFile(
 			else if (newObj->GetRuntimeClass()->derivedFrom(
 						 CLASS_ID(CObservation)))
 			{
-				if (IS_CLASS(newObj, CObservationComment))
+				if (IS_CLASS(*newObj, CObservationComment))
 				{
 					CObservationComment::Ptr o =
 						std::dynamic_pointer_cast<CObservationComment>(newObj);
@@ -382,11 +382,11 @@ bool CRawlog::getActionObservationPairOrObservation(
 		{
 			CSerializable::Ptr obj;
 			inStream >> obj;
-			if (IS_CLASS(obj, CActionCollection))
+			if (IS_CLASS(*obj, CActionCollection))
 			{
 				action = std::dynamic_pointer_cast<CActionCollection>(obj);
 			}
-			else if (IS_DERIVED(obj, CObservation))
+			else if (IS_DERIVED(*obj, CObservation))
 			{
 				observation = std::dynamic_pointer_cast<CObservation>(obj);
 				rawlogEntry++;

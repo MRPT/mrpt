@@ -107,7 +107,7 @@ bool CReflectivityGridMap2D::isEmpty() const { return false; }
 						insertObservation
   ---------------------------------------------------------------*/
 bool CReflectivityGridMap2D::internal_insertObservation(
-	const CObservation* obs, const CPose3D* robotPose)
+	const CObservation& obs, const CPose3D* robotPose)
 {
 	MRPT_START
 
@@ -129,20 +129,19 @@ bool CReflectivityGridMap2D::internal_insertObservation(
 		/********************************************************************
 					OBSERVATION TYPE: CObservationReflectivity
 		********************************************************************/
-		const auto* o = static_cast<const CObservationReflectivity*>(obs);
+		const auto& o = static_cast<const CObservationReflectivity&>(obs);
 
-		if (o->channel != -1 && insertionOptions.channel != -1 &&
-			o->channel != insertionOptions.channel)
+		if (o.channel != -1 && insertionOptions.channel != -1 &&
+			o.channel != insertionOptions.channel)
 		{
 			return false;  // Incorrect channel
 		}
 
 		CPose3D sensor_pose;
-		sensor_pose.composeFrom(robotPose3D, o->sensorPose);
+		sensor_pose.composeFrom(robotPose3D, o.sensorPose);
 
 		// log-odd increment due to the observation:
-		const cell_t logodd_observation =
-			m_logodd_lut.p2l(o->reflectivityLevel);
+		const cell_t logodd_observation = m_logodd_lut.p2l(o.reflectivityLevel);
 
 		// Update cell, with saturation:
 		cell_t* cell = cellByPos(sensor_pose.x(), sensor_pose.y());
@@ -185,7 +184,7 @@ bool CReflectivityGridMap2D::internal_insertObservation(
 						computeObservationLikelihood
   ---------------------------------------------------------------*/
 double CReflectivityGridMap2D::internal_computeObservationLikelihood(
-	const CObservation* obs, const CPose3D& takenFrom)
+	const CObservation& obs, const CPose3D& takenFrom)
 {
 	MRPT_START
 
@@ -194,27 +193,27 @@ double CReflectivityGridMap2D::internal_computeObservationLikelihood(
 		/********************************************************************
 					OBSERVATION TYPE: CObservationReflectivity
 		********************************************************************/
-		const auto* o = static_cast<const CObservationReflectivity*>(obs);
+		const auto& o = static_cast<const CObservationReflectivity&>(obs);
 
-		if (o->channel != -1 && insertionOptions.channel != -1 &&
-			o->channel != insertionOptions.channel)
+		if (o.channel != -1 && insertionOptions.channel != -1 &&
+			o.channel != insertionOptions.channel)
 		{
 			return 0;  // Incorrect channel
 		}
 
 		CPose3D sensor_pose;
-		sensor_pose.composeFrom(takenFrom, o->sensorPose);
+		sensor_pose.composeFrom(takenFrom, o.sensorPose);
 
 		cell_t* cell = cellByPos(sensor_pose.x(), sensor_pose.y());
 		if (!cell)
 			return 0;  // out of the map..
 		else
 		{
-			ASSERT_ABOVEEQ_(o->reflectivityLevel, 0);
-			ASSERT_BELOWEQ_(o->reflectivityLevel, 1);
+			ASSERT_ABOVEEQ_(o.reflectivityLevel, 0);
+			ASSERT_BELOWEQ_(o.reflectivityLevel, 1);
 			return -0.5 * square(
-							  (m_logodd_lut.l2p(*cell) - o->reflectivityLevel) /
-							  o->sensorStdNoise);
+							  (m_logodd_lut.l2p(*cell) - o.reflectivityLevel) /
+							  o.sensorStdNoise);
 		}
 	}
 	else

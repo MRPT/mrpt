@@ -51,7 +51,7 @@ DECLARE_OP_FUNCTION(op_export_2d_scans_txt)
 		// return false on any error.
 		bool processOneObservation(CObservation::Ptr& o) override
 		{
-			if (!IS_CLASS(o, CObservation2DRangeScan)) return true;
+			if (!IS_CLASS(*o, CObservation2DRangeScan)) return true;
 
 			const CObservation2DRangeScan* obs =
 				dynamic_cast<CObservation2DRangeScan*>(o.get());

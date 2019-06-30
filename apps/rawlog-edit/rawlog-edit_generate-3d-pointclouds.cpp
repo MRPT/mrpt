@@ -42,7 +42,7 @@ DECLARE_OP_FUNCTION(op_generate_3d_pointclouds)
 
 		bool processOneObservation(CObservation::Ptr& obs) override
 		{
-			if (IS_CLASS(obs, CObservation3DRangeScan))
+			if (IS_CLASS(*obs, CObservation3DRangeScan))
 			{
 				CObservation3DRangeScan::Ptr obs3D =
 					std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);

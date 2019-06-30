@@ -642,7 +642,7 @@ void CActionRobotMovement2D::prepareFastDrawSingleSample_modelGaussian() const
 {
 	MRPT_START
 
-	ASSERT_(IS_CLASS(poseChange, CPosePDFGaussian));
+	ASSERT_(IS_CLASS(*poseChange, CPosePDFGaussian));
 
 	const auto* gPdf = dynamic_cast<const CPosePDFGaussian*>(poseChange.get());
 	ASSERT_(gPdf != nullptr);

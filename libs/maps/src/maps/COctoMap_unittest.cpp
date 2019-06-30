@@ -57,6 +57,6 @@ TEST(COctoMapTests, insert2DScan)
 	// Insert the scan in the map and check expected values:
 	{
 		COctoMap map(0.1);
-		map.insertObservation(&scan1);
+		map.insertObservation(scan1);
 	}
 }

@@ -47,7 +47,7 @@ double pointmap_test_0(int a1, int a2)
 		{
 			pose.setFromValues(
 				pose.x() + 0.04, pose.y() + 0.08, 0, pose.yaw() + 0.02);
-			pt_map.insertObservation(&scan1, &pose);
+			pt_map.insertObservation(scan1, &pose);
 		}
 	}
 	return tictac.Tac() / a2;
@@ -73,7 +73,7 @@ double pointmap_test_1(int a1, int a2)
 		pose.setFromValues(
 			pose.x() + 0.04, pose.y() + 0.08, 0, pose.yaw() + 0.02);
 
-		pt_map.insertObservation(&scan1, &pose);
+		pt_map.insertObservation(scan1, &pose);
 	}
 
 	const unsigned N_REPS = 25;
@@ -127,7 +127,7 @@ double pointmap_test_2(int a1, int a2)
 		{
 			pose.setFromValues(
 				pose.x() + 0.04, pose.y() + 0.08, 0, pose.yaw() + 0.02);
-			pt_map.insertObservation(&scan1, &pose);
+			pt_map.insertObservation(scan1, &pose);
 			if (a2 == 1)
 			{  // 2d kd-tree
 				float x, y, dist2;
@@ -163,7 +163,7 @@ double pointmap_test_3(int a1, int a2)
 	{
 		pose.setFromValues(
 			pose.x() + 0.04, pose.y() + 0.08, 0, pose.yaw() + 0.02);
-		pt_map.insertObservation(&scan1, &pose);
+		pt_map.insertObservation(scan1, &pose);
 	}
 
 	CTicTac tictac;
@@ -200,10 +200,10 @@ double pointmap_test_4(int a1, int a2)
 	pt_map2.insertionOptions.minDistBetweenLaserPoints = 0.03f;
 
 	CPose3D pose;
-	pt_map.insertObservation(&scan1, &pose);
+	pt_map.insertObservation(scan1, &pose);
 
 	CPose3D pose2(0.05, 0.04, 0, DEG2RAD(4), 0, 0);
-	pt_map2.insertObservation(&scan1, &pose2);
+	pt_map2.insertObservation(scan1, &pose2);
 
 	const CPose2D nullPose(0, 0, 0);
 	TMatchingPairList correspondences;
@@ -240,7 +240,7 @@ double pointmap_test_5(int a1, int a2)
 	{
 		pose.setFromValues(
 			pose.x() + 0.04, pose.y() + 0.08, 0, pose.yaw() + 0.02);
-		pt_map.insertObservation(&scan1, &pose);
+		pt_map.insertObservation(scan1, &pose);
 	}
 
 	CTicTac tictac;

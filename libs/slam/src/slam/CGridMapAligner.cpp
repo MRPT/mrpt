@@ -106,7 +106,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 	const COccupancyGridMap2D* m1 = nullptr;
 	const COccupancyGridMap2D* m2 = nullptr;
 
-	if (IS_CLASS(mm1, CMultiMetricMap) && IS_CLASS(mm2, CMultiMetricMap))
+	if (IS_CLASS(*mm1, CMultiMetricMap) && IS_CLASS(*mm2, CMultiMetricMap))
 	{
 		multimap1 = static_cast<const CMultiMetricMap*>(mm1);
 		multimap2 = static_cast<const CMultiMetricMap*>(mm2);
@@ -118,8 +118,8 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 		m2 = multimap2->mapByClass<COccupancyGridMap2D>().get();
 	}
 	else if (
-		IS_CLASS(mm1, COccupancyGridMap2D) &&
-		IS_CLASS(mm2, COccupancyGridMap2D))
+		IS_CLASS(*mm1, COccupancyGridMap2D) &&
+		IS_CLASS(*mm2, COccupancyGridMap2D))
 	{
 		m1 = static_cast<const COccupancyGridMap2D*>(mm1);
 		m2 = static_cast<const COccupancyGridMap2D*>(mm2);

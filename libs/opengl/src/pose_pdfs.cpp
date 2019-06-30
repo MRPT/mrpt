@@ -44,7 +44,7 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPosePDF& o)
 {
 	auto outObj = CSetOfObjects::Create();
 
-	if (IS_CLASS(&o, CPosePDFSOG))
+	if (IS_CLASS(o, CPosePDFSOG))
 	{
 		const auto* p = dynamic_cast<const CPosePDFSOG*>(&o);
 		ASSERT_(p != nullptr);
@@ -73,7 +73,7 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPosePDF& o)
 		}
 		outObj->insert(lins);
 	}
-	else if (IS_CLASS(&o, CPosePDFGaussian))
+	else if (IS_CLASS(o, CPosePDFGaussian))
 	{
 		const auto* p = dynamic_cast<const CPosePDFGaussian*>(&o);
 		ASSERT_(p != nullptr);
@@ -100,7 +100,7 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPosePDF& o)
 
 		outObj->insert(lins);
 	}
-	else if (IS_CLASS(&o, CPosePDFParticles))
+	else if (IS_CLASS(o, CPosePDFParticles))
 	{
 		const auto* p = dynamic_cast<const CPosePDFParticles*>(&o);
 		ASSERT_(p != nullptr);
@@ -135,7 +135,7 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPointPDF& o)
 {
 	CSetOfObjects::Ptr outObj = std::make_shared<CSetOfObjects>();
 
-	if (IS_CLASS(&o, CPointPDFSOG))
+	if (IS_CLASS(o, CPointPDFSOG))
 	{
 		const auto* p = dynamic_cast<const CPointPDFSOG*>(&o);
 		ASSERT_(p != nullptr);
@@ -156,7 +156,7 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPointPDF& o)
 			outObj->insert(obj);
 		}  // end for each gaussian node
 	}
-	else if (IS_CLASS(&o, CPointPDFGaussian))
+	else if (IS_CLASS(o, CPointPDFGaussian))
 	{
 		const auto* p = dynamic_cast<const CPointPDFGaussian*>(&o);
 		ASSERT_(p != nullptr);
@@ -169,7 +169,7 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPointPDF& o)
 		obj->enableDrawSolid3D(false);
 		outObj->insert(obj);
 	}
-	else if (IS_CLASS(&o, CPointPDFParticles))
+	else if (IS_CLASS(o, CPointPDFParticles))
 	{
 		const auto* p = dynamic_cast<const CPointPDFParticles*>(&o);
 		ASSERT_(p != nullptr);
@@ -197,7 +197,7 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPose3DPDF& o)
 {
 	CSetOfObjects::Ptr outObj = std::make_shared<CSetOfObjects>();
 
-	if (IS_CLASS(&o, CPose3DPDFSOG))
+	if (IS_CLASS(o, CPose3DPDFSOG))
 	{
 		const auto* p = dynamic_cast<const CPose3DPDFSOG*>(&o);
 		ASSERT_(p != nullptr);
@@ -225,7 +225,7 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPose3DPDF& o)
 			outObj->insert(axes);
 		}  // end for each gaussian node
 	}
-	else if (IS_CLASS(&o, CPose3DPDFGaussian))
+	else if (IS_CLASS(o, CPose3DPDFGaussian))
 	{
 		const auto* p = dynamic_cast<const CPose3DPDFGaussian*>(&o);
 		ASSERT_(p != nullptr);
@@ -246,7 +246,7 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPose3DPDF& o)
 		axes->setScale(POSE_AXIS_SCALE);
 		outObj->insert(axes);
 	}
-	else if (IS_CLASS(&o, CPose3DPDFParticles))
+	else if (IS_CLASS(o, CPose3DPDFParticles))
 	{
 		const auto* p = dynamic_cast<const CPose3DPDFParticles*>(&o);
 		ASSERT_(p != nullptr);
@@ -270,7 +270,7 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPose3DQuatPDF& o)
 {
 	CSetOfObjects::Ptr outObj = std::make_shared<CSetOfObjects>();
 
-	if (IS_CLASS(&o, CPose3DQuatPDFGaussian))
+	if (IS_CLASS(o, CPose3DQuatPDFGaussian))
 	{
 		const auto* p = dynamic_cast<const CPose3DQuatPDFGaussian*>(&o);
 		ASSERT_(p != nullptr);

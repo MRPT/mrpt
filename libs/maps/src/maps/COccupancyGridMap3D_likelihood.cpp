@@ -16,16 +16,16 @@
 using namespace mrpt::maps;
 
 double COccupancyGridMap3D::internal_computeObservationLikelihood(
-	const mrpt::obs::CObservation* obs, const mrpt::poses::CPose3D& takenFrom3D)
+	const mrpt::obs::CObservation& obs, const mrpt::poses::CPose3D& takenFrom3D)
 {
 	THROW_EXCEPTION("Implement me!");
 	return .0;
 }
 
 bool COccupancyGridMap3D::internal_canComputeObservationLikelihood(
-	const mrpt::obs::CObservation* obs) const
+	const mrpt::obs::CObservation& obs) const
 {
-	if (auto* o = dynamic_cast<const mrpt::obs::CObservation2DRangeScan*>(obs);
+	if (auto* o = dynamic_cast<const mrpt::obs::CObservation2DRangeScan*>(&obs);
 		o != nullptr)
 	{
 		return true;

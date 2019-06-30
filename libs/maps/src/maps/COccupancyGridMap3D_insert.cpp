@@ -21,20 +21,20 @@ using namespace mrpt::maps;
 static constexpr unsigned FRBITS = 9;
 
 bool COccupancyGridMap3D::internal_insertObservation(
-	const mrpt::obs::CObservation* obs, const mrpt::poses::CPose3D* robPose)
+	const mrpt::obs::CObservation& obs, const mrpt::poses::CPose3D* robPose)
 {
 	MRPT_START
 
 	const mrpt::poses::CPose3D robotPose3D =
 		(robPose != nullptr) ? *robPose : mrpt::poses::CPose3D();
 
-	if (auto* o = dynamic_cast<const mrpt::obs::CObservation2DRangeScan*>(obs);
+	if (auto* o = dynamic_cast<const mrpt::obs::CObservation2DRangeScan*>(&obs);
 		o != nullptr)
 	{
 		this->internal_insertObservationScan2D(*o, robotPose3D);
 		return true;
 	}
-	if (auto* o = dynamic_cast<const mrpt::obs::CObservation3DRangeScan*>(obs);
+	if (auto* o = dynamic_cast<const mrpt::obs::CObservation3DRangeScan*>(&obs);
 		o != nullptr)
 	{
 		this->internal_insertObservationScan3D(*o, robotPose3D);
@@ -201,7 +201,7 @@ void COccupancyGridMap3D::insertRay(
 }
 
 void COccupancyGridMap3D::OnPostSuccesfulInsertObs(
-	const mrpt::obs::CObservation*)
+	const mrpt::obs::CObservation&)
 {
 	m_is_empty = false;
 }

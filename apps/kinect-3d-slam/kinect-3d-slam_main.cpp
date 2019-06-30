@@ -466,7 +466,7 @@ void Test_Kinect()
 							// Update global map: append another map at a given
 							// position:
 							globalPtsMap.insertObservation(
-								last_obs.get(), &new_keyframe_global);
+								*last_obs, &new_keyframe_global);
 							win3D.get3DSceneAndLock();
 							gl_points_map->loadFromPointsMap(&globalPtsMap);
 							win3D.unlockAccess3DScene();
@@ -491,7 +491,7 @@ void Test_Kinect()
 
 				// Update global map:
 				globalPtsMap.clear();
-				globalPtsMap.insertObservation(last_obs.get());
+				globalPtsMap.insertObservation(*last_obs);
 
 				win3D.get3DSceneAndLock();
 				gl_points_map->loadFromPointsMap(&globalPtsMap);

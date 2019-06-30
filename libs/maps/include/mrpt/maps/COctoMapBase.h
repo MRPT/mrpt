@@ -372,7 +372,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 	 */
 	template <class octomap_point3d, class octomap_pointcloud>
 	bool internal_build_PointCloud_for_observation(
-		const mrpt::obs::CObservation* obs,
+		const mrpt::obs::CObservation& obs,
 		const mrpt::poses::CPose3D* robotPose, octomap_point3d& sensorPt,
 		octomap_pointcloud& scan) const;
 
@@ -383,7 +383,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
    private:
 	// See docs in base class
 	double internal_computeObservationLikelihood(
-		const mrpt::obs::CObservation* obs,
+		const mrpt::obs::CObservation& obs,
 		const mrpt::poses::CPose3D& takenFrom) override;
 
 };  // End of class def.
