@@ -68,16 +68,14 @@ void Test_UserTypes()
 
 	pBar->printName();
 	pBase->printName();
-	std::cout << "Is Foo?     => " << (IS_DERIVED(pObj, Foo) ? "Yes" : "No")
-			  << std::endl;
-	std::cout << "Is BarBase? => " << (IS_DERIVED(pObj, BarBase) ? "Yes" : "No")
-			  << std::endl;
-	std::cout << "Is Bar?     => " << (IS_DERIVED(pObj, Bar) ? "Yes" : "No")
-			  << std::endl;
+	std::cout << "Is Foo?   => " << (IS_DERIVED(*pObj, Foo) ? "Yes\n" : "No\n");
+	std::cout << "Is BarBase? => "
+	          << (IS_DERIVED(*pObj, BarBase) ? "Yes\n" : "No\n");
+	std::cout << "Is Bar?  => " << (IS_DERIVED(*pObj, Bar) ? "Yes\n" : "No\n");
 	if (IS_CLASS(*pObj, Bar))
 	{
-		auto pBar = mrpt::ptr_cast<Bar>::from(pObj);
-		pBar->specificBarMethod();
+		auto pBar2 = mrpt::ptr_cast<Bar>::from(pObj);
+		pBar2->specificBarMethod();
 	}
 }
 
