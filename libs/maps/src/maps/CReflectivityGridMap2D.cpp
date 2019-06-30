@@ -141,8 +141,7 @@ bool CReflectivityGridMap2D::internal_insertObservation(
 		sensor_pose.composeFrom(robotPose3D, o.sensorPose);
 
 		// log-odd increment due to the observation:
-		const cell_t logodd_observation =
-			m_logodd_lut.p2l(o.reflectivityLevel);
+		const cell_t logodd_observation = m_logodd_lut.p2l(o.reflectivityLevel);
 
 		// Update cell, with saturation:
 		cell_t* cell = cellByPos(sensor_pose.x(), sensor_pose.y());

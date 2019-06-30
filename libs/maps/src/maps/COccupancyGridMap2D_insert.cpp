@@ -314,8 +314,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 					// Only if:
 					//  - It was a valid ray, and
 					//  - The ray was not truncated
-					if (o.validRange[idx] &&
-						o.scan[idx] < maxDistanceInsertion)
+					if (o.validRange[idx] && o.scan[idx] < maxDistanceInsertion)
 						updateCell_fast_occupied(
 							trg_cx, trg_cy, logodd_observation_occupied,
 							logodd_thres_occupied, theMapArray, theMapSize_x);
@@ -714,8 +713,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 					//  - It was a valid ray, and
 					//  - The ray was not truncated
 					// ----------------------------------------------------
-					if (o.validRange[idx] &&
-						o.scan[idx] < maxDistanceInsertion)
+					if (o.validRange[idx] && o.scan[idx] < maxDistanceInsertion)
 					{
 						theR += resolution;
 

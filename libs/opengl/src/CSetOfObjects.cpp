@@ -90,7 +90,7 @@ void CSetOfObjects::initializeAllTextures()
 {
 #if MRPT_HAS_OPENGL_GLUT
 	CListOpenGLObjects::iterator it;
-	for (auto& obj: m_objects)
+	for (auto& obj : m_objects)
 	{
 		if (IS_DERIVED(obj, CTexturedObject))
 			dynamic_cast<CTexturedObject&>(*obj).loadTextureInOpenGL();

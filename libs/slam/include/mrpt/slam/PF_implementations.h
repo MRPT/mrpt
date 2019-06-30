@@ -206,8 +206,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 			if (robotMovement2D)
 			{
 				ASSERT_(robotMovement2D->poseChange);
-				m_movementDrawer.setPosePDF(
-					*robotMovement2D->poseChange);
+				m_movementDrawer.setPosePDF(*robotMovement2D->poseChange);
 				motionModelMeanIncr = mrpt::poses::CPose3D(
 					robotMovement2D->poseChange->getMeanVal());
 			}

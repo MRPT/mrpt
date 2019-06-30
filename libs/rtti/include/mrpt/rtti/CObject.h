@@ -92,12 +92,11 @@ struct CLASS_ID_impl
 #define CLASS_ID_NAMESPACE(class_name, namespaceName) \
 	mrpt::rtti::CLASS_ID_impl<namespaceName::class_name>::get()
 
-
 template <typename T>
 struct IS_CLASS_impl
 {
 	template <typename REF>
-	static bool check(const REF &p)
+	static bool check(const REF& p)
 	{
 		return p.GetRuntimeClass() == CLASS_ID_impl<T>::get();
 	}
