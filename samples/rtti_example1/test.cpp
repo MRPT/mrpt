@@ -70,7 +70,7 @@ void Test_UserTypes()
 	pBase->printName();
 	std::cout << "Is Foo?   => " << (IS_DERIVED(*pObj, Foo) ? "Yes\n" : "No\n");
 	std::cout << "Is BarBase? => "
-	          << (IS_DERIVED(*pObj, BarBase) ? "Yes\n" : "No\n");
+			  << (IS_DERIVED(*pObj, BarBase) ? "Yes\n" : "No\n");
 	std::cout << "Is Bar?  => " << (IS_DERIVED(*pObj, Bar) ? "Yes\n" : "No\n");
 	if (IS_CLASS(*pObj, Bar))
 	{
