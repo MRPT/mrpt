@@ -73,7 +73,8 @@ void C2DRangeFinderAbstract::doProcess()
 	if (hwError)
 	{
 		m_state = ssError;
-		THROW_EXCEPTION("Couldn't communicate to the USB board!");
+		MRPT_LOG_THROTTLE_ERROR(
+			5.0, "Error reading from the sensor hardware. Will retry.");
 	}
 
 	if (thereIs)
