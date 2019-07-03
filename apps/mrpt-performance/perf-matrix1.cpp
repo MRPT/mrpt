@@ -152,6 +152,22 @@ double matrix_test_det_fix(int a1, int a2)
 	return tictac.Tac() / N;
 }
 
+template <typename MAT, size_t DIM>
+double matrix_test_vector_resize(int VECTOR_LEN, int a2)
+{
+	using vec_t = std::vector<MAT>;
+
+	const long N = 10000;
+	CTicTac tictac;
+	for (long i = 0; i < N; i++)
+	{
+		vec_t v;
+		v.resize(VECTOR_LEN);
+		for (auto& m : v) m.resize(DIM, DIM);
+	}
+	return tictac.Tac() / N;
+}
+
 // ------------------------------------------------------
 // register_tests_matrices: Part 1
 // ------------------------------------------------------
@@ -238,4 +254,23 @@ void register_tests_matrices1()
 		"matrix: det, dyn[double] 20x20", matrix_test_det_dyn<double, 20>);
 	lstTests.emplace_back(
 		"matrix: det, dyn[double] 40x40", matrix_test_det_dyn<double, 40>);
+
+	// clang-format off
+	lstTests.emplace_back("matrix: vector of, resize(10) dyn[double] 4x4",    matrix_test_vector_resize<CMatrixDynamic<double>, 4>, 10);
+	lstTests.emplace_back("matrix: vector of, resize(100) dyn[double] 4x4",   matrix_test_vector_resize<CMatrixDynamic<double>, 4>, 100);
+	lstTests.emplace_back("matrix: vector of, resize(1000) dyn[double] 4x4",  matrix_test_vector_resize<CMatrixDynamic<double>, 4>, 1000);
+
+	lstTests.emplace_back("matrix: vector of, resize(10) dyn[double] 5x5",    matrix_test_vector_resize<CMatrixDynamic<double>, 5>, 10);
+	lstTests.emplace_back("matrix: vector of, resize(100) dyn[double] 5x5",   matrix_test_vector_resize<CMatrixDynamic<double>, 5>, 100);
+	lstTests.emplace_back("matrix: vector of, resize(1000) dyn[double] 5x5",  matrix_test_vector_resize<CMatrixDynamic<double>, 5>, 1000);
+
+	lstTests.emplace_back("matrix: vector of, resize(10) fix[double] 4x4",    matrix_test_vector_resize<CMatrixDouble44, 4>, 10);
+	lstTests.emplace_back("matrix: vector of, resize(100) fix[double] 4x4",   matrix_test_vector_resize<CMatrixDouble44, 4>, 100);
+	lstTests.emplace_back("matrix: vector of, resize(1000) fix[double] 4x4",  matrix_test_vector_resize<CMatrixDouble44, 4>, 1000);
+
+	lstTests.emplace_back("matrix: vector of, resize(10) fix[double] 5x5",    matrix_test_vector_resize<CMatrixFixed<double,5,5>, 5>, 10);
+	lstTests.emplace_back("matrix: vector of, resize(100) fix[double] 5x5",   matrix_test_vector_resize<CMatrixFixed<double,5,5>, 5>, 100);
+	lstTests.emplace_back("matrix: vector of, resize(1000) fix[double] 5x5",  matrix_test_vector_resize<CMatrixFixed<double,5,5>, 5>, 1000);
+
+	// clang-format on
 }
