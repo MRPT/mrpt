@@ -32,11 +32,11 @@ TEST(CMatrixDynamic, GetSetEigen)
 			}
 	}
 }
-TEST(CMatrixDynamic, asStr)
+TEST(CMatrixDynamic, asString)
 {
 	auto M = mrpt::math::CMatrixDynamic<double>::Identity(2);
 	M.setIdentity();
-	EXPECT_EQ(std::string("1 0\n0 1"), M.asStr());
+	EXPECT_EQ(std::string("1 0\n0 1"), M.asString());
 }
 
 TEST(CMatrixDynamic, CtorFromArray)

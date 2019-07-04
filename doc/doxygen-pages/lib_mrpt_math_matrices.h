@@ -103,7 +103,7 @@ mrpt::math::CVectorDouble<3> x;
 // Solve Ax=b
 x.asEigen() = A.asEigen().fullPivHouseholderQr().solve(x);
 
-std::cout << "x:\n" << x.asStr() << "\n";
+std::cout << "x:\n" << x.asString() << "\n";
 ```
 
 See list of classes below.

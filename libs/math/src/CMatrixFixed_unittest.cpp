@@ -32,11 +32,11 @@ TEST(CMatrixFixed, Identity)
 	for (int i = 0; i < 3; i++) EXPECT_EQ(M(i, i), 1.0);
 }
 
-TEST(CMatrixFixed, asStr)
+TEST(CMatrixFixed, asString)
 {
 	mrpt::math::CMatrixFixed<double, 2, 2> M;
 	M.setIdentity();
-	EXPECT_EQ(std::string("1 0\n0 1"), M.asStr());
+	EXPECT_EQ(std::string("1 0\n0 1"), M.asString());
 }
 
 TEST(CMatrixFixed, GetSetEigen)
