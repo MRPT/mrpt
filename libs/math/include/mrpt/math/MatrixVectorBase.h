@@ -374,7 +374,7 @@ class MatrixVectorBase
 
 	/** Returns a string representation of the vector/matrix, using Eigen's
 	 * default settings. */
-	std::string asStr() const;
+	std::string asString() const;
 
 	/** Reads a matrix from a string in Matlab-like format, for example:
 	 *  "[1 0 2; 0 4 -1]"
@@ -470,7 +470,7 @@ template <
 std::ostream& operator<<(
 	std::ostream& o, const MatrixVectorBase<Scalar, Derived>& m)
 {
-	return o << m.asStr();
+	return o << m.asString();
 }
 
 }  // namespace mrpt::math
