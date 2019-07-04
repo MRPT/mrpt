@@ -22,6 +22,7 @@
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFGaussianInf.h>
+#include <mrpt/poses/CPose3DPDFGrid.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/poses/CPose3DPDFSOG.h>
 #include <mrpt/poses/CPose3DQuat.h>
@@ -71,6 +72,7 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_poses)
 	registerClass(CLASS_ID(CPose3DPDFGaussianInf));
 	registerClass(CLASS_ID(CPose3DPDFParticles));
 	registerClass(CLASS_ID(CPose3DPDFSOG));
+	registerClass(CLASS_ID(CPose3DPDFGrid));
 
 	registerClass(CLASS_ID(CPose3DQuatPDF));
 	registerClass(CLASS_ID(CPose3DQuatPDFGaussian));
