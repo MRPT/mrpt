@@ -332,7 +332,7 @@ void MatrixVectorBase<Scalar, Derived>::loadFromTextFile(
 }
 
 template <typename Scalar, class Derived>
-std::string MatrixVectorBase<Scalar, Derived>::asStr() const
+std::string MatrixVectorBase<Scalar, Derived>::asString() const
 {
 	std::stringstream ss;
 	ss << mvbDerived().asEigen();

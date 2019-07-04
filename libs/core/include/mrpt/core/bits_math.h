@@ -57,12 +57,11 @@ inline float RAD2DEG(const float x) { return x * 180.0f / float(M_PI); }
 inline long double DEG2RAD(const long double x) { return x * M_PIl / 180.0; }
 /** Radians to degrees */
 inline long double RAD2DEG(const long double x) { return x * 180.0 / M_PIl; }
-#define DEG2RAD \
-	DEG2RAD  // This is required to avoid other libs (like PCL) to #define their
-// own versions of DEG2RAD
-#define RAD2DEG \
-	RAD2DEG  // This is required to avoid other libs (like PCL) to #define their
-// own versions of RAD2DEG
+
+// This is required to avoid other libs (like PCL) to #define their own macros
+// after including this header
+#define DEG2RAD DEG2RAD
+#define RAD2DEG RAD2DEG
 
 /** Returns the sign of X as "1" or "-1" */
 template <typename T>
