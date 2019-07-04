@@ -31,11 +31,11 @@ class CPose3DGridTemplate
 	/** Resolution of the grid */
 	double m_resolutionXYZ{0.20}, m_resolutionYPR{mrpt::DEG2RAD(10.0)};
 
-	size_t m_sizeX{0}, m_sizeY{0}, m_sizeZ{0};
-	size_t m_sizeYaw{0}, m_sizePitch{0}, m_sizeRoll{0};
+	uint32_t m_sizeX{0}, m_sizeY{0}, m_sizeZ{0};
+	uint32_t m_sizeYaw{0}, m_sizePitch{0}, m_sizeRoll{0};
 
 	// Cached products of the ones above:
-	size_t m_size_xy, m_size_xyz, m_size_xyzY, m_size_xyzYP, m_size_xyzYPR;
+	uint32_t m_size_xy, m_size_xyz, m_size_xyzY, m_size_xyzYP, m_size_xyzYPR;
 
 	void update_cached_size_products()
 	{
@@ -123,33 +123,33 @@ class CPose3DGridTemplate
 	/** @name Return coordinates from "indexes"
 	 *   @{
 	 */
-	double idx2x(size_t cx) const
+	double idx2x(uint32_t cx) const
 	{
 		ASSERT_(cx < m_sizeX);
 		return m_bb_min.x + cx * m_resolutionXYZ;
 	}
-	double idx2y(size_t cy) const
+	double idx2y(uint32_t cy) const
 	{
 		ASSERT_(cy < m_sizeY);
 		return m_bb_min.y + cy * m_resolutionXYZ;
 	}
-	double idx2z(size_t cz) const
+	double idx2z(uint32_t cz) const
 	{
 		ASSERT_(cz < m_sizeZ);
 		return m_bb_min.z + cz * m_resolutionXYZ;
 	}
 
-	double idx2yaw(size_t cY) const
+	double idx2yaw(uint32_t cY) const
 	{
 		ASSERT_(cY < m_sizeYaw);
 		return m_bb_min.yaw + cY * m_resolutionYPR;
 	}
-	double idx2pitch(size_t cP) const
+	double idx2pitch(uint32_t cP) const
 	{
 		ASSERT_(cP < m_sizePitch);
 		return m_bb_min.pitch + cP * m_resolutionYPR;
 	}
-	double idx2roll(size_t cR) const
+	double idx2roll(uint32_t cR) const
 	{
 		ASSERT_(cR < m_sizeRoll);
 		return m_bb_min.roll + cR * m_resolutionYPR;
@@ -255,7 +255,7 @@ class CPose3DGridTemplate
 	template <class MATRIXLIKE>
 	void getAsMatrix(
 		MATRIXLIKE& outMat, const double z, const double yaw,
-		const double pitch, const double roll)
+		const double pitch, const double roll) const
 	{
 		MRPT_START
 		outMat.setSize(m_sizeY, m_sizeX);
@@ -265,8 +265,8 @@ class CPose3DGridTemplate
 		ASSERT_BELOW_(cY, m_sizeYaw);
 		ASSERT_BELOW_(cP, m_sizePitch);
 		ASSERT_BELOW_(cR, m_sizeRoll);
-		for (size_t cy = 0; cy < m_sizeY; cy++)
-			for (size_t cx = 0; cx < m_sizeX; cx++)
+		for (uint32_t cy = 0; cy < m_sizeY; cy++)
+			for (uint32_t cx = 0; cx < m_sizeX; cx++)
 				outMat(cy, cx) = *getByIndex(cx, cy, cz, cY, cP, cR);
 		MRPT_END
 	}
@@ -283,14 +283,14 @@ class CPose3DGridTemplate
 		for (auto& v : m_data) v = val;
 	}
 
-	size_t getSizeX() const { return m_sizeX; }
-	size_t getSizeY() const { return m_sizeY; }
-	size_t getSizeZ() const { return m_sizeZ; }
-	size_t getSizeYaw() const { return m_sizeYaw; }
-	size_t getSizePitch() const { return m_sizePitch; }
-	size_t getSizeRoll() const { return m_sizeRoll; }
+	auto getSizeX() const { return m_sizeX; }
+	auto getSizeY() const { return m_sizeY; }
+	auto getSizeZ() const { return m_sizeZ; }
+	auto getSizeYaw() const { return m_sizeYaw; }
+	auto getSizePitch() const { return m_sizePitch; }
+	auto getSizeRoll() const { return m_sizeRoll; }
 
-	size_t getTotalVoxelCount() const { return m_size_xyzYPR; }
+	auto getTotalVoxelCount() const { return m_size_xyzYPR; }
 
 };  // End of class def.
 
