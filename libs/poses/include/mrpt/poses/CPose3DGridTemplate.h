@@ -292,6 +292,9 @@ class CPose3DGridTemplate
 
 	auto getTotalVoxelCount() const { return m_size_xyzYPR; }
 
+	const std::vector<T>& getData() const { return m_data; }
+	std::vector<T>& getData() { return m_data; }
+
 };  // End of class def.
 
 }  // namespace mrpt::poses
