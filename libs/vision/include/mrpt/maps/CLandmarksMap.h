@@ -138,7 +138,6 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		internal::TSequenceLandmarks m_landmarks;
 
 		/** A grid-map with the set of landmarks falling into each cell.
-		 *  \todo Use the KD-tree instead?
 		 */
 		mrpt::containers::CDynamicGrid<std::vector<int32_t>> m_grid;
 
