@@ -272,7 +272,7 @@ class CCanvas
 	 * the image, given a generic container of features.
 	 *  The class of FEATURELIST can be:
 	 *    - mrpt::vision::CFeatureList
-	 *    - mrpt::vision::TSimpleFeatureList
+	 *    - mrpt::vision::TKeyPointList
 	 *
 	 * \sa drawFeaturesSimple
 	 */

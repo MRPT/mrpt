@@ -43,10 +43,10 @@ void CFeatureExtraction::internal_computeLogPolarImageDescriptors(
 		patch_w, patch_h, in_img.getChannelCount());
 
 	// Compute intensity-domain spin images
-	for (auto it = in_features.begin(); it != in_features.end(); ++it)
+	for (auto& f : in_features)
 	{
 		// Overwrite scale with the descriptor scale:
-		(*it)->scale = radius;
+		f.keypoint.octave = radius;
 
 		// Use OpenCV to convert:
 #if MRPT_OPENCV_VERSION_NUM < 0x300
@@ -58,11 +58,12 @@ void CFeatureExtraction::internal_computeLogPolarImageDescriptors(
 		cv::logPolar(
 			in_img.asCvMatRef(), logpolar_frame.asCvMatRef(),
 #endif
-			cv::Point2f((*it)->x, (*it)->y), rho_scale,
+		    cv::Point2f(f.keypoint.pt.x, f.keypoint.pt.y), rho_scale,
 			CV_INTER_LINEAR + CV_WARP_FILL_OUTLIERS);
 
 		// Get the image as a matrix and save as patch:
-		logpolar_frame.getAsMatrix((*it)->descriptors.LogPolarImg);
+		f.descriptors.LogPolarImg.emplace();
+		logpolar_frame.getAsMatrix(*f.descriptors.LogPolarImg);
 
 	}  // end for it
 

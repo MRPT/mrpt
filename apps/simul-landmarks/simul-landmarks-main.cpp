@@ -204,7 +204,7 @@ int main(int argc, char** argv)
 
 				// Add:
 				LM.createOneFeature();
-				LM.features[0]->type = featBeacon;
+				LM.features[0].type = featBeacon;
 				LM.ID = uniqueIds++;
 				LM.setPose(pt3D);
 

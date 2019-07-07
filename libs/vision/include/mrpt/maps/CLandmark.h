@@ -10,6 +10,7 @@
 
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/TPoint3D.h>
+#include <mrpt/obs/CObservation.h>  // INVALID_LANDMARK_ID
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/serialization/CSerializable.h>
@@ -40,7 +41,7 @@ class CLandmark : public mrpt::serialization::CSerializable
 	using TLandmarkID = int64_t;
 
 	/** The set of features from which the landmark comes. */
-	std::vector<mrpt::vision::CFeature::Ptr> features;
+	std::vector<mrpt::vision::CFeature> features;
 
 	/** The mean of the landmark 3D position. */
 	mrpt::math::TPoint3D pose_mean;
@@ -71,9 +72,11 @@ class CLandmark : public mrpt::serialization::CSerializable
 	 * Note that this field is never fill out automatically, it must be set by
 	 *the programmer if used.
 	 */
-	TLandmarkID ID;
+	TLandmarkID ID{INVALID_LANDMARK_ID};
+
 	/** The last time that this landmark was observed. */
-	mrpt::system::TTimeStamp timestampLastSeen;
+	mrpt::system::TTimeStamp timestampLastSeen{INVALID_TIMESTAMP};
+
 	/** The number of times that this landmark has been seen. */
 	uint32_t seenTimesCount{0};
 
@@ -96,28 +99,22 @@ class CLandmark : public mrpt::serialization::CSerializable
 	/** Gets the type of the first feature in its feature vector. The vector
 	 * must not be empty.
 	 */
-	mrpt::vision::TFeatureType getType() const
+	mrpt::vision::TKeyPointMethod getType() const
 	{
 		ASSERT_(!features.empty());
-		ASSERT_(features[0]);
-		return features[0]->type;
+		return features[0].type;
 	}
 
 	/** Creates one feature in the vector "features", calling the appropriate
 	 * constructor of the smart pointer, so after calling this method
 	 * "features[0]" is a valid pointer to a CFeature object.
 	 */
-	void createOneFeature()
-	{
-		features.assign(1, mrpt::vision::CFeature::Create());
-	}
+	void createOneFeature() { features.resize(1); }
 
-	/** Default constructor
-	 */
-	CLandmark();
+	/** Default constructor */
+	CLandmark() = default;
 
-	/** Virtual destructor
-	 */
+	/** Virtual destructor  */
 	~CLandmark() override;
 
    protected:

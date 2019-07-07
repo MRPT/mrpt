@@ -14,7 +14,7 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/TParameters.h>
-#include <mrpt/vision/TSimpleFeature.h>
+#include <mrpt/vision/TKeyPoint.h>
 #include <memory>  // for unique_ptr
 
 namespace mrpt::vision
@@ -41,7 +41,7 @@ namespace mrpt::vision
  * new features, not only tracking
  *       tracker.extra_params[...] = ...
  *       // ....
- *       TSimpleFeatureList theFeats;  // The list of features
+ *       TKeyPointList theFeats;  // The list of features
  *       mrpt::img::CImage  previous_img, current_img;
  *
  *       while (true) {
@@ -172,12 +172,12 @@ struct CGenericFeatureTracker
 	 */
 	void trackFeatures(
 		const mrpt::img::CImage& old_img, const mrpt::img::CImage& new_img,
-		TSimpleFeatureList& inout_featureList);
+		TKeyPointList& inout_featureList);
 
 	/** overload with subpixel precision */
 	void trackFeatures(
 		const mrpt::img::CImage& old_img, const mrpt::img::CImage& new_img,
-		TSimpleFeaturefList& inout_featureList);
+		TKeyPointfList& inout_featureList);
 
 	/** Returns a read-only reference to the internal time logger */
 	inline const mrpt::system::CTimeLogger& getProfiler() const
@@ -216,13 +216,13 @@ struct CGenericFeatureTracker
 	 * classes. */
 	virtual void trackFeatures_impl(
 		const mrpt::img::CImage& old_img, const mrpt::img::CImage& new_img,
-		TSimpleFeaturefList& inout_featureList);
+		TKeyPointfList& inout_featureList);
 
 	/** The tracking method implementation, to be implemented in children
 	 * classes. */
 	virtual void trackFeatures_impl(
 		const mrpt::img::CImage& old_img, const mrpt::img::CImage& new_img,
-		TSimpleFeatureList& inout_featureList) = 0;
+		TKeyPointList& inout_featureList) = 0;
 
 	/** the internal time logger, disabled by default. */
 	mrpt::system::CTimeLogger m_timlog;
@@ -233,7 +233,7 @@ struct CGenericFeatureTracker
 	 * If it's not the case, feats will be computed anyway if the user enabled
 	 * the "add_new_features" option.
 	 */
-	mrpt::vision::TSimpleFeatureList m_newly_detected_feats;
+	mrpt::vision::TKeyPointList m_newly_detected_feats;
 
 	/** Adapts the threshold \a m_detector_adaptive_thres according to the real
 	 * and desired number of features just detected */
@@ -292,10 +292,10 @@ struct CFeatureTracker_KL : public CGenericFeatureTracker
    protected:
 	void trackFeatures_impl(
 		const mrpt::img::CImage& old_img, const mrpt::img::CImage& new_img,
-		TSimpleFeatureList& inout_featureList) override;
+		TKeyPointList& inout_featureList) override;
 	void trackFeatures_impl(
 		const mrpt::img::CImage& old_img, const mrpt::img::CImage& new_img,
-		TSimpleFeaturefList& inout_featureList) override;
+		TKeyPointfList& inout_featureList) override;
 
    private:
 	template <typename FEATLIST>

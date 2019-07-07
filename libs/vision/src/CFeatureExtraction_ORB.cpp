@@ -44,8 +44,8 @@ void CFeatureExtraction::extractFeaturesORB(
 		cv_feats.resize(feats.size());
 		for (size_t k = 0; k < cv_feats.size(); ++k)
 		{
-			cv_feats[k].pt.x = feats[k]->x;
-			cv_feats[k].pt.y = feats[k]->y;
+			cv_feats[k].pt.x = feats[k].keypoint.pt.x;
+			cv_feats[k].pt.y = feats[k].keypoint.pt.y;
 		}
 	}
 
@@ -81,10 +81,9 @@ void CFeatureExtraction::extractFeaturesORB(
 	{
 		for (size_t k = 0; k < n_feats; ++k)
 		{
-			feats[k]->descriptors.ORB.resize(cv_descs.cols);
+			feats[k].descriptors.ORB->resize(cv_descs.cols);
 			for (int m = 0; m < cv_descs.cols; ++m)
-				feats[k]->descriptors.ORB[m] =
-					cv_descs.at<uchar>(k, m);  // to do: memcopy
+				(*feats[k].descriptors.ORB)[m] = cv_descs.at<uchar>(k, m);
 
 			/*
 			feats[k].response	= cv_feats[k].response;
@@ -92,14 +91,15 @@ void CFeatureExtraction::extractFeaturesORB(
 			feats[k].angle		= cv_feats[k].orientation;
 			feats[k].ID			= f_id++;
 			*/
-			feats[k]->type = featORB;
+			feats[k].type = featORB;
 
 			if (options.ORBOptions.extract_patch && options.patchSize > 0)
 			{
 				inImg.extract_patch(
-					feats[k]->patch, round(feats[k]->x) - patch_size_2,
-					round(feats[k]->y) - patch_size_2, options.patchSize,
-					options.patchSize);
+				    *feats[k].patch,
+				    round(feats[k].keypoint.pt.x) - patch_size_2,
+				    round(feats[k].keypoint.pt.y) - patch_size_2,
+				    options.patchSize, options.patchSize);
 			}
 		}
 		return;
@@ -193,32 +193,34 @@ void CFeatureExtraction::extractFeaturesORB(
 		}
 
 		// All tests passed: add new feature:
-		CFeature::Ptr ft = std::make_shared<CFeature>();
-		ft->type = featORB;
-		ft->ID = f_id++;
-		ft->x = kp.pt.x;
-		ft->y = kp.pt.y;
-		ft->response = kp.response;
-		ft->orientation = kp.angle;
-		ft->scale = kp.octave;
-		ft->patchSize = 0;
+		CFeature ft;
+		ft.type = featORB;
+		ft.keypoint.ID = f_id++;
+		ft.keypoint.pt.x = kp.pt.x;
+		ft.keypoint.pt.y = kp.pt.y;
+		ft.response = kp.response;
+		ft.orientation = kp.angle;
+		ft.keypoint.octave = kp.octave;
+		ft.patchSize = 0;
 
 		// descriptor
-		ft->descriptors.ORB.resize(cv_descs.cols);
+		ft.descriptors.ORB.emplace();
+		ft.descriptors.ORB->resize(cv_descs.cols);
 		for (int m = 0; m < cv_descs.cols; ++m)
-			ft->descriptors.ORB[m] = cv_descs.at<uchar>(idx, m);
+			(*ft.descriptors.ORB)[m] = cv_descs.at<uchar>(idx, m);
 
 		if (options.ORBOptions.extract_patch && options.patchSize > 0)
 		{
-			ft->patchSize = options.patchSize;  // The size of the feature patch
+			ft.patchSize = options.patchSize;  // The size of the feature patch
 
+			ft.patch.emplace();
 			inImg.extract_patch(
-				ft->patch, round(ft->x) - patch_size_2,
-				round(ft->y) - patch_size_2, options.patchSize,
+			    *ft.patch, round(kp.pt.x) - patch_size_2,
+			    round(kp.pt.y) - patch_size_2, options.patchSize,
 				options.patchSize);  // Image patch surronding the feature
 		}
 
-		feats.push_back(ft);
+		feats.emplace_back(std::move(ft));
 		c_feats++;
 	}
 #endif
@@ -241,10 +243,10 @@ void CFeatureExtraction::internal_computeORBDescriptors(
 	for (size_t k = 0; k < n_feats; ++k)
 	{
 		KeyPoint& kp = cv_feats[k];
-		kp.pt.x = in_features[k]->x;
-		kp.pt.y = in_features[k]->y;
-		kp.angle = in_features[k]->orientation;
-		kp.size = in_features[k]->scale;
+		kp.pt.x = in_features[k].keypoint.pt.x;
+		kp.pt.y = in_features[k].keypoint.pt.y;
+		kp.angle = in_features[k].orientation;
+		kp.size = in_features[k].keypoint.octave;
 	}  // end-for
 
 	const Mat& cvImg = inImg_gray.asCvMatRef();
@@ -266,9 +268,11 @@ void CFeatureExtraction::internal_computeORBDescriptors(
 	// add descriptor to CFeatureList
 	for (size_t k = 0; k < n_feats; ++k)
 	{
-		in_features[k]->descriptors.ORB.resize(cv_descs.cols);
+		in_features[k].descriptors.ORB.emplace();
+		auto& orb_desc = *in_features[k].descriptors.ORB;
+		orb_desc.resize(cv_descs.cols);
 		for (int i = 0; i < cv_descs.cols; ++i)
-			in_features[k]->descriptors.ORB[i] = cv_descs.at<uchar>(k, i);
+			orb_desc[i] = cv_descs.at<uchar>(k, i);
 
 	}  // end-for
 #endif

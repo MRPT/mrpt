@@ -13,7 +13,7 @@
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/vision/CImagePyramid.h>
-#include <mrpt/vision/TSimpleFeature.h>
+#include <mrpt/vision/TKeyPoint.h>
 #include <mrpt/vision/types.h>
 #include <iostream>
 
@@ -141,7 +141,7 @@ void TestVideoBuildPyr()
 						CImage gray_img(
 							imgpyr.images[level], FAST_REF_OR_CONVERT_TO_GRAY);
 
-						TSimpleFeatureList feats;
+						TKeyPointList feats;
 						CFeatureExtraction::detectFeatures_SSE2_FASTER12(
 							gray_img, feats, threshold);
 

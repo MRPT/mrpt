@@ -636,11 +636,11 @@ void do_grid_align()
 						const double dErr = P1.distanceTo(P2);
 						dErrs[i2] = dErr;
 
-						ASSERT_(!l1->features.empty() && l1->features[0]);
-						ASSERT_(!l2->features.empty() && l2->features[0]);
+						ASSERT_(!l1->features.empty());
+						ASSERT_(!l2->features.empty());
 
-						D[i2] = l1->features[0]->descriptorDistanceTo(
-							*l2->features[0]);
+						D[i2] = l1->features[0].descriptorDistanceTo(
+							l2->features[0]);
 					}
 
 					size_t best_match = 0;

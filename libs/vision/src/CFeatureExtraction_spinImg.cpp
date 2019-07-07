@@ -73,17 +73,17 @@ void CFeatureExtraction::internal_computeSpinImageDescriptors(
 	for (auto& in_feature : in_features)
 	{
 		// Overwrite scale with the descriptor scale:
-		in_feature->scale = options.SpinImagesOptions.radius;
+		in_feature.keypoint.octave = options.SpinImagesOptions.radius;
 
 		// Reset histogram to zeros:
 		hist2d.setZero();
 
 		// Define the ROI around the interest point which counts for the
 		// histogram:
-		int px0 = round(in_feature->x - R);
-		int px1 = round(in_feature->x + R);
-		int py0 = round(in_feature->y - R);
-		int py1 = round(in_feature->y + R);
+		int px0 = round(in_feature.keypoint.pt.x - R);
+		int px1 = round(in_feature.keypoint.pt.x + R);
+		int py0 = round(in_feature.keypoint.pt.y - R);
+		int py1 = round(in_feature.keypoint.pt.y + R);
 
 		// Clip at img borders:
 		px0 = max(0, px0);
@@ -106,8 +106,9 @@ void CFeatureExtraction::internal_computeSpinImageDescriptors(
 						(aux_pix_ptr[0] + aux_pix_ptr[1] + aux_pix_ptr[2]) / 3;
 				}
 
-				const float pix_dist =
-					hypot(in_feature->x - px, in_feature->y - py);
+				const float pix_dist = hypot(
+				    in_feature.keypoint.pt.x - px,
+				    in_feature.keypoint.pt.y - py);
 				const int center_bin_dist = k_dis2idx * pix_dist;
 
 				// A factor to correct the histogram due to the existence of
@@ -180,14 +181,14 @@ void CFeatureExtraction::internal_computeSpinImageDescriptors(
 
 		// Save the histogram as a vector:
 		unsigned idx = 0;
-		std::vector<float>& ptr_trg = in_feature->descriptors.SpinImg;
+		std::vector<float>& ptr_trg = *in_feature.descriptors.SpinImg;
 		ptr_trg.resize(HIST_N_INT * HIST_N_DIS);
 
 		for (unsigned i = 0; i < HIST_N_DIS; i++)
 			for (unsigned j = 0; j < HIST_N_INT; j++)
 				ptr_trg[idx++] = hist2d(j, i);
 
-		in_feature->descriptors.SpinImg_range_rows = HIST_N_DIS;
+		in_feature.descriptors.SpinImg_range_rows = HIST_N_DIS;
 
 	}  // end for each feature
 

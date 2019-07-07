@@ -219,8 +219,8 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 			{
 				float minDist;
 				minDist =
-					lm1->landmarks.get(idx1)->features[0]->descriptorDistanceTo(
-						*lm2->landmarks.get(idx2)->features[0]);
+					lm1->landmarks.get(idx1)->features[0].descriptorDistanceTo(
+						lm2->landmarks.get(idx2)->features[0]);
 
 				corrs_indiv.emplace_back(idx2, minDist);
 				corrs_indiv_only.push_back(minDist);
@@ -267,7 +267,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 				CMatrixFloat descriptor1;
 				lm1->landmarks.get(it.first)
 					->features[0]
-					->getFirstDescriptorAsMatrix(descriptor1);
+					.getFirstDescriptorAsMatrix(descriptor1);
 
 				im1.setFromMatrix(descriptor1, true /*normalized*/);
 
@@ -294,7 +294,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 					CMatrixFloat descriptor2;
 					lm2->landmarks.get(*it_j)
 						->features[0]
-						->getFirstDescriptorAsMatrix(descriptor2);
+						.getFirstDescriptorAsMatrix(descriptor2);
 					im2.setFromMatrix(descriptor2, true);
 					img_compose.drawImage(
 						10 + FEAT_W, 5 + j * (FEAT_H + 5), im2);
