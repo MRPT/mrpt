@@ -60,7 +60,7 @@ class Tracker
 	bool hasResolution;
 	TCamera cameraParams;  // For now, will only hold the image resolution on
 	// the arrive of the first frame.
-	TSimpleFeatureList trackedFeats;
+	TKeyPointList trackedFeats;
 	unsigned int step_num;
 	bool SHOW_FEAT_IDS;
 	bool SHOW_RESPONSES;

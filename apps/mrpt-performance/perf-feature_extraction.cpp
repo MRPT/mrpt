@@ -20,7 +20,7 @@ using namespace std;
 
 extern void getTestImage(unsigned int img_index, mrpt::img::CImage& out_img);
 
-template <TFeatureType FEAT_TYPE>
+template <TKeyPointMethod FEAT_TYPE>
 double benchmark_detectFeatures(int N, [[maybe_unused]] int h)
 {
 	// Generate a random image
@@ -50,7 +50,7 @@ double benchmark_detectFeatures(int N, [[maybe_unused]] int h)
 		getTestImage(0, img);                                               \
 		img = img.grayscale();                                              \
 		img.scaleImage(img, W, H, mrpt::img::IMG_INTERP_LINEAR);            \
-		TSimpleFeatureList corners;                                         \
+	    TKeyPointList corners;                                              \
 		const int threshold = 20;                                           \
 		std::vector<size_t> feats_index_by_row;                             \
 		CTicTac tictac;                                                     \
@@ -98,7 +98,7 @@ double benchmark_computeDescriptor(int N, int num_feats)
 // ------------------------------------------------------
 //				Benchmark: FASTER
 // ------------------------------------------------------
-template <mrpt::vision::TFeatureType TYP, int MAX_N_FEATS>
+template <mrpt::vision::TKeyPointMethod TYP, int MAX_N_FEATS>
 double benchmark_detectFeatures_FASTER(int N, int threshold)
 {
 	CTicTac tictac;

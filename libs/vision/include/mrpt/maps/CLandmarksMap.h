@@ -198,13 +198,8 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 
 	} landmarks;
 
-	/** Constructor
-	 */
-	CLandmarksMap();
-
-	/** Virtual destructor.
-	 */
-	~CLandmarksMap() override;
+	CLandmarksMap() = default;
+	~CLandmarksMap() override = default;
 
 	/**** FAMD ***/
 	/** Map of the Euclidean Distance between the descriptors of two SIFT-based

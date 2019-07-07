@@ -20,7 +20,7 @@ template <void (*F)(
 	const CVD::BasicImage<CVD::byte>& I, std::vector<CVD::ImageRef>& corners,
 	int barrier)>
 void fast_corner_detect(
-	const cv::Mat& I, TSimpleFeatureList& corners, int barrier, uint8_t octave,
+	const cv::Mat& I, TKeyPointList& corners, int barrier, uint8_t octave,
 	std::vector<size_t>* out_feats_index_by_row)
 {
 	auto ptr = I.data;
@@ -42,7 +42,7 @@ void fast_corner_detect(
 }
 
 void fast_corner_detect_9(
-	const cv::Mat& I, TSimpleFeatureList& corners, int barrier, uint8_t octave,
+	const cv::Mat& I, TKeyPointList& corners, int barrier, uint8_t octave,
 	std::vector<size_t>* out_feats_index_by_row)
 {
 	fast_corner_detect<CVD::fast_corner_detect_9>(
@@ -50,7 +50,7 @@ void fast_corner_detect_9(
 }
 
 void fast_corner_detect_10(
-	const cv::Mat& I, TSimpleFeatureList& corners, int barrier, uint8_t octave,
+	const cv::Mat& I, TKeyPointList& corners, int barrier, uint8_t octave,
 	std::vector<size_t>* out_feats_index_by_row)
 {
 	fast_corner_detect<CVD::fast_corner_detect_10>(
@@ -58,7 +58,7 @@ void fast_corner_detect_10(
 }
 
 void fast_corner_detect_12(
-	const cv::Mat& I, TSimpleFeatureList& corners, int barrier, uint8_t octave,
+	const cv::Mat& I, TKeyPointList& corners, int barrier, uint8_t octave,
 	std::vector<size_t>* out_feats_index_by_row)
 {
 	fast_corner_detect<CVD::fast_corner_detect_12>(

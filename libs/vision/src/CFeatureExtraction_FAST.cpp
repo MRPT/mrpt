@@ -161,24 +161,24 @@ void CFeatureExtraction::extractFeaturesFAST(
 		}
 
 		// All tests passed: add new feature:
-		CFeature::Ptr ft = std::make_shared<CFeature>();
-		ft->type = featFAST;
-		ft->ID = nextID++;
-		ft->x = kp.pt.x;
-		ft->y = kp.pt.y;
-		ft->response = kp.response;
-		ft->orientation = kp.angle;
-		ft->scale = kp.octave;
-		ft->patchSize = options.patchSize;  // The size of the feature patch
+		CFeature ft;
+		ft.type = featFAST;
+		ft.keypoint.ID = nextID++;
+		ft.keypoint.pt.x = kp.pt.x;
+		ft.keypoint.pt.y = kp.pt.y;
+		ft.response = kp.response;
+		ft.orientation = kp.angle;
+		ft.keypoint.octave = kp.octave;
+		ft.patchSize = options.patchSize;  // The size of the feature patch
 
 		if (options.patchSize > 0)
 		{
 			inImg.extract_patch(
-				ft->patch, round(ft->x) - offset, round(ft->y) - offset,
-				options.patchSize,
+			    *ft.patch, round(ft.keypoint.pt.x) - offset,
+			    round(ft.keypoint.pt.y) - offset, options.patchSize,
 				options.patchSize);  // Image patch surronding the feature
 		}
-		feats.push_back(ft);
+		feats.emplace_back(std::move(ft));
 		++cont;
 	}
 
