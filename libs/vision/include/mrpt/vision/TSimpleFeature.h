@@ -10,8 +10,6 @@
 
 #include <mrpt/core/round.h>
 #include <mrpt/img/TPixelCoord.h>
-#include <mrpt/math/CMatrixDynamic.h>  // mrpt::math::CMatrixBool
-#include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/KDTreeCapable.h>
 #include <mrpt/vision/types.h>
 #include <functional>
@@ -144,17 +142,6 @@ struct TSimpleFeatureList_templ
 	std::vector<size_t>& getFirstIndexPerRowLUT()
 	{
 		return m_first_index_per_row;
-	}
-
-	/** Get a ref to the occupation matrix: this is a user-defined matrix, which
-	 * is not updated automatically by this class. */
-	inline mrpt::math::CMatrixBool& getOccupiedSectionsMatrix()
-	{
-		return m_occupied_sections;
-	}
-	inline const mrpt::math::CMatrixBool& getOccupiedSectionsMatrix() const
-	{
-		return m_occupied_sections;
 	}
 
 	/** @} */
