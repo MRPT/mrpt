@@ -17,7 +17,6 @@ MRPT_WARNING(
 	"warning)")
 #endif
 
-#include <mrpt/vision/CCamModel.h>
 #include <mrpt/vision/CDifodo.h>
 #include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/vision/CImagePyramid.h>
