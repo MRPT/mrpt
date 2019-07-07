@@ -607,8 +607,9 @@ cv::Mat mrpt::vision::pnp::dls::cayley_LS_M(
 	const std::vector<double>& a, const std::vector<double>& b,
 	const std::vector<double>& c, const std::vector<double>& u)
 {
-	// TODO: input matrix pointer
-	// TODO: shift coefficients one position to left
+	// Note: coefficients start indices at [1], probably from
+	// an original implementation in MATLAB. I don't think it's worth
+	// changing all those indices (JLBC, Jul-2019)
 
 	cv::Mat M = cv::Mat::zeros(120, 120, CV_64F);
 

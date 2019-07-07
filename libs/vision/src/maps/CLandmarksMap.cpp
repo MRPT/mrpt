@@ -1282,9 +1282,6 @@ void CLandmarksMap::computeMatchingWith3DLandmarks(
 					// Is it a correspondence?
 					if (maxLik > insertionOptions.SiftLikelihoodThreshold)
 					{
-						// TODO: Solve in a better way the multiple
-						// correspondences case!!!
-						// ****************************************************************
 						// If a previous correspondence for this LM was found,
 						// discard this one!
 						if (!thisLandmarkAssigned[maxIdx])
@@ -2737,18 +2734,8 @@ float CLandmarksMap::compute3DMatchingRatio(
  ---------------------------------------------------------------*/
 void CLandmarksMap::auxParticleFilterCleanUp()
 {
-	// std::cout << "mEDD:" << std::endl;
-	// std::cout << "-----------------------" << std::endl;
-	// std::map<std::pair<mrpt::maps::CLandmark::TLandmarkID,
-	// mrpt::maps::CLandmark::TLandmarkID>, unsigned long>::iterator itmEDD;
-	// for(itmEDD = CLandmarksMap::_mEDD.begin(); itmEDD !=
-	// CLandmarksMap::_mEDD.end(); itmEDD++)
-	//	std::cout << "(" << itmEDD->first.first << "," << itmEDD->first.second
-	//<< ")"  << ": " << itmEDD->second << std::endl;
-
-	CLandmarksMap::_mEDD.clear();
-	CLandmarksMap::_maxIDUpdated = false;
-	// TODO: Paco...
+	_mEDD.clear();
+	_maxIDUpdated = false;
 }
 
 /*---------------------------------------------------------------
