@@ -14,7 +14,6 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/TParameters.h>
-#include <mrpt/vision/CFeature.h>
 #include <mrpt/vision/TSimpleFeature.h>
 #include <memory>  // for unique_ptr
 
@@ -42,7 +41,7 @@ namespace mrpt::vision
  * new features, not only tracking
  *       tracker.extra_params[...] = ...
  *       // ....
- *       CFeatureList	theFeats;  // The list of features
+ *       TSimpleFeatureList theFeats;  // The list of features
  *       mrpt::img::CImage  previous_img, current_img;
  *
  *       while (true) {
@@ -69,7 +68,7 @@ namespace mrpt::vision
  *      <td> If set to "1", the class will not only track existing features,
  * but will also perform (after doing the actual tracking) an efficient
  *            search for new features with the FAST detector, and will add them
- * to the passed "CFeatureList" if they fulfill a set of restrictions,
+ * to the passed feature list if they fulfill a set of restrictions,
  *            as stablished by the other parameters (see
  * <i>add_new_feat_min_separation</i>,<i>add_new_feat_max_features</i>,<i>minimum_KLT_response_to_add</i>).
  *        </td> </tr>
@@ -180,28 +179,6 @@ struct CGenericFeatureTracker
 		const mrpt::img::CImage& old_img, const mrpt::img::CImage& new_img,
 		TSimpleFeaturefList& inout_featureList);
 
-	/** overload This overload version uses the old (and much slower)
-	 * CFeatureList  */
-	void trackFeatures(
-		const mrpt::img::CImage& old_img, const mrpt::img::CImage& new_img,
-		CFeatureList& inout_featureList);
-
-	/** A wrapper around the basic trackFeatures() method, but keeping the
-	 * original list of features unmodified and returns the tracked ones in a
-	 * new list. */
-	inline void trackFeaturesNewList(
-		const mrpt::img::CImage& old_img, const mrpt::img::CImage& new_img,
-		const vision::CFeatureList& in_featureList,
-		vision::CFeatureList& out_featureList)
-	{
-		out_featureList = in_featureList;
-		std::for_each(
-			out_featureList.begin(), out_featureList.end(), [](auto& ptr) {
-				ptr.reset(dynamic_cast<CFeature*>(ptr->clone()));
-			});
-		this->trackFeatures(old_img, new_img, out_featureList);
-	}
-
 	/** Returns a read-only reference to the internal time logger */
 	inline const mrpt::system::CTimeLogger& getProfiler() const
 	{
@@ -246,12 +223,6 @@ struct CGenericFeatureTracker
 	virtual void trackFeatures_impl(
 		const mrpt::img::CImage& old_img, const mrpt::img::CImage& new_img,
 		TSimpleFeatureList& inout_featureList) = 0;
-
-	/** This version falls back to the version with TSimpleFeatureList if the
-	 * derived class does not implement it. */
-	virtual void trackFeatures_impl(
-		const mrpt::img::CImage& old_img, const mrpt::img::CImage& new_img,
-		CFeatureList& inout_featureList) = 0;
 
 	/** the internal time logger, disabled by default. */
 	mrpt::system::CTimeLogger m_timlog;
@@ -321,9 +292,6 @@ struct CFeatureTracker_KL : public CGenericFeatureTracker
    protected:
 	void trackFeatures_impl(
 		const mrpt::img::CImage& old_img, const mrpt::img::CImage& new_img,
-		vision::CFeatureList& inout_featureList) override;
-	void trackFeatures_impl(
-		const mrpt::img::CImage& old_img, const mrpt::img::CImage& new_img,
 		TSimpleFeatureList& inout_featureList) override;
 	void trackFeatures_impl(
 		const mrpt::img::CImage& old_img, const mrpt::img::CImage& new_img,
@@ -335,20 +303,6 @@ struct CFeatureTracker_KL : public CGenericFeatureTracker
 		const mrpt::img::CImage& old_img, const mrpt::img::CImage& new_img,
 		FEATLIST& inout_featureList);
 };
-
-/** Search for correspondences which are not in the same row and deletes them
- * ...
- */
-void checkTrackedFeatures(
-	CFeatureList& leftList, CFeatureList& rightList,
-	vision::TMatchingOptions options);
-
-/** Filter bad correspondences by distance
- * ...
- */
-void filterBadCorrsByDistance(
-	mrpt::tfest::TMatchingPairList& list,  // The list of correspondences
-	unsigned int numberOfSigmas);  // Threshold
 
 /**  @}  */  // end of grouping
 }  // namespace mrpt::vision
