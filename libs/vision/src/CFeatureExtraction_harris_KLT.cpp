@@ -108,26 +108,27 @@ void CFeatureExtraction::extractFeaturesKLT(
 			((xBorderSup < (int)imgW) && (xBorderInf > 0) &&
 			 (yBorderSup < (int)imgH) && (yBorderInf > 0)))
 		{
-			CFeature::Ptr ft = std::make_shared<CFeature>();
+			CFeature ft;
 
-			ft->type = featKLT;
-			ft->x = points[i].x;  // X position
-			ft->y = points[i].y;  // Y position
-			ft->track_status = status_TRACKED;  // Feature Status
-			ft->response = 0.0;  // A value proportional to the quality of the
+			ft.type = featKLT;
+			ft.keypoint.pt.x = points[i].x;  // X position
+			ft.keypoint.pt.y = points[i].y;  // Y position
+			ft.track_status = status_TRACKED;  // Feature Status
+			ft.response = 0.0;  // A value proportional to the quality of the
 			// feature (unused yet)
-			ft->ID = nCFeats++;  // Feature ID into extraction
-			ft->patchSize = options.patchSize;  // The size of the feature patch
+			ft.keypoint.ID = nCFeats++;  // Feature ID into extraction
+			ft.patchSize = options.patchSize;  // The size of the feature patch
 
 			if (options.patchSize > 0)
 			{
+				ft.patch.emplace();
 				inImg.extract_patch(
-					ft->patch, round(ft->x) - offset, round(ft->y) - offset,
-					options.patchSize,
+					*ft.patch, round(ft.keypoint.pt.x) - offset,
+					round(ft.keypoint.pt.y) - offset, options.patchSize,
 					options.patchSize);  // Image patch surronding the feature
 			}
 
-			feats.push_back(ft);
+			feats.emplace_back(std::move(ft));
 
 		}  // end if
 		else

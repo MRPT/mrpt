@@ -9,12 +9,12 @@
 
 #pragma once
 
-#include <mrpt/vision/TSimpleFeature.h>
+#include <mrpt/vision/TKeyPoint.h>
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
 
 using mrpt::img::TPixelCoord;
-using mrpt::vision::TSimpleFeatureList;
+using mrpt::vision::TKeyPointList;
 using std::vector;
 
 #if MRPT_HAS_OPENCV
@@ -22,13 +22,13 @@ using std::vector;
 // Prototypes of functions exported from "vision/src/faster/*" to
 // "vision/src/*":
 void fast_corner_detect_9(
-	const cv::Mat& I, TSimpleFeatureList& corners, int barrier, uint8_t octave,
+	const cv::Mat& I, TKeyPointList& corners, int barrier, uint8_t octave,
 	std::vector<size_t>* out_feats_index_by_row);
 void fast_corner_detect_10(
-	const cv::Mat& I, TSimpleFeatureList& corners, int barrier, uint8_t octave,
+	const cv::Mat& I, TKeyPointList& corners, int barrier, uint8_t octave,
 	std::vector<size_t>* out_feats_index_by_row);
 void fast_corner_detect_12(
-	const cv::Mat& I, TSimpleFeatureList& corners, int barrier, uint8_t octave,
+	const cv::Mat& I, TKeyPointList& corners, int barrier, uint8_t octave,
 	std::vector<size_t>* out_feats_index_by_row);
 
 #endif

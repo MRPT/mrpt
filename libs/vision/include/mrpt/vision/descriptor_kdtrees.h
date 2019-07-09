@@ -59,7 +59,7 @@ struct TSIFTDescriptorsKDTreeIndex
 	TSIFTDescriptorsKDTreeIndex(const CFeatureList& feats)
 		: m_adaptor(feats), m_kdtree(nullptr), m_feats(feats)
 	{
-		ASSERT_(!feats.empty() && feats[0]->descriptors.hasDescriptorSIFT());
+		ASSERT_(!feats.empty() && feats[0].descriptors.hasDescriptorSIFT());
 		this->regenerate_kdtreee();
 	}
 
@@ -71,7 +71,7 @@ struct TSIFTDescriptorsKDTreeIndex
 
 		nanoflann::KDTreeSingleIndexAdaptorParams params;
 		m_kdtree = new kdtree_t(
-			m_feats[0]->descriptors.SIFT.size() /* DIM */, m_adaptor, params);
+			m_feats[0].descriptors.SIFT->size() /* DIM */, m_adaptor, params);
 		m_kdtree->buildIndex();
 	}
 
@@ -117,7 +117,7 @@ struct TSURFDescriptorsKDTreeIndex
 	TSURFDescriptorsKDTreeIndex(const CFeatureList& feats)
 		: m_adaptor(feats), m_kdtree(nullptr), m_feats(feats)
 	{
-		ASSERT_(!feats.empty() && feats[0]->descriptors.hasDescriptorSIFT());
+		ASSERT_(!feats.empty() && feats[0].descriptors.hasDescriptorSIFT());
 		this->regenerate_kdtreee();
 	}
 
@@ -129,7 +129,7 @@ struct TSURFDescriptorsKDTreeIndex
 
 		nanoflann::KDTreeSingleIndexAdaptorParams params;
 		m_kdtree = new kdtree_t(
-			m_feats[0]->descriptors.SIFT.size() /* DIM */, m_adaptor, params);
+			m_feats[0].descriptors.SIFT->size() /* DIM */, m_adaptor, params);
 		m_kdtree->buildIndex();
 	}
 
@@ -165,8 +165,8 @@ struct TSIFTDesc2KDTree_Adaptor
 	inline distance_t kdtree_distance(
 		const element_t* p1, const size_t idx_p2, size_t size) const
 	{
-		const size_t dim = m_feats[idx_p2]->descriptors.SIFT.size();
-		const element_t* p2 = &m_feats[idx_p2]->descriptors.SIFT[0];
+		const size_t dim = m_feats[idx_p2].descriptors.SIFT->size();
+		const element_t* p2 = &(*m_feats[idx_p2].descriptors.SIFT)[0];
 		distance_t d = 0;
 		for (size_t i = 0; i < dim; i++)
 		{
@@ -179,7 +179,7 @@ struct TSIFTDesc2KDTree_Adaptor
 	// Must return the dim'th component of the idx'th point in the class:
 	inline element_t kdtree_get_pt(const size_t idx, int dim) const
 	{
-		return m_feats[idx]->descriptors.SIFT[dim];
+		return (*m_feats[idx].descriptors.SIFT)[dim];
 	}
 	template <class BBOX>
 	bool kdtree_get_bbox(BBOX& bb) const
@@ -200,8 +200,8 @@ struct TSURFDesc2KDTree_Adaptor
 	inline distance_t kdtree_distance(
 		const element_t* p1, const size_t idx_p2, size_t size) const
 	{
-		const size_t dim = m_feats[idx_p2]->descriptors.SURF.size();
-		const element_t* p2 = &m_feats[idx_p2]->descriptors.SURF[0];
+		const size_t dim = m_feats[idx_p2].descriptors.SURF->size();
+		const element_t* p2 = &(*m_feats[idx_p2].descriptors.SURF)[0];
 		distance_t d = 0;
 		for (size_t i = 0; i < dim; i++)
 		{
@@ -214,7 +214,7 @@ struct TSURFDesc2KDTree_Adaptor
 	// Must return the dim'th component of the idx'th point in the class:
 	inline element_t kdtree_get_pt(const size_t idx, int dim) const
 	{
-		return m_feats[idx]->descriptors.SURF[dim];
+		return (*m_feats[idx].descriptors.SURF)[dim];
 	}
 	template <class BBOX>
 	bool kdtree_get_bbox(BBOX& bb) const

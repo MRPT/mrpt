@@ -145,21 +145,6 @@ mrpt::math::CMatrixDouble33 defaultIntrinsicParamsMatrix(
 	unsigned int camIndex = 0, unsigned int resolutionX = 320,
 	unsigned int resolutionY = 240);
 
-/** Explore the feature list and removes features which are in the same
- * coordinates
- * \param list [IN] The list of features.
- */
-void deleteRepeatedFeats(CFeatureList& list);
-
-/** Search for correspondences which are not in the same row and deletes them
- * \param leftList     [IN/OUT]    The left list of matched features.
- * \param rightList    [IN/OUT]    The right list of matched features.
- * \param threshold    [IN]        The tolerance value for the row checking:
- * valid matched are within this threshold.
- */
-void rowChecking(
-	CFeatureList& leftList, CFeatureList& rightList, float threshold = 1.0);
-
 /** Computes the mean squared distance between a set of 3D correspondences
  * ...
  */
@@ -266,7 +251,7 @@ void projectMatchedFeatures(
  * stereo pair.
  */
 void projectMatchedFeature(
-	const CFeature::Ptr& leftFeat, const CFeature::Ptr& rightFeat,
+	const CFeature& leftFeat, const CFeature& rightFeat,
 	mrpt::math::TPoint3D& p3D,
 	const TStereoSystemParams& params = TStereoSystemParams());
 

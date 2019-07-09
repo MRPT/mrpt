@@ -12,8 +12,9 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/KDTreeCapable.h>
-
+#include <mrpt/vision/TKeyPoint.h>
 #include <mrpt/vision/types.h>
+#include <optional>
 
 namespace mrpt
 {
@@ -47,7 +48,7 @@ enum TListIdx
  * computed with  descriptorDistanceTo,
  *  while the similarity of the patches is given by patchCorrelationTo.
  *
- *  \sa CFeatureList, TSimpleFeature, TSimpleFeatureList
+ *  \sa CFeatureList, TKeyPoint, TKeyPointList
  */
 class CFeature : public mrpt::serialization::CSerializable
 {
@@ -57,32 +58,32 @@ class CFeature : public mrpt::serialization::CSerializable
 	DEFINE_SERIALIZABLE(CFeature)
 
    public:
-	float x{0.0f}, y{0.0f};  //!< Coordinates in the image
-	TFeatureID ID{0};  //!< ID of the feature
-	mrpt::img::CImage patch;  //!< A patch of the image surrounding the feature
-	uint16_t patchSize{
-		21};  //!< Size of the patch (patchSize x patchSize) (it must
-	//! be an odd number)
-	TFeatureType type{
-		featNotDefined};  //!< Type of the feature: featNotDefined, featSIFT,
-	//! featKLT,	featHarris, featSURF, featBeacon
-	TFeatureTrackStatus track_status{
-		status_IDLE};  //!< Status of the feature tracking
-	//! process (old name: KLT_status)
-	float response{
-		0.0};  //!< A measure of the "goodness" of the feature (old name:
-	//! KLT_val)
+	CFeature() = default;
+	~CFeature() override = default;
+
+	TKeyPointf keypoint;
+
+	/** A patch of the image surrounding the feature */
+	std::optional<mrpt::img::CImage> patch;
+
+	/** Size of the patch (patchSize x patchSize) (it must be an odd number) */
+	uint16_t patchSize{21};
+
+	/** Keypoint method used to detect this feature */
+	TKeyPointMethod type{featNotDefined};
+
+	/** Status of the feature tracking process */
+	TFeatureTrackStatus track_status{status_IDLE};
+
+	/** A measure of the "goodness" of the feature */
+	float response{0.0};
+
 	float orientation{0.0};  //!< Main orientation of the feature
-	float scale{0.0};  //!< Feature scale into the scale space
-	uint8_t user_flags{0};  //!< A field for any other flags needed by the user
-	//!(this has not a predefined meaning)
-	uint16_t nTimesSeen{
-		1};  //!< Number of frames it has been seen in a sequence
-	//! of images.
-	uint16_t nTimesNotSeen{0};  //!< Number of frames it has not been seen in a
-	//! sequence of images.
-	uint16_t nTimesLastSeen{0};  //!< Number of frames since it was seen for the
-	//! last time.
+	// Scale: replaced by keypoint.octave ==> float scale{0};
+
+	/** A field for any other flags needed by the user (this has not a
+	 * predefined meaning) */
+	uint8_t user_flags{0};
 
 	// # added by Raghavender Sahdev
 	float x2[2], y2[2];  //!< Coordinates for a LSD Detector to represent a line
@@ -90,99 +91,70 @@ class CFeature : public mrpt::serialization::CSerializable
 	double depth{
 		0};  //!< The estimated depth in 3D of this feature wrt the camera
 	//! in the current frame
+	//!
 	double initialDepth{
 		0};  //!< The estimated depth in 3D of this feature wrt the
 	//! camera that took its image
 	mrpt::math::TPoint3D
 		p3D;  //!< The estimated 3D point of this feature wrt its camera
-	std::deque<double> multiScales;  //!< A set of scales where the
-	//! multi-resolution descriptor has been
-	//! computed
-	std::deque<std::vector<double>> multiOrientations;  //!< A vector of main
-	//! orientations (there
-	//! is a vector of
-	//! orientations for each
-	//! scale)
-	std::deque<std::vector<std::vector<int32_t>>>
-		multiHashCoeffs;  //!< A set of vectors containing the coefficients for
-	//! a HASH table of descriptors
-	bool isPointFeature()
-		const;  //!< Return false only for Blob detectors (SIFT, SURF)
+
+	/** Return false only for Blob detectors (SIFT, SURF) */
+	bool isPointFeature() const;
 
 	/** All the possible descriptors this feature may have */
 	struct TDescriptors
 	{
-		TDescriptors();  // Initialization
+		TDescriptors() = default;
 
-		std::vector<uint8_t> SIFT;  //!< SIFT feature descriptor
-		std::vector<float> SURF;  //!< SURF feature descriptor
-		std::vector<float> SpinImg;  //!< The 2D histogram as a single row
-		uint16_t SpinImg_range_rows{
-			0};  //!< The number of rows (corresponding to
-		//! range bins in the 2D histogram) of the
-		//! original matrix from which SpinImg was
-		//! extracted as a vector.
-		mrpt::math::CMatrixF
-			PolarImg;  //!< A polar image centered at the interest point
-		mrpt::math::CMatrixF
-			LogPolarImg;  //!< A log-polar image centered at the interest point
-		bool polarImgsNoRotation{
-			false};  //!< If set to true (manually, default=false)
-		//! the call to "descriptorDistanceTo" will
-		//! not consider all the rotations between
-		//! polar image descriptors (PolarImg,
-		//! LogPolarImg)
-		std::deque<std::vector<std::vector<int32_t>>>
-			multiSIFTDescriptors;  //!< A set of SIFT-like descriptors for each
-		//! orientation and scale of the
-		//! multiResolution feature (there is a vector
-		//! of descriptors for each scale)
-		std::vector<uint8_t> ORB;  //!< ORB feature descriptor
-		// # added by Raghavender Sadev
-		std::vector<uint8_t> BLD;  //!< BLD feature descriptor
-		std::vector<uint8_t> LATCH;  //!< LATCH feature descriptor
+		/** SIFT feature descriptor */
+		std::optional<std::vector<uint8_t>> SIFT;
 
-		bool hasDescriptorSIFT() const
-		{
-			return !SIFT.empty();
-		};  //!< Whether this feature has this kind of descriptor
-		bool hasDescriptorSURF() const
-		{
-			return !SURF.empty();
-		}  //!< Whether this feature has this kind of descriptor
-		bool hasDescriptorSpinImg() const
-		{
-			return !SpinImg.empty();
-		};  //!< Whether this feature has this kind of descriptor
-		bool hasDescriptorPolarImg() const
-		{
-			return PolarImg.rows() != 0;
-		};  //!< Whether this feature has this kind of descriptor
+		/** SURF feature descriptor */
+		std::optional<std::vector<float>> SURF;
+
+		/** The 2D histogram as a single row */
+		std::optional<std::vector<float>> SpinImg;
+
+		/** The number of rows (corresponding to range bins in the 2D histogram)
+		 * of the original matrix from which SpinImg was extracted as a vector.
+		 */
+		uint16_t SpinImg_range_rows{0};
+
+		/** A polar image centered at the interest point */
+		std::optional<mrpt::math::CMatrixF> PolarImg;
+
+		/** A log-polar image centered at the interest point */
+		std::optional<mrpt::math::CMatrixF> LogPolarImg;
+
+		/** If set to true (default=false) the call to "descriptorDistanceTo"
+		 * will not consider all the rotations between polar image descriptors
+		 * (PolarImg, LogPolarImg) */
+		bool polarImgsNoRotation{false};
+
+		/** ORB feature descriptor */
+		std::optional<std::vector<uint8_t>> ORB;
+
+		// added by Raghavender Sadev
+		/** BLD feature descriptor */
+		std::optional<std::vector<uint8_t>> BLD;
+		/** LATCH feature descriptor */
+		std::optional<std::vector<uint8_t>> LATCH;
+
+		bool hasDescriptorSIFT() const { return SIFT.has_value(); }
+		bool hasDescriptorSURF() const { return SURF.has_value(); }
+		bool hasDescriptorSpinImg() const { return SpinImg.has_value(); }
+		bool hasDescriptorPolarImg() const { return PolarImg.has_value(); }
 		bool hasDescriptorLogPolarImg() const
 		{
-			return LogPolarImg.rows() != 0;
-		};  //!< Whether this feature has this kind of descriptor
-		bool hasDescriptorMultiSIFT() const
-		{
-			return (
-				multiSIFTDescriptors.size() > 0 &&
-				multiSIFTDescriptors[0].size() >
-					0);  //!< Whether this feature has this kind of descriptor
+			return LogPolarImg.has_value();
 		}
-		bool hasDescriptorORB() const
-		{
-			return !ORB.empty();
-		}  //!< Whether this feature has this kind of descriptor
-		//# added by Raghavender Sahdev
-		bool hasDescriptorBLD() const
-		{
-			return !BLD.empty();
-		}  //!< Whether this feature has this kind of descriptor
-		bool hasDescriptorLATCH() const
-		{
-			return !LATCH.empty();
-		}  //!< Whether this feature has this kind of descriptor
-	} descriptors;
+
+		bool hasDescriptorORB() const { return ORB.has_value(); }
+		bool hasDescriptorBLD() const { return BLD.has_value(); }
+		bool hasDescriptorLATCH() const { return LATCH.has_value(); }
+	};
+
+	TDescriptors descriptors;
 
 	/** Return the first found descriptor, as a matrix.
 	 * \return false on error, i.e. there is no valid descriptor.
@@ -281,18 +253,11 @@ class CFeature : public mrpt::serialization::CSerializable
 
 	/** Get the type of the feature
 	 */
-	TFeatureType get_type() const { return type; }
+	TKeyPointMethod get_type() const { return type; }
 	/** Dump feature information into a text stream */
 	void dumpToTextStream(std::ostream& out) const;
 
 	void dumpToConsole() const;
-
-	/** Constructor
-	 */
-	CFeature();
-
-	/** Virtual destructor */
-	~CFeature() override = default;
 
    protected:
 	/** Internal function used by "descriptorLogPolarImgDistanceTo" and
@@ -304,25 +269,22 @@ class CFeature : public mrpt::serialization::CSerializable
 
 };  // end of class
 
-/****************************************************
-				Class CFEATURELIST
-*****************************************************/
 /** A list of visual features, to be used as output by detectors, as
  * input/output by trackers, etc.
  */
 class CFeatureList : public mrpt::math::KDTreeCapable<CFeatureList>
 {
    protected:
-	using TInternalFeatList = std::vector<CFeature::Ptr>;
+	using TInternalFeatList = std::vector<CFeature>;
 
-	TInternalFeatList
-		m_feats;  //!< The actual container with the list of features
+	/** The actual container with the list of features */
+	TInternalFeatList m_feats;
 
    public:
 	/** The type of the first feature in the list */
-	inline TFeatureType get_type() const
+	inline TKeyPointMethod get_type() const
 	{
-		return empty() ? featNotDefined : (*begin())->get_type();
+		return empty() ? featNotDefined : (*begin()).get_type();
 	}
 
 	/** Save feature list to a text file */
@@ -339,13 +301,8 @@ class CFeatureList : public mrpt::math::KDTreeCapable<CFeatureList>
 	TFeatureID getMaxID() const;
 
 	/** Get a reference to a Feature from its ID */
-	CFeature::Ptr getByID(const TFeatureID& ID) const;
-	CFeature::Ptr getByID(const TFeatureID& ID, int& out_idx) const;
-
-	/** Get a vector of references to a subset of features from their IDs */
-	void getByMultiIDs(
-		const std::vector<TFeatureID>& IDs, std::vector<CFeature::Ptr>& out,
-		std::vector<int>& outIndex) const;
+	const CFeature* getByID(const TFeatureID& ID) const;
+	const CFeature* getByID(const TFeatureID& ID, int& out_idx) const;
 
 	/** Get a reference to the nearest feature to the a given 2D point (version
 	 * returning distance to closest feature in "max_dist")
@@ -353,15 +310,15 @@ class CFeatureList : public mrpt::math::KDTreeCapable<CFeatureList>
 	 *   \param y [IN] The query point y-coordinate
 	 *   \param max_dist [IN/OUT] At input: The maximum distance to search for.
 	 * At output: The actual distance to the feature.
-	 *  \return A reference to the found feature, or a nullptr smart pointer if
-	 * none found.
+	 *  \return A pointer to the found feature, or nullptr if not found.
 	 *  \note See also all the available KD-tree search methods, listed in
 	 * mrpt::math::KDTreeCapable
 	 */
-	CFeature::Ptr nearest(const float x, const float y, double& max_dist) const;
+	const CFeature* nearest(
+		const float x, const float y, double& max_dist) const;
 
 	/** Constructor */
-	CFeatureList();
+	CFeatureList() = default;
 
 	/** Virtual destructor */
 	virtual ~CFeatureList();
@@ -404,17 +361,22 @@ class CFeatureList : public mrpt::math::KDTreeCapable<CFeatureList>
 		mark_kdtree_as_outdated();
 	}
 
-	inline void push_back(const CFeature::Ptr& f)
+	inline void emplace_back(CFeature&& f)
+	{
+		mark_kdtree_as_outdated();
+		m_feats.emplace_back(std::move(f));
+	}
+	inline void push_back(const CFeature& f)
 	{
 		mark_kdtree_as_outdated();
 		m_feats.push_back(f);
 	}
 
-	inline CFeature::Ptr& operator[](const unsigned int index)
+	inline CFeature& operator[](const unsigned int index)
 	{
 		return m_feats[index];
 	}
-	inline const CFeature::Ptr& operator[](const unsigned int index) const
+	inline const CFeature& operator[](const unsigned int index) const
 	{
 		return m_feats[index];
 	}
@@ -432,9 +394,9 @@ class CFeatureList : public mrpt::math::KDTreeCapable<CFeatureList>
 	{
 		ASSERTDEB_(dim == 0 || dim == 1);
 		if (dim == 0)
-			return m_feats[idx]->x;
+			return m_feats[idx].keypoint.pt.x;
 		else
-			return m_feats[idx]->y;
+			return m_feats[idx].keypoint.pt.y;
 	}
 
 	/// Returns the distance between the vector "p1[0:size-1]" and the data
@@ -445,8 +407,8 @@ class CFeatureList : public mrpt::math::KDTreeCapable<CFeatureList>
 		ASSERTDEB_(size == 2);
 		MRPT_UNUSED_PARAM(size);  // in release mode
 
-		const float d0 = p1[0] - m_feats[idx_p2]->x;
-		const float d1 = p1[1] - m_feats[idx_p2]->y;
+		const float d0 = p1[0] - m_feats[idx_p2].keypoint.pt.x;
+		const float d1 = p1[1] - m_feats[idx_p2].keypoint.pt.y;
 		return d0 * d0 + d1 * d1;
 	}
 
@@ -467,36 +429,54 @@ class CFeatureList : public mrpt::math::KDTreeCapable<CFeatureList>
 
 	/** @name getFeature*() methods for template-based access to feature list
 		@{ */
-	inline float getFeatureX(size_t i) const { return m_feats[i]->x; }
-	inline float getFeatureY(size_t i) const { return m_feats[i]->y; }
-	inline TFeatureID getFeatureID(size_t i) const { return m_feats[i]->ID; }
+	inline float getFeatureX(size_t i) const
+	{
+		return m_feats[i].keypoint.pt.x;
+	}
+	inline float getFeatureY(size_t i) const
+	{
+		return m_feats[i].keypoint.pt.y;
+	}
+	inline TFeatureID getFeatureID(size_t i) const
+	{
+		return m_feats[i].keypoint.ID;
+	}
 	inline float getFeatureResponse(size_t i) const
 	{
-		return m_feats[i]->response;
+		return m_feats[i].keypoint.response;
 	}
 	inline bool isPointFeature(size_t i) const
 	{
-		return m_feats[i]->isPointFeature();
+		return m_feats[i].isPointFeature();
 	}
-	inline float getScale(size_t i) const { return m_feats[i]->scale; }
+	inline float getScale(size_t i) const { return m_feats[i].keypoint.octave; }
 	inline TFeatureTrackStatus getTrackStatus(size_t i)
 	{
-		return m_feats[i]->track_status;
+		return m_feats[i].keypoint.track_status;
 	}
 
-	inline void setFeatureX(size_t i, float x) { m_feats[i]->x = x; }
-	inline void setFeatureXf(size_t i, float x) { m_feats[i]->x = x; }
-	inline void setFeatureY(size_t i, float y) { m_feats[i]->y = y; }
-	inline void setFeatureYf(size_t i, float y) { m_feats[i]->y = y; }
-	inline void setFeatureID(size_t i, TFeatureID id) { m_feats[i]->ID = id; }
+	inline void setFeatureX(size_t i, float x) { m_feats[i].keypoint.pt.x = x; }
+	inline void setFeatureXf(size_t i, float x)
+	{
+		m_feats[i].keypoint.pt.x = x;
+	}
+	inline void setFeatureY(size_t i, float y) { m_feats[i].keypoint.pt.y = y; }
+	inline void setFeatureYf(size_t i, float y)
+	{
+		m_feats[i].keypoint.pt.y = y;
+	}
+	inline void setFeatureID(size_t i, TFeatureID id)
+	{
+		m_feats[i].keypoint.ID = id;
+	}
 	inline void setFeatureResponse(size_t i, float r)
 	{
-		m_feats[i]->response = r;
+		m_feats[i].keypoint.response = r;
 	}
-	inline void setScale(size_t i, float s) { m_feats[i]->scale = s; }
+	inline void setScale(size_t i, float s) { m_feats[i].keypoint.octave = s; }
 	inline void setTrackStatus(size_t i, TFeatureTrackStatus s)
 	{
-		m_feats[i]->track_status = s;
+		m_feats[i].keypoint.track_status = s;
 	}
 
 	inline void mark_as_outdated() const { kdtree_mark_as_outdated(); }
@@ -509,14 +489,13 @@ class CFeatureList : public mrpt::math::KDTreeCapable<CFeatureList>
 *****************************************************/
 /** A list of features
  */
-class CMatchedFeatureList
-	: public std::deque<std::pair<CFeature::Ptr, CFeature::Ptr>>
+class CMatchedFeatureList : public std::deque<std::pair<CFeature, CFeature>>
 {
    public:
 	/** The type of the first feature in the list */
-	inline TFeatureType get_type() const
+	inline TKeyPointMethod get_type() const
 	{
-		return empty() ? featNotDefined : (begin()->first)->get_type();
+		return empty() ? featNotDefined : begin()->first.get_type();
 	}
 
 	/** Save list of matched features to a text file */
@@ -527,7 +506,7 @@ class CMatchedFeatureList
 
 	/** Returns a smart pointer to the feature with the provided ID or a empty
 	 * one if not found */
-	CFeature::Ptr getByID(const TFeatureID& ID, const TListIdx& idx);
+	const CFeature* getByID(const TFeatureID& ID, const TListIdx& idx);
 
 	/** Returns the maximum ID of the features in the list. If the max ID has
 	   been already set up, this method just returns it.
@@ -550,13 +529,10 @@ class CMatchedFeatureList
 	{
 		setLeftMaxID(leftID);
 		setRightMaxID(rightID);
-	};
+	}
 
-	/** Constructor */
-	CMatchedFeatureList();
-
-	/** Virtual destructor */
-	virtual ~CMatchedFeatureList();
+	CMatchedFeatureList() = default;
+	virtual ~CMatchedFeatureList() = default;
 
    protected:
 	TFeatureID m_leftMaxID{0}, m_rightMaxID{0};

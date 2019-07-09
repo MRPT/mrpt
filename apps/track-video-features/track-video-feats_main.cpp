@@ -54,7 +54,7 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
 	TCamera cameraParams;  // For now, will only hold the image resolution on
 	// the arrive of the first frame.
 
-	TSimpleFeatureList trackedFeats;
+	TKeyPointList trackedFeats;
 
 	unsigned int step_num = 0;
 

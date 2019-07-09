@@ -37,31 +37,29 @@ inline void trackFeatures_checkResponses<CFeatureList>(
 	const float minimum_KLT_response, const unsigned int KLT_response_half_win,
 	const unsigned int max_x, const unsigned int max_y)
 {
-	const auto itFeatEnd = featureList.end();
-	for (auto itFeat = featureList.begin(); itFeat != itFeatEnd; ++itFeat)
+	for (auto& ft : featureList)
 	{
-		CFeature* ft = itFeat->get();
-		if (ft->track_status != status_TRACKED)
+		if (ft.track_status != status_TRACKED)
 			continue;  // Skip if it's not correctly tracked.
 
-		const unsigned int x = ft->x;
-		const unsigned int y = ft->y;
+		const unsigned int x = ft.keypoint.pt.x;
+		const unsigned int y = ft.keypoint.pt.y;
 		if (x > KLT_response_half_win && y > KLT_response_half_win &&
 			x < max_x && y < max_y)
 		{  // Update response:
-			ft->response = cur_gray.KLT_response(x, y, KLT_response_half_win);
+			ft.response = cur_gray.KLT_response(x, y, KLT_response_half_win);
 
 			// Is it good enough?
 			// http://grooveshark.com/s/Goonies+Are+Good+Enough/2beBfO?src=5
-			if (ft->response < minimum_KLT_response)
+			if (ft.response < minimum_KLT_response)
 			{  // Nope!
-				ft->track_status = status_LOST;
+				ft.track_status = status_LOST;
 			}
 		}
 		else
 		{  // Out of bounds
-			ft->response = 0;
-			ft->track_status = status_OOB;
+			ft.response = 0;
+			ft.track_status = status_OOB;
 		}
 	}
 }  // end of trackFeatures_checkResponses<>
@@ -107,22 +105,22 @@ inline void trackFeatures_checkResponses_impl_simple(
 }  // end of trackFeatures_checkResponses<>
 
 template <>
-inline void trackFeatures_checkResponses<TSimpleFeatureList>(
-	TSimpleFeatureList& featureList, const CImage& cur_gray,
+inline void trackFeatures_checkResponses<TKeyPointList>(
+	TKeyPointList& featureList, const CImage& cur_gray,
 	const float minimum_KLT_response, const unsigned int KLT_response_half_win,
 	const unsigned int max_x, const unsigned int max_y)
 {
-	trackFeatures_checkResponses_impl_simple<TSimpleFeatureList>(
+	trackFeatures_checkResponses_impl_simple<TKeyPointList>(
 		featureList, cur_gray, minimum_KLT_response, KLT_response_half_win,
 		max_x, max_y);
 }
 template <>
-inline void trackFeatures_checkResponses<TSimpleFeaturefList>(
-	TSimpleFeaturefList& featureList, const CImage& cur_gray,
+inline void trackFeatures_checkResponses<TKeyPointfList>(
+	TKeyPointfList& featureList, const CImage& cur_gray,
 	const float minimum_KLT_response, const unsigned int KLT_response_half_win,
 	const unsigned int max_x, const unsigned int max_y)
 {
-	trackFeatures_checkResponses_impl_simple<TSimpleFeaturefList>(
+	trackFeatures_checkResponses_impl_simple<TKeyPointfList>(
 		featureList, cur_gray, minimum_KLT_response, KLT_response_half_win,
 		max_x, max_y);
 }
@@ -135,41 +133,42 @@ template <>
 inline void trackFeatures_updatePatch<CFeatureList>(
 	CFeatureList& featureList, const CImage& cur_gray)
 {
-	for (auto& itFeat : featureList)
+	for (auto& ft : featureList)
 	{
-		CFeature* ft = itFeat.get();
-		if (ft->track_status != status_TRACKED)
+		if (ft.track_status != status_TRACKED)
 			continue;  // Skip if it's not correctly tracked.
 
-		const size_t patch_width = ft->patch.getWidth();
-		const size_t patch_height = ft->patch.getHeight();
+		const size_t patch_width = ft.patch->getWidth();
+		const size_t patch_height = ft.patch->getHeight();
 		if (patch_width > 0 && patch_height > 0)
 		{
 			try
 			{
 				const int offset = (int)patch_width / 2;  // + 1;
+				ft.patch.emplace();
 				cur_gray.extract_patch(
-					ft->patch, round(ft->x) - offset, round(ft->y) - offset,
-					patch_width, patch_height);
+					*ft.patch, round(ft.keypoint.pt.x) - offset,
+					round(ft.keypoint.pt.y) - offset, patch_width,
+					patch_height);
 			}
 			catch (std::exception&)
 			{
-				ft->track_status = status_OOB;  // Out of bounds!
+				ft.track_status = status_OOB;  // Out of bounds!
 			}
 		}
 	}
 }  // end of trackFeatures_updatePatch<>
 template <>
-inline void trackFeatures_updatePatch<TSimpleFeatureList>(
-	TSimpleFeatureList& featureList, const CImage& cur_gray)
+inline void trackFeatures_updatePatch<TKeyPointList>(
+	TKeyPointList& featureList, const CImage& cur_gray)
 {
 	MRPT_UNUSED_PARAM(featureList);
 	MRPT_UNUSED_PARAM(cur_gray);
 	// This list type does not have patch stored explicitly
 }  // end of trackFeatures_updatePatch<>
 template <>
-inline void trackFeatures_updatePatch<TSimpleFeaturefList>(
-	TSimpleFeaturefList& featureList, const CImage& cur_gray)
+inline void trackFeatures_updatePatch<TKeyPointfList>(
+	TKeyPointfList& featureList, const CImage& cur_gray)
 {
 	MRPT_UNUSED_PARAM(featureList);
 	MRPT_UNUSED_PARAM(cur_gray);
@@ -178,7 +177,7 @@ inline void trackFeatures_updatePatch<TSimpleFeaturefList>(
 
 template <typename FEATLIST>
 inline void trackFeatures_addNewFeats(
-	FEATLIST& featureList, const TSimpleFeatureList& new_feats,
+	FEATLIST& featureList, const TKeyPointList& new_feats,
 	const std::vector<size_t>& sorted_indices, const size_t nNewToCheck,
 	const size_t maxNumFeatures, const float minimum_KLT_response_to_add,
 	const double threshold_sqr_dist_to_add_new, const size_t patchSize,
@@ -186,7 +185,7 @@ inline void trackFeatures_addNewFeats(
 
 template <>
 inline void trackFeatures_addNewFeats<CFeatureList>(
-	CFeatureList& featureList, const TSimpleFeatureList& new_feats,
+	CFeatureList& featureList, const TKeyPointList& new_feats,
 	const std::vector<size_t>& sorted_indices, const size_t nNewToCheck,
 	const size_t maxNumFeatures, const float minimum_KLT_response_to_add,
 	const double threshold_sqr_dist_to_add_new, const size_t patchSize,
@@ -200,7 +199,7 @@ inline void trackFeatures_addNewFeats<CFeatureList>(
 	for (size_t i = 0; i < nNewToCheck && featureList.size() < maxNumFeatures;
 		 i++)
 	{
-		const TSimpleFeature& feat = new_feats[sorted_indices[i]];
+		const TKeyPoint& feat = new_feats[sorted_indices[i]];
 
 		if (feat.response < minimum_KLT_response_to_add) continue;
 
@@ -217,30 +216,33 @@ inline void trackFeatures_addNewFeats<CFeatureList>(
 			feat.pt.y < h_off)
 		{
 			// Add new feature:
-			CFeature::Ptr ft = std::make_shared<CFeature>();
-			ft->type = featFAST;
-			ft->ID = ++max_feat_ID_at_input;
-			ft->x = feat.pt.x;
-			ft->y = feat.pt.y;
-			ft->response = feat.response;
-			ft->orientation = 0;
-			ft->scale = 1;
-			ft->patchSize = patchSize;  // The size of the feature patch
+			CFeature ft;
+			ft.type = featFAST;
+			ft.keypoint.ID = ++max_feat_ID_at_input;
+			ft.keypoint.pt.x = feat.pt.x;
+			ft.keypoint.pt.y = feat.pt.y;
+			ft.response = feat.response;
+			ft.orientation = 0;
+			ft.keypoint.octave = 1;
+			ft.patchSize = patchSize;  // The size of the feature patch
 
+			// Image patch surronding the feature
 			if (patchSize > 0)
+			{
+				ft.patch.emplace();
 				cur_gray.extract_patch(
-					ft->patch, round(ft->x) - offset, round(ft->y) - offset,
-					patchSize,
-					patchSize);  // Image patch surronding the feature
+					*ft.patch, round(feat.pt.x) - offset,
+					round(feat.pt.y) - offset, patchSize, patchSize);
+			}
 
-			featureList.push_back(ft);
+			featureList.emplace_back(std::move(ft));
 		}
 	}
 }  // end of trackFeatures_addNewFeats<>
 
 template <class FEAT_LIST>
 inline void trackFeatures_addNewFeats_simple_list(
-	FEAT_LIST& featureList, const TSimpleFeatureList& new_feats,
+	FEAT_LIST& featureList, const TKeyPointList& new_feats,
 	const std::vector<size_t>& sorted_indices, const size_t nNewToCheck,
 	const size_t maxNumFeatures, const float minimum_KLT_response_to_add,
 	const double threshold_sqr_dist_to_add_new, const size_t patchSize,
@@ -255,7 +257,7 @@ inline void trackFeatures_addNewFeats_simple_list(
 	for (size_t i = 0; i < nNewToCheck && featureList.size() < maxNumFeatures;
 		 i++)
 	{
-		const TSimpleFeature& feat = new_feats[sorted_indices[i]];
+		const TKeyPoint& feat = new_feats[sorted_indices[i]];
 		if (feat.response < minimum_KLT_response_to_add) break;  // continue;
 
 		// Check the min-distance:
@@ -287,27 +289,27 @@ inline void trackFeatures_addNewFeats_simple_list(
 }  // end of trackFeatures_addNewFeats<>
 
 template <>
-inline void trackFeatures_addNewFeats<TSimpleFeatureList>(
-	TSimpleFeatureList& featureList, const TSimpleFeatureList& new_feats,
+inline void trackFeatures_addNewFeats<TKeyPointList>(
+	TKeyPointList& featureList, const TKeyPointList& new_feats,
 	const std::vector<size_t>& sorted_indices, const size_t nNewToCheck,
 	const size_t maxNumFeatures, const float minimum_KLT_response_to_add,
 	const double threshold_sqr_dist_to_add_new, const size_t patchSize,
 	const CImage& cur_gray, TFeatureID& max_feat_ID_at_input)
 {
-	trackFeatures_addNewFeats_simple_list<TSimpleFeatureList>(
+	trackFeatures_addNewFeats_simple_list<TKeyPointList>(
 		featureList, new_feats, sorted_indices, nNewToCheck, maxNumFeatures,
 		minimum_KLT_response_to_add, threshold_sqr_dist_to_add_new, patchSize,
 		cur_gray, max_feat_ID_at_input);
 }
 template <>
-inline void trackFeatures_addNewFeats<TSimpleFeaturefList>(
-	TSimpleFeaturefList& featureList, const TSimpleFeatureList& new_feats,
+inline void trackFeatures_addNewFeats<TKeyPointfList>(
+	TKeyPointfList& featureList, const TKeyPointList& new_feats,
 	const std::vector<size_t>& sorted_indices, const size_t nNewToCheck,
 	const size_t maxNumFeatures, const float minimum_KLT_response_to_add,
 	const double threshold_sqr_dist_to_add_new, const size_t patchSize,
 	const CImage& cur_gray, TFeatureID& max_feat_ID_at_input)
 {
-	trackFeatures_addNewFeats_simple_list<TSimpleFeaturefList>(
+	trackFeatures_addNewFeats_simple_list<TKeyPointfList>(
 		featureList, new_feats, sorted_indices, nNewToCheck, maxNumFeatures,
 		minimum_KLT_response_to_add, threshold_sqr_dist_to_add_new, patchSize,
 		cur_gray, max_feat_ID_at_input);
@@ -368,18 +370,18 @@ inline size_t trackFeatures_deleteOOB_impl_simple_feat(
 
 template <>
 inline size_t trackFeatures_deleteOOB(
-	TSimpleFeatureList& trackedFeats, const size_t img_width,
+	TKeyPointList& trackedFeats, const size_t img_width,
 	const size_t img_height, const int MIN_DIST_MARGIN_TO_STOP_TRACKING)
 {
-	return trackFeatures_deleteOOB_impl_simple_feat<TSimpleFeatureList>(
+	return trackFeatures_deleteOOB_impl_simple_feat<TKeyPointList>(
 		trackedFeats, img_width, img_height, MIN_DIST_MARGIN_TO_STOP_TRACKING);
 }
 template <>
 inline size_t trackFeatures_deleteOOB(
-	TSimpleFeaturefList& trackedFeats, const size_t img_width,
+	TKeyPointfList& trackedFeats, const size_t img_width,
 	const size_t img_height, const int MIN_DIST_MARGIN_TO_STOP_TRACKING)
 {
-	return trackFeatures_deleteOOB_impl_simple_feat<TSimpleFeaturefList>(
+	return trackFeatures_deleteOOB_impl_simple_feat<TKeyPointfList>(
 		trackedFeats, img_width, img_height, MIN_DIST_MARGIN_TO_STOP_TRACKING);
 }
 
@@ -392,13 +394,13 @@ inline size_t trackFeatures_deleteOOB(
 	size_t n_removed = 0;
 	while (itFeat != trackedFeats.end())
 	{
-		const TFeatureTrackStatus status = (*itFeat)->track_status;
+		const TFeatureTrackStatus status = itFeat->track_status;
 		bool eras = (status_TRACKED != status && status_IDLE != status);
 		if (!eras)
 		{
 			// Also, check if it's too close to the image border:
-			const float x = (*itFeat)->x;
-			const float y = (*itFeat)->y;
+			const float x = itFeat->keypoint.pt.x;
+			const float y = itFeat->keypoint.pt.y;
 			if (x < MIN_DIST_MARGIN_TO_STOP_TRACKING ||
 				y < MIN_DIST_MARGIN_TO_STOP_TRACKING ||
 				x > (img_width - MIN_DIST_MARGIN_TO_STOP_TRACKING) ||
@@ -423,7 +425,7 @@ inline size_t trackFeatures_deleteOOB(
 
 void CGenericFeatureTracker::trackFeatures_impl(
 	const CImage& old_img, const CImage& new_img,
-	TSimpleFeaturefList& inout_featureList)
+	TKeyPointfList& inout_featureList)
 {
 	MRPT_UNUSED_PARAM(old_img);
 	MRPT_UNUSED_PARAM(new_img);
@@ -631,7 +633,7 @@ void CGenericFeatureTracker::internal_trackFeatures(
 
 		std::sort(
 			sorted_indices.begin(), sorted_indices.end(),
-			KeypointResponseSorter<TSimpleFeatureList>(m_newly_detected_feats));
+			KeypointResponseSorter<TKeyPointList>(m_newly_detected_feats));
 
 		// For each new good feature, add it to the list of tracked ones only if
 		// it's pretty
@@ -658,23 +660,15 @@ void CGenericFeatureTracker::internal_trackFeatures(
 }  // end of CGenericFeatureTracker::trackFeatures
 
 void CGenericFeatureTracker::trackFeatures(
-	const CImage& old_img, const CImage& new_img, CFeatureList& featureList)
+	const CImage& old_img, const CImage& new_img, TKeyPointList& featureList)
 {
-	internal_trackFeatures<CFeatureList>(old_img, new_img, featureList);
+	internal_trackFeatures<TKeyPointList>(old_img, new_img, featureList);
 }
 
 void CGenericFeatureTracker::trackFeatures(
-	const CImage& old_img, const CImage& new_img,
-	TSimpleFeatureList& featureList)
+	const CImage& old_img, const CImage& new_img, TKeyPointfList& featureList)
 {
-	internal_trackFeatures<TSimpleFeatureList>(old_img, new_img, featureList);
-}
-
-void CGenericFeatureTracker::trackFeatures(
-	const CImage& old_img, const CImage& new_img,
-	TSimpleFeaturefList& featureList)
-{
-	internal_trackFeatures<TSimpleFeaturefList>(old_img, new_img, featureList);
+	internal_trackFeatures<TKeyPointfList>(old_img, new_img, featureList);
 }
 
 void CGenericFeatureTracker::updateAdaptiveNewFeatsThreshold(
@@ -692,125 +686,3 @@ void CGenericFeatureTracker::updateAdaptiveNewFeatsThreshold(
 		m_detector_adaptive_thres = std::max(
 			m_detector_adaptive_thres + 1.0, m_detector_adaptive_thres * 1.2);
 }
-
-/*------------------------------------------------------------
-					checkTrackedFeatures
--------------------------------------------------------------*/
-void vision::checkTrackedFeatures(
-	CFeatureList& leftList, CFeatureList& rightList,
-	vision::TMatchingOptions options)
-{
-	ASSERT_(leftList.size() == rightList.size());
-
-	// std::cout << std::endl << "Tracked features checking ..." << std::endl;
-
-	CFeatureList::iterator itLeft, itRight;
-	size_t u, v;
-	double res;
-
-	for (itLeft = leftList.begin(), itRight = rightList.begin();
-		 itLeft != leftList.end();)
-	{
-		bool delFeat = false;
-		if ((*itLeft)->x < 0 || (*itLeft)->y < 0 ||  // Out of bounds
-			(*itRight)->x < 0 || (*itRight)->y < 0 ||  // Out of bounds
-			fabs((*itLeft)->y - (*itRight)->y) >
-				options
-					.epipolar_TH)  // Not fulfillment of the epipolar constraint
-		{
-			// Show reason
-			std::cout << "Bad tracked match:";
-			if ((*itLeft)->x < 0 || (*itLeft)->y < 0 || (*itRight)->x < 0 ||
-				(*itRight)->y < 0)
-				std::cout << " Out of bounds: (" << (*itLeft)->x << ","
-						  << (*itLeft)->y << " & (" << (*itRight)->x << ","
-						  << (*itRight)->y << ")" << std::endl;
-
-			if (fabs((*itLeft)->y - (*itRight)->y) > options.epipolar_TH)
-				std::cout << " Bad row checking: "
-						  << fabs((*itLeft)->y - (*itRight)->y) << std::endl;
-
-			delFeat = true;
-		}
-		else
-		{
-			// Compute cross correlation:
-			openCV_cross_correlation(
-				(*itLeft)->patch, (*itRight)->patch, u, v, res);
-
-			if (res < options.minCC_TH)
-			{
-				std::cout << "Bad tracked match (correlation failed):"
-						  << " CC Value: " << res << std::endl;
-				delFeat = true;
-			}
-		}  // end if
-
-		if (delFeat)  // Erase the pair of features
-		{
-			itLeft = leftList.erase(itLeft);
-			itRight = rightList.erase(itRight);
-		}
-		else
-		{
-			itLeft++;
-			itRight++;
-		}
-	}  // end for
-}  // end checkTrackedFeatures
-
-/*-------------------------------------------------------------
-					filterBadCorrsByDistance
--------------------------------------------------------------*/
-void vision::filterBadCorrsByDistance(
-	TMatchingPairList& feat_list, unsigned int numberOfSigmas)
-{
-	ASSERT_(numberOfSigmas > 0);
-	//	MRPT_UNUSED_PARAM( numberOfSigmas );
-	MRPT_START
-
-	TMatchingPairList::iterator itPair;
-	CMatrixF dist;
-	double v_mean, v_std;
-	unsigned int count = 0;
-
-	dist.setSize(feat_list.size(), 1);
-	// v_mean.resize(1);
-	// v_std.resize(1);
-
-	// Compute mean and standard deviation of the distance
-	for (itPair = feat_list.begin(); itPair != feat_list.end();
-		 itPair++, count++)
-	{
-		// cout << "(" << itPair->other_x << "," << itPair->other_y << "," <<
-		// itPair->this_z << ")" << "- (" << itPair->this_x << "," <<
-		// itPair->this_y << "," << itPair->other_z << "): ";
-		// cout << sqrt( square( itPair->other_x - itPair->this_x ) + square(
-		// itPair->other_y - itPair->this_y ) + square( itPair->other_z -
-		// itPair->this_z ) ) << endl;
-		dist(count, 0) = sqrt(
-			square(itPair->other_x - itPair->this_x) +
-			square(itPair->other_y - itPair->this_y) +
-			square(itPair->other_z - itPair->this_z));
-	}
-
-	mrpt::math::meanAndStd(dist, v_mean, v_std);
-
-	// Filter out bad points
-	unsigned int idx = 0;
-	// for( int idx = (int)feat_list.size()-1; idx >= 0; idx-- )
-	for (itPair = feat_list.begin(); itPair != feat_list.end(); idx++)
-	{
-		// if( dist( idx, 0 ) > 1.2 )
-		if (fabs(dist(idx, 0) - v_mean) > v_std * numberOfSigmas)
-		{
-			cout << "Outlier deleted: " << dist(idx, 0) << " vs "
-				 << v_std * numberOfSigmas << endl;
-			itPair = feat_list.erase(itPair);
-		}
-		else
-			itPair++;
-	}
-
-	MRPT_END
-}  // end filterBadCorrsByDistance

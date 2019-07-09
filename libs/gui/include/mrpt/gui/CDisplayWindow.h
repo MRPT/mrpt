@@ -152,24 +152,23 @@ class CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 		for (typename MATCHEDLIST::const_iterator i = mList.begin();
 			 i != mList.end(); ++i, ++nf)
 		{
-			imgColor.drawCircle(
-				round(i->first->x), round(i->first->y), 4, color);
-			imgColor.drawCircle(
-				round(i->second->x + w), round(i->second->y), 4, color);
-			// imgColor.line( round( i->first->x ), round( i->first->y ), round(
-			// i->second->x + w ), round( i->second->y ), color );
+			const auto x1 = round(i->first.keypoint.pt.x);
+			const auto y1 = round(i->first.keypoint.pt.y);
+			const auto x2 = round(i->second.keypoint.pt.x);
+			const auto y2 = round(i->second.keypoint.pt.y);
+
+			imgColor.drawCircle(x1, y1, 4, color);
+			imgColor.drawCircle(x2 + w, y2, 4, color);
+
 			if (showNumbers)
 			{
 				char buf[15];
 				mrpt::system::os::sprintf(
-					buf, 15, "%d[%u]", nf, (unsigned int)i->first->ID);
-				imgColor.textOut(
-					round(i->first->x) - 10, round(i->first->y), buf, color);
+					buf, 15, "%d[%u]", nf, (unsigned int)i->first.keypoint.ID);
+				imgColor.textOut(x1 - 10, y1, buf, color);
 				mrpt::system::os::sprintf(
-					buf, 15, "%d[%u]", nf, (unsigned int)i->second->ID);
-				imgColor.textOut(
-					round(i->second->x + w) + 10, round(i->second->y), buf,
-					color);
+					buf, 15, "%d[%u]", nf, (unsigned int)i->second.keypoint.ID);
+				imgColor.textOut(x2 + w + 10, y2, buf, color);
 			}
 		}
 		showImage(imgColor);

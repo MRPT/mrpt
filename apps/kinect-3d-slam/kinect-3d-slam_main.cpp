@@ -182,7 +182,7 @@ void Test_Kinect()
 	if (thrPar.quit) return;
 
 	// Feature tracking variables:
-	CFeatureList trackedFeats;
+	mrpt::vision::TKeyPointList trackedFeats;
 	unsigned int step_num = 0;
 
 	bool SHOW_FEAT_IDS = true;
@@ -315,17 +315,17 @@ void Test_Kinect()
 				tracker->trackFeatures(previous_image, theImg, trackedFeats);
 
 				// Remove those now out of the image plane:
-				auto itFeat = trackedFeats.begin();
-				while (itFeat != trackedFeats.end())
+				for (auto itFeat = trackedFeats.begin();
+					 itFeat != trackedFeats.end();)
 				{
-					const TFeatureTrackStatus status = (*itFeat)->track_status;
+					const TFeatureTrackStatus status = itFeat->track_status;
 					bool eras =
 						(status_TRACKED != status && status_IDLE != status);
 					if (!eras)
 					{
 						// Also, check if it's too close to the image border:
-						const float x = (*itFeat)->x;
-						const float y = (*itFeat)->y;
+						const float x = itFeat->pt.x;
+						const float y = itFeat->pt.y;
 						static const float MIN_DIST_MARGIN_TO_STOP_TRACKING =
 							10;
 						if (x < MIN_DIST_MARGIN_TO_STOP_TRACKING ||
@@ -351,8 +351,8 @@ void Test_Kinect()
 			for (auto& trackedFeat : trackedFeats)
 			{
 				// Pixel coordinates in the intensity image:
-				const int int_x = trackedFeat->x;
-				const int int_y = trackedFeat->y;
+				const int int_x = trackedFeat.pt.x;
+				const int int_y = trackedFeat.pt.y;
 
 				// Convert to pixel coords in the range image:
 				//  APPROXIMATION: Assume coordinates are equal (that's not
@@ -370,7 +370,7 @@ void Test_Kinect()
 							last_obs->rangeImage.rows()) ==
 						last_obs->points3D_x.size());
 					const size_t nPt = last_obs->rangeImage.cols() * y + x;
-					curVisibleFeats[trackedFeat->ID] = TPoint3D(
+					curVisibleFeats[trackedFeat.ID] = TPoint3D(
 						last_obs->points3D_x[nPt], last_obs->points3D_y[nPt],
 						last_obs->points3D_z[nPt]);
 				}

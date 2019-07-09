@@ -22,7 +22,8 @@
 #include <vector>
 
 // See: https://gcc.gnu.org/viewcvs/gcc?view=revision&revision=258854
-#if defined(__clang__) && (__GLIBCXX__ <= 20180419)
+// See: https://stackoverflow.com/a/46507150/1631514
+#if defined(__clang__) && (__clang_major__ <= 7)
 #define HAS_BROKEN_CLANG_STD_VISIT
 #endif
 
@@ -276,9 +277,8 @@ class CArchive
 		}
 	}
 
-#ifndef HAS_BROKEN_CLANG_STD_VISIT
-	/** Writes a Variant to the stream.
-	 */
+#if !defined(HAS_BROKEN_CLANG_STD_VISIT)
+	/** Writes a Variant to the stream */
 	template <typename T>
 	void WriteVariant(T t)
 	{

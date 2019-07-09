@@ -19,17 +19,20 @@ CLandmarksConfig::CLandmarksConfig()
 	: CBaseConfig(), m_ui(std::make_unique<Ui::CLandmarksConfig>())
 {
 	m_ui->setupUi(this);
-	m_ui->TFeatureType->addItem("featNotDefined", TFeatureType::featNotDefined);
-	m_ui->TFeatureType->addItem("featKLT", TFeatureType::featKLT);
-	m_ui->TFeatureType->addItem("featHarris", TFeatureType::featHarris);
-	m_ui->TFeatureType->addItem("featSIFT", TFeatureType::featSIFT);
-	m_ui->TFeatureType->addItem("featSURF", TFeatureType::featSURF);
-	m_ui->TFeatureType->addItem("featBeacon", TFeatureType::featBeacon);
-	m_ui->TFeatureType->addItem("featFAST", TFeatureType::featFAST);
-	m_ui->TFeatureType->addItem("featFASTER9", TFeatureType::featFASTER9);
-	m_ui->TFeatureType->addItem("featFASTER10", TFeatureType::featFASTER10);
-	m_ui->TFeatureType->addItem("featFASTER12", TFeatureType::featFASTER12);
-	m_ui->TFeatureType->addItem("featORB", TFeatureType::featORB);
+	m_ui->TKeyPointMethod->addItem(
+		"featNotDefined", TKeyPointMethod::featNotDefined);
+	m_ui->TKeyPointMethod->addItem("featKLT", TKeyPointMethod::featKLT);
+	m_ui->TKeyPointMethod->addItem("featHarris", TKeyPointMethod::featHarris);
+	m_ui->TKeyPointMethod->addItem("featSIFT", TKeyPointMethod::featSIFT);
+	m_ui->TKeyPointMethod->addItem("featSURF", TKeyPointMethod::featSURF);
+	m_ui->TKeyPointMethod->addItem("featBeacon", TKeyPointMethod::featBeacon);
+	m_ui->TKeyPointMethod->addItem("featFAST", TKeyPointMethod::featFAST);
+	m_ui->TKeyPointMethod->addItem("featFASTER9", TKeyPointMethod::featFASTER9);
+	m_ui->TKeyPointMethod->addItem(
+		"featFASTER10", TKeyPointMethod::featFASTER10);
+	m_ui->TKeyPointMethod->addItem(
+		"featFASTER12", TKeyPointMethod::featFASTER12);
+	m_ui->TKeyPointMethod->addItem("featORB", TKeyPointMethod::featORB);
 
 	m_ui->implementation->addItem("LoweBinary", CFeatureExtraction::LoweBinary);
 	m_ui->implementation->addItem("CSBinary", CFeatureExtraction::CSBinary);
@@ -122,7 +125,8 @@ void CLandmarksConfig::updateConfiguration(
 	mapDefination->likelihoodOpts.GPSOrigin.min_sat = m_ui->min_sat->value();
 
 	mapDefination->likelihoodOpts.SIFT_feat_options.featsType =
-		static_cast<TFeatureType>(m_ui->TFeatureType->currentData().toInt());
+		static_cast<TKeyPointMethod>(
+			m_ui->TKeyPointMethod->currentData().toInt());
 	mapDefination->likelihoodOpts.SIFT_feat_options.patchSize =
 		m_ui->patchSize->value();
 
@@ -271,7 +275,7 @@ void CLandmarksConfig::setLikelihoodOpt(
 	m_ui->y_shift->setValue(likelihoodOpt.GPSOrigin.y_shift);
 	m_ui->min_sat->setValue(likelihoodOpt.GPSOrigin.min_sat);
 
-	m_ui->TFeatureType->setCurrentIndex(
+	m_ui->TKeyPointMethod->setCurrentIndex(
 		likelihoodOpt.SIFT_feat_options.featsType + 1);
 
 	m_ui->patchSize->setValue(likelihoodOpt.SIFT_feat_options.patchSize);

@@ -10,8 +10,6 @@
 
 #include <mrpt/core/round.h>
 #include <mrpt/img/TPixelCoord.h>
-#include <mrpt/math/CMatrixDynamic.h>  // mrpt::math::CMatrixBool
-#include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/KDTreeCapable.h>
 #include <mrpt/vision/types.h>
 #include <functional>
@@ -21,14 +19,13 @@ namespace mrpt::vision
 /** \addtogroup  mrptvision_features
 	@{ */
 
-/** A simple structure for representing one image feature (without descriptor
- * nor patch) - This is
- *  the template which allows you to select if pixels are represented as
- * integers or floats.
- *  \sa TSimpleFeature, TSimpleFeaturef
+/** Simple structure for image key points. Descriptors are stored separately in
+ * CFeatureList. This is a template to allow using both integers
+ * (TKeyPoint) or floats (TKeyPointf) as pixel coordinates. \sa
+ * TKeyPoint, TKeyPointf
  */
 template <typename PIXEL_COORD_TYPE>
-struct TSimpleFeature_templ
+struct TKeyPoint_templ
 {
 	/** The type of \a pt */
 	using pixel_coords_t = PIXEL_COORD_TYPE;
@@ -37,32 +34,34 @@ struct TSimpleFeature_templ
 
 	/** Coordinates in the image */
 	pixel_coords_t pt;
+
 	/** ID of the feature */
-	TFeatureID ID;
+	TFeatureID ID{static_cast<TFeatureID>(-1)};
+
 	/** Status of the feature tracking process */
-	TFeatureTrackStatus track_status;
+	TFeatureTrackStatus track_status{status_IDLE};
+
 	/** A measure of the "goodness" of the feature (typically, the KLT_response
 	 * value) */
-	float response;
+	float response{0};
 	/** The image octave the image was found in: 0=original image, 1=1/2 image,
 	 * 2=1/4 image, etc. */
-	uint8_t octave;
+	uint8_t octave{0};
 	/** A field for any other flags needed by the user (this has not a
 	 * predefined meaning) */
-	uint8_t user_flags;
+	uint8_t user_flags{0};
 
 	/** Constructor that only sets the pt.{x,y} values, leaving all other values
 	 * to *undefined values*. */
 	template <typename COORD_TYPE>
-	inline TSimpleFeature_templ(const COORD_TYPE x, const COORD_TYPE y)
-		: pt(x, y)
+	inline TKeyPoint_templ(const COORD_TYPE x, const COORD_TYPE y) : pt(x, y)
 	{
 	}
 
 	/** Default constructor, leaves all fields uninitialized */
-	inline TSimpleFeature_templ() = default;
-	template <typename OTHER_TSIMPLEFEATURE>
-	explicit TSimpleFeature_templ(const OTHER_TSIMPLEFEATURE& o)
+	inline TKeyPoint_templ() = default;
+	template <typename OTHER_TKeyPoint>
+	explicit TKeyPoint_templ(const OTHER_TKeyPoint& o)
 		: pt(o.pt.x, o.pt.y),
 		  ID(o.ID),
 		  track_status(o.track_status),
@@ -73,20 +72,19 @@ struct TSimpleFeature_templ
 	}
 };
 
-/** A simple structure for representing one image feature (without descriptor
- * nor patch).
- *  \sa TSimpleFeaturef, CFeature, TSimpleFeatureList
+/** Simple structure for image key points.
+ *  \sa TKeyPointf, CFeature, TKeyPointList
  */
-using TSimpleFeature = TSimpleFeature_templ<mrpt::img::TPixelCoord>;
+using TKeyPoint = TKeyPoint_templ<mrpt::img::TPixelCoord>;
 
-/** A version of  TSimpleFeature with subpixel precision */
-using TSimpleFeaturef = TSimpleFeature_templ<mrpt::img::TPixelCoordf>;
+/** A version of TKeyPoint with subpixel precision */
+using TKeyPointf = TKeyPoint_templ<mrpt::img::TPixelCoordf>;
 
 template <typename FEATURE>
-struct TSimpleFeatureTraits;
+struct TKeyPointTraits;
 
 template <>
-struct TSimpleFeatureTraits<TSimpleFeature>
+struct TKeyPointTraits<TKeyPoint>
 {
 	using coord_t = int;
 
@@ -94,20 +92,18 @@ struct TSimpleFeatureTraits<TSimpleFeature>
 };
 
 template <>
-struct TSimpleFeatureTraits<TSimpleFeaturef>
+struct TKeyPointTraits<TKeyPointf>
 {
 	using coord_t = float;
 
 	static inline coord_t f2coord(float f) { return f; }
 };
 
-/** A list of image features using the structure TSimpleFeature for each feature
- * - capable of KD-tree computations
- *  Users normally use directly the type TSimpleFeatureList &
- * TSimpleFeaturefList
+/** A list of image features using the structure TKeyPoint for each feature
+ * Users normally will use directly: TKeyPointList, TKeyPointfList
  */
 template <typename FEATURE>
-struct TSimpleFeatureList_templ
+struct TKeyPointList_templ
 {
    public:
 	using TFeatureVector = std::vector<FEATURE>;
@@ -144,17 +140,6 @@ struct TSimpleFeatureList_templ
 	std::vector<size_t>& getFirstIndexPerRowLUT()
 	{
 		return m_first_index_per_row;
-	}
-
-	/** Get a ref to the occupation matrix: this is a user-defined matrix, which
-	 * is not updated automatically by this class. */
-	inline mrpt::math::CMatrixBool& getOccupiedSectionsMatrix()
-	{
-		return m_occupied_sections;
-	}
-	inline const mrpt::math::CMatrixBool& getOccupiedSectionsMatrix() const
-	{
-		return m_occupied_sections;
 	}
 
 	/** @} */
@@ -210,12 +195,12 @@ struct TSimpleFeatureList_templ
 
 	/** @name getFeature*() methods for template-based access to feature list
 		@{ */
-	inline typename TSimpleFeatureTraits<FEATURE>::coord_t getFeatureX(
+	inline typename TKeyPointTraits<FEATURE>::coord_t getFeatureX(
 		size_t i) const
 	{
 		return m_feats[i].pt.x;
 	}
-	inline typename TSimpleFeatureTraits<FEATURE>::coord_t getFeatureY(
+	inline typename TKeyPointTraits<FEATURE>::coord_t getFeatureY(
 		size_t i) const
 	{
 		return m_feats[i].pt.y;
@@ -240,23 +225,23 @@ struct TSimpleFeatureList_templ
 	}
 
 	inline void setFeatureX(
-		size_t i, typename TSimpleFeatureTraits<FEATURE>::coord_t x)
+		size_t i, typename TKeyPointTraits<FEATURE>::coord_t x)
 	{
 		m_feats[i].pt.x = x;
 	}
 	inline void setFeatureY(
-		size_t i, typename TSimpleFeatureTraits<FEATURE>::coord_t y)
+		size_t i, typename TKeyPointTraits<FEATURE>::coord_t y)
 	{
 		m_feats[i].pt.y = y;
 	}
 
 	inline void setFeatureXf(size_t i, float x)
 	{
-		m_feats[i].pt.x = TSimpleFeatureTraits<FEATURE>::f2coord(x);
+		m_feats[i].pt.x = TKeyPointTraits<FEATURE>::f2coord(x);
 	}
 	inline void setFeatureYf(size_t i, float y)
 	{
-		m_feats[i].pt.y = TSimpleFeatureTraits<FEATURE>::f2coord(y);
+		m_feats[i].pt.y = TKeyPointTraits<FEATURE>::f2coord(y);
 	}
 
 	inline void setFeatureID(size_t i, TFeatureID id) { m_feats[i]->ID = id; }
@@ -286,18 +271,18 @@ struct TSimpleFeatureList_templ
 
 };  // end of class
 
-/** A list of image features using the structure TSimpleFeature for each feature
+/** A list of image features using the structure TKeyPoint for each feature
  * - capable of KD-tree computations */
-using TSimpleFeatureList = TSimpleFeatureList_templ<TSimpleFeature>;
+using TKeyPointList = TKeyPointList_templ<TKeyPoint>;
 
-/** A list of image features using the structure TSimpleFeaturef for each
+/** A list of image features using the structure TKeyPointf for each
  * feature - capable of KD-tree computations */
-using TSimpleFeaturefList = TSimpleFeatureList_templ<TSimpleFeaturef>;
+using TKeyPointfList = TKeyPointList_templ<TKeyPointf>;
 
 /** A helper struct to sort keypoints by their response: It can be used with
  *these types:
  *	  - std::vector<cv::KeyPoint>
- *	  - mrpt::vision::TSimpleFeatureList
+ *	  - mrpt::vision::TKeyPointList
  */
 template <typename FEATURE_LIST>
 struct KeypointResponseSorter : public std::function<bool(size_t, size_t)>
@@ -313,7 +298,7 @@ struct KeypointResponseSorter : public std::function<bool(size_t, size_t)>
 /** Helper class: KD-tree search class for vector<KeyPoint>:
  *  Call mark_as_outdated() to force rebuilding the kd-tree after modifying the
  * linked feature list.
- *  \tparam FEAT Can be cv::KeyPoint or mrpt::vision::TSimpleFeature
+ *  \tparam FEAT Can be cv::KeyPoint or mrpt::vision::TKeyPoint
  */
 template <typename FEAT>
 class CFeatureListKDTree

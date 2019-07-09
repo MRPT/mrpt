@@ -11,6 +11,7 @@
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSerializable.h>
+#include <mrpt/serialization/optional_serialization.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <memory>  // shared_ptr
 
@@ -59,6 +60,28 @@ TEST(Serialization, STL_complex_error_type)
 	// Trying to read to a different variable raises an exception:
 	f.Seek(0);
 	EXPECT_THROW(arch >> v2, std::exception);
+}
+
+TEST(Serialization, optional_STL)
+{
+	using map2array_t = std::map<double, std::array<uint8_t, 2>>;
+
+	std::optional<map2array_t> v1a, v1b;
+	std::optional<map2array_t> v2a, v2b;
+
+	// v1a: leave empty.
+	// v1b: assign value
+	v1b.emplace();
+	(*v1b)[0.4].fill(2);
+
+	mrpt::io::CMemoryStream f;
+	auto arch = mrpt::serialization::archiveFrom(f);
+	arch << v1a << v1b;
+
+	f.Seek(0);
+	arch >> v2a >> v2b;
+	EXPECT_FALSE(v2a.has_value());
+	EXPECT_EQ(*v1b, *v2b);
 }
 
 struct Foo

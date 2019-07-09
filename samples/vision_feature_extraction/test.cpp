@@ -23,34 +23,6 @@ using mrpt::format;
 string myDataDir(MRPT_EXAMPLES_BASE_DIRECTORY + string("img_convolution_fft/"));
 const string the_img_for_extract_feats = myDataDir + string("test_image.jpg");
 
-void TestTrackFeatures()
-{
-	CImage im1, im2;
-	im1.loadFromFile(
-		"/Trabajo/Experimentos/[2009] vOdometry Characterization/right1.jpg");
-	im2.loadFromFile(
-		"/Trabajo/Experimentos/[2009] vOdometry Characterization/right2.jpg");
-
-	CFeatureExtraction fExt;
-	CFeatureList feats;
-
-	fExt.options.featsType = featKLT;
-	fExt.detectFeatures(im1, feats);
-	feats.saveToTextFile(
-		"J:/Trabajo/Experimentos/[2009] vOdometry Characterization/before.txt");
-
-	CFeatureTracker_KL tracker;
-	// tracker.extra_params["add_new_features"]  = 1;   // track, AND ALSO, add
-	// new features
-	// ...
-
-	// Do tracking:
-	tracker.trackFeatures(im1, im2, feats);
-
-	feats.saveToTextFile(
-		"/Trabajo/Experimentos/[2009] vOdometry Characterization/after.txt");
-}
-
 // ------------------------------------------------------
 //				TestCapture
 // ------------------------------------------------------
@@ -310,11 +282,8 @@ void TestMatchingComparative()
 	fExt.computeDescriptors(im2, list2, descSIFT);
 	fExt.computeDescriptors(im2, list2, descSURF);
 
-	CFeatureList::iterator it1, it2;
-	for (it1 = list1.begin(); it1 != list1.end(); ++it1)
-		im1.drawMark((*it1)->x, (*it1)->y, TColor::red(), '+');
-	for (it2 = list2.begin(); it2 != list2.end(); ++it2)
-		im2.drawMark((*it2)->x, (*it2)->y, TColor::red(), '+');
+	im1.drawFeatures(list1);
+	im2.drawFeatures(list2);
 
 	CDisplayWindow win, win2;
 	win.setPos(0, 0);
@@ -331,21 +300,25 @@ void TestMatchingComparative()
 	infoimage.textOut(20, imH2 - 41, "NCC", TColor::blue());
 	infoimage.textOut(20, imH2 - 29, "SIFT", TColor::blue());
 	infoimage.textOut(20, imH2 - 17, "SURF", TColor::blue());
-	for (it1 = list1.begin(); it1 != list1.end(); ++it1)
+	for (auto it1 = list1.begin(); it1 != list1.end(); ++it1)
 	{
+		const auto& pt1 = it1->keypoint.pt;
+
 		copyInfoImage = infoimage;
 		copyjoinimage = joinimage;
+		copyjoinimage.line(pt1.x, 0, pt1.x, imH,
+						   TColor::green());  // Horiz
 		copyjoinimage.line(
-			(*it1)->x, 0, (*it1)->x, imH, TColor::green());  // Horiz
-		copyjoinimage.line(
-			(*it1)->x + imW, 0, (*it1)->x + imW, imH,
+			pt1.x + imW, 0, pt1.x + imW, imH,
 			TColor::green());  // Horiz
 		copyjoinimage.line(
-			0, (*it1)->y, imW + imW, (*it1)->y, TColor::green());  // Epipolar
+			0, pt1.y, imW + imW, pt1.y,
+			TColor::green());  // Epipolar
 		copyjoinimage.drawCircle(
-			(*it1)->x, (*it1)->y, 4, TColor::green(), 2);  // Keypoint
+			pt1.x, pt1.y, 4, TColor::green(),
+			2);  // Keypoint
 
-		copyInfoImage.update_patch((*it1)->patch, 0, 0);
+		copyInfoImage.update_patch(*it1->patch, 0, 0);
 		bool firstMatch = true;
 		int cnt = 0;
 		int px = 80;
@@ -353,15 +326,16 @@ void TestMatchingComparative()
 		float minsiftd = 1.0f, minsurfd = 1.0f;
 		int idxsad = 0, idxncc = 0, idxsiftd = 0, idxsurfd = 0;
 
-		for (it2 = list2.begin(); it2 != list2.end(); ++it2)
+		for (auto it2 = list2.begin(); it2 != list2.end(); ++it2)
 		{
-			if (fabs((*it1)->y - (*it2)->y) <= 1.0 && (*it1)->x > (*it2)->x)
+			const auto& pt2 = it2->keypoint.pt;
+
+			if (fabs(pt1.y - pt2.y) <= 1.0 && pt1.x > pt2.x)
 			{
 				// Compute matching with SAD and Correlation and SIFT/SURF?
 				// Use epipolar constraints
 				// Compute SAD
-				double sad =
-					mrpt::vision::computeSAD((*it1)->patch, (*it2)->patch);
+				double sad = mrpt::vision::computeSAD(*it1->patch, *it2->patch);
 				if (sad < minsad)
 				{
 					minsad = sad;
@@ -371,7 +345,7 @@ void TestMatchingComparative()
 				double ncc;
 				size_t u, v;
 				mrpt::vision::openCV_cross_correlation(
-					(*it1)->patch, (*it2)->patch, u, v, ncc);
+					*it1->patch, *it2->patch, u, v, ncc);
 				if (ncc > maxncc)
 				{
 					maxncc = ncc;
@@ -379,7 +353,7 @@ void TestMatchingComparative()
 				}
 
 				// Compute distance between descriptors SIFT
-				float siftd = (*it1)->descriptorSIFTDistanceTo(*(*it2));
+				float siftd = it1->descriptorSIFTDistanceTo(*it2);
 				if (siftd < minsiftd)
 				{
 					minsiftd = siftd;
@@ -387,7 +361,7 @@ void TestMatchingComparative()
 				}
 
 				// Compute distance between descriptors SIFT
-				float surfd = (*it1)->descriptorSURFDistanceTo(*(*it2));
+				float surfd = it1->descriptorSURFDistanceTo(*it2);
 				if (surfd < minsurfd)
 				{
 					minsurfd = surfd;
@@ -398,29 +372,29 @@ void TestMatchingComparative()
 				if (firstMatch)
 				{
 					copyjoinimage.line(
-						(*it1)->x + imW, 0, (*it1)->x + imW, imH,
+						pt1.x + imW, 0, pt1.x + imW, imH,
 						TColor::green());  // Limit line (only the first time)
 					firstMatch = false;
 				}  // end-if
 
 				copyjoinimage.drawCircle(
-					(*it2)->x + imW, (*it2)->y, 4, TColor::blue(),
+					pt2.x + imW, pt2.y, 4, TColor::blue(),
 					2);  // Keypoint
 				double rx0, rx1, ry0, ry1, tx, ty;
-				rx0 = (*it2)->x + imW - 15;
-				rx1 = (*it2)->x + imW;
-				tx = (*it2)->x + imW - 13;
+				rx0 = pt2.x + imW - 15;
+				rx1 = pt2.x + imW;
+				tx = pt2.x + imW - 13;
 				if (cnt % 2)
 				{
-					ry0 = (*it2)->y - 20;
-					ry1 = (*it2)->y - 10;
-					ty = (*it2)->y - 22;
+					ry0 = pt2.y - 20;
+					ry1 = pt2.y - 10;
+					ty = pt2.y - 22;
 				}
 				else
 				{
-					ry0 = (*it2)->y + 10;
-					ry1 = (*it2)->y + 20;
-					ty = (*it2)->y + 8;
+					ry0 = pt2.y + 10;
+					ry1 = pt2.y + 20;
+					ty = pt2.y + 8;
 				}
 				copyjoinimage.filledRectangle(
 					rx0, ry0, rx1, ry1, TColor(150, 150, 150));
@@ -430,7 +404,7 @@ void TestMatchingComparative()
 				px = 80 + cnt * 50;
 				if (px + fExt.options.patchSize > imW2) continue;
 
-				copyInfoImage.update_patch((*it2)->patch, px, 30);
+				copyInfoImage.update_patch(*it2->patch, px, 30);
 
 				copyInfoImage.textOut(
 					px, imH2 - 70, format("%d", cnt), TColor::blue());
@@ -626,7 +600,6 @@ int main(int argc, char** argv)
 		TestMatchFeatures();
 		// TestExtractFeatures();
 		// TestExtractFeaturesTile();
-		// TestTrackFeatures();
 		// TestMatchingComparative();
 		// TestORBTiled();
 

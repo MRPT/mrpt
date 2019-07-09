@@ -45,18 +45,18 @@ void COccupancyGridMapFeatureExtractor::uncached_extractFeatures(
 		fExt.computeDescriptors(img, lstFeatures, descriptors);
 
 	// Copy all the features to a map of landmarks:
-	for (auto& lstFeature : lstFeatures)
+	for (auto& ft : lstFeatures)
 	{
 		CLandmark lm;
-		lm.ID = lstFeature->ID;
+		lm.ID = ft.keypoint.ID;
 		lm.features.resize(1);
 
-		lm.features[0] = lstFeature;  // Insert the full feature there:
+		lm.features[0] = ft;  // Insert the full feature there:
 
 		lm.pose_mean.x =
-			grid.getXMin() + (lstFeature->x + 0.5f) * grid.getResolution();
+			grid.getXMin() + (ft.keypoint.pt.x + 0.5f) * grid.getResolution();
 		lm.pose_mean.y =
-			grid.getYMin() + (lstFeature->y + 0.5f) * grid.getResolution();
+			grid.getYMin() + (ft.keypoint.pt.y + 0.5f) * grid.getResolution();
 		lm.pose_mean.z = 0;
 
 		lm.pose_cov_11 = lm.pose_cov_22 = lm.pose_cov_33 =
