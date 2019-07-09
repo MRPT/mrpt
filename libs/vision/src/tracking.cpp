@@ -147,9 +147,9 @@ inline void trackFeatures_updatePatch<CFeatureList>(
 				const int offset = (int)patch_width / 2;  // + 1;
 				ft.patch.emplace();
 				cur_gray.extract_patch(
-				    *ft.patch, round(ft.keypoint.pt.x) - offset,
-				    round(ft.keypoint.pt.y) - offset, patch_width,
-				    patch_height);
+					*ft.patch, round(ft.keypoint.pt.x) - offset,
+					round(ft.keypoint.pt.y) - offset, patch_width,
+					patch_height);
 			}
 			catch (std::exception&)
 			{
@@ -231,8 +231,8 @@ inline void trackFeatures_addNewFeats<CFeatureList>(
 			{
 				ft.patch.emplace();
 				cur_gray.extract_patch(
-				    *ft.patch, round(feat.pt.x) - offset,
-				    round(feat.pt.y) - offset, patchSize, patchSize);
+					*ft.patch, round(feat.pt.x) - offset,
+					round(feat.pt.y) - offset, patchSize, patchSize);
 			}
 
 			featureList.emplace_back(std::move(ft));
@@ -660,13 +660,13 @@ void CGenericFeatureTracker::internal_trackFeatures(
 }  // end of CGenericFeatureTracker::trackFeatures
 
 void CGenericFeatureTracker::trackFeatures(
-    const CImage& old_img, const CImage& new_img, TKeyPointList& featureList)
+	const CImage& old_img, const CImage& new_img, TKeyPointList& featureList)
 {
 	internal_trackFeatures<TKeyPointList>(old_img, new_img, featureList);
 }
 
 void CGenericFeatureTracker::trackFeatures(
-    const CImage& old_img, const CImage& new_img, TKeyPointfList& featureList)
+	const CImage& old_img, const CImage& new_img, TKeyPointfList& featureList)
 {
 	internal_trackFeatures<TKeyPointfList>(old_img, new_img, featureList);
 }

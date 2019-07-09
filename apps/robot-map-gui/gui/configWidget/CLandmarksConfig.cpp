@@ -19,7 +19,8 @@ CLandmarksConfig::CLandmarksConfig()
 	: CBaseConfig(), m_ui(std::make_unique<Ui::CLandmarksConfig>())
 {
 	m_ui->setupUi(this);
-	m_ui->TKeyPointMethod->addItem("featNotDefined", TKeyPointMethod::featNotDefined);
+	m_ui->TKeyPointMethod->addItem(
+		"featNotDefined", TKeyPointMethod::featNotDefined);
 	m_ui->TKeyPointMethod->addItem("featKLT", TKeyPointMethod::featKLT);
 	m_ui->TKeyPointMethod->addItem("featHarris", TKeyPointMethod::featHarris);
 	m_ui->TKeyPointMethod->addItem("featSIFT", TKeyPointMethod::featSIFT);
@@ -27,8 +28,10 @@ CLandmarksConfig::CLandmarksConfig()
 	m_ui->TKeyPointMethod->addItem("featBeacon", TKeyPointMethod::featBeacon);
 	m_ui->TKeyPointMethod->addItem("featFAST", TKeyPointMethod::featFAST);
 	m_ui->TKeyPointMethod->addItem("featFASTER9", TKeyPointMethod::featFASTER9);
-	m_ui->TKeyPointMethod->addItem("featFASTER10", TKeyPointMethod::featFASTER10);
-	m_ui->TKeyPointMethod->addItem("featFASTER12", TKeyPointMethod::featFASTER12);
+	m_ui->TKeyPointMethod->addItem(
+		"featFASTER10", TKeyPointMethod::featFASTER10);
+	m_ui->TKeyPointMethod->addItem(
+		"featFASTER12", TKeyPointMethod::featFASTER12);
 	m_ui->TKeyPointMethod->addItem("featORB", TKeyPointMethod::featORB);
 
 	m_ui->implementation->addItem("LoweBinary", CFeatureExtraction::LoweBinary);
@@ -122,7 +125,8 @@ void CLandmarksConfig::updateConfiguration(
 	mapDefination->likelihoodOpts.GPSOrigin.min_sat = m_ui->min_sat->value();
 
 	mapDefination->likelihoodOpts.SIFT_feat_options.featsType =
-		static_cast<TKeyPointMethod>(m_ui->TKeyPointMethod->currentData().toInt());
+		static_cast<TKeyPointMethod>(
+			m_ui->TKeyPointMethod->currentData().toInt());
 	mapDefination->likelihoodOpts.SIFT_feat_options.patchSize =
 		m_ui->patchSize->value();
 

@@ -35,13 +35,13 @@ CArchive& operator>>(CArchive& in, std::optional<T>& obj)
 	in >> pref;
 	if (pref != "std::optional")
 		THROW_EXCEPTION(format(
-		"Error: serialized std::optional<%s>'s preamble is wrong: '%s'",
-		mrpt::typemeta::TTypeName<T>::get().c_str(),pref.c_str()));
+			"Error: serialized std::optional<%s>'s preamble is wrong: '%s'",
+			mrpt::typemeta::TTypeName<T>::get().c_str(), pref.c_str()));
 	in >> stored_T;
 	if (stored_T != std::string(mrpt::typemeta::TTypeName<T>::get().c_str()))
 		THROW_EXCEPTION(format(
-		"Error: serialized std::optional type %s != %s", stored_T.c_str(),
-		mrpt::typemeta::TTypeName<T>::get().c_str()));
+			"Error: serialized std::optional type %s != %s", stored_T.c_str(),
+			mrpt::typemeta::TTypeName<T>::get().c_str()));
 
 	bool has_value;
 	in >> has_value;
@@ -51,7 +51,8 @@ CArchive& operator>>(CArchive& in, std::optional<T>& obj)
 		in >> val;
 		obj = std::move(val);
 	}
-	else {
+	else
+	{
 		obj.reset();
 	}
 	return in;

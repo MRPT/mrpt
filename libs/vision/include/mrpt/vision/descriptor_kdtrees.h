@@ -71,7 +71,7 @@ struct TSIFTDescriptorsKDTreeIndex
 
 		nanoflann::KDTreeSingleIndexAdaptorParams params;
 		m_kdtree = new kdtree_t(
-		    m_feats[0].descriptors.SIFT->size() /* DIM */, m_adaptor, params);
+			m_feats[0].descriptors.SIFT->size() /* DIM */, m_adaptor, params);
 		m_kdtree->buildIndex();
 	}
 
@@ -129,7 +129,7 @@ struct TSURFDescriptorsKDTreeIndex
 
 		nanoflann::KDTreeSingleIndexAdaptorParams params;
 		m_kdtree = new kdtree_t(
-		    m_feats[0].descriptors.SIFT->size() /* DIM */, m_adaptor, params);
+			m_feats[0].descriptors.SIFT->size() /* DIM */, m_adaptor, params);
 		m_kdtree->buildIndex();
 	}
 

@@ -386,7 +386,7 @@ size_t vision::matchFeatures(
 					// Compute epipolar line Ax + By + C = 0
 					TLine2D epiLine;
 					TPoint2D oPoint(
-					    itList2->keypoint.pt.x, itList2->keypoint.pt.y);
+						itList2->keypoint.pt.x, itList2->keypoint.pt.y);
 
 					CMatrixDouble31 l, p;
 					p(0, 0) = itList1->keypoint.pt.x;
@@ -406,11 +406,11 @@ size_t vision::matchFeatures(
 			// Use epipolar restriction
 			bool c1 = options.useEpipolarRestriction
 						  ? fabs(d) < options.epipolar_TH
-			              : true;
+						  : true;
 			// Use x-coord restriction
 			bool c2 = options.useXRestriction
-			              ? itList1->keypoint.pt.x - itList2->keypoint.pt.x > 0
-			              : true;
+						  ? itList1->keypoint.pt.x - itList2->keypoint.pt.x > 0
+						  : true;
 
 			if (c1 && c2)
 			{
@@ -420,8 +420,8 @@ size_t vision::matchFeatures(
 					{
 						// Ensure that both features have SIFT descriptors
 						ASSERT_(
-						    itList1->descriptors.hasDescriptorSIFT() &&
-						    itList2->descriptors.hasDescriptorSIFT());
+							itList1->descriptors.hasDescriptorSIFT() &&
+							itList2->descriptors.hasDescriptorSIFT());
 
 						// Compute the Euclidean distance between descriptors
 						distDesc = itList1->descriptorSIFTDistanceTo(*itList2);
@@ -447,9 +447,9 @@ size_t vision::matchFeatures(
 
 						// Ensure that both features have patches
 						ASSERT_(
-						    itList1->patchSize > 0 && itList2->patchSize > 0);
+							itList1->patchSize > 0 && itList2->patchSize > 0);
 						vision::openCV_cross_correlation(
-						    *itList1->patch, *itList2->patch, u, v, res);
+							*itList1->patch, *itList2->patch, u, v, res);
 
 						// Search for the two maximum values
 						if (res > maxCC1)
@@ -469,8 +469,8 @@ size_t vision::matchFeatures(
 					{
 						// Ensure that both features have SURF descriptors
 						ASSERT_(
-						    itList1->descriptors.hasDescriptorSURF() &&
-						    itList2->descriptors.hasDescriptorSURF());
+							itList1->descriptors.hasDescriptorSURF() &&
+							itList2->descriptors.hasDescriptorSURF());
 
 						// Compute the Euclidean distance between descriptors
 						distDesc = itList1->descriptorSURFDistanceTo(*itList2);
@@ -493,8 +493,8 @@ size_t vision::matchFeatures(
 					{
 						// Ensure that both features have SURF descriptors
 						ASSERT_(
-						    itList1->descriptors.hasDescriptorORB() &&
-						    itList2->descriptors.hasDescriptorORB());
+							itList1->descriptors.hasDescriptorORB() &&
+							itList2->descriptors.hasDescriptorORB());
 						distDesc = itList1->descriptorORBDistanceTo(*itList2);
 
 						// Search for the two minimum values
@@ -515,16 +515,16 @@ size_t vision::matchFeatures(
 					{
 						// Ensure that both features have patches
 						ASSERT_(
-						    itList1->patchSize > 0 &&
-						    itList2->patchSize == itList1->patchSize);
+							itList1->patchSize > 0 &&
+							itList2->patchSize == itList1->patchSize);
 #if !MRPT_HAS_OPENCV
 						THROW_EXCEPTION(
 							"MRPT has been compiled without OpenCV");
 #else
 						const CImage aux1(
-						    *itList1->patch, FAST_REF_OR_CONVERT_TO_GRAY);
+							*itList1->patch, FAST_REF_OR_CONVERT_TO_GRAY);
 						const CImage aux2(
-						    *itList2->patch, FAST_REF_OR_CONVERT_TO_GRAY);
+							*itList2->patch, FAST_REF_OR_CONVERT_TO_GRAY);
 						const auto h = aux1.getHeight(), w = aux1.getWidth();
 
 						double res = 0;
@@ -760,8 +760,8 @@ void vision::addFeaturesToImage(
 	outImg = inImg;  // Create a copy of the input image
 	for (const auto& it : theList)
 		outImg.rectangle(
-		    it.keypoint.pt.x - 5, it.keypoint.pt.y - 5, it.keypoint.pt.x + 5,
-		    it.keypoint.pt.y + 5, TColor(255, 0, 0));
+			it.keypoint.pt.x - 5, it.keypoint.pt.y - 5, it.keypoint.pt.x + 5,
+			it.keypoint.pt.y + 5, TColor(255, 0, 0));
 }
 
 /*-------------------------------------------------------------
@@ -811,8 +811,8 @@ void vision::projectMatchedFeatures(
 					projectMatchedFeatures
 -------------------------------------------------------------*/
 void vision::projectMatchedFeature(
-    const CFeature& leftFeat, const CFeature& rightFeat, TPoint3D& p3D,
-    const TStereoSystemParams& params)
+	const CFeature& leftFeat, const CFeature& rightFeat, TPoint3D& p3D,
+	const TStereoSystemParams& params)
 {
 	const double f0 = 600;
 	double nfx1 = leftFeat.keypoint.pt.x, nfy1 = leftFeat.keypoint.pt.y,

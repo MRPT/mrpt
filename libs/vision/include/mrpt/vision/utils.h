@@ -251,7 +251,7 @@ void projectMatchedFeatures(
  * stereo pair.
  */
 void projectMatchedFeature(
-    const CFeature& leftFeat, const CFeature& rightFeat,
+	const CFeature& leftFeat, const CFeature& rightFeat,
 	mrpt::math::TPoint3D& p3D,
 	const TStereoSystemParams& params = TStereoSystemParams());
 

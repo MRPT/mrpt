@@ -50,7 +50,7 @@ double benchmark_detectFeatures(int N, [[maybe_unused]] int h)
 		getTestImage(0, img);                                               \
 		img = img.grayscale();                                              \
 		img.scaleImage(img, W, H, mrpt::img::IMG_INTERP_LINEAR);            \
-	    TKeyPointList corners;                                              \
+		TKeyPointList corners;                                              \
 		const int threshold = 20;                                           \
 		std::vector<size_t> feats_index_by_row;                             \
 		CTicTac tictac;                                                     \

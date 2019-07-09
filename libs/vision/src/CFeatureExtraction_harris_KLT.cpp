@@ -123,8 +123,8 @@ void CFeatureExtraction::extractFeaturesKLT(
 			{
 				ft.patch.emplace();
 				inImg.extract_patch(
-				    *ft.patch, round(ft.keypoint.pt.x) - offset,
-				    round(ft.keypoint.pt.y) - offset, options.patchSize,
+					*ft.patch, round(ft.keypoint.pt.x) - offset,
+					round(ft.keypoint.pt.y) - offset, options.patchSize,
 					options.patchSize);  // Image patch surronding the feature
 			}
 

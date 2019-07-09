@@ -107,8 +107,8 @@ void CFeatureExtraction::internal_computeSpinImageDescriptors(
 				}
 
 				const float pix_dist = hypot(
-				    in_feature.keypoint.pt.x - px,
-				    in_feature.keypoint.pt.y - py);
+					in_feature.keypoint.pt.x - px,
+					in_feature.keypoint.pt.y - py);
 				const int center_bin_dist = k_dis2idx * pix_dist;
 
 				// A factor to correct the histogram due to the existence of

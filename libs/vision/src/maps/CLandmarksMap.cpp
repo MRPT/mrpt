@@ -634,7 +634,7 @@ void CLandmarksMap::loadSiftFeaturesFromImageObservation(
 		// Find the 3D position from the pixels
 		//  coordinates and the camera intrinsic matrix:
 		mrpt::math::TPoint3D dir = vision::pixelTo3D(
-		    sift->keypoint.pt, obs.cameraParams.intrinsicParams);
+			sift->keypoint.pt, obs.cameraParams.intrinsicParams);
 
 		// Compute the mean and covariance of the landmark gaussian 3D position,
 		//  from the unitary direction vector and a given distance:
@@ -1128,9 +1128,9 @@ void CLandmarksMap::computeMatchingWith3DLandmarks(
 						if (thisIt->getType() == featSIFT &&
 							thisIt->features.size() ==
 								otherIt->features.size() &&
-						    !thisIt->features.empty() &&
-						    thisIt->features[0].descriptors.SIFT->size() ==
-						        otherIt->features[0].descriptors.SIFT->size())
+							!thisIt->features.empty() &&
+							thisIt->features[0].descriptors.SIFT->size() ==
+								otherIt->features[0].descriptors.SIFT->size())
 						{
 							// Compute "coincidence probability":
 							// --------------------------------------
@@ -1182,14 +1182,14 @@ void CLandmarksMap::computeMatchingWith3DLandmarks(
 								if (CLandmarksMap::_mEDD[mPair] == 0)
 								{
 									n = otherIt->features[0]
-									        .descriptors.SIFT->size();
+											.descriptors.SIFT->size();
 									desc = 0;
 									for (i = 0; i < n; i++)
 										desc += square(
-										    (*otherIt->features[0]
-										          .descriptors.SIFT)[i] -
-										    (*thisIt->features[0]
-										          .descriptors.SIFT)[i]);
+											(*otherIt->features[0]
+												  .descriptors.SIFT)[i] -
+											(*thisIt->features[0]
+												  .descriptors.SIFT)[i]);
 
 									CLandmarksMap::_mEDD[mPair] = desc;
 								}  // end if
@@ -1286,7 +1286,7 @@ void CLandmarksMap::computeMatchingWith3DLandmarks(
 			ASSERT_(!landmarks.begin()->features.empty());
 			unsigned int dLen = anotherMap->landmarks.begin()
 									->features[0]
-			                        .descriptors.SIFT->size();
+									.descriptors.SIFT->size();
 			for (k = 0, otherIt = anotherMap->landmarks.begin();
 				 otherIt != anotherMap->landmarks.end(); otherIt++, k++)
 			{
@@ -1299,8 +1299,8 @@ void CLandmarksMap::computeMatchingWith3DLandmarks(
 					double EDD = 0.0;
 					for (i = 0; i < dLen; i++)
 						EDD += square(
-						    (*otherIt->features[0].descriptors.SIFT)[i] -
-						    (*thisIt->features[0].descriptors.SIFT)[i]);
+							(*otherIt->features[0].descriptors.SIFT)[i] -
+							(*thisIt->features[0].descriptors.SIFT)[i]);
 
 					EDD = sqrt(EDD);
 
@@ -2037,17 +2037,17 @@ double CLandmarksMap::computeLikelihood_SIFT_LandmarkMap(
 										!lm1->features.empty() &&
 										!lm2->features.empty());
 									ASSERT_(
-									    lm1->features[0]
-									        .descriptors.SIFT->size() ==
+										lm1->features[0]
+											.descriptors.SIFT->size() ==
 										lm2->features[0]
-									        .descriptors.SIFT->size());
+											.descriptors.SIFT->size());
 
 									for (it1 = lm1->features[0]
-									               .descriptors.SIFT->begin(),
+												   .descriptors.SIFT->begin(),
 										it2 = lm2->features[0]
-									              .descriptors.SIFT->begin();
+												  .descriptors.SIFT->begin();
 										 it1 != lm1->features[0]
-									                .descriptors.SIFT->end();
+													.descriptors.SIFT->end();
 										 it1++, it2++)
 										distDesc += square(*it1 - *it2);
 
@@ -2648,20 +2648,20 @@ float CLandmarksMap::compute3DMatchingRatio(
 			{
 				// Now test the SIFT descriptors:
 				if (!itThis->features.empty() && !itOther->features.empty() &&
-				    itThis->features[0].descriptors.SIFT->size() ==
-				        itOther->features[0].descriptors.SIFT->size())
+					itThis->features[0].descriptors.SIFT->size() ==
+						itOther->features[0].descriptors.SIFT->size())
 				{
 					unsigned long descrDist = 0;
 					std::vector<unsigned char>::const_iterator it1, it2;
 					for (it1 = itThis->features[0].descriptors.SIFT->begin(),
-					    it2 = itOther->features[0].descriptors.SIFT->begin();
-					     it1 != itThis->features[0].descriptors.SIFT->end();
+						it2 = itOther->features[0].descriptors.SIFT->begin();
+						 it1 != itThis->features[0].descriptors.SIFT->end();
 						 it1++, it2++)
 						descrDist += square(*it1 - *it2);
 
 					float descrDist_f =
 						sqrt(static_cast<float>(descrDist)) /
-					    itThis->features[0].descriptors.SIFT->size();
+						itThis->features[0].descriptors.SIFT->size();
 
 					if (descrDist_f < 1.5f)
 					{
