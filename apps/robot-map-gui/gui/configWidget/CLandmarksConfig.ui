@@ -1061,7 +1061,7 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_20">
           <item>
-           <widget class="QComboBox" name="TFeatureType"/>
+           <widget class="QComboBox" name="TKeyPointMethod"/>
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_33">
