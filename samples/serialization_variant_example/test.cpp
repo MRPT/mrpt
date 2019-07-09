@@ -40,13 +40,16 @@ void thread_reader(CPipeReadEndPoint& read_pipe)
 		// *Note*: If the object class is known in advance, one can avoid smart
 		// pointers with ReadObject(&existingObj)
 		auto arch = archiveFrom(read_pipe);
-#ifndef HAS_BROKEN_CLANG_STD_VISIT
+#if !defined(HAS_BROKEN_CLANG_STD_VISIT)
 		auto doprint = [](auto& pose) { cout << "RX pose: " << pose << endl; };
 		auto var =
 			arch.ReadVariant<mrpt::poses::CPose2D, mrpt::poses::CPose3D>();
 		std::visit(doprint, var);
 		var = arch.ReadVariant<mrpt::poses::CPose2D, mrpt::poses::CPose3D>();
 		std::visit(doprint, var);
+#else
+		std::cout << "Code disabled for clang due to variant bug. See: "
+					 "https://stackoverflow.com/a/46507150/1631514\n";
 #endif
 
 		printf("[thread_reader] Finished.\n");
@@ -73,12 +76,13 @@ void thread_writer(CPipeWriteEndPoint& write_pipe)
 		// Send MRPT objects:
 		mrpt::poses::CPose3D pose1(1, 2, 3, 1.57, 3.14, 0);
 		mrpt::poses::CPose2D pose2(1.0, 2.0, 3.1415);
+
+#if !defined(HAS_BROKEN_CLANG_STD_VISIT)
 		std::variant<mrpt::poses::CPose3D, mrpt::poses::CPose2D> var1(
 			std::move(pose1));
 		std::variant<mrpt::poses::CPose3D, mrpt::poses::CPose2D> var2(
 			std::move(pose2));
 		auto arch = archiveFrom(write_pipe);
-#ifndef HAS_BROKEN_CLANG_STD_VISIT
 		arch.WriteVariant(var1);
 		arch.WriteVariant(var2);
 #endif
