@@ -110,7 +110,7 @@ cv::Mat Tracker::trackThemAll(
 
 	for (size_t i = 0; i < trackedFeats.size(); ++i)
 	{
-		TSimpleFeature& f = trackedFeats[i];
+		TKeyPoint& f = trackedFeats[i];
 
 		const TPixelCoordf pxRaw(f.pt.x, f.pt.y);
 		TPixelCoordf pxUndist;
@@ -155,7 +155,7 @@ cv::Mat Tracker::trackThemAll(
 		// cout << "tracked feats size" << trackedFeats.size() << endl;
 		for (size_t i = 0; i < trackedFeats.size(); ++i)
 		{
-			const TSimpleFeature& ft = trackedFeats[i];
+			const TKeyPoint& ft = trackedFeats[i];
 			std::list<TPixelCoord>& seq = feat_tracks[ft.ID];
 
 			// drawMarker(cvImg1, Point(trackedFeats.getFeatureX(i),

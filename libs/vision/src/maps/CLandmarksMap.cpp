@@ -110,9 +110,9 @@ mrpt::maps::CMetricMap* CLandmarksMap::internal_CreateFromMapDefinition(
 		CLandmark lm;
 
 		lm.createOneFeature();
-		lm.features[0]->type = featBeacon;
+		lm.features[0].type = featBeacon;
 
-		lm.features[0]->ID = initialBeacon.second;
+		lm.features[0].keypoint.ID = initialBeacon.second;
 		lm.ID = initialBeacon.second;
 
 		lm.pose_mean = initialBeacon.first;
@@ -141,33 +141,11 @@ std::map<
 	CLandmarksMap::_mEDD;
 mrpt::maps::CLandmark::TLandmarkID CLandmarksMap::_mapMaxID;
 bool CLandmarksMap::_maxIDUpdated = false;
-/*---------------------------------------------------------------
-						Constructor
-  ---------------------------------------------------------------*/
-CLandmarksMap::CLandmarksMap()
-	: landmarks(),
-	  insertionOptions(),
-	  likelihoodOptions(),
-	  insertionResults(),
-	  fuseOptions()
-{
-	landmarks.clear();
-	//_mEDD.clear();
-	//_mapMaxID = 0;
-}
 
-/*---------------------------------------------------------------
-						Destructor
-  ---------------------------------------------------------------*/
-CLandmarksMap::~CLandmarksMap() { landmarks.clear(); }
-/*---------------------------------------------------------------
-						clear
-  ---------------------------------------------------------------*/
 void CLandmarksMap::internal_clear() { landmarks.clear(); }
-/*---------------------------------------------------------------
-						getLandmarksCount
-  ---------------------------------------------------------------*/
+
 size_t CLandmarksMap::size() const { return landmarks.size(); }
+
 uint8_t CLandmarksMap::serializeGetVersion() const { return 0; }
 void CLandmarksMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
@@ -656,10 +634,7 @@ void CLandmarksMap::loadSiftFeaturesFromImageObservation(
 		// Find the 3D position from the pixels
 		//  coordinates and the camera intrinsic matrix:
 		mrpt::math::TPoint3D dir = vision::pixelTo3D(
-			TPixelCoordf((*sift)->x, (*sift)->y),
-			obs.cameraParams.intrinsicParams);  // dir = vision::pixelTo3D(
-		// sift->x,sift->y,
-		// obs.intrinsicParams );
+			sift->keypoint.pt, obs.cameraParams.intrinsicParams);
 
 		// Compute the mean and covariance of the landmark gaussian 3D position,
 		//  from the unitary direction vector and a given distance:
@@ -1147,29 +1122,15 @@ void CLandmarksMap::computeMatchingWith3DLandmarks(
 					maxLik = -1;
 					maxIdx = -1;
 
-					/*
-					// Get the list of close landmarks:
-					// ---------------------------------------------
-					int	cx0 = gridLandmarks->x2idx( otherIt->pose_mean.x,
-					otherIt->pose_mean.y );
-					int	cx0 = gridLandmarks->x2idx( otherIt->pose_mean.x,
-					otherIt->pose_mean.y );
-
-					closeLandmarksList.clear();
-					closeLandmarksList.reserve(300);
-					...
-					*/
-
 					for (j = 0, thisIt = landmarks.begin();
 						 thisIt != landmarks.end(); thisIt++, j++)
 					{
 						if (thisIt->getType() == featSIFT &&
 							thisIt->features.size() ==
 								otherIt->features.size() &&
-							!thisIt->features.empty() && thisIt->features[0] &&
-							otherIt->features[0] &&
-							thisIt->features[0]->descriptors.SIFT.size() ==
-								otherIt->features[0]->descriptors.SIFT.size())
+							!thisIt->features.empty() &&
+							thisIt->features[0].descriptors.SIFT->size() ==
+								otherIt->features[0].descriptors.SIFT->size())
 						{
 							// Compute "coincidence probability":
 							// --------------------------------------
@@ -1221,29 +1182,20 @@ void CLandmarksMap::computeMatchingWith3DLandmarks(
 								if (CLandmarksMap::_mEDD[mPair] == 0)
 								{
 									n = otherIt->features[0]
-											->descriptors.SIFT.size();
+											.descriptors.SIFT->size();
 									desc = 0;
 									for (i = 0; i < n; i++)
 										desc += square(
-											otherIt->features[0]
-												->descriptors.SIFT[i] -
-											thisIt->features[0]
-												->descriptors.SIFT[i]);
+											(*otherIt->features[0]
+												  .descriptors.SIFT)[i] -
+											(*thisIt->features[0]
+												  .descriptors.SIFT)[i]);
 
 									CLandmarksMap::_mEDD[mPair] = desc;
-									// std::cout << "[fuseWith] - Nueva entrada!
-									// - (LIK): " << exp( K_desc * desc ) << "
-									// -> " << "(" << mPair.first << "," <<
-									// mPair.second << ")" << std::endl;
-
 								}  // end if
 								else
 								{
 									desc = CLandmarksMap::_mEDD[mPair];
-									// std::cout << "[fuseWith] - Ya esta
-									// calculado!: " << "(" << mPair.first <<
-									// "," << mPair.second << ")"  << ": " <<
-									// desc << std::endl;
 								}
 
 								lik_desc = exp(K_desc * desc);  // Likelihood
@@ -1282,9 +1234,6 @@ void CLandmarksMap::computeMatchingWith3DLandmarks(
 					// Is it a correspondence?
 					if (maxLik > insertionOptions.SiftLikelihoodThreshold)
 					{
-						// TODO: Solve in a better way the multiple
-						// correspondences case!!!
-						// ****************************************************************
 						// If a previous correspondence for this LM was found,
 						// discard this one!
 						if (!thisLandmarkAssigned[maxIdx])
@@ -1337,7 +1286,7 @@ void CLandmarksMap::computeMatchingWith3DLandmarks(
 			ASSERT_(!landmarks.begin()->features.empty());
 			unsigned int dLen = anotherMap->landmarks.begin()
 									->features[0]
-									->descriptors.SIFT.size();
+									.descriptors.SIFT->size();
 			for (k = 0, otherIt = anotherMap->landmarks.begin();
 				 otherIt != anotherMap->landmarks.end(); otherIt++, k++)
 			{
@@ -1350,8 +1299,8 @@ void CLandmarksMap::computeMatchingWith3DLandmarks(
 					double EDD = 0.0;
 					for (i = 0; i < dLen; i++)
 						EDD += square(
-							otherIt->features[0]->descriptors.SIFT[i] -
-							thisIt->features[0]->descriptors.SIFT[i]);
+							(*otherIt->features[0].descriptors.SIFT)[i] -
+							(*thisIt->features[0].descriptors.SIFT)[i]);
 
 					EDD = sqrt(EDD);
 
@@ -1420,7 +1369,7 @@ bool CLandmarksMap::saveToTextFile(std::string file)
 
 	// os::fprintf(f,"%% Map of landmarks - file dumped by
 	// mrpt::maps::CLandmarksMap\n");
-	// os::fprintf(f,"%%  Columns are: X Y Z TYPE(TFeatureType) TIMES_SEEN
+	// os::fprintf(f,"%%  Columns are: X Y Z TYPE(TKeyPointMethod) TIMES_SEEN
 	// TIME_OF_LAST_OBSERVATION [SIFT DESCRIPTOR] ID\n");
 	// os::fprintf(f,"%%
 	// -----------------------------------------------------------------------------------------------------\n");
@@ -1438,8 +1387,8 @@ bool CLandmarksMap::saveToTextFile(std::string file)
 
 		if (it->getType() == featSIFT)
 		{
-			ASSERT_(!it->features.empty() && it->features[0]);
-			for (unsigned char i : it->features[0]->descriptors.SIFT)
+			ASSERT_(!it->features.empty());
+			for (unsigned char i : *it->features[0].descriptors.SIFT)
 				os::fprintf(f, " %u ", i);
 		}
 		os::fprintf(f, " %i ", (int)it->ID);
@@ -1651,15 +1600,15 @@ void CLandmarksMap::loadOccupancyFeaturesFrom2DRangeScan(
 			newLandmark.seenTimesCount = 1;
 
 			newLandmark.createOneFeature();
-			newLandmark.features[0]->type = featNotDefined;
+			newLandmark.features[0].type = featNotDefined;
 
 			d = obs.scan[i];
 
 			// Compute the landmark in 2D:
 			// -----------------------------------------------
 			// Descriptor:
-			newLandmark.features[0]->orientation = Th;
-			newLandmark.features[0]->scale = d;
+			newLandmark.features[0].orientation = Th;
+			newLandmark.features[0].keypoint.octave = d;
 
 			// Mean:
 			newLandmark.pose_mean.x = (cos(Th) * d);
@@ -1807,13 +1756,13 @@ double CLandmarksMap::computeLikelihood_RSLC_2007(
 			//os::fprintf(f,"\n INDIV LIK=%e\n lik=%e\n
 		closestObstacleInLine=%e\n measured
 		range=%e\n",indivLik,lik,closestObstacleInLine,
-		itOther->descriptors.SIFT[1]);
+		itOther.descriptors.SIFT[1]);
 			//os::fprintf(f,"
 		closestObstacleDirection=%e\n",closestObstacleDirection);
 			//os::fclose(f);
 
 			printf("\n lik=%e\n closestObstacleInLine=%e\n measured
-		range=%e\n",lik,closestObstacleInLine, itOther->descriptors.SIFT[1]);
+		range=%e\n",lik,closestObstacleInLine, itOther.descriptors.SIFT[1]);
 			if (itClosest)
 					printf(" closest=(%.03f,%.03f)\n", itClosest->pose_mean.x,
 		itClosest->pose_mean.y);
@@ -2088,19 +2037,17 @@ double CLandmarksMap::computeLikelihood_SIFT_LandmarkMap(
 										!lm1->features.empty() &&
 										!lm2->features.empty());
 									ASSERT_(
-										lm1->features[0] && lm2->features[0]);
-									ASSERT_(
 										lm1->features[0]
-											->descriptors.SIFT.size() ==
+											.descriptors.SIFT->size() ==
 										lm2->features[0]
-											->descriptors.SIFT.size());
+											.descriptors.SIFT->size());
 
 									for (it1 = lm1->features[0]
-												   ->descriptors.SIFT.begin(),
+												   .descriptors.SIFT->begin(),
 										it2 = lm2->features[0]
-												  ->descriptors.SIFT.begin();
+												  .descriptors.SIFT->begin();
 										 it1 != lm1->features[0]
-													->descriptors.SIFT.end();
+													.descriptors.SIFT->end();
 										 it1++, it2++)
 										distDesc += square(*it1 - *it2);
 
@@ -2701,20 +2648,20 @@ float CLandmarksMap::compute3DMatchingRatio(
 			{
 				// Now test the SIFT descriptors:
 				if (!itThis->features.empty() && !itOther->features.empty() &&
-					itThis->features[0]->descriptors.SIFT.size() ==
-						itOther->features[0]->descriptors.SIFT.size())
+					itThis->features[0].descriptors.SIFT->size() ==
+						itOther->features[0].descriptors.SIFT->size())
 				{
 					unsigned long descrDist = 0;
 					std::vector<unsigned char>::const_iterator it1, it2;
-					for (it1 = itThis->features[0]->descriptors.SIFT.begin(),
-						it2 = itOther->features[0]->descriptors.SIFT.begin();
-						 it1 != itThis->features[0]->descriptors.SIFT.end();
+					for (it1 = itThis->features[0].descriptors.SIFT->begin(),
+						it2 = itOther->features[0].descriptors.SIFT->begin();
+						 it1 != itThis->features[0].descriptors.SIFT->end();
 						 it1++, it2++)
 						descrDist += square(*it1 - *it2);
 
 					float descrDist_f =
 						sqrt(static_cast<float>(descrDist)) /
-						itThis->features[0]->descriptors.SIFT.size();
+						itThis->features[0].descriptors.SIFT->size();
 
 					if (descrDist_f < 1.5f)
 					{
@@ -2737,18 +2684,8 @@ float CLandmarksMap::compute3DMatchingRatio(
  ---------------------------------------------------------------*/
 void CLandmarksMap::auxParticleFilterCleanUp()
 {
-	// std::cout << "mEDD:" << std::endl;
-	// std::cout << "-----------------------" << std::endl;
-	// std::map<std::pair<mrpt::maps::CLandmark::TLandmarkID,
-	// mrpt::maps::CLandmark::TLandmarkID>, unsigned long>::iterator itmEDD;
-	// for(itmEDD = CLandmarksMap::_mEDD.begin(); itmEDD !=
-	// CLandmarksMap::_mEDD.end(); itmEDD++)
-	//	std::cout << "(" << itmEDD->first.first << "," << itmEDD->first.second
-	//<< ")"  << ": " << itmEDD->second << std::endl;
-
-	CLandmarksMap::_mEDD.clear();
-	CLandmarksMap::_maxIDUpdated = false;
-	// TODO: Paco...
+	_mEDD.clear();
+	_maxIDUpdated = false;
 }
 
 /*---------------------------------------------------------------

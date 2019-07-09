@@ -322,11 +322,12 @@ class MainWindow : public QMainWindow
 	/// main Feature Extraction params
 	CFeatureExtraction fext;  //!< CFeatureExtraction object to hold/store all
 	//! parameters for detectors/descriptors
-	CFeatureList featsImage1,
-		featsImage2;  //!< stores the features in image 1 and 2
-	CImage img1, img2;  //!< stores image 1 and 2
-	TDescriptorType
-		desc_to_compute;  //!< stores the type of the descriptor to be computed
+	// stores the features in image 1 and 2
+	CFeatureList featsImage1, featsImage2;
+	// stores image 1 and 2
+	CImage img1, img2;
+	// stores the type of the descriptor to be computed
+	TDescriptorType desc_to_compute;
 
 	int numFeats;  //!< stores the number of features to be computed
 

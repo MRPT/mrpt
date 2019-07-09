@@ -32,7 +32,7 @@ class dls
    public:
 	//! Constructor for DLS class
 	dls(const cv::Mat& opoints, const cv::Mat& ipoints);
-	~dls();
+	~dls() = default;
 
 	//! OpenCV function for computing pose
 	bool compute_pose(cv::Mat& R, cv::Mat& t);

@@ -208,80 +208,6 @@ CMatrixDouble33 vision::defaultIntrinsicParamsMatrix(
 }
 
 /*-------------------------------------------------------------
-					deleteRepeatedFeats
--------------------------------------------------------------*/
-void vision::deleteRepeatedFeats(CFeatureList& feat_list)
-{
-	CFeatureList::iterator itList1, itList2;
-	float lx = 0.0, ly = 0.0;
-
-	// Look for repeated features in the feat_list of features
-	for (itList1 = feat_list.begin(); itList1 != feat_list.end(); itList1++)
-	{
-		lx = (*itList1)->x;
-		ly = (*itList1)->y;
-		for (itList2 = itList1; itList2 != feat_list.end(); itList2++)
-		{
-			if ((lx == (*itList2)->x && ly == (*itList2)->y) &&
-				((*itList2)->x > 0.0f && (*itList2)->y > 0.0f))
-			{
-				(*itList2)->x = -1.0f;
-				(*itList2)->y = -1.0f;
-			}  // end if
-		}  // end for
-	}  // end for
-
-	// Delete the repeated features
-	for (itList1 = feat_list.begin(); itList1 != feat_list.end();)
-	{
-		if ((*itList1)->x == -1.0f && (*itList1)->y == -1.0f)
-			itList1 = feat_list.erase(itList1);
-		else
-			itList1++;
-	}  // end for
-}  // end deleteRepeatedFeats
-
-/*------------------------------------------------------------
-					rowChecking
--------------------------------------------------------------*/
-void vision::rowChecking(
-	CFeatureList& leftList, CFeatureList& rightList, float threshold)
-{
-	ASSERT_(leftList.size() == rightList.size());
-
-	// By now: row checking -> Delete bad correspondences
-	std::cout << std::endl
-			  << "[ROW CHECKING]------------------------------------------"
-			  << std::endl;
-
-	CFeatureList::iterator itLeft, itRight;
-	for (itLeft = leftList.begin(), itRight = rightList.begin();
-		 itLeft != leftList.end();)
-	{
-		if ((*itLeft)->x < 0 || (*itLeft)->y < 0 || (*itRight)->x < 0 ||
-			(*itRight)->y < 0 || fabs((*itLeft)->y - (*itRight)->y) > threshold)
-		{
-			std::cout << "[Erased Feature] Row Dif: "
-					  << fabs((*itLeft)->y - (*itRight)->y) << std::endl;
-			itLeft = leftList.erase(itLeft);
-			itRight = rightList.erase(itRight);
-		}  // end if
-		else
-		{
-			itLeft++;
-			itRight++;
-		}
-	}  // end for
-
-	std::cout << "------------------------------------------" << std::endl;
-
-	std::cout << "Tracked features: " << leftList.size() << " and "
-			  << rightList.size() << std::endl;
-	ASSERT_(leftList.size() == rightList.size());
-
-}  // end rowChecking
-
-/*-------------------------------------------------------------
 						computeMsd
 -------------------------------------------------------------*/
 double vision::computeMsd(
@@ -452,18 +378,19 @@ size_t vision::matchFeatures(
 			if (options.useEpipolarRestriction)
 			{
 				if (options.parallelOpticalAxis)
-					d = (*itList1)->y - (*itList2)->y;
+					d = itList1->keypoint.pt.y - itList2->keypoint.pt.y;
 				else
 				{
 					ASSERT_(options.hasFundamentalMatrix);
 
 					// Compute epipolar line Ax + By + C = 0
 					TLine2D epiLine;
-					TPoint2D oPoint((*itList2)->x, (*itList2)->y);
+					TPoint2D oPoint(
+						itList2->keypoint.pt.x, itList2->keypoint.pt.y);
 
 					CMatrixDouble31 l, p;
-					p(0, 0) = (*itList1)->x;
-					p(1, 0) = (*itList1)->y;
+					p(0, 0) = itList1->keypoint.pt.x;
+					p(1, 0) = itList1->keypoint.pt.y;
 					p(2, 0) = 1;
 
 					l = params.F * p;
@@ -476,12 +403,14 @@ size_t vision::matchFeatures(
 				}  // end else
 			}  // end if
 
+			// Use epipolar restriction
 			bool c1 = options.useEpipolarRestriction
 						  ? fabs(d) < options.epipolar_TH
-						  : true;  // Use epipolar restriction
+						  : true;
+			// Use x-coord restriction
 			bool c2 = options.useXRestriction
-						  ? ((*itList1)->x - (*itList2)->x) > 0
-						  : true;  // Use x-coord restriction
+						  ? itList1->keypoint.pt.x - itList2->keypoint.pt.x > 0
+						  : true;
 
 			if (c1 && c2)
 			{
@@ -491,12 +420,11 @@ size_t vision::matchFeatures(
 					{
 						// Ensure that both features have SIFT descriptors
 						ASSERT_(
-							(*itList1)->descriptors.hasDescriptorSIFT() &&
-							(*itList2)->descriptors.hasDescriptorSIFT());
+							itList1->descriptors.hasDescriptorSIFT() &&
+							itList2->descriptors.hasDescriptorSIFT());
 
 						// Compute the Euclidean distance between descriptors
-						distDesc =
-							(*itList1)->descriptorSIFTDistanceTo(*(*itList2));
+						distDesc = itList1->descriptorSIFTDistanceTo(*itList2);
 
 						// Search for the two minimum values
 						if (distDesc < minDist1)
@@ -519,10 +447,9 @@ size_t vision::matchFeatures(
 
 						// Ensure that both features have patches
 						ASSERT_(
-							(*itList1)->patchSize > 0 &&
-							(*itList2)->patchSize > 0);
+							itList1->patchSize > 0 && itList2->patchSize > 0);
 						vision::openCV_cross_correlation(
-							(*itList1)->patch, (*itList2)->patch, u, v, res);
+							*itList1->patch, *itList2->patch, u, v, res);
 
 						// Search for the two maximum values
 						if (res > maxCC1)
@@ -542,12 +469,11 @@ size_t vision::matchFeatures(
 					{
 						// Ensure that both features have SURF descriptors
 						ASSERT_(
-							(*itList1)->descriptors.hasDescriptorSURF() &&
-							(*itList2)->descriptors.hasDescriptorSURF());
+							itList1->descriptors.hasDescriptorSURF() &&
+							itList2->descriptors.hasDescriptorSURF());
 
 						// Compute the Euclidean distance between descriptors
-						distDesc =
-							(*itList1)->descriptorSURFDistanceTo(*(*itList2));
+						distDesc = itList1->descriptorSURFDistanceTo(*itList2);
 
 						// Search for the two minimum values
 						if (distDesc < minDist1)
@@ -567,10 +493,9 @@ size_t vision::matchFeatures(
 					{
 						// Ensure that both features have SURF descriptors
 						ASSERT_(
-							(*itList1)->descriptors.hasDescriptorORB() &&
-							(*itList2)->descriptors.hasDescriptorORB());
-						distDesc =
-							(*itList1)->descriptorORBDistanceTo(*(*itList2));
+							itList1->descriptors.hasDescriptorORB() &&
+							itList2->descriptors.hasDescriptorORB());
+						distDesc = itList1->descriptorORBDistanceTo(*itList2);
 
 						// Search for the two minimum values
 						if (distDesc < minDist1)
@@ -590,16 +515,16 @@ size_t vision::matchFeatures(
 					{
 						// Ensure that both features have patches
 						ASSERT_(
-							(*itList1)->patchSize > 0 &&
-							(*itList2)->patchSize == (*itList1)->patchSize);
+							itList1->patchSize > 0 &&
+							itList2->patchSize == itList1->patchSize);
 #if !MRPT_HAS_OPENCV
 						THROW_EXCEPTION(
 							"MRPT has been compiled without OpenCV");
 #else
 						const CImage aux1(
-							(*itList1)->patch, FAST_REF_OR_CONVERT_TO_GRAY);
+							*itList1->patch, FAST_REF_OR_CONVERT_TO_GRAY);
 						const CImage aux2(
-							(*itList2)->patch, FAST_REF_OR_CONVERT_TO_GRAY);
+							*itList2->patch, FAST_REF_OR_CONVERT_TO_GRAY);
 						const auto h = aux1.getHeight(), w = aux1.getWidth();
 
 						double res = 0;
@@ -707,7 +632,7 @@ size_t vision::matchFeatures(
 	{
 		if (idxLeftList[vCnt] != FEAT_FREE)
 		{
-			std::pair<CFeature::Ptr, CFeature::Ptr> thisMatch;
+			std::pair<CFeature, CFeature> thisMatch;
 
 			bool isGood = true;
 			double dp1 = -1.0, dp2 = -1.0;
@@ -735,26 +660,26 @@ size_t vision::matchFeatures(
 				// Update the max ID value
 				if (matches.empty())
 				{
-					idLeft = thisMatch.first->ID;
-					idRight = thisMatch.second->ID;
+					idLeft = thisMatch.first.keypoint.ID;
+					idRight = thisMatch.second.keypoint.ID;
 				}
 				else
 				{
-					keep_max(idLeft, thisMatch.first->ID);
+					keep_max(idLeft, thisMatch.first.keypoint.ID);
 					matches.setLeftMaxID(idLeft);
 
-					keep_max(idRight, thisMatch.second->ID);
+					keep_max(idRight, thisMatch.second.keypoint.ID);
 					matches.setRightMaxID(idRight);
 				}
 
 				// Set the depth and the 3D position of the feature
 				if (options.estimateDepth && options.parallelOpticalAxis)
 				{
-					thisMatch.first->initialDepth = dp1;
-					thisMatch.first->p3D = p3D;
+					thisMatch.first.initialDepth = dp1;
+					thisMatch.first.p3D = p3D;
 
-					thisMatch.second->initialDepth = dp2;
-					thisMatch.second->p3D =
+					thisMatch.second.initialDepth = dp2;
+					thisMatch.second.p3D =
 						TPoint3D(p3D.x - params.baseline, p3D.y, p3D.z);
 				}  // end-if
 
@@ -791,8 +716,8 @@ void vision::generateMask(
 		for (int ii = -hwsize; ii < hwsize; ++ii)
 			for (int jj = -hwsize; jj < hwsize; ++jj)
 			{
-				idx = (int)(it->first->x) + ii;
-				idy = (int)(it->first->y) + jj;
+				idx = (int)(it->first.keypoint.pt.x) + ii;
+				idy = (int)(it->first.keypoint.pt.y) + jj;
 				if (idx >= 0 && idy >= 0 && idx < mx && idy < my)
 					mask1(idy, idx) = false;
 			}
@@ -800,8 +725,8 @@ void vision::generateMask(
 		for (int ii = -hwsize; ii < hwsize; ++ii)
 			for (int jj = -hwsize; jj < hwsize; ++jj)
 			{
-				idx = (int)(it->second->x) + ii;
-				idy = (int)(it->second->y) + jj;
+				idx = (int)(it->second.keypoint.pt.x) + ii;
+				idy = (int)(it->second.keypoint.pt.y) + jj;
 				if (idx >= 0 && idy >= 0 && idx < mx && idy < my)
 					mask2(idy, idx) = false;
 			}
@@ -835,7 +760,8 @@ void vision::addFeaturesToImage(
 	outImg = inImg;  // Create a copy of the input image
 	for (const auto& it : theList)
 		outImg.rectangle(
-			it->x - 5, it->y - 5, it->x + 5, it->y + 5, TColor(255, 0, 0));
+			it.keypoint.pt.x - 5, it.keypoint.pt.y - 5, it.keypoint.pt.x + 5,
+			it.keypoint.pt.y + 5, TColor(255, 0, 0));
 }
 
 /*-------------------------------------------------------------
@@ -847,17 +773,20 @@ void vision::projectMatchedFeatures(
 {
 	out_points.clear();
 	out_points.reserve(matches.size());
-	for (const auto& matche : matches)
+	for (const auto& match : matches)
 	{
-		const double disp = matche.first->x - matche.second->x;
+		const auto& pt1 = match.first.keypoint.pt;
+		const auto& pt2 = match.second.keypoint.pt;
+
+		const double disp = pt1.x - pt2.x;
 		if (disp < 1) continue;
 
 		const double b_d = stereo_camera.rightCameraPose.x / disp;
 		out_points.emplace_back(
-			(matche.first->x - stereo_camera.leftCamera.cx()) * b_d,
-			(matche.first->y - stereo_camera.leftCamera.cy()) * b_d,
+			(pt1.x - stereo_camera.leftCamera.cx()) * b_d,
+			(pt1.y - stereo_camera.leftCamera.cy()) * b_d,
 			stereo_camera.leftCamera.fx() * b_d);
-	}  // end-for
+	}
 }
 /*-------------------------------------------------------------
 					projectMatchedFeatures
@@ -882,29 +811,17 @@ void vision::projectMatchedFeatures(
 					projectMatchedFeatures
 -------------------------------------------------------------*/
 void vision::projectMatchedFeature(
-	const CFeature::Ptr& leftFeat, const CFeature::Ptr& rightFeat,
-	TPoint3D& p3D, const TStereoSystemParams& params)
+	const CFeature& leftFeat, const CFeature& rightFeat, TPoint3D& p3D,
+	const TStereoSystemParams& params)
 {
-	//    double disp2 = leftFeat->x-rightFeat->x;
-	//	double aux2  = params.baseline/disp2;
-	//	p3D.x = (leftFeat->x-params.K(0,2))*aux2;
-	//	p3D.y = (leftFeat->y-params.K(1,2))*aux2;
-	//	p3D.z = params.K(0,0)*aux2;
-	//	cout << "Params: BS: " << params.baseline << " CX: " << params.K(0,2) <<
-	//" CY: " << params.K(1,2) << " FX: " << params.K(0,0) << endl;
-	//    cout << "Input: " << leftFeat->x << "," << leftFeat->y << endl;
-	//	cout << "Disp: " << disp2 << endl;
-	//	cout << p3D << endl;
-	//	return;
-
 	const double f0 = 600;
-	double nfx1 = leftFeat->x, nfy1 = leftFeat->y,
-		   nfx2 = rightFeat->x;  // nfy2 = rightFeat->y;
+	double nfx1 = leftFeat.keypoint.pt.x, nfy1 = leftFeat.keypoint.pt.y,
+		   nfx2 = rightFeat.keypoint.pt.x, nfy2 = rightFeat.keypoint.pt.y;
 
-	const double x = leftFeat->x * f0;  // x  = (x  / f0) * f0   x  = x
-	const double y = leftFeat->y * f0;  // y  = (y  / f0) * f0   y  = y
-	const double xd = rightFeat->x * f0;  // x' = (x' / f0) * f0   x' = x'
-	const double yd = rightFeat->y * f0;  // y' = (y' / f0) * f0   y' = y'
+	const double x = nfx1 * f0;  // x  = (x  / f0) * f0   x  = x
+	const double y = nfy1 * f0;  // y  = (y  / f0) * f0   y  = y
+	const double xd = nfx2 * f0;  // x' = (x' / f0) * f0   x' = x'
+	const double yd = nfy2 * f0;  // y' = (y' / f0) * f0   y' = y'
 
 	const double f2 = f0 * f0;
 	const double p9 = f2 * params.F(2, 2);
@@ -1013,327 +930,317 @@ void vision::projectMatchedFeatures(
 
 	landmarks.clear();  // Assert that the output CLandmarksMap is clear
 
-	CMatchedFeatureList::iterator itList;
 	float stdPixel2 = square(param.stdPixel);
 	float stdDisp2 = square(param.stdDisp);
 
 	// Main loop
-	for (itList = mfList.begin(); itList != mfList.end();)
+	for (auto itList = mfList.begin(); itList != mfList.end();)
 	{
-		float disp = (itList->first->x - itList->second->x);  // Disparity
-		if (disp < 1e-9)  // Filter out too far points
-			itList = mfList.erase(
-				itList);  // Erase the match : itList = mfList.erase( itList );
+		const auto& pt1 = itList->first.keypoint.pt;
+		const auto& pt2 = itList->second.keypoint.pt;
 
-		else  // This
+		const float disp = pt1.x - pt2.x;  // Disparity
+		if (disp < 1e-9)
 		{
-			// Too much distant features are not taken into account
-			float x3D =
-				(itList->first->x - param.K(0, 2)) * ((param.baseline)) / disp;
-			float y3D =
-				(itList->first->y - param.K(1, 2)) * ((param.baseline)) / disp;
-			float z3D = (param.K(0, 0)) * ((param.baseline)) / disp;
+			// Filter out too far points
+			// Erase the match
+			itList = mfList.erase(itList);
+			continue;
+		}
 
-			// Filter out bad points
-			if ((z3D < param.minZ) || (z3D > param.maxZ))
-				itList = mfList.erase(itList);  // Erase the match : itList =
-			// mfList.erase( itList );
-			else
+		float x3D = (pt1.x - param.K(0, 2)) * ((param.baseline)) / disp;
+		float y3D = (pt1.y - param.K(1, 2)) * ((param.baseline)) / disp;
+		float z3D = (param.K(0, 0)) * ((param.baseline)) / disp;
+
+		// Filter out bad points
+		if ((z3D < param.minZ) || (z3D > param.maxZ))
+		{
+			itList = mfList.erase(itList);
+		}
+		else
+		{
+			TPoint3D p3D(x3D, y3D, z3D);
+
+			// STORE THE OBTAINED LANDMARK
+			CLandmark lm;
+
+			TPoint3D norm3D = p3D;
+			norm3D *= -1 / norm3D.norm();
+
+			lm.normal = norm3D;
+			lm.pose_mean = p3D;
+			lm.ID = itList->first.keypoint.ID;
+
+			// If the matched landmarks has a (SIFT or SURF) descriptor,
+			// asign the left one to the landmark.
+			// TO DO: Assign the mean value of the descriptor (between the
+			// matches)
+			lm.features.resize(1);
+			lm.features[0] = (*itList).first;
+
+			// Compute the covariance matrix for the landmark
+			switch (param.uncPropagation)
 			{
-				TPoint3D p3D(x3D, y3D, z3D);
-
-				// STORE THE OBTAINED LANDMARK
-				CLandmark lm;
-
-				TPoint3D norm3D = p3D;
-				norm3D *= -1 / norm3D.norm();
-
-				lm.normal = norm3D;
-				lm.pose_mean = p3D;
-				lm.ID = itList->first->ID;
-
-				// If the matched landmarks has a (SIFT or SURF) descriptor,
-				// asign the left one to the landmark.
-				// TO DO: Assign the mean value of the descriptor (between the
-				// matches)
-				lm.features.resize(1);
-				lm.features[0] = (*itList).first;
-
-				// Compute the covariance matrix for the landmark
-				switch (param.uncPropagation)
+				case TStereoSystemParams::Prop_Linear:
 				{
-					case TStereoSystemParams::Prop_Linear:
+					float foc2 = square(param.K(0, 0));
+					float c0 = param.K(0, 2);
+					float r0 = param.K(1, 2);
+					float base2 = square(param.baseline);
+					float disp2 = square(disp);
+
+					lm.pose_cov_11 =
+						stdPixel2 * base2 / disp2 +
+						stdDisp2 * base2 * square(pt1.x - c0) / square(disp2);
+					lm.pose_cov_12 = stdDisp2 * base2 * (pt1.x - c0) *
+									 (pt1.y - r0) / square(disp2);
+					lm.pose_cov_13 = stdDisp2 * base2 * sqrt(foc2) *
+									 (pt1.x - c0) / square(disp2);
+					lm.pose_cov_22 =
+						stdPixel2 * base2 / disp2 +
+						stdDisp2 * base2 * square(pt1.y - r0) / square(disp2);
+					lm.pose_cov_23 = stdDisp2 * base2 * sqrt(foc2) *
+									 (pt1.y - r0) / square(disp2);
+					lm.pose_cov_33 = stdDisp2 * foc2 * base2 / square(disp2);
+				}  // end case 'Prop_Linear'
+				break;
+
+				case TStereoSystemParams::Prop_UT:
+				{
+					// Parameters
+					unsigned int Na = 3;
+					unsigned int i;
+
+					float k = param.factor_k;
+
+					float w0 = k / (Na + k);
+					float w1 = 1 / (2 * (Na + k));
+
+					CMatrixF Pa(3, 3);
+					CMatrixF L(3, 3);
+
+					Pa.fill(0);
+					Pa(0, 0) = Pa(1, 1) = (Na + k) * square(param.stdPixel);
+					Pa(2, 2) = (Na + k) * square(param.stdDisp);
+
+					// Cholesky decomposition
+					Pa.chol(L);  // math::chol(Pa,L);
+
+					vector<TPoint3D> B;  // B group
+					TPoint3D meanB;  // Mean value of the B group
+					CMatrixF Pb;  // Covariance of the B group
+
+					B.resize(2 * Na + 1);  // Set of output values
+					Pb.fill(0);  // Reset the output covariance
+
+					CVectorFloat vAux, myPoint;  // Auxiliar vectors
+					CVectorFloat meanA;  // Mean value of the A group
+
+					vAux.resize(3);  // Set the variables size
+					meanA.resize(3);
+					myPoint.resize(3);
+
+					// Mean input value: (c,r,d)
+					meanA[0] = pt1.x;
+					meanA[1] = pt1.y;
+					meanA[2] = disp;
+
+					// Output mean
+					meanB.x = w0 * x3D;
+					meanB.y = w0 * y3D;
+					meanB.z = w0 * z3D;  // Add to the mean
+					B[0].x = x3D;
+					B[0].y = y3D;
+					B[0].z = z3D;  // Insert into B
+
+					for (i = 1; i <= 2 * Na; i++)
 					{
-						float foc2 = square(param.K(0, 0));
-						float c0 = param.K(0, 2);
-						float r0 = param.K(1, 2);
-						float base2 = square(param.baseline);
-						float disp2 =
-							square(itList->first->x - itList->second->x);
+						// Form the Ai value
+						if (i <= Na)
+						{
+							// Extract the proper row
+							vAux.asEigen() = L.asEigen().row(i - 1);
+							myPoint[0] = meanA[0] + vAux[0];
+							myPoint[1] = meanA[1] + vAux[1];
+							myPoint[2] = meanA[2] + vAux[2];
+						}
+						else
+						{
+							vAux.asEigen() = L.asEigen().row((i - Na) - 1);
+							myPoint[0] = meanA[0] - vAux[0];
+							myPoint[1] = meanA[1] - vAux[1];
+							myPoint[2] = meanA[2] - vAux[2];
+						}
 
-						lm.pose_cov_11 = stdPixel2 * base2 / disp2 +
-										 stdDisp2 * base2 *
-											 square(itList->first->x - c0) /
-											 square(disp2);
-						lm.pose_cov_12 =
-							stdDisp2 * base2 * (itList->first->x - c0) *
-							(itList->first->y - r0) / square(disp2);
-						lm.pose_cov_13 = stdDisp2 * base2 * sqrt(foc2) *
-										 (itList->first->x - c0) /
-										 square(disp2);
-						lm.pose_cov_22 = stdPixel2 * base2 / disp2 +
-										 stdDisp2 * base2 *
-											 square(itList->first->y - r0) /
-											 square(disp2);
-						lm.pose_cov_23 = stdDisp2 * base2 * sqrt(foc2) *
-										 (itList->first->y - r0) /
-										 square(disp2);
-						lm.pose_cov_33 =
-							stdDisp2 * foc2 * base2 / square(disp2);
-					}  // end case 'Prop_Linear'
-					break;
+						// Pass the Ai through the functions:
+						x3D = (myPoint[0] - param.K(0, 2)) *
+							  ((param.baseline)) / myPoint[2];
+						y3D = (myPoint[1] - param.K(1, 2)) *
+							  ((param.baseline)) / myPoint[2];
+						z3D = (param.K(0, 0)) * ((param.baseline)) / myPoint[2];
 
-					case TStereoSystemParams::Prop_UT:
+						// Add to the B mean computation and the B vector
+						meanB.x = meanB.x + w1 * x3D;
+						meanB.y = meanB.y + w1 * y3D;
+						meanB.z = meanB.z + w1 * z3D;
+
+						B[i].x = x3D;
+						B[i].y = y3D;
+						B[i].z = z3D;
+
+					}  // end for 'i'
+
+					// Output covariance
+					for (i = 0; i <= 2 * Na; i++)
 					{
-						// Parameters
-						unsigned int Na = 3;
-						unsigned int i;
+						float weight = w1;
+						CMatrixF v(3, 1);
 
-						float k = param.factor_k;
+						if (i == 0)  // The weight for the mean value of A is w0
+							weight = w0;
 
-						float w0 = k / (Na + k);
-						float w1 = 1 / (2 * (Na + k));
+						v(0, 0) = B[i].x - meanB.x;
+						v(1, 0) = B[i].y - meanB.y;
+						v(2, 0) = B[i].z - meanB.z;
 
-						CMatrixF Pa(3, 3);
-						CMatrixF L(3, 3);
+						Pb.asEigen() +=
+							(weight * (v.asEigen() * v.transpose())).eval();
+					}  // end for 'i'
 
-						Pa.fill(0);
-						Pa(0, 0) = Pa(1, 1) = (Na + k) * square(param.stdPixel);
-						Pa(2, 2) = (Na + k) * square(param.stdDisp);
+					// Store it in the landmark
+					lm.pose_cov_11 = Pb(0, 0);
+					lm.pose_cov_12 = Pb(0, 1);
+					lm.pose_cov_13 = Pb(0, 2);
+					lm.pose_cov_22 = Pb(1, 1);
+					lm.pose_cov_23 = Pb(1, 2);
+					lm.pose_cov_33 = Pb(2, 2);
+				}  // end case 'Prop_UT'
+				break;
 
-						// Cholesky decomposition
-						Pa.chol(L);  // math::chol(Pa,L);
+				case TStereoSystemParams::Prop_SUT:
+				{
+					// Parameters
+					unsigned int Na = 3;
+					unsigned int i;
 
-						vector<TPoint3D> B;  // B group
-						TPoint3D meanB;  // Mean value of the B group
-						CMatrixF Pb;  // Covariance of the B group
+					float a = param.factor_a;
+					float b = param.factor_b;
+					float k = param.factor_k;
 
-						B.resize(2 * Na + 1);  // Set of output values
-						Pb.fill(0);  // Reset the output covariance
+					float lambda = square(a) * (Na + k) - Na;
 
-						CVectorFloat vAux, myPoint;  // Auxiliar vectors
-						CVectorFloat meanA;  // Mean value of the A group
+					float w0_m = lambda / (Na + lambda);
+					float w0_c = w0_m + (1 - square(a) + b);
+					float w1 = 1 / (2 * (Na + lambda));
 
-						vAux.resize(3);  // Set the variables size
-						meanA.resize(3);
-						myPoint.resize(3);
+					CMatrixF Pa(3, 3);
+					CMatrixF L(3, 3);
 
-						// Mean input value: (c,r,d)
-						meanA[0] = itList->first->x;
-						meanA[1] = itList->first->y;
-						meanA[2] = disp;
+					Pa.fill(0);
+					Pa(0, 0) = Pa(1, 1) =
+						(Na + lambda) * square(param.stdPixel);
+					Pa(2, 2) = (Na + lambda) * square(param.stdDisp);
 
-						// Output mean
-						meanB.x = w0 * x3D;
-						meanB.y = w0 * y3D;
-						meanB.z = w0 * z3D;  // Add to the mean
-						B[0].x = x3D;
-						B[0].y = y3D;
-						B[0].z = z3D;  // Insert into B
+					// Cholesky decomposition
+					Pa.chol(L);  // math::chol(Pa,L);
 
-						for (i = 1; i <= 2 * Na; i++)
-						{
-							// Form the Ai value
-							if (i <= Na)
-							{
-								// Extract the proper row
-								vAux.asEigen() = L.asEigen().row(i - 1);
-								myPoint[0] = meanA[0] + vAux[0];
-								myPoint[1] = meanA[1] + vAux[1];
-								myPoint[2] = meanA[2] + vAux[2];
-							}
-							else
-							{
-								vAux.asEigen() = L.asEigen().row((i - Na) - 1);
-								myPoint[0] = meanA[0] - vAux[0];
-								myPoint[1] = meanA[1] - vAux[1];
-								myPoint[2] = meanA[2] - vAux[2];
-							}
+					vector<TPoint3D> B;  // B group
+					TPoint3D meanB;  // Mean value of the B group
+					CMatrixF Pb;  // Covariance of the B group
 
-							// Pass the Ai through the functions:
-							x3D = (myPoint[0] - param.K(0, 2)) *
-								  ((param.baseline)) / myPoint[2];
-							y3D = (myPoint[1] - param.K(1, 2)) *
-								  ((param.baseline)) / myPoint[2];
-							z3D = (param.K(0, 0)) * ((param.baseline)) /
-								  myPoint[2];
+					B.resize(2 * Na + 1);  // Set of output values
+					Pb.fill(0);  // Reset the output covariance
 
-							// Add to the B mean computation and the B vector
-							meanB.x = meanB.x + w1 * x3D;
-							meanB.y = meanB.y + w1 * y3D;
-							meanB.z = meanB.z + w1 * z3D;
+					CVectorFloat vAux, myPoint;  // Auxiliar vectors
+					CVectorFloat meanA;  // Mean value of the A group
 
-							B[i].x = x3D;
-							B[i].y = y3D;
-							B[i].z = z3D;
+					vAux.resize(3);  // Set the variables size
+					meanA.resize(3);
+					myPoint.resize(3);
 
-						}  // end for 'i'
+					// Mean input value: (c,r,d)
+					meanA[0] = pt1.x;
+					meanA[1] = pt1.y;
+					meanA[2] = disp;
 
-						// Output covariance
-						for (i = 0; i <= 2 * Na; i++)
-						{
-							float weight = w1;
-							CMatrixF v(3, 1);
+					// Output mean
+					meanB.x = w0_m * x3D;
+					meanB.y = w0_m * y3D;
+					meanB.z = w0_m * z3D;  // Add to the mean
+					B[0].x = x3D;
+					B[0].y = y3D;
+					B[0].z = z3D;  // Insert into B
 
-							if (i ==
-								0)  // The weight for the mean value of A is w0
-								weight = w0;
-
-							v(0, 0) = B[i].x - meanB.x;
-							v(1, 0) = B[i].y - meanB.y;
-							v(2, 0) = B[i].z - meanB.z;
-
-							Pb.asEigen() +=
-								(weight * (v.asEigen() * v.transpose())).eval();
-						}  // end for 'i'
-
-						// Store it in the landmark
-						lm.pose_cov_11 = Pb(0, 0);
-						lm.pose_cov_12 = Pb(0, 1);
-						lm.pose_cov_13 = Pb(0, 2);
-						lm.pose_cov_22 = Pb(1, 1);
-						lm.pose_cov_23 = Pb(1, 2);
-						lm.pose_cov_33 = Pb(2, 2);
-					}  // end case 'Prop_UT'
-					break;
-
-					case TStereoSystemParams::Prop_SUT:
+					for (i = 1; i <= 2 * Na; i++)
 					{
-						// Parameters
-						unsigned int Na = 3;
-						unsigned int i;
-
-						float a = param.factor_a;
-						float b = param.factor_b;
-						float k = param.factor_k;
-
-						float lambda = square(a) * (Na + k) - Na;
-
-						float w0_m = lambda / (Na + lambda);
-						float w0_c = w0_m + (1 - square(a) + b);
-						float w1 = 1 / (2 * (Na + lambda));
-
-						CMatrixF Pa(3, 3);
-						CMatrixF L(3, 3);
-
-						Pa.fill(0);
-						Pa(0, 0) = Pa(1, 1) =
-							(Na + lambda) * square(param.stdPixel);
-						Pa(2, 2) = (Na + lambda) * square(param.stdDisp);
-
-						// Cholesky decomposition
-						Pa.chol(L);  // math::chol(Pa,L);
-
-						vector<TPoint3D> B;  // B group
-						TPoint3D meanB;  // Mean value of the B group
-						CMatrixF Pb;  // Covariance of the B group
-
-						B.resize(2 * Na + 1);  // Set of output values
-						Pb.fill(0);  // Reset the output covariance
-
-						CVectorFloat vAux, myPoint;  // Auxiliar vectors
-						CVectorFloat meanA;  // Mean value of the A group
-
-						vAux.resize(3);  // Set the variables size
-						meanA.resize(3);
-						myPoint.resize(3);
-
-						// Mean input value: (c,r,d)
-						meanA[0] = itList->first->x;
-						meanA[1] = itList->first->y;
-						meanA[2] = disp;
-
-						// Output mean
-						meanB.x = w0_m * x3D;
-						meanB.y = w0_m * y3D;
-						meanB.z = w0_m * z3D;  // Add to the mean
-						B[0].x = x3D;
-						B[0].y = y3D;
-						B[0].z = z3D;  // Insert into B
-
-						for (i = 1; i <= 2 * Na; i++)
+						// Form the Ai value
+						if (i <= Na)
 						{
-							// Form the Ai value
-							if (i <= Na)
-							{
-								// Extract the proper row
-								vAux.asEigen() = L.row(i - 1);
-								myPoint = meanA + vAux;
-								// myPoint[0] = meanA[0] + vAux[0];
-								// myPoint[1] = meanA[1] + vAux[1];
-								// myPoint[2] = meanA[2] + vAux[2];
-							}
-							else
-							{
-								vAux = L.row((i - Na) - 1);
-								myPoint = meanA - vAux;
-								// myPoint[0] = meanA[0] - vAux[0];
-								// myPoint[1] = meanA[1] - vAux[1];
-								// myPoint[2] = meanA[2] - vAux[2];
-							}
-
-							// Pass the Ai through the functions:
-							x3D = (myPoint[0] - param.K(0, 2)) *
-								  ((param.baseline)) / myPoint[2];
-							y3D = (myPoint[1] - param.K(1, 2)) *
-								  ((param.baseline)) / myPoint[2];
-							z3D = (param.K(0, 0)) * ((param.baseline)) /
-								  myPoint[2];
-
-							// Add to the B mean computation and the B vector
-							meanB.x = meanB.x + w1 * x3D;
-							meanB.y = meanB.y + w1 * y3D;
-							meanB.z = meanB.z + w1 * z3D;
-
-							B[i].x = x3D;
-							B[i].y = y3D;
-							B[i].z = z3D;
-
-						}  // end for 'i'
-
-						// Output covariance
-						for (i = 0; i <= 2 * Na; i++)
+							// Extract the proper row
+							vAux.asEigen() = L.row(i - 1);
+							myPoint = meanA + vAux;
+							// myPoint[0] = meanA[0] + vAux[0];
+							// myPoint[1] = meanA[1] + vAux[1];
+							// myPoint[2] = meanA[2] + vAux[2];
+						}
+						else
 						{
-							float weight = w1;
-							CMatrixF v(3, 1);
+							vAux = L.row((i - Na) - 1);
+							myPoint = meanA - vAux;
+							// myPoint[0] = meanA[0] - vAux[0];
+							// myPoint[1] = meanA[1] - vAux[1];
+							// myPoint[2] = meanA[2] - vAux[2];
+						}
 
-							if (i ==
-								0)  // The weight for the mean value of A is w0
-								weight = w0_c;
+						// Pass the Ai through the functions:
+						x3D = (myPoint[0] - param.K(0, 2)) *
+							  ((param.baseline)) / myPoint[2];
+						y3D = (myPoint[1] - param.K(1, 2)) *
+							  ((param.baseline)) / myPoint[2];
+						z3D = (param.K(0, 0)) * ((param.baseline)) / myPoint[2];
 
-							v(0, 0) = B[i].x - meanB.x;
-							v(1, 0) = B[i].y - meanB.y;
-							v(2, 0) = B[i].z - meanB.z;
+						// Add to the B mean computation and the B vector
+						meanB.x = meanB.x + w1 * x3D;
+						meanB.y = meanB.y + w1 * y3D;
+						meanB.z = meanB.z + w1 * z3D;
 
-							Pb.asEigen() +=
-								(weight * (v.asEigen() * v.transpose())).eval();
-						}  // end for 'i'
+						B[i].x = x3D;
+						B[i].y = y3D;
+						B[i].z = z3D;
 
-						// Store it in the landmark
-						lm.pose_cov_11 = Pb(0, 0);
-						lm.pose_cov_12 = Pb(0, 1);
-						lm.pose_cov_13 = Pb(0, 2);
-						lm.pose_cov_22 = Pb(1, 1);
-						lm.pose_cov_23 = Pb(1, 2);
-						lm.pose_cov_33 = Pb(2, 2);
-					}  // end case 'Prop_SUT'
-					break;
+					}  // end for 'i'
 
-				}  // end switch
-				landmarks.landmarks.push_back(lm);
-				itList++;
-			}  // end else ( (z3D > param.minZ) && (z3D < param.maxZ) )
-		}  // end else
+					// Output covariance
+					for (i = 0; i <= 2 * Na; i++)
+					{
+						float weight = w1;
+						CMatrixF v(3, 1);
+
+						if (i == 0)  // The weight for the mean value of A is w0
+							weight = w0_c;
+
+						v(0, 0) = B[i].x - meanB.x;
+						v(1, 0) = B[i].y - meanB.y;
+						v(2, 0) = B[i].z - meanB.z;
+
+						Pb.asEigen() +=
+							(weight * (v.asEigen() * v.transpose())).eval();
+					}  // end for 'i'
+
+					// Store it in the landmark
+					lm.pose_cov_11 = Pb(0, 0);
+					lm.pose_cov_12 = Pb(0, 1);
+					lm.pose_cov_13 = Pb(0, 2);
+					lm.pose_cov_22 = Pb(1, 1);
+					lm.pose_cov_23 = Pb(1, 2);
+					lm.pose_cov_33 = Pb(2, 2);
+				}  // end case 'Prop_SUT'
+				break;
+
+			}  // end switch
+			landmarks.landmarks.push_back(lm);
+			itList++;
+		}  // end else ( (z3D > param.minZ) && (z3D < param.maxZ) )
 	}  // end for 'i'
 
 	MRPT_END
@@ -1360,320 +1267,306 @@ void vision::projectMatchedFeatures(
 	for (itListL = leftList.begin(), itListR = rightList.begin();
 		 itListL != leftList.end();)
 	{
-		float disp = ((*itListL)->x - (*itListR)->x);  // Disparity
+		const auto& ptL = itListL->keypoint.pt;
+		const auto& ptR = itListR->keypoint.pt;
+
+		float disp = ptL.x - ptR.x;  // Disparity
 		if (disp < 1e-9)  // Filter out too far points
 		{
-			itListL = leftList.erase(itListL);  // Erase the match : itListL =
-			// leftList.erase( itListL );
-			itListR = rightList.erase(itListR);  // Erase the match : itListR =
-			// rightList.erase( itListR );
+			itListL = leftList.erase(itListL);
+			itListR = rightList.erase(itListR);
+			continue;
 		}
-		else  // This
+
+		// Too much distant features are not taken into account
+		float x3D = (ptL.x - param.K(0, 2)) * param.baseline / disp;
+		float y3D = (ptL.y - param.K(1, 2)) * param.baseline / disp;
+		float z3D = (param.K(0, 0)) * param.baseline / disp;
+
+		// Filter out bad points
+		if ((z3D < param.minZ) || (z3D > param.maxZ))
 		{
-			// Too much distant features are not taken into account
-			float x3D =
-				((*itListL)->x - param.K(0, 2)) * ((param.baseline)) / disp;
-			float y3D =
-				((*itListL)->y - param.K(1, 2)) * ((param.baseline)) / disp;
-			float z3D = (param.K(0, 0)) * ((param.baseline)) / disp;
+			itListL = leftList.erase(itListL);
+			itListR = rightList.erase(itListR);
+		}
+		else
+		{
+			TPoint3D p3D(x3D, y3D, z3D);
 
-			// Filter out bad points
-			if ((z3D < param.minZ) || (z3D > param.maxZ))
+			// STORE THE OBTAINED LANDMARK
+			CLandmark lm;
+
+			TPoint3D norm3D = p3D;
+			norm3D *= -1. / norm3D.norm();
+
+			lm.normal = norm3D;
+			lm.pose_mean = p3D;
+			lm.ID = itListL->keypoint.ID;
+
+			// If the matched landmarks has a (SIFT or SURF) descriptor,
+			// asign the left one to the landmark.
+			// TO DO: Assign the mean value of the descriptor (between the
+			// matches)
+			lm.features.resize(2);
+			lm.features[0] = *itListL;
+			lm.features[1] = *itListR;
+
+			// Compute the covariance matrix for the landmark
+			switch (param.uncPropagation)
 			{
-				itListL =
-					leftList.erase(itListL);  // Erase the match : (*itListL) =
-				// leftList.erase( (*itListL) );
-				itListR =
-					rightList.erase(itListR);  // Erase the match : (*itListR) =
-				// rightList.erase( (*itListR) );
-			}
-			else
-			{
-				TPoint3D p3D(x3D, y3D, z3D);
-
-				// STORE THE OBTAINED LANDMARK
-				CLandmark lm;
-
-				TPoint3D norm3D = p3D;
-				norm3D *= -1 / norm3D.norm();
-
-				lm.normal = norm3D;
-				lm.pose_mean = p3D;
-				lm.ID = (*itListL)->ID;
-
-				// If the matched landmarks has a (SIFT or SURF) descriptor,
-				// asign the left one to the landmark.
-				// TO DO: Assign the mean value of the descriptor (between the
-				// matches)
-				lm.features.resize(2);
-				lm.features[0] = *itListL;
-				lm.features[1] = *itListR;
-
-				// Compute the covariance matrix for the landmark
-				switch (param.uncPropagation)
+				case TStereoSystemParams::Prop_Linear:
 				{
-					case TStereoSystemParams::Prop_Linear:
+					float foc2 = square(param.K(0, 0));
+					float c0 = param.K(0, 2);
+					float r0 = param.K(1, 2);
+					float base2 = square(param.baseline);
+					float disp2 = square(ptL.x - ptR.x);
+
+					lm.pose_cov_11 =
+						stdPixel2 * base2 / disp2 +
+						stdDisp2 * base2 * square(ptL.x - c0) / square(disp2);
+					lm.pose_cov_12 = stdDisp2 * base2 * (ptL.x - c0) *
+									 (ptL.y - r0) / square(disp2);
+					lm.pose_cov_13 = stdDisp2 * base2 * sqrt(foc2) *
+									 (ptL.x - c0) / square(disp2);
+					lm.pose_cov_22 =
+						stdPixel2 * base2 / disp2 +
+						stdDisp2 * base2 * square(ptL.y - r0) / square(disp2);
+					lm.pose_cov_23 = stdDisp2 * base2 * sqrt(foc2) *
+									 (ptL.y - r0) / square(disp2);
+					lm.pose_cov_33 = stdDisp2 * foc2 * base2 / square(disp2);
+				}  // end case 'Prop_Linear'
+				break;
+
+				case TStereoSystemParams::Prop_UT:
+				{
+					// Parameters
+					unsigned int Na = 3;
+					unsigned int i;
+
+					float k = param.factor_k;
+
+					float w0 = k / (Na + k);
+					float w1 = 1 / (2 * (Na + k));
+
+					CMatrixF Pa(3, 3);
+					CMatrixF L(3, 3);
+
+					Pa.fill(0);
+					Pa(0, 0) = Pa(1, 1) = (Na + k) * square(param.stdPixel);
+					Pa(2, 2) = (Na + k) * square(param.stdDisp);
+
+					// Cholesky decomposition
+					Pa.chol(L);  // math::chol(Pa,L);
+
+					vector<TPoint3D> B;  // B group
+					TPoint3D meanB;  // Mean value of the B group
+					CMatrixF Pb;  // Covariance of the B group
+
+					B.resize(2 * Na + 1);  // Set of output values
+					Pb.fill(0);  // Reset the output covariance
+
+					CVectorFloat vAux, myPoint;  // Auxiliar vectors
+					CVectorFloat meanA;  // Mean value of the A group
+
+					vAux.resize(3);  // Set the variables size
+					meanA.resize(3);
+					myPoint.resize(3);
+
+					// Mean input value: (c,r,d)
+					meanA[0] = ptL.x;
+					meanA[1] = ptL.y;
+					meanA[2] = disp;
+
+					// Output mean
+					meanB.x = w0 * x3D;
+					meanB.y = w0 * y3D;
+					meanB.z = w0 * z3D;  // Add to the mean
+					B[0].x = x3D;
+					B[0].y = y3D;
+					B[0].z = z3D;  // Insert into B
+
+					for (i = 1; i <= 2 * Na; i++)
 					{
-						float foc2 = square(param.K(0, 0));
-						float c0 = param.K(0, 2);
-						float r0 = param.K(1, 2);
-						float base2 = square(param.baseline);
-						float disp2 = square((*itListL)->x - (*itListR)->x);
+						// Form the Ai value
+						if (i <= Na)
+						{
+							vAux.asEigen() = L.col(i - 1);
+							myPoint[0] = meanA[0] + vAux[0];
+							myPoint[1] = meanA[1] + vAux[1];
+							myPoint[2] = meanA[2] + vAux[2];
+						}
+						else
+						{
+							vAux = L.col((i - Na) - 1);
+							myPoint[0] = meanA[0] - vAux[0];
+							myPoint[1] = meanA[1] - vAux[1];
+							myPoint[2] = meanA[2] - vAux[2];
+						}
 
-						lm.pose_cov_11 = stdPixel2 * base2 / disp2 +
-										 stdDisp2 * base2 *
-											 square((*itListL)->x - c0) /
-											 square(disp2);
-						lm.pose_cov_12 = stdDisp2 * base2 *
-										 ((*itListL)->x - c0) *
-										 ((*itListL)->y - r0) / square(disp2);
-						lm.pose_cov_13 = stdDisp2 * base2 * sqrt(foc2) *
-										 ((*itListL)->x - c0) / square(disp2);
-						lm.pose_cov_22 = stdPixel2 * base2 / disp2 +
-										 stdDisp2 * base2 *
-											 square((*itListL)->y - r0) /
-											 square(disp2);
-						lm.pose_cov_23 = stdDisp2 * base2 * sqrt(foc2) *
-										 ((*itListL)->y - r0) / square(disp2);
-						lm.pose_cov_33 =
-							stdDisp2 * foc2 * base2 / square(disp2);
-					}  // end case 'Prop_Linear'
-					break;
+						// Pass the Ai through the functions:
+						x3D = (myPoint[0] - param.K(0, 2)) *
+							  ((param.baseline)) / myPoint[2];
+						y3D = (myPoint[1] - param.K(1, 2)) *
+							  ((param.baseline)) / myPoint[2];
+						z3D = (param.K(0, 0)) * ((param.baseline)) / myPoint[2];
 
-					case TStereoSystemParams::Prop_UT:
+						// Add to the B mean computation and the B vector
+						meanB.x = meanB.x + w1 * x3D;
+						meanB.y = meanB.y + w1 * y3D;
+						meanB.z = meanB.z + w1 * z3D;
+
+						B[i].x = x3D;
+						B[i].y = y3D;
+						B[i].z = z3D;
+
+					}  // end for 'i'
+
+					// Output covariance
+					for (i = 0; i <= 2 * Na; i++)
 					{
-						// Parameters
-						unsigned int Na = 3;
-						unsigned int i;
+						float weight = w1;
+						CMatrixF v(3, 1);
 
-						float k = param.factor_k;
+						if (i == 0)  // The weight for the mean value of A is w0
+							weight = w0;
 
-						float w0 = k / (Na + k);
-						float w1 = 1 / (2 * (Na + k));
+						v(0, 0) = B[i].x - meanB.x;
+						v(1, 0) = B[i].y - meanB.y;
+						v(2, 0) = B[i].z - meanB.z;
 
-						CMatrixF Pa(3, 3);
-						CMatrixF L(3, 3);
+						Pb.asEigen() +=
+							(weight * (v.asEigen() * v.transpose())).eval();
+					}  // end for 'i'
 
-						Pa.fill(0);
-						Pa(0, 0) = Pa(1, 1) = (Na + k) * square(param.stdPixel);
-						Pa(2, 2) = (Na + k) * square(param.stdDisp);
+					// Store it in the landmark
+					lm.pose_cov_11 = Pb(0, 0);
+					lm.pose_cov_12 = Pb(0, 1);
+					lm.pose_cov_13 = Pb(0, 2);
+					lm.pose_cov_22 = Pb(1, 1);
+					lm.pose_cov_23 = Pb(1, 2);
+					lm.pose_cov_33 = Pb(2, 2);
+				}  // end case 'Prop_UT'
+				break;
 
-						// Cholesky decomposition
-						Pa.chol(L);  // math::chol(Pa,L);
+				case TStereoSystemParams::Prop_SUT:
+				{
+					// Parameters
+					unsigned int Na = 3;
+					unsigned int i;
 
-						vector<TPoint3D> B;  // B group
-						TPoint3D meanB;  // Mean value of the B group
-						CMatrixF Pb;  // Covariance of the B group
+					float a = param.factor_a;
+					float b = param.factor_b;
+					float k = param.factor_k;
 
-						B.resize(2 * Na + 1);  // Set of output values
-						Pb.fill(0);  // Reset the output covariance
+					float lambda = square(a) * (Na + k) - Na;
 
-						CVectorFloat vAux, myPoint;  // Auxiliar vectors
-						CVectorFloat meanA;  // Mean value of the A group
+					float w0_m = lambda / (Na + lambda);
+					float w0_c = w0_m + (1 - square(a) + b);
+					float w1 = 1 / (2 * (Na + lambda));
 
-						vAux.resize(3);  // Set the variables size
-						meanA.resize(3);
-						myPoint.resize(3);
+					CMatrixF Pa(3, 3);
+					CMatrixF L(3, 3);
 
-						// Mean input value: (c,r,d)
-						meanA[0] = (*itListL)->x;
-						meanA[1] = (*itListL)->y;
-						meanA[2] = disp;
+					Pa.fill(0);
+					Pa(0, 0) = Pa(1, 1) =
+						(Na + lambda) * square(param.stdPixel);
+					Pa(2, 2) = (Na + lambda) * square(param.stdDisp);
 
-						// Output mean
-						meanB.x = w0 * x3D;
-						meanB.y = w0 * y3D;
-						meanB.z = w0 * z3D;  // Add to the mean
-						B[0].x = x3D;
-						B[0].y = y3D;
-						B[0].z = z3D;  // Insert into B
+					// Cholesky decomposition
+					Pa.chol(L);  // math::chol(Pa,L);
 
-						for (i = 1; i <= 2 * Na; i++)
-						{
-							// Form the Ai value
-							if (i <= Na)
-							{
-								vAux.asEigen() = L.col(i - 1);
-								myPoint[0] = meanA[0] + vAux[0];
-								myPoint[1] = meanA[1] + vAux[1];
-								myPoint[2] = meanA[2] + vAux[2];
-							}
-							else
-							{
-								vAux = L.col((i - Na) - 1);
-								myPoint[0] = meanA[0] - vAux[0];
-								myPoint[1] = meanA[1] - vAux[1];
-								myPoint[2] = meanA[2] - vAux[2];
-							}
+					vector<TPoint3D> B;  // B group
+					TPoint3D meanB;  // Mean value of the B group
+					CMatrixF Pb;  // Covariance of the B group
 
-							// Pass the Ai through the functions:
-							x3D = (myPoint[0] - param.K(0, 2)) *
-								  ((param.baseline)) / myPoint[2];
-							y3D = (myPoint[1] - param.K(1, 2)) *
-								  ((param.baseline)) / myPoint[2];
-							z3D = (param.K(0, 0)) * ((param.baseline)) /
-								  myPoint[2];
+					B.resize(2 * Na + 1);  // Set of output values
+					Pb.fill(0);  // Reset the output covariance
 
-							// Add to the B mean computation and the B vector
-							meanB.x = meanB.x + w1 * x3D;
-							meanB.y = meanB.y + w1 * y3D;
-							meanB.z = meanB.z + w1 * z3D;
+					CVectorFloat vAux, myPoint;  // Auxiliar vectors
+					CVectorFloat meanA;  // Mean value of the A group
 
-							B[i].x = x3D;
-							B[i].y = y3D;
-							B[i].z = z3D;
+					vAux.resize(3);  // Set the variables size
+					meanA.resize(3);
+					myPoint.resize(3);
 
-						}  // end for 'i'
+					// Mean input value: (c,r,d)
+					meanA[0] = ptL.x;
+					meanA[1] = ptL.y;
+					meanA[2] = disp;
 
-						// Output covariance
-						for (i = 0; i <= 2 * Na; i++)
-						{
-							float weight = w1;
-							CMatrixF v(3, 1);
+					// Output mean
+					meanB.x = w0_m * x3D;
+					meanB.y = w0_m * y3D;
+					meanB.z = w0_m * z3D;  // Add to the mean
+					B[0].x = x3D;
+					B[0].y = y3D;
+					B[0].z = z3D;  // Insert into B
 
-							if (i ==
-								0)  // The weight for the mean value of A is w0
-								weight = w0;
-
-							v(0, 0) = B[i].x - meanB.x;
-							v(1, 0) = B[i].y - meanB.y;
-							v(2, 0) = B[i].z - meanB.z;
-
-							Pb.asEigen() +=
-								(weight * (v.asEigen() * v.transpose())).eval();
-						}  // end for 'i'
-
-						// Store it in the landmark
-						lm.pose_cov_11 = Pb(0, 0);
-						lm.pose_cov_12 = Pb(0, 1);
-						lm.pose_cov_13 = Pb(0, 2);
-						lm.pose_cov_22 = Pb(1, 1);
-						lm.pose_cov_23 = Pb(1, 2);
-						lm.pose_cov_33 = Pb(2, 2);
-					}  // end case 'Prop_UT'
-					break;
-
-					case TStereoSystemParams::Prop_SUT:
+					for (i = 1; i <= 2 * Na; i++)
 					{
-						// Parameters
-						unsigned int Na = 3;
-						unsigned int i;
-
-						float a = param.factor_a;
-						float b = param.factor_b;
-						float k = param.factor_k;
-
-						float lambda = square(a) * (Na + k) - Na;
-
-						float w0_m = lambda / (Na + lambda);
-						float w0_c = w0_m + (1 - square(a) + b);
-						float w1 = 1 / (2 * (Na + lambda));
-
-						CMatrixF Pa(3, 3);
-						CMatrixF L(3, 3);
-
-						Pa.fill(0);
-						Pa(0, 0) = Pa(1, 1) =
-							(Na + lambda) * square(param.stdPixel);
-						Pa(2, 2) = (Na + lambda) * square(param.stdDisp);
-
-						// Cholesky decomposition
-						Pa.chol(L);  // math::chol(Pa,L);
-
-						vector<TPoint3D> B;  // B group
-						TPoint3D meanB;  // Mean value of the B group
-						CMatrixF Pb;  // Covariance of the B group
-
-						B.resize(2 * Na + 1);  // Set of output values
-						Pb.fill(0);  // Reset the output covariance
-
-						CVectorFloat vAux, myPoint;  // Auxiliar vectors
-						CVectorFloat meanA;  // Mean value of the A group
-
-						vAux.resize(3);  // Set the variables size
-						meanA.resize(3);
-						myPoint.resize(3);
-
-						// Mean input value: (c,r,d)
-						meanA[0] = (*itListL)->x;
-						meanA[1] = (*itListL)->y;
-						meanA[2] = disp;
-
-						// Output mean
-						meanB.x = w0_m * x3D;
-						meanB.y = w0_m * y3D;
-						meanB.z = w0_m * z3D;  // Add to the mean
-						B[0].x = x3D;
-						B[0].y = y3D;
-						B[0].z = z3D;  // Insert into B
-
-						for (i = 1; i <= 2 * Na; i++)
+						// Form the Ai value
+						if (i <= Na)
 						{
-							// Form the Ai value
-							if (i <= Na)
-							{
-								vAux = L.row(i - 1);
-								myPoint = meanA + vAux;
-							}
-							else
-							{
-								vAux = L.col((i - Na) - 1);
-								myPoint = meanA - vAux;
-							}
-
-							// Pass the Ai through the functions:
-							x3D = (myPoint[0] - param.K(0, 2)) *
-								  ((param.baseline)) / myPoint[2];
-							y3D = (myPoint[1] - param.K(1, 2)) *
-								  ((param.baseline)) / myPoint[2];
-							z3D = (param.K(0, 0)) * ((param.baseline)) /
-								  myPoint[2];
-
-							// Add to the B mean computation and the B vector
-							meanB.x = meanB.x + w1 * x3D;
-							meanB.y = meanB.y + w1 * y3D;
-							meanB.z = meanB.z + w1 * z3D;
-
-							B[i].x = x3D;
-							B[i].y = y3D;
-							B[i].z = z3D;
-
-						}  // end for 'i'
-
-						// Output covariance
-						for (i = 0; i <= 2 * Na; i++)
+							vAux = L.row(i - 1);
+							myPoint = meanA + vAux;
+						}
+						else
 						{
-							float weight = w1;
-							CMatrixF v(3, 1);
+							vAux = L.col((i - Na) - 1);
+							myPoint = meanA - vAux;
+						}
 
-							if (i ==
-								0)  // The weight for the mean value of A is w0
-								weight = w0_c;
+						// Pass the Ai through the functions:
+						x3D = (myPoint[0] - param.K(0, 2)) *
+							  ((param.baseline)) / myPoint[2];
+						y3D = (myPoint[1] - param.K(1, 2)) *
+							  ((param.baseline)) / myPoint[2];
+						z3D = (param.K(0, 0)) * ((param.baseline)) / myPoint[2];
 
-							v(0, 0) = B[i].x - meanB.x;
-							v(1, 0) = B[i].y - meanB.y;
-							v(2, 0) = B[i].z - meanB.z;
+						// Add to the B mean computation and the B vector
+						meanB.x = meanB.x + w1 * x3D;
+						meanB.y = meanB.y + w1 * y3D;
+						meanB.z = meanB.z + w1 * z3D;
 
-							Pb.asEigen() +=
-								(weight * (v.asEigen() * v.transpose())).eval();
-						}  // end for 'i'
+						B[i].x = x3D;
+						B[i].y = y3D;
+						B[i].z = z3D;
 
-						// Store it in the landmark
-						lm.pose_cov_11 = Pb(0, 0);
-						lm.pose_cov_12 = Pb(0, 1);
-						lm.pose_cov_13 = Pb(0, 2);
-						lm.pose_cov_22 = Pb(1, 1);
-						lm.pose_cov_23 = Pb(1, 2);
-						lm.pose_cov_33 = Pb(2, 2);
-					}  // end case 'Prop_SUT'
-					break;
+					}  // end for 'i'
 
-				}  // end switch
-				landmarks.landmarks.push_back(lm);
-				itListL++;
-				itListR++;
-			}  // end else ( (z3D > param.minZ) && (z3D < param.maxZ) )
-		}  // end else
+					// Output covariance
+					for (i = 0; i <= 2 * Na; i++)
+					{
+						float weight = w1;
+						CMatrixF v(3, 1);
+
+						if (i == 0)  // The weight for the mean value of A is w0
+							weight = w0_c;
+
+						v(0, 0) = B[i].x - meanB.x;
+						v(1, 0) = B[i].y - meanB.y;
+						v(2, 0) = B[i].z - meanB.z;
+
+						Pb.asEigen() +=
+							(weight * (v.asEigen() * v.transpose())).eval();
+					}  // end for 'i'
+
+					// Store it in the landmark
+					lm.pose_cov_11 = Pb(0, 0);
+					lm.pose_cov_12 = Pb(0, 1);
+					lm.pose_cov_13 = Pb(0, 2);
+					lm.pose_cov_22 = Pb(1, 1);
+					lm.pose_cov_23 = Pb(1, 2);
+					lm.pose_cov_33 = Pb(2, 2);
+				}  // end case 'Prop_SUT'
+				break;
+
+			}  // end switch
+			landmarks.landmarks.push_back(lm);
+			itListL++;
+			itListR++;
+		}  // end else ( (z3D > param.minZ) && (z3D < param.maxZ) )
 	}  // end for 'i'
 
 	MRPT_END
@@ -1699,10 +1592,10 @@ void vision::StereoObs2BRObs(
 
 	for (const auto& inMatche : inMatches)
 	{
-		double x = inMatche.first->x;  // Column of the feature
-		double y = inMatche.first->y;  // Row of the feature
+		double x = inMatche.first.keypoint.pt.x;  // Column of the feature
+		double y = inMatche.first.keypoint.pt.y;  // Row of the feature
 
-		double d = inMatche.first->x - inMatche.second->x;  // Disparity
+		double d = x - inMatche.second.keypoint.pt.x;  // Disparity
 		double d2 = square(d);
 		double k = square(b / d);
 
@@ -1724,7 +1617,7 @@ void vision::StereoObs2BRObs(
 		m.range = sqrt(square(X) + square(Y) + square(Z));
 		m.yaw = atan2(Y, X);
 		m.pitch = -asin(Z / m.range);
-		m.landmarkID = inMatche.first->ID;
+		m.landmarkID = inMatche.first.keypoint.ID;
 
 		// Compute the covariance
 		// Formula: S_BR = JG * (JF * diag(sg_c^2, sg_r^2, sg_d^2) * JF') * JG'
@@ -1811,10 +1704,10 @@ void vision::StereoObs2BRObs(
 	for (auto itMatchList = matchList.begin(); itMatchList != matchList.end();
 		 itMatchList++, id++)
 	{
-		double x = itMatchList->first->x;  // Column of the feature
-		double y = itMatchList->first->y;  // Row of the feature
+		double x = itMatchList->first.keypoint.pt.x;  // Column of the feature
+		double y = itMatchList->first.keypoint.pt.y;  // Row of the feature
 
-		double d = itMatchList->first->x - itMatchList->second->x;  // Disparity
+		double d = x - itMatchList->second.keypoint.pt.x;  // Disparity
 		double d2 = square(d);
 		double k = square(b / d);
 
@@ -1861,26 +1754,6 @@ void vision::StereoObs2BRObs(
 		// Jacobian equations according to a standard coordinate axis (+X
 		// forward & +Z upwards)
 		// -------------------------------------------------------------------------------------------------------
-		// aux( 0, 0 ) = k*(sg_d2*square(f)/d2);
-		// aux( 0, 1 ) = aux( 1, 0 ) =
-		// k*sg_d2*(x0-x)*f/d2;
-		// aux( 0, 2 ) = aux( 2, 0 ) =
-		// k*sg_d2*(y0-y)*f/d2;
-
-		// aux( 1, 1 ) = k*(sg_c2 + sg_d2*square(x0-x)/d2);
-		// aux( 1, 2 ) = aux( 2, 1 ) =
-		// k*sg_d2*(x0-x)*(y0-y)/d2;
-
-		// aux( 2, 2 ) = k*(sg_r2 + sg_d2*square(y0-y)/d2);
-
-		// CMatrixDouble33 JF;
-		// JF(0,0) = JF.set_unsafe(1,1) = JF.set_unsafe(2)=0 =
-		// JF.set_unsafe(2,1) = 0.0f;
-		// JF(0,1) = JF.set_unsafe(1)=0 = b/d;
-		// JF.set_unsafe(0,2) = -X/d;
-		// JF.set_unsafe(1,2) = -Y/d;
-		// JF.set_unsafe(2,2) = -Z/d;
-
 		CMatrixDouble33 JG;
 		JG(0, 0) = X / m.range;
 		JG(0, 1) = Y / m.range;
@@ -1929,9 +1802,7 @@ void vision::StereoObs2BRObs(
 		m.range = sqrt(
 			square(itCloud->pose_mean.x) + square(itCloud->pose_mean.y) +
 			square(itCloud->pose_mean.z));
-		// m.yaw			= atan2( itCloud->pose_mean.x, itCloud->pose_mean.z
-		// );
-		// m.pitch		= atan2( itCloud->pose_mean.y, itCloud->pose_mean.z );
+
 		// The reference system is assumed to be that typical robot operation:
 		// +X forward and +Z upwards.
 		m.yaw = atan2(itCloud->pose_mean.y, itCloud->pose_mean.x);
@@ -2028,7 +1899,6 @@ void vision::computeStereoRectificationMaps(
 /*-------------------------------------------------------------
 					TROI Constructors
 -------------------------------------------------------------*/
-vision::TROI::TROI() = default;
 vision::TROI::TROI(float x1, float x2, float y1, float y2, float z1, float z2)
 	: xMin(x1), xMax(x2), yMin(y1), yMax(y2), zMin(z1), zMax(z2)
 {
@@ -2037,7 +1907,6 @@ vision::TROI::TROI(float x1, float x2, float y1, float y2, float z1, float z2)
 /*-------------------------------------------------------------
 					TImageROI Constructors
 -------------------------------------------------------------*/
-vision::TImageROI::TImageROI() = default;
 vision::TImageROI::TImageROI(float x1, float x2, float y1, float y2)
 	: xMin(x1), xMax(x2), yMin(y1), yMax(y2)
 {

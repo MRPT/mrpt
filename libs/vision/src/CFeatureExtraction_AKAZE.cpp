@@ -116,26 +116,26 @@ void CFeatureExtraction::extractFeaturesAKAZE(
 			continue;  // nope, skip.
 
 		// All tests passed: add new feature:
-		CFeature::Ptr ft = std::make_shared<CFeature>();
-		ft->type = featAKAZE;
-		ft->ID = nextID++;
-		ft->x = kp.pt.x;
-		ft->y = kp.pt.y;
-		ft->response = kp.response;
-		ft->orientation = kp.angle;
-		ft->scale = kp.octave;
-		ft->patchSize = options.patchSize;  // The size of the feature patch
+		CFeature ft;
+		ft.type = featAKAZE;
+		ft.keypoint.ID = nextID++;
+		ft.keypoint.pt.x = kp.pt.x;
+		ft.keypoint.pt.y = kp.pt.y;
+		ft.response = kp.response;
+		ft.orientation = kp.angle;
+		ft.keypoint.octave = kp.octave;
+		ft.patchSize = options.patchSize;  // The size of the feature patch
 
 		if (options.patchSize > 0)
 		{
+			ft.patch.emplace();
 			inImg.extract_patch(
-				ft->patch, round(ft->x) - offset, round(ft->y) - offset,
+				*ft.patch, round(kp.pt.x) - offset, round(kp.pt.y) - offset,
 				options.patchSize,
 				options.patchSize);  // Image patch surronding the feature
 		}
-		feats.push_back(ft);
+		feats.emplace_back(std::move(ft));
 		++cont;
-		// cout << ft->x << "  " << ft->y << endl;
 	}
 
 #endif

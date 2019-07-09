@@ -44,11 +44,6 @@ mrpt::vision::pnp::dls::dls(const cv::Mat& opoints, const cv::Mat& ipoints)
 		init_points<double, float>(opoints, ipoints);
 }
 
-mrpt::vision::pnp::dls::~dls()
-{
-	// TODO Auto-generated destructor stub
-}
-
 bool mrpt::vision::pnp::dls::compute_pose(cv::Mat& R, cv::Mat& t)
 {
 	std::vector<cv::Mat> R_;
@@ -302,7 +297,9 @@ void mrpt::vision::pnp::dls::compute_eigenvec(
 
 void mrpt::vision::pnp::dls::fill_coeff(const cv::Mat* D_mat)
 {
-	// TODO: shift D and coefficients one position to left
+	// Note: D and "f*coeff" start indices at [1], probably from
+	// an original implementation in MATLAB. I don't think it's worth
+	// changing all those indices (JLBC, Jul-2019)
 
 	double D[10][10];  // put D_mat into array
 
@@ -610,8 +607,9 @@ cv::Mat mrpt::vision::pnp::dls::cayley_LS_M(
 	const std::vector<double>& a, const std::vector<double>& b,
 	const std::vector<double>& c, const std::vector<double>& u)
 {
-	// TODO: input matrix pointer
-	// TODO: shift coefficients one position to left
+	// Note: coefficients start indices at [1], probably from
+	// an original implementation in MATLAB. I don't think it's worth
+	// changing all those indices (JLBC, Jul-2019)
 
 	cv::Mat M = cv::Mat::zeros(120, 120, CV_64F);
 

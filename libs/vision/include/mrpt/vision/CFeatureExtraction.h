@@ -12,7 +12,7 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/vision/CFeature.h>
-#include <mrpt/vision/TSimpleFeature.h>
+#include <mrpt/vision/TKeyPoint.h>
 #include <mrpt/vision/utils.h>
 
 namespace mrpt::vision
@@ -95,7 +95,7 @@ class CFeatureExtraction
 	struct TOptions : public mrpt::config::CLoadableOptions
 	{
 		TOptions() = default;
-		TOptions(const TFeatureType ft) : TOptions() { featsType = ft; }
+		TOptions(const TKeyPointMethod ft) : TOptions() { featsType = ft; }
 
 		// See base docs
 		void loadFromConfigFile(
@@ -104,7 +104,7 @@ class CFeatureExtraction
 		void dumpToTextStream(std::ostream& out) const override;
 
 		/** Type of the extracted features */
-		TFeatureType featsType{featKLT};
+		TKeyPointMethod featsType{featKLT};
 
 		/** Size of the patch to extract, or 0 if no patch is desired
 		 * (default=21).
@@ -374,7 +374,7 @@ class CFeatureExtraction
 	 * \ingroup mrptvision_features
 	 */
 	static void detectFeatures_SSE2_FASTER9(
-		const mrpt::img::CImage& img, TSimpleFeatureList& corners,
+		const mrpt::img::CImage& img, TKeyPointList& corners,
 		const int threshold = 20, bool append_to_list = false,
 		uint8_t octave = 0,
 		std::vector<size_t>* out_feats_index_by_row = nullptr);
@@ -382,7 +382,7 @@ class CFeatureExtraction
 	/** Just like \a detectFeatures_SSE2_FASTER9() for another version of
 	 * the detector. \ingroup mrptvision_features */
 	static void detectFeatures_SSE2_FASTER10(
-		const mrpt::img::CImage& img, TSimpleFeatureList& corners,
+		const mrpt::img::CImage& img, TKeyPointList& corners,
 		const int threshold = 20, bool append_to_list = false,
 		uint8_t octave = 0,
 		std::vector<size_t>* out_feats_index_by_row = nullptr);
@@ -390,7 +390,7 @@ class CFeatureExtraction
 	/** Just like \a detectFeatures_SSE2_FASTER9() for another version of
 	 * the detector. \ingroup mrptvision_features */
 	static void detectFeatures_SSE2_FASTER12(
-		const mrpt::img::CImage& img, TSimpleFeatureList& corners,
+		const mrpt::img::CImage& img, TKeyPointList& corners,
 		const int threshold = 20, bool append_to_list = false,
 		uint8_t octave = 0,
 		std::vector<size_t>* out_feats_index_by_row = nullptr);

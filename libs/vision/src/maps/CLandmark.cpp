@@ -24,24 +24,8 @@ IMPLEMENTS_SERIALIZABLE(CLandmark, CSerializable, mrpt::maps)
 CLandmark::TLandmarkID CLandmark::m_counterIDs =
 	static_cast<CLandmark::TLandmarkID>(0);
 
-/*---------------------------------------------------------------
-						Default constructor
-  ---------------------------------------------------------------*/
-CLandmark::CLandmark()
-	: features(),
-	  pose_mean(),
-	  normal(),
-
-	  ID(INVALID_LANDMARK_ID),
-	  timestampLastSeen(INVALID_TIMESTAMP)
-
-{
-}
-
-/*---------------------------------------------------------------
-						Destructor
-  ---------------------------------------------------------------*/
 CLandmark::~CLandmark() = default;
+
 /*---------------------------------------------------------------
 						Destructor
   ---------------------------------------------------------------*/
