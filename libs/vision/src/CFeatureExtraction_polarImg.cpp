@@ -58,7 +58,7 @@ void CFeatureExtraction::internal_computePolarImageDescriptors(
 		cv::linearPolar(
 			in_img.asCvMatRef(), linpolar_frame.asCvMatRef(),
 #endif
-		    cv::Point2f(it->keypoint.pt.x, it->keypoint.pt.y), radius,
+			cv::Point2f(it->keypoint.pt.x, it->keypoint.pt.y), radius,
 			CV_INTER_LINEAR + CV_WARP_FILL_OUTLIERS);
 
 		// Get the image as a matrix and save as patch:

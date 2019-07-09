@@ -258,7 +258,7 @@ void CFeatureExtraction::extractFeaturesFASTER_N(
 		{
 			ft.patch.emplace();
 			inImg.extract_patch(
-			    *ft.patch, round(feat.pt.x) - offset, round(feat.pt.y) - offset,
+				*ft.patch, round(feat.pt.x) - offset, round(feat.pt.y) - offset,
 				options.patchSize,
 				options.patchSize);  // Image patch surronding the feature
 		}

@@ -130,7 +130,7 @@ void CFeatureExtraction::extractFeaturesAKAZE(
 		{
 			ft.patch.emplace();
 			inImg.extract_patch(
-			    *ft.patch, round(kp.pt.x) - offset, round(kp.pt.y) - offset,
+				*ft.patch, round(kp.pt.x) - offset, round(kp.pt.y) - offset,
 				options.patchSize,
 				options.patchSize);  // Image patch surronding the feature
 		}

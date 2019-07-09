@@ -96,10 +96,10 @@ void CFeatureExtraction::extractFeaturesORB(
 			if (options.ORBOptions.extract_patch && options.patchSize > 0)
 			{
 				inImg.extract_patch(
-				    *feats[k].patch,
-				    round(feats[k].keypoint.pt.x) - patch_size_2,
-				    round(feats[k].keypoint.pt.y) - patch_size_2,
-				    options.patchSize, options.patchSize);
+					*feats[k].patch,
+					round(feats[k].keypoint.pt.x) - patch_size_2,
+					round(feats[k].keypoint.pt.y) - patch_size_2,
+					options.patchSize, options.patchSize);
 			}
 		}
 		return;
@@ -215,8 +215,8 @@ void CFeatureExtraction::extractFeaturesORB(
 
 			ft.patch.emplace();
 			inImg.extract_patch(
-			    *ft.patch, round(kp.pt.x) - patch_size_2,
-			    round(kp.pt.y) - patch_size_2, options.patchSize,
+				*ft.patch, round(kp.pt.x) - patch_size_2,
+				round(kp.pt.y) - patch_size_2, options.patchSize,
 				options.patchSize);  // Image patch surronding the feature
 		}
 

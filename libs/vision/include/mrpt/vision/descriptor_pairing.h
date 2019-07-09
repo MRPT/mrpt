@@ -81,24 +81,24 @@ size_t find_descriptor_pairings(
 	if (descriptor == descSIFT)
 	{
 		ASSERTMSG_(
-		    feats_img1[0].descriptors.hasDescriptorSIFT(),
+			feats_img1[0].descriptors.hasDescriptorSIFT(),
 			"Request to match SIFT features but feats_img1 has no SIFT "
 			"descriptors!");
 		ASSERTMSG_(
 			sizeof(KDTreeElementType) ==
-		        sizeof((*feats_img1[0].descriptors.SIFT)[0]),
+				sizeof((*feats_img1[0].descriptors.SIFT)[0]),
 			"Incorrect data type kd_tree::ElementType for SIFT (should be "
 			"uint8_t)");
 	}
 	else if (descriptor == descSURF)
 	{
 		ASSERTMSG_(
-		    feats_img1[0].descriptors.hasDescriptorSURF(),
+			feats_img1[0].descriptors.hasDescriptorSURF(),
 			"Request to match SURF features but feats_img1 has no SURF "
 			"descriptors!");
 		ASSERTMSG_(
 			sizeof(KDTreeElementType) ==
-		        sizeof((*feats_img1[0].descriptors.SURF)[0]),
+				sizeof((*feats_img1[0].descriptors.SURF)[0]),
 			"Incorrect data type kd_tree::ElementType for SURF (should be "
 			"float)");
 	}

@@ -315,7 +315,7 @@ class CFeatureList : public mrpt::math::KDTreeCapable<CFeatureList>
 	 * mrpt::math::KDTreeCapable
 	 */
 	const CFeature* nearest(
-	    const float x, const float y, double& max_dist) const;
+		const float x, const float y, double& max_dist) const;
 
 	/** Constructor */
 	CFeatureList() = default;

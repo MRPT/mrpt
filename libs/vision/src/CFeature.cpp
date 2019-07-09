@@ -258,10 +258,10 @@ void CFeature::dumpToTextStream(std::ostream& out) const
 {
 	out << mrpt::format("\n----------- [vision::CFeature] ------------ \n");
 	out << mrpt::format(
-	    "Feature ID:                     %d\n", (int)keypoint.ID);
+		"Feature ID:                     %d\n", (int)keypoint.ID);
 	out << mrpt::format(
-	    "Coordinates:                    (%.2f,%.2f) px\n", keypoint.pt.x,
-	    keypoint.pt.y);
+		"Coordinates:                    (%.2f,%.2f) px\n", keypoint.pt.x,
+		keypoint.pt.y);
 	out << mrpt::format("PatchSize:                      %d\n", patchSize);
 	out << mrpt::format("Type:                           ");
 	out << mrpt::typemeta::TEnumType<decltype(type)>::value2name(type) << "\n";
@@ -328,13 +328,13 @@ void CFeature::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// The coordinates:
 	out << keypoint.pt.x << keypoint.pt.y << keypoint.ID << patch << patchSize
-	    << (uint32_t)type << (uint32_t)keypoint.track_status
-	    << keypoint.response << orientation << keypoint.octave << user_flags
-	    << depth << initialDepth << p3D << descriptors.SIFT << descriptors.SURF
-	    << descriptors.SpinImg << descriptors.SpinImg_range_rows
-	    << descriptors.PolarImg << descriptors.LogPolarImg
-	    << descriptors.polarImgsNoRotation << descriptors.ORB << descriptors.BLD
-	    << descriptors.LATCH;
+		<< (uint32_t)type << (uint32_t)keypoint.track_status
+		<< keypoint.response << orientation << keypoint.octave << user_flags
+		<< depth << initialDepth << p3D << descriptors.SIFT << descriptors.SURF
+		<< descriptors.SpinImg << descriptors.SpinImg_range_rows
+		<< descriptors.PolarImg << descriptors.LogPolarImg
+		<< descriptors.polarImgsNoRotation << descriptors.ORB << descriptors.BLD
+		<< descriptors.LATCH;
 }
 
 void CFeature::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -348,16 +348,16 @@ void CFeature::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			// The coordinates:
 			uint32_t aux_type, aux_KLTS;
 			in >> keypoint.pt.x >> keypoint.pt.y >> keypoint.ID >> patch >>
-			    patchSize >> aux_type >> aux_KLTS >> keypoint.response >>
-			    orientation >> keypoint.octave >> user_flags;
+				patchSize >> aux_type >> aux_KLTS >> keypoint.response >>
+				orientation >> keypoint.octave >> user_flags;
 			if (version > 0)
 			{
 				in >> depth >> initialDepth >> p3D;
 			}
 			in >> descriptors.SIFT >> descriptors.SURF >> descriptors.SpinImg >>
 				descriptors.SpinImg_range_rows >> descriptors.PolarImg >>
-			    descriptors.LogPolarImg >> descriptors.polarImgsNoRotation >>
-			    descriptors.BLD >> descriptors.LATCH;
+				descriptors.LogPolarImg >> descriptors.polarImgsNoRotation >>
+				descriptors.BLD >> descriptors.LATCH;
 			if (version > 1) in >> descriptors.ORB;
 
 			type = (TKeyPointMethod)aux_type;
@@ -393,7 +393,7 @@ float CFeature::patchCorrelationTo(const CFeature& oFeature) const
 	size_t x_max, y_max;
 	double max_val;
 	mrpt::vision::openCV_cross_correlation(
-	    *patch, *oFeature.patch, x_max, y_max, max_val);
+		*patch, *oFeature.patch, x_max, y_max, max_val);
 
 	return 0.5 -
 		   0.5 * max_val;  // Value as "distance" in the range [0,1], best = 0
@@ -481,14 +481,14 @@ float CFeature::descriptorSIFTDistanceTo(
 	ASSERT_(oFeature.descriptors.SIFT);
 	ASSERT_(descriptors.SIFT->size() == oFeature.descriptors.SIFT->size());
 	ASSERT_(
-	    descriptors.hasDescriptorSIFT() &&
+		descriptors.hasDescriptorSIFT() &&
 		oFeature.descriptors.hasDescriptorSIFT());
 
 	float dist = 0.0f;
 	std::vector<unsigned char>::const_iterator itDesc1, itDesc2;
 	for (itDesc1 = descriptors.SIFT->begin(),
-	    itDesc2 = oFeature.descriptors.SIFT->begin();
-	     itDesc1 != descriptors.SIFT->end(); itDesc1++, itDesc2++)
+		itDesc2 = oFeature.descriptors.SIFT->begin();
+		 itDesc1 != descriptors.SIFT->end(); itDesc1++, itDesc2++)
 	{
 		dist += square(*itDesc1 - *itDesc2);
 	}
@@ -507,14 +507,14 @@ float CFeature::descriptorSURFDistanceTo(
 	ASSERT_(descriptors.SURF);
 	ASSERT_(descriptors.SURF->size() == oFeature.descriptors.SURF->size());
 	ASSERT_(
-	    descriptors.hasDescriptorSURF() &&
+		descriptors.hasDescriptorSURF() &&
 		oFeature.descriptors.hasDescriptorSURF());
 
 	float dist = 0.0f;
 	std::vector<float>::const_iterator itDesc1, itDesc2;
 	for (itDesc1 = descriptors.SURF->begin(),
-	    itDesc2 = oFeature.descriptors.SURF->begin();
-	     itDesc1 != descriptors.SURF->end(); itDesc1++, itDesc2++)
+		itDesc2 = oFeature.descriptors.SURF->begin();
+		 itDesc1 != descriptors.SURF->end(); itDesc1++, itDesc2++)
 	{
 		dist += square(*itDesc1 - *itDesc2);
 	}
@@ -535,16 +535,16 @@ float CFeature::descriptorSpinImgDistanceTo(
 	ASSERT_(descriptors.SpinImg);
 
 	ASSERT_(
-	    descriptors.SpinImg->size() == oFeature.descriptors.SpinImg->size());
+		descriptors.SpinImg->size() == oFeature.descriptors.SpinImg->size());
 	ASSERT_(
-	    descriptors.hasDescriptorSpinImg() &&
+		descriptors.hasDescriptorSpinImg() &&
 		oFeature.descriptors.hasDescriptorSpinImg());
 	ASSERT_(!descriptors.SpinImg->empty());
 	float dist = 0.0f;
 	std::vector<float>::const_iterator itDesc1, itDesc2;
 	for (itDesc1 = descriptors.SpinImg->begin(),
-	    itDesc2 = oFeature.descriptors.SpinImg->begin();
-	     itDesc1 != descriptors.SpinImg->end(); itDesc1++, itDesc2++)
+		itDesc2 = oFeature.descriptors.SpinImg->begin();
+		 itDesc1 != descriptors.SpinImg->end(); itDesc1++, itDesc2++)
 	{
 		dist += square(*itDesc1 - *itDesc2);
 	}
@@ -680,19 +680,19 @@ float CFeature::descriptorPolarImgDistanceTo(
 
 	ASSERT_(descriptors.PolarImg);
 	ASSERT_(
-	    descriptors.PolarImg->rows() == oFeature.descriptors.PolarImg->rows());
+		descriptors.PolarImg->rows() == oFeature.descriptors.PolarImg->rows());
 	ASSERT_(
-	    descriptors.PolarImg->cols() == oFeature.descriptors.PolarImg->cols());
+		descriptors.PolarImg->cols() == oFeature.descriptors.PolarImg->cols());
 	ASSERT_(
-	    descriptors.hasDescriptorPolarImg() &&
+		descriptors.hasDescriptorPolarImg() &&
 		oFeature.descriptors.hasDescriptorPolarImg());
 	ASSERT_(
-	    descriptors.PolarImg->rows() > 1 && descriptors.PolarImg->cols() > 1);
+		descriptors.PolarImg->rows() > 1 && descriptors.PolarImg->cols() > 1);
 
 	// Call the common method for computing these distances:
 	return internal_distanceBetweenPolarImages(
-	    *descriptors.PolarImg, *oFeature.descriptors.PolarImg, minDistAngle,
-	    normalize_distances, descriptors.polarImgsNoRotation);
+		*descriptors.PolarImg, *oFeature.descriptors.PolarImg, minDistAngle,
+		normalize_distances, descriptors.polarImgsNoRotation);
 
 	MRPT_END
 }  // end descriptorPolarImgDistanceTo
@@ -708,22 +708,22 @@ float CFeature::descriptorLogPolarImgDistanceTo(
 
 	ASSERT_(descriptors.LogPolarImg);
 	ASSERT_(
-	    descriptors.LogPolarImg->rows() ==
-	    oFeature.descriptors.LogPolarImg->rows());
+		descriptors.LogPolarImg->rows() ==
+		oFeature.descriptors.LogPolarImg->rows());
 	ASSERT_(
-	    descriptors.LogPolarImg->cols() ==
-	    oFeature.descriptors.LogPolarImg->cols());
+		descriptors.LogPolarImg->cols() ==
+		oFeature.descriptors.LogPolarImg->cols());
 	ASSERT_(
-	    descriptors.hasDescriptorLogPolarImg() &&
+		descriptors.hasDescriptorLogPolarImg() &&
 		oFeature.descriptors.hasDescriptorLogPolarImg());
 	ASSERT_(
-	    descriptors.LogPolarImg->rows() > 1 &&
-	    descriptors.LogPolarImg->cols() > 1);
+		descriptors.LogPolarImg->rows() > 1 &&
+		descriptors.LogPolarImg->cols() > 1);
 
 	// Call the common method for computing these distances:
 	return internal_distanceBetweenPolarImages(
-	    *descriptors.LogPolarImg, *oFeature.descriptors.LogPolarImg,
-	    minDistAngle, normalize_distances, descriptors.polarImgsNoRotation);
+		*descriptors.LogPolarImg, *oFeature.descriptors.LogPolarImg,
+		minDistAngle, normalize_distances, descriptors.polarImgsNoRotation);
 
 	MRPT_END
 }  // end descriptorPolarImgDistanceTo
@@ -734,7 +734,7 @@ float CFeature::descriptorLogPolarImgDistanceTo(
 uint8_t CFeature::descriptorORBDistanceTo(const CFeature& oFeature) const
 {
 	ASSERT_(
-	    descriptors.hasDescriptorORB() &&
+		descriptors.hasDescriptorORB() &&
 		oFeature.descriptors.hasDescriptorORB());
 	ASSERT_(descriptors.ORB->size() == oFeature.descriptors.ORB->size());
 	const std::vector<uint8_t>& t_desc = *descriptors.ORB;
@@ -766,14 +766,14 @@ float CFeature::descriptorBLDDistanceTo(
 {
 	ASSERT_(descriptors.BLD->size() == oFeature.descriptors.BLD->size());
 	ASSERT_(
-	    descriptors.hasDescriptorBLD() &&
+		descriptors.hasDescriptorBLD() &&
 		oFeature.descriptors.hasDescriptorBLD());
 
 	float dist = 0.0f;
 	std::vector<unsigned char>::const_iterator itDesc1, itDesc2;
 	for (itDesc1 = descriptors.BLD->begin(),
-	    itDesc2 = oFeature.descriptors.BLD->begin();
-	     itDesc1 != descriptors.BLD->end(); itDesc1++, itDesc2++)
+		itDesc2 = oFeature.descriptors.BLD->begin();
+		 itDesc1 != descriptors.BLD->end(); itDesc1++, itDesc2++)
 	{
 		dist += square(*itDesc1 - *itDesc2);
 	}
@@ -791,14 +791,14 @@ float CFeature::descriptorLATCHDistanceTo(
 {
 	ASSERT_(descriptors.LATCH->size() == oFeature.descriptors.LATCH->size());
 	ASSERT_(
-	    descriptors.hasDescriptorLATCH() &&
+		descriptors.hasDescriptorLATCH() &&
 		oFeature.descriptors.hasDescriptorLATCH());
 
 	float dist = 0.0f;
 	std::vector<unsigned char>::const_iterator itDesc1, itDesc2;
 	for (itDesc1 = descriptors.LATCH->begin(),
-	    itDesc2 = oFeature.descriptors.LATCH->begin();
-	     itDesc1 != descriptors.LATCH->end(); itDesc1++, itDesc2++)
+		itDesc2 = oFeature.descriptors.LATCH->begin();
+		 itDesc1 != descriptors.LATCH->end(); itDesc1++, itDesc2++)
 	{
 		dist += square(*itDesc1 - *itDesc2);
 	}
@@ -837,9 +837,9 @@ void CFeature::saveToTextFile(const std::string& filename, bool APPEND)
 			"writing");
 
 	f.printf(
-	    "%5u %2d %7.3f %7.3f %6.2f %2d %2d %6.3f ", (unsigned int)keypoint.ID,
-	    (int)get_type(), keypoint.pt.x, keypoint.pt.y, orientation,
-	    keypoint.octave, (int)keypoint.track_status, keypoint.response);
+		"%5u %2d %7.3f %7.3f %6.2f %2d %2d %6.3f ", (unsigned int)keypoint.ID,
+		(int)get_type(), keypoint.pt.x, keypoint.pt.y, orientation,
+		keypoint.octave, (int)keypoint.track_status, keypoint.response);
 
 	f.printf("%2d ", int(descriptors.hasDescriptorSIFT() ? 1 : 0));
 	if (descriptors.hasDescriptorSIFT())
@@ -921,10 +921,10 @@ void CFeatureList::saveToTextFile(const std::string& filename, bool APPEND)
 	for (auto& feat : *this)
 	{
 		f.printf(
-		    "%5u %2d %7.3f %7.3f %6.2f %2d %2d %6.3f ",
-		    (unsigned int)feat.keypoint.ID, (int)feat.get_type(),
-		    feat.keypoint.pt.x, feat.keypoint.pt.y, feat.orientation,
-		    feat.keypoint.octave, (int)feat.track_status, feat.response);
+			"%5u %2d %7.3f %7.3f %6.2f %2d %2d %6.3f ",
+			(unsigned int)feat.keypoint.ID, (int)feat.get_type(),
+			feat.keypoint.pt.x, feat.keypoint.pt.y, feat.orientation,
+			feat.keypoint.octave, (int)feat.track_status, feat.response);
 
 		f.printf("%2d ", int(feat.descriptors.hasDescriptorSIFT() ? 1 : 0));
 		if (feat.descriptors.hasDescriptorSIFT())
@@ -1130,7 +1130,7 @@ const CFeature* CFeatureList::nearest(
 
 	// Look for the closest feature using KD-tree look up:
 	const size_t closest_idx =
-	    kdTreeClosestPoint2D(x, y, closest_x, closest_y, closest_sqDist);
+		kdTreeClosestPoint2D(x, y, closest_x, closest_y, closest_sqDist);
 	float closest_dist = std::sqrt(closest_sqDist);
 
 	if (closest_dist <= dist_prev)
@@ -1169,10 +1169,10 @@ void CMatchedFeatureList::saveToTextFile(const std::string& filename)
 	for (const auto& p : *this)
 	{
 		os::fprintf(
-		    f, "%d %.3f %.3f %d %.3f %.3f\n",
-		    (unsigned int)(p.first.keypoint.ID), p.first.keypoint.pt.x,
-		    p.first.keypoint.pt.y, (unsigned int)(p.second.keypoint.ID),
-		    p.second.keypoint.pt.x, p.second.keypoint.pt.y);
+			f, "%d %.3f %.3f %d %.3f %.3f\n",
+			(unsigned int)(p.first.keypoint.ID), p.first.keypoint.pt.x,
+			p.first.keypoint.pt.y, (unsigned int)(p.second.keypoint.ID),
+			p.second.keypoint.pt.x, p.second.keypoint.pt.y);
 
 	}  // end for
 	os::fclose(f);
@@ -1285,7 +1285,7 @@ bool CFeature::getFirstDescriptorAsMatrix(mrpt::math::CMatrixFloat& desc) const
 	{
 		const size_t nR = descriptors.SpinImg_range_rows;
 		const size_t nC =
-		    descriptors.SpinImg->size() / descriptors.SpinImg_range_rows;
+			descriptors.SpinImg->size() / descriptors.SpinImg_range_rows;
 		desc.resize(nR, nC);
 		auto itD = descriptors.SpinImg->begin();
 		for (size_t r = 0; r < nR; r++)
