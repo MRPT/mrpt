@@ -30,7 +30,7 @@ struct UnspecializedBool
  * \note In `#include <mrpt/containers/vector_with_small_size_optimization.h>`
  * \ingroup mrpt_containers_grp
  */
-template <typename VAL, size_t small_size, size_t alignment>
+template <typename VAL, size_t small_size, size_t alignment = 16>
 class vector_with_small_size_optimization
 {
    private:
@@ -69,6 +69,7 @@ class vector_with_small_size_optimization
 		using pointer = POINTER;
 		using iterator_category = std::random_access_iterator_tag;
 		using difference_type = typename large_vec::difference_type;
+		iteratorImpl() = default;
 		iteratorImpl(STORAGE ptr) : m_ptr(ptr) {}
 		self operator++()
 		{
@@ -121,7 +122,7 @@ class vector_with_small_size_optimization
 		bool operator!=(const self& o) { return m_ptr != o.m_ptr; }
 
 	   private:
-		STORAGE m_ptr;
+		STORAGE m_ptr{nullptr};
 	};
 
 	using iterator = iteratorImpl<VAL, VAL*, VAL&>;
@@ -135,18 +136,21 @@ class vector_with_small_size_optimization
 			{
 				m_v.assign(m_a.begin(), m_a.begin() + m_size);
 			}
-			else if (!m_is_small && n < small_size)
+			else if (!m_is_small && n <= small_size)
 			{
 				std::copy(m_v.begin(), m_v.begin() + n, m_a.begin());
 			}
 		}
 		m_size = n;
-		m_is_small = n < small_size;
+		m_is_small = (n <= small_size);
 		if (!m_is_small)
 		{
 			m_v.resize(m_size);
 		}
 	}
+
+	size_t size() const { return m_size; }
+	bool empty() const { return m_size == 0; }
 
 	reference operator[](size_type n) { return m_is_small ? m_a[n] : m_v[n]; }
 
@@ -154,6 +158,19 @@ class vector_with_small_size_optimization
 	{
 		return m_is_small ? m_a[n] : m_v[n];
 	}
+
+	const_reference back() const
+	{
+		return m_is_small ? m_a.back() : m_v.back();
+	}
+	reference back() { return m_is_small ? m_a.back() : m_v.back(); }
+
+	const_reference front() const
+	{
+		return m_is_small ? m_a.front() : m_v.front();
+	}
+
+	reference front() { return m_is_small ? m_a.front() : m_v.front(); }
 
 	void swap(vector& x)
 	{
