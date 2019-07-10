@@ -143,31 +143,28 @@ void CFeatureExtraction::extractFeaturesLSD(
 				continue;  // nope, skip.
 
 			// All tests passed: add new feature:
-			CFeature::Ptr ft = std::make_shared<CFeature>();
-			ft->type = featLSD;
-			ft->ID = nextID++;
-			ft->x = kp.pt.x;
-			ft->y = kp.pt.y;
-			ft->x2[0] = pt1.x;
-			ft->x2[1] = pt2.x;
-			ft->y2[0] = pt1.y;
-			ft->y2[1] = pt2.y;
-			ft->response = kl.response;
-			// ft->orientation		= kp.angle;
-			ft->scale = kl.octave;
-			// ft->patchSize		= options.patchSize;		// The size of
-			// the
-			// feature
-			// patch
+			CFeature ft;
+			ft.type = featLSD;
+			ft.keypoint.ID = nextID++;
+			ft.keypoint.pt.x = kp.pt.x;
+			ft.keypoint.pt.y = kp.pt.y;
+			ft.x2[0] = pt1.x;
+			ft.x2[1] = pt2.x;
+			ft.y2[0] = pt1.y;
+			ft.y2[1] = pt2.y;
+			ft.keypoint.response = kl.response;
+			ft.keypoint.octave = kl.octave;
 
 			if (options.patchSize > 0)
 			{
+				mrpt::img::CImage p;
 				inImg.extract_patch(
-					ft->patch, round(ft->x) - offset, round(ft->y) - offset,
+					p, round(kp.pt.x) - offset, round(kp.pt.y) - offset,
 					options.patchSize,
 					options.patchSize);  // Image patch surronding the feature
+				ft.patch = std::move(p);
 			}
-			feats.push_back(ft);
+			feats.emplace_back(std::move(ft));
 		}
 		++cont;
 		// cout << ft->x << "  " << ft->y << endl;
@@ -220,19 +217,16 @@ void CFeatureExtraction::internal_computeBLDLineDescriptors(
 	// -----------------------------------------------------------------
 	// MRPT Wrapping
 	// -----------------------------------------------------------------
-	CFeatureList::iterator itList;
-	int i;
-	for (i = 0, itList = in_features.begin(); itList != in_features.end();
-		 itList++, i++)
+	int i = 0;
+	for (auto& ft : in_features)
 	{
-		CFeature::Ptr ft = *itList;
-
 		// Get the BLD descriptor
-		ft->descriptors.BLD.resize(cv_descs.cols);
+		ft.descriptors.BLD.emplace();
+		auto& desc = ft.descriptors.BLD.value();
+		desc.resize(cv_descs.cols);
 		for (int m = 0; m < cv_descs.cols; ++m)
-			ft->descriptors.BLD[m] =
-				cv_descs.at<int>(i, m);  // Get the SURF descriptor
-	}  // end for
+			desc[m] = cv_descs.at<int>(i, m);
+	}
 
 #endif  // end of opencv3 version check
 }  // end internal_computeBLDDescriptors

@@ -105,7 +105,7 @@ void CFeatureExtraction::extractFeaturesSURF(
 	for (size_t i = 0; i < n_feats; i++)
 	{
 		// Get the OpenCV SURF point
-		CFeature::Ptr ft = std::make_shared<CFeature>();
+		CFeature ft;
 		const KeyPoint& point = cv_feats[i];
 
 		const int xBorderInf = (int)floor(point.pt.x - options.patchSize / 2);
@@ -117,28 +117,33 @@ void CFeatureExtraction::extractFeaturesSURF(
 			((xBorderSup < (int)imgW) && (xBorderInf > 0) &&
 			 (yBorderSup < (int)imgH) && (yBorderInf > 0)))
 		{
-			ft->type = featSURF;
-			ft->x = point.pt.x;  // X position
-			ft->y = point.pt.y;  // Y position
-			ft->orientation = point.angle;  // Orientation
-			ft->scale = point.size * 1.2 / 9;  // Scale
-			ft->ID = nCFeats++;  // Feature ID into extraction
-			ft->patchSize = options.patchSize;  // The size of the feature patch
+			ft.type = featSURF;
+			ft.keypoint.pt.x = point.pt.x;  // X position
+			ft.keypoint.pt.y = point.pt.y;  // Y position
+			ft.orientation = point.angle;  // Orientation
+			ft.keypoint.octave = point.size * 1.2 / 9;  // Scale
+			ft.keypoint.ID = nCFeats++;  // Feature ID into extraction
+			ft.patchSize = options.patchSize;  // The size of the feature patch
 
+			// Image patch?
 			if (options.patchSize > 0)
 			{
+				mrpt::img::CImage p;
 				inImg.extract_patch(
-					ft->patch, round(ft->x) - offset, round(ft->y) - offset,
-					options.patchSize,
-					options.patchSize);  // Image patch surronding the feature
+					p, round(point.pt.x) - offset, round(point.pt.y) - offset,
+					options.patchSize, options.patchSize);
+
+				ft.patch = std::move(p);
 			}
 
 			// Get the SURF descriptor
-			ft->descriptors.SURF.resize(cv_descs.cols);
+			ft.descriptors.SURF.emplace();
+			auto& desc = ft.descriptors.SURF.value();
+			desc.resize(cv_descs.cols);
 			for (int m = 0; m < cv_descs.cols; ++m)
-				ft->descriptors.SURF[m] = cv_descs.at<float>(i, m);
+				desc[m] = cv_descs.at<float>(i, m);
 
-			feats.push_back(ft);
+			feats.emplace_back(std::move(ft));
 
 		}  // end if
 	}  // end for
@@ -170,9 +175,9 @@ void CFeatureExtraction::internal_computeSurfDescriptors(
 	cv_feats.resize(in_features.size());
 	for (size_t i = 0; i < in_features.size(); ++i)
 	{
-		cv_feats[i].pt.x = in_features[i]->x;
-		cv_feats[i].pt.y = in_features[i]->y;
-		cv_feats[i].size = 16;  // sizes[layer];
+		cv_feats[i].pt.x = in_features[i].keypoint.pt.x;
+		cv_feats[i].pt.y = in_features[i].keypoint.pt.y;
+		cv_feats[i].size = 1 << in_features[i].keypoint.octave;
 	}
 
 // Only computes the descriptors:
@@ -211,24 +216,24 @@ void CFeatureExtraction::internal_computeSurfDescriptors(
 	// -----------------------------------------------------------------
 	// MRPT Wrapping
 	// -----------------------------------------------------------------
-	CFeatureList::iterator itList;
-	int i;
-	for (i = 0, itList = in_features.begin(); itList != in_features.end();
-		 itList++, i++)
+	int i = 0;
+	for (auto& ft : in_features)
 	{
 		// Get the OpenCV SURF point
-		CFeature::Ptr ft = *itList;
 		const KeyPoint& point = cv_feats[i];
 
-		ft->orientation = point.angle;  // Orientation
-		ft->scale = point.size * 1.2 / 9;  // Scale
+		ft.orientation = point.angle;
+		ft.keypoint.octave = point.octave;
 
 		// Get the SURF descriptor
-		ft->descriptors.SURF.resize(cv_descs.cols);
+		ft.descriptors.SURF.emplace();
+		auto& desc = ft.descriptors.SURF.value();
+		desc.resize(cv_descs.cols);
 		for (int m = 0; m < cv_descs.cols; ++m)
-			ft->descriptors.SURF[m] =
-				cv_descs.at<float>(i, m);  // Get the SURF descriptor
-	}  // end for
+			desc[m] = cv_descs.at<float>(i, m);
+
+		i++;
+	}
 
 #else
 	THROW_EXCEPTION(
