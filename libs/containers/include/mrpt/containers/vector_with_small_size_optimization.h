@@ -161,15 +161,14 @@ class vector_with_small_size_optimization
 
 	const_reference back() const
 	{
-		return m_is_small ? m_a.back() : m_v.back();
+		return m_is_small ? m_a[m_size - 1] : m_v.back();
 	}
-	reference back() { return m_is_small ? m_a.back() : m_v.back(); }
+	reference back() { return m_is_small ? m_a[m_size - 1] : m_v.back(); }
 
 	const_reference front() const
 	{
 		return m_is_small ? m_a.front() : m_v.front();
 	}
-
 	reference front() { return m_is_small ? m_a.front() : m_v.front(); }
 
 	void swap(vector& x)
