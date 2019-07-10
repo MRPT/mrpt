@@ -48,9 +48,6 @@ TEST(CVectorDouble, resize)
 			v.push_back(double(i));
 			EXPECT_TRUE(v.size() == (i + 1));
 		}
-		for (int i = 0; i < 10; i++)
-		{
-			EXPECT_TRUE(v[i] == i);
-		}
+		for (int i = 0; i < 10; i++) EXPECT_NEAR(v[i], i, 1e-10);
 	}
 }
