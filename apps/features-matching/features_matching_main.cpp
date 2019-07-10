@@ -125,7 +125,7 @@ Descriptors:
 			THROW_EXCEPTION_FMT("Error loading file: %s", file1.c_str());
 	}
 	else
-		mrpt::obs::stock_observations::exampleImage(img1, 1);
+		mrpt::obs::stock_observations::exampleImage(img1, 0);
 
 	if (!file2.empty())
 	{
