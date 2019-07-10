@@ -33,7 +33,7 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
    protected:
 	static constexpr size_t small_size = 16;
 	using vec_t = mrpt::containers::vector_with_small_size_optimization<
-	    T, small_size, MRPT_MAX_STATIC_ALIGN_BYTES>;
+		T, small_size, MRPT_MAX_STATIC_ALIGN_BYTES>;
 
 	vec_t m_data;
 
