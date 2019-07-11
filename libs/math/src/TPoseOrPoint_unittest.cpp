@@ -62,16 +62,6 @@ TEST(LightGeomData, PragmaPack)
 	}
 }
 
-TEST(LightGeomData, ExpectedMemorySizes)
-{
-	EXPECT_EQ(sizeof(TPoint2D), 2 * sizeof(double));
-	EXPECT_EQ(sizeof(TPoint3D), 3 * sizeof(double));
-	EXPECT_EQ(sizeof(TPoint3Df), 3 * sizeof(float));
-	EXPECT_EQ(sizeof(TPose2D), 3 * sizeof(double));
-	EXPECT_EQ(sizeof(TPose3D), 6 * sizeof(double));
-	EXPECT_EQ(sizeof(TPose3DQuat), 7 * sizeof(double));
-}
-
 TEST(LightGeomData, ConstExprCtors)
 {
 	{

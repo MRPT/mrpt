@@ -61,7 +61,7 @@ TEST(SparseMatrix, InitFromDenseUnit)
 
 void do_test_init_random(size_t N)
 {
-	CMatrixDouble dense1;
+	CMatrixDouble dense1(N, N);
 	mrpt::random::getRandomGenerator().drawGaussian1DMatrix(dense1);
 	CSparseMatrix SM(dense1);
 	CMatrixDouble dense_out;
