@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/core/aligned_std_basicstring.h>
+#include <mrpt/containers/vector_with_small_size_optimization.h>
 #include <mrpt/core/exceptions.h>  // ASSERT_()
 #include <mrpt/core/format.h>
 #include <mrpt/math/MatrixBase.h>
@@ -16,7 +16,6 @@
 #include <mrpt/math/matrix_size_t.h>
 #include <mrpt/typemeta/TTypeName.h>
 #include <algorithm>  // swap()
-#include <array>
 #include <cstring>  // memset()
 #include <type_traits>
 
@@ -40,7 +39,9 @@ template <class T>
 class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 {
    private:
-	using vec_t = mrpt::aligned_std_basicstring<T>;
+	static constexpr size_t small_size = 16;
+	using vec_t = mrpt::containers::vector_with_small_size_optimization<
+		T, small_size, MRPT_MAX_STATIC_ALIGN_BYTES>;
 
 	/** RowMajor matrix data */
 	vec_t m_data;
