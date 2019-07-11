@@ -704,6 +704,7 @@ bool CImageGrabber_FlyCapture2::getObservation(
 		FlyCapture2::Image image;
 		error = FC2_CAM->RetrieveBuffer(&image);
 		CHECK_FC2_ERROR(error)
+
 		FlyCapture2::TimeStamp timestamp = image.GetTimeStamp();
 		// White balance, etc.
 		// FlyCapture2::ImageMetadata imd = image.GetMetadata();
@@ -778,7 +779,6 @@ bool CImageGrabber_FlyCapture2::getObservation(
 		// ------------------------------------------
 		// Extract images from common interleaved image:
 		// ------------------------------------------
-		cv::Mat outImages[2];  // [0]:R, [1]:L. Output pair of images
 		FlyCapture2::Image rawImage[2];
 
 		// Convert the pixel interleaved raw data to de-interleaved raw data
@@ -800,29 +800,25 @@ bool CImageGrabber_FlyCapture2::getObservation(
 			FlyCapture2::Image rgbuImage;
 			ferr = rawImage[i].SetColorProcessing(FlyCapture2::HQ_LINEAR);
 			CHECK_FC2_ERROR(ferr)
-			ferr = rawImage[i].Convert(PIXEL_FORMAT_BGRU, &rgbuImage);
+			ferr = rawImage[i].Convert(PIXEL_FORMAT_BGR, &rgbuImage);
 			CHECK_FC2_ERROR(ferr)
-
-			unsigned char* ptrData;  // To store Ipl converted image pointer
 
 			// get unrectified images:
 			rgbuImage.GetDimensions(&img_rows, &img_cols, &img_stride);
-			ptrData = rgbuImage.GetData();
+			uint8_t* ptrData = rgbuImage.GetData();
 
 			// Convert PGR image ==> OpenCV format:
-			cv::Mat tmpImage =
-				cv::Mat(img_cols, img_rows, CV_8UC4, ptrData, img_stride);
+			auto tmpImg =
+				cv::Mat(img_rows, img_cols, CV_8UC3, ptrData, img_stride);
 
-			// Convert images to BGR (3 channels) and set origins
-			outImages[i] = cv::Mat(img_cols, img_rows, CV_8UC3);
-			cv::cvtColor(tmpImage, outImages[i], CV_BGRA2BGR);
+			// Fill output stereo observation
+			auto& im =
+				(i == 0 ? out_observation.imageRight
+						: out_observation.imageLeft);
+			im = mrpt::img::CImage(tmpImg, mrpt::img::DEEP_COPY);
 		}
 
-		/*-------------------------------------------------------------
-							Fill output stereo observation
-		 -------------------------------------------------------------*/
-		out_observation.imageRight.asCvMatRef() = outImages[0];
-		out_observation.imageLeft.asCvMatRef() = outImages[1];
+		out_observation.hasImageRight = true;
 
 		// It seems timestamp is not always correctly filled in the incoming
 		// imgs:
