@@ -1141,6 +1141,22 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 				obs3D->intensityImage = obs3D->intensityImage.grayscale();
 		}
 	}
+
+	// Before saving to disk, keep a copy for display, if needed:
+	CImage img4gui, img4guiR;
+	if (m_preview_win1 && m_preview_win1->isOpen())
+	{
+		if (stObs)
+		{
+			img4gui = stObs->imageLeft.makeDeepCopy();
+			img4guiR = stObs->imageRight.makeDeepCopy();
+		}
+		else if (obs)
+			img4gui = obs->image.makeDeepCopy();
+		else
+			img4gui = obs3D->intensityImage.makeDeepCopy();
+	}
+
 	// External storage?
 	// If true, we'll return nothing, but the observation will be
 	// inserted from the thread.
@@ -1266,48 +1282,40 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 				m_preview_win2 = mrpt::gui::CDisplayWindow::Create(caption);
 			}
 			// Monocular image or Left from a stereo pair:
-			if (m_preview_win1->isOpen())
+			if (m_preview_win1->isOpen() && img4gui.getWidth() > 0)
 			{
-				CImage* img;
-				if (stObs)
-					img = &stObs->imageLeft;
-				else if (obs)
-					img = &obs->image;
-				else
-					img = &obs3D->intensityImage;
-
 				// Apply image reduction?
 				if (m_preview_reduction >= 2)
 				{
-					unsigned int w = img->getWidth();
-					unsigned int h = img->getHeight();
+					unsigned int w = img4gui.getWidth();
+					unsigned int h = img4gui.getHeight();
 					CImage auxImg;
-					img->scaleImage(
+					img4gui.scaleImage(
 						auxImg, w / m_preview_reduction,
 						h / m_preview_reduction, IMG_INTERP_NN);
 					m_preview_win1->showImage(auxImg);
 				}
 				else
-					m_preview_win1->showImage(*img);
+					m_preview_win1->showImage(img4gui);
 			}
 
 			// Right from a stereo pair:
 			if (m_preview_win2 && m_preview_win2->isOpen() && stObs &&
-				stObs->hasImageRight)
+				stObs->hasImageRight && img4gui.getWidth() > 0)
 			{
 				// Apply image reduction?
 				if (m_preview_reduction >= 2)
 				{
-					unsigned int w = stObs->imageRight.getWidth();
-					unsigned int h = stObs->imageRight.getHeight();
+					unsigned int w = img4guiR.getWidth();
+					unsigned int h = img4guiR.getHeight();
 					CImage auxImg;
-					stObs->imageRight.scaleImage(
+					img4guiR.scaleImage(
 						auxImg, w / m_preview_reduction,
 						h / m_preview_reduction, IMG_INTERP_NN);
 					m_preview_win2->showImage(auxImg);
 				}
 				else
-					m_preview_win2->showImage(stObs->imageRight);
+					m_preview_win2->showImage(img4guiR);
 			}
 
 			// Disparity from a stereo pair:

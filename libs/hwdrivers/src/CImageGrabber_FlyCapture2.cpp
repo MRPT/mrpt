@@ -223,8 +223,6 @@ void TCaptureOptions_FlyCapture2::loadOptionsFrom(
 
 	stereo_mode =
 		cfg.read_bool(sect, prefix + string("stereo_mode"), stereo_mode);
-	get_rectified =
-		cfg.read_bool(sect, prefix + string("get_rectified"), get_rectified);
 	rect_width =
 		cfg.read_uint64_t(sect, prefix + string("rect_width"), rect_width);
 	rect_height =
@@ -579,7 +577,7 @@ void CImageGrabber_FlyCapture2::startSyncCapture(
 		if (!obj->m_camera)
 		{
 			THROW_EXCEPTION_FMT(
-				"Camera #%i in list is not opened. Call open() first.", i)
+				"Camera #%i in list is not opened. Call open() first.", i);
 		}
 
 		FlyCapture2::Camera* cam =
@@ -706,6 +704,7 @@ bool CImageGrabber_FlyCapture2::getObservation(
 		FlyCapture2::Image image;
 		error = FC2_CAM->RetrieveBuffer(&image);
 		CHECK_FC2_ERROR(error)
+
 		FlyCapture2::TimeStamp timestamp = image.GetTimeStamp();
 		// White balance, etc.
 		// FlyCapture2::ImageMetadata imd = image.GetMetadata();
@@ -768,7 +767,6 @@ bool CImageGrabber_FlyCapture2::getObservation(
 	{
 		FlyCapture2::Error ferr;
 		Fc2Triclops::ErrorType fterr;
-		TriclopsError te;
 		FlyCapture2::Image image;
 		ferr = FC2_CAM->RetrieveBuffer(&image);
 		CHECK_FC2_ERROR(ferr)
@@ -781,7 +779,6 @@ bool CImageGrabber_FlyCapture2::getObservation(
 		// ------------------------------------------
 		// Extract images from common interleaved image:
 		// ------------------------------------------
-		IplImage* imageIpl[2];  // Output pair of images
 		FlyCapture2::Image rawImage[2];
 
 		// Convert the pixel interleaved raw data to de-interleaved raw data
@@ -803,64 +800,25 @@ bool CImageGrabber_FlyCapture2::getObservation(
 			FlyCapture2::Image rgbuImage;
 			ferr = rawImage[i].SetColorProcessing(FlyCapture2::HQ_LINEAR);
 			CHECK_FC2_ERROR(ferr)
-			ferr = rawImage[i].Convert(PIXEL_FORMAT_BGRU, &rgbuImage);
+			ferr = rawImage[i].Convert(PIXEL_FORMAT_BGR, &rgbuImage);
 			CHECK_FC2_ERROR(ferr)
 
-			unsigned char* data::Ptr;  // To store Ipl converted image pointer
-			if (m_options.get_rectified)  // If rectified
-			{
-				// Use the rgbu single image to build up a packed (rbgu)
-				// TriclopsInput.
-				// A packed triclops input will contain a single image with 32
-				// bpp.
-				TriclopsInput triclopsColorInput;
-				te = triclopsBuildPackedTriclopsInput(
-					rgbuImage.GetCols(), rgbuImage.GetRows(),
-					rgbuImage.GetStride(),
-					(unsigned long)image.GetTimeStamp().seconds,
-					(unsigned long)image.GetTimeStamp().microSeconds,
-					rgbuImage.GetData(), &triclopsColorInput);
+			// get unrectified images:
+			rgbuImage.GetDimensions(&img_rows, &img_cols, &img_stride);
+			uint8_t* ptrData = rgbuImage.GetData();
 
-				// Do rectification
-				TriclopsPackedColorImage rectPackColImg;
-				te = triclopsRectifyPackedColorImage(
-					*(TRI_CONTEXT), i == 0 ? TriCam_RIGHT : TriCam_LEFT,
-					const_cast<TriclopsInput*>(&triclopsColorInput),
-					&rectPackColImg);
-				CHECK_TRICLOPS_ERROR(te)
-
-				// Set image properties for reallocation
-				img_rows = rectPackColImg.nrows;
-				img_cols = rectPackColImg.ncols;
-				img_stride = rectPackColImg.rowinc;
-				data::Ptr = (unsigned char*)rectPackColImg.data;
-			}
-			else  // If not rectified
-			{
-				rgbuImage.GetDimensions(&img_rows, &img_cols, &img_stride);
-				data::Ptr = rgbuImage.GetData();
-			}
 			// Convert PGR image ==> OpenCV format:
-			IplImage* tmpImage =
-				cvCreateImage(cvSize(img_cols, img_rows), IPL_DEPTH_8U, 4);
+			auto tmpImg =
+				cv::Mat(img_rows, img_cols, CV_8UC3, ptrData, img_stride);
 
-			// Copy image data
-			memcpy(tmpImage->imageData, data::Ptr, img_rows * img_stride);
-			tmpImage->widthStep = img_stride;
-			// Convert images to BGR (3 channels) and set origins
-			imageIpl[i] =
-				cvCreateImage(cvSize(img_cols, img_rows), IPL_DEPTH_8U, 3);
-			cvCvtColor(tmpImage, imageIpl[i], CV_BGRA2BGR);
-			imageIpl[i]->origin = tmpImage->origin;
-			// Release temp images
-			cvReleaseImage(&tmpImage);
+			// Fill output stereo observation
+			auto& im =
+				(i == 0 ? out_observation.imageRight
+						: out_observation.imageLeft);
+			im = mrpt::img::CImage(tmpImg, mrpt::img::DEEP_COPY);
 		}
 
-		/*-------------------------------------------------------------
-							Fill output stereo observation
-		 -------------------------------------------------------------*/
-		out_observation.imageRight.setFromIplImage(imageIpl[0]);  // Right cam.
-		out_observation.imageLeft.setFromIplImage(imageIpl[1]);  // Left cam.
+		out_observation.hasImageRight = true;
 
 		// It seems timestamp is not always correctly filled in the incoming
 		// imgs:
