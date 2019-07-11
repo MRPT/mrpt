@@ -8,14 +8,13 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/core/aligned_std_basicstring.h>
+#include <mrpt/containers/vector_with_small_size_optimization.h>
 #include <mrpt/core/exceptions.h>  // ASSERT_()
 #include <mrpt/math/MatrixVectorBase.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/math/matrix_size_t.h>
 #include <mrpt/serialization/serialization_frwds.h>
 #include <mrpt/typemeta/TTypeName.h>
-#include <array>
 #include <cstring>  // memset()
 #include <type_traits>
 
@@ -32,7 +31,10 @@ template <class T>
 class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
 {
    protected:
-	using vec_t = mrpt::aligned_std_basicstring<T>;
+	static constexpr size_t small_size = 16;
+	using vec_t = mrpt::containers::vector_with_small_size_optimization<
+		T, small_size, MRPT_MAX_STATIC_ALIGN_BYTES>;
+
 	vec_t m_data;
 
    public:
