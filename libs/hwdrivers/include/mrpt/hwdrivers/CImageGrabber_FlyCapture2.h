@@ -101,12 +101,10 @@ struct TCaptureOptions_FlyCapture2
 
 	/** (default=false) Obtain images as stereo pairs with Flycapture2 */
 	bool stereo_mode{false};
-	/** (default=false) Rectify stereo images (needs Triclops installed) */
-	bool get_rectified{false};
-	/** (default=640) Width for output rectified images */
-	unsigned int rect_width{640};
-	/** (default=480) Height for output rectified images */
-	unsigned int rect_height{480};
+	/** (default=800) Width for output rectified images */
+	unsigned int rect_width{800};
+	/** (default=600) Height for output rectified images */
+	unsigned int rect_height{600};
 	/** @} */
 
 	// clang-format off
@@ -152,7 +150,6 @@ struct TCaptureOptions_FlyCapture2
 	  * #gain_dB;           //!< (default=0.0) Sensor gain, if gain_auto=false
 	  *
 	  * flycap_stereo_mode	= 1	// (default=0) Obtain images as stereo pairs with Flycapture2
-	  * flycap_get_rectified	= 1	// (default=0) Rectify stereo images (needs Triclops installed)
 	  * flycap_rect_width	= 320	// (default=640) Width for output rectified images
 	  * flycap_rect_height	= 240	// (default=480) Height for output rectified images
 	  *

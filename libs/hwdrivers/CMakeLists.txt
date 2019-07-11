@@ -294,7 +294,6 @@ if(BUILD_mrpt-hwdrivers)
 		include_directories(${PGR_TRICLOPS_INCLUDE_DIR})
 		target_link_libraries(hwdrivers PRIVATE ${PGR_TRICLOPS_LIB_FILE_RELEASE})
 		target_link_libraries(hwdrivers PRIVATE ${PGR_FC2BRIDGE_LIB_FILE_RELEASE})
-		#target_link_libraries(hwdrivers PRIVATE  ${PGR_PNMUTILS_LIB_FILE_RELEASE}) # Not used in mrpt
 		# Windows: Set dll as DELAYLOAD, so users without that driver can use precompiled binaries:
 		if(MSVC)
 			get_filename_component(PGR_TRICLOPS_LIBNAME ${PGR_TRICLOPS_LIB_FILE_RELEASE} NAME_WE)
