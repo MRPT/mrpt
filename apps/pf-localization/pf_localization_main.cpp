@@ -145,12 +145,49 @@ struct pf2gauss_t<CMonteCarloLocalization2D>
 {
 	using type = CPosePDFGaussian;
 	static constexpr bool PF_IS_3D = false;
+
+	static void resetOnFreeSpace(
+		CMonteCarloLocalization2D& pdf, mrpt::maps::CMultiMetricMap& metricMap,
+		size_t PARTICLE_COUNT, const mrpt::math::TPose3D& init_min,
+		const mrpt::math::TPose3D& init_max)
+	{
+		pdf.resetUniformFreeSpace(
+			metricMap.mapByClass<COccupancyGridMap2D>().get(), 0.7f,
+			PARTICLE_COUNT, init_min.x, init_max.x, init_min.y, init_max.y,
+			init_min.yaw, init_max.yaw);
+	}
+
+	static void resetUniform(
+		CMonteCarloLocalization2D& pdf, size_t PARTICLE_COUNT,
+		const mrpt::math::TPose3D& init_min,
+		const mrpt::math::TPose3D& init_max)
+	{
+		pdf.resetUniform(
+			init_min.x, init_max.x, init_min.y, init_max.y, init_min.yaw,
+			init_max.yaw, PARTICLE_COUNT);
+	}
 };
 template <>
 struct pf2gauss_t<CMonteCarloLocalization3D>
 {
 	using type = CPose3DPDFGaussian;
 	static constexpr bool PF_IS_3D = true;
+
+	static void resetOnFreeSpace(
+		CMonteCarloLocalization3D& pdf, mrpt::maps::CMultiMetricMap& metricMap,
+		size_t PARTICLE_COUNT, const mrpt::math::TPose3D& init_min,
+		const mrpt::math::TPose3D& init_max)
+	{
+		THROW_EXCEPTION("init_PDF_mode=0 not supported for 3D particles");
+	}
+
+	static void resetUniform(
+		CMonteCarloLocalization3D& pdf, size_t PARTICLE_COUNT,
+		const mrpt::math::TPose3D& init_min,
+		const mrpt::math::TPose3D& init_max)
+	{
+		pdf.resetUniform(init_min, init_max, PARTICLE_COUNT);
+	}
 };
 
 // ------------------------------------------------------
@@ -503,32 +540,14 @@ void do_pf_localization(
 					/*Fail if not found*/ true))
 			{
 				// Reset uniform on free space:
-				if constexpr (pf2gauss_t<MONTECARLO_TYPE>::PF_IS_3D)
-				{
-					THROW_EXCEPTION(
-						"init_PDF_mode=0 not supported for 3D particles");
-				}
-				else
-				{
-					pdf.resetUniformFreeSpace(
-						metricMap.mapByClass<COccupancyGridMap2D>().get(), 0.7f,
-						PARTICLE_COUNT, init_min.x, init_max.x, init_min.y,
-						init_max.y, init_min.yaw, init_max.yaw);
-				}
+				pf2gauss_t<MONTECARLO_TYPE>::resetOnFreeSpace(
+					pdf, metricMap, PARTICLE_COUNT, init_min, init_max);
 			}
 			else
 			{
 				// Reset uniform:
-				if constexpr (pf2gauss_t<MONTECARLO_TYPE>::PF_IS_3D)
-				{
-					pdf.resetUniform(init_min, init_max, PARTICLE_COUNT);
-				}
-				else
-				{
-					pdf.resetUniform(
-						init_min.x, init_max.x, init_min.y, init_max.y,
-						init_min.yaw, init_max.yaw, PARTICLE_COUNT);
-				}
+				pf2gauss_t<MONTECARLO_TYPE>::resetUniform(
+					pdf, PARTICLE_COUNT, init_min, init_max);
 			}
 
 			printf(
@@ -680,7 +699,7 @@ void do_pf_localization(
 						// Show 3D?
 						if (SHOW_PROGRESS_3D_REAL_TIME)
 						{
-							const auto [cov, meanPose] =
+							const auto[cov, meanPose] =
 								pdf.getCovarianceAndMean();
 
 							if (rawlogEntry >= 2)
@@ -712,12 +731,8 @@ void do_pf_localization(
 									el =
 										mrpt::ptr_cast<CEllipsoid>::from(ellip);
 								}
-								double ellipse_z;
-								if constexpr (pf2gauss_t<
-												  MONTECARLO_TYPE>::PF_IS_3D)
-									ellipse_z = meanPose.z();
-								else
-									ellipse_z = 0.05;
+								double ellipse_z =
+									mrpt::poses::CPose3D(meanPose).z() + 0.01;
 
 								ellip->setLocation(
 									meanPose.x(), meanPose.y(), ellipse_z);
@@ -835,7 +850,7 @@ void do_pf_localization(
 							expectedPose.distanceTo(odometryEstimation));
 					}
 
-					const auto [C, M] = pdf.getCovarianceAndMean();
+					const auto[C, M] = pdf.getCovarianceAndMean();
 					const auto current_pdf_gaussian =
 						typename pf2gauss_t<MONTECARLO_TYPE>::type(M, C);
 
@@ -963,7 +978,7 @@ void do_pf_localization(
 							odometryEstimation.y(), odometryEstimation.phi());
 					}
 
-					const auto [cov, meanPose] = pdf.getCovarianceAndMean();
+					const auto[cov, meanPose] = pdf.getCovarianceAndMean();
 
 					if ((!SAVE_STATS_ONLY && SCENE3D_FREQ > 0) ||
 						SHOW_PROGRESS_3D_REAL_TIME)
