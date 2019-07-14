@@ -117,7 +117,9 @@ class vector_with_small_size_optimization
 		}
 		difference_type operator-(const self& o) { return m_ptr - o.m_ptr; }
 		REFERENCE operator*() { return *m_ptr; }
+		const REFERENCE operator*() const { return *m_ptr; }
 		POINTER operator->() { return m_ptr; }
+		const POINTER operator->() const { return m_ptr; }
 		bool operator==(const self& o) { return m_ptr == o.m_ptr; }
 		bool operator!=(const self& o) { return m_ptr != o.m_ptr; }
 
