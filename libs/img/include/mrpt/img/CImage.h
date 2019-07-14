@@ -664,6 +664,9 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	/** Returns true if the image is RGB, false if it is grayscale */
 	bool isColor() const;
 
+	/** Returns true if the object is in the state after default constructor */
+	bool isEmpty() const;
+
 	/** Returns true (as of MRPT v2.0.0, it's fixed) */
 	bool isOriginTopLeft() const;
 

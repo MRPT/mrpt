@@ -840,7 +840,7 @@ void CImage::getSize(TImageSize& s) const
 	s.x = m_impl->img.cols;
 	s.y = m_impl->img.rows;
 #else
-	THROW_EXCEPTION("MRPT built without MATLAB/Mex support");
+	THROW_EXCEPTION("MRPT built without OpenCV support");
 #endif
 }
 
@@ -861,7 +861,7 @@ std::string CImage::getChannelsOrder() const
 	IplImage ipl(m_impl->img);
 	return std::string(ipl.channelSeq);
 #else
-	THROW_EXCEPTION("MRPT built without MATLAB/Mex support");
+	THROW_EXCEPTION("MRPT built without OpenCV support");
 #endif
 }
 
@@ -871,7 +871,7 @@ size_t CImage::getRowStride() const
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 	return m_impl->img.step[0];
 #else
-	THROW_EXCEPTION("MRPT built without MATLAB/Mex support");
+	THROW_EXCEPTION("MRPT built without OpenCV support");
 #endif
 }
 
@@ -891,7 +891,16 @@ bool CImage::isColor() const
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 	return m_impl->img.channels() == 3;
 #else
-	THROW_EXCEPTION("MRPT built without MATLAB/Mex support");
+	THROW_EXCEPTION("MRPT built without OpenCV support");
+#endif
+}
+
+bool CImage::isEmpty() const
+{
+#if MRPT_HAS_OPENCV
+	return m_imgIsExternalStorage || m_impl->img.empty();
+#else
+	THROW_EXCEPTION("MRPT built without OpenCV support");
 #endif
 }
 
@@ -901,7 +910,7 @@ TImageChannels CImage::getChannelCount() const
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 	return static_cast<TImageChannels>(m_impl->img.channels());
 #else
-	THROW_EXCEPTION("MRPT built without MATLAB/Mex support");
+	THROW_EXCEPTION("MRPT built without OpenCV support");
 #endif
 }
 
