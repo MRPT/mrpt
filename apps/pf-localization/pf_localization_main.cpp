@@ -699,7 +699,7 @@ void do_pf_localization(
 						// Show 3D?
 						if (SHOW_PROGRESS_3D_REAL_TIME)
 						{
-							const auto[cov, meanPose] =
+							const auto [cov, meanPose] =
 								pdf.getCovarianceAndMean();
 
 							if (rawlogEntry >= 2)
@@ -850,7 +850,7 @@ void do_pf_localization(
 							expectedPose.distanceTo(odometryEstimation));
 					}
 
-					const auto[C, M] = pdf.getCovarianceAndMean();
+					const auto [C, M] = pdf.getCovarianceAndMean();
 					const auto current_pdf_gaussian =
 						typename pf2gauss_t<MONTECARLO_TYPE>::type(M, C);
 
@@ -978,7 +978,7 @@ void do_pf_localization(
 							odometryEstimation.y(), odometryEstimation.phi());
 					}
 
-					const auto[cov, meanPose] = pdf.getCovarianceAndMean();
+					const auto [cov, meanPose] = pdf.getCovarianceAndMean();
 
 					if ((!SAVE_STATS_ONLY && SCENE3D_FREQ > 0) ||
 						SHOW_PROGRESS_3D_REAL_TIME)
