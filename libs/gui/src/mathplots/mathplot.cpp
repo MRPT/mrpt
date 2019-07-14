@@ -104,7 +104,7 @@ wxBitmap mpLayer::GetColourSquare(int side)
 {
 	wxBitmap square(side, side, -1);
 	wxColour filler = m_pen.GetColour();
-	wxBrush brush(filler, wxSOLID);
+	wxBrush brush(filler, wxBRUSHSTYLE_SOLID);
 	wxMemoryDC dc;
 	dc.SelectObject(square);
 	dc.SetBackground(brush);
@@ -1617,7 +1617,7 @@ void mpWindow::OnMouseMove(wxMouseEvent& event)
 			if (m_movingInfoLayer == nullptr)
 			{
 				wxClientDC dc(this);
-				wxPen pen(*wxBLACK, 1, wxDOT);
+				wxPen pen(*wxBLACK, 1, wxPENSTYLE_DOT);
 				dc.SetPen(pen);
 				dc.SetBrush(*wxTRANSPARENT_BRUSH);
 				dc.DrawRectangle(
@@ -2224,7 +2224,8 @@ void mpWindow::OnPaint(wxPaintEvent& WXUNUSED(event))
 		// 	int centerY = (m_scrY - m_marginTop - m_marginBottom)/2; // -
 		// m_marginTop; // c.y = m_scrY/2;
 		/*SetScrollbars(1, 1, (int) ((m_maxX - m_minX)*m_scaleX), (int) ((m_maxY
-		 * - m_minY)*m_scaleY));*/  //, x2p(m_posX + centerX/m_scaleX), y2p(m_posY - centerY/m_scaleY), true);
+		 * - m_minY)*m_scaleY));*/  //, x2p(m_posX + centerX/m_scaleX),
+									// y2p(m_posY - centerY/m_scaleY), true);
 	}
 }
 
