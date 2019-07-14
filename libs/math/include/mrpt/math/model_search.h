@@ -11,6 +11,7 @@
 
 #include <cstdint>
 #include <set>
+#include <vector>
 
 namespace mrpt::math
 {
@@ -105,4 +106,5 @@ class ModelSearch
 
 }  // namespace mrpt::math
 // Template implementations:
+#define math_modelsearch_h
 #include "model_search_impl.h"
