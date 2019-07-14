@@ -13,8 +13,11 @@
 #include "model_search.h"
 #endif
 
+#include <mrpt/core/exceptions.h>  // ASSERT_()
+#include <algorithm>  // std::max(),...
 #include <cmath>
 #include <limits>
+#include <string>
 
 namespace mrpt::math
 {
@@ -112,12 +115,11 @@ bool ModelSearch::geneticSingleModel(
 	storage.resize(p_populationSize);
 	population.reserve(p_populationSize);
 	sortedPopulation.reserve(p_populationSize);
-	for (typename std::vector<Species>::iterator it = storage.begin();
-		 it != storage.end(); it++)
+	for (auto& d : storage)
 	{
-		pickRandomIndex(sampleCount, p_kernelSize, it->sample);
-		population.push_back(&*it);
-		sortedPopulation.push_back(&*it);
+		pickRandomIndex(sampleCount, p_kernelSize, d.sample);
+		population.push_back(&d);
+		sortedPopulation.push_back(&d);
 	}
 
 	size_t iter = 0;
