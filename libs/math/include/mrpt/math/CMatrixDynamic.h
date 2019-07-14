@@ -501,7 +501,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 	{
 		out.clear();
 		out.reserve(m_Rows * m_Cols);
-		out.insert(out.end(), m_data.begin(), m_data.end());
+		for (const auto& d : m_data) out.push_back(d);
 	}
 
 	/** Get as an Eigen-compatible Eigen::Map object  */
