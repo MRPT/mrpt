@@ -171,6 +171,9 @@ void CTexturedObject::loadTextureInOpenGL() const
 	static mrpt::system::CTimeLogger tim;
 #endif
 
+	// Do nothing until we are assigned an image.
+	if (m_textureImage.isEmpty()) return;
+
 	try
 	{
 		if (m_texture_is_loaded)
