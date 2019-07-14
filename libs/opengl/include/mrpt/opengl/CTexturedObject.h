@@ -26,12 +26,12 @@ class CTexturedObject : public CRenderizableDisplayList
    protected:
 	mutable unsigned int m_glTextureName{0};
 	mutable bool m_texture_is_loaded{false};
-	mutable mrpt::img::CImage m_textureImage;
+	mutable mrpt::img::CImage m_textureImage{4, 4};
 	mutable mrpt::img::CImage m_textureImageAlpha;
 	/** Of the texture using "m_textureImageAlpha" */
 	mutable bool m_enableTransparency{false};
 	/** Size of the texture image, rounded up to next power of 2 */
-	mutable int r_width{0}, r_height{0};
+	mutable int r_width{1}, r_height{1};
 	/** The size of the fill in pixels in the textured image, w.r.t the image
 	 * passed by the user. */
 	mutable int m_pad_x_right{0}, m_pad_y_bottom{0};
