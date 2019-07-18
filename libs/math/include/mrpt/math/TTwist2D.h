@@ -80,6 +80,15 @@ struct TTwist2D : public internal::ProvideStaticResize<TTwist2D>
 	/** Returns the pose increment of multiplying each twist component times
 	 * "dt" seconds. */
 	mrpt::math::TPose2D operator*(const double dt) const;
+
+	/** Scale factor */
+	void operator*=(const double k)
+	{
+		vx *= k;
+		vy *= k;
+		omega *= k;
+	}
+
 	/** Returns a human-readable textual representation of the object (eg: "[vx
 	 * vy omega]", omega in deg/s)
 	 * \sa fromString
