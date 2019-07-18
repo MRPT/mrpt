@@ -572,10 +572,29 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(
 	}
 }
 
-CParameterizedTrajectoryGenerator::TNavDynamicState::TNavDynamicState()
-	: curVelLocal(0, 0, 0), relTarget(20.0, 0, 0)
-
+mrpt::math::TTwist2D CParameterizedTrajectoryGenerator::getPathTwist(
+	uint16_t k, uint32_t step) const
 {
+	if (step > 0)
+	{
+		// Numerical estimate of "global" (wrt current, start of path) direction
+		// of motion:
+		const auto curPose = getPathPose(k, step);
+		const auto prevPose = getPathPose(k, step - 1);
+		const double dt = getPathStepDuration();
+		ASSERT_ABOVE_(dt, .0);
+
+		auto vel = mrpt::math::TTwist2D(
+			curPose.x - prevPose.x, curPose.y - prevPose.y,
+			mrpt::math::angDistance(prevPose.phi, curPose.phi));
+		vel *= (1.0 / dt);
+		return vel;
+	}
+	else
+	{
+		// Initial velocity:
+		return m_nav_dyn_state.curVelLocal;
+	}
 }
 
 bool CParameterizedTrajectoryGenerator::TNavDynamicState::operator==(
