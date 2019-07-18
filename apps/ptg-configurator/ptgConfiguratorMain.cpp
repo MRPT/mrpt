@@ -1140,42 +1140,34 @@ void ptgConfiguratorframe::rebuild3Dview()
 				robotPath_w.resize(nSteps);
 			}
 
-			mrpt::math::TPose2D prevPose, curPose;
 			double maxRobotHeadErr = .0;
 			for (size_t j = 0; j < nSteps; j++)
 			{
-				ptg->getPathPose(k, j, curPose);
-				if (j != 0)
+				const mrpt::math::TPose2D curPose = ptg->getPathPose(k, j);
+				const mrpt::math::TTwist2D curVel = ptg->getPathTwist(k, j);
+
+				// Head calc:
+				const double head2dir =
+					(curVel.vy != 0 || curVel.vx != 0)
+						? mrpt::math::angDistance(
+							  ::atan2(curVel.vy, curVel.vx), curPose.phi)
+						: .0;
+
+				if (is_selected_path)
 				{
-					// Numerical estimate of global direction of motion:
-					const double dx = curPose.x - prevPose.x,
-								 dy = curPose.y - prevPose.y,
-								 dphi = mrpt::math::angDistance(
-									 prevPose.phi, curPose.phi);
+					robotHeadAng_x[j] = j * dt;
+					robotHeadAng_y[j] = mrpt::RAD2DEG(head2dir);
+					robotPath_x[j] = curPose.x;
+					robotPath_y[j] = curPose.y;
+					robotPath_phi[j] = mrpt::RAD2DEG(curPose.phi);
+					robotPath_dist[j] = ptg->getPathDist(k, j);
 
-					// Head calc:
-					const double head2dir =
-						(dy != 0 || dx != 0) ? mrpt::math::angDistance(
-												   ::atan2(dy, dx), curPose.phi)
-											 : .0;
-
-					if (is_selected_path)
-					{
-						robotHeadAng_x[j] = j * dt;
-						robotHeadAng_y[j] = mrpt::RAD2DEG(head2dir);
-						robotPath_x[j] = curPose.x;
-						robotPath_y[j] = curPose.y;
-						robotPath_phi[j] = mrpt::RAD2DEG(curPose.phi);
-						robotPath_dist[j] = ptg->getPathDist(k, j);
-
-						robotPath_vx[j] = dx / dt;
-						robotPath_vy[j] = dy / dt;
-						robotPath_w[j] = mrpt::RAD2DEG(dphi / dt);
-					}
-
-					mrpt::keep_max(maxRobotHeadErr, std::abs(head2dir));
+					robotPath_vx[j] = curVel.vx;
+					robotPath_vy[j] = curVel.vy;
+					robotPath_w[j] = mrpt::RAD2DEG(curVel.omega);
 				}
-				prevPose = curPose;
+
+				mrpt::keep_max(maxRobotHeadErr, std::abs(head2dir));
 			}
 
 			robotHeadAngAll_y[k] = mrpt::RAD2DEG(maxRobotHeadErr);
