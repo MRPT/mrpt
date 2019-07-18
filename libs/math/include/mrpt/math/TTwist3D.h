@@ -92,6 +92,17 @@ struct TTwist3D : public internal::ProvideStaticResize<TTwist3D>
 		return (*this)[row];
 	}
 
+	/** Scale factor */
+	void operator*=(const double k)
+	{
+		vx *= k;
+		vy *= k;
+		vz *= k;
+		wx *= k;
+		wy *= k;
+		wz *= k;
+	}
+
 	/** Transformation into vector [vx vy vz wx wy wz] */
 	template <typename VECTORLIKE>
 	void asVector(VECTORLIKE& v) const
