@@ -56,10 +56,10 @@ struct TGap
 	int    k_best_eval; //!< Direction with the best evaluation inside the gap.
 
 	TGap() :
-		k_from(-1), k_to(-1), 
-		min_eval(std::numeric_limits<double>::max()), 
-		max_eval(-std::numeric_limits<double>::max()), 
-		contains_target_k(false), 
+		k_from(-1), k_to(-1),
+		min_eval(std::numeric_limits<double>::max()),
+		max_eval(-std::numeric_limits<double>::max()),
+		contains_target_k(false),
 		k_best_eval(-1)
 	{}
 };
@@ -145,47 +145,69 @@ void CHolonomicFullEval::evalSingleTarget(unsigned int target_idx, const NavInpu
 			mrpt::utils::keep_min(scores[0], max_real_freespace_norm);
 		}
 
-		// Factor #2: Closest approach to target along straight line (Euclidean)
-		// -------------------------------------------
-		mrpt::math::TSegment2D sg;
-		sg.point1.x = 0;
-		sg.point1.y = 0;
-		sg.point2.x = x;
-		sg.point2.y = y;
-
-		// Range of attainable values: 0=passes thru target. 2=opposite direction
-		double min_dist_target_along_path = sg.distance(target);
-
-		// Idea: if this segment is taking us *away* from target, don't make the segment to start at (0,0), since all
-		// paths "running away" will then have identical minimum distances to target. Use the middle of the segment instead:
-		const double endpt_dist_to_target = (target - TPoint2D(x, y)).norm();
-		const double endpt_dist_to_target_norm = std::min(1.0, endpt_dist_to_target);
-
-		if (
-			(endpt_dist_to_target_norm > target_dist && endpt_dist_to_target_norm >= 0.95 * target_dist)
-			&& min_dist_target_along_path > 1.05 * std::min(target_dist, endpt_dist_to_target_norm) // the path does not get any closer to trg
-			//|| (ni.obstacles[i]<0.95*target_dist)
-			)
+		if (target_dist < 1.0 - options.TOO_CLOSE_OBSTACLE &&
+			ni.obstacles[i] > 1.05 * target_dist)
 		{
-			// path takes us away or way blocked:
-			sg.point1.x = x*0.5;
-			sg.point1.y = y*0.5;
-			min_dist_target_along_path = sg.distance(target);
+			// Yes: this direction has more free space than required to reach
+			// target:
+
+			// Factor #2: Closest approach to target along straight line
+			// (Euclidean)
+			// -------------------------------------------
+			mrpt::math::TSegment2D sg;
+			sg.point1.x = 0;
+			sg.point1.y = 0;
+			sg.point2.x = x;
+			sg.point2.y = y;
+
+			// Range of attainable values: 0=passes thru target. 2=opposite
+			// direction
+			double min_dist_target_along_path = sg.distance(target);
+
+			// Idea: if this segment is taking us *away* from target, don't make
+			// the segment to start at (0,0), since all paths "running away"
+			// will then have identical minimum distances to target. Use the
+			// middle of the segment instead:
+			const double endpt_dist_to_target =
+				(target - TPoint2D(x, y)).norm();
+			const double endpt_dist_to_target_norm =
+				std::min(1.0, endpt_dist_to_target);
+
+			if ((endpt_dist_to_target_norm > target_dist &&
+				 endpt_dist_to_target_norm >= 0.95 * target_dist) &&
+				/* the path does not get any closer to trg */
+				min_dist_target_along_path >
+					1.05 * std::min(target_dist, endpt_dist_to_target_norm))
+			{
+				// path takes us away or way blocked:
+				sg.point1.x = x * 0.5;
+				sg.point1.y = y * 0.5;
+				min_dist_target_along_path = sg.distance(target);
+			}
+
+			scores[1] = 1.0 / (1.0 + square(min_dist_target_along_path));
+
+			// Factor #3: Distance of end collision-free point to target
+			// (Euclidean)
+			// -----------------------------------------------------
+			scores[2] = std::sqrt(1.01 - endpt_dist_to_target_norm);
+			// the 1.01 instead of 1.0 is to be 100% sure we don't get a domain
+			// error in sqrt()
 		}
-
-		scores[1] = 1.0 / (1.0 + square(min_dist_target_along_path) );
-
-		// Factor #3: Distance of end collision-free point to target (Euclidean)
-		// -----------------------------------------------------
+		else
 		{
-			scores[2] = std::sqrt(1.01 - endpt_dist_to_target_norm); // the 1.01 instead of 1.0 is to be 100% sure we don't get a domain error in sqrt()
+			// No: this direction cannot reach target, so assign a score of 0:
+			scores[1] = 0;
+			scores[2] = 0;
 		}
 
 		// Factor #4: Stabilizing factor (hysteresis) to avoid quick switch among very similar paths:
 		// ------------------------------------------------------------------------------------------
 		if (m_last_selected_sector != std::numeric_limits<unsigned int>::max() )
 		{
-			const unsigned int hist_dist = mrpt::utils::abs_diff(m_last_selected_sector, i);  // It's fine here to consider that -PI is far from +PI.
+			// It's fine here to consider that -PI is far from +PI.
+			const unsigned int hist_dist =
+				mrpt::utils::abs_diff(m_last_selected_sector, i);
 
 			if (hist_dist >= options.HYSTERESIS_SECTOR_COUNT)
 			     scores[3] = square( 1.0-(hist_dist-options.HYSTERESIS_SECTOR_COUNT)/double(nDirs) );
@@ -377,7 +399,7 @@ void CHolonomicFullEval::evalSingleTarget(unsigned int target_idx, const NavInpu
 
 		// Move straight to target?
 		if (smallest_clearance_in_k_units >= clearance_threshold &&
-			gap_width>=width_threshold && 
+			gap_width>=width_threshold &&
 			ni.obstacles[target_k]>target_dist*1.01
 			)
 		{
@@ -392,10 +414,10 @@ void CHolonomicFullEval::evalSingleTarget(unsigned int target_idx, const NavInpu
 	}
 
 	// Alternative, simpler method to decide motion:
-	// If target can be reached without collision *and* with a minimum of clearance, 
+	// If target can be reached without collision *and* with a minimum of clearance,
 	// then select that direction, with the score as computed with the regular formulas above
 	// (even if that score was not the maximum!).
-	if (target_dist<0.99 && 
+	if (target_dist<0.99 &&
 		(
 		/* No obstacles to target + enough clearance: */
 		( ni.obstacles[target_k]>target_dist*1.01 &&
@@ -404,7 +426,7 @@ void CHolonomicFullEval::evalSingleTarget(unsigned int target_idx, const NavInpu
 		)
 		||
 		/* Or: no obstacles to target with extra margin, target is really near, dont check clearance: */
-		( ni.obstacles[target_k]>(target_dist+0.15 /*meters*/ /ptg_ref_dist) && 
+		( ni.obstacles[target_k]>(target_dist+0.15 /*meters*/ /ptg_ref_dist) &&
 		  target_dist<(1.5 /*meters*/ / ptg_ref_dist)
 		)
 		)
@@ -414,7 +436,7 @@ void CHolonomicFullEval::evalSingleTarget(unsigned int target_idx, const NavInpu
 	{
 		eo.best_k = target_k;
 		eo.best_eval = dirs_eval[target_k];
-		
+
 		// Reflect this decision in the phase score plots:
 		phase_scores[NUM_PHASES - 1][target_k] += 2.0;
 	}
@@ -433,7 +455,7 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 	no.logRecord = log;
 
 	const size_t numTrgs = ni.targets.size();
-	
+
 	std::vector<EvalOutput> evals(numTrgs);
 	double       best_eval = .0;
 	unsigned int best_trg_idx = 0;
