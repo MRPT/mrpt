@@ -40,6 +40,7 @@ MRPT_WARNING(
 #include <mrpt/obs/CObservationRawDAQ.h>
 #include <mrpt/obs/CObservationReflectivity.h>
 #include <mrpt/obs/CObservationRobotPose.h>
+#include <mrpt/obs/CObservationRotatingScan.h>
 #include <mrpt/obs/CObservationSkeleton.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/obs/CObservationStereoImagesFeatures.h>
@@ -48,7 +49,7 @@ MRPT_WARNING(
 #include <mrpt/obs/CObservationWirelessPower.h>
 #include <mrpt/obs/CSensoryFrame.h>
 
-// Observations:
+// Actions:
 #include <mrpt/obs/CAction.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>

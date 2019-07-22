@@ -31,8 +31,6 @@ static CSinCosLookUpTableFor2DScans velodyne_sincos_tables;
 const float Velo::ROTATION_RESOLUTION = 0.01f; /**< degrees */
 const float Velo::DISTANCE_MAX = 130.0f; /**< meters */
 const float Velo::DISTANCE_RESOLUTION = 0.002f; /**< meters */
-const float Velo::DISTANCE_MAX_UNITS =
-	(Velo::DISTANCE_MAX / Velo::DISTANCE_RESOLUTION + 1.0f);
 
 const int SCANS_PER_FIRING = 16;
 
