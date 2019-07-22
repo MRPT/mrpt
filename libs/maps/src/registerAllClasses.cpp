@@ -13,6 +13,7 @@
 #include <mrpt/core/initializer.h>
 #include <mrpt/maps.h>
 #include <mrpt/obs/CObservationPointCloud.h>
+#include <mrpt/obs/CObservationRotatingScan.h>
 
 using namespace mrpt::maps;
 using namespace mrpt::obs;
@@ -45,6 +46,8 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_maps)
 	registerClass(CLASS_ID(CPlanarLaserScan));
 
 	registerClass(CLASS_ID(CObservationPointCloud));
+	registerClass(CLASS_ID(CObservationRotatingScan));
+
 	registerClass(CLASS_ID(CMultiMetricMap));
 
 #endif

@@ -95,7 +95,6 @@ class CObservationVelodyneScan : public CObservation
 
 	static const float DISTANCE_MAX; /**< meters */
 	static const float DISTANCE_RESOLUTION; /**< meters */
-	static const float DISTANCE_MAX_UNITS;
 
 	/** Blocks 0-31 */
 	static const uint16_t UPPER_BANK = 0xeeff;

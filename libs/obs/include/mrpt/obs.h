@@ -21,11 +21,6 @@ MRPT_WARNING(
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation2DRangeScanWithUncertainty.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/obs/CObservationImage.h>
-#include <mrpt/obs/CObservationRGBD360.h>
-#include <mrpt/obs/CObservationRange.h>
-// #include <mrpt/obs/CObservationVisualLandmarks.h>  // This one is in
-// mrpt-core
 #include <mrpt/obs/CObservation6DFeatures.h>
 #include <mrpt/obs/CObservationBatteryState.h>
 #include <mrpt/obs/CObservationBeaconRanges.h>
@@ -35,8 +30,11 @@ MRPT_WARNING(
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/obs/CObservationIMU.h>
+#include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CObservationRFID.h>
+#include <mrpt/obs/CObservationRGBD360.h>
+#include <mrpt/obs/CObservationRange.h>
 #include <mrpt/obs/CObservationRawDAQ.h>
 #include <mrpt/obs/CObservationReflectivity.h>
 #include <mrpt/obs/CObservationRobotPose.h>
@@ -48,7 +46,7 @@ MRPT_WARNING(
 #include <mrpt/obs/CObservationWirelessPower.h>
 #include <mrpt/obs/CSensoryFrame.h>
 
-// Observations:
+// Actions:
 #include <mrpt/obs/CAction.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
