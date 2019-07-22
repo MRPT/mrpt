@@ -39,7 +39,6 @@ CConfigFileMemory::CConfigFileMemory(const std::string& str)
 {
 	// Load the strings:
 	THE_INI.Load(str.c_str(), str.size());
-	THE_INI.Reset();
 }
 
 /*---------------------------------------------------------------
