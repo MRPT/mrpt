@@ -154,60 +154,54 @@ void CHolonomicFullEval::evalSingleTarget(
 			mrpt::keep_min(scores[0], max_real_freespace_norm);
 		}
 
-		if (target_dist < 1.0 - options.TOO_CLOSE_OBSTACLE &&
-			ni.obstacles[i] > 1.05 * target_dist)
+		// Factor #2: Closest approach to target along straight line
+		// (Euclidean)
+		// -------------------------------------------
+		mrpt::math::TSegment2D sg;
+		sg.point1.x = 0;
+		sg.point1.y = 0;
+		sg.point2.x = x;
+		sg.point2.y = y;
+
+		// Range of attainable values: 0=passes thru target. 2=opposite
+		// direction
+		double min_dist_target_along_path = sg.distance(target);
+
+		// Idea: if this segment is taking us *away* from target, don't make
+		// the segment to start at (0,0), since all paths "running away"
+		// will then have identical minimum distances to target. Use the
+		// middle of the segment instead:
+		const double endpt_dist_to_target = (target - TPoint2D(x, y)).norm();
+		const double endpt_dist_to_target_norm =
+			std::min(1.0, endpt_dist_to_target);
+
+		if ((endpt_dist_to_target_norm > target_dist &&
+			 endpt_dist_to_target_norm >= 0.95 * target_dist) &&
+			/* the path does not get any closer to trg */
+			min_dist_target_along_path >
+				1.05 * std::min(target_dist, endpt_dist_to_target_norm))
 		{
-			// Yes: this direction has more free space than required to reach
-			// target:
-
-			// Factor #2: Closest approach to target along straight line
-			// (Euclidean)
-			// -------------------------------------------
-			mrpt::math::TSegment2D sg;
-			sg.point1.x = 0;
-			sg.point1.y = 0;
-			sg.point2.x = x;
-			sg.point2.y = y;
-
-			// Range of attainable values: 0=passes thru target. 2=opposite
-			// direction
-			double min_dist_target_along_path = sg.distance(target);
-
-			// Idea: if this segment is taking us *away* from target, don't make
-			// the segment to start at (0,0), since all paths "running away"
-			// will then have identical minimum distances to target. Use the
-			// middle of the segment instead:
-			const double endpt_dist_to_target =
-				(target - TPoint2D(x, y)).norm();
-			const double endpt_dist_to_target_norm =
-				std::min(1.0, endpt_dist_to_target);
-
-			if ((endpt_dist_to_target_norm > target_dist &&
-				 endpt_dist_to_target_norm >= 0.95 * target_dist) &&
-				/* the path does not get any closer to trg */
-				min_dist_target_along_path >
-					1.05 * std::min(target_dist, endpt_dist_to_target_norm))
-			{
-				// path takes us away or way blocked:
-				sg.point1.x = x * 0.5;
-				sg.point1.y = y * 0.5;
-				min_dist_target_along_path = sg.distance(target);
-			}
-
-			scores[1] = 1.0 / (1.0 + square(min_dist_target_along_path));
-
-			// Factor #3: Distance of end collision-free point to target
-			// (Euclidean)
-			// -----------------------------------------------------
-			scores[2] = std::sqrt(1.01 - endpt_dist_to_target_norm);
-			// the 1.01 instead of 1.0 is to be 100% sure we don't get a domain
-			// error in sqrt()
+			// path takes us away or way blocked:
+			sg.point1.x = x * 0.5;
+			sg.point1.y = y * 0.5;
+			min_dist_target_along_path = sg.distance(target);
 		}
-		else
+
+		scores[1] = 1.0 / (1.0 + square(min_dist_target_along_path));
+
+		// Factor #3: Distance of end collision-free point to target
+		// (Euclidean)
+		// -----------------------------------------------------
+		scores[2] = std::sqrt(1.01 - endpt_dist_to_target_norm);
+		// the 1.01 instead of 1.0 is to be 100% sure we don't get a domain
+		// error in sqrt()
+
+		if (target_dist < 1.0 - options.TOO_CLOSE_OBSTACLE &&
+			ni.obstacles[i] < 1.05 * target_dist)
 		{
-			// No: this direction cannot reach target, so assign a score of 0:
-			scores[1] = 0;
-			scores[2] = 0;
+			// this direction cannot reach target, so assign a low score:
+			scores[1] *= 0.1;
+			scores[2] *= 0.1;
 		}
 
 		// Factor #4: Stabilizing factor (hysteresis) to avoid quick switch
