@@ -25,7 +25,7 @@ MRPTSRC=`pwd`
 MRPT_DEB_DIR="$HOME/mrpt_release"
 
 # Prepare a directory for building the debian package:
-# 
+#
 rm -fR $MRPT_DEB_DIR
 mkdir $MRPT_DEB_DIR
 
@@ -53,7 +53,7 @@ cd $MRPT_DEB_DIR
 rm *.zip > /dev/null 2>/dev/null
 
 # Rename tar.gz to Fedora convention:
-mv mrpt*.tar.gz mrpt-${MRPT_VERSION_STR}-$(date +%Y%m%d)svn${MRPT_SVN_VERSION}.tar.gz
+mv mrpt*.tar.gz mrpt-${MRPT_VERSION_STR}-$(date +%Y%m%d%k%M)svn${MRPT_SVN_VERSION}.tar.gz
 
 ls -l
 
@@ -64,4 +64,3 @@ ls -l ${HOME}/rpmbuild/SOURCES/
 
 
 exit 0
-
