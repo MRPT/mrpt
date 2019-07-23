@@ -305,7 +305,7 @@ void CParameterizedTrajectoryGenerator::updateNavDynamicState(const CParameteriz
 			double target_norm_d;
 			//bool is_exact = // JLB removed this constraint for being too restrictive.
 			this->inverseMap_WS2TP(m_nav_dyn_state.relTarget.x, m_nav_dyn_state.relTarget.y, target_k, target_norm_d,1.0 /*large tolerance*/);
-			if (target_norm_d>0.01 && target_norm_d<0.99 && target_k>=0 && target_k<m_alphaValuesCount) 
+			if (target_norm_d>0.01 && target_norm_d<0.99 && target_k>=0 && target_k<m_alphaValuesCount)
 			{
 				m_nav_dyn_state_target_k = target_k;
 				this->onNewNavDynamicState(); // Recalc
@@ -413,7 +413,17 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double
 	bool had_collision = false;
 
 	const size_t numPathSteps = getPathStepCount(k);
-	ASSERT_(numPathSteps >  inout_realdist2clearance.size());
+	// We don't have steps enought (?). Just ignore clearance for this short
+	// path in this "k" direction:
+	if (numPathSteps <= inout_realdist2clearance.size())
+	{
+		std::cerr << "[CParameterizedTrajectoryGenerator::"
+					 "evalClearanceSingleObstacle] Warning: k="
+				  << k << " numPathSteps is only=" << numPathSteps
+				  << " num of clearance steps="
+				  << inout_realdist2clearance.size();
+		return;
+	}
 
 	const double numStepsPerIncr = (numPathSteps - 1.0) / (inout_realdist2clearance.size());
 
@@ -445,8 +455,8 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double
 			:
 			ol.norm()
 			;
-		if (this_clearance <= .0 && treat_as_obstacle  && 
-			(dist_over_path>0.5 || std::abs(mrpt::math::angDistance(std::atan2(oy,ox),index2alpha(k)))<mrpt::utils::DEG2RAD(45.0))) 
+		if (this_clearance <= .0 && treat_as_obstacle  &&
+			(dist_over_path>0.5 || std::abs(mrpt::math::angDistance(std::atan2(oy,ox),index2alpha(k)))<mrpt::utils::DEG2RAD(45.0)))
 		{
 			// Collision:
 			had_collision = true;
