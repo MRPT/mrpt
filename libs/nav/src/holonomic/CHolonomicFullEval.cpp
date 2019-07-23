@@ -101,7 +101,7 @@ void CHolonomicFullEval::evalSingleTarget(
 		obstacles_2d[i].y = ni.obstacles[i] * sc_lut.csin[i];
 	}
 
-	const int NUM_FACTORS = 5;
+	const int NUM_FACTORS = 6;
 
 	ASSERT_(options.factorWeights.size() == NUM_FACTORS);
 
@@ -109,12 +109,10 @@ void CHolonomicFullEval::evalSingleTarget(
 	{
 		double scores[NUM_FACTORS];  // scores for each criterion
 
-		if (ni.obstacles[i] < options.TOO_CLOSE_OBSTACLE &&
-			!(i == target_k &&
-			  ni.obstacles[i] > 1.02 * target_dist))  // Too close to obstacles?
-		// (unless target is in
-		// between obstacles and
+		// Too close to obstacles? (unless target is in between obstacles and
 		// the robot)
+		if (ni.obstacles[i] < options.TOO_CLOSE_OBSTACLE &&
+			!(i == target_k && ni.obstacles[i] > 1.02 * target_dist))
 		{
 			for (int l = 0; l < NUM_FACTORS; l++) m_dirs_scores(i, l) = .0;
 			continue;
@@ -193,6 +191,7 @@ void CHolonomicFullEval::evalSingleTarget(
 		// (Euclidean)
 		// -----------------------------------------------------
 		scores[2] = std::sqrt(1.01 - endpt_dist_to_target_norm);
+		scores[5] = scores[2];
 		// the 1.01 instead of 1.0 is to be 100% sure we don't get a domain
 		// error in sqrt()
 
@@ -663,11 +662,11 @@ void CHolonomicFullEval::TOptions::loadFromConfigFile(
 
 	c.read_vector(
 		s, "factorWeights", std::vector<double>(), factorWeights, true);
-	ASSERT_(factorWeights.size() == 5);
+	ASSERT_EQUAL_(factorWeights.size(), 6U);
 
 	c.read_vector(
 		s, "factorNormalizeOrNot", factorNormalizeOrNot, factorNormalizeOrNot);
-	ASSERT_(factorNormalizeOrNot.size() == factorWeights.size());
+	ASSERT_EQUAL_(factorNormalizeOrNot.size(), factorWeights.size());
 
 	// Phases:
 	int PHASE_COUNT = 0;
@@ -724,12 +723,13 @@ void CHolonomicFullEval::TOptions::saveToConfigFile(
 		"Ratio [0,1], times path_count, gives the minimum gap width to accept "
 		"a direct motion towards target.");
 
-	ASSERT_EQUAL_(factorWeights.size(), 5);
+	ASSERT_EQUAL_(factorWeights.size(), 6U);
 	c.write(
 		s, "factorWeights",
 		mrpt::system::sprintf_container("%.2f ", factorWeights), WN, WV,
 		"[0]=Free space, [1]=Dist. in sectors, [2]=Closer to target "
-		"(Euclidean), [3]=Hysteresis, [4]=clearance along path");
+		"(Euclidean), [3]=Hysteresis, [4]=clearance along path, [5]=Like [2] "
+		"without decimation if path obstructed");
 	c.write(
 		s, "factorNormalizeOrNot",
 		mrpt::system::sprintf_container("%u ", factorNormalizeOrNot), WN, WV,
