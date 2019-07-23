@@ -36,6 +36,7 @@ namespace mrpt::nav
  * // 2: Distance of end collision-free point to target (Euclidean)
  * // 3: Hysteresis
  * // 4: Clearness to nearest obstacle along path
+ * // 5: Like 2, but without being decimated if path to target is obstructed
  * TARGET_SLOW_APPROACHING_DISTANCE = 0.20   // Start to reduce speed when
  * closer than this to target [m]
  * TOO_CLOSE_OBSTACLE               = 0.02   // Directions with collision-free
