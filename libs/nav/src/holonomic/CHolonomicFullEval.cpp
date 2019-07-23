@@ -105,7 +105,7 @@ void CHolonomicFullEval::evalSingleTarget(unsigned int target_idx, const NavInpu
 		obstacles_2d[i].y = ni.obstacles[i] * sc_lut.csin[i];
 	}
 
-	const int NUM_FACTORS = 5;
+	const int NUM_FACTORS = 6;
 
 	ASSERT_(options.factorWeights.size()==NUM_FACTORS);
 
@@ -113,7 +113,10 @@ void CHolonomicFullEval::evalSingleTarget(unsigned int target_idx, const NavInpu
 	{
 		double scores[NUM_FACTORS];  // scores for each criterion
 
-		if (ni.obstacles[i] < options.TOO_CLOSE_OBSTACLE && !(i==target_k &&ni.obstacles[i]>1.02*target_dist) ) // Too close to obstacles? (unless target is in between obstacles and the robot)
+		// Too close to obstacles? (unless target is in between obstacles and
+		// the robot)
+		if (ni.obstacles[i] < options.TOO_CLOSE_OBSTACLE &&
+			!(i == target_k && ni.obstacles[i] > 1.02 * target_dist))
 		{
 			for (int l=0;l<NUM_FACTORS;l++) m_dirs_scores(i,l)= .0;
 			continue;
@@ -185,6 +188,7 @@ void CHolonomicFullEval::evalSingleTarget(unsigned int target_idx, const NavInpu
 		// (Euclidean)
 		// -----------------------------------------------------
 		scores[2] = std::sqrt(1.01 - endpt_dist_to_target_norm);
+		scores[5] = scores[2];
 		// the 1.01 instead of 1.0 is to be 100% sure we don't get a domain
 		// error in sqrt()
 
@@ -618,11 +622,13 @@ void CHolonomicFullEval::TOptions::loadFromConfigFile(const mrpt::utils::CConfig
 	MRPT_LOAD_CONFIG_VAR(clearance_threshold_ratio, double, c, s);
 	MRPT_LOAD_CONFIG_VAR(gap_width_ratio_threshold,double,  c,s );
 
-	c.read_vector(s,"factorWeights", std::vector<double>(), factorWeights, true );
-	ASSERT_(factorWeights.size()==5);
+	c.read_vector(
+		s, "factorWeights", std::vector<double>(), factorWeights, true);
+	ASSERT_EQUAL_(factorWeights.size(), 6U);
 
-	c.read_vector(s, "factorNormalizeOrNot", factorNormalizeOrNot, factorNormalizeOrNot);
-	ASSERT_(factorNormalizeOrNot.size() == factorWeights.size());
+	c.read_vector(
+		s, "factorNormalizeOrNot", factorNormalizeOrNot, factorNormalizeOrNot);
+	ASSERT_EQUAL_(factorNormalizeOrNot.size(), factorWeights.size());
 
 	// Phases:
 	int PHASE_COUNT = 0;
@@ -646,21 +652,50 @@ void CHolonomicFullEval::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase
 {
 	MRPT_START;
 
-	const int WN = mrpt::utils::MRPT_SAVE_NAME_PADDING, WV = mrpt::utils::MRPT_SAVE_VALUE_PADDING;
+	const int WN = mrpt::utils::MRPT_SAVE_NAME_PADDING,
+			  WV = mrpt::utils::MRPT_SAVE_VALUE_PADDING;
 
-	MRPT_SAVE_CONFIG_VAR_COMMENT(TOO_CLOSE_OBSTACLE, "Directions with collision-free distances below this threshold are not elegible.");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(TARGET_SLOW_APPROACHING_DISTANCE, "Start to reduce speed when closer than this to target.");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(OBSTACLE_SLOW_DOWN_DISTANCE,"Start to reduce speed when clearance is below this value ([0,1] ratio wrt obstacle reference/max distance)");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(HYSTERESIS_SECTOR_COUNT,"Range of `sectors` (directions) for hysteresis over successive timesteps");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(LOG_SCORE_MATRIX, "Save the entire score matrix in log files");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(clearance_threshold_ratio, "Ratio [0,1], times path_count, gives the minimum number of paths at each side of a target direction to be accepted as desired direction");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(gap_width_ratio_threshold, "Ratio [0,1], times path_count, gives the minimum gap width to accept a direct motion towards target.");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		TOO_CLOSE_OBSTACLE,
+		"Directions with collision-free distances below this threshold are not "
+		"elegible.");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		TARGET_SLOW_APPROACHING_DISTANCE,
+		"Start to reduce speed when closer than this to target.");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		OBSTACLE_SLOW_DOWN_DISTANCE,
+		"Start to reduce speed when clearance is below this value ([0,1] ratio "
+		"wrt obstacle reference/max distance)");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		HYSTERESIS_SECTOR_COUNT,
+		"Range of `sectors` (directions) for hysteresis over successive "
+		"timesteps");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		LOG_SCORE_MATRIX, "Save the entire score matrix in log files");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		clearance_threshold_ratio,
+		"Ratio [0,1], times path_count, gives the minimum number of paths at "
+		"each side of a target direction to be accepted as desired direction");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		gap_width_ratio_threshold,
+		"Ratio [0,1], times path_count, gives the minimum gap width to accept "
+		"a direct motion towards target.");
 
-	ASSERT_EQUAL_(factorWeights.size(),5)
-	c.write(s,"factorWeights", mrpt::system::sprintf_container("%.2f ",factorWeights), WN,WV, "[0]=Free space, [1]=Dist. in sectors, [2]=Closer to target (Euclidean), [3]=Hysteresis, [4]=clearance along path");
-	c.write(s,"factorNormalizeOrNot", mrpt::system::sprintf_container("%u ", factorNormalizeOrNot), WN, WV, "Normalize factors or not (1/0)");
+	ASSERT_EQUAL_(factorWeights.size(), 6U);
+	c.write(
+		s, "factorWeights",
+		mrpt::system::sprintf_container("%.2f ", factorWeights), WN, WV,
+		"[0]=Free space, [1]=Dist. in sectors, [2]=Closer to target "
+		"(Euclidean), [3]=Hysteresis, [4]=clearance along path, [5]=Like [2] "
+		"without decimation if path obstructed");
+	c.write(
+		s, "factorNormalizeOrNot",
+		mrpt::system::sprintf_container("%u ", factorNormalizeOrNot), WN, WV,
+		"Normalize factors or not (1/0)");
 
-	c.write(s, "PHASE_COUNT", PHASE_FACTORS.size(), WN, WV, "Number of evaluation phases to run (params for each phase below)");
+	c.write(
+		s, "PHASE_COUNT", PHASE_FACTORS.size(), WN, WV,
+		"Number of evaluation phases to run (params for each phase below)");
 
 	for (unsigned int i = 0; i < PHASE_FACTORS.size(); i++)
 	{

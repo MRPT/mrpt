@@ -22,7 +22,7 @@ namespace mrpt
 	/** \addtogroup nav_holo Holonomic navigation methods
 	  * \ingroup mrpt_nav_grp
 	  * @{ */
-	
+
 	/** Full evaluation of all possible directions within the discrete set of input directions.
 	 *
 	 * These are the optional parameters of the method which can be set by means of a configuration file passed to the constructor or to CHolonomicFullEval::initialize() or directly in \a CHolonomicFullEval::options
@@ -130,4 +130,3 @@ namespace mrpt
 	  /** @} */
 	} // end namespace
 }
-
