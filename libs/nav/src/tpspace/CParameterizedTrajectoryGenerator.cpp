@@ -518,7 +518,17 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(
 	bool had_collision = false;
 
 	const size_t numPathSteps = getPathStepCount(k);
-	ASSERT_(numPathSteps > inout_realdist2clearance.size());
+	// We don't have steps enought (?). Just ignore clearance for this short
+	// path in this "k" direction:
+	if (numPathSteps <= inout_realdist2clearance.size())
+	{
+		std::cerr << "[CParameterizedTrajectoryGenerator::"
+					 "evalClearanceSingleObstacle] Warning: k="
+				  << k << " numPathSteps is only=" << numPathSteps
+				  << " num of clearance steps="
+				  << inout_realdist2clearance.size();
+		return;
+	}
 
 	const double numStepsPerIncr =
 		(numPathSteps - 1.0) / (inout_realdist2clearance.size());
