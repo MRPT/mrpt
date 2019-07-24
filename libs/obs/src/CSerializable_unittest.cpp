@@ -48,6 +48,7 @@ TEST_CLASS_MOVE_COPY_CTORS(CObservationCANBusJ1939);
 TEST_CLASS_MOVE_COPY_CTORS(CObservationRawDAQ);
 TEST_CLASS_MOVE_COPY_CTORS(CObservation6DFeatures);
 TEST_CLASS_MOVE_COPY_CTORS(CObservationVelodyneScan);
+TEST_CLASS_MOVE_COPY_CTORS(CObservationRotatingScan);
 TEST_CLASS_MOVE_COPY_CTORS(CActionRobotMovement2D);
 TEST_CLASS_MOVE_COPY_CTORS(CActionRobotMovement3D);
 
@@ -66,6 +67,7 @@ const mrpt::rtti::TRuntimeClassId* lstClasses[] = {
 #endif
 	CLASS_ID(CObservationCANBusJ1939), CLASS_ID(CObservationRawDAQ),
 	CLASS_ID(CObservation6DFeatures), CLASS_ID(CObservationVelodyneScan),
+	CLASS_ID(CObservationRotatingScan),
 	// Actions:
 	CLASS_ID(CActionRobotMovement2D), CLASS_ID(CActionRobotMovement3D)};
 

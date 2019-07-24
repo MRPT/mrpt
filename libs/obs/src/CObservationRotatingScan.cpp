@@ -25,6 +25,11 @@ IMPLEMENTS_SERIALIZABLE(CObservationRotatingScan, CObservation, mrpt::obs)
 
 using RotScan = CObservationRotatingScan;
 
+MRPT_TODO("fromVelodyne");
+MRPT_TODO("fromScan2D");
+MRPT_TODO("fromGenericObs");
+MRPT_TODO("toPointCloud / calibration");
+
 mrpt::system::TTimeStamp RotScan::getOriginalReceivedTimeStamp() const
 {
 	return originalReceivedTimestamp;
@@ -33,7 +38,10 @@ mrpt::system::TTimeStamp RotScan::getOriginalReceivedTimeStamp() const
 uint8_t RotScan::serializeGetVersion() const { return 0; }
 void RotScan::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	out << timestamp << sensorLabel << rowCount << columnCount;
+	out << timestamp << sensorLabel << rowCount << columnCount
+		<< rangeResolution << startAzimuth << endAzimuth << sweepDuration
+		<< lidarModel << minRange << maxRange << sensorPose
+		<< originalReceivedTimestamp << has_satellite_timestamp;
 
 	out.WriteAs<uint16_t>(rangeImage.cols());
 	out.WriteAs<uint16_t>(rangeImage.rows());
@@ -54,10 +62,6 @@ void RotScan::serializeTo(mrpt::serialization::CArchive& out) const
 		ASSERT_EQUAL_(ly.second.rows(), rowCount);
 		out.WriteBufferFixEndianness(&ly.second(0, 0), ly.second.size());
 	}
-
-	out << rangeResolution << startAzimuth << endAzimuth << sweepDuration
-		<< lidarModel << minRange << maxRange << sensorPose
-		<< originalReceivedTimestamp << has_satellite_timestamp;
 }
 
 void RotScan::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -66,39 +70,38 @@ void RotScan::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	{
 		case 0:
 		{
-			in >> timestamp >> sensorLabel;
-#if 0
+			in >> timestamp >> sensorLabel >> rowCount >> columnCount >>
+				rangeResolution >> startAzimuth >> endAzimuth >>
+				sweepDuration >> lidarModel >> minRange >> maxRange >>
+				sensorPose >> originalReceivedTimestamp >>
+				has_satellite_timestamp;
 
-			in >> minRange >> maxRange >> sensorPose;
+			const auto nCols = in.ReadAs<uint16_t>(),
+					   nRows = in.ReadAs<uint16_t>();
+			rangeImage.resize(nRows, nCols);
+			if (!rangeImage.empty())
+				in.ReadBufferFixEndianness(
+					&rangeImage(0, 0), rangeImage.size());
+
 			{
-				uint32_t N;
-				in >> N;
-				scan_packets.resize(N);
-				if (N)
-					in.ReadBuffer(
-						&scan_packets[0], sizeof(scan_packets[0]) * N);
+				const auto nIntCols = in.ReadAs<uint16_t>(),
+						   nIntRows = in.ReadAs<uint16_t>();
+				intensityImage.resize(nIntRows, nIntCols);
+				if (!intensityImage.empty())
+					in.ReadBufferFixEndianness(
+						&intensityImage(0, 0), intensityImage.size());
 			}
+
+			const auto nOtherLayers = in.ReadAs<uint16_t>();
+			rangeOtherLayers.clear();
+			for (size_t i = 0; i < nOtherLayers; i++)
 			{
-				uint32_t N;
-				in >> N;
-				calibration.laser_corrections.resize(N);
-				if (N)
-					in.ReadBuffer(
-						&calibration.laser_corrections[0],
-						sizeof(calibration.laser_corrections[0]) * N);
+				std::string name;
+				in >> name;
+				auto& im = rangeOtherLayers[name];
+				im.resize(nRows, nCols);
+				in.ReadBufferFixEndianness(&im(0, 0), im.size());
 			}
-			point_cloud.clear();
-			in >> point_cloud.x >> point_cloud.y >> point_cloud.z >>
-				point_cloud.intensity;
-			if (version >= 1)
-				in >> has_satellite_timestamp;
-			else
-				has_satellite_timestamp =
-					(this->timestamp != this->originalReceivedTimestamp);
-			if (version >= 2)
-				in >> point_cloud.timestamp >> point_cloud.azimuth >>
-					point_cloud.laser_id >> point_cloud.pointsForLaserID;
-#endif
 		}
 		break;
 		default:
@@ -114,6 +117,19 @@ void RotScan::getDescriptionAsText(std::ostream& o) const
 	o << sensorPose.getHomogeneousMatrixVal<mrpt::math::CMatrixDouble44>()
 	  << "\n"
 	  << sensorPose << endl;
-	o << format("Sensor min/max range: %.02f / %.02f m\n", minRange, maxRange);
-	MRPT_TODO("continue");
+
+	o << "lidarModel: " << lidarModel << "\n";
+	o << "Range rows=" << rowCount << " cols=" << columnCount << "\n";
+	o << "Range resolution=" << rangeResolution << " [meter]\n";
+	o << "Scan azimuth: start=" << mrpt::RAD2DEG(startAzimuth)
+	  << " end=" << mrpt::RAD2DEG(endAzimuth) << "\n";
+	o << "Sweep duration: " << sweepDuration << " [s]\n";
+	o << mrpt::format(
+		"Sensor min/max range: %.02f / %.02f m\n", minRange, maxRange);
+	o << "has_satellite_timestamp: " << (has_satellite_timestamp ? "YES" : "NO")
+	  << "\n";
+	o << "originalReceivedTimestamp: "
+	  << mrpt::system::dateTimeToString(originalReceivedTimestamp) << " (UTC)\n";
 }
+
+
