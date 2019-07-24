@@ -16,19 +16,19 @@
 #include <variant>
 #include <vector>
 
-namespace mrpt
+namespace mrpt::obs
 {
-namespace poses
-{
-class CPose3DInterpolator;
-}
-namespace obs
-{
+class CObservationVelodyneScan;
+class CObservation2DRangeScan;
+
 /** \addtogroup mrpt_obs_grp
  * @{ */
 
 /** A `CObservation`-derived class for raw range data from a 2D or 3D
- * rotating scanner.
+ * rotating scanner. This class is the preferred alternative to
+ * CObservationVelodyneScan and CObservation2DRangeScan in MRPT 2.x, since it
+ * exposes range data as an organized matrix, more convenient for feature
+ * detection directly on "range images".
  *
  * Check out the main data fields in the list of members below.
  *
@@ -57,7 +57,7 @@ class CObservationRotatingScan : public CObservation
 	DEFINE_SERIALIZABLE(CObservationRotatingScan)
 
    public:
-	/** @name Scan data
+	/** @name Scan range data
 		@{ */
 
 	/** Number of "Lidar rings" (e.g. 16 for a Velodyne VLP16, etc.). This
@@ -130,6 +130,26 @@ class CObservationRotatingScan : public CObservation
 
 	/** @} */
 
+	/** @name "Convert from" API
+	 * @{ */
+
+	void fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o);
+	void fromScan2D(const mrpt::obs::CObservation2DRangeScan& o);
+
+	/** Will convert from another observation if it's any of the supported
+	 * source types (see fromVelodyne(), fromScan2D()) and return true, or will
+	 * return false otherwise if there is no known way to convert from the
+	 * passed object. */
+	bool fromGeneric(const mrpt::obs::CObservation& o);
+
+	/** @} */
+
+	/** @name "Convert to" API
+	 * @{ */
+
+
+	/** @} */
+
 	// See base class docs
 	mrpt::system::TTimeStamp getOriginalReceivedTimeStamp() const override;
 
@@ -148,11 +168,9 @@ class CObservationRotatingScan : public CObservation
 
 /** @} */
 
-}  // namespace obs
+}  // namespace mrpt::obs
 
-namespace typemeta
+namespace mrpt::typemeta
 {  // Specialization must occur in the same namespace
 MRPT_DECLARE_TTYPENAME_PTR_NAMESPACE(CObservationRotatingScan, ::mrpt::obs)
 }
-
-}  // namespace mrpt

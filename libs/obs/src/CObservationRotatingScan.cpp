@@ -9,6 +9,7 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
+#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservationRotatingScan.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
 #include <mrpt/serialization/CArchive.h>
@@ -24,11 +25,6 @@ IMPLEMENTS_SERIALIZABLE(CObservationRotatingScan, CObservation, mrpt::obs)
 // static CSinCosLookUpTableFor2DScans velodyne_sincos_tables;
 
 using RotScan = CObservationRotatingScan;
-
-MRPT_TODO("fromVelodyne");
-MRPT_TODO("fromScan2D");
-MRPT_TODO("fromGenericObs");
-MRPT_TODO("toPointCloud / calibration");
 
 mrpt::system::TTimeStamp RotScan::getOriginalReceivedTimeStamp() const
 {
@@ -129,7 +125,42 @@ void RotScan::getDescriptionAsText(std::ostream& o) const
 	o << "has_satellite_timestamp: " << (has_satellite_timestamp ? "YES" : "NO")
 	  << "\n";
 	o << "originalReceivedTimestamp: "
-	  << mrpt::system::dateTimeToString(originalReceivedTimestamp) << " (UTC)\n";
+	  << mrpt::system::dateTimeToString(originalReceivedTimestamp)
+	  << " (UTC)\n";
 }
 
+MRPT_TODO("toPointCloud / calibration");
 
+void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
+{
+	MRPT_START
+
+	MRPT_TODO("fromVelodyne");
+
+	MRPT_END
+}
+void RotScan::fromScan2D(const mrpt::obs::CObservation2DRangeScan& o)
+{
+	MRPT_START
+	MRPT_TODO("fromScan2D");
+	MRPT_END
+}
+
+bool RotScan::fromGeneric(const mrpt::obs::CObservation& o)
+{
+	MRPT_START
+
+	if (auto oVel = dynamic_cast<const CObservationVelodyneScan*>(&o); oVel)
+	{
+		fromVelodyne(*oVel);
+		return true;
+	}
+	if (auto o2D = dynamic_cast<const CObservation2DRangeScan*>(&o); o2D)
+	{
+		fromScan2D(*o2D);
+		return true;
+	}
+	return false;
+
+	MRPT_END
+}
