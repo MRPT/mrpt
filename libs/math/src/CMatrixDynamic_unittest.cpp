@@ -9,6 +9,7 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CVectorDynamic.h>
 #include <Eigen/Dense>
 
 TEST(CMatrixDynamic, GetSetEigen)
@@ -71,4 +72,19 @@ TEST(CMatrixDynamic, Resizes)
 		CMatrixDouble M(40, 50);
 		M.resize(3, 3);
 	}
+}
+
+TEST(CVectorDynamic, segment)
+{
+	using mrpt::math::CVectorDouble;
+	CVectorDouble v;
+	v.resize(10);
+	for (int i = 0; i < v.size(); i++) v[i] = i;
+
+	for (int start = 0; start < 8; start++)
+		for (int len = 1; len < v.size() - start; len++)
+		{
+			const auto s = v.segmentCopy(start, len);
+			for (int i = 0; i < s.size(); i++) EXPECT_EQ(v[i + start], s[i]);
+		}
 }

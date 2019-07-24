@@ -228,6 +228,21 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 				mbDerived()(r + row_start, c + col_start) = submat(c, r);
 	}
 
+	/** const blockCopy(): Returns a *copy* of the given block */
+	template <int BLOCK_ROWS, int BLOCK_COLS>
+	CMatrixFixed<Scalar, BLOCK_ROWS, BLOCK_COLS> blockCopy(
+		int start_row = 0, int start_col = 0) const
+	{
+		return extractMatrix<BLOCK_ROWS, BLOCK_COLS>(start_row, start_col);
+	}
+	/** const blockCopy(): Returns a *copy* of the given block (non templated
+	 * version, dynamic sizes) */
+	CMatrixDynamic<Scalar> blockCopy(
+		int start_row, int start_col, int BLOCK_ROWS, int BLOCK_COLS) const
+	{
+		return extractMatrix(start_row, start_col, BLOCK_ROWS, BLOCK_COLS);
+	}
+
 	template <int BLOCK_ROWS, int BLOCK_COLS>
 	CMatrixFixed<Scalar, BLOCK_ROWS, BLOCK_COLS> extractMatrix(
 		const int start_row = 0, const int start_col = 0) const
