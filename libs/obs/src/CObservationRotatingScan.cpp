@@ -33,27 +33,31 @@ mrpt::system::TTimeStamp RotScan::getOriginalReceivedTimeStamp() const
 uint8_t RotScan::serializeGetVersion() const { return 0; }
 void RotScan::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	MRPT_TODO("continue!");
-#if 0
-	out << timestamp << sensorLabel;
-	out << minRange << maxRange << sensorPose;
-	out.WriteAs<uint32_t>(scan_packets.size());
-	if (!scan_packets.empty())
-		out.WriteBuffer(
-			&scan_packets[0], sizeof(scan_packets[0]) * scan_packets.size());
-	out.WriteAs<uint32_t>(calibration.laser_corrections.size());
-	if (!calibration.laser_corrections.empty())
-		out.WriteBuffer(
-			&calibration.laser_corrections[0],
-			sizeof(calibration.laser_corrections[0]) *
-				calibration.laser_corrections.size());
-	out << point_cloud.x << point_cloud.y << point_cloud.z
-		<< point_cloud.intensity;
-	out << has_satellite_timestamp;  // v1
-	// v2:
-	out << point_cloud.timestamp << point_cloud.azimuth << point_cloud.laser_id
-		<< point_cloud.pointsForLaserID;
-#endif
+	out << timestamp << sensorLabel << rowCount << columnCount;
+
+	out.WriteAs<uint16_t>(rangeImage.cols());
+	out.WriteAs<uint16_t>(rangeImage.rows());
+	if (!rangeImage.empty())
+		out.WriteBufferFixEndianness(&rangeImage(0, 0), rangeImage.size());
+
+	out.WriteAs<uint16_t>(intensityImage.cols());
+	out.WriteAs<uint16_t>(intensityImage.rows());
+	if (!intensityImage.empty())
+		out.WriteBufferFixEndianness(
+			&intensityImage(0, 0), intensityImage.size());
+
+	out.WriteAs<uint16_t>(rangeOtherLayers.size());
+	for (const auto& ly : rangeOtherLayers)
+	{
+		out << ly.first;
+		ASSERT_EQUAL_(ly.second.cols(), columnCount);
+		ASSERT_EQUAL_(ly.second.rows(), rowCount);
+		out.WriteBufferFixEndianness(&ly.second(0, 0), ly.second.size());
+	}
+
+	out << rangeResolution << startAzimuth << endAzimuth << sweepDuration
+		<< lidarModel << minRange << maxRange << sensorPose
+		<< originalReceivedTimestamp << has_satellite_timestamp;
 }
 
 void RotScan::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)

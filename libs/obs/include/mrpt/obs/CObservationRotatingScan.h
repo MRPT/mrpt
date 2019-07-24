@@ -27,15 +27,6 @@ namespace obs
 /** \addtogroup mrpt_obs_grp
  * @{ */
 
-using CMatrix_u8 = mrpt::math::CMatrixDynamic<uint8_t>;
-using CMatrix_u16 = mrpt::math::CMatrixDynamic<uint16_t>;
-using CMatrix_u32 = mrpt::math::CMatrixDynamic<uint32_t>;
-using CMatrix_f32 = mrpt::math::CMatrixDynamic<float>;
-
-/** A std::variant for range/intensity matrices ("range images") */
-using CRangeImageVariant = std::variant<
-	std::monostate, CMatrix_u8, CMatrix_u16, CMatrix_u32, CMatrix_f32>;
-
 /** A `CObservation`-derived class for raw range data from a 2D or 3D
  * rotating scanner.
  *
@@ -76,9 +67,9 @@ class CObservationRotatingScan : public CObservation
 	uint16_t rowCount{0};
 
 	/** Number of lidar "firings" for this scan. It is assumed
-	 * that firings occur at a fixed rate. Consecutive scans may have different
-	 * number of firings, and different start and end azimuth
-	 * All matrices in `imageLayer_*` have this number of columns.
+	 * that firings occur at a fixed rate. Consecutive scans ("scan"=instance of
+	 * this class) may have different number of firings, and different start and
+	 * end azimuth. All matrices defined below have this number of columns.
 	 */
 	uint16_t columnCount{0};
 
@@ -88,15 +79,16 @@ class CObservationRotatingScan : public CObservation
 	 * (i.e. invalid range). This member must be always provided, containing the
 	 * ranges for the STRONGEST ray returns.
 	 */
-	CRangeImageVariant rangeImage;
+	mrpt::math::CMatrix_u16 rangeImage{0, 0};
 
-	/** Optionally, the intensity channel */
-	CMatrix_u8 intensityImage;
+	/** Optionally, an intensity channel. Matrix with a 0x0 size if not
+	 * provided. */
+	mrpt::math::CMatrix_u8 intensityImage{0, 0};
 
 	/** Optional additional layers, e.g. LAST return, etc. for lidars with
 	 * multiple returns per firing. A descriptive name of what the alternative
 	 * range means as std::map Key, e.g. `FIRST`, `SECOND`. */
-	std::map<std::string, CRangeImageVariant> rangeOtherLayers;
+	std::map<std::string, mrpt::math::CMatrix_u16> rangeOtherLayers;
 
 	/**  Real-world scale (in meters) of integer units in range images (e.g.
 	 * 0.002 means 1 range unit is 2 millimeters) */
@@ -138,8 +130,8 @@ class CObservationRotatingScan : public CObservation
 
 	/** @} */
 
-	mrpt::system::TTimeStamp getOriginalReceivedTimeStamp()
-		const override;  // See base class docs
+	// See base class docs
+	mrpt::system::TTimeStamp getOriginalReceivedTimeStamp() const override;
 
 	// See base class docs
 	void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override
