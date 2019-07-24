@@ -565,6 +565,12 @@ using CMatrixDouble = CMatrixDynamic<double>;
  */
 using CMatrixUInt = CMatrixDynamic<unsigned int>;
 
+/** matrix of uint8_t (non serializable). \sa CMatrixDouble */
+using CMatrix_u8 = CMatrixDynamic<uint8_t>;
+
+/** matrix of uint16_t (non serializable). \sa CMatrixDouble */
+using CMatrix_u16 = CMatrixDynamic<uint16_t>;
+
 #ifdef HAVE_LONG_DOUBLE
 /** Declares a matrix of "long doubles" (non serializable), or of "doubles" if
  * the compiler does not support "long double".
