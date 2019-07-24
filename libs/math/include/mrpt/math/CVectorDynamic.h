@@ -200,6 +200,25 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
 		m_data.back() = val;
 	}
 
+	/** const segmentCopy(): Returns a *copy* of the given vector segment */
+	template <int LEN>
+	CMatrixFixed<Scalar, LEN, 1> segmentCopy(int start = 0) const
+	{
+		CMatrixFixed<Scalar, LEN, 1> v;
+		for (int i = 0; i < LEN; i++) v[i] = m_data[start + i];
+		return v;
+	}
+
+	/** const segmentCopy(): Returns a *copy* of the given vector segment (non
+	 * templated version, dynamic length) */
+	CVectorDynamic<Scalar> segmentCopy(int start, int LEN) const
+	{
+		CVectorDynamic<Scalar> v;
+		v.resize(LEN);
+		for (int i = 0; i < LEN; i++) v[i] = m_data[start + i];
+		return v;
+	}
+
 	/** Subscript operator to get/set individual elements
 	 */
 	inline T& operator()(size_t row, size_t col)
