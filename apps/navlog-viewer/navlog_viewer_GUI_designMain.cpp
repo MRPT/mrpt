@@ -1693,6 +1693,9 @@ void navlog_viewer_GUI_designDialog::OnmnuSeePTGParamsSelected(
 		sCfgText.c_str(), _("PTG parameters as stored in the log:"), wxOK,
 		this);
 
+	std::ofstream f("./ptg_info.ini");
+	f << sCfgText;
+
 	WX_END_TRY
 }
 
