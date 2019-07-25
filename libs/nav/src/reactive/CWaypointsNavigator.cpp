@@ -373,7 +373,11 @@ void CWaypointsNavigator::waypoints_navigationStep()
 void CWaypointsNavigator::navigationStep()
 {
 	MRPT_START
-	m_is_aligning = false;  // the robot is aligning into a waypoint with a desired heading
+	// the robot is aligning into a waypoint with a desired heading
+	m_is_aligning = false;
+
+	mrpt::utils::CTimeLoggerEntry tle(
+		m_navProfiler, "CWaypointsNavigator::navigationStep()");
 
 	// State can be NAVIGATING if we are already heading to a waypoint,
 	// or IDLE if navigateWaypoints() was called and this is the first

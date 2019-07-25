@@ -97,7 +97,8 @@ CAbstractNavigator::CAbstractNavigator(CRobot2NavInterface &react_iterf_impl) :
     m_last_curPoseVelUpdate_robot_time(-1e9),
     m_latestPoses         (),
     m_latestOdomPoses     (),
-    m_timlog_delays       (true, "CAbstractNavigator::m_timlog_delays")
+    m_timlog_delays       (true, "CAbstractNavigator::m_timlog_delays"),
+    m_navProfiler         (false,"mrpt::nav::CAbstractNavigator")
 {
 	m_latestPoses.setInterpolationMethod(mrpt::poses::imLinear2Neig);
 	m_latestOdomPoses.setInterpolationMethod(mrpt::poses::imLinear2Neig);
@@ -175,6 +176,10 @@ void CAbstractNavigator::loadConfigFile(const mrpt::utils::CConfigFileBase & c)
 
 	params_abstract_navigator.loadFromConfigFile(c, "CAbstractNavigator");
 
+	m_navProfiler.enable(c.read_bool(
+		"CAbstractNavigator", "enable_time_profiler",
+		m_navProfiler.isEnabled()));
+
 	// At this point, all derived classes have already loaded their parameters.
 	// Dump them to debug output:
 	{
@@ -197,7 +202,7 @@ void CAbstractNavigator::saveConfigFile(mrpt::utils::CConfigFileBase & c) const
 void CAbstractNavigator::navigationStep()
 {
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
-	mrpt::utils::CTimeLoggerEntry tle(m_timlog_delays, "CAbstractNavigator::navigationStep()");
+	mrpt::utils::CTimeLoggerEntry tle(m_navProfiler, "CAbstractNavigator::navigationStep()");
 
 	const TState prevState = m_navigationState;
 	switch ( m_navigationState )
@@ -364,7 +369,7 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds()
 	}
 
 	{
-		mrpt::utils::CTimeLoggerEntry tle(m_timlog_delays, "getCurrentPoseAndSpeeds()");
+		mrpt::utils::CTimeLoggerEntry tle(m_navProfiler, "getCurrentPoseAndSpeeds()");
 		m_curPoseVel.pose_frame_id = std::string("map"); // default
 		if (!m_robot.getCurrentPoseAndSpeeds(m_curPoseVel.pose, m_curPoseVel.velGlobal, m_curPoseVel.timestamp, m_curPoseVel.rawOdometry, m_curPoseVel.pose_frame_id))
 		{

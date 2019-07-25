@@ -201,6 +201,9 @@ bool CReactiveNavigationSystem::implementSenseObstacles(mrpt::system::TTimeStamp
 
 void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles, mrpt::nav::ClearanceDiagram &out_clearance, const mrpt::math::TPose2D &rel_pose_PTG_origin_wrt_sense_, const bool eval_clearance)
 {
+	CTimeLoggerEntry tle(
+		m_navProfiler, "CReactiveNavigationSystem::STEP3_WSpaceToTPSpace()");
+
 	ASSERT_BELOW_(ptg_idx, this->getPTG_count());
 	CParameterizedTrajectoryGenerator	*ptg = this->getPTG(ptg_idx);
 
