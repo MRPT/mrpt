@@ -707,7 +707,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 		nullptr, this);
 
 	// Redirect all output to control:
-	m_myRedirector = new CMyRedirector(edLog, false, 100, true);
+	m_myRedirector = new CMyRedirector(edLog, false, 100, true, false, true);
 
 	WX_START_TRY
 
