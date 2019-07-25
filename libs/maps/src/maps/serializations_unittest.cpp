@@ -10,6 +10,7 @@
 #define MRPT_NO_WARN_BIG_HDR  // Yes, we really want to include all classes.
 #include <mrpt/maps.h>
 #include <mrpt/obs/CObservationPointCloud.h>
+#include <mrpt/obs/CObservationRotatingScan.h>
 
 #include <CTraitsTest.h>
 #include <gtest/gtest.h>
@@ -42,6 +43,7 @@ TEST_CLASS_MOVE_COPY_CTORS(CPointsMapXYZI);
 TEST_CLASS_MOVE_COPY_CTORS(COctoMap);
 TEST_CLASS_MOVE_COPY_CTORS(CColouredOctoMap);
 TEST_CLASS_MOVE_COPY_CTORS(CObservationPointCloud);
+TEST_CLASS_MOVE_COPY_CTORS(CObservationRotatingScan);
 
 // Create a set of classes, then serialize and deserialize to test possible
 // bugs:
@@ -63,7 +65,8 @@ TEST(SerializeTestMaps, WriteReadToMem)
 		CLASS_ID(CPointsMapXYZI),
 		CLASS_ID(COctoMap),
 		CLASS_ID(CColouredOctoMap),
-		CLASS_ID(CObservationPointCloud)};
+		CLASS_ID(CObservationPointCloud),
+		CLASS_ID(CObservationRotatingScan)};
 
 	for (auto& lstClasse : lstClasses)
 	{

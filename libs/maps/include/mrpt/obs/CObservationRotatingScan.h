@@ -20,6 +20,7 @@ namespace mrpt::obs
 {
 class CObservationVelodyneScan;
 class CObservation2DRangeScan;
+class CObservationPointCloud;
 
 /** \addtogroup mrpt_obs_grp
  * @{ */
@@ -29,6 +30,10 @@ class CObservation2DRangeScan;
  * CObservationVelodyneScan and CObservation2DRangeScan in MRPT 2.x, since it
  * exposes range data as an organized matrix, more convenient for feature
  * detection directly on "range images".
+ * This class can also import data from KITTI dataset-like binary files
+ * containing unorganized (non "undistorted", i.e. without compensation for
+ * lidar motion) point clouds, which get organized into a 2D range image for
+ * easier filtering and postprocessing.
  *
  * Check out the main data fields in the list of members below.
  *
@@ -135,18 +140,18 @@ class CObservationRotatingScan : public CObservation
 
 	void fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o);
 	void fromScan2D(const mrpt::obs::CObservation2DRangeScan& o);
+	void fromPointCloud(const mrpt::obs::CObservationPointCloud& o);
 
 	/** Will convert from another observation if it's any of the supported
-	 * source types (see fromVelodyne(), fromScan2D()) and return true, or will
-	 * return false otherwise if there is no known way to convert from the
-	 * passed object. */
+	 * source types (see fromVelodyne(), fromScan2D(), fromPointCloud()) and
+	 * return true, or will return false otherwise if there is no known way to
+	 * convert from the passed object. */
 	bool fromGeneric(const mrpt::obs::CObservation& o);
 
 	/** @} */
 
 	/** @name "Convert to" API
 	 * @{ */
-
 
 	/** @} */
 

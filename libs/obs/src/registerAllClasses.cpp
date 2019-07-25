@@ -45,12 +45,10 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_obs)
 	registerClass(CLASS_ID(CObservationReflectivity));
 	registerClass(CLASS_ID(CObservationStereoImages));
 	registerClass(CLASS_ID(CObservationStereoImagesFeatures));
-	// registerClass( CLASS_ID( CObservationVisualLandmarks ) );
 	registerClass(CLASS_ID(CObservation6DFeatures));
 	registerClass(CLASS_ID(CObservationRobotPose));
 	registerClass(CLASS_ID(CObservationCANBusJ1939));
 	registerClass(CLASS_ID(CObservationRawDAQ));
-	registerClass(CLASS_ID(CObservationRotatingScan));
 
 	registerClass(CLASS_ID(CSimpleMap));
 	registerClassCustomName("CSensFrameProbSequence", CLASS_ID(CSimpleMap));

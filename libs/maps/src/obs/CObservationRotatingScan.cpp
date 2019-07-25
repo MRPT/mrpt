@@ -7,9 +7,11 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "obs-precomp.h"  // Precompiled headers
+#include "maps-precomp.h"  // Precomp header
 
+#include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/CObservationRotatingScan.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
 #include <mrpt/serialization/CArchive.h>
@@ -146,6 +148,13 @@ void RotScan::fromScan2D(const mrpt::obs::CObservation2DRangeScan& o)
 	MRPT_END
 }
 
+void RotScan::fromPointCloud(const mrpt::obs::CObservationPointCloud& o)
+{
+	MRPT_START
+	MRPT_TODO("fromPointCloud");
+	MRPT_END
+}
+
 bool RotScan::fromGeneric(const mrpt::obs::CObservation& o)
 {
 	MRPT_START
@@ -158,6 +167,11 @@ bool RotScan::fromGeneric(const mrpt::obs::CObservation& o)
 	if (auto o2D = dynamic_cast<const CObservation2DRangeScan*>(&o); o2D)
 	{
 		fromScan2D(*o2D);
+		return true;
+	}
+	if (auto oPc = dynamic_cast<const CObservationPointCloud*>(&o); oPc)
+	{
+		fromPointCloud(*oPc);
 		return true;
 	}
 	return false;
