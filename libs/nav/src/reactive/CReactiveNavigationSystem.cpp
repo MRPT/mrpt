@@ -222,6 +222,9 @@ void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(
 	const mrpt::math::TPose2D& rel_pose_PTG_origin_wrt_sense_,
 	const bool eval_clearance)
 {
+	mrpt::system::CTimeLoggerEntry tle(
+		m_navProfiler, "CReactiveNavigationSystem::STEP3_WSpaceToTPSpace()");
+
 	ASSERT_BELOW_(ptg_idx, this->getPTG_count());
 	CParameterizedTrajectoryGenerator* ptg = this->getPTG(ptg_idx);
 

@@ -445,8 +445,11 @@ void CWaypointsNavigator::waypoints_navigationStep()
 void CWaypointsNavigator::navigationStep()
 {
 	MRPT_START
-	m_is_aligning =
-		false;  // the robot is aligning into a waypoint with a desired heading
+	// the robot is aligning into a waypoint with a desired heading
+	m_is_aligning = false;
+
+	mrpt::system::CTimeLoggerEntry tle(
+		m_navProfiler, "CWaypointsNavigator::navigationStep()");
 
 	if (m_navigationState != SUSPENDED)
 	{
