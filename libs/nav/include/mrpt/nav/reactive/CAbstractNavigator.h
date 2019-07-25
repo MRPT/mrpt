@@ -264,6 +264,10 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 		return m_timlog_delays;
 	}
 
+	/** Publicly available time profiling object. Default: disabled */
+	mrpt::system::CTimeLogger m_navProfiler{false,
+											"mrpt::nav::CAbstractNavigator"};
+
    private:
 	/** Last internal state of navigator: */
 	TState m_lastNavigationState;

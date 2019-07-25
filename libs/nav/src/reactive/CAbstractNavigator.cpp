@@ -162,6 +162,10 @@ void CAbstractNavigator::loadConfigFile(const mrpt::config::CConfigFileBase& c)
 
 	params_abstract_navigator.loadFromConfigFile(c, "CAbstractNavigator");
 
+	m_navProfiler.enable(c.read_bool(
+		"CAbstractNavigator", "enable_time_profiler",
+		m_navProfiler.isEnabled()));
+
 	// At this point, all derived classes have already loaded their parameters.
 	// Dump them to debug output:
 	{
@@ -183,7 +187,7 @@ void CAbstractNavigator::navigationStep()
 {
 	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
 	mrpt::system::CTimeLoggerEntry tle(
-		m_timlog_delays, "CAbstractNavigator::navigationStep()");
+		m_navProfiler, "CAbstractNavigator::navigationStep()");
 
 	const TState prevState = m_navigationState;
 	switch (m_navigationState)
@@ -355,7 +359,7 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds()
 
 	{
 		mrpt::system::CTimeLoggerEntry tle(
-			m_timlog_delays, "getCurrentPoseAndSpeeds()");
+			m_navProfiler, "getCurrentPoseAndSpeeds()");
 		m_curPoseVel.pose_frame_id = std::string("map");  // default
 		if (!m_robot.getCurrentPoseAndSpeeds(
 				m_curPoseVel.pose, m_curPoseVel.velGlobal,
