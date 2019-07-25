@@ -290,6 +290,10 @@ namespace mrpt
 
 		mrpt::utils::CTimeLogger m_timlog_delays; //!< Time logger to collect delay-related stats
 
+
+  	/** Publicly available time profiling object. Default: disabled */
+  	mrpt::utils::CTimeLogger m_navProfiler;
+
 		/** For sending an alarm (error event) when it seems that we are not approaching toward the target in a while... */
 		double                   m_badNavAlarm_minDistTarget;
 		mrpt::system::TTimeStamp m_badNavAlarm_lastMinDistTime;
