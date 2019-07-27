@@ -19,10 +19,14 @@ TEST(CObservationRotatingScan, fromKittiUndistorted)
 	const auto fil = mrpt::UNITTEST_BASEDIR + "/tests/kitti_00_000000.bin.gz"s;
 
 	auto pts = mrpt::maps::CPointsMapXYZI::Create();
-	const bool read_ok = pts->loadFromKittiVelodyneFile(fil);
+	bool read_ok = pts->loadFromKittiVelodyneFile(fil);
 	EXPECT_TRUE(read_ok);
 
-	// pts->save3D_to_text_file("/tmp/kitti_00_000000.txt");
+	//	read_ok = pts->loadXYZI_from_text_file("0000000060.txt");
+	EXPECT_TRUE(read_ok);
+
+	pts->saveToKittiVelodyneFile("/tmp/a.bin.gz");
+	pts->saveXYZI_to_text_file("/tmp/a.txt");
 
 	mrpt::obs::CObservationPointCloud obsPcl;
 	//	obsPcl.
