@@ -27,6 +27,14 @@ class CObservation2DRangeScan;
 class CSinCosLookUpTableFor2DScans
 {
    public:
+	CSinCosLookUpTableFor2DScans() = default;
+	/** Do NOT copy neither the cache nor the mutex */
+	CSinCosLookUpTableFor2DScans(const CSinCosLookUpTableFor2DScans&) {}
+	CSinCosLookUpTableFor2DScans& operator=(const CSinCosLookUpTableFor2DScans&)
+	{
+		return *this;
+	}
+
 	/** A pair of vectors with the cos and sin values. */
 	struct TSinCosValues
 	{
