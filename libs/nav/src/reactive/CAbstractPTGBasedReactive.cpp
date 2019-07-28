@@ -877,7 +877,7 @@ void CAbstractPTGBasedReactive::STEP8_GenerateLogRecord(CLogFileRecord &newLogRe
 	//  Save to log file:
 	// --------------------------------------
 	{
-		mrpt::utils::CTimeLoggerEntry tle(m_timelogger,"navigationStep.write_log_file");
+		mrpt::utils::CTimeLoggerEntry tle2(m_timelogger,"navigationStep.write_log_file");
 		if (m_logFile) (*m_logFile) << newLogRec;
 	}
 	// Set as last log record
@@ -1492,7 +1492,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 		// STEP5: Evaluate each movement to assign them a "evaluation" value.
 		// ---------------------------------------------------------------------
 		{
-			CTimeLoggerEntry tle(m_timelogger, "navigationStep.calc_move_candidate_scores");
+			CTimeLoggerEntry tle2(m_timelogger, "navigationStep.calc_move_candidate_scores");
 
 			calc_move_candidate_scores(
 				cm,
