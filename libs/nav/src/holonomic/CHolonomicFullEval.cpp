@@ -94,9 +94,10 @@ void CHolonomicFullEval::evalSingleTarget(
 	obstacles_2d[i].y = ni.obstacles[i] * sc_lut.csin[i];
   }
 
-  const int NUM_FACTORS = 6;
-
-  ASSERT_(options.factorWeights.size() == NUM_FACTORS);
+	const int NUM_FACTORS = 6;
+	// Sanity checks:
+	ASSERT_EQUAL_(options.factorWeights.size(), NUM_FACTORS);
+	ASSERT_ABOVE_(nDirs, 3);
 
   for (unsigned int i = 0; i < nDirs; i++) {
 	double scores[NUM_FACTORS]; // scores for each criterion
@@ -204,14 +205,29 @@ void CHolonomicFullEval::evalSingleTarget(
 	}
 
 	// Factor #5: clearance to nearest obstacle along path
-	// ------------------------------------------------------------------------------------------
+	// Use TP-obstacles instead of real obstacles in Workspace since
+	// it's way faster, despite being an approximation:
+	// -------------------------------------------------------------------
 	{
-	  const double query_dist_norm = std::min(0.99, target_dist * 0.95);
-	  const double avr_path_clearance = ni.clearance->getClearance(
-		  i /*path index*/, query_dist_norm, true /*interpolate path*/);
-	  const double point_clearance = ni.clearance->getClearance(
-		  i /*path index*/, query_dist_norm, false /*interpolate path*/);
-	  scores[4] = 0.5 * (avr_path_clearance + point_clearance);
+		sg.point1.x = 0;
+		sg.point1.y = 0;
+		sg.point2.x = x;
+		sg.point2.y = y;
+
+		double& closest_obs = scores[4];
+		closest_obs = 1.0;
+
+		// eval obstacles within a certain region of this "i" direction only
+		const int W = std::max(1, mrpt::utils::round(nDirs * 0.1));
+		const int i_min = std::max(0, static_cast<int>(i) - W);
+		const int i_max =
+			std::min(static_cast<int>(nDirs) - 1, static_cast<int>(i) + W);
+		for (int oi = i_min; oi <= i_max; oi++)
+		{
+			// "no obstacle" (norm_dist=1.0) doesn't count as a real obs:
+			if (ni.obstacles[oi] >= 0.99) continue;
+			mrpt::utils::keep_min(closest_obs, sg.distance(obstacles_2d[oi]));
+		}
 	}
 
 	// Save stats for debugging:
@@ -404,17 +420,19 @@ void CHolonomicFullEval::navigate(const NavInput &ni, NavOutput &no) {
 	}
   }
 
-  ASSERT_(!gaps.empty());
-  ASSERT_(best_gap_idx < gaps.size());
+	// Not heading to target: go thru the "middle" of the gap to maximize
+	// clearance
+	int best_dir_k = -1;
+	double best_dir_eval = 0;
 
-  const TGap &best_gap = gaps[best_gap_idx];
-
-  // best_gap.max_eval;
-
-  // Not heading to target: go thru the "middle" of the gap to maximize
-  // clearance
-  const auto best_dir_k = best_gap.k_best_eval;
-  const auto best_dir_eval = overall_scores.at(best_dir_k);
+	// We may have no gaps if all paths are blocked by obstacles, for example:
+	if (!gaps.empty())
+	{
+		ASSERT_(best_gap_idx < gaps.size());
+		const TGap& best_gap = gaps[best_gap_idx];
+		best_dir_k = best_gap.k_best_eval;
+		best_dir_eval = overall_scores.at(best_dir_k);
+	}
 
   // Prepare NavigationOutput data:
   if (best_dir_eval == .0) {
