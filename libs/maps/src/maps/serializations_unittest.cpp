@@ -42,6 +42,7 @@ TEST_CLASS_MOVE_COPY_CTORS(CPointsMapXYZI);
 TEST_CLASS_MOVE_COPY_CTORS(COctoMap);
 TEST_CLASS_MOVE_COPY_CTORS(CColouredOctoMap);
 TEST_CLASS_MOVE_COPY_CTORS(CObservationPointCloud);
+TEST_CLASS_MOVE_COPY_CTORS(CSinCosLookUpTableFor2DScans);
 
 // Create a set of classes, then serialize and deserialize to test possible
 // bugs:
