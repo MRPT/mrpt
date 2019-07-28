@@ -136,18 +136,16 @@ class CHolonomicFullEval : public CAbstractHolonomicReactiveMethod
 	 * a "-1" value will be found. */
 	mrpt::math::CMatrixD m_dirs_scores;
 
+	/** If desired, override in a derived class to manipulate the final
+	 * evaluations of each directions */
 	virtual void postProcessDirectionEvaluations(
 		std::vector<double>& dir_evals, const NavInput& ni,
-		unsigned int trg_idx);  // If desired, override in a derived class to
-	// manipulate the final evaluations of each
-	// directions
+		unsigned int trg_idx);
 
 	struct EvalOutput
 	{
-		unsigned int best_k;
-		double best_eval{.0};
 		std::vector<std::vector<double>> phase_scores;
-		EvalOutput();
+		EvalOutput() {}
 	};
 
 	/** Evals one single target of the potentially many of them in NavInput */

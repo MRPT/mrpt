@@ -64,7 +64,6 @@ struct TGap
 	}
 };
 
-CHolonomicFullEval::EvalOutput::EvalOutput() : best_k(INVALID_K) {}
 void CHolonomicFullEval::evalSingleTarget(
 	unsigned int target_idx, const NavInput& ni, EvalOutput& eo)
 {
@@ -76,7 +75,6 @@ void CHolonomicFullEval::evalSingleTarget(
 	eo = EvalOutput();
 
 	const auto ptg = getAssociatedPTG();
-	const double ptg_ref_dist = ptg ? ptg->getRefDistance() : 1.0;
 	const size_t nDirs = ni.obstacles.size();
 
 	const double target_dir = ::atan2(target.y, target.x);
@@ -339,21 +337,65 @@ void CHolonomicFullEval::evalSingleTarget(
 			(1.0 - options.PHASE_THRESHOLDS[NUM_PHASES - 1]) * phase_min;
 	}
 
-	// Search for best direction:
+	// Thresholding:
+	for (unsigned int i = 0; i < nDirs; i++)
+	{
+		double& val = dirs_eval[i];
+		if (val < last_phase_threshold) val = .0;
+	}
+}
 
-	// Of those directions above "last_phase_threshold", keep the GAP with the
-	// largest maximum value within;
+void CHolonomicFullEval::navigate(const NavInput& ni, NavOutput& no)
+{
+	using mrpt::square;
+
+	ASSERT_(ni.clearance != nullptr);
+	ASSERT_(!ni.targets.empty());
+
+	// Create a log record for returning data.
+	auto log = std::make_shared<CLogFileRecord_FullEval>();
+	no.logRecord = log;
+
+	// Evaluate for each target:
+	const size_t numTrgs = ni.targets.size();
+	std::vector<EvalOutput> evals(numTrgs);
+	for (unsigned int trg_idx = 0; trg_idx < numTrgs; trg_idx++)
+	{
+		evalSingleTarget(trg_idx, ni, evals[trg_idx]);
+	}
+
+	ASSERT_(!evals.empty());
+	const auto nDirs = evals.front().phase_scores.back().size();
+	ASSERT_EQUAL_(nDirs, ni.obstacles.size());
+
+	// Now, sum all weights for the last stage for each target into an "overall"
+	// score vector, one score per direction of motion:
+	std::vector<double> overall_scores;
+	overall_scores.assign(nDirs, .0);
+	for (const auto& e : evals)
+	{
+		for (unsigned int i = 0; i < nDirs; i++)
+			overall_scores[i] += e.phase_scores.back()[i];
+	}
+	// Normalize:
+	for (unsigned int i = 0; i < nDirs; i++)
+		overall_scores[i] *= (1.0 / numTrgs);
+
+	// Search for best direction in the "overall score" vector:
+
+	// Keep the GAP with the largest maximum value within;
 	// then pick the MIDDLE point as the final selection.
 	std::vector<TGap> gaps;
-	int best_gap_idx = -1;
-	int gap_idx_for_target_dir = -1;
+	std::size_t best_gap_idx = std::string::npos;
 	{
 		bool inside_gap = false;
 		for (unsigned int i = 0; i < nDirs; i++)
 		{
-			const double val = dirs_eval[i];
-			if (val < last_phase_threshold)
+			const double val = overall_scores[i];
+			if (val < 0.01)
 			{
+				// This direction didn't pass the cut threshold for the "last
+				// phase":
 				if (inside_gap)
 				{
 					// We just ended a gap:
@@ -386,13 +428,8 @@ void CHolonomicFullEval::evalSingleTarget(
 				mrpt::keep_max(active_gap.max_eval, val);
 				mrpt::keep_min(active_gap.min_eval, val);
 
-				if (target_k == i)
-				{
-					active_gap.contains_target_k = true;
-					gap_idx_for_target_dir = gaps.size() - 1;
-				}
-
-				if (best_gap_idx == -1 || val > gaps[best_gap_idx].max_eval)
+				if (best_gap_idx == std::string::npos ||
+					val > gaps[best_gap_idx].max_eval)
 				{
 					best_gap_idx = gaps.size() - 1;
 				}
@@ -408,108 +445,19 @@ void CHolonomicFullEval::evalSingleTarget(
 	}
 
 	ASSERT_(!gaps.empty());
-	ASSERT_(best_gap_idx >= 0 && best_gap_idx < int(gaps.size()));
+	ASSERT_(best_gap_idx < gaps.size());
 
 	const TGap& best_gap = gaps[best_gap_idx];
 
-	eo.best_eval = best_gap.max_eval;
+	// best_gap.max_eval;
 
-	// Different qualitative situations:
-	if (best_gap_idx == gap_idx_for_target_dir)  // Gap contains target, AND
-	{
-		// the way seems to have clearance enought:
-		const auto cl_left =
-			mrpt::abs_diff(target_k, (unsigned int)best_gap.k_from);
-		const auto cl_right =
-			mrpt::abs_diff(target_k, (unsigned int)best_gap.k_to);
-
-		const auto smallest_clearance_in_k_units = std::min(cl_left, cl_right);
-		const unsigned int clearance_threshold =
-			mrpt::round(options.clearance_threshold_ratio * nDirs);
-
-		const unsigned int gap_width = best_gap.k_to - best_gap.k_from;
-		const unsigned int width_threshold =
-			mrpt::round(options.gap_width_ratio_threshold * nDirs);
-
-		// Move straight to target?
-		if (smallest_clearance_in_k_units >= clearance_threshold &&
-			gap_width >= width_threshold &&
-			ni.obstacles[target_k] > target_dist * 1.01)
-		{
-			eo.best_k = target_k;
-		}
-	}
-
-	if (eo.best_k == INVALID_K)  // did not fulfill conditions above
-	{
-		// Not heading to target: go thru the "middle" of the gap to maximize
-		// clearance
-		eo.best_k = mrpt::round(0.5 * (best_gap.k_to + best_gap.k_from));
-	}
-
-	// Alternative, simpler method to decide motion:
-	// If target can be reached without collision *and* with a minimum of
-	// clearance,
-	// then select that direction, with the score as computed with the regular
-	// formulas above
-	// (even if that score was not the maximum!).
-	if (target_dist < 0.99 &&
-		(
-			/* No obstacles to target + enough clearance: */
-			(ni.obstacles[target_k] > target_dist * 1.01 &&
-			 ni.clearance->getClearance(
-				 target_k /*path index*/, std::min(0.99, target_dist * 0.95),
-				 true /*interpolate path*/) > options.TOO_CLOSE_OBSTACLE) ||
-			/* Or: no obstacles to target with extra margin, target is really
-			   near, dont check clearance: */
-			(ni.obstacles[target_k] >
-				 (target_dist + 0.15 /*meters*/ / ptg_ref_dist) &&
-			 target_dist < (1.5 /*meters*/ / ptg_ref_dist))) &&
-		dirs_eval[target_k] >
-			0 /* the direct target direction has at least a minimum score */
-	)
-	{
-		eo.best_k = target_k;
-		eo.best_eval = dirs_eval[target_k];
-
-		// Reflect this decision in the phase score plots:
-		phase_scores[NUM_PHASES - 1][target_k] += 2.0;
-	}
-}
-
-void CHolonomicFullEval::navigate(const NavInput& ni, NavOutput& no)
-{
-	using mrpt::square;
-
-	ASSERT_(ni.clearance != nullptr);
-	ASSERT_(!ni.targets.empty());
-
-	// Create a log record for returning data.
-	CLogFileRecord_FullEval::Ptr log =
-		std::make_shared<CLogFileRecord_FullEval>();
-	no.logRecord = log;
-
-	const size_t numTrgs = ni.targets.size();
-
-	std::vector<EvalOutput> evals(numTrgs);
-	double best_eval = .0;
-	unsigned int best_trg_idx = 0;
-
-	for (unsigned int trg_idx = 0; trg_idx < numTrgs; trg_idx++)
-	{
-		auto& eo = evals[trg_idx];
-		evalSingleTarget(trg_idx, ni, eo);
-
-		if (eo.best_eval >=
-			best_eval)  // >= because we prefer the most advanced targets...
-		{
-			best_eval = eo.best_eval;
-			best_trg_idx = trg_idx;
-		}
-	}
+	// Not heading to target: go thru the "middle" of the gap to maximize
+	// clearance
+	const auto best_dir_k = best_gap.k_best_eval;
+	const auto best_dir_eval = overall_scores.at(best_dir_k);
 
 	// Prepare NavigationOutput data:
-	if (best_eval == .0)
+	if (best_dir_eval == .0)
 	{
 		// No way found!
 		no.desiredDirection = 0;
@@ -521,22 +469,21 @@ void CHolonomicFullEval::navigate(const NavInput& ni, NavOutput& no)
 		const auto ptg = getAssociatedPTG();
 		const double ptg_ref_dist = ptg ? ptg->getRefDistance() : 1.0;
 
-		no.desiredDirection = CParameterizedTrajectoryGenerator::index2alpha(
-			evals[best_trg_idx].best_k, ni.obstacles.size());
+		no.desiredDirection =
+			CParameterizedTrajectoryGenerator::index2alpha(best_dir_k, nDirs);
 
 		// Speed control: Reduction factors
 		// ---------------------------------------------
 		const double targetNearnessFactor =
 			m_enableApproachTargetSlowDown
 				? std::min(
-					  1.0, ni.targets[best_trg_idx].norm() /
+					  1.0, ni.targets.front().norm() /
 							   (options.TARGET_SLOW_APPROACHING_DISTANCE /
 								ptg_ref_dist))
 				: 1.0;
 
-		const double obs_dist =
-			ni.obstacles[evals[best_trg_idx].best_k];  // Was: min with
-		// obs_clearance too.
+		const double obs_dist = ni.obstacles[best_dir_k];
+		// Was: min with obs_clearance too.
 		const double obs_dist_th = std::max(
 			options.TOO_CLOSE_OBSTACLE,
 			(options.OBSTACLE_SLOW_DOWN_DISTANCE / ptg_ref_dist) *
@@ -556,15 +503,19 @@ void CHolonomicFullEval::navigate(const NavInput& ni, NavOutput& no)
 			ni.maxRobotSpeed * std::min(riskFactor, targetNearnessFactor);
 	}
 
-	m_last_selected_sector = evals[best_trg_idx].best_k;
+	m_last_selected_sector = best_dir_k;
 
 	// LOG --------------------------
 	if (log)
 	{
-		log->selectedTarget = best_trg_idx;
-		log->selectedSector = evals[best_trg_idx].best_k;
-		log->evaluation = evals[best_trg_idx].best_eval;
-		log->dirs_eval = evals[best_trg_idx].phase_scores;
+		log->selectedTarget = 0;  // was: best_trg_idx
+		log->selectedSector = best_dir_k;
+		log->evaluation = best_dir_eval;
+		// Copy the evaluation of first phases for (arbitrarily) the first
+		// target, then overwrite the scores of its last phase with the OVERALL
+		// phase scores:
+		log->dirs_eval = evals.front().phase_scores;
+		log->dirs_eval.back() = overall_scores;
 
 		if (options.LOG_SCORE_MATRIX)
 		{

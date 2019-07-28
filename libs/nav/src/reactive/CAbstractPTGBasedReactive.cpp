@@ -1008,7 +1008,7 @@ void CAbstractPTGBasedReactive::STEP8_GenerateLogRecord(
 	//  Save to log file:
 	// --------------------------------------
 	{
-		mrpt::system::CTimeLoggerEntry tle(
+		mrpt::system::CTimeLoggerEntry tle2(
 			m_timelogger, "navigationStep.write_log_file");
 		if (m_logFile) archiveFrom(*m_logFile) << newLogRec;
 	}
@@ -1748,7 +1748,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 		// STEP5: Evaluate each movement to assign them a "evaluation" value.
 		// ---------------------------------------------------------------------
 		{
-			CTimeLoggerEntry tle(
+			CTimeLoggerEntry tle2(
 				m_timelogger, "navigationStep.calc_move_candidate_scores");
 
 			calc_move_candidate_scores(
