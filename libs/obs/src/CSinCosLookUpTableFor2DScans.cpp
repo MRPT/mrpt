@@ -31,6 +31,8 @@ const CSinCosLookUpTableFor2DScans::TSinCosValues & CSinCosLookUpTableFor2DScans
   */
 const CSinCosLookUpTableFor2DScans::TSinCosValues & CSinCosLookUpTableFor2DScans::getSinCosForScan(const T2DScanProperties &scan_prop) const
 {
+	mrpt::synch::CCriticalSectionLocker lck(&m_cache_cs);
+
 	std::map<T2DScanProperties,TSinCosValues>::const_iterator it = m_cache.find(scan_prop);
 	if (it!=m_cache.end())
 	{ // Found in the cache:

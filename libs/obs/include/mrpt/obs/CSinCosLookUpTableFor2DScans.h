@@ -10,6 +10,7 @@
 #define CSinCosLookUpTableFor2DScans_H
 
 #include <mrpt/utils/types_math.h>
+#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/obs/T2DScanProperties.h>
 #include <mrpt/obs/link_pragmas.h>
 #include <map>
@@ -51,6 +52,7 @@ namespace obs
 
 	private:
 		mutable std::map<T2DScanProperties,TSinCosValues>  m_cache; //!< The cache of known scans and their sin/cos tables.
+		mrpt::synch::CCriticalSection m_cache_cs;
 	};
 
 
