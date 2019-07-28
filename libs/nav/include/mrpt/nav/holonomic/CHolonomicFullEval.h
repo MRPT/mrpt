@@ -91,15 +91,13 @@ namespace mrpt
 		unsigned int m_last_selected_sector;
 		unsigned int direction2sector(const double a, const unsigned int N);
 		mrpt::math::CMatrixD m_dirs_scores; //!< Individual scores for each direction: (i,j), i (row) are directions, j (cols) are scores. Not all directions may have evaluations, in which case a "-1" value will be found.
-		
+
 		virtual void postProcessDirectionEvaluations(std::vector<double> &dir_evals, const NavInput & ni, unsigned int trg_idx); // If desired, override in a derived class to manipulate the final evaluations of each directions
 
 		struct NAV_IMPEXP EvalOutput
 		{
-			unsigned int best_k;
-			double       best_eval;
 			std::vector<std::vector<double> > phase_scores;
-			EvalOutput();
+			EvalOutput() {}
 		};
 
 		void evalSingleTarget(unsigned int target_idx, const NavInput & ni, EvalOutput &eo); //!< Evals one single target of the potentially many of them in NavInput
