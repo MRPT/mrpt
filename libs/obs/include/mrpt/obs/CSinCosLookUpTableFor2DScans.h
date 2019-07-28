@@ -11,6 +11,7 @@
 #include <mrpt/math/CVectorDynamic.h>  //CVectorFloat
 #include <mrpt/obs/T2DScanProperties.h>
 #include <map>
+#include <mutex>
 
 namespace mrpt::obs
 {
@@ -53,6 +54,7 @@ class CSinCosLookUpTableFor2DScans
    private:
 	/** The cache of known scans and their sin/cos tables. */
 	mutable std::map<T2DScanProperties, TSinCosValues> m_cache;
+	mutable std::recursive_mutex m_cache_mtx;
 };
 
 }  // namespace mrpt::obs
