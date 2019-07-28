@@ -32,6 +32,14 @@ namespace obs
 	class OBS_IMPEXP CSinCosLookUpTableFor2DScans
 	{
 	public:
+		CSinCosLookUpTableFor2DScans() {}
+		/** Do NOT copy neither the cache nor the mutex */
+		CSinCosLookUpTableFor2DScans(const CSinCosLookUpTableFor2DScans&) {}
+		CSinCosLookUpTableFor2DScans & operator =(const CSinCosLookUpTableFor2DScans &)
+		{
+			return *this;
+		}
+
 		/** A pair of vectors with the cos and sin values. */
 		struct TSinCosValues {
 			mrpt::math::CVectorFloat ccos, csin;
@@ -52,7 +60,7 @@ namespace obs
 
 	private:
 		mutable std::map<T2DScanProperties,TSinCosValues>  m_cache; //!< The cache of known scans and their sin/cos tables.
-		mrpt::synch::CCriticalSection m_cache_cs;
+		mutable mrpt::synch::CCriticalSection m_cache_cs;
 	};
 
 
