@@ -53,7 +53,7 @@ cd $MRPT_DEB_DIR
 rm *.zip > /dev/null 2>/dev/null
 
 # Rename tar.gz to Fedora convention:
-mv mrpt*.tar.gz mrpt-${MRPT_VERSION_STR}-$(date +%Y%m%d%k%M)svn${MRPT_SVN_VERSION}.tar.gz
+mv mrpt*.tar.gz mrpt-${MRPT_VERSION_STR}-$(date +%Y%m%d%H%M)svn${MRPT_SVN_VERSION}.tar.gz
 
 ls -l
 
