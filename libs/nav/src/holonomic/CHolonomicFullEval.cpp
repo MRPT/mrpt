@@ -30,6 +30,8 @@ IMPLEMENTS_SERIALIZABLE(
 
 const unsigned int INVALID_K = std::numeric_limits<unsigned int>::max();
 
+const unsigned NUM_FACTORS = 7U;
+
 CHolonomicFullEval::CHolonomicFullEval(
 	const mrpt::config::CConfigFileBase* INI_FILE)
 	: CAbstractHolonomicReactiveMethod("CHolonomicFullEval"),
@@ -99,7 +101,6 @@ void CHolonomicFullEval::evalSingleTarget(
 		obstacles_2d[i].y = ni.obstacles[i] * sc_lut.csin[i];
 	}
 
-	const int NUM_FACTORS = 6;
 	// Sanity checks:
 	ASSERT_EQUAL_(options.factorWeights.size(), NUM_FACTORS);
 	ASSERT_ABOVE_(nDirs, 3);
@@ -113,7 +114,7 @@ void CHolonomicFullEval::evalSingleTarget(
 		if (ni.obstacles[i] < options.TOO_CLOSE_OBSTACLE &&
 			!(i == target_k && ni.obstacles[i] > 1.02 * target_dist))
 		{
-			for (int l = 0; l < NUM_FACTORS; l++) m_dirs_scores(i, l) = .0;
+			for (size_t l = 0; l < NUM_FACTORS; l++) m_dirs_scores(i, l) = .0;
 			continue;
 		}
 
@@ -123,7 +124,7 @@ void CHolonomicFullEval::evalSingleTarget(
 		const double x = d * sc_lut.ccos[i];
 		const double y = d * sc_lut.csin[i];
 
-		// Factor #1: collision-free distance
+		// Factor [0]: collision-free distance
 		// -----------------------------------------------------
 		if (mrpt::abs_diff(i, target_k) <= 1 &&
 			target_dist < 1.0 - options.TOO_CLOSE_OBSTACLE &&
@@ -151,7 +152,7 @@ void CHolonomicFullEval::evalSingleTarget(
 			mrpt::keep_min(scores[0], max_real_freespace_norm);
 		}
 
-		// Factor #2: Closest approach to target along straight line
+		// Factor [1]: Closest approach to target along straight line
 		// (Euclidean)
 		// -------------------------------------------
 		mrpt::math::TSegment2D sg;
@@ -186,23 +187,16 @@ void CHolonomicFullEval::evalSingleTarget(
 
 		scores[1] = 1.0 / (1.0 + square(min_dist_target_along_path));
 
-		// Factor #3: Distance of end collision-free point to target
+		// Factor [2]: Distance of end collision-free point to target
 		// (Euclidean)
+		// Factor [5]: idem (except: no decimation afterwards)
 		// -----------------------------------------------------
 		scores[2] = std::sqrt(1.01 - endpt_dist_to_target_norm);
 		scores[5] = scores[2];
 		// the 1.01 instead of 1.0 is to be 100% sure we don't get a domain
 		// error in sqrt()
 
-		if (target_dist < 1.0 - options.TOO_CLOSE_OBSTACLE &&
-			ni.obstacles[i] < 1.05 * target_dist)
-		{
-			// this direction cannot reach target, so assign a low score:
-			scores[1] *= 0.1;
-			scores[2] *= 0.1;
-		}
-
-		// Factor #4: Stabilizing factor (hysteresis) to avoid quick switch
+		// Factor [3]: Stabilizing factor (hysteresis) to avoid quick switch
 		// among very similar paths:
 		// ------------------------------------------------------------------------------------------
 		if (m_last_selected_sector != std::numeric_limits<unsigned int>::max())
@@ -223,7 +217,7 @@ void CHolonomicFullEval::evalSingleTarget(
 			scores[3] = 1.0;
 		}
 
-		// Factor #5: clearance to nearest obstacle along path
+		// Factor [4]: clearance to nearest obstacle along path
 		// Use TP-obstacles instead of real obstacles in Workspace since
 		// it's way faster, despite being an approximation:
 		// -------------------------------------------------------------------
@@ -249,14 +243,30 @@ void CHolonomicFullEval::evalSingleTarget(
 			}
 		}
 
+		// Factor [6]: Direct distance in "sectors":
+		// -------------------------------------------------------------------
+		scores[6] = 1.0 / (1.0 + mrpt::square((4.0 / nDirs) * mrpt::abs_diff(i, target_k)));
+
+		// If target is not directly reachable for this i-th direction, decimate
+		// its scorings:
+		if (target_dist < 1.0 - options.TOO_CLOSE_OBSTACLE &&
+			ni.obstacles[i] < 1.01 * target_dist)
+		{
+			// this direction cannot reach target, so assign a low score:
+			scores[1] *= 0.1;
+			scores[2] *= 0.1;
+			scores[6] *= 0.1;
+		}
+
 		// Save stats for debugging:
-		for (int l = 0; l < NUM_FACTORS; l++) m_dirs_scores(i, l) = scores[l];
+		for (size_t l = 0; l < NUM_FACTORS; l++)
+			m_dirs_scores(i, l) = scores[l];
 
 	}  // end for each direction "i"
 
 	// Normalize factors?
 	ASSERT_(options.factorNormalizeOrNot.size() == NUM_FACTORS);
-	for (int l = 0; l < NUM_FACTORS; l++)
+	for (size_t l = 0; l < NUM_FACTORS; l++)
 	{
 		if (!options.factorNormalizeOrNot[l]) continue;
 
@@ -279,7 +289,7 @@ void CHolonomicFullEval::evalSingleTarget(
 	for (unsigned int i = 0; i < NUM_PHASES; i++)
 	{
 		for (unsigned int l : options.PHASE_FACTORS[i])
-			weights_sum_phase[i] += options.factorWeights[l];
+			weights_sum_phase[i] += options.factorWeights.at(l);
 		ASSERT_(weights_sum_phase[i] > .0);
 		weights_sum_phase_inv[i] = 1.0 / weights_sum_phase[i];
 	}
@@ -312,7 +322,7 @@ void CHolonomicFullEval::evalSingleTarget(
 				// Weighted avrg of factors:
 				for (unsigned int l : options.PHASE_FACTORS[phase_idx])
 					this_dir_eval +=
-						options.factorWeights[l] *
+						options.factorWeights.at(l) *
 						std::log(std::max(1e-6, m_dirs_scores(i, l)));
 
 				this_dir_eval *= weights_sum_phase_inv[phase_idx];
@@ -336,7 +346,7 @@ void CHolonomicFullEval::evalSingleTarget(
 	}  // end for each phase
 
 	// Give a chance for a derived class to manipulate the final evaluations:
-	auto& dirs_eval = *phase_scores.rbegin();
+	auto& dirs_eval = phase_scores.back();
 
 	postProcessDirectionEvaluations(dirs_eval, ni, target_idx);
 
@@ -350,8 +360,8 @@ void CHolonomicFullEval::evalSingleTarget(
 			mrpt::keep_min(phase_min, dirs_eval[i]);
 		}
 		last_phase_threshold =
-			options.PHASE_THRESHOLDS[NUM_PHASES - 1] * phase_max +
-			(1.0 - options.PHASE_THRESHOLDS[NUM_PHASES - 1]) * phase_min;
+			options.PHASE_THRESHOLDS.back() * phase_max +
+			(1.0 - options.PHASE_THRESHOLDS.back()) * phase_min;
 	}
 
 	// Thresholding:
@@ -608,8 +618,8 @@ void CLogFileRecord_FullEval::serializeFrom(
 						TOptions
   ---------------------------------------------------------------*/
 CHolonomicFullEval::TOptions::TOptions()
-	: factorWeights{0.1, 0.5, 0.5, 0.01, 1},
-	  factorNormalizeOrNot{0, 0, 0, 0, 1},
+	: factorWeights{0.1, 0.5, 0.5, 0.01, 1, 1, 1},
+	  factorNormalizeOrNot{0, 0, 0, 0, 1, 0, 0},
 	  PHASE_FACTORS{{1, 2}, {4}, {0, 2}},
 	  PHASE_THRESHOLDS{0.5, 0.6, 0.7}
 
@@ -632,7 +642,7 @@ void CHolonomicFullEval::TOptions::loadFromConfigFile(
 
 	c.read_vector(
 		s, "factorWeights", std::vector<double>(), factorWeights, true);
-	ASSERT_EQUAL_(factorWeights.size(), 6U);
+	ASSERT_EQUAL_(factorWeights.size(), NUM_FACTORS);
 
 	c.read_vector(
 		s, "factorNormalizeOrNot", factorNormalizeOrNot, factorNormalizeOrNot);
@@ -693,7 +703,7 @@ void CHolonomicFullEval::TOptions::saveToConfigFile(
 		"Ratio [0,1], times path_count, gives the minimum gap width to accept "
 		"a direct motion towards target.");
 
-	ASSERT_EQUAL_(factorWeights.size(), 6U);
+	ASSERT_EQUAL_(factorWeights.size(), NUM_FACTORS);
 	c.write(
 		s, "factorWeights",
 		mrpt::system::sprintf_container("%.2f ", factorWeights), WN, WV,
