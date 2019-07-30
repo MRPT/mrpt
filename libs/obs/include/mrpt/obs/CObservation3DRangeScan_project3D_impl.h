@@ -406,6 +406,10 @@ inline void do_project_3d_pointcloud(
 			}
 	}
 	pca.resize(idx);
+	// Make sure indices are also resized down to the actual number of points,
+	// even if they are not part of the object PCA refers to:
+	idxs_x.resize(idx);
+	idxs_y.resize(idx);
 }
 
 // Auxiliary functions which implement (un)projection of 3D point clouds:
@@ -529,6 +533,10 @@ inline void do_project_3d_pointcloud_SSE2(
 		}
 	}
 	pca.resize(idx);
+	// Make sure indices are also resized down to the actual number of points,
+	// even if they are not part of the object PCA refers to:
+	idxs_x.resize(idx);
+	idxs_y.resize(idx);
 #endif
 }
 }  // namespace mrpt::obs::detail
