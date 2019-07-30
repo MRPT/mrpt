@@ -245,7 +245,9 @@ void CHolonomicFullEval::evalSingleTarget(
 
 		// Factor [6]: Direct distance in "sectors":
 		// -------------------------------------------------------------------
-		scores[6] = 1.0 / (1.0 + mrpt::square((4.0 / nDirs) * mrpt::abs_diff(i, target_k)));
+		scores[6] =
+			1.0 /
+			(1.0 + mrpt::square((4.0 / nDirs) * mrpt::abs_diff(i, target_k)));
 
 		// If target is not directly reachable for this i-th direction, decimate
 		// its scorings:
