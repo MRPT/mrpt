@@ -365,6 +365,10 @@ namespace detail {
 				}
 		}
 		pca.resize(idx);
+		// Make sure indices are also resized down to the actual number of points,
+		// even if they are not part of the object PCA refers to:
+		idxs_x.resize(idx);
+		idxs_y.resize(idx);
 	}
 
 	// Auxiliary functions which implement (un)projection of 3D point clouds:
@@ -467,6 +471,10 @@ namespace detail {
 				}
 			}
 			pca.resize(idx);
+			// Make sure indices are also resized down to the actual number of points,
+			// even if they are not part of the object PCA refers to:
+			idxs_x.resize(idx);
+			idxs_y.resize(idx);
     #endif
 	}
 
