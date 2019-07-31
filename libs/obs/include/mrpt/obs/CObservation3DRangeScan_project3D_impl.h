@@ -15,8 +15,8 @@ namespace mrpt {
 namespace obs {
 namespace detail {
     // Auxiliary functions which implement SSE-optimized proyection of 3D point cloud:
-    template <class POINTMAP> void do_project_3d_pointcloud(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca, std::vector<uint16_t> &idxs_x, std::vector<uint16_t> &idxs_y,const mrpt::obs::TRangeImageFilterParams &filterParams, bool MAKE_DENSE, const int DECIM);
-    template <class POINTMAP> void do_project_3d_pointcloud_SSE2(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca, std::vector<uint16_t> &idxs_x, std::vector<uint16_t> &idxs_y,const mrpt::obs::TRangeImageFilterParams &filterParams, bool MAKE_DENSE);
+	template <class POINTMAP> void do_project_3d_pointcloud(const int H,const int W,const float *kys,const float *kzs,mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca, std::vector<uint16_t> &idxs_x, std::vector<uint16_t> &idxs_y,const mrpt::obs::TRangeImageFilterParams &filterParams, bool MAKE_DENSE, const int DECIM);
+	template <class POINTMAP> void do_project_3d_pointcloud_SSE2(const int H,const int W,const float *kys,const float *kzs,mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca, std::vector<uint16_t> &idxs_x, std::vector<uint16_t> &idxs_y,const mrpt::obs::TRangeImageFilterParams &filterParams, bool MAKE_DENSE);
 
     template <typename POINTMAP, bool isDepth>
     inline void range2XYZ(
@@ -55,6 +55,11 @@ namespace detail {
 					src_obs.points3D_idxs_x[idx] = c;
 					src_obs.points3D_idxs_y[idx] = r;
 					++idx;
+				}
+				else
+				{
+					if (fp.mark_invalid_ranges)
+						src_obs.rangeImage.coeffRef(r, c) = 0;
 				}
 			}
 		pca.resize(idx);  // Actual number of valid pts
@@ -283,7 +288,7 @@ namespace detail {
 			if (pp.robotPoseInTheWorld)
 				transf_to_apply.composeFrom(*pp.robotPoseInTheWorld, mrpt::poses::CPose3D(transf_to_apply));
 
-			const mrpt::math::CMatrixFixedNumeric<float,4,4> HM = transf_to_apply.getHomogeneousMatrixVal().cast<float>();
+			mrpt::math::CMatrixFixedNumeric<float,4,4> HM = transf_to_apply.getHomogeneousMatrixVal().cast<float>();
 			Eigen::Matrix<float,4,1>  pt, pt_transf;
 			pt[3]=1;
 
@@ -301,7 +306,7 @@ namespace detail {
 	template <class POINTMAP>
 	inline void do_project_3d_pointcloud(
 	    const int H, const int W, const float* kys, const float* kzs,
-	    const mrpt::math::CMatrix& rangeImage,
+		mrpt::math::CMatrix& rangeImage,
 	    mrpt::utils::PointCloudAdapter<POINTMAP>& pca,
 	    std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
 	    const mrpt::obs::TRangeImageFilterParams& fp, bool MAKE_DENSE,
@@ -321,6 +326,7 @@ namespace detail {
 					if (!rif.do_range_filter(r, c, D))
 					{
 						if (!MAKE_DENSE) pca.setInvalidPoint(idx++);
+						if (fp.mark_invalid_ranges) rangeImage.coeffRef(r, c) = 0;
 						continue;
 					}
 					pca.setPointXYZ(idx, D /*x*/, ky * D /*y*/, kz * D /*z*/);
@@ -348,6 +354,11 @@ namespace detail {
 								valid_pt = true;
 								if (D < min_d) min_d = D;
 							}
+							else
+							{
+								if (fp.mark_invalid_ranges)
+									rangeImage.coeffRef(r, c) = 0;
+							}
 						}
 					if (!valid_pt)
 					{
@@ -373,7 +384,7 @@ namespace detail {
 
 	// Auxiliary functions which implement (un)projection of 3D point clouds:
 	template <class POINTMAP>
-	inline void do_project_3d_pointcloud_SSE2(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca, std::vector<uint16_t> &idxs_x, std::vector<uint16_t> &idxs_y,const mrpt::obs::TRangeImageFilterParams &filterParams, bool MAKE_DENSE)
+	inline void do_project_3d_pointcloud_SSE2(const int H,const int W,const float *kys,const float *kzs,mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca, std::vector<uint16_t> &idxs_x, std::vector<uint16_t> &idxs_y,const mrpt::obs::TRangeImageFilterParams &filterParams, bool MAKE_DENSE)
 	{
     #if MRPT_HAS_SSE2
 		    // Preconditions: minRangeMask() has the right size
@@ -443,17 +454,25 @@ namespace detail {
 						_mm_storeu_ps(zs , _mm_mul_ps(KZ,D));
 
 						for (int q=0;q<4;q++)
+						{
+							const int actual_c = (c << 2) + q;
 							if ((valid_range_maski & (1<<(q*4))) !=0) {
 								pca.setPointXYZ(idx,xs[q],ys[q],zs[q]);
-								idxs_x[idx]=(c<<2)+q;
+								idxs_x[idx]=actual_c;
 								idxs_y[idx]=r;
 								++idx;
 							}
-							else if (!MAKE_DENSE)
+							else
 							{
-								pca.setInvalidPoint(idx);
-								++idx;
+								if (!MAKE_DENSE)
+								{
+									pca.setInvalidPoint(idx);
+									++idx;
+								}
+								if (filterParams.mark_invalid_ranges)
+									rangeImage.coeffRef(r, actual_c) = 0;
 							}
+						}
 					}
 					else if (!MAKE_DENSE)
 					{
@@ -461,6 +480,9 @@ namespace detail {
 						{
 							pca.setInvalidPoint(idx);
 							++idx;
+							const int actual_c = (c << 2) + q;
+							if (filterParams.mark_invalid_ranges)
+								rangeImage.coeffRef(r, actual_c) = 0;
 						}
 					}
 					D_ptr+=4;

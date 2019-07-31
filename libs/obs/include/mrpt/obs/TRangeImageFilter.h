@@ -30,7 +30,13 @@ namespace obs {
 		  * for each direction (row,col). Values of 0.0f mean no filtering at those directions.
 			* If both `rangeMask_min` and `rangeMask_max` are provided, the joint filtering operation is determined by `rangeCheckBetween` */
 		const mrpt::math::CMatrix * rangeMask_min, * rangeMask_max;
-		TRangeImageFilterParams() : rangeCheckBetween(true), rangeMask_min(NULL), rangeMask_max(NULL)
+
+		/** If enabled, the range pixels of points that do NOT pass the mask filter
+		 * will be marked as invalid ranges (=0) in the source 3D observation
+		 * object. */
+		bool mark_invalid_ranges;
+
+		TRangeImageFilterParams() : rangeCheckBetween(true), rangeMask_min(NULL), rangeMask_max(NULL), mark_invalid_ranges(false)
 		{}
 	};
 
