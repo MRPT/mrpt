@@ -19,7 +19,7 @@ namespace mrpt::obs::detail
 template <class POINTMAP>
 void do_project_3d_pointcloud(
 	const int H, const int W, const float* kys, const float* kzs,
-	const mrpt::math::CMatrixF& rangeImage,
+	mrpt::math::CMatrixF& rangeImage,
 	mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
 	std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
 	const mrpt::obs::TRangeImageFilterParams& fp, bool MAKE_ORGANIZED,
@@ -27,7 +27,7 @@ void do_project_3d_pointcloud(
 template <class POINTMAP>
 void do_project_3d_pointcloud_SSE2(
 	const int H, const int W, const float* kys, const float* kzs,
-	const mrpt::math::CMatrixF& rangeImage,
+	mrpt::math::CMatrixF& rangeImage,
 	mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
 	std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
 	const mrpt::obs::TRangeImageFilterParams& fp, bool MAKE_ORGANIZED);
@@ -69,6 +69,11 @@ inline void range2XYZ(
 				src_obs.points3D_idxs_x[idx] = c;
 				src_obs.points3D_idxs_y[idx] = r;
 				++idx;
+			}
+			else
+			{
+				if (fp.mark_invalid_ranges)
+					src_obs.rangeImage.coeffRef(r, c) = 0;
 			}
 		}
 	pca.resize(idx);  // Actual number of valid pts
@@ -342,7 +347,7 @@ void project3DPointsFromDepthImageInto(
 template <class POINTMAP>
 inline void do_project_3d_pointcloud(
 	const int H, const int W, const float* kys, const float* kzs,
-	const mrpt::math::CMatrixF& rangeImage,
+	mrpt::math::CMatrixF& rangeImage,
 	mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
 	std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
 	const mrpt::obs::TRangeImageFilterParams& fp, bool MAKE_ORGANIZED,
@@ -362,6 +367,7 @@ inline void do_project_3d_pointcloud(
 				if (!rif.do_range_filter(r, c, D))
 				{
 					if (MAKE_ORGANIZED) pca.setInvalidPoint(idx++);
+					if (fp.mark_invalid_ranges) rangeImage.coeffRef(r, c) = 0;
 					continue;
 				}
 				pca.setPointXYZ(idx, D /*x*/, ky * D /*y*/, kz * D /*z*/);
@@ -388,6 +394,11 @@ inline void do_project_3d_pointcloud(
 						{
 							valid_pt = true;
 							if (D < min_d) min_d = D;
+						}
+						else
+						{
+							if (fp.mark_invalid_ranges)
+								rangeImage.coeffRef(r, c) = 0;
 						}
 					}
 				if (!valid_pt)
@@ -416,7 +427,7 @@ inline void do_project_3d_pointcloud(
 template <class POINTMAP>
 inline void do_project_3d_pointcloud_SSE2(
 	const int H, const int W, const float* kys, const float* kzs,
-	const mrpt::math::CMatrixF& rangeImage,
+	mrpt::math::CMatrixF& rangeImage,
 	mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
 	std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
 	const mrpt::obs::TRangeImageFilterParams& fp, bool MAKE_ORGANIZED)
@@ -504,18 +515,26 @@ inline void do_project_3d_pointcloud_SSE2(
 				_mm_storeu_ps(zs, _mm_mul_ps(KZ, D));
 
 				for (int q = 0; q < 4; q++)
+				{
+					const int actual_c = (c << 2) + q;
 					if ((valid_range_maski & (1 << (q * 4))) != 0)
 					{
 						pca.setPointXYZ(idx, xs[q], ys[q], zs[q]);
-						idxs_x[idx] = (c << 2) + q;
+						idxs_x[idx] = actual_c;
 						idxs_y[idx] = r;
 						++idx;
 					}
-					else if (MAKE_ORGANIZED)
+					else
 					{
-						pca.setInvalidPoint(idx);
-						++idx;
+						if (MAKE_ORGANIZED)
+						{
+							pca.setInvalidPoint(idx);
+							++idx;
+						}
+						if (fp.mark_invalid_ranges)
+							rangeImage.coeffRef(r, actual_c) = 0;
 					}
+				}
 			}
 			else if (MAKE_ORGANIZED)
 			{
@@ -523,6 +542,9 @@ inline void do_project_3d_pointcloud_SSE2(
 				{
 					pca.setInvalidPoint(idx);
 					++idx;
+					const int actual_c = (c << 2) + q;
+					if (fp.mark_invalid_ranges)
+						rangeImage.coeffRef(r, actual_c) = 0;
 				}
 			}
 			D_ptr += 4;
