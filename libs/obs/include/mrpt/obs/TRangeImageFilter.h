@@ -34,6 +34,12 @@ struct TRangeImageFilterParams
 	 * If both `rangeMask_min` and `rangeMask_max` are provided, the joint
 	 * filtering operation is determined by `rangeCheckBetween` */
 	const mrpt::math::CMatrixF *rangeMask_min{nullptr}, *rangeMask_max{nullptr};
+
+	/** If enabled, the range pixels of points that do NOT pass the mask filter
+	 * will be marked as invalid ranges (=0) in the source 3D observation
+	 * object. */
+	bool mark_invalid_ranges{false};
+
 	TRangeImageFilterParams() = default;
 };
 
