@@ -31,6 +31,8 @@ END_EVENT_TABLE()
 
 #include <mrpt/system/datetime.h>
 
+std::atomic_bool CRawlogTreeView::RAWLOG_UNDERGOING_CHANGES{false};
+
 #define MRPT_NO_WARN_BIG_HDR  // It's ok here
 #include <mrpt/obs.h>
 
@@ -185,6 +187,18 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 						reloadFromRawlog
    ------------------------------------------------------------ */
 void CRawlogTreeView::OnDraw(wxDC& dc)
+{
+	if (RAWLOG_UNDERGOING_CHANGES) return;
+	try
+	{
+		OnDrawImpl(dc);
+	}
+	catch (...)
+	{
+	}
+}
+
+void CRawlogTreeView::OnDrawImpl(wxDC& dc)
 {
 	// The origin of the window:
 	int xc0, y0;
