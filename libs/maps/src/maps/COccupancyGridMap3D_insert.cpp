@@ -99,13 +99,16 @@ void COccupancyGridMap3D::internal_insertObservationScan3D(
 	// Depth -> 3D points:
 	mrpt::maps::CSimplePointsMap pts;
 	mrpt::obs::T3DPointsProjectionParams pp;
-	pp.takeIntoAccountSensorPoseOnRobot = true;
+	pp.takeIntoAccountSensorPoseOnRobot = false;  // done below
 	pp.decimation = insertionOptions.decimation_3d_range;
 
 	const_cast<mrpt::obs::CObservation3DRangeScan&>(o)
 		.project3DPointsFromDepthImageInto(pts, pp);
 
 	const auto sensorPose3D = robotPose + o.sensorPose;
+	// Shift everything to its proper pose in the global frame:
+	pts.changeCoordinatesReference(sensorPose3D);
+
 	const auto sensorPt = mrpt::math::TPoint3D(sensorPose3D.asTPose());
 	insertPointCloud(sensorPt, pts, o.maxRange);
 
