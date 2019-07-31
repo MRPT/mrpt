@@ -119,7 +119,7 @@ DECLARE_OP_FUNCTION(op_info)
 		 << format(
 				"%.02f%%\n", 100.0 * double(proc.m_filSize) /
 								 double(in_rawlog.getPosition()));
-	cout << "Overall number of objects         : " << proc.m_rawlogEntry
+	cout << "Overall number of objects         : " << (proc.m_rawlogEntry + 1)
 		 << "\n";
 	cout << "Actions/SensoryFrame format       : "
 		 << (proc.has_actSF_format ? "Yes" : "No") << "\n";

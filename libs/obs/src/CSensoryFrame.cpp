@@ -163,16 +163,21 @@ void CSensoryFrame::eraseByIndex(const size_t& idx)
 /*---------------------------------------------------------------
 					getObservationByIndex
   ---------------------------------------------------------------*/
-CObservation::Ptr CSensoryFrame::getObservationByIndex(const size_t& idx) const
+const CObservation::Ptr& CSensoryFrame::getObservationByIndex(
+	const size_t& idx) const
 {
 	MRPT_START
-	if (idx >= size())
-		THROW_EXCEPTION_FMT(
-			"Index %u out of range.", static_cast<unsigned>(idx));
-
+	ASSERT_BELOW_(idx, size());
 	auto it = begin() + idx;
 	return *it;
-
+	MRPT_END
+}
+CObservation::Ptr& CSensoryFrame::getObservationByIndex(const size_t& idx)
+{
+	MRPT_START
+	ASSERT_BELOW_(idx, size());
+	auto it = begin() + idx;
+	return *it;
 	MRPT_END
 }
 
