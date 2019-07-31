@@ -69,11 +69,15 @@ class CRawlogProcessor
 
 		m_timParse.Tic();
 
+		size_t rawlogEntryCount = 0;
+
 		// Parse the entire rawlog:
 		auto arch = mrpt::serialization::archiveFrom(m_in_rawlog);
 		while (mrpt::obs::CRawlog::getActionObservationPairOrObservation(
-			arch, actions, SF, obs, m_rawlogEntry))
+			arch, actions, SF, obs, rawlogEntryCount))
 		{
+			m_rawlogEntry = rawlogEntryCount - 1;
+
 			// Abort if the user presses ESC:
 			if (mrpt::system::os::kbhit())
 				if (27 == mrpt::system::os::getch())
@@ -93,7 +97,7 @@ class CRawlogProcessor
 				{
 					std::cout << mrpt::format(
 						"Progress: %7u objects --- Pos: %9sB/%c%9sB \r",
-						(unsigned int)m_rawlogEntry,
+						(unsigned int)(m_rawlogEntry + 1),
 						mrpt::system::unitsFormat(fil_pos).c_str(),
 						(fil_pos > m_filSize ? '>' : ' '),
 						mrpt::system::unitsFormat(m_filSize)
@@ -175,23 +179,23 @@ class CRawlogProcessorOnEachObservation : public CRawlogProcessor
 		// within a "SF":
 		for (size_t idxObs = 0; true; idxObs++)
 		{
-			mrpt::obs::CObservation::Ptr obs_indiv;
+			mrpt::obs::CObservation::Ptr* obs_indiv = nullptr;
 			if (obs)
 			{
 				if (idxObs > 0) break;
-				obs_indiv = obs;
+				obs_indiv = &obs;
 			}
 			else if (SF)
 			{
 				if (idxObs >= SF->size()) break;
-				obs_indiv = SF->getObservationByIndex(idxObs);
+				obs_indiv = &SF->getObservationByIndex(idxObs);
 			}
 			else
 				break;  // shouldn't...
 
 			// Process "obs_indiv":
 			ASSERT_(obs_indiv);
-			if (!processOneObservation(obs_indiv)) return false;
+			if (!processOneObservation(*obs_indiv)) return false;
 		}
 
 		return true;  // No error.

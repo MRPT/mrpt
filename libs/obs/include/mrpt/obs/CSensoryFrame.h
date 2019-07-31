@@ -291,7 +291,9 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
 	/** Returns the i'th observation in the list (0=first).
 	 * \sa begin, size
 	 */
-	CObservation::Ptr getObservationByIndex(const size_t& idx) const;
+	const CObservation::Ptr& getObservationByIndex(const size_t& idx) const;
+	/// \overload
+	CObservation::Ptr& getObservationByIndex(const size_t& idx);
 
 	/** Returns the i'th observation in the list (0=first), and as a different
 	 * smart pointer type:
