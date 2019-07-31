@@ -996,6 +996,8 @@ void CFormEdit::executeOperationOnRawlog(
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
+	CRawlogTreeView::RAWLOG_UNDERGOING_CHANGES = true;
+
 	wxTheApp->Yield();  // Let the app. process messages
 
 	unsigned int countLoop = 0;
@@ -1134,6 +1136,8 @@ void CFormEdit::executeOperationOnRawlog(
 	if (out_fil) delete out_fil;
 
 	WX_END_TRY
+
+	CRawlogTreeView::RAWLOG_UNDERGOING_CHANGES = false;
 }
 
 // Remove observations by class name:
