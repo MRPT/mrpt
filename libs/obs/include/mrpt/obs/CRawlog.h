@@ -226,8 +226,32 @@ class CRawlog : public mrpt::serialization::CSerializable
 	 */
 	CObservation::Ptr getAsObservation(size_t index) const;
 
-	/** A normal iterator, plus the extra method "getType" to determine the type
-	 * of each entry in the sequence. */
+	/** Get the i'th observation as an observation of the given type.
+	 * \exception std::exception If index is out of bounds, or type not
+	 * compatible.
+	 */
+	template <class T>
+	typename T::ConstPtr asObservation(size_t index) const
+	{
+		MRPT_START
+		auto ptr = std::dynamic_pointer_cast<const T>(getAsObservation(index));
+		ASSERTMSG_(ptr, "Could not convert observation to specified class");
+		return ptr;
+		MRPT_END
+	}
+
+	template <class T>
+	typename T::Ptr asObservation(size_t index)
+	{
+		MRPT_START
+		auto ptr = std::dynamic_pointer_cast<T>(getAsObservation(index));
+		ASSERTMSG_(ptr, "Could not convert observation to specified class");
+		return ptr;
+		MRPT_END
+	}
+
+	/** A normal iterator, plus the extra method "getType" to determine the
+	 * type of each entry in the sequence. */
 	class iterator
 	{
 	   protected:
