@@ -102,6 +102,8 @@ class CObservationVelodyneScan : public CObservation
 	/** Blocks 32-63 */
 	static const uint16_t LOWER_BANK = 0xddff;
 
+	static const int SCANS_PER_FIRING = 16;
+
 	static const int PACKET_SIZE = 1206;
 	static const int POS_PACKET_SIZE = 512;
 	static const int BLOCKS_PER_PACKET = 12;

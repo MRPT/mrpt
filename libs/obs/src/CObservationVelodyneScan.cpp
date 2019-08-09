@@ -34,8 +34,6 @@ const float Velo::DISTANCE_RESOLUTION = 0.002f; /**< meters */
 const float Velo::DISTANCE_MAX_UNITS =
 	(Velo::DISTANCE_MAX / Velo::DISTANCE_RESOLUTION + 1.0f);
 
-const int SCANS_PER_FIRING = 16;
-
 const float VLP16_BLOCK_TDURATION = 110.592f;  // [us]
 const float VLP16_DSR_TOFFSET = 2.304f;  // [us]
 const float VLP16_FIRING_TOFFSET = 55.296f;  // [us]
@@ -245,7 +243,7 @@ static void velodyne_scan_to_pointcloud(
 				(raw->laser_return_mode == Velo::RETMODE_DUAL &&
 				 ((block & 0x01) == 0));
 
-			for (int dsr = 0, k = 0; dsr < SCANS_PER_FIRING; dsr++, k++)
+			for (int dsr = 0, k = 0; dsr < Velo::SCANS_PER_FIRING; dsr++, k++)
 			{
 				if (!raw->blocks[block]
 						 .laser_returns[k]
@@ -303,7 +301,7 @@ static void velodyne_scan_to_pointcloud(
 								isolatedPointsFilterDistance_units)
 							pass_filter = false;
 					}
-					if (k < (SCANS_PER_FIRING - 1))
+					if (k < (Velo::SCANS_PER_FIRING - 1))
 					{
 						const int16_t dist_next =
 							raw->blocks[block].laser_returns[k + 1].distance;
