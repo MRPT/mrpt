@@ -52,3 +52,10 @@ void CObservation::getDescriptionAsText(std::ostream& o) const
 	o << "Sensor label: '" << sensorLabel << "'" << std::endl;
 	o << std::endl;
 }
+
+std::string CObservation::getDescriptionAsTextValue() const
+{
+	std::stringstream ss;
+	getDescriptionAsText(ss);
+	return ss.str();
+}

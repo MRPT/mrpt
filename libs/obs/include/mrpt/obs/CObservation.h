@@ -139,6 +139,9 @@ class CObservation : public mrpt::serialization::CSerializable
 	 * object in the dataset */
 	virtual void getDescriptionAsText(std::ostream& o) const;
 
+	/** Return by value version of getDescriptionAsText(std::ostream&) */
+	std::string getDescriptionAsTextValue() const;
+
 	/** @name Delayed-load manual control methods.
 		@{ */
 
