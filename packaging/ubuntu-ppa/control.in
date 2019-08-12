@@ -35,7 +35,13 @@ Build-Depends: debhelper (>= 9),
 	libjsoncpp-dev,
 	libyaml-cpp-dev,
 	dh-python,
-	g++-7
+	libroscpp-dev,
+	librosbag-dev,
+	libcv-bridge-dev,
+	libsensor-msgs-dev,
+	libtf2-msgs-dev,
+	libtf2-dev,
+	g++-7,
 Standards-Version: 4.0.0
 Homepage: https://www.mrpt.org/
 

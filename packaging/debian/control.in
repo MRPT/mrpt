@@ -34,7 +34,13 @@ Build-Depends: debhelper (>= 10),
 	libqt5opengl5-dev,
 	libjsoncpp-dev,
 	libyaml-cpp-dev,
-	dh-python
+	dh-python,
+	libroscpp-dev,
+	librosbag-dev,
+	libcv-bridge-dev,
+	libsensor-msgs-dev,
+	libtf2-msgs-dev,
+	libtf2-dev
 Standards-Version: 4.1.1
 Homepage: https://www.mrpt.org/
 
