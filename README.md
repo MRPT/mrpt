@@ -96,3 +96,9 @@ make
 
 ## 4. License
 MRPT is released under the [new BSD license](http://www.mrpt.org/License/).
+
+
+## Stargazers over time
+
+[![Stargazers over time](https://starchart.cc/MRPT/mrpt.svg)](https://starchart.cc/MRPT/mrpt)
+      
