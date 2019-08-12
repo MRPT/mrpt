@@ -361,11 +361,10 @@ void CParameterizedTrajectoryGenerator::updateNavDynamicState(
 	const CParameterizedTrajectoryGenerator::TNavDynamicState& newState,
 	const bool force_update)
 {
-	// Make sure there is a real difference: notifying a PTG that a condition
-	// changed
-	// may imply a significant computational cost if paths need to be
-	// re-evaluated on the fly, etc.
-	// so the cost of the comparison here is totally worth:
+	// Make sure there is a real difference: notifying a PTG that a
+	// condition changed may imply a significant computational cost if paths
+	// need to be re-evaluated on the fly, etc. so the cost of the
+	// comparison here is totally worth:
 	if (force_update || m_nav_dyn_state != newState)
 	{
 		ASSERT_(
