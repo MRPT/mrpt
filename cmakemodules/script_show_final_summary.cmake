@@ -147,7 +147,17 @@ SHOW_CONFIG_LINE_SYSTEM("Matlab / mex files        " CMAKE_MRPT_HAS_MATLAB "[Ver
 SHOW_CONFIG_LINE("Python bindings (pymrpt)  " CMAKE_MRPT_HAS_PYTHON_BINDINGS)
 SHOW_CONFIG_LINE(" - dep: Boost found?      " Boost_FOUND)
 SHOW_CONFIG_LINE(" - dep: PythonLibs found? " PYTHONLIBS_FOUND)
-SHOW_CONFIG_LINE("ROS1 (roscpp,tf2,...)     " CMAKE_MRPT_HAS_ROS)
+message(STATUS " ROS1:")
+SHOW_CONFIG_LINE(" - cv_bridge              " cv_bridge_FOUND)
+SHOW_CONFIG_LINE(" - geometry_msgs          " geometry_msgs_FOUND)
+SHOW_CONFIG_LINE(" - nav_msgs               " nav_msgs_FOUND)
+SHOW_CONFIG_LINE(" - rosbag                 " rosbag_FOUND)
+SHOW_CONFIG_LINE(" - roscpp                 " roscpp_FOUND)
+SHOW_CONFIG_LINE(" - sensor_msgs            " sensor_msgs_FOUND)
+SHOW_CONFIG_LINE(" - std_msgs               " std_msgs_FOUND)
+SHOW_CONFIG_LINE(" - tf2                    " tf2_FOUND)
+SHOW_CONFIG_LINE(" - tf2_msgs               " tf2_msgs_FOUND)
+
 MESSAGE(STATUS "")
 
 message(STATUS " _____________________ HARDWARE & SENSORS _______________________")

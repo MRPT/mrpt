@@ -1,6 +1,13 @@
 INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
 
-if(CMAKE_MRPT_HAS_ROS AND CMAKE_MRPT_HAS_YAMLCPP)
+if(CMAKE_MRPT_HAS_YAMLCPP AND
+	roscpp_FOUND AND
+	rosbag_FOUND AND
+	cv_bridge_FOUND AND
+	sensor_msgs_FOUND AND
+	tf2_msgs_FOUND AND
+	tf2_FOUND)
+
 PROJECT(rosbag2rawlog)
 
 # ================================================
