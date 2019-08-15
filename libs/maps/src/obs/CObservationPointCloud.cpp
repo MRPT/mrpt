@@ -55,6 +55,11 @@ void CObservationPointCloud::getDescriptionAsText(std::ostream& o) const
 		o << pointcloud->GetRuntimeClass()->className << "\n";
 		o << "Number of points: " << pointcloud->size() << "\n";
 	}
+
+	if (m_externally_stored != ExternalStorageFormat::None)
+		o << "Pointcloud is stored externally in format `"
+		  << static_cast<int>(m_externally_stored) << "` in file `"
+		  << m_external_file << "`\n";
 }
 
 uint8_t CObservationPointCloud::serializeGetVersion() const { return 0; }
