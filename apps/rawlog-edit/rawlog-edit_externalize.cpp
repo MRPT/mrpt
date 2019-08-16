@@ -9,6 +9,7 @@
 
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationImage.h>
+#include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include "rawlog-edit-declarations.h"
 
@@ -80,6 +81,8 @@ DECLARE_OP_FUNCTION(op_externalize)
 
 		bool processOneObservation(CObservation::Ptr& obs) override
 		{
+			using namespace std::string_literals;
+
 			const string label_time = format(
 				"%s_%f", obs->sensorLabel.c_str(),
 				timestampTotime_t(obs->timestamp));
@@ -90,8 +93,8 @@ DECLARE_OP_FUNCTION(op_externalize)
 				// save image to file & convert into external storage:
 				if (!obsSt->imageLeft.isExternallyStored())
 				{
-					const string fileName = string("img_") + label_time +
-											string("_left.") + imgFileExtension;
+					const string fileName =
+						"img_"s + label_time + "_left."s + imgFileExtension;
 					obsSt->imageLeft.saveToFile(outDir + fileName);
 					obsSt->imageLeft.setExternalStorage(fileName);
 					entries_converted++;
@@ -101,9 +104,8 @@ DECLARE_OP_FUNCTION(op_externalize)
 
 				if (!obsSt->imageRight.isExternallyStored())
 				{
-					const string fileName = string("img_") + label_time +
-											string("_right.") +
-											imgFileExtension;
+					const string fileName =
+						"img_"s + label_time + "_right."s + imgFileExtension;
 					obsSt->imageRight.saveToFile(outDir + fileName);
 					obsSt->imageRight.setExternalStorage(fileName);
 					entries_converted++;
@@ -118,10 +120,34 @@ DECLARE_OP_FUNCTION(op_externalize)
 
 				if (!obsIm->image.isExternallyStored())
 				{
-					const string fileName = string("img_") + label_time +
-											string(".") + imgFileExtension;
+					const string fileName =
+						"img_"s + label_time + "."s + imgFileExtension;
 					obsIm->image.saveToFile(outDir + fileName);
 					obsIm->image.setExternalStorage(fileName);
+					entries_converted++;
+				}
+				else
+					entries_skipped++;
+			}
+			else if (IS_CLASS(*obs, CObservationPointCloud))
+			{
+				auto obsPc =
+					std::dynamic_pointer_cast<CObservationPointCloud>(obs);
+
+				if (obsPc->pointcloud && !obsPc->isExternallyStored())
+				{
+					const string fileName = "pc_"s + label_time + ".bin"s;
+					{
+						mrpt::io::CFileGZOutputStream of(fileName);
+						auto arch = mrpt::serialization::archiveFrom(of);
+						arch << *obsPc->pointcloud;
+					}
+					obsPc->pointcloud.reset();
+					obsPc->setAsExternalStorage(
+						fileName,
+						CObservationPointCloud::ExternalStorageFormat::
+							MRPT_Serialization);
+
 					entries_converted++;
 				}
 				else
@@ -137,8 +163,8 @@ DECLARE_OP_FUNCTION(op_externalize)
 				if (obs3D->hasIntensityImage &&
 					!obs3D->intensityImage.isExternallyStored())
 				{
-					const string fileName = string("3DCAM_") + label_time +
-											string("_INT.") + imgFileExtension;
+					const string fileName =
+						"3DCAM_"s + label_time + "_INT."s + imgFileExtension;
 					obs3D->intensityImage.saveToFile(outDir + fileName);
 					obs3D->intensityImage.setExternalStorage(fileName);
 					entries_converted++;
@@ -150,8 +176,8 @@ DECLARE_OP_FUNCTION(op_externalize)
 				if (obs3D->hasConfidenceImage &&
 					!obs3D->confidenceImage.isExternallyStored())
 				{
-					const string fileName = string("3DCAM_") + label_time +
-											string("_CONF.") + imgFileExtension;
+					const string fileName =
+						"3DCAM_"s + label_time + "_CONF."s + imgFileExtension;
 					obs3D->confidenceImage.saveToFile(outDir + fileName);
 					obs3D->confidenceImage.setExternalStorage(fileName);
 					entries_converted++;
@@ -162,8 +188,7 @@ DECLARE_OP_FUNCTION(op_externalize)
 				// 3D points:
 				if (obs3D->hasPoints3D && !obs3D->points3D_isExternallyStored())
 				{
-					const string fileName =
-						string("3DCAM_") + label_time + string("_3D.bin");
+					const string fileName = "3DCAM_"s + label_time + "_3D.bin"s;
 					obs3D->points3D_convertToExternalStorage(fileName, outDir);
 					entries_converted++;
 				}
@@ -175,7 +200,7 @@ DECLARE_OP_FUNCTION(op_externalize)
 					!obs3D->rangeImage_isExternallyStored())
 				{
 					const string fileName =
-						string("3DCAM_") + label_time + string("_RANGES.bin");
+						"3DCAM_"s + label_time + "_RANGES.bin"s;
 					obs3D->rangeImage_convertToExternalStorage(
 						fileName, outDir);
 					entries_converted++;

@@ -23,6 +23,8 @@
 - Changes in applications:
   - RawLogViewer:
     - The ICP module now supports Velodyne 3D scans.
+  - rawlog-edit:
+    - New operation: `--de-externalize`
   - pf-localization:
     - Odometry is now used also for observation-only rawlogs.
 - Changes in libraries:

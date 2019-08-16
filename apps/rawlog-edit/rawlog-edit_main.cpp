@@ -43,6 +43,7 @@ using namespace mrpt::io;
 
 // Frwd. decl:
 DECLARE_OP_FUNCTION(op_externalize);
+DECLARE_OP_FUNCTION(op_deexternalize);
 DECLARE_OP_FUNCTION(op_info);
 DECLARE_OP_FUNCTION(op_list_images);
 DECLARE_OP_FUNCTION(op_list_poses);
@@ -165,6 +166,14 @@ int main(int argc, char** argv)
 			"Optional: --image-format, --txt-externals",
 			cmd, false));
 		ops_functors["externalize"] = &op_externalize;
+
+		arg_ops.push_back(new TCLAP::SwitchArg(
+			"", "de-externalize",
+			"Op: the opposite that --externalize: generates a monolitic rawlog "
+			"file with all external files integrated in one.\n"
+			"Requires: -o (or --output)\n",
+			cmd, false));
+		ops_functors["de-externalize"] = &op_deexternalize;
 
 		arg_ops.push_back(new TCLAP::SwitchArg(
 			"", "info",
