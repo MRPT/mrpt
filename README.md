@@ -28,6 +28,7 @@ and [much more](http://www.mrpt.org/list-of-mrpt-apps/).
      [MRPT/share/mrpt/datasets](https://github.com/MRPT/mrpt/tree/master/share/mrpt/datasets).
     A more complete dataset repository is [available online](http://www.mrpt.org/robotics_datasets).
   * [How to contribute](https://github.com/MRPT/mrpt/blob/master/.github/CONTRIBUTING.md) with your code for new feaures, bug fixes, etc.
+  * MRPT is used in the [MOLA modular SLAM framework](https://github.com/MOLAorg/mola/).
 
 ## 3. Install
 
@@ -40,7 +41,7 @@ See [PPA](https://launchpad.net/~joseluisblancoc/+archive/ubuntu/mrpt) for mrpt 
         sudo apt-get install libmrpt-dev mrpt-apps
 
 Supported distributions:
-  * Ubuntu 18.04 (Bionic), 18.10 (Cosmic), 19.04 (Disco)
+  * Ubuntu 18.04 (Bionic), 18.10 (Cosmic), 19.04 (Disco), 19.10 (Eoan)
   * Ubuntu 16.04LTS Xenial (EOL: April 2021)
   	* Using 16.04 requires installing gcc-7 due to some bugs in gcc-5:
 
@@ -55,16 +56,16 @@ Minimum compiler requisites:
   * mrpt >=2.0 (`master` branch):
     * gcc-7 or newer.
       * Ubuntu 16.04LTS Xenial: [Instructions](https://gist.github.com/jlblancoc/99521194aba975286c80f93e47966dc5) for installing gcc-7 in this version of Ubuntu.
-      * Newer distros: default gcc version is ok.
+      * Ubuntu 18.04 or newer: default gcc version is ok.
     * clang-4 or newer.
     * Windows: Visual Studio 2017 version 15.3 or newer.
     * cmake >= 3.3 required (>=3.4 for Windows).
     * Eigen >= 3.3 required.
-  * mrpt 1.5.* and maintenance `mrpt-1.5` branch:
-    * Ubuntu 14.04LTS Trusty: default gcc/clang versions
+  * mrpt 1.5.* and **maintenance** `mrpt-1.5` branch:
+    * Ubuntu 14.06LTS Xenial: default gcc/clang versions
     * Windows: Visual Studio 2012
     * cmake >= 3.1 required
-    * **EOL** for `mrpt-1.5.*`: April 2019.
+    * **EOL** for `mrpt-1.5.*`: EOL of Ubuntu Xenial (April 2021).
 
 To build in Debian/Ubuntu follow the steps below. See [full build docs](http://www.mrpt.org/Building_and_Installing_Instructions) online
 for Windows instructions or to learn all the details.
