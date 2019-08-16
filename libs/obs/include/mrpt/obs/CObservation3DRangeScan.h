@@ -432,6 +432,11 @@ class CObservation3DRangeScan : public CObservation
 	 * MRPT programs. \sa EXTERNALS_AS_TEXT */
 	void points3D_convertToExternalStorage(
 		const std::string& fileName, const std::string& use_this_base_dir);
+	/** Users normally won't need to use this */
+	inline void points3D_overrideExternalStoredFlag(bool isExternal)
+	{
+		m_points3D_external_stored = isExternal;
+	}
 	/** @} */
 
 	/** \name Range (depth) image

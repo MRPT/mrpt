@@ -84,6 +84,11 @@ class CObservationPointCloud : public CObservation
 	}
 	void setAsExternalStorage(
 		const std::string& fileName, const ExternalStorageFormat fmt);
+
+	void overrideExternalStorageFormatFlag(const ExternalStorageFormat fmt)
+	{
+		m_externally_stored = fmt;
+	}
 	/** @} */
 
 };  // End of class def.
