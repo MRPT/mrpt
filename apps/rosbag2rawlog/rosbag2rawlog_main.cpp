@@ -59,14 +59,14 @@ TCLAP::ValueArg<std::string> arg_output_file(
 	cmd);
 
 TCLAP::ValueArg<std::string> arg_config_file(
-    "c", "config", "Config yaml file (*.yml)", true, "", "config.yml", cmd);
+	"c", "config", "Config yaml file (*.yml)", true, "", "config.yml", cmd);
 
 TCLAP::SwitchArg arg_overwrite(
 	"w", "overwrite", "Force overwrite target file without prompting.", cmd,
 	false);
 
 TCLAP::ValueArg<std::string> arg_world_frame(
-    "f", "frame", "World TF frame", true, "", "world", cmd);
+	"f", "frame", "World TF frame", true, "", "world", cmd);
 
 using Obs = std::list<mrpt::serialization::CSerializable::Ptr>;
 
@@ -74,7 +74,7 @@ using CallbackFunction = std::function<Obs(const rosbag::MessageInstance&)>;
 
 template <typename... Args>
 class RosSynchronizer
-    : public std::enable_shared_from_this<RosSynchronizer<Args...>>
+	: public std::enable_shared_from_this<RosSynchronizer<Args...>>
 {
    public:
 	using Tuple = std::tuple<boost::shared_ptr<Args>...>;
@@ -82,11 +82,11 @@ class RosSynchronizer
 	using Callback = std::function<Obs(const boost::shared_ptr<Args>&...)>;
 
 	RosSynchronizer(
-	    std::string_view rootFrame, std::shared_ptr<tf2::BufferCore> tfBuffer,
-	    const Callback& callback)
-	    : m_rootFrame(rootFrame),
-	      m_tfBuffer(std::move(tfBuffer)),
-	      m_callback(callback)
+		std::string_view rootFrame, std::shared_ptr<tf2::BufferCore> tfBuffer,
+		const Callback& callback)
+		: m_rootFrame(rootFrame),
+		  m_tfBuffer(std::move(tfBuffer)),
+		  m_callback(callback)
 	{
 	}
 
@@ -161,8 +161,8 @@ class RosSynchronizer
 			if (!std::get<i>(ptr->m_cache))
 			{
 				std::get<i>(ptr->m_cache) =
-				    rosmsg.instantiate<typename std::tuple_element<
-				        i, Tuple>::type::element_type>();
+					rosmsg.instantiate<typename std::tuple_element<
+						i, Tuple>::type::element_type>();
 				return ptr->checkAndSignal();
 			}
 			return Obs();
@@ -187,8 +187,8 @@ class RosSynchronizer
 };
 
 Obs toRangeImage(
-    std::string_view msg, const sensor_msgs::Image::Ptr& image,
-    const sensor_msgs::CameraInfo::Ptr& cameraInfo, bool rangeIsDepth)
+	std::string_view msg, const sensor_msgs::Image::Ptr& image,
+	const sensor_msgs::CameraInfo::Ptr& cameraInfo, bool rangeIsDepth)
 {
 	auto cv_ptr = cv_bridge::toCvShare(image);
 
@@ -219,20 +219,20 @@ Obs toRangeImage(
 
 			rangeScan->hasRangeImage = true;
 			rangeScan->rangeImage_setSize(
-			    cv_ptr->image.rows, cv_ptr->image.cols);
+				cv_ptr->image.rows, cv_ptr->image.cols);
 
 			rangeScan->cameraParams.nrows = cv_ptr->image.rows;
 			rangeScan->cameraParams.ncols = cv_ptr->image.cols;
 
 			std::copy(
-			    cameraInfo->D.begin(), cameraInfo->D.end(),
-			    rangeScan->cameraParams.dist.begin());
+				cameraInfo->D.begin(), cameraInfo->D.end(),
+				rangeScan->cameraParams.dist.begin());
 
 			size_t rows = cv_ptr->image.rows;
 			size_t cols = cv_ptr->image.cols;
 			std::copy(
-			    cameraInfo->K.begin(), cameraInfo->K.end(),
-			    rangeScan->cameraParams.intrinsicParams.begin());
+				cameraInfo->K.begin(), cameraInfo->K.end(),
+				rangeScan->cameraParams.intrinsicParams.begin());
 
 			for (size_t i = 0; i < rows; i++)
 			{
@@ -281,18 +281,18 @@ class Transcriber
 {
    public:
 	Transcriber(std::string_view rootFrame, const YAML::Node& config)
-	    : m_rootFrame(rootFrame)
+		: m_rootFrame(rootFrame)
 	{
 		auto tfBuffer = std::make_shared<tf2::BufferCore>();
 
 		m_lookup["/tf"].emplace_back(
-		    [=](const rosbag::MessageInstance& rosmsg) {
-			    return toTf<false>(*tfBuffer, rosmsg);
-		    });
+			[=](const rosbag::MessageInstance& rosmsg) {
+				return toTf<false>(*tfBuffer, rosmsg);
+			});
 		m_lookup["/tf_static"].emplace_back(
-		    [=](const rosbag::MessageInstance& rosmsg) {
-			    return toTf<true>(*tfBuffer, rosmsg);
-		    });
+			[=](const rosbag::MessageInstance& rosmsg) {
+				return toTf<true>(*tfBuffer, rosmsg);
+			});
 
 		for (auto& sensorNode : config["sensors"])
 		{
@@ -302,17 +302,17 @@ class Transcriber
 			{
 				bool rangeIsDepth = sensor["rangeIsDepth"].as<bool>(true);
 				auto callback = [=](const sensor_msgs::Image::Ptr& image,
-				                    const sensor_msgs::CameraInfo::Ptr& info) {
+									const sensor_msgs::CameraInfo::Ptr& info) {
 					return toRangeImage(sensorName, image, info, rangeIsDepth);
 				};
 				using Synchronizer = RosSynchronizer<
-				    sensor_msgs::Image, sensor_msgs::CameraInfo>;
+					sensor_msgs::Image, sensor_msgs::CameraInfo>;
 				auto sync = std::make_shared<Synchronizer>(
-				    rootFrame, tfBuffer, callback);
+					rootFrame, tfBuffer, callback);
 				m_lookup[sensor["depth"].as<std::string>()].emplace_back(
-				    sync->bind<0>());
+					sync->bind<0>());
 				m_lookup[sensor["cameraInfo"].as<std::string>()].emplace_back(
-				    sync->bind<1>());
+					sync->bind<1>());
 				m_lookup["/tf"].emplace_back(sync->bindTfSync());
 			}
 		}
