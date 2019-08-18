@@ -20,6 +20,7 @@
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservationIMU.h>
 #include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 #include <mrpt/poses/CPose3DQuat.h>
@@ -28,6 +29,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 
+#include <mrpt/ros1bridge/imu.h>
 #include <mrpt/ros1bridge/point_cloud2.h>
 #include <mrpt/ros1bridge/time.h>
 
@@ -37,6 +39,7 @@
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/CameraInfo.h>
 #include <sensor_msgs/Image.h>
+#include <sensor_msgs/Imu.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <std_msgs/Int32.h>
 #include <tf2/buffer_core.h>
@@ -197,12 +200,41 @@ Obs toPointCloud2(std::string_view msg, const rosbag::MessageInstance& rosmsg)
 	{
 		auto pts = rosmsg.instantiate<sensor_msgs::PointCloud2>();
 
-		auto ptsObs = mrpt::obs::CObservation3DRangeScan::Create();
+		auto ptsObs = mrpt::obs::CObservationPointCloud::Create();
 
 		ptsObs->sensorLabel = msg;
 		ptsObs->timestamp = mrpt::ros1bridge::fromROS(pts->header.stamp);
 
+		// Convert points:
+		auto mrptPts = mrpt::maps::CSimplePointsMap::Create();
+		ptsObs->pointcloud = mrptPts;
+		mrpt::ros1bridge::fromROS(*pts, *mrptPts);
+
 		return {ptsObs};
+	}
+	catch (tf2::TransformException& ex)
+	{
+		std::cerr << ex.what() << std::endl;
+	}
+
+	return {};
+}
+
+Obs toIMU(std::string_view msg, const rosbag::MessageInstance& rosmsg)
+{
+	try
+	{
+		auto pts = rosmsg.instantiate<sensor_msgs::Imu>();
+
+		auto mrptObs = mrpt::obs::CObservationIMU::Create();
+
+		mrptObs->sensorLabel = msg;
+		mrptObs->timestamp = mrpt::ros1bridge::fromROS(pts->header.stamp);
+
+		// Convert data:
+		mrpt::ros1bridge::fromROS(*pts, *mrptObs);
+
+		return {mrptObs};
 	}
 	catch (tf2::TransformException& ex)
 	{
@@ -340,6 +372,15 @@ class Transcriber
 			{
 				auto callback = [=](const rosbag::MessageInstance& m) {
 					return toPointCloud2(sensorName, m);
+				};
+				m_lookup[sensor["topic"].as<std::string>()].emplace_back(
+					callback);
+				// m_lookup["/tf"].emplace_back(sync->bindTfSync());
+			}
+			else if (sensorType == "CObservationIMU")
+			{
+				auto callback = [=](const rosbag::MessageInstance& m) {
+					return toIMU(sensorName, m);
 				};
 				m_lookup[sensor["topic"].as<std::string>()].emplace_back(
 					callback);
