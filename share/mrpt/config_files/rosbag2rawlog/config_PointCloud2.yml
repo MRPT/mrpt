@@ -8,4 +8,7 @@ sensors:
     # Parameters for this particular type of sensor.
     # Topic to subscribe for the pointcloud:
     topic: '/velodyne_points'
+  imu:
+    type: 'CObservationIMU'
+    topic: '/imu/data'
 
