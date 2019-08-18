@@ -21,7 +21,6 @@
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationPointCloud.h>
-#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/serialization/CArchive.h>
@@ -192,20 +191,18 @@ class RosSynchronizer
 	Callback m_callback;
 };
 
-Obs toPointCloud2(
-	std::string_view msg, const sensor_msgs::PointCloud2::Ptr& pts)
+Obs toPointCloud2(std::string_view msg, const rosbag::MessageInstance& rosmsg)
 {
 	try
 	{
+		auto pts = rosmsg.instantiate<sensor_msgs::PointCloud2>();
+
 		auto ptsObs = mrpt::obs::CObservation3DRangeScan::Create();
 
 		ptsObs->sensorLabel = msg;
 		ptsObs->timestamp = mrpt::ros1bridge::fromROS(pts->header.stamp);
 
-		auto sf = mrpt::obs::CSensoryFrame::Create();
-		sf->insert(ptsObs);
-
-		return {sf};
+		return {ptsObs};
 	}
 	catch (tf2::TransformException& ex)
 	{
@@ -267,10 +264,8 @@ Obs toRangeImage(
 			}
 
 			rangeScan->range_is_depth = rangeIsDepth;
-			auto sf = mrpt::obs::CSensoryFrame::Create();
-			sf->insert(rangeScan);
 
-			return {sf};
+			return {rangeScan};
 		}
 		catch (tf2::TransformException& ex)
 		{
@@ -343,18 +338,12 @@ class Transcriber
 			}
 			else if (sensorType == "CObservationPointCloud")
 			{
-				auto callback =
-					[=](const sensor_msgs::PointCloud2::Ptr& pts,
-						const sensor_msgs::PointCloud2::Ptr& dummy) {
-						return toPointCloud2(sensorName, pts);
-					};
-				using Synchronizer = RosSynchronizer<
-					sensor_msgs::PointCloud2, sensor_msgs::PointCloud2>;
-				auto sync = std::make_shared<Synchronizer>(
-					rootFrame, tfBuffer, callback);
+				auto callback = [=](const rosbag::MessageInstance& m) {
+					return toPointCloud2(sensorName, m);
+				};
 				m_lookup[sensor["topic"].as<std::string>()].emplace_back(
-					sync->bind<0>());
-				m_lookup["/tf"].emplace_back(sync->bindTfSync());
+					callback);
+				// m_lookup["/tf"].emplace_back(sync->bindTfSync());
 			}
 			// TODO: Handle more cases?
 		}
@@ -364,6 +353,7 @@ class Transcriber
 	{
 		Obs rets;
 		auto topic = rosmsg.getTopic();
+
 		auto search = m_lookup.find(topic);
 		if (search != m_lookup.end())
 		{
