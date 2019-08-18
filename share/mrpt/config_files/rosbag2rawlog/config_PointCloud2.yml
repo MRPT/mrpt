@@ -2,9 +2,9 @@
 sensors:
   # Then, one node per sensor to convert. This name will be used as 
   # sensorLabel in MRPT observations.
-  topRangeScan:
+  velodyne:
     # Type: C++ class name (see mrpt::obs)
-    type: 'CObservation3DRangeScan'
+    type: 'CObservationPointCloud'
     # Parameters for this particular type of sensor.
     # Topic to subscribe for the pointcloud:
     topic: '/velodyne_points'
