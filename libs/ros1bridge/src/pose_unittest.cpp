@@ -22,7 +22,8 @@
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/ros1bridge/pose.h>
-#include <tf2_eigen/tf2_eigen.h>
+
+#include <Eigen/Dense>
 
 using namespace std;
 

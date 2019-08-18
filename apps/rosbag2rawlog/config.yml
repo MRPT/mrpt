@@ -1,5 +1,0 @@
-sensors:
-  topRangeScan:
-    type: 'CObservation3DRangeScan'
-    depth: '/image_raw'
-    cameraInfo: '/camera_info'

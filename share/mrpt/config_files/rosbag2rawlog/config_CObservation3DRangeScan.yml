@@ -1,0 +1,14 @@
+# Config file for rosbag2rawlog. It must contain a top-level "sensors" node
+sensors:
+  # Then, one node per sensor to convert. This name will be used as 
+  # sensorLabel in MRPT observations.
+  topRangeScan:
+    # Type: C++ class name (see mrpt::obs)
+    type: 'CObservation3DRangeScan'
+    # Parameters for this particular type of sensor.
+    # Topic for the depth 32F1 image:
+    depth: '/image_raw'
+    # Camera calibration topic:
+    cameraInfo: '/camera_info'
+
+

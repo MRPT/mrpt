@@ -23,6 +23,7 @@ add_executable(${PROJECT_NAME}
 # Add the required libraries for linking:
 target_link_libraries(${PROJECT_NAME}
 	${MRPT_LINKER_LIBS}
+	mrpt::ros1bridge
 	${rosbag_LIBRARIES}
 	${cv_bridge_LIBRARIES}
 	${tf2_LIBRARIES}
