@@ -21,18 +21,18 @@ bool fromROS(const sensor_msgs::Imu& msg, mrpt::obs::CObservationIMU& obj)
 {
 	using namespace mrpt::obs;
 
-	obj.rawMeasurements.at(IMU_ORI_QUAT_X) = msg.orientation.x;
-	obj.rawMeasurements.at(IMU_ORI_QUAT_Y) = msg.orientation.y;
-	obj.rawMeasurements.at(IMU_ORI_QUAT_Z) = msg.orientation.z;
-	obj.rawMeasurements.at(IMU_ORI_QUAT_W) = msg.orientation.w;
+	obj.set(IMU_ORI_QUAT_X, msg.orientation.x);
+	obj.set(IMU_ORI_QUAT_Y, msg.orientation.y);
+	obj.set(IMU_ORI_QUAT_Z, msg.orientation.z);
+	obj.set(IMU_ORI_QUAT_W, msg.orientation.w);
 
-	obj.rawMeasurements.at(IMU_X_ACC_GLOBAL) = msg.linear_acceleration.x;
-	obj.rawMeasurements.at(IMU_Y_ACC_GLOBAL) = msg.linear_acceleration.y;
-	obj.rawMeasurements.at(IMU_Z_ACC_GLOBAL) = msg.linear_acceleration.z;
+	obj.set(IMU_X_ACC_GLOBAL, msg.linear_acceleration.x);
+	obj.set(IMU_Y_ACC_GLOBAL, msg.linear_acceleration.y);
+	obj.set(IMU_Z_ACC_GLOBAL, msg.linear_acceleration.z);
 
-	obj.rawMeasurements.at(IMU_X_VEL) = msg.angular_velocity.x;
-	obj.rawMeasurements.at(IMU_Y_VEL) = msg.angular_velocity.y;
-	obj.rawMeasurements.at(IMU_Z_VEL) = msg.angular_velocity.z;
+	obj.set(IMU_X_VEL, msg.angular_velocity.x);
+	obj.set(IMU_Y_VEL, msg.angular_velocity.y);
+	obj.set(IMU_Z_VEL, msg.angular_velocity.z);
 
 	// NEED TO WRITE CODE FOR COVARIANCE
 	return true;
@@ -46,7 +46,7 @@ bool toROS(
 
 	msg.header = msg_header;
 
-	std::vector<double> measurements = obj.rawMeasurements;
+	const auto& measurements = obj.rawMeasurements;
 	msg.orientation.x = measurements.at(IMU_ORI_QUAT_X);
 	msg.orientation.y = measurements.at(IMU_ORI_QUAT_Y);
 	msg.orientation.z = measurements.at(IMU_ORI_QUAT_Z);
