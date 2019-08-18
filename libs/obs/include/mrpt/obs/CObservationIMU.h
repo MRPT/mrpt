@@ -113,18 +113,9 @@ class CObservationIMU : public CObservation
 	DEFINE_SERIALIZABLE(CObservationIMU)
 
    public:
-	/** Constructor.
-	 */
-	CObservationIMU()
-		: sensorPose(),
-		  dataIsPresent(mrpt::obs::COUNT_IMU_DATA_FIELDS, false),
-		  rawMeasurements(mrpt::obs::COUNT_IMU_DATA_FIELDS, 0)
-	{
-	}
-
-	/** Destructor
-	 */
+	CObservationIMU() = default;
 	~CObservationIMU() override = default;
+
 	/** The pose of the sensor on the robot. */
 	mrpt::poses::CPose3D sensorPose;
 
@@ -132,13 +123,31 @@ class CObservationIMU : public CObservation
 	 * contains valid data (the IMU unit supplies that kind of data).
 	 *  See the top of this page for the meaning of the indices.
 	 */
-	std::vector<bool> dataIsPresent;
+	std::vector<bool> dataIsPresent =
+		std::vector<bool>(mrpt::obs::COUNT_IMU_DATA_FIELDS, false);
 
 	/** The accelerometer and/or gyroscope measurements taken by the IMU at the
 	 * given timestamp.
 	 * \sa dataIsPresent, CObservation::timestamp
 	 */
-	std::vector<double> rawMeasurements;
+	std::vector<double> rawMeasurements =
+		std::vector<double>(mrpt::obs::COUNT_IMU_DATA_FIELDS, 0);
+
+	/** Sets a given data type, and mark it as present. \sa has(), set() */
+	void set(TIMUDataIndex idx, double value)
+	{
+		rawMeasurements.at(idx) = value;
+		dataIsPresent.at(idx) = true;
+	}
+
+	/** Gets a given data type, throws if not set. \sa has(), get() */
+	double set(TIMUDataIndex idx) const
+	{
+		ASSERTMSG_(dataIsPresent.at(idx), "Trying to access non-set value");
+		return rawMeasurements.at(idx);
+	}
+	/** Returns true if the given data type is set. \sa set(), get() */
+	bool has(TIMUDataIndex idx) const { return dataIsPresent.at(idx); }
 
 	// See base class docs
 	void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override
