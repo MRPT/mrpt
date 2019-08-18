@@ -80,5 +80,6 @@ if (PROG_GZIP AND PROG_POD2MAN)
 	CREATE_MANPAGE_PROJECT(benchmarking-image-features)
 	CREATE_MANPAGE_PROJECT(yaml2ini)
 	CREATE_MANPAGE_PROJECT(ini2yaml)
+	CREATE_MANPAGE_PROJECT(rosbag2rawlog)
 
 endif()

@@ -20,6 +20,7 @@
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 #include <mrpt/poses/CPose3DQuat.h>
@@ -28,15 +29,20 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 
+#include <mrpt/ros1bridge/point_cloud2.h>
+#include <mrpt/ros1bridge/time.h>
+
 #include <rosbag/bag.h>
 #include <rosbag/view.h>
 
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/CameraInfo.h>
 #include <sensor_msgs/Image.h>
+#include <sensor_msgs/PointCloud2.h>
 #include <std_msgs/Int32.h>
+#include <tf2/buffer_core.h>
+#include <tf2/exceptions.h>
 #include <tf2_msgs/TFMessage.h>
-#include <tf2_ros/buffer.h>
 
 #include <yaml-cpp/yaml.h>
 
@@ -186,6 +192,29 @@ class RosSynchronizer
 	Callback m_callback;
 };
 
+Obs toPointCloud2(
+	std::string_view msg, const sensor_msgs::PointCloud2::Ptr& pts)
+{
+	try
+	{
+		auto ptsObs = mrpt::obs::CObservation3DRangeScan::Create();
+
+		ptsObs->sensorLabel = msg;
+		ptsObs->timestamp = mrpt::ros1bridge::fromROS(pts->header.stamp);
+
+		auto sf = mrpt::obs::CSensoryFrame::Create();
+		sf->insert(ptsObs);
+
+		return {sf};
+	}
+	catch (tf2::TransformException& ex)
+	{
+		std::cerr << ex.what() << std::endl;
+	}
+
+	return {};
+}
+
 Obs toRangeImage(
 	std::string_view msg, const sensor_msgs::Image::Ptr& image,
 	const sensor_msgs::CameraInfo::Ptr& cameraInfo, bool rangeIsDepth)
@@ -208,14 +237,9 @@ Obs toRangeImage(
 			mrpt::poses::CPose3D pose(poseQuat);
 			rangeScan->setSensorPose(pose);
 
-			mrpt::Clock::duration time =
-				std::chrono::duration_cast<mrpt::Clock::duration>(
-					std::chrono::seconds(image->header.stamp.sec) +
-					std::chrono::nanoseconds(image->header.stamp.nsec) +
-					std::chrono::seconds(11644473600));
-
 			rangeScan->sensorLabel = msg;
-			rangeScan->timestamp = TTimeStamp(time);
+			rangeScan->timestamp =
+				mrpt::ros1bridge::fromROS(image->header.stamp);
 
 			rangeScan->hasRangeImage = true;
 			rangeScan->rangeImage_setSize(
@@ -298,7 +322,9 @@ class Transcriber
 		{
 			auto& sensorName = sensorNode.first.as<std::string>();
 			auto& sensor = sensorNode.second;
-			if (sensor["type"].as<std::string>() == "CObservation3DRangeScan")
+			const auto sensorType = sensor["type"].as<std::string>();
+
+			if (sensorType == "CObservation3DRangeScan")
 			{
 				bool rangeIsDepth = sensor["rangeIsDepth"].as<bool>(true);
 				auto callback = [=](const sensor_msgs::Image::Ptr& image,
@@ -315,6 +341,22 @@ class Transcriber
 					sync->bind<1>());
 				m_lookup["/tf"].emplace_back(sync->bindTfSync());
 			}
+			else if (sensorType == "CObservationPointCloud")
+			{
+				auto callback =
+					[=](const sensor_msgs::PointCloud2::Ptr& pts,
+						const sensor_msgs::PointCloud2::Ptr& dummy) {
+						return toPointCloud2(sensorName, pts);
+					};
+				using Synchronizer = RosSynchronizer<
+					sensor_msgs::PointCloud2, sensor_msgs::PointCloud2>;
+				auto sync = std::make_shared<Synchronizer>(
+					rootFrame, tfBuffer, callback);
+				m_lookup[sensor["topic"].as<std::string>()].emplace_back(
+					sync->bind<0>());
+				m_lookup["/tf"].emplace_back(sync->bindTfSync());
+			}
+			// TODO: Handle more cases?
 		}
 	}
 
