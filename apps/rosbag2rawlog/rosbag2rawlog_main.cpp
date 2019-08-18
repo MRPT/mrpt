@@ -459,12 +459,26 @@ int main(int argc, char** argv)
 
 		auto arch = archiveFrom(fil_out);
 		Transcriber t(arg_world_frame.getValue(), config);
+		const auto nEntries = full_view.size();
+		size_t curEntry = 0, showProgressCnt = 0;
 		for (const auto& m : full_view)
 		{
 			auto ptrs = t.toMrpt(m);
 			for (auto& ptr : ptrs)
 			{
 				arch << ptr;
+			}
+
+			curEntry++;
+
+			if (++showProgressCnt > 100)
+			{
+				printf(
+					"Progress: %u/%u  %.03f%%             \r",
+					static_cast<unsigned int>(curEntry),
+					static_cast<unsigned int>(nEntries),
+					(100.0 * curEntry) / nEntries);
+				showProgressCnt = 0;
 			}
 		}
 
@@ -478,7 +492,8 @@ int main(int argc, char** argv)
 	}
 	catch (std::exception& e)
 	{
-		if (strlen(e.what())) std::cerr << e.what() << std::endl;
+		if (strlen(e.what()))
+			std::cerr << mrpt::exception_to_str(e) << std::endl;
 		return 1;
 	}
 }  // end of main()
