@@ -490,6 +490,23 @@ Depends: ${misc:Depends},libmrpt-rtti@MRPT_VER_MM@ (= ${binary:Version}),
 Description: Mobile Robot Programming Toolkit - rtti development package
  This package provides headers and libraries for development.
 
+Package: libmrpt-ros1bridge@MRPT_VER_MM@
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Description: Mobile Robot Programming Toolkit - ros1bridge library
+More about MRPT libraries in: https://www.mrpt.org/Libraries
+
+Package: libmrpt-ros1bridge-dev
+Section: libdevel
+Architecture: any
+Depends: ${misc:Depends},libmrpt-ros1bridge@MRPT_VER_MM@ (= ${binary:Version}),
+        libmrpt-maps-dev, libgeometry-msgs-dev, libroscpp-dev, libsensor-msgs-dev,
+        libstereo-msgs-dev, libtf2-msgs-dev
+Description: Mobile Robot Programming Toolkit - ros1bridge development package
+ This package provides headers and libraries for development.
+
 Package: libmrpt-serialization@MRPT_VER_MM@
 Section: libs
 Architecture: any
@@ -637,6 +654,7 @@ Recommends: libmrpt-bayes-dev (= ${binary:Version}),
          libmrpt-poses-dev (= ${binary:Version}),
          libmrpt-random-dev (= ${binary:Version}),
          libmrpt-rtti-dev (= ${binary:Version}),
+         libmrpt-ros1bridge-dev (= ${binary:Version}),
          libmrpt-serialization-dev (= ${binary:Version}),
          libmrpt-slam-dev (= ${binary:Version}),
          libmrpt-system-dev (= ${binary:Version}),
@@ -703,6 +721,7 @@ Description: Mobile Robot Programming Toolkit - Console and GUI applications
   - robotic-arm-kinematics: GUI for design of robot arms with
                             Denavit-Hartenberg parameters.
   - velodyne-view: Live display/grabbing of Velodyne scanners.
+  - rosbag2rawlog: Convert a ROS bag dataset into an MRPT Rawlog file.
 
 Package: python-mrpt
 Architecture: any
