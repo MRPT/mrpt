@@ -469,14 +469,14 @@ inline void do_project_3d_pointcloud_SSE2(
 					if (fp.rangeMask_min)
 					{
 						const __m128 Dmin = _mm_load_ps(Dgt_ptr);
-						valid_range_mask = _mm_and_ps(
-							_mm_cmpgt_ps(D, Dmin), _mm_cmpgt_ps(Dmin, D_zeros));
+						valid_range_mask = _mm_or_ps(
+							_mm_cmpgt_ps(D, Dmin), _mm_cmpeq_ps(Dmin, D_zeros));
 					}
 					else
 					{
 						const __m128 Dmax = _mm_load_ps(Dlt_ptr);
-						valid_range_mask = _mm_and_ps(
-							_mm_cmplt_ps(D, Dmax), _mm_cmpgt_ps(Dmax, D_zeros));
+						valid_range_mask = _mm_or_ps(
+							_mm_cmplt_ps(D, Dmax), _mm_cmpeq_ps(Dmax, D_zeros));
 					}
 					valid_range_mask = _mm_and_ps(
 						valid_range_mask, nz_mask);  // Filter out D=0 points
@@ -488,11 +488,13 @@ inline void do_project_3d_pointcloud_SSE2(
 					const __m128 Dmin = _mm_load_ps(Dgt_ptr);
 					const __m128 Dmax = _mm_load_ps(Dlt_ptr);
 
-					const __m128 gt_mask = _mm_cmpgt_ps(D, Dmin);
-					const __m128 lt_mask = _mm_and_ps(
-						_mm_cmplt_ps(D, Dmax), nz_mask);  // skip points at zero
+					const __m128 gt_mask = _mm_or_ps(
+						_mm_cmpgt_ps(D, Dmin), _mm_cmpeq_ps(Dmin, D_zeros));
+					const __m128 lt_mask = _mm_or_ps(
+						_mm_cmplt_ps(D, Dmax), _mm_cmpeq_ps(Dmax, D_zeros));
+					// (D>Dmin && D<Dmax) & skip points at zero
 					valid_range_mask =
-						_mm_and_ps(gt_mask, lt_mask);  // (D>Dmin && D<Dmax)
+						_mm_and_ps(nz_mask, _mm_and_ps(gt_mask, lt_mask));
 					valid_range_mask = _mm_xor_ps(valid_range_mask, xormask);
 					// Add the case of D_min & D_max = 0 (no filtering)
 					valid_range_mask = _mm_or_ps(
