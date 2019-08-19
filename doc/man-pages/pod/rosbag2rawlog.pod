@@ -1,0 +1,64 @@
+=head1 NAME
+
+rosbag2rawlog - Converts a ROS bag dataset into an MRPT rawlog file
+
+=head1 SYNOPSIS
+
+rosbag2rawlog  -f <world> [-w] -c <config.yml> -o <dataset_out.rawlog>
+               [--] [--version] [-h] <log.bag> ...
+
+=head1 DESCRIPTION
+
+B<rosbag2rawlog> is a command-line application to processes an offline rosbag
+dataset and generate its version in RawLog format.
+
+=head1 OPTIONS
+
+   -f<world>,  --frame <world>
+     (required)  World TF frame
+
+   -w,  --overwrite
+     Force overwrite target file without prompting.
+
+   -c <config.yml>,  --config <config.yml>
+     (required)  Config yaml file (*.yml)
+
+   -o <dataset_out.rawlog>,  --output <dataset_out.rawlog>
+     (required)  Output dataset (*.rawlog)
+
+   --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag.
+
+   --version
+     Displays version information and exits.
+
+   -h,  --help
+     Displays usage information and exits.
+
+   <log.bag>  (accepted multiple times)
+     (required)  Input bag files (required) (*.bag)
+
+
+=head1 BUGS
+
+Please report bugs at https://github.com/MRPT/mrpt/issues
+
+=head1 SEE ALSO
+
+The application wiki page at https://www.mrpt.org/Applications
+
+=head1 AUTHORS
+
+B<rosbag2rawlog> is part of the Mobile Robot Programming Toolkit (MRPT).
+
+This manual page was written by Jose Luis Blanco <jlblanco@ual.es>.
+
+=head1 COPYRIGHT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the BSD License.
+
+On Debian GNU/Linux systems, the complete text of the BSD License can be
+found in `/usr/share/common-licenses/BSD'.
+
+=cut

@@ -1134,6 +1134,7 @@ void CObservation3DRangeScan::getDescriptionAsText(std::ostream& o) const
 	else
 		o << "NO" << endl;
 
+	o << "Range is depth: " << (range_is_depth ? "YES" : "NO") << endl;
 	o << "Has raw range data? " << (hasRangeImage ? "YES" : "NO");
 	if (hasRangeImage)
 	{

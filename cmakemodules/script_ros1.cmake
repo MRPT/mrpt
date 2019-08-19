@@ -4,27 +4,42 @@
 option(DISABLE_ROS "Disable detection/usage of ROS libraries" "OFF")
 mark_as_advanced(DISABLE_ROS)
 
-set(CMAKE_MRPT_HAS_ROS 0)
-set(CMAKE_MRPT_HAS_ROS_SYSTEM 0)
-
 if (NOT DISABLE_ROS)
-	# Bare minimum pkg:
+	# ROS libs:
 	find_package(roscpp QUIET)
-	if(roscpp_FOUND)
-		set(CMAKE_MRPT_HAS_ROS 1)
-		set(CMAKE_MRPT_HAS_ROS_SYSTEM 1)
+	find_package(cv_bridge QUIET)
+	find_package(rosbag QUIET)
+	find_package(pcl_conversions QUIET)
 
-		# Optional ROS pkgs:
-		find_package(std_msgs QUIET)
-		find_package(sensor_msgs QUIET)
-		find_package(geometry_msgs QUIET)
-		find_package(nav_msgs QUIET)
+	# ROS libs for msgs:
+	find_package(sensor_msgs QUIET)
+	find_package(std_msgs QUIET)
+	find_package(geometry_msgs QUIET)
+	find_package(stereo_msgs QUIET)
 
-		if ($ENV{VERBOSE})
-			message(STATUS "Found ROS1:")
-			message(STATUS "  roscpp_INCLUDE_DIRS :${roscpp_INCLUDE_DIRS}")
-			message(STATUS "  roscpp_LIBRARIES    :${roscpp_LIBRARIES}")
-		endif()
+	# tf2: try to find w/o the need for catkin (so we can use it from
+	# Debian build servers w/o ROS installed under /opt/ etc.)
+	# (JLBC) For some reason calling find_package(tf2) leads to error
+	# in that case due to missing catkin stuff, while the lib & .h's are
+	# actually there and are usable.
+	find_library(tf2_LIBRARIES tf2)
+	if (tf2_LIBRARIES)
+		set(tf2_FOUND TRUE)
+	endif()
+	# tf2_msgs: idem (header-only lib)
+	find_file(tf2_msgs name TFMessage.h PATHS /usr/include/tf2_msgs)
+	if (tf2_msgs)
+		set(tf2_msgs_FOUND TRUE)
+	endif()
+	# nav_msgs: idem (header-only lib)
+	find_file(nav_msgs name OccupancyGrid.h  PATHS /usr/include/nav_msgs)
+	if (nav_msgs)
+		set(nav_msgs_FOUND TRUE)
+	endif()
 
+	if ($ENV{VERBOSE})
+		message(STATUS "Found ROS1:")
+		message(STATUS "  roscpp_INCLUDE_DIRS :${roscpp_INCLUDE_DIRS}")
+		message(STATUS "  roscpp_LIBRARIES    :${roscpp_LIBRARIES}")
 	endif()
 endif()
