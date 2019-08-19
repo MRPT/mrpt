@@ -42,6 +42,7 @@ Build-Depends: debhelper (>= 10),
 	librosbag-dev,
 	libroscpp-dev,
 	libsensor-msgs-dev,
+	libstd-srvs-dev,
 	libstereo-msgs-dev,
 	libtf2-dev,
 	libtf2-msgs-dev
