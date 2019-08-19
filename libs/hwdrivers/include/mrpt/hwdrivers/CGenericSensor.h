@@ -181,16 +181,6 @@ class CGenericSensor
 			std::vector<mrpt::serialization::CSerializable::Ptr>(1, obj));
 	}
 
-	/** Auxiliary structure used for CSerializable runtime class ID support.
-	 */
-	struct CLASSINIT_GENERIC_SENSOR
-	{
-		CLASSINIT_GENERIC_SENSOR(const TSensorClassId* pNewClass)
-		{
-			CGenericSensor::registerClass(pNewClass);
-		}
-	};
-
 	/** Loads specific configuration for the device from a given source of
 	 * configuration parameters, for example, an ".ini" file, loading from the
 	 * section "[iniSection]" (see config::CConfigFileBase and derived classes)
@@ -309,10 +299,6 @@ static_assert(
  * within the class declaration.
  */
 #define DEFINE_GENERIC_SENSOR(class_name)                                    \
-   protected:                                                                \
-	static mrpt::hwdrivers::CGenericSensor::CLASSINIT_GENERIC_SENSOR         \
-		_init_##class_name;                                                  \
-                                                                             \
    public:                                                                   \
 	static mrpt::hwdrivers::TSensorClassId class##class_name;                \
 	const mrpt::hwdrivers::TSensorClassId* GetRuntimeClass() const override; \
