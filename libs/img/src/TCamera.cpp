@@ -90,7 +90,7 @@ mxArray* TCamera::writeToMatlab() const
 	mexplus::MxArray params_struct(
 		mexplus::MxArray::Struct(sizeof(fields) / sizeof(fields[0]), fields));
 	params_struct.set("K", mrpt::math::convertToMatlab(this->intrinsicParams));
-	params_struct.set("dist", mrpt::math::convertToMatlab(this->dist));
+	params_struct.set("dist", mrpt::math::convertVectorToMatlab(this->dist));
 	params_struct.set("f", this->focalLengthMeters);
 	params_struct.set("ncols", this->ncols);
 	params_struct.set("nrows", this->nrows);

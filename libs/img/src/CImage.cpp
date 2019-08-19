@@ -826,8 +826,7 @@ IMPLEMENTS_MEXPLUS_FROM(mrpt::img::CImage)
 mxArray* CImage::writeToMatlab() const
 {
 #if MRPT_HAS_MATLAB
-	cv::Mat cvImg = cv::cvarrToMat(this->getAs<IplImage>());
-	return mexplus::from(cvImg);
+	return mexplus::from(this->asCvMatRef());
 #else
 	THROW_EXCEPTION("MRPT built without MATLAB/Mex support");
 #endif
