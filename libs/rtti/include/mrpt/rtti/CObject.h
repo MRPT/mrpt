@@ -138,15 +138,6 @@ struct CopyCtor<false>
 #define IS_DERIVED(obj, class_name) \
 	((obj).GetRuntimeClass()->derivedFrom(CLASS_ID(class_name)))
 
-/** Auxiliary structure used for CObject-based RTTI. \ingroup mrpt_rtti_grp */
-struct CLASSINIT
-{
-	CLASSINIT(const mrpt::rtti::TRuntimeClassId* pNewClass)
-	{
-		registerClass(pNewClass);
-	}
-};
-
 /** Virtual base to provide a compiler-independent RTTI system.
  *
  * Each class named `Foo` will have associated smart pointer types:
@@ -209,7 +200,6 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 	/*! @{  */                                                            \
    protected:                                                             \
 	static const mrpt::rtti::TRuntimeClassId* _GetBaseClass();            \
-	static mrpt::rtti::CLASSINIT _init_##class_name;                      \
 	static const mrpt::rtti::TRuntimeClassId runtimeClassId;              \
                                                                           \
    public:                                                                \
@@ -271,8 +261,6 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 	{                                                                         \
 		return CLASS_ID_NAMESPACE(class_name, NameSpace);                     \
 	}                                                                         \
-	mrpt::rtti::CLASSINIT NameSpace::class_name::_init_##class_name(          \
-		CLASS_ID(base));                                                      \
 	mrpt::rtti::CObject* NameSpace::class_name::clone() const                 \
 	{                                                                         \
 		return mrpt::rtti::internal::CopyCtor<std::is_copy_constructible<     \
