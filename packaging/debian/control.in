@@ -496,7 +496,7 @@ Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Multi-Arch: same
 Description: Mobile Robot Programming Toolkit - ros1bridge library
-More about MRPT libraries in: https://www.mrpt.org/Libraries
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
 
 Package: libmrpt-ros1bridge-dev
 Section: libdevel
