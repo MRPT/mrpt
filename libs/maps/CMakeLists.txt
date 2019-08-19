@@ -53,4 +53,11 @@ if(BUILD_mrpt-maps)
 	endif()
 
 	target_link_libraries(maps PRIVATE ${MRPT_OPENGL_LIBS})
+
+
+	# Windows only: the mxplus lib internally requires linking with opencv (sigh...)
+	# Perhaps there is a better way to solve this, someday.
+	if (BUILD_MATLAB)
+		target_link_libraries(maps PRIVATE ${OpenCV_LIBRARIES})
+	endif()
 endif()

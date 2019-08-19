@@ -31,16 +31,16 @@ namespace mrpt::math
  *  - mrpt::math::CVectorFixed<T,N>
  *  - mrpt::math::CMatrixF{*}
  */
-template <typename Derived>
-mxArray* convertToMatlab(const Eigen::EigenBase<Derived>& mat)
+template <typename MATRIX>
+mxArray* convertToMatlab(const MATRIX& mat)
 {
 	const size_t m = mat.rows(), n = mat.cols();
 	mxArray* mxa = mxCreateDoubleMatrix(m, n, mxREAL);
-	double* mxa_data = mxGetPr(
-		mxa);  // *IMPORTANT* Matlab stores matrices in *column-major* order!
+	// *IMPORTANT* Matlab stores matrices in *column-major* order!
+	double* mxa_data = mxGetPr(mxa);
 	for (size_t j = 0; j < n; j++)  // column
 		for (size_t i = 0; i < m; i++)  // rows
-			*mxa_data++ = mat.derived().coeff(i, j);
+			*mxa_data++ = mat.coeff(i, j);
 	return mxa;
 }
 
@@ -51,8 +51,8 @@ mxArray* convertVectorToMatlab(const CONTAINER& vec)
 {
 	const size_t m = vec.size(), n = 1;
 	mxArray* mxa = mxCreateDoubleMatrix(m, n, mxREAL);
-	double* mxa_data = mxGetPr(
-		mxa);  // *IMPORTANT* Matlab stores matrices in *column-major* order!
+	// *IMPORTANT* Matlab stores matrices in *column-major* order!
+	double* mxa_data = mxGetPr(mxa);
 	for (size_t i = 0; i < m; i++)  // rows
 		*mxa_data++ = vec[i];
 	return mxa;

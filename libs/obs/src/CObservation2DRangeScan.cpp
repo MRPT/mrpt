@@ -228,7 +228,7 @@ mxArray* CObservation2DRangeScan::writeToMatlab() const
 
 	obs_struct.set("class", this->GetRuntimeClass()->className);
 
-	obs_struct.set("ts", this->timestamp);
+	obs_struct.set("ts", mrpt::Clock::toDouble(timestamp));
 	obs_struct.set("sensorLabel", this->sensorLabel);
 
 	obs_struct.set("scan", this->m_scan);

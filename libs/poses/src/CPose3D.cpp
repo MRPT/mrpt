@@ -42,7 +42,6 @@
 
 using namespace mrpt;
 using namespace mrpt::math;
-
 using namespace mrpt::poses;
 
 IMPLEMENTS_SERIALIZABLE(CPose3D, CSerializable, mrpt::poses)

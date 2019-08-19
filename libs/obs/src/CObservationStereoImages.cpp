@@ -153,7 +153,7 @@ mxArray* CObservationStereoImages::writeToMatlab() const
 		mexplus::MxArray::Struct(sizeof(fields) / sizeof(fields[0]), fields));
 
 	obs_struct.set("class", this->GetRuntimeClass()->className);
-	obs_struct.set("ts", this->timestamp);
+	obs_struct.set("ts", mrpt::Clock::toDouble(timestamp));
 	obs_struct.set("sensorLabel", this->sensorLabel);
 	obs_struct.set("imageL", this->imageLeft);
 	obs_struct.set("imageR", this->imageRight);
