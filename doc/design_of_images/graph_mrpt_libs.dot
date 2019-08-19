@@ -102,6 +102,9 @@ digraph MRPT_LIBS {
 	rtti -> core;
 	rtti -> typemeta;
 
+	ros1bridge   [label="mrpt-ros1bridge", URL="group__mrpt__ros1bridge__grp.html"];
+	ros1bridge -> maps;
+
 	serialization [label="mrpt-serialization",URL="group__mrpt__serialization__grp.html"];
 	serialization -> rtti;
 

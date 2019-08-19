@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/core/exceptions.h>  //ASSERTMSG_
 #include <string>
 
 namespace mrpt::system
