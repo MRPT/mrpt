@@ -45,11 +45,9 @@ bool CWaypointsNavigator::TNavigationParamsWaypoints::isEqual(
 }
 
 CWaypointsNavigator::CWaypointsNavigator(CRobot2NavInterface& robot_if)
-	: CAbstractNavigator(robot_if),
-	  m_was_aligning(false),
-	  m_is_aligning(false),
-	  m_last_alignment_cmd(mrpt::system::now())
+	: CAbstractNavigator(robot_if)
 {
+	m_last_alignment_cmd = mrpt::system::now();
 }
 
 CWaypointsNavigator::~CWaypointsNavigator() = default;

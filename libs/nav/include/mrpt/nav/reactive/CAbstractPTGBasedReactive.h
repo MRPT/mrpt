@@ -291,9 +291,9 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 	std::vector<CAbstractHolonomicReactiveMethod::Ptr> m_holonomicMethod;
 	std::unique_ptr<mrpt::io::CStream> m_logFile;
 	/** The current log file stream, or nullptr if not being used */
-	mrpt::io::CStream* m_prev_logfile;
+	mrpt::io::CStream* m_prev_logfile{nullptr};
 	/** See enableKeepLogRecords */
-	bool m_enableKeepLogRecords;
+	bool m_enableKeepLogRecords{false};
 	/** The last log */
 	CLogFileRecord lastLogRecord;
 	/** Last velocity commands */
@@ -305,22 +305,23 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 	/** Enables / disables the console debug output. */
 	bool m_enableConsoleOutput;
 	/** Whether \a loadConfigFile() has been called or not. */
-	bool m_init_done;
+	bool m_init_done{false};
 	mrpt::system::CTicTac timerForExecutionPeriod;
 
 	/** A complete time logger \sa enableTimeLog() */
-	mrpt::system::CTimeLogger m_timelogger;
-	bool m_PTGsMustBeReInitialized;
+	mrpt::system::CTimeLogger m_timelogger{false};  // default: disabled
+	bool m_PTGsMustBeReInitialized{true};
 
 	/** @name Variables for CReactiveNavigationSystem::performNavigationStep
 		@{ */
 	mrpt::system::CTicTac totalExecutionTime, executionTime, tictac;
-	mrpt::math::LowPassFilter_IIR1 meanExecutionTime;
-	mrpt::math::LowPassFilter_IIR1 meanTotalExecutionTime;
+	mrpt::math::LowPassFilter_IIR1 meanExecutionTime{0.7, 1};
+	mrpt::math::LowPassFilter_IIR1 meanTotalExecutionTime{0.7, 1};
 	/** Runtime estimation of execution period of the method. */
-	mrpt::math::LowPassFilter_IIR1 meanExecutionPeriod;
-	mrpt::math::LowPassFilter_IIR1 tim_changeSpeed_avr, timoff_obstacles_avr,
-		timoff_curPoseAndSpeed_avr, timoff_sendVelCmd_avr;
+	mrpt::math::LowPassFilter_IIR1 meanExecutionPeriod{0.7, 1};
+	mrpt::math::LowPassFilter_IIR1 tim_changeSpeed_avr{0.7},
+		timoff_obstacles_avr{0.7}, timoff_curPoseAndSpeed_avr{0.7},
+		timoff_sendVelCmd_avr{0.7};
 	/** @} */
 
 	bool impl_waypoint_is_reachable(
@@ -400,9 +401,9 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 
 	/** Signal that the destructor has been called, so no more calls are
 	 * accepted from other threads */
-	bool m_closing_navigator;
+	bool m_closing_navigator{false};
 
-	mrpt::system::TTimeStamp m_WS_Obstacles_timestamp;
+	mrpt::system::TTimeStamp m_WS_Obstacles_timestamp{INVALID_TIMESTAMP};
 	/** Default: none */
 	mrpt::maps::CPointCloudFilterBase::Ptr m_WS_filter;
 
@@ -420,7 +421,7 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 
 	/** Temporary buffers for working with each PTG during a navigationStep() */
 	std::vector<TInfoPerPTG> m_infoPerPTG;
-	mrpt::system::TTimeStamp m_infoPerPTG_timestamp;
+	mrpt::system::TTimeStamp m_infoPerPTG_timestamp{INVALID_TIMESTAMP};
 
 	void build_movement_candidate(
 		CParameterizedTrajectoryGenerator* ptg, const size_t indexPTG,
