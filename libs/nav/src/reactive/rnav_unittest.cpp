@@ -117,7 +117,11 @@ void run_rnav_test(
 	mrpt::kinematics::CVehicleSimul_DiffDriven robot_simul;
 	MyDummyRobotIF robot2nav_if(robot_simul, grid);
 
-	RNAVCLASS rnav(robot2nav_if, false /*no console output*/);
+	// Use dynamic memory instead of stack-allocated object to prevent stack
+	// overflow on MSVC (!).
+	auto rnav_ptr =
+		std::make_unique<RNAVCLASS>(robot2nav_if, false /*no console output*/);
+	auto& rnav = *rnav_ptr;
 	// Logging:
 	{
 		rnav.enableTimeLog(false);
