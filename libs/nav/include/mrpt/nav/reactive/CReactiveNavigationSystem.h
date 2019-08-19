@@ -59,7 +59,6 @@ namespace mrpt::nav
 class CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 {
    public:
-   public:
 	/** See docs in ctor of base class */
 	CReactiveNavigationSystem(
 		CRobot2NavInterface& react_iterf_impl, bool enableConsoleOutput = true,

@@ -55,30 +55,12 @@ bool CAbstractPTGBasedReactive::TNavigationParamsPTG::isEqual(
 		   restrict_PTG_indices == o->restrict_PTG_indices;
 }
 
-const double ESTIM_LOWPASSFILTER_ALPHA = 0.7;
-
 // Ctor:
 CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(
 	CRobot2NavInterface& react_iterf_impl, bool enableConsoleOutput,
 	bool enableLogFile, const std::string& sLogDir)
 	: CWaypointsNavigator(react_iterf_impl),
-	  m_holonomicMethod(),
-	  m_prev_logfile(nullptr),
-	  m_enableKeepLogRecords(false),
 	  m_enableConsoleOutput(enableConsoleOutput),
-	  m_init_done(false),
-	  m_timelogger(false),  // default: disabled
-	  m_PTGsMustBeReInitialized(true),
-	  meanExecutionTime(ESTIM_LOWPASSFILTER_ALPHA, 0.1),
-	  meanTotalExecutionTime(ESTIM_LOWPASSFILTER_ALPHA, 0.1),
-	  meanExecutionPeriod(ESTIM_LOWPASSFILTER_ALPHA, 0.1),
-	  tim_changeSpeed_avr(ESTIM_LOWPASSFILTER_ALPHA),
-	  timoff_obstacles_avr(ESTIM_LOWPASSFILTER_ALPHA),
-	  timoff_curPoseAndSpeed_avr(ESTIM_LOWPASSFILTER_ALPHA),
-	  timoff_sendVelCmd_avr(ESTIM_LOWPASSFILTER_ALPHA),
-	  m_closing_navigator(false),
-	  m_WS_Obstacles_timestamp(INVALID_TIMESTAMP),
-	  m_infoPerPTG_timestamp(INVALID_TIMESTAMP),
 	  m_navlogfiles_dir(sLogDir)
 {
 	this->enableLogFile(enableLogFile);

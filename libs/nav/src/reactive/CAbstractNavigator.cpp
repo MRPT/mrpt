@@ -86,17 +86,7 @@ CAbstractNavigator::TRobotPoseVel::TRobotPoseVel()
 							Constructor
   ---------------------------------------------------------------*/
 CAbstractNavigator::CAbstractNavigator(CRobot2NavInterface& react_iterf_impl)
-	: mrpt::system::COutputLogger("MRPT_navigator"),
-	  m_lastNavigationState(IDLE),
-	  m_navigationEndEventSent(false),
-	  m_counter_check_target_is_blocked(0),
-	  m_navigationState(IDLE),
-	  m_robot(react_iterf_impl),
-	  m_curPoseVel(),
-	  m_last_curPoseVelUpdate_robot_time(-1e9),
-	  m_latestPoses(),
-	  m_latestOdomPoses(),
-	  m_timlog_delays(true, "CAbstractNavigator::m_timlog_delays")
+	: mrpt::system::COutputLogger("MRPT_navigator"), m_robot(react_iterf_impl)
 {
 	m_latestPoses.setInterpolationMethod(mrpt::poses::imLinear2Neig);
 	m_latestOdomPoses.setInterpolationMethod(mrpt::poses::imLinear2Neig);

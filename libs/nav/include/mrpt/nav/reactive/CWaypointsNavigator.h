@@ -163,8 +163,8 @@ class CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
 	bool waypoints_isAligning() const { return m_is_aligning; }
 	/** Whether the last timestep was "is_aligning" in a waypoint with heading
 	 */
-	bool m_was_aligning;
-	bool m_is_aligning;
+	bool m_was_aligning{false};
+	bool m_is_aligning{false};
 	mrpt::system::TTimeStamp m_last_alignment_cmd;
 };
 }  // namespace mrpt::nav

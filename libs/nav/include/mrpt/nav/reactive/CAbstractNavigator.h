@@ -270,12 +270,12 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 
    private:
 	/** Last internal state of navigator: */
-	TState m_lastNavigationState;
+	TState m_lastNavigationState{IDLE};
 	TErrorReason m_navErrorReason;
 	/** Will be false until the navigation end is sent, and it is reset with
 	 * each new command */
-	bool m_navigationEndEventSent;
-	int m_counter_check_target_is_blocked;
+	bool m_navigationEndEventSent{false};
+	int m_counter_check_target_is_blocked{0};
 	bool m_rethrow_exceptions{false};
 
 	/** Called before starting a new navigation. Internally, it calls to
@@ -345,7 +345,7 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 		const mrpt::math::TPose2D& relative_robot_pose) const;
 
 	/** Current internal state of navigator: */
-	TState m_navigationState;
+	TState m_navigationState{IDLE};
 	/** Current navigation parameters */
 	std::unique_ptr<TNavigationParams> m_navigationParams;
 
@@ -373,13 +373,14 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 
 	/** Current robot pose (updated in CAbstractNavigator::navigationStep() ) */
 	TRobotPoseVel m_curPoseVel;
-	double m_last_curPoseVelUpdate_robot_time;
+	double m_last_curPoseVelUpdate_robot_time{-1e9};
 	std::string m_last_curPoseVelUpdate_pose_frame_id;
 	/** Latest robot poses (updated in CAbstractNavigator::navigationStep() ) */
 	mrpt::poses::CPose2DInterpolator m_latestPoses, m_latestOdomPoses;
 
 	/** Time logger to collect delay-related stats */
-	mrpt::system::CTimeLogger m_timlog_delays;
+	mrpt::system::CTimeLogger m_timlog_delays{
+		true, "CAbstractNavigator::m_timlog_delays"};
 
 	/** For sending an alarm (error event) when it seems that we are not
 	 * approaching toward the target in a while... */
