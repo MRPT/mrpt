@@ -30,7 +30,6 @@ namespace mrpt::ros1bridge
 class MapHdl
 {
    private:
-	static MapHdl* instance_;  // singeleton instance
 #ifdef OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
 	int8_t lut_cellmrpt2ros[0xFF];  // lookup table for entry convertion
 	int8_t* lut_cellmrpt2rosPtr;  // pointer to the center of the lookup table
@@ -45,7 +44,7 @@ class MapHdl
 	// neede to work with neg. indexes
 	MapHdl();
 	MapHdl(const MapHdl&);
-	~MapHdl();
+	~MapHdl() = default;
 
    public:
 	/**

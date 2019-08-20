@@ -68,32 +68,30 @@ TEST(Map, check_ros2mrpt_and_back)
 	COccupancyGridMap2D desMrpt;
 	nav_msgs::OccupancyGrid desRos;
 
+	// Test empty gridmap:
 	getEmptyRosMsg(srcRos);
 
 	ASSERT_TRUE(mrpt::ros1bridge::fromROS(srcRos, desMrpt));
 	ASSERT_TRUE(mrpt::ros1bridge::toROS(desMrpt, desRos, desRos.header));
+	// all -1 entries should map to 50
 	for (uint32_t h = 0; h < srcRos.info.width; h++)
-	{
 		for (uint32_t w = 0; w < srcRos.info.width; w++)
-		{
-			EXPECT_EQ(
-				desRos.data[h * srcRos.info.width + h],
-				50);  // all -1 entreis should map to 50
-		}
-	}
+			EXPECT_EQ(desRos.data[h * srcRos.info.width + h], 50);
+
+	// Test gridmap with values: 0 to 100
+	for (int i = 0; i <= 100; i++) srcRos.data[i] = i;
+
+	EXPECT_TRUE(mrpt::ros1bridge::fromROS(srcRos, desMrpt));
+	EXPECT_TRUE(mrpt::ros1bridge::toROS(desMrpt, desRos, desRos.header));
 
 	for (int i = 0; i <= 100; i++)
 	{
-		srcRos.data[i] = i;
-	}
-	EXPECT_TRUE(mrpt::ros1bridge::fromROS(srcRos, desMrpt));
-	EXPECT_TRUE(mrpt::ros1bridge::toROS(desMrpt, desRos, desRos.header));
-	for (int i = 0; i <= 100; i++)
-	{
-		// printf("%4i, %4.3f = %4.3f,%4i\n", srcRos.data[i],
-		// 1-((float)i)/100.0, desMrpt.getCell(i,0), desRos.data[i]);
-		EXPECT_NEAR(1 - ((float)i) / 100.0, desMrpt.getCell(i, 0), 0.03)
-			<< "ros to mprt";
+		/*printf(
+			"%4i, %4.3f = %4.3f,%4i\n", srcRos.data[i], 1.0f - 0.01f * i,
+			desMrpt.getCell(i, 0), desRos.data[i]); */
+		EXPECT_NEAR(1.0f - 0.01f * i, desMrpt.getCell(i, 0), 0.03f)
+			<< "ros to mprt"
+			<< "i=" << i;
 		EXPECT_NEAR(srcRos.data[i], desRos.data[i], 1) << "ros to mprt to ros";
 	}
 }
