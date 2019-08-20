@@ -38,8 +38,6 @@ using mrpt::maps::CSimpleMap;
 
 namespace mrpt::ros1bridge
 {
-MapHdl* MapHdl::instance_ = NULL;
-
 MapHdl::MapHdl()
 {
 	/// creation of the lookup table and pointers
@@ -79,21 +77,21 @@ MapHdl::MapHdl()
 		fflush(stdout);
 	}
 }
-MapHdl::~MapHdl() {}
 MapHdl* MapHdl::instance()
 {
-	if (instance_ == NULL) instance_ = new MapHdl();
-	return instance_;
+	static MapHdl m;  // singeleton instance
+	return &m;
 }
 
 bool fromROS(const nav_msgs::OccupancyGrid& src, COccupancyGridMap2D& des)
 {
+	MRPT_START
 	if ((src.info.origin.orientation.x != 0) ||
 		(src.info.origin.orientation.y != 0) ||
 		(src.info.origin.orientation.z != 0) ||
 		(src.info.origin.orientation.w != 1))
 	{
-		std::cerr << "Rotated maps are not supported by mrpt!" << std::endl;
+		std::cerr << "[fromROS] Rotated maps are not supported!\n";
 		return false;
 	}
 	float xmin = src.info.origin.position.x;
@@ -101,21 +99,17 @@ bool fromROS(const nav_msgs::OccupancyGrid& src, COccupancyGridMap2D& des)
 	float xmax = xmin + src.info.width * src.info.resolution;
 	float ymax = ymin + src.info.height * src.info.resolution;
 
-	MRPT_START
 	des.setSize(xmin, xmax, ymin, ymax, src.info.resolution);
-	MRPT_END
-
-	/// I hope the data is allways aligned
+	auto inst = MapHdl::instance();
 	for (unsigned int h = 0; h < src.info.height; h++)
 	{
 		COccupancyGridMap2D::cellType* pDes = des.getRow(h);
 		const int8_t* pSrc = &src.data[h * src.info.width];
 		for (unsigned int w = 0; w < src.info.width; w++)
-		{
-			*pDes++ = MapHdl::instance()->cellRos2Mrpt(*pSrc++);
-		}
+			*pDes++ = inst->cellRos2Mrpt(*pSrc++);
 	}
 	return true;
+	MRPT_END
 }
 bool toROS(
 	const COccupancyGridMap2D& src, nav_msgs::OccupancyGrid& des,
