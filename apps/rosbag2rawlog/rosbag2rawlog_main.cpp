@@ -347,7 +347,7 @@ class Transcriber
 
 		for (auto& sensorNode : config["sensors"])
 		{
-			auto& sensorName = sensorNode.first.as<std::string>();
+			auto sensorName = sensorNode.first.as<std::string>();
 			auto& sensor = sensorNode.second;
 			const auto sensorType = sensor["type"].as<std::string>();
 
