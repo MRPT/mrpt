@@ -517,7 +517,7 @@ void CHolonomicFullEval::navigate(const NavInput& ni, NavOutput& no)
 		// Was: min with obs_clearance too.
 		const double obs_dist_th = std::max(
 			options.TOO_CLOSE_OBSTACLE,
-			(options.OBSTACLE_SLOW_DOWN_DISTANCE / ptg_ref_dist) *
+			(options.OBSTACLE_SLOW_DOWN_DISTANCE * ptg_ref_dist) *
 				ni.maxObstacleDist);
 		double riskFactor = 1.0;
 		if (obs_dist <= options.TOO_CLOSE_OBSTACLE)
