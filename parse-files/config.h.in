@@ -124,25 +124,26 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 /** Use optimized functions with the SSE2 machine instructions set */
 #if defined WIN32 && (!defined WIN64 || defined EM64T) && \
  (_MSC_VER >= 1400) || (defined __SSE2__ && defined __GNUC__ && __GNUC__ >= 4)
-	#define MRPT_HAS_SSE2  ${CMAKE_MRPT_HAS_SSE2}   // This value can be set to 0 from CMake with DISABLE_SSE2
+	#define MRPT_HAS_SSE2  ${CMAKE_MRPT_HAS_SSE2}   // This value can be set to 0 from CMake with ENABLE_SSE2
 #else
 	#define MRPT_HAS_SSE2  0
 #endif
 
-
-
 /** Use optimized functions with the SSE3 machine instructions set */
 #if defined WIN32 && (!defined WIN64 || defined EM64T) && \
  (_MSC_VER >= 1500) || (defined __SSE3__ && defined __GNUC__ && __GNUC__ >= 4)
-	#define MRPT_HAS_SSE3  ${CMAKE_MRPT_HAS_SSE3}   // This value can be set to 0 from CMake with DISABLE_SSE3
+	#define MRPT_HAS_SSE3  ${CMAKE_MRPT_HAS_SSE3}   // This value can be set to 0 from CMake with ENABLE_SSE3
 #else
 	#define MRPT_HAS_SSE3  0
 #endif
 
-/** Use optimized functions with the SSE4 machine instructions set */
-#define MRPT_HAS_SSE4_1  ${CMAKE_MRPT_HAS_SSE4_1}   // This value can be set to 0 from CMake with DISABLE_SSE4_1
-#define MRPT_HAS_SSE4_2  ${CMAKE_MRPT_HAS_SSE4_2}   // This value can be set to 0 from CMake with DISABLE_SSE4_2
-#define MRPT_HAS_SSE4_A  ${CMAKE_MRPT_HAS_SSE4_A}   // This value can be set to 0 from CMake with DISABLE_SSE4_A
+// This value can be set to 0 from CMake with ENABLE_XXX
+#define MRPT_HAS_SSE4_1  ${CMAKE_MRPT_HAS_SSE4_1}
+#define MRPT_HAS_SSE4_2  ${CMAKE_MRPT_HAS_SSE4_2}
+#define MRPT_HAS_SSE4_A  ${CMAKE_MRPT_HAS_SSE4_A}
+#define MRPT_HAS_AVX     ${CMAKE_MRPT_HAS_AVX}
+#define MRPT_HAS_AVX2    ${CMAKE_MRPT_HAS_AVX2}
+#define MRPT_HAS_NEON    ${CMAKE_MRPT_HAS_NEON}
 
 /** Whether to include RoboPeak LIDAR: */
 #define MRPT_HAS_ROBOPEAK_LIDAR ${CMAKE_MRPT_HAS_ROBOPEAK_LIDAR}
