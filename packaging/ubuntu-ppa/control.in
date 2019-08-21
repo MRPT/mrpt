@@ -46,7 +46,7 @@ Build-Depends: debhelper (>= 9),
 	libstereo-msgs-dev,
 	libtf2-dev,
 	libtf2-msgs-dev,
-	libproj-dev,
+	libbz2-dev,
 	g++-7
 Standards-Version: 4.0.0
 Homepage: https://www.mrpt.org/
