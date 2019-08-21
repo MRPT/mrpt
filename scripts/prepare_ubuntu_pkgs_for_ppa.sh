@@ -8,7 +8,7 @@
 #
 # You can declare a variable (in the caller shell) with extra flags for the
 # CMake in the final ./configure like:
-#  MRPT_PKG_CUSTOM_CMAKE_PARAMS="\"-DDISABLE_SSE3=ON\""
+#  MRPT_PKG_CUSTOM_CMAKE_PARAMS="\"-DENABLE_SSE3=OFF\""
 #
 
 set -e
