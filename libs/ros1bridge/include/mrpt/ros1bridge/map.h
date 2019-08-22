@@ -25,7 +25,7 @@ namespace mrpt::ros1bridge
 
 /** Methods to convert between ROS msgs and MRPT objects for map datatypes.
  * @brief the map class is implemented as singeleton use map::instance
- * ()->ros2mrpt ...
+ * ()->fromROS ...
  */
 class MapHdl
 {

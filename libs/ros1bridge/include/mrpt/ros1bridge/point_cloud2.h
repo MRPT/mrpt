@@ -10,8 +10,11 @@
 #pragma once
 
 #include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/maps/CPointsMapXYZI.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <sensor_msgs/PointCloud2.h>
+#include <set>
+#include <string>
 
 namespace mrpt::ros1bridge
 {
@@ -22,13 +25,22 @@ namespace mrpt::ros1bridge
  *  @{ */
 
 /** Convert sensor_msgs/PointCloud2 -> mrpt::slam::CSimplePointsMap
- *  CSimplePointsMap only contains (x,y,z) data, so
- * sensor_msgs::PointCloud2::channels are ignored.
+ *  Only (x,y,z) data is converted. To use the intensity channel, see
+ * the alternative signature for CPointsMapXYZI.
  * \return true on sucessful conversion, false on any error.
- * \sa mrpt2ros
+ * \sa toROS
  */
 bool fromROS(
 	const sensor_msgs::PointCloud2& msg, mrpt::maps::CSimplePointsMap& obj);
+
+/** \overload For (x,y,z,intensity) channels. */
+bool fromROS(
+	const sensor_msgs::PointCloud2& msg, mrpt::maps::CPointsMapXYZI& obj);
+
+/** Extract a list of fields found in the point cloud.
+ * Typically: {"x","y","z","intensity"}
+ */
+std::set<std::string> extractFields(const sensor_msgs::PointCloud2& msg);
 
 /** Convert mrpt::slam::CSimplePointsMap -> sensor_msgs/PointCloud2
  *  The user must supply the "msg_header" field to be copied into the output
@@ -37,7 +49,7 @@ bool fromROS(
  *  Since CSimplePointsMap only contains (x,y,z) data,
  * sensor_msgs::PointCloud2::channels will be empty.
  * \return true on sucessful conversion, false on any error.
- * \sa ros2mrpt
+ * \sa fromROS
  */
 bool toROS(
 	const mrpt::maps::CSimplePointsMap& obj, const std_msgs::Header& msg_header,
