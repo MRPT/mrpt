@@ -181,6 +181,7 @@ void CFeatureExtraction::internal_computeSpinImageDescriptors(
 
 		// Save the histogram as a vector:
 		unsigned idx = 0;
+		in_feature.descriptors.SpinImg.emplace();
 		std::vector<float>& ptr_trg = *in_feature.descriptors.SpinImg;
 		ptr_trg.resize(HIST_N_INT * HIST_N_DIS);
 
