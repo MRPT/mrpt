@@ -20,7 +20,7 @@ using namespace mrpt::maps;
 
 namespace mrpt::ros1bridge
 {
-inline bool check_field(
+static bool check_field(
 	const sensor_msgs::PointField& input_field, std::string check_name,
 	const sensor_msgs::PointField** output)
 {
@@ -30,7 +30,7 @@ inline bool check_field(
 		if (input_field.datatype != sensor_msgs::PointField::FLOAT32 &&
 			input_field.datatype != sensor_msgs::PointField::FLOAT64)
 		{
-			*output = NULL;
+			*output = nullptr;
 			coherence_error = true;
 		}
 		else
@@ -41,11 +41,11 @@ inline bool check_field(
 	return coherence_error;
 }
 
-inline void get_float_from_field(
+static void get_float_from_field(
 	const sensor_msgs::PointField* field, const unsigned char* data,
 	float& output)
 {
-	if (field != NULL)
+	if (field != nullptr)
 	{
 		if (field->datatype == sensor_msgs::PointField::FLOAT32)
 			output = *(reinterpret_cast<const float*>(&data[field->offset]));
@@ -55,6 +55,13 @@ inline void get_float_from_field(
 	}
 	else
 		output = 0.0;
+}
+
+std::set<std::string> extractFields(const sensor_msgs::PointCloud2& msg)
+{
+	std::set<std::string> lst;
+	for (const auto& f : msg.fields) lst.insert(f.name);
+	return lst;
 }
 
 /** Convert sensor_msgs/PointCloud2 -> mrpt::slam::CSimplePointsMap
@@ -68,20 +75,18 @@ bool fromROS(const sensor_msgs::PointCloud2& msg, CSimplePointsMap& obj)
 	obj.clear();
 	obj.reserve(num_points);
 
-	bool incompatible_clouds = false;
-	const sensor_msgs::PointField *x_field = NULL, *y_field = NULL,
-								  *z_field = NULL;
+	bool incompatible = false;
+	const sensor_msgs::PointField *x_field = nullptr, *y_field = nullptr,
+								  *z_field = nullptr;
 
-	for (unsigned int i = 0; i < msg.fields.size() && !incompatible_clouds; i++)
+	for (unsigned int i = 0; i < msg.fields.size() && !incompatible; i++)
 	{
-		incompatible_clouds |= check_field(msg.fields[i], "x", &x_field);
-		incompatible_clouds |= check_field(msg.fields[i], "y", &y_field);
-		incompatible_clouds |= check_field(msg.fields[i], "z", &z_field);
+		incompatible |= check_field(msg.fields[i], "x", &x_field);
+		incompatible |= check_field(msg.fields[i], "y", &y_field);
+		incompatible |= check_field(msg.fields[i], "z", &z_field);
 	}
 
-	if (incompatible_clouds ||
-		(x_field == NULL && y_field == NULL && z_field == NULL))
-		return false;
+	if (incompatible || (!x_field && !y_field && !z_field)) return false;
 
 	// If not, memcpy each group of contiguous fields separately
 	for (unsigned int row = 0; row < msg.height; ++row)
@@ -99,6 +104,49 @@ bool fromROS(const sensor_msgs::PointCloud2& msg, CSimplePointsMap& obj)
 		}
 	}
 
+	return true;
+}
+
+bool fromROS(const sensor_msgs::PointCloud2& msg, CPointsMapXYZI& obj)
+{
+	// Copy point data
+	unsigned int num_points = msg.width * msg.height;
+	obj.clear();
+	obj.reserve(num_points);
+
+	bool incompatible = false;
+	const sensor_msgs::PointField *x_field = nullptr, *y_field = nullptr,
+								  *z_field = nullptr, *i_field = nullptr;
+
+	for (unsigned int i = 0; i < msg.fields.size() && !incompatible; i++)
+	{
+		incompatible |= check_field(msg.fields[i], "x", &x_field);
+		incompatible |= check_field(msg.fields[i], "y", &y_field);
+		incompatible |= check_field(msg.fields[i], "z", &z_field);
+		incompatible |= check_field(msg.fields[i], "intensity", &i_field);
+	}
+
+	if (incompatible || (!x_field && !y_field && !z_field && !i_field))
+		return false;
+
+	// If not, memcpy each group of contiguous fields separately
+	for (unsigned int row = 0; row < msg.height; ++row)
+	{
+		const unsigned char* row_data = &msg.data[row * msg.row_step];
+		for (uint32_t col = 0; col < msg.width; ++col)
+		{
+			const unsigned char* msg_data = row_data + col * msg.point_step;
+
+			float x, y, z, i;
+			get_float_from_field(x_field, msg_data, x);
+			get_float_from_field(y_field, msg_data, y);
+			get_float_from_field(z_field, msg_data, z);
+			get_float_from_field(i_field, msg_data, i);
+			obj.insertPoint(x, y, z);
+
+			obj.setPointIntensity(obj.size() - 1, i / 255.0);
+		}
+	}
 	return true;
 }
 

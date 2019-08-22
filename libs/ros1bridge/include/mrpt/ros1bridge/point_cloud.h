@@ -25,7 +25,7 @@ namespace mrpt::ros1bridge
  *  CSimplePointsMap only contains (x,y,z) data, so
  * sensor_msgs::PointCloud::channels are ignored.
  * \return true on sucessful conversion, false on any error.
- * \sa mrpt2ros
+ * \sa toROS
  */
 bool fromROS(
 	const sensor_msgs::PointCloud& msg, mrpt::maps::CSimplePointsMap& obj);
@@ -37,7 +37,7 @@ bool fromROS(
  *  Since CSimplePointsMap only contains (x,y,z) data,
  * sensor_msgs::PointCloud::channels will be empty.
  * \return true on sucessful conversion, false on any error.
- * \sa ros2mrpt
+ * \sa fromROS
  */
 bool toROS(
 	const mrpt::maps::CSimplePointsMap& obj, const std_msgs::Header& msg_header,
