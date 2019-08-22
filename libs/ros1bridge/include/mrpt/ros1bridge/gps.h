@@ -45,7 +45,7 @@ bool fromROS(
  * and sensor_msgs::NavSatFix::position_covariance will be empty. \return true
  * on sucessful conversion, false on any error.
  */
-bool mrpt2ros(
+bool toROS(
 	const mrpt::obs::CObservationGPS& obj, const std_msgs::Header& msg_header,
 	sensor_msgs::NavSatFix& msg);
 

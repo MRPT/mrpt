@@ -24,7 +24,7 @@ namespace mrpt::ros1bridge
 /** ROS->MRPT: Takes a sensor_msgs::LaserScan and the relative pose of the laser
  * wrt base_link and builds a CObservation2DRangeScan
  * \return true on sucessful conversion, false on any error.
- * \sa mrpt2ros
+ * \sa toROS
  */
 bool fromROS(
 	const sensor_msgs::LaserScan& msg, const mrpt::poses::CPose3D& pose,
@@ -33,7 +33,7 @@ bool fromROS(
 /** MRPT->ROS: Takes a CObservation2DRangeScan and outputs range data in
  * sensor_msgs::LaserScan
  * \return true on sucessful conversion, false on any error.
- * \sa ros2mrpt
+ * \sa fromROS
  */
 bool toROS(
 	const mrpt::obs::CObservation2DRangeScan& obj, sensor_msgs::LaserScan& msg);
@@ -41,7 +41,7 @@ bool toROS(
 /** MRPT->ROS: Takes a CObservation2DRangeScan and outputs range data in
  * sensor_msgs::LaserScan + the relative pose of the laser wrt base_link
  * \return true on sucessful conversion, false on any error.
- * \sa ros2mrpt
+ * \sa fromROS
  */
 bool toROS(
 	const mrpt::obs::CObservation2DRangeScan& obj, sensor_msgs::LaserScan& msg,

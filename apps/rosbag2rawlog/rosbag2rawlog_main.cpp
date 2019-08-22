@@ -201,14 +201,38 @@ Obs toPointCloud2(std::string_view msg, const rosbag::MessageInstance& rosmsg)
 		auto pts = rosmsg.instantiate<sensor_msgs::PointCloud2>();
 
 		auto ptsObs = mrpt::obs::CObservationPointCloud::Create();
-
 		ptsObs->sensorLabel = msg;
 		ptsObs->timestamp = mrpt::ros1bridge::fromROS(pts->header.stamp);
 
 		// Convert points:
-		auto mrptPts = mrpt::maps::CSimplePointsMap::Create();
-		ptsObs->pointcloud = mrptPts;
-		mrpt::ros1bridge::fromROS(*pts, *mrptPts);
+		std::set<std::string> fields = mrpt::ros1bridge::extractFields(*pts);
+
+		// We need X Y Z:
+		if (!fields.count("x") || !fields.count("y") || !fields.count("z"))
+			return {};
+
+#if 0
+		if (fields.count("ring"))
+		{
+			// As a structured Velodyne observation with ring number:
+			MRPT_TODO("Implement me!");
+		}
+		else
+#endif
+		if (fields.count("intensity"))
+		{
+			// XYZI
+			auto mrptPts = mrpt::maps::CPointsMapXYZI::Create();
+			ptsObs->pointcloud = mrptPts;
+			mrpt::ros1bridge::fromROS(*pts, *mrptPts);
+		}
+		else
+		{
+			// XYZ
+			auto mrptPts = mrpt::maps::CSimplePointsMap::Create();
+			ptsObs->pointcloud = mrptPts;
+			mrpt::ros1bridge::fromROS(*pts, *mrptPts);
+		}
 
 		return {ptsObs};
 	}
