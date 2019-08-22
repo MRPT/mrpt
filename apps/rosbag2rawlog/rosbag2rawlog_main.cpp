@@ -196,20 +196,18 @@ class RosSynchronizer
 
 Obs toPointCloud2(std::string_view msg, const rosbag::MessageInstance& rosmsg)
 {
-	try
-	{
-		auto pts = rosmsg.instantiate<sensor_msgs::PointCloud2>();
+	auto pts = rosmsg.instantiate<sensor_msgs::PointCloud2>();
 
-		auto ptsObs = mrpt::obs::CObservationPointCloud::Create();
-		ptsObs->sensorLabel = msg;
-		ptsObs->timestamp = mrpt::ros1bridge::fromROS(pts->header.stamp);
+	auto ptsObs = mrpt::obs::CObservationPointCloud::Create();
+	ptsObs->sensorLabel = msg;
+	ptsObs->timestamp = mrpt::ros1bridge::fromROS(pts->header.stamp);
 
-		// Convert points:
-		std::set<std::string> fields = mrpt::ros1bridge::extractFields(*pts);
+	// Convert points:
+	std::set<std::string> fields = mrpt::ros1bridge::extractFields(*pts);
 
-		// We need X Y Z:
-		if (!fields.count("x") || !fields.count("y") || !fields.count("z"))
-			return {};
+	// We need X Y Z:
+	if (!fields.count("x") || !fields.count("y") || !fields.count("z"))
+		return {};
 
 #if 0
 		if (fields.count("ring"))
@@ -219,53 +217,37 @@ Obs toPointCloud2(std::string_view msg, const rosbag::MessageInstance& rosmsg)
 		}
 		else
 #endif
-		if (fields.count("intensity"))
-		{
-			// XYZI
-			auto mrptPts = mrpt::maps::CPointsMapXYZI::Create();
-			ptsObs->pointcloud = mrptPts;
-			mrpt::ros1bridge::fromROS(*pts, *mrptPts);
-		}
-		else
-		{
-			// XYZ
-			auto mrptPts = mrpt::maps::CSimplePointsMap::Create();
-			ptsObs->pointcloud = mrptPts;
-			mrpt::ros1bridge::fromROS(*pts, *mrptPts);
-		}
-
-		return {ptsObs};
-	}
-	catch (tf2::TransformException& ex)
+	if (fields.count("intensity"))
 	{
-		std::cerr << ex.what() << std::endl;
+		// XYZI
+		auto mrptPts = mrpt::maps::CPointsMapXYZI::Create();
+		ptsObs->pointcloud = mrptPts;
+		mrpt::ros1bridge::fromROS(*pts, *mrptPts);
+	}
+	else
+	{
+		// XYZ
+		auto mrptPts = mrpt::maps::CSimplePointsMap::Create();
+		ptsObs->pointcloud = mrptPts;
+		mrpt::ros1bridge::fromROS(*pts, *mrptPts);
 	}
 
-	return {};
+	return {ptsObs};
 }
 
 Obs toIMU(std::string_view msg, const rosbag::MessageInstance& rosmsg)
 {
-	try
-	{
-		auto pts = rosmsg.instantiate<sensor_msgs::Imu>();
+	auto pts = rosmsg.instantiate<sensor_msgs::Imu>();
 
-		auto mrptObs = mrpt::obs::CObservationIMU::Create();
+	auto mrptObs = mrpt::obs::CObservationIMU::Create();
 
-		mrptObs->sensorLabel = msg;
-		mrptObs->timestamp = mrpt::ros1bridge::fromROS(pts->header.stamp);
+	mrptObs->sensorLabel = msg;
+	mrptObs->timestamp = mrpt::ros1bridge::fromROS(pts->header.stamp);
 
-		// Convert data:
-		mrpt::ros1bridge::fromROS(*pts, *mrptObs);
+	// Convert data:
+	mrpt::ros1bridge::fromROS(*pts, *mrptObs);
 
-		return {mrptObs};
-	}
-	catch (tf2::TransformException& ex)
-	{
-		std::cerr << ex.what() << std::endl;
-	}
-
-	return {};
+	return {mrptObs};
 }
 
 Obs toRangeImage(
@@ -277,56 +259,47 @@ Obs toRangeImage(
 	// For now we are just assuming this is a range image
 	if (cv_ptr->encoding == "32FC1")
 	{
-		try
+		auto rangeScan = mrpt::obs::CObservation3DRangeScan::Create();
+
+		// MRPT assumes the image plane is parallel to the YZ plane, so the
+		// camera is pointed in the X direction ROS assumes the image plane
+		// is parallel to XY plane, so the camera is pointed in the Z
+		// direction Apply a rotation to convert between these conventions.
+		mrpt::math::CQuaternion<double> rot{0.5, 0.5, -0.5, 0.5};
+		mrpt::poses::CPose3DQuat poseQuat(0, 0, 0, rot);
+		mrpt::poses::CPose3D pose(poseQuat);
+		rangeScan->setSensorPose(pose);
+
+		rangeScan->sensorLabel = msg;
+		rangeScan->timestamp = mrpt::ros1bridge::fromROS(image->header.stamp);
+
+		rangeScan->hasRangeImage = true;
+		rangeScan->rangeImage_setSize(cv_ptr->image.rows, cv_ptr->image.cols);
+
+		rangeScan->cameraParams.nrows = cv_ptr->image.rows;
+		rangeScan->cameraParams.ncols = cv_ptr->image.cols;
+
+		std::copy(
+			cameraInfo->D.begin(), cameraInfo->D.end(),
+			rangeScan->cameraParams.dist.begin());
+
+		size_t rows = cv_ptr->image.rows;
+		size_t cols = cv_ptr->image.cols;
+		std::copy(
+			cameraInfo->K.begin(), cameraInfo->K.end(),
+			rangeScan->cameraParams.intrinsicParams.begin());
+
+		for (size_t i = 0; i < rows; i++)
 		{
-			auto rangeScan = mrpt::obs::CObservation3DRangeScan::Create();
-
-			// MRPT assumes the image plane is parallel to the YZ plane, so the
-			// camera is pointed in the X direction ROS assumes the image plane
-			// is parallel to XY plane, so the camera is pointed in the Z
-			// direction Apply a rotation to convert between these conventions.
-			mrpt::math::CQuaternion<double> rot{0.5, 0.5, -0.5, 0.5};
-			mrpt::poses::CPose3DQuat poseQuat(0, 0, 0, rot);
-			mrpt::poses::CPose3D pose(poseQuat);
-			rangeScan->setSensorPose(pose);
-
-			rangeScan->sensorLabel = msg;
-			rangeScan->timestamp =
-				mrpt::ros1bridge::fromROS(image->header.stamp);
-
-			rangeScan->hasRangeImage = true;
-			rangeScan->rangeImage_setSize(
-				cv_ptr->image.rows, cv_ptr->image.cols);
-
-			rangeScan->cameraParams.nrows = cv_ptr->image.rows;
-			rangeScan->cameraParams.ncols = cv_ptr->image.cols;
-
-			std::copy(
-				cameraInfo->D.begin(), cameraInfo->D.end(),
-				rangeScan->cameraParams.dist.begin());
-
-			size_t rows = cv_ptr->image.rows;
-			size_t cols = cv_ptr->image.cols;
-			std::copy(
-				cameraInfo->K.begin(), cameraInfo->K.end(),
-				rangeScan->cameraParams.intrinsicParams.begin());
-
-			for (size_t i = 0; i < rows; i++)
+			for (size_t j = 0; j < cols; j++)
 			{
-				for (size_t j = 0; j < cols; j++)
-				{
-					rangeScan->rangeImage(i, j) = cv_ptr->image.at<float>(i, j);
-				}
+				rangeScan->rangeImage(i, j) = cv_ptr->image.at<float>(i, j);
 			}
-
-			rangeScan->range_is_depth = rangeIsDepth;
-
-			return {rangeScan};
 		}
-		catch (tf2::TransformException& ex)
-		{
-			std::cerr << ex.what() << std::endl;
-		}
+
+		rangeScan->range_is_depth = rangeIsDepth;
+
+		return {rangeScan};
 	}
 	return {};
 }
