@@ -265,7 +265,8 @@ void register_tests_feature_extraction()
 	lstTests.emplace_back(
 		"feature_computeDescriptor [640x480,N=100]: SURF (OpenCV)",
 		benchmark_computeDescriptor<descSURF>, 6, 100);
-	lstTests.emplace_back(
-		"feature_computeDescriptor [640x480,N=100]: SIFT (OpenCV)",
-		benchmark_computeDescriptor<descSIFT>, 6, 100);
+	/*	lstTests.emplace_back(
+			"feature_computeDescriptor [640x480,N=100]: SIFT (OpenCV)",
+			benchmark_computeDescriptor<descSIFT>, 6, 100);
+			*/
 }

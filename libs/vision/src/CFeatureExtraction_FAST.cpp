@@ -173,6 +173,7 @@ void CFeatureExtraction::extractFeaturesFAST(
 
 		if (options.patchSize > 0)
 		{
+			ft.patch.emplace();
 			inImg.extract_patch(
 				*ft.patch, round(ft.keypoint.pt.x) - offset,
 				round(ft.keypoint.pt.y) - offset, options.patchSize,
