@@ -38,12 +38,12 @@ struct TImageStereoCallbackData
 {
 	/** =-1:Processing images;  =0: Initial calib without distortion, =1: Calib
 	 * of all parameters */
-	int calibRound;
-	size_t current_iter;
+	int calibRound{-1};
+	size_t current_iter{0};
 	/** Current root-mean square reprojection error (in pixels) */
-	double current_rmse;
+	double current_rmse{0};
 	/** Info for calibRound==-1 */
-	unsigned int nImgsProcessed, nImgsToProcess;
+	unsigned int nImgsProcessed{0}, nImgsToProcess{0};
 };
 
 /** Prototype of optional user callback function. */

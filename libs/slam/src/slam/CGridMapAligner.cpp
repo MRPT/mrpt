@@ -108,8 +108,8 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 
 	if (IS_CLASS(*mm1, CMultiMetricMap) && IS_CLASS(*mm2, CMultiMetricMap))
 	{
-		multimap1 = static_cast<const CMultiMetricMap*>(mm1);
-		multimap2 = static_cast<const CMultiMetricMap*>(mm2);
+		multimap1 = dynamic_cast<const CMultiMetricMap*>(mm1);
+		multimap2 = dynamic_cast<const CMultiMetricMap*>(mm2);
 
 		ASSERT_(multimap1->countMapsByClass<COccupancyGridMap2D>());
 		ASSERT_(multimap2->countMapsByClass<COccupancyGridMap2D>());
@@ -121,8 +121,8 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 		IS_CLASS(*mm1, COccupancyGridMap2D) &&
 		IS_CLASS(*mm2, COccupancyGridMap2D))
 	{
-		m1 = static_cast<const COccupancyGridMap2D*>(mm1);
-		m2 = static_cast<const COccupancyGridMap2D*>(mm2);
+		m1 = dynamic_cast<const COccupancyGridMap2D*>(mm1);
+		m2 = dynamic_cast<const COccupancyGridMap2D*>(mm2);
 	}
 	else
 		THROW_EXCEPTION(
@@ -999,8 +999,8 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_correlation(
 	// -----------------
 	ASSERT_(mm1->GetRuntimeClass() == CLASS_ID(COccupancyGridMap2D));
 	ASSERT_(mm2->GetRuntimeClass() == CLASS_ID(COccupancyGridMap2D));
-	const auto* m1 = static_cast<const COccupancyGridMap2D*>(mm1);
-	const auto* m2 = static_cast<const COccupancyGridMap2D*>(mm2);
+	const auto* m1 = dynamic_cast<const COccupancyGridMap2D*>(mm1);
+	const auto* m2 = dynamic_cast<const COccupancyGridMap2D*>(mm2);
 
 	ASSERT_(m1->getResolution() == m2->getResolution());
 
@@ -1058,10 +1058,10 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_correlation(
 		CPoint2D v1, v3;
 		v2 = CPose2D(0, 0, 0) - v2;  // Inverse
 
-		for (unsigned int cy2 = 0; cy2 < map2_ly; cy2++)
+		for (size_t cy2 = 0; cy2 < map2_ly; cy2++)
 		{
 			COccupancyGridMap2D::cellType* row = map2_mod.getRow(cy2);
-			for (unsigned int cx2 = 0; cx2 < map2_lx; cx2++)
+			for (size_t cx2 = 0; cx2 < map2_lx; cx2++)
 			{
 				v3 = v2 + CPoint2D(map2_mod.idx2x(cx2), map2_mod.idx2y(cy2));
 				*row++ = m2->p2l(m2->getPos(v3.x(), v3.y()));

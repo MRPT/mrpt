@@ -58,16 +58,16 @@ void CObservationRawDAQ::getDescriptionAsText(std::ostream& o) const
 	cout << "Analog IN interleaved?  : " << (AIN_interleaved ? "yes" : "no")
 		 << endl;
 
-#define RAWDAQ_SHOW_FIRSTS(_VEC)                                       \
-	cout << "Raw data in " #_VEC " (" << _VEC.size()                   \
-		 << " entries): First values [";                               \
-	if (!_VEC.empty())                                                 \
-	{                                                                  \
-		for (size_t i = 1;                                             \
-			 i <= std::min(_VEC.size(), static_cast<size_t>(10)); i++) \
-			cout << _VEC[i - 1] << " ";                                \
-		cout << " ... ";                                               \
-	}                                                                  \
+#define RAWDAQ_SHOW_FIRSTS(_VEC)                                         \
+	cout << "Raw data in " #_VEC " (" << (_VEC).size()                   \
+		 << " entries): First values [";                                 \
+	if (!(_VEC).empty())                                                 \
+	{                                                                    \
+		for (size_t i = 1;                                               \
+			 i <= std::min((_VEC).size(), static_cast<size_t>(10)); i++) \
+			cout << (_VEC)[i - 1] << " ";                                \
+		cout << " ... ";                                                 \
+	}                                                                    \
 	cout << "]\n";
 
 	RAWDAQ_SHOW_FIRSTS(AIN_8bits)

@@ -48,9 +48,9 @@ class CMesh3D : public CRenderizableDisplayList
 
 	// Data
 	/** Number of vertices of the mesh */
-	unsigned int m_num_verts;
+	unsigned int m_num_verts{0};
 	/** Number of faces of the mesh */
-	unsigned int m_num_faces;
+	unsigned int m_num_faces{0};
 	/** Pointer storing whether a face is a quad (1) or a triangle (0) */
 	std::vector<bool> m_is_quad;
 	/** Pointer storing the vertices that compose each face. Size: 4 x num_faces
@@ -65,11 +65,11 @@ class CMesh3D : public CRenderizableDisplayList
 
 	// Colors
 	/** Color of the edges (when shown) */
-	float edge_color[4];
+	float edge_color[4] = {.9f, .9f, .9f, 1.0f};
 	/** Color of the faces (when shown) */
-	float face_color[4];
+	float face_color[4] = {.7f, .7f, .8f, 1.0f};
 	/** Color of the vertices (when shown) */
-	float vert_color[4];
+	float vert_color[4] = {.3f, .3f, .3f, 1.0f};
 	mrpt::img::TColormap m_colorMap{mrpt::img::cmHOT};
 	// Not used yet. I leave it here in case
 	// I want to use it in the future

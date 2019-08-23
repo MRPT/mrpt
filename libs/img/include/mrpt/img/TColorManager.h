@@ -51,7 +51,7 @@ struct TColorManager
 	 *
 	 * \sa checkStdColorsUsed
 	 */
-	bool have_used_standard_colors;
+	bool have_used_standard_colors = false;
 	/**\brief Check if the standard colors have already been used.
 	 *
 	 * \ret True if they have indeed been used.

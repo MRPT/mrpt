@@ -21,8 +21,8 @@ using namespace std;
 IMPLEMENTS_SERIALIZABLE(CObservationSkeleton, CObservation, mrpt::obs)
 
 // Helpful macros for reading and writing joints to a stream
-#define WRITE_JOINT(_J) out << _J.x << _J.y << _J.z << _J.conf;
-#define READ_JOINT(_J) in >> _J.x >> _J.y >> _J.z >> _J.conf;
+#define WRITE_JOINT(_J) out << (_J).x << (_J).y << (_J).z << (_J).conf;
+#define READ_JOINT(_J) in >> (_J).x >> (_J).y >> (_J).z >> (_J).conf;
 
 uint8_t CObservationSkeleton::serializeGetVersion() const { return 2; }
 void CObservationSkeleton::serializeTo(mrpt::serialization::CArchive& out) const

@@ -228,7 +228,7 @@ class CSparseMatrix
 	virtual ~CSparseMatrix();
 
 	/** Copy operator from another existing object */
-	void operator=(const CSparseMatrix& other);
+	CSparseMatrix& operator=(const CSparseMatrix& other);
 
 	/** Fast swap contents with another sparse matrix */
 	void swap(CSparseMatrix& other);

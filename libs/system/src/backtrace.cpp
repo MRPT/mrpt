@@ -125,10 +125,11 @@ std::string mrpt::system::TCallStackBackTrace::asString() const
 {
 	std::ostringstream trace_buf;
 	trace_buf << "Callstack backtrace:" << std::endl;
-	for (unsigned int i = 0; i < this->backtrace_levels.size(); i++)
+	for (std::size_t i = 0; i < this->backtrace_levels.size(); i++)
 	{
 		trace_buf << mrpt::format(
-						 "[%-2d] %*p %s", i, int(2 + sizeof(void*) * 2),
+						 "[%-2d] %*p %s", static_cast<int>(i),
+						 int(2 + sizeof(void*) * 2),
 						 backtrace_levels[i].address,
 						 backtrace_levels[i].symbolName.c_str())
 				  << std::endl;

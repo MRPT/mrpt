@@ -191,9 +191,9 @@ void CFileSystemWatcher::getChanges(TFileSystemChangeList& out_list)
 #define BUF_LEN (1024 * (EVENT_SIZE + 16))
 
 		char buf[BUF_LEN];
-		int len, i = 0;
+		ssize_t i = 0;
 
-		len = read(m_fd, buf, BUF_LEN);
+		const auto len = read(m_fd, buf, BUF_LEN);
 		if (len < 0)
 		{
 			if (errno == EINTR)

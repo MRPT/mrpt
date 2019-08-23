@@ -1237,10 +1237,6 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 }  // end of recompute_errors_and_Jacobians
 
 // Ctor:
-TStereoCalibParams::TStereoCalibParams()
+TStereoCalibParams::TStereoCalibParams() = default;
 
-	= default;
-
-TStereoCalibResults::TStereoCalibResults()
-
-	= default;
+TStereoCalibResults::TStereoCalibResults() = default;

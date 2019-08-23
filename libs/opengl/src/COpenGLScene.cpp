@@ -50,13 +50,8 @@ COpenGLScene::COpenGLScene(const COpenGLScene& obj) : CSerializable()
 	(*this) = obj;
 }
 
-/*---------------------------------------------------------------
-						Destructor:
- ---------------------------------------------------------------*/
-COpenGLScene::~COpenGLScene() { clear(false); }
-/*---------------------------------------------------------------
-		Clear the scene.
- ---------------------------------------------------------------*/
+COpenGLScene::~COpenGLScene() { m_viewports.clear(); }
+
 void COpenGLScene::clear(bool createMainViewport)
 {
 	m_viewports.clear();

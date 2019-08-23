@@ -154,7 +154,7 @@ class CEdgeCounter
 	 * Tracking number of edges
 	 */
 	std::map<std::string, int> m_name_to_edges_num;
-	int m_num_loop_closures;
+	int m_num_loop_closures = 0;
 	int m_unique_edges = 0;
 
 	// visualization std::maps

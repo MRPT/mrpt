@@ -76,8 +76,8 @@ class CTimeLogger : public mrpt::system::COutputLogger
 
 	TDataMap m_data;
 
-	void do_enter(const std::string_view& func_name);
-	double do_leave(const std::string_view& func_name);
+	void do_enter(const std::string_view& func_name) noexcept;
+	double do_leave(const std::string_view& func_name) noexcept;
 
    public:
 	/** Data of each call section: # of calls, minimum, maximum, average and
@@ -131,19 +131,19 @@ class CTimeLogger : public mrpt::system::COutputLogger
 	void saveToMFile(const std::string& m_file) const;
 	void registerUserMeasure(
 		const std::string_view& event_name, const double value,
-		const bool is_time = false);
+		const bool is_time = false) noexcept;
 
-	const std::string& getName() const { return m_name; }
-	void setName(const std::string& name) { m_name = name; }
+	const std::string& getName() const noexcept { return m_name; }
+	void setName(const std::string& name) noexcept { m_name = name; }
 
 	/** Start of a named section \sa enter */
-	inline void enter(const std::string_view& func_name)
+	inline void enter(const std::string_view& func_name) noexcept
 	{
 		if (m_enabled) do_enter(func_name);
 	}
 	/** End of a named section \return The ellapsed time, in seconds or 0 if
 	 * disabled. \sa enter */
-	inline double leave(const std::string_view& func_name)
+	inline double leave(const std::string_view& func_name) noexcept
 	{
 		return m_enabled ? do_leave(func_name) : 0;
 	}

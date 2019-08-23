@@ -193,7 +193,7 @@ bool tfest::se3_l2_robust(
 			// Good set of points found
 			TMatchingPairList cSetInliers;
 			cSetInliers.resize(cSet.size());
-			for (unsigned int m = 0; m < cSet.size(); m++)
+			for (size_t m = 0; m < cSet.size(); m++)
 				cSetInliers[m] = in_correspondences[cSet[m]];
 
 			// Compute output: Consensus Set + Initial Inliers Guess

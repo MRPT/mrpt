@@ -60,7 +60,14 @@ CSerialPort::CSerialPort(const string& portName, bool openNow)
 // Dtor:
 CSerialPort::~CSerialPort()
 {
-	if (isOpen()) close();
+	try
+	{
+		if (isOpen()) close();
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "[~CSerialPort] Exception:\n" << mrpt::exception_to_str(e);
+	}
 }
 
 void CSerialPort::open(const std::string& COM_name)
@@ -840,7 +847,7 @@ size_t CSerialPort::Write(const void* Buffer, size_t Count)
 	// error is received.
 
 	/** \todo Add support for write timeout here */
-	struct timeval start, end;
+	struct timeval start = {0, 0}, end = {0, 0};
 	int num_of_bytes_written = -1;
 	size_t total_bytes_written = 0;
 	do
@@ -861,7 +868,7 @@ size_t CSerialPort::Write(const void* Buffer, size_t Count)
 			// need to do this sort of busy wait to ensure the right timing
 			// although I've noticed you will get some anamolies that are
 			// in the ms range; this could be a problem...
-			int usecs;
+			long usecs;
 			do
 			{
 				gettimeofday(&end, nullptr);

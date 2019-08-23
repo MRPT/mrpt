@@ -161,7 +161,7 @@ bool CColouredOctoMap::internal_insertObservation(
 		/********************************************************************
 				OBSERVATION TYPE: CObservation2DRangeScan
 		********************************************************************/
-		const auto& o = static_cast<const CObservation2DRangeScan&>(obs);
+		const auto& o = dynamic_cast<const CObservation2DRangeScan&>(obs);
 
 		// Build a points-map representation of the points from the scan
 		// (coordinates are wrt the robot base)
@@ -203,7 +203,7 @@ bool CColouredOctoMap::internal_insertObservation(
 		/********************************************************************
 				OBSERVATION TYPE: CObservation3DRangeScan
 		********************************************************************/
-		const auto& o = static_cast<const CObservation3DRangeScan&>(obs);
+		const auto& o = dynamic_cast<const CObservation3DRangeScan&>(obs);
 
 		o.load();  // Just to make sure the points are loaded from an external
 		// source, if that's the case...
