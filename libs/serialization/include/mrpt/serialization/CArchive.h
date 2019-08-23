@@ -399,7 +399,7 @@ using is_simple_type = is_any<
 #if MRPT_IS_BIG_ENDIAN
 // Big endian system: Convert into little-endian for streaming
 template <typename T, std::enable_if_t<is_simple_type<T>::value, int> = 0>
-CArchive& mrpt::serialization::operator<<(CArchive& out, const T a)
+CArchive& operator<<(CArchive& out, T a)
 {
 	mrpt::reverseBytesInPlace(a);
 	out.WriteBuffer((void*)&a, sizeof(a));
@@ -407,7 +407,7 @@ CArchive& mrpt::serialization::operator<<(CArchive& out, const T a)
 }
 
 template <typename T, std::enable_if_t<is_simple_type<T>::value, int> = 0>
-CArchive& mrpt::serialization::operator>>(CArchive& in, T& a)
+CArchive& operator>>(CArchive& in, T& a)
 {
 	T b;
 	in.ReadBuffer((void*)&b, sizeof(a));
