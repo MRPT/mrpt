@@ -136,7 +136,7 @@ void CDirectoryExplorer::explore(
 
 	while ((ent = readdir(dir)) != nullptr)
 	{
-		if (strcmp(ent->d_name, ".") && strcmp(ent->d_name, ".."))
+		if (strcmp(ent->d_name, ".") != 0 && strcmp(ent->d_name, "..") != 0)
 		{
 			// File name:
 			newEntry.name = string(ent->d_name);

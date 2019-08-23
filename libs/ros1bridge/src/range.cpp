@@ -36,10 +36,10 @@ bool toROS(
 	long num_range = obj.sensedData.size();
 
 	// 1) sensor_msgs::Range:: header
-	for (int i = 0; i < num_range; i++) msg[i].header = msg_header;
+	for (long i = 0; i < num_range; i++) msg[i].header = msg_header;
 
 	// 2) sensor_msg::Range parameters
-	for (int i = 0; i < num_range; i++)
+	for (long i = 0; i < num_range; i++)
 	{
 		msg[i].max_range = obj.maxSensorDistance;
 		msg[i].min_range = obj.minSensorDistance;
@@ -49,7 +49,7 @@ bool toROS(
 	/// following part needs to be double checked, it looks incorrect
 	/// ROS has single number float for range, MRPT has a list of
 	/// sensedDistances
-	for (int i = 0; i < num_range; i++)
+	for (long i = 0; i < num_range; i++)
 		msg[i].range = obj.sensedData.at(i).sensedDistance;
 
 	/// currently the following are not available in MRPT for corresponding

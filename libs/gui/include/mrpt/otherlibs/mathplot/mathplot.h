@@ -93,16 +93,16 @@
 #include <vector>
 
 // #include <wx/wx.h>
-#include <wx/defs.h>
-#include <wx/menu.h>
-#include <wx/scrolwin.h>
-#include <wx/event.h>
-#include <wx/dynarray.h>
-#include <wx/pen.h>
 #include <wx/dcmemory.h>
-#include <wx/string.h>
-#include <wx/print.h>
+#include <wx/defs.h>
+#include <wx/dynarray.h>
+#include <wx/event.h>
 #include <wx/image.h>
+#include <wx/menu.h>
+#include <wx/pen.h>
+#include <wx/print.h>
+#include <wx/scrolwin.h>
+#include <wx/string.h>
 
 #include <deque>
 
@@ -187,7 +187,7 @@ class WXDLLIMPEXP_MATHPLOT mpLayer : public wxObject
    public:
 	mpLayer();
 
-	~mpLayer() override= default;
+	~mpLayer() override = default;
 
 	/** Check whether this layer has a bounding box.
 		The default implementation returns \a TRUE. Override and return
@@ -622,7 +622,7 @@ class WXDLLIMPEXP_MATHPLOT mpFX : public mpLayer
 
    protected:
 	/** Holds label alignment */
-	int m_flags;
+	int m_flags = 0;
 
 	DECLARE_DYNAMIC_CLASS(mpFX)
 };
@@ -656,7 +656,7 @@ class WXDLLIMPEXP_MATHPLOT mpFY : public mpLayer
 
    protected:
 	/** Holds label alignment */
-	int m_flags;
+	int m_flags = 0;
 
 	DECLARE_DYNAMIC_CLASS(mpFY)
 };
@@ -697,10 +697,10 @@ class WXDLLIMPEXP_MATHPLOT mpFXY : public mpLayer
 
    protected:
 	/** Holds label alignment */
-	int m_flags;
+	int m_flags = 0;
 
 	// Data to calculate label positioning
-	wxCoord maxDrawX, minDrawX, maxDrawY, minDrawY;
+	wxCoord maxDrawX = 0, minDrawX = 0, maxDrawY = 0, minDrawY = 0;
 	// int drawnPoints;
 
 	/** Update label positioning data
@@ -745,7 +745,7 @@ class WXDLLIMPEXP_MATHPLOT mpProfile : public mpLayer
 
    protected:
 	/** Holds label alignment */
-	int m_flags;
+	int m_flags = 0;
 
 	DECLARE_DYNAMIC_CLASS(mpProfile)
 };
@@ -821,7 +821,7 @@ class WXDLLIMPEXP_MATHPLOT mpScaleX : public mpLayer
 
    protected:
 	/** Flag for axis alignment */
-	int m_flags;
+	int m_flags = 0;
 	/** Flag to toggle between ticks or grid */
 	bool m_ticks;
 	/** Select labels mode: mpX_NORMAL for normal labels, mpX_TIME for time axis
@@ -886,7 +886,7 @@ class WXDLLIMPEXP_MATHPLOT mpScaleY : public mpLayer
 
    protected:
 	/** Flag for axis alignment */
-	int m_flags;
+	int m_flags = 0;
 	/** Flag to toggle between ticks or grid */
 	bool m_ticks;
 	/** Format string used to print labels */
@@ -1467,9 +1467,9 @@ class WXDLLIMPEXP_MATHPLOT mpWindow : public wxWindow
 	/** Current view's Y dimension */
 	int m_scrY;
 	/** Last mouse click X position, for centering and zooming the view */
-	int m_clickedX;
+	int m_clickedX = 0;
 	/** Last mouse click Y position, for centering and zooming the view */
-	int m_clickedY;
+	int m_clickedY = 0;
 
 	/** These are updated in Fit() only, and may be different from the real
 	 * borders (layer coordinates) only if lock aspect ratio is true.
@@ -1490,11 +1490,11 @@ class WXDLLIMPEXP_MATHPLOT mpWindow : public wxWindow
 	bool m_enableMouseNavigation;
 	bool m_mouseMovedAfterRightClick;
 	/** For the right button "drag" feature */
-	long m_mouseRClick_X, m_mouseRClick_Y;
+	long m_mouseRClick_X = 0, m_mouseRClick_Y = 0;
 	/** Starting coords for rectangular zoom selection */
-	int m_mouseLClick_X, m_mouseLClick_Y;
+	int m_mouseLClick_X = 0, m_mouseLClick_Y = 0;
 	bool m_enableScrollBars;
-	int m_scrollX, m_scrollY;
+	int m_scrollX = 0, m_scrollY = 0;
 	/** For moving info layers over the window area */
 	mpInfoLayer* m_movingInfoLayer;
 
@@ -1609,7 +1609,7 @@ class WXDLLIMPEXP_MATHPLOT mpFXYVector : public mpFXY
 
    protected:
 	/** Holds label alignment */
-	int m_flags;
+	int m_flags = 0;
 
 	DECLARE_DYNAMIC_CLASS(mpFXYVector)
 };
@@ -1662,7 +1662,7 @@ class WXDLLIMPEXP_MATHPLOT mpPrintout : public wxPrintout
 	mpPrintout(
 		mpWindow* drawWindow,
 		const wxChar* title = _T("wxMathPlot print output"));
-	~mpPrintout() override= default;
+	~mpPrintout() override = default;
 
 	void SetDrawState(bool drawState) { drawn = drawState; };
 	bool OnPrintPage(int page) override;
@@ -1690,7 +1690,7 @@ class WXDLLIMPEXP_MATHPLOT mpMovableObject : public mpLayer
 	 */
 	mpMovableObject() : m_shape_xs(0), m_shape_ys(0) { m_type = mpLAYER_PLOT; }
 
-	~mpMovableObject() override= default;
+	~mpMovableObject() override = default;
 
 	/** Get the current coordinate transformation.
 	 */
@@ -1740,7 +1740,7 @@ class WXDLLIMPEXP_MATHPLOT mpMovableObject : public mpLayer
 
    protected:
 	/** Holds label alignment */
-	int m_flags;
+	int m_flags = 0;
 
 	/** The coordinates of the object (orientation "phi" is in radians).
 	 */
@@ -1931,7 +1931,7 @@ class WXDLLIMPEXP_MATHPLOT mpBitmapLayer : public mpLayer
 		m_type = mpLAYER_BITMAP;
 	}
 
-	~mpBitmapLayer() override= default;
+	~mpBitmapLayer() override = default;
 
 	/** Returns a copy of the current bitmap assigned to the layer.
 	 */
@@ -1977,7 +1977,7 @@ class WXDLLIMPEXP_MATHPLOT mpBitmapLayer : public mpLayer
 
    protected:
 	/** Holds label alignment */
-	int m_flags;
+	int m_flags = 0;
 
 	/** The internal copy of the Bitmap:
 	 */

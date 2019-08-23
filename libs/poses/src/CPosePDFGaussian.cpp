@@ -240,7 +240,7 @@ void CPosePDFGaussian::drawManySamples(
 
 	getRandomGenerator().drawGaussianMultivariateMany(rndSamples, N, cov);
 	outSamples.resize(N);
-	for (unsigned int i = 0; i < N; i++)
+	for (size_t i = 0; i < N; i++)
 	{
 		outSamples[i].resize(3);
 		outSamples[i][0] = mean.x() + rndSamples[i][0];

@@ -49,9 +49,9 @@ class CPose2D : public CPose<CPose2D, 3>,
 
    protected:
 	/** The orientation of the pose, in radians. */
-	double m_phi{0};
+	double m_phi{.0};
 	/** Precomputed cos() & sin() of phi. */
-	mutable double m_cosphi, m_sinphi;
+	mutable double m_cosphi{1.0}, m_sinphi{.0};
 	mutable bool m_cossin_uptodate{false};
 	void update_cached_cos_sin() const;
 

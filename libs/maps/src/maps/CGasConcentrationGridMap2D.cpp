@@ -192,7 +192,7 @@ bool CGasConcentrationGridMap2D::internal_insertObservation(
 		/********************************************************************
 					OBSERVATION TYPE: CObservationGasSensors
 		********************************************************************/
-		const auto& o = static_cast<const CObservationGasSensors&>(obs);
+		const auto& o = dynamic_cast<const CObservationGasSensors&>(obs);
 
 		if (o.sensorLabel.compare(insertionOptions.gasSensorLabel) == 0)
 		{
@@ -598,7 +598,7 @@ void CGasConcentrationGridMap2D::getWindAs3DObject(
 		// mrpt::system::pause();
 	}
 
-	unsigned int cx, cy;
+	size_t cx, cy;
 	vector<float> xs, ys;
 
 	// xs: array of X-axis values

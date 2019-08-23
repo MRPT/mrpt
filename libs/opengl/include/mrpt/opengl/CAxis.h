@@ -35,7 +35,7 @@ class CAxis : public CRenderizableDisplayList
 	float m_frequency;
 	float m_lineWidth;
 	/** draw marks for X,Y,Z */
-	std::array<bool, 3> m_marks;
+	std::array<bool, 3> m_marks = {false, false, false};
 	float m_textScale{0.25f};
 	float m_textRot[3][3];  // {x,y,z},{yaw,pitch,roll}
 	float m_markLen{0.07f};

@@ -110,29 +110,31 @@ class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 	// Params for the estimation of the gaussian volume in a cell.
 	struct TGaussianCell
 	{
-		int cx;  // x-index of the cell
-		int cy;  // y-index of the cell
-		float value;  // volume approximation
+		int cx = 0;  // x-index of the cell
+		int cy = 0;  // y-index of the cell
+		float value = 0;  // volume approximation
 	};
 
 	// Params for the estimation of the wind effect on each cell of the grid
 	struct TGaussianWindTable
 	{
 		// Fixed params
-		float resolution;  // Cell_resolution. To be read from config-file
-		float std_phi;  // to be read from config-file
-		float std_r;  // to be read from config-file
+		float resolution = 0;  // Cell_resolution. To be read from config-file
+		float std_phi = 0;  // to be read from config-file
+		float std_r = 0;  // to be read from config-file
 
 		// unsigned int subcell_count; //subcell_count x subcell_count	subcells
 		// float subcell_res;
-		float phi_inc;  // rad
-		unsigned int phi_count;
-		float r_inc;  // m
-		float max_r;  // maximum distance (m)
-		unsigned int r_count;
+		float phi_inc = 0;  // rad
+		unsigned int phi_count = 0;
+		float r_inc = 0;  // m
+		float max_r = 0;  // maximum distance (m)
+		unsigned int r_count = 0;
 
 		std::vector<std::vector<std::vector<TGaussianCell>>>* table;
-	} LUT;
+	};
+
+	TGaussianWindTable LUT;
 
    protected:
 	/** Get the part of the options common to all CRandomFieldGridMap2D classes

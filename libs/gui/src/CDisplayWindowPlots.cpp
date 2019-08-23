@@ -322,7 +322,7 @@ void CWindowDialogPlots::plot(
 	if (existingLy)
 	{
 		// Assure the class:
-		auto* lyPlot2D = static_cast<mpFXYVector*>(existingLy);
+		auto* lyPlot2D = dynamic_cast<mpFXYVector*>(existingLy);
 
 		if (!lyPlot2D)
 		{
@@ -486,7 +486,7 @@ void CWindowDialogPlots::plotEllipse(
 	if (existingLy)
 	{
 		// Assure the class:
-		auto* lyPlotEllipse = static_cast<mpCovarianceEllipse*>(existingLy);
+		auto* lyPlotEllipse = dynamic_cast<mpCovarianceEllipse*>(existingLy);
 
 		if (!lyPlotEllipse)
 		{
@@ -635,7 +635,7 @@ void CWindowDialogPlots::image(
 	if (existingLy)
 	{
 		// Assure the class:
-		auto* ly = static_cast<mpBitmapLayer*>(existingLy);
+		auto* ly = dynamic_cast<mpBitmapLayer*>(existingLy);
 
 		if (!ly)
 		{

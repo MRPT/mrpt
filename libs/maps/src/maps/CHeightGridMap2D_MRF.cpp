@@ -24,6 +24,8 @@ using namespace mrpt::math;
 MAP_DEFINITION_REGISTER(
 	"CHeightGridMap2D_MRF,dem_mrf", mrpt::maps::CHeightGridMap2D_MRF)
 
+MRPT_TODO("Improvement: Rewrite to avoid union -> variant");
+
 CHeightGridMap2D_MRF::TMapDefinition::TMapDefinition()
 
 	= default;

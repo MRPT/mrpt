@@ -370,12 +370,12 @@ bool CSimpleDatabase::saveAsXML(const string& fileName) const
 			size_t nRecs = t->getRecordCount();
 
 			XMLNode fNod = tabNod.addChild("fields");
-			for (unsigned int i = 0; i < nFields; i++)
+			for (size_t i = 0; i < nFields; i++)
 				fNod.addChild(t->getFieldName(i).c_str());
 
 			// Add record contents:
 			// ------------------------
-			for (unsigned int i = 0; i < nRecs; i++)
+			for (size_t i = 0; i < nRecs; i++)
 			{
 				XMLNode recNod = tabNod.addChild("record");
 				for (size_t j = 0; j < nFields; j++)

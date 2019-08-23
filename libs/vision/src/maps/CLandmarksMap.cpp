@@ -205,7 +205,7 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 		/********************************************************************
 						OBSERVATION TYPE: CObservation2DRangeScan
 			********************************************************************/
-		const auto& o = static_cast<const CObservation2DRangeScan&>(obs);
+		const auto& o = dynamic_cast<const CObservation2DRangeScan&>(obs);
 		CLandmarksMap auxMap;
 		CPose2D sensorPose2D(robotPose3D + o.sensorPose);
 
@@ -221,7 +221,7 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 						OBSERVATION TYPE: CObservationStereoImages
 				Lik. between "this" and "auxMap";
 			********************************************************************/
-		const auto& o = static_cast<const CObservationStereoImages&>(obs);
+		const auto& o = dynamic_cast<const CObservationStereoImages&>(obs);
 
 		CLandmarksMap auxMap;
 		auxMap.insertionOptions = insertionOptions;
@@ -251,7 +251,7 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 				Lik. between "this" and "auxMap";
 
 			********************************************************************/
-		const auto& o = static_cast<const CObservationBeaconRanges&>(obs);
+		const auto& o = dynamic_cast<const CObservationBeaconRanges&>(obs);
 
 		std::deque<CObservationBeaconRanges::TMeasurement>::const_iterator it;
 		TSequenceLandmarks::iterator lm_it;
@@ -316,7 +316,7 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 				Lik. between "this" and "robotPose";
 
 		********************************************************************/
-		const auto& o = static_cast<const CObservationRobotPose&>(obs);
+		const auto& o = dynamic_cast<const CObservationRobotPose&>(obs);
 
 		// Compute the 3D position of the sensor:
 		CPose3D sensorPose3D = robotPose3D + o.sensorPose;
@@ -350,7 +350,7 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 						OBSERVATION TYPE: CObservationGPS
 
 		********************************************************************/
-		const auto& o = static_cast<const CObservationGPS&>(obs);
+		const auto& o = dynamic_cast<const CObservationGPS&>(obs);
 		// Compute the 3D position of the sensor:
 		CPoint3D point3D = CPoint3D(robotPose3D);
 		CPoint3D GPSpose;
@@ -461,7 +461,7 @@ bool CLandmarksMap::internal_insertObservation(
 						OBSERVATION TYPE: CObservationImage
 
 			********************************************************************/
-		const auto& o = static_cast<const CObservationImage&>(obs);
+		const auto& o = dynamic_cast<const CObservationImage&>(obs);
 		CLandmarksMap tempMap;
 
 		// 1) Load the features in a temporary 3D landmarks map:
@@ -508,7 +508,7 @@ bool CLandmarksMap::internal_insertObservation(
 		/********************************************************************
 						OBSERVATION TYPE: CObservationStereoImages
 			********************************************************************/
-		const auto& o = static_cast<const CObservationStereoImages&>(obs);
+		const auto& o = dynamic_cast<const CObservationStereoImages&>(obs);
 
 		// Change coordinates ref:
 		CLandmarksMap auxMap;
@@ -530,7 +530,7 @@ bool CLandmarksMap::internal_insertObservation(
 						OBSERVATION TYPE:  CObservationVisualLandmarks
 
 			********************************************************************/
-		const auto& o = static_cast<const CObservationVisualLandmarks&>(obs);
+		const auto& o = dynamic_cast<const CObservationVisualLandmarks&>(obs);
 
 		// Change coordinates ref:
 		CLandmarksMap auxMap;
@@ -581,7 +581,7 @@ void CLandmarksMap::computeMatchingWith2D(
 
 	// Check the other map class:
 	ASSERT_(otherMap->GetRuntimeClass() == CLASS_ID(CLandmarksMap));
-	const auto* otherMap2 = static_cast<const CLandmarksMap*>(otherMap);
+	const auto* otherMap2 = dynamic_cast<const CLandmarksMap*>(otherMap);
 	std::vector<bool> otherCorrespondences;
 
 	// Coordinates change:
@@ -2081,7 +2081,6 @@ double CLandmarksMap::computeLikelihood_SIFT_LandmarkMap(
 
 		case 1:  // SIM, ELINAS, GRIFFIN, LITTLE
 			double dist;
-			unsigned int k;
 			TMatchingPairList::iterator itCorr;
 
 			lik = 1.0f;
@@ -2122,7 +2121,8 @@ double CLandmarksMap::computeLikelihood_SIFT_LandmarkMap(
 			}  // end for correspondences
 
 			// We complete the likelihood with the null correspondences
-			for (k = 1; k <= (theMap->size() - correspondences->size()); k++)
+			for (size_t k = 1; k <= (theMap->size() - correspondences->size());
+				 k++)
 				lik *= likelihoodOptions.SIFTnullCorrespondenceDistance;
 
 			break;
@@ -2563,7 +2563,7 @@ float CLandmarksMap::compute3DMatchingRatio(
 	const CLandmarksMap* otherMap = nullptr;
 
 	if (otherMap2->GetRuntimeClass() == CLASS_ID(CLandmarksMap))
-		otherMap = static_cast<const CLandmarksMap*>(otherMap2);
+		otherMap = dynamic_cast<const CLandmarksMap*>(otherMap2);
 
 	if (!otherMap) return 0;
 

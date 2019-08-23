@@ -740,7 +740,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 			// Do one rejection sampling step:
 			// ---------------------------------------------
 			mrpt::poses::CPose3D newPose;
-			double newParticleLogWeight;
+			double newParticleLogWeight = 0;
 			PF_SLAM_aux_perform_one_rejection_sampling_step<BINTYPE>(
 				USE_OPTIMAL_SAMPLING, doResample, maxMeanLik, k, sf, PF_options,
 				newPose, newParticleLogWeight);

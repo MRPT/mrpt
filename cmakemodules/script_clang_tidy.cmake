@@ -17,7 +17,10 @@ else()
     #  cppcoreguidelines-pro-bounds-constant-array-index
     #  cppcoreguidelines-pro-type-const-cast
     #  cppcoreguidelines-pro-type-vararg  (used A LOT in mrpt::format()...)
-    set(CLANG_TIDY_CHECKS "-checks=-*,bugprone-*,cppcoreguidelines-pro-bounds-pointer-arithmetic,cppcoreguidelines-c-copy-assignment-signature,cppcoreguidelines-interfaces-global-init,cppcoreguidelines-pro-type-cstyle-cast,cppcoreguidelines-pro-type-member-init,cppcoreguidelines-pro-type-reinterpret-cast,cppcoreguidelines-pro-type-static-cast-downcast,cppcoreguidelines-pro-type-union-access,cppcoreguidelines-slicing,cppcoreguidelines-special-member-functions" CACHE STRING "clang tidy cheks to run" CACHE STRING "clang-tidy checks to run")
+    #  cppcoreguidelines-pro-bounds-pointer-arithmetic: permit this one
+    #  cppcoreguidelines-pro-type-cstyle-cast: just too many to fix
+    #  cppcoreguidelines-pro-type-reinterpret-cast: too many, we need to support C API for sensors, sockets, etc.
+    set(CLANG_TIDY_CHECKS "-checks=-*,bugprone-*,-bugprone-narrowing-conversions,-cppcoreguidelines-c-copy-assignment-signature,cppcoreguidelines-interfaces-global-init,cppcoreguidelines-pro-type-member-init,cppcoreguidelines-pro-type-static-cast-downcast,cppcoreguidelines-pro-type-union-access,cppcoreguidelines-slicing,cppcoreguidelines-special-member-functions" CACHE STRING "clang tidy cheks to run")
     mark_as_advanced(CLANG_TIDY_CHECKS)
     set(DO_CLANG_TIDY "${CLANG_TIDY_EXE}" "${CLANG_TIDY_CHECKS}")
   endif()

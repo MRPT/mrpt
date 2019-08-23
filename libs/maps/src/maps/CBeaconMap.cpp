@@ -167,7 +167,7 @@ double CBeaconMap::internal_computeObservationLikelihood(
 
 			********************************************************************/
 		double ret = 0;
-		const auto& o = static_cast<const CObservationBeaconRanges&>(obs);
+		const auto& o = dynamic_cast<const CObservationBeaconRanges&>(obs);
 		const CBeacon* beac;
 		CPoint3D sensor3D;
 
@@ -800,7 +800,7 @@ void CBeaconMap::determineMatching2D(
 
 	// Check the other map class:
 	ASSERT_(otherMap->GetRuntimeClass() == CLASS_ID(CBeaconMap));
-	const auto* otherMap2 = static_cast<const CBeaconMap*>(otherMap);
+	const auto* otherMap2 = dynamic_cast<const CBeaconMap*>(otherMap);
 	vector<bool> otherCorrespondences;
 
 	// Coordinates change:
@@ -1198,7 +1198,7 @@ float CBeaconMap::compute3DMatchingRatio(
 	const CBeaconMap* otherMap = nullptr;
 
 	if (otherMap2->GetRuntimeClass() == CLASS_ID(CBeaconMap))
-		otherMap = static_cast<const CBeaconMap*>(otherMap2);
+		otherMap = dynamic_cast<const CBeaconMap*>(otherMap2);
 
 	if (!otherMap) return 0;
 

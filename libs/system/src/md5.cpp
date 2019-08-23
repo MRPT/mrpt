@@ -69,7 +69,7 @@ class MD5
    public:
 	using size_type = uint32_t;  // must be 32bit
 
-	MD5();
+	MD5() = default;
 	MD5(const std::string& text);
 	void update(const unsigned char* buf, size_type length);
 	void update(const char* buf, size_type length);
@@ -91,9 +91,11 @@ class MD5
 	static void encode(uint1 output[], const uint4 input[], size_type len);
 
 	bool finalized{false};
-	uint1 buffer[blocksize];  // bytes that didn't fit in last 64 byte chunk
+	// bytes that didn't fit in last 64 byte chunk
+	uint1 buffer[blocksize];
 	uint4 count[2] = {0, 0};  // 64bit counter for number of bits (lo, hi)
-	uint4 state[4];  // digest so far
+	// load magic initialization constants:
+	uint4 state[4] = {0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476};
 	uint1 digest[16]{};  // the result
 
 	// low level logic operations
@@ -179,10 +181,6 @@ inline void MD5::II(
 
 //////////////////////////////////////////////
 
-// default ctor, just initailize
-MD5::MD5() { init(); }
-//////////////////////////////////////////////
-
 // nifty shortcut ctor, compute MD5 for string and finalize it right away
 MD5::MD5(const std::string& text)
 {
@@ -193,19 +191,7 @@ MD5::MD5(const std::string& text)
 
 //////////////////////////////
 
-void MD5::init()
-{
-	finalized = false;
-
-	count[0] = 0;
-	count[1] = 0;
-
-	// load magic initialization constants.
-	state[0] = 0x67452301;
-	state[1] = 0xefcdab89;
-	state[2] = 0x98badcfe;
-	state[3] = 0x10325476;
-}
+void MD5::init() { *this = MD5(); }
 
 //////////////////////////////
 
@@ -366,7 +352,7 @@ void MD5::update(const unsigned char input[], size_type length)
 // for convenience provide a verson with signed char
 void MD5::update(const char input[], size_type length)
 {
-	update((const unsigned char*)input, length);
+	update(reinterpret_cast<const unsigned char*>(input), length);
 }
 
 //////////////////////////////

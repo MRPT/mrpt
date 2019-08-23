@@ -164,7 +164,7 @@ void CPointPDFSOG::copyFrom(const CPointPDF& o)
 
 	if (o.GetRuntimeClass() == CLASS_ID(CPointPDFSOG))
 	{
-		m_modes = static_cast<const CPointPDFSOG*>(&o)->m_modes;
+		m_modes = dynamic_cast<const CPointPDFSOG*>(&o)->m_modes;
 	}
 	else
 	{
@@ -258,8 +258,8 @@ void CPointPDFSOG::bayesianFusion(
 	ASSERT_(p1_.GetRuntimeClass() == CLASS_ID(CPointPDFSOG));
 	ASSERT_(p2_.GetRuntimeClass() == CLASS_ID(CPointPDFSOG));
 
-	const auto* p1 = static_cast<const CPointPDFSOG*>(&p1_);
-	const auto* p2 = static_cast<const CPointPDFSOG*>(&p2_);
+	const auto* p1 = dynamic_cast<const CPointPDFSOG*>(&p1_);
+	const auto* p2 = dynamic_cast<const CPointPDFSOG*>(&p2_);
 
 	// Compute the new kernel means, covariances, and weights after multiplying
 	// to the Gaussian "p2":

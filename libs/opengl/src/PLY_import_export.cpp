@@ -97,14 +97,14 @@ typedef struct PlyProperty
 { /* description of a property */
 
 	std::string name; /* property name */
-	int external_type; /* file's data type */
-	int internal_type; /* program's data type */
-	int offset; /* offset bytes of prop in a struct */
+	int external_type = 0; /* file's data type */
+	int internal_type = 0; /* program's data type */
+	int offset = 0; /* offset bytes of prop in a struct */
 
-	int is_list; /* 1 = list, 0 = scalar */
-	int count_external; /* file's count type */
-	int count_internal; /* program's count type */
-	int count_offset; /* offset byte for list count */
+	int is_list = 0; /* 1 = list, 0 = scalar */
+	int count_external = 0; /* file's count type */
+	int count_internal = 0; /* program's count type */
+	int count_offset = 0; /* offset byte for list count */
 
 } PlyProperty;
 
@@ -116,8 +116,8 @@ typedef struct PlyElement
 	int size{0}; /* size of element (bytes) or -1 if variable */
 	vector<PlyProperty> props; /* list of properties in the file */
 	vector<char> store_prop; /* flags: property wanted by user? */
-	int other_offset; /* offset to un-asked-for props, or -1 if none*/
-	int other_size; /* size of other_props structure */
+	int other_offset = 0; /* offset to un-asked-for props, or -1 if none*/
+	int other_size = 0; /* size of other_props structure */
 } PlyElement;
 
 struct PlyFile
@@ -1810,9 +1810,9 @@ const float VAL_NOT_SET = -1e10;
 
 struct TVertex
 {
-	float x, y, z;
-	float r, g, b;
-	float intensity;
+	float x{0}, y{0}, z{0};
+	float r{0}, g{0}, b{0};
+	float intensity{0};
 };
 
 const PlyProperty vert_props[] =
