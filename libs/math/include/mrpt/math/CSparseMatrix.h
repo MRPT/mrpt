@@ -128,13 +128,13 @@ class CSparseMatrix
 		sparse_matrix.p = (int*)malloc(sizeof(int) * col_list.size());
 		sparse_matrix.x = (double*)malloc(sizeof(double) * content_list.size());
 
-		::memcpy(
+		std::memcpy(
 			sparse_matrix.i, &row_list[0],
 			sizeof(row_list[0]) * row_list.size());
-		::memcpy(
+		std::memcpy(
 			sparse_matrix.p, &col_list[0],
 			sizeof(col_list[0]) * col_list.size());
-		::memcpy(
+		std::memcpy(
 			sparse_matrix.x, &content_list[0],
 			sizeof(content_list[0]) * content_list.size());
 

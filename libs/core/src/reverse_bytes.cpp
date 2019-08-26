@@ -30,12 +30,12 @@ template <typename T>
 void reverseBytesInPlace_2b(T& v_in_out)
 {
 	uint16_t org;
-	::memcpy(
+	std::memcpy(
 		&org, &v_in_out,
 		sizeof(T));  // Was: = *reinterpret_cast<uint16_t*>(&v_in_out); but
 	// caused SIGBUS in some archs
 	const uint16_t val_rev = ((org & 0xff00) >> 8) | ((org & 0x00ff) << 8);
-	::memcpy(&v_in_out, &val_rev, sizeof(T));  // This avoid deref. puned
+	std::memcpy(&v_in_out, &val_rev, sizeof(T));  // This avoid deref. puned
 	// pointer warning with:
 	// *reinterpret_cast<const
 	// T*>(&val_rev);
@@ -45,7 +45,7 @@ template <typename T>
 void reverseBytesInPlace_4b(T& v_in_out)
 {
 	uint32_t org;
-	::memcpy(
+	std::memcpy(
 		&org, &v_in_out,
 		sizeof(T));  // Was: = = *reinterpret_cast<uint32_t*>(&v_in_out); but
 	// caused SIGBUS in some archs
@@ -58,7 +58,7 @@ void reverseBytesInPlace_4b(T& v_in_out)
 		((org & 0xff000000) >> (3 * 8)) | ((org & 0x00ff0000) >> (1 * 8)) |
 		((org & 0x0000ff00) << (1 * 8)) | ((org & 0x000000ff) << (3 * 8));
 #endif
-	::memcpy(&v_in_out, &val_rev, sizeof(T));  // This avoid deref. puned
+	std::memcpy(&v_in_out, &val_rev, sizeof(T));  // This avoid deref. puned
 	// pointer warning with:
 	// *reinterpret_cast<const
 	// T*>(&val_rev);
@@ -68,7 +68,7 @@ template <typename T>
 void reverseBytesInPlace_8b(T& v_in_out)
 {
 	uint64_t org;
-	::memcpy(
+	std::memcpy(
 		&org, &v_in_out,
 		sizeof(T));  // Was: = *reinterpret_cast<uint64_t*>(&v_in_out); but
 // caused SIGBUS in some archs
@@ -84,7 +84,7 @@ void reverseBytesInPlace_8b(T& v_in_out)
 	for (i = 3, j = 1; i >= 0; i--, j += 2)
 		val_rev |= ((org & (UINT64_C(0xff) << (i * 8))) << (j * 8));
 #endif
-	::memcpy(&v_in_out, &val_rev, sizeof(T));  // This avoid deref. puned
+	std::memcpy(&v_in_out, &val_rev, sizeof(T));  // This avoid deref. puned
 	// pointer warning with:
 	// *reinterpret_cast<const
 	// T*>(&val_rev);
@@ -148,7 +148,7 @@ void mrpt::reverseBytesInPlace(double& v_in_out)
 void mrpt::reverseBytesInPlace(long double& v_in_out)
 {
 	uint64_t dat[2];
-	::memcpy(
+	std::memcpy(
 		&dat[0], &v_in_out, sizeof(long double));  // This avoid deref. puned
 	// pointer warning with:
 	// *reinterpret_cast<const
@@ -156,6 +156,6 @@ void mrpt::reverseBytesInPlace(long double& v_in_out)
 	std::swap(dat[0], dat[1]);
 	reverseBytesInPlace(dat[0]);
 	reverseBytesInPlace(dat[1]);
-	::memcpy(&v_in_out, &dat[0], sizeof(long double));
+	std::memcpy(&v_in_out, &dat[0], sizeof(long double));
 }
 #endif

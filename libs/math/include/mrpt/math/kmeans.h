@@ -64,7 +64,7 @@ double stub_kmeans(
 				"All points must have the same dimensionality.");
 		}
 
-		::memcpy(
+		std::memcpy(
 			trg_ptr, &(*it)[0],
 			dims * sizeof(typename TInnerVector::value_type));
 		trg_ptr += dims;

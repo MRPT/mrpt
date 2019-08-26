@@ -10,6 +10,7 @@
 #include "math-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/CSparseMatrix.h>
+#include <cstring>
 #include <iostream>
 #include <string>
 
@@ -47,9 +48,9 @@ void CSparseMatrix::copy(const cs* const sm)
 
 	// Do it in a different way depending on it being triplet or compressed
 	// format:
-	::memcpy(sparse_matrix.i, sm->i, sizeof(int) * sm->nzmax);
-	::memcpy(sparse_matrix.p, sm->p, sizeof(int) * (sm->n + 1));
-	::memcpy(sparse_matrix.x, sm->x, sizeof(double) * sm->nzmax);
+	std::memcpy(sparse_matrix.i, sm->i, sizeof(int) * sm->nzmax);
+	std::memcpy(sparse_matrix.p, sm->p, sizeof(int) * (sm->n + 1));
+	std::memcpy(sparse_matrix.x, sm->x, sizeof(double) * sm->nzmax);
 }
 
 /** Fast copy the data from an existing "cs" CSparse data structure, copying the

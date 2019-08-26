@@ -61,7 +61,7 @@ ERRORCODE_HTTP mrpt::comms::net::http_get(
 		out_http_responsecode, extra_headers, out_headers, timeout_ms);
 
 	out_content.resize(data.size());
-	if (!data.empty()) ::memcpy(&out_content[0], &data[0], data.size());
+	if (!data.empty()) std::memcpy(&out_content[0], &data[0], data.size());
 
 	return ret;
 }
@@ -134,7 +134,7 @@ ERRORCODE_HTTP mrpt::comms::net::http_request(
 		{
 			string auth_str = auth_user + string(":") + auth_pass;
 			std::vector<uint8_t> v(auth_str.size());
-			::memcpy(&v[0], &auth_str[0], auth_str.size());
+			std::memcpy(&v[0], &auth_str[0], auth_str.size());
 
 			string encoded_str;
 			mrpt::system::encodeBase64(v, encoded_str);
@@ -290,7 +290,8 @@ ERRORCODE_HTTP mrpt::comms::net::http_request(
 						string aux_all_headers;
 						deque<string> lstLines;
 						aux_all_headers.resize(content_offset);
-						::memcpy(&aux_all_headers[0], &buf[0], content_offset);
+						std::memcpy(
+							&aux_all_headers[0], &buf[0], content_offset);
 
 						mrpt::system::tokenize(
 							aux_all_headers, "\r\n", lstLines);
@@ -444,7 +445,7 @@ bool net::DNS_resolve_async(
 			else
 			{
 				struct in_addr ADDR;
-				::memcpy(
+				std::memcpy(
 					&ADDR, he->h_addr,
 					sizeof(ADDR));  // Was: *((struct in_addr *)he->h_addr);
 				// Convert address to text:

@@ -16,6 +16,7 @@
 #include <mrpt/hwdrivers/CNTRIPClient.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/system/string_utils.h>
+#include <cstring>
 #include <iostream>
 
 using namespace mrpt;
@@ -193,7 +194,7 @@ void CNTRIPClient::private_ntrip_thread()
 						string auth_str =
 							m_args.user + string(":") + m_args.password;
 						std::vector<uint8_t> v(auth_str.size());
-						::memcpy(&v[0], &auth_str[0], auth_str.size());
+						std::memcpy(&v[0], &auth_str[0], auth_str.size());
 
 						string encoded_str;
 						mrpt::system::encodeBase64(v, encoded_str);
@@ -233,7 +234,7 @@ void CNTRIPClient::private_ntrip_thread()
 				{
 					string resp;
 					resp.resize(buf.size());
-					::memcpy(&resp[0], &buf[0], buf.size());
+					std::memcpy(&resp[0], &buf[0], buf.size());
 
 					if (resp.find(" 200 ") == string::npos)
 					{
@@ -381,6 +382,6 @@ void CNTRIPClient::sendBackToServer(const std::string& data)
 	if (data.empty()) return;
 
 	std::vector<uint8_t> d(data.size());
-	::memcpy(&d[0], &data[0], data.size());
+	std::memcpy(&d[0], &data[0], data.size());
 	m_upload_data.appendData(d);
 }

@@ -303,7 +303,8 @@ void CKalmanFilterCapable<
 					std::pair<KFCLASS*, size_t>(this, lm_idx), Hx);
 				// The state vector was temporarily modified by
 				// KF_aux_estimate_*, restore it:
-				::memcpy(&m_xkk[0], &x_vehicle[0], sizeof(m_xkk[0]) * VEH_SIZE);
+				std::memcpy(
+					&m_xkk[0], &x_vehicle[0], sizeof(m_xkk[0]) * VEH_SIZE);
 
 				mrpt::math::estimateJacobian(
 					x_feat,
@@ -315,7 +316,7 @@ void CKalmanFilterCapable<
 					Hy);
 				// The state vector was temporarily modified by
 				// KF_aux_estimate_*, restore it:
-				::memcpy(
+				std::memcpy(
 					&m_xkk[lm_idx_in_statevector], &x_feat[0],
 					sizeof(m_xkk[0]) * FEAT_SIZE);
 
@@ -957,7 +958,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::
 	std::vector<size_t> idxs_to_predict(1, dat.second);
 	vector_KFArray_OBS prediction;
 	// Overwrite (temporarily!) the affected part of the state vector:
-	::memcpy(&dat.first->m_xkk[0], &x[0], sizeof(x[0]) * VEH_SIZE);
+	std::memcpy(&dat.first->m_xkk[0], &x[0], sizeof(x[0]) * VEH_SIZE);
 	dat.first->OnObservationModel(idxs_to_predict, prediction);
 	ASSERTDEB_(prediction.size() == 1);
 	out_x = prediction[0];
@@ -975,7 +976,7 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE, KFTYPE>::
 	vector_KFArray_OBS prediction;
 	const size_t lm_idx_in_statevector = VEH_SIZE + FEAT_SIZE * dat.second;
 	// Overwrite (temporarily!) the affected part of the state vector:
-	::memcpy(
+	std::memcpy(
 		&dat.first->m_xkk[lm_idx_in_statevector], &x[0],
 		sizeof(x[0]) * FEAT_SIZE);
 	dat.first->OnObservationModel(idxs_to_predict, prediction);

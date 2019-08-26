@@ -14,9 +14,9 @@
 #include <mrpt/gui/WxSubsystem.h>
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/system/os.h>
-
 #include <mrpt/math/utils.h>
+#include <mrpt/system/os.h>
+#include <cstring>
 
 using namespace mrpt;
 using namespace mrpt::gui;
@@ -345,8 +345,8 @@ void CWindowDialogPlots::plot(
 	// Set data:
 	{
 		std::vector<float> x_(x.size()), y_(x.size());
-		::memcpy(&x_[0], &x[0], sizeof(x[0]) * x_.size());
-		::memcpy(&y_[0], &y[0], sizeof(y[0]) * y_.size());
+		std::memcpy(&x_[0], &x[0], sizeof(x[0]) * x_.size());
+		std::memcpy(&y_[0], &y[0], sizeof(y[0]) * y_.size());
 		theLayer->SetData(x_, y_);
 	}
 

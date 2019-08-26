@@ -11,6 +11,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/string_utils.h>
 #include <cstdio>
+#include <cstring>
 #include <sstream>
 
 namespace mrpt::hmtslam
@@ -133,7 +134,7 @@ class CMHPropertiesValuesList : public mrpt::serialization::CSerializable
 
 		std::string basic_value;
 		basic_value.resize(sizeof(T));
-		::memcpy(&basic_value[0], &data, sizeof(T));
+		std::memcpy(&basic_value[0], &data, sizeof(T));
 
 		for (auto& m_propertie : m_properties)
 		{
