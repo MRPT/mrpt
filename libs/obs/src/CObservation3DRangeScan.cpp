@@ -9,11 +9,6 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
-#include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/opengl/CPointCloud.h>
-#include <mrpt/poses/CPosePDF.h>
-#include <mrpt/serialization/CArchive.h>
-
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/core/bits_mem.h>  // vector_strong_clear
 #include <mrpt/io/CFileGZInputStream.h>
@@ -21,10 +16,15 @@
 #include <mrpt/math/CLevenbergMarquardt.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/ops_containers.h>  // norm(), etc.
+#include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/poses/CPosePDF.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
+#include <cstring>
 #include <limits>
 
 using namespace std;
@@ -443,9 +443,9 @@ void CObservation3DRangeScan::load() const
 			xs.resize(N);
 			ys.resize(N);
 			zs.resize(N);
-			::memcpy(&xs[0], &M(0, 0), sizeof(float) * N);
-			::memcpy(&ys[0], &M(1, 0), sizeof(float) * N);
-			::memcpy(&zs[0], &M(2, 0), sizeof(float) * N);
+			std::memcpy(&xs[0], &M(0, 0), sizeof(float) * N);
+			std::memcpy(&ys[0], &M(1, 0), sizeof(float) * N);
+			std::memcpy(&zs[0], &M(2, 0), sizeof(float) * N);
 		}
 		else
 		{

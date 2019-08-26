@@ -100,7 +100,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 		for (size_t r = 0; r < nRowsToCopy; r++)
 		{
 			if constexpr (std::is_trivial_v<T>)
-				::memcpy(
+				std::memcpy(
 					&newData[r * m_Cols], &m_data[r * old_cols],
 					sizeof(T) * nColsToCopy);
 			else

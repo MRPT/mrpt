@@ -12,6 +12,7 @@
 #include <mrpt/db/CSimpleDatabase.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/serialization/CArchive.h>
+#include <cstring>
 
 using namespace mrpt::poses;
 using namespace mrpt::slam;
@@ -317,7 +318,7 @@ void CHierarchicalMHMap::dumpAsXMLfile(std::string fileName) const
 				std::vector<uint8_t> v;
 				ObjectToOctetVector(ann->value.get(), v);
 				str.resize(v.size());
-				::memcpy(&str[0], &v[0], v.size());
+				std::memcpy(&str[0], &v[0], v.size());
 			}
 			tableannots->set(j, "annotation-value", str);
 			if (tablenodes->get(j, "annotation-list") == ".")

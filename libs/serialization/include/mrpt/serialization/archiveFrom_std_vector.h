@@ -34,7 +34,7 @@ class CArchiveStreamBase<std::vector<uint8_t>> : public CArchive
 	{
 		const size_t idx = m_v.size();
 		m_v.resize(idx + n);
-		::memcpy(&m_v[idx], d, n);
+		std::memcpy(&m_v[idx], d, n);
 		return n;
 	}
 	size_t read(void* d, size_t n) override
@@ -43,7 +43,7 @@ class CArchiveStreamBase<std::vector<uint8_t>> : public CArchive
 		if (avail < static_cast<int>(n))
 			throw std::runtime_error(
 				"CArchiveStreamBase: EOF reading from std::vector!");
-		::memcpy(d, &m_v[m_pos_read], n);
+		std::memcpy(d, &m_v[m_pos_read], n);
 		m_pos_read += n;
 		return n;
 	};
@@ -70,7 +70,7 @@ class CArchiveStreamBase<const std::vector<uint8_t>> : public CArchive
 		if (avail < static_cast<int>(n))
 			throw std::runtime_error(
 				"CArchiveStreamBase: EOF reading from std::vector!");
-		::memcpy(d, &m_v[m_pos_read], n);
+		std::memcpy(d, &m_v[m_pos_read], n);
 		m_pos_read += n;
 		return n;
 	};

@@ -213,7 +213,7 @@ void CFileSystemWatcher::getChanges(TFileSystemChangeList& out_list)
 			struct inotify_event event_val
 			{
 			};
-			::memcpy(
+			std::memcpy(
 				&event_val, &buf[i],
 				sizeof(event_val));  // Was: event = (struct inotify_event *) ;
 			struct inotify_event* event = &event_val;

@@ -22,6 +22,7 @@
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/vector_loadsave.h>
 #include <mrpt/typemeta/TEnumType.h>
+#include <cstring>  // memcpy
 #include <vector>
 
 namespace mrpt
@@ -267,7 +268,7 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	inline void getLandmarkMean(size_t idx, KFArray_FEAT& feat) const
 	{
 		ASSERT_(idx < getNumberOfLandmarksInTheMap());
-		::memcpy(
+		std::memcpy(
 			&feat[0], &m_xkk[VEH_SIZE + idx * FEAT_SIZE],
 			FEAT_SIZE * sizeof(m_xkk[0]));
 	}

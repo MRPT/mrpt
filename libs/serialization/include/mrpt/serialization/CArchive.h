@@ -15,6 +15,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/typemeta/TTypeName.h>
 #include <cstdint>
+#include <cstring>  // memcpy
 #include <stdexcept>
 #include <string>
 #include <type_traits>  // remove_reference_t, is_polymorphic
@@ -412,7 +413,7 @@ CArchive& operator>>(CArchive& in, T& a)
 	T b;
 	in.ReadBuffer((void*)&b, sizeof(a));
 	mrpt::reverseBytesInPlace(b);
-	::memcpy(&a, &b, sizeof(b));
+	std::memcpy(&a, &b, sizeof(b));
 	return in;
 }
 
@@ -442,7 +443,7 @@ CArchive& operator>>(CArchive& in, mrpt::Clock::time_point& a);
 		const std::remove_cv_t<std::remove_reference_t<decltype(_VARIABLE)>> \
 			val = _STREAM.ReadPOD<std::remove_cv_t<                          \
 				std::remove_reference_t<decltype(_VARIABLE)>>>();            \
-		::memcpy(&_VARIABLE, &val, sizeof(val));                             \
+		std::memcpy(&_VARIABLE, &val, sizeof(val));                          \
 	} while (0)
 
 // Why this shouldn't be templatized?: There's a more modern system
