@@ -496,11 +496,12 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
 	endif()
 
 	# "-march=native" generates code optimized for the detected current processor.
-	set(MRPT_OPTIMIZE_NATIVE ON CACHE BOOL "GCC/clang optimizations for current processor (-march=native). Requires GCC 4.2+")
+	set(MRPT_OPTIMIZE_NATIVE ON CACHE BOOL "GCC/clang optimizations for current processor (-march=native)")
 
-	if(CMAKE_MRPT_USE_DEB_POSTFIXS OR CMAKE_MRPT_IS_RPM_PACKAGE)
-		# If we're building a Debian package, just DO NOT use -march=native
-	elseif(MRPT_OPTIMIZE_NATIVE)
+	#Was: if not building a Debian pkg.
+	# Don't decide on this, let the caller to enable/disable this feature.
+	# if(CMAKE_MRPT_USE_DEB_POSTFIXS OR CMAKE_MRPT_IS_RPM_PACKAGE)
+	if(MRPT_OPTIMIZE_NATIVE)
 		add_compile_options(-march=native)
 	endif()
 
