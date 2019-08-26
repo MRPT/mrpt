@@ -466,7 +466,7 @@ endif()
 # ======================================
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
 	# Even more warnings for different compilers
-	add_compile_options(-Wreturn-type -Wextra -Wtype-limits -Wcast-align -Wparentheses -Wno-unused-parameter) # -Wold-style-cast  -Woverloaded-virtual
+	add_compile_options(-Wreturn-type -Werror=return-type -Wextra -Wtype-limits -Wcast-align -Wparentheses -Wno-unused-parameter)
 
 	if(MRPT_WARNINGS_ARE_ERRORS)
 		add_compile_options(-Werror)
