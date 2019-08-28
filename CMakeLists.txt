@@ -502,7 +502,13 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
 	# Don't decide on this, let the caller to enable/disable this feature.
 	# if(CMAKE_MRPT_USE_DEB_POSTFIXS OR CMAKE_MRPT_IS_RPM_PACKAGE)
 	if(MRPT_OPTIMIZE_NATIVE)
-		add_compile_options(-march=native)
+		if ("${CMAKE_MRPT_ARCH}" MATCHES "ppc64.*")
+			# Special case: PowerPC does not have match=native:
+			add_compile_options(-mcpu=native -mtune=native)
+		else()
+			# amd64, arm64, etc.
+			add_compile_options(-march=native)
+		endif()
 	endif()
 
 	if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
