@@ -144,6 +144,13 @@ void mrpt::reverseBytesInPlace(double& v_in_out)
 	reverseBytesInPlace_8b(v_in_out);
 }
 
+void mrpt::reverseBytesInPlace(std::chrono::time_point<mrpt::Clock>& v_in_out)
+{
+	int64_t val = v_in_out.time_since_epoch().count();
+	reverseBytesInPlace_8b(val);
+	v_in_out = std::chrono::time_point<mrpt::Clock>(mrpt::Clock::duration(val));
+}
+
 #ifdef HAVE_LONG_DOUBLE
 void mrpt::reverseBytesInPlace(long double& v_in_out)
 {

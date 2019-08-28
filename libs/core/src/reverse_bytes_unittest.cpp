@@ -118,4 +118,12 @@ TEST(bits, reverseBytes)
 		auto val_check = bit_cast<uint64_t>(val);
 		EXPECT_EQ(val_check, val_r_ok);
 	}
+	{
+		std::chrono::time_point<mrpt::Clock> t = mrpt::Clock::now();
+		const auto t_org = t;
+		mrpt::reverseBytesInPlace(t);
+		EXPECT_NE(t, t_org);
+		mrpt::reverseBytesInPlace(t);
+		EXPECT_EQ(t, t_org);
+	}
 }
