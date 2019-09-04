@@ -200,9 +200,13 @@ void CObservationGPS::serializeFrom(
 						MRPT_READ_POD(in, PZS_datum.cartesian_vy);
 						MRPT_READ_POD(in, PZS_datum.cartesian_vz);
 						MRPT_READ_POD(in, PZS_datum.hasPosCov);
-						MRPT_READ_POD(in, PZS_datum.pos_covariance);
+						in.ReadBufferFixEndianness(
+							&PZS_datum.pos_covariance(0, 0),
+							PZS_datum.pos_covariance.size());
 						MRPT_READ_POD(in, PZS_datum.hasVelCov);
-						MRPT_READ_POD(in, PZS_datum.vel_covariance);
+						in.ReadBufferFixEndianness(
+							&PZS_datum.vel_covariance(0, 0),
+							PZS_datum.vel_covariance.size());
 						MRPT_READ_POD(in, PZS_datum.hasStats);
 						MRPT_READ_POD(in, PZS_datum.stats_GPS_sats_used);
 						MRPT_READ_POD(in, PZS_datum.stats_GLONASS_sats_used);
