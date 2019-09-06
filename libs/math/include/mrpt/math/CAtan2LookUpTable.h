@@ -33,13 +33,32 @@ class CAtan2LookUpTable
 
 	/** Returns the precomputed value for atan2(y,x). \return false if out of
 	 * grid bounds. */
-	bool atan2(double y, double x, double& out_atan2) const noexcept;
+	bool atan2(double y, double x, double& out_atan2) const noexcept
+	{
+		const double* cp = m_grid.cellByPos(x, y);
+		if (!cp) return false;
+		out_atan2 = *cp;
+		return true;
+	}
+
+	/** Returns the precomputed value for atan2() of the corresponding cell
+	 * with indices (ix,iy). \return false if out of grid bounds. */
+	bool atan2ByIndex(unsigned int iy, unsigned int ix, double& out_atan2) const
+		noexcept
+	{
+		const double* cp = m_grid.cellByIndex(ix, iy);
+		if (!cp) return false;
+		out_atan2 = *cp;
+		return true;
+	}
 
 	double getXMin() const { return m_grid.getXMin(); }
 	double getXMax() const { return m_grid.getXMax(); }
 	double getYMin() const { return m_grid.getYMin(); }
 	double getYMax() const { return m_grid.getYMax(); }
 	double getResolution() const { return m_grid.getResolution(); }
+	size_t getSizeX() const { return m_grid.getSizeX(); }
+	size_t getSizeY() const { return m_grid.getSizeY(); }
 
    private:
 	mrpt::containers::CDynamicGrid<double> m_grid;
