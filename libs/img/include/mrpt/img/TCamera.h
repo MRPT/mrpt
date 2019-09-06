@@ -15,7 +15,7 @@
 
 namespace mrpt::img
 {
-/** Structure to hold the parameters of a pinhole camera model.
+/** Parameters for the Brown-Conrady camera lens distortion model.
  *  The parameters obtained for one camera resolution can be used for any other
  * resolution by means of the method TCamera::scaleToResolution()
  *
@@ -38,9 +38,9 @@ class TCamera : public mrpt::serialization::CSerializable
 	/** Matrix of intrinsic parameters (containing the focal length and
 	 * principal point coordinates) */
 	mrpt::math::CMatrixDouble33 intrinsicParams;
-	/** [k1 k2 t1 t2 k3] -> k_i: parameters of radial distortion, t_i:
+	/** [k1 k2 t1 t2 k3 k4 k5 k6] -> k_i: parameters of radial distortion, t_i:
 	 * parameters of tangential distortion (default=0) */
-	std::array<double, 5> dist{{.0, .0, .0, .0, .0}};
+	std::array<double, 8> dist{{.0, .0, .0, .0, .0, .0, .0, .0}};
 	/** The focal length of the camera, in meters (can be used among
 	 * 'intrinsicParams' to determine the pixel size). */
 	double focalLengthMeters{.0};
@@ -111,14 +111,15 @@ class TCamera : public mrpt::serialization::CSerializable
 	inline void getDistortionParamsVector(
 		mrpt::math::CMatrixDouble15& distParVector) const
 	{
-		for (size_t i = 0; i < 5; i++) distParVector(0, i) = dist[i];
+		for (size_t i = 0; i < distParVector.size(); i++)
+			distParVector(0, i) = dist[i];
 	}
 
 	/** Get a vector with the distortion params of the camera  */
 	inline std::vector<double> getDistortionParamsAsVector() const
 	{
-		std::vector<double> v(5);
-		for (size_t i = 0; i < 5; i++) v[i] = dist[i];
+		std::vector<double> v(8);
+		for (size_t i = 0; i < 8; i++) v[i] = dist[i];
 		return v;
 	}
 
@@ -126,17 +127,18 @@ class TCamera : public mrpt::serialization::CSerializable
 	void setDistortionParamsVector(
 		const mrpt::math::CMatrixDouble15& distParVector)
 	{
+		dist.fill(0);
 		for (size_t i = 0; i < 5; i++) dist[i] = distParVector(0, i);
 	}
 
-	/** Set the whole vector of distortion params of the camera from a 4 or
-	 * 5-vector */
+	/** Set the whole vector of distortion params of the camera from a 4, 5, or
+	 * 8-vector (see definition of \a dist for parameter order) */
 	template <class VECTORLIKE>
 	void setDistortionParamsVector(const VECTORLIKE& distParVector)
 	{
 		auto N = static_cast<size_t>(distParVector.size());
-		ASSERT_(N == 4 || N == 5);
-		dist[4] = 0;  // Default value
+		ASSERT_(N == 4 || N == 5 || N == 8);
+		dist.fill(0);  // Default values
 		for (size_t i = 0; i < N; i++) dist[i] = distParVector[i];
 	}
 
@@ -179,16 +181,30 @@ class TCamera : public mrpt::serialization::CSerializable
 	inline double p2() const { return dist[3]; }
 	/** Get the value of the k3 distortion parameter.  */
 	inline double k3() const { return dist[4]; }
-	/** Get the value of the k1 distortion parameter.  */
+	/** Get the value of the k4 distortion parameter.  */
+	inline double k4() const { return dist[5]; }
+	/** Get the value of the k5 distortion parameter.  */
+	inline double k5() const { return dist[6]; }
+	/** Get the value of the k6 distortion parameter.  */
+	inline double k6() const { return dist[7]; }
+
+	/** Set the value of the k1 distortion parameter.  */
 	inline void k1(double val) { dist[0] = val; }
-	/** Get the value of the k2 distortion parameter.  */
+	/** Set the value of the k2 distortion parameter.  */
 	inline void k2(double val) { dist[1] = val; }
-	/** Get the value of the p1 distortion parameter.  */
+	/** Set the value of the p1 distortion parameter.  */
 	inline void p1(double val) { dist[2] = val; }
-	/** Get the value of the p2 distortion parameter.  */
+	/** Set the value of the p2 distortion parameter.  */
 	inline void p2(double val) { dist[3] = val; }
-	/** Get the value of the k3 distortion parameter.  */
+	/** Set the value of the k3 distortion parameter.  */
 	inline void k3(double val) { dist[4] = val; }
+	/** Set the value of the k4 distortion parameter.  */
+	inline void k4(double val) { dist[5] = val; }
+	/** Set the value of the k5 distortion parameter.  */
+	inline void k5(double val) { dist[6] = val; }
+	/** Set the value of the k6 distortion parameter.  */
+	inline void k6(double val) { dist[7] = val; }
+
 };  // end class TCamera
 
 bool operator==(const mrpt::img::TCamera& a, const mrpt::img::TCamera& b);

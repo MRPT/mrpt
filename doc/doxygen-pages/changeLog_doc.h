@@ -39,6 +39,8 @@
     - Removed the include file: `<mrpt/math/jacobians.h>`. Replace by `<mrpt/math/num_jacobian.h>` or individual methods in \ref mrpt_poses_grp classes.
   - \ref mrpt_config_grp  [NEW IN MRPT 2.0.0]
     - mrpt::config::CConfigFileBase::write() now supports enum types.
+  - \ref mrpt_img_grp  [NEW IN MRPT 2.0.0]
+    - mrpt::img::TCamera distortion parameters now also supports the extra K4,K5,K6 distortion parameters.
   - \ref mrpt_serialization_grp  [NEW IN MRPT 2.0.0]
     - New method mrpt::serialization::CArchive::ReadPOD() and macro `MRPT_READ_POD()` for reading unaligned POD variables.-
     - Add support for `$env{}` syntax to evaluate environment variables.

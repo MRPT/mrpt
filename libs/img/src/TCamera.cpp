@@ -32,11 +32,12 @@ std::string TCamera::dumpAsText() const
 	return cfg.getContent();
 }
 
-uint8_t TCamera::serializeGetVersion() const { return 2; }
+uint8_t TCamera::serializeGetVersion() const { return 3; }
 void TCamera::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out << focalLengthMeters;
-	for (unsigned int k = 0; k < 5; k++) out << dist[k];
+	// v3: from 5 to 8 dist params:
+	for (unsigned int k = 0; k < dist.size(); k++) out << dist[k];
 	out << intrinsicParams;
 	// version 0 did serialize here a "CMatrixDouble15"
 	out << nrows << ncols;  // New in v2
@@ -48,10 +49,14 @@ void TCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		case 0:
 		case 1:
 		case 2:
+		case 3:
 		{
 			in >> focalLengthMeters;
 
+			dist.fill(0);
 			for (unsigned int k = 0; k < 5; k++) in >> dist[k];
+			if (version >= 3)
+				for (unsigned int k = 5; k < 8; k++) in >> dist[k];
 
 			in >> intrinsicParams;
 
@@ -125,7 +130,8 @@ void TCamera::saveToConfigFile(
 	cfg.write(
 		section, "dist",
 		format(
-			"[%e %e %e %e %e]", dist[0], dist[1], dist[2], dist[3], dist[4]));
+			"[%e %e %e %e %e %e %e %e]", dist[0], dist[1], dist[2], dist[3],
+			dist[4], dist[5], dist[6], dist[7]));
 	if (focalLengthMeters != 0)
 		cfg.write(section, "focal_length", focalLengthMeters);
 }
@@ -158,8 +164,8 @@ void TCamera::loadFromConfigFile(
 
 	CVectorDouble dists;
 	cfg.read_vector(section, "dist", CVectorDouble(), dists, true);
-	if (dists.size() != 4 && dists.size() != 5)
-		THROW_EXCEPTION("Expected 4 or 5-length vector in field 'dist'");
+	if (dists.size() != 4 && dists.size() != 5 && dists.size() != 8)
+		THROW_EXCEPTION("Expected 4,5 or 8-length vector in field 'dist'");
 
 	dist.fill(0);
 	for (CVectorDouble::Index i = 0; i < dists.size(); i++) dist[i] = dists[i];
