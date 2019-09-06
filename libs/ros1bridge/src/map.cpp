@@ -40,41 +40,40 @@ namespace mrpt::ros1bridge
 {
 MapHdl::MapHdl()
 {
-	/// creation of the lookup table and pointers
+	// MRPT -> ROS LUT:
 	CLogOddsGridMapLUT<COccupancyGridMap2D::cellType> table;
+
 #ifdef OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
-	lut_cellmrpt2rosPtr =
-		lut_cellmrpt2ros + INT8_MAX + 1;  // center the pointer
-	lut_cellros2mrptPtr =
-		lut_cellros2mrpt + INT8_MAX + 1;  // center the pointer
-	for (int i = INT8_MIN; i < INT8_MAX; i++)
-	{
+	const int i_min = INT8_MIN, i_max = INT8_MAX;
 #else
-	lut_cellmrpt2rosPtr =
-		lut_cellmrpt2ros + INT16_MAX + 1;  // center the pointer
-	for (int i = INT16_MIN; INT16_MIN < INT16_MAX; i++)
-	{
+	const int i_min = INT16_MIN, i_max = INT16_MAX;
 #endif
-		float p = 1.0 - table.l2p(i);
-		int idx = round(p * 100.);
-		lut_cellmrpt2rosPtr[i] = idx;
-		// printf("- cell -> ros = %4i -> %4i, p=%4.3f\n", i, idx, p);
-	}
-	for (int i = INT8_MIN; i < INT8_MAX; i++)
+
+	for (int i = i_min; i <= i_max; i++)
 	{
-		float v = i;
-		if (v > 100) v = 50;
-		if (v < 0) v = 50;
-		float p = 1.0 - (v / 100.0);
-		int idx = table.p2l(p);
-		if (i < 0)
-			lut_cellros2mrptPtr[i] = table.p2l(0.5);
-		else if (i > 100)
-			lut_cellros2mrptPtr[i] = table.p2l(0.5);
+		int8_t ros_val;
+		if (i == 0)
+		{
+			// Unknown cell (no evidence data):
+			ros_val = -1;
+		}
 		else
-			lut_cellros2mrptPtr[i] = idx;
-		// printf("- ros -> cell = %4i -> %4i, p=%4.3f\n", i, idx, p);
-		fflush(stdout);
+		{
+			float p = 1.0 - table.l2p(i);
+			ros_val = round(p * 100.);
+			// printf("- cell -> ros = %4i -> %4i, p=%4.3f\n", i, ros_val, p);
+		}
+
+		lut_cellmrpt2ros[static_cast<int>(i) - i_min] = ros_val;
+	}
+
+	// ROS -> MRPT: [0,100] ->
+	for (int i = 0; i <= 100; i++)
+	{
+		const float p = 1.0 - (i / 100.0);
+		lut_cellros2mrpt[i] = table.p2l(p);
+
+		// printf("- ros->cell=%4i->%4i p=%4.3f\n",i, lut_cellros2mrpt[i], p);
 	}
 }
 MapHdl* MapHdl::instance()

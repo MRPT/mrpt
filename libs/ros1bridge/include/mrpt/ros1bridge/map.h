@@ -31,17 +31,12 @@ class MapHdl
 {
    private:
 #ifdef OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
-	int8_t lut_cellmrpt2ros[0xFF];  // lookup table for entry convertion
-	int8_t* lut_cellmrpt2rosPtr;  // pointer to the center of the lookup table
-// neede to work with neg. indexes
+	int8_t lut_cellmrpt2ros[0x100];  // lookup table for entry convertion
 #else
 	int8_t lut_cellmrpt2ros[0xFFFF];  // lookup table for entry convertion
-	int8_t* lut_cellmrpt2rosPtr;  // pointer to the center of the lookup table
-// neede to work with neg. indexes
 #endif
-	int8_t lut_cellros2mrpt[0xFF];  // lookup table for entry convertion
-	int8_t* lut_cellros2mrptPtr;  // pointer to the center of the lookup table
-	// neede to work with neg. indexes
+	int8_t lut_cellros2mrpt[101];  // lookup table for entry convertion
+
 	MapHdl();
 	MapHdl(const MapHdl&);
 	~MapHdl() = default;
@@ -55,11 +50,27 @@ class MapHdl
 	static MapHdl* instance();
 
 #ifdef OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
-	int8_t cellMrpt2Ros(int i) { return lut_cellmrpt2rosPtr[i]; }
+	int8_t cellMrpt2Ros(int8_t i)
+	{
+		return lut_cellmrpt2ros[static_cast<int>(i) - INT8_MIN];
+	}
 #else
-	int16_t cellMrpt2Ros(int i) { return lut_cellmrpt2rosPtr[i]; }
+	int16_t cellMrpt2Ros(int16_t i)
+	{
+		return lut_cellmrpt2ros[static_cast<int>(i) - INT16_MIN];
+	}
 #endif
-	int8_t cellRos2Mrpt(int i) { return lut_cellros2mrptPtr[i]; }
+	int8_t cellRos2Mrpt(int8_t i)
+	{
+		if (i < 0)
+		{
+			// unobserved cells: no log-odds information
+			return 0;
+		}
+		ASSERT_BELOWEQ_(i, 100);
+		return lut_cellros2mrpt[i];
+	}
+
 	/**
 	 * loads a mprt map
 	 * @return true on sucess.
