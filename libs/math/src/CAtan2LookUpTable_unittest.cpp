@@ -29,7 +29,7 @@ void atan2_lut_test(
 		if (std::abs(x) < skip_area || std::abs(y) < skip_area) continue;
 
 		const double atan2_good = ::atan2(y, x);
-		double atan2_lut;
+		double atan2_lut = .0;
 		bool atan2_lut_valid = atan2lut.atan2(y, x, atan2_lut);
 
 		EXPECT_TRUE(atan2_lut_valid);
