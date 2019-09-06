@@ -55,15 +55,6 @@ void CAtan2LookUpTable::resize(
 	}
 }
 
-bool CAtan2LookUpTable::atan2(double y, double x, double& out_atan2) const
-	noexcept
-{
-	const double* cp = m_grid.cellByPos(x, y);
-	if (!cp) return false;
-	out_atan2 = *cp;
-	return true;
-}
-
 CAtan2LookUpTableMultiRes::CAtan2LookUpTableMultiRes(
 	const std::map<double, double>& lst_resolutions2extensions) noexcept
 {
