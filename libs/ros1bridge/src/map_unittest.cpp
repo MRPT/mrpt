@@ -73,13 +73,17 @@ TEST(Map, check_ros2mrpt_and_back)
 
 	ASSERT_TRUE(mrpt::ros1bridge::fromROS(srcRos, desMrpt));
 	ASSERT_TRUE(mrpt::ros1bridge::toROS(desMrpt, desRos, desRos.header));
-	// all -1 entries should map to 50
+	// all -1 entries should map back to -1
 	for (uint32_t h = 0; h < srcRos.info.width; h++)
 		for (uint32_t w = 0; w < srcRos.info.width; w++)
-			EXPECT_EQ(desRos.data[h * srcRos.info.width + h], 50);
+			EXPECT_EQ(desRos.data[h * srcRos.info.width + h], -1);
 
 	// Test gridmap with values: 0 to 100
-	for (int i = 0; i <= 100; i++) srcRos.data[i] = i;
+	for (int i = 0; i <= 100; i++)
+	{
+		// 50 is mid-gray -> unknown = -1 in ROS
+		srcRos.data[i] = (std::abs(i - 50) <= 2) ? -1 : i;
+	}
 
 	EXPECT_TRUE(mrpt::ros1bridge::fromROS(srcRos, desMrpt));
 	EXPECT_TRUE(mrpt::ros1bridge::toROS(desMrpt, desRos, desRos.header));
