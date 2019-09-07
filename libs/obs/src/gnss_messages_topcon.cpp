@@ -17,15 +17,7 @@
 using namespace std;
 using namespace mrpt::obs::gnss;
 
-Message_TOPCON_PZS::Message_TOPCON_PZS()
-	: gnss_message(TOPCON_PZS),
-
-	  pos_covariance(),
-
-	  vel_covariance()
-
-{
-}
+Message_TOPCON_PZS::Message_TOPCON_PZS() : gnss_message(TOPCON_PZS) {}
 
 void Message_TOPCON_PZS::dumpToStream(std::ostream& out) const
 {

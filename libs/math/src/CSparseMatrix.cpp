@@ -172,9 +172,9 @@ void CSparseMatrix::insert_entry(
 }
 
 /** Copy operator from another existing object */
-void CSparseMatrix::operator=(const CSparseMatrix& other)
+CSparseMatrix& CSparseMatrix::operator=(const CSparseMatrix& other)
 {
-	if (&other == this) return;
+	if (&other == this) return *this;
 
 	cs_free(sparse_matrix.i);
 	cs_free(sparse_matrix.p);
@@ -185,6 +185,7 @@ void CSparseMatrix::operator=(const CSparseMatrix& other)
 	sparse_matrix.x =
 		(double*)malloc(sizeof(double) * other.sparse_matrix.nzmax);
 	copy(&other.sparse_matrix);
+	return *this;
 }
 
 void CSparseMatrix::add_AB(const CSparseMatrix& A, const CSparseMatrix& B)

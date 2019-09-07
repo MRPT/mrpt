@@ -93,7 +93,7 @@ double CTicTac::Tac() noexcept
 #else
 	auto* ts = TIMEVAL_NUMS;
 	gettimeofday(&ts[1], nullptr);
-	return (ts[1].tv_sec - ts[0].tv_sec) +
-		   1e-6 * (ts[1].tv_usec - ts[0].tv_usec);
+	return static_cast<double>(ts[1].tv_sec - ts[0].tv_sec) +
+		   1e-6 * static_cast<double>(ts[1].tv_usec - ts[0].tv_usec);
 #endif
 }

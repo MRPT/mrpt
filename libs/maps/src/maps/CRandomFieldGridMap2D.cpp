@@ -2398,7 +2398,8 @@ void CRandomFieldGridMap2D::getMeanAndCov(
 	for (size_t i = 0; i < N; ++i) out_means[i] = BASE::m_map[i].kf_mean;
 
 	recoverMeanAndCov();
-	out_cov = m_cov;
+	// Avoid warning on object slicing: we are OK with that.
+	out_cov = static_cast<const CMatrixDouble&>(m_cov);
 }
 
 /*---------------------------------------------------------------

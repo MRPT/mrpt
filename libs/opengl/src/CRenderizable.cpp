@@ -161,14 +161,16 @@ void CRenderizable::readFromStreamRender(mrpt::serialization::CArchive& in)
 	// See comments in CRenderizable::writeToStreamRender() for the employed
 	// serialization mechanism.
 	//
+	// MRPT 1.9.9 (Aug 2019): Was
+	// union {
+	//  uint8_t magic_signature[2 + 2];
+	//    (the extra 4 bytes will be used only for the old format)
+	//  uint32_t magic_signature_uint32;
+	//    So we can interpret the 4bytes above as a 32bit number cleanly.
+	// };
+	// Get rid of the "old" serialization format to avoid using "union".
 
-	// Read signature:
-	union {
-		uint8_t magic_signature[2 + 2];  // (the extra 4 bytes will be used only
-		// for the old format)
-		uint32_t magic_signature_uint32;  // So we can interpret the 4bytes
-		// above as a 32bit number cleanly.
-	};
+	uint8_t magic_signature[2];
 
 	in >> magic_signature[0] >> magic_signature[1];
 
@@ -231,64 +233,7 @@ void CRenderizable::readFromStreamRender(mrpt::serialization::CArchive& in)
 	else
 	{
 		// OLD FORMAT:
-		// Was: in >> m_name;
-		// We already read 2 bytes from the string uint32_t length:
-		in >> magic_signature[2] >> magic_signature[3];
-		{
-			const uint32_t nameLen =
-				magic_signature_uint32;  // *reinterpret_cast<const
-			// uint32_t*>(&magic_signature[0]);
-			m_name.resize(nameLen);
-			if (nameLen) in.ReadBuffer((void*)(&m_name[0]), m_name.size());
-		}
-
-		float f;
-		float yaw_deg, pitch_deg, roll_deg;
-
-		mrpt::img::TColorf col;
-		in >> col.R >> col.G >> col.B >> col.A;
-		m_color = mrpt::img::TColor(
-			col.R / 255, col.G / 255, col.B / 255,
-			col.A / 255);  // For some stupid reason, colors were saved
-		// multiplied by 255... (facepalm)
-
-		in >> f;
-		m_pose.x(f);
-		in >> f;
-		m_pose.y(f);
-		in >> f;
-		m_pose.z(f);
-		in >> yaw_deg;
-		in >> pitch_deg;
-		in >> f;
-		roll_deg = f;
-		// Version 2: Add scale vars:
-		//  JL: Yes, this is a crappy hack since I forgot to enable versions
-		//  here...what? :-P
-		if (f != 16.0f && f != 17.0f)
-		{
-			// Old version:
-			// "roll_deg" is the actual roll.
-			in >> m_show_name;
-			m_scale_x = m_scale_y = m_scale_z = 1;  // Default values
-		}
-		else
-		{
-			// New version >=v2:
-			in >> roll_deg;
-			in >> m_show_name;
-
-			// Scale data:
-			in >> m_scale_x >> m_scale_y >> m_scale_z;
-
-			if (f == 17.0f)  // version>=v3
-				in >> m_visible;
-			else
-				m_visible = true;  // Default
-		}
-
-		m_pose.setYawPitchRoll(
-			DEG2RAD(yaw_deg), DEG2RAD(pitch_deg), DEG2RAD(roll_deg));
+		THROW_EXCEPTION("Serialized object is too old! Unsupported format.");
 	}
 }
 

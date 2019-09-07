@@ -31,8 +31,8 @@ using namespace std;
  * stuff) */
 struct TLocalPoint
 {
-	float x, y;
-	int cx, cy;
+	float x{0}, y{0};
+	int cx{0}, cy{0};
 };
 
 /*---------------------------------------------------------------
@@ -93,7 +93,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 					OBSERVATION TYPE: CObservation2DRangeScan
 
 			********************************************************************/
-		const auto& o = static_cast<const CObservation2DRangeScan&>(obs);
+		const auto& o = dynamic_cast<const CObservation2DRangeScan&>(obs);
 		CPose3D sensorPose3D = robotPose3D + o.sensorPose;
 		CPose2D laserPose(sensorPose3D);
 
@@ -800,7 +800,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 	}
 	else if (IS_CLASS(obs, CObservationRange))
 	{
-		const auto& o = static_cast<const CObservationRange&>(obs);
+		const auto& o = dynamic_cast<const CObservationRange&>(obs);
 		CPose3D spose;
 		o.getSensorPose(spose);
 		CPose3D sensorPose3D = robotPose3D + spose;

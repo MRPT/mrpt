@@ -99,10 +99,12 @@ void CFeatureExtraction::extractFeaturesKLT(
 
 	while (i < limit)
 	{
-		const int xBorderInf = (int)floor(points[i].x - options.patchSize / 2);
-		const int xBorderSup = (int)floor(points[i].x + options.patchSize / 2);
-		const int yBorderInf = (int)floor(points[i].y - options.patchSize / 2);
-		const int yBorderSup = (int)floor(points[i].y + options.patchSize / 2);
+		const float W = options.patchSize * 0.5f;
+
+		const int xBorderInf = (int)floor(points[i].x - W);
+		const int xBorderSup = (int)floor(points[i].x + W);
+		const int yBorderInf = (int)floor(points[i].y - W);
+		const int yBorderSup = (int)floor(points[i].y + W);
 
 		if (options.patchSize == 0 ||
 			((xBorderSup < (int)imgW) && (xBorderInf > 0) &&

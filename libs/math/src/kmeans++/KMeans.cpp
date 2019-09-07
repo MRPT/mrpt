@@ -21,17 +21,17 @@ using namespace std;
 // Logging
 static vector<ostream*> gLogOutputs;
 static vector<ostream*> gVerboseLogOutputs;
-#define LOG(verbose, text)                                \
-	{                                                     \
-		vector<ostream*>& outputs =                       \
-			(verbose ? gVerboseLogOutputs : gLogOutputs); \
-		if (outputs.size() > 0)                           \
-		{                                                 \
-			ostringstream string_stream;                  \
-			string_stream << text;                        \
-			for (int i = 0; i < (int)outputs.size(); i++) \
-				*(outputs[i]) << string_stream.str();     \
-		}                                                 \
+#define LOG(verbose, text)                                  \
+	{                                                       \
+		vector<ostream*>& outputs =                         \
+			((verbose) ? gVerboseLogOutputs : gLogOutputs); \
+		if (outputs.size() > 0)                             \
+		{                                                   \
+			ostringstream string_stream;                    \
+			string_stream << text;                          \
+			for (int i = 0; i < (int)outputs.size(); i++)   \
+				*(outputs[i]) << string_stream.str();       \
+		}                                                   \
 	}
 void AddKMeansLogging(std::ostream* out, bool verbose)
 {
@@ -127,8 +127,8 @@ Scalar RunKMeans(
 	LOG(false, "Done preprocessing..." << endl);
 
 	// Initialization
-	auto* centers = (Scalar*)malloc(sizeof(Scalar) * k * d);
-	int* unused_centers = (int*)malloc(sizeof(int) * n);
+	auto* centers = static_cast<Scalar*>(malloc(sizeof(Scalar) * k * d));
+	int* unused_centers = static_cast<int*>(malloc(sizeof(int) * n));
 	KM_ASSERT(centers != nullptr && unused_centers != nullptr);
 	Scalar min_cost = -1, max_cost = -1, total_cost = 0;
 	double min_time = -1, max_time = -1, total_time = 0;
@@ -186,7 +186,7 @@ Scalar RunKMeansPlusPlus(
 	LOG(false, "Done preprocessing..." << endl);
 
 	// Initialization
-	auto* centers = (Scalar*)malloc(sizeof(Scalar) * k * d);
+	auto* centers = static_cast<Scalar*>(malloc(sizeof(Scalar) * k * d));
 	KM_ASSERT(centers != nullptr);
 	Scalar min_cost = -1, max_cost = -1, total_cost = 0;
 	double min_time = -1, max_time = -1, total_time = 0;

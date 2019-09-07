@@ -139,7 +139,7 @@ bool CWirelessPowerGridMap2D::internal_insertObservation(
 		/********************************************************************
 					OBSERVATION TYPE: CObservationWirelessPower
 		********************************************************************/
-		const auto& o = static_cast<const CObservationWirelessPower&>(obs);
+		const auto& o = dynamic_cast<const CObservationWirelessPower&>(obs);
 		float sensorReading;
 
 		// Compute the 3D sensor pose in world coordinates:

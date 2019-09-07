@@ -324,7 +324,7 @@ class CWindowDialog : public wxFrame
 	   protected:
 		wxBitmap* m_img;
 		std::mutex m_img_cs;
-		CDisplayWindow* m_win2D;
+		CDisplayWindow* m_win2D = nullptr;
 
 	   public:
 		wxMRPTImageControl(
@@ -358,7 +358,7 @@ class CWindowDialog : public wxFrame
 		wxSize initialSize = wxDefaultSize);
 	~CWindowDialog() override;
 
-	CDisplayWindow* m_win2D;
+	CDisplayWindow* m_win2D = nullptr;
 	WxSubsystem::CWXMainFrame* m_mainFrame;
 
 	// wxStaticBitmap      *m_image;

@@ -40,7 +40,6 @@ struct TRandomFieldCell
 	TRandomFieldCell(double kfmean_dm_mean = 1e-20, double kfstd_dmmeanw = 0)
 		: kf_mean(kfmean_dm_mean),
 		  kf_std(kfstd_dmmeanw),
-
 		  last_updated(mrpt::system::now()),
 		  updated_std(kfstd_dmmeanw)
 	{

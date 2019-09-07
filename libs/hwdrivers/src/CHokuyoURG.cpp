@@ -31,8 +31,15 @@ CHokuyoURG::CHokuyoURG() : m_rx_buffer(40000) { m_sensorLabel = "Hokuyo"; }
 
 CHokuyoURG::~CHokuyoURG()
 {
-	closeStreamConnection();
-	m_win.reset();
+	try
+	{
+		m_win.reset();
+		closeStreamConnection();
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "[~CHokuyoURG] Exception:\n" << mrpt::exception_to_str(e);
+	}
 }
 
 void CHokuyoURG::closeStreamConnection()
@@ -354,7 +361,7 @@ bool CHokuyoURG::turnOn()
 	{
 		int center = (m_lastRange + m_firstRange) >> 1;
 		const int half_range = static_cast<int>(
-								   (m_sensor_info.scans_per_360deg / 360) *
+								   (m_sensor_info.scans_per_360deg / 360.0) *
 								   RAD2DEG(m_reduced_fov)) >>
 							   1;
 		m_firstRange = center - half_range;

@@ -1145,9 +1145,9 @@ XMLSTR fromXMLString(XMLCSTR s, int lo, XML* pXML)
 	return (XMLSTR)s;
 }
 
-#define XML_isSPACECHAR(ch)                                              \
-	((ch == _CXML('\n')) || (ch == _CXML(' ')) || (ch == _CXML('\t')) || \
-	 (ch == _CXML('\r')))
+#define XML_isSPACECHAR(ch)                                                    \
+	(((ch) == _CXML('\n')) || ((ch) == _CXML(' ')) || ((ch) == _CXML('\t')) || \
+	 ((ch) == _CXML('\r')))
 
 // private:
 char myTagCompare(XMLCSTR cclose, XMLCSTR copen)
@@ -2390,7 +2390,7 @@ int XMLNode::CreateXMLStringR(
 
 	assert(pEntry);
 
-#define LENSTR(lpsz) (lpsz ? xstrlen(lpsz) : 0)
+#define LENSTR(lpsz) ((lpsz) ? xstrlen((lpsz)) : 0)
 
 	// If the element has no name then assume this is the head node.
 	cbElement = (int)LENSTR(pEntry->lpszName);
@@ -3791,9 +3791,9 @@ unsigned char XMLParserBase64Tool::decode(
 #define BASE64DECODE_READ_NEXT_CHAR(c)                       \
 	do                                                       \
 	{                                                        \
-		c = base64DecodeTable[(unsigned char)data[i++]];     \
-	} while (c == 97);                                       \
-	if (c == 98)                                             \
+		(c) = base64DecodeTable[(unsigned char)data[i++]];   \
+	} while ((c) == 97);                                     \
+	if ((c) == 98)                                           \
 	{                                                        \
 		if (xe) *xe = eXMLErrorBase64DecodeIllegalCharacter; \
 		return 0;                                            \

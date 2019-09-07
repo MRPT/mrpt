@@ -31,26 +31,11 @@ CMesh3D::CMesh3D(
 	  m_showEdges(enableShowEdges),
 	  m_showFaces(enableShowFaces),
 	  m_showVertices(enableShowVertices)
-
 {
 	m_color.R = 1.f;
 	m_color.G = 0.f;
 	m_color.B = 0.f;
 	m_color.A = 1.f;
-	edge_color[0] = 0.9f;
-	edge_color[1] = 0.9f;
-	edge_color[2] = 0.9f;
-	edge_color[3] = 1.f;
-	face_color[0] = 0.7f;
-	face_color[1] = 0.7f;
-	face_color[2] = 0.8f;
-	face_color[3] = 1.f;
-	vert_color[0] = 0.3f;
-	vert_color[1] = 0.3f;
-	vert_color[2] = 0.3f;
-	vert_color[3] = 1.f;
-	m_num_faces = 0;
-	m_num_verts = 0;
 }
 
 CMesh3D::~CMesh3D() = default;

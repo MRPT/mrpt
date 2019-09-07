@@ -759,7 +759,7 @@ double CObservation3DRangeScan::recoverCameraCalibrationParameters(
 		1e-3, 1e-9, 1e-9, false);
 
 	const double avr_px_err =
-		sqrt(info.final_sqr_err / double(nC * nR / square(CALIB_DECIMAT)));
+		sqrt(info.final_sqr_err / double(nC * nR) / square(CALIB_DECIMAT));
 
 	out_camParams.ncols = nC;
 	out_camParams.nrows = nR;

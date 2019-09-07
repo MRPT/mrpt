@@ -129,7 +129,7 @@ bool CReflectivityGridMap2D::internal_insertObservation(
 		/********************************************************************
 					OBSERVATION TYPE: CObservationReflectivity
 		********************************************************************/
-		const auto& o = static_cast<const CObservationReflectivity&>(obs);
+		const auto& o = dynamic_cast<const CObservationReflectivity&>(obs);
 
 		if (o.channel != -1 && insertionOptions.channel != -1 &&
 			o.channel != insertionOptions.channel)
@@ -193,7 +193,7 @@ double CReflectivityGridMap2D::internal_computeObservationLikelihood(
 		/********************************************************************
 					OBSERVATION TYPE: CObservationReflectivity
 		********************************************************************/
-		const auto& o = static_cast<const CObservationReflectivity&>(obs);
+		const auto& o = dynamic_cast<const CObservationReflectivity&>(obs);
 
 		if (o.channel != -1 && insertionOptions.channel != -1 &&
 			o.channel != insertionOptions.channel)

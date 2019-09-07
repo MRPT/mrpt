@@ -242,7 +242,8 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
 		switch (++idx)
 		{
 			case 1:
-				if (strncmp(&next[1], "sRA", 3) && strncmp(&next[1], "sSN", 3))
+				if (strncmp(&next[1], "sRA", 3) != 0 &&
+					strncmp(&next[1], "sSN", 3) != 0)
 					return false;
 				break;
 			case 2:
@@ -264,7 +265,7 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
 				}
 				break;
 			case 21:
-				if (strcmp(next, "DIST1"))
+				if (strcmp(next, "DIST1") != 0)
 				{
 					THROW_EXCEPTION(
 						"LMS100 is not configured to send distances.");

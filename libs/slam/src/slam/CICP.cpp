@@ -573,7 +573,7 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 
 	// Assure the class of the maps:
 	ASSERT_(mm1->GetRuntimeClass()->derivedFrom(CLASS_ID(CPointsMap)));
-	const auto* m1 = static_cast<const CPointsMap*>(mm1);
+	const auto* m1 = dynamic_cast<const CPointsMap*>(mm1);
 
 	// Asserts:
 	// -----------------

@@ -55,7 +55,7 @@ class CClientTCPSocket : public mrpt::io::CStream
 	/** The IP address of the remote part of the connection. */
 	std::string m_remotePartIP;
 	/** The TCP port of the remote part of the connection. */
-	unsigned short m_remotePartPort;
+	unsigned short m_remotePartPort = 0;
 
 	/** Introduces a virtual method responsible for reading from the stream
 	 * (This method BLOCKS)

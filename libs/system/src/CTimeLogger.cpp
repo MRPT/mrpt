@@ -27,12 +27,18 @@ struct MyGlobalProfiler : public mrpt::system::CTimeLogger
 	MyGlobalProfiler() : mrpt::system::CTimeLogger("MRPT_global_profiler") {}
 	~MyGlobalProfiler() override
 	{
-		if (!m_data.empty())
+		try
 		{
-			const std::string sFil("mrpt-global-profiler.csv");
-			this->saveToCSVFile(sFil);
-			std::cout << "[MRPT global profiler] Write stats to: " << sFil
-					  << std::endl;
+			if (!m_data.empty())
+			{
+				const std::string sFil("mrpt-global-profiler.csv");
+				this->saveToCSVFile(sFil);
+				std::cout << "[MRPT global profiler] Write stats to: " << sFil
+						  << std::endl;
+			}
+		}
+		catch (...)
+		{
 		}
 	}
 	MyGlobalProfiler(const MyGlobalProfiler&) = delete;
@@ -290,20 +296,33 @@ void CTimeLogger::dumpAllStats(const size_t column_width) const
 	MRPT_LOG_INFO_STREAM("dumpAllStats:\n" << getStatsAsText(column_width));
 }
 
-void CTimeLogger::do_enter(const std::string_view& func_name)
+void CTimeLogger::do_enter(const std::string_view& func_name) noexcept
 {
-	TCallData& d = m_data[std::string(func_name)];
-
+	TCallData* d_ptr = m_data.find_or_alloc(std::string(func_name));
+	if (!d_ptr)
+	{
+		std::cerr << "[CTimeLogger::do_enter] Warning: skipping due to hash "
+					 "collision.\n";
+		return;
+	}
+	auto& d = *d_ptr;
 	d.n_calls++;
 	d.open_calls.push(0);  // Dummy value, it'll be written below
 	d.open_calls.top() = m_tictac.Tac();  // to avoid possible delays.
 }
 
-double CTimeLogger::do_leave(const std::string_view& func_name)
+double CTimeLogger::do_leave(const std::string_view& func_name) noexcept
 {
 	const double tim = m_tictac.Tac();
 
-	TCallData& d = m_data[std::string(func_name)];
+	TCallData* d_ptr = m_data.find_or_alloc(std::string(func_name));
+	if (!d_ptr)
+	{
+		std::cerr << "[CTimeLogger::do_enter] Warning: skipping due to hash "
+					 "collision.\n";
+		return .0;
+	}
+	auto& d = *d_ptr;
 
 	if (!d.open_calls.empty())
 	{
@@ -337,10 +356,18 @@ double CTimeLogger::do_leave(const std::string_view& func_name)
 }
 
 void CTimeLogger::registerUserMeasure(
-	const std::string_view& event_name, const double value, const bool is_time)
+	const std::string_view& event_name, const double value,
+	const bool is_time) noexcept
 {
 	if (!m_enabled) return;
-	TCallData& d = m_data[std::string(event_name)];
+	TCallData* d_ptr = m_data.find_or_alloc(std::string(event_name));
+	if (!d_ptr)
+	{
+		std::cerr << "[CTimeLogger::do_enter] Warning: skipping due to hash "
+					 "collision.\n";
+		return;
+	}
+	auto& d = *d_ptr;
 
 	d.has_time_units = is_time;
 	d.last_t = value;
@@ -400,15 +427,35 @@ void CTimeLoggerEntry::stop()
 	stopped_ = true;
 }
 
-CTimeLoggerEntry::~CTimeLoggerEntry() { stop(); }
+CTimeLoggerEntry::~CTimeLoggerEntry()
+{
+	try
+	{
+		stop();
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "[~CTimeLoggerEntry] Exception:\n"
+				  << mrpt::exception_to_str(e);
+	}
+}
 
 CTimeLoggerSaveAtDtor::~CTimeLoggerSaveAtDtor()
 {
-	using namespace std::string_literals;
-	auto name = m_tm.getName() + ".m"s;
-	name = fileNameStripInvalidChars(name);
+	try
+	{
+		using namespace std::string_literals;
+		auto name = m_tm.getName() + ".m"s;
+		name = fileNameStripInvalidChars(name);
 
-	m_tm.logStr(
-		LVL_INFO, "[CTimeLoggerSaveAtDtor] Saving stats to: `"s + name + "`"s);
-	m_tm.saveToMFile(name);
+		m_tm.logStr(
+			LVL_INFO,
+			"[CTimeLoggerSaveAtDtor] Saving stats to: `"s + name + "`"s);
+		m_tm.saveToMFile(name);
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "[~CTimeLoggerSaveAtDtor] Exception:\n"
+				  << mrpt::exception_to_str(e);
+	}
 }
