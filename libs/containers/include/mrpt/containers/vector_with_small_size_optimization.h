@@ -37,7 +37,7 @@ class vector_with_small_size_optimization
 	using T =
 		std::conditional_t<std::is_same_v<VAL, bool>, UnspecializedBool, VAL>;
 	using ALLOC = mrpt::aligned_allocator_cpp11<T>;
-	using vector =
+	using self_t =
 		vector_with_small_size_optimization<VAL, small_size, alignment>;
 	using large_vec = std::vector<T, ALLOC>;
 	using small_array = std::array<T, small_size>;
@@ -176,7 +176,7 @@ class vector_with_small_size_optimization
 	}
 	reference front() { return m_is_small ? m_a.front() : m_v.front(); }
 
-	void swap(vector& x)
+	void swap(self_t& x)
 	{
 		if (m_is_small & x.m_is_small)
 		{
