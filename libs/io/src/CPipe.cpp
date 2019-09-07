@@ -183,7 +183,7 @@ size_t CPipeBaseEndPoint::Read(void* Buffer, size_t Count)
 
 				// Receive bytes:
 				const size_t readNow = ::read(
-					m_pipe_file, ((char*)Buffer) + alreadyRead,
+					m_pipe_file, reinterpret_cast<char*>(Buffer) + alreadyRead,
 					(int)remainToRead);
 
 				if (readNow != static_cast<size_t>(-1))

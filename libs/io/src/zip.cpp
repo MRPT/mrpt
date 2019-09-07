@@ -90,7 +90,7 @@ void mrpt::io::zip::compress(void* inData, size_t inDataSize, CStream& out)
 	resSize = (unsigned long)outData.size();
 
 	ret = ::compress(
-		&outData[0], &resSize, (unsigned char*)inData,
+		&outData[0], &resSize, reinterpret_cast<unsigned char*>(inData),
 		(unsigned long)inDataSize);
 	ASSERT_(ret == Z_OK);
 

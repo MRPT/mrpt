@@ -188,7 +188,7 @@ class CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
 	TDist m_distSinceLastICP;
 	/** Indexed by sensor label. */
 	std::map<std::string, TDist> m_distSinceLastInsertion;
-	bool m_there_has_been_an_odometry;
+	bool m_there_has_been_an_odometry{false};
 
 	void accumulateRobotDisplacementCounters(
 		const mrpt::poses::CPose2D& new_pose);

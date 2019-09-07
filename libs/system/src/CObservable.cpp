@@ -12,6 +12,7 @@
 #include <mrpt/core/exceptions.h>
 #include <mrpt/system/CObservable.h>
 #include <mrpt/system/CObserver.h>
+#include <iostream>
 
 using namespace mrpt::system;
 using namespace std;
@@ -19,11 +20,19 @@ using namespace std;
 CObservable::CObservable() = default;
 CObservable::~CObservable()
 {
-	// Notify my destruction:
-	this->publishEvent(mrptEventOnDestroy(this));
+	try
+	{
+		// Notify my destruction:
+		this->publishEvent(mrptEventOnDestroy(this));
 
-	// Tell observers to unsubscribe:
-	while (!m_subscribers.empty()) (*m_subscribers.begin())->observeEnd(*this);
+		// Tell observers to unsubscribe:
+		while (!m_subscribers.empty())
+			(*m_subscribers.begin())->observeEnd(*this);
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "[~CObservable] Exception:\n" << mrpt::exception_to_str(e);
+	}
 }
 
 void CObservable::internal_observer_begin(CObserver* o)

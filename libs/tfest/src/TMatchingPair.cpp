@@ -104,7 +104,7 @@ float TMatchingPairList::overallSquareError(const CPose2D& q) const
 {
 	vector<float> errs(size());
 	squareErrorVector(q, errs);
-	return std::accumulate(errs.begin(), errs.end(), 0);
+	return std::accumulate(errs.begin(), errs.end(), .0f);
 }
 
 float TMatchingPairList::overallSquareErrorAndPoints(
@@ -112,7 +112,7 @@ float TMatchingPairList::overallSquareErrorAndPoints(
 {
 	vector<float> errs(size());
 	squareErrorVector(q, errs, xs, ys);
-	return std::accumulate(errs.begin(), errs.end(), 0);
+	return std::accumulate(errs.begin(), errs.end(), .0f);
 }
 
 /*---------------------------------------------------------------

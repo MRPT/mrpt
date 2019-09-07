@@ -142,6 +142,12 @@ string mrpt::system::formatTimeInterval(const double t)
 	return s;
 }
 
+static unsigned int calcSecFractions(const uint64_t tmp)
+{
+	return static_cast<unsigned int>(
+		1e6 * static_cast<double>(tmp % 10000000) / 1e7);
+}
+
 /*---------------------------------------------------------------
   Convert a timestamp into this textual form: YEAR/MONTH/DAY,HH:MM:SS.MMM
   ---------------------------------------------------------------*/
@@ -152,7 +158,7 @@ string mrpt::system::dateTimeToString(const mrpt::system::TTimeStamp t)
 	uint64_t tmp =
 		(t.time_since_epoch().count() - ((uint64_t)116444736 * 1000000000));
 	time_t auxTime = tmp / (uint64_t)10000000;
-	auto secFractions = (unsigned int)(1000000 * (tmp % 10000000) / 10000000.0);
+	auto secFractions = calcSecFractions(tmp);
 	tm* ptm = gmtime(&auxTime);
 
 	if (!ptm) return std::string("(Malformed timestamp)");
@@ -174,7 +180,7 @@ string mrpt::system::dateTimeLocalToString(const mrpt::system::TTimeStamp t)
 	uint64_t tmp =
 		(t.time_since_epoch().count() - ((uint64_t)116444736 * 1000000000));
 	time_t auxTime = tmp / (uint64_t)10000000;
-	auto secFractions = (unsigned int)(1000000 * (tmp % 10000000) / 10000000.0);
+	auto secFractions = calcSecFractions(tmp);
 	tm* ptm = localtime(&auxTime);
 
 	if (!ptm) return "(Malformed timestamp)";
@@ -222,8 +228,7 @@ string mrpt::system::timeLocalToString(
 	uint64_t tmp = (t - ((uint64_t)116444736 * 1000000000));
 	const time_t auxTime = tmp / (uint64_t)10000000;
 	const tm* ptm = localtime(&auxTime);
-
-	auto secFractions = (unsigned int)(1000000 * (tmp % 10000000) / 10000000.0);
+	auto secFractions = calcSecFractions(tmp);
 	// We start with 10^{-6} second units: reduce if requested by user:
 	const unsigned int user_secondFractionDigits = secondFractionDigits;
 	while (secondFractionDigits++ < 6) secFractions = secFractions / 10;
@@ -243,7 +248,7 @@ string mrpt::system::timeToString(const mrpt::system::TTimeStamp tt)
 
 	uint64_t tmp = (t - ((uint64_t)116444736 * 1000000000));
 	time_t auxTime = tmp / (uint64_t)10000000;
-	auto secFractions = (unsigned int)(1000000 * (tmp % 10000000) / 10000000.0);
+	auto secFractions = calcSecFractions(tmp);
 	tm* ptm = gmtime(&auxTime);
 	if (!ptm) return string("(Malformed timestamp)");
 

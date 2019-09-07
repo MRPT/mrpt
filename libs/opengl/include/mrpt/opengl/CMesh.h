@@ -39,7 +39,7 @@ class CMesh : public CRenderizableDisplayList
    public:
 	struct TTriangleVertexIndices
 	{
-		size_t vind[3];
+		size_t vind[3] = {0, 0, 0};
 	};
 
    protected:

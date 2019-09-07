@@ -80,13 +80,19 @@ void CConfigFile::writeNow()
 }
 
 void CConfigFile::discardSavingChanges() { m_modified = false; }
-/*---------------------------------------------------------------
-					Destructor
- ---------------------------------------------------------------*/
-CConfigFile::~CConfigFile() { writeNow(); }
-/*---------------------------------------------------------------
-					writeString
- ---------------------------------------------------------------*/
+
+CConfigFile::~CConfigFile()
+{
+	try
+	{
+		writeNow();
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "[~CConfigFile] Exception:\n" << mrpt::exception_to_str(e);
+	}
+}
+
 void CConfigFile::writeString(
 	const std::string& section, const std::string& name, const std::string& str)
 {

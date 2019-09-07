@@ -48,8 +48,11 @@ CMemoryStream::~CMemoryStream()
 {
 	if (!m_read_only)
 	{
-		// Free memory buffer:
-		resize(0);
+		// Free buffer:
+		if (m_memory.get()) free(m_memory.get());
+		m_memory = nullptr;
+		m_size = 0;
+		m_position = 0;
 	}
 }
 
@@ -88,7 +91,9 @@ size_t CMemoryStream::Read(void* Buffer, size_t Count)
 
 	// Copy the memory block:
 	if (nToRead > 0)
-		memcpy(Buffer, ((char*)m_memory.get()) + m_position, nToRead);
+		memcpy(
+			Buffer, reinterpret_cast<char*>(m_memory.get()) + m_position,
+			nToRead);
 
 	// Update cursor position:
 	m_position += nToRead;
@@ -108,7 +113,7 @@ size_t CMemoryStream::Write(const void* Buffer, size_t Count)
 	}
 
 	// Copy the memory block:
-	memcpy(((char*)m_memory.get()) + m_position, Buffer, Count);
+	memcpy(reinterpret_cast<char*>(m_memory.get()) + m_position, Buffer, Count);
 
 	// New cursor position:
 	m_position = requiredSize;

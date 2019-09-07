@@ -36,7 +36,7 @@ double COccupancyGridMap2D::internal_computeObservationLikelihood(
 	//  at the altitude of this grid map:
 	if (IS_CLASS(obs, CObservation2DRangeScan))
 	{
-		const auto& scan = static_cast<const CObservation2DRangeScan&>(obs);
+		const auto& scan = dynamic_cast<const CObservation2DRangeScan&>(obs);
 		if (!scan.isPlanarScan(insertionOptions.horizontalTolerance))
 			return -10;
 		if (insertionOptions.useMapAltitude &&
@@ -97,7 +97,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_Consensus(
 	}
 	// Observation is a laser range scan:
 	// -------------------------------------------
-	const auto& o = static_cast<const CObservation2DRangeScan&>(obs);
+	const auto& o = dynamic_cast<const CObservation2DRangeScan&>(obs);
 
 	// Insert only HORIZONTAL scans, since the grid is supposed to
 	//  be a horizontal representation of space.
@@ -156,7 +156,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_ConsensusOWA(
 	}
 	// Observation is a laser range scan:
 	// -------------------------------------------
-	const auto& o = static_cast<const CObservation2DRangeScan&>(obs);
+	const auto& o = dynamic_cast<const CObservation2DRangeScan&>(obs);
 
 	// Insert only HORIZONTAL scans, since the grid is supposed to
 	//  be a horizontal representation of space.
@@ -249,7 +249,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_CellsDifference(
 	{
 		// Observation is a laser range scan:
 		// -------------------------------------------
-		const auto& o = static_cast<const CObservation2DRangeScan&>(obs);
+		const auto& o = dynamic_cast<const CObservation2DRangeScan&>(obs);
 
 		// Insert only HORIZONTAL scans, since the grid is supposed to
 		//  be a horizontal representation of space.
@@ -360,7 +360,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_rayTracing(
 	{
 		// Observation is a laser range scan:
 		// -------------------------------------------
-		const auto& o = static_cast<const CObservation2DRangeScan&>(obs);
+		const auto& o = dynamic_cast<const CObservation2DRangeScan&>(obs);
 		CObservation2DRangeScan simulatedObs;
 
 		// Insert only HORIZONTAL scans, since the grid is supposed to
@@ -436,7 +436,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_likelihoodField_Thrun(
 	{
 		// Observation is a laser range scan:
 		// -------------------------------------------
-		const auto& o = static_cast<const CObservation2DRangeScan&>(obs);
+		const auto& o = dynamic_cast<const CObservation2DRangeScan&>(obs);
 
 		// Insert only HORIZONTAL scans, since the grid is supposed to
 		//  be a horizontal representation of space.
@@ -458,7 +458,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_likelihoodField_Thrun(
 	{
 		// Sonar-like observations:
 		// ---------------------------------------
-		const auto& o = static_cast<const CObservationRange&>(obs);
+		const auto& o = dynamic_cast<const CObservationRange&>(obs);
 
 		// Create a point map representation of the observation:
 		CSimplePointsMap pts;
@@ -490,7 +490,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_likelihoodField_II(
 	{
 		// Observation is a laser range scan:
 		// -------------------------------------------
-		const auto& o = static_cast<const CObservation2DRangeScan&>(obs);
+		const auto& o = dynamic_cast<const CObservation2DRangeScan&>(obs);
 
 		// Insert only HORIZONTAL scans, since the grid is supposed to
 		//  be a horizontal representation of space.
@@ -553,7 +553,6 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
 	double maxCorrDist_sq = square(likelihoodOptions.LF_maxCorrsDistance);
 	double minimumLik = zRandomTerm + zHit * exp(Q * maxCorrDist_sq);
 	double ccos, ssin;
-	float occupiedMinDist;
 
 	if (likelihoodOptions.enableLikelihoodCache)
 	{
@@ -583,8 +582,6 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
 
 	for (size_t j = 0; j < N; j += decimation)
 	{
-		occupiedMinDist = maxCorrDist_sq;  // The max.distance
-
 		// Get the point and pass it to global coordinates:
 		if (relativePose)
 		{
@@ -640,6 +637,7 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
 				int yy2 = min(size_y_1, (unsigned)(cy + K));
 
 				// Optimized code: this part will be invoked a *lot* of times:
+				float occupiedMinDist;
 				{
 					cellType* mapPtr =
 						&map[xx1 + yy1 * size_x];  // Initial pointer position
@@ -964,7 +962,7 @@ bool COccupancyGridMap2D::internal_canComputeObservationLikelihood(
 	//  at the altitude of this grid map:
 	if (IS_CLASS(obs, CObservation2DRangeScan))
 	{
-		const auto& scan = static_cast<const CObservation2DRangeScan&>(obs);
+		const auto& scan = dynamic_cast<const CObservation2DRangeScan&>(obs);
 
 		if (!scan.isPlanarScan(insertionOptions.horizontalTolerance))
 			return false;

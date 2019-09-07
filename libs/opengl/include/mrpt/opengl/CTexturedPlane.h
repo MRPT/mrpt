@@ -20,11 +20,11 @@ class CTexturedPlane : public CTexturedObject
 {
 	DEFINE_SERIALIZABLE(CTexturedPlane)
    protected:
-	mutable float m_tex_x_min, m_tex_x_max;
-	mutable float m_tex_y_min, m_tex_y_max;
+	mutable float m_tex_x_min = -1.0f, m_tex_x_max = 1.0f;
+	mutable float m_tex_y_min = -1.0f, m_tex_y_max = 1.0f;
 
-	float m_xMin, m_xMax;
-	float m_yMin, m_yMax;
+	float m_xMin = -1.0f, m_xMax = 1.0f;
+	float m_yMin = -1.0f, m_yMax = 1.0f;
 
 	mutable bool polygonUpToDate{false};
 	/** Used for ray-tracing */

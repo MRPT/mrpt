@@ -2230,7 +2230,7 @@ int myQuads2Points(
 
 	// All corners found?
 	return (out_corners.size() ==
-			size_t(pattern_size.width * pattern_size.height))
+			size_t(pattern_size.width) * size_t(pattern_size.height))
 			   ? 1
 			   : 0;
 }

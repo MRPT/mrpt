@@ -53,7 +53,7 @@ class CPolyhedron : public CRenderizableDisplayList
 		/**
 		 * Vertices.
 		 */
-		uint32_t v1, v2;
+		uint32_t v1 = 0, v2 = 0;
 		/**
 		 * Default constructor. Initializes to garbage.
 		 */

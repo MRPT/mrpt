@@ -139,20 +139,13 @@ int SolveP4Bi(
 	}  // if( D>=0 )
 }  // SolveP4Bi(double *x, double b, double d)	// solve equation x^4 + b*x^2 d
 //---------------------------------------------------------------------------
-#define SWAP(a, b) \
-	{              \
-		t = b;     \
-		b = a;     \
-		a = t;     \
-	}
 static void dblSort3(double& a, double& b, double& c)  // make: a <= b <= c
 {
-	double t;
-	if (a > b) SWAP(a, b);  // now a<=b
+	if (a > b) std::swap(a, b);  // now a<=b
 	if (c < b)
 	{
-		SWAP(b, c);  // now a<=b, b<=c
-		if (a > b) SWAP(a, b);  // now a<=b
+		std::swap(b, c);  // now a<=b, b<=c
+		if (a > b) std::swap(a, b);  // now a<=b
 	}
 }
 //---------------------------------------------------------------------------
@@ -291,7 +284,7 @@ int mrpt::math::solve_poly4(
 	return res;
 }
 //-----------------------------------------------------------------------------
-#define F5(t) (((((t + a) * t + b) * t + c) * t + d) * t + e)
+#define F5(t) ((((((t) + a) * (t) + b) * (t) + c) * (t) + d) * (t) + e)
 //-----------------------------------------------------------------------------
 static double SolveP5_1(
 	double a, double b, double c, double d,
@@ -421,8 +414,7 @@ int mrpt::math::solve_poly2(
 		r1 = (-b + Di) / (2 * a);
 		r2 = (-b - Di) / (2 * a);
 		// We ensure at output that r1 <= r2
-		double t;  // temp:
-		if (r2 < r1) SWAP(r1, r2);
+		if (r2 < r1) std::swap(r1, r2);
 		return 2;
 	}
 }

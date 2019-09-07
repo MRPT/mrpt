@@ -320,6 +320,18 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 		return *this;
 	}
 
+	/** Move ctor */
+	CMatrixDynamic(CMatrixDynamic&& m) { (*this) = std::move(m); }
+
+	/** Move operator */
+	CMatrixDynamic& operator=(CMatrixDynamic&& m)
+	{
+		m_data = std::move(m.m_data);
+		m_Cols = m.m_Cols;
+		m_Rows = m.m_Rows;
+		return *this;
+	}
+
 	/** Number of rows in the matrix \sa rows() */
 	inline size_type rows() const { return m_Rows; }
 

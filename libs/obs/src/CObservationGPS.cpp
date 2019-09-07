@@ -433,7 +433,7 @@ bool TIMECONV_GetUTCTimeFromJulianDate(
 	// Check the input.
 	if (julian_date < 0.0) return false;
 
-	a = (int)(julian_date + 0.5);
+	a = lround(julian_date);
 	b = a + 1537;
 	c = (int)(((double)b - 122.1) / 365.25);
 	d = (int)(365.25 * c);

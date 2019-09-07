@@ -196,7 +196,6 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 	//						PREDICTION STAGE
 	// ----------------------------------------------------------------------
 	CVectorDouble rndSamples;
-	size_t M = m_particles.size();
 	bool updateStageAlreadyDone = false;
 	CPose3D initialPose, incrPose, finalPose;
 
@@ -248,7 +247,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 	//  input "action"
 	// --------------------------------------------------------------------------------------
 	printf(" 1) Prediction...");
-	M = m_particles.size();
+	const size_t M = m_particles.size();
 
 	// To be computed as an average from all m_particles:
 	size_t particleWithHighestW = 0;

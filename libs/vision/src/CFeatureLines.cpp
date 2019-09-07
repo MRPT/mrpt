@@ -63,7 +63,7 @@ static void extractLines_CannyHough(
 		// is true
 		if (fabs(theta) < 0.00001)
 		{
-			x = xF = static_cast<int>(rho + 0.5);
+			x = xF = lround(rho);
 			y = 0;
 			yF = canny_image.rows - 1;
 		}
@@ -315,7 +315,7 @@ void CFeatureLines::extractLines(
 
 	// convert cv->STL:
 	segments_out.resize(segments.size());
-	for (unsigned i = 0; i < segments.size(); i++)
+	for (size_t i = 0; i < segments.size(); i++)
 		for (size_t k = 0; k < segments_out[i].size(); k++)
 			segments_out[i][k] = segments[i][k];
 

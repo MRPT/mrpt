@@ -63,7 +63,7 @@ void CWindowObserver::OnEvent(const mrpt::system::mrptEvent& e)
 	if (e.isOfType<mrpt::system::mrptEventOnDestroy>())
 	{
 		const auto& ev =
-			static_cast<const mrpt::system::mrptEventOnDestroy&>(e);
+			dynamic_cast<const mrpt::system::mrptEventOnDestroy&>(e);
 		MRPT_UNUSED_PARAM(ev);
 		std::cout << "Event received: mrptEventOnDestroy" << std::endl;
 	}
@@ -77,7 +77,7 @@ void CWindowObserver::OnEvent(const mrpt::system::mrptEvent& e)
 	}
 	else if (e.isOfType<mrpt::gui::mrptEventWindowChar>())
 	{
-		const auto& ev = static_cast<const mrpt::gui::mrptEventWindowChar&>(e);
+		const auto& ev = dynamic_cast<const mrpt::gui::mrptEventWindowChar&>(e);
 		std::cout << "Char event received from: " << ev.source_object
 				  << ". Char code: " << ev.char_code
 				  << " modif: " << ev.key_modifiers << std::endl;
@@ -126,13 +126,13 @@ void CWindowObserver::OnEvent(const mrpt::system::mrptEvent& e)
 	else if (e.isOfType<mrpt::gui::mrptEventWindowClosed>())
 	{
 		const auto& ev =
-			static_cast<const mrpt::gui::mrptEventWindowClosed&>(e);
+			dynamic_cast<const mrpt::gui::mrptEventWindowClosed&>(e);
 		std::cout << "Window closed event received from: " << ev.source_object
 				  << "\n";
 	}
 	else if (e.isOfType<mrpt::gui::mrptEventMouseDown>())
 	{
-		const auto& ev = static_cast<const mrpt::gui::mrptEventMouseDown&>(e);
+		const auto& ev = dynamic_cast<const mrpt::gui::mrptEventMouseDown&>(e);
 		m_key_codes_to_pressed["mouse_clicked"] = true;
 
 		std::cout << "Mouse down event received from: " << ev.source_object

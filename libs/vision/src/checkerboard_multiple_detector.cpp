@@ -179,7 +179,7 @@ bool find_chessboard_corners_multiple(
 			for (size_t i = 0; i < nClusters; i++)
 			{
 				if (num_quads_by_cluster[i] <
-					size_t(pattern_size.height * pattern_size.width))
+					size_t(pattern_size.height) * size_t(pattern_size.width))
 					continue;  // Can't be good...
 
 				// Create a subset of the quads with those in the i'th cluster:

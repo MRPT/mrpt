@@ -231,9 +231,9 @@ num_t CGraphPartitioner<GRAPH_MATRIX, num_t>::nCut(
 	const GRAPH_MATRIX& in_A, const std::vector<uint32_t>& in_part1,
 	const std::vector<uint32_t>& in_part2)
 {
-	unsigned int i, j;
-	size_t size1 = in_part1.size();
-	size_t size2 = in_part2.size();
+	size_t i, j;
+	const size_t size1 = in_part1.size();
+	const size_t size2 = in_part2.size();
 
 	// Compute the N-cut value
 	// -----------------------------------------------

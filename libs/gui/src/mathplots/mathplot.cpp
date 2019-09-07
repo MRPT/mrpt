@@ -172,10 +172,10 @@ void mpInfoLayer::Plot(wxDC& dc, mpWindow& w)
 // %d x %d"), m_winX, m_winY, scrx, scry);
 #endif
 			if (m_winX != 1)
-				m_dim.x = (int)floor((double)(m_dim.x * scrx / m_winX));
+				m_dim.x = (int)floor((double)(m_dim.x * scrx) / m_winX);
 			if (m_winY != 1)
 			{
-				m_dim.y = (int)floor((double)(m_dim.y * scry / m_winY));
+				m_dim.y = (int)floor((double)(m_dim.y * scry) / m_winY);
 				UpdateReference();
 			}
 			// Finally update window size
@@ -233,10 +233,10 @@ void mpInfoCoords::Plot(wxDC& dc, mpWindow& w)
 // %d x %d"), m_winX, m_winY, scrx, scry);
 #endif
 			if (m_winX != 1)
-				m_dim.x = (int)floor((double)(m_dim.x * scrx / m_winX));
+				m_dim.x = (int)floor((double)(m_dim.x * scrx) / m_winX);
 			if (m_winY != 1)
 			{
-				m_dim.y = (int)floor((double)(m_dim.y * scry / m_winY));
+				m_dim.y = (int)floor((double)(m_dim.y * scry) / m_winY);
 				UpdateReference();
 			}
 			// Finally update window size
@@ -280,10 +280,10 @@ void mpInfoLegend::Plot(wxDC& dc, mpWindow& w)
 // %d x %d"), m_winX, m_winY, scrx, scry);
 #endif
 			if (m_winX != 1)
-				m_dim.x = (int)floor((double)(m_dim.x * scrx / m_winX));
+				m_dim.x = (int)floor((double)(m_dim.x * scrx) / m_winX);
 			if (m_winY != 1)
 			{
-				m_dim.y = (int)floor((double)(m_dim.y * scry / m_winY));
+				m_dim.y = (int)floor((double)(m_dim.y * scry) / m_winY);
 				UpdateReference();
 			}
 			// Finally update window size
@@ -303,7 +303,7 @@ void mpInfoLegend::Plot(wxDC& dc, mpWindow& w)
 		mpLayer* ly = nullptr;
 		wxPen lpen;
 		wxString label;
-		for (unsigned int p = 0; p < w.CountAllLayers(); p++)
+		for (size_t p = 0; p < w.CountAllLayers(); p++)
 		{
 			ly = w.GetLayer(p);
 			if ((ly->GetLayerType() == mpLAYER_PLOT) && (ly->IsVisible()))
@@ -328,7 +328,7 @@ void mpInfoLegend::Plot(wxDC& dc, mpWindow& w)
 			textY += mpLEGEND_MARGIN;
 			m_dim.height = textY;
 			dc.DrawRectangle(m_dim.x, m_dim.y, m_dim.width, m_dim.height);
-			for (unsigned int p2 = 0; p2 < w.CountAllLayers(); p2++)
+			for (size_t p2 = 0; p2 < w.CountAllLayers(); p2++)
 			{
 				ly = w.GetLayer(p2);
 				if ((ly->GetLayerType() == mpLAYER_PLOT) && (ly->IsVisible()))
@@ -3068,7 +3068,7 @@ bool mpPrintout::OnPrintPage(int page)
 		// trgDc->SetDeviceOrigin( m_prnX>>1, m_prnY>>1);  // Origin at the
 		// center
 		mpLayer* layer;
-		for (unsigned int li = 0; li < plotWindow->CountAllLayers(); ++li)
+		for (size_t li = 0; li < plotWindow->CountAllLayers(); ++li)
 		{
 			layer = plotWindow->GetLayer(li);
 			layer->Plot(*trgDc, *plotWindow);

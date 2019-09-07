@@ -103,7 +103,7 @@ class ScalarFactorGraph : public mrpt::system::COutputLogger
 
    private:
 	/** number of nodes in the graph */
-	size_t m_numNodes;
+	size_t m_numNodes = 0;
 
 	std::deque<const UnaryFactorVirtualBase*> m_factors_unary;
 	std::deque<const BinaryFactorVirtualBase*> m_factors_binary;

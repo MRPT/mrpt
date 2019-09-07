@@ -1212,7 +1212,6 @@ float CImage::correlate(
 		(img2.getHeight() + height_init > getHeight()))
 		THROW_EXCEPTION("Correlation Error!, image to correlate out of bounds");
 
-	unsigned int i, j;
 	float x1, x2;
 	float syy = 0.0f, sxy = 0.0f, sxx = 0.0f, m1 = 0.0f, m2 = 0.0f,
 		  n = (float)(img2.getHeight() * img2.getWidth());
@@ -1220,9 +1219,9 @@ float CImage::correlate(
 	//	IplImage *ipl2 = img2.img;
 
 	// find the means
-	for (i = 0; i < img2.getHeight(); i++)
+	for (size_t i = 0; i < img2.getHeight(); i++)
 	{
-		for (j = 0; j < img2.getWidth(); j++)
+		for (size_t j = 0; j < img2.getWidth(); j++)
 		{
 			m1 += *(*this)(
 				j + width_init,
@@ -1235,9 +1234,9 @@ float CImage::correlate(
 	m1 /= n;
 	m2 /= n;
 
-	for (i = 0; i < img2.getHeight(); i++)
+	for (size_t i = 0; i < img2.getHeight(); i++)
 	{
-		for (j = 0; j < img2.getWidth(); j++)
+		for (size_t j = 0; j < img2.getWidth(); j++)
 		{
 			x1 = *(*this)(j + width_init, i + height_init) -
 				 m1;  //(double)(ipl1->imageData[i*ipl1->widthStep

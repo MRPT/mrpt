@@ -61,7 +61,7 @@ class CVehicleSimul_DiffDriven : public CVehicleSimulVirtualBase
 
    private:
 	/** lin & angular velocity in the robot local frame. */
-	double m_v, m_w;
+	double m_v{0}, m_w{0};
 
 	/** Dynamic limitations of the robot.
 	 * Approximation to non-infinity motor forces: A first order low-pass
@@ -71,7 +71,8 @@ class CVehicleSimul_DiffDriven : public CVehicleSimulVirtualBase
 	 *   Command_v0, Command_w0: Actual robot velocities at the moment of
 	 * user request.
 	 */
-	double Command_Time, Command_v, Command_w, Command_v0, Command_w0;
+	double Command_Time{0}, Command_v{0}, Command_w{0}, Command_v0{0},
+		Command_w0{0};
 
 	/** The time-constants for the first order low-pass filter for the
 	 * velocities changes. */

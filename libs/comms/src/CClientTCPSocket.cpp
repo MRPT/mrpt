@@ -69,8 +69,15 @@ CClientTCPSocket::CClientTCPSocket()
 
 CClientTCPSocket::~CClientTCPSocket()
 {
-	// Close socket:
-	close();
+	try
+	{
+		close();
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "[~CClientTCPSocket] Exception:\n"
+				  << mrpt::exception_to_str(e);
+	}
 #ifdef _WIN32
 	WSACleanup();
 #else
@@ -196,7 +203,7 @@ void CClientTCPSocket::connect(
 
 	// Wait for connect:
 	fd_set socket_set;
-	timeval timer;
+	timeval timer = {0, 0};
 
 	FD_ZERO(&socket_set);
 	FD_SET(m_hSock, &socket_set);
@@ -279,7 +286,7 @@ size_t CClientTCPSocket::readAsync(
 	int readNow;
 	bool timeoutExpired = false;
 
-	struct timeval timeoutSelect;
+	struct timeval timeoutSelect = {0, 0};
 	struct timeval* ptrTimeout;
 	fd_set sockArr;
 
@@ -369,7 +376,7 @@ size_t CClientTCPSocket::writeAsync(
 	int writtenNow;
 	bool timeoutExpired = false;
 
-	struct timeval timeoutSelect;
+	struct timeval timeoutSelect = {0, 0};
 	struct timeval* ptrTimeout;
 	fd_set sockArr;
 

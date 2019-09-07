@@ -124,18 +124,18 @@ class CLMS100Eth : public C2DRangeFinderAbstract
 
    private:
 	std::string m_ip;
-	unsigned int m_port;
+	unsigned int m_port = 0;
 	mrpt::comms::CClientTCPSocket m_client;
 	bool m_turnedOn{false};
 	std::string m_cmd;
 	bool m_connected{false};
-	unsigned int m_scanFrequency;  // hertz
-	double m_angleResolution;  // degrees
-	double m_startAngle;  // degrees
-	double m_stopAngle;  // degrees
+	unsigned int m_scanFrequency = 0;  // hertz
+	double m_angleResolution = 0;  // degrees
+	double m_startAngle = 0;  // degrees
+	double m_stopAngle = 0;  // degrees
 	mrpt::poses::CPose3D m_sensorPose;
 	double m_maxRange{20.0};
-	double m_beamApperture;
+	double m_beamApperture = 0;
 
 	void generateCmd(const char* cmd);
 	bool checkIsConnected();

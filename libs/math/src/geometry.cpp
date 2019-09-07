@@ -1321,11 +1321,12 @@ struct T2ListsOfSegments
 	vector<TSegment2D> l1;
 	vector<TSegment2D> l2;
 };
+// TODO: Replace by std::variant
 struct TCommonRegion
 {
 	unsigned char type;  // 0 -> point, 1-> segment, any other-> empty
 	union {
-		TPoint2D* point;
+		TPoint2D* point = nullptr;
 		TSegment2D* segment;
 	} data;
 	void destroy()
@@ -1364,11 +1365,12 @@ struct TCommonRegion
 	}
 	TCommonRegion(const TCommonRegion& r) : type(0) { operator=(r); }
 };
+// TODO: Replace by std::variant
 struct TTempIntersection
 {
 	unsigned char type;  // 0->two lists of segments, 1-> common region
 	union {
-		T2ListsOfSegments* segms;
+		T2ListsOfSegments* segms = nullptr;
 		TCommonRegion* common;
 	} data;
 	void destroy()
