@@ -25,7 +25,7 @@ bool MatrixVectorBase<Scalar, Derived>::fromMatlabStringFormat(
 	const std::string& s, mrpt::optional_ref<std::ostream> dump_errors_here)
 {
 	// Start with a (0,0) matrix:
-	if (Derived::RowsAtCompileTime == Eigen::Dynamic) mvbDerived() = Derived();
+	if (Derived::RowsAtCompileTime == Eigen::Dynamic) mvbDerived().resize(0, 0);
 
 	// Look for starting "[".
 	size_t ini = s.find_first_not_of(" \t\r\n");
