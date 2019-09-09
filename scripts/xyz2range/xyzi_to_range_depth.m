@@ -6,9 +6,11 @@ end
 
 SHOW_3D_POINTS=0;
 SHOW_RANGE_IMG=1;
+SHOW_AZ_HIST=1;
 
 % Value obtained by optimization:
-sensorPt = [ -0.0062    0.0273    0.1757];
+%sensorPt = [ -0.0062    0.0273    0.1757];
+sensorPt = [ 0 0 0 ];
 %sensorPt = [ 0 0 0];
 
 D=load(filname);
@@ -51,6 +53,13 @@ if (SHOW_3D_POINTS)
     xlabel('x');
     ylabel('y');
     zlabel('z');
+end
+
+if (SHOW_AZ_HIST)
+   figure; 
+   histogram(azimuth*180/pi, linspace(-180,180,361));
+   grid on;
+   xlabel('Azimuth (deg)');
 end
 
 end

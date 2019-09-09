@@ -12,6 +12,7 @@
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/maps/CPointsMapXYZI.h>
 #include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/obs/CObservationRotatingScan.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <set>
 #include <string>
@@ -27,15 +28,26 @@ namespace mrpt::ros1bridge
 /** Convert sensor_msgs/PointCloud2 -> mrpt::slam::CSimplePointsMap
  *  Only (x,y,z) data is converted. To use the intensity channel, see
  * the alternative signature for CPointsMapXYZI.
+ * Requires point cloud fields: x,y,z.
  * \return true on sucessful conversion, false on any error.
  * \sa toROS
  */
 bool fromROS(
 	const sensor_msgs::PointCloud2& msg, mrpt::maps::CSimplePointsMap& obj);
 
-/** \overload For (x,y,z,intensity) channels. */
+/** \overload For (x,y,z,intensity) channels.
+ * Requires point cloud fields: x,y,z,intensity
+ */
 bool fromROS(
 	const sensor_msgs::PointCloud2& msg, mrpt::maps::CPointsMapXYZI& obj);
+
+/** Convert sensor_msgs/PointCloud2 -> mrpt::obs::CObservationRotatingScan.
+ * Requires point cloud fields: x,y,z,intensity,ring
+ */
+bool fromROS(
+	const sensor_msgs::PointCloud2& m, mrpt::obs::CObservationRotatingScan& o,
+	const mrpt::poses::CPose3D& sensorPoseOnRobot,
+	unsigned int num_azimuth_divisions = 360);
 
 /** Extract a list of fields found in the point cloud.
  * Typically: {"x","y","z","intensity"}
