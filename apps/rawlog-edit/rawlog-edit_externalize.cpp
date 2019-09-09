@@ -34,6 +34,7 @@ DECLARE_OP_FUNCTION(op_externalize)
 
 		string imgFileExtension;
 		string outDir;
+		bool m_external_txt{false};
 
 	   public:
 		size_t entries_converted;
@@ -47,9 +48,10 @@ DECLARE_OP_FUNCTION(op_externalize)
 			entries_converted = 0;
 			entries_skipped = 0;
 			getArgValue<string>(cmdline, "image-format", imgFileExtension);
+			m_external_txt = isFlagSet(cmdline, "txt-externals");
 
 			mrpt::obs::CObservation3DRangeScan::EXTERNALS_AS_TEXT(
-				isFlagSet(cmdline, "txt-externals"));
+				m_external_txt);
 
 			// Create the default "/Images" directory.
 			const string out_rawlog_basedir =
@@ -136,18 +138,18 @@ DECLARE_OP_FUNCTION(op_externalize)
 
 				if (obsPc->pointcloud && !obsPc->isExternallyStored())
 				{
-					const string fileName = "pc_"s + label_time + ".bin"s;
-					{
-						mrpt::io::CFileGZOutputStream of(fileName);
-						auto arch = mrpt::serialization::archiveFrom(of);
-						arch << *obsPc->pointcloud;
-					}
-					obsPc->pointcloud.reset();
+					const string fileName =
+						"pc_"s + label_time +
+						(m_external_txt ? ".txt"s : ".bin"s);
 					obsPc->setAsExternalStorage(
 						fileName,
-						CObservationPointCloud::ExternalStorageFormat::
-							MRPT_Serialization);
+						m_external_txt
+							? CObservationPointCloud::ExternalStorageFormat::
+								  PlainTextFile
+							: CObservationPointCloud::ExternalStorageFormat::
+								  MRPT_Serialization);
 
+					obsPc->unload();
 					entries_converted++;
 				}
 				else
