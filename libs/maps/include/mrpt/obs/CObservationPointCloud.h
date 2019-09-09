@@ -39,7 +39,8 @@ class CObservationPointCloud : public CObservation
 	{
 		None = 0,  //!< is always stored in memory
 		MRPT_Serialization,  //!< Uses mrpt-serialization binary file
-		KittiBinFile  //!< Uses Kitti .bin file format
+		KittiBinFile,  //!< Uses Kitti .bin file format
+		PlainTextFile  //!< Plain text, each line has "x y z [i]" coords
 	};
 
    protected:
