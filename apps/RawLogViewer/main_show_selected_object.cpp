@@ -341,22 +341,13 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 				obs->load();  // Make sure the 3D point cloud, etc... are all
 				// loaded in memory.
 
-				const bool generate3Donthefly =
-					!obs->hasPoints3D &&
-					mnuItemEnable3DCamAutoGenPoints->IsChecked();
-				if (generate3Donthefly)
-				{
-					mrpt::obs::T3DPointsProjectionParams pp;
-					pp.takeIntoAccountSensorPoseOnRobot = false;
-					obs->project3DPointsFromDepthImageInto(*obs, pp);
-				}
+				auto pointMap = mrpt::maps::CColouredPointsMap::Create();
+				pointMap->colorScheme.scheme =
+					CColouredPointsMap::cmFromIntensityImage;
 
-				if (generate3Donthefly)
-					cout << "NOTICE: The stored observation didn't contain 3D "
-							"points, but these have been generated on-the-fly "
-							"just for visualization purposes.\n"
-							"(You can disable this behavior from the menu "
-							"Sensors->3D depth cameras\n\n";
+				mrpt::obs::T3DPointsProjectionParams pp;
+				pp.takeIntoAccountSensorPoseOnRobot = true;
+				obs->project3DPointsFromDepthImageInto(*pointMap, pp);
 
 // Update 3D view ==========
 #if RAWLOGVIEWER_HAS_3D
@@ -367,80 +358,15 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 				openGLSceneRef->insert(mrpt::opengl::CAxis::Create(
 					-20, -20, -20, 20, 20, 20, 1, 2, true));
 
-				mrpt::opengl::CPointCloudColoured::Ptr pnts =
-					mrpt::opengl::CPointCloudColoured::Create();
-				CColouredPointsMap pointMap;
-				pointMap.colorScheme.scheme =
-					CColouredPointsMap::cmFromIntensityImage;
+				auto pnts = mrpt::opengl::CPointCloudColoured::Create();
+				pnts->loadFromPointsMap(pointMap.get());
 
-				if (obs->hasPoints3D)
-				{
-					// Assign only those points above a certain threshold:
-					const int confThreshold =
-						obs->hasConfidenceImage ? slid3DcamConf->GetValue() : 0;
+				// No need to further transform 3D points
+				pnts->setPose(mrpt::poses::CPose3D());
+				pnts->setPointSize(4.0);
 
-					if (confThreshold ==
-						0)  // This includes when there is no confidence image.
-					{
-						pointMap.insertionOptions.minDistBetweenLaserPoints =
-							0;  // don't drop any point
-						pointMap.insertObservation(*obs);  // This
-						// transform
-						// points into
-						// vehicle-frame
-						pnts->loadFromPointsMap(&pointMap);
-
-						pnts->setPose(mrpt::poses::CPose3D());  // No need to
-						// further
-						// transform 3D
-						// points
-					}
-					else
-					{
-						pnts->clear();
-
-						const vector<float>& obs_xs = obs->points3D_x;
-						const vector<float>& obs_ys = obs->points3D_y;
-						const vector<float>& obs_zs = obs->points3D_z;
-
-						size_t i = 0;
-
-						const size_t W = obs->confidenceImage.getWidth();
-						const size_t H = obs->confidenceImage.getHeight();
-
-						ASSERT_(obs->confidenceImage.isColor() == false);
-						ASSERT_(obs_xs.size() == H * W);
-
-						for (size_t r = 0; r < H; r++)
-						{
-							auto ptr_lin =
-								obs->confidenceImage.ptrLine<uint8_t>(r);
-							for (size_t c = 0; c < W; c++, i++)
-							{
-								unsigned char conf = *ptr_lin++;
-								if (conf >= confThreshold)
-									pnts->push_back(
-										obs_xs[i], obs_ys[i], obs_zs[i], 1, 1,
-										1);
-							}
-						}
-						// Translate the 3D cloud since sensed points are
-						// relative to the camera, but the camera may be
-						// translated wrt the robot (our 0,0,0 here):
-						pnts->setPose(obs->sensorPose);
-					}
-
-					pnts->setPointSize(4.0);
-				}
 				openGLSceneRef->insert(pnts);
 				m_gl3DRangeScan->Refresh();
-
-				// Free memory:
-				if (generate3Donthefly)
-				{
-					obs->hasPoints3D = false;
-					obs->resizePoints3DVectors(0);
-				}
 #endif
 
 				// Update intensity image ======

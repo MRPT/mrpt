@@ -422,6 +422,12 @@ class PointCloudAdapter<mrpt::maps::CColouredPointsMap>
 		m_obj.setPointColor_fast(idx, r / 255.f, g / 255.f, b / 255.f);
 	}
 
+	/** Set XYZ coordinates of i'th point */
+	inline void setInvalidPoint(const size_t idx)
+	{
+		THROW_EXCEPTION("mrpt::maps::CColouredPointsMap needs to be dense");
+	}
+
 };  // end of PointCloudAdapter<mrpt::maps::CColouredPointsMap>
 }  // namespace opengl
 }  // namespace mrpt
