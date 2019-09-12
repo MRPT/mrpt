@@ -32,13 +32,14 @@ std::string TCamera::dumpAsText() const
 	return cfg.getContent();
 }
 
-uint8_t TCamera::serializeGetVersion() const { return 3; }
+uint8_t TCamera::serializeGetVersion() const { return 4; }
 void TCamera::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out << focalLengthMeters;
 	// v3: from 5 to 8 dist params:
 	for (unsigned int k = 0; k < dist.size(); k++) out << dist[k];
-	out << intrinsicParams;
+	// v4: only store the 4 relevant values:
+	out << fx() << fy() << cx() << cy();
 	// version 0 did serialize here a "CMatrixDouble15"
 	out << nrows << ncols;  // New in v2
 }
@@ -50,6 +51,7 @@ void TCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		case 1:
 		case 2:
 		case 3:
+	    case 4:
 		{
 			in >> focalLengthMeters;
 
@@ -58,7 +60,22 @@ void TCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			if (version >= 3)
 				for (unsigned int k = 5; k < 8; k++) in >> dist[k];
 
-			in >> intrinsicParams;
+			if (version < 4)
+			{
+				in >> intrinsicParams;
+				// Enforce values with fixed 0 or 1 values:
+				intrinsicParams(0, 1) = 0;
+				intrinsicParams(1, 0) = 0;
+				intrinsicParams(2, 0) = 0;
+				intrinsicParams(2, 1) = 0;
+				intrinsicParams(2, 2) = 1;
+			}
+			else
+			{
+				double vfx, vfy, vcx, vcy;
+				in >> vfx >> vfy >> vcx >> vcy;
+				setIntrinsicParamsFromValues(vfx, vfy, vcx, vcy);
+			}
 
 			if (version == 0)
 			{
