@@ -18,6 +18,7 @@
 #include <mrpt/math/ops_containers.h>  // norm(), etc.
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/otherlibs/do_opencv_includes.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
@@ -1300,6 +1301,55 @@ T3DPointsTo2DScanParams::T3DPointsTo2DScanParams()
 	  angle_inf(mrpt::DEG2RAD(5)),
 	  z_min(-std::numeric_limits<double>::max()),
 	  z_max(std::numeric_limits<double>::max())
-
 {
+}
+
+void CObservation3DRangeScan::undistort()
+{
+#if MRPT_HAS_OPENCV
+
+	// DEPTH image:
+	{
+		// OpenCV wrapper (copy-less) for rangeImage:
+
+		cv::Mat rangeImg(
+			rangeImage.rows(), rangeImage.cols(), CV_32FC1, &rangeImage(0, 0));
+		const cv::Mat distortion(
+			1, cameraParams.dist.size(), CV_64F, &cameraParams.dist[0]);
+		const cv::Mat intrinsics(
+			3, 3, CV_64F, &cameraParams.intrinsicParams(0, 0));
+
+		double alpha = 0;  // all depth pixels are visible in the output
+		const cv::Mat newIntrinsics = cv::getOptimalNewCameraMatrix(
+			intrinsics, distortion,
+			cv::Size(rangeImage.rows(), rangeImage.cols()), alpha);
+
+		cv::Mat outRangeImg(rangeImage.rows(), rangeImage.cols(), CV_32FC1);
+
+		// Undistort:
+		cv::undistort(
+			rangeImg, outRangeImg, intrinsics, distortion, newIntrinsics);
+
+		// Overwrite:
+		outRangeImg.copyTo(rangeImg);
+		cameraParams.dist.fill(0);
+		for (int r = 0; r < 3; r++)
+			for (int c = 0; c < 3; c++)
+				cameraParams.intrinsicParams(r, c) =
+					newIntrinsics.at<double>(r, c);
+	}
+
+	// RGB image:
+	if (hasIntensityImage)
+	{
+		mrpt::img::CImage newIntImg;
+		intensityImage.undistort(newIntImg, cameraParamsIntensity);
+
+		intensityImage = std::move(newIntImg);
+		cameraParamsIntensity.dist.fill(0);
+	}
+
+#else
+	THROW_EXCEPTION("This method requires OpenCV");
+#endif
 }

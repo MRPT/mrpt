@@ -42,34 +42,35 @@ using namespace std;
 using namespace mrpt::io;
 
 // Frwd. decl:
-DECLARE_OP_FUNCTION(op_externalize);
+DECLARE_OP_FUNCTION(op_camera_params);
+DECLARE_OP_FUNCTION(op_cut);
 DECLARE_OP_FUNCTION(op_deexternalize);
+DECLARE_OP_FUNCTION(op_export_2d_scans_txt);
+DECLARE_OP_FUNCTION(op_export_anemometer_txt);
+DECLARE_OP_FUNCTION(op_export_enose_txt);
+DECLARE_OP_FUNCTION(op_export_gps_all);
+DECLARE_OP_FUNCTION(op_export_gps_gas_kml);
+DECLARE_OP_FUNCTION(op_export_gps_kml);
+DECLARE_OP_FUNCTION(op_export_gps_txt);
+DECLARE_OP_FUNCTION(op_export_imu_txt);
+DECLARE_OP_FUNCTION(op_export_odometry_txt);
+DECLARE_OP_FUNCTION(op_export_rawdaq_txt);
+DECLARE_OP_FUNCTION(op_externalize);
+DECLARE_OP_FUNCTION(op_generate_3d_pointclouds);
+DECLARE_OP_FUNCTION(op_generate_pcd);
 DECLARE_OP_FUNCTION(op_info);
+DECLARE_OP_FUNCTION(op_keep_label);
 DECLARE_OP_FUNCTION(op_list_images);
 DECLARE_OP_FUNCTION(op_list_poses);
 DECLARE_OP_FUNCTION(op_list_rangebearing);
-DECLARE_OP_FUNCTION(op_remove_label);
-DECLARE_OP_FUNCTION(op_keep_label);
-DECLARE_OP_FUNCTION(op_cut);
-DECLARE_OP_FUNCTION(op_export_gps_kml);
-DECLARE_OP_FUNCTION(op_export_gps_gas_kml);
-DECLARE_OP_FUNCTION(op_export_gps_txt);
-DECLARE_OP_FUNCTION(op_export_gps_all);
-DECLARE_OP_FUNCTION(op_export_imu_txt);
-DECLARE_OP_FUNCTION(op_export_odometry_txt);
-DECLARE_OP_FUNCTION(op_export_enose_txt);
-DECLARE_OP_FUNCTION(op_export_anemometer_txt);
-DECLARE_OP_FUNCTION(op_recalc_odometry);
-DECLARE_OP_FUNCTION(op_export_rawdaq_txt);
-DECLARE_OP_FUNCTION(op_export_2d_scans_txt);
-DECLARE_OP_FUNCTION(op_sensors_pose);
-DECLARE_OP_FUNCTION(op_camera_params);
-DECLARE_OP_FUNCTION(op_generate_3d_pointclouds);
-DECLARE_OP_FUNCTION(op_generate_pcd);
-DECLARE_OP_FUNCTION(op_stereo_rectify);
-DECLARE_OP_FUNCTION(op_rename_externals);
 DECLARE_OP_FUNCTION(op_list_timestamps);
+DECLARE_OP_FUNCTION(op_recalc_odometry);
 DECLARE_OP_FUNCTION(op_remap_timestamps);
+DECLARE_OP_FUNCTION(op_remove_label);
+DECLARE_OP_FUNCTION(op_rename_externals);
+DECLARE_OP_FUNCTION(op_sensors_pose);
+DECLARE_OP_FUNCTION(op_stereo_rectify);
+DECLARE_OP_FUNCTION(op_undistort);
 
 // Declare the supported command line switches ===========
 TCLAP::CmdLine cmd(
@@ -437,6 +438,11 @@ int main(int argc, char** argv)
 			"not exist).\n",
 			cmd, false));
 		ops_functors["rename-externals"] = &op_rename_externals;
+
+		arg_ops.push_back(new TCLAP::SwitchArg(
+			"", "undistort", "Op: Undistort all images in the rawlog.\n", cmd,
+			false));
+		ops_functors["undistort"] = &op_undistort;
 
 		// --------------- End of list of possible operations --------
 

@@ -37,6 +37,7 @@ add_executable(${PROJECT_NAME}
 	rawlog-edit_odometry.cpp
 	rawlog-edit_enose.cpp
 	rawlog-edit_anemometer.cpp
+	rawlog-edit_undistort.cpp
 	${MRPT_VERSION_RC_FILE}
  	)
 
