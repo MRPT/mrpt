@@ -35,8 +35,15 @@ class TCamera : public mrpt::serialization::CSerializable
 
 	/** Camera resolution */
 	uint32_t ncols{640}, nrows{480};
+
 	/** Matrix of intrinsic parameters (containing the focal length and
-	 * principal point coordinates) */
+	 * principal point coordinates):
+	 *
+	 *          [ fx  0 cx ]
+	 *      A = [  0 fy cy ]
+	 *          [  0  0  1 ]
+	 *
+	 */
 	mrpt::math::CMatrixDouble33 intrinsicParams;
 	/** [k1 k2 t1 t2 k3 k4 k5 k6] -> k_i: parameters of radial distortion, t_i:
 	 * parameters of tangential distortion (default=0) */
@@ -101,10 +108,12 @@ class TCamera : public mrpt::serialization::CSerializable
 	inline void setIntrinsicParamsFromValues(
 		double fx, double fy, double cx, double cy)
 	{
+		intrinsicParams.setZero();
 		intrinsicParams(0, 0) = fx;
 		intrinsicParams(1, 1) = fy;
 		intrinsicParams(0, 2) = cx;
 		intrinsicParams(1, 2) = cy;
+		intrinsicParams(2, 2) = 1.0;
 	}
 
 	/** Get the vector of distortion params of the camera  */
