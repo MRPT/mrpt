@@ -760,6 +760,11 @@ class CObservation3DRangeScan : public CObservation
 
 	/** @} */  // end sensor params
 
+	/** Removes the distortion in both, depth and intensity images. Intrinsics
+	 * (fx,fy,cx,cy) remains the same for each image after undistortion.
+	 */
+	void undistort();
+
 	// See base class docs
 	void getDescriptionAsText(std::ostream& o) const override;
 
