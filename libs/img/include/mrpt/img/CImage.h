@@ -407,6 +407,8 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	 * \param out_img The output undistorted image
 	 * \param cameraParams The input camera params (containing the intrinsic
 	 * and distortion parameters of the camera)
+	 * \note The intrinsic parameters (fx,fy,cx,cy) of the output image are the
+	 * same than in the input image.
 	 * \sa mrpt::vision::CUndistortMap
 	 */
 	void undistort(
