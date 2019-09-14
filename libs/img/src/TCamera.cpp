@@ -51,7 +51,7 @@ void TCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		case 1:
 		case 2:
 		case 3:
-	    case 4:
+		case 4:
 		{
 			in >> focalLengthMeters;
 
