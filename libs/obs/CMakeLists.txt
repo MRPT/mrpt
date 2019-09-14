@@ -44,9 +44,7 @@ if(BUILD_mrpt-obs)
 
 
 	# Windows only: the mxplus lib internally requires linking with opencv (sigh...)
-	# Perhaps there is a better way to solve this, someday.
-	if (BUILD_MATLAB)
-		target_link_libraries(obs PRIVATE ${OpenCV_LIBRARIES})
-	endif()
+	# Update Sep 2019: mrpt-obs now also uses OpenCV directly, so let's just link against opencv anyway:
+	target_link_libraries(obs PRIVATE ${OpenCV_LIBRARIES})
 
 endif(BUILD_mrpt-obs)
