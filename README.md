@@ -4,7 +4,6 @@ The MRPT project
 [![Shippable](http://150.214.150.101:50000/projects/5940153f75d24b06002327b7/badge?branch=master)](http://150.214.150.101:50001/github/MRPT/mrpt)
 [![Coverage Badge](http://150.214.150.101:50000/projects/5940153f75d24b06002327b7/coverageBadge?branch=master)](http://150.214.150.101:50001/github/MRPT/mrpt)
 [![Releases](https://img.shields.io/github/release/MRPT/mrpt.svg)](https://github.com/MRPT/mrpt/releases)
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/MRPT/mrpt)
 
 ## 1. Introduction
 <img align="right" src="https://mrpt.github.io/imgs/mrpt-videos-mix2.gif">
