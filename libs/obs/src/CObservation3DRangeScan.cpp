@@ -1319,16 +1319,23 @@ void CObservation3DRangeScan::undistort()
 		const cv::Mat intrinsics(
 			3, 3, CV_64F, &cameraParams.intrinsicParams(0, 0));
 
+		const auto imgSize = cv::Size(rangeImage.rows(), rangeImage.cols());
+
 		double alpha = 0;  // all depth pixels are visible in the output
 		const cv::Mat newIntrinsics = cv::getOptimalNewCameraMatrix(
-			intrinsics, distortion,
-			cv::Size(rangeImage.rows(), rangeImage.cols()), alpha);
+			intrinsics, distortion, imgSize, alpha);
 
 		cv::Mat outRangeImg(rangeImage.rows(), rangeImage.cols(), CV_32FC1);
 
 		// Undistort:
-		cv::undistort(
-			rangeImg, outRangeImg, intrinsics, distortion, newIntrinsics);
+		const cv::Mat R_eye = cv::Mat::eye(3, 3, CV_32FC1);
+
+		cv::Mat m1, m2;
+
+		cv::initUndistortRectifyMap(
+			intrinsics, distortion, R_eye, newIntrinsics, imgSize, CV_32FC1, m1,
+			m2);
+		cv::remap(rangeImg, outRangeImg, m1, m2, cv::INTER_NEAREST);
 
 		// Overwrite:
 		outRangeImg.copyTo(rangeImg);
