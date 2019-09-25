@@ -5,7 +5,10 @@
    | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+   +---------------------------------------------------------------------------+
+ */
+
+// clang-format off
 
 /** \page changelog Change Log
  *
@@ -14,8 +17,17 @@
 
 <hr>
 <a name="1.5.8">
-<h2>Version 1.5.8: (Under development) </h2></a>
- - (No changes yet)
+<h2>Version 1.5.8: Released 25/SEP/2019 </h2></a>
+- <b>Detailed list of changes:</b>
+    - BUG FIXES:
+        - made sin-cos table cache thread safe
+        - FIX BUG: in x/y indices of unprojected 3D range images
+        - FIX BUG: max/min filter=0 should mean ignore filter
+        - reactive navigation:
+            - fix wrong classification as is_slowdown motion
+            - safer nav score evaluation
+            - add optional detailed time logger to rnav
+            - OBSTACLE_SLOW_DOWN_DISTANCE is in normalized distance
 
 <hr>
 <a name="1.5.7">
@@ -1018,3 +1030,5 @@
 			- mrpt::vision::CStereoRectifyMap - See tutorial online: http://www.mrpt.org/Rectifying_stereo_
 
 */
+
+// clang-format on
