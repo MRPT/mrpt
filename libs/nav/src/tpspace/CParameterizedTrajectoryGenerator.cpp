@@ -517,7 +517,7 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(
 	bool had_collision = false;
 
 	const size_t numPathSteps = getPathStepCount(k);
-	// We don't have steps enought (?). Just ignore clearance for this short
+	// We don't have steps enough (?). Just ignore clearance for this short
 	// path in this "k" direction:
 	if (numPathSteps <= inout_realdist2clearance.size())
 	{

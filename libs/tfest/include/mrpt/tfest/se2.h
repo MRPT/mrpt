@@ -142,7 +142,7 @@ struct TSE2RobustResult
 /** Robust least-squares (L2 norm) solution to finding the optimal SE(2)
  * (x,y,yaw) between two reference frames.
  * This method implements a RANSAC-based robust estimation, returning a
- * probability distribution over all the posibilities as a Sum of Gaussians.
+ * probability distribution over all the possibilities as a Sum of Gaussians.
  *
  *  The optimal transformation `q` fulfills \f$ p_{this} = q \oplus p_{other}
  * \f$, that is, the

@@ -38,14 +38,14 @@ void compress(const std::vector<unsigned char>& inData, mrpt::io::CStream& out);
 
 /** Decompress an array of bytes into another one
  * \exception std::exception If the apriori estimated decompressed size is not
- * enought */
+ * enough */
 void decompress(
 	void* inData, size_t inDataSize, std::vector<unsigned char>& outData,
 	size_t outDataEstimatedSize);
 
 /** Decompress an array of bytes into another one
  * \exception std::exception If the apriori estimated decompressed size is not
- * enought
+ * enough
  */
 void decompress(
 	void* inData, size_t inDataSize, void* outData, size_t outDataBufferSize,
@@ -53,7 +53,7 @@ void decompress(
 
 /** Decompress an array of bytes into another one
  * \exception std::exception If the apriori estimated decompressed size is not
- * enought
+ * enough
  */
 void decompress(
 	mrpt::io::CStream& inStream, size_t inDataSize, void* outData,

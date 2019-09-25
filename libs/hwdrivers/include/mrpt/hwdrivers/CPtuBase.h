@@ -13,7 +13,7 @@
 
 namespace mrpt::hwdrivers
 {
-/** This class implements initialization and comunication methods to
+/** This class implements initialization and communication methods to
  * control a generic Pan and Tilt Unit, working in radians.
  * \ingroup mrpt_hwdrivers_grp
  */

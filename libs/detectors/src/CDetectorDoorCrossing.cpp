@@ -74,8 +74,8 @@ void CDetectorDoorCrossing::process(
 
 	if (lastObs.size() < options.windowSize * 2)
 	{
-		// Not enought old data yet:
-		out_estimation.enoughtInformation = false;
+		// Not enough old data yet:
+		out_estimation.enoughInformation = false;
 		return;
 	}
 
@@ -127,13 +127,13 @@ void CDetectorDoorCrossing::process(
 
 	if (!lastEntropyValid)
 	{
-		out_estimation.enoughtInformation = false;
+		out_estimation.enoughInformation = false;
 	}
 	else
 	{
 		// 5) Fill output data
 		// ---------------------------------
-		out_estimation.enoughtInformation = true;
+		out_estimation.enoughInformation = true;
 
 		out_estimation.informationGain = entropy.I - lastEntropy.I;
 		out_estimation.pointsMap = *auxMap.mapByClass<CSimplePointsMap>();

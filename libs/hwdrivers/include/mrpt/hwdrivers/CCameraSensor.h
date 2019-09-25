@@ -143,10 +143,10 @@ namespace mrpt::hwdrivers
  *    dc1394_frame_width	= 640
  *    dc1394_frame_height	= 480
  *    dc1394_framerate		= 15					// eg: 7.5, 15, 30, 60,
- * etc... For posibilities see mrpt::hwdrivers::TCaptureOptions_dc1394
+ * etc... For possibilities see mrpt::hwdrivers::TCaptureOptions_dc1394
  *    dc1394_mode7         = -1                    // -1: Ignore, i>=0, set to
  * MODE7_i
- *    dc1394_color_coding	= COLOR_CODING_YUV422	// For posibilities see
+ *    dc1394_color_coding	= COLOR_CODING_YUV422	// For possibilities see
  * mrpt::hwdrivers::TCaptureOptions_dc1394
  *    # Options for setting feature values: dc1394_<feature> = <n>
  *    # with <feature> = brightness | exposure | sharpness | white_balance |
@@ -180,7 +180,7 @@ namespace mrpt::hwdrivers
  * the first camera; 0,1,2,...: The unit number (within the given GUID) of the
  * camera to open (Stereo cameras: 0 or 1)
  *    bumblebee_dc1394_framerate     = 15				// eg: 7.5, 15, 30,
- * 60, etc... For posibilities see mrpt::hwdrivers::TCaptureOptions_dc1394
+ * 60, etc... For possibilities see mrpt::hwdrivers::TCaptureOptions_dc1394
  *
  *    # Options for grabber_type= ffmpeg -------------------------------------
  *    ffmpeg_url             = rtsp://127.0.0.1      // [ffmpeg] The video file

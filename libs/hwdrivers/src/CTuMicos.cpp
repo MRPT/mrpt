@@ -435,7 +435,7 @@ bool CTuMicos::init(const string& port)
 	{
 		serPort.open(port);
 
-		cout << endl << "[INFO] Start Tu MICOS comunication config:" << endl;
+		cout << endl << "[INFO] Start Tu MICOS communication config:" << endl;
 
 		cout << "[PTU::OpenSerialPort] Opening serial port...";
 

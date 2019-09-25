@@ -32,7 +32,7 @@ namespace mrpt::poses
  *  the kind of sample you ask it for, but will skip missing terms or fill out
  * with zeroes as required.
  * Specifically, when sampling 3D poses from a 2D pose pdf, this class will be
- * smart enought to draw only
+ * smart enough to draw only
  *  the 3 required dimensions, avoiding a waste of time with the other 3 missing
  * components.
  *

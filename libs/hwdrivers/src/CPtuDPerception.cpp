@@ -346,7 +346,7 @@ bool CPtuDPerception::init(const string& port)
 	{
 		serPort.open(port);
 
-		cout << endl << "[INFO] Start PTU comunication config:" << endl;
+		cout << endl << "[INFO] Start PTU communication config:" << endl;
 
 		cout << "[PTU::OpenSerialPort] Opening serial port...";
 

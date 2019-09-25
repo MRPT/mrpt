@@ -143,7 +143,7 @@ std::tuple<CMatrixDouble33, CPose2D> CPosePDFParticles::getCovarianceAndMean()
 
 	if (n < 2)
 	{
-		// Not enought information to estimate the variance:
+		// Not enough information to estimate the variance:
 	}
 	else
 	{
