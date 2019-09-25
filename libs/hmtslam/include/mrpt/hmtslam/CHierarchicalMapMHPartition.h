@@ -175,7 +175,7 @@ class CHierarchicalMapMHPartition : public mrpt::system::COutputLogger
 
 	/** Draw a number of samples according to the PDF of the coordinates
 	 * transformation between a pair of "Area"'s nodes.
-	 * \exception std::exception If there is not enought information in arcs to
+	 * \exception std::exception If there is not enough information in arcs to
 	 * compute the PDF
 	 * \sa computeGloballyConsistentNodeCoordinates
 	 */
@@ -261,7 +261,7 @@ class CHierarchicalMapMHPartition : public mrpt::system::COutputLogger
 
 	/** Computes the probability [0,1] of two areas' gridmaps to overlap, via a
 	 * Monte Carlo aproximation.
-	 * \exception std::exception If there is not enought information in arcs,
+	 * \exception std::exception If there is not enough information in arcs,
 	 * etc...
 	 * \param margin_to_substract In meters, the area of each gridmap is
 	 * "eroded" this amount to compensate the area in excess usually found in

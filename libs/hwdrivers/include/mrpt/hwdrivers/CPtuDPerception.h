@@ -14,7 +14,7 @@
 
 namespace mrpt::hwdrivers
 {
-/** This class implements initialization and comunication methods to
+/** This class implements initialization and communication methods to
  * control a Pan and Tilt Unit model PTU-46-17.5, working in radians .
  * \ingroup mrpt_hwdrivers_grp
  */
@@ -396,7 +396,7 @@ class CPtuDPerception : public CPtuBase
 
 	/** TimeoutError: Only occurs if the communication is cut with PTU
 	 *		so it is advisable to check the connection and initialize
-	 *		again the comunication.
+	 *		again the communication.
 	 */
 
 	int nError;

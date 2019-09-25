@@ -132,7 +132,7 @@ class CParticleFilter : public mrpt::system::COutputLogger
 		 * weight*=likelihood^powFactor (default=1 = no effects). */
 		double powFactor{1};
 		/** The PF algorithm to use (default=pfStandardProposal) See
-		 * TParticleFilterAlgorithm for the posibilities. */
+		 * TParticleFilterAlgorithm for the possibilities. */
 		TParticleFilterAlgorithm PF_algorithm{pfStandardProposal};
 		/** The resampling algorithm to use (default=prMultinomial). */
 		TParticleResamplingAlgorithm resamplingMethod{prMultinomial};

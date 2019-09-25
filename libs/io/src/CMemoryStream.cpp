@@ -85,7 +85,7 @@ void CMemoryStream::resize(uint64_t newSize)
 
 size_t CMemoryStream::Read(void* Buffer, size_t Count)
 {
-	// Enought bytes?
+	// enough bytes?
 	long maxAvail = (((long)m_size)) - ((long)m_position);
 	size_t nToRead = (size_t)min(((long)Count), maxAvail);
 
@@ -103,7 +103,7 @@ size_t CMemoryStream::Read(void* Buffer, size_t Count)
 size_t CMemoryStream::Write(const void* Buffer, size_t Count)
 {
 	ASSERT_(Buffer != nullptr);
-	// Enought space in current bufer?
+	// enough space in current bufer?
 	size_t requiredSize = m_position + Count;
 
 	if (requiredSize >= m_size)

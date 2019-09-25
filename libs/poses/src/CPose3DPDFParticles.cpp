@@ -97,7 +97,7 @@ std::tuple<CMatrixDouble66, CPose3D> CPose3DPDFParticles::getCovarianceAndMean()
 	if (mean_pitch < 0) mean_pitch += M_2PI;
 	if (mean_roll < 0) mean_roll += M_2PI;
 
-	// Enought information to estimate the covariance?
+	// enough information to estimate the covariance?
 	if (m_particles.size() < 2) return {cov, mean};
 
 	// Sum all weight values:

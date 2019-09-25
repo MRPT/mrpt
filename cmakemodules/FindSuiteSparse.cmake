@@ -264,7 +264,7 @@ macro(SuiteSparse_FIND_COMPONENTS )
 		endif()
 		if(NOT ${componentToCheck})
 			set(SuiteSparse_FOUND OFF)
-			break() ## one component not found is enought to failed
+			break() ## one component not found is enough to failed
 		endif()
 	endforeach()
 endmacro()

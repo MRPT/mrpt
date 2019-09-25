@@ -2090,7 +2090,7 @@ int myQuads2Points(
 	// If in a given direction the target pattern size is reached, we know
 	// exactly how
 	// the checkerboard is oriented.
-	// Else we need to prepare enought "dummy" corners for the worst case.
+	// Else we need to prepare enough "dummy" corners for the worst case.
 	for (size_t i = 0; i < output_quads.size(); i++)
 	{
 		const CvCBQuad::Ptr& q = output_quads[i];

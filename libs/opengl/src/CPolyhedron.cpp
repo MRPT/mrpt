@@ -563,7 +563,7 @@ CPolyhedron::Ptr CPolyhedron::CreatePyramid(
 	const vector<TPoint2D>& baseVertices, double height)
 {
 	uint32_t n = baseVertices.size();
-	if (baseVertices.size() < 3) throw std::logic_error("Not enought vertices");
+	if (baseVertices.size() < 3) throw std::logic_error("Not enough vertices");
 	vector<TPoint3D> verts;
 	vector<TPolyhedronFace> faces;
 	verts.emplace_back(0, 0, height);
@@ -590,7 +590,7 @@ CPolyhedron::Ptr CPolyhedron::CreateDoublePyramid(
 	const vector<TPoint2D>& baseVertices, double height1, double height2)
 {
 	uint32_t N = baseVertices.size();
-	if (N < 3) throw std::logic_error("Not enought vertices");
+	if (N < 3) throw std::logic_error("Not enough vertices");
 	vector<TPoint3D> verts;
 	verts.reserve(N + 2);
 	vector<TPolyhedronFace> faces;

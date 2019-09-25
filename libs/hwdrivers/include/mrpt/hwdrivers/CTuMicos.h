@@ -15,7 +15,7 @@
 
 namespace mrpt::hwdrivers
 {
-/** This class implements initialization and comunication methods to
+/** This class implements initialization and communication methods to
  * control a Tilt Unit model DT-80, working in radians .
  * \ingroup mrpt_hwdrivers_grp
  */

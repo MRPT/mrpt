@@ -194,7 +194,7 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 	/** Save to a MATLAB script which displays 3D error ellipses for the map.
 	 *	\param file		The name of the file to save the script to.
 	 *  \param style	The MATLAB-like string for the style of the lines (see
-	 *'help plot' in MATLAB for posibilities)
+	 *'help plot' in MATLAB for possibilities)
 	 *  \param stdCount The ellipsoids will be drawn from the center to a given
 	 *confidence interval in [0,1], e.g. 2 sigmas=0.95 (default is 2std = 0.95
 	 *confidence intervals)
