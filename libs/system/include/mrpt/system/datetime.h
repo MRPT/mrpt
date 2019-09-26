@@ -147,7 +147,7 @@ inline mrpt::system::TTimeStamp timestampAdd(
 	const mrpt::system::TTimeStamp tim, const double num_seconds)
 {
 	return tim +
-		   std::chrono::microseconds(static_cast<uint64_t>(num_seconds * 1e6));
+		   std::chrono::microseconds(static_cast<int64_t>(num_seconds * 1e6));
 }
 
 /** Returns a formated string with the given time difference (passed as the
