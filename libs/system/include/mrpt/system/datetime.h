@@ -151,7 +151,7 @@ inline mrpt::system::TTimeStamp timestampAdd(
 }
 
 /** Returns a formated string with the given time difference (passed as the
- * number of seconds), as a string [H]H:MM:SS.MILISECS
+ * number of seconds), as a string [H]H:MM:SS.MILLISECONDS
  * \sa unitsFormat
  */
 std::string formatTimeInterval(const double timeSeconds);
