@@ -79,12 +79,20 @@ libopencv-dev libeigen3-dev libgtest-dev
   MRPT builds against OpenCV 2.4.x, 3.x, 4.x, but it is recommended to use 3.0 or later.
 
 
-  * Install additional dependencies to enable all MRPT features:
+  * Install additional dependencies to enable most MRPT features (except ROS bridges):
 
 ```bash
 sudo apt install libftdi-dev freeglut3-dev zlib1g-dev libusb-1.0-0-dev \
 libudev-dev libfreenect-dev libdc1394-22-dev libavformat-dev libswscale-dev \
 libassimp-dev libjpeg-dev   libsuitesparse-dev libpcap-dev liboctomap-dev
+```
+
+  * Install additional dependencies for `ros1bridge` using official Ubuntu repositories. 
+  If you already have a ROS distribution installed, doing `source /opt/ros/xxx/setup.bash` 
+  is enough, no further packages must be installed.
+
+```bash
+sudo apt install libcv-bridge-dev libgeometry-msgs-dev libnav-msgs-dev libpcl-conversions-dev librosbag-dev libroscpp-dev libsensor-msgs-dev libstd-srvs-dev libstereo-msgs-dev libtf2-dev libtf2-msgs-dev libbz2-dev
 ```
 
   * Build with `cmake` as usual:
