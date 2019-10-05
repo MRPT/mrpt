@@ -5,7 +5,7 @@
 -->
 <package format="2">
   <name>mrpt1</name>
-  <version>1.5.8</version>
+  <version>1.5.9</version>
   <description>Mobile Robot Programming Toolkit (MRPT) version 1.5.x</description>
 
   <author     email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</author>
