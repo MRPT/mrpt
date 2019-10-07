@@ -9,6 +9,7 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/maps/CPointsMapXYZI.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/CObservationRotatingScan.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
@@ -54,5 +55,36 @@ TEST(CObservationRotatingScan, fromVelodyne)
 	mrpt::obs::CObservationRotatingScan rs;
 	rs.fromVelodyne(*oVelo);
 
-	std::cout << rs.getDescriptionAsTextValue();
+	EXPECT_TRUE(rs.azimuthSpan > 0) << "Rotation: CCW";
+	EXPECT_NEAR(std::abs(rs.azimuthSpan), 2 * M_PI, 0.1);
+	EXPECT_EQ(rs.columnCount, 28800);
+	EXPECT_EQ(rs.rowCount, 16);
+
+	// std::cout << rs.getDescriptionAsTextValue();
+}
+
+TEST(CObservationRotatingScan, from2DScan)
+{
+	using namespace std::string_literals;
+	const auto fil =
+		mrpt::system::getShareMRPTDir() + "/datasets/localization_demo.rawlog"s;
+
+	mrpt::obs::CRawlog rawlog;
+	bool load_ok = rawlog.loadFromRawLogFile(fil);
+	EXPECT_TRUE(load_ok) << "Could not load " << fil;
+
+	auto oScan2D =
+		rawlog.getAsObservations(1)
+			->getObservationByClass<mrpt::obs::CObservation2DRangeScan>();
+	EXPECT_TRUE(oScan2D.get() != nullptr);
+
+	mrpt::obs::CObservationRotatingScan rs;
+	rs.fromScan2D(*oScan2D);
+
+	EXPECT_TRUE(rs.azimuthSpan > 0) << "Rotation: CCW";
+	EXPECT_NEAR(std::abs(rs.azimuthSpan), M_PI, 1e-4);
+	EXPECT_EQ(rs.columnCount, 361);
+	EXPECT_EQ(rs.rowCount, 1);
+
+	// std::cout << rs.getDescriptionAsTextValue();
 }
