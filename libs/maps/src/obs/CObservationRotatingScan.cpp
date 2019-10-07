@@ -17,7 +17,6 @@
 #include <mrpt/obs/CObservationVelodyneScan.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
-#include <iostream>
 
 using namespace std;
 using namespace mrpt::obs;
@@ -148,6 +147,7 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
 	// Copy properties:
 	has_satellite_timestamp = o.has_satellite_timestamp;
 	originalReceivedTimestamp = o.originalReceivedTimestamp;
+	timestamp = o.timestamp;
 	sensorPose = o.sensorPose;
 	sensorLabel = o.sensorLabel;
 	minRange = o.minRange;
@@ -262,13 +262,13 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
 				uint8_t laserId = rawLaserId;
 
 				// Detect VLP-16 data and adjust laser id if necessary
-				bool firingWithinBlock = false;
+				// bool firingWithinBlock = false;
 				if (num_lasers == 16)
 				{
 					if (laserId >= 16)
 					{
 						laserId -= 16;
-						firingWithinBlock = true;
+						// firingWithinBlock = true;
 					}
 				}
 
@@ -304,8 +304,6 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
 					};
 				}();
 
-				std::cout << int(laserId) << " " << columnIdx << "\n";
-
 				ASSERT_BELOW_(columnIdx, columnCount);
 				if (pkt.laser_return_mode != Velo::RETMODE_DUAL ||
 					block_is_dual_strongest_range)
@@ -322,7 +320,7 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
 					// Regular range, or strongest in multi return mode:
 					auto& r = rangeOtherLayers["STRONGEST"];
 					// 1st time init:
-					if (r.rows() != num_lasers)
+					if (static_cast<size_t>(r.rows()) != num_lasers)
 						r.setZero(rowCount, columnCount);
 
 					r(laserId, columnIdx) = distance;
@@ -355,15 +353,55 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
 			break;
 	};
 
-	//	rangeImage.saveToTextFile("/tmp/range.txt");
-	//	intensityImage.saveToTextFile("/tmp/rangeInt.txt");
-
 	MRPT_END
 }
+
 void RotScan::fromScan2D(const mrpt::obs::CObservation2DRangeScan& o)
 {
 	MRPT_START
-	MRPT_TODO("fromScan2D");
+
+	// Reset:
+	*this = CObservationRotatingScan();
+
+	// Copy properties:
+	this->has_satellite_timestamp = false;
+	this->timestamp = o.timestamp;
+	this->sensorPose = o.sensorPose;
+	this->sensorLabel = o.sensorLabel;
+	this->maxRange = o.maxRange;
+
+	// Convert ranges to range images:
+	this->rowCount = 1;
+	this->columnCount = o.getScanSize();
+
+	this->rangeImage.setZero(rowCount, columnCount);
+	this->intensityImage.setZero(rowCount, columnCount);
+	this->rangeOtherLayers.clear();
+	this->rangeResolution = 0.01;
+	this->azimuthSpan = o.aperture * (o.rightToLeft ? +1.0 : -1.0);
+	this->startAzimuth = o.aperture * (o.rightToLeft ? -0.5 : +0.5);
+
+	for (size_t i = 0; i < o.getScanSize(); i++)
+	{
+		uint16_t& range_out = rangeImage(0, i);
+		uint8_t& intensity_out = intensityImage(0, i);
+		range_out = 0;
+		intensity_out = 0;
+
+		// Convert range into discrete units:
+		const float r = o.getScanRange(i);
+		const uint16_t r_discr = static_cast<uint16_t>(
+			(r / static_cast<float>(rangeResolution)) + 0.5f);
+
+		if (!o.getScanRangeValidity(i) || r <= 0 || r >= o.maxRange) continue;
+
+		range_out = r_discr;
+
+		if (o.hasIntensity()) intensity_out = o.getScanIntensity(i);
+	}
+
+	this->lidarModel = std::string("2D_SCAN_") + this->sensorLabel;
+
 	MRPT_END
 }
 
@@ -371,6 +409,7 @@ void RotScan::fromPointCloud(const mrpt::obs::CObservationPointCloud& o)
 {
 	MRPT_START
 	MRPT_TODO("fromPointCloud");
+	THROW_EXCEPTION("fromPointCloud() not implemented yet");
 	MRPT_END
 }
 

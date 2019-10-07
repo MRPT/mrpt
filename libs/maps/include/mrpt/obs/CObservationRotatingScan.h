@@ -100,7 +100,11 @@ class CObservationRotatingScan : public CObservation
 	double rangeResolution;
 
 	/** Azimuth of the first and last columns in `ranges`, with respect to the
-	 * *sensor* forward direction. */
+	 * *sensor* forward direction.
+	 * Note that startAzimuth may be possitive or negative, and azimuthSpan can
+	 * be too to reflect the direction of rotation of the scanner:
+	 * >0 is CCW, <0 is CW.
+	 */
 	double startAzimuth{-M_PI}, azimuthSpan{2 * M_PI};
 
 	/** Time(in seconds) that passed since `startAzimuth` to* `endAzimuth`. */
