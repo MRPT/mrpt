@@ -16,7 +16,7 @@
 
 #if MRPT_HAS_OPENCV
 // OPENCV HEADERS
-#define CV_NO_CVV_IMAGE  // Avoid CImage name crash
+#define CV_NO_CVV_IMAGE	 // Avoid CImage name crash
 
 #if MRPT_OPENCV_VERSION_NUM < 0x240
 #error "MRPT requires OpenCV 2.4.0 or newer"
@@ -26,24 +26,23 @@
 
 // C++ API:
 #if MRPT_OPENCV_VERSION_NUM >= 0x300
-// C++ API - opencv 3
-#include <opencv2/core/fast_math.hpp>
+// C++ API - opencv >=3
+#include <opencv2/calib3d.hpp>
 #include <opencv2/core.hpp>
+#include <opencv2/core/fast_math.hpp>
+#include <opencv2/features2d.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
-#include <opencv2/features2d.hpp>
-#include <opencv2/video/tracking.hpp>
-#include <opencv2/video/tracking_c.h>  // Only exists in opencv3
-#include <opencv2/videoio.hpp>
-#include <opencv2/calib3d.hpp>
 #include <opencv2/objdetect.hpp>
+#include <opencv2/video/tracking.hpp>
+#include <opencv2/videoio.hpp>
 #else
 // C++ API - opencv 2.4
+#include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/core/core.hpp>
+#include <opencv2/features2d/features2d.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/features2d/features2d.hpp>
-#include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/video/tracking.hpp>
 #endif
@@ -72,4 +71,4 @@
 #include <opencv2/imgcodecs.hpp>
 #endif
 
-#endif  // MRPT_HAS_OPENCV
+#endif	// MRPT_HAS_OPENCV
