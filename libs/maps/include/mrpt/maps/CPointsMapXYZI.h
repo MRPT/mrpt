@@ -77,6 +77,8 @@ class CPointsMapXYZI : public CPointsMap
 	 * \return true on success */
 	bool loadFromKittiVelodyneFile(const std::string& filename);
 
+	bool saveToKittiVelodyneFile(const std::string& filename) const;
+
 	/** See CPointsMap::loadFromRangeScan() */
 	void loadFromRangeScan(
 		const mrpt::obs::CObservation2DRangeScan& rangeScan,
@@ -107,6 +109,10 @@ class CPointsMapXYZI : public CPointsMap
 	 * Returns false if any error occured, true elsewere.
 	 */
 	bool saveXYZI_to_text_file(const std::string& file) const;
+
+	/** Loads from a text file, each line having "X Y Z I", I in [0,1].
+	 * Returns false if any error occured, true elsewere. */
+	bool loadXYZI_from_text_file(const std::string& file);
 
 	/** Changes a given point from map. First index is 0.
 	 * \exception Throws std::exception on index out of bound.
