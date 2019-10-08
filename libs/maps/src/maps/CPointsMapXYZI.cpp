@@ -11,6 +11,7 @@
 
 #include <mrpt/core/bits_mem.h>
 #include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/CFileInputStream.h>
 #include <mrpt/maps/CPointsMapXYZI.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
@@ -252,6 +253,40 @@ bool CPointsMapXYZI::saveXYZI_to_text_file(const std::string& file) const
 	return true;
 }
 
+bool CPointsMapXYZI::loadXYZI_from_text_file(const std::string& file)
+{
+	MRPT_START
+
+	// Clear current map:
+	mark_as_modified();
+	this->clear();
+
+	std::ifstream f;
+	f.open(file);
+	if (!f.is_open()) return false;
+
+	while (!f.eof())
+	{
+		std::string line;
+		std::getline(f, line);
+
+		std::stringstream ss(line);
+
+		float x, y, z, i;
+		if (!(ss >> x >> y >> z >> i))
+		{
+			break;
+		}
+
+		insertPointFast(x, y, z);
+		m_intensity.push_back(i);
+	}
+
+	return true;
+
+	MRPT_END
+}
+
 /*---------------------------------------------------------------
 addFrom_classSpecific
 ---------------------------------------------------------------*/
@@ -478,6 +513,28 @@ bool CPointsMapXYZI::loadFromKittiVelodyneFile(const std::string& filename)
 	catch (const std::exception& e)
 	{
 		std::cerr << "[loadFromKittiVelodyneFile] " << e.what() << std::endl;
+		return false;
+	}
+}
+
+bool CPointsMapXYZI::saveToKittiVelodyneFile(const std::string& filename) const
+{
+	try
+	{
+		mrpt::io::CFileGZOutputStream f(filename);
+
+		for (size_t i = 0; i < m_x.size(); i++)
+		{
+			const float xyzi[4] = {m_x[i], m_y[i], m_z[i], m_intensity[i]};
+			const auto toWrite = sizeof(float) * 4;
+			std::size_t nWr = f.Write(&xyzi, toWrite);
+			ASSERT_EQUAL_(nWr, toWrite);
+		}
+		return true;
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "[saveToKittiVelodyneFile] " << e.what() << std::endl;
 		return false;
 	}
 }

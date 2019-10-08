@@ -21,6 +21,8 @@
 #define MRPT_NO_WARN_BIG_HDR  // It's ok to include ALL hdrs here.
 #include <mrpt/obs.h>
 
+#include <mrpt/obs/CObservationRotatingScan.h>  // not included in obs.h since it's in mrpt-maps
+
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/poses/CPosePDFParticles.h>
@@ -459,6 +461,34 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 				// Free memory:
 				obs->point_cloud.clear_deep();
 #endif
+			}
+
+			if (classID == CLASS_ID(CObservationRotatingScan))
+			{
+				// ----------------------------------------------------------------------
+				//              CObservationRotatingScan
+				// ----------------------------------------------------------------------
+				Notebook1->ChangeSelection(4);
+				auto obs = std::dynamic_pointer_cast<CObservationRotatingScan>(
+					sel_obj);
+
+				// Get range image as bitmap:
+				// ---------------------------
+				mrpt::img::CImage img_range;
+				img_range.setFromMatrix(obs->rangeImage, false);
+
+				auto imgL = std::unique_ptr<wxBitmap>(
+					mrpt::gui::MRPTImage2wxBitmap(img_range));
+				bmpObsStereoLeft->SetBitmap(*imgL);
+				bmpObsStereoLeft->Refresh();
+
+				mrpt::img::CImage img_intensity;
+				img_intensity.setFromMatrix(obs->intensityImage, false);
+
+				auto imgR = std::unique_ptr<wxBitmap>(
+					mrpt::gui::MRPTImage2wxBitmap(img_intensity));
+				bmpObsStereoRight->SetBitmap(*imgR);
+				bmpObsStereoRight->Refresh();
 			}
 
 			if (classID->derivedFrom(CLASS_ID(CObservation)))

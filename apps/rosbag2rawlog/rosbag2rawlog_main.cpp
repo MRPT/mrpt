@@ -22,6 +22,7 @@
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationIMU.h>
 #include <mrpt/obs/CObservationPointCloud.h>
+#include <mrpt/obs/CObservationRotatingScan.h>
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/serialization/CArchive.h>
@@ -209,27 +210,40 @@ Obs toPointCloud2(std::string_view msg, const rosbag::MessageInstance& rosmsg)
 	if (!fields.count("x") || !fields.count("y") || !fields.count("z"))
 		return {};
 
-#if 0
-		if (fields.count("ring"))
-		{
-			// As a structured Velodyne observation with ring number:
-			MRPT_TODO("Implement me!");
-		}
-		else
-#endif
-	if (fields.count("intensity"))
+	if (fields.count("ring"))
+	{
+		// As a structured 2D range images, if we have ring numbers:
+		auto obsRotScan = mrpt::obs::CObservationRotatingScan::Create();
+		MRPT_TODO("Extract sensor pose from tf frames");
+		const mrpt::poses::CPose3D sensorPose;
+
+		if (!mrpt::ros1bridge::fromROS(*pts, *obsRotScan, sensorPose))
+			THROW_EXCEPTION(
+				"Could not convert pointcloud from ROS to "
+				"CObservationRotatingScan");
+
+		obsRotScan->sensorLabel = msg;
+		return {obsRotScan};
+	}
+	else if (fields.count("intensity"))
 	{
 		// XYZI
 		auto mrptPts = mrpt::maps::CPointsMapXYZI::Create();
 		ptsObs->pointcloud = mrptPts;
-		mrpt::ros1bridge::fromROS(*pts, *mrptPts);
+		if (!mrpt::ros1bridge::fromROS(*pts, *mrptPts))
+			THROW_EXCEPTION(
+				"Could not convert pointcloud from ROS to "
+				"CPointsMapXYZI");
 	}
 	else
 	{
 		// XYZ
 		auto mrptPts = mrpt::maps::CSimplePointsMap::Create();
 		ptsObs->pointcloud = mrptPts;
-		mrpt::ros1bridge::fromROS(*pts, *mrptPts);
+		if (!mrpt::ros1bridge::fromROS(*pts, *mrptPts))
+			THROW_EXCEPTION(
+				"Could not convert pointcloud from ROS to "
+				"CSimplePointsMap");
 	}
 
 	return {ptsObs};
