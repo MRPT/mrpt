@@ -277,8 +277,22 @@ void COpenGLViewport::render(
 						nBytesPerPixel == 3 ? (is_RGB_order ? GL_RGB : GL_BGR)
 											: GL_LUMINANCE;
 
+					// autodetect image row alignment, if any:
+					const auto row_stride = img->getRowStride();
+					const auto row_bytes = img->getWidth() * nBytesPerPixel;
+
+					ASSERT_ABOVEEQ_(row_stride, row_bytes);
+
+					// Alignment in bytes. Refer to OpenGL docs for
+					// GL_UNPACK_ALIGNMENT
+					const int img_store_alignment =
+						(row_stride - row_bytes) + 1;
+					ASSERT_(
+						img_store_alignment == 1 || img_store_alignment == 2 ||
+						img_store_alignment == 4 || img_store_alignment == 8);
+
 					// Send image data to OpenGL:
-					glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+					glPixelStorei(GL_UNPACK_ALIGNMENT, img_store_alignment);
 					glPixelStorei(GL_UNPACK_ROW_LENGTH, img->getWidth());
 					glDrawPixels(
 						img_w, img_h, img_format, img_type,
