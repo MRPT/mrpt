@@ -259,7 +259,7 @@ void CPosePDFParticles::resetAroundSetOfPoses(
 bool CPosePDFParticles::saveToTextFile(const std::string& file) const
 {
 	std::string buf;
-	buf += mrpt::format("%% x  y  yaw[rad] log_weight\n");
+	buf += "%% x  y  yaw[rad] log_weight\n";
 
 	for (const auto& p : m_particles)
 		buf += mrpt::format("%f %f %f %e\n", p.d.x, p.d.y, p.d.phi, p.log_w);

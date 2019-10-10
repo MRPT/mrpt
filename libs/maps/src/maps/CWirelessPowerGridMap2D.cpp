@@ -336,13 +336,12 @@ CWirelessPowerGridMap2D::TInsertionOptions::TInsertionOptions() = default;
 void CWirelessPowerGridMap2D::TInsertionOptions::dumpToTextStream(
 	std::ostream& out) const
 {
-	out << mrpt::format(
-		"\n----------- [CWirelessPowerGridMap2D::TInsertionOptions] "
-		"------------ \n\n");
+	out << "\n----------- [CWirelessPowerGridMap2D::TInsertionOptions] "
+		   "------------ \n\n";
 	internal_dumpToTextStream_common(
 		out);  // Common params to all random fields maps:
 
-	out << mrpt::format("\n");
+	out << "\n";
 }
 
 /*---------------------------------------------------------------

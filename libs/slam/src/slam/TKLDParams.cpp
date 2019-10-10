@@ -24,7 +24,7 @@ TKLDParams::TKLDParams() : KLD_binSize_PHI(DEG2RAD(5)) {}
   ---------------------------------------------------------------*/
 void TKLDParams::dumpToTextStream(std::ostream& out) const
 {
-	out << mrpt::format("\n----------- [TKLDParams] ------------ \n\n");
+	out << "\n----------- [TKLDParams] ------------ \n\n";
 
 	out << mrpt::format(
 		"KLD_minSampleSize                       = %i\n", KLD_minSampleSize);
@@ -39,7 +39,7 @@ void TKLDParams::dumpToTextStream(std::ostream& out) const
 		"KLD_delta                               = %f\n", KLD_delta);
 	out << mrpt::format(
 		"KLD_epsilon                             = %f\n", KLD_epsilon);
-	out << mrpt::format("\n");
+	out << "\n";
 }
 
 /*---------------------------------------------------------------

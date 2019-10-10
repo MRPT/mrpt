@@ -102,9 +102,8 @@ void TMultiResDescMatchOptions::saveToConfigFile(
 // --------------------------------------------------
 void TMultiResDescMatchOptions::dumpToTextStream(std::ostream& out) const
 {
-	out << mrpt::format(
-		"\n----------- [vision::TMultiResDescMatchOptions] ------------ \n");
-	out << mrpt::format("Use orientation filter?:        ");
+	out << "\n----------- [vision::TMultiResDescMatchOptions] ------------ \n";
+	out << "Use orientation filter?:        ";
 	if (useOriFilter)
 	{
 		out << mrpt::format("Yes\n");
@@ -249,7 +248,7 @@ void TMultiResDescOptions::dumpToTextStream(std::ostream& out) const
 
 	out << mrpt::format("Scales:                         ");
 	for (double scale : scales) out << mrpt::format("%.2f ", scale);
-	out << mrpt::format("\n");
+	out << "\n";
 	out << mrpt::format(
 		"-------------------------------------------------------- \n");
 }  // end-dumpToTextStream

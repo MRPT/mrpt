@@ -862,9 +862,9 @@ void COccupancyGridMap2D::TLikelihoodOptions::loadFromConfigFile(
 void COccupancyGridMap2D::TLikelihoodOptions::dumpToTextStream(
 	std::ostream& out) const
 {
-	out << mrpt::format(
-		"\n----------- [COccupancyGridMap2D::TLikelihoodOptions] ------------ "
-		"\n\n");
+	out << "\n----------- [COccupancyGridMap2D::TLikelihoodOptions] "
+		   "------------ "
+		   "\n\n";
 
 	out << mrpt::format("likelihoodMethod                        = ");
 	switch (likelihoodMethod)
@@ -894,7 +894,7 @@ void COccupancyGridMap2D::TLikelihoodOptions::dumpToTextStream(
 			out << mrpt::format("UNKNOWN!!!");
 			break;
 	}
-	out << mrpt::format("\n");
+	out << "\n";
 
 	out << mrpt::format(
 		"enableLikelihoodCache                   = %c\n",
@@ -947,7 +947,7 @@ void COccupancyGridMap2D::TLikelihoodOptions::dumpToTextStream(
 			out << mrpt::format(" ... ");
 	}
 	out << mrpt::format("] (size=%u)\n", (unsigned)OWA_weights.size());
-	out << mrpt::format("\n");
+	out << "\n";
 }
 
 /** Returns true if this map is able to compute a sensible likelihood function

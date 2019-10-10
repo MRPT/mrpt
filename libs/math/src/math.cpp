@@ -421,13 +421,13 @@ string math::MATLAB_plotCovariance2D(
 	for (x = X.begin(); x != X.end(); ++x)
 	{
 		str += format("%.4f", *x);
-		if (x != (X.end() - 1)) str += format(",");
+		if (x != (X.end() - 1)) str += ",";
 	}
 	str += string("],[ ");
 	for (y = Y.begin(); y != Y.end(); ++y)
 	{
 		str += format("%.4f", *y);
-		if (y != (Y.end() - 1)) str += format(",");
+		if (y != (Y.end() - 1)) str += ",";
 	}
 
 	str += format("],'%s');\n", style.c_str());

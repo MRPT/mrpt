@@ -275,13 +275,12 @@ CReflectivityGridMap2D::TInsertionOptions::TInsertionOptions() = default;
 void CReflectivityGridMap2D::TInsertionOptions::dumpToTextStream(
 	std::ostream& out) const
 {
-	out << mrpt::format(
-		"\n----------- [CReflectivityGridMap2D::TInsertionOptions] "
-		"------------ \n\n");
+	out << "\n----------- [CReflectivityGridMap2D::TInsertionOptions] "
+		   "------------ \n\n";
 
 	LOADABLEOPTS_DUMP_VAR(channel, int);
 
-	out << mrpt::format("\n");
+	out << "\n";
 }
 
 /*---------------------------------------------------------------
