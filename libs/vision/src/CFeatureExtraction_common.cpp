@@ -156,8 +156,7 @@ void CFeatureExtraction::computeDescriptors(
 
 void CFeatureExtraction::TOptions::dumpToTextStream(std::ostream& out) const
 {
-	out << mrpt::format(
-		"\n----------- [CFeatureExtraction::TOptions] ------------ \n\n");
+	out << "\n----------- [CFeatureExtraction::TOptions] ------------ \n\n";
 
 	LOADABLEOPTS_DUMP_VAR(featsType, int)
 	LOADABLEOPTS_DUMP_VAR(patchSize, int)
@@ -226,7 +225,7 @@ void CFeatureExtraction::TOptions::dumpToTextStream(std::ostream& out) const
 	LOADABLEOPTS_DUMP_VAR(LATCHOptions.half_ssd_size, int)
 	LOADABLEOPTS_DUMP_VAR(LATCHOptions.rotationInvariance, bool)
 
-	out << mrpt::format("\n");
+	out << "\n";
 }
 
 /*---------------------------------------------------------------

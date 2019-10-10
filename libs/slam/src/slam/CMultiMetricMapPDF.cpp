@@ -595,9 +595,8 @@ void CMultiMetricMapPDF::saveCurrentPathEstimationToTextFile(
 void CMultiMetricMapPDF::TPredictionParams::dumpToTextStream(
 	std::ostream& out) const
 {
-	out << mrpt::format(
-		"\n----------- [CMultiMetricMapPDF::TPredictionParams] ------------ "
-		"\n\n");
+	out << "\n----------- [CMultiMetricMapPDF::TPredictionParams] ------------ "
+		   "\n\n";
 
 	out << mrpt::format(
 		"pfOptimalProposal_mapSelection          = %i\n",
@@ -608,7 +607,7 @@ void CMultiMetricMapPDF::TPredictionParams::dumpToTextStream(
 
 	KLD_params.dumpToTextStream(out);
 	icp_params.dumpToTextStream(out);
-	out << mrpt::format("\n");
+	out << "\n";
 }
 
 /*---------------------------------------------------------------

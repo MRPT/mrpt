@@ -85,7 +85,7 @@ void CLandmarksMap::TMapDefinition::dumpToTextStream_map_specific(
 		"number of initial beacons                = %u\n",
 		(int)initialBeacons.size());
 
-	out << mrpt::format("      ID         (X,Y,Z)\n");
+	out << "      ID         (X,Y,Z)\n";
 	out << mrpt::format(
 		"--------------------------------------------------------\n");
 	for (const auto& initialBeacon : initialBeacons)
@@ -2149,8 +2149,7 @@ CLandmarksMap::TInsertionOptions::TInsertionOptions()
   ---------------------------------------------------------------*/
 void CLandmarksMap::TInsertionOptions::dumpToTextStream(std::ostream& out) const
 {
-	out << mrpt::format(
-		"\n----------- [CLandmarksMap::TInsertionOptions] ------------ \n\n");
+	out << "\n----------- [CLandmarksMap::TInsertionOptions] ------------ \n\n";
 
 	out << mrpt::format(
 		"insert_SIFTs_from_monocular_images      = %c\n",
@@ -2161,7 +2160,7 @@ void CLandmarksMap::TInsertionOptions::dumpToTextStream(std::ostream& out) const
 	out << mrpt::format(
 		"insert_Landmarks_from_range_scans       = %c\n",
 		insert_Landmarks_from_range_scans ? 'Y' : 'N');
-	out << mrpt::format("\n");
+	out << "\n";
 	out << mrpt::format(
 		"SiftCorrRatioThreshold                  = %f\n",
 		SiftCorrRatioThreshold);
@@ -2181,12 +2180,12 @@ void CLandmarksMap::TInsertionOptions::dumpToTextStream(std::ostream& out) const
 	out << mrpt::format(
 		"SIFTsLoadEllipsoidWidth                 = %f\n",
 		SIFTsLoadEllipsoidWidth);
-	out << mrpt::format("\n");
+	out << "\n";
 	out << mrpt::format(
 		"SIFTs_stdXY                             = %f\n", SIFTs_stdXY);
 	out << mrpt::format(
 		"SIFTs_stdDisparity                      = %f\n", SIFTs_stdDisparity);
-	out << mrpt::format("\n");
+	out << "\n";
 	out << mrpt::format(
 		"SIFTs_numberOfKLTKeypoints              = %i\n",
 		SIFTs_numberOfKLTKeypoints);
@@ -2201,7 +2200,7 @@ void CLandmarksMap::TInsertionOptions::dumpToTextStream(std::ostream& out) const
 
 	SIFT_feat_options.dumpToTextStream(out);
 
-	out << mrpt::format("\n");
+	out << "\n";
 }
 
 /*---------------------------------------------------------------
@@ -2272,8 +2271,8 @@ CLandmarksMap::TLikelihoodOptions::TGPSOrigin::TGPSOrigin()
 void CLandmarksMap::TLikelihoodOptions::dumpToTextStream(
 	std::ostream& out) const
 {
-	out << mrpt::format(
-		"\n----------- [CLandmarksMap::TLikelihoodOptions] ------------ \n\n");
+	out << "\n----------- [CLandmarksMap::TLikelihoodOptions] ------------ "
+		   "\n\n";
 
 	out << mrpt::format(
 		"rangeScan2D_decimation                  = %i\n",
@@ -2319,7 +2318,7 @@ void CLandmarksMap::TLikelihoodOptions::dumpToTextStream(
 
 	SIFT_feat_options.dumpToTextStream(out);
 
-	out << mrpt::format("\n");
+	out << "\n";
 }
 
 /*---------------------------------------------------------------

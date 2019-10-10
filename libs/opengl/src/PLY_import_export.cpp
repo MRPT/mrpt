@@ -971,8 +971,7 @@ void ascii_get_element(PlyFile* plyfile, char* elem_ptr)
 	vector<string> words = get_words(plyfile->fp, orig_line);
 
 	if (words.empty())
-		throw std::runtime_error(
-			format("ply_get_element: unexpected end of file"));
+		throw std::runtime_error("ply_get_element: unexpected end of file");
 
 	which_word = 0;
 

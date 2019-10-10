@@ -241,9 +241,8 @@ CHeightGridMap2D::TInsertionOptions::TInsertionOptions()
 void CHeightGridMap2D::TInsertionOptions::dumpToTextStream(
 	std::ostream& out) const
 {
-	out << mrpt::format(
-		"\n----------- [CHeightGridMap2D::TInsertionOptions] ------------ "
-		"\n\n");
+	out << "\n----------- [CHeightGridMap2D::TInsertionOptions] ------------ "
+		   "\n\n";
 	out << mrpt::format(
 		"filterByHeight                          = %c\n",
 		filterByHeight ? 'y' : 'n');
@@ -254,7 +253,7 @@ void CHeightGridMap2D::TInsertionOptions::dumpToTextStream(
 	out << mrpt::format(
 		"colormap                                = %s\n",
 		colorMap == cmJET ? "jet" : "grayscale");
-	out << mrpt::format("\n");
+	out << "\n";
 }
 
 /*---------------------------------------------------------------

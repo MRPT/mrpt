@@ -1136,8 +1136,7 @@ CGridMapAligner::TConfigParams::TConfigParams() : feature_detector_options() {}
   ---------------------------------------------------------------*/
 void CGridMapAligner::TConfigParams::dumpToTextStream(std::ostream& out) const
 {
-	out << mrpt::format(
-		"\n----------- [CGridMapAligner::TConfigParams] ------------ \n\n");
+	out << "\n----------- [CGridMapAligner::TConfigParams] ------------ \n\n";
 
 	LOADABLEOPTS_DUMP_VAR(methodSelection, int)
 	LOADABLEOPTS_DUMP_VAR(featsPerSquareMeter, float)
@@ -1159,7 +1158,7 @@ void CGridMapAligner::TConfigParams::dumpToTextStream(std::ostream& out) const
 
 	feature_detector_options.dumpToTextStream(out);
 
-	out << mrpt::format("\n");
+	out << "\n";
 }
 
 /*---------------------------------------------------------------
