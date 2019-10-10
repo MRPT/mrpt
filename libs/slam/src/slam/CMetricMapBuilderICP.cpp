@@ -99,9 +99,8 @@ void CMetricMapBuilderICP::TConfigParams::loadFromConfigFile(
 void CMetricMapBuilderICP::TConfigParams::dumpToTextStream(
 	std::ostream& out) const
 {
-	out << mrpt::format(
-		"\n----------- [CMetricMapBuilderICP::TConfigParams] ------------ "
-		"\n\n");
+	out << "\n----------- [CMetricMapBuilderICP::TConfigParams] ------------ "
+		   "\n\n";
 
 	out << mrpt::format(
 		"insertionLinDistance                    = %f m\n",

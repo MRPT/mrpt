@@ -523,9 +523,8 @@ CMetricMapBuilderRBPF::TConstructionOptions::TConstructionOptions()
 void CMetricMapBuilderRBPF::TConstructionOptions::dumpToTextStream(
 	std::ostream& out) const
 {
-	out << mrpt::format(
-		"\n----------- [CMetricMapBuilderRBPF::TConstructionOptions] "
-		"------------ \n\n");
+	out << "\n----------- [CMetricMapBuilderRBPF::TConstructionOptions] "
+		   "------------ \n\n";
 
 	out << mrpt::format(
 		"insertionLinDistance                    = %f m\n",
@@ -549,7 +548,7 @@ void CMetricMapBuilderRBPF::TConstructionOptions::dumpToTextStream(
 
 	out << mrpt::format(
 		"  Now showing 'mapsInitializers' and 'predictionOptions':\n");
-	out << mrpt::format("\n");
+	out << "\n";
 
 	mapsInitializers.dumpToTextStream(out);
 	predictionOptions.dumpToTextStream(out);

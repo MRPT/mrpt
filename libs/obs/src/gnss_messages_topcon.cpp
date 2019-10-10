@@ -21,7 +21,7 @@ Message_TOPCON_PZS::Message_TOPCON_PZS() : gnss_message(TOPCON_PZS) {}
 
 void Message_TOPCON_PZS::dumpToStream(std::ostream& out) const
 {
-	out << mrpt::format("\n[TopCon PZS datum]\n");
+	out << "\n[TopCon PZS datum]\n";
 	out << mrpt::format(
 		"  Longitude: %.09f deg  Latitude: %.09f deg Height: %.03f m (%.03f m "
 		"without NBeam) \n",

@@ -1334,9 +1334,9 @@ void COccupancyGridMap2D::TInsertionOptions::loadFromConfigFile(
 void COccupancyGridMap2D::TInsertionOptions::dumpToTextStream(
 	std::ostream& out) const
 {
-	out << mrpt::format(
-		"\n----------- [COccupancyGridMap2D::TInsertionOptions] ------------ "
-		"\n\n");
+	out << "\n----------- [COccupancyGridMap2D::TInsertionOptions] "
+		   "------------ "
+		   "\n\n";
 
 	LOADABLEOPTS_DUMP_VAR(mapAltitude, float)
 	LOADABLEOPTS_DUMP_VAR(maxDistanceInsertion, float)
@@ -1351,7 +1351,7 @@ void COccupancyGridMap2D::TInsertionOptions::dumpToTextStream(
 	LOADABLEOPTS_DUMP_VAR(CFD_features_median_size, float)
 	LOADABLEOPTS_DUMP_VAR(wideningBeamsWithDistance, bool)
 
-	out << mrpt::format("\n");
+	out << "\n";
 }
 
 void COccupancyGridMap2D::OnPostSuccesfulInsertObs(
