@@ -7,21 +7,16 @@ option(DISABLE_PCL "Forces NOT using PCL, even if it could be found by CMake" "O
 mark_as_advanced(DISABLE_PCL)
 
 if(NOT DISABLE_PCL)
-	# It seems the PCL find_package changes some wxWidgets variables (wtf!), so make a backup:
-	#set(BCK_wxWidgets_LIB_DIR ${wxWidgets_LIB_DIR})
-	#set(BCK_wxWidgets_LIBRARIES ${wxWidgets_LIBRARIES})
+	# Avoid warning about env var PCL_ROOT:
+	if(POLICY CMP0074)
+	  cmake_policy(SET CMP0074 NEW)
+	endif()
+
 
 	# PCL library:
 	# --------------------------------------------
 	find_package(PCL COMPONENTS io common registration visualization segmentation surface QUIET)
 	if(PCL_FOUND AND PCL_IO_FOUND AND PCL_COMMON_FOUND AND PCL_REGISTRATION_FOUND AND PCL_VISUALIZATION_FOUND AND PCL_SURFACE_FOUND)
-
-		# Filter: It seems clang + c++11 fails to build against PCL (for clang <3.5):
-		if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND NOT ${CMAKE_CXX_COMPILER_VERSION} VERSION_GREATER "3.4")
-			message(WARNING "Disabling PCL because of incompatibility between clang ${CMAKE_CXX_COMPILER_VERSION} and PCL with c++11 enabled")
-			set(DISABLE_PCL ON)
-			return()
-		endif ()
 
 		set(CMAKE_MRPT_HAS_PCL 1)
 		set(CMAKE_MRPT_HAS_PCL_SYSTEM 1)
@@ -46,9 +41,5 @@ if(NOT DISABLE_PCL)
 		ADD_DIRECTORIES_AS_ISYSTEM(PCL_INCLUDE_DIRS)
 
 	endif()
-
-	# Undo backups: (read above)
-	#set(wxWidgets_LIB_DIR ${BCK_wxWidgets_LIB_DIR})
-	#set(wxWidgets_LIBRARIES ${BCK_wxWidgets_LIBRARIES})
 
 endif()
