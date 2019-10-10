@@ -802,8 +802,7 @@ void CRangeBearingKFSLAM::TOptions::dumpToTextStream(std::ostream& out) const
 {
 	using namespace mrpt::typemeta;
 
-	out << mrpt::format(
-		"\n----------- [CRangeBearingKFSLAM::TOptions] ------------ \n\n");
+	out << "\n----------- [CRangeBearingKFSLAM::TOptions] ------------ \n\n";
 
 	out << mrpt::format(
 		"doPartitioningExperiment                = %c\n",
@@ -829,7 +828,7 @@ void CRangeBearingKFSLAM::TOptions::dumpToTextStream(std::ostream& out) const
 		"data_assoc_IC_ml_threshold              = %.06f\n",
 		data_assoc_IC_ml_threshold);
 
-	out << mrpt::format("\n");
+	out << "\n";
 }
 
 void CRangeBearingKFSLAM::OnInverseObservationModel(

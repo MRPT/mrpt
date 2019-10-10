@@ -778,8 +778,7 @@ void CRangeBearingKFSLAM2D::TOptions::dumpToTextStream(std::ostream& out) const
 {
 	using namespace mrpt::typemeta;
 
-	out << mrpt::format(
-		"\n----------- [CRangeBearingKFSLAM2D::TOptions] ------------ \n\n");
+	out << "\n----------- [CRangeBearingKFSLAM2D::TOptions] ------------ \n\n";
 
 	out << mrpt::format(
 		"data_assoc_method                       = %s\n",
@@ -800,7 +799,7 @@ void CRangeBearingKFSLAM2D::TOptions::dumpToTextStream(std::ostream& out) const
 		"data_assoc_IC_ml_threshold              = %.06f\n",
 		data_assoc_IC_ml_threshold);
 
-	out << mrpt::format("\n");
+	out << "\n";
 }
 
 void CRangeBearingKFSLAM2D::OnInverseObservationModel(

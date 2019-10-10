@@ -20,6 +20,7 @@
 #include <iosfwd>
 #include <sstream>
 #include <string>
+#include <string_view>
 
 namespace mrpt::system
 {
@@ -36,8 +37,8 @@ enum VerbosityLevel
 
 /** Callback types for use with mrpt::system::COuputLogger */
 using output_logger_callback_t = std::function<void(
-	const std::string& msg, const mrpt::system::VerbosityLevel level,
-	const std::string& loggerName, const mrpt::Clock::time_point& timestamp)>;
+	std::string_view msg, const mrpt::system::VerbosityLevel level,
+	std::string_view loggerName, const mrpt::Clock::time_point timestamp)>;
 
 /** \brief Versatile class for consistent logging and
  *        management of output messages
@@ -142,7 +143,7 @@ class COutputLogger
 	 * a_logger.setLoggerName("logger_name");
 	 * \endcode
 	 */
-	COutputLogger(const std::string& name);
+	COutputLogger(std::string_view name);
 	/** Default class constructor. Name of the logger is initialized to "logStr"
 	 */
 	COutputLogger();
@@ -151,7 +152,7 @@ class COutputLogger
 
 	/** \brief Main method to add the specified message string to the logger.
 	 * \sa logCond, logFmt */
-	void logStr(const VerbosityLevel level, const std::string& msg_str)
+	void logStr(const VerbosityLevel level, std::string_view msg_str)
 		const;  // renamed from log() to avoid conflict with math ::log()
 
 	/** \brief Alternative logging method, which mimics the printf behavior.
@@ -271,7 +272,7 @@ class COutputLogger
 		 * current message
 		 */
 		TMsg(
-			const mrpt::system::VerbosityLevel level, const std::string& msg,
+			const mrpt::system::VerbosityLevel level, std::string_view msg,
 			const COutputLogger& logger);
 		/** \brief  Default Destructor */
 		~TMsg();
@@ -303,7 +304,8 @@ class COutputLogger
 
 	/** Helper method for generating a std::string instance from printf-like
 	 * arguments */
-	std::string generateStringFromFormat(const char* fmt, va_list argp) const;
+	std::string generateStringFromFormat(
+		std::string_view fmt, va_list argp) const;
 
 	std::string m_logger_name;
 	mutable std::deque<TMsg>

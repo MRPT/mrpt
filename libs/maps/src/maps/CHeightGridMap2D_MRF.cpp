@@ -269,14 +269,14 @@ CHeightGridMap2D_MRF::TInsertionOptions::TInsertionOptions() = default;
 void CHeightGridMap2D_MRF::TInsertionOptions::dumpToTextStream(
 	std::ostream& out) const
 {
-	out << mrpt::format(
-		"\n----------- [CHeightGridMap2D_MRF::TInsertionOptions] ------------ "
-		"\n\n");
-	out << mrpt::format("[TInsertionOptions.Common] ------------ \n\n");
+	out << "\n----------- [CHeightGridMap2D_MRF::TInsertionOptions] "
+		   "------------ "
+		   "\n\n";
+	out << "[TInsertionOptions.Common] ------------ \n\n";
 	internal_dumpToTextStream_common(
 		out);  // Common params to all random fields maps:
 
-	out << mrpt::format("\n");
+	out << "\n";
 }
 
 /*---------------------------------------------------------------

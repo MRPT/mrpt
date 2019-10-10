@@ -958,11 +958,10 @@ bool CBeaconMap::saveToMATLABScript3D(
 
 void CBeaconMap::TLikelihoodOptions::dumpToTextStream(std::ostream& out) const
 {
-	out << mrpt::format(
-		"\n----------- [CBeaconMap::TLikelihoodOptions] ------------ \n\n");
+	out << "\n----------- [CBeaconMap::TLikelihoodOptions] ------------ \n\n";
 	out << mrpt::format(
 		"rangeStd                                = %f\n", rangeStd);
-	out << mrpt::format("\n");
+	out << "\n";
 }
 
 /*---------------------------------------------------------------
@@ -976,8 +975,7 @@ void CBeaconMap::TLikelihoodOptions::loadFromConfigFile(
 
 void CBeaconMap::TInsertionOptions::dumpToTextStream(std::ostream& out) const
 {
-	out << mrpt::format(
-		"\n----------- [CBeaconMap::TInsertionOptions] ------------ \n\n");
+	out << "\n----------- [CBeaconMap::TInsertionOptions] ------------ \n\n";
 
 	out << mrpt::format(
 		"insertAsMonteCarlo                      = %c\n",
@@ -1010,7 +1008,7 @@ void CBeaconMap::TInsertionOptions::dumpToTextStream(std::ostream& out) const
 		"SOG_separationConstant                  = %.03f\n",
 		SOG_separationConstant);
 
-	out << mrpt::format("\n");
+	out << "\n";
 }
 
 /*---------------------------------------------------------------

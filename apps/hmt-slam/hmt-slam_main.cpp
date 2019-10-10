@@ -120,7 +120,7 @@ void Run_HMT_SLAM()
 	ASSERT_FILE_EXISTS_(rawlogFileName);
 	CFileGZInputStream rawlogFile(rawlogFileName);
 
-	mapping.logFmt(
+	mapping.logStr(
 		mrpt::system::LVL_INFO,
 		"---------------------------------------------------\n\n");
 

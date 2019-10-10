@@ -83,7 +83,7 @@ struct TKF_options : public mrpt::config::CLoadableOptions
 	 * textual form, sending it to a CStream. */
 	void dumpToTextStream(std::ostream& out) const override
 	{
-		out << mrpt::format("\n----------- [TKF_options] ------------ \n\n");
+		out << "\n----------- [TKF_options] ------------ \n\n";
 		out << mrpt::format(
 			"method                                  = %s\n",
 			mrpt::typemeta::TEnumType<TKFMethod>::value2name(method).c_str());
@@ -97,7 +97,7 @@ struct TKF_options : public mrpt::config::CLoadableOptions
 		out << mrpt::format(
 			"enable_profiler                         = %c\n",
 			enable_profiler ? 'Y' : 'N');
-		out << mrpt::format("\n");
+		out << "\n";
 	}
 
 	/** The method to employ (default: kfEKFNaive) */

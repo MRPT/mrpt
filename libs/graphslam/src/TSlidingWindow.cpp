@@ -200,7 +200,7 @@ void TSlidingWindow::dumpToTextStream(std::ostream& out) const
 	{
 		out << mrpt::format("\t%.2f\n", it);
 	}
-	out << mrpt::format("\n");
+	out << "\n";
 
 	out << mrpt::format("m_name              : %s\n", m_name.c_str());
 	out << mrpt::format("m_mean_cached       : %.2f\n", m_mean_cached);

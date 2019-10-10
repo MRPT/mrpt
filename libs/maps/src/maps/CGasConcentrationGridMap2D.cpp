@@ -448,14 +448,13 @@ CGasConcentrationGridMap2D::TInsertionOptions::TInsertionOptions()
 void CGasConcentrationGridMap2D::TInsertionOptions::dumpToTextStream(
 	std::ostream& out) const
 {
-	out << mrpt::format(
-		"\n----------- [CGasConcentrationGridMap2D::TInsertionOptions] "
-		"------------ \n\n");
-	out << mrpt::format("[TInsertionOptions.Common] ------------ \n\n");
+	out << "\n----------- [CGasConcentrationGridMap2D::TInsertionOptions] "
+		   "------------ \n\n";
+	out << "[TInsertionOptions.Common] ------------ \n\n";
 	internal_dumpToTextStream_common(
 		out);  // Common params to all random fields maps:
 
-	out << mrpt::format("[TInsertionOptions.GasSpecific] ------------ \n\n");
+	out << "[TInsertionOptions.GasSpecific] ------------ \n\n";
 	out << mrpt::format(
 		"gasSensorLabel							= %s\n",
 		gasSensorLabel.c_str());
@@ -482,7 +481,7 @@ void CGasConcentrationGridMap2D::TInsertionOptions::dumpToTextStream(
 	out << mrpt::format(
 		"std_windNoise_mod						= %f\n", std_windNoise_mod);
 
-	out << mrpt::format("\n");
+	out << "\n";
 }
 
 /*---------------------------------------------------------------
