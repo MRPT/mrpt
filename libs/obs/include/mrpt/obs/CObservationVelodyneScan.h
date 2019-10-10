@@ -89,12 +89,12 @@ class CObservationVelodyneScan : public CObservation
 	static const int SCANS_PER_BLOCK = 32;
 	static const int BLOCK_DATA_SIZE = (SCANS_PER_BLOCK * RAW_SCAN_SIZE);
 
-	static const float ROTATION_RESOLUTION;  // = 0.01f; /**< degrees */
 	static const uint16_t ROTATION_MAX_UNITS =
 		36000; /**< hundredths of degrees */
 
-	static const float DISTANCE_MAX; /**< meters */
-	static const float DISTANCE_RESOLUTION; /**< meters */
+	static constexpr float ROTATION_RESOLUTION = 0.01f; /**< degrees */
+	static constexpr float DISTANCE_MAX = 130.0f; /**< meters */
+	static constexpr float DISTANCE_RESOLUTION = 0.002f; /**< meters */
 
 	/** Blocks 0-31 */
 	static const uint16_t UPPER_BANK = 0xeeff;
