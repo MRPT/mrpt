@@ -89,7 +89,7 @@ void COutputLogger::logStr(
 }
 
 void COutputLogger::logFmt(
-	const VerbosityLevel level, const char *fmt, ...) const
+	const VerbosityLevel level, const char* fmt, ...) const
 {
 	// see MRPT/libs/base/src/utils/CDeugOutputCapable.cpp for the iniitial
 	// implementtion
