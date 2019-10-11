@@ -8,7 +8,6 @@ set(sampleName vision_capture_video_build_pyr)
 project(EXAMPLE_${sampleName})
 
 cmake_minimum_required(VERSION 3.1)
-cmake_policy(SET CMP0003 NEW)  # Required by CMake 2.7+
 
 # ---------------------------------------------------------------------------
 # Set the output directory of each example to its corresponding subdirectory
