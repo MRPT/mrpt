@@ -88,7 +88,7 @@ void Message_TOPCON_PZS::internal_readFromStream(
 Message_TOPCON_SATS::Message_TOPCON_SATS() : gnss_message(TOPCON_SATS) {}
 void Message_TOPCON_SATS::dumpToStream(std::ostream& out) const
 {
-	out << mrpt::format("\n[TopCon SATS datum]\n");
+	out << "\n[TopCon SATS datum]\n";
 	out << mrpt::format(
 		"  USI   ELEV    AZIM      (%u entries) \n",
 		static_cast<unsigned int>(USIs.size()));

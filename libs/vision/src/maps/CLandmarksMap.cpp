@@ -86,8 +86,7 @@ void CLandmarksMap::TMapDefinition::dumpToTextStream_map_specific(
 		(int)initialBeacons.size());
 
 	out << "      ID         (X,Y,Z)\n";
-	out << mrpt::format(
-		"--------------------------------------------------------\n");
+	out << "--------------------------------------------------------\n";
 	for (const auto& initialBeacon : initialBeacons)
 		out << mrpt::format(
 			"      %03u         (%8.03f,%8.03f,%8.03f)\n", initialBeacon.second,

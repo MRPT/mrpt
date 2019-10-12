@@ -866,32 +866,32 @@ void COccupancyGridMap2D::TLikelihoodOptions::dumpToTextStream(
 		   "------------ "
 		   "\n\n";
 
-	out << mrpt::format("likelihoodMethod                        = ");
+	out << "likelihoodMethod                        = ";
 	switch (likelihoodMethod)
 	{
 		case lmMeanInformation:
-			out << mrpt::format("lmMeanInformation");
+			out << "lmMeanInformation";
 			break;
 		case lmRayTracing:
-			out << mrpt::format("lmRayTracing");
+			out << "lmRayTracing";
 			break;
 		case lmConsensus:
-			out << mrpt::format("lmConsensus");
+			out << "lmConsensus";
 			break;
 		case lmCellsDifference:
-			out << mrpt::format("lmCellsDifference");
+			out << "lmCellsDifference";
 			break;
 		case lmLikelihoodField_Thrun:
-			out << mrpt::format("lmLikelihoodField_Thrun");
+			out << "lmLikelihoodField_Thrun";
 			break;
 		case lmLikelihoodField_II:
-			out << mrpt::format("lmLikelihoodField_II");
+			out << "lmLikelihoodField_II";
 			break;
 		case lmConsensusOWA:
-			out << mrpt::format("lmConsensusOWA");
+			out << "lmConsensusOWA";
 			break;
 		default:
-			out << mrpt::format("UNKNOWN!!!");
+			out << "UNKNOWN!!!";
 			break;
 	}
 	out << "\n";
@@ -938,13 +938,13 @@ void COccupancyGridMap2D::TLikelihoodOptions::dumpToTextStream(
 		consensus_takeEachRange);
 	out << mrpt::format(
 		"consensus_pow                           = %.02f\n", consensus_pow);
-	out << mrpt::format("OWA_weights   = [");
+	out << "OWA_weights   = [";
 	for (size_t i = 0; i < OWA_weights.size(); i++)
 	{
 		if (i < 3 || i > (OWA_weights.size() - 3))
 			out << mrpt::format("%.03f ", OWA_weights[i]);
 		else if (i == 3 && OWA_weights.size() > 6)
-			out << mrpt::format(" ... ");
+			out << " ... ";
 	}
 	out << mrpt::format("] (size=%u)\n", (unsigned)OWA_weights.size());
 	out << "\n";

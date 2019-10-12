@@ -627,8 +627,8 @@ void Test_Kinect()
 		win3D.get3DSceneAndLock();
 		win3D.addTextMessage(
 			2, -30,
-			format("'s':save point cloud, 'r': reset, 'o'/'i': zoom "
-				   "out/in, mouse: orbit 3D, ESC: quit"),
+			"'s':save point cloud, 'r': reset, 'o'/'i': zoom "
+			"out/in, mouse: orbit 3D, ESC: quit",
 			TColorf(1, 1, 1), 110, MRPT_GLUT_BITMAP_HELVETICA_12);
 		win3D.addTextMessage(
 			2, -50, str_status, TColorf(1, 1, 1), 111,
