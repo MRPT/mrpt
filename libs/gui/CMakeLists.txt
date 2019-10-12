@@ -53,4 +53,11 @@ if(BUILD_mrpt-gui)
 		target_link_libraries(gui PRIVATE mrpt_glew)
 	endif()
 
+	if (TARGET EP_nanogui)
+		# Dep: build EP_nanogui first
+		add_dependencies(gui EP_nanogui)
+		# then, define the -I and -l
+		target_link_libraries(gui PUBLIC nanogui::nanogui)
+	endif()
+
 endif()
