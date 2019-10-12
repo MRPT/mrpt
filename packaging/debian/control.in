@@ -46,7 +46,9 @@ Build-Depends: debhelper (>= 10),
 	libstd-srvs-dev,
 	libstereo-msgs-dev,
 	libtf2-dev,
-	libtf2-msgs-dev
+	libtf2-msgs-dev,
+	xorg-dev,
+	libglu1-mesa-dev
 Standards-Version: 4.3.0
 Homepage: https://www.mrpt.org/
 
