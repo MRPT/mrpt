@@ -120,7 +120,7 @@ void CMetricMapBuilderICP::TConfigParams::dumpToTextStream(
 			verbosity_level)
 			.c_str());
 
-	out << mrpt::format("  Now showing 'mapsInitializers':\n");
+	out << "  Now showing 'mapsInitializers':\n";
 	mapInitializers.dumpToTextStream(out);
 }
 

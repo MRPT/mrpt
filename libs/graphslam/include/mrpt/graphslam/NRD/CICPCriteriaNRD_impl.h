@@ -347,9 +347,8 @@ void CICPCriteriaNRD<GRAPH_T>::TParams::dumpToTextStream(
 
 	using namespace mrpt::math;
 
-	out << mrpt::format(
-		"------------------[ ICP Fixed Intervals Node Registration "
-		"]------------------\n");
+	out << "------------------[ ICP Fixed Intervals Node Registration "
+		   "]------------------\n";
 	out << mrpt::format(
 		"Max distance for registration = %.2f m\n", registration_max_distance);
 	out << mrpt::format(

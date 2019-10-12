@@ -330,7 +330,7 @@ void CCameraSensor::initialize()
 	else if (m_grabber_type == "duo3d")
 	{
 		// m_cap_duo3D
-		cout << format("[CCameraSensor::initialize] DUO3D stereo camera ...\n");
+		cout << "[CCameraSensor::initialize] DUO3D stereo camera ...\n";
 
 		// Open it:
 		try

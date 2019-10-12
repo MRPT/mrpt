@@ -114,7 +114,7 @@ Message_NMEA_VTG::content_t::content_t()
 
 void Message_NMEA_VTG::dumpToStream(std::ostream& out) const
 {
-	out << mrpt::format("[NMEA VTG datum]\n");
+	out << "[NMEA VTG datum]\n";
 	out << mrpt::format(
 		"  True track: %.03f deg  Magnetic track: %.03f deg\n",
 		fields.true_track, fields.magnetic_track);
@@ -164,7 +164,7 @@ mrpt::system::TTimeStamp Message_NMEA_RMC::getDateAsTimestamp() const
 
 void Message_NMEA_RMC::dumpToStream(std::ostream& out) const
 {
-	out << mrpt::format("[NMEA RMC datum]\n");
+	out << "[NMEA RMC datum]\n";
 	out << mrpt::format(
 		" Positioning mode: `%c`\n ", (char)fields.positioning_mode);
 	out << mrpt::format(
@@ -205,7 +205,7 @@ bool Message_NMEA_RMC::getAllFieldValues(std::ostream& o) const
 Message_NMEA_ZDA::content_t::content_t() : UTCTime() {}
 void Message_NMEA_ZDA::dumpToStream(std::ostream& out) const
 {
-	out << mrpt::format("[NMEA ZDA datum]\n");
+	out << "[NMEA ZDA datum]\n";
 	out << mrpt::format(
 		" UTC time-stamp: %02u:%02u:%02.03f\n", fields.UTCTime.hour,
 		fields.UTCTime.minute, fields.UTCTime.sec);

@@ -577,7 +577,7 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 				MRPT_LOG_ERROR_STREAM(
 					"Expected [2] new registered nodes"
 					<< " but got [" << m_graph.nodeCount() << "]");
-				THROW_EXCEPTION(format("Illegal node registration"));
+				THROW_EXCEPTION("Illegal node registration");
 			}
 
 			m_nodes_to_laser_scans2D.insert(
@@ -2028,7 +2028,7 @@ void CGraphSlamEngine<GRAPH_T>::initGTVisualization()
 	m_win_manager->assignTextMessageParameters(
 		&m_offset_y_GT, &m_text_index_GT);
 	m_win_manager->addTextMessage(
-		m_offset_x_left, -m_offset_y_GT, mrpt::format("Ground truth path"),
+		m_offset_x_left, -m_offset_y_GT, "Ground truth path",
 		mrpt::img::TColorf(m_GT_color), m_text_index_GT);
 	m_win->forceRepaint();
 
@@ -2103,7 +2103,7 @@ void CGraphSlamEngine<GRAPH_T>::initOdometryVisualization()
 	m_win_manager->assignTextMessageParameters(
 		&m_offset_y_odometry, &m_text_index_odometry);
 	m_win_manager->addTextMessage(
-		m_offset_x_left, -m_offset_y_odometry, mrpt::format("Odometry path"),
+		m_offset_x_left, -m_offset_y_odometry, "Odometry path",
 		mrpt::img::TColorf(m_odometry_color), m_text_index_odometry);
 
 	m_win->forceRepaint();
@@ -2182,8 +2182,7 @@ void CGraphSlamEngine<GRAPH_T>::initEstimatedTrajectoryVisualization()
 		m_win_manager->assignTextMessageParameters(
 			&m_offset_y_estimated_traj, &m_text_index_estimated_traj);
 		m_win_manager->addTextMessage(
-			m_offset_x_left, -m_offset_y_estimated_traj,
-			mrpt::format("Estimated trajectory"),
+			m_offset_x_left, -m_offset_y_estimated_traj, "Estimated trajectory",
 			mrpt::img::TColorf(m_estimated_traj_color),
 			m_text_index_estimated_traj);
 	}

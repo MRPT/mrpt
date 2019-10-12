@@ -290,8 +290,7 @@ class CDijkstra
 					}
 				}
 
-				std::string err_str =
-					mrpt::format("Graph is not fully connected!");
+				std::string err_str = "Graph is not fully connected!";
 				throw mrpt::graphs::detail::NotConnectedGraph(
 					nodeIDs_unconnected, err_str);
 			}

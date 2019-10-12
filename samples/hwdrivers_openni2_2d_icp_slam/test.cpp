@@ -110,8 +110,8 @@ int main(int argc, char** argv)
 				MRPT_GLUT_BITMAP_HELVETICA_12);
 
 			win3D.addTextMessage(
-				5, 5, format("'o'/'i'-zoom out/in, ESC: quit"),
-				TColorf(0, 0, 1), 110, MRPT_GLUT_BITMAP_HELVETICA_18);
+				5, 5, "'o'/'i'-zoom out/in, ESC: quit", TColorf(0, 0, 1), 110,
+				MRPT_GLUT_BITMAP_HELVETICA_18);
 
 			win3D.unlockAccess3DScene();
 			win3D.repaint();
