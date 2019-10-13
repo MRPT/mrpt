@@ -204,6 +204,11 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 			target_compile_definitions(${name} PUBLIC _USE_MATH_DEFINES)
 		endif()
 
+		# for gcc and clang, we must build libraries as fPIC:
+		if(NOT MSVC)
+			target_compile_options(${name} PRIVATE "-fPIC")
+		endif()
+
 		set_target_properties(${name} PROPERTIES FOLDER "modules")
 		set(iftype PUBLIC)
 		add_coverage(${name})

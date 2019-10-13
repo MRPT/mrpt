@@ -295,7 +295,7 @@ void CLevMarqGSO<GRAPH_T>::initOptDistanceVisualization()
 
 	this->m_win_manager->addTextMessage(
 		5, -opt_params.offset_y_optimization_distance,
-		format("Radius for graph optimization"),
+		"Radius for graph optimization",
 		mrpt::img::TColorf(opt_params.optimization_distance_color),
 		/* unique_index = */ opt_params.text_index_optimization_distance);
 	MRPT_END;
@@ -767,8 +767,7 @@ void CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::dumpToTextStream(
 {
 	MRPT_START;
 
-	out << mrpt::format(
-		"-----------[ Graph Visualization Parameters ]-----------\n");
+	out << "-----------[ Graph Visualization Parameters ]-----------\n";
 	out << mrpt::format(
 		"Visualize optimized graph = %s\n",
 		visualize_optimized_graph ? "TRUE" : "FALSE");

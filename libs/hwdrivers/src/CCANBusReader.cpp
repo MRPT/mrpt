@@ -605,7 +605,7 @@ bool CCANBusReader::waitACK(uint16_t timeout_ms)
 	} while (tictac.Tac() < timeout_ms * 1e-3);
 
 	if (b == 0x07)  // [BELL]
-		RET_ERROR(format("ERROR received."))
+		RET_ERROR("ERROR received.")
 	else if (b != 0)
 		RET_ERROR(format("Unexpected code received: 0x%02X", b))
 	else

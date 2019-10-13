@@ -546,8 +546,7 @@ void CMetricMapBuilderRBPF::TConstructionOptions::dumpToTextStream(
 
 	PF_options.dumpToTextStream(out);
 
-	out << mrpt::format(
-		"  Now showing 'mapsInitializers' and 'predictionOptions':\n");
+	out << "  Now showing 'mapsInitializers' and 'predictionOptions':\n";
 	out << "\n";
 
 	mapsInitializers.dumpToTextStream(out);

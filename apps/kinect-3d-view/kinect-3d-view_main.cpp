@@ -386,9 +386,9 @@ void Test_Kinect()
 		win3D.get3DSceneAndLock();
 		win3D.addTextMessage(
 			10, 10,
-			format("'o'/'i'-zoom out/in, 'w'-tilt up,'s'-tilt down, mouse: "
-				   "orbit 3D,'c':Switch RGB/IR,'9':Save image, 'p': "
-				   "points/octomap, ESC: quit"),
+			"'o'/'i'-zoom out/in, 'w'-tilt up,'s'-tilt down, mouse: "
+			"orbit 3D,'c':Switch RGB/IR,'9':Save image, 'p': "
+			"points/octomap, ESC: quit",
 			TColorf(0, 0, 1), "mono", 10, mrpt::opengl::FILL, 110);
 		win3D.addTextMessage(
 			10, 35, format("Tilt angle: %.01f deg", thrPar.tilt_ang_deg),

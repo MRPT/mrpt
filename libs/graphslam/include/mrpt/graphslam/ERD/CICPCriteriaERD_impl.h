@@ -455,7 +455,7 @@ void CICPCriteriaERD<GRAPH_T>::initializeVisuals()
 			&m_offset_y_search_disk, &m_text_index_search_disk);
 
 		this->m_win_manager->addTextMessage(
-			5, -m_offset_y_search_disk, mrpt::format("ICP Edges search radius"),
+			5, -m_offset_y_search_disk, "ICP Edges search radius",
 			mrpt::img::TColorf(m_search_disk_color),
 			/* unique_index = */ m_text_index_search_disk);
 	}
@@ -629,9 +629,8 @@ void CICPCriteriaERD<GRAPH_T>::TParams::dumpToTextStream(
 {
 	MRPT_START;
 
-	out << mrpt::format(
-		"------------------[ Goodness-based ICP Edge Registration "
-		"]------------------\n");
+	out << "------------------[ Goodness-based ICP Edge Registration "
+		   "]------------------\n";
 	out << mrpt::format(
 		"ICP goodness threshold         = %.2f%% \n",
 		ICP_goodness_thresh * 100);

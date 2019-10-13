@@ -259,9 +259,9 @@ void CPTG_DiffDrive_CollisionGridBased::simulateTrajectories(
 	}
 	catch (...)
 	{
-		std::cout << format(
-			"[CPTG_DiffDrive_CollisionGridBased::simulateTrajectories] "
-			"Simulation aborted: unexpected exception!\n");
+		std::cout
+			<< "[CPTG_DiffDrive_CollisionGridBased::simulateTrajectories] "
+			   "Simulation aborted: unexpected exception!\n";
 	}
 }
 
