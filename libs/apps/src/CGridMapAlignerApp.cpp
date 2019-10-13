@@ -38,92 +38,97 @@
 
 using namespace mrpt::apps;
 
+CGridMapAlignerApp::CGridMapAlignerApp()
+	: mrpt::system::COutputLogger("CGridMapAlignerApp")
+{
+}
+
 void CGridMapAlignerApp::initialize(int argc, const char** argv)
 {
 	MRPT_START
 
 	// Declare the supported options.
 	TCLAP::CmdLine cmd(
-	    "grid-matching", ' ', mrpt::system::MRPT_getVersion().c_str());
+		"grid-matching", ' ', mrpt::system::MRPT_getVersion().c_str());
 
 	TCLAP::SwitchArg arg_match(
-	    "m", "match", "Operation: match two maps", cmd, false);
+		"m", "match", "Operation: match two maps", cmd, false);
 	TCLAP::SwitchArg arg_detect(
-	    "d", "detect-test", "Operation: Quality of match with one map", cmd,
-	    false);
+		"d", "detect-test", "Operation: Quality of match with one map", cmd,
+		false);
 
 	TCLAP::ValueArg<std::string> arg_filgrid1(
-	    "1", "map1", "Map #1 to align (*.simplemap)", true, "",
-	    "map1.simplemap", cmd);
+		"1", "map1", "Map #1 to align (*.simplemap)", true, "",
+		"map1.simplemap", cmd);
 	TCLAP::ValueArg<std::string> arg_filgrid2(
-	    "2", "map2", "Map #2 to align (*.simplemap)", false, "",
-	    "map2.simplemap", cmd);
+		"2", "map2", "Map #2 to align (*.simplemap)", false, "",
+		"map2.simplemap", cmd);
 
 	TCLAP::ValueArg<std::string> arg_out(
-	    "o", "out", "Output file for the results", false,
-	    "gridmatching_out.txt", "result_outfile", cmd);
+		"o", "out", "Output file for the results", false,
+		"gridmatching_out.txt", "result_outfile", cmd);
 	TCLAP::ValueArg<std::string> arg_config(
-	    "c", "config", "Optional config. file with more params", false, "",
-	    "config.ini", cmd);
+		"c", "config", "Optional config. file with more params", false, "",
+		"config.ini", cmd);
 
 	TCLAP::ValueArg<std::string> arg_aligner_method(
-	    "", "aligner", "The method to use for map aligning", false,
-	    "amModifiedRANSAC", "[amCorrelation|amRobustMatch|amModifiedRANSAC]",
-	    cmd);
+		"", "aligner", "The method to use for map aligning", false,
+		"amModifiedRANSAC", "[amCorrelation|amRobustMatch|amModifiedRANSAC]",
+		cmd);
 	TCLAP::ValueArg<std::string> arg_out_dir(
-	    "", "out-dir", "The output directory", false, "GRID-MATCHING_RESULTS",
-	    "GRID-MATCHING_RESULTS", cmd);
+		"", "out-dir", "The output directory", false, "GRID-MATCHING_RESULTS",
+		"GRID-MATCHING_RESULTS", cmd);
 
 	TCLAP::SwitchArg arg_savesog3d(
-	    "3", "save-sog-3d", "Save a 3D view of all the SOG modes", cmd, false);
+		"3", "save-sog-3d", "Save a 3D view of all the SOG modes", cmd, false);
 	TCLAP::SwitchArg arg_savesogall(
-	    "a", "save-sog-all", "Save all the map overlaps", cmd, false);
+		"a", "save-sog-all", "Save all the map overlaps", cmd, false);
 	TCLAP::SwitchArg arg_savecorrdists(
-	    "t", "save-corr-dists", "Save corr & non-corr distances", cmd, false);
+		"t", "save-corr-dists", "Save corr & non-corr distances", cmd, false);
 	TCLAP::ValueArg<std::string> arg_icpgoodness(
-	    "i", "save-icp-goodness", "Append all ICP goodness values here", false,
-	    "", "icp_goodness.txt", cmd);
+		"i", "save-icp-goodness", "Append all ICP goodness values here", false,
+		"", "icp_goodness.txt", cmd);
 
 	TCLAP::ValueArg<double> arg_noise_std_xy(
-	    "x", "noise-std-xy", "In detect-test mode,std. noise in XY", false, 0,
-	    "sigma", cmd);
+		"x", "noise-std-xy", "In detect-test mode,std. noise in XY", false, 0,
+		"sigma", cmd);
 	TCLAP::ValueArg<double> arg_noise_std_phi(
-	    "p", "noise-std-phi", "In detect-test mode,std. noise in PHI (deg)",
-	    false, 0, "sigma", cmd);
+		"p", "noise-std-phi", "In detect-test mode,std. noise in PHI (deg)",
+		false, 0, "sigma", cmd);
 	TCLAP::ValueArg<double> arg_noise_std_laser(
-	    "l", "noise-std-laser", "In detect-test mode,std. noise range (m)",
-	    false, 0, "sigma", cmd);
+		"l", "noise-std-laser", "In detect-test mode,std. noise range (m)",
+		false, 0, "sigma", cmd);
 	TCLAP::ValueArg<unsigned int> arg_niters(
-	    "N", "iters", "In detect-test mode,number of trials", false, 1,
-	    "rep.count", cmd);
+		"N", "iters", "In detect-test mode,number of trials", false, 1,
+		"rep.count", cmd);
 
 	TCLAP::ValueArg<double> arg_Ax(
-	    "X", "Ax", "In detect-test mode, displacement in X (m)", false, 4, "X",
-	    cmd);
+		"X", "Ax", "In detect-test mode, displacement in X (m)", false, 4, "X",
+		cmd);
 	TCLAP::ValueArg<double> arg_Ay(
-	    "Y", "Ay", "In detect-test mode, displacement in Y (m)", false, 2, "Y",
-	    cmd);
+		"Y", "Ay", "In detect-test mode, displacement in Y (m)", false, 2, "Y",
+		cmd);
 	TCLAP::ValueArg<double> arg_Aphi(
-	    "P", "Aphi", "In detect-test mode, displacement in PHI (deg)", false,
-	    30, "PHI", cmd);
+		"P", "Aphi", "In detect-test mode, displacement in PHI (deg)", false,
+		30, "PHI", cmd);
 
 	TCLAP::SwitchArg arg_noise_pose(
-	    "O", "noise-pose", "detect-test mode: enable noise in pose", cmd,
-	    false);
+		"O", "noise-pose", "detect-test mode: enable noise in pose", cmd,
+		false);
 	TCLAP::SwitchArg arg_noise_laser(
-	    "L", "noise-laser", "detect-test mode: enable noise in laser", cmd,
-	    false);
+		"L", "noise-laser", "detect-test mode: enable noise in laser", cmd,
+		false);
 
 	TCLAP::SwitchArg arg_verbose("v", "verbose", "Verbose output", cmd, false);
 	TCLAP::SwitchArg arg_nologo(
-	    "g", "nologo", "skip the logo at startup", cmd, false);
+		"g", "nologo", "skip the logo at startup", cmd, false);
 	TCLAP::SwitchArg arg_nosave(
-	    "n", "nosave", "skip saving map images", cmd, false);
+		"n", "nosave", "skip saving map images", cmd, false);
 	TCLAP::SwitchArg arg_skip_icp(
-	    "s", "noicp", "skip ICP optimization stage", cmd, false);
+		"s", "noicp", "skip ICP optimization stage", cmd, false);
 	TCLAP::SwitchArg arg_most_likely(
-	    "", "most-likely-only",
-	    "Keep the most-likely Gaussian mode from the SOG", cmd, false);
+		"", "most-likely-only",
+		"Keep the most-likely Gaussian mode from the SOG", cmd, false);
 
 	// Parse arguments:
 	if (!cmd.parse(argc, argv))
@@ -136,8 +141,8 @@ void CGridMapAlignerApp::initialize(int argc, const char** argv)
 	SAVE_ICP_GOODNESS_FIL = arg_icpgoodness.getValue();
 
 	aligner_method =
-	    mrpt::typemeta::TEnumType<mrpt::slam::CGridMapAligner::TAlignerMethod>::
-	        name2value(arg_aligner_method.getValue());
+		mrpt::typemeta::TEnumType<mrpt::slam::CGridMapAligner::TAlignerMethod>::
+			name2value(arg_aligner_method.getValue());
 
 	STD_NOISE_XY = arg_noise_std_xy.getValue();
 	STD_NOISE_PHI = DEG2RAD(arg_noise_std_phi.getValue());
@@ -158,9 +163,9 @@ void CGridMapAlignerApp::initialize(int argc, const char** argv)
 	{
 		printf(" grid-matching - Part of the MRPT\n");
 		printf(
-		    " MRPT C++ Library: %s - Sources timestamp: %s\n",
-		    mrpt::system::MRPT_getVersion().c_str(),
-		    mrpt::system::MRPT_getCompilationDate().c_str());
+			" MRPT C++ Library: %s - Sources timestamp: %s\n",
+			mrpt::system::MRPT_getVersion().c_str(),
+			mrpt::system::MRPT_getCompilationDate().c_str());
 	}
 
 	SKIP_ICP_STAGE = arg_skip_icp.getValue();
@@ -174,12 +179,12 @@ void CGridMapAlignerApp::initialize(int argc, const char** argv)
 	is_detect_test = arg_detect.getValue();
 
 	if (((!is_match && !is_detect_test) || (is_match && is_detect_test)) &&
-	    !SAVE_CORR_AND_NONCORR_DISTS)
+		!SAVE_CORR_AND_NONCORR_DISTS)
 	{
 		std::cerr << std::endl
-		          << "Error: One operation mode 'match' or 'detect-test' or "
-		             "'save-corr-dists' must be selected."
-		          << std::endl;
+				  << "Error: One operation mode 'match' or 'detect-test' or "
+					 "'save-corr-dists' must be selected."
+				  << std::endl;
 		TCLAP::StdOutput so;
 		so.usage(cmd);
 		THROW_EXCEPTION("Wrong CLI parameters.");
@@ -191,9 +196,9 @@ void CGridMapAlignerApp::initialize(int argc, const char** argv)
 		if (!arg_filgrid1.isSet() || !arg_filgrid2.isSet())
 		{
 			std::cerr << std::endl
-			          << "Error: Two maps must be passed: --map1=xxx and "
-			             "--map2=xxx"
-			          << std::endl;
+					  << "Error: Two maps must be passed: --map1=xxx and "
+						 "--map2=xxx"
+					  << std::endl;
 			TCLAP::StdOutput so;
 			so.usage(cmd);
 			THROW_EXCEPTION("Wrong CLI parameters.");
@@ -234,8 +239,8 @@ void CGridMapAlignerApp::run()
 		string ext2 = mrpt::system::extractFileExtension(fil_grid2, true);
 		if (ext1 != ext2 || ext1 != "simplemap")
 		{
-			cout << "Map1: " << fil_grid1 << endl;
-			cout << "Map2: " << fil_grid2 << endl;
+			MRPT_LOG_INFO_STREAM("Map1: " << fil_grid1);
+			MRPT_LOG_INFO_STREAM("Map2: " << fil_grid2);
 			THROW_EXCEPTION("Both file extensions must be 'simplemap'");
 		}
 	}
@@ -244,7 +249,7 @@ void CGridMapAlignerApp::run()
 		string ext1 = mrpt::system::extractFileExtension(fil_grid1, true);
 		if (ext1 != "simplemap")
 		{
-			cout << "Map: " << fil_grid1 << endl;
+			MRPT_LOG_INFO_STREAM("Map: " << fil_grid1);
 			THROW_EXCEPTION("The file extension must be 'simplemap'");
 		}
 	}
@@ -276,10 +281,10 @@ void CGridMapAlignerApp::run()
 
 	CFileOutputStream f_log(RESULTS_DIR + string("/log.txt"));
 	f_log.printf(
-	    "%% std_noise_xy std_noise_phi std_noise_laser  covDet:mean&std "
-	    "stdPhi:mean&std error2D:mean&std  errorPhi:mean&phi "
-	    "bruteErr2D:mean&std brutErrPhi:mean&std GT_likelihood "
-	    "#GTcorrFound:mean&std \n");
+		"%% std_noise_xy std_noise_phi std_noise_laser  covDet:mean&std "
+		"stdPhi:mean&std error2D:mean&std  errorPhi:mean&phi "
+		"bruteErr2D:mean&std brutErrPhi:mean&std GT_likelihood "
+		"#GTcorrFound:mean&std \n");
 	f_log.printf("%% -----------------------------------------\n");
 
 	CFileStream f_out_log;
@@ -287,6 +292,8 @@ void CGridMapAlignerApp::run()
 		f_out_log.open(OUTPUT_FIL, fomWrite);  //, fomAppend );
 
 	CGridMapAligner gridAlign;
+	gridAlign.setMinLoggingLevel(this->getMinLoggingLevel());
+
 	CGridMapAligner::TReturnInfo info;
 	float tim;
 
@@ -347,16 +354,16 @@ void CGridMapAlignerApp::run()
 	the_map1.loadFromProbabilisticPosesAndObservations(map1);
 
 	size_t N1 = max(
-	    40,
-	    (int)round(grid1->getArea() * gridAlign.options.featsPerSquareMeter));
+		40,
+		(int)round(grid1->getArea() * gridAlign.options.featsPerSquareMeter));
 
 	COccupancyGridMapFeatureExtractor gridfeatextract;
 
 	CLandmarksMap lm1;
 
 	gridfeatextract.extractFeatures(
-	    *grid1, lm1, N1, gridAlign.options.feature_descriptor,
-	    gridAlign.options.feature_detector_options);
+		*grid1, lm1, N1, gridAlign.options.feature_descriptor,
+		gridAlign.options.feature_detector_options);
 
 	if (!NOSAVE && (is_match || is_detect_test))  // If it's only a
 	// SAVE_CORR_AND_NONCORR_DISTS
@@ -364,7 +371,7 @@ void CGridMapAlignerApp::run()
 	{
 		grid1->saveAsBitmapFile(format("%s/map1.png", RESULTS_DIR.c_str()));
 		grid1->saveAsBitmapFileWithLandmarks(
-		    format("%s/map1_LM.png", RESULTS_DIR.c_str()), &lm1, true);
+			format("%s/map1_LM.png", RESULTS_DIR.c_str()), &lm1, true);
 		CImage img;
 		grid1->getAsImageFiltered(img);
 		img.saveToFile(format("%s/map1_filt.png", RESULTS_DIR.c_str()));
@@ -402,14 +409,14 @@ void CGridMapAlignerApp::run()
 				if (NOISE_IN_LASER)
 				{
 					CObservation2DRangeScan::Ptr obs =
-					    SF->getObservationByClass<CObservation2DRangeScan>();
+						SF->getObservationByClass<CObservation2DRangeScan>();
 					if (obs)
 					{
 						for (unsigned int k = 0; k < obs->scan.size(); k++)
 						{
 							float v = obs->getScanRange(k);
 							v += getRandomGenerator().drawGaussian1D(
-							    0, STD_NOISE_LASER);
+								0, STD_NOISE_LASER);
 							if (v < 0) v = 0;
 							obs->setScanRange(k, v);
 						}
@@ -419,16 +426,16 @@ void CGridMapAlignerApp::run()
 				if (NOISE_IN_POSE)
 				{
 					CPosePDFGaussian::Ptr newPDF =
-					    std::make_shared<CPosePDFGaussian>();
+						std::make_shared<CPosePDFGaussian>();
 					newPDF->copyFrom(*PDF);
 
 					// Change the pose:
 					newPDF->mean.x_incr(
-					    getRandomGenerator().drawGaussian1D(0, STD_NOISE_XY));
+						getRandomGenerator().drawGaussian1D(0, STD_NOISE_XY));
 					newPDF->mean.y_incr(
-					    getRandomGenerator().drawGaussian1D(0, STD_NOISE_XY));
+						getRandomGenerator().drawGaussian1D(0, STD_NOISE_XY));
 					newPDF->mean.phi_incr(getRandomGenerator().drawGaussian1D(
-					    0, DEG2RAD(STD_NOISE_PHI)));
+						0, DEG2RAD(STD_NOISE_PHI)));
 					newPDF->mean.normalizePhi();
 
 					// Change into the map:
@@ -442,14 +449,14 @@ void CGridMapAlignerApp::run()
 			// grid2->resetFeaturesCache();
 
 			size_t N2 = max(
-			    40,
-			    (int)round(
-			        grid2->getArea() * gridAlign.options.featsPerSquareMeter));
+				40,
+				(int)round(
+					grid2->getArea() * gridAlign.options.featsPerSquareMeter));
 
 			CLandmarksMap lm2;
 			gridfeatextract.extractFeatures(
-			    *grid2, lm2, N2, gridAlign.options.feature_descriptor,
-			    gridAlign.options.feature_detector_options);
+				*grid2, lm2, N2, gridAlign.options.feature_descriptor,
+				gridAlign.options.feature_detector_options);
 
 			if (!NOSAVE && (is_match || is_detect_test))  // If it's only a
 			// SAVE_CORR_AND_NONCORR_DISTS
@@ -457,17 +464,17 @@ void CGridMapAlignerApp::run()
 			{
 				// Save maps:
 				grid2->saveAsBitmapFile(format(
-				    "%s/map2_noise_%f.png", RESULTS_DIR.c_str(), STD_NOISE_XY));
+					"%s/map2_noise_%f.png", RESULTS_DIR.c_str(), STD_NOISE_XY));
 				grid2->saveAsBitmapFileWithLandmarks(
-				    format(
-				        "%s/map2_LM_noise_%f.png", RESULTS_DIR.c_str(),
-				        STD_NOISE_XY),
-				    &lm2, true);
+					format(
+						"%s/map2_LM_noise_%f.png", RESULTS_DIR.c_str(),
+						STD_NOISE_XY),
+					&lm2, true);
 				CImage img;
 				grid2->getAsImageFiltered(img);
 				img.saveToFile(format(
-				    "%s/map2_filt_noise_%f.png", RESULTS_DIR.c_str(),
-				    STD_NOISE_XY));
+					"%s/map2_filt_noise_%f.png", RESULTS_DIR.c_str(),
+					STD_NOISE_XY));
 			}
 
 			// Only if the case of "save-corr-dists" we can do NOT align the
@@ -478,19 +485,15 @@ void CGridMapAlignerApp::run()
 				//        DO ALIGN
 				// --------------------------
 				CPosePDF::Ptr parts = gridAlign.Align(
-				    &the_map1, &the_map2, CPose2D(0, 0, 0), &tim, &info);
-
-				// STATS:
-				CPose2D estimateMean;
-				CMatrixDouble33 estimateCOV;
+					&the_map1, &the_map2, CPose2D(0, 0, 0), &tim, &info);
 
 				// Get the mean, or the best Gassian mean in the case of a SOG:
 				if (IS_CLASS(*parts, CPosePDFSOG) && MOST_LIKELY_SOG_MODE_ONLY)
 				{
 					CPosePDFSOG::Ptr pdf_SOG =
-					    std::dynamic_pointer_cast<CPosePDFSOG>(parts);
+						std::dynamic_pointer_cast<CPosePDFSOG>(parts);
 					pdf_SOG->getMostLikelyCovarianceAndMean(
-					    estimateCOV, estimateMean);
+						estimateCOV, estimateMean);
 				}
 				else
 				{
@@ -504,63 +507,66 @@ void CGridMapAlignerApp::run()
 
 				float Axy = estimateMean.distance2DTo(GT_Ax, GT_Ay);
 				float Aphi =
-				    fabs(math::wrapToPi(estimateMean.phi() - GT_Aphi_rad));
+					fabs(math::wrapToPi(estimateMean.phi() - GT_Aphi_rad));
 				float AxyBrute =
-				    info.noRobustEstimation.distance2DTo(GT_Ax, GT_Ay);
+					info.noRobustEstimation.distance2DTo(GT_Ax, GT_Ay);
 				float AphiBrute = fabs(math::wrapToPi(
-				    info.noRobustEstimation.phi() - GT_Aphi_rad));
+					info.noRobustEstimation.phi() - GT_Aphi_rad));
 
-				printf("Done in %.03fms\n", 1000.0f * tim);
+				MRPT_LOG_INFO_FMT("Done in %.03fms\n", 1000.0f * tim);
 
-				std::cout << "Mean pose:\n\t " << estimateMean << "\n";
-				std::cout << "Estimate covariance::\n" << estimateCOV << "\n";
+				MRPT_LOG_INFO_STREAM("Mean pose:\n\t " << estimateMean);
+				MRPT_LOG_INFO_STREAM("Estimate covariance::\n" << estimateCOV);
 
 				// Save particles:
 				if (IS_CLASS(*parts, CPosePDFParticles))
 				{
 					CPosePDFParticles::Ptr partsPdf =
-					    std::dynamic_pointer_cast<CPosePDFParticles>(parts);
+						std::dynamic_pointer_cast<CPosePDFParticles>(parts);
 
 					partsPdf->saveToTextFile(format(
-					    "%s/particles_noise_%.03f.txt", RESULTS_DIR.c_str(),
-					    STD_NOISE_XY));
+						"%s/particles_noise_%.03f.txt", RESULTS_DIR.c_str(),
+						STD_NOISE_XY));
 
-					printf("Goodness: %.03f%%\n", 100 * info.goodness);
-					std::cout << partsPdf->particlesCount() << " particles\n";
-					std::cout << "Covariance:\n\t " << estimateCOV << "\n";
+					MRPT_LOG_INFO_FMT(
+						"Goodness: %.03f%%\n", 100 * info.goodness);
+					MRPT_LOG_INFO_STREAM(
+						partsPdf->particlesCount() << " particles");
+					MRPT_LOG_INFO_STREAM("Covariance:\n\t " << estimateCOV);
 				}
 				else if (IS_CLASS(*parts, CPosePDFSOG))
 				{
 					CPosePDFSOG::Ptr pdf_SOG =
-					    std::dynamic_pointer_cast<CPosePDFSOG>(parts);
-					printf("SoG has %u modes\n", (unsigned int)pdf_SOG->size());
+						std::dynamic_pointer_cast<CPosePDFSOG>(parts);
+					MRPT_LOG_INFO_FMT(
+						"SoG has %u modes.", (unsigned int)pdf_SOG->size());
 
 					pdf_SOG->normalizeWeights();
 					// pdf_SOG->saveToTextFile("_debug_SoG.txt");
 
 					stats_GT_likelihood.push_back((float)pdf_SOG->evaluatePDF(
-					    CPose2D(GT_Ax, GT_Ay, GT_Aphi_rad), true));
+						CPose2D(GT_Ax, GT_Ay, GT_Aphi_rad), true));
 
 					if (f_out_log.fileOpenCorrectly())
 					{
 						f_out_log.printf("%% SOG_log_w   x   y   phi  \n");
 						for (size_t m = 0; m < pdf_SOG->size(); m++)
 							f_out_log.printf(
-							    "    %e     %f %f %f\n", pdf_SOG->get(m).log_w,
-							    pdf_SOG->get(m).mean.x(),
-							    pdf_SOG->get(m).mean.y(),
-							    pdf_SOG->get(m).mean.phi());
+								"    %e     %f %f %f\n", pdf_SOG->get(m).log_w,
+								pdf_SOG->get(m).mean.x(),
+								pdf_SOG->get(m).mean.y(),
+								pdf_SOG->get(m).mean.phi());
 					}
 
 					if (SAVE_SOG_3DSCENE)
 					{
 						COpenGLScene scene3D;
 						opengl::CSetOfObjects::Ptr thePDF3D =
-						    std::make_shared<opengl::CSetOfObjects>();
+							std::make_shared<opengl::CSetOfObjects>();
 						pdf_SOG->getAs3DObject(thePDF3D);
 						opengl::CGridPlaneXY::Ptr gridXY =
-						    std::make_shared<opengl::CGridPlaneXY>(
-						        -10, 10, -10, 10, 0, 1);
+							std::make_shared<opengl::CGridPlaneXY>(
+								-10, 10, -10, 10, 0, 1);
 						scene3D.insert(gridXY);
 						scene3D.insert(thePDF3D);
 						scene3D.saveToFile("_out_SoG.3Dscene");
@@ -569,8 +575,8 @@ void CGridMapAlignerApp::run()
 					if (!SAVE_ICP_GOODNESS_FIL.empty())
 					{
 						mrpt::system::vectorToTextFile(
-						    info.icp_goodness_all_sog_modes,
-						    SAVE_ICP_GOODNESS_FIL, true);  // append & as column
+							info.icp_goodness_all_sog_modes,
+							SAVE_ICP_GOODNESS_FIL, true);  // append & as column
 					}
 
 					// Save all the maps overlap hypotheses:
@@ -580,10 +586,10 @@ void CGridMapAlignerApp::run()
 						size_t nNode;
 						CImage imgGrid1, imgCanvas;
 						grid1->resizeGrid(
-						    min(grid1->getXMin(), -60.0f),
-						    max(grid1->getXMax(), 60.0f),
-						    min(-40.0f, grid1->getYMin()),
-						    max(30.0f, grid1->getYMax()));
+							min(grid1->getXMin(), -60.0f),
+							max(grid1->getXMax(), 60.0f),
+							min(-40.0f, grid1->getYMin()),
+							max(30.0f, grid1->getYMax()));
 						grid1->getAsImage(imgGrid1, true);
 						int imgGrid1LY = imgGrid1.getHeight();
 						const CPose2D nullPose(0, 0, 0);
@@ -598,7 +604,7 @@ void CGridMapAlignerApp::run()
 						const TPoint2D p3(grid2->getXMax(), grid2->getYMax());
 						const TPoint2D p4(grid2->getXMax(), grid2->getYMin());
 						for (nNode = 0, it = pdf_SOG->begin();
-						     it != pdf_SOG->end(); it++, nNode++)
+							 it != pdf_SOG->end(); it++, nNode++)
 						{
 							CPose2D x = it->mean;
 							const TPoint2D pp1(x + p1);
@@ -611,41 +617,41 @@ void CGridMapAlignerApp::run()
 
 							// Draw the overlaped the_map2:
 							imgCanvas.line(
-							    grid1->x2idx(pp1.x),
-							    imgGrid1LY - 1 - grid1->y2idx(pp1.y),
-							    grid1->x2idx(pp2.x),
-							    imgGrid1LY - 1 - grid1->y2idx(pp2.y),
-							    TColor::black());
+								grid1->x2idx(pp1.x),
+								imgGrid1LY - 1 - grid1->y2idx(pp1.y),
+								grid1->x2idx(pp2.x),
+								imgGrid1LY - 1 - grid1->y2idx(pp2.y),
+								TColor::black());
 							imgCanvas.line(
-							    grid1->x2idx(pp2.x),
-							    imgGrid1LY - 1 - grid1->y2idx(pp2.y),
-							    grid1->x2idx(pp3.x),
-							    imgGrid1LY - 1 - grid1->y2idx(pp3.y),
-							    TColor::black());
+								grid1->x2idx(pp2.x),
+								imgGrid1LY - 1 - grid1->y2idx(pp2.y),
+								grid1->x2idx(pp3.x),
+								imgGrid1LY - 1 - grid1->y2idx(pp3.y),
+								TColor::black());
 							imgCanvas.line(
-							    grid1->x2idx(pp3.x),
-							    imgGrid1LY - 1 - grid1->y2idx(pp3.y),
-							    grid1->x2idx(pp4.x),
-							    imgGrid1LY - 1 - grid1->y2idx(pp4.y),
-							    TColor::black());
+								grid1->x2idx(pp3.x),
+								imgGrid1LY - 1 - grid1->y2idx(pp3.y),
+								grid1->x2idx(pp4.x),
+								imgGrid1LY - 1 - grid1->y2idx(pp4.y),
+								TColor::black());
 							imgCanvas.line(
-							    grid1->x2idx(pp4.x),
-							    imgGrid1LY - 1 - grid1->y2idx(pp4.y),
-							    grid1->x2idx(pp1.x),
-							    imgGrid1LY - 1 - grid1->y2idx(pp1.y),
-							    TColor::black());
+								grid1->x2idx(pp4.x),
+								imgGrid1LY - 1 - grid1->y2idx(pp4.y),
+								grid1->x2idx(pp1.x),
+								imgGrid1LY - 1 - grid1->y2idx(pp1.y),
+								TColor::black());
 
 							imgCanvas.saveToFile(format(
-							    "%s/_OVERLAP_MAPS_SOG_MODE_%04u.png",
-							    RESULTS_DIR.c_str(), (unsigned int)nNode));
+								"%s/_OVERLAP_MAPS_SOG_MODE_%04u.png",
+								RESULTS_DIR.c_str(), (unsigned int)nNode));
 
 							// Save as 3D scene:
 							COpenGLScene scene;
 							CSetOfObjects::Ptr obj1 =
-							    std::make_shared<CSetOfObjects>();
+								std::make_shared<CSetOfObjects>();
 							the_map1.getAs3DObject(obj1);
 							CSetOfObjects::Ptr obj2 =
-							    std::make_shared<CSetOfObjects>();
+								std::make_shared<CSetOfObjects>();
 							the_map2.getAs3DObject(obj2);
 
 							obj2->setPose(x);
@@ -655,7 +661,7 @@ void CGridMapAlignerApp::run()
 
 							// Add also the borders of the maps:
 							CSetOfLines::Ptr lines =
-							    std::make_shared<CSetOfLines>();
+								std::make_shared<CSetOfLines>();
 							lines->setLineWidth(3);
 							lines->setColor(0, 0, 1);
 
@@ -672,8 +678,8 @@ void CGridMapAlignerApp::run()
 							scene.insert(lines);
 
 							scene.saveToFile(format(
-							    "%s/_OVERLAP_MAPS_SOG_MODE_%04u.3Dscene",
-							    RESULTS_DIR.c_str(), (unsigned int)nNode));
+								"%s/_OVERLAP_MAPS_SOG_MODE_%04u.3Dscene",
+								RESULTS_DIR.c_str(), (unsigned int)nNode));
 						}
 
 					}  // end SAVE_SOG_ALL
@@ -683,22 +689,22 @@ void CGridMapAlignerApp::run()
 					CMatrixF gridLimits(1, 4);
 					gridLimits(0, 0) = estimateMean.x - 0.10f;
 					gridLimits(0, 1) = estimateMean.x + 0.10f,
-					              gridLimits(0, 2) = estimateMean.y - 0.10f;
+								  gridLimits(0, 2) = estimateMean.y - 0.10f;
 					gridLimits(0, 3) = estimateMean.y + 0.10f;
 					gridLimits.saveToTextFile(format(
-					    "%s/SOG_grid_limits_noise_%f.txt", RESULTS_DIR.c_str(),
-					    STD_NOISE_XY));
+						"%s/SOG_grid_limits_noise_%f.txt", RESULTS_DIR.c_str(),
+						STD_NOISE_XY));
 
 					CMatrixD evalGrid;
 					pdf_SOG->evaluatePDFInArea(
-					    gridLimits(0, 0), gridLimits(0, 1), gridLimits(0, 2),
-					    gridLimits(0, 3), 0.002f, 0, evalGrid,
-					    true  // Sum over all phis
+						gridLimits(0, 0), gridLimits(0, 1), gridLimits(0, 2),
+						gridLimits(0, 3), 0.002f, 0, evalGrid,
+						true  // Sum over all phis
 					);
 
 					evalGrid.saveToTextFile(format(
-					    "%s/SOG_grid_noise_%f.txt", RESULTS_DIR.c_str(),
-					    STD_NOISE_XY));
+						"%s/SOG_grid_noise_%f.txt", RESULTS_DIR.c_str(),
+						STD_NOISE_XY));
 #endif
 				}  // end if is SOG
 
@@ -717,7 +723,7 @@ void CGridMapAlignerApp::run()
 			//  (only known if we are in the "is_detect_test" mode!)
 			if (SAVE_CORR_AND_NONCORR_DISTS)
 			{
-				cout << "Generating coor & no.corr distances..." << endl;
+				MRPT_LOG_INFO_STREAM("Generating coor & no.corr distances...");
 
 				const bool SAVE_ALSO_COORS_DEBUG_MAPS = false;
 
@@ -731,13 +737,13 @@ void CGridMapAlignerApp::run()
 					lmap2 = CLandmarksMap::Create();
 
 					gridfeatextract.extractFeatures(
-					    *grid1, *lmap1, N1,
-					    gridAlign.options.feature_descriptor,
-					    gridAlign.options.feature_detector_options);
+						*grid1, *lmap1, N1,
+						gridAlign.options.feature_descriptor,
+						gridAlign.options.feature_detector_options);
 					gridfeatextract.extractFeatures(
-					    *grid2, *lmap2, N2,
-					    gridAlign.options.feature_descriptor,
-					    gridAlign.options.feature_detector_options);
+						*grid2, *lmap2, N2,
+						gridAlign.options.feature_descriptor,
+						gridAlign.options.feature_detector_options);
 				}
 
 				ASSERT_(lmap1 && lmap2);
@@ -774,7 +780,7 @@ void CGridMapAlignerApp::run()
 						ASSERT_(!l2->features.empty());
 
 						D[i2] = l1->features[0].descriptorDistanceTo(
-						    l2->features[0]);
+							l2->features[0]);
 					}
 
 					size_t best_match = 0;
@@ -784,9 +790,9 @@ void CGridMapAlignerApp::run()
 					{
 						CLandmark* l2 = lmap2->landmarks.get(best_match);
 						gt_corrs.push_back(TMatchingPair(
-						    i1, best_match, l1->pose_mean.x, l1->pose_mean.y,
-						    l1->pose_mean.z, l2->pose_mean.x, l2->pose_mean.y,
-						    l2->pose_mean.z));
+							i1, best_match, l1->pose_mean.x, l1->pose_mean.y,
+							l1->pose_mean.z, l2->pose_mean.x, l2->pose_mean.y,
+							l2->pose_mean.z));
 					}
 					else
 						best_match = (unsigned int)(-1);
@@ -799,44 +805,38 @@ void CGridMapAlignerApp::run()
 					{
 						if (i2 == best_match)
 							fout_CORR.printf(
-							    "%f %f\n", D[i2], D[i2] - MIN_DESCR_DIST);
+								"%f %f\n", D[i2], D[i2] - MIN_DESCR_DIST);
 						else
 							fout_NCORR.printf(
-							    "%f %f\n", D[i2], D[i2] - MIN_DESCR_DIST);
+								"%f %f\n", D[i2], D[i2] - MIN_DESCR_DIST);
 					}
 
 					// mrpt::system::pause();
 				}  // end for i1
 
-				cout << "GT corrs found: " << gt_corrs.size() << endl;
+				MRPT_LOG_INFO_STREAM("GT corrs found: " << gt_corrs.size());
 				overallGTcorrsFound.push_back(gt_corrs.size());
 				if (SAVE_ALSO_COORS_DEBUG_MAPS)
 				{
 					COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
-					    "GT_corrs.png", grid1.get(), grid2.get(), gt_corrs);
+						"GT_corrs.png", grid1.get(), grid2.get(), gt_corrs);
 					mrpt::system::pause();
 				}
 			}
 
-			/*			printf("\n------------------------------------------------------------------------\n");
-						printf("Noise:%f -> ratio:%.02f%%  ERRs:(%.03f,%.03f)
-			   STDs:(%.03f %.03f)\n",
-							STD_NOISE_XY,ratio*100,Axy,Aphi,stdXY,stdPhi );
-						printf("------------------------------------------------------------------------\n\n");*/
-
 		}  // end iter
 
 		f_log.printf(
-		    "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %e %f %f\n",
-		    STD_NOISE_XY, STD_NOISE_PHI, STD_NOISE_LASER,
-		    math::mean(stats_covDet), math::stddev(stats_covDet),
-		    math::mean(stats_stdPhi), math::stddev(stats_stdPhi),
-		    math::mean(stats_errorXY), math::stddev(stats_errorXY),
-		    math::mean(stats_errorPhi), math::stddev(stats_errorPhi),
-		    math::mean(stats_bruteErrorXY), math::stddev(stats_bruteErrorXY),
-		    math::mean(stats_bruteErrorPhi), math::stddev(stats_bruteErrorPhi),
-		    math::mean(stats_GT_likelihood), math::mean(overallGTcorrsFound),
-		    math::stddev(overallGTcorrsFound));
+			"%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %e %f %f\n",
+			STD_NOISE_XY, STD_NOISE_PHI, STD_NOISE_LASER,
+			math::mean(stats_covDet), math::stddev(stats_covDet),
+			math::mean(stats_stdPhi), math::stddev(stats_stdPhi),
+			math::mean(stats_errorXY), math::stddev(stats_errorXY),
+			math::mean(stats_errorPhi), math::stddev(stats_errorPhi),
+			math::mean(stats_bruteErrorXY), math::stddev(stats_bruteErrorXY),
+			math::mean(stats_bruteErrorPhi), math::stddev(stats_bruteErrorPhi),
+			math::mean(stats_GT_likelihood), math::mean(overallGTcorrsFound),
+			math::stddev(overallGTcorrsFound));
 
 	}  // For each noise
 

@@ -9,30 +9,44 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/apps/CGridMapAlignerApp.h>
+#include <mrpt/config.h>
 #include <mrpt/system/filesystem.h>
 #include <test_mrpt_common.h>
 
-TEST(CGridMapAligner, alignGridMaps)
+TEST(
+	CGridMapAligner,
+#if MRPT_HAS_OPENCV
+	alignGridMaps
+#else
+	DISABLED_alignGridMaps
+#endif
+)
 {
 	const std::string ini_fil =
-	    mrpt::UNITTEST_BASEDIR +
-	    std::string(
-	        "/share/mrpt/config_files/grid-matching/gridmatch_example.ini");
+		mrpt::UNITTEST_BASEDIR +
+		std::string(
+			"/share/mrpt/config_files/grid-matching/gridmatch_example.ini");
 	EXPECT_TRUE(mrpt::system::fileExists(ini_fil));
 
 	const std::string gridmap1_fil =
-	    mrpt::UNITTEST_BASEDIR +
-	    std::string("/share/mrpt/datasets/malaga-cs-fac-building.simplemap.gz");
+		mrpt::UNITTEST_BASEDIR +
+		std::string("/share/mrpt/datasets/malaga-cs-fac-building.simplemap.gz");
 	EXPECT_TRUE(mrpt::system::fileExists(gridmap1_fil));
 
 	mrpt::apps::CGridMapAlignerApp app;
 	app.setMinLoggingLevel(mrpt::system::LVL_ERROR);
 
-	const char* argv[] = {"grid-matching",		"--config",
-	                      ini_fil.c_str(),		"-1",
-	                      gridmap1_fil.c_str(), "--detect-test"};
+	const char* argv[] = {
+		"grid-matching", "--config",		   ini_fil.c_str(),
+		"--map1",		 gridmap1_fil.c_str(), "--detect-test",
+		"--nologo",		 "--nosave",		   "--noicp"};
 	const int argc = sizeof(argv) / sizeof(argv[0]);
 
 	app.initialize(argc, argv);
 	app.run();
+
+	// Check result:
+	EXPECT_NEAR(app.estimateMean.x(), app.GT_Ax, 0.1);
+	EXPECT_NEAR(app.estimateMean.y(), app.GT_Ay, 0.1);
+	EXPECT_NEAR(app.estimateMean.phi(), app.GT_Aphi_rad, 0.05);
 }

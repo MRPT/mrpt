@@ -21,6 +21,8 @@ namespace mrpt::apps
 class CGridMapAlignerApp : public mrpt::system::COutputLogger
 {
    public:
+	CGridMapAlignerApp();
+
 	/** @name Main API
 	 * @{ */
 
@@ -70,7 +72,13 @@ class CGridMapAlignerApp : public mrpt::system::COutputLogger
 	unsigned int N_ITERS = 1;
 
 	mrpt::slam::CGridMapAligner::TAlignerMethod aligner_method =
-	    mrpt::slam::CGridMapAligner::amModifiedRANSAC;
+		mrpt::slam::CGridMapAligner::amModifiedRANSAC;
+	/** @} */
+
+	/** @name Outputs and result variables
+	 * @{ */
+	mrpt::poses::CPose2D estimateMean;
+	mrpt::math::CMatrixDouble33 estimateCOV;
 
 	/** @} */
 };
