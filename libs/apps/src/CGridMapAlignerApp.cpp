@@ -126,7 +126,8 @@ void CGridMapAlignerApp::initialize(int argc, const char** argv)
 	    "Keep the most-likely Gaussian mode from the SOG", cmd, false);
 
 	// Parse arguments:
-	if (!cmd.parse(argc, argv)) throw std::runtime_error("");
+	if (!cmd.parse(argc, argv))
+		THROW_EXCEPTION("CLI arguments parsing tells we should exit.");
 
 	fil_grid1 = arg_filgrid1.getValue();
 	fil_grid2 = arg_filgrid2.getValue();
