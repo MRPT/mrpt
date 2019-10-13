@@ -44,26 +44,28 @@ void CFeatureExtraction::internal_computePolarImageDescriptors(
 	CImage linpolar_frame(patch_w, patch_h, in_img.getChannelCount());
 
 	// Compute intensity-domain spin images
-	for (auto it = in_features.begin(); it != in_features.end(); ++it)
+	for (auto& f : in_features)
 	{
 		// Overwrite scale with the descriptor scale:
-		it->keypoint.octave = radius;
+		f.keypoint.octave = radius;
+
+		const auto pt = cv::Point2f(f.keypoint.pt.x, f.keypoint.pt.y);
 
 #if MRPT_OPENCV_VERSION_NUM < 0x300
 		const cv::Mat& in = in_img.asCvMatRef();
 		cv::Mat& out = linpolar_frame.asCvMatRef();
 		cvLinearPolar(
-			&in, &out,
+			&in, &out, pt, radius, CV_INTER_LINEAR + CV_WARP_FILL_OUTLIERS);
 #else
-		cv::linearPolar(
+		cv::warpPolar(
 			in_img.asCvMatRef(), linpolar_frame.asCvMatRef(),
+			cv::Size(patch_w, patch_h), pt, radius,
+			cv::INTER_LINEAR + cv::WARP_FILL_OUTLIERS);
 #endif
-			cv::Point2f(it->keypoint.pt.x, it->keypoint.pt.y), radius,
-			CV_INTER_LINEAR + CV_WARP_FILL_OUTLIERS);
 
 		// Get the image as a matrix and save as patch:
-		it->descriptors.PolarImg.emplace();
-		linpolar_frame.getAsMatrix(*it->descriptors.PolarImg);
+		f.descriptors.PolarImg.emplace();
+		linpolar_frame.getAsMatrix(*f.descriptors.PolarImg);
 
 	}  // end for it
 
