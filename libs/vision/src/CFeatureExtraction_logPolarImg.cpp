@@ -50,15 +50,17 @@ void CFeatureExtraction::internal_computeLogPolarImageDescriptors(
 
 		const auto pt = cv::Point2f(f.keypoint.pt.x, f.keypoint.pt.y);
 
-#if MRPT_OPENCV_VERSION_NUM < 0x300
 		const cv::Mat& in = in_img.asCvMatRef();
-		cv::Mat& out = linpolar_frame.asCvMatRef();
-		cvLogPolar(
-			&in, &out, pt, radius, CV_INTER_LINEAR + CV_WARP_FILL_OUTLIERS);
+		cv::Mat& out = logpolar_frame.asCvMatRef();
+
+#if MRPT_OPENCV_VERSION_NUM < 0x342
+		cv::logPolar(
+			in(cv::Rect(
+				pt.x - radius, pt.y - radius, 1 + 2 * radius, 1 + 2 * radius)),
+			out, pt, radius, CV_INTER_LINEAR + CV_WARP_FILL_OUTLIERS);
 #else
 		cv::warpPolar(
-			in_img.asCvMatRef(), logpolar_frame.asCvMatRef(),
-			cv::Size(patch_w, patch_h), pt, radius,
+			in, out, cv::Size(patch_w, patch_h), pt, radius,
 			cv::INTER_LINEAR + cv::WARP_FILL_OUTLIERS + cv::WARP_POLAR_LOG);
 #endif
 
