@@ -666,15 +666,15 @@ float CFeature::descriptorPolarImgDistanceTo(
 	MRPT_START
 
 	ASSERT_(descriptors.PolarImg);
-	ASSERT_(
-		descriptors.PolarImg->rows() == oFeature.descriptors.PolarImg->rows());
-	ASSERT_(
-		descriptors.PolarImg->cols() == oFeature.descriptors.PolarImg->cols());
+	ASSERT_EQUAL_(
+		descriptors.PolarImg->rows(), oFeature.descriptors.PolarImg->rows());
+	ASSERT_EQUAL_(
+		descriptors.PolarImg->cols(), oFeature.descriptors.PolarImg->cols());
 	ASSERT_(
 		descriptors.hasDescriptorPolarImg() &&
 		oFeature.descriptors.hasDescriptorPolarImg());
-	ASSERT_(
-		descriptors.PolarImg->rows() > 1 && descriptors.PolarImg->cols() > 1);
+	ASSERT_ABOVE_(descriptors.PolarImg->rows(), 1);
+	ASSERT_ABOVE_(descriptors.PolarImg->cols(), 1);
 
 	// Call the common method for computing these distances:
 	return internal_distanceBetweenPolarImages(
