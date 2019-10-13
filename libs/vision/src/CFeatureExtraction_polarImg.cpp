@@ -62,6 +62,7 @@ void CFeatureExtraction::internal_computePolarImageDescriptors(
 			CV_INTER_LINEAR + CV_WARP_FILL_OUTLIERS);
 
 		// Get the image as a matrix and save as patch:
+		it->descriptors.PolarImg.emplace();
 		linpolar_frame.getAsMatrix(*it->descriptors.PolarImg);
 
 	}  // end for it
