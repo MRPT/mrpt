@@ -191,7 +191,7 @@ void Test_SUT()
 // Calibration of SUT parameters for Quat -> 3D pose
 // -----------------------------------------------------------
 
-void aux_posequat2poseypr(
+static void aux_posequat2poseypr(
 	const CVectorFixedDouble<7>& x, const double& dummy,
 	CVectorFixedDouble<6>& y)
 {

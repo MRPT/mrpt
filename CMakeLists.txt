@@ -465,8 +465,11 @@ endif()
 # Shared options between GCC and CLANG:
 # ======================================
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
-	# Even more warnings for different compilers
-	add_compile_options(-Wreturn-type -Werror=return-type -Wextra -Wtype-limits -Wcast-align -Wparentheses -Wno-unused-parameter)
+	# Even more warnings:
+	add_compile_options(-Wreturn-type -Werror=return-type)
+	add_compile_options(-Wformat -Werror=format-security)
+	add_compile_options(-Wextra -Wtype-limits -Wcast-align -Wparentheses)
+	add_compile_options(-Wno-unused-parameter)
 
 	if(MRPT_WARNINGS_ARE_ERRORS)
 		add_compile_options(-Werror)

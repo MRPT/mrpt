@@ -106,19 +106,19 @@ void TMultiResDescMatchOptions::dumpToTextStream(std::ostream& out) const
 	out << "Use orientation filter?:        ";
 	if (useOriFilter)
 	{
-		out << mrpt::format("Yes\n");
+		out << "Yes\n";
 		out << mrpt::format(
 			"· Orientation threshold:        %.1f deg\n",
 			RAD2DEG(oriThreshold));
 	}
 	else
-		out << mrpt::format("No\n");
-	out << mrpt::format("Use depth filter?:              ");
+		out << "No\n";
+	out << "Use depth filter?:              ";
 	if (useDepthFilter)
-		out << mrpt::format("Yes\n");
+		out << "Yes\n";
 	else
 	{
-		out << mrpt::format("No\n");
+		out << "No\n";
 		out << mrpt::format("Lowest scale in list1:          %d\n", lowScl1);
 		out << mrpt::format("Highest scale in list1:         %d\n", highScl1);
 		out << mrpt::format("Lowest scale in list2:          %d\n", lowScl2);
@@ -138,8 +138,7 @@ void TMultiResDescMatchOptions::dumpToTextStream(std::ostream& out) const
 		"Matching ratio threshold:       %.2f\n", matchingRatioThreshold);
 	out << mrpt::format(
 		"Size of the search window:      %d px\n", searchAreaSize);
-	out << mrpt::format(
-		"-------------------------------------------------------- \n");
+	out << "-------------------------------------------------------- \n";
 }  // end-dumpToTextStream
 
 // --------------------------------------------------
@@ -213,18 +212,17 @@ void TMultiResDescOptions::saveToConfigFile(
 // --------------------------------------------------
 void TMultiResDescOptions::dumpToTextStream(std::ostream& out) const
 {
-	out << mrpt::format(
-		"\n----------- [vision::TMultiResDescOptions] ------------ \n");
+	out << "\n----------- [vision::TMultiResDescOptions] ------------ \n";
 	out << mrpt::format("Base patch size:                %d px\n", basePSize);
 	out << mrpt::format("Lowest scale to compute:        %d\n", comLScl);
 	out << mrpt::format("Highest scale to compute:       %d\n", comHScl);
 	out << mrpt::format("Image smoothing sigma:          %.2f px\n", sg1);
 	out << mrpt::format("Orientation histogram sigma:    %.2f\n", sg2);
 	out << mrpt::format("Descriptor histogram sigma:     %.2f\n", sg3);
-	out << mrpt::format("Compute depth:                  ");
+	out << "Compute depth:                  ";
 	if (computeDepth)
 	{
-		out << mrpt::format("Yes\n");
+		out << "Yes\n";
 		out << mrpt::format("Focal length:                   %.2f px\n", fx);
 		out << mrpt::format("Principal point (cx):           %.2f px\n", cx);
 		out << mrpt::format("Principal point (cy):           %.2f px\n", cy);
@@ -232,52 +230,51 @@ void TMultiResDescOptions::dumpToTextStream(std::ostream& out) const
 			"Baseline:                       %.2f m\n", baseline);
 	}
 	else
-		out << mrpt::format("No\n");
+		out << "No\n";
 
-	out << mrpt::format("Compute Hash Coeffs:            ");
+	out << "Compute Hash Coeffs:            ";
 	if (computeHashCoeffs)
-		out << mrpt::format("Yes\n");
+		out << "Yes\n";
 	else
-		out << mrpt::format("No\n");
+		out << "No\n";
 
-	out << mrpt::format("Blur image previously:          ");
+	out << "Blur image previously:          ";
 	if (blurImage)
-		out << mrpt::format("Yes\n");
+		out << "Yes\n";
 	else
-		out << mrpt::format("No\n");
+		out << "No\n";
 
-	out << mrpt::format("Scales:                         ");
+	out << "Scales:                         ";
 	for (double scale : scales) out << mrpt::format("%.2f ", scale);
 	out << "\n";
-	out << mrpt::format(
-		"-------------------------------------------------------- \n");
+	out << "-------------------------------------------------------- \n";
 }  // end-dumpToTextStream
 
 void CFeature::dumpToTextStream(std::ostream& out) const
 {
-	out << mrpt::format("\n----------- [vision::CFeature] ------------ \n");
+	out << "\n----------- [vision::CFeature] ------------ \n";
 	out << mrpt::format(
 		"Feature ID:                     %d\n", (int)keypoint.ID);
 	out << mrpt::format(
 		"Coordinates:                    (%.2f,%.2f) px\n", keypoint.pt.x,
 		keypoint.pt.y);
 	out << mrpt::format("PatchSize:                      %d\n", patchSize);
-	out << mrpt::format("Type:                           ");
+	out << "Type:                           ";
 	out << mrpt::typemeta::TEnumType<decltype(type)>::value2name(type) << "\n";
-	out << mrpt::format("Status:                         ");
+	out << "Status:                         ";
 	switch (track_status)
 	{
 		case 0:
-			out << mrpt::format("Idle\n");
+			out << "Idle\n";
 			break;
 		case 1:
-			out << mrpt::format("[KLT] Out of bounds [KLT]\n");
+			out << "[KLT] Out of bounds [KLT]\n";
 			break;
 		case 5:
-			out << mrpt::format("[KLT] Tracked\n");
+			out << "[KLT] Tracked\n";
 			break;
 		case 10:
-			out << mrpt::format("[KLT] Lost\n");
+			out << "[KLT] Lost\n";
 			break;
 	}
 
@@ -289,35 +286,26 @@ void CFeature::dumpToTextStream(std::ostream& out) const
 	out << mrpt::format(
 		"3D point:                       (%.2f,%.2f,%.2f) m\n", p3D.x, p3D.y,
 		p3D.z);
-	out << mrpt::format("Is point feature?:              ");
-	isPointFeature() ? out << mrpt::format("Yes\n")
-					 : out << mrpt::format("No\n");
+	out << "Is point feature?:              ";
+	isPointFeature() ? out << "Yes\n" : out << "No\n";
 
-	out << mrpt::format("Has SIFT descriptor?:           ");
-	descriptors.hasDescriptorSIFT() ? out << mrpt::format("Yes\n")
-									: out << mrpt::format("No\n");
-	out << mrpt::format("Has SURF descriptor?:           ");
-	descriptors.hasDescriptorSURF() ? out << mrpt::format("Yes\n")
-									: out << mrpt::format("No\n");
-	out << mrpt::format("Has Spin image descriptor?:     ");
-	descriptors.hasDescriptorSpinImg() ? out << mrpt::format("Yes\n")
-									   : out << mrpt::format("No\n");
-	out << mrpt::format("Has Polar descriptor?:          ");
-	descriptors.hasDescriptorPolarImg() ? out << mrpt::format("Yes\n")
-										: out << mrpt::format("No\n");
-	out << mrpt::format("Has Log Polar descriptor?:      ");
-	descriptors.hasDescriptorLogPolarImg() ? out << mrpt::format("Yes\n")
-										   : out << mrpt::format("No\n");
-	out << mrpt::format("Has ORB descriptor?:			");
-	descriptors.hasDescriptorORB() ? out << mrpt::format("Yes\n")
-								   : out << mrpt::format("No\n");
+	out << "Has SIFT descriptor?:           ";
+	descriptors.hasDescriptorSIFT() ? out << "Yes\n" : out << "No\n";
+	out << "Has SURF descriptor?:           ";
+	descriptors.hasDescriptorSURF() ? out << "Yes\n" : out << "No\n";
+	out << "Has Spin image descriptor?:     ";
+	descriptors.hasDescriptorSpinImg() ? out << "Yes\n" : out << "No\n";
+	out << "Has Polar descriptor?:          ";
+	descriptors.hasDescriptorPolarImg() ? out << "Yes\n" : out << "No\n";
+	out << "Has Log Polar descriptor?:      ";
+	descriptors.hasDescriptorLogPolarImg() ? out << "Yes\n" : out << "No\n";
+	out << "Has ORB descriptor?:			";
+	descriptors.hasDescriptorORB() ? out << "Yes\n" : out << "No\n";
 	//# added by Raghavender Sahdev
-	out << mrpt::format("Has BLD descriptor?:			");
-	descriptors.hasDescriptorBLD() ? out << mrpt::format("Yes\n")
-								   : out << mrpt::format("No\n");
-	out << mrpt::format("Has LATCH descriptor?:			");
-	descriptors.hasDescriptorLATCH() ? out << mrpt::format("Yes\n")
-									 : out << mrpt::format("No\n");
+	out << "Has BLD descriptor?:			";
+	descriptors.hasDescriptorBLD() ? out << "Yes\n" : out << "No\n";
+	out << "Has LATCH descriptor?:			";
+	descriptors.hasDescriptorLATCH() ? out << "Yes\n" : out << "No\n";
 
 }  // end dumpToTextStream
 
