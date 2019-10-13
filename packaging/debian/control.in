@@ -617,6 +617,22 @@ Depends: ${misc:Depends},libmrpt-vision@MRPT_VER_MM@ (= ${binary:Version}),
 Description: Mobile Robot Programming Toolkit - vision development package
  This package provides headers and libraries for development.
 
+Package: libmrpt-apps@MRPT_VER_MM@
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Description: Mobile Robot Programming Toolkit - apps library
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
+
+Package: libmrpt-apps-dev
+Section: libdevel
+Architecture: any
+Depends: ${misc:Depends},libmrpt-apps@MRPT_VER_MM@ (= ${binary:Version}),
+         libmrpt-slam-dev, libmrpt-gui-dev, libmrpt-tclap-dev
+Description: Mobile Robot Programming Toolkit - apps development package
+ This package provides headers and libraries for development.
+
 Package: libmrpt-common-dev
 Section: libdevel
 Architecture: any

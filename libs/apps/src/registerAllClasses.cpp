@@ -7,20 +7,13 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/apps/CGridMapAlignerApp.h>
+#include "apps-precomp.h"  // Precompiled headers
 
-int main(int argc, char** argv)
+#include <mrpt/core/initializer.h>
+
+MRPT_INITIALIZER(registerAllClasses_mrpt_apps)
 {
-	try
-	{
-		mrpt::apps::CGridMapAlignerApp app;
-
-		app.initialize(argc, argv);
-		app.run();
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << mrpt::exception_to_str(e) << std::endl;
-		return 1;
-	}
+#if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
+	// registerClass(CLASS_ID(XXX));
+#endif
 }

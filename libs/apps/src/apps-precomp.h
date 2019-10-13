@@ -6,21 +6,13 @@
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
+#pragma once
 
-#include <mrpt/apps/CGridMapAlignerApp.h>
+#include <mrpt/config.h>
+#if MRPT_ENABLE_PRECOMPILED_HDRS
 
-int main(int argc, char** argv)
-{
-	try
-	{
-		mrpt::apps::CGridMapAlignerApp app;
+#include <mrpt/maps/CMetricMap.h>
+#include <mrpt/obs/CObservation.h>
+#include <mrpt/obs/CRawlog.h>
 
-		app.initialize(argc, argv);
-		app.run();
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << mrpt::exception_to_str(e) << std::endl;
-		return 1;
-	}
-}
+#endif
