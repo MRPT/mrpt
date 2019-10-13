@@ -61,13 +61,13 @@ namespace TCLAP {
  */
 class CmdLine : public CmdLineInterface
 {
-	protected:
+    protected:
 
-		/**
+	    /**
 		 * The list of arguments that will be tested against the
 		 * command line.
 		 */
-		std::list<Arg*> _argList;
+	    std::list<Arg*> _argList;
 
 		/**
 		 * The name of the program.  Set to argv[0].
@@ -139,7 +139,7 @@ class CmdLine : public CmdLineInterface
 		 */
 		void deleteOnExit(Visitor* ptr);
 
-	private:
+    private:
 
 		/**
 		 * Encapsulates the code common to the constructors (which is all
@@ -158,7 +158,7 @@ class CmdLine : public CmdLineInterface
 		 */
 		bool _helpAndVersion;
 
-	public:
+    public:
 
 		/**
 		 * Command line constructor. Defines how the arguments will be
@@ -173,9 +173,9 @@ class CmdLine : public CmdLineInterface
 		 * Version switches. Defaults to true.
 		 */
 		CmdLine(const std::string& message,
-				const char delimiter = ' ',
-				const std::string& version = "none",
-				bool helpAndVersion = true);
+		        const char delimiter = ' ',
+		        const std::string& version = "none",
+		        bool helpAndVersion = true);
 
 		/**
 		 * Deletes any resources allocated by a CmdLine object.
@@ -215,7 +215,7 @@ class CmdLine : public CmdLineInterface
 		 * \param argv - Array of arguments.
 		 * \return (Added by JLBC for MRPT): Return false if the program should exit (error in args, it was --help, etc...)
 		 */
-		bool parse(int argc, char** argv) override;
+		bool parse(int argc, const char** argv) override;
 
 		/**
 		 *
@@ -269,9 +269,9 @@ class CmdLine : public CmdLineInterface
 ///////////////////////////////////////////////////////////////////////////////
 
 inline CmdLine::CmdLine(const std::string& m,
-						char delim,
-						const std::string& v,
-						bool help )
+                        char delim,
+                        const std::string& v,
+                        bool help )
 : _progName("not_set_yet"),
   _message(m),
   _version(v),
@@ -289,13 +289,13 @@ inline CmdLine::~CmdLine()
 	VisitorListIterator visIter;
 
 	for( argIter = _argDeleteOnExitList.begin();
-		 argIter != _argDeleteOnExitList.end();
-		 ++argIter)
+	     argIter != _argDeleteOnExitList.end();
+	     ++argIter)
 		delete *argIter;
 
 	for( visIter = _visitorDeleteOnExitList.begin();
-		 visIter != _visitorDeleteOnExitList.end();
-		 ++visIter)
+	     visIter != _visitorDeleteOnExitList.end();
+	     ++visIter)
 		delete *visIter;
 
 	if ( !_userSetOutput )
@@ -314,16 +314,16 @@ inline void CmdLine::_constructor()
 	{
 		v = new HelpVisitor( this, &_output );
 		SwitchArg* help = new SwitchArg("h","help",
-						"Displays usage information and exits.",
-						false, v);
+		                "Displays usage information and exits.",
+		                false, v);
 		add( help );
 		deleteOnExit(help);
 		deleteOnExit(v);
 
 		v = new VersionVisitor( this, &_output );
 		SwitchArg* vers = new SwitchArg("","version",
-					"Displays version information and exits.",
-					false, v);
+		            "Displays version information and exits.",
+		            false, v);
 		add( vers );
 		deleteOnExit(vers);
 		deleteOnExit(v);
@@ -331,9 +331,9 @@ inline void CmdLine::_constructor()
 
 	v = new IgnoreRestVisitor();
 	SwitchArg* ignore  = new SwitchArg(Arg::flagStartString(),
-					   Arg::ignoreNameString(),
-			   "Ignores the rest of the labeled arguments following this flag.",
-					   false, v);
+	                   Arg::ignoreNameString(),
+	           "Ignores the rest of the labeled arguments following this flag.",
+	                   false, v);
 	add( ignore );
 	deleteOnExit(ignore);
 	deleteOnExit(v);
@@ -370,8 +370,8 @@ inline void CmdLine::add( Arg* a )
 	for(auto & it : _argList)
 		if ( *a == *it )
 			throw( SpecificationException(
-					"Argument with same flag/name already exists!",
-					a->longID() ) );
+		            "Argument with same flag/name already exists!",
+		            a->longID() ) );
 
 	a->addToList( _argList );
 
@@ -379,7 +379,7 @@ inline void CmdLine::add( Arg* a )
 		_numRequired++;
 }
 
-inline bool CmdLine::parse(int argc, char** argv)
+inline bool CmdLine::parse(int argc, const char** argv)
 {
 	try {
 
@@ -412,7 +412,7 @@ inline bool CmdLine::parse(int argc, char** argv)
 
 		if ( !matched && !Arg::ignoreRest() )
 			throw(CmdLineParseException("Couldn't find match for argument",
-										 args[i]));
+		                                 args[i]));
 	}
 
 	if ( requiredCount < _numRequired )

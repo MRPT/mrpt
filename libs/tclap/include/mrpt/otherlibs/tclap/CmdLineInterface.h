@@ -90,7 +90,7 @@ class CmdLineInterface
 		 * \param argv - Array of arguments.
 		 * \return (Added by JLBC for MRPT): Return false if the program should exit (error in args, it was --help, etc...)
 		 */
-		virtual bool parse(int argc, char** argv)=0;
+	    virtual bool parse(int argc, const char** argv)=0;
 
 		/**
 		 * Returns the CmdLineOutput object.
