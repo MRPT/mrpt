@@ -17,7 +17,7 @@ namespace mrpt::apps
 {
 /** EKF-SLAM application wrapper class.
  *
- * \sa mrpt::slam::CGridMapAligner
+ * \sa mrpt::slam::CRangeBearingKFSLAM2D, mrpt::slam::CRangeBearingKFSLAM
  * \ingroup mrpt_apps_grp
  */
 class KFSLAMApp : public mrpt::system::COutputLogger
