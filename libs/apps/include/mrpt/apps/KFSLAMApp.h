@@ -8,26 +8,28 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/slam/CGridMapAligner.h>
+#include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/system/COutputLogger.h>
+#include <memory>
 
 namespace mrpt::apps
 {
-/** grid-matching application wrapper class.
+/** EKF-SLAM application wrapper class.
  *
  * \sa mrpt::slam::CGridMapAligner
  * \ingroup mrpt_apps_grp
  */
-class CGridMapAlignerApp : public mrpt::system::COutputLogger
+class KFSLAMApp : public mrpt::system::COutputLogger
 {
    public:
-	CGridMapAlignerApp();
+	KFSLAMApp();
 
 	/** @name Main API
 	 * @{ */
 
 	/** Initializes the application from CLI parameters. Refer to the manpage of
-	 * grid-matching. Throws on errors.
+	 * kf-slam. Throws on errors.
 	 */
 	void initialize(int argc, const char** argv);
 
@@ -44,43 +46,27 @@ class CGridMapAlignerApp : public mrpt::system::COutputLogger
 	/** @name Parameters and options. See: initialize()
 	 * @{ */
 
-	bool SAVE_SOG_3DSCENE = false;
-	bool SAVE_SOG_ALL_MAPS_OVERLAP_HYPOTHESES = false;
-	bool SAVE_CORR_AND_NONCORR_DISTS = false;
-	bool IS_VERBOSE = false;
-	bool NOSAVE = false;
-	bool SKIP_ICP_STAGE = false;
-	bool MOST_LIKELY_SOG_MODE_ONLY = false;
+	/** Populated in initialize(). Can be replaced or manipulated by the user
+	 * after that and before run() to change the parameters loaded from INI
+	 * file. */
+	mrpt::config::CConfigFileMemory params;
 
-	std::string SAVE_ICP_GOODNESS_FIL = "";
+	/** rawlog to process */
+	std::string rawlogFileName;
 
-	// Mode of operation
-	bool is_match = false, is_detect_test = false;
-
-	std::string RESULTS_DIR = "GRID-MATCHING_RESULTS";
-	std::string fil_grid1, fil_grid2;
-	std::string OUTPUT_FIL;
-	std::string CONFIG_FIL;
-
-	double STD_NOISE_XY = 0, STD_NOISE_PHI = 0;
-	double STD_NOISE_LASER = 0;
-	double GT_Ax = 0, GT_Ay = 0, GT_Aphi_rad = 0;
-
-	bool NOISE_IN_LASER = false;
-	bool NOISE_IN_POSE = false;
-
-	unsigned int N_ITERS = 1;
-
-	mrpt::slam::CGridMapAligner::TAlignerMethod aligner_method =
-		mrpt::slam::CGridMapAligner::amModifiedRANSAC;
 	/** @} */
 
 	/** @name Outputs and result variables
 	 * @{ */
-	mrpt::poses::CPose2D estimateMean;
-	mrpt::math::CMatrixDouble33 estimateCOV;
+
+	/** Average localization error, when supplied with a ground-truth file */
+	double loc_error_wrt_gt = 0;
 
 	/** @} */
+
+   private:
+	template <class IMPL>
+	void Run_KF_SLAM();
 };
 
 }  // namespace mrpt::apps
