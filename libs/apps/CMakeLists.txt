@@ -6,6 +6,7 @@ define_mrpt_lib(
 	apps
 	# Dependencies
 	mrpt-bayes
+	mrpt-hwdrivers
 	mrpt-gui
 	mrpt-obs
 	mrpt-slam
