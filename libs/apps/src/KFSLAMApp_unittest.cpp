@@ -38,6 +38,12 @@ void generic_kf_slam_test(
 		const int argc = sizeof(argv) / sizeof(argv[0]);
 
 		app.initialize(argc, argv);
+
+		// Output 3D scenes to a temporary directory:
+		app.params.write(
+			"MappingApplication", "logOutput_dir",
+			mrpt::system::getTempFileName() + "_dir"s);
+
 		cfg_changer(app.params);
 		app.run();
 
@@ -59,10 +65,6 @@ TEST(KFSLAMApp, EKF_SLAM_3D)
 			using namespace std::string_literals;
 			c.write("MappingApplication", "SHOW_3D_LIVE", false);
 			c.write("MappingApplication", "SAVE_3D_SCENES", true);
-			// Output 3D scenes to a temporary directory:
-			c.write(
-				"MappingApplication", "logOutput_dir",
-				mrpt::system::getTempFileName() + "_dir"s);
 		});
 }
 
@@ -74,10 +76,6 @@ TEST(KFSLAMApp, EKF_SLAM_2D)
 			using namespace std::string_literals;
 			c.write("MappingApplication", "SHOW_3D_LIVE", false);
 			c.write("MappingApplication", "SAVE_3D_SCENES", true);
-			// Output 3D scenes to a temporary directory:
-			c.write(
-				"MappingApplication", "logOutput_dir",
-				mrpt::system::getTempFileName() + "_dir"s);
 		});
 }
 
@@ -92,10 +90,6 @@ TEST(KFSLAMApp, EKF_SLAM_3D_data_assoc_JCBB_Maha)
 
 			c.write("MappingApplication", "SHOW_3D_LIVE", false);
 			c.write("MappingApplication", "SAVE_3D_SCENES", false);
-			// Output 3D scenes to a temporary directory:
-			c.write(
-				"MappingApplication", "logOutput_dir",
-				mrpt::system::getTempFileName() + "_dir"s);
 		});
 }
 
@@ -110,9 +104,5 @@ TEST(KFSLAMApp, EKF_SLAM_3D_data_assoc_NN_Maha)
 
 			c.write("MappingApplication", "SHOW_3D_LIVE", false);
 			c.write("MappingApplication", "SAVE_3D_SCENES", false);
-			// Output 3D scenes to a temporary directory:
-			c.write(
-				"MappingApplication", "logOutput_dir",
-				mrpt::system::getTempFileName() + "_dir"s);
 		});
 }
