@@ -13,7 +13,7 @@
 #include <mrpt/system/filesystem.h>
 #include <test_mrpt_common.h>
 
-#if MRPT_HAS_FFMPEG
+#if MRPT_HAS_FFMPEG && MRPT_HAS_OPENCV
 TEST(RawlogGrabberApp, CGenericCamera_AVI)
 #else
 TEST(RawlogGrabberApp, DISABLED_CGenericCamera_AVI)

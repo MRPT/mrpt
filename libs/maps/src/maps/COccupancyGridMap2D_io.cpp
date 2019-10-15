@@ -9,6 +9,7 @@
 
 #include "maps-precomp.h"  // Precomp header
 
+#include <mrpt/config.h>
 #include <mrpt/core/round.h>  // round()
 #include <mrpt/img/CEnhancedMetaFile.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
@@ -16,6 +17,7 @@
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -34,11 +36,17 @@ using namespace std;
 bool COccupancyGridMap2D::saveAsBitmapFile(const std::string& file) const
 {
 	MRPT_START
+#if MRPT_HAS_OPENCV
 
 	CImage img;
 	getAsImage(img);
 	return img.saveToFile(file);
 
+#else
+	std::cerr << "[COccupancyGridMap2D::saveAsBitmapFile] Doing nothing, since "
+				 "MRPT was built without OpenCV.\n";
+	return true;
+#endif
 	MRPT_END
 }
 

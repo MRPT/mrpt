@@ -66,6 +66,8 @@ wxImage* mrpt::gui::MRPTImage2wxImage(const mrpt::img::CImage& img)
 
 	// create and return the object
 	return new wxImage(w, h, data, false /* false=transfer mem ownership */);
+#else
+	THROW_EXCEPTION("MRPT compiled without OpenCV");
 #endif
 }
 
