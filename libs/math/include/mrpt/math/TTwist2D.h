@@ -107,6 +107,13 @@ struct TTwist2D : public internal::ProvideStaticResize<TTwist2D>
 	 * \exception std::exception On invalid format
 	 */
 	void fromString(const std::string& s);
+
+	static TTwist2D FromString(const std::string& s)
+	{
+		TTwist2D o;
+		o.fromString(s);
+		return o;
+	}
 };
 
 mrpt::serialization::CArchive& operator>>(

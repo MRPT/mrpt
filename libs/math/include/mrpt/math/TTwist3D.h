@@ -150,6 +150,13 @@ struct TTwist3D : public internal::ProvideStaticResize<TTwist3D>
 	 * \exception std::exception On invalid format
 	 */
 	void fromString(const std::string& s);
+
+	static TTwist3D FromString(const std::string& s)
+	{
+		TTwist3D o;
+		o.fromString(s);
+		return o;
+	}
 };
 
 mrpt::serialization::CArchive& operator>>(
