@@ -5,8 +5,8 @@
 # Build xSens MT3?
 if(CMAKE_MRPT_HAS_xSENS_MT3)
 	list(APPEND hwdrivers_EXTRA_SRCS
-		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens_MT3/*.cpp"
-		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens_MT3/*.h"
+		"${MRPT_SOURCE_DIR}/otherlibs/xSens_MT3/*.cpp"
+		"${MRPT_SOURCE_DIR}/otherlibs/xSens_MT3/*.h"
 		)
 	list(APPEND hwdrivers_EXTRA_SRCS_NAME "xSens_MT3" "xSens_MT3" )
 endif()
@@ -14,11 +14,11 @@ endif()
 # Build xSens MT4?
 if(CMAKE_MRPT_HAS_xSENS_MT4)
 	list(APPEND hwdrivers_EXTRA_SRCS
-		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens_MT4/xcommunication/src/*.cpp"
-		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens_MT4/xcommunication/src/*.c"
-		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens_MT4/xcommunication/include/xsens/*.h"
-		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens_MT4/xstypes/src/*.c"
-		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens_MT4/xstypes/include/xsens/*.h"
+		"${MRPT_SOURCE_DIR}/otherlibs/xSens_MT4/xcommunication/src/*.cpp"
+		"${MRPT_SOURCE_DIR}/otherlibs/xSens_MT4/xcommunication/src/*.c"
+		"${MRPT_SOURCE_DIR}/otherlibs/xSens_MT4/xcommunication/include/xsens/*.h"
+		"${MRPT_SOURCE_DIR}/otherlibs/xSens_MT4/xstypes/src/*.c"
+		"${MRPT_SOURCE_DIR}/otherlibs/xSens_MT4/xstypes/include/xsens/*.h"
 		)
 	list(APPEND hwdrivers_EXTRA_SRCS_NAME
 		"xSens_MT4" "xSens_MT4" "xSens_MT4"
@@ -26,10 +26,10 @@ if(CMAKE_MRPT_HAS_xSENS_MT4)
 		)
 	# XSens MT4 sources seem to expect to have both [DIR]/ and [DIR]/xsens/ as INCLUDE_DIRS:
 	include_directories(
-		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens_MT4/xcommunication/include/"
-		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens_MT4/xcommunication/include/xsens/"
-		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens_MT4/xstypes/include/"
-		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens_MT4/xstypes/include/xsens/"
+		"${MRPT_SOURCE_DIR}/otherlibs/xSens_MT4/xcommunication/include/"
+		"${MRPT_SOURCE_DIR}/otherlibs/xSens_MT4/xcommunication/include/xsens/"
+		"${MRPT_SOURCE_DIR}/otherlibs/xSens_MT4/xstypes/include/"
+		"${MRPT_SOURCE_DIR}/otherlibs/xSens_MT4/xstypes/include/xsens/"
 		)
 endif()
 
@@ -86,9 +86,9 @@ endif()
 # Build RPLIDAR?
 if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
 	list(APPEND hwdrivers_EXTRA_SRCS
-		"${MRPT_LIBS_ROOT}/hwdrivers/src/rplidar/src/*.cpp"
-		"${MRPT_LIBS_ROOT}/hwdrivers/src/rplidar/src/hal/*.cpp"
-		"${MRPT_LIBS_ROOT}/hwdrivers/src/rplidar/include/*.h"
+		"${MRPT_SOURCE_DIR}/otherlibs/rplidar/src/*.cpp"
+		"${MRPT_SOURCE_DIR}/otherlibs/rplidar/src/hal/*.cpp"
+		"${MRPT_SOURCE_DIR}/otherlibs/rplidar/include/*.h"
 		)
 	list(APPEND hwdrivers_EXTRA_SRCS_NAME
 		"RoboPeakLidar"
@@ -96,14 +96,14 @@ if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
 		"RoboPeakLidar"
 		)
 	if (WIN32)
-		list(APPEND hwdrivers_EXTRA_SRCS "${MRPT_LIBS_ROOT}/hwdrivers/src/rplidar/src/arch/win32/*.cpp")
+		list(APPEND hwdrivers_EXTRA_SRCS "${MRPT_SOURCE_DIR}/otherlibs/rplidar/src/arch/win32/*.cpp")
 		list(APPEND hwdrivers_EXTRA_SRCS_NAME "RoboPeakLidar")
 	else()
-		list(APPEND hwdrivers_EXTRA_SRCS "${MRPT_LIBS_ROOT}/hwdrivers/src/rplidar/src/arch/linux/*.cpp")
+		list(APPEND hwdrivers_EXTRA_SRCS "${MRPT_SOURCE_DIR}/otherlibs/rplidar/src/arch/linux/*.cpp")
 		list(APPEND hwdrivers_EXTRA_SRCS_NAME "RoboPeakLidar")
 	endif()
-	include_directories("${MRPT_LIBS_ROOT}/hwdrivers/src/rplidar/include/")
-	include_directories("${MRPT_LIBS_ROOT}/hwdrivers/src/rplidar/src/")
+	include_directories("${MRPT_SOURCE_DIR}/otherlibs/rplidar/include/")
+	include_directories("${MRPT_SOURCE_DIR}/otherlibs/rplidar/src/")
 endif()
 
 if(CMAKE_MRPT_HAS_LIBDC1394_2)
@@ -171,6 +171,8 @@ if(BUILD_mrpt-hwdrivers)
 
 	# Ignore precompiled headers in xSens sources:
 	if(CMAKE_MRPT_HAS_xSENS_MT3 OR CMAKE_MRPT_HAS_xSENS_MT4)
+		target_include_directories(hwdrivers PRIVATE "${MRPT_SOURCE_DIR}/otherlibs")
+
 		if(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
 			set_source_files_properties(${xSens_MT3_FILES} ${xSens_MT4_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
 		endif()
@@ -305,6 +307,8 @@ if(BUILD_mrpt-hwdrivers)
 
 	# Ignore precompiled headers in RPLIDAR sources:
 	if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
+		target_include_directories(hwdrivers PRIVATE "${MRPT_SOURCE_DIR}/otherlibs")
+
 		if(MSVC)
 			set(flags_set "/DWIN64")
 			if(MRPT_ENABLE_PRECOMPILED_HDRS)
