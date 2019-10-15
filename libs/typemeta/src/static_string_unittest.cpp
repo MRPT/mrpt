@@ -49,8 +49,12 @@ TEST(StaticString, concat_multi)
 	auto abba = ab + ba;
 	static_assert(abba.size() == 2 * 6, "***");
 
+	// Test c_str():
 	const char* s = abba.c_str();
-	(void)(s);
+
+	// Test cast to "const char*" () operator:
+	const char* s2 = static_cast<const char*>(abba);
+	EXPECT_EQ(s, s2);
 }
 
 TEST(num_to_string, ctor)
