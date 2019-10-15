@@ -35,7 +35,7 @@ constexpr auto sect = "MappingApplication";
 //   ICP_SLAM_App_Base
 // ---------------------------------------
 ICP_SLAM_App_Base::ICP_SLAM_App_Base()
-    : mrpt::system::COutputLogger("ICP_SLAM_App")
+	: mrpt::system::COutputLogger("ICP_SLAM_App")
 {
 }
 
@@ -44,7 +44,7 @@ void ICP_SLAM_App_Base::initialize(int argc, const char** argv)
 	MRPT_START
 
 	MRPT_LOG_INFO_FMT(
-	    " icp-slam - Part of the MRPT\n"
+		" icp-slam - Part of the MRPT\n"
 		" MRPT C++ Library: %s - Sources timestamp: %s\n\n",
 		mrpt::system::MRPT_getVersion().c_str(),
 		mrpt::system::MRPT_getCompilationDate().c_str());
@@ -91,16 +91,16 @@ void ICP_SLAM_App_Base::run()
 	// ------------------------------------------
 
 	const string OUT_DIR_STD =
-	    params.read_string(sect, "logOutput_dir", "log_out", true);
+		params.read_string(sect, "logOutput_dir", "log_out", true);
 	const char* OUT_DIR = OUT_DIR_STD.c_str();
 
 	const int LOG_FREQUENCY = params.read_int(sect, "LOG_FREQUENCY", 5, true);
 	const bool SAVE_POSE_LOG =
-	    params.read_bool(sect, "SAVE_POSE_LOG", false, true);
+		params.read_bool(sect, "SAVE_POSE_LOG", false, true);
 	const bool SAVE_3D_SCENE =
-	    params.read_bool(sect, "SAVE_3D_SCENE", false, true);
+		params.read_bool(sect, "SAVE_3D_SCENE", false, true);
 	const bool CAMERA_3DSCENE_FOLLOWS_ROBOT =
-	    params.read_bool(sect, "CAMERA_3DSCENE_FOLLOWS_ROBOT", true, true);
+		params.read_bool(sect, "CAMERA_3DSCENE_FOLLOWS_ROBOT", true, true);
 
 	bool SHOW_PROGRESS_3D_REAL_TIME = false;
 	int SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS = 0;
@@ -109,7 +109,7 @@ void ICP_SLAM_App_Base::run()
 	MRPT_LOAD_CONFIG_VAR(SHOW_PROGRESS_3D_REAL_TIME, bool, params, sect);
 	MRPT_LOAD_CONFIG_VAR(SHOW_LASER_SCANS_3D, bool, params, sect);
 	MRPT_LOAD_CONFIG_VAR(
-	    SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS, int, params, sect);
+		SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS, int, params, sect);
 
 	// ------------------------------------
 	//		Constructor of ICP-SLAM object
@@ -127,7 +127,7 @@ void ICP_SLAM_App_Base::run()
 	//   CMetricMapBuilder::TOptions
 	// ---------------------------------
 	mapBuilder.options.alwaysInsertByClass.fromString(
-	    params.read_string(sect, "alwaysInsertByClass", ""));
+		params.read_string(sect, "alwaysInsertByClass", ""));
 
 	// Print params:
 	MRPT_LOG_INFO_FMT("Output directory: `%s`", OUT_DIR);
@@ -161,7 +161,7 @@ void ICP_SLAM_App_Base::run()
 	if (SHOW_PROGRESS_3D_REAL_TIME)
 	{
 		win3D = std::make_shared<CDisplayWindow3D>(
-		    "ICP-SLAM @ MRPT C++ Library", 600, 500);
+			"ICP-SLAM @ MRPT C++ Library", 600, 500);
 		win3D->setCameraZoom(20);
 		win3D->setCameraAzimuthDeg(-45);
 	}
@@ -192,7 +192,7 @@ void ICP_SLAM_App_Base::run()
 
 		const bool isObsBasedRawlog = observation ? true : false;
 		std::vector<mrpt::obs::CObservation2DRangeScan::Ptr>
-		    lst_current_laser_scans;  // Just for drawing in 3D views
+			lst_current_laser_scans;  // Just for drawing in 3D views
 
 		// Update odometry:
 		if (isObsBasedRawlog)
@@ -202,7 +202,7 @@ void ICP_SLAM_App_Base::run()
 			if (IS_CLASS(*observation, CObservationOdometry))
 			{
 				auto o = std::dynamic_pointer_cast<CObservationOdometry>(
-				    observation);
+					observation);
 				if (!firstOdo) odoPose = odoPose + (o->odometry - lastOdo);
 
 				lastOdo = o->odometry;
@@ -212,7 +212,7 @@ void ICP_SLAM_App_Base::run()
 		else
 		{
 			CActionRobotMovement2D::Ptr act =
-			    action->getBestMovementEstimation();
+				action->getBestMovementEstimation();
 			if (act) odoPose = odoPose + act->poseChange->getMeanVal();
 		}
 
@@ -225,8 +225,8 @@ void ICP_SLAM_App_Base::run()
 				if (IS_CLASS(*observation, CObservation2DRangeScan))
 				{
 					lst_current_laser_scans.push_back(
-					    std::dynamic_pointer_cast<CObservation2DRangeScan>(
-					        observation));
+						std::dynamic_pointer_cast<CObservation2DRangeScan>(
+							observation));
 				}
 			}
 			else
@@ -235,8 +235,8 @@ void ICP_SLAM_App_Base::run()
 				for (size_t i = 0;; i++)
 				{
 					CObservation2DRangeScan::Ptr new_obs =
-					    observations
-					        ->getObservationByClass<CObservation2DRangeScan>(i);
+						observations
+							->getObservationByClass<CObservation2DRangeScan>(i);
 					if (!new_obs)
 						break;  // There're no more scans
 					else
@@ -258,10 +258,10 @@ void ICP_SLAM_App_Base::run()
 		// Info log:
 		// -----------
 		f_log.printf(
-		    "%f %i\n", 1000.0f * t_exec, mapBuilder.getCurrentlyBuiltMapSize());
+			"%f %i\n", 1000.0f * t_exec, mapBuilder.getCurrentlyBuiltMapSize());
 
 		const CMultiMetricMap* mostLikMap =
-		    mapBuilder.getCurrentlyBuiltMetricMap();
+			mapBuilder.getCurrentlyBuiltMetricMap();
 
 		if (LOG_FREQUENCY > 0 && 0 == (step % LOG_FREQUENCY))
 		{
@@ -270,15 +270,15 @@ void ICP_SLAM_App_Base::run()
 			if (SAVE_POSE_LOG)
 			{
 				auto str =
-				    mrpt::format("%s/mapbuild_posepdf_%03u.txt", OUT_DIR, step);
+					mrpt::format("%s/mapbuild_posepdf_%03u.txt", OUT_DIR, step);
 				MRPT_LOG_INFO_FMT(
-				    "Saving pose log information to `%s`", str.c_str());
+					"Saving pose log information to `%s`", str.c_str());
 				mapBuilder.getCurrentPoseEstimation()->saveToTextFile(str);
 			}
 		}
 
 		const CPose3D robotPose =
-		    mapBuilder.getCurrentPoseEstimation()->getMeanVal();
+			mapBuilder.getCurrentPoseEstimation()->getMeanVal();
 
 		// Save a 3D scene view of the mapping process:
 		if ((LOG_FREQUENCY > 0 && 0 == (step % LOG_FREQUENCY)) ||
@@ -305,7 +305,7 @@ void ICP_SLAM_App_Base::run()
 
 			// The ground:
 			mrpt::opengl::CGridPlaneXY::Ptr groundPlane =
-			    mrpt::opengl::CGridPlaneXY::Create(-200, 200, -200, 200, 0, 5);
+				mrpt::opengl::CGridPlaneXY::Create(-200, 200, -200, 200, 0, 5);
 			groundPlane->setColor(0.4, 0.4, 0.4);
 			view->insert(groundPlane);
 			view_map->insert(CRenderizable::Ptr(groundPlane));  // A copy
@@ -368,7 +368,7 @@ void ICP_SLAM_App_Base::run()
 			if (0 == (step % LOG_FREQUENCY) && SAVE_3D_SCENE)
 			{
 				CFileGZOutputStream f(
-				    mrpt::format("%s/buildingmap_%05u.3Dscene", OUT_DIR, step));
+					mrpt::format("%s/buildingmap_%05u.3Dscene", OUT_DIR, step));
 				mrpt::serialization::archiveFrom(f) << *scene;
 			}
 
@@ -376,20 +376,20 @@ void ICP_SLAM_App_Base::run()
 			if (win3D)
 			{
 				opengl::COpenGLScene::Ptr& ptrScene =
-				    win3D->get3DSceneAndLock();
+					win3D->get3DSceneAndLock();
 				ptrScene = scene;
 
 				win3D->unlockAccess3DScene();
 
 				// Move camera:
 				win3D->setCameraPointingToPoint(
-				    robotPose.x(), robotPose.y(), robotPose.z());
+					robotPose.x(), robotPose.y(), robotPose.z());
 
 				// Update:
 				win3D->forceRepaint();
 
 				std::this_thread::sleep_for(std::chrono::milliseconds(
-				    SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS));
+					SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS));
 			}
 		}
 
@@ -405,28 +405,28 @@ void ICP_SLAM_App_Base::run()
 				os::fclose(f);
 			}
 			MRPT_LOG_INFO_FMT(
-			    "Memory usage:%.04f MiB", memUsage / (1024.0 * 1024.0));
+				"Memory usage:%.04f MiB", memUsage / (1024.0 * 1024.0));
 		}
 
 		// Save the robot estimated pose for each step:
 		f_path.printf(
-		    "%i %f %f %f\n", step, robotPose.x(), robotPose.y(),
-		    robotPose.yaw());
+			"%i %f %f %f\n", step, robotPose.x(), robotPose.y(),
+			robotPose.yaw());
 
 		// Also keep the robot path as a vector, for the convenience of the app
 		// user:
 		out_estimated_path.emplace_back(robotPose.asTPose());
 
 		f_pathOdo.printf(
-		    "%i %f %f %f\n", step, odoPose.x(), odoPose.y(), odoPose.phi());
+			"%i %f %f %f\n", step, odoPose.x(), odoPose.y(), odoPose.phi());
 
 		step++;
 		MRPT_LOG_INFO_FMT("------------- STEP %u ----------------", step);
 	};
 
 	MRPT_LOG_INFO_FMT(
-	    "----------- **END** (total time: %.03f sec) ---------",
-	    tictacGlobal.Tac());
+		"----------- **END** (total time: %.03f sec) ---------",
+		tictacGlobal.Tac());
 
 	// Save map:
 	mapBuilder.getCurrentlyBuiltMap(finalMap);
@@ -434,13 +434,13 @@ void ICP_SLAM_App_Base::run()
 	{
 		auto str = format("%s/_finalmap_.simplemap", OUT_DIR);
 		MRPT_LOG_INFO_FMT(
-		    "Dumping final map in binary format to: %s\n", str.c_str());
+			"Dumping final map in binary format to: %s\n", str.c_str());
 		mapBuilder.saveCurrentMapToFile(str);
 	}
 
 	{
 		const CMultiMetricMap* finalPointsMap =
-		    mapBuilder.getCurrentlyBuiltMetricMap();
+			mapBuilder.getCurrentlyBuiltMetricMap();
 		auto str = format("%s/_finalmaps_.txt", OUT_DIR);
 		MRPT_LOG_INFO_FMT("Dumping final metric maps to %s_XXX\n", str.c_str());
 		finalPointsMap->saveMetricMapRepresentationToFile(str);
@@ -464,10 +464,10 @@ void ICP_SLAM_App_Rawlog::impl_initialize(int argc, const char** argv)
 	MRPT_START
 	// Rawlog file: from args. line or from config file:
 	if (argc == 3)
-	    m_rawlogFileName = std::string(argv[2]);
+		m_rawlogFileName = std::string(argv[2]);
 	else
-	    m_rawlogFileName = params.read_string(
-		    sect, "rawlog_file", std::string("log.rawlog"), true);
+		m_rawlogFileName = params.read_string(
+			sect, "rawlog_file", std::string("log.rawlog"), true);
 
 	m_rawlog_offset = params.read_int(sect, "rawlog_offset", 0, true);
 
@@ -477,9 +477,9 @@ void ICP_SLAM_App_Rawlog::impl_initialize(int argc, const char** argv)
 }
 
 bool ICP_SLAM_App_Rawlog::impl_get_next_observations(
-    mrpt::obs::CActionCollection::Ptr& action,
-    mrpt::obs::CSensoryFrame::Ptr& observations,
-    mrpt::obs::CObservation::Ptr& observation)
+	mrpt::obs::CActionCollection::Ptr& action,
+	mrpt::obs::CSensoryFrame::Ptr& observations,
+	mrpt::obs::CObservation::Ptr& observation)
 {
 	MRPT_START
 
@@ -490,7 +490,7 @@ bool ICP_SLAM_App_Rawlog::impl_get_next_observations(
 		if (!m_rawlog_io.open(m_rawlogFileName, err_msg))
 		{
 			THROW_EXCEPTION_FMT(
-			    "Error opening rawlog file: `%s`", err_msg.c_str());
+				"Error opening rawlog file: `%s`", err_msg.c_str());
 		}
 		m_rawlog_arch = mrpt::serialization::archiveUniquePtrFrom(m_rawlog_io);
 
@@ -502,8 +502,8 @@ bool ICP_SLAM_App_Rawlog::impl_get_next_observations(
 	for (;;)
 	{
 		if (!mrpt::obs::CRawlog::getActionObservationPairOrObservation(
-		        *m_rawlog_arch, action, observations, observation,
-		        m_rawlogEntry))
+				*m_rawlog_arch, action, observations, observation,
+				m_rawlogEntry))
 			return false;
 
 		// Optional skip of first N entries
