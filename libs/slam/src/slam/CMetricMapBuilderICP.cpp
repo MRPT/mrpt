@@ -41,7 +41,7 @@ CMetricMapBuilderICP::CMetricMapBuilderICP()
   ---------------------------------------------------------------*/
 CMetricMapBuilderICP::~CMetricMapBuilderICP()
 {
-	// Asure, we have exit all critical zones:
+	// Ensure, we have exit all critical zones:
 	enterCriticalSection();
 	leaveCriticalSection();
 
