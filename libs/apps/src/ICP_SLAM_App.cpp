@@ -263,7 +263,7 @@ void ICP_SLAM_App_Base::run()
 		const CMultiMetricMap* mostLikMap =
 		    mapBuilder.getCurrentlyBuiltMetricMap();
 
-		if (0 == (step % LOG_FREQUENCY))
+		if (LOG_FREQUENCY > 0 && 0 == (step % LOG_FREQUENCY))
 		{
 			// Pose log:
 			// -------------
@@ -281,7 +281,8 @@ void ICP_SLAM_App_Base::run()
 		    mapBuilder.getCurrentPoseEstimation()->getMeanVal();
 
 		// Save a 3D scene view of the mapping process:
-		if (0 == (step % LOG_FREQUENCY) || (SAVE_3D_SCENE || win3D))
+		if ((LOG_FREQUENCY > 0 && 0 == (step % LOG_FREQUENCY)) ||
+			(SAVE_3D_SCENE || win3D))
 		{
 			auto scene = mrpt::opengl::COpenGLScene::Create();
 
