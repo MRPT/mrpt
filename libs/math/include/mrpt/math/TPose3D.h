@@ -194,6 +194,13 @@ struct TPose3D : public TPoseOrPoint,
 	 * \exception std::exception On invalid format
 	 */
 	void fromString(const std::string& s);
+
+	static TPose3D FromString(const std::string& s)
+	{
+		TPose3D o;
+		o.fromString(s);
+		return o;
+	}
 };
 
 /** Unary $\ominus\$ operator: computes inverse SE(3) element */

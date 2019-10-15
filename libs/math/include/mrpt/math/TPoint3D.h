@@ -263,6 +263,13 @@ struct TPoint3D : public TPoseOrPoint,
 	 * \exception std::exception On invalid format
 	 */
 	void fromString(const std::string& s);
+
+	static TPoint3D FromString(const std::string& s)
+	{
+		TPoint3D o;
+		o.fromString(s);
+		return o;
+	}
 };
 
 /** Useful type alias for 3-vectors */
