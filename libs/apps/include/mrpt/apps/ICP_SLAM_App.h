@@ -71,9 +71,9 @@ class ICP_SLAM_App_Base : public mrpt::system::COutputLogger
    protected:
 	virtual void impl_initialize(int argc, const char** argv) = 0;
 	virtual bool impl_get_next_observations(
-	    mrpt::obs::CActionCollection::Ptr& action,
-	    mrpt::obs::CSensoryFrame::Ptr& observations,
-	    mrpt::obs::CObservation::Ptr& observation) = 0;
+		mrpt::obs::CActionCollection::Ptr& action,
+		mrpt::obs::CSensoryFrame::Ptr& observations,
+		mrpt::obs::CObservation::Ptr& observation) = 0;
 	virtual std::string impl_get_usage() const = 0;
 };
 
@@ -87,9 +87,9 @@ class ICP_SLAM_App_Rawlog : public ICP_SLAM_App_Base
    protected:
 	void impl_initialize(int argc, const char** argv) override;
 	bool impl_get_next_observations(
-	    mrpt::obs::CActionCollection::Ptr& action,
-	    mrpt::obs::CSensoryFrame::Ptr& observations,
-	    mrpt::obs::CObservation::Ptr& observation) override;
+		mrpt::obs::CActionCollection::Ptr& action,
+		mrpt::obs::CSensoryFrame::Ptr& observations,
+		mrpt::obs::CObservation::Ptr& observation) override;
 	std::string impl_get_usage() const override
 	{
 		return "icp-slam <config_file> [dataset.rawlog]";
