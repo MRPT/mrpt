@@ -10,5 +10,7 @@ define_mrpt_lib(
 	mrpt-gui
 	mrpt-obs
 	mrpt-slam
+	mrpt-graphslam
+	mrpt-hmtslam
 	mrpt-tclap
 	)
