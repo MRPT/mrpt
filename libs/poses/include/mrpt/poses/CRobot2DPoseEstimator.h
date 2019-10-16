@@ -87,6 +87,13 @@ class CRobot2DPoseEstimator
 	/** parameters of the filter. */
 	TOptions params;
 
+	/** Auxiliary static method to extrapolate the pose of a robot located at
+	 * "p" with velocities (v,w) after a time delay "delta_time". */
+	static void extrapolateRobotPose(
+		const mrpt::math::TPose2D& p,
+		const mrpt::math::TTwist2D& robot_vel_local, const double delta_time,
+		mrpt::math::TPose2D& new_p);
+
    private:
 	std::mutex m_cs;
 
@@ -102,13 +109,6 @@ class CRobot2DPoseEstimator
 	mrpt::math::TPose2D m_last_odo;
 	/** Robot odometry-based velocity in a local frame of reference. */
 	mrpt::math::TTwist2D m_robot_vel_local;
-
-	/** An auxiliary method to extrapolate the pose of a robot located at "p"
-	 * with velocities (v,w) after a time delay "delta_time". */
-	static void extrapolateRobotPose(
-		const mrpt::math::TPose2D& p,
-		const mrpt::math::TTwist2D& robot_vel_local, const double delta_time,
-		mrpt::math::TPose2D& new_p);
 
 };  // end of class
 

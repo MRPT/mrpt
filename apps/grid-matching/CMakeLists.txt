@@ -9,8 +9,6 @@ include(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CM
 #-----------------------------------------------------------------
 project(grid-matching)
 
-
-
 # ---------------------------------------------
 # TARGET:
 # ---------------------------------------------
@@ -25,6 +23,5 @@ target_link_libraries(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
 # Dependencies on MRPT libraries:
 #  Just mention the top-level dependency, the rest will be detected automatically,
 #  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-DeclareAppDependencies(${PROJECT_NAME} mrpt-slam mrpt-gui mrpt-tclap)
-
+DeclareAppDependencies(${PROJECT_NAME} mrpt-apps)
 DeclareAppForInstall(${PROJECT_NAME})

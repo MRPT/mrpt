@@ -48,18 +48,21 @@ void CFeatureExtraction::internal_computeLogPolarImageDescriptors(
 		// Overwrite scale with the descriptor scale:
 		f.keypoint.octave = radius;
 
-		// Use OpenCV to convert:
-#if MRPT_OPENCV_VERSION_NUM < 0x300
+		const auto pt = cv::Point2f(f.keypoint.pt.x, f.keypoint.pt.y);
+
 		const cv::Mat& in = in_img.asCvMatRef();
 		cv::Mat& out = logpolar_frame.asCvMatRef();
-		cvLogPolar(
-			&in, &out,
-#else
+
+#if MRPT_OPENCV_VERSION_NUM < 0x342
 		cv::logPolar(
-			in_img.asCvMatRef(), logpolar_frame.asCvMatRef(),
+			in(cv::Rect(
+				pt.x - radius, pt.y - radius, 1 + 2 * radius, 1 + 2 * radius)),
+			out, pt, radius, CV_INTER_LINEAR + CV_WARP_FILL_OUTLIERS);
+#else
+		cv::warpPolar(
+			in, out, cv::Size(patch_w, patch_h), pt, radius,
+			cv::INTER_LINEAR + cv::WARP_FILL_OUTLIERS + cv::WARP_POLAR_LOG);
 #endif
-			cv::Point2f(f.keypoint.pt.x, f.keypoint.pt.y), rho_scale,
-			CV_INTER_LINEAR + CV_WARP_FILL_OUTLIERS);
 
 		// Get the image as a matrix and save as patch:
 		f.descriptors.LogPolarImg.emplace();

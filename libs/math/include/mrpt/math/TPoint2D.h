@@ -155,6 +155,13 @@ struct TPoint2D : public TPoseOrPoint,
 	 */
 	void fromString(const std::string& s);
 
+	static TPoint2D FromString(const std::string& s)
+	{
+		TPoint2D o;
+		o.fromString(s);
+		return o;
+	}
+
 	/** Squared norm: |v|^2 = x^2+y^2 */
 	double sqrNorm() const { return x * x + y * y; }
 

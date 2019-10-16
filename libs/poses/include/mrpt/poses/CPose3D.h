@@ -636,6 +636,13 @@ class CPose3D : public CPose<CPose3D, 6>,
 	 * string */
 	void fromStringRaw(const std::string& s);
 
+	static CPose3D FromString(const std::string& s)
+	{
+		CPose3D o;
+		o.fromString(s);
+		return o;
+	}
+
 	/** Return true if the 6D pose represents a Z axis almost exactly vertical
 	 * (upwards or downwards), with a given tolerance (if set to 0 exact
 	 * horizontality is tested). */

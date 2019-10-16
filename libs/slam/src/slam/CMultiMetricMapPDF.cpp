@@ -492,7 +492,7 @@ double CMultiMetricMapPDF::getCurrentJointEntropy()
 		max_y = max(max_y, grid->getYMax());
 	}
 
-	// Asure all maps have the same dimensions:
+	// Ensure all maps have the same dimensions:
 	for (auto& p : m_particles)
 	{
 		auto grid = p.d->mapTillNow.mapByClass<COccupancyGridMap2D>(0);

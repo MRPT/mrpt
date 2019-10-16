@@ -2,6 +2,13 @@ digraph MRPT_LIBS {
 
 	node [shape=box,style=filled, fillcolor="#D0D0D0"];
 
+	apps [label="mrpt-apps",URL="group__mrpt__bayes__grp.html"];
+	apps -> gui;
+	apps -> slam;
+	apps -> hwdrivers;
+	apps -> graphslam;
+	apps -> hmtslam;
+
 	bayes [label="mrpt-bayes",URL="group__mrpt__bayes__grp.html"];
 	bayes -> math;
 	bayes -> config;

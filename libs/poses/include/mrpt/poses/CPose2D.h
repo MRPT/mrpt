@@ -262,6 +262,13 @@ class CPose2D : public CPose<CPose2D, 3>,
 	 * string */
 	void fromStringRaw(const std::string& s);
 
+	static CPose2D FromString(const std::string& s)
+	{
+		CPose2D o;
+		o.fromString(s);
+		return o;
+	}
+
 	inline const double& operator[](unsigned int i) const
 	{
 		switch (i)

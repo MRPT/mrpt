@@ -112,6 +112,13 @@ struct TPose3DQuat : public TPoseOrPoint,
 	 * \exception std::exception On invalid format
 	 */
 	void fromString(const std::string& s);
+
+	static TPose3DQuat FromString(const std::string& s)
+	{
+		TPose3DQuat o;
+		o.fromString(s);
+		return o;
+	}
 };
 
 }  // namespace mrpt::math
