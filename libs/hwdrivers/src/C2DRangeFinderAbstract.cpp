@@ -103,6 +103,8 @@ void C2DRangeFinderAbstract::internal_notifyGoodScanNow()
 // Returns true if ok, false if this seems to be an error
 bool C2DRangeFinderAbstract::internal_notifyNoScanReceived()
 {
+	if (m_last_good_scan == INVALID_TIMESTAMP) return true;
+
 	const double dt =
 		mrpt::system::timeDifference(m_last_good_scan, mrpt::system::now());
 
