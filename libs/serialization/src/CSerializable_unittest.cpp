@@ -50,3 +50,19 @@ TEST(Serialization, CustomClassSerialize)
 
 	EXPECT_EQ(a.value, b.value);
 }
+
+TEST(Serialization, ArchiveSharedPtrs)
+{
+	mrpt::io::CMemoryStream buf;
+	auto arch_ptr = mrpt::serialization::archivePtrFrom(buf);
+	auto arch_ptr2 = mrpt::serialization::archiveUniquePtrFrom(buf);
+
+	int a = 42;
+	(*arch_ptr) << a;
+	buf.Seek(0);
+
+	int b;
+	(*arch_ptr2) >> b;
+
+	EXPECT_EQ(a, b);
+}

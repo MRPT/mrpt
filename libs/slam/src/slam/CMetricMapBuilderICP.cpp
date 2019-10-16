@@ -41,7 +41,7 @@ CMetricMapBuilderICP::CMetricMapBuilderICP()
   ---------------------------------------------------------------*/
 CMetricMapBuilderICP::~CMetricMapBuilderICP()
 {
-	// Asure, we have exit all critical zones:
+	// Ensure, we have exit all critical zones:
 	enterCriticalSection();
 	leaveCriticalSection();
 
@@ -545,24 +545,6 @@ void CMetricMapBuilderICP::initialize(
 	// copy map:
 	SF_Poses_seq = initialMap;
 
-	// Parse SFs to the hybrid map:
-	// Set options:
-	// ---------------------
-	// if (metricMap.m_pointsMaps.size())
-	//{
-	//	metricMap.m_pointsMaps[0]->insertionOptions.fuseWithExisting =
-	// false;
-	//	metricMap.m_pointsMaps[0]->insertionOptions.minDistBetweenLaserPoints
-	//=
-	// 0.05f;
-	//	metricMap.m_pointsMaps[0]->insertionOptions.disableDeletion =
-	// true;
-	//	metricMap.m_pointsMaps[0]->insertionOptions.isPlanarMap =
-	// true;
-	//	metricMap.m_pointsMaps[0]->insertionOptions.matchStaticPointsOnly =
-	// true;
-	//}
-
 	// Load estimated pose from given PDF:
 	m_lastPoseEst.reset();
 
@@ -585,24 +567,18 @@ void CMetricMapBuilderICP::initialize(
 		SF->insertObservationsInto(&metricMap, &estimatedPose3D);
 	}
 
-	MRPT_LOG_INFO("loadCurrentMapFromFile() OK.\n");
-
 	MRPT_END
 }
 
 void CMetricMapBuilderICP::getCurrentMapPoints(
 	std::vector<float>& x, std::vector<float>& y)
 {
-	// Critical section: We are using our global metric map
-	enterCriticalSection();
+	std::lock_guard<std::mutex> lck(critZoneChangingMap);
 
 	auto pPts = metricMap.mapByClass<CPointsMap>(0);
 
 	ASSERT_(pPts);
 	pPts->getAllPoints(x, y);
-
-	// Exit critical zone.
-	leaveCriticalSection();
 }
 
 /*---------------------------------------------------------------

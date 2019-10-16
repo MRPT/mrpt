@@ -683,12 +683,10 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
 		// ---------------------------
 		if (nPredictions)
 		{
-			CMatrixDouble Z_obs_cov = CMatrixDouble(R);
-			std::cout << "Z_obs_cov:\n" << Z_obs_cov << "\n";
+			// CMatrixDouble Z_obs_cov = CMatrixDouble(R);
 
 			mrpt::slam::data_association_full_covariance(
-				Z_obs_means,  // Z_obs_cov,
-				m_last_data_association.Y_pred_means,
+				Z_obs_means, m_last_data_association.Y_pred_means,
 				m_last_data_association.Y_pred_covs,
 				m_last_data_association.results, options.data_assoc_method,
 				options.data_assoc_metric, options.data_assoc_IC_chi2_thres,

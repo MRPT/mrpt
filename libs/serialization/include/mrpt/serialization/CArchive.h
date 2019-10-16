@@ -56,6 +56,10 @@ class CArchive
    public:
 	CArchive() = default;
 	virtual ~CArchive() = default;
+
+	using Ptr = std::shared_ptr<CArchive>;
+	using UniquePtr = std::unique_ptr<CArchive>;
+
 	/** @name Serialization API for generic "archives" I/O streams
 	 * @{ */
 	/** Reads a block of bytes from the stream into Buffer
@@ -588,6 +592,21 @@ CArchiveStreamBase<STREAM> archiveFrom(STREAM& s)
 {
 	return CArchiveStreamBase<STREAM>(s);
 }
+
+/** Like archiveFrom(), returning a shared_ptr<>. */
+template <class STREAM>
+CArchive::Ptr archivePtrFrom(STREAM& s)
+{
+	return std::make_shared<CArchiveStreamBase<STREAM>>(s);
+}
+
+/** Like archiveFrom(), returning a unique_ptr<>. */
+template <class STREAM>
+CArchive::UniquePtr archiveUniquePtrFrom(STREAM& s)
+{
+	return std::make_unique<CArchiveStreamBase<STREAM>>(s);
+}
+
 }  // namespace mrpt::serialization
 
 namespace mrpt::rtti

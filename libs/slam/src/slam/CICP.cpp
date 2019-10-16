@@ -229,7 +229,7 @@ CPosePDF::Ptr CICP::ICP_Method_Classic(
 	matchParams.decimation_other_map_points =
 		options.corresponding_points_decimation;
 
-	// Asure maps are not empty!
+	// Ensure maps are not empty!
 	// ------------------------------------------------------
 	if (!m2->isEmpty())
 	{
@@ -608,7 +608,7 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 	CMatrixFixed<float, 3, 3>
 		C_inv;  // This will keep the cov. matrix at the end
 
-	// Asure maps are not empty!
+	// Ensure maps are not empty!
 	// ------------------------------------------------------
 	if (!m2->isEmpty())
 	{
@@ -1005,7 +1005,7 @@ CPose3DPDF::Ptr CICP::ICP3D_Method_Classic(
 	matchParams.decimation_other_map_points =
 		options.corresponding_points_decimation;
 
-	// Asure maps are not empty!
+	// Ensure maps are not empty!
 	// ------------------------------------------------------
 	if (!m2->isEmpty())
 	{

@@ -226,11 +226,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 				corrs_indiv_only.push_back(minDist);
 			}  // end for idx2
 
-			// double corr_mean,corr_std;
-			// mrpt::math::meanAndStd(corrs_indiv_only,corr_mean,corr_std);
 			const double corr_best = mrpt::math::minimum(corrs_indiv_only);
-			// cout << "M: " << corr_mean << " std: " << corr_std << " best: "
-			// << corr_best << endl;
 
 			// Sort the list and keep the N best features:
 			std::sort(corrs_indiv.begin(), corrs_indiv.end(), myVectorOrder);
@@ -581,8 +577,6 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 						// multiplied by std^2_xy
 						temptPose.cov *= square(options.ransac_SOG_sigma_m);
 
-						// cout << "q: " << temptPose << endl;
-
 						// Find the landmark in MAP2 with the best (maximum)
 						// product-integral:
 						//   (i^* , j^*) = arg max_(i,j) \int p_i()p_j()
@@ -687,8 +681,6 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 #ifdef GRIDMAP_USE_PROD_INTEGRAL
 								const double prod_ij =
 									pdf_M1_i.productIntegralWith(pdf_M2_j);
-								// const double prod_ij_d2 = square(
-								// pdf_M1_i.mahalanobisDistanceTo(pdf_M2_j) );
 
 								if (prod_ij > best_pair_value)
 #else
@@ -707,14 +699,6 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 									best_pair_d2 =
 										square(pdf_M1_i.mahalanobisDistanceTo(
 											pdf_M2_j));
-
-									// cout << "P1: " << pdf_M1_i.mean << " C= "
-									// << pdf_M1_i.cov.inMatlabFormat() << endl;
-									// cout << "P2: " << pdf_M2_j.mean << " C= "
-									// << pdf_M2_j.cov.inMatlabFormat() << endl;
-									// cout << "  -> " << format("%e",prod_ij)
-									// << " d2: " << best_pair_d2 << endl <<
-									// endl;
 								}
 							}  // end for u (closest matches of LM2 in MAP 1)
 
@@ -822,8 +806,9 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 				pdf_SOG->clear();
 				for (auto s = sog_modes.begin(); s != sog_modes.end(); ++s)
 				{
-					cout << "SOG mode: " << s->second.mean
-						 << " inliers: " << s->first.size() << endl;
+					MRPT_LOG_INFO_STREAM(
+						"SOG mode: " << s->second.mean
+									 << " inliers: " << s->first.size());
 					pdf_SOG->push_back(s->second);
 				}
 
@@ -858,8 +843,8 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 					lastM1 = m1;
 					NN = 0;
 				}
-				printf(
-					"   Largest consensus: %u\n",
+				MRPT_LOG_INFO_FMT(
+					"Largest consensus: %u",
 					static_cast<unsigned>(largestConsensusCorrs.size()));
 				CEnhancedMetaFile::LINUX_IMG_WIDTH(
 					m1->getSizeX() + m2->getSizeX() + 50);
@@ -919,11 +904,13 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 					const double icp_maha_dist =
 						i_gauss.mahalanobisDistanceTo(icp_gauss);
 
-					cout << "ICP " << cnt << " log-w: " << i->log_w
-						 << " Goodness: " << 100 * icpInfo.goodness
-						 << "  D_M= " << icp_maha_dist << endl;
-					cout << "  final pos: " << icp_est->getMeanVal() << endl;
-					cout << "    org pos: " << i->mean << endl;
+					MRPT_LOG_INFO_STREAM(
+						"ICP " << cnt << " log-w: " << i->log_w
+							   << " Goodness: " << 100 * icpInfo.goodness
+							   << "  D_M= " << icp_maha_dist);
+					MRPT_LOG_INFO_STREAM(
+						"final pos: " << icp_est->getMeanVal());
+					MRPT_LOG_INFO_STREAM("  org pos: " << i->mean);
 
 					outInfo.icp_goodness_all_sog_modes.push_back(
 						icpInfo.goodness);
@@ -1079,7 +1066,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_correlation(
 		);
 
 		float corrPeak = outCrossCorr.maxCoeff();
-		printf("phi = %fdeg \tmax corr=%f\n", RAD2DEG(phi), corrPeak);
+		MRPT_LOG_INFO_FMT("phi = %fdeg \tmax corr=%f", RAD2DEG(phi), corrPeak);
 
 		// Keep the maximum:
 		if (corrPeak > currentMaxCorr)

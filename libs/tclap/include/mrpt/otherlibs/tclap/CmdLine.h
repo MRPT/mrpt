@@ -215,7 +215,13 @@ class CmdLine : public CmdLineInterface
 		 * \param argv - Array of arguments.
 		 * \return (Added by JLBC for MRPT): Return false if the program should exit (error in args, it was --help, etc...)
 		 */
-		bool parse(int argc, char** argv) override;
+		bool parse(int argc, const char** argv) override;
+
+		/** (Added by JLBC for MRPT) */
+		inline bool parse(int argc, char** argv)
+		{
+			return parse(argc, const_cast<const char**>(argv));
+		}
 
 		/**
 		 *
@@ -379,7 +385,7 @@ inline void CmdLine::add( Arg* a )
 		_numRequired++;
 }
 
-inline bool CmdLine::parse(int argc, char** argv)
+inline bool CmdLine::parse(int argc, const char** argv)
 {
 	try {
 

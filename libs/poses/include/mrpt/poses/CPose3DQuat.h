@@ -261,6 +261,13 @@ class CPose3DQuat : public CPose<CPose3DQuat, 7>,
 	 * string */
 	void fromStringRaw(const std::string& s);
 
+	static CPose3DQuat FromString(const std::string& s)
+	{
+		CPose3DQuat o;
+		o.fromString(s);
+		return o;
+	}
+
 	/** Read only [] operator */
 	inline const double& operator[](unsigned int i) const
 	{
