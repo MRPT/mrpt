@@ -499,7 +499,13 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
 	endif()
 
 	# "-march=native" generates code optimized for the detected current processor.
-	set(MRPT_OPTIMIZE_NATIVE ON CACHE BOOL "GCC/clang optimizations for current processor (-march=native)")
+	set(MRPT_OPTIMIZE_NATIVE OFF CACHE BOOL "GCC/clang optimizations for current processor (-march=native)")
+	# "-mtune=native" generates code optimized for the detected current processor.
+	set(MRPT_TUNE_NATIVE ON CACHE BOOL "GCC/clang tune for current processor (-mtune=native)")
+
+	if(MRPT_TUNE_NATIVE)
+		add_compile_options(-mtune=native)
+	endif()
 
 	#Was: if not building a Debian pkg.
 	# Don't decide on this, let the caller to enable/disable this feature.
