@@ -12,7 +12,6 @@
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/math/distributions.h>
-//#include <mrpt/math/eigen_extensions.h>
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/math/wrap2pi.h>
@@ -359,8 +358,8 @@ string math::MATLAB_plotCovariance2D(
 	const string& style, const size_t& nEllipsePoints)
 {
 	MRPT_START
-	CMatrixD cov2(cov);
-	CVectorDouble mean2(2);
+	const auto cov2 = CMatrixDouble(cov);
+	auto mean2 = CVectorDouble(2);
 	mean2[0] = mean[0];
 	mean2[1] = mean[1];
 
@@ -381,53 +380,51 @@ string math::MATLAB_plotCovariance2D(
 	ASSERT_(!((cov(0, 0) == 0) ^ (cov(1, 1) == 0)));  // Both or none 0
 	ASSERT_(mean.size() == 2);
 
-	std::vector<float> X, Y, COS, SIN;
-	std::vector<float>::iterator x, y, Cos, Sin;
-	double ang;
-	string str;
-
-	X.resize(nEllipsePoints);
-	Y.resize(nEllipsePoints);
-	COS.resize(nEllipsePoints);
-	SIN.resize(nEllipsePoints);
+	const auto cov2x2 = mrpt::math::CMatrixFixed<double, 2, 2>(cov.asEigen());
+	const auto N = nEllipsePoints;
+	double ang = 0;
+	const double dAng = (M_2PI / (nEllipsePoints - 1));
+	std::vector<double> X(N), Y(N), Cos(N), Sin(N);
 
 	// Fill the angles:
-	for (Cos = COS.begin(), Sin = SIN.begin(), ang = 0; Cos != COS.end();
-		 ++Cos, ++Sin, ang += (M_2PI / (nEllipsePoints - 1)))
+	for (std::size_t idx = 0; idx < N; idx++, ang += dAng)
 	{
-		*Cos = (float)cos(ang);
-		*Sin = (float)sin(ang);
+		Cos[idx] = std::cos(ang);
+		Sin[idx] = std::sin(ang);
 	}
 
-	Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eigensolver(cov.asEigen());
-	const auto eigVec = eigensolver.eigenvectors();
-	auto eigVal = eigensolver.eigenvalues();
+	std::vector<double> eVals;
+	mrpt::math::CMatrixFixed<double, 2, 2> eigVec, eigVals;
+	cov2x2.eig(eigVec, eVals);
+	eigVals.setDiagonal(eVals);
 
-	eigVal = eigVal.array().sqrt().matrix();
-	Eigen::MatrixXd M = eigVal * eigVec.transpose();
+	eigVals.asEigen() = eigVals.array().sqrt().matrix();
+
+	mrpt::math::CMatrixFixed<double, 2, 2> M;
+	M.asEigen() = eigVals.asEigen() * eigVec.transpose();
 
 	// Compute the points of the ellipsoid:
 	// ----------------------------------------------
-	for (x = X.begin(), y = Y.begin(), Cos = COS.begin(), Sin = SIN.begin();
-		 x != X.end(); ++x, ++y, ++Cos, ++Sin)
+	for (std::size_t idx = 0; idx < N; idx++)
 	{
-		*x = (float)(mean[0] + stdCount * (*Cos * M(0, 0) + *Sin * M(1, 0)));
-		*y = (float)(mean[1] + stdCount * (*Cos * M(0, 1) + *Sin * M(1, 1)));
+		X[idx] = mean[0] + stdCount * (Cos[idx] * M(0, 0) + Sin[idx] * M(1, 0));
+		X[idx] = mean[1] + stdCount * (Cos[idx] * M(0, 1) + Sin[idx] * M(1, 1));
 	}
 
 	// Save the code to plot the ellipsoid:
 	// ----------------------------------------------
+	std::string str;
 	str += string("plot([ ");
-	for (x = X.begin(); x != X.end(); ++x)
+	for (size_t i = 0; i < X.size(); i++)
 	{
-		str += format("%.4f", *x);
-		if (x != (X.end() - 1)) str += ",";
+		str += format("%.4f", X[i]);
+		if (i != (X.size() - 1)) str += ",";
 	}
 	str += string("],[ ");
-	for (y = Y.begin(); y != Y.end(); ++y)
+	for (size_t i = 0; i < X.size(); i++)
 	{
-		str += format("%.4f", *y);
-		if (y != (Y.end() - 1)) str += ",";
+		str += format("%.4f", Y[i]);
+		if (i != (Y.size() - 1)) str += ",";
 	}
 
 	str += format("],'%s');\n", style.c_str());

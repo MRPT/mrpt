@@ -68,7 +68,7 @@ TEST(KFSLAMApp, EKF_SLAM_3D)
 		});
 }
 
-TEST(KFSLAMApp, EKF_SLAM_2D)
+TEST(KFSLAMApp, EKF_SLAM_3D_planar)
 {
 	generic_kf_slam_test(
 		"EKF-SLAM_test.ini", "kf-slam_demo.rawlog",
