@@ -38,7 +38,7 @@ class string_literal
 		return MRPT_X_ASSERT(i >= 0 && i < N), _lit[i];
 	}
 	constexpr const char* c_str() const { return _lit; }
-	constexpr operator const char*() const { return c_str(); }
+	constexpr operator const char*() const { return _lit; }
 	operator std::string() const { return _lit; }
 };
 
