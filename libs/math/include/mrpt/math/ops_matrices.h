@@ -49,21 +49,22 @@ mrpt::math::CMatrixFixed<Scalar, H_ROWS, H_ROWS> multiply_HCHt(
 	return R;
 }
 
-/** r (a scalar) = H * C * H^t (with a column vector H and a symmetric
- * matrix C)
- */
+/** r (scalar) = H^t*C*H (H: column vector, C: symmetric matrix) */
 template <typename VECTOR_H, typename MAT_C>
 typename MAT_C::Scalar multiply_HtCH_scalar(const VECTOR_H& H, const MAT_C& C)
 {
-	return (mat2eig(H).transpose() * mat2eig(C) * mat2eig(H))(0, 0);
+	ASSERT_EQUAL_(H.rows(), C.rows());
+	ASSERT_EQUAL_(C.rows(), C.cols());
+	return (mat2eig(H).transpose() * mat2eig(C) * mat2eig(H)).eval()(0, 0);
 }
 
-/** r (a scalar) = H^t * C * H (with a row vector H and a symmetric matrix
- * C) */
+/** r (scalar) = H*C*H^t (H: row vector, C: symmetric matrix) */
 template <typename VECTOR_H, typename MAT_C>
 typename MAT_C::Scalar multiply_HCHt_scalar(const VECTOR_H& H, const MAT_C& C)
 {
-	return (mat2eig(H) * mat2eig(C) * mat2eig(H).transpose())(0, 0);
+	ASSERT_EQUAL_(H.cols(), C.rows());
+	ASSERT_EQUAL_(C.rows(), C.cols());
+	return (mat2eig(H) * mat2eig(C) * mat2eig(H).transpose()).eval()(0, 0);
 }
 
 /** Computes the mean vector and covariance from a list of samples in an NxM
