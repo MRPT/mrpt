@@ -51,10 +51,12 @@ TEST(StaticString, concat_multi)
 
 	// Test c_str():
 	const char* s = abba.c_str();
-
-	// Test cast to "const char*" () operator:
 	const char* s2 = static_cast<const char*>(abba);
 	EXPECT_EQ(s, s2);
+
+	// Test cast to "const char*" () operator:
+	const char* s3 = static_cast<const char*>(a);
+	EXPECT_EQ(a.c_str(), s3);
 }
 
 TEST(num_to_string, ctor)
