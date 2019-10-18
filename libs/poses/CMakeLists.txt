@@ -14,7 +14,7 @@ if(BUILD_mrpt-poses)
 	# Windows only: the mxplus lib internally requires linking with opencv (sigh...)
 	# Perhaps there is a better way to solve this, someday.
 	if (BUILD_MATLAB)
-		target_link_libraries(poses PRIVATE ${OpenCV_LIBRARIES})
+		target_link_libraries(poses PRIVATE imp_opencv)
 	endif()
 
 endif()

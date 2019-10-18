@@ -13,7 +13,7 @@ if(CMAKE_MRPT_HAS_PCL)
 		)
 
 	if(BUILD_mrpt-pbmap)
-		target_link_libraries(pbmap PRIVATE ${PCL_LIBRARIES})
+		target_link_libraries(pbmap PRIVATE imp_pcl  ${PCL_LIBRARIES})
 	endif()
 
 else(CMAKE_MRPT_HAS_PCL)

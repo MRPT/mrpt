@@ -40,11 +40,6 @@ if (NOT "${CMAKE_GTEST_CFLAGS}" STREQUAL "")
 	add_definitions(${CMAKE_GTEST_CFLAGS})
 endif ()
 
-# Fix issue #367: undefined reference to symbol on tests linking
-if(NOT MSVC)
-    set(CMAKE_THREAD_LIBS_INIT ${CMAKE_THREAD_LIBS_INIT} "-lpthread")
-endif()
-
 if(MSVC)
 	# avoid MSVC pedantic warning on tr1. See: https://github.com/google/googletest/issues/1111
 	add_definitions(/D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING)
@@ -70,14 +65,13 @@ foreach(_TSTLIB ${LST_LIB_TESTS})
 	# Add the required libraries for linking:
 	if (CMAKE_MRPT_HAS_GTEST_SYSTEM)
 		# System vesion:
-		target_link_libraries(test_${_TSTLIB} ${MRPT_LINKER_LIBS_RELorDEB} gtest ${CMAKE_THREAD_LIBS_INIT})
+		set(gtest_lib_name gtest)
 	else ()
 		# Own version:
-		target_link_libraries(test_${_TSTLIB} ${MRPT_LINKER_LIBS_RELorDEB} mrptgtest ${CMAKE_THREAD_LIBS_INIT})
-		add_dependencies(test_${_TSTLIB} mrptgtest)  # Assure the MRPT library is updated:
+		set(gtest_lib_name mrptgtest)
 	endif ()
 
-	set_target_properties(test_${_TSTLIB} PROPERTIES "COMPILE_DEFINITIONS" "MRPT_TEST_LIB=${_TSTLIB}")
+	target_link_libraries(test_${_TSTLIB} ${gtest_lib_name} Threads::Threads)
 
 	# Deps:
 	get_property(lst_deps GLOBAL PROPERTY "${_TSTLIB_DASH}_LIB_DEPS")
@@ -132,6 +126,6 @@ endforeach(_TSTLIB)
 # Special dependencies:
 if (TARGET test_mrpt_img)
     if(CMAKE_MRPT_HAS_OPENCV)
-	target_link_libraries(test_mrpt_img ${OpenCV_LIBRARIES})
+	target_link_libraries(test_mrpt_img imp_opencv)
     endif()
 endif()

@@ -1,6 +1,3 @@
-if(CMAKE_MRPT_HAS_OPENCV)
-	include_directories(${OpenCV_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${OPENCV_INCLUDE_DIRS} ${OPENCV_INCLUDEDIR})
-endif()
 
 define_mrpt_lib(
 	img 		# Lib name
@@ -24,7 +21,7 @@ if(BUILD_mrpt-img)
 	endif()
 
 	if(CMAKE_MRPT_HAS_OPENCV)
-		target_link_libraries(img PRIVATE ${OpenCV_LIBRARIES})
+		target_link_libraries(img PRIVATE imp_opencv)
 	endif()
 	if(CMAKE_MRPT_HAS_JPEG)
 		if(NOT CMAKE_MRPT_HAS_JPEG_SYSTEM)

@@ -7,11 +7,15 @@ include(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CM
 
 project(wxThings)
 
-include_directories("${MRPT_SOURCE_DIR}/otherlibs/wxThings/")
-
 add_library(mrptwxthings
 	STATIC
 	src/toggle.cpp    # fancy button
 	)
 
 set_target_properties(mrptwxthings PROPERTIES FOLDER "3rd party")
+
+target_include_directories(
+	mrptwxthings
+	PUBLIC
+	"${MRPT_SOURCE_DIR}/otherlibs/wxThings/"
+	)

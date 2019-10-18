@@ -15,7 +15,7 @@ define_mrpt_lib(
 
 if(BUILD_mrpt-detectors)
 	if(CMAKE_MRPT_HAS_OPENCV)
-		target_link_libraries(detectors PRIVATE ${OpenCV_LIBRARIES})
+		target_link_libraries(detectors PRIVATE imp_opencv)
 	endif()
 
 endif()

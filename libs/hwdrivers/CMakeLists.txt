@@ -121,22 +121,15 @@ if(CMAKE_MRPT_HAS_DUO3D)
 	link_directories("${DUO3D_LIB_DIR}")
 endif()
 
-if(CMAKE_MRPT_HAS_OPENNI2)
-	include_directories(${OPENNI2_INCLUDE_DIRS})
-	ADD_DIRECTORIES_AS_ISYSTEM(OPENNI2_INCLUDE_DIRS)
-endif()
-
 if(CMAKE_MRPT_HAS_SWISSRANGE)
 	include_directories("${SWR_LIBMESASR_DIR}")
-endif()
-
-if(CMAKE_MRPT_HAS_OPENCV)
-	include_directories(${OpenCV_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${OPENCV_INCLUDE_DIRS} ${OPENCV_INCLUDEDIR})
 endif()
 
 if(CMAKE_MRPT_HAS_LIBPCAP)
 	include_directories(${PCAP_INCLUDE_DIR})
 endif()
+
+include(${MRPT_SOURCE_DIR}/cmakemodules/script_ffmpeg.cmake REQUIRED)      # Check for ffmpeg C libraries: libavcodec, libavutil, libavformat, libswscale
 
 # Macro declared in "DeclareMRPTLib.cmake":
 define_mrpt_lib(
@@ -189,7 +182,7 @@ if(BUILD_mrpt-hwdrivers)
 	endif()
 
 	if(CMAKE_MRPT_HAS_OPENCV)
-		target_link_libraries(hwdrivers PRIVATE ${OpenCV_LIBRARIES})
+		target_link_libraries(hwdrivers PRIVATE imp_opencv)
 	endif()
 
 	if(CMAKE_MRPT_HAS_LIBPCAP)
@@ -208,7 +201,7 @@ if(BUILD_mrpt-hwdrivers)
 	endif ()
 
 	if(CMAKE_MRPT_HAS_OPENNI2)
-		target_link_libraries(hwdrivers PRIVATE ${OPENNI2_LIBRARIES})
+		target_link_libraries(hwdrivers PRIVATE ${MRPT_OPENNI2_LIBRARIES})
 	endif()
 
 	if(CMAKE_MRPT_HAS_SWISSRANGE)

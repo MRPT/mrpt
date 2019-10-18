@@ -69,4 +69,5 @@ install(TARGETS pymrpt
   LIBRARY DESTINATION ${PYMRPT_INSTALL_DIR}
 )
 
-DeclareAppDependencies(pymrpt mrpt-poses mrpt-slam mrpt-obs mrpt-maps mrpt-nav mrpt-gui mrpt-opengl mrpt-vision) # Dependencies
+# Dependencies (link & includes):
+DeclareAppDependencies(pymrpt mrpt::poses mrpt::slam mrpt::obs mrpt::maps mrpt::nav mrpt::gui mrpt::opengl mrpt::vision)
