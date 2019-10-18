@@ -8,9 +8,13 @@ else()
 	find_package(ZLIB)
 	if (ZLIB_FOUND)
 			#message(STATUS "Found library: zlib - Include: ${ZLIB_INCLUDE_DIR}")
-			include_directories("${ZLIB_INCLUDE_DIR}")
 
-			set(MRPT_ZLIB_LIBS ${ZLIB_LIBRARIES}) # APPEND_MRPT_LIBS(z)
+			add_library(imp_zlib INTERFACE IMPORTED)
+			set_target_properties(imp_zlib
+				PROPERTIES
+				INTERFACE_INCLUDE_DIRECTORIES ${ZLIB_INCLUDE_DIR}
+				INTERFACE_LINK_LIBRARIES ${ZLIB_LIBRARIES}
+				)
 
 			set(CMAKE_MRPT_HAS_ZLIB_SYSTEM 1)
 			set(CMAKE_MRPT_HAS_ZLIB_SYSTEM_IS_WX 0)

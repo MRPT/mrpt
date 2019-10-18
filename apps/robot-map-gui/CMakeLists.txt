@@ -1,4 +1,4 @@
-include(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
+
 
 #-----------------------------------------------------------------
 # CMake file for the MRPT application:  robot-map-gui
@@ -97,7 +97,7 @@ if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 	# Dependencies on MRPT libraries:
 	#  Just mention the top-level dependency, the rest will be detected automatically,
 	#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-	DeclareAppDependencies(${PROJECT_NAME} mrpt-slam mrpt-gui mrpt-opengl mrpt-vision)
+	DeclareAppDependencies(${PROJECT_NAME} mrpt::slam mrpt::gui mrpt::opengl mrpt::vision)
 
 	DeclareAppForInstall(${PROJECT_NAME})
 	AppStartMenuLink(${PROJECT_NAME} "Robot-made maps viewer")   # Add link to the Start menu (in Windows Installable packages)

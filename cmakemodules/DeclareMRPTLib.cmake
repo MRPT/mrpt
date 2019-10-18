@@ -297,13 +297,6 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 
 	add_dependencies(${name} "DocumentationFiles")  # docs files target (useful for IDE editing)
 
-	if (NOT ${headers_only})
-		target_link_libraries(${name}
-			PRIVATE
-			${MRPTLIB_LINKER_LIBS}
-			)
-	endif ()
-
 	# Set custom name of lib + dynamic link numbering convenions in Linux:
 	if (NOT ${headers_only})
 		set_target_properties(${name} PROPERTIES

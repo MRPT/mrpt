@@ -2,15 +2,17 @@
 #  These libs are linked against mrpt-hwdrivers only (in shared libs,
 #  in static all user apps will have to link against this)
 # ====================================================================
-set(CMAKE_MRPT_HAS_FFMPEG 0)
-set(CMAKE_MRPT_HAS_FFMPEG_SYSTEM 0)
-set(MRPT_FFMPEG_LIBS_TO_LINK "")
+set(CMAKE_MRPT_HAS_FFMPEG 0  PARENT_SCOPE)
+set(CMAKE_MRPT_HAS_FFMPEG_SYSTEM 0 PARENT_SCOPE)
+set(MRPT_FFMPEG_LIBS_TO_LINK "" PARENT_SCOPE)
 
 # DISABLE_FFMPEG
 # ---------------------
 option(DISABLE_FFMPEG "Force not using FFMPEG library" "OFF")
 mark_as_advanced(DISABLE_FFMPEG)
-if(NOT DISABLE_FFMPEG)
+if(DISABLE_FFMPEG)
+	return()
+endif()
 
 if(PKG_CONFIG_FOUND)
 	PKG_CHECK_MODULES(LIBAVCODEC  QUIET libavcodec)
@@ -54,17 +56,17 @@ if(PKG_CONFIG_FOUND)
 			link_directories("${LIBSWSCALE_LIBDIR}")
 		endif()
 
-		set(MRPT_FFMPEG_LIBS_TO_LINK "${MRPT_FFMPEG_LIBS_TO_LINK}" "${LIBAVCODEC_LIBRARIES}" "${LIBAVFORMAT_LIBRARIES}" "${LIBAVUTIL_LIBRARIES}" "${LIBSWSCALE_LIBRARIES}")
+		set(MRPT_FFMPEG_LIBS_TO_LINK "${MRPT_FFMPEG_LIBS_TO_LINK}" "${LIBAVCODEC_LIBRARIES}" "${LIBAVFORMAT_LIBRARIES}" "${LIBAVUTIL_LIBRARIES}" "${LIBSWSCALE_LIBRARIES}" PARENT_SCOPE)
 
 		if($ENV{VERBOSE})
 			message(STATUS " ffmpeg libs: ${MRPT_FFMPEG_LIBS_TO_LINK}")
 		endif($ENV{VERBOSE})
 	endif(LIBAVCODEC_FOUND AND LIBAVUTIL_FOUND AND LIBAVFORMAT_FOUND AND LIBSWSCALE_FOUND)
-endif(PKG_CONFIG_FOUND)
+endif()
 
 if(MSVC)
 	set( MRPT_HAS_FFMPEG_WIN32 OFF CACHE BOOL "Add support for IP cameras and all FFmpeg-capable video sources")
-endif(MSVC)
+endif()
 
 if(MRPT_HAS_FFMPEG_WIN32)
 	set( FFMPEG_WIN32_ROOT_DIR "" CACHE PATH "Path to FFmpeg win32 build root directory (See http://ffmpeg.arrozcru.org/builds/)")
@@ -129,8 +131,6 @@ if(MRPT_HAS_FFMPEG_WIN32)
 
 	set(MRPT_FFMPEG_LIBS_TO_LINK ${MRPT_FFMPEG_LIBS_TO_LINK} "${FFMPEG_WIN32_AVCODEC_LIB}" "${FFMPEG_WIN32_AVUTIL_LIB}" "${FFMPEG_WIN32_AVFORMAT_LIB}" "${FFMPEG_WIN32_SWSCALE_LIB}")
 endif(MRPT_HAS_FFMPEG_WIN32)
-
-endif(NOT DISABLE_FFMPEG)
 
 
 # -- install DLLs --

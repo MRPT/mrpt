@@ -21,10 +21,6 @@ if(NOT DISABLE_PCL)
 		set(CMAKE_MRPT_HAS_PCL 1)
 		set(CMAKE_MRPT_HAS_PCL_SYSTEM 1)
 
-		include_directories(${PCL_INCLUDE_DIRS})
-		link_directories(${PCL_LIBRARY_DIRS})
-		add_definitions(${PCL_DEFINITIONS})
-
 		if (NOT Boost_FOUND)
 			message(FATAL_ERROR "PCL requires Boost. Either disable PCL (with DISABLE_PCL=ON) or, to fix the error, create the entries BOOST_ROOT and BOOST_LIBRARYDIR and set them to the correct values")
 		endif (NOT Boost_FOUND)
@@ -35,11 +31,16 @@ if(NOT DISABLE_PCL)
 			message(STATUS " Library dirs: ${PCL_LIBRARY_DIRS}")
 			message(STATUS " Definitions : ${PCL_DEFINITIONS}")
 			message(STATUS " Libraries   : ${PCL_LIBRARIES}")
-		endif($ENV{VERBOSE})
+		endif()
 
-		# Add PCL directories as "-isystem" to avoid warnings:
-		ADD_DIRECTORIES_AS_ISYSTEM(PCL_INCLUDE_DIRS)
-
+		add_library(imp_pcl SHARED IMPORTED)
+		set_target_properties(imp_pcl
+			PROPERTIES
+			INTERFACE_INCLUDE_DIRECTORIES "${PCL_INCLUDE_DIRS}"
+			INTERFACE_COMPILE_DEFINITIONS "${PCL_DEFINITIONS}"
+			# We cannot add link libs here since they contain "optimized/debug" which are not permitted here.
+			#INTERFACE_LINK_LIBRARIES "${PCL_LIBRARIES}"
+			)
 	endif()
 
 endif()

@@ -7,7 +7,10 @@ set(CMAKE_MRPT_HAS_FTDI 0)
 option(DISABLE_FTDI "Do not use the USB driver for FTDI chips" 0)
 mark_as_advanced(DISABLE_FTDI)
 
-if (NOT DISABLE_FTDI)
+if (DISABLE_FTDI)
+	return()
+endif()
+
 if(UNIX)
 	# 1st: try to find LIBFTDI1 (1.2+)
 	find_package(LibFTDI1 QUIET)
@@ -52,18 +55,19 @@ if(UNIX)
 			message(STATUS "  FTDI_LIBS: ${FTDI_LIBS}")
 		endif($ENV{VERBOSE})
 
-		#APPEND_MRPT_LIBS(${FTDI_LIBS})
-		link_directories(${FTDI_LINK_DIRS})
-		include_directories(${FTDI_INCLUDE_DIRS})
+		add_library(imp_ftdi INTERFACE IMPORTED)
+		set_target_properties(imp_ftdi
+			PROPERTIES
+			INTERFACE_INCLUDE_DIRECTORIES ${FTDI_INCLUDE_DIRS}
+			INTERFACE_LINK_DIRECTORIES ${FTDI_LINK_DIRS}
+			)
 	endif()
 
-else(UNIX)
+else()
 	# In windows we always have FTDI support (at compile time at least...)
 	set(CMAKE_MRPT_HAS_FTDI 1)
 
 	set(LIBFTDI_VERSION_MAJOR 1)
 	set(LIBFTDI_VERSION_MINOR 0)
-endif(UNIX)
-endif (NOT DISABLE_FTDI)
-
+endif()
 
