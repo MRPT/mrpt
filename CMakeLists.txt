@@ -266,7 +266,7 @@ include(cmakemodules/script_ros1.cmake REQUIRED)       # Check for ROS
 
 # Don't include these ones *here*, since their modules polute the global namespace!
 #include(cmakemodules/script_vtk.cmake REQUIRED)         # Check for VTK
-#include(cmakemodules/script_pcl.cmake REQUIRED)     # PCL library
+include(cmakemodules/script_pcl.cmake REQUIRED)     # PCL library
 #include(cmakemodules/script_ffmpeg.cmake REQUIRED)      # Check for ffmpeg C libraries: libavcodec, libavutil, libavformat, libswscale
 
 # ---------------------------------------------------------------------------
