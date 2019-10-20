@@ -22,7 +22,7 @@ endif()
 add_executable(${PROJECT_NAME} WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
 
 # Add the required libraries for linking:
-target_link_libraries(${PROJECT_NAME} ${wxWidgets_LIBRARIES} )
+target_link_libraries(${PROJECT_NAME} imp_wxwidgets )
 target_link_libraries(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
 
 # -ldl required by the plugin load mechanism of this app:

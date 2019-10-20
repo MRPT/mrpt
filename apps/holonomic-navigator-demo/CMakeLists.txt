@@ -26,7 +26,7 @@ add_executable(${PROJECT_NAME} WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
 
 # Add the required libraries for linking:
 target_link_libraries(${PROJECT_NAME}
-	${wxWidgets_LIBRARIES}
+	imp_wxwidgets
 	mrptwxthings
 	)
 
