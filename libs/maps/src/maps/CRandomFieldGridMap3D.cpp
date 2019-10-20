@@ -15,17 +15,6 @@
 #include <mrpt/system/CTicTac.h>
 #include <fstream>
 
-#if MRPT_HAS_VTK
-#include <vtkCellArray.h>
-#include <vtkDoubleArray.h>
-#include <vtkPointData.h>
-#include <vtkPoints.h>
-#include <vtkSmartPointer.h>
-#include <vtkStructuredGrid.h>
-#include <vtkVersion.h>
-#include <vtkXMLStructuredGridWriter.h>
-#endif
-
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::system;
@@ -215,39 +204,6 @@ void CRandomFieldGridMap3D::TInsertionOptions::loadFromConfigFile(
 		section.c_str(), "GMRF_skip_variance", GMRF_skip_variance);
 }
 
-/** Save the current estimated grid to a VTK file (.vts) as a "structured grid".
- * \sa saveAsCSV */
-bool CRandomFieldGridMap3D::saveAsVtkStructuredGrid(
-	const std::string& fil) const
-{
-	MRPT_START;
-#if MRPT_HAS_VTK
-
-	vtkStructuredGrid* vtkGrid = vtkStructuredGrid::New();
-	this->getAsVtkStructuredGrid(vtkGrid);
-
-	// Write file
-	vtkSmartPointer<vtkXMLStructuredGridWriter> writer =
-		vtkSmartPointer<vtkXMLStructuredGridWriter>::New();
-	writer->SetFileName(fil.c_str());
-
-#if VTK_MAJOR_VERSION <= 5
-	writer->SetInput(vtkGrid);
-#else
-	writer->SetInputData(vtkGrid);
-#endif
-
-	int ret = writer->Write();
-
-	vtkGrid->Delete();
-
-	return ret == 0;
-#else
-	THROW_EXCEPTION("This method requires building MRPT against VTK!");
-#endif
-	MRPT_END
-}
-
 bool mrpt::maps::CRandomFieldGridMap3D::saveAsCSV(
 	const std::string& filName_mean, const std::string& filName_stddev) const
 {
@@ -435,82 +391,6 @@ void CRandomFieldGridMap3D::serializeFrom(
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-}
-
-void CRandomFieldGridMap3D::getAsVtkStructuredGrid(
-	vtkStructuredGrid* output, const std::string& label_mean,
-	const std::string& label_stddev) const
-{
-	MRPT_START;
-#if MRPT_HAS_VTK
-
-	const size_t nx = this->getSizeX(), ny = this->getSizeY(),
-				 nz = this->getSizeZ();
-
-	const int num_values = nx * ny * nz;
-
-	vtkPoints* newPoints = vtkPoints::New();
-
-	vtkDoubleArray* newData = vtkDoubleArray::New();
-	newData->SetNumberOfComponents(3);
-	newData->SetNumberOfTuples(num_values);
-
-	vtkDoubleArray* mean_arr = vtkDoubleArray::New();
-	mean_arr->SetNumberOfComponents(1);
-	mean_arr->SetNumberOfTuples(num_values);
-
-	vtkDoubleArray* std_arr = vtkDoubleArray::New();
-	std_arr->SetNumberOfComponents(1);
-	std_arr->SetNumberOfTuples(num_values);
-
-	vtkIdType numtuples = newData->GetNumberOfTuples();
-
-	{
-		size_t cx = 0, cy = 0, cz = 0;
-		for (vtkIdType cc = 0; cc < numtuples; cc++)
-		{
-			const double x = idx2x(cx), y = idx2y(cy), z = idx2z(cz);
-
-			newData->SetComponent(cc, 0, x);
-			newData->SetComponent(cc, 1, y);
-			newData->SetComponent(cc, 2, z);
-
-			mean_arr->SetComponent(cc, 0, m_map[cc].mean_value);
-			std_arr->SetComponent(cc, 0, m_map[cc].stddev_value);
-
-			// Increment coordinates:
-			if (++cx >= m_size_x)
-			{
-				cx = 0;
-				if (++cy >= m_size_y)
-				{
-					cy = 0;
-					cz++;
-				}
-			}
-		}
-		ASSERT_(size_t(m_map.size()) == size_t(numtuples));
-	}
-
-	newPoints->SetData(newData);
-	newData->Delete();
-
-	output->SetExtent(0, nx - 1, 0, ny - 1, 0, nz - 1);
-	output->SetPoints(newPoints);
-	newPoints->Delete();
-
-	mean_arr->SetName(label_mean.c_str());
-	std_arr->SetName(label_stddev.c_str());
-	output->GetPointData()->AddArray(mean_arr);
-	output->GetPointData()->AddArray(std_arr);
-
-	mean_arr->Delete();
-	std_arr->Delete();
-
-#else
-	THROW_EXCEPTION("This method requires building MRPT against VTK!");
-#endif  // VTK
-	MRPT_END;
 }
 
 // ============ TObservationGMRF ===========

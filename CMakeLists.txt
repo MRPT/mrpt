@@ -258,16 +258,19 @@ include(cmakemodules/script_yamlcpp.cmake REQUIRED)     # Check for YAMLCPP libr
 include(cmakemodules/script_pcap.cmake REQUIRED)        # Check for the libpcap library
 include(cmakemodules/script_clang_tidy.cmake REQUIRED)  # Clang tidy
 include(cmakemodules/script_iwyu.cmake REQUIRED)        # Include-what-you-use
-include(cmakemodules/script_cvd.cmake REQUIRED)         # Check for VTK
+include(cmakemodules/script_cvd.cmake REQUIRED)         # Check for CVD
 include(cmakemodules/script_jsoncpp.cmake REQUIRED)     # Check for jsoncpp
 include(cmakemodules/script_kinect.cmake REQUIRED)  # Kinect support in a set of different ways
 include(cmakemodules/script_suitesparse.cmake REQUIRED)     # SuiteSparse libs
 include(cmakemodules/script_ros1.cmake REQUIRED)       # Check for ROS
 
 # Don't include these ones *here*, since their modules polute the global namespace!
-#include(cmakemodules/script_vtk.cmake REQUIRED)         # Check for VTK
-include(cmakemodules/script_pcl.cmake REQUIRED)     # PCL library
 #include(cmakemodules/script_ffmpeg.cmake REQUIRED)      # Check for ffmpeg C libraries: libavcodec, libavutil, libavformat, libswscale
+
+#include(cmakemodules/script_pcl.cmake REQUIRED)     # PCL library
+# Instead:
+add_subdirectory(cmakemodules/probe_pcl)
+
 
 # ---------------------------------------------------------------------------
 #			OPTIONS
@@ -356,7 +359,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 
 	# Wall & pedantic?
 	set(MRPT_BUILD_GCC_PEDANTIC_DEFAULT "OFF")
-	set( MRPT_BUILD_GCC_PEDANTIC ${MRPT_BUILD_GCC_PEDANTIC_DEFAULT} CACHE BOOL "Enable pedantic error detection (with GCC only)")
+	set(MRPT_BUILD_GCC_PEDANTIC ${MRPT_BUILD_GCC_PEDANTIC_DEFAULT} CACHE BOOL "Enable pedantic error detection (with GCC only)")
 	mark_as_advanced(MRPT_BUILD_GCC_PEDANTIC)
 
 	# High level of warnings.
@@ -597,9 +600,11 @@ endif()
 	set(EIGEN_MAX_STATIC_ALIGN_BYTES 32)
 #endif()
 
+GET_PROPERTY(CMAKE_MRPT_HAS_PCL GLOBAL PROPERTY CMAKE_MRPT_HAS_PCL)
+GET_PROPERTY(CMAKE_MRPT_HAS_PCL_SYSTEM GLOBAL PROPERTY CMAKE_MRPT_HAS_PCL_SYSTEM)
+
 include(cmakemodules/script_create_config_h.cmake REQUIRED)   # Build config.h
 include(cmakemodules/script_create_version_h.cmake REQUIRED)  # Build version.h
-
 
 add_custom_target(all_mrpt_libs ALL) # all_mrpt_libs: target to build all mrpt-* modules
 

@@ -29,17 +29,8 @@ define_mrpt_lib(
 	)
 
 if(BUILD_mrpt-maps)
-	if (CMAKE_MRPT_HAS_PCL)
-		target_link_libraries(maps PRIVATE imp_pcl ${PCL_LIBRARIES})
-	endif()
-
 	if(CMAKE_MRPT_HAS_LIBLAS)
 		target_link_libraries(maps PRIVATE ${LAS_LIBS})
-	endif()
-
-	if (CMAKE_MRPT_HAS_VTK)
-		include(${VTK_USE_FILE})
-		target_link_libraries(maps PRIVATE ${VTK_LIBRARIES})
 	endif()
 
 	if (CMAKE_MRPT_HAS_OCTOMAP)

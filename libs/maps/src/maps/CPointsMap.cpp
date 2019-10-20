@@ -26,12 +26,6 @@
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/os.h>
 
-#if MRPT_HAS_PCL
-#include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
-//#   include <pcl/registration/icp.h>
-#endif
-
 #if MRPT_HAS_SSE2
 #include <mrpt/core/SSE_macros.h>
 #include <mrpt/core/SSE_types.h>
@@ -1665,41 +1659,6 @@ void CPointsMap::addFrom(const CPointsMap& anotherMap)
 	addFrom_classSpecific(anotherMap, nThis);
 
 	mark_as_modified();
-}
-
-/** Save the point cloud as a PCL PCD file, in either ASCII or binary format
- * \return false on any error */
-bool CPointsMap::savePCDFile(
-	const std::string& filename, bool save_as_binary) const
-{
-#if MRPT_HAS_PCL
-	pcl::PointCloud<pcl::PointXYZ> cloud;
-	this->getPCLPointCloud(cloud);
-
-	return 0 == pcl::io::savePCDFile(filename, cloud, save_as_binary);
-
-#else
-	MRPT_UNUSED_PARAM(filename);
-	MRPT_UNUSED_PARAM(save_as_binary);
-	THROW_EXCEPTION("Operation not available: MRPT was built without PCL");
-#endif
-}
-
-/** Load the point cloud from a PCL PCD file (requires MRPT built against
- * PCL) \return false on any error */
-bool CPointsMap::loadPCDFile(const std::string& filename)
-{
-#if MRPT_HAS_PCL
-	pcl::PointCloud<pcl::PointXYZ> cloud;
-	if (0 != pcl::io::loadPCDFile(filename, cloud)) return false;
-
-	this->getPCLPointCloud(cloud);
-
-	return true;
-#else
-	MRPT_UNUSED_PARAM(filename);
-	THROW_EXCEPTION("Operation not available: MRPT was built without PCL");
-#endif
 }
 
 /*---------------------------------------------------------------
