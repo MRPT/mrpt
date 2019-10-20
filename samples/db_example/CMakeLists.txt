@@ -58,5 +58,5 @@ endif()
 # This part can be removed if you are compiling this program outside of
 #  the MRPT tree:
 if(DEFINED MRPT_LIBS_ROOT) # Fails if build outside of MRPT project.
-	DeclareAppDependencies(${sampleName} mrpt-db;mrpt-io;mrpt-serialization) # Dependencies
+	DeclareAppDependencies(${sampleName} mrpt::db;mrpt::io;mrpt::serialization) # Dependencies
 endif()

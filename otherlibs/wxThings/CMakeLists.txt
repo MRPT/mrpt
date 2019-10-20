@@ -19,3 +19,4 @@ target_include_directories(
 	PUBLIC
 	"${MRPT_SOURCE_DIR}/otherlibs/wxThings/"
 	)
+target_link_libraries(mrptwxthings PRIVATE imp_wxwidgets)

@@ -46,6 +46,9 @@ if(BUILD_mrpt-gui)
 	endif()
 
 	if(CMAKE_MRPT_HAS_WXWIDGETS)
+		if (NOT TARGET imp_wxwidgets)
+			message(ERROR "imp_wxwidgets should be defined!")
+		endif()
 		target_link_libraries(gui PRIVATE imp_wxwidgets)
 	endif()
 
