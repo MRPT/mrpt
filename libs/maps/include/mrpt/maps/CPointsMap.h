@@ -406,13 +406,30 @@ class CPointsMap : public CMetricMap,
 	}
 
 	/** Save the point cloud as a PCL PCD file, in either ASCII or binary format
-	 * (requires MRPT built against PCL) \return false on any error */
-	virtual bool savePCDFile(
-		const std::string& filename, bool save_as_binary) const;
+	 * \note This method requires user code to include PCL before MRPT headers.
+	 * \return false on any error */
+#if defined(PCL_LINEAR_VERSION)
+	inline bool savePCDFile(
+		const std::string& filename, bool save_as_binary) const
+	{
+		pcl::PointCloud<pcl::PointXYZ> cloud;
+		this->getPCLPointCloud(cloud);
+		return 0 == pcl::io::savePCDFile(filename, cloud, save_as_binary);
+	}
+#endif
 
-	/** Load the point cloud from a PCL PCD file (requires MRPT built against
-	 * PCL) \return false on any error */
-	virtual bool loadPCDFile(const std::string& filename);
+	/** Load the point cloud from a PCL PCD file.
+	 * \note This method requires user code to include PCL before MRPT headers.
+	 * \return false on any error */
+#if defined(PCL_LINEAR_VERSION)
+	inline bool loadPCDFile(const std::string& filename)
+	{
+		pcl::PointCloud<pcl::PointXYZ> cloud;
+		if (0 != pcl::io::loadPCDFile(filename, cloud)) return false;
+		this->getPCLPointCloud(cloud);
+		return true;
+	}
+#endif
 
 	/** @} */  // End of: File input/output methods
 	// --------------------------------------------------

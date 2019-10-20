@@ -220,10 +220,45 @@ class CColouredPointsMap : public CPointsMap
 	/** @name PCL library support
 		@{ */
 
+#if defined(PCL_LINEAR_VERSION)
 	/** Save the point cloud as a PCL PCD file, in either ASCII or binary format
 	 * \return false on any error */
-	bool savePCDFile(
-		const std::string& filename, bool save_as_binary) const override;
+	inline bool savePCDFile(
+		const std::string& filename, bool save_as_binary) const
+	{
+		pcl::PointCloud<pcl::PointXYZRGB> cloud;
+
+		const size_t nThis = this->size();
+
+		// Fill in the cloud data
+		cloud.width = nThis;
+		cloud.height = 1;
+		cloud.is_dense = false;
+		cloud.points.resize(cloud.width * cloud.height);
+
+		const float f = 255.f;
+
+		union myaux_t {
+			uint8_t rgb[4];
+			float f;
+		} aux_val;
+
+		for (size_t i = 0; i < nThis; ++i)
+		{
+			cloud.points[i].x = m_x[i];
+			cloud.points[i].y = m_y[i];
+			cloud.points[i].z = m_z[i];
+
+			aux_val.rgb[0] = static_cast<uint8_t>(this->m_color_B[i] * f);
+			aux_val.rgb[1] = static_cast<uint8_t>(this->m_color_G[i] * f);
+			aux_val.rgb[2] = static_cast<uint8_t>(this->m_color_R[i] * f);
+
+			cloud.points[i].rgb = aux_val.f;
+		}
+
+		return 0 == pcl::io::savePCDFile(filename, cloud, save_as_binary);
+	}
+#endif
 
 	/** Loads a PCL point cloud (WITH RGB information) into this MRPT class (for
 	 * clouds without RGB data, see CPointsMap::setFromPCLPointCloud() ).

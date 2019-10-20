@@ -85,9 +85,6 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 /** Matlab wrapper is available */
 #define MRPT_HAS_MATLAB           ${CMAKE_MRPT_HAS_MATLAB}
 
-/** VTK libs are available */
-#define MRPT_HAS_VTK ${CMAKE_MRPT_HAS_VTK}
-
 /** jsoncpp is present */
 #define MRPT_HAS_JSONCPP ${CMAKE_MRPT_HAS_JSONCPP}
 
