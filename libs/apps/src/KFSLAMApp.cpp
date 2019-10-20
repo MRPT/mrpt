@@ -654,7 +654,7 @@ void KFSLAMApp::Run_KF_SLAM()
 					}
 
 					// The camera pointing to the current robot pose:
-					if (CAMERA_3DSCENE_FOLLOWS_ROBOT)
+					if (win3d && CAMERA_3DSCENE_FOLLOWS_ROBOT)
 					{
 						win3d->setCameraPointingToPoint(
 							robotPoseMean3D.x(), robotPoseMean3D.y(),

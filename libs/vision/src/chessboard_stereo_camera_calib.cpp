@@ -53,7 +53,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		ASSERT_(p.check_squares_length_Y_meters > 0);
 		const bool user_wants_use_robust = p.use_robust_kernel;
 
-		if (images.size() < 1)
+		if (images.size() < 1 && p.verbose)
 		{
 			std::cout << "ERROR: No input images." << std::endl;
 			return false;
@@ -210,12 +210,12 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 
 		if (p.verbose)
 			std::cout << valid_image_pair_indices.size()
-					  << " valid image pairs." << std::endl;
+					  << " valid image pairs.\n";
 		if (valid_image_pair_indices.empty())
 		{
-			std::cout << "ERROR: No valid images. Perhaps the checkerboard "
-						 "size is incorrect?"
-					  << std::endl;
+			if (p.verbose)
+				std::cerr << "ERROR: No valid images. Perhaps the checkerboard "
+							 "size is incorrect?\n";
 			return false;
 		}
 
@@ -475,6 +475,18 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		out.cam_params.rightCamera.k3(lm_stat.right_cam_params[6]);
 		out.cam_params.rightCamera.p1(lm_stat.right_cam_params[7]);
 		out.cam_params.rightCamera.p2(lm_stat.right_cam_params[8]);
+
+		const mrpt::poses::CPose3D l2r_pose = -lm_stat.right2left_pose;
+		mrpt::math::CQuaternionDouble l2r_quat;
+		l2r_pose.getAsQuaternion(l2r_quat);
+
+		out.cam_params.rightCameraPose.x = l2r_pose.x();
+		out.cam_params.rightCameraPose.y = l2r_pose.y();
+		out.cam_params.rightCameraPose.z = l2r_pose.z();
+		out.cam_params.rightCameraPose.qr = l2r_quat.r();
+		out.cam_params.rightCameraPose.qx = l2r_quat.x();
+		out.cam_params.rightCameraPose.qy = l2r_quat.y();
+		out.cam_params.rightCameraPose.qz = l2r_quat.z();
 
 		// R2L pose:
 		out.right2left_camera_pose = lm_stat.right2left_pose;

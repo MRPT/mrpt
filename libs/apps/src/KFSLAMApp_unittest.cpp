@@ -68,10 +68,10 @@ TEST(KFSLAMApp, EKF_SLAM_3D)
 		});
 }
 
-TEST(KFSLAMApp, EKF_SLAM_3D_planar)
+TEST(KFSLAMApp, EKF_SLAM_2D)
 {
 	generic_kf_slam_test(
-		"EKF-SLAM_test.ini", "kf-slam_demo.rawlog",
+		"EKF-SLAM_test_2d.ini", "kf-slam_demo.rawlog",
 		[](mrpt::config::CConfigFileBase& c) {
 			using namespace std::string_literals;
 			c.write("MappingApplication", "SHOW_3D_LIVE", false);
