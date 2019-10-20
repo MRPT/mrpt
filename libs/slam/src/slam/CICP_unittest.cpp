@@ -70,17 +70,6 @@ class ICPTests : public ::testing::Test
 		CPosePDF::Ptr pdf =
 			ICP.Align(&m1, &m2, initialPose, &runningTime, (void*)&info);
 
-		/*printf("ICP run in %.02fms, %d iterations (%.02fms/iter), %.01f%%
-		   goodness\n -> ",
-				runningTime*1000,
-				info.nIterations,
-				runningTime*1000.0f/info.nIterations,
-				info.goodness*100 );*/
-
-		// cout << "Mean of estimation: " << pdf->getEstimatedPose() << endl<<
-		// endl;
-		// Should be around: Mean of estimation: (0.820,0.084,8.73deg)
-
 		const CPose2D good_pose(0.820, 0.084, DEG2RAD(8.73));
 
 		EXPECT_NEAR(good_pose.distanceTo(pdf->getMeanVal()), 0, 0.02);
