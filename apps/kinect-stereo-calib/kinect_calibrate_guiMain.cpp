@@ -2153,11 +2153,8 @@ void kinect_calibrate_guiDialog::OnbtnRunCalibClick(wxCommandEvent& event)
 		edLogCalibResult->Clear();
 
 		// Run calibration:
-		bool res;
-		{
-			res = mrpt::vision::checkerBoardStereoCalibration(
-				m_calib_images, m_calib_params, m_calib_result);
-		}
+		const bool res = mrpt::vision::checkerBoardStereoCalibration(
+			m_calib_images, m_calib_params, m_calib_result);
 
 		pd.Close();
 
