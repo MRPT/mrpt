@@ -5,7 +5,7 @@ jobs:
       - image: mrpt/mrpt-build-env:full-bionic
     steps:
       - checkout
-      - run: cmake -DBUILD_EXAMPLES=On -DBUILD_TESTING=On -DENABLE_COVERAGE=On -H. -Bbuild
+      - run: cmake -DBUILD_EXAMPLES=On -DBUILD_TESTING=On -DENABLE_COVERAGE=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild
       - run: make -C build tests_build_all
       - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build
       - run: make gcov -C build
@@ -18,7 +18,7 @@ jobs:
       - checkout
       - run:
           name: Generate cmake files
-          command: cmake -DBUILD_EXAMPLES=On -DBUILD_TESTING=On -DENABLE_COVERAGE=On -H. -Bbuild
+          command: cmake -DBUILD_EXAMPLES=On -DBUILD_TESTING=On -DENABLE_COVERAGE=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild
           environment:
             CC: /usr/bin/clang-6.0
             CXX: /usr/bin/clang++-6.0
@@ -32,7 +32,7 @@ jobs:
       - image: mrpt/mrpt-build-env:headless-bionic
     steps:
       - checkout
-      - run: cmake -DBUILD_EXAMPLES=On -DBUILD_TESTING=On -DENABLE_COVERAGE=On -H. -Bbuild
+      - run: cmake -DBUILD_EXAMPLES=On -DBUILD_TESTING=On -DENABLE_COVERAGE=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild
       - run: make -C build tests_build_all
       - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build
       - run: make gcov -C build
@@ -43,7 +43,7 @@ jobs:
       - image: mrpt/mrpt-build-env:minimal-bionic
     steps:
       - checkout
-      - run: cmake -DBUILD_EXAMPLES=On -DBUILD_TESTING=On -DENABLE_COVERAGE=On -DDISABLE_PYTHON_BINDINGS=On -DEIGEN_USE_EMBEDDED_VERSION=On -H. -Bbuild
+      - run: cmake -DBUILD_EXAMPLES=On -DBUILD_TESTING=On -DENABLE_COVERAGE=On -DDISABLE_PYTHON_BINDINGS=On -DEIGEN_USE_EMBEDDED_VERSION=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild
       - run: make -C build tests_build_all
       - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build
       - run: make gcov -C build
@@ -69,10 +69,10 @@ jobs:
       - run: brew install cmake
       - run: brew install boost
       - run: brew install nasm
-      - run: cmake -DBUILD_EXAMPLES=On -DBUILD_TESTING=On -DENABLE_COVERAGE=On -DDISABLE_PYTHON_BINDINGS=On -DEIGEN_USE_EMBEDDED_VERSION=On -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild
-      - run: make -j4 -C build tests_build_all
-      - run: make -j4 CTEST_OUTPUT_ON_FAILURE=1 test -C build
-      - run: make -j4 -C build
+      - run: cmake -DBUILD_EXAMPLES=On -DBUILD_TESTING=On -DENABLE_COVERAGE=On -DDISABLE_PYTHON_BINDINGS=On -DEIGEN_USE_EMBEDDED_VERSION=On -DCMAKE_VERBOSE_MAKEFILE=ON -DMRPT_ALLOW_LGPLV3=ON -H. -Bbuild
+      - run: make -j2 -C build tests_build_all
+      - run: make -j2 CTEST_OUTPUT_ON_FAILURE=1 test -C build
+      - run: make -j2 -C build
 workflows:
   version: 2
   build:
