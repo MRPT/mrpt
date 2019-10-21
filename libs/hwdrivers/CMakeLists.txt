@@ -129,8 +129,6 @@ if(CMAKE_MRPT_HAS_LIBPCAP)
 	include_directories(${PCAP_INCLUDE_DIR})
 endif()
 
-include(${MRPT_SOURCE_DIR}/cmakemodules/script_ffmpeg.cmake REQUIRED)      # Check for ffmpeg C libraries: libavcodec, libavutil, libavformat, libswscale
-
 # Macro declared in "DeclareMRPTLib.cmake":
 define_mrpt_lib(
 	# Lib name
