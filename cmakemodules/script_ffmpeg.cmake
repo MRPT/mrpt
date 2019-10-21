@@ -6,6 +6,7 @@ set(CMAKE_MRPT_HAS_FFMPEG 0)
 set(CMAKE_MRPT_HAS_FFMPEG_SYSTEM 0)
 set(MRPT_FFMPEG_LIBRARIES "")
 set(MRPT_FFMPEG_INCLUDE_DIRS "")
+set(MRPT_FFMPEG_LINK_DIRS "")
 
 # DISABLE_FFMPEG
 # ---------------------
@@ -25,44 +26,39 @@ if(PKG_CONFIG_FOUND)
 		set(CMAKE_MRPT_HAS_FFMPEG_SYSTEM 1)
 
 		if (NOT "${LIBAVCODEC_INCLUDEDIR}" STREQUAL "")
-			include_directories("${LIBAVCODEC_INCLUDEDIR}/")
-			include_directories("${LIBAVCODEC_INCLUDEDIR}/ffmpeg")
-			include_directories("${LIBAVCODEC_INCLUDEDIR}/libavcodec")
-
-			include_directories("${LIBAVUTIL_INCLUDEDIR}")
+		    list(APPEND MRPT_FFMPEG_INCLUDE_DIRS "${LIBAVCODEC_INCLUDEDIR}/")
+			list(APPEND MRPT_FFMPEG_INCLUDE_DIRS "${LIBAVCODEC_INCLUDEDIR}/ffmpeg")
+			list(APPEND MRPT_FFMPEG_INCLUDE_DIRS "${LIBAVCODEC_INCLUDEDIR}/libavcodec")
+			list(APPEND MRPT_FFMPEG_INCLUDE_DIRS "${LIBAVUTIL_INCLUDEDIR}")
 		endif()
 
 		if (NOT "${LIBAVFORMAT_INCLUDEDIR}" STREQUAL "")
-			include_directories("${LIBAVFORMAT_INCLUDEDIR}")
-			include_directories("${LIBAVFORMAT_INCLUDEDIR}/ffmpeg")
-			include_directories("${LIBAVFORMAT_INCLUDEDIR}/libavformat")
+		    list(APPEND MRPT_FFMPEG_INCLUDE_DIRS "${LIBAVFORMAT_INCLUDEDIR}")
+			list(APPEND MRPT_FFMPEG_INCLUDE_DIRS "${LIBAVFORMAT_INCLUDEDIR}/ffmpeg")
+			list(APPEND MRPT_FFMPEG_INCLUDE_DIRS "${LIBAVFORMAT_INCLUDEDIR}/libavformat")
 		endif()
 
 		if (NOT "${LIBSWSCALE_INCLUDEDIR}" STREQUAL "")
-			include_directories("${LIBSWSCALE_INCLUDEDIR}")
-			include_directories("${LIBSWSCALE_INCLUDEDIR}/ffmpeg")
-			include_directories("${LIBSWSCALE_INCLUDEDIR}/libswscale")
+		    list(APPEND MRPT_FFMPEG_INCLUDE_DIRS "${LIBSWSCALE_INCLUDEDIR}")
+			list(APPEND MRPT_FFMPEG_INCLUDE_DIRS "${LIBSWSCALE_INCLUDEDIR}/ffmpeg")
+			list(APPEND MRPT_FFMPEG_INCLUDE_DIRS "${LIBSWSCALE_INCLUDEDIR}/libswscale")
 		endif()
 
 		if (NOT "${LIBAVCODEC_LIBDIR}" STREQUAL "")
-			link_directories("${LIBAVCODEC_LIBDIR}")
+		    list(APPEND MRPT_FFMPEG_LINK_DIRS "${LIBAVCODEC_LIBDIR}")
 		endif()
 		if (NOT "${LIBAVUTIL_LIBDIR}" STREQUAL "")
-			link_directories("${LIBAVUTIL_LIBDIR}")
+		    list(APPEND MRPT_FFMPEG_LINK_DIRS "${LIBAVUTIL_LIBDIR}")
 		endif()
 		if (NOT "${LIBAVFORMAT_LIBDIR}" STREQUAL "")
-			link_directories("${LIBAVFORMAT_LIBDIR}")
+		    list(APPEND MRPT_FFMPEG_LINK_DIRS "${LIBAVFORMAT_LIBDIR}")
 		endif()
 		if (NOT "${LIBSWSCALE_LIBDIR}" STREQUAL "")
-			link_directories("${LIBSWSCALE_LIBDIR}")
+		    list(APPEND MRPT_FFMPEG_LINK_DIRS "${LIBSWSCALE_LIBDIR}")
 		endif()
 
 		set(MRPT_FFMPEG_LIBRARIES "${MRPT_FFMPEG_LIBRARIES}" "${LIBAVCODEC_LIBRARIES}" "${LIBAVFORMAT_LIBRARIES}" "${LIBAVUTIL_LIBRARIES}" "${LIBSWSCALE_LIBRARIES}")
-
-		if($ENV{VERBOSE})
-		    message(STATUS " ffmpeg libs: ${MRPT_FFMPEG_LIBRARIES}")
-		endif($ENV{VERBOSE})
-	endif(LIBAVCODEC_FOUND AND LIBAVUTIL_FOUND AND LIBAVFORMAT_FOUND AND LIBSWSCALE_FOUND)
+	endif()
 endif()
 
 if(MSVC)
@@ -124,14 +120,26 @@ if(MRPT_HAS_FFMPEG_WIN32)
 		message("swscale-XX.lib not found under '${FFMPEG_WIN32_ROOT_DIR}/lib'. Turn off FFmpeg support or provide the correct path.")
 	endif (NOT EXISTS ${FFMPEG_WIN32_SWSCALE_LIB})
 
-	include_directories("${FFMPEG_WIN32_ROOT_DIR}/include")
-	include_directories("${FFMPEG_WIN32_ROOT_DIR}/include/libavcodec")
-	include_directories("${FFMPEG_WIN32_ROOT_DIR}/include/libavformat")
-	#include_directories("${FFMPEG_WIN32_ROOT_DIR}/include/libavutil")
-	include_directories("${FFMPEG_WIN32_ROOT_DIR}/include/libswscale")
+	list(APPEND MRPT_FFMPEG_INCLUDE_DIRS "${FFMPEG_WIN32_ROOT_DIR}/include")
+	list(APPEND MRPT_FFMPEG_INCLUDE_DIRS "${FFMPEG_WIN32_ROOT_DIR}/include/libavcodec")
+	list(APPEND MRPT_FFMPEG_INCLUDE_DIRS "${FFMPEG_WIN32_ROOT_DIR}/include/libavformat")
+	#list(APPEND MRPT_FFMPEG_INCLUDE_DIRS "${FFMPEG_WIN32_ROOT_DIR}/include/libavutil")
+	list(APPEND MRPT_FFMPEG_INCLUDE_DIRS "${FFMPEG_WIN32_ROOT_DIR}/include/libswscale")
 
 	set(MRPT_FFMPEG_LIBRARIES ${MRPT_FFMPEG_LIBRARIES} "${FFMPEG_WIN32_AVCODEC_LIB}" "${FFMPEG_WIN32_AVUTIL_LIB}" "${FFMPEG_WIN32_AVFORMAT_LIB}" "${FFMPEG_WIN32_SWSCALE_LIB}")
 endif()
+
+if($ENV{VERBOSE})
+    message(STATUS " ffmpeg libs: ${MRPT_FFMPEG_LIBRARIES}")
+endif()
+
+add_library(imp_ffmpeg INTERFACE IMPORTED)
+set_target_properties(imp_ffmpeg
+    PROPERTIES
+	INTERFACE_INCLUDE_DIRECTORIES "${MRPT_FFMPEG_INCLUDE_DIRS}"
+	INTERFACE_LINK_LIBRARIES "${MRPT_FFMPEG_LIBRARIES}"
+	INTERFACE_LINK_DIRECTORIES "${MRPT_FFMPEG_LINK_DIRS}"
+	)
 
 
 # -- install DLLs --
