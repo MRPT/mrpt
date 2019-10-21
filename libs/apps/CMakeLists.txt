@@ -14,3 +14,10 @@ define_mrpt_lib(
 	mrpt-hmtslam
 	mrpt-tclap
 	)
+
+if(NOT BUILD_mrpt-apps)
+  return()
+endif()
+
+target_link_libraries(apps PRIVATE Threads::Threads)
+

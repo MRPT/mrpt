@@ -201,6 +201,10 @@ if (BUILD_XSENS_MT4)
 	target_link_libraries(hwdrivers PRIVATE ${XSENS4_LIBS})
 endif ()
 
+if(UNIX)
+    target_link_libraries(hwdrivers PRIVATE dl)
+endif()
+
 if(CMAKE_MRPT_HAS_OPENNI2)
 	target_link_libraries(hwdrivers PRIVATE ${MRPT_OPENNI2_LIBRARIES})
 endif()
@@ -343,6 +347,13 @@ if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_MRPT_HAS_FFMPEG_SYSTEM)
 			PROPERTIES COMPILE_FLAGS ${EXTRA_ISYSTEMS}
 			)
 	endif ()
+endif()
+
+if (CMAKE_MRPT_HAS_FFMPEG)
+  if (NOT TARGET imp_ffmpeg)
+	  message(ERROR "imp_ffmpeg should be defined!")
+  endif()
+  target_link_libraries(hwdrivers PRIVATE imp_ffmpeg)
 endif()
 
 if(CMAKE_MRPT_HAS_WXWIDGETS)

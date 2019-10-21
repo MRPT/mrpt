@@ -13,9 +13,12 @@ define_mrpt_lib(
 	mrpt-slam
 	)
 
-if(BUILD_mrpt-detectors)
-	if(CMAKE_MRPT_HAS_OPENCV)
-		target_link_libraries(detectors PRIVATE imp_opencv)
-	endif()
-
+if(NOT BUILD_mrpt-detectors)
+	return()
 endif()
+
+if(CMAKE_MRPT_HAS_OPENCV)
+	target_link_libraries(detectors PRIVATE imp_opencv)
+endif()
+
+target_link_libraries(detectors PRIVATE Threads::Threads)
