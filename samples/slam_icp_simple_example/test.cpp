@@ -58,12 +58,6 @@ void TestICP()
 	m1.insertObservation(scan1);
 	m2.insertObservation(scan2);
 
-#if MRPT_HAS_PCL
-	cout << "Saving map1.pcd and map2.pcd in PCL format...\n";
-	m1.savePCDFile("map1.pcd", false);
-	m2.savePCDFile("map2.pcd", false);
-#endif
-
 	// -----------------------------------------------------
 
 	/**

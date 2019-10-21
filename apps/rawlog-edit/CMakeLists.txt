@@ -27,7 +27,6 @@ add_executable(${PROJECT_NAME}
 	rawlog-edit_list-images.cpp
 	rawlog-edit_list-rangbear.cpp
 	rawlog-edit_generate-3d-pointclouds.cpp
-	rawlog-edit_generate-pcd.cpp
 	rawlog-edit_stereo-rectify.cpp
 	rawlog-edit_rename_externals.cpp
 	rawlog-edit_list-timestamps.cpp

@@ -34,11 +34,6 @@
 #include <iostream>
 #include <memory>
 
-// Demonstrate MRPT RGB+D --> PCL point cloud conversion:
-#if MRPT_HAS_PCL
-#include <mrpt/maps/PCL_adapters.h>
-#endif
-
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::gui;
