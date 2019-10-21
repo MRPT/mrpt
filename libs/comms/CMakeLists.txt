@@ -11,6 +11,12 @@ define_mrpt_lib(
 	mrpt-io
 	)
 
+if(NOT BUILD_mrpt-comms)
+  return()
+endif()
+
+target_link_libraries(comms PRIVATE Threads::Threads)
+
 if(CMAKE_MRPT_HAS_FTDI_SYSTEM)
-	target_link_libraries(comms PRIVATE imp_ftdi)
+    target_link_libraries(comms PRIVATE imp_ftdi)
 endif()

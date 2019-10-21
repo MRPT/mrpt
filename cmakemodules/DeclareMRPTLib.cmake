@@ -315,6 +315,14 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 		KEEP_MATCHING_FILES_FROM_LIST("^.*h$" AUX_LIST_TO_IGNORE)
 		set_source_files_properties(${AUX_LIST_TO_IGNORE} PROPERTIES HEADER_FILE_ONLY true)
 
+		# If UNIX, don't link against unused libs:
+		IF (UNIX AND NOT APPLE)
+		    set_property(
+			    TARGET ${name}
+				APPEND_STRING PROPERTY
+				LINK_FLAGS " -Wl,--as-needed -Wl,--no-undefined -Wl,--no-allow-shlib-undefined")
+		endif()
+
 		if(MRPT_ENABLE_PRECOMPILED_HDRS)
 			if (MSVC)
 				# Precompiled hdrs for MSVC:
