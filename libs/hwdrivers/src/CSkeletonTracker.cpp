@@ -159,7 +159,7 @@ void CSkeletonTracker::processPreviewNone()
 					CSetOfObjects::Ptr dummy =
 						std::make_shared<CSetOfObjects>();
 					dummy->setName("dummy");
-					dummy->setPose(math::TPose3D(0, 0, 0, 0, 0, DEG2RAD(-90)));
+					dummy->setPose(math::TPose3D(0, 0, 0, 0, 0, -90.0_deg));
 					{
 						// head
 						CSphere::Ptr part =
@@ -185,7 +185,7 @@ void CSkeletonTracker::processPreviewNone()
 						part->setColor(1, 1, 1, ALPHA_CH);
 						part->setPose(math::TPose3D(
 							-BODY_RADIUS, 0, 0.5 * BODY_LENGTH - ARM_RADIUS, 0,
-							DEG2RAD(-90), 0));
+							-90.0_deg, 0));
 						dummy->insert(part);
 					}
 					{
@@ -205,7 +205,7 @@ void CSkeletonTracker::processPreviewNone()
 						part->setColor(1, 1, 1, ALPHA_CH);
 						part->setPose(math::TPose3D(
 							BODY_RADIUS, 0, 0.5 * BODY_LENGTH - ARM_RADIUS, 0,
-							DEG2RAD(90), 0));
+							90.0_deg, 0));
 						dummy->insert(part);
 					}
 					{

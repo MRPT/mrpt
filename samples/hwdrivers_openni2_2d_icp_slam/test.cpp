@@ -22,7 +22,7 @@ using namespace mrpt::hwdrivers;
 using namespace mrpt::img;
 using namespace std;
 
-const float vert_FOV = DEG2RAD(4.0);
+const float vert_FOV = 4.0_deg;
 
 // This demo records from an OpenNI2 device, convert observations to 2D scans
 // and runs 2d-icp-slam with them.

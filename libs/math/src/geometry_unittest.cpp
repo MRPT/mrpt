@@ -72,7 +72,7 @@ TEST(Geometry, Line3DAngle)
 	EXPECT_NEAR(RAD2DEG(std::abs(mrpt::math::getAngle(l3, l1))), 180.0, 1e-5);
 
 	const TLine3D l4(
-		TPoint3D(0, 0, 0), TPoint3D(cos(DEG2RAD(30.0)), sin(DEG2RAD(30.0)), 0));
+		TPoint3D(0, 0, 0), TPoint3D(cos(30.0_deg), sin(30.0_deg), 0));
 	EXPECT_NEAR(mrpt::RAD2DEG(mrpt::math::getAngle(l1, l4)), 30.0, 1e-5);
 	EXPECT_NEAR(mrpt::RAD2DEG(mrpt::math::getAngle(l4, l1)), 30.0, 1e-5);
 }

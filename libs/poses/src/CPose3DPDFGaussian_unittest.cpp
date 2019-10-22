@@ -368,113 +368,107 @@ class Pose3DPDFGaussTests : public ::testing::Test
 
 TEST_F(Pose3DPDFGaussTests, ToQuatGaussPDFAndBack)
 {
-	testToQuatPDFAndBack(0, 0, 0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1);
-	testToQuatPDFAndBack(0, 0, 0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.2);
+	testToQuatPDFAndBack(0, 0, 0, 0.0_deg, 0.0_deg, 0.0_deg, 0.1);
+	testToQuatPDFAndBack(0, 0, 0, 0.0_deg, 0.0_deg, 0.0_deg, 0.2);
 
-	testToQuatPDFAndBack(6, -2, -3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1);
-	testToQuatPDFAndBack(6, -2, -3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.2);
+	testToQuatPDFAndBack(6, -2, -3, 0.0_deg, 0.0_deg, 0.0_deg, 0.1);
+	testToQuatPDFAndBack(6, -2, -3, 0.0_deg, 0.0_deg, 0.0_deg, 0.2);
 
-	testToQuatPDFAndBack(6, -2, -3, DEG2RAD(10), DEG2RAD(40), DEG2RAD(5), 0.1);
-	testToQuatPDFAndBack(6, -2, -3, DEG2RAD(10), DEG2RAD(40), DEG2RAD(5), 0.2);
+	testToQuatPDFAndBack(6, -2, -3, 10.0_deg, 40.0_deg, 5.0_deg, 0.1);
+	testToQuatPDFAndBack(6, -2, -3, 10.0_deg, 40.0_deg, 5.0_deg, 0.2);
 
-	testToQuatPDFAndBack(
-		6, -2, -3, DEG2RAD(-50), DEG2RAD(87), DEG2RAD(20), 0.1);
-	testToQuatPDFAndBack(
-		6, -2, -3, DEG2RAD(-50), DEG2RAD(87), DEG2RAD(20), 0.2);
+	testToQuatPDFAndBack(6, -2, -3, -50.0_deg, 87.0_deg, 20.0_deg, 0.1);
+	testToQuatPDFAndBack(6, -2, -3, -50.0_deg, 87.0_deg, 20.0_deg, 0.2);
 
-	testToQuatPDFAndBack(
-		6, -2, -3, DEG2RAD(-50), DEG2RAD(-87), DEG2RAD(20), 0.1);
-	testToQuatPDFAndBack(
-		6, -2, -3, DEG2RAD(-50), DEG2RAD(-87), DEG2RAD(20), 0.2);
+	testToQuatPDFAndBack(6, -2, -3, -50.0_deg, -87.0_deg, 20.0_deg, 0.1);
+	testToQuatPDFAndBack(6, -2, -3, -50.0_deg, -87.0_deg, 20.0_deg, 0.2);
 }
 
 TEST_F(Pose3DPDFGaussTests, CompositionJacobian)
 {
 	testCompositionJacobian(
-		0, 0, 0, DEG2RAD(2), DEG2RAD(0), DEG2RAD(0), 0, 0, 0, DEG2RAD(0),
-		DEG2RAD(0), DEG2RAD(0));
+		0, 0, 0, 2.0_deg, 0.0_deg, 0.0_deg, 0, 0, 0, 0.0_deg, 0.0_deg, 0.0_deg);
 	testCompositionJacobian(
-		0, 0, 0, DEG2RAD(2), DEG2RAD(0), DEG2RAD(0), 0, 0, 0, DEG2RAD(0),
-		DEG2RAD(0), DEG2RAD(0));
+		0, 0, 0, 2.0_deg, 0.0_deg, 0.0_deg, 0, 0, 0, 0.0_deg, 0.0_deg, 0.0_deg);
 	testCompositionJacobian(
-		1, 2, 3, DEG2RAD(2), DEG2RAD(0), DEG2RAD(0), -8, 45, 10, DEG2RAD(0),
-		DEG2RAD(0), DEG2RAD(0));
+		1, 2, 3, 2.0_deg, 0.0_deg, 0.0_deg, -8, 45, 10, 0.0_deg, 0.0_deg,
+		0.0_deg);
 	testCompositionJacobian(
-		1, -2, 3, DEG2RAD(2), DEG2RAD(0), DEG2RAD(0), -8, 45, 10, DEG2RAD(0),
-		DEG2RAD(0), DEG2RAD(0));
+		1, -2, 3, 2.0_deg, 0.0_deg, 0.0_deg, -8, 45, 10, 0.0_deg, 0.0_deg,
+		0.0_deg);
 	testCompositionJacobian(
-		1, 2, -3, DEG2RAD(2), DEG2RAD(0), DEG2RAD(0), -8, 45, 10, DEG2RAD(0),
-		DEG2RAD(0), DEG2RAD(0));
+		1, 2, -3, 2.0_deg, 0.0_deg, 0.0_deg, -8, 45, 10, 0.0_deg, 0.0_deg,
+		0.0_deg);
 	testCompositionJacobian(
-		1, 2, 3, DEG2RAD(20), DEG2RAD(80), DEG2RAD(70), -8, 45, 10, DEG2RAD(50),
-		DEG2RAD(-10), DEG2RAD(30));
+		1, 2, 3, 20.0_deg, 80.0_deg, 70.0_deg, -8, 45, 10, 50.0_deg, -10.0_deg,
+		30.0_deg);
 	testCompositionJacobian(
-		1, 2, 3, DEG2RAD(20), DEG2RAD(-80), DEG2RAD(70), -8, 45, 10,
-		DEG2RAD(50), DEG2RAD(-10), DEG2RAD(30));
+		1, 2, 3, 20.0_deg, -80.0_deg, 70.0_deg, -8, 45, 10, 50.0_deg, -10.0_deg,
+		30.0_deg);
 	testCompositionJacobian(
-		1, 2, 3, DEG2RAD(20), DEG2RAD(80), DEG2RAD(-70), -8, 45, 10,
-		DEG2RAD(50), DEG2RAD(-10), DEG2RAD(30));
+		1, 2, 3, 20.0_deg, 80.0_deg, -70.0_deg, -8, 45, 10, 50.0_deg, -10.0_deg,
+		30.0_deg);
 	testCompositionJacobian(
-		1, 2, 3, DEG2RAD(20), DEG2RAD(80), DEG2RAD(70), -8, 45, 10,
-		DEG2RAD(-50), DEG2RAD(-10), DEG2RAD(30));
+		1, 2, 3, 20.0_deg, 80.0_deg, 70.0_deg, -8, 45, 10, -50.0_deg, -10.0_deg,
+		30.0_deg);
 	testCompositionJacobian(
-		1, 2, 3, DEG2RAD(20), DEG2RAD(80), DEG2RAD(70), -8, 45, 10, DEG2RAD(50),
-		DEG2RAD(10), DEG2RAD(30));
+		1, 2, 3, 20.0_deg, 80.0_deg, 70.0_deg, -8, 45, 10, 50.0_deg, 10.0_deg,
+		30.0_deg);
 	testCompositionJacobian(
-		1, 2, 3, DEG2RAD(20), DEG2RAD(80), DEG2RAD(70), -8, 45, 10, DEG2RAD(50),
-		DEG2RAD(-10), DEG2RAD(-30));
+		1, 2, 3, 20.0_deg, 80.0_deg, 70.0_deg, -8, 45, 10, 50.0_deg, -10.0_deg,
+		-30.0_deg);
 }
 
 // Test the +, -, +=, -=, "-" operators
 TEST_F(Pose3DPDFGaussTests, AllOperators)
 {
 	testAllPoseOperators(
-		0, 0, 0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1, 0, 0, 0, DEG2RAD(0),
-		DEG2RAD(0), DEG2RAD(0), 0.1);
+		0, 0, 0, 0.0_deg, 0.0_deg, 0.0_deg, 0.1, 0, 0, 0, 0.0_deg, 0.0_deg,
+		0.0_deg, 0.1);
 	testAllPoseOperators(
-		1, 2, 3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1, -8, 45, 10,
-		DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1);
+		1, 2, 3, 0.0_deg, 0.0_deg, 0.0_deg, 0.1, -8, 45, 10, 0.0_deg, 0.0_deg,
+		0.0_deg, 0.1);
 
 	testAllPoseOperators(
-		1, 2, 3, DEG2RAD(20), DEG2RAD(80), DEG2RAD(70), 0.1, -8, 45, 10,
-		DEG2RAD(50), DEG2RAD(-10), DEG2RAD(30), 0.1);
+		1, 2, 3, 20.0_deg, 80.0_deg, 70.0_deg, 0.1, -8, 45, 10, 50.0_deg,
+		-10.0_deg, 30.0_deg, 0.1);
 	testAllPoseOperators(
-		1, 2, 3, DEG2RAD(20), DEG2RAD(80), DEG2RAD(70), 0.2, -8, 45, 10,
-		DEG2RAD(50), DEG2RAD(-10), DEG2RAD(30), 0.2);
+		1, 2, 3, 20.0_deg, 80.0_deg, 70.0_deg, 0.2, -8, 45, 10, 50.0_deg,
+		-10.0_deg, 30.0_deg, 0.2);
 
 	testAllPoseOperators(
-		1, 2, 3, DEG2RAD(10), DEG2RAD(0), DEG2RAD(0), 0.1, -8, 45, 10,
-		DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1);
+		1, 2, 3, 10.0_deg, 0.0_deg, 0.0_deg, 0.1, -8, 45, 10, 0.0_deg, 0.0_deg,
+		0.0_deg, 0.1);
 	testAllPoseOperators(
-		1, 2, 3, DEG2RAD(0), DEG2RAD(10), DEG2RAD(0), 0.1, -8, 45, 10,
-		DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1);
+		1, 2, 3, 0.0_deg, 10.0_deg, 0.0_deg, 0.1, -8, 45, 10, 0.0_deg, 0.0_deg,
+		0.0_deg, 0.1);
 	testAllPoseOperators(
-		1, 2, 3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(10), 0.1, -8, 45, 10,
-		DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1);
+		1, 2, 3, 0.0_deg, 0.0_deg, 10.0_deg, 0.1, -8, 45, 10, 0.0_deg, 0.0_deg,
+		0.0_deg, 0.1);
 	testAllPoseOperators(
-		1, 2, 3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1, -8, 45, 10,
-		DEG2RAD(10), DEG2RAD(0), DEG2RAD(0), 0.1);
+		1, 2, 3, 0.0_deg, 0.0_deg, 0.0_deg, 0.1, -8, 45, 10, 10.0_deg, 0.0_deg,
+		0.0_deg, 0.1);
 	testAllPoseOperators(
-		1, 2, 3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1, -8, 45, 10,
-		DEG2RAD(0), DEG2RAD(10), DEG2RAD(0), 0.1);
+		1, 2, 3, 0.0_deg, 0.0_deg, 0.0_deg, 0.1, -8, 45, 10, 0.0_deg, 10.0_deg,
+		0.0_deg, 0.1);
 	testAllPoseOperators(
-		1, 2, 3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1, -8, 45, 10,
-		DEG2RAD(0), DEG2RAD(0), DEG2RAD(10), 0.1);
+		1, 2, 3, 0.0_deg, 0.0_deg, 0.0_deg, 0.1, -8, 45, 10, 0.0_deg, 0.0_deg,
+		10.0_deg, 0.1);
 }
 
 TEST_F(Pose3DPDFGaussTests, ChangeCoordsRef)
 {
 	testChangeCoordsRef(
-		0, 0, 0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1, 0, 0, 0, DEG2RAD(0),
-		DEG2RAD(0), DEG2RAD(0));
+		0, 0, 0, 0.0_deg, 0.0_deg, 0.0_deg, 0.1, 0, 0, 0, 0.0_deg, 0.0_deg,
+		0.0_deg);
 	testChangeCoordsRef(
-		1, 2, 3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1, -8, 45, 10,
-		DEG2RAD(0), DEG2RAD(0), DEG2RAD(0));
+		1, 2, 3, 0.0_deg, 0.0_deg, 0.0_deg, 0.1, -8, 45, 10, 0.0_deg, 0.0_deg,
+		0.0_deg);
 
 	testChangeCoordsRef(
-		1, 2, 3, DEG2RAD(20), DEG2RAD(80), DEG2RAD(70), 0.1, -8, 45, 10,
-		DEG2RAD(50), DEG2RAD(-10), DEG2RAD(30));
+		1, 2, 3, 20.0_deg, 80.0_deg, 70.0_deg, 0.1, -8, 45, 10, 50.0_deg,
+		-10.0_deg, 30.0_deg);
 	testChangeCoordsRef(
-		1, 2, 3, DEG2RAD(20), DEG2RAD(80), DEG2RAD(70), 0.2, -8, 45, 10,
-		DEG2RAD(50), DEG2RAD(-10), DEG2RAD(30));
+		1, 2, 3, 20.0_deg, 80.0_deg, 70.0_deg, 0.2, -8, 45, 10, 50.0_deg,
+		-10.0_deg, 30.0_deg);
 }

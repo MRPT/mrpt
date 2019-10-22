@@ -1217,7 +1217,7 @@ void CFormEdit::OnRemoveButLabel(wxCommandEvent& event)
 
 void CFormEdit::OnslFromCmdScroll(wxScrollEvent& event) {}
 void CFormEdit::OnslFromCmdScroll1(wxScrollEvent& event) {}
-double minPitchToDeleteLaserScan = DEG2RAD(1.2);
+double minPitchToDeleteLaserScan = 1.2_deg;
 
 void leave_horizontalScans(
 	mrpt::obs::CActionCollection* acts, mrpt::obs::CSensoryFrame* SF,

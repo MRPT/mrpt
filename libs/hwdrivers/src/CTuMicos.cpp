@@ -185,7 +185,7 @@ bool CTuMicos::upperSpeed(char axis, double radSec)
 
 bool CTuMicos::upperSpeedQ(char axis, double& radSec)
 {
-	radSec = DEG2RAD(26);
+	radSec = 26.0_deg;
 
 	return true;
 }
@@ -207,7 +207,7 @@ bool CTuMicos::lowerSpeed(char axis, double radSec)
 
 bool CTuMicos::lowerSpeedQ(char axis, double& radSec)
 {
-	radSec = DEG2RAD(1);
+	radSec = 1.0_deg;
 
 	return true;
 }

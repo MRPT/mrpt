@@ -32,9 +32,9 @@ CPose3DQuat generate_points(TPoints& pA, TPoints& pB)
 	const double Dy = 1.5;
 	const double Dz = 0.75;
 
-	const double yaw = DEG2RAD(10);
-	const double pitch = DEG2RAD(20);
-	const double roll = DEG2RAD(5);
+	const double yaw = 10.0_deg;
+	const double pitch = 20.0_deg;
+	const double roll = 5.0_deg;
 
 	pA.resize(5);  // A set of points at "A" reference system
 	pB.resize(5);  // A set of points at "B" reference system

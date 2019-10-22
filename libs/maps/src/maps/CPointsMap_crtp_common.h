@@ -285,7 +285,7 @@ struct loadFromRangeImpl
 										 .minDistBetweenLaserPoints &&
 							d < obj.insertionOptions
 									.maxDistForInterpolatePoints &&
-							fabs(changeInDirection) < DEG2RAD(5))
+							fabs(changeInDirection) < 5.0_deg)
 						{
 							int nInterpol = mrpt::round(
 								d / (2 * sqrt(minDistSqrBetweenLaserPoints)));

@@ -295,8 +295,8 @@ void TestOpenGLObjects()
 		const double rho_std = (1. / 6.) * (1. / min_dist - 1. / max_dist);
 
 		const double cov_params_dat[] = {square(rho_std), 0, 0,
-										 square(DEG2RAD(2))};
-		const double mean_params_dat[] = {rho_mean, DEG2RAD(70)};
+										 square(2.0_deg)};
+		const double mean_params_dat[] = {rho_mean, 70.0_deg};
 		mrpt::math::CMatrixFixed<double, 2, 2> cov_params(cov_params_dat);
 		mrpt::math::CMatrixFixed<double, 2, 1> mean_params(mean_params_dat);
 
@@ -330,10 +330,10 @@ void TestOpenGLObjects()
 		const double rho_mean = 0.5 * (1. / min_dist + 1. / max_dist);
 		const double rho_std = (1. / 6.) * (1. / min_dist - 1. / max_dist);
 
-		const double cov_params_dat[] = {square(rho_std),	0, 0, 0,
-										 square(DEG2RAD(2)), 0, 0, 0,
-										 square(DEG2RAD(2))};
-		const double mean_params_dat[] = {rho_mean, DEG2RAD(30), DEG2RAD(-45)};
+		const double cov_params_dat[] = {square(rho_std), 0, 0, 0,
+										 square(2.0_deg), 0, 0, 0,
+										 square(2.0_deg)};
+		const double mean_params_dat[] = {rho_mean, 30.0_deg, -45.0_deg};
 		mrpt::math::CMatrixFixed<double, 3, 3> cov_params(cov_params_dat);
 		mrpt::math::CMatrixFixed<double, 3, 1> mean_params(mean_params_dat);
 

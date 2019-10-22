@@ -31,8 +31,8 @@ double pose_interp_test(int a1, int a2)
 	const long N = 400000;
 	mrpt::system::CTicTac tictac;
 
-	pose_t a = pose_t(
-		mrpt::poses::CPose3D(1.0, 2.0, 0, DEG2RAD(10), .0, .0).asTPose());
+	pose_t a =
+		pose_t(mrpt::poses::CPose3D(1.0, 2.0, 0, 10.0_deg, .0, .0).asTPose());
 
 	PATH_T pose_path;
 	const auto t0 = mrpt::Clock::now();

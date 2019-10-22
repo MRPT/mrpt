@@ -83,7 +83,7 @@ void COccupancyGridMap2D::sonarSimulator(
 		// distance:
 		ASSERT_(inout_observation.sensorConeApperture > 0);
 		size_t nRays =
-			round(1 + inout_observation.sensorConeApperture / DEG2RAD(1.0));
+			round(1 + inout_observation.sensorConeApperture / 1.0_deg);
 
 		double direction = sensorAbsolutePose.phi() -
 						   0.5 * inout_observation.sensorConeApperture;
