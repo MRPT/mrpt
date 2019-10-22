@@ -25,10 +25,10 @@ void TestQuaternions()
 	CQuaternionDouble q1, q2, q3;
 
 	// q1 = CQuaternionDouble(1,2,3,4); q1.normalize();
-	CPose3D p1(0, 0, 0, DEG2RAD(10), DEG2RAD(30), DEG2RAD(-20));
+	CPose3D p1(0, 0, 0, 10.0_deg, 30.0_deg, -20.0_deg);
 	p1.getAsQuaternion(q1);
 
-	CPose3D p2(0, 0, 0, DEG2RAD(30), DEG2RAD(-20), DEG2RAD(10));
+	CPose3D p2(0, 0, 0, 30.0_deg, -20.0_deg, 10.0_deg);
 	p2.getAsQuaternion(q2);
 
 	// q3 = q1 x q2

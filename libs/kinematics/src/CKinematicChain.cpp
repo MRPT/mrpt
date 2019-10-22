@@ -152,7 +152,7 @@ void addBar_A(mrpt::opengl::CSetOfObjects::Ptr& objs, const double a)
 	mrpt::opengl::CCylinder::Ptr gl_cyl2 =
 		mrpt::opengl::CCylinder::Create(R, R, -a);
 	gl_cyl2->setColor_u8(mrpt::img::TColor(0xff, 0x00, 0x00));
-	gl_cyl2->setPose(mrpt::poses::CPose3D(0, 0, 0, 0, DEG2RAD(90), 0));
+	gl_cyl2->setPose(mrpt::poses::CPose3D(0, 0, 0, 0, 90.0_deg, 0));
 	gl_cyl2->setName("cyl.a");
 
 	objs->insert(gl_cyl2);
@@ -227,7 +227,7 @@ void CKinematicChain::update3DObject(
 				std::dynamic_pointer_cast<mrpt::opengl::CCylinder>(
 					gl_objs->getByName("cyl.a"));
 			const double a = m_links[i - 1].a;
-			// glCyl2->setPose( mrpt::poses::CPose3D(0,0,d, 0, DEG2RAD(90),0) );
+			// glCyl2->setPose( mrpt::poses::CPose3D(0,0,d, 0, 90.0_deg,0) );
 			glCyl2->setHeight(-a);
 		}
 	}

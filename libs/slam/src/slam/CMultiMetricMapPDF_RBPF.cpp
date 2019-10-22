@@ -382,10 +382,10 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 			// mrpt::math::wrapToPi(
 			// initialPoseEstimation.yaw()-icpEstimation.mean.phi() ) );
 			////			if (prior_dist_lin>0.10 ||
-			/// prior_dist_ang>DEG2RAD(3)) /				printf(" >>>>>>>>>>
+			/// prior_dist_ang>3.0_deg) /				printf(" >>>>>>>>>>
 			/// %f %f\n",prior_dist_lin,RAD2DEG(prior_dist_ang));
 			//			extra_log_lik = -(prior_dist_lin/0.20) -
-			//(prior_dist_ang/DEG2RAD(20));
+			//(prior_dist_ang/20.0_deg);
 
 			//				printf("gICP: %.02f%%,
 			// Iters=%u\n",icpInfo.goodness,icpInfo.nIterations);
@@ -402,7 +402,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 			// Use real ICP covariance (with a minimum level):
 			keep_max(finalEstimatedPoseGauss.cov(0, 0), square(0.002));
 			keep_max(finalEstimatedPoseGauss.cov(1, 1), square(0.002));
-			keep_max(finalEstimatedPoseGauss.cov(2, 2), square(DEG2RAD(0.1)));
+			keep_max(finalEstimatedPoseGauss.cov(2, 2), square(0.1_deg));
 
 #endif
 
@@ -719,7 +719,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 				{
 					auto* pdfGrid = new CPosePDFGrid(
 						grid_min_x, grid_max_x, grid_min_y, grid_max_y,
-						grid_resXY, DEG2RAD(180), 0, 0);
+						grid_resXY, 180.0_deg, 0, 0);
 
 					pdfGrid->uniformDistribution();
 

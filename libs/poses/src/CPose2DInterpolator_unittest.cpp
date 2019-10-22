@@ -17,6 +17,7 @@ template class mrpt::CTraitsTest<mrpt::poses::CPose2DInterpolator>;
 TEST(CPose2DInterpolator, interp)
 {
 	using namespace mrpt::poses;
+	using namespace mrpt;  // for 0.0_deg
 	using mrpt::DEG2RAD;
 	using mrpt::math::TPose2D;
 
@@ -26,7 +27,7 @@ TEST(CPose2DInterpolator, interp)
 
 	CPose2DInterpolator pose_path;
 
-	pose_path.insert(t0, TPose2D(1., 2., DEG2RAD(30.0)));
+	pose_path.insert(t0, TPose2D(1., 2., 30.0_deg));
 	pose_path.insert(
 		t0 + 2 * dt, TPose2D(1. + 3., 2. + 4., DEG2RAD(30.0 + 20.0)));
 

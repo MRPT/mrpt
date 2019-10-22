@@ -148,7 +148,7 @@ int last_pressed_key = 0;
 long LASER_N_RANGES = 361;
 double LASER_APERTURE = M_PI;
 double LASER_STD_ERROR = 0.01;
-double LASER_BEARING_STD_ERROR = DEG2RAD(0.05);
+double LASER_BEARING_STD_ERROR = 0.05_deg;
 
 class CMyGLCanvas : public CWxGLCanvasBase
 {
@@ -914,7 +914,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 
 			ssu_params.robotPose.mean = p;
 			ssu_params.robotPose.cov << square(0.25), 0.0, 0.0, 0.0,
-				square(0.25), 0.0, 0.0, 0.0, square(DEG2RAD(5.0));
+				square(0.25), 0.0, 0.0, 0.0, square(5.0_deg);
 
 			the_grid.laserScanSimulatorWithUncertainty(ssu_params, ssu_out);
 			timlog.leave("laserScanSimulatorWithUncertainty");

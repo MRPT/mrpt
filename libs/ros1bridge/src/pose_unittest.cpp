@@ -134,15 +134,16 @@ TEST(PoseConversions, check_CPose3D_tofrom_ROS)
 {
 	using mrpt::DEG2RAD;
 	using mrpt::RAD2DEG;
+	using namespace mrpt;  // for 0.0_deg
 
-	check_CPose3D_tofrom_ROS(0, 0, 0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0));
-	check_CPose3D_tofrom_ROS(1, 2, 3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0));
+	check_CPose3D_tofrom_ROS(0, 0, 0, 0.0_deg, 0.0_deg, 0.0_deg);
+	check_CPose3D_tofrom_ROS(1, 2, 3, 0.0_deg, 0.0_deg, 0.0_deg);
 
-	check_CPose3D_tofrom_ROS(1, 2, 3, DEG2RAD(30), DEG2RAD(0), DEG2RAD(0));
-	check_CPose3D_tofrom_ROS(1, 2, 3, DEG2RAD(0), DEG2RAD(30), DEG2RAD(0));
-	check_CPose3D_tofrom_ROS(1, 2, 3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(30));
+	check_CPose3D_tofrom_ROS(1, 2, 3, 30.0_deg, 0.0_deg, 0.0_deg);
+	check_CPose3D_tofrom_ROS(1, 2, 3, 0.0_deg, 30.0_deg, 0.0_deg);
+	check_CPose3D_tofrom_ROS(1, 2, 3, 0.0_deg, 0.0_deg, 30.0_deg);
 
-	check_CPose3D_tofrom_ROS(1, 2, 3, DEG2RAD(-5), DEG2RAD(15), DEG2RAD(-30));
+	check_CPose3D_tofrom_ROS(1, 2, 3, -5.0_deg, 15.0_deg, -30.0_deg);
 }
 
 // Declare a test

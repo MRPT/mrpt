@@ -599,7 +599,7 @@ bool CPointsMap::isEmpty() const { return m_x.empty(); }
 				TInsertionOptions
  ---------------------------------------------------------------*/
 CPointsMap::TInsertionOptions::TInsertionOptions()
-	: horizontalTolerance(DEG2RAD(0.05))
+	: horizontalTolerance(0.05_deg)
 
 {
 }

@@ -14,6 +14,10 @@
 
 namespace mrpt
 {
+/** \addtogroup mrpt_bits_math Funtions in #include <mrpt/core/bits_math.h>
+ *  \ingroup mrpt_core_grp
+ * @{ */
+
 /** Inline function for the square of a number. */
 template <class T>
 inline T square(const T x)
@@ -29,7 +33,7 @@ inline T hypot_fast(const T x, const T y)
 	return std::sqrt(x * x + y * y);
 }
 
-#ifdef DEG2RAD  // functions are preferred over macros
+#ifdef DEG2RAD	// functions are preferred over macros
 #undef DEG2RAD
 #endif
 #ifdef RAD2DEG
@@ -39,29 +43,47 @@ inline T hypot_fast(const T x, const T y)
 #define M_PI 3.14159265358979323846
 #endif
 
+/** Degrees to radians  */
+constexpr inline double DEG2RAD(const double x) { return x * M_PI / 180.0; }
 /** Degrees to radians */
-inline double DEG2RAD(const double x) { return x * M_PI / 180.0; }
+constexpr inline float DEG2RAD(const float x)
+{
+	return x * float(M_PI) / 180.0f;
+}
 /** Degrees to radians */
-inline float DEG2RAD(const float x) { return x * float(M_PI) / 180.0f; }
-/** Degrees to radians */
-inline double DEG2RAD(const int x) { return x * M_PI / 180.0; }
+constexpr inline double DEG2RAD(const int x) { return x * M_PI / 180.0; }
 /** Radians to degrees */
-inline double RAD2DEG(const double x) { return x * 180.0 / M_PI; }
+constexpr inline double RAD2DEG(const double x) { return x * 180.0 / M_PI; }
 /** Radians to degrees */
-inline float RAD2DEG(const float x) { return x * 180.0f / float(M_PI); }
+constexpr inline float RAD2DEG(const float x)
+{
+	return x * 180.0f / float(M_PI);
+}
 #if !defined(M_PIl)
 #define M_PIl 3.14159265358979323846264338327950288L
 #define M_2PIl (2.0L * 3.14159265358979323846264338327950288L)
 #endif
 /** Degrees to radians */
-inline long double DEG2RAD(const long double x) { return x * M_PIl / 180.0; }
+constexpr inline long double DEG2RAD(const long double x)
+{
+	return x * M_PIl / 180.0;
+}
 /** Radians to degrees */
-inline long double RAD2DEG(const long double x) { return x * 180.0 / M_PIl; }
+constexpr inline long double RAD2DEG(const long double x)
+{
+	return x * 180.0 / M_PIl;
+}
 
 // This is required to avoid other libs (like PCL) to #define their own macros
 // after including this header
 #define DEG2RAD DEG2RAD
 #define RAD2DEG RAD2DEG
+
+/** degrees to radian literal operator (e.g. `x=90.0_deg;`) */
+constexpr inline double operator"" _deg(long double v)
+{
+	return mrpt::DEG2RAD(v);
+}
 
 /** Returns the sign of X as "1" or "-1" */
 template <typename T>
@@ -163,4 +185,7 @@ T round2up(T val)
 	}
 	return n;
 }
+
+/** @} */
+
 }  // namespace mrpt

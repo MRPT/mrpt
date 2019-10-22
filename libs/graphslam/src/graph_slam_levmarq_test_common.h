@@ -65,11 +65,11 @@ class GraphSlamLevMarqTest
 		// ----------------------------
 		// Level of noise in nodes initial positions:
 		const double STD_NOISE_NODE_XYZ = 0.5;
-		const double STD_NOISE_NODE_ANG = DEG2RAD(5);
+		const double STD_NOISE_NODE_ANG = 5.0_deg;
 
 		// Level of noise in edges:
 		const double STD_NOISE_EDGE_XYZ = 0;  // 0.01;
-		const double STD_NOISE_EDGE_ANG = 0;  // DEG2RAD(0.1);
+		const double STD_NOISE_EDGE_ANG = 0;  // 0.1_deg;
 
 		for (TNodeID j = 0; j < N_VERTEX; j++)
 		{

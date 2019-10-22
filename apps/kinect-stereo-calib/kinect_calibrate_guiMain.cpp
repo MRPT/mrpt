@@ -1803,7 +1803,7 @@ void kinect_calibrate_guiDialog::ProcessNewGrabbedObs()
 				m_calib_result.cam_params.rightCamera;
 
 			const mrpt::poses::CPose3D l2r =
-				mrpt::poses::CPose3D(0, 0, 0, DEG2RAD(-90), 0, DEG2RAD(-90)) +
+				mrpt::poses::CPose3D(0, 0, 0, -90.0_deg, 0, -90.0_deg) +
 				(-m_calib_result.right2left_camera_pose);
 
 			m_last_obs->relativePoseIntensityWRTDepth =
@@ -2919,7 +2919,7 @@ void kinect_calibrate_guiDialog::CalibUpdate3DViewCameras()
 	}
 
 	gl_objs->setPose(
-		mrpt::poses::CPose3D(0, 0, 0, DEG2RAD(0), DEG2RAD(180), DEG2RAD(0)));
+		mrpt::poses::CPose3D(0, 0, 0, 0.0_deg, 180.0_deg, 0.0_deg));
 	scene->insert(gl_objs);
 
 	m_plot3D_cameras->setOpenGLSceneRef(scene);

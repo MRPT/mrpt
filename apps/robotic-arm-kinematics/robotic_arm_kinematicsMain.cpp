@@ -679,8 +679,8 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 	this->Maximize();
 
 	// Load default robot:
-	m_robot.addLink(0, 0.4, 0, DEG2RAD(90), false);
-	m_robot.addLink(0, 0.3, 0, DEG2RAD(90), false);
+	m_robot.addLink(0, 0.4, 0, 90.0_deg, false);
+	m_robot.addLink(0, 0.3, 0, 90.0_deg, false);
 	m_robot.addLink(0, 0.2, 0, 0, false);
 
 	auto openGLSceneRef = m_plot3D->getOpenGLSceneRef();
@@ -1147,15 +1147,15 @@ void robotic_arm_kinematicsFrame::On1stXYZSelect(wxCommandEvent& event)
 		// Z:
 		default:
 		case 0:
-			pose0 = CPose3D(0, 0, 0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0));
+			pose0 = CPose3D(0, 0, 0, 0.0_deg, 0.0_deg, 0.0_deg);
 			break;
 		// Y:
 		case 1:
-			pose0 = CPose3D(0, 0, 0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(-90));
+			pose0 = CPose3D(0, 0, 0, 0.0_deg, 0.0_deg, -90.0_deg);
 			break;
 		// X:
 		case 2:
-			pose0 = CPose3D(0, 0, 0, DEG2RAD(0), DEG2RAD(90), DEG2RAD(0));
+			pose0 = CPose3D(0, 0, 0, 0.0_deg, 90.0_deg, 0.0_deg);
 			break;
 	};
 

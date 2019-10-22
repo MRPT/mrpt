@@ -106,7 +106,7 @@ void theMainThing()
 
 	tictac.Tic();
 
-	float phi = (float)DEG2RAD(0);
+	float phi = (float)0.0_deg;
 
 	CPose2D nullPose(0, 0, phi);
 

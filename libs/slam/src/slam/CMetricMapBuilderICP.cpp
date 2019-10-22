@@ -56,9 +56,9 @@ CMetricMapBuilderICP::TConfigParams::TConfigParams(
 	mrpt::system::VerbosityLevel& parent_verbosity_level)
 	: matchAgainstTheGrid(false),
 	  insertionLinDistance(1.0),
-	  insertionAngDistance(DEG2RAD(30)),
+	  insertionAngDistance(30.0_deg),
 	  localizationLinDistance(0.20),
-	  localizationAngDistance(DEG2RAD(30)),
+	  localizationAngDistance(30.0_deg),
 	  minICPgoodnessToAccept(0.40),
 	  verbosity_level(parent_verbosity_level),
 	  mapInitializers()

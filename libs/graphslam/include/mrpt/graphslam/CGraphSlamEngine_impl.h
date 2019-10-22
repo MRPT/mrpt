@@ -1536,21 +1536,21 @@ void CGraphSlamEngine<GRAPH_T>::alignOpticalWithMRPTFrame()
 	// Optical Frame: X->Right; Y->Downward; Z->Forward
 	ASSERTDEB_(m_has_read_config);
 	// rotz
-	double anglez = DEG2RAD(0.0);
+	double anglez = 0.0_deg;
 	const double tmpz[] = {
 		cos(anglez), -sin(anglez), 0, sin(anglez), cos(anglez), 0, 0, 0, 1};
 	CMatrixDouble rotz(3, 3, tmpz);
 
 	// roty
-	double angley = DEG2RAD(0.0);
-	// double angley = DEG2RAD(90.0);
+	double angley = 0.0_deg;
+	// double angley = 90.0_deg;
 	const double tmpy[] = {cos(angley),  0, sin(angley), 0, 1, 0,
 						   -sin(angley), 0, cos(angley)};
 	CMatrixDouble roty(3, 3, tmpy);
 
 	// rotx
-	// double anglex = DEG2RAD(-90.0);
-	double anglex = DEG2RAD(0.0);
+	// double anglex = -90.0_deg;
+	double anglex = 0.0_deg;
 	const double tmpx[] = {
 		1, 0, 0, 0, cos(anglex), -sin(anglex), 0, sin(anglex), cos(anglex)};
 	CMatrixDouble rotx(3, 3, tmpx);

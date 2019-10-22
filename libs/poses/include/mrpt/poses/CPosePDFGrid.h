@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/core/bits_math.h>  // DEG2RAD()
+#include <mrpt/core/bits_math.h>  // .0_deg
 #include <mrpt/poses/CPose2DGridTemplate.h>
 #include <mrpt/poses/CPosePDF.h>
 

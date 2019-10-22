@@ -21,8 +21,8 @@ void TestSE3()
 	using namespace std;
 
 	const CPose3D p0;
-	const CPose3D p1(1, 2, 3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0));
-	const CPose3D p2(1, 2, 3, DEG2RAD(20), DEG2RAD(0), DEG2RAD(0));
+	const CPose3D p1(1, 2, 3, 0.0_deg, 0.0_deg, 0.0_deg);
+	const CPose3D p2(1, 2, 3, 20.0_deg, 0.0_deg, 0.0_deg);
 
 	cout << "p0: " << p0 << " SE(3)::log => " << Lie::SE<3>::log(p0) << endl;
 	cout << "p1: " << p1 << " SE(3)::log => " << Lie::SE<3>::log(p1) << endl;

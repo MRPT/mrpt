@@ -892,7 +892,7 @@ CPosePDFParticlesExtended::TPredictionParams::TPredictionParams()
 	KLD_minSampleSize = 250;
 	KLD_maxSampleSize = 100000;
 	KLD_binSize_XY = 0.2f;
-	KLD_binSize_PHI = DEG2RAD(5);
+	KLD_binSize_PHI = 5.0_deg;
 	KLD_delta = 0.01f;
 	KLD_epsilon = 0.02f;
 

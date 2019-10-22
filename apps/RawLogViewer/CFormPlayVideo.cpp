@@ -751,12 +751,12 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 				else
 				{
 					// By yaw angle:
-					if (obsImg->cameraPose.yaw() < DEG2RAD(-3))
+					if (obsImg->cameraPose.yaw() < -3.0_deg)
 					{
 						thePanel = pnRight2;
 						theLabel = lbCam3;
 					}
-					else if (obsImg->cameraPose.yaw() > DEG2RAD(3))
+					else if (obsImg->cameraPose.yaw() > 3.0_deg)
 					{
 						thePanel = pnLeft;
 						theLabel = lbCam1;

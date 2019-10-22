@@ -34,8 +34,8 @@ double poses_test_compose3D(int a1, int a2)
 	const long N = 100000;
 	CTicTac tictac;
 
-	CPose3D a(1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(50), DEG2RAD(-30));
-	CPose3D b(8.0, -5.0, -1.0, DEG2RAD(-40), DEG2RAD(10), DEG2RAD(-45));
+	CPose3D a(1.0, 2.0, 3.0, 10.0_deg, 50.0_deg, -30.0_deg);
+	CPose3D b(8.0, -5.0, -1.0, -40.0_deg, 10.0_deg, -45.0_deg);
 
 	CPose3D p;
 	for (long i = 0; i < N; i++)
@@ -52,8 +52,8 @@ double poses_test_compose3D2(int a1, int a2)
 	const long N = 100000;
 	CTicTac tictac;
 
-	CPose3D a(1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(50), DEG2RAD(-30));
-	CPose3D b(8.0, -5.0, -1.0, DEG2RAD(-40), DEG2RAD(10), DEG2RAD(-45));
+	CPose3D a(1.0, 2.0, 3.0, 10.0_deg, 50.0_deg, -30.0_deg);
+	CPose3D b(8.0, -5.0, -1.0, -40.0_deg, 10.0_deg, -45.0_deg);
 
 	CPose3D p;
 	for (long i = 0; i < N; i++)
@@ -70,7 +70,7 @@ double poses_test_compose3Dpoint(int a1, int a2)
 	const long N = 500000;
 	CTicTac tictac;
 
-	CPose3D a(1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(50), DEG2RAD(-30));
+	CPose3D a(1.0, 2.0, 3.0, 10.0_deg, 50.0_deg, -30.0_deg);
 	CPoint3D b(8.0, -5.0, -1.0);
 
 	CPoint3D p;
@@ -88,7 +88,7 @@ double poses_test_compose3Dpoint2(int a1, int a2)
 	const long N = 500000;
 	CTicTac tictac;
 
-	CPose3D a(1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(50), DEG2RAD(-30));
+	CPose3D a(1.0, 2.0, 3.0, 10.0_deg, 50.0_deg, -30.0_deg);
 	CPoint3D b(8.0, -5.0, -1.0);
 
 	double x, y, z;
@@ -106,7 +106,7 @@ double poses_test_compose3Dpoint3(int a1, int a2)
 	const long N = 500000;
 	CTicTac tictac;
 
-	CPose3D a(1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(50), DEG2RAD(-30));
+	CPose3D a(1.0, 2.0, 3.0, 10.0_deg, 50.0_deg, -30.0_deg);
 	CPoint3D b(8.0, -5.0, -1.0);
 
 	double x, y, z;
@@ -129,7 +129,7 @@ double poses_test_invcompose3Dpoint(int a1, int a2)
 	const long N = 500000;
 	CTicTac tictac;
 
-	CPose3D a(1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(50), DEG2RAD(-30));
+	CPose3D a(1.0, 2.0, 3.0, 10.0_deg, 50.0_deg, -30.0_deg);
 	CPoint3D b(8.0, -5.0, -1.0);
 
 	CPoint3D p;
@@ -147,7 +147,7 @@ double poses_test_invcompose3Dpoint2(int a1, int a2)
 	const long N = 500000;
 	CTicTac tictac;
 
-	CPose3D a(1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(50), DEG2RAD(-30));
+	CPose3D a(1.0, 2.0, 3.0, 10.0_deg, 50.0_deg, -30.0_deg);
 	CPoint3D b(8.0, -5.0, -1.0);
 
 	double x, y, z;
@@ -167,8 +167,8 @@ double poses_test_compose2D(int a1, int a2)
 	const long N = 500000;
 	CTicTac tictac;
 
-	CPose2D a(1.0, 2.0, DEG2RAD(10));
-	CPose2D b(8.0, -5.0, DEG2RAD(-40));
+	CPose2D a(1.0, 2.0, 10.0_deg);
+	CPose2D b(8.0, -5.0, -40.0_deg);
 
 	CPose2D p;
 	for (long i = 0; i < N; i++)
@@ -185,8 +185,8 @@ double poses_test_compose2D2(int a1, int a2)
 	const long N = 500000;
 	CTicTac tictac;
 
-	CPose2D a(1.0, 2.0, DEG2RAD(10));
-	CPose2D b(8.0, -5.0, DEG2RAD(-40));
+	CPose2D a(1.0, 2.0, 10.0_deg);
+	CPose2D b(8.0, -5.0, -40.0_deg);
 
 	CPose2D p;
 	for (long i = 0; i < N; i++)
@@ -203,7 +203,7 @@ double poses_test_compose2Dpoint(int a1, int a2)
 	const long N = 500000;
 	CTicTac tictac;
 
-	CPose2D a(1.0, 2.0, DEG2RAD(10));
+	CPose2D a(1.0, 2.0, 10.0_deg);
 	CPoint2D b(8.0, -5.0);
 
 	CPoint2D p;
@@ -221,7 +221,7 @@ double poses_test_compose2Dpoint2(int a1, int a2)
 	const long N = 500000;
 	CTicTac tictac;
 
-	CPose2D a(1.0, 2.0, DEG2RAD(10));
+	CPose2D a(1.0, 2.0, 10.0_deg);
 	CPoint2D b(8.0, -5.0);
 
 	double x, y;
@@ -240,10 +240,8 @@ double poses_test_compose3DQuat(int a1, int a2)
 	const long N = 100000;
 	CTicTac tictac;
 
-	CPose3DQuat a(
-		CPose3D(1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(50), DEG2RAD(-30)));
-	CPose3DQuat b(
-		CPose3D(8.0, -5.0, -1.0, DEG2RAD(-40), DEG2RAD(10), DEG2RAD(-45)));
+	CPose3DQuat a(CPose3D(1.0, 2.0, 3.0, 10.0_deg, 50.0_deg, -30.0_deg));
+	CPose3DQuat b(CPose3D(8.0, -5.0, -1.0, -40.0_deg, 10.0_deg, -45.0_deg));
 
 	CPose3DQuat p;
 	for (long i = 0; i < N; i++)
@@ -259,10 +257,8 @@ double poses_test_compose3DQuat2(int a1, int a2)
 	const long N = 100000;
 	CTicTac tictac;
 
-	CPose3DQuat a(
-		CPose3D(1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(50), DEG2RAD(-30)));
-	CPose3DQuat b(
-		CPose3D(8.0, -5.0, -1.0, DEG2RAD(-40), DEG2RAD(10), DEG2RAD(-45)));
+	CPose3DQuat a(CPose3D(1.0, 2.0, 3.0, 10.0_deg, 50.0_deg, -30.0_deg));
+	CPose3DQuat b(CPose3D(8.0, -5.0, -1.0, -40.0_deg, 10.0_deg, -45.0_deg));
 
 	CPose3DQuat p;
 	for (long i = 0; i < N; i++)
@@ -278,8 +274,7 @@ double poses_test_compose3DQuatpoint(int a1, int a2)
 	const long N = 500000;
 	CTicTac tictac;
 
-	CPose3DQuat a(
-		CPose3D(1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(50), DEG2RAD(-30)));
+	CPose3DQuat a(CPose3D(1.0, 2.0, 3.0, 10.0_deg, 50.0_deg, -30.0_deg));
 	CPoint3D b(8.0, -5.0, -1.0);
 
 	CPoint3D p;
@@ -297,8 +292,7 @@ double poses_test_compose3DQuatpoint2(int a1, int a2)
 	const long N = 500000;
 	CTicTac tictac;
 
-	CPose3DQuat a(
-		CPose3D(1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(50), DEG2RAD(-30)));
+	CPose3DQuat a(CPose3D(1.0, 2.0, 3.0, 10.0_deg, 50.0_deg, -30.0_deg));
 	CPoint3D b(8.0, -5.0, -1.0);
 
 	double x, y, z;
@@ -316,8 +310,7 @@ double poses_test_invcompose3DQuatpoint2(int a1, int a2)
 	const long N = 500000;
 	CTicTac tictac;
 
-	CPose3DQuat a(
-		CPose3D(1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(50), DEG2RAD(-30)));
+	CPose3DQuat a(CPose3D(1.0, 2.0, 3.0, 10.0_deg, 50.0_deg, -30.0_deg));
 	CPoint3D b(8.0, -5.0, -1.0);
 
 	double x, y, z;
@@ -336,7 +329,7 @@ double poses_test_convert_ypr_quat(int a1, int a2)
 	const long N = 1000000;
 	CTicTac tictac;
 
-	CPose3D a(1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(50), DEG2RAD(-30));
+	CPose3D a(1.0, 2.0, 3.0, 10.0_deg, 50.0_deg, -30.0_deg);
 
 	double x;
 	for (long i = 0; i < N; i++)
@@ -354,8 +347,7 @@ double poses_test_convert_quat_ypr(int a1, int a2)
 	const long N = 1000000;
 	CTicTac tictac;
 
-	CPose3DQuat a(
-		CPose3D(1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(50), DEG2RAD(-30)));
+	CPose3DQuat a(CPose3D(1.0, 2.0, 3.0, 10.0_deg, 50.0_deg, -30.0_deg));
 
 	double x;
 	for (long i = 0; i < N; i++)
@@ -374,7 +366,7 @@ double poses_test_convert_ypr_quat_pdf(int a1, int a2)
 	if (a1 >= 0) mrpt::global_settings::USE_SUT_EULER2QUAT_CONVERSION(a1 != 0);
 	const long N = 10000;
 
-	CPose3D a_mean(1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(50), DEG2RAD(-30));
+	CPose3D a_mean(1.0, 2.0, 3.0, 10.0_deg, 50.0_deg, -30.0_deg);
 	CMatrixDouble66 a_cov;
 
 	{
@@ -383,7 +375,7 @@ double poses_test_convert_ypr_quat_pdf(int a1, int a2)
 		mrpt::random::getRandomGenerator().drawGaussian1DMatrix(v);
 		v.asEigen() *= 0.1;
 		a_cov.matProductOf_AAt(v);  // COV = v*vt
-		for (int i = 3; i < 6; i++) a_cov(i, i) += square(DEG2RAD(2.0));
+		for (int i = 3; i < 6; i++) a_cov(i, i) += square(2.0_deg);
 	}
 
 	CPose3DPDFGaussian a(a_mean, a_cov);
@@ -408,7 +400,7 @@ double poses_test_convert_quat_ypr_pdf(int a1, int a2)
 
 	const long N = 2000;
 
-	CPose3D a_mean(1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(50), DEG2RAD(-30));
+	CPose3D a_mean(1.0, 2.0, 3.0, 10.0_deg, 50.0_deg, -30.0_deg);
 	CMatrixDouble66 a_cov;
 	{
 		CMatrixFixed<double, 6, 8> v;
@@ -416,7 +408,7 @@ double poses_test_convert_quat_ypr_pdf(int a1, int a2)
 		mrpt::random::getRandomGenerator().drawGaussian1DMatrix(v);
 		v.asEigen() *= 0.1;
 		a_cov.matProductOf_AAt(v);  // COV = v*vt
-		for (int i = 3; i < 6; i++) a_cov(i, i) += square(DEG2RAD(2.0));
+		for (int i = 3; i < 6; i++) a_cov(i, i) += square(2.0_deg);
 	}
 	CPose3DPDFGaussian a(a_mean, a_cov);
 

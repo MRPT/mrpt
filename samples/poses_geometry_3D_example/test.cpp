@@ -42,7 +42,7 @@ void TestGeometry3D()
 	CPose2D R(2, 1, DEG2RAD(45.0f));
 
 	// Camera pose relative to the robot: 6D (x,y,z,yaw,pitch,roll).
-	CPose3D C(0.5f, 0.5f, 1.5f, DEG2RAD(-90.0f), DEG2RAD(0), DEG2RAD(-90.0f));
+	CPose3D C(0.5f, 0.5f, 1.5f, DEG2RAD(-90.0f), 0.0_deg, DEG2RAD(-90.0f));
 
 	// TEST 1. Relative position L' of the landmark wrt the camera
 	// --------------------------------------------------------------

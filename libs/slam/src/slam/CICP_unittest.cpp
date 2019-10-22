@@ -70,7 +70,7 @@ class ICPTests : public ::testing::Test
 		CPosePDF::Ptr pdf =
 			ICP.Align(&m1, &m2, initialPose, &runningTime, (void*)&info);
 
-		const CPose2D good_pose(0.820, 0.084, DEG2RAD(8.73));
+		const CPose2D good_pose(0.820, 0.084, 8.73_deg);
 
 		EXPECT_NEAR(good_pose.distanceTo(pdf->getMeanVal()), 0, 0.02);
 	}
@@ -84,15 +84,14 @@ class ICPTests : public ::testing::Test
 
 		CDisk::Ptr pln = std::make_shared<opengl::CDisk>();
 		pln->setDiskRadius(2);
-		pln->setPose(CPose3D(0, 0, 0, 0, DEG2RAD(5), DEG2RAD(5)));
+		pln->setPose(CPose3D(0, 0, 0, 0, 5.0_deg, 5.0_deg));
 		pln->setColor(0.8, 0, 0);
 		world->insert(pln);
 
 		{
 			CDisk::Ptr pln2 = std::make_shared<opengl::CDisk>();
 			pln2->setDiskRadius(2);
-			pln2->setPose(
-				CPose3D(0, 0, 0, DEG2RAD(30), DEG2RAD(-20), DEG2RAD(-2)));
+			pln2->setPose(CPose3D(0, 0, 0, 30.0_deg, -20.0_deg, -2.0_deg));
 			pln2->setColor(0.9, 0, 0);
 			world->insert(pln2);
 		}
@@ -114,8 +113,8 @@ TEST_F(ICPTests, RayTracingICP3D)
 	const size_t HOW_MANY_PITCHS = 150;
 
 	// The two origins for the 3D scans
-	CPose3D viewpoint1(-0.3, 0.7, 3, DEG2RAD(5), DEG2RAD(80), DEG2RAD(3));
-	CPose3D viewpoint2(0.5, -0.2, 2.6, DEG2RAD(-5), DEG2RAD(100), DEG2RAD(-7));
+	CPose3D viewpoint1(-0.3, 0.7, 3, 5.0_deg, 80.0_deg, 3.0_deg);
+	CPose3D viewpoint2(0.5, -0.2, 2.6, -5.0_deg, 100.0_deg, -7.0_deg);
 
 	CPose3D SCAN2_POSE_ERROR(0.15, -0.07, 0.10, -0.03, 0.1, 0.1);
 

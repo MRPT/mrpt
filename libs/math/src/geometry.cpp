@@ -823,11 +823,11 @@ bool math::intersect(const TLine2D& r1, const TLine2D& r2, TObject2D& obj)
 	{
 		// Lines are parallel
 		if (abs(r1.coefs[0] * r2.coefs[2] - r1.coefs[2] * r2.coefs[0]) >=
-			geometryEpsilon)
+				geometryEpsilon ||
+			abs(r1.coefs[1] * r2.coefs[2] - r1.coefs[2] * r2.coefs[1]) >=
+				geometryEpsilon)
 			return false;
-		if (abs(r1.coefs[1] * r2.coefs[2] - r1.coefs[2] * r2.coefs[1]) >=
-			geometryEpsilon)
-			return false;
+
 		// Lines are the same
 		obj = r1;
 		return true;
@@ -999,7 +999,7 @@ bool math::conformAPlane(const std::vector<TPoint3D>& points)
 		mat(i, 1) = p.y - orig.y;
 		mat(i, 2) = p.z - orig.z;
 	}
-	return mat.rank() == 2;
+	return mat.rank(geometryEpsilon) == 2;
 }
 
 bool math::conformAPlane(const std::vector<TPoint3D>& points, TPlane& p)
@@ -1019,7 +1019,7 @@ bool math::areAligned(const std::vector<TPoint2D>& points)
 		mat(i, 0) = p.x - orig.x;
 		mat(i, 1) = p.y - orig.y;
 	}
-	return mat.rank() == 1;
+	return mat.rank(geometryEpsilon) == 1;
 }
 
 bool math::areAligned(const std::vector<TPoint2D>& points, TLine2D& r)
@@ -1052,7 +1052,7 @@ bool math::areAligned(const std::vector<TPoint3D>& points)
 		mat(i, 1) = p.y - orig.y;
 		mat(i, 2) = p.z - orig.z;
 	}
-	return mat.rank() == 1;
+	return mat.rank(geometryEpsilon) == 1;
 }
 
 bool math::areAligned(const std::vector<TPoint3D>& points, TLine3D& r)
