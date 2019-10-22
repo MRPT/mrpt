@@ -50,7 +50,12 @@ TEST(bits_math, deg_rad)
 		mrpt::DEG2RAD(180.0L), static_cast<long double>(M_PI),
 		static_cast<long double>(1e-6));
 	EXPECT_NEAR(mrpt::DEG2RAD(180.0), M_PI, 1e-6);
+	EXPECT_NEAR(mrpt::DEG2RAD(180), M_PI, 1e-6);
 	EXPECT_NEAR(mrpt::DEG2RAD(180.0f), static_cast<float>(M_PI), 1e-4f);
+	{
+		using namespace mrpt;  // _deg
+		EXPECT_NEAR(180.0_deg, M_PI, 1e-6);
+	}
 
 	EXPECT_NEAR(
 		mrpt::RAD2DEG(static_cast<long double>(M_PI)), 180.0L,
