@@ -33,7 +33,7 @@ inline T hypot_fast(const T x, const T y)
 	return std::sqrt(x * x + y * y);
 }
 
-#ifdef DEG2RAD  // functions are preferred over macros
+#ifdef DEG2RAD	// functions are preferred over macros
 #undef DEG2RAD
 #endif
 #ifdef RAD2DEG
@@ -80,7 +80,7 @@ constexpr inline long double RAD2DEG(const long double x)
 #define RAD2DEG RAD2DEG
 
 /** degrees to radian literal operator (e.g. `x=90.0_deg;`) */
-constexpr inline long double operator"" _deg(long double v)
+constexpr inline double operator"" _deg(long double v)
 {
 	return mrpt::DEG2RAD(v);
 }

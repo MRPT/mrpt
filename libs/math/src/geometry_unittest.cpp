@@ -12,6 +12,7 @@
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/math/TObject2D.h>
 #include <mrpt/math/TObject3D.h>
+#include <mrpt/math/TPose2D.h>
 #include <mrpt/math/geometry.h>
 #include <algorithm>
 
@@ -295,4 +296,85 @@ TEST(Geometry, PolygonConcaveContainsPoint)
 	// and the other:
 	std::reverse(vs.begin(), vs.end());
 	myTestPolygonContainsPoint(vs, false);
+}
+
+TEST(Geometry, changeEpsilon)
+{
+	// Default value:
+	const double default_val = 1e-5;
+	EXPECT_NEAR(mrpt::math::getEpsilon(), default_val, 1e-9);
+
+	// Test changing:
+	mrpt::math::setEpsilon(0.1);
+	EXPECT_NEAR(mrpt::math::getEpsilon(), 0.1, 1e-9);
+
+	// Test actual effects of epsilon:
+	{
+		const auto l1 = TLine2D({0.0, 0.0}, {1.0, 0.0});
+		const auto l2 = TLine2D({0.0, 2.0}, {1.0, 2.0001});
+
+		TObject2D obj;
+		mrpt::math::setEpsilon(0.1);
+		EXPECT_FALSE(mrpt::math::intersect(l1, l2, obj));
+		mrpt::math::setEpsilon(1e-10);
+		EXPECT_TRUE(mrpt::math::intersect(l1, l2, obj));
+	}
+
+	// Reset
+	mrpt::math::setEpsilon(default_val);
+}
+
+TEST(Geometry, conformAPlane)
+{
+	{
+		std::vector<TPoint3D> pts = {
+			{0., 0., 0.}, {1., 0., 0.}, {1., 1., 0.}, {0., 1., 0.}};
+		EXPECT_TRUE(mrpt::math::conformAPlane(pts));
+	}
+	{
+		std::vector<TPoint3D> pts = {
+			{0., 0., 0.}, {0., 0., 1.}, {0., 1., 1.}, {0., 1., 0.}};
+		EXPECT_TRUE(mrpt::math::conformAPlane(pts));
+	}
+	{
+		std::vector<TPoint3D> pts = {
+			{0., 0., 0.}, {0., 0., 1.}, {0., 1., 1.}, {0.1, 1., 0.1}};
+		EXPECT_FALSE(mrpt::math::conformAPlane(pts));
+	}
+	{
+		std::vector<TPoint3D> pts = {{5.56496063, -2.30508217, 29.53900000},
+									 {5.87949871, 0.00000000, 29.53900000},
+									 {13.50000000, 0.00000000, 0.00000000},
+									 {12.50465807, -7.29433126, 0.00000000}};
+		EXPECT_TRUE(mrpt::math::conformAPlane(pts));
+	}
+}
+
+TEST(Geometry, RectanglesIntersection)
+{
+	const auto r1_xmin = -1.0, r1_xmax = 1.0, r1_ymin = -1.0, r1_ymax = 1.0;
+	const auto r2_xmin = -2.0, r2_xmax = 2.0, r2_ymin = -3.0, r2_ymax = 3.0;
+
+	using mrpt::math::RectanglesIntersection;
+
+	using tst_set_t = std::array<double, 4>;
+
+	// Test cases: x,y,phi,  0/1:false/true (expected output)
+	const std::vector<tst_set_t> tsts = {
+		{0, 0, 0.0_deg, /*result*/ 1},	{3.1, 0, 0.0_deg, /*result*/ 0},
+		{-3.1, 0, 0.0_deg, /*result*/ 0}, {2.9, 0, 0.0_deg, /*result*/ 1},
+		{-2.9, 0, 0.0_deg, /*result*/ 1}, {0, 4.1, 0.0_deg, /*result*/ 0},
+		{0, 3.9, 0.0_deg, /*result*/ 1},  {0, -4.1, 0.0_deg, /*result*/ 0},
+		{0, -3.9, 0.0_deg, /*result*/ 1}, {3.1, 0, 0.0_deg, /*result*/ 0},
+		{3.1, 0, 45.0_deg, /*result*/ 1}, {3.1, 0, -90.0_deg, /*result*/ 1}};
+
+	for (const auto& t : tsts)
+	{
+		const auto p = mrpt::math::TPose2D(t[0], t[1], t[2]);
+		EXPECT_EQ(
+			RectanglesIntersection(
+				r1_xmin, r1_xmax, r1_ymin, r1_ymax, r2_xmin, r2_xmax, r2_ymin,
+				r2_ymax, p.x, p.y, p.phi),
+			t[3] != 0.0);
+	}
 }
