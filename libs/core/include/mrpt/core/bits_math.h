@@ -33,7 +33,7 @@ inline T hypot_fast(const T x, const T y)
 	return std::sqrt(x * x + y * y);
 }
 
-#ifdef DEG2RAD	// functions are preferred over macros
+#ifdef DEG2RAD  // functions are preferred over macros
 #undef DEG2RAD
 #endif
 #ifdef RAD2DEG
