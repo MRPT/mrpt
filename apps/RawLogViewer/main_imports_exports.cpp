@@ -1749,7 +1749,7 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
 				obs->sensor_std_range = 1e-2f;
 				obs->sensor_std_pitch = 0;  // Is a 2D sensor
 				obs->fieldOfView_pitch = 0;
-				obs->fieldOfView_yaw = DEG2RAD(180);
+				obs->fieldOfView_yaw = 180.0_deg;
 				obs->validCovariances =
 					true;  // Each observation has its own cov. matrix.
 

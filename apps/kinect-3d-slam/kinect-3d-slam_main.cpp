@@ -53,7 +53,7 @@ using namespace mrpt::opengl;
 using namespace std;
 
 const double KEYFRAMES_MIN_DISTANCE = 0.10;  // meters
-const double KEYFRAMES_MIN_ANG = DEG2RAD(10);
+const double KEYFRAMES_MIN_ANG = 10.0_deg;
 
 // Thread for grabbing: Do this is another thread so we divide rendering and
 // grabbing

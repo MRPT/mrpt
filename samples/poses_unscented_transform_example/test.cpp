@@ -207,9 +207,8 @@ void TestCalibrate_pose2quat()
 {
 	// Take a 7x7 representation:
 	CPose3DQuatPDFGaussian o;
-	o.mean = CPose3DQuat(
-		CPose3D(1.0, 2.0, 3.0, DEG2RAD(-30), DEG2RAD(10), DEG2RAD(60)));
-	// o.mean = CPose3D(1.0,2.0,3.0, DEG2RAD(00),DEG2RAD(90),DEG2RAD(0));
+	o.mean = CPose3DQuat(CPose3D(1.0, 2.0, 3.0, -30.0_deg, 10.0_deg, 60.0_deg));
+	// o.mean = CPose3D(1.0,2.0,3.0, 00.0_deg,90.0_deg,0.0_deg);
 
 	CMatrixFixed<double, 7, 1> v;
 	mrpt::random::getRandomGenerator().drawGaussian1DMatrix(v);

@@ -570,28 +570,28 @@ CSetOfObjects::Ptr stock_objects::Househam_Sprayer()
 		CCylinder::Ptr cyl1 =
 			std::make_shared<CCylinder>(0.716f, 0.716f, 0.387f, 30);
 		cyl1->setColor(0, 0, 0);
-		cyl1->setPose(CPose3D(-0.710, 0.923, -2.480, 0, 0, DEG2RAD(90)));
+		cyl1->setPose(CPose3D(-0.710, 0.923, -2.480, 0, 0, 90.0_deg));
 		ret->insert(cyl1);
 	}
 	{
 		CCylinder::Ptr cyl2 =
 			std::make_shared<CCylinder>(0.716f, 0.716f, 0.387f, 30);
 		cyl2->setColor(0, 0, 0);
-		cyl2->setPose(CPose3D(-3.937, 0.923, -2.480, 0, 0, DEG2RAD(90)));
+		cyl2->setPose(CPose3D(-3.937, 0.923, -2.480, 0, 0, 90.0_deg));
 		ret->insert(cyl2);
 	}
 	{
 		CCylinder::Ptr cyl1 =
 			std::make_shared<CCylinder>(0.716f, 0.716f, 0.387f, 30);
 		cyl1->setColor(0, 0, 0);
-		cyl1->setPose(CPose3D(-0.710, -0.423, -2.480, 0, 0, DEG2RAD(90)));
+		cyl1->setPose(CPose3D(-0.710, -0.423, -2.480, 0, 0, 90.0_deg));
 		ret->insert(cyl1);
 	}
 	{
 		CCylinder::Ptr cyl2 =
 			std::make_shared<CCylinder>(0.716f, 0.716f, 0.387f, 30);
 		cyl2->setColor(0, 0, 0);
-		cyl2->setPose(CPose3D(-3.937, -0.423, -2.480, 0, 0, DEG2RAD(90)));
+		cyl2->setPose(CPose3D(-3.937, -0.423, -2.480, 0, 0, 90.0_deg));
 		ret->insert(cyl2);
 	}
 	return ret;

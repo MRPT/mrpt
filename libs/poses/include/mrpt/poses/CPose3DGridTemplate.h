@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/core/bits_math.h>  // for DEG2RAD()
+#include <mrpt/core/bits_math.h>  // for .0_deg
 #include <mrpt/core/round.h>  // for round()
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/serialization/CSerializable.h>

@@ -85,7 +85,7 @@ void TestPoseComposition()
 	 * CPose3D default constructor method takes the arguments in the
 	 * (X, Y, Z, YAW=0, PITCH=0, ROLL=0) format. The angles are optional
 	 */
-	CPose3D A(0, 0, 0), B(1, 1, 0, DEG2RAD(45), 0, 0), C;
+	CPose3D A(0, 0, 0), B(1, 1, 0, 45.0_deg, 0, 0), C;
 
 	C = A - B;
 
@@ -99,12 +99,12 @@ void TestPoseComposition()
 	// stores a sequence of relative, incremental 2D poses
 	CPoses2DSequence seq;
 
-	CPose2D a(1, 2, (float)DEG2RAD(0));
-	CPose2D b(2, 3, (float)DEG2RAD(45));
+	CPose2D a(1, 2, (float)0.0_deg);
+	CPose2D b(2, 3, (float)45.0_deg);
 	CPose2D D;
 
-	CPose2D x(1, 0, (float)DEG2RAD(0));
-	CPose2D y(1, 0, (float)DEG2RAD(45));
+	CPose2D x(1, 0, (float)0.0_deg);
+	CPose2D y(1, 0, (float)45.0_deg);
 
 	cout << "a= " << a << endl;
 	cout << "b= " << b << endl;

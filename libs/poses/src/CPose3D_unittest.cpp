@@ -856,22 +856,22 @@ TEST_F(Pose3DTests, OperatorBracket)
 // List of "random" poses to test with (x,y,z,yaw,pitch,roll) (angles in
 // degrees)
 static const std::vector<mrpt::poses::CPose3D> ptc = {
-	{.0, .0, .0, DEG2RAD(.0), DEG2RAD(.0), DEG2RAD(.0)},
-	{1.0, 2.0, 3.0, DEG2RAD(.0), DEG2RAD(.0), DEG2RAD(.0)},
-	{1.0, 2.0, 3.0, DEG2RAD(10.0), DEG2RAD(.0), DEG2RAD(.0)},
-	{1.0, 2.0, 3.0, DEG2RAD(.0), DEG2RAD(1.0), DEG2RAD(.0)},
-	{1.0, 2.0, 3.0, DEG2RAD(.0), DEG2RAD(.0), DEG2RAD(1.0)},
-	{1.0, 2.0, 3.0, DEG2RAD(80.0), DEG2RAD(5.0), DEG2RAD(5.0)},
-	{1.0, 2.0, 3.0, DEG2RAD(-20.0), DEG2RAD(-30.0), DEG2RAD(-40.0)},
-	{1.0, 2.0, 3.0, DEG2RAD(-45.0), DEG2RAD(10.0), DEG2RAD(70.0)},
-	{1.0, 2.0, 3.0, DEG2RAD(40.0), DEG2RAD(-5.0), DEG2RAD(25.0)},
-	{1.0, 2.0, 3.0, DEG2RAD(40.0), DEG2RAD(20.0), DEG2RAD(-15.0)},
-	{-6.0, 2.0, 3.0, DEG2RAD(40.0), DEG2RAD(20.0), DEG2RAD(15.0)},
-	{6.0, -5.0, 3.0, DEG2RAD(40.0), DEG2RAD(20.0), DEG2RAD(15.0)},
-	{6.0, 2.0, -9.0, DEG2RAD(40.0), DEG2RAD(20.0), DEG2RAD(15.0)},
-	{0.0, 8.0, 5.0, DEG2RAD(-45.0), DEG2RAD(10.0), DEG2RAD(70.0)},
-	{1.0, 0.0, 5.0, DEG2RAD(-45.0), DEG2RAD(10.0), DEG2RAD(70.0)},
-	{1.0, 8.0, 0.0, DEG2RAD(-45.0), DEG2RAD(10.0), DEG2RAD(70.0)}};
+	{.0, .0, .0, .0_deg, .0_deg, .0_deg},
+	{1.0, 2.0, 3.0, .0_deg, .0_deg, .0_deg},
+	{1.0, 2.0, 3.0, 10.0_deg, .0_deg, .0_deg},
+	{1.0, 2.0, 3.0, .0_deg, 1.0_deg, .0_deg},
+	{1.0, 2.0, 3.0, .0_deg, .0_deg, 1.0_deg},
+	{1.0, 2.0, 3.0, 80.0_deg, 5.0_deg, 5.0_deg},
+	{1.0, 2.0, 3.0, -20.0_deg, -30.0_deg, -40.0_deg},
+	{1.0, 2.0, 3.0, -45.0_deg, 10.0_deg, 70.0_deg},
+	{1.0, 2.0, 3.0, 40.0_deg, -5.0_deg, 25.0_deg},
+	{1.0, 2.0, 3.0, 40.0_deg, 20.0_deg, -15.0_deg},
+	{-6.0, 2.0, 3.0, 40.0_deg, 20.0_deg, 15.0_deg},
+	{6.0, -5.0, 3.0, 40.0_deg, 20.0_deg, 15.0_deg},
+	{6.0, 2.0, -9.0, 40.0_deg, 20.0_deg, 15.0_deg},
+	{0.0, 8.0, 5.0, -45.0_deg, 10.0_deg, 70.0_deg},
+	{1.0, 0.0, 5.0, -45.0_deg, 10.0_deg, 70.0_deg},
+	{1.0, 8.0, 0.0, -45.0_deg, 10.0_deg, 70.0_deg}};
 
 // More complex tests:
 TEST_F(Pose3DTests, InverseHM)
@@ -918,20 +918,17 @@ TEST_F(Pose3DTests, ComposePointJacob)
 TEST_F(Pose3DTests, ComposePointJacobApprox)
 {  // Test approximated Jacobians for very small rotations
 	test_composePointJacob(
-		mrpt::poses::CPose3D(1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0)),
-		10, 11, 12, true);
+		mrpt::poses::CPose3D(1.0, 2.0, 3.0, 0.0_deg, 0.0_deg, 0.0_deg), 10, 11,
+		12, true);
 	test_composePointJacob(
-		mrpt::poses::CPose3D(
-			1.0, 2.0, 3.0, DEG2RAD(0.1), DEG2RAD(0), DEG2RAD(0)),
-		10, 11, 12, true);
+		mrpt::poses::CPose3D(1.0, 2.0, 3.0, 0.1_deg, 0.0_deg, 0.0_deg), 10, 11,
+		12, true);
 	test_composePointJacob(
-		mrpt::poses::CPose3D(
-			1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(0.1), DEG2RAD(0)),
-		10, 11, 12, true);
+		mrpt::poses::CPose3D(1.0, 2.0, 3.0, 0.0_deg, 0.1_deg, 0.0_deg), 10, 11,
+		12, true);
 	test_composePointJacob(
-		mrpt::poses::CPose3D(
-			1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0.1)),
-		10, 11, 12, true);
+		mrpt::poses::CPose3D(1.0, 2.0, 3.0, 0.0_deg, 0.0_deg, 0.1_deg), 10, 11,
+		12, true);
 }
 
 TEST_F(Pose3DTests, InvComposePointJacob)
@@ -972,15 +969,14 @@ TEST_F(Pose3DTests, ExpLnEqual)
 TEST_F(Pose3DTests, Jacob_dExpe_de_at_0) { check_jacob_expe_e_at_0(); }
 TEST_F(Pose3DTests, Jacob_dLnT_dT)
 {
-	check_jacob_LnT_T(
-		mrpt::poses::CPose3D(0, 0, 0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0)));
+	check_jacob_LnT_T(mrpt::poses::CPose3D(0, 0, 0, 0.0_deg, 0.0_deg, 0.0_deg));
 	// JL NOTE:
 	//  This function cannot be properly tested numerically, since the logm()
 	//  implementation
 	//  is not generic and does NOT depends on all matrix entries, thus the
 	//  numerical Jacobian
 	//  contains entire columns of zeros, even if the theorethical doesn't.
-	//	check_jacob_LnT_T(1.0,0,0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0) ); ...
+	//	check_jacob_LnT_T(1.0,0,0, 0.0_deg,0.0_deg,0.0_deg ); ...
 }
 
 TEST_F(Pose3DTests, Jacob_dexpeD_de)

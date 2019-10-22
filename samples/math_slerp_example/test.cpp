@@ -51,8 +51,8 @@ void TestSLERP()
 	}
 
 	// Initialize the start, end pose of the animation
-	const TPose3D pose_a(0, 0, 0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0));
-	const TPose3D pose_b(3, 4, 1, DEG2RAD(120), DEG2RAD(40), DEG2RAD(50));
+	const TPose3D pose_a(0, 0, 0, 0.0_deg, 0.0_deg, 0.0_deg);
+	const TPose3D pose_b(3, 4, 1, 120.0_deg, 40.0_deg, 50.0_deg);
 
 	{
 		// XYZ corner at A:

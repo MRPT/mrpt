@@ -507,9 +507,9 @@ void CMetricMapBuilderRBPF::saveCurrentPathEstimationToTextFile(
 						TConstructionOptions
   ---------------------------------------------------------------*/
 CMetricMapBuilderRBPF::TConstructionOptions::TConstructionOptions()
-	: insertionAngDistance(DEG2RAD(30)),
+	: insertionAngDistance(30.0_deg),
 
-	  localizeAngDistance(DEG2RAD(10)),
+	  localizeAngDistance(10.0_deg),
 	  PF_options(),
 	  mapsInitializers(),
 	  predictionOptions()

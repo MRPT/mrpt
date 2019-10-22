@@ -52,11 +52,11 @@ void TestOpenGLVideo()
 		opengl::CTexturedPlane::Create(0, 1, 0, 0.75);
 
 	gl_plane1->setPose(
-		mrpt::poses::CPose3D(0, 0, 1, DEG2RAD(0), DEG2RAD(0), DEG2RAD(-90)));
+		mrpt::poses::CPose3D(0, 0, 1, 0.0_deg, 0.0_deg, -90.0_deg));
 	gl_plane2->setPose(
-		mrpt::poses::CPose3D(1, 0, 1, DEG2RAD(120), DEG2RAD(0), DEG2RAD(-90)));
+		mrpt::poses::CPose3D(1, 0, 1, 120.0_deg, 0.0_deg, -90.0_deg));
 	gl_plane3->setPose(
-		mrpt::poses::CPose3D(0, 0, 1, DEG2RAD(60), DEG2RAD(0), DEG2RAD(-90)));
+		mrpt::poses::CPose3D(0, 0, 1, 60.0_deg, 0.0_deg, -90.0_deg));
 
 	win.setCameraZoom(5);
 

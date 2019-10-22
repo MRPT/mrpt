@@ -613,169 +613,147 @@ class Pose3DQuatTests : public ::testing::Test
 
 TEST_F(Pose3DQuatTests, FromYPRAndBack)
 {
-	test_fromYPRAndBack(1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0));
-	test_fromYPRAndBack(1.0, 2.0, 3.0, DEG2RAD(90), DEG2RAD(0), DEG2RAD(0));
-	test_fromYPRAndBack(1.0, 2.0, 3.0, DEG2RAD(-30), DEG2RAD(10), DEG2RAD(60));
-	test_fromYPRAndBack(1.0, 2.0, 3.0, DEG2RAD(179), DEG2RAD(0), DEG2RAD(60));
-	test_fromYPRAndBack(1.0, 2.0, 3.0, DEG2RAD(-179), DEG2RAD(0), DEG2RAD(60));
-	test_fromYPRAndBack(1.0, 2.0, 3.0, DEG2RAD(30), DEG2RAD(89), DEG2RAD(0));
-	test_fromYPRAndBack(1.0, 2.0, 3.0, DEG2RAD(30), DEG2RAD(-89), DEG2RAD(0));
+	test_fromYPRAndBack(1.0, 2.0, 3.0, 0.0_deg, 0.0_deg, 0.0_deg);
+	test_fromYPRAndBack(1.0, 2.0, 3.0, 90.0_deg, 0.0_deg, 0.0_deg);
+	test_fromYPRAndBack(1.0, 2.0, 3.0, -30.0_deg, 10.0_deg, 60.0_deg);
+	test_fromYPRAndBack(1.0, 2.0, 3.0, 179.0_deg, 0.0_deg, 60.0_deg);
+	test_fromYPRAndBack(1.0, 2.0, 3.0, -179.0_deg, 0.0_deg, 60.0_deg);
+	test_fromYPRAndBack(1.0, 2.0, 3.0, 30.0_deg, 89.0_deg, 0.0_deg);
+	test_fromYPRAndBack(1.0, 2.0, 3.0, 30.0_deg, -89.0_deg, 0.0_deg);
 }
 
 TEST_F(Pose3DQuatTests, UnaryInverse)
 {
-	test_unaryInverse(1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0));
-	test_unaryInverse(1.0, 2.0, 3.0, DEG2RAD(90), DEG2RAD(0), DEG2RAD(0));
-	test_unaryInverse(1.0, 2.0, 3.0, DEG2RAD(-30), DEG2RAD(10), DEG2RAD(60));
-	test_unaryInverse(1.0, 2.0, 3.0, DEG2RAD(179), DEG2RAD(0), DEG2RAD(60));
-	test_unaryInverse(1.0, 2.0, 3.0, DEG2RAD(-179), DEG2RAD(0), DEG2RAD(60));
-	test_unaryInverse(1.0, 2.0, 3.0, DEG2RAD(30), DEG2RAD(89), DEG2RAD(0));
-	test_unaryInverse(1.0, 2.0, 3.0, DEG2RAD(30), DEG2RAD(-89), DEG2RAD(0));
+	test_unaryInverse(1.0, 2.0, 3.0, 0.0_deg, 0.0_deg, 0.0_deg);
+	test_unaryInverse(1.0, 2.0, 3.0, 90.0_deg, 0.0_deg, 0.0_deg);
+	test_unaryInverse(1.0, 2.0, 3.0, -30.0_deg, 10.0_deg, 60.0_deg);
+	test_unaryInverse(1.0, 2.0, 3.0, 179.0_deg, 0.0_deg, 60.0_deg);
+	test_unaryInverse(1.0, 2.0, 3.0, -179.0_deg, 0.0_deg, 60.0_deg);
+	test_unaryInverse(1.0, 2.0, 3.0, 30.0_deg, 89.0_deg, 0.0_deg);
+	test_unaryInverse(1.0, 2.0, 3.0, 30.0_deg, -89.0_deg, 0.0_deg);
 }
 
 TEST_F(Pose3DQuatTests, CopyOperator)
 {
-	test_copy(1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0));
-	test_copy(1.0, 2.0, 3.0, DEG2RAD(90), DEG2RAD(0), DEG2RAD(0));
-	test_copy(1.0, 2.0, 3.0, DEG2RAD(-30), DEG2RAD(10), DEG2RAD(60));
-	test_copy(1.0, 2.0, 3.0, DEG2RAD(30), DEG2RAD(-89), DEG2RAD(0));
+	test_copy(1.0, 2.0, 3.0, 0.0_deg, 0.0_deg, 0.0_deg);
+	test_copy(1.0, 2.0, 3.0, 90.0_deg, 0.0_deg, 0.0_deg);
+	test_copy(1.0, 2.0, 3.0, -30.0_deg, 10.0_deg, 60.0_deg);
+	test_copy(1.0, 2.0, 3.0, 30.0_deg, -89.0_deg, 0.0_deg);
 }
 
 TEST_F(Pose3DQuatTests, Compose)
 {
 	test_compose(
-		1.0, 2.0, 3.0, DEG2RAD(-30), DEG2RAD(10), DEG2RAD(60), 2.0, -5.0, 8.0,
-		DEG2RAD(40), DEG2RAD(-5), DEG2RAD(25));
+		1.0, 2.0, 3.0, -30.0_deg, 10.0_deg, 60.0_deg, 2.0, -5.0, 8.0, 40.0_deg,
+		-5.0_deg, 25.0_deg);
 
 	test_compose(
-		25.0, 2.0, 3.0, DEG2RAD(-30), DEG2RAD(90), DEG2RAD(0), -10.0, 4.0, -8.0,
-		DEG2RAD(20), DEG2RAD(9), DEG2RAD(0));
+		25.0, 2.0, 3.0, -30.0_deg, 90.0_deg, 0.0_deg, -10.0, 4.0, -8.0,
+		20.0_deg, 9.0_deg, 0.0_deg);
 }
 
 TEST_F(Pose3DQuatTests, ComposeWithPoint)
 {
+	test_composePoint(1.0, 2.0, 3.0, 0.0_deg, 0.0_deg, 0.0_deg, 10, 11, 12);
+	test_composePoint(1.0, 2.0, 3.0, 10.0_deg, 0.0_deg, 0.0_deg, 10, 11, 12);
+	test_composePoint(1.0, 2.0, 3.0, 0.0_deg, 10.0_deg, 0.0_deg, 10, 11, 12);
+	test_composePoint(1.0, 2.0, 3.0, 0.0_deg, 0.0_deg, 10.0_deg, 10, 11, 12);
 	test_composePoint(
-		1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 10, 11, 12);
+		1.0, 2.0, 3.0, -30.0_deg, 10.0_deg, 60.0_deg, 10.0, 20.0, 30.0);
 	test_composePoint(
-		1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(0), DEG2RAD(0), 10, 11, 12);
-	test_composePoint(
-		1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(10), DEG2RAD(0), 10, 11, 12);
-	test_composePoint(
-		1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(10), 10, 11, 12);
-	test_composePoint(
-		1.0, 2.0, 3.0, DEG2RAD(-30), DEG2RAD(10), DEG2RAD(60), 10.0, 20.0,
-		30.0);
-	test_composePoint(
-		1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(-50), DEG2RAD(-40), -5.0, -15.0,
-		8.0);
+		1.0, 2.0, 3.0, 10.0_deg, -50.0_deg, -40.0_deg, -5.0, -15.0, 8.0);
 }
 
 TEST_F(Pose3DQuatTests, ComposeWithPointJacob)
 {
 	test_composePointJacob(
-		1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 10, 11, 12);
+		1.0, 2.0, 3.0, 0.0_deg, 0.0_deg, 0.0_deg, 10, 11, 12);
 	test_composePointJacob(
-		1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(0), DEG2RAD(0), 10, 11, 12);
+		1.0, 2.0, 3.0, 10.0_deg, 0.0_deg, 0.0_deg, 10, 11, 12);
 	test_composePointJacob(
-		1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(10), DEG2RAD(0), 10, 11, 12);
+		1.0, 2.0, 3.0, 0.0_deg, 10.0_deg, 0.0_deg, 10, 11, 12);
 	test_composePointJacob(
-		1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(10), 10, 11, 12);
+		1.0, 2.0, 3.0, 0.0_deg, 0.0_deg, 10.0_deg, 10, 11, 12);
 	test_composePointJacob(
-		1.0, 2.0, 3.0, DEG2RAD(-30), DEG2RAD(10), DEG2RAD(60), 10.0, 20.0,
-		30.0);
+		1.0, 2.0, 3.0, -30.0_deg, 10.0_deg, 60.0_deg, 10.0, 20.0, 30.0);
 	test_composePointJacob(
-		1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(-50), DEG2RAD(-40), -5.0, -15.0,
-		8.0);
+		1.0, 2.0, 3.0, 10.0_deg, -50.0_deg, -40.0_deg, -5.0, -15.0, 8.0);
 }
 
 TEST_F(Pose3DQuatTests, InvComposeWithPoint)
 {
+	test_invComposePoint(1.0, 2.0, 3.0, 0.0_deg, 0.0_deg, 0.0_deg, 10, 11, 12);
+	test_invComposePoint(1.0, 2.0, 3.0, 10.0_deg, 0.0_deg, 0.0_deg, 10, 11, 12);
+	test_invComposePoint(1.0, 2.0, 3.0, 0.0_deg, 10.0_deg, 0.0_deg, 10, 11, 12);
+	test_invComposePoint(1.0, 2.0, 3.0, 0.0_deg, 0.0_deg, 10.0_deg, 10, 11, 12);
 	test_invComposePoint(
-		1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 10, 11, 12);
+		1.0, 2.0, 3.0, -30.0_deg, 10.0_deg, 60.0_deg, 10.0, 20.0, 30.0);
 	test_invComposePoint(
-		1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(0), DEG2RAD(0), 10, 11, 12);
-	test_invComposePoint(
-		1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(10), DEG2RAD(0), 10, 11, 12);
-	test_invComposePoint(
-		1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(10), 10, 11, 12);
-	test_invComposePoint(
-		1.0, 2.0, 3.0, DEG2RAD(-30), DEG2RAD(10), DEG2RAD(60), 10.0, 20.0,
-		30.0);
-	test_invComposePoint(
-		1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(-50), DEG2RAD(-40), -5.0, -15.0,
-		8.0);
+		1.0, 2.0, 3.0, 10.0_deg, -50.0_deg, -40.0_deg, -5.0, -15.0, 8.0);
 }
 
 TEST_F(Pose3DQuatTests, InvComposeWithPointJacob)
 {
+	test_invComposePointJacob(0, 0, 0, 0.0_deg, 0.0_deg, 0.0_deg, 0, 0, 0);
+	test_invComposePointJacob(0, 0, 0, 0.0_deg, 0.0_deg, 0.0_deg, 1, 2, 3);
 	test_invComposePointJacob(
-		0, 0, 0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0, 0, 0);
+		1.0, 2.0, 3.0, 0.0_deg, 0.0_deg, 0.0_deg, 0, 0, 0);
 	test_invComposePointJacob(
-		0, 0, 0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 1, 2, 3);
+		1.0, 2.0, 3.0, 0.0_deg, 0.0_deg, 0.0_deg, 10, 11, 12);
 	test_invComposePointJacob(
-		1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0, 0, 0);
+		1.0, 2.0, 3.0, 10.0_deg, 0.0_deg, 0.0_deg, 10, 11, 12);
 	test_invComposePointJacob(
-		1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 10, 11, 12);
+		1.0, 2.0, 3.0, 0.0_deg, 10.0_deg, 0.0_deg, 10, 11, 12);
 	test_invComposePointJacob(
-		1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(0), DEG2RAD(0), 10, 11, 12);
+		1.0, 2.0, 3.0, 0.0_deg, 0.0_deg, 10.0_deg, 10, 11, 12);
 	test_invComposePointJacob(
-		1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(10), DEG2RAD(0), 10, 11, 12);
+		1.0, 2.0, 3.0, -30.0_deg, 10.0_deg, 60.0_deg, 10.0, 20.0, 30.0);
 	test_invComposePointJacob(
-		1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(10), 10, 11, 12);
-	test_invComposePointJacob(
-		1.0, 2.0, 3.0, DEG2RAD(-30), DEG2RAD(10), DEG2RAD(60), 10.0, 20.0,
-		30.0);
-	test_invComposePointJacob(
-		1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(-50), DEG2RAD(-40), -5.0, -15.0,
-		8.0);
+		1.0, 2.0, 3.0, 10.0_deg, -50.0_deg, -40.0_deg, -5.0, -15.0, 8.0);
 }
 
 TEST_F(Pose3DQuatTests, ComposeInvComposePoint)
 {
 	test_composeAndInvComposePoint(
-		1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 10, 11, 12);
+		1.0, 2.0, 3.0, 0.0_deg, 0.0_deg, 0.0_deg, 10, 11, 12);
 	test_composeAndInvComposePoint(
-		1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(0), DEG2RAD(0), 10, 11, 12);
+		1.0, 2.0, 3.0, 10.0_deg, 0.0_deg, 0.0_deg, 10, 11, 12);
 	test_composeAndInvComposePoint(
-		1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(10), DEG2RAD(0), 10, 11, 12);
+		1.0, 2.0, 3.0, 0.0_deg, 10.0_deg, 0.0_deg, 10, 11, 12);
 	test_composeAndInvComposePoint(
-		1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(10), 10, 11, 12);
+		1.0, 2.0, 3.0, 0.0_deg, 0.0_deg, 10.0_deg, 10, 11, 12);
 	test_composeAndInvComposePoint(
-		1.0, 2.0, 3.0, DEG2RAD(-30), DEG2RAD(10), DEG2RAD(60), 10.0, 20.0,
-		30.0);
+		1.0, 2.0, 3.0, -30.0_deg, 10.0_deg, 60.0_deg, 10.0, 20.0, 30.0);
 	test_composeAndInvComposePoint(
-		1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(-50), DEG2RAD(-40), -5.0, -15.0,
-		8.0);
+		1.0, 2.0, 3.0, 10.0_deg, -50.0_deg, -40.0_deg, -5.0, -15.0, 8.0);
 }
 
 TEST_F(Pose3DQuatTests, ComposePoint_vs_CPose3D)
 {
 	test_composePoint_vs_CPose3D(
-		1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 10, 11, 12);
+		1.0, 2.0, 3.0, 0.0_deg, 0.0_deg, 0.0_deg, 10, 11, 12);
 	test_composePoint_vs_CPose3D(
-		1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(0), DEG2RAD(0), 10, 11, 12);
+		1.0, 2.0, 3.0, 10.0_deg, 0.0_deg, 0.0_deg, 10, 11, 12);
 	test_composePoint_vs_CPose3D(
-		1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(10), DEG2RAD(0), 10, 11, 12);
+		1.0, 2.0, 3.0, 0.0_deg, 10.0_deg, 0.0_deg, 10, 11, 12);
 	test_composePoint_vs_CPose3D(
-		1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(10), 10, 11, 12);
+		1.0, 2.0, 3.0, 0.0_deg, 0.0_deg, 10.0_deg, 10, 11, 12);
 	test_composePoint_vs_CPose3D(
-		1.0, 2.0, 3.0, DEG2RAD(-30), DEG2RAD(10), DEG2RAD(60), 10.0, 20.0,
-		30.0);
+		1.0, 2.0, 3.0, -30.0_deg, 10.0_deg, 60.0_deg, 10.0, 20.0, 30.0);
 	test_composePoint_vs_CPose3D(
-		1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(-50), DEG2RAD(-40), -5.0, -15.0,
-		8.0);
+		1.0, 2.0, 3.0, 10.0_deg, -50.0_deg, -40.0_deg, -5.0, -15.0, 8.0);
 }
 
 TEST_F(Pose3DQuatTests, InvComposePoint_vs_CPose3D)
 {
 	test_invComposePoint_vs_CPose3D(
-		1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 10, 11, 12);
+		1.0, 2.0, 3.0, 0.0_deg, 0.0_deg, 0.0_deg, 10, 11, 12);
 	test_invComposePoint_vs_CPose3D(
-		1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(0), DEG2RAD(0), 10, 11, 12);
+		1.0, 2.0, 3.0, 10.0_deg, 0.0_deg, 0.0_deg, 10, 11, 12);
 	test_invComposePoint_vs_CPose3D(
-		1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(10), DEG2RAD(0), 10, 11, 12);
+		1.0, 2.0, 3.0, 0.0_deg, 10.0_deg, 0.0_deg, 10, 11, 12);
 	test_invComposePoint_vs_CPose3D(
-		1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(10), 10, 11, 12);
+		1.0, 2.0, 3.0, 0.0_deg, 0.0_deg, 10.0_deg, 10, 11, 12);
 
 	for (size_t i = 0; i < 10; i++)
 	{
@@ -788,28 +766,22 @@ TEST_F(Pose3DQuatTests, InvComposePoint_vs_CPose3D)
 
 TEST_F(Pose3DQuatTests, SphericalCoordsJacobian)
 {
+	test_sphericalCoords(1.0, 2.0, 3.0, 0.0_deg, 0.0_deg, 0.0_deg, 10, 11, 12);
+	test_sphericalCoords(1.0, 2.0, 3.0, 10.0_deg, 0.0_deg, 0.0_deg, 10, 11, 12);
+	test_sphericalCoords(1.0, 2.0, 3.0, 0.0_deg, 10.0_deg, 0.0_deg, 10, 11, 12);
+	test_sphericalCoords(1.0, 2.0, 3.0, 0.0_deg, 0.0_deg, 10.0_deg, 10, 11, 12);
 	test_sphericalCoords(
-		1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 10, 11, 12);
+		1.0, 2.0, 3.0, -30.0_deg, 10.0_deg, 60.0_deg, 10.0, 20.0, 30.0);
 	test_sphericalCoords(
-		1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(0), DEG2RAD(0), 10, 11, 12);
-	test_sphericalCoords(
-		1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(10), DEG2RAD(0), 10, 11, 12);
-	test_sphericalCoords(
-		1.0, 2.0, 3.0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(10), 10, 11, 12);
-	test_sphericalCoords(
-		1.0, 2.0, 3.0, DEG2RAD(-30), DEG2RAD(10), DEG2RAD(60), 10.0, 20.0,
-		30.0);
-	test_sphericalCoords(
-		1.0, 2.0, 3.0, DEG2RAD(10), DEG2RAD(-50), DEG2RAD(-40), -5.0, -15.0,
-		8.0);
+		1.0, 2.0, 3.0, 10.0_deg, -50.0_deg, -40.0_deg, -5.0, -15.0, 8.0);
 }
 
 TEST_F(Pose3DQuatTests, NormalizationJacobian)
 {
-	test_normalizeJacob(DEG2RAD(0), DEG2RAD(0), DEG2RAD(0));
-	test_normalizeJacob(DEG2RAD(10), DEG2RAD(0), DEG2RAD(0));
-	test_normalizeJacob(DEG2RAD(0), DEG2RAD(10), DEG2RAD(0));
-	test_normalizeJacob(DEG2RAD(0), DEG2RAD(0), DEG2RAD(10));
-	test_normalizeJacob(DEG2RAD(-30), DEG2RAD(10), DEG2RAD(60));
-	test_normalizeJacob(DEG2RAD(10), DEG2RAD(-50), DEG2RAD(-40));
+	test_normalizeJacob(0.0_deg, 0.0_deg, 0.0_deg);
+	test_normalizeJacob(10.0_deg, 0.0_deg, 0.0_deg);
+	test_normalizeJacob(0.0_deg, 10.0_deg, 0.0_deg);
+	test_normalizeJacob(0.0_deg, 0.0_deg, 10.0_deg);
+	test_normalizeJacob(-30.0_deg, 10.0_deg, 60.0_deg);
+	test_normalizeJacob(10.0_deg, -50.0_deg, -40.0_deg);
 }

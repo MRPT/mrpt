@@ -323,167 +323,166 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 
 TEST_F(Pose3DQuatPDFGaussTests, ToYPRGaussPDFAndBack)
 {
-	test_toFromYPRGauss(DEG2RAD(-30), DEG2RAD(10), DEG2RAD(60));
-	test_toFromYPRGauss(DEG2RAD(30), DEG2RAD(88), DEG2RAD(0));
-	test_toFromYPRGauss(DEG2RAD(30), DEG2RAD(89.5), DEG2RAD(0));
+	test_toFromYPRGauss(-30.0_deg, 10.0_deg, 60.0_deg);
+	test_toFromYPRGauss(30.0_deg, 88.0_deg, 0.0_deg);
+	test_toFromYPRGauss(30.0_deg, 89.5_deg, 0.0_deg);
 	// The formulas break at pitch=90, but this we cannot avoid...
 }
 
 TEST_F(Pose3DQuatPDFGaussTests, CompositionJacobian)
 {
 	testCompositionJacobian(
-		0, 0, 0, DEG2RAD(2), DEG2RAD(0), DEG2RAD(0), 0, 0, 0, DEG2RAD(0),
-		DEG2RAD(0), DEG2RAD(0));
+		0, 0, 0, 2.0_deg, 0.0_deg, 0.0_deg, 0, 0, 0, 0.0_deg, 0.0_deg, 0.0_deg);
 	testCompositionJacobian(
-		1, 2, 3, DEG2RAD(2), DEG2RAD(0), DEG2RAD(0), -8, 45, 10, DEG2RAD(0),
-		DEG2RAD(0), DEG2RAD(0));
+		1, 2, 3, 2.0_deg, 0.0_deg, 0.0_deg, -8, 45, 10, 0.0_deg, 0.0_deg,
+		0.0_deg);
 	testCompositionJacobian(
-		1, -2, 3, DEG2RAD(2), DEG2RAD(0), DEG2RAD(0), -8, 45, 10, DEG2RAD(0),
-		DEG2RAD(0), DEG2RAD(0));
+		1, -2, 3, 2.0_deg, 0.0_deg, 0.0_deg, -8, 45, 10, 0.0_deg, 0.0_deg,
+		0.0_deg);
 	testCompositionJacobian(
-		1, 2, -3, DEG2RAD(2), DEG2RAD(0), DEG2RAD(0), -8, 45, 10, DEG2RAD(0),
-		DEG2RAD(0), DEG2RAD(0));
+		1, 2, -3, 2.0_deg, 0.0_deg, 0.0_deg, -8, 45, 10, 0.0_deg, 0.0_deg,
+		0.0_deg);
 	testCompositionJacobian(
-		1, 2, 3, DEG2RAD(20), DEG2RAD(80), DEG2RAD(70), -8, 45, 10, DEG2RAD(50),
-		DEG2RAD(-10), DEG2RAD(30));
+		1, 2, 3, 20.0_deg, 80.0_deg, 70.0_deg, -8, 45, 10, 50.0_deg, -10.0_deg,
+		30.0_deg);
 	testCompositionJacobian(
-		1, 2, 3, DEG2RAD(20), DEG2RAD(-80), DEG2RAD(70), -8, 45, 10,
-		DEG2RAD(50), DEG2RAD(-10), DEG2RAD(30));
+		1, 2, 3, 20.0_deg, -80.0_deg, 70.0_deg, -8, 45, 10, 50.0_deg, -10.0_deg,
+		30.0_deg);
 	testCompositionJacobian(
-		1, 2, 3, DEG2RAD(20), DEG2RAD(80), DEG2RAD(-70), -8, 45, 10,
-		DEG2RAD(50), DEG2RAD(-10), DEG2RAD(30));
+		1, 2, 3, 20.0_deg, 80.0_deg, -70.0_deg, -8, 45, 10, 50.0_deg, -10.0_deg,
+		30.0_deg);
 	testCompositionJacobian(
-		1, 2, 3, DEG2RAD(20), DEG2RAD(80), DEG2RAD(70), -8, 45, 10,
-		DEG2RAD(-50), DEG2RAD(-10), DEG2RAD(30));
+		1, 2, 3, 20.0_deg, 80.0_deg, 70.0_deg, -8, 45, 10, -50.0_deg, -10.0_deg,
+		30.0_deg);
 	testCompositionJacobian(
-		1, 2, 3, DEG2RAD(20), DEG2RAD(80), DEG2RAD(70), -8, 45, 10, DEG2RAD(50),
-		DEG2RAD(10), DEG2RAD(30));
+		1, 2, 3, 20.0_deg, 80.0_deg, 70.0_deg, -8, 45, 10, 50.0_deg, 10.0_deg,
+		30.0_deg);
 	testCompositionJacobian(
-		1, 2, 3, DEG2RAD(20), DEG2RAD(80), DEG2RAD(70), -8, 45, 10, DEG2RAD(50),
-		DEG2RAD(-10), DEG2RAD(-30));
+		1, 2, 3, 20.0_deg, 80.0_deg, 70.0_deg, -8, 45, 10, 50.0_deg, -10.0_deg,
+		-30.0_deg);
 }
 
 TEST_F(Pose3DQuatPDFGaussTests, Inverse)
 {
-	testInverse(0, 0, 0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1);
-	testInverse(0, 0, 0, DEG2RAD(10), DEG2RAD(0), DEG2RAD(0), 0.1);
-	testInverse(0, 0, 0, DEG2RAD(0), DEG2RAD(10), DEG2RAD(0), 0.1);
-	testInverse(0, 0, 0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(10), 0.1);
+	testInverse(0, 0, 0, 0.0_deg, 0.0_deg, 0.0_deg, 0.1);
+	testInverse(0, 0, 0, 10.0_deg, 0.0_deg, 0.0_deg, 0.1);
+	testInverse(0, 0, 0, 0.0_deg, 10.0_deg, 0.0_deg, 0.1);
+	testInverse(0, 0, 0, 0.0_deg, 0.0_deg, 10.0_deg, 0.1);
 
-	testInverse(1, 2, 3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1);
-	testInverse(1, 2, 3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.2);
+	testInverse(1, 2, 3, 0.0_deg, 0.0_deg, 0.0_deg, 0.1);
+	testInverse(1, 2, 3, 0.0_deg, 0.0_deg, 0.0_deg, 0.2);
 
-	testInverse(1, 2, 3, DEG2RAD(30), DEG2RAD(0), DEG2RAD(0), 0.1);
-	testInverse(-1, 2, 3, DEG2RAD(30), DEG2RAD(0), DEG2RAD(0), 0.1);
-	testInverse(1, 2, -3, DEG2RAD(30), DEG2RAD(0), DEG2RAD(0), 0.1);
-	testInverse(-1, 2, -3, DEG2RAD(30), DEG2RAD(0), DEG2RAD(0), 0.1);
-	testInverse(1, 2, 3, DEG2RAD(-30), DEG2RAD(0), DEG2RAD(0), 0.1);
-	testInverse(-1, 2, 3, DEG2RAD(-30), DEG2RAD(0), DEG2RAD(0), 0.1);
-	testInverse(1, 2, -3, DEG2RAD(-30), DEG2RAD(0), DEG2RAD(0), 0.1);
-	testInverse(-1, 2, -3, DEG2RAD(-30), DEG2RAD(0), DEG2RAD(0), 0.1);
-	testInverse(1, 2, 3, DEG2RAD(0), DEG2RAD(30), DEG2RAD(0), 0.1);
-	testInverse(-1, 2, 3, DEG2RAD(0), DEG2RAD(30), DEG2RAD(0), 0.1);
-	testInverse(1, 2, -3, DEG2RAD(0), DEG2RAD(30), DEG2RAD(0), 0.1);
-	testInverse(-1, 2, -3, DEG2RAD(0), DEG2RAD(30), DEG2RAD(0), 0.1);
-	testInverse(1, 2, 3, DEG2RAD(0), DEG2RAD(-30), DEG2RAD(0), 0.1);
-	testInverse(-1, 2, 3, DEG2RAD(0), DEG2RAD(-30), DEG2RAD(0), 0.1);
-	testInverse(1, 2, -3, DEG2RAD(0), DEG2RAD(-30), DEG2RAD(0), 0.1);
-	testInverse(-1, 2, -3, DEG2RAD(0), DEG2RAD(-30), DEG2RAD(0), 0.1);
-	testInverse(1, 2, 3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(30), 0.1);
-	testInverse(-1, 2, 3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(30), 0.1);
-	testInverse(1, 2, -3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(30), 0.1);
-	testInverse(-1, 2, -3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(30), 0.1);
-	testInverse(1, 2, 3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(-30), 0.1);
-	testInverse(-1, 2, 3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(-30), 0.1);
-	testInverse(1, 2, -3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(-30), 0.1);
-	testInverse(-1, 2, -3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(-30), 0.1);
+	testInverse(1, 2, 3, 30.0_deg, 0.0_deg, 0.0_deg, 0.1);
+	testInverse(-1, 2, 3, 30.0_deg, 0.0_deg, 0.0_deg, 0.1);
+	testInverse(1, 2, -3, 30.0_deg, 0.0_deg, 0.0_deg, 0.1);
+	testInverse(-1, 2, -3, 30.0_deg, 0.0_deg, 0.0_deg, 0.1);
+	testInverse(1, 2, 3, -30.0_deg, 0.0_deg, 0.0_deg, 0.1);
+	testInverse(-1, 2, 3, -30.0_deg, 0.0_deg, 0.0_deg, 0.1);
+	testInverse(1, 2, -3, -30.0_deg, 0.0_deg, 0.0_deg, 0.1);
+	testInverse(-1, 2, -3, -30.0_deg, 0.0_deg, 0.0_deg, 0.1);
+	testInverse(1, 2, 3, 0.0_deg, 30.0_deg, 0.0_deg, 0.1);
+	testInverse(-1, 2, 3, 0.0_deg, 30.0_deg, 0.0_deg, 0.1);
+	testInverse(1, 2, -3, 0.0_deg, 30.0_deg, 0.0_deg, 0.1);
+	testInverse(-1, 2, -3, 0.0_deg, 30.0_deg, 0.0_deg, 0.1);
+	testInverse(1, 2, 3, 0.0_deg, -30.0_deg, 0.0_deg, 0.1);
+	testInverse(-1, 2, 3, 0.0_deg, -30.0_deg, 0.0_deg, 0.1);
+	testInverse(1, 2, -3, 0.0_deg, -30.0_deg, 0.0_deg, 0.1);
+	testInverse(-1, 2, -3, 0.0_deg, -30.0_deg, 0.0_deg, 0.1);
+	testInverse(1, 2, 3, 0.0_deg, 0.0_deg, 30.0_deg, 0.1);
+	testInverse(-1, 2, 3, 0.0_deg, 0.0_deg, 30.0_deg, 0.1);
+	testInverse(1, 2, -3, 0.0_deg, 0.0_deg, 30.0_deg, 0.1);
+	testInverse(-1, 2, -3, 0.0_deg, 0.0_deg, 30.0_deg, 0.1);
+	testInverse(1, 2, 3, 0.0_deg, 0.0_deg, -30.0_deg, 0.1);
+	testInverse(-1, 2, 3, 0.0_deg, 0.0_deg, -30.0_deg, 0.1);
+	testInverse(1, 2, -3, 0.0_deg, 0.0_deg, -30.0_deg, 0.1);
+	testInverse(-1, 2, -3, 0.0_deg, 0.0_deg, -30.0_deg, 0.1);
 }
 
 TEST_F(Pose3DQuatPDFGaussTests, Composition)
 {
 	testPoseComposition(
-		0, 0, 0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1, 0, 0, 0, DEG2RAD(0),
-		DEG2RAD(0), DEG2RAD(0), 0.1);
+		0, 0, 0, 0.0_deg, 0.0_deg, 0.0_deg, 0.1, 0, 0, 0, 0.0_deg, 0.0_deg,
+		0.0_deg, 0.1);
 	testPoseComposition(
-		1, 2, 3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1, -8, 45, 10,
-		DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1);
+		1, 2, 3, 0.0_deg, 0.0_deg, 0.0_deg, 0.1, -8, 45, 10, 0.0_deg, 0.0_deg,
+		0.0_deg, 0.1);
 
 	testPoseComposition(
-		1, 2, 3, DEG2RAD(20), DEG2RAD(80), DEG2RAD(70), 0.1, -8, 45, 10,
-		DEG2RAD(50), DEG2RAD(-10), DEG2RAD(30), 0.1);
+		1, 2, 3, 20.0_deg, 80.0_deg, 70.0_deg, 0.1, -8, 45, 10, 50.0_deg,
+		-10.0_deg, 30.0_deg, 0.1);
 	testPoseComposition(
-		1, 2, 3, DEG2RAD(20), DEG2RAD(80), DEG2RAD(70), 0.2, -8, 45, 10,
-		DEG2RAD(50), DEG2RAD(-10), DEG2RAD(30), 0.2);
+		1, 2, 3, 20.0_deg, 80.0_deg, 70.0_deg, 0.2, -8, 45, 10, 50.0_deg,
+		-10.0_deg, 30.0_deg, 0.2);
 
 	testPoseComposition(
-		1, 2, 3, DEG2RAD(10), DEG2RAD(0), DEG2RAD(0), 0.1, -8, 45, 10,
-		DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1);
+		1, 2, 3, 10.0_deg, 0.0_deg, 0.0_deg, 0.1, -8, 45, 10, 0.0_deg, 0.0_deg,
+		0.0_deg, 0.1);
 	testPoseComposition(
-		1, 2, 3, DEG2RAD(0), DEG2RAD(10), DEG2RAD(0), 0.1, -8, 45, 10,
-		DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1);
+		1, 2, 3, 0.0_deg, 10.0_deg, 0.0_deg, 0.1, -8, 45, 10, 0.0_deg, 0.0_deg,
+		0.0_deg, 0.1);
 	testPoseComposition(
-		1, 2, 3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(10), 0.1, -8, 45, 10,
-		DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1);
+		1, 2, 3, 0.0_deg, 0.0_deg, 10.0_deg, 0.1, -8, 45, 10, 0.0_deg, 0.0_deg,
+		0.0_deg, 0.1);
 	testPoseComposition(
-		1, 2, 3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1, -8, 45, 10,
-		DEG2RAD(10), DEG2RAD(0), DEG2RAD(0), 0.1);
+		1, 2, 3, 0.0_deg, 0.0_deg, 0.0_deg, 0.1, -8, 45, 10, 10.0_deg, 0.0_deg,
+		0.0_deg, 0.1);
 	testPoseComposition(
-		1, 2, 3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1, -8, 45, 10,
-		DEG2RAD(0), DEG2RAD(10), DEG2RAD(0), 0.1);
+		1, 2, 3, 0.0_deg, 0.0_deg, 0.0_deg, 0.1, -8, 45, 10, 0.0_deg, 10.0_deg,
+		0.0_deg, 0.1);
 	testPoseComposition(
-		1, 2, 3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1, -8, 45, 10,
-		DEG2RAD(0), DEG2RAD(0), DEG2RAD(10), 0.1);
+		1, 2, 3, 0.0_deg, 0.0_deg, 0.0_deg, 0.1, -8, 45, 10, 0.0_deg, 0.0_deg,
+		10.0_deg, 0.1);
 }
 
 TEST_F(Pose3DQuatPDFGaussTests, InverseComposition)
 {
 	testPoseInverseComposition(
-		0, 0, 0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1, 0, 0, 0, DEG2RAD(0),
-		DEG2RAD(0), DEG2RAD(0), 0.1);
+		0, 0, 0, 0.0_deg, 0.0_deg, 0.0_deg, 0.1, 0, 0, 0, 0.0_deg, 0.0_deg,
+		0.0_deg, 0.1);
 	testPoseInverseComposition(
-		1, 2, 3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1, -8, 45, 10,
-		DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1);
+		1, 2, 3, 0.0_deg, 0.0_deg, 0.0_deg, 0.1, -8, 45, 10, 0.0_deg, 0.0_deg,
+		0.0_deg, 0.1);
 
 	testPoseInverseComposition(
-		1, 2, 3, DEG2RAD(20), DEG2RAD(80), DEG2RAD(70), 0.1, -8, 45, 10,
-		DEG2RAD(50), DEG2RAD(-10), DEG2RAD(30), 0.1);
+		1, 2, 3, 20.0_deg, 80.0_deg, 70.0_deg, 0.1, -8, 45, 10, 50.0_deg,
+		-10.0_deg, 30.0_deg, 0.1);
 	testPoseInverseComposition(
-		1, 2, 3, DEG2RAD(20), DEG2RAD(80), DEG2RAD(70), 0.2, -8, 45, 10,
-		DEG2RAD(50), DEG2RAD(-10), DEG2RAD(30), 0.2);
+		1, 2, 3, 20.0_deg, 80.0_deg, 70.0_deg, 0.2, -8, 45, 10, 50.0_deg,
+		-10.0_deg, 30.0_deg, 0.2);
 
 	testPoseInverseComposition(
-		1, 2, 3, DEG2RAD(10), DEG2RAD(0), DEG2RAD(0), 0.1, -8, 45, 10,
-		DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1);
+		1, 2, 3, 10.0_deg, 0.0_deg, 0.0_deg, 0.1, -8, 45, 10, 0.0_deg, 0.0_deg,
+		0.0_deg, 0.1);
 	testPoseInverseComposition(
-		1, 2, 3, DEG2RAD(0), DEG2RAD(10), DEG2RAD(0), 0.1, -8, 45, 10,
-		DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1);
+		1, 2, 3, 0.0_deg, 10.0_deg, 0.0_deg, 0.1, -8, 45, 10, 0.0_deg, 0.0_deg,
+		0.0_deg, 0.1);
 	testPoseInverseComposition(
-		1, 2, 3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(10), 0.1, -8, 45, 10,
-		DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1);
+		1, 2, 3, 0.0_deg, 0.0_deg, 10.0_deg, 0.1, -8, 45, 10, 0.0_deg, 0.0_deg,
+		0.0_deg, 0.1);
 	testPoseInverseComposition(
-		1, 2, 3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1, -8, 45, 10,
-		DEG2RAD(10), DEG2RAD(0), DEG2RAD(0), 0.1);
+		1, 2, 3, 0.0_deg, 0.0_deg, 0.0_deg, 0.1, -8, 45, 10, 10.0_deg, 0.0_deg,
+		0.0_deg, 0.1);
 	testPoseInverseComposition(
-		1, 2, 3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1, -8, 45, 10,
-		DEG2RAD(0), DEG2RAD(10), DEG2RAD(0), 0.1);
+		1, 2, 3, 0.0_deg, 0.0_deg, 0.0_deg, 0.1, -8, 45, 10, 0.0_deg, 10.0_deg,
+		0.0_deg, 0.1);
 	testPoseInverseComposition(
-		1, 2, 3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1, -8, 45, 10,
-		DEG2RAD(0), DEG2RAD(0), DEG2RAD(10), 0.1);
+		1, 2, 3, 0.0_deg, 0.0_deg, 0.0_deg, 0.1, -8, 45, 10, 0.0_deg, 0.0_deg,
+		10.0_deg, 0.1);
 }
 
 TEST_F(Pose3DQuatPDFGaussTests, ChangeCoordsRef)
 {
 	testChangeCoordsRef(
-		0, 0, 0, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1, 0, 0, 0, DEG2RAD(0),
-		DEG2RAD(0), DEG2RAD(0));
+		0, 0, 0, 0.0_deg, 0.0_deg, 0.0_deg, 0.1, 0, 0, 0, 0.0_deg, 0.0_deg,
+		0.0_deg);
 	testChangeCoordsRef(
-		1, 2, 3, DEG2RAD(0), DEG2RAD(0), DEG2RAD(0), 0.1, -8, 45, 10,
-		DEG2RAD(0), DEG2RAD(0), DEG2RAD(0));
+		1, 2, 3, 0.0_deg, 0.0_deg, 0.0_deg, 0.1, -8, 45, 10, 0.0_deg, 0.0_deg,
+		0.0_deg);
 
 	testChangeCoordsRef(
-		1, 2, 3, DEG2RAD(20), DEG2RAD(80), DEG2RAD(70), 0.1, -8, 45, 10,
-		DEG2RAD(50), DEG2RAD(-10), DEG2RAD(30));
+		1, 2, 3, 20.0_deg, 80.0_deg, 70.0_deg, 0.1, -8, 45, 10, 50.0_deg,
+		-10.0_deg, 30.0_deg);
 	testChangeCoordsRef(
-		1, 2, 3, DEG2RAD(20), DEG2RAD(80), DEG2RAD(70), 0.2, -8, 45, 10,
-		DEG2RAD(50), DEG2RAD(-10), DEG2RAD(30));
+		1, 2, 3, 20.0_deg, 80.0_deg, 70.0_deg, 0.2, -8, 45, 10, 50.0_deg,
+		-10.0_deg, 30.0_deg);
 }

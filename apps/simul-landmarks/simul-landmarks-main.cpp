@@ -257,16 +257,13 @@ int main(int argc, char** argv)
 			{
 				if (random6DPath)
 				{  // 3D path
-					const double Ar = DEG2RAD(3);
+					const double Ar = 3.0_deg;
 					TPose3D Ap =
 						TPose3D(0.20 * cos(Ar), 0.20 * sin(Ar), 0, Ar, 0, 0);
 					// Ap.z  += getRandomGenerator().drawGaussian1D(0,0.05);
-					Ap.yaw +=
-						getRandomGenerator().drawGaussian1D(0, DEG2RAD(0.2));
-					Ap.pitch +=
-						getRandomGenerator().drawGaussian1D(0, DEG2RAD(2));
-					Ap.roll +=
-						getRandomGenerator().drawGaussian1D(0, DEG2RAD(4));
+					Ap.yaw += getRandomGenerator().drawGaussian1D(0, 0.2_deg);
+					Ap.pitch += getRandomGenerator().drawGaussian1D(0, 2.0_deg);
+					Ap.roll += getRandomGenerator().drawGaussian1D(0, 4.0_deg);
 
 					incPose3D = CPose3D(Ap);
 				}
@@ -275,7 +272,7 @@ int main(int argc, char** argv)
 					if (circularPath)
 					{
 						// Circular path:
-						float Ar = DEG2RAD(5);
+						float Ar = 5.0_deg;
 						incPose3D = CPose3D(
 							CPose2D(0.20f * cos(Ar), 0.20f * sin(Ar), Ar));
 					}

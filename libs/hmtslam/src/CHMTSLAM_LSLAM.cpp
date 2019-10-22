@@ -823,7 +823,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 								.setZero();  // *********** DEBUG !!!!!!!!!!!
 							Delta_b_c.cov(0, 0) = Delta_b_c.cov(1, 1) =
 								square(0.04);
-							Delta_b_c.cov(3, 3) = square(DEG2RAD(1));
+							Delta_b_c.cov(3, 3) = square(1.0_deg);
 
 							MRPT_LOG_DEBUG_STREAM(
 								"b_a: " << Delta_b_a.mean << endl
@@ -1107,7 +1107,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 														 // !!!!!!!!!!!
 								newDelta.cov(0, 0) = newDelta.cov(1, 1) =
 									square(0.04);
-								newDelta.cov(3, 3) = square(DEG2RAD(1));
+								newDelta.cov(3, 3) = square(1.0_deg);
 
 								MRPT_LOG_DEBUG_STREAM(
 									"[LSLAM_proc_msg_AA] Updating arc "
@@ -1157,7 +1157,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 														 // !!!!!!!!!!!
 								newDelta.cov(0, 0) = newDelta.cov(1, 1) =
 									square(0.04);
-								newDelta.cov(3, 3) = square(DEG2RAD(1));
+								newDelta.cov(3, 3) = square(1.0_deg);
 
 								MRPT_LOG_DEBUG_STREAM(
 									"[LSLAM_proc_msg_AA] Updating arc "
@@ -1367,7 +1367,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 
 			relPoseGauss.cov.setZero();  // *********** DEBUG !!!!!!!!!!!
 			relPoseGauss.cov(0, 0) = relPoseGauss.cov(1, 1) = square(0.04);
-			relPoseGauss.cov(3, 3) = square(DEG2RAD(1));
+			relPoseGauss.cov(3, 3) = square(1.0_deg);
 
 			logFmt(
 				mrpt::system::LVL_INFO,
@@ -1944,9 +1944,9 @@ void CHMTSLAM::LSLAM_process_message_from_TBI(const TMessageLSLAMfromTBI& myMsg)
 		pdfDeltaMap.cov(0, 0) += square(1.0);
 		pdfDeltaMap.cov(1, 1) += square(1.0);
 		pdfDeltaMap.cov(2, 2) += square(1.0);
-		pdfDeltaMap.cov(3, 3) += square(DEG2RAD(5));
-		pdfDeltaMap.cov(4, 4) += square(DEG2RAD(5));
-		pdfDeltaMap.cov(5, 5) += square(DEG2RAD(5));
+		pdfDeltaMap.cov(3, 3) += square(5.0_deg);
+		pdfDeltaMap.cov(4, 4) += square(5.0_deg);
+		pdfDeltaMap.cov(5, 5) += square(5.0_deg);
 
 		cout << "[LSLAM_proc_msg_TBI] HMap_delta=" << pdfDeltaMap.mean
 			 << " std_x=" << sqrt(pdfDeltaMap.cov(0, 0))

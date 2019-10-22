@@ -40,7 +40,7 @@ void setupDirContents()
 
 	string dir_name = "dir_a";
 	string file_name = "file_b";
-	CPose2D a_pose(1, 2, DEG2RAD(40));
+	CPose2D a_pose(1, 2, 40.0_deg);
 
 	if (!directoryExists(dir_name))
 	{

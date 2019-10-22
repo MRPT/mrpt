@@ -255,7 +255,7 @@ void TestRANSAC()
 		params.ransac_nSimulations = 0;  // 0=auto
 		params.ransac_fuseByCorrsMatch = true;
 		params.ransac_fuseMaxDiffXY = 0.01f;
-		params.ransac_fuseMaxDiffPhi = DEG2RAD(0.1);
+		params.ransac_fuseMaxDiffPhi = 0.1_deg;
 		params.ransac_algorithmForLandmarks = true;
 		params.probability_find_good_model = 0.999999;
 		params.ransac_min_nSimulations =

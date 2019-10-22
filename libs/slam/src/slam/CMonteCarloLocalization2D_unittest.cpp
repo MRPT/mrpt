@@ -269,7 +269,7 @@ TEST(MonteCarlo2D, RunSampleDataset)
 #endif
 
 	// Actual ending point:
-	const CPose2D GT_endpose(15.904, -10.010, DEG2RAD(4.93));
+	const CPose2D GT_endpose(15.904, -10.010, 4.93_deg);
 
 	// Placeholder for results:
 	CPose2D meanPose;

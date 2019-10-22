@@ -39,8 +39,7 @@ ctor
 COpenNI2Sensor::COpenNI2Sensor()
 	: m_sensorPoseOnRobot(),
 
-	  m_relativePoseIntensityWRTDepth(
-		  0, 0, 0, DEG2RAD(-90), DEG2RAD(0), DEG2RAD(-90))
+	  m_relativePoseIntensityWRTDepth(0, 0, 0, -90.0_deg, 0.0_deg, -90.0_deg)
 
 {
 	// Default label:
@@ -240,7 +239,7 @@ void COpenNI2Sensor::loadConfig_sensorSpecific(
 	if (hasLeft2RightPose)
 	{
 		const mrpt::poses::CPose3D twist(
-			0, 0, 0, DEG2RAD(-90), DEG2RAD(0), DEG2RAD(-90));
+			0, 0, 0, -90.0_deg, 0.0_deg, -90.0_deg);
 		m_relativePoseIntensityWRTDepth =
 			twist +
 			mrpt::poses::CPose3D(mrpt::poses::CPose3DQuat(sc.rightCameraPose));

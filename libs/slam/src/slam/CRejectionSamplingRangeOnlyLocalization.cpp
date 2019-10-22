@@ -62,7 +62,7 @@ void CRejectionSamplingRangeOnlyLocalization::RS_drawFromProposal(
 	outSample.y(m_dataPerBeacon[m_drawIndex].beaconPosition.y + sin(ang) * R);
 
 	outSample.phi(
-		getRandomGenerator().drawGaussian1D(m_oldPose.phi(), DEG2RAD(2)));
+		getRandomGenerator().drawGaussian1D(m_oldPose.phi(), 2.0_deg));
 
 	// Compute the robot pose P.
 	//	  P = SAMPLE - ROT · SENSOR_ON_ROBOT
@@ -210,7 +210,7 @@ bool CRejectionSamplingRangeOnlyLocalization::setParams(
 		std::vector<bool>* cell;
 
 		// The ngular step size:
-		float Aa = DEG2RAD(5);
+		float Aa = 5.0_deg;
 
 		// Fill the grid:
 		for (i = 0; i < m_dataPerBeacon.size(); i++)

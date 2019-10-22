@@ -407,7 +407,7 @@ void Test_KinectOnlineOffline(
 
 // Pathway: RGB+D --> XYZ+RGB opengl (With a 6D global pose of the robot)
 #if 0
-				const CPose3D globalPose(1,2,3,DEG2RAD(10),DEG2RAD(20),DEG2RAD(30));
+				const CPose3D globalPose(1,2,3,10.0_deg,20.0_deg,30.0_deg);
 				win3D.get3DSceneAndLock();
 				logger.enter("RGBD->3D.projectInto");
 					newObs->project3DPointsFromDepthImageInto(*gl_points, false /* without obs.sensorPose */, &globalPose);
