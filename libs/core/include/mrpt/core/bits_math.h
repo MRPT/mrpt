@@ -99,19 +99,6 @@ inline int signWithZero(T x)
 	return (x == 0 || x == -0) ? 0 : sign(x);
 }
 
-/** Returns the lowest, possitive among two numbers. If both are non-positive
- * (<=0), the lowest one is returned. */
-template <typename T>
-T lowestPositive(const T a, const T b)
-{
-	if (a > 0 && a <= b)
-		return a;  // a positive and smaller than b
-	else if (b > 0)
-		return b;  // b is positive and either smaller than a or a is negative
-	else
-		return a;  // at least b is negative, we might not have an answer
-}
-
 /** Efficient and portable evaluation of the absolute difference of two unsigned
  * integer values
  * (but will also work for signed and floating point types) */
