@@ -1141,7 +1141,7 @@ void CRangeBearingKFSLAM2D::OnPreComputingPredictions(
 				(1.5 + sensor_max_range + max_vehicle_loc_uncertainty +
 				 4 * options.std_sensor_range) &&
 			fabs(prediction_means[i][1]) <
-				(DEG2RAD(20) + 0.5 * fov_yaw + max_vehicle_ang_uncertainty +
+				(20.0_deg + 0.5 * fov_yaw + max_vehicle_ang_uncertainty +
 				 4 * options.std_sensor_yaw))
 #endif
 		{

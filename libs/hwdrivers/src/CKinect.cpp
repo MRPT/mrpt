@@ -80,7 +80,7 @@ void CKinect::calculate_range2meters()
 CKinect::CKinect()
 	: m_sensorPoseOnRobot(),
 	  m_relativePoseIntensityWRTDepth(
-		  0, -0.02, 0, DEG2RAD(-90), DEG2RAD(0), DEG2RAD(-90))
+		  0, -0.02, 0, -90.0_deg, 0.0_deg, -90.0_deg)
 {
 	calculate_range2meters();
 
@@ -194,8 +194,7 @@ void CKinect::loadConfig_sensorSpecific(
 	// [<SECTION>_LEFT2RIGHT_POSE]
 	//  pose_quaternion = [x y z qr qx qy qz]
 
-	const mrpt::poses::CPose3D twist(
-		0, 0, 0, DEG2RAD(-90), DEG2RAD(0), DEG2RAD(-90));
+	const mrpt::poses::CPose3D twist(0, 0, 0, -90.0_deg, 0.0_deg, -90.0_deg);
 
 	mrpt::img::TStereoCamera sc;
 	sc.leftCamera = m_cameraParamsDepth;  // Load default values so that if we

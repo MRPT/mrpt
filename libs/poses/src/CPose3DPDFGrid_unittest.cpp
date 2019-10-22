@@ -21,14 +21,12 @@ using namespace std;
 template class mrpt::CTraitsTest<CPose3DPDFGrid>;
 
 const auto bb_min =
-	mrpt::math::TPose3D(1, 2, 3, DEG2RAD(-20), DEG2RAD(-30), DEG2RAD(-40));
-const auto bb_max =
-	mrpt::math::TPose3D(3, 4, 5, DEG2RAD(20), DEG2RAD(30), DEG2RAD(40));
+	mrpt::math::TPose3D(1, 2, 3, -20.0_deg, -30.0_deg, -40.0_deg);
+const auto bb_max = mrpt::math::TPose3D(3, 4, 5, 20.0_deg, 30.0_deg, 40.0_deg);
 
 TEST(CPose3DPDFGrid, uniformDistribution)
 {
-	const auto gt_mean =
-		mrpt::math::TPose3D(2, 3, 4, DEG2RAD(.0), DEG2RAD(.0), DEG2RAD(.0));
+	const auto gt_mean = mrpt::math::TPose3D(2, 3, 4, .0_deg, .0_deg, .0_deg);
 
 	const double res_xyz = 0.25;
 	const double res_YPR = mrpt::DEG2RAD(10.0);
@@ -54,8 +52,8 @@ TEST(CPose3DPDFGrid, uniformDistribution)
 
 TEST(CPose3DPDFGrid, setManualPDF)
 {
-	const auto gt_mean = mrpt::math::TPose3D(
-		2, 3, 4, DEG2RAD(9.0), DEG2RAD(34.0), DEG2RAD(12.0));
+	const auto gt_mean =
+		mrpt::math::TPose3D(2, 3, 4, 9.0_deg, 34.0_deg, 12.0_deg);
 
 	const double res_xyz = 0.25;
 	const double res_YPR = mrpt::DEG2RAD(10.0);

@@ -31,11 +31,11 @@ using namespace mrpt::system;
 
 // Level of noise in nodes initial positions:
 const double STD_NOISE_NODE_XYZ = 0.5;
-const double STD_NOISE_NODE_ANG = DEG2RAD(5);
+const double STD_NOISE_NODE_ANG = 5.0_deg;
 
 // Level of noise in edges:
 const double STD_NOISE_EDGE_XYZ = 0.001;
-const double STD_NOISE_EDGE_ANG = DEG2RAD(0.01);
+const double STD_NOISE_EDGE_ANG = 0.01_deg;
 
 const double STD4EDGES_COV_MATRIX = 10;
 const double ERROR_IN_INCOMPATIBLE_EDGE = 0.3;  // ratio [0,1]

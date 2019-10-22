@@ -823,9 +823,9 @@ bool math::intersect(const TLine2D& r1, const TLine2D& r2, TObject2D& obj)
 	{
 		// Lines are parallel
 		if (abs(r1.coefs[0] * r2.coefs[2] - r1.coefs[2] * r2.coefs[0]) >=
-		        geometryEpsilon ||
-		    abs(r1.coefs[1] * r2.coefs[2] - r1.coefs[2] * r2.coefs[1]) >=
-		        geometryEpsilon)
+				geometryEpsilon ||
+			abs(r1.coefs[1] * r2.coefs[2] - r1.coefs[2] * r2.coefs[1]) >=
+				geometryEpsilon)
 			return false;
 
 		// Lines are the same

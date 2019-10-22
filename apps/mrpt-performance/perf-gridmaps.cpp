@@ -180,7 +180,7 @@ double grid_test_9(int a1, int a2)
 	CPose3D pose;
 	gridmap.insertObservation(scan1, &pose);
 
-	CPose3D pose2(0.05, 0.04, 0, DEG2RAD(4), 0, 0);
+	CPose3D pose2(0.05, 0.04, 0, 4.0_deg, 0, 0);
 	pt_map2.insertObservation(scan1, &pose2);
 
 	const CPose2D nullPose(0, 0, 0);

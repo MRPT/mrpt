@@ -1663,7 +1663,7 @@ double CLandmarksMap::computeLikelihood_RSLC_2007(
 	double corr;
 	double PrNoCorr;
 	CPointPDFGaussian poseThis, poseOther;
-	// double								STD_THETA = DEG2RAD(0.15);
+	// double								STD_THETA = 0.15_deg;
 	// double								STD_DIST = 0.5f;
 	double nFoundCorrs = 0;
 	std::vector<int32_t>* corrs;

@@ -23,19 +23,19 @@ using namespace std;
 // List of "random" poses to test with (x,y,z,yaw,pitch,roll) (angles in
 // degrees)
 static const std::vector<mrpt::poses::CPose3D> ptc = {
-	{.0, .0, .0, DEG2RAD(.0), DEG2RAD(.0), DEG2RAD(.0)},
-	{1.0, 2.0, 3.0, DEG2RAD(.0), DEG2RAD(.0), DEG2RAD(.0)},
-	{1.0, 2.0, 3.0, DEG2RAD(10.0), DEG2RAD(.0), DEG2RAD(.0)},
-	{1.0, 2.0, 3.0, DEG2RAD(.0), DEG2RAD(1.0), DEG2RAD(.0)},
-	{1.0, 2.0, 3.0, DEG2RAD(.0), DEG2RAD(.0), DEG2RAD(1.0)},
-	{-6.0, 2.0, 3.0, DEG2RAD(40.0), DEG2RAD(20.0), DEG2RAD(15.0)},
-	{1.0, 8.0, 0.0, DEG2RAD(-45.0), DEG2RAD(10.0), DEG2RAD(70.0)},
-	{1.0, 2.0, 3.0, DEG2RAD(89.0), DEG2RAD(.5), DEG2RAD(1.0)},
-	{1.0, -2.0, 0.4, DEG2RAD(-89.0), DEG2RAD(.5), DEG2RAD(1.0)},
-	{1.0, 2.0, 3.0, DEG2RAD(.1), DEG2RAD(89.0), DEG2RAD(1.0)},
-	{1.0, -2.0, 0.4, DEG2RAD(.1), DEG2RAD(-88.0), DEG2RAD(1.0)},
-	{1.0, 2.0, 3.0, DEG2RAD(.1), DEG2RAD(.9), DEG2RAD(178.0)},
-	{1.0, -2.0, 0.4, DEG2RAD(.1), DEG2RAD(.9), DEG2RAD(-179.1)},
+	{.0, .0, .0, .0_deg, .0_deg, .0_deg},
+	{1.0, 2.0, 3.0, .0_deg, .0_deg, .0_deg},
+	{1.0, 2.0, 3.0, 10.0_deg, .0_deg, .0_deg},
+	{1.0, 2.0, 3.0, .0_deg, 1.0_deg, .0_deg},
+	{1.0, 2.0, 3.0, .0_deg, .0_deg, 1.0_deg},
+	{-6.0, 2.0, 3.0, 40.0_deg, 20.0_deg, 15.0_deg},
+	{1.0, 8.0, 0.0, -45.0_deg, 10.0_deg, 70.0_deg},
+	{1.0, 2.0, 3.0, 89.0_deg, .5_deg, 1.0_deg},
+	{1.0, -2.0, 0.4, -89.0_deg, .5_deg, 1.0_deg},
+	{1.0, 2.0, 3.0, .1_deg, 89.0_deg, 1.0_deg},
+	{1.0, -2.0, 0.4, .1_deg, -88.0_deg, 1.0_deg},
+	{1.0, 2.0, 3.0, .1_deg, .9_deg, 178.0_deg},
+	{1.0, -2.0, 0.4, .1_deg, .9_deg, -179.1_deg},
 };
 
 template <class POSE_TYPE>

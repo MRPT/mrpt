@@ -142,7 +142,7 @@ bool ransac_data_assoc_run()
 	params.ransac_nSimulations = 0;  // 0=auto
 	params.ransac_fuseByCorrsMatch = true;
 	params.ransac_fuseMaxDiffXY = 0.01f;
-	params.ransac_fuseMaxDiffPhi = DEG2RAD(0.1);
+	params.ransac_fuseMaxDiffPhi = 0.1_deg;
 	params.ransac_algorithmForLandmarks = true;
 	params.probability_find_good_model = 0.999999;
 	params.ransac_min_nSimulations =
@@ -165,7 +165,7 @@ bool ransac_data_assoc_run()
 	solution_pose.cov *= square(normalizationStd);
 
 	if (!(solution_pose.mean.distanceTo(GT_pose) < 0.9 &&
-		  std::abs(solution_pose.mean.phi() - GT_pose.phi()) < DEG2RAD(10)))
+		  std::abs(solution_pose.mean.phi() - GT_pose.phi()) < 10.0_deg))
 	{
 		std::cerr << "Solution pose: " << solution_pose.mean << endl
 				  << "Ground truth pose: " << GT_pose << endl;

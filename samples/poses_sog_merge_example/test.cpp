@@ -32,20 +32,20 @@ void Test_SoG_Merge()
 	CPosePDFSOG pdf;
 
 	CPosePDFSOG::TGaussianMode m;
-	m.mean = CPose2D(1.1, -0.1, DEG2RAD(-2));
+	m.mean = CPose2D(1.1, -0.1, -2.0_deg);
 
 	m.cov.setIdentity();
 	m.cov(0, 0) = m.cov(1, 1) = square(0.1);
-	m.cov(2, 2) = square(DEG2RAD(2));
+	m.cov(2, 2) = square(2.0_deg);
 	m.log_w = 0;
 
 	pdf.clear();
 	pdf.push_back(m);
 
-	m.mean = CPose2D(1.1, 0.1, DEG2RAD(2));
+	m.mean = CPose2D(1.1, 0.1, 2.0_deg);
 	pdf.push_back(m);
 
-	m.mean = CPose2D(2, 0, DEG2RAD(20));
+	m.mean = CPose2D(2, 0, 20.0_deg);
 	pdf.push_back(m);
 
 	cout << "Initial PDF: mean: " << pdf.getMeanVal() << endl;

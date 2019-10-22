@@ -270,7 +270,7 @@ void TestBayesianTracking()
 
 	// Init. simulation:
 	// -------------------------
-	float x = VEHICLE_INITIAL_X, y = VEHICLE_INITIAL_Y, phi = DEG2RAD(-180),
+	float x = VEHICLE_INITIAL_X, y = VEHICLE_INITIAL_Y, phi = -180.0_deg,
 		  v = VEHICLE_INITIAL_V, w = VEHICLE_INITIAL_W;
 	float t = 0;
 

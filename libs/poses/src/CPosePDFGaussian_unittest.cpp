@@ -95,9 +95,9 @@ TEST_F(PosePDFGaussTests, Inverse)
 	testPoseInverse(0, -5, 0, 0.1);
 	testPoseInverse(0, 0, -5, 0.1);
 
-	testPoseInverse(4, 6, DEG2RAD(10), 0.1);
-	testPoseInverse(4, 6, DEG2RAD(-10), 0.1);
+	testPoseInverse(4, 6, 10.0_deg, 0.1);
+	testPoseInverse(4, 6, -10.0_deg, 0.1);
 
-	testPoseInverse(-7, 2, DEG2RAD(30), 0.1);
-	testPoseInverse(-7, 2, DEG2RAD(-30), 0.1);
+	testPoseInverse(-7, 2, 30.0_deg, 0.1);
+	testPoseInverse(-7, 2, -30.0_deg, 0.1);
 }

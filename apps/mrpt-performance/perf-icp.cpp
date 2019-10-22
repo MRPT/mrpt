@@ -62,7 +62,7 @@ double icp_test_1(int a1, int a2)
 	}
 
 	double insertionLinDistance = 0.75;
-	double insertionAngDistance = DEG2RAD(30);
+	double insertionAngDistance = 30.0_deg;
 
 	CICP::TConfigParams icpOptions;
 

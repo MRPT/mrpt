@@ -1390,9 +1390,9 @@ void CRangeBearingKFSLAM::OnPreComputingPredictions(
 				(15 + sensor_max_range + max_vehicle_loc_uncertainty +
 				 4 * options.std_sensor_range) &&
 			fabs(prediction_means[i][1]) <
-				(DEG2RAD(30) + 0.5 * fov_yaw + 4 * options.std_sensor_yaw) &&
+				(30.0_deg + 0.5 * fov_yaw + 4 * options.std_sensor_yaw) &&
 			fabs(prediction_means[i][2]) <
-				(DEG2RAD(30) + 0.5 * fov_pitch + 4 * options.std_sensor_pitch))
+				(30.0_deg + 0.5 * fov_pitch + 4 * options.std_sensor_pitch))
 		{
 			out_LM_indices_to_predict.push_back(i);
 		}

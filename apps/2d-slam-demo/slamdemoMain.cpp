@@ -1023,7 +1023,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 
 	options.sensor_max_range = 5;
 	options.sensor_min_range = 0.50;
-	options.sensor_fov = DEG2RAD(140);
+	options.sensor_fov = 140.0_deg;
 
 	options.sensorDistingishesLandmarks = false;
 
@@ -1897,7 +1897,7 @@ void slamdemoFrame::executeOneStep()
 		{  // Ok, move:
 			const double PATH_SQUARE_LEN = options.path_square_len;
 
-			if (fabs(fmod(m_GT_pose.phi(), DEG2RAD(90.0))) < 1e-2)
+			if (fabs(fmod(m_GT_pose.phi(), 90.0_deg)) < 1e-2)
 			{
 				int dir = mrpt::round(m_GT_pose.phi() / Aphi);
 

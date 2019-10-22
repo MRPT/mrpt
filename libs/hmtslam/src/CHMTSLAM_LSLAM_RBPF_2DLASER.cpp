@@ -853,7 +853,7 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 	// ------------------------------
 	icp.options.maxIterations = 80;
 	icp.options.thresholdDist = 0.50f;
-	icp.options.thresholdAng = DEG2RAD(20);
+	icp.options.thresholdAng = 20.0_deg;
 	icp.options.smallestThresholdDist = 0.05f;
 	icp.options.ALFA = 0.5f;
 	icp.options.doRANSAC = false;

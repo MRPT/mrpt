@@ -380,7 +380,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 				tfest_params.ransac_nSimulations = 0;  // 0=auto
 				tfest_params.ransac_fuseByCorrsMatch = true;
 				tfest_params.ransac_fuseMaxDiffXY = 0.01;
-				tfest_params.ransac_fuseMaxDiffPhi = DEG2RAD(0.1);
+				tfest_params.ransac_fuseMaxDiffPhi = 0.1_deg;
 				tfest_params.ransac_algorithmForLandmarks = true;
 				tfest_params.probability_find_good_model =
 					options.ransac_prob_good_inliers;
@@ -896,7 +896,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 
 					//(i)->cov(0,0) += square( 0.05 );
 					//(i)->cov(1,1) += square( 0.05 );
-					//(i)->cov(2,2) += square( DEG2RAD(0.05) );
+					//(i)->cov(2,2) += square( 0.05_deg );
 
 					CPosePDFGaussian i_gauss(i->mean, i->cov);
 					CPosePDFGaussian icp_gauss(icp_est->getMeanVal(), i->cov);

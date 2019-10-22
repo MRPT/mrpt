@@ -168,8 +168,7 @@ CObservation3DRangeScan::CObservation3DRangeScan()
 	: pixelLabels(),  // Start without label info
 	  cameraParams(),
 	  cameraParamsIntensity(),
-	  relativePoseIntensityWRTDepth(
-		  0, 0, 0, DEG2RAD(-90), DEG2RAD(0), DEG2RAD(-90)),
+	  relativePoseIntensityWRTDepth(0, 0, 0, -90.0_deg, 0.0_deg, -90.0_deg),
 
 	  sensorPose()
 
@@ -929,8 +928,7 @@ void CObservation3DRangeScan::rangeImage_setSize(const int H, const int W)
 bool CObservation3DRangeScan::doDepthAndIntensityCamerasCoincide() const
 {
 	static const double EPSILON = 1e-7;
-	static mrpt::poses::CPose3D ref_pose(
-		0, 0, 0, DEG2RAD(-90), 0, DEG2RAD(-90));
+	static mrpt::poses::CPose3D ref_pose(0, 0, 0, -90.0_deg, 0, -90.0_deg);
 
 	return (relativePoseIntensityWRTDepth.m_coords.array().abs() < EPSILON)
 			   .all() &&

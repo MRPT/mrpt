@@ -121,10 +121,10 @@ TEST_F(QuaternionTests, crossProduct)
 	CQuaternionDouble q1, q2, q3;
 
 	// q1 = CQuaternionDouble(1,2,3,4); q1.normalize();
-	CPose3D p1(0, 0, 0, DEG2RAD(10), DEG2RAD(30), DEG2RAD(-20));
+	CPose3D p1(0, 0, 0, 10.0_deg, 30.0_deg, -20.0_deg);
 	p1.getAsQuaternion(q1);
 
-	CPose3D p2(0, 0, 0, DEG2RAD(30), DEG2RAD(-20), DEG2RAD(10));
+	CPose3D p2(0, 0, 0, 30.0_deg, -20.0_deg, 10.0_deg);
 	p2.getAsQuaternion(q2);
 
 	// q3 = q1 x q2
@@ -148,18 +148,18 @@ TEST_F(QuaternionTests, crossProduct)
 // Use special cases: gimbal lock:
 TEST_F(QuaternionTests, gimbalLock)
 {
-	test_gimbalLock(DEG2RAD(20), DEG2RAD(90), DEG2RAD(0));
-	test_gimbalLock(DEG2RAD(20), DEG2RAD(-90), DEG2RAD(0));
+	test_gimbalLock(20.0_deg, 90.0_deg, 0.0_deg);
+	test_gimbalLock(20.0_deg, -90.0_deg, 0.0_deg);
 }
 
 TEST_F(QuaternionTests, ToYPRAndBack)
 {
-	test_toYPRAndBack(DEG2RAD(20), DEG2RAD(30), DEG2RAD(40));
-	test_toYPRAndBack(DEG2RAD(20), DEG2RAD(30), DEG2RAD(40));
-	test_toYPRAndBack(DEG2RAD(30), DEG2RAD(90), DEG2RAD(0));
-	test_toYPRAndBack(DEG2RAD(-30), DEG2RAD(90), DEG2RAD(0));
-	test_toYPRAndBack(DEG2RAD(-30), DEG2RAD(88), DEG2RAD(60));
-	test_toYPRAndBack(DEG2RAD(-30), DEG2RAD(10), DEG2RAD(60));
+	test_toYPRAndBack(20.0_deg, 30.0_deg, 40.0_deg);
+	test_toYPRAndBack(20.0_deg, 30.0_deg, 40.0_deg);
+	test_toYPRAndBack(30.0_deg, 90.0_deg, 0.0_deg);
+	test_toYPRAndBack(-30.0_deg, 90.0_deg, 0.0_deg);
+	test_toYPRAndBack(-30.0_deg, 88.0_deg, 60.0_deg);
+	test_toYPRAndBack(-30.0_deg, 10.0_deg, 60.0_deg);
 }
 
 TEST_F(QuaternionTests, LnAndExpMatches)

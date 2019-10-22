@@ -186,7 +186,7 @@ int main(int argc, char** argv)
 				if (circularPath)
 				{
 					// Circular path:
-					float Ar = DEG2RAD(5);
+					float Ar = 5.0_deg;
 					incPose = CPose2D(0.20f * cos(Ar), 0.20f * sin(Ar), Ar);
 				}
 				else
