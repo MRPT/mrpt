@@ -30,6 +30,16 @@ TEST(bits_math, keep_min)
 	mrpt::keep_min(min, -80);
 	EXPECT_EQ(min, -80);
 }
+TEST(bits_math, keep_max)
+{
+	int max = 40;
+	mrpt::keep_max(max, 30);
+	EXPECT_EQ(max, 40);
+	mrpt::keep_max(max, 80);
+	EXPECT_EQ(max, 80);
+	mrpt::keep_max(max, -80);
+	EXPECT_EQ(max, 80);
+}
 
 TEST(bits_math, round2up)
 {
@@ -72,4 +82,57 @@ TEST(bits_math, signWithZero)
 	EXPECT_EQ(mrpt::signWithZero(0.0), 0);
 	EXPECT_EQ(mrpt::signWithZero(-89), -1);
 	EXPECT_EQ(mrpt::signWithZero(-89.0), -1);
+}
+
+TEST(bits_math, abs_diff)
+{
+	EXPECT_EQ(mrpt::abs_diff(10, 20), 10);
+	EXPECT_EQ(mrpt::abs_diff(20, 10), 10);
+	EXPECT_DOUBLE_EQ(mrpt::abs_diff(20.0, 10.0), 10.0);
+	EXPECT_DOUBLE_EQ(mrpt::abs_diff(10.0, 20.0), 10.0);
+}
+
+TEST(bits_math, min3)
+{
+	EXPECT_EQ(mrpt::min3(1, 2, 3), 1);
+	EXPECT_EQ(mrpt::min3(-1, -2, -3), -3);
+
+	EXPECT_DOUBLE_EQ(mrpt::min3(1., 2., 3.), 1.);
+	EXPECT_DOUBLE_EQ(mrpt::min3(-1., -2., -3.), -3.);
+}
+
+TEST(bits_math, max3)
+{
+	EXPECT_EQ(mrpt::max3(1, 2, 3), 3);
+	EXPECT_EQ(mrpt::max3(-1, -2, -3), -1);
+
+	EXPECT_DOUBLE_EQ(mrpt::max3(1., 2., 3.), 3.);
+	EXPECT_DOUBLE_EQ(mrpt::max3(-1., -2., -3.), -1.);
+}
+
+TEST(bits_math, fix)
+{
+	EXPECT_EQ(mrpt::fix(1.2), 1);
+	EXPECT_EQ(mrpt::fix(2.9), 2);
+	EXPECT_EQ(mrpt::fix(-1.2), -1);
+	EXPECT_EQ(mrpt::fix(-2.9), -2);
+}
+
+TEST(bits_math, saturate_val)
+{
+	EXPECT_DOUBLE_EQ(mrpt::saturate_val(11.2, -10.0, 10.0), 10.0);
+	EXPECT_DOUBLE_EQ(mrpt::saturate_val(1.2, -10.0, 10.0), 1.2);
+	EXPECT_DOUBLE_EQ(mrpt::saturate_val(-11.2, -10.0, 10.0), -10.0);
+	EXPECT_DOUBLE_EQ(mrpt::saturate_val(-1.2, -10.0, 10.0), -1.2);
+}
+
+TEST(bits_math, saturate)
+{
+	double v = 11.2;
+	mrpt::saturate(v, -10.0, 10.0);
+	EXPECT_DOUBLE_EQ(v, 10.0);
+	mrpt::saturate(v, -20.0, 20.0);
+	EXPECT_DOUBLE_EQ(v, 10.0);
+	mrpt::saturate(v, -1.0, 1.0);
+	EXPECT_DOUBLE_EQ(v, 1.0);
 }

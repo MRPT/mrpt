@@ -108,15 +108,7 @@ TEST(circular_buffer_tests, RandomWriteAndPeekOverrun)
 		cb_t ret;
 		for (unsigned k = 0; k < 5; k++)
 		{
-			try
-			{
-				ret = cb.peek(nWr + k);
-				GTEST_FAIL() << "Exception was expected but didn't happen!";
-			}
-			catch (std::exception&)
-			{
-				// OK
-			}
+			EXPECT_ANY_THROW(ret = cb.peek(nWr + k););
 		}
 		for (size_t i = 0; i < nWr; i++) cb.pop(ret);
 	}
