@@ -54,7 +54,7 @@ jobs:
       - image: mrpt/mrpt-build-env:full-bionic
     steps:
       - checkout
-      - run: pip install --user -r travis/python_reqs.txt
+      - run: pip3 install --user -r travis/python_reqs.txt
       - run:
           name: Run lint task
           command: bash travis/check_style.sh
