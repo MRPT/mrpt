@@ -41,14 +41,15 @@ if(NOT CMAKE_MRPT_HAS_MATLAB)
 		find_package(Matlab)
 		if(MATLAB_FOUND)
 				set(CMAKE_MRPT_HAS_MATLAB 1)
-				APPEND_MRPT_LIBS( ${MATLAB_LIBRARIES} )
+
+        list(APPEND MATLAB_LINK_LIBRARIES ${MATLAB_LIBRARIES} )
 
 				# ----------------------------------------------------
 				# Windows & MSVC: Mark Matlab DLLs as "delay-load", so
 				#  non-mex apps can be run standalone without MATLAB:
 				# ----------------------------------------------------
 				if (MSVC)
-					APPEND_MRPT_LIBS( "delayimp.lib" )
+          list(APPEND MATLAB_LINK_LIBRARIES "delayimp.lib")
 					# Flags /DELAYLOAD:... added in DeclareMRPTLib.cmake
 				endif (MSVC)
 

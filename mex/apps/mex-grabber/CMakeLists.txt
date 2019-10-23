@@ -21,16 +21,12 @@ add_library(mexgrabber SHARED # MEX must be SHARED
 set(TMP_MEX_NAME "mexgrabber")
 
 # Add the required libraries for linking:
-target_link_libraries(${TMP_MEX_NAME} 
-	${MRPT_LINKER_LIBS_RELorDEB}
-	mrpt-hwdrivers${MRPT_LINKER_LIBS_POSTFIX}
-	${MATLAB_LIBRARIES} 
-	)
+target_link_libraries(${TMP_MEX_NAME} ${MATLAB_LIBRARIES})
 
 # Dependencies on MRPT libraries:
 #  Just mention the top-level dependency, the rest will be detected automatically,
 #  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-DeclareAppDependencies(${TMP_MEX_NAME} mrpt-hwdrivers mrpt-obs)
+DeclareAppDependencies(${TMP_MEX_NAME} mrpt::hwdrivers mrpt::obs)
 DeclareAppForInstall(${TMP_MEX_NAME})
 
 # Apply macros to set MEX library custom properties

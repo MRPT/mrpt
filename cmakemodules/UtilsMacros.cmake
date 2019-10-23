@@ -2,7 +2,7 @@
 # Helper macro to append space separeated value to string variable
 # similar to list(APPEND ...) but uses strings+space instead of semicolon+list
 # AUTHOR Jan Woetzel
-#  Grabbed by JLBlanco from: 
+#  Grabbed by JLBlanco from:
 #    http://www.mip.informatik.uni-kiel.de/~jw/cmake/CMakeModules/DefineFlags.cmake
 # ----------------------------------------------------------------------------
 macro(STRING_APPEND  _VAR _VALUE )
@@ -93,3 +93,21 @@ macro(VERSION_TO_HEXADECIMAL  OUT_VAR IN_VERSION)
 	# Concat version string:
 	set(${OUT_VAR} "0x${VERSION_NUMBER_MAJOR_HEX}${VERSION_NUMBER_MINOR_HEX}${VERSION_NUMBER_PATCH_HEX}")
 endmacro(VERSION_TO_HEXADECIMAL)
+
+
+# GOOD & BAD are single strings, INPUT is a list wrapped in string
+# OUTPUT is a name for a list
+# Based on: https://stackoverflow.com/a/30680445
+macro(mrpt_split_lib_list INPUT OUTPUT GOOD BAD)
+  set(LST ${${INPUT}})   # can we avoid this?
+  set(PICKME YES)
+  foreach(ELEMENT IN LISTS LST)
+    if(${ELEMENT} STREQUAL general OR ${ELEMENT} STREQUAL ${GOOD})
+      set(PICKME YES)
+    elseif(${ELEMENT} STREQUAL ${BAD})
+      set(PICKME NO)
+    elseif(PICKME)
+      list(APPEND ${OUTPUT} ${ELEMENT})
+    endif()
+  endforeach()
+endmacro()

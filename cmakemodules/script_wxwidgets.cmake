@@ -57,18 +57,24 @@ if(wxWidgets_FOUND)
 
 	# *** include(${wxWidgets_USE_FILE})
 
+	mrpt_split_lib_list(wxWidgets_LIBRARIES wxWidgets_LIBRARIES_RELEASE optimized debug)
+	mrpt_split_lib_list(wxWidgets_LIBRARIES wxWidgets_LIBRARIES_DEBUG debug optimized)
+
 	add_library(imp_wxwidgets INTERFACE IMPORTED)
 	set_target_properties(imp_wxwidgets
 		PROPERTIES
 		INTERFACE_INCLUDE_DIRECTORIES "${wxWidgets_INCLUDE_DIRS}"
-		INTERFACE_LINK_LIBRARIES "${wxWidgets_LIBRARIES}"
+		INTERFACE_LINK_LIBRARIES "$<$<CONFIG:Debug>:${wxWidgets_LIBRARIES_DEBUG}>$<$<NOT:$<CONFIG:Debug>>:${wxWidgets_LIBRARIES_RELEASE}>"
 		INTERFACE_COMPILE_OPTIONS "${wxWidgets_CXX_FLAGS}"
 		INTERFACE_COMPILE_DEFINITIONS "${wxWidgets_DEFINITIONS}"
 		)
 
+
 	if($ENV{VERBOSE})
 		message(STATUS "wxWidgets:")
-		message(STATUS "WX: ${wxWidgets_LIBRARIES}")
+		message(STATUS "   wxWidgets_LIBRARIES     : ${wxWidgets_LIBRARIES}")
+		message(STATUS "   wxWidgets_LIBRARIES_RELEASE : ${wxWidgets_LIBRARIES_RELEASE}")
+		message(STATUS "   wxWidgets_LIBRARIES_DEBUG   : ${wxWidgets_LIBRARIES_DEBUG}")
 		message(STATUS "   wxWidgets_LIBRARY_DIRS  : ${wxWidgets_LIBRARY_DIRS}")
 		message(STATUS "   wxWidgets_CXX_FLAGS     : ${wxWidgets_CXX_FLAGS}")
 		message(STATUS "   wxWidgets_DEFINITIONS   : ${wxWidgets_DEFINITIONS}")
@@ -76,8 +82,9 @@ if(wxWidgets_FOUND)
 	endif()
 
 	if(MSVC)
-		set_target_properties(imp_wxwidgets
-			PROPERTIES
+		set_property(
+			TARGET imp_wxwidgets
+			APPEND PROPERTY
 			INTERFACE_COMPILE_DEFINITIONS "-DwxUSE_NO_MANIFEST=1"
 			)
 	endif()
@@ -87,15 +94,6 @@ if(wxWidgets_FOUND)
 
 	set(CMAKE_MRPT_HAS_WXWIDGETS 1)
 endif()
-
-# WXWIDGETS+GL: Add libraries
-# -------------------------------------------
-if(CMAKE_MRPT_HAS_WXWIDGETS)
-	list(LENGTH wxWidgets_LIBRARIES wxLibsCount)
-	if (wxLibsCount GREATER 0)
-		#APPEND_MRPT_LIBS(${wxWidgets_LIBRARIES})
-	endif(wxLibsCount GREATER 0)
-endif(CMAKE_MRPT_HAS_WXWIDGETS)
 
 # It's always a system lib:
 set(CMAKE_MRPT_HAS_WXWIDGETS_SYSTEM 0)
