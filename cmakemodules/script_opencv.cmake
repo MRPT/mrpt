@@ -7,6 +7,12 @@ set(MRPT_OPENCV_VERSION 0.0.0)
 set(MRPT_OPENCV_VERSION_HEX "0x000")
 set(MRPT_OPENCV_SRC_DIR "") # used by MRPT exported targets
 
+# Define the interface library even if we don't have opencv in the system,
+# or its use is disabled in mrpt, to simplify specifying the list of dependencies
+# in all other libs / apps:
+add_library(imp_opencv INTERFACE IMPORTED)
+
+
 set(OpenCV_IGNORE_PKGCONFIG OFF CACHE BOOL "Forces using OpenCVConfig.cmake to find OpenCV")
 mark_as_advanced(OpenCV_IGNORE_PKGCONFIG)
 
@@ -50,7 +56,6 @@ if(CMAKE_MRPT_HAS_OPENCV)
 		message(STATUS "        OpenCV_INCLUDE_DIRS: ${OpenCV_INCLUDE_DIRS}")
 	endif($ENV{VERBOSE})
 
-	add_library(imp_opencv INTERFACE IMPORTED)
 	set_target_properties(imp_opencv
 		PROPERTIES
 		INTERFACE_INCLUDE_DIRECTORIES "${OpenCV_INCLUDE_DIRS}"
