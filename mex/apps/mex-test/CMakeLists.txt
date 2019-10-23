@@ -21,16 +21,12 @@ add_library(mextest SHARED # MEX must be SHARED
 set(TMP_MEX_NAME "mextest")
 
 # Add the required libraries for linking:
-target_link_libraries(${TMP_MEX_NAME} 
-	${MRPT_LINKER_LIBS_RELorDEB}
-	mrpt-hwdrivers${MRPT_LINKER_LIBS_POSTFIX}
-	${MATLAB_LIBRARIES}
-	)
+target_link_libraries(${TMP_MEX_NAME}  ${MATLAB_LIBRARIES})
 
 # Dependencies on MRPT libraries:
 #  Just mention the top-level dependency, the rest will be detected automatically,
 #  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-DeclareAppDependencies(${TMP_MEX_NAME} mrpt-hwdrivers mrpt-obs)
+DeclareAppDependencies(${TMP_MEX_NAME} mrpt::hwdrivers mrpt::obs)
 
 define_mex_lib(${TMP_MEX_NAME})
 # No test here because no main() function is declared
