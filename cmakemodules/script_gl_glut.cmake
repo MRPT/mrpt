@@ -14,7 +14,10 @@ if(DISABLE_OPENGL)
 endif()
 
 
+# Read: https://cmake.org/cmake/help/latest/module/FindOpenGL.html
+set(OpenGL_GL_PREFERENCE "LEGACY")
 find_package(OpenGL)
+
 if(UNIX)
 	find_package(GLUT)
 endif()
