@@ -47,7 +47,7 @@ Build-Depends: debhelper (>= 10),
 	libstereo-msgs-dev,
 	libtf2-dev,
 	libtf2-msgs-dev
-Standards-Version: 4.1.1
+Standards-Version: 4.3.0
 Homepage: https://www.mrpt.org/
 
 Package: mrpt-doc
