@@ -19,26 +19,35 @@ using namespace mrpt::gui;
 
 CQtGlCanvasBase::CQtGlCanvasBase(QWidget* parent)
 	: QOpenGLWidget(parent), mrpt::gui::CGlCanvasBase()
-
 {
+#if MRPT_HAS_OPENGL_GLUT
 	m_mainViewport = getOpenGLSceneRef()->getViewport("main");
 	setMouseTracking(true);
+#else
+	std::cerr << "[mrpt::gui::CQtGlCanvasBase] *Warning*: MRPT built without "
+				 "OpenGL support."
+			  << std::endl;
+#endif
 }
 
 void CQtGlCanvasBase::initializeGL()
 {
+#if MRPT_HAS_OPENGL_GLUT
 	clearColors();
 
 	QOpenGLWidget::initializeGL();
+#endif
 }
 
 void CQtGlCanvasBase::paintGL() { renderCanvas(); }
 void CQtGlCanvasBase::resizeGL(int width, int height)
 {
+#if MRPT_HAS_OPENGL_GLUT
 	if (height == 0) height = 1;
 	glViewport(0, 0, width, height);
 
 	QOpenGLWidget::resizeGL(width, height);
+#endif
 }
 
 opengl::COpenGLViewport::Ptr CQtGlCanvasBase::mainViewport() const
@@ -65,10 +74,7 @@ void CQtGlCanvasBase::mousePressEvent(QMouseEvent* event)
 
 void CQtGlCanvasBase::mouseMoveEvent(QMouseEvent* event)
 {
-	if (m_isPressLMouseButton ||
-		m_isPressRMouseButton)  // QApplication::keyboardModifiers()//
-	// event->modifiers() == Qt::ControlModifier
-	// Qt::ShiftModifier
+	if (m_isPressLMouseButton || m_isPressRMouseButton)
 	{
 		int X = event->pos().x();
 		int Y = event->pos().y();
