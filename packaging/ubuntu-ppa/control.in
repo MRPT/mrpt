@@ -620,6 +620,22 @@ Depends: ${misc:Depends},libmrpt-vision@MRPT_VER_MM@ (= ${binary:Version}),
 Description: Mobile Robot Programming Toolkit - vision development package
  This package provides headers and libraries for development.
 
+Package: libmrpt-vision-lgpl@MRPT_VER_MM@
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Description: Mobile Robot Programming Toolkit - vision-lgpl library
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
+
+Package: libmrpt-vision-lgpl-dev
+Section: libdevel
+Architecture: any
+Depends: ${misc:Depends},libmrpt-vision@MRPT_VER_MM@ (= ${binary:Version}),
+         libmrpt-vision-dev
+Description: Mobile Robot Programming Toolkit - vision-lgpl development package
+ This package provides headers and libraries for development.
+
 Package: libmrpt-apps@MRPT_VER_MM@
 Section: libs
 Architecture: any
@@ -681,7 +697,8 @@ Recommends: libmrpt-bayes-dev (= ${binary:Version}),
          libmrpt-tfest-dev (= ${binary:Version}),
          libmrpt-topography-dev (= ${binary:Version}),
          libmrpt-typemeta-dev (= ${binary:Version}),
-         libmrpt-vision-dev (= ${binary:Version})
+         libmrpt-vision-dev (= ${binary:Version}),
+		 libmrpt-vision-lgpl-dev (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - Metapackage: all dev packages
  .
  This metapackage install all mrpt -dev packages.
