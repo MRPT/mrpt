@@ -6,10 +6,10 @@ import shutil
 import urllib
 import sys
 import subprocess
-from custom_exceptions import CalledProcessError
+from .custom_exceptions import CalledProcessError
 import tarfile
 
-from config import (CLANG_FORMAT_VERSION,
+from .config import (CLANG_FORMAT_VERSION,
                     CLANG_FORMAT_HTTP_LINUX_CACHE,
                     CLANG_FORMAT_HTTP_DARWIN_CACHE,
                     CLANG_FORMAT_SOURCE_TAR_BASE, )
@@ -133,4 +133,3 @@ def extract_clang_format(tar_path):
             if name.endswith('clang-format'):
                 tarfp.extract(name)
         tarfp.close()
-

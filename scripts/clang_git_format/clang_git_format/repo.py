@@ -1,4 +1,4 @@
-from utils import callo
+from .utils import callo
 import os
 import subprocess
 import re
@@ -156,7 +156,7 @@ class Repo(object):
 
 
         files_regexp = self.get_files_regexp()
-        final_list = [l for l in final_list if files_regexp.search(l)]
+        final_list = [l for l in final_list if files_regexp.search(l.decode('utf8'))]
         logger.warn("Executing clang-format on %d files" % len(final_list))
 
         return final_list
@@ -171,7 +171,7 @@ class Repo(object):
         valid_files_in = []
         if self.dirs_in:
             for line in file_list:
-                if any([self._dir_filter(d, line, do_include=True)
+                if any([self._dir_filter(d.encode(), line, do_include=True)
                         for d in self.dirs_in]):
                     valid_files_in.append(line)
                     continue
@@ -183,7 +183,7 @@ class Repo(object):
         valid_files_out = []
         if self.dirs_out:
             for line in valid_files_in:
-                if all([self._dir_filter(d, line, do_include=False)
+                if all([self._dir_filter(d.encode(), line, do_include=False)
                         for d in self.dirs_out]):
                     valid_files_out.append(line)
                     continue
@@ -341,5 +341,3 @@ class Repo(object):
             ret = d not in line
 
         return ret
-
-

@@ -18,6 +18,6 @@ foreach(dir ${LIST_MEX_APP_DIRS})
 	if (${VAR_NAME})
 	add_subdirectory(${dir})
 	endif (${VAR_NAME})
-endforeach(dir)
+endforeach()
 
-endif (CMAKE_MRPT_HAS_MATLAB)
+endif()

@@ -2,6 +2,9 @@
 set(CMAKE_MRPT_HAS_PCL 0)
 set(CMAKE_MRPT_HAS_PCL_SYSTEM 0)
 
+SET_PROPERTY(GLOBAL PROPERTY CMAKE_MRPT_HAS_PCL "${CMAKE_MRPT_HAS_PCL}")
+SET_PROPERTY(GLOBAL PROPERTY CMAKE_MRPT_HAS_PCL_SYSTEM "${CMAKE_MRPT_HAS_PCL_SYSTEM}")
+
 # Leave at the user's choice to disable the SWR libs:
 option(DISABLE_PCL "Forces NOT using PCL, even if it could be found by CMake" "OFF")
 mark_as_advanced(DISABLE_PCL)
@@ -21,13 +24,12 @@ if(NOT DISABLE_PCL)
 		set(CMAKE_MRPT_HAS_PCL 1)
 		set(CMAKE_MRPT_HAS_PCL_SYSTEM 1)
 
-		include_directories(${PCL_INCLUDE_DIRS})
-		link_directories(${PCL_LIBRARY_DIRS})
-		add_definitions(${PCL_DEFINITIONS})
-
 		if (NOT Boost_FOUND)
 			message(FATAL_ERROR "PCL requires Boost. Either disable PCL (with DISABLE_PCL=ON) or, to fix the error, create the entries BOOST_ROOT and BOOST_LIBRARYDIR and set them to the correct values")
 		endif (NOT Boost_FOUND)
+
+		# Filter empty strings in flags (lead to errors since they end up as `" "` in gcc flags)
+		list(FILTER PCL_DEFINITIONS EXCLUDE REGEX "^[ ]+")
 
 		if($ENV{VERBOSE})
 			message(STATUS "PCL:")
@@ -35,11 +37,19 @@ if(NOT DISABLE_PCL)
 			message(STATUS " Library dirs: ${PCL_LIBRARY_DIRS}")
 			message(STATUS " Definitions : ${PCL_DEFINITIONS}")
 			message(STATUS " Libraries   : ${PCL_LIBRARIES}")
-		endif($ENV{VERBOSE})
+		endif()
 
-		# Add PCL directories as "-isystem" to avoid warnings:
-		ADD_DIRECTORIES_AS_ISYSTEM(PCL_INCLUDE_DIRS)
-
+		add_library(imp_pcl INTERFACE IMPORTED GLOBAL)
+		set_target_properties(imp_pcl
+			PROPERTIES
+			INTERFACE_INCLUDE_DIRECTORIES "${PCL_INCLUDE_DIRS}"
+			INTERFACE_COMPILE_OPTIONS "${PCL_DEFINITIONS}"
+			# We cannot add link libs here since they contain "optimized/debug" which are not permitted here.
+			#INTERFACE_LINK_LIBRARIES "${PCL_LIBRARIES}"
+			)
 	endif()
-
 endif()
+
+SET_PROPERTY(GLOBAL PROPERTY CMAKE_MRPT_HAS_PCL "${CMAKE_MRPT_HAS_PCL}")
+SET_PROPERTY(GLOBAL PROPERTY CMAKE_MRPT_HAS_PCL_SYSTEM "${CMAKE_MRPT_HAS_PCL_SYSTEM}")
+SET_PROPERTY(GLOBAL PROPERTY PCL_LIBRARIES "${PCL_LIBRARIES}")

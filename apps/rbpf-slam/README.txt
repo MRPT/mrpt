@@ -18,7 +18,7 @@ of the filter and the maps.
 
 See the application description page for more information:
  
- https://www.mrpt.org/list-of-mrpt-apps/application-RBPF-SLAM
+ https://www.mrpt.org/list-of-mrpt::apps/application-RBPF-SLAM
 
 --------------
  COMPILING

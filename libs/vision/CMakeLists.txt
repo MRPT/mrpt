@@ -37,7 +37,7 @@ if(BUILD_mrpt-vision)
 	endif ()
 
 	if(CMAKE_MRPT_HAS_OPENCV)
-		target_link_libraries(vision PRIVATE ${OpenCV_LIBRARIES} ${CVD_LIB})
+		target_link_libraries(vision PRIVATE imp_opencv ${CVD_LIB})
 	endif()
 
 endif()

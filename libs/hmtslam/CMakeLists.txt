@@ -7,5 +7,5 @@ define_mrpt_lib(
 	)
 
 if(BUILD_mrpt-hmtslam)
-
+    target_link_libraries(hmtslam PRIVATE Threads::Threads)
 endif()

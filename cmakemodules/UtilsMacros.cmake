@@ -2,7 +2,7 @@
 # Helper macro to append space separeated value to string variable
 # similar to list(APPEND ...) but uses strings+space instead of semicolon+list
 # AUTHOR Jan Woetzel
-#  Grabbed by JLBlanco from: 
+#  Grabbed by JLBlanco from:
 #    http://www.mip.informatik.uni-kiel.de/~jw/cmake/CMakeModules/DefineFlags.cmake
 # ----------------------------------------------------------------------------
 macro(STRING_APPEND  _VAR _VALUE )
@@ -14,52 +14,6 @@ macro(STRING_APPEND  _VAR _VALUE )
     set(${_VAR} "${_VALUE}")
   endif (${_VAR})
 endmacro(STRING_APPEND)
-
-# ------------------------------------------------------------------------
-# For usage below. Checks whether we have to add the "general" prefix.
-# ------------------------------------------------------------------------
-macro(APPEND_MRPT_LIBS )
-	if(NOT "${ARGV}" STREQUAL "")  # Do nothing for an empty string
-		if(${ARGV0} STREQUAL "debug" OR ${ARGV0} STREQUAL "optimized")
-			set(_libs ${ARGV})
-		else(${ARGV0} STREQUAL "debug" OR ${ARGV0} STREQUAL "optimized")
-			set(_libs general ${ARGV})
-		endif(${ARGV0} STREQUAL "debug" OR ${ARGV0} STREQUAL "optimized")
-		list(APPEND MRPT_LINKER_LIBS ${_libs})
-	endif(NOT "${ARGV}" STREQUAL "")
-endmacro(APPEND_MRPT_LIBS)
-
-# Add a path to "-isystem", filtering out "/usr/include", without checking for the right compiler:
-macro(INTERNAL_ADD_ISYSTEM   DIR)
-	get_filename_component(PATH_DIR "${DIR}" ABSOLUTE)
-	if (NOT "${PATH_DIR}" STREQUAL "/usr/include")
-	    if($ENV{VERBOSE})
-		    message(STATUS "isystem: Path added: ${PATH_DIR}")
-	    endif()
-	    include_directories(SYSTEM ${PATH_DIR})
-	endif()
-endmacro()
-
-# Only if GNU GCC is used, add one "-isystem" flag for each include directory.
-# Useful to discard -pedantic errors in system libraries not prepared to be so... well, pedantic.
-macro(ADD_DIRECTORIES_AS_ISYSTEM INCLUDE_DIRS)
-	if(CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-		foreach(DIR ${${INCLUDE_DIRS}})
-			INTERNAL_ADD_ISYSTEM(${DIR})
-		endforeach(DIR)
-	endif()
-endmacro(ADD_DIRECTORIES_AS_ISYSTEM)
-
-macro(ADD_DIRECTORIES_AS_INCLUDE_AND_ISYSTEM INCLUDE_DIRS)
-	if(CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-		foreach(DIR ${${INCLUDE_DIRS}})
-			set(CMAKE_CXX_FLAGS "-I ${DIR} ${CMAKE_CXX_FLAGS}")
-			set(CMAKE_C_FLAGS "-I ${DIR} ${CMAKE_C_FLAGS}")
-			INTERNAL_ADD_ISYSTEM(${DIR})
-		endforeach(DIR)
-	endif()
-endmacro(ADD_DIRECTORIES_AS_INCLUDE_AND_ISYSTEM)
-
 
 # Based on: http://www.cmake.org/pipermail/cmake/2008-February/020114.html
 # Usage: list_subdirectories(the_list_is_returned_here C:/cwd)
@@ -139,3 +93,21 @@ macro(VERSION_TO_HEXADECIMAL  OUT_VAR IN_VERSION)
 	# Concat version string:
 	set(${OUT_VAR} "0x${VERSION_NUMBER_MAJOR_HEX}${VERSION_NUMBER_MINOR_HEX}${VERSION_NUMBER_PATCH_HEX}")
 endmacro(VERSION_TO_HEXADECIMAL)
+
+
+# GOOD & BAD are single strings, INPUT is a list wrapped in string
+# OUTPUT is a name for a list
+# Based on: https://stackoverflow.com/a/30680445
+macro(mrpt_split_lib_list INPUT OUTPUT GOOD BAD)
+  set(LST ${${INPUT}})   # can we avoid this?
+  set(PICKME YES)
+  foreach(ELEMENT IN LISTS LST)
+    if(${ELEMENT} STREQUAL general OR ${ELEMENT} STREQUAL ${GOOD})
+      set(PICKME YES)
+    elseif(${ELEMENT} STREQUAL ${BAD})
+      set(PICKME NO)
+    elseif(PICKME)
+      list(APPEND ${OUTPUT} ${ELEMENT})
+    endif()
+  endforeach()
+endmacro()

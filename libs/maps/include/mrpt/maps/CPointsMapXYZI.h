@@ -165,9 +165,33 @@ class CPointsMapXYZI : public CPointsMap
 		@{ */
 
 	/** Save the point cloud as a PCL PCD file, in either ASCII or binary format
+	 * \note This method requires user code to include PCL before MRPT headers.
 	 * \return false on any error */
-	bool savePCDFile(
-		const std::string& filename, bool save_as_binary) const override;
+#if defined(PCL_LINEAR_VERSION)
+	inline bool savePCDFile(
+		const std::string& filename, bool save_as_binary) const
+	{
+		pcl::PointCloud<pcl::PointXYZI> cloud;
+
+		const size_t nThis = this->size();
+
+		// Fill in the cloud data
+		cloud.width = nThis;
+		cloud.height = 1;
+		cloud.is_dense = false;
+		cloud.points.resize(cloud.width * cloud.height);
+
+		for (size_t i = 0; i < nThis; ++i)
+		{
+			cloud.points[i].x = m_x[i];
+			cloud.points[i].y = m_y[i];
+			cloud.points[i].z = m_z[i];
+			cloud.points[i].intensity = this->m_intensity[i];
+		}
+
+		return 0 == pcl::io::savePCDFile(filename, cloud, save_as_binary);
+	}
+#endif
 
 	/** Loads a PCL point cloud (WITH XYZI information) into this MRPT class.
 	 *  Usage example:

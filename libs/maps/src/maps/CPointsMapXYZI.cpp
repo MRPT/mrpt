@@ -68,11 +68,6 @@ mrpt::maps::CMetricMap* CPointsMapXYZI::internal_CreateFromMapDefinition(
 
 IMPLEMENTS_SERIALIZABLE(CPointsMapXYZI, CPointsMap, mrpt::maps)
 
-#if MRPT_HAS_PCL
-#include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
-#endif
-
 void CPointsMapXYZI::reserve(size_t newLength)
 {
 	m_x.reserve(newLength);
@@ -304,39 +299,6 @@ void CPointsMapXYZI::addFrom_classSpecific(
 		for (size_t i = 0, j = nPreviousPoints; i < nOther; i++, j++)
 			m_intensity[j] = anotheMap_col->m_intensity[i];
 	}
-}
-
-/** Save the point cloud as a PCL PCD file, in either ASCII or binary format
- * \return false on any error */
-bool CPointsMapXYZI::savePCDFile(
-	const std::string& filename, bool save_as_binary) const
-{
-#if MRPT_HAS_PCL
-	pcl::PointCloud<pcl::PointXYZI> cloud;
-
-	const size_t nThis = this->size();
-
-	// Fill in the cloud data
-	cloud.width = nThis;
-	cloud.height = 1;
-	cloud.is_dense = false;
-	cloud.points.resize(cloud.width * cloud.height);
-
-	for (size_t i = 0; i < nThis; ++i)
-	{
-		cloud.points[i].x = m_x[i];
-		cloud.points[i].y = m_y[i];
-		cloud.points[i].z = m_z[i];
-		cloud.points[i].intensity = this->m_intensity[i];
-	}
-
-	return 0 == pcl::io::savePCDFile(filename, cloud, save_as_binary);
-
-#else
-	MRPT_UNUSED_PARAM(filename);
-	MRPT_UNUSED_PARAM(save_as_binary);
-	THROW_EXCEPTION("Operation not available: MRPT was built without PCL");
-#endif
 }
 
 namespace mrpt::maps::detail

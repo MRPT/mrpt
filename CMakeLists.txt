@@ -78,7 +78,6 @@ set(MRPT_LINKER_LIBS "")
 include(cmakemodules/UtilsMacros.cmake REQUIRED)
 include(cmakemodules/DebugMacros.cmake REQUIRED)
 include(cmakemodules/FilterFileLists.cmake REQUIRED)
-include(cmakemodules/MRPTPCHSupport.cmake REQUIRED)
 include(cmakemodules/DeclareMRPTLib.cmake REQUIRED)
 include(cmakemodules/DeclareMEXLib.cmake REQUIRED)
 include(cmakemodules/DeclareAppDependencies.cmake REQUIRED)
@@ -175,10 +174,6 @@ endif()
 set(MRPT_ENABLE_PRECOMPILED_HDRS ${default_use_precomp} CACHE BOOL "Enable precompiled headers")
 mark_as_advanced(MRPT_ENABLE_PRECOMPILED_HDRS)
 
-# Eigen library plugins:
-# ===================================================
-include(cmakemodules/script_eigen.cmake REQUIRED)
-
 # MRPT_TRY_START/END blocks
 # ===================================================
 set(MRPT_HAS_STACKED_EXCEPTIONS ON CACHE BOOL "Enable MRPT_TRY_START/END blocks (disable it for speed up).")
@@ -191,10 +186,9 @@ if (MRPT_ENABLE_EMBEDDED_GLOBAL_PROFILER)
 endif()
 
 # ASSERT_ blocks
-# ===================================================
 set(MRPT_HAS_ASSERT ON CACHE BOOL "Enable ASSERT_ statements (disable it for speed up).")
 
-#   "Classic" function & headers detection:
+# "Classic" function & headers detection:
 include(cmakemodules/script_detect_functions_headers.cmake REQUIRED)
 
 # MSVC only:
@@ -225,44 +219,49 @@ find_package(Threads) # Defines imported target Threads::Threads
 # ----------------------------------------------------------------------------
 # Other sub-scripts:
 # ----------------------------------------------------------------------------
-include(cmakemodules/script_gridmap_options.cmake REQUIRED) # Gridmap options
-
-include(cmakemodules/script_phidget.cmake REQUIRED)     # Support for phidget Interface Kit with proximity sensor device :
-include(cmakemodules/script_videre_svs.cmake REQUIRED)  # Support for Videre Design stereo camera:
+include(cmakemodules/script_assimp.cmake REQUIRED)      # Check for system assimp lib (3D models)
+include(cmakemodules/script_clang_tidy.cmake REQUIRED)  # Clang tidy
+include(cmakemodules/script_cvd.cmake REQUIRED)         # Check for CVD
+include(cmakemodules/script_duo3d.cmake REQUIRED)       # Support for DUO3D Camera
+include(cmakemodules/script_eigen.cmake REQUIRED)       # Eigen3
+include(cmakemodules/script_ffmpeg.cmake REQUIRED)      # Check for ffmpeg C libraries: libavcodec, libavutil, libavformat, libswscale
+include(cmakemodules/script_flycapture2.cmake REQUIRED) # Check for PointGreyResearch (PGR) FlyCapture2 library
 include(cmakemodules/script_ftdi.cmake REQUIRED)        # Check for the FTDI headers (Linux only, in win32 we use built-in header & dynamic DLL load):
-include(cmakemodules/script_inotify.cmake REQUIRED)     # Check for the sys/inotify headers (Linux only, in win32 we use the equivalent API for file system monitoring):
 include(cmakemodules/script_gl_glut.cmake REQUIRED)     # Check for the GL,GLUT libraries
+include(cmakemodules/script_gridmap_options.cmake REQUIRED) # Gridmap options
+include(cmakemodules/script_gtest.cmake REQUIRED)       # Unit testing lib
+include(cmakemodules/script_inotify.cmake REQUIRED)     # Check for the sys/inotify headers (Linux only, in win32 we use the equivalent API for file system monitoring):
+include(cmakemodules/script_isense.cmake REQUIRED)      # Support for INTERSENSE Sensors
+include(cmakemodules/script_iwyu.cmake REQUIRED)        # Include-what-you-use
+include(cmakemodules/script_jpeg.cmake REQUIRED)        # Check for jpeg
+include(cmakemodules/script_jsoncpp.cmake REQUIRED)     # Check for jsoncpp
+include(cmakemodules/script_kinect.cmake REQUIRED)      # Kinect support in a set of different ways
+include(cmakemodules/script_libdc1394.cmake REQUIRED)   # Check for libdc1394-2
+include(cmakemodules/script_liblas.cmake REQUIRED)      # Check for the LAS LiDAR format library
+include(cmakemodules/script_libtclap.cmake REQUIRED)    # Check for system libtclap
+include(cmakemodules/script_matlab.cmake REQUIRED)      # Support for Matlab MEX functions generation
+include(cmakemodules/script_national_instruments.cmake REQUIRED)  # NI C library
+include(cmakemodules/script_nite2.cmake REQUIRED)       # Check for NITE2 library
 include(cmakemodules/script_octomap.cmake REQUIRED)     # Check for the octomap library
 include(cmakemodules/script_opencv.cmake REQUIRED)      # Check for the OpenCV libraries (via pkg-config, CMake, with different options)
 include(cmakemodules/script_openni2.cmake REQUIRED)     # Check for the OpenNI2 library
-include(cmakemodules/script_ffmpeg.cmake REQUIRED)      # Check for ffmpeg C libraries: libavcodec, libavutil, libavformat, libswscale
-include(cmakemodules/script_wxwidgets.cmake REQUIRED)   # Check for wxWidgets + GL
-include(cmakemodules/script_qt.cmake REQUIRED)          # Check for wxWidgets + GL
-include(cmakemodules/script_libdc1394.cmake REQUIRED)   # Check for libdc1394-2
-include(cmakemodules/script_assimp.cmake REQUIRED)      # Check for system assimp lib (3D models)
-include(cmakemodules/script_liblas.cmake REQUIRED)      # Check for the LAS LiDAR format library
-include(cmakemodules/script_libtclap.cmake REQUIRED)    # Check for system libtclap
-include(cmakemodules/script_zlib.cmake REQUIRED)        # Check for zlib
-include(cmakemodules/script_jpeg.cmake REQUIRED)        # Check for jpeg
-include(cmakemodules/script_swissrange.cmake REQUIRED)  # Support for SWISSRANGE 3D camera:
-include(cmakemodules/script_SIMD.cmake REQUIRED)        # SSE2/SSE3/... optimization options
-include(cmakemodules/script_gtest.cmake REQUIRED)       # Unit testing lib
-include(cmakemodules/script_national_instruments.cmake REQUIRED)  # NI C library
-include(cmakemodules/script_xsens.cmake REQUIRED)       # XSens Motion trackers / IMU drivers
-include(cmakemodules/script_flycapture2.cmake REQUIRED) # Check for PointGreyResearch (PGR) FlyCapture2 library
-include(cmakemodules/script_triclops.cmake REQUIRED)    # Check for PointGreyResearch (PGR) Triclops library
-include(cmakemodules/script_duo3d.cmake REQUIRED)       # Support for DUO3D Camera
-include(cmakemodules/script_matlab.cmake REQUIRED)      # Support for Matlab MEX functions generation
-include(cmakemodules/script_isense.cmake REQUIRED)      # Support for INTERSENSE Sensors
-include(cmakemodules/script_nite2.cmake REQUIRED)       # Check for NITE2 library
-include(cmakemodules/script_yamlcpp.cmake REQUIRED)     # Check for YAMLCPP library
 include(cmakemodules/script_pcap.cmake REQUIRED)        # Check for the libpcap library
-include(cmakemodules/script_ros1.cmake REQUIRED)       # Check for ROS
-include(cmakemodules/script_vtk.cmake REQUIRED)         # Check for VTK
-include(cmakemodules/script_clang_tidy.cmake REQUIRED)  # Clang tidy
-include(cmakemodules/script_iwyu.cmake REQUIRED)        # Include-what-you-use
-include(cmakemodules/script_cvd.cmake REQUIRED)         # Check for VTK
-include(cmakemodules/script_jsoncpp.cmake REQUIRED)     # Check for jsoncpp
+include(cmakemodules/script_phidget.cmake REQUIRED)     # Support for phidget Interface Kit with proximity sensor device :
+include(cmakemodules/script_qt.cmake REQUIRED)          # Check for wxWidgets + GL
+include(cmakemodules/script_ros1.cmake REQUIRED)        # Check for ROS1
+include(cmakemodules/script_SIMD.cmake REQUIRED)        # SSE2/SSE3/... optimization options
+include(cmakemodules/script_suitesparse.cmake REQUIRED) # SuiteSparse libs
+include(cmakemodules/script_swissrange.cmake REQUIRED)  # Support for SWISSRANGE 3D camera:
+include(cmakemodules/script_triclops.cmake REQUIRED)    # Check for PointGreyResearch (PGR) Triclops library
+include(cmakemodules/script_videre_svs.cmake REQUIRED)  # Support for Videre Design stereo camera:
+include(cmakemodules/script_wxwidgets.cmake REQUIRED)   # Check for wxWidgets + GL
+include(cmakemodules/script_xsens.cmake REQUIRED)       # XSens Motion trackers / IMU drivers
+include(cmakemodules/script_yamlcpp.cmake REQUIRED)     # Check for YAMLCPP library
+include(cmakemodules/script_zlib.cmake REQUIRED)        # Check for zlib
+
+# PCL library: include indirectly, see comments in that subdirectory:
+add_subdirectory(cmakemodules/probe_pcl)
+
 
 # ---------------------------------------------------------------------------
 #			OPTIONS
@@ -273,65 +272,14 @@ mark_as_advanced(FORCE MRPT_ALWAYS_CHECKS_DEBUG)
 option(MRPT_ALWAYS_CHECKS_DEBUG_MATRICES "Additional checks even in Release (Only in matrix classes)" "OFF")
 mark_as_advanced(FORCE MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 
-# ---------------------------------------------------------------------------
-# Create the minimum list of libraries required by an application that
-#  uses the MRPT C++ library. This must be passed to "TARGET_LINK_LIBRARIES"
-# NOTE: For the compilers MSVC* & Borland most of the libraries are
-#        automatically included through "#pragma"'s ;-)
-# ---------------------------------------------------------------------------
-if(NOT MSVC)
-	# In Linux, link against librt
-	# Jerome Monceaux : 2011/03/08
-	# exclude rt from apple osx linking
-	if(UNIX AND NOT APPLE)
-		APPEND_MRPT_LIBS(rt)
-	endif()
-
-	# In Windows, link against ole32 & uuid & oleaut32, etc...
-	if(MINGW)
-		APPEND_MRPT_LIBS(ole32 uuid oleaut32 gdi32 winmm setupapi ws2_32)
-	endif()
-endif()
-
-
-set(CMAKE_MRPT_HAS_GZ_STREAMS ${CMAKE_MRPT_HAS_ZLIB})   # We have gz-streams is we have zlib:
-
-include(cmakemodules/script_kinect.cmake REQUIRED)  # Kinect support in a set of different ways
-include(cmakemodules/script_pcl.cmake REQUIRED)     # PCL library
-include(cmakemodules/script_suitesparse.cmake REQUIRED)     # SuiteSparse libs
-
-# Save the basic list of libraries (without MRPT-libs):
-# -------------------------------------------------------------------------------------
-set(MRPTLIB_LINKER_LIBS ${MRPT_LINKER_LIBS} ${MRPT_FFMPEG_LIBS_TO_LINK})
-if($ENV{VERBOSE})
-	message(STATUS "MRPTLIB_LINKER_LIBS: ${MRPTLIB_LINKER_LIBS}")
-endif()
-
-# If we are building .so libs, don't link every program to all the libs:
-if(BUILD_SHARED_LIBS)
-	set(MRPT_LINKER_LIBS "")
-endif()
-
-# Save the list of libraries according to the current debug/release build (gcc only)
-# -------------------------------------------------------------------------------------
-set(MRPT_LINKER_LIBS_RELorDEB ${MRPT_LINKER_LIBS})
-
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-	set(MRPT_LINKER_LIBS_POSTFIX "${MRPT_DEBUG_POSTFIX}")
-else()
-	set(MRPT_LINKER_LIBS_POSTFIX "")
-endif()
-
 # Include Asian fonts in utils::CMRPTCanvas ?
-set( MRPT_HAS_ASIAN_FONTS ON CACHE BOOL "Enable Asian fonts in utils::CMRPTCanvas (increases library size).")
+set( MRPT_HAS_ASIAN_FONTS ON CACHE BOOL "Enable Asian fonts in CMRPTCanvas (increases library size).")
 
 include(cmakemodules/script_declare_defines.cmake REQUIRED)  # Transform the variables MRPT_XXX="ON/OFF" to CMAKE_MRPT_XXX="1/0"
 
 # ---------------------------------------------------------------------------
 # The C++ include & link directories:
 # ---------------------------------------------------------------------------
-include_directories(".")
-
 # Add user supplied extra options (optimization, etc...)
 set(USER_EXTRA_CPP_FLAGS "" CACHE STRING "Put extra compiler options here if desired")
 
@@ -400,7 +348,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 
 	# Wall & pedantic?
 	set(MRPT_BUILD_GCC_PEDANTIC_DEFAULT "OFF")
-	set( MRPT_BUILD_GCC_PEDANTIC ${MRPT_BUILD_GCC_PEDANTIC_DEFAULT} CACHE BOOL "Enable pedantic error detection (with GCC only)")
+	set(MRPT_BUILD_GCC_PEDANTIC ${MRPT_BUILD_GCC_PEDANTIC_DEFAULT} CACHE BOOL "Enable pedantic error detection (with GCC only)")
 	mark_as_advanced(MRPT_BUILD_GCC_PEDANTIC)
 
 	# High level of warnings.
@@ -572,7 +520,6 @@ if($ENV{VERBOSE})
 	message(STATUS "Final CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 	message(STATUS "Final CMAKE_EXE_LINKER_FLAGS: ${CMAKE_EXE_LINKER_FLAGS}")
 	message(STATUS "Final CMAKE_SHARED_LINKER_FLAGS: ${CMAKE_SHARED_LINKER_FLAGS}")
-	message(STATUS "Final MRPTLIB_LINKER_LIBS: ${MRPTLIB_LINKER_LIBS}")
 endif()
 
 # Save libs and executables in the same place
@@ -613,7 +560,7 @@ string(REGEX REPLACE "/STACK:[0-9]+" "/STACK:1000000" CMAKE_SHARED_LINKER_FLAGS 
 #  dependencies stored in "mrpt-${name}_LIB_DEPS"
 set(ALL_MRPT_LIBS "" CACHE INTERNAL "")  # This emulates global vars
 
-if (NOT MSVC)
+if (NOT MSVC AND MRPT_ENABLE_PRECOMPILED_HDRS)
 	include(cmakemodules/cotire.cmake REQUIRED) # COmpiler TIme REducer helper for PCH
 	set_directory_properties(PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE) # Disable unity targets
 endif()
@@ -642,9 +589,11 @@ endif()
 	set(EIGEN_MAX_STATIC_ALIGN_BYTES 32)
 #endif()
 
+GET_PROPERTY(CMAKE_MRPT_HAS_PCL GLOBAL PROPERTY CMAKE_MRPT_HAS_PCL)
+GET_PROPERTY(CMAKE_MRPT_HAS_PCL_SYSTEM GLOBAL PROPERTY CMAKE_MRPT_HAS_PCL_SYSTEM)
+
 include(cmakemodules/script_create_config_h.cmake REQUIRED)   # Build config.h
 include(cmakemodules/script_create_version_h.cmake REQUIRED)  # Build version.h
-
 
 add_custom_target(all_mrpt_libs ALL) # all_mrpt_libs: target to build all mrpt-* modules
 
@@ -652,27 +601,30 @@ add_custom_target(all_mrpt_libs ALL) # all_mrpt_libs: target to build all mrpt-*
 #      					PROCESS SUBDIRECTORIES:
 # ----------------------------------------------------------------------------
 add_subdirectory(otherlibs)   # The third-party libraries
-add_subdirectory(libs)        # The MRPT C++ libraries:
+add_subdirectory(libs)        # The MRPT C++ libraries
 
-set( BUILD_APPLICATIONS ON CACHE BOOL "If you only want the MRPT libraries, disable this.")
+set(BUILD_APPLICATIONS ON CACHE BOOL "If you only want the MRPT libraries, disable this.")
 if(BUILD_APPLICATIONS)
 	add_subdirectory(apps)    # The applications:
 endif()
 
 if(BUILD_MATLAB)
-        add_subdirectory(mex/apps)# The MEX applications
+    add_subdirectory(mex/apps)# The MEX applications
 endif()
 
 # Generate .h to locate MRPT sources:
-configure_file("${CMAKE_SOURCE_DIR}/parse-files/mrpt_paths_config.h.in" "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/mrpt_paths_config.h")
+configure_file(
+    "${CMAKE_SOURCE_DIR}/parse-files/mrpt_paths_config.h.in"
+	"${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/mrpt_paths_config.h"
+	)
 
 # Documentation targets (must be AFTER "apps" because it uses the aux program "mrpt-perfdata2html")
 add_subdirectory(doc)
 
 #   UNIT TESTS:
 # ----------------------------------------------------------------------------
-set( BUILD_TESTING ON CACHE BOOL "Build MRPT tests")
-if( BUILD_TESTING)
+set(BUILD_TESTING ON CACHE BOOL "Build MRPT tests")
+if(BUILD_TESTING)
 	# Try using libgtest (Google testing library) from the system, if available
 	if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND APPLE)
 		add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
