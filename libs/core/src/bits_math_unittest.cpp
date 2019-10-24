@@ -136,3 +136,11 @@ TEST(bits_math, saturate)
 	mrpt::saturate(v, -1.0, 1.0);
 	EXPECT_DOUBLE_EQ(v, 1.0);
 }
+
+TEST(bits_math, lowestPositive)
+{
+	EXPECT_EQ(mrpt::lowestPositive(1, 2), 1);
+	EXPECT_EQ(mrpt::lowestPositive(2, 1), 1);
+	EXPECT_EQ(mrpt::lowestPositive(-10, 3), 3);
+	EXPECT_EQ(mrpt::lowestPositive(3, -1), 3);
+}
