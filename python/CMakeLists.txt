@@ -59,7 +59,9 @@ add_library(pymrpt
 add_definitions(-DROS_EXTENSIONS)
 
 target_link_libraries(pymrpt
-  ${Boost_LIBRARIES} ${Opencv_LIBRARIES}
+  ${Boost_LIBRARIES}
+  ${Opencv_LIBRARIES}
+  Python3::Python
 )
 
 # remove "lib" prefix from .so filename
@@ -69,4 +71,5 @@ install(TARGETS pymrpt
   LIBRARY DESTINATION ${PYMRPT_INSTALL_DIR}
 )
 
-DeclareAppDependencies(pymrpt mrpt-poses mrpt-slam mrpt-obs mrpt-maps mrpt-nav mrpt-gui mrpt-opengl mrpt-vision) # Dependencies
+# Dependencies (link & includes):
+DeclareAppDependencies(pymrpt mrpt::poses mrpt::slam mrpt::obs mrpt::maps mrpt::nav mrpt::gui mrpt::opengl mrpt::vision)

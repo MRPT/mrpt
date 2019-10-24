@@ -57,7 +57,6 @@ DECLARE_OP_FUNCTION(op_export_odometry_txt);
 DECLARE_OP_FUNCTION(op_export_rawdaq_txt);
 DECLARE_OP_FUNCTION(op_externalize);
 DECLARE_OP_FUNCTION(op_generate_3d_pointclouds);
-DECLARE_OP_FUNCTION(op_generate_pcd);
 DECLARE_OP_FUNCTION(op_info);
 DECLARE_OP_FUNCTION(op_keep_label);
 DECLARE_OP_FUNCTION(op_list_images);
@@ -384,17 +383,6 @@ int main(int argc, char** argv)
 			"Requires: -o (or --output)\n",
 			cmd, false));
 		ops_functors["generate-3d-pointclouds"] = &op_generate_3d_pointclouds;
-
-		arg_ops.push_back(new TCLAP::SwitchArg(
-			"", "generate-pcd",
-			"Op: Generate a PointCloud Library (PCL) PCD file with the "
-			"point cloud for each sensor observation that can be converted "
-			"into"
-			" this representation: laser scans, 3D camera images, etc.\n"
-			"Optional: --out-dir to change the output directory (default: "
-			"\"./\")\n",
-			cmd, false));
-		ops_functors["generate-pcd"] = &op_generate_pcd;
 
 		arg_ops.push_back(new TCLAP::ValueArg<std::string>(
 			"", "sensors-pose",

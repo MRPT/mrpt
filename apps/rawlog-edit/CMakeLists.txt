@@ -1,4 +1,4 @@
-include(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
+
 
 project(rawlog-edit)
 
@@ -27,7 +27,6 @@ add_executable(${PROJECT_NAME}
 	rawlog-edit_list-images.cpp
 	rawlog-edit_list-rangbear.cpp
 	rawlog-edit_generate-3d-pointclouds.cpp
-	rawlog-edit_generate-pcd.cpp
 	rawlog-edit_stereo-rectify.cpp
 	rawlog-edit_rename_externals.cpp
 	rawlog-edit_list-timestamps.cpp
@@ -46,4 +45,4 @@ target_link_libraries(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
 DeclareAppForInstall(${PROJECT_NAME})
 # Dependencies on MRPT libraries: Just mention the top-level dependency, the rest will be detected automatically,
 #  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-DeclareAppDependencies(${PROJECT_NAME} mrpt-obs mrpt-topography mrpt-maps mrpt-vision mrpt-tclap)
+DeclareAppDependencies(${PROJECT_NAME} mrpt::obs mrpt::topography mrpt::maps mrpt::vision mrpt::tclap)

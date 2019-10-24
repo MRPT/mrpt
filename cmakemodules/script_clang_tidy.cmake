@@ -5,7 +5,9 @@ find_program(
   DOC "Path to clang-tidy executable"
   )
 if(NOT CLANG_TIDY_EXE)
-  message(STATUS "clang-tidy not found.")
+    if ($ENV{VERBOSE})
+      message(STATUS "clang-tidy not found.")
+  endif()
 else()
   message(STATUS "clang-tidy found: ${CLANG_TIDY_EXE}")
   option(USE_CLANG_TIDY "Use clang-tidy analyzer" ON)

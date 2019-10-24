@@ -13,7 +13,7 @@ This application implements Hybrid Metric-Topological (HMT) SLAM.
 
 See the application description page for more information:
  
- https://www.mrpt.org/list-of-mrpt-apps/application-HMT-SLAM
+ https://www.mrpt.org/list-of-mrpt::apps/application-HMT-SLAM
 
 --------------
  COMPILING

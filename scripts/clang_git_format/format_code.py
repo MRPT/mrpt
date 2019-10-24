@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 A script that provides:
 1. Ability to grab binaries where possible from LLVM.
@@ -7,9 +7,10 @@ A script that provides:
 4. Supports checking which files are to be checked.
 5. Supports validating and updating a set of files to the right coding style.
 """
-from __future__ import print_function, absolute_import
+from __future__ import print_function
+# absolute_import
 
-import Queue
+import queue
 import re
 import os
 import sys
@@ -50,7 +51,7 @@ def parallel_process(items, func):
     except NotImplementedError:
         cpus = 1
 
-    task_queue = Queue.Queue()
+    task_queue = queue.Queue()
 
     # Use a list so that worker function will capture this variable
     pp_event = threading.Event()
@@ -63,7 +64,7 @@ def parallel_process(items, func):
 
             try:
                 item = task_queue.get_nowait()
-            except Queue.Empty:
+            except queue.Empty:
                 # if the queue is empty, exit the worker thread
                 pp_event.set()
                 return

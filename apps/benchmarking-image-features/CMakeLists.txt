@@ -41,7 +41,7 @@ if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENCV AND NOT "${MRPT_OPENCV_VERSION}"
         # Dependencies on MRPT libraries:
         #  Just mention the top-level dependency, the rest will be detected automatically,
         #  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-        DeclareAppDependencies(${PROJECT_NAME} mrpt-gui mrpt-vision)
+        DeclareAppDependencies(${PROJECT_NAME} mrpt::gui mrpt::vision)
         DeclareAppForInstall(${PROJECT_NAME})
 
 endif()

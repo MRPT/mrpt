@@ -85,9 +85,6 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 /** Matlab wrapper is available */
 #define MRPT_HAS_MATLAB           ${CMAKE_MRPT_HAS_MATLAB}
 
-/** VTK libs are available */
-#define MRPT_HAS_VTK ${CMAKE_MRPT_HAS_VTK}
-
 /** jsoncpp is present */
 #define MRPT_HAS_JSONCPP ${CMAKE_MRPT_HAS_JSONCPP}
 
@@ -158,7 +155,7 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #define MRPT_HAS_NITE2 ${CMAKE_MRPT_HAS_NITE2}
 
 /** Whether to compile support for .gz compressed I/O streams: */
-#define MRPT_HAS_GZ_STREAMS ${CMAKE_MRPT_HAS_GZ_STREAMS}
+#define MRPT_HAS_GZ_STREAMS ${CMAKE_MRPT_HAS_ZLIB}
 
 /** Whether ZLIB is present.  */
 #define MRPT_HAS_ZLIB ${CMAKE_MRPT_HAS_ZLIB}

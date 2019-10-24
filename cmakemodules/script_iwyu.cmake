@@ -6,9 +6,13 @@ find_program(
 )
 
 if(NOT IWYU_PATH)
-  message(STATUS "iwyu (include-what-you-use) not found.")
+  if ($ENV{VERBOSE})
+     message(STATUS "iwyu (include-what-you-use) not found.")
+  endif()
 else()
-  message(STATUS "iwyu found: ${IWYU_PATH}")
+  if ($ENV{VERBOSE})
+    message(STATUS "iwyu found: ${IWYU_PATH}")
+  endif()
   option(USE_IWYU "Use analyzer include-what-you-use" ON)
 
   set(IWYU_PATH_AND_OPTIONS

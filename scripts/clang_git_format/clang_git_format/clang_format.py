@@ -6,9 +6,9 @@ import sys
 import threading
 import subprocess
 
-from config import (CLANG_FORMAT_VERSION, CLANG_FORMAT_SHORT_VERSION, PROGNAME)
+from .config import (CLANG_FORMAT_VERSION, CLANG_FORMAT_SHORT_VERSION, PROGNAME)
 
-from utils import (
+from .utils import (
     callo,
     get_clang_format_from_linux_cache,
     get_clang_format_from_darwin_cache, )

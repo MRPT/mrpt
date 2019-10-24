@@ -221,12 +221,12 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 	else()
 		# A hdr-only library: needs no real compiling
 		add_library(${name} INTERFACE)
-		
+
 		REMOVE_MATCHING_FILES_FROM_LIST(".*.h" all_${name}_srcs)
-		
+
 		# List of hdr files (for editing in IDEs,etc.):
 		target_sources(${name} INTERFACE ${all_${name}_srcs})
-		
+
 		set(iftype INTERFACE)
 	endif ()
 
@@ -297,13 +297,6 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 
 	add_dependencies(${name} "DocumentationFiles")  # docs files target (useful for IDE editing)
 
-	if (NOT ${headers_only})
-		target_link_libraries(${name}
-			PRIVATE
-			${MRPTLIB_LINKER_LIBS}
-			)
-	endif ()
-
 	# Set custom name of lib + dynamic link numbering convenions in Linux:
 	if (NOT ${headers_only})
 		set_target_properties(${name} PROPERTIES
@@ -321,6 +314,14 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 		set(AUX_LIST_TO_IGNORE ${all_${name}_srcs})
 		KEEP_MATCHING_FILES_FROM_LIST("^.*h$" AUX_LIST_TO_IGNORE)
 		set_source_files_properties(${AUX_LIST_TO_IGNORE} PROPERTIES HEADER_FILE_ONLY true)
+
+		# If UNIX, don't link against unused libs:
+		IF (UNIX AND NOT APPLE)
+		    set_property(
+			    TARGET ${name}
+				APPEND_STRING PROPERTY
+				LINK_FLAGS " -Wl,--as-needed -Wl,--no-undefined -Wl,--no-allow-shlib-undefined")
+		endif()
 
 		if(MRPT_ENABLE_PRECOMPILED_HDRS)
 			if (MSVC)
@@ -366,6 +367,10 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 				)
 		endif()
 
+		# MATLAB?
+		if (CMAKE_MRPT_HAS_MATLAB)
+			target_link_libraries(${name} PRIVATE ${MATLAB_LIBRARIES})
+		endif()
 		# (See comments in script_matlab.cmake)
 		# Add /DELAYLOAD:... to avoid dependency of these DLLs for standalone (non-mex) projects
 		if (CMAKE_MRPT_HAS_MATLAB AND BUILD_SHARED_LIBS AND MSVC)
@@ -377,6 +382,9 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 			#  warning LNK4199: /DELAYLOAD:libmx.dll ignored; no imports found from libmx.dll
 			# in libs which do not (yet) support mex stuff
 		endif ()
+
+
+
 
 		if (USE_IWYU)
 			set_property(

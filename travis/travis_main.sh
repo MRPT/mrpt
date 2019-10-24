@@ -21,7 +21,7 @@ EXTRA_CMAKE_ARGS=""
 
 function install_lint_reqs()
 {
-  pip install -r travis/python_reqs.txt
+  pip3 install -r travis/python_reqs.txt
 }
 
 # arguments: extra CMAKE flags to append to common ones

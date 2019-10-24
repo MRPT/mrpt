@@ -58,7 +58,7 @@ TEST(RawlogGrabberApp, DISABLED_CGenericCamera_AVI)
 		app.run();
 
 		// Check expected results:
-		EXPECT_GT(app.rawlog_saved_objects, 2U);
+		EXPECT_GE(app.rawlog_saved_objects, 2U);
 	}
 	catch (const std::exception& e)
 	{

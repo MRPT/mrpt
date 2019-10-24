@@ -11,10 +11,6 @@ endif()
 
 # Embedded freeglut?
 if(CMAKE_MRPT_HAS_OPENGL_GLUT AND NOT CMAKE_MRPT_HAS_GLUT_SYSTEM)
-	#if(NOT BUILD_SHARED_LIBS)
-	#	list(APPEND gui_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/opengl/src/freeglut-2.4.0/*.c" "${MRPT_LIBS_ROOT}/opengl/src/freeglut-2.4.0/*.h")
-	#	list(APPEND gui_EXTRA_SRCS_NAME "freeglut" "freeglut")
-	#endif(NOT BUILD_SHARED_LIBS)
 	#add_definitions(/DFREEGLUT_STATIC)
 	include_directories("${MRPT_LIBS_ROOT}/opengl/include/otherlibs/freeglut/")
 endif()
@@ -27,10 +23,6 @@ if (WIN32)
 	# It's in the **opengl** lib tree:
 	include_directories("${MRPT_LIBS_ROOT}/opengl/src/freeglut-2.4.0/")
 endif ()
-
-if(CMAKE_MRPT_HAS_OPENCV)
-	include_directories(${OpenCV_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${OPENCV_INCLUDE_DIRS} ${OPENCV_INCLUDEDIR})
-endif()
 
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
@@ -54,7 +46,10 @@ if(BUILD_mrpt-gui)
 	endif()
 
 	if(CMAKE_MRPT_HAS_WXWIDGETS)
-		target_link_libraries(gui PRIVATE ${wxWidgets_LIBRARIES})
+		if (NOT TARGET imp_wxwidgets)
+			message(ERROR "imp_wxwidgets should be defined!")
+		endif()
+		target_link_libraries(gui PRIVATE imp_wxwidgets)
 	endif()
 
 	if(CMAKE_MRPT_HAS_Qt5)
@@ -63,7 +58,7 @@ if(BUILD_mrpt-gui)
 	endif()
 
 	if(CMAKE_MRPT_HAS_OPENCV)
-		target_link_libraries(gui PRIVATE ${OpenCV_LIBRARIES})
+		target_link_libraries(gui PRIVATE imp_opencv)
 	endif()
 
 	if(CMAKE_MRPT_HAS_OPENGL_GLUT)
