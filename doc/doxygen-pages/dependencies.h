@@ -5,7 +5,8 @@
    | Copyright (c) 2005-2019, Individual contributors, see AUTHORS file        |
    | See: https://www.mrpt.org/Authors - All rights reserved.                  |
    | Released under BSD License. See details in https://www.mrpt.org/License   |
-   +---------------------------------------------------------------------------+ */
+   +---------------------------------------------------------------------------+
+ */
 
 /** \page dependencies External library dependencies and build options
  *
@@ -57,10 +58,6 @@
 <tr>
 	<td align="center" > \ref dep-libzmq "libzmq (ZeroMQ)" </td>
 	<td align="center" > Optional (*) (Network transport layer) </td>
-</tr>
-<tr>
-	<td align="center" > \ref  dep-pcl "pcl" </td>
-	<td align="center" > Optional (*) </td>
 </tr>
 <tr>
 	<td align="center" > \ref  dep-liblas "LAS (liblas)" </td>

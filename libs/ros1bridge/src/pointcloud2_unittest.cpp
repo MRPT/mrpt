@@ -17,6 +17,8 @@
 #include <gtest/gtest.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/ros1bridge/point_cloud2.h>
+
+#if MRPT_HAVE_PCL_CONVERSIONS
 #include <pcl/common/common_headers.h>
 #include <pcl/conversions.h>
 #include <pcl/point_cloud.h>
@@ -63,3 +65,5 @@ TEST(PointCloud2, basicTest)
 	}
 	//;
 }
+
+#endif
