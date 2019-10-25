@@ -2052,7 +2052,6 @@ PREDEFINED             = _WIN32 \
                          MRPT_HAS_SSE3 \
                          MRPT_HAS_SSE4 \
                          EIGEN_PARSED_BY_DOXYGEN \
-                         MRPT_HAS_PCL=1 \
                          EIGEN_MATRIXBASE_PLUGIN=<mrpt/math/eigen_plugins.h> \
                          MRPT_HAS_MATLAB=1 \
                          MRPT_HAS_WXWIDGETS=1 \

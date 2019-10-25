@@ -87,12 +87,12 @@ libudev-dev libfreenect-dev libdc1394-22-dev libavformat-dev libswscale-dev \
 libassimp-dev libjpeg-dev   libsuitesparse-dev libpcap-dev liboctomap-dev
 ```
 
-  * Install additional dependencies for `ros1bridge` using official Ubuntu repositories. 
-  If you already have a ROS distribution installed, doing `source /opt/ros/xxx/setup.bash` 
+  * Install additional dependencies for `ros1bridge` using official Ubuntu repositories.
+  If you already have a ROS distribution installed, doing `source /opt/ros/xxx/setup.bash`
   is enough, no further packages must be installed.
 
 ```bash
-sudo apt install libcv-bridge-dev libgeometry-msgs-dev libnav-msgs-dev libpcl-conversions-dev librosbag-dev libroscpp-dev libsensor-msgs-dev libstd-srvs-dev libstereo-msgs-dev libtf2-dev libtf2-msgs-dev libbz2-dev
+sudo apt install libcv-bridge-dev libgeometry-msgs-dev libnav-msgs-dev librosbag-dev libroscpp-dev libsensor-msgs-dev libstd-srvs-dev libstereo-msgs-dev libtf2-dev libtf2-msgs-dev libbz2-dev
 ```
 
   * Build with `cmake` as usual:
@@ -110,4 +110,3 @@ MRPT is released under the [new BSD license](http://www.mrpt.org/License/).
 ## Stargazers over time
 
 [![Stargazers over time](https://starchart.cc/MRPT/mrpt.svg)](https://starchart.cc/MRPT/mrpt)
-      
