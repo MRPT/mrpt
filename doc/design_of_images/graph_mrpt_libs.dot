@@ -23,7 +23,7 @@ digraph MRPT_LIBS {
 	containers  [label="mrpt-containers",URL="group__mrpt__containers__grp.html"];
 	containers -> core;
 
-	{ rank = sink; 
+	{ rank = sink;
 	core       [label="mrpt-core",URL="group__mrpt__core__grp.html"];
 	}
 
@@ -67,7 +67,7 @@ digraph MRPT_LIBS {
 
 	kinematics [label="mrpt-kinematics",URL="group__mrpt__kinematics__grp.html"];
 	kinematics -> opengl;
-	
+
 	maps       [label="mrpt-maps",URL="group__mrpt__maps__grp.html"];
 	maps -> graphs;
 	maps -> obs;
@@ -78,7 +78,7 @@ digraph MRPT_LIBS {
 	math -> system;
 	math -> nanoflann;
 
-	{ rank = sink; 
+	{ rank = sink;
 	nanoflann  [label="mrpt-nanoflann",URL="group__nanoflann__grp.html"];
 	}
 
@@ -95,13 +95,10 @@ digraph MRPT_LIBS {
 	opengl -> poses;
 	opengl -> img;
 
-	pbmap      [label="mrpt-pbmap",URL="group__mrpt__pbmap__grp.html"];
-	pbmap -> graphs;
-
 	poses     [label="mrpt-poses",URL="group__mrpt__poses__grp.html"];
 	poses -> bayes;
-	
-	{ rank = sink; 
+
+	{ rank = sink;
 	random     [label="mrpt-random",URL="group__mrpt__random__grp.html"];
 	}
 
@@ -129,7 +126,7 @@ digraph MRPT_LIBS {
 	topography [label="mrpt-topography",URL="group__mrpt__topography__grp.html"];
 	topography -> obs;
 
-	{ rank = sink; 
+	{ rank = sink;
 	typemeta [label="mrpt-typemeta (.h)",URL="group__mrpt__typemeta__grp.html"];
 	}
 

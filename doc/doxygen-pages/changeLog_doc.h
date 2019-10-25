@@ -20,6 +20,7 @@
   - Backwards compatible headers for "maps" and "observations" in mrpt::slam are removed. They moved to their own namespaces in MRPT v1.3.0 (Jan 2015).
   - All pointer typedefs are now in their respective classes: FooPtr -> Foo::Ptr
   - Add support for serialization with std::variant
+  - PbMap has been factored out into [its own repository](https://github.com/MRPT/pbmap)
 - Changes in applications:
   - RawLogViewer:
     - The ICP module now supports Velodyne 3D scans.

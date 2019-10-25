@@ -39,7 +39,6 @@ Build-Depends: debhelper (>= 9),
 	libcv-bridge-dev,
 	libgeometry-msgs-dev,
 	libnav-msgs-dev,
-	libpcl-conversions-dev,
 	librosbag-dev,
 	libroscpp-dev,
 	libsensor-msgs-dev,
@@ -429,22 +428,6 @@ Depends: ${misc:Depends},libmrpt-opengl@MRPT_VER_MM@ (= ${binary:Version}),
 Description: Mobile Robot Programming Toolkit - opengl development package
  This package provides headers and libraries for development.
 
-Package: libmrpt-pbmap@MRPT_VER_MM@
-Section: libs
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Multi-Arch: same
-Description: Mobile Robot Programming Toolkit - pbmap library
- More about MRPT libraries in: https://www.mrpt.org/Libraries
-
-Package: libmrpt-pbmap-dev
-Section: libdevel
-Architecture: any
-Depends: ${misc:Depends},libmrpt-pbmap@MRPT_VER_MM@ (= ${binary:Version}),
-        libmrpt-common-dev, libmrpt-graphs-dev
-Description: Mobile Robot Programming Toolkit - pbmap development package
- This package provides headers and libraries for development.
-
 Package: libmrpt-poses@MRPT_VER_MM@
 Section: libs
 Architecture: any
@@ -685,7 +668,6 @@ Recommends: libmrpt-bayes-dev (= ${binary:Version}),
          libmrpt-nav-dev (= ${binary:Version}),
          libmrpt-obs-dev (= ${binary:Version}),
          libmrpt-opengl-dev (= ${binary:Version}),
-         libmrpt-pbmap-dev (= ${binary:Version}),
          libmrpt-poses-dev (= ${binary:Version}),
          libmrpt-random-dev (= ${binary:Version}),
          libmrpt-rtti-dev (= ${binary:Version}),

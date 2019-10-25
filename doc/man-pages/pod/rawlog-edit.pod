@@ -24,7 +24,7 @@ rawlog-edit - Command-line robotic datasets (rawlogs) manipulation tool
 
 B<Quick overview of a dataset file:>
 
-rawlog-edit --info -i I<in.rawlog> 
+rawlog-edit --info -i I<in.rawlog>
 
 
 B<Cut the entries [1000,2000] into another rawlog file:>
@@ -42,7 +42,7 @@ rawlog-edit --cut --to-time 1281619819 \
 B<Generate a Google Earth KML file with the GPS data in a dataset:>
 
 rawlog-edit --export-gps-kml -i I<in.rawlog>
-   
+
 
 B<Remove all observations named "REAR_LASER":>
 
@@ -65,7 +65,7 @@ rawlog-edit --externalize --image-format jpg -i I<in.rawlog> \
 =head1 DESCRIPTION
 
 B<rawlog-edit> is a command-line application to inspect and manipulate robotic
-dataset files in the "rawlog" standardized format. 
+dataset files in the "rawlog" standardized format.
 
 These are the supported arguments and operations:
 
@@ -84,10 +84,10 @@ These are the supported arguments and operations:
 
      Requires: -o (or --output)
 
-     Optional: --image-format to set image format (default=jpg), 
+     Optional: --image-format to set image format (default=jpg),
 
      --image-size to resize output images (example: --image-size 640x480)
-     
+
 
 
    --camera-params <SENSOR_LABEL,file.ini>
@@ -106,14 +106,6 @@ These are the supported arguments and operations:
      sensorLabel names.
 
      Requires: -o (or --output)
-
-
-   --generate-pcd
-     Op: Generate a PointCloud Library (PCL) PCD file with the point cloud
-     for each sensor observation that can be converted into this
-     representation: laser scans, 3D camera images, etc.
-
-     Optional: --out-dir to change the output directory (default: "./")
 
 
    --generate-3d-pointclouds
@@ -281,7 +273,7 @@ at https://www.mrpt.org/
 
 =head1 AUTHORS
 
-B<rawlog-edit> is part of the Mobile Robot Programming Toolkit (MRPT), and 
+B<rawlog-edit> is part of the Mobile Robot Programming Toolkit (MRPT), and
 was originally written by the MAPIR laboratory (University of Malaga).
 
 This manual page was written by Jose Luis Blanco <joseluisblancoc@gmail.com>.
@@ -291,8 +283,7 @@ This manual page was written by Jose Luis Blanco <joseluisblancoc@gmail.com>.
 This program is free software; you can redistribute it and/or modify it
 under the terms of the BSD License.
 
-On Debian GNU/Linux systems, the complete text of the BSD License can be 
+On Debian GNU/Linux systems, the complete text of the BSD License can be
 found in `/usr/share/common-licenses/BSD'.
 
 =cut
-

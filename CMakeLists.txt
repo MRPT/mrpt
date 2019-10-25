@@ -259,9 +259,6 @@ include(cmakemodules/script_xsens.cmake REQUIRED)       # XSens Motion trackers 
 include(cmakemodules/script_yamlcpp.cmake REQUIRED)     # Check for YAMLCPP library
 include(cmakemodules/script_zlib.cmake REQUIRED)        # Check for zlib
 
-# PCL library: include indirectly, see comments in that subdirectory:
-add_subdirectory(cmakemodules/probe_pcl)
-
 
 # ---------------------------------------------------------------------------
 #			OPTIONS
@@ -588,9 +585,6 @@ endif()
 	set(EIGEN_MAX_ALIGN_BYTES 32)
 	set(EIGEN_MAX_STATIC_ALIGN_BYTES 32)
 #endif()
-
-GET_PROPERTY(CMAKE_MRPT_HAS_PCL GLOBAL PROPERTY CMAKE_MRPT_HAS_PCL)
-GET_PROPERTY(CMAKE_MRPT_HAS_PCL_SYSTEM GLOBAL PROPERTY CMAKE_MRPT_HAS_PCL_SYSTEM)
 
 include(cmakemodules/script_create_config_h.cmake REQUIRED)   # Build config.h
 include(cmakemodules/script_create_version_h.cmake REQUIRED)  # Build version.h
