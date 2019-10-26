@@ -21,6 +21,7 @@
   - All pointer typedefs are now in their respective classes: FooPtr -> Foo::Ptr
   - Add support for serialization with std::variant
   - PbMap has been factored out into [its own repository](https://github.com/MRPT/pbmap)
+  - XML-based database C++ classes have been removed from MRPT.
 - Changes in applications:
   - RawLogViewer:
     - The ICP module now supports Velodyne 3D scans.

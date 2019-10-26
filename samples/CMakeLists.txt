@@ -82,13 +82,6 @@ if(BUILD_EXAMPLES)
 	set(CMAKE_EXAMPLE_DEPS mrpt::serialization mrpt::io mrpt::poses)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
-	# === Depending on: db ===
-	set(LIST_EXAMPLES_IN_THIS_DIR
-		db_example
-		)
-	set(CMAKE_EXAMPLE_DEPS mrpt::db mrpt::io mrpt::serialization)
-	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
-
 	# === Depending on: system ===
 	set(LIST_EXAMPLES_IN_THIS_DIR
 		system_datetime_example

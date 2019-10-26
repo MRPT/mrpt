@@ -252,13 +252,13 @@ include(cmakemodules/script_ros1.cmake REQUIRED)        # Check for ROS1
 include(cmakemodules/script_SIMD.cmake REQUIRED)        # SSE2/SSE3/... optimization options
 include(cmakemodules/script_suitesparse.cmake REQUIRED) # SuiteSparse libs
 include(cmakemodules/script_swissrange.cmake REQUIRED)  # Support for SWISSRANGE 3D camera:
+include(cmakemodules/script_tinyxml2.cmake REQUIRED)    # tinyxml2 lib
 include(cmakemodules/script_triclops.cmake REQUIRED)    # Check for PointGreyResearch (PGR) Triclops library
 include(cmakemodules/script_videre_svs.cmake REQUIRED)  # Support for Videre Design stereo camera:
 include(cmakemodules/script_wxwidgets.cmake REQUIRED)   # Check for wxWidgets + GL
 include(cmakemodules/script_xsens.cmake REQUIRED)       # XSens Motion trackers / IMU drivers
 include(cmakemodules/script_yamlcpp.cmake REQUIRED)     # Check for YAMLCPP library
 include(cmakemodules/script_zlib.cmake REQUIRED)        # Check for zlib
-
 
 # ---------------------------------------------------------------------------
 #			OPTIONS

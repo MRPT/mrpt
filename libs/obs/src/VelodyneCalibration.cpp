@@ -9,7 +9,6 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
-#include <mrpt/config.h>
 #include <mrpt/core/bits_math.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/obs/VelodyneCalibration.h>
@@ -18,12 +17,14 @@
 #include <iostream>
 #include <map>
 #include <sstream>
+
+#include <mrpt/config.h>
 #if MRPT_HAS_YAMLCPP
 #include <yaml-cpp/yaml.h>
 #endif
-
-#undef _UNICODE  // JLBC, for xmlParser
-#include "xmlparser/xmlParser.h"
+#if MRPT_HAS_TINYXML2
+#include <tinyxml2.h>
+#endif
 
 // ======= Default calibration files ========================
 #include "velodyne_default_calib_HDL-32.h"
@@ -34,150 +35,155 @@
 using namespace std;
 using namespace mrpt::obs;
 
-VelodyneCalibration::PerLaserCalib::PerLaserCalib()
+VelodyneCalibration::PerLaserCalib::PerLaserCalib() = default;
 
-	= default;
+#if MRPT_HAS_TINYXML2
+static const tinyxml2::XMLElement* get_xml_children(
+	const tinyxml2::XMLNode* e, const char* name)
+{
+	ASSERT_(e != nullptr);
+	// It's ok if name is nullptr for tinyxml2
+
+	auto ret = e->FirstChildElement(name);
+	if (!ret)
+		throw std::runtime_error(
+			mrpt::format("Cannot find XML tag `%s`", name));
+	return ret;
+}
+static const char* get_xml_children_as_str(
+	const tinyxml2::XMLNode* e, const char* name)
+{
+	auto n = get_xml_children(e, name);
+	ASSERTMSG_(n, mrpt::format("Cannot find XML tag `%s`", name));
+	const char* txt = n->GetText();
+	ASSERTMSG_(
+		txt, mrpt::format("Cannot convert XML tag `%s` to string", name));
+	return txt;
+}
+static double get_xml_children_as_double(
+	const tinyxml2::XMLNode* e, const char* name)
+{
+	return ::atof(get_xml_children_as_str(e, name));
+}
+static int get_xml_children_as_int(const tinyxml2::XMLNode* e, const char* name)
+{
+	return ::atoi(get_xml_children_as_str(e, name));
+}
+#endif
 
 VelodyneCalibration::VelodyneCalibration() : laser_corrections(0) {}
 bool VelodyneCalibration::internal_loadFromXMLNode(void* node_ptr)
 {
-	XMLNode& root = *reinterpret_cast<XMLNode*>(node_ptr);
+#if MRPT_HAS_TINYXML2
 
-	XMLNode node_bs = root.getChildNode("boost_serialization");
-	if (node_bs.isEmpty())
-		throw std::runtime_error("Cannot find XML node: 'boost_serialization'");
+	ASSERT_(node_ptr != nullptr);
 
-	XMLNode node_DB = node_bs.getChildNode("DB");
-	if (node_DB.isEmpty())
-		throw std::runtime_error("Cannot find XML node: 'DB'");
+	const tinyxml2::XMLDocument& root =
+		*reinterpret_cast<tinyxml2::XMLDocument*>(node_ptr);
 
-	XMLNode node_enabled_ = node_DB.getChildNode("enabled_");
-	if (node_enabled_.isEmpty())
-		throw std::runtime_error("Cannot find XML node: 'enabled_'");
+	auto node_bs = get_xml_children(&root, "boost_serialization");
+	auto node_DB = get_xml_children(node_bs, "DB");
+	auto node_enabled_ = get_xml_children(node_DB, "enabled_");
 
 	// Clear previous contents:
 	clear();
 
-	XMLNode node_enabled_count = node_enabled_.getChildNode("count");
-	if (node_enabled_count.isEmpty())
-		throw std::runtime_error("Cannot find XML node: 'enabled_::count'");
-	const int nEnabled = atoi(node_enabled_count.getText());
-	if (nEnabled <= 0 || nEnabled > 10000)
-		throw std::runtime_error(
-			"Senseless value found reading 'enabled_::count'");
+	const int nEnabled = get_xml_children_as_int(node_enabled_, "count");
+	ASSERT_ABOVE_(nEnabled, 0);
+	ASSERT_BELOW_(nEnabled, 10000);
 
 	int enabledCount = 0;
+	const tinyxml2::XMLElement* node_enabled_ith = nullptr;
 	for (int i = 0; i < nEnabled; i++)
 	{
-		XMLNode node_enabled_ith = node_enabled_.getChildNode("item", i);
-		if (node_enabled_ith.isEmpty())
+		if (node_enabled_ith)
+			node_enabled_ith = node_enabled_ith->NextSiblingElement("item");
+		else
+		{
+			ASSERT_EQUAL_(i, 0);
+			node_enabled_ith = node_enabled_->FirstChildElement("item");
+		}
+
+		if (!node_enabled_ith)
 			throw std::runtime_error(
 				"Cannot find the expected number of XML nodes: "
 				"'enabled_::item'");
-		const int enable_val = atoi(node_enabled_ith.getText());
+		const int enable_val = atoi(node_enabled_ith->GetText());
 		if (enable_val) ++enabledCount;
 	}
 
 	// enabledCount = number of lasers in the LIDAR
 	this->laser_corrections.resize(enabledCount);
 
-	XMLNode node_points_ = node_DB.getChildNode("points_");
-	if (node_points_.isEmpty())
-		throw std::runtime_error("Cannot find XML node: 'points_'");
+	auto node_points_ = get_xml_children(node_DB, "points_");
+	const tinyxml2::XMLElement* node_points_item = nullptr;
 
 	for (int i = 0;; ++i)
 	{
-		XMLNode node_points_item = node_points_.getChildNode("item", i);
-		if (node_points_item.isEmpty()) break;
+		if (!node_points_item)
+			node_points_item = node_points_->FirstChildElement("item");
+		else
+			node_points_item = node_points_item->NextSiblingElement("item");
 
-		XMLNode node_px = node_points_item.getChildNode("px");
-		if (node_px.isEmpty())
-			throw std::runtime_error(
-				"Cannot find XML node: 'points_::item::px'");
+		if (!node_points_item) break;
 
-		XMLNode node_px_id = node_px.getChildNode("id_");
-		if (node_px_id.isEmpty())
-			throw std::runtime_error(
-				"Cannot find XML node: 'points_::item::px::id_'");
-		const int id = atoi(node_px_id.getText());
+		auto node_px = get_xml_children(node_points_item, "px");
+		auto node_px_id = get_xml_children(node_px, "id_");
+		const int id = atoi(node_px_id->GetText());
 		ASSERT_ABOVEEQ_(id, 0);
 		if (id >= enabledCount) continue;  // ignore
 
-		PerLaserCalib* plc = &laser_corrections[id];
+		PerLaserCalib& plc = laser_corrections[id];
 
-		{
-			XMLNode node = node_px.getChildNode("rotCorrection_");
-			if (node.isEmpty())
-				throw std::runtime_error(
-					"Cannot find XML node: "
-					"'points_::item::px::rotCorrection_'");
-			plc->azimuthCorrection = atof(node.getText());
-		}
-		{
-			XMLNode node = node_px.getChildNode("vertCorrection_");
-			if (node.isEmpty())
-				throw std::runtime_error(
-					"Cannot find XML node: "
-					"'points_::item::px::vertCorrection_'");
-			plc->verticalCorrection = atof(node.getText());
-		}
-		{
-			XMLNode node = node_px.getChildNode("distCorrection_");
-			if (node.isEmpty())
-				throw std::runtime_error(
-					"Cannot find XML node: "
-					"'points_::item::px::distCorrection_'");
-			plc->distanceCorrection = 0.01f * atof(node.getText());
-		}
-		{
-			XMLNode node = node_px.getChildNode("vertOffsetCorrection_");
-			if (node.isEmpty())
-				throw std::runtime_error(
-					"Cannot find XML node: "
-					"'points_::item::px::vertOffsetCorrection_'");
-			plc->verticalOffsetCorrection = 0.01f * atof(node.getText());
-		}
-		{
-			XMLNode node = node_px.getChildNode("horizOffsetCorrection_");
-			if (node.isEmpty())
-				throw std::runtime_error(
-					"Cannot find XML node: "
-					"'points_::item::px::horizOffsetCorrection_'");
-			plc->horizontalOffsetCorrection = 0.01f * atof(node.getText());
-		}
+		plc.azimuthCorrection =
+			get_xml_children_as_double(node_px, "rotCorrection_");
+		plc.verticalCorrection =
+			get_xml_children_as_double(node_px, "vertCorrection_");
 
-		plc->sinVertCorrection =
-			std::sin(mrpt::DEG2RAD(plc->verticalCorrection));
-		plc->cosVertCorrection =
-			std::cos(mrpt::DEG2RAD(plc->verticalCorrection));
+		plc.distanceCorrection =
+			0.01 * get_xml_children_as_double(node_px, "distCorrection_");
+		plc.verticalOffsetCorrection =
+			0.01 * get_xml_children_as_double(node_px, "vertOffsetCorrection_");
+		plc.horizontalOffsetCorrection =
+			0.01 *
+			get_xml_children_as_double(node_px, "horizOffsetCorrection_");
 
-		plc->sinVertOffsetCorrection =
-			plc->sinVertCorrection * plc->sinVertOffsetCorrection;
-		plc->cosVertOffsetCorrection =
-			plc->cosVertCorrection * plc->sinVertOffsetCorrection;
+		plc.sinVertCorrection = std::sin(mrpt::DEG2RAD(plc.verticalCorrection));
+		plc.cosVertCorrection = std::cos(mrpt::DEG2RAD(plc.verticalCorrection));
+
+		plc.sinVertOffsetCorrection =
+			plc.sinVertCorrection * plc.sinVertOffsetCorrection;
+		plc.cosVertOffsetCorrection =
+			plc.cosVertCorrection * plc.sinVertOffsetCorrection;
 	}
 
 	return true;  // Ok
+#else
+	return false;
+#endif
 }
 
 bool VelodyneCalibration::loadFromXMLText(const std::string& xml_file_contents)
 {
 	try
 	{
-		XMLResults results;
-		XMLNode root =
-			XMLNode::parseString(xml_file_contents.c_str(), nullptr, &results);
+#if MRPT_HAS_TINYXML2
+		tinyxml2::XMLDocument doc;
+		const auto err = doc.Parse(xml_file_contents.c_str());
 
-		if (results.error != eXMLErrorNone)
+		if (err != tinyxml2::XML_SUCCESS)
 		{
-			cerr << "[VelodyneCalibration::loadFromXMLText] Error parsing XML "
-					"content: "
-				 << XMLNode::getError(results.error) << " at line "
-				 << results.nLine << ":" << results.nColumn << endl;
+			std::cerr
+				<< "[VelodyneCalibration::loadFromXMLText] Error parsing XML "
+				   "content: "
+				<< tinyxml2::XMLDocument::ErrorIDToName(err) << std::endl;
 			return false;
 		}
 
-		return internal_loadFromXMLNode(reinterpret_cast<void*>(&root));
+		return internal_loadFromXMLNode(reinterpret_cast<void*>(&doc));
+#else
+		THROW_EXCEPTION("MRPT built without tinyxml2");
+#endif
 	}
 	catch (exception& e)
 	{
@@ -191,23 +197,25 @@ bool VelodyneCalibration::loadFromXMLText(const std::string& xml_file_contents)
 // See reference code in:
 // vtkVelodyneHDLReader::vtkInternal::LoadCorrectionsFile()
 bool VelodyneCalibration::loadFromXMLFile(
-	const std::string& velodyne_calibration_xml_filename)
+	const std::string& velodyne_calibration_xml_fil)
 {
 	try
 	{
-		XMLResults results;
-		XMLNode root = XMLNode::parseFile(
-			velodyne_calibration_xml_filename.c_str(), nullptr, &results);
+#if MRPT_HAS_TINYXML2
+		tinyxml2::XMLDocument doc;
+		const auto err = doc.LoadFile(velodyne_calibration_xml_fil.c_str());
 
-		if (results.error != eXMLErrorNone)
+		if (err != tinyxml2::XML_SUCCESS)
 		{
-			cerr << "[VelodyneCalibration::loadFromXMLFile] Error loading XML "
-					"file: "
-				 << XMLNode::getError(results.error) << " at line "
-				 << results.nLine << ":" << results.nColumn << endl;
+			std::cerr << "[VelodyneCalibration::loadFromXMLFile] Error loading "
+						 "XML file: "
+					  << tinyxml2::XMLDocument::ErrorIDToName(err) << std::endl;
 			return false;
 		}
-		return internal_loadFromXMLNode(reinterpret_cast<void*>(&root));
+		return internal_loadFromXMLNode(reinterpret_cast<void*>(&doc));
+#else
+		THROW_EXCEPTION("MRPT built without tinyxml2");
+#endif
 	}
 	catch (exception& e)
 	{
@@ -240,24 +248,24 @@ bool VelodyneCalibration::loadFromYAMLText(const std::string& str)
 			const auto id = item["laser_id"].as<unsigned int>(9999999);
 			ASSERT_(id < num_lasers);
 
-			PerLaserCalib* plc = &laser_corrections[id];
+			PerLaserCalib& plc = laser_corrections[id];
 
-			plc->azimuthCorrection = item["rot_correction"].as<double>();
-			plc->verticalCorrection = item["vert_correction"].as<double>();
+			plc.azimuthCorrection = item["rot_correction"].as<double>();
+			plc.verticalCorrection = item["vert_correction"].as<double>();
 
-			plc->distanceCorrection = item["dist_correction"].as<double>();
-			plc->verticalOffsetCorrection =
+			plc.distanceCorrection = item["dist_correction"].as<double>();
+			plc.verticalOffsetCorrection =
 				item["vert_offset_correction"].as<double>();
-			plc->horizontalOffsetCorrection =
+			plc.horizontalOffsetCorrection =
 				item["horiz_offset_correction"].as<double>();
 
-			plc->sinVertCorrection = std::sin(plc->verticalCorrection);
-			plc->cosVertCorrection = std::cos(plc->verticalCorrection);
+			plc.sinVertCorrection = std::sin(plc.verticalCorrection);
+			plc.cosVertCorrection = std::cos(plc.verticalCorrection);
 
-			plc->sinVertOffsetCorrection =
-				plc->sinVertCorrection * plc->sinVertOffsetCorrection;
-			plc->cosVertOffsetCorrection =
-				plc->cosVertCorrection * plc->sinVertOffsetCorrection;
+			plc.sinVertOffsetCorrection =
+				plc.sinVertCorrection * plc.sinVertOffsetCorrection;
+			plc.cosVertOffsetCorrection =
+				plc.cosVertCorrection * plc.sinVertOffsetCorrection;
 		}
 
 		return true;  // all ok
