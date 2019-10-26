@@ -53,6 +53,13 @@ class vector_with_small_size_optimization
 	using const_reference = const T&;
 	using difference_type = typename large_vec::difference_type;
 	using size_type = typename large_vec::size_type;
+
+	vector_with_small_size_optimization() = default;
+	vector_with_small_size_optimization(size_t n)
+	    : m_is_small(n <= small_size), m_size(n)
+	{
+		if (!m_is_small) m_v.resize(n);
+	}
 	template <typename TYPE, typename POINTER, typename REFERENCE>
 	class iteratorImpl
 	{
@@ -152,6 +159,14 @@ class vector_with_small_size_optimization
 		{
 			m_v.resize(m_size);
 		}
+	}
+
+	void fill(const T& v)
+	{
+		if (m_is_small)
+			m_a.fill(v);
+		else
+			m_v.assign(m_v.size(), v);
 	}
 
 	size_t size() const { return m_size; }
