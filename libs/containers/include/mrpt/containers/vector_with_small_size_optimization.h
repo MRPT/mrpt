@@ -178,7 +178,7 @@ class vector_with_small_size_optimization
 
 	void swap(self_t& x)
 	{
-		if (m_is_small & x.m_is_small)
+		if (m_is_small && x.m_is_small)
 		{
 			m_a.swap(x.m_a);
 		}
