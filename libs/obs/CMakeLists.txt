@@ -9,19 +9,25 @@ list(APPEND obs_EXTRA_SRCS
 	"${MRPT_LIBS_ROOT}/obs/src/*.cpp"
 	"${MRPT_LIBS_ROOT}/obs/include/mrpt/obs/*.h"
 	"${MRPT_LIBS_ROOT}/obs/include/mrpt/maps/*.h"
-	"${MRPT_LIBS_ROOT}/obs/include/mrpt/slam/*.h"
 	)
 
 list(APPEND obs_EXTRA_SRCS_NAME
 	"obs sources"
 	"obs headers"
 	"maps headers"
-	"back-compat-hdrs")
+	)
 
-# Minimal XMLParser:
-include_directories("${MRPT_LIBS_ROOT}/db/src/")  # Notice the "src", not "include": these are private hdrs
-# No need to compile XML sources here (already in mrpt-db), will be exported and linked from mrpt-db,
-# even if their interface is in a private .h file.
+# Built-in libtinyxml2?
+if(CMAKE_MRPT_HAS_TINYXML2 AND NOT CMAKE_MRPT_HAS_TINYXML2_SYSTEM)
+	list(APPEND obs_EXTRA_SRCS
+		"${MRPT_BINARY_DIR}/otherlibs/tinyxml2/*.cpp"
+		"${MRPT_BINARY_DIR}/otherlibs/tinyxml2/*.h"
+		)
+	list(APPEND obs_EXTRA_SRCS_NAME
+		"tinyxml2" "tinyxml2"
+		)
+	include_directories("${MRPT_BINARY_DIR}/otherlibs/tinyxml2/")
+endif()
 
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
@@ -32,7 +38,6 @@ define_mrpt_lib(
 	# Dependencies
 	mrpt-opengl
 	mrpt-poses
-	mrpt-db # xmlparser
 	mrpt-tfest
 	)
 
@@ -42,6 +47,17 @@ if(BUILD_mrpt-obs)
 		target_link_libraries(obs PRIVATE ${LIBYAMLCPP_LIBRARIES})
 	endif()
 
+	# tinyxml2 as system lib:
+	if (TARGET imp_tinyxml2)
+		target_link_libraries(obs PRIVATE imp_tinyxml2)
+	endif()
+	#
+	# Ignore precompiled headers in built-in tinyxml2 (for Windows, etc.):
+	if(CMAKE_MRPT_HAS_TINYXML2 AND NOT CMAKE_MRPT_HAS_TINYXML2_SYSTEM)
+		if(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
+			set_source_files_properties(${tinyxml2_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
+		endif()
+	endif()
 
 	# Windows only: the mxplus lib internally requires linking with opencv (sigh...)
 	# Update Sep 2019: mrpt-obs now also uses OpenCV directly, so let's just link against opencv anyway:
