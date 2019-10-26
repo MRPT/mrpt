@@ -52,6 +52,7 @@ struct TColor
 		return (((unsigned int)R) << 16) | (((unsigned int)G) << 8) | B;
 	}
 
+	TColor(const TColor& other) { *this = other; }
 	TColor& operator=(const TColor& other);
 	TColor& operator+=(const TColor& other);
 	TColor& operator-=(const TColor& other);
