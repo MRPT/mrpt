@@ -356,7 +356,7 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 		double x, y;
 		double earth_radius = 6378137;
 
-		if ((o.has_GGA_datum) &&
+		if ((o.has_GGA_datum()) &&
 			(likelihoodOptions.GPSOrigin.min_sat <=
 			 o.getMsgByClass<gnss::Message_NMEA_GGA>().fields.satellitesUsed))
 		{
@@ -1555,7 +1555,7 @@ void CLandmarksMap::loadOccupancyFeaturesFrom2DRangeScan(
 	const CObservation2DRangeScan& obs, const CPose3D* robotPose,
 	unsigned int downSampleFactor)
 {
-	unsigned int i, n = obs.scan.size();
+	unsigned int i, n = obs.getScanSize();
 	double Th, dTh;  // angle of the ray
 	double J11, J12, J21, J22;  // The jacobian elements.
 	double d;
@@ -1590,7 +1590,7 @@ void CLandmarksMap::loadOccupancyFeaturesFrom2DRangeScan(
 	for (i = 0; i < n; i += downSampleFactor, Th += downSampleFactor * dTh)
 	{
 		// If it is a valid ray:
-		if (obs.validRange[i])
+		if (obs.getScanRangeValidity(i))
 		{
 			CLandmark newLandmark;
 
@@ -1601,7 +1601,7 @@ void CLandmarksMap::loadOccupancyFeaturesFrom2DRangeScan(
 			newLandmark.createOneFeature();
 			newLandmark.features[0].type = featNotDefined;
 
-			d = obs.scan[i];
+			d = obs.getScanRange(i);
 
 			// Compute the landmark in 2D:
 			// -----------------------------------------------

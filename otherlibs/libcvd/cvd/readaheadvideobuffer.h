@@ -9,7 +9,7 @@
 
 namespace CVD {
 #ifndef CVD_HAVE_PTHREAD
-#pragma message("ReadAheadVideoBuffer will not do any read - ahead because threads are not supported in this build")
+//#pragma message("ReadAheadVideoBuffer will not do any read - ahead because threads are not supported in this build")
 	template <class T> 
 		class ReadAheadVideoBuffer : public VideoBuffer<T>
 	{

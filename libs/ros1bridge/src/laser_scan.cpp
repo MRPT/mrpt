@@ -51,9 +51,9 @@ bool convert(
 		obj.setScanRange(i_mrpt, r);
 
 		// set the validity of the scan
+		const auto ri = obj.getScanRange(i_mrpt);
 		const bool r_valid =
-			((obj.scan[i_mrpt] < (msg.range_max * 0.95)) &&
-			 (obj.scan[i_mrpt] > msg.range_min));
+			((ri < (msg.range_max * 0.99)) && (ri > msg.range_min));
 		obj.setScanRangeValidity(i_mrpt, r_valid);
 	}
 
@@ -63,24 +63,22 @@ bool convert(
 bool toROS(
 	const mrpt::obs::CObservation2DRangeScan& obj, sensor_msgs::LaserScan& msg)
 {
-	const size_t nRays = obj.scan.size();
+	const size_t nRays = obj.getScanSize();
 	if (!nRays) return false;
-
-	ASSERT_EQUAL_(obj.scan.size(), obj.validRange.size());
 
 	msg.angle_min = -0.5f * obj.aperture;
 	msg.angle_max = 0.5f * obj.aperture;
-	msg.angle_increment = obj.aperture / (obj.scan.size() - 1);
+	msg.angle_increment = obj.aperture / (obj.getScanSize() - 1);
 
 	// setting the following values to zero solves a rviz visualization problem
 	msg.time_increment = 0.0;  // 1./30.; // Anything better?
 	msg.scan_time = 0.0;  // msg.time_increment; // idem?
 
-	msg.range_min = 0.02;
+	msg.range_min = 0.02f;
 	msg.range_max = obj.maxRange;
 
 	msg.ranges.resize(nRays);
-	for (size_t i = 0; i < nRays; i++) msg.ranges[i] = obj.scan[i];
+	for (size_t i = 0; i < nRays; i++) msg.ranges[i] = obj.getScanRange(i);
 
 	// Set header data:
 	msg.header.stamp = toROS(obj.timestamp);

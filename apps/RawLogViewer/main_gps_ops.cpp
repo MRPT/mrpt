@@ -219,9 +219,9 @@ void fixGPStimestamp(
 	CObservationGPS::Ptr& obs, CVectorDouble& time_changes,
 	std::map<std::string, double>& DeltaTimes)
 {
-	if (!obs->has_GGA_datum && !obs->has_RMC_datum) return;
+	if (!obs->has_GGA_datum() && !obs->has_RMC_datum()) return;
 
-	CObservationGPS::TUTCTime theTime;
+	gnss::UTC_time theTime;
 	bool hasTime = false;
 
 	const gnss::Message_NMEA_GGA* gga = nullptr;
@@ -436,7 +436,7 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
 				{
 					CObservationGPS::Ptr o =
 						sf->getObservationByClass<CObservationGPS>();
-					if (o && o->has_GGA_datum)
+					if (o && o->has_GGA_datum())
 					{
 						refCoords = o->getMsgByClass<gnss::Message_NMEA_GGA>()
 										.getAsStruct<TGeodeticCoords>();
@@ -452,7 +452,7 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
 					ASSERT_(o1->GetRuntimeClass() == CLASS_ID(CObservationGPS));
 					CObservationGPS::Ptr obs =
 						std::dynamic_pointer_cast<CObservationGPS>(o1);
-					if (obs->has_GGA_datum &&
+					if (obs->has_GGA_datum() &&
 						obs->getMsgByClass<gnss::Message_NMEA_GGA>()
 								.fields.fix_quality == 4)
 						last_GPS1 = obs;
@@ -462,7 +462,7 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
 					ASSERT_(o2->GetRuntimeClass() == CLASS_ID(CObservationGPS));
 					CObservationGPS::Ptr obs =
 						std::dynamic_pointer_cast<CObservationGPS>(o2);
-					if (obs->has_GGA_datum &&
+					if (obs->has_GGA_datum() &&
 						obs->getMsgByClass<gnss::Message_NMEA_GGA>()
 								.fields.fix_quality == 4)
 						last_GPS2 = obs;
@@ -478,7 +478,7 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
 				{
 					CObservationGPS::Ptr ob =
 						std::dynamic_pointer_cast<CObservationGPS>(o);
-					if (ob && ob->has_GGA_datum)
+					if (ob && ob->has_GGA_datum())
 					{
 						refCoords = ob->getMsgByClass<gnss::Message_NMEA_GGA>()
 										.getAsStruct<TGeodeticCoords>();
@@ -491,7 +491,7 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
 					ASSERT_(IS_CLASS(*o, CObservationGPS));
 					CObservationGPS::Ptr obs =
 						std::dynamic_pointer_cast<CObservationGPS>(o);
-					if (obs->has_GGA_datum &&
+					if (obs->has_GGA_datum() &&
 						obs->getMsgByClass<gnss::Message_NMEA_GGA>()
 								.fields.fix_quality == 4)
 						last_GPS1 = obs;
@@ -502,7 +502,7 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
 					ASSERT_(IS_CLASS(*o, CObservationGPS));
 					CObservationGPS::Ptr obs =
 						std::dynamic_pointer_cast<CObservationGPS>(o);
-					if (obs->has_GGA_datum &&
+					if (obs->has_GGA_datum() &&
 						obs->getMsgByClass<gnss::Message_NMEA_GGA>()
 								.fields.fix_quality == 4)
 						last_GPS2 = obs;
@@ -602,7 +602,7 @@ void xRawLogViewerFrame::OnSummaryGPS(wxCommandEvent& event)
 				CObservationGPS::Ptr obs =
 					sf->getObservationByClass<CObservationGPS>();
 				if (obs)
-					if (obs->has_GGA_datum)
+					if (obs->has_GGA_datum())
 					{
 						ASSERT_(
 							obs->getMsgByClass<gnss::Message_NMEA_GGA>()
@@ -622,7 +622,7 @@ void xRawLogViewerFrame::OnSummaryGPS(wxCommandEvent& event)
 					CObservationGPS::Ptr obs =
 						std::dynamic_pointer_cast<CObservationGPS>(o);
 					if (obs)
-						if (obs->has_GGA_datum)
+						if (obs->has_GGA_datum())
 						{
 							ASSERT_(
 								obs->getMsgByClass<gnss::Message_NMEA_GGA>()
@@ -786,7 +786,8 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 							else
 								f_this = it->second;
 
-							if (obs->has_GGA_datum)  // && obs->has_RMC_datum )
+							if (obs->has_GGA_datum())  // && obs->has_RMC_datum
+													   // )
 							{
 								TPoint3D p;  // Transformed coordinates
 
@@ -844,12 +845,12 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 										.fields.fix_quality,
 									obs->getMsgByClass<gnss::Message_NMEA_GGA>()
 										.fields.satellitesUsed,
-									obs->has_RMC_datum
+									obs->has_RMC_datum()
 										? obs->getMsgByClass<
 												 gnss::Message_NMEA_RMC>()
 											  .fields.speed_knots
 										: 0.0,
-									obs->has_RMC_datum
+									obs->has_RMC_datum()
 										? DEG2RAD(
 											  obs->getMsgByClass<
 													 gnss::Message_NMEA_RMC>()
@@ -932,7 +933,8 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 							else
 								f_this = it->second;
 
-							if (obs->has_GGA_datum)  // && obs->has_RMC_datum )
+							if (obs->has_GGA_datum())  // && obs->has_RMC_datum
+													   // )
 							{
 								TPoint3D p;  // Transformed coordinates
 
@@ -982,7 +984,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 								// supplied by the GPS itself:
 								TPoint3D cart_pos(0, 0, 0), cart_vel(0, 0, 0);
 								TPoint3D cart_vel_local(0, 0, 0);
-								if (obs->has_PZS_datum &&
+								if (obs->messages.count(gnss::TOPCON_PZS) &&
 									obs->getMsgByClass<
 										   gnss::Message_TOPCON_PZS>()
 										.hasCartesianPosVel)
@@ -1037,12 +1039,12 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 										.fields.fix_quality,
 									obs->getMsgByClass<gnss::Message_NMEA_GGA>()
 										.fields.satellitesUsed,
-									obs->has_RMC_datum
+									obs->has_RMC_datum()
 										? obs->getMsgByClass<
 												 gnss::Message_NMEA_RMC>()
 											  .fields.speed_knots
 										: 0.0,
-									obs->has_RMC_datum
+									obs->has_RMC_datum()
 										? DEG2RAD(
 											  obs->getMsgByClass<
 													 gnss::Message_NMEA_RMC>()
@@ -1163,7 +1165,7 @@ void filter_delGPSNan(
 			{
 				CObservationGPS::Ptr o =
 					std::dynamic_pointer_cast<CObservationGPS>(*it);
-				if (o->has_GGA_datum &&
+				if (o->has_GGA_datum() &&
 					(std::isnan(o->getMsgByClass<gnss::Message_NMEA_GGA>()
 									.fields.latitude_degrees) ||
 					 std::isnan(o->getMsgByClass<gnss::Message_NMEA_GGA>()

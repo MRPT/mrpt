@@ -82,6 +82,7 @@ class ts_hash_map
 			  m_idx_inner(idx_inner)
 		{
 		}
+		const_iterator(const const_iterator& o) { *this = o; }
 		const_iterator& operator=(const const_iterator& o)
 		{
 			m_vec = o.m_vec;

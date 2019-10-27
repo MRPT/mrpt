@@ -80,8 +80,8 @@ void Test_RPLIDAR()
 			printf(
 				"Scan received: %u ranges, FOV: %.02fdeg, %.03fHz: mid "
 				"rang=%fm\n",
-				(unsigned int)obs.scan.size(), RAD2DEG(obs.aperture), FPS,
-				obs.scan[obs.scan.size() / 2]);
+				(unsigned int)obs.getScanSize(), RAD2DEG(obs.aperture), FPS,
+				obs.getScanRange(obs.getScanSize() / 2));
 
 			obs.sensorPose = mrpt::poses::CPose3D(0, 0, 0);
 

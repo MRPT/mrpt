@@ -129,7 +129,7 @@ void CSickLaserSerial::doProcessSimple(
 	{
 		outObservation.setScanRange(i, ranges[i]);
 		outObservation.setScanRangeValidity(
-			i, (outObservation.scan[i] <= outObservation.maxRange));
+			i, (outObservation.getScanRange(i) <= outObservation.maxRange));
 	}
 
 	// Do filter:

@@ -159,10 +159,10 @@ void xRawLogViewerFrame::OnImportCARMEN(wxCommandEvent& event)
 
 			for (int q = 0; q < scanSize; q++)
 			{
-				obsScan->setScanRange(q, atof(str));
+				const auto r = atof(str);
+				obsScan->setScanRange(q, r);
 				goToNextToken(str);
-				obsScan->setScanRangeValidity(
-					q, obsScan->scan[q] < maxValidLaserRange);
+				obsScan->setScanRangeValidity(q, r < maxValidLaserRange);
 			}
 
 			// Read odometry:
@@ -490,7 +490,7 @@ void xRawLogViewerFrame::OnMenuExportALOG(wxCommandEvent& event)
 					lastTime = obs->timestamp;
 					if (firstTime == INVALID_TIMESTAMP) firstTime = lastTime;
 					double time_obs = timeDifference(firstTime, lastTime);
-					auto M_real = static_cast<unsigned int>(obs->scan.size());
+					auto M_real = static_cast<unsigned int>(obs->getScanSize());
 					ASSERT_(M_real == 361 || M_real == 181);
 
 					::fprintf(
@@ -514,8 +514,9 @@ void xRawLogViewerFrame::OnMenuExportALOG(wxCommandEvent& event)
 							else
 								idx = 2 * j;
 
-							float val =
-								obs->validRange[idx] ? obs->scan[idx] : 0;
+							float val = obs->getScanRangeValidity(idx)
+											? obs->getScanRange(idx)
+											: 0;
 							if (j < (181 - 1))
 								::fprintf(f, "%.03f,", val);
 							else
@@ -526,8 +527,9 @@ void xRawLogViewerFrame::OnMenuExportALOG(wxCommandEvent& event)
 					{
 						for (unsigned int idx = 0; idx < 181; idx++)
 						{
-							float val =
-								obs->validRange[idx] ? obs->scan[idx] : 0;
+							float val = obs->getScanRangeValidity(idx)
+											? obs->getScanRange(idx)
+											: 0;
 							if (idx < (181 - 1))
 								::fprintf(f, "%.03f,", val);
 							else

@@ -32,14 +32,17 @@ class CWeightedPointsMap : public CPointsMap
 
    public:
 	/** Default constructor */
-	CWeightedPointsMap();
-	CWeightedPointsMap(const CPointsMap& o) : CWeightedPointsMap()
+	CWeightedPointsMap() = default;
+	CWeightedPointsMap(const CPointsMap& o) { impl_copyFrom(o); }
+	CWeightedPointsMap(const CWeightedPointsMap& o) { impl_copyFrom(o); }
+	CWeightedPointsMap& operator=(const CPointsMap& o)
 	{
-		CPointsMap::operator=(o);
+		impl_copyFrom(o);
+		return *this;
 	}
-	CWeightedPointsMap operator=(const CPointsMap& o)
+	CWeightedPointsMap& operator=(const CWeightedPointsMap& o)
 	{
-		CPointsMap::operator=(o);
+		impl_copyFrom(o);
 		return *this;
 	}
 

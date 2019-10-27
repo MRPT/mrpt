@@ -61,8 +61,6 @@ void CPlanarLaserScan::clear()
 void CPlanarLaserScan::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
-	ASSERT_(m_scan.scan.size() == m_scan.validRange.size());
-
 	// Load into cache:
 	if (!m_cache_valid)
 	{

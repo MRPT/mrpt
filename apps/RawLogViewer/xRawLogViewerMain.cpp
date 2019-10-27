@@ -3019,10 +3019,12 @@ void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent& event)
 							files = &lstFiles[obs->sensorLabel];
 						}
 
-						for (size_t j = 0; j < obs->scan.size(); j++)
+						for (size_t j = 0; j < obs->getScanSize(); j++)
 							::fprintf(
 								files->first, "%f ",
-								obs->validRange[j] ? obs->scan[j] : 0);
+								obs->getScanRangeValidity(j)
+									? obs->getScanRange(j)
+									: 0);
 						::fprintf(files->first, "\n");
 
 						nLaser++;
@@ -3087,10 +3089,11 @@ void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent& event)
 						files = &lstFiles[obs->sensorLabel];
 					}
 
-					for (size_t j = 0; j < obs->scan.size(); j++)
+					for (size_t j = 0; j < obs->getScanSize(); j++)
 						::fprintf(
 							files->first, "%f ",
-							obs->validRange[j] ? obs->scan[j] : 0);
+							obs->getScanRangeValidity(j) ? obs->getScanRange(j)
+														 : 0);
 					::fprintf(files->first, "\n");
 
 					nLaser++;
@@ -3744,10 +3747,12 @@ void xRawLogViewerFrame::OnCountBadScans(wxCommandEvent& event)
 							CObservation2DRangeScan::Ptr>(k);
 						bool thisValid = false;
 
-						for (size_t k = 0; k < obsScan->validRange.size(); k++)
+						for (size_t k = 0; k < obsScan->getScanSize(); k++)
 						{
-							if (obsScan->validRange[k]) thisValid = true;
-							if (std::isnan(obsScan->scan[k])) thisValid = false;
+							if (obsScan->getScanRangeValidity(k))
+								thisValid = true;
+							if (std::isnan(obsScan->getScanRange(k)))
+								thisValid = false;
 						}
 
 						if (!thisValid) invalidScans++;
@@ -3764,10 +3769,11 @@ void xRawLogViewerFrame::OnCountBadScans(wxCommandEvent& event)
 						std::dynamic_pointer_cast<CObservation2DRangeScan>(o);
 					bool thisValid = false;
 
-					for (size_t k = 0; k < obsScan->validRange.size(); k++)
+					for (size_t k = 0; k < obsScan->getScanSize(); k++)
 					{
-						if (obsScan->validRange[k]) thisValid = true;
-						if (std::isnan(obsScan->scan[k])) thisValid = false;
+						if (obsScan->getScanRangeValidity(k)) thisValid = true;
+						if (std::isnan(obsScan->getScanRange(k)))
+							thisValid = false;
 					}
 
 					if (!thisValid) invalidScans++;
@@ -4246,28 +4252,37 @@ void doFilterErrScans(
 		// Build a vector: each element is true if
 		//    element[k] is the element[k] -/+ a value in [0.10-2.0], and
 		//    viceversa with [k-1]
-		std::vector<bool> ringing(obsScan->scan.size(), false);
+		std::vector<bool> ringing(obsScan->getScanSize(), false);
 		unsigned int k;
 
-		for (k = 1; k < (obsScan->scan.size() - 1); k++)
+		for (k = 1; k < (obsScan->getScanSize() - 1); k++)
 		{
-			if (obsScan->validRange[k] && obsScan->validRange[k - 1] &&
-				obsScan->validRange[k + 1])
+			if (obsScan->getScanRangeValidity(k) &&
+				obsScan->getScanRangeValidity(k - 1) &&
+				obsScan->getScanRangeValidity(k + 1))
 			{
 				int dirPrior = 0, dirPost = 0;
 
-				if (obsScan->scan[k] > (obsScan->scan[k - 1] + 0.03f) &&
-					obsScan->scan[k] < (obsScan->scan[k - 1] + 2.00f))
+				if (obsScan->getScanRange(k) >
+						(obsScan->getScanRange(k - 1) + 0.03f) &&
+					obsScan->getScanRange(k) <
+						(obsScan->getScanRange(k - 1) + 2.00f))
 					dirPrior = 1;
-				if (obsScan->scan[k] < (obsScan->scan[k - 1] - 0.03f) &&
-					obsScan->scan[k] > (obsScan->scan[k - 1] - 2.00f))
+				if (obsScan->getScanRange(k) <
+						(obsScan->getScanRange(k - 1) - 0.03f) &&
+					obsScan->getScanRange(k) >
+						(obsScan->getScanRange(k - 1) - 2.00f))
 					dirPrior = -1;
 
-				if (obsScan->scan[k] > (obsScan->scan[k + 1] + 0.03f) &&
-					obsScan->scan[k] < (obsScan->scan[k + 1] + 2.00f))
+				if (obsScan->getScanRange(k) >
+						(obsScan->getScanRange(k + 1) + 0.03f) &&
+					obsScan->getScanRange(k) <
+						(obsScan->getScanRange(k + 1) + 2.00f))
 					dirPost = -1;
-				if (obsScan->scan[k] < (obsScan->scan[k + 1] - 0.03f) &&
-					obsScan->scan[k] > (obsScan->scan[k + 1] - 2.00f))
+				if (obsScan->getScanRange(k) <
+						(obsScan->getScanRange(k + 1) - 0.03f) &&
+					obsScan->getScanRange(k) >
+						(obsScan->getScanRange(k + 1) - 2.00f))
 					dirPost = 1;
 
 				if ((dirPrior == 1 && dirPost == -1) ||
@@ -4279,7 +4294,7 @@ void doFilterErrScans(
 		// Look for segments of 'K' consecutive ringing ranges, and mark them as
 		// not valid!!
 		int ringingStart = -1;
-		for (k = 1; k < (obsScan->scan.size() - 1); k++)
+		for (k = 1; k < (obsScan->getScanSize() - 1); k++)
 		{
 			if (ringing[k])
 			{
@@ -5395,8 +5410,8 @@ void doFilterInvalidRange(CObservation::Ptr& obs, size_t& invalidRanges)
 	{
 		CObservation2DRangeScan::Ptr obsScan =
 			std::dynamic_pointer_cast<CObservation2DRangeScan>(obs);
-		for (size_t k = 0; k < obsScan->scan.size(); k++)
-			if (obsScan->scan[k] >= obsScan->maxRange)
+		for (size_t k = 0; k < obsScan->getScanSize(); k++)
+			if (obsScan->getScanRange(k) >= obsScan->maxRange)
 			{
 				obsScan->setScanRangeValidity(k, false);
 				invalidRanges++;

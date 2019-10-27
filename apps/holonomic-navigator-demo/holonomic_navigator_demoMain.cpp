@@ -764,7 +764,7 @@ void holonomic_navigator_demoFrame::simulateOneStep(double time_step)
 	gl_scan3D->setScan(simulatedScan);  // Draw real scan in 3D view
 
 	// Normalize:
-	for (size_t j = 0; j < simulatedScan.scan.size(); j++)
+	for (size_t j = 0; j < simulatedScan.getScanSize(); j++)
 		simulatedScan.setScanRange(
 			j, simulatedScan.getScanRange(j) / simulatedScan.maxRange);
 
@@ -839,8 +839,9 @@ void holonomic_navigator_demoFrame::simulateOneStep(double time_step)
 								   j * (log->gaps_end[i] - log->gaps_ini[i]) /
 									   static_cast<double>(N_STEPS - 1);
 				const double ang =
-					M_PI * (-1 + 2 * sec / ((float)simulatedScan.scan.size()));
-				const double d = simulatedScan.scan[sec] - 0.05;
+					M_PI *
+					(-1 + 2 * sec / ((float)simulatedScan.getScanSize()));
+				const double d = simulatedScan.getScanRange(sec) - 0.05;
 				gl_nd_gaps->appendLineStrip(d * cos(ang), d * sin(ang), 0);
 			}
 			gl_nd_gaps->appendLineStrip(0, 0, 0);

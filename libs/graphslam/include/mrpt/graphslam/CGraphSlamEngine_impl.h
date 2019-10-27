@@ -1969,7 +1969,7 @@ void CGraphSlamEngine<GRAPH_T>::decimateLaserScan(
 {
 	MRPT_START;
 
-	size_t scan_size = laser_scan_in.scan.size();
+	size_t scan_size = laser_scan_in.getScanSize();
 
 	// assign the decimated scans, ranges
 	std::vector<float> new_scan(
@@ -1980,8 +1980,9 @@ void CGraphSlamEngine<GRAPH_T>::decimateLaserScan(
 	{
 		if (i % keep_every_n_entries == 0)
 		{
-			new_scan[new_scan_size] = laser_scan_in.scan[i];
-			new_validRange[new_scan_size] = laser_scan_in.validRange[i];
+			new_scan[new_scan_size] = laser_scan_in.getScanRange(i);
+			new_validRange[new_scan_size] =
+				laser_scan_in.getScanRangeValidity(i);
 			new_scan_size++;
 		}
 	}

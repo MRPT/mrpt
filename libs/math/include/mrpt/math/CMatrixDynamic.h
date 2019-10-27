@@ -92,8 +92,8 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 		m_Cols = col;
 
 		// New buffer:
-		decltype(m_data) newData;
-		newData.resize(m_Rows * m_Cols);
+		decltype(m_data) newData(m_Rows * m_Cols);
+		newData.fill(typename decltype(m_data)::value_type());
 		// Copy old content:
 		const auto nRowsToCopy = m_Rows >= old_rows ? old_rows : m_Rows;
 		const auto nColsToCopy = m_Cols >= old_cols ? old_cols : m_Cols;

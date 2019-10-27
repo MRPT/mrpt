@@ -277,7 +277,7 @@ int VelodyneView(int argc, char** argv)
 			last_obs_gps = std::atomic_load(&thrPar.new_obs_gps);
 
 			std::string rmc_datum;
-			if (last_obs_gps->has_RMC_datum)
+			if (last_obs_gps->has_RMC_datum())
 			{
 				rmc_datum = mrpt::format(
 					"Lon=%.09f deg  Lat=%.09f deg  Valid?: '%c'\n",

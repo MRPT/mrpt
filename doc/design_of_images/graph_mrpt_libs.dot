@@ -27,10 +27,6 @@ digraph MRPT_LIBS {
 	core       [label="mrpt-core",URL="group__mrpt__core__grp.html"];
 	}
 
-	db         [label="mrpt-db",URL="group__mrpt__db__grp.html"];
-	db  -> serialization;
-	db  -> system;
-
 	detectors  [label="mrpt-detectors",URL="group__mrpt__detectors__grp.html"];
 	detectors -> gui;
 	detectors -> slam;
@@ -88,7 +84,6 @@ digraph MRPT_LIBS {
 
 	obs        [label="mrpt-obs",URL="group__mrpt__obs__grp.html"];
 	obs -> opengl;
-	obs -> db;
 	obs -> tfest;
 
 	opengl     [label="mrpt-opengl", URL="group__mrpt__opengl__grp.html"];

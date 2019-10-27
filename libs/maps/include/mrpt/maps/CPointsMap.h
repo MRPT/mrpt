@@ -122,8 +122,10 @@ class CPointsMap : public CMetricMap,
 		this->impl_copyFrom(o);
 		return *this;
 	}
-	// CPointsMap(const CPointsMap& o): Don't define this one to avoid calling
-	// a virtual method during copy ctors.
+	/** Don't define this one as we cannot call the virtual method
+	 * impl_copyFrom() during copy ctors. Redefine in derived classes as needed
+	 * instead. */
+	CPointsMap(const CPointsMap& o) = delete;
 
 	// --------------------------------------------
 	/** @name Pure virtual interfaces to be implemented by any class derived

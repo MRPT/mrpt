@@ -80,7 +80,7 @@ bool MatrixVectorBase<Scalar, Derived>::fromMatlabStringFormat(
 				// Else, this may be an empty matrix... if there is no next row,
 				// we'll return with a (0,0) matrix
 				if (Derived::RowsAtCompileTime == Eigen::Dynamic)
-					mvbDerived() = Derived();
+					mvbDerived().setZero(0, 0);
 			}
 		}
 		else
@@ -102,7 +102,9 @@ bool MatrixVectorBase<Scalar, Derived>::fromMatlabStringFormat(
 			// Append to the matrix:
 			if (Derived::RowsAtCompileTime == Eigen::Dynamic ||
 				Derived::ColsAtCompileTime == Eigen::Dynamic)
+			{
 				mvbDerived().resize(nRow + 1, N);
+			}
 			else if (
 				Derived::RowsAtCompileTime != Eigen::Dynamic &&
 				int(nRow) >= Derived::RowsAtCompileTime)

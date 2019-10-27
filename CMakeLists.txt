@@ -24,6 +24,11 @@ else()
 	cmake_minimum_required(VERSION 3.3)
 endif()
 
+# CheckIncludeFile: Yes, we will set "CMAKE_REQUIRED_LIBRARIES".
+if (POLICY CMP0075)
+	cmake_policy(SET CMP0075 NEW)
+endif()
+
 # Display timing information for each compiler instance on screen
 option(CMAKE_TIMING_VERBOSE "Enable the display of timing information for each compiler instance." OFF)
 mark_as_advanced(CMAKE_TIMING_VERBOSE)
@@ -227,6 +232,7 @@ include(cmakemodules/script_eigen.cmake REQUIRED)       # Eigen3
 include(cmakemodules/script_ffmpeg.cmake REQUIRED)      # Check for ffmpeg C libraries: libavcodec, libavutil, libavformat, libswscale
 include(cmakemodules/script_flycapture2.cmake REQUIRED) # Check for PointGreyResearch (PGR) FlyCapture2 library
 include(cmakemodules/script_ftdi.cmake REQUIRED)        # Check for the FTDI headers (Linux only, in win32 we use built-in header & dynamic DLL load):
+include(cmakemodules/script_gcc_clang_id.cmake REQUIRED) # Helper variables
 include(cmakemodules/script_gl_glut.cmake REQUIRED)     # Check for the GL,GLUT libraries
 include(cmakemodules/script_gridmap_options.cmake REQUIRED) # Gridmap options
 include(cmakemodules/script_gtest.cmake REQUIRED)       # Unit testing lib
@@ -252,13 +258,13 @@ include(cmakemodules/script_ros1.cmake REQUIRED)        # Check for ROS1
 include(cmakemodules/script_SIMD.cmake REQUIRED)        # SSE2/SSE3/... optimization options
 include(cmakemodules/script_suitesparse.cmake REQUIRED) # SuiteSparse libs
 include(cmakemodules/script_swissrange.cmake REQUIRED)  # Support for SWISSRANGE 3D camera:
+include(cmakemodules/script_tinyxml2.cmake REQUIRED)    # tinyxml2 lib
 include(cmakemodules/script_triclops.cmake REQUIRED)    # Check for PointGreyResearch (PGR) Triclops library
 include(cmakemodules/script_videre_svs.cmake REQUIRED)  # Support for Videre Design stereo camera:
 include(cmakemodules/script_wxwidgets.cmake REQUIRED)   # Check for wxWidgets + GL
 include(cmakemodules/script_xsens.cmake REQUIRED)       # XSens Motion trackers / IMU drivers
 include(cmakemodules/script_yamlcpp.cmake REQUIRED)     # Check for YAMLCPP library
 include(cmakemodules/script_zlib.cmake REQUIRED)        # Check for zlib
-
 
 # ---------------------------------------------------------------------------
 #			OPTIONS
@@ -387,7 +393,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 # CLang options ================================
-if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+if (MRPT_COMPILER_IS_CLANG)
 	add_definitions(-D__STRICT_ANSI__) # fixes errors like "support for type '__float128' is not yet implemented"
 
 	# High level of warnings.
@@ -409,7 +415,7 @@ endif()
 
 # Shared options between GCC and CLANG:
 # ======================================
-if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
+if (MRPT_COMPILER_IS_GCC_OR_CLANG)
 	# Even more warnings:
 	add_compile_options(-Wreturn-type -Werror=return-type)
 	add_compile_options(-Wformat -Werror=format-security)
@@ -620,7 +626,7 @@ add_subdirectory(doc)
 set(BUILD_TESTING ON CACHE BOOL "Build MRPT tests")
 if(BUILD_TESTING)
 	# Try using libgtest (Google testing library) from the system, if available
-	if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND APPLE)
+	if(MRPT_COMPILER_IS_CLANG AND APPLE)
 		add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
 	endif()
 	add_subdirectory(${CMAKE_MRPT_GTEST_SRC_DIR})  # Build gtest from sources

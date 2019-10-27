@@ -46,7 +46,7 @@ struct loadFromRangeImpl
 		// std::vector<> memory is not actually deadllocated
 		// and can be reused.
 
-		const int sizeRangeScan = rangeScan.scan.size();
+		const int sizeRangeScan = rangeScan.getScanSize();
 
 		if (!sizeRangeScan) return;  // Nothing to do.
 
@@ -164,7 +164,7 @@ struct loadFromRangeImpl
 			// hold vectors of 4*N capacity, so there is no need to call
 			// reserve() here.
 
-			const float* ptr_in_scan = &rangeScan.scan[0];
+			const float* ptr_in_scan = &rangeScan.getScanRange(0);
 			const float* ptr_in_cos = &sincos_vals.ccos[0];
 			const float* ptr_in_sin = &sincos_vals.csin[0];
 
@@ -208,16 +208,16 @@ struct loadFromRangeImpl
 
 			// Convert from the std::vector format:
 			const Eigen::Map<Eigen::Matrix<float, Eigen::Dynamic, 1>> scan_vals(
-				const_cast<float*>(&rangeScan.scan[0]), rangeScan.scan.size(),
-				1);
+				const_cast<float*>(&rangeScan.getScanRange(0)),
+				rangeScan.getScanSize(), 1);
 			// SinCos table allocates N+4 floats for the convenience of SSE2:
 			// Map to make it appears it has the correct size:
 			const Eigen::Map<Eigen::Matrix<float, Eigen::Dynamic, 1>> ccos(
-				const_cast<float*>(&sincos_vals.ccos[0]), rangeScan.scan.size(),
-				1);
+				const_cast<float*>(&sincos_vals.ccos[0]),
+				rangeScan.getScanSize(), 1);
 			const Eigen::Map<Eigen::Matrix<float, Eigen::Dynamic, 1>> csin(
-				const_cast<float*>(&sincos_vals.csin[0]), rangeScan.scan.size(),
-				1);
+				const_cast<float*>(&sincos_vals.csin[0]),
+				rangeScan.getScanSize(), 1);
 
 			// Vectorized (optimized) scalar multiplications:
 			scan_x = scan_vals.array() * ccos.array();
@@ -233,7 +233,7 @@ struct loadFromRangeImpl
 
 		for (int i = 0; i < sizeRangeScan; i++)
 		{
-			if (rangeScan.validRange[i])
+			if (rangeScan.getScanRangeValidity(i))
 			{
 				lx = scan_gx[i];
 				ly = scan_gy[i];
@@ -342,7 +342,7 @@ struct loadFromRangeImpl
 			}
 
 			// Save for next iteration:
-			lastPointWasValid = rangeScan.validRange[i] != 0;
+			lastPointWasValid = rangeScan.getScanRangeValidity(i) != 0;
 		}
 
 		// The last point

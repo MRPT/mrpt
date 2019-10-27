@@ -194,7 +194,7 @@ void CHokuyoURG::doProcessSimple(
 		outObservation.setScanRange(i, range_mm * 0.001f);
 		outObservation.setScanRangeValidity(
 			i, range_mm >= 20 &&
-				   (outObservation.scan[i] <= outObservation.maxRange));
+				   (outObservation.getScanRange(i) <= outObservation.maxRange));
 
 		if (m_intensity)
 		{

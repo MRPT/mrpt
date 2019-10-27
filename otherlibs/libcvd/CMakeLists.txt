@@ -14,6 +14,9 @@ find_package(TIFF)
 find_package(TooN)
 find_package(X11)
 find_package(dc1394v2)
+
+# Read: https://cmake.org/cmake/help/latest/module/FindOpenGL.html
+set(OpenGL_GL_PREFERENCE "LEGACY")
 find_package(OpenGL)
 
 # Detect endianness

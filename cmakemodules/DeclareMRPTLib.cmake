@@ -138,6 +138,8 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 	list(LENGTH ${name}_EXTRA_SRCS_NAME N_SRCS_NAMES)
 
 	if (NOT N_SRCS EQUAL N_SRCS_NAMES)
+		message(ERROR " ${name}_EXTRA_SRCS=${${name}_EXTRA_SRCS}")
+		message(ERROR " ${name}_EXTRA_SRCS_NAME=${${name}_EXTRA_SRCS_NAME}")
 		message(FATAL_ERROR "Mismatch length in ${name}_EXTRA_SRCS and ${name}_EXTRA_SRCS_NAME!")
 	endif ()
 

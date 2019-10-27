@@ -170,7 +170,7 @@ if(CMAKE_MRPT_HAS_xSENS_MT3 OR CMAKE_MRPT_HAS_xSENS_MT4)
 	endif()
 
 	# Avoid some annoying warnings:
-	if (CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+	if (MRPT_COMPILER_IS_GCC_OR_CLANG)
 		set_source_files_properties(${xSens_MT3_FILES} ${xSens_MT4_FILES} PROPERTIES COMPILE_FLAGS "-Wno-variadic-macros")
 		# -D_... = Needed to have CLOCK_REALTIME,... in gcc
 		# -fms-extensions: Unnamed structs in unions

@@ -148,9 +148,10 @@ CAboutBox::CAboutBox(
 
 	Connect(
 		ID_BUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CAboutBox::OnButton1Click);
+		wxCommandEventHandler(CAboutBox::OnButton1Click));
 	Connect(
-		wxID_ANY, wxEVT_INIT_DIALOG, (wxObjectEventFunction)&CAboutBox::OnInit);
+		wxID_ANY, wxEVT_INIT_DIALOG,
+		wxInitDialogEventHandler(CAboutBox::OnInit));
 	//*)
 
 	lbLicense->SetValue(license().c_str());
