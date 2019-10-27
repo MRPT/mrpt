@@ -22,7 +22,7 @@ add_library(mrptgtest
 
 mrpt_lib_target_requires_cpp17(mrptgtest)
 
-if (UNIX AND (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX))
+if (UNIX AND MRPT_COMPILER_IS_GCC_OR_CLANG)
 	target_compile_options(mrptgtest PRIVATE "-fPIC")
 endif()
 
