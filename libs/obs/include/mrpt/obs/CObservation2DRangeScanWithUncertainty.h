@@ -21,10 +21,10 @@ class CObservation2DRangeScanWithUncertainty
    public:
 	/** The observation with the mean ranges in the scan field */
 	CObservation2DRangeScan rangeScan;
-	/** The same ranges than in rangeScan.scan[], for convenience as a math
-	 * vector container, and with `double` precision */
+	/** The same ranges than in rangeScan.getScanRange(), for convenience as a
+	 * math vector container, and with `double` precision */
 	mrpt::math::CVectorDouble rangesMean;
-	/** The covariance matrix for all the ranges in rangeScan.scan[] */
+	/** The covariance matrix for all the ranges in rangeScan.getScanRange() */
 	mrpt::math::CMatrixDouble rangesCovar;
 
 	struct TEvalParams

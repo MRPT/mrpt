@@ -221,9 +221,9 @@ GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_BESTPOS)
 /** Frame header */
 nv_oem6_header_t header;
 nv_oem6_solution_status::nv_solution_status_t solution_stat =
-    nv_oem6_solution_status::INVALID_FIX;
+	nv_oem6_solution_status::INVALID_FIX;
 nv_oem6_position_type::nv_position_type_t position_type =
-    nv_oem6_position_type::NONE;
+	nv_oem6_position_type::NONE;
 /** [deg], [deg], hgt over sea level[m] */
 double lat = 0, lon = 0, hgt = 0;
 float undulation = 0;
@@ -233,7 +233,7 @@ float lat_sigma = 0, lon_sigma = 0, hgt_sigma = 0;
 char base_station_id[4]{0, 0, 0, 0};
 float diff_age = 0, sol_age = 0;
 uint8_t num_sats_tracked = 0, num_sats_sol = 0, num_sats_sol_L1 = 0,
-        num_sats_sol_multi = 0;
+		num_sats_sol_multi = 0;
 uint8_t reserved = 0;
 uint8_t ext_sol_stat = 0;
 uint8_t galileo_beidou_mask = 0;
@@ -262,7 +262,7 @@ double lat = 0, lon = 0, hgt = 0;
 double vel_north = 0, vel_east = 0, vel_up = 0;
 double roll = 0, pitch = 0, azimuth = 0;
 nv_oem6_ins_status_type::nv_ins_status_type_t ins_status =
-    nv_oem6_ins_status_type::INS_INACTIVE;
+	nv_oem6_ins_status_type::INS_INACTIVE;
 uint32_t crc = 0;
 GNSS_BINARY_MSG_DEFINITION_MID
 /**  Return the geodetic coords as a mrpt::topography::TGeodeticCoords structure
@@ -392,9 +392,9 @@ GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_MARKPOS)
 /** Frame header */
 nv_oem6_header_t header;
 nv_oem6_solution_status::nv_solution_status_t solution_stat =
-    nv_oem6_solution_status::INVALID_FIX;
+	nv_oem6_solution_status::INVALID_FIX;
 nv_oem6_position_type::nv_position_type_t position_type =
-    nv_oem6_position_type::NONE;
+	nv_oem6_position_type::NONE;
 /** [deg], [deg], hgt over sea level[m] */
 double lat = 0, lon = 0, hgt = 0;
 float undulation = 0;
@@ -403,7 +403,7 @@ float lat_sigma = 0, lon_sigma = 0, hgt_sigma = 0;
 char base_station_id[4] = {0, 0, 0, 0};
 float diff_age = 0, sol_age = 0;
 uint8_t num_sats_tracked = 0, num_sats_sol = 0, num_sats_sol_L1 = 0,
-        num_sats_sol_multi = 0;
+		num_sats_sol_multi = 0;
 uint8_t reserved = 0;
 uint8_t ext_sol_stat = 0;
 uint8_t galileo_beidou_mask = 0;

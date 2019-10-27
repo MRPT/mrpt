@@ -56,7 +56,7 @@ class vector_with_small_size_optimization
 
 	vector_with_small_size_optimization() = default;
 	vector_with_small_size_optimization(size_t n)
-	    : m_is_small(n <= small_size), m_size(n)
+		: m_is_small(n <= small_size), m_size(n)
 	{
 		if (!m_is_small) m_v.resize(n);
 	}

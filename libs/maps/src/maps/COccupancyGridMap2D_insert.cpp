@@ -121,7 +121,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 			// ---------------------------------------------
 			//		Insert the scan as simple rays:
 			// ---------------------------------------------
-			int cx, cy, N = o.scan.size();
+			int cx, cy, N = o.getScanSize();
 			float px, py;
 			double A, dAK;
 
@@ -137,7 +137,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 			int K = updateInfoChangeOnly.enabled
 						? updateInfoChangeOnly.laserRaysSkip
 						: decimation;
-			size_t idx, nRanges = o.scan.size();
+			size_t idx, nRanges = o.getScanSize();
 			float curRange = 0;
 
 			// Start position:
@@ -185,9 +185,9 @@ bool COccupancyGridMap2D::internal_insertObservation(
 					scanPoint_y = scanPoints_y;
 					 idx < nRanges; idx += K, scanPoint_x++, scanPoint_y++)
 				{
-					if (o.validRange[idx])
+					if (o.getScanRangeValidity(idx))
 					{
-						curRange = o.scan[idx];
+						curRange = o.getScanRange(idx);
 						float R = min(maxDistanceInsertion, curRange);
 
 						*scanPoint_x = px + cos(A) * R;
@@ -256,7 +256,8 @@ bool COccupancyGridMap2D::internal_insertObservation(
 				// Insert rays:
 				for (idx = 0; idx < nRanges; idx += K)
 				{
-					if (!o.validRange[idx] && !invalidAsFree) continue;
+					if (!o.getScanRangeValidity(idx) && !invalidAsFree)
+						continue;
 
 					// Starting position: Laser position
 					cx = cx0;
@@ -293,7 +294,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 
 					int frCX = cx << FRBITS;
 					int frCY = cy << FRBITS;
-					const auto logodd_free = o.validRange[idx]
+					const auto logodd_free = o.getScanRangeValidity(idx)
 												 ? logodd_observation_free
 												 : logodd_noecho_free;
 
@@ -314,7 +315,8 @@ bool COccupancyGridMap2D::internal_insertObservation(
 					// Only if:
 					//  - It was a valid ray, and
 					//  - The ray was not truncated
-					if (o.validRange[idx] && o.scan[idx] < maxDistanceInsertion)
+					if (o.getScanRangeValidity(idx) &&
+						o.getScanRange(idx) < maxDistanceInsertion)
 						updateCell_fast_occupied(
 							trg_cx, trg_cy, logodd_observation_occupied,
 							logodd_thres_occupied, theMapArray, theMapSize_x);
@@ -351,9 +353,9 @@ bool COccupancyGridMap2D::internal_insertObservation(
 				for (idx = 0; idx < nRanges; idx += K)
 				{
 					float scanPoint_x, scanPoint_y;
-					if (o.validRange[idx])
+					if (o.getScanRangeValidity(idx))
 					{
-						curRange = o.scan[idx];
+						curRange = o.getScanRange(idx);
 						float R = min(maxDistanceInsertion, curRange);
 
 						scanPoint_x = px + cos(A) * R;
@@ -444,9 +446,9 @@ bool COccupancyGridMap2D::internal_insertObservation(
 				for (idx = 0; idx < nRanges; idx += K, A += dAK)
 				{
 					float theR;  // The range of this beam
-					if (o.validRange[idx])
+					if (o.getScanRangeValidity(idx))
 					{
-						curRange = o.scan[idx];
+						curRange = o.getScanRange(idx);
 						last_valid_range = curRange;
 						theR = min(maxDistanceInsertion, curRange);
 					}
@@ -713,7 +715,8 @@ bool COccupancyGridMap2D::internal_insertObservation(
 					//  - It was a valid ray, and
 					//  - The ray was not truncated
 					// ----------------------------------------------------
-					if (o.validRange[idx] && o.scan[idx] < maxDistanceInsertion)
+					if (o.getScanRangeValidity(idx) &&
+						o.getScanRange(idx) < maxDistanceInsertion)
 					{
 						theR += resolution;
 

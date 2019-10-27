@@ -1600,8 +1600,8 @@ struct TAuxLoadFunctor
 	}
 };
 
-TAuxLoadFunctor dummy_loader;  // used just to set
-// "ptr_internal_build_points_map_from_scan2D"
+// used just to set "ptr_internal_build_points_map_from_scan2D"
+static TAuxLoadFunctor dummy_loader;
 
 // ================================ PLY files import & export virtual
 // methods

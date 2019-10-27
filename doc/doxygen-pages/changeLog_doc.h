@@ -76,6 +76,7 @@
   - \ref mrpt_opengl_grp
     - Update Assimp lib version 4.0.1 -> 4.1.0 (when built as ExternalProject)
   - \ref mrpt_obs_grp
+    - mrpt::obs::CObservation2DRangeScan: Deprecated access to scan data via proxy objects `obs->scan[i]`, `obs->validRange[i]`, `obs->intensity[i]` has been deleted. Please use the alternative getters/setters: `obs->getScanRange(i)`, etc.
     - mrpt::obs::T3DPointsProjectionParams and mrpt::obs::CObservation3DRangeScan::project3DPointsFromDepthImageInto now together support organized PCL point clouds.
   - \ref mrpt_poses_grp  [NEW IN MRPT 2.0.0]
     - Reorganized all Lie Algebra methods into \ref mrpt_poses_lie_grp
