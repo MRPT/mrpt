@@ -20,9 +20,12 @@ add_library(mrptgtest
 	src/gtest-all.cc
 	)
 
-if(CMAKE_COMPILER_IS_GNUCXX AND UNIX)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-endif(CMAKE_COMPILER_IS_GNUCXX AND UNIX)
+mrpt_lib_target_requires_cpp17(mrptgtest)
+
+if (UNIX AND (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX))
+	target_compile_options(mrptgtest PRIVATE "-fPIC")
+endif()
+
 
 
 set_target_properties(mrptgtest PROPERTIES FOLDER "3rd party")
