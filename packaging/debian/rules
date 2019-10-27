@@ -19,9 +19,9 @@ else
 CMAKE_ARCH_FLAGS = -DMRPT_AUTODETECT_SIMD=OFF
 endif
 
-# Unit tests can be run with target "test", or "test_gdb", which shows stack
+# Unit tests can be run with target "test_legacy", or "test_gdb", which shows stack
 # traces on failure:
-MRPT_TEST_TARGET = test_legacy
+MRPT_TEST_TARGET = test_gdb
 
 CMAKE_FLAGS = \
 	-DCMAKE_INSTALL_PREFIX="$(CURDIR)/debian/usr/" \
