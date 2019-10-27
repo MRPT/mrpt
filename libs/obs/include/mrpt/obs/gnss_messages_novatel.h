@@ -220,22 +220,25 @@ struct Message_NV_OEM6_GENERIC_SHORT_FRAME : public gnss_message
 GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_BESTPOS)
 /** Frame header */
 nv_oem6_header_t header;
-nv_oem6_solution_status::nv_solution_status_t solution_stat;
-nv_oem6_position_type::nv_position_type_t position_type;
+nv_oem6_solution_status::nv_solution_status_t solution_stat =
+    nv_oem6_solution_status::INVALID_FIX;
+nv_oem6_position_type::nv_position_type_t position_type =
+    nv_oem6_position_type::NONE;
 /** [deg], [deg], hgt over sea level[m] */
-double lat, lon, hgt;
-float undulation;
-uint32_t datum_id;
+double lat = 0, lon = 0, hgt = 0;
+float undulation = 0;
+uint32_t datum_id = 0;
 /** Uncertainties (all in [m]) */
-float lat_sigma, lon_sigma, hgt_sigma;
-char base_station_id[4];
-float diff_age, sol_age;
-uint8_t num_sats_tracked, num_sats_sol, num_sats_sol_L1, num_sats_sol_multi;
-uint8_t reserved;
-uint8_t ext_sol_stat;
-uint8_t galileo_beidou_mask;
-uint8_t gps_glonass_mask;
-uint32_t crc;
+float lat_sigma = 0, lon_sigma = 0, hgt_sigma = 0;
+char base_station_id[4]{0, 0, 0, 0};
+float diff_age = 0, sol_age = 0;
+uint8_t num_sats_tracked = 0, num_sats_sol = 0, num_sats_sol_L1 = 0,
+        num_sats_sol_multi = 0;
+uint8_t reserved = 0;
+uint8_t ext_sol_stat = 0;
+uint8_t galileo_beidou_mask = 0;
+uint8_t gps_glonass_mask = 0;
+uint32_t crc = 0;
 GNSS_BINARY_MSG_DEFINITION_MID
 /**  Return the geodetic coords as a mrpt::topography::TGeodeticCoords structure
  * (requires linking against mrpt-topography)
@@ -253,13 +256,14 @@ GNSS_BINARY_MSG_DEFINITION_MID_END
 GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_INSPVAS)
 /** Frame header */
 nv_oem6_short_header_t header;
-uint32_t week;
-double seconds_in_week;
-double lat, lon, hgt;
-double vel_north, vel_east, vel_up;
-double roll, pitch, azimuth;
-nv_oem6_ins_status_type::nv_ins_status_type_t ins_status;
-uint32_t crc;
+uint32_t week = 0;
+double seconds_in_week = 0;
+double lat = 0, lon = 0, hgt = 0;
+double vel_north = 0, vel_east = 0, vel_up = 0;
+double roll = 0, pitch = 0, azimuth = 0;
+nv_oem6_ins_status_type::nv_ins_status_type_t ins_status =
+    nv_oem6_ins_status_type::INS_INACTIVE;
+uint32_t crc = 0;
 GNSS_BINARY_MSG_DEFINITION_MID
 /**  Return the geodetic coords as a mrpt::topography::TGeodeticCoords structure
  * (requires linking against mrpt-topography)
@@ -277,18 +281,18 @@ GNSS_BINARY_MSG_DEFINITION_MID_END
 GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_INSCOVS)
 /** Frame header */
 nv_oem6_short_header_t header;
-uint32_t week;
-double seconds_in_week;
+uint32_t week = 0;
+double seconds_in_week = 0;
 /** Position covariance matrix in local level frame (metres squared)
  * xx,xy,xz,yx,yy,yz,zx,zy,zz */
-double pos_cov[9];
+double pos_cov[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 /** Attitude covariance matrix of the SPAN frame to the local level frame.  (deg
  * sq) xx,xy,xz,yx,yy,yz,zx,zy,zz */
-double att_cov[9];
+double att_cov[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 /** Velocity covariance matrix in local level frame. (metres/second squared)
  * xx,xy,xz,yx,yy,yz,zx,zy,zz */
-double vel_cov[9];
-uint32_t crc;
+double vel_cov[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+uint32_t crc = 0;
 GNSS_BINARY_MSG_DEFINITION_MID
 bool getAllFieldDescriptions(std::ostream& o) const override;
 bool getAllFieldValues(std::ostream& o) const override;
@@ -323,21 +327,21 @@ struct Message_NV_OEM6_RANGECMP : public gnss_message
 GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_RXSTATUS)
 /** Frame header */
 nv_oem6_header_t header;
-uint32_t error, num_stats;
-uint32_t rxstat, rxstat_pri, rxstat_set, rxstat_clear;
-uint32_t aux1stat, aux1stat_pri, aux1stat_set, aux1stat_clear;
-uint32_t aux2stat, aux2stat_pri, aux2stat_set, aux2stat_clear;
-uint32_t aux3stat, aux3stat_pri, aux3stat_set, aux3stat_clear;
-uint32_t crc;
+uint32_t error = 0, num_stats = 0;
+uint32_t rxstat = 0, rxstat_pri = 0, rxstat_set = 0, rxstat_clear = 0;
+uint32_t aux1stat = 0, aux1stat_pri = 0, aux1stat_set = 0, aux1stat_clear = 0;
+uint32_t aux2stat = 0, aux2stat_pri = 0, aux2stat_set = 0, aux2stat_clear = 0;
+uint32_t aux3stat = 0, aux3stat_pri = 0, aux3stat_set = 0, aux3stat_clear = 0;
+uint32_t crc = 0;
 GNSS_BINARY_MSG_DEFINITION_END
 
 /** Novatel frame: NV_OEM6_RAWEPHEM. \sa mrpt::obs::CObservationGPS  */
 GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_RAWEPHEM)
 /** Frame header */
 nv_oem6_header_t header;
-uint32_t sat_prn, ref_week, ref_secs;
+uint32_t sat_prn = 0, ref_week = 0, ref_secs = 0;
 uint8_t subframe1[30], subframe2[30], subframe3[30];
-uint32_t crc;
+uint32_t crc = 0;
 GNSS_BINARY_MSG_DEFINITION_END
 
 /** Novatel frame: NV_OEM6_VERSION. \sa mrpt::obs::CObservationGPS  */
@@ -372,12 +376,12 @@ struct Message_NV_OEM6_VERSION : public gnss_message
 GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_RAWIMUS)
 /** Frame header */
 nv_oem6_short_header_t header;
-uint32_t week;
-double week_seconds;
-uint32_t imu_status;
-int32_t accel_z, accel_y_neg, accel_x;
-int32_t gyro_z, gyro_y_neg, gyro_x;
-uint32_t crc;
+uint32_t week = 0;
+double week_seconds = 0;
+uint32_t imu_status = 0;
+int32_t accel_z = 0, accel_y_neg = 0, accel_x = 0;
+int32_t gyro_z = 0, gyro_y_neg = 0, gyro_x = 0;
+uint32_t crc = 0;
 GNSS_BINARY_MSG_DEFINITION_MID
 bool getAllFieldDescriptions(std::ostream& o) const override;
 bool getAllFieldValues(std::ostream& o) const override;
@@ -387,21 +391,24 @@ GNSS_BINARY_MSG_DEFINITION_MID_END
 GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_MARKPOS)
 /** Frame header */
 nv_oem6_header_t header;
-nv_oem6_solution_status::nv_solution_status_t solution_stat;
-nv_oem6_position_type::nv_position_type_t position_type;
+nv_oem6_solution_status::nv_solution_status_t solution_stat =
+    nv_oem6_solution_status::INVALID_FIX;
+nv_oem6_position_type::nv_position_type_t position_type =
+    nv_oem6_position_type::NONE;
 /** [deg], [deg], hgt over sea level[m] */
-double lat, lon, hgt;
-float undulation;
-uint32_t datum_id;
-float lat_sigma, lon_sigma, hgt_sigma;
-char base_station_id[4];
-float diff_age, sol_age;
-uint8_t num_sats_tracked, num_sats_sol, num_sats_sol_L1, num_sats_sol_multi;
-uint8_t reserved;
-uint8_t ext_sol_stat;
-uint8_t galileo_beidou_mask;
-uint8_t gps_glonass_mask;
-uint32_t crc;
+double lat = 0, lon = 0, hgt = 0;
+float undulation = 0;
+uint32_t datum_id = 0;
+float lat_sigma = 0, lon_sigma = 0, hgt_sigma = 0;
+char base_station_id[4] = {0, 0, 0, 0};
+float diff_age = 0, sol_age = 0;
+uint8_t num_sats_tracked = 0, num_sats_sol = 0, num_sats_sol_L1 = 0,
+        num_sats_sol_multi = 0;
+uint8_t reserved = 0;
+uint8_t ext_sol_stat = 0;
+uint8_t galileo_beidou_mask = 0;
+uint8_t gps_glonass_mask = 0;
+uint32_t crc = 0;
 GNSS_BINARY_MSG_DEFINITION_MID
 /**  Return the geodetic coords as a mrpt::topography::TGeodeticCoords structure
  * (requires linking against mrpt-topography)
@@ -417,12 +424,12 @@ GNSS_BINARY_MSG_DEFINITION_MID_END
 GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_MARKTIME)
 /** Frame header */
 nv_oem6_header_t header;
-uint32_t week;
-double week_seconds;
-double clock_offset, clock_offset_std;
-double utc_offset;
-uint32_t clock_status;
-uint32_t crc;
+uint32_t week = 0;
+double week_seconds = 0;
+double clock_offset = 0, clock_offset_std = 0;
+double utc_offset = 0;
+uint32_t clock_status = 0;
+uint32_t crc = 0;
 GNSS_BINARY_MSG_DEFINITION_MID
 bool getAllFieldDescriptions(std::ostream& o) const override;
 bool getAllFieldValues(std::ostream& o) const override;
@@ -432,12 +439,12 @@ GNSS_BINARY_MSG_DEFINITION_MID_END
 GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_MARK2TIME)
 /** Frame header */
 nv_oem6_header_t header;
-uint32_t week;
-double week_seconds;
-double clock_offset, clock_offset_std;
-double utc_offset;
-uint32_t clock_status;
-uint32_t crc;
+uint32_t week = 0;
+double week_seconds = 0;
+double clock_offset = 0, clock_offset_std = 0;
+double utc_offset = 0;
+uint32_t clock_status = 0;
+uint32_t crc = 0;
 GNSS_BINARY_MSG_DEFINITION_MID
 bool getAllFieldDescriptions(std::ostream& o) const override;
 bool getAllFieldValues(std::ostream& o) const override;
@@ -447,24 +454,24 @@ GNSS_BINARY_MSG_DEFINITION_MID_END
 GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_IONUTC)
 /** Frame header */
 nv_oem6_header_t header;
-double a0, a1, a2, a3, b0, b1, b2,
-	b3;  // Ionospheric alpha and beta constant terms parameters
+/** Ionospheric alpha and beta constant terms parameters */
+double a0 = 0, a1 = 0, a2 = 0, a3 = 0, b0 = 0, b1 = 0, b2 = 0, b3 = 0;
 /** UTC reference week number */
-uint32_t utc_wn;
+uint32_t utc_wn = 0;
 /** Reference time of UTC params */
-uint32_t tot;
+uint32_t tot = 0;
 /** UTC constant and 1st order terms */
-double A0, A1;
+double A0 = 0, A1 = 0;
 /** Future week number */
-uint32_t wn_lsf;
+uint32_t wn_lsf = 0;
 /** Day number (1=sunday, 7=saturday) */
-uint32_t dn;
+uint32_t dn = 0;
 /** Delta time due to leap seconds */
-uint32_t deltat_ls;
+uint32_t deltat_ls = 0;
 /** Delta time due to leap seconds (future) */
-uint32_t deltat_lsf;
-uint32_t reserved;
-uint32_t crc;
+uint32_t deltat_lsf = 0;
+uint32_t reserved = 0;
+uint32_t crc = 0;
 GNSS_BINARY_MSG_DEFINITION_END
 
 #pragma pack(pop)  // End of pack = 1

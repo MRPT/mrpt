@@ -149,8 +149,8 @@ struct gnss_message_ptr
 		struct content_t                                                     \
 		{
 #define GNSS_BINARY_MSG_DEFINITION_MID                                       \
-	content_t() { ::memset(this, 0, sizeof(*this)); }                        \
-	}                                                                        \
+	content_t() = default;                                                   \
+    }                                                                        \
 	;                                                                        \
 	content_t fields; /** Message content, accesible by individual fields */ \
 	void dumpToStream(std::ostream& out) const override;
