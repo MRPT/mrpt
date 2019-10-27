@@ -12,7 +12,7 @@ if (DISABLE_TINYXML2)
 endif()
 
 set(_use_embeded_default "OFF")
-if (NOT UNIX)
+if (WIN32 OR APPLE)
 	set(_use_embeded_default "ON")
 endif()
 
