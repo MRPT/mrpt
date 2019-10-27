@@ -371,7 +371,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_rayTracing(
 		// The number of simulated rays will be original range scan rays /
 		// DOWNRATIO
 		int decimation = likelihoodOptions.rayTracing_decimation;
-		int nRays = o.scan.size();
+		int nRays = o.getScanSize();
 
 		// Perform simulation using same parameters than real observation:
 		simulatedObs.aperture = o.aperture;
@@ -399,11 +399,11 @@ double COccupancyGridMap2D::computeObservationLikelihood_rayTracing(
 		for (int j = 0; j < nRays; j += decimation)
 		{
 			// Simulated and measured ranges:
-			r_sim = simulatedObs.scan[j];
-			r_obs = o.scan[j];
+			r_sim = simulatedObs.getScanRange(j);
+			r_obs = o.getScanRange(j);
 
 			// Is a valid range?
-			if (o.validRange[j])
+			if (o.getScanRangeValidity(j))
 			{
 				likelihood =
 					0.1 / o.maxRange +

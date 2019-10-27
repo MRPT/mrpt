@@ -267,7 +267,7 @@ void RawlogGrabberApp::dump_verbose_info(
 void RawlogGrabberApp::dump_GPS_mode_info(
 	const mrpt::obs::CObservationGPS& o) const
 {
-	if (o.has_GGA_datum)
+	if (o.has_GGA_datum())
 	{
 		using mrpt::obs::gnss::Message_NMEA_GGA;
 

@@ -412,13 +412,12 @@ void CGridMapAlignerApp::run()
 						SF->getObservationByClass<CObservation2DRangeScan>();
 					if (obs)
 					{
-						for (unsigned int k = 0; k < obs->scan.size(); k++)
+						for (unsigned int k = 0; k < obs->getScanSize(); k++)
 						{
-							float v = obs->getScanRange(k);
+							float& v = obs->getScanRange(k);
 							v += getRandomGenerator().drawGaussian1D(
 								0, STD_NOISE_LASER);
 							if (v < 0) v = 0;
-							obs->setScanRange(k, v);
 						}
 					}
 				}  // end of NOISE_IN_LASER

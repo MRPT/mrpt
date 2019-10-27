@@ -58,8 +58,6 @@ mrpt::maps::CMetricMap* CWeightedPointsMap::internal_CreateFromMapDefinition(
 
 IMPLEMENTS_SERIALIZABLE(CWeightedPointsMap, CPointsMap, mrpt::maps)
 
-CWeightedPointsMap::CWeightedPointsMap() { reserve(400); }
-
 void CWeightedPointsMap::reserve(size_t newLength)
 {
 	m_x.reserve(newLength);

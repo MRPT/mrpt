@@ -123,23 +123,7 @@ void Test_HOKUYO()
 		{
 			double FPS = 1.0 / tictac.Tac();
 
-			printf(
-				"Scan received: %u ranges, FOV: %.02fdeg, %.03fHz: mid "
-				"rang=%fm\n",
-				(unsigned int)obs.scan.size(), RAD2DEG(obs.aperture), FPS,
-				obs.scan[obs.scan.size() / 2]);
-
-			if (obs.hasIntensity())
-			{
-				size_t i;
-				std::cout << "[ ";
-				for (i = 0; i < obs.intensity.size() - 1; i++)
-				{
-					std::cout << obs.intensity[i] << ",\t";
-					if (i % 10 == 9) std::cout << std::endl;
-				}
-				std::cout << obs.intensity[i] << " ]" << std::endl;
-			}
+			obs.getDescriptionAsText(std::cout);
 
 			obs.sensorPose = CPose3D(0, 0, 0);
 

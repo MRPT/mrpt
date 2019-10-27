@@ -35,6 +35,7 @@ Build-Depends: debhelper (>= 10),
 	libqt5opengl5-dev,
 	libjsoncpp-dev,
 	libyaml-cpp-dev,
+	libtinyxml2-dev,
 	dh-python,
 	libcv-bridge-dev,
 	libgeometry-msgs-dev,
@@ -155,23 +156,6 @@ Architecture: any
 Depends: ${misc:Depends},libmrpt-core@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-common-dev
 Description: Mobile Robot Programming Toolkit - core development package
- This package provides headers and libraries for development.
-
-Package: libmrpt-db@MRPT_VER_MM@
-Section: libs
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Multi-Arch: same
-Description: Mobile Robot Programming Toolkit - db library
- More about MRPT libraries in: https://www.mrpt.org/Libraries
-
-Package: libmrpt-db-dev
-Section: libdevel
-Architecture: any
-Depends: ${misc:Depends},libmrpt-db@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-common-dev, libmrpt-core-dev, libmrpt-serialization-dev,
-         libmrpt-system-dev
-Description: Mobile Robot Programming Toolkit - db development package
  This package provides headers and libraries for development.
 
 Package: libmrpt-detectors@MRPT_VER_MM@
@@ -405,8 +389,7 @@ Package: libmrpt-obs-dev
 Section: libdevel
 Architecture: any
 Depends: ${misc:Depends},libmrpt-obs@MRPT_VER_MM@ (= ${binary:Version}),
-        libmrpt-common-dev, libmrpt-opengl-dev, libmrpt-db-dev,
-        libmrpt-tfest-dev
+        libmrpt-common-dev, libmrpt-opengl-dev, libmrpt-tfest-dev
 Description: Mobile Robot Programming Toolkit - obs development package
  This package provides headers and libraries for development.
 
@@ -649,7 +632,6 @@ Recommends: libmrpt-bayes-dev (= ${binary:Version}),
          libmrpt-config-dev (= ${binary:Version}),
          libmrpt-containers-dev (= ${binary:Version}),
          libmrpt-core-dev (= ${binary:Version}),
-         libmrpt-db-dev (= ${binary:Version}),
          libmrpt-detectors-dev (= ${binary:Version}),
          libmrpt-expr-dev (= ${binary:Version}),
          libmrpt-graphs-dev (= ${binary:Version}),

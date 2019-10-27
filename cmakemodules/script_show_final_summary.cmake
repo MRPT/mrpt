@@ -135,6 +135,7 @@ SHOW_CONFIG_LINE_SYSTEM("OpenGL                              " CMAKE_MRPT_HAS_OP
 SHOW_CONFIG_LINE_SYSTEM("GLUT                                " CMAKE_MRPT_HAS_GLUT)
 SHOW_CONFIG_LINE_SYSTEM("PCAP (Wireshark logs for Velodyne)  " CMAKE_MRPT_HAS_LIBPCAP)
 SHOW_CONFIG_LINE_SYSTEM("SuiteSparse                         " CMAKE_MRPT_HAS_SUITESPARSE)
+SHOW_CONFIG_LINE_SYSTEM("tinyxml2                            " CMAKE_MRPT_HAS_TINYXML2)
 SHOW_CONFIG_LINE_SYSTEM("wxWidgets                           " CMAKE_MRPT_HAS_WXWIDGETS "[Version: ${wxWidgets_VERSION_STRING} ${CMAKE_WXWIDGETS_TOOLKIT_NAME}]")
 SHOW_CONFIG_LINE_SYSTEM("yamlcpp (YAML file format)          " CMAKE_MRPT_HAS_YAMLCPP "[Version: ${LIBYAMLCPP_VERSION}]")
 message(STATUS  "")

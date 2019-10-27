@@ -902,7 +902,7 @@ void do_pf_localization(
 								CPosePDFGaussian(current_pdf_gaussian);
 							ssu_params.aperture = obs_scan->aperture;
 							ssu_params.rangeNoiseStd = obs_scan->stdError;
-							ssu_params.nRays = obs_scan->scan.size();
+							ssu_params.nRays = obs_scan->getScanSize();
 							ssu_params.rightToLeft = obs_scan->rightToLeft;
 							ssu_params.sensorPose = obs_scan->sensorPose;
 							ssu_params.maxRange = obs_scan->maxRange;
@@ -924,11 +924,15 @@ void do_pf_localization(
 								static mrpt::gui::CDisplayWindowPlots win;
 
 								std::vector<float> ranges_mean, ranges_obs;
-								for (float i :
-									 ssu_out.scanWithUncert.rangeScan.scan)
-									ranges_mean.push_back(i);
-								for (float i : obs_scan->scan)
-									ranges_obs.push_back(i);
+								for (size_t i = 0; i < obs_scan->getScanSize();
+									 i++)
+								{
+									ranges_mean.push_back(
+										ssu_out.scanWithUncert.rangeScan
+											.getScanRange(i));
+									ranges_obs.push_back(
+										obs_scan->getScanRange(i));
+								}
 
 								win.plot(ranges_mean, "3k-", "mean");
 								win.plot(ranges_obs, "r-", "obs");

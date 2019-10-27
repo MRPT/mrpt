@@ -28,10 +28,24 @@ class CPointsMapXYZI : public CPointsMap
 	DEFINE_SERIALIZABLE(CPointsMapXYZI)
 
    public:
-	// --------------------------------------------
+	CPointsMapXYZI() = default;
+
+	CPointsMapXYZI(const CPointsMap& o) { CPointsMap::operator=(o); }
+	CPointsMapXYZI(const CPointsMapXYZI& o) { impl_copyFrom(o); }
+	CPointsMapXYZI& operator=(const CPointsMap& o)
+	{
+		impl_copyFrom(o);
+		return *this;
+	}
+	CPointsMapXYZI& operator=(const CPointsMapXYZI& o)
+	{
+		impl_copyFrom(o);
+		return *this;
+	}
+
 	/** @name Pure virtual interfaces to be implemented by any class derived
-	   from CPointsMap
-		@{ */
+   from CPointsMap
+	@{ */
 
 	void reserve(size_t newLength) override;  // See base class docs
 	void resize(size_t newLength) override;  // See base class docs

@@ -565,8 +565,11 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 		obs.maxRange = 10000;
 		obs.sensorPose = initial;
 		obs.deltaPitch = 0;
-		obs.scan = scanValues;
-		obs.validRange = valid;
+		for (size_t i = 0; i < nV; i++)
+		{
+			obs.setScanRange(i, scanValues[i]);
+			obs.setScanRangeValidity(i, valid[i]);
+		}
 	}
 };
 

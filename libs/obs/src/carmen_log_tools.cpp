@@ -83,8 +83,7 @@ bool mrpt::obs::carmen_log_parse_line(
 			obsLaser->setScanRange(i, range);
 			// Valid value?
 			obsLaser->setScanRangeValidity(
-				i, (obsLaser->scan[i] >= obsLaser->maxRange ||
-					obsLaser->scan[i] <= 0));
+				i, (range >= obsLaser->maxRange || range <= 0));
 		}
 
 		size_t remmision_count;
@@ -216,8 +215,8 @@ bool mrpt::obs::carmen_log_parse_line(
 			obsLaser->setScanRange(i, range);
 			// Valid value?
 			obsLaser->setScanRangeValidity(
-				i, (obsLaser->scan[i] >= obsLaser->maxRange ||
-					obsLaser->scan[i] <= 0));
+				i, (obsLaser->getScanRange(i) >= obsLaser->maxRange ||
+					obsLaser->getScanRange(i) <= 0));
 		}
 
 		mrpt::math::TPose2D globalLaserPose;
