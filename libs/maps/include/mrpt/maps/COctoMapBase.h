@@ -72,10 +72,11 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		/** Initilization of default parameters */
 		TInsertionOptions(myself_t& parent);
 
-		TInsertionOptions();  //!< Especial constructor, not attached to a real
-		//! COctoMap object: used only in limited
-		//! situations, since get*() methods don't work,
-		//! etc.
+		/** Special constructor, not attached to a real COctoMap object: used
+		 * only in limited situations, since get*() methods don't work, etc. */
+		TInsertionOptions();
+		TInsertionOptions(const TInsertionOptions& o) { this->operator=(o); }
+
 		TInsertionOptions& operator=(const TInsertionOptions& o)
 		{
 			// Copy all but the m_parent pointer!

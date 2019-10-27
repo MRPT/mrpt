@@ -33,14 +33,17 @@ class CSimplePointsMap : public CPointsMap
 
    public:
 	/** Default constructor */
-	CSimplePointsMap();
-	CSimplePointsMap(const CPointsMap& o) : CSimplePointsMap()
+	CSimplePointsMap() = default;
+	CSimplePointsMap(const CPointsMap& o) { CPointsMap::operator=(o); }
+	CSimplePointsMap(const CSimplePointsMap& o) { CPointsMap::operator=(o); }
+	CSimplePointsMap& operator=(const CPointsMap& o)
 	{
 		CPointsMap::operator=(o);
+		return *this;
 	}
-	CSimplePointsMap operator=(const CPointsMap& o)
+	CSimplePointsMap& operator=(const CSimplePointsMap& o)
 	{
-		CPointsMap::operator=(o);
+		impl_copyFrom(o);
 		return *this;
 	}
 
