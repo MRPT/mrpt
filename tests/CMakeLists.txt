@@ -121,11 +121,11 @@ foreach(_TSTLIB ${LST_LIB_TESTS})
 	set_target_properties(test_${_TSTLIB} PROPERTIES FOLDER "unit tests")
 	set_target_properties(run_tests_${_TSTLIB} PROPERTIES FOLDER "unit tests")
 
-	if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
+	if (MRPT_COMPILER_IS_GCC_OR_CLANG)
 		target_compile_options(test_${_TSTLIB} PRIVATE "-Wno-abi")
 	endif()
 
-endforeach(_TSTLIB)
+endforeach()
 
 # Special dependencies:
 if (TARGET test_mrpt_img)
