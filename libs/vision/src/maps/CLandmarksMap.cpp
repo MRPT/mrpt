@@ -356,7 +356,7 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 		double x, y;
 		double earth_radius = 6378137;
 
-		if ((o.has_GGA_datum) &&
+		if ((o.has_GGA_datum()) &&
 			(likelihoodOptions.GPSOrigin.min_sat <=
 			 o.getMsgByClass<gnss::Message_NMEA_GGA>().fields.satellitesUsed))
 		{

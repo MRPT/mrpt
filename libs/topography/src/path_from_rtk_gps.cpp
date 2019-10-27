@@ -120,7 +120,7 @@ void mrpt::topography::path_from_rtk_gps(
 					CObservationGPS::Ptr obs =
 						std::dynamic_pointer_cast<CObservationGPS>(o);
 
-					if (obs->has_GGA_datum &&
+					if (obs->has_GGA_datum() &&
 						obs->getMsgByClass<gnss::Message_NMEA_GGA>()
 								.fields.fix_quality == 4)
 					{
@@ -131,7 +131,7 @@ void mrpt::topography::path_from_rtk_gps(
 					}
 
 					// Save to GPS paths:
-					if (obs->has_GGA_datum &&
+					if (obs->has_GGA_datum() &&
 						(obs->getMsgByClass<gnss::Message_NMEA_GGA>()
 								 .fields.fix_quality == 4 ||
 						 obs->getMsgByClass<gnss::Message_NMEA_GGA>()

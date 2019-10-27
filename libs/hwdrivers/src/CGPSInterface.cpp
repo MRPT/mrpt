@@ -436,8 +436,8 @@ void CGPSInterface::doProcess()
 			// a. These GPS data have both synched RMC and GGA data
 			// don't append observation until we have both data
 			do_append_obs =
-				(m_just_parsed_messages.has_GGA_datum &&
-				 m_just_parsed_messages.has_RMC_datum);
+				(m_just_parsed_messages.has_GGA_datum() &&
+				 m_just_parsed_messages.has_RMC_datum());
 		}  // end-else
 
 		if (do_append_obs) flushParsedMessagesNow();
