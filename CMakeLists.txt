@@ -24,6 +24,11 @@ else()
 	cmake_minimum_required(VERSION 3.3)
 endif()
 
+# CheckIncludeFile: Yes, we will set "CMAKE_REQUIRED_LIBRARIES".
+if (POLICY CMP0075)
+	cmake_policy(SET CMP0075 NEW)
+endif()
+
 # Display timing information for each compiler instance on screen
 option(CMAKE_TIMING_VERBOSE "Enable the display of timing information for each compiler instance." OFF)
 mark_as_advanced(CMAKE_TIMING_VERBOSE)
