@@ -1099,7 +1099,7 @@ void CObservation3DRangeScan::convertTo2DScan(
 			if (i_range < 0 || i_range >= int(nLaserRays)) continue;
 
 			const float r_wrt_origin = ::hypotf(xs[i], ys[i]);
-			if (out_scan2d.scan[i_range] > r_wrt_origin)
+			if (out_scan2d.getScanRange(i_range) > r_wrt_origin)
 				out_scan2d.setScanRange(i_range, r_wrt_origin);
 			out_scan2d.setScanRangeValidity(i_range, true);
 		}

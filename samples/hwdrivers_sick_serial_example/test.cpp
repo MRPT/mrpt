@@ -88,8 +88,8 @@ void TestPLS()
 			printf(
 				"[TEST] Observation received (%u ranges over %.02fdeg, "
 				"mid=%.03f)!!\n",
-				(unsigned int)obs.scan.size(), RAD2DEG(obs.aperture),
-				obs.scan[obs.scan.size() / 2]);
+				(unsigned int)obs.getScanSize(), RAD2DEG(obs.aperture),
+				obs.getScanRange(obs.getScanSize() / 2));
 
 			obs.sensorPose = CPose3D(0, 0, 0);
 			mrpt::maps::CSimplePointsMap theMap;

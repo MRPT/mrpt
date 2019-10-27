@@ -158,7 +158,7 @@ void BenchmarkGridmaps()
 	{
 		CPose3D  pose3D(0.21,0.34,0,-2);
 		//scan1.validRange.assign(scan1.validRange.size(), false);
-		//scan1.validRange[i]=true;
+		//scan1.getScanRangeValidity(i)=true;
 
 		gridMap->clear();
 		gridMap->resizeGrid(-5,20,-15,15);

@@ -215,8 +215,8 @@ void CClientTCPSocket::connect(
 	int sel_ret = select(
 		m_hSock + 1,
 		nullptr,  // For read
-	    &ss_write,  // For write or *connect done*
-	    &ss_errors,  // For errors
+		&ss_write,  // For write or *connect done*
+		&ss_errors,  // For errors
 		timeout_ms == 0 ? nullptr : &timer);
 
 	if (sel_ret == 0)

@@ -80,7 +80,7 @@ void CAngularObservationMesh::updateMesh() const
 		return;
 	}
 	if (pitchBounds.size() != numRows && pitchBounds.size() != 2) return;
-	size_t numCols = scanSet[0].scan.size();
+	size_t numCols = scanSet[0].getScanSize();
 	actualMesh.setSize(numRows, numCols);
 	validityMatrix.setSize(numRows, numCols);
 	auto* pitchs = new double[numRows];
@@ -97,14 +97,13 @@ void CAngularObservationMesh::updateMesh() const
 	const bool rToL = scanSet[0].rightToLeft;
 	for (size_t i = 0; i < numRows; i++)
 	{
-		const auto& scan = scanSet[i].scan;
-		const auto& valid = scanSet[i].validRange;
+		const auto& ss_i = scanSet[i];
 		const double pitchIncr = scanSet[i].deltaPitch;
 		const double aperture = scanSet[i].aperture;
 		const CPose3D origin = scanSet[i].sensorPose;
 		// This is not an error...
 		for (size_t j = 0; j < numCols; j++)
-			if ((validityMatrix(i, j) = (valid[j] != 0)))
+			if ((validityMatrix(i, j) = ss_i.getScanRangeValidity(j)))
 			{
 				double pYaw = aperture * ((static_cast<double>(j) /
 										   static_cast<double>(numCols - 1)) -
@@ -113,7 +112,7 @@ void CAngularObservationMesh::updateMesh() const
 				actualMesh(i, j) =
 					((origin +
 					  CPose3D(0, 0, 0, rToL ? pYaw : -pYaw, pitchIncr)) +
-					 CPoint3D(scan[j], 0, 0))
+					 CPoint3D(ss_i.getScanRange(j), 0, 0))
 						.asTPoint();
 			}
 	}
@@ -221,11 +220,11 @@ bool CAngularObservationMesh::setScanSet(
 	// Returns false if the scan is inconsistent
 	if (scans.size() > 0)
 	{
-		size_t setSize = scans[0].scan.size();
+		size_t setSize = scans[0].getScanSize();
 		bool rToL = scans[0].rightToLeft;
 		for (auto it = scans.begin() + 1; it != scans.end(); ++it)
 		{
-			if (it->scan.size() != setSize) return false;
+			if (it->getScanSize() != setSize) return false;
 			if (it->rightToLeft != rToL) return false;
 		}
 	}
@@ -372,17 +371,17 @@ class FAddUntracedLines
 	}
 	void operator()(const CObservation2DRangeScan& obs)
 	{
-		size_t hm = obs.scan.size();
-		for (char it : obs.validRange)
-			if (it) hm--;
+		size_t hm = obs.getScanSize();
+		for (size_t i = 0; i < obs.getScanSize(); i++)
+			if (obs.getScanRangeValidity(i)) hm--;
 		lins->reserve(hm);
-		for (size_t i = 0; i < obs.scan.size(); i++)
-			if (!obs.validRange[i])
+		for (size_t i = 0; i < obs.getScanSize(); i++)
+			if (!obs.getScanRangeValidity(i))
 			{
-				double yaw =
-					obs.aperture * ((static_cast<double>(i) /
-									 static_cast<double>(obs.scan.size() - 1)) -
-									0.5);
+				double yaw = obs.aperture *
+							 ((static_cast<double>(i) /
+							   static_cast<double>(obs.getScanSize() - 1)) -
+							  0.5);
 				lins->appendLine(
 					obs.sensorPose.asTPose(),
 					(obs.sensorPose +
