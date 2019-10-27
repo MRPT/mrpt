@@ -5,10 +5,11 @@ include (CheckFunctionExists)
 include (CheckIncludeFile)
 include (CheckTypeSize)
 
+
 set(CMAKE_REQUIRED_INCLUDES "math.h")
 if(CMAKE_COMPILER_IS_GNUCXX)
 	set(CMAKE_REQUIRED_LIBRARIES "m")
-endif(CMAKE_COMPILER_IS_GNUCXX)
+endif()
 
 CHECK_FUNCTION_EXISTS(timegm HAVE_TIMEGM)
 CHECK_FUNCTION_EXISTS(_mkgmtime HAVE_MKGMTIME)
@@ -25,9 +26,9 @@ CHECK_FUNCTION_EXISTS(_aligned_malloc HAVE_ALIGNED_MALLOC)
 
 if(MSVC AND NOT MSVC6 AND NOT MSVC7)
 	set(HAVE_OPENTHREAD 1)
-else(MSVC AND NOT MSVC6 AND NOT MSVC7)
+else()
 	set(HAVE_OPENTHREAD 0)
-endif(MSVC AND NOT MSVC6 AND NOT MSVC7)
+endif()
 
 
 CHECK_INCLUDE_FILE("alloca.h" HAVE_ALLOCA_H)
@@ -38,7 +39,7 @@ CHECK_INCLUDE_FILE("malloc/malloc.h" HAVE_MALLOC_MALLOC_H)
 
 if(HAVE_ALLOCA_FUNC OR HAVE_ALLOCA_H)
 	set(HAVE_ALLOCA 1)
-endif(HAVE_ALLOCA_FUNC OR HAVE_ALLOCA_H)
+endif()
 
 if(CMAKE_MRPT_HAS_GLUT_SYSTEM)
 	set(HAVE_FREEGLUT_EXT_H 0)
@@ -46,10 +47,10 @@ if(CMAKE_MRPT_HAS_GLUT_SYSTEM)
 	if(FREEGLUTEXT_HFILE)
 		mark_as_advanced(FREEGLUTEXT_HFILE)
 		set(HAVE_FREEGLUT_EXT_H 1)
-	endif(FREEGLUTEXT_HFILE)
-else(CMAKE_MRPT_HAS_GLUT_SYSTEM)
+	endif()
+else()
 	set(HAVE_FREEGLUT_EXT_H 1)
-endif(CMAKE_MRPT_HAS_GLUT_SYSTEM)
+endif()
 
 CHECK_INCLUDE_FILE("stdint.h" HAVE_STDINT_H)
 CHECK_INCLUDE_FILE("inttypes.h" HAVE_INTTYPES_H)
@@ -66,8 +67,8 @@ if (CMAKE_MRPT_HAS_SSE2)
 	# If the headers are not found, disable optimizations:
 	if (NOT HAVE_MMINTRIN_H OR NOT HAVE_EMMINTRIN_H)
 		set(CMAKE_MRPT_HAS_SSE2 0)
-	endif(NOT HAVE_MMINTRIN_H OR NOT HAVE_EMMINTRIN_H)
-endif(CMAKE_MRPT_HAS_SSE2)
+	endif()
+endif()
 
 # If we want SSE3, check for the expected headers:
 if (CMAKE_MRPT_HAS_SSE3)
@@ -78,20 +79,20 @@ if (CMAKE_MRPT_HAS_SSE3)
 	if(CMAKE_COMPILER_IS_GNUCXX)
 		set(TEMP_BACKUP_CMAKE_C_FLAGS ${CMAKE_C_FLAGS})
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse3")
-	endif(CMAKE_COMPILER_IS_GNUCXX)
+	endif()
 
 	CHECK_INCLUDE_FILE("pmmintrin.h" HAVE_PMMINTRIN_H)
 
 	# Restore from above:
 	if(CMAKE_COMPILER_IS_GNUCXX)
 		set(CMAKE_C_FLAGS ${TEMP_BACKUP_CMAKE_C_FLAGS})
-	endif(CMAKE_COMPILER_IS_GNUCXX)
+	endif()
 
 	# If the headers are not found, disable optimizations:
 	if (NOT HAVE_PMMINTRIN_H)
 		set(CMAKE_MRPT_HAS_SSE3 0)
-	endif (NOT HAVE_PMMINTRIN_H)
-endif(CMAKE_MRPT_HAS_SSE3)
+	endif (NOT )
+endif()
 
 
 # Compiler type sizes:
