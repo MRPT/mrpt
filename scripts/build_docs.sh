@@ -171,7 +171,7 @@ fi
 MRPT_COMPLETE_NAME="MRPT $MRPT_VERSION_STR $MRPT_SVN_NUMBER"
 printf "The library complete name to be used is: %s\n" "$MRPT_COMPLETE_NAME"
 
-cd doc/
+cd $CUR_DIR/doc/
 echo "The cwd is: " `pwd`
 
 # Load libs graph in DOT format:
@@ -190,8 +190,8 @@ cp images/*.* html/
 cp html_postbuild/*.* html/
 
 # Build & copy PDF manuals:
-for dir in ./{pbmap-guide,graphslam-engine-guide}; do
-    cd $dir
+for dir in graphslam-engine-guide; do
+    cd $CUR_DIR/doc/$dir
     make 2> /dev/null
     mv *.pdf ..
     cd ..
