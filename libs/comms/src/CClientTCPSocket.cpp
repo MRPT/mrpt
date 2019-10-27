@@ -202,11 +202,12 @@ void CClientTCPSocket::connect(
 			remotePartAddress.c_str(), remotePartTCPPort, strerror(er), er));
 
 	// Wait for connect:
-	fd_set socket_set;
 	timeval timer = {0, 0};
-
-	FD_ZERO(&socket_set);
-	FD_SET(m_hSock, &socket_set);
+	fd_set ss_write, ss_errors;
+	FD_ZERO(&ss_write);
+	FD_ZERO(&ss_errors);
+	FD_SET(m_hSock, &ss_write);
+	FD_SET(m_hSock, &ss_errors);
 
 	timer.tv_sec = timeout_ms / 1000;
 	timer.tv_usec = 1000 * (timeout_ms % 1000);
@@ -214,8 +215,8 @@ void CClientTCPSocket::connect(
 	int sel_ret = select(
 		m_hSock + 1,
 		nullptr,  // For read
-		&socket_set,  // For write or *connect done*
-		&socket_set,  // For errors
+	    &ss_write,  // For write or *connect done*
+	    &ss_errors,  // For errors
 		timeout_ms == 0 ? nullptr : &timer);
 
 	if (sel_ret == 0)
