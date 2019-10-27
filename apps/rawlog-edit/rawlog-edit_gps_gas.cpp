@@ -78,7 +78,7 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml)
 			if (IS_CLASS(*o, CObservationGPS))
 			{
 				obs = dynamic_cast<CObservationGPS*>(o.get());
-				if (!obs->has_GGA_datum)
+				if (!obs->has_GGA_datum())
 				{
 					obs = nullptr;
 					return true;  // Nothing to do...
