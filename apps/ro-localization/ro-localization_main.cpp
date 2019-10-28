@@ -109,9 +109,12 @@ void TestParticlesLocalization()
 	float Pc_range_end = 0.05f;
 	float Pc_range_step = 0.05f;
 
-	MRPT_LOAD_CONFIG_VAR(Pc_range_ini, float, (*iniFile), "ro-localization")
-	MRPT_LOAD_CONFIG_VAR(Pc_range_end, float, (*iniFile), "ro-localization")
-	MRPT_LOAD_CONFIG_VAR(Pc_range_step, float, (*iniFile), "ro-localization")
+	MRPT_LOAD_CONFIG_VAR(Pc_range_ini, float, (*iniFile), "ro-localization");
+	MRPT_LOAD_CONFIG_VAR(Pc_range_end, float, (*iniFile), "ro-localization");
+	MRPT_LOAD_CONFIG_VAR(Pc_range_step, float, (*iniFile), "ro-localization");
+
+	uint64_t random_seed = 0;
+	MRPT_LOAD_CONFIG_VAR(random_seed, uint64_t, (*iniFile), "ro-localization");
 
 	bool SHOW_3D_FRANCO_POSITION = false;
 	bool SAVE_3D_TO_VIDEO = false;
@@ -144,8 +147,11 @@ void TestParticlesLocalization()
 	mapList.dumpToConsole();
 	pfOptions.dumpToConsole();
 
-	// Init random & serialization:
-	getRandomGenerator().randomize();
+	// Init PSRNG:
+	if (random_seed)
+		getRandomGenerator().randomize(random_seed);
+	else
+		getRandomGenerator().randomize();
 
 	// --------------------------------------------------------------------
 	//					EXPERIMENT REPETITIONS LOOP
