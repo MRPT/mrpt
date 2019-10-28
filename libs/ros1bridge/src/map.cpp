@@ -12,7 +12,6 @@
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimpleMap.h>
-#include <mrpt/random.h>
 #include <mrpt/ros1bridge/map.h>
 #include <mrpt/ros1bridge/pose.h>
 #include <mrpt/serialization/CArchive.h>
@@ -161,13 +160,6 @@ bool MapHdl::loadMap(
 	// Load the set of metric maps to consider in the experiments:
 	_metric_map.setListOfMaps(mapInitializers);
 	if (_debug) mapInitializers.dumpToConsole();
-
-#if MRPT_VERSION >= 0x199
-	auto& r = mrpt::random::getRandomGenerator();
-#else
-	auto& r = mrpt::random::randomGenerator;
-#endif
-	r.randomize();
 
 	if (_debug)
 		printf(
