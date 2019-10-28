@@ -252,55 +252,55 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 			********************************************************************/
 		const auto& o = dynamic_cast<const CObservationBeaconRanges&>(obs);
 
-		std::deque<CObservationBeaconRanges::TMeasurement>::const_iterator it;
-		TSequenceLandmarks::iterator lm_it;
-		CPointPDFGaussian beaconPDF;
-		CPoint3D point3D, beacon3D;
-		double ret = 0;  // 300;
+		const double sensorStd = likelihoodOptions.beaconRangesUseObservationStd
+									 ? o.stdError
+									 : likelihoodOptions.beaconRangesStd;
+		ASSERT_ABOVE_(sensorStd, .0);
+		const auto unif_val =
+			std::log(1.0 / (o.maxSensorDistance - o.minSensorDistance));
 
-		for (it = o.sensedData.begin(); it != o.sensedData.end(); it++)
+		CPointPDFGaussian beaconPDF;
+		double ret = 0;
+
+		for (const auto& meas : o.sensedData)
 		{
 			// Look for the beacon in this map:
-			unsigned int sensedID = it->beaconID;
+			unsigned int sensedID = meas.beaconID;
 			bool found = false;
 
-			for (lm_it = landmarks.begin(); !found && lm_it != landmarks.end();
-				 lm_it++)
+			if (std::isnan(meas.sensedDistance)) continue;
+
+			// Compute the 3D position of the sensor:
+			const auto point3D = robotPose3D + meas.sensorLocationOnRobot;
+
+			for (const auto& lm : landmarks)
 			{
-				if ((lm_it->getType() == featBeacon) &&
-					(lm_it->ID == sensedID) &&
-					(!std::isnan(it->sensedDistance)))
-				{
-					lm_it->getPose(beaconPDF);
-					beacon3D = beaconPDF.mean;
+				if ((lm.getType() != featBeacon) || (lm.ID != sensedID))
+					continue;  // Skip
 
-					// Compute the 3D position of the sensor:
-					point3D = robotPose3D + it->sensorLocationOnRobot;
+				lm.getPose(beaconPDF);
+				const auto& beacon3D = beaconPDF.mean;
 
-					const float expectedRange = point3D.distanceTo(beacon3D);
-					float sensedDist = it->sensedDistance;
-					if (sensedDist < 0) sensedDist = 0;
+				const double expectedRange = point3D.distanceTo(beacon3D);
+				const double sensedDist =
+					std::max<double>(.0, meas.sensedDistance);
+				MRPT_CHECK_NORMAL_NUMBER(expectedRange);
 
-					float sensorStd =
-						likelihoodOptions.beaconRangesUseObservationStd
-							? o.stdError
-							: likelihoodOptions.beaconRangesStd;
-					ret +=
-						(-0.5f *
-						 square((expectedRange - sensedDist) / sensorStd));
-					found = true;
-				}
+				ret +=
+					(-0.5 *
+					 mrpt::square((expectedRange - sensedDist) / sensorStd));
+				found = true;
+				break;  // we found the beacon, skip the rest of landmarks
 			}
 
 			// If not found, uniform distribution:
-			if (!found)
+			if (!found && o.maxSensorDistance > o.minSensorDistance)
 			{
-				if (o.maxSensorDistance != o.minSensorDistance)
-					ret +=
-						log(1.0 / (o.maxSensorDistance - o.minSensorDistance));
+				ret += unif_val;
+				MRPT_CHECK_NORMAL_NUMBER(ret);
 			}
 
-		}  // for each sensed beacon "it"
+		}  // for each sensed beacon
 
 		MRPT_CHECK_NORMAL_NUMBER(ret);
 		return ret;
