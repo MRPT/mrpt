@@ -1004,6 +1004,9 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 
 	/** @} */
 
+	/** (DEPRECATED, DO NOT USE - Kept here only to interface opencv 2.4) */
+	void getAsIplImage(IplImage* dest) const;
+
    protected:
 	/** @name Data members
 		@{ */
