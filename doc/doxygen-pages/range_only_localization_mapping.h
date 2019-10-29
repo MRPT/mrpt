@@ -10,7 +10,7 @@
 
 /** \page ro_slam_solutions Range-only Localization and Mapping Solutions
 
-## Range-only SLAM
+# 1. Range-only SLAM
 
 MRPT at present offers one SLAM solution for RO-SLAM, integrated into the
 RBPF-SLAM framework. Refer to [this tutorial](https://www.mrpt.org/tutorials/slam-algorithms/rangeonly_slam/)
@@ -20,11 +20,11 @@ Users can employ 2D or 3D poses in RBPF-SLAM, but notice that RO-SLAM with a RBP
 requires a decent odometry as input, which can comprise 2D or 3D robot motion
 actions.
 
-## Range-only Localization
+# 2. Range-only Localization
 
 There are two implementations:
 
-### pf-localization
+## pf-localization
 
 The [pf-localization application](https://www.mrpt.org/list-of-mrpt-apps/application-pf-localization/)
 is a CLI to the underlying C++ class from the library: \ref mrpt_apps_grp.
@@ -38,7 +38,7 @@ to the underlying class in \ref mrpt_apps_grp or use the even most low-level cla
 - mrpt::slam::CMonteCarloLocalization2D: For robots moving in 2D; pose=(x,y,phi)
 - mrpt::slam::CMonteCarloLocalization3D: For robots moving in 3D space; pose=(x,y,z,yaw,pitch,roll)
 
-### ro-localization
+## ro-localization
 
 The [ro-localization application](https://www.mrpt.org/list-of-mrpt-apps/application-ro-localization/)
 is exactly like pf-localization above, but with two differences:
