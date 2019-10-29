@@ -2127,6 +2127,16 @@ bool CImage::loadTGA(
 #endif  // MRPT_HAS_OPENCV
 }
 
+void CImage::getAsIplImage(IplImage* dest) const
+{
+#if MRPT_HAS_OPENCV
+	makeSureImageIsLoaded();
+
+	ASSERT_(dest != nullptr);
+	*dest = m_impl->img;
+#endif
+}
+
 std::ostream& mrpt::img::operator<<(std::ostream& o, const TPixelCoordf& p)
 {
 	o << "(" << p.x << "," << p.y << ")";
