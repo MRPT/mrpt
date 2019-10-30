@@ -32,6 +32,8 @@ IMPLEMENTS_SERIALIZABLE(CActionRobotMovement2D, CAction, mrpt::obs)
 CActionRobotMovement2D::CActionRobotMovement2D()
 	: poseChange(mrpt::poses::CPosePDFGaussian::Create())
 {
+	// Re-build the PDF to have a consistent object state:
+	computeFromOdometry(rawOdometryIncrementReading, motionModelConfiguration);
 }
 
 uint8_t CActionRobotMovement2D::serializeGetVersion() const { return 7; }

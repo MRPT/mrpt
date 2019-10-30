@@ -30,6 +30,8 @@ class TCamera : public mrpt::serialization::CSerializable
 	DECLARE_MEX_CONVERSION
 
    public:
+	TCamera();
+
 	/** @name Camera parameters
 		@{ */
 

@@ -131,29 +131,33 @@ void CObservationImage::getDescriptionAsText(std::ostream& o) const
 	o << "Homogeneous matrix for the sensor's 3D pose, relative to robot "
 		 "base:\n";
 	o << cameraPose.getHomogeneousMatrixVal<CMatrixDouble44>() << cameraPose
-	  << endl;
+	  << "\n";
 
 	o << format(
 		"Focal length: %.03f mm\n", cameraParams.focalLengthMeters * 1000);
 
-	o << "Intrinsic parameters matrix for the camera:" << endl
-	  << cameraParams.intrinsicParams.inMatlabFormat() << endl
-	  << cameraParams.intrinsicParams << endl;
+	o << "Intrinsic parameters matrix for the camera:"
+	  << "\n"
+	  << cameraParams.intrinsicParams.inMatlabFormat() << "\n"
+	  << cameraParams.intrinsicParams << "\n";
 
 	o << "Distorsion parameters for the camera: "
-	  << cameraParams.getDistortionParamsAsVector() << endl;
+	  << cameraParams.getDistortionParamsAsVector() << "\n";
 
 	if (image.isExternallyStored())
 		o << " Image is stored externally in file: "
-		  << image.getExternalStorageFile() << endl;
+		  << image.getExternalStorageFile() << "\n";
 
-	o << format(
-		" Image size: %ux%u pixels\n", (unsigned int)image.getWidth(),
-		(unsigned int)image.getHeight());
+	if (!image.isEmpty())
+	{
+		o << format(
+			" Image size: %ux%u pixels\n", (unsigned int)image.getWidth(),
+			(unsigned int)image.getHeight());
 
-	o << " Channels order: " << image.getChannelsOrder() << endl;
+		o << " Channels order: " << image.getChannelsOrder() << "\n";
 
-	o << format(
-		" Rows are stored in top-bottom order: %s\n",
-		image.isOriginTopLeft() ? "YES" : "NO");
+		o << format(
+			" Rows are stored in top-bottom order: %s\n",
+			image.isOriginTopLeft() ? "YES" : "NO");
+	}
 }
