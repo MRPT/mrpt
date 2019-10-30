@@ -23,6 +23,12 @@ using namespace std;
  * CObservations objects */
 IMPLEMENTS_SERIALIZABLE(TCamera, CSerializable, mrpt::img)
 
+TCamera::TCamera()
+{
+	// Ensure intrinsics matrix has a 1 in the bottom-right corner:
+	setIntrinsicParamsFromValues(0, 0, 0, 0);
+}
+
 /** Dumps all the parameters as a multi-line string, with the same format than
  * \a saveToConfigFile.  \sa saveToConfigFile */
 std::string TCamera::dumpAsText() const
