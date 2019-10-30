@@ -11,7 +11,29 @@
 
 #include <mrpt/obs/CAction.h>
 #include <mrpt/serialization/CArchive.h>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
 
 using namespace mrpt::obs;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CAction, CSerializable, mrpt::obs)
+
+void CAction::getDescriptionAsText(std::ostream& o) const
+{
+	using namespace mrpt::system;  // for the TTimeStamp << op
+
+	o << "Timestamp (UTC): " << mrpt::system::dateTimeToString(timestamp)
+	  << std::endl;
+	o << "  (as time_t): " << std::fixed << std::setprecision(5)
+	  << mrpt::system::timestampTotime_t(timestamp) << std::endl;
+	o << "  (as TTimestamp): " << timestamp << std::endl;
+	o << std::endl;
+}
+
+std::string CAction::getDescriptionAsTextValue() const
+{
+	std::stringstream ss;
+	getDescriptionAsText(ss);
+	return ss.str();
+}
