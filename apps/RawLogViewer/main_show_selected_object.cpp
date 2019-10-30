@@ -193,76 +193,6 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 				CActionRobotMovement2D::Ptr act =
 					std::dynamic_pointer_cast<CActionRobotMovement2D>(sel_obj);
 
-				CPose2D Ap;
-				CMatrixDouble33 mat;
-				act->poseChange->getCovarianceAndMean(mat, Ap);
-
-				cout << "Robot Movement (as a gaussian pose change):\n";
-				cout << " Mean = " << Ap << endl;
-
-				cout << format(" Covariance:     DET=%e\n", mat.det());
-
-				cout << format(
-					"      %e %e %e\n", mat(0, 0), mat(0, 1), mat(0, 2));
-				cout << format(
-					"      %e %e %e\n", mat(1, 0), mat(1, 1), mat(1, 2));
-				cout << format(
-					"      %e %e %e\n", mat(2, 0), mat(2, 1), mat(2, 2));
-
-				cout << endl;
-
-				cout << " Actual reading from the odometry increment = "
-					 << act->rawOdometryIncrementReading << endl;
-
-				cout << format(
-					"Actual PDF class is: '%s'\n",
-					act->poseChange->GetRuntimeClass()->className);
-
-				if (act->poseChange->GetRuntimeClass() ==
-					CLASS_ID(CPosePDFParticles))
-				{
-					CPosePDFParticles::Ptr aux =
-						std::dynamic_pointer_cast<CPosePDFParticles>(
-							act->poseChange.get_ptr());
-					cout << format(
-						" (Particle count = %u)\n",
-						(unsigned)aux->m_particles.size());
-				}
-				cout << endl;
-
-				cout << "Estimation method: ";
-				switch (act->estimationMethod)
-				{
-					case CActionRobotMovement2D::emOdometry:
-						cout << "emOdometry\n";
-						break;
-					case CActionRobotMovement2D::emScan2DMatching:
-						cout << "emScan2DMatching\n";
-						break;
-					default:
-						cout << "(Unknown ID!)\n";
-						break;
-				};
-
-				// Additional data:
-				if (act->hasEncodersInfo)
-				{
-					cout << format(
-						" Encoder info: deltaL=%i deltaR=%i\n",
-						act->encoderLeftTicks, act->encoderRightTicks);
-				}
-				else
-					cout << "Encoder info: Not available!\n";
-
-				if (act->hasVelocities)
-				{
-					cout << format(
-						" Velocity info: v=%s\n",
-						act->velocityLocal.asString().c_str());
-				}
-				else
-					cout << "Velocity info: Not available!\n";
-
 				// Plot the 2D pose samples:
 				unsigned int N = 1000;
 				vector<CVectorDouble> samples;
@@ -317,18 +247,6 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 				plotRangeBearing->LockAspect();
 				plotRangeBearing
 					->Fit();  // Update the window to show the new data fitted.
-			}
-
-			if (classID == CLASS_ID(CActionRobotMovement3D))
-			{
-				// ----------------------------------------------------------------------
-				//              CActionRobotMovement3D
-				// ----------------------------------------------------------------------
-				// Notebook1->ChangeSelection( 1 );
-				CActionRobotMovement3D::Ptr act =
-					std::dynamic_pointer_cast<CActionRobotMovement3D>(sel_obj);
-				cout << "Robot Movement (as a gaussian pose change):\n";
-				cout << act->poseChange << endl;
 			}
 
 			if (classID == CLASS_ID(CObservation3DRangeScan))

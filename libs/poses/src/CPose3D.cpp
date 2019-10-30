@@ -120,12 +120,17 @@ CPose3D::CPose3D(const CPose3DQuat& p)
 	p.quat().rotationMatrixNoResize(m_ROT);
 }
 
-uint8_t CPose3D::serializeGetVersion() const { return 2; }
+uint8_t CPose3D::serializeGetVersion() const { return 3; }
 void CPose3D::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	const CPose3DQuat q(*this);
-	// The coordinates:
-	out << q[0] << q[1] << q[2] << q[3] << q[4] << q[5] << q[6];
+	// v2 serialized the equivalent CPose3DQuat representation.
+	// But this led to (**really** tiny) numerical differences between the
+	// original and reconstructed poses. To ensure bit-by-bit equivalence before
+	// and after serialization, let's get back to serializing the actual SO(3)
+	// matrix in serialization v3:
+	for (int i = 0; i < 3; i++) out << m_coords[i];
+	for (int r = 0; r < 3; r++)
+		for (int c = 0; c < 3; c++) out << m_ROT(r, c);
 }
 void CPose3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
@@ -143,7 +148,6 @@ void CPose3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			m_coords[0] = HM2(0, 3);
 			m_coords[1] = HM2(1, 3);
 			m_coords[2] = HM2(2, 3);
-			m_ypr_uptodate = false;
 		}
 		break;
 		case 1:
@@ -157,7 +161,6 @@ void CPose3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			m_coords[0] = HM(0, 3);
 			m_coords[1] = HM(1, 3);
 			m_coords[2] = HM(2, 3);
-			m_ypr_uptodate = false;
 		}
 		break;
 		case 2:
@@ -167,16 +170,23 @@ void CPose3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			in >> p[0] >> p[1] >> p[2] >> p[3] >> p[4] >> p[5] >> p[6];
 
 			// Extract XYZ + ROT from quaternion:
-			m_ypr_uptodate = false;
 			m_coords[0] = p.x();
 			m_coords[1] = p.y();
 			m_coords[2] = p.z();
 			p.quat().rotationMatrixNoResize(m_ROT);
 		}
 		break;
+		case 3:
+		{
+			for (int i = 0; i < 3; i++) in >> m_coords[i];
+			for (int r = 0; r < 3; r++)
+				for (int c = 0; c < 3; c++) in >> m_ROT(r, c);
+		}
+		break;
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
+	m_ypr_uptodate = false;
 }
 
 void CPose3D::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const

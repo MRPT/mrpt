@@ -113,6 +113,8 @@ class CActionRobotMovement3D : public CAction
 		const mrpt::poses::CPose3D& odometryIncrement,
 		const TMotionModelOptions& o);
 
+	virtual void getDescriptionAsText(std::ostream& o) const override;
+
 	/** Each "true" entry means that the corresponding "velocities" element
 	 * contains valid data - There are 6 entries.
 	 */

@@ -13,6 +13,7 @@
 #include <mrpt/obs/CAction.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPosePDF.h>
+#include <mrpt/typemeta/TEnumType.h>
 
 namespace mrpt::obs
 {
@@ -184,6 +185,8 @@ class CActionRobotMovement2D : public CAction
 	 */
 	void fastDrawSingleSample(mrpt::poses::CPose2D& outSample) const;
 
+	virtual void getDescriptionAsText(std::ostream& o) const override;
+
    protected:
 	/** Computes the PDF of the pose increment from an odometry reading, using a
 	 * Gaussian approximation as the motion model.
@@ -238,3 +241,8 @@ class CActionRobotMovement2D : public CAction
 };  // End of class def.
 
 }  // namespace mrpt::obs
+
+MRPT_ENUM_TYPE_BEGIN(mrpt::obs::CActionRobotMovement2D::TEstimationMethod)
+MRPT_FILL_ENUM_MEMBER(mrpt::obs::CActionRobotMovement2D, emOdometry);
+MRPT_FILL_ENUM_MEMBER(mrpt::obs::CActionRobotMovement2D, emScan2DMatching);
+MRPT_ENUM_TYPE_END()
