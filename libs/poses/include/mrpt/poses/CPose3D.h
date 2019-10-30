@@ -102,7 +102,7 @@ class CPose3D : public CPose<CPose3D, 6>,
 
 	/** Whether yaw/pitch/roll members are up-to-date since the last rotation
 	 * matrix update. */
-	mutable bool m_ypr_uptodate{true};
+	mutable bool m_ypr_uptodate{false};
 	/** These variables are updated every time that the object rotation matrix
 	 * is modified (construction, loading from values, pose composition, etc )
 	 */
