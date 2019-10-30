@@ -53,22 +53,23 @@ void CObservationRawDAQ::getDescriptionAsText(std::ostream& o) const
 	using namespace std;
 	CObservation::getDescriptionAsText(o);
 
-	cout << "Sample rate             : " << sample_rate << " Hz" << endl;
-	cout << "Analog IN Channel count : " << AIN_channel_count << endl;
-	cout << "Analog IN interleaved?  : " << (AIN_interleaved ? "yes" : "no")
-		 << endl;
+	o << "Sample rate             : " << sample_rate << " Hz"
+	  << "\n";
+	o << "Analog IN Channel count : " << AIN_channel_count << "\n";
+	o << "Analog IN interleaved?  : " << (AIN_interleaved ? "yes" : "no")
+	  << "\n";
 
 #define RAWDAQ_SHOW_FIRSTS(_VEC)                                         \
-	cout << "Raw data in " #_VEC " (" << (_VEC).size()                   \
-		 << " entries): First values [";                                 \
+	o << "Raw data in " #_VEC " (" << (_VEC).size()                      \
+	  << " entries): First values [";                                    \
 	if (!(_VEC).empty())                                                 \
 	{                                                                    \
 		for (size_t i = 1;                                               \
 			 i <= std::min((_VEC).size(), static_cast<size_t>(10)); i++) \
-			cout << (_VEC)[i - 1] << " ";                                \
-		cout << " ... ";                                                 \
+			o << (_VEC)[i - 1] << " ";                                   \
+		o << " ... ";                                                    \
 	}                                                                    \
-	cout << "]\n";
+	o << "]\n";
 
 	RAWDAQ_SHOW_FIRSTS(AIN_8bits)
 	RAWDAQ_SHOW_FIRSTS(AIN_16bits)
@@ -84,5 +85,5 @@ void CObservationRawDAQ::getDescriptionAsText(std::ostream& o) const
 	RAWDAQ_SHOW_FIRSTS(CNTRIN_32bits)
 	RAWDAQ_SHOW_FIRSTS(CNTRIN_double)
 
-	cout << endl;
+	o << "\n";
 }

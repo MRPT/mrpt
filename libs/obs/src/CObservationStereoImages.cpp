@@ -226,28 +226,29 @@ void CObservationStereoImages::getDescriptionAsText(std::ostream& o) const
 
 	o << "Homogeneous matrix for the sensor's 3D pose, relative to robot "
 		 "base:\n";
-	o << cameraPose.getHomogeneousMatrixVal<CMatrixDouble44>() << endl
-	  << "Camera pose: " << cameraPose << endl
-	  << "Camera pose (YPR): " << CPose3D(cameraPose) << endl
-	  << endl;
+	o << cameraPose.getHomogeneousMatrixVal<CMatrixDouble44>() << "\n"
+	  << "Camera pose: " << cameraPose << "\n"
+	  << "Camera pose (YPR): " << CPose3D(cameraPose) << "\n"
+	  << "\n";
 
 	mrpt::img::TStereoCamera stParams;
 	getStereoCameraParams(stParams);
-	o << stParams.dumpAsText() << endl;
+	o << stParams.dumpAsText() << "\n";
 
-	o << "Right camera pose wrt left camera (YPR):" << endl
-	  << CPose3D(stParams.rightCameraPose) << endl;
+	o << "Right camera pose wrt left camera (YPR):"
+	  << "\n"
+	  << CPose3D(stParams.rightCameraPose) << "\n";
 
 	if (imageLeft.isExternallyStored())
 		o << " Left image is stored externally in file: "
-		  << imageLeft.getExternalStorageFile() << endl;
+		  << imageLeft.getExternalStorageFile() << "\n";
 
 	o << " Right image";
 	if (hasImageRight)
 	{
 		if (imageRight.isExternallyStored())
 			o << " is stored externally in file: "
-			  << imageRight.getExternalStorageFile() << endl;
+			  << imageRight.getExternalStorageFile() << "\n";
 	}
 	else
 		o << " : No.\n";
@@ -257,18 +258,21 @@ void CObservationStereoImages::getDescriptionAsText(std::ostream& o) const
 	{
 		if (imageDisparity.isExternallyStored())
 			o << " is stored externally in file: "
-			  << imageDisparity.getExternalStorageFile() << endl;
+			  << imageDisparity.getExternalStorageFile() << "\n";
 	}
 	else
 		o << " : No.\n";
 
-	o << format(
-		" Image size: %ux%u pixels\n", (unsigned int)imageLeft.getWidth(),
-		(unsigned int)imageLeft.getHeight());
+	if (!imageLeft.isEmpty())
+	{
+		o << format(
+			" Image size: %ux%u pixels\n", (unsigned int)imageLeft.getWidth(),
+			(unsigned int)imageLeft.getHeight());
 
-	o << " Channels order: " << imageLeft.getChannelsOrder() << endl;
+		o << " Channels order: " << imageLeft.getChannelsOrder() << "\n";
 
-	o << format(
-		" Rows are stored in top-bottom order: %s\n",
-		imageLeft.isOriginTopLeft() ? "YES" : "NO");
+		o << format(
+			" Rows are stored in top-bottom order: %s\n",
+			imageLeft.isOriginTopLeft() ? "YES" : "NO");
+	}
 }

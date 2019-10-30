@@ -13,6 +13,7 @@
 #include <CTraitsTest.h>
 #include <gtest/gtest.h>
 #include <mrpt/io/CMemoryStream.h>
+#include <mrpt/obs/stock_observations.h>
 #include <sstream>
 
 using namespace mrpt;
@@ -126,6 +127,26 @@ TEST(Observations, WriteReadToOctectVectors)
 	}
 }
 
+static bool aux_get_sample_data(mrpt::obs::CObservation&) { return false; }
+static bool aux_get_sample_data(mrpt::obs::CAction&) { return false; }
+
+static bool aux_get_sample_data(mrpt::obs::CObservation2DRangeScan& o)
+{
+	mrpt::obs::stock_observations::example2DRangeScan(o);
+	return true;
+}
+static bool aux_get_sample_data(mrpt::obs::CObservationImage& o)
+{
+	mrpt::obs::stock_observations::exampleImage(o.image);
+	return true;
+}
+static bool aux_get_sample_data(mrpt::obs::CObservationStereoImages& o)
+{
+	mrpt::obs::stock_observations::exampleImage(o.imageLeft, 0);
+	mrpt::obs::stock_observations::exampleImage(o.imageRight, 1);
+	return true;
+}
+
 // Try to invoke a copy ctor and = operator:
 template <class T>
 void run_copy_tests()
@@ -146,6 +167,32 @@ void run_copy_tests()
 		// make sure the copy works without erroneous mem accesses,etc.
 		ptr_copy_ctor->getDescriptionAsText(ss);
 	}
+	// deep copy tests via serialization:
+	// 1st round: default object state after default ctors
+	// 2nd round: with an example dataset, if present.
+	for (int round = 0; round < 2; round++)
+	{
+		CMemoryStream buf;
+		auto arch = mrpt::serialization::archiveFrom(buf);
+		T obj1;
+
+		if (round == 1)
+			if (!aux_get_sample_data(obj1)) break;
+
+		arch << obj1;
+		buf.Seek(0);
+
+		T obj2;
+		arch >> obj2;
+
+		// Check they are identical:
+		std::stringstream ss1, ss2;
+		obj1.getDescriptionAsText(ss1);
+		obj2.getDescriptionAsText(ss2);
+
+		EXPECT_EQ(ss1.str(), ss2.str())
+			<< "className: " << obj1.className << "\n";
+	}
 }
 
 TEST(Observations, CopyCtorAssignOp)
@@ -155,4 +202,24 @@ TEST(Observations, CopyCtorAssignOp)
 	run_copy_tests<CObservationGPS>();
 	run_copy_tests<CObservationIMU>();
 	run_copy_tests<CObservationOdometry>();
+	run_copy_tests<CObservationRGBD360>();
+	run_copy_tests<CObservationBearingRange>();
+	run_copy_tests<CObservationBatteryState>();
+	run_copy_tests<CObservationWirelessPower>();
+	run_copy_tests<CObservationRFID>();
+	run_copy_tests<CObservationBeaconRanges>();
+	run_copy_tests<CObservationComment>();
+	run_copy_tests<CObservationGasSensors>();
+	run_copy_tests<CObservationReflectivity>();
+	run_copy_tests<CObservationRange>();
+#if MRPT_HAS_OPENCV  // These classes need CImage serialization
+	run_copy_tests<CObservationImage>();
+	run_copy_tests<CObservationStereoImages>();
+#endif
+	run_copy_tests<CObservationCANBusJ1939>();
+	run_copy_tests<CObservationRawDAQ>();
+	run_copy_tests<CObservation6DFeatures>();
+	run_copy_tests<CObservationVelodyneScan>();
+	run_copy_tests<CActionRobotMovement2D>();
+	run_copy_tests<CActionRobotMovement3D>();
 }

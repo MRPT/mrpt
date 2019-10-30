@@ -24,13 +24,23 @@ namespace mrpt::obs
 class CAction : public mrpt::serialization::CSerializable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CAction)
-
+   public:
 	/** Default ctor */
 	CAction() = default;
 	~CAction() override = default;
 
 	/** The associated time-stamp.*/
 	mrpt::system::TTimeStamp timestamp{INVALID_TIMESTAMP};
+
+	/** Build a detailed, multi-line textual description of the action
+	 * contents and dump it to the output stream.
+	 * \note If overried by derived classes, call base
+	 * CAction::getDescriptionAsText() first to show common information.
+	 */
+	virtual void getDescriptionAsText(std::ostream& o) const;
+
+	/** Return by value version of getDescriptionAsText(std::ostream&) */
+	std::string getDescriptionAsTextValue() const;
 
 };  // End of class def.
 
