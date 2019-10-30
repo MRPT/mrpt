@@ -210,3 +210,11 @@ void CActionRobotMovement3D::computeFromOdometry_model6DOF(
 
 	poseChange.copyFrom(*poseChangeTemp);
 }
+
+void CActionRobotMovement3D::getDescriptionAsText(std::ostream& o) const
+{
+	CAction::getDescriptionAsText(o);
+
+	o << "Robot Movement (as a gaussian pose change):\n";
+	o << poseChange << "\n";
+}

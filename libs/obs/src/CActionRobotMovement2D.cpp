@@ -702,3 +702,57 @@ void CActionRobotMovement2D::fastDrawSingleSample_modelThrun(
 {
 	drawSingleSample_modelThrun(outSample);
 }
+
+void CActionRobotMovement2D::getDescriptionAsText(std::ostream& o) const
+{
+	CAction::getDescriptionAsText(o);
+
+	CPose2D Ap;
+	CMatrixDouble33 mat;
+	poseChange->getCovarianceAndMean(mat, Ap);
+
+	o << "Robot Movement (as a gaussian pose change):\n";
+	o << " Mean = " << Ap << "\n";
+
+	o << format(" Covariance:     DET=%e\n", mat.det());
+
+	o << format("      %e %e %e\n", mat(0, 0), mat(0, 1), mat(0, 2));
+	o << format("      %e %e %e\n", mat(1, 0), mat(1, 1), mat(1, 2));
+	o << format("      %e %e %e\n", mat(2, 0), mat(2, 1), mat(2, 2));
+
+	o << "\n";
+
+	o << " Actual reading from the odometry increment = "
+	  << rawOdometryIncrementReading << "\n";
+
+	o << format(
+		"Actual PDF class is: '%s'\n",
+		poseChange->GetRuntimeClass()->className);
+
+	if (poseChange->GetRuntimeClass() == CLASS_ID(CPosePDFParticles))
+	{
+		CPosePDFParticles::Ptr aux =
+			std::dynamic_pointer_cast<CPosePDFParticles>(poseChange.get_ptr());
+		o << format(
+			" (Particle count = %u)\n", (unsigned)aux->m_particles.size());
+	}
+	o << "\n";
+
+	o << "Estimation method: "
+	  << mrpt::typemeta::TEnumType<TEstimationMethod>::value2name(
+			 estimationMethod)
+	  << "\n";
+
+	// Additional data:
+	if (hasEncodersInfo)
+		o << format(
+			" Encoder info: deltaL=%i deltaR=%i\n", encoderLeftTicks,
+			encoderRightTicks);
+	else
+		o << "Encoder info: Not available!\n";
+
+	if (hasVelocities)
+		o << " Velocity info: v=" << velocityLocal.asString() << "\n";
+	else
+		o << "Velocity info: Not available!\n";
+}
