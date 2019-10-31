@@ -176,7 +176,13 @@ bool VelodyneCalibration::loadFromXMLText(const std::string& xml_file_contents)
 			std::cerr
 				<< "[VelodyneCalibration::loadFromXMLText] Error parsing XML "
 				   "content: "
-				<< tinyxml2::XMLDocument::ErrorIDToName(err) << std::endl;
+#if TIXML2_MAJOR_VERSION >= 7 || \
+	(TIXML2_MAJOR_VERSION >= 6 && TIXML2_MINOR_VERSION >= 2)
+				<< tinyxml2::XMLDocument::ErrorIDToName(err)
+#else
+				<< doc.ErrorName()
+#endif
+				<< std::endl;
 			return false;
 		}
 
@@ -209,7 +215,13 @@ bool VelodyneCalibration::loadFromXMLFile(
 		{
 			std::cerr << "[VelodyneCalibration::loadFromXMLFile] Error loading "
 						 "XML file: "
-					  << tinyxml2::XMLDocument::ErrorIDToName(err) << std::endl;
+#if TIXML2_MAJOR_VERSION >= 7 || \
+	(TIXML2_MAJOR_VERSION >= 6 && TIXML2_MINOR_VERSION >= 2)
+					  << tinyxml2::XMLDocument::ErrorIDToName(err)
+#else
+					  << doc.ErrorName()
+#endif
+					  << std::endl;
 			return false;
 		}
 		return internal_loadFromXMLNode(reinterpret_cast<void*>(&doc));
