@@ -34,7 +34,10 @@ class CColouredPointsMap : public CPointsMap
 	CColouredPointsMap() = default;
 
 	CColouredPointsMap(const CPointsMap& o) { CPointsMap::operator=(o); }
-	CColouredPointsMap(const CColouredPointsMap& o) { impl_copyFrom(o); }
+	CColouredPointsMap(const CColouredPointsMap& o) : CPointsMap()
+	{
+		impl_copyFrom(o);
+	}
 	CColouredPointsMap& operator=(const CPointsMap& o)
 	{
 		impl_copyFrom(o);

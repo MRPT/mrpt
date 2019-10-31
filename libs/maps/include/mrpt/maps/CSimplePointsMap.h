@@ -35,7 +35,10 @@ class CSimplePointsMap : public CPointsMap
 	/** Default constructor */
 	CSimplePointsMap() = default;
 	CSimplePointsMap(const CPointsMap& o) { CPointsMap::operator=(o); }
-	CSimplePointsMap(const CSimplePointsMap& o) { CPointsMap::operator=(o); }
+	CSimplePointsMap(const CSimplePointsMap& o) : CPointsMap()
+	{
+		CPointsMap::operator=(o);
+	}
 	CSimplePointsMap& operator=(const CPointsMap& o)
 	{
 		CPointsMap::operator=(o);

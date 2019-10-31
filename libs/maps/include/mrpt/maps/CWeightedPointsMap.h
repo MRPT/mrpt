@@ -34,7 +34,10 @@ class CWeightedPointsMap : public CPointsMap
 	/** Default constructor */
 	CWeightedPointsMap() = default;
 	CWeightedPointsMap(const CPointsMap& o) { impl_copyFrom(o); }
-	CWeightedPointsMap(const CWeightedPointsMap& o) { impl_copyFrom(o); }
+	CWeightedPointsMap(const CWeightedPointsMap& o) : CPointsMap()
+	{
+		impl_copyFrom(o);
+	}
 	CWeightedPointsMap& operator=(const CPointsMap& o)
 	{
 		impl_copyFrom(o);
