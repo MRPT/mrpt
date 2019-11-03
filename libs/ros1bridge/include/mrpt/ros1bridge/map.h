@@ -31,11 +31,11 @@ class MapHdl
 {
    private:
 #ifdef OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
-	int8_t lut_cellmrpt2ros[0x100];  // lookup table for entry convertion
+	int lut_cellmrpt2ros[0x100];  // lookup table for entry convertion
 #else
-	int8_t lut_cellmrpt2ros[0xFFFF];  // lookup table for entry convertion
+	int lut_cellmrpt2ros[0xFFFF];  // lookup table for entry convertion
 #endif
-	int8_t lut_cellros2mrpt[101];  // lookup table for entry convertion
+	int lut_cellros2mrpt[101];  // lookup table for entry convertion
 
 	MapHdl();
 	MapHdl(const MapHdl&);
