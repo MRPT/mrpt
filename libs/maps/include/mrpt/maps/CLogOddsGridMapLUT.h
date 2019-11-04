@@ -10,6 +10,7 @@
 #pragma once
 
 #include <mrpt/maps/logoddscell_traits.h>
+#include <cmath>
 
 namespace mrpt::maps
 {
@@ -56,7 +57,7 @@ struct CLogOddsGridMapLUT : public detail::logoddscell_traits<TCELL>
 		logoddsTable_255.resize(traits_t::LOGODDS_LUT_ENTRIES);
 		for (int i = traits_t::CELLTYPE_MIN; i <= traits_t::CELLTYPE_MAX; i++)
 		{
-			float f = 1.0f / (1.0f + exp(-i * LOGODD_K_INV));
+			float f = 1.0f / (1.0f + std::exp(-i * LOGODD_K_INV));
 			unsigned int idx = -traits_t::CELLTYPE_MIN + i;
 			logoddsTable[idx] = f;
 			logoddsTable_255[idx] = (uint8_t)(f * 255.0f);
@@ -64,16 +65,11 @@ struct CLogOddsGridMapLUT : public detail::logoddscell_traits<TCELL>
 
 		// Build the p2lTable as well:
 		p2lTable.resize(traits_t::P2LTABLE_SIZE + 1);
-		double K = 1.0 / traits_t::P2LTABLE_SIZE;
+		const double K = 1.0 / traits_t::P2LTABLE_SIZE;
 		for (int j = 0; j <= traits_t::P2LTABLE_SIZE; j++)
 		{
-			double p = j * K;
-			if (p == 0)
-				p = 1e-14;
-			else if (p == 1)
-				p = 1 - 1e-14;
-
-			double logodd = log(p) - log(1 - p);
+			const double p = std::min(1.0 - 1e-14, std::max(1e-14, j * K));
+			const double logodd = log(p) - log(1 - p);
 			int L = round(logodd * LOGODD_K);
 			if (L > traits_t::CELLTYPE_MAX)
 				L = traits_t::CELLTYPE_MAX;
