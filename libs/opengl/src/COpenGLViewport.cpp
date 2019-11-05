@@ -796,7 +796,7 @@ void COpenGLViewport::get3DRayForPixelCoord(
 		// Perspective camera
 		// -------------------------------
 
-		// JL: This can derived from:
+		// JL: This can be derived from:
 		// http://www.opengl.org/sdk/docs/man/xhtml/gluPerspective.xml
 		//  where one arrives to:
 		//    tan(FOVx/2) = ASPECT_RATIO * tan(FOVy/2)
@@ -804,16 +804,14 @@ void COpenGLViewport::get3DRayForPixelCoord(
 		const double FOVy = DEG2RAD(m_lastProjMat.FOV);
 		const double FOVx = 2.0 * atan(ASPECT * tan(FOVy * 0.5));
 
-		const double ang_horz =
-			(-0.5 + x_coord / m_lastProjMat.viewport_width) * FOVx;
-		const double ang_vert =
-			-(-0.5 + y_coord / m_lastProjMat.viewport_height) * FOVy;
+		const auto vw = m_lastProjMat.viewport_width;
+		const auto vh = m_lastProjMat.viewport_height;
+		const double len_horz = 2.0 * (-0.5 + x_coord / vw) * tan(0.5 * FOVx);
+		const double len_vert = -2.0 * (-0.5 + y_coord / vh) * tan(0.5 * FOVy);
+		// Point in camera local reference frame
+		const auto l = mrpt::math::TPoint3D(len_horz, len_vert, 1.0);
 
-		const TPoint3D l(
-			tan(ang_horz), tan(ang_vert),
-			1.0);  // Point in camera local reference frame
-
-		const TPoint3D ray_director(
+		const mrpt::math::TPoint3D ray_director(
 			l.x * cam_x_3d.x + l.y * cam_up_3d.x + l.z * pointing_dir.x,
 			l.x * cam_x_3d.y + l.y * cam_up_3d.y + l.z * pointing_dir.y,
 			l.x * cam_x_3d.z + l.y * cam_up_3d.z + l.z * pointing_dir.z);
