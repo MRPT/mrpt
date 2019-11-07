@@ -178,11 +178,11 @@ void pointJac(
 	if (POSES_ARE_INVERSE)
 		cam_pose.composePoint(
 			landmark_global.x, landmark_global.y, landmark_global.z, l.x, l.y,
-			l.z, &dp_point);
+			l.z, dp_point);
 	else
 		cam_pose.inverseComposePoint(
 			landmark_global.x, landmark_global.y, landmark_global.z, l.x, l.y,
-			l.z, &dp_point);
+			l.z, dp_point);
 
 	ASSERT_(l.z != 0);
 	const double _z = 1.0 / l.z;
