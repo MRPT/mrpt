@@ -376,13 +376,13 @@ double CPose3D::distanceEuclidean6D(const CPose3D& o) const
 ---------------------------------------------------------------*/
 void CPose3D::composePoint(
 	double lx, double ly, double lz, double& gx, double& gy, double& gz,
-	mrpt::math::CMatrixFixed<double, 3, 3>* out_jacobian_df_dpoint,
-	mrpt::math::CMatrixFixed<double, 3, 6>* out_jacobian_df_dpose,
-	mrpt::math::CMatrixFixed<double, 3, 6>* out_jacobian_df_dse3,
+	mrpt::optional_ref<mrpt::math::CMatrixDouble33> out_jacobian_df_dpoint,
+	mrpt::optional_ref<mrpt::math::CMatrixDouble36> out_jacobian_df_dpose,
+	mrpt::optional_ref<mrpt::math::CMatrixDouble36> out_jacobian_df_dse3,
 	bool use_small_rot_approx) const
 {
 	// Jacob: df/dpoint
-	if (out_jacobian_df_dpoint) *out_jacobian_df_dpoint = m_ROT;
+	if (out_jacobian_df_dpoint) out_jacobian_df_dpoint.value().get() = m_ROT;
 
 	// Jacob: df/dpose
 	if (out_jacobian_df_dpose)
@@ -392,7 +392,7 @@ void CPose3D::composePoint(
 			// Linearized Jacobians around (yaw,pitch,roll)=(0,0,0):
 			alignas(MRPT_MAX_STATIC_ALIGN_BYTES) const double nums[3 * 6] = {
 				1, 0, 0, -ly, lz, 0, 0, 1, 0, lx, 0, -lz, 0, 0, 1, 0, -lx, ly};
-			out_jacobian_df_dpose->loadFromArray(nums);
+			out_jacobian_df_dpose.value().get().loadFromArray(nums);
 		}
 		else
 		{
@@ -440,7 +440,7 @@ void CPose3D::composePoint(
 				-lx * cp - ly * sp * sr - lz * sp * cr,  // d_z' / d_pitch
 				ly * cp * cr - lz * cp * sr  // d_z' / d_roll
 			};
-			out_jacobian_df_dpose->loadFromArray(nums);
+			out_jacobian_df_dpose.value().get().loadFromArray(nums);
 		}
 	}
 
@@ -453,7 +453,7 @@ void CPose3D::composePoint(
 	{
 		alignas(MRPT_MAX_STATIC_ALIGN_BYTES) const double nums[3 * 6] = {
 			1, 0, 0, 0, gz, -gy, 0, 1, 0, -gz, 0, gx, 0, 0, 1, gy, -gx, 0};
-		out_jacobian_df_dse3->loadFromArray(nums);
+		out_jacobian_df_dse3.value().get().loadFromArray(nums);
 	}
 }
 
@@ -516,7 +516,7 @@ CPose3D mrpt::poses::operator-(const CPose3D& b)
 
 void CPose3D::getAsQuaternion(
 	mrpt::math::CQuaternionDouble& q,
-	mrpt::math::CMatrixFixed<double, 4, 3>* out_dq_dr) const
+	mrpt::optional_ref<mrpt::math::CMatrixDouble43> out_dq_dr) const
 {
 	updateYawPitchRoll();
 	mrpt::math::TPose3D(0, 0, 0, m_yaw, m_pitch, m_roll)
@@ -655,16 +655,17 @@ void CPose3D::inverseComposeFrom(const CPose3D& A, const CPose3D& B)
  */
 void CPose3D::inverseComposePoint(
 	const double gx, const double gy, const double gz, double& lx, double& ly,
-	double& lz, mrpt::math::CMatrixFixed<double, 3, 3>* out_jacobian_df_dpoint,
-	mrpt::math::CMatrixFixed<double, 3, 6>* out_jacobian_df_dpose,
-	mrpt::math::CMatrixFixed<double, 3, 6>* out_jacobian_df_dse3) const
+	double& lz,
+	mrpt::optional_ref<mrpt::math::CMatrixDouble33> out_jacobian_df_dpoint,
+	mrpt::optional_ref<mrpt::math::CMatrixDouble36> out_jacobian_df_dpose,
+	mrpt::optional_ref<mrpt::math::CMatrixDouble36> out_jacobian_df_dse3) const
 {
 	CMatrixDouble33 R_inv(UNINITIALIZED_MATRIX);
 	CVectorFixedDouble<3> t_inv;
 	mrpt::math::homogeneousMatrixInverse(m_ROT, m_coords, R_inv, t_inv);
 
 	// Jacob: df/dpoint
-	if (out_jacobian_df_dpoint) *out_jacobian_df_dpoint = R_inv;
+	if (out_jacobian_df_dpoint) out_jacobian_df_dpoint.value().get() = R_inv;
 
 	// Jacob: df/dpose
 	if (out_jacobian_df_dpose)
@@ -745,7 +746,7 @@ void CPose3D::inverseComposePoint(
 			Ax * m31_dp + Ay * m32_dp + Az * m33_dp,  // d_x'/d_pitch
 			Ax * m31_dr + Ay * m32_dr + Az * m33_dr,  // d_x'/d_roll
 		};
-		out_jacobian_df_dpose->loadFromArray(nums);
+		out_jacobian_df_dpose.value().get().loadFromArray(nums);
 	}
 
 	lx = t_inv[0] + R_inv(0, 0) * gx + R_inv(0, 1) * gy + R_inv(0, 2) * gz;
@@ -757,7 +758,7 @@ void CPose3D::inverseComposePoint(
 	{
 		alignas(MRPT_MAX_STATIC_ALIGN_BYTES) const double nums[3 * 6] = {
 			-1, 0, 0, 0, -lz, ly, 0, -1, 0, lz, 0, -lx, 0, 0, -1, -ly, lx, 0};
-		out_jacobian_df_dse3->loadFromArray(nums);
+		out_jacobian_df_dse3.value().get().loadFromArray(nums);
 	}
 }
 

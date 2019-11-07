@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/core/optional_ref.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CQuaternion.h>
 #include <mrpt/math/TPoint2D.h>
@@ -278,10 +279,12 @@ class CPose3D : public CPose<CPose3D, 6>,
 	 */
 	void composePoint(
 		double lx, double ly, double lz, double& gx, double& gy, double& gz,
-		mrpt::math::CMatrixFixed<double, 3, 3>* out_jacobian_df_dpoint =
-			nullptr,
-		mrpt::math::CMatrixFixed<double, 3, 6>* out_jacobian_df_dpose = nullptr,
-		mrpt::math::CMatrixFixed<double, 3, 6>* out_jacobian_df_dse3 = nullptr,
+		mrpt::optional_ref<mrpt::math::CMatrixDouble33> out_jacobian_df_dpoint =
+			std::nullopt,
+		mrpt::optional_ref<mrpt::math::CMatrixDouble36> out_jacobian_df_dpose =
+			std::nullopt,
+		mrpt::optional_ref<mrpt::math::CMatrixDouble36> out_jacobian_df_dse3 =
+			std::nullopt,
 		bool use_small_rot_approx = false) const;
 
 	/** An alternative, slightly more efficient way of doing \f$ G = P \oplus L
@@ -350,11 +353,12 @@ class CPose3D : public CPose<CPose3D, 6>,
 	void inverseComposePoint(
 		const double gx, const double gy, const double gz, double& lx,
 		double& ly, double& lz,
-		mrpt::math::CMatrixFixed<double, 3, 3>* out_jacobian_df_dpoint =
-			nullptr,
-		mrpt::math::CMatrixFixed<double, 3, 6>* out_jacobian_df_dpose = nullptr,
-		mrpt::math::CMatrixFixed<double, 3, 6>* out_jacobian_df_dse3 =
-			nullptr) const;
+		mrpt::optional_ref<mrpt::math::CMatrixDouble33> out_jacobian_df_dpoint =
+			std::nullopt,
+		mrpt::optional_ref<mrpt::math::CMatrixDouble36> out_jacobian_df_dpose =
+			std::nullopt,
+		mrpt::optional_ref<mrpt::math::CMatrixDouble36> out_jacobian_df_dse3 =
+			std::nullopt) const;
 
 	/** \overload */
 	inline void inverseComposePoint(
@@ -577,7 +581,8 @@ class CPose3D : public CPose<CPose3D, 6>,
 	 */
 	void getAsQuaternion(
 		mrpt::math::CQuaternionDouble& q,
-		mrpt::math::CMatrixFixed<double, 4, 3>* out_dq_dr = nullptr) const;
+		mrpt::optional_ref<mrpt::math::CMatrixDouble43> out_dq_dr =
+			std::nullopt) const;
 
 	inline const double& operator[](unsigned int i) const
 	{
