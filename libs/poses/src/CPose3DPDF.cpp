@@ -161,7 +161,7 @@ void CPose3DPDF::jacobiansPoseComposition(
 	{
 		CMatrixFixed<double, 4, 3> dq_dr_sub(UNINITIALIZED_MATRIX);
 		CQuaternionDouble q_dumm(UNINITIALIZED_QUATERNION);
-		x.getAsQuaternion(q_dumm, &dq_dr_sub);
+		x.getAsQuaternion(q_dumm, dq_dr_sub);
 		J_E2Q_dx(0, 0) = J_E2Q_dx(1, 1) = J_E2Q_dx(2, 2) = 1;
 		J_E2Q_dx.insertMatrix(3, 3, dq_dr_sub);
 	}
@@ -171,7 +171,7 @@ void CPose3DPDF::jacobiansPoseComposition(
 	{
 		CMatrixFixed<double, 4, 3> dq_dr_sub(UNINITIALIZED_MATRIX);
 		CQuaternionDouble q_dumm(UNINITIALIZED_QUATERNION);
-		u.getAsQuaternion(q_dumm, &dq_dr_sub);
+		u.getAsQuaternion(q_dumm, dq_dr_sub);
 		J_E2Q_du(0, 0) = J_E2Q_du(1, 1) = J_E2Q_du(2, 2) = 1;
 		J_E2Q_du.insertMatrix(3, 3, dq_dr_sub);
 	}

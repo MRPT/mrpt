@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/core/bits_math.h>
+#include <mrpt/core/optional_ref.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/TPoseOrPoint.h>
 #include <mrpt/math/wrap2pi.h>
@@ -156,7 +157,8 @@ struct TPose3D : public TPoseOrPoint,
 	 */
 	void getAsQuaternion(
 		mrpt::math::CQuaternion<double>& q,
-		mrpt::math::CMatrixFixed<double, 4, 3>* out_dq_dr = nullptr) const;
+		mrpt::optional_ref<mrpt::math::CMatrixFixed<double, 4, 3>> out_dq_dr =
+			std::nullopt) const;
 
 	void composePoint(const TPoint3D& l, TPoint3D& g) const;
 	TPoint3D composePoint(const TPoint3D& l) const;
