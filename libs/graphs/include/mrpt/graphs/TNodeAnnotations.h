@@ -31,8 +31,7 @@ struct TNodeAnnotations
 	TNodeAnnotations() = default;
 	/**\brief Destructor */
 	virtual ~TNodeAnnotations() = default;
-	/**\brief Generic copy constructor */
-	TNodeAnnotations(const TNodeAnnotations& other) {}
+
 	virtual void getAnnotsAsString(std::string* s) const { ASSERT_(s); }
 	std::string retAnnotsAsString() const
 	{

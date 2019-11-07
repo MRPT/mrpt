@@ -175,7 +175,8 @@ class CNetworkOfPoses
 		/**\brief Potential class constructors
 		 */
 		/**\{ */
-		inline global_pose_t() : constraint_no_pdf_t() {}
+		inline global_pose_t() = default;
+
 		template <typename ARG1>
 		inline global_pose_t(const ARG1& a1) : constraint_no_pdf_t(a1)
 		{
@@ -186,14 +187,6 @@ class CNetworkOfPoses
 		{
 		}
 		/**\} */
-
-		/**\brief Copy constructor - delegate copying to the NODE_ANNOTATIONS
-		 * struct
-		 */
-		inline global_pose_t(const global_pose_t& other)
-			: constraint_no_pdf_t(other), NODE_ANNOTATIONS(other)
-		{
-		}
 
 		inline bool operator==(const global_pose_t& other) const
 		{
