@@ -117,7 +117,7 @@ double poses_test_compose3Dpoint3(int a1, int a2)
 	for (long i = 0; i < N; i++)
 	{
 		a.composePoint(
-			b.x(), b.y(), b.z(), x, y, z, &df_dpoint, &df_dpose, &df_dse3);
+			b.x(), b.y(), b.z(), x, y, z, df_dpoint, df_dpose, df_dse3);
 	}
 	double T = tictac.Tac() / N;
 	dummy_do_nothing_with_string(mrpt::format("%f", x));

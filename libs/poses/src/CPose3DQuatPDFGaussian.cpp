@@ -148,7 +148,7 @@ void CPose3DQuatPDFGaussian::copyFrom(const CPose3DPDFGaussian& o)
 		mean.y(o.mean.y());
 		mean.z(o.mean.z());
 
-		o.mean.getAsQuaternion(mean.quat(), &dq_dr_sub);
+		o.mean.getAsQuaternion(mean.quat(), dq_dr_sub);
 
 		// Cov:
 		CMatrixFixed<double, 7, 6> dq_dr;

@@ -263,7 +263,7 @@ void TPose3D::asString(std::string& s) const
 }
 void TPose3D::getAsQuaternion(
 	mrpt::math::CQuaternion<double>& q,
-	mrpt::math::CMatrixFixed<double, 4, 3>* out_dq_dr) const
+	mrpt::optional_ref<mrpt::math::CMatrixFixed<double, 4, 3>> out_dq_dr) const
 {
 	// See:
 	// http://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
@@ -296,7 +296,7 @@ void TPose3D::getAsQuaternion(
 			-0.5 * q[2], 0.5 * (-ssc - ccs), 0.5 * q[0],
 			0.5 * q[1],  0.5 * (ccc - sss),  0.5 * q[3],
 			0.5 * q[0],  0.5 * (-css - scc), -0.5 * q[2]};
-		out_dq_dr->loadFromArray(nums);
+		out_dq_dr.value().get().loadFromArray(nums);
 	}
 }
 void TPose3D::composePoint(const TPoint3D& l, TPoint3D& g) const

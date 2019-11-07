@@ -310,7 +310,7 @@ class Pose3DTests : public ::testing::Test
 
 		TPoint3D pp;
 		p1.composePoint(
-			x, y, z, pp.x, pp.y, pp.z, &df_dpoint, &df_dpose, nullptr,
+			x, y, z, pp.x, pp.y, pp.z, df_dpoint, df_dpose, std::nullopt,
 			use_aprox);
 
 		// Numerical approx:
@@ -380,8 +380,7 @@ class Pose3DTests : public ::testing::Test
 		CMatrixFixed<double, 3, 6> df_dpose;
 
 		TPoint3D pp;
-		p1.inverseComposePoint(
-			x, y, z, pp.x, pp.y, pp.z, &df_dpoint, &df_dpose);
+		p1.inverseComposePoint(x, y, z, pp.x, pp.y, pp.z, df_dpoint, df_dpose);
 
 		// Numerical approx:
 		CMatrixFixed<double, 3, 3> num_df_dpoint(UNINITIALIZED_MATRIX);
@@ -478,7 +477,8 @@ class Pose3DTests : public ::testing::Test
 
 		TPoint3D pp;
 		p.composePoint(
-			x_l.x, x_l.y, x_l.z, pp.x, pp.y, pp.z, nullptr, nullptr, &df_dse3);
+			x_l.x, x_l.y, x_l.z, pp.x, pp.y, pp.z, std::nullopt, std::nullopt,
+			df_dse3);
 
 		// Numerical approx:
 		CMatrixFixed<double, 3, 6> num_df_dse3(UNINITIALIZED_MATRIX);
@@ -519,7 +519,8 @@ class Pose3DTests : public ::testing::Test
 
 		TPoint3D pp;
 		p.inverseComposePoint(
-			x_g.x, x_g.y, x_g.z, pp.x, pp.y, pp.z, nullptr, nullptr, &df_dse3);
+			x_g.x, x_g.y, x_g.z, pp.x, pp.y, pp.z, std::nullopt, std::nullopt,
+			df_dse3);
 
 		// Numerical approx:
 		CMatrixFixed<double, 3, 6> num_df_dse3(UNINITIALIZED_MATRIX);
