@@ -25,7 +25,7 @@ namespace mrpt::obs
  */
 class CActionCollection : public mrpt::serialization::CSerializable
 {
-	DEFINE_SERIALIZABLE(CActionCollection)
+	DEFINE_SERIALIZABLE(CActionCollection, mrpt::obs)
 
    protected:
 	/** The robot "actionss" */

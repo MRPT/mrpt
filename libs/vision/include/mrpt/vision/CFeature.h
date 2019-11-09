@@ -55,7 +55,7 @@ class CFeature : public mrpt::serialization::CSerializable
 	friend class CFeatureList;
 	friend class CMatchedFeatureList;
 
-	DEFINE_SERIALIZABLE(CFeature)
+	DEFINE_SERIALIZABLE(CFeature, mrpt::vision)
 
    public:
 	CFeature() = default;

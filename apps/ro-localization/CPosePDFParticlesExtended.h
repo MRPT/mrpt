@@ -47,7 +47,7 @@ class CPosePDFParticlesExtended
 		  CPosePDFParticlesExtended,
 		  mrpt::bayes::CParticleFilterData<TExtendedCPose2D>::CParticleList>
 {
-	DEFINE_SERIALIZABLE(CPosePDFParticlesExtended)
+	DEFINE_SERIALIZABLE(CPosePDFParticlesExtended, mrpt::poses)
 
    public:
 	/** The struct for passing extra simulation parameters to the prediction

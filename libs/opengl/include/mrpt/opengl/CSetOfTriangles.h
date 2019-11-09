@@ -21,7 +21,7 @@ namespace mrpt::opengl
  */
 class CSetOfTriangles : public CRenderizableDisplayList
 {
-	DEFINE_SERIALIZABLE(CSetOfTriangles)
+	DEFINE_SERIALIZABLE(CSetOfTriangles, mrpt::opengl)
    public:
 	/**
 	 * Triangle definition. Each vertex has three spatial coordinates and four

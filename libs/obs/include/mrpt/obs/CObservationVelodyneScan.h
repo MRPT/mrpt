@@ -79,7 +79,7 @@ namespace obs
  */
 class CObservationVelodyneScan : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationVelodyneScan)
+	DEFINE_SERIALIZABLE(CObservationVelodyneScan, mrpt::obs)
 
    public:
 	/** @name Raw scan fixed parameters

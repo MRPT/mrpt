@@ -34,7 +34,7 @@ class COccupancyGridMap3D
 	: public CMetricMap,
 	  public CLogOddsGridMap3D<OccGridCellTraits::cellType>
 {
-	DEFINE_SERIALIZABLE(COccupancyGridMap3D)
+	DEFINE_SERIALIZABLE(COccupancyGridMap3D, mrpt::maps)
    public:
 	/** The type of the map voxels: */
 	using voxelType = OccGridCellTraits::cellType;

@@ -40,7 +40,7 @@ namespace maps
 class COctoMap : public COctoMapBase<octomap::OcTree, octomap::OcTreeNode>
 {
 	// This must be added to any CSerializable derived class:
-	DEFINE_SERIALIZABLE(COctoMap)
+	DEFINE_SERIALIZABLE(COctoMap, mrpt::maps)
 
    public:
 	COctoMap(const double resolution = 0.10);  //!< Default constructor

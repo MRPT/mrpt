@@ -53,7 +53,7 @@ namespace obs
  */
 class CObservation2DRangeScan : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservation2DRangeScan)
+	DEFINE_SERIALIZABLE(CObservation2DRangeScan, mrpt::obs)
 	// This must be added for declaration of MEX-related functions
 	DECLARE_MEX_CONVERSION
    private:

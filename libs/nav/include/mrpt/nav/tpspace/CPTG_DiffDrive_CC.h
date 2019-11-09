@@ -24,7 +24,7 @@ namespace mrpt::nav
  */
 class CPTG_DiffDrive_CC : public CPTG_DiffDrive_CollisionGridBased
 {
-	DEFINE_SERIALIZABLE(CPTG_DiffDrive_CC)
+	DEFINE_SERIALIZABLE(CPTG_DiffDrive_CC, mrpt::nav)
    public:
 	CPTG_DiffDrive_CC() = default;
 	CPTG_DiffDrive_CC(

@@ -54,7 +54,7 @@ class COccupancyGridMap2D
 	: public CMetricMap,
 	  public CLogOddsGridMap2D<OccGridCellTraits::cellType>
 {
-	DEFINE_SERIALIZABLE(COccupancyGridMap2D)
+	DEFINE_SERIALIZABLE(COccupancyGridMap2D, mrpt::maps)
    public:
 	/** The type of the map cells: */
 	using cellType = OccGridCellTraits::cellType;

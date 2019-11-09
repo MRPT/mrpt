@@ -35,7 +35,7 @@ namespace mrpt::opengl
  */
 class CMesh : public CRenderizableDisplayList
 {
-	DEFINE_SERIALIZABLE(CMesh)
+	DEFINE_SERIALIZABLE(CMesh, mrpt::opengl)
    public:
 	struct TTriangleVertexIndices
 	{

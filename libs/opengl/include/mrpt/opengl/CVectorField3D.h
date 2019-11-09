@@ -36,7 +36,7 @@ namespace mrpt::opengl
 
 class CVectorField3D : public CRenderizableDisplayList
 {
-	DEFINE_SERIALIZABLE(CVectorField3D)
+	DEFINE_SERIALIZABLE(CVectorField3D, mrpt::opengl)
    protected:
 	/** X component of the vector field */
 	mrpt::math::CMatrixF x_vf;

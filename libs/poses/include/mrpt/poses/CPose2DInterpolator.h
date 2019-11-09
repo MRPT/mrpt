@@ -49,7 +49,7 @@ class CPose2DInterpolator : public mrpt::serialization::CSerializable,
 							public mrpt::poses::CPoseInterpolatorBase<2>
 {
 	// This must be added to any CSerializable derived class:
-	DEFINE_SERIALIZABLE(CPose2DInterpolator)
+	DEFINE_SERIALIZABLE(CPose2DInterpolator, mrpt::poses)
 
 };  // End of class def.
 }  // namespace mrpt::poses

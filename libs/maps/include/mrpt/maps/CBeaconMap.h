@@ -42,7 +42,7 @@ namespace mrpt::maps
  */
 class CBeaconMap : public mrpt::maps::CMetricMap
 {
-	DEFINE_SERIALIZABLE(CBeaconMap)
+	DEFINE_SERIALIZABLE(CBeaconMap, mrpt::maps)
 
    public:
 	using TSequenceBeacons = std::deque<CBeacon>;

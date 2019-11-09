@@ -110,7 +110,7 @@ enum TIMUDataIndex
  */
 class CObservationIMU : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationIMU)
+	DEFINE_SERIALIZABLE(CObservationIMU, mrpt::obs)
 
    public:
 	CObservationIMU() = default;

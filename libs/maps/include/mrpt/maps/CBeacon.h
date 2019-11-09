@@ -34,7 +34,7 @@ class CBeaconMap;
  */
 class CBeacon : public mrpt::poses::CPointPDF
 {
-	DEFINE_SERIALIZABLE(CBeacon)
+	DEFINE_SERIALIZABLE(CBeacon, mrpt::maps)
 
    public:
 	/** The type for the IDs of landmarks.

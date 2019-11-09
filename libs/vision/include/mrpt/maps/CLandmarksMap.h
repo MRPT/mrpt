@@ -73,7 +73,7 @@ using TSequenceLandmarks = std::vector<CLandmark>;
  */
 class CLandmarksMap : public mrpt::maps::CMetricMap
 {
-	DEFINE_SERIALIZABLE(CLandmarksMap)
+	DEFINE_SERIALIZABLE(CLandmarksMap, mrpt::maps)
 
    private:
 	void internal_clear() override;

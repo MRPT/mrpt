@@ -29,7 +29,7 @@ namespace mrpt::opengl
  */
 class CDisk : public CRenderizableDisplayList
 {
-	DEFINE_SERIALIZABLE(CDisk)
+	DEFINE_SERIALIZABLE(CDisk, mrpt::opengl)
 
    protected:
 	float m_radiusIn{0}, m_radiusOut{1};

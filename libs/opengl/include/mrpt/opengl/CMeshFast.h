@@ -37,7 +37,7 @@ namespace mrpt::opengl
  */
 class CMeshFast : public CRenderizableDisplayList
 {
-	DEFINE_SERIALIZABLE(CMeshFast)
+	DEFINE_SERIALIZABLE(CMeshFast, mrpt::opengl)
 
    protected:
 	mrpt::img::CImage m_textureImage;

@@ -34,7 +34,7 @@ namespace mrpt::opengl
  */
 class CText : public CRenderizable
 {
-	DEFINE_SERIALIZABLE(CText)
+	DEFINE_SERIALIZABLE(CText, mrpt::opengl)
    protected:
 	std::string m_str;
 	std::string m_fontName;

@@ -38,7 +38,7 @@ namespace mrpt::opengl
  */
 class CAssimpModel : public CRenderizableDisplayList
 {
-	DEFINE_SERIALIZABLE(CAssimpModel)
+	DEFINE_SERIALIZABLE(CAssimpModel, mrpt::opengl)
 
    public:
 	/** Render child objects */

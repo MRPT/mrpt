@@ -24,7 +24,7 @@ namespace mrpt::obs
  */
 class CObservation6DFeatures : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservation6DFeatures)
+	DEFINE_SERIALIZABLE(CObservation6DFeatures, mrpt::obs)
    public:
 	/** Default ctor */
 	CObservation6DFeatures();

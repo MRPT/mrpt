@@ -36,7 +36,7 @@ using namespace mrpt::math;
 
 //  =========== Begin of Map definition ============
 MAP_DEFINITION_REGISTER(
-	"CGasConcentrationGridMap2D,gasGrid",
+	"mrpt::maps::CGasConcentrationGridMap2D,gasGrid",
 	mrpt::maps::CGasConcentrationGridMap2D)
 
 CGasConcentrationGridMap2D::TMapDefinition::TMapDefinition()

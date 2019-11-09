@@ -30,7 +30,7 @@ namespace mrpt::obs
  */
 class CObservationBatteryState : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationBatteryState)
+	DEFINE_SERIALIZABLE(CObservationBatteryState, mrpt::obs)
 
    public:
 	/** Constructor

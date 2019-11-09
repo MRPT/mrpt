@@ -23,7 +23,7 @@ namespace mrpt::poses
  */
 class CPosePDFGrid : public CPosePDF, public CPose2DGridTemplate<double>
 {
-	DEFINE_SERIALIZABLE(CPosePDFGrid)
+	DEFINE_SERIALIZABLE(CPosePDFGrid, mrpt::poses)
 
    protected:
    public:

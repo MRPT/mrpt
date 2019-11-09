@@ -22,7 +22,7 @@ namespace mrpt::poses
  */
 class CPoses3DSequence : public mrpt::serialization::CSerializable
 {
-	DEFINE_SERIALIZABLE(CPoses3DSequence)
+	DEFINE_SERIALIZABLE(CPoses3DSequence, mrpt::poses)
    public:
 	/** Returns the poses count in the sequence:
 	 */

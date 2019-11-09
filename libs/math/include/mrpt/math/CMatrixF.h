@@ -21,7 +21,7 @@ namespace mrpt::math
  */
 class CMatrixF : public mrpt::serialization::CSerializable, public CMatrixFloat
 {
-	DEFINE_SERIALIZABLE(CMatrixF)
+	DEFINE_SERIALIZABLE(CMatrixF, mrpt::math)
 	DEFINE_SCHEMA_SERIALIZABLE()
 
    public:

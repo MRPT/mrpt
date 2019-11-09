@@ -34,7 +34,7 @@ namespace mrpt::maps
  */
 class CLandmark : public mrpt::serialization::CSerializable
 {
-	DEFINE_SERIALIZABLE(CLandmark)
+	DEFINE_SERIALIZABLE(CLandmark, mrpt::maps)
 
    public:
 	/** The type for the IDs of landmarks. */

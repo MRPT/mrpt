@@ -36,7 +36,7 @@ class CHMHMapNode : public mrpt::serialization::CSerializable
 	friend class CHierarchicalMHMapPartition;
 	friend class CHMHMapArc;
 
-	DEFINE_SERIALIZABLE(CHMHMapNode)
+	DEFINE_SERIALIZABLE(CHMHMapNode, mrpt::hmtslam)
 
    public:
 	/** The type of the IDs of nodes.

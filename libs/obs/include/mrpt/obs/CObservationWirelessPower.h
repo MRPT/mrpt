@@ -25,7 +25,7 @@ namespace mrpt::obs
  */
 class CObservationWirelessPower : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationWirelessPower)
+	DEFINE_SERIALIZABLE(CObservationWirelessPower, mrpt::obs)
 
    public:
 	/** @name The data members

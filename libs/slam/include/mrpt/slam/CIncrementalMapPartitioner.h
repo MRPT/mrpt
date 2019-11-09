@@ -55,7 +55,7 @@ class CIncrementalMapPartitioner : public mrpt::system::COutputLogger,
 								   public mrpt::serialization::CSerializable
 {
 	// This must be added to any CSerializable derived class:
-	DEFINE_SERIALIZABLE(CIncrementalMapPartitioner)
+	DEFINE_SERIALIZABLE(CIncrementalMapPartitioner, mrpt::slam)
 
    public:
 	/** ctor */

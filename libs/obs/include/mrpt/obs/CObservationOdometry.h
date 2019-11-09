@@ -28,7 +28,7 @@ namespace mrpt::obs
  */
 class CObservationOdometry : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationOdometry)
+	DEFINE_SERIALIZABLE(CObservationOdometry, mrpt::obs)
 
    public:
 	/** Default ctor */

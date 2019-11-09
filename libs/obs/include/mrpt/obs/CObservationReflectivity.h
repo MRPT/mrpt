@@ -23,7 +23,7 @@ namespace mrpt::obs
  */
 class CObservationReflectivity : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationReflectivity)
+	DEFINE_SERIALIZABLE(CObservationReflectivity, mrpt::obs)
 
    public:
 	/** The read reflectivity level, in the range [0,1] (0=black, 1=white).
