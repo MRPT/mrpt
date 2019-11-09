@@ -20,7 +20,7 @@ namespace mrpt::obs
  */
 class CObservationRobotPose : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationRobotPose)
+	DEFINE_SERIALIZABLE(CObservationRobotPose, mrpt::obs)
    public:
 	/** The observed robot pose */
 	mrpt::poses::CPose3DPDFGaussian pose;

@@ -18,7 +18,7 @@ namespace mrpt::kinematics
  */
 class CVehicleVelCmd_DiffDriven : public CVehicleVelCmd
 {
-	DEFINE_SERIALIZABLE(CVehicleVelCmd_DiffDriven)
+	DEFINE_SERIALIZABLE(CVehicleVelCmd_DiffDriven, mrpt::kinematics)
    public:
 	/** Linear velocity (m/s) */
 	double lin_vel{.0};

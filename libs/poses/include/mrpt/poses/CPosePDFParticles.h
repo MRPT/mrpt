@@ -37,7 +37,7 @@ class CPosePDFParticles
 			  mrpt::math::TPose2D,
 			  mrpt::bayes::particle_storage_mode::VALUE>::CParticleList>
 {
-	DEFINE_SERIALIZABLE(CPosePDFParticles)
+	DEFINE_SERIALIZABLE(CPosePDFParticles, mrpt::poses)
 
    public:
 	/** Free all the memory associated to m_particles, and set the number of

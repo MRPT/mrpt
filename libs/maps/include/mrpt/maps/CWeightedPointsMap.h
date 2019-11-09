@@ -28,7 +28,7 @@ namespace maps
  */
 class CWeightedPointsMap : public CPointsMap
 {
-	DEFINE_SERIALIZABLE(CWeightedPointsMap)
+	DEFINE_SERIALIZABLE(CWeightedPointsMap, mrpt::maps)
 
    public:
 	/** Default constructor */

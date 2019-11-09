@@ -34,7 +34,7 @@ namespace maps
  */
 class CRBPFParticleData : public mrpt::serialization::CSerializable
 {
-	DEFINE_SERIALIZABLE(CRBPFParticleData)
+	DEFINE_SERIALIZABLE(CRBPFParticleData, mrpt::maps)
    public:
 	CRBPFParticleData() = default;
 	CRBPFParticleData(const TSetOfMetricMapInitializers& mapsInit)
@@ -66,7 +66,7 @@ class CMultiMetricMapPDF
 {
 	friend class mrpt::slam::CMetricMapBuilderRBPF;
 
-	DEFINE_SERIALIZABLE(CMultiMetricMapPDF)
+	DEFINE_SERIALIZABLE(CMultiMetricMapPDF, mrpt::maps)
 
    protected:
 	// PF algorithm implementations:

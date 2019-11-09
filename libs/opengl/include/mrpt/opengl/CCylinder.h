@@ -28,7 +28,7 @@ class CCylinder;
  */
 class CCylinder : public CRenderizableDisplayList
 {
-	DEFINE_SERIALIZABLE(CCylinder)
+	DEFINE_SERIALIZABLE(CCylinder, mrpt::opengl)
 	DEFINE_SCHEMA_SERIALIZABLE()
    protected:
 	/**

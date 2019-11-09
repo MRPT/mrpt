@@ -33,7 +33,7 @@ namespace mrpt::opengl
  */
 class CColorBar : public CRenderizableDisplayList
 {
-	DEFINE_SERIALIZABLE(CColorBar)
+	DEFINE_SERIALIZABLE(CColorBar, mrpt::opengl)
 
    protected:
 	mrpt::img::TColormap m_colormap;

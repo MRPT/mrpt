@@ -31,7 +31,7 @@ namespace mrpt::maps
  */
 class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 {
-	DEFINE_SERIALIZABLE(CGasConcentrationGridMap2D)
+	DEFINE_SERIALIZABLE(CGasConcentrationGridMap2D, mrpt::maps)
    public:
 	/** Constructor
 	 */

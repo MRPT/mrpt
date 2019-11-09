@@ -44,7 +44,8 @@ using namespace std;
 using mrpt::maps::internal::TSequenceLandmarks;
 
 //  =========== Begin of Map definition ============
-MAP_DEFINITION_REGISTER("CLandmarksMap,landmarksMap", mrpt::maps::CLandmarksMap)
+MAP_DEFINITION_REGISTER(
+	"mrpt::maps::CLandmarksMap,landmarksMap", mrpt::maps::CLandmarksMap)
 
 CLandmarksMap::TMapDefinition::TMapDefinition() = default;
 void CLandmarksMap::TMapDefinition::loadFromConfigFile_map_specific(

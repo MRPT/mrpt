@@ -28,7 +28,7 @@ namespace mrpt::opengl
  */
 class CGridPlaneXZ : public CRenderizableDisplayList
 {
-	DEFINE_SERIALIZABLE(CGridPlaneXZ)
+	DEFINE_SERIALIZABLE(CGridPlaneXZ, mrpt::opengl)
 
    protected:
 	float m_xMin, m_xMax;

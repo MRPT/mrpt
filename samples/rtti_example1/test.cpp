@@ -19,7 +19,7 @@ class Foo : public mrpt::rtti::CObject
 {
    public:
 	Foo() {}
-	DEFINE_MRPT_OBJECT(Foo)
+	DEFINE_MRPT_OBJECT(Foo, MyNS)
 
 	void printName() { std::cout << "printName: Foo" << std::endl; }
 };
@@ -37,7 +37,7 @@ class Bar : public BarBase
 {
    public:
 	Bar() {}
-	DEFINE_MRPT_OBJECT(Bar)
+	DEFINE_MRPT_OBJECT(Bar, MyNS)
 
 	void printName() override { std::cout << "class: Bar" << std::endl; }
 	void specificBarMethod()

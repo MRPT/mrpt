@@ -31,7 +31,7 @@ namespace mrpt::poses
 class CPoint3D : public CPoint<CPoint3D, 3>,
 				 public mrpt::serialization::CSerializable
 {
-	DEFINE_SERIALIZABLE(CPoint3D)
+	DEFINE_SERIALIZABLE(CPoint3D, mrpt::poses)
 	DEFINE_SCHEMA_SERIALIZABLE()
    public:
 	/** [x,y,z] */

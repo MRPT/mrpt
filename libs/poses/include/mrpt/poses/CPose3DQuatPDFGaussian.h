@@ -42,7 +42,7 @@ class CPose3DPDFGaussian;
  */
 class CPose3DQuatPDFGaussian : public CPose3DQuatPDF
 {
-	DEFINE_SERIALIZABLE(CPose3DQuatPDFGaussian)
+	DEFINE_SERIALIZABLE(CPose3DQuatPDFGaussian, mrpt::poses)
 
    protected:
 	/** Assures the symmetry of the covariance matrix (eventually certain

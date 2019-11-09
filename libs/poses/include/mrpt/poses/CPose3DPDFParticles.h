@@ -36,7 +36,7 @@ class CPose3DPDFParticles
 			  mrpt::math::TPose3D,
 			  mrpt::bayes::particle_storage_mode::VALUE>::CParticleList>
 {
-	DEFINE_SERIALIZABLE(CPose3DPDFParticles)
+	DEFINE_SERIALIZABLE(CPose3DPDFParticles, mrpt::poses)
 
    public:
 	/** Constructor

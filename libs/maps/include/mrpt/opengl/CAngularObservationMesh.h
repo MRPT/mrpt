@@ -40,7 +40,7 @@ namespace mrpt::opengl
  */
 class CAngularObservationMesh : public CRenderizableDisplayList
 {
-	DEFINE_SERIALIZABLE(CAngularObservationMesh)
+	DEFINE_SERIALIZABLE(CAngularObservationMesh, mrpt::opengl)
    public:
 	/**
 	 * Range specification type, with several uses.

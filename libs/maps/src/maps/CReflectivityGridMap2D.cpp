@@ -29,7 +29,7 @@ using namespace std;
 
 //  =========== Begin of Map definition ============
 MAP_DEFINITION_REGISTER(
-	"CReflectivityGridMap2D,reflectivityMap",
+	"mrpt::maps::CReflectivityGridMap2D,reflectivityMap",
 	mrpt::maps::CReflectivityGridMap2D)
 
 CReflectivityGridMap2D::TMapDefinition::TMapDefinition()

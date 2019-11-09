@@ -24,7 +24,7 @@ namespace mrpt::obs
  */
 class CObservationSkeleton : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationSkeleton)
+	DEFINE_SERIALIZABLE(CObservationSkeleton, mrpt::obs)
 
    public:
 	/** Constructor.

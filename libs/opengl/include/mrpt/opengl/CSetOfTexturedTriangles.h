@@ -20,7 +20,7 @@ namespace mrpt::opengl
  */
 class CSetOfTexturedTriangles : public CTexturedObject
 {
-	DEFINE_SERIALIZABLE(CSetOfTexturedTriangles)
+	DEFINE_SERIALIZABLE(CSetOfTexturedTriangles, mrpt::opengl)
 
    public:
 	/** Triangle vertex. This structure encapsulates the vertex coordinates and

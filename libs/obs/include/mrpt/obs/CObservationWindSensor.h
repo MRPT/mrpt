@@ -27,7 +27,7 @@ namespace mrpt::obs
  */
 class CObservationWindSensor : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationWindSensor)
+	DEFINE_SERIALIZABLE(CObservationWindSensor, mrpt::obs)
 
    public:
 	/** @name The data members

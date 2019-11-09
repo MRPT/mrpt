@@ -29,7 +29,7 @@ namespace maps
  */
 class CSimplePointsMap : public CPointsMap
 {
-	DEFINE_SERIALIZABLE(CSimplePointsMap)
+	DEFINE_SERIALIZABLE(CSimplePointsMap, mrpt::maps)
 
    public:
 	/** Default constructor */

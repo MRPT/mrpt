@@ -24,7 +24,7 @@ using namespace mrpt::math;
 
 //  =========== Begin of Map definition ============
 MAP_DEFINITION_REGISTER(
-	"CSimplePointsMap,pointsMap", mrpt::maps::CSimplePointsMap)
+	"mrpt::maps::CSimplePointsMap,pointsMap", mrpt::maps::CSimplePointsMap)
 
 CSimplePointsMap::TMapDefinition::TMapDefinition() = default;
 void CSimplePointsMap::TMapDefinition::loadFromConfigFile_map_specific(

@@ -38,7 +38,7 @@ namespace mrpt::opengl
  */
 class CBox : public CRenderizableDisplayList
 {
-	DEFINE_SERIALIZABLE(CBox)
+	DEFINE_SERIALIZABLE(CBox, mrpt::opengl)
 
    protected:
 	/** Corners coordinates */

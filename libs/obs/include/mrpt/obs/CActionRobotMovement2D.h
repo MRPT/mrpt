@@ -29,7 +29,7 @@ namespace mrpt::obs
  */
 class CActionRobotMovement2D : public CAction
 {
-	DEFINE_SERIALIZABLE(CActionRobotMovement2D)
+	DEFINE_SERIALIZABLE(CActionRobotMovement2D, mrpt::obs)
 
    public:
 	/** A list of posible ways for estimating the content of a

@@ -20,7 +20,7 @@ namespace mrpt::math
  */
 class CMatrixB : public mrpt::serialization::CSerializable, public CMatrixBool
 {
-	DEFINE_SERIALIZABLE(CMatrixB)
+	DEFINE_SERIALIZABLE(CMatrixB, mrpt::math)
    public:
 	/** Constructor */
 	CMatrixB(size_t row = 1, size_t col = 1) : CMatrixBool(row, col) {}

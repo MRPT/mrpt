@@ -23,7 +23,7 @@ namespace mrpt::obs
  */
 class CObservationGasSensors : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationGasSensors)
+	DEFINE_SERIALIZABLE(CObservationGasSensors, mrpt::obs)
 
    public:
 	/** Constructor.

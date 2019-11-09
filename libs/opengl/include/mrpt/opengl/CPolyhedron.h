@@ -42,7 +42,7 @@ class CPolyhedron;
  */
 class CPolyhedron : public CRenderizableDisplayList
 {
-	DEFINE_SERIALIZABLE(CPolyhedron)
+	DEFINE_SERIALIZABLE(CPolyhedron, mrpt::opengl)
    public:
 	/**
 	 * Struct used to store a polyhedron edge. The struct consists only of two

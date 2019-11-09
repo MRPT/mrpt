@@ -28,7 +28,7 @@ using namespace std;
 
 //  =========== Begin of Map definition ============
 MAP_DEFINITION_REGISTER(
-	"CHeightGridMap2D,heightMap,dem", mrpt::maps::CHeightGridMap2D)
+	"mrpt::maps::CHeightGridMap2D,heightMap,dem", mrpt::maps::CHeightGridMap2D)
 
 CHeightGridMap2D::TMapDefinition::TMapDefinition()
 

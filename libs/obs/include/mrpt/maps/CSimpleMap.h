@@ -31,7 +31,7 @@ namespace mrpt::maps
  */
 class CSimpleMap : public mrpt::serialization::CSerializable
 {
-	DEFINE_SERIALIZABLE(CSimpleMap)
+	DEFINE_SERIALIZABLE(CSimpleMap, mrpt::maps)
    public:
 	/** Default constructor (empty map) */
 	CSimpleMap() = default;

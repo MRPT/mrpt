@@ -50,7 +50,7 @@ namespace mrpt::obs
  */
 class CSensoryFrame : public mrpt::serialization::CSerializable
 {
-	DEFINE_SERIALIZABLE(CSensoryFrame)
+	DEFINE_SERIALIZABLE(CSensoryFrame, mrpt::obs)
 
    public:
 	/** Default constructor

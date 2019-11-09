@@ -23,7 +23,7 @@ namespace mrpt::obs
  */
 class CObservationRFID : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationRFID)
+	DEFINE_SERIALIZABLE(CObservationRFID, mrpt::obs)
 
    public:
 	/** Constructor */

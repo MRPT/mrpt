@@ -23,7 +23,7 @@ namespace mrpt::math
 class CMatrixD : public mrpt::serialization::CSerializable,
 				 public CMatrixDynamic<double>
 {
-	DEFINE_SERIALIZABLE(CMatrixD)
+	DEFINE_SERIALIZABLE(CMatrixD, mrpt::math)
 	DEFINE_SCHEMA_SERIALIZABLE()
    public:
 	using Base = CMatrixDynamic<double>;

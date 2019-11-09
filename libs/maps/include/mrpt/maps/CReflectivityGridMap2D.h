@@ -39,7 +39,7 @@ class CReflectivityGridMap2D : public CMetricMap,
 							   public mrpt::containers::CDynamicGrid<int8_t>,
 							   public CLogOddsGridMap2D<int8_t>
 {
-	DEFINE_SERIALIZABLE(CReflectivityGridMap2D)
+	DEFINE_SERIALIZABLE(CReflectivityGridMap2D, mrpt::maps)
 
    protected:
 	/** Lookup tables for log-odds */

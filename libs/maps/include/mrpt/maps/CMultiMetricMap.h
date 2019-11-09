@@ -119,7 +119,7 @@ class TSetOfMetricMapInitializers;
  */
 class CMultiMetricMap : public mrpt::maps::CMetricMap
 {
-	DEFINE_SERIALIZABLE(CMultiMetricMap)
+	DEFINE_SERIALIZABLE(CMultiMetricMap, mrpt::maps)
    public:
 	/** @name Access to list of maps
 		@{ */
