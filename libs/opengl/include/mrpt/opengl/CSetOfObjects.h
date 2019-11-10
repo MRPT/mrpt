@@ -25,7 +25,7 @@ namespace mrpt::opengl
  */
 class CSetOfObjects : public CRenderizable
 {
-	DEFINE_SERIALIZABLE(CSetOfObjects)
+	DEFINE_SERIALIZABLE(CSetOfObjects, mrpt::opengl)
 
    protected:
 	/** The list of child objects.

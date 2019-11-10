@@ -28,7 +28,7 @@ namespace mrpt::obs
  */
 class CObservationRawDAQ : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationRawDAQ)
+	DEFINE_SERIALIZABLE(CObservationRawDAQ, mrpt::obs)
    public:
 	/** Constructor */
 	inline CObservationRawDAQ() = default;

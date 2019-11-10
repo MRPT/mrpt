@@ -27,7 +27,7 @@ namespace mrpt::opengl
  */
 class CArrow : public CRenderizableDisplayList
 {
-	DEFINE_SERIALIZABLE(CArrow)
+	DEFINE_SERIALIZABLE(CArrow, mrpt::opengl)
 	DEFINE_SCHEMA_SERIALIZABLE()
    protected:
 	mutable float m_x0, m_y0, m_z0;

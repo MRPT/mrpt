@@ -149,8 +149,8 @@ void OctetVectorToObject(
 
 /** This declaration must be inserted in all CSerializable classes definition,
  * within the class declaration. */
-#define DEFINE_SERIALIZABLE(class_name)                                      \
-	DEFINE_MRPT_OBJECT(class_name)                                           \
+#define DEFINE_SERIALIZABLE(class_name, NS)                                  \
+	DEFINE_MRPT_OBJECT(class_name, NS)                                       \
    protected:                                                                \
 	/*! @name CSerializable virtual methods */                               \
 	/*! @{ */                                                                \
@@ -161,15 +161,7 @@ void OctetVectorToObject(
 /*! @} */
 
 /** To be added to all CSerializable-classes implementation files.
- * This version registers the class name with the NameSpace prefix.
- * \sa IMPLEMENTS_SERIALIZABLE
- */
-#define IMPLEMENTS_SERIALIZABLE_NS_PREFIX(class_name, base, NameSpace) \
-	IMPLEMENTS_MRPT_OBJECT_NS_PREFIX(class_name, base, NameSpace)
-
-/** To be added to all CSerializable-classes implementation files.
- * This version registers the class name with the NameSpace prefix.
- * \sa IMPLEMENTS_SERIALIZABLE_NS_PREFIX
+ * This registers the class name with the NameSpace prefix.
  */
 #define IMPLEMENTS_SERIALIZABLE(class_name, base, NameSpace) \
 	IMPLEMENTS_MRPT_OBJECT(class_name, base, NameSpace)

@@ -23,7 +23,7 @@ namespace mrpt::math
  */
 class CSplineInterpolator1D : public mrpt::serialization::CSerializable
 {
-	DEFINE_SERIALIZABLE(CSplineInterpolator1D)
+	DEFINE_SERIALIZABLE(CSplineInterpolator1D, mrpt::math)
 
    private:
 	/** The placeholders for the data */

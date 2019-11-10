@@ -18,7 +18,7 @@ namespace mrpt::opengl
  */
 class CSimpleLine : public CRenderizableDisplayList
 {
-	DEFINE_SERIALIZABLE(CSimpleLine)
+	DEFINE_SERIALIZABLE(CSimpleLine, mrpt::opengl)
 
    protected:
 	float m_x0, m_y0, m_z0;

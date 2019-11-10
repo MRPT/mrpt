@@ -146,7 +146,7 @@ class CExceptionExternalImageNotFound : public std::runtime_error
  */
 class CImage : public mrpt::serialization::CSerializable, public CCanvas
 {
-	DEFINE_SERIALIZABLE(CImage)
+	DEFINE_SERIALIZABLE(CImage, mrpt::img)
 
 	// This must be added for declaration of MEX-related functions
 	DECLARE_MEX_CONVERSION

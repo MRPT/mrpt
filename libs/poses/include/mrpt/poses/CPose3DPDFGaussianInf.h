@@ -39,7 +39,7 @@ class CPose3DQuatPDFGaussian;
 class CPose3DPDFGaussianInf : public CPose3DPDF
 {
 	// This must be added to any CSerializable derived class:
-	DEFINE_SERIALIZABLE(CPose3DPDFGaussianInf)
+	DEFINE_SERIALIZABLE(CPose3DPDFGaussianInf, mrpt::poses)
 	using self_t = CPose3DPDFGaussianInf;
 
    protected:

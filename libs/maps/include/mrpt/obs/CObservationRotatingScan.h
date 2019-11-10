@@ -59,7 +59,7 @@ class CObservationPointCloud;
  */
 class CObservationRotatingScan : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationRotatingScan)
+	DEFINE_SERIALIZABLE(CObservationRotatingScan, mrpt::obs)
 
    public:
 	/** @name Scan range data

@@ -28,7 +28,7 @@ namespace mrpt::nav
  */
 class CLogFileRecord : public mrpt::serialization::CSerializable
 {
-	DEFINE_SERIALIZABLE(CLogFileRecord)
+	DEFINE_SERIALIZABLE(CLogFileRecord, mrpt::nav)
 
    public:
 	/** Constructor, builds an empty record. */

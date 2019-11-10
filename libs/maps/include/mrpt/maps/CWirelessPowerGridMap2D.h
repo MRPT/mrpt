@@ -31,7 +31,7 @@ namespace mrpt::maps
  */
 class CWirelessPowerGridMap2D : public CRandomFieldGridMap2D
 {
-	DEFINE_SERIALIZABLE(CWirelessPowerGridMap2D)
+	DEFINE_SERIALIZABLE(CWirelessPowerGridMap2D, mrpt::maps)
    public:
 	/** Constructor */
 	CWirelessPowerGridMap2D(

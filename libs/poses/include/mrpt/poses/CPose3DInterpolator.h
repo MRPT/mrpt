@@ -47,6 +47,6 @@ namespace mrpt::poses
 class CPose3DInterpolator : public mrpt::serialization::CSerializable,
 							public mrpt::poses::CPoseInterpolatorBase<3>
 {
-	DEFINE_SERIALIZABLE(CPose3DInterpolator)
+	DEFINE_SERIALIZABLE(CPose3DInterpolator, mrpt::poses)
 };  // End of class def.
 }  // namespace mrpt::poses

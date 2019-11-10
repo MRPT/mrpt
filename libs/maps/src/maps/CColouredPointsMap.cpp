@@ -32,7 +32,8 @@ using namespace mrpt::config;
 
 //  =========== Begin of Map definition ============
 MAP_DEFINITION_REGISTER(
-	"CColouredPointsMap,colourPointsMap", mrpt::maps::CColouredPointsMap)
+	"mrpt::maps::CColouredPointsMap,colourPointsMap",
+	mrpt::maps::CColouredPointsMap)
 
 CColouredPointsMap::TMapDefinition::TMapDefinition() = default;
 void CColouredPointsMap::TMapDefinition::loadFromConfigFile_map_specific(

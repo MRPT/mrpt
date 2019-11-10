@@ -15,6 +15,7 @@
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/metaprogramming_serialization.h>
+#include <mrpt/system/filesystem.h>
 
 using namespace mrpt::maps;
 using namespace mrpt::poses;
@@ -246,7 +247,10 @@ void CMultiMetricMap::saveMetricMapRepresentationToFile(
 		ASSERT_(m);
 		std::string fil = filNamePrefix;
 		fil += format(
-			"_%s_%02u", m->GetRuntimeClass()->className,
+			"_%s_%02u",
+			mrpt::system::fileNameStripInvalidChars(
+				m->GetRuntimeClass()->className)
+				.c_str(),
 			static_cast<unsigned int>(idx));
 		m->saveMetricMapRepresentationToFile(fil);
 	}

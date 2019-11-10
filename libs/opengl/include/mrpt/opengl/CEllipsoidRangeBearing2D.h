@@ -40,7 +40,7 @@ namespace mrpt::opengl
 class CEllipsoidRangeBearing2D : public CGeneralizedEllipsoidTemplate<2>
 {
 	using BASE = CGeneralizedEllipsoidTemplate<2>;
-	DEFINE_SERIALIZABLE(CEllipsoidRangeBearing2D)
+	DEFINE_SERIALIZABLE(CEllipsoidRangeBearing2D, mrpt::opengl)
    protected:
 	/** To be implemented by derived classes: maps, using some arbitrary space
 	 * transformation, a list of points

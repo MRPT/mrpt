@@ -27,7 +27,7 @@ namespace mrpt::obs
  */
 class CObservationBearingRange : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationBearingRange)
+	DEFINE_SERIALIZABLE(CObservationBearingRange, mrpt::obs)
 
    public:
 	/** Default constructor.

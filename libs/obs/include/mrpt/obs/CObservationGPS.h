@@ -66,7 +66,7 @@ namespace mrpt::obs
  */
 class CObservationGPS : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationGPS)
+	DEFINE_SERIALIZABLE(CObservationGPS, mrpt::obs)
 
    public:
 	using message_list_t =

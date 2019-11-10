@@ -32,7 +32,7 @@ class CObservation3DRangeScan;
  */
 class CObservationPointCloud : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationPointCloud)
+	DEFINE_SERIALIZABLE(CObservationPointCloud, mrpt::obs)
 
    public:
 	enum class ExternalStorageFormat : uint8_t

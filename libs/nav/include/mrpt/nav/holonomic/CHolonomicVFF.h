@@ -24,7 +24,7 @@ namespace mrpt::nav
  */
 class CLogFileRecord_VFF : public CHolonomicLogFileRecord
 {
-	DEFINE_SERIALIZABLE(CLogFileRecord_VFF)
+	DEFINE_SERIALIZABLE(CLogFileRecord_VFF, mrpt::nav)
    public:
 };
 
@@ -46,7 +46,7 @@ class CLogFileRecord_VFF : public CHolonomicLogFileRecord
  */
 class CHolonomicVFF : public CAbstractHolonomicReactiveMethod
 {
-	DEFINE_SERIALIZABLE(CHolonomicVFF)
+	DEFINE_SERIALIZABLE(CHolonomicVFF, mrpt::nav)
    public:
 	/**  Initialize the parameters of the navigator, from some configuration
 	 * file, or default values if set to NULL. */

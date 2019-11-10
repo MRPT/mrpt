@@ -45,7 +45,7 @@ namespace mrpt::poses
 class CPose3DQuat : public CPose<CPose3DQuat, 7>,
 					public mrpt::serialization::CSerializable
 {
-	DEFINE_SERIALIZABLE(CPose3DQuat)
+	DEFINE_SERIALIZABLE(CPose3DQuat, mrpt::poses)
 	DEFINE_SCHEMA_SERIALIZABLE()
    public:
 	/** The translation vector [x,y,z] */

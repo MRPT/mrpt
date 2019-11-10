@@ -18,7 +18,7 @@ namespace mrpt::opengl
  */
 class CTexturedPlane : public CTexturedObject
 {
-	DEFINE_SERIALIZABLE(CTexturedPlane)
+	DEFINE_SERIALIZABLE(CTexturedPlane, mrpt::opengl)
    protected:
 	mutable float m_tex_x_min = -1.0f, m_tex_x_max = 1.0f;
 	mutable float m_tex_y_min = -1.0f, m_tex_y_max = 1.0f;

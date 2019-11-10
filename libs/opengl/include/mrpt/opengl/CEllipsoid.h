@@ -43,7 +43,7 @@ namespace mrpt::opengl
  */
 class CEllipsoid : public CRenderizableDisplayList
 {
-	DEFINE_SERIALIZABLE(CEllipsoid)
+	DEFINE_SERIALIZABLE(CEllipsoid, mrpt::opengl)
 
    protected:
 	/** Used to store computed values the first time this is rendered, and to

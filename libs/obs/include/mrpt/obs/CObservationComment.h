@@ -23,7 +23,7 @@ namespace mrpt::obs
  */
 class CObservationComment : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationComment)
+	DEFINE_SERIALIZABLE(CObservationComment, mrpt::obs)
 
    public:
 	/** Constructor.

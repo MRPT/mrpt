@@ -37,7 +37,7 @@ namespace mrpt::obs
  */
 class CObservationStereoImages : public mrpt::obs::CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationStereoImages)
+	DEFINE_SERIALIZABLE(CObservationStereoImages, mrpt::obs)
 	// This must be added for declaration of MEX-related functions
 	DECLARE_MEX_CONVERSION
 

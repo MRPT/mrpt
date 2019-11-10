@@ -42,7 +42,7 @@ class CDetectableObject : public mrpt::serialization::CSerializable
 
 class CDetectable2D : public CDetectableObject
 {
-	DEFINE_SERIALIZABLE(CDetectable2D)
+	DEFINE_SERIALIZABLE(CDetectable2D, mrpt::detectors)
 
    public:
 	/** 2D Coordinates of detected object */
@@ -75,7 +75,7 @@ class CDetectable2D : public CDetectableObject
 
 class CDetectable3D : public CDetectable2D
 {
-	DEFINE_SERIALIZABLE(CDetectable3D)
+	DEFINE_SERIALIZABLE(CDetectable3D, mrpt::detectors)
 
    public:
 	CDetectable3D() = default;

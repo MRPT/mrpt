@@ -27,7 +27,7 @@ class CPoint2DPDFGaussian;
  */
 class CPosePDFGaussian : public CPosePDF
 {
-	DEFINE_SERIALIZABLE(CPosePDFGaussian)
+	DEFINE_SERIALIZABLE(CPosePDFGaussian, mrpt::poses)
 	DEFINE_SCHEMA_SERIALIZABLE()
 
    protected:

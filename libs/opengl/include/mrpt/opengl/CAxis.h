@@ -28,7 +28,7 @@ namespace mrpt::opengl
  */
 class CAxis : public CRenderizableDisplayList
 {
-	DEFINE_SERIALIZABLE(CAxis)
+	DEFINE_SERIALIZABLE(CAxis, mrpt::opengl)
    protected:
 	float m_xmin, m_ymin, m_zmin;
 	float m_xmax, m_ymax, m_zmax;

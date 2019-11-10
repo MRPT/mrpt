@@ -33,7 +33,7 @@ namespace mrpt::poses
  */
 class CPosePDFSOG : public CPosePDF
 {
-	DEFINE_SERIALIZABLE(CPosePDFSOG)
+	DEFINE_SERIALIZABLE(CPosePDFSOG, mrpt::poses)
 
    public:
 	/** The struct for each mode:

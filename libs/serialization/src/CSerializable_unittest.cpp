@@ -18,7 +18,7 @@ namespace MyNS
 {
 class Foo : public CSerializable
 {
-	DEFINE_SERIALIZABLE(Foo)
+	DEFINE_SERIALIZABLE(Foo, MyNS)
    public:
 	int16_t value;
 };

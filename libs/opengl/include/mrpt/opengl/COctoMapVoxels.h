@@ -66,7 +66,7 @@ enum predefined_voxel_sets_t
  */
 class COctoMapVoxels : public CRenderizableDisplayList
 {
-	DEFINE_SERIALIZABLE(COctoMapVoxels)
+	DEFINE_SERIALIZABLE(COctoMapVoxels, mrpt::opengl)
    public:
 	/** The different coloring schemes, which modulate the generic
 	 * mrpt::opengl::CRenderizable object color. Set with setVisualizationMode()

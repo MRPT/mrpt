@@ -64,7 +64,7 @@ class CHeightGridMap2D
 	  public mrpt::containers::CDynamicGrid<THeightGridmapCell>,
 	  public CHeightGridMap2D_Base
 {
-	DEFINE_SERIALIZABLE(CHeightGridMap2D)
+	DEFINE_SERIALIZABLE(CHeightGridMap2D, mrpt::maps)
    public:
 	/** Calls the base CMetricMap::clear
 	 * Declared here to avoid ambiguity between the two clear() in both base

@@ -43,7 +43,7 @@ namespace mrpt::opengl
 class CEllipsoidInverseDepth2D : public CGeneralizedEllipsoidTemplate<2>
 {
 	using BASE = CGeneralizedEllipsoidTemplate<2>;
-	DEFINE_SERIALIZABLE(CEllipsoidInverseDepth2D)
+	DEFINE_SERIALIZABLE(CEllipsoidInverseDepth2D, mrpt::opengl)
 
    public:
 	/** The maximum range to be used as a correction when a point of the

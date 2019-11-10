@@ -52,6 +52,7 @@
   - \ref mrpt_system_grp
     - functions to get timestamp as *local* time were removed, since they don't make sense. All timestamps in MRPT are UTC, and they can be formated as dates in either UTC or local time frames.
   - \ref mrpt_rtti_grp  [NEW IN MRPT 2.0.0]
+	- All classes are now registered (and de/serialized) with their full name including namespaces. A backwards-compatible flag has been added to mrpt::rtti::findRegisteredClass().
     - CLASS_INIT() macro for automatic registration of classes has been removed, since it is not well-defined in which order global objects will be initialized.
       Therefore, manual registration (as already done in registerAllClasses.cpp files) is left as the unique registration system.
       This fixes warning messages "[mrpt::rtti::registerClass] Warning: Invoked with a nullptr".

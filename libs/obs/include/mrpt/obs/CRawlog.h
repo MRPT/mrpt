@@ -64,7 +64,7 @@ using TListTimeAndObservations =
  */
 class CRawlog : public mrpt::serialization::CSerializable
 {
-	DEFINE_SERIALIZABLE(CRawlog)
+	DEFINE_SERIALIZABLE(CRawlog, mrpt::obs)
 
    private:
 	using TListObjects = std::vector<mrpt::serialization::CSerializable::Ptr>;

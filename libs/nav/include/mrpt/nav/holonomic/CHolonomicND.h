@@ -51,7 +51,7 @@ class CLogFileRecord_ND;
  */
 class CHolonomicND : public CAbstractHolonomicReactiveMethod
 {
-	DEFINE_SERIALIZABLE(CHolonomicND)
+	DEFINE_SERIALIZABLE(CHolonomicND, mrpt::nav)
    public:
 	/**  Initialize the parameters of the navigator, from some configuration
 	 * file, or default values if set to nullptr */
@@ -162,7 +162,7 @@ class CHolonomicND : public CAbstractHolonomicReactiveMethod
  */
 class CLogFileRecord_ND : public CHolonomicLogFileRecord
 {
-	DEFINE_SERIALIZABLE(CLogFileRecord_ND)
+	DEFINE_SERIALIZABLE(CLogFileRecord_ND, mrpt::nav)
 
    public:
 	/** Member data.

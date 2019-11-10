@@ -76,7 +76,7 @@ class CRandomFieldGridMap3D
 {
 	using BASE = mrpt::containers::CDynamicGrid3D<TRandomFieldVoxel>;
 
-	DEFINE_SERIALIZABLE(CRandomFieldGridMap3D)
+	DEFINE_SERIALIZABLE(CRandomFieldGridMap3D, mrpt::maps)
    public:
 	/** [default:false] Enables a profiler to show a performance report at
 	 * application end. */

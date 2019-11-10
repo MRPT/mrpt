@@ -33,7 +33,7 @@ namespace mrpt::maps
 class CHeightGridMap2D_MRF : public CRandomFieldGridMap2D,
 							 public CHeightGridMap2D_Base
 {
-	DEFINE_SERIALIZABLE(CHeightGridMap2D_MRF)
+	DEFINE_SERIALIZABLE(CHeightGridMap2D_MRF, mrpt::maps)
    public:
 	/** Constructor */
 	CHeightGridMap2D_MRF(

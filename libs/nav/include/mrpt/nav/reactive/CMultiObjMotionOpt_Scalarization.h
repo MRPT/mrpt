@@ -25,7 +25,7 @@ namespace mrpt::nav
 class CMultiObjMotionOpt_Scalarization
 	: public mrpt::nav::CMultiObjectiveMotionOptimizerBase
 {
-	DEFINE_MRPT_OBJECT(CMultiObjMotionOpt_Scalarization)
+	DEFINE_MRPT_OBJECT(CMultiObjMotionOpt_Scalarization, mrpt::nav)
 
    public:
 	CMultiObjMotionOpt_Scalarization();

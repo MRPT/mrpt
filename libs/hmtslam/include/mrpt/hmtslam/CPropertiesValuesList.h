@@ -20,7 +20,7 @@ namespace mrpt::hmtslam
  */
 class CPropertiesValuesList : public mrpt::serialization::CSerializable
 {
-	DEFINE_SERIALIZABLE(CPropertiesValuesList)
+	DEFINE_SERIALIZABLE(CPropertiesValuesList, mrpt::hmtslam)
    protected:
 	struct TPropertyValuePair
 	{

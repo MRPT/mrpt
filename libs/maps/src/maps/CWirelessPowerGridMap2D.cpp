@@ -26,11 +26,10 @@ using namespace std;
 
 //  =========== Begin of Map definition ============
 MAP_DEFINITION_REGISTER(
-	"CWirelessPowerGridMap2D,wifiGrid", mrpt::maps::CWirelessPowerGridMap2D)
+	"mrpt::maps::CWirelessPowerGridMap2D,wifiGrid",
+	mrpt::maps::CWirelessPowerGridMap2D)
 
-CWirelessPowerGridMap2D::TMapDefinition::TMapDefinition()
-
-	= default;
+CWirelessPowerGridMap2D::TMapDefinition::TMapDefinition() = default;
 
 void CWirelessPowerGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(
 	const mrpt::config::CConfigFileBase& source,

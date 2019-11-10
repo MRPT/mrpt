@@ -24,7 +24,8 @@ using namespace mrpt::math;
 
 //  =========== Begin of Map definition ============
 MAP_DEFINITION_REGISTER(
-	"CWeightedPointsMap,weightedPointsMap", mrpt::maps::CWeightedPointsMap)
+	"mrpt::maps::CWeightedPointsMap,weightedPointsMap",
+	mrpt::maps::CWeightedPointsMap)
 
 CWeightedPointsMap::TMapDefinition::TMapDefinition() = default;
 void CWeightedPointsMap::TMapDefinition::loadFromConfigFile_map_specific(

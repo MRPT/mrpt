@@ -22,7 +22,7 @@ using _GLENUM = uint32_t;
  */
 class COpenGLStandardObject : public CRenderizableDisplayList
 {
-	DEFINE_SERIALIZABLE(COpenGLStandardObject)
+	DEFINE_SERIALIZABLE(COpenGLStandardObject, mrpt::opengl)
    protected:
 	/**
 	 * OpenGL identifier of the object type.
