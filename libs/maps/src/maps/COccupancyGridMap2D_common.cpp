@@ -28,7 +28,8 @@ using namespace std;
 
 //  =========== Begin of Map definition ============
 MAP_DEFINITION_REGISTER(
-	"COccupancyGridMap2D,occupancyGrid", mrpt::maps::COccupancyGridMap2D)
+	"mrpt::maps::COccupancyGridMap2D,occupancyGrid",
+	mrpt::maps::COccupancyGridMap2D)
 
 COccupancyGridMap2D::TMapDefinition::TMapDefinition() = default;
 

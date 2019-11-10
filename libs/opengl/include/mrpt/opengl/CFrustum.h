@@ -50,7 +50,7 @@ namespace mrpt::opengl
  */
 class CFrustum : public CRenderizableDisplayList
 {
-	DEFINE_SERIALIZABLE(CFrustum)
+	DEFINE_SERIALIZABLE(CFrustum, mrpt::opengl)
 
    protected:
 	/** Near and far planes */

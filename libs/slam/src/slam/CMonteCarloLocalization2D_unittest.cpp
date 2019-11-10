@@ -263,37 +263,40 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 // TEST =================
 TEST(MonteCarlo2D, RunSampleDataset)
 {
-#if MRPT_IS_BIG_ENDIAN
-	MRPT_TODO("Debug this issue in big endian platforms")
-	return;  // Skip this test for now
-#endif
-
-	// Actual ending point:
-	const CPose2D GT_endpose(15.904, -10.010, 4.93_deg);
-
-	// Placeholder for results:
-	CPose2D meanPose;
-	CMatrixDouble33 cov;
-
-	// Invoke test:
-	// Give it 3 opportunities, since it might fail once for bad luck, or even
-	// twice in an extreme bad luck:
-	for (int op = 0; op < 3; op++)
+	try
 	{
-		run_test_pf_localization(meanPose, cov);
+		// Actual ending point:
+		const CPose2D GT_endpose(15.904, -10.010, 4.93_deg);
 
-		const double final_pf_cov_trace = cov.trace();
-		const CPose2D final_pf_pose = meanPose;
+		// Placeholder for results:
+		CPose2D meanPose;
+		CMatrixDouble33 cov;
 
-		bool pass1 = (final_pf_pose - GT_endpose).norm() < 0.10;
-		bool pass2 = final_pf_cov_trace < 0.01;
+		// Invoke test:
+		// Give it 3 opportunities, since it might fail once for bad luck, or
+		// even twice in an extreme bad luck:
+		for (int op = 0; op < 3; op++)
+		{
+			run_test_pf_localization(meanPose, cov);
 
-		if (pass1 && pass2) return;  // OK!
+			const double final_pf_cov_trace = cov.trace();
+			const CPose2D final_pf_pose = meanPose;
 
-		// else: give it another try...
-		cout << "\n*Warning: Test failed. Will give it another chance, since "
-				"after all it's nondeterministic!\n";
+			bool pass1 = (final_pf_pose - GT_endpose).norm() < 0.10;
+			bool pass2 = final_pf_cov_trace < 0.01;
+
+			if (pass1 && pass2) return;  // OK!
+
+			// else: give it another try...
+			cout << "\n*Warning: Test failed. Will give it another chance, "
+					"since "
+					"after all it's nondeterministic!\n";
+		}
+
+		FAIL() << "Failed to converge after 3 opportunities!!" << endl;
 	}
-
-	FAIL() << "Failed to converge after 3 opportunities!!" << endl;
+	catch (const std::exception& e)
+	{
+		FAIL() << mrpt::exception_to_str(e);
+	}
 }

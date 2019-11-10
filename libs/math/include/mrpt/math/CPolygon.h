@@ -19,7 +19,7 @@ namespace mrpt::math
 class CPolygon : public mrpt::serialization::CSerializable,
 				 public mrpt::math::TPolygon2D
 {
-	DEFINE_SERIALIZABLE(CPolygon)
+	DEFINE_SERIALIZABLE(CPolygon, mrpt::math)
 
    public:
 	/** Default constructor (empty polygon, 0 vertices) */

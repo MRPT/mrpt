@@ -222,7 +222,7 @@ void project3DPointsFromDepthImageInto(
  */
 class CObservation3DRangeScan : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservation3DRangeScan)
+	DEFINE_SERIALIZABLE(CObservation3DRangeScan, mrpt::obs)
 
    protected:
 	/** If set to true, m_points3D_external_file is valid. */

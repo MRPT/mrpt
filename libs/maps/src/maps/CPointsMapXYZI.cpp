@@ -34,7 +34,8 @@ using namespace mrpt::math;
 using namespace mrpt::config;
 
 //  =========== Begin of Map definition ============
-MAP_DEFINITION_REGISTER("CPointsMapXYZI", mrpt::maps::CPointsMapXYZI)
+MAP_DEFINITION_REGISTER(
+	"mrpt::maps::CPointsMapXYZI", mrpt::maps::CPointsMapXYZI)
 
 CPointsMapXYZI::TMapDefinition::TMapDefinition() = default;
 

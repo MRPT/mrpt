@@ -72,7 +72,7 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 	friend class CTopLCDetector_GridMatching;
 	friend class CTopLCDetector_FabMap;
 
-	DEFINE_SERIALIZABLE(CHMTSLAM)
+	DEFINE_SERIALIZABLE(CHMTSLAM, mrpt::hmtslam)
 
    protected:
 	/** @name Inter-thread communication queues:

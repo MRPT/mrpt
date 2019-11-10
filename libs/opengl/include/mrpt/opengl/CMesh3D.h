@@ -31,7 +31,7 @@ namespace mrpt::opengl
  */
 class CMesh3D : public CRenderizableDisplayList
 {
-	DEFINE_SERIALIZABLE(CMesh3D)
+	DEFINE_SERIALIZABLE(CMesh3D, mrpt::opengl)
 
 	using f_verts = std::array<int, 4>;
 	using coord3D = mrpt::math::TPoint3Df;

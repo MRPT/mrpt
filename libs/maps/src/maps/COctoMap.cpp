@@ -33,7 +33,7 @@ using namespace mrpt::math;
 using namespace mrpt::opengl;
 
 //  =========== Begin of Map definition ============
-MAP_DEFINITION_REGISTER("COctoMap,octoMap", mrpt::maps::COctoMap)
+MAP_DEFINITION_REGISTER("mrpt::maps::COctoMap,octoMap", mrpt::maps::COctoMap)
 
 COctoMap::TMapDefinition::TMapDefinition() = default;
 void COctoMap::TMapDefinition::loadFromConfigFile_map_specific(

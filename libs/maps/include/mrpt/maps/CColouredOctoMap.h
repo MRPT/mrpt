@@ -37,7 +37,7 @@ class CColouredOctoMap
 	: public COctoMapBase<octomap::ColorOcTree, octomap::ColorOcTreeNode>
 {
 	// This must be added to any CSerializable derived class:
-	DEFINE_SERIALIZABLE(CColouredOctoMap)
+	DEFINE_SERIALIZABLE(CColouredOctoMap, mrpt::maps)
 
    public:
 	CColouredOctoMap(const double resolution = 0.10);  //!< Default constructor

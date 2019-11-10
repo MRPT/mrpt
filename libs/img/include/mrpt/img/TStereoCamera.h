@@ -22,7 +22,7 @@ namespace mrpt::img
  */
 class TStereoCamera : public mrpt::serialization::CSerializable
 {
-	DEFINE_SERIALIZABLE(TStereoCamera)
+	DEFINE_SERIALIZABLE(TStereoCamera, mrpt::img)
    public:
 	/** Intrinsic and distortion parameters of the left and right cameras */
 	TCamera leftCamera, rightCamera;

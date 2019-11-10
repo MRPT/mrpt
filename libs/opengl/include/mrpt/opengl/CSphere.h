@@ -27,7 +27,7 @@ namespace mrpt::opengl
  */
 class CSphere : public CRenderizableDisplayList
 {
-	DEFINE_SERIALIZABLE(CSphere)
+	DEFINE_SERIALIZABLE(CSphere, mrpt::opengl)
 
    protected:
 	float m_radius;

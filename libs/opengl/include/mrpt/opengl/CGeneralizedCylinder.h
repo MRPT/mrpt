@@ -27,7 +27,7 @@ class CGeneralizedCylinder;
  */
 class CGeneralizedCylinder : public CRenderizableDisplayList
 {
-	DEFINE_SERIALIZABLE(CGeneralizedCylinder)
+	DEFINE_SERIALIZABLE(CGeneralizedCylinder, mrpt::opengl)
    public:
 	/**
 	 * Auxiliary struct holding any quadrilateral, represented by foour points.

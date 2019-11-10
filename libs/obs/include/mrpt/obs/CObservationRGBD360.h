@@ -82,7 +82,7 @@ namespace obs
  */
 class CObservationRGBD360 : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationRGBD360)
+	DEFINE_SERIALIZABLE(CObservationRGBD360, mrpt::obs)
 
    protected:
 	/** If set to true, m_points3D_external_file is valid. */

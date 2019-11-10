@@ -32,7 +32,7 @@ class CHMHMapArc : public mrpt::serialization::CSerializable
 	friend class CHierarchicalMapMHPartition;
 	friend class TArcList;
 
-	DEFINE_SERIALIZABLE(CHMHMapArc)
+	DEFINE_SERIALIZABLE(CHMHMapArc, mrpt::hmtslam)
 
    public:
 	/** The hypothesis IDs under which this arc exists.

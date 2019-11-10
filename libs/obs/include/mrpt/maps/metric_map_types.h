@@ -77,7 +77,7 @@ struct TMatchingRatioParams
 class TMapGenericParams : public mrpt::config::CLoadableOptions,
 						  public mrpt::serialization::CSerializable
 {
-	DEFINE_SERIALIZABLE(TMapGenericParams)
+	DEFINE_SERIALIZABLE(TMapGenericParams, mrpt::maps)
    public:
 	/** (Default=true) If false, calling CMetricMap::getAs3DObject() will have
 	 * no effects */

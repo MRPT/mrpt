@@ -69,7 +69,7 @@ mrpt::serialization::CArchive& operator<<(
  */
 class CKinematicChain : public mrpt::serialization::CSerializable
 {
-	DEFINE_SERIALIZABLE(CKinematicChain)
+	DEFINE_SERIALIZABLE(CKinematicChain, mrpt::kinematics)
 
    private:
 	/** Smart pointers to the last objects for each link, as returned in

@@ -30,7 +30,7 @@ namespace mrpt::opengl
  */
 class CSetOfLines : public CRenderizableDisplayList
 {
-	DEFINE_SERIALIZABLE(CSetOfLines)
+	DEFINE_SERIALIZABLE(CSetOfLines, mrpt::opengl)
    protected:
 	std::vector<mrpt::math::TSegment3D> mSegments;
 	float mLineWidth{1.0};

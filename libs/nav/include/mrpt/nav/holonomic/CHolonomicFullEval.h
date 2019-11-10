@@ -55,7 +55,7 @@ namespace mrpt::nav
  */
 class CHolonomicFullEval : public CAbstractHolonomicReactiveMethod
 {
-	DEFINE_SERIALIZABLE(CHolonomicFullEval)
+	DEFINE_SERIALIZABLE(CHolonomicFullEval, mrpt::nav)
    public:
 	/**  Initialize the parameters of the navigator, from some configuration
 	 * file, or default values if set to nullptr */
@@ -161,7 +161,7 @@ class CHolonomicFullEval : public CAbstractHolonomicReactiveMethod
  */
 class CLogFileRecord_FullEval : public CHolonomicLogFileRecord
 {
-	DEFINE_SERIALIZABLE(CLogFileRecord_FullEval)
+	DEFINE_SERIALIZABLE(CLogFileRecord_FullEval, mrpt::nav)
    public:
 	CLogFileRecord_FullEval();
 

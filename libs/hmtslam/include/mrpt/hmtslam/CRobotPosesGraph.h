@@ -36,7 +36,7 @@ struct TPoseInfo
 class CRobotPosesGraph : public mrpt::serialization::CSerializable,
 						 public std::map<TPoseID, TPoseInfo>
 {
-	DEFINE_SERIALIZABLE(CRobotPosesGraph)
+	DEFINE_SERIALIZABLE(CRobotPosesGraph, mrpt::hmtslam)
    public:
 	/** Insert all the observations in the map (without erasing previous
 	 * contents). */

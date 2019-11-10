@@ -25,7 +25,7 @@ namespace mrpt::nav
  */
 class CPTG_Holo_Blend : public CPTG_RobotShape_Circular
 {
-	DEFINE_SERIALIZABLE(CPTG_Holo_Blend)
+	DEFINE_SERIALIZABLE(CPTG_Holo_Blend, mrpt::nav)
    public:
 	CPTG_Holo_Blend();
 	CPTG_Holo_Blend(

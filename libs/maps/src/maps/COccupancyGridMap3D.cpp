@@ -20,7 +20,8 @@ using namespace mrpt;
 using namespace mrpt::maps;
 
 //  =========== Begin of Map definition ============
-MAP_DEFINITION_REGISTER("COccupancyGridMap3D", mrpt::maps::COccupancyGridMap3D)
+MAP_DEFINITION_REGISTER(
+	"mrpt::maps::COccupancyGridMap3D", mrpt::maps::COccupancyGridMap3D)
 
 COccupancyGridMap3D::TMapDefinition::TMapDefinition() = default;
 

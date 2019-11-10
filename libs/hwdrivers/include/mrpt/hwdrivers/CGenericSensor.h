@@ -205,10 +205,9 @@ class CGenericSensor
 
 	/** Just like createSensor, but returning a smart pointer to the newly
 	 * created sensor object. */
-	static inline CGenericSensor::Ptr createSensorPtr(
-		const std::string& className)
+	static inline Ptr createSensorPtr(const std::string& className)
 	{
-		return CGenericSensor::Ptr(createSensor(className));
+		return Ptr(createSensor(className));
 	}
 
 	/** Constructor */

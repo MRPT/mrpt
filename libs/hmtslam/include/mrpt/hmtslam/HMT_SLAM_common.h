@@ -75,7 +75,7 @@ using TPoseIDSet = std::set<TPoseID>;
 class THypothesisIDSet : public mrpt::serialization::CSerializable,
 						 public std::set<THypothesisID>
 {
-	DEFINE_SERIALIZABLE(THypothesisIDSet)
+	DEFINE_SERIALIZABLE(THypothesisIDSet, mrpt::hmtslam)
 
    public:
 	/** Default constructor

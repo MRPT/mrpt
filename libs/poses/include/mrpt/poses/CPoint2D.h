@@ -32,7 +32,7 @@ class CPose2D;
 class CPoint2D : public CPoint<CPoint2D, 2>,
 				 public mrpt::serialization::CSerializable
 {
-	DEFINE_SERIALIZABLE(CPoint2D)
+	DEFINE_SERIALIZABLE(CPoint2D, mrpt::poses)
 	DEFINE_SCHEMA_SERIALIZABLE()
    public:
 	/** [x,y] */

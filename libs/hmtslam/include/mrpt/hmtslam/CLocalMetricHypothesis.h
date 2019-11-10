@@ -43,7 +43,7 @@ class CLSLAM_RBPF_2DLASER;
  */
 class CLSLAMParticleData : public mrpt::serialization::CSerializable
 {
-	DEFINE_SERIALIZABLE(CLSLAMParticleData)
+	DEFINE_SERIALIZABLE(CLSLAMParticleData, mrpt::hmtslam)
 
    public:
 	CLSLAMParticleData(
@@ -71,7 +71,7 @@ class CLocalMetricHypothesis
 {
 	friend class CLSLAM_RBPF_2DLASER;
 
-	DEFINE_SERIALIZABLE(CLocalMetricHypothesis)
+	DEFINE_SERIALIZABLE(CLocalMetricHypothesis, mrpt::hmtslam)
 
    public:
 	/** Constructor (Default param only used from STL classes)

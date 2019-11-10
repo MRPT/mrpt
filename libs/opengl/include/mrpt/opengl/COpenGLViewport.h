@@ -59,7 +59,7 @@ namespace opengl
 class COpenGLViewport : public mrpt::serialization::CSerializable,
 						public mrpt::system::CObservable
 {
-	DEFINE_SERIALIZABLE(COpenGLViewport)
+	DEFINE_SERIALIZABLE(COpenGLViewport, mrpt::opengl)
 	friend class COpenGLScene;
 
    public:

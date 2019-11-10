@@ -57,7 +57,7 @@ namespace opengl
  */
 class COpenGLScene : public mrpt::serialization::CSerializable
 {
-	DEFINE_SERIALIZABLE(COpenGLScene)
+	DEFINE_SERIALIZABLE(COpenGLScene, mrpt::opengl)
    public:
 	/** Constructor
 	 */

@@ -28,7 +28,7 @@ namespace maps
  */
 class CColouredPointsMap : public CPointsMap
 {
-	DEFINE_SERIALIZABLE(CColouredPointsMap)
+	DEFINE_SERIALIZABLE(CColouredPointsMap, mrpt::maps)
 
    public:
 	CColouredPointsMap() = default;

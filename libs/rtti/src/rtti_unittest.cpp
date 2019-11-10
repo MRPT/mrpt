@@ -20,23 +20,23 @@ class MyDerived1 : public mrpt::rtti::CObject
 
 	MyDerived1() = default;
 	MyDerived1(int v) : m_value(v) {}
-	DEFINE_MRPT_OBJECT(MyDerived1)
+	DEFINE_MRPT_OBJECT(MyDerived1, MyNS)
 };
 
 class MyDerived2 : public mrpt::rtti::CObject
 {
    public:
 	MyDerived2() = default;
-	DEFINE_MRPT_OBJECT(MyDerived2)
+	DEFINE_MRPT_OBJECT(MyDerived2, MyNS)
 };
 
 }  // namespace MyNS
 
-// Register "MyDerived1"
+// Register "MyNS::MyDerived1"
 IMPLEMENTS_MRPT_OBJECT(MyDerived1, mrpt::rtti::CObject, MyNS)
 
 // Register "MyNS::MyDerived2"
-IMPLEMENTS_MRPT_OBJECT_NS_PREFIX(MyDerived2, mrpt::rtti::CObject, MyNS)
+IMPLEMENTS_MRPT_OBJECT(MyDerived2, mrpt::rtti::CObject, MyNS)
 
 void do_register()
 {
@@ -55,7 +55,8 @@ TEST(rtti, MyDerived1_CLASSID)
 {
 	using namespace std;
 	const auto cid_myd1 = CLASS_ID(MyNS::MyDerived1);
-	EXPECT_TRUE(std::string(cid_myd1->className) == std::string("MyDerived1"));
+	EXPECT_TRUE(
+		std::string(cid_myd1->className) == std::string("MyNS::MyDerived1"));
 
 	const auto cid_cobj = CLASS_ID(mrpt::rtti::CObject);
 	EXPECT_TRUE(cid_myd1->getBaseClass() == cid_cobj);
@@ -72,7 +73,8 @@ TEST(rtti, Factory)
 {
 	do_register();
 	{
-		mrpt::rtti::CObject::Ptr p = mrpt::rtti::classFactory("MyDerived1");
+		mrpt::rtti::CObject::Ptr p =
+			mrpt::rtti::classFactory("MyNS::MyDerived1");
 		EXPECT_TRUE(p);
 	}
 	{

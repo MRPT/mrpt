@@ -69,10 +69,23 @@ std::vector<const TRuntimeClassId*> getAllRegisteredClassesChildrenOf(
 	const TRuntimeClassId* parent_id);
 
 /** Return info about a given class by its name, or nullptr if the class is not
- * registered
+ * registered.
+ *
+ * The list of registered "namespaces::class_name" will be looked up first. If
+ * no match is found, **and** `allow_ignore_namespace=true`, then a second
+ * search will be performed looking for a match of the class name without the
+ * namespace part. Note that this is enabled by default since namespaces were
+ * not used while serializing classes in MRPT older than v2.0, so this option
+ * allows reading from older datasets transparently. It could be set to false if
+ * it is ensured that only mrpt2 datasets will be read.
+ *
+ * \param[in] className The name of the class to look up
+ * \param[i] allow_ignore_namespace See discussion above
+ *
  * \sa registerClass, getAllRegisteredClasses
  */
-const TRuntimeClassId* findRegisteredClass(const std::string& className);
+const TRuntimeClassId* findRegisteredClass(
+	const std::string& className, const bool allow_ignore_namespace = true);
 
 template <typename T>
 struct CLASS_ID_impl
@@ -195,7 +208,7 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 
 /** This declaration must be inserted in all CObject classes definition, within
  * the class declaration. */
-#define DEFINE_MRPT_OBJECT(class_name)                                    \
+#define DEFINE_MRPT_OBJECT(class_name, NameSpace)                         \
 	/*! @name RTTI stuff  */                                              \
 	/*! @{  */                                                            \
    protected:                                                             \
@@ -204,14 +217,14 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
                                                                           \
    public:                                                                \
 	/*! A type for the associated smart pointer */                        \
-	using Ptr = std::shared_ptr<class_name>;                              \
-	using ConstPtr = std::shared_ptr<const class_name>;                   \
-	using UniquePtr = std::unique_ptr<class_name>;                        \
-	using ConstUniquePtr = std::unique_ptr<const class_name>;             \
-	static constexpr const char* className = #class_name;                 \
+	using Ptr = std::shared_ptr<NameSpace::class_name>;                   \
+	using ConstPtr = std::shared_ptr<const NameSpace::class_name>;        \
+	using UniquePtr = std::unique_ptr<NameSpace::class_name>;             \
+	using ConstUniquePtr = std::unique_ptr<const NameSpace::class_name>;  \
+	static constexpr const char* className = #NameSpace "::" #class_name; \
 	static constexpr auto getClassName()                                  \
 	{                                                                     \
-		return mrpt::typemeta::literal(#class_name);                      \
+		return mrpt::typemeta::literal(#NameSpace "::" #class_name);      \
 	}                                                                     \
 	static const mrpt::rtti::TRuntimeClassId& GetRuntimeClassIdStatic();  \
 	virtual const mrpt::rtti::TRuntimeClassId* GetRuntimeClass()          \
@@ -267,20 +280,12 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 			NameSpace::class_name>::value>::clone(*this);                     \
 	}
 
-/** This must be inserted in all CObject classes implementation files.
- * This version registers calss ns1::Foo as "ns1::Foo", where are
- * IMPLEMENTS_MRPT_OBJECT() makes it for some random name.
- */
-#define IMPLEMENTS_MRPT_OBJECT_NS_PREFIX(class_name, base, NameSpace) \
-	INTERNAL_IMPLEMENTS_MRPT_OBJECT(                                  \
-		class_name, base, NameSpace, #NameSpace "::" #class_name)
-
 /** Must be added to all CObject-derived classes implementation file.
- * This version does NOT include the namespace in the name of the class when
- * registering.
+ * This registers class ns1::Foo as "ns1::Foo".
  */
 #define IMPLEMENTS_MRPT_OBJECT(class_name, base, NameSpace) \
-	INTERNAL_IMPLEMENTS_MRPT_OBJECT(class_name, base, NameSpace, #class_name)
+	INTERNAL_IMPLEMENTS_MRPT_OBJECT(                        \
+		class_name, base, NameSpace, #NameSpace "::" #class_name)
 
 /** This declaration must be inserted in virtual CObject classes
  * definition:
@@ -321,12 +326,9 @@ inline mrpt::rtti::CObject::Ptr CObject::duplicateGetSmartPtr() const
 		return NS::class_name::runtimeClassId;                                 \
 	}
 
-#define IMPLEMENTS_VIRTUAL_MRPT_OBJECT_NS_PREFIX(class_name, base, NS) \
-	INTERNAL_IMPLEMENTS_VIRTUAL_MRPT_OBJECT(                           \
-		class_name, base, NS, #NS "::" #class_name)
-
 #define IMPLEMENTS_VIRTUAL_MRPT_OBJECT(class_name, base, NS) \
-	INTERNAL_IMPLEMENTS_VIRTUAL_MRPT_OBJECT(class_name, base, NS, #class_name)
+	INTERNAL_IMPLEMENTS_VIRTUAL_MRPT_OBJECT(                 \
+		class_name, base, NS, #NS "::" #class_name)
 
 /** Register all pending classes - to be called just before
  * de-serializing an object, for example. After calling this method,

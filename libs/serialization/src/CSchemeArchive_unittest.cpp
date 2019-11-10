@@ -30,7 +30,7 @@ TEST(SchemaSerialization, JSON_archive)
 	arch = pt1;
 	std::stringstream ss;
 	ss << arch;
-	auto pos = ss.str().find("\"datatype\" : \"CPose2D\"");
+	auto pos = ss.str().find("\"datatype\" : \"mrpt::poses::CPose2D\"");
 	EXPECT_TRUE(pos != std::string::npos);
 
 	// test deserializing:
@@ -55,7 +55,7 @@ TEST(SchemaSerialization, JSON_raw)
 	arch = pt1;
 	std::stringstream ss;
 	ss << val;
-	auto pos = ss.str().find("\"datatype\" : \"CPose2D\"");
+	auto pos = ss.str().find("\"datatype\" : \"mrpt::poses::CPose2D\"");
 	EXPECT_TRUE(pos != std::string::npos);
 
 	// test deserializing:

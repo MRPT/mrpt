@@ -19,7 +19,7 @@ namespace mrpt::poses
  */
 class CPoint2DPDFGaussian : public CPoint2DPDF
 {
-	DEFINE_SERIALIZABLE(CPoint2DPDFGaussian)
+	DEFINE_SERIALIZABLE(CPoint2DPDFGaussian, mrpt::poses)
 	DEFINE_SCHEMA_SERIALIZABLE()
 
    public:

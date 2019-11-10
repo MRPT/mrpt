@@ -55,7 +55,7 @@ class CPlanarLaserScan;
  */
 class CPlanarLaserScan : public CRenderizableDisplayList
 {
-	DEFINE_SERIALIZABLE(CPlanarLaserScan)
+	DEFINE_SERIALIZABLE(CPlanarLaserScan, mrpt::opengl)
    protected:
 	mrpt::obs::CObservation2DRangeScan m_scan;
 	mutable mrpt::maps::CSimplePointsMap m_cache_points;

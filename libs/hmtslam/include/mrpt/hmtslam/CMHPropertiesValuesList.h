@@ -35,7 +35,7 @@ struct TPropertyValueIDTriplet
  */
 class CMHPropertiesValuesList : public mrpt::serialization::CSerializable
 {
-	DEFINE_SERIALIZABLE(CMHPropertiesValuesList)
+	DEFINE_SERIALIZABLE(CMHPropertiesValuesList, mrpt::hmtslam)
 
    private:
 	std::vector<TPropertyValueIDTriplet> m_properties;

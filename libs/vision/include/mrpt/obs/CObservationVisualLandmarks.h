@@ -24,7 +24,7 @@ namespace mrpt::obs
  */
 class CObservationVisualLandmarks : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationVisualLandmarks)
+	DEFINE_SERIALIZABLE(CObservationVisualLandmarks, mrpt::obs)
 
    public:
 	/** Constructor */

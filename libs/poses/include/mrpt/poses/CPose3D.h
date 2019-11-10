@@ -85,7 +85,7 @@ class CPose3DQuat;
 class CPose3D : public CPose<CPose3D, 6>,
 				public mrpt::serialization::CSerializable
 {
-	DEFINE_SERIALIZABLE(CPose3D)
+	DEFINE_SERIALIZABLE(CPose3D, mrpt::poses)
 	DEFINE_SCHEMA_SERIALIZABLE()
 
 	// This must be added for declaration of MEX-related functions

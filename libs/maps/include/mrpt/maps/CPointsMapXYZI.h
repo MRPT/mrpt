@@ -25,7 +25,7 @@ namespace maps
  */
 class CPointsMapXYZI : public CPointsMap
 {
-	DEFINE_SERIALIZABLE(CPointsMapXYZI)
+	DEFINE_SERIALIZABLE(CPointsMapXYZI, mrpt::maps)
 
    public:
 	CPointsMapXYZI() = default;

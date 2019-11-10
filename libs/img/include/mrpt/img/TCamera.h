@@ -24,7 +24,7 @@ namespace mrpt::img
  */
 class TCamera : public mrpt::serialization::CSerializable
 {
-	DEFINE_SERIALIZABLE(TCamera)
+	DEFINE_SERIALIZABLE(TCamera, mrpt::img)
 
 	// This must be added for declaration of MEX-related functions
 	DECLARE_MEX_CONVERSION

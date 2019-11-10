@@ -35,7 +35,7 @@ struct TStereoImageFeatures
  */
 class CObservationStereoImagesFeatures : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationStereoImagesFeatures)
+	DEFINE_SERIALIZABLE(CObservationStereoImagesFeatures, mrpt::obs)
 
    public:
 	CObservationStereoImagesFeatures() = default;

@@ -42,7 +42,8 @@ using namespace mrpt::math;
 
 //  =========== Begin of Map definition ============
 MAP_DEFINITION_REGISTER(
-	"CColouredOctoMap,colourOctoMap,colorOctoMap", mrpt::maps::CColouredOctoMap)
+	"mrpt::maps::CColouredOctoMap,colourOctoMap,colorOctoMap",
+	mrpt::maps::CColouredOctoMap)
 
 CColouredOctoMap::TMapDefinition::TMapDefinition() = default;
 void CColouredOctoMap::TMapDefinition::loadFromConfigFile_map_specific(

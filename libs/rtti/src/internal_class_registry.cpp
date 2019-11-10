@@ -67,8 +67,8 @@ class CClassRegistry
 			std::unique_lock<std::mutex> lk(m_cs);
 
 			// Sanity check: don't allow registering twice the same class name!
-			const auto it = registeredClasses.find(className);
-			if (it != registeredClasses.cend())
+			const auto it = m_ns_classes.find(className);
+			if (it != m_ns_classes.cend())
 			{
 				if (it->second != &id)
 				{
@@ -79,12 +79,16 @@ class CClassRegistry
 						className.c_str());
 				}
 			}
-			registeredClasses[className] = &id;
+			m_ns_classes[className] = &id;
+
+			// Also register without NS (backwards compatible datasets):
+			m_no_ns_classes[stripNamespace(className)] = &id;
 		}
 		m_being_modified = false;
 	}
 
-	const TRuntimeClassId* Get(const std::string& className)
+	const TRuntimeClassId* Get(
+		const std::string& className, const bool allow_ignore_namespace)
 	{
 		// Optimization to avoid the costly lock() in virtually all situations:
 		bool has_to_unlock = false;
@@ -93,7 +97,24 @@ class CClassRegistry
 			m_cs.lock();
 			has_to_unlock = true;
 		}
-		const TRuntimeClassId* ret = registeredClasses[className];
+		const TRuntimeClassId* ret = nullptr;
+		const auto itEntry = m_ns_classes.find(className);
+		if (itEntry != m_ns_classes.end())
+		{
+			// found:
+			ret = itEntry->second;
+		}
+		else if (allow_ignore_namespace)
+		{
+			// 2nd attempt: search for class name only:
+			const auto itEntry2 =
+				m_no_ns_classes.find(stripNamespace(className));
+			if (itEntry2 != m_no_ns_classes.end())
+			{
+				// found:
+				ret = itEntry2->second;
+			}
+		}
 		if (has_to_unlock) m_cs.unlock();
 		return ret;
 	}
@@ -103,16 +124,31 @@ class CClassRegistry
 		std::unique_lock<std::mutex> lk(m_cs);
 
 		std::vector<const TRuntimeClassId*> ret;
-		for (auto& registeredClasse : registeredClasses)
+		for (auto& registeredClasse : m_ns_classes)
 			ret.push_back(registeredClasse.second);
 		return ret;
 	}
 
    private:
+	static std::string stripNamespace(const std::string& n)
+	{
+		std::string ret = n;
+		const auto pos = ret.rfind("::");
+		if (pos != std::string::npos)
+		{
+			return ret.substr(pos + 2);
+		}
+		return ret;
+	}
+
 	// This must be static since we can be called from C startup
 	// functions and it cannot be assured that classesKeeper will be
 	// initialized before other classes that call it...
-	TClassnameToRuntimeId registeredClasses;
+	TClassnameToRuntimeId m_ns_classes;
+
+	// The auxiliary copy of "m_ns_classes", w/o namespace prefixes:
+	TClassnameToRuntimeId m_no_ns_classes;
+
 	std::mutex m_cs;
 	std::atomic<bool> m_being_modified{false};
 };
@@ -202,7 +238,7 @@ std::vector<const TRuntimeClassId*>
 					findRegisteredClass
  ---------------------------------------------------------------*/
 const TRuntimeClassId* mrpt::rtti::findRegisteredClass(
-	const std::string& className)
+	const std::string& className, const bool allow_ignore_namespace)
 {
-	return CClassRegistry::Instance().Get(className);
+	return CClassRegistry::Instance().Get(className, allow_ignore_namespace);
 }

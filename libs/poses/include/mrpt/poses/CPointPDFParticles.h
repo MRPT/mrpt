@@ -28,7 +28,7 @@ class CPointPDFParticles
 		  CPointPDFParticles, mrpt::bayes::CParticleFilterData<
 								  mrpt::math::TPoint3Df>::CParticleList>
 {
-	DEFINE_SERIALIZABLE(CPointPDFParticles)
+	DEFINE_SERIALIZABLE(CPointPDFParticles, mrpt::poses)
 
    public:
 	/** Default constructor */

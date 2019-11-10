@@ -20,7 +20,7 @@ namespace mrpt::obs
  */
 class CObservationCANBusJ1939 : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationCANBusJ1939)
+	DEFINE_SERIALIZABLE(CObservationCANBusJ1939, mrpt::obs)
 
    public:
 	/** Constructor.

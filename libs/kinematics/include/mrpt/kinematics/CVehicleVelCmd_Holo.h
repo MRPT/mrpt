@@ -18,7 +18,7 @@ namespace mrpt::kinematics
  */
 class CVehicleVelCmd_Holo : public CVehicleVelCmd
 {
-	DEFINE_SERIALIZABLE(CVehicleVelCmd_Holo)
+	DEFINE_SERIALIZABLE(CVehicleVelCmd_Holo, mrpt::kinematics)
    public:
 	/** speed(m / s) */
 	double vel{.0};

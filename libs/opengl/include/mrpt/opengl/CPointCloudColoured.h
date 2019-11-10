@@ -46,7 +46,7 @@ class CPointCloudColoured : public CRenderizable,
 							public mrpt::opengl::PLY_Importer,
 							public mrpt::opengl::PLY_Exporter
 {
-	DEFINE_SERIALIZABLE(CPointCloudColoured)
+	DEFINE_SERIALIZABLE(CPointCloudColoured, mrpt::opengl)
 
    public:
 	struct TPointColour

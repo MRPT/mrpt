@@ -28,7 +28,7 @@ class CCamera : public CRenderizable
 {
 	friend class COpenGLViewport;
 
-	DEFINE_SERIALIZABLE(CCamera)
+	DEFINE_SERIALIZABLE(CCamera, mrpt::opengl)
    protected:
 	float m_pointingX{0}, m_pointingY{0}, m_pointingZ{0};
 	float m_distanceZoom{10};

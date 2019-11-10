@@ -40,7 +40,8 @@ using namespace mrpt::tfest;
 using namespace std;
 
 //  =========== Begin of Map definition ============
-MAP_DEFINITION_REGISTER("CBeaconMap,beaconMap", mrpt::maps::CBeaconMap)
+MAP_DEFINITION_REGISTER(
+	"mrpt::maps::CBeaconMap,beaconMap", mrpt::maps::CBeaconMap)
 
 CBeaconMap::TMapDefinition::TMapDefinition() = default;
 void CBeaconMap::TMapDefinition::loadFromConfigFile_map_specific(

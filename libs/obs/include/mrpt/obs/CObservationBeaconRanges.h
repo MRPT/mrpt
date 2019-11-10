@@ -23,7 +23,7 @@ namespace mrpt::obs
  */
 class CObservationBeaconRanges : public CObservation
 {
-	DEFINE_SERIALIZABLE(CObservationBeaconRanges)
+	DEFINE_SERIALIZABLE(CObservationBeaconRanges, mrpt::obs)
 
    public:
 	/** ctor */
