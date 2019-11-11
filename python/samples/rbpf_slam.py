@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 import pymrpt
@@ -46,7 +46,7 @@ while True:
     next_entry, act, obs, entry = pymrpt.obs.CRawlog.readActionObservationPair(rawlog_file, entry)
     if not next_entry: break
     else: entry += 1
-    print 'Processing entry: {}.'.format(entry)
+    print(('Processing entry: {}.'.format(entry)))
 
     # process
     map_builder.processActionObservation(act, obs)
@@ -74,7 +74,7 @@ while True:
 
     # get ellipsoids at time t
     dummy_path = map_builder.mapPDF.getPath(0)
-    k_s = range(len(dummy_path))
+    k_s = list(range(len(dummy_path)))
     k_s.reverse()
     ellipsoid_objects = []
     for k in k_s:
@@ -102,10 +102,9 @@ occ_map = pymrpt.maps.COccupancyGridMap2D()
 occ_map.loadFromSimpleMap(simple_map)
 if output_filename:
     occ_map.saveAsBitmapFile(output_filename)
-    print 'Saved map as {}'.format(output_filename)
+    print(('Saved map as {}'.format(output_filename)))
 if image_filename:
     occ_map.saveAsBitmapFile(image_filename)
-    print 'Saved map image as {}'.format(output_filename)
-print
-print 'Done.'
-raw_input('Press key to quit.')
+    print(('Saved map image as {}'.format(output_filename)))
+print('Done.')
+input('Press key to quit.')

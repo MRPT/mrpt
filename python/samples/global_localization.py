@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 import sys
@@ -18,12 +18,12 @@ config_filename = args.config
 
 # get configuration
 if not os.path.exists(config_filename):
-    print 'Error. Config file not found.'
-    print 'Quit.'
+    print('Error. Config file not found.')
+    print('Quit.')
     sys.exit(1)
 
 config_file = pymrpt.utils.CConfigFile(config_filename)
-print 'Load config file {}.'.format(config_filename)
+print('Load config file {}.'.format(config_filename))
 sec_name = 'LocalizationExperiment'
 
 rawlog_filename = config_file.read_string(sec_name, "rawlog_file", "")
@@ -37,21 +37,21 @@ config_dir = os.path.dirname(os.path.abspath(config_filename))
 if not os.path.exists(os.path.abspath(rawlog_filename)):
     os.chdir(config_dir)
     if not os.path.exists(os.path.abspath(rawlog_filename)):
-        print 'Error. Rawlog file not found.'
-        print 'Quit.'
+        print('Error. Rawlog file not found.')
+        print('Quit.')
         sys.exit(1)
     else:
         rawlog_filename = os.path.abspath(rawlog_filename)
         os.chdir(curr_dir)
 rawlog_file = pymrpt.utils.CFileGZInputStream(rawlog_filename)
-print 'Load rawlog file {}.'.format(rawlog_filename)
+print('Load rawlog file {}.'.format(rawlog_filename))
 
 # map
 if not os.path.exists(os.path.abspath(map_filename)):
     os.chdir(config_dir)
     if not os.path.exists(os.path.abspath(map_filename)):
-        print 'Error. Map file not found.'
-        print 'Quit.'
+        print('Error. Map file not found.')
+        print('Quit.')
         sys.exit(1)
     else:
         map_filename = os.path.abspath(map_filename)
@@ -93,10 +93,10 @@ elif (map_filename.endswith('.gridmap')
         if metric_map.maps[i].ctx().GetRuntimeClass().className == 'COccupancyGridMap2D':
             metric_map.maps[i] = occ_map
 else:
-    print 'Error. Can not load map from unknown extension.'
-    print 'Quit.'
+    print('Error. Can not load map from unknown extension.')
+    print('Quit.')
     sys.exit(1)
-print 'Load map file {}.'.format(map_filename)
+print('Load map file {}.'.format(map_filename))
 
 
 # get window resolution
@@ -136,7 +136,7 @@ while True:
     next_entry, act, obs, entry = pymrpt.obs.CRawlog.readActionObservationPair(rawlog_file, entry)
     if not next_entry: break
     else: entry += 1
-    print 'Processing entry: {}.'.format(entry)
+    print('Processing entry: {}.'.format(entry))
 
     # get covariance and mean
     cov, mean = pdf.getCovarianceAndMean()
@@ -174,6 +174,6 @@ while True:
             sleep(0.2)
     else: sleep(0.2)
 
-print
-print 'Done.'
-raw_input('Press key to quit.')
+print()
+print('Done.')
+input('Press key to quit.')
