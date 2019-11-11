@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import sys
 import numpy as np
 import matplotlib as mpl
@@ -27,7 +27,7 @@ plt.rcParams.update({'axes.titlesize': 30, 'axes.labelsize': 20, 'xtick.labelsiz
 # Define number of points and camera parameters
 n = 10
 sigma = 0.0005
-n_range = range(5, 25)
+n_range = list(range(5, 25))
 sigma_range = np.arange(0.0001, 0.001, 0.0001)
 f = 1.0
 cx = 0.0
@@ -35,7 +35,7 @@ cy = 0.0
 cam_intrinsic = np.array([[f, 0.0, cx], [0.0, f, cy], [0.0, 0.0, 1.0]])
 
 # Define constants for serial outputting results
-checkmark = u'\u2713'
+checkmark = '\u2713'
 l_progress_bar = 50
 
 # Instantiate pnp module
@@ -281,7 +281,7 @@ def printProgress(iteration, total, prefix='', suffix='', decimals=1, barLength=
     formatStr = "{0:." + str(decimals) + "f}"
     percents = formatStr.format(100 * (iteration / float(total)))
     filledLength = int(round(barLength * iteration / float(total)))
-    bar = u"\u2588" * filledLength + '-' * (barLength - filledLength)
+    bar = "\u2588" * filledLength + '-' * (barLength - filledLength)
     sys.stdout.write('\r%s |%s| %s%s %s' % (prefix, bar, percents, '%', suffix)),
     sys.stdout.flush()
     if iteration == total:
@@ -294,12 +294,12 @@ def printTestStatus(test_index):
     head_tests = ['#No.', 'Status', 'Description']
 
     table_tests = [[str(1), '', 'Test for 100 iterations with each algorithm'], [str(2), '',  'Varitaion of error with image pixel noise standard deviation (' +
-                                                                                 u'\u03C3' + ')'], [str(3), '', ' Variation in error with number of 2d/3d correspondences (n)'], [str(4), '', 'Average computation time of each algorithm']]
+                                                                                 '\u03C3' + ')'], [str(3), '', ' Variation in error with number of 2d/3d correspondences (n)'], [str(4), '', 'Average computation time of each algorithm']]
 
     for i in range(0, test_index):
         table_tests[i][1] = checkmark
 
-    print tabulate(table_tests, head_tests, tablefmt='fancy_grid')
+    print(tabulate(table_tests, head_tests, tablefmt='fancy_grid'))
 
     for i in range(0, test_index):
         printProgress(l_progress_bar, l_progress_bar, prefix='Test' + str(i + 1) +
@@ -315,7 +315,7 @@ def printTest1Results(vals):
     test1_table[:, 1:] = vals
     test1_table[:, 0] = algo_names
 
-    print tabulate(test1_table, test1_headers, tablefmt='fancy_grid')
+    print(tabulate(test1_table, test1_headers, tablefmt='fancy_grid'))
 
 
 def printTest4Results(vals):
@@ -328,7 +328,7 @@ def printTest4Results(vals):
     test4_table[:, 1:] = vals
     test4_table[:, 0] = algo_names
 
-    print tabulate(test4_table, test4_headers, tablefmt='fancy_grid')
+    print(tabulate(test4_table, test4_headers, tablefmt='fancy_grid'))
 
 
 def calc_err(pose1, pose2):
@@ -363,8 +363,8 @@ def calc_err(pose1, pose2):
     err = [err_t, err_q]
 
     if np.isnan(err_t) or np.isnan(err_q):
-        print 'pose_est=\n', pose2
-        print 'pose=\n', pose1
+        print('pose_est=\n', pose2)
+        print('pose=\n', pose1)
 
     return err
 
@@ -416,8 +416,8 @@ def err_plot():
             err_q.append(e[1])
 
             if np.isnan(e[0]) or np.isnan(e[1]):
-                print 'algo=\n', algo_names[i]
-                print 'err=\n', e
+                print('algo=\n', algo_names[i])
+                print('err=\n', e)
 
         err_net_t.append(err_t)
         err_net_q.append(err_q)
@@ -711,7 +711,7 @@ def time_comp():
 
         tcomp_storage.append(tcomp)
 
-        printProgress(n - n_start, len(range(n_start, n_max, n_step)), prefix='Test' + str(4) +
+        printProgress(n - n_start, len(list(range(n_start, n_max, n_step))), prefix='Test' + str(4) +
                       ' Progress:', suffix='Complete', barLength=50)
     it = np.arange(n_start, n_max, n_step)
     tcomp_storage = np.array(tcomp_storage)
@@ -750,35 +750,35 @@ ss = """<!DOCTYPE html>
 # sys.stderr.write('\x1b[2J\x1b[H')
 clear()
 printTestStatus(0)
-printProgress(0, len(range(5, 25)), prefix='Test' + str(1) +
+printProgress(0, len(list(range(5, 25))), prefix='Test' + str(1) +
               ' Progress:', suffix='Complete', barLength=50)
 s1, vals = err_plot()
 
 # sys.stderr.write('\x1b[2J\x1b[H')
 clear()
 printTestStatus(1)
-printProgress(0, len(range(5, 25)), prefix='Test' + str(2) +
+printProgress(0, len(list(range(5, 25))), prefix='Test' + str(2) +
               ' Progress:', suffix='Complete', barLength=50)
 s2 = err_statistics_fcn_sigma()
 
 # sys.stderr.write('\x1b[2J\x1b[H')
 clear()
 printTestStatus(2)
-printProgress(0, len(range(5, 25)), prefix='Test' + str(3) +
+printProgress(0, len(list(range(5, 25))), prefix='Test' + str(3) +
               ' Progress:', suffix='Complete', barLength=50)
 s3 = err_statistics_fcn_n()
 
 # sys.stderr.write('\x1b[2J\x1b[H')
 clear()
 printTestStatus(3)
-printProgress(0, len(range(5, 25)), prefix='Test' + str(4) +
+printProgress(0, len(list(range(5, 25))), prefix='Test' + str(4) +
               ' Progress:', suffix='Complete', barLength=50)
 s4 = time_comp()
 
 # sys.stderr.write('\x1b[2J\x1b[H')
 clear()
 printTestStatus(4)
-print '\n\nResults of Test 1 \n\n'
+print('\n\nResults of Test 1 \n\n')
 printTest1Results(vals)
 
 s5 = """<h1> MRPT Merge Pull Request </h1>
