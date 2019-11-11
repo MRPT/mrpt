@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  full:
+  full-u18.04-bionic:
     docker:
       - image: mrpt/mrpt-build-env:full-bionic
     steps:
@@ -11,7 +11,16 @@ jobs:
       - run: make gcov -C build
       - run: make -C build
       - run: bash <(curl -s https://codecov.io/bash) -X gcov -y .codecov.yml -s build
-  clang:
+  full-u19.10-eoan:
+    docker:
+      - image: mrpt/mrpt-build-env:full-eoan
+    steps:
+      - checkout
+      - run: cmake -DBUILD_EXAMPLES=On -DBUILD_TESTING=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild
+      - run: make -C build tests_build_all
+      - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build
+      - run: make -C build
+  clang-u18.04-bionic:
     docker:
       - image: mrpt/mrpt-build-env:full-bionic
     steps:
@@ -27,7 +36,7 @@ jobs:
       - run: make gcov -C build
       - run: make -C build
       - run: bash <(curl -s https://codecov.io/bash) -X gcov -y .codecov.yml -s build
-  headless:
+  headless-u18.04-bionic:
     docker:
       - image: mrpt/mrpt-build-env:headless-bionic
     steps:
@@ -38,7 +47,7 @@ jobs:
       - run: make gcov -C build
       - run: make -C build
       - run: bash <(curl -s https://codecov.io/bash) -X gcov -y .codecov.yml -s build
-  minimal:
+  minimal-u18.04-bionic:
     docker:
       - image: mrpt/mrpt-build-env:minimal-bionic
     steps:
@@ -77,9 +86,10 @@ workflows:
   version: 2
   build:
     jobs:
-      - full
-      - headless
-      - minimal
-      - clang
+      - full-u18.04-bionic
+      - full-u19.10-eoan
+      - headless-u18.04-bionic
+      - minimal-u18.04-bionic
+      - clang-u18.04-bionic
       - clang-format-lint
       - macos
