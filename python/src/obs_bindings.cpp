@@ -223,10 +223,8 @@ object CObservation2DRangeScan_to_ROS_LaserScan_msg(
 	scan_msg.attr("angle_increment") = self.beamAperture;
 	// set ranges (no intensities given in mrpt)
 	list ranges;
-	for (float i : self.scan)
-	{
-		ranges.append(i);
-	}
+	for (size_t i = 0; i < self.getScanSize(); i++)
+		ranges.append(self.getScanRange(i));
 	scan_msg.attr("ranges") = ranges;
 	return scan_msg;
 }
@@ -595,8 +593,6 @@ void export_obs()
 
 		class_<CObservation2DRangeScan, bases<CObservation>>(
 			"CObservation2DRangeScan", init<>())
-			.def_readwrite("scan", &CObservation2DRangeScan::scan)
-			.def_readwrite("validRange", &CObservation2DRangeScan::validRange)
 			.def_readwrite("aperture", &CObservation2DRangeScan::aperture)
 			.def_readwrite("sensorPose", &CObservation2DRangeScan::sensorPose)
 			.def_readwrite("maxRange", &CObservation2DRangeScan::maxRange)
