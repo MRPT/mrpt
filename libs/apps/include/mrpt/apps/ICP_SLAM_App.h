@@ -13,7 +13,9 @@
 #include <mrpt/apps/DataSourceRawlog.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/system/COutputLogger.h>
+#include <atomic>
 
 namespace mrpt::apps
 {
@@ -82,6 +84,39 @@ class ICP_SLAM_App_Rawlog : public ICP_SLAM_App_Base, public DataSourceRawlog
 	{
 		return "icp-slam <config_file> [dataset.rawlog]";
 	}
+};
+
+/** Instance of ICP_SLAM_App_Base to run mapping from a live LIDAR sensor.
+ */
+class ICP_SLAM_App_Live : public ICP_SLAM_App_Base
+{
+   public:
+	ICP_SLAM_App_Live();
+	virtual ~ICP_SLAM_App_Live() override;
+
+   protected:
+	void impl_initialize(int argc, const char** argv) override;
+	std::string impl_get_usage() const override
+	{
+		return "icp-slam-live <config_file>";
+	}
+
+	bool impl_get_next_observations(
+		mrpt::obs::CActionCollection::Ptr& action,
+		mrpt::obs::CSensoryFrame::Ptr& observations,
+		mrpt::obs::CObservation::Ptr& observation) override;
+
+	struct TThreadParams
+	{
+		mrpt::config::CConfigFileBase* cfgFile;
+		std::string section_name;
+	};
+
+	void SensorThread(TThreadParams params);
+
+	mrpt::hwdrivers::CGenericSensor::TListObservations m_global_list_obs;
+	std::mutex m_cs_global_list_obs;
+	std::atomic_bool m_allThreadsMustExit = false;
 };
 
 }  // namespace mrpt::apps
