@@ -16,7 +16,6 @@
 #include <mrpt/io/vector_loadsave.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/obs/CObservationOdometry.h>
-#include <mrpt/obs/CRawlog.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>  // from lib [mrpt-maps]
@@ -456,7 +455,7 @@ void ICP_SLAM_App_Base::run()
 // ---------------------------------------
 ICP_SLAM_App_Rawlog::ICP_SLAM_App_Rawlog()
 {
-	this->setLoggerName("ICP_SLAM_App_Rawlog");
+	setLoggerName("ICP_SLAM_App_Rawlog");
 }
 
 void ICP_SLAM_App_Rawlog::impl_initialize(int argc, const char** argv)
@@ -472,48 +471,6 @@ void ICP_SLAM_App_Rawlog::impl_initialize(int argc, const char** argv)
 	m_rawlog_offset = params.read_int(sect, "rawlog_offset", 0, true);
 
 	ASSERT_FILE_EXISTS_(m_rawlogFileName);
-
-	MRPT_END
-}
-
-bool ICP_SLAM_App_Rawlog::impl_get_next_observations(
-	mrpt::obs::CActionCollection::Ptr& action,
-	mrpt::obs::CSensoryFrame::Ptr& observations,
-	mrpt::obs::CObservation::Ptr& observation)
-{
-	MRPT_START
-
-	// 1st time? Open rawlog:
-	if (!m_rawlog_arch)
-	{
-		std::string err_msg;
-		if (!m_rawlog_io.open(m_rawlogFileName, err_msg))
-		{
-			THROW_EXCEPTION_FMT(
-				"Error opening rawlog file: `%s`", err_msg.c_str());
-		}
-		m_rawlog_arch = mrpt::serialization::archiveUniquePtrFrom(m_rawlog_io);
-
-		MRPT_LOG_INFO_FMT("RAWLOG file: `%s`", m_rawlogFileName.c_str());
-	}
-
-	// Read:
-
-	for (;;)
-	{
-		if (!mrpt::obs::CRawlog::getActionObservationPairOrObservation(
-				*m_rawlog_arch, action, observations, observation,
-				m_rawlogEntry))
-			return false;
-
-		// Optional skip of first N entries
-		if (m_rawlogEntry < m_rawlog_offset) continue;
-
-		// Ok, accept this new observations:
-		return true;
-	};
-
-	return false;
 
 	MRPT_END
 }
