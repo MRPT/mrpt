@@ -25,6 +25,7 @@ class BaseAppDataSource
 	virtual ~BaseAppDataSource() = default;
 
    protected:
+	/** Get next sensory data. Return false on any error, true if success. */
 	virtual bool impl_get_next_observations(
 		mrpt::obs::CActionCollection::Ptr& action,
 		mrpt::obs::CSensoryFrame::Ptr& observations,

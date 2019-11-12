@@ -22,6 +22,7 @@
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/slam/CMetricMapBuilderICP.h>
+#include <mrpt/system/CRateTimer.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/memory.h>
 #include <mrpt/system/os.h>
@@ -34,8 +35,9 @@ constexpr auto sect = "MappingApplication";
 //   ICP_SLAM_App_Base
 // ---------------------------------------
 ICP_SLAM_App_Base::ICP_SLAM_App_Base()
-	: mrpt::system::COutputLogger("ICP_SLAM_App")
 {
+	// Set logger display name:
+	this->setLoggerName("ICP_SLAM_App");
 }
 
 void ICP_SLAM_App_Base::initialize(int argc, const char** argv)
@@ -473,4 +475,160 @@ void ICP_SLAM_App_Rawlog::impl_initialize(int argc, const char** argv)
 	ASSERT_FILE_EXISTS_(m_rawlogFileName);
 
 	MRPT_END
+}
+
+// ---------------------------------------
+//   ICP_SLAM_App_Live
+// ---------------------------------------
+ICP_SLAM_App_Live::ICP_SLAM_App_Live()
+{
+	this->setLoggerName("ICP_SLAM_App_Live");
+}
+
+ICP_SLAM_App_Live::~ICP_SLAM_App_Live() = default;
+
+void ICP_SLAM_App_Live::impl_initialize(int argc, const char** argv)
+{
+	MRPT_START
+
+	if (argc != 2)
+	{
+		THROW_EXCEPTION_FMT("Usage: %s", impl_get_usage().c_str());
+	}
+
+	// Config file already loaded into "params".
+
+	// Load sensor params from section: "LIDAR_SENSOR"
+	std::thread hSensorThread;
+	{
+		TThreadParams threParms;
+		threParms.cfgFile = &params;
+		threParms.section_name = "LIDAR_SENSOR";
+		MRPT_LOG_INFO("Launching LIDAR grabbing thread...");
+		hSensorThread =
+			std::thread(&ICP_SLAM_App_Live::SensorThread, this, threParms);
+	}
+	// Wait and check if the sensor is ready:
+	using namespace std::chrono_literals;
+	std::this_thread::sleep_for(2000ms);
+
+	if (m_allThreadsMustExit)
+		throw std::runtime_error(
+			"\n\n==== ABORTING: It seems that we could not connect to the "
+			"LIDAR. See reported errors. ==== \n");
+
+	MRPT_END
+}
+
+bool ICP_SLAM_App_Live::impl_get_next_observations(
+	[[maybe_unused]] mrpt::obs::CActionCollection::Ptr& action,
+	[[maybe_unused]] mrpt::obs::CSensoryFrame::Ptr& observations,
+	mrpt::obs::CObservation::Ptr& observation)
+{
+	MRPT_START
+
+	using mrpt::obs::CObservation2DRangeScan;
+
+	// Check if we had any hardware failure:
+	if (m_allThreadsMustExit) return false;
+
+	const auto t0 = mrpt::Clock::now();
+
+	// Load sensor LIDAR data from live capture:
+	while (mrpt::system::timeDifference(t0, mrpt::Clock::now()) < 2.0)
+	{
+		CObservation2DRangeScan::Ptr new_obs;
+		{
+			mrpt::hwdrivers::CGenericSensor::TListObservations obs_copy;
+			{
+				std::lock_guard<std::mutex> csl(m_cs_global_list_obs);
+				obs_copy = m_global_list_obs;
+				m_global_list_obs.clear();
+			}
+			// Keep the most recent laser scan:
+			for (auto it = obs_copy.rbegin(); !new_obs && it != obs_copy.rend();
+				 ++it)
+				if (it->second &&
+					IS_CLASS(*it->second, CObservation2DRangeScan))
+					new_obs =
+						std::dynamic_pointer_cast<CObservation2DRangeScan>(
+							it->second);
+		}
+
+		if (new_obs)
+		{
+			observation = std::move(new_obs);
+			return true;
+		}
+		else
+		{
+			using namespace std::chrono_literals;
+			std::this_thread::sleep_for(10ms);
+		}
+	}
+
+	// timeout:
+	MRPT_LOG_ERROR("Timeout waiting for next lidar scan.");
+	return false;
+
+	MRPT_END
+}
+
+void ICP_SLAM_App_Live::SensorThread(ICP_SLAM_App_Live::TThreadParams tp)
+{
+	using namespace mrpt::hwdrivers;
+	using namespace mrpt::system;
+	try
+	{
+		std::string driver_name =
+			tp.cfgFile->read_string(tp.section_name, "driver", "", true);
+		CGenericSensor::Ptr sensor =
+			CGenericSensor::createSensorPtr(driver_name);
+		if (!sensor)
+			throw std::runtime_error(
+				std::string("***ERROR***: Class name not recognized: ") +
+				driver_name);
+
+		// Load common & sensor specific parameters:
+		sensor->loadConfig(*tp.cfgFile, tp.section_name);
+		std::cout << mrpt::format(
+						 "[thread_%s] Starting...", tp.section_name.c_str())
+				  << " at " << sensor->getProcessRate() << " Hz" << std::endl;
+
+		ASSERTMSG_(
+			sensor->getProcessRate() > 0,
+			"process_rate must be set to a valid value (>0 Hz).");
+
+		mrpt::system::CRateTimer rate(sensor->getProcessRate());
+
+		sensor->initialize();  // Init device:
+		while (!m_allThreadsMustExit)
+		{
+			sensor->doProcess();  // Process
+			// Get new observations
+			CGenericSensor::TListObservations lstObjs;
+			sensor->getObservations(lstObjs);
+			{
+				std::lock_guard<std::mutex> lock(m_cs_global_list_obs);
+				m_global_list_obs.insert(lstObjs.begin(), lstObjs.end());
+			}
+			lstObjs.clear();
+
+			// wait for the process period:
+			rate.sleep();
+		}
+		sensor.reset();
+		printf("[thread_%s] Closing...", tp.section_name.c_str());
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "[SensorThread]  Closing due to exception:\n"
+				  << mrpt::exception_to_str(e) << std::endl;
+		m_allThreadsMustExit = true;
+	}
+	catch (...)
+	{
+		std::cerr << "[SensorThread] Untyped exception! Closing." << std::endl;
+		m_allThreadsMustExit = true;
+	}
 }
