@@ -8,13 +8,11 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/apps/BaseAppDataSource.h>
+#include <mrpt/apps/BaseAppInitializableCLI.h>
+#include <mrpt/apps/DataSourceRawlog.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/config/CConfigFileMemory.h>
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/obs/CActionCollection.h>
-#include <mrpt/obs/CObservation.h>
-#include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/COutputLogger.h>
 
 namespace mrpt::apps
@@ -28,7 +26,9 @@ namespace mrpt::apps
  * \sa  mrpt::slam::CMetricMapBuilderICP
  * \ingroup mrpt_apps_grp
  */
-class ICP_SLAM_App_Base : public mrpt::system::COutputLogger
+class ICP_SLAM_App_Base : virtual public mrpt::system::COutputLogger,
+						  public mrpt::apps::BaseAppInitializableCLI,
+						  virtual public mrpt::apps::BaseAppDataSource
 {
    public:
 	ICP_SLAM_App_Base();
@@ -67,41 +67,21 @@ class ICP_SLAM_App_Base : public mrpt::system::COutputLogger
 	std::vector<mrpt::math::TPose3D> out_estimated_path;
 
 	/** @} */
-
-   protected:
-	virtual void impl_initialize(int argc, const char** argv) = 0;
-	virtual bool impl_get_next_observations(
-		mrpt::obs::CActionCollection::Ptr& action,
-		mrpt::obs::CSensoryFrame::Ptr& observations,
-		mrpt::obs::CObservation::Ptr& observation) = 0;
-	virtual std::string impl_get_usage() const = 0;
 };
 
 /** Instance of ICP_SLAM_App_Base to run mapping from an offline dataset file.
  */
-class ICP_SLAM_App_Rawlog : public ICP_SLAM_App_Base
+class ICP_SLAM_App_Rawlog : public ICP_SLAM_App_Base, public DataSourceRawlog
 {
    public:
 	ICP_SLAM_App_Rawlog();
 
    protected:
 	void impl_initialize(int argc, const char** argv) override;
-	bool impl_get_next_observations(
-		mrpt::obs::CActionCollection::Ptr& action,
-		mrpt::obs::CSensoryFrame::Ptr& observations,
-		mrpt::obs::CObservation::Ptr& observation) override;
 	std::string impl_get_usage() const override
 	{
 		return "icp-slam <config_file> [dataset.rawlog]";
 	}
-
-   private:
-	std::string m_rawlogFileName = "UNDEFINED.rawlog";
-	unsigned int m_rawlog_offset;
-
-	size_t m_rawlogEntry = 0;
-	mrpt::io::CFileGZInputStream m_rawlog_io;
-	mrpt::serialization::CArchive::UniquePtr m_rawlog_arch;
 };
 
 }  // namespace mrpt::apps
