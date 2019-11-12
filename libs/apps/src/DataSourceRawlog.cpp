@@ -7,6 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include "apps-precomp.h"  // Precompiled headers
+
 #include <mrpt/apps/DataSourceRawlog.h>
 #include <mrpt/obs/CRawlog.h>
 
