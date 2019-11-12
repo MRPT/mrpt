@@ -14,16 +14,16 @@
 template <typename cell_t>
 void test_monotonic()
 {
-    mrpt::maps::CLogOddsGridMapLUT<cell_t> lut;
-    float last_p=.0f;
-    const auto i_init = std::numeric_limits<cell_t>::min();
-    const auto i_end = std::numeric_limits<cell_t>::max();
-    for (int64_t i=i_init;i<=i_end;i++)
-    {
-        // Ensure LUT is monotonic:
-        const float new_p = lut.l2p(i);
-        EXPECT_GE(new_p, last_p) << " i=" << i;
-        last_p = new_p;
+	mrpt::maps::CLogOddsGridMapLUT<cell_t> lut;
+	float last_p = .0f;
+	const auto i_init = std::numeric_limits<cell_t>::min();
+	const auto i_end = std::numeric_limits<cell_t>::max();
+	for (int64_t i = i_init; i <= i_end; i++)
+	{
+		// Ensure LUT is monotonic:
+		const float new_p = lut.l2p(i);
+		EXPECT_GE(new_p, last_p) << " i=" << i;
+		last_p = new_p;
 	}
 	EXPECT_NEAR(lut.l2p(i_init), .0f, 0.05);
 	EXPECT_NEAR(lut.l2p(i_end), 1.0f, 0.05);
@@ -39,12 +39,6 @@ void test_monotonic()
 	}
 }
 
-TEST(CLogOddsGridMapLUT, monotonic_8bit)
-{
-    test_monotonic<int8_t>();
-}
+TEST(CLogOddsGridMapLUT, monotonic_8bit) { test_monotonic<int8_t>(); }
 
-TEST(CLogOddsGridMapLUT, monotonic_16bit)
-{
-    test_monotonic<int16_t>();
-}
+TEST(CLogOddsGridMapLUT, monotonic_16bit) { test_monotonic<int16_t>(); }
