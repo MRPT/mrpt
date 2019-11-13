@@ -11,35 +11,35 @@
 #include <mrpt/apps/BaseAppDataSource.h>
 #include <mrpt/apps/BaseAppInitializableCLI.h>
 #include <mrpt/apps/DataSourceRawlog.h>
-#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/config/CConfigFileMemory.h>
-#include <mrpt/hwdrivers/CGenericSensor.h>
+#include <mrpt/poses/CPose2DInterpolator.h>
+#include <mrpt/poses/CPose3DInterpolator.h>
 #include <mrpt/system/COutputLogger.h>
-#include <atomic>
 
 namespace mrpt::apps
 {
-/** ICP-SLAM virtual base class for application wrappers.
+/** MonteCarlo (Particle filter) localization wrapper class for CLI or custom
+ * applications: virtual base class, which can be used as base for custom
+ * user robotic applications.
  *
- * This virtual base provides the common code to the applications icp-slam and
- * icp-slam-live, and could be used by users to build their own ICP-SLAM
- * solution.
- *
- * \sa  mrpt::slam::CMetricMapBuilderICP
  * \ingroup mrpt_apps_grp
  */
-class ICP_SLAM_App_Base : virtual public mrpt::system::COutputLogger,
-						  public mrpt::apps::BaseAppInitializableCLI,
-						  virtual public mrpt::apps::BaseAppDataSource
+class MonteCarloLocalization_Base : virtual public mrpt::system::COutputLogger,
+									public mrpt::apps::BaseAppInitializableCLI,
+									virtual public mrpt::apps::BaseAppDataSource
 {
    public:
-	ICP_SLAM_App_Base();
+	MonteCarloLocalization_Base();
+
+	/** Default name of the main configuration section in INI files for this app
+	 */
+	constexpr static auto sect = "LocalizationExperiment";
 
 	/** @name Main API
 	 * @{ */
 
 	/** Initializes the application from CLI parameters. Refer to the manpage of
-	 * icp-slam and icp-slam-live. Throws on errors.
+	 * pf-localization. Throws on errors.
 	 */
 	void initialize(int argc, const char** argv);
 
@@ -61,62 +61,51 @@ class ICP_SLAM_App_Base : virtual public mrpt::system::COutputLogger,
 	 * file. */
 	mrpt::config::CConfigFileMemory params;
 
+	/** If true, will watch the keyboard and quit when ESC is pushed. */
+	bool allow_quit_on_esc_key = true;
+
+	/** Whether to populate out_estimated_path */
+	bool fill_out_estimated_path = false;
+
 	/** @} */
 
 	/** @name Outputs and result variables
 	 * @{ */
 
-	std::vector<mrpt::math::TPose3D> out_estimated_path;
+	/** Controlled by flag `fill_out_estimated_path` */
+	mrpt::poses::CPose3DInterpolator out_estimated_path;
 
 	/** @} */
+
+   protected:
+	template <class MONTECARLO_TYPE>
+	void do_pf_localization();
+
+	void getGroundTruth(
+		mrpt::poses::CPose2D& expectedPose, size_t rawlogEntry,
+		const mrpt::math::CMatrixDouble& GT, const Clock::time_point& cur_time);
+	void prepareGT(const mrpt::math::CMatrixDouble& GT);
+
+	mrpt::poses::CPose2DInterpolator GT_path;
 };
 
-/** Instance of ICP_SLAM_App_Base to run mapping from an offline dataset file.
+/** MonteCarlo (Particle filter) localization wrapper class, reading from a
+ * rawlog dataset.
+ *
+ * \ingroup mrpt_apps_grp
  */
-class ICP_SLAM_App_Rawlog : public ICP_SLAM_App_Base, public DataSourceRawlog
+class MonteCarloLocalization_Rawlog : public MonteCarloLocalization_Base,
+									  public DataSourceRawlog
 {
    public:
-	ICP_SLAM_App_Rawlog();
+	MonteCarloLocalization_Rawlog();
 
    protected:
 	void impl_initialize(int argc, const char** argv) override;
 	std::string impl_get_usage() const override
 	{
-		return "icp-slam <config_file> [dataset.rawlog]";
+		return "pf-localization <config_file> [dataset.rawlog]";
 	}
-};
-
-/** Instance of ICP_SLAM_App_Base to run mapping from a live LIDAR sensor.
- */
-class ICP_SLAM_App_Live : public ICP_SLAM_App_Base
-{
-   public:
-	ICP_SLAM_App_Live();
-	virtual ~ICP_SLAM_App_Live() override;
-
-   protected:
-	void impl_initialize(int argc, const char** argv) override;
-	std::string impl_get_usage() const override
-	{
-		return "icp-slam-live <config_file>";
-	}
-
-	bool impl_get_next_observations(
-		mrpt::obs::CActionCollection::Ptr& action,
-		mrpt::obs::CSensoryFrame::Ptr& observations,
-		mrpt::obs::CObservation::Ptr& observation) override;
-
-	struct TThreadParams
-	{
-		mrpt::config::CConfigFileBase* cfgFile;
-		std::string section_name;
-	};
-
-	void SensorThread(TThreadParams params);
-
-	mrpt::hwdrivers::CGenericSensor::TListObservations m_global_list_obs;
-	std::mutex m_cs_global_list_obs;
-	std::atomic_bool m_allThreadsMustExit = false;
 };
 
 }  // namespace mrpt::apps

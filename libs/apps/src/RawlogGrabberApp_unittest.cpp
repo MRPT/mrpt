@@ -50,9 +50,14 @@ TEST(RawlogGrabberApp, DISABLED_CGenericCamera_AVI)
 
 		// Run slowly, so we have time to capture a few frames from the
 		// (otherwise really short) test video file:
-		app.params.write("Camera1", "process_rate", "0.75");
+		app.params.write("Camera1", "process_rate", "3.0");
 
-		app.run_for_seconds = 6.0;
+		// Max. run time.
+		// Should end much sooner when the video file is entirely processed.
+		app.run_for_seconds = 20.0;
+
+		// Less verbose output in tests:
+		app.show_sensor_thread_exceptions = false;
 
 		// Run:
 		app.run();

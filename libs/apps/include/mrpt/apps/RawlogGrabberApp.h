@@ -53,6 +53,10 @@ class RawlogGrabberApp : public mrpt::system::COutputLogger
 	/** If >0, run() will return after this period (in seconds) */
 	double run_for_seconds = 0;
 
+	/** If enabled (default), exceptions in sensor threads will be reported to
+	 * std::cerr */
+	bool show_sensor_thread_exceptions = true;
+
 	/** Populated in initialize(). Can be replaced or manipulated by the user
 	 * after that and before run() to change the parameters loaded from INI
 	 * file. */
