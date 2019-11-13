@@ -94,6 +94,12 @@ class CPU_analyzer
 		// __builtin_cpu_supports() checks for both: CPU and OS support
 
 		using namespace mrpt::cpu;
+
+		// These ones only for intel 64bit arch:
+		// Some might be usable in 32bit builds, but they might require
+		// additional checks (in MSVC) and it's not worth: why building for
+		// 32bit nowadays?
+#if defined(__x86_64__)
 		feat(feature::MMX) = !!__builtin_cpu_supports("mmx");
 		feat(feature::POPCNT) = !!__builtin_cpu_supports("popcnt");
 		feat(feature::SSE) = !!__builtin_cpu_supports("sse");
@@ -104,6 +110,7 @@ class CPU_analyzer
 		feat(feature::SSE4_2) = !!__builtin_cpu_supports("sse4.2");
 		feat(feature::AVX) = __builtin_cpu_supports("avx");
 		feat(feature::AVX2) = __builtin_cpu_supports("avx2");
+#endif
 	}
 #endif
 };
