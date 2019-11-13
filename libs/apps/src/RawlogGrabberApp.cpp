@@ -355,12 +355,20 @@ void RawlogGrabberApp::SensorThread(std::string sensor_label)
 	}
 	catch (const std::exception& e)
 	{
-		MRPT_LOG_ERROR(mrpt::exception_to_str(e));
+		if (show_sensor_thread_exceptions)
+		{
+			MRPT_LOG_ERROR_STREAM(
+				"Exception in SensorThread:\n"
+				<< mrpt::exception_to_str(e));
+		}
 		allThreadsMustExit = true;
 	}
 	catch (...)
 	{
-		MRPT_LOG_ERROR("Untyped exception!!");
+		if (show_sensor_thread_exceptions)
+		{
+			MRPT_LOG_ERROR("Untyped exception in SensorThread.");
+		}
 		allThreadsMustExit = true;
 	}
 }
