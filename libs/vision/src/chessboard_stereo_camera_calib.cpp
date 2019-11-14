@@ -476,7 +476,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		out.cam_params.rightCamera.p1(lm_stat.right_cam_params[7]);
 		out.cam_params.rightCamera.p2(lm_stat.right_cam_params[8]);
 
-		const mrpt::poses::CPose3D l2r_pose = -lm_stat.right2left_pose;
+		const auto l2r_pose = -mrpt::poses::CPose3D(lm_stat.right2left_pose);
 		mrpt::math::CQuaternionDouble l2r_quat;
 		l2r_pose.getAsQuaternion(l2r_quat);
 
@@ -489,7 +489,8 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		out.cam_params.rightCameraPose.qz = l2r_quat.z();
 
 		// R2L pose:
-		out.right2left_camera_pose = lm_stat.right2left_pose;
+		out.right2left_camera_pose =
+			mrpt::poses::CPose3D(lm_stat.right2left_pose);
 
 		// All the estimated camera poses:
 		out.left_cam_poses = lm_stat.left_cam_poses;
@@ -519,18 +520,6 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		// Draw projected points
 		for (unsigned long idx : valid_image_pair_indices)
 		{
-			// mrpt::poses::CPose3D			reconstructed_camera_pose;   //!< At
-			// output, the reconstructed pose of the camera.
-			// std::vector<TPixelCoordf>		projectedPoints_distorted; //!<
-			// At
-			// output, only will have an empty vector if the checkerboard was
-			// not found in this image, or the predicted (reprojected) corners,
-			// which were used to estimate the average square error.
-			// std::vector<TPixelCoordf>		projectedPoints_undistorted;
-			// //!<
-			// At
-			// output, like projectedPoints_distorted but for the undistorted
-			// image.
 			TImageCalibData& dat_l = images[idx].left;
 			TImageCalibData& dat_r = images[idx].right;
 
@@ -539,9 +528,11 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 			dat_r.img_original.colorImage(dat_r.img_rectified);
 
 			// Camera poses:
-			dat_l.reconstructed_camera_pose = -lm_stat.left_cam_poses[idx];
+			dat_l.reconstructed_camera_pose =
+				-mrpt::poses::CPose3D(lm_stat.left_cam_poses[idx]);
 			dat_r.reconstructed_camera_pose =
-				-(lm_stat.right2left_pose + lm_stat.left_cam_poses[idx]);
+				-(mrpt::poses::CPose3D(lm_stat.right2left_pose) +
+				  mrpt::poses::CPose3D(lm_stat.left_cam_poses[idx]));
 
 			// Project distorted images:
 			mrpt::vision::pinhole::projectPoints_with_distortion(
@@ -582,7 +573,7 @@ Jacobian:
 
 */
 
-void jacob_db_dp(
+static void jacob_db_dp(
 	const TPoint3D& p,  // 3D coordinates wrt the camera
 	mrpt::math::CMatrixFixed<double, 2, 3>& G)
 {
@@ -641,7 +632,7 @@ y \end{array}\right)
 
 */
 
-void jacob_dh_db_and_dh_dc(
+static void jacob_dh_db_and_dh_dc(
 	const TPoint3D& nP,  // Point in relative coords wrt the camera
 	const mrpt::math::CVectorFixedDouble<9>& c,  // camera parameters
 	mrpt::math::CMatrixFixed<double, 2, 2>& Hb,
@@ -697,7 +688,7 @@ void jacob_dh_db_and_dh_dc(
 	Hc(1, 8) = 2 * fy * x * y;
 }
 
-void jacob_deps_D_p_deps(
+static void jacob_deps_D_p_deps(
 	const TPoint3D& p_D,  // D (+) p
 	mrpt::math::CMatrixFixed<double, 3, 6>& dpl_del)
 {
@@ -707,7 +698,7 @@ void jacob_deps_D_p_deps(
 	dpl_del.block<3, 3>(0, 3) = mrpt::math::skew_symmetric3_neg(p_D).asEigen();
 }
 
-void jacob_dA_eps_D_p_deps(
+static void jacob_dA_eps_D_p_deps(
 	const CPose3D& A, const CPose3D& D, const TPoint3D& p,
 	mrpt::math::CMatrixFixed<double, 3, 6>& dp_deps)
 {
@@ -728,13 +719,13 @@ void jacob_dA_eps_D_p_deps(
 	dp_deps = A.getRotationMatrix().asEigen() * H;
 }
 
-void project_point(
+static void project_point(
 	const mrpt::math::TPoint3D& P, const mrpt::img::TCamera& params,
-	const CPose3D& cameraPose, mrpt::img::TPixelCoordf& px)
+	const mrpt::math::TPose3D& cameraPose, mrpt::img::TPixelCoordf& px)
 {
 	// Change the reference system to that wrt the camera
 	TPoint3D nP;
-	cameraPose.composePoint(P.x, P.y, P.z, nP.x, nP.y, nP.z);
+	cameraPose.composePoint(P, nP);
 
 	// Pinhole model:
 	const double x = nP.x / nP.z;
@@ -884,7 +875,7 @@ void mrpt::vision::add_lm_increment(
 	const size_t N = lm_stat.valid_image_pair_indices.size();
 	for (size_t i = 0; i < N; i++)
 	{
-		CPose3D& cam_pose =
+		auto& cam_pose =
 			lm_stat.left_cam_poses[lm_stat.valid_image_pair_indices[i]];
 
 		// Use the Lie Algebra methods for the increment:
@@ -893,7 +884,7 @@ void mrpt::vision::add_lm_increment(
 
 		// new_pose =  old_pose  [+] delta
 		//         = exp(delta) (+) old_pose
-		cam_pose.composeFrom(incrPose, cam_pose);
+		cam_pose = (incrPose + CPose3D(cam_pose)).asTPose();
 	}
 
 	// Increment of the right-left pose:
@@ -904,7 +895,8 @@ void mrpt::vision::add_lm_increment(
 
 		// new_pose =  old_pose  [+] delta
 		//         = exp(delta) (+) old_pose
-		lm_stat.right2left_pose.composeFrom(incrPose, lm_stat.right2left_pose);
+		lm_stat.right2left_pose =
+			(incrPose + CPose3D(lm_stat.right2left_pose)).asTPose();
 	}
 
 	// Increment of the camera params:
@@ -1114,9 +1106,12 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 			project_point(
 				lm_stat.obj_points[i], camparam_l,
 				lm_stat.left_cam_poses[k_idx], px_l);
-			project_point(
-				lm_stat.obj_points[i], camparam_r,
-				lm_stat.right2left_pose + lm_stat.left_cam_poses[k_idx], px_r);
+
+			TPose3D auxPose;
+			lm_stat.right2left_pose.composePose(
+				lm_stat.left_cam_poses[k_idx], auxPose);
+
+			project_point(lm_stat.obj_points[i], camparam_r, auxPose, px_r);
 			rje.predicted_obs =
 				Eigen::Matrix<double, 4, 1>(px_l.x, px_l.y, px_r.x, px_r.y);
 
@@ -1154,8 +1149,11 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 			TPoint3D pt_wrt_left, pt_wrt_right;
 			lm_stat.left_cam_poses[k_idx].composePoint(
 				lm_stat.obj_points[i], pt_wrt_left);
-			(lm_stat.right2left_pose + lm_stat.left_cam_poses[k_idx])
-				.composePoint(lm_stat.obj_points[i], pt_wrt_right);
+
+			lm_stat.right2left_pose.composePose(
+				lm_stat.left_cam_poses[k_idx], auxPose);
+
+			auxPose.composePoint(lm_stat.obj_points[i], pt_wrt_right);
 
 			// Build partial Jacobians:
 			mrpt::math::CMatrixFixed<double, 2, 2> dhl_dbl, dhr_dbr;
@@ -1174,9 +1172,11 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 			mrpt::math::CMatrixFixed<double, 3, 6> dpl_del, dpr_del, dpr_der;
 			jacob_deps_D_p_deps(pt_wrt_left, dpl_del);
 			jacob_deps_D_p_deps(pt_wrt_right, dpr_der);
-			jacob_dA_eps_D_p_deps(
-				lm_stat.right2left_pose, lm_stat.left_cam_poses[k_idx],
-				lm_stat.obj_points[i], dpr_del);
+
+			const auto r2l_p = mrpt::poses::CPose3D(lm_stat.right2left_pose);
+			const auto lcp =
+				mrpt::poses::CPose3D(lm_stat.left_cam_poses[k_idx]);
+			jacob_dA_eps_D_p_deps(r2l_p, lcp, lm_stat.obj_points[i], dpr_del);
 
 			// Jacobian chain rule:
 			dhl_del = dhl_dbl.asEigen() * dbl_dpl.asEigen() * dpl_del.asEigen();

@@ -25,10 +25,9 @@ struct lm_stat_t
 
 	// State being optimized:
 	//  N*left_cam_pose + right2left_pose + left_cam_params + right_cam_params
-	std::vector<mrpt::poses::CPose3D>
-		left_cam_poses;  // Poses of the origin of coordinates of the pattern
-	// wrt the left camera
-	mrpt::poses::CPose3D right2left_pose;
+	// Poses of the origin of coordinates of the pattern wrt the left camera
+	std::vector<mrpt::math::TPose3D> left_cam_poses;
+	mrpt::math::TPose3D right2left_pose;
 	/** [fx fy cx cy k1 k2 k3 t1 t2] */
 	mrpt::math::CVectorFixedDouble<9> left_cam_params, right_cam_params;
 
@@ -41,8 +40,9 @@ struct lm_stat_t
 		  valid_image_pair_indices(_valid_image_pair_indices),
 		  obj_points(_obj_points)
 	{
+		// Initial
 		left_cam_poses.assign(
-			images.size(), mrpt::poses::CPose3D(0, 0, 1, 0, 0, 0));  // Initial
+			images.size(), mrpt::math::TPose3D(0, 0, 1, 0, 0, 0));
 	}
 
 	// Swap:
