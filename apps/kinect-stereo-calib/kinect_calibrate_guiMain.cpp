@@ -2898,9 +2898,9 @@ void kinect_calibrate_guiDialog::CalibUpdate3DViewCameras()
 				cor->setName(mrpt::format("#%u", static_cast<unsigned int>(i)));
 				cor->enableShowName(true);
 
-				mrpt::poses::CPose3D p =
-					-m_calib_result
-						 .left_cam_poses[i];  // Inversed poses are estimated.
+				// Inversed poses are estimated.
+				const auto p =
+					-mrpt::poses::CPose3D(m_calib_result.left_cam_poses[i]);
 				cor->setPose(p);
 
 				gl_objs->insert(cor);
@@ -2908,10 +2908,10 @@ void kinect_calibrate_guiDialog::CalibUpdate3DViewCameras()
 			{
 				mrpt::opengl::CSetOfObjects::Ptr cor =
 					mrpt::opengl::stock_objects::CornerXYZSimple(0.05f, 2);
+				// Inversed poses are estimated.
 				mrpt::poses::CPose3D p =
 					-(m_calib_result.right2left_camera_pose +
-					  m_calib_result
-						  .left_cam_poses[i]);  // Inversed poses are estimated.
+					  mrpt::poses::CPose3D(m_calib_result.left_cam_poses[i]));
 				cor->setPose(p);
 				gl_objs->insert(cor);
 			}
