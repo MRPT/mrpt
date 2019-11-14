@@ -183,7 +183,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 
 				for (idx = 0, scanPoint_x = scanPoints_x,
 					scanPoint_y = scanPoints_y;
-					 idx < nRanges; idx += K, scanPoint_x++, scanPoint_y++)
+					 idx < nRanges; idx += K, scanPoint_x += K, scanPoint_y += K)
 				{
 					if (o.getScanRangeValidity(idx))
 					{
