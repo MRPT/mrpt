@@ -10,6 +10,7 @@
 #pragma once
 
 #include <mrpt/core/SSE_types.h>  // needed by SSE intrinsics used in some inline functions below.
+#include <mrpt/core/cpu.h>
 #include <cmath>  // pow(), lrint()
 
 namespace mrpt
@@ -23,11 +24,14 @@ template <typename T>
 inline int round(const T value)
 {
 #if MRPT_HAS_SSE2
-	__m128d t = _mm_set_sd(value);
-	return _mm_cvtsd_si32(t);
-#else
-	return static_cast<int>(lrint(value));
+	if (mrpt::cpu::supports(mrpt::cpu::feature::SSE2))
+	{
+		__m128d t = _mm_set_sd(value);
+		return _mm_cvtsd_si32(t);
+	}
+	else
 #endif
+		return static_cast<int>(lrint(value));
 }
 
 /** Returns the closer integer (long) to x */
@@ -35,11 +39,14 @@ template <typename T>
 inline long round_long(const T value)
 {
 #if MRPT_HAS_SSE2 && MRPT_WORD_SIZE == 64
-	__m128d t = _mm_set_sd(value);
-	return _mm_cvtsd_si64(t);
-#else
-	return lrint(value);
+	if (mrpt::cpu::supports(mrpt::cpu::feature::SSE2))
+	{
+		__m128d t = _mm_set_sd(value);
+		return _mm_cvtsd_si64(t);
+	}
+	else
 #endif
+		return lrint(value);
 }
 
 /** Round a decimal number up to the given 10'th power (eg, to 1000,100,10, and
