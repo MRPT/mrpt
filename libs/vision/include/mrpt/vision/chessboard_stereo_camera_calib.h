@@ -11,6 +11,7 @@
 
 #include <mrpt/img/CImage.h>
 #include <mrpt/img/TStereoCamera.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/vision/chessboard_camera_calib.h>
 #include <mrpt/vision/types.h>
 #include <array>
@@ -108,7 +109,7 @@ struct TStereoCalibResults
 	/** Poses of the origin of coordinates of the pattern wrt the left camera
 	 * (i.e. the origin of coordinates, as seen from the different camera poses)
 	 */
-	std::vector<mrpt::poses::CPose3D> left_cam_poses;
+	std::vector<mrpt::math::TPose3D> left_cam_poses;
 	/** true if a checkerboard was correctly detected in both left/right images.
 	 * false if it wasn't, so the image pair didn't make it to the optimization.
 	 */
