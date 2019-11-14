@@ -16,18 +16,11 @@ fi
 
 MRPTDIR=`pwd`
 
-# Build normal PPA:
+# Build PPA packages:
 export MRPT_PKG_CUSTOM_CMAKE_PARAMS=""
 
 bash scripts/prepare_ubuntu_pkgs_for_ppa.sh
 cd $HOME/mrpt_ubuntu
 bash $MRPTDIR/scripts/upload_all_mrpt_ppa.sh
-
-# Build non-SSE3 PPA:
-cd $MRPTDIR
-bash scripts/prepare_ubuntu_pkgs_for_ppa_no_SSE3.sh
-cd $HOME/mrpt_ubuntu
-bash $MRPTDIR/scripts/upload_all_mrpt_ppa_no_sse3.sh
-
 
 exit 0
