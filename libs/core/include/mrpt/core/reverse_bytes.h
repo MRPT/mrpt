@@ -40,5 +40,24 @@ inline void reverseBytes(const T& v_in, T& v_out)
 	v_out = v_in;
 	reverseBytesInPlace(v_out);
 }
+
+template <class T>
+inline T reverseBytes(const T& v_in)
+{
+	T v_out = v_in;
+	reverseBytesInPlace(v_out);
+	return v_out;
+}
+
+template <
+	typename enum_t,
+	typename underlying_t = typename std::underlying_type<enum_t>::type>
+inline void reverseBytesInPlace_enum(enum_t& v)
+{
+	underlying_t v_out = static_cast<underlying_t>(v);
+	reverseBytesInPlace(v_out);
+	v = static_cast<enum_t>(v_out);
+}
+
 /** @} */
 }  // namespace mrpt
