@@ -10,11 +10,7 @@
 
 #include "gnss_messages_common.h"
 
-namespace mrpt
-{
-namespace obs
-{
-namespace gnss
+namespace mrpt::obs::gnss
 {
 // Pragma to ensure we can safely serialize some of these structures
 #pragma pack(push, 1)
@@ -43,6 +39,20 @@ struct nv_oem6_header_t
 	uint32_t receiver_status{0};
 	uint16_t reserved{0};
 	uint16_t receiver_sw_version{0};
+
+	void fixEndianness()
+	{
+#if MRPT_IS_BIG_ENDIAN
+		mrpt::reverseBytesInPlace(msg_id);
+		mrpt::reverseBytesInPlace(msg_len);
+		mrpt::reverseBytesInPlace(seq_number);
+		mrpt::reverseBytesInPlace(week);
+		mrpt::reverseBytesInPlace(ms_in_week);
+		mrpt::reverseBytesInPlace(receiver_status);
+		mrpt::reverseBytesInPlace(reserved);
+		mrpt::reverseBytesInPlace(receiver_sw_version);
+#endif
+	}
 };
 
 /** Novatel OEM6 short header structure \sa mrpt::obs::CObservationGPS  */
@@ -59,6 +69,16 @@ struct nv_oem6_short_header_t
 	uint16_t msg_id{0};
 	uint16_t week{0};
 	uint32_t ms_in_week{0};
+
+	void fixEndianness()
+	{
+#if MRPT_IS_BIG_ENDIAN
+		mrpt::reverseBytesInPlace(msg_id);
+		mrpt::reverseBytesInPlace(msg_len);
+		mrpt::reverseBytesInPlace(week);
+		mrpt::reverseBytesInPlace(ms_in_week);
+#endif
+	}
 };
 
 namespace nv_oem6_position_type
@@ -190,6 +210,8 @@ struct Message_NV_OEM6_GENERIC_FRAME : public gnss_message
 	nv_oem6_header_t header;
 	std::vector<uint8_t> msg_body;
 
+	void fixEndianness() override { header.fixEndianness(); }
+
 	void dumpToStream(std::ostream& out) const override;  // See docs in base
    protected:
 	void internal_writeToStream(
@@ -208,6 +230,8 @@ struct Message_NV_OEM6_GENERIC_SHORT_FRAME : public gnss_message
 	/** Frame header */
 	nv_oem6_short_header_t header;
 	std::vector<uint8_t> msg_body;
+
+	void fixEndianness() override { header.fixEndianness(); }
 
 	void dumpToStream(std::ostream& out) const override;  // See docs in base
    protected:
@@ -250,6 +274,25 @@ inline TGEODETICCOORDS getAsStruct() const
 }
 bool getAllFieldDescriptions(std::ostream& o) const override;
 bool getAllFieldValues(std::ostream& o) const override;
+void fixEndianness() override
+{
+#if MRPT_IS_BIG_ENDIAN
+	fields.header.fixEndianness();
+	mrpt::reverseBytesInPlace_enum(fields.solution_stat);
+	mrpt::reverseBytesInPlace_enum(fields.position_type);
+	mrpt::reverseBytesInPlace(fields.lat);
+	mrpt::reverseBytesInPlace(fields.lon);
+	mrpt::reverseBytesInPlace(fields.hgt);
+	mrpt::reverseBytesInPlace(fields.undulation);
+	mrpt::reverseBytesInPlace(fields.datum_id);
+	mrpt::reverseBytesInPlace(fields.lat_sigma);
+	mrpt::reverseBytesInPlace(fields.lon_sigma);
+	mrpt::reverseBytesInPlace(fields.hgt_sigma);
+	mrpt::reverseBytesInPlace(fields.diff_age);
+	mrpt::reverseBytesInPlace(fields.sol_age);
+	mrpt::reverseBytesInPlace(fields.crc);
+#endif
+}
 GNSS_BINARY_MSG_DEFINITION_MID_END
 
 /** Novatel frame: NV_OEM6_INSPVAS. \sa mrpt::obs::CObservationGPS  */
@@ -275,6 +318,25 @@ inline TGEODETICCOORDS getAsStruct() const
 }
 bool getAllFieldDescriptions(std::ostream& o) const override;
 bool getAllFieldValues(std::ostream& o) const override;
+void fixEndianness() override
+{
+#if MRPT_IS_BIG_ENDIAN
+	fields.header.fixEndianness();
+	mrpt::reverseBytesInPlace(fields.week);
+	mrpt::reverseBytesInPlace(fields.seconds_in_week);
+	mrpt::reverseBytesInPlace(fields.lat);
+	mrpt::reverseBytesInPlace(fields.lon);
+	mrpt::reverseBytesInPlace(fields.hgt);
+	mrpt::reverseBytesInPlace(fields.vel_north);
+	mrpt::reverseBytesInPlace(fields.vel_east);
+	mrpt::reverseBytesInPlace(fields.vel_up);
+	mrpt::reverseBytesInPlace(fields.roll);
+	mrpt::reverseBytesInPlace(fields.pitch);
+	mrpt::reverseBytesInPlace(fields.roll);
+	mrpt::reverseBytesInPlace_enum(fields.ins_status);
+	mrpt::reverseBytesInPlace(fields.crc);
+#endif
+}
 GNSS_BINARY_MSG_DEFINITION_MID_END
 
 /** Novatel frame: NV_OEM6_INSCOVS. \sa mrpt::obs::CObservationGPS  */
@@ -296,6 +358,21 @@ uint32_t crc = 0;
 GNSS_BINARY_MSG_DEFINITION_MID
 bool getAllFieldDescriptions(std::ostream& o) const override;
 bool getAllFieldValues(std::ostream& o) const override;
+void fixEndianness() override
+{
+#if MRPT_IS_BIG_ENDIAN
+	fields.header.fixEndianness();
+	mrpt::reverseBytesInPlace(fields.week);
+	mrpt::reverseBytesInPlace(fields.seconds_in_week);
+	for (int i = 0; i < 9; i++)
+	{
+		mrpt::reverseBytesInPlace(fields.pos_cov[i]);
+		mrpt::reverseBytesInPlace(fields.att_cov[i]);
+		mrpt::reverseBytesInPlace(fields.vel_cov[i]);
+	}
+	mrpt::reverseBytesInPlace(fields.crc);
+#endif
+}
 GNSS_BINARY_MSG_DEFINITION_MID_END
 
 /** Novatel frame: NV_OEM6_RANGECMP. \sa mrpt::obs::CObservationGPS  */
@@ -333,7 +410,33 @@ uint32_t aux1stat = 0, aux1stat_pri = 0, aux1stat_set = 0, aux1stat_clear = 0;
 uint32_t aux2stat = 0, aux2stat_pri = 0, aux2stat_set = 0, aux2stat_clear = 0;
 uint32_t aux3stat = 0, aux3stat_pri = 0, aux3stat_set = 0, aux3stat_clear = 0;
 uint32_t crc = 0;
-GNSS_BINARY_MSG_DEFINITION_END
+GNSS_BINARY_MSG_DEFINITION_MID
+void fixEndianness() override
+{
+#if MRPT_IS_BIG_ENDIAN
+	fields.header.fixEndianness();
+	mrpt::reverseBytesInPlace(fields.error);
+	mrpt::reverseBytesInPlace(fields.num_stats);
+	mrpt::reverseBytesInPlace(fields.rxstat);
+	mrpt::reverseBytesInPlace(fields.rxstat_pri);
+	mrpt::reverseBytesInPlace(fields.rxstat_set);
+	mrpt::reverseBytesInPlace(fields.rxstat_clear);
+	mrpt::reverseBytesInPlace(fields.aux1stat);
+	mrpt::reverseBytesInPlace(fields.aux1stat_pri);
+	mrpt::reverseBytesInPlace(fields.aux1stat_set);
+	mrpt::reverseBytesInPlace(fields.aux1stat_clear);
+	mrpt::reverseBytesInPlace(fields.aux2stat);
+	mrpt::reverseBytesInPlace(fields.aux2stat_pri);
+	mrpt::reverseBytesInPlace(fields.aux2stat_set);
+	mrpt::reverseBytesInPlace(fields.aux2stat_clear);
+	mrpt::reverseBytesInPlace(fields.aux3stat);
+	mrpt::reverseBytesInPlace(fields.aux3stat_pri);
+	mrpt::reverseBytesInPlace(fields.aux3stat_set);
+	mrpt::reverseBytesInPlace(fields.aux3stat_clear);
+	mrpt::reverseBytesInPlace(fields.crc);
+#endif
+}
+GNSS_BINARY_MSG_DEFINITION_MID_END
 
 /** Novatel frame: NV_OEM6_RAWEPHEM. \sa mrpt::obs::CObservationGPS  */
 GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_RAWEPHEM)
@@ -342,13 +445,24 @@ nv_oem6_header_t header;
 uint32_t sat_prn = 0, ref_week = 0, ref_secs = 0;
 uint8_t subframe1[30], subframe2[30], subframe3[30];
 uint32_t crc = 0;
-GNSS_BINARY_MSG_DEFINITION_END
+GNSS_BINARY_MSG_DEFINITION_MID
+void fixEndianness() override
+{
+#if MRPT_IS_BIG_ENDIAN
+	fields.header.fixEndianness();
+	mrpt::reverseBytesInPlace(fields.sat_prn);
+	mrpt::reverseBytesInPlace(fields.ref_week);
+	mrpt::reverseBytesInPlace(fields.ref_secs);
+	mrpt::reverseBytesInPlace(fields.crc);
+#endif
+}
+GNSS_BINARY_MSG_DEFINITION_MID_END
 
 /** Novatel frame: NV_OEM6_VERSION. \sa mrpt::obs::CObservationGPS  */
 struct Message_NV_OEM6_VERSION : public gnss_message
 {
 	Message_NV_OEM6_VERSION()
-		: gnss_message((gnss_message_type_t)NV_OEM6_VERSION)
+		: gnss_message(static_cast<gnss_message_type_t>(NV_OEM6_VERSION))
 	{
 	}
 	struct TComponentVersion
@@ -366,6 +480,15 @@ struct Message_NV_OEM6_VERSION : public gnss_message
 	uint32_t crc;
 
 	void dumpToStream(std::ostream& out) const override;  // See docs in base
+	void fixEndianness() override
+	{
+#if MRPT_IS_BIG_ENDIAN
+		header.fixEndianness();
+		for (auto& c : components) mrpt::reverseBytesInPlace(c.type);
+		mrpt::reverseBytesInPlace(crc);
+#endif
+	}
+
    protected:
 	void internal_writeToStream(
 		mrpt::serialization::CArchive& out) const override;
@@ -385,6 +508,22 @@ uint32_t crc = 0;
 GNSS_BINARY_MSG_DEFINITION_MID
 bool getAllFieldDescriptions(std::ostream& o) const override;
 bool getAllFieldValues(std::ostream& o) const override;
+void fixEndianness() override
+{
+#if MRPT_IS_BIG_ENDIAN
+	fields.header.fixEndianness();
+	mrpt::reverseBytesInPlace(fields.week);
+	mrpt::reverseBytesInPlace(fields.week_seconds);
+	mrpt::reverseBytesInPlace(fields.imu_status);
+	mrpt::reverseBytesInPlace(fields.accel_z);
+	mrpt::reverseBytesInPlace(fields.accel_y_neg);
+	mrpt::reverseBytesInPlace(fields.accel_x);
+	mrpt::reverseBytesInPlace(fields.gyro_z);
+	mrpt::reverseBytesInPlace(fields.gyro_y_neg);
+	mrpt::reverseBytesInPlace(fields.gyro_x);
+	mrpt::reverseBytesInPlace(fields.crc);
+#endif
+}
 GNSS_BINARY_MSG_DEFINITION_MID_END
 
 /** Novatel frame: NV_OEM6_MARKPOS. \sa mrpt::obs::CObservationGPS  */
@@ -418,6 +557,25 @@ inline TGEODETICCOORDS getAsStruct() const
 {
 	return TGEODETICCOORDS(fields.lat, fields.lon, fields.hgt);
 }
+void fixEndianness() override
+{
+#if MRPT_IS_BIG_ENDIAN
+	fields.header.fixEndianness();
+	mrpt::reverseBytesInPlace_enum(fields.solution_stat);
+	mrpt::reverseBytesInPlace_enum(fields.position_type);
+	mrpt::reverseBytesInPlace(fields.lat);
+	mrpt::reverseBytesInPlace(fields.lon);
+	mrpt::reverseBytesInPlace(fields.hgt);
+	mrpt::reverseBytesInPlace(fields.undulation);
+	mrpt::reverseBytesInPlace(fields.datum_id);
+	mrpt::reverseBytesInPlace(fields.lat_sigma);
+	mrpt::reverseBytesInPlace(fields.lon_sigma);
+	mrpt::reverseBytesInPlace(fields.hgt_sigma);
+	mrpt::reverseBytesInPlace(fields.diff_age);
+	mrpt::reverseBytesInPlace(fields.sol_age);
+	mrpt::reverseBytesInPlace(fields.crc);
+#endif
+}
 GNSS_BINARY_MSG_DEFINITION_MID_END
 
 /** Novatel frame: NV_OEM6_MARKTIME. \sa mrpt::obs::CObservationGPS  */
@@ -433,6 +591,19 @@ uint32_t crc = 0;
 GNSS_BINARY_MSG_DEFINITION_MID
 bool getAllFieldDescriptions(std::ostream& o) const override;
 bool getAllFieldValues(std::ostream& o) const override;
+void fixEndianness() override
+{
+#if MRPT_IS_BIG_ENDIAN
+	fields.header.fixEndianness();
+	mrpt::reverseBytesInPlace(fields.week);
+	mrpt::reverseBytesInPlace(fields.week_seconds);
+	mrpt::reverseBytesInPlace(fields.clock_offset);
+	mrpt::reverseBytesInPlace(fields.clock_offset_std);
+	mrpt::reverseBytesInPlace(fields.utc_offset);
+	mrpt::reverseBytesInPlace(fields.clock_status);
+	mrpt::reverseBytesInPlace(fields.crc);
+#endif
+}
 GNSS_BINARY_MSG_DEFINITION_MID_END
 
 /** Novatel frame: NV_OEM6_MARK2TIME. \sa mrpt::obs::CObservationGPS  */
@@ -448,6 +619,19 @@ uint32_t crc = 0;
 GNSS_BINARY_MSG_DEFINITION_MID
 bool getAllFieldDescriptions(std::ostream& o) const override;
 bool getAllFieldValues(std::ostream& o) const override;
+void fixEndianness() override
+{
+#if MRPT_IS_BIG_ENDIAN
+	fields.header.fixEndianness();
+	mrpt::reverseBytesInPlace(fields.week);
+	mrpt::reverseBytesInPlace(fields.week_seconds);
+	mrpt::reverseBytesInPlace(fields.clock_offset);
+	mrpt::reverseBytesInPlace(fields.clock_offset_std);
+	mrpt::reverseBytesInPlace(fields.utc_offset);
+	mrpt::reverseBytesInPlace(fields.clock_status);
+	mrpt::reverseBytesInPlace(fields.crc);
+#endif
+}
 GNSS_BINARY_MSG_DEFINITION_MID_END
 
 /** Novatel frame: NV_OEM6_IONUTC. \sa mrpt::obs::CObservationGPS  */
@@ -472,9 +656,32 @@ uint32_t deltat_ls = 0;
 uint32_t deltat_lsf = 0;
 uint32_t reserved = 0;
 uint32_t crc = 0;
-GNSS_BINARY_MSG_DEFINITION_END
+GNSS_BINARY_MSG_DEFINITION_MID
+void fixEndianness() override
+{
+#if MRPT_IS_BIG_ENDIAN
+	fields.header.fixEndianness();
+	mrpt::reverseBytesInPlace(fields.a0);
+	mrpt::reverseBytesInPlace(fields.a1);
+	mrpt::reverseBytesInPlace(fields.a2);
+	mrpt::reverseBytesInPlace(fields.a3);
+	mrpt::reverseBytesInPlace(fields.b0);
+	mrpt::reverseBytesInPlace(fields.b1);
+	mrpt::reverseBytesInPlace(fields.b2);
+	mrpt::reverseBytesInPlace(fields.b3);
+	mrpt::reverseBytesInPlace(fields.utc_wn);
+	mrpt::reverseBytesInPlace(fields.tot);
+	mrpt::reverseBytesInPlace(fields.A0);
+	mrpt::reverseBytesInPlace(fields.A1);
+	mrpt::reverseBytesInPlace(fields.wn_lsf);
+	mrpt::reverseBytesInPlace(fields.dn);
+	mrpt::reverseBytesInPlace(fields.deltat_ls);
+	mrpt::reverseBytesInPlace(fields.deltat_lsf);
+	mrpt::reverseBytesInPlace(fields.reserved);
+	mrpt::reverseBytesInPlace(fields.crc);
+#endif
+}
+GNSS_BINARY_MSG_DEFINITION_MID_END
 
 #pragma pack(pop)  // End of pack = 1
-}  // namespace gnss
-}  // namespace obs
-}  // namespace mrpt
+}  // namespace mrpt::obs::gnss
