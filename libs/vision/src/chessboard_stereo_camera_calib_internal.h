@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/vision/chessboard_camera_calib.h>
@@ -67,7 +68,8 @@ struct TResidJacobElement
 	Eigen::Matrix<double, 4, 30> J;
 };
 
-using TResidualJacobianList = std::vector<std::vector<TResidJacobElement>>;
+using TResidualJacobianList =
+	std::vector<mrpt::aligned_std_vector<TResidJacobElement>>;
 
 // Auxiliary functions for the Lev-Marq algorithm:
 double recompute_errors_and_Jacobians(
