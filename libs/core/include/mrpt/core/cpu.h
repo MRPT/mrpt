@@ -10,6 +10,7 @@
 #pragma once
 
 #include <mrpt/core/common.h>
+#include <array>
 #include <string>
 
 namespace mrpt::cpu
@@ -33,14 +34,55 @@ enum class feature : unsigned int
 	FEATURE_COUNT
 };
 
-/** Returns true if CPU (and OS) supports the given CPU feature
+namespace internal
+{
+/** Auxiliary class. Users should use mrpt::core::supports() instead.
  * \ingroup mrpt_core_grp
  */
-bool supports(feature f);
+class CPU_analyzer
+{
+   public:
+	static CPU_analyzer& Instance() noexcept;
+
+	std::array<
+		bool, static_cast<std::size_t>(mrpt::cpu::feature::FEATURE_COUNT)>
+		feat_detected;
+
+	inline bool& feat(mrpt::cpu::feature f) noexcept
+	{
+		return feat_detected[static_cast<std::size_t>(f)];
+	}
+	inline const bool& feat(mrpt::cpu::feature f) const noexcept
+	{
+		return feat_detected[static_cast<std::size_t>(f)];
+	}
+
+   private:
+	// Ctor: runs all the checks and fills in the vector of features:
+	CPU_analyzer() noexcept
+	{
+		// Start with all falses:
+		feat_detected.fill(false);
+		detect_impl();
+	}
+	void detect_impl() noexcept;
+};
+}  // namespace internal
+
+/** Returns true if CPU (and OS) supports the given CPU feature, *and* that
+ * instruction set or feature was also enabled by the compiler flags used while
+ * building MRPT.
+ * \ingroup mrpt_core_grp
+ */
+inline bool supports(feature f) noexcept
+{
+	const auto& o = internal::CPU_analyzer::Instance();
+	return o.feat(f);
+}
 
 /** Returns a string with detected features: "MMX:1 SSE2:0 etc."
  * \ingroup mrpt_core_grp
  */
-std::string features_as_string();
+std::string features_as_string() noexcept;
 
 }  // namespace mrpt::cpu

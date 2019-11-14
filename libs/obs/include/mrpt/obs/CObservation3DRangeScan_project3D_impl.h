@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/core/cpu.h>
 #include <mrpt/core/round.h>  // round()
 #include <mrpt/math/CVectorFixed.h>
 #include <Eigen/Dense>  // block<>()
@@ -127,7 +128,8 @@ inline void range2XYZ_LUT(
 	}
 #if MRPT_HAS_SSE2
 	// if image width is not 8*N, use standard method
-	if ((W & 0x07) == 0 && pp.USE_SSE2 && DECIM == 1)
+	if ((W & 0x07) == 0 && pp.USE_SSE2 && DECIM == 1 &&
+		mrpt::cpu::supports(mrpt::cpu::feature::SSE2))
 		do_project_3d_pointcloud_SSE2(
 			H, W, kys, kzs, src_obs.rangeImage, pca, src_obs.points3D_idxs_x,
 			src_obs.points3D_idxs_y, fp, pp.MAKE_ORGANIZED);

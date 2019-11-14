@@ -9,6 +9,7 @@
 
 #include "img-precomp.h"  // Precompiled headers
 
+#include <mrpt/core/cpu.h>
 #include <mrpt/core/round.h>  // for round()
 #include <mrpt/img/CImage.h>
 #include <mrpt/io/CFileInputStream.h>
@@ -974,7 +975,8 @@ static bool my_img_to_grayscale(const cv::Mat& src, cv::Mat& dest)
 
 // If possible, use SSE optimized version:
 #if MRPT_HAS_SSE3
-	if ((src.step[0] & 0x0f) == 0 && (dest.step[0] & 0x0f) == 0)
+	if ((src.step[0] & 0x0f) == 0 && (dest.step[0] & 0x0f) == 0 &&
+		mrpt::cpu::supports(mrpt::cpu::feature::SSE3))
 	{
 		image_SSSE3_bgr_to_gray_8u(
 			src.ptr<uint8_t>(), dest.ptr<uint8_t>(), src.cols, src.rows,
@@ -1026,7 +1028,8 @@ bool CImage::scaleHalf(CImage& out, TInterpolationMethod interp) const
 
 	// If possible, use SSE optimized version:
 #if MRPT_HAS_SSE3
-	if (img.channels() == 3 && interp == IMG_INTERP_NN)
+	if (img.channels() == 3 && interp == IMG_INTERP_NN &&
+		mrpt::cpu::supports(mrpt::cpu::feature::SSE3))
 	{
 		image_SSSE3_scale_half_3c8u(
 			img.data, img_out.data, w, h, img.step[0], img_out.step[0]);
@@ -1034,7 +1037,7 @@ bool CImage::scaleHalf(CImage& out, TInterpolationMethod interp) const
 	}
 #endif
 #if MRPT_HAS_SSE2
-	if (img.channels() == 1)
+	if (img.channels() == 1 && mrpt::cpu::supports(mrpt::cpu::feature::SSE2))
 	{
 		if (interp == IMG_INTERP_NN)
 		{
