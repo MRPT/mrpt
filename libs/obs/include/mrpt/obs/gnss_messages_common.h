@@ -55,19 +55,28 @@ struct gnss_message
 	/** Dumps the contents of the observation in a human-readable form to a
 	 * given output stream \sa dumpToConsole() */
 	virtual void dumpToStream(std::ostream& out) const = 0;
+
+	/** If we are in a big endian system, reverse all fields >1 byte to fix its
+	 * representation. Only in binary frames, text-based derived classes
+	 * obviously do not need to reimplement this one. */
+	virtual void fixEndianness() {}
+
 	/** Dumps the contents of the observation in a human-readable form to an
 	 * std::ostream (set to std::cout to print to console) */
 	void dumpToConsole(std::ostream& o) const;
 	/** Dumps a header for getAllFieldValues() \return false if not implemented
 	 * for this message type */
-	virtual bool getAllFieldDescriptions(std::ostream& o) const
+	virtual bool getAllFieldDescriptions([[maybe_unused]] std::ostream& o) const
 	{
 		return false;
 	}
 	/** Dumps a line with the sequence of all field values (without a line feed
 	 * at the end). \sa getAllFieldDescriptions() \return false if not
 	 * implemented for this message type */
-	virtual bool getAllFieldValues(std::ostream& o) const { return false; }
+	virtual bool getAllFieldValues([[maybe_unused]] std::ostream& o) const
+	{
+		return false;
+	}
 	/** Returns "NMEA_GGA", etc. */
 	const std::string& getMessageTypeAsString() const;
 	virtual ~gnss_message() = default;
@@ -125,7 +134,12 @@ struct gnss_message_ptr
 		const override                                                       \
 	{                                                                        \
 		out << static_cast<uint32_t>(DATA_LEN);                              \
+		auto nonconst_this = const_cast<std::remove_const<                   \
+			std::remove_reference<decltype(*this)>::type>::type*>(this);     \
+		/* Temporarily switch to little endian for serialization only */     \
+		nonconst_this->fixEndianness();                                      \
 		out.WriteBuffer(DATA_PTR, DATA_LEN);                                 \
+		nonconst_this->fixEndianness();                                      \
 	}                                                                        \
 	void internal_readFromStream(mrpt::serialization::CArchive& in) override \
 	{                                                                        \
@@ -133,20 +147,24 @@ struct gnss_message_ptr
 		in >> nBytesInStream;                                                \
 		ASSERT_EQUAL_(nBytesInStream, DATA_LEN);                             \
 		in.ReadBuffer(DATA_PTR, DATA_LEN);                                   \
+		fixEndianness();                                                     \
 	}                                                                        \
                                                                              \
    public:
 
-#define GNSS_BINARY_MSG_DEFINITION_START(_MSG_ID)                            \
-	struct Message_##_MSG_ID : public gnss_message                           \
-	{                                                                        \
-		GNSS_MESSAGE_BINARY_BLOCK(&fields, sizeof(fields))                   \
-		enum : uint32_t                                                      \
-		{                                                                    \
-			msg_type = _MSG_ID                                               \
-		}; /* Static msg type (member expected by templates)*/               \
-		Message_##_MSG_ID() : gnss_message((gnss_message_type_t)msg_type) {} \
-		struct content_t                                                     \
+#define GNSS_BINARY_MSG_DEFINITION_START(_MSG_ID)                      \
+	struct Message_##_MSG_ID : public gnss_message                     \
+	{                                                                  \
+		GNSS_MESSAGE_BINARY_BLOCK(&fields, sizeof(fields))             \
+		enum : uint32_t                                                \
+		{                                                              \
+			msg_type = _MSG_ID                                         \
+		}; /* Static msg type (member expected by templates)*/         \
+		Message_##_MSG_ID()                                            \
+			: gnss_message(static_cast<gnss_message_type_t>(msg_type)) \
+		{                                                              \
+		}                                                              \
+		struct content_t                                               \
 		{
 #define GNSS_BINARY_MSG_DEFINITION_MID                                       \
 	content_t() = default;                                                   \

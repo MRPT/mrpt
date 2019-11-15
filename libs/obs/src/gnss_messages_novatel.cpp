@@ -39,6 +39,7 @@ void Message_NV_OEM6_GENERIC_FRAME::internal_readFromStream(
 	in >> nBytesInStream;
 	msg_body.resize(nBytesInStream);
 	if (nBytesInStream) in.ReadBuffer(&msg_body[0], sizeof(nBytesInStream));
+	fixEndianness();
 }
 // ------------
 void Message_NV_OEM6_GENERIC_SHORT_FRAME::dumpToStream(std::ostream& out) const
@@ -61,6 +62,7 @@ void Message_NV_OEM6_GENERIC_SHORT_FRAME::internal_readFromStream(
 	in >> nBytesInStream;
 	msg_body.resize(nBytesInStream);
 	if (nBytesInStream) in.ReadBuffer(&msg_body[0], sizeof(nBytesInStream));
+	fixEndianness();
 }
 
 // ------------
@@ -343,6 +345,7 @@ void Message_NV_OEM6_RANGECMP::internal_readFromStream(
 	obs_data.resize(num_obs);
 	if (num_obs)
 		in.ReadBuffer(&obs_data[0], sizeof(obs_data[0]) * obs_data.size());
+	fixEndianness();
 }
 
 // ------------
@@ -406,6 +409,7 @@ void Message_NV_OEM6_VERSION::internal_readFromStream(
 	if (num_comps)
 		in.ReadBuffer(
 			&components[0], sizeof(components[0]) * components.size());
+	fixEndianness();
 }
 
 // ------------
