@@ -9,7 +9,7 @@
 
 #include "img-precomp.h"  // Precompiled headers
 
-#include <mrpt/core/bit_cast.h>
+#include <mrpt/core/reverse_bytes.h>
 #include <mrpt/core/round.h>
 #include <mrpt/img/CCanvas.h>
 #include <mrpt/img/CImage.h>
@@ -18,6 +18,7 @@
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
 #include <Eigen/Dense>
+#include <cstring>  // memcpy
 #include <map>
 
 // Include the MRPT bitmap fonts:
@@ -44,11 +45,14 @@ using namespace mrpt;
 using namespace mrpt::img;
 using namespace std;
 
-// map<string,const uint32_t*>   list_registered_fonts;
-map<string, std::vector<uint8_t>>
-	list_registered_fonts;  // Each vector is the target
-// place where to uncompress
-// each font.
+struct FontData
+{
+	std::vector<uint8_t> data;
+	bool prepared_to_big_endian = false;
+};
+
+// Each vector is the target place where to uncompress each font.
+map<string, FontData> list_registered_fonts;
 bool list_fonts_init = false;
 
 void init_fonts_list()
@@ -95,7 +99,7 @@ void init_fonts_list()
 			&tmpBuf[0], mrpt_font_gz_##FONTNAME,                      \
 			sizeof(mrpt_font_gz_##FONTNAME));                         \
 		mrpt::io::zip::decompress_gz_data_block(                      \
-			tmpBuf, list_registered_fonts[#FONTNAME]);                \
+			tmpBuf, list_registered_fonts[#FONTNAME].data);           \
 	}
 
 		LOAD_FONT(5x7)
@@ -240,9 +244,20 @@ void CCanvas::selectTextFont(const std::string& fontName)
 	}
 	else
 	{
-		m_selectedFontBitmaps =
-			reinterpret_cast<const uint32_t*>(&it->second[0]);
+		FontData& fd = it->second;
+		m_selectedFontBitmaps = reinterpret_cast<const uint32_t*>(&fd.data[0]);
 		m_selectedFont = fontName;
+
+#if MRPT_IS_BIG_ENDIAN
+		// Fix endianness of char tables:
+		if (!fd.prepared_to_big_endian)
+		{
+			fd.prepared_to_big_endian = true;  // Only do once
+			uint32_t* ptr = reinterpret_cast<uint32_t*>(&fd.data[0]);
+			for (size_t i = 0; i < fd.data.size() / sizeof(uint32_t); i++)
+				mrpt::reverseBytesInPlace(ptr[i]);
+		}
+#endif
 	}
 }
 
@@ -393,8 +408,8 @@ void CCanvas::textOut(
 	int py = y0;
 
 	// Char size:
-	uint32_t char_w = m_selectedFontBitmaps[0];
-	uint32_t char_h = m_selectedFontBitmaps[1];
+	int char_w = m_selectedFontBitmaps[0];
+	int char_h = m_selectedFontBitmaps[1];
 
 	for (unsigned short unichar : uniStr)
 	{
@@ -409,19 +424,22 @@ void CCanvas::textOut(
 			if (unichar <= charset_end && unichar >= charset_ini)
 			{
 				// Draw this character:
-				unsigned pyy = y_axis_reversed ? (py + char_h - 1) : py;
-				unsigned pxx;
+				int pyy = y_axis_reversed ? (py + char_h - 1) : py;
 
 				const uint32_t* char_bitmap =
 					table_ptr + 2 + char_h * (unichar - charset_ini);
 
-				for (unsigned y = 0; y < char_h;
+				for (int y = 0; y < char_h;
 					 y++, pyy += y_axis_reversed ? -1 : 1)
 				{
-					pxx = px;
-					const uint32_t& row = *char_bitmap++;
-					for (unsigned x = 0; x < char_w; x++, pxx++)
-						if (row & (1 << x)) setPixel(pxx, pyy, color);
+					// Use memcpy() here since directly dereferencing is an
+					// invalid operation in architectures (S390X) where
+					// unaligned accesses are forbiden:
+					uint32_t row;
+					memcpy(&row, char_bitmap, sizeof(row));
+					char_bitmap++;
+					for (int x = 0, pxx = px; x < char_w; x++, pxx++)
+						if (!!(row & (1 << x))) setPixel(pxx, pyy, color);
 				}
 
 				// Advance the raster cursor:
