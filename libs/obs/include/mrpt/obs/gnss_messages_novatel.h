@@ -332,7 +332,7 @@ void fixEndianness() override
 	mrpt::reverseBytesInPlace(fields.vel_up);
 	mrpt::reverseBytesInPlace(fields.roll);
 	mrpt::reverseBytesInPlace(fields.pitch);
-	mrpt::reverseBytesInPlace(fields.roll);
+	mrpt::reverseBytesInPlace(fields.azimuth);
 	mrpt::reverseBytesInPlace_enum(fields.ins_status);
 	mrpt::reverseBytesInPlace(fields.crc);
 #endif
