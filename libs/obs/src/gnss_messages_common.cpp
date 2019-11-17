@@ -12,6 +12,7 @@
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/obs/gnss_messages.h>  // Must include all message classes so we can implemente the class factory here
 #include <mrpt/serialization/CArchive.h>
+#include <iostream>
 #include <map>
 
 using namespace std;
@@ -102,6 +103,14 @@ void gnss_message::readFromStream(mrpt::serialization::CArchive& in)
 	this->internal_readFromStream(in);
 }
 
+void gnss_message::dumpToConsole(std::ostream& o) const
+{
+	getAllFieldDescriptions(o);
+	o << "\n";
+	getAllFieldValues(o);
+	o << "\n";
+}
+
 // Load from binary stream and creates object detecting its type (class
 // factory). Launches an exception upon error
 gnss_message* gnss_message::readAndBuildFromStream(
@@ -116,6 +125,7 @@ gnss_message* gnss_message::readAndBuildFromStream(
 			"Error deserializing gnss_message: unknown message type '%i'",
 			static_cast<int>(msg_id));
 	msg->internal_readFromStream(in);
+	// internal_readFromStream() already calls fixEndianness().
 	return msg;
 }
 

@@ -50,17 +50,12 @@ struct TParsersRegistry
    ----------------------------------------------------- */
 CGPSInterface::CGPSInterface()
 	: mrpt::system::COutputLogger("CGPSInterface"),
-
 	  m_customInit(),
 	  m_rx_buffer(0x10000),
-
 	  m_raw_dump_file_prefix(),
 	  m_COMname(),
-
 	  m_last_timestamp(INVALID_TIMESTAMP),
-
 	  m_JAVAD_rtk_src_port(),
-
 	  m_JAVAD_rtk_format("cmr")
 {
 	m_sensorLabel = "GPS";
