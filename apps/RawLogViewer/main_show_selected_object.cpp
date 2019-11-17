@@ -261,13 +261,32 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 				obs->load();  // Make sure the 3D point cloud, etc... are all
 				// loaded in memory.
 
-				auto pointMap = mrpt::maps::CColouredPointsMap::Create();
-				pointMap->colorScheme.scheme =
-					CColouredPointsMap::cmFromIntensityImage;
+				mrpt::maps::CPointsMap::Ptr pointMap;
+				mrpt::maps::CColouredPointsMap::Ptr pointMapCol;
 
-				mrpt::obs::T3DPointsProjectionParams pp;
-				pp.takeIntoAccountSensorPoseOnRobot = true;
-				obs->project3DPointsFromDepthImageInto(*pointMap, pp);
+				if (obs->hasRangeImage)
+				{
+					pointMapCol = mrpt::maps::CColouredPointsMap::Create();
+					pointMapCol->colorScheme.scheme =
+						CColouredPointsMap::cmFromIntensityImage;
+
+					mrpt::obs::T3DPointsProjectionParams pp;
+					pp.takeIntoAccountSensorPoseOnRobot = true;
+					obs->project3DPointsFromDepthImageInto(*pointMapCol, pp);
+					pointMap = pointMapCol;
+				}
+				else
+				{
+					// Empty point set, or load from XYZ in observation:
+					pointMap = mrpt::maps::CSimplePointsMap::Create();
+					if (obs->hasPoints3D)
+					{
+						for (size_t i = 0; i < obs->points3D_x.size(); i++)
+							pointMap->insertPoint(
+								obs->points3D_x[i], obs->points3D_y[i],
+								obs->points3D_z[i]);
+					}
+				}
 
 // Update 3D view ==========
 #if RAWLOGVIEWER_HAS_3D
@@ -278,14 +297,18 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 				openGLSceneRef->insert(mrpt::opengl::CAxis::Create(
 					-20, -20, -20, 20, 20, 20, 1, 2, true));
 
-				auto pnts = mrpt::opengl::CPointCloudColoured::Create();
-				pnts->loadFromPointsMap(pointMap.get());
+				auto gl_pnts = mrpt::opengl::CPointCloudColoured::Create();
+				// Load as RGB or grayscale points:
+				if (pointMapCol)
+					gl_pnts->loadFromPointsMap(pointMapCol.get());
+				else
+					gl_pnts->loadFromPointsMap(pointMap.get());
 
 				// No need to further transform 3D points
-				pnts->setPose(mrpt::poses::CPose3D());
-				pnts->setPointSize(4.0);
+				gl_pnts->setPose(mrpt::poses::CPose3D());
+				gl_pnts->setPointSize(4.0);
 
-				openGLSceneRef->insert(pnts);
+				openGLSceneRef->insert(gl_pnts);
 				m_gl3DRangeScan->Refresh();
 #endif
 
