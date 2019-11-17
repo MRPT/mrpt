@@ -63,7 +63,8 @@ struct gnss_message
 
 	/** Dumps the contents of the observation in a human-readable form to an
 	 * std::ostream (set to std::cout to print to console) */
-	void dumpToConsole(std::ostream& o) const;
+	virtual void dumpToConsole(std::ostream& o) const;
+
 	/** Dumps a header for getAllFieldValues() \return false if not implemented
 	 * for this message type */
 	virtual bool getAllFieldDescriptions([[maybe_unused]] std::ostream& o) const
