@@ -102,6 +102,14 @@ void gnss_message::readFromStream(mrpt::serialization::CArchive& in)
 	this->internal_readFromStream(in);
 }
 
+void gnss_message::dumpToConsole(std::ostream& o) const
+{
+	getAllFieldDescriptions(o);
+	o << "\n";
+	getAllFieldValues(o);
+	o << "\n";
+}
+
 // Load from binary stream and creates object detecting its type (class
 // factory). Launches an exception upon error
 gnss_message* gnss_message::readAndBuildFromStream(
