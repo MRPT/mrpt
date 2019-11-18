@@ -48,6 +48,7 @@ void CDifodoDatasets::loadConfiguration(
 
 	//						Open Rawlog File
 	//==================================================================
+	std::cout << "Loading dataset from: " << filename << std::endl;
 	if (!dataset.loadFromRawLogFile(filename))
 		throw std::runtime_error(
 			"\nCouldn't open rawlog dataset file for input...");
@@ -415,7 +416,7 @@ void CDifodoDatasets::loadFrame()
 
 	// Read the inmediatly previous groundtruth
 	double x0, y0, z0, qx0, qy0, qz0, w0, t0;
-	if (new_data == 1)
+	if (new_data)
 	{
 		f_gt >> x0;
 		f_gt >> y0;
