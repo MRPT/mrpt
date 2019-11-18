@@ -9,6 +9,7 @@
 
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/system/CRateTimer.h>
 #include <mrpt/system/os.h>
 #include "DifOdometry_Camera.h"
 
@@ -102,7 +103,7 @@ int main(int num_arg, char* argv[])
 		// scene and initialize camera
 		//----------------------------------------------------------------------------------------------
 
-		if (use_config_file == 0)
+		if (use_config_file)
 		{
 			mrpt::config::CConfigFileMemory configDifodo(default_cfg_txt);
 			odo.loadConfiguration(configDifodo);
@@ -122,10 +123,10 @@ int main(int num_arg, char* argv[])
 
 		int pushed_key = 0;
 		bool working = false, stop = false;
-		mrpt::system::CTicTac main_clock;
-		main_clock.Tic();
 
 		odo.reset();
+
+		mrpt::system::CRateTimer rate(odo.fps);
 
 		while (!stop)
 		{
@@ -138,9 +139,10 @@ int main(int num_arg, char* argv[])
 			{
 				// Capture a new depth frame and calculate odometry
 				case 'n':
+				case 'N':
 					odo.loadFrame();
 					odo.odometryCalculation();
-					if (odo.save_results == 1) odo.writeTrajectoryFile();
+					if (odo.save_results) odo.writeTrajectoryFile();
 
 					cout << endl
 						 << "Difodo runtime(ms): " << odo.execution_time;
@@ -149,33 +151,34 @@ int main(int num_arg, char* argv[])
 
 				// Start and stop continous odometry
 				case 's':
+				case 'S':
 					working = !working;
 					break;
 
 				// Close the program
 				case 'e':
+				case 'E':
 					stop = true;
 					if (odo.f_res.is_open()) odo.f_res.close();
 					break;
 
-				// Reset estimation
+					// Reset estimation
+				case 'R':
 				case 'r':
 					odo.reset();
 					break;
 			}
 
-			if (working == 1)
+			if (working)
 			{
-				while (main_clock.Tac() < 1.f / odo.fps)
-					;
-				if (main_clock.Tac() > 1.05f / odo.fps)
-					cout << endl << "Not enough time to compute everything!!!";
-
-				main_clock.Tic();
+				const bool slower_than_realtime = rate.sleep();
+				if (slower_than_realtime)
+					cout << endl
+						 << "Not enough time to compute everything!!!\n";
 
 				odo.loadFrame();
 				odo.odometryCalculation();
-				if (odo.save_results == 1) odo.writeTrajectoryFile();
+				if (odo.save_results) odo.writeTrajectoryFile();
 
 				cout << endl << "Difodo runtime(ms): " << odo.execution_time;
 				odo.updateScene();
