@@ -11,6 +11,7 @@
 #include <mrpt/containers/circular_buffer.h>
 #include <mrpt/core/common.h>
 #include <mrpt/random.h>
+#include <array>
 
 #include <gtest/gtest.h>
 
