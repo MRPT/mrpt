@@ -733,30 +733,10 @@ bool CVelodyneScanner::receivePackets(
 	}
 #endif
 
-// Convert from Velodyne's standard little-endian ordering to host byte
-// ordering:
-// (done AFTER saving the pckg as is to pcap above)
-#if MRPT_IS_BIG_ENDIAN
-	if (data_pkt_timestamp != INVALID_TIMESTAMP)
-	{
-		mrpt::reverseBytesInPlace(out_data_pkt.gps_timestamp);
-		for (int i = 0; i < CObservationVelodyneScan::BLOCKS_PER_PACKET; i++)
-		{
-			mrpt::reverseBytesInPlace(out_data_pkt.blocks[i].header);
-			mrpt::reverseBytesInPlace(out_data_pkt.blocks[i].rotation);
-			for (int k = 0; k < CObservationVelodyneScan::SCANS_PER_BLOCK; k++)
-			{
-				mrpt::reverseBytesInPlace(
-					out_data_pkt.blocks[i].laser_returns[k].distance);
-			}
-		}
-	}
-	if (pos_pkt_timestamp != INVALID_TIMESTAMP)
-	{
-		mrpt::reverseBytesInPlace(out_pos_pkt.gps_timestamp);
-		mrpt::reverseBytesInPlace(out_pos_pkt.unused2);
-	}
-#endif
+	// Convert from Velodyne's standard little-endian ordering to host byte
+	// ordering (done AFTER saving the pckg as is to pcap above).
+	// 2019-NOV: Removed. Don't do this here, since it's problematic to
+	// "remember" whether internal data is already in big or little endian.
 
 	// Position packet decimation:
 	if (pos_pkt_timestamp != INVALID_TIMESTAMP)
