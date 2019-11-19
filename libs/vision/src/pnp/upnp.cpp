@@ -62,7 +62,7 @@
 * Contributed by Edgar Riba
 \****************************************************************************************/
 
-#include <mrpt/otherlibs/do_opencv_includes.h>
+#include <mrpt/3rdparty/do_opencv_includes.h>
 #include <iostream>
 
 #include <limits>

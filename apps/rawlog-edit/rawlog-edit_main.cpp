@@ -25,7 +25,7 @@
 
 #include "rawlog-edit-declarations.h"
 
-#include <mrpt/otherlibs/tclap/CmdLine.h>
+#include <mrpt/3rdparty/tclap/CmdLine.h>
 
 #include <memory>
 

@@ -9,8 +9,8 @@
 
 #include "vision-precomp.h"  // Precompiled headers
 
+#include <mrpt/3rdparty/do_opencv_includes.h>
 #include <mrpt/config.h>
-#include <mrpt/otherlibs/do_opencv_includes.h>
 #include <iostream>
 
 #if MRPT_HAS_OPENCV

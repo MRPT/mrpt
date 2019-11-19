@@ -14,7 +14,7 @@
 #include <mrpt/vision/tracking.h>
 
 // Universal include for all versions of OpenCV
-#include <mrpt/otherlibs/do_opencv_includes.h>
+#include <mrpt/3rdparty/do_opencv_includes.h>
 
 #if HAVE_ALLOCA_H
 #include <alloca.h>

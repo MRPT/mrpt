@@ -14,7 +14,7 @@
 #include <mrpt/graphslam/apps_related/CGraphSlamHandler.h>
 #include <mrpt/graphslam/apps_related/TUserOptionsChecker.h>
 
-#include <mrpt/otherlibs/tclap/CmdLine.h>
+#include <mrpt/3rdparty/tclap/CmdLine.h>
 
 #include <string>
 

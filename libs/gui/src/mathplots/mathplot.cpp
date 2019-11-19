@@ -47,7 +47,7 @@ const int INVALID_CLICK_COORDS = -99999;
 #include "wx/sizer.h"
 #endif
 
-#include <mrpt/otherlibs/mathplot/mathplot.h>
+#include <mrpt/3rdparty/mathplot/mathplot.h>
 
 #include <wx/bmpbuttn.h>
 #include <wx/image.h>

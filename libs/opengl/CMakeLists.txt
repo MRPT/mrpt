@@ -10,7 +10,7 @@ if(CMAKE_MRPT_HAS_OPENGL_GLUT AND NOT CMAKE_MRPT_HAS_GLUT_SYSTEM)
 	list(APPEND opengl_EXTRA_SRCS_NAME 	"freeglut" "freeglut")
 	#add_definitions(/DFREEGLUT_STATIC)
 	add_definitions(/DFREEGLUT_EXPORTS)
-	include_directories("${MRPT_LIBS_ROOT}/opengl/include/otherlibs/freeglut/")
+	include_directories("${MRPT_LIBS_ROOT}/opengl/include/3rdparty/freeglut/")
 endif()
 
 # Embedded version of Glew:

@@ -12,8 +12,8 @@
 //#include <mrpt/math/types_math.h>  // Eigen must be included first via MRPT to
 // enable the plugin system
 
+#include <mrpt/3rdparty/do_opencv_includes.h>
 #include <mrpt/config.h>
-#include <mrpt/otherlibs/do_opencv_includes.h>
 #include <mrpt/vision/pnp_algos.h>
 #include <mrpt/vision/utils.h>
 #include <Eigen/Core>

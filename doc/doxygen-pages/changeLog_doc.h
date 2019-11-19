@@ -30,6 +30,7 @@
   - pf-localization:
     - Odometry is now used also for observation-only rawlogs.
 - Changes in libraries:
+  - All `otherlibs` subdirectories have been renamed to `3rdparty` since it is a widespread name used in most projects.
   - \ref mrpt_base_grp => Refactored into several smaller libraries, one per namespace.
     - Removed class std::vector<std::string>. Replace by STL containers of `std::string` and functions mrpt::system::stringListAsString() in \ref string_manage.
   - \ref mrpt_core_grp  [NEW IN MRPT 2.0.0]
@@ -297,7 +298,7 @@ odometry-based velocity model (vx,vy,omega).
       - New template mrpt::utils::ts_hash_map<> for thread-safe,
 std::map-like containers based on hash functions.
       - Included exprtk header-only library to runtime compile &
-evaluation of mathematical expressions, under `<mrpt/otherlibs/exprtk.hpp>`
+evaluation of mathematical expressions, under `<mrpt/3rdparty/exprtk.hpp>`
       - New smart pointer templates: `mrpt::utils::copy_ptr<>`,
 `mrpt::utils::poly_ptr<>`.
       - New colormap: mrpt::utils::hot2rgb()
@@ -318,7 +319,7 @@ mrpt::math types marked as explicit, to avoid potential ambiguities and
 unnoticed conversions.
       - [Sophus](https://github.com/strasdat/Sophus/) is now used
 internally for some Lie Algebra methods, and also exposed to the user as
-`#include <mrpt/otherlibs/sophus/so3.hpp>`, etc. as part of mrpt-base
+`#include <mrpt/3rdparty/sophus/so3.hpp>`, etc. as part of mrpt-base
     - \ref mrpt_bayes_grp
       - [API change] `verbose` is no longer a field of
 mrpt::bayes::CParticleFilter::TParticleFilterOptions. Use the

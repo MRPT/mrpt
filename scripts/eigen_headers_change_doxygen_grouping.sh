@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ ! -f Eigen/Core ]; then
-	echo "Only run this script from the root source of eigen!!! otherlibs/eigen3/"	
+	echo "Only run this script from the root source of eigen!!! 3rdparty/eigen3/"	
 	exit 1
 fi
 

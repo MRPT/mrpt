@@ -30,7 +30,7 @@
 #include <mrpt/obs/carmen_log_tools.h>
 #include <mrpt/serialization/CArchive.h>
 
-#include <mrpt/otherlibs/tclap/CmdLine.h>
+#include <mrpt/3rdparty/tclap/CmdLine.h>
 
 #include <fstream>
 #include <map>

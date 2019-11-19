@@ -9,6 +9,7 @@
 
 #include "vision-precomp.h"  // Precompiled headers
 
+#include <mrpt/3rdparty/do_opencv_includes.h>
 #include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_matrices.h>
@@ -17,7 +18,6 @@
 #include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/obs/CObservationVisualLandmarks.h>
-#include <mrpt/otherlibs/do_opencv_includes.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/filesystem.h>

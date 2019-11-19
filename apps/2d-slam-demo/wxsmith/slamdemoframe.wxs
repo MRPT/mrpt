@@ -46,7 +46,7 @@
 							<object class="sizeritem">
 								<object class="Custom" name="ID_CUSTOM1" subclass="mpWindow" variable="plotGT" member="yes">
 									<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
-									<include_file>mrpt/otherlibs/mathplot/mathplot.h</include_file>
+									<include_file>mrpt/3rdparty/mathplot/mathplot.h</include_file>
 									<style></style>
 								</object>
 								<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
@@ -79,7 +79,7 @@
 							<object class="sizeritem">
 								<object class="Custom" name="ID_CUSTOM2" subclass="mpWindow" variable="plotObs" member="yes">
 									<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
-									<include_file>mrpt/otherlibs/mathplot/mathplot.h</include_file>
+									<include_file>mrpt/3rdparty/mathplot/mathplot.h</include_file>
 									<style></style>
 								</object>
 								<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
@@ -122,7 +122,7 @@
 							<object class="sizeritem">
 								<object class="Custom" name="ID_CUSTOM3" subclass="mpWindow" variable="plotMap" member="yes">
 									<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
-									<include_file>mrpt/otherlibs/mathplot/mathplot.h</include_file>
+									<include_file>mrpt/3rdparty/mathplot/mathplot.h</include_file>
 									<style></style>
 								</object>
 								<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
@@ -155,7 +155,7 @@
 							<object class="sizeritem">
 								<object class="Custom" name="ID_CUSTOM4" subclass="mpWindow" variable="plotIndivCompat" member="yes">
 									<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
-									<include_file>mrpt/otherlibs/mathplot/mathplot.h</include_file>
+									<include_file>mrpt/3rdparty/mathplot/mathplot.h</include_file>
 									<style></style>
 								</object>
 								<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
@@ -251,7 +251,7 @@
 												<object class="sizeritem">
 													<object class="Custom" name="ID_CUSTOM7" subclass="mpWindow" variable="plotErrorX" member="yes">
 														<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
-														<include_file>mrpt/otherlibs/mathplot/mathplot.h</include_file>
+														<include_file>mrpt/3rdparty/mathplot/mathplot.h</include_file>
 														<style></style>
 													</object>
 													<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
@@ -284,7 +284,7 @@
 												<object class="sizeritem">
 													<object class="Custom" name="ID_CUSTOM8" subclass="mpWindow" variable="plotErrorY" member="yes">
 														<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
-														<include_file>mrpt/otherlibs/mathplot/mathplot.h</include_file>
+														<include_file>mrpt/3rdparty/mathplot/mathplot.h</include_file>
 														<style></style>
 													</object>
 													<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
@@ -317,7 +317,7 @@
 												<object class="sizeritem">
 													<object class="Custom" name="ID_CUSTOM9" subclass="mpWindow" variable="plotErrorPhi" member="yes">
 														<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
-														<include_file>mrpt/otherlibs/mathplot/mathplot.h</include_file>
+														<include_file>mrpt/3rdparty/mathplot/mathplot.h</include_file>
 														<style></style>
 													</object>
 													<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
@@ -362,7 +362,7 @@
 												<object class="sizeritem">
 													<object class="Custom" name="ID_CUSTOM5" subclass="mpWindow" variable="plotDaTP" member="yes">
 														<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
-														<include_file>mrpt/otherlibs/mathplot/mathplot.h</include_file>
+														<include_file>mrpt/3rdparty/mathplot/mathplot.h</include_file>
 														<style></style>
 													</object>
 													<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
@@ -394,7 +394,7 @@
 												<object class="sizeritem">
 													<object class="Custom" name="ID_CUSTOM6" subclass="mpWindow" variable="plotDaTN" member="yes">
 														<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
-														<include_file>mrpt/otherlibs/mathplot/mathplot.h</include_file>
+														<include_file>mrpt/3rdparty/mathplot/mathplot.h</include_file>
 														<style></style>
 													</object>
 													<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
@@ -426,7 +426,7 @@
 												<object class="sizeritem">
 													<object class="Custom" name="ID_CUSTOM11" subclass="mpWindow" variable="plotDaFP" member="yes">
 														<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
-														<include_file>mrpt/otherlibs/mathplot/mathplot.h</include_file>
+														<include_file>mrpt/3rdparty/mathplot/mathplot.h</include_file>
 														<style></style>
 													</object>
 													<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
@@ -458,7 +458,7 @@
 												<object class="sizeritem">
 													<object class="Custom" name="ID_CUSTOM12" subclass="mpWindow" variable="plotDaFN" member="yes">
 														<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
-														<include_file>mrpt/otherlibs/mathplot/mathplot.h</include_file>
+														<include_file>mrpt/3rdparty/mathplot/mathplot.h</include_file>
 														<style></style>
 													</object>
 													<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
@@ -502,7 +502,7 @@
 												<object class="sizeritem">
 													<object class="Custom" name="ID_CUSTOM10" subclass="mpWindow" variable="plotStatTime" member="yes">
 														<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
-														<include_file>mrpt/otherlibs/mathplot/mathplot.h</include_file>
+														<include_file>mrpt/3rdparty/mathplot/mathplot.h</include_file>
 														<style></style>
 													</object>
 													<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
@@ -534,7 +534,7 @@
 												<object class="sizeritem">
 													<object class="Custom" name="ID_CUSTOM13" subclass="mpWindow" variable="plotDaJCBB" member="yes">
 														<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
-														<include_file>mrpt/otherlibs/mathplot/mathplot.h</include_file>
+														<include_file>mrpt/3rdparty/mathplot/mathplot.h</include_file>
 														<style></style>
 													</object>
 													<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM</flag>

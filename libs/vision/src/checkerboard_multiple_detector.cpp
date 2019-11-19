@@ -17,7 +17,7 @@
 #include <vector>
 
 // Universal include for all versions of OpenCV
-#include <mrpt/otherlibs/do_opencv_includes.h>
+#include <mrpt/3rdparty/do_opencv_includes.h>
 #include "checkerboard_ocamcalib_detector.h"
 
 #if VIS

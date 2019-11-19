@@ -11,6 +11,7 @@
 
 #include <mrpt/apps/CGridMapAlignerApp.h>
 
+#include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/gui.h>
 #include <mrpt/io/CFileGZInputStream.h>
@@ -25,7 +26,6 @@
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSetOfLines.h>
-#include <mrpt/otherlibs/tclap/CmdLine.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFParticles.h>

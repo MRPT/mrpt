@@ -5,7 +5,7 @@
 #  Jose Luis Blanco, March 2008.
 
 F1=$(find ../src/ -name '*.cpp')
-F2=$(find ../include/mrpt/ -name '*.h' | grep -v  otherlibs)
+F2=$(find ../include/mrpt/ -name '*.h' | grep -v  3rdparty)
 F3=$(find ../apps/ -name '*.cpp')
 F4=$(find ../apps/ -name '*.h')
 F5=$(find ../samples/ -name '*.cpp')

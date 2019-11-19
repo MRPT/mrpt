@@ -9,6 +9,7 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
+#include <mrpt/3rdparty/do_opencv_includes.h>
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/core/bits_mem.h>  // vector_strong_clear
 #include <mrpt/io/CFileGZInputStream.h>
@@ -18,7 +19,6 @@
 #include <mrpt/math/ops_containers.h>  // norm(), etc.
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/opengl/CPointCloud.h>
-#include <mrpt/otherlibs/do_opencv_includes.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>

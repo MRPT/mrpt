@@ -35,10 +35,10 @@
 #include <iostream>
 #include <algorithm>
 
-#include <mrpt/otherlibs/tclap/CmdLineInterface.h>
-#include <mrpt/otherlibs/tclap/CmdLineOutput.h>
-#include <mrpt/otherlibs/tclap/XorHandler.h>
-#include <mrpt/otherlibs/tclap/Arg.h>
+#include <mrpt/3rdparty/tclap/CmdLineInterface.h>
+#include <mrpt/3rdparty/tclap/CmdLineOutput.h>
+#include <mrpt/3rdparty/tclap/XorHandler.h>
+#include <mrpt/3rdparty/tclap/Arg.h>
 
 namespace TCLAP {
 

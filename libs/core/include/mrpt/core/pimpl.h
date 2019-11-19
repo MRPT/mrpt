@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/otherlibs/spimpl.h>
+#include <mrpt/3rdparty/spimpl.h>
 namespace mrpt
 {
 template <typename T>

@@ -6,7 +6,7 @@ set(CMAKE_MRPT_HAS_ASSIMP_SYSTEM 0)
 
 set(ASSIMP_FOUND_VIA_CMAKE 0)
 
-set(EMBEDDED_ASSIMP_DIR "${MRPT_BINARY_DIR}/otherlibs/assimp")
+set(EMBEDDED_ASSIMP_DIR "${MRPT_BINARY_DIR}/3rdparty/assimp")
 
 # 1st) Try to locate the pkg via pkg-config:
 find_package(PkgConfig QUIET)
@@ -38,7 +38,7 @@ if (NOT ASSIMP_FOUND)
 		ExternalProject_Add(EP_assimp
 		  URL               "https://github.com/assimp/assimp/archive/v4.1.0.tar.gz"
 		  URL_MD5           "83b53a10c38d964bd1e69da0606e2727"
-		  SOURCE_DIR        "${MRPT_BINARY_DIR}/otherlibs/assimp/"
+		  SOURCE_DIR        "${MRPT_BINARY_DIR}/3rdparty/assimp/"
 		  CMAKE_ARGS 
 			-DASSIMP_BUILD_ASSIMP_TOOLS=OFF
 			-DASSIMP_BUILD_SAMPLES=OFF
@@ -86,7 +86,7 @@ if (ASSIMP_FOUND_VIA_CMAKE)
 
 	# override wrong include dirs:
 	set(ASSIMP_INCLUDE_DIRS
-		"${MRPT_BINARY_DIR}/otherlibs/assimp/include/"
+		"${MRPT_BINARY_DIR}/3rdparty/assimp/include/"
 		"${MRPT_BINARY_DIR}/EP_assimp-prefix/src/EP_assimp-build/include/"
 	)
 

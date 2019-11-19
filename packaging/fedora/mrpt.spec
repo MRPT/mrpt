@@ -8,7 +8,7 @@ URL: https://www.mrpt.org/
 
 # Tarballs at http://babel.isa.uma.es/mrpt/src-repo/ are the same that those
 # at SourceForge (http://downloads.sourceforge.net/mrpt/mrpt-%{version}.tar.gz)
-# but without the directory "otherlibs/sift-hess", which contains code with a
+# but without the directory "3rdparty/sift-hess", which contains code with a
 # patent pending for approval.
 
 # The source for this package was pulled from upstream's vcs.  Use the

@@ -9,8 +9,8 @@
 
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
+#include <mrpt/3rdparty/do_opencv_includes.h>
 #include <mrpt/hwdrivers/CImageGrabber_OpenCV.h>
-#include <mrpt/otherlibs/do_opencv_includes.h>
 #include <thread>
 
 #ifdef HAVE_OPENCV_VIDEOIO

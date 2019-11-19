@@ -20,13 +20,13 @@ list(APPEND obs_EXTRA_SRCS_NAME
 # Built-in libtinyxml2?
 if(CMAKE_MRPT_HAS_TINYXML2 AND NOT CMAKE_MRPT_HAS_TINYXML2_SYSTEM)
 	list(APPEND obs_EXTRA_SRCS
-		"${MRPT_BINARY_DIR}/otherlibs/tinyxml2/*.cpp"
-		"${MRPT_BINARY_DIR}/otherlibs/tinyxml2/*.h"
+		"${MRPT_BINARY_DIR}/3rdparty/tinyxml2/*.cpp"
+		"${MRPT_BINARY_DIR}/3rdparty/tinyxml2/*.h"
 		)
 	list(APPEND obs_EXTRA_SRCS_NAME
 		"tinyxml2" "tinyxml2"
 		)
-	include_directories("${MRPT_BINARY_DIR}/otherlibs/tinyxml2/")
+	include_directories("${MRPT_BINARY_DIR}/3rdparty/tinyxml2/")
 endif()
 
 #---------------------------------------------

@@ -61,8 +61,8 @@
 
 #pragma once
 
+#include <mrpt/3rdparty/do_opencv_includes.h>
 #include <mrpt/config.h>
-#include <mrpt/otherlibs/do_opencv_includes.h>
 
 #if MRPT_HAS_OPENCV
 //#include <opencv2/core/core_c.h>

@@ -78,7 +78,7 @@
 #include <string>
 
 /// opencv includes
-#include <mrpt/otherlibs/do_opencv_includes.h>
+#include <mrpt/3rdparty/do_opencv_includes.h>
 
 /// MRPT includes
 #include <mrpt/vision/CFeatureExtraction.h>

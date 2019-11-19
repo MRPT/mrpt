@@ -4,9 +4,9 @@ list(APPEND math_EXTRA_SRCS_NAME 	"math" "math")
 
 # CSparse
 if(NOT CMAKE_MRPT_HAS_SUITESPARSE)
-	list(APPEND math_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/math/src/CSparse/*.c" "${MRPT_LIBS_ROOT}/math/include/mrpt/otherlibs/CSparse/*.h")
+	list(APPEND math_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/math/src/CSparse/*.c" "${MRPT_LIBS_ROOT}/math/include/mrpt/3rdparty/CSparse/*.h")
 	list(APPEND math_EXTRA_SRCS_NAME 	"math/CSparse" "math/CSparse")
-	include_directories("${MRPT_LIBS_ROOT}/math/include/mrpt/otherlibs/CSparse/")
+	include_directories("${MRPT_LIBS_ROOT}/math/include/mrpt/3rdparty/CSparse/")
 endif()
 
 # kmeans++

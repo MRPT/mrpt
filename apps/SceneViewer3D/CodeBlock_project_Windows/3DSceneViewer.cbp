@@ -80,7 +80,7 @@
 			<Add library="wsock32.lib" />
 			<Add library="odbc32.lib" />
 			<Add directory="..\..\..\lib" />
-			<Add directory="..\..\..\lib\otherlibs" />
+			<Add directory="..\..\..\lib\3rdparty" />
 		</Linker>
 		<Unit filename="..\CAboutBox.cpp" />
 		<Unit filename="..\CAboutBox.h" />

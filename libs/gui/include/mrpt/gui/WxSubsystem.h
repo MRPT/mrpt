@@ -47,7 +47,7 @@
 #include <wx/toolbar.h>
 
 // The wxMathPlot library
-#include <mrpt/otherlibs/mathplot/mathplot.h>
+#include <mrpt/3rdparty/mathplot/mathplot.h>
 
 #if 0
 // The wxFreeChart library

@@ -35,7 +35,7 @@
 #include <string>
 #include <vector>
 
-#include <mrpt/otherlibs/tclap/SwitchArg.h>
+#include <mrpt/3rdparty/tclap/SwitchArg.h>
 
 namespace TCLAP {
 

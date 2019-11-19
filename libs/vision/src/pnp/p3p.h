@@ -10,7 +10,7 @@
 
 //#include <mrpt/math/types_math.h>  // Eigen must be included first via MRPT to
 // enable the plugin system
-#include <mrpt/otherlibs/do_opencv_includes.h>
+#include <mrpt/3rdparty/do_opencv_includes.h>
 #include <Eigen/Dense>
 #include <Eigen/SVD>
 #include <vector>

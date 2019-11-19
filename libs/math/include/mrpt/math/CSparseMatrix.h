@@ -27,7 +27,7 @@ extern "C"
 // incompatible with C
 #include "cs.h"
 #else
-#include <mrpt/otherlibs/CSparse/cs.h>
+#include <mrpt/3rdparty/CSparse/cs.h>
 #endif
 }
 

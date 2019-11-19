@@ -20,7 +20,7 @@
 #include <mrpt/graphslam/levmarq.h>
 #include <mrpt/gui.h>
 
-#include <mrpt/otherlibs/tclap/CmdLine.h>
+#include <mrpt/3rdparty/tclap/CmdLine.h>
 
 using namespace mrpt;
 using namespace mrpt::graphslam;
