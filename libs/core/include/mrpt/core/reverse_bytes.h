@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/config.h>
 #include <mrpt/core/Clock.h>
 #include <cstdint>
 
@@ -47,6 +48,18 @@ inline T reverseBytes(const T& v_in)
 	T v_out = v_in;
 	reverseBytesInPlace(v_out);
 	return v_out;
+}
+
+template <class T>
+inline T toNativeEndianness(const T& v_in)
+{
+#if MRPT_IS_BIG_ENDIAN
+	T v_out = v_in;
+	reverseBytesInPlace(v_out);
+	return v_out;
+#else
+	return v_in;
+#endif
 }
 
 template <
