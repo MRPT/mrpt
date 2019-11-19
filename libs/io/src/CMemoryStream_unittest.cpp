@@ -10,5 +10,4 @@
 #include <gtest/gtest.h>
 #include <mrpt/io/CMemoryStream.h>
 
-MRPT_TODO("implement tests!");
 TEST(CMemoryStream, readwrite) {}
