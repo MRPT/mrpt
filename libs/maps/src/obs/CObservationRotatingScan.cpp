@@ -173,8 +173,8 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
 		Velo::SCANS_PER_BLOCK * o.scan_packets.size() * Velo::BLOCKS_PER_PACKET;
 
 	const double timeBetweenLastTwoBlocks =
-		1e-6 * (o.scan_packets.rbegin()->gps_timestamp -
-				(o.scan_packets.rbegin() + 1)->gps_timestamp);
+		1e-6 * (o.scan_packets.rbegin()->gps_timestamp() -
+				(o.scan_packets.rbegin() + 1)->gps_timestamp());
 
 	rangeImage.setZero(rowCount, columnCount);
 	intensityImage.setZero(rowCount, columnCount);
@@ -190,21 +190,21 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
 
 		model = pkt.velodyne_model_ID;
 
-		const degree_cents pkt_azimuth = pkt.blocks[0].rotation;
+		const degree_cents pkt_azimuth = pkt.blocks[0].rotation();
 
 		if (last_pkt_tim != std::numeric_limits<uint32_t>::max())
 		{
 			// Estimate rot speed:
-			ASSERT_ABOVE_(pkt.gps_timestamp, last_pkt_tim);
-			const double dT = 1e-6 * (pkt.gps_timestamp - last_pkt_tim);
+			ASSERT_ABOVE_(pkt.gps_timestamp(), last_pkt_tim);
+			const double dT = 1e-6 * (pkt.gps_timestamp() - last_pkt_tim);
 			const auto dAzimuth = 1e-2 * (pkt_azimuth - last_pkt_az);
 			const auto estRotVel = dAzimuth / dT;
 			rotspeed.insert(estRotVel);
 		}
-		last_pkt_tim = pkt.gps_timestamp;
+		last_pkt_tim = pkt.gps_timestamp();
 		last_pkt_az = pkt_azimuth;
 
-		azimuth2timestamp[pkt_azimuth] = pkt.gps_timestamp;
+		azimuth2timestamp[pkt_azimuth] = pkt.gps_timestamp();
 
 		// Accum azimuth span:
 		if (pktIdx + 1 == o.scan_packets.size())
@@ -230,9 +230,9 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
 		{
 			// non-last packet:
 			const double curAng =
-				0.01 * o.scan_packets[pktIdx].blocks[0].rotation;
+				0.01 * o.scan_packets[pktIdx].blocks[0].rotation();
 			const double nextAng =
-				0.01 * o.scan_packets[pktIdx + 1].blocks[0].rotation;
+				0.01 * o.scan_packets[pktIdx + 1].blocks[0].rotation();
 
 			const double incrAng = mrpt::math::angDistance(
 				mrpt::DEG2RAD(curAng), mrpt::DEG2RAD(nextAng));
@@ -243,7 +243,7 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
 		for (int block = 0; block < Velo::BLOCKS_PER_PACKET; block++)
 		{
 			const int dsr_offset =
-				(pkt.blocks[block].header == Velo::LOWER_BANK) ? 32 : 0;
+				(pkt.blocks[block].header() == Velo::LOWER_BANK) ? 32 : 0;
 			const bool block_is_dual_strongest_range =
 				(pkt.laser_return_mode == Velo::RETMODE_DUAL &&
 				 ((block & 0x01) != 0));
@@ -255,7 +255,7 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
 			{
 				if (!pkt.blocks[block]
 						 .laser_returns[k]
-						 .distance)  // Invalid return?
+						 .distance())  // Invalid return?
 					continue;
 
 				const auto rawLaserId = static_cast<uint8_t>(dsr + dsr_offset);
@@ -279,7 +279,7 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
 				// ignore one of them:
 
 				const auto distance =
-					pkt.blocks[block].laser_returns[k].distance +
+					pkt.blocks[block].laser_returns[k].distance() +
 					static_cast<uint16_t>(
 						calib.distanceCorrection / Velo::DISTANCE_RESOLUTION);
 
@@ -313,7 +313,7 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
 
 					// Intensity:
 					intensityImage(laserId, columnIdx) =
-						pkt.blocks[block].laser_returns[k].intensity;
+						pkt.blocks[block].laser_returns[k].intensity();
 				}
 				else if (block_is_dual_last_range)
 				{
@@ -332,10 +332,10 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
 
 	// Start and end azimuth:
 	startAzimuth =
-		mrpt::DEG2RAD(o.scan_packets.begin()->blocks[0].rotation * 1e-2);
+		mrpt::DEG2RAD(o.scan_packets.begin()->blocks[0].rotation() * 1e-2);
 
-	const auto microsecs_1st_pkt = o.scan_packets.begin()->gps_timestamp;
-	const auto microsecs_last_pkt = o.scan_packets.rbegin()->gps_timestamp;
+	const auto microsecs_1st_pkt = o.scan_packets.begin()->gps_timestamp();
+	const auto microsecs_last_pkt = o.scan_packets.rbegin()->gps_timestamp();
 	sweepDuration = 1e-6 * (microsecs_last_pkt - microsecs_1st_pkt) +
 					timeBetweenLastTwoBlocks;
 
