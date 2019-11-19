@@ -13,11 +13,6 @@
 
 TEST(CSimpleMap, ParseFileInFormat_v1_5)
 {
-#if MRPT_IS_BIG_ENDIAN
-	MRPT_TODO("Debug this issue in big endian platforms")
-	return;  // Skip this test for now
-#endif
-
 	const std::string fil =
 		mrpt::UNITTEST_BASEDIR +
 		std::string("/share/mrpt/datasets/localization_demo.simplemap.gz");

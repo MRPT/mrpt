@@ -177,8 +177,8 @@ static void velodyne_scan_to_pointcloud(
 
 		mrpt::system::TTimeStamp pkt_tim;  // Find out timestamp of this pkt
 		{
-			const uint32_t us_pkt0 = scan.scan_packets[0].gps_timestamp;
-			const uint32_t us_pkt_this = raw->gps_timestamp;
+			const uint32_t us_pkt0 = scan.scan_packets[0].gps_timestamp();
+			const uint32_t us_pkt_this = raw->gps_timestamp();
 			// Handle the case of time counter reset by new hour 00:00:00
 			const uint32_t us_ellapsed =
 				(us_pkt_this >= us_pkt0)
@@ -201,8 +201,8 @@ static void velodyne_scan_to_pointcloud(
 			for (size_t i = 0; i < nDiffs; ++i)
 			{
 				int localDiff = (Velo::ROTATION_MAX_UNITS +
-								 raw->blocks[i + nBlocksPerAzimuth].rotation -
-								 raw->blocks[i].rotation) %
+								 raw->blocks[i + nBlocksPerAzimuth].rotation() -
+								 raw->blocks[i].rotation()) %
 								Velo::ROTATION_MAX_UNITS;
 				diffs[i] = localDiff;
 			}
@@ -217,19 +217,19 @@ static void velodyne_scan_to_pointcloud(
 		{
 			// ignore packets with mangled or otherwise different contents
 			if ((num_lasers != 64 &&
-				 Velo::UPPER_BANK != raw->blocks[block].header) ||
-				(raw->blocks[block].header != Velo::UPPER_BANK &&
-				 raw->blocks[block].header != Velo::LOWER_BANK))
+				 Velo::UPPER_BANK != raw->blocks[block].header()) ||
+				(raw->blocks[block].header() != Velo::UPPER_BANK &&
+				 raw->blocks[block].header() != Velo::LOWER_BANK))
 			{
 				cerr << "[Velo] skipping invalid packet: block " << block
-					 << " header value is " << raw->blocks[block].header;
+					 << " header value is " << raw->blocks[block].header();
 				continue;
 			}
 
 			const int dsr_offset =
-				(raw->blocks[block].header == Velo::LOWER_BANK) ? 32 : 0;
+				(raw->blocks[block].header() == Velo::LOWER_BANK) ? 32 : 0;
 			const auto azimuth_raw_f =
-				static_cast<float>(raw->blocks[block].rotation);
+				static_cast<float>(raw->blocks[block].rotation());
 			const bool block_is_dual_2nd_ranges =
 				(raw->laser_return_mode == Velo::RETMODE_DUAL &&
 				 ((block & 0x01) != 0));
@@ -241,7 +241,7 @@ static void velodyne_scan_to_pointcloud(
 			{
 				if (!raw->blocks[block]
 						 .laser_returns[k]
-						 .distance)  // Invalid return?
+						 .distance())  // Invalid return?
 					continue;
 
 				const auto rawLaserId = static_cast<uint8_t>(dsr + dsr_offset);
@@ -266,8 +266,8 @@ static void velodyne_scan_to_pointcloud(
 				// ignore one of them:
 				if (block_is_dual_2nd_ranges)
 				{
-					if (raw->blocks[block].laser_returns[k].distance ==
-						raw->blocks[block - 1].laser_returns[k].distance)
+					if (raw->blocks[block].laser_returns[k].distance() ==
+						raw->blocks[block - 1].laser_returns[k].distance())
 						continue;  // duplicated point
 					if (!params.dualKeepStrongest) continue;
 				}
@@ -275,7 +275,7 @@ static void velodyne_scan_to_pointcloud(
 
 				// Return distance:
 				const float distance =
-					raw->blocks[block].laser_returns[k].distance *
+					raw->blocks[block].laser_returns[k].distance() *
 						Velo::DISTANCE_RESOLUTION +
 					calib.distanceCorrection;
 				if (distance < realMinDist || distance > realMaxDist) continue;
@@ -285,11 +285,11 @@ static void velodyne_scan_to_pointcloud(
 				{
 					bool pass_filter = true;
 					const int16_t dist_this =
-						raw->blocks[block].laser_returns[k].distance;
+						raw->blocks[block].laser_returns[k].distance();
 					if (k > 0)
 					{
 						const int16_t dist_prev =
-							raw->blocks[block].laser_returns[k - 1].distance;
+							raw->blocks[block].laser_returns[k - 1].distance();
 						if (!dist_prev ||
 							std::abs(dist_this - dist_prev) >
 								isolatedPointsFilterDistance_units)
@@ -298,7 +298,7 @@ static void velodyne_scan_to_pointcloud(
 					if (k < (Velo::SCANS_PER_FIRING - 1))
 					{
 						const int16_t dist_next =
-							raw->blocks[block].laser_returns[k + 1].distance;
+							raw->blocks[block].laser_returns[k + 1].distance();
 						if (!dist_next ||
 							std::abs(dist_this - dist_next) >
 								isolatedPointsFilterDistance_units)
@@ -417,7 +417,7 @@ static void velodyne_scan_to_pointcloud(
 				// Insert point:
 				out_pc.add_point(
 					pt.x, pt.y, pt.z,
-					raw->blocks[block].laser_returns[k].intensity, pkt_tim,
+					raw->blocks[block].laser_returns[k].intensity(), pkt_tim,
 					azimuth_corrected_f, laserId);
 
 			}  // end for k,dsr=[0,31]
