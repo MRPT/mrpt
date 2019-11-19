@@ -30,21 +30,21 @@
 
 #pragma once
 
-#include <mrpt/otherlibs/tclap/SwitchArg.h>
-#include <mrpt/otherlibs/tclap/MultiSwitchArg.h>
-#include <mrpt/otherlibs/tclap/UnlabeledValueArg.h>
-#include <mrpt/otherlibs/tclap/UnlabeledMultiArg.h>
+#include <mrpt/3rdparty/tclap/SwitchArg.h>
+#include <mrpt/3rdparty/tclap/MultiSwitchArg.h>
+#include <mrpt/3rdparty/tclap/UnlabeledValueArg.h>
+#include <mrpt/3rdparty/tclap/UnlabeledMultiArg.h>
 
-#include <mrpt/otherlibs/tclap/XorHandler.h>
-#include <mrpt/otherlibs/tclap/HelpVisitor.h>
-#include <mrpt/otherlibs/tclap/VersionVisitor.h>
-#include <mrpt/otherlibs/tclap/IgnoreRestVisitor.h>
+#include <mrpt/3rdparty/tclap/XorHandler.h>
+#include <mrpt/3rdparty/tclap/HelpVisitor.h>
+#include <mrpt/3rdparty/tclap/VersionVisitor.h>
+#include <mrpt/3rdparty/tclap/IgnoreRestVisitor.h>
 
-#include <mrpt/otherlibs/tclap/CmdLineOutput.h>
-#include <mrpt/otherlibs/tclap/StdOutput.h>
+#include <mrpt/3rdparty/tclap/CmdLineOutput.h>
+#include <mrpt/3rdparty/tclap/StdOutput.h>
 
-#include <mrpt/otherlibs/tclap/Constraint.h>
-#include <mrpt/otherlibs/tclap/ValuesConstraint.h>
+#include <mrpt/3rdparty/tclap/Constraint.h>
+#include <mrpt/3rdparty/tclap/ValuesConstraint.h>
 
 #include <string>
 #include <vector>

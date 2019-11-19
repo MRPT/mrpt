@@ -10,7 +10,7 @@ else
 	exit 1
 fi
 
-FS=$(find ../libs/$1/include/ -name '*.h' | grep -v otherlibs)
+FS=$(find ../libs/$1/include/ -name '*.h' | grep -v 3rdparty)
 
 for F in $FS
 do

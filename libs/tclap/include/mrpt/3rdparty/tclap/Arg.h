@@ -36,9 +36,9 @@
 #include <list>
 #include <iostream>
 
-#include <mrpt/otherlibs/tclap/ArgException.h>
-#include <mrpt/otherlibs/tclap/Visitor.h>
-#include <mrpt/otherlibs/tclap/CmdLineInterface.h>
+#include <mrpt/3rdparty/tclap/ArgException.h>
+#include <mrpt/3rdparty/tclap/Visitor.h>
+#include <mrpt/3rdparty/tclap/CmdLineInterface.h>
 
 namespace TCLAP {
 

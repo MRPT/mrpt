@@ -1,7 +1,7 @@
 include(ExternalProject)
 
 ExternalProject_Add(libcvd
-	SOURCE_DIR ${MRPT_SOURCE_DIR}/otherlibs/libcvd
+	SOURCE_DIR ${MRPT_SOURCE_DIR}/3rdparty/libcvd
 	CMAKE_ARGS
 		-DCMAKE_POSITION_INDEPENDENT_CODE=ON
 		# No SSE2: Gives problems in non Intel archs, and anyway we don't exploit libcvd CPU-intensive ops from mrpt
@@ -13,7 +13,7 @@ ExternalProject_Add(libcvd
 	INSTALL_COMMAND ""
 )
 
-set(CVD_DIR "${MRPT_SOURCE_DIR}/otherlibs/libcvd")
+set(CVD_DIR "${MRPT_SOURCE_DIR}/3rdparty/libcvd")
 set(CVD_BIN_DIR "${MRPT_BINARY_DIR}/libcvd-prefix/src/libcvd-build")
 
 set(CVD_INCLUDE_DIRS "${CVD_DIR}" "${CVD_BIN_DIR}/include")

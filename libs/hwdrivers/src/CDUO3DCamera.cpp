@@ -13,7 +13,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 
-#include <mrpt/otherlibs/do_opencv_includes.h>
+#include <mrpt/3rdparty/do_opencv_includes.h>
 
 #include <map>
 

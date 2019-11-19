@@ -13,19 +13,19 @@ Copyright: 2008-2009 Marius Muja (mariusm@cs.ubc.ca)
            2011-2018 José Luis Blanco Claraco (joseluisblancoc@gmail.com)
 License: BSD-3-clause
 
-Files: otherlibs/gtest-1.10.0/*
+Files: 3rdparty/gtest-1.10.0/*
 Copyright: 2005, Google Inc.
 License: BSD-3-clause
 
-Files: otherlibs/libfreenect/*
+Files: 3rdparty/libfreenect/*
 Copyright: 2010, Individual OpenKinect contributors (See CONTRIB file)
 License: Apache
 
-Files: otherlibs/mexplus/*
+Files: 3rdparty/mexplus/*
 Copyright: 2014, Kota Yamaguchi
 License: BSD-3-clause
 
-Files: otherlibs/wxThings/*
+Files: 3rdparty/wxThings/*
 Copyright: 2000-2002, John Labenki
 License: WXwindows
 
@@ -50,7 +50,7 @@ Copyright: 2003, David Schalig
 		   2007 Jose Luis Blanco
 License: WXwindows
 
-Files: otherlibs/xSens_*/*
+Files: 3rdparty/xSens_*/*
 Copyright: 2006-2012, Xsens Technologies B.V.
 License: mt-sdk-license
 Comment: Permission is granted by Xsens Technologies to distribute this code as
@@ -61,15 +61,15 @@ Copyright: 1991-1992, RSA Data Security, Inc.
            2009 Frank Thilo <thilo@unix-ag.org>
 License: rsa-license
 
-Files: libs/expr/include/mrpt/otherlibs/exprtk.hpp
+Files: libs/expr/include/mrpt/3rdparty/exprtk.hpp
 Copyright: 1999-2016, Arash Partow
 License: Expat
 
-Files: otherlibs/rplidar/*
+Files: 3rdparty/rplidar/*
 Copyright: 2014-2016, Shanghai Slamtec Co., Ltd.
 License: BSD-2-clause
 
-Files: libs/math/include/mrpt/otherlibs/CSparse/* libs/math/src/CSparse/*
+Files: libs/math/include/mrpt/3rdparty/CSparse/* libs/math/src/CSparse/*
 Copyright: 2006, Timothy A. Davis.
 License: LGPL
 
@@ -84,7 +84,7 @@ Files: libs/opengl/src/PLY_import_export.cpp
 Copyright: 1994, The Board of Trustees of The Leland Stanford Junior University
 License: Expat
 
-Files: libs/core/include/mrpt/otherlibs/llvm/*
+Files: libs/core/include/mrpt/3rdparty/llvm/*
 Copyright: 2009-2017 by the contributors listed below
  N: Saleem Abdulrasool
  E: compnerd@compnerd.org
@@ -234,11 +234,11 @@ Copyright: 2009-2017 by the contributors listed below
  .
 License: NCSA or Expat
 
-Files: libs/core/include/mrpt/otherlibs/spimpl.h
+Files: libs/core/include/mrpt/3rdparty/spimpl.h
 Copyright: Copyright (c) 2015 Andrey Upadyshev (oliora@gmail.com)
 License: Boost
 
-Files: otherlibs/libcvd/*
+Files: 3rdparty/libcvd/*
 Copyright: Copyright (c) 2005--2013, The Authors
  The Authors are:
  .

@@ -24,7 +24,7 @@
 #define exprtk_disable_superscalar_unroll
 #define exprtk_disable_rtl_vecops
 #define exprtk_disable_rtl_io_file
-#include <mrpt/otherlibs/exprtk.hpp>
+#include <mrpt/3rdparty/exprtk.hpp>
 
 using namespace mrpt;
 using namespace mrpt::expr;

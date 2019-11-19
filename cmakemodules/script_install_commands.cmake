@@ -22,7 +22,7 @@ if(WIN32)
 	install(DIRECTORY
 			"${MRPT_SOURCE_DIR}/doc"
 			"${MRPT_SOURCE_DIR}/cmakemodules"
-			"${MRPT_SOURCE_DIR}/otherlibs"
+			"${MRPT_SOURCE_DIR}/3rdparty"
 			"${MRPT_SOURCE_DIR}/scripts"
 			"${MRPT_SOURCE_DIR}/tests"
 			"${MRPT_SOURCE_DIR}/parse-files"

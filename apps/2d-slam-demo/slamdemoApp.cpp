@@ -17,7 +17,7 @@
 
 IMPLEMENT_APP(slamdemoApp)
 
-#include <mrpt/otherlibs/tclap/CmdLine.h>
+#include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 

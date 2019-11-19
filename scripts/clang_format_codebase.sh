@@ -11,7 +11,7 @@
 # the  **root** of the MRPT repository
 
 DIRS_IN="libs apps samples python"
-DIRS_OUT="otherlibs"
+DIRS_OUT="3rdparty"
 LANGS=cpp
 FORMAT_CODE_BIN="scripts/clang_git_format/format_code.py"
 

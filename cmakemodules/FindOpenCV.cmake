@@ -118,10 +118,10 @@ set(OpenCV_INCDIR_SUFFIXES
   cv/include
   cxcore/include
   cvaux/include
-  otherlibs/cvcam/include
-  otherlibs/highgui
-  otherlibs/highgui/include
-  otherlibs/_graphics/include
+  3rdparty/cvcam/include
+  3rdparty/highgui
+  3rdparty/highgui/include
+  3rdparty/_graphics/include
   )
 DBG_MSG("OpenCV_INCDIR_SUFFIXES=${OpenCV_INCDIR_SUFFIXES}")
 
@@ -129,7 +129,7 @@ DBG_MSG("OpenCV_INCDIR_SUFFIXES=${OpenCV_INCDIR_SUFFIXES}")
 set(OpenCV_LIBDIR_SUFFIXES
   lib
   OpenCV/lib
-  otherlibs/_graphics/lib
+  3rdparty/_graphics/lib
   )
 DBG_MSG("OpenCV_LIBDIR_SUFFIXES=${OpenCV_LIBDIR_SUFFIXES}")
 

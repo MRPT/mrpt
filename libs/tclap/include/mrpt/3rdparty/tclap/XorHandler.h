@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include <mrpt/otherlibs/tclap/Arg.h>
+#include <mrpt/3rdparty/tclap/Arg.h>
 #include <string>
 #include <vector>
 #include <algorithm>

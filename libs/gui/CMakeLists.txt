@@ -4,7 +4,7 @@
 
 # Embedded version of mathplot:
 if(CMAKE_MRPT_HAS_WXWIDGETS)
-	list(APPEND gui_EXTRA_SRCS		"${MRPT_SOURCE_DIR}/libs/gui/src/mathplots/*.cpp" "${MRPT_SOURCE_DIR}/libs/gui/include/mrpt/otherlibs/mathplot/*.h")
+	list(APPEND gui_EXTRA_SRCS		"${MRPT_SOURCE_DIR}/libs/gui/src/mathplots/*.cpp" "${MRPT_SOURCE_DIR}/libs/gui/include/mrpt/3rdparty/mathplot/*.h")
 	list(APPEND gui_EXTRA_SRCS_NAME 	"mathplot" "mathplot")
 endif()
 
@@ -12,7 +12,7 @@ endif()
 # Embedded freeglut?
 if(CMAKE_MRPT_HAS_OPENGL_GLUT AND NOT CMAKE_MRPT_HAS_GLUT_SYSTEM)
 	#add_definitions(/DFREEGLUT_STATIC)
-	include_directories("${MRPT_LIBS_ROOT}/opengl/include/otherlibs/freeglut/")
+	include_directories("${MRPT_LIBS_ROOT}/opengl/include/3rdparty/freeglut/")
 endif()
 
 # Embedded version of freeglut-2.4.0 for Windows:

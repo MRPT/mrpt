@@ -8,14 +8,14 @@ if (EIGEN_USE_EMBEDDED_VERSION)
 	ExternalProject_Add(EP_eigen3
 	  URL               "https://bitbucket.org/eigen/eigen/get/3.3.7.tar.bz2"
 	  URL_MD5           "05b1f7511c93980c385ebe11bd3c93fa"
-	  SOURCE_DIR        "${MRPT_BINARY_DIR}/otherlibs/eigen3/"
+	  SOURCE_DIR        "${MRPT_BINARY_DIR}/3rdparty/eigen3/"
 	  CONFIGURE_COMMAND ""
 	  BUILD_COMMAND     ""
 	  INSTALL_COMMAND     ""
 	  TEST_COMMAND      ""
 	)
 
-	set(EIGEN_EMBEDDED_INCLUDE_DIR "${MRPT_BINARY_DIR}/otherlibs/eigen3/" CACHE PATH "Eigen path for embedded use" FORCE)
+	set(EIGEN_EMBEDDED_INCLUDE_DIR "${MRPT_BINARY_DIR}/3rdparty/eigen3/" CACHE PATH "Eigen path for embedded use" FORCE)
 	mark_as_advanced(EIGEN_EMBEDDED_INCLUDE_DIR)
 
 	set(MRPT_EIGEN_INCLUDE_DIR "${EIGEN_EMBEDDED_INCLUDE_DIR}")  # only to find out version
@@ -107,7 +107,7 @@ endif ()
 if(EIGEN_USE_EMBEDDED_VERSION AND NOT IS_DEBIAN_DBG_PKG)
 	install(
 		DIRECTORY
-			"${MRPT_BINARY_DIR}/otherlibs/eigen3/Eigen"
-			"${MRPT_BINARY_DIR}/otherlibs/eigen3/unsupported"
+			"${MRPT_BINARY_DIR}/3rdparty/eigen3/Eigen"
+			"${MRPT_BINARY_DIR}/3rdparty/eigen3/unsupported"
 		DESTINATION libs/math/include/ )
 endif()

@@ -34,8 +34,8 @@
 #include <string>
 #include <vector>
 
-#include <mrpt/otherlibs/tclap/ValueArg.h>
-#include <mrpt/otherlibs/tclap/OptionalUnlabeledTracker.h>
+#include <mrpt/3rdparty/tclap/ValueArg.h>
+#include <mrpt/3rdparty/tclap/OptionalUnlabeledTracker.h>
 
 namespace TCLAP {
 

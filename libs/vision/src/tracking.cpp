@@ -9,8 +9,8 @@
 
 #include "vision-precomp.h"  // Precompiled headers
 
+#include <mrpt/3rdparty/do_opencv_includes.h>
 #include <mrpt/math/ops_matrices.h>
-#include <mrpt/otherlibs/do_opencv_includes.h>
 #include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/vision/tracking.h>
 

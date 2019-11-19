@@ -3,5 +3,5 @@ coverage:
     - tests/*
     - samples/*
     - apps/*
-    - **/otherlibs
-    - otherlibs/*
+    - **/3rdparty
+    - 3rdparty/*

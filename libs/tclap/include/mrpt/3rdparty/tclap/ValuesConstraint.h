@@ -32,7 +32,7 @@
 
 #include <string>
 #include <vector>
-#include <mrpt/otherlibs/tclap/Constraint.h>
+#include <mrpt/3rdparty/tclap/Constraint.h>
 
 //#ifdef HAVE_CONFIG_H
 //#include <config.h>

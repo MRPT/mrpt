@@ -18,7 +18,7 @@ set(ZLIB_SRCS
 		zutil.c
 		)
 
-include_directories("${MRPT_SOURCE_DIR}/otherlibs/zlib")
+include_directories("${MRPT_SOURCE_DIR}/3rdparty/zlib")
 
 # Always build as a static lib:
 if(BUILD_SHARED_LIBS AND NOT WIN32)

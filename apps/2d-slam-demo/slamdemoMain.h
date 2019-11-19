@@ -11,7 +11,7 @@
 #define SLAMDEMOMAIN_H
 
 //(*Headers(slamdemoFrame)
-#include <mrpt/otherlibs/mathplot/mathplot.h>
+#include <mrpt/3rdparty/mathplot/mathplot.h>
 #include <wx/frame.h>
 #include <wx/grid.h>
 #include <wx/menu.h>

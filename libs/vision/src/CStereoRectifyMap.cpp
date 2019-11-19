@@ -9,7 +9,7 @@
 
 #include "vision-precomp.h"  // Precompiled headers
 
-#include <mrpt/otherlibs/do_opencv_includes.h>
+#include <mrpt/3rdparty/do_opencv_includes.h>
 #include <mrpt/vision/CStereoRectifyMap.h>
 #include <Eigen/Dense>
 

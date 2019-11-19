@@ -10,8 +10,8 @@
 #pragma once
 
 // Universal include for all versions of OpenCV
+#include <mrpt/3rdparty/do_opencv_includes.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/otherlibs/do_opencv_includes.h>
 
 #include <cmath>
 #include <cstdio>

@@ -600,7 +600,7 @@ add_custom_target(all_mrpt_libs ALL) # all_mrpt_libs: target to build all mrpt-*
 # ----------------------------------------------------------------------------
 #      					PROCESS SUBDIRECTORIES:
 # ----------------------------------------------------------------------------
-add_subdirectory(otherlibs)   # The third-party libraries
+add_subdirectory(3rdparty)   # The third-party libraries
 add_subdirectory(libs)        # The MRPT C++ libraries
 
 set(BUILD_APPLICATIONS ON CACHE BOOL "If you only want the MRPT libraries, disable this.")

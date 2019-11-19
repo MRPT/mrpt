@@ -30,8 +30,8 @@
 
 #pragma once
 
-#include <mrpt/otherlibs/tclap/Visitor.h>
-#include <mrpt/otherlibs/tclap/Arg.h>
+#include <mrpt/3rdparty/tclap/Visitor.h>
+#include <mrpt/3rdparty/tclap/Arg.h>
 
 namespace TCLAP {
 

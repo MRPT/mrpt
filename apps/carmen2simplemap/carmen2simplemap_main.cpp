@@ -22,11 +22,11 @@
 //  Started: JLBC @ Aug-2010
 // ===========================================================================
 
+#include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/carmen_log_tools.h>
-#include <mrpt/otherlibs/tclap/CmdLine.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/datetime.h>

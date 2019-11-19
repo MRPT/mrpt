@@ -12,12 +12,12 @@
 	PURPOSE: Do an exhaustive test of performance for various algos of MRPT
   ---------------------------------------------------------------*/
 
+#include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/io/CFileInputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/stock_observations.h>
-#include <mrpt/otherlibs/tclap/CmdLine.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/version.h>

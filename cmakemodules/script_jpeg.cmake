@@ -28,7 +28,7 @@ if(NOT CMAKE_MRPT_HAS_JPEG_SYSTEM)
 	ExternalProject_Add(EP_JPEG
 		URL               "https://github.com/libjpeg-turbo/libjpeg-turbo/archive/1.5.90.tar.gz"
 		URL_MD5           "85f7f9c377b70cbf48e61726097d4efa"
-		SOURCE_DIR        "${MRPT_BINARY_DIR}/otherlibs/libjpeg-turbo/"
+		SOURCE_DIR        "${MRPT_BINARY_DIR}/3rdparty/libjpeg-turbo/"
 		CMAKE_ARGS
 			-DENABLE_SHARED=OFF
 			-DCMAKE_POSITION_INDEPENDENT_CODE=ON
@@ -45,7 +45,7 @@ if(NOT CMAKE_MRPT_HAS_JPEG_SYSTEM)
 	endif()
 
 	set(JPEG_INCLUDE_DIRS
-		"${MRPT_BINARY_DIR}/otherlibs/libjpeg-turbo/"
+		"${MRPT_BINARY_DIR}/3rdparty/libjpeg-turbo/"
 		"${BINARY_DIR}")
 	set(JPEG_LIBRARIES ${BINARY_DIR}/${OBJDIR}${CMAKE_STATIC_LIBRARY_PREFIX}${JPEG_LIBRARY_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX})
 

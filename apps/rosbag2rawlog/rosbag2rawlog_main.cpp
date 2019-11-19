@@ -15,6 +15,7 @@
 //  Started: HL @ SEPT-2018
 // ===========================================================================
 
+#include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/obs/CActionCollection.h>
@@ -23,7 +24,6 @@
 #include <mrpt/obs/CObservationIMU.h>
 #include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/CObservationRotatingScan.h>
-#include <mrpt/otherlibs/tclap/CmdLine.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSerializable.h>

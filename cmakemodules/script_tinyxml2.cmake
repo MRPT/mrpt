@@ -25,13 +25,13 @@ if (TINYXML2_USE_EMBEDDED_VERSION)
 	# download on the fly:
 	set(TINYXML2_VERSION_TO_DOWNLOAD "7.1.0" CACHE STRING "Download from this GitHub tag")
 
-	if (NOT EXISTS "${MRPT_BINARY_DIR}/otherlibs/tinyxml2/tinyxml2.h")
+	if (NOT EXISTS "${MRPT_BINARY_DIR}/3rdparty/tinyxml2/tinyxml2.h")
 		file(DOWNLOAD
 			https://github.com/leethomason/tinyxml2/raw/${TINYXML2_VERSION_TO_DOWNLOAD}/tinyxml2.h
-			"${MRPT_BINARY_DIR}/otherlibs/tinyxml2/tinyxml2.h" SHOW_PROGRESS)
+			"${MRPT_BINARY_DIR}/3rdparty/tinyxml2/tinyxml2.h" SHOW_PROGRESS)
 		file(DOWNLOAD
 			https://github.com/leethomason/tinyxml2/raw/${TINYXML2_VERSION_TO_DOWNLOAD}/tinyxml2.cpp
-			"${MRPT_BINARY_DIR}/otherlibs/tinyxml2/tinyxml2.cpp" SHOW_PROGRESS)
+			"${MRPT_BINARY_DIR}/3rdparty/tinyxml2/tinyxml2.cpp" SHOW_PROGRESS)
 	endif()
 
 	set(CMAKE_MRPT_HAS_TINYXML2 1)

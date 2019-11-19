@@ -15,7 +15,7 @@
 
 #if MRPT_HAS_WXWIDGETS
 
-#include <mrpt/otherlibs/do_opencv_includes.h>
+#include <mrpt/3rdparty/do_opencv_includes.h>
 
 using namespace mrpt;
 using namespace mrpt::gui;

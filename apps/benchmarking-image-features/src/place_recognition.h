@@ -18,7 +18,7 @@
 #define MRPT_PLACERECOGNITION_H
 
 /// openCV includes
-#include <mrpt/otherlibs/do_opencv_includes.h>
+#include <mrpt/3rdparty/do_opencv_includes.h>
 
 /// standard C++ includes
 #include <ctype.h>

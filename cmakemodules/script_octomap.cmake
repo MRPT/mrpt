@@ -33,15 +33,15 @@ if (NOT OCTOMAP_FOUND)
 		include(ExternalProject)
 
 		# download from GH or use embedded ZIPed version (used only for old Ubuntu PPAs):
-		if (EXISTS "${MRPT_SOURCE_DIR}/otherlibs/octomap.zip")
-			set(OCTOMAP_EP_URL "${MRPT_SOURCE_DIR}/otherlibs/octomap.zip")
+		if (EXISTS "${MRPT_SOURCE_DIR}/3rdparty/octomap.zip")
+			set(OCTOMAP_EP_URL "${MRPT_SOURCE_DIR}/3rdparty/octomap.zip")
 		else()
 			set(OCTOMAP_EP_URL "https://github.com/MRPT/octomap/archive/devel.zip")
 		endif()
 
 		ExternalProject_Add(EP_octomap
 		  URL               "${OCTOMAP_EP_URL}" #TO-DO: Switch back to original repo after next stable release.
-		  SOURCE_DIR        "${MRPT_BINARY_DIR}/otherlibs/octomap/"
+		  SOURCE_DIR        "${MRPT_BINARY_DIR}/3rdparty/octomap/"
 		  CMAKE_ARGS
 			-DBUILD_TESTING=OFF
 			-DBUILD_DYNAMICETD3D_SUBPROJECT=OFF
@@ -50,8 +50,8 @@ if (NOT OCTOMAP_FOUND)
 			${CMD_CMAKE_POSTFIX}
 		  BUILD_COMMAND
 			${CMAKE_COMMAND} --build ${MRPT_BINARY_DIR}/EP_octomap-prefix/src/EP_octomap-build --config $<CONFIG> --target octomap-static
-			COMMAND ${CMAKE_COMMAND} -E copy ${MRPT_BINARY_DIR}/otherlibs/octomap/lib/${LIB_PREFIX}octomap$<$<CONFIG:Debug>:${CMAKE_DEBUG_POSTFIX}>.${LIB_EXT} ${MRPT_BINARY_DIR}/lib/
-			COMMAND ${CMAKE_COMMAND} -E copy ${MRPT_BINARY_DIR}/otherlibs/octomap/lib/${LIB_PREFIX}octomath$<$<CONFIG:Debug>:${CMAKE_DEBUG_POSTFIX}>.${LIB_EXT} ${MRPT_BINARY_DIR}/lib/
+			COMMAND ${CMAKE_COMMAND} -E copy ${MRPT_BINARY_DIR}/3rdparty/octomap/lib/${LIB_PREFIX}octomap$<$<CONFIG:Debug>:${CMAKE_DEBUG_POSTFIX}>.${LIB_EXT} ${MRPT_BINARY_DIR}/lib/
+			COMMAND ${CMAKE_COMMAND} -E copy ${MRPT_BINARY_DIR}/3rdparty/octomap/lib/${LIB_PREFIX}octomath$<$<CONFIG:Debug>:${CMAKE_DEBUG_POSTFIX}>.${LIB_EXT} ${MRPT_BINARY_DIR}/lib/
 		  INSTALL_COMMAND   ""
 		  TEST_COMMAND      ""
 		)
@@ -66,7 +66,7 @@ if (NOT OCTOMAP_FOUND)
 			${MRPT_BINARY_DIR}/lib/${LIB_PREFIX}octomap$<$<CONFIG:Debug>:${CMAKE_DEBUG_POSTFIX}>.${LIB_EXT}
 			)
 		set(OCTOMAP_INCLUDE_DIRS
-			"${MRPT_BINARY_DIR}/otherlibs/octomap/octomap/include/"
+			"${MRPT_BINARY_DIR}/3rdparty/octomap/octomap/include/"
 		)
 	endif()
 endif()

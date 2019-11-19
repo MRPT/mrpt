@@ -30,9 +30,9 @@
 
 #pragma once
 
-#include <mrpt/otherlibs/tclap/CmdLineInterface.h>
-#include <mrpt/otherlibs/tclap/CmdLineOutput.h>
-#include <mrpt/otherlibs/tclap/Visitor.h>
+#include <mrpt/3rdparty/tclap/CmdLineInterface.h>
+#include <mrpt/3rdparty/tclap/CmdLineOutput.h>
+#include <mrpt/3rdparty/tclap/Visitor.h>
 
 namespace TCLAP {
 

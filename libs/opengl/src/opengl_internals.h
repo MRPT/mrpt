@@ -42,12 +42,12 @@
 #endif
 
 /* Jerome Monceaux : bilock@gmail.com
- * Add inclusion of otherlibs/freeglut/GL/glut.h
+ * Add inclusion of 3rdparty/freeglut/GL/glut.h
  * because GLUT_INIT_STATE is detected as undefined
  * under osx
  */
 #ifdef __APPLE__
-//#include <otherlibs/freeglut/GL/freeglut_std.h>
+//#include <3rdparty/freeglut/GL/freeglut_std.h>
 #ifndef GLUT_INIT_STATE
 #define GLUT_INIT_STATE 0x007C
 #endif
