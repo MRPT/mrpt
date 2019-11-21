@@ -340,7 +340,6 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
 	/** The set of observations taken at the same time instant. See the top of
 	 * this page for instructions on accessing this.
 	 */
-	// std::deque<CObservation*>	m_observations;
 	std::deque<CObservation::Ptr> m_observations;
 
 };  // End of class def.
