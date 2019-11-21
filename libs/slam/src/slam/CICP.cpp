@@ -168,7 +168,7 @@ void CICP::TConfigParams::saveToConfigFile(
 	MRPT_SAVE_CONFIG_VAR_COMMENT(corresponding_points_decimation, "");
 }
 
-float CICP::kernel(const float& x2, const float& rho2)
+float CICP::kernel(float x2, float rho2)
 {
 	return options.use_kernel ? (x2 / (x2 + rho2)) : x2;
 }

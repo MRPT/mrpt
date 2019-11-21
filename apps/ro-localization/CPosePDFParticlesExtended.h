@@ -272,7 +272,7 @@ class CPosePDFParticlesExtended
 
 	void bayesianFusion(
 		mrpt::poses::CPosePDF& p1, mrpt::poses::CPosePDF& p2,
-		const double& minMahalanobisDistToDrop = 0)
+		double minMahalanobisDistToDrop = 0)
 	{
 		THROW_EXCEPTION("Not implemented");
 	}

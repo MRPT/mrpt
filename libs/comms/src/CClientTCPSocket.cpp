@@ -467,7 +467,7 @@ size_t CClientTCPSocket::getReadPendingBytes()
 /*---------------------------------------------------------------
 						setTCPNoDelay
  ---------------------------------------------------------------*/
-int CClientTCPSocket::setTCPNoDelay(const int& newValue)
+int CClientTCPSocket::setTCPNoDelay(int newValue)
 {
 	int length = sizeof(newValue);
 
@@ -498,7 +498,7 @@ int CClientTCPSocket::getTCPNoDelay()
 /*---------------------------------------------------------------
 						setSOSendBufffer
  ---------------------------------------------------------------*/
-int CClientTCPSocket::setSOSendBufffer(const int& newValue)
+int CClientTCPSocket::setSOSendBufffer(int newValue)
 {
 	const unsigned int length = sizeof(newValue);
 

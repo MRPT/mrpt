@@ -178,7 +178,7 @@ void UTMToGeodetic(
  * WGS84)
  */
 inline void UTMToGeodetic(
-	const TUTMCoords& UTMCoords, const int& zone, const char& hem,
+	const TUTMCoords& UTMCoords, int zone, char hem,
 	TGeodeticCoords& GeodeticCoords,
 	const TEllipsoid& ellip = TEllipsoid::Ellipsoid_WGS84())
 {

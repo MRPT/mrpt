@@ -153,7 +153,7 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	 * By default (ith=0), the first match is returned.
 	 */
 	template <typename T>
-	typename T::Ptr mapByClass(const size_t& ith = 0) const
+	typename T::Ptr mapByClass(size_t ith = 0) const
 	{
 		size_t foundCount = 0;
 		const auto* class_ID = &T::GetRuntimeClassIdStatic();

@@ -685,7 +685,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 * otherwies nullptr.
 	 */
 	static hypot_t* findHypotByID(
-		const hypotsp_t& vec_hypots, const size_t& id, bool throw_exc = true);
+		const hypotsp_t& vec_hypots, size_t id, bool throw_exc = true);
 	/**\brief Get the ICP Edge between the provided nodes.
 	 *
 	 * Handy for not having to manually fetch the laser scans, as the method

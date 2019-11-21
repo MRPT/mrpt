@@ -52,7 +52,7 @@ class CPU_analyzer
 	{
 		return feat_detected[static_cast<std::size_t>(f)];
 	}
-	inline const bool& feat(mrpt::cpu::feature f) const noexcept
+	inline bool feat(mrpt::cpu::feature f) const noexcept
 	{
 		return feat_detected[static_cast<std::size_t>(f)];
 	}

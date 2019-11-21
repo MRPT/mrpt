@@ -1231,7 +1231,7 @@ void CPointsMap::extractCylinder(
 ---------------------------------------------------------------*/
 void CPointsMap::extractPoints(
 	const TPoint3D& corner1, const TPoint3D& corner2, CPointsMap* outMap,
-	const double& R, const double& G, const double& B)
+	double R, double G, double B)
 {
 	outMap->clear();
 	double minX, maxX, minY, maxY, minZ, maxZ;

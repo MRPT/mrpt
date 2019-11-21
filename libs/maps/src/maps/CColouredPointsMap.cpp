@@ -697,7 +697,7 @@ struct pointmap_traits<CColouredPointsMap>
 		float& pR = lric.fVars[0];
 		float& pG = lric.fVars[1];
 		float& pB = lric.fVars[2];
-		const float& Az_1_color = lric.fVars[3];
+		float Az_1_color = lric.fVars[3];
 
 		// Compute color:
 		switch (me.colorScheme.scheme)

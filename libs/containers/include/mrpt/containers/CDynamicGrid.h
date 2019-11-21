@@ -268,7 +268,7 @@ class CDynamicGrid
 
 	/** Transform a global (linear) cell index value into its corresponding
 	 * (x,y) cell indexes. */
-	inline void idx2cxcy(const int& idx, int& cx, int& cy) const
+	inline void idx2cxcy(int idx, int& cx, int& cy) const
 	{
 		cx = idx % m_size_x;
 		cy = idx / m_size_x;

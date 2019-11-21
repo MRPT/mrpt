@@ -37,8 +37,8 @@ void mrpt::math::setEpsilon(double eps) { geometryEpsilon = eps; }
 	Returns the closest point to a segment
   ---------------------------------------------------------------*/
 void math::closestFromPointToSegment(
-	const double& Px, const double& Py, const double& x1, const double& y1,
-	const double& x2, const double& y2, double& out_x, double& out_y)
+	double Px, double Py, double x1, double y1, double x2, double y2,
+	double& out_x, double& out_y)
 {
 	if (x1 == x2 && y1 == y2)
 	{
@@ -75,8 +75,8 @@ void math::closestFromPointToSegment(
 	Returns the closest point to a line
   ---------------------------------------------------------------*/
 void math::closestFromPointToLine(
-	const double& Px, const double& Py, const double& x1, const double& y1,
-	const double& x2, const double& y2, double& out_x, double& out_y)
+	double Px, double Py, double x1, double y1, double x2, double y2,
+	double& out_x, double& out_y)
 {
 	if (x1 == x2 && y1 == y2)
 	{
@@ -98,8 +98,7 @@ void math::closestFromPointToLine(
 	Returns the sq. distance to closest point to a line
   ---------------------------------------------------------------*/
 double math::closestSquareDistanceFromPointToLine(
-	const double& Px, const double& Py, const double& x1, const double& y1,
-	const double& x2, const double& y2)
+	double Px, double Py, double x1, double y1, double x2, double y2)
 {
 	if (x1 == x2 && y1 == y2)
 	{
@@ -232,8 +231,8 @@ bool math::SegmentsIntersection(
 						Intersect
   ---------------------------------------------------------------*/
 bool math::pointIntoPolygon2D(
-	const double& px, const double& py, unsigned int polyEdges,
-	const double* poly_xs, const double* poly_ys)
+	double px, double py, unsigned int polyEdges, const double* poly_xs,
+	const double* poly_ys)
 {
 	unsigned int i, j;
 	bool res = false;
@@ -263,8 +262,8 @@ bool math::pointIntoPolygon2D(
 						Intersect
   ---------------------------------------------------------------*/
 double math::distancePointToPolygon2D(
-	const double& px, const double& py, unsigned int polyEdges,
-	const double* poly_xs, const double* poly_ys)
+	double px, double py, unsigned int polyEdges, const double* poly_xs,
+	const double* poly_ys)
 {
 	unsigned int i, j;
 	double minDist = 1e20f;
@@ -297,11 +296,9 @@ double math::distancePointToPolygon2D(
 					minDistBetweenLines
  --------------------------------------------------------------- */
 bool math::minDistBetweenLines(
-	const double& p1_x, const double& p1_y, const double& p1_z,
-	const double& p2_x, const double& p2_y, const double& p2_z,
-	const double& p3_x, const double& p3_y, const double& p3_z,
-	const double& p4_x, const double& p4_y, const double& p4_z, double& x,
-	double& y, double& z, double& dist)
+	double p1_x, double p1_y, double p1_z, double p2_x, double p2_y,
+	double p2_z, double p3_x, double p3_y, double p3_z, double p4_x,
+	double p4_y, double p4_z, double& x, double& y, double& z, double& dist)
 {
 	const double EPS = 1e-30f;
 
@@ -368,10 +365,9 @@ bool math::minDistBetweenLines(
 				Rectangles Intersect
   ---------------------------------------------------------------*/
 bool math::RectanglesIntersection(
-	const double& R1_x_min, const double& R1_x_max, const double& R1_y_min,
-	const double& R1_y_max, const double& R2_x_min, const double& R2_x_max,
-	const double& R2_y_min, const double& R2_y_max, const double& R2_pose_x,
-	const double& R2_pose_y, const double& R2_pose_phi)
+	double R1_x_min, double R1_x_max, double R1_y_min, double R1_y_max,
+	double R2_x_min, double R2_x_max, double R2_y_min, double R2_y_max,
+	double R2_pose_x, double R2_pose_y, double R2_pose_phi)
 {
 	// Compute the rotated R2:
 	// ----------------------------------------

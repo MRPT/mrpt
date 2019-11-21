@@ -176,7 +176,7 @@ class CPosePDFSOG : public CPosePDF
 	 * \mathbf{R}~\mathbf{COV}~\mathbf{R}^t \f$, where \f$ \mathbf{R} = \left[
 	 * \begin{array}{ccc} \cos\alpha & -\sin\alpha & 0 \\ \sin\alpha &
 	 * \cos\alpha & 0 \\ 0 & 0 & 1 \end{array}\right] \f$ */
-	void rotateAllCovariances(const double& ang);
+	void rotateAllCovariances(double ang);
 	/** Draws a single sample from the distribution */
 	void drawSingleSample(CPose2D& outPart) const override;
 	/** Draws a number of samples from the distribution, and saves as a list of
@@ -202,9 +202,9 @@ class CPosePDFSOG : public CPosePDF
 	 * and saves the result in a matrix (each row contains values for a fixed
 	 * y-coordinate value). */
 	void evaluatePDFInArea(
-		const double& x_min, const double& x_max, const double& y_min,
-		const double& y_max, const double& resolutionXY, const double& phi,
-		mrpt::math::CMatrixDouble& outMatrix, bool sumOverAllPhis = false);
+		double x_min, double x_max, double y_min, double y_max,
+		double resolutionXY, double phi, mrpt::math::CMatrixDouble& outMatrix,
+		bool sumOverAllPhis = false);
 
 	/** Bayesian fusion of two pose distributions, then save the result in this
 	 * object (WARNING: Currently p1 must be a mrpt::poses::CPosePDFSOG object

@@ -416,8 +416,7 @@ poses::CPosePDFGaussian operator+(
 /*---------------------------------------------------------------
 						assureMinCovariance
  ---------------------------------------------------------------*/
-void CPosePDFGaussian::assureMinCovariance(
-	const double& minStdXY, const double& minStdPhi)
+void CPosePDFGaussian::assureMinCovariance(double minStdXY, double minStdPhi)
 {
 	cov(0, 0) = max(cov(0, 0), square(minStdXY));
 	cov(1, 1) = max(cov(1, 1), square(minStdXY));

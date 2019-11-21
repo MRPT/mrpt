@@ -572,7 +572,7 @@ class Pose3DTests : public ::testing::Test
 		CVectorFixedDouble<6> x_mean;
 		for (int i = 0; i < 6; i++) x_mean[i] = 0;
 
-		double dummy = 0.;
+		const double& dummy = 0.;
 		CVectorFixedDouble<6> x_incrs;
 		x_incrs.fill(1e-9);
 		CMatrixDouble numJacobs;
@@ -634,7 +634,7 @@ class Pose3DTests : public ::testing::Test
 			CVectorFixedDouble<12> x_mean;
 			p.getAs12Vector(x_mean);
 
-			double dummy = 0.;
+			const double& dummy = 0.;
 			CVectorFixedDouble<12> x_incrs;
 			x_incrs.fill(1e-6);
 			mrpt::math::estimateJacobian(

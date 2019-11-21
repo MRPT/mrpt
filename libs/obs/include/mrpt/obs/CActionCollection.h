@@ -126,7 +126,7 @@ class CActionCollection : public mrpt::serialization::CSerializable
 	  * By default (ith=0), the first one is returned.
 	  */
 	template <typename T>
-	typename T::Ptr getActionByClass(const size_t& ith = 0) const
+	typename T::Ptr getActionByClass(size_t ith = 0) const
 	{
 		MRPT_START
 		size_t foundCount = 0;
@@ -179,7 +179,7 @@ class CActionCollection : public mrpt::serialization::CSerializable
 	/** Remove an action from the list by its index.
 	 * \exception std::exception On index out of bounds.
 	 */
-	void eraseByIndex(const size_t& index);
+	void eraseByIndex(size_t index);
 
 };  // End of class def.
 

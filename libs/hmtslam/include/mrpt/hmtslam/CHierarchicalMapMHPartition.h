@@ -254,7 +254,7 @@ class CHierarchicalMapMHPartition : public mrpt::system::COutputLogger
 		const CHMHMapNode::TNodeID& idReferenceNode,
 		const THypothesisID& hypothesisID,
 		const unsigned int& numberOfIterationsForOptimalGlobalPoses = 5,
-		const bool& showRobotPoseIDs = true) const;
+		bool showRobotPoseIDs = true) const;
 
 	/** Return a textual description of the whole graph */
 	void dumpAsText(std::vector<std::string>& s) const;
@@ -270,7 +270,7 @@ class CHierarchicalMapMHPartition : public mrpt::system::COutputLogger
 	double computeOverlapProbabilityBetweenNodes(
 		const CHMHMapNode::TNodeID& nodeFrom,
 		const CHMHMapNode::TNodeID& nodeTo, const THypothesisID& hypothesisID,
-		const size_t& monteCarloSamples = 100,
+		size_t monteCarloSamples = 100,
 		const float margin_to_substract = 6) const;
 
    protected:

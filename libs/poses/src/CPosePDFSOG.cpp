@@ -230,7 +230,7 @@ void CPosePDFSOG::changeCoordinatesReference(const CPose3D& newReferenceBase_)
 /*---------------------------------------------------------------
 						rotateAllCovariances
  ---------------------------------------------------------------*/
-void CPosePDFSOG::rotateAllCovariances(const double& ang)
+void CPosePDFSOG::rotateAllCovariances(double ang)
 {
 	CMatrixDouble33 rot;
 	rot(0, 0) = rot(1, 1) = cos(ang);
@@ -489,9 +489,8 @@ void CPosePDFSOG::normalizeWeights()
 						normalizeWeights
  ---------------------------------------------------------------*/
 void CPosePDFSOG::evaluatePDFInArea(
-	const double& x_min, const double& x_max, const double& y_min,
-	const double& y_max, const double& resolutionXY, const double& phi,
-	CMatrixDouble& outMatrix, bool sumOverAllPhis)
+	double x_min, double x_max, double y_min, double y_max, double resolutionXY,
+	double phi, CMatrixDouble& outMatrix, bool sumOverAllPhis)
 {
 	MRPT_START
 

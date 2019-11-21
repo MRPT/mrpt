@@ -117,10 +117,10 @@ bool tfest::se2_l2(
 	_mm_store_ps(sums_a, sum_a_xyz);
 	_mm_store_ps(sums_b, sum_b_xyz);
 
-	const float& SumXa = sums_a[0];
-	const float& SumYa = sums_a[1];
-	const float& SumXb = sums_b[0];
-	const float& SumYb = sums_b[1];
+	float SumXa = sums_a[0];
+	float SumYa = sums_a[1];
+	float SumXb = sums_b[0];
+	float SumYb = sums_b[1];
 
 	// Compute all four means:
 	const __m128 Ninv_4val =
@@ -136,20 +136,20 @@ bool tfest::se2_l2(
 	_mm_store_ps(means_a, sum_a_xyz);
 	_mm_store_ps(means_b, sum_b_xyz);
 
-	const float& mean_x_a = means_a[0];
-	const float& mean_y_a = means_a[1];
-	const float& mean_x_b = means_b[0];
-	const float& mean_y_b = means_b[1];
+	float mean_x_a = means_a[0];
+	float mean_y_a = means_a[1];
+	float mean_x_b = means_b[0];
+	float mean_y_b = means_b[1];
 
 	//      Sxx   Syy     Sxy    Syx
 	//    xa*xb  ya*yb   xa*yb  xb*ya
 	alignas(MRPT_MAX_STATIC_ALIGN_BYTES) float cross_sums[4];
 	_mm_store_ps(cross_sums, sum_ab_xyz);
 
-	const float& Sxx = cross_sums[0];
-	const float& Syy = cross_sums[1];
-	const float& Sxy = cross_sums[2];
-	const float& Syx = cross_sums[3];
+	float Sxx = cross_sums[0];
+	float Syy = cross_sums[1];
+	float Sxy = cross_sums[2];
+	float Syx = cross_sums[3];
 
 	// Auxiliary variables Ax,Ay:
 	const float Ax = N * (Sxx + Syy) - SumXa * SumXb - SumYa * SumYb;

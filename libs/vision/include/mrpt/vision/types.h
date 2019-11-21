@@ -568,12 +568,11 @@ struct TMultiResDescMatchOptions : public mrpt::config::CLoadableOptions
 	TMultiResDescMatchOptions() = default;
 
 	TMultiResDescMatchOptions(
-		const bool& _useOriFilter, const double& _oriThreshold,
-		const bool& _useDepthFilter, const double& _th, const double& _th2,
-		const unsigned int& _lwscl1, const unsigned int& _lwscl2,
-		const unsigned int& _hwscl1, const unsigned int& _hwscl2,
-		const int& _searchAreaSize, const int& _lsth, const int& _tsth,
-		const int& _minFeaturesToFind, const int& _minFeaturesToBeLost)
+		bool _useOriFilter, double _oriThreshold, bool _useDepthFilter,
+		double _th, double _th2, const unsigned int& _lwscl1,
+		const unsigned int& _lwscl2, const unsigned int& _hwscl1,
+		const unsigned int& _hwscl2, int _searchAreaSize, int _lsth, int _tsth,
+		int _minFeaturesToFind, int _minFeaturesToBeLost)
 		: useOriFilter(_useOriFilter),
 		  oriThreshold(_oriThreshold),
 		  useDepthFilter(_useDepthFilter),
@@ -648,11 +647,10 @@ struct TMultiResDescOptions : public mrpt::config::CLoadableOptions
 
 	TMultiResDescOptions(
 		const unsigned int& _basePSize, const std::vector<double>& _scales,
-		const unsigned int& _comLScl, const unsigned int& _comHScl,
-		const double& _sg1, const double& _sg2, const double& _sg3,
-		const bool& _computeDepth, const bool _blurImage, const double& _fx,
-		const double& _cx, const double& _cy, const double& _baseline,
-		const bool& _computeHashCoeffs, const double& _cropValue)
+		const unsigned int& _comLScl, const unsigned int& _comHScl, double _sg1,
+		double _sg2, double _sg3, bool _computeDepth, const bool _blurImage,
+		double _fx, double _cx, double _cy, double _baseline,
+		bool _computeHashCoeffs, double _cropValue)
 		: basePSize(_basePSize),
 		  comLScl(_comLScl),
 		  comHScl(_comHScl),

@@ -1106,7 +1106,7 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 	COpenGLScene& outScene, const CHMHMapNode::TNodeID& idReferenceNode,
 	const THypothesisID& hypothesisID,
 	const unsigned int& numberOfIterationsForOptimalGlobalPoses,
-	const bool& showRobotPoseIDs) const
+	bool showRobotPoseIDs) const
 {
 	MRPT_START
 
@@ -1554,7 +1554,7 @@ CHMHMapArc::Ptr CHierarchicalMapMHPartition::findArcOfTypeBetweenNodes(
   ---------------------------------------------------------------*/
 double CHierarchicalMapMHPartition::computeOverlapProbabilityBetweenNodes(
 	const CHMHMapNode::TNodeID& nodeFrom, const CHMHMapNode::TNodeID& nodeTo,
-	const THypothesisID& hypothesisID, const size_t& monteCarloSamples,
+	const THypothesisID& hypothesisID, size_t monteCarloSamples,
 	const float margin_to_substract) const
 {
 	MRPT_START

@@ -396,7 +396,7 @@ class CRangeBearingKFSLAM
 	 * \f$.
 	 */
 	void OnObservationJacobians(
-		const size_t& idx_landmark_to_predict, KFMatrix_OxV& Hx,
+		size_t idx_landmark_to_predict, KFMatrix_OxV& Hx,
 		KFMatrix_OxF& Hy) const override;
 
 	/** Computes A=A-B, which may need to be re-implemented depending on the

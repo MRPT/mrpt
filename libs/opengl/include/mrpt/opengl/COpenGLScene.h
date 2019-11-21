@@ -161,7 +161,7 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 	  * By default (ith=0), the first observation is returned.
 	  */
 	template <typename T>
-	typename T::Ptr getByClass(const size_t& ith = 0) const
+	typename T::Ptr getByClass(size_t ith = 0) const
 	{
 		MRPT_START
 		for (const auto& m_viewport : m_viewports)

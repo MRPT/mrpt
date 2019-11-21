@@ -50,7 +50,7 @@ struct TTwist2D : public internal::ProvideStaticResize<TTwist2D>
 		}
 	}
 	/** Coordinate access using operator[]. Order: vx,vy,vphi */
-	constexpr const double& operator[](size_t i) const
+	constexpr double operator[](size_t i) const
 	{
 		switch (i)
 		{

@@ -137,25 +137,25 @@ class CMeshFast : public CRenderizableDisplayList
 	inline float getXMax() const { return xMax; }
 	inline float getYMin() const { return yMin; }
 	inline float getYMax() const { return yMax; }
-	inline void setXMin(const float& nxm)
+	inline void setXMin(float nxm)
 	{
 		xMin = nxm;
 		pointsUpToDate = false;
 		CRenderizableDisplayList::notifyChange();
 	}
-	inline void setXMax(const float& nxm)
+	inline void setXMax(float nxm)
 	{
 		xMax = nxm;
 		pointsUpToDate = false;
 		CRenderizableDisplayList::notifyChange();
 	}
-	inline void setYMin(const float& nym)
+	inline void setYMin(float nym)
 	{
 		yMin = nym;
 		pointsUpToDate = false;
 		CRenderizableDisplayList::notifyChange();
 	}
-	inline void setYMax(const float& nym)
+	inline void setYMax(float nym)
 	{
 		yMax = nym;
 		pointsUpToDate = false;
@@ -171,14 +171,14 @@ class CMeshFast : public CRenderizableDisplayList
 		min = yMin;
 		max = yMax;
 	}
-	inline void setXBounds(const float& min, const float& max)
+	inline void setXBounds(float min, float max)
 	{
 		xMin = min;
 		xMax = max;
 		pointsUpToDate = false;
 		CRenderizableDisplayList::notifyChange();
 	}
-	inline void setYBounds(const float& min, const float& max)
+	inline void setYBounds(float min, float max)
 	{
 		yMin = min;
 		yMax = max;

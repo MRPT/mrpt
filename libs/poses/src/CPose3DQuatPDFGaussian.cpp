@@ -163,7 +163,7 @@ void CPose3DQuatPDFGaussian::copyFrom(const CPose3DPDFGaussian& o)
 		//   f: R^6 => R^7
 		const CVectorFixedDouble<6> x_mean(o.mean);
 
-		static const double dummy = 0;
+		const double dummy = 0;
 		mrpt::math::transform_gaussian_unscented(
 			x_mean, o.cov, &aux_poseypr2posequat, dummy, this->mean, this->cov);
 	}

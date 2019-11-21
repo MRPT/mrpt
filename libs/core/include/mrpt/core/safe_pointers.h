@@ -91,12 +91,12 @@ struct safe_ptr : safe_ptr_basic<T>
 		return *safe_ptr_basic<T>::ptr;
 	}
 
-	T& operator[](const size_t& i)
+	T& operator[](size_t i)
 	{
 		ASSERT_(safe_ptr_basic<T>::ptr);
 		return safe_ptr_basic<T>::ptr[i];
 	}
-	const T& operator[](const size_t& i) const
+	const T& operator[](size_t i) const
 	{
 		ASSERT_(safe_ptr_basic<T>::ptr);
 		return safe_ptr_basic<T>::ptr[i];
@@ -201,12 +201,12 @@ struct non_copiable_ptr : non_copiable_ptr_basic<T>
 		return *non_copiable_ptr_basic<T>::ptr;
 	}
 
-	T& operator[](const size_t& i)
+	T& operator[](size_t i)
 	{
 		ASSERT_(non_copiable_ptr_basic<T>::ptr);
 		return non_copiable_ptr_basic<T>::ptr[i];
 	}
-	const T& operator[](const size_t& i) const
+	const T& operator[](size_t i) const
 	{
 		ASSERT_(non_copiable_ptr_basic<T>::ptr);
 		return non_copiable_ptr_basic<T>::ptr[i];
@@ -347,12 +347,12 @@ struct copiable_NULL_ptr : copiable_NULL_ptr_basic<T>
 		return *copiable_NULL_ptr_basic<T>::ptr;
 	}
 
-	T& operator[](const size_t& i)
+	T& operator[](size_t i)
 	{
 		ASSERT_(copiable_NULL_ptr_basic<T>::ptr);
 		return copiable_NULL_ptr_basic<T>::ptr[i];
 	}
-	const T& operator[](const size_t& i) const
+	const T& operator[](size_t i) const
 	{
 		ASSERT_(copiable_NULL_ptr_basic<T>::ptr);
 		return copiable_NULL_ptr_basic<T>::ptr[i];
