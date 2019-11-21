@@ -88,7 +88,7 @@ class CPoint : public CPoseOrPoint<DERIVEDCLASS, DIM>
 	 */
 	void fromString(const std::string& s);
 
-	inline const double& operator[](unsigned int i) const
+	inline double operator[](unsigned int i) const
 	{
 		return static_cast<const DERIVEDCLASS*>(this)->m_coords[i];
 	}

@@ -434,7 +434,7 @@ void CDisplayWindow::showImage(const CImage& img)
  ---------------------------------------------------------------*/
 void CDisplayWindow::showImageAndPoints(
 	const CImage& img, const CVectorFloat& x_, const CVectorFloat& y_,
-	const TColor& color, const bool& showNumbers)
+	const TColor& color, bool showNumbers)
 {
 	std::vector<float> x(x_.size()), y(y_.size());
 	for (size_t i = 0; i < x.size(); i++) x[i] = x_[i];
@@ -444,7 +444,7 @@ void CDisplayWindow::showImageAndPoints(
 
 void CDisplayWindow::showImageAndPoints(
 	const CImage& img, const std::vector<float>& x, const std::vector<float>& y,
-	const TColor& color, const bool& showNumbers)
+	const TColor& color, bool showNumbers)
 {
 #if MRPT_HAS_WXWIDGETS
 	MRPT_START

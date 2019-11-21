@@ -167,7 +167,7 @@ class CPosePDFGaussian : public CPosePDF
 	/** Substitutes the diagonal elements if (square) they are below some given
 	 * minimum values (Use this before bayesianFusion, for example, to avoid
 	 * inversion of singular matrixes, etc...)  */
-	void assureMinCovariance(const double& minStdXY, const double& minStdPhi);
+	void assureMinCovariance(double minStdXY, double minStdPhi);
 
 	/** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the
 	 * mean, and the covariance matrix are updated) (see formulas in

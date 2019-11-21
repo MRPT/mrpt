@@ -470,8 +470,8 @@ class CWindowDialogPlots : public wxFrame
 	/** Redirected from CDisplayWindowPlots::image
 	 */
 	void image(
-		void* theWxImage, const float& x0, const float& y0, const float& w,
-		const float& h, const std::string& plotName);
+		void* theWxImage, float x0, float y0, float w, float h,
+		const std::string& plotName);
 
    private:
 	void OnClose(wxCloseEvent& event);

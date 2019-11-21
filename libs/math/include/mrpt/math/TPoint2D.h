@@ -71,7 +71,7 @@ struct TPoint2D : public TPoseOrPoint,
 		}
 	}
 	/** Coordinate access using operator[]. Order: x,y */
-	constexpr const double& operator[](size_t i) const
+	constexpr double operator[](size_t i) const
 	{
 		switch (i)
 		{

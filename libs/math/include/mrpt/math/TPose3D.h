@@ -91,7 +91,7 @@ struct TPose3D : public TPoseOrPoint,
 		}
 	}
 	/** Coordinate access using operator[]. Order: x,y,z,yaw,pitch,roll */
-	constexpr const double& operator[](size_t i) const
+	constexpr double operator[](size_t i) const
 	{
 		switch (i)
 		{

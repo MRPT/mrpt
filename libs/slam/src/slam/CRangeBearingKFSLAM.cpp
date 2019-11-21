@@ -487,8 +487,7 @@ void CRangeBearingKFSLAM::OnObservationModel(
 }
 
 void CRangeBearingKFSLAM::OnObservationJacobians(
-	const size_t& idx_landmark_to_predict, KFMatrix_OxV& Hx,
-	KFMatrix_OxF& Hy) const
+	size_t idx_landmark_to_predict, KFMatrix_OxV& Hx, KFMatrix_OxF& Hy) const
 {
 	MRPT_START
 

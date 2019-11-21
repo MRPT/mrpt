@@ -932,21 +932,20 @@ inline bool vectorsAreParallel3D(const T& v1, const U& v2)
  * \sa closestFromPointToLine
  */
 void closestFromPointToSegment(
-	const double& Px, const double& Py, const double& x1, const double& y1,
-	const double& x2, const double& y2, double& out_x, double& out_y);
+	double Px, double Py, double x1, double y1, double x2, double y2,
+	double& out_x, double& out_y);
 
 /** Computes the closest point from a given point to a (infinite) line.
  * \sa closestFromPointToSegment
  */
 void closestFromPointToLine(
-	const double& Px, const double& Py, const double& x1, const double& y1,
-	const double& x2, const double& y2, double& out_x, double& out_y);
+	double Px, double Py, double x1, double y1, double x2, double y2,
+	double& out_x, double& out_y);
 
 /** Returns the square distance from a point to a line.
  */
 double closestSquareDistanceFromPointToLine(
-	const double& Px, const double& Py, const double& x1, const double& y1,
-	const double& x2, const double& y2);
+	double Px, double Py, double x1, double y1, double x2, double y2);
 
 /** Returns the distance between 2 points in 2D. */
 template <typename T>
@@ -1011,8 +1010,8 @@ bool SegmentsIntersection(
  * \sa pointIntoQuadrangle
  */
 bool pointIntoPolygon2D(
-	const double& px, const double& py, unsigned int polyEdges,
-	const double* poly_xs, const double* poly_ys);
+	double px, double py, unsigned int polyEdges, const double* poly_xs,
+	const double* poly_ys);
 
 /** Specialized method to check whether a point (x,y) falls into a quadrangle.
  * \sa pointIntoPolygon2D
@@ -1045,8 +1044,8 @@ bool pointIntoQuadrangle(
  * point is INTO the polygon or its perimeter.
  */
 double distancePointToPolygon2D(
-	const double& px, const double& py, unsigned int polyEdges,
-	const double* poly_xs, const double* poly_ys);
+	double px, double py, unsigned int polyEdges, const double* poly_xs,
+	const double* poly_ys);
 
 /** Calculates the minimum distance between a pair of lines.
   The lines are given by:
@@ -1058,11 +1057,9 @@ double distancePointToPolygon2D(
   to EPS) parallel.
  */
 bool minDistBetweenLines(
-	const double& p1_x, const double& p1_y, const double& p1_z,
-	const double& p2_x, const double& p2_y, const double& p2_z,
-	const double& p3_x, const double& p3_y, const double& p3_z,
-	const double& p4_x, const double& p4_y, const double& p4_z, double& x,
-	double& y, double& z, double& dist);
+	double p1_x, double p1_y, double p1_z, double p2_x, double p2_y,
+	double p2_z, double p3_x, double p3_y, double p3_z, double p4_x,
+	double p4_y, double p4_z, double& x, double& y, double& z, double& dist);
 
 /** Returns whether two rotated rectangles intersect.
  *  The first rectangle is not rotated and given by
@@ -1074,10 +1071,9 @@ bool minDistBetweenLines(
  *   to the coordinates system of rectangle 1.
  */
 bool RectanglesIntersection(
-	const double& R1_x_min, const double& R1_x_max, const double& R1_y_min,
-	const double& R1_y_max, const double& R2_x_min, const double& R2_x_max,
-	const double& R2_y_min, const double& R2_y_max, const double& R2_pose_x,
-	const double& R2_pose_y, const double& R2_pose_phi);
+	double R1_x_min, double R1_x_max, double R1_y_min, double R1_y_max,
+	double R2_x_min, double R2_x_max, double R2_y_min, double R2_y_max,
+	double R2_pose_x, double R2_pose_y, double R2_pose_phi);
 
 /** Computes an axis base (a set of three 3D normal vectors) with the given
   vector being the first of them ("X")

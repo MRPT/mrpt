@@ -504,8 +504,7 @@ void CLocalMetricHypothesis::clearRobotPoses()
 /*---------------------------------------------------------------
 						getCurrentPose
  ---------------------------------------------------------------*/
-const CPose3D* CLocalMetricHypothesis::getCurrentPose(
-	const size_t& particleIdx) const
+const CPose3D* CLocalMetricHypothesis::getCurrentPose(size_t particleIdx) const
 {
 	if (particleIdx >= m_particles.size())
 		THROW_EXCEPTION("Particle index out of bounds!");
@@ -518,7 +517,7 @@ const CPose3D* CLocalMetricHypothesis::getCurrentPose(
 /*---------------------------------------------------------------
 						getCurrentPose
  ---------------------------------------------------------------*/
-CPose3D* CLocalMetricHypothesis::getCurrentPose(const size_t& particleIdx)
+CPose3D* CLocalMetricHypothesis::getCurrentPose(size_t particleIdx)
 {
 	if (particleIdx >= m_particles.size())
 		THROW_EXCEPTION("Particle index out of bounds!");

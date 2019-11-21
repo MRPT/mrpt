@@ -105,7 +105,7 @@ class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 
 	/** Implements the transition model of the gasConcentration map using the
 	 * information of the wind maps  */
-	bool simulateAdvection(const double& STD_increase_value);
+	bool simulateAdvection(double STD_increase_value);
 
 	// Params for the estimation of the gaussian volume in a cell.
 	struct TGaussianCell

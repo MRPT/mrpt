@@ -308,7 +308,7 @@ void StereoObs2BRObs(
 */
 void StereoObs2BRObs(
 	const CMatchedFeatureList& inMatches,
-	const mrpt::math::CMatrixDouble33& intrinsicParams, const double& baseline,
+	const mrpt::math::CMatrixDouble33& intrinsicParams, double baseline,
 	const mrpt::poses::CPose3D& sensorPose, const std::vector<double>& sg,
 	mrpt::obs::CObservationBearingRange& outObs);
 

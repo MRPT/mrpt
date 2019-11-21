@@ -209,10 +209,10 @@ class CLocalMetricHypothesis
 	void clearRobotPoses();
 
 	/** Returns the i'th particle hypothesis for the current robot pose.  */
-	const mrpt::poses::CPose3D* getCurrentPose(const size_t& particleIdx) const;
+	const mrpt::poses::CPose3D* getCurrentPose(size_t particleIdx) const;
 
 	/** Returns the i'th particle hypothesis for the current robot pose.  */
-	mrpt::poses::CPose3D* getCurrentPose(const size_t& particleIdx);
+	mrpt::poses::CPose3D* getCurrentPose(size_t particleIdx);
 
 	/** Removes a given area from the LMH:
 	 *	- The corresponding node in the HMT map is updated with the robot poses

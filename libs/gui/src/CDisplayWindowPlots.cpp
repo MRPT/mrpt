@@ -620,8 +620,8 @@ void CWindowDialogPlots::plotEllipse(
 }
 
 void CWindowDialogPlots::image(
-	void* theWxImage, const float& x0, const float& y0, const float& w,
-	const float& h, const std::string& plotName)
+	void* theWxImage, float x0, float y0, float w, float h,
+	const std::string& plotName)
 {
 	mpBitmapLayer* theLayer;
 
@@ -1038,8 +1038,8 @@ template void CDisplayWindowPlots::plotEllipse(
 					image
  ---------------------------------------------------------------*/
 void CDisplayWindowPlots::image(
-	const mrpt::img::CImage& img, const float& x_left, const float& y_bottom,
-	const float& x_width, const float& y_height, const std::string& plotName)
+	const mrpt::img::CImage& img, float x_left, float y_bottom, float x_width,
+	float y_height, const std::string& plotName)
 {
 #if MRPT_HAS_WXWIDGETS
 	MRPT_START

@@ -354,8 +354,8 @@ double math::averageWrap2Pi(const CVectorDouble& angles)
 }
 
 string math::MATLAB_plotCovariance2D(
-	const CMatrixFloat& cov, const CVectorFloat& mean, const float& stdCount,
-	const string& style, const size_t& nEllipsePoints)
+	const CMatrixFloat& cov, const CVectorFloat& mean, float stdCount,
+	const string& style, size_t nEllipsePoints)
 {
 	MRPT_START
 	const auto cov2 = CMatrixDouble(cov);
@@ -370,8 +370,8 @@ string math::MATLAB_plotCovariance2D(
 }
 
 string math::MATLAB_plotCovariance2D(
-	const CMatrixDouble& cov, const CVectorDouble& mean, const float& stdCount,
-	const string& style, const size_t& nEllipsePoints)
+	const CMatrixDouble& cov, const CVectorDouble& mean, float stdCount,
+	const string& style, size_t nEllipsePoints)
 {
 	MRPT_START
 
@@ -460,8 +460,8 @@ double mrpt::math::interpolate2points(
  ---------------------------------------------------------------*/
 // template<typename VECTOR>
 void mrpt::math::medianFilter(
-	const std::vector<double>& inV, std::vector<double>& outV,
-	const int& _winSize, const int& numberOfSigmas)
+	const std::vector<double>& inV, std::vector<double>& outV, int _winSize,
+	int numberOfSigmas)
 {
 	MRPT_UNUSED_PARAM(numberOfSigmas);
 	ASSERT_((int)inV.size() >= _winSize);

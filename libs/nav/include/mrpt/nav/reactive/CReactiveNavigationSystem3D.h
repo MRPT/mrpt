@@ -32,8 +32,8 @@ struct TRobotShape
 	{
 		return polygons[level];
 	}
-	const double& getRadius(size_t level) const { return radius[level]; }
-	const double& getHeight(size_t level) const { return heights[level]; }
+	double getRadius(size_t level) const { return radius[level]; }
+	double getHeight(size_t level) const { return heights[level]; }
 	mrpt::math::CPolygon& polygon(size_t level) { return polygons[level]; }
 	void setRadius(size_t level, double r) { radius[level] = r; }
 	void setHeight(size_t level, double h) { heights[level] = h; }
