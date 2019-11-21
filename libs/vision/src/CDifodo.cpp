@@ -883,7 +883,7 @@ void CDifodo::filterLevelSolution()
 	CMatrixFloat66 Bii;
 	std::vector<float> eigenVals;
 
-	if (est_cov.eig_symmetric(Bii, eigenVals))
+	if (!est_cov.eig_symmetric(Bii, eigenVals))
 	{
 		std::cerr
 			<< "\n Eigensolver couldn't find a solution. Pose is not updated\n";
