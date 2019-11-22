@@ -1577,7 +1577,7 @@ void vision::projectMatchedFeatures(
    ------------------------------------------------------- */
 void vision::StereoObs2BRObs(
 	const CMatchedFeatureList& inMatches,
-	const CMatrixDouble33& intrinsicParams, const double& baseline,
+	const CMatrixDouble33& intrinsicParams, double baseline,
 	const CPose3D& sensorPose, const vector<double>& sg,
 	CObservationBearingRange& outObs)
 {

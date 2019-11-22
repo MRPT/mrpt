@@ -128,7 +128,7 @@ CActionRobotMovement2D::Ptr CActionCollection::getBestMovementEstimation() const
 /*---------------------------------------------------------------
 							eraseByIndex
  ---------------------------------------------------------------*/
-void CActionCollection::eraseByIndex(const size_t& index)
+void CActionCollection::eraseByIndex(size_t index)
 {
 	if (index >= m_actions.size()) THROW_EXCEPTION("Index out of bounds");
 

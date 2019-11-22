@@ -151,20 +151,20 @@ class CObservationGasSensors : public CObservation
 		/** Estimates the gas concentration based on readings and sensor model
 		 */
 		void inverse_MOSmodeling(
-			const float& reading, const mrpt::system::TTimeStamp& timestamp);
+			float reading, const mrpt::system::TTimeStamp& timestamp);
 
 		/** Reduce noise by averaging with a mobile window of specific size
 		 * (winNoise_size)
 		 */
 		void noise_filtering(
-			const float& reading, const mrpt::system::TTimeStamp& timestamp);
+			float reading, const mrpt::system::TTimeStamp& timestamp);
 
 		/** Save the gas distribution estiamtion into a log file for offline
 		 * representation
 		 */
 		void save_log_map(
-			const mrpt::system::TTimeStamp& timestamp, const float& reading,
-			const float& estimation, const float& tau);
+			const mrpt::system::TTimeStamp& timestamp, float reading,
+			float estimation, float tau);
 
 	};  // End of CMOSmodel class def.
 

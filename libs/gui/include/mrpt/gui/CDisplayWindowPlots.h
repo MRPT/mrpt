@@ -231,8 +231,8 @@ class CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
 	 * \sa axis, axis_equal, axis_fit, hold_on, hold_off
 	 */
 	void image(
-		const mrpt::img::CImage& img, const float& x_left,
-		const float& y_bottom, const float& x_width, const float& y_height,
+		const mrpt::img::CImage& img, float x_left, float y_bottom,
+		float x_width, float y_height,
 		const std::string& plotName = std::string("image"));
 
 	/** Remove all plot objects in the display.

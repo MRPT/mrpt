@@ -247,7 +247,7 @@ class CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 	 *  \f[ K(x^2) = \frac{x^2}{x^2+\rho^2}  \f]
 	 *  or just return the input if options.useKernel = false.
 	 */
-	float kernel(const float& x2, const float& rho2);
+	float kernel(float x2, float rho2);
 
 	mrpt::poses::CPosePDF::Ptr ICP_Method_Classic(
 		const mrpt::maps::CMetricMap* m1, const mrpt::maps::CMetricMap* m2,

@@ -1261,7 +1261,7 @@ mrpt::graphs::detail::THypothesis<GRAPH_T>*
 template <class GRAPH_T>
 mrpt::graphs::detail::THypothesis<GRAPH_T>*
 	CLoopCloserERD<GRAPH_T>::findHypotByID(
-		const hypotsp_t& vec_hypots, const size_t& id, bool throw_exc)
+		const hypotsp_t& vec_hypots, size_t id, bool throw_exc)
 {
 	using namespace mrpt::graphslam::detail;
 

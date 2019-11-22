@@ -179,7 +179,7 @@ class CPose2DGridTemplate
 	 * each row contains values for a fixed "y".
 	 */
 	template <class MATRIXLIKE>
-	void getAsMatrix(const double& phi, MATRIXLIKE& outMat)
+	void getAsMatrix(double phi, MATRIXLIKE& outMat)
 	{
 		MRPT_START
 		outMat.setSize(m_sizeY, m_sizeX);

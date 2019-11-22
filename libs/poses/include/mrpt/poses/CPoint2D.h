@@ -86,7 +86,7 @@ class CPoint2D : public CPoint<CPoint2D, 2>,
 	/** The type of the elements */
 	using value_type = double;
 	using reference = double&;
-	using const_reference = const double&;
+	using const_reference = double;
 	using size_type = std::size_t;
 	using difference_type = std::ptrdiff_t;
 

@@ -277,7 +277,7 @@ class CRangeBearingKFSLAM2D
 	 * \f$.
 	 */
 	void OnObservationJacobians(
-		const size_t& idx_landmark_to_predict, KFMatrix_OxV& Hx,
+		size_t idx_landmark_to_predict, KFMatrix_OxV& Hx,
 		KFMatrix_OxF& Hy) const override;
 
 	/** Only called if using a numeric approximation of the observation

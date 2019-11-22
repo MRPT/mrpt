@@ -232,7 +232,7 @@ class CClientTCPSocket : public mrpt::io::CStream
 	 * \param newValue New value (0 enable Nagle algorithm, 1 disable).
 	 * \return Return a number lower than 0 if any error occurred.
 	 */
-	int setTCPNoDelay(const int& newValue);
+	int setTCPNoDelay(int newValue);
 
 	/** Return the value of the TCPNoDelay option. */
 	int getTCPNoDelay();
@@ -242,7 +242,7 @@ class CClientTCPSocket : public mrpt::io::CStream
 	 * \param newValue New size of the SO send buffer.
 	 * \return Return a number lower than 0 if any error occurred.
 	 */
-	int setSOSendBufffer(const int& newValue);
+	int setSOSendBufffer(int newValue);
 
 	/** Return the current size of the SO send buffer. */
 	int getSOSendBufffer();

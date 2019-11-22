@@ -57,7 +57,7 @@ struct TTwist3D : public internal::ProvideStaticResize<TTwist3D>
 		}
 	}
 	/// \overload
-	constexpr const double& operator[](size_t i) const
+	constexpr double operator[](size_t i) const
 	{
 		switch (i)
 		{
@@ -86,7 +86,7 @@ struct TTwist3D : public internal::ProvideStaticResize<TTwist3D>
 		return (*this)[row];
 	}
 	/// \overload
-	constexpr const double& operator()(int row, int col) const
+	constexpr double operator()(int row, int col) const
 	{
 		ASSERT_EQUAL_(col, 0);
 		return (*this)[row];

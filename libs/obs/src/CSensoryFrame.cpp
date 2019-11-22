@@ -145,7 +145,7 @@ void CSensoryFrame::insert(const CObservation::Ptr& obs)
 /*---------------------------------------------------------------
 				eraseByIndex
   ---------------------------------------------------------------*/
-void CSensoryFrame::eraseByIndex(const size_t& idx)
+void CSensoryFrame::eraseByIndex(size_t idx)
 {
 	MRPT_START
 	if (idx >= size())
@@ -163,8 +163,7 @@ void CSensoryFrame::eraseByIndex(const size_t& idx)
 /*---------------------------------------------------------------
 					getObservationByIndex
   ---------------------------------------------------------------*/
-const CObservation::Ptr& CSensoryFrame::getObservationByIndex(
-	const size_t& idx) const
+const CObservation::Ptr& CSensoryFrame::getObservationByIndex(size_t idx) const
 {
 	MRPT_START
 	ASSERT_BELOW_(idx, size());
@@ -172,7 +171,7 @@ const CObservation::Ptr& CSensoryFrame::getObservationByIndex(
 	return *it;
 	MRPT_END
 }
-CObservation::Ptr& CSensoryFrame::getObservationByIndex(const size_t& idx)
+CObservation::Ptr& CSensoryFrame::getObservationByIndex(size_t idx)
 {
 	MRPT_START
 	ASSERT_BELOW_(idx, size());
@@ -198,7 +197,7 @@ CSensoryFrame::iterator CSensoryFrame::erase(const iterator& it)
 					getObservationBySensorLabel
   ---------------------------------------------------------------*/
 CObservation::Ptr CSensoryFrame::getObservationBySensorLabel(
-	const std::string& label, const size_t& idx) const
+	const std::string& label, size_t idx) const
 {
 	MRPT_START
 

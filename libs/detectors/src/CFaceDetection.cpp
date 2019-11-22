@@ -1784,8 +1784,8 @@ void CFaceDetection::experimental_segmentFace(
 //------------------------------------------------------------------------
 
 void CFaceDetection::experimental_calcHist(
-	const CImage& face, const size_t& c1, const size_t& r1, const size_t& c2,
-	const size_t& r2, CMatrixDynamic<unsigned int>& hist)
+	const CImage& face, size_t c1, size_t r1, size_t c2, size_t r2,
+	CMatrixDynamic<unsigned int>& hist)
 {
 	TImageSize size;
 	face.getSize(size);

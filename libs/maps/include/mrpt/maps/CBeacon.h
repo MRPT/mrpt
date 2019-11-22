@@ -151,12 +151,12 @@ class CBeacon : public mrpt::poses::CPointPDF
 	 *  \sa CBeaconMap::insertionOptions, generateRingSOG
 	 */
 	void generateObservationModelDistribution(
-		const float& sensedRange, mrpt::poses::CPointPDFSOG& outPDF,
+		float sensedRange, mrpt::poses::CPointPDFSOG& outPDF,
 		const CBeaconMap* myBeaconMap,
 		const mrpt::poses::CPoint3D& sensorPntOnRobot,
 		const mrpt::poses::CPoint3D& centerPoint =
 			mrpt::poses::CPoint3D(0, 0, 0),
-		const float& maxDistanceFromCenter = 0) const;
+		float maxDistanceFromCenter = 0) const;
 
 	/** This static method returns a SOG with ring-shape (or as a 3D sphere)
 	 * that can be used to initialize a beacon if observed the first time.
@@ -169,13 +169,13 @@ class CBeacon : public mrpt::poses::CPointPDF
 	 * \sa generateObservationModelDistribution
 	 */
 	static void generateRingSOG(
-		const float& sensedRange, mrpt::poses::CPointPDFSOG& outPDF,
+		float sensedRange, mrpt::poses::CPointPDFSOG& outPDF,
 		const CBeaconMap* myBeaconMap, const mrpt::poses::CPoint3D& sensorPnt,
 		const mrpt::math::CMatrixDouble33* covarianceCompositionToAdd = nullptr,
 		bool clearPreviousContentsOutPDF = true,
 		const mrpt::poses::CPoint3D& centerPoint =
 			mrpt::poses::CPoint3D(0, 0, 0),
-		const float& maxDistanceFromCenter = 0);
+		float maxDistanceFromCenter = 0);
 
 };  // End of class definition
 

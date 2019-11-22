@@ -669,8 +669,7 @@ void CGasConcentrationGridMap2D::increaseUncertainty(
 /*---------------------------------------------------------------
 						simulateAdvection
 ---------------------------------------------------------------*/
-bool CGasConcentrationGridMap2D::simulateAdvection(
-	const double& STD_increase_value)
+bool CGasConcentrationGridMap2D::simulateAdvection(double STD_increase_value)
 {
 	/* 1- Ensure we can use Wind Information
 	-------------------------------------------------*/

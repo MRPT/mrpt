@@ -412,7 +412,7 @@ class CNetworkOfPoses
 	void extractSubGraph(
 		const std::set<TNodeID>& node_IDs, self_t* sub_graph,
 		const TNodeID root_node_in = INVALID_NODEID,
-		const bool& auto_expand_set = true) const
+		bool auto_expand_set = true) const
 	{
 		using namespace std;
 		using namespace mrpt;

@@ -83,7 +83,7 @@ class CPose2D : public CPose<CPose2D, 3>,
 	 * UNINITIALIZED_POSE as argument */
 	inline CPose2D(TConstructorFlags_Poses) : m_cossin_uptodate(false) {}
 	/** Get the phi angle of the 2D pose (in radians) */
-	inline const double& phi() const { return m_phi; }
+	inline double phi() const { return m_phi; }
 	//! \overload
 	inline double& phi()
 	{
@@ -269,7 +269,7 @@ class CPose2D : public CPose<CPose2D, 3>,
 		return o;
 	}
 
-	inline const double& operator[](unsigned int i) const
+	inline double operator[](unsigned int i) const
 	{
 		switch (i)
 		{
@@ -336,7 +336,7 @@ class CPose2D : public CPose<CPose2D, 3>,
 	/** The type of the elements */
 	using value_type = double;
 	using reference = double&;
-	using const_reference = const double&;
+	using const_reference = double;
 	using size_type = std::size_t;
 	using difference_type = std::ptrdiff_t;
 

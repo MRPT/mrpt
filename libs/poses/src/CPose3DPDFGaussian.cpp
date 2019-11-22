@@ -213,7 +213,7 @@ void CPose3DPDFGaussian::copyFrom(const CPose3DQuatPDFGaussian& o)
 		static const bool elements_do_wrapPI[6] = {
 			false, false, false, true, true, true};  // xyz yaw pitch roll
 
-		static const double dummy = 0;
+		const double dummy = 0;
 		mrpt::math::transform_gaussian_unscented(
 			x_mean, o.cov, aux_posequat2poseypr, dummy, y_mean, this->cov,
 			elements_do_wrapPI);
