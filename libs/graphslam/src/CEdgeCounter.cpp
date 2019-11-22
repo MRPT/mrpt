@@ -266,8 +266,8 @@ void CEdgeCounter::setTextMessageParams(
 void CEdgeCounter::setTextMessageParams(
 	const std::map<std::string, double>& name_to_offset_y,
 	const std::map<std::string, int>& name_to_text_index,
-	const double& offset_y_total_edges, const int& text_index_total_edges,
-	const double& offset_y_loop_closures, const int& text_index_loop_closures)
+	double offset_y_total_edges, int text_index_total_edges,
+	double offset_y_loop_closures, int text_index_loop_closures)
 {
 	// set the parameters for total edges / loop closures
 	m_display_total_edges = true;

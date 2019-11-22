@@ -436,7 +436,7 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	 * \f$.
 	 */
 	virtual void OnObservationJacobians(
-		const size_t& idx_landmark_to_predict, KFMatrix_OxV& Hx,
+		size_t idx_landmark_to_predict, KFMatrix_OxV& Hx,
 		KFMatrix_OxF& Hy) const
 	{
 		MRPT_UNUSED_PARAM(idx_landmark_to_predict);

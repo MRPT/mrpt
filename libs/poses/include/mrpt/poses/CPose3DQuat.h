@@ -269,7 +269,7 @@ class CPose3DQuat : public CPose<CPose3DQuat, 7>,
 	}
 
 	/** Read only [] operator */
-	inline const double& operator[](unsigned int i) const
+	inline double operator[](unsigned int i) const
 	{
 		switch (i)
 		{
@@ -356,7 +356,7 @@ class CPose3DQuat : public CPose<CPose3DQuat, 7>,
 	/** The type of the elements */
 	using value_type = double;
 	using reference = double&;
-	using const_reference = const double&;
+	using const_reference = double;
 	using size_type = std::size_t;
 	using difference_type = std::ptrdiff_t;
 

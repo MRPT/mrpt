@@ -1008,7 +1008,7 @@ void eval_h_b(
 }
 
 void eval_b_p(
-	const CVectorFixedDouble<3>& P, const int& dummy, CVectorFixedDouble<2>& b)
+	const CVectorFixedDouble<3>& P, int dummy, CVectorFixedDouble<2>& b)
 {
 	// Radial distortion:
 	b[0] = P[0] / P[2];

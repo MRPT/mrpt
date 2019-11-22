@@ -171,7 +171,7 @@ class CRangeBearing : public mrpt::bayes::CKalmanFilterCapable<
 	 * \f$.
 	 */
 	void OnObservationJacobians(
-		const size_t& idx_landmark_to_predict, KFMatrix_OxV& Hx,
+		size_t idx_landmark_to_predict, KFMatrix_OxV& Hx,
 		KFMatrix_OxF& Hy) const override;
 
 	/** Computes A=A-B, which may need to be re-implemented depending on the
@@ -557,8 +557,7 @@ void CRangeBearing::OnObservationModel(
  * \param Hy  The output Jacobian \f$ \frac{\partial h_i}{\partial y_i} \f$.
  */
 void CRangeBearing::OnObservationJacobians(
-	const size_t& idx_landmark_to_predict, KFMatrix_OxV& Hx,
-	KFMatrix_OxF& Hy) const
+	size_t idx_landmark_to_predict, KFMatrix_OxV& Hx, KFMatrix_OxF& Hy) const
 {
 	// predicted bearing:
 	kftype x = m_xkk[0];

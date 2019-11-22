@@ -71,13 +71,13 @@ class CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 		const mrpt::img::CImage& img, const mrpt::math::CVectorFloat& x,
 		const mrpt::math::CVectorFloat& y,
 		const mrpt::img::TColor& color = mrpt::img::TColor::red(),
-		const bool& showNumbers = false);
+		bool showNumbers = false);
 	/** \overload */
 	void showImageAndPoints(
 		const mrpt::img::CImage& img, const std::vector<float>& x,
 		const std::vector<float>& y,
 		const mrpt::img::TColor& color = mrpt::img::TColor::red(),
-		const bool& showNumbers = false);
+		bool showNumbers = false);
 
 	/** Show a given color or grayscale image on the window and print a set of
 	 * points on it.
@@ -89,7 +89,7 @@ class CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 	void showImageAndPoints(
 		const mrpt::img::CImage& img, const FEATURELIST& list,
 		const mrpt::img::TColor& color = mrpt::img::TColor::red(),
-		const bool& showIDs = false)
+		bool showIDs = false)
 	{
 		MRPT_START
 		mrpt::img::CImage imgColor = img.colorImage();

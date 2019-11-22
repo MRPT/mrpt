@@ -834,7 +834,7 @@ class PointCloudAdapter<mrpt::obs::CObservation3DRangeScan>
 		m_obj.resizePoints3DVectors(N);
 	}
 	/** Does nothing as of now */
-	inline void setDimensions(const size_t& height, const size_t& width) {}
+	inline void setDimensions(size_t height, size_t width) {}
 	/** Get XYZ coordinates of i'th point */
 	template <typename T>
 	inline void getPointXYZ(const size_t idx, T& x, T& y, T& z) const

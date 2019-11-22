@@ -198,7 +198,7 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
 	  * By default (ith=0), the first observation is returned.
 	  */
 	template <typename T>
-	typename T::Ptr getObservationByClass(const size_t& ith = 0) const
+	typename T::Ptr getObservationByClass(size_t ith = 0) const
 	{
 		MRPT_START
 		size_t foundCount = 0;
@@ -277,7 +277,7 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
 	/** Returns true if there are no observations in the list. */
 	inline bool empty() const { return m_observations.empty(); }
 	/** Removes the i'th observation in the list (0=first). */
-	void eraseByIndex(const size_t& idx);
+	void eraseByIndex(size_t idx);
 
 	/** Removes the given observation in the list, and return an iterator to the
 	 * next element (or this->end() if it was the last one).
@@ -291,9 +291,9 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
 	/** Returns the i'th observation in the list (0=first).
 	 * \sa begin, size
 	 */
-	const CObservation::Ptr& getObservationByIndex(const size_t& idx) const;
+	const CObservation::Ptr& getObservationByIndex(size_t idx) const;
 	/// \overload
-	CObservation::Ptr& getObservationByIndex(const size_t& idx);
+	CObservation::Ptr& getObservationByIndex(size_t idx);
 
 	/** Returns the i'th observation in the list (0=first), and as a different
 	 * smart pointer type:
@@ -303,7 +303,7 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
 	 * \sa begin, size
 	 */
 	template <typename T>
-	T getObservationByIndexAs(const size_t& idx) const
+	T getObservationByIndexAs(size_t idx) const
 	{
 		return std::dynamic_pointer_cast<typename T::element_type>(
 			getObservationByIndex(idx));
@@ -315,7 +315,7 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
 	 * \sa begin, size
 	 */
 	CObservation::Ptr getObservationBySensorLabel(
-		const std::string& label, const size_t& idx = 0) const;
+		const std::string& label, size_t idx = 0) const;
 
 	/** Returns the i'th observation in the list with the given "sensorLabel"
 	 * (0=first), and as a different smart pointer type:
@@ -326,7 +326,7 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
 	 */
 	template <typename T>
 	T getObservationBySensorLabelAs(
-		const std::string& label, const size_t& idx = 0) const
+		const std::string& label, size_t idx = 0) const
 	{
 		return std::dynamic_pointer_cast<typename T::element_type>(
 			getObservationBySensorLabel(label, idx));
@@ -340,7 +340,6 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
 	/** The set of observations taken at the same time instant. See the top of
 	 * this page for instructions on accessing this.
 	 */
-	// std::deque<CObservation*>	m_observations;
 	std::deque<CObservation::Ptr> m_observations;
 
 };  // End of class def.

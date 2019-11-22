@@ -74,8 +74,8 @@ bool loadVector(std::istream& f, std::vector<int>& d);
 bool loadVector(std::istream& f, std::vector<double>& d);
 
 void medianFilter(
-	const std::vector<double>& inV, std::vector<double>& outV,
-	const int& winSize, const int& numberOfSigmas = 2);
+	const std::vector<double>& inV, std::vector<double>& outV, int winSize,
+	int numberOfSigmas = 2);
 
 /** Generates an equidistant sequence of numbers given the first one, the last
   one and the desired number of points.
@@ -172,9 +172,8 @@ double factorial(unsigned int n);
  * \ingroup stats_grp
  */
 std::string MATLAB_plotCovariance2D(
-	const CMatrixFloat& cov22, const CVectorFloat& mean, const float& stdCount,
-	const std::string& style = std::string("b"),
-	const size_t& nEllipsePoints = 30);
+	const CMatrixFloat& cov22, const CVectorFloat& mean, float stdCount,
+	const std::string& style = std::string("b"), size_t nEllipsePoints = 30);
 
 /** Generates a string with the MATLAB commands required to plot an confidence
  * interval (ellipse) for a 2D Gaussian ('double' version).
@@ -187,9 +186,8 @@ std::string MATLAB_plotCovariance2D(
  * \ingroup stats_grp
  */
 std::string MATLAB_plotCovariance2D(
-	const CMatrixDouble& cov22, const CVectorDouble& mean,
-	const float& stdCount, const std::string& style = std::string("b"),
-	const size_t& nEllipsePoints = 30);
+	const CMatrixDouble& cov22, const CVectorDouble& mean, float stdCount,
+	const std::string& style = std::string("b"), size_t nEllipsePoints = 30);
 
 /** Assignment operator for initializing a std::vector from a C array (The
  *vector will be automatically set to the correct size).

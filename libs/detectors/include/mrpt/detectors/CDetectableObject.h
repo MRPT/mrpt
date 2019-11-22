@@ -51,9 +51,7 @@ class CDetectable2D : public CDetectableObject
 	float m_height, m_width;
 
 	/** Extra constructor */
-	CDetectable2D(
-		const int& x = 0, const int& y = 0, const int& height = 0,
-		const int& width = 0)
+	CDetectable2D(int x = 0, int y = 0, int height = 0, int width = 0)
 		: m_x(x), m_y(y), m_height(height), m_width(width){};
 
 	/** Copy pointer content constructor */

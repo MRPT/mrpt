@@ -202,7 +202,7 @@ bool CObservationGasSensors::CMOSmodel::get_GasDistribution_estimation(
 					 noise_filtering (smooth)
  ---------------------------------------------------------------*/
 void CObservationGasSensors::CMOSmodel::noise_filtering(
-	const float& reading, const mrpt::system::TTimeStamp& timestamp)
+	float reading, const mrpt::system::TTimeStamp& timestamp)
 {
 	try
 	{
@@ -244,7 +244,7 @@ void CObservationGasSensors::CMOSmodel::noise_filtering(
 				inverse_MOSmodeling
  ---------------------------------------------------------------*/
 void CObservationGasSensors::CMOSmodel::inverse_MOSmodeling(
-	const float& reading, const mrpt::system::TTimeStamp& timestamp)
+	float reading, const mrpt::system::TTimeStamp& timestamp)
 {
 	try
 	{
@@ -321,8 +321,8 @@ void CObservationGasSensors::CMOSmodel::inverse_MOSmodeling(
 						save_log_map
   ---------------------------------------------------------------*/
 void CObservationGasSensors::CMOSmodel::save_log_map(
-	const mrpt::system::TTimeStamp& timestamp, const float& reading,
-	const float& estimation, const float& tau)
+	const mrpt::system::TTimeStamp& timestamp, float reading, float estimation,
+	float tau)
 {
 	// function to save in a log file the information of the generated gas
 	// distribution estimation

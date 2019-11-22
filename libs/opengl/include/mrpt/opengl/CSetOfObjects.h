@@ -92,7 +92,7 @@ class CSetOfObjects : public CRenderizable
 	  * By default (ith=0), the first observation is returned.
 	  */
 	template <typename T>
-	typename T::Ptr getByClass(const size_t& ith = 0) const;
+	typename T::Ptr getByClass(size_t ith = 0) const;
 
 	/** Removes the given object from the scene (it also deletes the object to
 	 * free its memory).
@@ -178,7 +178,7 @@ inline CSetOfObjects::Ptr& operator<<(
 // Implementation: (here because it needs the _POST macro defining the
 // Smart::Ptr)
 template <typename T>
-typename T::Ptr CSetOfObjects::getByClass(const size_t& ith) const
+typename T::Ptr CSetOfObjects::getByClass(size_t ith) const
 {
 	MRPT_START
 	size_t foundCount = 0;

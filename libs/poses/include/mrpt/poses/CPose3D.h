@@ -584,7 +584,7 @@ class CPose3D : public CPose<CPose3D, 6>,
 		mrpt::optional_ref<mrpt::math::CMatrixDouble43> out_dq_dr =
 			std::nullopt) const;
 
-	inline const double& operator[](unsigned int i) const
+	inline double operator[](unsigned int i) const
 	{
 		updateYawPitchRoll();
 		switch (i)
@@ -685,7 +685,7 @@ class CPose3D : public CPose<CPose3D, 6>,
 	/** The type of the elements */
 	using value_type = double;
 	using reference = double&;
-	using const_reference = const double&;
+	using const_reference = double;
 	using size_type = std::size_t;
 	using difference_type = std::ptrdiff_t;
 

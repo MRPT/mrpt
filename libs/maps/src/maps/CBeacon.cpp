@@ -394,9 +394,9 @@ densities such as they represent the position of the robot, not the sensor.
 
   ---------------------------------------------------------------*/
 void CBeacon::generateObservationModelDistribution(
-	const float& sensedRange, CPointPDFSOG& outPDF,
-	const CBeaconMap* myBeaconMap, const CPoint3D& sensorPntOnRobot,
-	const CPoint3D& centerPoint, const float& maxDistanceFromCenter) const
+	float sensedRange, CPointPDFSOG& outPDF, const CBeaconMap* myBeaconMap,
+	const CPoint3D& sensorPntOnRobot, const CPoint3D& centerPoint,
+	float maxDistanceFromCenter) const
 {
 	MRPT_START
 
@@ -456,11 +456,11 @@ void CBeacon::generateObservationModelDistribution(
 					generateRingSOG
   ---------------------------------------------------------------*/
 void CBeacon::generateRingSOG(
-	const float& R, CPointPDFSOG& outPDF, const CBeaconMap* myBeaconMap,
+	float R, CPointPDFSOG& outPDF, const CBeaconMap* myBeaconMap,
 	const CPoint3D& sensorPnt,
 	const CMatrixDouble33* covarianceCompositionToAdd,
 	bool clearPreviousContentsOutPDF, const CPoint3D& centerPoint,
-	const float& maxDistanceFromCenter)
+	float maxDistanceFromCenter)
 {
 	MRPT_START
 
