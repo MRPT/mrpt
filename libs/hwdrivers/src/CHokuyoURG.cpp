@@ -86,7 +86,6 @@ void CHokuyoURG::doProcessSimple(
 	}
 
 	// Wait for a message:
-	char rcv_status0, rcv_status1;
 	int nRanges = m_lastRange - m_firstRange + 1;
 	int expectedSize = nRanges * 3 + 4;
 	if (m_intensity) expectedSize += nRanges * 3;
@@ -95,7 +94,7 @@ void CHokuyoURG::doProcessSimple(
 	m_rcv_data.reserve(expectedSize + 1000);
 
 	m_state = ssWorking;
-	if (!receiveResponse(rcv_status0, rcv_status1))
+	if (!parseResponse())
 	{
 		if (!internal_notifyNoScanReceived())
 		{
@@ -117,7 +116,7 @@ void CHokuyoURG::doProcessSimple(
 	}
 
 	// DECODE:
-	if (rcv_status0 != '0' && rcv_status0 != '9')
+	if (m_rcv_status0 != '0' && m_rcv_status0 != '9')
 	{
 		hardwareError = true;
 		return;
@@ -398,7 +397,6 @@ bool CHokuyoURG::turnOff()
 
 bool CHokuyoURG::setHighBaudrate()
 {
-	char rcv_status0, rcv_status1;
 	if (!ensureStreamIsOpen()) return false;
 
 	MRPT_LOG_DEBUG(
@@ -408,7 +406,7 @@ bool CHokuyoURG::setHighBaudrate()
 	sendCmd("SS115200\x0A");
 
 	// Receive response:
-	if (!receiveResponse(rcv_status0, rcv_status1))
+	if (!parseResponse())
 	{
 		MRPT_LOG_ERROR(
 			"[CHokuyoURG::setHighBaudrate] Error waiting for response");
@@ -420,50 +418,39 @@ bool CHokuyoURG::setHighBaudrate()
 }
 
 /*-------------------------------------------------------------
-						assureBufferHasBytes
+						ensureBufferHasBytes
 -------------------------------------------------------------*/
-bool CHokuyoURG::assureBufferHasBytes(const size_t nDesiredBytes)
+bool CHokuyoURG::ensureBufferHasBytes(const size_t nDesiredBytes)
 {
-	ASSERT_(nDesiredBytes < m_rx_buffer.capacity());
+	ASSERT_BELOW_(nDesiredBytes, m_rx_buffer.capacity());
 
-	if (m_rx_buffer.size() >= nDesiredBytes)
+	if (m_rx_buffer.size() >= nDesiredBytes) return true;
+
+	// Try to read more bytes:
+	std::array<uint8_t, 128> buf;
+	const size_t to_read = std::min(m_rx_buffer.available(), buf.size());
+
+	try
 	{
-		return true;
+		auto sock = dynamic_cast<CClientTCPSocket*>(m_stream);
+		const size_t nRead = sock ? sock->readAsync(&buf[0], to_read, 100, 10)
+								  : m_stream->Read(&buf[0], to_read);
+		m_rx_buffer.push_many(&buf[0], nRead);
 	}
-	else
+	catch (std::exception&)
 	{
-		// Try to read more bytes:
-		uint8_t buf[128];
-		const size_t to_read = std::min(m_rx_buffer.available(), sizeof(buf));
-
-		try
-		{
-			size_t nRead;
-
-			if (!m_ip_dir.empty())
-			{
-				auto* client = dynamic_cast<CClientTCPSocket*>(m_stream);
-				nRead = client->readAsync(buf, to_read, 100, 10);
-			}
-			else
-			{
-				nRead = m_stream->Read(buf, to_read);
-			}
-
-			m_rx_buffer.push_many(buf, nRead);
-		}
-		catch (std::exception&)
-		{
-			// 0 bytes read
-		}
-
-		return (m_rx_buffer.size() >= nDesiredBytes);
+		// 0 bytes read
 	}
+
+	return (m_rx_buffer.size() >= nDesiredBytes);
 }
 
-bool CHokuyoURG::receiveResponse(char& rcv_status0, char& rcv_status1)
+bool CHokuyoURG::parseResponse()
 {
+	m_rcv_status0 = '\0';
+	m_rcv_status1 = '\0';
 	m_rcv_data.clear();
+
 	if (!ensureStreamIsOpen()) return false;
 	ASSERT_(!m_lastSentMeasCmd.empty());
 
@@ -471,48 +458,57 @@ bool CHokuyoURG::receiveResponse(char& rcv_status0, char& rcv_status1)
 	{
 		// Process response:
 		// ---------------------------------
+		char tmp_rcv_status0 = '\0', tmp_rcv_status1 = '\0';
 
 		// COMMAND ECHO ---------
-		unsigned int i = 0;
+		size_t peekIdx = 0;
 		const unsigned int verifLen = m_lastSentMeasCmd.size();
 
 		if (verifLen)
 		{
+			unsigned int i = 0;
 			do
 			{
-				if (!assureBufferHasBytes(verifLen - i)) return false;
+				if (!ensureBufferHasBytes(verifLen - i)) return false;
 
 				// If matches the echo, go on:
-				if (m_rx_buffer.pop() == m_lastSentMeasCmd[i])
+				if (m_rx_buffer.peek(peekIdx++) == m_lastSentMeasCmd[i])
+				{
+					// Match is ok:
 					i++;
+				}
 				else
+				{
+					// Skip one byte and keep trying to match:
+					m_rx_buffer.pop();
 					i = 0;
+					peekIdx = 0;
+				}
 			} while (i < verifLen);
 		}
 
 		// Now, the status bytes:
-		if (!assureBufferHasBytes(2)) return false;
+		if (!ensureBufferHasBytes(peekIdx + 2)) return false;
 
-		rcv_status0 = m_rx_buffer.pop();
-		rcv_status1 = m_rx_buffer.pop();
+		tmp_rcv_status0 = m_rx_buffer.peek(peekIdx++);
+		tmp_rcv_status1 = m_rx_buffer.peek(peekIdx++);
 
 		// In SCIP2.0, there is an additional sum char:
-		if (rcv_status1 != 0x0A)
+		if (tmp_rcv_status1 != 0x0A)
 		{
 			// Yes, it is SCIP2.0
-			if (!assureBufferHasBytes(1)) return false;
-
+			if (!ensureBufferHasBytes(peekIdx + 1)) return false;
 			// Ignore this byte: sumStatus
-			m_rx_buffer.pop();
+			peekIdx++;
 		}
 		else
 		{
 			// Continue, it seems a SCIP1.1 response...
 		}
 
-		// After the status bytes, there is a LF:
-		if (!assureBufferHasBytes(1)) return false;
-		char nextChar = m_rx_buffer.pop();
+		// After the status bytes, there must be a LF:
+		if (!ensureBufferHasBytes(peekIdx + 1)) return false;
+		char nextChar = m_rx_buffer.peek(peekIdx++);
 		if (nextChar != 0x0A) return false;
 
 		// -----------------------------------------------------------------------------
@@ -524,66 +520,77 @@ bool CHokuyoURG::receiveResponse(char& rcv_status0, char& rcv_status1)
 		//  the read method with only 1 byte each time:
 		// -----------------------------------------------------------------------------
 		bool lastWasLF = false;
-		i = 0;
+		std::string tmp_rx;
 		for (;;)
 		{
-			if (!assureBufferHasBytes(1))
+			if (!ensureBufferHasBytes(peekIdx + 1))
 			{
+				// Do not empty the queue, it seems we need to wait for more
+				// data:
 				return false;
 			}
-			m_rcv_data.push_back(m_rx_buffer.pop());
-			i++;  // One more byte in the buffer
+			tmp_rx.push_back(m_rx_buffer.peek(peekIdx++));
 
 			// No data?
-			if (i == 1 && m_rcv_data[0] == 0x0A)
+			if (tmp_rx.size() == 1 && tmp_rx[0] == 0x0A)
 			{
-				m_rcv_data.clear();
+				tmp_rx.clear();
+				m_rcv_status0 = tmp_rcv_status0;
+				m_rcv_status1 = tmp_rcv_status1;
+				// Empty read bytes so far:
+				for (size_t k = 0; k < peekIdx; k++) m_rx_buffer.pop();
 				return true;
 			}
 
 			// Is it a LF?
-			if (m_rcv_data[i - 1] == 0x0A)
+			if (*tmp_rx.rbegin() != 0x0A)
 			{
-				if (!lastWasLF)
-				{
-					// Discard SUM+LF
-					ASSERT_(i >= 2);
-					i -= 2;
-					m_rcv_data.resize(i);
-				}
-				else
-				{
-					// Discard this last LF:
-					i--;
+				lastWasLF = false;
+				continue;
+			}
 
-					// Done!
-					m_rcv_data.resize(i);
-					MRPT_LOG_DEBUG_STREAM(
-						"[Hokuyo] receiveResponse(): RX `" << m_rcv_data
-														   << "`");
-
-					if (rcv_status0 != '0' &&
-						(rcv_status0 != '9' && rcv_status1 != '9'))
-					{
-						MRPT_LOG_ERROR_STREAM(
-							"[Hokuyo] Error LIDAR status: "
-							<< (int)rcv_status0 << " after command: `"
-							<< m_lastSentMeasCmd << "`");
-						return false;
-					}
-
-					return true;
-				}
-				lastWasLF = true;
+			// This was a single LF:
+			if (!lastWasLF)
+			{
+				// Discard SUM+LF
+				ASSERT_(tmp_rx.size() >= 2);
+				tmp_rx.resize(tmp_rx.size() - 2);
 			}
 			else
-				lastWasLF = false;
+			{
+				// This was a double LF.
+
+				// Discard this last LF:
+				tmp_rx.resize(tmp_rx.size() - 1);
+
+				// Done!
+				m_rcv_data = tmp_rx;
+				m_rcv_status0 = tmp_rcv_status0;
+				m_rcv_status1 = tmp_rcv_status1;
+
+				// Empty read bytes so far:
+				for (size_t k = 0; k < peekIdx; k++) m_rx_buffer.pop();
+
+				MRPT_LOG_DEBUG_STREAM(
+					"[Hokuyo] parseResponse(): RX `" << m_rcv_data << "`");
+
+				if (m_rcv_status0 != '0' &&
+					(m_rcv_status0 != '9' && m_rcv_status1 != '9'))
+				{
+					MRPT_LOG_ERROR_STREAM(
+						"[Hokuyo] Error LIDAR status: "
+						<< (int)m_rcv_status0 << " after command: `"
+						<< m_lastSentMeasCmd << "`");
+					return false;
+				}
+				return true;
+			}
+			lastWasLF = true;
 		}
 	}
 	catch (const std::exception& e)
 	{
-		MRPT_LOG_ERROR_FMT(
-			"[Hokuyo] receiveResponse() Exception: %s", e.what());
+		MRPT_LOG_ERROR_FMT("[Hokuyo] parseResponse() Exception: %s", e.what());
 		return false;
 	}
 	catch (...)
@@ -594,7 +601,6 @@ bool CHokuyoURG::receiveResponse(char& rcv_status0, char& rcv_status1)
 
 bool CHokuyoURG::enableSCIP20()
 {
-	char rcv_status0, rcv_status1;
 	if (!ensureStreamIsOpen()) return false;
 
 	MRPT_LOG_DEBUG(
@@ -604,7 +610,7 @@ bool CHokuyoURG::enableSCIP20()
 	sendCmd("SCIP2.0\x0A");
 
 	// Receive response:
-	if (!receiveResponse(rcv_status0, rcv_status1))
+	if (!parseResponse())
 	{
 		MRPT_LOG_ERROR_STREAM(
 			__CURRENT_FUNCTION_NAME__ << ": Error in response");
@@ -617,8 +623,6 @@ bool CHokuyoURG::enableSCIP20()
 
 bool CHokuyoURG::switchLaserOn()
 {
-	char rcv_status0, rcv_status1;
-
 	if (!ensureStreamIsOpen()) return false;
 
 	MRPT_LOG_DEBUG("[CHokuyoURG::switchLaserOn] Switching laser ON...");
@@ -627,7 +631,7 @@ bool CHokuyoURG::switchLaserOn()
 	sendCmd("BM\x0A");
 
 	// Receive response:
-	if (!receiveResponse(rcv_status0, rcv_status1))
+	if (!parseResponse())
 	{
 		MRPT_LOG_ERROR_STREAM(
 			__CURRENT_FUNCTION_NAME__ << ": Error in response");
@@ -640,8 +644,6 @@ bool CHokuyoURG::switchLaserOn()
 
 bool CHokuyoURG::switchLaserOff()
 {
-	char rcv_status0, rcv_status1;
-
 	if (!ensureStreamIsOpen()) return false;
 
 	MRPT_LOG_DEBUG("[CHokuyoURG::switchLaserOff] Switching laser OFF...");
@@ -650,7 +652,7 @@ bool CHokuyoURG::switchLaserOff()
 	sendCmd("QT\x0A");
 
 	// Receive response:
-	if (!receiveResponse(rcv_status0, rcv_status1))
+	if (!parseResponse())
 	{
 		MRPT_LOG_ERROR_STREAM(
 			__CURRENT_FUNCTION_NAME__ << ": Error in response");
@@ -668,7 +670,6 @@ void CHokuyoURG::setScanInterval(unsigned int skipScanCount)
 unsigned int CHokuyoURG::getScanInterval() const { return m_scan_interval; }
 bool CHokuyoURG::setMotorSpeed(int motoSpeed_rpm)
 {
-	char rcv_status0, rcv_status1;
 	if (!ensureStreamIsOpen()) return false;
 
 	MRPT_LOG_DEBUG_FMT(
@@ -689,7 +690,7 @@ bool CHokuyoURG::setMotorSpeed(int motoSpeed_rpm)
 	sendCmd(cmd);
 
 	// Receive response:
-	if (!receiveResponse(rcv_status0, rcv_status1))
+	if (!parseResponse())
 	{
 		MRPT_LOG_ERROR_STREAM(
 			__CURRENT_FUNCTION_NAME__ << ": Error in response");
@@ -705,7 +706,6 @@ bool CHokuyoURG::setMotorSpeed(int motoSpeed_rpm)
 -------------------------------------------------------------*/
 bool CHokuyoURG::setHighSensitivityMode(bool enabled)
 {
-	char rcv_status0, rcv_status1;
 	if (!ensureStreamIsOpen()) return false;
 
 	MRPT_LOG_DEBUG_FMT(
@@ -718,7 +718,7 @@ bool CHokuyoURG::setHighSensitivityMode(bool enabled)
 	sendCmd(cmd);
 
 	// Receive response:
-	if (!receiveResponse(rcv_status0, rcv_status1))
+	if (!parseResponse())
 	{
 		MRPT_LOG_ERROR_STREAM(
 			__CURRENT_FUNCTION_NAME__ << ": Error in response");
@@ -740,7 +740,6 @@ bool CHokuyoURG::setIntensityMode(bool enabled)
 
 bool CHokuyoURG::displayVersionInfo()
 {
-	char rcv_status0, rcv_status1;
 	if (!ensureStreamIsOpen()) return false;
 
 	MRPT_LOG_DEBUG("[CHokuyoURG::displayVersionInfo] Asking info...");
@@ -749,7 +748,7 @@ bool CHokuyoURG::displayVersionInfo()
 	sendCmd("VV\x0A");
 
 	// Receive response:
-	if (!receiveResponse(rcv_status0, rcv_status1))
+	if (!parseResponse())
 	{
 		MRPT_LOG_ERROR_STREAM(
 			__CURRENT_FUNCTION_NAME__ << ": Error in response");
@@ -779,7 +778,6 @@ bool CHokuyoURG::displayVersionInfo()
 -------------------------------------------------------------*/
 bool CHokuyoURG::displaySensorInfo(TSensorInfo* out_data)
 {
-	char rcv_status0, rcv_status1;
 	if (!ensureStreamIsOpen()) return false;
 
 	MRPT_LOG_DEBUG("[CHokuyoURG::displaySensorInfo] Asking for info...");
@@ -788,7 +786,7 @@ bool CHokuyoURG::displaySensorInfo(TSensorInfo* out_data)
 	sendCmd("PP\x0A");
 
 	// Receive response:
-	if (!receiveResponse(rcv_status0, rcv_status1))
+	if (!parseResponse())
 	{
 		MRPT_LOG_ERROR_STREAM(
 			__CURRENT_FUNCTION_NAME__ << ": Error in response");
@@ -866,7 +864,6 @@ bool CHokuyoURG::displaySensorInfo(TSensorInfo* out_data)
 
 bool CHokuyoURG::startScanningMode()
 {
-	char rcv_status0, rcv_status1;
 	if (!ensureStreamIsOpen()) return false;
 
 	MRPT_LOG_DEBUG("[CHokuyoURG::startScanningMode] Starting scanning mode...");
@@ -888,7 +885,7 @@ bool CHokuyoURG::startScanningMode()
 	sendCmd(cmd);
 
 	// Receive response:
-	if (!receiveResponse(rcv_status0, rcv_status1))
+	if (!parseResponse())
 	{
 		MRPT_LOG_ERROR_STREAM(
 			__CURRENT_FUNCTION_NAME__ << ": Error in response");
