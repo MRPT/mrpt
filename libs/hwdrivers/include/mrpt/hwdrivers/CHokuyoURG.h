@@ -160,18 +160,20 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	/** Turns the laser on */
 	void initialize() override;
 
-	/** Waits for a response from the device. Packet is stored in m_rcv_data,
-	 * and status codes in the reference parameters.
-	 * \return false on any error
+	/** Parses the response from the device from raw bytes in m_rx_buffer, and
+	 * stored the received frame in m_rcv_data. Status codes are stored in
+	 * m_rcv_status0 and m_rcv_status1.
+	 * \return false on any error or if received frame is incomplete and needs
+	 * more input bytes.
 	 */
-	bool receiveResponse(char& rcv_status0, char& rcv_status1);
+	bool parseResponse();
 
 	/** Assures a minimum number of bytes in the input buffer, reading from the
 	 * serial port only if required.
 	 * \return false if the number of bytes are not available, even after
 	 * trying to fetch more data from the serial port.
 	 */
-	bool assureBufferHasBytes(const size_t nDesiredBytes);
+	bool ensureBufferHasBytes(const size_t nDesiredBytes);
 
    public:
 	/** Constructor
@@ -247,6 +249,7 @@ class CHokuyoURG : public C2DRangeFinderAbstract
    protected:
 	/** temp buffer for incoming data packets */
 	std::string m_rcv_data;
+	char m_rcv_status0 = '\0', m_rcv_status1 = '\0';
 
 	/** Returns true if there is a valid stream bound to the laser scanner,
 	 * otherwise it first try to open the serial port "m_com_port"
