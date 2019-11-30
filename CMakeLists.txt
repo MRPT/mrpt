@@ -330,11 +330,6 @@ if(MSVC)
 	# Remove unreferenced functions: function level linking
 	add_compile_options(/Gy)
 
-	# SSE2 for MSVC?
-	if (CMAKE_MRPT_HAS_SSE2 AND NOT CMAKE_MRPT_WORD_SIZE EQUAL 64)
-		add_compile_options(/arch:SSE2)
-	endif()
-
 	# Profiling?
 	if(MRPT_ENABLE_PROFILING)
 		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /PROFILE ")
@@ -458,9 +453,6 @@ if (MRPT_COMPILER_IS_GCC_OR_CLANG)
 		add_compile_options(-mtune=native)
 	endif()
 
-	#Was: if not building a Debian pkg.
-	# Don't decide on this, let the caller to enable/disable this feature.
-	# if(CMAKE_MRPT_USE_DEB_POSTFIXS OR CMAKE_MRPT_IS_RPM_PACKAGE)
 	if(MRPT_OPTIMIZE_NATIVE)
 		if ("${CMAKE_MRPT_ARCH}" MATCHES "ppc64.*")
 			# Special case: PowerPC does not have match=native:
@@ -475,29 +467,16 @@ if (MRPT_COMPILER_IS_GCC_OR_CLANG)
 		add_compile_options(-O3)
 	endif()
 
-	# SSE2?
+	# Was: add_compile_options(-mfpmath=sse)
+	# No need to add this flag: it's enabled by default in 64bit builds.
+
+	# SSE2? add flag to entire codebase:
 	if (CMAKE_MRPT_HAS_SSE2)
-		add_compile_options(-msse2 -funroll-loops)
-		if (CMAKE_COMPILER_IS_GNUCXX)
-			add_compile_options(-mfpmath=sse)
-		endif()
+		add_compile_options(-msse2)
 	endif()
 
-	# SSE3?
-	if (CMAKE_MRPT_HAS_SSE3)
-		add_compile_options(-msse3 -mssse3)
-	endif()
+	# SSE3 and above: only add flags to files with the proper suffix:
 
-	# SSE4*?
-	if (CMAKE_MRPT_HAS_SSE4_1)
-		add_compile_options(-msse4.1)
-	endif()
-	if (CMAKE_MRPT_HAS_SSE4_2)
-		add_compile_options(-msse4.2)
-	endif()
-	if (CMAKE_MRPT_HAS_SSE4_A)
-		add_compile_options(-msse4a)
-	endif()
 endif ()
 
 # Add user supplied extra options (optimization, etc...)
