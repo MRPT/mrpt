@@ -179,6 +179,14 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 		set_property(GLOBAL PROPERTY "mrpt_${name}_UNIT_TEST_FILES" ${lst_unittests})
 	endif()
 
+	# Make a list of files matching: _SSE3
+	if (MRPT_COMPILER_IS_GCC_OR_CLANG)
+		set(_lst ${${name}_srcs})
+		KEEP_MATCHING_FILES_FROM_LIST(".*_SSE3.cpp" _lst)
+		if(NOT "${_lst}" STREQUAL "")
+			set_source_files_properties("${_lst}" PROPERTIES COMPILE_FLAGS "-msse3 -mssse3")
+		endif()
+	endif()
 
 	# Don't include here the unit testing code:
 	REMOVE_MATCHING_FILES_FROM_LIST(".*_unittest.cpp" ${name}_srcs)
