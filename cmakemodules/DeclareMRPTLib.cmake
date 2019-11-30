@@ -179,6 +179,14 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 		set_property(GLOBAL PROPERTY "mrpt_${name}_UNIT_TEST_FILES" ${lst_unittests})
 	endif()
 
+	# Make a list of files matching: _SSE3
+	if (MRPT_COMPILER_IS_GCC_OR_CLANG)
+		set(_lst ${${name}_srcs})
+		KEEP_MATCHING_FILES_FROM_LIST(".*_SSE3.cpp" _lst)
+		if(NOT "${_lst}" STREQUAL "")
+			set_source_files_properties("${_lst}" PROPERTIES COMPILE_FLAGS "-msse3 -mssse3")
+		endif()
+	endif()
 
 	# Don't include here the unit testing code:
 	REMOVE_MATCHING_FILES_FROM_LIST(".*_unittest.cpp" ${name}_srcs)
@@ -237,15 +245,9 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 	add_library(mrpt::${name} ALIAS ${name})
 
 	# Include directories for target:
-	if (CMAKE_MRPT_USE_DEB_POSTFIXS)
-		set(LIB_INCL_DIR_EXPRESSION "/usr/include/mrpt/${name}/include")
-	else()
-		set(LIB_INCL_DIR_EXPRESSION "$<INSTALL_PREFIX>/include/mrpt/${name}/include")
-	endif()
-
 	target_include_directories(${name} ${iftype}
 		$<BUILD_INTERFACE:${MRPT_SOURCE_DIR}/libs/${name}/include>
-		$<INSTALL_INTERFACE:${LIB_INCL_DIR_EXPRESSION}>
+		$<INSTALL_INTERFACE:include/mrpt/${name}/include>
 	)
 
 	add_dependencies(all_mrpt_libs ${name}) # for target: all_mrpt_libs
