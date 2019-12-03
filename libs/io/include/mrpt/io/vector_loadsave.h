@@ -34,8 +34,18 @@ bool loadBinaryFile(
 
 /** Loads a text file as a vector of string lines.
  * \return Returns false on any error, true on everything OK.
+ * \sa file_get_contents()
  */
 bool loadTextFile(std::vector<std::string>& o, const std::string& fileName);
+
+/** Loads an entire text file and return its contents as a single std::string.
+ * \exception std::runtime_error On any read error.
+ * \sa loadBinaryFile(), loadTextFile()
+ * \note Relying on C++17 RVO to return a string without worring on
+ * return-by-value of big objects.
+ */
+std::string file_get_contents(const std::string& fileName);
+
 /** @} */
 
 }  // namespace mrpt::io
