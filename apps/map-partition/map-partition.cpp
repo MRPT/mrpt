@@ -359,7 +359,7 @@ int main(int argc, char** argv)
 {
 	try
 	{
-		printf(" map-partition version 0.2 - Part of the MRPT\n");
+		printf(" map-partition - Part of the MRPT\n");
 		printf(
 			" MRPT C++ Library: %s - Sources timestamp: %s\n",
 			MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());
