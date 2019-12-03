@@ -246,7 +246,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 	//  Compute a new mean and covariance by sampling around the mean of the
 	//  input "action"
 	// --------------------------------------------------------------------------------------
-	printf(" 1) Prediction...");
+	MRPT_LOG_DEBUG("Stage 1) Prediction start.");
 	const size_t M = m_particles.size();
 
 	// To be computed as an average from all m_particles:
@@ -361,54 +361,26 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 			// Set the gaussian pose:
 			CPose3DPDFGaussian finalEstimatedPoseGauss(icpEstimation);
 
-			// printf("[rbpf-slam] gridICP[%u]: %.02f%%\n", i,
-			// 100*icpInfo.goodness);
+			MRPT_LOG_DEBUG_FMT(
+				"gridICP[particle %u]: %.02f%%", static_cast<unsigned int>(i),
+				100 * icpInfo.goodness);
 			if (icpInfo.goodness < options.ICPGlobalAlign_MinQuality &&
 				SFs.size())
 			{
-				printf(
-					"[rbpf-slam] Warning: gridICP[%u]: %.02f%% -> Using "
-					"odometry instead!\n",
+				MRPT_LOG_WARN_FMT(
+					"gridICP[particle %u]: %.02f%% -> Using odometry instead!",
 					(unsigned int)i, 100 * icpInfo.goodness);
 				icpEstimation.mean = CPose2D(initialPoseEstimation);
 			}
 
-			// As a way to take into account the odometry / "prior", use
-			//  a correcting factor in the likelihood from the mismatch
-			//  prior<->icp_estimate:
-			//			const double prior_dist_lin =
-			// initialPoseEstimation.distanceTo(icpEstimation.mean);
-			//			const double prior_dist_ang = std::abs(
-			// mrpt::math::wrapToPi(
-			// initialPoseEstimation.yaw()-icpEstimation.mean.phi() ) );
-			////			if (prior_dist_lin>0.10 ||
-			/// prior_dist_ang>3.0_deg) /				printf(" >>>>>>>>>>
-			/// %f %f\n",prior_dist_lin,RAD2DEG(prior_dist_ang));
-			//			extra_log_lik = -(prior_dist_lin/0.20) -
-			//(prior_dist_ang/20.0_deg);
-
-			//				printf("gICP: %.02f%%,
-			// Iters=%u\n",icpInfo.goodness,icpInfo.nIterations);
-
-#if 0  // Use hacked ICP covariance:
-			CPose3D Ap = finalEstimatedPoseGauss.mean - ith_last_pose;
-			const double  Ap_dist = Ap.norm();
-
-			finalEstimatedPoseGauss.cov.setZero();
-			finalEstimatedPoseGauss.cov(0,0) = square( fabs(Ap_dist)*0.01 );
-			finalEstimatedPoseGauss.cov(1,1) = square( fabs(Ap_dist)*0.01 );
-			finalEstimatedPoseGauss.cov(2,2) = square( fabs(Ap.yaw())*0.02 );
-#else
 			// Use real ICP covariance (with a minimum level):
 			keep_max(finalEstimatedPoseGauss.cov(0, 0), square(0.002));
 			keep_max(finalEstimatedPoseGauss.cov(1, 1), square(0.002));
 			keep_max(finalEstimatedPoseGauss.cov(2, 2), square(0.1_deg));
 
-#endif
-
 			// Generate gaussian-distributed 2D-pose increments according to
 			// "finalEstimatedPoseGauss":
-			// -------------------------------------------------------------------------------------------
+			// ------------------------------------------------------------
 			finalPose =
 				finalEstimatedPoseGauss.mean;  // Add to the new robot pose:
 			getRandomGenerator().drawGaussianMultivariate(
@@ -429,16 +401,15 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 			// We'll also update the weight of the particle here
 			updateStageAlreadyDone = true;
 
-			// =====================================================================
+			// =================================================================
 			// SUMMARY:
 			// For each beacon measurement in the SF, stored in
 			// "lstObservedRanges",
 			//  compute the SOG of the observation model, and multiply all of
-			//  them
-			//  (fuse) in "fusedObsModels". The result will hopefully be a very
-			//  small
-			//  PDF where to draw a sample from for the new robot pose.
-			// =====================================================================
+			//  them (fuse) in "fusedObsModels". The result will hopefully be a
+			//  very small PDF where to draw a sample from for the new robot
+			//  pose.
+			// =================================================================
 			bool methodSOGorGrid = false;  // TRUE=SOG
 			CPoint3D newDrawnPosition;
 			float firstEstimateRobotHeading = std::numeric_limits<float>::max();
@@ -457,10 +428,10 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 				if (!beacMap->size())
 				{
 					// First iteration only...
-					cerr << "[RO-SLAM] Optimal filtering without map & "
-							"odometry...this message should appear only the "
-							"first iteration!!"
-						 << endl;
+					MRPT_LOG_WARN(
+						"[RO-SLAM] Optimal filtering without map & "
+						"odometry...this message should appear only the "
+						"first iteration!!");
 				}
 				else
 				{
@@ -469,9 +440,9 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 					//  unbiguity dissapears.
 					if (beacMap->get(0).m_typePDF == CBeacon::pdfSOG)
 					{
-						cerr << "[RO-SLAM] Optimal filtering without map & "
-								"odometry->FIXING ONE BEACON!"
-							 << endl;
+						MRPT_LOG_WARN(
+							"[RO-SLAM] Optimal filtering without map & "
+							"odometry->FIXING ONE BEACON!");
 						ASSERT_(beacMap->get(0).m_locationSOG.size() > 0);
 						CPoint3D fixedBeacon(
 							beacMap->get(0).m_locationSOG[0].val.mean);
@@ -686,18 +657,6 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 
 				}  // end for itBeacs
 
-				/** /
-				COpenGLScene	scene;
-				opengl::CSetOfObjects *obj = new opengl::CSetOfObjects();
-				fusedObsModels.getAs3DObject( *obj );
-				scene.insert( obj );
-				CFileStream("debug.3Dscene",fomWrite) << scene;
-				cout << "fusedObsModels # of modes: " <<
-				fusedObsModels.m_modes.size() << endl;
-				printf("ESS: %f\n",fusedObsModels.ESS() );
-				cout << fusedObsModels.getEstimatedCovariance() << endl;
-				mrpt::system::pause(); / **/
-
 				if (beacMap->size())
 					fusedObsModels.drawSingleSample(newDrawnPosition);
 			}
@@ -840,21 +799,6 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 						newDrawnPosition.x(maxX);
 						newDrawnPosition.y(maxY);
 
-#if 0
-						{
-							//cout << "Grid: " << pdfGaussApprox << endl;
-							//pdfGrid->saveToTextFile("debug.txt");
-							CMatrixDouble outMat;
-							pdfGrid->getAsMatrix(0, outMat );
-							outMat *= 1.0f/outMat.maxCoeff();
-							CImage imgF(outMat, true);
-							static int autocount=0;
-							imgF.saveToFile(format("debug_grid_%f_%05i.png",grid_resXY,autocount++));
-							printf("grid res: %f   MAX: %f,%f\n",grid_resXY,maxX,maxY);
-							//mrpt::system::pause();
-						}
-#endif
-
 						if (grid_resXY > 0.01f)
 						{
 							grid_min_x = maxX - 0.03f;
@@ -866,17 +810,6 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 						}
 						else
 							repeatGridCalculation = false;
-
-						/*
-						// Approximate by a Gaussian:
-						CPosePDFGaussian pdfGaussApprox(
-							pdfGrid->getEstimatedPose(),
-							pdfGrid->getEstimatedCovariance() );
-						CPose2D newDrawnPose;
-						//pdfGrid->drawSingleSample( newDrawnPose );
-						pdfGaussApprox.drawSingleSample( newDrawnPose );
-						newDrawnPosition = newDrawnPose;
-						*/
 					}
 					delete pdfGrid;
 					pdfGrid = nullptr;
@@ -954,7 +887,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 
 	}  // end of for each particle "i" & "partIt"
 
-	printf("Ok\n");
+	MRPT_LOG_DEBUG("Stage 1) Prediction done.");
 
 	MRPT_END
 }

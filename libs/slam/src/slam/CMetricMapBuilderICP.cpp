@@ -193,7 +193,8 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 				{  // couldn't had a good extrapolation estimate... we'll have
 					// to live with the latest pose:
 					m_lastPoseEst.getLatestRobotPose(initialEstimatedRobotPose);
-					MRPT_LOG_WARN(
+					MRPT_LOG_THROTTLE_WARN(
+						10.0 /*seconds*/,
 						"processObservation(): new pose extrapolation failed, "
 						"using last pose as is.");
 				}
