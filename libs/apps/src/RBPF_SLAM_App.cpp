@@ -62,9 +62,7 @@ void RBPF_SLAM_App_Base::initialize(int argc, const char** argv)
 	const std::string configFile = std::string(argv[1]);
 
 	ASSERT_FILE_EXISTS_(configFile);
-	std::vector<std::string> cfgLines;
-	mrpt::io::loadTextFile(cfgLines, configFile);
-	params.setContent(cfgLines);
+	params.setContent(mrpt::io::file_get_contents(configFile));
 
 	impl_initialize(argc, argv);
 
