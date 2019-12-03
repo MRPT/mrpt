@@ -344,7 +344,7 @@ if(BUILD_EXAMPLES)
 	endif(MRPT_HAS_OPENNI2)
 
 	# === Navigation examples ===
-	if(BUILD_mrpt::nav)
+	if(BUILD_mrpt-nav)
 		set(LIST_EXAMPLES_IN_THIS_DIR
 			nav_circ_robot_path_planning
 			nav_rrt_planning_example
