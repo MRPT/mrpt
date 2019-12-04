@@ -1,7 +1,7 @@
 # This file is part of CMake-codecov.
 #
 # Copyright (c)
-#   2015-2017 RWTH Aachen University, Federal Republic of Germany
+#   2015-2019 RWTH Aachen University, Federal Republic of Germany
 #
 # See the LICENSE file in the package base directory for details
 #
@@ -68,13 +68,13 @@ endif ()
 
 
 
-# Find the reuired flags foreach language.
+# Find the required flags foreach language.
 set(CMAKE_REQUIRED_QUIET_SAVE ${CMAKE_REQUIRED_QUIET})
 set(CMAKE_REQUIRED_QUIET ${codecov_FIND_QUIETLY})
 
 get_property(ENABLED_LANGUAGES GLOBAL PROPERTY ENABLED_LANGUAGES)
 foreach (LANG ${ENABLED_LANGUAGES})
-	# Coverage flags are not dependend on language, but the used compiler. So
+	# Coverage flags are not dependent on language, but the used compiler. So
 	# instead of searching flags foreach language, search flags foreach compiler
 	# used.
 	set(COMPILER ${CMAKE_${LANG}_COMPILER_ID})
@@ -133,7 +133,15 @@ set(CMAKE_REQUIRED_QUIET ${CMAKE_REQUIRED_QUIET_SAVE})
 
 # Helper function to get the language of a source file.
 function (codecov_lang_of_source FILE RETURN_VAR)
-	get_filename_component(FILE_EXT "${FILE}" EXT)
+	# Usually, only the last extension of the file should be checked, to avoid
+	# template files (i.e. *.t.cpp) are checked with the full file extension.
+	# However, this feature requires CMake 3.14 or later.
+	set(EXT_COMP "LAST_EXT")
+	if(${CMAKE_VERSION} VERSION_LESS "3.14.0")
+		set(EXT_COMP "EXT")
+	endif()
+
+	get_filename_component(FILE_EXT "${FILE}" ${EXT_COMP})
 	string(TOLOWER "${FILE_EXT}" FILE_EXT)
 	string(SUBSTRING "${FILE_EXT}" 1 -1 FILE_EXT)
 
