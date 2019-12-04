@@ -375,7 +375,8 @@ void ICP_SLAM_App_Base::run()
 			}
 
 			// Save as file:
-			if (0 == (step % LOG_FREQUENCY) && SAVE_3D_SCENE)
+			if (LOG_FREQUENCY > 0 && 0 == (step % LOG_FREQUENCY) &&
+				SAVE_3D_SCENE)
 			{
 				CFileGZOutputStream f(
 					mrpt::format("%s/buildingmap_%05u.3Dscene", OUT_DIR, step));
