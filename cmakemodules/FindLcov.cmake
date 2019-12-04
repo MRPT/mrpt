@@ -1,7 +1,7 @@
 # This file is part of CMake-codecov.
 #
 # Copyright (c)
-#   2015-2017 RWTH Aachen University, Federal Republic of Germany
+#   2015-2019 RWTH Aachen University, Federal Republic of Germany
 #
 # See the LICENSE file in the package base directory for details
 #
@@ -159,7 +159,9 @@ function (lcov_capture_initial_tgt TNAME)
 	set(GCOV_ENV "${GCOV_${TCOMPILER}_ENV}")
 
 
-	set(TDIR ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${TNAME}.dir)
+	get_target_property(TBIN_DIR ${TNAME} BINARY_DIR)
+	set(TDIR ${TBIN_DIR}/CMakeFiles/${TNAME}.dir)
+
 	set(GENINFO_FILES "")
 	foreach(FILE ${SOURCES})
 		# generate empty coverage files
@@ -249,8 +251,9 @@ function (lcov_capture_tgt TNAME)
 	set(GCOV_BIN "${GCOV_${TCOMPILER}_BIN}")
 	set(GCOV_ENV "${GCOV_${TCOMPILER}_ENV}")
 
-
-	set(TDIR ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${TNAME}.dir)
+	get_target_property(TBIN_DIR ${TNAME} BINARY_DIR)
+	set(TDIR ${TBIN_DIR}/CMakeFiles/${TNAME}.dir)
+	
 	set(GENINFO_FILES "")
 	foreach(FILE ${SOURCES})
 		# Generate coverage files. If no .gcda file was generated during
