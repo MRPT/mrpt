@@ -60,9 +60,7 @@ void ICP_SLAM_App_Base::initialize(int argc, const char** argv)
 	const std::string configFile = std::string(argv[1]);
 
 	ASSERT_FILE_EXISTS_(configFile);
-	std::vector<std::string> cfgLines;
-	mrpt::io::loadTextFile(cfgLines, configFile);
-	params.setContent(cfgLines);
+	params.setContent(mrpt::io::file_get_contents(configFile));
 
 	impl_initialize(argc, argv);
 
@@ -180,7 +178,7 @@ void ICP_SLAM_App_Base::run()
 		CSensoryFrame::Ptr observations;
 		CObservation::Ptr observation;
 
-		if (os::kbhit())
+		if (quits_with_esc_key && os::kbhit())
 		{
 			char c = os::getch();
 			if (c == 27) break;
@@ -192,8 +190,19 @@ void ICP_SLAM_App_Base::run()
 			break;  // EOF
 
 		const bool isObsBasedRawlog = observation ? true : false;
-		std::vector<mrpt::obs::CObservation2DRangeScan::Ptr>
-			lst_current_laser_scans;  // Just for drawing in 3D views
+
+		ASSERT_(
+			(isObsBasedRawlog && observation->timestamp != INVALID_TIMESTAMP) ||
+			(!isObsBasedRawlog && !observations->empty() &&
+			 *observations->begin() &&
+			 (*observations->begin())->timestamp != INVALID_TIMESTAMP));
+
+		const mrpt::system::TTimeStamp cur_timestamp =
+			isObsBasedRawlog ? observation->timestamp
+							 : (*observations->begin())->timestamp;
+
+		// For drawing in 3D views:
+		std::vector<mrpt::obs::CObservation2DRangeScan::Ptr> lst_lidars;
 
 		// Update odometry:
 		if (isObsBasedRawlog)
@@ -225,7 +234,7 @@ void ICP_SLAM_App_Base::run()
 			{
 				if (IS_CLASS(*observation, CObservation2DRangeScan))
 				{
-					lst_current_laser_scans.push_back(
+					lst_lidars.push_back(
 						std::dynamic_pointer_cast<CObservation2DRangeScan>(
 							observation));
 				}
@@ -241,7 +250,7 @@ void ICP_SLAM_App_Base::run()
 					if (!new_obs)
 						break;  // There're no more scans
 					else
-						lst_current_laser_scans.push_back(new_obs);
+						lst_lidars.push_back(new_obs);
 				}
 			}
 		}
@@ -352,7 +361,7 @@ void ICP_SLAM_App_Base::run()
 			// Draw laser scanners in 3D:
 			if (SHOW_LASER_SCANS_3D)
 			{
-				for (auto& lst_current_laser_scan : lst_current_laser_scans)
+				for (auto& lst_current_laser_scan : lst_lidars)
 				{
 					// Create opengl object and load scan data from the scan
 					// observation:
@@ -366,7 +375,8 @@ void ICP_SLAM_App_Base::run()
 			}
 
 			// Save as file:
-			if (0 == (step % LOG_FREQUENCY) && SAVE_3D_SCENE)
+			if (LOG_FREQUENCY > 0 && 0 == (step % LOG_FREQUENCY) &&
+				SAVE_3D_SCENE)
 			{
 				CFileGZOutputStream f(
 					mrpt::format("%s/buildingmap_%05u.3Dscene", OUT_DIR, step));
@@ -416,7 +426,7 @@ void ICP_SLAM_App_Base::run()
 
 		// Also keep the robot path as a vector, for the convenience of the app
 		// user:
-		out_estimated_path.emplace_back(robotPose.asTPose());
+		out_estimated_path[cur_timestamp] = robotPose.asTPose();
 
 		f_pathOdo.printf(
 			"%i %f %f %f\n", step, odoPose.x(), odoPose.y(), odoPose.phi());

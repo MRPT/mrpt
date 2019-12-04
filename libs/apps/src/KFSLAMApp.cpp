@@ -52,9 +52,7 @@ void KFSLAMApp::initialize(int argc, const char** argv)
 	const std::string configFile = std::string(argv[1]);
 
 	ASSERT_FILE_EXISTS_(configFile);
-	std::vector<std::string> cfgLines;
-	mrpt::io::loadTextFile(cfgLines, configFile);
-	params.setContent(cfgLines);
+	params.setContent(mrpt::io::file_get_contents(configFile));
 
 	// Rawlog file: from args. line or from config file:
 	if (argc == 3)
