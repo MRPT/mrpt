@@ -343,7 +343,7 @@ void RBPF_SLAM_App_Base::run()
 			curPDF = *pp;
 		}
 
-		if (0 == (step % LOG_FREQUENCY))
+		if (LOG_FREQUENCY > 0 && 0 == (step % LOG_FREQUENCY))
 		{
 			const CMultiMetricMap* mostLikMap =
 				mapBuilder->mapPDF.getCurrentMostLikelyMetricMap();
