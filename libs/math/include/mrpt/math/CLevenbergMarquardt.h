@@ -66,8 +66,8 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 
 	struct TResultInfo
 	{
-		NUMTYPE final_sqr_err;
-		size_t iterations_executed;
+		NUMTYPE final_sqr_err = 0, initial_sqr_err = 0;
+		size_t iterations_executed = 0;
 		/** The last error vector returned by the user-provided functor. */
 		VECTORTYPE last_err_vector;
 		/** Each row is the optimized value at each iteration. */
@@ -151,6 +151,7 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 		VECTORTYPE h_lm;
 		VECTORTYPE xnew, f_xnew;
 		NUMTYPE F_x = pow(math::norm(f_x), 2);
+		out_info.initial_sqr_err = F_x;
 
 		const size_t N = x.size();
 
