@@ -4,14 +4,14 @@ set(EIGEN_USE_EMBEDDED_VERSION OFF CACHE BOOL "Download Eigen3 and use it instea
 if (EIGEN_USE_EMBEDDED_VERSION)
 	# Include embedded version headers:
 	include(ExternalProject)
-	# download Eigen from bitbucket
+	# download Eigen from gitlab
 	ExternalProject_Add(EP_eigen3
-	  URL               "https://bitbucket.org/eigen/eigen/get/3.3.7.tar.bz2"
-	  URL_MD5           "05b1f7511c93980c385ebe11bd3c93fa"
+	  URL               "https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.bz2"
+	  URL_MD5           "b9e98a200d2455f06db9c661c5610496"
 	  SOURCE_DIR        "${MRPT_BINARY_DIR}/3rdparty/eigen3/"
 	  CONFIGURE_COMMAND ""
 	  BUILD_COMMAND     ""
-	  INSTALL_COMMAND     ""
+	  INSTALL_COMMAND   ""
 	  TEST_COMMAND      ""
 	)
 
