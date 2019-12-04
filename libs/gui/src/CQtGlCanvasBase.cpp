@@ -74,12 +74,12 @@ void CQtGlCanvasBase::mousePressEvent(QMouseEvent* event)
 
 void CQtGlCanvasBase::mouseMoveEvent(QMouseEvent* event)
 {
+	int X = event->pos().x();
+	int Y = event->pos().y();
+	updateLastPos(X, Y);
+
 	if (m_isPressLMouseButton || m_isPressRMouseButton)
 	{
-		int X = event->pos().x();
-		int Y = event->pos().y();
-		updateLastPos(X, Y);
-
 		// Proxy variables to cache the changes:
 		CamaraParams params = cameraParams();
 
