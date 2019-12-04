@@ -2,37 +2,6 @@
 #  See "DeclareMRPTLib.cmake" for explanations
 # -------------------------------------------------
 
-# Build xSens MT3?
-if(CMAKE_MRPT_HAS_xSENS_MT3)
-	list(APPEND hwdrivers_EXTRA_SRCS
-		"${MRPT_SOURCE_DIR}/3rdparty/xSens_MT3/*.cpp"
-		"${MRPT_SOURCE_DIR}/3rdparty/xSens_MT3/*.h"
-		)
-	list(APPEND hwdrivers_EXTRA_SRCS_NAME "xSens_MT3" "xSens_MT3" )
-endif()
-
-# Build xSens MT4?
-if(CMAKE_MRPT_HAS_xSENS_MT4)
-	list(APPEND hwdrivers_EXTRA_SRCS
-		"${MRPT_SOURCE_DIR}/3rdparty/xSens_MT4/xcommunication/src/*.cpp"
-		"${MRPT_SOURCE_DIR}/3rdparty/xSens_MT4/xcommunication/src/*.c"
-		"${MRPT_SOURCE_DIR}/3rdparty/xSens_MT4/xcommunication/include/xsens/*.h"
-		"${MRPT_SOURCE_DIR}/3rdparty/xSens_MT4/xstypes/src/*.c"
-		"${MRPT_SOURCE_DIR}/3rdparty/xSens_MT4/xstypes/include/xsens/*.h"
-		)
-	list(APPEND hwdrivers_EXTRA_SRCS_NAME
-		"xSens_MT4" "xSens_MT4" "xSens_MT4"
-		"xSens_MT4" "xSens_MT4"
-		)
-	# XSens MT4 sources seem to expect to have both [DIR]/ and [DIR]/xsens/ as INCLUDE_DIRS:
-	include_directories(
-		"${MRPT_SOURCE_DIR}/3rdparty/xSens_MT4/xcommunication/include/"
-		"${MRPT_SOURCE_DIR}/3rdparty/xSens_MT4/xcommunication/include/xsens/"
-		"${MRPT_SOURCE_DIR}/3rdparty/xSens_MT4/xstypes/include/"
-		"${MRPT_SOURCE_DIR}/3rdparty/xSens_MT4/xstypes/include/xsens/"
-		)
-endif()
-
 # Build Intersense devices?
 if(CMAKE_MRPT_HAS_INTERSENSE)
    list(APPEND hwdrivers_EXTRA_SRCS
@@ -107,23 +76,12 @@ if(CMAKE_MRPT_HAS_NITE2)
 	target_link_libraries(hwdrivers PRIVATE ${NITE2_LIB_FILE_RELEASE})
 endif()
 
-# Ignore precompiled headers in xSens sources:
-if(CMAKE_MRPT_HAS_xSENS_MT3 OR CMAKE_MRPT_HAS_xSENS_MT4)
-	target_include_directories(hwdrivers PRIVATE "${MRPT_SOURCE_DIR}/3rdparty")
-
-	if(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
-		set_source_files_properties(${xSens_MT3_FILES} ${xSens_MT4_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
-	endif()
-
-	# Avoid some annoying warnings:
-	if (MRPT_COMPILER_IS_GCC_OR_CLANG)
-		set_source_files_properties(${xSens_MT3_FILES} ${xSens_MT4_FILES} PROPERTIES COMPILE_FLAGS "-Wno-variadic-macros")
-		# -D_... = Needed to have CLOCK_REALTIME,... in gcc
-		# -fms-extensions: Unnamed structs in unions
-		set_source_files_properties(${xSens_MT4_FILES} PROPERTIES COMPILE_FLAGS "-D_POSIX_C_SOURCE=199309L -fms-extensions")
-	endif ()
-
-	add_definitions(-D_LOG_TO_STDOUT)
+# XSens libs:
+if(TARGET mrpt_xsens_mt3)
+	target_link_libraries(hwdrivers PRIVATE mrpt_xsens_mt3)
+endif()
+if(TARGET mrpt_xsens_mt4)
+	target_link_libraries(hwdrivers PRIVATE mrpt_xsens_mt4)
 endif()
 
 if(CMAKE_MRPT_HAS_OPENCV)
