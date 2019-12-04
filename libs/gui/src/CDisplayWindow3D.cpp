@@ -794,9 +794,8 @@ bool CDisplayWindow3D::getLastMousePositionRay(TLine3D& ray) const
 	int x, y;
 	if (getLastMousePosition(x, y))
 	{
-		m_csAccess3DScene.lock();
+		std::lock_guard<std::recursive_mutex> lck(m_csAccess3DScene);
 		m_3Dscene->getViewport("main")->get3DRayForPixelCoord(x, y, ray);
-		m_csAccess3DScene.unlock();
 		return true;
 	}
 	else

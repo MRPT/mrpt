@@ -76,12 +76,12 @@ void CWxGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 {
 	bool leftIsDown = event.LeftIsDown();
 
+	int X = event.GetX();
+	int Y = event.GetY();
+	updateLastPos(X, Y);
+
 	if (leftIsDown || event.RightIsDown())
 	{
-		int X = event.GetX();
-		int Y = event.GetY();
-		updateLastPos(X, Y);
-
 		// Proxy variables to cache the changes:
 		CamaraParams params = cameraParams();
 
