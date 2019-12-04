@@ -43,8 +43,8 @@ if(CMAKE_MRPT_HAS_FREENECT AND NOT CMAKE_MRPT_HAS_FREENECT_SYSTEM)
 	endif()
 
 	if (MRPT_COMPILER_IS_GCC_OR_CLANG)
-		target_compile_options(mrpt_freenect PRIVATE -fPIC)
 		target_compile_options(mrpt_freenect PRIVATE
+			-fPIC
 			-Wno-ignored-qualifiers
 			-Wno-unused-function
 			-Wno-unused-const-variable
@@ -55,4 +55,43 @@ if(CMAKE_MRPT_HAS_FREENECT AND NOT CMAKE_MRPT_HAS_FREENECT_SYSTEM)
 	target_include_directories(mrpt_freenect SYSTEM PUBLIC
 		${MRPT_SOURCE_DIR}/3rdparty/libfreenect/
 	)
+	unset(SRCS)
+endif()
+
+# ----------------------------------
+# Build RPLIDAR?
+# ----------------------------------
+if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
+	set(SRCS_LIST
+		rplidar/src/*.cpp
+		rplidar/src/hal/*.cpp
+		rplidar/include/*.h
+	)
+	if (WIN32)
+		list(APPEND SRCS_LIST rplidar/src/arch/win32/*.cpp)
+	else()
+		list(APPEND SRCS_LIST rplidar/src/arch/linux/*.cpp)
+	endif()
+	file(GLOB SRCS ${SRCS_LIST})
+
+	add_library(mrpt_rplidar STATIC ${SRCS})
+
+	if (MRPT_COMPILER_IS_GCC_OR_CLANG)
+		target_compile_options(mrpt_rplidar PRIVATE
+			-fPIC
+		)
+	endif()
+	if(MSVC)
+		target_compile_options(mrpt_rplidar PRIVATE WIN64)
+	endif()
+
+	# Embedded version:
+	target_include_directories(mrpt_rplidar SYSTEM PUBLIC
+		${MRPT_SOURCE_DIR}/3rdparty/rplidar/include/
+		${MRPT_SOURCE_DIR}/3rdparty/rplidar/src/
+		#${MRPT_SOURCE_DIR}/3rdparty
+	)
+
+	unset(SRCS_LIST)
+	unset(SRCS)
 endif()

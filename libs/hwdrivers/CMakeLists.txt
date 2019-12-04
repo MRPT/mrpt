@@ -51,28 +51,6 @@ if(CMAKE_MRPT_HAS_FREENECT AND CMAKE_MRPT_HAS_FREENECT_SYSTEM)
 	endif()
 endif()
 
-# Build RPLIDAR?
-if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
-	list(APPEND hwdrivers_EXTRA_SRCS
-		"${MRPT_SOURCE_DIR}/3rdparty/rplidar/src/*.cpp"
-		"${MRPT_SOURCE_DIR}/3rdparty/rplidar/src/hal/*.cpp"
-		"${MRPT_SOURCE_DIR}/3rdparty/rplidar/include/*.h"
-		)
-	list(APPEND hwdrivers_EXTRA_SRCS_NAME
-		"RoboPeakLidar"
-		"RoboPeakLidar"
-		"RoboPeakLidar"
-		)
-	if (WIN32)
-		list(APPEND hwdrivers_EXTRA_SRCS "${MRPT_SOURCE_DIR}/3rdparty/rplidar/src/arch/win32/*.cpp")
-		list(APPEND hwdrivers_EXTRA_SRCS_NAME "RoboPeakLidar")
-	else()
-		list(APPEND hwdrivers_EXTRA_SRCS "${MRPT_SOURCE_DIR}/3rdparty/rplidar/src/arch/linux/*.cpp")
-		list(APPEND hwdrivers_EXTRA_SRCS_NAME "RoboPeakLidar")
-	endif()
-	include_directories("${MRPT_SOURCE_DIR}/3rdparty/rplidar/include/")
-	include_directories("${MRPT_SOURCE_DIR}/3rdparty/rplidar/src/")
-endif()
 
 if(CMAKE_MRPT_HAS_LIBDC1394_2)
 	if ("${LIBDC1394_2_INCLUDE_DIRS}")
@@ -261,17 +239,8 @@ if(CMAKE_MRPT_HAS_TRICLOPS)
 	endif()
 endif()
 
-# Ignore precompiled headers in RPLIDAR sources:
 if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
-	target_include_directories(hwdrivers PRIVATE "${MRPT_SOURCE_DIR}/3rdparty")
-
-	if(MSVC)
-		set(flags_set "/DWIN64")
-		if(MRPT_ENABLE_PRECOMPILED_HDRS)
-			set(flags_set "${flags_set} /Y-")
-		endif()
-		set_source_files_properties(${RoboPeakLidar_FILES} PROPERTIES COMPILE_FLAGS "${flags_set}")
-	endif()
+	target_link_libraries(hwdrivers PRIVATE mrpt_rplidar)
 endif()
 
 # Build with link on SVS lib
