@@ -25,7 +25,7 @@ endif()
 
 # 1st option: Try to find OpenCV config file (NO_MODULE: Don't find a module, but OpenCVConfig.cmake):
 if(NOT CMAKE_MRPT_HAS_OPENCV)
-	find_package(OpenCV QUIET NO_MODULE)
+	find_package(OpenCV 2 QUIET NO_MODULE)
 	if(OpenCV_FOUND)
 		set(MRPT_OPENCV_VERSION ${OpenCV_VERSION})
 		set(OpenCV_LIBRARIES ${OpenCV_LIBS})
