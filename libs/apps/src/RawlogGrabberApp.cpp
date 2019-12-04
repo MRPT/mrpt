@@ -58,9 +58,7 @@ void RawlogGrabberApp::initialize(int argc, const char** argv)
 	{
 		std::string INI_FILENAME(argv[1]);
 		ASSERT_FILE_EXISTS_(INI_FILENAME);
-		std::vector<std::string> cfgLines;
-		mrpt::io::loadTextFile(cfgLines, INI_FILENAME);
-		params.setContent(cfgLines);
+		params.setContent(mrpt::io::file_get_contents(INI_FILENAME));
 	}
 
 	MRPT_END

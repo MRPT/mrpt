@@ -14,32 +14,32 @@
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
+#include <mrpt/slam/CMetricMapBuilderRBPF.h>
 #include <mrpt/system/COutputLogger.h>
 #include <atomic>
 
 namespace mrpt::apps
 {
-/** ICP-SLAM virtual base class for application wrappers.
+/** RBPF-SLAM virtual base class for application wrappers.
  *
- * This virtual base provides the common code to the applications icp-slam and
- * icp-slam-live, and could be used by users to build their own ICP-SLAM
- * solution.
+ * This virtual base provides the common code to the application rbpf-slam.
+ * It can be used by users to build their own RBPF-SLAM solution.
  *
- * \sa  mrpt::slam::CMetricMapBuilderICP
+ * \sa  mrpt::slam::CMetricMapBuilderRBPF
  * \ingroup mrpt_apps_grp
  */
-class ICP_SLAM_App_Base : virtual public mrpt::system::COutputLogger,
-						  public mrpt::apps::BaseAppInitializableCLI,
-						  virtual public mrpt::apps::BaseAppDataSource
+class RBPF_SLAM_App_Base : virtual public mrpt::system::COutputLogger,
+						   public mrpt::apps::BaseAppInitializableCLI,
+						   virtual public mrpt::apps::BaseAppDataSource
 {
    public:
-	ICP_SLAM_App_Base();
+	RBPF_SLAM_App_Base();
 
 	/** @name Main API
 	 * @{ */
 
 	/** Initializes the application from CLI parameters. Refer to the manpage of
-	 * icp-slam and icp-slam-live. Throws on errors.
+	 * rbpf-slam. Throws on errors.
 	 */
 	void initialize(int argc, const char** argv);
 
@@ -69,58 +69,26 @@ class ICP_SLAM_App_Base : virtual public mrpt::system::COutputLogger,
 
 	/** @name Outputs and result variables
 	 * @{ */
+	std::shared_ptr<mrpt::slam::CMetricMapBuilderRBPF> mapBuilder;
 
 	std::map<mrpt::system::TTimeStamp, mrpt::math::TPose3D> out_estimated_path;
 
 	/** @} */
 };
 
-/** Instance of ICP_SLAM_App_Base to run mapping from an offline dataset file.
+/** Instance of RBPF_SLAM_App_Base to run mapping from an offline dataset file.
  */
-class ICP_SLAM_App_Rawlog : public ICP_SLAM_App_Base, public DataSourceRawlog
+class RBPF_SLAM_App_Rawlog : public RBPF_SLAM_App_Base, public DataSourceRawlog
 {
    public:
-	ICP_SLAM_App_Rawlog();
+	RBPF_SLAM_App_Rawlog();
 
    protected:
 	void impl_initialize(int argc, const char** argv) override;
 	std::string impl_get_usage() const override
 	{
-		return "icp-slam <config_file> [dataset.rawlog]";
+		return "rbpf-slam <config_file> [dataset.rawlog]";
 	}
-};
-
-/** Instance of ICP_SLAM_App_Base to run mapping from a live LIDAR sensor.
- */
-class ICP_SLAM_App_Live : public ICP_SLAM_App_Base
-{
-   public:
-	ICP_SLAM_App_Live();
-	virtual ~ICP_SLAM_App_Live() override;
-
-   protected:
-	void impl_initialize(int argc, const char** argv) override;
-	std::string impl_get_usage() const override
-	{
-		return "icp-slam-live <config_file>";
-	}
-
-	bool impl_get_next_observations(
-		mrpt::obs::CActionCollection::Ptr& action,
-		mrpt::obs::CSensoryFrame::Ptr& observations,
-		mrpt::obs::CObservation::Ptr& observation) override;
-
-	struct TThreadParams
-	{
-		mrpt::config::CConfigFileBase* cfgFile;
-		std::string section_name;
-	};
-
-	void SensorThread(TThreadParams params);
-
-	mrpt::hwdrivers::CGenericSensor::TListObservations m_global_list_obs;
-	std::mutex m_cs_global_list_obs;
-	std::atomic_bool m_allThreadsMustExit = false;
 };
 
 }  // namespace mrpt::apps
