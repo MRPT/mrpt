@@ -8,4 +8,11 @@ if(UNIX)
 	if ($ENV{VERBOSE})
 		message(STATUS "Kernel name (uname -s): ${CMAKE_MRPT_KERNEL}")
 	endif()
-endif(UNIX)
+endif()
+
+# Detect if we are in i386 / amd64:
+if ("${CMAKE_MRPT_ARCH}" STREQUAL "x86_64" OR "${CMAKE_MRPT_ARCH}" STREQUAL "i686")
+	set(MRPT_ARCH_INTEL_COMPATIBLE 1)
+else()
+	set(MRPT_ARCH_INTEL_COMPATIBLE 1)
+endif()
