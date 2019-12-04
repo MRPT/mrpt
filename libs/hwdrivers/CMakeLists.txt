@@ -44,43 +44,11 @@ if(CMAKE_MRPT_HAS_INTERSENSE)
 endif()
 
 # Build Kinect support via libfreenect?
-if(CMAKE_MRPT_HAS_FREENECT)
-	if (CMAKE_MRPT_HAS_FREENECT_SYSTEM)
-		# No need to build if it's already built in the system:
-		if (NOT "${OPENKINECT_FREENECT_INCLUDE_DIR}" STREQUAL "")
-			include_directories("${OPENKINECT_FREENECT_INCLUDE_DIR}")
-		endif ()
-	else ()
-		# Embedded version:
-		include_directories("${MRPT_SOURCE_DIR}/3rdparty/libfreenect/")
-		list(APPEND hwdrivers_EXTRA_SRCS
-			"${MRPT_SOURCE_DIR}/3rdparty/libfreenect/*.c"
-			"${MRPT_SOURCE_DIR}/3rdparty/libfreenect/*.h"
-			)
-		list(APPEND hwdrivers_EXTRA_SRCS_NAME
-			"libfreenect"
-			"libfreenect"
-			)
-
-		# Special stuff for windows:
-		if (WIN32)
-			list(APPEND hwdrivers_EXTRA_SRCS
-				"${MRPT_SOURCE_DIR}/3rdparty/libfreenect/platform/windows/libusb10emu/libusb-1.0/libusbemu.cpp"
-				"${MRPT_SOURCE_DIR}/3rdparty/libfreenect/platform/windows/libusb10emu/libusb-1.0/failguard.cpp"
-				)
-			list(APPEND hwdrivers_EXTRA_SRCS_NAME
-				"libfreenect"
-				"libfreenect"
-				)
-
-			include_directories("${MRPT_SOURCE_DIR}/3rdparty/libfreenect/platform/windows")
-			include_directories("${MRPT_SOURCE_DIR}/3rdparty/libfreenect/platform/windows/libusb10emu")
-			# libfreenect.h includes libusb.h:
-			include_directories("${LIBUSB_1_INCLUDE_DIRS}")
-
-		endif()
-
-	endif ()
+if(CMAKE_MRPT_HAS_FREENECT AND CMAKE_MRPT_HAS_FREENECT_SYSTEM)
+	# No need to build if it's already built in the system:
+	if(NOT "${OPENKINECT_FREENECT_INCLUDE_DIR}" STREQUAL "")
+		include_directories("${OPENKINECT_FREENECT_INCLUDE_DIR}")
+	endif()
 endif()
 
 # Build RPLIDAR?
@@ -236,17 +204,9 @@ if(CMAKE_MRPT_HAS_FREENECT)
 		endif ()
 	endif()
 
-	if (NOT CMAKE_MRPT_HAS_FREENECT_SYSTEM)
-		# Using embedded version:
-		# Ignore precompiled headers:
-		if(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
-			set_source_files_properties(${libfreenect_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
-		endif()
-
-		if (MSVC)
-			set_source_files_properties(${libfreenect_FILES} PROPERTIES LANGUAGE CXX) 			# Build as C++
-		endif()
-	endif ()
+	if(NOT CMAKE_MRPT_HAS_FREENECT_SYSTEM)
+		target_link_libraries(hwdrivers PRIVATE mrpt_freenect)
+	endif()
 endif()
 
 if(NOT "${LIBUSB10_LIBS}" STREQUAL "")
