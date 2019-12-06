@@ -34,6 +34,7 @@
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/stock_objects.h>
+#include <mrpt/rtti/CListOfClasses.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
@@ -528,8 +529,8 @@ void navlog_viewer_GUI_designDialog::loadLogfile(const std::string& filName)
 
 	wxBusyCursor busy;
 
-	set<string> validClasses;
-	validClasses.insert("CLogFileRecord");
+	mrpt::rtti::CListOfClasses validClasses;
+	validClasses.insert(CLASS_ID(mrpt::nav::CLogFileRecord));
 
 	m_log_first_tim = INVALID_TIMESTAMP;
 	m_log_last_tim = INVALID_TIMESTAMP;
@@ -540,8 +541,7 @@ void navlog_viewer_GUI_designDialog::loadLogfile(const std::string& filName)
 		try
 		{
 			CSerializable::Ptr obj = arch.ReadObject();
-			if (validClasses.find(string(obj->GetRuntimeClass()->className)) ==
-				validClasses.end())
+			if (!validClasses.contains(obj->GetRuntimeClass()))
 			{
 				wxMessageBox(
 					(format(
