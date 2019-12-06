@@ -724,8 +724,8 @@ void CActionRobotMovement2D::getDescriptionAsText(std::ostream& o) const
 
 	o << "\n";
 
-	o << " Actual reading from the odometry increment = "
-	  << rawOdometryIncrementReading << "\n";
+	o << "Actual odometry increment reading: " << rawOdometryIncrementReading
+	  << "\n";
 
 	o << format(
 		"Actual PDF class is: '%s'\n",
@@ -748,13 +748,13 @@ void CActionRobotMovement2D::getDescriptionAsText(std::ostream& o) const
 	// Additional data:
 	if (hasEncodersInfo)
 		o << format(
-			" Encoder info: deltaL=%i deltaR=%i\n", encoderLeftTicks,
+			"Encoder info: deltaL=%i deltaR=%i\n", encoderLeftTicks,
 			encoderRightTicks);
 	else
 		o << "Encoder info: Not available!\n";
 
 	if (hasVelocities)
-		o << " Velocity info: v=" << velocityLocal.asString() << "\n";
+		o << "Velocity info: v=" << velocityLocal.asString() << "\n";
 	else
 		o << "Velocity info: Not available!\n";
 }

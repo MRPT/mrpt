@@ -34,6 +34,7 @@
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/stock_objects.h>
+#include <mrpt/rtti/CListOfClasses.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
@@ -377,66 +378,38 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(
 	FlexGridSizer1->Fit(this);
 	FlexGridSizer1->SetSizeHints(this);
 
-	Connect(
-		ID_BUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnLoadClick);
-	Connect(
-		ID_BUTTON2, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnHelpClick);
-	Connect(
-		ID_BUTTON3, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnQuitClick);
-	Connect(
-		ID_RADIOBOX1, wxEVT_COMMAND_RADIOBOX_SELECTED,
-		(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::
-			OnrbPerPTGPlotsSelect);
-	Connect(
-		ID_CHECKLISTBOX1, wxEVT_COMMAND_CHECKLISTBOX_TOGGLED,
-		(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::
-			OncbGlobalFrameClick);
-	Connect(
-		ID_SLIDER1, wxEVT_SCROLL_THUMBTRACK,
-		(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::
-			OnslidLogCmdScroll);
-	Connect(
-		ID_SLIDER1, wxEVT_SCROLL_CHANGED,
-		(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::
-			OnslidLogCmdScroll);
-	Connect(
-		ID_BUTTON6, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::
-			OnbtnMoreOpsClick);
-	Connect(
-		ID_BUTTON4, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnPlayClick);
-	Connect(
-		ID_BUTTON5, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnStopClick);
-	Connect(
-		ID_TIMER1, wxEVT_TIMER,
-		(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::
-			OntimPlayTrigger);
-	Connect(
-		ID_TIMER2, wxEVT_TIMER,
-		(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::
-			OntimAutoloadTrigger);
-	Connect(
-		ID_MENUITEM2, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::
-			OnmnuSeePTGParamsSelected);
-	Connect(
-		ID_MENUITEM1, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::
-			OnmnuMatlabPlotsSelected);
-	Connect(
-		ID_MENUITEM3, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::
-			OnmnuSaveScoreMatrixSelected);
+	using me = navlog_viewer_GUI_designDialog;
+
+	Bind(wxEVT_COMMAND_BUTTON_CLICKED, &me::OnbtnLoadClick, this, ID_BUTTON1);
+	Bind(wxEVT_COMMAND_BUTTON_CLICKED, &me::OnbtnHelpClick, this, ID_BUTTON2);
+	Bind(wxEVT_COMMAND_BUTTON_CLICKED, &me::OnbtnQuitClick, this, ID_BUTTON3);
+	Bind(
+		wxEVT_COMMAND_RADIOBOX_SELECTED, &me::OnrbPerPTGPlotsSelect, this,
+		ID_RADIOBOX1);
+	Bind(
+		wxEVT_COMMAND_CHECKLISTBOX_TOGGLED, &me::OncbGlobalFrameClick, this,
+		ID_CHECKLISTBOX1);
+	Bind(wxEVT_SCROLL_THUMBTRACK, &me::OnslidLogCmdScroll, this, ID_SLIDER1);
+	Bind(wxEVT_SCROLL_CHANGED, &me::OnslidLogCmdScroll, this, ID_SLIDER1);
+	Bind(
+		wxEVT_COMMAND_BUTTON_CLICKED, &me::OnbtnMoreOpsClick, this, ID_BUTTON6);
+	Bind(wxEVT_COMMAND_BUTTON_CLICKED, &me::OnbtnPlayClick, this, ID_BUTTON4);
+	Bind(wxEVT_COMMAND_BUTTON_CLICKED, &me::OnbtnStopClick, this, ID_BUTTON5);
+	Bind(wxEVT_TIMER, &me::OntimPlayTrigger, this, ID_TIMER1);
+	Bind(wxEVT_TIMER, &me::OntimAutoloadTrigger, this, ID_TIMER2);
+	Bind(
+		wxEVT_COMMAND_MENU_SELECTED, &me::OnmnuSeePTGParamsSelected, this,
+		ID_MENUITEM2);
+	Bind(
+		wxEVT_COMMAND_MENU_SELECTED, &me::OnmnuMatlabPlotsSelected, this,
+		ID_MENUITEM1);
+	Bind(
+		wxEVT_COMMAND_MENU_SELECTED, &me::OnmnuSaveScoreMatrixSelected, this,
+		ID_MENUITEM3);
 	//*)
-	Connect(
-		ID_MENUITEM100, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::
-			OnmnuSaveCurrentObstacles);
+	Bind(
+		wxEVT_COMMAND_MENU_SELECTED, &me::OnmnuSaveCurrentObstacles, this,
+		ID_MENUITEM100);
 
 	{
 		wxMenuItem* mnuMatlabExportPaths;
@@ -444,10 +417,9 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(
 			(&mnuMoreOps), ID_MENUITEM_SAVE_MATLAB_PATH,
 			_("Export paths info to MATLAB..."), wxEmptyString, wxITEM_NORMAL);
 		mnuMoreOps.Append(mnuMatlabExportPaths);
-		Connect(
-			ID_MENUITEM_SAVE_MATLAB_PATH, wxEVT_COMMAND_MENU_SELECTED,
-			(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::
-				OnmnuMatlabExportPaths);
+		Bind(
+			wxEVT_COMMAND_MENU_SELECTED, &me::OnmnuMatlabExportPaths, this,
+			ID_MENUITEM_SAVE_MATLAB_PATH);
 	}
 
 	m_cbIdx_DrawShape = cbList->Append(_("Draw shape along path"));
@@ -464,9 +436,7 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(
 	cbList->Check(m_cbIdx_ShowDelays);
 
 	timMouseXY.SetOwner(this, ID_TIMER3);
-	Connect(
-		ID_TIMER3, wxEVT_TIMER,
-		(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OntimMouseXY);
+	Bind(wxEVT_TIMER, &me::OntimMouseXY, this, ID_TIMER3);
 
 	rbPerPTGPlots->SetSelection(2);
 
@@ -528,8 +498,8 @@ void navlog_viewer_GUI_designDialog::loadLogfile(const std::string& filName)
 
 	wxBusyCursor busy;
 
-	set<string> validClasses;
-	validClasses.insert("CLogFileRecord");
+	mrpt::rtti::CListOfClasses validClasses;
+	validClasses.insert(CLASS_ID(mrpt::nav::CLogFileRecord));
 
 	m_log_first_tim = INVALID_TIMESTAMP;
 	m_log_last_tim = INVALID_TIMESTAMP;
@@ -540,8 +510,7 @@ void navlog_viewer_GUI_designDialog::loadLogfile(const std::string& filName)
 		try
 		{
 			CSerializable::Ptr obj = arch.ReadObject();
-			if (validClasses.find(string(obj->GetRuntimeClass()->className)) ==
-				validClasses.end())
+			if (!validClasses.contains(obj->GetRuntimeClass()))
 			{
 				wxMessageBox(
 					(format(
