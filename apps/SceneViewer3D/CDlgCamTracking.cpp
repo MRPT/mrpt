@@ -122,27 +122,13 @@ CDlgCamTracking::CDlgCamTracking(
 	FlexGridSizer1->Fit(this);
 	FlexGridSizer1->SetSizeHints(this);
 
-	Connect(
-		ID_BUTTON2, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CDlgCamTracking::OnbtnLoadClick);
-	Connect(
-		ID_BUTTON3, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CDlgCamTracking::OnbtnSaveClick);
-	Connect(
-		ID_BUTTON4, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CDlgCamTracking::OnbtnGrabClick);
-	Connect(
-		ID_BUTTON6, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CDlgCamTracking::OnbtnStartClick);
-	Connect(
-		ID_BUTTON5, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CDlgCamTracking::OnbtnStopClick);
-	Connect(
-		ID_BUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CDlgCamTracking::OnbtnCloseClick);
-	Connect(
-		ID_MENUITEM1, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&CDlgCamTracking::OnMenuItemDelete);
+	Bind(wxEVT_BUTTON, &CDlgCamTracking::OnbtnLoadClick, this, ID_BUTTON2);
+	Bind(wxEVT_BUTTON, &CDlgCamTracking::OnbtnSaveClick, this, ID_BUTTON3);
+	Bind(wxEVT_BUTTON, &CDlgCamTracking::OnbtnGrabClick, this, ID_BUTTON4);
+	Bind(wxEVT_BUTTON, &CDlgCamTracking::OnbtnStartClick, this, ID_BUTTON6);
+	Bind(wxEVT_BUTTON, &CDlgCamTracking::OnbtnStopClick, this, ID_BUTTON5);
+	Bind(wxEVT_BUTTON, &CDlgCamTracking::OnbtnCloseClick, this, ID_BUTTON1);
+	Bind(wxEVT_MENU, &CDlgCamTracking::OnMenuItemDelete, this, ID_MENUITEM1);
 	//*)
 }
 

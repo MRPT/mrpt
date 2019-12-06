@@ -281,18 +281,10 @@ CDlgPoseEst::CDlgPoseEst(
 	FlexGridSizer1->SetSizeHints(this);
 	Center();
 
-	Connect(
-		ID_BUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CDlgPoseEst::OnbtnStartClick);
-	Connect(
-		ID_BUTTON2, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CDlgPoseEst::OnbtnStopClick);
-	Connect(
-		ID_BUTTON3, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CDlgPoseEst::OnbtnCloseClick);
-	Connect(
-		ID_TIMER1, wxEVT_TIMER,
-		(wxObjectEventFunction)&CDlgPoseEst::OntimCaptureTrigger);
+	Bind(wxEVT_BUTTON, &CDlgPoseEst::OnbtnStartClick, this, ID_BUTTON1);
+	Bind(wxEVT_BUTTON, &CDlgPoseEst::OnbtnStopClick, this, ID_BUTTON2);
+	Bind(wxEVT_BUTTON, &CDlgPoseEst::OnbtnCloseClick, this, ID_BUTTON3);
+	Bind(wxEVT_TIMER, &CDlgPoseEst::OntimCaptureTrigger, this, ID_TIMER1);
 	cam_intrinsic = Eigen::MatrixXd::Zero(3, 3);
 	I3 = Eigen::MatrixXd::Identity(3, 3);
 	pose_mat = Eigen::MatrixXd::Zero(6, 1);

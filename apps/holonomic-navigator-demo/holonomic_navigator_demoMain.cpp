@@ -371,68 +371,26 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 	FlexGridSizer1->SetSizeHints(this);
 	Center();
 
-	Connect(
-		ID_BUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&holonomic_navigator_demoFrame::
-			OnbtnLoadMapClick);
-	Connect(
-		ID_BUTTON2, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&holonomic_navigator_demoFrame::OnAbout);
-	Connect(
-		ID_BUTTON3, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&holonomic_navigator_demoFrame::OnQuit);
-	Connect(
-		ID_BUTTON6, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&holonomic_navigator_demoFrame::
-			OnbtnPlaceRobotClick);
-	Connect(
-		ID_BUTTON7, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&holonomic_navigator_demoFrame::
-			OnbtnPlaceTargetClick);
-	Connect(
-		ID_BUTTON4, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&holonomic_navigator_demoFrame::OnbtnStartClick);
-	Connect(
-		ID_BUTTON5, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&holonomic_navigator_demoFrame::OnbtnStopClick);
-	Connect(
-		ID_MENUITEM4, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&holonomic_navigator_demoFrame::
-			OnbtnLoadMapClick);
-	Connect(
-		idMenuQuit, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&holonomic_navigator_demoFrame::OnQuit);
-	Connect(
-		ID_MENUITEM1, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&holonomic_navigator_demoFrame::
-			OnMenuItemChangeVisibleStuff);
-	Connect(
-		ID_MENUITEM2, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&holonomic_navigator_demoFrame::
-			OnMenuItemChangeVisibleStuff);
-	Connect(
-		ID_MENUITEM3, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&holonomic_navigator_demoFrame::
-			OnMenuItemClearRobotPath);
-	Connect(
-		idMenuAbout, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&holonomic_navigator_demoFrame::OnAbout);
-	Connect(
-		ID_TIMER1, wxEVT_TIMER,
-		(wxObjectEventFunction)&holonomic_navigator_demoFrame::
-			OntimRunSimulTrigger);
+	using hndf = holonomic_navigator_demoFrame;
+
+	Bind(wxEVT_BUTTON, &hndf::OnbtnLoadMapClick, this, ID_BUTTON1);
+	Bind(wxEVT_BUTTON, &hndf::OnAbout, this, ID_BUTTON2);
+	Bind(wxEVT_BUTTON, &hndf::OnQuit, this, ID_BUTTON3);
+	Bind(wxEVT_BUTTON, &hndf::OnbtnPlaceRobotClick, this, ID_BUTTON6);
+	Bind(wxEVT_BUTTON, &hndf::OnbtnPlaceTargetClick, this, ID_BUTTON7);
+	Bind(wxEVT_BUTTON, &hndf::OnbtnStartClick, this, ID_BUTTON4);
+	Bind(wxEVT_BUTTON, &hndf::OnbtnStopClick, this, ID_BUTTON5);
+	Bind(wxEVT_MENU, &hndf::OnbtnLoadMapClick, this, ID_MENUITEM4);
+	Bind(wxEVT_MENU, &hndf::OnQuit, this, idMenuQuit);
+	Bind(wxEVT_MENU, &hndf::OnMenuItemChangeVisibleStuff, this, ID_MENUITEM1);
+	Bind(wxEVT_MENU, &hndf::OnMenuItemChangeVisibleStuff, this, ID_MENUITEM2);
+	Bind(wxEVT_MENU, &hndf::OnMenuItemClearRobotPath, this, ID_MENUITEM3);
+	Bind(wxEVT_MENU, &hndf::OnAbout, this, idMenuAbout);
+	Bind(wxEVT_TIMER, &hndf::OntimRunSimulTrigger, this, ID_TIMER1);
 	//*)
 
-	m_plot3D->Connect(
-		wxEVT_MOTION,
-		(wxObjectEventFunction)&holonomic_navigator_demoFrame::
-			Onplot3DMouseMove,
-		nullptr, this);
-	m_plot3D->Connect(
-		wxEVT_LEFT_DOWN,
-		(wxObjectEventFunction)&holonomic_navigator_demoFrame::
-			Onplot3DMouseClick,
-		nullptr, this);
+	m_plot3D->Bind(wxEVT_MOTION, &hndf::Onplot3DMouseMove, this);
+	m_plot3D->Bind(wxEVT_LEFT_DOWN, &hndf::Onplot3DMouseClick, this);
 
 	mnuViewMaxRange->Check(true);
 	mnuViewRobotPath->Check(true);

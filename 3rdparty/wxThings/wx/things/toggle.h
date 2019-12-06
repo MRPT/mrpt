@@ -24,17 +24,17 @@ There are four styles the button can take.
 
 wxCUSTBUT_BUTTON == wxButton
     Left and Right clicks and double clicks all send
-        wxEVT_COMMAND_BUTTON_CLICKED => EVT_BUTTON(id,fn)
+        wxEVT_BUTTON => EVT_BUTTON(id,fn)
 
 wxCUSTBUT_TOGGLE == wxToggleButton
     Left clicks sends
         wxEVT_COMMAND_TOGGLEBUTTON_CLICKED => EVT_TOGGLEBUTTON(id, fn)
     Left double clicks and Right clicks send
-        wxEVT_COMMAND_BUTTON_CLICKED => EVT_BUTTON(id,fn)
+        wxEVT_BUTTON => EVT_BUTTON(id,fn)
 
 wxCUSTBUT_BUT_DCLICK_TOG
     Left and Right clicks and Right double clicks send
-        wxEVT_COMMAND_BUTTON_CLICKED => EVT_BUTTON(id,fn)
+        wxEVT_BUTTON => EVT_BUTTON(id,fn)
     Left double clicks sends
         wxEVT_COMMAND_TOGGLEBUTTON_CLICKED => EVT_TOGGLEBUTTON(id, fn)
 
@@ -42,13 +42,13 @@ wxCUSTBUT_TOG_DCLICK_BUT
     Left clicks sends
         wxEVT_COMMAND_TOGGLEBUTTON_CLICKED => EVT_TOGGLEBUTTON(id, fn)
     Left and Right double clicks and Right clicks send
-        wxEVT_COMMAND_BUTTON_CLICKED => EVT_BUTTON(id,fn)
+        wxEVT_BUTTON => EVT_BUTTON(id,fn)
 
 The event's wxCommandEvent::GetInt (IsChecked) is true (1) if the button is
     depressed, this is only useful for the wxToggleButton styles
 
 For both types of button when double-clicked it sends this event
-    wxEVT_COMMAND_BUTTON_CLICKED => EVT_BUTTON(id, fn)
+    wxEVT_BUTTON => EVT_BUTTON(id, fn)
     and the button state does not change. Only a single EVT_BUTTON event should
     be sent on double-click and event.GetExtraLong == wxEVT_XXX_DCLICK,
     if not then there's a bug.

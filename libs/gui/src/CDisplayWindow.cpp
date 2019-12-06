@@ -41,25 +41,14 @@ CWindowDialog::wxMRPTImageControl::wxMRPTImageControl(
 {
 	this->Create(parent, winID, wxPoint(x, y), wxSize(width, height));
 
-	Connect(
-		wxEVT_PAINT,
-		wxPaintEventHandler(CWindowDialog::wxMRPTImageControl::OnPaint));
-	Connect(
-		wxEVT_MOTION,
-		wxMouseEventHandler(CWindowDialog::wxMRPTImageControl::OnMouseMove));
-	Connect(
-		wxID_ANY, wxEVT_LEFT_DOWN,
-		wxMouseEventHandler(CWindowDialog::wxMRPTImageControl::OnMouseClick));
-
-	Connect(
-		wxID_ANY, wxEVT_CHAR,
-		(wxObjectEventFunction)&CWindowDialog::wxMRPTImageControl::OnChar);
-	Connect(
-		wxEVT_CHAR,
-		(wxObjectEventFunction)&CWindowDialog::wxMRPTImageControl::OnChar);
-
-	//	Connect(wxID_ANY,wxEVT_CHAR,(wxObjectEventFunction)&CWindowDialog::wxMRPTImageControl::OnChar);
-	//	Connect(wxID_ANY,wxEVT_KEY_DOWN,(wxObjectEventFunction)&CWindowDialog::wxMRPTImageControl::OnChar);
+	Bind(wxEVT_PAINT, &CWindowDialog::wxMRPTImageControl::OnPaint, this);
+	Bind(wxEVT_MOTION, &CWindowDialog::wxMRPTImageControl::OnMouseMove, this);
+	Bind(
+		wxEVT_LEFT_DOWN, &CWindowDialog::wxMRPTImageControl::OnMouseClick,
+		this);
+	Bind(
+		wxEVT_CHAR, &CWindowDialog::wxMRPTImageControl::OnChar, this, wxID_ANY);
+	Bind(wxEVT_CHAR, &CWindowDialog::wxMRPTImageControl::OnChar, this);
 }
 
 CWindowDialog::wxMRPTImageControl::~wxMRPTImageControl()
@@ -160,42 +149,20 @@ CWindowDialog::CWindowDialog(
 	SetMenuBar(MenuBar1);
 
 	// Events:
-	Connect(
-		wxID_ANY, wxEVT_CLOSE_WINDOW,
-		(wxObjectEventFunction)&CWindowDialog::OnClose);
-	Connect(
-		ID_MENUITEM1, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&CWindowDialog::OnMenuClose);
-	Connect(
-		ID_MENUITEM2, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&CWindowDialog::OnMenuAbout);
-	Connect(
-		ID_MENUITEM3, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&CWindowDialog::OnMenuSave);
+	Bind(wxEVT_CLOSE_WINDOW, &CWindowDialog::OnClose, this, wxID_ANY);
+	Bind(wxEVT_MENU, &CWindowDialog::OnMenuClose, this, ID_MENUITEM1);
+	Bind(wxEVT_MENU, &CWindowDialog::OnMenuAbout, this, ID_MENUITEM2);
+	Bind(wxEVT_MENU, &CWindowDialog::OnMenuSave, this, ID_MENUITEM3);
 
-	//	Connect(wxID_ANY,wxEVT_CHAR,(wxObjectEventFunction)&CWindowDialog::OnChar);
-	Connect(
-		wxID_ANY, wxEVT_KEY_DOWN,
-		(wxObjectEventFunction)&CWindowDialog::OnChar);
-	// Connect(wxID_ANY,wxEVT_CHAR,(wxObjectEventFunction)&CWindowDialog::OnChar);
-	Connect(wxEVT_CHAR, (wxObjectEventFunction)&CWindowDialog::OnChar);
+	Bind(wxEVT_KEY_DOWN, &CWindowDialog::OnChar, this, wxID_ANY);
+	Bind(wxEVT_CHAR, &CWindowDialog::OnChar, this, wxID_ANY);
 
-	m_image->Connect(
-		wxID_ANY, wxEVT_KEY_DOWN, (wxObjectEventFunction)&CWindowDialog::OnChar,
-		nullptr, this);
-	m_image->Connect(
-		wxEVT_SIZE, (wxObjectEventFunction)&CWindowDialog::OnResize, nullptr,
-		this);
+	m_image->Bind(wxEVT_KEY_DOWN, &CWindowDialog::OnChar, this);
+	m_image->Bind(wxEVT_SIZE, &CWindowDialog::OnResize, this);
 
-	m_image->Connect(
-		wxEVT_LEFT_DOWN, (wxObjectEventFunction)&CWindowDialog::OnMouseDown,
-		nullptr, this);
-	m_image->Connect(
-		wxEVT_RIGHT_DOWN, (wxObjectEventFunction)&CWindowDialog::OnMouseDown,
-		nullptr, this);
-	m_image->Connect(
-		wxEVT_MOTION, (wxObjectEventFunction)&CWindowDialog::OnMouseMove,
-		nullptr, this);
+	m_image->Bind(wxEVT_LEFT_DOWN, &CWindowDialog::OnMouseDown, this);
+	m_image->Bind(wxEVT_RIGHT_DOWN, &CWindowDialog::OnMouseDown, this);
+	m_image->Bind(wxEVT_MOTION, &CWindowDialog::OnMouseMove, this);
 
 	// Increment number of windows:
 	// int winCount =

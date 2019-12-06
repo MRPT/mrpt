@@ -767,72 +767,37 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 	FlexGridSizer1->Fit(this);
 	FlexGridSizer1->SetSizeHints(this);
 
-	Connect(
-		ID_MENUITEM1, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&slamdemoFrame::OnbtnResetClicked);
-	Connect(
-		ID_MENUITEM2, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&slamdemoFrame::OnbtnOneStepClicked);
-	Connect(
-		ID_MENUITEM3, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&slamdemoFrame::OnbtnRunClicked);
-	Connect(
-		ID_MENUITEM6, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&slamdemoFrame::OnbtnStopClicked);
-	Connect(
-		ID_MENUITEM4, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&slamdemoFrame::OnbtnRunBatchClicked);
-	Connect(
-		ID_MENUITEM5, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&slamdemoFrame::OnConfigClicked);
-	Connect(
-		idMenuQuit, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&slamdemoFrame::OnQuit);
-	Connect(
-		ID_MENUITEM8, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&slamdemoFrame::OnMenuSaveFilterState);
-	Connect(
-		ID_MENUITEM11, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&slamdemoFrame::OnmnuSaveLastDASelected);
-	Connect(
-		ID_MENUITEM_SAVE_RAWLOG, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&slamdemoFrame::OnmnuItemSaveRawlogSelected);
-	Connect(
-		ID_MENUITEM9, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&slamdemoFrame::OnMenuProfilerViewStats);
-	Connect(
-		ID_MENUITEM10, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&slamdemoFrame::OnMenuProfilerReset);
-	Connect(
-		idMenuAbout, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&slamdemoFrame::OnAbout);
-	Connect(
-		ID_TOOLBARITEM1, wxEVT_COMMAND_TOOL_CLICKED,
-		(wxObjectEventFunction)&slamdemoFrame::OnbtnResetClicked);
-	Connect(
-		ID_TOOLBARITEM2, wxEVT_COMMAND_TOOL_CLICKED,
-		(wxObjectEventFunction)&slamdemoFrame::OnbtnOneStepClicked);
-	Connect(
-		ID_BTNRUN, wxEVT_COMMAND_TOOL_CLICKED,
-		(wxObjectEventFunction)&slamdemoFrame::OnbtnRunClicked);
-	Connect(
-		ID_BTNSTOP, wxEVT_COMMAND_TOOL_CLICKED,
-		(wxObjectEventFunction)&slamdemoFrame::OnbtnStopClicked);
-	Connect(
-		ID_TOOLBARITEM4, wxEVT_COMMAND_TOOL_CLICKED,
-		(wxObjectEventFunction)&slamdemoFrame::OnbtnRunBatchClicked);
-	Connect(
-		ID_TOOLBARITEM3, wxEVT_COMMAND_TOOL_CLICKED,
-		(wxObjectEventFunction)&slamdemoFrame::OnConfigClicked);
-	Connect(
-		ID_TOOLBARITEM6, wxEVT_COMMAND_TOOL_CLICKED,
-		(wxObjectEventFunction)&slamdemoFrame::OnAbout);
-	Connect(
-		ID_TOOLBARITEM7, wxEVT_COMMAND_TOOL_CLICKED,
-		(wxObjectEventFunction)&slamdemoFrame::OnQuit);
-	Connect(
-		ID_TIMER1, wxEVT_TIMER,
-		(wxObjectEventFunction)&slamdemoFrame::OntimSimulTrigger);
+	Bind(wxEVT_MENU, &slamdemoFrame::OnbtnResetClicked, this, ID_MENUITEM1);
+	Bind(wxEVT_MENU, &slamdemoFrame::OnbtnOneStepClicked, this, ID_MENUITEM2);
+	Bind(wxEVT_MENU, &slamdemoFrame::OnbtnRunClicked, this, ID_MENUITEM3);
+	Bind(wxEVT_MENU, &slamdemoFrame::OnbtnStopClicked, this, ID_MENUITEM6);
+	Bind(wxEVT_MENU, &slamdemoFrame::OnbtnRunBatchClicked, this, ID_MENUITEM4);
+	Bind(wxEVT_MENU, &slamdemoFrame::OnConfigClicked, this, ID_MENUITEM5);
+	Bind(wxEVT_MENU, &slamdemoFrame::OnQuit, this, idMenuQuit);
+	Bind(wxEVT_MENU, &slamdemoFrame::OnMenuSaveFilterState, this, ID_MENUITEM8);
+	Bind(
+		wxEVT_MENU, &slamdemoFrame::OnmnuSaveLastDASelected, this,
+		ID_MENUITEM11);
+	Bind(
+		wxEVT_MENU, &slamdemoFrame::OnmnuItemSaveRawlogSelected, this,
+		ID_MENUITEM_SAVE_RAWLOG);
+	Bind(
+		wxEVT_MENU, &slamdemoFrame::OnMenuProfilerViewStats, this,
+		ID_MENUITEM9);
+	Bind(wxEVT_MENU, &slamdemoFrame::OnMenuProfilerReset, this, ID_MENUITEM10);
+	Bind(wxEVT_MENU, &slamdemoFrame::OnAbout, this, idMenuAbout);
+	Bind(wxEVT_TOOL, &slamdemoFrame::OnbtnResetClicked, this, ID_TOOLBARITEM1);
+	Bind(
+		wxEVT_TOOL, &slamdemoFrame::OnbtnOneStepClicked, this, ID_TOOLBARITEM2);
+	Bind(wxEVT_TOOL, &slamdemoFrame::OnbtnRunClicked, this, ID_BTNRUN);
+	Bind(wxEVT_TOOL, &slamdemoFrame::OnbtnStopClicked, this, ID_BTNSTOP);
+	Bind(
+		wxEVT_TOOL, &slamdemoFrame::OnbtnRunBatchClicked, this,
+		ID_TOOLBARITEM4);
+	Bind(wxEVT_TOOL, &slamdemoFrame::OnConfigClicked, this, ID_TOOLBARITEM3);
+	Bind(wxEVT_TOOL, &slamdemoFrame::OnAbout, this, ID_TOOLBARITEM6);
+	Bind(wxEVT_TOOL, &slamdemoFrame::OnQuit, this, ID_TOOLBARITEM7);
+	Bind(wxEVT_TIMER, &slamdemoFrame::OntimSimulTrigger, this, ID_TIMER1);
 	//*)
 
 	gridDA->SetSelectionMode(wxGrid::wxGridSelectCells);

@@ -257,46 +257,27 @@ CScanAnimation::CScanAnimation(
 	FlexGridSizer1->SetSizeHints(this);
 	Center();
 
-	Connect(
-		ID_RADIOBUTTON1, wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-		(wxObjectEventFunction)&CScanAnimation::OnrbLoadedSelect);
-	Connect(
-		ID_RADIOBUTTON2, wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-		(wxObjectEventFunction)&CScanAnimation::OnrbFile);
-	Connect(
-		ID_BUTTON5, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CScanAnimation::OnbtnPickInputClick);
-	Connect(
-		ID_BUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CScanAnimation::OnbtnPlayClick);
-	Connect(
-		ID_BUTTON2, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CScanAnimation::OnbtnStopClick);
-	Connect(
-		ID_CHECKBOX1, wxEVT_COMMAND_CHECKBOX_CLICKED,
-		(wxObjectEventFunction)&CScanAnimation::OncbAllowMixClick);
-	Connect(
-		ID_BUTTON3, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CScanAnimation::OnbtnCloseClick);
-	Connect(
-		ID_SLIDER1,
-		wxEVT_SCROLL_TOP | wxEVT_SCROLL_BOTTOM | wxEVT_SCROLL_LINEUP |
-			wxEVT_SCROLL_LINEDOWN | wxEVT_SCROLL_PAGEUP |
-			wxEVT_SCROLL_PAGEDOWN | wxEVT_SCROLL_THUMBTRACK |
-			wxEVT_SCROLL_THUMBRELEASE | wxEVT_SCROLL_CHANGED,
-		(wxObjectEventFunction)&CScanAnimation::OnslPosCmdScrollChanged);
-	Connect(
-		ID_SLIDER1, wxEVT_SCROLL_THUMBTRACK,
-		(wxObjectEventFunction)&CScanAnimation::OnslPosCmdScrollChanged);
-	Connect(
-		ID_SLIDER1, wxEVT_SCROLL_CHANGED,
-		(wxObjectEventFunction)&CScanAnimation::OnslPosCmdScrollChanged);
-	Connect(
-		ID_BUTTON4, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CScanAnimation::OnbtnJumpClick);
-	Connect(
-		wxID_ANY, wxEVT_INIT_DIALOG,
-		(wxObjectEventFunction)&CScanAnimation::OnInit);
+	Bind(
+		wxEVT_RADIOBUTTON, &CScanAnimation::OnrbLoadedSelect, this,
+		ID_RADIOBUTTON1);
+	Bind(wxEVT_RADIOBUTTON, &CScanAnimation::OnrbFile, this, ID_RADIOBUTTON2);
+	Bind(wxEVT_BUTTON, &CScanAnimation::OnbtnPickInputClick, this, ID_BUTTON5);
+	Bind(wxEVT_BUTTON, &CScanAnimation::OnbtnPlayClick, this, ID_BUTTON1);
+	Bind(wxEVT_BUTTON, &CScanAnimation::OnbtnStopClick, this, ID_BUTTON2);
+	Bind(
+		wxEVT_CHECKBOX, &CScanAnimation::OncbAllowMixClick, this, ID_CHECKBOX1);
+	Bind(wxEVT_BUTTON, &CScanAnimation::OnbtnCloseClick, this, ID_BUTTON3);
+	Bind(
+		wxEVT_SLIDER, &CScanAnimation::OnslPosCmdScrollChanged, this,
+		ID_SLIDER1);
+	Bind(
+		wxEVT_SCROLL_THUMBTRACK, &CScanAnimation::OnslPosCmdScrollChanged, this,
+		ID_SLIDER1);
+	Bind(
+		wxEVT_SCROLL_CHANGED, &CScanAnimation::OnslPosCmdScrollChanged, this,
+		ID_SLIDER1);
+	Bind(wxEVT_BUTTON, &CScanAnimation::OnbtnJumpClick, this, ID_BUTTON4);
+	Bind(wxEVT_INIT_DIALOG, &CScanAnimation::OnInit, this, wxID_ANY);
 	//*)
 
 	// Initialize 3D view:
@@ -626,7 +607,7 @@ void CScanAnimation::OnbtnPlayClick(wxCommandEvent& event)
 
 void CScanAnimation::OnbtnStopClick(wxCommandEvent& event) { m_stop = true; }
 void CScanAnimation::OnbtnCloseClick(wxCommandEvent& event) { Close(); }
-void CScanAnimation::OnslPosCmdScrollChanged(wxScrollEvent& event)
+void CScanAnimation::OnslPosCmdScrollChanged(wxCommandEvent&)
 {
 	edIndex->SetValue(slPos->GetValue());
 	RebuildMaps();

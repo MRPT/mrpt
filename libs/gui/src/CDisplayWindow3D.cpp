@@ -300,12 +300,8 @@ C3DWindowDialog::C3DWindowDialog(
 
 	// Events:
 	this->Bind(wxEVT_CLOSE_WINDOW, &C3DWindowDialog::OnClose, this);
-	this->Bind(
-		wxEVT_COMMAND_MENU_SELECTED, &C3DWindowDialog::OnMenuClose, this,
-		ID_MENUITEM1);
-	this->Bind(
-		wxEVT_COMMAND_MENU_SELECTED, &C3DWindowDialog::OnMenuAbout, this,
-		ID_MENUITEM2);
+	this->Bind(wxEVT_MENU, &C3DWindowDialog::OnMenuClose, this, ID_MENUITEM1);
+	this->Bind(wxEVT_MENU, &C3DWindowDialog::OnMenuAbout, this, ID_MENUITEM2);
 	this->Bind(wxEVT_CHAR, &C3DWindowDialog::OnChar, this);
 	this->Bind(wxEVT_SIZE, &C3DWindowDialog::OnResize, this);
 

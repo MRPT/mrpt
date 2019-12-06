@@ -104,7 +104,7 @@ class kinect_calibrate_guiDialog : public wxDialog
    private:
 	wxConfig m_config;
 
-	CMyRedirector* m_my_redirector;
+	std::unique_ptr<CMyRedirector> m_my_redirector;
 
 	std::thread m_cap_thread;
 	TThreadParam m_cap_thread_data;

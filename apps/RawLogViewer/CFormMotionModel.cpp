@@ -635,51 +635,36 @@ CFormMotionModel::CFormMotionModel(wxWindow* parent, wxWindowID id)
 	SetSizer(FlexGridSizer1);
 	Layout();
 
-	Connect(
-		ID_BUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormMotionModel::OnbtnOkClick);
-	Connect(
-		ID_BUTTON10, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormMotionModel::OnbtnResetGaussClick);
-	Connect(
-		ID_BUTTON2, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormMotionModel::OnbtnGaussOKClick);
-	Connect(
-		ID_BUTTON8, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormMotionModel::OnbtnSimulateClick);
-	Connect(
-		ID_BUTTON11, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormMotionModel::OnbtnResetThrunClick);
-	Connect(
-		ID_BUTTON3, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormMotionModel::OnbtnThrunOkClick);
-	Connect(
-		ID_BUTTON9, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormMotionModel::OnbtnSimulateThrunClick);
-	Connect(
-		ID_RADIOBUTTON1, wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-		(wxObjectEventFunction)&CFormMotionModel::OnrbLoadedSelect);
-	Connect(
-		ID_BUTTON6, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormMotionModel::OnbtnGetFromCurrentClick);
-	Connect(
-		ID_CHECKBOX1, wxEVT_COMMAND_CHECKBOX_CLICKED,
-		(wxObjectEventFunction)&CFormMotionModel::OncbAllClick);
-	Connect(
-		ID_RADIOBUTTON2, wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-		(wxObjectEventFunction)&CFormMotionModel::OnrbFileSelect);
-	Connect(
-		ID_BUTTON4, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormMotionModel::OnbtnPickInputClick);
-	Connect(
-		ID_BUTTON7, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormMotionModel::OnbtnGetFromFileClick);
-	Connect(
-		ID_BUTTON5, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormMotionModel::OnbtnPickOutClick);
-	Connect(
-		wxID_ANY, wxEVT_INIT_DIALOG,
-		(wxObjectEventFunction)&CFormMotionModel::OnInit);
+	Bind(wxEVT_BUTTON, &CFormMotionModel::OnbtnOkClick, this, ID_BUTTON1);
+	Bind(
+		wxEVT_BUTTON, &CFormMotionModel::OnbtnResetGaussClick, this,
+		ID_BUTTON10);
+	Bind(wxEVT_BUTTON, &CFormMotionModel::OnbtnGaussOKClick, this, ID_BUTTON2);
+	Bind(wxEVT_BUTTON, &CFormMotionModel::OnbtnSimulateClick, this, ID_BUTTON8);
+	Bind(
+		wxEVT_BUTTON, &CFormMotionModel::OnbtnResetThrunClick, this,
+		ID_BUTTON11);
+	Bind(wxEVT_BUTTON, &CFormMotionModel::OnbtnThrunOkClick, this, ID_BUTTON3);
+	Bind(
+		wxEVT_BUTTON, &CFormMotionModel::OnbtnSimulateThrunClick, this,
+		ID_BUTTON9);
+	Bind(
+		wxEVT_RADIOBUTTON, &CFormMotionModel::OnrbLoadedSelect, this,
+		ID_RADIOBUTTON1);
+	Bind(
+		wxEVT_BUTTON, &CFormMotionModel::OnbtnGetFromCurrentClick, this,
+		ID_BUTTON6);
+	Bind(wxEVT_CHECKBOX, &CFormMotionModel::OncbAllClick, this, ID_CHECKBOX1);
+	Bind(
+		wxEVT_RADIOBUTTON, &CFormMotionModel::OnrbFileSelect, this,
+		ID_RADIOBUTTON2);
+	Bind(
+		wxEVT_BUTTON, &CFormMotionModel::OnbtnPickInputClick, this, ID_BUTTON4);
+	Bind(
+		wxEVT_BUTTON, &CFormMotionModel::OnbtnGetFromFileClick, this,
+		ID_BUTTON7);
+	Bind(wxEVT_BUTTON, &CFormMotionModel::OnbtnPickOutClick, this, ID_BUTTON5);
+	Bind(wxEVT_INIT_DIALOG, &CFormMotionModel::OnInit, this, wxID_ANY);
 	//*)
 
 	// The graph:

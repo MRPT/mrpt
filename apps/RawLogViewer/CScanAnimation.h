@@ -92,7 +92,7 @@ class CScanAnimation : public wxDialog
 	void OnbtnPlayClick(wxCommandEvent& event);
 	void OnbtnStopClick(wxCommandEvent& event);
 	void OnbtnCloseClick(wxCommandEvent& event);
-	void OnslPosCmdScrollChanged(wxScrollEvent& event);
+	void OnslPosCmdScrollChanged(wxCommandEvent& event);
 	void OnbtnJumpClick(wxCommandEvent& event);
 	void OnslPosCmdScroll(wxScrollEvent& event);
 	void OnbtnPickInputClick(wxCommandEvent& event);

@@ -478,43 +478,38 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent, wxWindowID id)
 	FlexGridSizer1->Fit(this);
 	FlexGridSizer1->SetSizeHints(this);
 
-	Connect(
-		ID_BUTTON8, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&camera_calib_guiDialog::OnbtnCaptureNowClick);
-	Connect(
-		ID_BUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&camera_calib_guiDialog::OnAddImage);
-	Connect(
-		ID_BUTTON2, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&camera_calib_guiDialog::OnListClear);
-	Connect(
-		ID_BUTTON9, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&camera_calib_guiDialog::OnbtnSaveImagesClick);
-	Connect(
-		ID_LISTBOX1, wxEVT_COMMAND_LISTBOX_SELECTED,
-		(wxObjectEventFunction)&camera_calib_guiDialog::OnlbFilesSelect);
-	Connect(
-		ID_CHOICE1, wxEVT_COMMAND_CHOICE_SELECTED,
-		(wxObjectEventFunction)&camera_calib_guiDialog::OncbZoomSelect);
-	Connect(
-		ID_BUTTON3, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&camera_calib_guiDialog::OnbtnRunCalibClick);
-	Connect(
-		ID_BUTTON6, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&camera_calib_guiDialog::OnbtnSaveClick);
-	Connect(
-		ID_BUTTON7, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&camera_calib_guiDialog::OnbtnManualRectClick);
-	Connect(
-		ID_BUTTON5, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&camera_calib_guiDialog::OnbtnAboutClick);
-	Connect(
-		ID_BUTTON4, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&camera_calib_guiDialog::OnbtnCloseClick);
-	Connect(
-		ID_BUTTON10, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&camera_calib_guiDialog::
-			OnbtnPoseEstimateNowClick);
+	Bind(
+		wxEVT_BUTTON, &camera_calib_guiDialog::OnbtnCaptureNowClick, this,
+		ID_BUTTON8);
+	Bind(wxEVT_BUTTON, &camera_calib_guiDialog::OnAddImage, this, ID_BUTTON1);
+	Bind(wxEVT_BUTTON, &camera_calib_guiDialog::OnListClear, this, ID_BUTTON2);
+	Bind(
+		wxEVT_BUTTON, &camera_calib_guiDialog::OnbtnSaveImagesClick, this,
+		ID_BUTTON9);
+	Bind(
+		wxEVT_LISTBOX, &camera_calib_guiDialog::OnlbFilesSelect, this,
+		ID_LISTBOX1);
+	Bind(
+		wxEVT_CHOICE, &camera_calib_guiDialog::OncbZoomSelect, this,
+		ID_CHOICE1);
+	Bind(
+		wxEVT_BUTTON, &camera_calib_guiDialog::OnbtnRunCalibClick, this,
+		ID_BUTTON3);
+	Bind(
+		wxEVT_BUTTON, &camera_calib_guiDialog::OnbtnSaveClick, this,
+		ID_BUTTON6);
+	Bind(
+		wxEVT_BUTTON, &camera_calib_guiDialog::OnbtnManualRectClick, this,
+		ID_BUTTON7);
+	Bind(
+		wxEVT_BUTTON, &camera_calib_guiDialog::OnbtnAboutClick, this,
+		ID_BUTTON5);
+	Bind(
+		wxEVT_BUTTON, &camera_calib_guiDialog::OnbtnCloseClick, this,
+		ID_BUTTON4);
+	Bind(
+		wxEVT_BUTTON, &camera_calib_guiDialog::OnbtnPoseEstimateNowClick, this,
+		ID_BUTTON10);
 	//*)
 
 	camera_params.intrinsicParams(0, 0) = 0;  // Indicate calib didn't run yet.
