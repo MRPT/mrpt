@@ -637,45 +637,36 @@ CDlgParams::CDlgParams(
 	FlexGridSizer1->SetSizeHints(this);
 	Center();
 
-	Connect(
-		ID_RADIOBUTTON1, wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-		(wxObjectEventFunction)&CDlgParams::OnUpdateControlsState);
-	Connect(
-		ID_RADIOBUTTON2, wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-		(wxObjectEventFunction)&CDlgParams::OnUpdateControlsState);
-	Connect(
-		ID_RADIOBUTTON3, wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-		(wxObjectEventFunction)&CDlgParams::OnUpdateControlsState);
-	Connect(
-		ID_RADIOBUTTON4, wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-		(wxObjectEventFunction)&CDlgParams::OnUpdateControlsState);
-	Connect(
-		ID_RADIOBOX3, wxEVT_COMMAND_RADIOBOX_SELECTED,
-		(wxObjectEventFunction)&CDlgParams::OnUpdateControlsState);
-	Connect(
-		ID_RADIOBOX1, wxEVT_COMMAND_RADIOBOX_SELECTED,
-		(wxObjectEventFunction)&CDlgParams::OnUpdateControlsState);
-	Connect(
-		ID_RADIOBUTTON5, wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-		(wxObjectEventFunction)&CDlgParams::OnUpdateControlsState);
-	Connect(
-		ID_RADIOBUTTON6, wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-		(wxObjectEventFunction)&CDlgParams::OnUpdateControlsState);
-	Connect(
-		ID_RADIOBUTTON7, wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-		(wxObjectEventFunction)&CDlgParams::OnUpdateControlsState);
-	Connect(
-		ID_BUTTON3, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CDlgParams::OnbtnBrowseClick);
-	Connect(
-		ID_CHECKBOX1, wxEVT_COMMAND_CHECKBOX_CLICKED,
-		(wxObjectEventFunction)&CDlgParams::OnUpdateControlsState);
-	Connect(
-		ID_BUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CDlgParams::OnbtnOkClick);
-	Connect(
-		ID_BUTTON2, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CDlgParams::OnbtnCancelClick);
+	Bind(
+		wxEVT_RADIOBUTTON, &CDlgParams::OnUpdateControlsState, this,
+		ID_RADIOBUTTON1);
+	Bind(
+		wxEVT_RADIOBUTTON, &CDlgParams::OnUpdateControlsState, this,
+		ID_RADIOBUTTON2);
+	Bind(
+		wxEVT_RADIOBUTTON, &CDlgParams::OnUpdateControlsState, this,
+		ID_RADIOBUTTON3);
+	Bind(
+		wxEVT_RADIOBUTTON, &CDlgParams::OnUpdateControlsState, this,
+		ID_RADIOBUTTON4);
+	Bind(
+		wxEVT_RADIOBOX, &CDlgParams::OnUpdateControlsState, this, ID_RADIOBOX3);
+	Bind(
+		wxEVT_RADIOBOX, &CDlgParams::OnUpdateControlsState, this, ID_RADIOBOX1);
+	Bind(
+		wxEVT_RADIOBUTTON, &CDlgParams::OnUpdateControlsState, this,
+		ID_RADIOBUTTON5);
+	Bind(
+		wxEVT_RADIOBUTTON, &CDlgParams::OnUpdateControlsState, this,
+		ID_RADIOBUTTON6);
+	Bind(
+		wxEVT_RADIOBUTTON, &CDlgParams::OnUpdateControlsState, this,
+		ID_RADIOBUTTON7);
+	Bind(wxEVT_BUTTON, &CDlgParams::OnbtnBrowseClick, this, ID_BUTTON3);
+	Bind(
+		wxEVT_CHECKBOX, &CDlgParams::OnUpdateControlsState, this, ID_CHECKBOX1);
+	Bind(wxEVT_BUTTON, &CDlgParams::OnbtnOkClick, this, ID_BUTTON1);
+	Bind(wxEVT_BUTTON, &CDlgParams::OnbtnCancelClick, this, ID_BUTTON2);
 	//*)
 }
 

@@ -246,7 +246,7 @@ class xRawLogViewerFrame : public wxFrame
 	void OnmnuCreateAVISelected(wxCommandEvent& event);
 	void OnMenuRegenerateOdometryTimes(wxCommandEvent& event);
 	void OnMenuItem3DObsRecoverParams(wxCommandEvent& event);
-	void Onslid3DcamConfCmdScrollChanged(wxScrollEvent& event);
+	void Onslid3DcamConfCmdScrollChanged(wxCommandEvent&);
 	void OnMenuItemImportBremenDLRLog(wxCommandEvent& event);
 	void OnMenuRenameSingleObs(wxCommandEvent& event);
 	//*)

@@ -187,15 +187,9 @@ CDlgPLYOptions::CDlgPLYOptions(wxWindow* parent, wxWindowID id)
 	FlexGridSizer1->SetSizeHints(this);
 	Center();
 
-	Connect(
-		ID_RADIOBOX2, wxEVT_COMMAND_RADIOBOX_SELECTED,
-		(wxObjectEventFunction)&CDlgPLYOptions::OnrbClassSelect);
-	Connect(
-		ID_BUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CDlgPLYOptions::OnbtnCancelClick);
-	Connect(
-		ID_BUTTON2, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CDlgPLYOptions::OnbtnOKClick);
+	Bind(wxEVT_RADIOBOX, &CDlgPLYOptions::OnrbClassSelect, this, ID_RADIOBOX2);
+	Bind(wxEVT_BUTTON, &CDlgPLYOptions::OnbtnCancelClick, this, ID_BUTTON1);
+	Bind(wxEVT_BUTTON, &CDlgPLYOptions::OnbtnOKClick, this, ID_BUTTON2);
 	//*)
 
 	wxCommandEvent ev;

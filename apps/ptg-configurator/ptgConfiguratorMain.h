@@ -70,7 +70,7 @@ class ptgConfiguratorframe : public wxFrame
 	void OnbtnRebuildTPObsClick(wxCommandEvent& event);
 	void OnbtnPlaceObsClick(wxCommandEvent& event);
 	void OnbtnPlaceTargetClick(wxCommandEvent& event);
-	void OnslidPathHighlightCmdScroll(wxScrollEvent& event);
+	void OnslidPathHighlightCmdScroll(wxCommandEvent&);
 	void OncbHighlightOnePathClick(wxCommandEvent& event);
 	void OnedIndexHighlightPathChange(wxSpinEvent& event);
 	void OnedCfgText(wxCommandEvent& event);

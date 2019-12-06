@@ -116,13 +116,9 @@ wxMRPTImageControl::wxMRPTImageControl(
 {
 	this->Create(parent, winID, wxPoint(x, y), wxSize(width, height));
 
-	Connect(wxEVT_PAINT, wxPaintEventHandler(wxMRPTImageControl::OnPaint));
-	Connect(wxEVT_MOTION, wxMouseEventHandler(wxMRPTImageControl::OnMouseMove));
-	Connect(
-		wxID_ANY, wxEVT_LEFT_DOWN,
-		wxMouseEventHandler(wxMRPTImageControl::OnMouseClick));
-
-	// Connect(wxID_ANY,wxEVT_CHAR,(wxObjectEventFunction)&wxMRPTImageControl::OnChar);
+	Bind(wxEVT_PAINT, &wxMRPTImageControl::OnPaint, this);
+	Bind(wxEVT_MOTION, &wxMRPTImageControl::OnMouseMove, this);
+	Bind(wxEVT_LEFT_DOWN, &wxMRPTImageControl::OnMouseClick, this);
 }
 
 wxMRPTImageControl::~wxMRPTImageControl()
@@ -608,16 +604,15 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent, wxWindowID id)
 	FlexGridSizer1->Fit(this);
 	FlexGridSizer1->SetSizeHints(this);
 
-	Connect(
-		ID_BUTTON7, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CPanelCameraSelection::OnbtnBrowseVideoClick);
-	Connect(
-		ID_BUTTON8, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CPanelCameraSelection::OnbtnBrowseRawlogClick);
-	Connect(
-		ID_BUTTON9, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CPanelCameraSelection::
-			OnbtnBrowseRawlogDirClick);
+	Bind(
+		wxEVT_BUTTON, &CPanelCameraSelection::OnbtnBrowseVideoClick, this,
+		ID_BUTTON7);
+	Bind(
+		wxEVT_BUTTON, &CPanelCameraSelection::OnbtnBrowseRawlogClick, this,
+		ID_BUTTON8);
+	Bind(
+		wxEVT_BUTTON, &CPanelCameraSelection::OnbtnBrowseRawlogDirClick, this,
+		ID_BUTTON9);
 	//*)
 
 	// end of automatically-generated code above:

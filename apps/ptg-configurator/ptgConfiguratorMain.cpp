@@ -625,86 +625,34 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	FlexGridSizer1->SetSizeHints(this);
 	Center();
 
-	Connect(
-		ID_CHOICE1, wxEVT_COMMAND_CHOICE_SELECTED,
-		(wxObjectEventFunction)&ptgConfiguratorframe::OncbPTGClassSelect);
-	Connect(
-		ID_BUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&ptgConfiguratorframe::OnbtnReloadParamsClick);
-	Connect(
-		ID_SPINCTRL1, wxEVT_COMMAND_SPINCTRL_UPDATED,
-		(wxObjectEventFunction)&ptgConfiguratorframe::OnedPTGIndexChange);
-	Connect(
-		ID_CHECKBOX1, wxEVT_COMMAND_CHECKBOX_CLICKED,
-		(wxObjectEventFunction)&ptgConfiguratorframe::OncbDrawShapePathClick);
-	Connect(
-		ID_BUTTON5, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&ptgConfiguratorframe::OnButton1Click);
-	Connect(
-		ID_CHECKBOX3, wxEVT_COMMAND_CHECKBOX_CLICKED,
-		(wxObjectEventFunction)&ptgConfiguratorframe::
-			OncbHighlightOnePathClick);
-	Connect(
-		ID_SLIDER1,
-		wxEVT_SCROLL_TOP | wxEVT_SCROLL_BOTTOM | wxEVT_SCROLL_LINEUP |
-			wxEVT_SCROLL_LINEDOWN | wxEVT_SCROLL_PAGEUP |
-			wxEVT_SCROLL_PAGEDOWN | wxEVT_SCROLL_THUMBTRACK |
-			wxEVT_SCROLL_THUMBRELEASE | wxEVT_SCROLL_CHANGED,
-		(wxObjectEventFunction)&ptgConfiguratorframe::
-			OnslidPathHighlightCmdScroll);
-	Connect(
-		ID_SLIDER1, wxEVT_SCROLL_THUMBTRACK,
-		(wxObjectEventFunction)&ptgConfiguratorframe::
-			OnslidPathHighlightCmdScroll);
-	Connect(
-		ID_SLIDER1, wxEVT_SCROLL_CHANGED,
-		(wxObjectEventFunction)&ptgConfiguratorframe::
-			OnslidPathHighlightCmdScroll);
-	Connect(
-		ID_SPINCTRL2, wxEVT_COMMAND_SPINCTRL_UPDATED,
-		(wxObjectEventFunction)&ptgConfiguratorframe::
-			OnedIndexHighlightPathChange);
-	Connect(
-		ID_CHECKBOX4, wxEVT_COMMAND_CHECKBOX_CLICKED,
-		(wxObjectEventFunction)&ptgConfiguratorframe::
-			OncbHighlightOnePathClick);
-	Connect(
-		ID_CHECKBOX2, wxEVT_COMMAND_CHECKBOX_CLICKED,
-		(wxObjectEventFunction)&ptgConfiguratorframe::OncbBuildTPObsClick);
-	Connect(
-		ID_BUTTON3, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&ptgConfiguratorframe::OnbtnPlaceObsClick);
-	Connect(
-		ID_BUTTON2, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&ptgConfiguratorframe::OnbtnRebuildTPObsClick);
-	Connect(
-		ID_BUTTON4, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&ptgConfiguratorframe::OnbtnPlaceTargetClick);
-	Connect(
-		ID_CHECKBOX5, wxEVT_COMMAND_CHECKBOX_CLICKED,
-		(wxObjectEventFunction)&ptgConfiguratorframe::OnrbShowTPSelectSelect);
-	Connect(
-		ID_CHECKBOX6, wxEVT_COMMAND_CHECKBOX_CLICKED,
-		(wxObjectEventFunction)&ptgConfiguratorframe::OnrbShowTPSelectSelect);
-	Connect(
-		ID_CHECKBOX7, wxEVT_COMMAND_CHECKBOX_CLICKED,
-		(wxObjectEventFunction)&ptgConfiguratorframe::OnrbShowTPSelectSelect);
-	Connect(
-		idMenuQuit, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&ptgConfiguratorframe::OnQuit);
-	Connect(
-		idMenuAbout, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&ptgConfiguratorframe::OnAbout);
+	using pcf = ptgConfiguratorframe;
+
+	Bind(wxEVT_CHOICE, &pcf::OncbPTGClassSelect, this, ID_CHOICE1);
+	Bind(wxEVT_BUTTON, &pcf::OnbtnReloadParamsClick, this, ID_BUTTON1);
+	Bind(
+		wxEVT_COMMAND_SPINCTRL_UPDATED, &pcf::OnedPTGIndexChange, this,
+		ID_SPINCTRL1);
+	Bind(wxEVT_CHECKBOX, &pcf::OncbDrawShapePathClick, this, ID_CHECKBOX1);
+	Bind(wxEVT_BUTTON, &pcf::OnButton1Click, this, ID_BUTTON5);
+	Bind(wxEVT_CHECKBOX, &pcf::OncbHighlightOnePathClick, this, ID_CHECKBOX3);
+	Bind(wxEVT_SLIDER, &pcf::OnslidPathHighlightCmdScroll, this, ID_SLIDER1);
+	Bind(
+		wxEVT_COMMAND_SPINCTRL_UPDATED, &pcf::OnedIndexHighlightPathChange,
+		this, ID_SPINCTRL2);
+	Bind(wxEVT_CHECKBOX, &pcf::OncbHighlightOnePathClick, this, ID_CHECKBOX4);
+	Bind(wxEVT_CHECKBOX, &pcf::OncbBuildTPObsClick, this, ID_CHECKBOX2);
+	Bind(wxEVT_BUTTON, &pcf::OnbtnPlaceObsClick, this, ID_BUTTON3);
+	Bind(wxEVT_BUTTON, &pcf::OnbtnRebuildTPObsClick, this, ID_BUTTON2);
+	Bind(wxEVT_BUTTON, &pcf::OnbtnPlaceTargetClick, this, ID_BUTTON4);
+	Bind(wxEVT_CHECKBOX, &pcf::OnrbShowTPSelectSelect, this, ID_CHECKBOX5);
+	Bind(wxEVT_CHECKBOX, &pcf::OnrbShowTPSelectSelect, this, ID_CHECKBOX6);
+	Bind(wxEVT_CHECKBOX, &pcf::OnrbShowTPSelectSelect, this, ID_CHECKBOX7);
+	Bind(wxEVT_MENU, &pcf::OnQuit, this, idMenuQuit);
+	Bind(wxEVT_MENU, &pcf::OnAbout, this, idMenuAbout);
 	//*)
 
-	m_plot->Connect(
-		wxEVT_MOTION,
-		(wxObjectEventFunction)&ptgConfiguratorframe::Onplot3DMouseMove,
-		nullptr, this);
-	m_plot->Connect(
-		wxEVT_LEFT_DOWN,
-		(wxObjectEventFunction)&ptgConfiguratorframe::Onplot3DMouseClick,
-		nullptr, this);
+	m_plot->Bind(wxEVT_MOTION, &pcf::Onplot3DMouseMove, this);
+	m_plot->Bind(wxEVT_LEFT_DOWN, &pcf::Onplot3DMouseClick, this);
 
 	// Redirect all output to control:
 	m_myRedirector = new CMyRedirector(edLog, false, 100, true, false, true);
@@ -1434,7 +1382,7 @@ void ptgConfiguratorframe::OnbtnPlaceTargetClick(wxCommandEvent& event)
 	m_cursorPickState = cpsPickTarget;
 }
 
-void ptgConfiguratorframe::OnslidPathHighlightCmdScroll(wxScrollEvent& event)
+void ptgConfiguratorframe::OnslidPathHighlightCmdScroll(wxCommandEvent&)
 {
 	edIndexHighlightPath->SetValue(slidPathHighlight->GetValue());
 	wxSpinEvent dm;

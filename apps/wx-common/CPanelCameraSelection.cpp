@@ -425,12 +425,12 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent, wxWindowID id)
 	FlexGridSizer1->Fit(this);
 	FlexGridSizer1->SetSizeHints(this);
 
-	Connect(
-		ID_BUTTON7, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CPanelCameraSelection::OnbtnBrowseVideoClick);
-	Connect(
-		ID_BUTTON8, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CPanelCameraSelection::OnbtnBrowseRawlogClick);
+	Bind(
+		wxEVT_COMMAND_BUTTON_CLICKED,
+		&CPanelCameraSelection::OnbtnBrowseVideoClick, this, ID_BUTTON7);
+	Bind(
+		wxEVT_COMMAND_BUTTON_CLICKED,
+		&CPanelCameraSelection::OnbtnBrowseRawlogClick, this, ID_BUTTON8);
 	Connect(
 		ID_BUTTON9, wxEVT_COMMAND_BUTTON_CLICKED,
 		(wxObjectEventFunction)&CPanelCameraSelection::

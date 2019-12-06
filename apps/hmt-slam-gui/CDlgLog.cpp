@@ -84,11 +84,8 @@ CDlgLog::CDlgLog(
 	timDumpLog.Start(250, false);
 	FlexGridSizer1->SetSizeHints(this);
 
-	Connect(
-		ID_TIMER1, wxEVT_TIMER,
-		(wxObjectEventFunction)&CDlgLog::OntimDumpLogTrigger);
-	Connect(
-		wxID_ANY, wxEVT_CLOSE_WINDOW, (wxObjectEventFunction)&CDlgLog::OnClose);
+	Bind(wxEVT_TIMER, &CDlgLog::OntimDumpLogTrigger, this, ID_TIMER1);
+	Bind(wxEVT_CLOSE_WINDOW, &CDlgLog::OnClose, this, wxID_ANY);
 	//*)
 
 	m_redirector = std::make_unique<CMyRedirector>(

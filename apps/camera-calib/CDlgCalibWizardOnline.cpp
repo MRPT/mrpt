@@ -270,18 +270,17 @@ CDlgCalibWizardOnline::CDlgCalibWizardOnline(
 	FlexGridSizer1->SetSizeHints(this);
 	Center();
 
-	Connect(
-		ID_BUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CDlgCalibWizardOnline::OnbtnStartClick);
-	Connect(
-		ID_BUTTON2, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CDlgCalibWizardOnline::OnbtnStopClick);
-	Connect(
-		ID_BUTTON3, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CDlgCalibWizardOnline::OnbtnCloseClick);
-	Connect(
-		ID_TIMER1, wxEVT_TIMER,
-		(wxObjectEventFunction)&CDlgCalibWizardOnline::OntimCaptureTrigger);
+	Bind(
+		wxEVT_BUTTON, &CDlgCalibWizardOnline::OnbtnStartClick, this,
+		ID_BUTTON1);
+	Bind(
+		wxEVT_BUTTON, &CDlgCalibWizardOnline::OnbtnStopClick, this, ID_BUTTON2);
+	Bind(
+		wxEVT_BUTTON, &CDlgCalibWizardOnline::OnbtnCloseClick, this,
+		ID_BUTTON3);
+	Bind(
+		wxEVT_TIMER, &CDlgCalibWizardOnline::OntimCaptureTrigger, this,
+		ID_TIMER1);
 	//*)
 
 	redire = new CMyRedirector(txtLog, true, 10);

@@ -159,11 +159,10 @@ CAboutBox::CAboutBox(wxWindow* parent, wxWindowID id)
 	FlexGridSizer1->SetSizeHints(this);
 	Center();
 
-	Connect(
-		ID_BUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CAboutBox::OnButton1Click);
-	Connect(
-		wxID_ANY, wxEVT_INIT_DIALOG, (wxObjectEventFunction)&CAboutBox::OnInit);
+	Bind(
+		wxEVT_COMMAND_BUTTON_CLICKED, &CAboutBox::OnButton1Click, this,
+		ID_BUTTON1);
+	Bind(wxEVT_INIT_DIALOG, &CAboutBox::OnInit, this, wxID_ANY);
 	//*)
 	lbLicense->SetValue(mrpt::system::getMRPTLicense().c_str());
 }

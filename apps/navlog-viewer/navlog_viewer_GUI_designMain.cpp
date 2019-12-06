@@ -380,36 +380,23 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(
 
 	using me = navlog_viewer_GUI_designDialog;
 
-	Bind(wxEVT_COMMAND_BUTTON_CLICKED, &me::OnbtnLoadClick, this, ID_BUTTON1);
-	Bind(wxEVT_COMMAND_BUTTON_CLICKED, &me::OnbtnHelpClick, this, ID_BUTTON2);
-	Bind(wxEVT_COMMAND_BUTTON_CLICKED, &me::OnbtnQuitClick, this, ID_BUTTON3);
-	Bind(
-		wxEVT_COMMAND_RADIOBOX_SELECTED, &me::OnrbPerPTGPlotsSelect, this,
-		ID_RADIOBOX1);
-	Bind(
-		wxEVT_COMMAND_CHECKLISTBOX_TOGGLED, &me::OncbGlobalFrameClick, this,
-		ID_CHECKLISTBOX1);
+	Bind(wxEVT_BUTTON, &me::OnbtnLoadClick, this, ID_BUTTON1);
+	Bind(wxEVT_BUTTON, &me::OnbtnHelpClick, this, ID_BUTTON2);
+	Bind(wxEVT_BUTTON, &me::OnbtnQuitClick, this, ID_BUTTON3);
+	Bind(wxEVT_RADIOBOX, &me::OnrbPerPTGPlotsSelect, this, ID_RADIOBOX1);
+	Bind(wxEVT_CHECKLISTBOX, &me::OncbGlobalFrameClick, this, ID_CHECKLISTBOX1);
 	Bind(wxEVT_SCROLL_THUMBTRACK, &me::OnslidLogCmdScroll, this, ID_SLIDER1);
 	Bind(wxEVT_SCROLL_CHANGED, &me::OnslidLogCmdScroll, this, ID_SLIDER1);
-	Bind(
-		wxEVT_COMMAND_BUTTON_CLICKED, &me::OnbtnMoreOpsClick, this, ID_BUTTON6);
-	Bind(wxEVT_COMMAND_BUTTON_CLICKED, &me::OnbtnPlayClick, this, ID_BUTTON4);
-	Bind(wxEVT_COMMAND_BUTTON_CLICKED, &me::OnbtnStopClick, this, ID_BUTTON5);
+	Bind(wxEVT_BUTTON, &me::OnbtnMoreOpsClick, this, ID_BUTTON6);
+	Bind(wxEVT_BUTTON, &me::OnbtnPlayClick, this, ID_BUTTON4);
+	Bind(wxEVT_BUTTON, &me::OnbtnStopClick, this, ID_BUTTON5);
 	Bind(wxEVT_TIMER, &me::OntimPlayTrigger, this, ID_TIMER1);
 	Bind(wxEVT_TIMER, &me::OntimAutoloadTrigger, this, ID_TIMER2);
-	Bind(
-		wxEVT_COMMAND_MENU_SELECTED, &me::OnmnuSeePTGParamsSelected, this,
-		ID_MENUITEM2);
-	Bind(
-		wxEVT_COMMAND_MENU_SELECTED, &me::OnmnuMatlabPlotsSelected, this,
-		ID_MENUITEM1);
-	Bind(
-		wxEVT_COMMAND_MENU_SELECTED, &me::OnmnuSaveScoreMatrixSelected, this,
-		ID_MENUITEM3);
+	Bind(wxEVT_MENU, &me::OnmnuSeePTGParamsSelected, this, ID_MENUITEM2);
+	Bind(wxEVT_MENU, &me::OnmnuMatlabPlotsSelected, this, ID_MENUITEM1);
+	Bind(wxEVT_MENU, &me::OnmnuSaveScoreMatrixSelected, this, ID_MENUITEM3);
 	//*)
-	Bind(
-		wxEVT_COMMAND_MENU_SELECTED, &me::OnmnuSaveCurrentObstacles, this,
-		ID_MENUITEM100);
+	Bind(wxEVT_MENU, &me::OnmnuSaveCurrentObstacles, this, ID_MENUITEM100);
 
 	{
 		wxMenuItem* mnuMatlabExportPaths;
@@ -418,7 +405,7 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(
 			_("Export paths info to MATLAB..."), wxEmptyString, wxITEM_NORMAL);
 		mnuMoreOps.Append(mnuMatlabExportPaths);
 		Bind(
-			wxEVT_COMMAND_MENU_SELECTED, &me::OnmnuMatlabExportPaths, this,
+			wxEVT_MENU, &me::OnmnuMatlabExportPaths, this,
 			ID_MENUITEM_SAVE_MATLAB_PATH);
 	}
 

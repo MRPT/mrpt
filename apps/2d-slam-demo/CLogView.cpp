@@ -63,9 +63,7 @@ CLogView::CLogView(
 	FlexGridSizer1->SetSizeHints(this);
 	Center();
 
-	Connect(
-		ID_BUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CLogView::OnbtnOkClick);
+	Bind(wxEVT_BUTTON, &CLogView::OnbtnOkClick, this, ID_BUTTON1);
 	//*)
 }
 

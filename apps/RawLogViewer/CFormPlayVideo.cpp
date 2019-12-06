@@ -388,45 +388,35 @@ CFormPlayVideo::CFormPlayVideo(wxWindow* parent, wxWindowID id)
 	FlexGridSizer1->SetSizeHints(this);
 	Center();
 
-	Connect(
-		ID_RADIOBUTTON1, wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-		(wxObjectEventFunction)&CFormPlayVideo::OnrbLoadedSelect);
-	Connect(
-		ID_RADIOBUTTON2, wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-		(wxObjectEventFunction)&CFormPlayVideo::OnrbFileSelect);
-	Connect(
-		ID_BUTTON4, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormPlayVideo::OnbtnPickClick);
-	Connect(
-		ID_COMBOBOX1, wxEVT_COMMAND_COMBOBOX_SELECTED,
-		(wxObjectEventFunction)&CFormPlayVideo::OncbImageDirsSelect);
-	Connect(
-		ID_BUTTON2, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormPlayVideo::OnbtnPlayClick);
-	Connect(
-		ID_BUTTON3, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormPlayVideo::OnbtnStopClick);
-	Connect(
-		ID_BUTTON5, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormPlayVideo::OnbtnCloseClick);
-	Connect(
-		ID_SLIDER1, wxEVT_SCROLL_THUMBTRACK,
-		(wxObjectEventFunction)&CFormPlayVideo::OnprogressBarCmdScrollChanged);
-	Connect(
-		ID_SLIDER1, wxEVT_SCROLL_CHANGED,
-		(wxObjectEventFunction)&CFormPlayVideo::OnprogressBarCmdScrollChanged);
-	Connect(
-		ID_BITMAPBUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormPlayVideo::OnbtnSaveCam1Click);
-	Connect(
-		ID_BITMAPBUTTON2, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormPlayVideo::OnbtnSaveCam2Click);
-	Connect(
-		ID_BITMAPBUTTON3, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormPlayVideo::OnbtnSaveCam3Click);
-	Connect(
-		wxID_ANY, wxEVT_INIT_DIALOG,
-		(wxObjectEventFunction)&CFormPlayVideo::OnInit);
+	Bind(
+		wxEVT_RADIOBUTTON, &CFormPlayVideo::OnrbLoadedSelect, this,
+		ID_RADIOBUTTON1);
+	Bind(
+		wxEVT_RADIOBUTTON, &CFormPlayVideo::OnrbFileSelect, this,
+		ID_RADIOBUTTON2);
+	Bind(wxEVT_BUTTON, &CFormPlayVideo::OnbtnPickClick, this, ID_BUTTON4);
+	Bind(
+		wxEVT_COMBOBOX, &CFormPlayVideo::OncbImageDirsSelect, this,
+		ID_COMBOBOX1);
+	Bind(wxEVT_BUTTON, &CFormPlayVideo::OnbtnPlayClick, this, ID_BUTTON2);
+	Bind(wxEVT_BUTTON, &CFormPlayVideo::OnbtnStopClick, this, ID_BUTTON3);
+	Bind(wxEVT_BUTTON, &CFormPlayVideo::OnbtnCloseClick, this, ID_BUTTON5);
+	Bind(
+		wxEVT_SCROLL_THUMBTRACK, &CFormPlayVideo::OnprogressBarCmdScrollChanged,
+		this, ID_SLIDER1);
+	Bind(
+		wxEVT_SCROLL_CHANGED, &CFormPlayVideo::OnprogressBarCmdScrollChanged,
+		this, ID_SLIDER1);
+	Bind(
+		wxEVT_BUTTON, &CFormPlayVideo::OnbtnSaveCam1Click, this,
+		ID_BITMAPBUTTON1);
+	Bind(
+		wxEVT_BUTTON, &CFormPlayVideo::OnbtnSaveCam2Click, this,
+		ID_BITMAPBUTTON2);
+	Bind(
+		wxEVT_BUTTON, &CFormPlayVideo::OnbtnSaveCam3Click, this,
+		ID_BITMAPBUTTON3);
+	Bind(wxEVT_INIT_DIALOG, &CFormPlayVideo::OnInit, this, wxID_ANY);
 	//*)
 
 	WX_END_TRY

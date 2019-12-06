@@ -712,139 +712,61 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 	FlexGridSizer1->SetSizeHints(this);
 	Center();
 
-	Connect(
-		ID_BUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnNewScene);
-	Connect(
-		ID_BUTTON2, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnOpenFile);
-	Connect(
-		ID_BUTTON3, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnPrevious);
-	Connect(
-		ID_BUTTON4, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnNext);
-	Connect(
-		ID_BUTTON5, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnReload);
-	Connect(
-		ID_BUTTON6, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuOptions);
-	Connect(
-		ID_BUTTON7, wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnbtnOrthoClicked);
-	Connect(
-		ID_BUTTON8, wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnbtnAutoplayClicked);
-	Connect(
-		ID_BUTTON9, wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnBtnRecordClicked);
-	Connect(
-		ID_BUTTON10, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnAbout);
-	Connect(
-		ID_BUTTON11, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnQuit);
-	Connect(
-		ID_MENUITEM1, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnNewScene);
-	Connect(
-		ID_MENUITEM2, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnOpenFile);
-	Connect(
-		ID_MENUITEM5, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnReload);
-	Connect(
-		ID_MENUITEM7, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuSave);
-	Connect(
-		ID_MENUITEM6, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnInsert3DS);
-	Connect(
-		ID_MENUITEM20, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::
-			OnMenuItemImportPLYPointCloud);
-	Connect(
-		ID_MENUITEM25, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuImportLASSelected);
-	Connect(
-		ID_MENUITEM22, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuItemExportPointsPLY);
-	Connect(
-		ID_MENUITEM29, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnPrevious);
-	Connect(
-		ID_MENUITEM30, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnNext);
-	Connect(
-		ID_MENUITEM12, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuItem14Selected);
-	Connect(
-		ID_MENUITEM23, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuItemHighResRender);
-	Connect(
-		ID_MENUITEM18, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuSceneStatsSelected);
-	Connect(
-		idMenuQuit, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnQuit);
-	Connect(
-		ID_MENUITEM24, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuSelectNoneSelected);
-	Connect(
-		ID_MENUITEM26, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuSelectByClassSelected);
-	Connect(
-		ID_MENUITEM27, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::
-			OnmnuSelectionScaleSelected);
-	Connect(
-		ID_MENUITEM28, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::
-			OnmnuSelectionDeleteSelected);
-	Connect(
-		ID_MENUITEM4, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuBackColor);
-	Connect(
-		ID_MENUITEM3, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuOptions);
-	Connect(
-		ID_MENUITEM15, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::
-			OnmnuItemShowCloudOctreesSelected);
-	Connect(
-		ID_MENUITEM17, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::
-			OnmnuItemChangeMaxPointsPerOctreeNodeSelected);
-	Connect(
-		ID_MENUITEM11, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuDeleteAll);
-	Connect(
-		ID_MENUITEM9, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuAddSICK);
-	Connect(
-		ID_MENUITEM10, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnStartCameraTravelling);
-	Connect(
-		idMenuAbout, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnAbout);
-	Connect(
-		ID_TIMER1, wxEVT_TIMER,
-		(wxObjectEventFunction)&_DSceneViewerFrame::
-			OntimLoadFileCmdLineTrigger);
+	using svf = _DSceneViewerFrame;
+
+	Bind(wxEVT_BUTTON, &svf::OnNewScene, this, ID_BUTTON1);
+	Bind(wxEVT_BUTTON, &svf::OnOpenFile, this, ID_BUTTON2);
+	Bind(wxEVT_BUTTON, &svf::OnPrevious, this, ID_BUTTON3);
+	Bind(wxEVT_BUTTON, &svf::OnNext, this, ID_BUTTON4);
+	Bind(wxEVT_BUTTON, &svf::OnReload, this, ID_BUTTON5);
+	Bind(wxEVT_BUTTON, &svf::OnMenuOptions, this, ID_BUTTON6);
+	Bind(
+		wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, &svf::OnbtnOrthoClicked, this,
+		ID_BUTTON7);
+	Bind(
+		wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, &svf::OnbtnAutoplayClicked, this,
+		ID_BUTTON8);
+	Bind(
+		wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, &svf::OnBtnRecordClicked, this,
+		ID_BUTTON9);
+	Bind(wxEVT_BUTTON, &svf::OnAbout, this, ID_BUTTON10);
+	Bind(wxEVT_BUTTON, &svf::OnQuit, this, ID_BUTTON11);
+	Bind(wxEVT_MENU, &svf::OnNewScene, this, ID_MENUITEM1);
+	Bind(wxEVT_MENU, &svf::OnOpenFile, this, ID_MENUITEM2);
+	Bind(wxEVT_MENU, &svf::OnReload, this, ID_MENUITEM5);
+	Bind(wxEVT_MENU, &svf::OnMenuSave, this, ID_MENUITEM7);
+	Bind(wxEVT_MENU, &svf::OnInsert3DS, this, ID_MENUITEM6);
+	Bind(wxEVT_MENU, &svf::OnMenuItemImportPLYPointCloud, this, ID_MENUITEM20);
+	Bind(wxEVT_MENU, &svf::OnmnuImportLASSelected, this, ID_MENUITEM25);
+	Bind(wxEVT_MENU, &svf::OnMenuItemExportPointsPLY, this, ID_MENUITEM22);
+	Bind(wxEVT_MENU, &svf::OnPrevious, this, ID_MENUITEM29);
+	Bind(wxEVT_MENU, &svf::OnNext, this, ID_MENUITEM30);
+	Bind(wxEVT_MENU, &svf::OnMenuItem14Selected, this, ID_MENUITEM12);
+	Bind(wxEVT_MENU, &svf::OnMenuItemHighResRender, this, ID_MENUITEM23);
+	Bind(wxEVT_MENU, &svf::OnmnuSceneStatsSelected, this, ID_MENUITEM18);
+	Bind(wxEVT_MENU, &svf::OnQuit, this, idMenuQuit);
+	Bind(wxEVT_MENU, &svf::OnmnuSelectNoneSelected, this, ID_MENUITEM24);
+	Bind(wxEVT_MENU, &svf::OnmnuSelectByClassSelected, this, ID_MENUITEM26);
+	Bind(wxEVT_MENU, &svf::OnmnuSelectionScaleSelected, this, ID_MENUITEM27);
+	Bind(wxEVT_MENU, &svf::OnmnuSelectionDeleteSelected, this, ID_MENUITEM28);
+	Bind(wxEVT_MENU, &svf::OnMenuBackColor, this, ID_MENUITEM4);
+	Bind(wxEVT_MENU, &svf::OnMenuOptions, this, ID_MENUITEM3);
+	Bind(
+		wxEVT_MENU, &svf::OnmnuItemShowCloudOctreesSelected, this,
+		ID_MENUITEM15);
+	Bind(
+		wxEVT_MENU, &svf::OnmnuItemChangeMaxPointsPerOctreeNodeSelected, this,
+		ID_MENUITEM17);
+	Bind(wxEVT_MENU, &svf::OnMenuDeleteAll, this, ID_MENUITEM11);
+	Bind(wxEVT_MENU, &svf::OnMenuAddSICK, this, ID_MENUITEM9);
+	Bind(wxEVT_MENU, &svf::OnStartCameraTravelling, this, ID_MENUITEM10);
+	Bind(wxEVT_MENU, &svf::OnAbout, this, idMenuAbout);
+	Bind(wxEVT_TIMER, &svf::OntimLoadFileCmdLineTrigger, this, ID_TIMER1);
 	//*)
 
-	Connect(
-		ID_MENUITEM14, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&_DSceneViewerFrame::
-			OnMenuCameraTrackingArbitrary);
-
-	Connect(
-		ID_TIMER_AUTOPLAY, wxEVT_TIMER,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OntimAutoplay);
-	Connect(
-		ID_TRAVELLING_TIMER, wxEVT_TIMER,
-		(wxObjectEventFunction)&_DSceneViewerFrame::OnTravellingTrigger);
+	Bind(wxEVT_MENU, &svf::OnMenuCameraTrackingArbitrary, this, ID_MENUITEM14);
+	Bind(wxEVT_TIMER, &svf::OntimAutoplay, this, ID_TIMER_AUTOPLAY);
+	Bind(wxEVT_TIMER, &svf::OnTravellingTrigger, this, ID_TRAVELLING_TIMER);
 
 	// Create the wxCanvas object:
 	m_canvas =
