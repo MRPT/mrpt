@@ -461,40 +461,27 @@ hmtMapViewerFrame::hmtMapViewerFrame(wxWindow* parent, wxWindowID id)
 	SetToolBar(ToolBar1);
 	Center();
 
-	Connect(
-		ID_TREECTRL1, wxEVT_COMMAND_TREE_SEL_CHANGED,
-		(wxObjectEventFunction)&hmtMapViewerFrame::OntreeViewSelectionChanged);
-	Connect(
-		ID_MENUITEM1, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&hmtMapViewerFrame::OnMenuLoad);
-	Connect(
-		ID_MENUITEM4, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&hmtMapViewerFrame::
-			OnmenuExportLocalMapsSelected);
-	Connect(
-		idMenuQuit, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&hmtMapViewerFrame::OnQuit);
-	Connect(
-		ID_MENUITEM2, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&hmtMapViewerFrame::OnMenuTranslationBtw2);
-	Connect(
-		ID_MENUITEM3, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&hmtMapViewerFrame::OnMenuOverlapBtw2);
-	Connect(
-		ID_MENUITEM6, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&hmtMapViewerFrame::OnTopologicalModel_Gridmap);
-	Connect(
-		ID_MENUITEM7, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&hmtMapViewerFrame::OnTopologicalModel_Fabmap);
-	Connect(
-		idMenuAbout, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&hmtMapViewerFrame::OnAbout);
-	Connect(
-		ID_TOOLBARITEM1, wxEVT_COMMAND_TOOL_CLICKED,
-		(wxObjectEventFunction)&hmtMapViewerFrame::OnMenuLoad);
-	Connect(
-		ID_TOOLBARITEM2, wxEVT_COMMAND_TOOL_CLICKED,
-		(wxObjectEventFunction)&hmtMapViewerFrame::OnQuit);
+	Bind(
+		wxEVT_COMMAND_TREE_SEL_CHANGED,
+		&hmtMapViewerFrame::OntreeViewSelectionChanged, this, ID_TREECTRL1);
+	Bind(wxEVT_MENU, &hmtMapViewerFrame::OnMenuLoad, this, ID_MENUITEM1);
+	Bind(
+		wxEVT_MENU, &hmtMapViewerFrame::OnmenuExportLocalMapsSelected, this,
+		ID_MENUITEM4);
+	Bind(wxEVT_MENU, &hmtMapViewerFrame::OnQuit, this, idMenuQuit);
+	Bind(
+		wxEVT_MENU, &hmtMapViewerFrame::OnMenuTranslationBtw2, this,
+		ID_MENUITEM2);
+	Bind(wxEVT_MENU, &hmtMapViewerFrame::OnMenuOverlapBtw2, this, ID_MENUITEM3);
+	Bind(
+		wxEVT_MENU, &hmtMapViewerFrame::OnTopologicalModel_Gridmap, this,
+		ID_MENUITEM6);
+	Bind(
+		wxEVT_MENU, &hmtMapViewerFrame::OnTopologicalModel_Fabmap, this,
+		ID_MENUITEM7);
+	Bind(wxEVT_MENU, &hmtMapViewerFrame::OnAbout, this, idMenuAbout);
+	Bind(wxEVT_TOOL, &hmtMapViewerFrame::OnMenuLoad, this, ID_TOOLBARITEM1);
+	Bind(wxEVT_TOOL, &hmtMapViewerFrame::OnQuit, this, ID_TOOLBARITEM2);
 	//*)
 
 	// Fix sizes:
@@ -542,9 +529,9 @@ hmtMapViewerFrame::hmtMapViewerFrame(wxWindow* parent, wxWindowID id)
 	timAutoLoad.SetOwner(this, ID_TIMER1);
 	if (!global_fileToOpen.empty())
 	{
-		Connect(
-			ID_TIMER1, wxEVT_TIMER,
-			(wxObjectEventFunction)&hmtMapViewerFrame::OntimAutoLoadTrigger);
+		Bind(
+			wxEVT_TIMER, &hmtMapViewerFrame::OntimAutoLoadTrigger, this,
+			ID_TIMER1);
 		timAutoLoad.Start(250, true);
 	}
 }

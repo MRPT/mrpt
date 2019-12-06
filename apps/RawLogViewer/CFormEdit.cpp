@@ -475,65 +475,38 @@ CFormEdit::CFormEdit(wxWindow* parent, wxWindowID id)
 	FlexGridSizer1->SetSizeHints(this);
 	Center();
 
-	Connect(
-		ID_RADIOBUTTON1, wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-		(wxObjectEventFunction)&CFormEdit::OnrbLoadedSelect);
-	Connect(
-		ID_RADIOBUTTON2, wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-		(wxObjectEventFunction)&CFormEdit::OnrbFileSelect);
-	Connect(
-		ID_BUTTON9, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormEdit::OnbtnPickInputClick);
-	Connect(
-		ID_BUTTON11, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormEdit::OnbtnPickOutClick);
-	Connect(
-		ID_SLIDER1, wxEVT_SCROLL_THUMBTRACK,
-		(wxObjectEventFunction)&CFormEdit::OnslFirstCmdScrollChanged);
-	Connect(
-		ID_SLIDER1, wxEVT_SCROLL_CHANGED,
-		(wxObjectEventFunction)&CFormEdit::OnslFirstCmdScrollChanged);
-	Connect(
-		ID_SLIDER2, wxEVT_SCROLL_THUMBTRACK,
-		(wxObjectEventFunction)&CFormEdit::OnslToCmdScrollChanged);
-	Connect(
-		ID_SLIDER2, wxEVT_SCROLL_CHANGED,
-		(wxObjectEventFunction)&CFormEdit::OnslToCmdScrollChanged);
-	Connect(
-		ID_BUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormEdit::OnbtnKeepClick);
-	Connect(
-		ID_BUTTON2, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormEdit::OnbtnDeleteClick);
-	Connect(
-		ID_BUTTON4, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormEdit::OnbtnDelObsIndxClick);
-	Connect(
-		ID_BUTTON5, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormEdit::OnbtnRemActsIndxClick);
-	Connect(
-		ID_BUTTON7, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormEdit::OnbtnRemoveObsClassClick);
-	Connect(
-		ID_BUTTON8, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormEdit::OnbtnRemoveAllButByClassClick1);
-	Connect(
-		ID_BUTTON10, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormEdit::OnRemoveByLabel);
-	Connect(
-		ID_BUTTON12, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormEdit::OnRemoveButLabel);
-	Connect(
-		ID_BUTTON13, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormEdit::OnbtnLeaveHorizScansClick);
-	Connect(
-		ID_BUTTON3, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormEdit::OnbtnImgSwapClick);
-	Connect(
-		ID_BUTTON6, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormEdit::OnbtnCloseClick);
-	Connect(
-		wxID_ANY, wxEVT_INIT_DIALOG, (wxObjectEventFunction)&CFormEdit::OnInit);
+	Bind(
+		wxEVT_RADIOBUTTON, &CFormEdit::OnrbLoadedSelect, this, ID_RADIOBUTTON1);
+	Bind(wxEVT_RADIOBUTTON, &CFormEdit::OnrbFileSelect, this, ID_RADIOBUTTON2);
+	Bind(wxEVT_BUTTON, &CFormEdit::OnbtnPickInputClick, this, ID_BUTTON9);
+	Bind(wxEVT_BUTTON, &CFormEdit::OnbtnPickOutClick, this, ID_BUTTON11);
+	Bind(
+		wxEVT_SCROLL_THUMBTRACK, &CFormEdit::OnslFirstCmdScrollChanged, this,
+		ID_SLIDER1);
+	Bind(
+		wxEVT_SCROLL_CHANGED, &CFormEdit::OnslFirstCmdScrollChanged, this,
+		ID_SLIDER1);
+	Bind(
+		wxEVT_SCROLL_THUMBTRACK, &CFormEdit::OnslToCmdScrollChanged, this,
+		ID_SLIDER2);
+	Bind(
+		wxEVT_SCROLL_CHANGED, &CFormEdit::OnslToCmdScrollChanged, this,
+		ID_SLIDER2);
+	Bind(wxEVT_BUTTON, &CFormEdit::OnbtnKeepClick, this, ID_BUTTON1);
+	Bind(wxEVT_BUTTON, &CFormEdit::OnbtnDeleteClick, this, ID_BUTTON2);
+	Bind(wxEVT_BUTTON, &CFormEdit::OnbtnDelObsIndxClick, this, ID_BUTTON4);
+	Bind(wxEVT_BUTTON, &CFormEdit::OnbtnRemActsIndxClick, this, ID_BUTTON5);
+	Bind(wxEVT_BUTTON, &CFormEdit::OnbtnRemoveObsClassClick, this, ID_BUTTON7);
+	Bind(
+		wxEVT_BUTTON, &CFormEdit::OnbtnRemoveAllButByClassClick1, this,
+		ID_BUTTON8);
+	Bind(wxEVT_BUTTON, &CFormEdit::OnRemoveByLabel, this, ID_BUTTON10);
+	Bind(wxEVT_BUTTON, &CFormEdit::OnRemoveButLabel, this, ID_BUTTON12);
+	Bind(
+		wxEVT_BUTTON, &CFormEdit::OnbtnLeaveHorizScansClick, this, ID_BUTTON13);
+	Bind(wxEVT_BUTTON, &CFormEdit::OnbtnImgSwapClick, this, ID_BUTTON3);
+	Bind(wxEVT_BUTTON, &CFormEdit::OnbtnCloseClick, this, ID_BUTTON6);
+	Bind(wxEVT_INIT_DIALOG, &CFormEdit::OnInit, this, wxID_ANY);
 	//*)
 }
 

@@ -392,51 +392,33 @@ CFormRawMap::CFormRawMap(wxWindow* parent, wxWindowID)
 	FlexGridSizer1->SetSizeHints(this);
 	Center();
 
-	Connect(
-		ID_SLIDER1, wxEVT_SCROLL_THUMBTRACK,
-		(wxObjectEventFunction)&CFormRawMap::OnslFromCmdScrollThumbTrack);
-	Connect(
-		ID_SLIDER1, wxEVT_SCROLL_CHANGED,
-		(wxObjectEventFunction)&CFormRawMap::OnslFromCmdScrollThumbTrack);
-	Connect(
-		ID_SLIDER2, wxEVT_SCROLL_THUMBTRACK,
-		(wxObjectEventFunction)&CFormRawMap::OnslToCmdScrollThumbTrack);
-	Connect(
-		ID_SLIDER2, wxEVT_SCROLL_CHANGED,
-		(wxObjectEventFunction)&CFormRawMap::OnslToCmdScrollThumbTrack);
-	Connect(
-		ID_SLIDER3, wxEVT_SCROLL_THUMBTRACK,
-		(wxObjectEventFunction)&CFormRawMap::OnslDecimateCmdScrollThumbTrack);
-	Connect(
-		ID_SLIDER3, wxEVT_SCROLL_CHANGED,
-		(wxObjectEventFunction)&CFormRawMap::OnslDecimateCmdScrollThumbTrack);
-	Connect(
-		ID_BUTTON2, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormRawMap::OnbtnGenerateClick);
-	Connect(
-		ID_BUTTON6, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormRawMap::OnGenerateFromRTK);
-	Connect(
-		ID_BUTTON5, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormRawMap::OnbtnGeneratePathsClick);
-	Connect(
-		ID_BUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormRawMap::OnbtnSaveTxtClick);
-	Connect(
-		ID_BUTTON3, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormRawMap::OnbtnSave3DClick);
-	Connect(
-		ID_BUTTON7, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormRawMap::OnbtnSavePathClick);
-	Connect(
-		ID_BUTTON8, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormRawMap::OnbtnSaveObsPathClick);
-	Connect(
-		ID_BUTTON9, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormRawMap::OnbtnView3DClick);
-	Connect(
-		ID_BUTTON4, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CFormRawMap::OnbtnCloseClick);
+	Bind(
+		wxEVT_SCROLL_THUMBTRACK, &CFormRawMap::OnslFromCmdScrollThumbTrack,
+		this, ID_SLIDER1);
+	Bind(
+		wxEVT_SCROLL_CHANGED, &CFormRawMap::OnslFromCmdScrollThumbTrack, this,
+		ID_SLIDER1);
+	Bind(
+		wxEVT_SCROLL_THUMBTRACK, &CFormRawMap::OnslToCmdScrollThumbTrack, this,
+		ID_SLIDER2);
+	Bind(
+		wxEVT_SCROLL_CHANGED, &CFormRawMap::OnslToCmdScrollThumbTrack, this,
+		ID_SLIDER2);
+	Bind(
+		wxEVT_SCROLL_THUMBTRACK, &CFormRawMap::OnslDecimateCmdScrollThumbTrack,
+		this, ID_SLIDER3);
+	Bind(
+		wxEVT_SCROLL_CHANGED, &CFormRawMap::OnslDecimateCmdScrollThumbTrack,
+		this, ID_SLIDER3);
+	Bind(wxEVT_BUTTON, &CFormRawMap::OnbtnGenerateClick, this, ID_BUTTON2);
+	Bind(wxEVT_BUTTON, &CFormRawMap::OnGenerateFromRTK, this, ID_BUTTON6);
+	Bind(wxEVT_BUTTON, &CFormRawMap::OnbtnGeneratePathsClick, this, ID_BUTTON5);
+	Bind(wxEVT_BUTTON, &CFormRawMap::OnbtnSaveTxtClick, this, ID_BUTTON1);
+	Bind(wxEVT_BUTTON, &CFormRawMap::OnbtnSave3DClick, this, ID_BUTTON3);
+	Bind(wxEVT_BUTTON, &CFormRawMap::OnbtnSavePathClick, this, ID_BUTTON7);
+	Bind(wxEVT_BUTTON, &CFormRawMap::OnbtnSaveObsPathClick, this, ID_BUTTON8);
+	Bind(wxEVT_BUTTON, &CFormRawMap::OnbtnView3DClick, this, ID_BUTTON9);
+	Bind(wxEVT_BUTTON, &CFormRawMap::OnbtnCloseClick, this, ID_BUTTON4);
 	//*)
 
 	Maximize();

@@ -83,46 +83,23 @@ CWindowDialogPlots::CWindowDialogPlots(
 	SetMenuBar(MenuBar1);
 
 	// Events:
-	Connect(
-		wxID_ANY, wxEVT_CLOSE_WINDOW,
-		(wxObjectEventFunction)&CWindowDialogPlots::OnClose);
-	Connect(
-		ID_MENUITEM1, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&CWindowDialogPlots::OnMenuClose);
-	Connect(
-		ID_MENU_PRINT, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&CWindowDialogPlots::OnMenuPrint);
-	Connect(
-		ID_MENUITEM2, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&CWindowDialogPlots::OnMenuAbout);
+	Bind(wxEVT_CLOSE_WINDOW, &CWindowDialogPlots::OnClose, this, wxID_ANY);
+	Bind(wxEVT_MENU, &CWindowDialogPlots::OnMenuClose, this, ID_MENUITEM1);
+	Bind(wxEVT_MENU, &CWindowDialogPlots::OnMenuPrint, this, ID_MENU_PRINT);
+	Bind(wxEVT_MENU, &CWindowDialogPlots::OnMenuAbout, this, ID_MENUITEM2);
 
-	Connect(
-		wxID_ANY, wxEVT_SIZE,
-		(wxObjectEventFunction)&CWindowDialogPlots::OnResize);
+	Bind(wxEVT_SIZE, &CWindowDialogPlots::OnResize, this, wxID_ANY);
 
-	Connect(
-		wxID_ANY, wxEVT_CHAR,
-		(wxObjectEventFunction)&CWindowDialogPlots::OnChar);
-	m_plot->Connect(
-		wxEVT_CHAR, (wxObjectEventFunction)&CWindowDialogPlots::OnChar, nullptr,
-		this);
-	m_plot->Connect(
-		wxEVT_MOTION, (wxObjectEventFunction)&CWindowDialogPlots::OnMouseMove,
-		nullptr, this);
+	Bind(wxEVT_CHAR, &CWindowDialogPlots::OnChar, this, wxID_ANY);
+	m_plot->Bind(wxEVT_CHAR, &CWindowDialogPlots::OnChar, this);
+	m_plot->Bind(wxEVT_MOTION, &CWindowDialogPlots::OnMouseMove, this);
 
-	m_plot->Connect(
-		wxEVT_LEFT_DOWN,
-		(wxObjectEventFunction)&CWindowDialogPlots::OnMouseDown, nullptr, this);
-	m_plot->Connect(
-		wxEVT_RIGHT_DOWN,
-		(wxObjectEventFunction)&CWindowDialogPlots::OnMouseDown, nullptr, this);
+	m_plot->Bind(wxEVT_LEFT_DOWN, &CWindowDialogPlots::OnMouseDown, this);
+	m_plot->Bind(wxEVT_RIGHT_DOWN, &CWindowDialogPlots::OnMouseDown, this);
 
 	// Increment number of windows:
 	// int winCount =
 	WxSubsystem::CWXMainFrame::notifyWindowCreation();
-	// cout << "[CWindowDialogPlots] Notifying new window: " << winCount <<
-	// endl;
-
 	// this->Iconize(false);
 
 #if 0

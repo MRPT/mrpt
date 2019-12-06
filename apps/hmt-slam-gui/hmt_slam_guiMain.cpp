@@ -780,60 +780,32 @@ hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent, wxWindowID id)
 	SetStatusBar(StatusBar1);
 	FlexGridSizer1->SetSizeHints(this);
 
-	Connect(
-		ID_BUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&hmt_slam_guiFrame::OnbtnResetClick);
-	Connect(
-		ID_BUTTON2, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&hmt_slam_guiFrame::OnbtnLoadClick);
-	Connect(
-		ID_BUTTON3, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&hmt_slam_guiFrame::OnbtnSaveClick);
-	Connect(
-		ID_BUTTON4, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&hmt_slam_guiFrame::OnbtnStartClick);
-	Connect(
-		ID_BUTTON6, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&hmt_slam_guiFrame::OnbtnPauseClick);
-	Connect(
-		ID_BUTTON12, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&hmt_slam_guiFrame::OnbtnShowLogWinClick);
-	Connect(
-		ID_BUTTON10, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&hmt_slam_guiFrame::OnAbout);
-	Connect(
-		ID_BUTTON5, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&hmt_slam_guiFrame::OnQuit);
-	Connect(
-		ID_BUTTON11, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&hmt_slam_guiFrame::OnbtnPickRawlogClick);
-	Connect(
-		ID_NOTEBOOK2, wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
-		(wxObjectEventFunction)&hmt_slam_guiFrame::OnNotebook2PageChanged);
-	Connect(
-		ID_MENUITEM1, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&hmt_slam_guiFrame::OnbtnResetClick);
-	Connect(
-		ID_MENUITEM2, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&hmt_slam_guiFrame::OnbtnLoadClick);
-	Connect(
-		ID_MENUITEM3, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&hmt_slam_guiFrame::OnbtnSaveClick);
-	Connect(
-		idMenuQuit, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&hmt_slam_guiFrame::OnQuit);
-	Connect(
-		ID_MENUITEM6, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&hmt_slam_guiFrame::OnMenuSetSLAMParameter);
-	Connect(
-		ID_MENUITEM4, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&hmt_slam_guiFrame::OnbtnStartClick);
-	Connect(
-		ID_MENUITEM5, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&hmt_slam_guiFrame::OnbtnPauseClick);
-	Connect(
-		idMenuAbout, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&hmt_slam_guiFrame::OnAbout);
+	Bind(wxEVT_BUTTON, &hmt_slam_guiFrame::OnbtnResetClick, this, ID_BUTTON1);
+	Bind(wxEVT_BUTTON, &hmt_slam_guiFrame::OnbtnLoadClick, this, ID_BUTTON2);
+	Bind(wxEVT_BUTTON, &hmt_slam_guiFrame::OnbtnSaveClick, this, ID_BUTTON3);
+	Bind(wxEVT_BUTTON, &hmt_slam_guiFrame::OnbtnStartClick, this, ID_BUTTON4);
+	Bind(wxEVT_BUTTON, &hmt_slam_guiFrame::OnbtnPauseClick, this, ID_BUTTON6);
+	Bind(
+		wxEVT_BUTTON, &hmt_slam_guiFrame::OnbtnShowLogWinClick, this,
+		ID_BUTTON12);
+	Bind(wxEVT_BUTTON, &hmt_slam_guiFrame::OnAbout, this, ID_BUTTON10);
+	Bind(wxEVT_BUTTON, &hmt_slam_guiFrame::OnQuit, this, ID_BUTTON5);
+	Bind(
+		wxEVT_BUTTON, &hmt_slam_guiFrame::OnbtnPickRawlogClick, this,
+		ID_BUTTON11);
+	Bind(
+		wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
+		&hmt_slam_guiFrame::OnNotebook2PageChanged, this, ID_NOTEBOOK2);
+	Bind(wxEVT_MENU, &hmt_slam_guiFrame::OnbtnResetClick, this, ID_MENUITEM1);
+	Bind(wxEVT_MENU, &hmt_slam_guiFrame::OnbtnLoadClick, this, ID_MENUITEM2);
+	Bind(wxEVT_MENU, &hmt_slam_guiFrame::OnbtnSaveClick, this, ID_MENUITEM3);
+	Bind(wxEVT_MENU, &hmt_slam_guiFrame::OnQuit, this, idMenuQuit);
+	Bind(
+		wxEVT_MENU, &hmt_slam_guiFrame::OnMenuSetSLAMParameter, this,
+		ID_MENUITEM6);
+	Bind(wxEVT_MENU, &hmt_slam_guiFrame::OnbtnStartClick, this, ID_MENUITEM4);
+	Bind(wxEVT_MENU, &hmt_slam_guiFrame::OnbtnPauseClick, this, ID_MENUITEM5);
+	Bind(wxEVT_MENU, &hmt_slam_guiFrame::OnAbout, this, idMenuAbout);
 	//*)
 
 	// Initialize data ========================================================

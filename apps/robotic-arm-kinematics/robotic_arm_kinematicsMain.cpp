@@ -569,110 +569,39 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 	FlexGridSizer1->SetSizeHints(this);
 	Center();
 
-	Connect(
-		ID_RADIOBOX2, wxEVT_COMMAND_RADIOBOX_SELECTED,
-		(wxObjectEventFunction)&robotic_arm_kinematicsFrame::On1stXYZSelect);
-	Connect(
-		ID_SIMPLEHTMLLISTBOX1, wxEVT_COMMAND_LISTBOX_SELECTED,
-		(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnlistLinksSelect);
-	Connect(
-		ID_BUTTON5, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnbtnAddLinkClick);
-	Connect(
-		ID_BUTTON6, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnbtnClearClick);
-	Connect(
-		ID_BUTTON7, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnbtnDeleteClick);
-	Connect(
-		ID_RADIOBOX1, wxEVT_COMMAND_RADIOBOX_SELECTED,
-		(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnrbTypeSelect);
-	Connect(
-		ID_BUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&robotic_arm_kinematicsFrame::
-			OnButtonSaveFromEdit);
-	Connect(
-		ID_SLIDER1,
-		wxEVT_SCROLL_TOP | wxEVT_SCROLL_BOTTOM | wxEVT_SCROLL_LINEUP |
-			wxEVT_SCROLL_LINEDOWN | wxEVT_SCROLL_PAGEUP |
-			wxEVT_SCROLL_PAGEDOWN | wxEVT_SCROLL_THUMBTRACK |
-			wxEVT_SCROLL_THUMBRELEASE | wxEVT_SCROLL_CHANGED,
-		(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSliderScroll);
-	Connect(
-		ID_SLIDER1, wxEVT_SCROLL_CHANGED,
-		(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSliderScroll);
-	Connect(
-		ID_SLIDER1, wxEVT_COMMAND_SLIDER_UPDATED,
-		(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSliderScroll);
-	Connect(
-		ID_BUTTON2, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&robotic_arm_kinematicsFrame::
-			OnButtonSaveFromEdit);
-	Connect(
-		ID_SLIDER2,
-		wxEVT_SCROLL_TOP | wxEVT_SCROLL_BOTTOM | wxEVT_SCROLL_LINEUP |
-			wxEVT_SCROLL_LINEDOWN | wxEVT_SCROLL_PAGEUP |
-			wxEVT_SCROLL_PAGEDOWN | wxEVT_SCROLL_THUMBTRACK |
-			wxEVT_SCROLL_THUMBRELEASE | wxEVT_SCROLL_CHANGED,
-		(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSliderScroll);
-	Connect(
-		ID_SLIDER2, wxEVT_SCROLL_CHANGED,
-		(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSliderScroll);
-	Connect(
-		ID_SLIDER2, wxEVT_COMMAND_SLIDER_UPDATED,
-		(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSliderScroll);
-	Connect(
-		ID_BUTTON3, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&robotic_arm_kinematicsFrame::
-			OnButtonSaveFromEdit);
-	Connect(
-		ID_SLIDER3,
-		wxEVT_SCROLL_TOP | wxEVT_SCROLL_BOTTOM | wxEVT_SCROLL_LINEUP |
-			wxEVT_SCROLL_LINEDOWN | wxEVT_SCROLL_PAGEUP |
-			wxEVT_SCROLL_PAGEDOWN | wxEVT_SCROLL_THUMBTRACK |
-			wxEVT_SCROLL_THUMBRELEASE | wxEVT_SCROLL_CHANGED,
-		(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSliderScroll);
-	Connect(
-		ID_SLIDER3, wxEVT_SCROLL_CHANGED,
-		(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSliderScroll);
-	Connect(
-		ID_SLIDER3, wxEVT_COMMAND_SLIDER_UPDATED,
-		(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSliderScroll);
-	Connect(
-		ID_BUTTON4, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&robotic_arm_kinematicsFrame::
-			OnButtonSaveFromEdit);
-	Connect(
-		ID_SLIDER4,
-		wxEVT_SCROLL_TOP | wxEVT_SCROLL_BOTTOM | wxEVT_SCROLL_LINEUP |
-			wxEVT_SCROLL_LINEDOWN | wxEVT_SCROLL_PAGEUP |
-			wxEVT_SCROLL_PAGEDOWN | wxEVT_SCROLL_THUMBTRACK |
-			wxEVT_SCROLL_THUMBRELEASE | wxEVT_SCROLL_CHANGED,
-		(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSliderScroll);
-	Connect(
-		ID_SLIDER4, wxEVT_SCROLL_CHANGED,
-		(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSliderScroll);
-	Connect(
-		ID_SLIDER4, wxEVT_COMMAND_SLIDER_UPDATED,
-		(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSliderScroll);
-	Connect(
-		ID_LISTBOX1, wxEVT_COMMAND_LISTBOX_SELECTED,
-		(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnlbXYZsSelect);
-	Connect(
-		ID_MENUITEM3, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnbtnClearClick);
-	Connect(
-		ID_MENUITEM1, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnLoadBinary);
-	Connect(
-		ID_MENUITEM2, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSaveBinary);
-	Connect(
-		idMenuQuit, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnQuit);
-	Connect(
-		idMenuAbout, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnAbout);
+	using rakf = robotic_arm_kinematicsFrame;
+
+	Bind(wxEVT_RADIOBOX, &rakf::On1stXYZSelect, this, ID_RADIOBOX2);
+	Bind(wxEVT_LISTBOX, &rakf::OnlistLinksSelect, this, ID_SIMPLEHTMLLISTBOX1);
+	Bind(wxEVT_BUTTON, &rakf::OnbtnAddLinkClick, this, ID_BUTTON5);
+	Bind(wxEVT_BUTTON, &rakf::OnbtnClearClick, this, ID_BUTTON6);
+	Bind(wxEVT_BUTTON, &rakf::OnbtnDeleteClick, this, ID_BUTTON7);
+	Bind(wxEVT_RADIOBOX, &rakf::OnrbTypeSelect, this, ID_RADIOBOX1);
+	Bind(wxEVT_BUTTON, &rakf::OnButtonSaveFromEdit, this, ID_BUTTON1);
+	Bind(wxEVT_SLIDER, &rakf::OnSliderScroll, this, ID_SLIDER1);
+	Bind(wxEVT_BUTTON, &rakf::OnButtonSaveFromEdit, this, ID_BUTTON2);
+	Bind(wxEVT_SCROLL_TOP, &rakf::OnSliderScroll, this, ID_SLIDER2);
+	Bind(wxEVT_SCROLL_BOTTOM, &rakf::OnSliderScroll, this, ID_SLIDER2);
+	Bind(wxEVT_SCROLL_LINEUP, &rakf::OnSliderScroll, this, ID_SLIDER2);
+	Bind(wxEVT_SCROLL_LINEDOWN, &rakf::OnSliderScroll, this, ID_SLIDER2);
+	Bind(wxEVT_SCROLL_PAGEUP, &rakf::OnSliderScroll, this, ID_SLIDER2);
+	Bind(wxEVT_SCROLL_PAGEDOWN, &rakf::OnSliderScroll, this, ID_SLIDER2);
+	Bind(wxEVT_SCROLL_THUMBTRACK, &rakf::OnSliderScroll, this, ID_SLIDER2);
+	Bind(wxEVT_SCROLL_THUMBRELEASE, &rakf::OnSliderScroll, this, ID_SLIDER2);
+	Bind(wxEVT_SCROLL_CHANGED, &rakf::OnSliderScroll, this, ID_SLIDER2);
+	Bind(wxEVT_SLIDER, &rakf::OnSliderScroll, this, ID_SLIDER2);
+	Bind(wxEVT_BUTTON, &rakf::OnButtonSaveFromEdit, this, ID_BUTTON3);
+	Bind(wxEVT_SLIDER, &rakf::OnSliderScroll, this, ID_SLIDER3);
+	Bind(wxEVT_SLIDER, &rakf::OnSliderScroll, this, ID_SLIDER3);
+	Bind(wxEVT_BUTTON, &rakf::OnButtonSaveFromEdit, this, ID_BUTTON4);
+	Bind(wxEVT_SLIDER, &rakf::OnSliderScroll, this, ID_SLIDER4);
+	Bind(wxEVT_SLIDER, &rakf::OnSliderScroll, this, ID_SLIDER4);
+	Bind(wxEVT_LISTBOX, &rakf::OnlbXYZsSelect, this, ID_LISTBOX1);
+	Bind(wxEVT_MENU, &rakf::OnbtnClearClick, this, ID_MENUITEM3);
+	Bind(wxEVT_MENU, &rakf::OnLoadBinary, this, ID_MENUITEM1);
+	Bind(wxEVT_MENU, &rakf::OnSaveBinary, this, ID_MENUITEM2);
+	Bind(wxEVT_MENU, &rakf::OnQuit, this, idMenuQuit);
+	Bind(wxEVT_MENU, &rakf::OnAbout, this, idMenuAbout);
 	//*)
 
 	// maximize:
@@ -914,7 +843,7 @@ void robotic_arm_kinematicsFrame::OnlistLinksSelect(wxCommandEvent& event)
 }
 
 // Sliders of the DOFs bottom panels:
-void robotic_arm_kinematicsFrame::OnSliderDOFScroll(wxScrollEvent& event)
+void robotic_arm_kinematicsFrame::OnSliderDOFScroll(wxScrollEvent&)
 {
 	for (size_t i = 0; i < m_dof_panels.size(); i++)
 	{
@@ -934,7 +863,7 @@ void robotic_arm_kinematicsFrame::OnSliderDOFScroll(wxScrollEvent& event)
 }
 
 // Sliders of the left panel:
-void robotic_arm_kinematicsFrame::OnSliderScroll(wxScrollEvent& event)
+void robotic_arm_kinematicsFrame::OnSliderScroll(wxCommandEvent&)
 {
 	UpdateMatrixView();
 

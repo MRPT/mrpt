@@ -37,14 +37,19 @@ class robotic_arm_kinematicsFrame : public wxFrame
 	robotic_arm_kinematicsFrame(wxWindow* parent, wxWindowID id = -1);
 	~robotic_arm_kinematicsFrame() override;
 
-	void OnSliderDOFScroll(wxScrollEvent& event);
+	void OnSliderDOFScroll(wxScrollEvent&);
+	void OnSliderDOFScrollBis(wxCommandEvent&)
+	{
+		wxScrollEvent e;
+		OnSliderDOFScroll(e);
+	}
 
    private:
 	//(*Handlers(robotic_arm_kinematicsFrame)
 	void OnQuit(wxCommandEvent& event);
 	void OnAbout(wxCommandEvent& event);
 	void OnlistLinksSelect(wxCommandEvent& event);
-	void OnSliderScroll(wxScrollEvent& event);
+	void OnSliderScroll(wxCommandEvent& event);
 	void OnButtonSaveFromEdit(wxCommandEvent& event);
 	void OnbtnClearClick(wxCommandEvent& event);
 	void OnbtnAddLinkClick(wxCommandEvent& event);
