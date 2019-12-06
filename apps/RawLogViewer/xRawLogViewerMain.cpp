@@ -1434,298 +1434,213 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	timAutoLoad.Start(50, true);
 	FlexGridSizer1->SetSizeHints(this);
 
-	Connect(
-		ID_BUTTON2, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnFileOpen);
-	Connect(
-		ID_BUTTON3, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnSaveFile);
-	Connect(
-		ID_BUTTON4, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnEditRawlog);
-	Connect(
-		ID_BUTTON5, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnRawMapOdo);
-	Connect(
-		ID_BUTTON6, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnChangeMotionModel);
-	Connect(
-		ID_BUTTON7, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnShowICP);
-	Connect(
-		ID_BUTTON8, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnShowAnimateScans);
-	Connect(
-		ID_BUTTON9, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnShowImagesAsVideo);
-	Connect(
-		ID_BUTTON10, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnAbout);
-	Connect(
-		ID_BUTTON11, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnQuit);
-	Connect(
-		ID_BUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnbtnEditCommentsClick1);
-	Connect(
-		ID_SLIDER1,
-		wxEVT_SCROLL_TOP | wxEVT_SCROLL_BOTTOM | wxEVT_SCROLL_LINEUP |
-			wxEVT_SCROLL_LINEDOWN | wxEVT_SCROLL_PAGEUP |
-			wxEVT_SCROLL_PAGEDOWN | wxEVT_SCROLL_THUMBTRACK |
-			wxEVT_SCROLL_THUMBRELEASE | wxEVT_SCROLL_CHANGED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::
-			Onslid3DcamConfCmdScrollChanged);
-	Connect(
-		ID_SLIDER1, wxEVT_SCROLL_THUMBTRACK,
-		(wxObjectEventFunction)&xRawLogViewerFrame::
-			Onslid3DcamConfCmdScrollChanged);
-	Connect(
-		ID_SLIDER1, wxEVT_SCROLL_CHANGED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::
-			Onslid3DcamConfCmdScrollChanged);
-	Connect(
-		ID_NOTEBOOK1, wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGING,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnNotebook1PageChanging);
-	Connect(
-		ID_MENUITEM1, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnFileOpen);
-	Connect(
-		ID_MENUITEM2, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnSaveFile);
-	Connect(
-		ID_MENUITEM76, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuRevert);
-	Connect(
-		ID_MENUITEM7, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnLoadAPartOnly);
-	Connect(
-		ID_MENUITEM8, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnFileCountEntries);
-	Connect(
-		ID_MENUITEM10, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnFileSaveImages);
-	Connect(
-		ID_MENUITEM62, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::
-			OnMenuConvertExternallyStored);
-	Connect(
-		ID_MENUITEM64, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::
-			OnMenuConvertObservationOnly);
-	Connect(
-		ID_MENUITEM13, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::
-			OnFileGenVisualLMFromStereoImages);
-	Connect(
-		ID_MENUITEM60, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuLossLessDecFILE);
-	Connect(
-		ID_MENUITEM61, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnMenCompactFILE);
-	Connect(
-		ID_MENUITEM5, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnImportCARMEN);
-	Connect(
-		ID_MENUITEM47, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnImportSequenceOfImages);
-	Connect(
-		ID_MENUITEM56, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuImportALOG);
-	Connect(
-		ID_MENUITEM63, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnImportRTL);
-	Connect(
-		ID_MENUITEM87, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::
-			OnMenuItemImportBremenDLRLog);
-	Connect(
-		ID_MENUITEM58, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnGenOdoLaser);
-	Connect(
-		ID_MENUITEM55, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuExportALOG);
-	Connect(
-		idMenuQuit, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnQuit);
-	Connect(
-		ID_MENUITEM14, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnEditRawlog);
-	Connect(
-		ID_MENUITEM51, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuInsertComment);
-	Connect(
-		ID_MENUITEM69, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuRenameSensor);
-	Connect(
-		ID_MENUITEM91, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuRenameSingleObs);
-	Connect(
-		ID_MENUITEM15, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnChangeSensorPositions);
-	Connect(
-		ID_MENUITEM70, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuChangePosesBatch);
-	Connect(
-		ID_MENUITEM16, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnDecimateRecords);
-	Connect(
-		ID_MENUITEM59, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuLossLessDecimate);
-	Connect(
-		ID_MENUITEM57, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuCompactRawlog);
-	Connect(
-		ID_MENUITEM75, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuConvertSF);
-	Connect(
-		ID_MENUITEM67, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuResortByTimestamp);
-	Connect(
-		ID_MENUITEM68, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::
-			OnMenuShiftTimestampsByLabel);
-	Connect(
-		ID_MENUITEM82, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::
-			OnMenuRegenerateTimestampBySF);
-	Connect(
-		ID_MENUITEM20, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnChangeMotionModel);
-	Connect(
-		ID_MENUITEM22, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnRecalculateActionsICP);
-	Connect(
-		ID_MENUITEM53, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::
-			OnMenuModifyICPActionsUncertainty);
-	Connect(
-		ID_MENUITEM23, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnRecomputeOdometry);
-	Connect(
-		ID_MENUITEM41, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnForceEncodersFalse);
-	Connect(
-		ID_MENUITEM84, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::
-			OnMenuRegenerateOdometryTimes);
-	Connect(
-		ID_MENUITEM17, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnShowICP);
-	Connect(
-		ID_MENUITEM44, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnShowAnimateScans);
-	Connect(
-		ID_MENUITEM19, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnCountBadScans);
-	Connect(
-		ID_MENUITEM25, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnFilterErroneousScans);
-	Connect(
-		ID_MENUITEM73, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuMarkLaserScanInvalid);
-	Connect(
-		ID_MENUITEM74, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuChangeMaxRangeLaser);
-	Connect(
-		ID_MENUITEM77, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::
-			OnMenuBatchLaserExclusionZones);
-	Connect(
-		ID_MENUITEM79, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnLaserFilterAngles);
-	Connect(
-		ID_MENUITEM86, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::
-			OnMenuItem3DObsRecoverParams);
-	Connect(
-		ID_MENUITEM29, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnGenerateSeqImgs);
-	Connect(
-		ID_MENUITEM9, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnShowImagesAsVideo);
-	Connect(
-		ID_MENUITEM71, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuMono2Stereo);
-	Connect(
-		ID_MENUITEM72, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuRectifyImages);
-	Connect(
-		ID_MENUITEM78, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuRenameImageFiles);
-	Connect(
-		ID_MENUITEM83, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnmnuCreateAVISelected);
-	Connect(
-		ID_MENUITEM30, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnGenGasTxt);
-	Connect(
-		ID_MENUITEM24, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnFilterSpureousGas);
-	Connect(
-		ID_MENUITEM31, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnGenGPSTxt);
-	Connect(
-		ID_MENUITEM34, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnSummaryGPS);
-	Connect(
-		ID_MENUITEM65, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuDistanceBtwGPSs);
-	Connect(
-		ID_MENUITEM66, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::
-			OnMenuRegenerateGPSTimestamps);
-	Connect(
-		ID_MENUITEM52, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuDrawGPSPath);
-	Connect(
-		ID_MENUITEM80, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuGPSDeleteNaN);
-	Connect(
-		ID_MENUITEM33, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuGenerateBeaconList);
-	Connect(
-		ID_MENUITEM38, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnRemoveSpecificRangeMeas);
-	Connect(
-		ID_MENUITEM40, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::
-			OnGenerateTextFileRangeBearing);
-	Connect(
-		ID_MENUITEM81, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuRangeBearFilterIDs);
-	Connect(
-		ID_MENUITEM46, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnRangeFinder1DGenTextFile);
-	Connect(
-		ID_MENUITEM43, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnGenerateIMUTextFile);
-	Connect(
-		ID_MENUITEM89, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnGenWifiTxt);
-	Connect(
-		ID_MENUITEM26, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnRawMapOdo);
-	Connect(
-		ID_MENUITEM32, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnGenOdoLaser);
-	Connect(
-		ID_MENUITEM27, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuShowTips);
-	Connect(
-		idMenuAbout, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnAbout);
-	Connect(
-		MNU_1, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuItem37Selected);
-	Connect(
-		ID_MENUITEM49, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuItem46Selected);
-	Connect(
-		ID_MENUITEM50, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuItem47Selected);
-	Connect(
-		ID_TIMER1, wxEVT_TIMER,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OntimAutoLoadTrigger);
+	Bind(wxEVT_BUTTON, &xRawLogViewerFrame::OnFileOpen, this, ID_BUTTON2);
+	Bind(wxEVT_BUTTON, &xRawLogViewerFrame::OnSaveFile, this, ID_BUTTON3);
+	Bind(wxEVT_BUTTON, &xRawLogViewerFrame::OnEditRawlog, this, ID_BUTTON4);
+	Bind(wxEVT_BUTTON, &xRawLogViewerFrame::OnRawMapOdo, this, ID_BUTTON5);
+	Bind(
+		wxEVT_BUTTON, &xRawLogViewerFrame::OnChangeMotionModel, this,
+		ID_BUTTON6);
+	Bind(wxEVT_BUTTON, &xRawLogViewerFrame::OnShowICP, this, ID_BUTTON7);
+	Bind(
+		wxEVT_BUTTON, &xRawLogViewerFrame::OnShowAnimateScans, this,
+		ID_BUTTON8);
+	Bind(
+		wxEVT_BUTTON, &xRawLogViewerFrame::OnShowImagesAsVideo, this,
+		ID_BUTTON9);
+	Bind(wxEVT_BUTTON, &xRawLogViewerFrame::OnAbout, this, ID_BUTTON10);
+	Bind(wxEVT_BUTTON, &xRawLogViewerFrame::OnQuit, this, ID_BUTTON11);
+	Bind(
+		wxEVT_BUTTON, &xRawLogViewerFrame::OnbtnEditCommentsClick1, this,
+		ID_BUTTON1);
+	Bind(
+		wxEVT_SLIDER, &xRawLogViewerFrame::Onslid3DcamConfCmdScrollChanged,
+		this, ID_SLIDER1);
+	Bind(
+		wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGING,
+		&xRawLogViewerFrame::OnNotebook1PageChanging, this, ID_NOTEBOOK1);
+	Bind(wxEVT_MENU, &xRawLogViewerFrame::OnFileOpen, this, ID_MENUITEM1);
+	Bind(wxEVT_MENU, &xRawLogViewerFrame::OnSaveFile, this, ID_MENUITEM2);
+	Bind(wxEVT_MENU, &xRawLogViewerFrame::OnMenuRevert, this, ID_MENUITEM76);
+	Bind(wxEVT_MENU, &xRawLogViewerFrame::OnLoadAPartOnly, this, ID_MENUITEM7);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnFileCountEntries, this,
+		ID_MENUITEM8);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnFileSaveImages, this, ID_MENUITEM10);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuConvertExternallyStored, this,
+		ID_MENUITEM62);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuConvertObservationOnly, this,
+		ID_MENUITEM64);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnFileGenVisualLMFromStereoImages,
+		this, ID_MENUITEM13);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuLossLessDecFILE, this,
+		ID_MENUITEM60);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenCompactFILE, this, ID_MENUITEM61);
+	Bind(wxEVT_MENU, &xRawLogViewerFrame::OnImportCARMEN, this, ID_MENUITEM5);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnImportSequenceOfImages, this,
+		ID_MENUITEM47);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuImportALOG, this, ID_MENUITEM56);
+	Bind(wxEVT_MENU, &xRawLogViewerFrame::OnImportRTL, this, ID_MENUITEM63);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuItemImportBremenDLRLog, this,
+		ID_MENUITEM87);
+	Bind(wxEVT_MENU, &xRawLogViewerFrame::OnGenOdoLaser, this, ID_MENUITEM58);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuExportALOG, this, ID_MENUITEM55);
+	Bind(wxEVT_MENU, &xRawLogViewerFrame::OnQuit, this, idMenuQuit);
+	Bind(wxEVT_MENU, &xRawLogViewerFrame::OnEditRawlog, this, ID_MENUITEM14);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuInsertComment, this,
+		ID_MENUITEM51);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuRenameSensor, this,
+		ID_MENUITEM69);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuRenameSingleObs, this,
+		ID_MENUITEM91);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnChangeSensorPositions, this,
+		ID_MENUITEM15);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuChangePosesBatch, this,
+		ID_MENUITEM70);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnDecimateRecords, this,
+		ID_MENUITEM16);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuLossLessDecimate, this,
+		ID_MENUITEM59);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuCompactRawlog, this,
+		ID_MENUITEM57);
+	Bind(wxEVT_MENU, &xRawLogViewerFrame::OnMenuConvertSF, this, ID_MENUITEM75);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuResortByTimestamp, this,
+		ID_MENUITEM67);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuShiftTimestampsByLabel, this,
+		ID_MENUITEM68);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuRegenerateTimestampBySF, this,
+		ID_MENUITEM82);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnChangeMotionModel, this,
+		ID_MENUITEM20);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnRecalculateActionsICP, this,
+		ID_MENUITEM22);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuModifyICPActionsUncertainty,
+		this, ID_MENUITEM53);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnRecomputeOdometry, this,
+		ID_MENUITEM23);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnForceEncodersFalse, this,
+		ID_MENUITEM41);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuRegenerateOdometryTimes, this,
+		ID_MENUITEM84);
+	Bind(wxEVT_MENU, &xRawLogViewerFrame::OnShowICP, this, ID_MENUITEM17);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnShowAnimateScans, this,
+		ID_MENUITEM44);
+	Bind(wxEVT_MENU, &xRawLogViewerFrame::OnCountBadScans, this, ID_MENUITEM19);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnFilterErroneousScans, this,
+		ID_MENUITEM25);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuMarkLaserScanInvalid, this,
+		ID_MENUITEM73);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuChangeMaxRangeLaser, this,
+		ID_MENUITEM74);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuBatchLaserExclusionZones, this,
+		ID_MENUITEM77);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnLaserFilterAngles, this,
+		ID_MENUITEM79);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuItem3DObsRecoverParams, this,
+		ID_MENUITEM86);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnGenerateSeqImgs, this,
+		ID_MENUITEM29);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnShowImagesAsVideo, this,
+		ID_MENUITEM9);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuMono2Stereo, this,
+		ID_MENUITEM71);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuRectifyImages, this,
+		ID_MENUITEM72);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuRenameImageFiles, this,
+		ID_MENUITEM78);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnmnuCreateAVISelected, this,
+		ID_MENUITEM83);
+	Bind(wxEVT_MENU, &xRawLogViewerFrame::OnGenGasTxt, this, ID_MENUITEM30);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnFilterSpureousGas, this,
+		ID_MENUITEM24);
+	Bind(wxEVT_MENU, &xRawLogViewerFrame::OnGenGPSTxt, this, ID_MENUITEM31);
+	Bind(wxEVT_MENU, &xRawLogViewerFrame::OnSummaryGPS, this, ID_MENUITEM34);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuDistanceBtwGPSs, this,
+		ID_MENUITEM65);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuRegenerateGPSTimestamps, this,
+		ID_MENUITEM66);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuDrawGPSPath, this,
+		ID_MENUITEM52);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuGPSDeleteNaN, this,
+		ID_MENUITEM80);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuGenerateBeaconList, this,
+		ID_MENUITEM33);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnRemoveSpecificRangeMeas, this,
+		ID_MENUITEM38);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnGenerateTextFileRangeBearing, this,
+		ID_MENUITEM40);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuRangeBearFilterIDs, this,
+		ID_MENUITEM81);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnRangeFinder1DGenTextFile, this,
+		ID_MENUITEM46);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnGenerateIMUTextFile, this,
+		ID_MENUITEM43);
+	Bind(wxEVT_MENU, &xRawLogViewerFrame::OnGenWifiTxt, this, ID_MENUITEM89);
+	Bind(wxEVT_MENU, &xRawLogViewerFrame::OnRawMapOdo, this, ID_MENUITEM26);
+	Bind(wxEVT_MENU, &xRawLogViewerFrame::OnGenOdoLaser, this, ID_MENUITEM32);
+	Bind(wxEVT_MENU, &xRawLogViewerFrame::OnMenuShowTips, this, ID_MENUITEM27);
+	Bind(wxEVT_MENU, &xRawLogViewerFrame::OnAbout, this, idMenuAbout);
+	Bind(wxEVT_MENU, &xRawLogViewerFrame::OnMenuItem37Selected, this, MNU_1);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuItem46Selected, this,
+		ID_MENUITEM49);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuItem47Selected, this,
+		ID_MENUITEM50);
+	Bind(
+		wxEVT_TIMER, &xRawLogViewerFrame::OntimAutoLoadTrigger, this,
+		ID_TIMER1);
 	//*)
 
 	// "Manually" added code:
@@ -1812,9 +1727,9 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 
 	// Image directory selector on the toolbar:
 	// --------------------------------------------
-	Connect(
-		ID_COMBO_IMG_DIRS, wxEVT_COMMAND_COMBOBOX_SELECTED,
-		(wxObjectEventFunction)&xRawLogViewerFrame::OnComboImageDirsChange);
+	Bind(
+		wxEVT_COMBOBOX, &xRawLogViewerFrame::OnComboImageDirsChange, this,
+		ID_COMBO_IMG_DIRS);
 
 	// Construction of "global" dialog variables:
 	// ----------------------------------------------
@@ -6499,7 +6414,7 @@ void xRawLogViewerFrame::OnMenuItem3DObsRecoverParams(wxCommandEvent& event)
 	WX_END_TRY
 }
 
-void xRawLogViewerFrame::Onslid3DcamConfCmdScrollChanged(wxScrollEvent& event)
+void xRawLogViewerFrame::Onslid3DcamConfCmdScrollChanged(wxCommandEvent&)
 {
 	// Refresh:
 	SelectObjectInTreeView(curSelectedObject);

@@ -124,12 +124,10 @@ class CDialogAskUserForCamera : public wxDialog
 			btnCancel, 1, wxALL | wxALIGN_BOTTOM | wxALIGN_CENTER_HORIZONTAL,
 			5);
 
-		Connect(
-			ID_BTN_OK, wxEVT_COMMAND_BUTTON_CLICKED,
-			(wxObjectEventFunction)&CDialogAskUserForCamera::OnBtnOk);
-		Connect(
-			ID_BTN_CANCEL, wxEVT_COMMAND_BUTTON_CLICKED,
-			(wxObjectEventFunction)&CDialogAskUserForCamera::OnBtnCancel);
+		Bind(wxEVT_BUTTON, &CDialogAskUserForCamera::OnBtnOk, this, ID_BTN_OK);
+		Bind(
+			wxEVT_BUTTON, &CDialogAskUserForCamera::OnBtnCancel, this,
+			ID_BTN_CANCEL);
 
 		SetSizer(f1);
 		Fit();
@@ -173,9 +171,9 @@ WxSubsystem::CWXMainFrame::CWXMainFrame(wxWindow* parent, wxWindowID id)
 	// Create a timer so requests from the main application thread can be
 	// processed regularly:
 	// ------------------------------------------------------------------------------------------
-	Connect(
-		ID_TIMER_WX_PROCESS_REQUESTS, wxEVT_TIMER,
-		(wxObjectEventFunction)&CWXMainFrame::OnTimerProcessRequests);
+	Bind(
+		wxEVT_TIMER, &CWXMainFrame::OnTimerProcessRequests, this,
+		ID_TIMER_WX_PROCESS_REQUESTS);
 	m_theTimer = new wxTimer(this, ID_TIMER_WX_PROCESS_REQUESTS);
 
 	m_theTimer->Start(10, true);  // One-shot
@@ -700,10 +698,9 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 								wxEmptyString, wxITEM_NORMAL);
 							popupMnu->Insert(0, mnuTarget);
 
-							wnd->Connect(
-								MENUITEM_ID, wxEVT_COMMAND_MENU_SELECTED,
-								(wxObjectEventFunction)&CWindowDialogPlots::
-									OnMenuSelected);
+							wnd->Bind(
+								wxEVT_MENU, &CWindowDialogPlots::OnMenuSelected,
+								wnd, MENUITEM_ID);
 						}
 					}
 					break;

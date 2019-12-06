@@ -184,7 +184,7 @@ END_EVENT_TABLE()
 
 kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(
 	wxWindow* parent, wxWindowID id)
-	: m_config(_("kinect-stereo-calib")), m_my_redirector(nullptr)
+	: m_config(_("kinect-stereo-calib"))
 {
 	m_grabstate = gsIdle;
 
@@ -1151,157 +1151,71 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(
 	FlexGridSizer1->SetSizeHints(this);
 	Center();
 
-	Connect(
-		ID_BUTTON15, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::
-			OnbtnOpCalibKinectClick);
-	Connect(
-		ID_BUTTON16, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::
-			OnbtnOpCalibStereoGenericClick);
-	Connect(
-		ID_BUTTON17, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::
-			OnbtnOpTestKinectClick);
-	Connect(
-		ID_BUTTON3, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnNext1Click);
-	Connect(
-		ID_BUTTON5, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnConnectClick);
-	Connect(
-		ID_BUTTON4, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnNext1Click);
-	Connect(
-		ID_BUTTON8, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::
-			OnbtnDisconnectClick);
-	Connect(
-		ID_RADIOBOX1, wxEVT_COMMAND_RADIOBOX_SELECTED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::
-			OnrbChannelSwitchSelect);
-	Connect(
-		ID_SPINCTRL7, wxEVT_COMMAND_SPINCTRL_UPDATED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnedTiltChange);
-	Connect(
-		ID_BUTTON6, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnCaptureClick);
-	Connect(
-		ID_BUTTON7, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::
-			OnbtnNextCalibClick);
-	Connect(
-		ID_LISTBOX1, wxEVT_COMMAND_LISTBOX_SELECTED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::
-			OnlbImagePairsSelect);
-	Connect(
-		ID_BUTTON9, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::
-			OnbtnListRemoveSelectedClick);
-	Connect(
-		ID_BUTTON10, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnListLoadClick);
-	Connect(
-		ID_BUTTON11, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::
-			OnbtnLoadImageListClick);
-	Connect(
-		ID_BUTTON12, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnListSaveClick);
-	Connect(
-		ID_RADIOBOX2, wxEVT_COMMAND_RADIOBOX_SELECTED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::
-			OnrbShowImagesSelect);
-	Connect(
-		ID_SPINCTRL3, wxEVT_COMMAND_SPINCTRL_UPDATED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::
-			OnNeedsToUpdate6DCamPlot);
-	Connect(
-		ID_SPINCTRL4, wxEVT_COMMAND_SPINCTRL_UPDATED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::
-			OnNeedsToUpdate6DCamPlot);
-	Connect(
-		ID_TEXTCTRL6, wxEVT_COMMAND_TEXT_UPDATED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnedCalibSizeXText);
-	Connect(
-		ID_TEXTCTRL7, wxEVT_COMMAND_TEXT_UPDATED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnedCalibSizeXText);
-	Connect(
-		ID_CHECKBOX3, wxEVT_COMMAND_CHECKBOX_CLICKED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::
-			OncbCalibNormalizeClick);
-	Connect(
-		ID_CHECKBOX2, wxEVT_COMMAND_CHECKBOX_CLICKED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::
-			OncbCalibNormalizeClick);
-	Connect(
-		ID_BUTTON14, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnRunCalibClick);
-	Connect(
-		ID_BUTTON13, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::
-			OnbtnSaveCalibClick);
-	Connect(
-		ID_BUTTON18, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::
-			OnbtnConnectLive3DClick);
-	Connect(
-		ID_BUTTON20, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::
-			OnbtnDisconnectLiveClick);
-	Connect(
-		ID_BUTTON19, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::
-			OnbtnLoadCalibClick);
-	Connect(
-		ID_BUTTON21, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::
-			OnbtnSaveCalibLiveClick);
-	Connect(
-		ID_BITMAPBUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::
-			OnbtnHelpLiveCalibClick);
-	Panel5->Connect(
-		wxEVT_SET_FOCUS,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnPanel5SetFocus,
-		nullptr, this);
-	Connect(
-		ID_NOTEBOOK1, wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGING,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::
-			OnNotebook1PageChanging);
-	Connect(
-		ID_BUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnAbout);
-	Connect(
-		ID_BUTTON2, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnQuitClick);
-	Connect(
-		ID_TIMER1, wxEVT_TIMER,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::
-			OntimConsoleDumpTrigger);
-	Connect(
-		ID_TIMER2, wxEVT_TIMER,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::OntimMiscTrigger);
-	Connect(
-		wxID_ANY, wxEVT_CLOSE_WINDOW,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnClose);
-	Connect(
-		wxEVT_SIZE,
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnResize);
+	using kcgd = kinect_calibrate_guiDialog;
+
+	Bind(wxEVT_BUTTON, &kcgd::OnbtnOpCalibKinectClick, this, ID_BUTTON15);
+	Bind(
+		wxEVT_BUTTON, &kcgd::OnbtnOpCalibStereoGenericClick, this, ID_BUTTON16);
+	Bind(wxEVT_BUTTON, &kcgd::OnbtnOpTestKinectClick, this, ID_BUTTON17);
+	Bind(wxEVT_BUTTON, &kcgd::OnbtnNext1Click, this, ID_BUTTON3);
+	Bind(wxEVT_BUTTON, &kcgd::OnbtnConnectClick, this, ID_BUTTON5);
+	Bind(wxEVT_BUTTON, &kcgd::OnbtnNext1Click, this, ID_BUTTON4);
+	Bind(wxEVT_BUTTON, &kcgd::OnbtnDisconnectClick, this, ID_BUTTON8);
+	Bind(wxEVT_RADIOBOX, &kcgd::OnrbChannelSwitchSelect, this, ID_RADIOBOX1);
+	Bind(
+		wxEVT_COMMAND_SPINCTRL_UPDATED, &kcgd::OnedTiltChange, this,
+		ID_SPINCTRL7);
+	Bind(wxEVT_BUTTON, &kcgd::OnbtnCaptureClick, this, ID_BUTTON6);
+	Bind(wxEVT_BUTTON, &kcgd::OnbtnNextCalibClick, this, ID_BUTTON7);
+	Bind(wxEVT_LISTBOX, &kcgd::OnlbImagePairsSelect, this, ID_LISTBOX1);
+	Bind(wxEVT_BUTTON, &kcgd::OnbtnListRemoveSelectedClick, this, ID_BUTTON9);
+	Bind(wxEVT_BUTTON, &kcgd::OnbtnListLoadClick, this, ID_BUTTON10);
+	Bind(wxEVT_BUTTON, &kcgd::OnbtnLoadImageListClick, this, ID_BUTTON11);
+	Bind(wxEVT_BUTTON, &kcgd::OnbtnListSaveClick, this, ID_BUTTON12);
+	Bind(wxEVT_RADIOBOX, &kcgd::OnrbShowImagesSelect, this, ID_RADIOBOX2);
+	Bind(
+		wxEVT_COMMAND_SPINCTRL_UPDATED, &kcgd::OnNeedsToUpdate6DCamPlot, this,
+		ID_SPINCTRL3);
+	Bind(
+		wxEVT_COMMAND_SPINCTRL_UPDATED, &kcgd::OnNeedsToUpdate6DCamPlot, this,
+		ID_SPINCTRL4);
+	Bind(
+		wxEVT_COMMAND_TEXT_UPDATED, &kcgd::OnedCalibSizeXText, this,
+		ID_TEXTCTRL6);
+	Bind(
+		wxEVT_COMMAND_TEXT_UPDATED, &kcgd::OnedCalibSizeXText, this,
+		ID_TEXTCTRL7);
+	Bind(wxEVT_CHECKBOX, &kcgd::OncbCalibNormalizeClick, this, ID_CHECKBOX3);
+	Bind(wxEVT_CHECKBOX, &kcgd::OncbCalibNormalizeClick, this, ID_CHECKBOX2);
+	Bind(wxEVT_BUTTON, &kcgd::OnbtnRunCalibClick, this, ID_BUTTON14);
+	Bind(wxEVT_BUTTON, &kcgd::OnbtnSaveCalibClick, this, ID_BUTTON13);
+	Bind(wxEVT_BUTTON, &kcgd::OnbtnConnectLive3DClick, this, ID_BUTTON18);
+	Bind(wxEVT_BUTTON, &kcgd::OnbtnDisconnectLiveClick, this, ID_BUTTON20);
+	Bind(wxEVT_BUTTON, &kcgd::OnbtnLoadCalibClick, this, ID_BUTTON19);
+	Bind(wxEVT_BUTTON, &kcgd::OnbtnSaveCalibLiveClick, this, ID_BUTTON21);
+	Bind(wxEVT_BUTTON, &kcgd::OnbtnHelpLiveCalibClick, this, ID_BITMAPBUTTON1);
+	Panel5->Bind(wxEVT_SET_FOCUS, &kcgd::OnPanel5SetFocus, this);
+	Bind(
+		wxEVT_NOTEBOOK_PAGE_CHANGING, &kcgd::OnNotebook1PageChanging, this,
+		ID_NOTEBOOK1);
+	Bind(wxEVT_BUTTON, &kcgd::OnAbout, this, ID_BUTTON1);
+	Bind(wxEVT_BUTTON, &kcgd::OnbtnQuitClick, this, ID_BUTTON2);
+	Bind(wxEVT_TIMER, &kcgd::OntimConsoleDumpTrigger, this, ID_TIMER1);
+	Bind(wxEVT_TIMER, &kcgd::OntimMiscTrigger, this, ID_TIMER2);
+	Bind(wxEVT_CLOSE_WINDOW, &kcgd::OnClose, this, wxID_ANY);
+	Bind(wxEVT_SIZE, &kcgd::OnResize, this);
 	//*)
 
-	Connect(
-		ID_GRID1,
+	Bind(
 #if wxCHECK_VERSION(3, 1, 0)
 		wxEVT_GRID_CELL_CHANGED,
 #else
 		wxEVT_GRID_CELL_CHANGE,
 #endif
-		(wxObjectEventFunction)&kinect_calibrate_guiDialog::
-			Onm_grid_live_calibCellChange);
+		&kcgd::Onm_grid_live_calibCellChange, this, ID_GRID1);
 
 	// Set std::cout/cerr out:
-	m_my_redirector = new CMyRedirector(
+	m_my_redirector = std::make_unique<CMyRedirector>(
 		edLogTest,
 		false,  // yieldApplication
 		0,  // bufferSize
@@ -1364,9 +1278,6 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(
 
 kinect_calibrate_guiDialog::~kinect_calibrate_guiDialog()
 {
-	delete m_my_redirector;
-	m_my_redirector = nullptr;
-
 	//(*Destroy(kinect_calibrate_guiDialog)
 	//*)
 }

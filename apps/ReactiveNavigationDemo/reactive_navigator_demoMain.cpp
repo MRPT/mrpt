@@ -813,92 +813,35 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	FlexGridSizer1->SetSizeHints(this);
 	Center();
 
-	Connect(
-		ID_BUTTON4, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&reactive_navigator_demoframe::OnbtnStartClick);
-	Connect(
-		ID_BUTTON5, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&reactive_navigator_demoframe::OnbtnStopClick);
-	Connect(
-		ID_BUTTON7, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&reactive_navigator_demoframe::
-			OnbtnPlaceTargetClick);
-	Connect(
-		ID_BUTTON12, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&reactive_navigator_demoframe::
-			OnbtnSetWaypointSeqClick);
-	Connect(
-		ID_BUTTON6, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&reactive_navigator_demoframe::
-			OnbtnPlaceRobotClick);
-	Connect(
-		ID_BUTTON8, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&reactive_navigator_demoframe::
-			OnbtnDrawMapObsClick);
-	Connect(
-		ID_BUTTON11, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&reactive_navigator_demoframe::
-			OnbtnDrawEmptyClick);
-	Connect(
-		ID_BUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&reactive_navigator_demoframe::
-			OnbtnLoadMapClick);
-	Connect(
-		ID_BUTTON9, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&reactive_navigator_demoframe::
-			OnbtnEmptyMapClick);
-	Connect(
-		ID_BUTTON10, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&reactive_navigator_demoframe::
-			OnbtnSaveMapClick);
-	Connect(
-		ID_BUTTON2, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&reactive_navigator_demoframe::OnAbout);
-	Connect(
-		ID_BUTTON3, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&reactive_navigator_demoframe::OnbtnQuitClick);
-	Connect(
-		ID_RADIOBOX1, wxEVT_COMMAND_RADIOBOX_SELECTED,
-		(wxObjectEventFunction)&reactive_navigator_demoframe::
-			OnrbKinTypeSelect);
-	Connect(
-		ID_BUTTON13, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&reactive_navigator_demoframe::
-			OnbtnGenerateTemplateClick);
-	Connect(
-		ID_TEXTCTRL3, wxEVT_COMMAND_TEXT_UPDATED,
-		(wxObjectEventFunction)&reactive_navigator_demoframe::
-			OnedManualKinRampsText);
-	Connect(
-		ID_NOTEBOOK1, wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
-		(wxObjectEventFunction)&reactive_navigator_demoframe::
-			OnNotebook1PageChanged1);
-	Connect(
-		ID_MENUITEM4, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&reactive_navigator_demoframe::
-			OnbtnLoadMapClick);
-	Connect(
-		idMenuQuit, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&reactive_navigator_demoframe::OnQuit);
-	Connect(
-		ID_MENUITEM1, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&reactive_navigator_demoframe::
-			OnMenuItemChangeVisibleStuff);
-	Connect(
-		ID_MENUITEM2, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&reactive_navigator_demoframe::
-			OnMenuItemChangeVisibleStuff);
-	Connect(
-		ID_MENUITEM3, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&reactive_navigator_demoframe::
-			OnMenuItemClearRobotPath);
-	Connect(
-		idMenuAbout, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&reactive_navigator_demoframe::OnAbout);
-	Connect(
-		ID_TIMER1, wxEVT_TIMER,
-		(wxObjectEventFunction)&reactive_navigator_demoframe::
-			OntimRunSimulTrigger);
+	using rndf = reactive_navigator_demoframe;
+
+	Bind(wxEVT_BUTTON, &rndf::OnbtnStartClick, this, ID_BUTTON4);
+	Bind(wxEVT_BUTTON, &rndf::OnbtnStopClick, this, ID_BUTTON5);
+	Bind(wxEVT_BUTTON, &rndf::OnbtnPlaceTargetClick, this, ID_BUTTON7);
+	Bind(wxEVT_BUTTON, &rndf::OnbtnSetWaypointSeqClick, this, ID_BUTTON12);
+	Bind(wxEVT_BUTTON, &rndf::OnbtnPlaceRobotClick, this, ID_BUTTON6);
+	Bind(wxEVT_BUTTON, &rndf::OnbtnDrawMapObsClick, this, ID_BUTTON8);
+	Bind(wxEVT_BUTTON, &rndf::OnbtnDrawEmptyClick, this, ID_BUTTON11);
+	Bind(wxEVT_BUTTON, &rndf::OnbtnLoadMapClick, this, ID_BUTTON1);
+	Bind(wxEVT_BUTTON, &rndf::OnbtnEmptyMapClick, this, ID_BUTTON9);
+	Bind(wxEVT_BUTTON, &rndf::OnbtnSaveMapClick, this, ID_BUTTON10);
+	Bind(wxEVT_BUTTON, &rndf::OnAbout, this, ID_BUTTON2);
+	Bind(wxEVT_BUTTON, &rndf::OnbtnQuitClick, this, ID_BUTTON3);
+	Bind(wxEVT_RADIOBOX, &rndf::OnrbKinTypeSelect, this, ID_RADIOBOX1);
+	Bind(wxEVT_BUTTON, &rndf::OnbtnGenerateTemplateClick, this, ID_BUTTON13);
+	Bind(
+		wxEVT_COMMAND_TEXT_UPDATED, &rndf::OnedManualKinRampsText, this,
+		ID_TEXTCTRL3);
+	Bind(
+		wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, &rndf::OnNotebook1PageChanged1,
+		this, ID_NOTEBOOK1);
+	Bind(wxEVT_MENU, &rndf::OnbtnLoadMapClick, this, ID_MENUITEM4);
+	Bind(wxEVT_MENU, &rndf::OnQuit, this, idMenuQuit);
+	Bind(wxEVT_MENU, &rndf::OnMenuItemChangeVisibleStuff, this, ID_MENUITEM1);
+	Bind(wxEVT_MENU, &rndf::OnMenuItemChangeVisibleStuff, this, ID_MENUITEM2);
+	Bind(wxEVT_MENU, &rndf::OnMenuItemClearRobotPath, this, ID_MENUITEM3);
+	Bind(wxEVT_MENU, &rndf::OnAbout, this, idMenuAbout);
+	Bind(wxEVT_TIMER, &rndf::OntimRunSimulTrigger, this, ID_TIMER1);
 	//*)
 
 	// Load updated cfg file:
@@ -925,20 +868,14 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	SplitterWindow1->SetSashPosition(200);
 	SplitterWindow2->SetSashPosition(90);
 
-	m_plot3D->Connect(
-		wxEVT_MOTION,
-		(wxObjectEventFunction)&reactive_navigator_demoframe::Onplot3DMouseMove,
-		nullptr, this);
-	m_plot3D->Connect(
-		wxEVT_LEFT_DOWN,
-		(wxObjectEventFunction)&reactive_navigator_demoframe::
-			Onplot3DMouseClick,
-		nullptr, this);
-	m_plot3D->Connect(
-		wxEVT_RIGHT_DOWN,
-		(wxObjectEventFunction)&reactive_navigator_demoframe::
-			Onplot3DMouseClick,
-		nullptr, this);
+	m_plot3D->Bind(
+		wxEVT_MOTION, &reactive_navigator_demoframe::Onplot3DMouseMove, this);
+	m_plot3D->Bind(
+		wxEVT_LEFT_DOWN, &reactive_navigator_demoframe::Onplot3DMouseClick,
+		this);
+	m_plot3D->Bind(
+		wxEVT_RIGHT_DOWN, &reactive_navigator_demoframe::Onplot3DMouseClick,
+		this);
 
 	mnuViewMaxRange->Check(true);
 	mnuViewRobotPath->Check(true);

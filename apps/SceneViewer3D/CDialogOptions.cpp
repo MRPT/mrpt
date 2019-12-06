@@ -289,12 +289,8 @@ CDialogOptions::CDialogOptions(
 	FlexGridSizer1->SetSizeHints(this);
 	Center();
 
-	Connect(
-		ID_BUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CDialogOptions::OnbtnOkClick);
-	Connect(
-		ID_BUTTON2, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CDialogOptions::OnbtnCancelClick);
+	Bind(wxEVT_BUTTON, &CDialogOptions::OnbtnOkClick, this, ID_BUTTON1);
+	Bind(wxEVT_BUTTON, &CDialogOptions::OnbtnCancelClick, this, ID_BUTTON2);
 	//*)
 }
 

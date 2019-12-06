@@ -291,7 +291,7 @@ void wxCustomButton::SendEvent()
 	}
 	else
 	{
-		wxCommandEvent eventOut(wxEVT_COMMAND_BUTTON_CLICKED, GetId());
+		wxCommandEvent eventOut(wxEVT_BUTTON, GetId());
 		eventOut.SetInt(0);
 		eventOut.SetExtraLong(m_eventType);
 		eventOut.SetEventObject(this);

@@ -679,39 +679,22 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, wxWindowID id)
 	FlexGridSizer1->Fit(this);
 	FlexGridSizer1->SetSizeHints(this);
 
-	Connect(
-		ID_BUTTON5, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&gridmapSimulFrame::OnbtnSetLaserClick);
-	Connect(
-		ID_BUTTON4, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&gridmapSimulFrame::OnbtnResimulateClick);
-	Connect(
-		ID_BUTTON6, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&gridmapSimulFrame::OnbtnQuitClick);
-	Connect(
-		ID_BUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&gridmapSimulFrame::OnbtnStartClick);
-	Connect(
-		ID_BUTTON2, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&gridmapSimulFrame::OnbtnEndClick);
-	Connect(
-		ID_BUTTON3, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&gridmapSimulFrame::OnbtnExploreClick);
-	Connect(
-		ID_TIMER1, wxEVT_TIMER,
-		(wxObjectEventFunction)&gridmapSimulFrame::OntimRunTrigger);
-	Connect(
-		ID_MENUITEM1, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&gridmapSimulFrame::OnbtnExploreClick);
-	Connect(
-		ID_MENUITEM_LOADMAP, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&gridmapSimulFrame::OnMenuLoadMap);
-	Connect(
-		ID_MENUITEM2, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&gridmapSimulFrame::OnbtnQuitClick);
-	Connect(
-		ID_MENUITEM3, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&gridmapSimulFrame::OnAbout);
+	Bind(
+		wxEVT_BUTTON, &gridmapSimulFrame::OnbtnSetLaserClick, this, ID_BUTTON5);
+	Bind(
+		wxEVT_BUTTON, &gridmapSimulFrame::OnbtnResimulateClick, this,
+		ID_BUTTON4);
+	Bind(wxEVT_BUTTON, &gridmapSimulFrame::OnbtnQuitClick, this, ID_BUTTON6);
+	Bind(wxEVT_BUTTON, &gridmapSimulFrame::OnbtnStartClick, this, ID_BUTTON1);
+	Bind(wxEVT_BUTTON, &gridmapSimulFrame::OnbtnEndClick, this, ID_BUTTON2);
+	Bind(wxEVT_BUTTON, &gridmapSimulFrame::OnbtnExploreClick, this, ID_BUTTON3);
+	Bind(wxEVT_TIMER, &gridmapSimulFrame::OntimRunTrigger, this, ID_TIMER1);
+	Bind(wxEVT_MENU, &gridmapSimulFrame::OnbtnExploreClick, this, ID_MENUITEM1);
+	Bind(
+		wxEVT_MENU, &gridmapSimulFrame::OnMenuLoadMap, this,
+		ID_MENUITEM_LOADMAP);
+	Bind(wxEVT_MENU, &gridmapSimulFrame::OnbtnQuitClick, this, ID_MENUITEM2);
+	Bind(wxEVT_MENU, &gridmapSimulFrame::OnAbout, this, ID_MENUITEM3);
 	//*)
 
 	// Import grid map:
@@ -765,9 +748,7 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, wxWindowID id)
 	gl_robot->insert(gl_scan);
 
 	// Redirect all keystrokes in this box to the gl canvas:
-	edInput->Connect(
-		wxEVT_CHAR, (wxObjectEventFunction)&CMyGLCanvas::OnCharCustom, nullptr,
-		m_canvas);
+	edInput->Bind(wxEVT_CHAR, &CMyGLCanvas::OnCharCustom, m_canvas);
 
 	// fix sizes:
 	SplitterWindow1->SetMinSize(wxSize(200, 200));

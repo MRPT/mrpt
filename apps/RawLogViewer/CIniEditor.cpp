@@ -74,12 +74,8 @@ CIniEditor::CIniEditor(
 	FlexGridSizer1->SetSizeHints(this);
 	Center();
 
-	Connect(
-		ID_BUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CIniEditor::OnbtnOKClick);
-	Connect(
-		ID_BUTTON2, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CIniEditor::OnbtnCancelClick);
+	Bind(wxEVT_BUTTON, &CIniEditor::OnbtnOKClick, this, ID_BUTTON1);
+	Bind(wxEVT_BUTTON, &CIniEditor::OnbtnCancelClick, this, ID_BUTTON2);
 	//*)
 }
 

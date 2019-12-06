@@ -462,27 +462,19 @@ CScanMatching::CScanMatching(wxWindow* parent, wxWindowID)
 	FlexGridSizer1->SetSizeHints(this);
 	Center();
 
-	Connect(
-		ID_BITMAPBUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CScanMatching::OnbtnHelpClick);
-	Connect(
-		ID_RADIOBUTTON1, wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-		(wxObjectEventFunction)&CScanMatching::OChangeSelectedMapType);
-	Connect(
-		ID_RADIOBUTTON2, wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-		(wxObjectEventFunction)&CScanMatching::OChangeSelectedMapType);
-	Connect(
-		ID_NOTEBOOK1, wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGING,
-		(wxObjectEventFunction)&CScanMatching::OnNotebook1PageChanging);
-	Connect(
-		ID_BUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CScanMatching::OnbtnICPClick);
-	Connect(
-		ID_CHECKBOX1, wxEVT_COMMAND_CHECKBOX_CLICKED,
-		(wxObjectEventFunction)&CScanMatching::OncbAnimateClick);
-	Connect(
-		ID_BUTTON2, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&CScanMatching::OnbtnCloseClick);
+	Bind(wxEVT_BUTTON, &CScanMatching::OnbtnHelpClick, this, ID_BITMAPBUTTON1);
+	Bind(
+		wxEVT_RADIOBUTTON, &CScanMatching::OChangeSelectedMapType, this,
+		ID_RADIOBUTTON1);
+	Bind(
+		wxEVT_RADIOBUTTON, &CScanMatching::OChangeSelectedMapType, this,
+		ID_RADIOBUTTON2);
+	Bind(
+		wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGING,
+		&CScanMatching::OnNotebook1PageChanging, this, ID_NOTEBOOK1);
+	Bind(wxEVT_BUTTON, &CScanMatching::OnbtnICPClick, this, ID_BUTTON1);
+	Bind(wxEVT_CHECKBOX, &CScanMatching::OncbAnimateClick, this, ID_CHECKBOX1);
+	Bind(wxEVT_BUTTON, &CScanMatching::OnbtnCloseClick, this, ID_BUTTON2);
 	//*)
 
 	// Initialize 3D view:
