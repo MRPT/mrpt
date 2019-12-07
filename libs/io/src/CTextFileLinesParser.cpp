@@ -29,7 +29,6 @@ void CTextFileLinesParser::open(std::istream& in)
 	m_fileName = "{std::istream}";
 	this->close();
 	m_in = &in;
-	m_in_ownership = false;
 }
 
 void CTextFileLinesParser::open(const std::string& fil)
@@ -37,19 +36,19 @@ void CTextFileLinesParser::open(const std::string& fil)
 	m_curLineNum = 0;
 	m_fileName = fil;
 	this->close();
-	auto ifs = new std::ifstream;
-	m_in = ifs;
-	m_in_ownership = true;
+	auto ifs = std::make_shared<std::ifstream>();
 	ifs->clear();
 	ifs->open(fil.c_str());
 	if (!ifs->is_open())
 		THROW_EXCEPTION_FMT("Error opening file '%s' for reading", fil.c_str());
+	m_my_in = std::shared_ptr<std::istream>(ifs);
+	m_in = m_my_in.get();
 }
 
 void CTextFileLinesParser::close()
 {
 	if (!m_in) return;
-	if (m_in_ownership) delete m_in;
+	m_my_in.reset();
 	m_in = nullptr;
 }
 void CTextFileLinesParser::rewind()

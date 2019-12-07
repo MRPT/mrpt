@@ -51,7 +51,7 @@ using namespace std;
 
 void CWxGLCanvasBase::OnWindowCreation(wxWindowCreateEvent& ev)
 {
-	if (!m_gl_context) m_gl_context = new wxGLContext(this);
+	if (!m_gl_context) m_gl_context = std::make_unique<wxGLContext>(this);
 }
 
 void CWxGLCanvasBase::swapBuffers() { SwapBuffers(); }
@@ -158,10 +158,6 @@ CWxGLCanvasBase::CWxGLCanvasBase(
 #endif
 }
 
-CWxGLCanvasBase::~CWxGLCanvasBase()
-{
-	if (m_gl_context) delete m_gl_context;
-}
 void CWxGLCanvasBase::OnChar(wxKeyEvent& event) { OnCharCustom(event); }
 void CWxGLCanvasBase::Render()
 {

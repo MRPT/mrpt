@@ -283,12 +283,11 @@ CDlgCalibWizardOnline::CDlgCalibWizardOnline(
 		ID_TIMER1);
 	//*)
 
-	redire = new CMyRedirector(txtLog, true, 10);
+	redire = std::make_unique<CMyRedirector>(txtLog, true, 10);
 }
 
 CDlgCalibWizardOnline::~CDlgCalibWizardOnline()
 {
-	delete redire;
 	//(*Destroy(CDlgCalibWizardOnline)
 	//*)
 }

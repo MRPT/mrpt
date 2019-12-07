@@ -966,7 +966,7 @@ COpenNI2Generic::CDevice::Ptr COpenNI2Generic::CDevice::create(
 	const openni::DeviceInfo& info, openni::PixelFormat rgb,
 	openni::PixelFormat depth, bool verbose)
 {
-	return Ptr(new CDevice(info, rgb, depth, verbose));
+	return std::make_shared<CDevice>(info, rgb, depth, verbose);
 }
 
 bool COpenNI2Generic::CDevice::getSerialNumber(std::string& sn)
@@ -1198,7 +1198,7 @@ COpenNI2Generic::CDevice::CStream::Ptr
 		openni::Device& device, openni::SensorType type,
 		openni::PixelFormat format, std::ostream& log, bool verbose)
 {
-	return Ptr(new CStream(device, type, format, log, verbose));
+	return std::make_shared<CStream>(device, type, format, log, verbose);
 }
 
 bool COpenNI2Generic::CDevice::CStream::getFrame(

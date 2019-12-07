@@ -41,8 +41,6 @@ CLMS100Eth::CLMS100Eth(string _ip, unsigned int _port)
 CLMS100Eth::~CLMS100Eth()
 {
 	if (m_connected) m_client.close();
-	//    delete m_client;
-	//    delete m_sensorPose;
 }
 
 void CLMS100Eth::initialize()

@@ -790,7 +790,6 @@ void robotic_arm_kinematicsFrame::UpdateListLinks()
 void robotic_arm_kinematicsFrame::RegenerateDOFPanels()
 {
 	// Clear:
-	for (auto& m_dof_panel : m_dof_panels) delete m_dof_panel;
 	m_dof_panels.clear();
 
 	// Create:
@@ -798,8 +797,8 @@ void robotic_arm_kinematicsFrame::RegenerateDOFPanels()
 	m_dof_panels.resize(N);
 	for (unsigned int i = 0; i < N; i++)
 	{
-		m_dof_panels[i] = new PanelDOF(pnDOFs);
-		boxSizerDOFs->Add(m_dof_panels[i]);
+		m_dof_panels[i] = std::make_unique<PanelDOF>(pnDOFs);
+		boxSizerDOFs->Add(m_dof_panels[i].get());
 	}
 
 	boxSizerDOFs->Fit(pnDOFs);

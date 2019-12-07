@@ -1959,8 +1959,7 @@ void CAbstractPTGBasedReactive::saveConfigFile(
 			CLASS_ID(CAbstractHolonomicReactiveMethod));
 		for (const auto& cl : lst)
 		{
-			mrpt::rtti::CObject::Ptr obj =
-				mrpt::rtti::CObject::Ptr(cl->createObject());
+			mrpt::rtti::CObject::Ptr obj = cl->createObject();
 			auto* holo =
 				dynamic_cast<CAbstractHolonomicReactiveMethod*>(obj.get());
 			if (holo)
@@ -1983,8 +1982,7 @@ void CAbstractPTGBasedReactive::saveConfigFile(
 			CLASS_ID(CMultiObjectiveMotionOptimizerBase));
 		for (const auto& cl : lst)
 		{
-			mrpt::rtti::CObject::Ptr obj =
-				mrpt::rtti::CObject::Ptr(cl->createObject());
+			mrpt::rtti::CObject::Ptr obj = cl->createObject();
 			auto* momo =
 				dynamic_cast<CMultiObjectiveMotionOptimizerBase*>(obj.get());
 			if (momo)

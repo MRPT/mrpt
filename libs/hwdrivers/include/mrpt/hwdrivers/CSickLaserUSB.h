@@ -64,7 +64,7 @@ class CSickLaserUSB : public C2DRangeFinderAbstract
 	DEFINE_GENERIC_SENSOR(CSickLaserUSB)
 
    private:
-	mrpt::comms::CInterfaceFTDI* m_usbConnection{nullptr};
+	std::unique_ptr<mrpt::comms::CInterfaceFTDI> m_usbConnection{nullptr};
 	std::string m_serialNumber;
 
 	/** Time of the first data packet, for synchronization purposes. */
@@ -87,13 +87,8 @@ class CSickLaserUSB : public C2DRangeFinderAbstract
 		const std::string& iniSection) override;
 
    public:
-	/** Constructor
-	 */
 	CSickLaserUSB();
-
-	/** Destructor
-	 */
-	~CSickLaserUSB() override;
+	~CSickLaserUSB() override = default;
 
 	/** Changes the serial number of the device to open (call prior to
 	 * 'doProcess')

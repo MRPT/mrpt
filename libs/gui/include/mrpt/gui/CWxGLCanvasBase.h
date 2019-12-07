@@ -75,7 +75,7 @@ class CWxGLCanvasBase : public CGlCanvasBase,
 		const wxSize& size = wxDefaultSize, long style = 0,
 		const wxString& name = _T("CWxGLCanvasBase"));
 
-	~CWxGLCanvasBase() override;
+	~CWxGLCanvasBase() override = default;
 
 	void OnPaint(wxPaintEvent& event);
 	void OnSize(wxSizeEvent& event);
@@ -110,7 +110,7 @@ class CWxGLCanvasBase : public CGlCanvasBase,
 	virtual void OnRenderError(const wxString& str) { MRPT_UNUSED_PARAM(str); }
 
    protected:
-	wxGLContext* m_gl_context = nullptr;
+	std::unique_ptr<wxGLContext> m_gl_context;
 	bool m_init = false;
 
 	long m_Key = 0;

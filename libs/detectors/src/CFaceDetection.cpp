@@ -291,8 +291,8 @@ void CFaceDetection::detectObjects_Impl(
 		// Convert 2d detected objects to 3d
 		for (const auto& i : localDetected)
 		{
-			CDetectable3D::Ptr object3d = CDetectable3D::Ptr(
-				new CDetectable3D(std::dynamic_pointer_cast<CDetectable2D>(i)));
+			auto object3d = std::make_shared<CDetectable3D>(
+				std::dynamic_pointer_cast<CDetectable2D>(i));
 			detected.push_back(object3d);
 		}
 

@@ -40,7 +40,7 @@ class CRenderizableDisplayList : public mrpt::opengl::CRenderizable
    private:
 	/** Display list ID, for derived classes that want to use it (it's
 	 * automatically deleted and freed on destruction of this base class). */
-	mutable unsigned int m_dl;
+	mutable unsigned int m_dl = INVALID_DISPLAY_LIST_ID;
 	/** If using display lists, this is true when the list must be updated (the
 	 * object changes, it's the first rendering, etc...). */
 	mutable bool m_dl_recreate{true};
@@ -68,7 +68,7 @@ class CRenderizableDisplayList : public mrpt::opengl::CRenderizable
 	/** @} */
 
    public:
-	CRenderizableDisplayList();
+	CRenderizableDisplayList() = default;
 	~CRenderizableDisplayList() override;
 
 	/** Render the object, regenerating the display list if needed, otherwise
