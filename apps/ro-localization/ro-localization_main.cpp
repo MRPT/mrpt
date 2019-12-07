@@ -72,7 +72,7 @@ using namespace std;
 // ------------------------------------------------------
 //				Configuration
 // ------------------------------------------------------
-mrpt::config::CConfigFile* iniFile = nullptr;
+std::unique_ptr<mrpt::config::CConfigFile> iniFile;
 std::string iniFileName;
 
 // extern double	likelihood_acumulation;
@@ -1004,11 +1004,9 @@ int main(int argc, char** argv)
 
 		iniFileName = argv[1];
 
-		iniFile = new mrpt::config::CConfigFile(iniFileName);
+		iniFile = std::make_unique<mrpt::config::CConfigFile>(iniFileName);
 
 		TestParticlesLocalization();
-
-		delete iniFile;
 
 		return 0;
 	}

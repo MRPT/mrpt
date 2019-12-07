@@ -191,10 +191,9 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 	gl_path->setPointSize(3);
 
 	scene.insert(gl_path);
-	scene.insert(CGridPlaneXY::Ptr(
-		std::make_shared<CGridPlaneXY>(-300, 300, -300, 300, 0, 10)));
-	scene.insert(CAxis::Ptr(
-		std::make_shared<CAxis>(-300, -300, -50, 300, 300, 50, 1.0, 3, true)));
+	scene.insert(std::make_shared<CGridPlaneXY>(-300, 300, -300, 300, 0, 10));
+	scene.insert(
+		std::make_shared<CAxis>(-300, -300, -50, 300, 300, 50, 1.0, 3, true));
 
 	COpenGLScene::Ptr the_scene = winGPSPath->get3DSceneAndLock();
 	*the_scene = scene;

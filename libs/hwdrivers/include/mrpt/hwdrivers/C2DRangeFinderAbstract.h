@@ -66,7 +66,7 @@ class C2DRangeFinderAbstract : public mrpt::system::COutputLogger,
 
    protected:
 	/** The I/O channel (will be nullptr if not bound). */
-	mrpt::io::CStream* m_stream{nullptr};
+	std::shared_ptr<mrpt::io::CStream> m_stream;
 
 	/** Should be call by derived classes at "loadConfig" (loads exclusion areas
 	 *AND exclusion angles).
@@ -120,7 +120,7 @@ class C2DRangeFinderAbstract : public mrpt::system::COutputLogger,
 	 * class.
 	 * \sa comms::CSerialPort
 	 */
-	void bindIO(mrpt::io::CStream* streamIO);
+	void bindIO(const std::shared_ptr<mrpt::io::CStream>& streamIO);
 
 	/** Get the last observation from the sensor, if available, and unmarks it
 	 * as being "the last one" (thus a new scan must arrive or subsequent calls

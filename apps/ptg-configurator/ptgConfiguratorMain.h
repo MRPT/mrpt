@@ -218,7 +218,7 @@ class ptgConfiguratorframe : public wxFrame
 	void dumpPTGcfgToTextBox();
 
 	/* Methods: */
-	CMyRedirector* m_myRedirector;
+	std::unique_ptr<CMyRedirector> m_myRedirector;
 
 	/**  The state of the cursor onto the 3D view */
 	enum TCursorPickState

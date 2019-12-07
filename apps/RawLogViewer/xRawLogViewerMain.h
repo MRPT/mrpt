@@ -606,7 +606,7 @@ class xRawLogViewerFrame : public wxFrame
 };
 
 extern std::string iniFileSect;
-extern mrpt::config::CConfigFile* iniFile;
+extern std::unique_ptr<mrpt::config::CConfigFile> iniFile;
 extern std::string loadedFileName;
 extern mrpt::obs::CRawlog rawlog;
 

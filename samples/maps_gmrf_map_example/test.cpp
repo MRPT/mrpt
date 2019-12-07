@@ -57,15 +57,14 @@ void Example_GMRF()
 		RESOLUTION /* resolution */
 	);
 
-	mrpt::maps::CGasConcentrationGridMap2D::ConnectivityDescriptor::Ptr conn =
+	auto conn =
 		mrpt::maps::CGasConcentrationGridMap2D::ConnectivityDescriptor::Ptr(
 			new MyConnectivityVisitor);
 	gasmap.setMinLoggingLevel(mrpt::system::LVL_DEBUG);
 	gasmap.setCellsConnectivity(conn);
 	gasmap.clear();  // for the connectivity to be taken into account.
 
-	mrpt::opengl::CPointCloud::Ptr gl_data =
-		mrpt::opengl::CPointCloud::Create();
+	auto gl_data = mrpt::opengl::CPointCloud::Create();
 	gl_data->setPointSize(3.0f);
 
 	for (int i = 0; i < 20; i++)
@@ -87,8 +86,7 @@ void Example_GMRF()
 	gasmap.updateMapEstimation();
 
 	// 3D view:
-	mrpt::opengl::CSetOfObjects::Ptr glObj =
-		mrpt::opengl::CSetOfObjects::Create();
+	auto glObj = mrpt::opengl::CSetOfObjects::Create();
 	gasmap.getAs3DObject(glObj);
 
 	mrpt::gui::CDisplayWindow3D win("Map", 640, 480);

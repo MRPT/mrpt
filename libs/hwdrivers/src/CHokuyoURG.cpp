@@ -47,9 +47,7 @@ void CHokuyoURG::closeStreamConnection()
 	if (m_stream)
 	{
 		turnOff();
-
-		if (m_I_am_owner_serial_port) delete m_stream;
-		m_stream = nullptr;
+		m_stream.reset();
 	}
 }
 
@@ -286,7 +284,7 @@ bool CHokuyoURG::turnOn()
 	// If we are over a serial link, set it up:
 	if (m_ip_dir.empty())
 	{
-		auto* COM = dynamic_cast<CSerialPort*>(m_stream);
+		auto* COM = dynamic_cast<CSerialPort*>(m_stream.get());
 
 		if (COM != nullptr)
 		{
@@ -319,7 +317,7 @@ bool CHokuyoURG::turnOn()
 	}
 	else
 	{
-		auto* COM = dynamic_cast<CClientTCPSocket*>(m_stream);
+		auto* COM = dynamic_cast<CClientTCPSocket*>(m_stream.get());
 
 		if (COM != nullptr)
 		{
@@ -432,7 +430,7 @@ bool CHokuyoURG::ensureBufferHasBytes(const size_t nDesiredBytes)
 
 	try
 	{
-		auto sock = dynamic_cast<CClientTCPSocket*>(m_stream);
+		auto sock = dynamic_cast<CClientTCPSocket*>(m_stream.get());
 		const size_t nRead = sock ? sock->readAsync(&buf[0], to_read, 100, 10)
 								  : m_stream->Read(&buf[0], to_read);
 		m_rx_buffer.push_many(&buf[0], nRead);
@@ -906,7 +904,7 @@ bool CHokuyoURG::ensureStreamIsOpen()
 		if (!m_ip_dir.empty() && m_port_dir)
 		{
 			// Has the port been disconected (USB serial ports)??
-			auto* COM = dynamic_cast<CClientTCPSocket*>(m_stream);
+			auto* COM = dynamic_cast<CClientTCPSocket*>(m_stream.get());
 
 			if (COM != nullptr)
 			{
@@ -938,7 +936,7 @@ bool CHokuyoURG::ensureStreamIsOpen()
 		else
 		{
 			// Has the port been disconected (USB serial ports)??
-			auto* COM = dynamic_cast<CSerialPort*>(m_stream);
+			auto* COM = dynamic_cast<CSerialPort*>(m_stream.get());
 			if (COM != nullptr)
 			{
 				if (COM->isOpen()) return true;
@@ -979,7 +977,7 @@ bool CHokuyoURG::ensureStreamIsOpen()
 		if (!m_ip_dir.empty())
 		{
 			// Connect to the TCP/IP port:
-			auto* theCOM = new CClientTCPSocket();
+			auto theCOM = std::make_shared<CClientTCPSocket>();
 
 			MRPT_LOG_INFO_STREAM(
 				__CURRENT_FUNCTION_NAME__ << " Connecting to " << m_ip_dir
@@ -992,7 +990,6 @@ bool CHokuyoURG::ensureStreamIsOpen()
 					__CURRENT_FUNCTION_NAME__
 					<< " Cannot connect with the server '" << m_com_port
 					<< "'");
-				delete theCOM;
 				return false;
 			}
 
@@ -1002,21 +999,19 @@ bool CHokuyoURG::ensureStreamIsOpen()
 		else
 		{
 			// Try to open the serial port:
-			auto* theCOM = new CSerialPort(m_com_port, true);
+			auto theCOM = std::make_shared<CSerialPort>(m_com_port, true);
 
 			if (!theCOM->isOpen())
 			{
 				MRPT_LOG_ERROR_STREAM(
 					__CURRENT_FUNCTION_NAME__ << " Cannot open serial port '"
 											  << m_com_port << "'");
-				delete theCOM;
 				return false;
 			}
 
 			// Bind:
 			bindIO(theCOM);
 		}
-		m_I_am_owner_serial_port = true;
 
 		// (re)connected to the sensor. Configure the laser:
 		turnOn();
@@ -1045,7 +1040,7 @@ void CHokuyoURG::purgeBuffers()
 
 	if (m_ip_dir.empty())
 	{
-		auto* COM = dynamic_cast<CSerialPort*>(m_stream);
+		auto* COM = dynamic_cast<CSerialPort*>(m_stream.get());
 		if (COM != nullptr)
 		{
 			COM->purgeBuffers();
@@ -1053,7 +1048,7 @@ void CHokuyoURG::purgeBuffers()
 	}
 	else  // Socket connection
 	{
-		auto* COM = dynamic_cast<CClientTCPSocket*>(m_stream);
+		auto* COM = dynamic_cast<CClientTCPSocket*>(m_stream.get());
 
 		size_t to_read = COM->getReadPendingBytes();
 

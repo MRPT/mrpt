@@ -83,7 +83,7 @@ void CAngularObservationMesh::updateMesh() const
 	size_t numCols = scanSet[0].getScanSize();
 	actualMesh.setSize(numRows, numCols);
 	validityMatrix.setSize(numRows, numCols);
-	auto* pitchs = new double[numRows];
+	std::vector<double> pitchs(numRows);
 	if (pitchBounds.size() == 2)
 	{
 		double p1 = pitchBounds[0];
@@ -116,7 +116,7 @@ void CAngularObservationMesh::updateMesh() const
 						.asTPoint();
 			}
 	}
-	delete[] pitchs;
+
 	triangles.reserve(2 * (numRows - 1) * (numCols - 1));
 	for (size_t k = 0; k < numRows - 1; k++)
 	{

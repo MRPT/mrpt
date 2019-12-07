@@ -121,7 +121,7 @@ TCLAP::SwitchArg arg_no_span(
 // ======================================================================
 int main(int argc, char** argv)
 {
-	vector<TCLAP::Arg*> arg_ops;  // to be destroyed on exit.
+	vector<std::unique_ptr<TCLAP::Arg>> arg_ops;
 	int ret_val = 0;
 
 	try
@@ -130,7 +130,7 @@ int main(int argc, char** argv)
 		// Only one of the following operators have to be specified by the user
 		map<string, TOperationFunctor> ops_functors;
 
-		arg_ops.push_back(new TCLAP::SwitchArg(
+		arg_ops.push_back(std::make_unique<TCLAP::SwitchArg>(
 			"", "levmarq",
 			"Op: Optimizes the graph with sparse Levenberg-Marquartd using "
 			"global coordinates (via "
@@ -140,7 +140,7 @@ int main(int argc, char** argv)
 			cmd, false));
 		ops_functors["levmarq"] = &op_levmarq;
 
-		arg_ops.push_back(new TCLAP::SwitchArg(
+		arg_ops.push_back(std::make_unique<TCLAP::SwitchArg>(
 			"", "dijkstra",
 			"Op: Executes CNetworkOfPoses::dijkstra_nodes_estimate() to "
 			"estimate the global pose of nodes from a Dijkstra tree and "
@@ -149,7 +149,7 @@ int main(int argc, char** argv)
 			cmd, false));
 		ops_functors["dijkstra"] = &op_dijkstra;
 
-		arg_ops.push_back(new TCLAP::SwitchArg(
+		arg_ops.push_back(std::make_unique<TCLAP::SwitchArg>(
 			"", "info",
 			"Op: Loads the graph and displays statistics and information "
 			"on it.\n",
@@ -228,9 +228,6 @@ int main(int argc, char** argv)
 		std::cerr << mrpt::exception_to_str(e) << std::endl;
 		ret_val = -1;
 	}
-
-	// Free mem:
-	for (auto& arg_op : arg_ops) delete arg_op;
 
 	// end:
 	return ret_val;

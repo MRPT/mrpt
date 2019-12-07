@@ -327,7 +327,7 @@ class reactive_navigator_demoframe : public wxFrame
 
 	mrpt::io::CFileOutputStream m_log_trajectory_file;
 
-	CMyRedirector* m_myRedirector;
+	std::unique_ptr<CMyRedirector> m_myRedirector;
 
 	// ========= Opengl View: Map & robot  =======
 	mrpt::opengl::CSetOfObjects::Ptr gl_grid;

@@ -52,7 +52,7 @@ class CDlgPoseEst : public wxDialog
 		const wxSize& size = wxDefaultSize);
 	~CDlgPoseEst() override;
 
-	CMyRedirector* redire;
+	std::unique_ptr<CMyRedirector> redire;
 
 	//(*Declarations(CDlgCalibWizardOnline)
 	wxStaticText* lbProgress;

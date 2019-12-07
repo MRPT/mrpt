@@ -316,12 +316,11 @@ CDlgPoseEst::CDlgPoseEst(
 	scene->insert(cor);
 
 	this->showCamPose();
-	redire = new CMyRedirector(txtLog, true, 10);
+	redire = std::make_unique<CMyRedirector>(txtLog, true, 10);
 }
 
 CDlgPoseEst::~CDlgPoseEst()
 {
-	delete redire;
 	//(*Destroy(CDlgPoseEst)
 	//*)
 }
