@@ -89,7 +89,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 	// variable & 1 copy.
 	mrpt::tfest::TMatchingPairList largestConsensusCorrs;
 
-	CTicTac* tictac = nullptr;
+	std::unique_ptr<CTicTac> tictac;
 
 	CPose2D grossEst = initialEstimationPDF.mean;
 
@@ -166,7 +166,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 
 	if (runningTime)
 	{
-		tictac = new CTicTac();
+		tictac = std::make_unique<CTicTac>();
 		tictac->Tic();
 	}
 
@@ -954,11 +954,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 		*info_ = outInfo;
 	}
 
-	if (runningTime)
-	{
-		*runningTime = tictac->Tac();
-		delete tictac;
-	}
+	if (runningTime) *runningTime = tictac->Tac();
 
 	return pdf_SOG;
 
@@ -980,7 +976,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_correlation(
 
 	//#define	CORRELATION_SHOW_DEBUG
 
-	CTicTac* tictac = nullptr;
+	std::unique_ptr<CTicTac> tictac;
 
 	// Asserts:
 	// -----------------
@@ -993,7 +989,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_correlation(
 
 	if (runningTime)
 	{
-		tictac = new CTicTac();
+		tictac = std::make_unique<CTicTac>();
 		tictac->Tic();
 	}
 
@@ -1086,11 +1082,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_correlation(
 
 	}  // end for phi
 
-	if (runningTime)
-	{
-		*runningTime = tictac->Tac();
-		delete tictac;
-	}
+	if (runningTime) *runningTime = tictac->Tac();
 
 	CImage aux;
 	aux.setFromMatrix(bestCrossCorr, false /* do normalization [0,1]*/);

@@ -37,29 +37,15 @@ struct TAuxDLData
 	{
 		if (!m_pInstance)
 		{
-			m_pInstance = new TAuxDLData;
-			std::atexit(deleteSingleton);
+			m_pInstance = std::make_unique<TAuxDLData>();
 		}
 		return *m_pInstance;
 	}
 
-	static TAuxDLData* m_pInstance;
+	static std::unique_ptr<TAuxDLData> m_pInstance;
 };
-void deleteSingleton()
-{
-	if (TAuxDLData::m_pInstance)
-	{
-		delete TAuxDLData::m_pInstance;
-		TAuxDLData::m_pInstance = nullptr;
-	}
-}
-TAuxDLData* TAuxDLData::m_pInstance = nullptr;
 
-// Default constructor:
-CRenderizableDisplayList::CRenderizableDisplayList()
-	: m_dl(INVALID_DISPLAY_LIST_ID)
-{
-}
+std::unique_ptr<TAuxDLData> TAuxDLData::m_pInstance;
 
 // Destructor:
 CRenderizableDisplayList::~CRenderizableDisplayList()

@@ -27,7 +27,7 @@ using namespace mrpt;
 using namespace mrpt::config;
 
 // The configuration file:
-CConfigFile* iniFile = nullptr;
+std::unique_ptr<CConfigFile> iniFile;
 
 bool _DSceneViewerApp::OnInit()
 {
@@ -47,7 +47,7 @@ bool _DSceneViewerApp::OnInit()
 	std::string dataDirStr(dataDir.mb_str());
 	mrpt::system::createDirectory(dataDirStr);  // Create dir!
 	std::string iniFileName(dataDirStr + std::string("/config.cfg"));
-	iniFile = new CConfigFile(iniFileName);
+	iniFile = std::make_unique<CConfigFile>(iniFileName);
 
 	//(*AppInitialize
 	bool wxsOK = true;
@@ -62,10 +62,4 @@ bool _DSceneViewerApp::OnInit()
 	return wxsOK;
 }
 
-int _DSceneViewerApp::OnExit()
-{
-	delete iniFile;
-	iniFile = nullptr;
-
-	return 0;
-}
+int _DSceneViewerApp::OnExit() { return 0; }

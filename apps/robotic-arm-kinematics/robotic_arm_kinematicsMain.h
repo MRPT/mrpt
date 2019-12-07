@@ -161,7 +161,7 @@ class robotic_arm_kinematicsFrame : public wxFrame
    protected:
 	mrpt::kinematics::CKinematicChain m_robot;
 
-	std::vector<PanelDOF*> m_dof_panels;
+	std::vector<std::unique_ptr<PanelDOF>> m_dof_panels;
 
 	mrpt::opengl::CSetOfObjects::Ptr m_gl_robot;
 

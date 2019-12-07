@@ -137,7 +137,7 @@ std::mutex critSec_UpdateScene;
 // The file to open (from cmd line), or an empty string
 extern std::string global_fileToOpen;
 // The configuration file:
-extern CConfigFile* iniFile;
+extern std::unique_ptr<CConfigFile> iniFile;
 
 bool isCapturing = false;
 string capturingDir = ".";
@@ -781,7 +781,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 	wxCommandEvent dummEvent;
 	OnNewScene(dummEvent);
 
-	m_autoplayTimer = new wxTimer(this, ID_TIMER_AUTOPLAY);
+	m_autoplayTimer = std::make_unique<wxTimer>(this, ID_TIMER_AUTOPLAY);
 
 	m_tTravelling.SetOwner(this, ID_TRAVELLING_TIMER);
 
@@ -793,8 +793,6 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 _DSceneViewerFrame::~_DSceneViewerFrame()
 {
 	theWindow = nullptr;
-
-	delete m_autoplayTimer;
 
 	//(*Destroy(_DSceneViewerFrame)
 	//*)

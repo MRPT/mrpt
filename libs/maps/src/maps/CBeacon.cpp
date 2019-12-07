@@ -400,26 +400,28 @@ void CBeacon::generateObservationModelDistribution(
 {
 	MRPT_START
 
-	const CPointPDFSOG* beaconPos = nullptr;
+	std::unique_ptr<CPointPDFSOG> beaconPos;
+	const CPointPDFSOG* beaconPosToUse = nullptr;
 
 	if (m_typePDF == pdfGauss)
 	{
 		// Copy the gaussian to the SOG:
-		auto* new_beaconPos = new CPointPDFSOG(1);
+		auto new_beaconPos = std::make_unique<CPointPDFSOG>(1);
 		new_beaconPos->push_back(CPointPDFSOG::TGaussianMode());
 		new_beaconPos->get(0).log_w = 0;
 		new_beaconPos->get(0).val = m_locationGauss;
-		beaconPos = new_beaconPos;
+		beaconPos = std::move(new_beaconPos);
+		beaconPosToUse = beaconPos.get();
 	}
 	else
 	{
 		ASSERT_(m_typePDF == pdfSOG);
-		beaconPos = static_cast<const CPointPDFSOG*>(&m_locationSOG);
+		beaconPosToUse = static_cast<const CPointPDFSOG*>(&m_locationSOG);
 	}
 
 	outPDF.clear();
 
-	for (const auto& beaconPo : *beaconPos)
+	for (const auto& beaconPo : *beaconPosToUse)
 	{
 		// The center of the ring to be generated
 		CPoint3D ringCenter(
@@ -446,8 +448,6 @@ void CBeacon::generateObservationModelDistribution(
 		for (size_t k = startIdx; k < outPDF.size(); k++)
 			outPDF.get(k).log_w = beaconPo.log_w;
 	}
-
-	if (m_typePDF == pdfGauss) delete beaconPos;
 
 	MRPT_END
 }

@@ -179,9 +179,6 @@ class CGPSInterface : public mrpt::system::COutputLogger, public CGenericSensor
 	void setParser(PARSERS parser);
 	PARSERS getParser() const;
 
-	// void setExternCOM( CSerialPort *outPort, std::mutex *csOutPort ); //
-	// Replaced by bindStream() in MRPT 1.4.0
-
 	/** This enforces the use of a given user stream, instead of trying to open
 	 * the serial port set in this class parameters.
 	 * \param[in] csExternalStream If not NULL, read/write operations to the
@@ -191,10 +188,10 @@ class CGPSInterface : public mrpt::system::COutputLogger, public CGenericSensor
 	 * \note Call before CGenericSensor::initialize()
 	 */
 	void bindStream(
-		mrpt::io::CStream* external_stream,
-		std::mutex* csOptionalExternalStream = nullptr);
+		const std::shared_ptr<mrpt::io::CStream>& external_stream,
+		const std::shared_ptr<std::mutex>& csOptionalExternalStream =
+			std::shared_ptr<std::mutex>());
 
-	bool useExternCOM() const { return m_data_stream_is_external; }
 	bool useExternalStream() const { return m_data_stream_is_external; }
 	void setSetupCommandsDelay(const double delay_secs);
 	double getSetupCommandsDelay() const;
@@ -269,9 +266,10 @@ class CGPSInterface : public mrpt::system::COutputLogger, public CGenericSensor
 
 	/** Typically a CSerialPort created by this class, but may be set
 	 * externally. */
-	mrpt::io::CStream* m_data_stream{nullptr};
-	std::mutex* m_data_stream_cs{nullptr};
-	std::mutex m_data_stream_mine_cs;
+	std::shared_ptr<mrpt::io::CStream> m_data_stream;
+	std::shared_ptr<std::mutex> m_data_stream_cs;
+	std::shared_ptr<std::mutex> m_data_stream_mine_cs =
+		std::make_shared<std::mutex>();
 	bool m_data_stream_is_external{false};
 
 	poses::CPose3D m_sensorPose;

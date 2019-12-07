@@ -128,9 +128,8 @@ void PlannerTPS_VirtualBase::internal_loadConfig_PTG(
 		// Generate it:
 		const std::string sPTGName =
 			ini.read_string(sSect, format("PTG%u_Type", n), "", true);
-		m_PTGs.push_back(CParameterizedTrajectoryGenerator::Ptr(
-			CParameterizedTrajectoryGenerator::CreatePTG(
-				sPTGName, ini, sSect, format("PTG%u_", n))));
+		m_PTGs.push_back(CParameterizedTrajectoryGenerator::CreatePTG(
+			sPTGName, ini, sSect, format("PTG%u_", n)));
 	}
 }
 

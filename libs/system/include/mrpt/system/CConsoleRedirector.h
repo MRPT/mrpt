@@ -27,11 +27,12 @@ class CConsoleRedirector : public std::streambuf
 	/** The text output file stream. */
 	std::ofstream m_of;
 	/** The "old" std::cout */
-	std::streambuf* sbOld;
+	std::streambuf* sbOld = nullptr;
 	/** The "old" std::cout */
-	std::streambuf* sbOld_cerr;
+	std::streambuf* sbOld_cerr = nullptr;
 	bool m_also_to_console;
 	std::mutex m_cs;
+	std::vector<char> m_buf;
 
    public:
 	/** Constructor
@@ -48,11 +49,7 @@ class CConsoleRedirector : public std::streambuf
 	CConsoleRedirector(
 		const std::string& out_file, bool also_to_console = true,
 		bool also_cerr = true, bool append_file = false, int bufferSize = 1000)
-		: m_of(),
-		  sbOld(nullptr),
-		  sbOld_cerr(nullptr),
-		  m_also_to_console(also_to_console),
-		  m_cs()
+		: m_also_to_console(also_to_console)
 	{
 		// Open the file:
 		std::ios_base::openmode openMode =
@@ -64,8 +61,8 @@ class CConsoleRedirector : public std::streambuf
 
 		if (bufferSize)
 		{
-			char* ptr = new char[bufferSize];
-			setp(ptr, ptr + bufferSize);
+			m_buf.resize(bufferSize);
+			setp(&m_buf[0], &m_buf[bufferSize]);
 		}
 		else
 			setp(nullptr, nullptr);
@@ -87,7 +84,6 @@ class CConsoleRedirector : public std::streambuf
 		// Restore normal output:
 		std::cout.rdbuf(sbOld);
 		if (sbOld_cerr != nullptr) std::cerr.rdbuf(sbOld_cerr);
-		if (pbase()) delete[] pbase();
 	}
 
 	void flush() { sync(); }

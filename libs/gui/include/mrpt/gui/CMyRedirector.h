@@ -45,6 +45,7 @@ class CMyRedirector : public std::streambuf
 
 	wxCriticalSection m_cs;
 	std::string m_strbuf;
+	std::vector<char> m_buf;
 
    public:
 	CMyRedirector(
@@ -59,8 +60,8 @@ class CMyRedirector : public std::streambuf
 	{
 		if (bufferSize)
 		{
-			char* ptr = new char[bufferSize];
-			setp(ptr, ptr + bufferSize);
+			m_buf.resize(bufferSize);
+			setp(&m_buf[0], &m_buf[bufferSize]);
 		}
 		else
 			setp(nullptr, nullptr);
@@ -83,8 +84,6 @@ class CMyRedirector : public std::streambuf
 		std::cout.rdbuf(sbOld);
 
 		if (m_also_cerr) std::cerr.rdbuf(sbOldErr);
-
-		delete[] pbase();
 	}
 
 	void flush() { sync(); }

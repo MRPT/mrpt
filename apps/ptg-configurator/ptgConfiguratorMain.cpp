@@ -655,7 +655,8 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	m_plot->Bind(wxEVT_LEFT_DOWN, &pcf::Onplot3DMouseClick, this);
 
 	// Redirect all output to control:
-	m_myRedirector = new CMyRedirector(edLog, false, 100, true, false, true);
+	m_myRedirector =
+		std::make_unique<CMyRedirector>(edLog, false, 100, true, false, true);
 
 	WX_START_TRY
 
@@ -819,7 +820,6 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 
 ptgConfiguratorframe::~ptgConfiguratorframe()
 {
-	delete m_myRedirector;
 	//(*Destroy(ptgConfiguratorframe)
 	//*)
 }

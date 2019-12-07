@@ -34,17 +34,8 @@ CSickLaserUSB::CSickLaserUSB() : m_serialNumber("LASER001")
 {
 	MRPT_START
 	m_sensorLabel = "SICKLMS";
-	m_usbConnection = new CInterfaceFTDI();
+	m_usbConnection = std::make_unique<CInterfaceFTDI>();
 	MRPT_END
-}
-
-/*-------------------------------------------------------------
-						~CSickLaserUSB
--------------------------------------------------------------*/
-CSickLaserUSB::~CSickLaserUSB()
-{
-	delete m_usbConnection;
-	m_usbConnection = nullptr;
 }
 
 /*-------------------------------------------------------------

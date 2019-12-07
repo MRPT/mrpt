@@ -461,7 +461,7 @@ int main(int argc, char** argv)
 			const string ext = mrpt::system::lowerCase(
 				mrpt::system::extractFileExtension(fil, true));
 
-			cam = CCameraSensor::Ptr(new CCameraSensor);
+			cam = std::make_shared<CCameraSensor>();
 			if (ext == "rawlog")
 			{
 				// It's a rawlog:

@@ -53,14 +53,7 @@ class DeviceClass
 {
    public:
 	DeviceClass() = default;
-	~DeviceClass()
-	{
-		if (m_streamInterface)
-		{
-			delete m_streamInterface;
-			m_streamInterface = nullptr;
-		}
-	}
+	~DeviceClass() = default;
 
 	/*! \brief Open an IO device
 		\param portInfo The info to use for opening the port
@@ -69,9 +62,9 @@ class DeviceClass
 	bool openPort(const XsPortInfo& portInfo)
 	{
 		if (portInfo.isUsb())
-			m_streamInterface = new UsbInterface();
+			m_streamInterface = std::make_unique<UsbInterface>();
 		else
-			m_streamInterface = new SerialInterface();
+			m_streamInterface = std::make_unique<SerialInterface>();
 
 		if (m_streamInterface->open(portInfo) != XRV_OK) return false;
 		return true;
@@ -295,7 +288,7 @@ class DeviceClass
 	}
 
    private:
-	StreamInterface* m_streamInterface{nullptr};
+	std::unique_ptr<StreamInterface> m_streamInterface;
 	XsByteArray m_dataBuffer;
 };
 #endif

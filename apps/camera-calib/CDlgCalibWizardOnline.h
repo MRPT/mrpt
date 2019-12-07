@@ -38,7 +38,7 @@ class CDlgCalibWizardOnline : public wxDialog
 		const wxSize& size = wxDefaultSize);
 	~CDlgCalibWizardOnline() override;
 
-	CMyRedirector* redire;
+	std::unique_ptr<CMyRedirector> redire;
 
 	//(*Declarations(CDlgCalibWizardOnline)
 	wxStaticText* lbProgress;
