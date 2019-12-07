@@ -33,9 +33,7 @@ jobs:
             CXX: /usr/bin/clang++-6.0
       - run: make -C build tests_build_all
       - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build
-      - run: make gcov -C build
       - run: make -C build
-      - run: bash <(curl -s https://codecov.io/bash) -X gcov -y .codecov.yml -s build
   headless-u18.04-bionic:
     docker:
       - image: mrpt/mrpt-build-env:headless-bionic
@@ -44,9 +42,7 @@ jobs:
       - run: cmake -DBUILD_EXAMPLES=On -DBUILD_TESTING=On -DENABLE_COVERAGE=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild
       - run: make -C build tests_build_all
       - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build
-      - run: make gcov -C build
       - run: make -C build
-      - run: bash <(curl -s https://codecov.io/bash) -X gcov -y .codecov.yml -s build
   minimal-u18.04-bionic:
     docker:
       - image: mrpt/mrpt-build-env:minimal-bionic
@@ -55,9 +51,7 @@ jobs:
       - run: cmake -DBUILD_EXAMPLES=On -DBUILD_TESTING=On -DENABLE_COVERAGE=On -DDISABLE_PYTHON_BINDINGS=On -DEIGEN_USE_EMBEDDED_VERSION=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild
       - run: make -C build tests_build_all
       - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build
-      - run: make gcov -C build
       - run: make -C build
-      - run: bash <(curl -s https://codecov.io/bash) -X gcov -y .codecov.yml -s build
   clang-format-lint:
     docker:
       - image: mrpt/mrpt-build-env:full-bionic
