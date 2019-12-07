@@ -2,37 +2,6 @@
 #  See "DeclareMRPTLib.cmake" for explanations
 # -------------------------------------------------
 
-# Build xSens MT3?
-if(CMAKE_MRPT_HAS_xSENS_MT3)
-	list(APPEND hwdrivers_EXTRA_SRCS
-		"${MRPT_SOURCE_DIR}/3rdparty/xSens_MT3/*.cpp"
-		"${MRPT_SOURCE_DIR}/3rdparty/xSens_MT3/*.h"
-		)
-	list(APPEND hwdrivers_EXTRA_SRCS_NAME "xSens_MT3" "xSens_MT3" )
-endif()
-
-# Build xSens MT4?
-if(CMAKE_MRPT_HAS_xSENS_MT4)
-	list(APPEND hwdrivers_EXTRA_SRCS
-		"${MRPT_SOURCE_DIR}/3rdparty/xSens_MT4/xcommunication/src/*.cpp"
-		"${MRPT_SOURCE_DIR}/3rdparty/xSens_MT4/xcommunication/src/*.c"
-		"${MRPT_SOURCE_DIR}/3rdparty/xSens_MT4/xcommunication/include/xsens/*.h"
-		"${MRPT_SOURCE_DIR}/3rdparty/xSens_MT4/xstypes/src/*.c"
-		"${MRPT_SOURCE_DIR}/3rdparty/xSens_MT4/xstypes/include/xsens/*.h"
-		)
-	list(APPEND hwdrivers_EXTRA_SRCS_NAME
-		"xSens_MT4" "xSens_MT4" "xSens_MT4"
-		"xSens_MT4" "xSens_MT4"
-		)
-	# XSens MT4 sources seem to expect to have both [DIR]/ and [DIR]/xsens/ as INCLUDE_DIRS:
-	include_directories(
-		"${MRPT_SOURCE_DIR}/3rdparty/xSens_MT4/xcommunication/include/"
-		"${MRPT_SOURCE_DIR}/3rdparty/xSens_MT4/xcommunication/include/xsens/"
-		"${MRPT_SOURCE_DIR}/3rdparty/xSens_MT4/xstypes/include/"
-		"${MRPT_SOURCE_DIR}/3rdparty/xSens_MT4/xstypes/include/xsens/"
-		)
-endif()
-
 # Build Intersense devices?
 if(CMAKE_MRPT_HAS_INTERSENSE)
    list(APPEND hwdrivers_EXTRA_SRCS
@@ -44,67 +13,13 @@ if(CMAKE_MRPT_HAS_INTERSENSE)
 endif()
 
 # Build Kinect support via libfreenect?
-if(CMAKE_MRPT_HAS_FREENECT)
-	if (CMAKE_MRPT_HAS_FREENECT_SYSTEM)
-		# No need to build if it's already built in the system:
-		if (NOT "${OPENKINECT_FREENECT_INCLUDE_DIR}" STREQUAL "")
-			include_directories("${OPENKINECT_FREENECT_INCLUDE_DIR}")
-		endif ()
-	else ()
-		# Embedded version:
-		include_directories("${MRPT_SOURCE_DIR}/3rdparty/libfreenect/")
-		list(APPEND hwdrivers_EXTRA_SRCS
-			"${MRPT_SOURCE_DIR}/3rdparty/libfreenect/*.c"
-			"${MRPT_SOURCE_DIR}/3rdparty/libfreenect/*.h"
-			)
-		list(APPEND hwdrivers_EXTRA_SRCS_NAME
-			"libfreenect"
-			"libfreenect"
-			)
-
-		# Special stuff for windows:
-		if (WIN32)
-			list(APPEND hwdrivers_EXTRA_SRCS
-				"${MRPT_SOURCE_DIR}/3rdparty/libfreenect/platform/windows/libusb10emu/libusb-1.0/libusbemu.cpp"
-				"${MRPT_SOURCE_DIR}/3rdparty/libfreenect/platform/windows/libusb10emu/libusb-1.0/failguard.cpp"
-				)
-			list(APPEND hwdrivers_EXTRA_SRCS_NAME
-				"libfreenect"
-				"libfreenect"
-				)
-
-			include_directories("${MRPT_SOURCE_DIR}/3rdparty/libfreenect/platform/windows")
-			include_directories("${MRPT_SOURCE_DIR}/3rdparty/libfreenect/platform/windows/libusb10emu")
-			# libfreenect.h includes libusb.h:
-			include_directories("${LIBUSB_1_INCLUDE_DIRS}")
-
-		endif()
-
-	endif ()
-endif()
-
-# Build RPLIDAR?
-if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
-	list(APPEND hwdrivers_EXTRA_SRCS
-		"${MRPT_SOURCE_DIR}/3rdparty/rplidar/src/*.cpp"
-		"${MRPT_SOURCE_DIR}/3rdparty/rplidar/src/hal/*.cpp"
-		"${MRPT_SOURCE_DIR}/3rdparty/rplidar/include/*.h"
-		)
-	list(APPEND hwdrivers_EXTRA_SRCS_NAME
-		"RoboPeakLidar"
-		"RoboPeakLidar"
-		"RoboPeakLidar"
-		)
-	if (WIN32)
-		list(APPEND hwdrivers_EXTRA_SRCS "${MRPT_SOURCE_DIR}/3rdparty/rplidar/src/arch/win32/*.cpp")
-		list(APPEND hwdrivers_EXTRA_SRCS_NAME "RoboPeakLidar")
-	else()
-		list(APPEND hwdrivers_EXTRA_SRCS "${MRPT_SOURCE_DIR}/3rdparty/rplidar/src/arch/linux/*.cpp")
-		list(APPEND hwdrivers_EXTRA_SRCS_NAME "RoboPeakLidar")
+if(CMAKE_MRPT_HAS_FREENECT AND CMAKE_MRPT_HAS_FREENECT_SYSTEM)
+	# No need to build if it's already built in the system:
+	if(NOT "${OPENKINECT_FREENECT_INCLUDE_DIR}" STREQUAL "")
+		include_directories("${OPENKINECT_FREENECT_INCLUDE_DIR}")
 	endif()
-	include_directories("${MRPT_SOURCE_DIR}/3rdparty/rplidar/include/")
-	include_directories("${MRPT_SOURCE_DIR}/3rdparty/rplidar/src/")
 endif()
+
 
 if(CMAKE_MRPT_HAS_LIBDC1394_2)
 	if ("${LIBDC1394_2_INCLUDE_DIRS}")
@@ -161,23 +76,12 @@ if(CMAKE_MRPT_HAS_NITE2)
 	target_link_libraries(hwdrivers PRIVATE ${NITE2_LIB_FILE_RELEASE})
 endif()
 
-# Ignore precompiled headers in xSens sources:
-if(CMAKE_MRPT_HAS_xSENS_MT3 OR CMAKE_MRPT_HAS_xSENS_MT4)
-	target_include_directories(hwdrivers PRIVATE "${MRPT_SOURCE_DIR}/3rdparty")
-
-	if(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
-		set_source_files_properties(${xSens_MT3_FILES} ${xSens_MT4_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
-	endif()
-
-	# Avoid some annoying warnings:
-	if (MRPT_COMPILER_IS_GCC_OR_CLANG)
-		set_source_files_properties(${xSens_MT3_FILES} ${xSens_MT4_FILES} PROPERTIES COMPILE_FLAGS "-Wno-variadic-macros")
-		# -D_... = Needed to have CLOCK_REALTIME,... in gcc
-		# -fms-extensions: Unnamed structs in unions
-		set_source_files_properties(${xSens_MT4_FILES} PROPERTIES COMPILE_FLAGS "-D_POSIX_C_SOURCE=199309L -fms-extensions")
-	endif ()
-
-	add_definitions(-D_LOG_TO_STDOUT)
+# XSens libs:
+if(TARGET mrpt_xsens_mt3)
+	target_link_libraries(hwdrivers PRIVATE mrpt_xsens_mt3)
+endif()
+if(TARGET mrpt_xsens_mt4)
+	target_link_libraries(hwdrivers PRIVATE mrpt_xsens_mt4)
 endif()
 
 if(CMAKE_MRPT_HAS_OPENCV)
@@ -236,17 +140,9 @@ if(CMAKE_MRPT_HAS_FREENECT)
 		endif ()
 	endif()
 
-	if (NOT CMAKE_MRPT_HAS_FREENECT_SYSTEM)
-		# Using embedded version:
-		# Ignore precompiled headers:
-		if(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
-			set_source_files_properties(${libfreenect_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
-		endif()
-
-		if (MSVC)
-			set_source_files_properties(${libfreenect_FILES} PROPERTIES LANGUAGE CXX) 			# Build as C++
-		endif()
-	endif ()
+	if(NOT CMAKE_MRPT_HAS_FREENECT_SYSTEM)
+		target_link_libraries(hwdrivers PRIVATE mrpt_freenect)
+	endif()
 endif()
 
 if(NOT "${LIBUSB10_LIBS}" STREQUAL "")
@@ -301,17 +197,8 @@ if(CMAKE_MRPT_HAS_TRICLOPS)
 	endif()
 endif()
 
-# Ignore precompiled headers in RPLIDAR sources:
 if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
-	target_include_directories(hwdrivers PRIVATE "${MRPT_SOURCE_DIR}/3rdparty")
-
-	if(MSVC)
-		set(flags_set "/DWIN64")
-		if(MRPT_ENABLE_PRECOMPILED_HDRS)
-			set(flags_set "${flags_set} /Y-")
-		endif()
-		set_source_files_properties(${RoboPeakLidar_FILES} PROPERTIES COMPILE_FLAGS "${flags_set}")
-	endif()
+	target_link_libraries(hwdrivers PRIVATE mrpt_rplidar)
 endif()
 
 # Build with link on SVS lib
