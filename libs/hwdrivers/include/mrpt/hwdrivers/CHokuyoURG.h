@@ -278,8 +278,6 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	/** The information gathered when the laser is first open */
 	TSensorInfo m_sensor_info;
 
-	bool m_I_am_owner_serial_port{false};
-
 	/** Time of the first data packet, for synchronization purposes. */
 	uint32_t m_timeStartUI{0};
 	/** Counter to discard to first few packets before setting the

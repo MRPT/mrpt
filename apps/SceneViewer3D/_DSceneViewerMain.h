@@ -201,7 +201,7 @@ class _DSceneViewerFrame : public wxFrame
 	//*)
 
 	CMyGLCanvas* m_canvas;
-	wxTimer* m_autoplayTimer;
+	std::unique_ptr<wxTimer> m_autoplayTimer;
 
 	/** The list of currently selected objects */
 	std::vector<mrpt::opengl::CRenderizable::Ptr> m_selected_gl_objects;

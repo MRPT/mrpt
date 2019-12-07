@@ -191,24 +191,24 @@ void mrpt::system::deleteFiles(const string& s)
 {
 	MRPT_START
 	size_t len = s.size() + 20;
-	char* aux = new char[len];
+	std::vector<char> aux(len);
 #ifdef _WIN32
-	os::sprintf(aux, len, "del %s", &s[0]);
-	for (char* c = aux; *c; c++)
+	os::sprintf(&aux[0], len, "del %s", &s[0]);
+	for (char* c = &aux[0]; *c; c++)
 		if (*c == '/') *c = '\\';
-	os::strcat(aux, len, " /Q");
+	os::strcat(&aux[0], len, " /Q");
 #else
-	os::sprintf(aux, len, "rm %s", &s[0]);
+	os::sprintf(&aux[0], len, "rm %s", &s[0]);
 #endif
 
-	int res = ::system(aux);
+	int res = ::system(&aux[0]);
 	if (res)
 	{
 		fprintf(
 			stderr,
-			"[mrpt::system::deleteFiles] Warning: error invoking: `%s`\n", aux);
+			"[mrpt::system::deleteFiles] Warning: error invoking: `%s`\n",
+			&aux[0]);
 	}
-	delete[] aux;
 	MRPT_END
 }
 

@@ -31,10 +31,8 @@ C2DRangeFinderAbstract::C2DRangeFinderAbstract()
 						Destructor
 -------------------------------------------------------------*/
 C2DRangeFinderAbstract::~C2DRangeFinderAbstract() = default;
-/*-------------------------------------------------------------
-						bindIO
--------------------------------------------------------------*/
-void C2DRangeFinderAbstract::bindIO(CStream* streamIO)
+
+void C2DRangeFinderAbstract::bindIO(const std::shared_ptr<CStream>& streamIO)
 {
 	m_csChangeStream.lock();
 	m_stream = streamIO;
@@ -225,8 +223,8 @@ void C2DRangeFinderAbstract::processPreview(
 			m_win->setCameraAzimuthDeg(180);
 			m_win->setCameraElevationDeg(90);
 			COpenGLScene::Ptr& theScene = m_win->get3DSceneAndLock();
-			theScene->insert(CAxis::Ptr(std::make_shared<CAxis>(
-				-300, -300, -50, 300, 300, 50, 1.0, 3, true)));
+			theScene->insert(std::make_shared<CAxis>(
+				-300, -300, -50, 300, 300, 50, 1.0, 3, true));
 			m_win->unlockAccess3DScene();
 		}
 

@@ -26,7 +26,7 @@ int main(int num_arg, char* argv[])
 		//----------------------------------------------------------------------
 		bool enable_logfile = true;
 
-		if (num_arg != 2 || num_arg == 2 && string(argv[1]) == "--help")
+		if ((num_arg != 2) || (num_arg == 2 && string(argv[1]) == "--help"))
 		{
 			printf("\n\t       Arguments of the function 'main' \n");
 			printf(

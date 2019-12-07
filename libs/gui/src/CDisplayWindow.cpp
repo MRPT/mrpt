@@ -54,11 +54,7 @@ CWindowDialog::wxMRPTImageControl::wxMRPTImageControl(
 CWindowDialog::wxMRPTImageControl::~wxMRPTImageControl()
 {
 	std::lock_guard<std::mutex> lock(m_img_cs);
-	if (m_img)
-	{
-		delete m_img;
-		m_img = nullptr;
-	}
+	if (m_img) m_img.reset();
 }
 
 void CWindowDialog::wxMRPTImageControl::OnMouseMove(wxMouseEvent& ev)
@@ -77,13 +73,7 @@ void CWindowDialog::wxMRPTImageControl::OnChar(wxKeyEvent& ev) {}
 void CWindowDialog::wxMRPTImageControl::AssignImage(wxBitmap* img)
 {
 	std::lock_guard<std::mutex> lock(m_img_cs);
-	if (m_img)
-	{
-		delete m_img;
-		m_img = nullptr;
-	}
-
-	m_img = img;
+	m_img.reset(img);
 }
 
 void CWindowDialog::wxMRPTImageControl::OnPaint(wxPaintEvent& ev)

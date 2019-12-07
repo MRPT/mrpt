@@ -883,7 +883,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	updateButtonsEnableState(false);
 
 	// Redirect all output to control:
-	m_myRedirector = new CMyRedirector(edLog, false, 100, true);
+	m_myRedirector = std::make_unique<CMyRedirector>(edLog, false, 100, true);
 
 	WX_START_TRY
 
@@ -1103,9 +1103,6 @@ reactive_navigator_demoframe::~reactive_navigator_demoframe()
 	// Destroy this first to avoid problems, since it may contain a ref of the
 	// simulator object:
 	m_navMethod.reset();
-
-	delete m_myRedirector;
-	m_myRedirector = nullptr;
 }
 
 void reactive_navigator_demoframe::OnQuit(wxCommandEvent&) { Close(); }

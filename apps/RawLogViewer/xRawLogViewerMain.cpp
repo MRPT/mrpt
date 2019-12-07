@@ -159,7 +159,7 @@ double experimentLenght = 0;
 
 xRawLogViewerFrame* theMainWindow = nullptr;
 
-extern CConfigFile* iniFile;
+extern std::unique_ptr<CConfigFile> iniFile;
 
 // As a global variable to keep the user selections in memory.
 CFormRawMap* formRawMap = nullptr;

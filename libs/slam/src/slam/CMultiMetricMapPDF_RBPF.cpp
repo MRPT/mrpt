@@ -676,7 +676,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 
 				do
 				{
-					auto* pdfGrid = new CPosePDFGrid(
+					auto pdfGrid = std::make_unique<CPosePDFGrid>(
 						grid_min_x, grid_max_x, grid_min_y, grid_max_y,
 						grid_resXY, 180.0_deg, 0, 0);
 
@@ -811,8 +811,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 						else
 							repeatGridCalculation = false;
 					}
-					delete pdfGrid;
-					pdfGrid = nullptr;
+					pdfGrid.reset();
 
 				} while (repeatGridCalculation);
 

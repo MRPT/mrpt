@@ -322,7 +322,7 @@ class CWindowDialog : public wxFrame
 	class wxMRPTImageControl : public wxPanel
 	{
 	   protected:
-		wxBitmap* m_img;
+		std::unique_ptr<wxBitmap> m_img;
 		std::mutex m_img_cs;
 		CDisplayWindow* m_win2D = nullptr;
 

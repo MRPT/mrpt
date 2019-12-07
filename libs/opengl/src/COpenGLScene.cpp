@@ -230,8 +230,7 @@ COpenGLViewport::Ptr COpenGLScene::createViewport(const string& viewportName)
 	COpenGLViewport::Ptr old = getViewport(viewportName);
 	if (old) return old;
 
-	COpenGLViewport::Ptr theNew =
-		COpenGLViewport::Ptr(new COpenGLViewport(this, viewportName));
+	auto theNew = std::make_shared<COpenGLViewport>(this, viewportName);
 	m_viewports.push_back(theNew);
 	return theNew;
 

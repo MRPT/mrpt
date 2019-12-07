@@ -84,7 +84,7 @@ class CGyroKVHDSP3000 : public hwdrivers::CGenericSensor
 	// bool searchPortAndConnect();
 
 	/** The serial port connection */
-	mrpt::comms::CSerialPort* m_serialPort;
+	std::unique_ptr<mrpt::comms::CSerialPort> m_serialPort;
 	GYRO_MODE m_mode{RATE};
 	bool m_firstInteration{true};
 

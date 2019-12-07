@@ -32,7 +32,7 @@ using namespace mrpt::config;
 using namespace std;
 
 // The configuration file:
-CConfigFile* iniFile = nullptr;
+std::unique_ptr<CConfigFile> iniFile;
 
 bool xRawLogViewerApp::OnInit()
 {
@@ -50,7 +50,7 @@ bool xRawLogViewerApp::OnInit()
 	std::string dataDirStr(dataDir.mb_str());
 	mrpt::system::createDirectory(dataDirStr);  // Create dir!
 	std::string iniFileName(dataDirStr + std::string("/config.cfg"));
-	iniFile = new CConfigFile(iniFileName);
+	iniFile = std::make_unique<CConfigFile>(iniFileName);
 
 	// Set numeric locale to "POSIX" to enable a consistent file generation in
 	// all platforms:
@@ -69,10 +69,4 @@ bool xRawLogViewerApp::OnInit()
 	return wxsOK;
 }
 
-int xRawLogViewerApp::OnExit()
-{
-	delete iniFile;
-	iniFile = nullptr;
-
-	return 0;
-}
+int xRawLogViewerApp::OnExit() { return 0; }

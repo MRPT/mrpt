@@ -116,7 +116,7 @@ class CSickLaserSerial : public C2DRangeFinderAbstract
 	std::string m_com_port;
 	/** Will be !=nullptr only if I created it, so I must destroy it at the end.
 	 */
-	mrpt::comms::CSerialPort* m_mySerialPort{nullptr};
+	std::shared_ptr<mrpt::comms::CSerialPort> m_mySerialPort;
 	/** Baudrate: 9600, 38400, 500000 */
 	int m_com_baudRate{38400};
 	/** Default = 1 */

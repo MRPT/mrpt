@@ -124,15 +124,15 @@ TEST(CGPSInterface, parse_NMEA_ZDA)
 
 TEST(CGPSInterface, parse_NMEA_ZDA_stream)
 {
-	mrpt::io::CMemoryStream buf;
+	auto buf = std::make_shared<mrpt::io::CMemoryStream>();
 	{
 		const std::string s("$GPZDA,181813,14,10,2003,00,00*4F\n");
-		buf.Write(s.c_str(), s.size());
-		buf.Seek(0);
+		buf->Write(s.c_str(), s.size());
+		buf->Seek(0);
 	}
 
 	CGPSInterface gps;
-	gps.bindStream(&buf);
+	gps.bindStream(buf);
 
 	gps.initialize();
 	gps.doProcess();
@@ -161,7 +161,7 @@ TEST(CGPSInterface, parse_NMEA_ZDA_stream)
 
 TEST(CGPSInterface, parse_NOVATEL6_stream)
 {
-	mrpt::io::CMemoryStream buf;
+	auto buf = std::make_shared<mrpt::io::CMemoryStream>();
 	{
 		const uint8_t sample_novatel6_gps[] = {
 			0xaa, 0x44, 0x12, 0x1c, 0x2a, 0x00, 0x00, 0xa0, 0x48, 0x00, 0x00,
@@ -211,12 +211,12 @@ TEST(CGPSInterface, parse_NOVATEL6_stream)
 			0x92, 0x9b, 0x96, 0x3c, 0x70, 0xd3, 0x9c, 0x3c, 0x06, 0x3b, 0xa8,
 			0x3c, 0x35, 0x35, 0x35, 0x00};
 		const unsigned int sample_novatel6_gps_len = 500;
-		buf.Write(sample_novatel6_gps, sample_novatel6_gps_len);
-		buf.Seek(0);
+		buf->Write(sample_novatel6_gps, sample_novatel6_gps_len);
+		buf->Seek(0);
 	}
 
 	CGPSInterface gps;
-	gps.bindStream(&buf);
+	gps.bindStream(buf);
 
 	gps.initialize();
 	gps.doProcess();
