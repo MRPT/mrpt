@@ -1,14 +1,17 @@
-# C++ coding style for MRPT
+===========================
+C++ coding style for MRPT
+===========================
 
-## General rules
+General rules
+------------------
 
-* Take a look at [Google's C++ style
-guide](https://google.github.io/styleguide/cppguide.html) for very good general
-advices and reasons to worry about code style. It is worth reading carefully.
+* Take a look at `Google's C++ style guide <https://google.github.io/styleguide/cppguide.html>`m_
+for very good general advices and reasons to worry about code style. It is worth reading carefully.
 
-* C++11/14 is **not** allowed unless working on a MRPT 2.0.0 branch.
+* Since mrpt 2.0 we use C++17.
 
-## Class and filenames
+Class and filenames
+----------------------
 
 * For historical reasons, most MRPT classes and structures use the prefix `C`
     and `T`, respectively. For example: `class CBar`and `struct TFoo`. This
@@ -18,13 +21,14 @@ advices and reasons to worry about code style. It is worth reading carefully.
     implementations in `CFoo_impl.h`.
 * Each MRPT library, or "module", has its own directory under `MRPT/libs`, with
     its own `include` and `src` directory. More on source tree layout
-    [here](http://www.mrpt.org/libs_tree_layout).
-* Use the #include guard [`#pragma
-    once`](https://en.wikipedia.org/wiki/Pragma_once) in new code.
+    `here <http://www.mrpt.org/libs_tree_layout>`_.
+* Use the #include guard `#pragma once <https://en.wikipedia.org/wiki/Pragma_once>`_ in new code.
 
-## Code content and style
+Code content and style
+------------------------
 
-### Tabs vs Spaces
+Tabs vs Spaces
+=================
 
 Prefer **tabs to spaces**. Yes, I know this is an eternal source of discussions
 and debate, but virtually all MRPT code follow this convention, so **please**
@@ -52,25 +56,25 @@ there, a space is assumed.
 
 **Wrong indentation**
 
-![mixed_indentation2](https://raw.githubusercontent.com/MRPT/mrpt/master/doc/design_of_images/vim_wrong_indentation.png)
+.. image:: images/vim_wrong_indentation.png
 
 **Correct indentation**
 
-![mixed_indentation2](https://raw.githubusercontent.com/MRPT/mrpt/master/doc/design_of_images/vim_correct_indentation.png)
+.. image:: images/vim_correct_indentation.png
 
 **Wrong inline alignment**
 
-![wrong_inline_alignment](https://raw.githubusercontent.com/MRPT/mrpt/master/doc/design_of_images/wrong_inline_alignment.png)
+.. image:: images/wrong_inline_alignment.png
 
 **Correct inline alignment**
 
-![correct_inline_alignment](https://raw.githubusercontent.com/MRPT/mrpt/master/doc/design_of_images/correct_inline_alignment.png)
+.. image:: images/correct_inline_alignment.png
 
-Finally, if you are a vim-user you can add [this snippet of
-code](https://gist.github.com/bergercookie/9a2e96e19733b32ca55b8e2940eaba2c) to
-your `.vimrc` to enable the aforementioned settings.
+Finally, if you are a vim-user you can add `this snippet of code <https://gist.github.com/bergercookie/9a2e96e19733b32ca55b8e2940eaba2c>`_ 
+to your `.vimrc` to enable the aforementioned settings.
 
-### Misc
+Misc
+======
 
 * **Never**, **ever**, put a `using namespace XXX;` in a header file, since it
     will pollute without control user namespaces. An exception is its use
@@ -103,7 +107,6 @@ your `.vimrc` to enable the aforementioned settings.
 * In general, `typedefs` and `using` will use lowercase with underscores, e.g.
    `using vector_int = std::vector<int>;`
 
-* If a packed structure is defined (i.e. `#pragma pack(push,1) ... #pragma
-    pack(pop)`), it will be much safer to make all fields protected and offer
-    accessor methods. In this way, we avoid alignment errors in some processor
-    architectures.
+* If a packed structure is defined (i.e. `#pragma pack(push,1) ... #pragma pack(pop)`),
+it will be much safer to make all fields protected and offer accessor methods.
+In this way, we avoid alignment errors in some processor architectures.

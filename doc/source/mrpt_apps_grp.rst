@@ -24,7 +24,7 @@ This C++ library is part of MRPT and can be installed in Debian-based systems wi
 
 		sudo apt install libmrpt-apps-dev
 
-See also: [Import MRPT into your CMake scripts](mrpt_from_cmake.html).
+See also: `Import MRPT into your CMake scripts <mrpt_from_cmake.html>`_.
 
 Refer to classes in the namespace mrpt::apps.
 
