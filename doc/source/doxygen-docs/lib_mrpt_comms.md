@@ -1,19 +1,7 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          https://www.mrpt.org/                            |
-   |                                                                           |
-   | Copyright (c) 2005-2020, Individual contributors, see AUTHORS file        |
-   | See: https://www.mrpt.org/Authors - All rights reserved.                  |
-   | Released under BSD License. See details in https://www.mrpt.org/License   |
-   +---------------------------------------------------------------------------+
- */
-
-/** \defgroup mrpt_comms_grp [mrpt-comms]
+\defgroup mrpt_comms_grp [mrpt-comms]
 
 Communication utilities: serial ports, networking (TCP, DNS,...), pub/sub
 nodelets.
-
-
 
 [TOC]
 
@@ -25,7 +13,7 @@ with:
 
 		sudo apt install libmrpt-comms-dev
 
-See: \ref mrpt_from_cmake
+See also: [Import MRPT into your CMake scripts](mrpt_from_cmake.html).
 
 Find below some examples of use.
 
@@ -65,6 +53,3 @@ requiring the POST method.
 
 See: \ref comms_http_client/test.cpp
 \snippet comms_http_client/test.cpp example-http-get
-
-
-*/

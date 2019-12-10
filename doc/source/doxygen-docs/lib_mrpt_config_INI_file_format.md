@@ -1,15 +1,5 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          https://www.mrpt.org/                            |
-   |                                                                           |
-   | Copyright (c) 2005-2020, Individual contributors, see AUTHORS file        |
-   | See: https://www.mrpt.org/Authors - All rights reserved.                  |
-   | Released under BSD License. See details in https://www.mrpt.org/License   |
-   +---------------------------------------------------------------------------+
- */
-
-/** \defgroup config_file_format Configuration file format in MRPT
- * \ingroup mrpt_config_grp
+\defgroup config_file_format Configuration file format in MRPT
+\ingroup mrpt_config_grp
 
 Configuration ("INI"-like) file format in MRPT
 
@@ -68,5 +58,3 @@ the example below: [New in MRPT 1.5.0]. \code
 
 There are dozens of examples in the subdirectory
 [MRPT/share/mrpt/config_files](https://github.com/MRPT/mrpt/tree/master/share/mrpt/config_files).
-
-*/

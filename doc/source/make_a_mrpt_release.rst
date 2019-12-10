@@ -1,12 +1,12 @@
 
-(These notes are mostly for myself (J.L. Blanco), but hopefully they'll be 
+(These notes are mostly for myself (J.L. Blanco), but hopefully they'll be
  useful if someone else maintains MRPT in the future...)
 
   MRPT release check-list:
 =============================
 
 1) CREATE PACKAGES OF SOURCES
-> Go to MRPT dir. 
+> Go to MRPT dir.
 > Edit docs/doxygen-pages/changelog.h and set release date.
 > bash scripts/build_docs.sh -c (from Windows, or everything from linux, then CHM from Windows)
 > Do the final "git commit" before the release.
@@ -33,5 +33,3 @@ Test with: "lintian *.changes"
 > sudo ARCH=amd64 DIST=sid pbuilder --build  MRPT*.dsc
 
 Test all binary pkgs with: "lintian *.deb"
-
-

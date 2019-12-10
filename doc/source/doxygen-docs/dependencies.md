@@ -1,21 +1,7 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          https://www.mrpt.org/                            |
-   |                                                                           |
-   | Copyright (c) 2005-2020, Individual contributors, see AUTHORS file        |
-   | See: https://www.mrpt.org/Authors - All rights reserved.                  |
-   | Released under BSD License. See details in https://www.mrpt.org/License   |
-   +---------------------------------------------------------------------------+
- */
+\page dependencies External library dependencies and build options
 
-/** \page dependencies External library dependencies and build options
- *
-
-<small> <a href="index.html">Back to main page</a> </small>
-<br>
-
-<h2>List of all MRPT dependencies / build options</h2>
-<hr>
+# List of all MRPT dependencies / build options
+------------
 
 <center>
 <table style="border:1px solid black; " >
@@ -73,5 +59,3 @@
 <b>Note:</b> (*) means that the functionality is header-only. This means that
 will be available even if MRPT is built without those libraries, but the user
 program includes both, the external library, and MRPT headers.
-
-*/

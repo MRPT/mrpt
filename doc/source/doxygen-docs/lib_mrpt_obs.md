@@ -1,18 +1,6 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          https://www.mrpt.org/                            |
-   |                                                                           |
-   | Copyright (c) 2005-2020, Individual contributors, see AUTHORS file        |
-   | See: https://www.mrpt.org/Authors - All rights reserved.                  |
-   | Released under BSD License. See details in https://www.mrpt.org/License   |
-   +---------------------------------------------------------------------------+
- */
-
-/** \defgroup mrpt_obs_grp [mrpt-obs]
+\defgroup mrpt_obs_grp [mrpt-obs]
 
 Observation classes for all kinds of robot sensors.
-
-
 
 
 # Library `mrpt-obs`
@@ -21,7 +9,7 @@ This library is part of MRPT and can be installed in Debian-based systems with:
 
 		sudo apt install libmrpt-obs-dev
 
-See: \ref mrpt_from_cmake
+See also: [Import MRPT into your CMake scripts](mrpt_from_cmake.html).
 
 Key concepts:
 
@@ -52,6 +40,3 @@ carmen2simplemap. </li>
 </ul>
 
 See the list of classes in mrpt::obs
-
-
-*/
