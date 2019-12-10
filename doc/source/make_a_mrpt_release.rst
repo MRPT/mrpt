@@ -1,9 +1,12 @@
+.. _make_a_mrpt_release:
 
-(These notes are mostly for myself (J.L. Blanco), but hopefully they'll be
- useful if someone else maintains MRPT in the future...)
-
-  MRPT release check-list:
 =============================
+MRPT release check-list
+=============================
+
+These notes are mostly for myself (J.L. Blanco), but hopefully they'll be
+useful to someone else maintaining MRPT in the future... ;-)
+
 
 1) CREATE PACKAGES OF SOURCES
 > Go to MRPT dir.

@@ -1,15 +1,8 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          https://www.mrpt.org/                            |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: https://www.mrpt.org/Authors - All rights reserved.                  |
-   | Released under BSD License. See details in https://www.mrpt.org/License   |
-   +---------------------------------------------------------------------------+
- */
+.. env_vars:
 
-/** \page env-vars Environment variables that MRPT looks for
- *
+====================================================
+Environment variables that MRPT looks for
+====================================================
 
 The following environment variables may be set to alter some MRPT functionality:
 
@@ -32,5 +25,3 @@ The following environment variables may be set to alter some MRPT functionality:
   really creates the window, before reporting an error. It's also used in
   the function mrpt::hwdrivers::prepareVideoSourceFromUserSelection().
   Default: "5000" in Release builds, "30000" in Debug.
-
-*/

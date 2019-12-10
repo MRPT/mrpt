@@ -1,3 +1,13 @@
+.. _make_a_mrpt_fedora_release:
+
+===============================
+MRPT Fedora release check-list
+===============================
+
+These incomplete notes were mostly for myself (J.L. Blanco), but hopefully they'll be 
+useful for someone else maintaining MRPT in the future... ;-)
+
+
 cd MRPT
 bash scritpts/prepare_fedora.sh
 

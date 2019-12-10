@@ -1,14 +1,4 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          https://www.mrpt.org/                            |
-   |                                                                           |
-   | Copyright (c) 2005 2017, Individual contributors, see AUTHORS file        |
-   | See: https://www.mrpt.org/Authors - All rights reserved.                  |
-   | Released under BSD License. See details in https://www.mrpt.org/License   |
-   +---------------------------------------------------------------------------+ */
-
-/** \page maps_observations Maps and observations compatibility matrix
- *
+\page maps_observations Maps and observations compatibility matrix
 
 There exists many kinds of metric maps and observations in MRPT, but some operations
 involving a map and an observation (for example "inserting" an observation in a map to update it)
@@ -80,5 +70,3 @@ See: mrpt::maps::CMetricMaps::computeObservationLikelihood()
 | mrpt::obs::CObservationWindSensor           |                                                                                                                                                              |
 | mrpt::obs::CObservationWirelessPower        |                                                                                                                                                              |
 
-
-*/
