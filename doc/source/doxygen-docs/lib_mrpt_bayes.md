@@ -1,16 +1,4 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          https://www.mrpt.org/                            |
-   |                                                                           |
-   | Copyright (c) 2005-2020, Individual contributors, see AUTHORS file        |
-   | See: https://www.mrpt.org/Authors - All rights reserved.                  |
-   | Released under BSD License. See details in https://www.mrpt.org/License   |
-   +---------------------------------------------------------------------------+
- */
-
-// clang-format off
-
-/** \defgroup mrpt_bayes_grp [mrpt-bayes]
+\defgroup mrpt_bayes_grp [mrpt-bayes]
 
 Bayesian filtering algorithms
 
@@ -22,7 +10,7 @@ This C++ library is part of MRPT and can be installed in Debian-based systems wi
 
 		sudo apt install libmrpt-bayes-dev
 
-See: \ref mrpt_from_cmake
+See also: [Import MRPT into your CMake scripts](mrpt_from_cmake.html).
 
 Refer to classes in the namespace mrpt::bayes and these examples:
  - [bayes_tracking_example](https://github.com/MRPT/mrpt/tree/master/samples/bayes_tracking_example)
@@ -41,6 +29,3 @@ are not as generic as in Kalman filtering, but the classes serve to organize and
 of different PF algorithms in MRPT.
 
 See mrpt::bayes::CParticleFilter.
-
-
-*/

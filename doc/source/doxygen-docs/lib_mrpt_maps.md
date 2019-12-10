@@ -1,17 +1,6 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          https://www.mrpt.org/                            |
-   |                                                                           |
-   | Copyright (c) 2005-2020, Individual contributors, see AUTHORS file        |
-   | See: https://www.mrpt.org/Authors - All rights reserved.                  |
-   | Released under BSD License. See details in https://www.mrpt.org/License   |
-   +---------------------------------------------------------------------------+
- */
-
-/** \defgroup mrpt_maps_grp [mrpt-maps]
+\defgroup mrpt_maps_grp [mrpt-maps]
 
 Map representations for localization and SLAM.
-
 
 
 # Library `mrpt-maps`
@@ -20,7 +9,7 @@ This library is part of MRPT and can be installed in Debian-based systems with:
 
 		sudo apt install libmrpt-maps-dev
 
-See: \ref mrpt_from_cmake
+See also: [Import MRPT into your CMake scripts](mrpt_from_cmake.html).
 
 This library includes (almost) all the maps usable for localization or mapping
 in the rest of MRPT classes.
@@ -45,5 +34,3 @@ the map contents from observations, fusing the information from all maps while
 evaluating an observation likelihood, etc.
 
 See the list of classes in mrpt::maps
-
-*/

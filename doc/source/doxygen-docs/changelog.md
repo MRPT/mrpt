@@ -1,16 +1,5 @@
-/* +------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)            |
-   |                          https://www.mrpt.org/                         |
-   |                                                                        |
-   | Copyright (c) 2005-2020, Individual contributors, see AUTHORS file     |
-   | See: https://www.mrpt.org/Authors - All rights reserved.               |
-   | Released under BSD License. See: https://www.mrpt.org/License          |
-   +------------------------------------------------------------------------+ */
+\page changelog Change Log
 
-// clang-format off
-
-/** \page changelog Change Log
- *
 # Version 2.0.5: (Under development)
 - Changes in libraries:
   - \ref mrpt_containers_grp
@@ -37,7 +26,7 @@
       - mrpt::math::TLine2D::FromCoefficientsABC()
       - mrpt::math::TLine2D::FromTwoPoints()
   - \ref mrpt_obs_grp
-    - CObservation3DRangeScan::points3D_convertToExternalStorage() stores point clouds with points as rows (vs as columns as it did before). 
+    - CObservation3DRangeScan::points3D_convertToExternalStorage() stores point clouds with points as rows (vs as columns as it did before).
   - \ref mrpt_opengl_grp
     - Emit warnings to std::cerr whenever opengl memory is leaked due to OpenGL buffers being created and destroyed in different threads.
     - Overlaid text messages are now also (de)serialized in mrpt::opengl::COpenGLViewport, and hence in 3D scenes in general.
@@ -1878,6 +1867,3 @@ TSURFDescriptorsKDTreeIndex  - <a
 href="http://code.google.com/p/mrpt/source/detail?r=2799" >2799</a>
       - mrpt::vision::CStereoRectifyMap - See tutorial online:
 http://www.mrpt.org/Rectifying_stereo_
-
-*/
-// clang-format on

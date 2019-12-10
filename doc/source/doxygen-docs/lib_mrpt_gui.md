@@ -1,14 +1,4 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          https://www.mrpt.org/                            |
-   |                                                                           |
-   | Copyright (c) 2005-2020, Individual contributors, see AUTHORS file        |
-   | See: https://www.mrpt.org/Authors - All rights reserved.                  |
-   | Released under BSD License. See details in https://www.mrpt.org/License   |
-   +---------------------------------------------------------------------------+
- */
-
-/** \defgroup mrpt_gui_grp [mrpt-gui]
+\defgroup mrpt_gui_grp [mrpt-gui]
 
 GUI support: 2D plots (Matlab-like), 3D rendering viewports, etc.
 
@@ -21,7 +11,7 @@ with:
 
 		sudo apt install libmrpt-gui-dev
 
-See: \ref mrpt_from_cmake
+See also: [Import MRPT into your CMake scripts](mrpt_from_cmake.html).
 
 This library provides these classes that represent GUI windows, each having a
 specific specialized purpose:
@@ -54,5 +44,3 @@ mrpt::system::CObservable pattern, emitting events as described in the
 description of mrpt::gui::CBaseGUIWindow.
 
 All the classes in this library are in the namespace mrpt::gui
-
-*/

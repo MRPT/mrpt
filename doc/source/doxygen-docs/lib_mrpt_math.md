@@ -1,14 +1,4 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          https://www.mrpt.org/                            |
-   |                                                                           |
-   | Copyright (c) 2005-2020, Individual contributors, see AUTHORS file        |
-   | See: https://www.mrpt.org/Authors - All rights reserved.                  |
-   | Released under BSD License. See details in https://www.mrpt.org/License   |
-   +---------------------------------------------------------------------------+
- */
-
-/** \defgroup mrpt_math_grp [mrpt-math]
+\defgroup mrpt_math_grp [mrpt-math]
 
 Math C++ library: vectors and matrices, probability distributions, statistics,
 geometry, etc.
@@ -22,7 +12,7 @@ This library is part of MRPT and can be installed in Debian-based systems with:
 
 		sudo apt install libmrpt-math-dev
 
-See: \ref mrpt_from_cmake
+See also: [Import MRPT into your CMake scripts](mrpt_from_cmake.html).
 
 The main classes and concepts associated with this library:
 
@@ -41,7 +31,3 @@ Other important elements:
  - \ref polynomial_roots
  - \ref ransac_grp
  - \ref stats_grp
-
-
-
-*/

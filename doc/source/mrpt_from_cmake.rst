@@ -1,16 +1,12 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          https://www.mrpt.org/                            |
-   |                                                                           |
-   | Copyright (c) 2005-2020, Individual contributors, see AUTHORS file        |
-   | See: https://www.mrpt.org/Authors - All rights reserved.                  |
-   | Released under BSD License. See details in https://www.mrpt.org/License   |
-   +---------------------------------------------------------------------------+
- */
+.. _mrpt_from_cmake:
 
-/** \page mrpt_from_cmake Using MRPT from your CMake project
+####################################
+Using MRPT from your CMake project
+####################################
 
-## Finding MRPT from CMake
+
+Finding MRPT from CMake
+-------------------------
 
 MRPT defines exported projects that can be imported as usual in modern CMake:
 
@@ -46,9 +42,8 @@ target_link_libraries(myapp
 ```
 
 
-
-
-## For MRPT 1.x
+For MRPT 1.x
+-------------------------
 
 Prior to MRPT 2.0.0, the correct way to find for MRPT was:
 ```
@@ -58,6 +53,3 @@ find_package(MRPT REQUIRED poses gui)
 add_executable(myapp  main.cpp)
 target_link_libraries(myapp ${MRPT_LIBRARIES})
 ```
-
-
- */

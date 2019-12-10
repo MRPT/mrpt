@@ -1,16 +1,4 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          https://www.mrpt.org/                            |
-   |                                                                           |
-   | Copyright (c) 2005-2020, Individual contributors, see AUTHORS file        |
-   | See: https://www.mrpt.org/Authors - All rights reserved.                  |
-   | Released under BSD License. See details in https://www.mrpt.org/License   |
-   +---------------------------------------------------------------------------+
- */
-
-// clang-format off
-
-/** \defgroup mrpt_math_vectors_matrices_grp Vectors, matrices, linear Algebra
+\defgroup mrpt_math_vectors_matrices_grp Vectors, matrices, linear Algebra
 \ingroup mrpt_math_grp
 
 Dynamic and fixed-size vectors and matrices, basic linear Algebra
@@ -107,6 +95,3 @@ std::cout << "x:\n" << x.asString() << "\n";
 ```
 
 See list of classes below.
-
-
-*/

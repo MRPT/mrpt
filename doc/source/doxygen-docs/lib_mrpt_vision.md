@@ -1,18 +1,6 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          https://www.mrpt.org/                            |
-   |                                                                           |
-   | Copyright (c) 2005-2020, Individual contributors, see AUTHORS file        |
-   | See: https://www.mrpt.org/Authors - All rights reserved.                  |
-   | Released under BSD License. See details in https://www.mrpt.org/License   |
-   +---------------------------------------------------------------------------+
- */
-
-/** \defgroup mrpt_vision_grp [mrpt-vision]
+\defgroup mrpt_vision_grp [mrpt-vision]
 
 Computer vision algorithms
-
-
 
 [TOC]
 
@@ -24,7 +12,7 @@ in Debian-based systems with:
 
 		sudo apt install libmrpt-vision-dev
 
-See: \ref mrpt_from_cmake
+See also: [Import MRPT into your CMake scripts](mrpt_from_cmake.html).
 
 This library includes some extensions to OpenCV functionality, plus some
 original classes:
@@ -65,6 +53,3 @@ efficient for sequences of images all with the same distortion parameters.
 based on depth images and the "range flow constraint equation".
 
 See all the classes in mrpt::vision
-
-
-*/

@@ -1,19 +1,8 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          https://www.mrpt.org/                            |
-   |                                                                           |
-   | Copyright (c) 2005-2020, Individual contributors, see AUTHORS file        |
-   | See: https://www.mrpt.org/Authors - All rights reserved.                  |
-   | Released under BSD License. See details in https://www.mrpt.org/License   |
-   +---------------------------------------------------------------------------+
- */
-
-/** \defgroup mrpt_typemeta_grp [mrpt-typemeta]
+\defgroup mrpt_typemeta_grp [mrpt-typemeta]
 
 Metaprogramming header-only library to obtain `constexpr` textual string
 representations of enum types and type names, including smart pointers and
 complex STL compound types.
-
 
 
 [TOC]
@@ -26,7 +15,7 @@ in Debian-based systems with:
 
 		sudo apt install libmrpt-typemeta-dev
 
-See: \ref mrpt_from_cmake
+See also: [Import MRPT into your CMake scripts](mrpt_from_cmake.html).
 
 
 ## Example #1: compile-time type/struct/class names to strings
@@ -57,5 +46,3 @@ See: \ref typemeta_TEnumType/test.cpp
 \snippet typemeta_TEnumType/test.cpp example
 Output:
 \include typemeta_TEnumType/console.out
-
-*/

@@ -1,18 +1,7 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          https://www.mrpt.org/                            |
-   |                                                                           |
-   | Copyright (c) 2005-2020, Individual contributors, see AUTHORS file        |
-   | See: https://www.mrpt.org/Authors - All rights reserved.                  |
-   | Released under BSD License. See details in https://www.mrpt.org/License   |
-   +---------------------------------------------------------------------------+
- */
-
-/** \defgroup mrpt_graphs_grp [mrpt-graphs]
+\defgroup mrpt_graphs_grp [mrpt-graphs]
 
 Graphs data structures (directed graphs, trees, graphs of pose constraints),
 graphs algorithms
-
 
 
 # Library `mrpt-graphs`
@@ -22,7 +11,7 @@ with:
 
 		sudo apt install libmrpt-graphs-dev
 
-See: \ref mrpt_from_cmake
+See also: [Import MRPT into your CMake scripts](mrpt_from_cmake.html).
 
 Graph-related stuff: generic directed graphs (mrpt::graphs::CDirectedGraph) and
 trees (mrpt::graphs::CDirectedTree).
@@ -41,7 +30,3 @@ uncertainty.
 inverse covariance (information) matrix.
  - mrpt::graphs::CNetworkOfPoses3DInf  -> Edges are 3D graphs
 (x,y,z,yaw,pitch,roll), with an inverse covariance (information) matrix.
-
-
-
-*/
