@@ -15,7 +15,6 @@
 #include <mrpt/io/CFileInputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/CMemoryStream.h>
-#include <mrpt/io/zip.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/fourier.h>
 #include <mrpt/math/utils.h>  // for roundup()
@@ -47,16 +46,10 @@ using namespace std;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CImage, CSerializable, mrpt::img)
 
-static bool DISABLE_ZIP_COMPRESSION_value = false;
 static bool DISABLE_JPEG_COMPRESSION_value = true;
 static int SERIALIZATION_JPEG_QUALITY_value = 95;
 static std::string IMAGES_PATH_BASE(".");
 
-void CImage::DISABLE_ZIP_COMPRESSION(bool val)
-{
-	DISABLE_ZIP_COMPRESSION_value = val;
-}
-bool CImage::DISABLE_ZIP_COMPRESSION() { return DISABLE_ZIP_COMPRESSION_value; }
 void CImage::DISABLE_JPEG_COMPRESSION(bool val)
 {
 	DISABLE_JPEG_COMPRESSION_value = val;
@@ -534,29 +527,15 @@ void CImage::serializeTo(mrpt::serialization::CArchive& out) const
 					<< int32_t(cvDepth2PixelDepth(depth));
 
 				// Version 5: Use CImage::DISABLE_ZIP_COMPRESSION
-				bool imageStoredAsZip = !CImage::DISABLE_ZIP_COMPRESSION() &&
-										(imageSize > 16 * 1024);
+				// Dec 2019: Remove this feature since it's not worth.
+				// We still spend 1 byte for this constant bool just not to
+				// bump the serialization number.
+				bool imageStoredAsZip = false;
 
 				out << imageStoredAsZip;
 
-				// Version 4: Skip zip if the image size <= 16Kb
-				if (imageStoredAsZip)
-				{
-					std::vector<unsigned char> tempBuf;
-					mrpt::io::zip::compress(
-						m_impl->img.data, imageSize, tempBuf);
-
-					auto zipDataLen = static_cast<int32_t>(tempBuf.size());
-					out << zipDataLen;
-
-					out.WriteBuffer(&tempBuf[0], tempBuf.size());
-					tempBuf.clear();
-				}
-				else
-				{
-					if (imageSize > 0 && m_impl->img.data != nullptr)
-						out.WriteBuffer(m_impl->img.data, imageSize);
-				}
+				if (imageSize > 0 && m_impl->img.data != nullptr)
+					out.WriteBuffer(m_impl->img.data, imageSize);
 			}
 			else
 			{
@@ -696,11 +675,9 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 					resize(
 						static_cast<uint32_t>(width),
 						static_cast<uint32_t>(height), CH_GRAY, depth);
-					ASSERT_(
-						static_cast<uint32_t>(imageSize) ==
-						static_cast<uint32_t>(width) *
-							static_cast<uint32_t>(height) *
-							m_impl->img.step[0]);
+					ASSERT_EQUAL_(
+						static_cast<uint32_t>(imageSize),
+						static_cast<uint32_t>(height) * m_impl->img.step[0]);
 
 					if (version == 2)
 					{
@@ -727,19 +704,9 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 						{
 							uint32_t zipDataLen;
 							in >> zipDataLen;
-
-#if 0
-						size_t outDataBufferSize = imageSize;
-						size_t outDataActualSize;
-						mrpt::io::zip::decompress(
-						    in, zipDataLen, m_impl->img.data,
-							outDataBufferSize, outDataActualSize);
-						ASSERT_(outDataActualSize == outDataBufferSize);
-#else
 							THROW_EXCEPTION(
-								"ZIP image deserialization not "
-								"implemented");
-#endif
+								"ZIP image deserialization not supported "
+								"anymore");
 						}
 						else
 						{
