@@ -56,12 +56,6 @@
 #   undef min
 #   undef max
 
-/* MOD JLBC FOR MRPT */
-#include <mrpt/config.h>
-#ifndef MRPT_BUILT_AS_DLL
-#	define FREEGLUT_STATIC
-#endif
-
 /* Windows static library */
 #   ifdef FREEGLUT_STATIC
 
@@ -592,5 +586,3 @@ FGAPI void    FGAPIENTRY glutReportErrors( void );
 #endif
 
 /*** END OF FILE ***/
-
-

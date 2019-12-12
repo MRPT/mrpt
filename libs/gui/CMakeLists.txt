@@ -8,22 +8,6 @@ if(CMAKE_MRPT_HAS_WXWIDGETS)
 	list(APPEND gui_EXTRA_SRCS_NAME 	"mathplot" "mathplot")
 endif()
 
-
-# Embedded freeglut?
-if(CMAKE_MRPT_HAS_OPENGL_GLUT AND NOT CMAKE_MRPT_HAS_GLUT_SYSTEM)
-	#add_definitions(/DFREEGLUT_STATIC)
-	include_directories("${MRPT_LIBS_ROOT}/opengl/include/3rdparty/freeglut/")
-endif()
-
-# Embedded version of freeglut-2.4.0 for Windows:
-# It's already in mrpt-opengl, we need its include headers:
-if (WIN32)
-	list(APPEND gui_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/opengl/src/freeglut-2.4.0/*.h")
-	list(APPEND gui_EXTRA_SRCS_NAME "freeglut-headers")
-	# It's in the **opengl** lib tree:
-	include_directories("${MRPT_LIBS_ROOT}/opengl/src/freeglut-2.4.0/")
-endif ()
-
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
 #---------------------------------------------
@@ -40,7 +24,6 @@ if(BUILD_mrpt-gui)
 		if (MSVC)
 			set_source_files_properties(
 				${mathplot_FILES}
-				${freeglut_FILES}
 				PROPERTIES COMPILE_FLAGS "/Y-")
 		endif ()
 	endif()
@@ -61,8 +44,8 @@ if(BUILD_mrpt-gui)
 		target_link_libraries(gui PRIVATE imp_opencv)
 	endif()
 
-	if(CMAKE_MRPT_HAS_OPENGL_GLUT)
-		# Link against gl:
+	if(MRPT_OPENGL_LIBS)
+		# Link against glut:
 		target_link_libraries(gui PRIVATE ${MRPT_OPENGL_LIBS})
 	endif()
 
