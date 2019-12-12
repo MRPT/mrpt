@@ -54,11 +54,13 @@ endif()
 
 # GLUT: Windows or Linux w/o system OpenGL packages: embedded source version.
 if (WIN32 OR (OPENGL_gl_LIBRARY AND NOT CMAKE_MRPT_HAS_OPENGL_GLUT_SYSTEM))
-	message(STATUS "**Warning**: System OpenGL and/or GLUT libraries not found! Using built-in version:")
-	message(STATUS "  OPENGL_gl_LIBRARY: ${OPENGL_gl_LIBRARY}")
-	message(STATUS "  OPENGL_glu_LIBRARY: ${OPENGL_glu_LIBRARY}")
-	message(STATUS "  GLUT_glut_LIBRARY: ${GLUT_glut_LIBRARY}")
-	message(STATUS "  OPENGL_INCLUDE_DIR: ${OPENGL_INCLUDE_DIR}")
+	if (NOT WIN32) # In Windows, this is the expected behavior!
+		message(STATUS "**Warning**: System GLUT libraries not found! Using built-in version:")
+		message(STATUS "  OPENGL_gl_LIBRARY: ${OPENGL_gl_LIBRARY}")
+		message(STATUS "  OPENGL_glu_LIBRARY: ${OPENGL_glu_LIBRARY}")
+		message(STATUS "  GLUT_glut_LIBRARY: ${GLUT_glut_LIBRARY}")
+		message(STATUS "  OPENGL_INCLUDE_DIR: ${OPENGL_INCLUDE_DIR}")
+	endif()
 
 	set(CMAKE_MRPT_HAS_OPENGL_GLUT 1)
 	set(CMAKE_MRPT_HAS_OPENGL_GLUT_SYSTEM 0)

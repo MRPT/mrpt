@@ -10,7 +10,9 @@
 #pragma once
 
 #define GL_GLEXT_PROTOTYPES 1
+#if !defined(GLEW_STATIC)
 #define GLEW_STATIC
+#endif
 
 #include <mrpt/config.h>
 
