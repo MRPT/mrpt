@@ -194,12 +194,12 @@ if(CMAKE_MRPT_HAS_OPENGL_GLUT AND NOT CMAKE_MRPT_HAS_OPENGL_GLUT_SYSTEM)
 	CHECK_INCLUDE_FILE("fcntl.h" HAVE_FCNTL_H)
 	CHECK_INCLUDE_FILE("unistd.h" HAVE_UNISTD_H)
 
-	target_compile_definitions(mrpt_freeglut PRIVATE 
+	target_compile_definitions(mrpt_freeglut PUBLIC
 		FREEGLUT_STATIC # or /DFREEGLUT_EXPORTS
-		HAVE_SYS_TIME_H=${HAVE_SYS_TIME_H}
-		HAVE_SYS_IOCTL_H=${HAVE_SYS_IOCTL_H}
-		HAVE_FCNTL_H=${HAVE_FCNTL_H}
-		HAVE_UNISTD_H=${HAVE_UNISTD_H}
+		HAVE_SYS_TIME_H=$<BOOL:${HAVE_SYS_TIME_H}>
+		HAVE_SYS_IOCTL_H=$<BOOL:${HAVE_SYS_IOCTL_H}>
+		HAVE_FCNTL_H=$<BOOL:${HAVE_FCNTL_H}>
+		HAVE_UNISTD_H=$<BOOL:${HAVE_UNISTD_H}>
 		)
 
 	# Embedded version:
@@ -210,7 +210,7 @@ if(CMAKE_MRPT_HAS_OPENGL_GLUT AND NOT CMAKE_MRPT_HAS_OPENGL_GLUT_SYSTEM)
 
 	# Depend on X11 lib:
 	if (UNIX)
-		target_link_libraries(mrpt_freeglut PUBLIC 
+		target_link_libraries(mrpt_freeglut PUBLIC
 			X11
 			${OPENGL_glu_LIBRARY}
 		)
@@ -227,14 +227,14 @@ if(WIN32)
 		glew/include/GL/*.h
 	)
 	add_library(mrpt_glew STATIC ${SRCS})
-	
+
 	if (MRPT_COMPILER_IS_GCC_OR_CLANG)
 		target_compile_options(mrpt_glew PRIVATE
 			-fPIC
 		)
 	endif()
 
-	target_compile_definitions(mrpt_glew PRIVATE 
+	target_compile_definitions(mrpt_glew PUBLIC
 		GLEW_STATIC
 	)
 
@@ -246,4 +246,3 @@ if(WIN32)
 	set_target_properties(mrpt_glew PROPERTIES FOLDER "3rd party")
 	unset(SRCS)
 endif()
-

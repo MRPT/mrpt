@@ -48,10 +48,13 @@ if(BUILD_mrpt-opengl)
 	endif()
 
 	# Link against gl, glu, glut:
-	target_link_libraries(opengl PRIVATE 
-		${MRPT_OPENGL_LIBS}	
+	target_link_libraries(opengl PRIVATE
+		${MRPT_OPENGL_LIBS}
 		${CVD_LIB}
 		)
+	if (TARGET mrpt_glew) # Basically, for Windows
+		target_link_libraries(opengl PRIVATE mrpt_glew)
+	endif()
 
 	# Link against assimp:
 	if (CMAKE_MRPT_HAS_ASSIMP)
