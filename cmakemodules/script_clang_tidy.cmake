@@ -10,7 +10,7 @@ if(NOT CLANG_TIDY_EXE)
   endif()
 else()
   message(STATUS "clang-tidy found: ${CLANG_TIDY_EXE}")
-  option(USE_CLANG_TIDY "Use clang-tidy analyzer" ON)
+  option(USE_CLANG_TIDY "Use clang-tidy analyzer" OFF)
   if (USE_CLANG_TIDY)
     #  cppcoreguidelines checks: not all for now...
     #  cppcoreguidelines-no-malloc
