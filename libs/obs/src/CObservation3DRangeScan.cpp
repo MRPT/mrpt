@@ -21,7 +21,6 @@
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
@@ -101,7 +100,7 @@ struct CObservation3DRangeScan_Ranges_MemPoolParams
 };
 struct CObservation3DRangeScan_Ranges_MemPoolData
 {
-	mrpt::math::CMatrixF rangeImage;
+	mrpt::math::CMatrix_u16 rangeImage;
 };
 using TMyRangesMemPool = mrpt::system::CGenericMemoryPool<
 	CObservation3DRangeScan_Ranges_MemPoolParams,
@@ -183,7 +182,7 @@ CObservation3DRangeScan::~CObservation3DRangeScan()
 #endif
 }
 
-uint8_t CObservation3DRangeScan::serializeGetVersion() const { return 8; }
+uint8_t CObservation3DRangeScan::serializeGetVersion() const { return 9; }
 void CObservation3DRangeScan::serializeTo(
 	mrpt::serialization::CArchive& out) const
 {
@@ -210,7 +209,15 @@ void CObservation3DRangeScan::serializeTo(
 	}
 
 	out << hasRangeImage;
-	if (hasRangeImage) out << rangeImage;
+	out << rangeUnits;  // new in v9
+	if (hasRangeImage)
+	{
+		out.WriteAs<uint32_t>(rangeImage.rows());
+		out.WriteAs<uint32_t>(rangeImage.cols());
+		if (rangeImage.size() != 0)
+			out.WriteBufferFixEndianness<uint16_t>(
+				rangeImage.data(), rangeImage.size());
+	}
 	out << hasIntensityImage;
 	if (hasIntensityImage) out << intensityImage;
 	out << hasConfidenceImage;
@@ -256,6 +263,7 @@ void CObservation3DRangeScan::serializeFrom(
 		case 6:
 		case 7:
 		case 8:
+		case 9:
 		{
 			uint32_t N;
 
@@ -298,14 +306,41 @@ void CObservation3DRangeScan::serializeFrom(
 			if (version >= 1)
 			{
 				in >> hasRangeImage;
+				if (version >= 9)
+					in >> rangeUnits;
+				else
+					rangeUnits = 1e-3f;  // default units
+
 				if (hasRangeImage)
 				{
-#ifdef COBS3DRANGE_USE_MEMPOOL
-					// We should call "rangeImage_setSize()" to exploit the
-					// mempool:
-					this->rangeImage_setSize(480, 640);
-#endif
-					in >> rangeImage;
+					if (version < 9)
+					{
+						// Convert from old format:
+						mrpt::math::CMatrixF ri;
+						in >> ri;
+						const uint32_t rows = ri.rows(), cols = ri.cols();
+						ASSERT_(rows > 0 && cols > 0);
+
+						// Call "rangeImage_setSize()" to exploit the mempool:
+						rangeImage_setSize(rows, cols);
+
+						for (uint32_t r = 0; r < rows; r++)
+							for (uint32_t c = 0; c < cols; c++)
+								rangeImage(r, c) = static_cast<uint16_t>(
+									mrpt::round(ri(r, c) / rangeUnits));
+					}
+					else
+					{
+						const uint32_t rows = in.ReadAs<uint32_t>();
+						const uint32_t cols = in.ReadAs<uint32_t>();
+
+						// Call "rangeImage_setSize()" to exploit the mempool:
+						rangeImage_setSize(rows, cols);
+
+						// new v9:
+						in.ReadBufferFixEndianness<uint16_t>(
+							rangeImage.data(), rangeImage.size());
+					}
 				}
 
 				in >> hasIntensityImage;
@@ -463,13 +498,20 @@ void CObservation3DRangeScan::load() const
 		if (mrpt::system::strCmpI(
 				"txt", mrpt::system::extractFileExtension(fil, true)))
 		{
-			const_cast<CMatrixF&>(rangeImage).loadFromTextFile(fil);
+			const_cast<CMatrix_u16&>(rangeImage).loadFromTextFile(fil);
 		}
 		else
 		{
+			auto& me = const_cast<CObservation3DRangeScan&>(*this);
+
 			mrpt::io::CFileGZInputStream fi(fil);
 			auto f = mrpt::serialization::archiveFrom(fi);
-			f >> const_cast<CMatrixF&>(rangeImage);
+			const uint32_t rows = f.ReadAs<uint32_t>();
+			const uint32_t cols = f.ReadAs<uint32_t>();
+			me.rangeImage_setSize(rows, cols);
+			if (me.rangeImage.size() != 0)
+				f.ReadBufferFixEndianness<uint16_t>(
+					me.rangeImage.data(), me.rangeImage.size());
 		}
 	}
 }
@@ -607,7 +649,12 @@ void CObservation3DRangeScan::rangeImage_convertToExternalStorage(
 	{
 		mrpt::io::CFileGZOutputStream fo(real_absolute_file_path);
 		auto f = mrpt::serialization::archiveFrom(fo);
-		f << rangeImage;
+
+		f.WriteAs<uint32_t>(rangeImage.rows());
+		f.WriteAs<uint32_t>(rangeImage.cols());
+		if (rangeImage.size() != 0)
+			f.WriteBufferFixEndianness<uint16_t>(
+				rangeImage.data(), rangeImage.size());
 	}
 
 	m_rangeImage_external_stored = true;
@@ -1048,7 +1095,7 @@ void CObservation3DRangeScan::convertTo2DScan(
 
 			for (size_t r = 0; r < nRows; r++)
 			{
-				const float D = this->rangeImage.coeff(r, c);
+				const float D = rangeImage.coeff(r, c) * rangeUnits;
 				if (!rif.do_range_filter(r, c, D)) continue;
 
 				// All filters passed:
@@ -1201,99 +1248,6 @@ void CObservation3DRangeScan::getDescriptionAsText(std::ostream& o) const
 	  << endl;
 }
 
-using plib = CObservation3DRangeScan::TPixelLabelInfoBase;
-void plib::writeToStream(mrpt::serialization::CArchive& out) const
-{
-	const uint8_t version = 1;  // for possible future changes.
-	out << version;
-	// 1st: Save number MAX_NUM_DIFFERENT_LABELS so we can reconstruct the
-	// object in the class factory later on.
-	out << BITFIELD_BYTES;
-	// 2nd: data-specific serialization:
-	this->internal_writeToStream(out);
-}
-
-template <unsigned int BYTES_REQUIRED_>
-void CObservation3DRangeScan::TPixelLabelInfo<
-	BYTES_REQUIRED_>::internal_readFromStream(mrpt::serialization::CArchive& in)
-{
-	{
-		uint32_t nR, nC;
-		in >> nR >> nC;
-		pixelLabels.resize(nR, nC);
-		for (uint32_t c = 0; c < nC; c++)
-			for (uint32_t r = 0; r < nR; r++) in >> pixelLabels.coeffRef(r, c);
-	}
-	in >> pixelLabelNames;
-}
-template <unsigned int BYTES_REQUIRED_>
-void CObservation3DRangeScan::TPixelLabelInfo<BYTES_REQUIRED_>::
-	internal_writeToStream(mrpt::serialization::CArchive& out) const
-{
-	{
-		const auto nR = static_cast<uint32_t>(pixelLabels.rows());
-		const auto nC = static_cast<uint32_t>(pixelLabels.cols());
-		out << nR << nC;
-		for (uint32_t c = 0; c < nC; c++)
-			for (uint32_t r = 0; r < nR; r++) out << pixelLabels.coeff(r, c);
-	}
-	out << pixelLabelNames;
-}
-
-// Deserialization and class factory. All in one, ladies and gentlemen
-CObservation3DRangeScan::TPixelLabelInfoBase* plib::readAndBuildFromStream(
-	mrpt::serialization::CArchive& in)
-{
-	uint8_t version;
-	in >> version;
-
-	switch (version)
-	{
-		case 1:
-		{
-			// 1st: Read NUM BYTES
-			uint8_t bitfield_bytes;
-			in >> bitfield_bytes;
-
-			// Hand-made class factory. May be a good solution if there will be
-			// not too many different classes:
-			CObservation3DRangeScan::TPixelLabelInfoBase* new_obj = nullptr;
-			switch (bitfield_bytes)
-			{
-				case 1:
-					new_obj = new CObservation3DRangeScan::TPixelLabelInfo<1>();
-					break;
-				case 2:
-					new_obj = new CObservation3DRangeScan::TPixelLabelInfo<2>();
-					break;
-				case 3:
-				case 4:
-					new_obj = new CObservation3DRangeScan::TPixelLabelInfo<4>();
-					break;
-				case 5:
-				case 6:
-				case 7:
-				case 8:
-					new_obj = new CObservation3DRangeScan::TPixelLabelInfo<8>();
-					break;
-				default:
-					throw std::runtime_error(
-						"Unknown type of pixelLabel inner class while "
-						"deserializing!");
-			};
-			// 2nd: data-specific serialization:
-			new_obj->internal_readFromStream(in);
-
-			return new_obj;
-		}
-		break;
-
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
-			break;
-	};
-}
-
 T3DPointsTo2DScanParams::T3DPointsTo2DScanParams()
 	: angle_sup(mrpt::DEG2RAD(5)),
 	  angle_inf(mrpt::DEG2RAD(5)),
@@ -1311,7 +1265,7 @@ void CObservation3DRangeScan::undistort()
 		// OpenCV wrapper (copy-less) for rangeImage:
 
 		cv::Mat rangeImg(
-			rangeImage.rows(), rangeImage.cols(), CV_32FC1, &rangeImage(0, 0));
+			rangeImage.rows(), rangeImage.cols(), CV_16UC1, &rangeImage(0, 0));
 		const cv::Mat distortion(
 			1, cameraParams.dist.size(), CV_64F, &cameraParams.dist[0]);
 		const cv::Mat intrinsics(
@@ -1323,7 +1277,7 @@ void CObservation3DRangeScan::undistort()
 		const cv::Mat newIntrinsics = cv::getOptimalNewCameraMatrix(
 			intrinsics, distortion, imgSize, alpha);
 
-		cv::Mat outRangeImg(rangeImage.rows(), rangeImage.cols(), CV_32FC1);
+		cv::Mat outRangeImg(rangeImage.rows(), rangeImage.cols(), CV_16UC1);
 
 		// Undistort:
 		const cv::Mat R_eye = cv::Mat::eye(3, 3, CV_32FC1);

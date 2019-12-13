@@ -303,13 +303,13 @@ Obs toRangeImage(
 			cameraInfo->K.begin(), cameraInfo->K.end(),
 			rangeScan->cameraParams.intrinsicParams.begin());
 
+		rangeScan->rangeUnits = 1e-3;
+		const float inv_unit = 1.0f / rangeScan->rangeUnits;
+
 		for (size_t i = 0; i < rows; i++)
-		{
 			for (size_t j = 0; j < cols; j++)
-			{
-				rangeScan->rangeImage(i, j) = cv_ptr->image.at<float>(i, j);
-			}
-		}
+				rangeScan->rangeImage(i, j) = static_cast<uint16_t>(
+					inv_unit * cv_ptr->image.at<float>(i, j));
 
 		rangeScan->range_is_depth = rangeIsDepth;
 

@@ -267,8 +267,8 @@ class CKinect : public mrpt::hwdrivers::CGenericSensor
 	DEFINE_GENERIC_SENSOR(CKinect)
 
    public:
-	/** A type for an array that converts raw depth to ranges in meters. */
-	using TDepth2RangeArray = float[KINECT_RANGES_TABLE_LEN];
+	/** A type for an array that converts raw depth to ranges in millimeters. */
+	using TDepth2RangeArray = uint16_t[KINECT_RANGES_TABLE_LEN];
 
 	/** RGB or IR video channel identifiers \sa setVideoChannel */
 	enum TVideoChannel
@@ -427,7 +427,7 @@ class CKinect : public mrpt::hwdrivers::CGenericSensor
 	}
 
 	/** Get a reference to the array that convert raw depth values (10 or 11
-	 * bit) into ranges in meters, so it can be read or replaced by the user.
+	 * bit) into ranges in mm, so it can be read or replaced by the user.
 	 *  If you replace it, remember to set the first and last entries (index 0
 	 * and KINECT_RANGES_TABLE_LEN-1) to zero, to indicate that those are
 	 * invalid ranges.

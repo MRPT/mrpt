@@ -453,18 +453,8 @@ void COpenNI2Generic::getNextFrameRGB(
 #endif  // MRPT_HAS_OPENNI2
 }
 
-/** The main data retrieving function, to be called after calling loadConfig()
- * and initialize().
- *  \param depth_img The output retrieved depth image (only if
- * there_is_obs=true).
- *  \param timestamp The timestamp of the capture (only if there_is_obs=true).
- *  \param there_is_obs If set to false, there was no new observation.
- *  \param hardware_error True on hardware/comms error.
- *  \param sensor_id The index of the sensor accessed.
- *
- */
 void COpenNI2Generic::getNextFrameD(
-	mrpt::math::CMatrixF& depth_img, mrpt::system::TTimeStamp& timestamp,
+	mrpt::math::CMatrix_u16& depth_img_mm, mrpt::system::TTimeStamp& timestamp,
 	bool& there_is_obs, bool& hardware_error, unsigned sensor_id)
 {
 #if MRPT_HAS_OPENNI2
@@ -479,14 +469,14 @@ void COpenNI2Generic::getNextFrameD(
 			"Sensor index is higher than the number of connected devices.");
 	}
 	if (vDevices[sensor_id]->getNextFrameD(
-			depth_img, timestamp, there_is_obs, hardware_error) == false)
+			depth_img_mm, timestamp, there_is_obs, hardware_error) == false)
 	{
 		showLog(mrpt::format("[%s]\n", __FUNCTION__));
 		showLog(mrpt::format(" Error [%d]th Sensor.\n", sensor_id));
 		showLog(std::string(" ") + vDevices[sensor_id]->getLog() + "\n");
 	}
 #else
-	MRPT_UNUSED_PARAM(depth_img);
+	MRPT_UNUSED_PARAM(depth_img_mm);
 	MRPT_UNUSED_PARAM(timestamp);
 	MRPT_UNUSED_PARAM(there_is_obs);
 	MRPT_UNUSED_PARAM(hardware_error);
@@ -862,7 +852,7 @@ bool COpenNI2Generic::CDevice::getNextFrameRGB(
 }
 
 bool COpenNI2Generic::CDevice::getNextFrameD(
-	mrpt::math::CMatrixF& img, mrpt::system::TTimeStamp& timestamp,
+	mrpt::math::CMatrix_u16& depth_mm, mrpt::system::TTimeStamp& timestamp,
 	bool& there_is_obs, bool& hardware_error)
 {
 	MRPT_START
@@ -876,7 +866,7 @@ bool COpenNI2Generic::CDevice::getNextFrameD(
 	{
 		return false;
 	}
-	copyFrame<openni::DepthPixel, mrpt::math::CMatrixF>(frame, img);
+	copyFrame<openni::DepthPixel, mrpt::math::CMatrix_u16>(frame, depth_mm);
 
 	return true;
 	MRPT_END

@@ -34,8 +34,10 @@ void fillSampleObs(
 
 	obs.rangeImage.setZero();
 
+	obs.rangeUnits = 1e-3f;
+
 	for (int r = 10; r < 16; r++)
-		for (int c = 10; c <= r; c++) obs.rangeImage(r, c) = r;
+		for (int c = 10; c <= r; c++) obs.rangeImage(r, c) = r / obs.rangeUnits;
 
 	// Test case:
 	pp.PROJ3D_USE_LUT = (test_case & 1) != 0;

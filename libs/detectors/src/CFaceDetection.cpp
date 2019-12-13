@@ -24,6 +24,7 @@
 #include <mrpt/opengl/CSphere.h>
 #include <mrpt/slam/CICP.h>
 #include <mrpt/slam/CMetricMapsAlignmentAlgorithm.h>
+#include <Eigen/Dense>
 #include <fstream>
 
 using namespace std;
@@ -1674,8 +1675,9 @@ void CFaceDetection::experimental_segmentFace(
 
 	mrpt::img::CImage img;
 	// Normalize the image
-	CMatrixFloat range2D = m_lastFaceDetected.rangeImage;
-	range2D *= 1.0f / 5;
+	const Eigen::MatrixXf range2D =
+		m_lastFaceDetected.rangeImage.asEigen().cast<float>() *
+		m_lastFaceDetected.rangeUnits * (1.0f / 5);
 	img.setFromMatrix(range2D);
 
 	// INITIALIZATION

@@ -368,6 +368,21 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 	const CMatrixDynamic& derived() const { return *this; }
 	void conservativeResize(size_t row, size_t col) { setSize(row, col); }
 
+	/** Return raw pointer to row-major data buffer. All matrix cells can be
+	 * assumed to be stored contiguously in memory, i.e. row stride = column
+	 * count. */
+	const T* data() const
+	{
+		ASSERT_(!m_data.empty());
+		return &m_data[0];
+	}
+	/// \overload
+	T* data()
+	{
+		ASSERT_(!m_data.empty());
+		return &m_data[0];
+	}
+
 	/** Subscript operator to get/set individual elements
 	 */
 	inline T& operator()(size_t row, size_t col)

@@ -109,7 +109,10 @@ class CObservationRGBD360 : public CObservation
 	bool hasRangeImage{false};
 	/** If hasRangeImage=true, a matrix of floats with the range data as
 	 * captured by the camera (in meters) \sa range_is_depth */
-	mrpt::math::CMatrixF rangeImages[NUM_SENSORS];
+	mrpt::math::CMatrix_u16 rangeImages[NUM_SENSORS];
+
+	/** Units for integer depth values in rangeImages */
+	float rangeUnits = 0.001f;
 
 	/** Similar to calling "rangeImage.setSize(H,W)" but this method provides
 	 * memory pooling to speed-up the memory allocation. */

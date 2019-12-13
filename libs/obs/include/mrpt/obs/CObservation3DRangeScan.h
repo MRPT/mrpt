@@ -9,12 +9,12 @@
 #pragma once
 
 #include <mrpt/core/aligned_std_vector.h>
-#include <mrpt/core/integer_select.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/TPixelLabelInfo.h>
 #include <mrpt/obs/TRangeImageFilter.h>
 #include <mrpt/opengl/pointcloud_adapters.h>
 #include <mrpt/poses/CPose2D.h>
@@ -100,8 +100,9 @@ void project3DPointsFromDepthImageInto(
  *    - Each 3D point has its associated (u,v) pixel coordinates in \a
  *points3D_idxs_x & \a points3D_idxs_y (New in MRPT 1.4.0)
  *    - 2D range image (as a matrix): Each entry in the matrix
- *"rangeImage(ROW,COLUMN)" contains a distance or a depth (in meters), depending
- *on \a range_is_depth.
+ *"rangeImage(ROW,COLUMN)" contains a distance or a depth, depending
+ *on \a range_is_depth. Ranges are stored as uint16_t for efficiency. The units
+ *of ranges are stored separately in rangeUnits.
  *    - 2D intensity (grayscale or RGB) image (as a mrpt::img::CImage): For
  *SwissRanger cameras, a logarithmic A-law compression is used to convert the
  *original 16bit intensity to a more standard 8bit graylevel.
@@ -194,7 +195,7 @@ void project3DPointsFromDepthImageInto(
  *
  * \code
  *   // Assume obs of type CObservation3DRangeScan::Ptr
- *   obs->pixelLabels = CObservation3DRangeScan::TPixelLabelInfo::Ptr( new
+ *   obs->pixelLabels =TPixelLabelInfo::Ptr( new
  *CObservation3DRangeScan::TPixelLabelInfo<NUM_BYTES>() );
  *   obs->pixelLabels->setSize(ROWS,COLS);
  *   obs->pixelLabels->setLabel(col,row, label_idx);   // label_idxs =
@@ -275,7 +276,7 @@ class CObservation3DRangeScan : public CObservation
 	 * is the way Kinect reports ranges):
 	 *
 	 * \code
-	 *   x(i) = rangeImage(r,c)
+	 *   x(i) = rangeImage(r,c) * rangeUnits
 	 *   y(i) = (r_cx - c) * x(i) / r_fx
 	 *   z(i) = (r_cy - r) * x(i) / r_fy
 	 * \endcode
@@ -289,7 +290,7 @@ class CObservation3DRangeScan : public CObservation
 	 *   Ky = (r_cx - c)/r_fx
 	 *   Kz = (r_cy - r)/r_fy
 	 *
-	 *   x(i) = rangeImage(r,c) / sqrt( 1 + Ky^2 + Kz^2 )
+	 *   x(i) = rangeImage(r,c) * rangeUnits / sqrt( 1 + Ky^2 + Kz^2 )
 	 *   y(i) = Ky * x(i)
 	 *   z(i) = Kz * x(i)
 	 * \endcode
@@ -306,9 +307,6 @@ class CObservation3DRangeScan : public CObservation
 	 * \tparam POINTMAP Supported maps are all those covered by
 	 * mrpt::opengl::PointCloudAdapter (mrpt::maps::CPointsMap and derived,
 	 * mrpt::opengl::CPointCloudColoured, PCL point clouds,...)
-	 *
-	 * \note In MRPT < 0.9.5, this method always assumes that ranges were in
-	 * Kinect-like format.
 	 */
 	template <class POINTMAP>
 	inline void project3DPointsFromDepthImageInto(
@@ -443,11 +441,19 @@ class CObservation3DRangeScan : public CObservation
 	 * @{ */
 	/** true means the field rangeImage contains valid data */
 	bool hasRangeImage{false};
+
 	/** If hasRangeImage=true, a matrix of floats with the range data as
-	 * captured by the camera (in meters) \sa range_is_depth */
-	mrpt::math::CMatrixF rangeImage;
-	/** true: Kinect-like ranges: entries of \a rangeImage are distances along
-	 * the +X axis; false: Ranges in \a rangeImage are actual distances in 3D.
+	 * captured by the camera (in meters) \sa range_is_depth, rangeUnits */
+	mrpt::math::CMatrix_u16 rangeImage;
+
+	/** The conversion factor from integer units in rangeImage and actual
+	 * distances in meters. Default is 0.001 m, that is 1 millimeter. \sa
+	 * rangeImage */
+	float rangeUnits = 0.001f;
+
+	/** true: Kinect-like ranges: entries of \a rangeImage are distances
+	 * along the +X axis; false: Ranges in \a rangeImage are actual
+	 * distances in 3D.
 	 */
 	bool range_is_depth{true};
 
@@ -501,9 +507,11 @@ class CObservation3DRangeScan : public CObservation
 
 	/** true means the field intensityImage contains valid data */
 	bool hasIntensityImage{false};
+
 	/** If hasIntensityImage=true, a color or gray-level intensity image of the
 	 * same size than "rangeImage" */
 	mrpt::img::CImage intensityImage;
+
 	/** The source of the intensityImage; typically the visible channel \sa
 	 * TIntensityChannelID */
 	TIntensityChannelID intensityImageChannel{CH_VISIBLE};
@@ -526,186 +534,6 @@ class CObservation3DRangeScan : public CObservation
 	 * appropiate object to \a pixelLabels
 	 */
 	bool hasPixelLabels() const { return pixelLabels ? true : false; }
-	/** Virtual interface to all pixel-label information structs. See
-	 * CObservation3DRangeScan::pixelLabels */
-	struct TPixelLabelInfoBase
-	{
-		/** Used in CObservation3DRangeScan::pixelLabels */
-		using Ptr = std::shared_ptr<TPixelLabelInfoBase>;
-		using TMapLabelID2Name = std::map<uint32_t, std::string>;
-
-		/** The 'semantic' or human-friendly name of the i'th bit in
-		 * pixelLabels(r,c) can be found in pixelLabelNames[i] as a std::string
-		 */
-		TMapLabelID2Name pixelLabelNames;
-
-		const std::string& getLabelName(unsigned int label_idx) const
-		{
-			auto it = pixelLabelNames.find(label_idx);
-			if (it == pixelLabelNames.end())
-				throw std::runtime_error(
-					"Error: label index has no defined name");
-			return it->second;
-		}
-		void setLabelName(unsigned int label_idx, const std::string& name)
-		{
-			pixelLabelNames[label_idx] = name;
-		}
-		/** Check the existence of a label by returning its associated index.
-		 * -1 if it does not exist. */
-		int checkLabelNameExistence(const std::string& name) const
-		{
-			std::map<uint32_t, std::string>::const_iterator it;
-			for (it = pixelLabelNames.begin(); it != pixelLabelNames.end();
-				 it++)
-				if (it->second == name) return it->first;
-			return -1;
-		}
-
-		/** Resizes the matrix pixelLabels to the given size, setting all
-		 * bitfields to zero (that is, all pixels are assigned NONE category).
-		 */
-		virtual void setSize(const int NROWS, const int NCOLS) = 0;
-		/** Mark the pixel(row,col) as classified in the category \a label_idx,
-		 * which may be in the range 0 to MAX_NUM_LABELS-1
-		 * Note that 0 is a valid label index, it does not mean "no label" \sa
-		 * unsetLabel, unsetAll */
-		virtual void setLabel(
-			const int row, const int col, uint8_t label_idx) = 0;
-		virtual void getLabels(
-			const int row, const int col, uint8_t& labels) = 0;
-		/** For the pixel(row,col), removes its classification into the category
-		 * \a label_idx, which may be in the range 0 to 7
-		 * Note that 0 is a valid label index, it does not mean "no label" \sa
-		 * setLabel, unsetAll */
-		virtual void unsetLabel(
-			const int row, const int col, uint8_t label_idx) = 0;
-		/** Removes all categories for pixel(row,col)  \sa setLabel, unsetLabel
-		 */
-		virtual void unsetAll(
-			const int row, const int col, uint8_t label_idx) = 0;
-		/** Checks whether pixel(row,col) has been clasified into category \a
-		 * label_idx, which may be in the range 0 to 7
-		 * \sa unsetLabel, unsetAll */
-		virtual bool checkLabel(
-			const int row, const int col, uint8_t label_idx) const = 0;
-
-		void writeToStream(mrpt::serialization::CArchive& out) const;
-		static TPixelLabelInfoBase* readAndBuildFromStream(
-			mrpt::serialization::CArchive& in);
-
-		/// std stream interface
-		friend std::ostream& operator<<(
-			std::ostream& out, const TPixelLabelInfoBase& obj)
-		{
-			obj.Print(out);
-			return out;
-		}
-
-		TPixelLabelInfoBase(unsigned int BITFIELD_BYTES_)
-			: BITFIELD_BYTES(BITFIELD_BYTES_)
-		{
-		}
-
-		virtual ~TPixelLabelInfoBase() = default;
-		/** Minimum number of bytes required to hold MAX_NUM_DIFFERENT_LABELS
-		 * bits. */
-		const uint8_t BITFIELD_BYTES;
-
-	   protected:
-		virtual void internal_readFromStream(
-			mrpt::serialization::CArchive& in) = 0;
-		virtual void internal_writeToStream(
-			mrpt::serialization::CArchive& out) const = 0;
-		virtual void Print(std::ostream&) const = 0;
-	};
-
-	template <unsigned int BYTES_REQUIRED_>
-	struct TPixelLabelInfo : public TPixelLabelInfoBase
-	{
-		using Ptr = std::shared_ptr<TPixelLabelInfo>;
-		enum
-		{
-			BYTES_REQUIRED = BYTES_REQUIRED_  // ((MAX_LABELS-1)/8)+1
-		};
-
-		/** Automatically-determined integer type of the proper size such that
-		 * all labels fit as one bit (max: 64)  */
-		using bitmask_t =
-			typename mrpt::uint_select_by_bytecount<BYTES_REQUIRED>::type;
-
-		/** Each pixel may be assigned between 0 and MAX_NUM_LABELS-1 'labels'
-		 * by
-		 * setting to 1 the corresponding i'th bit [0,MAX_NUM_LABELS-1] in the
-		 * byte in pixelLabels(r,c).
-		 * That is, each pixel is assigned an 8*BITFIELD_BYTES bit-wide
-		 * bitfield of possible categories.
-		 * \sa hasPixelLabels
-		 */
-		using TPixelLabelMatrix = mrpt::math::CMatrixDynamic<bitmask_t>;
-		TPixelLabelMatrix pixelLabels;
-
-		void setSize(const int NROWS, const int NCOLS) override
-		{
-			pixelLabels = TPixelLabelMatrix::Zero(NROWS, NCOLS);
-		}
-		void setLabel(const int row, const int col, uint8_t label_idx) override
-		{
-			pixelLabels(row, col) |= static_cast<bitmask_t>(1) << label_idx;
-		}
-		void getLabels(const int row, const int col, uint8_t& labels) override
-		{
-			labels = pixelLabels(row, col);
-		}
-
-		void unsetLabel(
-			const int row, const int col, uint8_t label_idx) override
-		{
-			pixelLabels(row, col) &= ~(static_cast<bitmask_t>(1) << label_idx);
-		}
-		void unsetAll(const int row, const int col, uint8_t label_idx) override
-		{
-			pixelLabels(row, col) = 0;
-		}
-		bool checkLabel(
-			const int row, const int col, uint8_t label_idx) const override
-		{
-			return (pixelLabels(row, col) &
-					(static_cast<bitmask_t>(1) << label_idx)) != 0;
-		}
-
-		// Ctor: pass identification to parent for deserialization
-		TPixelLabelInfo() : TPixelLabelInfoBase(BYTES_REQUIRED_) {}
-
-	   protected:
-		void internal_readFromStream(
-			mrpt::serialization::CArchive& in) override;
-		void internal_writeToStream(
-			mrpt::serialization::CArchive& out) const override;
-		void Print(std::ostream& out) const override
-		{
-			{
-				const auto nR = static_cast<uint32_t>(pixelLabels.rows());
-				const auto nC = static_cast<uint32_t>(pixelLabels.cols());
-				out << "Number of rows: " << nR << std::endl;
-				out << "Number of cols: " << nC << std::endl;
-				out << "Matrix of labels: " << std::endl;
-				for (uint32_t c = 0; c < nC; c++)
-				{
-					for (uint32_t r = 0; r < nR; r++)
-						out << pixelLabels.coeff(r, c) << " ";
-
-					out << std::endl;
-				}
-			}
-			out << std::endl;
-			out << "Label indices and names: " << std::endl;
-			std::map<uint32_t, std::string>::const_iterator it;
-			for (it = pixelLabelNames.begin(); it != pixelLabelNames.end();
-				 it++)
-				out << it->first << " " << it->second << std::endl;
-		}
-	};  // end TPixelLabelInfo
 
 	/** All information about pixel labeling is stored in this (smart pointer
 	 * to) structure; refer to TPixelLabelInfo for details on the contents

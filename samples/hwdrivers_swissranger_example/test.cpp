@@ -172,9 +172,10 @@ void Test_SwissRanger()
 		{
 			mrpt::img::CImage img;
 			// Normalize the image
-			CMatrixFloat range2D = obs.rangeImage;
-			range2D *= 1.0 / cam.getMaxRange();
-			img.setFromMatrix(range2D);
+			Eigen::MatrixXf range2D = obs.rangeImage.asEigen().cast<float>() *
+									  obs.rangeUnits *
+									  (1.0f / cam.getMaxRange());
+			img.setFromMatrix(range2D, true /*normalized 0-1*/);
 
 			win3D.get3DSceneAndLock();
 			gl_img_range->assignImage_fast(img);
