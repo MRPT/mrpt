@@ -43,13 +43,17 @@ TEST(CMatrixDynamic, asString)
 TEST(CMatrixDynamic, CtorFromArray)
 {
 	const double dat_R[] = {1., 2., 3., 4., 5., 6., 7., 8., 9.};
-	mrpt::math::CMatrixDouble R(3, 3, dat_R);
+	const mrpt::math::CMatrixDouble R(3, 3, dat_R);
 	for (int r = 0; r < 3; r++)
 	{
 		for (int c = 0; c < 3; c++)
 		{
 			EXPECT_EQ(dat_R[c + r * 3], R(r, c))
 				<< "(r,c)=(" << r << "," << c << ")\n";
+
+			// Also test access via data():
+			EXPECT_EQ(R(r, c), R.data()[c + r * 3]);
+			EXPECT_EQ(&R(r, c), &R.data()[c + r * 3]);
 		}
 	}
 }

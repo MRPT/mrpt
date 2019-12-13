@@ -272,6 +272,21 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
 		return EIGEN_MAP(&m_data[0], ROWS, COLS);
 	}
 
+	/** Return raw pointer to row-major data buffer. All matrix cells can be
+	 * assumed to be stored contiguously in memory, i.e. row stride = column
+	 * count. */
+	const T* data() const
+	{
+		ASSERT_(!m_data.empty());
+		return &m_data[0];
+	}
+	/// \overload
+	T* data()
+	{
+		ASSERT_(!m_data.empty());
+		return &m_data[0];
+	}
+
 	/** Access (row,col), without out-of-bounds check (except in Debug builds)
 	 */
 	inline T& operator()(int row, int col)
