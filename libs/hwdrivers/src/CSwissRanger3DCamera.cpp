@@ -403,9 +403,10 @@ void CSwissRanger3DCamera::getNextObservation(
 					const uint16_t* data_ptr =
 						reinterpret_cast<const uint16_t*>(img->data);
 
+					obs.rangeUnits = K;
 					for (size_t y = 0; y < img->height; y++)
 						for (size_t x = 0; x < img->width; x++)
-							obs.rangeImage(y, x) = K * (*data_ptr++);
+							obs.rangeImage(y, x) = (*data_ptr++);
 				}
 
 				if (this->m_save_3d)

@@ -370,7 +370,7 @@ class COpenNI2Sensor : public mrpt::hwdrivers::CGenericSensor,
 
 	/** Sensor max range (meters)
 	 */
-	double m_maxRange;
+	double m_maxRange = 5.0;
 
 	/** Number of device to open (0:first,...)
 	 */

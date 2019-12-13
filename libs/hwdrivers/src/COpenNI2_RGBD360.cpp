@@ -211,9 +211,10 @@ void COpenNI2_RGBD360::getNextObservation(
 
 					// Normalize the image
 					mrpt::img::CImage img;
-					img.setFromMatrix(out_obs.rangeImages[sensor_id]);
-					CMatrixFloat r = out_obs.rangeImages[sensor_id];
-					r *= float(1.0 / this->m_maxRange);
+					const Eigen::MatrixXf r =
+						out_obs.rangeImages[sensor_id].asEigen().cast<float>() *
+						out_obs.rangeUnits * float(1.0 / this->m_maxRange);
+					img.setFromMatrix(r, true /*normalized 0-1 */);
 					m_win_range[sensor_id]->showImage(img);
 				}
 			}
