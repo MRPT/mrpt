@@ -62,11 +62,13 @@ void CKinect::calculate_range2meters()
 	const float k3 = 0.1236f;
 
 	for (size_t i = 0; i < KINECT_RANGES_TABLE_LEN; i++)
-		m_range2meters[i] = k3 * tanf(i / k2 + k1);
+		m_range2meters[i] =
+			static_cast<uint16_t>(k3 * tanf(i / k2 + k1) / 1e-3f);
 
 #else
 	for (size_t i = 0; i < KINECT_RANGES_TABLE_LEN; i++)
-		m_range2meters[i] = 1.0f / (i * (-0.0030711016) + 3.3309495161);
+		m_range2meters[i] =
+			static_cast<uint16_t>(1e+3f / (i * (-0.0030711016) + 3.3309495161));
 #endif
 
 	// Minimum/Maximum range means error:
@@ -85,9 +87,8 @@ CKinect::CKinect()
 	calculate_range2meters();
 
 	// Get maximum range:
-	m_maxRange =
-		m_range2meters[KINECT_RANGES_TABLE_LEN - 2];  // Recall: r[Max-1] means
-	// error.
+	// Recall: r[Max-1] means error.
+	m_maxRange = m_range2meters[KINECT_RANGES_TABLE_LEN - 2];
 
 	// Default label:
 	m_sensorLabel = "KINECT";
@@ -285,6 +286,8 @@ void depth_cb(freenect_device* dev, void* v_depth, uint32_t timestamp)
 #endif
 
 	const CKinect::TDepth2RangeArray& r2m = obj->getRawDepth2RangeConversion();
+	obs.rangeUnits = 1e-3f;  // we use mm as units
+
 	for (int r = 0; r < frMode.height; r++)
 		for (int c = 0; c < frMode.width; c++)
 		{
@@ -616,9 +619,10 @@ void CKinect::getNextObservation(
 
 				// Normalize the image
 				mrpt::img::CImage img;
-				img.setFromMatrix(_out_obs.rangeImage);
-				CMatrixFloat r = _out_obs.rangeImage;
-				r *= float(1.0 / this->m_maxRange);
+				const Eigen::MatrixXf r =
+					_out_obs.rangeImage.asEigen().cast<float>() *
+					_out_obs.rangeUnits * float(1.0 / this->m_maxRange);
+				img.setFromMatrix(r, true /*normalized: 0-1 */);
 				m_win_range->showImage(img);
 			}
 		}

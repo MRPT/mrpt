@@ -255,8 +255,8 @@ void Test_Kinect()
 				static CMatrixFloat range2D;  // Static to save time allocating
 
 				// the matrix in every iteration
-				range2D = last_obs->rangeImage;
-				range2D *= (1.0f / last_obs->maxRange);
+				range2D = last_obs->rangeImage.asEigen().cast<float>() *
+						  last_obs->rangeUnits * (1.0f / last_obs->maxRange);
 
 				img.setFromMatrix(range2D);
 
