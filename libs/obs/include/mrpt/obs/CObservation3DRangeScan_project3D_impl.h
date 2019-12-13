@@ -20,7 +20,7 @@ namespace mrpt::obs::detail
 template <class POINTMAP>
 void do_project_3d_pointcloud(
 	const int H, const int W, const float* kys, const float* kzs,
-	mrpt::math::CMatrixF& rangeImage,
+	mrpt::math::CMatrix_u16& rangeImage, const float rangeUnits,
 	mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
 	std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
 	const mrpt::obs::TRangeImageFilterParams& fp, bool MAKE_ORGANIZED,
@@ -28,7 +28,7 @@ void do_project_3d_pointcloud(
 template <class POINTMAP>
 void do_project_3d_pointcloud_SSE2(
 	const int H, const int W, const float* kys, const float* kzs,
-	mrpt::math::CMatrixF& rangeImage,
+	mrpt::math::CMatrix_u16& rangeImage, const float rangeUnits,
 	mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
 	std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
 	const mrpt::obs::TRangeImageFilterParams& fp, bool MAKE_ORGANIZED);
@@ -43,7 +43,7 @@ inline void range2XYZ(
 	 *   Ky = (r_cx - c)/r_fx
 	 *   Kz = (r_cy - r)/r_fy
 	 *
-	 *   x(i) = rangeImage(r,c) / sqrt( 1 + Ky^2 + Kz^2 )
+	 *   x(i) = rangeImage(r,c) * rangeUnits / sqrt( 1 + Ky^2 + Kz^2 )
 	 *   y(i) = Ky * x(i)
 	 *   z(i) = Kz * x(i)
 	 */
@@ -56,7 +56,7 @@ inline void range2XYZ(
 	for (int r = 0; r < H; r++)
 		for (int c = 0; c < W; c++)
 		{
-			const float D = src_obs.rangeImage.coeff(r, c);
+			const float D = src_obs.rangeImage.coeff(r, c) * src_obs.rangeUnits;
 			if (rif.do_range_filter(r, c, D))
 			{
 				const float Ky = (r_cx - c) * r_fx_inv;
@@ -131,13 +131,15 @@ inline void range2XYZ_LUT(
 	if ((W & 0x07) == 0 && pp.USE_SSE2 && DECIM == 1 &&
 		mrpt::cpu::supports(mrpt::cpu::feature::SSE2))
 		do_project_3d_pointcloud_SSE2(
-			H, W, kys, kzs, src_obs.rangeImage, pca, src_obs.points3D_idxs_x,
-			src_obs.points3D_idxs_y, fp, pp.MAKE_ORGANIZED);
+			H, W, kys, kzs, src_obs.rangeImage, src_obs.rangeUnits, pca,
+			src_obs.points3D_idxs_x, src_obs.points3D_idxs_y, fp,
+			pp.MAKE_ORGANIZED);
 	else
 #endif
 		do_project_3d_pointcloud(
-			H, W, kys, kzs, src_obs.rangeImage, pca, src_obs.points3D_idxs_x,
-			src_obs.points3D_idxs_y, fp, pp.MAKE_ORGANIZED, DECIM);
+			H, W, kys, kzs, src_obs.rangeImage, src_obs.rangeUnits, pca,
+			src_obs.points3D_idxs_x, src_obs.points3D_idxs_y, fp,
+			pp.MAKE_ORGANIZED, DECIM);
 }
 
 template <class POINTMAP>
@@ -349,7 +351,7 @@ void project3DPointsFromDepthImageInto(
 template <class POINTMAP>
 inline void do_project_3d_pointcloud(
 	const int H, const int W, const float* kys, const float* kzs,
-	mrpt::math::CMatrixF& rangeImage,
+	mrpt::math::CMatrix_u16& rangeImage, const float rangeUnits,
 	mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
 	std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
 	const mrpt::obs::TRangeImageFilterParams& fp, bool MAKE_ORGANIZED,
@@ -363,7 +365,7 @@ inline void do_project_3d_pointcloud(
 		for (int r = 0; r < H; r++)
 			for (int c = 0; c < W; c++)
 			{
-				const float D = rangeImage.coeff(r, c);
+				const float D = rangeImage.coeff(r, c) * rangeUnits;
 				// LUT projection coefs:
 				const auto ky = *kys++, kz = *kzs++;
 				if (!rif.do_range_filter(r, c, D))
@@ -391,7 +393,7 @@ inline void do_project_3d_pointcloud(
 					for (int cb = 0; cb < DECIM; cb++)
 					{
 						const auto r = rd * DECIM + rb, c = cd * DECIM + cb;
-						const float D = rangeImage.coeff(r, c);
+						const float D = rangeImage.coeff(r, c) * rangeUnits;
 						if (rif.do_range_filter(r, c, D))
 						{
 							valid_pt = true;
@@ -429,7 +431,7 @@ inline void do_project_3d_pointcloud(
 template <class POINTMAP>
 inline void do_project_3d_pointcloud_SSE2(
 	const int H, const int W, const float* kys, const float* kzs,
-	mrpt::math::CMatrixF& rangeImage,
+	mrpt::math::CMatrix_u16& rangeImage, const float rangeUnits,
 	mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
 	std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
 	const mrpt::obs::TRangeImageFilterParams& fp, bool MAKE_ORGANIZED)
@@ -449,7 +451,7 @@ inline void do_project_3d_pointcloud_SSE2(
 				D_zeros);  // want points OUTSIDE of min and max to be valid
 	for (int r = 0; r < H; r++)
 	{
-		const float* D_ptr = &rangeImage(r, 0);  // Matrices are 16-aligned
+		const uint16_t* Du16_ptr = &rangeImage(r, 0);
 		const float* Dgt_ptr =
 			!fp.rangeMask_min ? nullptr : &(*fp.rangeMask_min)(r, 0);
 		const float* Dlt_ptr =
@@ -457,7 +459,12 @@ inline void do_project_3d_pointcloud_SSE2(
 
 		for (int c = 0; c < W_4; c++)
 		{
-			const __m128 D = _mm_load_ps(D_ptr);
+			// Let the compiler optimize this as MMX instructions (tested in
+			// godbolt):
+			alignas(16) float tmp[4];
+			for (int b = 0; b < 4; b++) tmp[b] = Du16_ptr[b] * rangeUnits;
+
+			const __m128 D = _mm_load_ps(&tmp[0]);
 			const __m128 nz_mask = _mm_cmpgt_ps(D, D_zeros);
 			__m128 valid_range_mask;
 			if (!fp.rangeMask_min && !fp.rangeMask_max)
@@ -551,7 +558,7 @@ inline void do_project_3d_pointcloud_SSE2(
 						rangeImage.coeffRef(r, actual_c) = 0;
 				}
 			}
-			D_ptr += 4;
+			Du16_ptr += 4;
 			if (Dgt_ptr) Dgt_ptr += 4;
 			if (Dlt_ptr) Dlt_ptr += 4;
 			kys += 4;

@@ -100,8 +100,9 @@ void project3DPointsFromDepthImageInto(
  *    - Each 3D point has its associated (u,v) pixel coordinates in \a
  *points3D_idxs_x & \a points3D_idxs_y (New in MRPT 1.4.0)
  *    - 2D range image (as a matrix): Each entry in the matrix
- *"rangeImage(ROW,COLUMN)" contains a distance or a depth (in meters), depending
- *on \a range_is_depth.
+ *"rangeImage(ROW,COLUMN)" contains a distance or a depth, depending
+ *on \a range_is_depth. Ranges are stored as uint16_t for efficiency. The units
+ *of ranges are stored separately in rangeUnits.
  *    - 2D intensity (grayscale or RGB) image (as a mrpt::img::CImage): For
  *SwissRanger cameras, a logarithmic A-law compression is used to convert the
  *original 16bit intensity to a more standard 8bit graylevel.
@@ -275,7 +276,7 @@ class CObservation3DRangeScan : public CObservation
 	 * is the way Kinect reports ranges):
 	 *
 	 * \code
-	 *   x(i) = rangeImage(r,c)
+	 *   x(i) = rangeImage(r,c) * rangeUnits
 	 *   y(i) = (r_cx - c) * x(i) / r_fx
 	 *   z(i) = (r_cy - r) * x(i) / r_fy
 	 * \endcode
@@ -289,7 +290,7 @@ class CObservation3DRangeScan : public CObservation
 	 *   Ky = (r_cx - c)/r_fx
 	 *   Kz = (r_cy - r)/r_fy
 	 *
-	 *   x(i) = rangeImage(r,c) / sqrt( 1 + Ky^2 + Kz^2 )
+	 *   x(i) = rangeImage(r,c) * rangeUnits / sqrt( 1 + Ky^2 + Kz^2 )
 	 *   y(i) = Ky * x(i)
 	 *   z(i) = Kz * x(i)
 	 * \endcode
@@ -440,11 +441,19 @@ class CObservation3DRangeScan : public CObservation
 	 * @{ */
 	/** true means the field rangeImage contains valid data */
 	bool hasRangeImage{false};
+
 	/** If hasRangeImage=true, a matrix of floats with the range data as
-	 * captured by the camera (in meters) \sa range_is_depth */
-	mrpt::math::CMatrixF rangeImage;
-	/** true: Kinect-like ranges: entries of \a rangeImage are distances along
-	 * the +X axis; false: Ranges in \a rangeImage are actual distances in 3D.
+	 * captured by the camera (in meters) \sa range_is_depth, rangeUnits */
+	mrpt::math::CMatrix_u16 rangeImage;
+
+	/** The conversion factor from integer units in rangeImage and actual
+	 * distances in meters. Default is 0.001 m, that is 1 millimeter. \sa
+	 * rangeImage */
+	float rangeUnits = 0.001f;
+
+	/** true: Kinect-like ranges: entries of \a rangeImage are distances
+	 * along the +X axis; false: Ranges in \a rangeImage are actual
+	 * distances in 3D.
 	 */
 	bool range_is_depth{true};
 

@@ -31,37 +31,23 @@ CObservationRGBD360::CObservationRGBD360() : sensorPose() {}
 /*---------------------------------------------------------------
 							Destructor
  ---------------------------------------------------------------*/
+CObservationRGBD360::~CObservationRGBD360() {}
 
-CObservationRGBD360::~CObservationRGBD360()
-{
-#ifdef COBS3DRANGE_USE_MEMPOOL
-	mempool_donate_xyz_buffers(*this);
-	mempool_donate_range_matrix(*this);
-#endif
-}
-
-uint8_t CObservationRGBD360::serializeGetVersion() const { return 0; }
+uint8_t CObservationRGBD360::serializeGetVersion() const { return 1; }
 void CObservationRGBD360::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// The data
 	out << maxRange << sensorPose;
 
-	//		out << hasPoints3D;
-	//		if (hasPoints3D)
-	//		{
-	//			uint32_t N = points3D_x.size();
-	//			out << N;
-	//			if (N)
-	//			{
-	//				out.WriteBufferFixEndianness( &points3D_x[0], N );
-	//				out.WriteBufferFixEndianness( &points3D_y[0], N );
-	//				out.WriteBufferFixEndianness( &points3D_z[0], N );
-	//			}
-	//		}
-	//
 	out << hasRangeImage;
 	if (hasRangeImage)
-		for (const auto& rangeImage : rangeImages) out << rangeImage;
+		for (const auto& ri : rangeImages)
+		{
+			out.WriteAs<uint32_t>(ri.rows());
+			out.WriteAs<uint32_t>(ri.cols());
+			if (ri.size() == 0) continue;
+			out.WriteBufferFixEndianness<uint16_t>(ri.data(), ri.size());
+		}
 	out << hasIntensityImage;
 	if (hasIntensityImage)
 		for (const auto& intensityImage : intensityImages)
@@ -84,30 +70,26 @@ void CObservationRGBD360::serializeFrom(
 	switch (version)
 	{
 		case 0:
+			THROW_EXCEPTION(
+				"Import from serialization version 0 not implemented!");
+			break;
+		case 1:
 		{
 			in >> maxRange >> sensorPose;
 			in >> hasRangeImage;
 			if (hasRangeImage)
-				for (auto& rangeImage : rangeImages)
+				for (auto& ri : rangeImages)
 				{
-#ifdef COBS3DRANGE_USE_MEMPOOL
-					// We should call "rangeImage_setSize()" to exploit the
-					// mempool:
-					this->rangeImage_setSize(240, 320, i);
-#endif
-					in >> rangeImage;
+					const auto rows = in.ReadAs<uint32_t>();
+					const auto cols = in.ReadAs<uint32_t>();
+					ri.setSize(rows, cols);
+					in.ReadBufferFixEndianness<uint16_t>(ri.data(), ri.size());
 				}
 
 			in >> hasIntensityImage;
 			if (hasIntensityImage)
 				for (auto& intensityImage : intensityImages)
 					in >> intensityImage;
-
-			//      in >> hasConfidenceImage;
-			//      if (hasConfidenceImage)
-			//        in >> confidenceImage;
-
-			//      in >> cameraParams;
 
 			for (auto& t : timestamps) in >> t;
 			in >> stdError;
@@ -128,27 +110,6 @@ void CObservationRGBD360::serializeFrom(
 void CObservationRGBD360::rangeImage_setSize(
 	const int H, const int W, const unsigned sensor_id)
 {
-#ifdef COBS3DRANGE_USE_MEMPOOL
-	// Request memory from the memory pool:
-	TMyRangesMemPool* pool = TMyRangesMemPool::getInstance();
-	if (pool)
-	{
-		CObservationRGBD360_Ranges_MemPoolParams mem_params;
-		mem_params.H = H;
-		mem_params.W = W;
-
-		CObservationRGBD360_Ranges_MemPoolData* mem_block =
-			pool->request_memory(mem_params);
-
-		if (mem_block)
-		{  // Take the memory via swaps:
-			rangeImage.swap(mem_block->rangeImage);
-			delete mem_block;
-			return;
-		}
-	}
-// otherwise, continue with the normal method:
-#endif
 	// Fall-back to normal method:
 	rangeImages[sensor_id].setSize(H, W);
 }

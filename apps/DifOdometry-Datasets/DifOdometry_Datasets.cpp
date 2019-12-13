@@ -370,7 +370,8 @@ void CDifodoDatasets::loadFrame()
 	CObservation3DRangeScan::Ptr obs3D =
 		std::dynamic_pointer_cast<CObservation3DRangeScan>(alfa);
 	obs3D->load();
-	const CMatrixF range = obs3D->rangeImage;
+	const auto& range = obs3D->rangeImage;
+	const auto rangeUnits = obs3D->rangeUnits;
 	const unsigned int height = range.rows();
 	const unsigned int width = range.cols();
 
@@ -378,7 +379,8 @@ void CDifodoDatasets::loadFrame()
 		for (unsigned int i = 0; i < rows; i++)
 		{
 			const float z =
-				range(height - downsample * i - 1, width - downsample * j - 1);
+				range(height - downsample * i - 1, width - downsample * j - 1) *
+				rangeUnits;
 			if (z < 4.5f)
 				depth_wf(i, j) = z;
 			else

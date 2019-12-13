@@ -361,7 +361,8 @@ void Test_Kinect()
 				const int y = int_y;
 
 				// Does this (x,y) have valid range data?
-				const float d = last_obs->rangeImage(y, x);
+				const float d =
+					last_obs->rangeImage(y, x) * last_obs->rangeUnits;
 				if (d > 0.05 && d < 10.0)
 				{
 					ASSERT_(
