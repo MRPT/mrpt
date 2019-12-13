@@ -29,7 +29,16 @@ TEST(CMatrixFixed, Identity)
 {
 	mrpt::math::CMatrixFixed<double, 3, 3> M;
 	M.setIdentity();
-	for (int i = 0; i < 3; i++) EXPECT_EQ(M(i, i), 1.0);
+	for (int i = 0; i < 3; i++)
+	{
+		EXPECT_EQ(M(i, i), 1.0);
+		// Also test access via data():
+		EXPECT_EQ(M(i, i), M.data()[i + i * 3]);
+	}
+
+	// Check that access via data() is what we expect:
+	for (int r = 0; r < 3; r++)
+		for (int c = 0; c < 3; c++) EXPECT_EQ(&M(r, c), &M.data()[c + r * 3]);
 }
 
 TEST(CMatrixFixed, asString)
