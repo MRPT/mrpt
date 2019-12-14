@@ -7,102 +7,71 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/gui/CDisplayWindowPlots.h>
-#include <mrpt/math/distributions.h>
-#include <mrpt/system/os.h>
+#include <mrpt/core/exceptions.h>
+#include <mrpt/gui/CDisplayWindowGUI.h>
+#include <mrpt/opengl/stock_objects.h>
 #include <iostream>
 
-using namespace mrpt;
-using namespace mrpt::gui;
-using namespace mrpt::math;
-using namespace std;
-
-void myOnMenu(int menuID, float x, float y, void* param)
+#if MRPT_HAS_NANOGUI
+void TestGUI()
 {
-	cout << "Menu: " << menuID << endl << " x=" << x << " y=" << y << endl;
-}
+	nanogui::init();
 
-// ------------------------------------------------------
-//				TestDisplayPlots
-// ------------------------------------------------------
-void TestDisplayPlots()
-{
-	CDisplayWindowPlots win("Example of function plot", 400, 300);
-
-	win.enableMousePanZoom(true);
-	win.addPopupMenuEntry("Mark this point...", 1);
-	win.setMenuCallback(myOnMenu);
-
-	// Generate data for a 2D plot:
-	CVectorDouble X, Y;
-	for (double x = 0; x < 5; x += 0.01f)
 	{
-		double y = math::normalPDF(x, 2, 0.3);
-		X.push_back(x);
-		Y.push_back(y);
+		// Create main window:
+		mrpt::gui::CDisplayWindowGUI win("CDisplayWindowGUI demo", 500, 400);
+
+		// Add controls:
+		auto window = new nanogui::Window(&win, "Main");
+		window->setPosition(Eigen::Vector2i(15, 15));
+		window->setLayout(new nanogui::GroupLayout());
+
+		nanogui::Widget* tools = new nanogui::Widget(window);
+		tools->setLayout(new nanogui::BoxLayout(
+			nanogui::Orientation::Horizontal, nanogui::Alignment::Middle, 0,
+			5));
+
+		auto b0 = tools->add<nanogui::Button>("Do it");
+		b0->setCallback([]() { std::cout << "button0\n"; });
+
+		mrpt::gui::MRPTGLCanvas* glControl =
+			tools->add<mrpt::gui::MRPTGLCanvas>();
+
+		{
+			auto scene = mrpt::opengl::COpenGLScene::Create();
+			scene->insert(mrpt::opengl::stock_objects::CornerXYZEye());
+
+			glControl->scene_mtx.lock();
+			glControl->scene = std::move(scene);
+			glControl->scene_mtx.unlock();
+		}
+
+		win.performLayout();
+
+		// Update view and process events:
+		win.drawAll();
+		win.setVisible(true);
+		nanogui::mainloop();
 	}
 
-	win.plot(X, Y, "r-3");
-	win.axis_equal(false);
-	win.axis_fit();
-
-	win.setPos(10, 10);
-	// -----------
-	CDisplayWindowPlots win2("Example of plot update", 400, 300);
-
-	win2.enableMousePanZoom(true);
-
-	// Add an unnamed & a named ellipse:
-	float mean_x = 5;
-	float mean_y = 0;
-	CMatrixFloat ellipse_cov(2, 2);
-	ellipse_cov(0, 0) = 1.0f;
-	ellipse_cov(1, 1) = 1.0f;
-	ellipse_cov(0, 1) = ellipse_cov(1, 0) = 0.5f;
-
-	win2.plotEllipse(1.0f, 2.0f, ellipse_cov, 3, "k-2");
-	win2.plotEllipse(mean_x, mean_y, ellipse_cov, 3, "b-2", "my_ellipse");
-
-	win2.axis(-10, 10, -10, 10);
-	win2.axis_equal(true);
-
-	win2.setPos(450, 10);
-
-	cout << "Press any key to exit..." << endl;
-	// win.waitForKey();
-
-	float t = 0;
-	ellipse_cov(0, 1) = ellipse_cov(1, 0) = -0.9f;
-	while (!mrpt::system::os::kbhit() && win.isOpen() && win2.isOpen() &&
-		   !win.keyHit() && !win2.keyHit())
-	{
-		t += 0.05f;
-		mean_x = cos(t) * 5;
-		mean_y = sin(t) * 5;
-		win2.plotEllipse(mean_x, mean_y, ellipse_cov, 3, "b-2", "my_ellipse");
-
-		std::this_thread::sleep_for(50ms);
-	}
+	nanogui::shutdown();
 }
+#endif
 
-// ------------------------------------------------------
-//						MAIN
-// ------------------------------------------------------
 int main()
 {
 	try
 	{
-		TestDisplayPlots();
+#if MRPT_HAS_NANOGUI
+		TestGUI();
+#else
+		std::cerr << "This example requires MRPT built with NANOGUI.\n";
+#endif
 		return 0;
 	}
 	catch (const std::exception& e)
 	{
-		std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
-		return -1;
-	}
-	catch (...)
-	{
-		printf("Untyped exception!!");
+		std::cerr << mrpt::exception_to_str(e) << std::endl;
 		return -1;
 	}
 }

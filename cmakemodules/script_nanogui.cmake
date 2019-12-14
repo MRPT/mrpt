@@ -36,6 +36,7 @@ ExternalProject_Add(EP_nanogui
 	GIT_REPOSITORY https://github.com/MRPT/nanogui.git
 	GIT_TAG 9cca0fc3045fc80a489e07bca96bacec8bfbbeb7
 	GIT_SUBMODULES ext/eigen ext/glfw ext/nanovg # ext/pybind
+	UPDATE_DISCONNECTED 1
 	CMAKE_ARGS ${nanogui_CMAKE_ARGS}
 	TEST_COMMAND      ""
 )
