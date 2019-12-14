@@ -21,20 +21,20 @@
 
 namespace mrpt::gui
 {
-/** The base class for GUI window classes.
+/** The base class for GUI window classes based on wxWidgets.
  *
- *   This class can be observed (see mrpt::system::CObserver) for the following
+ * This class can be observed (see mrpt::system::CObserver) for the following
  * events (see mrpt::system::mrptEvent):
- *   - mrpt::gui::mrptEventWindowChar
- *   - mrpt::gui::mrptEventWindowResize
- *   - mrpt::gui::mrptEventMouseDown
- *   - mrpt::gui::mrptEventWindowClosed
+ * - mrpt::gui::mrptEventWindowChar
+ * - mrpt::gui::mrptEventWindowResize
+ * - mrpt::gui::mrptEventMouseDown
+ * - mrpt::gui::mrptEventWindowClosed
  *
- *  See derived classes to check if they emit other additional events.
+ * See derived classes to check if they emit other additional events.
  *
- *  IMPORTANTE NOTICE: Event handlers in your observer class will be invoked
- * from the wxWidgets internal MRPT thread,
- *    so all your code in the handler must be thread safe.
+ * IMPORTANTE NOTICE: Event handlers in your observer class will be invoked
+ * from the wxWidgets internal MRPT thread, so all your code in the handler
+ * must be thread safe.
  * \ingroup mrpt_gui_grp
  */
 class CBaseGUIWindow : public mrpt::system::CObservable
