@@ -123,8 +123,16 @@ void CWxGLCanvasBase::OnMouseWheel(wxMouseEvent& event)
 	this->SetFocus();
 }
 
-static int WX_GL_ATTR_LIST[] = {WX_GL_DOUBLEBUFFER, WX_GL_RGBA,
-								WX_GL_DEPTH_SIZE, 24, 0};
+// clang-format off
+static int WX_GL_ATTR_LIST[] = {
+	WX_GL_DOUBLEBUFFER,    WX_GL_RGBA,
+	WX_GL_DEPTH_SIZE,     24,
+	WX_GL_MAJOR_VERSION,  3,
+	WX_GL_MINOR_VERSION,  1,
+	WX_GL_CORE_PROFILE, // do not allow using opengl 1.x deprecated stuff
+	0
+};
+// clang-format on
 
 CWxGLCanvasBase::CWxGLCanvasBase(
 	wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size,
