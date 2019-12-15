@@ -179,7 +179,7 @@ void CTexturedObject::loadTextureInOpenGL() const
 		if (m_texture_is_loaded)
 		{
 			glBindTexture(GL_TEXTURE_2D, m_glTextureName);
-			checkOpenGLError();
+			CHECK_OPENGL_ERROR();
 			return;
 		}
 
@@ -191,7 +191,7 @@ void CTexturedObject::loadTextureInOpenGL() const
 
 		// select our current texture
 		glBindTexture(GL_TEXTURE_2D, m_glTextureName);
-		checkOpenGLError();
+		CHECK_OPENGL_ERROR();
 
 		// when texture area is small, linear interpolation. Default is
 		// GL_LINEAR_MIPMAP_NEAREST but we
@@ -199,22 +199,22 @@ void CTexturedObject::loadTextureInOpenGL() const
 		//  See also:
 		//  http://www.opengl.org/discussion_boards/ubbthreads.php?ubb=showflat&Number=133116&page=1
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		checkOpenGLError();
+		CHECK_OPENGL_ERROR();
 
 		// when texture area is large, NEAREST: this is mainly thinking of
 		// rendering
 		//  occupancy grid maps, such as we want those "big pixels" to be
 		//  clearly visible ;-)
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		checkOpenGLError();
+		CHECK_OPENGL_ERROR();
 
 		// if wrap is true, the texture wraps over at the edges (repeat)
 		//       ... false, the texture ends at the edges (clamp)
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		checkOpenGLError();
+		CHECK_OPENGL_ERROR();
 
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		checkOpenGLError();
+		CHECK_OPENGL_ERROR();
 
 		// Assure that the images do not overpass the maximum dimensions allowed
 		// by OpenGL:
@@ -306,7 +306,7 @@ void CTexturedObject::loadTextureInOpenGL() const
 				glTexImage2D(
 					GL_TEXTURE_2D, 0 /*level*/, 4 /* RGB components */, width,
 					height, 0 /*border*/, img_format, img_type, dataAligned);
-				checkOpenGLError();
+				CHECK_OPENGL_ERROR();
 				glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);  // Reset
 
 				// No need to hide a fill border:
@@ -385,7 +385,7 @@ void CTexturedObject::loadTextureInOpenGL() const
 				glTexImage2D(
 					GL_TEXTURE_2D, 0 /*level*/, 2 /* RGB components */, width,
 					height, 0 /*border*/, img_format, img_type, dataAligned);
-				checkOpenGLError();
+				CHECK_OPENGL_ERROR();
 				glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);  // Reset
 
 				// No need to hide a fill border:
@@ -407,7 +407,7 @@ void CTexturedObject::loadTextureInOpenGL() const
 					GL_TEXTURE_2D, 0 /*level*/, 1 /* RGB components */, width,
 					height, 0 /*border*/, img_format, img_type,
 					m_textureImage(0, 0));
-				checkOpenGLError();
+				CHECK_OPENGL_ERROR();
 				glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);  // Reset
 
 				// No need to hide a fill border:
@@ -507,7 +507,7 @@ void CTexturedObject::render_pre() const
 #if MRPT_HAS_OPENGL_GLUT
 	MRPT_START
 	glEnable(GL_TEXTURE_2D);
-	checkOpenGLError();
+	CHECK_OPENGL_ERROR();
 
 	if (m_enableTransparency || m_color.A != 255)
 	{
@@ -536,16 +536,16 @@ void CTexturedObject::render_post() const
 	if (m_enableTransparency || m_color.A != 255)
 	{
 		glDisable(GL_BLEND);
-		checkOpenGLError();
+		CHECK_OPENGL_ERROR();
 
 		glBlendFunc(GL_ONE, GL_ZERO);
 
 		glEnable(GL_DEPTH_TEST);
-		checkOpenGLError();
+		CHECK_OPENGL_ERROR();
 	}
 
 	glDisable(GL_TEXTURE_2D);
-	checkOpenGLError();
+	CHECK_OPENGL_ERROR();
 
 	MRPT_END
 #endif

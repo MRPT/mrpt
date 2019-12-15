@@ -79,10 +79,11 @@ struct TRenderInfo
 void renderSetOfObjects(const mrpt::opengl::CListOpenGLObjects& objs);
 
 /** Checks glGetError and throws an exception if an error situation is found */
-void checkOpenGLError();
+void checkOpenGLErr_impl(const char* filename, int lineno);
 
 /** Can be used by derived classes to draw a triangle with a normal vector
- * computed automatically - to be called within a glBegin()-glEnd() block. */
+ * computed automatically - to be called within a glBegin()-glEnd() block.
+ */
 void renderTriangleWithNormal(
 	const mrpt::math::TPoint3D& p1, const mrpt::math::TPoint3D& p2,
 	const mrpt::math::TPoint3D& p3);

@@ -115,7 +115,7 @@ void CMeshFast::render_dl() const
 
 	if (m_pointSmooth) glDisable(GL_POINT_SMOOTH);
 
-	checkOpenGLError();
+	CHECK_OPENGL_ERROR();
 #endif
 }
 

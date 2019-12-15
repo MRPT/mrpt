@@ -66,7 +66,7 @@ void CFrustum::render_dl() const
 
 		// wireframe:
 		glLineWidth(m_lineWidth);
-		checkOpenGLError();
+		CHECK_OPENGL_ERROR();
 		glBegin(GL_LINE_STRIP);
 		glColor4ub(m_color.R, m_color.G, m_color.B, m_color.A);
 

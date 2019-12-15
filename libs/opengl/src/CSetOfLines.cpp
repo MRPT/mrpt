@@ -70,7 +70,8 @@ void CSetOfLines::render_dl() const
 	}
 	if (m_antiAliasing) glEnable(GL_LINE_SMOOTH);
 	glLineWidth(mLineWidth);
-	checkOpenGLError();
+	CHECK_OPENGL_ERROR();
+	;
 
 	glDisable(GL_LIGHTING);  // Disable lights when drawing lines
 	glBegin(GL_LINES);
@@ -81,7 +82,8 @@ void CSetOfLines::render_dl() const
 		glVertex3d(mSegment.point2.x, mSegment.point2.y, mSegment.point2.z);
 	}
 	glEnd();
-	checkOpenGLError();
+	CHECK_OPENGL_ERROR();
+	;
 
 	// Draw vertices?
 	if (m_verticesPointSize > 0)

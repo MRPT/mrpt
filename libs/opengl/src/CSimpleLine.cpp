@@ -59,14 +59,14 @@ void CSimpleLine::render_dl() const
 	glVertex3f(m_x1, m_y1, m_z1);
 
 	glEnd();
-	checkOpenGLError();
+	CHECK_OPENGL_ERROR();
 	glEnable(GL_LIGHTING);  // Disable lights when drawing lines
 
 	// End antialiasing:
 	if (m_antiAliasing)
 	{
 		glPopAttrib();
-		checkOpenGLError();
+		CHECK_OPENGL_ERROR();
 	}
 #endif
 }

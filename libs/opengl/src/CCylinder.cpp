@@ -31,9 +31,9 @@ void CCylinder::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	glEnable(GL_BLEND);
-	checkOpenGLError();
+	CHECK_OPENGL_ERROR();
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	checkOpenGLError();
+	CHECK_OPENGL_ERROR();
 	GLUquadricObj* obj = gluNewQuadric();
 
 	// This is required to draw cylinders of negative height.

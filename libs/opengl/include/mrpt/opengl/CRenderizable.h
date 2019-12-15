@@ -18,8 +18,18 @@
 
 namespace mrpt::opengl
 {
+// Frwd decls:
 class COpenGLViewport;
 class CSetOfObjects;
+namespace gl_utils
+{
+void checkOpenGLErr_impl(const char* filename, int lineno);
+}
+
+/** Checks glGetError and throws an exception if an error situation is found
+ */
+#define CHECK_OPENGL_ERROR() \
+	mrpt::opengl::gl_utils::checkOpenGLErr_impl(__FILE__, __LINE__);
 
 /** The base class of 3D objects that can be directly rendered through OpenGL.
  *  In this class there are a set of common properties to all 3D objects,
@@ -310,10 +320,6 @@ class CRenderizable : public mrpt::serialization::CSerializable
 		mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const = 0;
 
    protected:
-	/** Checks glGetError and throws an exception if an error situation is found
-	 */
-	static void checkOpenGLError();
-
 	void writeToStreamRender(mrpt::serialization::CArchive& out) const;
 	void readFromStreamRender(mrpt::serialization::CArchive& in);
 

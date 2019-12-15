@@ -51,16 +51,16 @@ void CSphere::render_dl() const
 		real_radius = m_radius;
 
 	GLUquadricObj* obj = gluNewQuadric();
-	checkOpenGLError();
+	CHECK_OPENGL_ERROR();
 
 	gluQuadricDrawStyle(obj, GLU_FILL);
 	gluQuadricNormals(obj, GLU_SMOOTH);
 
 	gluSphere(obj, real_radius, m_nDivsLongitude, m_nDivsLatitude);
-	checkOpenGLError();
+	CHECK_OPENGL_ERROR();
 
 	gluDeleteQuadric(obj);
-	checkOpenGLError();
+	CHECK_OPENGL_ERROR();
 
 	if (m_color.A != 255)
 	{

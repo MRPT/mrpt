@@ -31,11 +31,11 @@ void renderGeneralizedEllipsoidTemplate<2>(
 {
 #if MRPT_HAS_OPENGL_GLUT
 	glEnable(GL_BLEND);
-	gl_utils::checkOpenGLError();
+	CHECK_OPENGL_ERROR();
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	gl_utils::checkOpenGLError();
+	CHECK_OPENGL_ERROR();
 	glLineWidth(lineWidth);
-	gl_utils::checkOpenGLError();
+	CHECK_OPENGL_ERROR();
 
 	glDisable(GL_LIGHTING);  // Disable lights when drawing lines
 
@@ -65,11 +65,11 @@ void renderGeneralizedEllipsoidTemplate<3>(
 {
 #if MRPT_HAS_OPENGL_GLUT
 	glEnable(GL_BLEND);
-	gl_utils::checkOpenGLError();
+	CHECK_OPENGL_ERROR();
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	gl_utils::checkOpenGLError();
+	CHECK_OPENGL_ERROR();
 	glLineWidth(lineWidth);
-	gl_utils::checkOpenGLError();
+	CHECK_OPENGL_ERROR();
 	glDisable(GL_LIGHTING);  // Disable lights when drawing lines
 
 	// Points in the ellipsoid:

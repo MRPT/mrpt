@@ -1054,7 +1054,7 @@ void CPolyhedron::render_dl() const
 		glDisable(GL_LIGHTING);  // Disable lights when drawing lines
 
 		glLineWidth(mLineWidth);
-		checkOpenGLError();
+		CHECK_OPENGL_ERROR();
 		glColor4ub(m_color.R, m_color.G, m_color.B, m_color.A);
 		glBegin(GL_LINES);
 		for (const auto& mEdge : mEdges)
@@ -1069,7 +1069,7 @@ void CPolyhedron::render_dl() const
 	}
 	else
 	{
-		checkOpenGLError();
+		CHECK_OPENGL_ERROR();
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
