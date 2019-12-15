@@ -78,7 +78,7 @@ void CGridPlaneXZ::render_dl() const
 	if (m_antiAliasing)
 	{
 		glPopAttrib();
-		checkOpenGLError();
+		CHECK_OPENGL_ERROR();
 	}
 #endif
 }

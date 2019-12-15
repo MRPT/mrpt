@@ -69,7 +69,7 @@ void CVectorField2D::render_dl() const
 	glLineWidth(m_LineWidth);
 	glPointSize(m_pointSize);
 
-	checkOpenGLError();
+	CHECK_OPENGL_ERROR();
 
 	glDisable(GL_LIGHTING);  // Disable lights when drawing lines
 	glBegin(GL_POINTS);
@@ -131,7 +131,7 @@ void CVectorField2D::render_dl() const
 		}
 	glEnd();
 
-	checkOpenGLError();
+	CHECK_OPENGL_ERROR();
 	glEnable(GL_LIGHTING);  // Disable lights when drawing lines
 
 	// End of antialiasing:

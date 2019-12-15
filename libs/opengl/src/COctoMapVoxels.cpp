@@ -85,7 +85,7 @@ void COctoMapVoxels::render_dl() const
 	if (m_show_grids)
 	{
 		glLineWidth(m_grid_width);
-		checkOpenGLError();
+		CHECK_OPENGL_ERROR();
 
 		glDisable(GL_LIGHTING);  // Disable lights when drawing lines
 
@@ -190,7 +190,7 @@ void COctoMapVoxels::render_dl() const
 	if (!m_enable_lighting) glEnable(GL_LIGHTING);
 
 	glDisableClientState(GL_VERTEX_ARRAY);
-	checkOpenGLError();
+	CHECK_OPENGL_ERROR();
 
 #endif
 }

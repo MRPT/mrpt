@@ -39,11 +39,11 @@ void CEllipsoid::render_dl() const
 		(dim == 2 || m_eigVal(2, 2) != 0.0) && m_quantiles != 0.0)
 	{
 		glEnable(GL_BLEND);
-		checkOpenGLError();
+		CHECK_OPENGL_ERROR();
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		checkOpenGLError();
+		CHECK_OPENGL_ERROR();
 		glLineWidth(m_lineWidth);
-		checkOpenGLError();
+		CHECK_OPENGL_ERROR();
 
 		if (dim == 2)
 		{
@@ -127,7 +127,7 @@ void CEllipsoid::render_dl() const
 			mat[10] = m_eigVec(2, 2);  // New X-axis
 
 			GLUquadricObj* obj = gluNewQuadric();
-			checkOpenGLError();
+			CHECK_OPENGL_ERROR();
 
 			if (!m_drawSolid3D)
 				glDisable(GL_LIGHTING);  // Disable lights when drawing lines
@@ -141,12 +141,12 @@ void CEllipsoid::render_dl() const
 				m_eigVal(2, 2) * m_quantiles);
 
 			gluSphere(obj, 1, m_3D_segments, m_3D_segments);
-			checkOpenGLError();
+			CHECK_OPENGL_ERROR();
 
 			glPopMatrix();
 
 			gluDeleteQuadric(obj);
-			checkOpenGLError();
+			CHECK_OPENGL_ERROR();
 
 			// 3D: Save bounding box:
 			const double max_radius =

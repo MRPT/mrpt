@@ -67,7 +67,7 @@ void CPointCloudColoured::render() const
 
 	m_last_rendered_count = m_last_rendered_count_ongoing;
 
-	checkOpenGLError();
+	CHECK_OPENGL_ERROR();
 #endif
 }
 

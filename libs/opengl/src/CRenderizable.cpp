@@ -237,11 +237,6 @@ void CRenderizable::readFromStreamRender(mrpt::serialization::CArchive& in)
 	}
 }
 
-void CRenderizable::checkOpenGLError()
-{
-	mrpt::opengl::gl_utils::checkOpenGLError();
-}
-
 /*--------------------------------------------------------------
 					setPose
   ---------------------------------------------------------------*/

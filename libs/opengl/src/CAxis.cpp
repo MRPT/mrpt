@@ -66,14 +66,14 @@ void CAxis::render_dl() const
 	glDisable(GL_LIGHTING);
 
 	glEnable(GL_BLEND);
-	checkOpenGLError();
+	CHECK_OPENGL_ERROR();
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	checkOpenGLError();
+	CHECK_OPENGL_ERROR();
 
 	ASSERT_(m_frequency >= 0);
 
 	glLineWidth(m_lineWidth);
-	checkOpenGLError();
+	CHECK_OPENGL_ERROR();
 	glBegin(GL_LINES);
 	glColor4ub(m_color.R, m_color.G, m_color.B, m_color.A);
 	// X axis
@@ -87,13 +87,13 @@ void CAxis::render_dl() const
 	glVertex3f(0.0f, 0.0f, m_zmax);
 
 	glEnd();
-	checkOpenGLError();
+	CHECK_OPENGL_ERROR();
 
 	glLineWidth(1.0f);
-	checkOpenGLError();
+	CHECK_OPENGL_ERROR();
 
 	glDisable(GL_BLEND);
-	checkOpenGLError();
+	CHECK_OPENGL_ERROR();
 
 	// Draw the "tick marks" for X,Y,Z
 	const float ml = m_markLen * m_frequency;
@@ -137,7 +137,7 @@ void CAxis::render_dl() const
 				glVertex3f(tick1[axis].x, tick1[axis].y, tick1[axis].z);
 				glEnd();
 				glPopMatrix();
-				checkOpenGLError();
+				CHECK_OPENGL_ERROR();
 			}
 			glTranslatef(
 				axis == 0 ? m_frequency : 0, axis == 1 ? m_frequency : 0,

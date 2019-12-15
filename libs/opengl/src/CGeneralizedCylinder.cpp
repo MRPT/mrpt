@@ -87,7 +87,7 @@ void CGeneralizedCylinder::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	if (!meshUpToDate) updateMesh();
-	checkOpenGLError();
+	CHECK_OPENGL_ERROR();
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 

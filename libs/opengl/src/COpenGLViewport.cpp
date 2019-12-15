@@ -298,7 +298,7 @@ void COpenGLViewport::render(
 						img_w, img_h, img_format, img_type,
 						img->ptrLine<uint8_t>(0));
 					glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);  // Reset
-					CRenderizable::checkOpenGLError();
+					CHECK_OPENGL_ERROR();
 				}
 			}
 // done.
@@ -397,7 +397,7 @@ void COpenGLViewport::render(
 				gluPerspective(
 					myCamera->m_projectiveFOVdeg, vw / double(vh), m_clip_min,
 					m_clip_max);
-				CRenderizable::checkOpenGLError();
+				CHECK_OPENGL_ERROR();
 			}
 			else
 			{
@@ -413,7 +413,7 @@ void COpenGLViewport::render(
 				}
 
 				glOrtho(-Ax, Ax, -Ay, Ay, -0.5 * m_clip_max, 0.5 * m_clip_max);
-				CRenderizable::checkOpenGLError();
+				CHECK_OPENGL_ERROR();
 			}
 
 			if (myCamera->is6DOFMode())
@@ -430,7 +430,7 @@ void COpenGLViewport::render(
 					pose.getRotationMatrix()(0, 1),
 					pose.getRotationMatrix()(1, 1),
 					pose.getRotationMatrix()(2, 1));
-				CRenderizable::checkOpenGLError();
+				CHECK_OPENGL_ERROR();
 			}
 			else
 			{
@@ -440,7 +440,7 @@ void COpenGLViewport::render(
 					m_lastProjMat.eye.z, m_lastProjMat.pointing.x,
 					m_lastProjMat.pointing.y, m_lastProjMat.pointing.z,
 					m_lastProjMat.up.x, m_lastProjMat.up.y, m_lastProjMat.up.z);
-				CRenderizable::checkOpenGLError();
+				CHECK_OPENGL_ERROR();
 			}
 
 			// Optional pre-Render user code:

@@ -63,7 +63,7 @@ void CTexturedPlane::render_texturedobj() const
 	glVertex3f(m_xMin, m_yMax, 0);
 
 	glEnd();
-	checkOpenGLError();
+	CHECK_OPENGL_ERROR();
 
 	MRPT_END
 #endif

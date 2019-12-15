@@ -86,7 +86,7 @@ void CPlanarLaserScan::render_dl() const
 	if (n > 1 && m_enable_line)
 	{
 		glLineWidth(m_line_width);
-		checkOpenGLError();
+		CHECK_OPENGL_ERROR();
 
 		glBegin(GL_LINES);
 		glColor4f(m_line_R, m_line_G, m_line_B, m_line_A);
@@ -97,7 +97,7 @@ void CPlanarLaserScan::render_dl() const
 			glVertex3f(x[i + 1], y[i + 1], z[i + 1]);
 		}
 		glEnd();
-		checkOpenGLError();
+		CHECK_OPENGL_ERROR();
 	}
 
 	// POINTS
@@ -105,7 +105,7 @@ void CPlanarLaserScan::render_dl() const
 	if (n > 0 && m_enable_points)
 	{
 		glPointSize(m_points_width);
-		checkOpenGLError();
+		CHECK_OPENGL_ERROR();
 
 		glBegin(GL_POINTS);
 		glColor4f(m_points_R, m_points_G, m_points_B, m_points_A);
@@ -115,7 +115,7 @@ void CPlanarLaserScan::render_dl() const
 			glVertex3f(x[i], y[i], z[i]);
 		}
 		glEnd();
-		checkOpenGLError();
+		CHECK_OPENGL_ERROR();
 	}
 
 	// SURFACE:
@@ -135,7 +135,7 @@ void CPlanarLaserScan::render_dl() const
 			glVertex3f(x[i + 1], y[i + 1], z[i + 1]);
 		}
 		glEnd();
-		checkOpenGLError();
+		CHECK_OPENGL_ERROR();
 	}
 
 	glDisable(GL_BLEND);

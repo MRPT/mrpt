@@ -53,7 +53,7 @@ void gl_utils::renderSetOfObjects(const CListOpenGLObjects& objectsToRender)
 
 			glPushAttrib(GL_CURRENT_BIT);  // drawing color, etc
 			glPushAttrib(GL_LIGHTING_BIT);  // lighting
-			// gl_utils::checkOpenGLError();
+			// CHECK_OPENGL_ERROR();
 
 			// It's more efficient to prepare the 4x4 matrix ourselves and load
 			// it directly into opengl stack:
@@ -85,7 +85,7 @@ void gl_utils::renderSetOfObjects(const CListOpenGLObjects& objectsToRender)
 				it->getColorA());
 
 			it->render();
-			gl_utils::checkOpenGLError();
+			CHECK_OPENGL_ERROR();
 
 			if (it->isShowNameEnabled())
 			{
@@ -113,10 +113,10 @@ void gl_utils::renderSetOfObjects(const CListOpenGLObjects& objectsToRender)
 
 			glPopAttrib();
 			glPopAttrib();
-			//			gl_utils::checkOpenGLError();
+			//			CHECK_OPENGL_ERROR();
 
 			glPopMatrix();
-			gl_utils::checkOpenGLError();
+			CHECK_OPENGL_ERROR();
 
 		}  // end foreach object
 	}
@@ -149,19 +149,17 @@ void gl_utils::TRenderInfo::projectPoint(
 	proj_z_depth = proj[2];
 }
 
-/*---------------------------------------------------------------
-					checkOpenGLError
-  ---------------------------------------------------------------*/
-void gl_utils::checkOpenGLError()
+void gl_utils::checkOpenGLErr_impl(const char* filename, int lineno)
 {
 #if MRPT_HAS_OPENGL_GLUT
 	int openglErr;
 	if ((openglErr = glGetError()) != GL_NO_ERROR)
 	{
-		const std::string sErr = std::string("OpenGL error: ") +
-								 std::string((char*)gluErrorString(openglErr));
+		const std::string sErr = mrpt::format(
+			"[%s:%i] OpenGL error: %s", filename, lineno,
+			((char*)gluErrorString(openglErr)));
 		std::cerr << "[gl_utils::checkOpenGLError] " << sErr << std::endl;
-		// THROW_EXCEPTION(sErr);
+		THROW_EXCEPTION(sErr);
 	}
 #endif
 }

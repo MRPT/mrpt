@@ -144,7 +144,7 @@ void CBox::render_dl() const
 
 		// wireframe:
 		glLineWidth(m_lineWidth);
-		checkOpenGLError();
+		CHECK_OPENGL_ERROR();
 
 		mrpt::math::TPoint3D a = m_corner_min, b = m_corner_max;
 
