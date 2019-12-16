@@ -1725,6 +1725,10 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 			m_fileHistory.AddFileToHistory(fil.c_str());
 	}
 
+	// 3D view: default view, with +X pointing to the right:
+	m_gl3DRangeScan->setAzimuthDegrees(-80.0f);
+	m_gl3DRangeScan->setElevationDegrees(30.0f);
+
 	// Image directory selector on the toolbar:
 	// --------------------------------------------
 	Bind(
