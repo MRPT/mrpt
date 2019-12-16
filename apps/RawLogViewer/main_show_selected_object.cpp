@@ -304,8 +304,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 #if RAWLOGVIEWER_HAS_3D
 		auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
 		openGLSceneRef->clear();
-		// this->m_gl3DRangeScan->m_openGLScene->insert(
-		// mrpt::opengl::stock_objects::CornerXYZ() );
+
 		openGLSceneRef->insert(
 			mrpt::opengl::CAxis::Create(-20, -20, -20, 20, 20, 20, 1, 2, true));
 
