@@ -23,7 +23,6 @@ using namespace Eigen;
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::opengl;
-
 using namespace mrpt::gui;
 using namespace mrpt::img;
 using namespace mrpt::obs;

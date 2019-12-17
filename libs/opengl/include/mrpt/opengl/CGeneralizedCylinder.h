@@ -11,7 +11,7 @@
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/opengl/CPolyhedron.h>
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
 #include <vector>
 
@@ -25,7 +25,7 @@ class CGeneralizedCylinder;
  * perpendicular to the Z axis.
  * \ingroup mrpt_opengl_grp
  */
-class CGeneralizedCylinder : public CRenderizableDisplayList
+class CGeneralizedCylinder : public CRenderizable
 {
 	DEFINE_SERIALIZABLE(CGeneralizedCylinder, mrpt::opengl)
    public:
@@ -134,16 +134,10 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 	size_t lastSection;
 
    public:
-	/**
-	 * Render.
-	 * \sa mrpt::opengl::CRenderizable
-	 */
-	void render_dl() const override;
-	/**
-	 * Ray tracing.
-	 * \sa mrpt::opengl::CRenderizable.
-	 */
+	void render() const override;
+	void renderUpdateBuffers() const override;
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
+
 	/**
 	 * Get axis's spatial coordinates.
 	 */
@@ -174,7 +168,7 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 		generatePoses(a, axis);
 		meshUpToDate = false;
 		fullyVisible = true;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Get cylinder's profile.
@@ -190,7 +184,7 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 	{
 		generatrix = g;
 		meshUpToDate = false;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Returns true if each section is a closed polygon.
@@ -203,7 +197,7 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 	{
 		closed = c;
 		meshUpToDate = false;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Get a polyhedron containing the starting point of the cylinder (its
@@ -273,7 +267,7 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 	inline void setAllSectionsVisible()
 	{
 		fullyVisible = true;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Hides all sections.
@@ -283,7 +277,7 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 		fullyVisible = false;
 		firstSection = pointer;
 		lastSection = pointer;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Sets which sections are visible.
@@ -296,7 +290,7 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 			throw std::logic_error("Wrong bound definition");
 		firstSection = first;
 		lastSection = last;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Adds another visible section at the start of the cylinder. The cylinder
@@ -311,7 +305,7 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 		if (fullyVisible || firstSection == 0)
 			throw std::logic_error("No more sections");
 		firstSection--;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Adds another visible section at the end of the cylinder. The cylinder
@@ -326,7 +320,7 @@ class CGeneralizedCylinder : public CRenderizableDisplayList
 		if (fullyVisible || lastSection == getNumberOfSections())
 			throw std::logic_error("No more sections");
 		lastSection++;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Removes a visible section from the start of the currently visible set.

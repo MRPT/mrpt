@@ -25,9 +25,12 @@ using mrpt::serialization::CArchive;
 
 IMPLEMENTS_SERIALIZABLE(CPointCloudColoured, CRenderizable, mrpt::opengl)
 
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
+void CPointCloudColoured::renderUpdateBuffers() const
+{
+	//
+	MRPT_TODO("Implement me!");
+}
+
 void CPointCloudColoured::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT

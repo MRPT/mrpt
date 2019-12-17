@@ -23,7 +23,6 @@ using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
 using namespace mrpt::img;
-
 using namespace std::literals;
 
 // ------------------------------------------------------

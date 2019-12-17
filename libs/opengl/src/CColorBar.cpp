@@ -17,11 +17,10 @@
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CColorBar, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CColorBar, CRenderizable, mrpt::opengl)
 
 CColorBar::CColorBar(
 	/** The colormap to represent. */
@@ -52,7 +51,7 @@ CColorBar::CColorBar(
 void CColorBar::setColormap(const mrpt::img::TColormap colormap)
 {
 	m_colormap = colormap;
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 void CColorBar::setColorAndValueLimits(
@@ -62,19 +61,21 @@ void CColorBar::setColorAndValueLimits(
 	m_max_col = col_max;
 	m_min_value = value_min;
 	m_max_value = value_max;
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 void mrpt::opengl::CColorBar::enableDepthTest(bool enable)
 {
 	m_disable_depth_test = enable;
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
-void CColorBar::render_dl() const
+void CColorBar::renderUpdateBuffers() const
+{
+	//
+	MRPT_TODO("Implement me!");
+}
+void CColorBar::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	if (m_disable_depth_test)
@@ -83,8 +84,6 @@ void CColorBar::render_dl() const
 	glDisable(GL_LIGHTING);
 
 	// solid:
-	glShadeModel(GL_SMOOTH);
-
 	unsigned int num_divisions = 64;
 	unsigned int num_labels = 4;
 	unsigned int one_label_each_nth = floor((num_divisions) / num_labels);
@@ -158,8 +157,6 @@ void CColorBar::render_dl() const
 		}
 	}
 
-	glEnable(GL_LIGHTING);
-
 #endif
 }
 
@@ -187,7 +184,7 @@ void CColorBar::serializeFrom(
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 void CColorBar::getBoundingBox(

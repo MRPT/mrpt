@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/opengl/COpenGLScene.h>
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizable.h>
 #include <map>
 
 namespace mrpt::opengl
@@ -36,16 +36,14 @@ namespace mrpt::opengl
  * \ingroup mrpt_opengl_grp
  * \note Class introduced in MRPT 1.2.2
  */
-class CAssimpModel : public CRenderizableDisplayList
+class CAssimpModel : public CRenderizable
 {
 	DEFINE_SERIALIZABLE(CAssimpModel, mrpt::opengl)
 
    public:
 	/** Render child objects */
-	void render_dl() const override;
-
-	/** Evaluates the bounding box of this object (including possible children)
-	 * in the coordinate frame of the object parent. */
+	void render() const override;
+	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;

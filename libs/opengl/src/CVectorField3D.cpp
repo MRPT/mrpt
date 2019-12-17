@@ -18,7 +18,7 @@ using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CVectorField3D, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CVectorField3D, CRenderizable, mrpt::opengl)
 
 /** Constructor */
 CVectorField3D::CVectorField3D()
@@ -55,10 +55,13 @@ CVectorField3D::CVectorField3D(
 	m_maxspeed = 1.f;
 }
 
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
-void CVectorField3D::render_dl() const
+void CVectorField3D::renderUpdateBuffers() const
+{
+	//
+	MRPT_TODO("Implement me!");
+}
+
+void CVectorField3D::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 
@@ -213,7 +216,7 @@ void CVectorField3D::serializeFrom(
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 			break;
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 void CVectorField3D::getBoundingBox(

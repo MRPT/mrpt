@@ -220,6 +220,7 @@ class CPointCloudColoured : public CRenderizable,
 
 	/** Render */
 	void render() const override;
+	void renderUpdateBuffers() const override;
 
 	/** Render a subset of points (required by octree renderer) */
 	void render_subset(

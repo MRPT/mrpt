@@ -13,6 +13,7 @@
 #include <mrpt/opengl/CCamera.h>
 #include <mrpt/opengl/CLight.h>
 #include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/Shader.h>
 #include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/CObservable.h>
@@ -339,6 +340,9 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 		COpenGLScene* parent = nullptr,
 		const std::string& name = std::string(""));
 
+	/** Render the objects in this viewport (called from COpenGLScene) */
+	void render(const int render_width, const int render_height) const;
+
    protected:
 	/** Initializes all textures in the scene (See
 	 * opengl::CTexturedPlane::loadTextureInOpenGL)
@@ -349,8 +353,14 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	 */
 	void dumpListOfObjects(std::vector<std::string>& lst);
 
-	/** Render the objects in this viewport (called from COpenGLScene only) */
-	void render(const int render_width, const int render_height) const;
+	/** Render in image mode */
+	void renderImageMode() const;
+
+	/** Render a normal scene with 3D objects */
+	void renderNormalSceneMode() const;
+
+	/** Render the viewport border, if enabled */
+	void renderViewportBorder() const;
 
 	/** The camera associated to the viewport */
 	opengl::CCamera m_camera;
@@ -382,30 +392,56 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	/** The image to display, after calling \a setImageView() */
 	mrpt::img::CImage::Ptr m_imageview_img;
 
-	struct TLastProjectiveMatrixInfo
+	struct TRenderMatrices
 	{
-		TLastProjectiveMatrixInfo()
-			: eye(0, 0, 0), pointing(0, 0, 0), up(0, 0, 0)
+		TRenderMatrices() = default;
 
-		{
-		}
 		/** The camera is here. */
-		mrpt::math::TPoint3D eye;
+		mrpt::math::TPoint3D eye = {0, 0, 0};
+
 		/** The camera points to here */
-		mrpt::math::TPoint3D pointing;
+		mrpt::math::TPoint3D pointing = {0, 0, 0};
+
 		/** Up vector of the camera. */
-		mrpt::math::TPoint3D up;
+		mrpt::math::TPoint3D up = {0, 0, 0};
+
 		/** In pixels. This may be smaller than the total render window. */
-		size_t viewport_width{640}, viewport_height{480};
-		/** FOV in degrees. */
-		float FOV{30};
+		size_t viewport_width = 640, viewport_height = 480;
+		/** Vertical FOV in degrees. */
+		float FOV = 30.0f;
 		/** Camera elev & azimuth, in radians. */
-		float azimuth{0}, elev{0};
-		float zoom{1};
-		bool is_projective{true};  // true: projective, false: ortho
+		float azimuth = .0f, elev = .0f;
+		float eyeDistance = 1.0f;
+		/** true: projective, false: ortho */
+		bool is_projective = true;
+
+		/** Projection matrix, computed by renderNormalScene() from all the
+		 * parameters above. Used in shaders. */
+		mrpt::math::CMatrixFloat44 p_matrix;
+
+		/** Model-view matrix. Used in shaders.
+		 * The homogeneous coordinates of a rendered point comes from:
+		 *
+		 *  p = p_matrix * mv_matrix * [x y z 1.0]'
+		 *
+		 */
+		mrpt::math::CMatrixFloat44 mv_matrix;
+
+		/** Uses is_projective , vw,vh, etc. and computes p_matrix.
+		 * Replacement for obsolete: gluPerspective() and glOrtho() */
+		void computeProjectionMatrix(float zmin, float zmax);
+
+		/** Updates the current p_matrix such that it "looks at" pointing, with
+		 * up vector "up". Replacement for deprecated OpenGL gluLookAt(). */
+		void applyLookAt();
 	};
 	/** Info updated with each "render()" and used in "get3DRayForPixelCoord" */
-	mutable TLastProjectiveMatrixInfo m_lastProjMat;
+	mutable TRenderMatrices m_state;
+
+	/** Default shader program */
+	mutable std::shared_ptr<Program> m_shaders;
+
+	void loadDefaultShaders() const;
 
 	/** The list of objects that comprise the 3D scene.
 	 *  Objects are automatically deleted when calling "clear" or in the
@@ -453,13 +489,6 @@ inline COpenGLViewport::Ptr& operator<<(
  * functions or those in mrpt::opengl::gl_utils to draw stuff *in the back* of
  * the normal
  *   objects contained in the COpenGLScene.
- *
- *  After processing this event, COpenGLViewport will change the OpenGL matrix
- * mode into "GL_MODELVIEW" and load an identity matrix to continue
- *   rendering the scene objects as usual. Any change done to the GL_PROJECTION
- * will have effects, so do a glPushMatrix()/glPopMatrix() if that is not your
- * intention.
- *
  *
  *  IMPORTANTE NOTICE: Event handlers in your observer class will most likely
  * be invoked from an internal GUI thread of MRPT,

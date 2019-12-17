@@ -16,24 +16,16 @@
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-
 using namespace mrpt::math;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CCamera, CRenderizable, mrpt::opengl)
 
-/*--------------------------------------------------------------
-					CCamera
-  ---------------------------------------------------------------*/
-CCamera::CCamera()
-
-	= default;
-
 uint8_t CCamera::serializeGetVersion() const { return 1; }
 void CCamera::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// Save data:
-	out << m_pointingX << m_pointingY << m_pointingZ << m_distanceZoom
+	out << m_pointingX << m_pointingY << m_pointingZ << m_eyeDistance
 		<< m_azimuthDeg << m_elevationDeg << m_projectiveModel
 		<< m_projectiveFOVdeg;
 }
@@ -45,14 +37,14 @@ void CCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		case 1:
 		{
 			// Load data:
-			in >> m_pointingX >> m_pointingY >> m_pointingZ >> m_distanceZoom >>
+			in >> m_pointingX >> m_pointingY >> m_pointingZ >> m_eyeDistance >>
 				m_azimuthDeg >> m_elevationDeg >> m_projectiveModel >>
 				m_projectiveFOVdeg;
 		}
 		break;
 		case 0:
 		{
-			in >> m_pointingX >> m_pointingY >> m_pointingZ >> m_distanceZoom >>
+			in >> m_pointingX >> m_pointingY >> m_pointingZ >> m_eyeDistance >>
 				m_azimuthDeg >> m_elevationDeg;
 		}
 		break;

@@ -23,13 +23,19 @@ class COpenGLViewport;
 class CSetOfObjects;
 namespace gl_utils
 {
-void checkOpenGLErr_impl(const char* filename, int lineno);
+void checkOpenGLErr_impl(
+	unsigned int glErrorCode, const char* filename, int lineno);
 }
 
 /** Checks glGetError and throws an exception if an error situation is found
  */
-#define CHECK_OPENGL_ERROR() \
-	mrpt::opengl::gl_utils::checkOpenGLErr_impl(__FILE__, __LINE__);
+#define CHECK_OPENGL_ERROR()                             \
+	{                                                    \
+		auto openglErr = glGetError();                   \
+		if (openglErr != GL_NO_ERROR)                    \
+			mrpt::opengl::gl_utils::checkOpenGLErr_impl( \
+				openglErr, __FILE__, __LINE__);          \
+	}
 
 /** The base class of 3D objects that can be directly rendered through OpenGL.
  *  In this class there are a set of common properties to all 3D objects,
@@ -275,9 +281,34 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	~CRenderizable() override;
 
 	/** Implements the rendering of 3D objects in each class derived from
-	 * CRenderizable.
+	 * CRenderizable. \sa renderUpdateBuffers
 	 */
 	virtual void render() const = 0;
+
+	/** Called whenever m_outdatedBuffers is true: used to re-generate OpenGL
+	 * vertex buffers, etc. before they are sent for rendering in render() */
+	virtual void renderUpdateBuffers() const = 0;
+
+	/** Calls renderUpdateBuffers() and clear the flag that is set with
+	 * notifyChange() */
+	void updateBuffers() const
+	{
+		renderUpdateBuffers();
+		const_cast<CRenderizable&>(*this).m_outdatedBuffers = false;
+	}
+
+	/** Call to enable calling renderUpdateBuffers() before the next render()
+	 * rendering iteration. */
+	void notifyChange() const
+	{
+		const_cast<CRenderizable&>(*this).m_outdatedBuffers = true;
+	}
+
+	/** Returns whether notifyChange() has been invoked since the last call to
+	 * renderUpdateBuffers(), meaning the latter needs to be called again before
+	 * rendering.
+	 */
+	bool hasToUpdateBuffers() const { return m_outdatedBuffers; }
 
 	/** Simulation of ray-trace, given a pose. Returns true if the ray
 	 * effectively collisions with the object (returning the distance to the
@@ -328,6 +359,8 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	 * cool).  */
 	static unsigned int getNewTextureNumber();
 	static void releaseTextureName(unsigned int i);
+
+	bool m_outdatedBuffers = true;
 };
 /** A list of objects pointers, automatically managing memory free at
  * destructor, and managing copies correctly. */

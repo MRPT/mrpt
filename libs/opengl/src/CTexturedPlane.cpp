@@ -18,7 +18,6 @@
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
-
 using namespace mrpt::math;
 using namespace std;
 
@@ -35,6 +34,8 @@ CTexturedPlane::CTexturedPlane(
 }
 
 CTexturedPlane::~CTexturedPlane() = default;
+
+void CTexturedPlane::renderUpdateBuffers() const { MRPT_TODO("Implement me!"); }
 
 void CTexturedPlane::render_texturedobj() const
 {
@@ -126,7 +127,7 @@ void CTexturedPlane::serializeFrom(
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 bool CTexturedPlane::traceRay(const mrpt::poses::CPose3D& o, double& dist) const

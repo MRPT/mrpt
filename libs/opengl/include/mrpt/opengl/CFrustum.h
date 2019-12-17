@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/math/TPoint3D.h>
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizable.h>
 
 namespace mrpt::opengl
 {
@@ -48,7 +48,7 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_opengl_grp
  */
-class CFrustum : public CRenderizableDisplayList
+class CFrustum : public CRenderizable
 {
 	DEFINE_SERIALIZABLE(CFrustum, mrpt::opengl)
 
@@ -67,7 +67,7 @@ class CFrustum : public CRenderizableDisplayList
 	inline void setLineWidth(float width)
 	{
 		m_lineWidth = width;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	inline float getLineWidth() const { return m_lineWidth; }
 	/** Changes the color of the planes; to change color of lines, use
@@ -75,7 +75,7 @@ class CFrustum : public CRenderizableDisplayList
 	inline void setPlaneColor(const mrpt::img::TColor& c)
 	{
 		m_planes_color = c;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	inline const mrpt::img::TColor& getPlaneColor() const
 	{
@@ -110,14 +110,10 @@ class CFrustum : public CRenderizableDisplayList
 	float getHorzFOVRight() const { return mrpt::RAD2DEG(m_fov_horz_right); }
 	float getVertFOVDown() const { return mrpt::RAD2DEG(m_fov_vert_down); }
 	float getVertFOVUp() const { return mrpt::RAD2DEG(m_fov_vert_up); }
-	/** Render \sa mrpt::opengl::CRenderizable */
-	void render_dl() const override;
 
-	/** Ray tracing. \sa mrpt::opengl::CRenderizable */
+	void render() const override;
+	void renderUpdateBuffers() const override;
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
-
-	/** Evaluates the bounding box of this object (including possible children)
-	 * in the coordinate frame of the object parent. */
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;

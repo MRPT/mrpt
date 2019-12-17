@@ -16,10 +16,9 @@
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CGridPlaneXZ, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CGridPlaneXZ, CRenderizable, mrpt::opengl)
 
 /** Constructor */
 CGridPlaneXZ::CGridPlaneXZ(
@@ -36,25 +35,23 @@ CGridPlaneXZ::CGridPlaneXZ(
 {
 }
 
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
-void CGridPlaneXZ::render_dl() const
+void CGridPlaneXZ::renderUpdateBuffers() const
+{
+	//
+	MRPT_TODO("Implement me!");
+}
+
+void CGridPlaneXZ::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	ASSERT_(m_frequency >= 0);
 
 	// Enable antialiasing:
-	if (m_antiAliasing)
-	{
-		glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glEnable(GL_BLEND);
-		glEnable(GL_LINE_SMOOTH);
-	}
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
+	glEnable(GL_LINE_SMOOTH);
 	glLineWidth(m_lineWidth);
 
-	glDisable(GL_LIGHTING);  // Disable lights when drawing lines
 	glBegin(GL_LINES);
 
 	ASSERT_(m_frequency >= 0);
@@ -72,14 +69,6 @@ void CGridPlaneXZ::render_dl() const
 	}
 
 	glEnd();
-	glEnable(GL_LIGHTING);
-
-	// End antialiasing:
-	if (m_antiAliasing)
-	{
-		glPopAttrib();
-		CHECK_OPENGL_ERROR();
-	}
 #endif
 }
 
@@ -117,7 +106,7 @@ void CGridPlaneXZ::serializeFrom(
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 void CGridPlaneXZ::getBoundingBox(

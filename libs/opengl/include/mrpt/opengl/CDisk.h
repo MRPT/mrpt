@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/math/geometry.h>
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/poses/CPose3D.h>
 
 namespace mrpt::opengl
@@ -27,7 +27,7 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_opengl_grp
  */
-class CDisk : public CRenderizableDisplayList
+class CDisk : public CRenderizable
 {
 	DEFINE_SERIALIZABLE(CDisk, mrpt::opengl)
 
@@ -40,7 +40,7 @@ class CDisk : public CRenderizableDisplayList
 	{
 		m_radiusIn = inRadius;
 		m_radiusOut = outRadius;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	float getInRadius() const { return m_radiusIn; }
@@ -49,18 +49,17 @@ class CDisk : public CRenderizableDisplayList
 	void setSlicesCount(uint32_t N)
 	{
 		m_nSlices = N;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/** Default=4 */
 	void setLoopsCount(uint32_t N)
 	{
 		m_nLoops = N;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
-	/** Render
-	 */
-	void render_dl() const override;
+	void render() const override;
+	void renderUpdateBuffers() const override;
 
 	/** Evaluates the bounding box of this object (including possible children)
 	 * in the coordinate frame of the object parent. */

@@ -11,7 +11,7 @@
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/matrix_serialization.h>  // for >> ops
 //#include <mrpt/math/types_math.h>
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/serialization/CArchive.h>  // for >> ops
 
 namespace mrpt
@@ -69,7 +69,7 @@ void generalizedEllipsoidPoints<3>(
  * \ingroup mrpt_opengl_grp
  */
 template <int DIM>
-class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
+class CGeneralizedEllipsoidTemplate : public CRenderizable
 {
    public:
 	/** The type of fixed-size covariance matrices for this representation */
@@ -93,12 +93,13 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 		m_cov = new_cov;
 		m_mean = new_mean;
 		m_needToRecomputeEigenVals = true;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 		MRPT_END
 	}
 
 	/** Gets the current uncertainty covariance of parameter space */
 	const cov_matrix_t& getCovMatrix() const { return m_cov; }
+
 	/** Changes the scale of the "sigmas" for drawing the ellipse/ellipsoid
 	 *(default=3, ~97 or ~98% CI); the exact mathematical meaning is:
 	 *   This value of "quantiles" \a q should be set to the square root of the
@@ -129,7 +130,7 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 	void setQuantiles(float q)
 	{
 		m_quantiles = q;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/** Refer to documentation of \a setQuantiles() */
 	float getQuantiles() const { return m_quantiles; }
@@ -137,7 +138,7 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 	void setLineWidth(float w)
 	{
 		m_lineWidth = w;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	float getLineWidth() const { return m_lineWidth; }
 	/** Set the number of segments of the surface/curve (higher means with
@@ -145,15 +146,15 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 	void setNumberOfSegments(const uint32_t numSegments)
 	{
 		m_numSegments = numSegments;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	uint32_t getNumberOfSegments() { return m_numSegments; }
-	/** Render
-	 *	If one of the eigen value of the covariance matrix of the ellipsoid is
-	 *null, ellipsoid will not
-	 * be rendered to ensure stability in the rendering process.
+
+	/** Render. If one of the eigen value of the covariance matrix of the
+	 * ellipsoid is null, ellipsoid will not be rendered to ensure stability in
+	 * the rendering process.
 	 */
-	void render_dl() const override
+	void renderUpdateBuffers() const override
 	{
 		MRPT_START
 		// 1) Update eigenvectors/values:
@@ -190,8 +191,8 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 				Uscaled, m_mean, params_pts, m_numSegments, m_numSegments);
 
 			// 3) Transform into 2D/3D render space:
-			std::vector<array_point_t> render_pts;
-			this->transformFromParameterSpace(params_pts, render_pts);
+
+			this->transformFromParameterSpace(params_pts, m_render_pts);
 
 			// 3.5) Save bounding box:
 			m_bb_min = mrpt::math::TPoint3D(
@@ -200,22 +201,24 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 			m_bb_max = mrpt::math::TPoint3D(
 				-std::numeric_limits<double>::max(),
 				-std::numeric_limits<double>::max(), 0);
-			for (size_t i = 0; i < render_pts.size(); i++)
+			for (size_t i = 0; i < m_render_pts.size(); i++)
 				for (int k = 0; k < DIM; k++)
 				{
-					mrpt::keep_min(m_bb_min[k], render_pts[i][k]);
-					mrpt::keep_max(m_bb_max[k], render_pts[i][k]);
+					mrpt::keep_min(m_bb_min[k], m_render_pts[i][k]);
+					mrpt::keep_max(m_bb_max[k], m_render_pts[i][k]);
 				}
 			// Convert to coordinates of my parent:
 			m_pose.composePoint(m_bb_min, m_bb_min);
 			m_pose.composePoint(m_bb_max, m_bb_max);
-
-			// 4) Render them:
-			mrpt::opengl::detail::renderGeneralizedEllipsoidTemplate<DIM>(
-				render_pts, m_lineWidth, m_numSegments, m_numSegments);
 		}
-
 		MRPT_END
+	}
+
+	// Render precomputed points in m_render_pts:
+	void render() const override
+	{
+		mrpt::opengl::detail::renderGeneralizedEllipsoidTemplate<DIM>(
+			m_render_pts, m_lineWidth, m_numSegments, m_numSegments);
 	}
 
 	/** Evaluates the bounding box of this object (including possible children)
@@ -260,6 +263,7 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 
 	/** Cholesky U triangular matrix cache. */
 	mutable cov_matrix_t m_U;
+	mutable std::vector<array_point_t> m_render_pts;
 
 	void thisclass_writeToStream(mrpt::serialization::CArchive& out) const
 	{
@@ -285,7 +289,7 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 			default:
 				MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 		};
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	CGeneralizedEllipsoidTemplate() : m_bb_min(0, 0, 0), m_bb_max(0, 0, 0) {}

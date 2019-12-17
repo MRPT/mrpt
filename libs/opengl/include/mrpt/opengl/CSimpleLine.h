@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizable.h>
 
 namespace mrpt::opengl
 {
@@ -16,7 +16,7 @@ namespace mrpt::opengl
  *  \sa opengl::COpenGLScene
  * \ingroup mrpt_opengl_grp
  */
-class CSimpleLine : public CRenderizableDisplayList
+class CSimpleLine : public CRenderizable
 {
 	DEFINE_SERIALIZABLE(CSimpleLine, mrpt::opengl)
 
@@ -30,13 +30,13 @@ class CSimpleLine : public CRenderizableDisplayList
 	void setLineWidth(float w)
 	{
 		m_lineWidth = w;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	float getLineWidth() const { return m_lineWidth; }
 	void enableAntiAliasing(bool enable = true)
 	{
 		m_antiAliasing = enable;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	bool isAntiAliasingEnabled() const { return m_antiAliasing; }
 	void setLineCoords(
@@ -48,7 +48,7 @@ class CSimpleLine : public CRenderizableDisplayList
 		m_x1 = x1;
 		m_y1 = y1;
 		m_z1 = z1;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	void getLineCoords(
@@ -62,12 +62,8 @@ class CSimpleLine : public CRenderizableDisplayList
 		z1 = m_z1;
 	}
 
-	/** Render
-	 */
-	void render_dl() const override;
-
-	/** Evaluates the bounding box of this object (including possible children)
-	 * in the coordinate frame of the object parent. */
+	void render() const override;
+	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;

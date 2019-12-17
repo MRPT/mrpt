@@ -10,7 +10,7 @@
 #pragma once
 
 #include <mrpt/math/CMatrixF.h>
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizable.h>
 
 namespace mrpt::opengl
 {
@@ -29,7 +29,7 @@ namespace mrpt::opengl
  * \ingroup mrpt_opengl_grp
  */
 
-class CVectorField2D : public CRenderizableDisplayList
+class CVectorField2D : public CRenderizable
 {
 	DEFINE_SERIALIZABLE(CVectorField2D, mrpt::opengl)
    protected:
@@ -58,7 +58,7 @@ class CVectorField2D : public CRenderizableDisplayList
 	{
 		xcomp.resize(0, 0);
 		ycomp.resize(0, 0);
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/**
@@ -68,7 +68,7 @@ class CVectorField2D : public CRenderizableDisplayList
 		const float R, const float G, const float B, const float A = 1)
 	{
 		m_point_color = mrpt::img::TColor(R * 255, G * 255, B * 255, A * 255);
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/**
@@ -86,7 +86,7 @@ class CVectorField2D : public CRenderizableDisplayList
 		const float R, const float G, const float B, const float A = 1)
 	{
 		m_field_color = mrpt::img::TColor(R * 255, G * 255, B * 255, A * 255);
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/**
@@ -103,7 +103,7 @@ class CVectorField2D : public CRenderizableDisplayList
 	inline void setPointSize(const float p)
 	{
 		m_pointSize = p;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/**
@@ -116,7 +116,7 @@ class CVectorField2D : public CRenderizableDisplayList
 	inline void setLineWidth(const float w)
 	{
 		m_LineWidth = w;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/**
@@ -137,7 +137,7 @@ class CVectorField2D : public CRenderizableDisplayList
 		xMax = center_x + 0.5 * cellsize_x * (xcomp.cols() - 1);
 		yMin = center_y - 0.5 * cellsize_y * (xcomp.rows() - 1);
 		yMax = center_y + 0.5 * cellsize_y * (xcomp.rows() - 1);
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/**
@@ -151,7 +151,7 @@ class CVectorField2D : public CRenderizableDisplayList
 		xMax = xmax;
 		yMin = ymin;
 		yMax = ymax;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/**
@@ -206,7 +206,7 @@ class CVectorField2D : public CRenderizableDisplayList
 			(Matrix_x.cols() == Matrix_y.cols()));
 		xcomp = Matrix_x;
 		ycomp = Matrix_y;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/**
@@ -221,7 +221,7 @@ class CVectorField2D : public CRenderizableDisplayList
 	{
 		xcomp.resize(rows, cols);
 		ycomp.resize(rows, cols);
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/** Returns the total count of rows used to represent the vector field. */
@@ -229,12 +229,9 @@ class CVectorField2D : public CRenderizableDisplayList
 	/** Returns the total count of columns used to represent the vector field.
 	 */
 	inline size_t rows() const { return xcomp.rows(); }
-	/** Render
-	 */
-	void render_dl() const override;
 
-	/** Evaluates the bounding box of this object (including possible children)
-	 * in the coordinate frame of the object parent. */
+	void render() const override;
+	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
@@ -242,7 +239,7 @@ class CVectorField2D : public CRenderizableDisplayList
 	void enableAntiAliasing(bool enable = true)
 	{
 		m_antiAliasing = enable;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	bool isAntiAliasingEnabled() const { return m_antiAliasing; }
 	/** Constructor */

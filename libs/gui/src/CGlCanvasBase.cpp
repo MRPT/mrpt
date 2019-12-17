@@ -259,18 +259,17 @@ double CGlCanvasBase::renderCanvas(int width, int height)
 
 	try
 	{
+		CHECK_OPENGL_ERROR();
+
 		// Call PreRender user code:
 		preRender();
-
-		glPushAttrib(GL_ALL_ATTRIB_BITS);
+		CHECK_OPENGL_ERROR();
 
 		// Set static configs:
 		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_ALPHA_TEST);
-		glEnable(GL_TEXTURE_2D);
+		CHECK_OPENGL_ERROR();
 
-		// PART 1a: Set the viewport
-		// --------------------------------------
+		// Set the viewport
 		resizeViewport((GLsizei)width, (GLsizei)height);
 
 		// Set the background color:
@@ -293,15 +292,9 @@ double CGlCanvasBase::renderCanvas(int width, int height)
 				updateCameraParams(cam);
 			}
 
-			// PART 2: Set the MODELVIEW matrix
-			// --------------------------------------
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-
 			tictac.Tic();
 
-			// PART 3: Draw primitives:
-			// --------------------------------------
+			// Draw primitives:
 			m_openGLScene->render();
 
 		}  // end if "m_openGLScene!=nullptr"
@@ -313,22 +306,14 @@ double CGlCanvasBase::renderCanvas(int width, int height)
 		swapBuffers();
 
 		At = tictac.Tac();
-
-		glPopAttrib();
 	}
 	catch (const std::exception& e)
 	{
-		glPopAttrib();
 		const std::string err_msg =
-			std::string("[CWxGLCanvasBase::Render] Exception!: ") +
-			std::string(e.what());
+			std::string("[CGLCanvasBase::Render] Exception:\n") +
+			mrpt::exception_to_str(e);
 		std::cerr << err_msg;
 		renderError(err_msg);
-	}
-	catch (...)
-	{
-		glPopAttrib();
-		std::cerr << "Runtime error!" << std::endl;
 	}
 
 	return At;

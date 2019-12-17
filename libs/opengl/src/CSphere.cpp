@@ -17,13 +17,18 @@
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
-
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CSphere, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CSphere, CRenderizable, mrpt::opengl)
 
-void CSphere::render_dl() const
+void CSphere::renderUpdateBuffers() const
+{
+	//
+	MRPT_TODO("Implement me!");
+}
+
+void CSphere::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	if (m_color.A != 255)
@@ -101,7 +106,7 @@ void CSphere::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 bool CSphere::traceRay(const mrpt::poses::CPose3D& o, double& dist) const

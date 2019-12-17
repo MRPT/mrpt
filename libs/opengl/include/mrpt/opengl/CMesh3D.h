@@ -10,7 +10,7 @@
 #pragma once
 
 #include <mrpt/img/color_maps.h>
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizable.h>
 #include <array>
 
 namespace mrpt::opengl
@@ -29,7 +29,7 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_opengl_grp
  */
-class CMesh3D : public CRenderizableDisplayList
+class CMesh3D : public CRenderizable
 {
 	DEFINE_SERIALIZABLE(CMesh3D, mrpt::opengl)
 
@@ -78,32 +78,32 @@ class CMesh3D : public CRenderizableDisplayList
 	void enableTransparency(bool v)
 	{
 		m_enableTransparency = v;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	void enableAntiAliasing(bool v)
 	{
 		m_antiAliasing = v;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	void enableShowEdges(bool v)
 	{
 		m_showEdges = v;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	void enableShowFaces(bool v)
 	{
 		m_showFaces = v;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	void enableShowVertices(bool v)
 	{
 		m_showVertices = v;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	void enableFaceNormals(bool v)
 	{
 		m_computeNormals = v;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/** Load a 3D mesh. The arguments indicate:
@@ -144,13 +144,9 @@ class CMesh3D : public CRenderizableDisplayList
 	void setVertColor(float r, float g, float b, float a = 1.f);
 	void setLineWidth(float lw) { m_lineWidth = lw; }
 	void setPointSize(float ps) { m_pointSize = ps; }
-	/** Render
-	 */
-	void render_dl() const override;
 
-	/** Evaluates the bounding box of this object (including possible children)
-	 * in the coordinate frame of the object parent.
-	 */
+	void render() const override;
+	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;

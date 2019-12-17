@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizable.h>
 
 namespace mrpt::opengl
 {
@@ -39,7 +39,7 @@ namespace mrpt::opengl
  * http://www.edwardrosten.com/cvd/ )
  * \ingroup mrpt_opengl_grp
  */
-class CText3D : public CRenderizableDisplayList
+class CText3D : public CRenderizable
 {
 	DEFINE_SERIALIZABLE(CText3D, mrpt::opengl)
    protected:
@@ -54,7 +54,7 @@ class CText3D : public CRenderizableDisplayList
 	inline void setString(const std::string& s)
 	{
 		m_str = s;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/** Returns the currently text associated to this object */
 	inline const std::string& getString() const { return m_str; }
@@ -62,7 +62,7 @@ class CText3D : public CRenderizableDisplayList
 	inline void setFont(const std::string& font)
 	{
 		m_fontName = font;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/** Returns the text font  */
 	inline const std::string& getFont() const { return m_fontName; }
@@ -70,27 +70,25 @@ class CText3D : public CRenderizableDisplayList
 	void setTextStyle(const mrpt::opengl::TOpenGLFontStyle text_style)
 	{
 		m_text_style = text_style;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/** Gets the current drawing style */
 	mrpt::opengl::TOpenGLFontStyle getTextStyle() const { return m_text_style; }
 	void setTextSpacing(const double text_spacing)
 	{
 		m_text_spacing = text_spacing;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	double setTextSpacing() const { return m_text_spacing; }
 	void setTextKerning(const double text_kerning)
 	{
 		m_text_kerning = text_kerning;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	double setTextKerning() const { return m_text_kerning; }
-	/** Render */
-	void render_dl() const override;
 
-	/** Evaluates the bounding box of this object (including possible children)
-	 * in the coordinate frame of the object parent. */
+	void render() const override;
+	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;

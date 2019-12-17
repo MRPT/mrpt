@@ -10,7 +10,7 @@
 #pragma once
 
 #include <mrpt/math/CMatrixF.h>
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizable.h>
 
 namespace mrpt::opengl
 {
@@ -34,7 +34,7 @@ namespace mrpt::opengl
  * \ingroup mrpt_opengl_grp
  */
 
-class CVectorField3D : public CRenderizableDisplayList
+class CVectorField3D : public CRenderizable
 {
 	DEFINE_SERIALIZABLE(CVectorField3D, mrpt::opengl)
    protected:
@@ -88,7 +88,7 @@ class CVectorField3D : public CRenderizableDisplayList
 		y_p.resize(0, 0);
 		z_p.resize(0, 0);
 
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/**
@@ -98,7 +98,7 @@ class CVectorField3D : public CRenderizableDisplayList
 		const float R, const float G, const float B, const float A = 1)
 	{
 		m_point_color = mrpt::img::TColor(R * 255, G * 255, B * 255, A * 255);
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/**
@@ -116,7 +116,7 @@ class CVectorField3D : public CRenderizableDisplayList
 		const float R, const float G, const float B, const float A = 1)
 	{
 		m_field_color = mrpt::img::TColor(R * 255, G * 255, B * 255, A * 255);
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/**
@@ -141,7 +141,7 @@ class CVectorField3D : public CRenderizableDisplayList
 			mrpt::img::TColor(Rmin * 255, Gmin * 255, Bmin * 255, Amin * 255);
 		m_maxspeed_color =
 			mrpt::img::TColor(Rmax * 255, Gmax * 255, Bmax * 255, Amax * 255);
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/**
@@ -158,7 +158,7 @@ class CVectorField3D : public CRenderizableDisplayList
 	inline void setPointSize(const float p)
 	{
 		m_pointSize = p;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/**
@@ -171,7 +171,7 @@ class CVectorField3D : public CRenderizableDisplayList
 	inline void setLineWidth(const float w)
 	{
 		m_LineWidth = w;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/**
@@ -185,7 +185,7 @@ class CVectorField3D : public CRenderizableDisplayList
 	inline void setMaxSpeedForColor(const float s)
 	{
 		m_maxspeed = s;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/**
@@ -273,7 +273,7 @@ class CVectorField3D : public CRenderizableDisplayList
 		x_vf = Matrix_x;
 		y_vf = Matrix_y;
 		z_vf = Matrix_z;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	template <class MATRIX>
@@ -288,7 +288,7 @@ class CVectorField3D : public CRenderizableDisplayList
 		x_vf = Matrix_x;
 		y_vf = Matrix_y;
 		z_vf = Matrix_z;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/**
@@ -308,7 +308,7 @@ class CVectorField3D : public CRenderizableDisplayList
 		x_p = Matrix_x;
 		y_p = Matrix_y;
 		z_p = Matrix_z;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	template <class MATRIX>
@@ -324,7 +324,7 @@ class CVectorField3D : public CRenderizableDisplayList
 		x_p = Matrix_x;
 		y_p = Matrix_y;
 		z_p = Matrix_z;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/**
@@ -338,7 +338,7 @@ class CVectorField3D : public CRenderizableDisplayList
 		x_p.resize(rows, cols);
 		y_p.resize(rows, cols);
 		z_p.resize(rows, cols);
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/** Returns the total count of rows used to represent the vector field. */
@@ -346,12 +346,9 @@ class CVectorField3D : public CRenderizableDisplayList
 	/** Returns the total count of columns used to represent the vector field.
 	 */
 	inline size_t rows() const { return x_vf.rows(); }
-	/** Render
-	 */
-	void render_dl() const override;
 
-	/** Evaluates the bounding box of this object (including possible children)
-	 * in the coordinate frame of the object parent. */
+	void render() const override;
+	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
@@ -359,17 +356,17 @@ class CVectorField3D : public CRenderizableDisplayList
 	void enableAntiAliasing(bool enable = true)
 	{
 		m_antiAliasing = enable;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	void enableColorFromModule(bool enable = true)
 	{
 		m_colorFromModule = enable;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	void enableShowPoints(bool enable = true)
 	{
 		m_showPoints = enable;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	bool isAntiAliasingEnabled() const { return m_antiAliasing; }
 	bool isColorFromModuleEnabled() const { return m_colorFromModule; }

@@ -38,7 +38,7 @@ using namespace mrpt::math;
 using namespace std;
 using mrpt::img::CImage;
 
-IMPLEMENTS_SERIALIZABLE(CAssimpModel, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CAssimpModel, CRenderizable, mrpt::opengl)
 
 #if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
 void recursive_render(
@@ -60,10 +60,12 @@ void load_textures(
 	const std::string& modelPath);
 #endif  // MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
 
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
-void CAssimpModel::render_dl() const
+void CAssimpModel::renderUpdateBuffers() const
+{
+	//
+	MRPT_TODO("Implement me!");
+}
+void CAssimpModel::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
 	MRPT_START
@@ -72,7 +74,6 @@ void CAssimpModel::render_dl() const
 
 	auto* scene = (aiScene*)m_assimp_scene->scene;
 
-	glEnable(GL_TEXTURE_2D);
 	glDisable(GL_CULL_FACE);
 	// glFrontFace(GL_CW);
 
@@ -130,7 +131,7 @@ void CAssimpModel::serializeFrom(
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 CAssimpModel::CAssimpModel() : m_bbox_min(0, 0, 0), m_bbox_max(0, 0, 0)
@@ -144,7 +145,7 @@ CAssimpModel::~CAssimpModel() { clear(); }
   ---------------------------------------------------------------*/
 void CAssimpModel::clear()
 {
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 	m_assimp_scene = std::make_shared<TImplAssimp>();
 	m_modelPath.clear();
 	m_textures_loaded = false;
@@ -163,7 +164,7 @@ void CAssimpModel::loadScene(const std::string& filepath)
 {
 #if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
 	clear();
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 
 	// we are taking one of the postprocessing presets to avoid
 	// spelling out 20+ single postprocessing flags here.
@@ -194,7 +195,7 @@ void CAssimpModel::evaluateAnimation(double time_anim)
 #if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
 // if (m_assimp_scene->file)
 //{
-//	CRenderizableDisplayList::notifyChange();
+//	CRenderizable::notifyChange();
 //	lib3ds_file_eval( (Lib3dsFile*) m_assimp_scene->file, time_anim );
 //}
 #endif
@@ -425,16 +426,6 @@ void recursive_render(
 
 		apply_material(
 			sc->mMaterials[mesh->mMaterialIndex], textureIds, textureIdMap);
-
-		if (mesh->mNormals == nullptr)
-			glDisable(GL_LIGHTING);
-		else
-			glEnable(GL_LIGHTING);
-
-		if (mesh->mColors[0] != nullptr)
-			glEnable(GL_COLOR_MATERIAL);
-		else
-			glDisable(GL_COLOR_MATERIAL);
 
 		for (t = 0; t < mesh->mNumFaces; ++t)
 		{

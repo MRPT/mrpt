@@ -19,10 +19,9 @@
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
-
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CAxis, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CAxis, CRenderizable, mrpt::opengl)
 
 CAxis::CAxis(
 	float xmin, float ymin, float zmin, float xmax, float ymax, float zmax,
@@ -56,10 +55,16 @@ CAxis::CAxis(
 void CAxis::setTickMarksLength(float len)
 {
 	m_markLen = len;
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
-void CAxis::render_dl() const
+void CAxis::renderUpdateBuffers() const
+{
+	//
+	MRPT_TODO("Implement me!");
+}
+
+void CAxis::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	MRPT_START
@@ -155,7 +160,6 @@ void CAxis::render_dl() const
 		glPopMatrix();
 	}
 
-	glEnable(GL_LIGHTING);
 	MRPT_END
 /*******************************************************/
 #endif
@@ -207,7 +211,7 @@ void CAxis::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 void CAxis::getBoundingBox(
@@ -230,32 +234,32 @@ void CAxis::setFrequency(float f)
 {
 	ASSERT_(f > 0);
 	m_frequency = f;
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 float CAxis::getFrequency() const { return m_frequency; }
 void CAxis::setLineWidth(float w)
 {
 	m_lineWidth = w;
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 float CAxis::getLineWidth() const { return m_lineWidth; }
 void CAxis::enableTickMarks(bool v)
 {
 	m_marks.fill(v);
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 void CAxis::enableTickMarks(bool show_x, bool show_y, bool show_z)
 {
 	m_marks[0] = show_x;
 	m_marks[1] = show_y;
 	m_marks[2] = show_z;
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 void CAxis::setTextScale(float f)
 {
 	ASSERT_(f > 0);
 	m_textScale = f;
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 float CAxis::getTextScale() const { return m_textScale; }
 void CAxis::setAxisLimits(
@@ -267,7 +271,7 @@ void CAxis::setAxisLimits(
 	m_xmax = xmax;
 	m_ymax = ymax;
 	m_zmax = zmax;
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 void CAxis::setTextLabelOrientation(
 	int axis, float yaw_deg, float pitch_deg, float roll_deg)

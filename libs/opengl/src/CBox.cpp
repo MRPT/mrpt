@@ -18,11 +18,10 @@
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CBox, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CBox, CRenderizable, mrpt::opengl)
 
 CBox::CBox()
 	: m_corner_min(-1, -1, -1),
@@ -43,10 +42,13 @@ CBox::CBox(
 	setBoxCorners(corner1, corner2);
 }
 
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
-void CBox::render_dl() const
+void CBox::renderUpdateBuffers() const
+{
+	//
+	MRPT_TODO("Implement me!");
+}
+
+void CBox::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	if (m_color.A != 255)
@@ -134,8 +136,6 @@ void CBox::render_dl() const
 
 	if (m_wireframe || m_draw_border)
 	{
-		glDisable(GL_LIGHTING);
-
 		if (m_draw_border)
 		{
 			glEnable(GL_BLEND);
@@ -191,8 +191,6 @@ void CBox::render_dl() const
 		glVertex3d(b.x, b.y, b.z);
 		glVertex3d(b.x, a.y, b.z);
 		glEnd();
-
-		glEnable(GL_LIGHTING);
 	}
 
 	glDisable(GL_BLEND);
@@ -233,13 +231,13 @@ void CBox::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 void CBox::setBoxCorners(
 	const mrpt::math::TPoint3D& corner1, const mrpt::math::TPoint3D& corner2)
 {
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 
 	// Order the coordinates so we always have the min/max in their right
 	// position:

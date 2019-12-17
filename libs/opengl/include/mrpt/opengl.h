@@ -14,7 +14,7 @@
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/COpenGLViewport.h>
 #include <mrpt/opengl/CRenderizable.h>
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizable.h>
 
 #include <mrpt/opengl/CArrow.h>
 #include <mrpt/opengl/CAssimpModel.h>

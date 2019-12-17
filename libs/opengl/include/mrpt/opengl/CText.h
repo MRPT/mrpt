@@ -52,8 +52,9 @@ class CText : public CRenderizable
 		m_fontHeight = height;
 	}
 	std::string getFont() const { return m_fontName; }
-	/** Render */
+
 	void render() const override;
+	void renderUpdateBuffers() const override;
 
 	/** Evaluates the bounding box of this object (including possible children)
 	 * in the coordinate frame of the object parent. */

@@ -17,16 +17,18 @@
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CFrustum, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CFrustum, CRenderizable, mrpt::opengl)
 
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
-void CFrustum::render_dl() const
+void CFrustum::renderUpdateBuffers() const
+{
+	//
+	MRPT_TODO("Implement me!");
+}
+
+void CFrustum::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	if (m_color.A != 255 || (m_draw_planes && m_planes_color.A != 255))
@@ -59,7 +61,7 @@ void CFrustum::render_dl() const
 	// Render lines:
 	if (m_draw_lines)
 	{
-		glDisable(GL_LIGHTING);  // Disable lights when drawing lines
+		// glDisable(GL_LIGHTING);  // Disable lights when drawing lines
 
 		const int draw_path[] = {0, 1, 3, 2, 0, 4, 6, 2,
 								 3, 7, 6, 4, 5, 7, 5, 1};
@@ -73,8 +75,6 @@ void CFrustum::render_dl() const
 		for (int i : draw_path) glVertex3fv(&pts[i].x);
 
 		glEnd();
-
-		glEnable(GL_LIGHTING);  // Disable lights when drawing lines
 	}
 
 	if (m_draw_planes)
@@ -161,7 +161,7 @@ void CFrustum::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 bool CFrustum::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
@@ -177,7 +177,7 @@ void CFrustum::setNearFarPlanes(
 {
 	m_min_distance = near_distance;
 	m_max_distance = far_distance;
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 void CFrustum::setHorzFOV(const float fov_horz_degrees)
 {
@@ -186,7 +186,7 @@ void CFrustum::setHorzFOV(const float fov_horz_degrees)
 	keep_max(m_fov_horz_left, 0);
 	keep_min(m_fov_horz_right, DEG2RAD(89.9f));
 	keep_max(m_fov_horz_right, 0);
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 void CFrustum::setVertFOV(const float fov_vert_degrees)
 {
@@ -195,7 +195,7 @@ void CFrustum::setVertFOV(const float fov_vert_degrees)
 	keep_max(m_fov_vert_down, 0);
 	keep_min(m_fov_vert_up, DEG2RAD(89.9f));
 	keep_max(m_fov_vert_up, 0);
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 void CFrustum::setHorzFOVAsymmetric(
 	const float fov_horz_left_degrees, const float fov_horz_right_degrees)
@@ -206,7 +206,7 @@ void CFrustum::setHorzFOVAsymmetric(
 	keep_max(m_fov_horz_left, 0);
 	keep_min(m_fov_horz_right, DEG2RAD(89.9f));
 	keep_max(m_fov_horz_right, 0);
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 void CFrustum::setVertFOVAsymmetric(
 	const float fov_vert_down_degrees, const float fov_vert_up_degrees)
@@ -217,7 +217,7 @@ void CFrustum::setVertFOVAsymmetric(
 	keep_max(m_fov_vert_down, 0);
 	keep_min(m_fov_vert_up, DEG2RAD(89.9f));
 	keep_max(m_fov_vert_up, 0);
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 void CFrustum::getBoundingBox(

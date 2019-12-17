@@ -30,7 +30,7 @@ using namespace mrpt::poses;
 using namespace std;
 using mrpt::serialization::CArchive;
 
-IMPLEMENTS_SERIALIZABLE(CPolyhedron, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CPolyhedron, CRenderizable, mrpt::opengl)
 
 // Auxiliary data and code
 template <class T>
@@ -1042,11 +1042,13 @@ CPolyhedron::Ptr CPolyhedron::CreateJohnsonSolidWithConstantBase(
 	return CreateNoCheck(verts, faces);
 }
 
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
+void CPolyhedron::renderUpdateBuffers() const
+{
+	//
+	MRPT_TODO("Implement me!");
+}
 
-void CPolyhedron::render_dl() const
+void CPolyhedron::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	if (mWireframe)
@@ -2015,7 +2017,7 @@ void CPolyhedron::serializeFrom(
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 void CPolyhedron::getBoundingBox(

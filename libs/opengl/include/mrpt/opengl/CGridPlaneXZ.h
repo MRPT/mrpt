@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizable.h>
 
 namespace mrpt::opengl
 {
@@ -26,7 +26,7 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_opengl_grp
  */
-class CGridPlaneXZ : public CRenderizableDisplayList
+class CGridPlaneXZ : public CRenderizable
 {
 	DEFINE_SERIALIZABLE(CGridPlaneXZ, mrpt::opengl)
 
@@ -42,13 +42,13 @@ class CGridPlaneXZ : public CRenderizableDisplayList
 	void setLineWidth(float w)
 	{
 		m_lineWidth = w;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	float getLineWidth() const { return m_lineWidth; }
 	void enableAntiAliasing(bool enable = true)
 	{
 		m_antiAliasing = enable;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	bool isAntiAliasingEnabled() const { return m_antiAliasing; }
 	void setPlaneLimits(float xmin, float xmax, float zmin, float zmax)
@@ -57,7 +57,7 @@ class CGridPlaneXZ : public CRenderizableDisplayList
 		m_xMax = xmax;
 		m_zMin = zmin;
 		m_zMax = zmax;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	void getPlaneLimits(
@@ -72,22 +72,19 @@ class CGridPlaneXZ : public CRenderizableDisplayList
 	void setPlaneYcoord(float y)
 	{
 		m_plane_y = y;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	float getPlaneYcoord() const { return m_plane_y; }
 	void setGridFrequency(float freq)
 	{
 		ASSERT_(freq > 0);
 		m_frequency = freq;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	float getGridFrequency() const { return m_frequency; }
-	/** Render
-	 */
-	void render_dl() const override;
 
-	/** Evaluates the bounding box of this object (including possible children)
-	 * in the coordinate frame of the object parent. */
+	void render() const override;
+	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;

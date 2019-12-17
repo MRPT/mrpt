@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizable.h>
 
 namespace mrpt::opengl
 {
@@ -26,7 +26,7 @@ class CCylinder;
  *
  * \ingroup mrpt_opengl_grp
  */
-class CCylinder : public CRenderizableDisplayList
+class CCylinder : public CRenderizable
 {
 	DEFINE_SERIALIZABLE(CCylinder, mrpt::opengl)
 	DEFINE_SCHEMA_SERIALIZABLE()
@@ -54,14 +54,9 @@ class CCylinder : public CRenderizableDisplayList
 	bool mHasTopBase{true}, mHasBottomBase{true};
 
    public:
-	/** Render
-	 * \sa mrpt::opengl::CRenderizable
-	 */
-	void render_dl() const override;
-	/**
-	 * Ray tracing.
-	 * \sa mrpt::opengl::CRenderizable
-	 */
+	void render() const override;
+	void renderUpdateBuffers() const override;
+
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 	/**
 	 * Configuration of the cylinder's bases display.
@@ -70,7 +65,7 @@ class CCylinder : public CRenderizableDisplayList
 	{
 		mHasTopBase = top;
 		mHasBottomBase = bottom;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Check whether top base is displayed.
@@ -90,7 +85,7 @@ class CCylinder : public CRenderizableDisplayList
 	inline void setRadius(float radius)
 	{
 		mBaseRadius = mTopRadius = radius;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Sets both radii independently.
@@ -100,7 +95,7 @@ class CCylinder : public CRenderizableDisplayList
 	{
 		mBaseRadius = bottom;
 		mTopRadius = top;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Chenges cylinder's height.
@@ -108,7 +103,7 @@ class CCylinder : public CRenderizableDisplayList
 	inline void setHeight(float height)
 	{
 		mHeight = height;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Gets the bottom radius.
@@ -129,7 +124,7 @@ class CCylinder : public CRenderizableDisplayList
 	inline void setSlicesCount(uint32_t slices)
 	{
 		mSlices = slices;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Gets how many stacks are used in the cylinder's lateral area.
@@ -137,7 +132,7 @@ class CCylinder : public CRenderizableDisplayList
 	inline void setStacksCount(uint32_t stacks)
 	{
 		mStacks = stacks;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Sets the amount of slices used to display the object.

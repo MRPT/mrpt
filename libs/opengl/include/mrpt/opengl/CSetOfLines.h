@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/math/TSegment3D.h>
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizable.h>
 
 namespace mrpt::opengl
 {
@@ -28,7 +28,7 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_opengl_grp
  */
-class CSetOfLines : public CRenderizableDisplayList
+class CSetOfLines : public CRenderizable
 {
 	DEFINE_SERIALIZABLE(CSetOfLines, mrpt::opengl)
    protected:
@@ -45,7 +45,7 @@ class CSetOfLines : public CRenderizableDisplayList
 	inline void clear()
 	{
 		mSegments.clear();
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Sets the width with which lines will be drawn.
@@ -53,7 +53,7 @@ class CSetOfLines : public CRenderizableDisplayList
 	inline void setLineWidth(float w)
 	{
 		mLineWidth = w;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Gets the width with which lines are drawn.
@@ -68,7 +68,7 @@ class CSetOfLines : public CRenderizableDisplayList
 	inline void appendLine(const mrpt::math::TSegment3D& sgm)
 	{
 		mSegments.push_back(sgm);
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Appends a line to the set, given the coordinates of its bounds.
@@ -79,7 +79,7 @@ class CSetOfLines : public CRenderizableDisplayList
 		appendLine(mrpt::math::TSegment3D(
 			mrpt::math::TPoint3D(x0, y0, z0),
 			mrpt::math::TPoint3D(x1, y1, z1)));
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/** Appends a line whose starting point is the end point of the last line
@@ -107,7 +107,7 @@ class CSetOfLines : public CRenderizableDisplayList
 	inline void appendLines(const T& sgms)
 	{
 		mSegments.insert(mSegments.end(), sgms.begin(), sgms.end());
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Appends certain amount of lines, located between two iterators, into the
@@ -119,7 +119,7 @@ class CSetOfLines : public CRenderizableDisplayList
 	{
 		mSegments.reserve(mSegments.size() + (end - begin));
 		mSegments.insert(mSegments.end(), begin, end);
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Resizes the set.
@@ -128,7 +128,7 @@ class CSetOfLines : public CRenderizableDisplayList
 	void resize(size_t nLines)
 	{
 		mSegments.resize(nLines);
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Reserves an amount of lines to the set. This method should be used when
@@ -139,7 +139,7 @@ class CSetOfLines : public CRenderizableDisplayList
 	void reserve(size_t r)
 	{
 		mSegments.reserve(r);
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Inserts a line, given its bounds. Works with any pair of objects with
@@ -149,7 +149,7 @@ class CSetOfLines : public CRenderizableDisplayList
 	inline void appendLine(T p0, U p1)
 	{
 		appendLine(p0.x, p0.y, p0.z, p1.x, p1.y, p1.z);
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/** Returns the total count of lines in this set. */
 	inline size_t getLineCount() const { return mSegments.size(); }
@@ -174,7 +174,7 @@ class CSetOfLines : public CRenderizableDisplayList
 			index, mrpt::math::TSegment3D(
 					   mrpt::math::TPoint3D(x0, y0, z0),
 					   mrpt::math::TPoint3D(x1, y1, z1)));
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Gets a specific line in the set, given its index.
@@ -184,8 +184,8 @@ class CSetOfLines : public CRenderizableDisplayList
 		size_t index, double& x0, double& y0, double& z0, double& x1,
 		double& y1, double& z1) const;
 
-	/** Render */
-	void render_dl() const override;
+	void render() const override;
+	void renderUpdateBuffers() const override;
 
 	// Iterator management
 	using iterator = std::vector<mrpt::math::TSegment3D>::iterator;
@@ -201,7 +201,7 @@ class CSetOfLines : public CRenderizableDisplayList
 	inline const_iterator begin() const { return mSegments.begin(); }
 	inline iterator begin()
 	{
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 		return mSegments.begin();
 	}
 	/**
@@ -211,7 +211,7 @@ class CSetOfLines : public CRenderizableDisplayList
 	inline const_iterator end() const { return mSegments.end(); }
 	inline iterator end()
 	{
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 		return mSegments.end();
 	}
 	/**
@@ -235,7 +235,7 @@ class CSetOfLines : public CRenderizableDisplayList
 	void enableAntiAliasing(bool enable = true)
 	{
 		m_antiAliasing = enable;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	bool isAntiAliasingEnabled() const { return m_antiAliasing; }
 	/** Constructor */

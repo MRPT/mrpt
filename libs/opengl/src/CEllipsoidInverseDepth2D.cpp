@@ -16,12 +16,11 @@
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-
 using namespace mrpt::math;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(
-	CEllipsoidInverseDepth2D, CRenderizableDisplayList, mrpt::opengl)
+	CEllipsoidInverseDepth2D, CRenderizable, mrpt::opengl)
 
 /*---------------------------------------------------------------
 							transformFromParameterSpace
@@ -74,5 +73,5 @@ void CEllipsoidInverseDepth2D::serializeFrom(
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }

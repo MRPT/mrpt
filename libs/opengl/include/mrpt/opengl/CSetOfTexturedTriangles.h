@@ -63,13 +63,14 @@ class CSetOfTexturedTriangles : public CTexturedObject
 	/** Triangle array. */
 	std::vector<TTriangle> m_triangles;
 
+	void renderUpdateBuffers() const override;
 	void render_texturedobj() const override;
 
    public:
 	void clearTriangles()
 	{
 		m_triangles.clear();
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	size_t getTrianglesCount() const { return m_triangles.size(); }
 	const TTriangle& getTriangle(size_t idx) const
@@ -81,12 +82,12 @@ class CSetOfTexturedTriangles : public CTexturedObject
 	{
 		ASSERT_(idx < m_triangles.size());
 		t = m_triangles[idx];
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	void insertTriangle(const TTriangle& t)
 	{
 		m_triangles.push_back(t);
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
