@@ -21,7 +21,7 @@ using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CMesh3D, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CMesh3D, CRenderizable, mrpt::opengl)
 
 CMesh3D::CMesh3D(
 	bool enableTransparency, bool antiAliasing, bool enableShowEdges,
@@ -130,7 +130,7 @@ void CMesh3D::loadMesh(
 		}
 	}
 
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 void CMesh3D::loadMesh(
@@ -209,13 +209,16 @@ void CMesh3D::loadMesh(
 			}
 		}
 
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
-void CMesh3D::render_dl() const
+void CMesh3D::renderUpdateBuffers() const
+{
+	//
+	MRPT_TODO("Implement me!");
+}
+
+void CMesh3D::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 
@@ -232,8 +235,6 @@ void CMesh3D::render_dl() const
 
 	glEnable(GL_NORMALIZE);  // So the GPU normalizes the normals instead of
 	// doing it in the CPU
-	glEnable(GL_COLOR_MATERIAL);
-	glShadeModel(GL_SMOOTH);
 
 	if (m_num_verts == 0) return;
 
@@ -321,7 +322,6 @@ void CMesh3D::render_dl() const
 				m_vert_coords[v_1][2]);
 		}
 		glEnd();
-		glEnable(GL_LIGHTING);
 		glDisable(GL_LINE_SMOOTH);
 	}
 
@@ -329,7 +329,6 @@ void CMesh3D::render_dl() const
 	if (m_showVertices)
 	{
 		glColor4f(vert_color[0], vert_color[1], vert_color[2], vert_color[3]);
-		glDisable(GL_LIGHTING);
 		glPointSize(m_pointSize);
 		glEnable(GL_POINT_SMOOTH);
 		glBegin(GL_POINTS);
@@ -338,12 +337,8 @@ void CMesh3D::render_dl() const
 				m_vert_coords[v][0], m_vert_coords[v][1], m_vert_coords[v][2]);
 
 		glEnd();
-		glEnable(GL_LIGHTING);
 		glDisable(GL_POINT_SMOOTH);
 	}
-
-	glDisable(GL_BLEND);
-	glDisable(GL_NORMALIZE);
 
 #endif
 }

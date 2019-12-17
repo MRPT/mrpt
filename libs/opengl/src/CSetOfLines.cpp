@@ -17,11 +17,10 @@
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CSetOfLines, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CSetOfLines, CRenderizable, mrpt::opengl)
 
 /** Constructor */
 CSetOfLines::CSetOfLines() : mSegments() {}
@@ -42,7 +41,7 @@ void CSetOfLines::setLineByIndex(
 {
 	MRPT_START
 	if (index >= mSegments.size()) THROW_EXCEPTION("Index out of bounds");
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 	mSegments[index] = segm;
 	MRPT_END
 }
@@ -51,13 +50,16 @@ float CSetOfLines::getVerticesPointSize() const { return m_verticesPointSize; }
 void CSetOfLines::setVerticesPointSize(const float size_points)
 {
 	m_verticesPointSize = size_points;
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
-void CSetOfLines::render_dl() const
+void CSetOfLines::renderUpdateBuffers() const
+{
+	//
+	MRPT_TODO("Implement me!");
+}
+
+void CSetOfLines::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 
@@ -175,7 +177,7 @@ void CSetOfLines::serializeFrom(
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 void CSetOfLines::getBoundingBox(

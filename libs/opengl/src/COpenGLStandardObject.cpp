@@ -19,8 +19,7 @@ using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace mrpt::poses;
 
-IMPLEMENTS_SERIALIZABLE(
-	COpenGLStandardObject, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(COpenGLStandardObject, CRenderizable, mrpt::opengl)
 
 #define COMPILE_TIME_ASSERT(N, expr) char dummy_constraint##N[expr]
 
@@ -40,11 +39,17 @@ void renderFunc(TPoint3D p)
 #endif
 }
 
-void COpenGLStandardObject::render_dl() const
+void COpenGLStandardObject::renderUpdateBuffers() const
+{
+	//
+	MRPT_TODO("Implement me!");
+}
+
+void COpenGLStandardObject::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	for_each(enabled.begin(), enabled.end(), glEnable);
-	glShadeModel(GL_SMOOTH);
+
 	// This line won't take any effect if GL_BLEND is not enabled, so it's safe
 	// to always execute it.
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -94,7 +99,7 @@ void COpenGLStandardObject::serializeFrom(
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 bool COpenGLStandardObject::traceRay(
@@ -133,5 +138,5 @@ void COpenGLStandardObject::disable(_GLENUM flag)
 		else
 			++it;
 	}
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }

@@ -22,11 +22,9 @@ using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
-
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(
-	CGeneralizedCylinder, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CGeneralizedCylinder, CRenderizable, mrpt::opengl)
 
 void CGeneralizedCylinder::TQuadrilateral::calculateNormal()
 {
@@ -83,7 +81,13 @@ void CGeneralizedCylinder::getMeshIterators(
 	}
 }
 
-void CGeneralizedCylinder::render_dl() const
+void CGeneralizedCylinder::renderUpdateBuffers() const
+{
+	//
+	MRPT_TODO("Implement me!");
+}
+
+void CGeneralizedCylinder::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	if (!meshUpToDate) updateMesh();
@@ -123,7 +127,7 @@ bool CGeneralizedCylinder::traceRay(const CPose3D& o, double& dist) const
 
 void CGeneralizedCylinder::updateMesh() const
 {
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 
 	size_t A = axis.size();
 	vector<TPoint3D> genX = generatrix;
@@ -175,7 +179,7 @@ void CGeneralizedCylinder::serializeFrom(
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 void generatePolygon(
@@ -269,7 +273,7 @@ void CGeneralizedCylinder::getClosedSection(
 
 void CGeneralizedCylinder::removeVisibleSectionAtStart()
 {
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 	if (fullyVisible)
 	{
 		if (!getNumberOfSections()) throw std::logic_error("No more sections");
@@ -284,7 +288,7 @@ void CGeneralizedCylinder::removeVisibleSectionAtStart()
 }
 void CGeneralizedCylinder::removeVisibleSectionAtEnd()
 {
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 	if (fullyVisible)
 	{
 		if (!getNumberOfSections()) throw std::logic_error("No more sections");
@@ -300,7 +304,7 @@ void CGeneralizedCylinder::removeVisibleSectionAtEnd()
 
 void CGeneralizedCylinder::updatePolys() const
 {
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 
 	if (!meshUpToDate) updateMesh();
 	size_t N = mesh.size();

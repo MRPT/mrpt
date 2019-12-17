@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/math/geometry.h>
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizable.h>
 
 namespace mrpt::opengl
 {
@@ -19,7 +19,7 @@ namespace mrpt::opengl
  *  \sa opengl::COpenGLScene, CSetOfTexturedTriangles
  * \ingroup mrpt_opengl_grp
  */
-class CSetOfTriangles : public CRenderizableDisplayList
+class CSetOfTriangles : public CRenderizable
 {
 	DEFINE_SERIALIZABLE(CSetOfTriangles, mrpt::opengl)
    public:
@@ -85,7 +85,7 @@ class CSetOfTriangles : public CRenderizableDisplayList
 	{
 		m_triangles.clear();
 		polygonsUpToDate = false;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Get triangle count.
@@ -106,7 +106,7 @@ class CSetOfTriangles : public CRenderizableDisplayList
 	{
 		m_triangles.push_back(t);
 		polygonsUpToDate = false;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Inserts a set of triangles, bounded by iterators, into this set.
@@ -118,7 +118,7 @@ class CSetOfTriangles : public CRenderizableDisplayList
 	{
 		m_triangles.insert(m_triangles.end(), begin, end);
 		polygonsUpToDate = false;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Inserts an existing CSetOfTriangles into this one.
@@ -131,14 +131,14 @@ class CSetOfTriangles : public CRenderizableDisplayList
 	inline void reserve(size_t t)
 	{
 		m_triangles.reserve(t);
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/** Enables or disables transparency. */
 	inline void enableTransparency(bool v)
 	{
 		m_enableTransparency = v;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	CRenderizable& setColor_u8(const mrpt::img::TColor& c) override;
@@ -147,12 +147,8 @@ class CSetOfTriangles : public CRenderizableDisplayList
 	CRenderizable& setColorB_u8(const uint8_t b) override;
 	CRenderizable& setColorA_u8(const uint8_t a) override;
 
-	/** Render
-	 */
-	void render_dl() const override;
-
-	/** Ray tracing
-	 */
+	void render() const override;
+	void renderUpdateBuffers() const override;
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 
 	/**
@@ -170,7 +166,7 @@ class CSetOfTriangles : public CRenderizableDisplayList
 	inline void insertTriangles(const CONTAINER& c)
 	{
 		this->insertTriangles(c.begin(), c.end());
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/**

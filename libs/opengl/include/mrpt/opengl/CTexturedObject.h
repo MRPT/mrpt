@@ -10,7 +10,7 @@
 
 #include <mrpt/img/CImage.h>
 #include <mrpt/math/geometry.h>
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizable.h>
 
 namespace mrpt::opengl
 {
@@ -19,7 +19,7 @@ namespace mrpt::opengl
  * opengl::CSetOfTexturedTriangles
  * \ingroup mrpt_opengl_grp
  */
-class CTexturedObject : public CRenderizableDisplayList
+class CTexturedObject : public CRenderizable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CTexturedObject)
 
@@ -78,7 +78,8 @@ class CTexturedObject : public CRenderizableDisplayList
 	 */
 	void loadTextureInOpenGL() const;
 
-	void render_dl() const override;
+	void render() const override;
+	void renderUpdateBuffers() const override;
 };
 
 }  // namespace mrpt::opengl

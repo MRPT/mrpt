@@ -16,11 +16,10 @@
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CVectorField2D, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CVectorField2D, CRenderizable, mrpt::opengl)
 
 /** Constructor */
 CVectorField2D::CVectorField2D() : xcomp(0, 0), ycomp(0, 0)
@@ -46,10 +45,13 @@ CVectorField2D::CVectorField2D(
 	m_field_color = m_color;
 }
 
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
-void CVectorField2D::render_dl() const
+void CVectorField2D::renderUpdateBuffers() const
+{
+	//
+	MRPT_TODO("Implement me!");
+}
+
+void CVectorField2D::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 
@@ -179,7 +181,7 @@ void CVectorField2D::serializeFrom(
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 			break;
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 void CVectorField2D::getBoundingBox(
@@ -251,5 +253,5 @@ void CVectorField2D::adjustVectorFieldToGrid()
 
 	xcomp *= norm_factor;
 	ycomp *= norm_factor;
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }

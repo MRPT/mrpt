@@ -61,9 +61,12 @@ CPointCloud::CPointCloud()
 	markAllPointsAsNew();
 }
 
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
+void CPointCloud::renderUpdateBuffers() const
+{
+	//
+	MRPT_TODO("Implement me!");
+}
+
 void CPointCloud::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT

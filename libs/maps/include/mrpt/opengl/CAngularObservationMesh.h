@@ -12,7 +12,7 @@
 #include <mrpt/math/CMatrixB.h>
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
 
@@ -38,7 +38,7 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_maps_grp
  */
-class CAngularObservationMesh : public CRenderizableDisplayList
+class CAngularObservationMesh : public CRenderizable
 {
 	DEFINE_SERIALIZABLE(CAngularObservationMesh, mrpt::opengl)
    public:
@@ -342,7 +342,7 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 	inline void setWireframe(bool enabled = true)
 	{
 		mWireframe = enabled;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Returns whether the object may be transparent or not.
@@ -354,13 +354,15 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 	inline void enableTransparency(bool enabled = true)
 	{
 		mEnableTransparency = enabled;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Renderizes the object.
 	 * \sa mrpt::opengl::CRenderizable
 	 */
-	void render_dl() const override;
+	void render() const override;
+	void renderUpdateBuffers() const override;
+
 	/**
 	 * Traces a ray to the object, returning the distance to a given pose
 	 * through its X axis.

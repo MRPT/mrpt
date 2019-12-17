@@ -15,7 +15,6 @@
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-
 using namespace mrpt::math;
 using namespace std;
 
@@ -45,7 +44,6 @@ void renderGeneralizedEllipsoidTemplate<2>(
 
 	glEnd();
 
-	glEnable(GL_LIGHTING);
 	glDisable(GL_BLEND);
 #else
 	MRPT_UNUSED_PARAM(pts);
@@ -131,12 +129,6 @@ void renderGeneralizedEllipsoidTemplate<3>(
 	// glEnd();
 
 	glDisable(GL_BLEND);
-	glEnable(GL_LIGHTING);
-#else
-	MRPT_UNUSED_PARAM(pts);
-	MRPT_UNUSED_PARAM(lineWidth);
-	MRPT_UNUSED_PARAM(slices);
-	MRPT_UNUSED_PARAM(stacks);
 #endif
 }
 

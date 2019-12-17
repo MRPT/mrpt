@@ -25,11 +25,11 @@ using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CMeshFast, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CMeshFast, CRenderizable, mrpt::opengl)
 
 void CMeshFast::updatePoints() const
 {
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 
 	const auto cols = Z.cols();
 	const auto rows = Z.rows();
@@ -53,10 +53,13 @@ void CMeshFast::updatePoints() const
 	pointsUpToDate = true;
 }
 
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
-void CMeshFast::render_dl() const
+void CMeshFast::renderUpdateBuffers() const
+{
+	//
+	MRPT_TODO("Implement me!");
+}
+
+void CMeshFast::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 
@@ -108,8 +111,6 @@ void CMeshFast::render_dl() const
 
 	glEnd();
 
-	glEnable(GL_LIGHTING);
-
 	// Undo flags:
 	if (m_color.A != 255) glDisable(GL_BLEND);
 
@@ -136,7 +137,7 @@ void CMeshFast::assignImage(const CImage& img)
 	m_isImage = true;
 	pointsUpToDate = false;
 
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 
 	MRPT_END
 }
@@ -162,7 +163,7 @@ void CMeshFast::assignImageAndZ(
 	m_isImage = true;
 	pointsUpToDate = false;
 
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 
 	MRPT_END
 }
@@ -218,14 +219,14 @@ void CMeshFast::serializeFrom(
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 void CMeshFast::updateColorsMatrix() const
 {
 	if ((!m_modified_Z) && (!m_modified_Image)) return;
 
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 
 	if (m_isImage)
 	{
@@ -277,7 +278,7 @@ void CMeshFast::setZ(const mrpt::math::CMatrixDynamic<float>& in_Z)
 	// Delete previously loaded images
 	m_isImage = false;
 
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 void CMeshFast::getBoundingBox(

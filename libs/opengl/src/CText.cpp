@@ -15,15 +15,11 @@
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-
 using namespace mrpt::math;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CText, CRenderizable, mrpt::opengl)
 
-/*---------------------------------------------------------------
-							Constructor
-  ---------------------------------------------------------------*/
 CText::CText(const string& str)
 {
 	m_str = str;
@@ -33,13 +29,14 @@ CText::CText(const string& str)
 	m_fontWidth = 0;
 }
 
-/*---------------------------------------------------------------
-							Destructor
-  ---------------------------------------------------------------*/
 CText::~CText() = default;
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
+
+void CText::renderUpdateBuffers() const
+{
+	//
+	MRPT_TODO("Implement me!");
+}
+
 void CText::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT

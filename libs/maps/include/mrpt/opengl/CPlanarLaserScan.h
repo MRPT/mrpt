@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizable.h>
 
 #include <mrpt/img/TColor.h>
 #include <mrpt/maps/CMetricMap.h>
@@ -53,7 +53,7 @@ class CPlanarLaserScan;
  *  \sa mrpt::opengl::CPointCloud, opengl::COpenGLScene
  * \ingroup mrpt_maps_grp
  */
-class CPlanarLaserScan : public CRenderizableDisplayList
+class CPlanarLaserScan : public CRenderizable
 {
 	DEFINE_SERIALIZABLE(CPlanarLaserScan, mrpt::opengl)
    protected:
@@ -82,7 +82,7 @@ class CPlanarLaserScan : public CRenderizableDisplayList
 	inline void enablePoints(bool enable = true)
 	{
 		m_enable_points = enable;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/** Show or hides lines along all scanned points \sa setLineWidth,
@@ -90,14 +90,14 @@ class CPlanarLaserScan : public CRenderizableDisplayList
 	inline void enableLine(bool enable = true)
 	{
 		m_enable_line = enable;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/** Show or hides the scanned area as a 2D surface \sa setSurfaceColor */
 	inline void enableSurface(bool enable = true)
 	{
 		m_enable_surface = enable;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	void setLineWidth(float w) { m_line_width = w; }
@@ -127,15 +127,13 @@ class CPlanarLaserScan : public CRenderizableDisplayList
 
 	void setScan(const mrpt::obs::CObservation2DRangeScan& scan)
 	{
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 		m_cache_valid = false;
 		m_scan = scan;
 	}
 
-	/** Render
-	 */
-	void render_dl() const override;
-
+	void render() const override;
+	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;

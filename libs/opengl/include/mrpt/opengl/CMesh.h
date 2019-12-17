@@ -12,7 +12,7 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/img/color_maps.h>
 #include <mrpt/math/CMatrixF.h>
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
 
 namespace mrpt::opengl
@@ -33,7 +33,7 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_opengl_grp
  */
-class CMesh : public CRenderizableDisplayList
+class CMesh : public CRenderizable
 {
 	DEFINE_SERIALIZABLE(CMesh, mrpt::opengl)
    public:
@@ -105,7 +105,7 @@ class CMesh : public CRenderizableDisplayList
 		xMax = xmax;
 		yMin = ymin;
 		yMax = ymax;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	void getGridLimits(float& xmin, float& xmax, float& ymin, float& ymax) const
@@ -119,19 +119,19 @@ class CMesh : public CRenderizableDisplayList
 	void enableTransparency(bool v)
 	{
 		m_enableTransparency = v;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	void enableWireFrame(bool v)
 	{
 		m_isWireFrame = v;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	void enableColorFromZ(
 		bool v, mrpt::img::TColormap colorMap = mrpt::img::cmHOT)
 	{
 		m_colorFromZ = v;
 		m_colorMap = colorMap;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/** This method sets the matrix of heights for each position (cell) in the
@@ -161,25 +161,25 @@ class CMesh : public CRenderizableDisplayList
 	{
 		xMin = nxm;
 		trianglesUpToDate = false;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	inline void setXMax(const float nxm)
 	{
 		xMax = nxm;
 		trianglesUpToDate = false;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	inline void setYMin(const float nym)
 	{
 		yMin = nym;
 		trianglesUpToDate = false;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	inline void setYMax(const float nym)
 	{
 		yMax = nym;
 		trianglesUpToDate = false;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	inline void getXBounds(float& min, float& max) const
 	{
@@ -196,22 +196,18 @@ class CMesh : public CRenderizableDisplayList
 		xMin = min;
 		xMax = max;
 		trianglesUpToDate = false;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	inline void setYBounds(const float min, const float max)
 	{
 		yMin = min;
 		yMax = max;
 		trianglesUpToDate = false;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
-	/** Render
-	 */
-	void render_dl() const override;
-
-	/** Evaluates the bounding box of this object (including possible children)
-	 * in the coordinate frame of the object parent. */
+	void render() const override;
+	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
@@ -238,7 +234,7 @@ class CMesh : public CRenderizableDisplayList
 							   float(m_textureImage.getHeight());
 		yMax = ycenter + 0.5 * newratio * xwidth;
 		yMin = ycenter - 0.5 * newratio * xwidth;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/** Trace ray

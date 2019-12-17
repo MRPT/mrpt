@@ -22,8 +22,7 @@ using namespace mrpt::math;
 using namespace std;
 using mrpt::img::CImage;
 
-IMPLEMENTS_VIRTUAL_SERIALIZABLE(
-	CTexturedObject, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_VIRTUAL_SERIALIZABLE(CTexturedObject, CRenderizable, mrpt::opengl)
 
 // Whether to profile memory allocations:
 //#define TEXTUREOBJ_PROFILE_MEM_ALLOC
@@ -59,7 +58,7 @@ void CTexturedObject::assignImage(const CImage& img, const CImage& imgAlpha)
 {
 	MRPT_START
 
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 
 	unloadTexture();
 
@@ -79,7 +78,7 @@ void CTexturedObject::assignImage(const CImage& img)
 {
 	MRPT_START
 
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 
 	unloadTexture();
 
@@ -98,7 +97,7 @@ void CTexturedObject::assignImage_fast(CImage& img, CImage& imgAlpha)
 {
 	MRPT_START
 
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 
 	unloadTexture();
 
@@ -118,7 +117,7 @@ void CTexturedObject::assignImage_fast(CImage& img)
 {
 	MRPT_START
 
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 
 	unloadTexture();
 
@@ -487,7 +486,13 @@ void CTexturedObject::writeToStreamTexturedObject(
 	if (m_enableTransparency) out << m_textureImageAlpha;
 }
 
-void CTexturedObject::render_dl() const
+void CTexturedObject::renderUpdateBuffers() const
+{
+	//
+	MRPT_TODO("Implement me!");
+}
+
+void CTexturedObject::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	render_pre();
@@ -506,8 +511,6 @@ void CTexturedObject::render_pre() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	MRPT_START
-	glEnable(GL_TEXTURE_2D);
-	CHECK_OPENGL_ERROR();
 
 	if (m_enableTransparency || m_color.A != 255)
 	{
@@ -544,9 +547,6 @@ void CTexturedObject::render_post() const
 		CHECK_OPENGL_ERROR();
 	}
 
-	glDisable(GL_TEXTURE_2D);
-	CHECK_OPENGL_ERROR();
-
 	MRPT_END
 #endif
 }
@@ -557,7 +557,7 @@ void CTexturedObject::readFromStreamTexturedObject(
 	uint8_t version;
 	in >> version;
 
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 
 	switch (version)
 	{
@@ -579,5 +579,5 @@ void CTexturedObject::readFromStreamTexturedObject(
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }

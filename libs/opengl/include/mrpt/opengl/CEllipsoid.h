@@ -10,7 +10,7 @@
 
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/CMatrixFixed.h>
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizable.h>
 
 namespace mrpt::opengl
 {
@@ -41,7 +41,7 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_opengl_grp
  */
-class CEllipsoid : public CRenderizableDisplayList
+class CEllipsoid : public CRenderizable
 {
 	DEFINE_SERIALIZABLE(CEllipsoid, mrpt::opengl)
 
@@ -109,44 +109,38 @@ class CEllipsoid : public CRenderizableDisplayList
 	void enableDrawSolid3D(bool v)
 	{
 		m_drawSolid3D = v;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/** The number of "sigmas" for drawing the ellipse/ellipsoid (default=3) */
 	void setQuantiles(float q)
 	{
 		m_quantiles = q;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	float getQuantiles() const { return m_quantiles; }
 	/** The number of segments of a 2D ellipse (default=20) */
 	void set2DsegmentsCount(unsigned int N)
 	{
 		m_2D_segments = N;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/** The number of segments of a 3D ellipse (in both "axis") (default=20) */
 	void set3DsegmentsCount(unsigned int N)
 	{
 		m_3D_segments = N;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/** The line width for 2D ellipses or 3D wireframe ellipsoids (default=1) */
 	void setLineWidth(float w)
 	{
 		m_lineWidth = w;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	float getLineWidth() const { return m_lineWidth; }
-	/** Render
-	 *	If one of the eigen value of the covariance matrix of the ellipsoid is
-	 *null, ellipsoid will not
-	 * be rendered to ensure stability in the rendering process.
-	 */
-	void render_dl() const override;
 
-	/** Evaluates the bounding box of this object (including possible children)
-	 * in the coordinate frame of the object parent. */
+	void render() const override;
+	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;

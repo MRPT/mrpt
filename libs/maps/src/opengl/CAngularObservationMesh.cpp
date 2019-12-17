@@ -44,8 +44,7 @@ using namespace mrpt::opengl;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 
-IMPLEMENTS_SERIALIZABLE(
-	CAngularObservationMesh, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CAngularObservationMesh, CRenderizable, mrpt::opengl)
 
 void CAngularObservationMesh::addTriangle(
 	const TPoint3D& p1, const TPoint3D& p2, const TPoint3D& p3) const
@@ -63,12 +62,12 @@ void CAngularObservationMesh::addTriangle(
 		t.a[i] = m_color.A * (1.f / 255);
 	}
 	triangles.push_back(t);
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 void CAngularObservationMesh::updateMesh() const
 {
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 
 	size_t numRows = scanSet.size();
 	triangles.clear();
@@ -163,7 +162,12 @@ void CAngularObservationMesh::updateMesh() const
 	meshUpToDate = true;
 }
 
-void CAngularObservationMesh::render_dl() const
+void CAngularObservationMesh::renderUpdateBuffers() const
+{
+	MRPT_TODO("Implement!");
+}
+
+void CAngularObservationMesh::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	if (mEnableTransparency)
@@ -176,8 +180,6 @@ void CAngularObservationMesh::render_dl() const
 		glEnable(GL_DEPTH_TEST);
 		glDisable(GL_BLEND);
 	}
-	glEnable(GL_COLOR_MATERIAL);
-	glShadeModel(GL_SMOOTH);
 	if (!meshUpToDate) updateMesh();
 	if (!mWireframe) glBegin(GL_TRIANGLES);
 	for (const auto& t : triangles)
@@ -198,8 +200,6 @@ void CAngularObservationMesh::render_dl() const
 		if (mWireframe) glEnd();
 	}
 	if (!mWireframe) glEnd();
-	glDisable(GL_BLEND);
-	glDisable(GL_LIGHTING);
 #endif
 }
 
@@ -215,7 +215,7 @@ bool CAngularObservationMesh::traceRay(
 bool CAngularObservationMesh::setScanSet(
 	const std::vector<mrpt::obs::CObservation2DRangeScan>& scans)
 {
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 
 	// Returns false if the scan is inconsistent
 	if (scans.size() > 0)
@@ -236,7 +236,7 @@ bool CAngularObservationMesh::setScanSet(
 void CAngularObservationMesh::setPitchBounds(
 	const double initial, const double final)
 {
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 
 	pitchBounds.clear();
 	pitchBounds.push_back(initial);
@@ -245,7 +245,7 @@ void CAngularObservationMesh::setPitchBounds(
 }
 void CAngularObservationMesh::setPitchBounds(const std::vector<double>& bounds)
 {
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 
 	pitchBounds = bounds;
 	meshUpToDate = false;

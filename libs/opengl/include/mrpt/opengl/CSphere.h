@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizable.h>
 
 namespace mrpt::opengl
 {
@@ -25,7 +25,7 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_opengl_grp
  */
-class CSphere : public CRenderizableDisplayList
+class CSphere : public CRenderizable
 {
 	DEFINE_SERIALIZABLE(CSphere, mrpt::opengl)
 
@@ -38,36 +38,27 @@ class CSphere : public CRenderizableDisplayList
 	void setRadius(float r)
 	{
 		m_radius = r;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	float getRadius() const { return m_radius; }
 	void setNumberDivsLongitude(int N)
 	{
 		m_nDivsLongitude = N;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	void setNumberDivsLatitude(int N)
 	{
 		m_nDivsLatitude = N;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	void enableRadiusIndependentOfEyeDistance(bool v = true)
 	{
 		m_keepRadiusIndependentEyeDistance = v;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
-	/** \sa CRenderizableDisplayList */
-	bool should_skip_display_list_cache() const override
-	{
-		return m_keepRadiusIndependentEyeDistance;
-	}
-
-	/** Render */
-	void render_dl() const override;
-
-	/** Evaluates the bounding box of this object (including possible children)
-	 * in the coordinate frame of the object parent. */
+	void render() const override;
+	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;

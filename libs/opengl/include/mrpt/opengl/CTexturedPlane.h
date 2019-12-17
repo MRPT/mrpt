@@ -33,6 +33,7 @@ class CTexturedPlane : public CTexturedObject
 	void unloadTexture();
 
 	void render_texturedobj() const override;
+	void renderUpdateBuffers() const override;
 
    public:
 	/** Set the texture coordinates of the four corners (in the range 0-1). */
@@ -43,7 +44,7 @@ class CTexturedPlane : public CTexturedObject
 		m_tex_x_max = tex_x_max;
 		m_tex_y_min = tex_y_min;
 		m_tex_y_max = tex_y_max;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/** Set the coordinates of the four corners that define the plane on the XY
@@ -55,7 +56,7 @@ class CTexturedPlane : public CTexturedObject
 		m_yMin = yMin;
 		m_yMax = yMax;
 		polygonUpToDate = false;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/** Get the coordinates of the four corners that define the plane on the XY

@@ -10,7 +10,7 @@
 
 #include <mrpt/img/color_maps.h>
 #include <mrpt/math/TPoint3D.h>
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizable.h>
 
 namespace mrpt::opengl
 {
@@ -31,7 +31,7 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_opengl_grp
  */
-class CColorBar : public CRenderizableDisplayList
+class CColorBar : public CRenderizable
 {
 	DEFINE_SERIALIZABLE(CColorBar, mrpt::opengl)
 
@@ -44,21 +44,16 @@ class CColorBar : public CRenderizableDisplayList
 	bool m_disable_depth_test{true};
 
    public:
-	/** Render
-	 * \sa mrpt::opengl::CRenderizable
-	 */
-	void render_dl() const override;
+	void render() const override;
+	void renderUpdateBuffers() const override;
+	void getBoundingBox(
+		mrpt::math::TPoint3D& bb_min,
+		mrpt::math::TPoint3D& bb_max) const override;
 
 	void setColormap(const mrpt::img::TColormap colormap);
 	void setColorAndValueLimits(
 		double col_min, double col_max, double value_min, double value_max);
 	void enableDepthTest(bool enable);
-
-	/** Evaluates the bounding box of this object (including possible children)
-	 * in the coordinate frame of the object parent. */
-	void getBoundingBox(
-		mrpt::math::TPoint3D& bb_min,
-		mrpt::math::TPoint3D& bb_max) const override;
 
 	/** Basic empty constructor. Set all parameters to default. */
 	CColorBar(

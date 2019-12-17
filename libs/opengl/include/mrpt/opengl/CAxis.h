@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizable.h>
 #include <array>
 
 namespace mrpt::opengl
@@ -26,7 +26,7 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_opengl_grp
  */
-class CAxis : public CRenderizableDisplayList
+class CAxis : public CRenderizable
 {
 	DEFINE_SERIALIZABLE(CAxis, mrpt::opengl)
    protected:
@@ -41,6 +41,14 @@ class CAxis : public CRenderizableDisplayList
 	float m_markLen{0.07f};
 
    public:
+	/** Constructor */
+	CAxis(
+		float xmin = -1.0f, float ymin = -1.0f, float zmin = -1.0f,
+		float xmax = 1.0f, float ymax = 1.0f, float zmax = 1.0f,
+		float frecuency = 1.f, float lineWidth = 3.0f, bool marks = false);
+
+	~CAxis() override = default;
+
 	void setAxisLimits(
 		float xmin, float ymin, float zmin, float xmax, float ymax, float zmax);
 	/** Changes the frequency of the "ticks" */
@@ -64,23 +72,11 @@ class CAxis : public CRenderizableDisplayList
 	void setTickMarksLength(float len);
 	float getTickMarksLength(float len) { return m_markLen; }
 
-	/** Render */
-	void render_dl() const override;
-
-	/** Evaluates the bounding box of this object (including possible children)
-	 * in the coordinate frame of the object parent. */
+	void render() const override;
+	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
-
-	/** Constructor */
-	CAxis(
-		float xmin = -1.0f, float ymin = -1.0f, float zmin = -1.0f,
-		float xmax = 1.0f, float ymax = 1.0f, float zmax = 1.0f,
-		float frecuency = 1.f, float lineWidth = 3.0f, bool marks = false);
-
-	/** Private, virtual destructor: only can be deleted from smart pointers */
-	~CAxis() override = default;
 };
 
 }  // namespace mrpt::opengl

@@ -21,13 +21,18 @@
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CArrow, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CArrow, CRenderizable, mrpt::opengl)
 
-void CArrow::render_dl() const
+void CArrow::renderUpdateBuffers() const
+{
+	//
+	MRPT_TODO("Implement me!");
+}
+
+void CArrow::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 
@@ -195,7 +200,7 @@ void CArrow::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 void CArrow::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const

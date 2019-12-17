@@ -20,12 +20,15 @@ using namespace mrpt::opengl;
 using mrpt::poses::CPose3D;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CDisk, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CDisk, CRenderizable, mrpt::opengl)
 
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
-void CDisk::render_dl() const
+void CDisk::renderUpdateBuffers() const
+{
+	//
+	MRPT_TODO("Implement me!");
+}
+
+void CDisk::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	glEnable(GL_BLEND);
@@ -66,7 +69,7 @@ void CDisk::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 bool CDisk::traceRay(const mrpt::poses::CPose3D& o, double& dist) const

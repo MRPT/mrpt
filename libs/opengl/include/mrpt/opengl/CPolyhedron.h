@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/math/geometry.h>
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizable.h>
 
 namespace mrpt
 {
@@ -40,7 +40,7 @@ class CPolyhedron;
  *
  * \ingroup mrpt_opengl_grp
  */
-class CPolyhedron : public CRenderizableDisplayList
+class CPolyhedron : public CRenderizable
 {
 	DEFINE_SERIALIZABLE(CPolyhedron, mrpt::opengl)
    public:
@@ -642,16 +642,10 @@ class CPolyhedron : public CRenderizableDisplayList
 	/** @}
 	 */
 
-	/**
-	 * Render
-	 * \sa CRenderizable
-	 */
-	void render_dl() const override;
-	/**
-	 * Ray trace
-	 * \sa CRenderizable
-	 */
+	void render() const override;
+	void renderUpdateBuffers() const override;
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
+
 	/**
 	 * Gets a list with the polyhedron's vertices.
 	 */
@@ -709,7 +703,7 @@ class CPolyhedron : public CRenderizableDisplayList
 	inline void setWireframe(bool enabled = true)
 	{
 		mWireframe = enabled;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Gets the wireframe lines width.
@@ -722,7 +716,7 @@ class CPolyhedron : public CRenderizableDisplayList
 	inline void setLineWidth(double lineWidth)
 	{
 		mLineWidth = lineWidth;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Gets the polyhedron as a set of polygons.

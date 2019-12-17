@@ -29,7 +29,6 @@ using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace mrpt::system;
-
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CPosePDFGaussianInf, CPosePDF, mrpt::poses)

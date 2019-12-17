@@ -64,6 +64,7 @@ class CSetOfObjects : public CRenderizable
 	/** Render child objects.
 	 */
 	void render() const override;
+	void renderUpdateBuffers() const override;
 
 	/** Clear the list of objects in the scene, deleting objects' memory.
 	 */

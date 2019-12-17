@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizable.h>
 
 namespace mrpt::opengl
 {
@@ -25,7 +25,7 @@ namespace mrpt::opengl
  * \ingroup mrpt_opengl_grp
  *
  */
-class CArrow : public CRenderizableDisplayList
+class CArrow : public CRenderizable
 {
 	DEFINE_SERIALIZABLE(CArrow, mrpt::opengl)
 	DEFINE_SCHEMA_SERIALIZABLE()
@@ -49,37 +49,33 @@ class CArrow : public CRenderizableDisplayList
 		m_x1 = x1;
 		m_y1 = y1;
 		m_z1 = z1;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	void setHeadRatio(float rat)
 	{
 		m_headRatio = rat;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	void setSmallRadius(float rat)
 	{
 		m_smallRadius = rat;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	void setLargeRadius(float rat)
 	{
 		m_largeRadius = rat;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	void setArrowYawPitchRoll(float yaw, float pitch, float roll)
 	{
 		m_arrow_yaw = yaw;
 		m_arrow_pitch = pitch;
 		m_arrow_roll = roll;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
-	/** Render
-	 */
-	void render_dl() const override;
-
-	/** Evaluates the bounding box of this object (including possible children)
-	 * in the coordinate frame of the object parent. */
+	void render() const override;
+	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;

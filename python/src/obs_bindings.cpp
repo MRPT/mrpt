@@ -30,7 +30,6 @@
 #include <cstdint>
 
 using namespace boost::python;
-
 using namespace mrpt::io;
 using namespace mrpt::poses;
 using namespace mrpt::obs;

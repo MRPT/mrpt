@@ -12,7 +12,7 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/img/color_maps.h>
 #include <mrpt/math/CMatrixF.h>
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizable.h>
 
 namespace mrpt::opengl
 {
@@ -35,7 +35,7 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_opengl_grp
  */
-class CMeshFast : public CRenderizableDisplayList
+class CMeshFast : public CRenderizable
 {
 	DEFINE_SERIALIZABLE(CMeshFast, mrpt::opengl)
 
@@ -102,7 +102,7 @@ class CMeshFast : public CRenderizableDisplayList
 		xMax = xmax;
 		yMin = ymin;
 		yMax = ymax;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	void getGridLimits(float& xmin, float& xmax, float& ymin, float& ymax) const
@@ -116,14 +116,14 @@ class CMeshFast : public CRenderizableDisplayList
 	void enableTransparency(bool v)
 	{
 		m_enableTransparency = v;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	void enableColorFromZ(
 		bool v, mrpt::img::TColormap colorMap = mrpt::img::cmJET)
 	{
 		m_colorFromZ = v;
 		m_colorMap = colorMap;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/** This method sets the matrix of heights for each position (cell) in the
@@ -141,25 +141,25 @@ class CMeshFast : public CRenderizableDisplayList
 	{
 		xMin = nxm;
 		pointsUpToDate = false;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	inline void setXMax(float nxm)
 	{
 		xMax = nxm;
 		pointsUpToDate = false;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	inline void setYMin(float nym)
 	{
 		yMin = nym;
 		pointsUpToDate = false;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	inline void setYMax(float nym)
 	{
 		yMax = nym;
 		pointsUpToDate = false;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	inline void getXBounds(float& min, float& max) const
 	{
@@ -176,22 +176,18 @@ class CMeshFast : public CRenderizableDisplayList
 		xMin = min;
 		xMax = max;
 		pointsUpToDate = false;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	inline void setYBounds(float min, float max)
 	{
 		yMin = min;
 		yMax = max;
 		pointsUpToDate = false;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
-	/** Render
-	 */
-	void render_dl() const override;
-
-	/** Evaluates the bounding box of this object (including possible children)
-	 * in the coordinate frame of the object parent. */
+	void render() const override;
+	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
@@ -218,7 +214,7 @@ class CMeshFast : public CRenderizableDisplayList
 							   float(m_textureImage.getHeight());
 		yMax = ycenter + 0.5 * newratio * xwidth;
 		yMin = ycenter - 0.5 * newratio * xwidth;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/** Constructor

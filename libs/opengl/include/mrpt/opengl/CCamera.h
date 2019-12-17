@@ -27,23 +27,11 @@ class CCamera;
 class CCamera : public CRenderizable
 {
 	friend class COpenGLViewport;
-
 	DEFINE_SERIALIZABLE(CCamera, mrpt::opengl)
-   protected:
-	float m_pointingX{0}, m_pointingY{0}, m_pointingZ{0};
-	float m_distanceZoom{10};
-	float m_azimuthDeg{45}, m_elevationDeg{45};
-
-	/** If set to true (default), camera model is projective, otherwise, it's
-	 * orthogonal. */
-	bool m_projectiveModel{true};
-	/** Field-of-View in degs, only when projectiveModel=true (default=30 deg).
-	 */
-	float m_projectiveFOVdeg{30};
-	/** If set to true, camera pose is used when rendering the viewport */
-	bool m_6DOFMode{false};
-
    public:
+	CCamera() = default;
+	~CCamera() override = default;
+
 	void setPointingAt(float x, float y, float z)
 	{
 		m_pointingX = x;
@@ -66,8 +54,8 @@ class CCamera : public CRenderizable
 	float getPointingAtX() const { return m_pointingX; }
 	float getPointingAtY() const { return m_pointingY; }
 	float getPointingAtZ() const { return m_pointingZ; }
-	void setZoomDistance(float z) { m_distanceZoom = z; }
-	float getZoomDistance() const { return m_distanceZoom; }
+	void setZoomDistance(float z) { m_eyeDistance = z; }
+	float getZoomDistance() const { return m_eyeDistance; }
 	float getAzimuthDegrees() const { return m_azimuthDeg; }
 	float getElevationDegrees() const { return m_elevationDeg; }
 	void setAzimuthDegrees(float ang) { m_azimuthDeg = ang; }
@@ -87,25 +75,37 @@ class CCamera : public CRenderizable
 	bool isProjective() const { return m_projectiveModel; }
 	bool isOrthogonal() const { return !m_projectiveModel; }
 	bool is6DOFMode() const { return m_6DOFMode; }
-	/** Field-of-View in degs, only when projectiveModel=true (default=30 deg).
+	/** Vertical field-of-View in degs, only when projectiveModel=true
+	 * (default=30 deg).
 	 */
 	void setProjectiveFOVdeg(float ang) { m_projectiveFOVdeg = ang; }
 	/** Field-of-View in degs, only when projectiveModel=true (default=30 deg).
 	 */
 	float getProjectiveFOVdeg() const { return m_projectiveFOVdeg; }
+
 	/** Render does nothing here. */
 	void render() const override {}
+	/** Render does nothing here. */
+	void renderUpdateBuffers() const override {}
+
 	/** In this class, returns a fixed box (max,max,max), (-max,-max,-max). */
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
 
-	/** Constructor
-	 */
-	CCamera();
+   protected:
+	float m_pointingX{0}, m_pointingY{0}, m_pointingZ{0};
+	float m_eyeDistance{10};
+	float m_azimuthDeg{45}, m_elevationDeg{45};
 
-	/** Private, virtual destructor: only can be deleted from smart pointers */
-	~CCamera() override = default;
+	/** If set to true (default), camera model is projective, otherwise, it's
+	 * orthogonal. */
+	bool m_projectiveModel{true};
+	/** Field-of-View in degs, only when projectiveModel=true (default=30 deg).
+	 */
+	float m_projectiveFOVdeg{30};
+	/** If set to true, camera pose is used when rendering the viewport */
+	bool m_6DOFMode{false};
 };
 
 }  // namespace mrpt::opengl

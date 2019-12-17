@@ -66,7 +66,7 @@ void TestOpenGLObjects()
 		theScene->insert(gl_txt);
 	}
 	off_x += STEP_X;
-
+#if 0
 	// XZ Grid
 	{
 		opengl::CGridPlaneXZ::Ptr obj =
@@ -535,7 +535,6 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
-#if 1
 	// CText
 	{
 		{
@@ -839,7 +838,6 @@ void TestOpenGLObjects()
 		theScene->insert(gl_txt);
 	}
 	off_x += STEP_X;
-
 #endif
 
 	win.setCameraZoom(150);

@@ -15,11 +15,10 @@
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CSimpleLine, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CSimpleLine, CRenderizable, mrpt::opengl)
 
 CSimpleLine::CSimpleLine(
 	float x0, float y0, float z0, float x1, float y1, float z1, float lineWidth,
@@ -35,10 +34,13 @@ CSimpleLine::CSimpleLine(
 {
 }
 
-/*---------------------------------------------------------------
-							render_dl
-  ---------------------------------------------------------------*/
-void CSimpleLine::render_dl() const
+void CSimpleLine::renderUpdateBuffers() const
+{
+	//
+	MRPT_TODO("Implement me!");
+}
+
+void CSimpleLine::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	// Enable antialiasing:
@@ -99,7 +101,7 @@ void CSimpleLine::serializeFrom(
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 void CSimpleLine::getBoundingBox(

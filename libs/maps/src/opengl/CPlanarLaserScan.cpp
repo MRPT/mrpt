@@ -39,8 +39,7 @@ using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(
-	CPlanarLaserScan, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CPlanarLaserScan, CRenderizable, mrpt::opengl)
 
 /*---------------------------------------------------------------
 				Constructor
@@ -51,14 +50,16 @@ CPlanarLaserScan::CPlanarLaserScan() : m_scan(), m_cache_points() {}
   ---------------------------------------------------------------*/
 void CPlanarLaserScan::clear()
 {
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 	m_scan.resizeScan(0);
 }
+
+void CPlanarLaserScan::renderUpdateBuffers() const { MRPT_TODO("Implement!"); }
 
 /*---------------------------------------------------------------
 							render
   ---------------------------------------------------------------*/
-void CPlanarLaserScan::render_dl() const
+void CPlanarLaserScan::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	// Load into cache:

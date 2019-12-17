@@ -16,10 +16,9 @@
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CText3D, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CText3D, CRenderizable, mrpt::opengl)
 
 /*---------------------------------------------------------------
 							Constructor
@@ -37,14 +36,15 @@ CText3D::CText3D(
 	this->setScale(scale);
 }
 
-/*---------------------------------------------------------------
-							Destructor
-  ---------------------------------------------------------------*/
 CText3D::~CText3D() = default;
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
-void CText3D::render_dl() const
+
+void CText3D::renderUpdateBuffers() const
+{
+	//
+	MRPT_TODO("Implement me!");
+}
+
+void CText3D::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	glColor4ub(m_color.R, m_color.G, m_color.B, m_color.A);
@@ -83,7 +83,7 @@ void CText3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 void CText3D::getBoundingBox(

@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/math/geometry.h>
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizable.h>
 
 namespace mrpt::opengl
 {
@@ -20,7 +20,7 @@ using _GLENUM = uint32_t;
  * geometric properties.
  * \ingroup mrpt_opengl_grp
  */
-class COpenGLStandardObject : public CRenderizableDisplayList
+class COpenGLStandardObject : public CRenderizable
 {
 	DEFINE_SERIALIZABLE(COpenGLStandardObject, mrpt::opengl)
    protected:
@@ -44,13 +44,8 @@ class COpenGLStandardObject : public CRenderizableDisplayList
 	float normal[3];
 
    public:
-	/**
-	 * Render.
-	 * \sa mrpt::opengl::CRenderizable
-	 */
-	void render_dl() const override;
-	/** Evaluates the bounding box of this object (including possible children)
-	 * in the coordinate frame of the object parent. */
+	void render() const override;
+	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
@@ -68,7 +63,7 @@ class COpenGLStandardObject : public CRenderizableDisplayList
 	{
 		if (find(enabled.begin(), enabled.end(), flag) == enabled.end())
 			enabled.push_back(flag);
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Disable some openGL flag.
@@ -92,7 +87,7 @@ class COpenGLStandardObject : public CRenderizableDisplayList
 	inline void setFlags(const std::vector<_GLENUM>& v)
 	{
 		enabled = v;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Set the normal vector to this object.
@@ -100,7 +95,7 @@ class COpenGLStandardObject : public CRenderizableDisplayList
 	inline void setNormal(const float (&n)[3])
 	{
 		for (size_t i = 0; i < 3; i++) normal[i] = n[i];
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Gets the normal vector to this object.

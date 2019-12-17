@@ -20,7 +20,6 @@
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
-
 using namespace mrpt::math;
 using namespace std;
 
@@ -38,9 +37,12 @@ void CSetOfObjects::clear()
 	// more copies out there!)
 }
 
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
+void CSetOfObjects::renderUpdateBuffers() const
+{
+	//
+	MRPT_TODO("Implement me!");
+}
+
 void CSetOfObjects::render() const
 {
 	// Render all the objects:

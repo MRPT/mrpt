@@ -19,7 +19,7 @@ using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(COctoMapVoxels, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(COctoMapVoxels, CRenderizable, mrpt::opengl)
 
 /** Ctor */
 COctoMapVoxels::COctoMapVoxels() : m_grid_color(0xE0, 0xE0, 0xE0, 0x90) {}
@@ -29,7 +29,7 @@ void COctoMapVoxels::clear()
 	m_voxel_sets.clear();
 	m_grid_cubes.clear();
 
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 void COctoMapVoxels::setBoundingBox(
@@ -72,13 +72,15 @@ const GLfloat normals_cube[3 * 6 * 4] = {
 
 #endif
 
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
-void COctoMapVoxels::render_dl() const
+void COctoMapVoxels::renderUpdateBuffers() const
+{
+	//
+	MRPT_TODO("Implement me!");
+}
+
+void COctoMapVoxels::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT
-
 	glEnableClientState(GL_VERTEX_ARRAY);
 
 	// Draw grids ====================================
@@ -87,10 +89,7 @@ void COctoMapVoxels::render_dl() const
 		glLineWidth(m_grid_width);
 		CHECK_OPENGL_ERROR();
 
-		glDisable(GL_LIGHTING);  // Disable lights when drawing lines
-
 		// Antialiasing:
-		glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT);
 		glEnable(GL_LINE_SMOOTH);
 		if (m_grid_color.A != 255)
 		{
@@ -117,10 +116,6 @@ void COctoMapVoxels::render_dl() const
 				sizeof(grid_line_indices) / sizeof(grid_line_indices[0]),
 				GL_UNSIGNED_BYTE, grid_line_indices);
 		}
-
-		glEnable(GL_LIGHTING);  // Disable lights when drawing lines
-		// End of antialiasing:
-		glPopAttrib();
 	}
 
 	// Draw cubes ====================================
@@ -283,7 +278,7 @@ void COctoMapVoxels::serializeFrom(CArchive& in, uint8_t version)
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 void COctoMapVoxels::getBoundingBox(

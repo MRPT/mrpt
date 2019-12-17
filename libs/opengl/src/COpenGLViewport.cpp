@@ -136,6 +136,483 @@ void COpenGLViewport::insert(const CRenderizable::Ptr& newObject)
 	m_objects.push_back(newObject);
 }
 
+// Maps [0,1] to [0,Len], wrap negative numbers, etc.
+static int sizeFromRatio(
+	const int startCoord, const double dSize, const int iLength)
+{
+	if (dSize > 1)  // >1 -> absolute pixels:
+		return static_cast<int>(dSize);
+	else if (dSize < 0)
+	{  // Negative numbers: Specify the right side coordinates instead of
+		// the width:
+		if (dSize >= -1)
+			return static_cast<int>(-iLength * dSize - startCoord + 1);
+		else
+			return static_cast<int>(-dSize - startCoord + 1);
+	}
+	// Otherwise: a fraction
+	return static_cast<int>(iLength * dSize);
+}
+static int startFromRatio(const double frac, const int dSize)
+{
+	return frac > 1 ? static_cast<int>(frac)
+					: (frac < 0 ? static_cast<int>(dSize + frac)
+								: static_cast<int>(dSize * frac));
+}
+
+// "Image mode" rendering:
+void COpenGLViewport::renderImageMode() const
+{
+#if MRPT_HAS_OPENGL_GLUT
+#if defined(OPENGLVIEWPORT_ENABLE_TIMEPROFILING)
+	mrpt::system::CTimeLoggerEntry tle(
+		glv_timlog, "COpenGLViewport::render imageview");
+#endif
+	// Do we have an actual image to render?
+	if (!m_imageview_img) return;
+
+	// Note: The following code is inspired in the implementations:
+	//  - libcvd, by Edward Rosten http://www.edwardrosten.com/cvd/
+	//  - PTAM, by Klein & Murray
+	//  http://www.robots.ox.ac.uk/~gk/PTAM/
+	mrpt::img::CImage* img = m_imageview_img.get();
+	const int img_w = img->getWidth();
+	const int img_h = img->getHeight();
+
+	// Empty image?
+	if (img_w == 0 || img_h == 0) return;
+
+	// Need to adjust the aspect ratio?
+	const auto vw = m_state.viewport_width, vh = m_state.viewport_height;
+
+	const double ratio = vw * img_h / double(vh * img_w);
+	double ortho_w = img_w;
+	double ortho_h = img_h;
+	if (ratio > 1)
+		ortho_w *= ratio;
+	else if (ratio != 0)
+		ortho_h /= ratio;
+
+	glOrtho(-0.5, ortho_h - 0.5, ortho_w - 0.5, -0.5, -1, 1);
+
+	// Prepare raster pos & pixel copy direction in -Y.
+	glRasterPos2f(-0.5f, -0.5f);
+	glPixelZoom(vw / float(ortho_w), -vh / float(ortho_h));
+
+	// Prepare image data types:
+	const GLenum img_type = GL_UNSIGNED_BYTE;
+	const int nBytesPerPixel = img->isColor() ? 3 : 1;
+	// Reverse RGB <-> BGR order?
+	const bool is_RGB_order = (img->getChannelsOrder() == std::string("RGB"));
+	const GLenum img_format =
+		nBytesPerPixel == 3 ? (is_RGB_order ? GL_RGB : GL_BGR) : GL_LUMINANCE;
+
+	// autodetect image row alignment, if any:
+	const auto row_stride = img->getRowStride();
+	const auto row_bytes = img->getWidth() * nBytesPerPixel;
+
+	ASSERT_ABOVEEQ_(row_stride, row_bytes);
+
+	// Alignment in bytes. Refer to OpenGL docs for
+	// GL_UNPACK_ALIGNMENT
+	const int img_store_alignment = (row_stride - row_bytes) + 1;
+	ASSERT_(
+		img_store_alignment == 1 || img_store_alignment == 2 ||
+		img_store_alignment == 4 || img_store_alignment == 8);
+
+	// Send image data to OpenGL:
+	glPixelStorei(GL_UNPACK_ALIGNMENT, img_store_alignment);
+	glPixelStorei(GL_UNPACK_ROW_LENGTH, img->getWidth());
+	glDrawPixels(img_w, img_h, img_format, img_type, img->ptrLine<uint8_t>(0));
+	glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);  // Reset
+	CHECK_OPENGL_ERROR();
+#endif
+}
+
+// Replacement for obsolete: gluPerspective() and glOrtho()
+void COpenGLViewport::TRenderMatrices::computeProjectionMatrix(
+	float znear, float zfar)
+{
+	ASSERT_ABOVE_(FOV, .0f);
+	ASSERT_ABOVE_(zfar, znear);
+	ASSERT_ABOVE_(zfar, .0f);
+	ASSERT_ABOVEEQ_(znear, .0f);
+
+	if (is_projective)
+	{
+		const float f = 1.0f / std::tan(mrpt::DEG2RAD(FOV));
+		const float aspect = viewport_width / (1.0f * viewport_height);
+
+		p_matrix(0, 0) = f / aspect;
+		p_matrix(0, 1) = .0f;
+		p_matrix(0, 2) = .0f;
+		p_matrix(0, 3) = .0f;
+
+		p_matrix(1, 0) = .0f;
+		p_matrix(1, 1) = f;
+		p_matrix(1, 2) = .0f;
+		p_matrix(1, 3) = .0f;
+
+		p_matrix(2, 0) = .0f;
+		p_matrix(2, 1) = .0f;
+		p_matrix(2, 2) = (zfar + znear) / (znear - zfar);
+		p_matrix(2, 3) = 2 * zfar * znear / (znear - zfar);
+
+		p_matrix(3, 0) = .0f;
+		p_matrix(3, 1) = .0f;
+		p_matrix(3, 2) = -1.0f;
+		p_matrix(3, 3) = .0f;
+	}
+	else
+	{
+		// Was:
+		// glOrtho(-Ax, Ax, -Ay, Ay, -0.5 * m_clip_max, 0.5 * m_clip_max);
+
+		const float ratio = viewport_width / (1.0f * viewport_height);
+		float Ax = eyeDistance * 0.5f;
+		float Ay = eyeDistance * 0.5f;
+
+		if (ratio > 1)
+			Ax *= ratio;
+		else
+		{
+			if (ratio != 0) Ay /= ratio;
+		}
+
+		p_matrix(0, 0) = 1.0f / Ax;
+		p_matrix(0, 1) = .0f;
+		p_matrix(0, 2) = .0f;
+		p_matrix(0, 3) = .0f;  // x displacement;
+
+		p_matrix(1, 0) = .0f;
+		p_matrix(1, 1) = 1.0f / Ay;
+		p_matrix(1, 2) = .0f;
+		p_matrix(1, 3) = .0f;  // y displacement
+
+		p_matrix(2, 0) = .0f;
+		p_matrix(2, 1) = .0f;
+		p_matrix(2, 2) = -2.0f / (zfar - znear);
+		p_matrix(2, 3) = -(zfar + znear) / (zfar - znear);
+
+		p_matrix(3, 0) = .0f;
+		p_matrix(3, 1) = .0f;
+		p_matrix(3, 2) = .0f;
+		p_matrix(3, 3) = 1.0f;
+
+		p_matrix(2, 3) = 2 * zfar * znear / (znear - zfar);
+	}
+}
+
+// Replacement for deprecated OpenGL gluLookAt():
+void COpenGLViewport::TRenderMatrices::applyLookAt()
+{
+	using mrpt::math::TVector3Df;
+
+	TVector3Df forward = TVector3Df(pointing - eye);
+	const double fn = forward.norm();
+	ASSERT_(fn != 0);
+	forward *= 1.0 / fn;
+
+	// Side = forward x up
+	TVector3Df side = mrpt::math::crossProduct3D(forward, up);
+	const double sn = side.norm();
+	ASSERT_(sn != 0);
+	side *= 1.0 / sn;
+
+	// Recompute up as: up = side x forward
+	const TVector3Df up2 = mrpt::math::crossProduct3D(side, forward);
+
+	mrpt::math::CMatrixFloat44 m(mrpt::math::UNINITIALIZED_MATRIX);
+	// Axis X:
+	m(0, 0) = side[0];
+	m(1, 0) = side[1];
+	m(2, 0) = side[2];
+	m(3, 0) = 0;
+	// Axis Y:
+	m(0, 1) = up2[0];
+	m(1, 1) = up2[1];
+	m(2, 1) = up2[2];
+	m(3, 1) = 0;
+	// Axis Z:
+	m(0, 2) = -forward[0];
+	m(1, 2) = -forward[1];
+	m(2, 2) = -forward[2];
+	m(3, 2) = 0;
+	// Translation:
+	m(0, 3) = 0;
+	m(1, 3) = 0;
+	m(2, 3) = 0;
+	m(3, 3) = 1;
+
+	// Homogeneous matrices composition:
+	mrpt::math::CMatrixFloat44 result = p_matrix * m;
+
+	// Translation:
+	result(0, 3) -= eye.x;
+	result(1, 3) -= eye.y;
+	result(2, 3) -= eye.z;
+
+	// Overwrite projection matrix:
+	p_matrix = result;
+}
+
+void COpenGLViewport::loadDefaultShaders() const
+{
+#if MRPT_HAS_OPENGL_GLUT
+	// Vertex shader:
+	const char* DEFAULT_VERTEX_SHADER_CODE = R"XXX(
+#version 110
+
+uniform mat4 p_matrix, mv_matrix;
+uniform sampler2D texture;
+
+attribute vec3 position, normal;
+attribute vec2 texcoord;
+attribute float shininess;
+attribute vec4 specular;
+
+varying vec3 frag_position, frag_normal;
+varying vec2 frag_texcoord;
+varying float frag_shininess;
+varying vec4 frag_specular;
+
+void main()
+{
+    vec4 eye_position = mv_matrix * vec4(position, 1.0);
+    gl_Position = p_matrix * eye_position;
+    frag_position = eye_position.xyz;
+    frag_normal   = (mv_matrix * vec4(normal, 0.0)).xyz;
+    frag_texcoord = texcoord;
+    frag_shininess = shininess;
+    frag_specular = specular;
+}
+)XXX";
+
+	// Fragment shader:
+	const char* DEFAULT_FRAGMENT_SHADER_CODE = R"XXX(
+#version 110
+
+uniform mat4 p_matrix, mv_matrix;
+//uniform sampler2D texture;
+
+varying vec3 frag_position, frag_normal;
+varying vec2 frag_texcoord;
+varying float frag_shininess;
+varying vec4 frag_specular;
+
+const vec3 light_direction = vec3(0.408248, -0.816497, 0.408248);
+const vec4 light_diffuse = vec4(0.8, 0.8, 0.8, 0.0);
+const vec4 light_ambient = vec4(0.2, 0.2, 0.2, 1.0);
+const vec4 light_specular = vec4(1.0, 1.0, 1.0, 1.0);
+
+void main()
+{
+    vec3 mv_light_direction = (mv_matrix * vec4(light_direction, 0.0)).xyz,
+         normal = normalize(frag_normal),
+         eye = normalize(frag_position),
+         reflection = reflect(mv_light_direction, normal);
+
+    //vec4 frag_diffuse = texture2D(texture, frag_texcoord);
+    vec4 diffuse_factor
+        = max(-dot(normal, mv_light_direction), 0.0) * light_diffuse;
+    vec4 ambient_diffuse_factor
+        = diffuse_factor + light_ambient;
+    vec4 specular_factor
+        = max(pow(-dot(reflection, eye), frag_shininess), 0.0) * light_specular;
+
+    gl_FragColor = specular_factor * frag_specular;
+    //+ ambient_diffuse_factor * frag_diffuse;
+}
+)XXX";
+
+	if (!m_shaders) m_shaders = std::make_shared<Program>();
+	m_shaders->clear();
+
+	std::string errMsgs;
+	std::vector<Shader> lstShaders;
+	lstShaders.resize(2);
+	if (!lstShaders[0].compileFromSource(
+			GL_VERTEX_SHADER, DEFAULT_VERTEX_SHADER_CODE, errMsgs))
+	{
+		THROW_EXCEPTION_FMT(
+			"Error compiling GL_VERTEX_SHADER:\n%s", errMsgs.c_str());
+	}
+	if (!lstShaders[1].compileFromSource(
+			GL_FRAGMENT_SHADER, DEFAULT_FRAGMENT_SHADER_CODE, errMsgs))
+	{
+		THROW_EXCEPTION_FMT(
+			"Error compiling GL_FRAGMENT_SHADER:\n%s", errMsgs.c_str());
+	}
+	if (!m_shaders->linkProgram(lstShaders, errMsgs))
+	{
+		THROW_EXCEPTION_FMT(
+			"Error linking Opengl Shader programs:\n%s", errMsgs.c_str());
+	}
+
+#endif
+}
+
+/** Render a normal scene with 3D objects */
+void COpenGLViewport::renderNormalSceneMode() const
+{
+#if MRPT_HAS_OPENGL_GLUT
+	// Prepare shaders upon first invokation:
+	if (!m_shaders || m_shaders->empty()) loadDefaultShaders();
+
+	// Prepare camera (projection matrix):
+	const CListOpenGLObjects* objectsToRender = nullptr;
+	COpenGLViewport* viewForGetCamera = nullptr;
+
+	if (m_isCloned)
+	{  // Clone: render someone's else objects.
+		ASSERT_(m_parent.get() != nullptr);
+
+		COpenGLViewport::Ptr view = m_parent->getViewport(m_clonedViewport);
+		if (!view)
+			THROW_EXCEPTION_FMT(
+				"Cloned viewport '%s' not found in parent COpenGLScene",
+				m_clonedViewport.c_str());
+
+		objectsToRender = &view->m_objects;
+		viewForGetCamera =
+			m_isClonedCamera ? view.get() : const_cast<COpenGLViewport*>(this);
+	}
+	else
+	{  // Normal case: render our own objects:
+		objectsToRender = &m_objects;
+		viewForGetCamera = const_cast<COpenGLViewport*>(this);
+	}
+
+	// Get camera:
+	// 1st: if there is a CCamera in the scene (nullptr if no camera found):
+	const CCamera* myCamera =
+		dynamic_cast<CCamera*>(viewForGetCamera->getByClass<CCamera>().get());
+
+	// 2nd: the internal camera of all viewports:
+	if (!myCamera) myCamera = &viewForGetCamera->m_camera;
+
+	ASSERT_(m_camera.m_eyeDistance > 0);
+
+	auto& _ = m_state;
+
+	_.is_projective = myCamera->m_projectiveModel;
+	_.FOV = myCamera->m_projectiveFOVdeg;
+	_.eyeDistance = myCamera->m_eyeDistance;
+	_.azimuth = DEG2RAD(myCamera->m_azimuthDeg);
+	_.elev = DEG2RAD(myCamera->m_elevationDeg);
+
+	if (myCamera->is6DOFMode())
+	{
+		// In 6DOFMode eye is set viewing towards the direction of the
+		// positive Z axis
+		// Up is set as Y axis
+		mrpt::poses::CPose3D viewDirection, pose, at;
+		viewDirection.z(+1);
+		pose = mrpt::poses::CPose3D(myCamera->getPose());
+		at = pose + viewDirection;
+
+		_.eye.x = pose.x();
+		_.eye.y = pose.y();
+		_.eye.z = pose.z();
+		_.pointing.x = at.x();
+		_.pointing.y = at.y();
+		_.pointing.z = at.z();
+		_.up.x = pose.getRotationMatrix()(0, 1);
+		_.up.y = pose.getRotationMatrix()(1, 1);
+		_.up.z = pose.getRotationMatrix()(2, 1);
+	}
+	else
+	{
+		// Normal mode: use "camera orbit" parameters to compute pointing-to
+		// point:
+		const float dis = max(0.01f, myCamera->m_eyeDistance);
+		_.eye.x = _.pointing.x + dis * cos(_.azimuth) * cos(_.elev);
+		_.eye.y = _.pointing.y + dis * sin(_.azimuth) * cos(_.elev);
+		_.eye.z = _.pointing.z + dis * sin(_.elev);
+
+		_.pointing.x = myCamera->m_pointingX;
+		_.pointing.y = myCamera->m_pointingY;
+		_.pointing.z = myCamera->m_pointingZ;
+
+		if (fabs(fabs(myCamera->m_elevationDeg) - 90) > 1e-6)
+		{
+			_.up.x = 0;
+			_.up.y = 0;
+			_.up.z = 1;
+		}
+		else
+		{
+			float sgn = myCamera->m_elevationDeg > 0 ? 1 : -1;
+			_.up.x = -cos(_.azimuth) * sgn;
+			_.up.y = -sin(_.azimuth) * sgn;
+			_.up.z = 0;
+		}
+	}
+
+	// Compute the projection matrix (p_matrix):
+	_.computeProjectionMatrix(m_clip_min, m_clip_max);
+
+	// Apply eye center and lookAt to p_matrix:
+	_.applyLookAt();
+
+	// Optional pre-Render user code:
+	if (hasSubscribers())
+	{
+		mrptEventGLPreRender ev(this);
+		this->publishEvent(ev);
+	}
+
+	// Global OpenGL settings:
+	// ---------------------------------
+	glHint(
+		GL_POLYGON_SMOOTH_HINT,
+		m_OpenGL_enablePolygonNicest ? GL_NICEST : GL_FASTEST);
+	CHECK_OPENGL_ERROR();
+
+	// Reset model-view 4x4 matrix to the identity transformation:
+	_.mv_matrix.setIdentity();
+
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);  // GL_LESS
+	CHECK_OPENGL_ERROR();
+
+	MRPT_TODO("Port Lights!");
+	// for (const auto& m_light : m_lights) m_light.sendToOpenGL();
+
+	// Render all the objects:
+	// -------------------------------------------
+	mrpt::opengl::gl_utils::renderSetOfObjects(*objectsToRender);
+
+#endif
+}
+
+void COpenGLViewport::renderViewportBorder() const
+{
+#if MRPT_HAS_OPENGL_GLUT
+	if (m_borderWidth < 1) return;
+
+	glLineWidth(2 * m_borderWidth);
+	glColor4f(0, 0, 0, 1);
+	glDisable(GL_DEPTH_TEST);
+	CHECK_OPENGL_ERROR();
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	glDisable(GL_LIGHTING);  // Disable lights when drawing lines
+	glBegin(GL_LINE_LOOP);
+	glVertex2f(-1, -1);
+	glVertex2f(-1, 1);
+	glVertex2f(1, 1);
+	glVertex2f(1, -1);
+	glEnd();
+
+	glEnable(GL_DEPTH_TEST);
+#endif
+}
+
 /*---------------------------------------------------------------
 						render
  ---------------------------------------------------------------*/
@@ -143,368 +620,74 @@ void COpenGLViewport::render(
 	const int render_width, const int render_height) const
 {
 #if MRPT_HAS_OPENGL_GLUT
-	const CRenderizable* it =
-		nullptr;  // Declared here for usage in the "catch"
+	// Declared here for usage in the "catch"
+	const CRenderizable* it = nullptr;
 	try
 	{
 		// Change viewport:
 		// -------------------------------------------
-		const GLint vx = m_view_x > 1
-							 ? GLint(m_view_x)
-							 : (m_view_x < 0 ? GLint(render_width + m_view_x)
-											 : GLint(render_width * m_view_x));
-		const GLint vy = m_view_y > 1
-							 ? GLint(m_view_y)
-							 : (m_view_y < 0 ? GLint(render_height + m_view_y)
-											 : GLint(render_height * m_view_y));
-
-		GLint vw;
-		if (m_view_width > 1)  // >1 -> absolute pixels:
-			vw = GLint(m_view_width);
-		else if (m_view_width < 0)
-		{  // Negative numbers: Specify the right side coordinates instead of
-			// the width:
-			if (m_view_width >= -1)
-				vw = GLint(-render_width * m_view_width - vx + 1);
-			else
-				vw = GLint(-m_view_width - vx + 1);
-		}
-		else  // A factor:
-		{
-			vw = GLint(render_width * m_view_width);
-		}
-
-		GLint vh;
-		if (m_view_height > 1)  // >1 -> absolute pixels:
-			vh = GLint(m_view_height);
-		else if (m_view_height < 0)
-		{  // Negative numbers: Specify the right side coordinates instead of
-			// the width:
-			if (m_view_height >= -1)
-				vh = GLint(-render_height * m_view_height - vy + 1);
-			else
-				vh = GLint(-m_view_height - vy + 1);
-		}
-		else  // A factor:
-			vh = GLint(render_height * m_view_height);
+		const GLint vx = startFromRatio(m_view_x, render_width);
+		const GLint vy = startFromRatio(m_view_y, render_height);
+		const GLint vw = sizeFromRatio(vx, m_view_width, render_width);
+		const GLint vh = sizeFromRatio(vy, m_view_height, render_height);
 
 		glViewport(vx, vy, vw, vh);
+		CHECK_OPENGL_ERROR();
 
 		// Clear depth&/color buffers:
 		// -------------------------------------------
-		m_lastProjMat.viewport_width = vw;
-		m_lastProjMat.viewport_height = vh;
+		m_state.viewport_width = vw;
+		m_state.viewport_height = vh;
 
 		glScissor(vx, vy, vw, vh);
+		CHECK_OPENGL_ERROR();
 
 		glEnable(GL_SCISSOR_TEST);
+		CHECK_OPENGL_ERROR();
+
 		if (!m_isTransparent)
 		{  // Clear color & depth buffers:
 			// Save?
-			GLdouble old_colors[4];
+			GLdouble prevCol[4];
 			if (m_custom_backgb_color)
 			{
-				glGetDoublev(GL_COLOR_CLEAR_VALUE, old_colors);
+				glGetDoublev(GL_COLOR_CLEAR_VALUE, prevCol);
+				CHECK_OPENGL_ERROR();
 				glClearColor(
 					m_background_color.R, m_background_color.G,
 					m_background_color.B, m_background_color.A);
+				CHECK_OPENGL_ERROR();
 			}
 
 			glClear(
 				GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT |
-				GL_ACCUM_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+				GL_STENCIL_BUFFER_BIT);
+			CHECK_OPENGL_ERROR();
 
 			// Restore old colors:
 			if (m_custom_backgb_color)
-				glClearColor(
-					old_colors[0], old_colors[1], old_colors[2], old_colors[3]);
+			{
+				glClearColor(prevCol[0], prevCol[1], prevCol[2], prevCol[3]);
+				CHECK_OPENGL_ERROR();
+			}
 		}
 		else
 		{  // Clear depth buffer only:
 			glClear(GL_DEPTH_BUFFER_BIT);
+			CHECK_OPENGL_ERROR();
 		}
 		glDisable(GL_SCISSOR_TEST);
+		CHECK_OPENGL_ERROR();
 
 		// If we are in "image mode", rendering is much simpler: just set
 		//  ortho projection and render the image quad:
 		if (m_isImageView)
-		{
-#if defined(OPENGLVIEWPORT_ENABLE_TIMEPROFILING)
-			glv_timlog.enter("COpenGLViewport::render imageview");
-#endif
-			// "Image mode" rendering:
-			// -----------------------------------
-			if (m_imageview_img)  // should be ALWAYS true, but just in case!
-			{
-				// Note: The following code is inspired in the implementations:
-				//  - libcvd, by Edward Rosten http://www.edwardrosten.com/cvd/
-				//  - PTAM, by Klein & Murray
-				//  http://www.robots.ox.ac.uk/~gk/PTAM/
-
-				mrpt::img::CImage* img = m_imageview_img.get();
-
-				const int img_w = img->getWidth();
-				const int img_h = img->getHeight();
-
-				if (img_w != 0 && img_h != 0)
-				{
-					// Prepare an ortho projection:
-					glMatrixMode(GL_PROJECTION);
-					glLoadIdentity();
-
-					// Need to adjust the aspect ratio?
-					const double ratio = vw * img_h / double(vh * img_w);
-					double ortho_w = img_w;
-					double ortho_h = img_h;
-					if (ratio > 1)
-						ortho_w *= ratio;
-					else if (ratio != 0)
-						ortho_h /= ratio;
-
-					glOrtho(-0.5, ortho_h - 0.5, ortho_w - 0.5, -0.5, -1, 1);
-
-					// Prepare raster pos & pixel copy direction in -Y.
-					glRasterPos2f(-0.5f, -0.5f);
-					glPixelZoom(vw / float(ortho_w), -vh / float(ortho_h));
-
-					// Prepare image data types:
-					const GLenum img_type = GL_UNSIGNED_BYTE;
-					const int nBytesPerPixel = img->isColor() ? 3 : 1;
-					// Reverse RGB <-> BGR order?
-					const bool is_RGB_order =
-						(img->getChannelsOrder() == std::string("RGB"));
-					const GLenum img_format =
-						nBytesPerPixel == 3 ? (is_RGB_order ? GL_RGB : GL_BGR)
-											: GL_LUMINANCE;
-
-					// autodetect image row alignment, if any:
-					const auto row_stride = img->getRowStride();
-					const auto row_bytes = img->getWidth() * nBytesPerPixel;
-
-					ASSERT_ABOVEEQ_(row_stride, row_bytes);
-
-					// Alignment in bytes. Refer to OpenGL docs for
-					// GL_UNPACK_ALIGNMENT
-					const int img_store_alignment =
-						(row_stride - row_bytes) + 1;
-					ASSERT_(
-						img_store_alignment == 1 || img_store_alignment == 2 ||
-						img_store_alignment == 4 || img_store_alignment == 8);
-
-					// Send image data to OpenGL:
-					glPixelStorei(GL_UNPACK_ALIGNMENT, img_store_alignment);
-					glPixelStorei(GL_UNPACK_ROW_LENGTH, img->getWidth());
-					glDrawPixels(
-						img_w, img_h, img_format, img_type,
-						img->ptrLine<uint8_t>(0));
-					glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);  // Reset
-					CHECK_OPENGL_ERROR();
-				}
-			}
-// done.
-#if defined(OPENGLVIEWPORT_ENABLE_TIMEPROFILING)
-			glv_timlog.leave("COpenGLViewport::render imageview");
-#endif
-		}
+			renderImageMode();
 		else
-		{
-			// Non "image mode" rendering:
-
-			// Set camera:
-			// -------------------------------------------
-			glMatrixMode(GL_PROJECTION);
-			glLoadIdentity();
-
-			const CListOpenGLObjects* objectsToRender;
-			COpenGLViewport* viewForGetCamera;
-
-			if (m_isCloned)
-			{  // Clone: render someone's else objects.
-				ASSERT_(m_parent.get() != nullptr);
-
-				COpenGLViewport::Ptr view =
-					m_parent->getViewport(m_clonedViewport);
-				if (!view)
-					THROW_EXCEPTION_FMT(
-						"Cloned viewport '%s' not found in parent COpenGLScene",
-						m_clonedViewport.c_str());
-
-				objectsToRender = &view->m_objects;
-				viewForGetCamera = m_isClonedCamera
-									   ? view.get()
-									   : const_cast<COpenGLViewport*>(this);
-			}
-			else
-			{  // Normal case: render our own objects:
-				objectsToRender = &m_objects;
-				viewForGetCamera = const_cast<COpenGLViewport*>(this);
-			}
-
-			// Get camera:
-			// 1st: if there is a CCamera in the scene:
-			CRenderizable::Ptr cam_ptr =
-				viewForGetCamera->getByClass<CCamera>();
-
-			CCamera* myCamera = nullptr;
-			if (cam_ptr)
-			{
-				myCamera = dynamic_cast<CCamera*>(cam_ptr.get());
-			}
-
-			// 2nd: the internal camera of all viewports:
-			if (!myCamera) myCamera = &viewForGetCamera->m_camera;
-
-			ASSERT_(m_camera.m_distanceZoom > 0);
-
-			m_lastProjMat.azimuth = DEG2RAD(myCamera->m_azimuthDeg);
-			m_lastProjMat.elev = DEG2RAD(myCamera->m_elevationDeg);
-
-			const float dis = max(0.01f, myCamera->m_distanceZoom);
-			m_lastProjMat.eye.x =
-				myCamera->m_pointingX +
-				dis * cos(m_lastProjMat.azimuth) * cos(m_lastProjMat.elev);
-			m_lastProjMat.eye.y =
-				myCamera->m_pointingY +
-				dis * sin(m_lastProjMat.azimuth) * cos(m_lastProjMat.elev);
-			m_lastProjMat.eye.z =
-				myCamera->m_pointingZ + dis * sin(m_lastProjMat.elev);
-
-			if (fabs(fabs(myCamera->m_elevationDeg) - 90) > 1e-6)
-			{
-				m_lastProjMat.up.x = 0;
-				m_lastProjMat.up.y = 0;
-				m_lastProjMat.up.z = 1;
-			}
-			else
-			{
-				float sgn = myCamera->m_elevationDeg > 0 ? 1 : -1;
-				m_lastProjMat.up.x =
-					-cos(DEG2RAD(myCamera->m_azimuthDeg)) * sgn;
-				m_lastProjMat.up.y =
-					-sin(DEG2RAD(myCamera->m_azimuthDeg)) * sgn;
-				m_lastProjMat.up.z = 0;
-			}
-
-			m_lastProjMat.is_projective = myCamera->m_projectiveModel;
-			m_lastProjMat.FOV = myCamera->m_projectiveFOVdeg;
-			m_lastProjMat.pointing.x = myCamera->m_pointingX;
-			m_lastProjMat.pointing.y = myCamera->m_pointingY;
-			m_lastProjMat.pointing.z = myCamera->m_pointingZ;
-			m_lastProjMat.zoom = myCamera->m_distanceZoom;
-
-			if (myCamera->m_projectiveModel)
-			{
-				gluPerspective(
-					myCamera->m_projectiveFOVdeg, vw / double(vh), m_clip_min,
-					m_clip_max);
-				CHECK_OPENGL_ERROR();
-			}
-			else
-			{
-				const double ratio = vw / double(vh);
-				double Ax = myCamera->m_distanceZoom * 0.5;
-				double Ay = myCamera->m_distanceZoom * 0.5;
-
-				if (ratio > 1)
-					Ax *= ratio;
-				else
-				{
-					if (ratio != 0) Ay /= ratio;
-				}
-
-				glOrtho(-Ax, Ax, -Ay, Ay, -0.5 * m_clip_max, 0.5 * m_clip_max);
-				CHECK_OPENGL_ERROR();
-			}
-
-			if (myCamera->is6DOFMode())
-			{
-				// In 6DOFMode eye is set viewing towards the direction of the
-				// positive Z axis
-				// Up is set as Y axis
-				mrpt::poses::CPose3D viewDirection, pose, at;
-				viewDirection.z(+1);
-				pose = mrpt::poses::CPose3D(myCamera->getPose());
-				at = pose + viewDirection;
-				gluLookAt(
-					pose.x(), pose.y(), pose.z(), at.x(), at.y(), at.z(),
-					pose.getRotationMatrix()(0, 1),
-					pose.getRotationMatrix()(1, 1),
-					pose.getRotationMatrix()(2, 1));
-				CHECK_OPENGL_ERROR();
-			}
-			else
-			{
-				// This command is common to ortho and perspective:
-				gluLookAt(
-					m_lastProjMat.eye.x, m_lastProjMat.eye.y,
-					m_lastProjMat.eye.z, m_lastProjMat.pointing.x,
-					m_lastProjMat.pointing.y, m_lastProjMat.pointing.z,
-					m_lastProjMat.up.x, m_lastProjMat.up.y, m_lastProjMat.up.z);
-				CHECK_OPENGL_ERROR();
-			}
-
-			// Optional pre-Render user code:
-			if (hasSubscribers())
-			{
-				mrptEventGLPreRender ev(this);
-				this->publishEvent(ev);
-			}
-
-			// Global OpenGL settings:
-			// ---------------------------------
-			glHint(
-				GL_POLYGON_SMOOTH_HINT,
-				m_OpenGL_enablePolygonNicest ? GL_NICEST : GL_FASTEST);
-			glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-
-			// Render objects:
-			// -------------------------------------------
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-
-			glEnable(GL_DEPTH_TEST);
-			glDepthFunc(GL_LEQUAL);  // GL_LESS
-
-			// Setup lights
-			// -------------------------------------------
-			glEnable(GL_LIGHTING);
-			glEnable(GL_COLOR_MATERIAL);
-			glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-			glShadeModel(GL_SMOOTH);
-			glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-
-			for (const auto& m_light : m_lights) m_light.sendToOpenGL();
-
-			// Render all the objects:
-			// -------------------------------------------
-			mrpt::opengl::gl_utils::renderSetOfObjects(*objectsToRender);
-
-		}  // end of non "image mode" rendering
+			renderNormalSceneMode();
 
 		// Finally, draw the border:
-		// --------------------------------
-		if (m_borderWidth > 0)
-		{
-			glLineWidth(2 * m_borderWidth);
-			glColor4f(0, 0, 0, 1);
-			glDisable(GL_DEPTH_TEST);
-
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-			glMatrixMode(GL_PROJECTION);
-			glLoadIdentity();
-
-			glDisable(GL_LIGHTING);  // Disable lights when drawing lines
-			glBegin(GL_LINE_LOOP);
-			glVertex2f(-1, -1);
-			glVertex2f(-1, 1);
-			glVertex2f(1, 1);
-			glVertex2f(1, -1);
-			glEnd();
-			glEnable(GL_LIGHTING);  // Disable lights when drawing lines
-
-			glEnable(GL_DEPTH_TEST);
-		}
+		renderViewportBorder();
 
 		// Optional post-Render user code:
 		if (hasSubscribers())
@@ -513,15 +696,16 @@ void COpenGLViewport::render(
 			this->publishEvent(ev);
 		}
 	}
-	catch (exception& e)
+	catch (const exception& e)
 	{
+		const auto sErr = mrpt::exception_to_str(e);
 		string msg;
 		if (it != nullptr)
 			msg = format(
 				"Exception while rendering a class '%s'\n%s",
-				it->GetRuntimeClass()->className, e.what());
+				it->GetRuntimeClass()->className, sErr.c_str());
 		else
-			msg = format("Exception while rendering:\n%s", e.what());
+			msg = format("Exception while rendering:\n%s", sErr.c_str());
 
 		THROW_EXCEPTION(msg);
 	}
@@ -735,23 +919,22 @@ void COpenGLViewport::get3DRayForPixelCoord(
 	const double x_coord, const double y_coord, mrpt::math::TLine3D& out_ray,
 	mrpt::poses::CPose3D* out_cameraPose) const
 {
-	ASSERTDEB_(
-		m_lastProjMat.viewport_height > 0 && m_lastProjMat.viewport_width > 0);
+	ASSERTDEB_(m_state.viewport_height > 0 && m_state.viewport_width > 0);
 
 	const double ASPECT =
-		m_lastProjMat.viewport_width / double(m_lastProjMat.viewport_height);
+		m_state.viewport_width / double(m_state.viewport_height);
 
 	// unitary vector between (eye) -> (pointing):
 	TPoint3D pointing_dir;
-	pointing_dir.x = -cos(m_lastProjMat.azimuth) * cos(m_lastProjMat.elev);
-	pointing_dir.y = -sin(m_lastProjMat.azimuth) * cos(m_lastProjMat.elev);
-	pointing_dir.z = -sin(m_lastProjMat.elev);
+	pointing_dir.x = -cos(m_state.azimuth) * cos(m_state.elev);
+	pointing_dir.y = -sin(m_state.azimuth) * cos(m_state.elev);
+	pointing_dir.z = -sin(m_state.elev);
 
 	// The camera X vector (in 3D) can be computed from the camera azimuth
 	// angle:
 	TPoint3D cam_x_3d;
-	cam_x_3d.x = -sin(m_lastProjMat.azimuth);
-	cam_x_3d.y = cos(m_lastProjMat.azimuth);
+	cam_x_3d.x = -sin(m_state.azimuth);
+	cam_x_3d.y = cos(m_state.azimuth);
 	cam_x_3d.z = 0;
 
 	// The camera real UP vector (in 3D) is the cross product:
@@ -759,11 +942,11 @@ void COpenGLViewport::get3DRayForPixelCoord(
 	TPoint3D cam_up_3d;
 	crossProduct3D(cam_x_3d, pointing_dir, cam_up_3d);
 
-	if (!m_lastProjMat.is_projective)
+	if (!m_state.is_projective)
 	{
 		// Ortho projection:
 		// -------------------------------
-		double Ax = m_lastProjMat.zoom * 0.5;
+		double Ax = m_state.eyeDistance * 0.5;
 		double Ay = Ax;
 
 		if (ASPECT > 1)
@@ -774,17 +957,14 @@ void COpenGLViewport::get3DRayForPixelCoord(
 		}
 
 		const double point_lx =
-			(-0.5 + x_coord / m_lastProjMat.viewport_width) * 2 * Ax;
+			(-0.5 + x_coord / m_state.viewport_width) * 2 * Ax;
 		const double point_ly =
-			-(-0.5 + y_coord / m_lastProjMat.viewport_height) * 2 * Ay;
+			-(-0.5 + y_coord / m_state.viewport_height) * 2 * Ay;
 
 		const TPoint3D ray_origin(
-			m_lastProjMat.eye.x + point_lx * cam_x_3d.x +
-				point_ly * cam_up_3d.x,
-			m_lastProjMat.eye.y + point_lx * cam_x_3d.y +
-				point_ly * cam_up_3d.y,
-			m_lastProjMat.eye.z + point_lx * cam_x_3d.z +
-				point_ly * cam_up_3d.z);
+			m_state.eye.x + point_lx * cam_x_3d.x + point_ly * cam_up_3d.x,
+			m_state.eye.y + point_lx * cam_x_3d.y + point_ly * cam_up_3d.y,
+			m_state.eye.z + point_lx * cam_x_3d.z + point_ly * cam_up_3d.z);
 
 		out_ray.pBase = ray_origin;
 		out_ray.director[0] = pointing_dir.x;
@@ -801,11 +981,11 @@ void COpenGLViewport::get3DRayForPixelCoord(
 		//  where one arrives to:
 		//    tan(FOVx/2) = ASPECT_RATIO * tan(FOVy/2)
 		//
-		const double FOVy = DEG2RAD(m_lastProjMat.FOV);
+		const double FOVy = DEG2RAD(m_state.FOV);
 		const double FOVx = 2.0 * atan(ASPECT * tan(FOVy * 0.5));
 
-		const auto vw = m_lastProjMat.viewport_width;
-		const auto vh = m_lastProjMat.viewport_height;
+		const auto vw = m_state.viewport_width;
+		const auto vh = m_state.viewport_height;
 		const double len_horz = 2.0 * (-0.5 + x_coord / vw) * tan(0.5 * FOVx);
 		const double len_vert = -2.0 * (-0.5 + y_coord / vh) * tan(0.5 * FOVy);
 		// Point in camera local reference frame
@@ -817,7 +997,7 @@ void COpenGLViewport::get3DRayForPixelCoord(
 			l.x * cam_x_3d.z + l.y * cam_up_3d.z + l.z * pointing_dir.z);
 
 		// Set out ray:
-		out_ray.pBase = m_lastProjMat.eye;
+		out_ray.pBase = m_state.eye;
 		out_ray.director[0] = ray_director.x;
 		out_ray.director[1] = ray_director.y;
 		out_ray.director[2] = ray_director.z;
@@ -843,9 +1023,9 @@ void COpenGLViewport::get3DRayForPixelCoord(
 		M(2, 2) = pointing_dir.z;
 		M(3, 2) = 0;
 
-		M(0, 3) = m_lastProjMat.eye.x;
-		M(1, 3) = m_lastProjMat.eye.y;
-		M(2, 3) = m_lastProjMat.eye.z;
+		M(0, 3) = m_state.eye.x;
+		M(1, 3) = m_state.eye.y;
+		M(2, 3) = m_state.eye.z;
 		M(3, 3) = 1;
 
 		*out_cameraPose = CPose3D(M);

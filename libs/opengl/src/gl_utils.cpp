@@ -45,15 +45,14 @@ void gl_utils::renderSetOfObjects(const CListOpenGLObjects& objectsToRender)
 			if (!*itP) continue;
 			const CRenderizable* it =
 				itP->get();  // Use plain pointers, faster than smart pointers:
+
+			// Regenerate opengl vertex buffers?
+			if (it->hasToUpdateBuffers()) it->updateBuffers();
+
 			if (!it->isVisible()) continue;
 
 			// 3D coordinates transformation:
-			glMatrixMode(GL_MODELVIEW);
-			glPushMatrix();
-
-			glPushAttrib(GL_CURRENT_BIT);  // drawing color, etc
-			glPushAttrib(GL_LIGHTING_BIT);  // lighting
-			// CHECK_OPENGL_ERROR();
+			MRPT_TODO("push modelview matrix");
 
 			// It's more efficient to prepare the 4x4 matrix ourselves and load
 			// it directly into opengl stack:
@@ -71,24 +70,28 @@ void gl_utils::renderSetOfObjects(const CListOpenGLObjects& objectsToRender)
 				R.coeff(0, 1),   R.coeff(1, 1),   R.coeff(2, 1),   0,
 				R.coeff(0, 2),   R.coeff(1, 2),   R.coeff(2, 2),   0,
 				pos.m_coords[0], pos.m_coords[1], pos.m_coords[2], 1};
-			glMultMatrixd(m);  // Multiply so it's composed with the previous,
+			// glMultMatrixd(m);  // Multiply so it's composed with the
+			// previous,
 			// current MODELVIEW matrix
 
 			// Do scaling after the other transformations!
-			if (it->getScaleX() != 1 || it->getScaleY() != 1 ||
+			/*if (it->getScaleX() != 1 || it->getScaleY() != 1 ||
 				it->getScaleZ() != 1)
 				glScalef(it->getScaleX(), it->getScaleY(), it->getScaleZ());
-
+*/
+			MRPT_TODO("Shader: set color");
 			// Set color:
-			glColor4f(
+			/*glColor4f(
 				it->getColorR(), it->getColorG(), it->getColorB(),
 				it->getColorA());
-
+*/
+			// Render object:
 			it->render();
 			CHECK_OPENGL_ERROR();
 
 			if (it->isShowNameEnabled())
 			{
+				MRPT_TODO("Show text");
 				glDisable(GL_DEPTH_TEST);
 				glColor3f(
 					1.f, 1.f, 1.f);  // Must be called BEFORE glRasterPos3f
@@ -110,13 +113,6 @@ void gl_utils::renderSetOfObjects(const CListOpenGLObjects& objectsToRender)
 
 				glEnable(GL_DEPTH_TEST);
 			}
-
-			glPopAttrib();
-			glPopAttrib();
-			//			CHECK_OPENGL_ERROR();
-
-			glPopMatrix();
-			CHECK_OPENGL_ERROR();
 
 		}  // end foreach object
 	}
@@ -149,18 +145,16 @@ void gl_utils::TRenderInfo::projectPoint(
 	proj_z_depth = proj[2];
 }
 
-void gl_utils::checkOpenGLErr_impl(const char* filename, int lineno)
+void gl_utils::checkOpenGLErr_impl(
+	unsigned int glErrorCode, const char* filename, int lineno)
 {
 #if MRPT_HAS_OPENGL_GLUT
-	int openglErr;
-	if ((openglErr = glGetError()) != GL_NO_ERROR)
-	{
-		const std::string sErr = mrpt::format(
-			"[%s:%i] OpenGL error: %s", filename, lineno,
-			((char*)gluErrorString(openglErr)));
-		std::cerr << "[gl_utils::checkOpenGLError] " << sErr << std::endl;
-		THROW_EXCEPTION(sErr);
-	}
+	if (glErrorCode == GL_NO_ERROR) return;
+	const std::string sErr = mrpt::format(
+		"[%s:%i] OpenGL error: %s", filename, lineno,
+		reinterpret_cast<const char*>(gluErrorString(glErrorCode)));
+	std::cerr << "[gl_utils::checkOpenGLError] " << sErr << std::endl;
+	THROW_EXCEPTION(sErr);
 #endif
 }
 

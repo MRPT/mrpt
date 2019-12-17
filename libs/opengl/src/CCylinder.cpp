@@ -19,15 +19,17 @@
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
-
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CCylinder, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CCylinder, CRenderizable, mrpt::opengl)
 
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
-void CCylinder::render_dl() const
+void CCylinder::renderUpdateBuffers() const
+{
+	//
+	MRPT_TODO("Implement me!");
+}
+
+void CCylinder::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	glEnable(GL_BLEND);
@@ -114,7 +116,7 @@ void CCylinder::serializeFrom(
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 bool solveEqn(double a, double b, double c, double& t)

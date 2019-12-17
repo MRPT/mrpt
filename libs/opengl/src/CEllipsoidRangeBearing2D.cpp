@@ -14,12 +14,11 @@
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-
 using namespace mrpt::math;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(
-	CEllipsoidRangeBearing2D, CRenderizableDisplayList, mrpt::opengl)
+	CEllipsoidRangeBearing2D, CRenderizable, mrpt::opengl)
 
 /*---------------------------------------------------------------
 							transformFromParameterSpace
@@ -66,5 +65,5 @@ void CEllipsoidRangeBearing2D::serializeFrom(
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }

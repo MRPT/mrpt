@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/math/TPoint3D.h>
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizable.h>
 
 namespace mrpt::opengl
 {
@@ -36,7 +36,7 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_opengl_grp
  */
-class CBox : public CRenderizableDisplayList
+class CBox : public CRenderizable
 {
 	DEFINE_SERIALIZABLE(CBox, mrpt::opengl)
 
@@ -54,13 +54,8 @@ class CBox : public CRenderizableDisplayList
 	mrpt::img::TColor m_solidborder_color;
 
    public:
-	/** Render
-	 * \sa mrpt::opengl::CRenderizable
-	 */
-	void render_dl() const override;
-
-	/** Evaluates the bounding box of this object (including possible children)
-	 * in the coordinate frame of the object parent. */
+	void render() const override;
+	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
@@ -74,25 +69,25 @@ class CBox : public CRenderizableDisplayList
 	inline void setLineWidth(float width)
 	{
 		m_lineWidth = width;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	inline float getLineWidth() const { return m_lineWidth; }
 	inline void setWireframe(bool is_wireframe = true)
 	{
 		m_wireframe = is_wireframe;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	inline bool isWireframe() const { return m_wireframe; }
 	inline void enableBoxBorder(bool drawBorder = true)
 	{
 		m_draw_border = drawBorder;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	inline bool isBoxBorderEnabled() const { return m_draw_border; }
 	inline void setBoxBorderColor(const mrpt::img::TColor& c)
 	{
 		m_solidborder_color = c;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	inline mrpt::img::TColor getBoxBorderColor() const
 	{
