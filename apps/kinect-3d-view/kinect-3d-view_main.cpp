@@ -249,16 +249,9 @@ void Test_Kinect()
 			// Show ranges as 2D:
 			if (last_obs->hasRangeImage)
 			{
-				mrpt::img::CImage img;
-
 				// Normalize the image
-				static CMatrixFloat range2D;  // Static to save time allocating
-
-				// the matrix in every iteration
-				range2D = last_obs->rangeImage.asEigen().cast<float>() *
-						  last_obs->rangeUnits * (1.0f / last_obs->maxRange);
-
-				img.setFromMatrix(range2D);
+				mrpt::img::CImage img = last_obs->rangeImage_getAsImage(
+					mrpt::img::TColormap::cmJET);
 
 				win3D.get3DSceneAndLock();
 				viewRange->setImageView(std::move(img));

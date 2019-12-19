@@ -170,12 +170,7 @@ void Test_SwissRanger()
 		// Show ranges as 2D:
 		if (there_is_obs && obs.hasRangeImage)
 		{
-			mrpt::img::CImage img;
-			// Normalize the image
-			Eigen::MatrixXf range2D = obs.rangeImage.asEigen().cast<float>() *
-									  obs.rangeUnits *
-									  (1.0f / cam.getMaxRange());
-			img.setFromMatrix(range2D, true /*normalized 0-1*/);
+			mrpt::img::CImage img = obs.rangeImage_getAsImage();
 
 			win3D.get3DSceneAndLock();
 			gl_img_range->assignImage_fast(img);

@@ -10,6 +10,7 @@
 
 #include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/img/CImage.h>
+#include <mrpt/img/color_maps.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/obs/CObservation.h>
@@ -22,6 +23,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/serialization/serialization_frwds.h>
 #include <mrpt/typemeta/TEnumType.h>
+#include <optional>
 
 namespace mrpt
 {
@@ -460,6 +462,19 @@ class CObservation3DRangeScan : public CObservation
 	/** Similar to calling "rangeImage.setSize(H,W)" but this method provides
 	 * memory pooling to speed-up the memory allocation. */
 	void rangeImage_setSize(const int HEIGHT, const int WIDTH);
+
+	/** Builds a visualization from the rangeImage.
+	 * The image is built with the given color map (default: grayscale) and such
+	 * that the colormap range is mapped to ranges 0 meters to the field
+	 * "maxRange" in this object, unless overriden with the optional parameters.
+	 * Note that the usage of optional<> allows any parameter to be left to its
+	 * default placing `std::nullopt`.
+	 */
+	mrpt::img::CImage rangeImage_getAsImage(
+		const std::optional<mrpt::img::TColormap> color = std::nullopt,
+		const std::optional<float> normMinRange = std::nullopt,
+		const std::optional<float> normMaxRange = std::nullopt) const;
+
 	/** @} */
 
 	/** \name Range Matrix external storage functions

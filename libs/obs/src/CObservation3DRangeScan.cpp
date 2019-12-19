@@ -1312,3 +1312,60 @@ void CObservation3DRangeScan::undistort()
 	THROW_EXCEPTION("This method requires OpenCV");
 #endif
 }
+
+mrpt::img::CImage CObservation3DRangeScan::rangeImage_getAsImage(
+	const std::optional<mrpt::img::TColormap> color,
+	const std::optional<float> normMinRange,
+	const std::optional<float> normMaxRange) const
+{
+#if MRPT_HAS_OPENCV
+	const float val_min = normMinRange.value_or(.0f);
+	const float val_max = normMaxRange.value_or(this->maxRange);
+	ASSERT_ABOVE_(val_max, val_min);
+
+	const float range_inv = rangeUnits / (val_max - val_min);
+
+	ASSERT_(this->hasRangeImage);
+	ASSERT_ABOVE_(rangeImage.cols(), 0);
+	ASSERT_ABOVE_(rangeImage.rows(), 0);
+
+	mrpt::img::CImage img;
+	const int cols = rangeImage.cols(), rows = rangeImage.rows();
+
+	const auto col = color.value_or(mrpt::img::TColormap::cmGRAYSCALE);
+
+	const bool is_gray = (col == mrpt::img::TColormap::cmGRAYSCALE);
+
+	img.resize(cols, rows, is_gray ? mrpt::img::CH_GRAY : mrpt::img::CH_RGB);
+
+	for (int r = 0; r < rows; r++)
+	{
+		for (int c = 0; c < cols; c++)
+		{
+			// Normalized value in the range [0,1]:
+			const float val_01 = (rangeImage.coeff(r, c) - val_min) * range_inv;
+			if (is_gray)
+			{
+				img.setPixel(c, r, static_cast<uint8_t>(val_01 * 255));
+			}
+			else
+			{
+				float R, G, B;
+				mrpt::img::colormap(col, val_01, R, G, B);
+
+				img.setPixel(
+					c, r,
+					mrpt::img::TColor(
+						static_cast<uint8_t>(R * 255),
+						static_cast<uint8_t>(G * 255),
+						static_cast<uint8_t>(B * 255)));
+			}
+		}
+	}
+
+	return img;
+
+#else
+	THROW_EXCEPTION("This method requires OpenCV");
+#endif
+}
