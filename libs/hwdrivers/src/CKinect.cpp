@@ -618,11 +618,7 @@ void CKinect::getNextObservation(
 				}
 
 				// Normalize the image
-				mrpt::img::CImage img;
-				const Eigen::MatrixXf r =
-					_out_obs.rangeImage.asEigen().cast<float>() *
-					_out_obs.rangeUnits * float(1.0 / this->m_maxRange);
-				img.setFromMatrix(r, true /*normalized: 0-1 */);
+				mrpt::img::CImage img = _out_obs.rangeImage_getAsImage();
 				m_win_range->showImage(img);
 			}
 		}

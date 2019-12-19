@@ -321,14 +321,7 @@ void COpenNI2Sensor::getNextObservation(
 					m_win_range->setPos(5, 5);
 				}
 
-				// Normalize the image
-				mrpt::img::CImage img;
-				CMatrixF r = out_obs.rangeImage.asEigen().cast<float>();
-				r *= out_obs.rangeUnits *
-					 static_cast<float>(255.0 / this->m_maxRange);
-
-				img.setFromMatrix(r, false /*normalized in 0-255*/);
-				m_win_range->showImage(img);
+				m_win_range->showImage(out_obs.rangeImage_getAsImage());
 			}
 		}
 		if (out_obs.hasIntensityImage)
