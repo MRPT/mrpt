@@ -146,12 +146,17 @@ CPose3D::CPose3D(const CPose3DRotVec &p )
 void  CPose3D::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
-		*version = 2;
+		*version = 3;
 	else
 	{
-		const CPose3DQuat  q(*this);
-		// The coordinates:
-		out << q[0] << q[1] << q[2] << q[3] << q[4] << q[5] << q[6];
+		// v2 serialized the equivalent CPose3DQuat representation.
+		// But this led to (**really** tiny) numerical differences between the
+		// original and reconstructed poses. To ensure bit-by-bit equivalence before
+		// and after serialization, let's get back to serializing the actual SO(3)
+		// matrix in serialization v3:
+		for (int i = 0; i < 3; i++) out << m_coords[i];
+		for (int r = 0; r < 3; r++)
+			for (int c = 0; c < 3; c++) out << m_ROT(r, c);
 	}
 }
 
@@ -203,6 +208,13 @@ void  CPose3D::readFromStream(mrpt::utils::CStream &in,int version)
 			m_coords[2] = p.z();
 			p.quat().rotationMatrixNoResize(m_ROT);
 		} break;
+	case 3:
+		{
+			for (int i = 0; i < 3; i++) in >> m_coords[i];
+			for (int r = 0; r < 3; r++)
+				for (int c = 0; c < 3; c++) in >> m_ROT(r, c);
+		}
+		break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 
