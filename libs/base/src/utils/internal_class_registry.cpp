@@ -26,6 +26,16 @@ using namespace mrpt::synch;
 using namespace mrpt::system;
 using namespace std;
 
+static std::string stripNamespace(const std::string& n)
+{
+	std::string ret = n;
+	const auto pos = ret.rfind("::");
+	if (pos != std::string::npos)
+	{
+		return ret.substr(pos + 2);
+	}
+	return ret;
+}
 
 /*---------------------------------------------------------------
 					STATIC GLOBAL VARIABLES
@@ -88,6 +98,9 @@ namespace mrpt
 
 			const TRuntimeClassId *Get(const std::string &className)
 			{
+				// Make this fordward compatible with mrpt2 serialization:
+				const std::string name = stripNamespace(className);
+
 				// Optimization to avoid the costly lock() in virtually all situations:
 				bool has_to_unlock = false;
 				if (m_being_modified)
@@ -95,7 +108,7 @@ namespace mrpt
 					m_cs.lock();
 					has_to_unlock = true;
 				}
-				const TRuntimeClassId *ret = registeredClasses[className];
+				const TRuntimeClassId *ret = registeredClasses[name];
 				if (has_to_unlock) m_cs.unlock();
 				return ret;
 			}

@@ -202,6 +202,19 @@ void  CPosePDFParticles::readFromStream(mrpt::utils::CStream &in, int version)
 		{
 			readParticlesFromStream( in );
 		} break;
+		// fordward-compatible with mrpt2:
+	case 1:
+		{
+			mrpt::bayes::CParticleFilterData<mrpt::math::TPose2D> newparts;
+			newparts.readParticlesFromStream(in);
+			resetDeterministic(CPose2D(),newparts.m_particles.size());
+			for (size_t i=0;i<newparts.m_particles.size();i++)
+			{
+				*m_particles[i].d = CPose2D(*newparts.m_particles[i].d);
+				m_particles[i].log_w = newparts.m_particles[i].log_w;
+			}
+		}
+		break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 
