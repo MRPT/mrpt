@@ -76,6 +76,7 @@
       - Rewrite driver to be safer and reduce mem allocs.
       - New parameter `scan_interval` to decimate scans.
     - VelodyneCalibration: Can now load YAML files, in addition to XML.
+    - New sensor state enum value: mrpt::hwdrivers::CGenericSensor::ssUninitialized
   - \ref mrpt_opengl_grp
     - Update Assimp lib version 4.0.1 -> 4.1.0 (when built as ExternalProject)
   - \ref mrpt_obs_grp

@@ -11,6 +11,7 @@
 
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/obs/CObservation.h>
+#include <mrpt/typemeta/TEnumType.h>
 #include <map>
 #include <mutex>
 
@@ -84,7 +85,8 @@ class CGenericSensor
 	{
 		ssInitializing = 0,
 		ssWorking,
-		ssError
+		ssError,
+		ssUninitialized  // New in MRPT 1.9.9
 	};
 
 	/** The current state of the sensor  */
@@ -325,3 +327,10 @@ static_assert(
 
 }  // namespace hwdrivers
 }  // namespace mrpt
+
+MRPT_ENUM_TYPE_BEGIN(mrpt::hwdrivers::CGenericSensor::TSensorState)
+MRPT_FILL_ENUM_MEMBER(mrpt::hwdrivers::CGenericSensor, ssInitializing);
+MRPT_FILL_ENUM_MEMBER(mrpt::hwdrivers::CGenericSensor, ssWorking);
+MRPT_FILL_ENUM_MEMBER(mrpt::hwdrivers::CGenericSensor, ssError);
+MRPT_FILL_ENUM_MEMBER(mrpt::hwdrivers::CGenericSensor, ssUninitialized);
+MRPT_ENUM_TYPE_END()
