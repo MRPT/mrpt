@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/math/TPoseOrPoint.h>
+#include <vector>
 
 namespace mrpt::math
 {
