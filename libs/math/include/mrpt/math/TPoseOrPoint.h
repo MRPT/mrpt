@@ -27,8 +27,16 @@ struct TPoseOrPoint
 
 /** Forward declarations of all mrpt::math classes related to poses and points
  */
-struct TPoint2D;
-struct TPoint3D;
+template <typename T>
+struct TPoint2D_;
+using TPoint2D = TPoint2D_<double>;
+using TPoint2Df = TPoint2D_<float>;
+
+template <typename T>
+struct TPoint3D_;
+using TPoint3D = TPoint3D_<double>;
+using TPoint3Df = TPoint3D_<float>;
+
 struct TPose2D;
 struct TPose3D;
 struct TPose3DQuat;
@@ -46,6 +54,7 @@ class TPolygon3D;
 class TPolygon2D;
 struct TObject3D;
 struct TObject2D;
+struct TPlane;
 
 namespace internal
 {

@@ -16,6 +16,7 @@
 #include <mrpt/math/TPolygon2D.h>
 #include <mrpt/math/TPolygon3D.h>
 #include <mrpt/math/TPose3D.h>
+#include <mrpt/math/epsilon.h>
 #include <mrpt/math/math_frwds.h>  // forward declarations
 #include <mrpt/math/wrap2pi.h>
 
@@ -737,16 +738,6 @@ void assemblePolygons(
 	const std::vector<TObject3D>& objs, std::vector<TPolygon3D>& polys,
 	std::vector<TSegment3D>& remainder1, std::vector<TObject3D>& remainder2);
 
-/**
- * Changes the value of the geometric epsilon (default = 1e-5)
- * \sa geometryEpsilon,getEpsilon
- */
-void setEpsilon(double nE);
-/**
- * Gets the value of the geometric epsilon  (default = 1e-5)
- * \sa setEpsilon
- */
-double getEpsilon();
 /**
  * Splits a 2D polygon into convex components.
  */

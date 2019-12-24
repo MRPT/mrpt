@@ -17,68 +17,82 @@
 namespace mrpt::math
 {
 /** \ingroup geometry_grp */
+template <typename T>
 struct TPoint2D_data
 {
 	/** X,Y coordinates */
-	double x, y;
+	T x, y;
 };
 
-/**
- * Lightweight 2D point. Allows coordinate access using [] operator.
- * \sa mrpt::poses::CPoint2D
+/** Base template for TPoint2D and TPoint2Df
  * \ingroup geometry_grp
  */
-struct TPoint2D : public TPoseOrPoint,
-				  public TPoint2D_data,
-				  public internal::ProvideStaticResize<TPoint2D>
+template <typename T>
+struct TPoint2D_ : public TPoseOrPoint,
+				   public TPoint2D_data<T>,
+				   public internal::ProvideStaticResize<TPoint2D_<T>>
 {
 	enum
 	{
 		static_size = 2
 	};
 	/** Default constructor. Initializes to zeros  */
-	constexpr TPoint2D() : TPoint2D_data{0, 0} {}
+	constexpr TPoint2D_() : TPoint2D_data<T>{0, 0} {}
 	/** Constructor from coordinates  */
-	constexpr TPoint2D(double xx, double yy) : TPoint2D_data{xx, yy} {}
-	constexpr TPoint2D(const TPoint2D_data& d) : TPoint2D_data{d.x, d.y} {}
+	constexpr TPoint2D_(T xx, T yy) : TPoint2D_data<T>{xx, yy} {}
+
+	/** Explicit constructor from coordinates.  */
+	template <typename U>
+	explicit TPoint2D_(const TPoint2D_data<U>& p)
+	{
+		TPoint2D_data<T>::x = static_cast<T>(p.x);
+		TPoint2D_data<T>::y = static_cast<T>(p.y);
+	}
 
 	/** Constructor from TPose2D, discarding phi.
 	 * \sa TPose2D
 	 */
-	explicit TPoint2D(const TPose2D& p);
+	explicit TPoint2D_(const TPose2D& p);
 	/**
 	 * Constructor from TPoint3D, discarding z.
 	 * \sa TPoint3D
 	 */
-	explicit TPoint2D(const TPoint3D& p);
+	explicit TPoint2D_(const TPoint3D_<T>& p);
 	/**
 	 * Constructor from TPose3D, discarding z and the angular coordinates.
 	 * \sa TPose3D
 	 */
-	explicit TPoint2D(const TPose3D& p);
+	explicit TPoint2D_(const TPose3D& p);
+
+	/** Return a copy of this object using type U for coordinates */
+	template <typename U>
+	TPoint2D_<U> cast() const
+	{
+		return TPoint2D_<U>(static_cast<U>(this->x), static_cast<U>(this->y));
+	}
 
 	/** Coordinate access using operator[]. Order: x,y */
-	double& operator[](size_t i)
+	T& operator[](size_t i)
 	{
 		switch (i)
 		{
 			case 0:
-				return x;
+				return this->x;
 			case 1:
-				return y;
+				return this->y;
 			default:
 				throw std::out_of_range("index out of range");
 		}
 	}
 	/** Coordinate access using operator[]. Order: x,y */
-	constexpr double operator[](size_t i) const
+	constexpr T operator[](size_t i) const
 	{
 		switch (i)
 		{
 			case 0:
-				return x;
+				return this->x;
 			case 1:
-				return y;
+				return this->y;
 			default:
 				throw std::out_of_range("index out of range");
 		}
@@ -87,60 +101,73 @@ struct TPoint2D : public TPoseOrPoint,
 	/**
 	 * Transformation into vector.
 	 */
-	void asVector(std::vector<double>& v) const
+	template <typename U>
+	void asVector(std::vector<U>& v) const
 	{
 		v.resize(2);
-		v[0] = x;
-		v[1] = y;
+		v[0] = static_cast<U>(this->x);
+		v[1] = static_cast<U>(this->y);
 	}
 
-	bool operator<(const TPoint2D& p) const;
+	bool operator<(const TPoint2D_& p) const;
 
-	TPoint2D& operator+=(const TPoint2D& p)
+	TPoint2D_& operator+=(const TPoint2D_& p)
 	{
-		x += p.x;
-		y += p.y;
+		this->x += p.x;
+		this->y += p.y;
 		return *this;
 	}
 
-	TPoint2D& operator-=(const TPoint2D& p)
+	TPoint2D_& operator-=(const TPoint2D_& p)
 	{
-		x -= p.x;
-		y -= p.y;
+		this->x -= p.x;
+		this->y -= p.y;
 		return *this;
 	}
 
-	TPoint2D& operator*=(double d)
+	TPoint2D_& operator*=(T d)
 	{
-		x *= d;
-		y *= d;
+		this->x *= d;
+		this->y *= d;
 		return *this;
 	}
 
-	TPoint2D& operator/=(double d)
+	TPoint2D_& operator/=(T d)
 	{
-		x /= d;
-		y /= d;
+		ASSERT_(d != 0);
+		this->x /= d;
+		this->y /= d;
 		return *this;
 	}
 
-	constexpr TPoint2D operator+(const TPoint2D& p) const
+	constexpr TPoint2D_ operator+(const TPoint2D_& p) const
 	{
-		return {x + p.x, y + p.y};
+		return {this->x + p.x, this->y + p.y};
 	}
 
-	constexpr TPoint2D operator-(const TPoint2D& p) const
+	constexpr TPoint2D_ operator-(const TPoint2D_& p) const
 	{
-		return {x - p.x, y - p.y};
+		return {this->x - p.x, this->y - p.y};
 	}
 
-	constexpr TPoint2D operator*(double d) const { return {d * x, d * y}; }
-	constexpr TPoint2D operator/(double d) const { return {x / d, y / d}; }
+	constexpr TPoint2D_ operator*(T d) const
+	{
+		return {d * this->x, d * this->y};
+	}
+	constexpr TPoint2D_ operator/(T d) const
+	{
+		ASSERT_(d != 0);
+		return {this->x / d, this->y / d};
+	}
 	/** Returns a human-readable textual representation of the object (eg:
 	 * "[0.02 1.04]" )
 	 * \sa fromString
 	 */
-	void asString(std::string& s) const { s = mrpt::format("[%f %f]", x, y); }
+	void asString(std::string& s) const
+	{
+		s = mrpt::format("[%f %f]", this->x, this->y);
+	}
+
 	std::string asString() const
 	{
 		std::string s;
@@ -155,27 +182,38 @@ struct TPoint2D : public TPoseOrPoint,
 	 */
 	void fromString(const std::string& s);
 
-	static TPoint2D FromString(const std::string& s)
+	static TPoint2D_ FromString(const std::string& s)
 	{
-		TPoint2D o;
+		TPoint2D_ o;
 		o.fromString(s);
 		return o;
 	}
 
 	/** Squared norm: |v|^2 = x^2+y^2 */
-	double sqrNorm() const { return x * x + y * y; }
+	T sqrNorm() const { return this->x * this->x + this->y * this->y; }
 
 	/** Point norm: |v| = sqrt(x^2+y^2) */
-	double norm() const { return std::sqrt(sqrNorm()); }
+	T norm() const { return std::sqrt(sqrNorm()); }
 };
 
+/**
+ * Lightweight 2D point. Allows coordinate access using [] operator.
+ * \sa mrpt::poses::CPoint2D
+ * \ingroup geometry_grp
+ */
+using TPoint2D = TPoint2D_<double>;
+using TPoint2Df = TPoint2D_<float>;
+
 /** Exact comparison between 2D points */
-constexpr bool operator==(const TPoint2D& p1, const TPoint2D& p2)
+template <typename T>
+constexpr bool operator==(const TPoint2D_<T>& p1, const TPoint2D_<T>& p2)
 {
 	return (p1.x == p2.x) && (p1.y == p2.y);  //-V550
 }
+
 /**  Exact comparison between 2D points */
-constexpr bool operator!=(const TPoint2D& p1, const TPoint2D& p2)
+template <typename T>
+constexpr bool operator!=(const TPoint2D_<T>& p1, const TPoint2D_<T>& p2)
 {
 	return (p1.x != p2.x) || (p1.y != p2.y);  //-V550
 }
