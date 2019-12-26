@@ -616,6 +616,8 @@ static void quat_vs_YPR(
 	double yaw, double pitch, double roll, double qx, double qy, double qz,
 	double qw, const std::string& sRotMat)
 {
+	const double eps = 1e-4;
+
 	// First, test Yaw-pitch-roll to Rot matrix:
 	const mrpt::poses::CPose3D p(0, 0, 0, yaw, pitch, roll);
 	mrpt::math::CMatrixDouble33 R_gt;
@@ -628,28 +630,37 @@ static void quat_vs_YPR(
 
 	EXPECT_NEAR(
 		0,
-		(R_gt.asEigen() - p.getRotationMatrix().asEigen()).array().abs().sum(),
-		1e-6)
-		<< "R_gt=" << R_gt << "p.R=" << p.getRotationMatrix() << std::endl;
+		(R_gt.asEigen() - p.getRotationMatrix().asEigen())
+			.array()
+			.abs()
+			.maxCoeff(),
+		eps)
+		<< "R_gt=\n"
+		<< R_gt << "\np.R=\n"
+		<< p.getRotationMatrix() << std::endl;
 
 	// Convert to quat:
+	const auto q_gt = mrpt::math::CQuaternionDouble(qw, qx, qy, qz);
 	mrpt::math::CQuaternionDouble q;
 	p.getAsQuaternion(q);
 
-	const double eps = 1e-4;
-
-	if (std::abs(q.w() - qw) > eps || std::abs(q.x() - qx) > eps ||
-		std::abs(q.y() - qy) > eps || std::abs(q.z() - qz) > eps)
+	if (std::abs(q.w() - q_gt.w()) > eps || std::abs(q.x() - q_gt.x()) > eps ||
+		std::abs(q.y() - q_gt.y()) > eps || std::abs(q.z() - q_gt.z()) > eps)
 	{
-		GTEST_FAIL() << "q = " << q.asString() << "\nExpected: qx=" << qx
-					 << " qy=" << qy << " qz=" << qz << " qw=" << qw << "\n";
+		GTEST_FAIL() << "q = " << q.asString()
+					 << "\nExpected = " << q_gt.asString() << "\n";
 	}
 
 	auto R = q.rotationMatrix<mrpt::math::CMatrixDouble33>();
 	EXPECT_NEAR(
-		0, (R.asEigen() - p.getRotationMatrix().asEigen()).array().abs().sum(),
-		1e-6)
-		<< "q.R=" << R << "p.R=" << p.getRotationMatrix() << std::endl;
+		0,
+		(R.asEigen() - p.getRotationMatrix().asEigen())
+			.array()
+			.abs()
+			.maxCoeff(),
+		eps)
+		<< "q.R=\n"
+		<< R << "\np.R=" << p.getRotationMatrix() << std::endl;
 }
 
 // Check yaw-pitch-roll vs its [qx,qy,qz,qw] representation:
@@ -683,6 +694,12 @@ TEST(QuatTests, Quat_vs_YPR)
 		"[  0.9254166  0.3187958 -0.2048741;"
 		"  -0.1631759  0.8231729  0.5438381;"
 		"   0.3420202 -0.4698463  0.8137977 ]");
+	quat_vs_YPR(
+		-179.9995949_deg, -90.0_deg, 0.0_deg,  // Input Yaw-pitch-roll
+		0.7071068, 0, 0.7071068, -0.000005,  // Expected quaternion
+		"[  0.0000000  0.0000071  1.0000000;"
+		"  -0.0000071 -1.0000000  0.0000071;"
+		"   1.0000000 -0.0000071  0.0000000 ]");
 }
 
 TEST_F(Pose3DQuatTests, FromYPRAndBack)

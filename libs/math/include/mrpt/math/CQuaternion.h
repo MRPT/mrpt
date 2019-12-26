@@ -57,30 +57,46 @@ class CQuaternion : public CVectorFixed<T, 4>
 	 * no rotation. */
 	inline CQuaternion()
 	{
-		(*this)[0] = 1;
-		(*this)[1] = 0;
-		(*this)[2] = 0;
-		(*this)[3] = 0;
+		r() = 1;
+		x() = 0;
+		y() = 0;
+		z() = 0;
 	}
 
 	/**	Construct a quaternion from its parameters 'r', 'x', 'y', 'z', with q =
 	 * r + ix + jy + kz. */
-	inline CQuaternion(const T r, const T x, const T y, const T z)
+	inline CQuaternion(const T R, const T X, const T Y, const T Z)
 	{
-		(*this)[0] = r;
-		(*this)[1] = x;
-		(*this)[2] = y;
-		(*this)[3] = z;
+		r() = R;
+		x() = X;
+		y() = Y;
+		z() = Z;
+		ensurePositiveRealPart();
+
 		ASSERTMSG_(
 			std::abs(normSqr() - 1.0) < 1e-3,
 			mrpt::format(
 				"Initialization data for quaternion is not normalized: %f %f "
 				"%f %f -> sqrNorm=%f",
-				r, x, y, z, normSqr()));
+				R, X, Y, Z, normSqr()));
 	}
 
 	/* @}
 	 */
+
+	/** Adhere to the convention of w>=0 to avoid ambiguity of quaternion double
+	 * cover of SO(3) */
+	inline void ensurePositiveRealPart()
+	{
+		// Ensure r()>0
+		if (r() < 0)
+		{
+			r() = -r();
+			x() = -x();
+			y() = -y();
+			z() = -z();
+		}
+	}
 
 	/** Return r (real part) coordinate of the quaternion */
 	inline T r() const { return (*this)[0]; }
@@ -285,6 +301,7 @@ class CQuaternion : public CVectorFixed<T, 4>
 	 */
 	inline void normalize()
 	{
+		ensurePositiveRealPart();
 		const T qq = 1.0 / std::sqrt(normSqr());
 		for (unsigned int i = 0; i < 4; i++) (*this)[i] *= qq;
 	}
