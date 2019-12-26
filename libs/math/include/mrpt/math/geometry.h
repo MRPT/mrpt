@@ -904,7 +904,7 @@ inline mrpt::math::CMatrixDouble33 skew_symmetric3_neg(const VECTOR& v)
 template <class T, class U>
 inline bool vectorsAreParallel2D(const T& v1, const U& v2)
 {
-	return abs(v1[0] * v2[1] - v2[0] * v1[1]) < getEpsilon();
+	return std::abs(v1[0] * v2[1] - v2[0] * v1[1]) < getEpsilon();
 }
 
 /**
@@ -914,9 +914,9 @@ inline bool vectorsAreParallel2D(const T& v1, const U& v2)
 template <class T, class U>
 inline bool vectorsAreParallel3D(const T& v1, const U& v2)
 {
-	if (abs(v1[0] * v2[1] - v2[0] * v1[1]) >= getEpsilon()) return false;
-	if (abs(v1[1] * v2[2] - v2[1] * v1[2]) >= getEpsilon()) return false;
-	return abs(v1[2] * v2[0] - v2[2] * v1[0]) < getEpsilon();
+	if (std::abs(v1[0] * v2[1] - v2[0] * v1[1]) >= getEpsilon()) return false;
+	if (std::abs(v1[1] * v2[2] - v2[1] * v1[2]) >= getEpsilon()) return false;
+	return std::abs(v1[2] * v2[0] - v2[2] * v1[0]) < getEpsilon();
 }
 
 /** Computes the closest point from a given point to a segment.

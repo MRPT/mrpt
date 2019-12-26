@@ -32,16 +32,16 @@ bool TPlane::contains(const TPoint3D& point) const
 bool TPlane::contains(const TLine3D& line) const
 {
 	if (!contains(line.pBase)) return false;  // Base point must be contained
-	return abs(getAngle(*this, line)) <
+	return std::abs(getAngle(*this, line)) <
 		   getEpsilon();  // Plane's normal must be normal to director vector
 }
 double TPlane::distance(const TPoint3D& point) const
 {
-	return abs(evaluatePoint(point)) / sqrt(squareNorm<3, double>(coefs));
+	return std::abs(evaluatePoint(point)) / sqrt(squareNorm<3, double>(coefs));
 }
 double TPlane::distance(const TLine3D& line) const
 {
-	if (abs(getAngle(*this, line)) >= getEpsilon())
+	if (std::abs(getAngle(*this, line)) >= getEpsilon())
 		return 0;  // Plane crosses with line
 	else
 		return distance(line.pBase);
@@ -79,7 +79,7 @@ void TPlane::getAsPose3D(mrpt::math::TPose3D& outPose) const
 	CMatrixDouble44 AXIS;
 	generateAxisBaseFromDirectionAndAxis(normal, 2, AXIS);
 	for (size_t i = 0; i < 3; i++)
-		if (abs(coefs[i]) >= getEpsilon())
+		if (std::abs(coefs[i]) >= getEpsilon())
 		{
 			AXIS(i, 3) = -coefs[3] / coefs[i];
 			break;
@@ -109,8 +109,8 @@ TPlane::TPlane(const TPoint3D& p1, const TPoint3D& p2, const TPoint3D& p3)
 	coefs[0] = dy1 * dz2 - dy2 * dz1;
 	coefs[1] = dz1 * dx2 - dz2 * dx1;
 	coefs[2] = dx1 * dy2 - dx2 * dy1;
-	if (abs(coefs[0]) < getEpsilon() && abs(coefs[1]) < getEpsilon() &&
-		abs(coefs[2]) < getEpsilon())
+	if (std::abs(coefs[0]) < getEpsilon() && std::abs(coefs[1]) < getEpsilon() &&
+		std::abs(coefs[2]) < getEpsilon())
 		throw std::logic_error("Points are linearly dependent");
 	coefs[3] = -coefs[0] * p1.x - coefs[1] * p1.y - coefs[2] * p1.z;
 }
@@ -122,8 +122,8 @@ TPlane::TPlane(const TPoint3D& p1, const TLine3D& r2)
 	coefs[0] = dy1 * r2.director[2] - dz1 * r2.director[1];
 	coefs[1] = dz1 * r2.director[0] - dx1 * r2.director[2];
 	coefs[2] = dx1 * r2.director[1] - dy1 * r2.director[0];
-	if (abs(coefs[0]) < getEpsilon() && abs(coefs[1]) < getEpsilon() &&
-		abs(coefs[2]) < getEpsilon())
+	if (std::abs(coefs[0]) < getEpsilon() && std::abs(coefs[1]) < getEpsilon() &&
+		std::abs(coefs[2]) < getEpsilon())
 		throw std::logic_error("Point is contained in the line");
 	coefs[3] = -coefs[0] * p1.x - coefs[1] * p1.y - coefs[2] * p1.z;
 }
@@ -144,8 +144,8 @@ TPlane::TPlane(const TLine3D& r1, const TLine3D& r2)
 	crossProduct3D(r1.director, r2.director, coefs);
 	coefs[3] =
 		-coefs[0] * r1.pBase.x - coefs[1] * r1.pBase.y - coefs[2] * r1.pBase.z;
-	if (abs(coefs[0]) < getEpsilon() && abs(coefs[1]) < getEpsilon() &&
-		abs(coefs[2]) < getEpsilon())
+	if (std::abs(coefs[0]) < getEpsilon() && std::abs(coefs[1]) < getEpsilon() &&
+		std::abs(coefs[2]) < getEpsilon())
 	{
 		// Lines are parallel
 		if (r1.contains(r2.pBase)) throw std::logic_error("Lines are the same");
@@ -157,7 +157,7 @@ TPlane::TPlane(const TLine3D& r1, const TLine3D& r2)
 		coefs[3] = -coefs[0] * r1.pBase.x - coefs[1] * r1.pBase.y -
 				   coefs[2] * r1.pBase.z;
 	}
-	else if (abs(evaluatePoint(r2.pBase)) >= getEpsilon())
+	else if (std::abs(evaluatePoint(r2.pBase)) >= getEpsilon())
 		throw std::logic_error("Lines do not intersect");
 }
 

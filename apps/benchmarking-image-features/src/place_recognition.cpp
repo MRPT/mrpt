@@ -135,9 +135,6 @@ int PlaceRecognition::predictLabel2(
 			{
 				for (int k = 0; k < descriptor_size; k++)
 				{
-					/// Use abs if better results
-					// temp_sum = temp_sum + abs((temp_feat.at(k) -
-					// training_words[j].at(k)))
 					temp_sum =
 						temp_sum +
 						pow((temp_feat.at(k) - (int)training_words[j].at(k)),

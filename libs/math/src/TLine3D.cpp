@@ -27,15 +27,15 @@ bool TLine3D::contains(const TPoint3D& point) const
 	double dx = point.x - pBase.x;
 	double dy = point.y - pBase.y;
 	double dz = point.z - pBase.z;
-	if (abs(dx) < getEpsilon() && abs(dy) < getEpsilon() &&
-		abs(dz) < getEpsilon())
+	if (std::abs(dx) < getEpsilon() && std::abs(dy) < getEpsilon() &&
+		std::abs(dz) < getEpsilon())
 		return true;
 	//       dx          dy          dz
 	// if -----------=-----------=-----------, point is inside the line.
 	//   director[0] director[1] director[2]
-	return (abs(dx * director[1] - dy * director[0]) < getEpsilon()) &&
-		   (abs(dx * director[2] - dz * director[0]) < getEpsilon()) &&
-		   (abs(dy * director[2] - dz * director[1]) < getEpsilon());
+	return (std::abs(dx * director[1] - dy * director[0]) < getEpsilon()) &&
+		   (std::abs(dx * director[2] - dz * director[0]) < getEpsilon()) &&
+		   (std::abs(dy * director[2] - dz * director[1]) < getEpsilon());
 }
 double TLine3D::distance(const TPoint3D& point) const
 {
@@ -60,7 +60,7 @@ void TLine3D::unitarize()
 }
 TLine3D::TLine3D(const TPoint3D& p1, const TPoint3D& p2)
 {
-	if (abs(math::distance(p1, p2)) < getEpsilon())
+	if (std::abs(math::distance(p1, p2)) < getEpsilon())
 		throw std::logic_error("Both points are the same");
 	pBase = p1;
 	director[0] = p2.x - p1.x;
@@ -81,7 +81,7 @@ TLine3D::TLine3D(const TLine2D& l)
 	director[2] = 0;
 	// We assume that either l.coefs[0] or l.coefs[1] is not null. Respectively,
 	// either y or x can be used as free cordinate.
-	if (abs(l.coefs[0]) >= getEpsilon())
+	if (std::abs(l.coefs[0]) >= getEpsilon())
 	{
 		pBase.x = -l.coefs[2] / l.coefs[0];
 		pBase.y = 0;

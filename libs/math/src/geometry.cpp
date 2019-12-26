@@ -479,12 +479,12 @@ bool intersectInCommonLine(
 {
 	// Move in a free coordinate, searching for minima and maxima.
 	size_t i1 = 0;
-	while (abs(lin.director[i1]) < geometryEpsilon) i1++;
+	while (std::abs(lin.director[i1]) < geometryEpsilon) i1++;
 	TSegment3D s11 = (s1[0][i1] > s1[1][i1]) ? TSegment3D(s1[1], s1[0]) : s1;
 	TSegment3D s21 = (s2[0][i1] > s2[1][i1]) ? TSegment3D(s2[1], s2[0]) : s2;
 	TPoint3D pMin = ((s11[0][i1] < s21[0][i1]) ? s21 : s11)[0];
 	TPoint3D pMax = ((s11[1][i1] < s21[1][i1]) ? s11 : s21)[1];
-	if (abs(pMax[i1] - pMin[i1]) < geometryEpsilon)
+	if (std::abs(pMax[i1] - pMin[i1]) < geometryEpsilon)
 	{  // Intersection is a point
 		obj = pMax;
 		return true;
@@ -502,12 +502,12 @@ bool intersectInCommonLine(
 	TObject2D& obj)
 {
 	// Move in a free coordinate, searching for minima and maxima
-	size_t i1 = (abs(lin.coefs[0]) >= geometryEpsilon) ? 1 : 0;
+	size_t i1 = (std::abs(lin.coefs[0]) >= geometryEpsilon) ? 1 : 0;
 	TSegment2D s11 = (s1[0][i1] > s1[1][i1]) ? TSegment2D(s1[1], s1[0]) : s1;
 	TSegment2D s21 = (s2[0][i1] > s2[1][i1]) ? TSegment2D(s2[1], s2[0]) : s2;
 	TPoint2D pMin = ((s11[0][i1] < s21[0][i1]) ? s21 : s11)[0];
 	TPoint2D pMax = ((s11[1][i1] < s21[1][i1]) ? s11 : s21)[1];
-	if (abs(pMax[i1] - pMin[i1]) < geometryEpsilon)
+	if (std::abs(pMax[i1] - pMin[i1]) < geometryEpsilon)
 	{  // Intersection is a point
 		obj = pMax;
 		return true;
@@ -546,7 +546,7 @@ bool intersect(
 		if (obj.getPoint(p))
 		{
 			for (size_t i = 0; i < 3; i++)
-				if (abs(l2.director[i]) > geometryEpsilon)
+				if (std::abs(l2.director[i]) > geometryEpsilon)
 				{
 					d = (p[i] - l2.pBase[i]) / l2.director[i];
 					break;
@@ -695,13 +695,13 @@ bool math::intersect(const TPlane& p1, const TPlane& p2, TObject3D& obj)
 {
 	TLine3D lin;
 	crossProduct3D(p1.coefs, p2.coefs, lin.director);
-	if ((abs(lin.director[0]) < geometryEpsilon) &&
-		(abs(lin.director[1]) < geometryEpsilon) &&
-		(abs(lin.director[2]) < geometryEpsilon))
+	if ((std::abs(lin.director[0]) < geometryEpsilon) &&
+		(std::abs(lin.director[1]) < geometryEpsilon) &&
+		(std::abs(lin.director[2]) < geometryEpsilon))
 	{
 		// Planes are parallel
 		for (size_t i = 0; i < 3; i++)
-			if (abs(p1.coefs[i] * p2.coefs[3] - p1.coefs[3] * p2.coefs[i]) >=
+			if (std::abs(p1.coefs[i] * p2.coefs[3] - p1.coefs[3] * p2.coefs[i]) >=
 				geometryEpsilon)
 				return false;
 		// Planes are the same
@@ -715,7 +715,7 @@ bool math::intersect(const TPlane& p1, const TPlane& p2, TObject3D& obj)
 		// The following process manages to create a random point in the line
 		// without loss of generality and almost without conditional sentences.
 		size_t i1 = 0;
-		while (abs(lin.director[i1]) < geometryEpsilon) i1++;
+		while (std::abs(lin.director[i1]) < geometryEpsilon) i1++;
 		// At this point, i1 points to a coordinate (0->x, 1->y, 2->z) in which
 		// we can move freely.
 		// If we arbitrarily assign this coordinate to 0, we'll find a suitable
@@ -740,11 +740,11 @@ bool math::intersect(const TPlane& p1, const TLine3D& r2, TObject3D& obj)
 	// n=p1.coefs[0]*r2.director[0]+p1.coefs[1]*r2.director[1]+p1.coefs[2]*r2.director[2];
 	double n = dotProduct<3, double>(p1.coefs, r2.director);
 	double e = p1.evaluatePoint(r2.pBase);
-	if (abs(n) < geometryEpsilon)
+	if (std::abs(n) < geometryEpsilon)
 	{
 		// Plane's normal and line's director are orthogonal, so both are
 		// parallel
-		if (abs(e) < geometryEpsilon)
+		if (std::abs(e) < geometryEpsilon)
 		{
 			// Line is contained in plane.
 			obj = r2;
@@ -777,7 +777,7 @@ bool math::intersect(const TLine3D& r1, const TLine3D& r2, TObject3D& obj)
 	{
 		double sysDet = -r1.director[c1[i]] * r2.director[c2[i]] +
 						r2.director[c1[i]] * r1.director[c2[i]];
-		if (abs(sysDet) < geometryEpsilon) continue;
+		if (std::abs(sysDet) < geometryEpsilon) continue;
 		// We've found a coordinate in which we can solve the associated system
 		d[c1[i]] = r2.pBase[c1[i]] - r1.pBase[c1[i]];
 		d[c2[i]] = r2.pBase[c2[i]] - r1.pBase[c2[i]];
@@ -806,7 +806,7 @@ bool math::intersect(const TLine3D& r1, const TLine3D& r2, TObject3D& obj)
 bool math::intersect(const TLine2D& r1, const TLine2D& r2, TObject2D& obj)
 {
 	double sysDet = r1.coefs[0] * r2.coefs[1] - r1.coefs[1] * r2.coefs[0];
-	if (abs(sysDet) >= geometryEpsilon)
+	if (std::abs(sysDet) >= geometryEpsilon)
 	{
 		// Resulting point comes simply from solving an equation.
 		TPoint2D p;
@@ -818,9 +818,9 @@ bool math::intersect(const TLine2D& r1, const TLine2D& r2, TObject2D& obj)
 	else
 	{
 		// Lines are parallel
-		if (abs(r1.coefs[0] * r2.coefs[2] - r1.coefs[2] * r2.coefs[0]) >=
+		if (std::abs(r1.coefs[0] * r2.coefs[2] - r1.coefs[2] * r2.coefs[0]) >=
 				geometryEpsilon ||
-			abs(r1.coefs[1] * r2.coefs[2] - r1.coefs[2] * r2.coefs[1]) >=
+			std::abs(r1.coefs[1] * r2.coefs[2] - r1.coefs[2] * r2.coefs[1]) >=
 				geometryEpsilon)
 			return false;
 
@@ -870,7 +870,7 @@ double math::getAngle(const TPlane& s1, const TPlane& s2)
 	}
 	double s = sqrt(n1 * n2);
 	if (s < geometryEpsilon) throw std::logic_error("Invalid plane(s)");
-	if (abs(s) < abs(c))
+	if (std::abs(s) < std::abs(c))
 		return (c / s < 0) ? M_PI : 0;
 	else
 		return acos(c / s);
@@ -887,7 +887,7 @@ double math::getAngle(const TPlane& s1, const TLine3D& r2)
 	}
 	double s = sqrt(n1 * n2);
 	if (s < geometryEpsilon) throw std::logic_error("Invalid plane or line");
-	if (abs(s) < abs(c))
+	if (std::abs(s) < std::abs(c))
 		return M_PI * sign(c / s) / 2;
 	else
 		return asin(c / s);
@@ -904,7 +904,7 @@ double math::getAngle(const TLine3D& r1, const TLine3D& r2)
 	}
 	double s = sqrt(n1 * n2);
 	if (s < geometryEpsilon) throw std::logic_error("Invalid line(s)");
-	if (abs(s) < abs(c))
+	if (std::abs(s) < std::abs(c))
 		return (c / s < 0) ? M_PI : 0;
 	else
 		return acos(c / s);
@@ -1000,7 +1000,7 @@ bool math::conformAPlane(const std::vector<TPoint3D>& points)
 
 bool math::conformAPlane(const std::vector<TPoint3D>& points, TPlane& p)
 {
-	return abs(getRegressionPlane(points, p)) < geometryEpsilon;
+	return std::abs(getRegressionPlane(points, p)) < geometryEpsilon;
 }
 
 bool math::areAligned(const std::vector<TPoint2D>& points)
@@ -1266,9 +1266,9 @@ bool math::intersect(const TPolygon2D& p1, const TLine2D& r2, TObject2D& obj)
 	for (size_t i = 1; i <= N; i++)
 	{
 		double cur = projPoly[i].y;
-		if (abs(cur) < geometryEpsilon)
+		if (std::abs(cur) < geometryEpsilon)
 		{
-			if (abs(pre) < geometryEpsilon)
+			if (std::abs(pre) < geometryEpsilon)
 			{
 				pnts.resize(2);
 				pnts[0] = projPoly[i - 1];
@@ -1278,7 +1278,7 @@ bool math::intersect(const TPolygon2D& p1, const TLine2D& r2, TObject2D& obj)
 			else
 				pnts.push_back(projPoly[i]);
 		}
-		else if ((abs(pre) >= geometryEpsilon) && (sign(cur) != sign(pre)))
+		else if ((std::abs(pre) >= geometryEpsilon) && (sign(cur) != sign(pre)))
 		{
 			double a = projPoly[i - 1].x;
 			double c = projPoly[i].x;
@@ -1917,11 +1917,11 @@ void math::getRectangleBounds(
 
 double math::distance(const TLine2D& r1, const TLine2D& r2)
 {
-	if (abs(r1.coefs[0] * r2.coefs[1] - r2.coefs[0] * r1.coefs[1]) <
+	if (std::abs(r1.coefs[0] * r2.coefs[1] - r2.coefs[0] * r1.coefs[1]) <
 		geometryEpsilon)
 	{
 		// Lines are parallel
-		size_t i1 = (abs(r1.coefs[0]) < geometryEpsilon) ? 0 : 1;
+		size_t i1 = (std::abs(r1.coefs[0]) < geometryEpsilon) ? 0 : 1;
 		TPoint2D p;
 		p[i1] = 0.0;
 		p[1 - i1] = -r1.coefs[2] / r1.coefs[1 - i1];
@@ -1933,7 +1933,7 @@ double math::distance(const TLine2D& r1, const TLine2D& r2)
 
 double math::distance(const TLine3D& r1, const TLine3D& r2)
 {
-	if (abs(getAngle(r1, r2)) < geometryEpsilon)
+	if (std::abs(getAngle(r1, r2)) < geometryEpsilon)
 		return r1.distance(r2.pBase);  // Lines are parallel
 	else
 	{
@@ -1949,12 +1949,12 @@ double math::distance(const TLine3D& r1, const TLine3D& r2)
 
 double math::distance(const TPlane& p1, const TPlane& p2)
 {
-	if (abs(getAngle(p1, p2)) < geometryEpsilon)
+	if (std::abs(getAngle(p1, p2)) < geometryEpsilon)
 	{
 		// Planes are parallel
 		TPoint3D p(0, 0, 0);
 		for (size_t i = 0; i < 3; i++)
-			if (abs(p1.coefs[i]) >= geometryEpsilon)
+			if (std::abs(p1.coefs[i]) >= geometryEpsilon)
 			{
 				p[i] = -p1.coefs[3] / p1.coefs[i];
 				break;
@@ -2522,7 +2522,7 @@ void math::getAngleBisector(const TLine2D& l1, const TLine2D& l2, TLine2D& bis)
 		bis.coefs[0] = l1.coefs[0] / mod1;
 		bis.coefs[1] = l1.coefs[1] / mod1;
 		bool sameSign;
-		if (abs(bis.coefs[0]) < geometryEpsilon)
+		if (std::abs(bis.coefs[0]) < geometryEpsilon)
 			sameSign = (l1.coefs[1] * l2.coefs[1]) > 0;
 		else
 			sameSign = (l1.coefs[0] * l2.coefs[0]) > 0;
