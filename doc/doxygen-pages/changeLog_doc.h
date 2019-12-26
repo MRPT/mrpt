@@ -96,6 +96,7 @@
   - Fix segfault in CMetricMap::loadFromSimpleMap() if the provided CMetricMap has empty smart pointers.
   - Fix crash in CGPSInterface when not setting an external mutex.
   - Fix potential crashes in RawLogViewer while editing list of observations.
+  - Fix incorrect conversion from quaternion to CPose3D.
 
 <a name="1.5.7">
 <h2>Version 1.5.7: Released 24/APR/2019  </h2></a>
