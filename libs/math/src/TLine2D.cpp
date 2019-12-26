@@ -28,11 +28,11 @@ double TLine2D::evaluatePoint(const TPoint2D& point) const
 }
 bool TLine2D::contains(const TPoint2D& point) const
 {
-	return abs(distance(point)) < getEpsilon();
+	return std::abs(distance(point)) < getEpsilon();
 }
 double TLine2D::distance(const TPoint2D& point) const
 {
-	return abs(evaluatePoint(point)) /
+	return std::abs(evaluatePoint(point)) /
 		   sqrt(coefs[0] * coefs[0] + coefs[1] * coefs[1]);
 }
 double TLine2D::signedDistance(const TPoint2D& point) const
@@ -62,7 +62,7 @@ void TLine2D::getAsPose2D(TPose2D& outPose) const
 	// If line is horizontal, force x=0. Else, force y=0. In both cases, we'll
 	// find a suitable point.
 	outPose.phi = atan2(coefs[0], -coefs[1]);
-	if (abs(coefs[0]) < getEpsilon())
+	if (std::abs(coefs[0]) < getEpsilon())
 	{
 		outPose.x = 0;
 		outPose.y = -coefs[2] / coefs[1];

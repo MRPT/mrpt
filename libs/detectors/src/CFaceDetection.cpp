@@ -1717,7 +1717,7 @@ void CFaceDetection::experimental_segmentFace(
 					if ((row > 0) && (toExpand(row - 1, col) != 2))
 					{
 						int value2 = img.at<uint8_t>(col, row - 1);
-						if (abs(value - value2) < 2)
+						if (std::abs(value - value2) < 2)
 						{
 							toExpand(row - 1, col) = 1;
 							newExpanded = true;
@@ -1727,7 +1727,7 @@ void CFaceDetection::experimental_segmentFace(
 					if ((row < faceWidth - 1) && (toExpand(row + 1, col) != 2))
 					{
 						int value2 = img.at<uint8_t>(col, row + 1);
-						if (abs(value - value2) < 2)
+						if (std::abs(value - value2) < 2)
 						{
 							toExpand(row + 1, col) = 1;
 							newExpanded = true;
@@ -1737,7 +1737,7 @@ void CFaceDetection::experimental_segmentFace(
 					if ((col > 0) && (toExpand(row, col - 1) != 2))
 					{
 						int value2 = img.at<uint8_t>(col - 1, row);
-						if (abs(value - value2) < 2)
+						if (std::abs(value - value2) < 2)
 						{
 							toExpand(row, col - 1) = 1;
 							newExpanded = true;
@@ -1747,7 +1747,7 @@ void CFaceDetection::experimental_segmentFace(
 					if ((col < faceHeight - 1) && (toExpand(row, col + 1) != 2))
 					{
 						int value2 = img.at<uint8_t>(col + 1, row);
-						if (abs(value - value2) < 2)
+						if (std::abs(value - value2) < 2)
 						{
 							toExpand(row, col + 1) = 1;
 							newExpanded = true;

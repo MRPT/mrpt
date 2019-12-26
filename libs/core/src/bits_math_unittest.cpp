@@ -56,9 +56,7 @@ TEST(bits_math, hypot_fast)
 
 TEST(bits_math, deg_rad)
 {
-	EXPECT_NEAR(
-		mrpt::DEG2RAD(180.0L), static_cast<long double>(M_PI),
-		static_cast<long double>(1e-6));
+	EXPECT_NEAR(mrpt::DEG2RAD(180.0L), static_cast<long double>(M_PI), 1e-6L);
 	EXPECT_NEAR(mrpt::DEG2RAD(180.0), M_PI, 1e-6);
 	EXPECT_NEAR(mrpt::DEG2RAD(180), M_PI, 1e-6);
 	EXPECT_NEAR(mrpt::DEG2RAD(180.0f), static_cast<float>(M_PI), 1e-4f);

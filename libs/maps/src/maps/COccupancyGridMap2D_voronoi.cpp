@@ -273,7 +273,7 @@ int COccupancyGridMap2D::computeClearance(
 	int estimated_min_free_circle;
 	static int ultimo_free_circle;
 
-	if (abs(ultimo_cx - cx) <= 1 && abs(ultimo_cy - cy) <= 1)
+	if (std::abs(ultimo_cx - cx) <= 1 && std::abs(ultimo_cy - cy) <= 1)
 		estimated_min_free_circle = max(1, ultimo_free_circle - 3);
 	else
 		estimated_min_free_circle = 1;
@@ -404,7 +404,7 @@ int COccupancyGridMap2D::computeClearance(
 			// Hayar punto libre mas cercano al basis 0:
 			dx = cx - basis_x[0];
 			dy = cy - basis_y[0];
-			if (abs(dx) > abs(dy))
+			if (std::abs(dx) > std::abs(dy))
 				if (dx > 0)
 					dir_predilecta = 4;
 				else
@@ -441,7 +441,7 @@ int COccupancyGridMap2D::computeClearance(
 			// Hayar punto libre mas cercano al basis 1:
 			dx = cx - basis_x[1];
 			dy = cy - basis_y[1];
-			if (abs(dx) > abs(dy))
+			if (std::abs(dx) > std::abs(dy))
 				if (dx > 0)
 					dir_predilecta = 4;
 				else

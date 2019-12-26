@@ -164,7 +164,7 @@ void COccupancyGridMap2D::simulateScanRay(
 	// Store:
 	// Check out of the grid?
 	// Tip: if x<0, (unsigned)(x) will also be >>> size_x ;-)
-	if (abs(hitCellOcc_int) <= 1 || static_cast<unsigned>(x) >= size_x ||
+	if (std::abs(hitCellOcc_int) <= 1 || static_cast<unsigned>(x) >= size_x ||
 		static_cast<unsigned>(y) >= size_y)
 	{
 		out_valid = false;

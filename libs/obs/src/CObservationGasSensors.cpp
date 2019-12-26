@@ -277,11 +277,11 @@ void CObservationGasSensors::CMOSmodel::inverse_MOSmodeling(
 			// slope<0 -->Decay
 			if (reading < last_Obs.reading)
 			{
-				last_Obs.tau = a_decay * abs(reading - min_reading) + b_decay;
+				last_Obs.tau = a_decay * std::abs(reading - min_reading) + b_decay;
 			}
 			else  // slope>=0 -->rise
 			{
-				last_Obs.tau = a_rise * abs(reading - min_reading) + b_rise;
+				last_Obs.tau = a_rise * std::abs(reading - min_reading) + b_rise;
 			}  // end-if
 
 			// New estimation values -- Ziegler-Nichols model --

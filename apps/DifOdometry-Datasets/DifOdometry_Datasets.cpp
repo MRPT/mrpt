@@ -480,8 +480,9 @@ void CDifodoDatasets::loadFrame()
 		}
 
 		// Sometimes the quaternion sign changes in the groundtruth
-		if (abs(qx0 + last_gt_data[3]) + abs(qy0 + last_gt_data[4]) +
-				abs(qz0 + last_gt_data[5]) + abs(w0 + last_gt_data[6]) <
+		if (std::abs(qx0 + last_gt_data[3]) + std::abs(qy0 + last_gt_data[4]) +
+				std::abs(qz0 + last_gt_data[5]) +
+				std::abs(w0 + last_gt_data[6]) <
 			0.05)
 		{
 			qx0 = -qx0;
@@ -554,7 +555,7 @@ void CDifodoDatasets::writeTrajectoryFile()
 {
 	// Don't take into account those iterations with consecutive equal depth
 	// images
-	if (abs(dt.sum()) > 0)
+	if (std::abs(dt.sum()) > 0)
 	{
 		mrpt::math::CQuaternionDouble quat;
 		CPose3D auxpose, transf;

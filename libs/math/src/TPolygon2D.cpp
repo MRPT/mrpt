@@ -127,7 +127,7 @@ bool TPolygon2D::isConvex() const
 		for (size_t j = 0; j < N; j++)
 		{
 			double d = l.evaluatePoint(operator[](j));
-			if (abs(d) < getEpsilon())
+			if (std::abs(d) < getEpsilon())
 				continue;
 			else if (!s)
 				s = (d > 0) ? 1 : -1;
@@ -166,7 +166,7 @@ TPolygon2D::TPolygon2D(const TPolygon3D& p) : std::vector<TPoint2D>()
 void TPolygon2D::createRegularPolygon(
 	size_t numEdges, double radius, TPolygon2D& poly)
 {
-	if (numEdges < 3 || abs(radius) < getEpsilon())
+	if (numEdges < 3 || std::abs(radius) < getEpsilon())
 		throw std::logic_error(
 			"Invalid arguments for regular polygon creations");
 	poly.resize(numEdges);

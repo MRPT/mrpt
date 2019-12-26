@@ -520,7 +520,7 @@ void mrpt::topography::path_from_rtk_gps(
 					 k < PATH_SMOOTH_FILTER && q != robot_path.begin(); k++)
 				{
 					--q;
-					if (abs(mrpt::system::timeDifference(q->first, i->first)) <
+					if (std::abs(mrpt::system::timeDifference(q->first, i->first)) <
 						MAX_DIST_TO_FILTER)
 					{
 						pitchs.push_back(q->second.pitch);
@@ -532,7 +532,7 @@ void mrpt::topography::path_from_rtk_gps(
 					 k < PATH_SMOOTH_FILTER && q != (--robot_path.end()); k++)
 				{
 					++q;
-					if (abs(mrpt::system::timeDifference(q->first, i->first)) <
+					if (std::abs(mrpt::system::timeDifference(q->first, i->first)) <
 						MAX_DIST_TO_FILTER)
 					{
 						pitchs.push_back(q->second.pitch);

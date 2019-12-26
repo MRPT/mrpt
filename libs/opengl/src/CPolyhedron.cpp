@@ -450,10 +450,10 @@ double getHeight(const TPolygon3D& p, const TPoint3D& c)
 	double r = mrpt::math::distance(p[0], c);
 	double l = mrpt::math::distance(p[0], p[1]);
 	for (size_t i = 1; i < N; i++)
-		if (abs(mrpt::math::distance(p[i], c) - r) >= mrpt::math::getEpsilon())
+		if (std::abs(mrpt::math::distance(p[i], c) - r) >= mrpt::math::getEpsilon())
 			throw std::logic_error("There is a non-regular polygon.");
 		else if (
-			abs(mrpt::math::distance(p[i], p[(i + 1) % N]) - l) >=
+			std::abs(mrpt::math::distance(p[i], p[(i + 1) % N]) - l) >=
 			mrpt::math::getEpsilon())
 			throw std::logic_error("There is a non-regular polygon.");
 	return sqrt(square(l) - square(r));
@@ -1128,7 +1128,7 @@ double CPolyhedron::getVolume() const
 	getFacesArea(areas);
 	auto itA = areas.begin();
 	for (auto it = mFaces.begin(); it != mFaces.end(); ++it, ++itP, ++itA)
-		res += abs(itP->plane.distance(center)) * (*itA);
+		res += std::abs(itP->plane.distance(center)) * (*itA);
 	return res / 3;
 }
 

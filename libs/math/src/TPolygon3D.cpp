@@ -60,7 +60,7 @@ bool TPolygon3D::contains(const TPoint3D& point) const
 	pose.getInverseHomogeneousMatrix(P_inv);
 	pose.fromHomogeneousMatrix(P_inv);
 	project3D(point, pose, projectedPoint);
-	if (abs(projectedPoint.z) >= getEpsilon())
+	if (std::abs(projectedPoint.z) >= getEpsilon())
 		return false;  // Point is not inside the polygon's plane.
 	project3D(*this, pose, projectedPoly);
 	return TPolygon2D(projectedPoly).contains(TPoint2D(projectedPoint));
@@ -102,7 +102,7 @@ TPolygon3D::TPolygon3D(const TPolygon2D& p) : std::vector<TPoint3D>()
 void TPolygon3D::createRegularPolygon(
 	size_t numEdges, double radius, TPolygon3D& poly)
 {
-	if (numEdges < 3 || abs(radius) < getEpsilon())
+	if (numEdges < 3 || std::abs(radius) < getEpsilon())
 		throw std::logic_error(
 			"Invalid arguments for regular polygon creations");
 	poly.resize(numEdges);

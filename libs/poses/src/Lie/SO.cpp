@@ -88,12 +88,12 @@ SO<3>::tangent_vector SO<3>::log(const SO<3>::type& R)
 	{
 		// If quaternion is normalized and n=0, then w should be 1;
 		// w=0 should never happen here!
-		ASSERTMSG_(abs(w) >= 1e-7, "Quaternion should be normalized!");
+		ASSERTMSG_(std::abs(w) >= 1e-7, "Quaternion should be normalized!");
 		two_atan_nbyw_by_n = 2.0 / w - 2.0 * (squared_n) / (w * w * w);
 	}
 	else
 	{
-		if (abs(w) < 1e-7)
+		if (std::abs(w) < 1e-7)
 		{
 			if (w > 0)
 				two_atan_nbyw_by_n = M_PI / n;

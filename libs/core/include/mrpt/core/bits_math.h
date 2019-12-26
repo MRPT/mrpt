@@ -82,7 +82,7 @@ constexpr inline long double RAD2DEG(const long double x)
 /** degrees to radian literal operator (e.g. `x=90.0_deg;`) */
 constexpr inline double operator"" _deg(long double v)
 {
-	return mrpt::DEG2RAD(v);
+	return static_cast<double>(mrpt::DEG2RAD(v));
 }
 
 /** Returns the sign of X as "1" or "-1" */
