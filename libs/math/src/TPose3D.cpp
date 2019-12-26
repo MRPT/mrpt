@@ -58,10 +58,10 @@ void TPose3D::getAsQuaternion(
 	const double csc = cr * sp * cy;
 	const double scs = sr * cp * sy;
 
-	q[0] = ccc + sss;  // w
-	q[1] = scc - css;  // x
-	q[2] = csc + scs;  // y
-	q[3] = ccs - ssc;  // z
+	q.w(ccc + sss);
+	q.x(scc - css);
+	q.y(csc + scs);
+	q.z(ccs - ssc);
 
 	// Compute 4x3 Jacobian: for details, see technical report:
 	//   Parameterizations of SE(3) transformations: equivalences, compositions

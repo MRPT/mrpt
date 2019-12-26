@@ -27,7 +27,7 @@ enum TConstructorFlags_Quaternions
  *alternatively, q = r + ix + jy + kz.
  *
  *  The elements of the quaternion can be accessed by either:
- *		- r(), x(), y(), z(), or
+ *		- r()(equivalent to w()), x(), y(), z(), or
  *		- the operator [] with indices running from 0 (=r) to 3 (=z).
  *
  *  Users will usually employ the type `CQuaternionDouble` instead of this
@@ -82,22 +82,32 @@ class CQuaternion : public CVectorFixed<T, 4>
 	/* @}
 	 */
 
-	/** Return r coordinate of the quaternion */
+	/** Return r (real part) coordinate of the quaternion */
 	inline T r() const { return (*this)[0]; }
+	/** Return w (real part) coordinate of the quaternion. Alias of r() */
+	inline T w() const { return (*this)[0]; }
 	/** Return x coordinate of the quaternion */
 	inline T x() const { return (*this)[1]; }
 	/** Return y coordinate of the quaternion */
 	inline T y() const { return (*this)[2]; }
 	/** Return z coordinate of the quaternion */
 	inline T z() const { return (*this)[3]; }
-	/** Set r coordinate of the quaternion */
+	/** Set r (real part) coordinate of the quaternion */
 	inline void r(const T r) { (*this)[0] = r; }
+	/** Set w (real part) coordinate of the quaternion. Alias of r() */
+	inline void w(const T w) { (*this)[0] = w; }
 	/** Set x coordinate of the quaternion */
 	inline void x(const T x) { (*this)[1] = x; }
 	/** Set y coordinate of the quaternion */
 	inline void y(const T y) { (*this)[2] = y; }
 	/** Set z coordinate of the quaternion */
 	inline void z(const T z) { (*this)[3] = z; }
+
+	inline T& r() { return (*this)[0]; }
+	inline T& x() { return (*this)[1]; }
+	inline T& y() { return (*this)[2]; }
+	inline T& z() { return (*this)[3]; }
+
 	/**	Set this quaternion to the rotation described by a 3D (Rodrigues)
 	 * rotation vector \f$ \mathbf{v} \f$:
 	 *   If \f$ \mathbf{v}=0 \f$, then the quaternion is \f$ \mathbf{q} = [1 ~
@@ -355,6 +365,14 @@ class CQuaternion : public CVectorFixed<T, 4>
 	{
 		M.setSize(3, 3);
 		rotationMatrixNoResize(M);
+	}
+
+	template <class MATRIXLIKE>
+	inline MATRIXLIKE rotationMatrix() const
+	{
+		MATRIXLIKE M(3, 3);
+		rotationMatrixNoResize(M);
+		return M;
 	}
 
 	/** Fill out the top-left 3x3 block of the given matrix with the rotation
