@@ -54,13 +54,13 @@ mrpt::math::TPose2D TTwist2D::operator*(const double dt) const
 	return mrpt::math::TPose2D(vx * dt, vy * dt, omega * dt);
 }
 
-mrpt::serialization::CArchive& operator>>(
+mrpt::serialization::CArchive& mrpt::math::operator>>(
 	mrpt::serialization::CArchive& in, mrpt::math::TTwist2D& o)
 {
 	for (size_t i = 0; i < o.size(); i++) in >> o[i];
 	return in;
 }
-mrpt::serialization::CArchive& operator<<(
+mrpt::serialization::CArchive& mrpt::math::operator<<(
 	mrpt::serialization::CArchive& out, const mrpt::math::TTwist2D& o)
 {
 	for (size_t i = 0; i < o.size(); i++) out << o[i];

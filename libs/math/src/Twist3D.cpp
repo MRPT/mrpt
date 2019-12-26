@@ -60,13 +60,13 @@ bool TTwist3D::operator==(const TTwist3D& o) const
 }
 bool TTwist3D::operator!=(const TTwist3D& o) const { return !(*this == o); }
 
-mrpt::serialization::CArchive& operator>>(
+mrpt::serialization::CArchive& mrpt::math::operator>>(
 	mrpt::serialization::CArchive& in, mrpt::math::TTwist3D& o)
 {
 	for (size_t i = 0; i < o.size(); i++) in >> o[i];
 	return in;
 }
-mrpt::serialization::CArchive& operator<<(
+mrpt::serialization::CArchive& mrpt::math::operator<<(
 	mrpt::serialization::CArchive& out, const mrpt::math::TTwist3D& o)
 {
 	for (size_t i = 0; i < o.size(); i++) out << o[i];

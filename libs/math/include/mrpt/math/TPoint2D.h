@@ -43,7 +43,7 @@ struct TPoint2D_ : public TPoseOrPoint,
 
 	/** Explicit constructor from coordinates.  */
 	template <typename U>
-	explicit TPoint2D_(const TPoint2D_data<U>& p)
+	TPoint2D_(const TPoint2D_data<U>& p)
 	{
 		TPoint2D_data<T>::x = static_cast<T>(p.x);
 		TPoint2D_data<T>::y = static_cast<T>(p.y);

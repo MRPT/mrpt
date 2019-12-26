@@ -41,9 +41,9 @@ struct TPoint3D_ : public TPoseOrPoint,
 	/** Constructor from coordinates.  */
 	constexpr TPoint3D_(T xx, T yy, T zz) : TPoint3D_data<T>{xx, yy, zz} {}
 
-	/** Explicit constructor from coordinates.  */
+	/** Constructor from coordinates. */
 	template <typename U>
-	explicit TPoint3D_(const TPoint3D_data<U>& p)
+	TPoint3D_(const TPoint3D_data<U>& p)
 	{
 		TPoint3D_data<T>::x = static_cast<T>(p.x);
 		TPoint3D_data<T>::y = static_cast<T>(p.y);
