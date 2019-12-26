@@ -377,10 +377,10 @@ void upnp::find_betas_and_focal_approx_1(
 	Mat x = Mat(2, 1, CV_64F);
 	solve(A, b, x);
 
-	betas[0] = sqrt(abs(x.at<double>(0)));
+	betas[0] = sqrt(std::abs(x.at<double>(0)));
 	betas[1] = betas[2] = betas[3] = 0.0;
 
-	efs[0] = sqrt(abs(x.at<double>(1))) / betas[0];
+	efs[0] = sqrt(std::abs(x.at<double>(1))) / betas[0];
 }
 
 void upnp::find_betas_and_focal_approx_2(
@@ -628,15 +628,15 @@ void upnp::generate_all_possible_solutions_for_f_unk(
 
 		for (int j = 0; j < 9; ++j) matrix[j] = (double)matrix_to_resolve[i][j];
 
-		independent_term[0] = log(abs(betas[combination[i][0] - 1]));
-		independent_term[1] = log(abs(betas[combination[i][1] - 1]));
-		independent_term[2] = log(abs(betas[combination[i][2] - 1]));
+		independent_term[0] = log(std::abs(betas[combination[i][0] - 1]));
+		independent_term[1] = log(std::abs(betas[combination[i][1] - 1]));
+		independent_term[2] = log(std::abs(betas[combination[i][2] - 1]));
 
 		exp(Mat(M.inv() * I), S);
 
 		solutions[i][0] = S.at<double>(0);
 		solutions[i][1] = S.at<double>(1) * sign(betas[1]);
-		solutions[i][2] = abs(S.at<double>(2));
+		solutions[i][2] = std::abs(S.at<double>(2));
 	}
 }
 

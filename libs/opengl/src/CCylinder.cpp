@@ -146,7 +146,7 @@ bool solveEqn(double a, double b, double c, double& t)
 			}  // else return false;	Both solutions are negative
 		}  // else return false;	Both solutions are complex
 	}
-	else if (abs(b) >= mrpt::math::getEpsilon())
+	else if (std::abs(b) >= mrpt::math::getEpsilon())
 	{
 		t = -c / (b + b);
 		return t >= 0;
@@ -160,7 +160,7 @@ bool CCylinder::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 	mrpt::math::createFromPoseX((o - this->m_pose).asTPose(), lin);
 	lin.unitarize();  // By adding this line, distance from any point of the
 	// line to its base is exactly equal to the "t".
-	if (abs(lin.director[2]) < getEpsilon())
+	if (std::abs(lin.director[2]) < getEpsilon())
 	{
 		if (!reachesHeight(lin.pBase.z)) return false;
 		float r;

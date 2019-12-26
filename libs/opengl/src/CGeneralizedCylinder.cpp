@@ -103,15 +103,16 @@ void CGeneralizedCylinder::render_dl() const
 }
 
 inline void createMesh(
-	const CMatrixDynamic<TPoint3D_data>& pointsMesh, size_t R, size_t C,
+	const CMatrixDynamic<TPoint3D_data<double>>& pointsMesh, size_t R, size_t C,
 	vector<CGeneralizedCylinder::TQuadrilateral>& mesh)
 {
 	mesh.reserve(R * C);
 	for (size_t i = 0; i < R; i++)
 		for (size_t j = 0; j < C; j++)
 			mesh.emplace_back(
-				pointsMesh(i, j), pointsMesh(i, j + 1),
-				pointsMesh(i + 1, j + 1), pointsMesh(i + 1, j));
+				TPoint3D(pointsMesh(i, j)), TPoint3D(pointsMesh(i, j + 1)),
+				TPoint3D(pointsMesh(i + 1, j + 1)),
+				TPoint3D(pointsMesh(i + 1, j)));
 }
 
 bool CGeneralizedCylinder::traceRay(const CPose3D& o, double& dist) const
@@ -131,7 +132,7 @@ void CGeneralizedCylinder::updateMesh() const
 	mesh.clear();
 	if (A > 1 && G > 1)
 	{
-		pointsMesh = CMatrixDynamic<TPoint3D_data>(A, G);
+		pointsMesh = CMatrixDynamic<TPoint3D_data<double>>(A, G);
 		for (size_t i = 0; i < A; i++)
 			for (size_t j = 0; j < G; j++)
 				pointsMesh(i, j) = axis[i].composePoint(genX[j]);
@@ -228,7 +229,7 @@ void CGeneralizedCylinder::getClosedSection(
 	if (index1 > index2) swap(index1, index2);
 	if (index2 >= axis.size() - 1) throw std::logic_error("Out of range");
 	if (!meshUpToDate) updateMesh();
-	auto ROIpoints = CMatrixDynamic<TPoint3D_data>(
+	auto ROIpoints = CMatrixDynamic<TPoint3D_data<double>>(
 		pointsMesh.asEigen().block(index1, 0, index2 + 1, pointsMesh.cols()));
 
 	// At this point, ROIpoints contains a matrix of TPoints in which the number
@@ -236,12 +237,14 @@ void CGeneralizedCylinder::getClosedSection(
 	// for each vertex in the generatrix.
 	if (!closed)
 	{
-		CVectorDynamic<TPoint3D_data> vec(ROIpoints.rows());
+		CVectorDynamic<TPoint3D_data<double>> vec(ROIpoints.rows());
 		vec.asEigen() = ROIpoints.col(0);
 		ROIpoints.appendCol(vec);
 	}
 	vector<TPoint3D> vertices;
-	ROIpoints.asVector(vertices);
+	vertices.reserve(ROIpoints.rows() * ROIpoints.cols());
+	for (const auto& d : ROIpoints) vertices.push_back(TPoint3D(d));
+
 	size_t nr = ROIpoints.rows() - 1;
 	size_t nc = ROIpoints.cols() - 1;
 	vector<vector<uint32_t>> faces;

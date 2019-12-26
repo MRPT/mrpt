@@ -83,8 +83,8 @@ struct TPose3DQuat : public TPoseOrPoint,
 				throw std::out_of_range("index out of range");
 		}
 	}
-	/** Pose's spatial coordinates norm. */
-	double norm() const { return sqrt(square(x) + square(y) + square(z)); }
+	/** Pose's spatial coordinates (x,y,z) norm. */
+	double norm() const;
 	/** Gets the pose as a vector of doubles. */
 	void asVector(std::vector<double>& v) const
 	{

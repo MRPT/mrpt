@@ -26,7 +26,8 @@ bool CRateTimer::sleep()
 {
 	const double elapsed_tim = m_tictac.Tac();
 	const double period = 1.0 / m_rate_hz;
-	const int64_t wait_tim_us = 1000000L * (period - elapsed_tim);
+	const int64_t wait_tim_us =
+		static_cast<int64_t>(1000000L * (period - elapsed_tim));
 	if (elapsed_tim > period)
 	{
 		m_tictac.Tic();

@@ -646,7 +646,7 @@ bool CPtuDPerception::scan(
 	int initialPos = radToPos(axis, initial);
 	int finalPos = radToPos(axis, final);
 
-	totalSteps = abs(initialPos - finalPos);
+	totalSteps = std::abs(initialPos - finalPos);
 
 	// Performs first sweep
 	for (int i = 0; i < totalSteps / steps; i++)

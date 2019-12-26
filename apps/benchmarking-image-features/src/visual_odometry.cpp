@@ -54,7 +54,7 @@ double VisualOdometry::computeOdomError()
 						(pow((ground_truth_x[i] - ground_truth_x[i + 1]), 2) +
 						 pow((ground_truth_y[i] - ground_truth_y[i + 1]), 2)));
 	}
-	double percentage = abs(error - total) / (double)total * 100.00;
+	double percentage = std::abs(error - total) / (double)total * 100.00;
 
 	// display();
 	return percentage;

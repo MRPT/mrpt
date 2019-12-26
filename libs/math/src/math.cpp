@@ -324,7 +324,7 @@ double math::averageWrap2Pi(const CVectorDouble& angles)
 	for (CVectorDouble::Index i = 0; i < angles.size(); i++)
 	{
 		double phi = angles[i];
-		if (abs(phi) > 1.5707963267948966192313216916398)
+		if (std::abs(phi) > 1.5707963267948966192313216916398)
 		{
 			// LEFT HALF: 0,2pi
 			if (phi < 0) phi = (M_2PI + phi);
