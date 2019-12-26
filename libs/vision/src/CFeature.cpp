@@ -591,9 +591,9 @@ float CFeature::internal_distanceBetweenPolarImages(
 #elif defined(LM_CORR_METHOD_MANHATTAN)
 #ifdef LM_CORR_BIAS_MEAN
 				dist +=
-					abs(desc1(i, j) - desc1_mean - desc2(ii, j) + desc2_mean);
+					std::abs(desc1(i, j) - desc1_mean - desc2(ii, j) + desc2_mean);
 #else
-				dist += abs(desc1(i, j) - desc2(ii, j));
+				dist += std::abs(desc1(i, j) - desc2(ii, j));
 #endif
 #elif defined(LM_CORR_METHOD_CORRELATION)
 				float d1 = desc1(i, j) - desc1_mean;

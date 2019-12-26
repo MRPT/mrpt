@@ -694,11 +694,11 @@ void robotic_arm_kinematicsFrame::UpdateListLinks()
 		const CPose3D& pose0 = m_robot.getOriginPose();
 		const CMatrixDouble33& R = pose0.getRotationMatrix();
 
-		if (abs(R(0, 2)) > abs(R(1, 2)) && abs(R(0, 2)) > abs(R(2, 2)))
+		if (std::abs(R(0, 2)) > std::abs(R(1, 2)) && std::abs(R(0, 2)) > std::abs(R(2, 2)))
 			RadioBox1->SetSelection(2);  // X
-		else if (abs(R(1, 2)) > abs(R(0, 2)) && abs(R(1, 2)) > abs(R(2, 2)))
+		else if (std::abs(R(1, 2)) > std::abs(R(0, 2)) && std::abs(R(1, 2)) > std::abs(R(2, 2)))
 			RadioBox1->SetSelection(1);  // Y
-		else if (abs(R(2, 2)) > abs(R(0, 2)) && abs(R(2, 2)) > abs(R(1, 2)))
+		else if (std::abs(R(2, 2)) > std::abs(R(0, 2)) && std::abs(R(2, 2)) > std::abs(R(1, 2)))
 			RadioBox1->SetSelection(0);  // Z
 	}
 

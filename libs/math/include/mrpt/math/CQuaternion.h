@@ -27,7 +27,7 @@ enum TConstructorFlags_Quaternions
  *alternatively, q = r + ix + jy + kz.
  *
  *  The elements of the quaternion can be accessed by either:
- *		- r(), x(), y(), z(), or
+ *		- r()(equivalent to w()), x(), y(), z(), or
  *		- the operator [] with indices running from 0 (=r) to 3 (=z).
  *
  *  Users will usually employ the type `CQuaternionDouble` instead of this
@@ -57,47 +57,73 @@ class CQuaternion : public CVectorFixed<T, 4>
 	 * no rotation. */
 	inline CQuaternion()
 	{
-		(*this)[0] = 1;
-		(*this)[1] = 0;
-		(*this)[2] = 0;
-		(*this)[3] = 0;
+		r() = 1;
+		x() = 0;
+		y() = 0;
+		z() = 0;
 	}
 
 	/**	Construct a quaternion from its parameters 'r', 'x', 'y', 'z', with q =
 	 * r + ix + jy + kz. */
-	inline CQuaternion(const T r, const T x, const T y, const T z)
+	inline CQuaternion(const T R, const T X, const T Y, const T Z)
 	{
-		(*this)[0] = r;
-		(*this)[1] = x;
-		(*this)[2] = y;
-		(*this)[3] = z;
+		r() = R;
+		x() = X;
+		y() = Y;
+		z() = Z;
+		ensurePositiveRealPart();
+
 		ASSERTMSG_(
 			std::abs(normSqr() - 1.0) < 1e-3,
 			mrpt::format(
 				"Initialization data for quaternion is not normalized: %f %f "
 				"%f %f -> sqrNorm=%f",
-				r, x, y, z, normSqr()));
+				R, X, Y, Z, normSqr()));
 	}
 
 	/* @}
 	 */
 
-	/** Return r coordinate of the quaternion */
+	/** Adhere to the convention of w>=0 to avoid ambiguity of quaternion double
+	 * cover of SO(3) */
+	inline void ensurePositiveRealPart()
+	{
+		// Ensure r()>0
+		if (r() < 0)
+		{
+			r() = -r();
+			x() = -x();
+			y() = -y();
+			z() = -z();
+		}
+	}
+
+	/** Return r (real part) coordinate of the quaternion */
 	inline T r() const { return (*this)[0]; }
+	/** Return w (real part) coordinate of the quaternion. Alias of r() */
+	inline T w() const { return (*this)[0]; }
 	/** Return x coordinate of the quaternion */
 	inline T x() const { return (*this)[1]; }
 	/** Return y coordinate of the quaternion */
 	inline T y() const { return (*this)[2]; }
 	/** Return z coordinate of the quaternion */
 	inline T z() const { return (*this)[3]; }
-	/** Set r coordinate of the quaternion */
+	/** Set r (real part) coordinate of the quaternion */
 	inline void r(const T r) { (*this)[0] = r; }
+	/** Set w (real part) coordinate of the quaternion. Alias of r() */
+	inline void w(const T w) { (*this)[0] = w; }
 	/** Set x coordinate of the quaternion */
 	inline void x(const T x) { (*this)[1] = x; }
 	/** Set y coordinate of the quaternion */
 	inline void y(const T y) { (*this)[2] = y; }
 	/** Set z coordinate of the quaternion */
 	inline void z(const T z) { (*this)[3] = z; }
+
+	inline T& r() { return (*this)[0]; }
+	inline T& x() { return (*this)[1]; }
+	inline T& y() { return (*this)[2]; }
+	inline T& z() { return (*this)[3]; }
+
 	/**	Set this quaternion to the rotation described by a 3D (Rodrigues)
 	 * rotation vector \f$ \mathbf{v} \f$:
 	 *   If \f$ \mathbf{v}=0 \f$, then the quaternion is \f$ \mathbf{q} = [1 ~
@@ -275,6 +301,7 @@ class CQuaternion : public CVectorFixed<T, 4>
 	 */
 	inline void normalize()
 	{
+		ensurePositiveRealPart();
 		const T qq = 1.0 / std::sqrt(normSqr());
 		for (unsigned int i = 0; i < 4; i++) (*this)[i] *= qq;
 	}
@@ -355,6 +382,14 @@ class CQuaternion : public CVectorFixed<T, 4>
 	{
 		M.setSize(3, 3);
 		rotationMatrixNoResize(M);
+	}
+
+	template <class MATRIXLIKE>
+	inline MATRIXLIKE rotationMatrix() const
+	{
+		MATRIXLIKE M(3, 3);
+		rotationMatrixNoResize(M);
+		return M;
 	}
 
 	/** Fill out the top-left 3x3 block of the given matrix with the rotation

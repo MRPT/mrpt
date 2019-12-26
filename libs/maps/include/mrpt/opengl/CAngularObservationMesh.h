@@ -312,7 +312,8 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 	/** Whether the object may present transparencies or not. */
 	bool mEnableTransparency{true};
 	/** Mutable object with the mesh's points. */
-	mutable mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_data> actualMesh;
+	mutable mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_data<double>>
+		actualMesh;
 	/** Scan validity matrix. */
 	mutable mrpt::math::CMatrixB validityMatrix;
 	/** Observation pitch range. When containing exactly two elements, they
@@ -423,7 +424,7 @@ class CAngularObservationMesh : public CRenderizableDisplayList
 	 * Retrieves the full mesh, along with the validity matrix.
 	 */
 	void getActualMesh(
-		mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_data>& pts,
+		mrpt::math::CMatrixDynamic<mrpt::math::TPoint3D_data<double>>& pts,
 		mrpt::math::CMatrixBool& validity) const
 	{
 		if (!meshUpToDate) updateMesh();

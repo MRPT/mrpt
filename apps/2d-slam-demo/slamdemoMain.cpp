@@ -1871,7 +1871,7 @@ void slamdemoFrame::executeOneStep()
 					 m_GT_pose.y() < PATH_SQUARE_LEN && dir == 0) ||
 					(m_GT_pose.x() > PATH_SQUARE_LEN &&
 					 m_GT_pose.y() > PATH_SQUARE_LEN && dir == turnSteps) ||
-					(m_GT_pose.x() <= 0 && abs(dir) == 2 * turnSteps) ||
+					(m_GT_pose.x() <= 0 && std::abs(dir) == 2 * turnSteps) ||
 					(m_GT_pose.y() <= 0 && dir == -turnSteps))
 				{  // Turn
 					poseIncr = CPose2D(0, 0, Aphi);
