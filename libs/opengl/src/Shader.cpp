@@ -16,8 +16,6 @@ using namespace std;
 using namespace mrpt;
 using namespace mrpt::opengl;
 
-MRPT_TODO("Make m_color a program attribute");
-
 // ============ Shader ============
 Shader::~Shader() { clear(); }
 Shader& Shader::operator=(Shader&& o)
@@ -103,9 +101,9 @@ void Program::clear()
 	// 4) Delete all variables:
 	m_uniforms.clear();
 	m_attribs.clear();
-#else
-	THROW_EXCEPTION("MRPT built without OpenGL support.");
 #endif
+
+	m_program = 0;
 }
 
 bool Program::linkProgram(
@@ -114,7 +112,36 @@ bool Program::linkProgram(
 {
 #if MRPT_HAS_OPENGL_GLUT
 	clear();
-	MRPT_TODO("Finish!");
+
+	m_program = glCreateProgram();
+	ASSERT_(m_program != 0);
+
+	// Take ownership of shaders:
+	m_shaders = std::move(shaders);
+
+	for (const auto& shader : m_shaders)
+		glAttachShader(m_program, shader.handle());
+
+	glLinkProgram(m_program);
+	CHECK_OPENGL_ERROR();
+
+	GLint program_ok;
+	glGetProgramiv(m_program, GL_LINK_STATUS, &program_ok);
+	if (!program_ok)
+	{
+		GLint log_length;
+		std::string log;
+		glGetProgramiv(m_program, GL_INFO_LOG_LENGTH, &log_length);
+		log.resize(log_length);
+		glGetProgramInfoLog(m_program, log_length, NULL, &log[0]);
+
+		if (outErrorMessages)
+			outErrorMessages.value().get() = std::move(log);
+		else
+			std::cerr << "[Program::linkProgram] Link error: " << log << "\n";
+		clear();
+		return false;  // error
+	}
 
 	return true;
 #else

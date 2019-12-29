@@ -449,6 +449,8 @@ void main()
 			"Error linking Opengl Shader programs:\n%s", errMsgs.c_str());
 	}
 
+	MRPT_TODO("Make m_color a program attribute");
+
 #endif
 }
 
