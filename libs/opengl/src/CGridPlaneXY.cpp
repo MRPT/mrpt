@@ -106,59 +106,78 @@ void CGridPlaneXY::renderUpdateBuffers() const
 #if MRPT_HAS_OPENGL_GLUT
 	std::cerr << "renderUpdateBuffers\n";
 
+	CHECK_OPENGL_ERROR();
+
 	init_shaders();
 	if (!shaders || shaders->empty()) return;
+	CHECK_OPENGL_ERROR();
 
 	// -----------------
 	// Create a buffer
 	GLuint buffer;
 	glGenBuffers(1, &buffer);
+	CHECK_OPENGL_ERROR();
 
 	mrpt::math::TPoint3Df points[NumPoints] = {
 		{0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {1, 0, 1}, {1, 1, 1}};
 
 	// Bind it to GL_ARRAY_BUFFER and pass the data to the GPU
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
+	CHECK_OPENGL_ERROR();
 	glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
+	CHECK_OPENGL_ERROR();
 
 	// -----------------
 	glGenBuffers(1, &indexBuffer);
+	CHECK_OPENGL_ERROR();
 
 	// Bind it to GL_ARRAY_BUFFER and pass the data to the GPU
 	glBindBuffer(GL_ARRAY_BUFFER, indexBuffer);
+	CHECK_OPENGL_ERROR();
 
 	int indices[NumPoints] = {0, 1, 2, 3, 0};
 	glBufferData(GL_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	CHECK_OPENGL_ERROR();
 	// -----------------
 
 	// Create a vertex array object (VAO)
 	glGenVertexArrays(1, &vao);
+	CHECK_OPENGL_ERROR();
 	glBindVertexArray(vao);
+	CHECK_OPENGL_ERROR();
 
 	// Initialize the vertex in_pos attribute defined in the vertex shader
 
 	// Get an index for the attribute from the shader
 	GLuint loc_in_pos = glGetAttribLocation(shaders->programId(), "in_pos");
+	CHECK_OPENGL_ERROR();
 	glEnableVertexAttribArray(loc_in_pos);
+	CHECK_OPENGL_ERROR();
 
 	// Associate the attribute with the data in the buffer.
 	// glVertexAttribPointer implicitly refers to the currently bound
 	// GL_ARRAY_BUFFER
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
+	CHECK_OPENGL_ERROR();
 	glVertexAttribPointer(
 		loc_in_pos, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+	CHECK_OPENGL_ERROR();
 
 	// Add indices for indexed rendering
 	// Binding to GL_ELEMENT_ARRAY_BUFFER is saved with VAO state
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+	CHECK_OPENGL_ERROR();
 
 	// Unbind the buffer
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	CHECK_OPENGL_ERROR();
 
 	// Unbind the VAO
 	glBindVertexArray(0);
+	CHECK_OPENGL_ERROR();
 
 	glPointSize(4.0f);  // make points show up better
+	CHECK_OPENGL_ERROR();
 
 	//
 	MRPT_TODO("Implement me!");
@@ -183,12 +202,15 @@ void CGridPlaneXY::render() const
 
 	// bind the shaders
 	glUseProgram(shaders->programId());
+	CHECK_OPENGL_ERROR();
 
 	// bind the VAO
 	glBindVertexArray(vao);
+	CHECK_OPENGL_ERROR();
 
 	// draw primitives
 	glDrawArrays(GL_LINES, 0, NumPoints);
+	CHECK_OPENGL_ERROR();
 
 #if 0
 	glBegin(GL_LINES);

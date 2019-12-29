@@ -48,22 +48,20 @@ void TestOpenGLObjects()
 	 */
 	{
 		// using mrpt smart pointers so that obj survives outside this scope.
-		opengl::CGridPlaneXY::Ptr obj =
-			opengl::CGridPlaneXY::Create(-7, 7, -7, 7, 0, 1);
+		auto obj = opengl::CGridPlaneXY::Create(-7, 7, -7, 7, 0, 1);
 		obj->setColor(0.7, 0.7, 0.7);
 		obj->setLocation(off_x, 0, 0);
 		theScene->insert(obj);
 
-		opengl::CGridPlaneXY::Ptr obj2 =
-			opengl::CGridPlaneXY::Create(-7, 7, -7, 7, 0, 1);
+		auto obj2 = opengl::CGridPlaneXY::Create(-7, 7, -7, 7, 0, 1);
 		obj2->setColor(0.7, 0.7, 0.7, 0.99);
 		obj2->setLocation(off_x, 15, 0);
 		obj2->enableAntiAliasing();
 		theScene->insert(obj2);
 
-		opengl::CText::Ptr gl_txt = opengl::CText::Create("CGridPlaneXY");
-		gl_txt->setLocation(off_x, off_y_label, 0);
-		theScene->insert(gl_txt);
+		// auto gl_txt = opengl::CText::Create("CGridPlaneXY");
+		// gl_txt->setLocation(off_x, off_y_label, 0);
+		// theScene->insert(gl_txt);
 	}
 	off_x += STEP_X;
 #if 0
@@ -75,7 +73,7 @@ void TestOpenGLObjects()
 		obj->setLocation(off_x, 0, 0);
 		theScene->insert(obj);
 
-		opengl::CText::Ptr gl_txt = opengl::CText::Create("CGridPlaneXZ");
+		auto gl_txt = opengl::CText::Create("CGridPlaneXZ");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -89,7 +87,7 @@ void TestOpenGLObjects()
 		obj->setColor(1, 0, 0);
 		theScene->insert(obj);
 
-		opengl::CText::Ptr gl_txt = opengl::CText::Create("CArrow");
+		auto gl_txt = opengl::CText::Create("CArrow");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -102,7 +100,7 @@ void TestOpenGLObjects()
 		obj->setLocation(off_x, 0, 0);
 		theScene->insert(obj);
 
-		opengl::CText::Ptr gl_txt = opengl::CText::Create("CAxis");
+		auto gl_txt = opengl::CText::Create("CAxis");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -127,7 +125,7 @@ void TestOpenGLObjects()
 		obj3->setLocation(off_x, 8, 0);
 		theScene->insert(obj3);
 
-		opengl::CText::Ptr gl_txt = opengl::CText::Create("CBox");
+		auto gl_txt = opengl::CText::Create("CBox");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -145,7 +143,7 @@ void TestOpenGLObjects()
 		obj2->setLocation(off_x, 6, 0);
 		theScene->insert(obj2);
 
-		opengl::CText::Ptr gl_txt = opengl::CText::Create("CFrustum");
+		auto gl_txt = opengl::CText::Create("CFrustum");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -170,7 +168,7 @@ void TestOpenGLObjects()
 		obj3->setColor(0, 0, 0.8);
 		theScene->insert(obj3);
 
-		opengl::CText::Ptr gl_txt = opengl::CText::Create("CCylinder");
+		auto gl_txt = opengl::CText::Create("CCylinder");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -192,7 +190,7 @@ void TestOpenGLObjects()
 			theScene->insert(obj);
 		}
 
-		opengl::CText::Ptr gl_txt = opengl::CText::Create("CDisk");
+		auto gl_txt = opengl::CText::Create("CDisk");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -230,7 +228,7 @@ void TestOpenGLObjects()
 			theScene->insert(obj);
 		}
 
-		opengl::CText::Ptr gl_txt = opengl::CText::Create("CEllipsoid");
+		auto gl_txt = opengl::CText::Create("CEllipsoid");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -279,7 +277,7 @@ void TestOpenGLObjects()
 			theScene->insert(obj_corner);
 		}
 
-		opengl::CText::Ptr gl_txt =
+		auto gl_txt =
 			opengl::CText::Create("CEllipsoidRangeBearing2D");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
@@ -315,7 +313,7 @@ void TestOpenGLObjects()
 			theScene->insert(obj_corner);
 		}
 
-		opengl::CText::Ptr gl_txt =
+		auto gl_txt =
 			opengl::CText::Create("CEllipsoidInverseDepth2D");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
@@ -352,7 +350,7 @@ void TestOpenGLObjects()
 			theScene->insert(obj_corner);
 		}
 
-		opengl::CText::Ptr gl_txt =
+		auto gl_txt =
 			opengl::CText::Create("CEllipsoidInverseDepth3D");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
@@ -380,7 +378,7 @@ void TestOpenGLObjects()
 		obj->enableColorFromZ(true, mrpt::img::cmJET);
 		theScene->insert(obj);
 
-		opengl::CText::Ptr gl_txt = opengl::CText::Create("CMesh");
+		auto gl_txt = opengl::CText::Create("CMesh");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -440,7 +438,7 @@ void TestOpenGLObjects()
 			num_verts, num_faces, vert_per_face, face_verts, vert_coords);
 		theScene->insert(obj);
 
-		opengl::CText::Ptr gl_txt = opengl::CText::Create("CMesh3D");
+		auto gl_txt = opengl::CText::Create("CMesh3D");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -462,7 +460,7 @@ void TestOpenGLObjects()
 				mrpt::random::getRandomGenerator().drawUniform(-5, 5),
 				mrpt::random::getRandomGenerator().drawUniform(-5, 5));
 
-		opengl::CText::Ptr gl_txt = opengl::CText::Create("CPointCloud");
+		auto gl_txt = opengl::CText::Create("CPointCloud");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -487,7 +485,7 @@ void TestOpenGLObjects()
 				mrpt::random::getRandomGenerator().drawUniform(0, 1),
 				mrpt::random::getRandomGenerator().drawUniform(0, 1));
 
-		opengl::CText::Ptr gl_txt =
+		auto gl_txt =
 			opengl::CText::Create("CPointCloudColoured");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
@@ -515,7 +513,7 @@ void TestOpenGLObjects()
 			theScene->insert(obj);
 		}
 
-		opengl::CText::Ptr gl_txt = opengl::CText::Create("CPolyhedron");
+		auto gl_txt = opengl::CText::Create("CPolyhedron");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -529,7 +527,7 @@ void TestOpenGLObjects()
 			theScene->insert(obj);
 		}
 
-		opengl::CText::Ptr gl_txt = opengl::CText::Create("CSphere");
+		auto gl_txt = opengl::CText::Create("CSphere");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -545,7 +543,7 @@ void TestOpenGLObjects()
 			theScene->insert(obj);
 		}
 
-		opengl::CText::Ptr gl_txt = opengl::CText::Create("CText");
+		auto gl_txt = opengl::CText::Create("CText");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -560,7 +558,7 @@ void TestOpenGLObjects()
 			theScene->insert(obj);
 		}
 
-		opengl::CText::Ptr gl_txt = opengl::CText::Create("CText3D");
+		auto gl_txt = opengl::CText::Create("CText3D");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -576,7 +574,7 @@ void TestOpenGLObjects()
 			theScene->insert(obj);
 		}
 
-		opengl::CText::Ptr gl_txt = opengl::CText::Create("CColorBar");
+		auto gl_txt = opengl::CText::Create("CColorBar");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -600,7 +598,7 @@ void TestOpenGLObjects()
 			theScene->insert(obj);
 		}
 
-		opengl::CText::Ptr gl_txt = opengl::CText::Create("CSetOfLines");
+		auto gl_txt = opengl::CText::Create("CSetOfLines");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -623,7 +621,7 @@ void TestOpenGLObjects()
 			theScene->insert(obj);
 		}
 
-		opengl::CText::Ptr gl_txt = opengl::CText::Create("CSimpleLine");
+		auto gl_txt = opengl::CText::Create("CSimpleLine");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -652,7 +650,7 @@ void TestOpenGLObjects()
 			theScene->insert(obj);
 		}
 
-		opengl::CText::Ptr gl_txt = opengl::CText::Create("CVectorField2D");
+		auto gl_txt = opengl::CText::Create("CVectorField2D");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -690,7 +688,7 @@ void TestOpenGLObjects()
 			theScene->insert(obj);
 		}
 
-		opengl::CText::Ptr gl_txt = opengl::CText::Create("CVectorField3D");
+		auto gl_txt = opengl::CText::Create("CVectorField3D");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -705,7 +703,7 @@ void TestOpenGLObjects()
 			theScene->insert(obj);
 		}
 
-		opengl::CText::Ptr gl_txt =
+		auto gl_txt =
 			opengl::CText::Create("stock_objects::BumblebeeCamera()");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
@@ -721,7 +719,7 @@ void TestOpenGLObjects()
 			theScene->insert(obj);
 		}
 
-		opengl::CText::Ptr gl_txt =
+		auto gl_txt =
 			opengl::CText::Create("stock_objects::CornerXYSimple()");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
@@ -737,7 +735,7 @@ void TestOpenGLObjects()
 			theScene->insert(obj);
 		}
 
-		opengl::CText::Ptr gl_txt =
+		auto gl_txt =
 			opengl::CText::Create("stock_objects::CornerXYZSimple()");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
@@ -752,7 +750,7 @@ void TestOpenGLObjects()
 			theScene->insert(obj);
 		}
 
-		opengl::CText::Ptr gl_txt =
+		auto gl_txt =
 			opengl::CText::Create("stock_objects::CornerXYZ()");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
@@ -768,7 +766,7 @@ void TestOpenGLObjects()
 			theScene->insert(obj);
 		}
 
-		opengl::CText::Ptr gl_txt =
+		auto gl_txt =
 			opengl::CText::Create("stock_objects::RobotPioneer()");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
@@ -784,7 +782,7 @@ void TestOpenGLObjects()
 			theScene->insert(obj);
 		}
 
-		opengl::CText::Ptr gl_txt =
+		auto gl_txt =
 			opengl::CText::Create("stock_objects::Hokuyo_URG()");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
@@ -800,7 +798,7 @@ void TestOpenGLObjects()
 			theScene->insert(obj);
 		}
 
-		opengl::CText::Ptr gl_txt =
+		auto gl_txt =
 			opengl::CText::Create("stock_objects::Hokuyo_UTM()");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
@@ -816,7 +814,7 @@ void TestOpenGLObjects()
 			theScene->insert(obj);
 		}
 
-		opengl::CText::Ptr gl_txt =
+		auto gl_txt =
 			opengl::CText::Create("stock_objects::Househam_Sprayer()");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
@@ -832,7 +830,7 @@ void TestOpenGLObjects()
 			theScene->insert(obj);
 		}
 
-		opengl::CText::Ptr gl_txt =
+		auto gl_txt =
 			opengl::CText::Create("stock_objects::RobotRhodon()");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
