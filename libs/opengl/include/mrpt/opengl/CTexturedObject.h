@@ -78,7 +78,7 @@ class CTexturedObject : public CRenderizable
 	 */
 	void loadTextureInOpenGL() const;
 
-	void render() const override;
+	void render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const override;
 	void renderUpdateBuffers() const override;
 };
 

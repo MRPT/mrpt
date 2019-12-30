@@ -492,7 +492,7 @@ void CTexturedObject::renderUpdateBuffers() const
 	MRPT_TODO("Implement me!");
 }
 
-void CTexturedObject::render() const
+void CTexturedObject::render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	render_pre();

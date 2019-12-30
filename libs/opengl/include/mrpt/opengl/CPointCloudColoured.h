@@ -219,7 +219,7 @@ class CPointCloudColoured : public CRenderizable,
 	/** @} */
 
 	/** Render */
-	void render() const override;
+	void render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const override;
 	void renderUpdateBuffers() const override;
 
 	/** Render a subset of points (required by octree renderer) */

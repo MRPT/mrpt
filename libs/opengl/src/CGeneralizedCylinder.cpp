@@ -87,7 +87,7 @@ void CGeneralizedCylinder::renderUpdateBuffers() const
 	MRPT_TODO("Implement me!");
 }
 
-void CGeneralizedCylinder::render() const
+void CGeneralizedCylinder::render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	if (!meshUpToDate) updateMesh();

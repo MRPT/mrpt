@@ -26,59 +26,59 @@ using namespace mrpt::poses;
 using namespace mrpt::system;
 using namespace mrpt::opengl;
 
-/** For each object in the list:
- *   - checks visibility of each object
- *   - prepare the GL_MODELVIEW matrix according to its coordinates
- *   - call its ::render()
- *   - shows its name (if enabled).
- */
-void gl_utils::renderSetOfObjects(const CListOpenGLObjects& objectsToRender)
+// Render a set of objects
+void gl_utils::renderSetOfObjects(
+	const mrpt::opengl::CListOpenGLObjects& objs,
+	const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders)
 {
 #if MRPT_HAS_OPENGL_GLUT
-	MRPT_PROFILE_FUNC_START  // Just the non-try/catch part of MRPT_START
+	MRPT_PROFILE_FUNC_START
 
-		CListOpenGLObjects::const_iterator itP;
+	using mrpt::math::CMatrixDouble44;
+
+	CListOpenGLObjects::const_iterator itP;
 	try
 	{
-		for (itP = objectsToRender.begin(); itP != objectsToRender.end(); ++itP)
+		for (itP = objs.begin(); itP != objs.end(); ++itP)
 		{
 			if (!*itP) continue;
-			const CRenderizable* it =
-				itP->get();  // Use plain pointers, faster than smart pointers:
+			// Use plain pointers, faster than smart pointers:
+			const CRenderizable* it = itP->get();
 
 			// Regenerate opengl vertex buffers?
 			if (it->hasToUpdateBuffers()) it->updateBuffers();
 
 			if (!it->isVisible()) continue;
 
-			// 3D coordinates transformation:
-			MRPT_TODO("push modelview matrix");
+			// Make a copy of rendering state, so we always have the original
+			// version of my parent intact.
+			auto _ = state;
 
-			// It's more efficient to prepare the 4x4 matrix ourselves and load
-			// it directly into opengl stack:
-			//  A homogeneous transformation matrix, in this order:
-			//
-			//     0  4  8  12
-			//     1  5  9  13
-			//     2  6  10 14
-			//     3  7  11 15
-			//
-			const CPose3D& pos = it->getPoseRef();
-			const CMatrixDouble33& R = pos.getRotationMatrix();
-			const GLdouble m[16] = {
-				R.coeff(0, 0),   R.coeff(1, 0),   R.coeff(2, 0),   0,
-				R.coeff(0, 1),   R.coeff(1, 1),   R.coeff(2, 1),   0,
-				R.coeff(0, 2),   R.coeff(1, 2),   R.coeff(2, 2),   0,
-				pos.m_coords[0], pos.m_coords[1], pos.m_coords[2], 1};
-			// glMultMatrixd(m);  // Multiply so it's composed with the
-			// previous,
-			// current MODELVIEW matrix
+			const CPose3D& thisPose = it->getPoseRef();
+			CMatrixFloat44 HM =
+				thisPose.getHomogeneousMatrixVal<CMatrixDouble44>()
+					.cast_float();
 
-			// Do scaling after the other transformations!
-			/*if (it->getScaleX() != 1 || it->getScaleY() != 1 ||
+			// Scaling:
+			if (it->getScaleX() != 1 || it->getScaleY() != 1 ||
 				it->getScaleZ() != 1)
-				glScalef(it->getScaleX(), it->getScaleY(), it->getScaleZ());
-*/
+			{
+				auto scale = CMatrixFloat44::Identity();
+				scale(0, 0) = it->getScaleX();
+				scale(1, 1) = it->getScaleY();
+				scale(2, 2) = it->getScaleZ();
+
+				HM = scale * HM;
+			}
+
+			// Compose relative to my parent pose:
+			_.mv_matrix = _.mv_matrix * HM;
+
+			// Precompute pmv_matrix to be used in shaders:
+			_.pmv_matrix = _.p_matrix * _.mv_matrix;
+
+			MRPT_TODO("Load matrices in shader");
+
 			MRPT_TODO("Shader: set color");
 			// Set color:
 			/*glColor4f(
@@ -86,7 +86,7 @@ void gl_utils::renderSetOfObjects(const CListOpenGLObjects& objectsToRender)
 				it->getColorA());
 */
 			// Render object:
-			it->render();
+			it->render(_, shaders);
 			CHECK_OPENGL_ERROR();
 
 			if (it->isShowNameEnabled())
@@ -131,18 +131,6 @@ void gl_utils::renderSetOfObjects(const CListOpenGLObjects& objectsToRender)
 #else
 	MRPT_UNUSED_PARAM(objectsToRender);
 #endif
-}
-
-void gl_utils::TRenderInfo::projectPoint(
-	float x, float y, float z, float& proj_x, float& proj_y,
-	float& proj_z_depth) const
-{
-	const Eigen::Matrix<float, 4, 1, Eigen::ColMajor> proj =
-		full_matrix.asEigen() *
-		Eigen::Matrix<float, 4, 1, Eigen::ColMajor>(x, y, z, 1);
-	proj_x = proj[3] ? proj[0] / proj[3] : 0;
-	proj_y = proj[3] ? proj[1] / proj[3] : 0;
-	proj_z_depth = proj[2];
 }
 
 void gl_utils::checkOpenGLErr_impl(
@@ -212,50 +200,6 @@ void gl_utils::renderQuadWithNormal(
 {
 	renderTriangleWithNormal(p1, p2, p3);
 	renderTriangleWithNormal(p3, p4, p1);
-}
-
-/** Gather useful information on the render parameters.
- *  It can be called from within the render() method of derived classes.
- */
-void gl_utils::getCurrentRenderingInfo(TRenderInfo& ri)
-{
-#if MRPT_HAS_OPENGL_GLUT
-	// Viewport geometry:
-	GLint win_dims[4];
-	glGetIntegerv(GL_VIEWPORT, win_dims);
-	ri.vp_x = win_dims[0];
-	ri.vp_y = win_dims[1];
-	ri.vp_width = win_dims[2];
-	ri.vp_height = win_dims[3];
-
-	// Get the inverse camera position:
-	GLfloat mat_proj[16];
-	glGetFloatv(GL_PROJECTION_MATRIX, mat_proj);
-	// ColMajor -> RowMajor:
-	ri.proj_matrix = Eigen::Matrix<float, 4, 4, Eigen::ColMajor>(mat_proj);
-
-	// Extract the camera position:
-	const auto HMinv = ri.proj_matrix.inverse();
-	const auto cam_pose_hm = HMinv.col(3).eval();
-	if (cam_pose_hm[3] != 0)
-	{
-		ri.camera_position.x = cam_pose_hm[0] / cam_pose_hm[3];
-		ri.camera_position.y = cam_pose_hm[1] / cam_pose_hm[3];
-		ri.camera_position.z = cam_pose_hm[2] / cam_pose_hm[3];
-	}
-	else
-		ri.camera_position = mrpt::math::TPoint3Df(0, 0, 0);
-
-	// Get the model transformation:
-	GLfloat mat_mod[16];
-	glGetFloatv(GL_MODELVIEW_MATRIX, mat_mod);
-	ri.model_matrix = Eigen::Matrix<float, 4, 4, Eigen::ColMajor>(mat_mod);
-
-	// PROJ * MODEL
-	ri.full_matrix = ri.proj_matrix * ri.model_matrix;
-#else
-	MRPT_UNUSED_PARAM(ri);
-#endif
 }
 
 /*---------------------------------------------------------------

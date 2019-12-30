@@ -184,7 +184,7 @@ class CSetOfLines : public CRenderizable
 		size_t index, double& x0, double& y0, double& z0, double& x1,
 		double& y1, double& z1) const;
 
-	void render() const override;
+	void render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const override;
 	void renderUpdateBuffers() const override;
 
 	// Iterator management

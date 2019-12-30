@@ -59,7 +59,7 @@ void CPlanarLaserScan::renderUpdateBuffers() const { MRPT_TODO("Implement!"); }
 /*---------------------------------------------------------------
 							render
   ---------------------------------------------------------------*/
-void CPlanarLaserScan::render() const
+void CPlanarLaserScan::render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	// Load into cache:

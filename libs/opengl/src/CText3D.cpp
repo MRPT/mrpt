@@ -44,7 +44,7 @@ void CText3D::renderUpdateBuffers() const
 	MRPT_TODO("Implement me!");
 }
 
-void CText3D::render() const
+void CText3D::render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	glColor4ub(m_color.R, m_color.G, m_color.B, m_color.A);

@@ -44,7 +44,7 @@ class CColorBar : public CRenderizable
 	bool m_disable_depth_test{true};
 
    public:
-	void render() const override;
+	void render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const override;
 	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,

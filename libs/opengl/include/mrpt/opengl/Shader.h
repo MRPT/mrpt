@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/core/exceptions.h>
 #include <mrpt/core/optional_ref.h>
-#include <mrpt/opengl/CRenderizable.h>
 #include <unordered_map>
 #include <vector>
 

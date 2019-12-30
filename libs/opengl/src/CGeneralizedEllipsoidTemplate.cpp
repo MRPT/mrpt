@@ -26,7 +26,8 @@ namespace mrpt::opengl::detail
 template <>
 void renderGeneralizedEllipsoidTemplate<2>(
 	const std::vector<mrpt::math::CMatrixFixed<float, 2, 1>>& pts,
-	const float lineWidth, const uint32_t slices, const uint32_t stacks)
+	const float lineWidth, const uint32_t slices, const uint32_t stacks,
+	const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders)
 {
 #if MRPT_HAS_OPENGL_GLUT
 	glEnable(GL_BLEND);
@@ -59,7 +60,8 @@ void renderGeneralizedEllipsoidTemplate<2>(
 template <>
 void renderGeneralizedEllipsoidTemplate<3>(
 	const std::vector<mrpt::math::CMatrixFixed<float, 3, 1>>& pts,
-	const float lineWidth, const uint32_t slices, const uint32_t stacks)
+	const float lineWidth, const uint32_t slices, const uint32_t stacks,
+	const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders)
 {
 #if MRPT_HAS_OPENGL_GLUT
 	glEnable(GL_BLEND);

@@ -97,6 +97,7 @@ void COpenGLScene::render() const
 
 	// Assure we restore the original viewport:
 	glViewport(win_dims[0], win_dims[1], win_dims[2], win_dims[3]);
+	CHECK_OPENGL_ERROR();
 
 #else
 	THROW_EXCEPTION(
