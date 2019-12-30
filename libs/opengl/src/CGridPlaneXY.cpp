@@ -40,10 +40,9 @@ GLuint indexBuffer;
 GLuint vao;
 std::shared_ptr<mrpt::opengl::Program> shaders;
 
-void init_shaders()
-{
-	// Vertex shader:
-	const char* DEFAULT_VERTEX_SHADER_CODE = R"XXX(
+#if 0
+// Vertex shader:
+const char* DEFAULT_VERTEX_SHADER_CODE = R"XXX(
 #version 110
 
 uniform mat4 p_matrix, mv_matrix;
@@ -71,32 +70,7 @@ void main()
     gl_FragColor = frag_color;
 }
 )XXX";
-
-	if (shaders) return;
-	shaders = std::make_shared<Program>();
-	shaders->clear();
-
-	std::string errMsgs;
-	std::vector<Shader> lstShaders;
-	lstShaders.resize(2);
-	if (!lstShaders[0].compileFromSource(
-			GL_VERTEX_SHADER, DEFAULT_VERTEX_SHADER_CODE, errMsgs))
-	{
-		THROW_EXCEPTION_FMT(
-			"Error compiling GL_VERTEX_SHADER:\n%s", errMsgs.c_str());
-	}
-	if (!lstShaders[1].compileFromSource(
-			GL_FRAGMENT_SHADER, DEFAULT_FRAGMENT_SHADER_CODE, errMsgs))
-	{
-		THROW_EXCEPTION_FMT(
-			"Error compiling GL_FRAGMENT_SHADER:\n%s", errMsgs.c_str());
-	}
-	if (!shaders->linkProgram(lstShaders, errMsgs))
-	{
-		THROW_EXCEPTION_FMT(
-			"Error linking Opengl Shader programs:\n%s", errMsgs.c_str());
-	}
-}
+#endif
 
 #define BUFFER_OFFSET(offset) ((GLvoid*)(offset))
 const int NumPoints = 5;
@@ -108,11 +82,6 @@ void CGridPlaneXY::renderUpdateBuffers() const
 
 	CHECK_OPENGL_ERROR();
 
-	init_shaders();
-	if (!shaders || shaders->empty()) return;
-	CHECK_OPENGL_ERROR();
-
-	// -----------------
 	// Create a buffer
 	GLuint buffer;
 	glGenBuffers(1, &buffer);
@@ -185,7 +154,9 @@ void CGridPlaneXY::renderUpdateBuffers() const
 #endif
 }
 
-void CGridPlaneXY::render() const
+void CGridPlaneXY::render(
+	const mrpt::opengl::TRenderMatrices& state,
+	mrpt::opengl::Program& shaders) const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	ASSERT_(m_frequency >= 0);
@@ -201,7 +172,7 @@ void CGridPlaneXY::render() const
 	//	glLineWidth(m_lineWidth);
 
 	// bind the shaders
-	glUseProgram(shaders->programId());
+	glUseProgram(shaders.programId());
 	CHECK_OPENGL_ERROR();
 
 	// bind the VAO

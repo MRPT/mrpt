@@ -67,7 +67,9 @@ void CPointCloud::renderUpdateBuffers() const
 	MRPT_TODO("Implement me!");
 }
 
-void CPointCloud::render() const
+void CPointCloud::render(
+	const mrpt::opengl::TRenderMatrices& state,
+	mrpt::opengl::Program& shaders) const
 {
 #if MRPT_HAS_OPENGL_GLUT
 
@@ -76,10 +78,6 @@ void CPointCloud::render() const
 
 	octree_assure_uptodate();  // Rebuild octree if needed
 	m_last_rendered_count_ongoing = 0;
-
-	// Info needed by octree renderer:
-	gl_utils::TRenderInfo ri;
-	gl_utils::getCurrentRenderingInfo(ri);
 
 	if (m_colorFromDepth)
 	{
@@ -136,7 +134,7 @@ void CPointCloud::render() const
 	glColor4ub(
 		m_color.R, m_color.G, m_color.B,
 		m_color.A);  // The default if m_colorFromDepth=false
-	octree_render(ri);  // Render all points recursively:
+	octree_render(state);  // Render all points recursively:
 	glEnd();
 
 	glEnable(GL_LIGHTING);

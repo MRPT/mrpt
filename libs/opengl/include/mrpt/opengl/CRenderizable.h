@@ -11,6 +11,8 @@
 #include <mrpt/img/TColor.h>
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/math/math_frwds.h>
+#include <mrpt/opengl/Shader.h>
+#include <mrpt/opengl/TRenderMatrices.h>
 #include <mrpt/opengl/opengl_fonts.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CSerializable.h>
@@ -283,7 +285,9 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	/** Implements the rendering of 3D objects in each class derived from
 	 * CRenderizable. \sa renderUpdateBuffers
 	 */
-	virtual void render() const = 0;
+	virtual void render(
+		const mrpt::opengl::TRenderMatrices& state,
+		mrpt::opengl::Program& shaders) const = 0;
 
 	/** Called whenever m_outdatedBuffers is true: used to re-generate OpenGL
 	 * vertex buffers, etc. before they are sent for rendering in render() */

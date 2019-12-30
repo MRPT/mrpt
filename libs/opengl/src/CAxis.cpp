@@ -64,7 +64,9 @@ void CAxis::renderUpdateBuffers() const
 	MRPT_TODO("Implement me!");
 }
 
-void CAxis::render() const
+void CAxis::render(
+	const mrpt::opengl::TRenderMatrices& state,
+	mrpt::opengl::Program& shaders) const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	MRPT_START

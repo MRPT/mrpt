@@ -134,7 +134,7 @@ class CGeneralizedCylinder : public CRenderizable
 	size_t lastSection;
 
    public:
-	void render() const override;
+	void render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const override;
 	void renderUpdateBuffers() const override;
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 

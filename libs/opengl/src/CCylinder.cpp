@@ -29,7 +29,7 @@ void CCylinder::renderUpdateBuffers() const
 	MRPT_TODO("Implement me!");
 }
 
-void CCylinder::render() const
+void CCylinder::render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	glEnable(GL_BLEND);

@@ -84,7 +84,10 @@ class CCamera : public CRenderizable
 	float getProjectiveFOVdeg() const { return m_projectiveFOVdeg; }
 
 	/** Render does nothing here. */
-	void render() const override {}
+	void render(const mrpt::opengl::TRenderMatrices&, mrpt::opengl::Program&)
+		const override
+	{
+	}
 	/** Render does nothing here. */
 	void renderUpdateBuffers() const override {}
 

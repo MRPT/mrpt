@@ -37,7 +37,7 @@ void CText::renderUpdateBuffers() const
 	MRPT_TODO("Implement me!");
 }
 
-void CText::render() const
+void CText::render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	glDisable(GL_DEPTH_TEST);

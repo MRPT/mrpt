@@ -347,7 +347,7 @@ class CVectorField3D : public CRenderizable
 	 */
 	inline size_t rows() const { return x_vf.rows(); }
 
-	void render() const override;
+	void render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const override;
 	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,

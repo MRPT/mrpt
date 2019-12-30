@@ -32,7 +32,7 @@ void CArrow::renderUpdateBuffers() const
 	MRPT_TODO("Implement me!");
 }
 
-void CArrow::render() const
+void CArrow::render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const
 {
 #if MRPT_HAS_OPENGL_GLUT
 

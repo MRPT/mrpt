@@ -86,7 +86,7 @@ class COctreePointRenderer
 	/** Render the entire octree recursively.
 	 * Should be called from children's render() method.
 	 */
-	void octree_render(const mrpt::opengl::gl_utils::TRenderInfo& ri) const
+	void octree_render(const mrpt::opengl::TRenderMatrices& ri) const
 	{
 		m_visible_octree_nodes_ongoing = 0;
 
@@ -284,7 +284,7 @@ class COctreePointRenderer
 
 	/** Render a given node. */
 	void octree_recursive_render(
-		size_t node_idx, const mrpt::opengl::gl_utils::TRenderInfo& ri,
+		size_t node_idx, const mrpt::opengl::TRenderMatrices& ri,
 		mrpt::img::TPixelCoordf cr_px[8], float cr_z[8],
 		bool corners_are_all_computed = true,
 		bool trust_me_youre_visible = false,
@@ -331,9 +331,9 @@ class COctreePointRenderer
 			// If all 8 corners are way out of the screen (and all "cr_z" have
 			// the same sign),
 			// this node and all the children are not visible:
-			if (!box_crosses_image_plane &&
-				(px_min.x >= ri.vp_width || px_min.y >= ri.vp_height ||
-				 px_max.x < 0 || px_max.y < 0))
+			if (!box_crosses_image_plane && (px_min.x >= ri.viewport_width ||
+											 px_min.y >= ri.viewport_height ||
+											 px_max.x < 0 || px_max.y < 0))
 				return;  // Not visible
 		}
 
@@ -370,8 +370,8 @@ class COctreePointRenderer
 				for (int i = 0; i < 8; i++)
 				{
 					if (!(cr_px[i].x >= 0 && cr_px[i].y >= 0 &&
-						  cr_px[i].x < ri.vp_width &&
-						  cr_px[i].y < ri.vp_height))
+						  cr_px[i].x < ri.viewport_width &&
+						  cr_px[i].y < ri.viewport_height))
 					{
 						children_are_all_visible_for_sure = false;
 						break;

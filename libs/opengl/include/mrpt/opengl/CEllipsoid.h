@@ -139,7 +139,7 @@ class CEllipsoid : public CRenderizable
 	}
 	float getLineWidth() const { return m_lineWidth; }
 
-	void render() const override;
+	void render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const override;
 	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,

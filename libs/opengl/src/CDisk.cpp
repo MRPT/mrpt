@@ -28,7 +28,7 @@ void CDisk::renderUpdateBuffers() const
 	MRPT_TODO("Implement me!");
 }
 
-void CDisk::render() const
+void CDisk::render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	glEnable(GL_BLEND);

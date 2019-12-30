@@ -44,7 +44,7 @@ class COpenGLStandardObject : public CRenderizable
 	float normal[3];
 
    public:
-	void render() const override;
+	void render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const override;
 	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,

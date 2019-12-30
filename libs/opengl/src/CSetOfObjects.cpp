@@ -43,10 +43,10 @@ void CSetOfObjects::renderUpdateBuffers() const
 	MRPT_TODO("Implement me!");
 }
 
-void CSetOfObjects::render() const
+void CSetOfObjects::render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const
 {
 	// Render all the objects:
-	mrpt::opengl::gl_utils::renderSetOfObjects(m_objects);
+	mrpt::opengl::gl_utils::renderSetOfObjects(m_objects, state, shaders);
 }
 
 uint8_t CSetOfObjects::serializeGetVersion() const { return 0; }

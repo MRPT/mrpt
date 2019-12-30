@@ -14,6 +14,7 @@
 #include <mrpt/opengl/CLight.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/Shader.h>
+#include <mrpt/opengl/TRenderMatrices.h>
 #include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/CObservable.h>
@@ -392,49 +393,6 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	/** The image to display, after calling \a setImageView() */
 	mrpt::img::CImage::Ptr m_imageview_img;
 
-	struct TRenderMatrices
-	{
-		TRenderMatrices() = default;
-
-		/** The camera is here. */
-		mrpt::math::TPoint3D eye = {0, 0, 0};
-
-		/** The camera points to here */
-		mrpt::math::TPoint3D pointing = {0, 0, 0};
-
-		/** Up vector of the camera. */
-		mrpt::math::TPoint3D up = {0, 0, 0};
-
-		/** In pixels. This may be smaller than the total render window. */
-		size_t viewport_width = 640, viewport_height = 480;
-		/** Vertical FOV in degrees. */
-		float FOV = 30.0f;
-		/** Camera elev & azimuth, in radians. */
-		float azimuth = .0f, elev = .0f;
-		float eyeDistance = 1.0f;
-		/** true: projective, false: ortho */
-		bool is_projective = true;
-
-		/** Projection matrix, computed by renderNormalScene() from all the
-		 * parameters above. Used in shaders. */
-		mrpt::math::CMatrixFloat44 p_matrix;
-
-		/** Model-view matrix. Used in shaders.
-		 * The homogeneous coordinates of a rendered point comes from:
-		 *
-		 *  p = p_matrix * mv_matrix * [x y z 1.0]'
-		 *
-		 */
-		mrpt::math::CMatrixFloat44 mv_matrix;
-
-		/** Uses is_projective , vw,vh, etc. and computes p_matrix.
-		 * Replacement for obsolete: gluPerspective() and glOrtho() */
-		void computeProjectionMatrix(float zmin, float zmax);
-
-		/** Updates the current p_matrix such that it "looks at" pointing, with
-		 * up vector "up". Replacement for deprecated OpenGL gluLookAt(). */
-		void applyLookAt();
-	};
 	/** Info updated with each "render()" and used in "get3DRayForPixelCoord" */
 	mutable TRenderMatrices m_state;
 

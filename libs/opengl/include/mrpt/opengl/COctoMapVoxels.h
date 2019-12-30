@@ -326,7 +326,7 @@ class COctoMapVoxels : public CRenderizable
 
 	void sort_voxels_by_z();
 
-	void render() const override;
+	void render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const override;
 	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,

@@ -11,6 +11,8 @@
 #include <mrpt/img/TPixelCoord.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/Shader.h>
+#include <mrpt/opengl/TRenderMatrices.h>
 #include <mrpt/opengl/opengl_fonts.h>
 
 namespace mrpt
@@ -23,60 +25,20 @@ namespace opengl
  */
 namespace gl_utils
 {
-/** @name Data types for mrpt::opengl::gl_utils
-	@{ */
-
-/** Information about the rendering process being issued. \sa See
- * getCurrentRenderingInfo for more details */
-struct TRenderInfo
-{
-	/** Rendering viewport geometry (in pixels) */
-	int vp_x, vp_y, vp_width, vp_height;
-	/** The 4x4 projection matrix */
-	mrpt::math::CMatrixFixed<float, 4, 4> proj_matrix;
-	/** The 4x4 model transformation matrix */
-	mrpt::math::CMatrixFixed<float, 4, 4> model_matrix;
-	/** PROJ * MODEL */
-	mrpt::math::CMatrixFixed<float, 4, 4> full_matrix;
-	/** The 3D location of the camera */
-	mrpt::math::TPoint3Df camera_position;
-
-	/** Computes the normalized coordinates (range=[0,1]) on the current
-	 * rendering viewport of a
-	 * point with local coordinates (wrt to the current model matrix) of
-	 * (x,y,z).
-	 *  The output proj_z_depth is the real distance from the eye to the point.
-	 */
-	void projectPoint(
-		float x, float y, float z, float& proj_x, float& proj_y,
-		float& proj_z_depth) const;
-
-	/** Exactly like projectPoint but the (x,y) projected coordinates are given
-	 * in pixels instead of normalized coordinates. */
-	void projectPointPixels(
-		float x, float y, float z, float& proj_x_px, float& proj_y_px,
-		float& proj_z_depth) const
-	{
-		projectPoint(x, y, z, proj_x_px, proj_y_px, proj_z_depth);
-		proj_x_px = (proj_x_px + 1.0f) * (vp_width / 2.0f);
-		proj_y_px = (proj_y_px + 1.0f) * (vp_height / 2.0f);
-	}
-};
-
-/** @} */  // -----------------------------------------------------
-
 /** @name Miscellaneous rendering methods
 	@{ */
 
 /** For each object in the list:
  *   - checks visibility of each object
- *   - prepare the GL_MODELVIEW matrix according to its coordinates
+ *   - update the MODELVIEW matrix according to its coordinates
  *   - call its ::render()
  *   - shows its name (if enabled).
  *
  *  \note Used by  COpenGLViewport, CSetOfObjects
  */
-void renderSetOfObjects(const mrpt::opengl::CListOpenGLObjects& objs);
+void renderSetOfObjects(
+	const mrpt::opengl::CListOpenGLObjects& objs,
+	const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders);
 
 /** Checks glGetError and throws an exception if an error situation is found */
 void checkOpenGLErr_impl(int glErrorCode, const char* filename, int lineno);
@@ -96,25 +58,6 @@ void renderTriangleWithNormal(
 void renderQuadWithNormal(
 	const mrpt::math::TPoint3Df& p1, const mrpt::math::TPoint3Df& p2,
 	const mrpt::math::TPoint3Df& p3, const mrpt::math::TPoint3Df& p4);
-
-/** Gather useful information on the render parameters.
- *  It can be called from within the render() method of CRenderizable-derived
- * classes, and
- *   the returned matrices can be used to determine whether a given point
- * (lx,ly,lz)
- *   in local coordinates wrt the object being rendered falls within the screen
- * or not:
- * \code
- *  TRenderInfo ri;
- *  getCurrentRenderingInfo(ri);
- *  Eigen::Matrix<float,4,4> M= ri.proj_matrix * ri.model_matrix *
- * HomogeneousMatrix(lx,ly,lz);
- *  const float rend_x = M(0,3)/M(3,3);
- *  const float rend_y = M(1,3)/M(3,3);
- * \endcode
- *  where (rend_x,rend_y) are both in the range [-1,1].
- */
-void getCurrentRenderingInfo(TRenderInfo& ri);
 
 /** Draws a message box with a centered (possibly multi-lined) text.
  *  It consists of a filled rectangle with a frame around and the centered text

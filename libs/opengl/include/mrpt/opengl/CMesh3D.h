@@ -145,7 +145,7 @@ class CMesh3D : public CRenderizable
 	void setLineWidth(float lw) { m_lineWidth = lw; }
 	void setPointSize(float ps) { m_pointSize = ps; }
 
-	void render() const override;
+	void render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const override;
 	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
