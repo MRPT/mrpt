@@ -38,7 +38,26 @@ CGridPlaneXY::CGridPlaneXY(
 
 GLuint indexBuffer;
 GLuint vao;
-std::shared_ptr<mrpt::opengl::Program> shaders;
+
+static GLuint make_buffer(
+	GLenum target, const void* buffer_data, GLsizei buffer_size)
+{
+	GLuint buffer;
+	glGenBuffers(1, &buffer);
+	glBindBuffer(target, buffer);
+	glBufferData(target, buffer_size, buffer_data, GL_STATIC_DRAW);
+	return buffer;
+}
+
+static const GLfloat g_vertex_buffer_data[] = {
+	// clang-format off
+	-1.0f, -1.0f, 0.0f,
+	1.0f, -1.0f,  0.0f,
+	-1.0f, 1.0f, 0.0f,
+	1.0f, 1.0f, 0.0f
+	// clang-format on
+};
+static const GLushort g_element_buffer_data[] = {0, 1, 2, 3};
 
 #if 0
 // Vertex shader:
@@ -72,8 +91,7 @@ void main()
 )XXX";
 #endif
 
-#define BUFFER_OFFSET(offset) ((GLvoid*)(offset))
-const int NumPoints = 5;
+#define BUFFER_OFFSET(offset) (reinterpret_cast<GLvoid*>(offset))
 
 void CGridPlaneXY::renderUpdateBuffers() const
 {
@@ -82,73 +100,13 @@ void CGridPlaneXY::renderUpdateBuffers() const
 
 	CHECK_OPENGL_ERROR();
 
-	// Create a buffer
-	GLuint buffer;
-	glGenBuffers(1, &buffer);
-	CHECK_OPENGL_ERROR();
+	vao = make_buffer(
+		GL_ARRAY_BUFFER, g_vertex_buffer_data, sizeof(g_vertex_buffer_data));
 
-	mrpt::math::TPoint3Df points[NumPoints] = {
-		{0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {1, 0, 1}, {1, 1, 1}};
+	indexBuffer = make_buffer(
+		GL_ELEMENT_ARRAY_BUFFER, g_element_buffer_data,
+		sizeof(g_element_buffer_data));
 
-	// Bind it to GL_ARRAY_BUFFER and pass the data to the GPU
-	glBindBuffer(GL_ARRAY_BUFFER, buffer);
-	CHECK_OPENGL_ERROR();
-	glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
-	CHECK_OPENGL_ERROR();
-
-	// -----------------
-	glGenBuffers(1, &indexBuffer);
-	CHECK_OPENGL_ERROR();
-
-	// Bind it to GL_ARRAY_BUFFER and pass the data to the GPU
-	glBindBuffer(GL_ARRAY_BUFFER, indexBuffer);
-	CHECK_OPENGL_ERROR();
-
-	int indices[NumPoints] = {0, 1, 2, 3, 0};
-	glBufferData(GL_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-	CHECK_OPENGL_ERROR();
-	// -----------------
-
-	// Create a vertex array object (VAO)
-	glGenVertexArrays(1, &vao);
-	CHECK_OPENGL_ERROR();
-	glBindVertexArray(vao);
-	CHECK_OPENGL_ERROR();
-
-	// Initialize the vertex in_pos attribute defined in the vertex shader
-
-	// Get an index for the attribute from the shader
-	GLuint loc_in_pos = glGetAttribLocation(shaders->programId(), "in_pos");
-	CHECK_OPENGL_ERROR();
-	glEnableVertexAttribArray(loc_in_pos);
-	CHECK_OPENGL_ERROR();
-
-	// Associate the attribute with the data in the buffer.
-	// glVertexAttribPointer implicitly refers to the currently bound
-	// GL_ARRAY_BUFFER
-	glBindBuffer(GL_ARRAY_BUFFER, buffer);
-	CHECK_OPENGL_ERROR();
-	glVertexAttribPointer(
-		loc_in_pos, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
-	CHECK_OPENGL_ERROR();
-
-	// Add indices for indexed rendering
-	// Binding to GL_ELEMENT_ARRAY_BUFFER is saved with VAO state
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-	CHECK_OPENGL_ERROR();
-
-	// Unbind the buffer
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	CHECK_OPENGL_ERROR();
-
-	// Unbind the VAO
-	glBindVertexArray(0);
-	CHECK_OPENGL_ERROR();
-
-	glPointSize(4.0f);  // make points show up better
-	CHECK_OPENGL_ERROR();
-
-	//
 	MRPT_TODO("Implement me!");
 
 #endif
@@ -175,12 +133,56 @@ void CGridPlaneXY::render(
 	glUseProgram(shaders.programId());
 	CHECK_OPENGL_ERROR();
 
-	// bind the VAO
-	glBindVertexArray(vao);
+	GLint attr_position = glGetAttribLocation(shaders.programId(), "position");
+	CHECK_OPENGL_ERROR();
+	ASSERT_(attr_position >= 0);
+
+	// PMV matrices:
+	GLint unif_p_matrix = glGetUniformLocation(shaders.programId(), "p_matrix");
+	CHECK_OPENGL_ERROR();
+	ASSERT_(unif_p_matrix >= 0);
+
+	GLint unif_mv_matrix =
+		glGetUniformLocation(shaders.programId(), "mv_matrix");
+	CHECK_OPENGL_ERROR();
+	ASSERT_(unif_mv_matrix >= 0);
+
+	glUniformMatrix4fv(unif_p_matrix, 1, GL_FALSE, state.p_matrix.data());
 	CHECK_OPENGL_ERROR();
 
-	// draw primitives
-	glDrawArrays(GL_LINES, 0, NumPoints);
+	glUniformMatrix4fv(unif_mv_matrix, 1, GL_FALSE, state.mv_matrix.data());
+	CHECK_OPENGL_ERROR();
+
+	// Set up the vertex array:
+	MRPT_TODO("Move this to the prepare method!");
+
+	glEnableVertexAttribArray(attr_position);
+	CHECK_OPENGL_ERROR();
+
+	glBindBuffer(GL_ARRAY_BUFFER, vao);
+	CHECK_OPENGL_ERROR();
+
+	glVertexAttribPointer(
+		attr_position, /* attribute */
+		3, /* size */
+		GL_FLOAT, /* type */
+		GL_FALSE, /* normalized? */
+		0, /* stride */
+		BUFFER_OFFSET(0) /* array buffer offset */
+	);
+	CHECK_OPENGL_ERROR();
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+	CHECK_OPENGL_ERROR();
+	glDrawElements(
+		GL_TRIANGLE_STRIP, /* mode */
+		4, /* count */
+		GL_UNSIGNED_SHORT, /* type */
+		BUFFER_OFFSET(0) /* element array buffer offset */
+	);
+	CHECK_OPENGL_ERROR();
+
+	glDisableVertexAttribArray(attr_position);
 	CHECK_OPENGL_ERROR();
 
 #if 0
