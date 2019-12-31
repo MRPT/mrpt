@@ -72,7 +72,7 @@ void gl_utils::renderSetOfObjects(
 			}
 
 			// Compose relative to my parent pose:
-			_.mv_matrix = _.mv_matrix * HM;
+			_.mv_matrix.asEigen() = _.mv_matrix.asEigen() * HM.asEigen();
 
 			// Precompute pmv_matrix to be used in shaders:
 			_.pmv_matrix = _.p_matrix * _.mv_matrix;
