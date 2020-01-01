@@ -98,6 +98,15 @@ class Program
 		return m_program;
 	}
 
+	unsigned int uniformId(const char* name) const
+	{
+		return m_uniforms.at(name);
+	}
+	unsigned int attributeId(const char* name) const
+	{
+		return m_attribs.at(name);
+	}
+
    private:
 	std::vector<Shader> m_shaders;
 	unsigned int m_program = 0;

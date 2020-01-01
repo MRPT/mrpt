@@ -38,6 +38,7 @@ CGridPlaneXY::CGridPlaneXY(
 
 GLuint indexBuffer;
 GLuint vao;
+GLuint vertexArray;
 
 static GLuint make_buffer(
 	GLenum target, const void* buffer_data, GLsizei buffer_size)
@@ -107,7 +108,13 @@ void CGridPlaneXY::renderUpdateBuffers() const
 		GL_ELEMENT_ARRAY_BUFFER, g_element_buffer_data,
 		sizeof(g_element_buffer_data));
 
-	MRPT_TODO("Implement me!");
+	// Generate a name for a new array.
+	glGenVertexArrays(1, &vertexArray);
+	// Make the new array active, creating it if necessary.
+	glBindVertexArray(vertexArray);
+
+	// Make the buffer the active array buffer.
+	glBindBuffer(GL_ARRAY_BUFFER, vertexArray);
 
 #endif
 }
@@ -129,38 +136,16 @@ void CGridPlaneXY::render(
 	MRPT_TODO("Port thick lines to opengl3?");
 	//	glLineWidth(m_lineWidth);
 
-	// bind the shaders
-	glUseProgram(shaders.programId());
-	CHECK_OPENGL_ERROR();
-
-	GLint attr_position = glGetAttribLocation(shaders.programId(), "position");
-	CHECK_OPENGL_ERROR();
-	ASSERT_(attr_position >= 0);
-
-	// PMV matrices:
-	GLint unif_p_matrix = glGetUniformLocation(shaders.programId(), "p_matrix");
-	CHECK_OPENGL_ERROR();
-	ASSERT_(unif_p_matrix >= 0);
-
-	GLint unif_mv_matrix =
-		glGetUniformLocation(shaders.programId(), "mv_matrix");
-	CHECK_OPENGL_ERROR();
-	ASSERT_(unif_mv_matrix >= 0);
-
-	glUniformMatrix4fv(unif_p_matrix, 1, GL_FALSE, state.p_matrix.data());
-	CHECK_OPENGL_ERROR();
-
-	glUniformMatrix4fv(unif_mv_matrix, 1, GL_FALSE, state.mv_matrix.data());
-	CHECK_OPENGL_ERROR();
-
 	// Set up the vertex array:
 	MRPT_TODO("Move this to the prepare method!");
 
-	glEnableVertexAttribArray(attr_position);
-	CHECK_OPENGL_ERROR();
-
 	glBindBuffer(GL_ARRAY_BUFFER, vao);
 	CHECK_OPENGL_ERROR();
+
+	glBindVertexArray(vertexArray);
+	CHECK_OPENGL_ERROR();
+
+	const GLint attr_position = shaders.attributeId("position");
 
 	glVertexAttribPointer(
 		attr_position, /* attribute */
