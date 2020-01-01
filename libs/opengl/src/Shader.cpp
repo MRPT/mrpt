@@ -36,7 +36,6 @@ void Shader::clear()
 {
 	if (!m_shader) return;  // Nothing to do
 #if MRPT_HAS_OPENGL_GLUT
-	printf("Shader::clear: %u\n", m_shader);
 	glDeleteShader(m_shader);
 	m_shader = 0;
 #endif
@@ -104,8 +103,6 @@ void Program::clear()
 	// 4) Delete all variables:
 	m_uniforms.clear();
 	m_attribs.clear();
-
-	printf("Program::clear: %u\n", m_program);
 #endif
 
 	m_program = 0;

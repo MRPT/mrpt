@@ -266,7 +266,13 @@ void COpenGLViewport::loadDefaultShaders() const
 			"Error linking Opengl Shader programs:\n%s", errMsgs.c_str());
 	}
 
-	MRPT_TODO("Make m_color a program attribute");
+	// Uniforms:
+	m_shaders->declareUniform("p_matrix");
+	m_shaders->declareUniform("mv_matrix");
+
+	// Attributes:
+	m_shaders->declareAttribute("position");
+	MRPT_TODO("Make color a program attribute");
 
 #endif
 }
