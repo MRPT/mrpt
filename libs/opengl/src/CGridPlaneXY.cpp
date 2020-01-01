@@ -36,9 +36,7 @@ CGridPlaneXY::CGridPlaneXY(
 {
 }
 
-GLuint indexBuffer;
-GLuint vao;
-GLuint vertexArray;
+static GLuint vertexBuffer, vao;
 
 static GLuint make_buffer(
 	GLenum target, const void* buffer_data, GLsizei buffer_size)
@@ -53,44 +51,11 @@ static GLuint make_buffer(
 static const GLfloat g_vertex_buffer_data[] = {
 	// clang-format off
 	-1.0f, -1.0f, 0.0f,
-	1.0f, -1.0f,  0.0f,
-	-1.0f, 1.0f, 0.0f,
-	1.0f, 1.0f, 0.0f
+	1.0f, -1.0f, 0.0f,
+	0.0f,  1.0f, 0.0f,
 	// clang-format on
 };
 static const GLushort g_element_buffer_data[] = {0, 1, 2, 3};
-
-#if 0
-// Vertex shader:
-const char* DEFAULT_VERTEX_SHADER_CODE = R"XXX(
-#version 110
-
-uniform mat4 p_matrix, mv_matrix;
-
-attribute vec3 in_pos;
-attribute vec4 in_color;
-varying vec4 frag_color;
-
-void main()
-{
-    vec4 eye_position = mv_matrix * vec4(in_pos, 1.0);
-    gl_Position = p_matrix * eye_position;
-    frag_color = in_color;
-}
-)XXX";
-
-	// Fragment shader:
-	const char* DEFAULT_FRAGMENT_SHADER_CODE = R"XXX(
-#version 110
-
-varying vec4 frag_color;
-
-void main()
-{
-    gl_FragColor = frag_color;
-}
-)XXX";
-#endif
 
 #define BUFFER_OFFSET(offset) (reinterpret_cast<GLvoid*>(offset))
 
@@ -101,20 +66,17 @@ void CGridPlaneXY::renderUpdateBuffers() const
 
 	CHECK_OPENGL_ERROR();
 
-	vao = make_buffer(
+	vertexBuffer = make_buffer(
 		GL_ARRAY_BUFFER, g_vertex_buffer_data, sizeof(g_vertex_buffer_data));
 
-	indexBuffer = make_buffer(
-		GL_ELEMENT_ARRAY_BUFFER, g_element_buffer_data,
-		sizeof(g_element_buffer_data));
-
+	/*	indexBuffer = make_buffer(
+			GL_ELEMENT_ARRAY_BUFFER, g_element_buffer_data,
+			sizeof(g_element_buffer_data));
+	*/
 	// Generate a name for a new array.
-	glGenVertexArrays(1, &vertexArray);
+	glGenVertexArrays(1, &vao);
 	// Make the new array active, creating it if necessary.
-	glBindVertexArray(vertexArray);
-
-	// Make the buffer the active array buffer.
-	glBindBuffer(GL_ARRAY_BUFFER, vertexArray);
+	glBindVertexArray(vao);
 
 #endif
 }
@@ -128,9 +90,9 @@ void CGridPlaneXY::render(
 
 	// Enable antialiasing:
 	CHECK_OPENGL_ERROR();
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	// glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	CHECK_OPENGL_ERROR();
-	glEnable(GL_BLEND);
+	// glEnable(GL_BLEND);
 	CHECK_OPENGL_ERROR();
 
 	MRPT_TODO("Port thick lines to opengl3?");
@@ -139,13 +101,18 @@ void CGridPlaneXY::render(
 	// Set up the vertex array:
 	MRPT_TODO("Move this to the prepare method!");
 
-	glBindBuffer(GL_ARRAY_BUFFER, vao);
+#if 0
+	glBindVertexArray(vao);
 	CHECK_OPENGL_ERROR();
+#endif
 
-	glBindVertexArray(vertexArray);
+	//	const GLint attr_position = shaders.attributeId("position");
+	const GLint attr_position = 0;
+
+	glEnableVertexAttribArray(attr_position);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 	CHECK_OPENGL_ERROR();
-
-	const GLint attr_position = shaders.attributeId("position");
 
 	glVertexAttribPointer(
 		attr_position, /* attribute */
@@ -157,14 +124,9 @@ void CGridPlaneXY::render(
 	);
 	CHECK_OPENGL_ERROR();
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-	CHECK_OPENGL_ERROR();
-	glDrawElements(
-		GL_TRIANGLE_STRIP, /* mode */
-		4, /* count */
-		GL_UNSIGNED_SHORT, /* type */
-		BUFFER_OFFSET(0) /* element array buffer offset */
-	);
+	// glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+	// CHECK_OPENGL_ERROR();
+	glDrawArrays(GL_TRIANGLES, 0, 3);
 	CHECK_OPENGL_ERROR();
 
 	glDisableVertexAttribArray(attr_position);
