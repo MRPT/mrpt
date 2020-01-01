@@ -1,5 +1,6 @@
 R"XXX(
-#version 110
+#version 330 core
+
 // FRAGMENT SHADER: Default shader for MRPT CRenderizable objects
 // Jose Luis Blanco Claraco (C) 2019
 // Part of the MRPT project
@@ -7,9 +8,11 @@ R"XXX(
 //uniform mat4 p_matrix, mv_matrix;
 //uniform sampler2D texture;
 
-varying vec3 frag_position, frag_normal;
+out vec3 color;
+
+//varying vec3 frag_position, frag_normal;
 //varying vec2 frag_texcoord;
-varying vec4 frag_diffuse;
+//varying vec4 frag_diffuse;
 
 /*
 varying vec2 frag_texcoord;
@@ -24,7 +27,7 @@ const vec4 light_specular = vec4(1.0, 1.0, 1.0, 1.0);
 
 void main()
 {
-  gl_FragColor = frag_diffuse;
+    color = vec3(1,0,0);
 
 /*    vec3 mv_light_direction = (mv_matrix * vec4(light_direction, 0.0)).xyz,
          normal = normalize(frag_normal),
