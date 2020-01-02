@@ -4,9 +4,13 @@ R"XXX(
 // VERTEX SHADER: Default shader for MRPT CRenderizable objects
 // Jose Luis Blanco Claraco (C) 2019
 // Part of the MRPT project
-layout(location = 0) in vec3 vertexPosition_modelspace;
 
-//uniform mat4 p_matrix,  mv_matrix;
+
+layout(location = 0) in vec3 position;
+
+uniform mat4 p_matrix;
+uniform mat4 mv_matrix;
+
 //uniform sampler2D texture;
 
 //attribute vec3 position; //, normal;
@@ -26,13 +30,10 @@ layout(location = 0) in vec3 vertexPosition_modelspace;
 
 void main()
 {
-    gl_Position.xyz = vertexPosition_modelspace;
-    gl_Position.w = 1.0;
-
-/*    vec4 eye_position = mv_matrix * vec4(position, 1.0);
+    vec4 eye_position = mv_matrix * vec4(position, 1.0);
     gl_Position = p_matrix * eye_position;
 
-    frag_position = eye_position.xyz;
+/*    frag_position = eye_position.xyz;
     frag_diffuse = material_diffuse_color;
 */
 //    frag_normal   = (mv_matrix * vec4(normal, 0.0)).xyz;
