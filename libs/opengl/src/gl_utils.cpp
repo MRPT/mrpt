@@ -81,12 +81,15 @@ void gl_utils::renderSetOfObjects(
 			_.pmv_matrix.asEigen() =
 				_.p_matrix.asEigen() * _.mv_matrix.asEigen();
 
+			MRPT_TODO("Debug the p_matrix!!");
+			//_.mv_matrix.setIdentity();
+			_.p_matrix.setIdentity();
+
 			// Load matrices in shader:
 			// bind the shaders
 			glUseProgram(shaders.programId());
 			CHECK_OPENGL_ERROR();
 
-#if 0
 			const GLint unif_p_matrix = shaders.uniformId("p_matrix");
 			const GLint unif_mv_matrix = shaders.uniformId("mv_matrix");
 
@@ -99,7 +102,6 @@ void gl_utils::renderSetOfObjects(
 			glUniformMatrix4fv(
 				unif_mv_matrix, 1, MATRIX_TRANSPOSED, _.mv_matrix.data());
 			CHECK_OPENGL_ERROR();
-#endif
 
 			MRPT_TODO("Shader: set color");
 			// Set color:

@@ -267,11 +267,11 @@ void COpenGLViewport::loadDefaultShaders() const
 	}
 
 	// Uniforms:
-	//	m_shaders->declareUniform("p_matrix");
-	//	m_shaders->declareUniform("mv_matrix");
+	m_shaders->declareUniform("p_matrix");
+	m_shaders->declareUniform("mv_matrix");
 
 	// Attributes:
-	//	m_shaders->declareAttribute("position");
+	m_shaders->declareAttribute("position");
 	MRPT_TODO("Make color a program attribute");
 
 #endif

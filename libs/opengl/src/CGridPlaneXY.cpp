@@ -106,8 +106,7 @@ void CGridPlaneXY::render(
 	CHECK_OPENGL_ERROR();
 #endif
 
-	//	const GLint attr_position = shaders.attributeId("position");
-	const GLint attr_position = 0;
+	const GLint attr_position = shaders.attributeId("position");
 
 	glEnableVertexAttribArray(attr_position);
 
