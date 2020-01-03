@@ -10,6 +10,7 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/math/geometry.h>  // crossProduct3D()
+#include <mrpt/math/ops_containers.h>  // dotProduct()
 #include <mrpt/opengl/TRenderMatrices.h>
 #include <Eigen/Dense>
 
@@ -25,28 +26,22 @@ void TRenderMatrices::computeProjectionMatrix(float znear, float zfar)
 
 	if (is_projective)
 	{
-		const float f = 1.0f / std::tan(mrpt::DEG2RAD(FOV));
+		// Was: gluPerspective()
+		// Based on GLM's perspective (MIT license).
+
 		const float aspect = viewport_width / (1.0f * viewport_height);
+		ASSERT_ABOVE_(
+			std::abs(aspect - std::numeric_limits<float>::epsilon()), .0f);
+
+		const float f = 1.0f / std::tan(mrpt::DEG2RAD(FOV) / 2.0f);
+
+		p_matrix.setZero();
 
 		p_matrix(0, 0) = f / aspect;
-		p_matrix(0, 1) = .0f;
-		p_matrix(0, 2) = .0f;
-		p_matrix(0, 3) = .0f;
-
-		p_matrix(1, 0) = .0f;
 		p_matrix(1, 1) = f;
-		p_matrix(1, 2) = .0f;
-		p_matrix(1, 3) = .0f;
-
-		p_matrix(2, 0) = .0f;
-		p_matrix(2, 1) = .0f;
-		p_matrix(2, 2) = (zfar + znear) / (znear - zfar);
-		p_matrix(2, 3) = 2 * zfar * znear / (znear - zfar);
-
-		p_matrix(3, 0) = .0f;
-		p_matrix(3, 1) = .0f;
+		p_matrix(2, 2) = -(zfar + znear) / (zfar - znear);
 		p_matrix(3, 2) = -1.0f;
-		p_matrix(3, 3) = .0f;
+		p_matrix(2, 3) = -(2.0f * zfar * znear) / (zfar - znear);
 	}
 	else
 	{
@@ -64,27 +59,16 @@ void TRenderMatrices::computeProjectionMatrix(float znear, float zfar)
 			if (ratio != 0) Ay /= ratio;
 		}
 
-		p_matrix(0, 0) = 1.0f / Ax;
-		p_matrix(0, 1) = .0f;
-		p_matrix(0, 2) = .0f;
-		p_matrix(0, 3) = .0f;  // x displacement;
+		p_matrix.setIdentity();
+		const auto left = -.5f * Ax, right = .5f * Ax;
+		const auto bottom = -.5f * Ay, top = .5f * Ay;
 
-		p_matrix(1, 0) = .0f;
-		p_matrix(1, 1) = 1.0f / Ay;
-		p_matrix(1, 2) = .0f;
-		p_matrix(1, 3) = .0f;  // y displacement
-
-		p_matrix(2, 0) = .0f;
-		p_matrix(2, 1) = .0f;
-		p_matrix(2, 2) = -2.0f / (zfar - znear);
-		p_matrix(2, 3) = -(zfar + znear) / (zfar - znear);
-
-		p_matrix(3, 0) = .0f;
-		p_matrix(3, 1) = .0f;
-		p_matrix(3, 2) = .0f;
-		p_matrix(3, 3) = 1.0f;
-
-		p_matrix(2, 3) = 2 * zfar * znear / (znear - zfar);
+		p_matrix(0, 0) = 2.0f / (right - left);
+		p_matrix(1, 1) = 2.0f / (top - bottom);
+		p_matrix(2, 2) = 1.0f / (zfar - znear);
+		p_matrix(3, 0) = -(right + left) / (right - left);
+		p_matrix(3, 1) = -(top + bottom) / (top - bottom);
+		p_matrix(3, 2) = -znear / (zfar - znear);
 	}
 }
 
@@ -107,38 +91,37 @@ void TRenderMatrices::applyLookAt()
 	// Recompute up as: up = side x forward
 	const TVector3Df up2 = mrpt::math::crossProduct3D(side, forward);
 
+	//  s.x   s.y   s.z  -dot(s, eye)
+	//  u.x   u.y   u.z  -dot(u, eye)
+	// -f.x  -f.y  -f.z  dot(up, eye)
+	//   0     0     0      1
+
 	mrpt::math::CMatrixFloat44 m(mrpt::math::UNINITIALIZED_MATRIX);
 	// Axis X:
 	m(0, 0) = side[0];
-	m(1, 0) = side[1];
-	m(2, 0) = side[2];
-	m(3, 0) = 0;
+	m(0, 1) = side[1];
+	m(0, 2) = side[2];
 	// Axis Y:
-	m(0, 1) = up2[0];
+	m(1, 0) = up2[0];
 	m(1, 1) = up2[1];
-	m(2, 1) = up2[2];
-	m(3, 1) = 0;
+	m(1, 2) = up2[2];
 	// Axis Z:
-	m(0, 2) = -forward[0];
-	m(1, 2) = -forward[1];
+	m(2, 0) = -forward[0];
+	m(2, 1) = -forward[1];
 	m(2, 2) = -forward[2];
-	m(3, 2) = 0;
 	// Translation:
-	m(0, 3) = 0;
-	m(1, 3) = 0;
-	m(2, 3) = 0;
-	m(3, 3) = 1;
+	m(0, 3) = -mrpt::math::dotProduct<3, float>(side, eye);
+	m(1, 3) = -mrpt::math::dotProduct<3, float>(up2, eye);
+	m(2, 3) = mrpt::math::dotProduct<3, float>(forward, eye);
+	// Last row:
+	m(3, 0) = .0f;
+	m(3, 1) = .0f;
+	m(3, 2) = .0f;
+	m(3, 3) = 1.f;
 
 	// Homogeneous matrices composition:
-	mrpt::math::CMatrixFloat44 result = p_matrix * m;
-
-	// Translation:
-	result(0, 3) -= eye.x;
-	result(1, 3) -= eye.y;
-	result(2, 3) -= eye.z;
-
 	// Overwrite projection matrix:
-	p_matrix = result;
+	p_matrix.asEigen() = p_matrix.asEigen() * m.asEigen();
 }
 
 void TRenderMatrices::projectPoint(
