@@ -74,33 +74,24 @@ void gl_utils::renderSetOfObjects(
 			// Compose relative to my parent pose:
 			_.mv_matrix.asEigen() = _.mv_matrix.asEigen() * HM.asEigen();
 
-			// We store matrices for OpenGL in column-major, despite MRPT
-			// standard is row-major.
-
 			// Precompute pmv_matrix to be used in shaders:
 			_.pmv_matrix.asEigen() =
 				_.p_matrix.asEigen() * _.mv_matrix.asEigen();
-
-			MRPT_TODO("Debug the p_matrix!!");
-			//_.mv_matrix.setIdentity();
-			_.p_matrix.setIdentity();
 
 			// Load matrices in shader:
 			// bind the shaders
 			glUseProgram(shaders.programId());
 			CHECK_OPENGL_ERROR();
 
-			const GLint unif_p_matrix = shaders.uniformId("p_matrix");
-			const GLint unif_mv_matrix = shaders.uniformId("mv_matrix");
+			const GLint u_pmat = shaders.uniformId("p_matrix");
+			const GLint u_mvmat = shaders.uniformId("mv_matrix");
 
-			const auto MATRIX_TRANSPOSED = GL_TRUE;
+			const auto IS_TRANSPOSED = GL_FALSE;
 
-			glUniformMatrix4fv(
-				unif_p_matrix, 1, MATRIX_TRANSPOSED, _.p_matrix.data());
+			glUniformMatrix4fv(u_pmat, 1, IS_TRANSPOSED, _.p_matrix.data());
 			CHECK_OPENGL_ERROR();
 
-			glUniformMatrix4fv(
-				unif_mv_matrix, 1, MATRIX_TRANSPOSED, _.mv_matrix.data());
+			glUniformMatrix4fv(u_mvmat, 1, IS_TRANSPOSED, _.mv_matrix.data());
 			CHECK_OPENGL_ERROR();
 
 			MRPT_TODO("Shader: set color");
