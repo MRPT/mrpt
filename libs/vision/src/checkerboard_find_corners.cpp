@@ -91,7 +91,7 @@ bool mrpt::vision::findChessboardCorners(
 
 	if (corners_found)
 	{
-		IplImage iplImg(cvImg);
+		IplImage iplImg = cvIplImage(cvImg);
 		// Refine corners:
 		cvFindCornerSubPix(
 			&iplImg, &corners_list[0], corners_count, cvSize(5, 5),  // window
@@ -139,7 +139,7 @@ void mrpt::vision::findMultipleChessboardsCorners(
 	// Grayscale version:
 	const CImage img(in_img, FAST_REF_OR_CONVERT_TO_GRAY);
 	const cv::Mat img_m = img.asCvMat<cv::Mat>(SHALLOW_COPY);
-	const IplImage img_ipl(img_m);
+	const IplImage img_ipl = cvIplImage(img_m);
 
 	std::vector<std::vector<CvPoint2D32f>> corners_list;
 
