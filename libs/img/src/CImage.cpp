@@ -257,12 +257,12 @@ void CImage::resize(
 
 	// If we're resizing to exactly the current size, do nothing:
 	{
-		cv::Mat ipl = m_impl->img;
+		IplImage ipl = cvIplImage(m_impl->img);
 
-		if (static_cast<unsigned>(ipl.cols) == width &&
-			static_cast<unsigned>(ipl.rows) == height &&
-			ipl.channels() == nChannels &&
-			static_cast<unsigned>(ipl.depth()) == pixelDepth2IPLCvDepth(depth))
+		if (static_cast<unsigned>(ipl.width) == width &&
+			static_cast<unsigned>(ipl.height) == height &&
+			ipl.nChannels == nChannels &&
+			static_cast<unsigned>(ipl.depth) == pixelDepth2IPLCvDepth(depth))
 		{
 			// Nothing to do:
 			return;
@@ -339,7 +339,7 @@ bool CImage::saveToFile(const std::string& fileName, int jpeg_quality) const
 	return cv::imwrite(fileName, m_impl->img, params);
 #else
 	int p[3] = {CV_IMWRITE_JPEG_QUALITY, jpeg_quality, 0};
-	cv::Mat ipl = m_impl->img;
+	_IplImage ipl = m_impl->img;
 	return (0 != cvSaveImage(fileName.c_str(), &ipl, p));
 #endif
 #else
@@ -372,18 +372,15 @@ void CImage::loadFromMemoryBuffer(
 	resize(width, height, color ? CH_RGB : CH_GRAY);
 	m_imgIsExternalStorage = false;
 
-	//cv::Mat ii(m_impl->img);
-	//IplImage* img = &ii;
-    cv::Mat img(m_impl->img);
+	IplImage ii = cvIplImage(m_impl->img);
+	IplImage* img = &ii;
 
 	if (color && swapRedBlue)
 	{
 		// Do copy & swap at once:
 		unsigned char* ptr_src = rawpixels;
-		//auto* ptr_dest = reinterpret_cast<unsigned char*>(img->imageData);
-		//const int bytes_per_row_out = img->widthStep;
-        auto* ptr_dest = reinterpret_cast<unsigned char*>(img.data);
-        const int bytes_per_row_out = img.step;
+		auto* ptr_dest = reinterpret_cast<unsigned char*>(img->imageData);
+		const int bytes_per_row_out = img->widthStep;
 
 		for (int h = height; h--;)
 		{
@@ -400,22 +397,18 @@ void CImage::loadFromMemoryBuffer(
 	}
 	else
 	{
-		//if (img->widthStep == img->width * img->nChannels)
-        if (img.step == img.cols * img.channels())
+		if (img->widthStep == img->width * img->nChannels)
 		{
 			// Copy the image data:
-			//memcpy(img->imageData, rawpixels, img->imageSize);
-            memcpy(img.data, rawpixels, img.rows*img.cols);
+			memcpy(img->imageData, rawpixels, img->imageSize);
 		}
 		else
 		{
 			// Copy the image row by row:
 			unsigned char* ptr_src = rawpixels;
-			//auto* ptr_dest = reinterpret_cast<unsigned char*>(img->imageData);
-            auto* ptr_dest = reinterpret_cast<unsigned char*>(img.data);
+			auto* ptr_dest = reinterpret_cast<unsigned char*>(img->imageData);
 			int bytes_per_row = width * (color ? 3 : 1);
-			//int bytes_per_row_out = img->widthStep;
-            int bytes_per_row_out = img.step;
+			int bytes_per_row_out = img->widthStep;
 			for (unsigned int y = 0; y < height; y++)
 			{
 				memcpy(ptr_dest, ptr_src, bytes_per_row);
@@ -832,9 +825,8 @@ std::string CImage::getChannelsOrder() const
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	//IplImage ipl(m_impl->img);
-	//return std::string(ipl.channelSeq);
-    return ("BGR");
+	IplImage ipl = cvIplImage(m_impl->img);
+	return std::string(ipl.channelSeq);
 #else
 	THROW_EXCEPTION("MRPT built without OpenCV support");
 #endif
@@ -1747,9 +1739,6 @@ bool CImage::drawChessboardCorners(
 
 	CCanvas::selectTextFont("10x20");
 
-	//IplImage iplp(img);
-	//IplImage* ipl = &iplp;
-    cv::Mat ipl(img);
 
 	for (y = 0, i = 0; y < check_size_y; y++)
 	{
@@ -1760,16 +1749,16 @@ bool CImage::drawChessboardCorners(
 			pt.x = cvRound(cornerCoords[i].x);
 			pt.y = cvRound(cornerCoords[i].y);
 
-			if (i != 0) cv::line(ipl, prev_pt, pt, color, lines_width);
+			if (i != 0) cv::line(img, prev_pt, pt, color, lines_width);
 
 			cv::line(
-				ipl, cv::Point(pt.x - r, pt.y - r), cv::Point(pt.x + r, pt.y + r),
+				img, cv::Point(pt.x - r, pt.y - r), cv::Point(pt.x + r, pt.y + r),
 				color, lines_width);
 			cv::line(
-				ipl, cv::Point(pt.x - r, pt.y + r), cv::Point(pt.x + r, pt.y - r),
+				img, cv::Point(pt.x - r, pt.y + r), cv::Point(pt.x + r, pt.y - r),
 				color, lines_width);
 
-			if (r > 0) cv::circle(ipl, pt, r + 1, color);
+			if (r > 0) cv::circle(img, pt, r + 1, color);
 			prev_pt = pt;
 
 			// Text label with the corner index in the first and last
@@ -2107,14 +2096,12 @@ bool CImage::loadTGA(
 }
 
 void CImage::getAsIplImage(cv::Mat& dest) const
-//void CImage::getAsIplImage(IplImage* dest) const
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();
 
-    dest = cv::Mat(m_impl->img);
 	//ASSERT_(dest != nullptr);
-	//*dest = m_impl->img;
+	dest = m_impl->img;
 #endif
 }
 
