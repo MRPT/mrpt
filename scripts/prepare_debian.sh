@@ -50,10 +50,9 @@ fi
 # Append snapshot?
 if [ $APPEND_SNAPSHOT_NUM == "1" ];
 then
-        MRPT_SNAPSHOT_VERSION=`date +%Y%m%d%H%M`
-        MRPT_SNAPSHOT_VERSION+="-git-"
-        MRPT_SNAPSHOT_VERSION+=`git rev-parse --short=8 HEAD`
-        MRPT_SNAPSHOT_VERSION+="-"
+        CUR_SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+        source $CUR_SCRIPT_DIR/prepare_debian_gen_snapshot_version.sh  # populate MRPT_SNAPSHOT_VERSION
+
         MRPT_VERSION_STR="${MRPT_VERSION_STR}~snapshot${MRPT_SNAPSHOT_VERSION}${APPEND_LINUX_DISTRO}"
 else
         MRPT_VERSION_STR="${MRPT_VERSION_STR}${APPEND_LINUX_DISTRO}"
