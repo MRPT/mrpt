@@ -9,6 +9,8 @@
 
 #include "comms-precomp.h"  // Precompiled headers
 
+#include <iostream>
+
 #ifdef _WIN32
 
 /*===========================================================================
