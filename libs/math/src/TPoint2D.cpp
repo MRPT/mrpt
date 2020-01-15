@@ -62,6 +62,6 @@ void TPoint2D_<T>::fromString(const std::string& s)
 }
 
 // Explicit instantiations:
-template class TPoint2D_<float>;
-template class TPoint2D_<double>;
+template struct TPoint2D_<float>;
+template struct TPoint2D_<double>;
 }  // namespace mrpt::math
