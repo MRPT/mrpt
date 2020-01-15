@@ -1,6 +1,12 @@
-# By default: Use system version
+# By default (non Windows): Use system version
+# In Windows: do use an embedded version.
+if (WIN32)
+	set(EIGEN_USE_EMBEDDED_VERSION_DEFAULT ON)
+else()
+	set(EIGEN_USE_EMBEDDED_VERSION_DEFAULT OFF)
+endif()
 
-set(EIGEN_USE_EMBEDDED_VERSION OFF CACHE BOOL "Download Eigen3 and use it instead of system version")
+set(EIGEN_USE_EMBEDDED_VERSION ${EIGEN_USE_EMBEDDED_VERSION_DEFAULT} CACHE BOOL "Download Eigen3 and use it instead of system version")
 if (EIGEN_USE_EMBEDDED_VERSION)
 	# Include embedded version headers:
 	include(ExternalProject)
