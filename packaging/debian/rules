@@ -48,7 +48,7 @@ override_dh_auto_build-arch:
 	dh_auto_build -O--buildsystem=cmake
 
 	# Python bindings:
-	dh_python2 --package=python-mrpt
+	dh_python3 --package=python-mrpt
 
 
 override_dh_auto_build-indep:
