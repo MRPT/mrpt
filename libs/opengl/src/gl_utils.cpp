@@ -50,10 +50,6 @@ void gl_utils::renderSetOfObjects(
 
 			if (!it->isVisible()) continue;
 
-			// Make a copy of rendering state, so we always have the original
-			// version of my parent intact.
-			auto _ = state;
-
 			const CPose3D& thisPose = it->getPoseRef();
 			CMatrixFloat44 HM =
 				thisPose.getHomogeneousMatrixVal<CMatrixDouble44>()
@@ -71,6 +67,10 @@ void gl_utils::renderSetOfObjects(
 				HM = scale * HM;
 			}
 
+			// Make a copy of rendering state, so we always have the original
+			// version of my parent intact.
+			auto _ = state;
+
 			// Compose relative to my parent pose:
 			_.mv_matrix.asEigen() = _.mv_matrix.asEigen() * HM.asEigen();
 
@@ -86,7 +86,7 @@ void gl_utils::renderSetOfObjects(
 			const GLint u_pmat = shaders.uniformId("p_matrix");
 			const GLint u_mvmat = shaders.uniformId("mv_matrix");
 
-			const auto IS_TRANSPOSED = GL_FALSE;
+			const auto IS_TRANSPOSED = GL_TRUE;
 
 			glUniformMatrix4fv(u_pmat, 1, IS_TRANSPOSED, _.p_matrix.data());
 			CHECK_OPENGL_ERROR();
