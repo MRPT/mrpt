@@ -57,4 +57,19 @@
 #endif
 #endif
 
+namespace mrpt::opengl
+{
+inline GLuint make_buffer(
+	GLenum target, const void* buffer_data, GLsizei buffer_size)
+{
+	GLuint buffer;
+	glGenBuffers(1, &buffer);
+	glBindBuffer(target, buffer);
+	glBufferData(target, buffer_size, buffer_data, GL_STATIC_DRAW);
+	return buffer;
+}
+#define BUFFER_OFFSET(offset) (reinterpret_cast<GLvoid*>(offset))
+
+}  // namespace mrpt::opengl
+
 #endif  // MRPT_HAS_OPENGL_GLUT
