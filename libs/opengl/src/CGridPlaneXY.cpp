@@ -36,47 +36,33 @@ CGridPlaneXY::CGridPlaneXY(
 {
 }
 
-static GLuint vertexBuffer, vao;
-
-static GLuint make_buffer(
-	GLenum target, const void* buffer_data, GLsizei buffer_size)
-{
-	GLuint buffer;
-	glGenBuffers(1, &buffer);
-	glBindBuffer(target, buffer);
-	glBufferData(target, buffer_size, buffer_data, GL_STATIC_DRAW);
-	return buffer;
-}
-
-static const GLfloat g_vertex_buffer_data[] = {
-	// clang-format off
-	-1.0f, -1.0f, 0.0f,
-	1.0f, -1.0f, 0.0f,
-	0.0f,  1.0f, 0.0f,
-	// clang-format on
-};
 static const GLushort g_element_buffer_data[] = {0, 1, 2, 3};
-
-#define BUFFER_OFFSET(offset) (reinterpret_cast<GLvoid*>(offset))
 
 void CGridPlaneXY::renderUpdateBuffers() const
 {
 #if MRPT_HAS_OPENGL_GLUT
-	std::cerr << "renderUpdateBuffers\n";
 
-	CHECK_OPENGL_ERROR();
+	m_vertex_buffer_data.clear();
+	for (float y = m_yMin; y <= m_yMax; y += m_frequency)
+	{
+		m_vertex_buffer_data.emplace_back(m_xMin, y, m_plane_z);
+		m_vertex_buffer_data.emplace_back(m_xMax, y, m_plane_z);
+	}
 
-	vertexBuffer = make_buffer(
-		GL_ARRAY_BUFFER, g_vertex_buffer_data, sizeof(g_vertex_buffer_data));
+	for (float x = m_xMin; x <= m_xMax; x += m_frequency)
+	{
+		m_vertex_buffer_data.emplace_back(x, m_yMin, m_plane_z);
+		m_vertex_buffer_data.emplace_back(x, m_yMax, m_plane_z);
+	}
 
-	/*	indexBuffer = make_buffer(
-			GL_ELEMENT_ARRAY_BUFFER, g_element_buffer_data,
-			sizeof(g_element_buffer_data));
-	*/
+	m_vertexBuffer = make_buffer(
+		GL_ARRAY_BUFFER, m_vertex_buffer_data.data(),
+		sizeof(m_vertex_buffer_data[0]) * m_vertex_buffer_data.size());
+
 	// Generate a name for a new array.
-	glGenVertexArrays(1, &vao);
+	glGenVertexArrays(1, &m_vao);
 	// Make the new array active, creating it if necessary.
-	glBindVertexArray(vao);
+	glBindVertexArray(m_vao);
 
 #endif
 }
@@ -96,21 +82,15 @@ void CGridPlaneXY::render(
 	CHECK_OPENGL_ERROR();
 
 	MRPT_TODO("Port thick lines to opengl3?");
-	//	glLineWidth(m_lineWidth);
+	// glLineWidth(m_lineWidth);
 
 	// Set up the vertex array:
 	MRPT_TODO("Move this to the prepare method!");
 
-#if 0
-	glBindVertexArray(vao);
-	CHECK_OPENGL_ERROR();
-#endif
-
 	const GLint attr_position = shaders.attributeId("position");
-
 	glEnableVertexAttribArray(attr_position);
 
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
 	CHECK_OPENGL_ERROR();
 
 	glVertexAttribPointer(
@@ -125,28 +105,11 @@ void CGridPlaneXY::render(
 
 	// glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 	// CHECK_OPENGL_ERROR();
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glDrawArrays(GL_LINES, 0, m_vertex_buffer_data.size());
 	CHECK_OPENGL_ERROR();
 
 	glDisableVertexAttribArray(attr_position);
 	CHECK_OPENGL_ERROR();
-
-#if 0
-	glBegin(GL_LINES);
-
-	for (float y = m_yMin; y <= m_yMax; y += m_frequency)
-	{
-		glVertex3f(m_xMin, y, m_plane_z);
-		glVertex3f(m_xMax, y, m_plane_z);
-	}
-
-	for (float x = m_xMin; x <= m_xMax; x += m_frequency)
-	{
-		glVertex3f(x, m_yMin, m_plane_z);
-		glVertex3f(x, m_yMax, m_plane_z);
-	}
-	glEnd();
-#endif
 
 #endif
 }
