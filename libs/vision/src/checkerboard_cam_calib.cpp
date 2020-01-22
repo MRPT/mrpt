@@ -213,9 +213,9 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 				if (!dat.img_original.isExternallyStored())
 				{
 					const int r = 4;
-					CvPoint prev_pt = cvPoint(0, 0);
+					cv::Point prev_pt = cvPoint(0, 0);
 					const int line_max = 8;
-					CvScalar line_colors[8];
+					cv::Scalar line_colors[8];
 
 					line_colors[0] = CV_RGB(255, 0, 0);
 					line_colors[1] = CV_RGB(255, 128, 0);

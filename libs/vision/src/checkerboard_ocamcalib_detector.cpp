@@ -86,7 +86,7 @@ bool do_special_dilation(
 	IplConvKernel* kernel_vert)
 {
 	cv::Mat m = thresh_img.asCvMat<cv::Mat>(SHALLOW_COPY);
-	IplImage i(m);
+	IplImage i = cvIplImage(m);
 	IplImage* ipl = &i;
 
 	bool isLast = false;
@@ -1901,7 +1901,7 @@ int icvGenerateQuads(
 
 	// Initialize contour retrieving routine
 	cv::Mat im_mat = image.asCvMat<cv::Mat>(SHALLOW_COPY);
-	IplImage im_ipl(im_mat);
+	IplImage im_ipl= cvIplImage(im_mat);
 	scanner = cvStartFindContours(
 		&im_ipl, temp_storage, sizeof(CvContourEx), CV_RETR_CCOMP,
 		CV_CHAIN_APPROX_SIMPLE);
