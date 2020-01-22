@@ -825,7 +825,7 @@ std::string CImage::getChannelsOrder() const
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	IplImage ipl= cvIplImage(m_impl->img);
+	IplImage ipl = cvIplImage(m_impl->img);
 	return std::string(ipl.channelSeq);
 #else
 	THROW_EXCEPTION("MRPT built without OpenCV support");
