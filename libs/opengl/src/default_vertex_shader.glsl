@@ -7,9 +7,12 @@ R"XXX(
 
 
 layout(location = 0) in vec3 position;
+layout(location = 1) in vec4 vertexColor;
 
 uniform mat4 p_matrix;
 uniform mat4 mv_matrix;
+
+out vec3 fragmentColor;
 
 //uniform sampler2D texture;
 
@@ -32,6 +35,10 @@ void main()
 {
     vec4 eye_position = mv_matrix * vec4(position, 1.0);
     gl_Position = p_matrix * eye_position;
+    
+    // The color of each vertex will be interpolated
+    // to produce the color of each fragment
+    fragmentColor = vertexColor;
 
 /*    frag_position = eye_position.xyz;
     frag_diffuse = material_diffuse_color;

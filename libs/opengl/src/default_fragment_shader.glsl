@@ -10,6 +10,9 @@ R"XXX(
 
 out vec3 color;
 
+// Interpolated values from the vertex shaders
+in vec3 fragmentColor;
+
 //varying vec3 frag_position, frag_normal;
 //varying vec2 frag_texcoord;
 //varying vec4 frag_diffuse;
@@ -27,7 +30,9 @@ const vec4 light_specular = vec4(1.0, 1.0, 1.0, 1.0);
 
 void main()
 {
-    color = vec3(1,0,0);
+    // Output color = color specified in the vertex shader,
+    // interpolated between all 3 surrounding vertices
+    color = fragmentColor;
 
 /*    vec3 mv_light_direction = (mv_matrix * vec4(light_direction, 0.0)).xyz,
          normal = normalize(frag_normal),
