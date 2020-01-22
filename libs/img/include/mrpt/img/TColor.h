@@ -17,6 +17,9 @@ namespace mrpt::img
 {
 /** A RGB color - 8bit
  * \ingroup mrpt_img_grp */
+
+pack : 1;
+
 struct TColor
 {
 	constexpr inline TColor() = default;
