@@ -257,7 +257,7 @@ void CImage::resize(
 
 	// If we're resizing to exactly the current size, do nothing:
 	{
-		_IplImage ipl = m_impl->img;
+		IplImage ipl = cvIplImage(m_impl->img);
 
 		if (static_cast<unsigned>(ipl.width) == width &&
 			static_cast<unsigned>(ipl.height) == height &&
@@ -372,7 +372,7 @@ void CImage::loadFromMemoryBuffer(
 	resize(width, height, color ? CH_RGB : CH_GRAY);
 	m_imgIsExternalStorage = false;
 
-	_IplImage ii(m_impl->img);
+	IplImage ii = cvIplImage(m_impl->img);
 	IplImage* img = &ii;
 
 	if (color && swapRedBlue)
@@ -825,7 +825,7 @@ std::string CImage::getChannelsOrder() const
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	IplImage ipl(m_impl->img);
+	IplImage ipl = cvIplImage(m_impl->img);
 	return std::string(ipl.channelSeq);
 #else
 	THROW_EXCEPTION("MRPT built without OpenCV support");
@@ -1185,8 +1185,6 @@ float CImage::correlate(
 	float x1, x2;
 	float syy = 0.0f, sxy = 0.0f, sxx = 0.0f, m1 = 0.0f, m2 = 0.0f,
 		  n = (float)(img2.getHeight() * img2.getWidth());
-	//	IplImage *ipl1 = (*this).img;
-	//	IplImage *ipl2 = img2.img;
 
 	// find the means
 	for (size_t i = 0; i < img2.getHeight(); i++)
@@ -1724,9 +1722,9 @@ bool CImage::drawChessboardCorners(
 	auto& img = m_impl->img;
 
 	unsigned int x, y, i;
-	CvPoint prev_pt = cvPoint(0, 0);
+	cv::Point prev_pt = cvPoint(0, 0);
 	const int line_max = 8;
-	CvScalar line_colors[8];
+	cv::Scalar line_colors[8];
 
 	line_colors[0] = CV_RGB(255, 0, 0);
 	line_colors[1] = CV_RGB(255, 128, 0);
@@ -1739,28 +1737,25 @@ bool CImage::drawChessboardCorners(
 
 	CCanvas::selectTextFont("10x20");
 
-	IplImage iplp(img);
-	IplImage* ipl = &iplp;
-
 	for (y = 0, i = 0; y < check_size_y; y++)
 	{
-		CvScalar color = line_colors[y % line_max];
+		const auto color = line_colors[y % line_max];
 		for (x = 0; x < check_size_x; x++, i++)
 		{
-			CvPoint pt;
+			cv::Point pt;
 			pt.x = cvRound(cornerCoords[i].x);
 			pt.y = cvRound(cornerCoords[i].y);
 
-			if (i != 0) cvLine(ipl, prev_pt, pt, color, lines_width);
+			if (i != 0) cv::line(img, prev_pt, pt, color, lines_width);
 
-			cvLine(
-				ipl, cvPoint(pt.x - r, pt.y - r), cvPoint(pt.x + r, pt.y + r),
+			cv::line(
+				img, cvPoint(pt.x - r, pt.y - r), cvPoint(pt.x + r, pt.y + r),
 				color, lines_width);
-			cvLine(
-				ipl, cvPoint(pt.x - r, pt.y + r), cvPoint(pt.x + r, pt.y - r),
+			cv::line(
+				img, cvPoint(pt.x - r, pt.y + r), cvPoint(pt.x + r, pt.y - r),
 				color, lines_width);
 
-			if (r > 0) cvCircle(ipl, pt, r + 1, color);
+			if (r > 0) cv::circle(img, pt, r + 1, color);
 			prev_pt = pt;
 
 			// Text label with the corner index in the first and last
@@ -2103,7 +2098,7 @@ void CImage::getAsIplImage(IplImage* dest) const
 	makeSureImageIsLoaded();
 
 	ASSERT_(dest != nullptr);
-	*dest = m_impl->img;
+	*dest = cvIplImage(m_impl->img);
 #endif
 }
 

@@ -16,7 +16,7 @@
 
 #if MRPT_HAS_OPENCV
 // OPENCV HEADERS
-#define CV_NO_CVV_IMAGE	 // Avoid CImage name crash
+#define CV_NO_CVV_IMAGE  // Avoid CImage name crash
 
 #if MRPT_OPENCV_VERSION_NUM < 0x240
 #error "MRPT requires OpenCV 2.4.0 or newer"
@@ -71,4 +71,9 @@
 #include <opencv2/imgcodecs.hpp>
 #endif
 
-#endif	// MRPT_HAS_OPENCV
+// Backwards compatible macro:
+#if MRPT_OPENCV_VERSION_NUM < 0x420
+#define cvIplImage(X) (X)
+#endif
+
+#endif  // MRPT_HAS_OPENCV

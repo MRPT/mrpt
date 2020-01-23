@@ -116,7 +116,7 @@ const CVideoFileWriter& CVideoFileWriter::operator<<(
 
 #if MRPT_HAS_OPENCV
 	cv::Mat m = img.asCvMat<cv::Mat>(SHALLOW_COPY);
-	IplImage ipl(m);
+	IplImage ipl = cvIplImage(m);
 	if (!cvWriteFrame(M_WRITER, &ipl))
 		THROW_EXCEPTION("Error writing image frame to video file");
 #endif
@@ -144,7 +144,7 @@ bool CVideoFileWriter::writeImage(const mrpt::img::CImage& img) const
 
 #if MRPT_HAS_OPENCV
 	cv::Mat m = img.asCvMat<cv::Mat>(SHALLOW_COPY);
-	IplImage ipl(m);
+	IplImage ipl = cvIplImage(m);
 	return 0 != cvWriteFrame(M_WRITER, &ipl);
 #else
 	return false;
