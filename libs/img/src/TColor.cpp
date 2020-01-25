@@ -16,6 +16,10 @@
 using namespace mrpt::img;
 using mrpt::serialization::CArchive;
 
+// Check "#pragma pack(push, 1)" is doing its job:
+static_assert(sizeof(TColor) == 4 * sizeof(uint8_t));
+static_assert(sizeof(TColorf) == 4 * sizeof(float));
+
 TColor mrpt::img::operator+(const TColor& first, const TColor& second)
 {
 	TColor ret;
