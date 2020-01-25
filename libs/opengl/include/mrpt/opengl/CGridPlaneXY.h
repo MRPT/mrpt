@@ -37,7 +37,7 @@ class CGridPlaneXY : public CRenderizable
 	float m_frequency;
 	float m_lineWidth;
 	bool m_antiAliasing;
-	mutable unsigned int m_vertexBuffer = 0, m_vao = 0;
+	mutable unsigned int m_vertexBuffer = 0, m_vao = 0, m_colorBuffer = 0;
 	mutable std::vector<mrpt::math::TPoint3Df> m_vertex_buffer_data;
 	mutable std::vector<mrpt::img::TColor> m_color_buffer_data;
 

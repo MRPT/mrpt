@@ -12,7 +12,7 @@ layout(location = 1) in vec4 vertexColor;
 uniform mat4 p_matrix;
 uniform mat4 mv_matrix;
 
-out vec3 fragmentColor;
+out vec4 fragmentColor;
 
 //uniform sampler2D texture;
 

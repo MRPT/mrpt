@@ -54,7 +54,7 @@ void TestOpenGLObjects()
 		theScene->insert(obj);
 
 		auto obj2 = opengl::CGridPlaneXY::Create(-9, 9, -9, 9, 0, 2);
-		obj2->setColor(0.7, 0.7, 0.7, 0.99);
+		obj2->setColor(0.3, 0.3, 0.3, 0.99);
 		obj2->setLocation(off_x, 15, 0);
 		obj2->enableAntiAliasing();
 		theScene->insert(obj2);

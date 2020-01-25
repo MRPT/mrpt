@@ -8,10 +8,10 @@ R"XXX(
 //uniform mat4 p_matrix, mv_matrix;
 //uniform sampler2D texture;
 
-out vec3 color;
+out vec4 color;
 
 // Interpolated values from the vertex shaders
-in vec3 fragmentColor;
+in vec4 fragmentColor;
 
 //varying vec3 frag_position, frag_normal;
 //varying vec2 frag_texcoord;

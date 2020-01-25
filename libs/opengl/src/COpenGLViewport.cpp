@@ -272,7 +272,7 @@ void COpenGLViewport::loadDefaultShaders() const
 
 	// Attributes:
 	m_shaders->declareAttribute("position");
-	MRPT_TODO("Make color a program attribute");
+	m_shaders->declareAttribute("vertexColor");
 
 #endif
 }
