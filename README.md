@@ -43,6 +43,7 @@ See [PPA](https://launchpad.net/~joseluisblancoc/+archive/ubuntu/mrpt-1.5) for b
 Supported distributions:
   * Ubuntu 14.04LTS Trusty.
   * Ubuntu 16.04LTS Xenial.
+  * For more recent versions of Ubuntu, it is recommended to use mrpt>=1.9.9.
 
 ### 3.2. Build from sources
 
