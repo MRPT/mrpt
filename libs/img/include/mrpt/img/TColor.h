@@ -15,11 +15,11 @@
 
 namespace mrpt::img
 {
-/** A RGB color - 8bit
+// Ensure 1-byte memory alignment, no additional stride bytes.
+#pragma pack(push, 1)
+
+/** A RGB color - 8bit. Struct pack=1 is ensured.
  * \ingroup mrpt_img_grp */
-
-pack : 1;
-
 struct TColor
 {
 	constexpr inline TColor() = default;
@@ -68,6 +68,8 @@ struct TColor
 	static constexpr TColor white() { return TColor(255, 255, 255); }
 	static constexpr TColor gray() { return TColor(127, 127, 127); }
 };
+#pragma pack(pop)
+
 // Text streaming:
 std::ostream& operator<<(std::ostream& o, const TColor& c);
 // Binary streaming:
@@ -75,6 +77,9 @@ mrpt::serialization::CArchive& operator<<(
 	mrpt::serialization::CArchive& o, const TColor& c);
 mrpt::serialization::CArchive& operator>>(
 	mrpt::serialization::CArchive& i, TColor& c);
+
+// Ensure 1-byte memory alignment, no additional stride bytes.
+#pragma pack(push, 1)
 
 /** A RGB color - floats in the range [0,1]
  * \ingroup mrpt_img_grp */
@@ -95,6 +100,7 @@ struct TColorf
 
 	float R, G, B, A;
 };
+#pragma pack(pop)
 
 /**\brief Pairwise addition of their corresponding RGBA members
  */
