@@ -37,38 +37,87 @@ CGridPlaneXZ::CGridPlaneXZ(
 
 void CGridPlaneXZ::renderUpdateBuffers() const
 {
-	//
-	MRPT_TODO("Implement me!");
-}
-
-void CGridPlaneXZ::render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const
-{
 #if MRPT_HAS_OPENGL_GLUT
-	ASSERT_(m_frequency >= 0);
 
-	// Enable antialiasing:
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_BLEND);
-	glEnable(GL_LINE_SMOOTH);
-	glLineWidth(m_lineWidth);
-
-	glBegin(GL_LINES);
-
-	ASSERT_(m_frequency >= 0);
+	// Generate vertices:
+	m_vertex_buffer_data.clear();
+	m_color_buffer_data.clear();
 
 	for (float z = m_zMin; z <= m_zMax; z += m_frequency)
 	{
-		glVertex3f(m_xMin, m_plane_y, z);
-		glVertex3f(m_xMax, m_plane_y, z);
+		m_vertex_buffer_data.emplace_back(m_xMin, m_plane_y, z);
+		m_vertex_buffer_data.emplace_back(m_xMax, m_plane_y, z);
 	}
 
 	for (float x = m_xMin; x <= m_xMax; x += m_frequency)
 	{
-		glVertex3f(x, m_plane_y, m_zMin);
-		glVertex3f(x, m_plane_y, m_zMax);
+		m_vertex_buffer_data.emplace_back(x, m_plane_y, m_zMin);
+		m_vertex_buffer_data.emplace_back(x, m_plane_y, m_zMax);
 	}
+	// The same color to all vertices:
+	m_color_buffer_data.assign(m_vertex_buffer_data.size(), m_color);
 
-	glEnd();
+	// Define OpenGL buffers:
+	m_vertexBuffer = make_buffer(
+		GL_ARRAY_BUFFER, m_vertex_buffer_data.data(),
+		sizeof(m_vertex_buffer_data[0]) * m_vertex_buffer_data.size());
+
+	// Generate a name for a new array.
+	glGenVertexArrays(1, &m_vao);
+	// Make the new array active, creating it if necessary.
+	glBindVertexArray(m_vao);
+
+	// color buffer:
+	m_colorBuffer = make_buffer(
+		GL_ARRAY_BUFFER, m_color_buffer_data.data(),
+		sizeof(m_color_buffer_data[0]) * m_color_buffer_data.size());
+#endif
+}
+
+void CGridPlaneXZ::render(
+	const mrpt::opengl::TRenderMatrices& state,
+	mrpt::opengl::Program& shaders) const
+{
+#if MRPT_HAS_OPENGL_GLUT
+	ASSERT_(m_frequency >= 0);
+
+	// TODO: Port thick lines to opengl3?
+	// glLineWidth(m_lineWidth);
+
+	// Set up the vertex array:
+	const GLint attr_position = shaders.attributeId("position");
+	glEnableVertexAttribArray(attr_position);
+	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
+	glVertexAttribPointer(
+		attr_position, /* attribute */
+		3, /* size */
+		GL_FLOAT, /* type */
+		GL_FALSE, /* normalized? */
+		0, /* stride */
+		BUFFER_OFFSET(0) /* array buffer offset */
+	);
+	CHECK_OPENGL_ERROR();
+
+	// Set up the color array:
+	const GLint attr_color = shaders.attributeId("vertexColor");
+	glEnableVertexAttribArray(attr_color);
+	glBindBuffer(GL_ARRAY_BUFFER, m_colorBuffer);
+	glVertexAttribPointer(
+		attr_color, /* attribute */
+		4, /* size */
+		GL_UNSIGNED_BYTE, /* type */
+		GL_TRUE, /* normalized? */
+		0, /* stride */
+		BUFFER_OFFSET(0) /* array buffer offset */
+	);
+	CHECK_OPENGL_ERROR();
+
+	glDrawArrays(GL_LINES, 0, m_vertex_buffer_data.size());
+	CHECK_OPENGL_ERROR();
+
+	glDisableVertexAttribArray(attr_position);
+	glDisableVertexAttribArray(attr_color);
+	CHECK_OPENGL_ERROR();
 #endif
 }
 
