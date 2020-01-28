@@ -39,6 +39,10 @@ class CArrow : public CRenderizable
 	float m_arrow_pitch;
 	float m_arrow_yaw;
 
+	mutable unsigned int m_vertexBuffer = 0, m_vao = 0, m_colorBuffer = 0;
+	mutable std::vector<mrpt::math::TPoint3Df> m_vertex_buffer_data;
+	mutable std::vector<mrpt::img::TColor> m_color_buffer_data;
+
    public:
 	void setArrowEnds(
 		float x0, float y0, float z0, float x1, float y1, float z1)
@@ -74,7 +78,9 @@ class CArrow : public CRenderizable
 		CRenderizable::notifyChange();
 	}
 
-	void render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const override;
+	void render(
+		const mrpt::opengl::TRenderMatrices& state,
+		mrpt::opengl::Program& shaders) const override;
 	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,

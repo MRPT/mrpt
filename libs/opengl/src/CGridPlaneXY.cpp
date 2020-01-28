@@ -36,8 +36,6 @@ CGridPlaneXY::CGridPlaneXY(
 {
 }
 
-static const GLushort g_element_buffer_data[] = {0, 1, 2, 3};
-
 void CGridPlaneXY::renderUpdateBuffers() const
 {
 #if MRPT_HAS_OPENGL_GLUT
@@ -84,14 +82,7 @@ void CGridPlaneXY::render(
 #if MRPT_HAS_OPENGL_GLUT
 	ASSERT_(m_frequency >= 0);
 
-	// Enable antialiasing:
-	CHECK_OPENGL_ERROR();
-	// glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	CHECK_OPENGL_ERROR();
-	// glEnable(GL_BLEND);
-	CHECK_OPENGL_ERROR();
-
-	MRPT_TODO("Port thick lines to opengl3?");
+	// TODO: Port thick lines to opengl3?
 	// glLineWidth(m_lineWidth);
 
 	// Set up the vertex array:
@@ -122,14 +113,12 @@ void CGridPlaneXY::render(
 	);
 	CHECK_OPENGL_ERROR();
 
-	// glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-	// CHECK_OPENGL_ERROR();
 	glDrawArrays(GL_LINES, 0, m_vertex_buffer_data.size());
 	CHECK_OPENGL_ERROR();
 
 	glDisableVertexAttribArray(attr_position);
+	glDisableVertexAttribArray(attr_color);
 	CHECK_OPENGL_ERROR();
-
 #endif
 }
 

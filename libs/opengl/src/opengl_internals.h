@@ -59,6 +59,7 @@
 
 namespace mrpt::opengl
 {
+MRPT_TODO("****** Convert into a class with dtor to free resources***");
 inline GLuint make_buffer(
 	GLenum target, const void* buffer_data, GLsizei buffer_size)
 {

@@ -53,8 +53,16 @@ class CCylinder : public CRenderizable
 	 */
 	bool mHasTopBase{true}, mHasBottomBase{true};
 
+	mutable unsigned int m_vertexBuffer = 0, m_vao = 0, m_colorBuffer = 0,
+						 m_normalBuffer = 0;
+	mutable std::vector<mrpt::math::TPoint3Df> m_vertex_buffer_data;
+	mutable std::vector<mrpt::math::TPoint3Df> m_normals_buffer_data;
+	mutable std::vector<mrpt::img::TColor> m_color_buffer_data;
+
    public:
-	void render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const override;
+	void render(
+		const mrpt::opengl::TRenderMatrices& state,
+		mrpt::opengl::Program& shaders) const override;
 	void renderUpdateBuffers() const override;
 
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
