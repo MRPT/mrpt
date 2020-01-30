@@ -15,7 +15,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/CObservable.h>
 #include <mrpt/system/mrptEvent.h>
-
+#include <atomic>
 #include <future>
 #include <mutex>
 
@@ -62,9 +62,9 @@ class CBaseGUIWindow : public mrpt::system::CObservable
 	mrpt::void_ptr_noncopy m_hwnd;
 
 	/* Auxiliary */
-	volatile bool m_keyPushed;
-	volatile int m_keyPushedCode;
-	volatile mrptKeyModifier m_keyPushedModifier;
+	std::atomic_bool m_keyPushed = false;
+	std::atomic_int m_keyPushedCode = 0;
+	std::atomic<mrptKeyModifier> m_keyPushedModifier;
 
 	/** Must be called by child classes just within the constructor. */
 	void createWxWindow(unsigned int initialWidth, unsigned int initialHeight);
