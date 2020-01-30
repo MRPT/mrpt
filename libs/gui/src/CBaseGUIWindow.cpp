@@ -186,22 +186,14 @@ int CBaseGUIWindow::waitForKey(
  ---------------------------------------------------------------*/
 int CBaseGUIWindow::getPushedKey(mrptKeyModifier* out_pushModifier)
 {
-	int k = 0;
 	if (out_pushModifier) *out_pushModifier = MRPTKMOD_NONE;
 
-	for (;;)
-	{
-		if (m_keyPushed)
-		{
-			k = m_keyPushedCode;
-			m_keyPushed = false;
-			if (out_pushModifier) *out_pushModifier = m_keyPushedModifier;
-			return k;
-		}
-		std::this_thread::sleep_for(10ms);
-		// Are we still alive?
-		if (!isOpen()) return 0;
-	}
+	if (!m_keyPushed) return 0;
+
+	int k = m_keyPushedCode;
+	m_keyPushed = false;
+	if (out_pushModifier) *out_pushModifier = m_keyPushedModifier;
+	return k;
 }
 
 /*---------------------------------------------------------------
