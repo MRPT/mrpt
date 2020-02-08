@@ -297,6 +297,21 @@ struct TPointXYZfRGBu8
 	}
 };
 
+/** XYZ point (float) + RGBA(float) \sa mrpt::math::TPoint3D */
+struct TPointXYZRGBAf
+{
+	mrpt::math::TPoint3Df pt;
+	float R{0}, G{0}, B{0}, A{0};
+	TPointXYZRGBAf() = default;
+
+	constexpr TPointXYZRGBAf(
+		float x, float y, float z, float R_val, float G_val, float B_val,
+		float A_val)
+		: pt(x, y, z), R(R_val), G(G_val), B(B_val), A(A_val)
+	{
+	}
+};
+
 /** Unary minus operator for 3D points. */
 template <typename T>
 constexpr TPoint3D_<T> operator-(const TPoint3D_<T>& p1)

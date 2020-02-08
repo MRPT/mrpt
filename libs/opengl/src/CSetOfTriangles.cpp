@@ -24,8 +24,43 @@ IMPLEMENTS_SERIALIZABLE(CSetOfTriangles, CRenderizable, mrpt::opengl)
 
 void CSetOfTriangles::renderUpdateBuffers() const
 {
-	//
-	MRPT_TODO("Implement me!");
+#if MRPT_HAS_OPENGL_GLUT
+
+	// Vertices and colors are already stored into m_triangles.
+
+	// Eval normals:
+	const auto n = m_triangles.size();
+	m_trianglesNormals.resize(n);
+	for (size_t i = 0; i < n; i++)
+	{
+		const auto& t = m_triangles[i];
+		const float ax = t.x(1) - t.x(0);
+		const float ay = t.y(1) - t.y(0);
+		const float az = t.z(1) - t.z(0);
+		const float bx = t.x(2) - t.x(0);
+		const float by = t.y(2) - t.y(0);
+		const float bz = t.z(2) - t.z(0);
+
+		auto& no = m_trianglesNormals[i];
+		no.x = ay * bz - az * by;
+		no.y = -ax * bz + az * bx;
+		no.z = ax * by - ay * bx;
+	}
+
+	// Define OpenGL buffers:
+	m_trianglesBuffer = mrpt::opengl::make_buffer(
+		GL_ARRAY_BUFFER, m_triangles.data(), sizeof(m_triangles[0]) * n);
+
+	m_normalsBuffer = mrpt::opengl::make_buffer(
+		GL_ARRAY_BUFFER, m_trianglesNormals.data(),
+		sizeof(m_trianglesNormals[0]) * n);
+
+	// Generate a name for a new array.
+	glGenVertexArrays(1, &m_vao);
+	// Make the new array active, creating it if necessary.
+	glBindVertexArray(m_vao);
+
+#endif
 }
 
 void CSetOfTriangles::render(
@@ -36,7 +71,6 @@ void CSetOfTriangles::render(
 
 	if (m_enableTransparency)
 	{
-		// glDisable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
@@ -45,40 +79,45 @@ void CSetOfTriangles::render(
 		glEnable(GL_DEPTH_TEST);
 		glDisable(GL_BLEND);
 	}
+	CHECK_OPENGL_ERROR();
 
-	vector<TTriangle>::const_iterator it;
+	// Set up the vertex array:
+	const GLint attr_position = shaders.attributeId("position");
+	glEnableVertexAttribArray(attr_position);
+	glBindBuffer(GL_ARRAY_BUFFER, m_trianglesBuffer);
+	glVertexAttribPointer(
+		attr_position, /* attribute */
+		3, /* size */
+		GL_FLOAT, /* type */
+		GL_FALSE, /* normalized? */
+		sizeof(TTriangle), /* stride */
+		BUFFER_OFFSET(offsetof(TTriangle, x)) /* array buffer offset */
+	);
+	CHECK_OPENGL_ERROR();
 
-	glEnable(GL_NORMALIZE);  // Normalize normals
-	glBegin(GL_TRIANGLES);
+	// Set up the color array:
+	const GLint attr_color = shaders.attributeId("vertexColor");
+	glEnableVertexAttribArray(attr_color);
+	glBindBuffer(GL_ARRAY_BUFFER, m_trianglesBuffer);
+	glVertexAttribPointer(
+		attr_color, /* attribute */
+		4, /* size */
+		GL_FLOAT, /* type */
+		GL_FALSE, /* normalized? */
+		sizeof(TTriangle), /* stride */
+		BUFFER_OFFSET(offsetof(TTriangle, r)) /* array buffer offset */
+	);
+	CHECK_OPENGL_ERROR();
 
-	for (it = m_triangles.begin(); it != m_triangles.end(); ++it)
-	{
-		// Compute the normal vector:
-		// ---------------------------------
-		float ax = it->x[1] - it->x[0];
-		float ay = it->y[1] - it->y[0];
-		float az = it->z[1] - it->z[0];
+	MRPT_TODO("Handle normals!");
 
-		float bx = it->x[2] - it->x[0];
-		float by = it->y[2] - it->y[0];
-		float bz = it->z[2] - it->z[0];
+	glDrawArrays(GL_TRIANGLES, 0, m_triangles.size());
+	CHECK_OPENGL_ERROR();
 
-		glNormal3f(ay * bz - az * by, -ax * bz + az * bx, ax * by - ay * bx);
+	glDisableVertexAttribArray(attr_position);
+	glDisableVertexAttribArray(attr_color);
 
-		glColor4f(it->r[0], it->g[0], it->b[0], it->a[0]);
-		glVertex3f(it->x[0], it->y[0], it->z[0]);
-
-		glColor4f(it->r[1], it->g[1], it->b[1], it->a[1]);
-		glVertex3f(it->x[1], it->y[1], it->z[1]);
-
-		glColor4f(it->r[2], it->g[2], it->b[2], it->a[2]);
-		glVertex3f(it->x[2], it->y[2], it->z[2]);
-	}
-
-	glEnd();
-	glDisable(GL_NORMALIZE);
-
-	glDisable(GL_BLEND);
+	if (m_enableTransparency) glDisable(GL_BLEND);
 #endif
 }
 
