@@ -81,7 +81,7 @@ void CSetOfTriangles::render(const mrpt::opengl::TRenderMatrices& state, mrpt::o
 }
 
 static void triangle_writeToStream(
-	mrpt::serialization::CArchive& o, const CSetOfTriangles::TTriangle& t)
+	mrpt::serialization::CArchive& o, const mrpt::opengl::TTriangle& t)
 {
 	o.WriteBufferFixEndianness(t.x, 3);
 	o.WriteBufferFixEndianness(t.y, 3);
@@ -93,7 +93,7 @@ static void triangle_writeToStream(
 	o.WriteBufferFixEndianness(t.a, 3);
 }
 static void triangle_readFromStream(
-	mrpt::serialization::CArchive& i, CSetOfTriangles::TTriangle& t)
+	mrpt::serialization::CArchive& i, mrpt::opengl::TTriangle& t)
 {
 	i.ReadBufferFixEndianness(t.x, 3);
 	i.ReadBufferFixEndianness(t.y, 3);

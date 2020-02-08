@@ -86,7 +86,7 @@ class CMesh : public CRenderizable
 	float xMin, xMax, yMin, yMax;
 	/** List of triangles in the mesh */
 	mutable std::vector<
-		std::pair<CSetOfTriangles::TTriangle, TTriangleVertexIndices>>
+		std::pair<mrpt::opengl::TTriangle, TTriangleVertexIndices>>
 		actualMesh;
 	/** The accumulated normals & counts for each vertex, so normals can be
 	 * averaged. */

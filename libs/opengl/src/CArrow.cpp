@@ -26,13 +26,17 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CArrow, CRenderizable, mrpt::opengl)
 
+MRPT_TODO("Refactor based on triangle set");
+
 void CArrow::renderUpdateBuffers() const
 {
 	//
 	MRPT_TODO("Implement me!");
 }
 
-void CArrow::render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const
+void CArrow::render(
+	const mrpt::opengl::TRenderMatrices& state,
+	mrpt::opengl::Program& shaders) const
 {
 #if MRPT_HAS_OPENGL_GLUT
 

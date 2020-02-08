@@ -36,7 +36,7 @@ CSetOfObjects::Ptr stock_objects::RobotPioneer()
 	CSetOfTriangles::Ptr obj = std::make_shared<CSetOfTriangles>();
 
 	// Add triangles:
-	CSetOfTriangles::TTriangle trian;
+	mrpt::opengl::TTriangle trian;
 
 	trian.r[0] = trian.r[1] = trian.r[2] = 1;
 	trian.g[0] = trian.g[1] = trian.g[2] = 0;

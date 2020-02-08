@@ -62,7 +62,7 @@ void CMesh::updateTriangles() const
 	// Remember:
 	/** List of triangles in the mesh */
 	// mutable
-	// std::vector<std::pair<CSetOfTriangles::TTriangle,TTriangleVertexIndices>
+	// std::vector<std::pair<mrpt::opengl::TTriangle,TTriangleVertexIndices>
 	// > actualMesh;
 	/** The accumulated normals & counts for each vertex, so normals can be
 	 * averaged. */
@@ -106,7 +106,7 @@ void CMesh::updateTriangles() const
 	const float sCellX = (xMax - xMin) / (rows - 1);
 	const float sCellY = (yMax - yMin) / (cols - 1);
 
-	CSetOfTriangles::TTriangle tri;
+	mrpt::opengl::TTriangle tri;
 	for (int iX = 0; iX < rows - 1; iX++)
 		for (int iY = 0; iY < cols - 1; iY++)
 		{
@@ -308,7 +308,7 @@ void CMesh::render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Pro
 	if (!m_isWireFrame) glBegin(GL_TRIANGLES);
 	for (auto& i : actualMesh)
 	{
-		const CSetOfTriangles::TTriangle& t = i.first;
+		const mrpt::opengl::TTriangle& t = i.first;
 		const TTriangleVertexIndices& tvi = i.second;
 
 		if (m_isWireFrame)
@@ -546,10 +546,9 @@ bool CMesh::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 
 static math::TPolygon3D tmpPoly(3);
 mrpt::math::TPolygonWithPlane createPolygonFromTriangle(
-	const std::pair<CSetOfTriangles::TTriangle, CMesh::TTriangleVertexIndices>&
-		p)
+	const std::pair<mrpt::opengl::TTriangle, CMesh::TTriangleVertexIndices>& p)
 {
-	const CSetOfTriangles::TTriangle& t = p.first;
+	const mrpt::opengl::TTriangle& t = p.first;
 	for (size_t i = 0; i < 3; i++)
 	{
 		tmpPoly[i].x = t.x[i];
