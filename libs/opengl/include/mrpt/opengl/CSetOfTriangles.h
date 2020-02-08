@@ -29,15 +29,16 @@ class CSetOfTriangles : public CRenderizable
 		std::vector<TTriangle>::const_reverse_iterator;
 
    protected:
-	/**
-	 * List of triangles.
-	 * \sa TTriangle
-	 */
+	/** List of triangles  \sa TTriangle */
 	std::vector<TTriangle> m_triangles;
-	/**
-	 * Transparency enabling.
-	 */
-	bool m_enableTransparency;
+	mutable unsigned int m_trianglesBuffer = 0, m_vao = 0;
+
+	// Computed in renderUpdateBuffers()
+	mutable std::vector<mrpt::math::TVector3Df> m_trianglesNormals;
+	mutable unsigned int m_normalsBuffer;
+
+	bool m_enableTransparency;  //!< Transparency enabling.
+
 	/**
 	 * Mutable variable used to check whether polygons need to be recalculated.
 	 */

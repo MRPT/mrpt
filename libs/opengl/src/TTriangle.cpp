@@ -14,34 +14,17 @@
 
 using namespace mrpt::opengl;
 
-template <typename T>
-void TTriangle_<T>::writeTo(mrpt::serialization::CArchive& o) const
-{
-	o.WriteBufferFixEndianness(x, 3);
-	o.WriteBufferFixEndianness(y, 3);
-	o.WriteBufferFixEndianness(z, 3);
+static_assert(sizeof(TTriangle) == sizeof(float) * 3 * 7, "pack(1) test");
 
-	o.WriteBufferFixEndianness(r, 3);
-	o.WriteBufferFixEndianness(g, 3);
-	o.WriteBufferFixEndianness(b, 3);
-	o.WriteBufferFixEndianness(a, 3);
+void TTriangle::writeTo(mrpt::serialization::CArchive& o) const
+{
+	for (int i = 0; i < 3; i++)
+		o << vertex[i].pt.x << vertex[i].pt.y << vertex[i].pt.z << vertex[i].R
+		  << vertex[i].G << vertex[i].B << vertex[i].A;
 }
-template <typename T>
-void TTriangle_<T>::readFrom(mrpt::serialization::CArchive& i)
+void TTriangle::readFrom(mrpt::serialization::CArchive& in)
 {
-	i.ReadBufferFixEndianness(x, 3);
-	i.ReadBufferFixEndianness(y, 3);
-	i.ReadBufferFixEndianness(z, 3);
-
-	i.ReadBufferFixEndianness(r, 3);
-	i.ReadBufferFixEndianness(g, 3);
-	i.ReadBufferFixEndianness(b, 3);
-	i.ReadBufferFixEndianness(a, 3);
+	for (int i = 0; i < 3; i++)
+		in >> vertex[i].pt.x >> vertex[i].pt.y >> vertex[i].pt.z >>
+			vertex[i].R >> vertex[i].G >> vertex[i].B >> vertex[i].A;
 }
-
-namespace mrpt::opengl
-{
-// Explicit instantiations:
-template class TTriangle_<float>;
-template class TTriangle_<double>;
-}  // namespace mrpt::opengl

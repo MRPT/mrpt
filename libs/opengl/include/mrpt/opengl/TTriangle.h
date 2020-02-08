@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/core/exceptions.h>
+#include <mrpt/math/TPoint3D.h>
 #include <mrpt/math/TPolygon3D.h>
 #include <mrpt/serialization/serialization_frwds.h>
 
@@ -17,39 +18,47 @@ namespace mrpt::opengl
 // Ensure 1-byte memory alignment, no additional stride bytes.
 #pragma pack(push, 1)
 
-/** A triangle with RGBA colors for each vertex.
+/** A triangle with RGBA colors for each vertex (float scalars).
  * The structure is memory packed to 1-byte, to ensure it can be used in GPU
  * memory vertex arrays without unexpected paddings.
  *
  * \sa opengl::COpenGLScene, CSetOfTexturedTriangles
  * \ingroup mrpt_opengl_grp
  */
-template <typename T>
-struct TTriangle_
+struct TTriangle
 {
-	TTriangle_() = default;
-
-	TTriangle_(const mrpt::math::TPolygon3D& p)
+	TTriangle() = default;
+	TTriangle(const mrpt::math::TPolygon3D& p)
 	{
 		ASSERT_EQUAL_(p.size(), 3U);
 		for (size_t i = 0; i < 3; i++)
 		{
-			x[i] = p[i].x;
-			y[i] = p[i].y;
-			z[i] = p[i].z;
-			r[i] = g[i] = b[i] = a[i] = 1;
+			vertex[i].pt = p[i];
+			vertex[i].R = vertex[i].G = vertex[i].B = 1;
 		}
 	}
-	T x[3] = {0, 0, 0}, y[3] = {0, 0, 0}, z[3] = {0, 0, 0};
-	T r[3] = {1, 1, 1}, g[3] = {1, 1, 1}, b[3] = {1, 1, 1}, a[3] = {1, 1, 1};
+
+	mrpt::math::TPointXYZRGBAf vertex[3];
+
+	const float& x(int i) const { return vertex[i].pt.x; }
+	const float& y(int i) const { return vertex[i].pt.y; }
+	const float& z(int i) const { return vertex[i].pt.z; }
+	const float& r(int i) const { return vertex[i].R; }
+	const float& g(int i) const { return vertex[i].G; }
+	const float& b(int i) const { return vertex[i].B; }
+	const float& a(int i) const { return vertex[i].A; }
+	float& x(int i) { return vertex[i].pt.x; }
+	float& y(int i) { return vertex[i].pt.y; }
+	float& z(int i) { return vertex[i].pt.z; }
+	float& r(int i) { return vertex[i].R; }
+	float& g(int i) { return vertex[i].G; }
+	float& b(int i) { return vertex[i].B; }
+	float& a(int i) { return vertex[i].A; }
 
 	// These methods are explicitly instantiated for T=float and double.
 	void readFrom(mrpt::serialization::CArchive& i);
 	void writeTo(mrpt::serialization::CArchive& o) const;
 };
 #pragma pack(pop)
-
-/** Triangle with float XYZ+RGBA vertices. \sa TTriangle_ */
-using TTriangle = TTriangle_<float>;
 
 }  // namespace mrpt::opengl
