@@ -299,7 +299,7 @@ class CAngularObservationMesh : public CRenderizable
 	 * content. */
 	void updateMesh() const;
 	/** Actual set of triangles to be displayed. */
-	mutable std::vector<CSetOfTriangles::TTriangle> triangles;
+	mutable std::vector<mrpt::opengl::TTriangle> triangles;
 	/** Internal method to add a triangle to the mutable mesh. */
 	void addTriangle(
 		const mrpt::math::TPoint3D& p1, const mrpt::math::TPoint3D& p2,
@@ -398,7 +398,7 @@ class CAngularObservationMesh : public CRenderizable
 	/**
 	 * Gets the mesh as a set of triangles, for displaying them.
 	 * \sa generateSetOfTriangles(std::vector<TPolygon3D>
-	 * &),mrpt::opengl::CSetOfTriangles,mrpt::opengl::CSetOfTriangles::TTriangle
+	 * &),mrpt::opengl::CSetOfTriangles,mrpt::opengl::mrpt::opengl::TTriangle
 	 */
 	void generateSetOfTriangles(CSetOfTriangles::Ptr& res) const;
 	/**

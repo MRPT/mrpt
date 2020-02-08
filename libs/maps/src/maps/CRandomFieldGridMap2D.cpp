@@ -1604,7 +1604,7 @@ void CRandomFieldGridMap2D::getAs3DObject(
 
 	recoverMeanAndCov();  // Only works for KF2 method
 
-	opengl::CSetOfTriangles::TTriangle triag;
+	opengl::mrpt::opengl::TTriangle triag;
 
 	unsigned int cx, cy;
 	vector<double> xs, ys;

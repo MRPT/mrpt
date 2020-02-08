@@ -79,6 +79,7 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
+#if 0
 	// Arrow
 	{
 		opengl::CArrow::Ptr obj =
@@ -93,7 +94,6 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
-#if 0
 	// Axis
 	{
 		opengl::CAxis::Ptr obj =
@@ -149,7 +149,6 @@ void TestOpenGLObjects()
 		theScene->insert(gl_txt);
 	}
 	off_x += STEP_X;
-#endif
 
 	// Cylinder
 	{
@@ -176,7 +175,6 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
-#if 0
 	// CDisk
 	{
 		{
@@ -840,6 +838,18 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 #endif
+
+	// CSetOfTriangles, via stock object:
+	{
+		auto obj = opengl::stock_objects::RobotPioneer();
+		obj->setLocation(off_x, 0, 0);
+		theScene->insert(obj);
+
+		auto gl_txt = opengl::CText::Create("CSetOfTriangles");
+		gl_txt->setLocation(off_x, off_y_label, 0);
+		theScene->insert(gl_txt);
+	}
+	off_x += STEP_X;
 
 	win.setCameraZoom(150);
 

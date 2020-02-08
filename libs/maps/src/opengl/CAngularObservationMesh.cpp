@@ -50,7 +50,7 @@ void CAngularObservationMesh::addTriangle(
 	const TPoint3D& p1, const TPoint3D& p2, const TPoint3D& p3) const
 {
 	const TPoint3D* arr[3] = {&p1, &p2, &p3};
-	CSetOfTriangles::TTriangle t;
+	mrpt::opengl::TTriangle t;
 	for (size_t i = 0; i < 3; i++)
 	{
 		t.x[i] = arr[i]->x;
@@ -271,7 +271,7 @@ void CAngularObservationMesh::generateSetOfTriangles(
 {
 	if (!meshUpToDate) updateMesh();
 	res->insertTriangles(triangles.begin(), triangles.end());
-	// for (vector<CSetOfTriangles::TTriangle>::iterator
+	// for (vector<mrpt::opengl::TTriangle>::iterator
 	// it=triangles.begin();it!=triangles.end();++it) res->insertTriangle(*it);
 }
 
@@ -402,7 +402,7 @@ void CAngularObservationMesh::getUntracedRays(
 		FAddUntracedLines(res, dist, pitchBounds));
 }
 
-TPolygon3D createFromTriangle(const CSetOfTriangles::TTriangle& t)
+TPolygon3D createFromTriangle(const mrpt::opengl::TTriangle& t)
 {
 	TPolygon3D res(3);
 	for (size_t i = 0; i < 3; i++)

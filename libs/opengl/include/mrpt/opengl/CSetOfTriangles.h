@@ -10,46 +10,20 @@
 
 #include <mrpt/math/geometry.h>
 #include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/TTriangle.h>
 
 namespace mrpt::opengl
 {
-/** A set of colored triangles.
- *  This class can be used to draw any solid, arbitrarily complex object
- * (without textures).
- *  \sa opengl::COpenGLScene, CSetOfTexturedTriangles
+/** A set of colored triangles, able to draw any solid, arbitrarily complex
+ * object without textures. For textures, see CSetOfTexturedTriangles
+ *
+ * \sa opengl::COpenGLScene, CSetOfTexturedTriangles
  * \ingroup mrpt_opengl_grp
  */
 class CSetOfTriangles : public CRenderizable
 {
 	DEFINE_SERIALIZABLE(CSetOfTriangles, mrpt::opengl)
    public:
-	/**
-	 * Triangle definition. Each vertex has three spatial coordinates and four
-	 * color values.
-	 */
-	struct TTriangle
-	{
-		inline TTriangle()
-		{
-			for (size_t i = 0; i < 3; i++)
-			{
-				r[i] = g[i] = b[i] = a[i] = 1.0f;
-			}
-		}
-		inline TTriangle(const mrpt::math::TPolygon3D& p)
-		{
-			ASSERT_(p.size() == 3);
-			for (size_t i = 0; i < 3; i++)
-			{
-				x[i] = p[i].x;
-				y[i] = p[i].y;
-				z[i] = p[i].z;
-				r[i] = g[i] = b[i] = a[i] = 1.0f;
-			}
-		}
-		float x[3], y[3], z[3];
-		float r[3], g[3], b[3], a[3];
-	};
 	using const_iterator = std::vector<TTriangle>::const_iterator;
 	using const_reverse_iterator =
 		std::vector<TTriangle>::const_reverse_iterator;
@@ -147,7 +121,9 @@ class CSetOfTriangles : public CRenderizable
 	CRenderizable& setColorB_u8(const uint8_t b) override;
 	CRenderizable& setColorA_u8(const uint8_t a) override;
 
-	void render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const override;
+	void render(
+		const mrpt::opengl::TRenderMatrices& state,
+		mrpt::opengl::Program& shaders) const override;
 	void renderUpdateBuffers() const override;
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 
@@ -222,7 +198,7 @@ inline CSetOfTriangles::Ptr& operator<<(CSetOfTriangles::Ptr& s, const T& t)
  */
 template <>
 inline CSetOfTriangles::Ptr& operator<<(
-	CSetOfTriangles::Ptr& s, const CSetOfTriangles::TTriangle& t)
+	CSetOfTriangles::Ptr& s, const mrpt::opengl::TTriangle& t)
 {
 	s->insertTriangle(t);
 	return s;
