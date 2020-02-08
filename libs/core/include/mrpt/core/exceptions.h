@@ -187,14 +187,14 @@ std::string exception_to_str(const std::exception& e);
 #define ASSERTDEB_ABOVEEQ_(__A, __B) ASSERT_ABOVEEQ_(__A, __B)
 #else
 // clang-format off
-#define ASSERTDEB_(f) {}
-#define ASSERTDEBMSG_(f, __ERROR_MSG) {}
-#define ASSERTDEB_EQUAL_(__A, __B) {}
-#define ASSERTDEB_NOT_EQUAL_(__A, __B) {}
-#define ASSERTDEB_BELOW_(__A, __B) {}
-#define ASSERTDEB_ABOVE_(__A, __B) {}
-#define ASSERTDEB_BELOWEQ_(__A, __B) {}
-#define ASSERTDEB_ABOVEEQ_(__A, __B) {}
+#define ASSERTDEB_(f) while (0){}
+#define ASSERTDEBMSG_(f, __ERROR_MSG) while (0){}
+#define ASSERTDEB_EQUAL_(__A, __B) while (0){}
+#define ASSERTDEB_NOT_EQUAL_(__A, __B) while (0){}
+#define ASSERTDEB_BELOW_(__A, __B) while (0){}
+#define ASSERTDEB_ABOVE_(__A, __B) while (0){}
+#define ASSERTDEB_BELOWEQ_(__A, __B) while (0){}
+#define ASSERTDEB_ABOVEEQ_(__A, __B) while (0){}
 // clang-format on
 
 #endif
