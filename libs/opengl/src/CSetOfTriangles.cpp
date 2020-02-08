@@ -28,7 +28,9 @@ void CSetOfTriangles::renderUpdateBuffers() const
 	MRPT_TODO("Implement me!");
 }
 
-void CSetOfTriangles::render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const
+void CSetOfTriangles::render(
+	const mrpt::opengl::TRenderMatrices& state,
+	mrpt::opengl::Program& shaders) const
 {
 #if MRPT_HAS_OPENGL_GLUT
 
@@ -80,38 +82,13 @@ void CSetOfTriangles::render(const mrpt::opengl::TRenderMatrices& state, mrpt::o
 #endif
 }
 
-static void triangle_writeToStream(
-	mrpt::serialization::CArchive& o, const mrpt::opengl::TTriangle& t)
-{
-	o.WriteBufferFixEndianness(t.x, 3);
-	o.WriteBufferFixEndianness(t.y, 3);
-	o.WriteBufferFixEndianness(t.z, 3);
-
-	o.WriteBufferFixEndianness(t.r, 3);
-	o.WriteBufferFixEndianness(t.g, 3);
-	o.WriteBufferFixEndianness(t.b, 3);
-	o.WriteBufferFixEndianness(t.a, 3);
-}
-static void triangle_readFromStream(
-	mrpt::serialization::CArchive& i, mrpt::opengl::TTriangle& t)
-{
-	i.ReadBufferFixEndianness(t.x, 3);
-	i.ReadBufferFixEndianness(t.y, 3);
-	i.ReadBufferFixEndianness(t.z, 3);
-
-	i.ReadBufferFixEndianness(t.r, 3);
-	i.ReadBufferFixEndianness(t.g, 3);
-	i.ReadBufferFixEndianness(t.b, 3);
-	i.ReadBufferFixEndianness(t.a, 3);
-}
-
 uint8_t CSetOfTriangles::serializeGetVersion() const { return 1; }
 void CSetOfTriangles::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
 	auto n = (uint32_t)m_triangles.size();
 	out << n;
-	for (size_t i = 0; i < n; i++) triangle_writeToStream(out, m_triangles[i]);
+	for (size_t i = 0; i < n; i++) m_triangles[i].writeTo(out);
 
 	// Version 1:
 	out << m_enableTransparency;
@@ -128,8 +105,7 @@ void CSetOfTriangles::serializeFrom(
 			uint32_t n;
 			in >> n;
 			m_triangles.assign(n, TTriangle());
-			for (size_t i = 0; i < n; i++)
-				triangle_readFromStream(in, m_triangles[i]);
+			for (size_t i = 0; i < n; i++) m_triangles[i].readFrom(in);
 
 			if (version >= 1)
 				in >> m_enableTransparency;

@@ -10,6 +10,7 @@
 
 #include <mrpt/core/exceptions.h>
 #include <mrpt/math/TPolygon3D.h>
+#include <mrpt/serialization/serialization_frwds.h>
 
 namespace mrpt::opengl
 {
@@ -41,6 +42,10 @@ struct TTriangle_
 	}
 	T x[3] = {0, 0, 0}, y[3] = {0, 0, 0}, z[3] = {0, 0, 0};
 	T r[3] = {1, 1, 1}, g[3] = {1, 1, 1}, b[3] = {1, 1, 1}, a[3] = {1, 1, 1};
+
+	// These methods are explicitly instantiated for T=float and double.
+	void readFrom(mrpt::serialization::CArchive& i);
+	void writeTo(mrpt::serialization::CArchive& o) const;
 };
 #pragma pack(pop)
 
