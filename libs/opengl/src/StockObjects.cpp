@@ -36,167 +36,128 @@ CSetOfObjects::Ptr stock_objects::RobotPioneer()
 	CSetOfTriangles::Ptr obj = std::make_shared<CSetOfTriangles>();
 
 	// Add triangles:
-	mrpt::opengl::TTriangle trian;
+	mrpt::opengl::TTriangle t;
 
-	trian.r(0) = trian.r(1) = trian.r(2) = 1;
-	trian.g(0) = trian.g(1) = trian.g(2) = 0;
-	trian.b(0) = trian.b(1) = trian.b(2) = 0;
-	trian.a(0) = trian.a(1) = trian.a(2) = 1;
+	t.r(0) = t.r(1) = t.r(2) = 1;
+	t.g(0) = t.g(1) = t.g(2) = 0;
+	t.b(0) = t.b(1) = t.b(2) = 0;
+	t.a(0) = t.a(1) = t.a(2) = 1;
 
-	trian.x(0) = 0.10f;
-	trian.x(1) = -0.20f;
-	trian.x(2) = -0.20f;
-	trian.y(0) = -0.10f;
-	trian.y(1) = 0.10f;
-	trian.y(2) = -0.10f;
-	trian.z(0) = 0.20f;
-	trian.z(1) = 0.25f;
-	trian.z(2) = 0.25f;
-	obj->insertTriangle(trian);  // 0
-	trian.x(0) = 0.10f;
-	trian.x(1) = 0.10f;
-	trian.x(2) = -0.20f;
-	trian.y(0) = -0.10f;
-	trian.y(1) = 0.10f;
-	trian.y(2) = 0.10f;
-	trian.z(0) = 0.20f;
-	trian.z(1) = 0.20f;
-	trian.z(2) = 0.25f;
-	obj->insertTriangle(trian);  // 1
+	t.vertex[0].pt = {0.10f, -0.10f, 0.20f};
+	t.vertex[1].pt = {-0.20f, 0.10f, 0.25f};
+	t.vertex[2].pt = {-0.20f, -0.10f, 0.25f};
+	obj->insertTriangle(t);  // 0
+	t.vertex[0].pt = {0.10f, -0.10f, 0.20f};
+	t.vertex[1].pt = {0.10f, 0.10f, 0.20f};
+	t.vertex[2].pt = {-0.20f, 0.10f, 0.25f};
+	obj->insertTriangle(t);  // 1
 
-	// trian.r = 0.9f; trian.g = 0; trian.b = 0; trian.a = 1;
+	t.vertex[0].pt = {0.10f, -0.10f, 0.05f};
+	t.vertex[1].pt = {0.10f, 0.10f, 0.20f};
+	t.vertex[2].pt = {0.10f, -0.10f, 0.20f};
+	obj->insertTriangle(t);  // 2
+	t.vertex[0].pt = {0.10f, -0.10f, 0.05f};
+	t.vertex[1].pt = {0.10f, 0.10f, 0.05f};
+	t.vertex[2].pt = {0.10f, 0.10f, 0.20f};
+	obj->insertTriangle(t);  // 3
 
-	trian.x(0) = 0.10f;
-	trian.x(1) = 0.10f;
-	trian.x(2) = 0.10f;
-	trian.y(0) = -0.10f;
-	trian.y(1) = -0.10f;
-	trian.y(2) = 0.10f;
-	trian.z(0) = 0.05f;
-	trian.z(1) = 0.20f;
-	trian.z(2) = 0.20f;
-	obj->insertTriangle(trian);  // 2
-	trian.x(0) = 0.10f;
-	trian.x(1) = 0.10f;
-	trian.x(2) = 0.10f;
-	trian.y(0) = -0.10f;
-	trian.y(1) = 0.10f;
-	trian.y(2) = 0.10f;
-	trian.z(0) = 0.05f;
-	trian.z(1) = 0.05f;
-	trian.z(2) = 0.20f;
-	obj->insertTriangle(trian);  // 3
+	t.vertex[0].pt = {-0.20f, -0.10f, 0.05f};
+	t.vertex[1].pt = {-0.20f, -0.10f, 0.25f};
+	t.vertex[2].pt = {-0.20f, 0.10f, 0.25f};
+	obj->insertTriangle(t);  // 2b
+	t.vertex[0].pt = {-0.20f, -0.10f, 0.05f};
+	t.vertex[1].pt = {-0.20f, 0.10f, 0.25f};
+	t.vertex[2].pt = {-0.20f, 0.10f, 0.05f};
+	obj->insertTriangle(t);  // 3b
 
-	trian.x(0) = -0.20f;
-	trian.x(1) = -0.20f;
-	trian.x(2) = -0.20f;
-	trian.y(0) = -0.10f;
-	trian.y(1) = -0.10f;
-	trian.y(2) = 0.10f;
-	trian.z(0) = 0.05f;
-	trian.z(1) = 0.25f;
-	trian.z(2) = 0.25f;
-	obj->insertTriangle(trian);  // 2b
-	trian.x(0) = -0.20f;
-	trian.x(1) = -0.20f;
-	trian.x(2) = -0.20f;
-	trian.y(0) = -0.10f;
-	trian.y(1) = 0.10f;
-	trian.y(2) = 0.10f;
-	trian.z(0) = 0.05f;
-	trian.z(1) = 0.05f;
-	trian.z(2) = 0.25f;
-	obj->insertTriangle(trian);  // 3b
+	t.x(0) = 0.10f;
+	t.x(1) = -0.20f;
+	t.x(2) = -0.20f;
+	t.y(0) = -0.10f;
+	t.y(1) = -0.10f;
+	t.y(2) = -0.10f;
+	t.z(0) = 0.20f;
+	t.z(1) = 0.25f;
+	t.z(2) = 0.05f;
+	obj->insertTriangle(t);  // 4
+	t.x(0) = 0.10f;
+	t.x(1) = 0.10f;
+	t.x(2) = -0.20f;
+	t.y(0) = -0.10f;
+	t.y(1) = -0.10f;
+	t.y(2) = -0.10f;
+	t.z(0) = 0.20f;
+	t.z(1) = 0.05f;
+	t.z(2) = 0.05f;
+	obj->insertTriangle(t);  // 5
 
-	// trian.r = 0.8f; trian.g = 0; trian.b = 0; trian.a = 1;
-	trian.x(0) = 0.10f;
-	trian.x(1) = -0.20f;
-	trian.x(2) = -0.20f;
-	trian.y(0) = -0.10f;
-	trian.y(1) = -0.10f;
-	trian.y(2) = -0.10f;
-	trian.z(0) = 0.20f;
-	trian.z(1) = 0.25f;
-	trian.z(2) = 0.05f;
-	obj->insertTriangle(trian);  // 4
-	trian.x(0) = 0.10f;
-	trian.x(1) = 0.10f;
-	trian.x(2) = -0.20f;
-	trian.y(0) = -0.10f;
-	trian.y(1) = -0.10f;
-	trian.y(2) = -0.10f;
-	trian.z(0) = 0.20f;
-	trian.z(1) = 0.05f;
-	trian.z(2) = 0.05f;
-	obj->insertTriangle(trian);  // 5
+	t.x(0) = 0.10f;
+	t.x(1) = -0.20f;
+	t.x(2) = -0.20f;
+	t.y(0) = 0.10f;
+	t.y(1) = 0.10f;
+	t.y(2) = 0.10f;
+	t.z(0) = 0.20f;
+	t.z(1) = 0.25f;
+	t.z(2) = 0.05f;
+	obj->insertTriangle(t);  // 6
+	t.x(0) = 0.10f;
+	t.x(1) = 0.10f;
+	t.x(2) = -0.20f;
+	t.y(0) = 0.10f;
+	t.y(1) = 0.10f;
+	t.y(2) = 0.10f;
+	t.z(0) = 0.20f;
+	t.z(1) = 0.05f;
+	t.z(2) = 0.05f;
+	obj->insertTriangle(t);  // 7
 
-	trian.x(0) = 0.10f;
-	trian.x(1) = -0.20f;
-	trian.x(2) = -0.20f;
-	trian.y(0) = 0.10f;
-	trian.y(1) = 0.10f;
-	trian.y(2) = 0.10f;
-	trian.z(0) = 0.20f;
-	trian.z(1) = 0.25f;
-	trian.z(2) = 0.05f;
-	obj->insertTriangle(trian);  // 6
-	trian.x(0) = 0.10f;
-	trian.x(1) = 0.10f;
-	trian.x(2) = -0.20f;
-	trian.y(0) = 0.10f;
-	trian.y(1) = 0.10f;
-	trian.y(2) = 0.10f;
-	trian.z(0) = 0.20f;
-	trian.z(1) = 0.05f;
-	trian.z(2) = 0.05f;
-	obj->insertTriangle(trian);  // 7
+	t.r(0) = t.r(1) = t.r(2) = 0.05f;
+	t.g(0) = t.g(1) = t.g(2) = 0.05f;
+	t.b(0) = t.b(1) = t.b(2) = 0.05f;
+	t.a(0) = t.a(1) = t.a(2) = 1;
 
-	trian.r(0) = trian.r(1) = trian.r(2) = 0.05f;
-	trian.g(0) = trian.g(1) = trian.g(2) = 0.05f;
-	trian.b(0) = trian.b(1) = trian.b(2) = 0.05f;
-	trian.a(0) = trian.a(1) = trian.a(2) = 1;
+	t.x(0) = 0.00f;
+	t.x(1) = 0.00f;
+	t.x(2) = 0.05f;
+	t.y(0) = 0.11f;
+	t.y(1) = 0.11f;
+	t.y(2) = 0.11f;
+	t.z(0) = 0.00f;
+	t.z(1) = 0.10f;
+	t.z(2) = 0.05f;
+	obj->insertTriangle(t);  // 8
+	t.x(0) = 0.00f;
+	t.x(1) = 0.00f;
+	t.x(2) = -0.05f;
+	t.y(0) = 0.11f;
+	t.y(1) = 0.11f;
+	t.y(2) = 0.11f;
+	t.z(0) = 0.00f;
+	t.z(1) = 0.10f;
+	t.z(2) = 0.05f;
+	obj->insertTriangle(t);  // 9
 
-	trian.x(0) = 0.00f;
-	trian.x(1) = 0.00f;
-	trian.x(2) = 0.05f;
-	trian.y(0) = 0.11f;
-	trian.y(1) = 0.11f;
-	trian.y(2) = 0.11f;
-	trian.z(0) = 0.00f;
-	trian.z(1) = 0.10f;
-	trian.z(2) = 0.05f;
-	obj->insertTriangle(trian);  // 8
-	trian.x(0) = 0.00f;
-	trian.x(1) = 0.00f;
-	trian.x(2) = -0.05f;
-	trian.y(0) = 0.11f;
-	trian.y(1) = 0.11f;
-	trian.y(2) = 0.11f;
-	trian.z(0) = 0.00f;
-	trian.z(1) = 0.10f;
-	trian.z(2) = 0.05f;
-	obj->insertTriangle(trian);  // 9
-
-	trian.x(0) = 0.00f;
-	trian.x(1) = 0.00f;
-	trian.x(2) = 0.05f;
-	trian.y(0) = -0.11f;
-	trian.y(1) = -0.11f;
-	trian.y(2) = -0.11f;
-	trian.z(0) = 0.00f;
-	trian.z(1) = 0.10f;
-	trian.z(2) = 0.05f;
-	obj->insertTriangle(trian);  // 10
-	trian.x(0) = 0.00f;
-	trian.x(1) = 0.00f;
-	trian.x(2) = -0.05f;
-	trian.y(0) = -0.11f;
-	trian.y(1) = -0.11f;
-	trian.y(2) = -0.11f;
-	trian.z(0) = 0.00f;
-	trian.z(1) = 0.10f;
-	trian.z(2) = 0.05f;
-	obj->insertTriangle(trian);  // 11
+	t.x(0) = 0.00f;
+	t.x(1) = 0.00f;
+	t.x(2) = 0.05f;
+	t.y(0) = -0.11f;
+	t.y(1) = -0.11f;
+	t.y(2) = -0.11f;
+	t.z(0) = 0.00f;
+	t.z(1) = 0.10f;
+	t.z(2) = 0.05f;
+	obj->insertTriangle(t);  // 10
+	t.x(0) = 0.00f;
+	t.x(1) = 0.00f;
+	t.x(2) = -0.05f;
+	t.y(0) = -0.11f;
+	t.y(1) = -0.11f;
+	t.y(2) = -0.11f;
+	t.z(0) = 0.00f;
+	t.z(1) = 0.10f;
+	t.z(2) = 0.05f;
+	obj->insertTriangle(t);  // 11
 
 	ret->insert(obj);
 
