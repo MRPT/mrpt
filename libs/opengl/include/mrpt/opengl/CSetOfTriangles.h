@@ -43,62 +43,54 @@ class CSetOfTriangles : public CRenderizable
 	 * Mutable variable used to check whether polygons need to be recalculated.
 	 */
 	mutable bool polygonsUpToDate{false};
-	/**
-	 * Polygon cache.
-	 */
-	mutable std::vector<mrpt::math::TPolygonWithPlane> tmpPolygons;
+
+	/** Polygon cache, used for ray-tracing only */
+	mutable std::vector<mrpt::math::TPolygonWithPlane> m_polygons;
 
    public:
-	/**
-	 * Polygon cache updating.
-	 */
+	/** Explicitly updates the internal polygon cache, with all triangles as
+	 * polygons. \sa getPolygons() */
 	void updatePolygons() const;
-	/**
-	 * Clear this object.
-	 */
-	inline void clearTriangles()
+
+	/** Clear this object, removing all triangles. */
+	void clearTriangles()
 	{
 		m_triangles.clear();
 		polygonsUpToDate = false;
 		CRenderizable::notifyChange();
 	}
-	/**
-	 * Get triangle count.
-	 */
-	inline size_t getTrianglesCount() const { return m_triangles.size(); }
-	/**
-	 * Gets the triangle in a given position.
-	 */
-	inline void getTriangle(size_t idx, TTriangle& t) const
+
+	/** Get triangle count */
+	size_t getTrianglesCount() const { return m_triangles.size(); }
+
+	/** Gets the i-th triangle */
+	void getTriangle(size_t idx, TTriangle& t) const
 	{
-		ASSERT_(idx < m_triangles.size());
+		ASSERT_BELOW_(idx, m_triangles.size());
 		t = m_triangles[idx];
 	}
-	/**
-	 * Inserts a triangle into the set.
-	 */
-	inline void insertTriangle(const TTriangle& t)
+	/** Inserts a triangle into the set */
+	void insertTriangle(const TTriangle& t)
 	{
 		m_triangles.push_back(t);
 		polygonsUpToDate = false;
 		CRenderizable::notifyChange();
 	}
-	/**
-	 * Inserts a set of triangles, bounded by iterators, into this set.
+
+	/** Inserts a set of triangles, bounded by iterators, into this set.
 	 * \sa insertTriangle
 	 */
 	template <class InputIterator>
-	inline void insertTriangles(
-		const InputIterator& begin, const InputIterator& end)
+	void insertTriangles(const InputIterator& begin, const InputIterator& end)
 	{
 		m_triangles.insert(m_triangles.end(), begin, end);
 		polygonsUpToDate = false;
 		CRenderizable::notifyChange();
 	}
-	/**
-	 * Inserts an existing CSetOfTriangles into this one.
-	 */
+
+	/** Inserts an existing CSetOfTriangles into this one */
 	void insertTriangles(const CSetOfTriangles::Ptr& p);
+
 	/**
 	 * Reserves memory for certain number of triangles, avoiding multiple
 	 * memory allocation calls.
