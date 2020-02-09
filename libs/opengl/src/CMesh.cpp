@@ -111,12 +111,12 @@ void CMesh::updateTriangles() const
 		for (int iY = 0; iY < cols - 1; iY++)
 		{
 			if (useMask && (!mask(iX, iY) || !mask(iX + 1, iY + 1))) continue;
-			tri.x[0] = xMin + iX * sCellX;
-			tri.y[0] = yMin + iY * sCellY;
-			tri.z[0] = Z(iX, iY);
-			tri.x[2] = tri.x[0] + sCellX;
-			tri.y[2] = tri.y[0] + sCellY;
-			tri.z[2] = Z(iX + 1, iY + 1);
+			tri.x(0) = xMin + iX * sCellX;
+			tri.y(0) = yMin + iY * sCellY;
+			tri.z(0) = Z(iX, iY);
+			tri.x(2) = tri.x(0) + sCellX;
+			tri.y(2) = tri.y(0) + sCellY;
+			tri.z(2) = Z(iX + 1, iY + 1);
 
 			// Vertex indices:
 			TTriangleVertexIndices tvi;
@@ -131,54 +131,54 @@ void CMesh::updateTriangles() const
 			// Order: 0,1,2
 			if (!useMask || mask(iX + 1, iY))
 			{
-				tri.x[1] = tri.x[2];
-				tri.y[1] = tri.y[0];
-				tri.z[1] = Z(iX + 1, iY);
+				tri.x(1) = tri.x(2);
+				tri.y(1) = tri.y(0);
+				tri.z(1) = Z(iX + 1, iY);
 				for (int i = 0; i < 3; i++)
-					tri.a[i] = cA[i];  // Assign alpha channel
+					tri.a(i) = cA[i];  // Assign alpha channel
 
 				if (m_colorFromZ)
 				{
 					colormap(
-						m_colorMap, C(iX, iY), tri.r[0], tri.g[0], tri.b[0]);
+						m_colorMap, C(iX, iY), tri.r(0), tri.g(0), tri.b(0));
 					colormap(
-						m_colorMap, C(iX + 1, iY), tri.r[1], tri.g[1],
-						tri.b[1]);
+						m_colorMap, C(iX + 1, iY), tri.r(1), tri.g(1),
+						tri.b(1));
 					colormap(
-						m_colorMap, C(iX + 1, iY + 1), tri.r[2], tri.g[2],
-						tri.b[2]);
+						m_colorMap, C(iX + 1, iY + 1), tri.r(2), tri.g(2),
+						tri.b(2));
 				}
 				else if (m_isImage)
 				{
 					if (m_textureImage.isColor())
 					{
-						tri.r[0] = tri.r[1] = tri.r[2] = C_r(iX, iY);
-						tri.g[0] = tri.g[1] = tri.g[2] = C_g(iX, iY);
-						tri.b[0] = tri.b[1] = tri.b[2] = C_b(iX, iY);
+						tri.r(0) = tri.r(1) = tri.r(2) = C_r(iX, iY);
+						tri.g(0) = tri.g(1) = tri.g(2) = C_g(iX, iY);
+						tri.b(0) = tri.b(1) = tri.b(2) = C_b(iX, iY);
 					}
 					else
 					{
-						tri.r[0] = tri.r[1] = tri.r[2] = C(iX, iY);
-						tri.g[0] = tri.g[1] = tri.g[2] = C(iX, iY);
-						tri.b[0] = tri.b[1] = tri.b[2] = C(iX, iY);
+						tri.r(0) = tri.r(1) = tri.r(2) = C(iX, iY);
+						tri.g(0) = tri.g(1) = tri.g(2) = C(iX, iY);
+						tri.b(0) = tri.b(1) = tri.b(2) = C(iX, iY);
 					}
 				}
 				else
 				{
-					tri.r[0] = tri.r[1] = tri.r[2] = m_color.R / 255.f;
-					tri.g[0] = tri.g[1] = tri.g[2] = m_color.G / 255.f;
-					tri.b[0] = tri.b[1] = tri.b[2] = m_color.B / 255.f;
+					tri.r(0) = tri.r(1) = tri.r(2) = m_color.R / 255.f;
+					tri.g(0) = tri.g(1) = tri.g(2) = m_color.G / 255.f;
+					tri.b(0) = tri.b(1) = tri.b(2) = m_color.B / 255.f;
 				}
 
 				// Compute normal of this triangle, and add it up to the 3
 				// neighboring vertices:
 				// A = P1 - P0, B = P2 - P0
-				float ax = tri.x[1] - tri.x[0];
-				float bx = tri.x[2] - tri.x[0];
-				float ay = tri.y[1] - tri.y[0];
-				float by = tri.y[2] - tri.y[0];
-				float az = tri.z[1] - tri.z[0];
-				float bz = tri.z[2] - tri.z[0];
+				float ax = tri.x(1) - tri.x(0);
+				float bx = tri.x(2) - tri.x(0);
+				float ay = tri.y(1) - tri.y(0);
+				float by = tri.y(2) - tri.y(0);
+				float az = tri.z(1) - tri.z(0);
+				float bz = tri.z(2) - tri.z(0);
 				const TPoint3D this_normal(
 					ay * bz - az * by, az * bx - ax * bz, ax * by - ay * bx);
 
@@ -203,55 +203,55 @@ void CMesh::updateTriangles() const
 			// Order: 0,2,1
 			if (!useMask || mask(iX, iY + 1))
 			{
-				tri.x[1] = tri.x[2];
-				tri.y[1] = tri.y[2];
-				tri.z[1] = tri.z[2];
+				tri.x(1) = tri.x(2);
+				tri.y(1) = tri.y(2);
+				tri.z(1) = tri.z(2);
 
-				tri.x[2] = tri.x[0];
-				// tri.y[2]=tri.y[1];
-				tri.z[2] = Z(iX, iY + 1);
+				tri.x(2) = tri.x(0);
+				// tri.y(2)=tri.y(1);
+				tri.z(2) = Z(iX, iY + 1);
 				if (m_colorFromZ)
 				{
 					colormap(
-						m_colorMap, C(iX, iY), tri.r[0], tri.g[0], tri.b[0]);
+						m_colorMap, C(iX, iY), tri.r(0), tri.g(0), tri.b(0));
 					colormap(
-						m_colorMap, C(iX + 1, iY + 1), tri.r[1], tri.g[1],
-						tri.b[1]);
+						m_colorMap, C(iX + 1, iY + 1), tri.r(1), tri.g(1),
+						tri.b(1));
 					colormap(
-						m_colorMap, C(iX, iY + 1), tri.r[2], tri.g[2],
-						tri.b[2]);
+						m_colorMap, C(iX, iY + 1), tri.r(2), tri.g(2),
+						tri.b(2));
 				}
 				else if (m_isImage)
 				{
 					if (m_textureImage.isColor())
 					{
-						tri.r[0] = tri.r[1] = tri.r[2] = C_r(iX, iY);
-						tri.g[0] = tri.g[1] = tri.g[2] = C_g(iX, iY);
-						tri.b[0] = tri.b[1] = tri.b[2] = C_b(iX, iY);
+						tri.r(0) = tri.r(1) = tri.r(2) = C_r(iX, iY);
+						tri.g(0) = tri.g(1) = tri.g(2) = C_g(iX, iY);
+						tri.b(0) = tri.b(1) = tri.b(2) = C_b(iX, iY);
 					}
 					else
 					{
-						tri.r[0] = tri.r[1] = tri.r[2] = C(iX, iY);
-						tri.g[0] = tri.g[1] = tri.g[2] = C(iX, iY);
-						tri.b[0] = tri.b[1] = tri.b[2] = C(iX, iY);
+						tri.r(0) = tri.r(1) = tri.r(2) = C(iX, iY);
+						tri.g(0) = tri.g(1) = tri.g(2) = C(iX, iY);
+						tri.b(0) = tri.b(1) = tri.b(2) = C(iX, iY);
 					}
 				}
 				else
 				{
-					tri.r[0] = tri.r[1] = tri.r[2] = m_color.R / 255.f;
-					tri.g[0] = tri.g[1] = tri.g[2] = m_color.G / 255.f;
-					tri.b[0] = tri.b[1] = tri.b[2] = m_color.B / 255.f;
+					tri.r(0) = tri.r(1) = tri.r(2) = m_color.R / 255.f;
+					tri.g(0) = tri.g(1) = tri.g(2) = m_color.G / 255.f;
+					tri.b(0) = tri.b(1) = tri.b(2) = m_color.B / 255.f;
 				}
 
 				// Compute normal of this triangle, and add it up to the 3
 				// neighboring vertices:
 				// A = P1 - P0, B = P2 - P0
-				float ax = tri.x[1] - tri.x[0];
-				float bx = tri.x[2] - tri.x[0];
-				float ay = tri.y[1] - tri.y[0];
-				float by = tri.y[2] - tri.y[0];
-				float az = tri.z[1] - tri.z[0];
-				float bz = tri.z[2] - tri.z[0];
+				float ax = tri.x(1) - tri.x(0);
+				float bx = tri.x(2) - tri.x(0);
+				float ay = tri.y(1) - tri.y(0);
+				float by = tri.y(2) - tri.y(0);
+				float az = tri.z(1) - tri.z(0);
+				float bz = tri.z(2) - tri.z(0);
 				const TPoint3D this_normal(
 					ay * bz - az * by, az * bx - ax * bz, ax * by - ay * bx);
 
@@ -322,8 +322,8 @@ void CMesh::render(
 		{
 			const mrpt::math::TPoint3D& n = vertex_normals[tvi.vind[k]].first;
 			glNormal3f(n.x, n.y, n.z);
-			glColor4f(t.r[k], t.g[k], t.b[k], t.a[k]);
-			glVertex3f(t.x[k], t.y[k], t.z[k]);
+			glColor4f(t.r(k), t.g(k), t.b(k), t.a(k));
+			glVertex3f(t.x(k), t.y(k), t.z(k));
 		}
 		if (m_isWireFrame)
 		{
@@ -551,12 +551,7 @@ mrpt::math::TPolygonWithPlane createPolygonFromTriangle(
 	const std::pair<mrpt::opengl::TTriangle, CMesh::TTriangleVertexIndices>& p)
 {
 	const mrpt::opengl::TTriangle& t = p.first;
-	for (size_t i = 0; i < 3; i++)
-	{
-		tmpPoly[i].x = t.x[i];
-		tmpPoly[i].y = t.y[i];
-		tmpPoly[i].z = t.z[i];
-	}
+	for (size_t i = 0; i < 3; i++) tmpPoly[i] = t.vertex[i].pt;
 	return mrpt::math::TPolygonWithPlane(tmpPoly);
 }
 
