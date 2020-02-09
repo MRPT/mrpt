@@ -273,6 +273,7 @@ void COpenGLViewport::loadDefaultShaders() const
 	// Attributes:
 	m_shaders->declareAttribute("position");
 	m_shaders->declareAttribute("vertexColor");
+	m_shaders->declareAttribute("vertexNormal");
 
 #endif
 }

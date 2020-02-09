@@ -34,6 +34,7 @@ class CSetOfTriangles : public CRenderizable
 	mutable unsigned int m_trianglesBuffer = 0, m_vao = 0;
 
 	// Computed in renderUpdateBuffers()
+	// Note: a normal per vertex, not per triangle.
 	mutable std::vector<mrpt::math::TVector3Df> m_trianglesNormals;
 	mutable unsigned int m_normalsBuffer;
 

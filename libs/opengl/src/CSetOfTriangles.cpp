@@ -30,7 +30,7 @@ void CSetOfTriangles::renderUpdateBuffers() const
 
 	// Eval normals:
 	const auto n = m_triangles.size();
-	m_trianglesNormals.resize(n);
+	m_trianglesNormals.resize(3 * n);  // normal per vertex
 	for (size_t i = 0; i < n; i++)
 	{
 		const auto& t = m_triangles[i];
@@ -41,10 +41,12 @@ void CSetOfTriangles::renderUpdateBuffers() const
 		const float by = t.y(2) - t.y(0);
 		const float bz = t.z(2) - t.z(0);
 
-		auto& no = m_trianglesNormals[i];
+		mrpt::math::TVector3Df no;
 		no.x = ay * bz - az * by;
 		no.y = -ax * bz + az * bx;
 		no.z = ax * by - ay * bx;
+
+		for (unsigned k = 0; k < 3; k++) m_trianglesNormals[3 * i + k] = no;
 	}
 
 	// Define OpenGL buffers:
@@ -53,7 +55,7 @@ void CSetOfTriangles::renderUpdateBuffers() const
 
 	m_normalsBuffer = mrpt::opengl::make_buffer(
 		GL_ARRAY_BUFFER, m_trianglesNormals.data(),
-		sizeof(m_trianglesNormals[0]) * n);
+		sizeof(m_trianglesNormals[0]) * 3 * n);
 
 	// Generate a name for a new array.
 	glGenVertexArrays(1, &m_vao);
@@ -107,13 +109,25 @@ void CSetOfTriangles::render(
 		BUFFER_OFFSET(offsetof(mrpt::math::TPointXYZRGBAf, R)));
 	CHECK_OPENGL_ERROR();
 
-	MRPT_TODO("Handle normals!");
+	// Set up the normals array:
+	const GLint attr_normals = shaders.attributeId("vertexNormal");
+	glEnableVertexAttribArray(attr_normals);
+	glBindBuffer(GL_ARRAY_BUFFER, m_normalsBuffer);
+	glVertexAttribPointer(
+		attr_normals, /* attribute */
+		3, /* size */
+		GL_FLOAT, /* type */
+		GL_FALSE, /* normalized? */
+		sizeof(mrpt::math::TVector3Df), /* stride */
+		BUFFER_OFFSET(0));
+	CHECK_OPENGL_ERROR();
 
 	glDrawArrays(GL_TRIANGLES, 0, 3 * m_triangles.size());
 	CHECK_OPENGL_ERROR();
 
 	glDisableVertexAttribArray(attr_position);
 	glDisableVertexAttribArray(attr_color);
+	glDisableVertexAttribArray(attr_normals);
 
 	if (m_enableTransparency) glDisable(GL_BLEND);
 #endif

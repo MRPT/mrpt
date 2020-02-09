@@ -297,7 +297,11 @@ struct TPointXYZfRGBu8
 	}
 };
 
-/** XYZ point (float) + RGBA(float) \sa mrpt::math::TPoint3D */
+// Ensure 1-byte memory alignment, no additional stride bytes.
+#pragma pack(push, 1)
+
+/** XYZ point (float) + RGBA(float) [1-byte memory packed, no padding]
+ * \sa mrpt::math::TPoint3D */
 struct TPointXYZRGBAf
 {
 	mrpt::math::TPoint3Df pt;
@@ -311,6 +315,7 @@ struct TPointXYZRGBAf
 	{
 	}
 };
+#pragma pack(pop)
 
 /** Unary minus operator for 3D points. */
 template <typename T>
