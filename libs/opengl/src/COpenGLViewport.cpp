@@ -14,6 +14,7 @@
 #include <mrpt/opengl/COpenGLViewport.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CTexturedPlane.h>
+#include <mrpt/opengl/DefaultShaders.h>
 #include <mrpt/opengl/gl_utils.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/metaprogramming_serialization.h>
@@ -232,48 +233,9 @@ void COpenGLViewport::renderImageMode() const
 void COpenGLViewport::loadDefaultShaders() const
 {
 #if MRPT_HAS_OPENGL_GLUT
-	// Vertex shader:
-	const char* DEFAULT_VERTEX_SHADER_CODE =
-#include "default_vertex_shader.glsl"
-		;
 
-	// Fragment shader:
-	const char* DEFAULT_FRAGMENT_SHADER_CODE =
-#include "default_fragment_shader.glsl"
-		;
-
-	if (!m_shaders) m_shaders = std::make_shared<Program>();
-	m_shaders->clear();
-
-	std::string errMsgs;
-	std::vector<Shader> lstShaders;
-	lstShaders.resize(2);
-	if (!lstShaders[0].compileFromSource(
-			GL_VERTEX_SHADER, DEFAULT_VERTEX_SHADER_CODE, errMsgs))
-	{
-		THROW_EXCEPTION_FMT(
-			"Error compiling GL_VERTEX_SHADER:\n%s", errMsgs.c_str());
-	}
-	if (!lstShaders[1].compileFromSource(
-			GL_FRAGMENT_SHADER, DEFAULT_FRAGMENT_SHADER_CODE, errMsgs))
-	{
-		THROW_EXCEPTION_FMT(
-			"Error compiling GL_FRAGMENT_SHADER:\n%s", errMsgs.c_str());
-	}
-	if (!m_shaders->linkProgram(lstShaders, errMsgs))
-	{
-		THROW_EXCEPTION_FMT(
-			"Error linking Opengl Shader programs:\n%s", errMsgs.c_str());
-	}
-
-	// Uniforms:
-	m_shaders->declareUniform("p_matrix");
-	m_shaders->declareUniform("mv_matrix");
-
-	// Attributes:
-	m_shaders->declareAttribute("position");
-	m_shaders->declareAttribute("vertexColor");
-	m_shaders->declareAttribute("vertexNormal");
+	MRPT_TODO("XXX Continue refactoring here!!");
+	m_shaders = mrpt::opengl::LoadDefaultShader(DefaultShaderID::POINTS);
 
 #endif
 }
@@ -400,6 +362,9 @@ void COpenGLViewport::renderNormalSceneMode() const
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);  // GL_LESS
+	CHECK_OPENGL_ERROR();
+
+	glEnable(GL_PROGRAM_POINT_SIZE);
 	CHECK_OPENGL_ERROR();
 
 	MRPT_TODO("Port Lights!");

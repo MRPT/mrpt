@@ -23,7 +23,7 @@ enum predefined_voxel_sets_t
  *mrpt::maps::COctoMap).
  *  This class is sort of equivalent to octovis::OcTreeDrawer from the octomap
  *package, but
- *  relying on MRPT's CRenderizableShader so there's no need to manually
+ *  relying on MRPT's CRenderizable so there's no need to manually
  *cache the rendering of OpenGL primitives.
  *
  *  Normally users call mrpt::maps::COctoMap::getAs3DObject() to obtain a
@@ -326,7 +326,9 @@ class COctoMapVoxels : public CRenderizable
 
 	void sort_voxels_by_z();
 
-	void render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const override;
+	void render(
+		const mrpt::opengl::TRenderMatrices& state,
+		mrpt::opengl::Program& shaders) const override;
 	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,

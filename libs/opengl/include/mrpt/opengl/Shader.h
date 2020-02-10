@@ -10,6 +10,7 @@
 
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/optional_ref.h>
+#include <memory>
 #include <unordered_map>
 #include <vector>
 
@@ -21,7 +22,7 @@ namespace mrpt::opengl
  * called. Normally, users want shader(s) to be linked into a
  * mrpt::opengl::Program.
  *
- * \sa CRenderizableShader
+ * \sa CRenderizable
  * \ingroup mrpt_opengl_grp
  */
 class Shader
@@ -46,7 +47,7 @@ class Shader
 	 * here. If not, they will dumped to std::cerr
 	 * \return false on error.
 	 */
-	bool compileFromSource(
+	bool compile(
 		unsigned int type, const std::string& shaderCode,
 		mrpt::optional_ref<std::string> outErrorMessages = std::nullopt);
 
@@ -61,7 +62,7 @@ class Shader
  * The OpenGL "program" resource will be freed upon destruction or when clear()
  * is called.
  *
- * \sa CRenderizableShader
+ * \sa CRenderizable
  * \ingroup mrpt_opengl_grp
  */
 class Program
@@ -69,6 +70,8 @@ class Program
    public:
 	Program() = default;
 	~Program();
+
+	using Ptr = std::shared_ptr<Program>;
 
 	bool empty() const { return m_program == 0; }
 	/** Frees the shader program in OpenGL. */
