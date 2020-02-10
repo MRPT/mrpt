@@ -41,7 +41,7 @@ void Shader::clear()
 #endif
 }
 
-bool Shader::compileFromSource(
+bool Shader::compile(
 	unsigned int type, const std::string& shaderCode,
 	mrpt::optional_ref<std::string> outErrorMessages)
 {
@@ -69,8 +69,7 @@ bool Shader::compileFromSource(
 		if (outErrorMessages)
 			outErrorMessages.value().get() = std::move(log);
 		else
-			std::cerr << "[Shader::compileFromSource] Compile error: " << log
-					  << "\n";
+			std::cerr << "[Shader::compile] Compile error: " << log << "\n";
 
 		glDeleteShader(m_shader);
 		m_shader = 0;

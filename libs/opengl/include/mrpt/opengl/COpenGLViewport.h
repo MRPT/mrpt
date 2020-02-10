@@ -20,13 +20,11 @@
 #include <mrpt/system/CObservable.h>
 #include <mrpt/system/mrptEvent.h>
 
-namespace mrpt
-{
-namespace img
+namespace mrpt::img
 {
 class CImage;
 }
-namespace opengl
+namespace mrpt::opengl
 {
 /** A viewport within a COpenGLScene, containing a set of OpenGL objects to
  *render.
@@ -397,7 +395,7 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	mutable TRenderMatrices m_state;
 
 	/** Default shader program */
-	mutable std::shared_ptr<Program> m_shaders;
+	mutable Program::Ptr m_shaders;
 
 	void loadDefaultShaders() const;
 
@@ -494,6 +492,4 @@ class mrptEventGLPostRender : public mrpt::system::mrptEvent
 
 /** @} */
 
-}  // namespace opengl
-
-}  // namespace mrpt
+}  // namespace mrpt::opengl
