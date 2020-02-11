@@ -18,8 +18,6 @@ void main()
 {
     vec4 eye_position = mv_matrix * vec4(position, 1.0);
     gl_Position = p_matrix * eye_position;
-    //gl_PointSize = 4.0;
-
     frag_color = vertexColor;
 }
 )XXX"

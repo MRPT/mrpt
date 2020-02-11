@@ -16,6 +16,12 @@
 
 namespace mrpt::opengl
 {
+/** Type for IDs of shaders.
+ * \sa DefaultShaderID, LoadDefaultShader()
+ * \ingroup mrpt_opengl_grp
+ */
+using shader_id_t = uint8_t;
+
 /** A resource handling helper for OpenGL "Shader" compiled code fragment.
  *
  * The OpenGL shader resource will be freed upon destruction or when clear() is
@@ -95,7 +101,7 @@ class Program
 	void declareUniform(const std::string& name);
 	void declareAttribute(const std::string& name);
 
-	unsigned int programId()
+	unsigned int programId() const
 	{
 		ASSERT_(m_program != 0);
 		return m_program;

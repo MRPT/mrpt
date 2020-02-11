@@ -43,10 +43,17 @@ void CSetOfObjects::renderUpdateBuffers() const
 	MRPT_TODO("Implement me!");
 }
 
-void CSetOfObjects::render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const
+void CSetOfObjects::render(
+	const mrpt::opengl::TRenderMatrices& state,
+	mrpt::opengl::Program& shaders) const
 {
-	// Render all the objects:
-	mrpt::opengl::gl_utils::renderSetOfObjects(m_objects, state, shaders);
+	// Do nothing: the enqueForRenderRecursive() does the actual job.
+}
+
+void CSetOfObjects::enqueForRenderRecursive(
+	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq) const
+{
+	mrpt::opengl::gl_utils::enqueForRendering(m_objects, state, rq);
 }
 
 uint8_t CSetOfObjects::serializeGetVersion() const { return 0; }

@@ -19,6 +19,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/CObservable.h>
 #include <mrpt/system/mrptEvent.h>
+#include <map>
 
 namespace mrpt::img
 {
@@ -395,7 +396,7 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	mutable TRenderMatrices m_state;
 
 	/** Default shader program */
-	mutable Program::Ptr m_shaders;
+	mutable std::map<shader_id_t, mrpt::opengl::Program::Ptr> m_shaders;
 
 	void loadDefaultShaders() const;
 
