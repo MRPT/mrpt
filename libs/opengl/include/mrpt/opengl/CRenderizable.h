@@ -11,6 +11,8 @@
 #include <mrpt/img/TColor.h>
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/math/math_frwds.h>
+#include <mrpt/opengl/DefaultShaders.h>
+#include <mrpt/opengl/RenderQueue.h>
 #include <mrpt/opengl/Shader.h>
 #include <mrpt/opengl/TRenderMatrices.h>
 #include <mrpt/opengl/opengl_fonts.h>
@@ -23,6 +25,7 @@ namespace mrpt::opengl
 // Frwd decls:
 class COpenGLViewport;
 class CSetOfObjects;
+
 namespace gl_utils
 {
 void checkOpenGLErr_impl(
@@ -42,16 +45,17 @@ void checkOpenGLErr_impl(
 /** The base class of 3D objects that can be directly rendered through OpenGL.
  *  In this class there are a set of common properties to all 3D objects,
  *mainly:
- *		- A name (m_name): A name that can be optionally asigned to objects for
+ * - A name (m_name): A name that can be optionally asigned to objects for
  *easing its reference.
- *		- 6D coordinates (x,y,z,yaw,pitch,roll), relative to the "current"
+ * - 6D coordinates (x,y,z,yaw,pitch,roll), relative to the "current"
  *reference framework. By default, any object is referenced to global scene
  *coordinates.
- *		- A RGB color: This field will be used in simple elements (points,
- *lines,
- *text,...) but is ignored in more complex objects that carry their own color
- *information (triangle sets,...)
- *  See the main class opengl::COpenGLScene
+ * - A RGB color: This field will be used in simple elements (points,
+ *lines, text,...) but is ignored in more complex objects that carry their own
+ *color information (triangle sets,...)
+ *
+ * See the main class opengl::COpenGLScene
+ *
  *  \sa opengl::COpenGLScene, mrpt::opengl
  * \ingroup mrpt_opengl_grp
  */
@@ -289,9 +293,26 @@ class CRenderizable : public mrpt::serialization::CSerializable
 		const mrpt::opengl::TRenderMatrices& state,
 		mrpt::opengl::Program& shaders) const = 0;
 
-	/** Called whenever m_outdatedBuffers is true: used to re-generate OpenGL
-	 * vertex buffers, etc. before they are sent for rendering in render() */
+	/** Process all children objects recursively, if the object is a container
+	 */
+	virtual void enqueForRenderRecursive(
+		const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq) const
+	{
+		// do thing
+	}
+
+	/** Called whenever m_outdatedBuffers is true: used to re-generate
+	 * OpenGL vertex buffers, etc. before they are sent for rendering in
+	 * render() */
 	virtual void renderUpdateBuffers() const = 0;
+
+	/** Returns the ID of the OpenGL shader program required to render this
+	 * class. \sa DefaultShaderID
+	 */
+	virtual shader_id_t shaderType() const
+	{
+		THROW_EXCEPTION("Not implemented in derived class!");
+	}
 
 	/** Calls renderUpdateBuffers() and clear the flag that is set with
 	 * notifyChange() */
@@ -301,16 +322,16 @@ class CRenderizable : public mrpt::serialization::CSerializable
 		const_cast<CRenderizable&>(*this).m_outdatedBuffers = false;
 	}
 
-	/** Call to enable calling renderUpdateBuffers() before the next render()
-	 * rendering iteration. */
+	/** Call to enable calling renderUpdateBuffers() before the next
+	 * render() rendering iteration. */
 	void notifyChange() const
 	{
 		const_cast<CRenderizable&>(*this).m_outdatedBuffers = true;
 	}
 
-	/** Returns whether notifyChange() has been invoked since the last call to
-	 * renderUpdateBuffers(), meaning the latter needs to be called again before
-	 * rendering.
+	/** Returns whether notifyChange() has been invoked since the last call
+	 * to renderUpdateBuffers(), meaning the latter needs to be called again
+	 * before rendering.
 	 */
 	bool hasToUpdateBuffers() const { return m_outdatedBuffers; }
 
@@ -325,9 +346,9 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	 * renderTextBitmap, mrpt::opengl::gl_utils */
 	static void renderTextBitmap(const char* str, void* fontStyle);
 
-	/** Return the exact width in pixels for a given string, as will be rendered
-	 * by renderTextBitmap().
-	 * \sa renderTextBitmap, mrpt::opengl::gl_utils
+	/** Return the exact width in pixels for a given string, as will be
+	 * rendered by renderTextBitmap(). \sa renderTextBitmap,
+	 * mrpt::opengl::gl_utils
 	 */
 	static int textBitmapWidth(
 		const std::string& str,
@@ -337,11 +358,11 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	/** Render a text message in the current rendering context, creating a
 	 * glViewport in the way (do not call within ::render() methods)
 	 *   - Coordinates (x,y) are 2D pixels, starting at bottom-left of the
-	 * viewport. Negative numbers will wrap to the opposite side of the viewport
-	 * (e.g. x=-10 means 10px fromt the right).
-	 *   - The text color is defined by (color_r,color_g,color_b), each float
-	 * numbers in the range [0,1].
-	 *  \sa renderTextBitmap, textBitmapWidth, mrpt::opengl::gl_utils
+	 * viewport. Negative numbers will wrap to the opposite side of the
+	 * viewport (e.g. x=-10 means 10px fromt the right).
+	 *   - The text color is defined by (color_r,color_g,color_b), each
+	 * float numbers in the range [0,1]. \sa renderTextBitmap,
+	 * textBitmapWidth, mrpt::opengl::gl_utils
 	 */
 	static void renderTextBitmap(
 		int screen_x, int screen_y, const std::string& str, float color_r = 1,
@@ -349,8 +370,8 @@ class CRenderizable : public mrpt::serialization::CSerializable
 		mrpt::opengl::TOpenGLFont font =
 			mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24);
 
-	/** Evaluates the bounding box of this object (including possible children)
-	 * in the coordinate frame of the object parent. */
+	/** Evaluates the bounding box of this object (including possible
+	 * children) in the coordinate frame of the object parent. */
 	virtual void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const = 0;
 
@@ -359,22 +380,15 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	void readFromStreamRender(mrpt::serialization::CArchive& in);
 
 	/** Returns the lowest next free texture name (avoid using OpenGL's own
-	 * function since we may call them from different threads and seem it's not
-	 * cool).  */
+	 * function since we may call them from different threads and seem it's
+	 * not cool).  */
 	static unsigned int getNewTextureNumber();
 	static void releaseTextureName(unsigned int i);
 
 	bool m_outdatedBuffers = true;
 };
-/** A list of objects pointers, automatically managing memory free at
- * destructor, and managing copies correctly. */
-using CListOpenGLObjects = std::deque<CRenderizable::Ptr>;
 
-/** Applies a mrpt::poses::CPose3D transformation to the object. Note that this
- * method doesn't <i>set</i> the pose to the given value, but <i>combines</i> it
- * with the existing one.
- * \sa setPose */
-CRenderizable::Ptr& operator<<(
-	CRenderizable::Ptr& r, const mrpt::poses::CPose3D& p);
+/** A list of smart pointers to renderizable objects */
+using CListOpenGLObjects = std::deque<CRenderizable::Ptr>;
 
 }  // namespace mrpt::opengl

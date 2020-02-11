@@ -86,6 +86,10 @@ class CGridPlaneXZ : public CRenderizable
 	}
 	float getGridFrequency() const { return m_frequency; }
 
+	shader_id_t shaderType() const override
+	{
+		return DefaultShaderID::WIREFRAME;
+	}
 	void render(
 		const mrpt::opengl::TRenderMatrices& state,
 		mrpt::opengl::Program& shaders) const override;

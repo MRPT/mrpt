@@ -27,43 +27,43 @@ using namespace mrpt::system;
 using namespace mrpt::opengl;
 
 // Render a set of objects
-void gl_utils::renderSetOfObjects(
+void gl_utils::enqueForRendering(
 	const mrpt::opengl::CListOpenGLObjects& objs,
-	const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders)
+	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq)
 {
 #if MRPT_HAS_OPENGL_GLUT
-	MRPT_PROFILE_FUNC_START
-
 	using mrpt::math::CMatrixDouble44;
 
-	CListOpenGLObjects::const_iterator itP;
+	const char* curClassName = nullptr;
 	try
 	{
-		for (itP = objs.begin(); itP != objs.end(); ++itP)
+		for (const auto& objPtr : objs)
 		{
-			if (!*itP) continue;
+			if (!objPtr) continue;
 			// Use plain pointers, faster than smart pointers:
-			const CRenderizable* it = itP->get();
+			const CRenderizable* obj = objPtr.get();
+			// Save class name: just in case we have an exception, for error
+			// reporting:
+			curClassName = obj->GetRuntimeClass()->className;
 
 			// Regenerate opengl vertex buffers?
-			if (it->hasToUpdateBuffers()) it->updateBuffers();
+			if (obj->hasToUpdateBuffers()) obj->updateBuffers();
 
-			if (!it->isVisible()) continue;
+			if (!obj->isVisible()) continue;
 
-			const CPose3D& thisPose = it->getPoseRef();
+			const CPose3D& thisPose = obj->getPoseRef();
 			CMatrixFloat44 HM =
 				thisPose.getHomogeneousMatrixVal<CMatrixDouble44>()
 					.cast_float();
 
 			// Scaling:
-			if (it->getScaleX() != 1 || it->getScaleY() != 1 ||
-				it->getScaleZ() != 1)
+			if (obj->getScaleX() != 1 || obj->getScaleY() != 1 ||
+				obj->getScaleZ() != 1)
 			{
 				auto scale = CMatrixFloat44::Identity();
-				scale(0, 0) = it->getScaleX();
-				scale(1, 1) = it->getScaleY();
-				scale(2, 2) = it->getScaleZ();
-
+				scale(0, 0) = obj->getScaleX();
+				scale(1, 1) = obj->getScaleY();
+				scale(2, 2) = obj->getScaleZ();
 				HM = scale * HM;
 			}
 
@@ -78,35 +78,15 @@ void gl_utils::renderSetOfObjects(
 			_.pmv_matrix.asEigen() =
 				_.p_matrix.asEigen() * _.mv_matrix.asEigen();
 
-			// Load matrices in shader:
-			// bind the shaders
-			glUseProgram(shaders.programId());
-			CHECK_OPENGL_ERROR();
+			// Enqeue:
+			rq[obj->shaderType()].emplace_back(obj, _);
 
-			const GLint u_pmat = shaders.uniformId("p_matrix");
-			const GLint u_mvmat = shaders.uniformId("mv_matrix");
-
-			const auto IS_TRANSPOSED = GL_TRUE;
-
-			glUniformMatrix4fv(u_pmat, 1, IS_TRANSPOSED, _.p_matrix.data());
-			CHECK_OPENGL_ERROR();
-
-			glUniformMatrix4fv(u_mvmat, 1, IS_TRANSPOSED, _.mv_matrix.data());
-			CHECK_OPENGL_ERROR();
-
-			MRPT_TODO("Shader: set color");
-			// Set color:
-			/*glColor4f(
-				it->getColorR(), it->getColorG(), it->getColorB(),
-				it->getColorA());
-*/
-			// Render object:
-			it->render(_, shaders);
-			CHECK_OPENGL_ERROR();
-
-			if (it->isShowNameEnabled())
+			if (obj->isShowNameEnabled())
 			{
 				MRPT_TODO("Show text");
+
+				// rq[DefaultShaderID::TEXT].emplace_back(objPtr, _);
+#if 0
 				glDisable(GL_DEPTH_TEST);
 				glColor3f(
 					1.f, 1.f, 1.f);  // Must be called BEFORE glRasterPos3f
@@ -127,24 +107,58 @@ void gl_utils::renderSetOfObjects(
 						it->getName().c_str(), font);
 
 				glEnable(GL_DEPTH_TEST);
+#endif
 			}
 
 		}  // end foreach object
 	}
-	catch (exception& e)
+	catch (const exception& e)
 	{
-		char str[1000];
-		os::sprintf(
-			str, 1000, "Exception while rendering a class '%s'\n%s",
-			(*itP)->GetRuntimeClass()->className, e.what());
-		THROW_EXCEPTION(str);
+		THROW_EXCEPTION_FMT(
+			"Exception while rendering class '%s':\n%s",
+			curClassName ? curClassName : "(undefined)", e.what());
 	}
-	catch (...)
+#endif
+}
+
+void gl_utils::processRenderQueue(
+	const RenderQueue& rq,
+	std::map<shader_id_t, mrpt::opengl::Program::Ptr>& shaders)
+{
+#if MRPT_HAS_OPENGL_GLUT
+	MRPT_PROFILE_FUNC_START
+
+	for (const auto& rqSet : rq)
 	{
-		THROW_EXCEPTION("Runtime error!");
+		// bind the shader for this sequence of objects:
+		mrpt::opengl::Program& shader = *shaders.at(rqSet.first);
+
+		glUseProgram(shader.programId());
+		CHECK_OPENGL_ERROR();
+
+		// Process all objects using this shader:
+		for (const RenderQueueElement& rqe : rqSet.second)
+		{
+			// Load matrices in shader:
+			const GLint u_pmat = shader.uniformId("p_matrix");
+			const GLint u_mvmat = shader.uniformId("mv_matrix");
+
+			const auto IS_TRANSPOSED = GL_TRUE;
+
+			glUniformMatrix4fv(
+				u_pmat, 1, IS_TRANSPOSED, rqe.renderState.p_matrix.data());
+			CHECK_OPENGL_ERROR();
+
+			glUniformMatrix4fv(
+				u_mvmat, 1, IS_TRANSPOSED, rqe.renderState.mv_matrix.data());
+			CHECK_OPENGL_ERROR();
+
+			// Render object:
+			rqe.object->render(rqe.renderState, shader);
+			CHECK_OPENGL_ERROR();
+		}
 	}
-#else
-	MRPT_UNUSED_PARAM(objectsToRender);
+
 #endif
 }
 

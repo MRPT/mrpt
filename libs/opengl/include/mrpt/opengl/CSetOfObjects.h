@@ -61,12 +61,20 @@ class CSetOfObjects : public CRenderizable
 		for (T_it it = begin; it != end; it++) insert(*it);
 	}
 
-	/** Render child objects.
-	 */
+	// For this container class, it actually doesn't matter the type of shader,
+	// since each children will register using the adequate shader ID. But the
+	// method is virtual, so we must provide an arbitrary one here anyway:
+	shader_id_t shaderType() const override
+	{
+		return DefaultShaderID::WIREFRAME;
+	}
 	void render(
 		const mrpt::opengl::TRenderMatrices& state,
 		mrpt::opengl::Program& shaders) const override;
 	void renderUpdateBuffers() const override;
+	void enqueForRenderRecursive(
+		const mrpt::opengl::TRenderMatrices& state,
+		RenderQueue& rq) const override;
 
 	/** Clear the list of objects in the scene, deleting objects' memory.
 	 */

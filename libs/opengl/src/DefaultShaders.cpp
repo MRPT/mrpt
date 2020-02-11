@@ -35,28 +35,50 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 #include "../shaders/points.f.glsl"
 				;
 			uniforms = {"p_matrix", "mv_matrix"};
-			attribs = {"position", "vertexColor", "vertexNormal"};
+			attribs = {"position", "vertexColor"};
 			break;
 
 			// ==============================
 		case DefaultShaderID::WIREFRAME:
 			vertex_shader =
-#include "../shaders/points.v.glsl"
+#include "../shaders/wireframe.v.glsl"
 				;
 			fragment_shader =
-#include "../shaders/points.f.glsl"
+#include "../shaders/wireframe.f.glsl"
 				;
 			uniforms = {"p_matrix", "mv_matrix"};
-			attribs = {"position", "vertexColor", "vertexNormal"};
+			attribs = {"position", "vertexColor"};
 			break;
 
 			// ==============================
 		case DefaultShaderID::TRIANGLES:
 			vertex_shader =
-#include "../shaders/points.v.glsl"
+#include "../shaders/triangles.v.glsl"
 				;
 			fragment_shader =
-#include "../shaders/points.f.glsl"
+#include "../shaders/triangles.f.glsl"
+				;
+			uniforms = {"p_matrix", "mv_matrix"};
+			attribs = {"position", "vertexColor", "vertexNormal"};
+			break;
+			// ==============================
+		case DefaultShaderID::TEXTURED_TRIANGLES:
+			vertex_shader =
+#include "../shaders/textured-triangles.v.glsl"
+				;
+			fragment_shader =
+#include "../shaders/textured-triangles.f.glsl"
+				;
+			uniforms = {"p_matrix", "mv_matrix"};
+			attribs = {"position", "vertexColor", "vertexNormal"};
+			break;
+			// ==============================
+		case DefaultShaderID::TEXT:
+			vertex_shader =
+#include "../shaders/text.v.glsl"
+				;
+			fragment_shader =
+#include "../shaders/text.f.glsl"
 				;
 			uniforms = {"p_matrix", "mv_matrix"};
 			attribs = {"position", "vertexColor", "vertexNormal"};

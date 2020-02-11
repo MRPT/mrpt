@@ -8,28 +8,39 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/Shader.h>
+#include <mrpt/opengl/TRenderMatrices.h>
 #include <cstdint>
+#include <deque>
+#include <map>
 
 namespace mrpt::opengl
 {
-// Note: do not use a enum-class to allow easy conversion from names to values:
-struct DefaultShaderID
-{
-	static constexpr shader_id_t POINTS = 0;
-	static constexpr shader_id_t WIREFRAME = 1;
-	static constexpr shader_id_t TRIANGLES = 2;
-	static constexpr shader_id_t TEXTURED_TRIANGLES = 3;
-	static constexpr shader_id_t TEXT = 4;
-};
+class CRenderizable;
 
-/** Loads a set of OpenGL Vertex+Fragment shaders from the default library
- * available in mrpt::opengl.
- *
- * \sa CRenderizable
+/** Each element in the queue to be rendered for each keyframe
  * \ingroup mrpt_opengl_grp
  */
-Program::Ptr LoadDefaultShader(const shader_id_t id);
+struct RenderQueueElement
+{
+	RenderQueueElement() = default;
+
+	RenderQueueElement(
+		const mrpt::opengl::CRenderizable* obj,
+		mrpt::opengl::TRenderMatrices state)
+		: object(obj), renderState(state)
+	{
+	}
+
+	const mrpt::opengl::CRenderizable* object = nullptr;
+	mrpt::opengl::TRenderMatrices renderState = {};
+};
+
+/** A queue for rendering, sorted by shader program to minimize changes of
+ * OpenGL shader programs while rendering a scene.
+ * Filled by sortRenderObjectsByShader()
+ * \ingroup mrpt_opengl_grp
+ */
+using RenderQueue = std::map<shader_id_t, std::deque<RenderQueueElement>>;
 
 }  // namespace mrpt::opengl

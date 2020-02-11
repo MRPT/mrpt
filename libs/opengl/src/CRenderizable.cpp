@@ -280,13 +280,6 @@ bool CRenderizable::traceRay(const mrpt::poses::CPose3D&, double&) const
 	return false;
 }
 
-CRenderizable::Ptr& mrpt::opengl::operator<<(
-	CRenderizable::Ptr& r, const mrpt::poses::CPose3D& p)
-{
-	r->setPose(p + mrpt::poses::CPose3D(r->getPose()));
-	return r;
-}
-
 CRenderizable& CRenderizable::setColor_u8(const mrpt::img::TColor& c)
 {
 	m_color.R = c.R;

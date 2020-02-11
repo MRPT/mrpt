@@ -234,8 +234,18 @@ void COpenGLViewport::loadDefaultShaders() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 
-	MRPT_TODO("XXX Continue refactoring here!!");
-	m_shaders = mrpt::opengl::LoadDefaultShader(DefaultShaderID::POINTS);
+	std::vector<shader_id_t> lstShaderIDs = {
+		DefaultShaderID::POINTS, DefaultShaderID::WIREFRAME,
+		DefaultShaderID::TRIANGLES, DefaultShaderID::TEXTURED_TRIANGLES,
+		DefaultShaderID::TEXT};
+
+	for (const auto& id : lstShaderIDs)
+	{
+		m_shaders[id] = mrpt::opengl::LoadDefaultShader(id);
+
+		ASSERT_(m_shaders[id]);
+		ASSERT_(!m_shaders[id]->empty());
+	}
 
 #endif
 }
@@ -245,7 +255,7 @@ void COpenGLViewport::renderNormalSceneMode() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	// Prepare shaders upon first invokation:
-	if (!m_shaders || m_shaders->empty()) loadDefaultShaders();
+	if (m_shaders.empty()) loadDefaultShaders();
 
 	// Prepare camera (projection matrix):
 	const CListOpenGLObjects* objectsToRender = nullptr;
@@ -364,14 +374,19 @@ void COpenGLViewport::renderNormalSceneMode() const
 	glDepthFunc(GL_LEQUAL);  // GL_LESS
 	CHECK_OPENGL_ERROR();
 
+	// Enable point sizes>1
 	glEnable(GL_PROGRAM_POINT_SIZE);
 	CHECK_OPENGL_ERROR();
 
 	MRPT_TODO("Port Lights!");
 	// for (const auto& m_light : m_lights) m_light.sendToOpenGL();
 
-	// Render all the objects:
-	mrpt::opengl::gl_utils::renderSetOfObjects(*objectsToRender, _, *m_shaders);
+	// Pass 1: Process all objects (recursively for sets of objects):
+	mrpt::opengl::RenderQueue rq;
+	mrpt::opengl::gl_utils::enqueForRendering(*objectsToRender, _, rq);
+
+	// pass 2: render, sorted by shader program:
+	mrpt::opengl::gl_utils::processRenderQueue(rq, m_shaders);
 
 #endif
 }
