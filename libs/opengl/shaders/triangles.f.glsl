@@ -7,7 +7,7 @@ R"XXX(
 
 uniform mat4 mv_matrix;
 in vec3 frag_position, frag_normal;
-in vec4 frag_diffuse;
+in vec4 frag_materialColor;
 
 out vec4 color;
 
@@ -27,6 +27,6 @@ void main()
     vec4 ambient_diffuse_factor = diffuse_factor + light_ambient;
     vec4 specular_factor = max(pow(-dot(reflection, eye), frag_shininess), 0.0) * light_specular;
 
-    color = ambient_diffuse_factor * frag_diffuse + 0.001*specular_factor;
+    color = frag_materialColor * (diffuse_factor + ambient_diffuse_factor + specular_factor);
 }
 )XXX"
