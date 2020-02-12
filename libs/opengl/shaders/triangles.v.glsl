@@ -14,7 +14,7 @@ uniform mat4 p_matrix;
 uniform mat4 mv_matrix;
 
 out vec3 frag_position, frag_normal;
-out vec4 frag_diffuse;
+out vec4 frag_materialColor;
 
 void main()
 {
@@ -22,7 +22,7 @@ void main()
     gl_Position = p_matrix * eye_position;
 
     frag_position = eye_position.xyz;
-    frag_diffuse = vertexColor;
+    frag_materialColor = vertexColor;
     frag_normal   = normalize((mv_matrix * vec4(vertexNormal, 0.0)).xyz);
 }
 )XXX"

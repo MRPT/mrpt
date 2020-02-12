@@ -70,46 +70,24 @@ CSetOfObjects::Ptr stock_objects::RobotPioneer()
 	t.vertex[2].pt = {-0.20f, 0.10f, 0.05f};
 	obj->insertTriangle(t);  // 3b
 
-	t.x(0) = 0.10f;
-	t.x(1) = -0.20f;
-	t.x(2) = -0.20f;
-	t.y(0) = -0.10f;
-	t.y(1) = -0.10f;
-	t.y(2) = -0.10f;
-	t.z(0) = 0.20f;
-	t.z(1) = 0.25f;
-	t.z(2) = 0.05f;
+	t.vertex[0].pt = {0.10f, -0.10f, 0.20f};
+	t.vertex[1].pt = {-0.20f, -0.10f, 0.25f};
+	t.vertex[2].pt = {-0.20f, -0.10f, 0.05f};
 	obj->insertTriangle(t);  // 4
-	t.x(0) = 0.10f;
-	t.x(1) = 0.10f;
-	t.x(2) = -0.20f;
-	t.y(0) = -0.10f;
-	t.y(1) = -0.10f;
-	t.y(2) = -0.10f;
-	t.z(0) = 0.20f;
-	t.z(1) = 0.05f;
-	t.z(2) = 0.05f;
+
+	t.vertex[0].pt = {0.10f, -0.10f, 0.20f};
+	t.vertex[1].pt = {-0.20f, -0.10f, 0.05f};
+	t.vertex[2].pt = {0.10f, -0.10f, 0.05f};
 	obj->insertTriangle(t);  // 5
 
-	t.x(0) = 0.10f;
-	t.x(1) = -0.20f;
-	t.x(2) = -0.20f;
-	t.y(0) = 0.10f;
-	t.y(1) = 0.10f;
-	t.y(2) = 0.10f;
-	t.z(0) = 0.20f;
-	t.z(1) = 0.25f;
-	t.z(2) = 0.05f;
+	t.vertex[0].pt = {0.10f, 0.10f, 0.20f};
+	t.vertex[1].pt = {-0.20f, 0.10f, 0.05f};
+	t.vertex[2].pt = {-0.20f, 0.10f, 0.25f};
 	obj->insertTriangle(t);  // 6
-	t.x(0) = 0.10f;
-	t.x(1) = 0.10f;
-	t.x(2) = -0.20f;
-	t.y(0) = 0.10f;
-	t.y(1) = 0.10f;
-	t.y(2) = 0.10f;
-	t.z(0) = 0.20f;
-	t.z(1) = 0.05f;
-	t.z(2) = 0.05f;
+
+	t.vertex[0].pt = {0.10f, 0.10f, 0.20f};
+	t.vertex[1].pt = {0.10f, 0.10f, 0.05f};
+	t.vertex[2].pt = {-0.20f, 0.10f, 0.05f};
 	obj->insertTriangle(t);  // 7
 
 	t.r(0) = t.r(1) = t.r(2) = 0.05f;
@@ -117,46 +95,22 @@ CSetOfObjects::Ptr stock_objects::RobotPioneer()
 	t.b(0) = t.b(1) = t.b(2) = 0.05f;
 	t.a(0) = t.a(1) = t.a(2) = 1;
 
-	t.x(0) = 0.00f;
-	t.x(1) = 0.00f;
-	t.x(2) = 0.05f;
-	t.y(0) = 0.11f;
-	t.y(1) = 0.11f;
-	t.y(2) = 0.11f;
-	t.z(0) = 0.00f;
-	t.z(1) = 0.10f;
-	t.z(2) = 0.05f;
+	t.vertex[0].pt = {0.00f, 0.11f, 0.00f};
+	t.vertex[1].pt = {0.00f, 0.11f, 0.10f};
+	t.vertex[2].pt = {0.05f, 0.11f, 0.05f};
 	obj->insertTriangle(t);  // 8
-	t.x(0) = 0.00f;
-	t.x(1) = 0.00f;
-	t.x(2) = -0.05f;
-	t.y(0) = 0.11f;
-	t.y(1) = 0.11f;
-	t.y(2) = 0.11f;
-	t.z(0) = 0.00f;
-	t.z(1) = 0.10f;
-	t.z(2) = 0.05f;
+	t.vertex[0].pt = {0.00f, 0.11f, 0.00f};
+	t.vertex[1].pt = {0.00f, 0.11f, 0.10f};
+	t.vertex[2].pt = {-0.05f, 0.11f, 0.05f};
 	obj->insertTriangle(t);  // 9
 
-	t.x(0) = 0.00f;
-	t.x(1) = 0.00f;
-	t.x(2) = 0.05f;
-	t.y(0) = -0.11f;
-	t.y(1) = -0.11f;
-	t.y(2) = -0.11f;
-	t.z(0) = 0.00f;
-	t.z(1) = 0.10f;
-	t.z(2) = 0.05f;
+	t.vertex[0].pt = {0.00f, -0.11f, 0.00f};
+	t.vertex[1].pt = {0.00f, -0.11f, 0.10f};
+	t.vertex[2].pt = {0.05f, -0.11f, 0.05f};
 	obj->insertTriangle(t);  // 10
-	t.x(0) = 0.00f;
-	t.x(1) = 0.00f;
-	t.x(2) = -0.05f;
-	t.y(0) = -0.11f;
-	t.y(1) = -0.11f;
-	t.y(2) = -0.11f;
-	t.z(0) = 0.00f;
-	t.z(1) = 0.10f;
-	t.z(2) = 0.05f;
+	t.vertex[0].pt = {0.00f, -0.11f, 0.00f};
+	t.vertex[1].pt = {0.00f, -0.11f, 0.10f};
+	t.vertex[2].pt = {-0.05f, -0.11f, 0.05f};
 	obj->insertTriangle(t);  // 11
 
 	ret->insert(obj);

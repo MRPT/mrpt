@@ -78,8 +78,11 @@ void gl_utils::enqueForRendering(
 			_.pmv_matrix.asEigen() =
 				_.p_matrix.asEigen() * _.mv_matrix.asEigen();
 
-			// Enqeue:
+			// Enqeue this object...
 			rq[obj->shaderType()].emplace_back(obj, _);
+
+			// ...and its children:
+			obj->enqueForRenderRecursive(_, rq);
 
 			if (obj->isShowNameEnabled())
 			{
