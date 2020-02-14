@@ -59,7 +59,7 @@ void CMeshFast::renderUpdateBuffers() const
 	MRPT_TODO("Implement me!");
 }
 
-void CMeshFast::render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const
+void CMeshFast::render(const RenderContext& rc) const
 {
 #if MRPT_HAS_OPENGL_GLUT
 

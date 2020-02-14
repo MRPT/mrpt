@@ -65,7 +65,7 @@ void CAssimpModel::renderUpdateBuffers() const
 	//
 	MRPT_TODO("Implement me!");
 }
-void CAssimpModel::render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const
+void CAssimpModel::render(const RenderContext& rc) const
 {
 #if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
 	MRPT_START

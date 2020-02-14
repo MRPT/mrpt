@@ -31,9 +31,7 @@ void CPointCloudColoured::renderUpdateBuffers() const
 	MRPT_TODO("Implement me!");
 }
 
-void CPointCloudColoured::render(
-	const mrpt::opengl::TRenderMatrices& state,
-	mrpt::opengl::Program& shaders) const
+void CPointCloudColoured::render(const RenderContext& rc) const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	octree_assure_uptodate();  // Rebuild octree if needed
@@ -56,7 +54,7 @@ void CPointCloudColoured::render(
 	glDisable(GL_LIGHTING);
 
 	glBegin(GL_POINTS);
-	octree_render(state);  // Render all points recursively:
+	octree_render(*rc.state);  // Render all points recursively:
 	glEnd();
 
 	glEnable(GL_LIGHTING);

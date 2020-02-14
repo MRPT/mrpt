@@ -286,12 +286,22 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	CRenderizable();
 	~CRenderizable() override;
 
+	/** Context for calls to render() */
+	struct RenderContext
+	{
+		RenderContext() = default;
+
+		const mrpt::opengl::TRenderMatrices* state = nullptr;
+		const mrpt::opengl::Program* shader = nullptr;
+		mrpt::opengl::shader_id_t shader_id;
+	};
+
 	/** Implements the rendering of 3D objects in each class derived from
-	 * CRenderizable. \sa renderUpdateBuffers
+	 * CRenderizable. This can be called more than once (one per required shader
+	 * program) if the object registered several shaders. \sa
+	 * renderUpdateBuffers
 	 */
-	virtual void render(
-		const mrpt::opengl::TRenderMatrices& state,
-		mrpt::opengl::Program& shaders) const = 0;
+	virtual void render(const RenderContext& rc) const = 0;
 
 	/** Process all children objects recursively, if the object is a container
 	 */

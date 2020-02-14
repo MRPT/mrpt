@@ -27,7 +27,8 @@ void CRenderizableShaderWireFrame::renderUpdateBuffers() const
 #if MRPT_HAS_OPENGL_GLUT
 
 	// Generate vertices & colors:
-	const_cast<CRenderizableShaderWireFrame&>(*this).onUpdateBuffers();
+	const_cast<CRenderizableShaderWireFrame&>(*this)
+		.onUpdateBuffers_Wireframe();
 
 	// Define OpenGL buffers:
 	m_vertexBuffer = make_buffer(
@@ -46,16 +47,14 @@ void CRenderizableShaderWireFrame::renderUpdateBuffers() const
 #endif
 }
 
-void CRenderizableShaderWireFrame::render(
-	const mrpt::opengl::TRenderMatrices& state,
-	mrpt::opengl::Program& shaders) const
+void CRenderizableShaderWireFrame::render(const RenderContext& rc) const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	// TODO: Port thick lines to opengl3?
 	// glLineWidth(m_lineWidth);
 
 	// Set up the vertex array:
-	const GLint attr_position = shaders.attributeId("position");
+	const GLint attr_position = rc.shader->attributeId("position");
 	glEnableVertexAttribArray(attr_position);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
 	glVertexAttribPointer(
@@ -69,7 +68,7 @@ void CRenderizableShaderWireFrame::render(
 	CHECK_OPENGL_ERROR();
 
 	// Set up the color array:
-	const GLint attr_color = shaders.attributeId("vertexColor");
+	const GLint attr_color = rc.shader->attributeId("vertexColor");
 	glEnableVertexAttribArray(attr_color);
 	glBindBuffer(GL_ARRAY_BUFFER, m_colorBuffer);
 	glVertexAttribPointer(

@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/math/TSegment3D.h>
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableShaderWireFrame.h>
 
 namespace mrpt::opengl
 {
@@ -28,13 +28,11 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_opengl_grp
  */
-class CSetOfLines : public CRenderizable
+class CSetOfLines : public CRenderizableShaderWireFrame
 {
 	DEFINE_SERIALIZABLE(CSetOfLines, mrpt::opengl)
    protected:
-	std::vector<mrpt::math::TSegment3D> mSegments;
-	float mLineWidth{1.0};
-	bool m_antiAliasing{true};
+	std::vector<mrpt::math::TSegment3D> m_Segments;
 	/** 0: means hidden */
 	float m_verticesPointSize{.0f};
 
@@ -44,21 +42,9 @@ class CSetOfLines : public CRenderizable
 	 */
 	inline void clear()
 	{
-		mSegments.clear();
+		m_Segments.clear();
 		CRenderizable::notifyChange();
 	}
-	/**
-	 * Sets the width with which lines will be drawn.
-	 */
-	inline void setLineWidth(float w)
-	{
-		mLineWidth = w;
-		CRenderizable::notifyChange();
-	}
-	/**
-	 * Gets the width with which lines are drawn.
-	 */
-	float getLineWidth() const { return mLineWidth; }
 	float getVerticesPointSize() const;
 	/** Enable showing vertices as dots if size_points>0 */
 	void setVerticesPointSize(const float size_points);
@@ -67,7 +53,7 @@ class CSetOfLines : public CRenderizable
 	 */
 	inline void appendLine(const mrpt::math::TSegment3D& sgm)
 	{
-		mSegments.push_back(sgm);
+		m_Segments.push_back(sgm);
 		CRenderizable::notifyChange();
 	}
 	/**
@@ -106,7 +92,7 @@ class CSetOfLines : public CRenderizable
 	template <class T>
 	inline void appendLines(const T& sgms)
 	{
-		mSegments.insert(mSegments.end(), sgms.begin(), sgms.end());
+		m_Segments.insert(m_Segments.end(), sgms.begin(), sgms.end());
 		CRenderizable::notifyChange();
 	}
 	/**
@@ -117,8 +103,8 @@ class CSetOfLines : public CRenderizable
 	template <class T_it>
 	inline void appendLines(const T_it& begin, const T_it& end)
 	{
-		mSegments.reserve(mSegments.size() + (end - begin));
-		mSegments.insert(mSegments.end(), begin, end);
+		m_Segments.reserve(m_Segments.size() + (end - begin));
+		m_Segments.insert(m_Segments.end(), begin, end);
 		CRenderizable::notifyChange();
 	}
 	/**
@@ -127,7 +113,7 @@ class CSetOfLines : public CRenderizable
 	 */
 	void resize(size_t nLines)
 	{
-		mSegments.resize(nLines);
+		m_Segments.resize(nLines);
 		CRenderizable::notifyChange();
 	}
 	/**
@@ -138,7 +124,7 @@ class CSetOfLines : public CRenderizable
 	 */
 	void reserve(size_t r)
 	{
-		mSegments.reserve(r);
+		m_Segments.reserve(r);
 		CRenderizable::notifyChange();
 	}
 	/**
@@ -152,11 +138,11 @@ class CSetOfLines : public CRenderizable
 		CRenderizable::notifyChange();
 	}
 	/** Returns the total count of lines in this set. */
-	inline size_t getLineCount() const { return mSegments.size(); }
+	inline size_t getLineCount() const { return m_Segments.size(); }
 	/** Returns the total count of lines in this set. */
-	inline size_t size() const { return mSegments.size(); }
+	inline size_t size() const { return m_Segments.size(); }
 	/** Returns true if there are no line segments. */
-	inline bool empty() const { return mSegments.empty(); }
+	inline bool empty() const { return m_Segments.empty(); }
 	/**
 	 * Sets a specific line in the set, given its index.
 	 * \sa appendLine
@@ -184,8 +170,8 @@ class CSetOfLines : public CRenderizable
 		size_t index, double& x0, double& y0, double& z0, double& x1,
 		double& y1, double& z1) const;
 
-	void render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const override;
-	void renderUpdateBuffers() const override;
+	void onUpdateBuffers_Wireframe() override;
+	void onUpdateBuffers_Points();  // override;
 
 	// Iterator management
 	using iterator = std::vector<mrpt::math::TSegment3D>::iterator;
@@ -198,34 +184,34 @@ class CSetOfLines : public CRenderizable
 	 * Beginning const iterator.
 	 * \sa end,rbegin,rend
 	 */
-	inline const_iterator begin() const { return mSegments.begin(); }
+	inline const_iterator begin() const { return m_Segments.begin(); }
 	inline iterator begin()
 	{
 		CRenderizable::notifyChange();
-		return mSegments.begin();
+		return m_Segments.begin();
 	}
 	/**
 	 * Ending const iterator.
 	 * \sa begin,rend,rbegin
 	 */
-	inline const_iterator end() const { return mSegments.end(); }
+	inline const_iterator end() const { return m_Segments.end(); }
 	inline iterator end()
 	{
 		CRenderizable::notifyChange();
-		return mSegments.end();
+		return m_Segments.end();
 	}
 	/**
 	 * Beginning const reverse iterator (actually, accesses the end of the
 	 * set).
 	 * \sa rend,begin,end
 	 */
-	inline const_reverse_iterator rbegin() const { return mSegments.rbegin(); }
+	inline const_reverse_iterator rbegin() const { return m_Segments.rbegin(); }
 	/**
 	 * Ending const reverse iterator (actually, refers to the starting point of
 	 * the set).
 	 * \sa rbegin,end,begin
 	 */
-	inline const_reverse_iterator rend() const { return mSegments.rend(); }
+	inline const_reverse_iterator rend() const { return m_Segments.rend(); }
 	/** Evaluates the bounding box of this object (including possible children)
 	 * in the coordinate frame of the object parent. */
 	void getBoundingBox(

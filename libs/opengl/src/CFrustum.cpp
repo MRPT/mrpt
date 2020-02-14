@@ -28,7 +28,7 @@ void CFrustum::renderUpdateBuffers() const
 	MRPT_TODO("Implement me!");
 }
 
-void CFrustum::render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const
+void CFrustum::render(const RenderContext& rc) const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	if (m_color.A != 255 || (m_draw_planes && m_planes_color.A != 255))

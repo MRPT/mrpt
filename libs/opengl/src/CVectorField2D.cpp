@@ -51,7 +51,7 @@ void CVectorField2D::renderUpdateBuffers() const
 	MRPT_TODO("Implement me!");
 }
 
-void CVectorField2D::render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const
+void CVectorField2D::render(const RenderContext& rc) const
 {
 #if MRPT_HAS_OPENGL_GLUT
 

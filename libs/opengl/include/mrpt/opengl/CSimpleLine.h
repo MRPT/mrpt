@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableShaderWireFrame.h>
 
 namespace mrpt::opengl
 {
@@ -16,29 +16,15 @@ namespace mrpt::opengl
  *  \sa opengl::COpenGLScene
  * \ingroup mrpt_opengl_grp
  */
-class CSimpleLine : public CRenderizable
+class CSimpleLine : public CRenderizableShaderWireFrame
 {
 	DEFINE_SERIALIZABLE(CSimpleLine, mrpt::opengl)
 
    protected:
 	float m_x0, m_y0, m_z0;
 	float m_x1, m_y1, m_z1;
-	float m_lineWidth;
-	bool m_antiAliasing;
 
    public:
-	void setLineWidth(float w)
-	{
-		m_lineWidth = w;
-		CRenderizable::notifyChange();
-	}
-	float getLineWidth() const { return m_lineWidth; }
-	void enableAntiAliasing(bool enable = true)
-	{
-		m_antiAliasing = enable;
-		CRenderizable::notifyChange();
-	}
-	bool isAntiAliasingEnabled() const { return m_antiAliasing; }
 	void setLineCoords(
 		float x0, float y0, float z0, float x1, float y1, float z1)
 	{
@@ -62,8 +48,8 @@ class CSimpleLine : public CRenderizable
 		z1 = m_z1;
 	}
 
-	void render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const override;
-	void renderUpdateBuffers() const override;
+	void onUpdateBuffers_Wireframe() override;
+
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;

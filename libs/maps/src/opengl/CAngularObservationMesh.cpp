@@ -167,7 +167,7 @@ void CAngularObservationMesh::renderUpdateBuffers() const
 	MRPT_TODO("Implement!");
 }
 
-void CAngularObservationMesh::render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const
+void CAngularObservationMesh::render(const RenderContext& rc) const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	if (mEnableTransparency)

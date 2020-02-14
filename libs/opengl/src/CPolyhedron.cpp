@@ -514,7 +514,7 @@ void CPolyhedron::TPolyhedronFace::getCenter(
 }
 
 CPolyhedron::CPolyhedron(const std::vector<math::TPolygon3D>& polys)
-	: mEdges(), mWireframe(false), mLineWidth(1), polygonsUpToDate(false)
+	: mEdges(), mWireframe(false), m_LineWidth(1), polygonsUpToDate(false)
 {
 	std::vector<TPoint3D> vertices(0);
 	std::vector<TPolyhedronFace> faces;
@@ -1048,14 +1048,14 @@ void CPolyhedron::renderUpdateBuffers() const
 	MRPT_TODO("Implement me!");
 }
 
-void CPolyhedron::render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const
+void CPolyhedron::render(const RenderContext& rc) const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	if (mWireframe)
 	{
 		glDisable(GL_LIGHTING);  // Disable lights when drawing lines
 
-		glLineWidth(mLineWidth);
+		glLineWidth(m_LineWidth);
 		CHECK_OPENGL_ERROR();
 		glColor4ub(m_color.R, m_color.G, m_color.B, m_color.A);
 		glBegin(GL_LINES);
@@ -1994,7 +1994,7 @@ void CPolyhedron::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
 	// version 0
-	out << mVertices << mFaces << mWireframe << mLineWidth;
+	out << mVertices << mFaces << mWireframe << m_LineWidth;
 }
 
 void CPolyhedron::serializeFrom(
@@ -2004,7 +2004,7 @@ void CPolyhedron::serializeFrom(
 	{
 		case 0:
 			readFromStreamRender(in);
-			in >> mVertices >> mFaces >> mWireframe >> mLineWidth;
+			in >> mVertices >> mFaces >> mWireframe >> m_LineWidth;
 			if (!checkConsistence(mVertices, mFaces))
 				throw std::logic_error("Inconsistent data read from stream");
 			for (auto& mFace : mFaces)

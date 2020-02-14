@@ -60,9 +60,7 @@ class CCylinder : public CRenderizable
 	mutable std::vector<mrpt::img::TColor> m_color_buffer_data;
 
    public:
-	void render(
-		const mrpt::opengl::TRenderMatrices& state,
-		mrpt::opengl::Program& shaders) const override;
+	void render(const RenderContext& rc) const override;
 	void renderUpdateBuffers() const override;
 
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;

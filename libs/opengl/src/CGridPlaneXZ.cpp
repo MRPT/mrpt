@@ -34,7 +34,7 @@ CGridPlaneXZ::CGridPlaneXZ(
 	m_antiAliasing = antiAliasing;
 }
 
-void CGridPlaneXZ::onUpdateBuffers()
+void CGridPlaneXZ::onUpdateBuffers_Wireframe()
 {
 	// Generate vertices:
 	m_vertex_buffer_data.clear();
