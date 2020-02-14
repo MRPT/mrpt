@@ -156,8 +156,13 @@ void gl_utils::processRenderQueue(
 				u_mvmat, 1, IS_TRANSPOSED, rqe.renderState.mv_matrix.data());
 			CHECK_OPENGL_ERROR();
 
+			CRenderizable::RenderContext rc;
+			rc.shader = &shader;
+			rc.shader_id = rqSet.first;
+			rc.state = &rqe.renderState;
+
 			// Render object:
-			rqe.object->render(rqe.renderState, shader);
+			rqe.object->render(rc);
 			CHECK_OPENGL_ERROR();
 		}
 	}

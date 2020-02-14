@@ -54,9 +54,7 @@ class CText : public CRenderizable
 	std::string getFont() const { return m_fontName; }
 
 	shader_id_t shaderType() const override { return DefaultShaderID::TEXT; }
-	void render(
-		const mrpt::opengl::TRenderMatrices& state,
-		mrpt::opengl::Program& shaders) const override;
+	void render(const RenderContext& rc) const override;
 	void renderUpdateBuffers() const override;
 
 	/** Evaluates the bounding box of this object (including possible children)

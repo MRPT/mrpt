@@ -75,7 +75,7 @@ void CColorBar::renderUpdateBuffers() const
 	//
 	MRPT_TODO("Implement me!");
 }
-void CColorBar::render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const
+void CColorBar::render(const RenderContext& rc) const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	if (m_disable_depth_test)

@@ -24,17 +24,17 @@ template <int DIM>
 void renderGeneralizedEllipsoidTemplate(
 	const std::vector<mrpt::math::CMatrixFixed<float, DIM, 1>>& pts,
 	const float lineWidth, const uint32_t slices, const uint32_t stacks,
-	const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders);
+	const CRenderizable::RenderContext& rc);
 template <>
 void renderGeneralizedEllipsoidTemplate<2>(
 	const std::vector<mrpt::math::CMatrixFixed<float, 2, 1>>& pts,
 	const float lineWidth, const uint32_t slices, const uint32_t stacks,
-	const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders);
+	const CRenderizable::RenderContext& rc);
 template <>
 void renderGeneralizedEllipsoidTemplate<3>(
 	const std::vector<mrpt::math::CMatrixFixed<float, 3, 1>>& pts,
 	const float lineWidth, const uint32_t slices, const uint32_t stacks,
-	const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders);
+	const CRenderizable::RenderContext& rc);
 
 template <int DIM>
 void generalizedEllipsoidPoints(
@@ -218,13 +218,10 @@ class CGeneralizedEllipsoidTemplate : public CRenderizable
 	}
 
 	// Render precomputed points in m_render_pts:
-	void render(
-		const mrpt::opengl::TRenderMatrices& state,
-		mrpt::opengl::Program& shaders) const override
+	void render(const RenderContext& rc) const override
 	{
 		mrpt::opengl::detail::renderGeneralizedEllipsoidTemplate<DIM>(
-			m_render_pts, m_lineWidth, m_numSegments, m_numSegments, state,
-			shaders);
+			m_render_pts, m_lineWidth, m_numSegments, m_numSegments, rc);
 	}
 
 	/** Evaluates the bounding box of this object (including possible children)

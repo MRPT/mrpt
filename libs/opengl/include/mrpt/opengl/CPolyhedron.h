@@ -121,7 +121,7 @@ class CPolyhedron : public CRenderizable
 	 * When displaying as wireframe object, this variable stores the width of
 	 * the edges.
 	 */
-	double mLineWidth{1};
+	double m_LineWidth{1};
 	/**
 	 * Mutable list of actual polygons, maintained for speed.
 	 */
@@ -642,7 +642,7 @@ class CPolyhedron : public CRenderizable
 	/** @}
 	 */
 
-	void render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const override;
+	void render(const RenderContext& rc) const override;
 	void renderUpdateBuffers() const override;
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 
@@ -708,14 +708,14 @@ class CPolyhedron : public CRenderizable
 	/**
 	 * Gets the wireframe lines width.
 	 */
-	inline double getLineWidth() const { return mLineWidth; }
+	inline double getLineWidth() const { return m_LineWidth; }
 	/**
 	 * Sets the width used to render lines, when wireframe rendering is
 	 * activated.
 	 */
 	inline void setLineWidth(double lineWidth)
 	{
-		mLineWidth = lineWidth;
+		m_LineWidth = lineWidth;
 		CRenderizable::notifyChange();
 	}
 	/**
@@ -893,7 +893,7 @@ class CPolyhedron : public CRenderizable
 		  mEdges(),
 		  mFaces(faces),
 		  mWireframe(false),
-		  mLineWidth(1),
+		  m_LineWidth(1),
 		  polygonsUpToDate(false)
 	{
 		InitFromVertAndFaces(vertices, faces, doCheck);

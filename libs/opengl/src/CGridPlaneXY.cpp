@@ -34,7 +34,7 @@ CGridPlaneXY::CGridPlaneXY(
 	m_antiAliasing = antiAliasing;
 }
 
-void CGridPlaneXY::onUpdateBuffers()
+void CGridPlaneXY::onUpdateBuffers_Wireframe()
 {
 	ASSERT_ABOVE_(m_frequency, 0);
 

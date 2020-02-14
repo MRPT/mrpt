@@ -69,7 +69,7 @@ class CGridPlaneXZ : public CRenderizableShaderWireFrame
 	}
 	float getGridFrequency() const { return m_frequency; }
 
-	void onUpdateBuffers() override;
+	void onUpdateBuffers_Wireframe() override;
 
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,

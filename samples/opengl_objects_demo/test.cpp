@@ -581,6 +581,8 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
+#endif
+
 	// CSetOfLines
 	{
 		{
@@ -628,6 +630,7 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
+#if 0
 	// CVectorField2D
 	{
 		{

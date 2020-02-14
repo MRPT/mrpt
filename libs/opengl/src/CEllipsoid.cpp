@@ -31,7 +31,7 @@ void CEllipsoid::renderUpdateBuffers() const
 	MRPT_TODO("Implement me!");
 }
 
-void CEllipsoid::render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const
+void CEllipsoid::render(const RenderContext& rc) const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	MRPT_START

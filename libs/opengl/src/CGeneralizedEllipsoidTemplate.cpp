@@ -27,7 +27,7 @@ template <>
 void renderGeneralizedEllipsoidTemplate<2>(
 	const std::vector<mrpt::math::CMatrixFixed<float, 2, 1>>& pts,
 	const float lineWidth, const uint32_t slices, const uint32_t stacks,
-	const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders)
+	const CRenderizable::RenderContext& rc)
 {
 #if MRPT_HAS_OPENGL_GLUT
 	glEnable(GL_BLEND);
@@ -61,7 +61,7 @@ template <>
 void renderGeneralizedEllipsoidTemplate<3>(
 	const std::vector<mrpt::math::CMatrixFixed<float, 3, 1>>& pts,
 	const float lineWidth, const uint32_t slices, const uint32_t stacks,
-	const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders)
+	const CRenderizable::RenderContext& rc)
 {
 #if MRPT_HAS_OPENGL_GLUT
 	glEnable(GL_BLEND);

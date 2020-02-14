@@ -45,7 +45,7 @@ void COpenGLStandardObject::renderUpdateBuffers() const
 	MRPT_TODO("Implement me!");
 }
 
-void COpenGLStandardObject::render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const
+void COpenGLStandardObject::render(const RenderContext& rc) const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	for_each(enabled.begin(), enabled.end(), glEnable);

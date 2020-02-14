@@ -87,7 +87,7 @@ class CText3D : public CRenderizable
 	}
 	double setTextKerning() const { return m_text_kerning; }
 
-	void render(const mrpt::opengl::TRenderMatrices& state, mrpt::opengl::Program& shaders) const override;
+	void render(const RenderContext& rc) const override;
 	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,

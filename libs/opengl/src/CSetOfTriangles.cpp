@@ -65,9 +65,7 @@ void CSetOfTriangles::renderUpdateBuffers() const
 #endif
 }
 
-void CSetOfTriangles::render(
-	const mrpt::opengl::TRenderMatrices& state,
-	mrpt::opengl::Program& shaders) const
+void CSetOfTriangles::render(const RenderContext& rc) const
 {
 #if MRPT_HAS_OPENGL_GLUT
 
@@ -84,7 +82,7 @@ void CSetOfTriangles::render(
 	CHECK_OPENGL_ERROR();
 
 	// Set up the vertex array:
-	const GLint attr_position = shaders.attributeId("position");
+	const GLint attr_position = rc.shader->attributeId("position");
 	glEnableVertexAttribArray(attr_position);
 	glBindBuffer(GL_ARRAY_BUFFER, m_trianglesBuffer);
 	glVertexAttribPointer(
@@ -97,7 +95,7 @@ void CSetOfTriangles::render(
 	CHECK_OPENGL_ERROR();
 
 	// Set up the color array:
-	const GLint attr_color = shaders.attributeId("vertexColor");
+	const GLint attr_color = rc.shader->attributeId("vertexColor");
 	glEnableVertexAttribArray(attr_color);
 	glBindBuffer(GL_ARRAY_BUFFER, m_trianglesBuffer);
 	glVertexAttribPointer(
@@ -110,7 +108,7 @@ void CSetOfTriangles::render(
 	CHECK_OPENGL_ERROR();
 
 	// Set up the normals array:
-	const GLint attr_normals = shaders.attributeId("vertexNormal");
+	const GLint attr_normals = rc.shader->attributeId("vertexNormal");
 	glEnableVertexAttribArray(attr_normals);
 	glBindBuffer(GL_ARRAY_BUFFER, m_normalsBuffer);
 	glVertexAttribPointer(
