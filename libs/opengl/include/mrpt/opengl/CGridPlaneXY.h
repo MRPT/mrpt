@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableShaderWireFrame.h>
 
 namespace mrpt::opengl
 {
@@ -26,7 +26,7 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_opengl_grp
  */
-class CGridPlaneXY : public CRenderizable
+class CGridPlaneXY : public CRenderizableShaderWireFrame
 {
 	DEFINE_SERIALIZABLE(CGridPlaneXY, mrpt::opengl)
 
@@ -35,25 +35,8 @@ class CGridPlaneXY : public CRenderizable
 	float m_yMin, m_yMax;
 	float m_plane_z;
 	float m_frequency;
-	float m_lineWidth;
-	bool m_antiAliasing;
-	mutable unsigned int m_vertexBuffer = 0, m_vao = 0, m_colorBuffer = 0;
-	mutable std::vector<mrpt::math::TPoint3Df> m_vertex_buffer_data;
-	mutable std::vector<mrpt::img::TColor> m_color_buffer_data;
 
    public:
-	void setLineWidth(float w)
-	{
-		m_lineWidth = w;
-		CRenderizable::notifyChange();
-	}
-	float getLineWidth() const { return m_lineWidth; }
-	void enableAntiAliasing(bool enable = true)
-	{
-		m_antiAliasing = enable;
-		CRenderizable::notifyChange();
-	}
-	bool isAntiAliasingEnabled() const { return m_antiAliasing; }
 	void setPlaneLimits(float xmin, float xmax, float ymin, float ymax)
 	{
 		m_xMin = xmin;
@@ -86,14 +69,8 @@ class CGridPlaneXY : public CRenderizable
 	}
 	float getGridFrequency() const { return m_frequency; }
 
-	shader_id_t shaderType() const override
-	{
-		return DefaultShaderID::WIREFRAME;
-	}
-	void render(
-		const mrpt::opengl::TRenderMatrices& state,
-		mrpt::opengl::Program& shaders) const override;
-	void renderUpdateBuffers() const override;
+	void onUpdateBuffers() override;
+
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
