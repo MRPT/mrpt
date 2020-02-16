@@ -197,5 +197,6 @@ class CCylinder : public CRenderizable
 		return (mHeight < 0) ? (Z >= mHeight && Z <= 0)
 							 : (Z <= mHeight && Z >= 0);
 	}
+	inline bool reachesHeight(double Z) const { return reachesHeight(d2f(Z)); }
 };
 }  // namespace mrpt::opengl

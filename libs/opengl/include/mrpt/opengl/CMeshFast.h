@@ -208,12 +208,12 @@ class CMeshFast : public CRenderizable
 	inline void adjustGridToImageAR()
 	{
 		ASSERT_(m_isImage);
-		const float ycenter = 0.5 * (yMin + yMax);
+		const float ycenter = 0.5f * (yMin + yMax);
 		const float xwidth = xMax - xMin;
 		const float newratio = float(m_textureImage.getWidth()) /
 							   float(m_textureImage.getHeight());
-		yMax = ycenter + 0.5 * newratio * xwidth;
-		yMin = ycenter - 0.5 * newratio * xwidth;
+		yMax = ycenter + 0.5f * newratio * xwidth;
+		yMin = ycenter - 0.5f * newratio * xwidth;
 		CRenderizable::notifyChange();
 	}
 

@@ -62,7 +62,7 @@ struct TFontParams
 	/** Vectorized font name ("sans","mono","serif") */
 	std::string vfont_name;
 	/** Size of characters */
-	double vfont_scale{10};
+	float vfont_scale{10.0f};
 	/** (default: NICE) See TOpenGLFontStyle. */
 	TOpenGLFontStyle vfont_style{};
 	/** (default: 1.5) Refer to mrpt::opengl::gl_utils::glDrawText */

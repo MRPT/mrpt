@@ -469,9 +469,11 @@ void CDisplayWindow::plot(const CVectorFloat& x, const CVectorFloat& y)
 	{
 		float tpx = (*itx - x[0]) / px + ox;
 		float tpy = (*ity - *itymn) / py + oy;
-		imgColor.drawMark(tpx, tpy, TColor(255, 0, 0), 'x');
+		imgColor.drawMark(round(tpx), round(tpy), TColor(255, 0, 0), 'x');
 		if (itx != x.begin())
-			imgColor.line(tpxA, tpyA, tpx, tpy, TColor(0, 0, 255), 3);
+			imgColor.line(
+				round(tpxA), round(tpyA), round(tpx), round(tpy),
+				TColor(0, 0, 255), 3);
 		tpxA = tpx;
 		tpyA = tpy;
 	}  // end for
@@ -513,14 +515,14 @@ void CDisplayWindow::plot(const CVectorFloat& y)
 	itymn = std::min_element(y.begin(), y.end());
 	float px = y.size() / 520.0f;
 	float py = (*itymx - *itymn) / 400.0f;
-	float tpxA = 0, tpyA = 0;
+	int tpxA = 0, tpyA = 0;
 
 	unsigned int k = 0;
 
 	for (k = 0, ity = y.begin(); ity != y.end(); ++k, ++ity)
 	{
-		float tpx = k / px + ox;
-		float tpy = (*ity - *itymn) / py + oy;
+		auto tpx = round(k / px + ox);
+		auto tpy = round((*ity - *itymn) / py + oy);
 		imgColor.drawMark(tpx, tpy, TColor::red(), 'x');
 		if (k > 0) imgColor.line(tpxA, tpyA, tpx, tpy, TColor::blue(), 3);
 		tpxA = tpx;

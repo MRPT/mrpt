@@ -167,13 +167,13 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	/** Rotation relative to parent coordinate origin, in radians. */
 	inline double getPoseRollRad() const { return m_pose.roll(); }
 	/** Color components in the range [0,1] */
-	inline double getColorR() const { return m_color.R / 255.; }
+	inline float getColorR() const { return u8tof(m_color.R); }
 	/** Color components in the range [0,1] */
-	inline double getColorG() const { return m_color.G / 255.; }
+	inline float getColorG() const { return u8tof(m_color.G); }
 	/** Color components in the range [0,1] */
-	inline double getColorB() const { return m_color.B / 255.; }
+	inline float getColorB() const { return u8tof(m_color.B); }
 	/** Color components in the range [0,1] */
-	inline double getColorA() const { return m_color.A / 255.; }
+	inline float getColorA() const { return u8tof(m_color.A); }
 	/** Color components in the range [0,255] */
 	inline uint8_t getColorR_u8() const { return m_color.R; }
 	/** Color components in the range [0,255] */
@@ -183,25 +183,13 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	/** Color components in the range [0,255] */
 	inline uint8_t getColorA_u8() const { return m_color.A; }
 	/**Color components in the range [0,1] \return a ref to this */
-	CRenderizable& setColorR(const double r)
-	{
-		return setColorR_u8(static_cast<uint8_t>(255 * r));
-	}
+	CRenderizable& setColorR(const float r) { return setColorR_u8(f2u8(r)); }
 	/**Color components in the range [0,1] \return a ref to this */
-	CRenderizable& setColorG(const double g)
-	{
-		return setColorG_u8(static_cast<uint8_t>(255 * g));
-	}
+	CRenderizable& setColorG(const float g) { return setColorG_u8(f2u8(g)); }
 	/**Color components in the range [0,1] \return a ref to this */
-	CRenderizable& setColorB(const double b)
-	{
-		return setColorB_u8(static_cast<uint8_t>(255 * b));
-	}
+	CRenderizable& setColorB(const float b) { return setColorB_u8(f2u8(b)); }
 	/**Color components in the range [0,1] \return a ref to this */
-	CRenderizable& setColorA(const double a)
-	{
-		return setColorA_u8(static_cast<uint8_t>(255 * a));
-	}
+	CRenderizable& setColorA(const float a) { return setColorA_u8(f2u8(a)); }
 	/**Color components in the range [0,255] \return a ref to this */
 	virtual CRenderizable& setColorR_u8(const uint8_t r)
 	{
@@ -257,15 +245,15 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	/** Changes the default object color \return a ref to this */
 	CRenderizable& setColor(const mrpt::img::TColorf& c)
 	{
-		return setColor_u8(mrpt::img::TColor(
-			c.R * 255.f, c.G * 255.f, c.B * 255.f, c.A * 255.f));
+		return setColor_u8(
+			mrpt::img::TColor(f2u8(c.R), f2u8(c.G), f2u8(c.B), f2u8(c.A)));
 	}
 
 	/** Set the color components of this object (R,G,B,Alpha, in the range 0-1)
 	 * \return a ref to this */
-	inline CRenderizable& setColor(double R, double G, double B, double A = 1)
+	inline CRenderizable& setColor(float R, float G, float B, float A = 1)
 	{
-		return setColor_u8(R * 255, G * 255, B * 255, A * 255);
+		return setColor_u8(f2u8(R), f2u8(G), f2u8(B), f2u8(A));
 	}
 
 	/** Returns the object color property as a TColor */
@@ -306,7 +294,8 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	/** Process all children objects recursively, if the object is a container
 	 */
 	virtual void enqueForRenderRecursive(
-		const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq) const
+		[[maybe_unused]] const mrpt::opengl::TRenderMatrices& state,
+		[[maybe_unused]] RenderQueue& rq) const
 	{
 		// do thing
 	}

@@ -161,12 +161,15 @@ bool CCylinder::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 	TLine3D lin;
 	mrpt::math::createFromPoseX((o - this->m_pose).asTPose(), lin);
 	lin.unitarize();  // By adding this line, distance from any point of the
+
+	const float zz = d2f(lin.pBase.z);
+
 	// line to its base is exactly equal to the "t".
 	if (std::abs(lin.director[2]) < getEpsilon())
 	{
-		if (!reachesHeight(lin.pBase.z)) return false;
+		if (!reachesHeight(zz)) return false;
 		float r;
-		return getRadius(static_cast<float>(lin.pBase.z), r)
+		return getRadius(zz, r)
 				   ? solveEqn(
 						 square(lin.director[0]) + square(lin.director[1]),
 						 lin.director[0] * lin.pBase.x +

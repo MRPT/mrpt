@@ -24,7 +24,7 @@ IMPLEMENTS_SERIALIZABLE(CText3D, CRenderizable, mrpt::opengl)
 							Constructor
   ---------------------------------------------------------------*/
 CText3D::CText3D(
-	const std::string& str, const std::string& fontName, const double scale,
+	const std::string& str, const std::string& fontName, const float scale,
 	const mrpt::opengl::TOpenGLFontStyle text_style, const double text_spacing,
 	const double text_kerning)
 	: m_str(str),

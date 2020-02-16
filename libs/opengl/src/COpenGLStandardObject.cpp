@@ -33,7 +33,7 @@ COMPILE_TIME_ASSERT(GLENUM, sizeof(GLenum) == sizeof(_GLENUM));
 void renderFunc(TPoint3D p)
 {
 #if MRPT_HAS_OPENGL_GLUT
-	glVertex3f(p.x, p.y, p.z);
+	glVertex3d(p.x, p.y, p.z);
 #else
 	MRPT_UNUSED_PARAM(p);
 #endif

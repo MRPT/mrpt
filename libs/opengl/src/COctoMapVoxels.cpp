@@ -168,7 +168,7 @@ void COctoMapVoxels::render(const RenderContext& rc) const
 			else
 			{
 				// Render as simple points:
-				glVertex3f(c.x, c.y, c.z);
+				glVertex3d(c.x, c.y, c.z);
 			}
 		}
 	}

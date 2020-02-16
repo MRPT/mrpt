@@ -27,7 +27,8 @@ struct TPixelCoordf
 	/** Constructor from x,y values */
 	TPixelCoordf(const float _x, const float _y) : x(_x), y(_y) {}
 	template <typename T>
-	TPixelCoordf(const std::pair<T, T>& p) : x(p.first), y(p.second)
+	TPixelCoordf(const std::pair<T, T>& p)
+		: x(static_cast<float>(p.first)), y(static_cast<float>(p.second))
 	{
 	}
 };

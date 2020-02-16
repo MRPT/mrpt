@@ -9,8 +9,7 @@
 #pragma once
 
 #include <mrpt/math/geometry.h>
-#include <mrpt/opengl/CRenderizable.h>
-#include <mrpt/opengl/TTriangle.h>
+#include <mrpt/opengl/CRenderizableShaderTriangles.h>
 
 namespace mrpt::opengl
 {
@@ -20,35 +19,19 @@ namespace mrpt::opengl
  * \sa opengl::COpenGLScene, CSetOfTexturedTriangles
  * \ingroup mrpt_opengl_grp
  */
-class CSetOfTriangles : public CRenderizable
+class CSetOfTriangles : public CRenderizableShaderTriangles
 {
 	DEFINE_SERIALIZABLE(CSetOfTriangles, mrpt::opengl)
    public:
+	/** @name Renderizable shader API virtual methods
+	 * @{ */
+	void onUpdateBuffers_Triangles() override;
+	/** @} */
+
 	using const_iterator = std::vector<TTriangle>::const_iterator;
 	using const_reverse_iterator =
 		std::vector<TTriangle>::const_reverse_iterator;
 
-   protected:
-	/** List of triangles  \sa TTriangle */
-	std::vector<TTriangle> m_triangles;
-	mutable unsigned int m_trianglesBuffer = 0, m_vao = 0;
-
-	// Computed in renderUpdateBuffers()
-	// Note: a normal per vertex, not per triangle.
-	mutable std::vector<mrpt::math::TVector3Df> m_trianglesNormals;
-	mutable unsigned int m_normalsBuffer;
-
-	bool m_enableTransparency;  //!< Transparency enabling.
-
-	/**
-	 * Mutable variable used to check whether polygons need to be recalculated.
-	 */
-	mutable bool polygonsUpToDate{false};
-
-	/** Polygon cache, used for ray-tracing only */
-	mutable std::vector<mrpt::math::TPolygonWithPlane> m_polygons;
-
-   public:
 	/** Explicitly updates the internal polygon cache, with all triangles as
 	 * polygons. \sa getPolygons() */
 	void updatePolygons() const;
@@ -102,13 +85,6 @@ class CSetOfTriangles : public CRenderizable
 		CRenderizable::notifyChange();
 	}
 
-	/** Enables or disables transparency. */
-	inline void enableTransparency(bool v)
-	{
-		m_enableTransparency = v;
-		CRenderizable::notifyChange();
-	}
-
 	/** Overwrite all triangles colors with the one provided */
 	CRenderizable& setColor_u8(const mrpt::img::TColor& c) override;
 	/** Overwrite all triangles colors with the one provided */
@@ -120,12 +96,6 @@ class CSetOfTriangles : public CRenderizable
 	/** Overwrite all triangles colors with the one provided */
 	CRenderizable& setColorA_u8(const uint8_t a) override;
 
-	shader_list_t requiredShaders() const override
-	{
-		return {DefaultShaderID::TRIANGLES};
-	}
-	void render(const RenderContext& rc) const override;
-	void renderUpdateBuffers() const override;
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 
 	/**
@@ -173,16 +143,22 @@ class CSetOfTriangles : public CRenderizable
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
 
-	/** Constructor
-	 */
+	/** Constructor */
 	CSetOfTriangles(bool enableTransparency = false)
-		: m_triangles(), m_enableTransparency(enableTransparency)
-
 	{
+		CRenderizableShaderTriangles::enableTransparency(enableTransparency);
 	}
 
-	/** Private, virtual destructor: only can be deleted from smart pointers */
 	~CSetOfTriangles() override = default;
+
+   protected:
+	/**
+	 * Mutable variable used to check whether polygons need to be recalculated.
+	 */
+	mutable bool polygonsUpToDate{false};
+
+	/** Polygon cache, used for ray-tracing only */
+	mutable std::vector<mrpt::math::TPolygonWithPlane> m_polygons;
 };
 /** Inserts a set of triangles into the list; note that this method allows to
  * pass another CSetOfTriangles as argument. Allows call chaining.

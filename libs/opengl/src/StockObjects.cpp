@@ -167,7 +167,7 @@ CSetOfObjects::Ptr stock_objects::RobotRhodon()
 		opengl::CPolyhedron::CreateCustomPrism(level1, 0.38);
 	obj1->setLocation(0, 0, height);
 	height += 0.38f;
-	obj1->setColor(0.6, 0.6, 0.6);
+	obj1->setColor(0.6f, 0.6f, 0.6f);
 	ret->insert(obj1);
 
 	vector<TPoint2D> level2;
@@ -180,7 +180,7 @@ CSetOfObjects::Ptr stock_objects::RobotRhodon()
 		opengl::CPolyhedron::CreateCustomPrism(level2, 0.35);
 	obj2->setLocation(0, 0, height);
 	height += 0.35f;
-	obj2->setColor(0.2, 0.2, 0.2);
+	obj2->setColor(0.2f, 0.2f, 0.2f);
 	ret->insert(obj2);
 
 	vector<TPoint2D> level3;
@@ -192,19 +192,19 @@ CSetOfObjects::Ptr stock_objects::RobotRhodon()
 	CPolyhedron::Ptr obj3 = opengl::CPolyhedron::CreateCustomPrism(level3, 1);
 	obj3->setLocation(0, 0, height);
 	// height+=1;
-	obj3->setColor(0.6, 0.6, 0.6);
+	obj3->setColor(0.6f, 0.6f, 0.6f);
 	ret->insert(obj3);
 
 	opengl::CCylinder::Ptr obj4 =
 		std::make_shared<opengl::CCylinder>(0.05f, 0.05f, 0.4f, 20, 20);
 	obj4->setLocation(0, 0, 0.73);
-	obj4->setColor(0, 0, 0.9);
+	obj4->setColor(0.0f, 0.0f, 0.9f);
 	ret->insert(obj4);
 
 	opengl::CCylinder::Ptr obj5 =
 		std::make_shared<opengl::CCylinder>(0.05f, 0.05f, 0.4f, 20, 20);
 	obj5->setPose(CPose3D(0.32, 0, 0.89, 0, -1, 0));
-	obj5->setColor(0, 0, 0.9);
+	obj5->setColor(0.0f, 0.0f, 0.9f);
 	ret->insert(obj5);
 
 	return ret;
@@ -231,7 +231,7 @@ CSetOfObjects::Ptr stock_objects::RobotGiraff()
 		opengl::CPolyhedron::CreateCustomPrism(level1, 0.23);
 	obj1->setLocation(0, 0, height);
 	height += 0.23f;
-	obj1->setColor(1.0, 0.6, 0.0);
+	obj1->setColor(1.0f, 0.6f, 0.0f);
 	ret->insert(obj1);
 
 	// Electronic's cage
@@ -245,7 +245,7 @@ CSetOfObjects::Ptr stock_objects::RobotGiraff()
 		opengl::CPolyhedron::CreateCustomPrism(level2, 0.45);
 	obj2->setLocation(0, 0, height);
 	height += 0.45f;
-	obj2->setColor(1.0, 0.6, 0.2);
+	obj2->setColor(1.0f, 0.6f, 0.2f);
 	ret->insert(obj2);
 
 	// Neck
@@ -259,7 +259,7 @@ CSetOfObjects::Ptr stock_objects::RobotGiraff()
 		opengl::CPolyhedron::CreateCustomPrism(level3, 0.55);
 	obj3->setLocation(0, 0, height);
 	height += 0.55f;
-	obj3->setColor(0.6, 0.6, 0.6);
+	obj3->setColor(0.6f, 0.6f, 0.6f);
 	ret->insert(obj3);
 
 	// Screen
@@ -271,7 +271,7 @@ CSetOfObjects::Ptr stock_objects::RobotGiraff()
 
 	CPolyhedron::Ptr obj4 = opengl::CPolyhedron::CreateCustomPrism(level4, 0.4);
 	obj4->setLocation(0, 0, height);
-	obj4->setColor(1.0, 0.6, 0.0);
+	obj4->setColor(1.0f, 0.6f, 0.0f);
 	ret->insert(obj4);
 
 	return ret;
@@ -310,7 +310,7 @@ CSetOfObjects::Ptr stock_objects::BumblebeeCamera()
 
 	CPolyhedron::Ptr rect = opengl::CPolyhedron::CreateCubicPrism(
 		-0.02, 0.14, -0.02, 0.02, 0, -0.04);
-	rect->setColor(1, 0.8, 0);
+	rect->setColor(1.0f, 0.8f, 0.0f);
 
 	camera->insert(rect);
 
@@ -385,7 +385,7 @@ CSetOfObjects::Ptr stock_objects::Hokuyo_URG()
 	{
 		CBox::Ptr base = std::make_shared<CBox>(
 			TPoint3D(-0.025, -0.025, -0.0575), TPoint3D(0.025, 0.025, -0.0185));
-		base->setColor(0.7, 0.7, 0.7);
+		base->setColor(0.7f, 0.7f, 0.7f);
 		ret->insert(base);
 	}
 	{
@@ -432,7 +432,7 @@ CSetOfObjects::Ptr stock_objects::Hokuyo_UTM()
 	{
 		CCylinder::Ptr cyl2 =
 			std::make_shared<CCylinder>(0.028f, 0.028f, 0.01f);
-		cyl2->setColor(1, 69 / 255.0, 0);
+		cyl2->setColor(1.0f, 69.0f / 255.0f, 0);
 		cyl2->setLocation(0, 0, 0.014);
 		ret->insert(cyl2);
 	}
@@ -454,7 +454,7 @@ CSetOfObjects::Ptr stock_objects::Househam_Sprayer()
 	{
 		CBox::Ptr cabin = std::make_shared<CBox>(
 			TPoint3D(0.878, 0.723, -0.12), TPoint3D(-0.258, -0.723, -1.690));
-		cabin->setColor(0.7, 0.7, 0.7);
+		cabin->setColor(0.7f, 0.7f, 0.7f);
 		ret->insert(cabin);
 	}
 	{

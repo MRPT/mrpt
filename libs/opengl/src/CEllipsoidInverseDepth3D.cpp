@@ -17,8 +17,7 @@ using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(
-	CEllipsoidInverseDepth3D, CRenderizable, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CEllipsoidInverseDepth3D, CRenderizable, mrpt::opengl)
 
 /*---------------------------------------------------------------
 							transformFromParameterSpace
@@ -34,17 +33,17 @@ void CEllipsoidInverseDepth3D::transformFromParameterSpace(
 	out_pts.resize(N);
 	for (size_t i = 0; i < N; i++)
 	{
-		const double inv_range = in_pts[i][0];
-		const double yaw = in_pts[i][1];
-		const double pitch = in_pts[i][2];
+		const float inv_range = in_pts[i][0];
+		const float yaw = in_pts[i][1];
+		const float pitch = in_pts[i][2];
 
-		const double range = inv_range < 0
-								 ? m_underflowMaxRange
-								 : (inv_range != 0 ? 1. / inv_range : 0);
+		const float range = inv_range < 0
+								? m_underflowMaxRange
+								: (inv_range != 0 ? 1.f / inv_range : 0);
 
-		out_pts[i][0] = range * cos(yaw) * cos(pitch);
-		out_pts[i][1] = range * sin(yaw) * cos(pitch);
-		out_pts[i][2] = -range * sin(pitch);
+		out_pts[i][0] = range * cosf(yaw) * cosf(pitch);
+		out_pts[i][1] = range * sinf(yaw) * cosf(pitch);
+		out_pts[i][2] = -range * sinf(pitch);
 	}
 
 	MRPT_END

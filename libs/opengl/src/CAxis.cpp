@@ -156,7 +156,7 @@ void CAxis::render(const RenderContext& rc) const
 		glRotatef(m_textRot[0][1], 0, 1, 0);
 		glRotatef(m_textRot[0][2], 1, 0, 0);
 		gl_utils::glDrawText(
-			axis2name[axis], m_textScale * 1.2, mrpt::opengl::NICE);
+			axis2name[axis], m_textScale * 1.2f, mrpt::opengl::NICE);
 		glPopMatrix();
 	}
 

@@ -78,15 +78,15 @@ void TRenderMatrices::applyLookAt()
 	using mrpt::math::TVector3Df;
 
 	TVector3Df forward = TVector3Df(pointing - eye);
-	const double fn = forward.norm();
+	const float fn = forward.norm();
 	ASSERT_(fn != 0);
-	forward *= 1.0 / fn;
+	forward *= 1.0f / fn;
 
 	// Side = forward x up
 	TVector3Df side = mrpt::math::crossProduct3D(forward, up);
-	const double sn = side.norm();
+	const float sn = side.norm();
 	ASSERT_(sn != 0);
-	side *= 1.0 / sn;
+	side *= 1.0f / sn;
 
 	// Recompute up as: up = side x forward
 	const TVector3Df up2 = mrpt::math::crossProduct3D(side, forward);

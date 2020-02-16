@@ -192,11 +192,11 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	/** Changes the camera min clip range (z) (used for gluPerspective). The
 	 * window is not updated with this method, call "forceRepaint" to update the
 	 * 3D view. */
-	void setMinRange(double new_min);
+	void setMinRange(float new_min);
 	/** Changes the camera max clip range (z) (used for gluPerspective. The
 	 * window is not updated with this method, call "forceRepaint" to update the
 	 * 3D view. */
-	void setMaxRange(double new_max);
+	void setMaxRange(float new_max);
 	/** Changes the camera field of view (in degrees) (used for gluPerspective).
 	 * The window is not updated with this method, call "forceRepaint" to update
 	 * the 3D view. */
@@ -335,7 +335,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	void addTextMessage(
 		const double x_frac, const double y_frac, const std::string& text,
 		const mrpt::img::TColorf& color, const std::string& font_name,
-		const double font_size,
+		const float font_size,
 		const mrpt::opengl::TOpenGLFontStyle font_style = mrpt::opengl::NICE,
 		const size_t unique_index = 0, const double font_spacing = 1.5,
 		const double font_kerning = 0.1, const bool draw_shadow = false,

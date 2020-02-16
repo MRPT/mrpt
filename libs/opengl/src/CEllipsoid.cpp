@@ -82,8 +82,8 @@ void CEllipsoid::render(const RenderContext& rc) const
 				double ccos = cos(ang);
 				double ssin = sin(ang);
 
-				const float x = ccos * M(0, 0) + ssin * M(1, 0);
-				const float y = ccos * M(0, 1) + ssin * M(1, 1);
+				const float x = d2f(ccos * M(0, 0) + ssin * M(1, 0));
+				const float y = d2f(ccos * M(0, 1) + ssin * M(1, 1));
 
 				glVertex2f(x, y);
 			}  // end for points on ellipse
@@ -106,7 +106,7 @@ void CEllipsoid::render(const RenderContext& rc) const
 			// ---------------------
 			//    3D ellipsoid
 			// ---------------------
-			GLfloat mat[16];
+			GLdouble mat[16];
 
 			//  A homogeneous transformation matrix, in this order:
 			//
@@ -138,8 +138,8 @@ void CEllipsoid::render(const RenderContext& rc) const
 			gluQuadricDrawStyle(obj, m_drawSolid3D ? GLU_FILL : GLU_LINE);
 
 			glPushMatrix();
-			glMultMatrixf(mat);
-			glScalef(
+			glMultMatrixd(mat);
+			glScaled(
 				m_eigVal(0, 0) * m_quantiles, m_eigVal(1, 1) * m_quantiles,
 				m_eigVal(2, 2) * m_quantiles);
 

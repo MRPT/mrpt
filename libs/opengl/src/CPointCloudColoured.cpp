@@ -78,8 +78,7 @@ void CPointCloudColoured::render_subset(
 #if MRPT_HAS_OPENGL_GLUT
 	const size_t N = all ? m_points.size() : idxs.size();
 	const size_t decimation = mrpt::round(std::max(
-		1.0f, static_cast<float>(
-				  N / (mrpt::global_settings::
+		1.0f, d2f(N / (mrpt::global_settings::
 						   OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL() *
 					   render_area_sqpixels))));
 
@@ -93,8 +92,8 @@ void CPointCloudColoured::render_subset(
 		for (size_t i = 0; i < N; i += decimation)
 		{
 			const TPointColour& p = m_points[i];
-			glColor4f(p.R, p.G, p.B, m_color.A * 1.0f / 255.f);
-			glVertex3f(p.x, p.y, p.z);
+			glColor4ub(p.r, p.g, p.b, m_color.A);
+			glVertex3f(p.pt.x, p.pt.y, p.pt.z);
 		}
 	}
 	else
@@ -102,8 +101,8 @@ void CPointCloudColoured::render_subset(
 		for (size_t i = 0; i < N; i += decimation)
 		{
 			const TPointColour& p = m_points[idxs[i]];
-			glColor4f(p.R, p.G, p.B, m_color.A * 1.0f / 255.f);
-			glVertex3f(p.x, p.y, p.z);
+			glColor4ub(p.r, p.g, p.b, m_color.A);
+			glVertex3f(p.pt.x, p.pt.y, p.pt.z);
 		}
 	}
 #else
@@ -158,20 +157,6 @@ void CPointCloudColoured::serializeFrom(
 	markAllPointsAsNew();
 }
 
-CArchive& mrpt::opengl::operator>>(
-	CArchive& in, CPointCloudColoured::TPointColour& o)
-{
-	in >> o.x >> o.y >> o.z >> o.R >> o.G >> o.B;
-	return in;
-}
-
-CArchive& mrpt::opengl::operator<<(
-	CArchive& out, const CPointCloudColoured::TPointColour& o)
-{
-	out << o.x << o.y << o.z << o.R << o.G << o.B;
-	return out;
-}
-
 /** Write an individual point (checks for "i" in the valid range only in Debug).
  */
 void CPointCloudColoured::setPoint(size_t i, const TPointColour& p)
@@ -190,7 +175,7 @@ void CPointCloudColoured::setPoint(size_t i, const TPointColour& p)
 void CPointCloudColoured::push_back(
 	float x, float y, float z, float R, float G, float B)
 {
-	m_points.push_back(TPointColour(x, y, z, R, G, B));
+	m_points.push_back(TPointColour(x, y, z, f2u8(R), f2u8(G), f2u8(B)));
 
 	// JL: TODO note: Well, this can be clearly done much more efficiently
 	// but...I don't have time! :-(
@@ -220,7 +205,8 @@ void CPointCloudColoured::PLY_import_set_vertex(
 	else
 		this->setPoint(
 			idx, TPointColour(
-					 pt.x, pt.y, pt.z, pt_color->R, pt_color->G, pt_color->B));
+					 pt.x, pt.y, pt.z, f2u8(pt_color->R), f2u8(pt_color->G),
+					 f2u8(pt_color->B)));
 }
 
 /** In a base class, return the number of vertices */
@@ -239,12 +225,10 @@ void CPointCloudColoured::PLY_export_get_vertex(
 	mrpt::img::TColorf& pt_color) const
 {
 	const TPointColour& p = m_points[idx];
-	pt.x = p.x;
-	pt.y = p.y;
-	pt.z = p.z;
-	pt_color.R = p.R;
-	pt_color.G = p.G;
-	pt_color.B = p.B;
+	pt = p.pt;
+	pt_color.R = u8tof(p.r);
+	pt_color.G = u8tof(p.g);
+	pt_color.B = u8tof(p.b);
 	pt_has_color = true;
 }
 
@@ -263,13 +247,13 @@ void CPointCloudColoured::recolorizeByCoordinate(
 		switch (coord_index)
 		{
 			case 0:
-				coord = m_points[i].x;
+				coord = m_points[i].pt.x;
 				break;
 			case 1:
-				coord = m_points[i].y;
+				coord = m_points[i].pt.y;
 				break;
 			case 2:
-				coord = m_points[i].z;
+				coord = m_points[i].pt.z;
 				break;
 		};
 		const float col_idx =

@@ -252,7 +252,7 @@ void CWindowDialogPlots::OnMenuSelected(wxCommandEvent& ev)
 	{
 		if (m_winPlots && m_winPlots->m_callback)
 			m_winPlots->m_callback(
-				it->second, m_curCursorPos.x, m_curCursorPos.y,
+				it->second, d2f(m_curCursorPos.x), d2f(m_curCursorPos.y),
 				m_winPlots->m_callback_param);
 	}
 }
@@ -905,14 +905,14 @@ void CDisplayWindowPlots::plotEllipse(
 	REQ->plotName = plotName + holdon_post;
 
 	REQ->vector_x.resize(3);
-	REQ->vector_x[0] = mean_x;
-	REQ->vector_x[1] = mean_y;
+	REQ->vector_x[0] = d2f(mean_x);
+	REQ->vector_x[1] = d2f(mean_y);
 	REQ->vector_x[2] = quantiles;
 
 	REQ->vector_y.resize(3);
-	REQ->vector_y[0] = cov22(0, 0);
-	REQ->vector_y[1] = cov22(1, 1);
-	REQ->vector_y[2] = cov22(0, 1);
+	REQ->vector_y[0] = d2f(cov22(0, 0));
+	REQ->vector_y[1] = d2f(cov22(1, 1));
+	REQ->vector_y[2] = d2f(cov22(0, 1));
 
 	REQ->boolVal = showName;
 
@@ -977,14 +977,14 @@ void CDisplayWindowPlots::plotEllipse(
 	REQ->plotName = plotName + holdon_post;
 
 	REQ->vector_x.resize(3);
-	REQ->vector_x[0] = mean_x;
-	REQ->vector_x[1] = mean_y;
+	REQ->vector_x[0] = d2f(mean_x);
+	REQ->vector_x[1] = d2f(mean_y);
 	REQ->vector_x[2] = quantiles;
 
 	REQ->vector_y.resize(3);
-	REQ->vector_y[0] = cov22(0, 0);
-	REQ->vector_y[1] = cov22(1, 1);
-	REQ->vector_y[2] = cov22(0, 1);
+	REQ->vector_y[0] = d2f(cov22(0, 0));
+	REQ->vector_y[1] = d2f(cov22(1, 1));
+	REQ->vector_y[2] = d2f(cov22(0, 1));
 
 	REQ->boolVal = showName;
 

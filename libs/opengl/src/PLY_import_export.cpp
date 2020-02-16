@@ -643,7 +643,7 @@ PlyFile* ply_read(FILE* fp, vector<string>& elem_names)
 				plyfile->file_type = PLY_BINARY_LE;
 			else
 				return (nullptr);
-			plyfile->version = atof(words[2].c_str());
+			plyfile->version = d2f(atof(words[2].c_str()));
 			// found_format = 1;
 		}
 		else if (words[0] == "element")
@@ -1369,7 +1369,7 @@ void write_binary_item(
 			fwrite(&uint_val, 4, 1, fp);
 			break;
 		case PLY_FLOAT:
-			float_val = double_val;
+			float_val = d2f(double_val);
 			fwrite(&float_val, 4, 1, fp);
 			break;
 		case PLY_DOUBLE:
@@ -1469,13 +1469,13 @@ void get_stored_item(
 			break;
 		case PLY_FLOAT:
 			*double_val = *((float*)ptr);
-			*int_val = *double_val;
-			*uint_val = *double_val;
+			*int_val = static_cast<int>(*double_val);
+			*uint_val = static_cast<unsigned int>(*double_val);
 			break;
 		case PLY_DOUBLE:
 			*double_val = *((double*)ptr);
-			*int_val = *double_val;
-			*uint_val = *double_val;
+			*int_val = static_cast<int>(*double_val);
+			*uint_val = static_cast<unsigned int>(*double_val);
 			break;
 		default:
 			throw std::runtime_error(
@@ -1549,14 +1549,14 @@ int get_binary_item(
 		case PLY_FLOAT:
 			if (fread(ptr, 4, 1, fp) != 1) return 0;
 			*double_val = *((float*)ptr);
-			*int_val = *double_val;
-			*uint_val = *double_val;
+			*int_val = static_cast<int>(*double_val);
+			*uint_val = static_cast<unsigned int>(*double_val);
 			break;
 		case PLY_DOUBLE:
 			if (fread(ptr, 8, 1, fp) != 1) return 0;
 			*double_val = *((double*)ptr);
-			*int_val = *double_val;
-			*uint_val = *double_val;
+			*int_val = static_cast<int>(*double_val);
+			*uint_val = static_cast<unsigned int>(*double_val);
 			break;
 		default:
 			throw std::runtime_error(
@@ -1686,7 +1686,7 @@ void store_item(
 			break;
 		case PLY_FLOAT:
 			pfloat = (float*)item;
-			*pfloat = double_val;
+			*pfloat = d2f(double_val);
 			break;
 		case PLY_DOUBLE:
 			pdouble = (double*)item;

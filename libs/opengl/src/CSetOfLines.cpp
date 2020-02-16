@@ -80,6 +80,7 @@ void CSetOfLines::setVerticesPointSize(const float size_points)
 void CSetOfLines::onUpdateBuffers_Wireframe()
 {
 	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
+	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
 	vbd.clear();
 	vbd.reserve(m_Segments.size() * 2);
 
@@ -90,8 +91,7 @@ void CSetOfLines::onUpdateBuffers_Wireframe()
 	}
 
 	// The same color to all vertices:
-	CRenderizableShaderWireFrame::m_color_buffer_data.assign(
-		vbd.size(), m_color);
+	cbd.assign(vbd.size(), m_color);
 }
 
 void CSetOfLines::onUpdateBuffers_Points()

@@ -109,25 +109,25 @@ void CVectorField2D::render(const RenderContext& rc) const
 		for (int j = 0; j < xcomp.rows(); j++)
 		{
 			const float tri_side =
-				0.25 *
+				0.25f *
 				sqrt(xcomp(j, i) * xcomp(j, i) + ycomp(j, i) * ycomp(j, i));
-			const float ang = ::atan2(ycomp(j, i), xcomp(j, i)) - 1.5708;
+			const float ang = ::atan2f(ycomp(j, i), xcomp(j, i)) - 1.5708f;
 			glVertex3f(
-				-sin(ang) * 0.866 * tri_side + xMin + i * x_cell_size +
+				-sin(ang) * 0.866f * tri_side + xMin + i * x_cell_size +
 					xcomp(j, i),
-				cos(ang) * 0.866 * tri_side + yMin + j * y_cell_size +
+				cos(ang) * 0.866f * tri_side + yMin + j * y_cell_size +
 					ycomp(j, i),
 				0);
 			glVertex3f(
-				cos(ang) * 0.5 * tri_side + xMin + i * x_cell_size +
+				cos(ang) * 0.5f * tri_side + xMin + i * x_cell_size +
 					xcomp(j, i),
-				sin(ang) * 0.5 * tri_side + yMin + j * y_cell_size +
+				sin(ang) * 0.5f * tri_side + yMin + j * y_cell_size +
 					ycomp(j, i),
 				0);
 			glVertex3f(
-				-cos(ang) * 0.5 * tri_side + xMin + i * x_cell_size +
+				-cos(ang) * 0.5f * tri_side + xMin + i * x_cell_size +
 					xcomp(j, i),
-				-sin(ang) * 0.5 * tri_side + yMin + j * y_cell_size +
+				-sin(ang) * 0.5f * tri_side + yMin + j * y_cell_size +
 					ycomp(j, i),
 				0);
 		}
@@ -202,32 +202,32 @@ void CVectorField2D::getBoundingBox(
 		for (int j = 0; j < xcomp.rows(); j++)
 		{
 			const float tri_side =
-				0.25 *
+				0.25f *
 				sqrt(xcomp(j, i) * xcomp(j, i) + ycomp(j, i) * ycomp(j, i));
-			const float ang = ::atan2(ycomp(j, i), xcomp(j, i)) - 1.5708;
+			const float ang = ::atan2f(ycomp(j, i), xcomp(j, i)) - 1.5708f;
 
-			if (-sin(ang) * 0.866 * tri_side + xMin + i * x_cell_size +
+			if (-sin(ang) * 0.866f * tri_side + xMin + i * x_cell_size +
 					xcomp(j, i) <
 				bb_min.x)
-				bb_min.x = -sin(ang) * 0.866 * tri_side + xMin +
+				bb_min.x = -sin(ang) * 0.866f * tri_side + xMin +
 						   i * x_cell_size + xcomp(j, i);
 
-			if (cos(ang) * 0.866 * tri_side + yMin + j * y_cell_size +
+			if (cos(ang) * 0.866f * tri_side + yMin + j * y_cell_size +
 					ycomp(j, i) <
 				bb_min.y)
-				bb_min.y = cos(ang) * 0.866 * tri_side + yMin +
+				bb_min.y = cos(ang) * 0.866f * tri_side + yMin +
 						   j * y_cell_size + ycomp(j, i);
 
-			if (-sin(ang) * 0.866 * tri_side + xMin + i * x_cell_size +
+			if (-sin(ang) * 0.866f * tri_side + xMin + i * x_cell_size +
 					xcomp(j, i) >
 				bb_max.x)
-				bb_max.x = -sin(ang) * 0.866 * tri_side + xMin +
+				bb_max.x = -sin(ang) * 0.866f * tri_side + xMin +
 						   i * x_cell_size + xcomp(j, i);
 
-			if (cos(ang) * 0.866 * tri_side + yMin + j * y_cell_size +
+			if (cos(ang) * 0.866f * tri_side + yMin + j * y_cell_size +
 					ycomp(j, i) >
 				bb_max.y)
-				bb_max.y = cos(ang) * 0.866 * tri_side + yMin +
+				bb_max.y = cos(ang) * 0.866f * tri_side + yMin +
 						   j * y_cell_size + ycomp(j, i);
 		}
 
@@ -248,8 +248,8 @@ void CVectorField2D::adjustVectorFieldToGrid()
 		ycomp.maxCoeff() * (ycomp.rows() - 1) / (yMax - yMin);
 	const float ratio_yn =
 		ycomp.minCoeff() * (ycomp.rows() - 1) / (yMax - yMin);
-	const float norm_factor = 0.85 / max(max(ratio_xp, std::abs(ratio_xn)),
-										 max(ratio_yp, std::abs(ratio_yn)));
+	const float norm_factor = 0.85f / max(max(ratio_xp, std::abs(ratio_xn)),
+										  max(ratio_yp, std::abs(ratio_yn)));
 
 	xcomp *= norm_factor;
 	ycomp *= norm_factor;

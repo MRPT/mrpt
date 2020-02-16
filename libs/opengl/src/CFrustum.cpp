@@ -85,12 +85,14 @@ void CFrustum::render(const RenderContext& rc) const
 			m_planes_color.R, m_planes_color.G, m_planes_color.B,
 			m_planes_color.A);
 
+#if 0
 		gl_utils::renderQuadWithNormal(pts[0], pts[2], pts[6], pts[4]);
 		gl_utils::renderQuadWithNormal(pts[2], pts[3], pts[7], pts[6]);
 		gl_utils::renderQuadWithNormal(pts[4], pts[6], pts[7], pts[5]);
 		gl_utils::renderQuadWithNormal(pts[1], pts[5], pts[7], pts[3]);
 		gl_utils::renderQuadWithNormal(pts[1], pts[5], pts[7], pts[3]);
 		gl_utils::renderQuadWithNormal(pts[4], pts[5], pts[1], pts[0]);
+#endif
 
 		glEnd();
 	}
@@ -102,11 +104,10 @@ void CFrustum::render(const RenderContext& rc) const
 
 // Ctors
 CFrustum::CFrustum()
-	: m_fov_horz_left(mrpt::DEG2RAD(45)),
-	  m_fov_horz_right(mrpt::DEG2RAD(45)),
-	  m_fov_vert_down(mrpt::DEG2RAD(30)),
-	  m_fov_vert_up(mrpt::DEG2RAD(30)),
-
+	: m_fov_horz_left(mrpt::DEG2RAD(45.0f)),
+	  m_fov_horz_right(mrpt::DEG2RAD(45.0f)),
+	  m_fov_vert_down(mrpt::DEG2RAD(30.0f)),
+	  m_fov_vert_up(mrpt::DEG2RAD(30.0f)),
 	  m_planes_color(0xE0, 0x00, 0x00, 0x50)  // RGBA
 {
 	keep_min(m_fov_horz_left, DEG2RAD(89.9f));

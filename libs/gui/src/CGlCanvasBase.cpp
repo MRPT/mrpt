@@ -51,13 +51,13 @@ void CGlCanvasBase::setMousePos(int x, int y)
 void CGlCanvasBase::setMouseClicked(bool is) { mouseClicked = is; }
 void CGlCanvasBase::updateZoom(CamaraParams& params, int x, int y) const
 {
-	float zoom = params.cameraZoomDistance * exp(0.01 * (y - m_mouseClickY));
+	float zoom = params.cameraZoomDistance * exp(0.01f * (y - m_mouseClickY));
 	if (zoom <= m_minZoom || (m_maxZoom != -1.0f && m_maxZoom <= zoom)) return;
 	params.cameraZoomDistance = zoom;
-	if (params.cameraZoomDistance < 0.01) params.cameraZoomDistance = 0.01f;
+	if (params.cameraZoomDistance < 0.01f) params.cameraZoomDistance = 0.01f;
 
-	float Az = -0.05 * (x - m_mouseClickX);
-	float D = 0.001 * params.cameraZoomDistance;
+	float Az = -0.05f * (x - m_mouseClickX);
+	float D = 0.001f * params.cameraZoomDistance;
 	params.cameraPointingZ += D * Az;
 }
 
@@ -101,9 +101,9 @@ void CGlCanvasBase::updateRotate(CamaraParams& params, int x, int y) const
 
 void CGlCanvasBase::updateOrbitCamera(CamaraParams& params, int x, int y) const
 {
-	params.cameraAzimuthDeg -= 0.2 * (x - m_mouseClickX);
+	params.cameraAzimuthDeg -= 0.2f * (x - m_mouseClickX);
 	params.setElevationDeg(
-		params.cameraElevationDeg + 0.2 * (y - m_mouseClickY));
+		params.cameraElevationDeg + 0.2f * (y - m_mouseClickY));
 }
 
 void CGlCanvasBase::updateLastPos(int x, int y)
@@ -132,7 +132,7 @@ void CGlCanvasBase::updatePan(CamaraParams& params, int x, int y) const
 {
 	float Ay = -(x - m_mouseClickX);
 	float Ax = -(y - m_mouseClickY);
-	float D = 0.001 * params.cameraZoomDistance;
+	float D = 0.001f * params.cameraZoomDistance;
 	params.cameraPointingX += D * (Ax * cos(DEG2RAD(params.cameraAzimuthDeg)) -
 								   Ay * sin(DEG2RAD(params.cameraAzimuthDeg)));
 	params.cameraPointingY += D * (Ax * sin(DEG2RAD(params.cameraAzimuthDeg)) +
