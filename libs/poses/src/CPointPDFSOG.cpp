@@ -264,7 +264,7 @@ void CPointPDFSOG::bayesianFusion(
 	// to the Gaussian "p2":
 	CPointPDFGaussian auxGaussianProduct, auxSOG_Kernel_i;
 
-	float minMahalanobisDistToDrop2 = square(minMahalanobisDistToDrop);
+	const double minMahalanobisDistToDrop2 = square(minMahalanobisDistToDrop);
 
 	this->m_modes.clear();
 	bool is2D =
@@ -308,19 +308,17 @@ void CPointPDFSOG::bayesianFusion(
 			if (minMahalanobisDistToDrop > 0)
 			{
 				// Approximate (fast) mahalanobis distance (square):
-				float mahaDist2;
-
-				float stdX2 = max(auxSOG_Kernel_i.cov(0, 0), m.val.cov(0, 0));
-				mahaDist2 =
+				double stdX2 = max(auxSOG_Kernel_i.cov(0, 0), m.val.cov(0, 0));
+				double mahaDist2 =
 					square(auxSOG_Kernel_i.mean.x() - m.val.mean.x()) / stdX2;
 
-				float stdY2 = max(auxSOG_Kernel_i.cov(1, 1), m.val.cov(1, 1));
+				double stdY2 = max(auxSOG_Kernel_i.cov(1, 1), m.val.cov(1, 1));
 				mahaDist2 +=
 					square(auxSOG_Kernel_i.mean.y() - m.val.mean.y()) / stdY2;
 
 				if (!is2D)
 				{
-					float stdZ2 =
+					double stdZ2 =
 						max(auxSOG_Kernel_i.cov(2, 2), m.val.cov(2, 2));
 					mahaDist2 +=
 						square(auxSOG_Kernel_i.mean.z() - m.val.mean.z()) /

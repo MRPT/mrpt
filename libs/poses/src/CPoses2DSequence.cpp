@@ -96,37 +96,23 @@ CPose2D CPoses2DSequence::absolutePoseOf(unsigned int n)
 	return ret;
 }
 
-/*---------------------------------------------------------------
-	A shortcut for "absolutePoseOf( posesCount() )".
- ---------------------------------------------------------------*/
 CPose2D CPoses2DSequence::absolutePoseAfterAll()
 {
 	return absolutePoseOf(posesCount());
 }
 
-/*---------------------------------------------------------------
-	Returns the traveled distance after moving "n" poses, so for "n=0" it
- returns 0, for "n=1" the first traveled distance, and for "n=posesCount()", the
- total
-	distance after ALL movements.
- ---------------------------------------------------------------*/
-float CPoses2DSequence::computeTraveledDistanceAfter(unsigned int n)
+double CPoses2DSequence::computeTraveledDistanceAfter(size_t n)
 {
-	unsigned int i;
-	float dist = 0;
+	double dist = 0;
 
 	if (n > poses.size()) THROW_EXCEPTION("Index out of range!!");
 
-	for (i = 0; i < n; i++) dist += poses[i].norm();
+	for (size_t i = 0; i < n; i++) dist += poses[i].norm();
 
 	return dist;
 }
 
-/*---------------------------------------------------------------
-	Returns the traveled distance after ALL movements.
-	A shortcut for "computeTraveledDistanceAfter( posesCount() )".
- ---------------------------------------------------------------*/
-float CPoses2DSequence::computeTraveledDistanceAfterAll()
+double CPoses2DSequence::computeTraveledDistanceAfterAll()
 {
 	return computeTraveledDistanceAfter(posesCount());
 }
