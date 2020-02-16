@@ -210,8 +210,7 @@ class CPointsMap : public CMetricMap,
 	inline float squareDistanceToClosestCorrespondenceT(
 		const mrpt::math::TPoint2D& p0) const
 	{
-		return squareDistanceToClosestCorrespondence(
-			static_cast<float>(p0.x), static_cast<float>(p0.y));
+		return squareDistanceToClosestCorrespondence(d2f(p0.x), d2f(p0.y));
 	}
 
 	/** With this struct options are provided to the observation insertion

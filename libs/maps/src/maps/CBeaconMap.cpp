@@ -908,8 +908,7 @@ void CBeaconMap::computeMatchingWith3DLandmarks(
 	}  // end of other it., k
 
 	// Compute the corrs ratio:
-	correspondencesRatio =
-		2.0f * correspondences.size() / static_cast<float>(nThis + nOther);
+	correspondencesRatio = 2.0f * correspondences.size() / d2f(nThis + nOther);
 
 	MRPT_END
 }

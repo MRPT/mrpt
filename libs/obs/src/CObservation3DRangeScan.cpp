@@ -1267,8 +1267,7 @@ void CObservation3DRangeScan::convertTo2DScan(
 	// Precompute the tangents of the vertical angles of each "ray"
 	// for every row in the range image:
 	std::vector<float> vert_ang_tan(nRows);
-	for (size_t r = 0; r < nRows; r++)
-		vert_ang_tan[r] = static_cast<float>((cy - r) / fy);
+	for (size_t r = 0; r < nRows; r++) vert_ang_tan[r] = d2f((cy - r) / fy);
 
 	if (!sp.use_origin_sensor_pose)
 	{

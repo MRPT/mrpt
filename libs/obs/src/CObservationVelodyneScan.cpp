@@ -155,10 +155,8 @@ static void velodyne_scan_to_pointcloud(
 
 	const int minAzimuth_int = round(params.minAzimuth_deg * 100);
 	const int maxAzimuth_int = round(params.maxAzimuth_deg * 100);
-	const float realMinDist =
-		std::max(static_cast<float>(scan.minRange), params.minDistance);
-	const float realMaxDist =
-		std::min(params.maxDistance, static_cast<float>(scan.maxRange));
+	const float realMinDist = std::max(d2f(scan.minRange), params.minDistance);
+	const float realMaxDist = std::min(params.maxDistance, d2f(scan.maxRange));
 	const auto isolatedPointsFilterDistance_units = mrpt::round(
 		params.isolatedPointsFilterDistance / Velo::DISTANCE_RESOLUTION);
 
@@ -228,8 +226,7 @@ static void velodyne_scan_to_pointcloud(
 
 			const int dsr_offset =
 				(raw->blocks[block].header() == Velo::LOWER_BANK) ? 32 : 0;
-			const auto azimuth_raw_f =
-				static_cast<float>(raw->blocks[block].rotation());
+			const auto azimuth_raw_f = d2f(raw->blocks[block].rotation());
 			const bool block_is_dual_2nd_ranges =
 				(raw->laser_return_mode == Velo::RETMODE_DUAL &&
 				 ((block & 0x01) != 0));
@@ -370,14 +367,10 @@ static void velodyne_scan_to_pointcloud(
 					continue;
 
 				// Vertical axis mis-alignment calibration:
-				const float cos_vert_angle =
-					static_cast<float>(calib.cosVertCorrection);
-				const float sin_vert_angle =
-					static_cast<float>(calib.sinVertCorrection);
-				const float horz_offset =
-					static_cast<float>(calib.horizontalOffsetCorrection);
-				const float vert_offset =
-					static_cast<float>(calib.verticalOffsetCorrection);
+				const float cos_vert_angle = d2f(calib.cosVertCorrection);
+				const float sin_vert_angle = d2f(calib.sinVertCorrection);
+				const float horz_offset = d2f(calib.horizontalOffsetCorrection);
+				const float vert_offset = d2f(calib.verticalOffsetCorrection);
 
 				float xy_distance = distance * cos_vert_angle;
 				if (vert_offset != .0f)

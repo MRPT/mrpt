@@ -1265,8 +1265,7 @@ void CLandmarksMap::computeMatchingWith3DLandmarks(
 			}  // end of other it., k
 
 			// Compute the corrs ratio:
-			correspondencesRatio =
-				correspondences.size() / static_cast<float>(nOther);
+			correspondencesRatio = correspondences.size() / d2f(nOther);
 			//		os::fclose(f);
 
 			break;
@@ -1347,8 +1346,7 @@ void CLandmarksMap::computeMatchingWith3DLandmarks(
 
 			}  // end for k
 
-			correspondencesRatio =
-				correspondences.size() / static_cast<float>(nOther);
+			correspondencesRatio = correspondences.size() / d2f(nOther);
 
 			break;
 
@@ -2659,7 +2657,7 @@ float CLandmarksMap::compute3DMatchingRatio(
 						descrDist += square(*it1 - *it2);
 
 					float descrDist_f =
-						sqrt(static_cast<float>(descrDist)) /
+						sqrt(d2f(descrDist)) /
 						itThis->features[0].descriptors.SIFT->size();
 
 					if (descrDist_f < 1.5f)
@@ -2673,7 +2671,7 @@ float CLandmarksMap::compute3DMatchingRatio(
 
 	}  // for each in "other"
 
-	return static_cast<float>(otherLandmarkWithCorrespondence) / nOther;
+	return d2f(otherLandmarkWithCorrespondence) / nOther;
 
 	MRPT_END
 }

@@ -185,6 +185,16 @@ T round2up(T val)
 	return n;
 }
 
+/** shortcut for static_cast<float>(double) */
+inline float d2f(const double d) { return static_cast<float>(d); }
+
+/** converts a float [0,1] into an uint8_t [0,255] (without checking for out of
+ * bounds) \sa u8tof */
+inline uint8_t f2u8(const float f) { return static_cast<uint8_t>(f * 255); }
+
+/** converts a uint8_t [0,255] into a float [0,1] \sa f2u8 */
+inline float u8tof(const uint8_t v) { return v / 255.0f; }
+
 /** @} */
 
 }  // namespace mrpt

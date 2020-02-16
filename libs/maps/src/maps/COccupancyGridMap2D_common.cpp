@@ -731,7 +731,7 @@ void COccupancyGridMap2D::determineMatching2D(
 
 	extraResults.correspondencesRatio =
 		nOtherMapPointsWithCorrespondence /
-		static_cast<float>(nLocalPoints / params.decimation_other_map_points);
+		d2f(nLocalPoints / params.decimation_other_map_points);
 	extraResults.sumSqrDist = _sumSqrDist;
 
 	MRPT_END
@@ -764,13 +764,13 @@ float COccupancyGridMap2D::computePathCost(
 
 	for (int i = 0; i < nSteps; i++)
 	{
-		float x = x1 + (x2 - x1) * i / static_cast<float>(nSteps);
-		float y = y1 + (y2 - y1) * i / static_cast<float>(nSteps);
+		float x = x1 + (x2 - x1) * i / d2f(nSteps);
+		float y = y1 + (y2 - y1) * i / d2f(nSteps);
 		sumCost += getPos(x, y);
 	}
 
 	if (nSteps)
-		return sumCost / static_cast<float>(nSteps);
+		return sumCost / d2f(nSteps);
 	else
 		return 0;
 }
