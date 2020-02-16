@@ -19,7 +19,7 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_opengl_grp
  */
-class CRenderizableShaderWireFrame : public CRenderizable
+class CRenderizableShaderWireFrame : public virtual CRenderizable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CRenderizableShaderWireFrame)
 
@@ -27,9 +27,9 @@ class CRenderizableShaderWireFrame : public CRenderizable
 	CRenderizableShaderWireFrame() = default;
 	virtual ~CRenderizableShaderWireFrame();
 
-	shader_id_t shaderType() const override
+	virtual shader_list_t requiredShaders() const override
 	{
-		return DefaultShaderID::WIREFRAME;
+		return {DefaultShaderID::WIREFRAME};
 	}
 	void render(const RenderContext& rc) const override;
 	void renderUpdateBuffers() const override;

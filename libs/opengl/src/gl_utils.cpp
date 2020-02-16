@@ -79,7 +79,9 @@ void gl_utils::enqueForRendering(
 				_.p_matrix.asEigen() * _.mv_matrix.asEigen();
 
 			// Enqeue this object...
-			rq[obj->shaderType()].emplace_back(obj, _);
+			const auto lst_shaders = obj->requiredShaders();
+			for (const auto shader_id : lst_shaders)
+				rq[shader_id].emplace_back(obj, _);
 
 			// ...and its children:
 			obj->enqueForRenderRecursive(_, rq);
@@ -150,11 +152,9 @@ void gl_utils::processRenderQueue(
 
 			glUniformMatrix4fv(
 				u_pmat, 1, IS_TRANSPOSED, rqe.renderState.p_matrix.data());
-			CHECK_OPENGL_ERROR();
 
 			glUniformMatrix4fv(
 				u_mvmat, 1, IS_TRANSPOSED, rqe.renderState.mv_matrix.data());
-			CHECK_OPENGL_ERROR();
 
 			CRenderizable::RenderContext rc;
 			rc.shader = &shader;

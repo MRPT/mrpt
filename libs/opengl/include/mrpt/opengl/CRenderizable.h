@@ -319,7 +319,7 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	/** Returns the ID of the OpenGL shader program required to render this
 	 * class. \sa DefaultShaderID
 	 */
-	virtual shader_id_t shaderType() const
+	virtual shader_list_t requiredShaders() const
 	{
 		THROW_EXCEPTION("Not implemented in derived class!");
 	}

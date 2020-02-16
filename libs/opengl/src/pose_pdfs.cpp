@@ -105,11 +105,11 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPosePDF& o)
 		const auto* p = dynamic_cast<const CPosePDFParticles*>(&o);
 		ASSERT_(p != nullptr);
 
-		opengl::CPointCloud::Ptr pnts = std::make_shared<opengl::CPointCloud>();
+		auto pnts = opengl::CPointCloud::Create();
 		pnts->setColor(POSE_COLOR, 0.6);
 		pnts->setPointSize(POSE_POINT_SIZE);
 
-		opengl::CSetOfLines::Ptr lins = std::make_shared<opengl::CSetOfLines>();
+		auto lins = opengl::CSetOfLines::Create();
 		lins->setColor(POSE_COLOR, 0.6);
 		lins->setLineWidth(POSE_TAIL_WIDTH);
 

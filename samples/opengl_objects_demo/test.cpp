@@ -30,6 +30,8 @@ void TestOpenGLObjects()
 
 	COpenGLScene::Ptr& theScene = win.get3DSceneAndLock();
 
+	auto& rng = mrpt::random::getRandomGenerator();
+
 	// Lights:
 	// theScene->getViewport()->setNumberOfLights(1);
 	// mrpt::opengl::CLight & light0 = theScene->getViewport()->getLight(0);
@@ -457,9 +459,9 @@ void TestOpenGLObjects()
 
 		for (int i = 0; i < 100000; i++)
 			obj->insertPoint(
-				mrpt::random::getRandomGenerator().drawUniform(-5, 5),
-				mrpt::random::getRandomGenerator().drawUniform(-5, 5),
-				mrpt::random::getRandomGenerator().drawUniform(-5, 5));
+				rng.drawUniform(-5, 5),
+				rng.drawUniform(-5, 5),
+				rng.drawUniform(-5, 5));
 
 		auto gl_txt = opengl::CText::Create("CPointCloud");
 		gl_txt->setLocation(off_x, off_y_label, 0);
@@ -479,12 +481,12 @@ void TestOpenGLObjects()
 
 		for (int i = 0; i < 200; i++)
 			obj->push_back(
-				mrpt::random::getRandomGenerator().drawUniform(-5, 5),
-				mrpt::random::getRandomGenerator().drawUniform(-5, 5),
-				mrpt::random::getRandomGenerator().drawUniform(-5, 5),
-				mrpt::random::getRandomGenerator().drawUniform(0, 1),
-				mrpt::random::getRandomGenerator().drawUniform(0, 1),
-				mrpt::random::getRandomGenerator().drawUniform(0, 1));
+				rng.drawUniform(-5, 5),
+				rng.drawUniform(-5, 5),
+				rng.drawUniform(-5, 5),
+				rng.drawUniform(0, 1),
+				rng.drawUniform(0, 1),
+				rng.drawUniform(0, 1));
 
 		auto gl_txt =
 			opengl::CText::Create("CPointCloudColoured");
@@ -585,19 +587,18 @@ void TestOpenGLObjects()
 
 	// CSetOfLines
 	{
+		for (int rep = 0; rep < 2; rep++)
 		{
 			opengl::CSetOfLines::Ptr obj = opengl::CSetOfLines::Create();
-			obj->setLocation(off_x, 0, 0);
+			obj->setLocation(off_x, rep * 20, 0);
 
 			for (int i = 0; i < 15; i++)
 				obj->appendLine(
-					mrpt::random::getRandomGenerator().drawUniform(-5, 5),
-					mrpt::random::getRandomGenerator().drawUniform(-5, 5),
-					mrpt::random::getRandomGenerator().drawUniform(-5, 5),
-					mrpt::random::getRandomGenerator().drawUniform(-5, 5),
-					mrpt::random::getRandomGenerator().drawUniform(-5, 5),
-					mrpt::random::getRandomGenerator().drawUniform(-5, 5));
+					rng.drawUniform(-5, 5), rng.drawUniform(-5, 5),
+					rng.drawUniform(-5, 5), rng.drawUniform(-5, 5),
+					rng.drawUniform(-5, 5), rng.drawUniform(-5, 5));
 
+			if (rep == 1) obj->setVerticesPointSize(5.0f);
 			theScene->insert(obj);
 		}
 
@@ -614,12 +615,9 @@ void TestOpenGLObjects()
 			obj->setLocation(off_x, 0, 0);
 
 			obj->setLineCoords(
-				mrpt::random::getRandomGenerator().drawUniform(-5, 5),
-				mrpt::random::getRandomGenerator().drawUniform(-5, 5),
-				mrpt::random::getRandomGenerator().drawUniform(-5, 5),
-				mrpt::random::getRandomGenerator().drawUniform(-5, 5),
-				mrpt::random::getRandomGenerator().drawUniform(-5, 5),
-				mrpt::random::getRandomGenerator().drawUniform(-5, 5));
+				rng.drawUniform(-5, 5), rng.drawUniform(-5, 5),
+				rng.drawUniform(-5, 5), rng.drawUniform(-5, 5),
+				rng.drawUniform(-5, 5), rng.drawUniform(-5, 5));
 
 			theScene->insert(obj);
 		}

@@ -11,6 +11,7 @@ layout(location = 1) in vec4 vertexColor;
 
 uniform mat4 p_matrix;
 uniform mat4 mv_matrix;
+uniform float vertexPointSize;
 
 out vec4 frag_color;
 
@@ -18,7 +19,7 @@ void main()
 {
     vec4 eye_position = mv_matrix * vec4(position, 1.0);
     gl_Position = p_matrix * eye_position;
-    //gl_PointSize = 4.0;
+    gl_PointSize = vertexPointSize;
 
     frag_color = vertexColor;
 }

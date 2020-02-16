@@ -53,7 +53,10 @@ class CText : public CRenderizable
 	}
 	std::string getFont() const { return m_fontName; }
 
-	shader_id_t shaderType() const override { return DefaultShaderID::TEXT; }
+	shader_list_t requiredShaders() const override
+	{
+		return {DefaultShaderID::TEXT};
+	}
 	void render(const RenderContext& rc) const override;
 	void renderUpdateBuffers() const override;
 

@@ -22,6 +22,9 @@ namespace mrpt::opengl
  */
 using shader_id_t = uint8_t;
 
+/** A list of shader IDs */
+using shader_list_t = std::vector<shader_id_t>;
+
 /** A resource handling helper for OpenGL "Shader" compiled code fragment.
  *
  * The OpenGL shader resource will be freed upon destruction or when clear() is

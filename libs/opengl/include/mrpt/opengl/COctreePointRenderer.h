@@ -13,6 +13,7 @@
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/gl_utils.h>
+#include <atomic>
 #include <deque>
 
 namespace mrpt
@@ -279,8 +280,8 @@ class COctreePointRenderer
 	std::deque<TNode> m_octree_nodes;
 
 	// Counters of visible octrees for each render:
-	volatile mutable size_t m_visible_octree_nodes{0},
-		m_visible_octree_nodes_ongoing{0};
+	mutable std::atomic<size_t> m_visible_octree_nodes = 0;
+	mutable size_t m_visible_octree_nodes_ongoing = 0;
 
 	/** Render a given node. */
 	void octree_recursive_render(
@@ -600,10 +601,10 @@ class COctreePointRenderer
 			{
 				if (all_pts)
 					for (size_t i = 0; i < N; i++)
-						node.update_bb(octree_derived().getPointf(i));
+						node.update_bb(octree_derived()[i]);
 				else
 					for (size_t i = 0; i < N; i++)
-						node.update_bb(octree_derived().getPointf(node.pts[i]));
+						node.update_bb(octree_derived()[node.pts[i]]);
 			}
 		}
 		else
@@ -614,15 +615,14 @@ class COctreePointRenderer
 			if (all_pts)
 				for (size_t i = 0; i < N; i++)
 				{
-					mrpt::math::TPoint3Df p = octree_derived().getPointf(i);
+					const auto& p = octree_derived()[i];
 					mean += p;
 					if (has_to_compute_bb) node.update_bb(p);
 				}
 			else
 				for (size_t i = 0; i < N; i++)
 				{
-					mrpt::math::TPoint3Df p =
-						octree_derived().getPointf(node.pts[i]);
+					const auto& p = octree_derived()[node.pts[i]];
 					mean += p;
 					if (has_to_compute_bb) node.update_bb(p);
 				}
@@ -648,7 +648,7 @@ class COctreePointRenderer
 			for (size_t j = 0; j < N; j++)
 			{
 				const size_t i = all_pts ? j : node.pts[j];
-				const mrpt::math::TPoint3Df p = octree_derived().getPointf(i);
+				const mrpt::math::TPoint3Df p = octree_derived()[i];
 				if (p.z < c.z)
 				{
 					if (p.y < c.y)

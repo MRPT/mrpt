@@ -47,47 +47,45 @@ void mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE(size_t value)
 
 IMPLEMENTS_SERIALIZABLE(CPointCloud, CRenderizable, mrpt::opengl)
 
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
-CPointCloud::CPointCloud()
-	: m_xs(),
-	  m_ys(),
-	  m_zs(),
+CPointCloud::CPointCloud() { markAllPointsAsNew(); }
 
-	  m_colorFromDepth_min(0, 0, 0),
-	  m_colorFromDepth_max(0, 0, 1)
+void CPointCloud::onUpdateBuffers_Points()
 {
-	markAllPointsAsNew();
-}
+	{
+		mrpt::math::TPoint3Df tst[2];
+		static_assert(
+			&tst[1].x == (&tst[0].x + 3), "memory layout not as expected");
+		static_assert(
+			&tst[1].y == (&tst[0].y + 3), "memory layout not as expected");
+		static_assert(
+			&tst[1].z == (&tst[0].z + 3), "memory layout not as expected");
+	}
 
-void CPointCloud::renderUpdateBuffers() const
-{
-	//
-	MRPT_TODO("Implement me!");
-}
-
-void CPointCloud::render(const RenderContext& rc) const
-{
-#if MRPT_HAS_OPENGL_GLUT
-
-	ASSERT_(m_xs.size() == m_ys.size());
-	ASSERT_(m_xs.size() == m_zs.size());
+	const auto N = m_points.size();
 
 	octree_assure_uptodate();  // Rebuild octree if needed
 	m_last_rendered_count_ongoing = 0;
 
-	if (m_colorFromDepth)
+	if (m_colorFromDepth != colNone)
 	{
 		if (!m_minmax_valid)
 		{
 			m_minmax_valid = true;
-			if (!m_zs.empty())
-				mrpt::math::minimum_maximum(
-					m_colorFromDepth == CPointCloud::colZ
-						? m_zs
-						: (m_colorFromDepth == CPointCloud::colY ? m_ys : m_xs),
-					m_min, m_max);
+			if (!m_points.empty())
+			{
+				const float* vs = m_colorFromDepth == CPointCloud::colZ
+									  ? &m_points[0].z
+									  : (m_colorFromDepth == CPointCloud::colY
+											 ? &m_points[0].y
+											 : &m_points[0].x);
+				m_min = m_max = vs[0];
+				for (size_t i = 1; i < N; i++)
+				{
+					float v = vs[3 * i];
+					if (v < m_min) m_min = v;
+					if (v > m_max) m_max = v;
+				}
+			}
 			else
 				m_max = m_min = 0;
 		}
@@ -97,17 +95,7 @@ void CPointCloud::render(const RenderContext& rc) const
 			m_max_m_min = -1;
 		else
 			m_min = m_max - m_max_m_min * 1.01f;
-		m_max_m_min_inv = 1.0 / m_max_m_min;
-	}
-
-	if (m_color.A != 255)
-	{
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
-	else
-	{
-		glDisable(GL_BLEND);
+		m_max_m_min_inv = 1.0f / m_max_m_min;
 	}
 
 	// Slopes of color interpolation:
@@ -119,54 +107,64 @@ void CPointCloud::render(const RenderContext& rc) const
 	m_col_slop_inv.G = m_col_slop.G != 0 ? 1.0f / m_col_slop.G : 0;
 	m_col_slop_inv.B = m_col_slop.B != 0 ? 1.0f / m_col_slop.B : 0;
 
-	glPointSize(m_pointSize);
-	if (m_pointSmooth)
-		glEnable(GL_POINT_SMOOTH);
+	MRPT_TODO("Restore rendering using octrees");
+	// octree_render(*rc.state);  // Render all points recursively:
+
+	// ------------------------------
+	// Fill the shader buffers
+	// ------------------------------
+	// "CRenderizableShaderPoints::m_vertex_buffer_data" is already done, since
+	// "m_points" is an alias for it.
+
+	// color buffer:
+	auto& cbd = CRenderizableShaderPoints::m_color_buffer_data;
+	cbd.clear();
+	cbd.reserve(N);
+
+	// color for each point:
+	if (m_colorFromDepth != colNone && m_max_m_min > 0)
+	{
+		for (size_t i = 0; i < N; i++)
+		{
+			const float depthCol =
+				(m_colorFromDepth == colX
+					 ? m_points[i].x
+					 : (m_colorFromDepth == colY ? m_points[i].y
+												 : m_points[i].z));
+
+			float f = (depthCol - m_min) * m_max_m_min_inv;
+			f = std::max(0.0f, min(1.0f, f));
+
+			cbd.push_back(
+				{static_cast<uint8_t>(
+					 (m_colorFromDepth_min.R + f * m_col_slop_inv.R) * 255.0f),
+				 static_cast<uint8_t>(
+					 (m_colorFromDepth_min.G + f * m_col_slop_inv.G) * 255.0f),
+				 static_cast<uint8_t>(
+					 (m_colorFromDepth_min.B + f * m_col_slop_inv.B) * 255.0f),
+				 m_color.A});
+		}
+	}
 	else
-		glDisable(GL_POINT_SMOOTH);
-
-	// Disable lighting for point clouds:
-	glDisable(GL_LIGHTING);
-
-	glBegin(GL_POINTS);
-	glColor4ub(
-		m_color.R, m_color.G, m_color.B,
-		m_color.A);  // The default if m_colorFromDepth=false
-	octree_render(*rc.state);  // Render all points recursively:
-	glEnd();
-
-	glEnable(GL_LIGHTING);
-
-	if (m_color.A != 255) glDisable(GL_BLEND);
-
-	if (m_pointSmooth) glDisable(GL_POINT_SMOOTH);
+	{
+		// all points: same color
+		cbd.assign(N, m_color);
+	}
 
 	m_last_rendered_count = m_last_rendered_count_ongoing;
 
 	CHECK_OPENGL_ERROR();
-#endif
+}
+
+void CPointCloud::render(const RenderContext& rc) const
+{
+	// Actually invoke the shader for points:
+	CRenderizableShaderPoints::render(rc);
 }
 
 inline void CPointCloud::internal_render_one_point(size_t i) const
 {
 #if MRPT_HAS_OPENGL_GLUT
-	if (m_colorFromDepth != colNone && m_max_m_min > 0)
-	{
-		const float depthCol =
-			(m_colorFromDepth == colX
-				 ? m_xs[i]
-				 : (m_colorFromDepth == colY ? m_ys[i] : m_zs[i]));
-
-		float f = (depthCol - m_min) * m_max_m_min_inv;
-		f = std::max(0.0f, min(1.0f, f));
-
-		glColor4f(
-			m_colorFromDepth_min.R + f * m_col_slop_inv.R,
-			m_colorFromDepth_min.G + f * m_col_slop_inv.G,
-			m_colorFromDepth_min.B + f * m_col_slop_inv.B,
-			m_color.A * (1.0f / 255.f));
-	}
-	glVertex3f(m_xs[i], m_ys[i], m_zs[i]);
 #else
 	MRPT_UNUSED_PARAM(i);
 #endif
@@ -177,7 +175,8 @@ void CPointCloud::render_subset(
 	const bool all, const std::vector<size_t>& idxs,
 	const float render_area_sqpixels) const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if 0 && MRPT_HAS_OPENGL_GLUT
+	// Disabled for now... (Feb 2020)
 
 	const size_t N = (all ? m_xs.size() : idxs.size());
 	const size_t decimation = mrpt::round(std::max(
@@ -209,17 +208,13 @@ void CPointCloud::serializeTo(
 	SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
 	out["colorFromDepth"] = static_cast<int32_t>(m_colorFromDepth);
 	out["pointSize"] = m_pointSize;
-	for (size_t i = 0; i < m_xs.size(); i++)
+	const auto N = m_points.size();
+	out["N"] = N;
+	for (size_t i = 0; i < N; i++)
 	{
-		out["xs"][i] = m_xs[i];
-	}
-	for (size_t i = 0; i < m_ys.size(); i++)
-	{
-		out["ys"][i] = m_ys[i];
-	}
-	for (size_t i = 0; i < m_zs.size(); i++)
-	{
-		out["zs"][i] = m_zs[i];
+		out["xs"][i] = m_points[i].x;
+		out["ys"][i] = m_points[i].y;
+		out["zs"][i] = m_points[i].z;
 	}
 	out["colorFromDepth_min"]["R"] = m_colorFromDepth_min.R;
 	out["colorFromDepth_min"]["G"] = m_colorFromDepth_min.G;
@@ -243,17 +238,13 @@ void CPointCloud::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 			 */
 			// m_colorFromDepth = static_cast<float>(in["colorDepth"]);
 			m_pointSize = static_cast<float>(in["pointSize"]);
-			for (size_t i = 0; i < m_xs.size(); i++)
+			const size_t N = static_cast<size_t>(in["N"]);
+			m_points.resize(N);
+			for (size_t i = 0; i < N; i++)
 			{
-				m_xs[i] = static_cast<float>(in["xs"][i]);
-			}
-			for (size_t i = 0; i < m_ys.size(); i++)
-			{
-				m_ys[i] = static_cast<float>(in["ys"][i]);
-			}
-			for (size_t i = 0; i < m_zs.size(); i++)
-			{
-				m_zs[i] = static_cast<float>(in["zs"][i]);
+				m_points[i].x = static_cast<float>(in["xs"][i]);
+				m_points[i].y = static_cast<float>(in["ys"][i]);
+				m_points[i].z = static_cast<float>(in["zs"][i]);
 			}
 			m_colorFromDepth_min.R =
 				static_cast<float>(in["colorFromDepth_min"]["R"]);
@@ -274,13 +265,17 @@ void CPointCloud::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	}
 }
-uint8_t CPointCloud::serializeGetVersion() const { return 4; }
+uint8_t CPointCloud::serializeGetVersion() const { return 5; }
 void CPointCloud::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
 	// Changed from bool to enum/int32_t in version 3.
 	out << static_cast<int32_t>(m_colorFromDepth);
-	out << m_xs << m_ys << m_zs;
+
+	// out << m_xs << m_ys << m_zs;// was: v4
+	out.WriteAs<uint32_t>(m_points.size());
+	if (!m_points.empty())
+		out.WriteBufferFixEndianness(m_points.data(), m_points.size());
 
 	// Added in version 1.
 	out << m_pointSize;
@@ -305,6 +300,7 @@ void CPointCloud::serializeFrom(
 		case 2:
 		case 3:
 		case 4:
+		case 5:
 		{
 			readFromStreamRender(in);
 			if (version >= 3)
@@ -320,7 +316,19 @@ void CPointCloud::serializeFrom(
 				m_colorFromDepth =
 					colorFromZ ? CPointCloud::colZ : CPointCloud::colNone;
 			}
-			in >> m_xs >> m_ys >> m_zs;
+			if (version < 5)
+			{
+				std::vector<float> xs, ys, zs;
+				in >> xs >> ys >> zs;
+				this->setAllPoints(xs, ys, zs);
+			}
+			else
+			{
+				// New in v5:
+				auto N = in.ReadAs<uint32_t>();
+				m_points.resize(N);
+				in.ReadBufferFixEndianness(m_points.data(), N);
+			}
 
 			if (version >= 1)
 				in >> m_pointSize;
@@ -355,25 +363,15 @@ void CPointCloud::serializeFrom(
 	markAllPointsAsNew();
 }
 
-/*---------------------------------------------------------------
-						clear
----------------------------------------------------------------*/
 void CPointCloud::clear()
 {
-	m_xs.clear();
-	m_ys.clear();
-	m_zs.clear();
+	m_points.clear();
 	markAllPointsAsNew();
 }
 
-/*---------------------------------------------------------------
-						insertPoint
----------------------------------------------------------------*/
 void CPointCloud::insertPoint(float x, float y, float z)
 {
-	m_xs.push_back(x);
-	m_ys.push_back(y);
-	m_zs.push_back(z);
+	m_points.emplace_back(x, y, z);
 
 	m_minmax_valid = false;
 
@@ -382,17 +380,13 @@ void CPointCloud::insertPoint(float x, float y, float z)
 	markAllPointsAsNew();
 }
 
-/** Write an individual point (checks for "i" in the valid range only in Debug).
+/** Write an individual point (checks for "i" in the valid range only in
+ * Debug).
  */
 void CPointCloud::setPoint(
 	size_t i, const float x, const float y, const float z)
 {
-#ifdef _DEBUG
-	ASSERT_BELOW_(i, size());
-#endif
-	m_xs[i] = x;
-	m_ys[i] = y;
-	m_zs[i] = z;
+	m_points.at(i) = {x, y, z};
 
 	m_minmax_valid = false;
 
@@ -425,10 +419,9 @@ void CPointCloud::PLY_import_set_vertex_count(const size_t N)
 	this->resize(N);
 }
 
-/** In a base class, will be called after PLY_import_set_vertex_count() once for
- * each loaded point.
- *  \param pt_color Will be nullptr if the loaded file does not provide color
- * info.
+/** In a base class, will be called after PLY_import_set_vertex_count() once
+ * for each loaded point. \param pt_color Will be nullptr if the loaded file
+ * does not provide color info.
  */
 void CPointCloud::PLY_import_set_vertex(
 	const size_t idx, const mrpt::math::TPoint3Df& pt,
@@ -440,10 +433,9 @@ void CPointCloud::PLY_import_set_vertex(
 
 /** In a base class, return the number of vertices */
 size_t CPointCloud::PLY_export_get_vertex_count() const { return this->size(); }
-/** In a base class, will be called after PLY_export_get_vertex_count() once for
- * each exported point.
- *  \param pt_color Will be nullptr if the loaded file does not provide color
- * info.
+/** In a base class, will be called after PLY_export_get_vertex_count() once
+ * for each exported point. \param pt_color Will be nullptr if the loaded
+ * file does not provide color info.
  */
 void CPointCloud::PLY_export_get_vertex(
 	const size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
@@ -452,7 +444,18 @@ void CPointCloud::PLY_export_get_vertex(
 	MRPT_UNUSED_PARAM(pt_color);
 	pt_has_color = false;
 
-	pt.x = m_xs[idx];
-	pt.y = m_ys[idx];
-	pt.z = m_zs[idx];
+	pt = m_points[idx];
+}
+
+void CPointCloud::setAllPoints(
+	const std::vector<float>& x, const std::vector<float>& y,
+	const std::vector<float>& z)
+{
+	const auto N = x.size();
+	m_points.resize(N);
+
+	for (size_t i = 0; i < N; i++) m_points[i] = {x[i], y[i], z[i]};
+
+	m_minmax_valid = false;
+	markAllPointsAsNew();
 }

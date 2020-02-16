@@ -204,6 +204,9 @@ struct TPoint2D_ : public TPoseOrPoint,
 using TPoint2D = TPoint2D_<double>;
 using TPoint2Df = TPoint2D_<float>;
 
+/** Useful type alias for 2-vectors */
+using TVector2D = TPoint2D;
+
 /** Exact comparison between 2D points */
 template <typename T>
 constexpr bool operator==(const TPoint2D_<T>& p1, const TPoint2D_<T>& p2)
