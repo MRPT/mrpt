@@ -561,8 +561,8 @@ float CFeature::internal_distanceBetweenPolarImages(
 	//#define LM_CORR_METHOD_CORRELATION
 
 #if defined(LM_CORR_BIAS_MEAN) || defined(LM_CORR_METHOD_CORRELATION)
-	const float desc1_mean = desc1.sum() / static_cast<float>(width * height);
-	const float desc2_mean = desc2.sum() / static_cast<float>(width * height);
+	const float desc1_mean = desc1.sum() / d2f(width * height);
+	const float desc2_mean = desc2.sum() / d2f(width * height);
 #endif
 
 	CVectorFloat distances(height, 0);  // Distances for each shift
@@ -608,7 +608,7 @@ float CFeature::internal_distanceBetweenPolarImages(
 		}
 
 		// Average:
-		if (normalize_distances) dist /= static_cast<float>(width * height);
+		if (normalize_distances) dist /= d2f(width * height);
 
 #ifdef LM_CORR_METHOD_EUCLID
 		dist = sqrt(dist);
@@ -650,7 +650,7 @@ float CFeature::internal_distanceBetweenPolarImages(
 #endif
 
 	// Output:
-	minDistAngle = minDistIdx * M_2PI / static_cast<float>(width);
+	minDistAngle = minDistIdx * M_2PI / d2f(width);
 	return minDist;
 
 	MRPT_END

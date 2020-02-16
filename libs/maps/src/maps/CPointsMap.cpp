@@ -536,7 +536,7 @@ void CPointsMap::determineMatching2D(
 	// The ratio of points in the other map with corrs:
 	extraResults.correspondencesRatio = params.decimation_other_map_points *
 										nOtherMapPointsWithCorrespondence /
-										static_cast<float>(nLocalPoints);
+										d2f(nLocalPoints);
 
 	MRPT_END
 }
@@ -1204,7 +1204,7 @@ void CPointsMap::determineMatching3D(
 		(_sumSqrCount) ? _sumSqrDist / static_cast<double>(_sumSqrCount) : 0;
 	extraResults.correspondencesRatio = params.decimation_other_map_points *
 										nOtherMapPointsWithCorrespondence /
-										static_cast<float>(nLocalPoints);
+										d2f(nLocalPoints);
 
 	MRPT_END
 }
@@ -1411,7 +1411,7 @@ void CPointsMap::compute3DDistanceToMesh(
 
 	// The ratio of points in the other map with corrs:
 	correspondencesRatio =
-		nOtherMapPointsWithCorrespondence / static_cast<float>(nLocalPoints);
+		nOtherMapPointsWithCorrespondence / d2f(nLocalPoints);
 
 	MRPT_END
 }

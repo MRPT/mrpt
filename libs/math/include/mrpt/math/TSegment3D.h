@@ -14,32 +14,22 @@
 
 namespace mrpt::math
 {
-/**
- * 3D segment, consisting of two points.
+/** 3D segment, consisting of two points.
  * \sa TSegment2D,TLine3D,TPlane,TPolygon3D,TPoint3D
  */
 struct TSegment3D
 {
    public:
-	/**
-	 * Origin point.
-	 */
-	TPoint3D point1;
-	/**
-	 * Destiny point.
-	 */
-	TPoint3D point2;
-	/**
-	 * Segment length.
-	 */
+	TPoint3D point1;  //!< origin point
+	TPoint3D point2;  //!< final point
+
+	/** Segment length */
 	double length() const;
-	/**
-	 * Distance to point.
-	 */
+
+	/** Distance to point */
 	double distance(const TPoint3D& point) const;
-	/**
-	 * Distance to another segment.
-	 */
+
+	/** Distance to another segment */
 	double distance(const TSegment3D& segment) const;
 	/**
 	 * Check whether a point is inside the segment.

@@ -222,8 +222,8 @@ bool math::SegmentsIntersection(
 {
 	double x, y;
 	bool b = SegmentsIntersection(x1, y1, x2, y2, x3, y3, x4, y4, x, y);
-	ix = static_cast<float>(x);
-	iy = static_cast<float>(y);
+	ix = d2f(x);
+	iy = d2f(y);
 	return b;
 }
 
