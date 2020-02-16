@@ -47,6 +47,8 @@ bool DataSourceRawlog::impl_get_next_observations(
 		// Optional skip of first N entries
 		if (m_rawlogEntry < m_rawlog_offset) continue;
 
+		MRPT_LOG_DEBUG_STREAM("Processing rawlog entry #" << m_rawlogEntry);
+
 		// Ok, accept this new observations:
 		return true;
 	};
