@@ -50,6 +50,14 @@ TEST(CConfigFileMemory, Names)
 		EXPECT_STREQ("name", names[0].c_str());
 		EXPECT_STREQ("names", names[1].c_str());
 	}
+
+	EXPECT_TRUE(third.sectionExists("sec"));
+	EXPECT_TRUE(third.sectionExists("SEC"));
+	EXPECT_FALSE(third.sectionExists("SECXX"));
+
+	EXPECT_TRUE(third.keyExists("sec", "name"));
+	EXPECT_TRUE(third.keyExists("SEC", "NAME"));
+	EXPECT_FALSE(third.keyExists("SEC", "NAMEX"));
 }
 
 TEST(CConfigFileMemory, setFromString)

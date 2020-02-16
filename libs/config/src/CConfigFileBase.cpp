@@ -202,7 +202,6 @@ std::string CConfigFileBase::read_string_first_word(
 		return auxStrs[0];
 }
 
-/** Checks if a given section exists (name is case insensitive) */
 bool CConfigFileBase::sectionExists(const std::string& section_name) const
 {
 	std::vector<std::string> sects;
@@ -210,6 +209,16 @@ bool CConfigFileBase::sectionExists(const std::string& section_name) const
 	for (auto& sect : sects)
 		if (!mrpt::system::os::_strcmpi(section_name.c_str(), sect.c_str()))
 			return true;
+	return false;
+}
+
+bool CConfigFileBase::keyExists(
+	const std::string& section, const std::string& key) const
+{
+	std::vector<std::string> keys;
+	getAllKeys(section, keys);
+	for (auto& k : keys)
+		if (!mrpt::system::os::_strcmpi(key.c_str(), k.c_str())) return true;
 	return false;
 }
 

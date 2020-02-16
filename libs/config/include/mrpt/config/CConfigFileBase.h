@@ -77,8 +77,13 @@ class CConfigFileBase
 	virtual void getAllKeys(
 		const std::string& section, std::vector<std::string>& keys) const = 0;
 
-	/** Checks if a given section exists (name is case insensitive) */
+	/** Checks if a given section exists (name is case insensitive)
+	 * \sa keyExists() */
 	bool sectionExists(const std::string& section_name) const;
+
+	/** Checks if a given key exists inside a section (case insensitive)
+	 * \sa sectionExists() */
+	bool keyExists(const std::string& section, const std::string& key) const;
 
 	/** Changes the contents of the virtual "config file" from a text block
 	 * containing a YAML configuration text. Refer to unit test
