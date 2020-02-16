@@ -15,7 +15,12 @@
 
 namespace mrpt::math
 {
-/** Trivially copiable underlying data for TPoint3D */
+// Ensure 1-byte memory alignment, no additional stride bytes.
+#pragma pack(push, 1)
+
+/** Trivially copiable underlying data for TPoint3D
+ * 1-byte memory packed, no padding]
+ */
 template <typename T>
 struct TPoint3D_data
 {
@@ -23,7 +28,8 @@ struct TPoint3D_data
 	T x, y, z;
 };
 
-/** Base template for TPoint3D and TPoint3Df
+/** Base template for TPoint3D and TPoint3Df.
+ * [1-byte memory packed, no padding]
  * \ingroup geometry_grp
  */
 template <typename T>
@@ -235,19 +241,17 @@ struct TPoint3D_ : public TPoseOrPoint,
 	}
 };
 
-/**
- * Lightweight 3D point. Allows coordinate access using [] operator.
+/** Lightweight 3D point. Allows coordinate access using [] operator.
+ * (1-byte memory packed, no padding).
  * \sa mrpt::poses::CPoint3D, mrpt::math::TPoint3Df
  */
 using TPoint3D = TPoint3D_<double>;
 using TPoint3Df = TPoint3D_<float>;
 
-/** Useful type alias for 3-vectors */
+/** Useful type alias for 3-vectors.
+ * (1-byte memory packed, no padding) */
 using TVector3D = TPoint3D;
 using TVector3Df = TPoint3Df;
-
-/** Useful type alias for 2-vectors */
-using TVector2D = TPoint2D;
 
 /** XYZ point (double) + Intensity(u8) \sa mrpt::math::TPoint3D */
 struct TPointXYZIu8
@@ -296,9 +300,6 @@ struct TPointXYZfRGBu8
 	{
 	}
 };
-
-// Ensure 1-byte memory alignment, no additional stride bytes.
-#pragma pack(push, 1)
 
 /** XYZ point (float) + RGBA(float) [1-byte memory packed, no padding]
  * \sa mrpt::math::TPoint3D */

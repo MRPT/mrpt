@@ -8,8 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/math/TPoint3D.h>
 #include <mrpt/opengl/COctreePointRenderer.h>
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableShaderPoints.h>
 #include <mrpt/opengl/PLY_import_export.h>
 #include <mrpt/opengl/pointcloud_adapters.h>
 
@@ -40,7 +41,7 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_opengl_grp
  */
-class CPointCloud : public CRenderizable,
+class CPointCloud : public CRenderizableShaderPoints,
 					public COctreePointRenderer<CPointCloud>,
 					public mrpt::opengl::PLY_Importer,
 					public mrpt::opengl::PLY_Exporter
@@ -54,15 +55,19 @@ class CPointCloud : public CRenderizable,
 		colZ,
 		colY,
 		colX
-	} m_colorFromDepth{CPointCloud::colNone};
-	std::vector<float> m_xs, m_ys, m_zs;
-	/** By default is 1.0 */
-	float m_pointSize{1};
-	/** Default: false */
-	bool m_pointSmooth{false};
+	};
 
-	mutable volatile size_t m_last_rendered_count{0},
-		m_last_rendered_count_ongoing{0};
+	Axis m_colorFromDepth = CPointCloud::colNone;
+
+	/** Actually, an alias for the base class shader container of points. Kept
+	 * to have an easy to use name. */
+	std::vector<mrpt::math::TPoint3Df>& m_points =
+		CRenderizableShaderPoints::m_vertex_buffer_data;
+
+	/** Default: false */
+	bool m_pointSmooth = false;
+
+	mutable size_t m_last_rendered_count{0}, m_last_rendered_count_ongoing{0};
 
 	/** Do needed internal work if all points are new (octree rebuilt,...) */
 	void markAllPointsAsNew();
@@ -113,57 +118,40 @@ class CPointCloud : public CRenderizable,
 	/** @name Read/Write of the list of points to render
 		@{ */
 
-	inline size_t size() const { return m_xs.size(); }
+	inline size_t size() const { return m_points.size(); }
 	/** Set the number of points (with contents undefined) */
 	inline void resize(size_t N)
 	{
-		m_xs.resize(N);
-		m_ys.resize(N);
-		m_zs.resize(N);
+		m_points.resize(N);
 		m_minmax_valid = false;
 		markAllPointsAsNew();
 	}
 
 	/** Like STL std::vector's reserve */
-	inline void reserve(size_t N)
-	{
-		m_xs.reserve(N);
-		m_ys.reserve(N);
-		m_zs.reserve(N);
-	}
+	inline void reserve(size_t N) { m_points.reserve(N); }
 
 	/** Set the list of (X,Y,Z) point coordinates, all at once, from three
 	 * vectors with their coordinates */
 	void setAllPoints(
 		const std::vector<float>& x, const std::vector<float>& y,
-		const std::vector<float>& z)
-	{
-		m_xs = x;
-		m_ys = y;
-		m_zs = z;
-		m_minmax_valid = false;
-		markAllPointsAsNew();
-	}
+		const std::vector<float>& z);
 
 	/** Set the list of (X,Y,Z) point coordinates, DESTROYING the contents of
 	 * the input vectors (via swap) */
-	void setAllPointsFast(
-		std::vector<float>& x, std::vector<float>& y, std::vector<float>& z)
+	void setAllPointsFast(std::vector<mrpt::math::TPoint3Df>& pts)
 	{
 		this->clear();
-		m_xs.swap(x);
-		m_ys.swap(y);
-		m_zs.swap(z);
+		m_points.swap(pts);
 		m_minmax_valid = false;
 		markAllPointsAsNew();
 	}
 
-	/** Get a const reference to the internal array of X coordinates */
-	inline const std::vector<float>& getArrayX() const { return m_xs; }
-	/** Get a const reference to the internal array of Y coordinates */
-	inline const std::vector<float>& getArrayY() const { return m_ys; }
-	/** Get a const reference to the internal array of Z coordinates */
-	inline const std::vector<float>& getArrayZ() const { return m_zs; }
+	/** Get a const reference to the internal array of points */
+	inline const std::vector<mrpt::math::TPoint3Df>& getArrayPoints() const
+	{
+		return m_points;
+	}
+
 	/** Empty the list of points. */
 	void clear();
 
@@ -172,32 +160,12 @@ class CPointCloud : public CRenderizable,
 
 	/** Read access to each individual point (checks for "i" in the valid range
 	 * only in Debug). */
-	inline mrpt::math::TPoint3D operator[](size_t i) const
+	inline const mrpt::math::TPoint3Df& operator[](size_t i) const
 	{
 #ifdef _DEBUG
 		ASSERT_BELOW_(i, size());
 #endif
-		return mrpt::math::TPoint3D(m_xs[i], m_ys[i], m_zs[i]);
-	}
-
-	/** Read access to each individual point (checks for "i" in the valid range
-	 * only in Debug). */
-	inline mrpt::math::TPoint3D getPoint(size_t i) const
-	{
-#ifdef _DEBUG
-		ASSERT_BELOW_(i, size());
-#endif
-		return mrpt::math::TPoint3D(m_xs[i], m_ys[i], m_zs[i]);
-	}
-
-	/** Read access to each individual point (checks for "i" in the valid range
-	 * only in Debug). */
-	inline mrpt::math::TPoint3Df getPointf(size_t i) const
-	{
-#ifdef _DEBUG
-		ASSERT_BELOW_(i, size());
-#endif
-		return mrpt::math::TPoint3Df(m_xs[i], m_ys[i], m_zs[i]);
+		return m_points[i];
 	}
 
 	/** Write an individual point (checks for "i" in the valid range only in
@@ -208,9 +176,7 @@ class CPointCloud : public CRenderizable,
 	inline void setPoint_fast(
 		size_t i, const float x, const float y, const float z)
 	{
-		m_xs[i] = x;
-		m_ys[i] = y;
-		m_zs[i] = z;
+		m_points[i] = {x, y, z};
 		m_minmax_valid = false;
 		markAllPointsAsNew();
 	}
@@ -228,19 +194,11 @@ class CPointCloud : public CRenderizable,
 	{
 		MRPT_START
 		const size_t N = pointsList.size();
-
-		m_xs.resize(N);
-		m_ys.resize(N);
-		m_zs.resize(N);
-
+		m_points.resize(N);
 		size_t idx;
 		typename LISTOFPOINTS::const_iterator it;
 		for (idx = 0, it = pointsList.begin(); idx < N; ++idx, ++it)
-		{
-			m_xs[idx] = it->x;
-			m_ys[idx] = it->y;
-			m_zs[idx] = it->z;
-		}
+			m_points[idx] = {it->x, it->y, it->z};
 		markAllPointsAsNew();
 		MRPT_END
 	}
@@ -265,9 +223,6 @@ class CPointCloud : public CRenderizable,
 		m_colorFromDepth = v ? CPointCloud::colZ : CPointCloud::colNone;
 	}
 
-	/** By default is 1.0 */
-	inline void setPointSize(float p) { m_pointSize = p; }
-	inline float getPointSize() const { return m_pointSize; }
 	inline void enablePointSmooth(bool enable = true)
 	{
 		m_pointSmooth = enable;
@@ -280,8 +235,8 @@ class CPointCloud : public CRenderizable,
 
 	/** @} */
 
+	void onUpdateBuffers_Points() override;
 	void render(const RenderContext& rc) const override;
-	void renderUpdateBuffers() const override;
 
 	/** Render a subset of points (required by octree renderer) */
 	void render_subset(
@@ -302,7 +257,8 @@ class CPointCloud : public CRenderizable,
 	mutable bool m_minmax_valid{false};
 
 	/** The colors used to interpolate when m_colorFromDepth is true. */
-	mrpt::img::TColorf m_colorFromDepth_min, m_colorFromDepth_max;
+	mrpt::img::TColorf m_colorFromDepth_min = {0, 0, 0},
+					   m_colorFromDepth_max = {0, 0, 1};
 
 	inline void internal_render_one_point(size_t i) const;
 };
@@ -340,9 +296,10 @@ class PointCloudAdapter<mrpt::opengl::CPointCloud>
 	template <typename T>
 	inline void getPointXYZ(const size_t idx, T& x, T& y, T& z) const
 	{
-		x = m_obj.getArrayX()[idx];
-		y = m_obj.getArrayY()[idx];
-		z = m_obj.getArrayZ()[idx];
+		const auto& pt = m_obj[idx];
+		x = pt.x;
+		y = pt.y;
+		z = pt.z;
 	}
 	/** Set XYZ coordinates of i'th point */
 	inline void setPointXYZ(

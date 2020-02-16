@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/img/color_maps.h>
+#include <mrpt/math/TPoint3D.h>
 #include <mrpt/opengl/COctreePointRenderer.h>
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/PLY_import_export.h>
@@ -49,16 +50,7 @@ class CPointCloudColoured : public CRenderizable,
 	DEFINE_SERIALIZABLE(CPointCloudColoured, mrpt::opengl)
 
    public:
-	struct TPointColour
-	{
-		inline TPointColour() = default;
-		inline TPointColour(
-			float _x, float _y, float _z, float _R, float _G, float _B)
-			: x(_x), y(_y), z(_z), R(_R), G(_G), B(_B)
-		{
-		}
-		float x, y, z, R, G, B;  // Float is precission enough for rendering
-	};
+	using TPointColour = mrpt::math::TPointXYZRGBAf;
 
    private:
 	using TListPointColour = std::vector<TPointColour>;
@@ -111,6 +103,7 @@ class CPointCloudColoured : public CRenderizable,
 
 	/** Like STL std::vector's reserve */
 	inline void reserve(size_t N) { m_points.reserve(N); }
+
 	/** Read access to each individual point (checks for "i" in the valid range
 	 * only in Debug). */
 	inline const TPointColour& operator[](size_t i) const
@@ -119,27 +112,6 @@ class CPointCloudColoured : public CRenderizable,
 		ASSERT_BELOW_(i, size());
 #endif
 		return m_points[i];
-	}
-
-	/** Read access to each individual point (checks for "i" in the valid range
-	 * only in Debug). */
-	inline const TPointColour& getPoint(size_t i) const
-	{
-#ifdef _DEBUG
-		ASSERT_BELOW_(i, size());
-#endif
-		return m_points[i];
-	}
-
-	/** Read access to each individual point (checks for "i" in the valid range
-	 * only in Debug). */
-	inline mrpt::math::TPoint3Df getPointf(size_t i) const
-	{
-#ifdef _DEBUG
-		ASSERT_BELOW_(i, size());
-#endif
-		return mrpt::math::TPoint3Df(
-			m_points[i].x, m_points[i].y, m_points[i].z);
 	}
 
 	/** Write an individual point (checks for "i" in the valid range only in
@@ -157,10 +129,7 @@ class CPointCloudColoured : public CRenderizable,
 	inline void setPoint_fast(
 		const size_t i, const float x, const float y, const float z)
 	{
-		TPointColour& p = m_points[i];
-		p.x = x;
-		p.y = y;
-		p.z = z;
+		m_points[i].pt = {x, y, z};
 		markAllPointsAsNew();
 	}
 

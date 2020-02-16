@@ -120,9 +120,9 @@ class CSetOfTriangles : public CRenderizable
 	/** Overwrite all triangles colors with the one provided */
 	CRenderizable& setColorA_u8(const uint8_t a) override;
 
-	shader_id_t shaderType() const override
+	shader_list_t requiredShaders() const override
 	{
-		return DefaultShaderID::TRIANGLES;
+		return {DefaultShaderID::TRIANGLES};
 	}
 	void render(const RenderContext& rc) const override;
 	void renderUpdateBuffers() const override;

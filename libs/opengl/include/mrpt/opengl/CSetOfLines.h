@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/math/TSegment3D.h>
+#include <mrpt/opengl/CRenderizableShaderPoints.h>
 #include <mrpt/opengl/CRenderizableShaderWireFrame.h>
 
 namespace mrpt::opengl
@@ -28,18 +29,24 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_opengl_grp
  */
-class CSetOfLines : public CRenderizableShaderWireFrame
+class CSetOfLines : public CRenderizableShaderWireFrame,
+					public CRenderizableShaderPoints
 {
 	DEFINE_SERIALIZABLE(CSetOfLines, mrpt::opengl)
    protected:
 	std::vector<mrpt::math::TSegment3D> m_Segments;
-	/** 0: means hidden */
-	float m_verticesPointSize{.0f};
 
    public:
-	/**
-	 * Clear the list of segments
-	 */
+	void render(const RenderContext& rc) const override;
+	void renderUpdateBuffers() const override;
+
+	virtual shader_list_t requiredShaders() const override
+	{
+		// May use up to two shaders (vertices + lines):
+		return {DefaultShaderID::WIREFRAME, DefaultShaderID::POINTS};
+	}
+
+	/** Clear the list of segments */
 	inline void clear()
 	{
 		m_Segments.clear();
@@ -171,7 +178,7 @@ class CSetOfLines : public CRenderizableShaderWireFrame
 		double& y1, double& z1) const;
 
 	void onUpdateBuffers_Wireframe() override;
-	void onUpdateBuffers_Points();  // override;
+	void onUpdateBuffers_Points() override;
 
 	// Iterator management
 	using iterator = std::vector<mrpt::math::TSegment3D>::iterator;

@@ -34,7 +34,7 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			fragment_shader =
 #include "../shaders/points.f.glsl"
 				;
-			uniforms = {"p_matrix", "mv_matrix"};
+			uniforms = {"p_matrix", "mv_matrix", "vertexPointSize"};
 			attribs = {"position", "vertexColor"};
 			break;
 

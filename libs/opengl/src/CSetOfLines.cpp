@@ -22,14 +22,39 @@ using namespace std;
 IMPLEMENTS_SERIALIZABLE(CSetOfLines, CRenderizableShaderWireFrame, mrpt::opengl)
 
 /** Constructor */
-CSetOfLines::CSetOfLines() : m_Segments() {}
+CSetOfLines::CSetOfLines()
+{
+	// Override default pointsize=1 in points shader:
+	CRenderizableShaderPoints::m_pointSize = 0;
+}
 
 /** Constructor with a initial set of lines. */
 CSetOfLines::CSetOfLines(const std::vector<TSegment3D>& sgms, bool antiAliasing)
-	: m_Segments(sgms), m_verticesPointSize(.0f)
+	: m_Segments(sgms)
 {
+	// Override default pointsize=1 in points shader:
+	CRenderizableShaderPoints::m_pointSize = 0;
+
 	m_lineWidth = 1;
 	m_antiAliasing = antiAliasing;
+}
+
+void CSetOfLines::render(const RenderContext& rc) const
+{
+	switch (rc.shader_id)
+	{
+		case DefaultShaderID::POINTS:
+			CRenderizableShaderPoints::render(rc);
+			break;
+		case DefaultShaderID::WIREFRAME:
+			CRenderizableShaderWireFrame::render(rc);
+			break;
+	};
+}
+void CSetOfLines::renderUpdateBuffers() const
+{
+	CRenderizableShaderPoints::renderUpdateBuffers();
+	CRenderizableShaderWireFrame::renderUpdateBuffers();
 }
 
 /*---------------------------------------------------------------
@@ -45,10 +70,10 @@ void CSetOfLines::setLineByIndex(
 	MRPT_END
 }
 
-float CSetOfLines::getVerticesPointSize() const { return m_verticesPointSize; }
+float CSetOfLines::getVerticesPointSize() const { return m_pointSize; }
 void CSetOfLines::setVerticesPointSize(const float size_points)
 {
-	m_verticesPointSize = size_points;
+	m_pointSize = size_points;
 	CRenderizable::notifyChange();
 }
 
@@ -56,7 +81,7 @@ void CSetOfLines::onUpdateBuffers_Wireframe()
 {
 	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
 	vbd.clear();
-	vbd.reserve(m_Segments.size());
+	vbd.reserve(m_Segments.size() * 2);
 
 	for (const auto& segment : m_Segments)
 	{
@@ -65,24 +90,30 @@ void CSetOfLines::onUpdateBuffers_Wireframe()
 	}
 
 	// The same color to all vertices:
-	m_color_buffer_data.assign(vbd.size(), m_color);
+	CRenderizableShaderWireFrame::m_color_buffer_data.assign(
+		vbd.size(), m_color);
 }
 
 void CSetOfLines::onUpdateBuffers_Points()
 {
-#if 0
-	// Points buffer:
-	bool first = true;
-	for (const auto& seg : m_Segments)
+	auto& vbd = CRenderizableShaderPoints::m_vertex_buffer_data;
+	auto& cbd = CRenderizableShaderPoints::m_color_buffer_data;
+	vbd.clear();
+	cbd.clear();
+
+	// Only draw points if they are enabled:
+	if (m_pointSize <= .0f) return;
+
+	vbd.reserve(m_Segments.size() * 2);
+
+	for (const auto& segment : m_Segments)
 	{
-		if (first)
-		{
-			glVertex3d(seg.point1.x, seg.point1.y, seg.point1.z);
-			first = false;
-		}
-		glVertex3d(seg.point2.x, seg.point2.y, seg.point2.z);
+		vbd.emplace_back(segment.point1);
+		vbd.emplace_back(segment.point2);
 	}
-#endif
+
+	// The same color to all vertices:
+	cbd.assign(vbd.size(), m_color);
 }
 
 uint8_t CSetOfLines::serializeGetVersion() const { return 4; }
@@ -91,7 +122,7 @@ void CSetOfLines::serializeTo(mrpt::serialization::CArchive& out) const
 	writeToStreamRender(out);
 	out << m_Segments << m_lineWidth;
 	out << m_antiAliasing;  // Added in v3
-	out << m_verticesPointSize;  // v4
+	out << m_pointSize;  // v4
 }
 
 void CSetOfLines::serializeFrom(
@@ -134,9 +165,9 @@ void CSetOfLines::serializeFrom(
 			else
 				m_antiAliasing = true;
 			if (version >= 4)
-				in >> m_verticesPointSize;
+				in >> m_pointSize;
 			else
-				m_verticesPointSize = .0f;
+				m_pointSize = .0f;
 		}
 		break;
 		default:

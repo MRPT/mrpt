@@ -61,12 +61,13 @@ class CSetOfObjects : public CRenderizable
 		for (T_it it = begin; it != end; it++) insert(*it);
 	}
 
-	// For this container class, it actually doesn't matter the type of shader,
-	// since each children will register using the adequate shader ID. But the
-	// method is virtual, so we must provide an arbitrary one here anyway:
-	shader_id_t shaderType() const override
+	shader_list_t requiredShaders() const override
 	{
-		return DefaultShaderID::WIREFRAME;
+		// For this container class, it actually doesn't matter the type of
+		// shader, since each children will register using the adequate shader
+		// ID. But the method is virtual, so we must provide an arbitrary one
+		// here anyway:
+		return {DefaultShaderID::WIREFRAME};
 	}
 	void render(const RenderContext& rc) const override;
 	void renderUpdateBuffers() const override;
