@@ -110,6 +110,10 @@ void ICP_SLAM_App_Base::run()
 	MRPT_LOAD_CONFIG_VAR(
 		SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS, int, params, sect);
 
+	if (params.keyExists(sect, "verbosity"))
+		this->setMinLoggingLevel(params.read_enum<mrpt::system::VerbosityLevel>(
+			sect, "verbosity", mrpt::system::VerbosityLevel::LVL_INFO));
+
 	// ------------------------------------
 	//		Constructor of ICP-SLAM object
 	// ------------------------------------

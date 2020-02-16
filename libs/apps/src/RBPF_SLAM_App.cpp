@@ -108,6 +108,10 @@ void RBPF_SLAM_App_Base::run()
 	const string OUT_DIR_STD =
 		params.read_string(sect, "logOutput_dir", "log_out", true);
 
+	if (params.keyExists(sect, "verbosity"))
+		this->setMinLoggingLevel(params.read_enum<mrpt::system::VerbosityLevel>(
+			sect, "verbosity", mrpt::system::VerbosityLevel::LVL_INFO));
+
 	// This to allow using the shorter XXX_CS() macros to read params:
 	{
 		const auto& c = params;
