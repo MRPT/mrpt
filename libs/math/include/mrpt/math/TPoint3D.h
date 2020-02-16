@@ -268,12 +268,12 @@ struct TPointXYZIu8
 struct TPointXYZRGBu8
 {
 	mrpt::math::TPoint3D pt;
-	uint8_t R{0}, G{0}, B{0};
+	uint8_t r{0}, g{0}, b{0};
 	TPointXYZRGBu8() = default;
 	constexpr TPointXYZRGBu8(
 		double x, double y, double z, uint8_t R_val, uint8_t G_val,
 		uint8_t B_val)
-		: pt(x, y, z), R(R_val), G(G_val), B(B_val)
+		: pt(x, y, z), r(R_val), g(G_val), b(B_val)
 	{
 	}
 };
@@ -292,11 +292,11 @@ struct TPointXYZfIu8
 struct TPointXYZfRGBu8
 {
 	mrpt::math::TPoint3Df pt;
-	uint8_t R{0}, G{0}, B{0};
+	uint8_t r{0}, g{0}, b{0};
 	TPointXYZfRGBu8() : pt() {}
 	constexpr TPointXYZfRGBu8(
 		float x, float y, float z, uint8_t R_val, uint8_t G_val, uint8_t B_val)
-		: pt(x, y, z), R(R_val), G(G_val), B(B_val)
+		: pt(x, y, z), r(R_val), g(G_val), b(B_val)
 	{
 	}
 };

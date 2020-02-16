@@ -254,7 +254,8 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 		MRPT_START
 		setSize(m.rows(), m.cols());
 		for (Index r = 0; r < rows(); r++)
-			for (Index c = 0; c < cols(); c++) (*this)(r, c) = m(r, c);
+			for (Index c = 0; c < cols(); c++)
+				(*this)(r, c) = static_cast<T>(m(r, c));
 		MRPT_END
 	}
 

@@ -213,7 +213,8 @@ class CConfigFileBase
 			for (size_t i = 0; i < N; i++)
 			{
 				double val = std::stod(tokens[i]);
-				outValues[i] = val;
+				outValues[i] =
+					static_cast<typename VECTOR_TYPE::value_type>(val);
 			}
 		}
 	}
