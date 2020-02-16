@@ -9,7 +9,8 @@
 #pragma once
 
 #include <mrpt/math/TPoint3D.h>
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableShaderTriangles.h>
+#include <mrpt/opengl/CRenderizableShaderWireFrame.h>
 
 namespace mrpt::opengl
 {
@@ -36,26 +37,26 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_opengl_grp
  */
-class CBox : public CRenderizable
+class CBox : public CRenderizableShaderTriangles,
+			 public CRenderizableShaderWireFrame
 {
 	DEFINE_SERIALIZABLE(CBox, mrpt::opengl)
 
-   protected:
-	/** Corners coordinates */
-	mrpt::math::TPoint3D m_corner_min, m_corner_max;
-	/** true: wireframe, false: solid */
-	bool m_wireframe{false};
-	/** For wireframe only. */
-	float m_lineWidth{1};
-	/** Draw line borders to solid box with the given linewidth (default: true)
-	 */
-	bool m_draw_border{false};
-	/** Color of the solid box borders. */
-	mrpt::img::TColor m_solidborder_color;
-
    public:
+	/** @name Renderizable shader API virtual methods
+	 * @{ */
 	void render(const RenderContext& rc) const override;
 	void renderUpdateBuffers() const override;
+
+	virtual shader_list_t requiredShaders() const override
+	{
+		// May use up to two shaders (vertices + lines):
+		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES};
+	}
+	void onUpdateBuffers_Wireframe() override;
+	void onUpdateBuffers_Triangles() override;
+	/** @} */
+
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
@@ -117,6 +118,17 @@ class CBox : public CRenderizable
 	/** Destructor  */
 	~CBox() override = default;
 
-   private:
+   protected:
+	/** Corners coordinates */
+	mrpt::math::TPoint3D m_corner_min, m_corner_max;
+	/** true: wireframe, false: solid */
+	bool m_wireframe{false};
+
+	/** Draw line borders to solid box with the given linewidth (default: true)
+	 */
+	bool m_draw_border{false};
+
+	/** Color of the solid box borders. */
+	mrpt::img::TColor m_solidborder_color;
 };
 }  // namespace mrpt::opengl

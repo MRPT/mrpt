@@ -97,7 +97,7 @@ class CVectorField3D : public CRenderizable
 	inline void setPointColor(
 		const float R, const float G, const float B, const float A = 1)
 	{
-		m_point_color = mrpt::img::TColor(R * 255, G * 255, B * 255, A * 255);
+		m_point_color = mrpt::img::TColor(f2u8(R), f2u8(G), f2u8(B), f2u8(A));
 		CRenderizable::notifyChange();
 	}
 
@@ -115,7 +115,7 @@ class CVectorField3D : public CRenderizable
 	inline void setVectorFieldColor(
 		const float R, const float G, const float B, const float A = 1)
 	{
-		m_field_color = mrpt::img::TColor(R * 255, G * 255, B * 255, A * 255);
+		m_field_color = mrpt::img::TColor(f2u8(R), f2u8(G), f2u8(B), f2u8(A));
 		CRenderizable::notifyChange();
 	}
 
@@ -138,9 +138,9 @@ class CVectorField3D : public CRenderizable
 		const float Amax = 1)
 	{
 		m_still_color =
-			mrpt::img::TColor(Rmin * 255, Gmin * 255, Bmin * 255, Amin * 255);
+			mrpt::img::TColor(f2u8(Rmin), f2u8(Gmin), f2u8(Bmin), f2u8(Amin));
 		m_maxspeed_color =
-			mrpt::img::TColor(Rmax * 255, Gmax * 255, Bmax * 255, Amax * 255);
+			mrpt::img::TColor(f2u8(Rmax), f2u8(Gmax), f2u8(Bmax), f2u8(Amax));
 		CRenderizable::notifyChange();
 	}
 

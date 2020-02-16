@@ -28,13 +28,13 @@ CColorBar::CColorBar(
 	/** size of the color bar */
 	double width, double height,
 	/** limits for [0,1] colormap indices */
-	double min_col, double max_col,
+	float min_col, float max_col,
 	/** limits for values associated to extreme colors */
-	double min_value, double max_value,
+	float min_value, float max_value,
 	/** sprintf-like format string for values */
 	const std::string& label_format,
 	/** Label text font size */
-	double label_font_size)
+	float label_font_size)
 	: m_colormap(colormap),
 	  m_width(width),
 	  m_height(height),
@@ -55,7 +55,7 @@ void CColorBar::setColormap(const mrpt::img::TColormap colormap)
 }
 
 void CColorBar::setColorAndValueLimits(
-	double col_min, double col_max, double value_min, double value_max)
+	float col_min, float col_max, float value_min, float value_max)
 {
 	m_min_col = col_min;
 	m_max_col = col_max;
@@ -86,7 +86,7 @@ void CColorBar::render(const RenderContext& rc) const
 	// solid:
 	unsigned int num_divisions = 64;
 	unsigned int num_labels = 4;
-	unsigned int one_label_each_nth = floor((num_divisions) / num_labels);
+	unsigned int one_label_each_nth = num_divisions / num_labels;
 
 	const double x0 = .0, x1 = m_width, x2 = m_width * 1.3;
 	const double Ay = m_height / (num_divisions - 1);
@@ -94,7 +94,7 @@ void CColorBar::render(const RenderContext& rc) const
 	std::vector<mrpt::img::TColorf> cols(num_divisions);
 	for (unsigned int i = 0; i < num_divisions; i++)
 	{
-		const double col_idx =
+		const float col_idx =
 			m_min_col + i * (m_max_col - m_min_col) / (num_divisions - 1);
 		mrpt::img::colormap(
 			m_colormap, col_idx, cols[i].R, cols[i].G, cols[i].B);
@@ -110,16 +110,16 @@ void CColorBar::render(const RenderContext& rc) const
 
 		glBegin(GL_TRIANGLES);
 		glColor3f(cols[i].R, cols[i].G, cols[i].B);
-		glVertex3f(pt00.x, pt00.y, pt00.z);
-		glVertex3f(pt10.x, pt10.y, pt10.z);
+		glVertex3d(pt00.x, pt00.y, pt00.z);
+		glVertex3d(pt10.x, pt10.y, pt10.z);
 		glColor3f(cols[i + 1].R, cols[i + 1].G, cols[i + 1].B);
-		glVertex3f(pt11.x, pt11.y, pt11.z);
+		glVertex3d(pt11.x, pt11.y, pt11.z);
 		//
 		glColor3f(cols[i].R, cols[i].G, cols[i].B);
-		glVertex3f(pt00.x, pt00.y, pt00.z);
+		glVertex3d(pt00.x, pt00.y, pt00.z);
 		glColor3f(cols[i + 1].R, cols[i + 1].G, cols[i + 1].B);
-		glVertex3f(pt11.x, pt11.y, pt11.z);
-		glVertex3f(pt01.x, pt01.y, pt01.z);
+		glVertex3d(pt11.x, pt11.y, pt11.z);
+		glVertex3d(pt01.x, pt01.y, pt01.z);
 		glEnd();
 	}
 
@@ -148,7 +148,7 @@ void CColorBar::render(const RenderContext& rc) const
 			// Text:
 			glPushMatrix();
 
-			glTranslatef(x2, y0, 0.0);
+			glTranslated(x2, y0, 0.0);
 			glColor3ub(0xff, 0xff, 0xff);
 			mrpt::opengl::gl_utils::glDrawText(
 				mrpt::format(m_label_format.c_str(), val), m_label_font_size);

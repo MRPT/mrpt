@@ -189,13 +189,13 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	 * 0.1 - 10000)
 	 * \sa getViewportClipDistances
 	 */
-	void setViewportClipDistances(const double clip_min, const double clip_max);
+	void setViewportClipDistances(const float clip_min, const float clip_max);
 
 	/** Get the current min/max clip depth distances of the rendering frustum
 	 * (default: 0.1 - 10000)
 	 * \sa setViewportClipDistances
 	 */
-	void getViewportClipDistances(double& clip_min, double& clip_max) const;
+	void getViewportClipDistances(float& clip_min, float& clip_max) const;
 
 	/** Set the border size ("frame") of the viewport (default=0).
 	 */
@@ -381,7 +381,7 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	/** The viewport position [0,1] */
 	double m_view_x{0}, m_view_y{0}, m_view_width{1}, m_view_height{1};
 	/** The min/max clip depth distances (default: 0.1 - 10000) */
-	double m_clip_min{0.1}, m_clip_max{10000};
+	float m_clip_min = 0.1f, m_clip_max = 10000.0f;
 	bool m_custom_backgb_color{false};
 	/** used only if m_custom_backgb_color */
 	mrpt::img::TColorf m_background_color;

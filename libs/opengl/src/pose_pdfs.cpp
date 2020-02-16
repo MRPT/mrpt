@@ -31,8 +31,8 @@ using namespace mrpt::poses;
 
 const double POSE_TAIL_LENGTH = 0.1;
 const double POSE_TAIL_WIDTH = 3.0;
-const double POSE_POINT_SIZE = 4.0;
-const double POSE_AXIS_SCALE = 0.1;
+const float POSE_POINT_SIZE = 4.0f;
+const float POSE_AXIS_SCALE = 0.1f;
 
 #define POSE_COLOR 0, 0, 1
 #define POINT_COLOR 1, 0, 0
@@ -50,7 +50,7 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPosePDF& o)
 		ASSERT_(p != nullptr);
 
 		opengl::CSetOfLines::Ptr lins = std::make_shared<opengl::CSetOfLines>();
-		lins->setColor(0, 0, 1, 0.6);
+		lins->setColor(0.0f, 0.0f, 1.0f, 0.6f);
 		lins->setLineWidth(POSE_TAIL_WIDTH);
 
 		for (const auto& it : *p)
@@ -60,7 +60,7 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPosePDF& o)
 
 			ellip->setPose(CPose3D(it.mean.x(), it.mean.y(), 0));
 			ellip->setCovMatrix(it.cov, 2 /* x y */);
-			ellip->setColor(POSE_COLOR, 0.6);
+			ellip->setColor(POSE_COLOR, 0.6f);
 			ellip->setQuantiles(3);
 			ellip->enableDrawSolid3D(false);
 
@@ -79,14 +79,14 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPosePDF& o)
 		ASSERT_(p != nullptr);
 
 		opengl::CSetOfLines::Ptr lins = std::make_shared<opengl::CSetOfLines>();
-		lins->setColor(POSE_COLOR, 0.6);
+		lins->setColor(POSE_COLOR, 0.6f);
 		lins->setLineWidth(POSE_TAIL_WIDTH);
 
 		opengl::CEllipsoid::Ptr ellip = std::make_shared<opengl::CEllipsoid>();
 
 		ellip->setPose(CPose3D(p->mean.x(), p->mean.y(), 0));
 		ellip->setCovMatrix(p->cov, 2 /* x y */);
-		ellip->setColor(POSE_COLOR, 0.6);
+		ellip->setColor(POSE_COLOR, 0.6f);
 
 		ellip->setQuantiles(3);
 		ellip->enableDrawSolid3D(false);
@@ -106,17 +106,17 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPosePDF& o)
 		ASSERT_(p != nullptr);
 
 		auto pnts = opengl::CPointCloud::Create();
-		pnts->setColor(POSE_COLOR, 0.6);
+		pnts->setColor(POSE_COLOR, 0.6f);
 		pnts->setPointSize(POSE_POINT_SIZE);
 
 		auto lins = opengl::CSetOfLines::Create();
-		lins->setColor(POSE_COLOR, 0.6);
+		lins->setColor(POSE_COLOR, 0.6f);
 		lins->setLineWidth(POSE_TAIL_WIDTH);
 
 		for (size_t i = 0; i < p->size(); ++i)
 		{
 			const auto po = p->m_particles[i].d;
-			pnts->insertPoint(po.x, po.y, 0);
+			pnts->insertPoint(d2f(po.x), d2f(po.y), 0);
 			lins->appendLine(
 				po.x, po.y, 0, po.x + POSE_TAIL_LENGTH * cos(po.phi),
 				po.y + POSE_TAIL_LENGTH * sin(po.phi), 0);

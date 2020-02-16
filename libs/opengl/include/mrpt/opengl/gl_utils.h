@@ -59,22 +59,6 @@ void processRenderQueue(
 /** Checks glGetError and throws an exception if an error situation is found */
 void checkOpenGLErr_impl(int glErrorCode, const char* filename, int lineno);
 
-/** Can be used by derived classes to draw a triangle with a normal vector
- * computed automatically - to be called within a glBegin()-glEnd() block.
- */
-void renderTriangleWithNormal(
-	const mrpt::math::TPoint3D& p1, const mrpt::math::TPoint3D& p2,
-	const mrpt::math::TPoint3D& p3);
-void renderTriangleWithNormal(
-	const mrpt::math::TPoint3Df& p1, const mrpt::math::TPoint3Df& p2,
-	const mrpt::math::TPoint3Df& p3);
-
-/** Can be used by derived classes to draw a quad with a normal vector computed
- * automatically - to be called within a glBegin()-glEnd() block. */
-void renderQuadWithNormal(
-	const mrpt::math::TPoint3Df& p1, const mrpt::math::TPoint3Df& p2,
-	const mrpt::math::TPoint3Df& p3, const mrpt::math::TPoint3Df& p4);
-
 /** Draws a message box with a centered (possibly multi-lined) text.
  *  It consists of a filled rectangle with a frame around and the centered text
  * in the middle.
@@ -161,7 +145,7 @@ const std::string& glGetFont();
 /// \note This functions comes from libcvd (BSD,
 /// http://www.edwardrosten.com/cvd/ )
 mrpt::img::TPixelCoordf glDrawText(
-	const std::string& text, const double textScale,
+	const std::string& text, const float textScale,
 	enum TOpenGLFontStyle style = NICE, double spacing = 1.5,
 	double kerning = 0.1);
 
@@ -170,7 +154,7 @@ mrpt::img::TPixelCoordf glDrawText(
 /// \note This functions comes from libcvd (BSD,
 /// http://www.edwardrosten.com/cvd/ )
 mrpt::img::TPixelCoordf glGetExtends(
-	const std::string& text, const double textScale, double spacing = 1.5,
+	const std::string& text, const float textScale, double spacing = 1.5,
 	double kerning = 0.1);
 
 /** @} */  // --------------------------------------------------

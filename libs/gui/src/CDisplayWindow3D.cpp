@@ -408,7 +408,7 @@ void C3DWindowDialog::addTextMessage(
 void C3DWindowDialog::addTextMessage(
 	const double x_frac, const double y_frac, const std::string& text,
 	const mrpt::img::TColorf& color, const std::string& font_name,
-	const double font_size, const mrpt::opengl::TOpenGLFontStyle font_style,
+	const float font_size, const mrpt::opengl::TOpenGLFontStyle font_style,
 	const size_t unique_index, const double font_spacing,
 	const double font_kerning, const bool has_shadow,
 	const mrpt::img::TColorf& shadow_color)
@@ -644,7 +644,7 @@ void CDisplayWindow3D::setCameraProjective(bool isProjective)
 #endif
 }
 
-void CDisplayWindow3D::setMinRange(double new_min)
+void CDisplayWindow3D::setMinRange(float new_min)
 {
 	if (m_3Dscene)
 	{
@@ -652,13 +652,13 @@ void CDisplayWindow3D::setMinRange(double new_min)
 			m_3Dscene->getViewport("main");
 		if (gl_view)
 		{
-			double m, M;
+			float m, M;
 			gl_view->getViewportClipDistances(m, M);
 			gl_view->setViewportClipDistances(new_min, M);
 		}
 	}
 }
-void CDisplayWindow3D::setMaxRange(double new_max)
+void CDisplayWindow3D::setMaxRange(float new_max)
 {
 	if (m_3Dscene)
 	{
@@ -666,7 +666,7 @@ void CDisplayWindow3D::setMaxRange(double new_max)
 			m_3Dscene->getViewport("main");
 		if (gl_view)
 		{
-			double m, M;
+			float m, M;
 			gl_view->getViewportClipDistances(m, M);
 			gl_view->setViewportClipDistances(m, new_max);
 		}
@@ -896,8 +896,8 @@ void CDisplayWindow3D::addTextMessage(
 		REQ->OPCODE = 360;
 		REQ->str = text;
 		REQ->vector_x.resize(5);
-		REQ->vector_x[0] = x_frac;
-		REQ->vector_x[1] = y_frac;
+		REQ->vector_x[0] = static_cast<float>(x_frac);
+		REQ->vector_x[1] = static_cast<float>(y_frac);
 		REQ->vector_x[2] = color.R;
 		REQ->vector_x[3] = color.G;
 		REQ->vector_x[4] = color.B;
@@ -922,7 +922,7 @@ void CDisplayWindow3D::addTextMessage(
 void CDisplayWindow3D::addTextMessage(
 	const double x_frac, const double y_frac, const std::string& text,
 	const mrpt::img::TColorf& color, const std::string& font_name,
-	const double font_size, const mrpt::opengl::TOpenGLFontStyle font_style,
+	const float font_size, const mrpt::opengl::TOpenGLFontStyle font_style,
 	const size_t unique_index, const double font_spacing,
 	const double font_kerning, const bool draw_shadow,
 	const mrpt::img::TColorf& shadow_color)
@@ -939,14 +939,14 @@ void CDisplayWindow3D::addTextMessage(
 		REQ->str = text;
 		REQ->plotName = font_name;
 		REQ->vector_x.resize(12);
-		REQ->vector_x[0] = x_frac;
-		REQ->vector_x[1] = y_frac;
+		REQ->vector_x[0] = static_cast<float>(x_frac);
+		REQ->vector_x[1] = static_cast<float>(y_frac);
 		REQ->vector_x[2] = color.R;
 		REQ->vector_x[3] = color.G;
 		REQ->vector_x[4] = color.B;
 		REQ->vector_x[5] = font_size;
-		REQ->vector_x[6] = font_spacing;
-		REQ->vector_x[7] = font_kerning;
+		REQ->vector_x[6] = static_cast<float>(font_spacing);
+		REQ->vector_x[7] = static_cast<float>(font_kerning);
 		REQ->vector_x[8] = draw_shadow ? 1 : 0;
 		REQ->vector_x[9] = shadow_color.R;
 		REQ->vector_x[10] = shadow_color.G;

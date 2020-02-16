@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <mrpt/core/bits_math.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/opengl/CRenderizable.h>
 
@@ -39,11 +40,11 @@ class CVectorField2D : public CRenderizable
 	mrpt::math::CMatrixF ycomp;
 
 	/** Grid bounds */
-	float xMin{-1.0}, xMax{1.0}, yMin{-1.0}, yMax{1.0};
+	float xMin{-1.0f}, xMax{1.0f}, yMin{-1.0f}, yMax{1.0f};
 	/** By default is 1.0 */
-	float m_LineWidth{1.0};
+	float m_LineWidth{1.0f};
 	/** By default is 1.0 */
-	float m_pointSize{1.0};
+	float m_pointSize{1.0f};
 	/** By default is true */
 	bool m_antiAliasing{true};
 
@@ -67,7 +68,7 @@ class CVectorField2D : public CRenderizable
 	inline void setPointColor(
 		const float R, const float G, const float B, const float A = 1)
 	{
-		m_point_color = mrpt::img::TColor(R * 255, G * 255, B * 255, A * 255);
+		m_point_color = mrpt::img::TColor(f2u8(R), f2u8(G), f2u8(B), f2u8(A));
 		CRenderizable::notifyChange();
 	}
 
@@ -85,7 +86,7 @@ class CVectorField2D : public CRenderizable
 	inline void setVectorFieldColor(
 		const float R, const float G, const float B, const float A = 1)
 	{
-		m_field_color = mrpt::img::TColor(R * 255, G * 255, B * 255, A * 255);
+		m_field_color = mrpt::img::TColor(f2u8(R), f2u8(G), f2u8(B), f2u8(A));
 		CRenderizable::notifyChange();
 	}
 
@@ -133,10 +134,10 @@ class CVectorField2D : public CRenderizable
 		const float center_x, const float center_y, const float cellsize_x,
 		const float cellsize_y)
 	{
-		xMin = center_x - 0.5 * cellsize_x * (xcomp.cols() - 1);
-		xMax = center_x + 0.5 * cellsize_x * (xcomp.cols() - 1);
-		yMin = center_y - 0.5 * cellsize_y * (xcomp.rows() - 1);
-		yMax = center_y + 0.5 * cellsize_y * (xcomp.rows() - 1);
+		xMin = center_x - 0.5f * cellsize_x * (xcomp.cols() - 1);
+		xMax = center_x + 0.5f * cellsize_x * (xcomp.cols() - 1);
+		yMin = center_y - 0.5f * cellsize_y * (xcomp.rows() - 1);
+		yMax = center_y + 0.5f * cellsize_y * (xcomp.rows() - 1);
 		CRenderizable::notifyChange();
 	}
 

@@ -14,14 +14,12 @@
 #include <mrpt/opengl/gl_utils.h>
 #include <mrpt/serialization/CArchive.h>
 
-#include "opengl_internals.h"
-
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CBox, CRenderizable, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CBox, CRenderizableShaderTriangles, mrpt::opengl)
 
 CBox::CBox()
 	: m_corner_min(-1, -1, -1),
@@ -35,22 +33,46 @@ CBox::CBox(
 	const mrpt::math::TPoint3D& corner1, const mrpt::math::TPoint3D& corner2,
 	bool is_wireframe, float lineWidth)
 	: m_wireframe(is_wireframe),
-	  m_lineWidth(lineWidth),
 	  m_draw_border(false),
 	  m_solidborder_color(0, 0, 0)
 {
+	CRenderizableShaderWireFrame::setLineWidth(lineWidth);
 	setBoxCorners(corner1, corner2);
-}
-
-void CBox::renderUpdateBuffers() const
-{
-	//
-	MRPT_TODO("Implement me!");
 }
 
 void CBox::render(const RenderContext& rc) const
 {
-#if MRPT_HAS_OPENGL_GLUT
+	switch (rc.shader_id)
+	{
+		case DefaultShaderID::TRIANGLES:
+			CRenderizableShaderTriangles::render(rc);
+			break;
+		case DefaultShaderID::WIREFRAME:
+			CRenderizableShaderWireFrame::render(rc);
+			break;
+	};
+}
+void CBox::renderUpdateBuffers() const
+{
+	CRenderizableShaderTriangles::renderUpdateBuffers();
+	CRenderizableShaderWireFrame::renderUpdateBuffers();
+}
+
+void CBox::onUpdateBuffers_Wireframe()
+{
+	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
+	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	vbd.clear();
+}
+void CBox::onUpdateBuffers_Triangles()
+{
+	auto& tris = CRenderizableShaderTriangles::m_triangles;
+	tris.clear();
+}
+
+#if 0
+void CBox::render(const RenderContext& rc) const
+{
 	if (m_color.A != 255)
 	{
 		glEnable(GL_BLEND);
@@ -71,6 +93,7 @@ void CBox::render(const RenderContext& rc) const
 		glColor4ub(m_color.R, m_color.G, m_color.B, m_color.A);
 
 		// Front face:
+#if 0
 		gl_utils::renderTriangleWithNormal(
 			TPoint3D(m_corner_max.x, m_corner_min.y, m_corner_min.z),
 			TPoint3D(m_corner_min.x, m_corner_min.y, m_corner_min.z),
@@ -129,6 +152,7 @@ void CBox::render(const RenderContext& rc) const
 			TPoint3D(m_corner_min.x, m_corner_max.y, m_corner_max.z),
 			TPoint3D(m_corner_min.x, m_corner_min.y, m_corner_max.z),
 			TPoint3D(m_corner_max.x, m_corner_max.y, m_corner_max.z));
+#endif
 
 		glEnd();
 		glDisable(GL_NORMALIZE);
@@ -195,8 +219,8 @@ void CBox::render(const RenderContext& rc) const
 
 	glDisable(GL_BLEND);
 
-#endif
 }
+#endif
 
 uint8_t CBox::serializeGetVersion() const { return 1; }
 void CBox::serializeTo(mrpt::serialization::CArchive& out) const

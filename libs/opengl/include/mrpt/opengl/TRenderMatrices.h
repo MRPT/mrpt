@@ -27,13 +27,13 @@ struct TRenderMatrices
 	TRenderMatrices() = default;
 
 	/** The camera is here. */
-	mrpt::math::TPoint3D eye = {0, 0, 0};
+	mrpt::math::TPoint3Df eye = {0, 0, 0};
 
 	/** The camera points to here */
-	mrpt::math::TPoint3D pointing = {0, 0, 0};
+	mrpt::math::TPoint3Df pointing = {0, 0, 0};
 
 	/** Up vector of the camera. */
-	mrpt::math::TPoint3D up = {0, 0, 0};
+	mrpt::math::TPoint3Df up = {0, 0, 0};
 
 	/** In pixels. This may be smaller than the total render window. */
 	size_t viewport_width = 640, viewport_height = 480;

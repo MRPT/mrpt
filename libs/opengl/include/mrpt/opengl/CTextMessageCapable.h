@@ -65,7 +65,7 @@ class CTextMessageCapable
 	void addTextMessage(
 		const double x_frac, const double y_frac, const std::string& text,
 		const mrpt::img::TColorf& color, const std::string& font_name,
-		const double font_size,
+		const float font_size,
 		const mrpt::opengl::TOpenGLFontStyle font_style = mrpt::opengl::NICE,
 		const size_t unique_index = 0, const double font_spacing = 1.5,
 		const double font_kerning = 0.1, const bool has_shadow = false,

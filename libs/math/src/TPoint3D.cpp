@@ -71,4 +71,16 @@ void TPoint3D_<T>::fromString(const std::string& s)
 // Explicit instantiations:
 template struct TPoint3D_<float>;
 template struct TPoint3D_<double>;
+
+mrpt::serialization::CArchive& operator>>(
+	mrpt::serialization::CArchive& in, mrpt::math::TPointXYZfRGBu8& p)
+{
+	return in >> p.pt >> p.r >> p.g >> p.b;
+}
+mrpt::serialization::CArchive& operator<<(
+	mrpt::serialization::CArchive& out, const mrpt::math::TPointXYZfRGBu8& p)
+{
+	return out << p.pt << p.r << p.g << p.b;
+}
+
 }  // namespace mrpt::math

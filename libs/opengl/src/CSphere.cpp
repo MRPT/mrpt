@@ -50,7 +50,7 @@ void CSphere::render(const RenderContext& rc) const
 
 		eye_distance = max(eye_distance, 0.1f);
 
-		real_radius = 0.01 * m_radius * eye_distance;
+		real_radius = 0.01f * m_radius * eye_distance;
 	}
 	else
 		real_radius = m_radius;

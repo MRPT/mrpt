@@ -27,7 +27,7 @@ struct RenderQueueElement
 
 	RenderQueueElement(
 		const mrpt::opengl::CRenderizable* obj,
-		mrpt::opengl::TRenderMatrices state)
+		const mrpt::opengl::TRenderMatrices& state)
 		: object(obj), renderState(state)
 	{
 	}

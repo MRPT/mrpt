@@ -1062,9 +1062,9 @@ void CPolyhedron::render(const RenderContext& rc) const
 		for (const auto& mEdge : mEdges)
 		{
 			TPoint3D p = mVertices[mEdge.v1];
-			glVertex3f(p.x, p.y, p.z);
+			glVertex3d(p.x, p.y, p.z);
 			p = mVertices[mEdge.v2];
-			glVertex3f(p.x, p.y, p.z);
+			glVertex3d(p.x, p.y, p.z);
 		}
 		glEnd();
 		glEnable(GL_LIGHTING);  // Disable lights when drawing lines
@@ -1079,12 +1079,12 @@ void CPolyhedron::render(const RenderContext& rc) const
 		for (const auto& mFace : mFaces)
 		{
 			glBegin(GL_POLYGON);
-			glNormal3f(mFace.normal[0], mFace.normal[1], mFace.normal[2]);
+			glNormal3d(mFace.normal[0], mFace.normal[1], mFace.normal[2]);
 			for (auto it2 = mFace.vertices.begin(); it2 != mFace.vertices.end();
 				 ++it2)
 			{
 				const TPoint3D& p = mVertices[*it2];
-				glVertex3f(p.x, p.y, p.z);
+				glVertex3d(p.x, p.y, p.z);
 			}
 			glEnd();
 		}

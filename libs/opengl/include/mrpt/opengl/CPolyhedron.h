@@ -121,7 +121,7 @@ class CPolyhedron : public CRenderizable
 	 * When displaying as wireframe object, this variable stores the width of
 	 * the edges.
 	 */
-	double m_LineWidth{1};
+	float m_LineWidth{1.0f};
 	/**
 	 * Mutable list of actual polygons, maintained for speed.
 	 */
@@ -708,12 +708,12 @@ class CPolyhedron : public CRenderizable
 	/**
 	 * Gets the wireframe lines width.
 	 */
-	inline double getLineWidth() const { return m_LineWidth; }
+	inline float getLineWidth() const { return m_LineWidth; }
 	/**
 	 * Sets the width used to render lines, when wireframe rendering is
 	 * activated.
 	 */
-	inline void setLineWidth(double lineWidth)
+	inline void setLineWidth(float lineWidth)
 	{
 		m_LineWidth = lineWidth;
 		CRenderizable::notifyChange();

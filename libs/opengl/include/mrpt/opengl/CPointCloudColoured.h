@@ -50,7 +50,7 @@ class CPointCloudColoured : public CRenderizable,
 	DEFINE_SERIALIZABLE(CPointCloudColoured, mrpt::opengl)
 
    public:
-	using TPointColour = mrpt::math::TPointXYZRGBAf;
+	using TPointColour = mrpt::math::TPointXYZfRGBu8;
 
    private:
 	using TListPointColour = std::vector<TPointColour>;
@@ -114,6 +114,11 @@ class CPointCloudColoured : public CRenderizable,
 		return m_points[i];
 	}
 
+	inline const mrpt::math::TPoint3Df& getPoint3Df(size_t i) const
+	{
+		return m_points[i].pt;
+	}
+
 	/** Write an individual point (checks for "i" in the valid range only in
 	 * Debug). */
 	void setPoint(size_t i, const TPointColour& p);
@@ -136,17 +141,31 @@ class CPointCloudColoured : public CRenderizable,
 	/** Like \c setPointColor but without checking for out-of-index erors */
 	inline void setPointColor_fast(size_t index, float R, float G, float B)
 	{
-		m_points[index].R = R;
-		m_points[index].G = G;
-		m_points[index].B = B;
+		m_points[index].r = static_cast<uint8_t>(255 * R);
+		m_points[index].g = static_cast<uint8_t>(255 * G);
+		m_points[index].b = static_cast<uint8_t>(255 * B);
+	}
+	inline void setPointColor_u8_fast(
+		size_t index, uint8_t r, uint8_t g, uint8_t b)
+	{
+		m_points[index].r = r;
+		m_points[index].g = g;
+		m_points[index].b = b;
 	}
 	/** Like \c getPointColor but without checking for out-of-index erors */
 	inline void getPointColor_fast(
 		size_t index, float& R, float& G, float& B) const
 	{
-		R = m_points[index].R;
-		G = m_points[index].G;
-		B = m_points[index].B;
+		R = m_points[index].r / 255.0f;
+		G = m_points[index].g / 255.0f;
+		B = m_points[index].b / 255.0f;
+	}
+	inline void getPointColor_fast(
+		size_t index, uint8_t& r, uint8_t& g, uint8_t& b) const
+	{
+		r = m_points[index].r;
+		g = m_points[index].g;
+		b = m_points[index].b;
 	}
 
 	/** Return the number of points */
@@ -228,12 +247,6 @@ class CPointCloudColoured : public CRenderizable,
 	/** @} */
 };
 
-mrpt::serialization::CArchive& operator>>(
-	mrpt::serialization::CArchive& in, CPointCloudColoured::TPointColour& o);
-mrpt::serialization::CArchive& operator<<(
-	mrpt::serialization::CArchive& out,
-	const CPointCloudColoured::TPointColour& o);
-
 /** Specialization
  * mrpt::opengl::PointCloudAdapter<mrpt::opengl::CPointCloudColoured>  \ingroup
  * mrpt_adapters_grp*/
@@ -268,10 +281,10 @@ class PointCloudAdapter<mrpt::opengl::CPointCloudColoured>
 	template <typename T>
 	inline void getPointXYZ(const size_t idx, T& x, T& y, T& z) const
 	{
-		const mrpt::opengl::CPointCloudColoured::TPointColour& pc = m_obj[idx];
-		x = pc.x;
-		y = pc.y;
-		z = pc.z;
+		const auto& pc = m_obj[idx];
+		x = pc.pt.x;
+		y = pc.pt.y;
+		z = pc.pt.z;
 	}
 	/** Set XYZ coordinates of i'th point */
 	inline void setPointXYZ(
@@ -288,24 +301,27 @@ class PointCloudAdapter<mrpt::opengl::CPointCloudColoured>
 	/** Get XYZ_RGBf coordinates of i'th point */
 	template <typename T>
 	inline void getPointXYZ_RGBf(
-		const size_t idx, T& x, T& y, T& z, float& r, float& g, float& b) const
+		const size_t idx, T& x, T& y, T& z, float& Rf, float& Gf,
+		float& Bf) const
 	{
-		const mrpt::opengl::CPointCloudColoured::TPointColour& pc = m_obj[idx];
-		x = pc.x;
-		y = pc.y;
-		z = pc.z;
-		r = pc.R;
-		g = pc.G;
-		b = pc.B;
+		const auto& pc = m_obj[idx];
+		x = pc.pt.x;
+		y = pc.pt.y;
+		z = pc.pt.z;
+		Rf = pc.r / 255.0f;
+		Gf = pc.g / 255.0f;
+		Bf = pc.b / 255.0f;
 	}
 	/** Set XYZ_RGBf coordinates of i'th point */
 	inline void setPointXYZ_RGBf(
 		const size_t idx, const coords_t x, const coords_t y, const coords_t z,
-		const float r, const float g, const float b)
+		const float Rf, const float Gf, const float Bf)
 	{
 		m_obj.setPoint_fast(
-			idx,
-			mrpt::opengl::CPointCloudColoured::TPointColour(x, y, z, r, g, b));
+			idx, mrpt::opengl::CPointCloudColoured::TPointColour(
+					 x, y, z, static_cast<uint8_t>(255 * Rf),
+					 static_cast<uint8_t>(255 * Gf),
+					 static_cast<uint8_t>(255 * Bf)));
 	}
 
 	/** Get XYZ_RGBu8 coordinates of i'th point */
@@ -314,13 +330,13 @@ class PointCloudAdapter<mrpt::opengl::CPointCloudColoured>
 		const size_t idx, T& x, T& y, T& z, uint8_t& r, uint8_t& g,
 		uint8_t& b) const
 	{
-		const mrpt::opengl::CPointCloudColoured::TPointColour& pc = m_obj[idx];
-		x = pc.x;
-		y = pc.y;
-		z = pc.z;
-		r = pc.R * 255;
-		g = pc.G * 255;
-		b = pc.B * 255;
+		const auto& pc = m_obj[idx];
+		x = pc.pt.x;
+		y = pc.pt.y;
+		z = pc.pt.z;
+		r = pc.r;
+		g = pc.g;
+		b = pc.b;
 	}
 	/** Set XYZ_RGBu8 coordinates of i'th point */
 	inline void setPointXYZ_RGBu8(
@@ -328,8 +344,8 @@ class PointCloudAdapter<mrpt::opengl::CPointCloudColoured>
 		const uint8_t r, const uint8_t g, const uint8_t b)
 	{
 		m_obj.setPoint_fast(
-			idx, mrpt::opengl::CPointCloudColoured::TPointColour(
-					 x, y, z, r / 255.f, g / 255.f, b / 255.f));
+			idx,
+			mrpt::opengl::CPointCloudColoured::TPointColour(x, y, z, r, g, b));
 	}
 
 	/** Get RGBf color of i'th point */
@@ -349,17 +365,13 @@ class PointCloudAdapter<mrpt::opengl::CPointCloudColoured>
 	inline void getPointRGBu8(
 		const size_t idx, uint8_t& r, uint8_t& g, uint8_t& b) const
 	{
-		float R, G, B;
-		m_obj.getPointColor_fast(idx, R, G, B);
-		r = R * 255;
-		g = G * 255;
-		b = B * 255;
+		m_obj.getPointColor_fast(idx, r, g, b);
 	}
 	/** Set RGBu8 coordinates of i'th point */
 	inline void setPointRGBu8(
 		const size_t idx, const uint8_t r, const uint8_t g, const uint8_t b)
 	{
-		m_obj.setPointColor_fast(idx, r / 255.f, g / 255.f, b / 255.f);
+		m_obj.setPointColor_u8_fast(idx, r, g, b);
 	}
 
 };  // end of PointCloudAdapter<mrpt::opengl::CPointCloudColoured>

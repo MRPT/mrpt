@@ -309,15 +309,15 @@ void COpenGLViewport::renderNormalSceneMode() const
 		pose = mrpt::poses::CPose3D(myCamera->getPose());
 		at = pose + viewDirection;
 
-		_.eye.x = pose.x();
-		_.eye.y = pose.y();
-		_.eye.z = pose.z();
-		_.pointing.x = at.x();
-		_.pointing.y = at.y();
-		_.pointing.z = at.z();
-		_.up.x = pose.getRotationMatrix()(0, 1);
-		_.up.y = pose.getRotationMatrix()(1, 1);
-		_.up.z = pose.getRotationMatrix()(2, 1);
+		_.eye.x = d2f(pose.x());
+		_.eye.y = d2f(pose.y());
+		_.eye.z = d2f(pose.z());
+		_.pointing.x = d2f(at.x());
+		_.pointing.y = d2f(at.y());
+		_.pointing.z = d2f(at.z());
+		_.up.x = d2f(pose.getRotationMatrix()(0, 1));
+		_.up.y = d2f(pose.getRotationMatrix()(1, 1));
+		_.up.z = d2f(pose.getRotationMatrix()(2, 1));
 	}
 	else
 	{
@@ -453,10 +453,10 @@ void COpenGLViewport::render(
 		if (!m_isTransparent)
 		{  // Clear color & depth buffers:
 			// Save?
-			GLdouble prevCol[4];
+			GLclampf prevCol[4];
 			if (m_custom_backgb_color)
 			{
-				glGetDoublev(GL_COLOR_CLEAR_VALUE, prevCol);
+				glGetFloatv(GL_COLOR_CLEAR_VALUE, prevCol);
 				CHECK_OPENGL_ERROR();
 				glClearColor(
 					m_background_color.R, m_background_color.G,
@@ -695,23 +695,17 @@ void COpenGLViewport::removeObject(const CRenderizable::Ptr& obj)
 			dynamic_cast<CSetOfObjects*>(it->get())->removeObject(obj);
 }
 
-/*--------------------------------------------------------------
-					setViewportClipDistances
-  ---------------------------------------------------------------*/
 void COpenGLViewport::setViewportClipDistances(
-	const double clip_min, const double clip_max)
+	const float clip_min, const float clip_max)
 {
-	ASSERT_(clip_max > clip_min);
+	ASSERT_ABOVE_(clip_max, clip_min);
 
 	m_clip_min = clip_min;
 	m_clip_max = clip_max;
 }
 
-/*--------------------------------------------------------------
-					getViewportClipDistances
-  ---------------------------------------------------------------*/
 void COpenGLViewport::getViewportClipDistances(
-	double& clip_min, double& clip_max) const
+	float& clip_min, float& clip_max) const
 {
 	clip_min = m_clip_min;
 	clip_max = m_clip_max;

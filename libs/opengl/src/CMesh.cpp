@@ -319,7 +319,7 @@ void CMesh::render(const RenderContext& rc) const
 		for (int k = 0; k < 3; k++)
 		{
 			const mrpt::math::TPoint3D& n = vertex_normals[tvi.vind[k]].first;
-			glNormal3f(n.x, n.y, n.z);
+			glNormal3d(n.x, n.y, n.z);
 			glColor4f(t.r(k), t.g(k), t.b(k), t.a(k));
 			glVertex3f(t.x(k), t.y(k), t.z(k));
 		}

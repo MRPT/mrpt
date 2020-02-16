@@ -183,6 +183,7 @@ void gl_utils::checkOpenGLErr_impl(
 #endif
 }
 
+#if 0
 void gl_utils::renderTriangleWithNormal(
 	const mrpt::math::TPoint3D& p1, const mrpt::math::TPoint3D& p2,
 	const mrpt::math::TPoint3D& p3)
@@ -238,6 +239,7 @@ void gl_utils::renderQuadWithNormal(
 	renderTriangleWithNormal(p1, p2, p3);
 	renderTriangleWithNormal(p3, p4, p1);
 }
+#endif
 
 /*---------------------------------------------------------------
 					renderTextBitmap
@@ -415,8 +417,8 @@ void gl_utils::renderMessageBox(
 	const float msg_real_w = msg_x1 - msg_x0;
 	const float msg_real_h = msg_y1 - msg_y0;
 
-	const float msg_cx = .5 * (msg_x0 + msg_x1);
-	const float msg_cy = .5 * (msg_y0 + msg_y1);
+	const float msg_cx = .5f * (msg_x0 + msg_x1);
+	const float msg_cy = .5f * (msg_y0 + msg_y1);
 
 	// Background:
 	glColor4ub(back_col.R, back_col.G, back_col.B, back_col.A);
@@ -516,13 +518,13 @@ const std::string& gl_utils::glGetFont()
 }
 
 mrpt::img::TPixelCoordf gl_utils::glDrawText(
-	const std::string& text, const double textScale,
-	enum TOpenGLFontStyle style, double spacing, double kerning)
+	const std::string& text, const float textScale, enum TOpenGLFontStyle style,
+	double spacing, double kerning)
 {
 #if MRPT_HAS_OPENGL_GLUT
 	glPushMatrix();
 	glMatrixMode(GL_MODELVIEW);
-	glScaled(textScale, textScale, textScale);
+	glScalef(textScale, textScale, textScale);
 	auto ret = CVD::glDrawText(
 		text, static_cast<CVD::TEXT_STYLE>(style), spacing, kerning);
 	glPopMatrix();
@@ -538,7 +540,7 @@ mrpt::img::TPixelCoordf gl_utils::glDrawText(
 }
 
 mrpt::img::TPixelCoordf gl_utils::glGetExtends(
-	const std::string& text, const double textScale, double spacing,
+	const std::string& text, const float textScale, double spacing,
 	double kerning)
 {
 #if MRPT_HAS_OPENGL_GLUT

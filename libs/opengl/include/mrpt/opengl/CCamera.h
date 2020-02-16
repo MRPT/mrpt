@@ -48,7 +48,7 @@ class CCamera : public CRenderizable
 	}
 	inline void setPointingAt(const mrpt::math::TPoint3D& p)
 	{
-		setPointingAt(p.x, p.y, p.z);
+		setPointingAt(d2f(p.x), d2f(p.y), d2f(p.z));
 	}
 
 	float getPointingAtX() const { return m_pointingX; }

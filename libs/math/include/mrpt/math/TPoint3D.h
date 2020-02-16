@@ -301,6 +301,11 @@ struct TPointXYZfRGBu8
 	}
 };
 
+mrpt::serialization::CArchive& operator>>(
+	mrpt::serialization::CArchive& in, mrpt::math::TPointXYZfRGBu8& p);
+mrpt::serialization::CArchive& operator<<(
+	mrpt::serialization::CArchive& out, const mrpt::math::TPointXYZfRGBu8& p);
+
 /** XYZ point (float) + RGBA(float) [1-byte memory packed, no padding]
  * \sa mrpt::math::TPoint3D */
 struct TPointXYZRGBAf

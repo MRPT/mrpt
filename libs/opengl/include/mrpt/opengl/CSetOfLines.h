@@ -37,14 +37,18 @@ class CSetOfLines : public CRenderizableShaderWireFrame,
 	std::vector<mrpt::math::TSegment3D> m_Segments;
 
    public:
+	/** @name Renderizable shader API virtual methods
+	 * @{ */
 	void render(const RenderContext& rc) const override;
 	void renderUpdateBuffers() const override;
-
 	virtual shader_list_t requiredShaders() const override
 	{
 		// May use up to two shaders (vertices + lines):
 		return {DefaultShaderID::WIREFRAME, DefaultShaderID::POINTS};
 	}
+	void onUpdateBuffers_Wireframe() override;
+	void onUpdateBuffers_Points() override;
+	/** @} */
 
 	/** Clear the list of segments */
 	inline void clear()
@@ -67,7 +71,7 @@ class CSetOfLines : public CRenderizableShaderWireFrame,
 	 * Appends a line to the set, given the coordinates of its bounds.
 	 */
 	inline void appendLine(
-		float x0, float y0, float z0, float x1, float y1, float z1)
+		double x0, double y0, double z0, double x1, double y1, double z1)
 	{
 		appendLine(mrpt::math::TSegment3D(
 			mrpt::math::TPoint3D(x0, y0, z0),
@@ -176,9 +180,6 @@ class CSetOfLines : public CRenderizableShaderWireFrame,
 	void getLineByIndex(
 		size_t index, double& x0, double& y0, double& z0, double& x1,
 		double& y1, double& z1) const;
-
-	void onUpdateBuffers_Wireframe() override;
-	void onUpdateBuffers_Points() override;
 
 	// Iterator management
 	using iterator = std::vector<mrpt::math::TSegment3D>::iterator;

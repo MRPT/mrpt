@@ -58,7 +58,7 @@ class CEllipsoid : public CRenderizable
 	 * set to "false" it will be drawn as a "wireframe". */
 	bool m_drawSolid3D{true};
 	/** The number of "sigmas" for drawing the ellipse/ellipsoid (default=3) */
-	float m_quantiles{3};
+	double m_quantiles = 3.0;
 	/** The number of segments of a 2D ellipse (default=20) */
 	unsigned int m_2D_segments{20};
 	/** The number of segments of a 3D ellipse (in both "axis") (default=20) */
@@ -112,12 +112,12 @@ class CEllipsoid : public CRenderizable
 		CRenderizable::notifyChange();
 	}
 	/** The number of "sigmas" for drawing the ellipse/ellipsoid (default=3) */
-	void setQuantiles(float q)
+	void setQuantiles(double q)
 	{
 		m_quantiles = q;
 		CRenderizable::notifyChange();
 	}
-	float getQuantiles() const { return m_quantiles; }
+	double getQuantiles() const { return m_quantiles; }
 	/** The number of segments of a 2D ellipse (default=20) */
 	void set2DsegmentsCount(unsigned int N)
 	{

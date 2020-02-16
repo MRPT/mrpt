@@ -51,12 +51,12 @@ void TestOpenGLObjects()
 	{
 		// using mrpt smart pointers so that obj survives outside this scope.
 		auto obj = opengl::CGridPlaneXY::Create(-7, 7, -7, 7, 0, 1);
-		obj->setColor(0.7, 0.7, 0.7);
+		obj->setColor(0.7f, 0.7f, 0.7f);
 		obj->setLocation(off_x, 0, 0);
 		theScene->insert(obj);
 
 		auto obj2 = opengl::CGridPlaneXY::Create(-9, 9, -9, 9, 0, 2);
-		obj2->setColor(0.3, 0.3, 0.3, 0.99);
+		obj2->setColor(0.3f, 0.3f, 0.3f, 0.99f);
 		obj2->setLocation(off_x, 20, 0);
 		obj2->enableAntiAliasing();
 		theScene->insert(obj2);
@@ -71,7 +71,7 @@ void TestOpenGLObjects()
 	{
 		opengl::CGridPlaneXZ::Ptr obj =
 			opengl::CGridPlaneXZ::Create(-7, 7, -7, 7, 0, 1);
-		obj->setColor(0.7, 0.7, 0.7);
+		obj->setColor(0.7f, 0.7f, 0.7f);
 		obj->setLocation(off_x, 0, 0);
 		theScene->insert(obj);
 
@@ -615,9 +615,9 @@ void TestOpenGLObjects()
 			obj->setLocation(off_x, 0, 0);
 
 			obj->setLineCoords(
-				rng.drawUniform(-5, 5), rng.drawUniform(-5, 5),
-				rng.drawUniform(-5, 5), rng.drawUniform(-5, 5),
-				rng.drawUniform(-5, 5), rng.drawUniform(-5, 5));
+				rng.drawUniform<float>(-5, 5), rng.drawUniform<float>(-5, 5),
+				rng.drawUniform<float>(-5, 5), rng.drawUniform<float>(-5, 5),
+				rng.drawUniform<float>(-5, 5), rng.drawUniform<float>(-5, 5));
 
 			theScene->insert(obj);
 		}
@@ -758,34 +758,33 @@ void TestOpenGLObjects()
 		theScene->insert(gl_txt);
 	}
 	off_x += STEP_X;
+#endif
 
+	// CSetOfTriangles: tested via stock_objects:
 	// stock_objects::RobotPioneer
 	{
 		{
-			opengl::CSetOfObjects::Ptr obj =
-				opengl::stock_objects::RobotPioneer();
+			auto obj = opengl::stock_objects::RobotPioneer();
 			obj->setLocation(off_x, 0, 0);
 			theScene->insert(obj);
 		}
 
-		auto gl_txt =
-			opengl::CText::Create("stock_objects::RobotPioneer()");
+		auto gl_txt = opengl::CText::Create("stock_objects::RobotPioneer()");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
 	off_x += STEP_X;
 
+#if 0
 	// stock_objects::Hokuyo_URG
 	{
 		{
-			opengl::CSetOfObjects::Ptr obj =
-				opengl::stock_objects::Hokuyo_URG();
+			auto obj = opengl::stock_objects::Hokuyo_URG();
 			obj->setLocation(off_x, 0, 0);
 			theScene->insert(obj);
 		}
 
-		auto gl_txt =
-			opengl::CText::Create("stock_objects::Hokuyo_URG()");
+		auto gl_txt = opengl::CText::Create("stock_objects::Hokuyo_URG()");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -794,14 +793,12 @@ void TestOpenGLObjects()
 	// stock_objects::Hokuyo_UTM
 	{
 		{
-			opengl::CSetOfObjects::Ptr obj =
-				opengl::stock_objects::Hokuyo_UTM();
+			auto obj = opengl::stock_objects::Hokuyo_UTM();
 			obj->setLocation(off_x, 0, 0);
 			theScene->insert(obj);
 		}
 
-		auto gl_txt =
-			opengl::CText::Create("stock_objects::Hokuyo_UTM()");
+		auto gl_txt = opengl::CText::Create("stock_objects::Hokuyo_UTM()");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -810,8 +807,7 @@ void TestOpenGLObjects()
 	// stock_objects::Househam_Sprayer
 	{
 		{
-			opengl::CSetOfObjects::Ptr obj =
-				opengl::stock_objects::Househam_Sprayer();
+			auto obj = opengl::stock_objects::Househam_Sprayer();
 			obj->setLocation(off_x, 0, 0);
 			theScene->insert(obj);
 		}
@@ -826,31 +822,17 @@ void TestOpenGLObjects()
 	// stock_objects::RobotRhodon
 	{
 		{
-			opengl::CSetOfObjects::Ptr obj =
-				opengl::stock_objects::RobotRhodon();
+			auto obj = opengl::stock_objects::RobotRhodon();
 			obj->setLocation(off_x, 0, 0);
 			theScene->insert(obj);
 		}
 
-		auto gl_txt =
-			opengl::CText::Create("stock_objects::RobotRhodon()");
+		auto gl_txt = opengl::CText::Create("stock_objects::RobotRhodon()");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
 	off_x += STEP_X;
 #endif
-
-	// CSetOfTriangles, via stock object:
-	{
-		auto obj = opengl::stock_objects::RobotPioneer();
-		obj->setLocation(off_x, 0, 0);
-		theScene->insert(obj);
-
-		auto gl_txt = opengl::CText::Create("CSetOfTriangles");
-		gl_txt->setLocation(off_x, off_y_label, 0);
-		theScene->insert(gl_txt);
-	}
-	off_x += STEP_X;
 
 	win.setCameraZoom(150);
 

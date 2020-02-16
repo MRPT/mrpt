@@ -135,14 +135,10 @@ void CPointCloud::onUpdateBuffers_Points()
 			float f = (depthCol - m_min) * m_max_m_min_inv;
 			f = std::max(0.0f, min(1.0f, f));
 
-			cbd.push_back(
-				{static_cast<uint8_t>(
-					 (m_colorFromDepth_min.R + f * m_col_slop_inv.R) * 255.0f),
-				 static_cast<uint8_t>(
-					 (m_colorFromDepth_min.G + f * m_col_slop_inv.G) * 255.0f),
-				 static_cast<uint8_t>(
-					 (m_colorFromDepth_min.B + f * m_col_slop_inv.B) * 255.0f),
-				 m_color.A});
+			cbd.push_back({f2u8(m_colorFromDepth_min.R + f * m_col_slop_inv.R),
+						   f2u8(m_colorFromDepth_min.G + f * m_col_slop_inv.G),
+						   f2u8(m_colorFromDepth_min.B + f * m_col_slop_inv.B),
+						   m_color.A});
 		}
 	}
 	else
@@ -180,7 +176,7 @@ void CPointCloud::render_subset(
 
 	const size_t N = (all ? m_xs.size() : idxs.size());
 	const size_t decimation = mrpt::round(std::max(
-		1.0f, static_cast<float>(
+		1.0f, d2f(
 				  N / (OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL_value *
 					   render_area_sqpixels))));
 
@@ -246,18 +242,12 @@ void CPointCloud::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 				m_points[i].y = static_cast<float>(in["ys"][i]);
 				m_points[i].z = static_cast<float>(in["zs"][i]);
 			}
-			m_colorFromDepth_min.R =
-				static_cast<float>(in["colorFromDepth_min"]["R"]);
-			m_colorFromDepth_min.G =
-				static_cast<float>(in["colorFromDepth_min"]["G"]);
-			m_colorFromDepth_min.B =
-				static_cast<float>(in["colorFromDepth_min"]["B"]);
-			m_colorFromDepth_max.R =
-				static_cast<float>(in["colorFromDepth_max"]["R"]);
-			m_colorFromDepth_max.G =
-				static_cast<float>(in["colorFromDepth_max"]["G"]);
-			m_colorFromDepth_max.B =
-				static_cast<float>(in["colorFromDepth_max"]["B"]);
+			m_colorFromDepth_min.R = static_cast<float>(in["colorFromDepth_min"]["R"]);
+			m_colorFromDepth_min.G = static_cast<float>(in["colorFromDepth_min"]["G"]);
+			m_colorFromDepth_min.B = static_cast<float>(in["colorFromDepth_min"]["B"]);
+			m_colorFromDepth_max.R = static_cast<float>(in["colorFromDepth_max"]["R"]);
+			m_colorFromDepth_max.G = static_cast<float>(in["colorFromDepth_max"]["G"]);
+			m_colorFromDepth_max.B = static_cast<float>(in["colorFromDepth_max"]["B"]);
 			m_pointSmooth = static_cast<bool>(in["pointSmooth"]);
 		}
 		break;

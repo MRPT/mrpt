@@ -168,6 +168,11 @@ class CPointCloud : public CRenderizableShaderPoints,
 		return m_points[i];
 	}
 
+	inline const mrpt::math::TPoint3Df& getPoint3Df(size_t i) const
+	{
+		return m_points[i];
+	}
+
 	/** Write an individual point (checks for "i" in the valid range only in
 	 * Debug). */
 	void setPoint(size_t i, const float x, const float y, const float z);

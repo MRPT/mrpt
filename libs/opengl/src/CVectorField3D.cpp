@@ -141,7 +141,7 @@ void CVectorField3D::render(const RenderContext& rc) const
 					const float A =
 						(m_maxspeed - module) * m_still_color.A / m_maxspeed +
 						module * m_maxspeed_color.A / m_maxspeed;
-					glColor4ub(R, G, B, A);
+					glColor4f(R, G, B, A);
 				}
 
 				glVertex3f(x_p(j, i), y_p(j, i), z_p(j, i));
