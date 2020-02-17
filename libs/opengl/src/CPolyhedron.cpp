@@ -837,7 +837,7 @@ CPolyhedron::Ptr CPolyhedron::CreateJohnsonSolidWithConstantBase(
 	// Some common values are computed
 	size_t nParts = parts.size();
 	double edgeLength = 2 * baseRadius * sin(M_PI / numBaseEdges);
-	double antiPrismHeight = sqrt(
+	double antiPrism_height = sqrt(
 		square(edgeLength) -
 		square(baseRadius) * (2 - 2 * cos(M_PI / numBaseEdges)));
 	// Vertices' and faces' vectors are computed
@@ -853,7 +853,7 @@ CPolyhedron::Ptr CPolyhedron::CreateJohnsonSolidWithConstantBase(
 	faces.reserve(nFaces);
 	// Each base's position is computed. Also, the height is set so that the
 	// polyhedron is vertically centered in z=0.
-	double h, mHeight = 0;
+	double h, m_height = 0;
 	vector<pair<double, size_t>> basePositionInfo(nParts - 1);
 	for (size_t i = 0; i < nParts - 1; i++)
 	{
@@ -861,19 +861,19 @@ CPolyhedron::Ptr CPolyhedron::CreateJohnsonSolidWithConstantBase(
 			h = edgeLength;
 		else if (parts[i] == ANTIPRISM)
 		{
-			h = antiPrismHeight;
+			h = antiPrism_height;
 			shifts++;
 		}
 		else
 			h = 0;
-		basePositionInfo[i] = make_pair(mHeight += h, shifts);
+		basePositionInfo[i] = make_pair(m_height += h, shifts);
 	}
-	mHeight /= 2;
+	m_height /= 2;
 	double semi = M_PI / numBaseEdges;
 	// All the bases are generated and inserted into the vertices' vector.
 	for (auto it = basePositionInfo.begin(); it != basePositionInfo.end(); ++it)
 		generateShiftedBase(
-			numBaseEdges, baseRadius, it->first - mHeight, semi * it->second,
+			numBaseEdges, baseRadius, it->first - m_height, semi * it->second,
 			verts);
 	size_t initialBase = 0, endBase = 0;
 	TPolyhedronFace face;

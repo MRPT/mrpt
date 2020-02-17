@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableShaderTriangles.h>
 
 namespace mrpt::opengl
 {
@@ -26,42 +26,15 @@ class CCylinder;
  *
  * \ingroup mrpt_opengl_grp
  */
-class CCylinder : public CRenderizable
+class CCylinder : public CRenderizableShaderTriangles
 {
 	DEFINE_SERIALIZABLE(CCylinder, mrpt::opengl)
 	DEFINE_SCHEMA_SERIALIZABLE()
-   protected:
-	/**
-	 * Cylinder's radii. If mBaseRadius==mTopRadius, then the object is an
-	 * actual cylinder. If both differ, it's a truncated cone. If one of the
-	 * radii is zero, the object is a cone.
-	 */
-	float mBaseRadius{1}, mTopRadius{1};
-	/**
-	 * Cylinder's height
-	 */
-	float mHeight{1};
-	/**
-	 * Implementation parameters on which depend the number of actually
-	 * rendered polygons.
-	 */
-	uint32_t mSlices{10}, mStacks{10};
-	/**
-	 * Boolean parameters about including the bases in the object. If both
-	 * mHasTopBase and mHasBottomBase are set to false, only the lateral area is
-	 * displayed.
-	 */
-	bool mHasTopBase{true}, mHasBottomBase{true};
-
-	mutable unsigned int m_vertexBuffer = 0, m_vao = 0, m_colorBuffer = 0,
-						 m_normalBuffer = 0;
-	mutable std::vector<mrpt::math::TPoint3Df> m_vertex_buffer_data;
-	mutable std::vector<mrpt::math::TPoint3Df> m_normals_buffer_data;
-	mutable std::vector<mrpt::img::TColor> m_color_buffer_data;
-
    public:
-	void render(const RenderContext& rc) const override;
-	void renderUpdateBuffers() const override;
+	/** @name Renderizable shader API virtual methods
+	 * @{ */
+	void onUpdateBuffers_Triangles() override;
+	/** @} */
 
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 	/**
@@ -69,20 +42,20 @@ class CCylinder : public CRenderizable
 	 */
 	inline void setHasBases(bool top = true, bool bottom = true)
 	{
-		mHasTopBase = top;
-		mHasBottomBase = bottom;
+		m_hasTopBase = top;
+		m_hasBottomBase = bottom;
 		CRenderizable::notifyChange();
 	}
 	/**
 	 * Check whether top base is displayed.
 	 * \sa hasBottomBase
 	 */
-	inline bool hasTopBase() const { return mHasTopBase; }
+	inline bool hasTopBase() const { return m_hasTopBase; }
 	/**
 	 * Check whether bottom base is displayed.
 	 * \sa hasTopBase
 	 */
-	inline bool hasBottomBase() const { return mHasBottomBase; }
+	inline bool hasBottomBase() const { return m_hasBottomBase; }
 	/**
 	 * Sets both radii to a single value, thus configuring the object as a
 	 * cylinder.
@@ -90,7 +63,7 @@ class CCylinder : public CRenderizable
 	 */
 	inline void setRadius(float radius)
 	{
-		mBaseRadius = mTopRadius = radius;
+		m_baseRadius = m_topRadius = radius;
 		CRenderizable::notifyChange();
 	}
 	/**
@@ -99,8 +72,8 @@ class CCylinder : public CRenderizable
 	 */
 	inline void setRadii(float bottom, float top)
 	{
-		mBaseRadius = bottom;
-		mTopRadius = top;
+		m_baseRadius = bottom;
+		m_topRadius = top;
 		CRenderizable::notifyChange();
 	}
 	/**
@@ -108,75 +81,78 @@ class CCylinder : public CRenderizable
 	 */
 	inline void setHeight(float height)
 	{
-		mHeight = height;
+		m_height = height;
 		CRenderizable::notifyChange();
 	}
 	/**
 	 * Gets the bottom radius.
 	 */
-	inline float getBottomRadius() const { return mBaseRadius; }
+	inline float getBottomRadius() const { return m_baseRadius; }
 	/**
 	 * Gets the top radius.
 	 */
-	inline float getTopRadius() const { return mTopRadius; }
+	inline float getTopRadius() const { return m_topRadius; }
 	/**
 	 * Gets the cylinder's height.
 	 */
-	inline float getHeight() const { return mHeight; }
-	/**
-	 * Gets how many slices are used in the cylinder's lateral area and in its
-	 * bases.
-	 */
+	inline float getHeight() const { return m_height; }
+
+	/** Number of radial divisions  */
 	inline void setSlicesCount(uint32_t slices)
 	{
-		mSlices = slices;
+		m_slices = slices;
 		CRenderizable::notifyChange();
 	}
-	/**
-	 * Gets how many stacks are used in the cylinder's lateral area.
-	 */
-	inline void setStacksCount(uint32_t stacks)
-	{
-		mStacks = stacks;
-		CRenderizable::notifyChange();
-	}
-	/**
-	 * Sets the amount of slices used to display the object.
-	 */
-	inline uint32_t getSlicesCount() const { return mSlices; }
-	/**
-	 * Sets the amount of stacks used to display the object.
-	 */
-	inline uint32_t getStacksCount() const { return mStacks; }
+
+	/** Number of radial divisions  */
+	inline uint32_t getSlicesCount() const { return m_slices; }
+
 	/** Evaluates the bounding box of this object (including possible children)
 	 * in the coordinate frame of the object parent. */
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
-	/**
-	 * Basic empty constructor. Set all parameters to default.
-	 */
-	CCylinder()
 
-		= default;
+	CCylinder() = default;
 	/**
 	 * Complete constructor. Allows the configuration of every parameter.
 	 */
 	/** Constructor with two radii. Allows the construction of any cylinder. */
 	CCylinder(
 		const float baseRadius, const float topRadius, const float height = 1,
-		const int slices = 10, const int stacks = 10)
-		: mBaseRadius(baseRadius),
-		  mTopRadius(topRadius),
-		  mHeight(height),
-		  mSlices(slices),
-		  mStacks(stacks),
-		  mHasTopBase(true),
-		  mHasBottomBase(true){};
-	/**
-	 * Destructor.
-	 */
+		const int slices = 10)
+		: m_baseRadius(baseRadius),
+		  m_topRadius(topRadius),
+		  m_height(height),
+		  m_slices(slices),
+		  m_hasTopBase(true),
+		  m_hasBottomBase(true)
+	{
+	}
+	/** Destructor */
 	~CCylinder() override = default;
+
+   protected:
+	/**
+	 * Cylinder's radii. If m_baseRadius==m_topRadius, then the object is an
+	 * actual cylinder. If both differ, it's a truncated cone. If one of the
+	 * radii is zero, the object is a cone.
+	 */
+	float m_baseRadius{1}, m_topRadius{1};
+	/**
+	 * Cylinder's height
+	 */
+	float m_height{1};
+
+	/** Number of radial divisions. */
+	uint32_t m_slices{10};
+
+	/**
+	 * Boolean parameters about including the bases in the object. If both
+	 * m_hasTopBase and m_hasBottomBase are set to false, only the lateral area
+	 * is displayed.
+	 */
+	bool m_hasTopBase{true}, m_hasBottomBase{true};
 
    private:
 	/**
@@ -186,7 +162,7 @@ class CCylinder : public CRenderizable
 	inline bool getRadius(float Z, float& r) const
 	{
 		if (!reachesHeight(Z)) return false;
-		r = (Z / mHeight) * (mTopRadius - mBaseRadius) + mBaseRadius;
+		r = (Z / m_height) * (m_topRadius - m_baseRadius) + m_baseRadius;
 		return true;
 	}
 	/**
@@ -194,8 +170,8 @@ class CCylinder : public CRenderizable
 	 */
 	inline bool reachesHeight(float Z) const
 	{
-		return (mHeight < 0) ? (Z >= mHeight && Z <= 0)
-							 : (Z <= mHeight && Z >= 0);
+		return (m_height < 0) ? (Z >= m_height && Z <= 0)
+							  : (Z <= m_height && Z >= 0);
 	}
 	inline bool reachesHeight(double Z) const { return reachesHeight(d2f(Z)); }
 };

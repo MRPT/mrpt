@@ -28,7 +28,7 @@ namespace mrpt::opengl
 struct TTriangle
 {
 	TTriangle() = default;
-	TTriangle(const mrpt::math::TPolygon3D& p)
+	explicit TTriangle(const mrpt::math::TPolygon3D& p)
 	{
 		ASSERT_EQUAL_(p.size(), 3U);
 		for (size_t i = 0; i < 3; i++)
@@ -36,6 +36,14 @@ struct TTriangle
 			vertex[i].pt = p[i];
 			vertex[i].R = vertex[i].G = vertex[i].B = 1;
 		}
+	}
+	explicit TTriangle(
+		const mrpt::math::TPoint3Df& p1, const mrpt::math::TPoint3Df& p2,
+		const mrpt::math::TPoint3Df& p3)
+	{
+		vertex[0].pt = p1;
+		vertex[1].pt = p2;
+		vertex[2].pt = p3;
 	}
 
 	mrpt::math::TPointXYZRGBAf vertex[3];

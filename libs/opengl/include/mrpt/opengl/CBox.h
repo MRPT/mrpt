@@ -121,12 +121,12 @@ class CBox : public CRenderizableShaderTriangles,
    protected:
 	/** Corners coordinates */
 	mrpt::math::TPoint3D m_corner_min, m_corner_max;
-	/** true: wireframe, false: solid */
+	/** true: wireframe, false (default): solid */
 	bool m_wireframe{false};
 
 	/** Draw line borders to solid box with the given linewidth (default: true)
 	 */
-	bool m_draw_border{false};
+	bool m_draw_border{true};
 
 	/** Color of the solid box borders. */
 	mrpt::img::TColor m_solidborder_color;

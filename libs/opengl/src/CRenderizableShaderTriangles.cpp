@@ -25,7 +25,9 @@ CRenderizableShaderTriangles::~CRenderizableShaderTriangles() = default;
 void CRenderizableShaderTriangles::renderUpdateBuffers() const
 {
 #if MRPT_HAS_OPENGL_GLUT
-	// Vertices and colors are already stored into m_triangles.
+	// Generate vertices & colors into m_triangles
+	const_cast<CRenderizableShaderTriangles&>(*this)
+		.onUpdateBuffers_Triangles();
 
 	// Eval normals:
 	const auto n = m_triangles.size();
