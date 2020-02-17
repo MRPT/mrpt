@@ -230,6 +230,8 @@ void COpenGLViewport::renderImageMode() const
 #endif
 }
 
+void COpenGLViewport::unloadShaders() { m_shaders.clear(); }
+
 void COpenGLViewport::loadDefaultShaders() const
 {
 #if MRPT_HAS_OPENGL_GLUT

@@ -40,6 +40,12 @@ using mrpt::system::CTicTac;
 
 float CGlCanvasBase::SENSIBILITY_DEG_PER_PIXEL = 0.1f;
 
+CGlCanvasBase::~CGlCanvasBase()
+{
+	// Ensure all OpenGL resources are freed before the opengl context is gone:
+	if (m_openGLScene) m_openGLScene->unloadShaders();
+}
+
 void CGlCanvasBase::setMinimumZoom(float zoom) { m_minZoom = zoom; }
 void CGlCanvasBase::setMaximumZoom(float zoom) { m_maxZoom = zoom; }
 void CGlCanvasBase::setMousePos(int x, int y)

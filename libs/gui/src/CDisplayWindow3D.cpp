@@ -200,8 +200,11 @@ void CMyGLCanvas_DisplayWindow3D::OnMouseMove(wxMouseEvent& event)
 
 CMyGLCanvas_DisplayWindow3D::~CMyGLCanvas_DisplayWindow3D()
 {
-	getOpenGLSceneRef().reset();  // Avoid the base class to free this object
-	// (it's freed by CDisplayWindow3D)
+	// Ensure all OpenGL resources are freed before the opengl context is gone:
+	if (getOpenGLSceneRef()) getOpenGLSceneRef()->unloadShaders();
+
+	// Avoid the base class to free this object (it's freed by CDisplayWindow3D)
+	getOpenGLSceneRef().reset();
 }
 
 void CMyGLCanvas_DisplayWindow3D::OnPreRender()
@@ -215,8 +218,6 @@ void CMyGLCanvas_DisplayWindow3D::OnPreRender()
 
 void CMyGLCanvas_DisplayWindow3D::OnPostRender()
 {
-	// Avoid the base class to free this object (it's freed by CDisplayWindow3D)
-	getOpenGLSceneRef().reset();
 	m_win3D->unlockAccess3DScene();
 
 	// If any, draw the 2D text messages:

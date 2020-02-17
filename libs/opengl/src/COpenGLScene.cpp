@@ -51,6 +51,12 @@ COpenGLScene::COpenGLScene(const COpenGLScene& obj) : CSerializable()
 
 COpenGLScene::~COpenGLScene() { m_viewports.clear(); }
 
+void COpenGLScene::unloadShaders()
+{
+	for (auto& v : m_viewports)
+		if (v) v->unloadShaders();
+}
+
 void COpenGLScene::clear(bool createMainViewport)
 {
 	m_viewports.clear();
