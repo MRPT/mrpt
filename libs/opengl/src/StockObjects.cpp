@@ -196,13 +196,13 @@ CSetOfObjects::Ptr stock_objects::RobotRhodon()
 	ret->insert(obj3);
 
 	opengl::CCylinder::Ptr obj4 =
-		std::make_shared<opengl::CCylinder>(0.05f, 0.05f, 0.4f, 20, 20);
+		std::make_shared<opengl::CCylinder>(0.05f, 0.05f, 0.4f, 20);
 	obj4->setLocation(0, 0, 0.73);
 	obj4->setColor(0.0f, 0.0f, 0.9f);
 	ret->insert(obj4);
 
 	opengl::CCylinder::Ptr obj5 =
-		std::make_shared<opengl::CCylinder>(0.05f, 0.05f, 0.4f, 20, 20);
+		std::make_shared<opengl::CCylinder>(0.05f, 0.05f, 0.4f, 20);
 	obj5->setPose(CPose3D(0.32, 0, 0.89, 0, -1, 0));
 	obj5->setColor(0.0f, 0.0f, 0.9f);
 	ret->insert(obj5);
@@ -315,11 +315,11 @@ CSetOfObjects::Ptr stock_objects::BumblebeeCamera()
 	camera->insert(rect);
 
 	CCylinder::Ptr lCam =
-		std::make_shared<opengl::CCylinder>(0.01f, 0.01f, 0.003f, 10, 10);
+		std::make_shared<opengl::CCylinder>(0.01f, 0.01f, 0.003f, 10);
 	lCam->setColor(1, 0, 0);
 
 	CCylinder::Ptr rCam =
-		std::make_shared<opengl::CCylinder>(0.01f, 0.01f, 0.003f, 10, 10);
+		std::make_shared<opengl::CCylinder>(0.01f, 0.01f, 0.003f, 10);
 	rCam->setPose(CPose3D(0.12, 0, 0));
 	rCam->setColor(0, 0, 0);
 

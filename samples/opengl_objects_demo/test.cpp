@@ -108,6 +108,7 @@ void TestOpenGLObjects()
 		theScene->insert(gl_txt);
 	}
 	off_x += STEP_X;
+#endif
 
 	// Box
 	{
@@ -125,6 +126,7 @@ void TestOpenGLObjects()
 			opengl::CBox::Create(TPoint3D(0, 0, 0), TPoint3D(1, 1, 1), false);
 		obj3->enableBoxBorder(true);
 		obj3->setLineWidth(3);
+		obj3->setColor_u8(0xff, 0x00, 0x00, 0xa0);
 		obj3->setLocation(off_x, 8, 0);
 		theScene->insert(obj3);
 
@@ -134,6 +136,7 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
+#if 0
 	// Frustum
 	{
 		opengl::CFrustum::Ptr obj =
@@ -151,24 +154,23 @@ void TestOpenGLObjects()
 		theScene->insert(gl_txt);
 	}
 	off_x += STEP_X;
+#endif
 
 	// Cylinder
 	{
-		opengl::CCylinder::Ptr obj = opengl::CCylinder::Create(2, 2, 4, 20, 10);
+		opengl::CCylinder::Ptr obj = opengl::CCylinder::Create(2, 2, 4, 20);
 		obj->setLocation(off_x, 0, 0);
-		obj->setColor(0, 0, 0.8);
+		obj->setColor(0, 0, 0.8f);
 		theScene->insert(obj);
 
-		opengl::CCylinder::Ptr obj2 =
-			opengl::CCylinder::Create(2, 1, 4, 20, 10);
+		opengl::CCylinder::Ptr obj2 = opengl::CCylinder::Create(2, 1, 4, 20);
 		obj2->setLocation(off_x, 6, 0);
-		obj2->setColor(0, 0, 0.8);
+		obj2->setColor(0, 0, 0.8f);
 		theScene->insert(obj2);
 
-		opengl::CCylinder::Ptr obj3 =
-			opengl::CCylinder::Create(2, 0, 4, 20, 10);
+		opengl::CCylinder::Ptr obj3 = opengl::CCylinder::Create(2, 0, 4, 20);
 		obj3->setLocation(off_x, -6, 0);
-		obj3->setColor(0, 0, 0.8);
+		obj3->setColor(0, 0, 0.8f);
 		theScene->insert(obj3);
 
 		auto gl_txt = opengl::CText::Create("CCylinder");
@@ -177,6 +179,7 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
+#if 0
 	// CDisk
 	{
 		{
@@ -280,8 +283,7 @@ void TestOpenGLObjects()
 			theScene->insert(obj_corner);
 		}
 
-		auto gl_txt =
-			opengl::CText::Create("CEllipsoidRangeBearing2D");
+		auto gl_txt = opengl::CText::Create("CEllipsoidRangeBearing2D");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -316,8 +318,7 @@ void TestOpenGLObjects()
 			theScene->insert(obj_corner);
 		}
 
-		auto gl_txt =
-			opengl::CText::Create("CEllipsoidInverseDepth2D");
+		auto gl_txt = opengl::CText::Create("CEllipsoidInverseDepth2D");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -353,8 +354,7 @@ void TestOpenGLObjects()
 			theScene->insert(obj_corner);
 		}
 
-		auto gl_txt =
-			opengl::CText::Create("CEllipsoidInverseDepth3D");
+		auto gl_txt = opengl::CText::Create("CEllipsoidInverseDepth3D");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -459,8 +459,7 @@ void TestOpenGLObjects()
 
 		for (int i = 0; i < 100000; i++)
 			obj->insertPoint(
-				rng.drawUniform(-5, 5),
-				rng.drawUniform(-5, 5),
+				rng.drawUniform(-5, 5), rng.drawUniform(-5, 5),
 				rng.drawUniform(-5, 5));
 
 		auto gl_txt = opengl::CText::Create("CPointCloud");
@@ -481,15 +480,11 @@ void TestOpenGLObjects()
 
 		for (int i = 0; i < 200; i++)
 			obj->push_back(
-				rng.drawUniform(-5, 5),
-				rng.drawUniform(-5, 5),
-				rng.drawUniform(-5, 5),
-				rng.drawUniform(0, 1),
-				rng.drawUniform(0, 1),
-				rng.drawUniform(0, 1));
+				rng.drawUniform(-5, 5), rng.drawUniform(-5, 5),
+				rng.drawUniform(-5, 5), rng.drawUniform(0, 1),
+				rng.drawUniform(0, 1), rng.drawUniform(0, 1));
 
-		auto gl_txt =
-			opengl::CText::Create("CPointCloudColoured");
+		auto gl_txt = opengl::CText::Create("CPointCloudColoured");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
