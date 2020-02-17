@@ -229,6 +229,9 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 		MRPT_END
 	}
 
+	/** Ensure all shaders are unloaded in all viewports */
+	void unloadShaders();
+
    protected:
 	bool m_followCamera{false};
 

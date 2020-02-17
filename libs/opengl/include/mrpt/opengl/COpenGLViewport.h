@@ -398,7 +398,11 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	/** Default shader program */
 	mutable std::map<shader_id_t, mrpt::opengl::Program::Ptr> m_shaders;
 
+	/** Load all MPRT predefined shader programs into m_shaders */
 	void loadDefaultShaders() const;
+
+	/** Unload shader programs in m_shaders */
+	void unloadShaders();
 
 	/** The list of objects that comprise the 3D scene.
 	 *  Objects are automatically deleted when calling "clear" or in the

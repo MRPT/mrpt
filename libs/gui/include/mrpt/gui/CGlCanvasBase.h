@@ -10,17 +10,12 @@
 #pragma once
 #include <mrpt/opengl/COpenGLScene.h>
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 class CCamera;
-}
-}  // namespace mrpt
+}  // namespace mrpt::opengl
 
-namespace mrpt
-{
-namespace gui
+namespace mrpt::gui
 {
 /** This base class implements a working with opengl::Camera and a OpenGL
  * canvas, and it's used in gui::CWxGLCanvasBase and gui::CQtGlCanvasBase.
@@ -42,7 +37,7 @@ class CGlCanvasBase
 	};
 
 	CGlCanvasBase() = default;
-	virtual ~CGlCanvasBase() = default;
+	virtual ~CGlCanvasBase();
 	/** Sets the minimum of the zoom
 	 * See also setMaximumZoom(float) */
 	void setMinimumZoom(float zoom);
@@ -257,5 +252,4 @@ class CGlCanvasBase
 	float m_maxZoom = 3200.f;
 	CamaraParams m_cameraParams;
 };  // end of class
-}  // namespace gui
-}  // namespace mrpt
+}  // namespace mrpt::gui
