@@ -65,15 +65,15 @@ void CFrustum::onUpdateBuffers_Wireframe()
 
 	const std::array<mrpt::math::TPoint3Df, 8> pts = computeFrustumCorners();
 
-	const int draw_path[] = {0, 1, 3, 2, 0, 4, 6, 2, 3, 7, 6, 4, 5, 7, 5, 1};
-	const auto N = sizeof(draw_path) / sizeof(draw_path[0]);
+	const std::array<int, 16> draw_path = {0, 1, 3, 2, 0, 4, 6, 2,
+										   3, 7, 6, 4, 5, 7, 5, 1};
 
 	// GL_LINE_STRIP:
-	for (unsigned int idx = 0; idx < N; idx++)
+	for (unsigned int idx = 0; idx < draw_path.size(); idx++)
 	{
-		const unsigned int idx_next = (idx + 1) % N;
-		vbd.emplace_back(pts[idx]);
-		vbd.emplace_back(pts[idx_next]);
+		const unsigned int idx_next = (idx + 1) % draw_path.size();
+		vbd.emplace_back(pts[draw_path[idx]]);
+		vbd.emplace_back(pts[draw_path[idx_next]]);
 	}
 
 	cbd.assign(vbd.size(), m_color);
