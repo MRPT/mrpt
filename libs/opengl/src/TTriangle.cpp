@@ -14,17 +14,18 @@
 
 using namespace mrpt::opengl;
 
-static_assert(sizeof(TTriangle) == sizeof(float) * 3 * 7, "pack(1) test");
+// packet size= 3 vertices, each XYZ (float) + RGBA (u8)
+static_assert(sizeof(TTriangle) == (sizeof(float) * 3 + 4) * 3, "pack(1) test");
 
 void TTriangle::writeTo(mrpt::serialization::CArchive& o) const
 {
 	for (int i = 0; i < 3; i++)
-		o << vertex[i].pt.x << vertex[i].pt.y << vertex[i].pt.z << vertex[i].R
-		  << vertex[i].G << vertex[i].B << vertex[i].A;
+		o << vertex[i].pt.x << vertex[i].pt.y << vertex[i].pt.z << vertex[i].r
+		  << vertex[i].g << vertex[i].b << vertex[i].a;
 }
 void TTriangle::readFrom(mrpt::serialization::CArchive& in)
 {
 	for (int i = 0; i < 3; i++)
 		in >> vertex[i].pt.x >> vertex[i].pt.y >> vertex[i].pt.z >>
-			vertex[i].R >> vertex[i].G >> vertex[i].B >> vertex[i].A;
+			vertex[i].r >> vertex[i].g >> vertex[i].b >> vertex[i].a;
 }

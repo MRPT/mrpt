@@ -77,15 +77,7 @@ CRenderizable& CSetOfTriangles::setColor_u8(const mrpt::img::TColor& c)
 {
 	CRenderizable::notifyChange();
 	m_color = c;
-	mrpt::img::TColorf col(c);
-	for (auto& m_triangle : m_triangles)
-		for (size_t i = 0; i < 3; i++)
-		{
-			m_triangle.r(i) = col.R;
-			m_triangle.g(i) = col.G;
-			m_triangle.b(i) = col.B;
-			m_triangle.a(i) = col.A;
-		}
+	for (auto& t : m_triangles) t.setColor(c);
 	return *this;
 }
 
@@ -93,9 +85,7 @@ CRenderizable& CSetOfTriangles::setColorR_u8(const uint8_t r)
 {
 	CRenderizable::notifyChange();
 	m_color.R = r;
-	const float col = r / 255.f;
-	for (auto& m_triangle : m_triangles)
-		for (size_t i = 0; i < 3; i++) m_triangle.r(i) = col;
+	for (auto& t : m_triangles) t.setColor(m_color);
 	return *this;
 }
 
@@ -103,9 +93,7 @@ CRenderizable& CSetOfTriangles::setColorG_u8(const uint8_t g)
 {
 	CRenderizable::notifyChange();
 	m_color.G = g;
-	const float col = g / 255.f;
-	for (auto& m_triangle : m_triangles)
-		for (size_t i = 0; i < 3; i++) m_triangle.g(i) = col;
+	for (auto& t : m_triangles) t.setColor(m_color);
 	return *this;
 }
 
@@ -113,9 +101,7 @@ CRenderizable& CSetOfTriangles::setColorB_u8(const uint8_t b)
 {
 	CRenderizable::notifyChange();
 	m_color.B = b;
-	const float col = b / 255.f;
-	for (auto& m_triangle : m_triangles)
-		for (size_t i = 0; i < 3; i++) m_triangle.b(i) = col;
+	for (auto& t : m_triangles) t.setColor(m_color);
 	return *this;
 }
 
@@ -123,9 +109,7 @@ CRenderizable& CSetOfTriangles::setColorA_u8(const uint8_t a)
 {
 	CRenderizable::notifyChange();
 	m_color.A = a;
-	const float col = a / 255.f;
-	for (auto& m_triangle : m_triangles)
-		for (size_t i = 0; i < 3; i++) m_triangle.a(i) = col;
+	for (auto& t : m_triangles) t.setColor(m_color);
 	return *this;
 }
 

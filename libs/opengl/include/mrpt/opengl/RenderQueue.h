@@ -38,9 +38,11 @@ struct RenderQueueElement
 
 /** A queue for rendering, sorted by shader program to minimize changes of
  * OpenGL shader programs while rendering a scene.
- * Filled by sortRenderObjectsByShader()
- * \ingroup mrpt_opengl_grp
+ * Within each shader, objects are sorted by eye-to-object distance, so we can
+ * later render them from back to front to render transparencies properly Filled
+ * by sortRenderObjectsByShader() \ingroup mrpt_opengl_grp
  */
-using RenderQueue = std::map<shader_id_t, std::deque<RenderQueueElement>>;
+using RenderQueue =
+	std::map<shader_id_t, std::multimap<float, RenderQueueElement>>;
 
 }  // namespace mrpt::opengl

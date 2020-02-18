@@ -83,4 +83,15 @@ mrpt::serialization::CArchive& operator<<(
 	return out << p.pt << p.r << p.g << p.b;
 }
 
+mrpt::serialization::CArchive& operator>>(
+	mrpt::serialization::CArchive& in, mrpt::math::TPointXYZfRGBAu8& p)
+{
+	return in >> p.pt >> p.r >> p.g >> p.b >> p.a;
+}
+mrpt::serialization::CArchive& operator<<(
+	mrpt::serialization::CArchive& out, const mrpt::math::TPointXYZfRGBAu8& p)
+{
+	return out << p.pt << p.r << p.g << p.b << p.a;
+}
+
 }  // namespace mrpt::math

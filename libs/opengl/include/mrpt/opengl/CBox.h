@@ -107,7 +107,7 @@ class CBox : public CRenderizableShaderTriangles,
 	}
 
 	/** Basic empty constructor. Set all parameters to default. */
-	CBox();
+	CBox() = default;
 
 	/** Constructor with all the parameters  */
 	CBox(
@@ -120,7 +120,7 @@ class CBox : public CRenderizableShaderTriangles,
 
    protected:
 	/** Corners coordinates */
-	mrpt::math::TPoint3D m_corner_min, m_corner_max;
+	mrpt::math::TPoint3D m_corner_min = {-1, -1, -1}, m_corner_max = {1, 1, 1};
 	/** true: wireframe, false (default): solid */
 	bool m_wireframe{false};
 
@@ -129,6 +129,6 @@ class CBox : public CRenderizableShaderTriangles,
 	bool m_draw_border{true};
 
 	/** Color of the solid box borders. */
-	mrpt::img::TColor m_solidborder_color;
+	mrpt::img::TColor m_solidborder_color = {0, 0, 0};
 };
 }  // namespace mrpt::opengl

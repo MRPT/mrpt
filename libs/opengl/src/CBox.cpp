@@ -21,14 +21,6 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CBox, CRenderizableShaderTriangles, mrpt::opengl)
 
-CBox::CBox()
-	: m_corner_min(-1, -1, -1),
-	  m_corner_max(1, 1, 1),
-
-	  m_solidborder_color(0, 0, 0)
-{
-}
-
 CBox::CBox(
 	const mrpt::math::TPoint3D& corner1, const mrpt::math::TPoint3D& corner2,
 	bool is_wireframe, float lineWidth)
@@ -136,14 +128,7 @@ void CBox::onUpdateBuffers_Triangles()
 		P3(c0.x, c1.y, c1.z), P3(c0.x, c0.y, c1.z), P3(c1.x, c1.y, c1.z));
 
 	// All faces, all vertices, same color:
-	for (auto& t : tris)
-		for (unsigned int i = 0; i < 3; i++)
-		{
-			t.vertex[i].R = u8tof(m_color.R);
-			t.vertex[i].G = u8tof(m_color.G);
-			t.vertex[i].B = u8tof(m_color.B);
-			t.vertex[i].A = u8tof(m_color.A);
-		}
+	for (auto& t : tris) t.setColor(m_color);
 }
 
 uint8_t CBox::serializeGetVersion() const { return 1; }

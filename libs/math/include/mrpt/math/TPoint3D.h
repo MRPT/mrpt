@@ -306,6 +306,25 @@ mrpt::serialization::CArchive& operator>>(
 mrpt::serialization::CArchive& operator<<(
 	mrpt::serialization::CArchive& out, const mrpt::math::TPointXYZfRGBu8& p);
 
+/** XYZ point (float) + RGBA(u8) \sa mrpt::math::TPoint3D */
+struct TPointXYZfRGBAu8
+{
+	mrpt::math::TPoint3Df pt;
+	uint8_t r{0}, g{0}, b{0}, a{0xff};
+	TPointXYZfRGBAu8() : pt() {}
+	constexpr TPointXYZfRGBAu8(
+		float x, float y, float z, uint8_t R_val, uint8_t G_val, uint8_t B_val,
+		uint8_t A_val = 0xff)
+		: pt(x, y, z), r(R_val), g(G_val), b(B_val), a(A_val)
+	{
+	}
+};
+
+mrpt::serialization::CArchive& operator>>(
+	mrpt::serialization::CArchive& in, mrpt::math::TPointXYZfRGBAu8& p);
+mrpt::serialization::CArchive& operator<<(
+	mrpt::serialization::CArchive& out, const mrpt::math::TPointXYZfRGBAu8& p);
+
 /** XYZ point (float) + RGBA(float) [1-byte memory packed, no padding]
  * \sa mrpt::math::TPoint3D */
 struct TPointXYZRGBAf

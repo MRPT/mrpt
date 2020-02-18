@@ -39,15 +39,6 @@ class CRenderizableShaderTriangles : public virtual CRenderizable
 	 * to be drawn in "m_*_buffer" fields. */
 	virtual void onUpdateBuffers_Triangles() = 0;
 
-	/** Enables or disables transparency (default=false) */
-	inline void enableTransparency(bool v)
-	{
-		m_enableTransparency = v;
-		CRenderizable::notifyChange();
-	}
-
-	inline bool transparencyEnabled() const { return m_enableTransparency; }
-
    protected:
 	/** List of triangles  \sa TTriangle */
 	mutable std::vector<mrpt::opengl::TTriangle> m_triangles;
