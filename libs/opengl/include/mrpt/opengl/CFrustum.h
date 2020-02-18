@@ -9,7 +9,8 @@
 #pragma once
 
 #include <mrpt/math/TPoint3D.h>
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableShaderTriangles.h>
+#include <mrpt/opengl/CRenderizableShaderWireFrame.h>
 
 namespace mrpt::opengl
 {
@@ -48,28 +49,26 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_opengl_grp
  */
-class CFrustum : public CRenderizable
+class CFrustum : public CRenderizableShaderTriangles,
+				 public CRenderizableShaderWireFrame
 {
 	DEFINE_SERIALIZABLE(CFrustum, mrpt::opengl)
 
-   protected:
-	/** Near and far planes */
-	float m_min_distance{0.1f}, m_max_distance{1.f};
-	/** Semi FOVs (in radians) */
-	float m_fov_horz_left, m_fov_horz_right;
-	/** Semi FOVs (in radians) */
-	float m_fov_vert_down, m_fov_vert_up;
-	bool m_draw_lines{true}, m_draw_planes{false};
-	float m_lineWidth{1.5f};
-	mrpt::img::TColor m_planes_color;
-
    public:
-	inline void setLineWidth(float width)
+	/** @name Renderizable shader API virtual methods
+	 * @{ */
+	void render(const RenderContext& rc) const override;
+	void renderUpdateBuffers() const override;
+
+	virtual shader_list_t requiredShaders() const override
 	{
-		m_lineWidth = width;
-		CRenderizable::notifyChange();
+		// May use up to two shaders (vertices + lines):
+		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES};
 	}
-	inline float getLineWidth() const { return m_lineWidth; }
+	void onUpdateBuffers_Wireframe() override;
+	void onUpdateBuffers_Triangles() override;
+	/** @} */
+
 	/** Changes the color of the planes; to change color of lines, use
 	 * CRenderizable base methods. */
 	inline void setPlaneColor(const mrpt::img::TColor& c)
@@ -111,8 +110,6 @@ class CFrustum : public CRenderizable
 	float getVertFOVDown() const { return mrpt::RAD2DEG(m_fov_vert_down); }
 	float getVertFOVUp() const { return mrpt::RAD2DEG(m_fov_vert_up); }
 
-	void render(const RenderContext& rc) const override;
-	void renderUpdateBuffers() const override;
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
@@ -128,5 +125,18 @@ class CFrustum : public CRenderizable
 
 	/** Destructor  */
 	~CFrustum() override = default;
+
+   protected:
+	/** Near and far planes */
+	float m_min_distance{0.1f}, m_max_distance{1.f};
+	/** Semi FOVs (in radians) */
+	float m_fov_horz_left, m_fov_horz_right;
+	/** Semi FOVs (in radians) */
+	float m_fov_vert_down, m_fov_vert_up;
+	bool m_draw_lines{true}, m_draw_planes{false};
+	mrpt::img::TColor m_planes_color;
+
+	// Compute the 8 corners of the frustum:
+	std::array<mrpt::math::TPoint3Df, 8> computeFrustumCorners() const;
 };
 }  // namespace mrpt::opengl

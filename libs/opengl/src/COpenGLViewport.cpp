@@ -50,15 +50,11 @@ mrpt::system::CTimeLogger glv_timlog;
 COpenGLViewport::COpenGLViewport(COpenGLScene* parent, const string& name)
 	: m_camera(),
 	  m_parent(parent),
-
 	  m_clonedViewport(),
 	  m_name(name),
-
 	  m_background_color(0.6f, 0.6f, 0.6f),
-
 	  m_imageview_img(),
 	  m_objects(),
-
 	  m_lights()
 {
 	// Default: one light from default direction
@@ -81,13 +77,8 @@ COpenGLViewport::COpenGLViewport(COpenGLScene* parent, const string& name)
 	m_lights[1].color_ambient[2] = 0.3f;
 }
 
-/*--------------------------------------------------------------
-					Destructor
-  ---------------------------------------------------------------*/
 COpenGLViewport::~COpenGLViewport() { clear(); }
-/*--------------------------------------------------------------
-					setCloneView
-  ---------------------------------------------------------------*/
+
 void COpenGLViewport::setCloneView(const string& clonedViewport)
 {
 	clear();
@@ -95,9 +86,6 @@ void COpenGLViewport::setCloneView(const string& clonedViewport)
 	m_clonedViewport = clonedViewport;
 }
 
-/*--------------------------------------------------------------
-					setViewportPosition
-  ---------------------------------------------------------------*/
 void COpenGLViewport::setViewportPosition(
 	const double x, const double y, const double width, const double height)
 {
@@ -374,6 +362,9 @@ void COpenGLViewport::renderNormalSceneMode() const
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);  // GL_LESS
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	CHECK_OPENGL_ERROR();
 
 	// Enable point sizes>1

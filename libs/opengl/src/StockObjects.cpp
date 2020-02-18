@@ -90,10 +90,7 @@ CSetOfObjects::Ptr stock_objects::RobotPioneer()
 	t.vertex[2].pt = {-0.20f, 0.10f, 0.05f};
 	obj->insertTriangle(t);  // 7
 
-	t.r(0) = t.r(1) = t.r(2) = 0.05f;
-	t.g(0) = t.g(1) = t.g(2) = 0.05f;
-	t.b(0) = t.b(1) = t.b(2) = 0.05f;
-	t.a(0) = t.a(1) = t.a(2) = 1;
+	t.setColor(mrpt::img::TColorf(0.05f, 0.05f, 0.05f, 1));
 
 	t.vertex[0].pt = {0.00f, 0.11f, 0.00f};
 	t.vertex[1].pt = {0.00f, 0.11f, 0.10f};

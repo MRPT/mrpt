@@ -58,7 +58,7 @@ CMesh::~CMesh() = default;
 void CMesh::updateTriangles() const
 {
 	CRenderizable::notifyChange();
-
+#if 0
 	// Remember:
 	/** List of triangles in the mesh */
 	// mutable
@@ -277,7 +277,7 @@ void CMesh::updateTriangles() const
 		const size_t N = vertex_normal.second;
 		if (N > 0) vertex_normal.first *= 1.0 / N;
 	}
-
+#endif
 	trianglesUpToDate = true;
 	polygonsUpToDate = false;
 }

@@ -143,13 +143,8 @@ class CSetOfTriangles : public CRenderizableShaderTriangles
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
 
-	/** Constructor */
-	CSetOfTriangles(bool enableTransparency = false)
-	{
-		CRenderizableShaderTriangles::enableTransparency(enableTransparency);
-	}
-
-	~CSetOfTriangles() override = default;
+	CSetOfTriangles() = default;
+	virtual ~CSetOfTriangles() override = default;
 
    protected:
 	/**

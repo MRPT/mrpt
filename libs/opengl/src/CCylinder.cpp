@@ -74,14 +74,7 @@ void CCylinder::onUpdateBuffers_Triangles()
 	}
 
 	// All faces, same color:
-	for (auto& t : tris)
-		for (unsigned int i = 0; i < 3; i++)
-		{
-			t.vertex[i].R = u8tof(m_color.R);
-			t.vertex[i].G = u8tof(m_color.G);
-			t.vertex[i].B = u8tof(m_color.B);
-			t.vertex[i].A = u8tof(m_color.A);
-		}
+	for (auto& t : tris) t.setColor(m_color);
 }
 
 void CCylinder::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const

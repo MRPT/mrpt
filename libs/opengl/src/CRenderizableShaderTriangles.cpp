@@ -69,18 +69,6 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 {
 #if MRPT_HAS_OPENGL_GLUT
 
-	if (m_enableTransparency)
-	{
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
-	else
-	{
-		glEnable(GL_DEPTH_TEST);
-		glDisable(GL_BLEND);
-	}
-	CHECK_OPENGL_ERROR();
-
 	// Set up the vertex array:
 	const GLint attr_position = rc.shader->attributeId("position");
 	glEnableVertexAttribArray(attr_position);
@@ -90,8 +78,8 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 		3, /* size */
 		GL_FLOAT, /* type */
 		GL_FALSE, /* normalized? */
-		sizeof(mrpt::math::TPointXYZRGBAf), /* stride */
-		BUFFER_OFFSET(offsetof(mrpt::math::TPointXYZRGBAf, pt.x)));
+		sizeof(mrpt::math::TPointXYZfRGBAu8), /* stride */
+		BUFFER_OFFSET(offsetof(mrpt::math::TPointXYZfRGBAu8, pt.x)));
 	CHECK_OPENGL_ERROR();
 
 	// Set up the color array:
@@ -101,10 +89,10 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 	glVertexAttribPointer(
 		attr_color, /* attribute */
 		4, /* size */
-		GL_FLOAT, /* type */
-		GL_FALSE, /* normalized? */
-		sizeof(mrpt::math::TPointXYZRGBAf), /* stride */
-		BUFFER_OFFSET(offsetof(mrpt::math::TPointXYZRGBAf, R)));
+		GL_UNSIGNED_BYTE, /* type */
+		GL_TRUE, /* normalized? */
+		sizeof(mrpt::math::TPointXYZfRGBAu8), /* stride */
+		BUFFER_OFFSET(offsetof(mrpt::math::TPointXYZfRGBAu8, r)));
 	CHECK_OPENGL_ERROR();
 
 	// Set up the normals array:

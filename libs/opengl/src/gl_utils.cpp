@@ -81,7 +81,11 @@ void gl_utils::enqueForRendering(
 			// Enqeue this object...
 			const auto lst_shaders = obj->requiredShaders();
 			for (const auto shader_id : lst_shaders)
-				rq[shader_id].emplace_back(obj, _);
+			{
+				// eye-to-object depth:
+				float depth = _.pmv_matrix(2, 3);
+				rq[shader_id].emplace(depth, RenderQueueElement(obj, _));
+			}
 
 			// ...and its children:
 			obj->enqueForRenderRecursive(_, rq);
@@ -142,8 +146,13 @@ void gl_utils::processRenderQueue(
 		CHECK_OPENGL_ERROR();
 
 		// Process all objects using this shader:
-		for (const RenderQueueElement& rqe : rqSet.second)
+		const auto& rqMap = rqSet.second;
+
+		// Render in reverse depth order:
+		for (auto it = rqMap.rbegin(); it != rqMap.rend(); ++it)
 		{
+			const RenderQueueElement& rqe = it->second;
+
 			// Load matrices in shader:
 			const GLint u_pmat = shader.uniformId("p_matrix");
 			const GLint u_mvmat = shader.uniformId("mv_matrix");
@@ -182,64 +191,6 @@ void gl_utils::checkOpenGLErr_impl(
 	THROW_EXCEPTION(sErr);
 #endif
 }
-
-#if 0
-void gl_utils::renderTriangleWithNormal(
-	const mrpt::math::TPoint3D& p1, const mrpt::math::TPoint3D& p2,
-	const mrpt::math::TPoint3D& p3)
-{
-#if MRPT_HAS_OPENGL_GLUT
-	const float ax = p2.x - p1.x;
-	const float ay = p2.y - p1.y;
-	const float az = p2.z - p1.z;
-
-	const float bx = p3.x - p1.x;
-	const float by = p3.y - p1.y;
-	const float bz = p3.z - p1.z;
-
-	glNormal3f(ay * bz - az * by, -ax * bz + az * bx, ax * by - ay * bx);
-
-	glVertex3f(p1.x, p1.y, p1.z);
-	glVertex3f(p2.x, p2.y, p2.z);
-	glVertex3f(p3.x, p3.y, p3.z);
-#else
-	MRPT_UNUSED_PARAM(p1);
-	MRPT_UNUSED_PARAM(p2);
-	MRPT_UNUSED_PARAM(p3);
-#endif
-}
-void gl_utils::renderTriangleWithNormal(
-	const mrpt::math::TPoint3Df& p1, const mrpt::math::TPoint3Df& p2,
-	const mrpt::math::TPoint3Df& p3)
-{
-#if MRPT_HAS_OPENGL_GLUT
-	const float ax = p2.x - p1.x;
-	const float ay = p2.y - p1.y;
-	const float az = p2.z - p1.z;
-
-	const float bx = p3.x - p1.x;
-	const float by = p3.y - p1.y;
-	const float bz = p3.z - p1.z;
-
-	glNormal3f(ay * bz - az * by, -ax * bz + az * bx, ax * by - ay * bx);
-
-	glVertex3f(p1.x, p1.y, p1.z);
-	glVertex3f(p2.x, p2.y, p2.z);
-	glVertex3f(p3.x, p3.y, p3.z);
-#else
-	MRPT_UNUSED_PARAM(p1);
-	MRPT_UNUSED_PARAM(p2);
-	MRPT_UNUSED_PARAM(p3);
-#endif
-}
-void gl_utils::renderQuadWithNormal(
-	const mrpt::math::TPoint3Df& p1, const mrpt::math::TPoint3Df& p2,
-	const mrpt::math::TPoint3Df& p3, const mrpt::math::TPoint3Df& p4)
-{
-	renderTriangleWithNormal(p1, p2, p3);
-	renderTriangleWithNormal(p3, p4, p1);
-}
-#endif
 
 /*---------------------------------------------------------------
 					renderTextBitmap
