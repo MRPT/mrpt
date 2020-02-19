@@ -98,11 +98,9 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
-#if 0
 	// Axis
 	{
-		auto obj =
-			opengl::CAxis::Create(-6, -6, -6, 6, 6, 6, 2, 2, true);
+		auto obj = opengl::CAxis::Create(-6, -6, -6, 6, 6, 6, 2, 2, true);
 		obj->setLocation(off_x, 0, 0);
 		theScene->insert(obj);
 
@@ -111,7 +109,6 @@ void TestOpenGLObjects()
 		theScene->insert(gl_txt);
 	}
 	off_x += STEP_X;
-#endif
 
 	// Box
 	{
