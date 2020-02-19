@@ -56,8 +56,8 @@ using namespace std;
 // higher eigenvalue of N
 //
 // 7. Scale computation (symmetric expression)
-//		s = sqrt( sum{i}( square(std::abs(pRi')) / sum{i}( square(std::abs(pLi'))
-//) )
+//		s = sqrt( sum{i}( square(std::abs(pRi')) / sum{i}(
+//square(std::abs(pLi')) ) )
 //
 // 8. Translation computation (distance between the Right centroid and the
 // scaled and rotated Left centroid)
