@@ -58,8 +58,6 @@ void CAxis::setTickMarksLength(float len)
 
 void CAxis::onUpdateBuffers_Wireframe()
 {
-	std::cout << "UPDATE BUFFER!!!!!!!!!!!!!!\n";
-
 	using mrpt::math::TPoint3Df;
 
 	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
