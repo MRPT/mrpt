@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableShaderTriangles.h>
 
 namespace mrpt::opengl
 {
@@ -25,25 +25,17 @@ namespace mrpt::opengl
  * \ingroup mrpt_opengl_grp
  *
  */
-class CArrow : public CRenderizable
+class CArrow : public CRenderizableShaderTriangles
 {
 	DEFINE_SERIALIZABLE(CArrow, mrpt::opengl)
 	DEFINE_SCHEMA_SERIALIZABLE()
-   protected:
-	mutable float m_x0, m_y0, m_z0;
-	mutable float m_x1, m_y1, m_z1;
-	float m_headRatio;
-	float m_smallRadius, m_largeRadius;
-	// For version 2 in stream
-	float m_arrow_roll;
-	float m_arrow_pitch;
-	float m_arrow_yaw;
-
-	mutable unsigned int m_vertexBuffer = 0, m_vao = 0, m_colorBuffer = 0;
-	mutable std::vector<mrpt::math::TPoint3Df> m_vertex_buffer_data;
-	mutable std::vector<mrpt::img::TColor> m_color_buffer_data;
 
    public:
+	/** @name Renderizable shader API virtual methods
+	 * @{ */
+	void onUpdateBuffers_Triangles() override;
+	/** @} */
+
 	void setArrowEnds(
 		float x0, float y0, float z0, float x1, float y1, float z1)
 	{
@@ -70,27 +62,25 @@ class CArrow : public CRenderizable
 		m_largeRadius = rat;
 		CRenderizable::notifyChange();
 	}
-	void setArrowYawPitchRoll(float yaw, float pitch, float roll)
+	/** Number of radial divisions  */
+	inline void setSlicesCount(uint32_t slices)
 	{
-		m_arrow_yaw = yaw;
-		m_arrow_pitch = pitch;
-		m_arrow_roll = roll;
+		m_slices = slices;
 		CRenderizable::notifyChange();
 	}
 
-	void render(const RenderContext& rc) const override;
-	void renderUpdateBuffers() const override;
+	/** Number of radial divisions  */
+	inline uint32_t getSlicesCount() const { return m_slices; }
+
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
 
-	/** Constructor
-	 */
+	/** Constructor */
 	CArrow(
 		float x0 = 0, float y0 = 0, float z0 = 0, float x1 = 1, float y1 = 1,
 		float z1 = 1, float headRatio = 0.2f, float smallRadius = 0.05f,
-		float largeRadius = 0.2f, float arrow_roll = -1.0f,
-		float arrow_pitch = -1.0f, float arrow_yaw = -1.0f)
+		float largeRadius = 0.2f)
 		: m_x0(x0),
 		  m_y0(y0),
 		  m_z0(z0),
@@ -99,15 +89,19 @@ class CArrow : public CRenderizable
 		  m_z1(z1),
 		  m_headRatio(headRatio),
 		  m_smallRadius(smallRadius),
-		  m_largeRadius(largeRadius),
-		  m_arrow_roll(arrow_roll),
-		  m_arrow_pitch(arrow_pitch),
-		  m_arrow_yaw(arrow_yaw)
+		  m_largeRadius(largeRadius)
 	{
 	}
 
-	/** Private, virtual destructor: only can be deleted from smart pointers */
 	~CArrow() override = default;
+
+   protected:
+	mutable float m_x0, m_y0, m_z0;
+	mutable float m_x1, m_y1, m_z1;
+	float m_headRatio;
+	float m_smallRadius, m_largeRadius;
+	/** Number of radial divisions. */
+	uint32_t m_slices = 10;
 };
 
 }  // namespace mrpt::opengl

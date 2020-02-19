@@ -86,7 +86,7 @@ class CPolyhedron : public CRenderizable
 		/** Vector of indices to the vertex list. */
 		std::vector<uint32_t> vertices;
 		/** Normal vector. */
-		double normal[3];
+		mrpt::math::TVector3D normal;
 		/** Fast default constructor. Initializes to garbage. */
 		TPolyhedronFace() : vertices() {}
 		/** Destructor.  */
