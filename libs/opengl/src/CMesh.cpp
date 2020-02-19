@@ -549,7 +549,7 @@ mrpt::math::TPolygonWithPlane createPolygonFromTriangle(
 	const std::pair<mrpt::opengl::TTriangle, CMesh::TTriangleVertexIndices>& p)
 {
 	const mrpt::opengl::TTriangle& t = p.first;
-	for (size_t i = 0; i < 3; i++) tmpPoly[i] = t.vertex[i].pt;
+	for (size_t i = 0; i < 3; i++) tmpPoly[i] = t.vertex(i);
 	return mrpt::math::TPolygonWithPlane(tmpPoly);
 }
 

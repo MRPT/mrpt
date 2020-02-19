@@ -29,16 +29,13 @@ void CSetOfTriangles::onUpdateBuffers_Triangles()
 	// buffers.
 }
 
-uint8_t CSetOfTriangles::serializeGetVersion() const { return 1; }
+uint8_t CSetOfTriangles::serializeGetVersion() const { return 0; }
 void CSetOfTriangles::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
 	auto n = (uint32_t)m_triangles.size();
 	out << n;
 	for (size_t i = 0; i < n; i++) m_triangles[i].writeTo(out);
-
-	// Version 1:
-	out << m_enableTransparency;
 }
 void CSetOfTriangles::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)
@@ -46,18 +43,12 @@ void CSetOfTriangles::serializeFrom(
 	switch (version)
 	{
 		case 0:
-		case 1:
 		{
 			readFromStreamRender(in);
 			uint32_t n;
 			in >> n;
 			m_triangles.assign(n, TTriangle());
 			for (size_t i = 0; i < n; i++) m_triangles[i].readFrom(in);
-
-			if (version >= 1)
-				in >> m_enableTransparency;
-			else
-				m_enableTransparency = true;
 		}
 		break;
 		default:
