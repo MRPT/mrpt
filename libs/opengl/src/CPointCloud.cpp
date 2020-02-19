@@ -242,12 +242,18 @@ void CPointCloud::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 				m_points[i].y = static_cast<float>(in["ys"][i]);
 				m_points[i].z = static_cast<float>(in["zs"][i]);
 			}
-			m_colorFromDepth_min.R = static_cast<float>(in["colorFromDepth_min"]["R"]);
-			m_colorFromDepth_min.G = static_cast<float>(in["colorFromDepth_min"]["G"]);
-			m_colorFromDepth_min.B = static_cast<float>(in["colorFromDepth_min"]["B"]);
-			m_colorFromDepth_max.R = static_cast<float>(in["colorFromDepth_max"]["R"]);
-			m_colorFromDepth_max.G = static_cast<float>(in["colorFromDepth_max"]["G"]);
-			m_colorFromDepth_max.B = static_cast<float>(in["colorFromDepth_max"]["B"]);
+			m_colorFromDepth_min.R =
+				static_cast<float>(in["colorFromDepth_min"]["R"]);
+			m_colorFromDepth_min.G =
+				static_cast<float>(in["colorFromDepth_min"]["G"]);
+			m_colorFromDepth_min.B =
+				static_cast<float>(in["colorFromDepth_min"]["B"]);
+			m_colorFromDepth_max.R =
+				static_cast<float>(in["colorFromDepth_max"]["R"]);
+			m_colorFromDepth_max.G =
+				static_cast<float>(in["colorFromDepth_max"]["G"]);
+			m_colorFromDepth_max.B =
+				static_cast<float>(in["colorFromDepth_max"]["B"]);
 			m_pointSmooth = static_cast<bool>(in["pointSmooth"]);
 		}
 		break;
