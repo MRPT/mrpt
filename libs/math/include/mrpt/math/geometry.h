@@ -673,8 +673,8 @@ void createPlaneFromPoseAndNormal(
  * \param[in] vec must be a *unitary* vector
  * \sa generateAxisBaseFromDirectionAndAxis()
  */
-void generateAxisBaseFromDirectionAndAxis(
-	const double (&vec)[3], uint8_t coord, CMatrixDouble44& matrix);
+CMatrixDouble44 generateAxisBaseFromDirectionAndAxis(
+	const mrpt::math::TVector3D& vec, uint8_t coord);
 /** @}
  */
 

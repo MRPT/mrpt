@@ -2074,9 +2074,10 @@ void math::createPlaneFromPoseAndNormal(
 	}
 }
 
-void math::generateAxisBaseFromDirectionAndAxis(
-	const double (&vec)[3], uint8_t coord, CMatrixDouble44& m)
+CMatrixDouble44 math::generateAxisBaseFromDirectionAndAxis(
+	const TVector3D& vec, uint8_t coord)
 {
+	CMatrixDouble44 m;
 	// Assumes vector is unitary.
 	// coord: 0=x, 1=y, 2=z.
 	const uint8_t coord1 = (coord + 1) % 3;
@@ -2099,6 +2100,7 @@ void math::generateAxisBaseFromDirectionAndAxis(
 	m(0, coord2) = m(1, coord) * m(2, coord1) - m(2, coord) * m(1, coord1);
 	m(1, coord2) = m(2, coord) * m(0, coord1) - m(0, coord) * m(2, coord1);
 	m(2, coord2) = m(0, coord) * m(1, coord1) - m(1, coord) * m(0, coord1);
+	return m;
 }
 
 double math::getRegressionLine(const vector<TPoint2D>& points, TLine2D& line)

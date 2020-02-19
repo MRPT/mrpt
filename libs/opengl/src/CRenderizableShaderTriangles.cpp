@@ -22,6 +22,10 @@ IMPLEMENTS_VIRTUAL_SERIALIZABLE(
 // Dtor:
 CRenderizableShaderTriangles::~CRenderizableShaderTriangles() = default;
 
+MRPT_TODO(
+	"Integrate normals into TTriangle, and allow derived classes to define "
+	"smooth normals");
+
 void CRenderizableShaderTriangles::renderUpdateBuffers() const
 {
 #if MRPT_HAS_OPENGL_GLUT

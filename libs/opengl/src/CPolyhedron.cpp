@@ -1899,11 +1899,10 @@ bool CPolyhedron::setNormal(TPolyhedronFace& f, bool doCheck)
 	for (size_t i = 0; i < N; i++) poly[i] = mVertices[f.vertices[i]];
 	TPlane tmp;
 	if (!poly.getPlane(tmp)) return false;
-	tmp.getNormalVector(f.normal);
+	f.normal = tmp.getNormalVector();
 	TPoint3D c;
 	getCenter(c);
-	if (tmp.evaluatePoint(c) > 0)
-		for (double& i : f.normal) i = -i;
+	if (tmp.evaluatePoint(c) > 0) f.normal *= -1;
 	return true;
 }
 

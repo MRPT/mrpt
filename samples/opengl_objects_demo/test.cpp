@@ -80,14 +80,17 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
-#if 0
 	// Arrow
 	{
-		auto obj =
-			opengl::CArrow::Create(0, 0, 0, 3, 0, 0, 0.2f, 0.1f, 0.2f, 0, 0, 0);
+		auto obj = opengl::CArrow::Create(0, 0, 0, 3, 0, 0, 0.2f, 0.1f, 0.2f);
 		obj->setLocation(off_x, 0, 0);
 		obj->setColor(1, 0, 0);
 		theScene->insert(obj);
+
+		auto obj2 = opengl::CArrow::Create(1, 2, 3, 6, -3, 0, 0.1f, 0.1f, 0.3f);
+		obj2->setLocation(off_x, 0, 0);
+		obj2->setColor(0, 0, 1);
+		theScene->insert(obj2);
 
 		auto gl_txt = opengl::CText::Create("CArrow");
 		gl_txt->setLocation(off_x, off_y_label, 0);
@@ -95,6 +98,7 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
+#if 0
 	// Axis
 	{
 		auto obj =
