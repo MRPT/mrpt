@@ -26,6 +26,7 @@ IMPLEMENTS_SERIALIZABLE(CArrow, CRenderizableShaderTriangles, mrpt::opengl)
 void CArrow::onUpdateBuffers_Triangles()
 {
 	using P3f = mrpt::math::TPoint3Df;
+	using V3f = mrpt::math::TVector3Df;
 
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
 	tris.clear();
@@ -52,12 +53,12 @@ void CArrow::onUpdateBuffers_Triangles()
 
 	const float dAng = 2 * M_PIf / m_slices;
 	float a = 0;
-	// unit circle points: cos(ang),sin(ang)
-	std::vector<mrpt::math::TPoint2Df> circle(m_slices);
+	// unit cc points: cos(ang),sin(ang)
+	std::vector<mrpt::math::TPoint2Df> cc(m_slices);
 	for (unsigned int i = 0; i < m_slices; i++, a += dAng)
 	{
-		circle[i].x = cos(a);
-		circle[i].y = sin(a);
+		cc[i].x = cos(a);
+		cc[i].y = sin(a);
 	}
 
 	ASSERT_ABOVEEQ_(m_headRatio, .0f);
@@ -66,20 +67,36 @@ void CArrow::onUpdateBuffers_Triangles()
 	const float r0 = m_smallRadius, r1 = m_largeRadius,
 				h0 = P10_norm * (1.0f - m_headRatio), h1 = P10_norm;
 
+	const float wall_tilt = 0;
+	const float coswt = std::cos(wall_tilt), sinwt = std::sin(wall_tilt);
+
+	const float head_tilt = std::atan2(r1, P10_norm * m_headRatio);
+	const float cosht = std::cos(wall_tilt), sinht = std::sin(wall_tilt);
+
 	// cylinder walls:
 	for (unsigned int i = 0; i < m_slices; i++)
 	{
 		const auto ip = (i + 1) % m_slices;
 
 		tris.emplace_back(
-			T.composePoint(P3f(r0 * circle[i].x, r0 * circle[i].y, .0f)),
-			T.composePoint(P3f(r0 * circle[ip].x, r0 * circle[ip].y, .0f)),
-			T.composePoint(P3f(r0 * circle[i].x, r0 * circle[i].y, h0)));
+			// Points:
+			T.composePoint(P3f(r0 * cc[i].x, r0 * cc[i].y, .0f)),
+			T.composePoint(P3f(r0 * cc[ip].x, r0 * cc[ip].y, .0f)),
+			T.composePoint(P3f(r0 * cc[i].x, r0 * cc[i].y, h0)),
+			// Normals:
+			T.rotateVector(V3f(-coswt * cc[i].y, coswt * cc[i].x, sinwt)),
+			T.rotateVector(V3f(-coswt * cc[ip].y, coswt * cc[ip].x, sinwt)),
+			T.rotateVector(V3f(-coswt * cc[i].y, coswt * cc[i].x, sinwt)));
 
 		tris.emplace_back(
-			T.composePoint(P3f(r0 * circle[ip].x, r0 * circle[ip].y, .0f)),
-			T.composePoint(P3f(r0 * circle[ip].x, r0 * circle[ip].y, h0)),
-			T.composePoint(P3f(r0 * circle[i].x, r0 * circle[i].y, h0)));
+			// Points:
+			T.composePoint(P3f(r0 * cc[ip].x, r0 * cc[ip].y, .0f)),
+			T.composePoint(P3f(r0 * cc[ip].x, r0 * cc[ip].y, h0)),
+			T.composePoint(P3f(r0 * cc[i].x, r0 * cc[i].y, h0)),
+			// Normals:
+			T.rotateVector(V3f(-coswt * cc[ip].y, coswt * cc[ip].x, sinwt)),
+			T.rotateVector(V3f(-coswt * cc[ip].y, coswt * cc[ip].x, sinwt)),
+			T.rotateVector(V3f(-coswt * cc[i].y, coswt * cc[i].x, sinwt)));
 	}
 
 	// top cone:
@@ -87,9 +104,14 @@ void CArrow::onUpdateBuffers_Triangles()
 	{
 		const auto ip = (i + 1) % m_slices;
 		tris.emplace_back(
-			T.composePoint(P3f(r1 * circle[i].x, r1 * circle[i].y, h0)),
-			T.composePoint(P3f(r1 * circle[ip].x, r1 * circle[ip].y, h0)),
-			T.composePoint(P3f(.0f, .0f, h1)));
+			// Points:
+			T.composePoint(P3f(r1 * cc[i].x, r1 * cc[i].y, h0)),
+			T.composePoint(P3f(r1 * cc[ip].x, r1 * cc[ip].y, h0)),
+			T.composePoint(P3f(.0f, .0f, h1)),
+			// Normals:
+			T.rotateVector(V3f(-cosht * cc[i].y, cosht * cc[i].x, sinht)),
+			T.rotateVector(V3f(-cosht * cc[ip].y, cosht * cc[ip].x, sinht)),
+			T.rotateVector(V3f(-cosht * cc[i].y, cosht * cc[i].x, sinht)));
 	}
 
 	// All faces, same color:

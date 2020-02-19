@@ -42,20 +42,33 @@ void CCylinder::onUpdateBuffers_Triangles()
 
 	const float r0 = m_baseRadius, r1 = m_topRadius;
 
+	const float wall_tilt = std::atan2(r0 - r1, m_height);
+	const float coswt = std::cos(wall_tilt), sinwt = std::sin(wall_tilt);
+
 	// cylinder walls:
 	for (unsigned int i = 0; i < m_slices; i++)
 	{
 		const auto ip = (i + 1) % m_slices;
 
 		tris.emplace_back(
+			// Points:
 			TPoint3Df(r0 * circle[i].x, r0 * circle[i].y, .0f),
 			TPoint3Df(r0 * circle[ip].x, r0 * circle[ip].y, .0f),
-			TPoint3Df(r1 * circle[i].x, r1 * circle[i].y, m_height));
+			TPoint3Df(r1 * circle[i].x, r1 * circle[i].y, m_height),
+			// Normals:
+			TVector3Df(-coswt * circle[i].y, coswt * circle[i].x, sinwt),
+			TVector3Df(-coswt * circle[ip].y, coswt * circle[ip].x, sinwt),
+			TVector3Df(-coswt * circle[i].y, coswt * circle[i].x, sinwt));
 
 		tris.emplace_back(
+			// Points:
 			TPoint3Df(r0 * circle[ip].x, r0 * circle[ip].y, .0f),
 			TPoint3Df(r1 * circle[ip].x, r1 * circle[ip].y, m_height),
-			TPoint3Df(r1 * circle[i].x, r1 * circle[i].y, m_height));
+			TPoint3Df(r1 * circle[i].x, r1 * circle[i].y, m_height),
+			// Normals:
+			TVector3Df(-coswt * circle[ip].y, coswt * circle[ip].x, sinwt),
+			TVector3Df(-coswt * circle[ip].y, coswt * circle[ip].x, sinwt),
+			TVector3Df(-coswt * circle[i].y, coswt * circle[i].x, sinwt));
 	}
 
 	// bottom & top disks:

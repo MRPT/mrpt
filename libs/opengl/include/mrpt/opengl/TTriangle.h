@@ -47,6 +47,7 @@ struct TTriangle
 		}
 		computeNormals();
 	}
+	/** Constructor from 3 points (default normals are computed) */
 	explicit TTriangle(
 		const mrpt::math::TPoint3Df& p1, const mrpt::math::TPoint3Df& p2,
 		const mrpt::math::TPoint3Df& p3)
@@ -55,6 +56,19 @@ struct TTriangle
 		vertices[1].position.pt = p2;
 		vertices[2].position.pt = p3;
 		computeNormals();
+	}
+	/** Constructor from 3 points and its 3 normals */
+	explicit TTriangle(
+		const mrpt::math::TPoint3Df& p1, const mrpt::math::TPoint3Df& p2,
+		const mrpt::math::TPoint3Df& p3, const mrpt::math::TVector3Df& n1,
+		const mrpt::math::TVector3Df& n2, const mrpt::math::TVector3Df& n3)
+	{
+		vertices[0].position.pt = p1;
+		vertices[0].normal = n1;
+		vertices[1].position.pt = p2;
+		vertices[1].normal = n2;
+		vertices[2].position.pt = p3;
+		vertices[2].normal = n3;
 	}
 
 	std::array<PointNormal, 3> vertices;
