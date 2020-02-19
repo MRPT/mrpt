@@ -176,20 +176,19 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
-#if 0
 	// CDisk
 	{
 		{
 			auto obj = opengl::CDisk::Create(2.0f, 1.8f, 50);
 			obj->setLocation(off_x, 0, 0);
-			obj->setColor(0.8, 0, 0);
+			obj->setColor(0.8f, 0, 0);
 			theScene->insert(obj);
 		}
 
 		{
 			auto obj = opengl::CDisk::Create(2.0f, 0, 50);
 			obj->setLocation(off_x, 5, 0);
-			obj->setColor(0.8, 0, 0);
+			obj->setColor(0.8f, 0, 0);
 			theScene->insert(obj);
 		}
 
@@ -199,6 +198,7 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
+#if 0
 	// CEllipsoid
 	{
 		const double cov3d_dat[] = {0.9,  0.7,  -0.4, 0.7, 1.6,
