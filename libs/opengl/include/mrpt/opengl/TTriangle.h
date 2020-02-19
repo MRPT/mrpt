@@ -29,57 +29,79 @@ namespace mrpt::opengl
  */
 struct TTriangle
 {
+	struct PointNormal
+	{
+		mrpt::math::TPointXYZfRGBAu8 position;
+		mrpt::math::TVector3Df normal;  //!< Must not be normalized
+	};
+
 	TTriangle() = default;
 	explicit TTriangle(const mrpt::math::TPolygon3D& p)
 	{
 		ASSERT_EQUAL_(p.size(), 3U);
 		for (size_t i = 0; i < 3; i++)
 		{
-			vertex[i].pt = p[i];
-			vertex[i].r = vertex[i].g = vertex[i].b = 0xff;
+			auto& pp = vertices[i].position;
+			pp.pt = p[i];
+			pp.r = pp.g = pp.b = 0xff;
 		}
+		computeNormals();
 	}
 	explicit TTriangle(
 		const mrpt::math::TPoint3Df& p1, const mrpt::math::TPoint3Df& p2,
 		const mrpt::math::TPoint3Df& p3)
 	{
-		vertex[0].pt = p1;
-		vertex[1].pt = p2;
-		vertex[2].pt = p3;
+		vertices[0].position.pt = p1;
+		vertices[1].position.pt = p2;
+		vertices[2].position.pt = p3;
+		computeNormals();
 	}
 
-	mrpt::math::TPointXYZfRGBAu8 vertex[3];
+	std::array<PointNormal, 3> vertices;
 
-	const float& x(int i) const { return vertex[i].pt.x; }
-	const float& y(int i) const { return vertex[i].pt.y; }
-	const float& z(int i) const { return vertex[i].pt.z; }
-	const uint8_t& r(int i) const { return vertex[i].r; }
-	const uint8_t& g(int i) const { return vertex[i].g; }
-	const uint8_t& b(int i) const { return vertex[i].b; }
-	const uint8_t& a(int i) const { return vertex[i].a; }
-	float& x(int i) { return vertex[i].pt.x; }
-	float& y(int i) { return vertex[i].pt.y; }
-	float& z(int i) { return vertex[i].pt.z; }
-	uint8_t& r(int i) { return vertex[i].r; }
-	uint8_t& g(int i) { return vertex[i].g; }
-	uint8_t& b(int i) { return vertex[i].b; }
-	uint8_t& a(int i) { return vertex[i].a; }
+	const float& x(size_t i) const { return vertices[i].position.pt.x; }
+	const float& y(size_t i) const { return vertices[i].position.pt.y; }
+	const float& z(size_t i) const { return vertices[i].position.pt.z; }
+	const uint8_t& r(size_t i) const { return vertices[i].position.r; }
+	const uint8_t& g(size_t i) const { return vertices[i].position.g; }
+	const uint8_t& b(size_t i) const { return vertices[i].position.b; }
+	const uint8_t& a(size_t i) const { return vertices[i].position.a; }
+	float& x(size_t i) { return vertices[i].position.pt.x; }
+	float& y(size_t i) { return vertices[i].position.pt.y; }
+	float& z(size_t i) { return vertices[i].position.pt.z; }
+	uint8_t& r(size_t i) { return vertices[i].position.r; }
+	uint8_t& g(size_t i) { return vertices[i].position.g; }
+	uint8_t& b(size_t i) { return vertices[i].position.b; }
+	uint8_t& a(size_t i) { return vertices[i].position.a; }
+
+	mrpt::math::TPoint3Df& vertex(size_t i) { return vertices[i].position.pt; }
+	const mrpt::math::TPoint3Df& vertex(size_t i) const
+	{
+		return vertices[i].position.pt;
+	}
 
 	/** Sets the color of all vertices */
 	inline void setColor(const mrpt::img::TColor& c)
 	{
 		for (size_t i = 0; i < 3; i++)
 		{
-			vertex[i].r = c.R;
-			vertex[i].g = c.G;
-			vertex[i].b = c.B;
-			vertex[i].a = c.A;
+			vertices[i].position.r = c.R;
+			vertices[i].position.g = c.G;
+			vertices[i].position.b = c.B;
+			vertices[i].position.a = c.A;
 		}
 	}
 	inline void setColor(const mrpt::img::TColorf& c)
 	{
 		setColor(mrpt::img::TColor(f2u8(c.R), f2u8(c.G), f2u8(c.B), f2u8(c.A)));
 	}
+
+	/** Compute the three normals from the cross-product of "v01 x v02".
+	 * Note that using this default normals will not lead to interpolated
+	 * lighting in the fragment shaders, since all vertex are equal; a derived
+	 * class should use custom, more accurate normals to enable soft lighting.
+	 */
+	void computeNormals();
 
 	// These methods are explicitly instantiated for T=float and double.
 	void readFrom(mrpt::serialization::CArchive& i);

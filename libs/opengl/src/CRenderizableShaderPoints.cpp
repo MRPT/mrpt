@@ -55,7 +55,7 @@ void CRenderizableShaderPoints::render(const RenderContext& rc) const
 	glUniform1f(id_ptSize, m_pointSize);
 
 	// Set up the vertex array:
-	const GLint attr_position = rc.shader->attributeId("position");
+	const GLuint attr_position = rc.shader->attributeId("position");
 	glEnableVertexAttribArray(attr_position);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
 	glVertexAttribPointer(
@@ -69,7 +69,7 @@ void CRenderizableShaderPoints::render(const RenderContext& rc) const
 	CHECK_OPENGL_ERROR();
 
 	// Set up the color array:
-	const GLint attr_color = rc.shader->attributeId("vertexColor");
+	const GLuint attr_color = rc.shader->attributeId("vertexColor");
 	glEnableVertexAttribArray(attr_color);
 	glBindBuffer(GL_ARRAY_BUFFER, m_colorBuffer);
 	glVertexAttribPointer(

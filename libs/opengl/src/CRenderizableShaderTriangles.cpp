@@ -22,10 +22,6 @@ IMPLEMENTS_VIRTUAL_SERIALIZABLE(
 // Dtor:
 CRenderizableShaderTriangles::~CRenderizableShaderTriangles() = default;
 
-MRPT_TODO(
-	"Integrate normals into TTriangle, and allow derived classes to define "
-	"smooth normals");
-
 void CRenderizableShaderTriangles::renderUpdateBuffers() const
 {
 #if MRPT_HAS_OPENGL_GLUT
@@ -35,32 +31,10 @@ void CRenderizableShaderTriangles::renderUpdateBuffers() const
 
 	// Eval normals:
 	const auto n = m_triangles.size();
-	m_trianglesNormals.resize(3 * n);  // normal per vertex
-	for (size_t i = 0; i < n; i++)
-	{
-		const auto& t = m_triangles[i];
-		const float ax = t.x(1) - t.x(0);
-		const float ay = t.y(1) - t.y(0);
-		const float az = t.z(1) - t.z(0);
-		const float bx = t.x(2) - t.x(0);
-		const float by = t.y(2) - t.y(0);
-		const float bz = t.z(2) - t.z(0);
-
-		mrpt::math::TVector3Df no;
-		no.x = ay * bz - az * by;
-		no.y = -ax * bz + az * bx;
-		no.z = ax * by - ay * bx;
-
-		for (unsigned k = 0; k < 3; k++) m_trianglesNormals[3 * i + k] = no;
-	}
 
 	// Define OpenGL buffers:
 	m_trianglesBuffer = mrpt::opengl::make_buffer(
 		GL_ARRAY_BUFFER, m_triangles.data(), sizeof(m_triangles[0]) * n);
-
-	m_normalsBuffer = mrpt::opengl::make_buffer(
-		GL_ARRAY_BUFFER, m_trianglesNormals.data(),
-		sizeof(m_trianglesNormals[0]) * 3 * n);
 
 	// Generate a name for a new array.
 	glGenVertexArrays(1, &m_vao);
@@ -74,7 +48,7 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 #if MRPT_HAS_OPENGL_GLUT
 
 	// Set up the vertex array:
-	const GLint attr_position = rc.shader->attributeId("position");
+	const GLuint attr_position = rc.shader->attributeId("position");
 	glEnableVertexAttribArray(attr_position);
 	glBindBuffer(GL_ARRAY_BUFFER, m_trianglesBuffer);
 	glVertexAttribPointer(
@@ -82,12 +56,12 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 		3, /* size */
 		GL_FLOAT, /* type */
 		GL_FALSE, /* normalized? */
-		sizeof(mrpt::math::TPointXYZfRGBAu8), /* stride */
-		BUFFER_OFFSET(offsetof(mrpt::math::TPointXYZfRGBAu8, pt.x)));
+		sizeof(TTriangle::PointNormal), /* stride */
+		BUFFER_OFFSET(offsetof(TTriangle::PointNormal, position.pt.x)));
 	CHECK_OPENGL_ERROR();
 
 	// Set up the color array:
-	const GLint attr_color = rc.shader->attributeId("vertexColor");
+	const GLuint attr_color = rc.shader->attributeId("vertexColor");
 	glEnableVertexAttribArray(attr_color);
 	glBindBuffer(GL_ARRAY_BUFFER, m_trianglesBuffer);
 	glVertexAttribPointer(
@@ -95,21 +69,21 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 		4, /* size */
 		GL_UNSIGNED_BYTE, /* type */
 		GL_TRUE, /* normalized? */
-		sizeof(mrpt::math::TPointXYZfRGBAu8), /* stride */
-		BUFFER_OFFSET(offsetof(mrpt::math::TPointXYZfRGBAu8, r)));
+		sizeof(TTriangle::PointNormal), /* stride */
+		BUFFER_OFFSET(offsetof(TTriangle::PointNormal, position.r)));
 	CHECK_OPENGL_ERROR();
 
 	// Set up the normals array:
-	const GLint attr_normals = rc.shader->attributeId("vertexNormal");
+	const GLuint attr_normals = rc.shader->attributeId("vertexNormal");
 	glEnableVertexAttribArray(attr_normals);
-	glBindBuffer(GL_ARRAY_BUFFER, m_normalsBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, m_trianglesBuffer);
 	glVertexAttribPointer(
 		attr_normals, /* attribute */
 		3, /* size */
 		GL_FLOAT, /* type */
 		GL_FALSE, /* normalized? */
-		sizeof(mrpt::math::TVector3Df), /* stride */
-		BUFFER_OFFSET(0));
+		sizeof(TTriangle::PointNormal), /* stride */
+		BUFFER_OFFSET(offsetof(TTriangle::PointNormal, normal.x)));
 	CHECK_OPENGL_ERROR();
 
 	glDrawArrays(GL_TRIANGLES, 0, 3 * m_triangles.size());
@@ -119,6 +93,5 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 	glDisableVertexAttribArray(attr_color);
 	glDisableVertexAttribArray(attr_normals);
 
-	if (m_enableTransparency) glDisable(GL_BLEND);
 #endif
 }

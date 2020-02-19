@@ -26,7 +26,7 @@ class CRenderizableShaderTriangles : public virtual CRenderizable
 
    public:
 	CRenderizableShaderTriangles() = default;
-	virtual ~CRenderizableShaderTriangles();
+	virtual ~CRenderizableShaderTriangles() override;
 
 	virtual shader_list_t requiredShaders() const override
 	{
@@ -43,15 +43,8 @@ class CRenderizableShaderTriangles : public virtual CRenderizable
 	/** List of triangles  \sa TTriangle */
 	mutable std::vector<mrpt::opengl::TTriangle> m_triangles;
 
-	// Computed in renderUpdateBuffers()
-	// Note: a normal per vertex, not per triangle.
-	mutable std::vector<mrpt::math::TVector3Df> m_trianglesNormals;
-
-	bool m_enableTransparency = false;  //!< Transparency enabling.
-
    private:
 	mutable unsigned int m_trianglesBuffer = 0, m_vao = 0;
-	mutable unsigned int m_normalsBuffer = 0;
 	mutable unsigned int m_colorBuffer = 0;
 };
 
