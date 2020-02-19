@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableShaderWireFrame.h>
 #include <array>
 
 namespace mrpt::opengl
@@ -26,21 +26,16 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_opengl_grp
  */
-class CAxis : public CRenderizable
+class CAxis : public CRenderizableShaderWireFrame
 {
 	DEFINE_SERIALIZABLE(CAxis, mrpt::opengl)
-   protected:
-	float m_xmin, m_ymin, m_zmin;
-	float m_xmax, m_ymax, m_zmax;
-	float m_frequency;
-	float m_lineWidth;
-	/** draw marks for X,Y,Z */
-	std::array<bool, 3> m_marks = {false, false, false};
-	float m_textScale{0.25f};
-	float m_textRot[3][3];  // {x,y,z},{yaw,pitch,roll}
-	float m_markLen{0.07f};
-
    public:
+	/** @name Renderizable shader API virtual methods
+	 * @{ */
+	void onUpdateBuffers_Wireframe() override;
+	void render(const RenderContext& rc) const override;
+	/** @} */
+
 	/** Constructor */
 	CAxis(
 		float xmin = -1.0f, float ymin = -1.0f, float zmin = -1.0f,
@@ -54,8 +49,6 @@ class CAxis : public CRenderizable
 	/** Changes the frequency of the "ticks" */
 	void setFrequency(float f);
 	float getFrequency() const;
-	void setLineWidth(float w);
-	float getLineWidth() const;
 	/** Changes the size of text labels (default:0.25) */
 	void setTextScale(float f);
 	float getTextScale() const;
@@ -72,11 +65,19 @@ class CAxis : public CRenderizable
 	void setTickMarksLength(float len);
 	float getTickMarksLength(float len) { return m_markLen; }
 
-	void render(const RenderContext& rc) const override;
-	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
+
+   protected:
+	float m_xmin, m_ymin, m_zmin;
+	float m_xmax, m_ymax, m_zmax;
+	float m_frequency;
+	/** draw marks for X,Y,Z */
+	std::array<bool, 3> m_marks = {false, false, false};
+	float m_textScale{0.25f};
+	float m_textRot[3][3];  // {x,y,z},{yaw,pitch,roll}
+	float m_markLen{0.07f};
 };
 
 }  // namespace mrpt::opengl

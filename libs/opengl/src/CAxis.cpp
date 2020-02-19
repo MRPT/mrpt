@@ -14,14 +14,12 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
 
-#include "opengl_internals.h"
-
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CAxis, CRenderizable, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CAxis, CRenderizableShaderWireFrame, mrpt::opengl)
 
 CAxis::CAxis(
 	float xmin, float ymin, float zmin, float xmax, float ymax, float zmax,
@@ -32,10 +30,10 @@ CAxis::CAxis(
 	  m_xmax(xmax),
 	  m_ymax(ymax),
 	  m_zmax(zmax),
-	  m_frequency(frecuency),
-	  m_lineWidth(lineWidth)
-
+	  m_frequency(frecuency)
 {
+	CRenderizableShaderWireFrame::setLineWidth(lineWidth);
+
 	m_marks.fill(marks);
 
 	// x:180, 0, 90
@@ -58,98 +56,77 @@ void CAxis::setTickMarksLength(float len)
 	CRenderizable::notifyChange();
 }
 
-void CAxis::renderUpdateBuffers() const
+void CAxis::onUpdateBuffers_Wireframe()
 {
-	//
-	MRPT_TODO("Implement me!");
-}
+	std::cout << "UPDATE BUFFER!!!!!!!!!!!!!!\n";
 
-void CAxis::render(const RenderContext& rc) const
-{
-#if MRPT_HAS_OPENGL_GLUT
-	MRPT_START
-	glDisable(GL_LIGHTING);
+	using mrpt::math::TPoint3Df;
 
-	glEnable(GL_BLEND);
-	CHECK_OPENGL_ERROR();
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	CHECK_OPENGL_ERROR();
+	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
+	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	vbd.clear();
 
-	ASSERT_(m_frequency >= 0);
-
-	glLineWidth(m_lineWidth);
-	CHECK_OPENGL_ERROR();
-	glBegin(GL_LINES);
-	glColor4ub(m_color.R, m_color.G, m_color.B, m_color.A);
 	// X axis
-	glVertex3f(m_xmin, 0.0f, 0.0f);
-	glVertex3f(m_xmax, 0.0f, 0.0f);
+	vbd.emplace_back(m_xmin, 0.0f, 0.0f);
+	vbd.emplace_back(m_xmax, 0.0f, 0.0f);
 	// Y axis
-	glVertex3f(0.0f, m_ymin, 0.0f);
-	glVertex3f(0.0f, m_ymax, 0.0f);
+	vbd.emplace_back(0.0f, m_ymin, 0.0f);
+	vbd.emplace_back(0.0f, m_ymax, 0.0f);
 	// Z axis
-	glVertex3f(0.0f, 0.0f, m_zmin);
-	glVertex3f(0.0f, 0.0f, m_zmax);
-
-	glEnd();
-	CHECK_OPENGL_ERROR();
-
-	glLineWidth(1.0f);
-	CHECK_OPENGL_ERROR();
-
-	glDisable(GL_BLEND);
-	CHECK_OPENGL_ERROR();
+	vbd.emplace_back(0.0f, 0.0f, m_zmin);
+	vbd.emplace_back(0.0f, 0.0f, m_zmax);
 
 	// Draw the "tick marks" for X,Y,Z
 	const float ml = m_markLen * m_frequency;
 
 	char n[50];
-	const std::array<mrpt::math::TPoint3Df, 3> init_trans = {
+	const std::array<TPoint3Df, 3> init_trans = {
 		{{m_xmin, .0f, ml}, {.0f, m_ymin, ml}, {.0f, .0f, m_zmin}}};
 	const std::array<std::array<float, 2>, 3> xyz_ranges = {
 		{{m_xmin, m_xmax}, {m_ymin, m_ymax}, {m_zmin, m_zmax}}};
-	const std::array<mrpt::math::TPoint3Df, 3> tick0 = {
+	const std::array<TPoint3Df, 3> tick0 = {
 		{{0, -ml, -ml}, {-ml, .0f, -ml}, {-ml, .0f, .0f}}};
-	const std::array<mrpt::math::TPoint3Df, 3> tick1 = {
+	const std::array<TPoint3Df, 3> tick1 = {
 		{{0, ml, -ml}, {ml, .0f, -ml}, {ml, .0f, .0f}}};
-	const std::array<mrpt::math::TPoint3Df, 3> endMark = {
+	const std::array<TPoint3Df, 3> endMark = {
 		{{m_xmax + 1.0f * m_frequency, 0, 0},
 		 {0, m_ymax + .5f * m_frequency, 0},
 		 {0, 0, m_zmax + 0.5f * m_frequency}}};
 	const std::array<const char*, 3> axis2name = {{"+X", "+Y", "+Z"}};
 
-	for (int axis = 0; axis < 3; axis++)
+	for (unsigned int axis = 0; axis < 3; axis++)
 	{
 		if (!m_marks[axis]) continue;
 
-		glPushMatrix();
+		TPoint3Df tick_incr(0, 0, 0);
+		tick_incr[axis] = m_frequency;
+
 		const auto& tf = init_trans[axis];
-		glTranslatef(tf.x, tf.y, tf.z);
+		TPoint3Df cur_tf = tf;
+
 		for (float i = xyz_ranges[axis][0]; i <= xyz_ranges[axis][1];
 			 i = i + m_frequency)
 		{
 			// Dont draw the "0" more than once
-			if (axis == 0 || std::abs(i) > 1e-4)
+			if (axis == 0 || std::abs(i) > 1e-4f)
 			{
 				os::sprintf(n, 50, "%.02f", i);
+
+#if 0
 				glPushMatrix();
 				glRotatef(m_textRot[0][0], 0, 0, 1);
 				glRotatef(m_textRot[0][1], 0, 1, 0);
 				glRotatef(m_textRot[0][2], 1, 0, 0);
 				gl_utils::glDrawText(n, m_textScale, mrpt::opengl::FILL);
-				glBegin(GL_LINES);
-				glVertex3f(tick0[axis].x, tick0[axis].y, tick0[axis].z);
-				glVertex3f(tick1[axis].x, tick1[axis].y, tick1[axis].z);
-				glEnd();
-				glPopMatrix();
-				CHECK_OPENGL_ERROR();
+#endif
+				// tick line:
+				vbd.emplace_back(cur_tf + tick0[axis]);
+				vbd.emplace_back(cur_tf + tick1[axis]);
 			}
-			glTranslatef(
-				axis == 0 ? m_frequency : 0, axis == 1 ? m_frequency : 0,
-				axis == 2 ? m_frequency : 0);
+			cur_tf = cur_tf + tick_incr;
 		}
 
-		glPopMatrix();
+#if 0
 		glPushMatrix();
 		glTranslatef(endMark[axis].x, endMark[axis].y, endMark[axis].z);
 		glRotatef(m_textRot[0][0], 0, 0, 1);
@@ -158,11 +135,19 @@ void CAxis::render(const RenderContext& rc) const
 		gl_utils::glDrawText(
 			axis2name[axis], m_textScale * 1.2f, mrpt::opengl::NICE);
 		glPopMatrix();
+#endif
 	}
 
-	MRPT_END
-/*******************************************************/
-#endif
+	cbd.assign(vbd.size(), m_color);
+}
+
+void CAxis::render(const RenderContext& rc) const
+{
+	// Base lines render:
+	CRenderizableShaderWireFrame::render(rc);
+
+	// Enque rendering all text labels:
+	MRPT_TODO("Enque rendering all text labels");
 }
 
 uint8_t CAxis::serializeGetVersion() const { return 2; }
@@ -237,12 +222,6 @@ void CAxis::setFrequency(float f)
 	CRenderizable::notifyChange();
 }
 float CAxis::getFrequency() const { return m_frequency; }
-void CAxis::setLineWidth(float w)
-{
-	m_lineWidth = w;
-	CRenderizable::notifyChange();
-}
-float CAxis::getLineWidth() const { return m_lineWidth; }
 void CAxis::enableTickMarks(bool v)
 {
 	m_marks.fill(v);
