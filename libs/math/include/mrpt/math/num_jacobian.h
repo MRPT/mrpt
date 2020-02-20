@@ -66,7 +66,7 @@ void estimateJacobian(
 		if (j == 0)
 		{
 			m = f_plus.size();
-			out_Jacobian.setSize(m, n);
+			out_Jacobian.resize(m, n);
 		}
 
 		for (size_t i = 0; i < m; i++)
