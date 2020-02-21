@@ -16,19 +16,162 @@
 #include <mrpt/opengl/CEllipsoid.h>
 #include <mrpt/serialization/CArchive.h>
 #include <Eigen/Dense>
-#include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CEllipsoid, CRenderizable, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CEllipsoid, CRenderizableShaderWireFrame, mrpt::opengl)
 
-void CEllipsoid::renderUpdateBuffers() const
+void CEllipsoid::render(const RenderContext& rc) const
+	void CEllipsoid::renderUpdateBuffers() const
 {
-	//
-	MRPT_TODO("Implement me!");
+}
+
+bool CEllipsoid::isInvalidCov() const
+{
+	return (
+		m_eigVal(0, 0) == 0 || m_eigVal(1, 1) == 0.0 ||
+		(dim != 2 && m_eigVal(2, 2) == 0.0) || m_quantiles <= 0.0);
+}
+
+void CEllipsoid::onUpdateBuffers_Wireframe()
+{
+	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
+	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	vbd.clear();
+
+	// Invalid params?
+	if (isInvalidCov()) return;
+
+	const size_t dim = m_cov.cols();
+
+	// 2D ellipse
+	// ---------------
+	if (dim == 2)
+	{
+		/* Equivalent MATLAB code:
+		 *
+		 * q=1;
+		 * [vec val]=eig(C);
+		 * M=(q*val*vec)';
+		 * R=M*[x;y];
+		 * xx=R(1,:);yy=R(2,:);
+		 * plot(xx,yy), axis equal;
+		 */
+
+		const double Aang = (M_2PI / m_2D_segments);
+		double ang;
+		unsigned int i;
+
+		// Compute the new vectors for the ellipsoid:
+		auto M = CMatrixDouble(m_eigVal.asEigen() * m_eigVec.transpose());
+		M *= m_quantiles;
+
+		// Compute the points of the 2D ellipse:
+		std::vector<float> xs, ys;
+		xs.reserve(m_2D_segments);
+		ys.reserve(m_2D_segments);
+
+		for (i = 0, ang = 0; i < m_2D_segments; i++, ang += Aang)
+		{
+			const double ccos = cos(ang), ssin = sin(ang);
+			const float x = d2f(ccos * M(0, 0) + ssin * M(1, 0));
+			const float y = d2f(ccos * M(0, 1) + ssin * M(1, 1));
+
+			xs.push_back(x);
+			ys.push_back(y);
+		}
+
+		for (i = 0; i < xs.size(); i++)
+		{
+			const auto ip = (i + 1) % xs.size();
+			vbd.emplace_back(xs[i], ys[i], .0f);
+			vbd.emplace_back(xs[ip], ys[ip], .0f);
+		}
+
+		// 2D: Save bounding box:
+		const double max_radius =
+			m_quantiles * std::max(m_eigVal(0, 0), m_eigVal(1, 1));
+		m_bb_min = mrpt::math::TPoint3D(-max_radius, -max_radius, 0);
+		m_bb_max = mrpt::math::TPoint3D(max_radius, max_radius, 0);
+	}
+	else
+	{
+		// ---------------------
+		//    3D ellipsoid
+		// ---------------------
+		double mat[16];
+
+		//  A homogeneous transformation matrix, in this order:
+		//
+		//     0  4  8  12
+		//     1  5  9  13
+		//     2  6  10 14
+		//     3  7  11 15
+		//
+		mat[3] = mat[7] = mat[11] = 0;
+		mat[15] = 1;
+		mat[12] = mat[13] = mat[14] = 0;
+
+		mat[0] = m_eigVec(0, 0);
+		mat[1] = m_eigVec(1, 0);
+		mat[2] = m_eigVec(2, 0);  // New X-axis
+		mat[4] = m_eigVec(0, 1);
+		mat[5] = m_eigVec(1, 1);
+		mat[6] = m_eigVec(2, 1);  // New X-axis
+		mat[8] = m_eigVec(0, 2);
+		mat[9] = m_eigVec(1, 2);
+		mat[10] = m_eigVec(2, 2);  // New X-axis
+
+		GLUquadricObj* obj = gluNewQuadric();
+		CHECK_OPENGL_ERROR();
+
+		if (!m_drawSolid3D)
+			glDisable(GL_LIGHTING);  // Disable lights when drawing lines
+
+		gluQuadricDrawStyle(obj, m_drawSolid3D ? GLU_FILL : GLU_LINE);
+
+		glPushMatrix();
+		glMultMatrixd(mat);
+		glScaled(
+			m_eigVal(0, 0) * m_quantiles, m_eigVal(1, 1) * m_quantiles,
+			m_eigVal(2, 2) * m_quantiles);
+
+		gluSphere(obj, 1, m_3D_segments, m_3D_segments);
+		CHECK_OPENGL_ERROR();
+
+		glPopMatrix();
+
+		gluDeleteQuadric(obj);
+		CHECK_OPENGL_ERROR();
+
+		// 3D: Save bounding box:
+		const double max_radius =
+			m_quantiles *
+			std::max(m_eigVal(0, 0), std::max(m_eigVal(1, 1), m_eigVal(2, 2)));
+		m_bb_min = mrpt::math::TPoint3D(-max_radius, -max_radius, 0);
+		m_bb_max = mrpt::math::TPoint3D(max_radius, max_radius, 0);
+		// Convert to coordinates of my parent:
+		m_pose.composePoint(m_bb_min, m_bb_min);
+		m_pose.composePoint(m_bb_max, m_bb_max);
+	}
+
+	cbd.assign(vbd.size(), m_solidborder_color);
+}
+void CEllipsoid::onUpdateBuffers_Triangles()
+{
+	auto& tris = CRenderizableShaderTriangles::m_triangles;
+	tris.clear();
+
+	using P3 = mrpt::math::TPoint3D;
+
+	//	tris.emplace_back(
+	//		P3(c1.x, c0.y, c0.z), P3(c0.x, c0.y, c0.z), P3(c1.x, c0.y, c1.z));
+
+	// All faces, all vertices, same color:
+	for (auto& t : tris) t.setColor(m_color);
 }
 
 void CEllipsoid::render(const RenderContext& rc) const
@@ -38,131 +181,7 @@ void CEllipsoid::render(const RenderContext& rc) const
 
 	const size_t dim = m_cov.cols();
 
-	if (m_eigVal(0, 0) != 0.0 && m_eigVal(1, 1) != 0.0 &&
-		(dim == 2 || m_eigVal(2, 2) != 0.0) && m_quantiles != 0.0)
 	{
-		glEnable(GL_BLEND);
-		CHECK_OPENGL_ERROR();
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		CHECK_OPENGL_ERROR();
-		glLineWidth(m_lineWidth);
-		CHECK_OPENGL_ERROR();
-
-		if (dim == 2)
-		{
-			glDisable(GL_LIGHTING);  // Disable lights when drawing lines
-
-			// ---------------------
-			//     2D ellipse
-			// ---------------------
-
-			/* Equivalent MATLAB code:
-			 *
-			 * q=1;
-			 * [vec val]=eig(C);
-			 * M=(q*val*vec)';
-			 * R=M*[x;y];
-			 * xx=R(1,:);yy=R(2,:);
-			 * plot(xx,yy), axis equal;
-			 */
-
-			double ang;
-			unsigned int i;
-
-			// Compute the new vectors for the ellipsoid:
-			auto M = CMatrixDouble(m_eigVal.asEigen() * m_eigVec.transpose());
-			M *= double(m_quantiles);
-
-			glBegin(GL_LINE_LOOP);
-
-			// Compute the points of the 2D ellipse:
-			for (i = 0, ang = 0; i < m_2D_segments;
-				 i++, ang += (M_2PI / m_2D_segments))
-			{
-				double ccos = cos(ang);
-				double ssin = sin(ang);
-
-				const float x = d2f(ccos * M(0, 0) + ssin * M(1, 0));
-				const float y = d2f(ccos * M(0, 1) + ssin * M(1, 1));
-
-				glVertex2f(x, y);
-			}  // end for points on ellipse
-
-			glEnd();
-
-			// 2D: Save bounding box:
-			const double max_radius =
-				m_quantiles * std::max(m_eigVal(0, 0), m_eigVal(1, 1));
-			m_bb_min = mrpt::math::TPoint3D(-max_radius, -max_radius, 0);
-			m_bb_max = mrpt::math::TPoint3D(max_radius, max_radius, 0);
-			// Convert to coordinates of my parent:
-			m_pose.composePoint(m_bb_min, m_bb_min);
-			m_pose.composePoint(m_bb_max, m_bb_max);
-
-			// glEnable(GL_LIGHTING);
-		}
-		else
-		{
-			// ---------------------
-			//    3D ellipsoid
-			// ---------------------
-			GLdouble mat[16];
-
-			//  A homogeneous transformation matrix, in this order:
-			//
-			//     0  4  8  12
-			//     1  5  9  13
-			//     2  6  10 14
-			//     3  7  11 15
-			//
-			mat[3] = mat[7] = mat[11] = 0;
-			mat[15] = 1;
-			mat[12] = mat[13] = mat[14] = 0;
-
-			mat[0] = m_eigVec(0, 0);
-			mat[1] = m_eigVec(1, 0);
-			mat[2] = m_eigVec(2, 0);  // New X-axis
-			mat[4] = m_eigVec(0, 1);
-			mat[5] = m_eigVec(1, 1);
-			mat[6] = m_eigVec(2, 1);  // New X-axis
-			mat[8] = m_eigVec(0, 2);
-			mat[9] = m_eigVec(1, 2);
-			mat[10] = m_eigVec(2, 2);  // New X-axis
-
-			GLUquadricObj* obj = gluNewQuadric();
-			CHECK_OPENGL_ERROR();
-
-			if (!m_drawSolid3D)
-				glDisable(GL_LIGHTING);  // Disable lights when drawing lines
-
-			gluQuadricDrawStyle(obj, m_drawSolid3D ? GLU_FILL : GLU_LINE);
-
-			glPushMatrix();
-			glMultMatrixd(mat);
-			glScaled(
-				m_eigVal(0, 0) * m_quantiles, m_eigVal(1, 1) * m_quantiles,
-				m_eigVal(2, 2) * m_quantiles);
-
-			gluSphere(obj, 1, m_3D_segments, m_3D_segments);
-			CHECK_OPENGL_ERROR();
-
-			glPopMatrix();
-
-			gluDeleteQuadric(obj);
-			CHECK_OPENGL_ERROR();
-
-			// 3D: Save bounding box:
-			const double max_radius =
-				m_quantiles *
-				std::max(
-					m_eigVal(0, 0), std::max(m_eigVal(1, 1), m_eigVal(2, 2)));
-			m_bb_min = mrpt::math::TPoint3D(-max_radius, -max_radius, 0);
-			m_bb_max = mrpt::math::TPoint3D(max_radius, max_radius, 0);
-			// Convert to coordinates of my parent:
-			m_pose.composePoint(m_bb_min, m_bb_min);
-			m_pose.composePoint(m_bb_max, m_bb_max);
-		}
-
 		glDisable(GL_BLEND);
 	}
 	MRPT_END_WITH_CLEAN_UP(cout << "Covariance matrix leading to error is:"
