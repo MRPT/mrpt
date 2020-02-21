@@ -9,63 +9,45 @@
 
 #include "opengl-precomp.h"  // Precompiled header
 
-#include <mrpt/math/CMatrixF.h>
-#include <mrpt/math/TLine3D.h>
-#include <mrpt/math/geometry.h>
 #include <mrpt/math/matrix_serialization.h>
-#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CEllipsoid2D.h>
 #include <mrpt/serialization/CArchive.h>
-#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CEllipsoid, CRenderizableShaderWireFrame, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(
+	CEllipsoid2D, CRenderizableShaderWireFrame, mrpt::opengl)
 
-void CEllipsoid::transformFromParameterSpace(
+void CEllipsoid2D::transformFromParameterSpace(
 	const std::vector<BASE::array_parameter_t>& in_pts,
 	std::vector<BASE::array_point_t>& out_pts) const
 {
-	MRPT_TODO("todo");
+	// Euclidean space:
+	out_pts = in_pts;
 }
 
-uint8_t CEllipsoid::serializeGetVersion() const { return 2; }
-void CEllipsoid::serializeTo(mrpt::serialization::CArchive& out) const
+uint8_t CEllipsoid2D::serializeGetVersion() const { return 0; }
+void CEllipsoid2D::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
 	out << m_cov << m_drawSolid3D << m_quantiles << (uint32_t)m_numSegments
 		<< m_lineWidth;
 }
 
-void CEllipsoid::serializeFrom(
+void CEllipsoid2D::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
 		case 0:
-		case 1:
-		case 2:
 		{
 			readFromStreamRender(in);
-			if (version == 0)
-			{
-				CMatrixF c;
-				in >> c;
-				m_cov = c.cast_double();
-			}
-			else
-			{
-				in >> m_cov;
-			}
-
+			in >> m_cov;
 			in >> m_drawSolid3D >> m_quantiles;
 			m_numSegments = in.ReadAs<uint32_t>();
-			if (version < 2)
-			{
-				const auto old_3D_segments = in.ReadAs<uint32_t>();
-			}
 			in >> m_lineWidth;
 
 			// Update cov. matrix cache:
@@ -97,7 +79,7 @@ static bool quickSolveEqn(double a, double b_2, double c, double& t)
 }
 #endif
 
-bool CEllipsoid::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
+bool CEllipsoid2D::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 {
 #if 0  // Update, someday...
 	if (m_cov.rows() != 3) return false;
@@ -127,25 +109,4 @@ bool CEllipsoid::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 	return quickSolveEqn(a, b_2, c, dist);
 #endif
 	return false;
-}
-
-void CEllipsoid::setCovMatrix(const mrpt::math::CMatrixDouble& m)
-{
-	MRPT_START
-
-	ASSERT_EQUAL_(m.cols(), m.rows());
-	ASSERT_(
-		m.rows() == 2 || m.rows() == 3 ||
-		(resizeToSize > 0 && (resizeToSize == 2 || resizeToSize == 3)));
-
-	auto cov = m;
-	if (cov.cols() == 2)
-	{
-		cov.conservativeResize(3, 3);
-		cov(2, 0) = cov(2, 1) = cov(2, 2) = cov(0, 2) = cov(1, 2) = 0;
-	}
-
-	BASE::setCovMatrixAndMean(cov, BASE::mean_vector_t::Zero());
-
-	MRPT_END
 }

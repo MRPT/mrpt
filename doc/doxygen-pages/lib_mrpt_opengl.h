@@ -50,7 +50,7 @@ Below follows a table with the preview of most rendering primitive classes:
  <tr> <td> mrpt::opengl::CFrustum </td> <td> \image html preview_CFrustum.png </td> </tr>
  <tr> <td> mrpt::opengl::CCylinder </td> <td> \image html preview_CCylinder.png </td> </tr>
  <tr> <td> mrpt::opengl::CDisk </td> <td> \image html preview_CDisk.png </td> </tr>
- <tr> <td> mrpt::opengl::CEllipsoid </td> <td> \image html preview_CEllipsoid.png </td> </tr>
+ <tr> <td> mrpt::opengl::CEllipsoid3D </td> <td> \image html preview_CEllipsoid.png </td> </tr>
  <tr> <td> mrpt::opengl::CGridPlaneXY </td> <td> \image html preview_CGridPlaneXY.png </td> </tr>
  <tr> <td> mrpt::opengl::CGridPlaneXZ </td> <td> \image html preview_CGridPlaneXZ.png </td> </tr>
  <tr> <td> mrpt::opengl::CMesh </td> <td> \image html preview_CMesh.png </td> </tr>

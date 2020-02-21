@@ -20,7 +20,7 @@
 #include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/obs/CObservationWirelessPower.h>
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CEllipsoid3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/stock_objects.h>
@@ -476,8 +476,8 @@ void RBPF_SLAM_App_Base::run()
 
 						minDistBtwPoses = 6 * sqrt(COV3(0, 0) + COV3(1, 1));
 
-						opengl::CEllipsoid::Ptr objEllip =
-							std::make_shared<opengl::CEllipsoid>();
+						opengl::CEllipsoid3D::Ptr objEllip =
+							std::make_shared<opengl::CEllipsoid3D>();
 						objEllip->setLocation(
 							meanPose.x(), meanPose.y(), meanPose.z() + 0.001);
 						objEllip->setCovMatrix(COV3, COV3(2, 2) == 0 ? 2 : 3);

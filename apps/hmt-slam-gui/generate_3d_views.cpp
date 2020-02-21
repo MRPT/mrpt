@@ -191,8 +191,8 @@ void hmt_slam_guiFrame::updateLocalMapView()
 					if (refPoseThisArea.cov(0, 0) != 0 ||
 						refPoseThisArea.cov(1, 1) != 0)
 					{
-						opengl::CEllipsoid::Ptr ellip =
-							std::make_shared<opengl::CEllipsoid>();
+						opengl::CEllipsoid3D::Ptr ellip =
+							std::make_shared<opengl::CEllipsoid3D>();
 						ellip->setPose(refPoseThisArea.mean);
 						ellip->enableDrawSolid3D(false);
 

@@ -14,7 +14,7 @@
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/obs/CObservation.h>
-#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CEllipsoid3D.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CText.h>
@@ -245,8 +245,8 @@ void CBeacon::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 		break;
 		case pdfGauss:
 		{
-			opengl::CEllipsoid::Ptr obj =
-				std::make_shared<opengl::CEllipsoid>();
+			opengl::CEllipsoid3D::Ptr obj =
+				std::make_shared<opengl::CEllipsoid3D>();
 
 			obj->setPose(m_locationGauss.mean);
 			obj->setLineWidth(3);

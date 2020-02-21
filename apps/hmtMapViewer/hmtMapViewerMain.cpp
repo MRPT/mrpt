@@ -47,7 +47,7 @@ extern std::string global_fileToOpen;
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
-#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CEllipsoid3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/stock_objects.h>
@@ -829,8 +829,8 @@ void hmtMapViewerFrame::updateLocalMapView()
 					if (refPoseThisArea.cov(0, 0) != 0 ||
 						refPoseThisArea.cov(1, 1) != 0)
 					{
-						opengl::CEllipsoid::Ptr ellip =
-							std::make_shared<opengl::CEllipsoid>();
+						opengl::CEllipsoid3D::Ptr ellip =
+							std::make_shared<opengl::CEllipsoid3D>();
 						ellip->setPose(refPoseThisArea.mean);
 						ellip->enableDrawSolid3D(false);
 

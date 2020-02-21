@@ -21,30 +21,22 @@ using namespace std;
 template <>
 void CGeneralizedEllipsoidTemplate<2>::implUpdate_Wireframe()
 {
+	const auto& pts = m_render_pts;
+
 	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
 	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
 	vbd.clear();
 	// All lines, same color:
 	cbd.assign(vbd.size(), m_color);
 
-#if 0
-	glEnable(GL_BLEND);
-	CHECK_OPENGL_ERROR();
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	CHECK_OPENGL_ERROR();
-	glLineWidth(lineWidth);
-	CHECK_OPENGL_ERROR();
-
-	glDisable(GL_LIGHTING);  // Disable lights when drawing lines
-
-	glBegin(GL_LINE_LOOP);
-	const size_t N = pts.size();
-	for (size_t i = 0; i < N; i++) glVertex2f(pts[i][0], pts[i][1]);
-
-	glEnd();
-
-	glDisable(GL_BLEND);
-#endif
+	// Line loop:
+	const auto N = pts.size();
+	for (size_t i = 0; i < N; i++)
+	{
+		const auto ip = (i + 1) % N;
+		vbd.emplace_back(pts[i][0], pts[i][1], .0f);
+		vbd.emplace_back(pts[ip][0], pts[ip][1], .0f);
+	}
 }
 
 template <>
@@ -124,6 +116,8 @@ void CGeneralizedEllipsoidTemplate<3>::implUpdate_Wireframe()
 template <>
 void CGeneralizedEllipsoidTemplate<2>::implUpdate_Triangles()
 {
+	using P3f = mrpt::math::TPoint3Df;
+
 	// Render precomputed points in m_render_pts:
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
 	tris.clear();
