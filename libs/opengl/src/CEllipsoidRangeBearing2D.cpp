@@ -17,7 +17,8 @@ using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CEllipsoidRangeBearing2D, CRenderizable, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(
+	CEllipsoidRangeBearing2D, CRenderizableShaderWireFrame, mrpt::opengl)
 
 /*---------------------------------------------------------------
 							transformFromParameterSpace

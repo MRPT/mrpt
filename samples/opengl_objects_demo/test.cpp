@@ -236,7 +236,6 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
-#if 0
 	// CEllipsoidRangeBearing2D
 	{  // (range,bearing) -> (x,y)
 		const double cov_params_dat[] = {0.2, 0, 0, 0.1};
@@ -245,16 +244,14 @@ void TestOpenGLObjects()
 		mrpt::math::CMatrixFixed<double, 2, 1> mean_params(mean_params_dat);
 
 		{
-			auto obj =
-				opengl::CEllipsoidRangeBearing2D::Create();
+			auto obj = opengl::CEllipsoidRangeBearing2D::Create();
 			obj->setCovMatrixAndMean(cov_params, mean_params);
 			obj->setLocation(off_x, 6, 0);
 			obj->setQuantiles(2.0f);
 			// obj->setNumberOfSegments(50);
 			theScene->insert(obj);
 
-			auto obj_corner =
-				opengl::stock_objects::CornerXYSimple(1, 3);
+			auto obj_corner = opengl::stock_objects::CornerXYSimple(1, 3);
 			obj_corner->setLocation(off_x, 6, 0);
 			theScene->insert(obj_corner);
 		}
@@ -266,16 +263,14 @@ void TestOpenGLObjects()
 		mrpt::math::CMatrixFixed<double, 2, 1> mean_params(mean_params_dat);
 
 		{
-			auto obj =
-				opengl::CEllipsoidRangeBearing2D::Create();
+			auto obj = opengl::CEllipsoidRangeBearing2D::Create();
 			obj->setCovMatrixAndMean(cov_params, mean_params);
 			obj->setLocation(off_x, 0, 0);
 			obj->setQuantiles(2.0f);
 			// obj->setNumberOfSegments(50);
 			theScene->insert(obj);
 
-			auto obj_corner =
-				opengl::stock_objects::CornerXYSimple(1, 3);
+			auto obj_corner = opengl::stock_objects::CornerXYSimple(1, 3);
 			obj_corner->setLocation(off_x, 0, 0);
 			theScene->insert(obj_corner);
 		}
@@ -301,16 +296,14 @@ void TestOpenGLObjects()
 		mrpt::math::CMatrixFixed<double, 2, 1> mean_params(mean_params_dat);
 
 		{
-			auto obj =
-				opengl::CEllipsoidInverseDepth2D::Create();
+			auto obj = opengl::CEllipsoidInverseDepth2D::Create();
 			obj->setCovMatrixAndMean(cov_params, mean_params);
 			obj->setLocation(off_x, 6, 0);
 			obj->setQuantiles(3.f);
 			obj->setNumberOfSegments(100);
 			theScene->insert(obj);
 
-			auto obj_corner =
-				opengl::stock_objects::CornerXYSimple(1, 3);
+			auto obj_corner = opengl::stock_objects::CornerXYSimple(1, 3);
 			obj_corner->setLocation(off_x, 6, 0);
 			theScene->insert(obj_corner);
 		}
@@ -337,16 +330,14 @@ void TestOpenGLObjects()
 		mrpt::math::CMatrixFixed<double, 3, 1> mean_params(mean_params_dat);
 
 		{
-			auto obj =
-				opengl::CEllipsoidInverseDepth3D::Create();
+			auto obj = opengl::CEllipsoidInverseDepth3D::Create();
 			obj->setCovMatrixAndMean(cov_params, mean_params);
 			obj->setLocation(off_x, 0, 0);
 			obj->setQuantiles(3.f);
 			// obj->setNumberOfSegments(50);
 			theScene->insert(obj);
 
-			auto obj_corner =
-				opengl::stock_objects::CornerXYZSimple(1, 3);
+			auto obj_corner = opengl::stock_objects::CornerXYZSimple(1, 3);
 			obj_corner->setLocation(off_x, 0, 0);
 			theScene->insert(obj_corner);
 		}
@@ -356,6 +347,7 @@ void TestOpenGLObjects()
 		theScene->insert(gl_txt);
 	}
 	off_x += STEP_X;
+#if 0
 
 	// CMesh
 	{

@@ -17,7 +17,8 @@ using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CEllipsoidInverseDepth3D, CRenderizable, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(
+	CEllipsoidInverseDepth3D, CRenderizableShaderWireFrame, mrpt::opengl)
 
 /*---------------------------------------------------------------
 							transformFromParameterSpace

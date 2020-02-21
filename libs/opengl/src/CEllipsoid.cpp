@@ -24,178 +24,19 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CEllipsoid, CRenderizableShaderWireFrame, mrpt::opengl)
 
-void CEllipsoid::render(const RenderContext& rc) const
-	void CEllipsoid::renderUpdateBuffers() const
+void CEllipsoid::transformFromParameterSpace(
+	const std::vector<BASE::array_parameter_t>& in_pts,
+	std::vector<BASE::array_point_t>& out_pts) const
 {
+	MRPT_TODO("todo");
 }
 
-bool CEllipsoid::isInvalidCov() const
-{
-	return (
-		m_eigVal(0, 0) == 0 || m_eigVal(1, 1) == 0.0 ||
-		(dim != 2 && m_eigVal(2, 2) == 0.0) || m_quantiles <= 0.0);
-}
-
-void CEllipsoid::onUpdateBuffers_Wireframe()
-{
-	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
-	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
-	vbd.clear();
-
-	// Invalid params?
-	if (isInvalidCov()) return;
-
-	const size_t dim = m_cov.cols();
-
-	// 2D ellipse
-	// ---------------
-	if (dim == 2)
-	{
-		/* Equivalent MATLAB code:
-		 *
-		 * q=1;
-		 * [vec val]=eig(C);
-		 * M=(q*val*vec)';
-		 * R=M*[x;y];
-		 * xx=R(1,:);yy=R(2,:);
-		 * plot(xx,yy), axis equal;
-		 */
-
-		const double Aang = (M_2PI / m_2D_segments);
-		double ang;
-		unsigned int i;
-
-		// Compute the new vectors for the ellipsoid:
-		auto M = CMatrixDouble(m_eigVal.asEigen() * m_eigVec.transpose());
-		M *= m_quantiles;
-
-		// Compute the points of the 2D ellipse:
-		std::vector<float> xs, ys;
-		xs.reserve(m_2D_segments);
-		ys.reserve(m_2D_segments);
-
-		for (i = 0, ang = 0; i < m_2D_segments; i++, ang += Aang)
-		{
-			const double ccos = cos(ang), ssin = sin(ang);
-			const float x = d2f(ccos * M(0, 0) + ssin * M(1, 0));
-			const float y = d2f(ccos * M(0, 1) + ssin * M(1, 1));
-
-			xs.push_back(x);
-			ys.push_back(y);
-		}
-
-		for (i = 0; i < xs.size(); i++)
-		{
-			const auto ip = (i + 1) % xs.size();
-			vbd.emplace_back(xs[i], ys[i], .0f);
-			vbd.emplace_back(xs[ip], ys[ip], .0f);
-		}
-
-		// 2D: Save bounding box:
-		const double max_radius =
-			m_quantiles * std::max(m_eigVal(0, 0), m_eigVal(1, 1));
-		m_bb_min = mrpt::math::TPoint3D(-max_radius, -max_radius, 0);
-		m_bb_max = mrpt::math::TPoint3D(max_radius, max_radius, 0);
-	}
-	else
-	{
-		// ---------------------
-		//    3D ellipsoid
-		// ---------------------
-		double mat[16];
-
-		//  A homogeneous transformation matrix, in this order:
-		//
-		//     0  4  8  12
-		//     1  5  9  13
-		//     2  6  10 14
-		//     3  7  11 15
-		//
-		mat[3] = mat[7] = mat[11] = 0;
-		mat[15] = 1;
-		mat[12] = mat[13] = mat[14] = 0;
-
-		mat[0] = m_eigVec(0, 0);
-		mat[1] = m_eigVec(1, 0);
-		mat[2] = m_eigVec(2, 0);  // New X-axis
-		mat[4] = m_eigVec(0, 1);
-		mat[5] = m_eigVec(1, 1);
-		mat[6] = m_eigVec(2, 1);  // New X-axis
-		mat[8] = m_eigVec(0, 2);
-		mat[9] = m_eigVec(1, 2);
-		mat[10] = m_eigVec(2, 2);  // New X-axis
-
-		GLUquadricObj* obj = gluNewQuadric();
-		CHECK_OPENGL_ERROR();
-
-		if (!m_drawSolid3D)
-			glDisable(GL_LIGHTING);  // Disable lights when drawing lines
-
-		gluQuadricDrawStyle(obj, m_drawSolid3D ? GLU_FILL : GLU_LINE);
-
-		glPushMatrix();
-		glMultMatrixd(mat);
-		glScaled(
-			m_eigVal(0, 0) * m_quantiles, m_eigVal(1, 1) * m_quantiles,
-			m_eigVal(2, 2) * m_quantiles);
-
-		gluSphere(obj, 1, m_3D_segments, m_3D_segments);
-		CHECK_OPENGL_ERROR();
-
-		glPopMatrix();
-
-		gluDeleteQuadric(obj);
-		CHECK_OPENGL_ERROR();
-
-		// 3D: Save bounding box:
-		const double max_radius =
-			m_quantiles *
-			std::max(m_eigVal(0, 0), std::max(m_eigVal(1, 1), m_eigVal(2, 2)));
-		m_bb_min = mrpt::math::TPoint3D(-max_radius, -max_radius, 0);
-		m_bb_max = mrpt::math::TPoint3D(max_radius, max_radius, 0);
-		// Convert to coordinates of my parent:
-		m_pose.composePoint(m_bb_min, m_bb_min);
-		m_pose.composePoint(m_bb_max, m_bb_max);
-	}
-
-	cbd.assign(vbd.size(), m_solidborder_color);
-}
-void CEllipsoid::onUpdateBuffers_Triangles()
-{
-	auto& tris = CRenderizableShaderTriangles::m_triangles;
-	tris.clear();
-
-	using P3 = mrpt::math::TPoint3D;
-
-	//	tris.emplace_back(
-	//		P3(c1.x, c0.y, c0.z), P3(c0.x, c0.y, c0.z), P3(c1.x, c0.y, c1.z));
-
-	// All faces, all vertices, same color:
-	for (auto& t : tris) t.setColor(m_color);
-}
-
-void CEllipsoid::render(const RenderContext& rc) const
-{
-#if MRPT_HAS_OPENGL_GLUT
-	MRPT_START
-
-	const size_t dim = m_cov.cols();
-
-	{
-		glDisable(GL_BLEND);
-	}
-	MRPT_END_WITH_CLEAN_UP(cout << "Covariance matrix leading to error is:"
-								<< endl
-								<< m_cov << endl;);
-#endif
-}
-
-uint8_t CEllipsoid::serializeGetVersion() const { return 1; }
+uint8_t CEllipsoid::serializeGetVersion() const { return 2; }
 void CEllipsoid::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
-	out << m_cov << m_drawSolid3D << m_quantiles << (uint32_t)m_2D_segments
-		<< (uint32_t)m_3D_segments << m_lineWidth;
+	out << m_cov << m_drawSolid3D << m_quantiles << (uint32_t)m_numSegments
+		<< m_lineWidth;
 }
 
 void CEllipsoid::serializeFrom(
@@ -205,8 +46,8 @@ void CEllipsoid::serializeFrom(
 	{
 		case 0:
 		case 1:
+		case 2:
 		{
-			uint32_t i;
 			readFromStreamRender(in);
 			if (version == 0)
 			{
@@ -220,10 +61,11 @@ void CEllipsoid::serializeFrom(
 			}
 
 			in >> m_drawSolid3D >> m_quantiles;
-			in >> i;
-			m_2D_segments = i;
-			in >> i;
-			m_3D_segments = i;
+			m_numSegments = in.ReadAs<uint32_t>();
+			if (version < 2)
+			{
+				const auto old_3D_segments = in.ReadAs<uint32_t>();
+			}
 			in >> m_lineWidth;
 
 			// Update cov. matrix cache:
@@ -236,7 +78,8 @@ void CEllipsoid::serializeFrom(
 	CRenderizable::notifyChange();
 }
 
-bool quickSolveEqn(double a, double b_2, double c, double& t)
+#if 0
+static bool quickSolveEqn(double a, double b_2, double c, double& t)
 {
 	double delta = square(b_2) - a * c;
 	if (delta == 0)
@@ -252,9 +95,11 @@ bool quickSolveEqn(double a, double b_2, double c, double& t)
 	else
 		return false;
 }
+#endif
 
 bool CEllipsoid::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 {
+#if 0  // Update, someday...
 	if (m_cov.rows() != 3) return false;
 	TLine3D lin, lin2;
 	createFromPoseX((o - this->m_pose).asTPose(), lin);
@@ -280,70 +125,27 @@ bool CEllipsoid::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 		c += square(lin2.pBase[i] / ev);
 	}
 	return quickSolveEqn(a, b_2, c, dist);
+#endif
+	return false;
 }
 
-void CEllipsoid::setCovMatrix(
-	const mrpt::math::CMatrixDouble& m, int resizeToSize)
+void CEllipsoid::setCovMatrix(const mrpt::math::CMatrixDouble& m)
 {
 	MRPT_START
 
-	ASSERT_(m.cols() == m.rows());
+	ASSERT_EQUAL_(m.cols(), m.rows());
 	ASSERT_(
 		m.rows() == 2 || m.rows() == 3 ||
 		(resizeToSize > 0 && (resizeToSize == 2 || resizeToSize == 3)));
 
-	m_cov = m;
-	if (resizeToSize > 0 && resizeToSize < (int)m.rows())
-		m_cov.setSize(resizeToSize, resizeToSize);
-
-	if (m_cov == m_prevComputedCov) return;  // Done.
-
-	m_prevComputedCov = m_cov;
-
-	CRenderizable::notifyChange();
-
-	// Handle the special case of an ellipsoid of volume = 0
-	const double d = m_cov.det();
-	if (d == 0 || d != d)  // Note: "d!=d" is a great test for invalid numbers,
-	// don't remove!
+	auto cov = m;
+	if (cov.cols() == 2)
 	{
-		// All zeros:
-		m_eigVec.setZero(3, 3);
-		m_eigVal.setZero(3, 3);
+		cov.conservativeResize(3, 3);
+		cov(2, 0) = cov(2, 1) = cov(2, 2) = cov(0, 2) = cov(1, 2) = 0;
 	}
-	else
-	{
-		// Not null matrix: compute the eigen-vectors & values:
-		std::vector<double> eigvals;
-		if (m_cov.eig_symmetric(m_eigVec, eigvals))
-		{
-			// Do the scale at render to avoid recomputing the m_eigVal for
-			// different m_quantiles
-			m_eigVal.setDiagonal(eigvals);
-			m_eigVal.array() = m_eigVal.array().sqrt().matrix();
-		}
-		else
-		{
-			m_eigVec.setZero(3, 3);
-			m_eigVal.setZero(3, 3);
-		}
-	}
+
+	BASE::setCovMatrixAndMean(cov, BASE::mean_vector_t::Zero());
 
 	MRPT_END
-}
-
-void CEllipsoid::setCovMatrix(
-	const mrpt::math::CMatrixFloat& m, int resizeToSize)
-{
-	CRenderizable::notifyChange();
-	setCovMatrix(CMatrixDouble(m), resizeToSize);
-}
-
-/** Evaluates the bounding box of this object (including possible children) in
- * the coordinate frame of the object parent. */
-void CEllipsoid::getBoundingBox(
-	mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const
-{
-	bb_min = m_bb_min;
-	bb_max = m_bb_max;
 }
