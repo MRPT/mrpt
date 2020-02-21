@@ -10,7 +10,8 @@
 
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/CMatrixFixed.h>
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableShaderTriangles.h>
+#include <mrpt/opengl/CRenderizableShaderWireFrame.h>
 
 namespace mrpt::opengl
 {
@@ -41,33 +42,29 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_opengl_grp
  */
-class CEllipsoid : public CRenderizable
+class CEllipsoid : public CRenderizableShaderWireFrame,
+				   public CRenderizableShaderTriangles
 {
 	DEFINE_SERIALIZABLE(CEllipsoid, mrpt::opengl)
 
-   protected:
-	/** Used to store computed values the first time this is rendered, and to
-	 * avoid recomputing them again.
-	 */
-	math::CMatrixD m_eigVal, m_eigVec, m_prevComputedCov;
-
-	/** The 2x2 or 3x3 covariance matrix that will determine the aspect of the
-	 * ellipsoid. */
-	math::CMatrixD m_cov;
-	/** If set to true (default), a whole ellipsoid surface will be drawn, or if
-	 * set to "false" it will be drawn as a "wireframe". */
-	bool m_drawSolid3D{true};
-	/** The number of "sigmas" for drawing the ellipse/ellipsoid (default=3) */
-	double m_quantiles = 3.0;
-	/** The number of segments of a 2D ellipse (default=20) */
-	unsigned int m_2D_segments{20};
-	/** The number of segments of a 3D ellipse (in both "axis") (default=20) */
-	unsigned int m_3D_segments{20};
-	/** The line width for 2D ellipses or 3D wireframe ellipsoids (default=1) */
-	float m_lineWidth{1.0};
-	mutable mrpt::math::TPoint3D m_bb_min, m_bb_max;
-
    public:
+	/** @name Renderizable shader API virtual methods
+	 * @{ */
+	void render(const RenderContext& rc) const override;
+	void renderUpdateBuffers() const override;
+
+	virtual shader_list_t requiredShaders() const override
+	{
+		// May use up to two shaders (vertices + lines):
+		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES};
+	}
+	void onUpdateBuffers_Wireframe() override;
+	void onUpdateBuffers_Triangles() override;
+	/** @} */
+
+	CEllipsoid() = default;
+	virtual ~CEllipsoid() override = default;
+
 	/** Set the 2x2 or 3x3 covariance matrix that will determine the aspect of
 	 * the ellipsoid (if resizeToSize>0, the matrix will be cut to the square
 	 * matrix of the given size) */
@@ -131,16 +128,6 @@ class CEllipsoid : public CRenderizable
 		CRenderizable::notifyChange();
 	}
 
-	/** The line width for 2D ellipses or 3D wireframe ellipsoids (default=1) */
-	void setLineWidth(float w)
-	{
-		m_lineWidth = w;
-		CRenderizable::notifyChange();
-	}
-	float getLineWidth() const { return m_lineWidth; }
-
-	void render(const RenderContext& rc) const override;
-	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
@@ -149,20 +136,27 @@ class CEllipsoid : public CRenderizable
 	 */
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 
-	/** Constructor
+   protected:
+	/** Used to store computed values the first time this is rendered, and to
+	 * avoid recomputing them again.
 	 */
-	CEllipsoid()
-		: m_eigVal(),
-		  m_eigVec(),
-		  m_prevComputedCov(),
-		  m_cov(2, 2),
+	math::CMatrixD m_eigVal, m_eigVec, m_prevComputedCov;
 
-		  m_bb_min(0, 0, 0),
-		  m_bb_max(0, 0, 0)
-	{
-	}
-	/** Private, virtual destructor: only can be deleted from smart pointers */
-	~CEllipsoid() override = default;
+	/** The 2x2 or 3x3 covariance matrix that will determine the aspect of the
+	 * ellipsoid. */
+	math::CMatrixD m_cov{2, 2};
+	/** If set to true (default), a whole ellipsoid surface will be drawn, or if
+	 * set to "false" it will be drawn as a "wireframe". */
+	bool m_drawSolid3D{true};
+	/** The number of "sigmas" for drawing the ellipse/ellipsoid (default=3) */
+	double m_quantiles = 3.0;
+	/** The number of segments of a 2D ellipse (default=20) */
+	unsigned int m_2D_segments{20};
+	/** The number of segments of a 3D ellipse (in both "axis") (default=20) */
+	unsigned int m_3D_segments{20};
+	mutable mrpt::math::TPoint3D m_bb_min = {0, 0, 0}, m_bb_max = {0, 0, 0};
+
+	bool isInvalidCov() const;
 };
 
 }  // namespace mrpt::opengl

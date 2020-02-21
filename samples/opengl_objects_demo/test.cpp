@@ -198,7 +198,6 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
-#if 0
 	// CEllipsoid
 	{
 		const double cov3d_dat[] = {0.9,  0.7,  -0.4, 0.7, 1.6,
@@ -237,6 +236,7 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
+#if 0
 	// CEllipsoidRangeBearing2D
 	{  // (range,bearing) -> (x,y)
 		const double cov_params_dat[] = {0.2, 0, 0, 0.1};
