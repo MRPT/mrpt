@@ -13,7 +13,7 @@
 #include <mrpt/math/utils.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
-#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CEllipsoid3D.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/poses/CPosePDF.h>
@@ -943,7 +943,7 @@ void CRangeBearingKFSLAM2D::getAs3DObject(
 	pointGauss.cov = m_pkk.blockCopy<2, 2>(0, 0);
 
 	{
-		auto ellip = opengl::CEllipsoid::Create();
+		auto ellip = opengl::CEllipsoid3D::Create();
 
 		ellip->setPose(pointGauss.mean);
 		ellip->setCovMatrix(pointGauss.cov);
@@ -963,7 +963,7 @@ void CRangeBearingKFSLAM2D::getAs3DObject(
 		pointGauss.mean.y(m_xkk[3 + 2 * i + 1]);
 		pointGauss.cov = m_pkk.blockCopy<2, 2>(3 + 2 * i, 3 + 2 * i);
 
-		auto ellip = opengl::CEllipsoid::Create();
+		auto ellip = opengl::CEllipsoid3D::Create();
 
 		ellip->setName(format("%u", static_cast<unsigned int>(i)));
 		ellip->enableShowName(true);

@@ -45,7 +45,7 @@ TEST(SerializeTestOpenGL, WriteReadToMem)
 		CLASS_ID(CPolyhedron),
 		CLASS_ID(CArrow),
 		CLASS_ID(CCamera),
-		CLASS_ID(CEllipsoid),
+		CLASS_ID(CEllipsoid3D),
 		CLASS_ID(CGridPlaneXZ),
 		CLASS_ID(COpenGLScene),
 		CLASS_ID(CSetOfObjects),

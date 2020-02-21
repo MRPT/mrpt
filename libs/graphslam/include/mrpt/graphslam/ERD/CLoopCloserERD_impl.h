@@ -13,7 +13,7 @@
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/obs/obs_utils.h>
-#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CEllipsoid3D.h>
 #include <mrpt/opengl/CSphere.h>
 
 namespace mrpt::graphslam::deciders
@@ -2226,7 +2226,7 @@ void CLoopCloserERD<GRAPH_T>::initCurrCovarianceVisualization()
 		m_text_index_curr_node_covariance);
 
 	// covariance ellipsis
-	CEllipsoid::Ptr cov_ellipsis_obj = std::make_shared<CEllipsoid>();
+	CEllipsoid3D::Ptr cov_ellipsis_obj = std::make_shared<CEllipsoid3D>();
 	cov_ellipsis_obj->setName("cov_ellipsis_obj");
 	cov_ellipsis_obj->setColor_u8(m_curr_node_covariance_color);
 	cov_ellipsis_obj->setLocation(0, 0, 0);
@@ -2268,8 +2268,8 @@ void CLoopCloserERD<GRAPH_T>::updateCurrCovarianceVisualization()
 
 	mrpt::opengl::COpenGLScene::Ptr scene = this->m_win->get3DSceneAndLock();
 	CRenderizable::Ptr obj = scene->getByName("cov_ellipsis_obj");
-	CEllipsoid::Ptr cov_ellipsis_obj =
-		std::dynamic_pointer_cast<CEllipsoid>(obj);
+	CEllipsoid3D::Ptr cov_ellipsis_obj =
+		std::dynamic_pointer_cast<CEllipsoid3D>(obj);
 
 	// set the pose and corresponding covariance matrix of the ellipsis
 	cov_ellipsis_obj->setLocation(curr_position.x(), curr_position.y(), 0);

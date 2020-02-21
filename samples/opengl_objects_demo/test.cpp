@@ -198,7 +198,7 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
-	// CEllipsoid
+	// CEllipsoid3D
 	{
 		const double cov3d_dat[] = {0.9,  0.7,  -0.4, 0.7, 1.6,
 									-0.6, -0.4, -0.6, 1.5};
@@ -207,14 +207,14 @@ void TestOpenGLObjects()
 		mrpt::math::CMatrixDouble33 cov3d(cov3d_dat);
 
 		{
-			auto obj = opengl::CEllipsoid::Create();
+			auto obj = opengl::CEllipsoid2D::Create();
 			obj->setCovMatrix(cov2d);
 			obj->setLocation(off_x, 6, 0);
 			obj->setQuantiles(2.0);
 			theScene->insert(obj);
 		}
 		{
-			auto obj = opengl::CEllipsoid::Create();
+			auto obj = opengl::CEllipsoid3D::Create();
 			obj->setCovMatrix(cov3d);
 			obj->setQuantiles(2.0);
 			obj->enableDrawSolid3D(false);
@@ -222,7 +222,7 @@ void TestOpenGLObjects()
 			theScene->insert(obj);
 		}
 		{
-			auto obj = opengl::CEllipsoid::Create();
+			auto obj = opengl::CEllipsoid3D::Create();
 			obj->setCovMatrix(cov3d);
 			obj->setQuantiles(2.0);
 			obj->enableDrawSolid3D(true);
@@ -230,7 +230,7 @@ void TestOpenGLObjects()
 			theScene->insert(obj);
 		}
 
-		auto gl_txt = opengl::CText::Create("CEllipsoid");
+		auto gl_txt = opengl::CText::Create("CEllipsoid3D");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}

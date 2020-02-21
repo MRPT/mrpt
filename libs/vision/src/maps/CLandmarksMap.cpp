@@ -21,7 +21,7 @@
 #include <mrpt/obs/CObservationRobotPose.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/obs/CObservationVisualLandmarks.h>
-#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CEllipsoid3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
@@ -2477,7 +2477,7 @@ void CLandmarksMap::getAs3DObject(
 	CPointPDFGaussian pointGauss;
 	for (const auto& landmark : landmarks)
 	{
-		opengl::CEllipsoid::Ptr ellip = std::make_shared<opengl::CEllipsoid>();
+		opengl::CEllipsoid3D::Ptr ellip = std::make_shared<opengl::CEllipsoid3D>();
 
 		landmark.getPose(pointGauss);
 

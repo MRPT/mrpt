@@ -550,8 +550,8 @@ void CPointPDFSOG::getMostLikelyMode(CPointPDFGaussian& outVal) const
 //	for (CListGaussianModes::const_iterator it = m_modes.begin(); it!=
 // m_modes.end();++it)
 //	{
-//		opengl::CEllipsoid::Ptr obj =
-// std::make_shared<opengl::CEllipsoid>();
+//		opengl::CEllipsoid3D::Ptr obj =
+// std::make_shared<opengl::CEllipsoid3D>();
 //
 //		obj->setPose( it->val.mean);
 //		obj->setCovMatrix(it->val.cov,  it->val.cov(2,2)==0  ?  2:3);

@@ -12,7 +12,7 @@
 #include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/transform_gaussian.h>
 #include <mrpt/math/utils.h>
-#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CEllipsoid3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
@@ -85,7 +85,7 @@ void Test_SUT()
 	scene->insert(opengl::CGridPlaneXY::Create(-10, 10, -10, 10, 0, 1));
 
 	{
-		opengl::CEllipsoid::Ptr el = opengl::CEllipsoid::Create();
+		opengl::CEllipsoid3D::Ptr el = opengl::CEllipsoid3D::Create();
 		el->enableDrawSolid3D(false);
 		el->setLocation(y_mean[0], y_mean[1], y_mean[2]);
 		el->setCovMatrix(y_cov);
@@ -116,7 +116,7 @@ void Test_SUT()
 		extractColumnFromVectorOfVectors(i, MC_samples, MC_y[i]);
 
 	{
-		auto el = opengl::CEllipsoid::Create();
+		auto el = opengl::CEllipsoid3D::Create();
 		el->enableDrawSolid3D(false);
 		el->setLocation(y_mean[0], y_mean[1], y_mean[2]);
 		el->setCovMatrix(y_cov);
@@ -150,7 +150,7 @@ void Test_SUT()
 	cout << "y_cov: " << endl << y_cov << endl;
 
 	{
-		auto el = opengl::CEllipsoid::Create();
+		auto el = opengl::CEllipsoid3D::Create();
 		el->enableDrawSolid3D(false);
 		el->setLocation(y_mean[0], y_mean[1], y_mean[2]);
 		el->setCovMatrix(y_cov);

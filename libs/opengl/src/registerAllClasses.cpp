@@ -27,7 +27,7 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_opengl)
 	registerClass(CLASS_ID(CColorBar));
 	registerClass(CLASS_ID(CCylinder));
 	registerClass(CLASS_ID(CDisk));
-	registerClass(CLASS_ID(CEllipsoid));
+	registerClass(CLASS_ID(CEllipsoid3D));
 	registerClass(CLASS_ID(CEllipsoidInverseDepth2D));
 	registerClass(CLASS_ID(CEllipsoidInverseDepth3D));
 	registerClass(CLASS_ID(CEllipsoidRangeBearing2D));

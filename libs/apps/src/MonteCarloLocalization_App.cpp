@@ -32,7 +32,7 @@
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/opengl/CDisk.h>
-#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CEllipsoid3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/stock_objects.h>
@@ -660,10 +660,10 @@ void MonteCarloLocalization_Base::do_pf_localization()
 							{
 								CRenderizable::Ptr ellip =
 									scene.getByName("parts_cov");
-								CEllipsoid::Ptr el;
+								CEllipsoid3D::Ptr el;
 								if (!ellip)
 								{
-									el = std::make_shared<CEllipsoid>();
+									el = std::make_shared<CEllipsoid3D>();
 									ellip =
 										mrpt::ptr_cast<CRenderizable>::from(el);
 									ellip->setName("parts_cov");
@@ -678,7 +678,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
 								else
 								{
 									el =
-										mrpt::ptr_cast<CEllipsoid>::from(ellip);
+										mrpt::ptr_cast<CEllipsoid3D>::from(ellip);
 								}
 								double ellipse_z =
 									mrpt::poses::CPose3D(meanPose).z() + 0.01;

@@ -38,7 +38,7 @@
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CDisk.h>
-#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CEllipsoid3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CSphere.h>
@@ -580,14 +580,14 @@ void TestParticlesLocalization()
 // The particles' cov:
 #ifdef SHOW_REAL_TIME_3D
 					obj = sceneTR->getByName("cov");
-					opengl::CEllipsoid::Ptr ellip;
+					opengl::CEllipsoid3D::Ptr ellip;
 					if (!obj)
-						ellip = std::make_shared<opengl::CEllipsoid>();
+						ellip = std::make_shared<opengl::CEllipsoid3D>();
 					else
-						ellip = std::dynamic_pointer_cast<CEllipsoid>(obj);
+						ellip = std::dynamic_pointer_cast<CEllipsoid3D>(obj);
 #else
-					opengl::CEllipsoid::Ptr ellip =
-						std::make_shared<opengl::CEllipsoid>();
+					opengl::CEllipsoid3D::Ptr ellip =
+						std::make_shared<opengl::CEllipsoid3D>();
 #endif
 
 					ellip->setColor(1, 0, 0, 0.6);
@@ -803,14 +803,14 @@ void TestParticlesLocalization()
 						{
 							opengl::CRenderizable::Ptr obj =
 								sceneTR->getByName("gps");
-							opengl::CEllipsoid::Ptr sphere;
+							opengl::CEllipsoid3D::Ptr sphere;
 							double x, y;
 
 							if (!obj)
-								sphere = std::make_shared<opengl::CEllipsoid>();
+								sphere = std::make_shared<opengl::CEllipsoid3D>();
 							else
 								sphere = std::dynamic_pointer_cast<
-									opengl::CEllipsoid>(obj);
+									opengl::CEllipsoid3D>(obj);
 
 							sphere->setColor(0, 1, 1, 0.5);
 							sphere->setName("gps");

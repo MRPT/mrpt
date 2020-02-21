@@ -20,7 +20,7 @@
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CCylinder.h>
 #include <mrpt/opengl/CDisk.h>
-#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CEllipsoid3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPolyhedron.h>
 #include <mrpt/opengl/CSphere.h>
@@ -134,7 +134,7 @@ void generateObjects(CSetOfObjects::Ptr& world)
 	configRandom(cil);
 	world->insert(cil);
 
-	CEllipsoid::Ptr ell = CEllipsoid::Create();
+	CEllipsoid3D::Ptr ell = CEllipsoid3D::Create();
 	CMatrixDouble md = CMatrixDouble(3, 3);
 	for (size_t i = 0; i < 3; i++) md(i, i) = MYRANDG(8.0, 1.0);
 	for (size_t i = 0; i < 3; i++)

@@ -9,7 +9,7 @@
 
 #include "DifOdometry_Camera.h"
 #include <mrpt/opengl/CBox.h>
-#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CEllipsoid3D.h>
 #include <mrpt/opengl/CFrustum.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPointCloud.h>
@@ -298,7 +298,7 @@ void CDifodoCamera::initializeScene()
 	math::CMatrixFloat33 cov3d = est_cov.extractMatrix<3, 3>(0, 0);
 	cov3d *= 20.f;
 
-	CEllipsoid::Ptr ellip = std::make_shared<CEllipsoid>();
+	CEllipsoid3D::Ptr ellip = std::make_shared<CEllipsoid3D>();
 	ellip->setCovMatrix(cov3d);
 	ellip->setQuantiles(2.0);
 	ellip->setColor(1.0, 1.0, 1.0, 0.5);
@@ -359,7 +359,7 @@ void CDifodoCamera::updateScene()
 
 	// Ellipsoid showing covariance
 	const auto cov3d = math::CMatrixFloat33(20.f * est_cov.block<3, 3>(0, 0));
-	CEllipsoid::Ptr ellip = scene->getByClass<CEllipsoid>(0);
+	CEllipsoid3D::Ptr ellip = scene->getByClass<CEllipsoid3D>(0);
 	ellip->setCovMatrix(cov3d);
 	ellip->setPose(cam_pose + rel_lenspose);
 

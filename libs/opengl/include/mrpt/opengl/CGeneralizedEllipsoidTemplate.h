@@ -105,6 +105,10 @@ class CGeneralizedEllipsoidTemplate
 
 		if (!eig_ok)
 		{
+			std::cerr << "[CGeneralizedEllipsoidTemplate<" << DIM
+					  << ">] Warning: invalid covariance matrix: "
+					  << m_cov.inMatlabFormat() << "\n";
+
 			CRenderizableShaderTriangles::m_triangles.clear();
 			CRenderizableShaderWireFrame::m_vertex_buffer_data.clear();
 			CRenderizableShaderWireFrame::m_color_buffer_data.clear();
@@ -155,6 +159,14 @@ class CGeneralizedEllipsoidTemplate
 
 	/** Gets the current uncertainty covariance of parameter space */
 	const cov_matrix_t& getCovMatrix() const { return m_cov; }
+
+	/** Like setCovMatrixAndMean(), for mean=zero.
+	 */
+	template <typename MATRIX>
+	void setCovMatrix(const MATRIX& new_cov)
+	{
+		setCovMatrixAndMean(new_cov, mean_vector_t::Zero());
+	}
 
 	/** Changes the scale of the "sigmas" for drawing the ellipse/ellipsoid
 	 *(default=3, ~97 or ~98% CI); the exact mathematical meaning is:

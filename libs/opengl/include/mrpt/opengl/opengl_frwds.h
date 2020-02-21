@@ -18,7 +18,7 @@ class CCamera;
 class CColorBar;
 class CCylinder;
 class CDisk;
-class CEllipsoid;
+class CEllipsoid3D;
 class CEllipsoidInverseDepth2D;
 class CEllipsoidInverseDepth3D;
 class CEllipsoidRangeBearing2D;

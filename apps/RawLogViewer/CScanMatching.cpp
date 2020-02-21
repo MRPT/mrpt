@@ -23,7 +23,7 @@
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
-#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CEllipsoid3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/poses/CPosePDFSOG.h>
@@ -676,7 +676,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 	refMap->getAs3DObject(m_gl_map_ref);
 	newMapPt.getAs3DObject(m_gl_map_new);
 
-	auto gl_ellipse = mrpt::opengl::CEllipsoid::Create();
+	auto gl_ellipse = mrpt::opengl::CEllipsoid3D::Create();
 	gl_ellipse->setQuantiles(3.0f);
 	gl_ellipse->setColor_u8(0, 0, 0);
 	m_gl_map_new->insert(gl_ellipse);
