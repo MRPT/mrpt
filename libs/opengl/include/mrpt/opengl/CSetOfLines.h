@@ -43,7 +43,7 @@ class CSetOfLines : public CRenderizableShaderWireFrame,
 	void renderUpdateBuffers() const override;
 	virtual shader_list_t requiredShaders() const override
 	{
-		// May use up to two shaders (vertices + lines):
+		// May use up to two shaders (triangles and lines):
 		return {DefaultShaderID::WIREFRAME, DefaultShaderID::POINTS};
 	}
 	void onUpdateBuffers_Wireframe() override;
