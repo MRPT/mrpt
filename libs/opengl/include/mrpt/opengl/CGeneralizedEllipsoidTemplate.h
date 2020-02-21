@@ -14,24 +14,22 @@
 #include <mrpt/opengl/CRenderizableShaderWireFrame.h>
 #include <mrpt/serialization/CArchive.h>  // for >> ops
 
-namespace mrpt
-{
-namespace opengl
+namespace mrpt::opengl
 {
 namespace detail
 {
 template <int DIM>
-void renderGeneralizedEllipsoidTemplate(
+void generalizedEllipsoidTemplate(
 	const std::vector<mrpt::math::CMatrixFixed<float, DIM, 1>>& pts,
 	const float lineWidth, const uint32_t slices, const uint32_t stacks,
 	const CRenderizable::RenderContext& rc);
 template <>
-void renderGeneralizedEllipsoidTemplate<2>(
+void generalizedEllipsoidTemplate<2>(
 	const std::vector<mrpt::math::CMatrixFixed<float, 2, 1>>& pts,
 	const float lineWidth, const uint32_t slices, const uint32_t stacks,
 	const CRenderizable::RenderContext& rc);
 template <>
-void renderGeneralizedEllipsoidTemplate<3>(
+void generalizedEllipsoidTemplate<3>(
 	const std::vector<mrpt::math::CMatrixFixed<float, 3, 1>>& pts,
 	const float lineWidth, const uint32_t slices, const uint32_t stacks,
 	const CRenderizable::RenderContext& rc);
@@ -158,20 +156,34 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableShaderTriangles,
 	}
 	virtual shader_list_t requiredShaders() const override
 	{
-		// May use up to two shaders (vertices + lines):
+		// May use up to two shaders (triangles and lines):
 		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES};
 	}
+	// Render precomputed points in m_render_pts:
 	void onUpdateBuffers_Wireframe() override
 	{
-		// Render precomputed points in m_render_pts:
+		auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
+		auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+		vbd.clear();
+
 		mrpt::opengl::detail::renderGeneralizedEllipsoidTemplate<DIM>(
 			m_render_pts, m_lineWidth, m_numSegments, m_numSegments, rc);
+
+		// All lines, same color:
+		cbd.assign(vbd.size(), m_solidborder_color);
 	}
+	// Render precomputed points in m_render_pts:
 	void onUpdateBuffers_Triangles() override
 	{
 		// Render precomputed points in m_render_pts:
+		auto& tris = CRenderizableShaderTriangles::m_triangles;
+		tris.clear();
+
 		mrpt::opengl::detail::renderGeneralizedEllipsoidTemplate<DIM>(
 			m_render_pts, m_lineWidth, m_numSegments, m_numSegments, rc);
+
+		// All faces, all vertices, same color:
+		for (auto& t : tris) t.setColor(m_color);
 	}
 	/** @} */
 
@@ -193,7 +205,8 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableShaderTriangles,
 	void setCovMatrixAndMean(const MATRIX& new_cov, const VECTOR& new_mean)
 	{
 		MRPT_START
-		ASSERT_(new_cov.cols() == new_cov.rows() && new_cov.cols() == DIM);
+		ASSERT_EQUAL_(new_cov.cols(), new_cov.rows());
+		ASSERT_EQUAL_(new_cov.cols(), DIM);
 		m_cov = new_cov;
 		m_mean = new_mean;
 		m_needToRecomputeEigenVals = true;
@@ -332,6 +345,4 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableShaderTriangles,
 	virtual ~CGeneralizedEllipsoidTemplate() override = default;
 };
 
-}  // namespace opengl
-
-}  // namespace mrpt
+}  // namespace mrpt::opengl

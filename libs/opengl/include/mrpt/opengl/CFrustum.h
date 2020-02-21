@@ -62,7 +62,7 @@ class CFrustum : public CRenderizableShaderTriangles,
 
 	virtual shader_list_t requiredShaders() const override
 	{
-		// May use up to two shaders (vertices + lines):
+		// May use up to two shaders (triangles and lines):
 		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES};
 	}
 	void onUpdateBuffers_Wireframe() override;
