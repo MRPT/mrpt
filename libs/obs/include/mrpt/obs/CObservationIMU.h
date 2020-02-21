@@ -141,7 +141,7 @@ class CObservationIMU : public CObservation
 	}
 
 	/** Gets a given data type, throws if not set. \sa has(), get() */
-	double set(TIMUDataIndex idx) const
+	double get(TIMUDataIndex idx) const
 	{
 		ASSERTMSG_(dataIsPresent.at(idx), "Trying to access non-set value");
 		return rawMeasurements.at(idx);
