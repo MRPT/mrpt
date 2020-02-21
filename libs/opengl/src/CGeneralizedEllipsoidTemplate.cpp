@@ -18,18 +18,16 @@ using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace std;
 
-/*---------------------------------------------------------------
-						Render: 2D implementation
-  ---------------------------------------------------------------*/
-namespace mrpt::opengl::detail
-{
 template <>
-void renderGeneralizedEllipsoidTemplate<2>(
-	const std::vector<mrpt::math::CMatrixFixed<float, 2, 1>>& pts,
-	const float lineWidth, const uint32_t slices, const uint32_t stacks,
-	const CRenderizable::RenderContext& rc)
+void CGeneralizedEllipsoidTemplate<2>::implUpdate_Wireframe()
 {
-#if MRPT_HAS_OPENGL_GLUT
+	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
+	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	vbd.clear();
+	// All lines, same color:
+	cbd.assign(vbd.size(), m_color);
+
+#if 0
 	glEnable(GL_BLEND);
 	CHECK_OPENGL_ERROR();
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -46,24 +44,13 @@ void renderGeneralizedEllipsoidTemplate<2>(
 	glEnd();
 
 	glDisable(GL_BLEND);
-#else
-	MRPT_UNUSED_PARAM(pts);
-	MRPT_UNUSED_PARAM(lineWidth);
-	MRPT_UNUSED_PARAM(slices);
-	MRPT_UNUSED_PARAM(stacks);
 #endif
 }
 
-/*---------------------------------------------------------------
-						Render: 3D implementation
-  ---------------------------------------------------------------*/
 template <>
-void renderGeneralizedEllipsoidTemplate<3>(
-	const std::vector<mrpt::math::CMatrixFixed<float, 3, 1>>& pts,
-	const float lineWidth, const uint32_t slices, const uint32_t stacks,
-	const CRenderizable::RenderContext& rc)
+void CGeneralizedEllipsoidTemplate<3>::implUpdate_Wireframe()
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if 0
 	glEnable(GL_BLEND);
 	CHECK_OPENGL_ERROR();
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -134,31 +121,47 @@ void renderGeneralizedEllipsoidTemplate<3>(
 #endif
 }
 
-/*---------------------------------------------------------------
-			generalizedEllipsoidPoints: 2D
-  ---------------------------------------------------------------*/
 template <>
-void generalizedEllipsoidPoints<2>(
-	const mrpt::math::CMatrixFixed<double, 2, 2>& U,
-	const mrpt::math::CMatrixFixed<double, 2, 1>& mean,
-	std::vector<mrpt::math::CMatrixFixed<float, 2, 1>>& out_params_pts,
-	const uint32_t numSegments, const uint32_t numSegments_unused)
+void CGeneralizedEllipsoidTemplate<2>::implUpdate_Triangles()
 {
-	MRPT_UNUSED_PARAM(numSegments_unused);
-	out_params_pts.clear();
-	out_params_pts.reserve(numSegments);
-	const double Aa = 2 * M_PI / numSegments;
+	// Render precomputed points in m_render_pts:
+	auto& tris = CRenderizableShaderTriangles::m_triangles;
+	tris.clear();
+
+	// All faces, all vertices, same color:
+	for (auto& t : tris) t.setColor(m_color);
+}
+
+template <>
+void CGeneralizedEllipsoidTemplate<3>::implUpdate_Triangles()
+{
+	// Render precomputed points in m_render_pts:
+	auto& tris = CRenderizableShaderTriangles::m_triangles;
+	tris.clear();
+
+	// All faces, all vertices, same color:
+	for (auto& t : tris) t.setColor(m_color);
+}
+
+template <>
+void CGeneralizedEllipsoidTemplate<2>::generatePoints(
+	const CGeneralizedEllipsoidTemplate<2>::cov_matrix_t& U,
+	std::vector<CGeneralizedEllipsoidTemplate<2>::array_parameter_t>& pts) const
+{
+	pts.clear();
+	pts.reserve(m_numSegments);
+	const double Aa = 2 * M_PI / m_numSegments;
 	for (double ang = 0; ang < 2 * M_PI; ang += Aa)
 	{
 		const double ccos = cos(ang);
 		const double ssin = sin(ang);
 
-		out_params_pts.resize(out_params_pts.size() + 1);
+		pts.resize(pts.size() + 1);
 
-		auto& pt = out_params_pts.back();
+		auto& pt = pts.back();
 
-		pt[0] = d2f(mean[0] + ccos * U(0, 0) + ssin * U(0, 1));
-		pt[1] = d2f(mean[1] + ccos * U(1, 0) + ssin * U(1, 1));
+		pt[0] = d2f(m_mean[0] + ccos * U(0, 0) + ssin * U(0, 1));
+		pt[1] = d2f(m_mean[1] + ccos * U(1, 0) + ssin * U(1, 1));
 	}
 }
 
@@ -175,17 +178,13 @@ inline void aux_add3DpointWithEigenVectors(
 	pt[2] = d2f(mean[2] + x * M(2, 0) + y * M(2, 1) + z * M(2, 2));
 }
 
-/*---------------------------------------------------------------
-			generalizedEllipsoidPoints: 3D
-  ---------------------------------------------------------------*/
 template <>
-void generalizedEllipsoidPoints<3>(
-	const mrpt::math::CMatrixFixed<double, 3, 3>& U,
-	const mrpt::math::CMatrixFixed<double, 3, 1>& mean,
-	std::vector<mrpt::math::CMatrixFixed<float, 3, 1>>& pts,
-	const uint32_t slices, const uint32_t stacks)
+void CGeneralizedEllipsoidTemplate<3>::generatePoints(
+	const CGeneralizedEllipsoidTemplate<3>::cov_matrix_t& U,
+	std::vector<CGeneralizedEllipsoidTemplate<3>::array_parameter_t>& pts) const
 {
 	MRPT_START
+	const auto slices = m_numSegments, stacks = m_numSegments;
 	ASSERT_ABOVEEQ_(slices, 3);
 	ASSERT_ABOVEEQ_(stacks, 3);
 	// sin/cos cache --------
@@ -216,9 +215,9 @@ void generalizedEllipsoidPoints<3>(
 	for (uint32_t i = 0; i < slices; i++)
 	{
 		if (i == 0)
-			aux_add3DpointWithEigenVectors(1, 0, 0, pts, U, mean);
+			aux_add3DpointWithEigenVectors(1, 0, 0, pts, U, m_mean);
 		else if (i == (slices - 1))
-			aux_add3DpointWithEigenVectors(-1, 0, 0, pts, U, mean);
+			aux_add3DpointWithEigenVectors(-1, 0, 0, pts, U, m_mean);
 		else
 		{
 			const double x = slice_cos[i];
@@ -228,11 +227,10 @@ void generalizedEllipsoidPoints<3>(
 			{
 				const double y = R * stack_cos[j];
 				const double z = R * stack_sin[j];
-				aux_add3DpointWithEigenVectors(x, y, z, pts, U, mean);
+				aux_add3DpointWithEigenVectors(x, y, z, pts, U, m_mean);
 			}
 		}
 	}
 
 	MRPT_END
 }
-}  // namespace mrpt::opengl::detail

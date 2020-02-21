@@ -16,44 +16,6 @@
 
 namespace mrpt::opengl
 {
-namespace detail
-{
-template <int DIM>
-void generalizedEllipsoidTemplate(
-	const std::vector<mrpt::math::CMatrixFixed<float, DIM, 1>>& pts,
-	const float lineWidth, const uint32_t slices, const uint32_t stacks,
-	const CRenderizable::RenderContext& rc);
-template <>
-void generalizedEllipsoidTemplate<2>(
-	const std::vector<mrpt::math::CMatrixFixed<float, 2, 1>>& pts,
-	const float lineWidth, const uint32_t slices, const uint32_t stacks,
-	const CRenderizable::RenderContext& rc);
-template <>
-void generalizedEllipsoidTemplate<3>(
-	const std::vector<mrpt::math::CMatrixFixed<float, 3, 1>>& pts,
-	const float lineWidth, const uint32_t slices, const uint32_t stacks,
-	const CRenderizable::RenderContext& rc);
-
-template <int DIM>
-void generalizedEllipsoidPoints(
-	const mrpt::math::CMatrixFixed<double, DIM, DIM>& U,
-	const mrpt::math::CMatrixFixed<double, DIM, 1>& mean,
-	std::vector<mrpt::math::CMatrixFixed<float, DIM, 1>>& out_params_pts,
-	const uint32_t slices, const uint32_t stacks);
-template <>
-void generalizedEllipsoidPoints<2>(
-	const mrpt::math::CMatrixFixed<double, 2, 2>& U,
-	const mrpt::math::CMatrixFixed<double, 2, 1>& mean,
-	std::vector<mrpt::math::CMatrixFixed<float, 2, 1>>& out_params_pts,
-	const uint32_t slices, const uint32_t stacks);
-template <>
-void generalizedEllipsoidPoints<3>(
-	const mrpt::math::CMatrixFixed<double, 3, 3>& U,
-	const mrpt::math::CMatrixFixed<double, 3, 1>& mean,
-	std::vector<mrpt::math::CMatrixFixed<float, 3, 1>>& out_params_pts,
-	const uint32_t slices, const uint32_t stacks);
-}  // namespace detail
-
 /** A class that generalizes the concept of an ellipsoid to arbitrary
  * parameterizations of
  *  uncertainty shapes in either 2D or 3D. See derived classes for examples.
@@ -70,8 +32,9 @@ void generalizedEllipsoidPoints<3>(
  * \ingroup mrpt_opengl_grp
  */
 template <int DIM>
-class CGeneralizedEllipsoidTemplate : public CRenderizableShaderTriangles,
-									  public CRenderizableShaderWireFrame
+class CGeneralizedEllipsoidTemplate
+	: virtual public CRenderizableShaderTriangles,
+	  virtual public CRenderizableShaderWireFrame
 {
    public:
 	/** @name Renderizable shader API virtual methods
@@ -81,11 +44,10 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableShaderTriangles,
 		switch (rc.shader_id)
 		{
 			case DefaultShaderID::TRIANGLES:
-				if (!m_wireframe) CRenderizableShaderTriangles::render(rc);
+				if (m_drawSolid3D) CRenderizableShaderTriangles::render(rc);
 				break;
 			case DefaultShaderID::WIREFRAME:
-				if (m_draw_border || m_wireframe)
-					CRenderizableShaderWireFrame::render(rc);
+				if (!m_drawSolid3D) CRenderizableShaderWireFrame::render(rc);
 				break;
 		};
 	}
@@ -119,8 +81,7 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableShaderTriangles,
 		std::vector<array_parameter_t> params_pts;
 		cov_matrix_t Uscaled = m_U;
 		Uscaled *= static_cast<double>(m_quantiles);
-		detail::generalizedEllipsoidPoints<DIM>(
-			Uscaled, m_mean, params_pts, m_numSegments, m_numSegments);
+		generatePoints(Uscaled, params_pts);
 
 		// 3) Transform into 2D/3D render space:
 		this->transformFromParameterSpace(params_pts, m_render_pts);
@@ -160,31 +121,9 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableShaderTriangles,
 		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES};
 	}
 	// Render precomputed points in m_render_pts:
-	void onUpdateBuffers_Wireframe() override
-	{
-		auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
-		auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
-		vbd.clear();
-
-		mrpt::opengl::detail::renderGeneralizedEllipsoidTemplate<DIM>(
-			m_render_pts, m_lineWidth, m_numSegments, m_numSegments, rc);
-
-		// All lines, same color:
-		cbd.assign(vbd.size(), m_solidborder_color);
-	}
+	void onUpdateBuffers_Wireframe() override { implUpdate_Wireframe(); }
 	// Render precomputed points in m_render_pts:
-	void onUpdateBuffers_Triangles() override
-	{
-		// Render precomputed points in m_render_pts:
-		auto& tris = CRenderizableShaderTriangles::m_triangles;
-		tris.clear();
-
-		mrpt::opengl::detail::renderGeneralizedEllipsoidTemplate<DIM>(
-			m_render_pts, m_lineWidth, m_numSegments, m_numSegments, rc);
-
-		// All faces, all vertices, same color:
-		for (auto& t : tris) t.setColor(m_color);
-	}
+	void onUpdateBuffers_Triangles() override { implUpdate_Triangles(); }
 	/** @} */
 
 	/** The type of fixed-size covariance matrices for this representation
@@ -278,9 +217,9 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableShaderTriangles,
 		bb_max = m_bb_max;
 	}
 
-	/** Ray tracing
-	 */
-	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override
+	/** Ray tracing  */
+	virtual bool traceRay(
+		const mrpt::poses::CPose3D& o, double& dist) const override
 	{
 		MRPT_UNUSED_PARAM(o);
 		MRPT_UNUSED_PARAM(dist);
@@ -302,8 +241,8 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableShaderTriangles,
 	/** The number of "sigmas" for drawing the ellipse/ellipsoid (default=3)
 	 */
 	float m_quantiles{3.f};
-	/** Number of segments in 2D/3D ellipsoids (default=10) */
-	uint32_t m_numSegments{50};
+	/** Number of segments in 2D/3D ellipsoids (default=20) */
+	uint32_t m_numSegments{20};
 	mutable mrpt::math::TPoint3D m_bb_min{0, 0, 0}, m_bb_max{0, 0, 0};
 
 	/** If set to "true", a whole ellipsoid surface will be drawn, or
@@ -343,6 +282,21 @@ class CGeneralizedEllipsoidTemplate : public CRenderizableShaderTriangles,
 
 	CGeneralizedEllipsoidTemplate() = default;
 	virtual ~CGeneralizedEllipsoidTemplate() override = default;
+
+	// Uscaled, m_mean, params_pts, m_numSegments, m_numSegments
+	void generatePoints(
+		const cov_matrix_t& U,
+		std::vector<array_parameter_t>& out_params_pts) const;
+
+	void implUpdate_Wireframe();
+	void implUpdate_Triangles();
+
+   public:
+	// Solve virtual public inheritance ambiguity:
+	virtual const mrpt::rtti::TRuntimeClassId* GetRuntimeClass() const override
+	{
+		return CRenderizableShaderWireFrame::GetRuntimeClass();
+	}
 };
 
 }  // namespace mrpt::opengl

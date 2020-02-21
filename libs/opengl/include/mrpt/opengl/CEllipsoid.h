@@ -10,8 +10,7 @@
 
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/CMatrixFixed.h>
-#include <mrpt/opengl/CRenderizableShaderTriangles.h>
-#include <mrpt/opengl/CRenderizableShaderWireFrame.h>
+#include <mrpt/opengl/CGeneralizedEllipsoidTemplate.h>
 
 namespace mrpt::opengl
 {
@@ -42,38 +41,25 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_opengl_grp
  */
-class CEllipsoid : public CRenderizableShaderWireFrame,
-				   public CRenderizableShaderTriangles
+class CEllipsoid : public CGeneralizedEllipsoidTemplate<3>
 {
+	using BASE = CGeneralizedEllipsoidTemplate<3>;
+
 	DEFINE_SERIALIZABLE(CEllipsoid, mrpt::opengl)
 
    public:
-	/** @name Renderizable shader API virtual methods
-	 * @{ */
-	void render(const RenderContext& rc) const override;
-	void renderUpdateBuffers() const override;
-
-	virtual shader_list_t requiredShaders() const override
-	{
-		// May use up to two shaders (triangles and lines):
-		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES};
-	}
-	void onUpdateBuffers_Wireframe() override;
-	void onUpdateBuffers_Triangles() override;
-	/** @} */
-
 	CEllipsoid() = default;
 	virtual ~CEllipsoid() override = default;
 
 	/** Set the 2x2 or 3x3 covariance matrix that will determine the aspect of
-	 * the ellipsoid (if resizeToSize>0, the matrix will be cut to the square
-	 * matrix of the given size) */
-	void setCovMatrix(
-		const mrpt::math::CMatrixDouble& m, int resizeToSize = -1);
-	/** Set the 2x2 or 3x3 covariance matrix that will determine the aspect of
-	 * the ellipsoid (if resizeToSize>0, the matrix will be cut to the square
-	 * matrix of the given size). */
-	void setCovMatrix(const mrpt::math::CMatrixFloat& m, int resizeToSize = -1);
+	 * the ellipsoid  */
+	void setCovMatrix(const mrpt::math::CMatrixDouble& m);
+
+	/// \overload
+	inline void setCovMatrix(const mrpt::math::CMatrixFloat& m)
+	{
+		setCovMatrix(m.cast_double());
+	}
 
 	/**  Set the 2x2 or 3x3 covariance matrix that will determine the aspect of
 	 * the ellipsoid (if resizeToSize>0, the matrix will be cut to the square
@@ -101,62 +87,23 @@ class CEllipsoid : public CRenderizableShaderWireFrame,
 		return mrpt::math::CMatrixDouble(m_cov);
 	}
 
-	/** If set to true (default), a whole ellipsoid surface will be drawn, or if
-	 * set to "false" it will be drawn as a "wireframe". */
-	void enableDrawSolid3D(bool v)
-	{
-		m_drawSolid3D = v;
-		CRenderizable::notifyChange();
-	}
-	/** The number of "sigmas" for drawing the ellipse/ellipsoid (default=3) */
-	void setQuantiles(double q)
-	{
-		m_quantiles = q;
-		CRenderizable::notifyChange();
-	}
-	double getQuantiles() const { return m_quantiles; }
 	/** The number of segments of a 2D ellipse (default=20) */
-	void set2DsegmentsCount(unsigned int N)
-	{
-		m_2D_segments = N;
-		CRenderizable::notifyChange();
-	}
-	/** The number of segments of a 3D ellipse (in both "axis") (default=20) */
-	void set3DsegmentsCount(unsigned int N)
-	{
-		m_3D_segments = N;
-		CRenderizable::notifyChange();
-	}
+	void set2DsegmentsCount(unsigned int N) { BASE::setNumberOfSegments(N); }
+	/** The number of segments of a 3D ellipse (in both "axes") (default=20) */
+	void set3DsegmentsCount(unsigned int N) { BASE::setNumberOfSegments(N); }
 
-	void getBoundingBox(
-		mrpt::math::TPoint3D& bb_min,
-		mrpt::math::TPoint3D& bb_max) const override;
-
-	/** Ray tracing
-	 */
+	/** Ray tracing */
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 
    protected:
-	/** Used to store computed values the first time this is rendered, and to
-	 * avoid recomputing them again.
+	/** To be implemented by derived classes: maps, using some arbitrary space
+	 * transformation, a list of points
+	 *  defining an ellipsoid in parameter space into their corresponding
+	 * points in 2D/3D space.
 	 */
-	math::CMatrixD m_eigVal, m_eigVec, m_prevComputedCov;
-
-	/** The 2x2 or 3x3 covariance matrix that will determine the aspect of the
-	 * ellipsoid. */
-	math::CMatrixD m_cov{2, 2};
-	/** If set to true (default), a whole ellipsoid surface will be drawn, or if
-	 * set to "false" it will be drawn as a "wireframe". */
-	bool m_drawSolid3D{true};
-	/** The number of "sigmas" for drawing the ellipse/ellipsoid (default=3) */
-	double m_quantiles = 3.0;
-	/** The number of segments of a 2D ellipse (default=20) */
-	unsigned int m_2D_segments{20};
-	/** The number of segments of a 3D ellipse (in both "axis") (default=20) */
-	unsigned int m_3D_segments{20};
-	mutable mrpt::math::TPoint3D m_bb_min = {0, 0, 0}, m_bb_max = {0, 0, 0};
-
-	bool isInvalidCov() const;
+	void transformFromParameterSpace(
+		const std::vector<BASE::array_parameter_t>& in_pts,
+		std::vector<BASE::array_point_t>& out_pts) const override;
 };
 
 }  // namespace mrpt::opengl
