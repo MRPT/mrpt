@@ -214,6 +214,14 @@ void TestOpenGLObjects()
 			theScene->insert(obj);
 		}
 		{
+			auto obj = opengl::CEllipsoid2D::Create();
+			obj->setCovMatrix(cov2d);
+			obj->setLocation(off_x, 12, 0);
+			obj->enableDrawSolid3D(true);
+			obj->setQuantiles(2.0);
+			theScene->insert(obj);
+		}
+		{
 			auto obj = opengl::CEllipsoid3D::Create();
 			obj->setCovMatrix(cov3d);
 			obj->setQuantiles(2.0);
@@ -435,6 +443,7 @@ void TestOpenGLObjects()
 		theScene->insert(gl_txt);
 	}
 	off_x += STEP_X;
+#endif
 
 	// CPointCloud
 	{
@@ -448,8 +457,8 @@ void TestOpenGLObjects()
 
 		for (int i = 0; i < 100000; i++)
 			obj->insertPoint(
-				rng.drawUniform(-5, 5), rng.drawUniform(-5, 5),
-				rng.drawUniform(-5, 5));
+				rng.drawUniform<float>(-5, 5), rng.drawUniform<float>(-5, 5),
+				rng.drawUniform<float>(-5, 5));
 
 		auto gl_txt = opengl::CText::Create("CPointCloud");
 		gl_txt->setLocation(off_x, off_y_label, 0);
@@ -459,8 +468,7 @@ void TestOpenGLObjects()
 
 	// CPointCloudColoured
 	{
-		auto obj =
-			opengl::CPointCloudColoured::Create();
+		auto obj = opengl::CPointCloudColoured::Create();
 		obj->setLocation(off_x, 0, 0);
 		theScene->insert(obj);
 
@@ -469,9 +477,9 @@ void TestOpenGLObjects()
 
 		for (int i = 0; i < 200; i++)
 			obj->push_back(
-				rng.drawUniform(-5, 5), rng.drawUniform(-5, 5),
-				rng.drawUniform(-5, 5), rng.drawUniform(0, 1),
-				rng.drawUniform(0, 1), rng.drawUniform(0, 1));
+				rng.drawUniform<float>(-5, 5), rng.drawUniform<float>(-5, 5),
+				rng.drawUniform<float>(-5, 5), rng.drawUniform<float>(0, 1),
+				rng.drawUniform<float>(0, 1), rng.drawUniform<float>(0, 1));
 
 		auto gl_txt = opengl::CText::Create("CPointCloudColoured");
 		gl_txt->setLocation(off_x, off_y_label, 0);
@@ -479,23 +487,21 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
+#if 0
 	// CPolyhedron
 	{
 		{
-			auto obj =
-				opengl::CPolyhedron::CreateCuboctahedron(1.0);
+			auto obj = opengl::CPolyhedron::CreateCuboctahedron(1.0);
 			obj->setLocation(off_x, 0, 0);
 			theScene->insert(obj);
 		}
 		{
-			auto obj =
-				opengl::CPolyhedron::CreateDodecahedron(1.0);
+			auto obj = opengl::CPolyhedron::CreateDodecahedron(1.0);
 			obj->setLocation(off_x, -5, 0);
 			theScene->insert(obj);
 		}
 		{
-			auto obj =
-				opengl::CPolyhedron::CreateIcosahedron(1.0);
+			auto obj = opengl::CPolyhedron::CreateIcosahedron(1.0);
 			obj->setLocation(off_x, 5, 0);
 			theScene->insert(obj);
 		}
@@ -539,8 +545,7 @@ void TestOpenGLObjects()
 	// CText3D
 	{
 		{
-			auto obj =
-				opengl::CText3D::Create("I'm a cool CText3D!");
+			auto obj = opengl::CText3D::Create("I'm a cool CText3D!");
 			obj->setLocation(off_x, 0, 0);
 			theScene->insert(obj);
 		}
@@ -566,7 +571,6 @@ void TestOpenGLObjects()
 		theScene->insert(gl_txt);
 	}
 	off_x += STEP_X;
-
 #endif
 
 	// CSetOfLines

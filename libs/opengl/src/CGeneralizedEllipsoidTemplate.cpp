@@ -26,8 +26,6 @@ void CGeneralizedEllipsoidTemplate<2>::implUpdate_Wireframe()
 	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
 	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
 	vbd.clear();
-	// All lines, same color:
-	cbd.assign(vbd.size(), m_color);
 
 	// Line loop:
 	const auto N = pts.size();
@@ -37,19 +35,21 @@ void CGeneralizedEllipsoidTemplate<2>::implUpdate_Wireframe()
 		vbd.emplace_back(pts[i][0], pts[i][1], .0f);
 		vbd.emplace_back(pts[ip][0], pts[ip][1], .0f);
 	}
+
+	// All lines, same color:
+	cbd.assign(vbd.size(), m_color);
 }
 
 template <>
 void CGeneralizedEllipsoidTemplate<3>::implUpdate_Wireframe()
 {
-#if 0
-	glEnable(GL_BLEND);
-	CHECK_OPENGL_ERROR();
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	CHECK_OPENGL_ERROR();
-	glLineWidth(lineWidth);
-	CHECK_OPENGL_ERROR();
-	glDisable(GL_LIGHTING);  // Disable lights when drawing lines
+	const auto& pts = m_render_pts;
+
+	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
+	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	vbd.clear();
+
+	const auto slices = m_numSegments, stacks = m_numSegments;
 
 	// Points in the ellipsoid:
 	//  * "#slices" slices, with "#stacks" points each, but for the two ends
@@ -60,67 +60,75 @@ void CGeneralizedEllipsoidTemplate<3>::implUpdate_Wireframe()
 
 	// 1st slice: triangle fan (if it were solid)
 	// ----------------------------
-	glBegin(GL_LINES);
 	for (size_t i = 0; i < stacks; i++)
 	{
-		glVertex3fv(&pts[0][0]);
-		glVertex3fv(&pts[idx_1st_slice + i][0]);
+		const auto idx = idx_1st_slice + i;
+		vbd.emplace_back(pts[0]);
+		vbd.emplace_back(pts[idx]);
 	}
-	glEnd();
 
 	// Middle slices: triangle strip (if it were solid)
 	// ----------------------------
 	for (size_t s = 0; s < slices - 3; s++)
 	{
-		size_t idx_this_slice = idx_1st_slice + stacks * s;
-		size_t idx_next_slice = idx_this_slice + stacks;
+		size_t idx0 = idx_1st_slice + stacks * s;
+		size_t idx1 = idx0 + stacks;
 
 		for (size_t i = 0; i < stacks; i++)
 		{
 			const size_t ii =
 				(i == (stacks - 1) ? 0 : i + 1);  // next i with wrapping
 
-			glBegin(GL_LINE_STRIP);
-			glVertex3fv(&pts[idx_this_slice + i][0]);
-			glVertex3fv(&pts[idx_next_slice + ii][0]);
-			glVertex3fv(&pts[idx_next_slice + i][0]);
-			glVertex3fv(&pts[idx_this_slice + i][0]);
-			glVertex3fv(&pts[idx_this_slice + ii][0]);
-			glVertex3fv(&pts[idx_next_slice + ii][0]);
-			glEnd();
+			vbd.emplace_back(pts[idx0 + i]);
+			vbd.emplace_back(pts[idx1 + ii]);
+
+			vbd.emplace_back(pts[idx1 + ii]);
+			vbd.emplace_back(pts[idx1 + i]);
+
+			vbd.emplace_back(pts[idx1 + i]);
+			vbd.emplace_back(pts[idx0 + i]);
+
+			vbd.emplace_back(pts[idx0 + i]);
+			vbd.emplace_back(pts[idx0 + ii]);
+
+			vbd.emplace_back(pts[idx0 + ii]);
+			vbd.emplace_back(pts[idx1 + ii]);
 		}
 	}
 
 	// Last slice: triangle fan (if it were solid)
 	// ----------------------------
-	const size_t idx_last_pt = pts.size() - 1;
+	const size_t idxN = pts.size() - 1;
 	const size_t idx_last_slice = idx_1st_slice + (slices - 3) * stacks;
-	glBegin(GL_LINES);
+
 	for (size_t i = 0; i < stacks; i++)
 	{
-		glVertex3fv(&pts[idx_last_pt][0]);
-		glVertex3fv(&pts[idx_last_slice + i][0]);
+		vbd.emplace_back(pts[idxN]);
+		vbd.emplace_back(pts[idx_last_slice + i]);
 	}
-	glEnd();
 
-	// glBegin( GL_POINTS );
-	// const size_t N = pts.size();
-	// for (size_t i=0;i<N;i++)
-	//	glVertex3f( pts[i][0], pts[i][1], pts[i][2] );
-	// glEnd();
-
-	glDisable(GL_BLEND);
-#endif
+	// All lines, same color:
+	cbd.assign(vbd.size(), m_color);
 }
 
 template <>
 void CGeneralizedEllipsoidTemplate<2>::implUpdate_Triangles()
 {
 	using P3f = mrpt::math::TPoint3Df;
+	const auto& pts = m_render_pts;
 
 	// Render precomputed points in m_render_pts:
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
 	tris.clear();
+
+	const auto N = pts.size();
+	for (size_t i = 0; i < N; i++)
+	{
+		const auto ip = (i + 1) % N;
+		tris.emplace_back(
+			P3f(0, 0, 0), P3f(pts[i][0], pts[i][1], .0f),
+			P3f(pts[ip][0], pts[ip][1], .0f));
+	}
 
 	// All faces, all vertices, same color:
 	for (auto& t : tris) t.setColor(m_color);
@@ -129,9 +137,77 @@ void CGeneralizedEllipsoidTemplate<2>::implUpdate_Triangles()
 template <>
 void CGeneralizedEllipsoidTemplate<3>::implUpdate_Triangles()
 {
+	using P3f = mrpt::math::TPoint3Df;
+	const auto& pts = m_render_pts;
+
 	// Render precomputed points in m_render_pts:
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
 	tris.clear();
+
+	const auto slices = m_numSegments, stacks = m_numSegments;
+
+	// Points in the ellipsoid:
+	//  * "#slices" slices, with "#stacks" points each, but for the two ends
+	//  * 1 point at each end slice
+	// #total points = stacks*(slices-2) + 2
+	ASSERT_EQUAL_((slices - 2) * stacks + 2, pts.size());
+	const size_t idx_1st_slice = 1;
+
+	// 1st slice: triangle fan (if it were solid)
+	// ----------------------------
+	for (size_t i = 0; i < stacks; i++)
+	{
+		const auto idx = idx_1st_slice + i;
+		const auto idxp = idx_1st_slice + ((i + 1) % stacks);
+
+		tris.emplace_back(
+			// Points
+			pts[0], pts[idx], pts[idxp],
+			// Normals:
+			pts[0], pts[idx], pts[idxp]);
+	}
+
+	// Middle slices: triangle strip (if it were solid)
+	// ----------------------------
+	for (size_t s = 0; s < slices - 3; s++)
+	{
+		size_t idx0 = idx_1st_slice + stacks * s;
+		size_t idx1 = idx0 + stacks;
+
+		for (size_t i = 0; i < stacks; i++)
+		{
+			const size_t ii =
+				(i == (stacks - 1) ? 0 : i + 1);  // next i with wrapping
+
+			tris.emplace_back(
+				// Points
+				pts[idx0 + i], pts[idx0 + ii], pts[idx1 + i],
+				// Normals:
+				pts[idx0 + i], pts[idx0 + ii], pts[idx1 + i]);
+			tris.emplace_back(
+				// Points
+				pts[idx1 + ii], pts[idx1 + i], pts[idx0 + ii],
+				// Normals:
+				pts[idx1 + ii], pts[idx1 + i], pts[idx0 + ii]);
+		}
+	}
+
+	// Last slice: triangle fan (if it were solid)
+	// ----------------------------
+	const size_t idxN = pts.size() - 1;
+	const size_t idx_last_slice = idx_1st_slice + (slices - 3) * stacks;
+
+	for (size_t i = 0; i < stacks; i++)
+	{
+		const auto idx = idx_last_slice + i;
+		const auto idxp = idx_last_slice + ((i + 1) % stacks);
+
+		tris.emplace_back(
+			// Points
+			pts[idx], pts[idxN], pts[idxp],
+			// Normals
+			pts[idx], pts[idxN], pts[idxp]);
+	}
 
 	// All faces, all vertices, same color:
 	for (auto& t : tris) t.setColor(m_color);

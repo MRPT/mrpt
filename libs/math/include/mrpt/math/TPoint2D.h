@@ -11,6 +11,7 @@
 #include <mrpt/core/bits_math.h>
 #include <mrpt/core/format.h>
 #include <mrpt/math/TPoseOrPoint.h>
+#include <mrpt/math/math_frwds.h>  // CMatrixFixed
 #include <cmath>
 #include <vector>
 
@@ -47,6 +48,14 @@ struct TPoint2D_ : public TPoseOrPoint,
 	{
 		TPoint2D_data<T>::x = static_cast<T>(p.x);
 		TPoint2D_data<T>::y = static_cast<T>(p.y);
+	}
+
+	/** Constructor from column vector. */
+	template <typename U>
+	TPoint2D_(const mrpt::math::CMatrixFixed<U, 2, 1>& m)
+	{
+		TPoint2D_data<T>::x = static_cast<T>(m[0]);
+		TPoint2D_data<T>::y = static_cast<T>(m[1]);
 	}
 
 	/** Constructor from TPose2D, discarding phi.

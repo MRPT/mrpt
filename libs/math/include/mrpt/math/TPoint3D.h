@@ -11,6 +11,7 @@
 #include <mrpt/core/bits_math.h>
 #include <mrpt/core/format.h>
 #include <mrpt/math/TPoseOrPoint.h>
+#include <mrpt/math/math_frwds.h>  // CMatrixFixed
 #include <cmath>  // sqrt
 
 namespace mrpt::math
@@ -54,6 +55,15 @@ struct TPoint3D_ : public TPoseOrPoint,
 		TPoint3D_data<T>::x = static_cast<T>(p.x);
 		TPoint3D_data<T>::y = static_cast<T>(p.y);
 		TPoint3D_data<T>::z = static_cast<T>(p.z);
+	}
+
+	/** Constructor from column vector. */
+	template <typename U>
+	TPoint3D_(const mrpt::math::CMatrixFixed<U, 3, 1>& m)
+	{
+		TPoint3D_data<T>::x = static_cast<T>(m[0]);
+		TPoint3D_data<T>::y = static_cast<T>(m[1]);
+		TPoint3D_data<T>::z = static_cast<T>(m[2]);
 	}
 
 	/** Implicit constructor from TPoint2D. Zeroes the z.
