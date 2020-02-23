@@ -60,8 +60,8 @@ void CFeatureExtraction::extractFeaturesFAST(
 		const unsigned int max_y = inImg_gray.getHeight() - 1 - KLT_half_win;
 		for (size_t i = 0; i < N; i++)
 		{
-			const unsigned int x = cv_feats[i].pt.x;
-			const unsigned int y = cv_feats[i].pt.y;
+			const unsigned int x = mrpt::round(cv_feats[i].pt.x);
+			const unsigned int y = mrpt::round(cv_feats[i].pt.y);
 			if (x > KLT_half_win && y > KLT_half_win && x <= max_x &&
 				y <= max_y)
 				cv_feats[i].response =

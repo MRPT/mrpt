@@ -323,6 +323,12 @@ class CConfigFileBase
 		variableName = mrpt::DEG2RAD(configFileObject.read_double(        \
 			sectionNameStr, #variableName, mrpt::RAD2DEG(variableName))); \
 	}
+#define MRPT_LOAD_CONFIG_VAR_DEGREESf(                                    \
+	variableName, configFileObject, sectionNameStr)                       \
+	{                                                                     \
+		variableName = mrpt::DEG2RAD(configFileObject.read_float(         \
+			sectionNameStr, #variableName, mrpt::RAD2DEG(variableName))); \
+	}
 
 /** Loads a double, required, variable, stored as radians but entered in the
  * INI-file as degrees */

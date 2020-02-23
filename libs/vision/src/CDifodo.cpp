@@ -130,7 +130,7 @@ void CDifodo::buildCoordinatesPyramid()
 	// Generate levels
 	for (unsigned int i = 0; i < pyr_levels; i++)
 	{
-		unsigned int s = pow(2.f, int(i));
+		unsigned int s = static_cast<unsigned int>(pow(2., int(i)));
 		cols_i = m_width / s;
 		rows_i = m_height / s;
 		const int rows_i2 = 2 * rows_i;
@@ -289,7 +289,7 @@ void CDifodo::buildCoordinatesPyramidFast()
 	// Generate levels
 	for (unsigned int i = 0; i < pyr_levels; i++)
 	{
-		unsigned int s = pow(2.f, int(i));
+		unsigned int s = static_cast<unsigned int>(pow(2., int(i)));
 		cols_i = m_width / s;
 		rows_i = m_height / s;
 		// const int rows_i2 = 2*rows_i;
@@ -439,10 +439,10 @@ void CDifodo::performWarping()
 				if ((uwarp >= 0.f) && (uwarp < cols_lim) && (vwarp >= 0.f) &&
 					(vwarp < rows_lim))
 				{
-					const int uwarp_l = uwarp;
-					const int uwarp_r = uwarp_l + 1;
-					const int vwarp_d = vwarp;
-					const int vwarp_u = vwarp_d + 1;
+					const int uwarp_l = static_cast<int>(uwarp);
+					const int uwarp_r = static_cast<int>(uwarp_l + 1);
+					const int vwarp_d = static_cast<int>(vwarp);
+					const int vwarp_u = static_cast<int>(vwarp_d + 1);
 					const float delta_r = float(uwarp_r) - uwarp;
 					const float delta_l = uwarp - float(uwarp_l);
 					const float delta_u = float(vwarp_u) - vwarp;
@@ -616,8 +616,8 @@ void CDifodo::calculateDepthDerivatives()
 	for (unsigned int u = 0; u < cols_i; u++)
 		for (unsigned int v = 0; v < rows_i; v++)
 			if (null(v, u) == false)
-				dt(v, u) = fps * (depth_warped[image_level](v, u) -
-								  depth_old[image_level](v, u));
+				dt(v, u) = d2f(fps) * (depth_warped[image_level](v, u) -
+									   depth_old[image_level](v, u));
 }
 
 void CDifodo::computeWeights()
@@ -650,7 +650,7 @@ void CDifodo::computeWeights()
 
 	// Parameters for linearization error
 	const float kduv = 20e-5f;
-	const float kdt = kduv / square(fps);
+	const float kdt = kduv / square<float>(fps);
 	const float k2dt = 5e-6f;
 	const float k2duv = 5e-6f;
 
@@ -839,7 +839,8 @@ void CDifodo::odometryCalculation()
 		transformations[i].setIdentity();
 
 		level = i;
-		unsigned int s = pow(2.f, int(ctf_levels - (i + 1)));
+		unsigned int s =
+			static_cast<unsigned int>(pow(2.f, int(ctf_levels - (i + 1))));
 		cols_i = cols / s;
 		rows_i = rows / s;
 		image_level =
