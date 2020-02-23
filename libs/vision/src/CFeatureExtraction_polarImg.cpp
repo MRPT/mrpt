@@ -63,7 +63,8 @@ void CFeatureExtraction::internal_computePolarImageDescriptors(
 #elif MRPT_OPENCV_VERSION_NUM < 0x342
 		cv::linearPolar(
 			in(cv::Rect(
-				pt.x - radius, pt.y - radius, 1 + 2 * radius, 1 + 2 * radius)),
+				mrpt::round(pt.x - radius), mrpt::round(pt.y - radius),
+				1 + 2 * radius, 1 + 2 * radius)),
 			out, pt, radius, CV_INTER_LINEAR + CV_WARP_FILL_OUTLIERS);
 #else
 		// Latest opencv versions:

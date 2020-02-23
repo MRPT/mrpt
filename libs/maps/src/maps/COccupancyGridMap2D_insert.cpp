@@ -122,7 +122,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 			//		Insert the scan as simple rays:
 			// ---------------------------------------------
 			int cx, cy, N = o.getScanSize();
-			double A, dAK;
+			float A, dAK;
 
 			// Parameters values:
 			const float maxDistanceInsertion =
@@ -140,8 +140,8 @@ bool COccupancyGridMap2D::internal_insertObservation(
 			float curRange = 0;
 
 			// Start position:
-			double px = laserPose.x();
-			double py = laserPose.y();
+			const float px = d2f(laserPose.x());
+			const float py = d2f(laserPose.y());
 
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
 			MRPT_CHECK_NORMAL_NUMBER(px);
@@ -166,12 +166,12 @@ bool COccupancyGridMap2D::internal_insertObservation(
 
 				if (o.rightToLeft ^ sensorIsBottomwards)
 				{
-					A = laserPose.phi() - 0.5 * o.aperture;
+					A = d2f(laserPose.phi() - 0.5f * o.aperture);
 					dAK = K * o.aperture / N;
 				}
 				else
 				{
-					A = laserPose.phi() + 0.5 * o.aperture;
+					A = d2f(laserPose.phi() + 0.5f * o.aperture);
 					dAK = -K * o.aperture / N;
 				}
 
@@ -188,7 +188,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 					if (o.getScanRangeValidity(idx))
 					{
 						curRange = o.getScanRange(idx);
-						float R = min(maxDistanceInsertion, curRange);
+						float R = std::min(maxDistanceInsertion, curRange);
 
 						*scanPoint_x = px + cos(A) * R;
 						*scanPoint_y = py + sin(A) * R;
@@ -199,7 +199,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 						if (invalidAsFree)
 						{
 							// Invalid range:
-							float R = min(
+							float R = std::min(
 								maxDistanceInsertion, 0.5f * last_valid_range);
 							*scanPoint_x = px + cos(A) * R;
 							*scanPoint_y = py + sin(A) * R;
@@ -335,12 +335,12 @@ bool COccupancyGridMap2D::internal_insertObservation(
 				// ---------------------------------
 				if (o.rightToLeft ^ sensorIsBottomwards)
 				{
-					A = laserPose.phi() - 0.5 * o.aperture;
+					A = d2f(laserPose.phi()) - 0.5f * o.aperture;
 					dAK = K * o.aperture / N;
 				}
 				else
 				{
-					A = laserPose.phi() + 0.5 * o.aperture;
+					A = d2f(laserPose.phi()) + 0.5f * o.aperture;
 					dAK = -K * o.aperture / N;
 				}
 
@@ -426,12 +426,12 @@ bool COccupancyGridMap2D::internal_insertObservation(
 				// -----------------------------------------------
 				if (o.rightToLeft ^ sensorIsBottomwards)
 				{
-					A = laserPose.phi() - 0.5 * o.aperture;
+					A = d2f(laserPose.phi()) - 0.5f * o.aperture;
 					dAK = K * o.aperture / N;
 				}
 				else
 				{
-					A = laserPose.phi() + 0.5 * o.aperture;
+					A = d2f(laserPose.phi()) + 0.5f * o.aperture;
 					dAK = -K * o.aperture / N;
 				}
 
@@ -442,7 +442,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 
 				last_valid_range = maxDistanceInsertion;
 
-				const double dA_2 = 0.5 * o.aperture / N;
+				const float dA_2 = 0.5f * o.aperture / N;
 				for (idx = 0; idx < nRanges; idx += K, A += dAK)
 				{
 					float theR;  // The range of this beam
@@ -833,7 +833,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 
 			// int		/*cx,cy,*/ N =  o.sensedData.size();
 			float px, py;
-			double A, dAK;
+			float A, dAK;
 
 			// Parameters values:
 			const float maxDistanceInsertion =
@@ -851,8 +851,8 @@ bool COccupancyGridMap2D::internal_insertObservation(
 			float curRange = 0;
 
 			// Start position:
-			px = laserPose.x();
-			py = laserPose.y();
+			px = d2f(laserPose.x());
+			py = d2f(laserPose.y());
 
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
 			MRPT_CHECK_NORMAL_NUMBER(px);
@@ -863,7 +863,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 			// Algorithm in: https://www.mrpt.org/Occupancy_Grids
 			// FIXME: doesn't support many different poses in one measurement
 			// ---------------------------------
-			A = laserPose.phi();
+			A = d2f(laserPose.phi());
 			dAK = 0;
 
 			new_x_max = -(numeric_limits<float>::max)();
@@ -946,7 +946,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 
 			// Now go and insert the triangles of each beam:
 			// -----------------------------------------------
-			A = laserPose.phi() - 0.5 * o.sensorConeApperture;
+			A = d2f(laserPose.phi()) - 0.5f * o.sensorConeApperture;
 			dAK = 0;
 
 			// Insert the rays:
@@ -956,7 +956,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 
 			last_valid_range = maxDistanceInsertion;
 
-			const double dA_2 = 0.5 * o.sensorConeApperture;
+			const float dA_2 = 0.5f * o.sensorConeApperture;
 			for (idx = 0; idx < nRanges; idx += K, A += dAK)
 			{
 				float theR;  // The range of this beam
@@ -1334,7 +1334,7 @@ void COccupancyGridMap2D::TInsertionOptions::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR(
 		considerInvalidRangesAsFreeSpace, bool, iniFile, section);
 	MRPT_LOAD_CONFIG_VAR(decimation, int, iniFile, section);
-	MRPT_LOAD_CONFIG_VAR_DEGREES(horizontalTolerance, iniFile, section);
+	MRPT_LOAD_CONFIG_VAR_DEGREESf(horizontalTolerance, iniFile, section);
 
 	MRPT_LOAD_CONFIG_VAR(CFD_features_gaussian_size, float, iniFile, section);
 	MRPT_LOAD_CONFIG_VAR(CFD_features_median_size, float, iniFile, section);

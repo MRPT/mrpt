@@ -144,14 +144,14 @@ inline int fix(T x)
 template <typename T, typename K>
 inline void keep_min(T& var, const K test_val)
 {
-	if (test_val < var) var = test_val;
+	if (test_val < var) var = static_cast<T>(test_val);
 }
 /** If the second argument is above the first one, set the first argument to
  * this higher value. */
 template <typename T, typename K>
 inline void keep_max(T& var, const K test_val)
 {
-	if (test_val > var) var = test_val;
+	if (test_val > var) var = static_cast<T>(test_val);
 }
 /** Saturate the value of var (the variable gets modified) so it does not get
  * out of [min,max]. */

@@ -536,7 +536,7 @@ float CFeature::descriptorSpinImgDistanceTo(
 		dist += square(*itDesc1 - *itDesc2);
 	}
 
-	if (normalize_by_vector_length) dist /= 0.25 * descriptors.SpinImg->size();
+	if (normalize_by_vector_length) dist /= 0.25f * descriptors.SpinImg->size();
 
 	return sqrt(dist);
 }  // end descriptorSpinImgDistanceTo
@@ -650,7 +650,7 @@ float CFeature::internal_distanceBetweenPolarImages(
 #endif
 
 	// Output:
-	minDistAngle = minDistIdx * M_2PI / d2f(width);
+	minDistAngle = minDistIdx * d2f(M_2PI / width);
 	return minDist;
 
 	MRPT_END
@@ -741,8 +741,8 @@ uint8_t CFeature::descriptorORBDistanceTo(const CFeature& oFeature) const
 		distance += count;
 	}
 
-	return float(distance);
-}  // end-descriptorORBDistanceTo
+	return distance;
+}
 
 // # added by Raghavender Sahdev
 // --------------------------------------------------
