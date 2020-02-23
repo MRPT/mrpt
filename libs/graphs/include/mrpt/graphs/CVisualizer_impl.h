@@ -114,7 +114,7 @@ void CVisualizer<
 	const double grid_frequency = 5.0;
 	CGridPlaneXY::Ptr grid = CGridPlaneXY::Create(
 		BB_min.x, BB_max.x, BB_min.y, BB_max.y, BB_min.z, grid_frequency);
-	grid->setColor(0.3, 0.3, 0.3);
+	grid->setColor(0.3f, 0.3f, 0.3f);
 	object->insert(grid);
 }
 

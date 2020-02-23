@@ -1115,7 +1115,7 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 	{
 		mrpt::opengl::CGridPlaneXY::Ptr obj =
 			mrpt::opengl::CGridPlaneXY::Create(-500, 500, -500, 500, 0, 5);
-		obj->setColor(0.3, 0.3, 0.3);
+		obj->setColor(0.3f, 0.3f, 0.3f);
 		outScene.insert(obj);
 	}
 

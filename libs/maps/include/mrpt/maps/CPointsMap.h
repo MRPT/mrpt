@@ -498,12 +498,12 @@ class CPointsMap : public CMetricMap,
 	/// \overload
 	inline void setPoint(size_t index, const mrpt::math::TPoint2D& p)
 	{
-		setPoint(index, p.x, p.y, 0);
+		setPoint(index, d2f(p.x), d2f(p.y), 0);
 	}
 	/// \overload
 	inline void setPoint(size_t index, const mrpt::math::TPoint3D& p)
 	{
-		setPoint(index, p.x, p.y, p.z);
+		setPoint(index, d2f(p.x), d2f(p.y), d2f(p.z));
 	}
 	/// \overload
 	inline void setPoint(size_t index, float x, float y)
@@ -648,7 +648,7 @@ class CPointsMap : public CMetricMap,
 	/// \overload
 	inline void insertPoint(const mrpt::math::TPoint3D& p)
 	{
-		insertPoint(p.x, p.y, p.z);
+		insertPoint(d2f(p.x), d2f(p.y), d2f(p.z));
 	}
 	/// overload (RGB data is ignored in classes without color information)
 	virtual void insertPointRGB(

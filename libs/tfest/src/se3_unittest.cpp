@@ -82,13 +82,13 @@ void generate_list_of_points(
 	for (unsigned int i = 0; i < 5; ++i)
 	{
 		pair.this_idx = pair.other_idx = i;
-		pair.this_x = pA[i][0];
-		pair.this_y = pA[i][1];
-		pair.this_z = pA[i][2];
+		pair.this_x = d2f(pA[i][0]);
+		pair.this_y = d2f(pA[i][1]);
+		pair.this_z = d2f(pA[i][2]);
 
-		pair.other_x = pB[i][0];
-		pair.other_y = pB[i][1];
-		pair.other_z = pB[i][2];
+		pair.other_x = d2f(pB[i][0]);
+		pair.other_y = d2f(pB[i][1]);
+		pair.other_z = d2f(pB[i][2]);
 
 		list.push_back(pair);
 	}

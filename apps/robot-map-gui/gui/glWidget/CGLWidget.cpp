@@ -76,7 +76,7 @@ CGlWidget::CGlWidget(bool is2D, QWidget* parent)
 	}
 
 	updateCamerasParams();
-	m_groundPlane->setColor(0.4, 0.4, 0.4);
+	m_groundPlane->setColor(0.4f, 0.4f, 0.4f);
 	setVisibleGrid(true);
 	setFocusPolicy(Qt::StrongFocus);
 }

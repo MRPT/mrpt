@@ -473,7 +473,10 @@ class CFeatureList : public mrpt::math::KDTreeCapable<CFeatureList>
 	{
 		m_feats[i].keypoint.response = r;
 	}
-	inline void setScale(size_t i, float s) { m_feats[i].keypoint.octave = s; }
+	inline void setScale(size_t i, uint8_t s)
+	{
+		m_feats[i].keypoint.octave = s;
+	}
 	inline void setTrackStatus(size_t i, TFeatureTrackStatus s)
 	{
 		m_feats[i].keypoint.track_status = s;

@@ -122,7 +122,6 @@ bool COccupancyGridMap2D::internal_insertObservation(
 			//		Insert the scan as simple rays:
 			// ---------------------------------------------
 			int cx, cy, N = o.getScanSize();
-			float px, py;
 			double A, dAK;
 
 			// Parameters values:
@@ -141,8 +140,8 @@ bool COccupancyGridMap2D::internal_insertObservation(
 			float curRange = 0;
 
 			// Start position:
-			px = laserPose.x();
-			py = laserPose.y();
+			double px = laserPose.x();
+			double py = laserPose.y();
 
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
 			MRPT_CHECK_NORMAL_NUMBER(px);

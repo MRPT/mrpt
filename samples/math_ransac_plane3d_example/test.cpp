@@ -172,12 +172,12 @@ void TestRANSAC()
 	points->enableColorFromZ();
 
 	{
-		std::vector<float> xs, ys, zs;
+		std::vector<double> xs, ys, zs;
 
 		data.extractRow(0, xs);
 		data.extractRow(1, ys);
 		data.extractRow(2, zs);
-		points->setAllPointsFast(xs, ys, zs);
+		points->setAllPoints(xs, ys, zs);
 	}
 
 	scene->insert(points);

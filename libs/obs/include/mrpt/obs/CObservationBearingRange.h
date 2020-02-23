@@ -30,19 +30,17 @@ class CObservationBearingRange : public CObservation
 	DEFINE_SERIALIZABLE(CObservationBearingRange, mrpt::obs)
 
    public:
-	/** Default constructor.
-	 */
-	CObservationBearingRange();
+	CObservationBearingRange() = default;
 
 	float minSensorDistance{0}, maxSensorDistance{0};  //! Information about the
 	//! sensor: Ranges, in meters
 	//! (0: there is no limits)
 	/** Information about the sensor: The "field-of-view" of the sensor, in
 	 * radians (for yaw ). */
-	float fieldOfView_yaw;
+	float fieldOfView_yaw = mrpt::d2f(180.0_deg);
 	/** Information about the sensor: The "field-of-view" of the sensor, in
 	 * radians (for pitch ). */
-	float fieldOfView_pitch;
+	float fieldOfView_pitch = mrpt::d2f(90.0_deg);
 
 	/** The position of the sensor on the robot.
 	 */

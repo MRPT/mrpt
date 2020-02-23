@@ -337,7 +337,7 @@ void TestParticlesLocalization()
 				opengl::CGridPlaneXY::Ptr obj =
 					std::make_shared<opengl::CGridPlaneXY>(
 						-20, 20, -10, 10, 0, 0.5);
-				obj->setColor(0.4, 0.4, 0.4);
+				obj->setColor(0.4f, 0.4f, 0.4f);
 #ifdef SHOW_REAL_TIME_3D
 				sceneTR->insert(obj);
 #endif

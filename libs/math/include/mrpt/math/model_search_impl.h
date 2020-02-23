@@ -14,6 +14,7 @@
 #endif
 
 #include <mrpt/core/exceptions.h>  // ASSERT_()
+#include <mrpt/core/round.h>
 #include <algorithm>  // std::max(),...
 #include <cmath>
 #include <limits>
@@ -83,7 +84,7 @@ bool ModelSearch::ransacSingleModel(
 			const double eps = std::numeric_limits<double>::epsilon();
 			p = std::max(eps, p);  // Avoid division by -Inf
 			p = std::min(1 - eps, p);  // Avoid division by 0.
-			softIterLimit = log(1 - p) / log(p);
+			softIterLimit = mrpt::round(log(1 - p) / log(p));
 		}
 
 		iter++;

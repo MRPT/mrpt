@@ -610,7 +610,7 @@ void KFSLAMApp::Run_KF_SLAM()
 					opengl::CGridPlaneXY::Ptr grid =
 						std::make_shared<opengl::CGridPlaneXY>(
 							-1000, 1000, -1000, 1000, 0, 5);
-					grid->setColor(0.4, 0.4, 0.4);
+					grid->setColor(0.4f, 0.4f, 0.4f);
 					scene3D->insert(grid);
 				}
 

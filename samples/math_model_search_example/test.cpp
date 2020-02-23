@@ -138,23 +138,10 @@ void TestRANSAC()
 	scene->insert(opengl::stock_objects::CornerXYZ());
 
 	opengl::CPointCloud::Ptr points = opengl::CPointCloud::Create();
-	points->setColor(0, 0, 1);
+	points->setColor(0.0f, 0.0f, 1.0f);
 	points->setPointSize(3);
 	points->enableColorFromZ();
-
-	{
-		std::vector<float> x, y, z;
-		x.reserve(data.size());
-		y.reserve(data.size());
-		z.reserve(data.size());
-		for (size_t i = 0; i < data.size(); i++)
-		{
-			x.push_back(data[i].x);
-			y.push_back(data[i].y);
-			z.push_back(data[i].z);
-		}
-		points->setAllPointsFast(x, y, z);
-	}
+	points->setAllPoints(data);
 
 	scene->insert(points);
 

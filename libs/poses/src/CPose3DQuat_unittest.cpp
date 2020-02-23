@@ -460,7 +460,7 @@ class Pose3DQuatTests : public ::testing::Test
 		{
 			CPose3DQuat q = mrpt::poses::CPose3DQuat(p1);
 
-			float gx = x, gy = y, gz = z;
+			double gx = x, gy = y, gz = z;
 
 			double dist, yaw, pitch;
 			p1.sphericalCoordinates(TPoint3D(gx, gy, gz), dist, yaw, pitch);

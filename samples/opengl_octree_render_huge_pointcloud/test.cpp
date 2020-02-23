@@ -25,11 +25,12 @@ void insertRandomPoints_uniform(
 	const size_t N, opengl::CPointCloud::Ptr& gl, const TPoint3D& p_min,
 	const TPoint3D& p_max)
 {
+	auto& rnd = random::getRandomGenerator();
 	for (size_t i = 0; i < N; i++)
 		gl->insertPoint(
-			random::getRandomGenerator().drawUniform(p_min.x, p_max.x),
-			random::getRandomGenerator().drawUniform(p_min.y, p_max.y),
-			random::getRandomGenerator().drawUniform(p_min.z, p_max.z));
+			rnd.drawUniform<float>(p_min.x, p_max.x),
+			rnd.drawUniform<float>(p_min.y, p_max.y),
+			rnd.drawUniform<float>(p_min.z, p_max.z));
 }
 
 void insertRandomPoints_screw(
@@ -49,7 +50,8 @@ void insertRandomPoints_screw(
 	{
 		const double ang = i * 0.01;
 		TPoint3D pp = p + up * 30 * cos(ang) + lat * 30 * sin(ang);
-		gl->insertPoint(pp.x, pp.y, pp.z);
+		const auto ppf = TPoint3Df(pp);
+		gl->insertPoint(ppf.x, ppf.y, ppf.z);
 		p += d;
 	}
 }
@@ -58,11 +60,12 @@ void insertRandomPoints_gauss(
 	const size_t N, opengl::CPointCloud::Ptr& gl, const TPoint3D& p_mean,
 	const TPoint3D& p_stddevs)
 {
+	auto& rnd = random::getRandomGenerator();
 	for (size_t i = 0; i < N; i++)
 		gl->insertPoint(
-			random::getRandomGenerator().drawGaussian1D(p_mean.x, p_stddevs.x),
-			random::getRandomGenerator().drawGaussian1D(p_mean.y, p_stddevs.y),
-			random::getRandomGenerator().drawGaussian1D(p_mean.z, p_stddevs.z));
+			rnd.drawGaussian1D<float>(p_mean.x, p_stddevs.x),
+			rnd.drawGaussian1D<float>(p_mean.y, p_stddevs.y),
+			rnd.drawGaussian1D<float>(p_mean.z, p_stddevs.z));
 }
 
 // ------------------------------------------------------
@@ -134,7 +137,7 @@ void TestOctreeRenderHugePointCloud()
 	win.setCameraZoom(600);
 	{
 		mrpt::opengl::COpenGLViewport::Ptr view = theScene->getViewport("main");
-		view->setViewportClipDistances(0.1, 1e6);
+		view->setViewportClipDistances(0.1f, 1e6f);
 	}
 
 	// IMPORTANT!!! IF NOT UNLOCKED, THE WINDOW WILL NOT BE UPDATED!

@@ -23,18 +23,6 @@ using namespace mrpt::math;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationBearingRange, CObservation, mrpt::obs)
 
-/*---------------------------------------------------------------
- Default constructor.
- ---------------------------------------------------------------*/
-CObservationBearingRange::CObservationBearingRange()
-	: fieldOfView_yaw(180.0_deg),
-	  fieldOfView_pitch(90.0_deg),
-	  sensorLocationOnRobot(),
-	  sensedData()
-
-{
-}
-
 uint8_t CObservationBearingRange::serializeGetVersion() const { return 3; }
 void CObservationBearingRange::serializeTo(
 	mrpt::serialization::CArchive& out) const

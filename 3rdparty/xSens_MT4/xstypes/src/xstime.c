@@ -353,7 +353,7 @@ void XsTime_udelay(uint32_t us)
 
 	clock_gettime(clockid, &ts);
 
-	s = us/1e6;
+	s = (int64_t)(us / 1e6);
 	ts.tv_sec += s;
 
 	ns = ts.tv_nsec + (us * 1000);

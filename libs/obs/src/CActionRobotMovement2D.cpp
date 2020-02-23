@@ -159,7 +159,7 @@ void CActionRobotMovement2D::serializeFrom(
 			}
 			else
 			{
-				float velocityLin, velocityAng;
+				double velocityLin, velocityAng;
 				in >> velocityLin >> velocityAng;
 				velocityLocal.vx = velocityLin;
 				velocityLocal.vy = .0f;
@@ -206,7 +206,7 @@ void CActionRobotMovement2D::serializeFrom(
 				motionModelConfiguration.modelSelection =
 					static_cast<TDrawSampleMotionModel>(i);
 
-				float dum1, dum2, dum3;
+				double dum1, dum2, dum3;
 
 				in >> dum1 >> dum2 >> dum3 >>
 					motionModelConfiguration.gaussianModel.minStdXY >>
@@ -234,7 +234,7 @@ void CActionRobotMovement2D::serializeFrom(
 
 			in >> hasVelocities;
 			{
-				float velocityLin, velocityAng;
+				double velocityLin, velocityAng;
 				in >> velocityLin >> velocityAng;
 				velocityLocal.vx = velocityLin;
 				velocityLocal.vy = .0f;
@@ -287,7 +287,7 @@ void CActionRobotMovement2D::serializeFrom(
 
 			in >> hasVelocities;
 			{
-				float velocityLin, velocityAng;
+				double velocityLin, velocityAng;
 				in >> velocityLin >> velocityAng;
 				velocityLocal.vx = velocityLin;
 				velocityLocal.vy = .0f;
@@ -324,7 +324,7 @@ void CActionRobotMovement2D::serializeFrom(
 			{
 				in >> hasVelocities;
 				{
-					float velocityLin, velocityAng;
+					double velocityLin, velocityAng;
 					in >> velocityLin >> velocityAng;
 					velocityLocal.vx = velocityLin;
 					velocityLocal.vy = .0f;
@@ -474,25 +474,25 @@ void CActionRobotMovement2D::computeFromOdometry_modelThrun(
 	// ---------------------------------------------------------------------------------------------
 
 	// The increments in odometry:
-	float Arot1 = (odometryIncrement.y() != 0 || odometryIncrement.x() != 0)
-					  ? atan2(odometryIncrement.y(), odometryIncrement.x())
-					  : 0;
-	float Atrans = odometryIncrement.norm();
-	float Arot2 = math::wrapToPi(odometryIncrement.phi() - Arot1);
+	double Arot1 = (odometryIncrement.y() != 0 || odometryIncrement.x() != 0)
+					   ? atan2(odometryIncrement.y(), odometryIncrement.x())
+					   : 0;
+	double Atrans = odometryIncrement.norm();
+	double Arot2 = math::wrapToPi(odometryIncrement.phi() - Arot1);
 
 	// Draw samples:
 	for (size_t i = 0; i < o.thrunModel.nParticlesCount; i++)
 	{
-		float Arot1_draw =
+		double Arot1_draw =
 			Arot1 - (o.thrunModel.alfa1_rot_rot * fabs(Arot1) +
 					 o.thrunModel.alfa2_rot_trans * Atrans) *
 						getRandomGenerator().drawGaussian1D_normalized();
-		float Atrans_draw =
+		double Atrans_draw =
 			Atrans -
 			(o.thrunModel.alfa3_trans_trans * Atrans +
 			 o.thrunModel.alfa4_trans_rot * (fabs(Arot1) + fabs(Arot2))) *
 				getRandomGenerator().drawGaussian1D_normalized();
-		float Arot2_draw =
+		double Arot2_draw =
 			Arot2 - (o.thrunModel.alfa1_rot_rot * fabs(Arot2) +
 					 o.thrunModel.alfa2_rot_trans * Atrans) *
 						getRandomGenerator().drawGaussian1D_normalized();
@@ -560,27 +560,27 @@ void CActionRobotMovement2D::drawSingleSample_modelThrun(
 	// ---------------------------------------------------------------------------------------------
 
 	// The increments in odometry:
-	float Arot1 = (rawOdometryIncrementReading.y() != 0 ||
-				   rawOdometryIncrementReading.x() != 0)
-					  ? atan2(
-							rawOdometryIncrementReading.y(),
-							rawOdometryIncrementReading.x())
-					  : 0;
-	float Atrans = rawOdometryIncrementReading.norm();
-	float Arot2 = math::wrapToPi(rawOdometryIncrementReading.phi() - Arot1);
+	double Arot1 = (rawOdometryIncrementReading.y() != 0 ||
+					rawOdometryIncrementReading.x() != 0)
+					   ? atan2(
+							 rawOdometryIncrementReading.y(),
+							 rawOdometryIncrementReading.x())
+					   : 0;
+	double Atrans = rawOdometryIncrementReading.norm();
+	double Arot2 = math::wrapToPi(rawOdometryIncrementReading.phi() - Arot1);
 
-	float Arot1_draw =
+	double Arot1_draw =
 		Arot1 -
 		(motionModelConfiguration.thrunModel.alfa1_rot_rot * fabs(Arot1) +
 		 motionModelConfiguration.thrunModel.alfa2_rot_trans * Atrans) *
 			getRandomGenerator().drawGaussian1D_normalized();
-	float Atrans_draw =
+	double Atrans_draw =
 		Atrans -
 		(motionModelConfiguration.thrunModel.alfa3_trans_trans * Atrans +
 		 motionModelConfiguration.thrunModel.alfa4_trans_rot *
 			 (fabs(Arot1) + fabs(Arot2))) *
 			getRandomGenerator().drawGaussian1D_normalized();
-	float Arot2_draw =
+	double Arot2_draw =
 		Arot2 -
 		(motionModelConfiguration.thrunModel.alfa1_rot_rot * fabs(Arot2) +
 		 motionModelConfiguration.thrunModel.alfa2_rot_trans * Atrans) *
@@ -681,11 +681,11 @@ void CActionRobotMovement2D::prepareFastDrawSingleSample_modelThrun() const {}
 void CActionRobotMovement2D::fastDrawSingleSample_modelGaussian(
 	CPose2D& outSample) const
 {
-	CVectorFloat rndVector;
+	CVectorDouble rndVector;
 	rndVector.assign(3, 0.0f);
 	for (size_t i = 0; i < 3; i++)
 	{
-		float rnd = getRandomGenerator().drawGaussian1D_normalized();
+		double rnd = getRandomGenerator().drawGaussian1D_normalized();
 		for (size_t d = 0; d < 3; d++)
 			rndVector[d] += (m_fastDrawGauss_Z(d, i) * rnd);
 	}

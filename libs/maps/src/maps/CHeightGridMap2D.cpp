@@ -297,7 +297,7 @@ void CHeightGridMap2D::getAs3DObject(
 
 		mesh->setGridLimits(m_x_min, m_x_max, m_y_min, m_y_max);
 
-		mesh->setColor(0.4, 0.4, 0.4);
+		mesh->setColor(0.4f, 0.4f, 0.4f);
 
 		mesh->enableWireFrame(true);
 		mesh->enableColorFromZ(true, insertionOptions.colorMap /*cmJET*/);

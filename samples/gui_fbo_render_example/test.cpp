@@ -37,7 +37,7 @@ void TestDisplay3D()
 	{
 		opengl::CGridPlaneXY::Ptr obj =
 			opengl::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
-		obj->setColor(0.4, 0.4, 0.4);
+		obj->setColor(0.4f, 0.4f, 0.4f);
 		scene.insert(obj);
 	}
 	{
@@ -50,7 +50,7 @@ void TestDisplay3D()
 	{
 		opengl::CSphere::Ptr obj = opengl::CSphere::Create();
 		obj->setColor(0, 0, 1);
-		obj->setRadius(0.3);
+		obj->setRadius(0.3f);
 		obj->setLocation(0, 0, 1);
 		obj->setName("ball_1");
 		scene.insert(obj);
@@ -58,7 +58,7 @@ void TestDisplay3D()
 	{
 		opengl::CSphere::Ptr obj = opengl::CSphere::Create();
 		obj->setColor(1, 0, 0);
-		obj->setRadius(0.3);
+		obj->setRadius(0.3f);
 		obj->setLocation(-1, -1, 1);
 		obj->setName("ball_2");
 		scene.insert(obj);

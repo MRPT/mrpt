@@ -163,7 +163,8 @@ void Test_SUT()
 	win.get3DSceneAndLock() = scene;
 	win.unlockAccess3DScene();
 
-	win.setCameraPointingToPoint(y_mean[0], y_mean[1], y_mean[2]);
+	win.setCameraPointingToPoint(
+		d2f(y_mean[0]), d2f(y_mean[1]), d2f(y_mean[2]));
 	win.setCameraZoom(5.0);
 
 	// MC-based histograms:

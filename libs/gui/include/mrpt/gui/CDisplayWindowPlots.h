@@ -55,9 +55,9 @@ class CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
 	{
 		mrpt::math::CVectorFloat x1(x.size()), y1(y.size());
 		const auto N1 = size_t(x.size());
-		for (size_t i = 0; i < N1; i++) x1[i] = x[i];
+		for (size_t i = 0; i < N1; i++) x1[i] = mrpt::d2f(x[i]);
 		const auto N2 = size_t(y.size());
-		for (size_t i = 0; i < N2; i++) y1[i] = y[i];
+		for (size_t i = 0; i < N2; i++) y1[i] = mrpt::d2f(y[i]);
 		this->internal_plot(x1, y1, lineFormat, plotName);
 	}
 	template <typename VECTOR1>

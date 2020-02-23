@@ -83,7 +83,7 @@ void TestDisplay3D()
 	{
 		opengl::CGridPlaneXY::Ptr obj =
 			opengl::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
-		obj->setColor(0.8, 0.8, 0.8);
+		obj->setColor(0.8f, 0.8f, 0.8f);
 		theScene->insert(obj);
 	}
 
@@ -107,7 +107,7 @@ void TestDisplay3D()
 	{
 		opengl::CSphere::Ptr obj = opengl::CSphere::Create();
 		obj->setColor(0, 0, 1);
-		obj->setRadius(0.3);
+		obj->setRadius(0.3f);
 		obj->setLocation(0, 0, 1);
 		obj->setName("ball_1");
 		theScene->insert(obj);
@@ -115,7 +115,7 @@ void TestDisplay3D()
 	{
 		opengl::CSphere::Ptr obj = opengl::CSphere::Create();
 		obj->setColor(1, 0, 0);
-		obj->setRadius(0.3);
+		obj->setRadius(0.3f);
 		obj->setLocation(-1, -1, 1);
 		obj->setName("ball_2");
 		theScene->insert(obj);
@@ -187,7 +187,7 @@ void TestDisplay3D()
 			format(
 				"ball#1 pos: %.02f %.02f %.02f ", obj1->getPoseX(),
 				obj1->getPoseY(), obj1->getPoseZ()),
-			TColorf(.8, .8, .8), "sans", 14,  // font name & size
+			TColorf(.8f, .8f, .8f), "sans", 14,  // font name & size
 			mrpt::opengl::FILL,
 			10  // An arbitrary ID to always overwrite the same, previous 2D
 			// text message
