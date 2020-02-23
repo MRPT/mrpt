@@ -7,6 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <mrpt/core/round.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CBox.h>
@@ -78,9 +79,12 @@ struct TMyExtraRenderingStuff : public mrpt::system::CObserver
 					" - 'ESC': Quit",
 					0.05f,  // text size
 					mrpt::img::TColor(
-						190, 190, 190, 200 * tranparency),  // background
-					mrpt::img::TColor(0, 0, 0, 200 * tranparency),  // border
-					mrpt::img::TColor(200, 0, 0, 150 * tranparency),  // text
+						190, 190, 190,
+						mrpt::round(200 * tranparency)),  // background
+					mrpt::img::TColor(
+						0, 0, 0, mrpt::round(200 * tranparency)),  // border
+					mrpt::img::TColor(
+						200, 0, 0, mrpt::round(150 * tranparency)),  // text
 					6.0f,  // border width
 					"serif",  // text font
 					mrpt::opengl::NICE  // text style
@@ -114,7 +118,7 @@ void TestDisplay3D()
 	{
 		opengl::CGridPlaneXY::Ptr obj =
 			opengl::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
-		obj->setColor(0.8, 0.8, 0.8);
+		obj->setColor(0.8f, 0.8f, 0.8f);
 		theScene->insert(obj);
 	}
 

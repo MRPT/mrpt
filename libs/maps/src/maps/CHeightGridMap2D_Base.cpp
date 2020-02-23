@@ -9,6 +9,7 @@
 
 #include "maps-precomp.h"  // Precomp header
 
+#include <mrpt/core/round.h>
 #include <mrpt/maps/CHeightGridMap2D_Base.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/math/geometry.h>
@@ -41,7 +42,7 @@ bool CHeightGridMap2D_Base::getMinMaxHeight(float& z_min, float& z_max) const
 				{
 					// First:
 					any = true;
-					z_min = z_max = z;
+					z_min = z_max = mrpt::d2f(z);
 				}
 				else
 				{
@@ -94,7 +95,7 @@ bool CHeightGridMap2D_Base::intersectLine3D(
 	TPoint3D Apt_half = Apt;
 	Apt_half *= 0.5;
 
-	const size_t N = ceil(totalDist / resolution);
+	const size_t N = mrpt::round(ceil(totalDist / resolution));
 
 	for (size_t i = 0; i < N; i++)
 	{

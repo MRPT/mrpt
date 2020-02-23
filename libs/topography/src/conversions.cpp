@@ -217,9 +217,12 @@ void mrpt::topography::geodeticToGeocentric_WGS84(
 	const precnum_t N = a / std::sqrt(1 - sin2_ae_earth * square(sin(lat)));
 
 	// Generate 3D point:
-	out_point.x = (N + in_coords.height) * cos(lat) * cos(lon);
-	out_point.y = (N + in_coords.height) * cos(lat) * sin(lon);
-	out_point.z = (cos2_ae_earth * N + in_coords.height) * sin(lat);
+	out_point.x =
+		static_cast<double>((N + in_coords.height) * cos(lat) * cos(lon));
+	out_point.y =
+		static_cast<double>((N + in_coords.height) * cos(lat) * sin(lon));
+	out_point.z =
+		static_cast<double>((cos2_ae_earth * N + in_coords.height) * sin(lat));
 }
 
 /*---------------------------------------------------------------
@@ -248,9 +251,12 @@ void mrpt::topography::geodeticToGeocentric(
 	const precnum_t N = a / std::sqrt(1 - sin2_ae_earth * square(sin(lat)));
 
 	// Generate 3D point:
-	out_point.x = (N + in_coords.height) * cos(lat) * cos(lon);
-	out_point.y = (N + in_coords.height) * cos(lat) * sin(lon);
-	out_point.z = (cos2_ae_earth * N + in_coords.height) * sin(lat);
+	out_point.x =
+		static_cast<double>((N + in_coords.height) * cos(lat) * cos(lon));
+	out_point.y =
+		static_cast<double>((N + in_coords.height) * cos(lat) * sin(lon));
+	out_point.z =
+		static_cast<double>((cos2_ae_earth * N + in_coords.height) * sin(lat));
 }
 
 /*---------------------------------------------------------------
@@ -323,11 +329,11 @@ void mrpt::topography::UTMToGeodetic(
 	const precnum_t dlon = atan2(she, cos(nu));
 	const precnum_t tau = atan2(cos(dlon) * tan(nu), 1);
 
-	out_lon = RAD2DEG(dlon) + lon0;
-	out_lat = RAD2DEG(
+	out_lon = static_cast<double>(RAD2DEG(dlon) + lon0);
+	out_lat = static_cast<double>(RAD2DEG(
 		latp +
 		(1 + ep2 * clp2 - 1.5 * ep2 * sin(latp) * cos(latp) * (tau - latp)) *
-			(tau - latp));
+			(tau - latp)));
 }
 
 void mrpt::topography::geodeticToUTM(
@@ -409,9 +415,9 @@ void mrpt::topography::geodeticToUTM(
 	const precnum_t ngam = (35.0 / 27.0) * nalp * nalp * nalp;
 	const precnum_t B = 0.9996 * c * (lat - nalp * J2 + nbet * J4 - ngam * J6);
 
-	UTMCoords.x = eps * v * (1 + psi / 3.0) + 500000;
-	UTMCoords.y = nu * v * (1 + psi) + B;
-	UTMCoords.z = GeodeticCoords.height;
+	UTMCoords.x = static_cast<double>(eps * v * (1 + psi / 3.0) + 500000);
+	UTMCoords.y = static_cast<double>(nu * v * (1 + psi) + B);
+	UTMCoords.z = static_cast<double>(GeodeticCoords.height);
 
 	UTMZone = Huso;
 	UTMLatitudeBand = Letra;

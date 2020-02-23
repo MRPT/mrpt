@@ -73,8 +73,8 @@ const CSinCosLookUpTableFor2DScans::TSinCosValues&
 
 			for (size_t i = 0; i < scan_prop.nRays; i++)
 			{
-				new_entry.ccos[i] = cos(Ang);
-				new_entry.csin[i] = sin(Ang);
+				new_entry.ccos[i] = d2f(cos(Ang));
+				new_entry.csin[i] = d2f(sin(Ang));
 				Ang += dA;
 			}
 		}

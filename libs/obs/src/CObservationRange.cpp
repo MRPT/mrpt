@@ -18,13 +18,6 @@ using namespace mrpt::poses;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationRange, CObservation, mrpt::obs)
 
-/** Default constructor.
- */
-CObservationRange::CObservationRange()
-	: sensorConeApperture(20.0_deg), sensedData()
-{
-}
-
 uint8_t CObservationRange::serializeGetVersion() const { return 3; }
 void CObservationRange::serializeTo(mrpt::serialization::CArchive& out) const
 {

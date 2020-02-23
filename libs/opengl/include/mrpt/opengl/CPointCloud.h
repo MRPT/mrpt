@@ -132,9 +132,22 @@ class CPointCloud : public CRenderizableShaderPoints,
 
 	/** Set the list of (X,Y,Z) point coordinates, all at once, from three
 	 * vectors with their coordinates */
+	template <typename T>
 	void setAllPoints(
-		const std::vector<float>& x, const std::vector<float>& y,
-		const std::vector<float>& z);
+		const std::vector<T>& x, const std::vector<T>& y,
+		const std::vector<T>& z)
+	{
+		const auto N = x.size();
+		m_points.resize(N);
+		for (size_t i = 0; i < N; i++)
+			m_points[i] = {static_cast<float>(x[i]), static_cast<float>(y[i]),
+						   static_cast<float>(z[i])};
+		m_minmax_valid = false;
+		markAllPointsAsNew();
+	}
+
+	/// \overload Prefer setAllPointsFast() instead
+	void setAllPoints(const std::vector<mrpt::math::TPoint3D>& pts);
 
 	/** Set the list of (X,Y,Z) point coordinates, DESTROYING the contents of
 	 * the input vectors (via swap) */

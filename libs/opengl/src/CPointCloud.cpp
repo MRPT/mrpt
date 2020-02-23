@@ -443,15 +443,11 @@ void CPointCloud::PLY_export_get_vertex(
 	pt = m_points[idx];
 }
 
-void CPointCloud::setAllPoints(
-	const std::vector<float>& x, const std::vector<float>& y,
-	const std::vector<float>& z)
+void CPointCloud::setAllPoints(const std::vector<mrpt::math::TPoint3D>& pts)
 {
-	const auto N = x.size();
+	const auto N = pts.size();
 	m_points.resize(N);
-
-	for (size_t i = 0; i < N; i++) m_points[i] = {x[i], y[i], z[i]};
-
+	for (size_t i = 0; i < N; i++) m_points[i] = pts[i];
 	m_minmax_valid = false;
 	markAllPointsAsNew();
 }

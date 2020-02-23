@@ -727,7 +727,7 @@ class COctreePointRenderer
 	 * lines_color. Otherwise, wireframe boxes will be drawn.
 	 */
 	void octree_get_graphics_boundingboxes(
-		mrpt::opengl::CSetOfObjects& gl_bb, const double lines_width = 1,
+		mrpt::opengl::CSetOfObjects& gl_bb, const float lines_width = 1,
 		const mrpt::img::TColorf& lines_color = mrpt::img::TColorf(1, 1, 1),
 		const bool draw_solid_boxes = false) const
 	{

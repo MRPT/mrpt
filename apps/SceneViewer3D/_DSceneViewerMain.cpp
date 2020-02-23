@@ -816,7 +816,7 @@ void _DSceneViewerFrame::OnNewScene(wxCommandEvent& event)
 	{
 		mrpt::opengl::CGridPlaneXY::Ptr obj =
 			mrpt::opengl::CGridPlaneXY::Create(-50, 50, -50, 50, 0, 1);
-		obj->setColor(0.3, 0.3, 0.3);
+		obj->setColor(0.3f, 0.3f, 0.3f);
 		openGLSceneRef->insert(obj);
 	}
 
@@ -1678,7 +1678,7 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 			{
 				mrpt::opengl::CGridPlaneXY::Ptr obj =
 					mrpt::opengl::CGridPlaneXY::Create(-50, 50, -50, 50, 0, 1);
-				obj->setColor(0.3, 0.3, 0.3);
+				obj->setColor(0.3f, 0.3f, 0.3f);
 				openGLSceneRef->insert(obj);
 			}
 
@@ -2079,7 +2079,7 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 				mrpt::opengl::CGridPlaneXY::Create(
 					bb_min.x, bb_max.x, bb_min.y, bb_max.y, 0,
 					scene_size * 0.02);
-			obj->setColor(0.3, 0.3, 0.3);
+			obj->setColor(0.3f, 0.3f, 0.3f);
 			scene->insert(obj);
 		}
 

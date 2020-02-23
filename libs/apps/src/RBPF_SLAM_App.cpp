@@ -413,7 +413,7 @@ void RBPF_SLAM_App_Base::run()
 				mrpt::opengl::CGridPlaneXY::Ptr groundPlane =
 					mrpt::opengl::CGridPlaneXY::Create(
 						-200, 200, -200, 200, 0, 5);
-				groundPlane->setColor(0.4, 0.4, 0.4);
+				groundPlane->setColor(0.4f, 0.4f, 0.4f);
 				scene->insert(groundPlane);
 
 				// The camera pointing to the current robot pose:

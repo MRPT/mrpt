@@ -125,7 +125,7 @@ TEST_F(ICPTests, RayTracingICP3D)
 
 	opengl::CGridPlaneXY::Ptr plane1 =
 		std::make_shared<CGridPlaneXY>(-20, 20, -20, 20, 0, 1);
-	plane1->setColor(0.3, 0.3, 0.3);
+	plane1->setColor(0.3f, 0.3f, 0.3f);
 	scene1->insert(plane1);
 	scene2->insert(plane1);
 	scene3->insert(plane1);

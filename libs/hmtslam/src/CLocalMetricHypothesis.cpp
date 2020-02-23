@@ -68,7 +68,7 @@ void CLocalMetricHypothesis::getAs3DScene(
 	{
 		opengl::CGridPlaneXY::Ptr obj =
 			std::make_shared<opengl::CGridPlaneXY>(-100, 100, -100, 100, 0, 5);
-		obj->setColor(0.4, 0.4, 0.4);
+		obj->setColor(0.4f, 0.4f, 0.4f);
 
 		objs->insert(obj);  // it will free the memory
 	}

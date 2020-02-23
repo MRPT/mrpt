@@ -718,7 +718,7 @@ void hmtMapViewerFrame::updateLocalMapView()
 		// -------------------------------------------
 		{
 			auto o = opengl::CGridPlaneXY::Create(-100, 100, -100, 100, 0, 5);
-			o->setColor(0.4, 0.4, 0.4);
+			o->setColor(0.4f, 0.4f, 0.4f);
 			objs->insert(o);  // it will free the memory
 		}
 

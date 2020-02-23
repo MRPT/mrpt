@@ -145,20 +145,21 @@ void CActionRobotMovement3D::computeFromOdometry_model6DOF(
 	*/
 
 	// The increments in odometry:
-	float Ayaw1 = (odometryIncrement.y() != 0 || odometryIncrement.x() != 0)
-					  ? atan2(odometryIncrement.y(), odometryIncrement.x())
-					  : 0;
+	double Ayaw1 = (odometryIncrement.y() != 0 || odometryIncrement.x() != 0)
+					   ? atan2(odometryIncrement.y(), odometryIncrement.x())
+					   : 0;
 
-	float Atrans = odometryIncrement.norm();
+	double Atrans = odometryIncrement.norm();
 
-	float Apitch1 = (odometryIncrement.y() != 0 || odometryIncrement.x() != 0 ||
-					 odometryIncrement.z() != 0)
-						? atan2(odometryIncrement.z(), odometryIncrement.norm())
-						: 0;
+	double Apitch1 =
+		(odometryIncrement.y() != 0 || odometryIncrement.x() != 0 ||
+		 odometryIncrement.z() != 0)
+			? atan2(odometryIncrement.z(), odometryIncrement.norm())
+			: 0;
 
-	float Aroll = odometryIncrement.roll();
-	float Apitch2 = odometryIncrement.pitch();
-	float Ayaw2 = odometryIncrement.yaw();
+	double Aroll = odometryIncrement.roll();
+	double Apitch2 = odometryIncrement.pitch();
+	double Ayaw2 = odometryIncrement.yaw();
 
 	const auto stdxyz = motionModelConfiguration.mm6DOFModel.additional_std_XYZ;
 	auto& rnd = mrpt::random::getRandomGenerator();
@@ -167,22 +168,22 @@ void CActionRobotMovement3D::computeFromOdometry_model6DOF(
 	for (size_t i = 0; i < o.mm6DOFModel.nParticlesCount; i++)
 	{
 		auto& ith_part = aux->m_particles[i].d;
-		float Ayaw1_draw =
+		double Ayaw1_draw =
 			Ayaw1 + (o.mm6DOFModel.a1 * Ayaw1 + o.mm6DOFModel.a2 * Atrans) *
 						rnd.drawGaussian1D_normalized();
-		float Apitch1_draw =
+		double Apitch1_draw =
 			Apitch1 + (o.mm6DOFModel.a3 * odometryIncrement.z()) *
 						  rnd.drawGaussian1D_normalized();
-		float Atrans_draw =
+		double Atrans_draw =
 			Atrans + (o.mm6DOFModel.a4 * Atrans + o.mm6DOFModel.a5 * Ayaw2 +
 					  o.mm6DOFModel.a6 * (Aroll + Apitch2)) *
 						 rnd.drawGaussian1D_normalized();
 
-		float Aroll_draw = Aroll + (o.mm6DOFModel.a7 * Aroll) *
-									   rnd.drawGaussian1D_normalized();
-		float Apitch2_draw = Apitch2 + (o.mm6DOFModel.a8 * Apitch2) *
-										   rnd.drawGaussian1D_normalized();
-		float Ayaw2_draw =
+		double Aroll_draw = Aroll + (o.mm6DOFModel.a7 * Aroll) *
+										rnd.drawGaussian1D_normalized();
+		double Apitch2_draw = Apitch2 + (o.mm6DOFModel.a8 * Apitch2) *
+											rnd.drawGaussian1D_normalized();
+		double Ayaw2_draw =
 			Ayaw2 + (o.mm6DOFModel.a9 * Ayaw2 + o.mm6DOFModel.a10 * Atrans) *
 						rnd.drawGaussian1D_normalized();
 

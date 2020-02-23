@@ -190,9 +190,10 @@ class CRandomGenerator
 	 * \param mean The mean value of desired normal distribution
 	 * \param std  The standard deviation value of desired normal distribution
 	 */
-	double drawGaussian1D(const double mean, const double std)
+	template <typename return_t = double>
+	return_t drawGaussian1D(const double mean, const double std)
 	{
-		return mean + std * drawGaussian1D_normalized();
+		return static_cast<return_t>(mean + std * drawGaussian1D_normalized());
 	}
 
 	/** Fills the given matrix with independent, 1D-normally distributed

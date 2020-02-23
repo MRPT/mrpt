@@ -125,7 +125,7 @@ bool tfest::se3_l2_robust(
 
 		// Maybe inliers Output
 		const CPose3D mbOut = CPose3D(mbOutQuat);
-		CVectorFloat mbOut_vec(7);
+		CVectorDouble mbOut_vec(7);
 		mbOut_vec[0] = mbOut.x();
 		mbOut_vec[1] = mbOut.y();
 		mbOut_vec[2] = mbOut.z();

@@ -25,7 +25,7 @@ template <class T>
 inline void wrapTo2PiInPlace(T& a)
 {
 	bool was_neg = a < 0;
-	a = fmod(a, static_cast<T>(2.0 * M_PI));
+	a = static_cast<T>(fmod(a, static_cast<T>(2.0 * M_PI)));
 	if (was_neg) a += static_cast<T>(2.0 * M_PI);
 }
 

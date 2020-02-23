@@ -61,7 +61,7 @@ void TMultiResDescMatchOptions::loadFromConfigFile(
 	highScl1 = cfg.read_int(section, "highScl1", 6, false);
 	highScl2 = cfg.read_int(section, "highScl2", 6, false);
 
-	searchAreaSize = cfg.read_double(section, "searchAreaSize", 20, false);
+	searchAreaSize = cfg.read_uint64_t(section, "searchAreaSize", 20, false);
 }
 
 // --------------------------------------------------
@@ -150,7 +150,7 @@ void TMultiResDescMatchOptions::dumpToTextStream(std::ostream& out) const
 void TMultiResDescOptions::loadFromConfigFile(
 	const mrpt::config::CConfigFileBase& cfg, const std::string& section)
 {
-	basePSize = cfg.read_double(section, "basePSize", 23, false);
+	basePSize = cfg.read_uint64_t(section, "basePSize", 23, false);
 	comLScl = cfg.read_int(section, "comLScl", 0, false);
 	comHScl = cfg.read_int(section, "comHScl", 6, false);
 	sg1 = cfg.read_double(section, "sg1", 0.5, false);
@@ -382,8 +382,8 @@ float CFeature::patchCorrelationTo(const CFeature& oFeature) const
 	mrpt::vision::openCV_cross_correlation(
 		*patch, *oFeature.patch, x_max, y_max, max_val);
 
-	return 0.5 -
-		   0.5 * max_val;  // Value as "distance" in the range [0,1], best = 0
+	// Value as "distance" in the range [0,1], best = 0
+	return d2f(0.5 - 0.5 * max_val);
 
 	MRPT_END
 }

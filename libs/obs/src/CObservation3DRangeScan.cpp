@@ -935,18 +935,18 @@ static void cost_func(
 				const double r2 = square(x) + square(y);
 				const double r4 = square(r2);
 
-				pixel.x =
+				pixel.x = mrpt::d2f(
 					params.cx() +
 					params.fx() *
 						(x * (1 + params.dist[0] * r2 + params.dist[1] * r4 +
 							  2 * params.dist[2] * x * y +
-							  params.dist[3] * (r2 + 2 * square(x))));
-				pixel.y =
+							  params.dist[3] * (r2 + 2 * square(x)))));
+				pixel.y = mrpt::d2f(
 					params.cy() +
 					params.fy() *
 						(y * (1 + params.dist[0] * r2 + params.dist[1] * r4 +
 							  2 * params.dist[3] * x * y +
-							  params.dist[2] * (r2 + 2 * square(y))));
+							  params.dist[2] * (r2 + 2 * square(y)))));
 			}
 
 			// In theory, it should be (r,c):
@@ -1237,7 +1237,8 @@ void CObservation3DRangeScan::convertTo2DScan(
 	const double real_FOV_right = atan2(nCols - 1 - cx, fx);
 
 	// FOV of the equivalent "fake" "laser scanner":
-	const float FOV_equiv = 2. * std::max(real_FOV_left, real_FOV_right);
+	const float FOV_equiv =
+		mrpt::d2f(2 * std::max(real_FOV_left, real_FOV_right));
 
 	// Now, we should create more "fake laser" points than columns in the image,
 	//  since laser scans are assumed to sample space at evenly-spaced angles,
@@ -1251,9 +1252,8 @@ void CObservation3DRangeScan::convertTo2DScan(
 	out_scan2d.maxRange = this->maxRange;
 	out_scan2d.resizeScan(nLaserRays);
 
-	out_scan2d.resizeScanAndAssign(
-		nLaserRays, 2.0 * this->maxRange,
-		false);  // default: all ranges=invalid
+	// default: all ranges=invalid
+	out_scan2d.resizeScanAndAssign(nLaserRays, 2.0f * this->maxRange, false);
 	if (sp.use_origin_sensor_pose)
 		out_scan2d.sensorPose = mrpt::poses::CPose3D();
 	else
@@ -1261,8 +1261,8 @@ void CObservation3DRangeScan::convertTo2DScan(
 
 	// The vertical FOVs given by the user can be translated into limits of the
 	// tangents (tan>0 means above, i.e. z>0):
-	const float tan_min = -tan(std::abs(sp.angle_inf));
-	const float tan_max = tan(std::abs(sp.angle_sup));
+	const float tan_min = mrpt::d2f(-tan(std::abs(sp.angle_inf)));
+	const float tan_max = mrpt::d2f(tan(std::abs(sp.angle_sup)));
 
 	// Precompute the tangents of the vertical angles of each "ray"
 	// for every row in the range image:
@@ -1318,7 +1318,8 @@ void CObservation3DRangeScan::convertTo2DScan(
 				out_scan2d.setScanRangeValidity(i, true);
 				// Compute the distance in 2D from the "depth" in closest_range:
 				out_scan2d.setScanRange(
-					i, closest_range * std::sqrt(1.0 + tan_ang * tan_ang));
+					i, mrpt::d2f(
+						   closest_range * std::sqrt(1.0 + tan_ang * tan_ang)));
 			}
 		}  // end for columns
 	}
@@ -1335,23 +1336,22 @@ void CObservation3DRangeScan::convertTo2DScan(
 		mrpt::opengl::CPointCloud::Ptr pc = mrpt::opengl::CPointCloud::Create();
 		this->unprojectInto(*pc, projParams, fp);
 
-		const std::vector<float>&xs = pc->getArrayX(), &ys = pc->getArrayY(),
-			  &zs = pc->getArrayZ();
-		const size_t N = xs.size();
+		const std::vector<mrpt::math::TPoint3Df>& pts = pc->getArrayPoints();
+		const size_t N = pts.size();
 
 		const double A_ang = FOV_equiv / (nLaserRays - 1);
 		const double ang0 = -FOV_equiv * 0.5;
 
 		for (size_t i = 0; i < N; i++)
 		{
-			if (zs[i] < sp.z_min || zs[i] > sp.z_max) continue;
+			if (pts[i].z < sp.z_min || pts[i].z > sp.z_max) continue;
 
-			const double phi_wrt_origin = atan2(ys[i], xs[i]);
+			const double phi_wrt_origin = atan2(pts[i].y, pts[i].x);
 
-			int i_range = (phi_wrt_origin - ang0) / A_ang;
+			int i_range = mrpt::round((phi_wrt_origin - ang0) / A_ang);
 			if (i_range < 0 || i_range >= int(nLaserRays)) continue;
 
-			const float r_wrt_origin = ::hypotf(xs[i], ys[i]);
+			const float r_wrt_origin = ::hypotf(pts[i].x, pts[i].y);
 			if (out_scan2d.getScanRange(i_range) > r_wrt_origin)
 				out_scan2d.setScanRange(i_range, r_wrt_origin);
 			out_scan2d.setScanRangeValidity(i_range, true);

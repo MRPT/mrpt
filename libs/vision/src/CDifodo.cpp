@@ -56,7 +56,7 @@ CDifodo::CDifodo()
 
 	for (unsigned int i = 0; i < pyr_levels; i++)
 	{
-		unsigned int s = pow(2.f, int(i));
+		unsigned int s = static_cast<unsigned int>(pow(2., int(i)));
 		cols_i = m_width / s;
 		rows_i = m_height / s;
 		depth[i].resize(rows_i, cols_i);

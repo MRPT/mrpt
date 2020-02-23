@@ -56,20 +56,22 @@ TEST(bits_math, hypot_fast)
 
 TEST(bits_math, deg_rad)
 {
-	EXPECT_NEAR(mrpt::DEG2RAD(180.0L), static_cast<long double>(M_PI), 1e-6L);
+	// Note: gtest doesn't support long double, hence the static_cast:
+	EXPECT_NEAR(static_cast<double>(mrpt::DEG2RAD(180.0L)), M_PI, 1e-6);
+
 	EXPECT_NEAR(mrpt::DEG2RAD(180.0), M_PI, 1e-6);
 	EXPECT_NEAR(mrpt::DEG2RAD(180), M_PI, 1e-6);
-	EXPECT_NEAR(mrpt::DEG2RAD(180.0f), d2f(M_PI), 1e-4f);
+	EXPECT_NEAR(mrpt::DEG2RAD(180.0f), mrpt::d2f(M_PI), 1e-4f);
 	{
 		using namespace mrpt;  // _deg
 		EXPECT_NEAR(180.0_deg, M_PI, 1e-6);
 	}
 
 	EXPECT_NEAR(
-		mrpt::RAD2DEG(static_cast<long double>(M_PI)), 180.0L,
-		static_cast<long double>(1e-6));
+		static_cast<double>(mrpt::RAD2DEG(static_cast<long double>(M_PI))),
+		180.0, 1e-6);
 	EXPECT_NEAR(mrpt::RAD2DEG(M_PI), 180.0, 1e-6);
-	EXPECT_NEAR(mrpt::RAD2DEG(d2f(M_PI)), 180.0f, 1e-4f);
+	EXPECT_NEAR(mrpt::RAD2DEG(mrpt::d2f(M_PI)), 180.0f, 1e-4f);
 }
 
 TEST(bits_math, signWithZero)

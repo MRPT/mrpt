@@ -240,8 +240,8 @@ class CDifodo
 	/** Get the horizontal and vertical field of vision (in degrees) */
 	inline void getFOV(float& cur_fovh, float& cur_fovv) const
 	{
-		cur_fovh = 57.296 * fovh;
-		cur_fovv = 57.296 * fovv;
+		cur_fovh = 57.296f * fovh;
+		cur_fovv = 57.296f * fovv;
 	}
 
 	/** Get the filter constant-weight of the velocity filter. */

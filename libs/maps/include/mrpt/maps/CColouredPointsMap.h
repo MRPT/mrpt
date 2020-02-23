@@ -452,9 +452,9 @@ class PointCloudAdapter<mrpt::maps::CColouredPointsMap>
 	{
 		float R, G, B;
 		m_obj.getPointColor_fast(idx, R, G, B);
-		r = R * 255;
-		g = G * 255;
-		b = B * 255;
+		r = mrpt::f2u8(R);
+		g = mrpt::f2u8(G);
+		b = mrpt::f2u8(B);
 	}
 	/** Set RGBu8 coordinates of i'th point */
 	inline void setPointRGBu8(

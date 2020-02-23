@@ -46,7 +46,7 @@ void TestSLERP()
 	// ------------------------------------------------------
 	{
 		auto obj = opengl::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
-		obj->setColor(0.4, 0.4, 0.4);
+		obj->setColor(0.4f, 0.4f, 0.4f);
 		theScene->insert(obj);
 	}
 
