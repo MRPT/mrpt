@@ -1165,7 +1165,8 @@ void CObservation3DRangeScan::getDescriptionAsText(std::ostream& o) const
 	o << sensorPose.getHomogeneousMatrixVal<CMatrixDouble44>() << sensorPose
 	  << endl;
 
-	o << "maxRange = " << maxRange << " m" << endl;
+	o << "maxRange = " << maxRange << " [meters]" << endl;
+	o << "rangeUnits = " << rangeUnits << " [meters]" << endl;
 
 	o << "Has 3D point cloud? ";
 	if (hasPoints3D)
