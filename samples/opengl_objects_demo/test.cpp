@@ -473,7 +473,6 @@ void TestOpenGLObjects()
 		theScene->insert(obj);
 
 		obj->setPointSize(3.0);
-		obj->enablePointSmooth();
 
 		for (int i = 0; i < 200; i++)
 			obj->push_back(
@@ -511,6 +510,7 @@ void TestOpenGLObjects()
 		theScene->insert(gl_txt);
 	}
 	off_x += STEP_X;
+#endif
 
 	// CSphere
 	{
@@ -526,6 +526,7 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
+#if 0
 	// CText
 	{
 		{
@@ -542,6 +543,7 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
+#if 0
 	// CText3D
 	{
 		{
@@ -616,7 +618,7 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
-#if 0
+	//#if 0
 	// CVectorField2D
 	{
 		{
@@ -683,18 +685,16 @@ void TestOpenGLObjects()
 		theScene->insert(gl_txt);
 	}
 	off_x += STEP_X;
-
+#endif
 	// stock_objects::BumblebeeCamera
 	{
 		{
-			auto obj =
-				opengl::stock_objects::BumblebeeCamera();
+			auto obj = opengl::stock_objects::BumblebeeCamera();
 			obj->setLocation(off_x, 0, 0);
 			theScene->insert(obj);
 		}
 
-		auto gl_txt =
-			opengl::CText::Create("stock_objects::BumblebeeCamera()");
+		auto gl_txt = opengl::CText::Create("stock_objects::BumblebeeCamera()");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -703,14 +703,12 @@ void TestOpenGLObjects()
 	// stock_objects::CornerXYSimple
 	{
 		{
-			auto obj =
-				opengl::stock_objects::CornerXYSimple(1, 3);
+			auto obj = opengl::stock_objects::CornerXYSimple(1, 3);
 			obj->setLocation(off_x, 0, 0);
 			theScene->insert(obj);
 		}
 
-		auto gl_txt =
-			opengl::CText::Create("stock_objects::CornerXYSimple()");
+		auto gl_txt = opengl::CText::Create("stock_objects::CornerXYSimple()");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -719,14 +717,12 @@ void TestOpenGLObjects()
 	// stock_objects::CornerXYZSimple
 	{
 		{
-			auto obj =
-				opengl::stock_objects::CornerXYZSimple(1, 3);
+			auto obj = opengl::stock_objects::CornerXYZSimple(1, 3);
 			obj->setLocation(off_x, 0, 0);
 			theScene->insert(obj);
 		}
 
-		auto gl_txt =
-			opengl::CText::Create("stock_objects::CornerXYZSimple()");
+		auto gl_txt = opengl::CText::Create("stock_objects::CornerXYZSimple()");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -740,13 +736,11 @@ void TestOpenGLObjects()
 			theScene->insert(obj);
 		}
 
-		auto gl_txt =
-			opengl::CText::Create("stock_objects::CornerXYZ()");
+		auto gl_txt = opengl::CText::Create("stock_objects::CornerXYZ()");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
 	off_x += STEP_X;
-#endif
 
 	// CSetOfTriangles: tested via stock_objects:
 	// stock_objects::RobotPioneer
@@ -763,7 +757,7 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
-#if 0
+	//#if 0
 	// stock_objects::Hokuyo_URG
 	{
 		{
@@ -820,7 +814,6 @@ void TestOpenGLObjects()
 		theScene->insert(gl_txt);
 	}
 	off_x += STEP_X;
-#endif
 
 	win.setCameraZoom(150);
 

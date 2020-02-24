@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/core/bits_math.h>
 #include <mrpt/serialization/serialization_frwds.h>
 #include <cstdint>
 #include <iosfwd>
@@ -91,11 +92,15 @@ struct TColorf
 	}
 
 	explicit TColorf(const TColor& col)
-		: R(col.R * (1.f / 255)),
-		  G(col.G * (1.f / 255)),
-		  B(col.B * (1.f / 255)),
-		  A(col.A * (1.f / 255))
+		: R(u8tof(col.R)), G(u8tof(col.G)), B(u8tof(col.B)), A(u8tof(col.A))
 	{
+	}
+
+	/** Returns the 0-255 integer version of this color: RGBA_u8  */
+	TColor asTColor() const
+	{
+		return TColor(
+			mrpt::f2u8(R), mrpt::f2u8(G), mrpt::f2u8(B), mrpt::f2u8(A));
 	}
 
 	float R, G, B, A;

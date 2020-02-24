@@ -152,12 +152,6 @@ void CPointCloud::onUpdateBuffers_Points()
 	CHECK_OPENGL_ERROR();
 }
 
-void CPointCloud::render(const RenderContext& rc) const
-{
-	// Actually invoke the shader for points:
-	CRenderizableShaderPoints::render(rc);
-}
-
 inline void CPointCloud::internal_render_one_point(size_t i) const
 {
 #if MRPT_HAS_OPENGL_GLUT

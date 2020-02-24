@@ -254,7 +254,6 @@ class CPointCloud : public CRenderizableShaderPoints,
 	/** @} */
 
 	void onUpdateBuffers_Points() override;
-	void render(const RenderContext& rc) const override;
 
 	/** Render a subset of points (required by octree renderer) */
 	void render_subset(
