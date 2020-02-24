@@ -25,49 +25,44 @@ using mrpt::serialization::CArchive;
 
 IMPLEMENTS_SERIALIZABLE(CPointCloudColoured, CRenderizable, mrpt::opengl)
 
-void CPointCloudColoured::renderUpdateBuffers() const
+void CPointCloudColoured::onUpdateBuffers_Points()
 {
-	//
-	MRPT_TODO("Implement me!");
-}
-
-void CPointCloudColoured::render(const RenderContext& rc) const
-{
-#if MRPT_HAS_OPENGL_GLUT
 	octree_assure_uptodate();  // Rebuild octree if needed
 	m_last_rendered_count_ongoing = 0;
 
-	if (m_color.A != 255)
 	{
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		mrpt::math::TPoint3Df tst[2];
+		static_assert(
+			&tst[1].x == (&tst[0].x + 3), "memory layout not as expected");
+		static_assert(
+			&tst[1].y == (&tst[0].y + 3), "memory layout not as expected");
+		static_assert(
+			&tst[1].z == (&tst[0].z + 3), "memory layout not as expected");
 	}
 
-	glPointSize(m_pointSize);
+	const auto N = m_points.size();
 
-	if (m_pointSmooth)
-		glEnable(GL_POINT_SMOOTH);
-	else
-		glDisable(GL_POINT_SMOOTH);
+	octree_assure_uptodate();  // Rebuild octree if needed
+	m_last_rendered_count_ongoing = 0;
 
-	// Disable lighting for point clouds:
-	glDisable(GL_LIGHTING);
+	MRPT_TODO("Restore rendering using octrees");
+	// octree_render(*rc.state);  // Render all points recursively:
 
-	glBegin(GL_POINTS);
-	octree_render(*rc.state);  // Render all points recursively:
-	glEnd();
+	// ------------------------------
+	// Fill the shader buffers
+	// ------------------------------
+	// "CRenderizableShaderPoints::m_vertex_buffer_data" is already done, since
+	// "m_points" is an alias for it.
 
-	glEnable(GL_LIGHTING);
+	// color buffer:
+	auto& cbd = CRenderizableShaderPoints::m_color_buffer_data;
+	cbd.clear();
+	cbd.reserve(N);
 
-	// Undo flags:
-	if (m_color.A != 255) glDisable(GL_BLEND);
-
-	if (m_pointSmooth) glDisable(GL_POINT_SMOOTH);
+	// Point colors:
+	cbd.assign(N, m_color);
 
 	m_last_rendered_count = m_last_rendered_count_ongoing;
-
-	CHECK_OPENGL_ERROR();
-#endif
 }
 
 /** Render a subset of points (required by octree renderer) */
@@ -75,7 +70,8 @@ void CPointCloudColoured::render_subset(
 	const bool all, const std::vector<size_t>& idxs,
 	const float render_area_sqpixels) const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if 0 && MRPT_HAS_OPENGL_GLUT
+	// Disabled for now... (Feb 2020)
 	const size_t N = all ? m_points.size() : idxs.size();
 	const size_t decimation = mrpt::round(std::max(
 		1.0f, d2f(N / (mrpt::global_settings::
@@ -112,13 +108,12 @@ void CPointCloudColoured::render_subset(
 #endif
 }
 
-uint8_t CPointCloudColoured::serializeGetVersion() const { return 2; }
+uint8_t CPointCloudColoured::serializeGetVersion() const { return 3; }
 void CPointCloudColoured::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
 	out << m_points;
 	out << m_pointSize;
-	out << m_pointSmooth;  // Added in v2
 }
 
 void CPointCloudColoured::serializeFrom(
@@ -128,14 +123,16 @@ void CPointCloudColoured::serializeFrom(
 	{
 		case 1:
 		case 2:
+		case 3:
 		{
 			readFromStreamRender(in);
 			in >> m_points >> m_pointSize;
 
-			if (version >= 2)
-				in >> m_pointSmooth;
-			else
-				m_pointSmooth = false;
+			if (version == 2)
+			{
+				bool pointSmooth;
+				in >> pointSmooth;
+			}
 		}
 		break;
 		case 0:
@@ -159,12 +156,17 @@ void CPointCloudColoured::serializeFrom(
 
 /** Write an individual point (checks for "i" in the valid range only in Debug).
  */
-void CPointCloudColoured::setPoint(size_t i, const TPointColour& p)
+void CPointCloudColoured::setPoint(size_t i, const TPointXYZfRGBAu8& p)
 {
 #ifdef _DEBUG
 	ASSERT_BELOW_(i, size());
 #endif
-	m_points[i] = p;
+	m_points[i] = p.pt;
+	auto& c = m_point_colors[i];
+	c.R = p.r;
+	c.G = p.g;
+	c.B = p.b;
+	c.A = p.a;
 
 	// JL: TODO note: Well, this can be clearly done much more efficiently
 	// but...I don't have time! :-(
@@ -173,9 +175,10 @@ void CPointCloudColoured::setPoint(size_t i, const TPointColour& p)
 
 /** Inserts a new point into the point cloud. */
 void CPointCloudColoured::push_back(
-	float x, float y, float z, float R, float G, float B)
+	float x, float y, float z, float R, float G, float B, float A)
 {
-	m_points.push_back(TPointColour(x, y, z, f2u8(R), f2u8(G), f2u8(B)));
+	m_points.emplace_back(x, y, z);
+	m_point_colors.emplace_back(f2u8(R), f2u8(G), f2u8(B), f2u8(A));
 
 	// JL: TODO note: Well, this can be clearly done much more efficiently
 	// but...I don't have time! :-(
@@ -201,10 +204,11 @@ void CPointCloudColoured::PLY_import_set_vertex(
 	const mrpt::img::TColorf* pt_color)
 {
 	if (!pt_color)
-		this->setPoint(idx, TPointColour(pt.x, pt.y, pt.z, 1, 1, 1));
+		this->setPoint(
+			idx, TPointXYZfRGBAu8(pt.x, pt.y, pt.z, 0xff, 0xff, 0xff));
 	else
 		this->setPoint(
-			idx, TPointColour(
+			idx, TPointXYZfRGBAu8(
 					 pt.x, pt.y, pt.z, f2u8(pt_color->R), f2u8(pt_color->G),
 					 f2u8(pt_color->B)));
 }
@@ -224,11 +228,10 @@ void CPointCloudColoured::PLY_export_get_vertex(
 	const size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
 	mrpt::img::TColorf& pt_color) const
 {
-	const TPointColour& p = m_points[idx];
-	pt = p.pt;
-	pt_color.R = u8tof(p.r);
-	pt_color.G = u8tof(p.g);
-	pt_color.B = u8tof(p.b);
+	auto& p = m_points[idx];
+	auto& p_color = m_point_colors[idx];
+	p = pt;
+	p_color = pt_color.asTColor();
 	pt_has_color = true;
 }
 
@@ -247,13 +250,13 @@ void CPointCloudColoured::recolorizeByCoordinate(
 		switch (coord_index)
 		{
 			case 0:
-				coord = m_points[i].pt.x;
+				coord = m_points[i].x;
 				break;
 			case 1:
-				coord = m_points[i].pt.y;
+				coord = m_points[i].y;
 				break;
 			case 2:
-				coord = m_points[i].pt.z;
+				coord = m_points[i].z;
 				break;
 		};
 		const float col_idx =
