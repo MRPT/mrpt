@@ -456,7 +456,7 @@ class CQuaternion : public CVectorFixed<T, 4>
 
 		if (out_dr_dq && resize_out_dr_dq_to3x4) out_dr_dq->setSize(3, 4);
 		const T discr = r() * y() - x() * z();
-		if (fabs(discr) > 0.49999)
+		if (discr > 0.49999)
 		{  // pitch = 90 deg
 			pitch = 0.5 * M_PI;
 			yaw = -2 * atan2(x(), r());
