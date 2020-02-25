@@ -10,6 +10,7 @@
 #include "core-precomp.h"  // Precompiled headers
 
 #include <mrpt/core/Clock.h>
+#include <mrpt/core/exceptions.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -18,6 +19,8 @@
 #endif
 
 #include <ctime>  // clock_gettime
+
+static mrpt::Clock::Source selectedClock = mrpt::Clock::Source::Realtime;
 
 static uint64_t getCurrentTime()
 {
@@ -34,7 +37,10 @@ static uint64_t getCurrentTime()
 	tim.tv_nsec = tv.tv_usec * 1000;
 #else
 	timespec tim{0, 0};
-	clock_gettime(CLOCK_REALTIME, &tim);
+	clock_gettime(
+		selectedClock == mrpt::Clock::Source::Realtime ? CLOCK_REALTIME
+													   : CLOCK_MONOTONIC,
+		&tim);
 #endif
 
 	// Convert to TTimeStamp 100-nanoseconds representation:
@@ -62,3 +68,13 @@ double mrpt::Clock::toDouble(const mrpt::Clock::time_point t) noexcept
 			   UINT64_C(116444736) * UINT64_C(1000000000)) /
 		   10000000.0;
 }
+
+void mrpt::Clock::setActiveClock(const Source s)
+{
+	ASSERT_(
+		s == mrpt::Clock::Source::Realtime ||
+		s == mrpt::Clock::Source::Monotonic);
+	selectedClock = s;
+}
+
+mrpt::Clock::Source mrpt::Clock::getActiveClock() { return selectedClock; }
