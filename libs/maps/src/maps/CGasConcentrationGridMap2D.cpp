@@ -213,7 +213,7 @@ bool CGasConcentrationGridMap2D::internal_insertObservation(
 				// Compute the sensor reading value (Volts):
 				if (insertionOptions.gasSensorType == 0x0000)
 				{  // compute the mean
-					sensorReading = math::mean(it->readingsVoltage);
+					sensorReading = d2f(math::mean(it->readingsVoltage));
 				}
 				else
 				{
@@ -235,7 +235,7 @@ bool CGasConcentrationGridMap2D::internal_insertObservation(
 						cout << "Sensor especified not found, compute default "
 								"mean value"
 							 << endl;
-						sensorReading = math::mean(it->readingsVoltage);
+						sensorReading = d2f(math::mean(it->readingsVoltage));
 					}
 				}
 			}
@@ -579,11 +579,11 @@ void CGasConcentrationGridMap2D::getWindAs3DObject(
 		5;  // distance between arrows, expresed as times the cell resolution
 
 	// map limits
-	float x_min = getXMin();
-	float x_max = getXMax();
-	float y_min = getYMin();
-	float y_max = getYMax();
-	float resol = getResolution();
+	float x_min = d2f(getXMin());
+	float x_max = d2f(getXMax());
+	float y_min = d2f(getYMin());
+	float y_max = d2f(getYMax());
+	float resol = d2f(getResolution());
 
 	// Ensure map dimensions match with wind map
 	unsigned int wind_map_size =

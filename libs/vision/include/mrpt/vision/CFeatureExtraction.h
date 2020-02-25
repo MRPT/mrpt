@@ -162,9 +162,9 @@ class CFeatureExtraction
 		struct TFASTOptions
 		{
 			/** default= 20 */
-			int threshold{20};
+			int threshold = 20;
 			/** (default=5) minimum distance between features (in pixels) */
-			float min_distance;
+			unsigned int min_distance = 5;
 			/** Default = true */
 			bool nonmax_suppression{true};
 			/** (default=false) If true, use CImage::KLT_response to compute the

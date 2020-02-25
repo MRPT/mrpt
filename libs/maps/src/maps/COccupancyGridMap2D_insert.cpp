@@ -51,7 +51,6 @@ bool COccupancyGridMap2D::internal_insertObservation(
 	CPose3D robotPose3D;
 
 	// This is required to indicate the grid map has changed!
-	// resetFeaturesCache();
 	// For the precomputed likelihood trick:
 	m_likelihoodCacheOutDated = true;
 

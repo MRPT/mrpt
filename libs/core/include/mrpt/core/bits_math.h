@@ -19,10 +19,10 @@ namespace mrpt
  * @{ */
 
 /** Inline function for the square of a number. */
-template <class T>
-inline T square(const T x)
+template <typename num_t, typename return_t = num_t>
+inline return_t square(const num_t x)
 {
-	return x * x;
+	return static_cast<return_t>(x * x);
 }
 
 /** Faster version of std::hypot(), to use when overflow is not an issue and we

@@ -117,13 +117,14 @@ void CHeightGridMap2D::internal_clear() { fill(THeightGridmapCell()); }
   ---------------------------------------------------------------*/
 bool CHeightGridMap2D::isEmpty() const { return false; }
 bool CHeightGridMap2D::insertIndividualPoint(
-	const double x, const double y, const double z,
+	const double x, const double y, const double zz,
 	const CHeightGridMap2D_Base::TPointInsertParams& params)
 {
 	THeightGridmapCell* cell = cellByPos(x, y);
 	if (!cell)
 		return false;  // Out of the map: Ignore if we've not resized before.
 
+	const float z = d2f(zz);
 	if (!insertionOptions.filterByHeight ||
 		(z >= insertionOptions.z_min && z <= insertionOptions.z_max))
 	{
@@ -139,7 +140,7 @@ bool CHeightGridMap2D::insertIndividualPoint(
 			float W = cell->w++;  // W = N-1
 			cell->h = (cell->h * W + z) / cell->w;
 			if (W > 0)
-				cell->var = 1 / (W) * (cell->v - pow(cell->u, 2) / cell->w);
+				cell->var = (cell->v - d2f(pow(cell->u, 2)) / cell->w) / W;
 		}
 	}  // end if really inserted
 	return true;

@@ -351,13 +351,10 @@ void COccupancyGridMap2D::freeMap()
  ---------------------------------------------------------------*/
 void COccupancyGridMap2D::computeEntropy(TEntropyInfo& info) const
 {
-	unsigned long i;
-	float h, p;
-
 #ifdef OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
-	unsigned int N = 256;
+	size_t N = 256;
 #else
-	unsigned int N = 65536;
+	size_t N = 65536;
 #endif
 
 	// Compute the entropy table: The entropy for each posible cell value
@@ -365,10 +362,10 @@ void COccupancyGridMap2D::computeEntropy(TEntropyInfo& info) const
 	if (entropyTable.size() != N)
 	{
 		entropyTable.resize(N, 0);
-		for (i = 0; i < N; i++)
+		for (size_t i = 0; i < N; i++)
 		{
-			p = l2p(static_cast<cellType>(i));
-			h = H(p) + H(1 - p);
+			const auto p = l2p(static_cast<cellType>(i));
+			const auto h = d2f(H(p) + H(1 - p));
 
 			// Cell's probabilities rounding problem fixing:
 			if (i == 0 || i == (N - 1)) h = 0;
@@ -417,23 +414,11 @@ void COccupancyGridMap2D::computeEntropy(TEntropyInfo& info) const
 }
 
 /*---------------------------------------------------------------
-					Entropy aux. function
- ---------------------------------------------------------------*/
-double COccupancyGridMap2D::H(double p)
-{
-	if (p == 0 || p == 1)
-		return 0;
-	else
-		return -p * log(p);
-}
-
-/*---------------------------------------------------------------
 							clear
  ---------------------------------------------------------------*/
 void COccupancyGridMap2D::internal_clear()
 {
 	setSize(-10, 10, -10, 10, getResolution());
-	// resetFeaturesCache();
 	// For the precomputed likelihood trick:
 	m_likelihoodCacheOutDated = true;
 }
@@ -447,7 +432,6 @@ void COccupancyGridMap2D::fill(float default_value)
 	for (auto it = map.begin(); it < map.end(); ++it) *it = defValue;
 	// For the precomputed likelihood trick:
 	m_likelihoodCacheOutDated = true;
-	// resetFeaturesCache();
 }
 
 /*---------------------------------------------------------------

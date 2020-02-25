@@ -97,11 +97,11 @@ COccupancyGridMap3D::COccupancyGridMap3D(
 
 void COccupancyGridMap3D::setSize(
 	const mrpt::math::TPoint3D& cmin, const mrpt::math::TPoint3D& cmax,
-	float res, float default_value)
+	double res, float default_value)
 {
 	MRPT_START
 
-	ASSERT_ABOVE_(res, 0.0f);
+	ASSERT_ABOVE_(res, 0.0);
 	ASSERT_ABOVE_(cmax.x, cmin.x);
 	ASSERT_ABOVE_(cmax.y, cmin.y);
 	ASSERT_ABOVE_(cmax.z, cmin.z);
@@ -225,9 +225,7 @@ void COccupancyGridMap3D::getAsOctoMapVoxels(
 
 	const size_t N = m_grid.getSizeX() * m_grid.getSizeY() * m_grid.getSizeZ();
 	const TColorf general_color = gl_obj.getColor();
-	const TColor general_color_u(
-		general_color.R * 255, general_color.G * 255, general_color.B * 255,
-		general_color.A * 255);
+	const TColor general_color_u = general_color.asTColor();
 
 	gl_obj.clear();
 	gl_obj.resizeVoxelSets(2);  // 2 sets of voxels: occupied & free
@@ -246,7 +244,7 @@ void COccupancyGridMap3D::getAsOctoMapVoxels(
 		m_grid.getXMin(), m_grid.getYMin(), m_grid.getZMin());
 	const mrpt::math::TPoint3D bbmax(
 		m_grid.getXMax(), m_grid.getYMax(), m_grid.getZMax());
-	const auto inv_dz = 1.0 / (bbmax.z - bbmin.z + 0.01);
+	const float inv_dz = 1.0f / d2f(bbmax.z - bbmin.z + 0.01f);
 	const double L = 0.5 * m_grid.getResolutionZ();
 
 	for (size_t cz = 0; cz < m_grid.getSizeZ(); cz++)
@@ -267,28 +265,28 @@ void COccupancyGridMap3D::getAsOctoMapVoxels(
 					(is_free && renderingOptions.generateFreeVoxels))
 				{
 					mrpt::img::TColor vx_color;
-					double coefc, coeft;
+					float coefc, coeft;
 					switch (gl_obj.getVisualizationMode())
 					{
 						case COctoMapVoxels::FIXED:
 							vx_color = general_color_u;
 							break;
 						case COctoMapVoxels::COLOR_FROM_HEIGHT:
-							coefc = 255 * inv_dz * (z - bbmin.z);
+							coefc = 255 * inv_dz * d2f(z - bbmin.z);
 							vx_color = TColor(
-								coefc * general_color.R,
-								coefc * general_color.G,
-								coefc * general_color.B,
-								255.0 * general_color.A);
+								f2u8(coefc * general_color.R),
+								f2u8(coefc * general_color.G),
+								f2u8(coefc * general_color.B),
+								f2u8(255 * general_color.A));
 							break;
 
 						case COctoMapVoxels::COLOR_FROM_OCCUPANCY:
 							coefc = 240 * (1 - occ) + 15;
 							vx_color = TColor(
-								coefc * general_color.R,
-								coefc * general_color.G,
-								coefc * general_color.B,
-								255.0 * general_color.A);
+								f2u8(coefc * general_color.R),
+								f2u8(coefc * general_color.G),
+								f2u8(coefc * general_color.B),
+								f2u8(255 * general_color.A));
 							break;
 
 						case COctoMapVoxels::TRANSPARENCY_FROM_OCCUPANCY:
@@ -297,30 +295,30 @@ void COccupancyGridMap3D::getAsOctoMapVoxels(
 							{
 								coeft = 0;
 							}
-							vx_color = TColor(
-								255 * general_color.R, 255 * general_color.G,
-								255 * general_color.B, coeft);
+							vx_color = general_color.asTColor();
+							vx_color.A = mrpt::round(coeft);
 							break;
 
 						case COctoMapVoxels::TRANS_AND_COLOR_FROM_OCCUPANCY:
 							coefc = 240 * (1 - occ) + 15;
 							vx_color = TColor(
-								coefc * general_color.R,
-								coefc * general_color.G,
-								coefc * general_color.B, 50);
+								f2u8(coefc * general_color.R),
+								f2u8(coefc * general_color.G),
+								f2u8(coefc * general_color.B), 50);
 							break;
 
 						case COctoMapVoxels::MIXED:
-							coefc = 255 * inv_dz * (z - bbmin.z);
-							coeft = 255 - 510 * (1 - occ);
+							coefc = d2f(255 * inv_dz * (z - bbmin.z));
+							coeft = d2f(255 - 510 * (1 - occ));
 							if (coeft < 0)
 							{
 								coeft = 0;
 							}
 							vx_color = TColor(
-								coefc * general_color.R,
-								coefc * general_color.G,
-								coefc * general_color.B, coeft);
+								f2u8(coefc * general_color.R),
+								f2u8(coefc * general_color.G),
+								f2u8(coefc * general_color.B),
+								static_cast<uint8_t>(coeft));
 							break;
 
 						default:
