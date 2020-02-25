@@ -33,6 +33,7 @@ inline void from_nanoseconds(const uint64_t ns, struct timespec& ts)
 	ts.tv_sec = (ns / static_cast<uint64_t>(1000000000L));
 	ts.tv_nsec = (ns % static_cast<uint64_t>(1000000000L));
 }
+#endif
 struct MonotonicToRealtimeEpoch
 {
 	uint64_t monotonic_ns = 0;
@@ -41,7 +42,6 @@ struct MonotonicToRealtimeEpoch
 };
 static MonotonicToRealtimeEpoch m2r_epoch;
 static bool monotonic_epoch_init = false;
-#endif
 
 static uint64_t getCurrentTime()
 {
