@@ -650,7 +650,7 @@ void CDifodo::computeWeights()
 
 	// Parameters for linearization error
 	const float kduv = 20e-5f;
-	const float kdt = kduv / square<float>(fps);
+	const float kdt = kduv / square<double, float>(fps);
 	const float k2dt = 5e-6f;
 	const float k2duv = 5e-6f;
 
@@ -678,7 +678,7 @@ void CDifodo::computeWeights()
 				// kz2*xx_inter[image_level](v,u)*yy_inter[image_level](v,u)*z2;
 				// const float var33 =
 				// kz2*square(yy_inter[image_level](v,u))*z2;
-				const float var44 = kz2 * z4 * square(fps);
+				const float var44 = kz2 * z4 * square<double, float>(fps);
 				const float var55 = kz2 * z4 * 0.25f;
 				const float var66 = var55;
 
@@ -876,7 +876,7 @@ void CDifodo::odometryCalculation()
 	poseUpdate();
 
 	// Save runtime
-	execution_time = 1000.f * clock.Tac();
+	execution_time = d2f(1000 * clock.Tac());
 }
 
 void CDifodo::filterLevelSolution()

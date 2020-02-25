@@ -445,8 +445,6 @@ void CGridMapAlignerApp::run()
 
 			the_map2.loadFromProbabilisticPosesAndObservations(map2noisy);
 
-			// grid2->resetFeaturesCache();
-
 			size_t N2 = max(
 				40,
 				(int)round(

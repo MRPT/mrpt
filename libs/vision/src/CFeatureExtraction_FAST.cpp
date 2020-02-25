@@ -97,8 +97,7 @@ void CFeatureExtraction::extractFeaturesFAST(
 
 	// Used half the min-distance since we'll later mark as occupied the ranges
 	// [i-1,i+1] for a feature at "i"
-	const unsigned int occupied_grid_cell_size =
-		options.FASTOptions.min_distance / 2.0;
+	const float occupied_grid_cell_size = options.FASTOptions.min_distance / 2;
 	const float occupied_grid_cell_size_inv = 1.0f / occupied_grid_cell_size;
 
 	unsigned int grid_lx =

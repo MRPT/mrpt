@@ -264,7 +264,7 @@ void CFeatureExtraction::TOptions::loadFromConfigFile(
 
 	MRPT_LOAD_CONFIG_VAR(FASTOptions.threshold, int, iniFile, section)
 	MRPT_LOAD_CONFIG_VAR(FASTOptions.nonmax_suppression, bool, iniFile, section)
-	MRPT_LOAD_CONFIG_VAR(FASTOptions.min_distance, float, iniFile, section)
+	MRPT_LOAD_CONFIG_VAR(FASTOptions.min_distance, int, iniFile, section)
 	MRPT_LOAD_CONFIG_VAR(FASTOptions.use_KLT_response, bool, iniFile, section)
 
 	MRPT_LOAD_CONFIG_VAR(ORBOptions.extract_patch, bool, iniFile, section)

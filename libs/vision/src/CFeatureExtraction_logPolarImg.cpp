@@ -37,7 +37,7 @@ void CFeatureExtraction::internal_computeLogPolarImageDescriptors(
 	const unsigned int patch_h = options.LogPolarImagesOptions.num_angles;
 	const double rho_scale = options.LogPolarImagesOptions.rho_scale;
 	const unsigned int patch_w =
-		rho_scale * std::log(static_cast<double>(radius));
+		mrpt::round(rho_scale * std::log(static_cast<double>(radius)));
 
 	mrpt::img::CImage logpolar_frame(
 		patch_w, patch_h, in_img.getChannelCount());
@@ -63,7 +63,8 @@ void CFeatureExtraction::internal_computeLogPolarImageDescriptors(
 #elif MRPT_OPENCV_VERSION_NUM < 0x342
 		cv::logPolar(
 			in(cv::Rect(
-				pt.x - radius, pt.y - radius, 1 + 2 * radius, 1 + 2 * radius)),
+				round(pt.x - radius), round(pt.y - radius),
+				round(1 + 2 * radius), round(1 + 2 * radius))),
 			out, pt, radius, CV_INTER_LINEAR + CV_WARP_FILL_OUTLIERS);
 #else
 		// Latest opencv versions:

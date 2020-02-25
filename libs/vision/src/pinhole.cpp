@@ -111,8 +111,8 @@ void mrpt::vision::pinhole::projectPoints_with_distortion(
 	{
 		if (accept_points_behind || objPoints[i].z > 0)
 		{  // Valid point or we accept them:
-			projectedPoints[i].x = image_points[i].x;
-			projectedPoints[i].y = image_points[i].y;
+			projectedPoints[i].x = d2f(image_points[i].x);
+			projectedPoints[i].y = d2f(image_points[i].y);
 		}
 		else
 		{  // Invalid point behind the camera:
@@ -189,8 +189,8 @@ void mrpt::vision::pinhole::undistort_points(
 		}
 
 		// Save undistorted pixel coords:
-		out_pixels[i].x = x * fx + cx;
-		out_pixels[i].y = y * fy + cy;
+		out_pixels[i].x = d2f(x * fx + cx);
+		out_pixels[i].y = d2f(y * fy + cy);
 
 	}  // end for i
 
@@ -241,8 +241,8 @@ void mrpt::vision::pinhole::undistort_point(
 	}
 
 	// Save undistorted pixel coords:
-	outPt.x = x * fx + cx;
-	outPt.y = y * fy + cy;
+	outPt.x = d2f(x * fx + cx);
+	outPt.y = d2f(y * fy + cy);
 
 	MRPT_END
 }
@@ -280,12 +280,14 @@ void mrpt::vision::pinhole::projectPoints_with_distortion(
 		const double B = 2 * x * y;
 		if (A > 0 && (accept_points_behind || nP.z > 0))
 		{
-			itPixels->x = params.cx() +
-						  params.fx() * (x * A + params.dist[2] * B +
-										 params.dist[3] * (r2 + 2 * square(x)));
-			itPixels->y = params.cy() +
-						  params.fy() * (y * A + params.dist[3] * B +
-										 params.dist[2] * (r2 + 2 * square(y)));
+			itPixels->x =
+				d2f(params.cx() +
+					params.fx() * (x * A + params.dist[2] * B +
+								   params.dist[3] * (r2 + 2 * square(x))));
+			itPixels->y =
+				d2f(params.cy() +
+					params.fy() * (y * A + params.dist[3] * B +
+								   params.dist[2] * (r2 + 2 * square(y))));
 		}
 		else
 		{
@@ -314,16 +316,18 @@ void mrpt::vision::pinhole::projectPoint_with_distortion(
 	const double r4 = square(r2);
 	const double r6 = r2 * r4;
 
-	pixel.x = params.cx() +
-			  params.fx() * (x * (1 + params.dist[0] * r2 +
-								  params.dist[1] * r4 + params.dist[4] * r6) +
-							 2 * params.dist[2] * x * y +
-							 params.dist[3] * (r2 + 2 * square(x)));
-	pixel.y = params.cy() +
-			  params.fy() * (y * (1 + params.dist[0] * r2 +
-								  params.dist[1] * r4 + params.dist[4] * r6) +
-							 2 * params.dist[3] * x * y +
-							 params.dist[2] * (r2 + 2 * square(y)));
+	pixel.x =
+		d2f(params.cx() +
+			params.fx() * (x * (1 + params.dist[0] * r2 + params.dist[1] * r4 +
+								params.dist[4] * r6) +
+						   2 * params.dist[2] * x * y +
+						   params.dist[3] * (r2 + 2 * square(x))));
+	pixel.y =
+		d2f(params.cy() +
+			params.fy() * (y * (1 + params.dist[0] * r2 + params.dist[1] * r4 +
+								params.dist[4] * r6) +
+						   2 * params.dist[3] * x * y +
+						   params.dist[2] * (r2 + 2 * square(y))));
 }
 
 /* -------------------------------------------------------

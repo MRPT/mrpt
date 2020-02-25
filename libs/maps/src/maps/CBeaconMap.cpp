@@ -1018,12 +1018,12 @@ void CBeaconMap::TInsertionOptions::loadFromConfigFile(
 	const mrpt::config::CConfigFileBase& iniFile, const string& section)
 {
 	MRPT_LOAD_CONFIG_VAR(insertAsMonteCarlo, bool, iniFile, section.c_str());
-	MRPT_LOAD_CONFIG_VAR(maxElevation_deg, float, iniFile, section.c_str());
-	MRPT_LOAD_CONFIG_VAR(minElevation_deg, float, iniFile, section.c_str());
+	MRPT_LOAD_CONFIG_VAR(maxElevation_deg, double, iniFile, section.c_str());
+	MRPT_LOAD_CONFIG_VAR(minElevation_deg, double, iniFile, section.c_str());
 	MRPT_LOAD_CONFIG_VAR(MC_numSamplesPerMeter, int, iniFile, section.c_str());
 	MRPT_LOAD_CONFIG_VAR(MC_maxStdToGauss, float, iniFile, section.c_str());
 	MRPT_LOAD_CONFIG_VAR(
-		MC_thresholdNegligible, float, iniFile, section.c_str());
+		MC_thresholdNegligible, double, iniFile, section.c_str());
 	MRPT_LOAD_CONFIG_VAR(MC_performResampling, bool, iniFile, section.c_str());
 	MRPT_LOAD_CONFIG_VAR(
 		MC_afterResamplingNoise, float, iniFile, section.c_str());

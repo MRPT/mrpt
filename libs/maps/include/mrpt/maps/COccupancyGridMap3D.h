@@ -41,9 +41,6 @@ class COccupancyGridMap3D
 	using voxelTypeUnsigned = OccGridCellTraits::cellTypeUnsigned;
 
    protected:
-	// friend class CMultiMetricMap;
-	// friend class CMultiMetricMapPDF;
-
 	/** Lookup tables for log-odds */
 	static CLogOddsGridMapLUT<voxelType>& get_logodd_lut();
 
@@ -96,7 +93,7 @@ class COccupancyGridMap3D
 	 */
 	void setSize(
 		const mrpt::math::TPoint3D& corner_min,
-		const mrpt::math::TPoint3D& corner_max, float resolution,
+		const mrpt::math::TPoint3D& corner_max, double resolution,
 		float default_value = 0.5f);
 
 	/** Change the size of gridmap, maintaining previous contents.

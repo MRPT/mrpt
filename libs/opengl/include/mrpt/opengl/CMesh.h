@@ -99,12 +99,13 @@ class CMesh : public CRenderizable
 	mutable std::vector<mrpt::math::TPolygonWithPlane> tmpPolys;
 
    public:
-	void setGridLimits(float xmin, float xmax, float ymin, float ymax)
+	template <typename T>
+	void setGridLimits(T xmin, T xmax, T ymin, T ymax)
 	{
-		xMin = xmin;
-		xMax = xmax;
-		yMin = ymin;
-		yMax = ymax;
+		xMin = static_cast<float>(xmin);
+		xMax = static_cast<float>(xmax);
+		yMin = static_cast<float>(ymin);
+		yMax = static_cast<float>(ymax);
 		CRenderizable::notifyChange();
 	}
 

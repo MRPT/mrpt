@@ -258,7 +258,7 @@ void CBeacon::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 			obj->setQuantiles(3);
 			obj->enableDrawSolid3D(false);
 
-			obj->setColor(1, 0, 0, 0.85);
+			obj->setColor(1, 0, 0, 0.85f);
 			outObj->insert(obj);
 		}
 		break;
@@ -467,8 +467,10 @@ void CBeacon::generateRingSOG(
 	ASSERT_(myBeaconMap);
 
 	// Compute the number of Gaussians:
-	const float minEl = DEG2RAD(myBeaconMap->insertionOptions.minElevation_deg);
-	const float maxEl = DEG2RAD(myBeaconMap->insertionOptions.maxElevation_deg);
+	const double minEl =
+		DEG2RAD(myBeaconMap->insertionOptions.minElevation_deg);
+	const double maxEl =
+		DEG2RAD(myBeaconMap->insertionOptions.maxElevation_deg);
 	ASSERT_(
 		myBeaconMap->insertionOptions.minElevation_deg <=
 		myBeaconMap->insertionOptions.maxElevation_deg);
