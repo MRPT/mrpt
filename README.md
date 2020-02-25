@@ -8,20 +8,20 @@ gcc/clang: <a href="https://circleci.com/gh/MRPT/mrpt"><img src="https://circlec
 <img align="right" src="https://mrpt.github.io/imgs/mrpt-videos-mix2.gif">
 
 Mobile Robot Programming Toolkit (MRPT) provides C++ libraries aimed at researchers
-in mobile robotics and computer vision. Libraries include [SLAM solutions](http://www.mrpt.org/List_of_SLAM_algorithms), [3D(6D) geometry](http://www.mrpt.org/tutorials/programming/maths-and-geometry/2d_3d_geometry/), [SE(2)/SE(3) Lie groups](http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf),
-[probability density functions (pdfs)](http://reference.mrpt.org/stable/classmrpt_1_1utils_1_1_c_probability_density_function.html) over points, landmarks, poses and maps,
-Bayesian inference ([Kalman filters](http://www.mrpt.org/Kalman_Filters), [particle filters](http://www.mrpt.org/tutorials/programming/statistics-and-bayes-filtering/particle_filters/)), [image processing](http://www.mrpt.org/tutorials/programming/images-image-processing-camera-models/), [obstacle avoidance](http://www.mrpt.org/Obstacle_avoidance), [etc](http://reference.mrpt.org/devel/modules.html).
-MRPT also provides GUI apps for [Stereo camera calibration](http://www.mrpt.org/list-of-mrpt-apps/application-kinect-stereo-calib/), [dataset inspection](http://www.mrpt.org/list-of-mrpt-apps/rawlogviewer/),
-and [much more](http://www.mrpt.org/list-of-mrpt-apps/).
+in mobile robotics and computer vision. Libraries include [SLAM solutions](https://www.mrpt.org/List_of_SLAM_algorithms), [3D(6D) geometry](https://www.mrpt.org/tutorials/programming/maths-and-geometry/2d_3d_geometry/), [SE(2)/SE(3) Lie groups](https://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf),
+[probability density functions (pdfs)](https://docs.mrpt.org/reference/develop/classmrpt_1_1math_1_1_c_probability_density_function.html) over points, landmarks, poses and maps,
+Bayesian inference ([Kalman filters](https://www.mrpt.org/Kalman_Filters), [particle filters](https://www.mrpt.org/tutorials/programming/statistics-and-bayes-filtering/particle_filters/)), [image processing](https://www.mrpt.org/tutorials/programming/images-image-processing-camera-models/), [obstacle avoidance](https://www.mrpt.org/Obstacle_avoidance), [etc](https://reference.mrpt.org/devel/modules.html).
+MRPT also provides GUI apps for [Stereo camera calibration](https://www.mrpt.org/list-of-mrpt-apps/application-kinect-stereo-calib/), [dataset inspection](https://www.mrpt.org/list-of-mrpt-apps/rawlogviewer/),
+and [much more](https://www.mrpt.org/list-of-mrpt-apps/).
 
 ## 2. Resources
   * Download the latest unstable code with: `git clone https://github.com/MRPT/mrpt.git --depth 1`
-  * Ask questions at: [this Google group](http://www.mrpt.org/forum/) or at [stackoverflow](http://stackoverflow.com/search?q=mrpt) (please, use the tag `mrpt`!)
-  * [Main project website](http://www.mrpt.org/), including [sources and Windows installer downloads](http://www.mrpt.org/download-mrpt/)
-  * [C++ API reference](http://docs.mrpt.org/reference/)
-  * ROS packages: [`mrpt_navigation`](http://wiki.ros.org/mrpt_navigation), [`mrpt_slam`](http://wiki.ros.org/mrpt_slam)
+  * Ask questions at: [this Google group](https://www.mrpt.org/forum/) or at [stackoverflow](https://stackoverflow.com/search?q=mrpt) (please, use the tag `mrpt`!)
+  * [Main project website](https://www.mrpt.org/), including [sources and Windows installer downloads](https://www.mrpt.org/download-mrpt/)
+  * [C++ API reference](https://docs.mrpt.org/reference/)
+  * ROS packages: [`mrpt_navigation`](https://wiki.ros.org/mrpt_navigation), [`mrpt_slam`](https://wiki.ros.org/mrpt_slam)
   * [Bindings documentation](https://github.com/MRPT/mrpt/wiki) (Python, Matlab)
-  * Source code for [dozens of examples](http://www.mrpt.org/tutorials/mrpt-examples/)
+  * Source code for [dozens of examples](https://www.mrpt.org/tutorials/mrpt-examples/)
   * Example configuration files for  MRPT applications can be found at:
      [MRPT/share/mrpt/config_files](https://github.com/MRPT/mrpt/tree/master/share/mrpt/config_files)
   * Some sample datasets are stored in:
