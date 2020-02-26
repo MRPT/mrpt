@@ -101,3 +101,9 @@ void CSphere::getBoundingBox(
 	m_pose.composePoint(bb_min, bb_min);
 	m_pose.composePoint(bb_max, bb_max);
 }
+
+void CSphere::renderUpdateBuffers() const
+{
+	const_cast<CSphere*>(this)->regenerateBaseParams();
+	BASE::renderUpdateBuffers();
+}
