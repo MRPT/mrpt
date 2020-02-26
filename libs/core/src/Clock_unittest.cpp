@@ -61,6 +61,6 @@ TEST(clock, checkSynchEpoch)
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(5));
 		const int64_t err = mrpt::Clock::resetMonotonicToRealTimeEpoch();
-		EXPECT_LT(std::abs(err), 1000);
+		EXPECT_LT(std::abs(err), 5000);
 	}
 }
