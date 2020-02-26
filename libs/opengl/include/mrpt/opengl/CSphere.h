@@ -31,6 +31,8 @@ class CSphere : public CGeneralizedEllipsoidTemplate<3>
 	DEFINE_SERIALIZABLE(CSphere, mrpt::opengl)
 
    public:
+	void renderUpdateBuffers() const override;
+
 	void setRadius(float r)
 	{
 		m_radius = r;
@@ -61,6 +63,7 @@ class CSphere : public CGeneralizedEllipsoidTemplate<3>
 		  m_nDivsLatitude(nDivsLatitude)
 	{
 		regenerateBaseParams();
+		BASE::enableDrawSolid3D(true);  // default
 	}
 
 	virtual ~CSphere() override = default;
