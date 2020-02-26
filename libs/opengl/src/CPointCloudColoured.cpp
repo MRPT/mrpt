@@ -108,12 +108,11 @@ void CPointCloudColoured::render_subset(
 #endif
 }
 
-uint8_t CPointCloudColoured::serializeGetVersion() const { return 3; }
+uint8_t CPointCloudColoured::serializeGetVersion() const { return 4; }
 void CPointCloudColoured::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
-	out << m_points;
-	out << m_pointSize;
+	out << m_points << m_point_colors << m_pointSize;
 }
 
 void CPointCloudColoured::serializeFrom(
@@ -121,31 +120,19 @@ void CPointCloudColoured::serializeFrom(
 {
 	switch (version)
 	{
+		case 0:
 		case 1:
 		case 2:
 		case 3:
 		{
-			readFromStreamRender(in);
-			in >> m_points >> m_pointSize;
-
-			if (version == 2)
-			{
-				bool pointSmooth;
-				in >> pointSmooth;
-			}
+			THROW_EXCEPTION(
+				"Binary backward compatibility lost for this class.");
 		}
 		break;
-		case 0:
+		case 4:
 		{
 			readFromStreamRender(in);
-
-			// Old vector_serializable:
-			uint32_t n;
-			in >> n;
-			m_points.resize(n);
-			for (uint32_t i = 0; i < n; i++) in >> m_points[i];
-
-			in >> m_pointSize;
+			in >> m_points >> m_point_colors >> m_pointSize;
 		}
 		break;
 		default:
