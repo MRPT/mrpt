@@ -486,7 +486,6 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
-#if 0
 	// CPolyhedron
 	{
 		{
@@ -510,7 +509,6 @@ void TestOpenGLObjects()
 		theScene->insert(gl_txt);
 	}
 	off_x += STEP_X;
-#endif
 
 	// CSphere
 	{
@@ -543,7 +541,6 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
-#if 0
 	// CText3D
 	{
 		{
@@ -618,7 +615,7 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
-	//#if 0
+#if 0
 	// CVectorField2D
 	{
 		{

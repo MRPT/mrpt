@@ -181,7 +181,7 @@ void CAngularObservationMesh::render(const RenderContext& rc) const
 		glDisable(GL_BLEND);
 	}
 	if (!meshUpToDate) updateMesh();
-	if (!mWireframe) glBegin(GL_TRIANGLES);
+	if (!m_Wireframe) glBegin(GL_TRIANGLES);
 	for (const auto& t : triangles)
 	{
 		float ax = t.x[1] - t.x[0];
@@ -191,15 +191,15 @@ void CAngularObservationMesh::render(const RenderContext& rc) const
 		float az = t.z[1] - t.z[0];
 		float bz = t.z[2] - t.z[0];
 		glNormal3f(ay * bz - az * by, az * bx - ax * bz, ax * by - ay * bx);
-		if (mWireframe) glBegin(GL_LINE_LOOP);
+		if (m_Wireframe) glBegin(GL_LINE_LOOP);
 		for (int k = 0; k < 3; k++)
 		{
 			glColor4f(t.r[k], t.g[k], t.b[k], t.a[k]);
 			glVertex3f(t.x[k], t.y[k], t.z[k]);
 		}
-		if (mWireframe) glEnd();
+		if (m_Wireframe) glEnd();
 	}
-	if (!mWireframe) glEnd();
+	if (!m_Wireframe) glEnd();
 #endif
 }
 
@@ -311,7 +311,7 @@ void CAngularObservationMesh::serializeTo(
 {
 	writeToStreamRender(out);
 	// Version 0:
-	out << pitchBounds << scanSet << mWireframe << mEnableTransparency;
+	out << pitchBounds << scanSet << m_Wireframe << mEnableTransparency;
 }
 
 void CAngularObservationMesh::serializeFrom(
@@ -321,7 +321,7 @@ void CAngularObservationMesh::serializeFrom(
 	{
 		case 0:
 			readFromStreamRender(in);
-			in >> pitchBounds >> scanSet >> mWireframe >> mEnableTransparency;
+			in >> pitchBounds >> scanSet >> m_Wireframe >> mEnableTransparency;
 			break;
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);

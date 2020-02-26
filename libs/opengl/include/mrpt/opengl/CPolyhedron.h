@@ -9,7 +9,8 @@
 #pragma once
 
 #include <mrpt/math/geometry.h>
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableShaderTriangles.h>
+#include <mrpt/opengl/CRenderizableShaderWireFrame.h>
 
 namespace mrpt
 {
@@ -40,10 +41,25 @@ class CPolyhedron;
  *
  * \ingroup mrpt_opengl_grp
  */
-class CPolyhedron : public CRenderizable
+class CPolyhedron : public CRenderizableShaderWireFrame,
+					public CRenderizableShaderTriangles
 {
 	DEFINE_SERIALIZABLE(CPolyhedron, mrpt::opengl)
    public:
+	/** @name Renderizable shader API virtual methods
+	 * @{ */
+	void render(const RenderContext& rc) const override;
+	void renderUpdateBuffers() const override;
+
+	virtual shader_list_t requiredShaders() const override
+	{
+		// May use up to two shaders (triangles and lines):
+		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES};
+	}
+	void onUpdateBuffers_Wireframe() override;
+	void onUpdateBuffers_Triangles() override;
+	/** @} */
+
 	/**
 	 * Struct used to store a polyhedron edge. The struct consists only of two
 	 * vertex indices, used to access the polyhedron vertex list.
@@ -103,25 +119,20 @@ class CPolyhedron : public CRenderizable
 	/**
 	 * List of vertices presents in the polyhedron.
 	 */
-	std::vector<mrpt::math::TPoint3D> mVertices;
+	std::vector<mrpt::math::TPoint3D> m_Vertices;
 	/**
 	 * List of polyhedron's edges.
 	 */
-	std::vector<TPolyhedronEdge> mEdges;
+	std::vector<TPolyhedronEdge> m_Edges;
 	/**
 	 * List of polyhedron's faces.
 	 */
-	std::vector<TPolyhedronFace> mFaces;
+	std::vector<TPolyhedronFace> m_Faces;
 	/**
 	 * This flag determines whether the polyhedron will be displayed as a solid
 	 * object or as a set of edges.
 	 */
-	bool mWireframe{false};
-	/**
-	 * When displaying as wireframe object, this variable stores the width of
-	 * the edges.
-	 */
-	float m_LineWidth{1.0f};
+	bool m_Wireframe{false};
 	/**
 	 * Mutable list of actual polygons, maintained for speed.
 	 */
@@ -642,8 +653,6 @@ class CPolyhedron : public CRenderizable
 	/** @}
 	 */
 
-	void render(const RenderContext& rc) const override;
-	void renderUpdateBuffers() const override;
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 
 	/**
@@ -651,34 +660,34 @@ class CPolyhedron : public CRenderizable
 	 */
 	inline void getVertices(std::vector<mrpt::math::TPoint3D>& vertices) const
 	{
-		vertices = mVertices;
+		vertices = m_Vertices;
 	}
 	/**
 	 * Gets a list with the polyhedron's edges.
 	 */
 	inline void getEdges(std::vector<TPolyhedronEdge>& edges) const
 	{
-		edges = mEdges;
+		edges = m_Edges;
 	}
 	/**
 	 * Gets a list with the polyhedron's faces.
 	 */
 	inline void getFaces(std::vector<TPolyhedronFace>& faces) const
 	{
-		faces = mFaces;
+		faces = m_Faces;
 	}
 	/**
 	 * Gets the amount of vertices.
 	 */
-	inline uint32_t getNumberOfVertices() const { return mVertices.size(); }
+	inline uint32_t getNumberOfVertices() const { return m_Vertices.size(); }
 	/**
 	 * Gets the amount of edges.
 	 */
-	inline uint32_t getNumberOfEdges() const { return mEdges.size(); }
+	inline uint32_t getNumberOfEdges() const { return m_Edges.size(); }
 	/**
 	 * Gets the amount of faces.
 	 */
-	inline uint32_t getNumberOfFaces() const { return mFaces.size(); }
+	inline uint32_t getNumberOfFaces() const { return m_Faces.size(); }
 	/**
 	 * Gets a vector with each edge's length.
 	 */
@@ -696,26 +705,13 @@ class CPolyhedron : public CRenderizable
 	/**
 	 * Returns whether the polyhedron will be rendered as a wireframe object.
 	 */
-	inline bool isWireframe() const { return mWireframe; }
+	inline bool isWireframe() const { return m_Wireframe; }
 	/**
 	 * Sets whether the polyhedron will be rendered as a wireframe object.
 	 */
 	inline void setWireframe(bool enabled = true)
 	{
-		mWireframe = enabled;
-		CRenderizable::notifyChange();
-	}
-	/**
-	 * Gets the wireframe lines width.
-	 */
-	inline float getLineWidth() const { return m_LineWidth; }
-	/**
-	 * Sets the width used to render lines, when wireframe rendering is
-	 * activated.
-	 */
-	inline void setLineWidth(float lineWidth)
-	{
-		m_LineWidth = lineWidth;
+		m_Wireframe = enabled;
 		CRenderizable::notifyChange();
 	}
 	/**
@@ -741,7 +737,7 @@ class CPolyhedron : public CRenderizable
 	 */
 	inline bool isClosed() const
 	{
-		for (size_t i = 0; i < mVertices.size(); i++)
+		for (size_t i = 0; i < m_Vertices.size(); i++)
 			if (edgesInVertex(i) != facesInVertex(i)) return false;
 		return true;
 	}
@@ -881,7 +877,7 @@ class CPolyhedron : public CRenderizable
 	/**
 	 * Basic empty constructor.
 	 */
-	inline CPolyhedron() : mVertices(), mEdges(), mFaces() {}
+	inline CPolyhedron() : m_Vertices(), m_Edges(), m_Faces() {}
 	/**
 	 * Basic constructor with a list of vertices and another of faces, checking
 	 * for correctness.
@@ -889,11 +885,10 @@ class CPolyhedron : public CRenderizable
 	inline CPolyhedron(
 		const std::vector<mrpt::math::TPoint3D>& vertices,
 		const std::vector<TPolyhedronFace>& faces, bool doCheck = true)
-		: mVertices(vertices),
-		  mEdges(),
-		  mFaces(faces),
-		  mWireframe(false),
-		  m_LineWidth(1),
+		: m_Vertices(vertices),
+		  m_Edges(),
+		  m_Faces(faces),
+		  m_Wireframe(false),
 		  polygonsUpToDate(false)
 	{
 		InitFromVertAndFaces(vertices, faces, doCheck);
@@ -904,7 +899,7 @@ class CPolyhedron : public CRenderizable
 	{
 		if (doCheck && !checkConsistence(vertices, faces))
 			throw std::logic_error("Face list accesses a vertex out of range");
-		for (auto& mFace : mFaces)
+		for (auto& mFace : m_Faces)
 		{
 			if (!setNormal(mFace, doCheck))
 				throw std::logic_error("Bad face specification");

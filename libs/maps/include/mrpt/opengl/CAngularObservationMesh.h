@@ -305,7 +305,7 @@ class CAngularObservationMesh : public CRenderizable
 		const mrpt::math::TPoint3D& p1, const mrpt::math::TPoint3D& p2,
 		const mrpt::math::TPoint3D& p3) const;
 	/** Whether the mesh will be displayed wireframe or solid. */
-	bool mWireframe{true};
+	bool m_Wireframe{true};
 	/** Mutable variable which controls if the object has suffered any change
 	 * since last time the mesh was updated. */
 	mutable bool meshUpToDate{false};
@@ -335,13 +335,13 @@ class CAngularObservationMesh : public CRenderizable
 	/**
 	 * Returns whether the object is configured as wireframe or solid.
 	 */
-	inline bool isWireframe() const { return mWireframe; }
+	inline bool isWireframe() const { return m_Wireframe; }
 	/**
 	 * Sets the display mode for the object. True=wireframe, False=solid.
 	 */
 	inline void setWireframe(bool enabled = true)
 	{
-		mWireframe = enabled;
+		m_Wireframe = enabled;
 		CRenderizable::notifyChange();
 	}
 	/**
@@ -586,7 +586,7 @@ void CAngularObservationMesh::trace2DSetOfRays(
 	for_each(
 		pValues.begin(), pValues.end(),
 		FTrace2D<T>(e, initial, caom, yaws, vObs, initial));
-	caom->mWireframe = false;
+	caom->m_Wireframe = false;
 	caom->mEnableTransparency = false;
 	caom->setPitchBounds(pValues);
 	caom->setScanSet(vObs);
