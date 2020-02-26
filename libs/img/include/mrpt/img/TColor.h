@@ -10,6 +10,7 @@
 
 #include <mrpt/core/bits_math.h>
 #include <mrpt/serialization/serialization_frwds.h>
+#include <mrpt/typemeta/TTypeName.h>
 #include <cstdint>
 #include <iosfwd>
 #include <iostream>
@@ -125,3 +126,10 @@ mrpt::serialization::CArchive& operator>>(
 	mrpt::serialization::CArchive& i, TColorf& c);
 
 }  // namespace mrpt::img
+
+namespace mrpt::typemeta
+{
+// Specialization must occur in the same namespace
+MRPT_DECLARE_TTYPENAME_NO_NAMESPACE(TColor, mrpt::img)
+MRPT_DECLARE_TTYPENAME_NO_NAMESPACE(TColorf, mrpt::img)
+}  // namespace mrpt::typemeta

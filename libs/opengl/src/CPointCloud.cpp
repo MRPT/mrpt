@@ -317,7 +317,7 @@ void CPointCloud::serializeFrom(
 				// New in v5:
 				auto N = in.ReadAs<uint32_t>();
 				m_points.resize(N);
-				in.ReadBufferFixEndianness(m_points.data(), N);
+				if (N) in.ReadBufferFixEndianness(m_points.data(), N);
 			}
 
 			if (version >= 1)
