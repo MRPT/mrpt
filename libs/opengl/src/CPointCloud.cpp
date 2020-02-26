@@ -260,7 +260,7 @@ void CPointCloud::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
 	// Changed from bool to enum/int32_t in version 3.
-	out << static_cast<int32_t>(m_colorFromDepth);
+	out.WriteAs<int32_t>(m_colorFromDepth);
 
 	// out << m_xs << m_ys << m_zs;// was: v4
 	out.WriteAs<uint32_t>(m_points.size());

@@ -157,7 +157,7 @@ mrpt::serialization::CArchive& mrpt::math::operator>>(
 mrpt::serialization::CArchive& mrpt::math::operator<<(
 	mrpt::serialization::CArchive& out, const mrpt::math::TObject2D& o)
 {
-	out << static_cast<uint16_t>(o.getType());
+	out.WriteAs<uint16_t>(o.getType());
 	switch (o.getType())
 	{
 		case GEOMETRIC_TYPE_POINT:
