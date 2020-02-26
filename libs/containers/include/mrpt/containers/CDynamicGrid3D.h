@@ -372,9 +372,9 @@ class CDynamicGrid3D
 	{
 		out << m_x_min << m_x_max << m_y_min << m_y_max << m_z_min << m_z_max;
 		out << m_resolution_xy << m_resolution_z;
-		out << static_cast<uint32_t>(m_size_x)
-			<< static_cast<uint32_t>(m_size_y)
-			<< static_cast<uint32_t>(m_size_z);
+		out.WriteAs<uint32_t>(m_size_x)
+			.WriteAs<uint32_t>(m_size_y)
+			.WriteAs<uint32_t>(m_size_z);
 	}
 	/** Serialization of all parameters, except the contents of each voxel
 	 * (responsability of the derived class) */
@@ -384,12 +384,10 @@ class CDynamicGrid3D
 		in >> m_x_min >> m_x_max >> m_y_min >> m_y_max >> m_z_min >> m_z_max;
 		in >> m_resolution_xy >> m_resolution_z;
 
-		uint32_t nX, nY, nZ;
-		in >> nX >> nY >> nZ;
-		m_size_x = nX;
-		m_size_y = nY;
-		m_size_z = nZ;
-		m_map.resize(nX * nY * nZ);
+		m_size_x = in.ReadAs<uint32_t>();
+		m_size_y = in.ReadAs<uint32_t>();
+		m_size_z = in.ReadAs<uint32_t>();
+		m_map.resize(m_size_x * m_size_y * m_size_z);
 	}
 
 };  // end of CDynamicGrid3D<>

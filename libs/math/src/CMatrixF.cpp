@@ -24,7 +24,7 @@ uint8_t CMatrixF::serializeGetVersion() const { return 0; }
 void CMatrixF::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// First, write the number of rows and columns:
-	out << static_cast<uint32_t>(rows()) << static_cast<uint32_t>(cols());
+	out.WriteAs<uint32_t>(rows()).WriteAs<uint32_t>(cols());
 
 	// Since mrpt-1.9.9, dynamic matrices are stored as a contiguous vector:
 	if (rows() > 0 && cols() > 0)
@@ -38,10 +38,9 @@ void CMatrixF::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	{
 		case 0:
 		{
-			uint32_t nRows, nCols;
-
-			// First, write the number of rows and columns:
-			in >> nRows >> nCols;
+			// Read the number of rows and columns:
+			const uint32_t nRows = in.ReadAs<uint32_t>();
+			const uint32_t nCols = in.ReadAs<uint32_t>();
 
 			setSize(nRows, nCols);
 

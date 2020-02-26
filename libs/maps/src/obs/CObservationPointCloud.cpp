@@ -71,7 +71,7 @@ void CObservationPointCloud::serializeTo(
 	out << sensorLabel << timestamp;  // Base class data
 
 	out << sensorPose;
-	out << static_cast<uint8_t>(m_externally_stored);
+	out.WriteAs<uint8_t>(m_externally_stored);
 
 	if (isExternallyStored())
 	{

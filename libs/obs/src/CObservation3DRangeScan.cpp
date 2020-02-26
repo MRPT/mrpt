@@ -351,7 +351,7 @@ void CObservation3DRangeScan::serializeTo(
 	out << range_is_depth;
 
 	// New in v6:
-	out << static_cast<int8_t>(intensityImageChannel);
+	out.WriteAs<int8_t>(intensityImageChannel);
 
 	// New in v7:
 	out << hasPixelLabels();
