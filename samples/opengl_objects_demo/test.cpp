@@ -491,6 +491,7 @@ void TestOpenGLObjects()
 		{
 			auto obj = opengl::CPolyhedron::CreateCuboctahedron(1.0);
 			obj->setLocation(off_x, 0, 0);
+			obj->setWireframe(true);
 			theScene->insert(obj);
 		}
 		{
