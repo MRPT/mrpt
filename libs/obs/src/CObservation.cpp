@@ -43,13 +43,17 @@ void CObservation::getDescriptionAsText(std::ostream& o) const
 {
 	using namespace mrpt::system;  // for the TTimeStamp << op
 
-	o << "Timestamp (UTC): " << mrpt::system::dateTimeToString(timestamp)
-	  << std::endl;
-	o << "  (as time_t): " << std::fixed << std::setprecision(5)
-	  << mrpt::system::timestampTotime_t(timestamp) << std::endl;
-	o << "  (as TTimestamp): " << timestamp << std::endl;
-	o << "Sensor label: '" << sensorLabel << "'" << std::endl;
-	o << std::endl;
+	o << mrpt::format(
+		"Timestamp (UTC): %s\n"
+		"  (as time_t): %.09f\n",
+		mrpt::system::dateTimeToString(timestamp).c_str(),
+		mrpt::Clock::toDouble(timestamp));
+
+	o << "  (as TTimestamp): " << timestamp
+	  << "\n"
+		 "Sensor label: '"
+	  << sensorLabel << "'"
+	  << "\n\n";
 }
 
 std::string CObservation::getDescriptionAsTextValue() const
