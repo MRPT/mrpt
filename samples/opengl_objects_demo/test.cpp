@@ -525,7 +525,6 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
-#if 0
 	// CText
 	{
 		{
@@ -556,6 +555,7 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
+#if 0
 	// CColorMap
 	{
 		{

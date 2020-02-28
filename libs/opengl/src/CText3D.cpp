@@ -12,7 +12,6 @@
 #include <mrpt/opengl/CText3D.h>
 #include <mrpt/opengl/gl_utils.h>
 #include <mrpt/serialization/CArchive.h>
-#include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
@@ -20,9 +19,6 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CText3D, CRenderizable, mrpt::opengl)
 
-/*---------------------------------------------------------------
-							Constructor
-  ---------------------------------------------------------------*/
 CText3D::CText3D(
 	const std::string& str, const std::string& fontName, const float scale,
 	const mrpt::opengl::TOpenGLFontStyle text_style, const double text_spacing,
@@ -38,7 +34,7 @@ CText3D::CText3D(
 
 CText3D::~CText3D() = default;
 
-void CText3D::renderUpdateBuffers() const
+void CText3D::onUpdateBuffers_Triangles() override
 {
 	//
 	MRPT_TODO("Implement me!");
