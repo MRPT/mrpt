@@ -222,7 +222,6 @@ void CObservation3DRangeScan::serializeTo(
 	if (hasIntensityImage) out << intensityImage;
 	out << hasConfidenceImage;
 	if (hasConfidenceImage) out << confidenceImage;
-
 	out << cameraParams;  // New in v2
 	out << cameraParamsIntensity;  // New in v4
 	out << relativePoseIntensityWRTDepth;  // New in v4
@@ -338,8 +337,9 @@ void CObservation3DRangeScan::serializeFrom(
 						rangeImage_setSize(rows, cols);
 
 						// new v9:
-						in.ReadBufferFixEndianness<uint16_t>(
-							rangeImage.data(), rangeImage.size());
+						if (rangeImage.size() != 0)
+							in.ReadBufferFixEndianness<uint16_t>(
+								rangeImage.data(), rangeImage.size());
 					}
 				}
 
