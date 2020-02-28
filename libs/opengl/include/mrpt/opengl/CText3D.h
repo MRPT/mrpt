@@ -39,7 +39,7 @@ namespace mrpt::opengl
  * http://www.edwardrosten.com/cvd/ )
  * \ingroup mrpt_opengl_grp
  */
-class CText3D : public CRenderizable
+class CText3D : public CRenderizableShaderTriangles
 {
 	DEFINE_SERIALIZABLE(CText3D, mrpt::opengl)
    protected:
