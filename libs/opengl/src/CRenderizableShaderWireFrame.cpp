@@ -53,6 +53,9 @@ void CRenderizableShaderWireFrame::render(const RenderContext& rc) const
 	// TODO: Port thick lines to opengl3?
 	// glLineWidth(m_lineWidth);
 
+	glEnable(GL_LINE_SMOOTH);
+	CHECK_OPENGL_ERROR();
+
 	// Set up the vertex array:
 	const GLuint attr_position = rc.shader->attributeId("position");
 	glEnableVertexAttribArray(attr_position);

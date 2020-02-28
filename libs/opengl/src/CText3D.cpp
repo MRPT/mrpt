@@ -34,23 +34,15 @@ CText3D::CText3D(
 
 CText3D::~CText3D() = default;
 
-void CText3D::onUpdateBuffers_Triangles() override
+void CText3D::onUpdateBuffers_Triangles()
 {
-	//
-	MRPT_TODO("Implement me!");
-}
-
-void CText3D::render(const RenderContext& rc) const
-{
-#if MRPT_HAS_OPENGL_GLUT
-	glColor4ub(m_color.R, m_color.G, m_color.B, m_color.A);
-
+	MRPT_TODO("Update to use the new functions");
+#if 0
 	mrpt::opengl::gl_utils::glSetFont(m_fontName);
 	mrpt::opengl::gl_utils::glDrawText(
 		m_str,
 		1.0,  // Scale
 		m_text_style, m_text_spacing, m_text_kerning);
-
 #endif
 }
 
