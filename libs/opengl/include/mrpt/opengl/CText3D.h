@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableShaderTriangles.h>
 
 namespace mrpt::opengl
 {
@@ -49,6 +49,8 @@ class CText3D : public CRenderizable
 	double m_text_spacing;
 	double m_text_kerning;
 
+	void onUpdateBuffers_Triangles() override;
+
    public:
 	/** Sets the displayed string */
 	inline void setString(const std::string& s)
@@ -87,13 +89,10 @@ class CText3D : public CRenderizable
 	}
 	double setTextKerning() const { return m_text_kerning; }
 
-	void render(const RenderContext& rc) const override;
-	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
 
-	/** Constructor */
 	CText3D(
 		const std::string& str = std::string(""),
 		const std::string& fontName = std::string("sans"),
@@ -101,7 +100,6 @@ class CText3D : public CRenderizable
 		const mrpt::opengl::TOpenGLFontStyle text_style = mrpt::opengl::NICE,
 		const double text_spacing = 1.5, const double text_kerning = 0.1);
 
-	/** Private, virtual destructor: only can be deleted from smart pointers */
 	~CText3D() override;
 };
 
