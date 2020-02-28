@@ -2268,19 +2268,25 @@ void CPolyhedron::onUpdateBuffers_Triangles()
 
 	for (const auto& face : m_Faces)
 	{
-		// glBegin(GL_POLYGON);
 		const size_t N = face.vertices.size();
 		if (N < 3) continue;
 
 		// convert polygon -> triangle fan:
-		for (size_t i = 0; i < N; i++)
+		for (size_t i = 0; i < N - 2; i++)
 		{
+			const size_t ip0 = 0;
 			const size_t ip1 = (i + 1) % N;
 			const size_t ip2 = (i + 2) % N;
 
-			const TPoint3D& p0 = m_Vertices[i];
-			const TPoint3D& p1 = m_Vertices[ip1];
-			const TPoint3D& p2 = m_Vertices[ip2];
+			const TPoint3D& p0 = m_Vertices[face.vertices[ip0]];
+			TPoint3D p1 = m_Vertices[face.vertices[ip1]];
+			TPoint3D p2 = m_Vertices[face.vertices[ip2]];
+
+			// Ensure the normal points outwards:
+			const auto normal = mrpt::math::crossProduct3D(p1 - p0, p2 - p0);
+			if (mrpt::math::dotProduct<3, double, TPoint3D, TPoint3D>(
+					normal, p0) < 0)
+				std::swap(p1, p2);
 
 			tris.emplace_back(p0, p1, p2);
 		}
