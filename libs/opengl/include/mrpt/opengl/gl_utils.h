@@ -117,47 +117,7 @@ int textBitmapWidth(
 								mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24);
 
 /** @} */  // --------------------------------------------------
-
-/** @name OpenGL vector 3D fonts
-	@{ */
-
-/// sets the font to use for future font rendering commands. currently "sans",
-/// "serif" and "mono" are available.
-/// @param fontname string containing font name
-void glSetFont(const std::string& fontname);
-
-/// returns the name of the currently active font
-const std::string& glGetFont();
-
-/// renders a string in GL using the current settings.
-/// Font coordinates are +X along the line and +Y along the up direction of
-/// glyphs.
-/// The origin is at the top baseline at the left of the first character.
-/// Characters have a maximum size of 1.
-/// linefeed is interpreted as a new line and the start is offset in -Y
-/// direction by @ref spacing . Individual characters
-/// are separated by @ref kerning + plus their individual with.
-/// @param text string to be rendered, unknown characters are replaced with '?'
-/// @param textScale The size of the characters (default=1.0)
-/// @param style rendering style
-/// @param spacing distance between individual text lines
-/// @param kerning distance between characters
-/// \note This functions comes from libcvd (BSD,
-/// http://www.edwardrosten.com/cvd/ )
-mrpt::img::TPixelCoordf glDrawText(
-	const std::string& text, const float textScale,
-	enum TOpenGLFontStyle style = NICE, double spacing = 1.5,
-	double kerning = 0.1);
-
-/// returns the size of the bounding box of a text to be rendered, similar to
-/// @ref glDrawText but without any visual output
-/// \note This functions comes from libcvd (BSD,
-/// http://www.edwardrosten.com/cvd/ )
-mrpt::img::TPixelCoordf glGetExtends(
-	const std::string& text, const float textScale, double spacing = 1.5,
-	double kerning = 0.1);
-
-/** @} */  // --------------------------------------------------
+		   // --------------------------------------------------
 }  // namespace gl_utils
 }  // namespace opengl
 }  // namespace mrpt

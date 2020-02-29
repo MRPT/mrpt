@@ -13,6 +13,8 @@
 #include <mrpt/opengl/gl_utils.h>
 #include <mrpt/serialization/CArchive.h>
 
+#include "gltext.h"
+
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace std;
@@ -34,16 +36,18 @@ CText3D::CText3D(
 
 CText3D::~CText3D() = default;
 
-void CText3D::onUpdateBuffers_Triangles()
+void CText3D::onUpdateBuffers_Text()
 {
-	MRPT_TODO("Update to use the new functions");
-#if 0
-	mrpt::opengl::gl_utils::glSetFont(m_fontName);
-	mrpt::opengl::gl_utils::glDrawText(
-		m_str,
-		1.0,  // Scale
-		m_text_style, m_text_spacing, m_text_kerning);
-#endif
+	mrpt::opengl::internal::glSetFont(m_fontName);
+	mrpt::opengl::internal::glDrawText(
+		m_str, CRenderizableShaderText::m_triangles,
+		CRenderizableShaderText::m_vertex_buffer_data, m_text_style,
+		m_text_spacing, m_text_kerning);
+
+	// All lines & triangles, the same color:
+	CRenderizableShaderText::m_color_buffer_data.assign(
+		m_vertex_buffer_data.size(), m_color);
+	for (auto& tri : m_triangles) tri.setColor(m_color);
 }
 
 uint8_t CText3D::serializeGetVersion() const { return 0; }

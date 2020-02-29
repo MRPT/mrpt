@@ -10,11 +10,11 @@
 // Stripped out version of libCVD gl-helpers.h file, ported to OpenGL>=3
 // 2-BSD License.
 
-#ifndef CVD_GL_HELPERS_H
-#define CVD_GL_HELPERS_H
+#pragma once
 
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/opengl/TTriangle.h>
+#include <mrpt/opengl/opengl_fonts.h>
 #include <iostream>
 #include <map>
 #include <string>
@@ -23,9 +23,8 @@
 
 namespace mrpt::opengl::internal
 {
-/// @defgroup gGLText OpenGL text rendering
-/// @ingroup gGL
-/// @{
+/** @name OpenGL vector 3D fonts
+	@{ */
 
 /// sets the font to use for future font rendering commands. currently sans,
 /// serif and mono are available.
@@ -36,12 +35,7 @@ void glSetFont(const std::string& fontname);
 const std::string& glGetFont();
 
 /// different style for font rendering
-enum TEXT_STYLE
-{
-	FILL = 0,  ///< renders glyphs as filled polygons
-	OUTLINE = 1,  ///< renders glyphs as outlines with GL_LINES
-	NICE = 2  ///< renders glyphs filled with antialiased outlines
-};
+using TEXT_STYLE = TOpenGLFontStyle;
 
 /// renders a string in GL using the current settings.
 /// Font coordinates are +X along the line and +Y along the up direction of
@@ -56,7 +50,7 @@ enum TEXT_STYLE
 /// @param kerning distance between characters
 std::pair<double, double> glDrawText(
 	const std::string& text, std::vector<mrpt::opengl::TTriangle>& tris,
-	std::vector<mrpt::math::TPoint3Df>& lines, enum TEXT_STYLE style = NICE,
+	std::vector<mrpt::math::TPoint3Df>& lines, TEXT_STYLE style = NICE,
 	double spacing = 1.5, double kerning = 0.1);
 
 /// returns the size of the bounding box of a text to be rendered, similar to
@@ -64,7 +58,6 @@ std::pair<double, double> glDrawText(
 std::pair<double, double> glGetExtends(
 	const std::string& text, double spacing = 1.5, double kerning = 0.1);
 
-///@}
-}  // namespace mrpt::opengl::internal
+/** @} */
 
-#endif
+}  // namespace mrpt::opengl::internal

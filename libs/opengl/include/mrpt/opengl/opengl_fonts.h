@@ -34,7 +34,11 @@ enum TOpenGLFontStyle
 {
 	FILL = 0,  ///< renders glyphs as filled polygons
 	OUTLINE = 1,  ///< renders glyphs as outlines with GL_LINES
-	NICE = 2  ///< renders glyphs filled with antialiased outlines
+
+	/** This was "renders glyphs filled with antialiased outlines", but since
+	   antialiased is not properly implemented in mrtp2 since the port to
+	   OpenGL3, NICE is for now an alias for FILL. */
+	NICE = 2
 };
 
 /** A description of a bitmapped or vectorized text font.

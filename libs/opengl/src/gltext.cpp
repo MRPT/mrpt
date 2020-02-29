@@ -66,42 +66,55 @@ struct Font
 	void fill(
 		const char c, std::vector<mrpt::opengl::TTriangle>& tris,
 		std::vector<mrpt::math::TPoint3Df>& lines,
-		const mrpt::math::TPoint2Df& raster_pos) const
+		const mrpt::math::TPoint2Df& cursor) const
 	{
 		const Char* ch = findChar(c);
 		if (!ch || !ch->numTriangles) return;
-		/* Was:
-		 * glVertexPointer(2, GL_FLOAT, 0, vertices + ch->vertexOffset);
-		 * glDrawElements(
-		 * GL_TRIANGLES, ch->numTriangles, GL_UNSIGNED_SHORT,
-		 * triangles + ch->triangleOffset);
-		 */
+		// triangles
+		const Point* vs = vertices + ch->vertexOffset;
+		for (int i = 0; i < ch->numTriangles / 3; i++)
+		{
+			const auto idx0 = triangles[ch->triangleOffset + i * 3 + 0];
+			const auto idx1 = triangles[ch->triangleOffset + i * 3 + 1];
+			const auto idx2 = triangles[ch->triangleOffset + i * 3 + 2];
+
+			using P3f = mrpt::math::TPoint3Df;
+
+			tris.emplace_back(
+				P3f(cursor.x + vs[idx0].x, cursor.y + vs[idx0].y, .0f),
+				P3f(cursor.x + vs[idx1].x, cursor.y + vs[idx1].y, .0f),
+				P3f(cursor.x + vs[idx2].x, cursor.y + vs[idx2].y, .0f));
+		}
 	}
 
 	void outline(
 		const char c, std::vector<mrpt::opengl::TTriangle>& tris,
 		std::vector<mrpt::math::TPoint3Df>& lines,
-		const mrpt::math::TPoint2Df& raster_pos) const
+		const mrpt::math::TPoint2Df& cursor) const
 	{
 		const Char* ch = findChar(c);
 		if (!ch || !ch->numOutlines) return;
-		/* Was:
-		 * glVertexPointer(2, GL_FLOAT, 0, vertices + ch->vertexOffset);
-		 * glDrawElements(
-		 * GL_LINES, ch->numOutlines, GL_UNSIGNED_SHORT,
-		 * outlines + ch->outlineOffset);
-		 */
-		MRPT_TODO("Continue here");
 		// lines
+		const Point* vs = vertices + ch->vertexOffset;
+		for (int i = 0; i < ch->numOutlines / 2; i++)
+		{
+			const auto idx0 = outlines[ch->outlineOffset + i * 2 + 0];
+			const auto idx1 = outlines[ch->outlineOffset + i * 2 + 1];
+
+			lines.emplace_back(
+				cursor.x + vs[idx0].x, cursor.y + vs[idx0].y, .0f);
+			lines.emplace_back(
+				cursor.x + vs[idx1].x, cursor.y + vs[idx1].y, .0f);
+		}
 	}
 
 	void draw(
 		const char c, std::vector<mrpt::opengl::TTriangle>& tris,
 		std::vector<mrpt::math::TPoint3Df>& lines,
-		const mrpt::math::TPoint2Df& raster_pos) const
+		const mrpt::math::TPoint2Df& cursor) const
 	{
-		outline(c, tris, lines, raster_pos);
-		fill(c, tris, lines, raster_pos);
+		outline(c, tris, lines, cursor);
+		fill(c, tris, lines, cursor);
 	}
 };
 
@@ -139,18 +152,18 @@ const std::string& glGetFont() { return data.currentFontName; }
 
 std::pair<double, double> glDrawText(
 	const std::string& text, std::vector<mrpt::opengl::TTriangle>& tris,
-	std::vector<mrpt::math::TPoint3Df>& render_lines, enum TEXT_STYLE style,
+	std::vector<mrpt::math::TPoint3Df>& render_lines, TEXT_STYLE style,
 	double spacing, double kerning)
 {
 	// Was: glPushMatrix();
-	mrpt::math::TPoint2Df raster_pos = {0, 0};
+	mrpt::math::TPoint2Df cursor = {0, 0};
 
 	// figure out which operation to do on the Char (yes, this is a pointer to
 	// member function :)
 	void (Font::*operation)(
 		const char c, std::vector<mrpt::opengl::TTriangle>& tris,
 		std::vector<mrpt::math::TPoint3Df>& lines,
-		const mrpt::math::TPoint2Df& raster_pos) const;
+		const mrpt::math::TPoint2Df& cursor) const;
 	switch (style)
 	{
 		case FILL:
@@ -160,8 +173,12 @@ std::pair<double, double> glDrawText(
 			operation = &Font::outline;
 			break;
 		case NICE:
-			operation = &Font::draw;
+			// operation = &Font::draw; (See comments in definition of "NICE")
+			operation = &Font::fill;
 			break;
+
+		default:
+			THROW_EXCEPTION("Invalid style value");
 	};
 
 	int lines = 0;
@@ -175,8 +192,8 @@ std::pair<double, double> glDrawText(
 		char c = text[i];
 		if (c == '\n')
 		{
-			raster_pos.x -= total;
-			raster_pos.y -= spacing;
+			cursor.x -= total;
+			cursor.y -= spacing;
 
 			max_total = std::max(max_total, total);
 			total = 0;
@@ -187,7 +204,7 @@ std::pair<double, double> glDrawText(
 		{
 			const float advance = tab_width - std::fmod(total, tab_width);
 			total += advance;
-			raster_pos.x += advance;
+			cursor.x += advance;
 			continue;
 		}
 		const Font::Char* ch = font->findChar(c);
@@ -202,10 +219,10 @@ std::pair<double, double> glDrawText(
 			}
 		}
 		if (!ch) continue;
-		(font->*operation)(c, tris, render_lines, raster_pos);
+		(font->*operation)(c, tris, render_lines, cursor);
 
 		double w = ch->advance + kerning;
-		raster_pos.x += w;
+		cursor.x += w;
 		total += w;
 	}
 

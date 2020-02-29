@@ -549,6 +549,14 @@ void TestOpenGLObjects()
 			theScene->insert(obj);
 		}
 
+		{
+			auto obj = opengl::CText3D::Create("A rotated CText3D");
+			obj->setPose(
+				mrpt::poses::CPose3D(off_x, 0, 0, 0, 0, 0) +
+				mrpt::poses::CPose3D::FromString("[0 5 0 180 0 90]"));
+			theScene->insert(obj);
+		}
+
 		auto gl_txt = opengl::CText::Create("CText3D");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
@@ -755,7 +763,6 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
-	//#if 0
 	// stock_objects::Hokuyo_URG
 	{
 		{

@@ -77,7 +77,7 @@ void CColorBar::renderUpdateBuffers() const
 }
 void CColorBar::render(const RenderContext& rc) const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if 0 && MRPT_HAS_OPENGL_GLUT
 	if (m_disable_depth_test)
 		glDisable(GL_DEPTH_TEST);  // colobars are typically displayed on-top of
 	// the rest of objects!
