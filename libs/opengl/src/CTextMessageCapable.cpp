@@ -24,10 +24,10 @@ using namespace mrpt::opengl;
  */
 void CTextMessageCapable::render_text_messages(const int w, const int h) const
 {
-#if MRPT_HAS_OPENGL_GLUT
-
 	MRPT_TODO("Port to shaders!!");
 	return;
+#if 0 && MRPT_HAS_OPENGL_GLUT
+
 
 	// Render text labels as opengl primitives (much faster):
 	GLint old_matMode = 0;

@@ -197,6 +197,7 @@ void gl_utils::checkOpenGLErr_impl(
   ---------------------------------------------------------------*/
 void gl_utils::renderTextBitmap(const char* str, void* fontStyle)
 {
+	MRPT_TODO("Completely remove these functions");
 #if MRPT_HAS_OPENGL_GLUT
 	while (*str) glutBitmapCharacter(fontStyle, *(str++));
 #else
@@ -331,7 +332,8 @@ void gl_utils::renderMessageBox(
 	const std::string& text_font, mrpt::opengl::TOpenGLFontStyle text_style,
 	const double text_spacing, const double text_kerning)
 {
-#if MRPT_HAS_OPENGL_GLUT
+	MRPT_TODO("Port or remove");
+#if 0 && MRPT_HAS_OPENGL_GLUT
 	const int nLines = 1 + std::count(text.begin(), text.end(), '\n');
 
 	GLint win_dims[4];
@@ -449,62 +451,3 @@ void gl_utils::renderMessageBox(
 	MRPT_UNUSED_PARAM(text_kerning);
 #endif
 }
-
-void gl_utils::glSetFont(const std::string& fontname)
-{
-#if MRPT_HAS_OPENGL_GLUT
-	CVD::glSetFont(fontname);
-#else
-	MRPT_UNUSED_PARAM(fontname);
-#endif
-}
-
-const std::string& gl_utils::glGetFont()
-{
-#if MRPT_HAS_OPENGL_GLUT
-	return CVD::glGetFont();
-#else
-	THROW_EXCEPTION("MRPT built without OpenGL");
-#endif
-}
-
-mrpt::img::TPixelCoordf gl_utils::glDrawText(
-	const std::string& text, const float textScale, enum TOpenGLFontStyle style,
-	double spacing, double kerning)
-{
-#if MRPT_HAS_OPENGL_GLUT
-	glPushMatrix();
-	glMatrixMode(GL_MODELVIEW);
-	glScalef(textScale, textScale, textScale);
-	auto ret = CVD::glDrawText(
-		text, static_cast<CVD::TEXT_STYLE>(style), spacing, kerning);
-	glPopMatrix();
-	return ret;
-#else
-	MRPT_UNUSED_PARAM(text);
-	MRPT_UNUSED_PARAM(textScale);
-	MRPT_UNUSED_PARAM(style);
-	MRPT_UNUSED_PARAM(spacing);
-	MRPT_UNUSED_PARAM(kerning);
-	THROW_EXCEPTION("MRPT built without OpenGL");
-#endif
-}
-
-mrpt::img::TPixelCoordf gl_utils::glGetExtends(
-	const std::string& text, const float textScale, double spacing,
-	double kerning)
-{
-#if MRPT_HAS_OPENGL_GLUT
-	mrpt::img::TPixelCoordf ret(CVD::glGetExtends(text, spacing, kerning));
-	ret.x *= textScale;
-	ret.y *= textScale;
-	return ret;
-#else
-	MRPT_UNUSED_PARAM(text);
-	MRPT_UNUSED_PARAM(textScale);
-	MRPT_UNUSED_PARAM(spacing);
-	MRPT_UNUSED_PARAM(kerning);
-	THROW_EXCEPTION("MRPT built without OpenGL");
-#endif
-}
-//  ===============  END OF CODE FROM "libcvd -> gltext.cpp" ===============

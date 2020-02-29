@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <mrpt/opengl/CRenderizableShaderTriangles.h>
+#include <mrpt/opengl/CRenderizableShaderText.h>
 
 namespace mrpt::opengl
 {
@@ -39,17 +39,17 @@ namespace mrpt::opengl
  * http://www.edwardrosten.com/cvd/ )
  * \ingroup mrpt_opengl_grp
  */
-class CText3D : public CRenderizableShaderTriangles
+class CText3D : public CRenderizableShaderText
 {
 	DEFINE_SERIALIZABLE(CText3D, mrpt::opengl)
    protected:
 	std::string m_str;
-	std::string m_fontName;
+	std::string m_fontName = "sans";
 	TOpenGLFontStyle m_text_style;
-	double m_text_spacing;
-	double m_text_kerning;
+	double m_text_spacing = 1.5;
+	double m_text_kerning = 0.1;
 
-	void onUpdateBuffers_Triangles() override;
+	void onUpdateBuffers_Text() override;
 
    public:
 	/** Sets the displayed string */

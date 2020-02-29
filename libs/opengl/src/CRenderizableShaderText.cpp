@@ -9,7 +9,7 @@
 
 #include "opengl-precomp.h"  // Precompiled header
 
-#include <mrpt/opengl/CRenderizableShaderTriangles.h>
+#include <mrpt/opengl/CRenderizableShaderText.h>
 #include <mrpt/opengl/Shader.h>
 #include "opengl_internals.h"
 
@@ -17,18 +17,34 @@ using namespace mrpt;
 using namespace mrpt::opengl;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(
-	CRenderizableShaderTriangles, CRenderizable, mrpt::opengl)
+	CRenderizableShaderText, CRenderizable, mrpt::opengl)
 
 // Dtor:
-CRenderizableShaderTriangles::~CRenderizableShaderTriangles() = default;
+CRenderizableShaderText::~CRenderizableShaderText() = default;
 
-void CRenderizableShaderTriangles::renderUpdateBuffers() const
+void CRenderizableShaderText::renderUpdateBuffers() const
 {
 #if MRPT_HAS_OPENGL_GLUT
-	// Generate vertices & colors into m_triangles
-	const_cast<CRenderizableShaderTriangles&>(*this)
-		.onUpdateBuffers_Triangles();
+	// Generate vertices & colors:
+	const_cast<CRenderizableShaderText&>(*this).onUpdateBuffers_Text();
 
+	// ======== LINES ========
+	// Define OpenGL buffers:
+	m_linesVertexBuffer = make_buffer(
+		GL_ARRAY_BUFFER, m_vertex_buffer_data.data(),
+		sizeof(m_vertex_buffer_data[0]) * m_vertex_buffer_data.size());
+
+	// Generate a name for a new array.
+	glGenVertexArrays(1, &m_linesVao);
+	// Make the new array active, creating it if necessary.
+	glBindVertexArray(m_linesVao);
+
+	// color buffer:
+	m_linesColorBuffer = make_buffer(
+		GL_ARRAY_BUFFER, m_color_buffer_data.data(),
+		sizeof(m_color_buffer_data[0]) * m_color_buffer_data.size());
+
+	// ======== TRIANGLES ========
 	const auto n = m_triangles.size();
 
 	// Define OpenGL buffers:
@@ -36,19 +52,52 @@ void CRenderizableShaderTriangles::renderUpdateBuffers() const
 		GL_ARRAY_BUFFER, m_triangles.data(), sizeof(m_triangles[0]) * n);
 
 	// Generate a name for a new array.
-	glGenVertexArrays(1, &m_vao);
+	glGenVertexArrays(1, &m_trianglesVao);
 	// Make the new array active, creating it if necessary.
-	glBindVertexArray(m_vao);
+	glBindVertexArray(m_trianglesVao);
+
 #endif
 }
 
-void CRenderizableShaderTriangles::render(const RenderContext& rc) const
+void CRenderizableShaderText::render(const RenderContext& rc) const
 {
 #if MRPT_HAS_OPENGL_GLUT
+	glEnable(GL_LINE_SMOOTH);
+	CHECK_OPENGL_ERROR();
 
+	// === LINES ===
 	// Set up the vertex array:
 	const GLuint attr_position = rc.shader->attributeId("position");
 	glEnableVertexAttribArray(attr_position);
+	glBindBuffer(GL_ARRAY_BUFFER, m_linesVertexBuffer);
+	glVertexAttribPointer(
+		attr_position, /* attribute */
+		3, /* size */
+		GL_FLOAT, /* type */
+		GL_FALSE, /* normalized? */
+		0, /* stride */
+		BUFFER_OFFSET(0) /* array buffer offset */
+	);
+	CHECK_OPENGL_ERROR();
+
+	// Set up the color array:
+	const GLuint attr_color = rc.shader->attributeId("vertexColor");
+	glEnableVertexAttribArray(attr_color);
+	glBindBuffer(GL_ARRAY_BUFFER, m_linesColorBuffer);
+	glVertexAttribPointer(
+		attr_color, /* attribute */
+		4, /* size */
+		GL_UNSIGNED_BYTE, /* type */
+		GL_TRUE, /* normalized? */
+		0, /* stride */
+		BUFFER_OFFSET(0) /* array buffer offset */
+	);
+	CHECK_OPENGL_ERROR();
+
+	glDrawArrays(GL_LINES, 0, m_vertex_buffer_data.size());
+	CHECK_OPENGL_ERROR();
+
+	// === TRIANGLES ===
 	glBindBuffer(GL_ARRAY_BUFFER, m_trianglesBuffer);
 	glVertexAttribPointer(
 		attr_position, /* attribute */
@@ -60,8 +109,6 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 	CHECK_OPENGL_ERROR();
 
 	// Set up the color array:
-	const GLuint attr_color = rc.shader->attributeId("vertexColor");
-	glEnableVertexAttribArray(attr_color);
 	glBindBuffer(GL_ARRAY_BUFFER, m_trianglesBuffer);
 	glVertexAttribPointer(
 		attr_color, /* attribute */
@@ -72,25 +119,14 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 		BUFFER_OFFSET(offsetof(TTriangle::PointNormal, position.r)));
 	CHECK_OPENGL_ERROR();
 
-	// Set up the normals array:
-	const GLuint attr_normals = rc.shader->attributeId("vertexNormal");
-	glEnableVertexAttribArray(attr_normals);
-	glBindBuffer(GL_ARRAY_BUFFER, m_trianglesBuffer);
-	glVertexAttribPointer(
-		attr_normals, /* attribute */
-		3, /* size */
-		GL_FLOAT, /* type */
-		GL_FALSE, /* normalized? */
-		sizeof(TTriangle::PointNormal), /* stride */
-		BUFFER_OFFSET(offsetof(TTriangle::PointNormal, normal.x)));
-	CHECK_OPENGL_ERROR();
+	// normals array: not used to render text
 
+	// Draw:
 	glDrawArrays(GL_TRIANGLES, 0, 3 * m_triangles.size());
 	CHECK_OPENGL_ERROR();
 
 	glDisableVertexAttribArray(attr_position);
 	glDisableVertexAttribArray(attr_color);
-	glDisableVertexAttribArray(attr_normals);
-
+	CHECK_OPENGL_ERROR();
 #endif
 }

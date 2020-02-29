@@ -81,7 +81,7 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 #include "../shaders/text.f.glsl"
 				;
 			uniforms = {"p_matrix", "mv_matrix"};
-			attribs = {"position", "vertexColor", "vertexNormal"};
+			attribs = {"position", "vertexColor"};
 			break;
 
 		default:
