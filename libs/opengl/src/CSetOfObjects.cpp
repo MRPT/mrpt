@@ -39,8 +39,7 @@ void CSetOfObjects::clear()
 
 void CSetOfObjects::renderUpdateBuffers() const
 {
-	//
-	MRPT_TODO("Implement me!");
+	// Do nothing:
 }
 
 void CSetOfObjects::render(const RenderContext& rc) const
@@ -51,7 +50,7 @@ void CSetOfObjects::render(const RenderContext& rc) const
 void CSetOfObjects::enqueForRenderRecursive(
 	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq) const
 {
-	mrpt::opengl::gl_utils::enqueForRendering(m_objects, state, rq);
+	mrpt::opengl::enqueForRendering(m_objects, state, rq);
 }
 
 uint8_t CSetOfObjects::serializeGetVersion() const { return 0; }

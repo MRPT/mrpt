@@ -44,7 +44,11 @@ class CText : public CRenderizableShaderText
 
    public:
 	/** Sets the text to display */
-	void setString(const std::string& s) { m_str = s; }
+	void setString(const std::string& s)
+	{
+		m_str = s;
+		CRenderizable::notifyChange();
+	}
 	/** Return the current text associated to this label */
 	std::string getString() const { return m_str; }
 	/** Sets the font (It has no effect yet!) */
@@ -52,6 +56,7 @@ class CText : public CRenderizableShaderText
 	{
 		m_fontName = s;
 		m_fontHeight = height;
+		CRenderizable::notifyChange();
 	}
 	std::string getFont() const { return m_fontName; }
 

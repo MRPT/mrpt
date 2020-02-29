@@ -30,32 +30,6 @@ namespace gl_utils
 /** @name Miscellaneous rendering methods
 	@{ */
 
-/** Processes, recursively, all objects in the list, classifying them by shader
- * programs into a list suitable to be used within processPendingRendering()
- *
- * For each object in the list:
- *   - checks visibility of each object
- *   - update the MODELVIEW matrix according to its coordinates
- *   - call its ::render()
- *   - shows its name (if enabled).
- *
- * \note Used by CSetOfObjects and COpenGLViewport
- *
- * \sa processPendingRendering
- */
-void enqueForRendering(
-	const mrpt::opengl::CListOpenGLObjects& objs,
-	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq);
-
-/** After enqueForRendering(), actually executes the rendering tasks, grouped
- * shader by shader.
- *
- *  \note Used by COpenGLViewport
- */
-void processRenderQueue(
-	const RenderQueue& rq,
-	std::map<shader_id_t, mrpt::opengl::Program::Ptr>& shaders);
-
 /** Checks glGetError and throws an exception if an error situation is found */
 void checkOpenGLErr_impl(int glErrorCode, const char* filename, int lineno);
 
