@@ -12,6 +12,7 @@
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/opengl/CRenderizable.h>  // Include these before windows.h!!
+#include <mrpt/opengl/CText.h>
 #include <mrpt/opengl/gl_utils.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPoint3D.h>
@@ -304,4 +305,14 @@ int CRenderizable::textBitmapWidth(
 	const std::string& str, mrpt::opengl::TOpenGLFont font)
 {
 	return gl_utils::textBitmapWidth(str, font);
+}
+
+CText& CRenderizable::labelObject() const
+{
+	if (!m_label_obj)
+	{
+		m_label_obj = std::make_shared<mrpt::opengl::CText>();
+		m_label_obj->setString(m_name);
+	}
+	return *m_label_obj;
 }

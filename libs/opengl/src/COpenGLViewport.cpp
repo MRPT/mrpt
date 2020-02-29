@@ -376,10 +376,10 @@ void COpenGLViewport::renderNormalSceneMode() const
 
 	// Pass 1: Process all objects (recursively for sets of objects):
 	mrpt::opengl::RenderQueue rq;
-	mrpt::opengl::gl_utils::enqueForRendering(*objectsToRender, _, rq);
+	mrpt::opengl::enqueForRendering(*objectsToRender, _, rq);
 
 	// pass 2: render, sorted by shader program:
-	mrpt::opengl::gl_utils::processRenderQueue(rq, m_shaders);
+	mrpt::opengl::processRenderQueue(rq, m_shaders);
 
 #endif
 }

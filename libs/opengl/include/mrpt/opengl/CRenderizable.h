@@ -25,6 +25,7 @@ namespace mrpt::opengl
 // Frwd decls:
 class COpenGLViewport;
 class CSetOfObjects;
+class CText;
 
 namespace gl_utils
 {
@@ -374,6 +375,12 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	virtual void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const = 0;
 
+	/** Returns or constructs (in its first invokation) the associated
+	 * mrpt::opengl::CText object representing the label of the object.
+	 * \sa enableShowName()
+	 */
+	mrpt::opengl::CText& labelObject() const;
+
    protected:
 	void writeToStreamRender(mrpt::serialization::CArchive& out) const;
 	void readFromStreamRender(mrpt::serialization::CArchive& in);
@@ -385,9 +392,43 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	static void releaseTextureName(unsigned int i);
 
 	bool m_outdatedBuffers = true;
+
+	/** Optional pointer to a mrpt::opengl::CText */
+	mutable std::shared_ptr<mrpt::opengl::CText> m_label_obj;
 };
 
 /** A list of smart pointers to renderizable objects */
 using CListOpenGLObjects = std::deque<CRenderizable::Ptr>;
+
+/** @name Miscellaneous rendering methods
+@{ */
+
+/** Processes, recursively, all objects in the list, classifying them by shader
+ * programs into a list suitable to be used within processPendingRendering()
+ *
+ * For each object in the list:
+ *   - checks visibility of each object
+ *   - update the MODELVIEW matrix according to its coordinates
+ *   - call its ::render()
+ *   - shows its name (if enabled).
+ *
+ * \note Used by CSetOfObjects and COpenGLViewport
+ *
+ * \sa processPendingRendering
+ */
+void enqueForRendering(
+	const mrpt::opengl::CListOpenGLObjects& objs,
+	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq);
+
+/** After enqueForRendering(), actually executes the rendering tasks, grouped
+ * shader by shader.
+ *
+ *  \note Used by COpenGLViewport
+ */
+void processRenderQueue(
+	const RenderQueue& rq,
+	std::map<shader_id_t, mrpt::opengl::Program::Ptr>& shaders);
+
+/** @} */
 
 }  // namespace mrpt::opengl

@@ -9,7 +9,10 @@
 
 #include "opengl-precomp.h"  // Precompiled header
 
-#include <mrpt/opengl/gl_utils.h>  // Include these before windows.h!!
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CText.h>
+#include <mrpt/opengl/RenderQueue.h>
+#include <mrpt/opengl/gl_utils.h>
 #include <mrpt/system/os.h>
 #include <Eigen/Dense>
 #include <map>
@@ -27,7 +30,7 @@ using namespace mrpt::system;
 using namespace mrpt::opengl;
 
 // Render a set of objects
-void gl_utils::enqueForRendering(
+void mrpt::opengl::enqueForRendering(
 	const mrpt::opengl::CListOpenGLObjects& objs,
 	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq)
 {
@@ -80,10 +83,10 @@ void gl_utils::enqueForRendering(
 
 			// Enqeue this object...
 			const auto lst_shaders = obj->requiredShaders();
+			const float depth = _.pmv_matrix(2, 3);
 			for (const auto shader_id : lst_shaders)
 			{
 				// eye-to-object depth:
-				float depth = _.pmv_matrix(2, 3);
 				rq[shader_id].emplace(depth, RenderQueueElement(obj, _));
 			}
 
@@ -92,31 +95,10 @@ void gl_utils::enqueForRendering(
 
 			if (obj->isShowNameEnabled())
 			{
-				MRPT_TODO("Show text");
-
-				// rq[DefaultShaderID::TEXT].emplace_back(objPtr, _);
-#if 0
-				glDisable(GL_DEPTH_TEST);
-				glColor3f(
-					1.f, 1.f, 1.f);  // Must be called BEFORE glRasterPos3f
-				glRasterPos3f(0.0f, 0.0f, 0.0f);
-
-				GLfloat raster_pos[4];
-				glGetFloatv(GL_CURRENT_RASTER_POSITION, raster_pos);
-				float eye_distance = raster_pos[3];
-
-				void* font = nullptr;
-				if (eye_distance < 2)
-					font = GLUT_BITMAP_TIMES_ROMAN_24;
-				else if (eye_distance < 200)
-					font = GLUT_BITMAP_TIMES_ROMAN_10;
-
-				if (font)
-					CRenderizable::renderTextBitmap(
-						it->getName().c_str(), font);
-
-				glEnable(GL_DEPTH_TEST);
-#endif
+				CText& label = obj->labelObject();
+				label.setString(obj->getName());
+				rq[DefaultShaderID::TEXT].emplace(
+					depth, RenderQueueElement(&label, _));
 			}
 
 		}  // end foreach object
@@ -130,7 +112,7 @@ void gl_utils::enqueForRendering(
 #endif
 }
 
-void gl_utils::processRenderQueue(
+void mrpt::opengl::processRenderQueue(
 	const RenderQueue& rq,
 	std::map<shader_id_t, mrpt::opengl::Program::Ptr>& shaders)
 {
@@ -171,8 +153,11 @@ void gl_utils::processRenderQueue(
 			rc.state = &rqe.renderState;
 
 			// Render object:
-			rqe.object->render(rc);
-			CHECK_OPENGL_ERROR();
+			ASSERT_(rqe.object != nullptr);
+			{
+				rqe.object->render(rc);
+				CHECK_OPENGL_ERROR();
+			}
 		}
 	}
 

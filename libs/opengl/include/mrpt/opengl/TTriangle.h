@@ -14,6 +14,7 @@
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/math/TPolygon3D.h>
 #include <mrpt/serialization/serialization_frwds.h>
+#include <array>
 
 namespace mrpt::opengl
 {
