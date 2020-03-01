@@ -112,7 +112,8 @@ uint8_t CPointCloudColoured::serializeGetVersion() const { return 4; }
 void CPointCloudColoured::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
-	out << m_points << m_point_colors << m_pointSize;
+	out << m_points << m_point_colors;
+	CRenderizableShaderPoints::params_serialize(out);
 }
 
 void CPointCloudColoured::serializeFrom(
@@ -132,7 +133,9 @@ void CPointCloudColoured::serializeFrom(
 		case 4:
 		{
 			readFromStreamRender(in);
-			in >> m_points >> m_point_colors >> m_pointSize;
+			in >> m_points >> m_point_colors;
+
+			CRenderizableShaderPoints::params_deserialize(in);
 		}
 		break;
 		default:

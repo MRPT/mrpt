@@ -11,6 +11,7 @@
 
 #include <mrpt/opengl/CRenderizableShaderPoints.h>
 #include <mrpt/opengl/Shader.h>
+#include <mrpt/serialization/CArchive.h>
 #include "opengl_internals.h"
 
 using namespace mrpt;
@@ -51,8 +52,18 @@ void CRenderizableShaderPoints::render(const RenderContext& rc) const
 #if MRPT_HAS_OPENGL_GLUT
 
 	// Point size as uniform:
-	GLuint id_ptSize = rc.shader->uniformId("vertexPointSize");
-	glUniform1f(id_ptSize, m_pointSize);
+	glUniform1f(rc.shader->uniformId("vertexPointSize"), m_pointSize);
+
+	// Variable point size code in the shader:
+	glUniform1i(
+		rc.shader->uniformId("enableVariablePointSize"),
+		m_variablePointSize ? 1 : 0);
+
+	glUniform1f(
+		rc.shader->uniformId("variablePointSize_K"), m_variablePointSize_K);
+	glUniform1f(
+		rc.shader->uniformId("variablePointSize_DepthScale"),
+		m_variablePointSize_DepthScale);
 
 	// Set up the vertex array:
 	const GLuint attr_position = rc.shader->attributeId("position");
@@ -82,8 +93,6 @@ void CRenderizableShaderPoints::render(const RenderContext& rc) const
 	);
 	CHECK_OPENGL_ERROR();
 
-	MRPT_TODO("Selective rendering!");
-
 	glDrawArrays(GL_POINTS, 0, m_vertex_buffer_data.size());
 	CHECK_OPENGL_ERROR();
 
@@ -91,4 +100,27 @@ void CRenderizableShaderPoints::render(const RenderContext& rc) const
 	glDisableVertexAttribArray(attr_color);
 	CHECK_OPENGL_ERROR();
 #endif
+}
+
+void CRenderizableShaderPoints::params_serialize(
+	mrpt::serialization::CArchive& out) const
+{
+	out.WriteAs<uint8_t>(0);  // serialization version
+	out << m_pointSize << m_variablePointSize << m_variablePointSize_K
+		<< m_variablePointSize_DepthScale;
+}
+void CRenderizableShaderPoints::params_deserialize(
+	mrpt::serialization::CArchive& in)
+{
+	const auto version = in.ReadAs<uint8_t>();
+
+	switch (version)
+	{
+		case 0:
+			in >> m_pointSize >> m_variablePointSize >> m_variablePointSize_K >>
+				m_variablePointSize_DepthScale;
+			break;
+		default:
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+	};
 }
