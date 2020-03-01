@@ -110,14 +110,8 @@ class Program
 		return m_program;
 	}
 
-	unsigned int uniformId(const char* name) const
-	{
-		return m_uniforms.at(name);
-	}
-	unsigned int attributeId(const char* name) const
-	{
-		return m_attribs.at(name);
-	}
+	int uniformId(const char* name) const { return m_uniforms.at(name); }
+	int attributeId(const char* name) const { return m_attribs.at(name); }
 
    private:
 	std::vector<Shader> m_shaders;
@@ -127,7 +121,7 @@ class Program
 	 * code.
 	 * \sa declareUniform(), declareAttribute();
 	 */
-	std::unordered_map<std::string, unsigned int> m_uniforms, m_attribs;
+	std::unordered_map<std::string, int> m_uniforms, m_attribs;
 };
 
 }  // namespace mrpt::opengl

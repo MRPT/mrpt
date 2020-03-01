@@ -255,7 +255,7 @@ void CPointCloud::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	}
 }
-uint8_t CPointCloud::serializeGetVersion() const { return 5; }
+uint8_t CPointCloud::serializeGetVersion() const { return 6; }
 void CPointCloud::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
@@ -267,9 +267,6 @@ void CPointCloud::serializeTo(mrpt::serialization::CArchive& out) const
 	if (!m_points.empty())
 		out.WriteBufferFixEndianness(m_points.data(), m_points.size());
 
-	// Added in version 1.
-	out << m_pointSize;
-
 	// New in version 2:
 	out << m_colorFromDepth_min.R << m_colorFromDepth_min.G
 		<< m_colorFromDepth_min.B;
@@ -278,6 +275,9 @@ void CPointCloud::serializeTo(mrpt::serialization::CArchive& out) const
 
 	// New in version 4:
 	out << m_pointSmooth;
+
+	// new v6:
+	CRenderizableShaderPoints::params_serialize(out);
 }
 
 void CPointCloud::serializeFrom(
@@ -291,6 +291,7 @@ void CPointCloud::serializeFrom(
 		case 3:
 		case 4:
 		case 5:
+		case 6:
 		{
 			readFromStreamRender(in);
 			if (version >= 3)
@@ -320,7 +321,7 @@ void CPointCloud::serializeFrom(
 				if (N) in.ReadBufferFixEndianness(m_points.data(), N);
 			}
 
-			if (version >= 1)
+			if (version >= 1 && version < 6)
 				in >> m_pointSize;
 			else
 				m_pointSize = 1;
@@ -344,6 +345,8 @@ void CPointCloud::serializeFrom(
 				in >> m_pointSmooth;
 			else
 				m_pointSmooth = false;
+
+			if (version >= 6) CRenderizableShaderPoints::params_deserialize(in);
 		}
 		break;
 		default:

@@ -122,7 +122,7 @@ void CSetOfLines::serializeTo(mrpt::serialization::CArchive& out) const
 	writeToStreamRender(out);
 	out << m_Segments << m_lineWidth;
 	out << m_antiAliasing;  // Added in v3
-	out << m_pointSize;  // v4
+	CRenderizableShaderPoints::params_serialize(out);  // v4
 }
 
 void CSetOfLines::serializeFrom(
@@ -165,7 +165,7 @@ void CSetOfLines::serializeFrom(
 			else
 				m_antiAliasing = true;
 			if (version >= 4)
-				in >> m_pointSize;
+				CRenderizableShaderPoints::params_deserialize(in);
 			else
 				m_pointSize = .0f;
 		}
