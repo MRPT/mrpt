@@ -305,7 +305,7 @@ void Test_Kinect()
 				mrpt::obs::T3DPointsProjectionParams pp;
 				pp.takeIntoAccountSensorPoseOnRobot = false;
 
-				last_obs->project3DPointsFromDepthImageInto(*gl_points, pp);
+				last_obs->unprojectInto(*gl_points, pp);
 				win3D.unlockAccess3DScene();
 				do_refresh = true;
 			}

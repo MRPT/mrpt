@@ -35,18 +35,21 @@ inline void removeUnusedVertices(T& poly)
 	size_t N = poly.size();
 	if (N < 3) return;
 	std::vector<size_t> unused;
-	if (std::abs(mrpt::math::distance(poly[N - 1], poly[0]) +
+	if (std::abs(
+			mrpt::math::distance(poly[N - 1], poly[0]) +
 			mrpt::math::distance(poly[0], poly[1]) -
 			mrpt::math::distance(poly[N - 1], poly[1])) <
 		mrpt::math::getEpsilon())
 		unused.push_back(0);
 	for (size_t i = 1; i < N - 1; i++)
-		if (std::abs(mrpt::math::distance(poly[i - 1], poly[i]) +
+		if (std::abs(
+				mrpt::math::distance(poly[i - 1], poly[i]) +
 				mrpt::math::distance(poly[i], poly[i + 1]) -
 				mrpt::math::distance(poly[i - 1], poly[i + 1])) <
 			mrpt::math::getEpsilon())
 			unused.push_back(i);
-	if (std::abs(mrpt::math::distance(poly[N - 2], poly[N - 1]) +
+	if (std::abs(
+			mrpt::math::distance(poly[N - 2], poly[N - 1]) +
 			mrpt::math::distance(poly[N - 1], poly[0]) -
 			mrpt::math::distance(poly[N - 2], poly[0])) <
 		mrpt::math::getEpsilon())

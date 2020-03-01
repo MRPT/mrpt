@@ -50,8 +50,7 @@ double obs3d_test_depth_to_3d(int a, int b)
 	CTimeLogger timlog;
 
 	T3DPointsProjectionParams pp;
-	pp.PROJ3D_USE_LUT = (a & 0x01) != 0;
-	pp.USE_SSE2 = (a & 0x02) != 0;
+	pp.USE_SSE2 = (a & 0x01) != 0;
 
 	TRangeImageFilterParams fp;
 	mrpt::math::CMatrixF minF, maxF;
@@ -71,15 +70,12 @@ double obs3d_test_depth_to_3d(int a, int b)
 	for (int i = 0; i < 100; i++)
 	{
 		CObservation3DRangeScan obs = obs1;
-		if (!pp.PROJ3D_USE_LUT || i > 0)
-		{
-			timlog.enter("run");
-		}
-		obs.project3DPointsFromDepthImageInto(obs, pp, fp);
-		if (!pp.PROJ3D_USE_LUT || i > 0)
-		{
-			timlog.leave("run");
-		}
+		// to avoid counting the generation of the LUT
+		if (i > 0) timlog.enter("run");
+
+		obs.unprojectInto(obs, pp, fp);
+
+		if (i > 0) timlog.leave("run");
 	}
 	const double t = timlog.getMeanTime("run");
 	timlog.clear(true);
@@ -135,17 +131,11 @@ void register_tests_CObservation3DRangeScan()
 	if (mrpt::system::fileExists(rgbd_test_rawlog_file))
 	{
 		lstTests.emplace_back(
-			"3DRangeScan: 320x240 Depth->3D (no LUT,w/o SSE2)",
-			obs3d_test_depth_to_3d, 0x00, 0);
+			"3DRangeScan: 320x240 Depth->3D (w/o SSE2)", obs3d_test_depth_to_3d,
+			0x00, 0);
 		lstTests.emplace_back(
-			"3DRangeScan: 320x240 Depth->3D (no LUT,w/SSE2)",
-			obs3d_test_depth_to_3d, 0x02, 0);
-		lstTests.emplace_back(
-			"3DRangeScan: 320x240 Depth->3D (LUT,w/o SSE2)",
-			obs3d_test_depth_to_3d, 0x01, 0);
-		lstTests.emplace_back(
-			"3DRangeScan: 320x240 Depth->3D (LUT,w/SSE2)",
-			obs3d_test_depth_to_3d, 0x03, 0);
+			"3DRangeScan: 320x240 Depth->3D (w/SSE2)", obs3d_test_depth_to_3d,
+			0x01, 0);
 
 		lstTests.emplace_back(
 			"3DRangeScan: 320x240 Depth->3D (no LUT,w/o SSE2,minFilter)",

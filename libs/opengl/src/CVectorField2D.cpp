@@ -246,8 +246,8 @@ void CVectorField2D::adjustVectorFieldToGrid()
 		ycomp.maxCoeff() * (ycomp.rows() - 1) / (yMax - yMin);
 	const float ratio_yn =
 		ycomp.minCoeff() * (ycomp.rows() - 1) / (yMax - yMin);
-	const float norm_factor =
-		0.85 / max(max(ratio_xp, std::abs(ratio_xn)), max(ratio_yp, std::abs(ratio_yn)));
+	const float norm_factor = 0.85 / max(max(ratio_xp, std::abs(ratio_xn)),
+										 max(ratio_yp, std::abs(ratio_yn)));
 
 	xcomp *= norm_factor;
 	ycomp *= norm_factor;

@@ -190,7 +190,7 @@ int main(int argc, char** argv)
 					win3D.get3DSceneAndLock();
 					mrpt::obs::T3DPointsProjectionParams pp;
 					pp.takeIntoAccountSensorPoseOnRobot = false;
-					newObs->project3DPointsFromDepthImageInto(
+					newObs->unprojectInto(
 						*gl_points, pp /* without obs.sensorPose */);
 					win3D.unlockAccess3DScene();
 				}

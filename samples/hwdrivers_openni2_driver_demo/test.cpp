@@ -201,7 +201,7 @@ int main(int argc, char** argv)
 					{
 #if 0
             static pcl::PointCloud<pcl::PointXYZRGB> cloud;
-            newObs->project3DPointsFromDepthImageInto(cloud, false /* without obs.sensorPose */);
+            newObs->unprojectInto(cloud, false /* without obs.sensorPose */);
 
             win3D.get3DSceneAndLock();
               gl_points->loadFromPointsMap(&cloud);
@@ -213,7 +213,7 @@ int main(int argc, char** argv)
 						win3D.get3DSceneAndLock();
 						mrpt::obs::T3DPointsProjectionParams pp;
 						pp.takeIntoAccountSensorPoseOnRobot = false;
-						newObs->project3DPointsFromDepthImageInto(
+						newObs->unprojectInto(
 							*gl_points, pp /* without obs.sensorPose */);
 						win3D.unlockAccess3DScene();
 #endif

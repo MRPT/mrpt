@@ -26,6 +26,7 @@
 #include <mrpt/system/string_utils.h>
 #include <cstring>
 #include <limits>
+#include <mutex>
 
 using namespace std;
 using namespace mrpt::obs;
@@ -38,11 +39,84 @@ using mrpt::config::CConfigFileMemory;
 IMPLEMENTS_SERIALIZABLE(CObservation3DRangeScan, CObservation, mrpt::obs)
 
 // Static LUT:
-static CObservation3DRangeScan::TCached3DProjTables lut_3dproj;
-CObservation3DRangeScan::TCached3DProjTables&
-	CObservation3DRangeScan::get_3dproj_lut()
+static std::unordered_map<
+	mrpt::img::TCamera, CObservation3DRangeScan::unproject_LUT_t>
+	LUTs;
+static std::mutex LUTs_mtx;
+
+const CObservation3DRangeScan::unproject_LUT_t&
+	CObservation3DRangeScan::get_unproj_lut() const
 {
-	return lut_3dproj;
+#if MRPT_HAS_OPENCV
+	// Access to, or create upon first usage:
+	LUTs_mtx.lock();
+	const unproject_LUT_t& ret = LUTs[this->cameraParams];
+	LUTs_mtx.unlock();
+
+	// already existed and was filled?
+	int H = cameraParams.nrows, W = cameraParams.ncols;
+	const size_t WH = W * H;
+	if (ret.Kxs.size() == WH) return ret;
+
+	// fill LUT upon first use:
+	auto& lut = const_cast<unproject_LUT_t&>(ret);
+
+	lut.Kxs.resize(WH);
+	lut.Kys.resize(WH);
+	lut.Kzs.resize(WH);
+
+	float* kxs = &lut.Kxs[0];
+	float* kys = &lut.Kys[0];
+	float* kzs = &lut.Kzs[0];
+
+	// Undistort all points:
+	cv::Mat pts(1, WH, CV_32FC2), undistort_pts(1, WH, CV_32FC2);
+
+	const auto& intrMat = cameraParams.intrinsicParams;
+	const auto& dist = cameraParams.dist;
+	cv::Mat cv_distortion(
+		1, dist.size(), CV_64F, const_cast<double*>(&dist[0]));
+	cv::Mat cv_intrinsics(3, 3, CV_64F);
+	for (int i = 0; i < 3; i++)
+		for (int j = 0; j < 3; j++)
+			cv_intrinsics.at<double>(i, j) = intrMat(i, j);
+
+	for (int r = 0; r < H; r++)
+		for (int c = 0; c < W; c++)
+		{
+			auto& p = pts.at<cv::Vec2f>(r * W + c);
+			p[0] = c;
+			p[1] = r;
+		}
+
+	cv::undistortPoints(pts, undistort_pts, cv_intrinsics, cv_distortion);
+
+	// Note: undistort_pts now holds point coordinates with (-1,-1)=top left,
+	// (1,1)=bottom-right
+
+	ASSERT_EQUAL_(undistort_pts.size().area(), static_cast<int>(WH));
+	undistort_pts.reshape(WH);
+
+	for (size_t idx = 0; idx < WH; idx++)
+	{
+		const auto& p = undistort_pts.at<cv::Vec2f>(idx);
+		const float c = p[0], r = p[1];
+
+		// XYZ -> (-Y,-Z, X)
+		auto v = mrpt::math::TPoint3Df(1.0f, -c, -r);
+
+		// Range instead of depth? Use a unit vector:
+		if (!this->range_is_depth) v *= 1.0f / v.norm();
+
+		*kxs++ = v.x;
+		*kys++ = v.y;
+		*kzs++ = v.z;
+	}
+
+	return ret;
+#else
+	THROW_EXCEPTION("This method requires MRPT built against OpenCV");
+#endif
 }
 
 static bool EXTERNALS_AS_TEXT_value = false;
@@ -1127,7 +1201,7 @@ void CObservation3DRangeScan::convertTo2DScan(
 		projParams.takeIntoAccountSensorPoseOnRobot = true;
 
 		mrpt::opengl::CPointCloud::Ptr pc = mrpt::opengl::CPointCloud::Create();
-		this->project3DPointsFromDepthImageInto(*pc, projParams, fp);
+		this->unprojectInto(*pc, projParams, fp);
 
 		const std::vector<float>&xs = pc->getArrayX(), &ys = pc->getArrayY(),
 			  &zs = pc->getArrayZ();

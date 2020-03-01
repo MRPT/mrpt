@@ -342,7 +342,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 			{
 				mrpt::obs::T3DPointsProjectionParams pp;
 				pp.takeIntoAccountSensorPoseOnRobot = false;
-				o->project3DPointsFromDepthImageInto(*o, pp);
+				o->unprojectInto(*o, pp);
 				obs3D_to_clear.push_back(o);
 			}
 		}

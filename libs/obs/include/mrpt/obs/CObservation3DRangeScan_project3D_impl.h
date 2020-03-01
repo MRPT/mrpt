@@ -10,7 +10,11 @@
 
 #include <mrpt/core/cpu.h>
 #include <mrpt/core/round.h>  // round()
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/CVectorFixed.h>
+#include <mrpt/obs/T3DPointsProjectionParams.h>
+#include <mrpt/obs/TRangeImageFilter.h>
+#include <mrpt/opengl/pointcloud_adapters.h>
 #include <Eigen/Dense>  // block<>()
 
 namespace mrpt::obs::detail
@@ -19,68 +23,21 @@ namespace mrpt::obs::detail
 // cloud:
 template <class POINTMAP>
 void do_project_3d_pointcloud(
-	const int H, const int W, const float* kys, const float* kzs,
-	mrpt::math::CMatrix_u16& rangeImage, const float rangeUnits,
-	mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
+	const int H, const int W, const float* kxs, const float* kys,
+	const float* kzs, mrpt::math::CMatrix_u16& rangeImage,
+	const float rangeUnits, mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
 	std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
 	const mrpt::obs::TRangeImageFilterParams& fp, bool MAKE_ORGANIZED,
 	const int DECIM);
 template <class POINTMAP>
 void do_project_3d_pointcloud_SSE2(
-	const int H, const int W, const float* kys, const float* kzs,
-	mrpt::math::CMatrix_u16& rangeImage, const float rangeUnits,
-	mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
+	const int H, const int W, const float* kxs, const float* kys,
+	const float* kzs, mrpt::math::CMatrix_u16& rangeImage,
+	const float rangeUnits, mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
 	std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
 	const mrpt::obs::TRangeImageFilterParams& fp, bool MAKE_ORGANIZED);
 
-template <typename POINTMAP, bool isDepth>
-inline void range2XYZ(
-	mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
-	mrpt::obs::CObservation3DRangeScan& src_obs,
-	const mrpt::obs::TRangeImageFilterParams& fp, const int H, const int W)
-{
-	/* range_is_depth = false :
-	 *   Ky = (r_cx - c)/r_fx
-	 *   Kz = (r_cy - r)/r_fy
-	 *
-	 *   x(i) = rangeImage(r,c) * rangeUnits / sqrt( 1 + Ky^2 + Kz^2 )
-	 *   y(i) = Ky * x(i)
-	 *   z(i) = Kz * x(i)
-	 */
-	const float r_cx = src_obs.cameraParams.cx();
-	const float r_cy = src_obs.cameraParams.cy();
-	const float r_fx_inv = 1.0f / src_obs.cameraParams.fx();
-	const float r_fy_inv = 1.0f / src_obs.cameraParams.fy();
-	TRangeImageFilter rif(fp);
-	size_t idx = 0;
-	for (int r = 0; r < H; r++)
-		for (int c = 0; c < W; c++)
-		{
-			const float D = src_obs.rangeImage.coeff(r, c) * src_obs.rangeUnits;
-			if (rif.do_range_filter(r, c, D))
-			{
-				const float Ky = (r_cx - c) * r_fx_inv;
-				const float Kz = (r_cy - r) * r_fy_inv;
-				pca.setPointXYZ(
-					idx,
-					isDepth ? D : D / std::sqrt(1 + Ky * Ky + Kz * Kz),  // x
-					Ky * D,  // y
-					Kz * D  // z
-				);
-				src_obs.points3D_idxs_x[idx] = c;
-				src_obs.points3D_idxs_y[idx] = r;
-				++idx;
-			}
-			else
-			{
-				if (fp.mark_invalid_ranges)
-					src_obs.rangeImage.coeffRef(r, c) = 0;
-			}
-		}
-	pca.resize(idx);  // Actual number of valid pts
-}
-
-template <typename POINTMAP, bool isDepth>
+template <typename POINTMAP>
 inline void range2XYZ_LUT(
 	mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
 	mrpt::obs::CObservation3DRangeScan& src_obs,
@@ -89,32 +46,14 @@ inline void range2XYZ_LUT(
 	const int DECIM = 1)
 {
 	const size_t WH = W * H;
-	if (src_obs.get_3dproj_lut().prev_camParams != src_obs.cameraParams ||
-		WH != size_t(src_obs.get_3dproj_lut().Kys.size()))
-	{
-		src_obs.get_3dproj_lut().prev_camParams = src_obs.cameraParams;
-		src_obs.get_3dproj_lut().Kys.resize(WH);
-		src_obs.get_3dproj_lut().Kzs.resize(WH);
+	const auto& lut = src_obs.get_unproj_lut();
 
-		const float r_cx = src_obs.cameraParams.cx();
-		const float r_cy = src_obs.cameraParams.cy();
-		const float r_fx_inv = 1.0f / src_obs.cameraParams.fx();
-		const float r_fy_inv = 1.0f / src_obs.cameraParams.fy();
-
-		float* kys = &src_obs.get_3dproj_lut().Kys[0];
-		float* kzs = &src_obs.get_3dproj_lut().Kzs[0];
-		for (int r = 0; r < H; r++)
-			for (int c = 0; c < W; c++)
-			{
-				*kys++ = (r_cx - c) * r_fx_inv;
-				*kzs++ = (r_cy - r) * r_fy_inv;
-			}
-	}  // end update LUT.
-
-	ASSERT_EQUAL_(WH, size_t(src_obs.get_3dproj_lut().Kys.size()));
-	ASSERT_EQUAL_(WH, size_t(src_obs.get_3dproj_lut().Kzs.size()));
-	float* kys = &src_obs.get_3dproj_lut().Kys[0];
-	float* kzs = &src_obs.get_3dproj_lut().Kzs[0];
+	ASSERT_EQUAL_(WH, size_t(lut.Kxs.size()));
+	ASSERT_EQUAL_(WH, size_t(lut.Kys.size()));
+	ASSERT_EQUAL_(WH, size_t(lut.Kzs.size()));
+	const float* kxs = &lut.Kxs[0];
+	const float* kys = &lut.Kys[0];
+	const float* kzs = &lut.Kzs[0];
 
 	if (fp.rangeMask_min)
 	{  // sanity check:
@@ -131,28 +70,32 @@ inline void range2XYZ_LUT(
 	if ((W & 0x07) == 0 && pp.USE_SSE2 && DECIM == 1 &&
 		mrpt::cpu::supports(mrpt::cpu::feature::SSE2))
 		do_project_3d_pointcloud_SSE2(
-			H, W, kys, kzs, src_obs.rangeImage, src_obs.rangeUnits, pca,
+			H, W, kxs, kys, kzs, src_obs.rangeImage, src_obs.rangeUnits, pca,
 			src_obs.points3D_idxs_x, src_obs.points3D_idxs_y, fp,
 			pp.MAKE_ORGANIZED);
 	else
 #endif
 		do_project_3d_pointcloud(
-			H, W, kys, kzs, src_obs.rangeImage, src_obs.rangeUnits, pca,
+			H, W, kxs, kys, kzs, src_obs.rangeImage, src_obs.rangeUnits, pca,
 			src_obs.points3D_idxs_x, src_obs.points3D_idxs_y, fp,
 			pp.MAKE_ORGANIZED, DECIM);
 }
 
 template <class POINTMAP>
-void project3DPointsFromDepthImageInto(
+void unprojectInto(
 	mrpt::obs::CObservation3DRangeScan& src_obs, POINTMAP& dest_pointcloud,
 	const mrpt::obs::T3DPointsProjectionParams& pp,
 	const mrpt::obs::TRangeImageFilterParams& fp)
 {
 	using namespace mrpt::math;
 
-	if (!src_obs.hasRangeImage) return;
-
 	mrpt::opengl::PointCloudAdapter<POINTMAP> pca(dest_pointcloud);
+
+	if (!src_obs.hasRangeImage)
+	{
+		pca.resize(0);
+		return;
+	}
 
 	// ------------------------------------------------------------
 	// Stage 1/3: Create 3D point cloud local coordinates
@@ -162,6 +105,7 @@ void project3DPointsFromDepthImageInto(
 	ASSERT_(W != 0 && H != 0);
 	const size_t WH = W * H;
 
+	const auto DECIM = pp.decimation;
 	if (pp.decimation == 1)
 	{
 		// No decimation: one point per range image pixel
@@ -172,22 +116,10 @@ void project3DPointsFromDepthImageInto(
 		// actual number of valid points
 		pca.resize(WH);
 		if (pp.MAKE_ORGANIZED) pca.setDimensions(H, W);
-		if (src_obs.range_is_depth)
-		{
-			// range_is_depth = true
-			// Use cached tables?
-			if (pp.PROJ3D_USE_LUT)
-				range2XYZ_LUT<POINTMAP, true>(pca, src_obs, pp, fp, H, W);
-			else
-				range2XYZ<POINTMAP, true>(pca, src_obs, fp, H, W);
-		}
-		else
-			range2XYZ<POINTMAP, false>(pca, src_obs, fp, H, W);
 	}
 	else
 	{
 		// Decimate range image:
-		const auto DECIM = pp.decimation;
 		ASSERTMSG_(
 			(W % DECIM) == 0 && (H % DECIM == 0),
 			"Width/Height are not an exact multiple of decimation");
@@ -199,11 +131,8 @@ void project3DPointsFromDepthImageInto(
 		src_obs.resizePoints3DVectors(WHd);
 		pca.resize(WHd);
 		if (pp.MAKE_ORGANIZED) pca.setDimensions(Hd, Wd);
-		ASSERTMSG_(
-			src_obs.range_is_depth && pp.PROJ3D_USE_LUT,
-			"Decimation only available if range_is_depth && PROJ3D_USE_LUT");
-		range2XYZ_LUT<POINTMAP, true>(pca, src_obs, pp, fp, H, W, DECIM);
 	}
+	range2XYZ_LUT<POINTMAP>(pca, src_obs, pp, fp, H, W, DECIM);
 
 	// -------------------------------------------------------------
 	// Stage 2/3: Project local points into RGB image to get colors
@@ -345,14 +274,14 @@ void project3DPointsFromDepthImageInto(
 			pca.setPointXYZ(i, pt_transf[0], pt_transf[1], pt_transf[2]);
 		}
 	}
-}  // end of project3DPointsFromDepthImageInto
+}  // end of unprojectInto
 
 // Auxiliary functions which implement (un)projection of 3D point clouds:
 template <class POINTMAP>
 inline void do_project_3d_pointcloud(
-	const int H, const int W, const float* kys, const float* kzs,
-	mrpt::math::CMatrix_u16& rangeImage, const float rangeUnits,
-	mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
+	const int H, const int W, const float* kxs, const float* kys,
+	const float* kzs, mrpt::math::CMatrix_u16& rangeImage,
+	const float rangeUnits, mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
 	std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
 	const mrpt::obs::TRangeImageFilterParams& fp, bool MAKE_ORGANIZED,
 	const int DECIM)
@@ -367,14 +296,14 @@ inline void do_project_3d_pointcloud(
 			{
 				const float D = rangeImage.coeff(r, c) * rangeUnits;
 				// LUT projection coefs:
-				const auto ky = *kys++, kz = *kzs++;
+				const auto kx = *kxs++, ky = *kys++, kz = *kzs++;
 				if (!rif.do_range_filter(r, c, D))
 				{
 					if (MAKE_ORGANIZED) pca.setInvalidPoint(idx++);
 					if (fp.mark_invalid_ranges) rangeImage.coeffRef(r, c) = 0;
 					continue;
 				}
-				pca.setPointXYZ(idx, D /*x*/, ky * D /*y*/, kz * D /*z*/);
+				pca.setPointXYZ(idx, kx * D, ky * D /*y*/, kz * D /*z*/);
 				idxs_x[idx] = c;
 				idxs_y[idx] = r;
 				++idx;
@@ -412,9 +341,10 @@ inline void do_project_3d_pointcloud(
 				}
 				const auto eq_r = rd * DECIM + DECIM / 2,
 						   eq_c = cd * DECIM + DECIM / 2;
-				const auto ky = kys[eq_c + eq_r * W], kz = kzs[eq_c + eq_r * W];
+				const auto eq_idx = eq_c + eq_r * W;
+				const auto kx = kxs[eq_idx], ky = kys[eq_idx], kz = kzs[eq_idx];
 				pca.setPointXYZ(
-					idx, min_d /*x*/, ky * min_d /*y*/, kz * min_d /*z*/);
+					idx, kx * min_d /*x*/, ky * min_d /*y*/, kz * min_d /*z*/);
 				idxs_x[idx] = eq_c;
 				idxs_y[idx] = eq_r;
 				++idx;
@@ -430,9 +360,9 @@ inline void do_project_3d_pointcloud(
 // Auxiliary functions which implement (un)projection of 3D point clouds:
 template <class POINTMAP>
 inline void do_project_3d_pointcloud_SSE2(
-	const int H, const int W, const float* kys, const float* kzs,
-	mrpt::math::CMatrix_u16& rangeImage, const float rangeUnits,
-	mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
+	const int H, const int W, const float* kxs, const float* kys,
+	const float* kzs, mrpt::math::CMatrix_u16& rangeImage,
+	const float rangeUnits, mrpt::opengl::PointCloudAdapter<POINTMAP>& pca,
 	std::vector<uint16_t>& idxs_x, std::vector<uint16_t>& idxs_y,
 	const mrpt::obs::TRangeImageFilterParams& fp, bool MAKE_ORGANIZED)
 {
@@ -518,10 +448,11 @@ inline void do_project_3d_pointcloud_SSE2(
 				_mm_castps_si128(valid_range_mask));  // 0x{f|0}{f|0}{f|0}{f|0}
 			if (valid_range_maski != 0)  // Any of the 4 values is valid?
 			{
+				const __m128 KX = _mm_load_ps(kxs);
 				const __m128 KY = _mm_load_ps(kys);
 				const __m128 KZ = _mm_load_ps(kzs);
 
-				_mm_storeu_ps(xs, D);
+				_mm_storeu_ps(xs, _mm_mul_ps(KX, D));
 				_mm_storeu_ps(ys, _mm_mul_ps(KY, D));
 				_mm_storeu_ps(zs, _mm_mul_ps(KZ, D));
 
@@ -561,6 +492,7 @@ inline void do_project_3d_pointcloud_SSE2(
 			Du16_ptr += 4;
 			if (Dgt_ptr) Dgt_ptr += 4;
 			if (Dlt_ptr) Dlt_ptr += 4;
+			kxs += 4;
 			kys += 4;
 			kzs += 4;
 		}
