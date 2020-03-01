@@ -96,7 +96,15 @@ void mrpt::opengl::enqueForRendering(
 			if (obj->isShowNameEnabled())
 			{
 				CText& label = obj->labelObject();
-				label.setString(obj->getName());
+
+				// Update the label, only if it changed:
+				if (label.getString() != obj->getName())
+					label.setString(obj->getName());
+
+				// Regenerate opengl vertex buffers, if first time or label
+				// changed:
+				if (label.hasToUpdateBuffers()) label.updateBuffers();
+
 				rq[DefaultShaderID::TEXT].emplace(
 					depth, RenderQueueElement(&label, _));
 			}

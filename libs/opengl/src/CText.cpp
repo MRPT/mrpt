@@ -29,15 +29,19 @@ void CText::onUpdateBuffers_Text()
 	const double text_spacing = 1.5;
 	const double text_kerning = 0.1;
 
+	auto& vbd = CRenderizableShaderText::m_vertex_buffer_data;
+	auto& tris = CRenderizableShaderText::m_triangles;
+	auto& cbd = CRenderizableShaderText::m_color_buffer_data;
+	vbd.clear();
+	tris.clear();
+	cbd.clear();
+
 	mrpt::opengl::internal::glSetFont(m_fontName);
 	mrpt::opengl::internal::glDrawText(
-		m_str, CRenderizableShaderText::m_triangles,
-		CRenderizableShaderText::m_vertex_buffer_data, mrpt::opengl::FILL,
-		text_spacing, text_kerning);
+		m_str, tris, vbd, mrpt::opengl::FILL, text_spacing, text_kerning);
 
 	// All lines & triangles, the same color:
-	CRenderizableShaderText::m_color_buffer_data.assign(
-		m_vertex_buffer_data.size(), m_color);
+	cbd.assign(vbd.size(), m_color);
 	for (auto& tri : m_triangles) tri.setColor(m_color);
 }
 
@@ -50,6 +54,8 @@ void CText::render(const RenderContext& rc) const
 	//     [-1,-1] (left-bottom) - [+1,+1] (top-right)
 	//
 	const auto& pmv = rc.state->pmv_matrix;
+	if (std::abs(pmv(3, 3)) < 1e-10) return;
+
 	const auto px =
 		mrpt::math::TPoint2Df(pmv(0, 3) / pmv(3, 3), pmv(1, 3) / pmv(3, 3));
 

@@ -92,8 +92,6 @@ void TestOpenGLObjects()
 		auto obj2 = opengl::CArrow::Create(1, 2, 3, 6, -3, 0, 0.1f, 0.1f, 0.3f);
 		obj2->setLocation(off_x, 0, 0);
 		obj2->setColor(0, 0, 1);
-		obj2->setName("arrow #2");
-		obj2->enableShowName();
 		theScene->insert(obj2);
 
 		auto gl_txt = opengl::CText::Create("CArrow");
