@@ -15,6 +15,8 @@
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/T3DPointsProjectionParams.h>
+#include <mrpt/obs/T3DPointsTo2DScanParams.h>
 #include <mrpt/obs/TPixelLabelInfo.h>
 #include <mrpt/obs/TRangeImageFilter.h>
 #include <mrpt/opengl/pointcloud_adapters.h>
@@ -25,79 +27,22 @@
 #include <mrpt/typemeta/TEnumType.h>
 #include <optional>
 
-namespace mrpt
+namespace mrpt::obs
 {
-namespace obs
-{
-/** Used in CObservation3DRangeScan::project3DPointsFromDepthImageInto() */
-struct T3DPointsProjectionParams
-{
-	/** (Default: false) If false, local (sensor-centric) coordinates of points
-	 * are generated. Otherwise, points are transformed with \a sensorPose.
-	 * Furthermore, if provided, those coordinates are transformed with \a
-	 * robotPoseInTheWorld */
-	bool takeIntoAccountSensorPoseOnRobot{false};
-	/** (Default: nullptr) Read takeIntoAccountSensorPoseOnRobot */
-	const mrpt::poses::CPose3D* robotPoseInTheWorld{nullptr};
-	/** (Default:true) [Only used when `range_is_depth`=true] Whether to use a
-	 * Look-up-table (LUT) to speed up the conversion. It's thread safe in all
-	 * situations <b>except</b> when you call this method from different threads
-	 * <b>and</b> with different camera parameter matrices. In all other cases,
-	 * it is a good idea to left it enabled. */
-	bool PROJ3D_USE_LUT{true};
-	/** (Default:true) If possible, use SSE2 optimized code. */
-	bool USE_SSE2{true};
-	/** (Default:false) set to true if you want an organized point cloud */
-	bool MAKE_ORGANIZED{false};
-
-	/** (Default:1) If !=1, split the range image in blocks of DxD
-	 * (D=decimation), and only generates one point per block, with the minimum
-	 * valid range. */
-	uint8_t decimation{1};
-
-	T3DPointsProjectionParams() = default;
-};
-/** Used in CObservation3DRangeScan::convertTo2DScan() */
-struct T3DPointsTo2DScanParams
-{
-	/** The sensor label that will have the newly created observation. */
-	std::string sensorLabel;
-	/** (Default=5 degrees) [Only if use_origin_sensor_pose=false] The upper &
-	 * lower half-FOV angle (in radians). */
-	double angle_sup, angle_inf;
-	/** (Default:-inf, +inf) [Only if use_origin_sensor_pose=true] Only obstacle
-	 * points with Z coordinates within the range [z_min,z_max] will be taken
-	 * into account. */
-	double z_min, z_max;
-	/** (Default=1.2=120%) How many more laser scans rays to create (read docs
-	 * for CObservation3DRangeScan::convertTo2DScan()). */
-	double oversampling_ratio{1.2};
-
-	/** (Default:false) If `false`, the conversion will be such that the 2D
-	 * observation pose on the robot coincides with that in the original 3D
-	 * range scan.
-	 * If `true`, the sensed points will be "reprojected" as seen from a sensor
-	 * pose at the robot/vehicle frame origin  (and angle_sup, angle_inf will be
-	 * ignored) */
-	bool use_origin_sensor_pose{false};
-
-	T3DPointsTo2DScanParams();
-};
-
 namespace detail
 {
 // Implemented in CObservation3DRangeScan_project3D_impl.h
 template <class POINTMAP>
-void project3DPointsFromDepthImageInto(
+void unprojectInto(
 	mrpt::obs::CObservation3DRangeScan& src_obs, POINTMAP& dest_pointcloud,
 	const mrpt::obs::T3DPointsProjectionParams& projectParams,
 	const mrpt::obs::TRangeImageFilterParams& filterParams);
 }  // namespace detail
 
-/** Declares a class derived from "CObservation" that encapsules a 3D range scan
- *measurement, as from a time-of-flight range camera or any other RGBD sensor.
+/** A range or depth 3D scan measurement, as from a time-of-flight range camera
+ *or a structured-light depth RGBD sensor.
  *
- *  This kind of observations can carry one or more of these data fields:
+ * This kind of observations can carry one or more of these data fields:
  *    - 3D point cloud (as float's).
  *    - Each 3D point has its associated (u,v) pixel coordinates in \a
  *points3D_idxs_x & \a points3D_idxs_y (New in MRPT 1.4.0)
@@ -183,13 +128,12 @@ void project3DPointsFromDepthImageInto(
  *Kinect. Look at field \a intensityImageChannel to
  *    find out if the image was grabbed from the visible (RGB) or IR channels.
  *
- *  3D point clouds can be generated at any moment after grabbing with
- *CObservation3DRangeScan::project3DPointsFromDepthImage() and
- *CObservation3DRangeScan::project3DPointsFromDepthImageInto(), provided the
+ * 3D point clouds can be generated at any moment after grabbing with
+ * CObservation3DRangeScan::unprojectInto(), provided the
  *correct
- *   calibration parameters. Note that project3DPointsFromDepthImage() will
+ *   calibration parameters. Note that unprojectInto() will
  *store the point cloud in sensor-centric local coordinates. Use
- *project3DPointsFromDepthImageInto() to directly obtain vehicle or world
+ *unprojectInto() to directly obtain vehicle or world
  *coordinates.
  *
  *  Example of how to assign labels to pixels (for object segmentation, semantic
@@ -263,14 +207,13 @@ class CObservation3DRangeScan : public CObservation
 	void unload() override;
 	/** @} */
 
-	/** Project the RGB+D images into a 3D point cloud (with color if the target
-	 * map supports it) and optionally at a given 3D pose.
-	 *  The 3D point coordinates are computed from the depth image (\a
-	 * rangeImage) and the depth camera camera parameters (\a cameraParams).
-	 *  There exist two set of formulas for projecting the i'th point,
-	 * depending on the value of "range_is_depth".
-	 *   In all formulas below, "rangeImage" is the matrix of ranges and the
-	 * pixel coordinates are (r,c).
+	/** Unprojects the RGB+D image pair into a 3D point cloud (with color if the
+	 * target map supports it) and optionally at a given 3D pose. The 3D point
+	 * coordinates are computed from the depth image (\a rangeImage) and the
+	 * depth camera camera parameters (\a cameraParams). There exist two set of
+	 * formulas for projecting the i'th point, depending on the value of
+	 * "range_is_depth". In all formulas below, "rangeImage" is the matrix of
+	 * ranges and the pixel coordinates are (r,c).
 	 *
 	 *  1) [range_is_depth=true] With "range equals depth" or "Kinect-like
 	 * depth mode": the range values
@@ -311,26 +254,13 @@ class CObservation3DRangeScan : public CObservation
 	 * mrpt::opengl::CPointCloudColoured, PCL point clouds,...)
 	 */
 	template <class POINTMAP>
-	inline void project3DPointsFromDepthImageInto(
+	inline void unprojectInto(
 		POINTMAP& dest_pointcloud,
 		const T3DPointsProjectionParams& projectParams,
 		const TRangeImageFilterParams& filterParams = TRangeImageFilterParams())
 	{
-		detail::project3DPointsFromDepthImageInto<POINTMAP>(
+		detail::unprojectInto<POINTMAP>(
 			*this, dest_pointcloud, projectParams, filterParams);
-	}
-
-	/** This method is equivalent to \c project3DPointsFromDepthImageInto()
-	 * storing the projected 3D points (without color, in local sensor-centric
-	 * coordinates) in this same class.
-	 *  For new code it's recommended to use instead \c
-	 * project3DPointsFromDepthImageInto() which is much more versatile. */
-	inline void project3DPointsFromDepthImage(const bool PROJ3D_USE_LUT = true)
-	{
-		T3DPointsProjectionParams p;
-		p.takeIntoAccountSensorPoseOnRobot = false;
-		p.PROJ3D_USE_LUT = PROJ3D_USE_LUT;
-		this->project3DPointsFromDepthImageInto(*this, p);
 	}
 
 	/** Convert this 3D observation into an "equivalent 2D fake laser scan",
@@ -560,6 +490,7 @@ class CObservation3DRangeScan : public CObservation
 
 	/** \name Sensor parameters
 	 * @{ */
+
 	/** Projection parameters of the depth camera. */
 	mrpt::img::TCamera cameraParams;
 	/** Projection parameters of the intensity (graylevel or RGB) camera. */
@@ -630,20 +561,24 @@ class CObservation3DRangeScan : public CObservation
 		const CObservation3DRangeScan& in_obs,
 		mrpt::img::TCamera& out_camParams, const double camera_offset = 0.01);
 
-	/** Look-up-table struct for project3DPointsFromDepthImageInto() */
-	struct TCached3DProjTables
+	/** Look-up-table struct for unprojectInto() */
+	struct unproject_LUT_t
 	{
-		mrpt::aligned_std_vector<float> Kzs, Kys;
-		mrpt::img::TCamera prev_camParams;
+		// x,y,z: +X pointing forward (depth), +z up
+		mrpt::aligned_std_vector<float> Kxs, Kys, Kzs;
 	};
-	/** 3D point cloud projection look-up-table \sa
-	 * project3DPointsFromDepthImage */
-	static TCached3DProjTables& get_3dproj_lut();
+
+	/** Gets (or generates upon first request) the 3D point cloud projection
+	 * look-up-table for the current depth camera intrinsics & distortion
+	 * parameters.
+	 * Returns a const reference to a global variable. Multithread safe.
+	 * \sa unprojectInto */
+	const unproject_LUT_t& get_unproj_lut() const;
 
 };  // End of class def.
+}  // namespace mrpt::obs
 
-}  // namespace obs
-namespace opengl
+namespace mrpt::opengl
 {
 /** Specialization mrpt::opengl::PointCloudAdapter<CObservation3DRangeScan>
  * \ingroup mrpt_adapters_grp */
@@ -702,8 +637,7 @@ class PointCloudAdapter<mrpt::obs::CObservation3DRangeScan>
 	}
 
 };  // end of PointCloudAdapter<CObservation3DRangeScan>
-}  // namespace opengl
-}  // namespace mrpt
+}  // namespace mrpt::opengl
 MRPT_ENUM_TYPE_BEGIN(mrpt::obs::CObservation3DRangeScan::TIntensityChannelID)
 MRPT_FILL_ENUM_MEMBER(mrpt::obs::CObservation3DRangeScan, CH_VISIBLE);
 MRPT_FILL_ENUM_MEMBER(mrpt::obs::CObservation3DRangeScan, CH_IR);

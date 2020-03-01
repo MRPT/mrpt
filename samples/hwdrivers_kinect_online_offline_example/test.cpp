@@ -363,7 +363,7 @@ void Test_KinectOnlineOffline(
 #if 0
 				static pcl::PointCloud<pcl::PointXYZ> cloud;
 				logger.enter("RGBD->3D.projectInto");
-				newObs->project3DPointsFromDepthImageInto(cloud, false /* without obs.sensorPose */);
+				newObs->unprojectInto(cloud, false /* without obs.sensorPose */);
 				logger.leave("RGBD->3D.projectInto");
 
 				win3D.get3DSceneAndLock();
@@ -377,7 +377,7 @@ void Test_KinectOnlineOffline(
 #if 0
 				static pcl::PointCloud<pcl::PointXYZRGB> cloud;
 				logger.enter("RGBD->3D.projectInto");
-				newObs->project3DPointsFromDepthImageInto(cloud, false /* without obs.sensorPose */);
+				newObs->unprojectInto(cloud, false /* without obs.sensorPose */);
 				logger.leave("RGBD->3D.projectInto");
 
 				win3D.get3DSceneAndLock();
@@ -394,7 +394,7 @@ void Test_KinectOnlineOffline(
 				mrpt::obs::T3DPointsProjectionParams pp;
 				pp.takeIntoAccountSensorPoseOnRobot = false;
 
-				newObs->project3DPointsFromDepthImageInto(*gl_points, pp);
+				newObs->unprojectInto(*gl_points, pp);
 
 				logger.leave("RGBD->3D.projectInto");
 				win3D.unlockAccess3DScene();
@@ -405,7 +405,7 @@ void Test_KinectOnlineOffline(
 				const CPose3D globalPose(1,2,3,10.0_deg,20.0_deg,30.0_deg);
 				win3D.get3DSceneAndLock();
 				logger.enter("RGBD->3D.projectInto");
-					newObs->project3DPointsFromDepthImageInto(*gl_points, false /* without obs.sensorPose */, &globalPose);
+					newObs->unprojectInto(*gl_points, false /* without obs.sensorPose */, &globalPose);
 				logger.leave("RGBD->3D.projectInto");
 				win3D.unlockAccess3DScene();
 #endif
@@ -417,7 +417,7 @@ void Test_KinectOnlineOffline(
 				if (!newObs->hasPoints3D)
 				{
 				logger.enter("RGBD->3D.projectInto");
-					newObs->project3DPointsFromDepthImage();
+					newObs->unprojectInto();
 				logger.leave("RGBD->3D.projectInto");
 				}
 

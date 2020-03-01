@@ -593,7 +593,7 @@ void CKinect::getNextObservation(
 	// 3D point cloud:
 	if (_out_obs.hasRangeImage && m_grab_3D_points)
 	{
-		_out_obs.project3DPointsFromDepthImage();
+		_out_obs.unprojectInto();
 
 		if (!m_grab_depth)
 		{

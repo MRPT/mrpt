@@ -109,8 +109,8 @@ TPlane::TPlane(const TPoint3D& p1, const TPoint3D& p2, const TPoint3D& p3)
 	coefs[0] = dy1 * dz2 - dy2 * dz1;
 	coefs[1] = dz1 * dx2 - dz2 * dx1;
 	coefs[2] = dx1 * dy2 - dx2 * dy1;
-	if (std::abs(coefs[0]) < getEpsilon() && std::abs(coefs[1]) < getEpsilon() &&
-		std::abs(coefs[2]) < getEpsilon())
+	if (std::abs(coefs[0]) < getEpsilon() &&
+		std::abs(coefs[1]) < getEpsilon() && std::abs(coefs[2]) < getEpsilon())
 		throw std::logic_error("Points are linearly dependent");
 	coefs[3] = -coefs[0] * p1.x - coefs[1] * p1.y - coefs[2] * p1.z;
 }
@@ -122,8 +122,8 @@ TPlane::TPlane(const TPoint3D& p1, const TLine3D& r2)
 	coefs[0] = dy1 * r2.director[2] - dz1 * r2.director[1];
 	coefs[1] = dz1 * r2.director[0] - dx1 * r2.director[2];
 	coefs[2] = dx1 * r2.director[1] - dy1 * r2.director[0];
-	if (std::abs(coefs[0]) < getEpsilon() && std::abs(coefs[1]) < getEpsilon() &&
-		std::abs(coefs[2]) < getEpsilon())
+	if (std::abs(coefs[0]) < getEpsilon() &&
+		std::abs(coefs[1]) < getEpsilon() && std::abs(coefs[2]) < getEpsilon())
 		throw std::logic_error("Point is contained in the line");
 	coefs[3] = -coefs[0] * p1.x - coefs[1] * p1.y - coefs[2] * p1.z;
 }
@@ -144,8 +144,8 @@ TPlane::TPlane(const TLine3D& r1, const TLine3D& r2)
 	crossProduct3D(r1.director, r2.director, coefs);
 	coefs[3] =
 		-coefs[0] * r1.pBase.x - coefs[1] * r1.pBase.y - coefs[2] * r1.pBase.z;
-	if (std::abs(coefs[0]) < getEpsilon() && std::abs(coefs[1]) < getEpsilon() &&
-		std::abs(coefs[2]) < getEpsilon())
+	if (std::abs(coefs[0]) < getEpsilon() &&
+		std::abs(coefs[1]) < getEpsilon() && std::abs(coefs[2]) < getEpsilon())
 	{
 		// Lines are parallel
 		if (r1.contains(r2.pBase)) throw std::logic_error("Lines are the same");

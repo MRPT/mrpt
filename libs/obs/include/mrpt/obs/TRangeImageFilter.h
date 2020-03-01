@@ -13,7 +13,7 @@
 
 namespace mrpt::obs
 {
-/** Used in CObservation3DRangeScan::project3DPointsFromDepthImageInto() */
+/** Used in CObservation3DRangeScan::unprojectInto() */
 struct TRangeImageFilterParams
 {
 	/** Only used if <b>both</b> rangeMask_min and rangeMask_max are present.
@@ -44,7 +44,7 @@ struct TRangeImageFilterParams
 };
 
 /** Mainly for internal use within
- * CObservation3DRangeScan::project3DPointsFromDepthImageInto() */
+ * CObservation3DRangeScan::unprojectInto() */
 struct TRangeImageFilter
 {
 	TRangeImageFilterParams fp;
