@@ -22,6 +22,11 @@
 using namespace mrpt;
 using namespace std;
 
+// We need OPENCV to read the image internal to CObservation3DRangeScan,
+// and to build the unprojected points LUTs, so skip tests if we don't have
+// opencv.
+#if MRPT_HAS_OPENCV
+
 constexpr unsigned int TEST_RANGEIMG_WIDTH = 32;
 constexpr unsigned int TEST_RANGEIMG_HEIGHT = 24;
 
@@ -200,10 +205,6 @@ TEST(CObservation3DRangeScan, Project3D_filterMax)
 			<< " testcase flags: i=" << i << std::endl;
 	}
 }
-
-// We need OPENCV to read the image internal to CObservation3DRangeScan,
-// so skip this test if built without opencv.
-#if MRPT_HAS_OPENCV
 
 TEST(CObservation3DRangeScan, LoadAndCheckFloorPoints)
 {

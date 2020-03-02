@@ -72,8 +72,11 @@ const CObservation3DRangeScan::unproject_LUT_t&
 		LUTs[std::make_pair(this->cameraParams, this->range_is_depth)];
 	LUTs_mtx.unlock();
 
+	ASSERT_EQUAL_(rangeImage.cols(), static_cast<int>(cameraParams.ncols));
+	ASSERT_EQUAL_(rangeImage.rows(), static_cast<int>(cameraParams.nrows));
+
 	// already existed and was filled?
-	int H = cameraParams.nrows, W = cameraParams.ncols;
+	unsigned int H = cameraParams.nrows, W = cameraParams.ncols;
 	const size_t WH = W * H;
 	if (ret.Kxs.size() == WH) return ret;
 
@@ -100,8 +103,8 @@ const CObservation3DRangeScan::unproject_LUT_t&
 		for (int j = 0; j < 3; j++)
 			cv_intrinsics.at<double>(i, j) = intrMat(i, j);
 
-	for (int r = 0; r < H; r++)
-		for (int c = 0; c < W; c++)
+	for (unsigned int r = 0; r < H; r++)
+		for (unsigned int c = 0; c < W; c++)
 		{
 			auto& p = pts.at<cv::Vec2f>(r * W + c);
 			p[0] = c;
@@ -507,6 +510,20 @@ void CObservation3DRangeScan::serializeFrom(
 				if (do_have_labels)
 					pixelLabels.reset(
 						TPixelLabelInfoBase::readAndBuildFromStream(in));
+			}
+
+			// auto-fix wrong camera resolution in parameters:
+			if (hasRangeImage &&
+				(static_cast<int>(cameraParams.ncols) != rangeImage.cols() ||
+				 static_cast<int>(cameraParams.nrows) != rangeImage.rows()))
+			{
+				std::cerr << "[CObservation3DRangeScan] Warning: autofixing "
+							 "incorrect camera resolution in TCamera:"
+						  << cameraParams.ncols << "x" << cameraParams.nrows
+						  << " => " << rangeImage.cols() << "x"
+						  << rangeImage.rows() << "\n";
+				cameraParams.ncols = rangeImage.cols();
+				cameraParams.nrows = rangeImage.rows();
 			}
 		}
 		break;
