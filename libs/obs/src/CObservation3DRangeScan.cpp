@@ -27,6 +27,7 @@
 #include <cstring>
 #include <limits>
 #include <mutex>
+#include <unordered_map>
 
 using namespace std;
 using namespace mrpt::obs;
