@@ -22,8 +22,8 @@
 using namespace mrpt;
 using namespace std;
 
-#define TEST_RANGEIMG_WIDTH 32
-#define TEST_RANGEIMG_HEIGHT 24
+constexpr unsigned int TEST_RANGEIMG_WIDTH = 32;
+constexpr unsigned int TEST_RANGEIMG_HEIGHT = 24;
 
 void fillSampleObs(
 	mrpt::obs::CObservation3DRangeScan& obs,
@@ -290,14 +290,74 @@ TEST(CObservation3DRangeScan, LoadAndCheckFloorPoints)
 
 TEST(CObservation3DRangeScan, SyntheticRange)
 {
-	//
-	MRPT_TODO("Write me");
-	THROW_EXCEPTION("write me");
+	for (int i = 0; i < 4; i++)  // test all combinations of flags
+	{
+		mrpt::obs::T3DPointsProjectionParams pp;
+		mrpt::obs::CObservation3DRangeScan o;
+		fillSampleObs(o, pp, i);
+		const float R = 15.0f;
+		o.rangeImage.fill(static_cast<uint16_t>(R / o.rangeUnits));
+
+		// Ranges:
+		o.range_is_depth = false;
+
+		// x y z yaw pitch roll
+		o.sensorPose = mrpt::poses::CPose3D::FromString("[1 2 3 0 0 0]");
+
+		mrpt::maps::CSimplePointsMap pts;
+		o.unprojectInto(pts, pp);
+
+		EXPECT_EQ(pts.size(), TEST_RANGEIMG_WIDTH * TEST_RANGEIMG_HEIGHT);
+
+		for (size_t j = 0; j < pts.size(); j++)
+		{
+			float px, py, pz;
+			pts.getPoint(j, px, py, pz);
+
+			mrpt::math::TPoint3D l;
+			if (pp.takeIntoAccountSensorPoseOnRobot)
+				o.sensorPose.inverseComposePoint(px, py, pz, l.x, l.y, l.z);
+			else
+				l = mrpt::math::TPoint3D(px, py, pz);
+
+			EXPECT_NEAR(l.norm(), R, 2e-3);
+		}
+	}
 }
 
 TEST(CObservation3DRangeScan, SyntheticDepth)
 {
-	//
-	MRPT_TODO("Write me");
-	THROW_EXCEPTION("write me");
+	for (int i = 0; i < 4; i++)  // test all combinations of flags
+	{
+		mrpt::obs::T3DPointsProjectionParams pp;
+		mrpt::obs::CObservation3DRangeScan o;
+		fillSampleObs(o, pp, i);
+		const float R = 15.0f;
+		o.rangeImage.fill(static_cast<uint16_t>(R / o.rangeUnits));
+
+		// depth:
+		o.range_is_depth = true;
+
+		// x y z yaw pitch roll
+		o.sensorPose = mrpt::poses::CPose3D::FromString("[1 2 3 0 0 0]");
+
+		mrpt::maps::CSimplePointsMap pts;
+		o.unprojectInto(pts, pp);
+
+		EXPECT_EQ(pts.size(), TEST_RANGEIMG_WIDTH * TEST_RANGEIMG_HEIGHT);
+
+		for (size_t j = 0; j < pts.size(); j++)
+		{
+			float px, py, pz;
+			pts.getPoint(j, px, py, pz);
+
+			mrpt::math::TPoint3D l;
+			if (pp.takeIntoAccountSensorPoseOnRobot)
+				o.sensorPose.inverseComposePoint(px, py, pz, l.x, l.y, l.z);
+			else
+				l = mrpt::math::TPoint3D(px, py, pz);
+
+			EXPECT_NEAR(l.x, R, 2e-3);
+		}
+	}
 }
