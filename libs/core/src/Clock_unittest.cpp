@@ -61,6 +61,10 @@ TEST(clock, checkSynchEpoch)
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(5));
 		const int64_t err = mrpt::Clock::resetMonotonicToRealTimeEpoch();
-		EXPECT_LT(std::abs(err), 5000);
+
+		// it should be a really small number in a regular computer,
+		// but we set the threshold much higher due to spurious errors
+		// when running unit tests in VMs (build farms)
+		EXPECT_LT(std::abs(err), 70000);
 	}
 }
