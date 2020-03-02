@@ -52,7 +52,6 @@
 #include <mrpt/opengl/CFBORender.h>
 #include <mrpt/opengl/CGeneralizedCylinder.h>
 #include <mrpt/opengl/COctoMapVoxels.h>
-#include <mrpt/opengl/COpenGLStandardObject.h>
 #include <mrpt/opengl/CPolyhedron.h>
 #include <mrpt/opengl/CVectorField2D.h>
 #include <mrpt/opengl/CVectorField3D.h>
