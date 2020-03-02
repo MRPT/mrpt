@@ -12,6 +12,7 @@
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <array>
+#include <functional>  // hash
 
 namespace mrpt::img
 {
@@ -224,3 +225,25 @@ bool operator!=(const mrpt::img::TCamera& a, const mrpt::img::TCamera& b);
 }  // namespace mrpt::img
 // Add for declaration of mexplus::from template specialization
 DECLARE_MEXPLUS_FROM(mrpt::img::TCamera)  // Not working at the beginning?
+
+namespace std
+{
+template <>
+struct hash<mrpt::img::TCamera>
+{
+	size_t operator()(const mrpt::img::TCamera& k) const
+	{
+		size_t res = 17;
+		res = res * 31 + hash<double>()(k.cx());
+		res = res * 31 + hash<double>()(k.cy());
+		res = res * 31 + hash<double>()(k.fx());
+		res = res * 31 + hash<double>()(k.fy());
+		res = res * 31 + hash<uint32_t>()(k.ncols);
+		res = res * 31 + hash<uint32_t>()(k.nrows);
+		for (unsigned int i = 0; i < k.dist.size(); i++)
+			res = res * 31 + hash<double>()(k.dist[i]);
+		return res;
+	}
+};
+
+}  // namespace std

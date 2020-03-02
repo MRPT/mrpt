@@ -297,7 +297,7 @@ void COpenNI2Sensor::getNextObservation(
 	// 3D point cloud:
 	if (out_obs.hasRangeImage && m_grab_3D_points)
 	{
-		out_obs.project3DPointsFromDepthImage();
+		out_obs.unprojectInto(out_obs);
 
 		if (!m_grab_depth)
 		{

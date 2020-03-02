@@ -548,7 +548,9 @@ bool COccupancyGridMap2D::internal_insertObservation(
 
 						// Increments at each raytracing step:
 						const float inv_N_01 =
-							1.0f / (max3(std::abs(Acx01), std::abs(Acy01), std::abs(Acx01b)) +
+							1.0f / (max3(
+										std::abs(Acx01), std::abs(Acy01),
+										std::abs(Acx01b)) +
 									1);  // Number of steps ^ -1
 						const int frAcx01 = round(
 							(Acx01 << FRBITS) * inv_N_01);  //  Acx*128 / N
@@ -636,7 +638,9 @@ bool COccupancyGridMap2D::internal_insertObservation(
 
 						// Increments at each raytracing step:
 						const float inv_N_12 =
-							1.0f / (max3(std::abs(Acx12), std::abs(Acy12), std::abs(Acx1b2)) +
+							1.0f / (max3(
+										std::abs(Acx12), std::abs(Acy12),
+										std::abs(Acx1b2)) +
 									1);  // Number of steps ^ -1
 						const int frAcx12 = round(
 							(Acx12 << FRBITS) * inv_N_12);  //  Acx*128 / N
@@ -759,7 +763,8 @@ bool COccupancyGridMap2D::internal_insertObservation(
 							const int AcyE = P2.cy - P1.cy;
 
 							// Increments at each raytracing step:
-							const int nSteps = (max(std::abs(AcxE), std::abs(AcyE)) + 1);
+							const int nSteps =
+								(max(std::abs(AcxE), std::abs(AcyE)) + 1);
 							const float inv_N_12 =
 								1.0f / nSteps;  // Number of steps ^ -1
 							const int frAcxE = round(
@@ -1055,7 +1060,9 @@ bool COccupancyGridMap2D::internal_insertObservation(
 
 					// Increments at each raytracing step:
 					const float inv_N_01 =
-						1.0f / (max3(std::abs(Acx01), std::abs(Acy01), std::abs(Acx01b)) +
+						1.0f / (max3(
+									std::abs(Acx01), std::abs(Acy01),
+									std::abs(Acx01b)) +
 								1);  // Number of steps ^ -1
 					const int frAcx01 =
 						round((Acx01 << FRBITS) * inv_N_01);  //  Acx*128 / N
@@ -1141,7 +1148,9 @@ bool COccupancyGridMap2D::internal_insertObservation(
 
 					// Increments at each raytracing step:
 					const float inv_N_12 =
-						1.0f / (max3(std::abs(Acx12), std::abs(Acy12), std::abs(Acx1b2)) +
+						1.0f / (max3(
+									std::abs(Acx12), std::abs(Acy12),
+									std::abs(Acx1b2)) +
 								1);  // Number of steps ^ -1
 					const int frAcx12 =
 						round((Acx12 << FRBITS) * inv_N_12);  //  Acx*128 / N
@@ -1262,7 +1271,8 @@ bool COccupancyGridMap2D::internal_insertObservation(
 						const int AcyE = P2.cy - P1.cy;
 
 						// Increments at each raytracing step:
-						const int nSteps = (max(std::abs(AcxE), std::abs(AcyE)) + 1);
+						const int nSteps =
+							(max(std::abs(AcxE), std::abs(AcyE)) + 1);
 						const float inv_N_12 =
 							1.0f / nSteps;  // Number of steps ^ -1
 						const int frAcxE =

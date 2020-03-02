@@ -284,7 +284,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 
 			mrpt::obs::T3DPointsProjectionParams pp;
 			pp.takeIntoAccountSensorPoseOnRobot = true;
-			obs->project3DPointsFromDepthImageInto(*pointMapCol, pp);
+			obs->unprojectInto(*pointMapCol, pp);
 			pointMap = pointMapCol;
 		}
 		else

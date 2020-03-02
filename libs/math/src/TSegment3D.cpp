@@ -112,7 +112,8 @@ double TSegment3D::distance(const TSegment3D& segment) const
 bool TSegment3D::contains(const TPoint3D& point) const
 {
 	// Not very intuitive, but very fast, method.
-	return std::abs(math::distance(point1, point) + math::distance(point2, point) -
+	return std::abs(
+			   math::distance(point1, point) + math::distance(point2, point) -
 			   math::distance(point1, point2)) < getEpsilon();
 }
 

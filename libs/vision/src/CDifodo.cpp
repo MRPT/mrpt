@@ -338,7 +338,8 @@ void CDifodo::buildCoordinatesPyramidFast()
 
 							for (unsigned char k = 0; k < 16; k++)
 							{
-								const float abs_dif = std::abs(d_block(k) - dcenter);
+								const float abs_dif =
+									std::abs(d_block(k) - dcenter);
 								if (abs_dif < max_depth_dif)
 								{
 									const float aux_w =
@@ -448,7 +449,8 @@ void CDifodo::performWarping()
 					const float delta_d = vwarp - float(vwarp_d);
 
 					// Warped pixel very close to an integer value
-					if (std::abs(round(uwarp) - uwarp) + std::abs(round(vwarp) - vwarp) <
+					if (std::abs(round(uwarp) - uwarp) +
+							std::abs(round(vwarp) - vwarp) <
 						0.05f)
 					{
 						depth_warped[image_level](round(vwarp), round(uwarp)) +=
