@@ -39,8 +39,26 @@ using mrpt::config::CConfigFileMemory;
 IMPLEMENTS_SERIALIZABLE(CObservation3DRangeScan, CObservation, mrpt::obs)
 
 // Static LUT:
-static std::unordered_map<
-	mrpt::img::TCamera, CObservation3DRangeScan::unproject_LUT_t>
+
+// Index info: camera parameters + range_is_depth
+using LUT_info = std::pair<mrpt::img::TCamera, bool>;
+
+namespace std
+{
+template <>
+struct hash<LUT_info>
+{
+	size_t operator()(const LUT_info& k) const
+	{
+		size_t res = 17;
+		res = res * 31 + hash<mrpt::img::TCamera>()(k.first);
+		res = res * 31 + hash<bool>()(k.second);
+		return res;
+	}
+};
+}  // namespace std
+
+static std::unordered_map<LUT_info, CObservation3DRangeScan::unproject_LUT_t>
 	LUTs;
 static std::mutex LUTs_mtx;
 
@@ -50,7 +68,8 @@ const CObservation3DRangeScan::unproject_LUT_t&
 #if MRPT_HAS_OPENCV
 	// Access to, or create upon first usage:
 	LUTs_mtx.lock();
-	const unproject_LUT_t& ret = LUTs[this->cameraParams];
+	const unproject_LUT_t& ret =
+		LUTs[std::make_pair(this->cameraParams, this->range_is_depth)];
 	LUTs_mtx.unlock();
 
 	// already existed and was filled?
