@@ -256,7 +256,8 @@ class CObservation3DRangeScan : public CObservation
 	template <class POINTMAP>
 	inline void unprojectInto(
 		POINTMAP& dest_pointcloud,
-		const T3DPointsProjectionParams& projectParams,
+		const T3DPointsProjectionParams& projectParams =
+			T3DPointsProjectionParams(),
 		const TRangeImageFilterParams& filterParams = TRangeImageFilterParams())
 	{
 		detail::unprojectInto<POINTMAP>(
