@@ -82,7 +82,7 @@
     - Update Assimp lib version 4.0.1 -> 4.1.0 (when built as ExternalProject)
   - \ref mrpt_obs_grp
     - mrpt::obs::CObservation2DRangeScan: Deprecated access to scan data via proxy objects `obs->scan[i]`, `obs->validRange[i]`, `obs->intensity[i]` has been deleted. Please use the alternative getters/setters: `obs->getScanRange(i)`, etc.
-    - mrpt::obs::T3DPointsProjectionParams and mrpt::obs::CObservation3DRangeScan::project3DPointsFromDepthImageInto now together support organized PCL point clouds.
+    - mrpt::obs::T3DPointsProjectionParams and mrpt::obs::CObservation3DRangeScan::unprojectInto now together support organized PCL point clouds.
     - New method: mrpt::obs::CObservation3DRangeScan::rangeImage_getAsImage()
   - \ref mrpt_poses_grp  [NEW IN MRPT 2.0.0]
     - Reorganized all Lie Algebra methods into \ref mrpt_poses_lie_grp
@@ -366,7 +366,7 @@ scan members.
       - [ABI change] mrpt::obs::CObservation3DRangeScan:
         - Now uses more SSE2 optimized code
         - Depth filters are now available for
-mrpt::obs::CObservation3DRangeScan::project3DPointsFromDepthImageInto() and
+mrpt::obs::CObservation3DRangeScan::unprojectInto() and
 mrpt::obs::CObservation3DRangeScan::convertTo2DScan()
         - New switch
 mrpt::obs::CObservation3DRangeScan::EXTERNALS_AS_TEXT for runtime selection of

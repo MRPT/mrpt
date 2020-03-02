@@ -345,7 +345,7 @@ void CSwissRanger3DCamera::internal_resendParamsToCamera() const
  * \sa doProcess
  */
 void CSwissRanger3DCamera::getNextObservation(
-	mrpt::obs::CObservation3DRangeScan& _out_obs, bool& there_is_obs,
+	mrpt::obs::CObservation3DRangeScan& m_out_obs, bool& there_is_obs,
 	bool& hardware_error)
 {
 	there_is_obs = false;
@@ -530,14 +530,14 @@ void CSwissRanger3DCamera::getNextObservation(
 	}
 
 	// Save the observation to the user's object:
-	_out_obs.swap(obs);
+	m_out_obs.swap(obs);
 
 	there_is_obs = true;
 
 	// preview in real-time?
 	if (m_preview_window)
 	{
-		if (_out_obs.hasRangeImage)
+		if (m_out_obs.hasRangeImage)
 		{
 			static int decim = 0;
 			if (++decim > 10)
@@ -552,13 +552,13 @@ void CSwissRanger3DCamera::getNextObservation(
 
 				mrpt::img::CImage img;
 				// Normalize the image
-				math::CMatrixFloat range2D = _out_obs.rangeImage;
+				math::CMatrixFloat range2D = m_out_obs.rangeImage;
 				range2D *= 1.0 / m_maxRange;
 				img.setFromMatrix(range2D);
 				m_win_range->showImage(img);
 			}
 		}
-		if (_out_obs.hasIntensityImage)
+		if (m_out_obs.hasIntensityImage)
 		{
 			static int decim = 0;
 			if (++decim > 10)
@@ -570,7 +570,7 @@ void CSwissRanger3DCamera::getNextObservation(
 						mrpt::gui::CDisplayWindow::Create("Preview INTENSITY");
 					m_win_int->setPos(300, 5);
 				}
-				m_win_int->showImage(_out_obs.intensityImage);
+				m_win_int->showImage(m_out_obs.intensityImage);
 			}
 		}
 	}
@@ -582,7 +582,7 @@ void CSwissRanger3DCamera::getNextObservation(
 
 	return;
 #else
-	MRPT_UNUSED_PARAM(_out_obs);
+	MRPT_UNUSED_PARAM(m_out_obs);
 	MRPT_UNUSED_PARAM(there_is_obs);
 	MRPT_UNUSED_PARAM(hardware_error);
 #endif

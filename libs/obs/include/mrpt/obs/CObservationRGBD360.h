@@ -25,7 +25,7 @@ namespace obs
 //	namespace detail {
 //		// Implemented in CObservationRGBD360_project3D_impl.h
 //		template <class POINTMAP>
-//		void project3DPointsFromDepthImageInto(CObservationRGBD360 &src_obs,
+//		void unprojectInto(CObservationRGBD360 &src_obs,
 // POINTMAP &dest_pointcloud, const bool takeIntoAccountSensorPoseOnRobot, const
 // mrpt::poses::CPose3D * robotPoseInTheWorld, const bool PROJ3D_USE_LUT);
 //	}
@@ -65,8 +65,8 @@ namespace obs
  *
  *
  *  3D point clouds can be generated at any moment after grabbing with
- *CObservationRGBD360::project3DPointsFromDepthImage() and
- *CObservationRGBD360::project3DPointsFromDepthImageInto(), provided the correct
+ *CObservationRGBD360::unprojectInto() and
+ *CObservationRGBD360::unprojectInto(), provided the correct
  *   calibration parameters.
  *
  *  \note Starting at serialization version 3 (MRPT 0.9.1+), the 3D point cloud

@@ -701,7 +701,8 @@ bool math::intersect(const TPlane& p1, const TPlane& p2, TObject3D& obj)
 	{
 		// Planes are parallel
 		for (size_t i = 0; i < 3; i++)
-			if (std::abs(p1.coefs[i] * p2.coefs[3] - p1.coefs[3] * p2.coefs[i]) >=
+			if (std::abs(
+					p1.coefs[i] * p2.coefs[3] - p1.coefs[3] * p2.coefs[i]) >=
 				geometryEpsilon)
 				return false;
 		// Planes are the same
