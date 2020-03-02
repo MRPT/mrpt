@@ -287,7 +287,6 @@ TEST(CObservation3DRangeScan, LoadAndCheckFloorPoints)
 		EXPECT_LE(bin_count[19], 5);
 	}
 }
-#endif
 
 TEST(CObservation3DRangeScan, SyntheticRange)
 {
@@ -362,3 +361,4 @@ TEST(CObservation3DRangeScan, SyntheticDepth)
 		}
 	}
 }
+#endif
