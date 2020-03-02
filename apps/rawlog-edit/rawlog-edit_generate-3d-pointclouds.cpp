@@ -50,7 +50,7 @@ DECLARE_OP_FUNCTION(op_generate_3d_pointclouds)
 				{
 					obs3D->load();  // We must be sure that depth has been
 					// loaded, if stored separately.
-					obs3D->unprojectInto();
+					obs3D->unprojectInto(*obs3D);
 					entries_modified++;
 				}
 			}

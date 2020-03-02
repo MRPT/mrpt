@@ -504,7 +504,7 @@ void CKinect::setVideoChannel(const TVideoChannel vch)
  * \sa doProcess
  */
 void CKinect::getNextObservation(
-	mrpt::obs::CObservation3DRangeScan& _out_obs, bool& there_is_obs,
+	mrpt::obs::CObservation3DRangeScan& m_out_obs, bool& there_is_obs,
 	bool& hardware_error)
 {
 	there_is_obs = false;
@@ -576,36 +576,36 @@ void CKinect::getNextObservation(
 
 	// Quick save the observation to the user's object:
 	m_latest_obs_cs.lock();
-	_out_obs.swap(m_latest_obs);
+	m_out_obs.swap(m_latest_obs);
 	m_latest_obs_cs.unlock();
 #endif
 
 	// Set common data into observation:
 	// --------------------------------------
-	_out_obs.sensorLabel = m_sensorLabel;
-	_out_obs.timestamp = mrpt::system::now();
-	_out_obs.sensorPose = m_sensorPoseOnRobot;
-	_out_obs.relativePoseIntensityWRTDepth = m_relativePoseIntensityWRTDepth;
+	m_out_obs.sensorLabel = m_sensorLabel;
+	m_out_obs.timestamp = mrpt::system::now();
+	m_out_obs.sensorPose = m_sensorPoseOnRobot;
+	m_out_obs.relativePoseIntensityWRTDepth = m_relativePoseIntensityWRTDepth;
 
-	_out_obs.cameraParams = m_cameraParamsDepth;
-	_out_obs.cameraParamsIntensity = m_cameraParamsRGB;
+	m_out_obs.cameraParams = m_cameraParamsDepth;
+	m_out_obs.cameraParamsIntensity = m_cameraParamsRGB;
 
 	// 3D point cloud:
-	if (_out_obs.hasRangeImage && m_grab_3D_points)
+	if (m_out_obs.hasRangeImage && m_grab_3D_points)
 	{
-		_out_obs.unprojectInto();
+		m_out_obs.unprojectInto(m_out_obs);
 
 		if (!m_grab_depth)
 		{
-			_out_obs.hasRangeImage = false;
-			_out_obs.rangeImage.resize(0, 0);
+			m_out_obs.hasRangeImage = false;
+			m_out_obs.rangeImage.resize(0, 0);
 		}
 	}
 
 	// preview in real-time?
 	if (m_preview_window)
 	{
-		if (_out_obs.hasRangeImage)
+		if (m_out_obs.hasRangeImage)
 		{
 			if (++m_preview_decim_counter_range > m_preview_window_decimation)
 			{
@@ -618,11 +618,11 @@ void CKinect::getNextObservation(
 				}
 
 				// Normalize the image
-				mrpt::img::CImage img = _out_obs.rangeImage_getAsImage();
+				mrpt::img::CImage img = m_out_obs.rangeImage_getAsImage();
 				m_win_range->showImage(img);
 			}
 		}
-		if (_out_obs.hasIntensityImage)
+		if (m_out_obs.hasIntensityImage)
 		{
 			if (++m_preview_decim_counter_rgb > m_preview_window_decimation)
 			{
@@ -633,7 +633,7 @@ void CKinect::getNextObservation(
 						mrpt::gui::CDisplayWindow::Create("Preview INTENSITY");
 					m_win_int->setPos(300, 5);
 				}
-				m_win_int->showImage(_out_obs.intensityImage);
+				m_win_int->showImage(m_out_obs.intensityImage);
 			}
 		}
 	}
