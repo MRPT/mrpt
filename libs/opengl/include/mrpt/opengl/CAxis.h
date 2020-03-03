@@ -34,6 +34,9 @@ class CAxis : public CRenderizableShaderWireFrame
 	 * @{ */
 	void onUpdateBuffers_Wireframe() override;
 	void render(const RenderContext& rc) const override;
+	void enqueForRenderRecursive(
+		const mrpt::opengl::TRenderMatrices& state,
+		RenderQueue& rq) const override;
 	/** @} */
 
 	/** Constructor */
@@ -78,6 +81,8 @@ class CAxis : public CRenderizableShaderWireFrame
 	float m_textScale{0.25f};
 	float m_textRot[3][3];  // {x,y,z},{yaw,pitch,roll}
 	float m_markLen{0.07f};
+
+	mrpt::opengl::CListOpenGLObjects m_gl_labels;
 };
 
 }  // namespace mrpt::opengl

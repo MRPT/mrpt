@@ -67,7 +67,7 @@ void mrpt::opengl::enqueForRendering(
 				scale(0, 0) = obj->getScaleX();
 				scale(1, 1) = obj->getScaleY();
 				scale(2, 2) = obj->getScaleZ();
-				HM = scale * HM;
+				HM = HM * scale;
 			}
 
 			// Make a copy of rendering state, so we always have the original
