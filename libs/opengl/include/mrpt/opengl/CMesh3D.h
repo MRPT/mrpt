@@ -9,8 +9,11 @@
 
 #pragma once
 
-#include <mrpt/img/color_maps.h>
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/math/CMatrixFixed.h>
+#include <mrpt/math/TPoint3D.h>
+#include <mrpt/opengl/CRenderizableShaderPoints.h>
+#include <mrpt/opengl/CRenderizableShaderTriangles.h>
+#include <mrpt/opengl/CRenderizableShaderWireFrame.h>
 #include <array>
 
 namespace mrpt::opengl
@@ -29,62 +32,30 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_opengl_grp
  */
-class CMesh3D : public CRenderizable
+class CMesh3D : public CRenderizableShaderTriangles,
+				public CRenderizableShaderWireFrame,
+				public CRenderizableShaderPoints
 {
 	DEFINE_SERIALIZABLE(CMesh3D, mrpt::opengl)
 
-	using f_verts = std::array<int, 4>;
-	using coord3D = mrpt::math::TPoint3Df;
-
-   protected:
-	bool m_enableTransparency;
-	bool m_antiAliasing;
-	bool m_showEdges;
-	bool m_showFaces;
-	bool m_showVertices;
-	bool m_computeNormals{true};
-	float m_lineWidth{2.f};
-	float m_pointSize{6.f};
-
-	// Data
-	/** Number of vertices of the mesh */
-	unsigned int m_num_verts{0};
-	/** Number of faces of the mesh */
-	unsigned int m_num_faces{0};
-	/** Pointer storing whether a face is a quad (1) or a triangle (0) */
-	std::vector<bool> m_is_quad;
-	/** Pointer storing the vertices that compose each face. Size: 4 x num_faces
-	 * (4 for the possible max number - quad) */
-	std::vector<f_verts> m_face_verts;
-
-	/** Pointer storing the coordinates of the vertices. Size: 3 x num_vertices
-	 */
-	std::vector<coord3D> m_vert_coords;
-	/** Pointer storing the face normals. Size: 3 x num_faces */
-	std::vector<coord3D> m_normals;
-
-	// Colors
-	/** Color of the edges (when shown) */
-	float edge_color[4] = {.9f, .9f, .9f, 1.0f};
-	/** Color of the faces (when shown) */
-	float face_color[4] = {.7f, .7f, .8f, 1.0f};
-	/** Color of the vertices (when shown) */
-	float vert_color[4] = {.3f, .3f, .3f, 1.0f};
-	mrpt::img::TColormap m_colorMap{mrpt::img::cmHOT};
-	// Not used yet. I leave it here in case
-	// I want to use it in the future
-
    public:
-	void enableTransparency(bool v)
+	/** @name Renderizable shader API virtual methods
+	 * @{ */
+	void render(const RenderContext& rc) const override;
+	void renderUpdateBuffers() const override;
+
+	virtual shader_list_t requiredShaders() const override
 	{
-		m_enableTransparency = v;
-		CRenderizable::notifyChange();
+		// May use up to two shaders (triangles and lines):
+		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES};
 	}
-	void enableAntiAliasing(bool v)
-	{
-		m_antiAliasing = v;
-		CRenderizable::notifyChange();
-	}
+	void onUpdateBuffers_Wireframe() override;
+	void onUpdateBuffers_Triangles() override;
+	/** @} */
+
+	CMesh3D() = default;
+	virtual ~CMesh3D() override;
+
 	void enableShowEdges(bool v)
 	{
 		m_showEdges = v;
@@ -142,22 +113,40 @@ class CMesh3D : public CRenderizable
 	void setEdgeColor(float r, float g, float b, float a = 1.f);
 	void setFaceColor(float r, float g, float b, float a = 1.f);
 	void setVertColor(float r, float g, float b, float a = 1.f);
-	void setLineWidth(float lw) { m_lineWidth = lw; }
-	void setPointSize(float ps) { m_pointSize = ps; }
 
-	void render(const RenderContext& rc) const override;
-	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
 
-	/** Constructor */
-	CMesh3D(
-		bool enableTransparency = false, bool antiAliasing = false,
-		bool enableShowEdges = true, bool enableShowFaces = true,
-		bool enableShowVertices = false);
-	/** Private, virtual destructor: only can be deleted from smart pointers  */
-	~CMesh3D() override;
+   protected:
+	using vertex_indices_t = mrpt::math::CMatrixFixed<uint32_t, 1, 4>;
+
+	bool m_showEdges = true;
+	bool m_showFaces = true;
+	bool m_showVertices = false;
+	bool m_computeNormals = true;
+
+	/** Pointer storing whether a face is a quad (1) or a triangle (0) */
+	std::vector<bool> m_is_quad;
+	/** Pointer storing the vertices that compose each face. Size: 4 x num_faces
+	 * (4 for the possible max number - quad) */
+	std::vector<vertex_indices_t> m_face_verts;
+
+	/** Pointer storing the coordinates of the vertices. Size: 3 x num_vertices
+	 */
+	std::vector<mrpt::math::TPoint3Df> m_vertices;
+
+	/** Pointer storing the face normals. Size: 3 x num_faces */
+	std::vector<mrpt::math::TPoint3Df> m_normals;
+
+	/** Color of the edges */
+	mrpt::img::TColorf edge_color = {.9f, .9f, .9f, 1.0f};
+
+	/** Color of the faces */
+	mrpt::img::TColorf face_color = {.7f, .7f, .8f, 1.0f};
+
+	/** Color of the vertices */
+	mrpt::img::TColorf vert_color = {.3f, .3f, .3f, 1.0f};
 };
 
 }  // namespace mrpt::opengl
