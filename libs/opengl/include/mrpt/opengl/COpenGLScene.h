@@ -11,13 +11,11 @@
 #include <mrpt/opengl/COpenGLViewport.h>
 #include <mrpt/opengl/CRenderizable.h>
 
-namespace mrpt
-{
 /** The namespace for 3D scene representation and rendering. See also the <a
  * href="mrpt-opengl.html" > summary page</a> of the mrpt-opengl library for
  * more info and thumbnails of many of the render primitive.
  */
-namespace opengl
+namespace mrpt::opengl
 {
 /** This class allows the user to create, load, save, and render 3D scenes using
  * OpenGL primitives.
@@ -272,6 +270,4 @@ inline COpenGLScene::Ptr& operator<<(
 	s->insert(v.begin(), v.end());
 	return s;
 }
-}  // namespace opengl
-
-}  // namespace mrpt
+}  // namespace mrpt::opengl

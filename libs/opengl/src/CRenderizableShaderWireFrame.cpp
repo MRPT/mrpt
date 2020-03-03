@@ -31,19 +31,21 @@ void CRenderizableShaderWireFrame::renderUpdateBuffers() const
 		.onUpdateBuffers_Wireframe();
 
 	// Define OpenGL buffers:
-	m_vertexBuffer = make_buffer(
-		GL_ARRAY_BUFFER, m_vertex_buffer_data.data(),
+	m_vertexBuffer.createOnce();
+	m_vertexBuffer.bind();
+	m_vertexBuffer.allocate(
+		m_vertex_buffer_data.data(),
 		sizeof(m_vertex_buffer_data[0]) * m_vertex_buffer_data.size());
 
-	// Generate a name for a new array.
-	glGenVertexArrays(1, &m_vao);
-	// Make the new array active, creating it if necessary.
-	glBindVertexArray(m_vao);
-
 	// color buffer:
-	m_colorBuffer = make_buffer(
-		GL_ARRAY_BUFFER, m_color_buffer_data.data(),
+	m_colorBuffer.createOnce();
+	m_colorBuffer.bind();
+	m_colorBuffer.allocate(
+		m_color_buffer_data.data(),
 		sizeof(m_color_buffer_data[0]) * m_color_buffer_data.size());
+
+	// VAO: required to use glEnableVertexAttribArray()
+	m_vao.createOnce();
 #endif
 }
 
@@ -58,8 +60,9 @@ void CRenderizableShaderWireFrame::render(const RenderContext& rc) const
 
 	// Set up the vertex array:
 	const GLuint attr_position = rc.shader->attributeId("position");
+	m_vao.bind();
 	glEnableVertexAttribArray(attr_position);
-	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
+	m_vertexBuffer.bind();
 	glVertexAttribPointer(
 		attr_position, /* attribute */
 		3, /* size */
@@ -73,7 +76,7 @@ void CRenderizableShaderWireFrame::render(const RenderContext& rc) const
 	// Set up the color array:
 	const GLuint attr_color = rc.shader->attributeId("vertexColor");
 	glEnableVertexAttribArray(attr_color);
-	glBindBuffer(GL_ARRAY_BUFFER, m_colorBuffer);
+	m_colorBuffer.bind();
 	glVertexAttribPointer(
 		attr_color, /* attribute */
 		4, /* size */

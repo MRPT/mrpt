@@ -32,13 +32,12 @@ void CRenderizableShaderTriangles::renderUpdateBuffers() const
 	const auto n = m_triangles.size();
 
 	// Define OpenGL buffers:
-	m_trianglesBuffer = mrpt::opengl::make_buffer(
-		GL_ARRAY_BUFFER, m_triangles.data(), sizeof(m_triangles[0]) * n);
+	m_trianglesBuffer.createOnce();
+	m_trianglesBuffer.bind();
+	m_trianglesBuffer.allocate(m_triangles.data(), sizeof(m_triangles[0]) * n);
 
-	// Generate a name for a new array.
-	glGenVertexArrays(1, &m_vao);
-	// Make the new array active, creating it if necessary.
-	glBindVertexArray(m_vao);
+	// VAO: required to use glEnableVertexAttribArray()
+	m_vao.createOnce();
 #endif
 }
 
@@ -48,8 +47,9 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 
 	// Set up the vertex array:
 	const GLuint attr_position = rc.shader->attributeId("position");
+	m_vao.bind();
 	glEnableVertexAttribArray(attr_position);
-	glBindBuffer(GL_ARRAY_BUFFER, m_trianglesBuffer);
+	m_trianglesBuffer.bind();
 	glVertexAttribPointer(
 		attr_position, /* attribute */
 		3, /* size */
@@ -62,7 +62,7 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 	// Set up the color array:
 	const GLuint attr_color = rc.shader->attributeId("vertexColor");
 	glEnableVertexAttribArray(attr_color);
-	glBindBuffer(GL_ARRAY_BUFFER, m_trianglesBuffer);
+	m_trianglesBuffer.bind();
 	glVertexAttribPointer(
 		attr_color, /* attribute */
 		4, /* size */
@@ -75,7 +75,7 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 	// Set up the normals array:
 	const GLuint attr_normals = rc.shader->attributeId("vertexNormal");
 	glEnableVertexAttribArray(attr_normals);
-	glBindBuffer(GL_ARRAY_BUFFER, m_trianglesBuffer);
+	m_trianglesBuffer.bind();
 	glVertexAttribPointer(
 		attr_normals, /* attribute */
 		3, /* size */
