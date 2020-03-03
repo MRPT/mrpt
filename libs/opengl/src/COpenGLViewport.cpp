@@ -48,33 +48,8 @@ mrpt::system::CTimeLogger glv_timlog;
 					Constructor
   ---------------------------------------------------------------*/
 COpenGLViewport::COpenGLViewport(COpenGLScene* parent, const string& name)
-	: m_camera(),
-	  m_parent(parent),
-	  m_clonedViewport(),
-	  m_name(name),
-	  m_background_color(0.6f, 0.6f, 0.6f),
-	  m_imageview_img(),
-	  m_objects(),
-	  m_lights()
+	: m_parent(parent), m_name(name)
 {
-	// Default: one light from default direction
-	m_lights.emplace_back();
-	m_lights.emplace_back();
-
-	m_lights[0].setPosition(1, 1, 1, 0);
-	m_lights[0].setDirection(-1, -1, -1);
-
-	m_lights[1].light_ID = 1;
-	m_lights[1].setPosition(1, 2, -1, 0);
-	m_lights[1].setDirection(1, 2, 1);
-
-	m_lights[1].color_diffuse[0] = 0.3f;
-	m_lights[1].color_diffuse[1] = 0.3f;
-	m_lights[1].color_diffuse[2] = 0.3f;
-
-	m_lights[1].color_ambient[0] = 0.3f;
-	m_lights[1].color_ambient[1] = 0.3f;
-	m_lights[1].color_ambient[2] = 0.3f;
 }
 
 COpenGLViewport::~COpenGLViewport() { clear(); }
@@ -365,21 +340,17 @@ void COpenGLViewport::renderNormalSceneMode() const
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	CHECK_OPENGL_ERROR();
 
 	// Enable point sizes>1
 	glEnable(GL_PROGRAM_POINT_SIZE);
 	CHECK_OPENGL_ERROR();
-
-	MRPT_TODO("Port Lights!");
-	// for (const auto& m_light : m_lights) m_light.sendToOpenGL();
 
 	// Pass 1: Process all objects (recursively for sets of objects):
 	mrpt::opengl::RenderQueue rq;
 	mrpt::opengl::enqueForRendering(*objectsToRender, _, rq);
 
 	// pass 2: render, sorted by shader program:
-	mrpt::opengl::processRenderQueue(rq, m_shaders);
+	mrpt::opengl::processRenderQueue(rq, m_shaders, m_lights);
 
 #endif
 }
@@ -597,9 +568,8 @@ void COpenGLViewport::serializeFrom(
 				in >> m_lights;
 			else
 			{
-				// Default: one light from default direction
-				m_lights.clear();
-				m_lights.emplace_back();
+				// Default:
+				m_lights = TLightParameters();
 			}
 		}
 		break;

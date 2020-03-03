@@ -122,7 +122,8 @@ void mrpt::opengl::enqueForRendering(
 
 void mrpt::opengl::processRenderQueue(
 	const RenderQueue& rq,
-	std::map<shader_id_t, mrpt::opengl::Program::Ptr>& shaders)
+	std::map<shader_id_t, mrpt::opengl::Program::Ptr>& shaders,
+	const mrpt::opengl::TLightParameters& lights)
 {
 #if MRPT_HAS_OPENGL_GLUT
 	MRPT_PROFILE_FUNC_START
@@ -159,6 +160,7 @@ void mrpt::opengl::processRenderQueue(
 			rc.shader = &shader;
 			rc.shader_id = rqSet.first;
 			rc.state = &rqe.renderState;
+			rc.lights = &lights;
 
 			// Render object:
 			ASSERT_(rqe.object != nullptr);

@@ -83,7 +83,7 @@ mrpt::serialization::CArchive& operator>>(
 // Ensure 1-byte memory alignment, no additional stride bytes.
 #pragma pack(push, 1)
 
-/** A RGB color - floats in the range [0,1]
+/** An RGBA color - floats in the range [0,1]
  * \ingroup mrpt_img_grp */
 struct TColorf
 {

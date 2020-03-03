@@ -113,6 +113,15 @@ class Program
 	int uniformId(const char* name) const { return m_uniforms.at(name); }
 	int attributeId(const char* name) const { return m_attribs.at(name); }
 
+	bool hasUniform(const char* name) const
+	{
+		return m_uniforms.count(name) != 0;
+	}
+	bool hasAttribute(const char* name) const
+	{
+		return m_attribs.count(name) != 0;
+	}
+
    private:
 	std::vector<Shader> m_shaders;
 	unsigned int m_program = 0;

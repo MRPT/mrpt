@@ -6,15 +6,14 @@ R"XXX(
 // Part of the MRPT project
 
 uniform mat4 mv_matrix;
+uniform vec4 light_diffuse, light_ambient, light_specular;
+uniform vec3 light_direction;
+
 in vec3 frag_position, frag_normal;
 in vec4 frag_materialColor;
 
 out vec4 color;
 
-const vec3 light_direction = vec3(-0.40825, -0.40825, -0.81650);
-const vec4 light_diffuse = vec4(0.8, 0.8, 0.8, 0.0);
-const vec4 light_ambient = vec4(0.2, 0.2, 0.2, 1.0);
-const vec4 light_specular = vec4(1.0, 1.0, 1.0, 1.0);
 const float frag_shininess = 1.0;
 
 void main()

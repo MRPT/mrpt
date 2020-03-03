@@ -33,10 +33,9 @@ void TestOpenGLObjects()
 	auto& rng = mrpt::random::getRandomGenerator();
 
 	// Lights:
-	// theScene->getViewport()->setNumberOfLights(1);
-	// mrpt::opengl::CLight & light0 = theScene->getViewport()->getLight(0);
-	// light0.light_ID = 0;
-	// light0.setPosition(1,1,0,0);
+	mrpt::opengl::TLightParameters& lights =
+		theScene->getViewport()->lightParameters();
+	lights.direction = mrpt::math::TVector3Df(-1, -1, -1).unitarize();
 
 	// Objects:
 	double off_x = 0;

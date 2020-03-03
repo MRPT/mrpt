@@ -26,6 +26,7 @@ namespace mrpt::opengl
 class COpenGLViewport;
 class CSetOfObjects;
 class CText;
+struct TLightParameters;
 
 namespace gl_utils
 {
@@ -283,6 +284,7 @@ class CRenderizable : public mrpt::serialization::CSerializable
 		const mrpt::opengl::TRenderMatrices* state = nullptr;
 		const mrpt::opengl::Program* shader = nullptr;
 		mrpt::opengl::shader_id_t shader_id;
+		const mrpt::opengl::TLightParameters* lights = nullptr;
 	};
 
 	/** Implements the rendering of 3D objects in each class derived from
@@ -427,7 +429,8 @@ void enqueForRendering(
  */
 void processRenderQueue(
 	const RenderQueue& rq,
-	std::map<shader_id_t, mrpt::opengl::Program::Ptr>& shaders);
+	std::map<shader_id_t, mrpt::opengl::Program::Ptr>& shaders,
+	const mrpt::opengl::TLightParameters& lights);
 
 /** @} */
 

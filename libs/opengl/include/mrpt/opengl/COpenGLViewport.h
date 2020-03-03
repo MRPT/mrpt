@@ -11,9 +11,9 @@
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/opengl/CCamera.h>
-#include <mrpt/opengl/CLight.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/Shader.h>
+#include <mrpt/opengl/TLightParameters.h>
 #include <mrpt/opengl/TRenderMatrices.h>
 #include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/serialization/CSerializable.h>
@@ -49,10 +49,8 @@ namespace mrpt::opengl
  *
  * Two directional light sources at infinity are created by default, with
  *directions (-1,-1,-1) and (1,2,1), respectively.
- * All OpenGL properties of light sources are accesible via the methods:
- *setNumberOfLights(), lightsClearAll(), addLight(), and getLight().
- * Please, refer to mrpt::opengl::CLight and the standard OpenGL documentation
- *for the meaning of all light properties.
+ *
+ * Lighting parameters are accessible via lightParameters().
  *
  *  Refer to mrpt::opengl::COpenGLScene for further details.
  * \ingroup mrpt_opengl_grp
@@ -104,8 +102,8 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	 * setImageView */
 	void setNormalMode();
 
-	/** @} */  // end of Set the "viewport mode"
-	// ------------------------------------------------------
+	/** @} */
+	// end of Set the "viewport mode"
 
 	/** @name OpenGL global settings that affect rendering all objects in the
 	   scene/viewport
@@ -118,28 +116,12 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 		m_OpenGL_enablePolygonNicest = enable;
 	}
 	bool isPolygonNicestEnabled() const { return m_OpenGL_enablePolygonNicest; }
-	/** Removes all lights (and disables the global "GL_LIGHTING") */
-	void lightsClearAll() { m_lights.clear(); }
-	/** Append a new light to the scene. By default there are two lights.
-	 * "GL_LIGHTING" is disabled if all lights are removed */
-	void addLight(const CLight& l) { m_lights.push_back(l); }
-	/** Allocates a number of lights, which must be correctly defined via
-	 * getLight(i), etc. */
-	void setNumberOfLights(const size_t N) { m_lights.resize(N); }
-	CLight& getLight(const size_t i)
-	{
-		ASSERT_BELOW_(i, m_lights.size());
-		return m_lights[i];
-	}
-	const CLight& getLight(const size_t i) const
-	{
-		ASSERT_BELOW_(i, m_lights.size());
-		return m_lights[i];
-	}
 
-	/** @} */  // end of OpenGL settings
+	const TLightParameters& lightParameters() const { return m_lights; }
+	TLightParameters& lightParameters() { return m_lights; }
 
-	// -------------------------------------------------------------------
+	/** @} */
+
 	/** @name Change or read viewport properties (except "viewport modes")
 		@{ */
 
@@ -384,7 +366,7 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	float m_clip_min = 0.1f, m_clip_max = 10000.0f;
 	bool m_custom_backgb_color{false};
 	/** used only if m_custom_backgb_color */
-	mrpt::img::TColorf m_background_color;
+	mrpt::img::TColorf m_background_color = {0.6f, 0.6f, 0.6f};
 	/** Set by setImageView */
 	bool m_isImageView{false};
 	// CRenderizable::Ptr m_imageview_quad ; //!< A mrpt::opengl::CTexturedPlane
@@ -415,7 +397,7 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	// OpenGL global settings:
 	bool m_OpenGL_enablePolygonNicest{true};
 
-	std::vector<CLight> m_lights;
+	TLightParameters m_lights;
 };
 /**
  * Inserts an openGL object into a viewport. Allows call chaining.
