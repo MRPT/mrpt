@@ -384,6 +384,7 @@ void TestOpenGLObjects()
 		theScene->insert(gl_txt);
 	}
 	off_x += STEP_X;
+#endif
 
 	// CMesh3D
 	{
@@ -444,7 +445,6 @@ void TestOpenGLObjects()
 		theScene->insert(gl_txt);
 	}
 	off_x += STEP_X;
-#endif
 
 	// CPointCloud
 	{
