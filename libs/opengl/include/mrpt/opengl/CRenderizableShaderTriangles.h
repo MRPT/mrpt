@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include <mrpt/opengl/COpenGLBuffer.h>
+#include <mrpt/opengl/COpenGLVertexArrayObject.h>
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/TTriangle.h>
 
@@ -44,8 +46,8 @@ class CRenderizableShaderTriangles : public virtual CRenderizable
 	mutable std::vector<mrpt::opengl::TTriangle> m_triangles;
 
    private:
-	mutable unsigned int m_trianglesBuffer = 0, m_vao = 0;
-	mutable unsigned int m_colorBuffer = 0;
+	mutable COpenGLBuffer m_trianglesBuffer, m_colorBuffer;
+	mutable COpenGLVertexArrayObject m_vao;
 };
 
 }  // namespace mrpt::opengl

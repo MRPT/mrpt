@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include <mrpt/opengl/COpenGLBuffer.h>
+#include <mrpt/opengl/COpenGLVertexArrayObject.h>
 #include <mrpt/opengl/CRenderizable.h>
 
 namespace mrpt::opengl
@@ -93,7 +95,8 @@ class CRenderizableShaderPoints : public virtual CRenderizable
 	void params_deserialize(mrpt::serialization::CArchive& in);
 
    private:
-	mutable unsigned int m_vertexBuffer = 0, m_vao = 0, m_colorBuffer = 0;
+	mutable COpenGLBuffer m_vertexBuffer, m_colorBuffer;
+	mutable COpenGLVertexArrayObject m_vao;
 };
 
 }  // namespace mrpt::opengl
