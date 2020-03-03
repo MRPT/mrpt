@@ -10,9 +10,10 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CAxis.h>
-#include <mrpt/opengl/gl_utils.h>
+#include <mrpt/opengl/CText3D.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+#include "gltext.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
@@ -64,6 +65,8 @@ void CAxis::onUpdateBuffers_Wireframe()
 	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
 	vbd.clear();
 
+	m_gl_labels.clear();
+
 	// X axis
 	vbd.emplace_back(m_xmin, 0.0f, 0.0f);
 	vbd.emplace_back(m_xmax, 0.0f, 0.0f);
@@ -103,40 +106,51 @@ void CAxis::onUpdateBuffers_Wireframe()
 		TPoint3Df cur_tf = tf;
 
 		for (float i = xyz_ranges[axis][0]; i <= xyz_ranges[axis][1];
-			 i = i + m_frequency)
+			 i = i + m_frequency, cur_tf = cur_tf + tick_incr)
 		{
 			// Dont draw the "0" more than once
-			if (axis == 0 || std::abs(i) > 1e-4f)
-			{
-				os::sprintf(n, 50, "%.02f", i);
+			if (axis != 0 && std::abs(i) < 1e-4f) continue;
 
-#if 0
-				glPushMatrix();
-				glRotatef(m_textRot[0][0], 0, 0, 1);
-				glRotatef(m_textRot[0][1], 0, 1, 0);
-				glRotatef(m_textRot[0][2], 1, 0, 0);
-				gl_utils::glDrawText(n, m_textScale, mrpt::opengl::FILL);
-#endif
-				// tick line:
-				vbd.emplace_back(cur_tf + tick0[axis]);
-				vbd.emplace_back(cur_tf + tick1[axis]);
-			}
-			cur_tf = cur_tf + tick_incr;
+			os::sprintf(n, 50, "%.02f", i);
+			mrpt::opengl::internal::glSetFont("mono");
+
+			auto label = mrpt::opengl::CText3D::Create();
+			label->setTextStyle(mrpt::opengl::FILL);
+			label->setScale(m_textScale);
+
+			label->setPose(mrpt::poses::CPose3D(
+				cur_tf.x, cur_tf.y, cur_tf.z, mrpt::DEG2RAD(m_textRot[0][0]),
+				mrpt::DEG2RAD(m_textRot[0][1]),
+				mrpt::DEG2RAD(m_textRot[0][2])));
+			label->setString(n);
+			m_gl_labels.emplace_back(label);
+
+			// tick line:
+			vbd.emplace_back(cur_tf + tick0[axis]);
+			vbd.emplace_back(cur_tf + tick1[axis]);
 		}
 
-#if 0
-		glPushMatrix();
-		glTranslatef(endMark[axis].x, endMark[axis].y, endMark[axis].z);
-		glRotatef(m_textRot[0][0], 0, 0, 1);
-		glRotatef(m_textRot[0][1], 0, 1, 0);
-		glRotatef(m_textRot[0][2], 1, 0, 0);
-		gl_utils::glDrawText(
-			axis2name[axis], m_textScale * 1.2f, mrpt::opengl::NICE);
-		glPopMatrix();
-#endif
+		auto label = mrpt::opengl::CText3D::Create();
+		label->setTextStyle(mrpt::opengl::FILL);
+		label->setScale(m_textScale * 1.2f);
+		label->setPose(mrpt::poses::CPose3D(
+			endMark[axis].x, endMark[axis].y, endMark[axis].z,
+			mrpt::DEG2RAD(m_textRot[0][0]), mrpt::DEG2RAD(m_textRot[0][1]),
+			mrpt::DEG2RAD(m_textRot[0][2])));
+		label->setString(axis2name[axis]);
+		m_gl_labels.emplace_back(label);
 	}
 
 	cbd.assign(vbd.size(), m_color);
+
+	for (auto& lb : m_gl_labels) lb->updateBuffers();
+}
+
+void CAxis::enqueForRenderRecursive(
+	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq) const
+{
+	// Enque rendering all text labels:
+	mrpt::opengl::enqueForRendering(m_gl_labels, state, rq);
 }
 
 void CAxis::render(const RenderContext& rc) const
@@ -144,8 +158,8 @@ void CAxis::render(const RenderContext& rc) const
 	// Base lines render:
 	CRenderizableShaderWireFrame::render(rc);
 
-	// Enque rendering all text labels:
-	MRPT_TODO("Enque rendering all text labels");
+	// Do nothing for text labels: the enqueForRenderRecursive() does the actual
+	// job.
 }
 
 uint8_t CAxis::serializeGetVersion() const { return 2; }
