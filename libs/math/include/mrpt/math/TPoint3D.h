@@ -149,6 +149,16 @@ struct TPoint3D_ : public TPoseOrPoint,
 	/** Point norm: |v| = sqrt(x^2+y^2+z^2) */
 	T norm() const { return std::sqrt(sqrNorm()); }
 
+	/** Returns this vector with unit length: v/norm(v) */
+	TPoint3D_<T> unitarize() const
+	{
+		const T n = norm();
+		ASSERT_ABOVE_(n, 0);
+		const T f = 1 / n;
+		return {TPoint3D_data<T>::x * f, TPoint3D_data<T>::y * f,
+				TPoint3D_data<T>::z * f};
+	}
+
 	/** Scale point/vector */
 	TPoint3D_<T>& operator*=(const T f)
 	{

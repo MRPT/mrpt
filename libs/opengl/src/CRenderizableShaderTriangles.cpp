@@ -11,6 +11,7 @@
 
 #include <mrpt/opengl/CRenderizableShaderTriangles.h>
 #include <mrpt/opengl/Shader.h>
+#include <mrpt/opengl/TLightParameters.h>
 #include "opengl_internals.h"
 
 using namespace mrpt;
@@ -44,6 +45,18 @@ void CRenderizableShaderTriangles::renderUpdateBuffers() const
 void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 {
 #if MRPT_HAS_OPENGL_GLUT
+
+	if (rc.lights && rc.shader->hasUniform("light_diffuse"))
+	{
+		const Program& s = *rc.shader;
+
+		glUniform4fv(s.uniformId("light_diffuse"), 1, &rc.lights->diffuse.R);
+		glUniform4fv(s.uniformId("light_ambient"), 1, &rc.lights->ambient.R);
+		glUniform4fv(s.uniformId("light_specular"), 1, &rc.lights->specular.R);
+		glUniform3fv(
+			s.uniformId("light_direction"), 1, &rc.lights->direction.x);
+		CHECK_OPENGL_ERROR();
+	}
 
 	// Set up the vertex array:
 	const GLuint attr_position = rc.shader->attributeId("position");
