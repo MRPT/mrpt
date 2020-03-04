@@ -30,63 +30,76 @@ bool CGPSInterface::implement_parser_NMEA(size_t& out_minimum_rx_buf_to_decide)
 	const size_t nBytesAval = m_rx_buffer.size();  // Available for read
 
 	// If the string does not start with "$GP" it is not valid:
-	uint8_t peek_buffer[3];
-	m_rx_buffer.peek_many(&peek_buffer[0], 3);
-	if (peek_buffer[0] != '$' || peek_buffer[1] != 'G' || peek_buffer[2] != 'P')
+	uint8_t buf[3];  // peek_buffer
+	m_rx_buffer.peek_many(&buf[0], 3);
+
+	// Known "talkers": Baidu, Galileo, GPS, GLONASS, etc.
+	// Ref: https://gpsd.gitlab.io/gpsd/NMEA.html
+	static const std::array<const char*, 12> known_prefixes = {
+		"BD", "CD", "EC", "GA", "GB", "GL", "GN", "GP", "II", "IN", "LC", "QZ"};
+
+	bool recognized = false;
+	if (buf[0] == '$')
 	{
-		// Not the start of a NMEA string, skip 1 char:
-		return false;
-	}
-	else
-	{
-		// It starts OK: try to find the end of the line
-		std::string line;
-		bool line_is_ended = false;
-		for (size_t i = 0; i < nBytesAval && i < MAX_NMEA_LINE_LENGTH; i++)
+		for (const char* prefix : known_prefixes)
 		{
-			const char val = static_cast<char>(m_rx_buffer.peek(i));
-			if (val == '\r' || val == '\n')
+			if (buf[1] == prefix[0] && buf[2] == prefix[1])
 			{
-				line_is_ended = true;
+				recognized = true;
 				break;
 			}
-			line.push_back(val);
 		}
-		if (line_is_ended)
+	}
+	// Not the start of a NMEA string, skip 1 char:
+	if (!recognized) return false;
+
+	// It starts OK: try to find the end of the line
+	std::string line;
+	bool line_is_ended = false;
+	for (size_t i = 0; i < nBytesAval && i < MAX_NMEA_LINE_LENGTH; i++)
+	{
+		const char val = static_cast<char>(m_rx_buffer.peek(i));
+		if (val == '\r' || val == '\n')
 		{
-			// Pop from buffer:
-			for (size_t i = 0; i < line.size(); i++) m_rx_buffer.pop();
+			line_is_ended = true;
+			break;
+		}
+		line.push_back(val);
+	}
+	if (line_is_ended)
+	{
+		// Pop from buffer:
+		for (size_t i = 0; i < line.size(); i++) m_rx_buffer.pop();
 
-			// Parse:
-			const bool did_have_gga = m_just_parsed_messages.has_GGA_datum();
-			if (CGPSInterface::parse_NMEA(
-					line, m_just_parsed_messages, false /*verbose*/))
-			{
-				// Parsers must set only the part of the msg type:
-				m_just_parsed_messages.sensorLabel = "NMEA";
+		// Parse:
+		const bool did_have_gga = m_just_parsed_messages.has_GGA_datum();
+		if (CGPSInterface::parse_NMEA(
+				line, m_just_parsed_messages, false /*verbose*/))
+		{
+			// Parsers must set only the part of the msg type:
+			m_just_parsed_messages.sensorLabel = "NMEA";
 
-				// Save GGA cache (useful for NTRIP,...)
-				const bool now_has_gga = m_just_parsed_messages.has_GGA_datum();
-				if (now_has_gga && !did_have_gga)
-				{
-					m_last_GGA = line;
-				}
-			}
-			else
+			// Save GGA cache (useful for NTRIP,...)
+			const bool now_has_gga = m_just_parsed_messages.has_GGA_datum();
+			if (now_has_gga && !did_have_gga)
 			{
-				if (m_verbose)
-					std::cerr << "[CGPSInterface::implement_parser_NMEA] Line "
-								 "of unknown format ignored: `"
-							  << line << "`\n";
+				m_last_GGA = line;
 			}
-			return true;
 		}
 		else
 		{
-			// We still need to wait for more data to be read:
-			out_minimum_rx_buf_to_decide = nBytesAval + 1;
-			return true;
+			if (m_verbose)
+				std::cerr << "[CGPSInterface::implement_parser_NMEA] Line "
+							 "of unknown format ignored: `"
+						  << line << "`\n";
 		}
+		return true;
+	}
+	else
+	{
+		// We still need to wait for more data to be read:
+		out_minimum_rx_buf_to_decide = nBytesAval + 1;
+		return true;
 	}
 }
 
@@ -106,7 +119,7 @@ bool CGPSInterface::parse_NMEA(
 
 	// Firstly! If the string does not start with "$GP" it is not valid:
 	if (s.size() < 7) return false;
-	if (s[0] != '$' || s[1] != 'G') return false;
+	if (s[0] != '$') return false;
 
 	std::vector<std::string> lstTokens;
 	mrpt::system::tokenize(
@@ -117,8 +130,12 @@ bool CGPSInterface::parse_NMEA(
 		lstToken = mrpt::system::trim(lstToken);  // Trim whitespaces
 
 	bool parsed_ok = false;
+
+	// Remove talker ID "$xxGGA" ==> "GGA"
+	if (lstTokens[0].size() > 3) lstTokens[0] = lstTokens[0].substr(3);
+
 	// Try to determine the kind of command:
-	if (lstTokens[0] == "$GPGGA" && lstTokens.size() >= 13)
+	if (lstTokens[0] == "GGA" && lstTokens.size() >= 13)
 	{
 		// ---------------------------------------------
 		//					GGA
@@ -230,7 +247,7 @@ bool CGPSInterface::parse_NMEA(
 		}
 		parsed_ok = all_fields_ok;
 	}
-	else if (lstTokens[0] == "$GPRMC" && lstTokens.size() >= 13)
+	else if (lstTokens[0] == "RMC" && lstTokens.size() >= 13)
 	{
 		// ---------------------------------------------
 		//					GPRMC
@@ -353,7 +370,7 @@ bool CGPSInterface::parse_NMEA(
 		}
 		parsed_ok = all_fields_ok;
 	}
-	else if (lstTokens[0] == "$GPGLL" && lstTokens.size() >= 5)
+	else if (lstTokens[0] == "GLL" && lstTokens.size() >= 5)
 	{
 		// ---------------------------------------------
 		//					GPGLL
@@ -434,7 +451,7 @@ bool CGPSInterface::parse_NMEA(
 		}
 		parsed_ok = all_fields_ok;
 	}
-	else if (lstTokens[0] == "$GPVTG" && lstTokens.size() >= 9)
+	else if (lstTokens[0] == "VTG" && lstTokens.size() >= 9)
 	{
 		// ---------------------------------------------
 		//					GPVTG
@@ -463,7 +480,7 @@ bool CGPSInterface::parse_NMEA(
 		}
 		parsed_ok = all_fields_ok;
 	}
-	else if (lstTokens[0] == "$GPZDA" && lstTokens.size() >= 5)
+	else if (lstTokens[0] == "ZDA" && lstTokens.size() >= 5)
 	{
 		// ---------------------------------------------
 		//					GPZDA
