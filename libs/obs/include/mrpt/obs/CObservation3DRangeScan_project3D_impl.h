@@ -43,17 +43,22 @@ inline void range2XYZ_LUT(
 	mrpt::obs::CObservation3DRangeScan& src_obs,
 	const mrpt::obs::T3DPointsProjectionParams& pp,
 	const mrpt::obs::TRangeImageFilterParams& fp, const int H, const int W,
-	const int DECIM = 1)
+	const int DECIM, const bool use_rotated_LUT)
 {
 	const size_t WH = W * H;
 	const auto& lut = src_obs.get_unproj_lut();
 
-	ASSERT_EQUAL_(WH, size_t(lut.Kxs.size()));
-	ASSERT_EQUAL_(WH, size_t(lut.Kys.size()));
-	ASSERT_EQUAL_(WH, size_t(lut.Kzs.size()));
-	const float* kxs = &lut.Kxs[0];
-	const float* kys = &lut.Kys[0];
-	const float* kzs = &lut.Kzs[0];
+	// Select between coordinates wrt the robot/vehicle, or local wrt sensor:
+	const auto& Kxs = use_rotated_LUT ? lut.Kxs_rot : lut.Kxs;
+	const auto& Kys = use_rotated_LUT ? lut.Kys_rot : lut.Kys;
+	const auto& Kzs = use_rotated_LUT ? lut.Kzs_rot : lut.Kzs;
+
+	ASSERT_EQUAL_(WH, size_t(Kxs.size()));
+	ASSERT_EQUAL_(WH, size_t(Kys.size()));
+	ASSERT_EQUAL_(WH, size_t(Kzs.size()));
+	const float* kxs = &Kxs[0];
+	const float* kys = &Kys[0];
+	const float* kzs = &Kzs[0];
 
 	if (fp.rangeMask_min)
 	{  // sanity check:
@@ -79,6 +84,22 @@ inline void range2XYZ_LUT(
 			H, W, kxs, kys, kzs, src_obs.rangeImage, src_obs.rangeUnits, pca,
 			src_obs.points3D_idxs_x, src_obs.points3D_idxs_y, fp,
 			pp.MAKE_ORGANIZED, DECIM);
+
+	// Do final traslation, if we were generating points in the vehicle frame:
+	if (use_rotated_LUT)
+	{
+		const size_t nPts = pca.size();
+		const auto trans = mrpt::math::TPoint3Df(
+			src_obs.sensorPose.x(), src_obs.sensorPose.y(),
+			src_obs.sensorPose.z());
+		for (size_t i = 0; i < nPts; i++)
+		{
+			mrpt::math::TPoint3Df pt;
+			pca.getPointXYZ(i, pt.x, pt.y, pt.z);
+			pt += trans;
+			pca.setPointXYZ(i, pt.x, pt.y, pt.z);
+		}
+	}
 }
 
 template <class POINTMAP>
@@ -96,6 +117,16 @@ void unprojectInto(
 		pca.resize(0);
 		return;
 	}
+
+	// Decide whether we could directly use the precomputed LUT of pixel
+	// directions including the sensor pose:
+	const bool use_rotated_LUT =
+		// The user DO want the transformed points
+		pp.takeIntoAccountSensorPoseOnRobot &&
+		// We don't have colors (local coordinates needed then)
+		(!pca.HAS_RGB || !src_obs.hasIntensityImage) &&
+		// and we are not to use a global pose in the world/map
+		!pp.robotPoseInTheWorld;
 
 	// ------------------------------------------------------------
 	// Stage 1/3: Create 3D point cloud local coordinates
@@ -132,7 +163,7 @@ void unprojectInto(
 		pca.resize(WHd);
 		if (pp.MAKE_ORGANIZED) pca.setDimensions(Hd, Wd);
 	}
-	range2XYZ_LUT<POINTMAP>(pca, src_obs, pp, fp, H, W, DECIM);
+	range2XYZ_LUT<POINTMAP>(pca, src_obs, pp, fp, H, W, DECIM, use_rotated_LUT);
 
 	// -------------------------------------------------------------
 	// Stage 2/3: Project local points into RGB image to get colors
@@ -248,7 +279,8 @@ void unprojectInto(
 	// ------------------------------------------------------------
 	// Stage 3/3: Apply 6D transformations
 	// ------------------------------------------------------------
-	if (pp.takeIntoAccountSensorPoseOnRobot || pp.robotPoseInTheWorld)
+	if (!use_rotated_LUT &&
+		(pp.takeIntoAccountSensorPoseOnRobot || pp.robotPoseInTheWorld))
 	{
 		mrpt::poses::CPose3D transf_to_apply;  // Either ROBOTPOSE or
 		// ROBOTPOSE(+)SENSORPOSE or

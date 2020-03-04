@@ -565,8 +565,16 @@ class CObservation3DRangeScan : public CObservation
 	/** Look-up-table struct for unprojectInto() */
 	struct unproject_LUT_t
 	{
-		// x,y,z: +X pointing forward (depth), +z up
+		/** x,y,z: +X pointing forward (depth), +z up
+		 * These doesn't account for the sensor pose.
+		 */
 		mrpt::aligned_std_vector<float> Kxs, Kys, Kzs;
+
+		/** x,y,z: in the rotated frame of coordinates of the sensorPose.
+		 * So, sensed points are directly measured_range(or depth) times this
+		 * vector, plus the translation (no rotation!) of the sensor pose.
+		 */
+		mrpt::aligned_std_vector<float> Kxs_rot, Kys_rot, Kzs_rot;
 	};
 
 	/** Gets (or generates upon first request) the 3D point cloud projection

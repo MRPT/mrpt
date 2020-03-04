@@ -42,7 +42,18 @@ IMPLEMENTS_SERIALIZABLE(CObservation3DRangeScan, CObservation, mrpt::obs)
 // Static LUT:
 
 // Index info: camera parameters + range_is_depth
-using LUT_info = std::pair<mrpt::img::TCamera, bool>;
+struct LUT_info
+{
+	mrpt::img::TCamera calib;
+	mrpt::poses::CPose3D sensorPose;
+	bool range_is_depth;
+};
+
+inline bool operator==(const LUT_info& a, const LUT_info& o)
+{
+	return a.calib == o.calib && a.sensorPose == o.sensorPose &&
+		   a.range_is_depth == o.range_is_depth;
+}
 
 namespace std
 {
@@ -52,8 +63,10 @@ struct hash<LUT_info>
 	size_t operator()(const LUT_info& k) const
 	{
 		size_t res = 17;
-		res = res * 31 + hash<mrpt::img::TCamera>()(k.first);
-		res = res * 31 + hash<bool>()(k.second);
+		res = res * 31 + hash<mrpt::img::TCamera>()(k.calib);
+		res = res * 31 + hash<bool>()(k.range_is_depth);
+		for (unsigned int i = 0; i < 6; i++)
+			res = res * 31 + hash<double>()(k.sensorPose[i]);
 		return res;
 	}
 };
@@ -68,9 +81,19 @@ const CObservation3DRangeScan::unproject_LUT_t&
 {
 #if MRPT_HAS_OPENCV
 	// Access to, or create upon first usage:
+	LUT_info linfo;
+	linfo.calib = this->cameraParams;
+	linfo.sensorPose = this->sensorPose;
+	linfo.range_is_depth = this->range_is_depth;
+
 	LUTs_mtx.lock();
-	const unproject_LUT_t& ret =
-		LUTs[std::make_pair(this->cameraParams, this->range_is_depth)];
+	// Protect against infinite memory growth: imagine sensorPose gets changed
+	// everytime for a sweeping sensor, etc.
+	// Unlikely, but "just in case" (TM)
+	if (LUTs.size() > 100) LUTs.clear();
+
+	const unproject_LUT_t& ret = LUTs[linfo];
+
 	LUTs_mtx.unlock();
 
 	ASSERT_EQUAL_(rangeImage.cols(), static_cast<int>(cameraParams.ncols));
@@ -87,10 +110,9 @@ const CObservation3DRangeScan::unproject_LUT_t&
 	lut.Kxs.resize(WH);
 	lut.Kys.resize(WH);
 	lut.Kzs.resize(WH);
-
-	float* kxs = &lut.Kxs[0];
-	float* kys = &lut.Kys[0];
-	float* kzs = &lut.Kzs[0];
+	lut.Kxs_rot.resize(WH);
+	lut.Kys_rot.resize(WH);
+	lut.Kzs_rot.resize(WH);
 
 	// Undistort all points:
 	cv::Mat pts(1, WH, CV_32FC2), undistort_pts(1, WH, CV_32FC2);
@@ -120,6 +142,13 @@ const CObservation3DRangeScan::unproject_LUT_t&
 	ASSERT_EQUAL_(undistort_pts.size().area(), static_cast<int>(WH));
 	undistort_pts.reshape(WH);
 
+	float* kxs = &lut.Kxs[0];
+	float* kys = &lut.Kys[0];
+	float* kzs = &lut.Kzs[0];
+	float* kxs_rot = &lut.Kxs_rot[0];
+	float* kys_rot = &lut.Kys_rot[0];
+	float* kzs_rot = &lut.Kzs_rot[0];
+
 	for (size_t idx = 0; idx < WH; idx++)
 	{
 		const auto& p = undistort_pts.at<cv::Vec2f>(idx);
@@ -131,9 +160,16 @@ const CObservation3DRangeScan::unproject_LUT_t&
 		// Range instead of depth? Use a unit vector:
 		if (!this->range_is_depth) v *= 1.0f / v.norm();
 
+		// compute also the rotated version:
+		auto v_rot = sensorPose.rotateVector(v);
+
 		*kxs++ = v.x;
 		*kys++ = v.y;
 		*kzs++ = v.z;
+
+		*kxs_rot++ = v_rot.x;
+		*kys_rot++ = v_rot.y;
+		*kzs_rot++ = v_rot.z;
 	}
 
 	return ret;
