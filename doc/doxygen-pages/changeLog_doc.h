@@ -85,6 +85,7 @@
     - mrpt::obs::CObservation2DRangeScan: Deprecated access to scan data via proxy objects `obs->scan[i]`, `obs->validRange[i]`, `obs->intensity[i]` has been deleted. Please use the alternative getters/setters: `obs->getScanRange(i)`, etc.
     - mrpt::obs::T3DPointsProjectionParams and mrpt::obs::CObservation3DRangeScan::unprojectInto now together support organized PCL point clouds.
     - New method: mrpt::obs::CObservation3DRangeScan::rangeImage_getAsImage()
+    - New NMEA frame class: Message_NMEA_GSA
   - \ref mrpt_poses_grp  [NEW IN MRPT 2.0.0]
     - Reorganized all Lie Algebra methods into \ref mrpt_poses_lie_grp
     - Removed CPose3DRotVec, since its conceptual design is identical to Lie tangent space vectors.

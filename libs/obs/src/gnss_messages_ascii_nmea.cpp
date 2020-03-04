@@ -165,14 +165,14 @@ mrpt::system::TTimeStamp Message_NMEA_RMC::getDateAsTimestamp() const
 void Message_NMEA_RMC::dumpToStream(std::ostream& out) const
 {
 	out << "[NMEA RMC datum]\n";
-	out << mrpt::format(
-		" Positioning mode: `%c`\n ", (char)fields.positioning_mode);
+	out << mrpt::format(" Positioning mode: `%c`\n ", fields.positioning_mode);
 	out << mrpt::format(
 		" UTC time-stamp: %02u:%02u:%02.03f\n", fields.UTCTime.hour,
 		fields.UTCTime.minute, fields.UTCTime.sec);
 	out << mrpt::format(
-		" Date (DD/MM/YY): %02u/%02u/%02u\n ", (unsigned)fields.date_day,
-		(unsigned)fields.date_month, (unsigned)fields.date_year);
+		" Date (DD/MM/YY): %02u/%02u/%02u\n ",
+		static_cast<unsigned>(fields.date_day), (unsigned)fields.date_month,
+		static_cast<unsigned>(fields.date_year));
 	out << mrpt::format(
 		"  Longitude: %.09f deg  Latitude: %.09f deg  Valid?: '%c'\n",
 		fields.longitude_degrees, fields.latitude_degrees,
@@ -198,6 +198,50 @@ bool Message_NMEA_RMC::getAllFieldValues(std::ostream& o) const
 		fields.UTCTime.minute, fields.UTCTime.sec, fields.speed_knots,
 		fields.direction_degrees, fields.date_year, fields.date_month,
 		fields.date_day);
+	return true;
+}
+
+// ---------------------------------------
+Message_NMEA_GSA::content_t::content_t()
+{
+	for (int i = 0; i < 12; i++) PRNs[i][0] = PRNs[i][1] = '\0';
+}
+void Message_NMEA_GSA::dumpToStream(std::ostream& out) const
+{
+	out << "[NMEA GSA datum]\n";
+	out << "auto_selection_fix: " << fields.auto_selection_fix
+		<< "\n"
+		   "fix_2D_3D: "
+		<< fields.fix_2D_3D << "\n";
+	for (int i = 0; i < 12; i++)
+		out << mrpt::format("PRNs[%i]=%5.02s\n", i, fields.PRNs[i]);
+
+	out << "PDOP: " << fields.PDOP
+		<< "\n"
+		   "HDOP: "
+		<< fields.HDOP
+		<< "\n"
+		   "VDOP: "
+		<< fields.VDOP << "\n";
+}
+
+bool Message_NMEA_GSA::getAllFieldDescriptions(std::ostream& o) const
+{
+	o << "auto_selection_fix fix_2D_3D PRN[0] PRN[1] PRN[2] PRN[3] PRN[4] "
+		 "PRN[5] PRN[6] PRN[7] PRN[8] PRN[9] PRN[10] PRN[11] PDOP HDOP VDOP";
+	return true;
+}
+bool Message_NMEA_GSA::getAllFieldValues(std::ostream& o) const
+{
+	o << mrpt::format(
+		"%04c %02c %07.2s %07.2s  %07.2s %07.2s %07.2s %07.2s %07.2s %07.2s "
+		"%07.2s %07.2s %07.2s "
+		"%07.2s %.05f %.05f %.05f",
+		fields.auto_selection_fix, fields.fix_2D_3D, fields.PRNs[0],
+		fields.PRNs[1], fields.PRNs[2], fields.PRNs[3], fields.PRNs[4],
+		fields.PRNs[5], fields.PRNs[6], fields.PRNs[7], fields.PRNs[8],
+		fields.PRNs[9], fields.PRNs[10], fields.PRNs[11], fields.PDOP,
+		fields.HDOP, fields.VDOP);
 	return true;
 }
 

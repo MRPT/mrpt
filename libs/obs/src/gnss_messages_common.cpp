@@ -21,6 +21,7 @@ using namespace mrpt::obs::gnss;
 #define LIST_ALL_MSGS                     \
 	/* ====== NMEA ======  */             \
 	DOFOR(NMEA_GGA)                       \
+	DOFOR(NMEA_GSA)                       \
 	DOFOR(NMEA_RMC)                       \
 	DOFOR(NMEA_ZDA)                       \
 	DOFOR(NMEA_VTG)                       \

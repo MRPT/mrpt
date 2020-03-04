@@ -197,6 +197,32 @@ struct Message_NMEA_VTG : public gnss_message
 	bool getAllFieldValues(std::ostream& o) const override;
 };
 
+/** NMEA datum: GSA. \sa mrpt::obs::CObservationGPS   */
+struct Message_NMEA_GSA : public gnss_message
+{
+	GNSS_MESSAGE_BINARY_BLOCK(&fields, sizeof(fields))
+	/** Static msg type (member expected by templates) */
+	enum
+	{
+		msg_type = NMEA_GSA
+	};
+	Message_NMEA_GSA() : gnss_message((gnss_message_type_t)msg_type) {}
+	struct content_t
+	{
+		char auto_selection_fix = 'M';
+		char fix_2D_3D = '1';  //!< 1: no fix, 2: 2D fix, 3: 3D fix
+		char PRNs[12][2];  //!< Satellite IDs used
+		double PDOP = 0, HDOP = 0, VDOP = 0;
+		content_t();
+	};
+	/** Message content, accesible by individual fields */
+	content_t fields;
+
+	void dumpToStream(std::ostream& out) const override;  // See docs in base
+	bool getAllFieldDescriptions(std::ostream& o) const override;
+	bool getAllFieldValues(std::ostream& o) const override;
+};
+
 /** NMEA datum: ZDA. \sa mrpt::obs::CObservationGPS   */
 struct Message_NMEA_ZDA : public gnss_message
 {

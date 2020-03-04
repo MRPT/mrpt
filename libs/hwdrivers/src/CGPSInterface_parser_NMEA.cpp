@@ -538,6 +538,58 @@ bool CGPSInterface::parse_NMEA(
 		}
 		parsed_ok = all_fields_ok;
 	}
+	else if (lstTokens[0] == "GSA" && lstTokens.size() >= 18)
+	{
+		// ---------------------------------------------
+		//					GSA
+		// ---------------------------------------------
+		bool all_fields_ok = true;
+		std::string token;
+
+		// Fill out the output structure:
+		gnss::Message_NMEA_GSA gsa;
+		//  $GPGSA,A,3,04,05,,09,12,,,24,,,,,2.5,1.3,2.1*39
+		// Where:
+		//     GSA      Satellite status
+		//     A        Auto selection of 2D or 3D fix (M = manual)
+		//     3        3D fix - values include: 1 = no fix
+		//                                       2 = 2D fix
+		//                                       3 = 3D fix
+		//     04,05... PRNs of satellites used for fix (space for 12)
+		//     2.5      PDOP (dilution of precision)
+		//     1.3      Horizontal dilution of precision (HDOP)
+		//     2.1      Vertical dilution of precision (VDOP)
+		//     *39      the checksum data, always begins with *
+		token = lstTokens[1];
+		if (!token.empty())
+			gsa.fields.auto_selection_fix = token[0];
+		else
+			all_fields_ok = false;
+
+		token = lstTokens[2];
+		if (!token.empty())
+			gsa.fields.fix_2D_3D = token[0];
+		else
+			all_fields_ok = false;
+
+		for (int i = 0; i < 12; i++)
+		{
+			token = lstTokens[3 + i];
+			if (token.size() > 0) gsa.fields.PRNs[i][0] = token[0];
+			if (token.size() > 1) gsa.fields.PRNs[i][1] = token[1];
+		}
+		// PDOP:
+		gsa.fields.PDOP = ::atof(lstTokens[3 + 12 + 0].data());
+		gsa.fields.HDOP = ::atof(lstTokens[3 + 12 + 1].data());
+		gsa.fields.VDOP = ::atof(lstTokens[3 + 12 + 2].data());
+
+		if (all_fields_ok)
+		{
+			out_obs.setMsg(gsa);
+			out_obs.originalReceivedTimestamp = mrpt::system::now();
+		}
+		parsed_ok = all_fields_ok;
+	}
 	else
 	{
 		// other commands?
