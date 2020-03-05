@@ -792,7 +792,7 @@ void CLocalMetricHypothesis::updateAreaFromLMH(
 
 	CHMHMapNode::Ptr node;
 	{
-		std::lock_guard<std::mutex>(m_parent->m_map_cs);
+		std::lock_guard<std::mutex> lock(m_parent->m_map_cs);
 		node = m_parent->m_map.getNodeByID(areaID);
 		ASSERT_(node);
 		ASSERT_(node->m_hypotheses.has(m_ID));
