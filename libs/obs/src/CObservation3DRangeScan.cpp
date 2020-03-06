@@ -239,73 +239,53 @@ using TMyRangesMemPool = mrpt::system::CGenericMemoryPool<
 	CObservation3DRangeScan_Ranges_MemPoolParams,
 	CObservation3DRangeScan_Ranges_MemPoolData>;
 
-void mempool_donate_xyz_buffers(CObservation3DRangeScan& obs)
+static void mempool_donate_xyz_buffers(CObservation3DRangeScan& obs)
 {
-	if (!obs.points3D_x.empty())
-	{
-		// Before dying, donate my memory to the pool for the joy of future
-		// class-brothers...
-		TMyPointsMemPool* pool = TMyPointsMemPool::getInstance();
-		if (pool)
-		{
-			CObservation3DRangeScan_Points_MemPoolParams mem_params;
-			mem_params.WH = obs.points3D_x.capacity();
-			if (obs.points3D_y.capacity() != mem_params.WH)
-				obs.points3D_y.resize(mem_params.WH);
-			if (obs.points3D_z.capacity() != mem_params.WH)
-				obs.points3D_z.resize(mem_params.WH);
-			if (obs.points3D_idxs_x.capacity() != mem_params.WH)
-				obs.points3D_idxs_x.resize(mem_params.WH);
-			if (obs.points3D_idxs_y.capacity() != mem_params.WH)
-				obs.points3D_idxs_y.resize(mem_params.WH);
+	if (obs.points3D_x.empty()) return;
+	// Before dying, donate my memory to the pool for the joy of future
+	// class-brothers...
+	TMyPointsMemPool* pool = TMyPointsMemPool::getInstance();
+	if (!pool) return;
 
-			auto* mem_block = new CObservation3DRangeScan_Points_MemPoolData();
-			obs.points3D_x.swap(mem_block->pts_x);
-			obs.points3D_y.swap(mem_block->pts_y);
-			obs.points3D_z.swap(mem_block->pts_z);
-			obs.points3D_idxs_x.swap(mem_block->idxs_x);
-			obs.points3D_idxs_y.swap(mem_block->idxs_y);
+	CObservation3DRangeScan_Points_MemPoolParams mem_params;
+	mem_params.WH = obs.points3D_x.capacity();
+	if (obs.points3D_y.capacity() != mem_params.WH)
+		obs.points3D_y.resize(mem_params.WH);
+	if (obs.points3D_z.capacity() != mem_params.WH)
+		obs.points3D_z.resize(mem_params.WH);
+	if (obs.points3D_idxs_x.capacity() != mem_params.WH)
+		obs.points3D_idxs_x.resize(mem_params.WH);
+	if (obs.points3D_idxs_y.capacity() != mem_params.WH)
+		obs.points3D_idxs_y.resize(mem_params.WH);
 
-			pool->dump_to_pool(mem_params, mem_block);
-		}
-	}
+	auto* mem_block = new CObservation3DRangeScan_Points_MemPoolData();
+	obs.points3D_x.swap(mem_block->pts_x);
+	obs.points3D_y.swap(mem_block->pts_y);
+	obs.points3D_z.swap(mem_block->pts_z);
+	obs.points3D_idxs_x.swap(mem_block->idxs_x);
+	obs.points3D_idxs_y.swap(mem_block->idxs_y);
+
+	pool->dump_to_pool(mem_params, mem_block);
 }
 void mempool_donate_range_matrix(CObservation3DRangeScan& obs)
 {
-	if (obs.rangeImage.cols() > 1 && obs.rangeImage.rows() > 1)
-	{
-		// Before dying, donate my memory to the pool for the joy of future
-		// class-brothers...
-		TMyRangesMemPool* pool = TMyRangesMemPool::getInstance();
-		if (pool)
-		{
-			CObservation3DRangeScan_Ranges_MemPoolParams mem_params;
-			mem_params.H = obs.rangeImage.rows();
-			mem_params.W = obs.rangeImage.cols();
+	if (obs.rangeImage.cols() == 0 || obs.rangeImage.rows() == 0) return;
 
-			auto* mem_block = new CObservation3DRangeScan_Ranges_MemPoolData();
-			obs.rangeImage.swap(mem_block->rangeImage);
+	// Before dying, donate my memory to the pool for the joy of future
+	// class-brothers...
+	TMyRangesMemPool* pool = TMyRangesMemPool::getInstance();
+	if (!pool) return;
 
-			pool->dump_to_pool(mem_params, mem_block);
-		}
-	}
+	CObservation3DRangeScan_Ranges_MemPoolParams mem_params;
+	mem_params.H = obs.rangeImage.rows();
+	mem_params.W = obs.rangeImage.cols();
+
+	auto* mem_block = new CObservation3DRangeScan_Ranges_MemPoolData();
+	obs.rangeImage.swap(mem_block->rangeImage);
+
+	pool->dump_to_pool(mem_params, mem_block);
 }
-
 #endif
-
-/*---------------------------------------------------------------
-							Constructor
- ---------------------------------------------------------------*/
-CObservation3DRangeScan::CObservation3DRangeScan()
-	: pixelLabels(),  // Start without label info
-	  cameraParams(),
-	  cameraParamsIntensity(),
-	  relativePoseIntensityWRTDepth(0, 0, 0, -90.0_deg, 0.0_deg, -90.0_deg),
-
-	  sensorPose()
-
-{
-}
 
 CObservation3DRangeScan::~CObservation3DRangeScan()
 {
@@ -315,7 +295,7 @@ CObservation3DRangeScan::~CObservation3DRangeScan()
 #endif
 }
 
-uint8_t CObservation3DRangeScan::serializeGetVersion() const { return 9; }
+uint8_t CObservation3DRangeScan::serializeGetVersion() const { return 10; }
 void CObservation3DRangeScan::serializeTo(
 	mrpt::serialization::CArchive& out) const
 {
@@ -379,6 +359,18 @@ void CObservation3DRangeScan::serializeTo(
 	{
 		pixelLabels->writeToStream(out);
 	}
+
+	// v10:
+	out.WriteAs<uint8_t>(rangeImageOtherLayers.size());
+	for (const auto& kv : rangeImageOtherLayers)
+	{
+		out << kv.first;
+		const auto& ri = kv.second;
+		out.WriteAs<uint32_t>(ri.cols());
+		out.WriteAs<uint32_t>(ri.rows());
+		if (!ri.empty())
+			out.WriteBufferFixEndianness<uint16_t>(ri.data(), ri.size());
+	}
 }
 
 void CObservation3DRangeScan::serializeFrom(
@@ -396,6 +388,7 @@ void CObservation3DRangeScan::serializeFrom(
 		case 7:
 		case 8:
 		case 9:
+		case 10:
 		{
 			uint32_t N;
 
@@ -549,6 +542,25 @@ void CObservation3DRangeScan::serializeFrom(
 						TPixelLabelInfoBase::readAndBuildFromStream(in));
 			}
 
+			rangeImageOtherLayers.clear();
+			if (version >= 10)
+			{
+				const auto numLayers = in.ReadAs<uint8_t>();
+				for (size_t i = 0; i < numLayers; i++)
+				{
+					std::string name;
+					in >> name;
+					auto& ri = rangeImageOtherLayers[name];
+
+					const uint32_t rows = in.ReadAs<uint32_t>();
+					const uint32_t cols = in.ReadAs<uint32_t>();
+					ri.resize(rows, cols);
+					if (ri.size() != 0)
+						in.ReadBufferFixEndianness<uint16_t>(
+							ri.data(), ri.size());
+				}
+			}
+
 			// auto-fix wrong camera resolution in parameters:
 			if (hasRangeImage &&
 				(static_cast<int>(cameraParams.ncols) != rangeImage.cols() ||
@@ -604,6 +616,8 @@ void CObservation3DRangeScan::swap(CObservation3DRangeScan& o)
 	std::swap(maxRange, o.maxRange);
 	std::swap(sensorPose, o.sensorPose);
 	std::swap(stdError, o.stdError);
+
+	rangeImageOtherLayers.swap(o.rangeImageOtherLayers);
 }
 
 void CObservation3DRangeScan::load() const
@@ -641,25 +655,40 @@ void CObservation3DRangeScan::load() const
 
 	if (hasRangeImage && m_rangeImage_external_stored)
 	{
-		const string fil = rangeImage_getExternalStorageFileAbsolutePath();
-		if (mrpt::system::strCmpI(
-				"txt", mrpt::system::extractFileExtension(fil, true)))
+		for (size_t idx = 0; idx < 1 + rangeImageOtherLayers.size(); idx++)
 		{
-			const_cast<CMatrix_u16&>(rangeImage).loadFromTextFile(fil);
-		}
-		else
-		{
-			auto& me = const_cast<CObservation3DRangeScan&>(*this);
+			std::string layerName;
+			mrpt::math::CMatrix_u16* ri = nullptr;
+			if (idx == 0)
+				ri = const_cast<mrpt::math::CMatrix_u16*>(&rangeImage);
+			else
+			{
+				auto it = rangeImageOtherLayers.begin();
+				std::advance(it, idx - 1);
+				layerName = it->first;
+				ri = const_cast<mrpt::math::CMatrix_u16*>(&it->second);
+			}
+			const string fil =
+				rangeImage_getExternalStorageFileAbsolutePath(layerName);
+			if (mrpt::system::strCmpI(
+					"txt", mrpt::system::extractFileExtension(fil, true)))
+			{
+				ri->loadFromTextFile(fil);
+			}
+			else
+			{
+				auto& me = const_cast<CObservation3DRangeScan&>(*this);
 
-			mrpt::io::CFileGZInputStream fi(fil);
-			auto f = mrpt::serialization::archiveFrom(fi);
-			const uint32_t rows = f.ReadAs<uint32_t>();
-			const uint32_t cols = f.ReadAs<uint32_t>();
-			me.rangeImage_setSize(rows, cols);
-			if (me.rangeImage.size() != 0)
-				f.ReadBufferFixEndianness<uint16_t>(
-					me.rangeImage.data(), me.rangeImage.size());
-		}
+				mrpt::io::CFileGZInputStream fi(fil);
+				auto f = mrpt::serialization::archiveFrom(fi);
+				const uint32_t rows = f.ReadAs<uint32_t>();
+				const uint32_t cols = f.ReadAs<uint32_t>();
+				me.rangeImage_setSize(rows, cols);
+				if (ri->size() != 0)
+					f.ReadBufferFixEndianness<uint16_t>(ri->data(), ri->size());
+			}
+
+		}  // end for each layer
 	}
 }
 
@@ -678,15 +707,28 @@ void CObservation3DRangeScan::unload()
 	confidenceImage.unload();
 }
 
-void CObservation3DRangeScan::rangeImage_getExternalStorageFileAbsolutePath(
-	std::string& out_path) const
+std::string CObservation3DRangeScan::rangeImage_getExternalStorageFile(
+	const std::string& rangeImageLayer) const
 {
-	ASSERT_(m_rangeImage_external_file.size() > 2);
-	if (m_rangeImage_external_file[0] == '/' ||
-		(m_rangeImage_external_file[1] == ':' &&
-		 m_rangeImage_external_file[2] == '\\'))
+	std::string filName = m_rangeImage_external_file;
+	if (!rangeImageLayer.empty())
 	{
-		out_path = m_rangeImage_external_file;
+		const auto curExt = mrpt::system::extractFileExtension(filName);
+		mrpt::system::fileNameChangeExtension(
+			filName, std::string("layer_") + rangeImageLayer + curExt);
+	}
+	return filName;
+}
+
+void CObservation3DRangeScan::rangeImage_getExternalStorageFileAbsolutePath(
+	std::string& out_path, const std::string& rangeImageLayer) const
+{
+	std::string filName = rangeImage_getExternalStorageFile(rangeImageLayer);
+
+	ASSERT_(filName.size() > 2);
+	if (filName[0] == '/' || (filName[1] == ':' && filName[2] == '\\'))
+	{
+		out_path = filName;
 	}
 	else
 	{
@@ -695,7 +737,7 @@ void CObservation3DRangeScan::rangeImage_getExternalStorageFileAbsolutePath(
 		if (CImage::getImagesPathBase()[N] != '/' &&
 			CImage::getImagesPathBase()[N] != '\\')
 			out_path += "/";
-		out_path += m_rangeImage_external_file;
+		out_path += filName;
 	}
 }
 void CObservation3DRangeScan::points3D_getExternalStorageFileAbsolutePath(
@@ -738,7 +780,7 @@ void CObservation3DRangeScan::points3D_convertToExternalStorage(
 	// instead of CImage::getImagesPathBase()
 	const string savedDir = CImage::getImagesPathBase();
 	CImage::setImagesPathBase(use_this_base_dir);
-	const string real_absolute_file_path =
+	const string real_absolute_path =
 		points3D_getExternalStorageFileAbsolutePath();
 	CImage::setImagesPathBase(savedDir);
 
@@ -751,11 +793,11 @@ void CObservation3DRangeScan::points3D_convertToExternalStorage(
 		M.setRow(1, points3D_y);
 		M.setRow(2, points3D_z);
 
-		M.saveToTextFile(real_absolute_file_path, MATRIX_FORMAT_FIXED);
+		M.saveToTextFile(real_absolute_path, MATRIX_FORMAT_FIXED);
 	}
 	else
 	{
-		mrpt::io::CFileGZOutputStream fo(real_absolute_file_path);
+		mrpt::io::CFileGZOutputStream fo(real_absolute_path);
 		auto f = mrpt::serialization::archiveFrom(fo);
 		f << points3D_x << points3D_y << points3D_z;
 	}
@@ -784,33 +826,46 @@ void CObservation3DRangeScan::rangeImage_convertToExternalStorage(
 	// instead of CImage::getImagesPathBase()
 	const string savedDir = CImage::getImagesPathBase();
 	CImage::setImagesPathBase(use_this_base_dir);
-	const string real_absolute_file_path =
-		rangeImage_getExternalStorageFileAbsolutePath();
-	CImage::setImagesPathBase(savedDir);
 
-	if (EXTERNALS_AS_TEXT_value)
+	for (size_t idx = 0; idx < 1 + rangeImageOtherLayers.size(); idx++)
 	{
-		rangeImage.saveToTextFile(real_absolute_file_path, MATRIX_FORMAT_FIXED);
-	}
-	else
-	{
-		mrpt::io::CFileGZOutputStream fo(real_absolute_file_path);
-		auto f = mrpt::serialization::archiveFrom(fo);
+		std::string layerName;
+		mrpt::math::CMatrix_u16* ri = nullptr;
+		if (idx == 0)
+			ri = &rangeImage;
+		else
+		{
+			auto it = rangeImageOtherLayers.begin();
+			std::advance(it, idx - 1);
+			layerName = it->first;
+			ri = &it->second;
+		}
+		const string real_absolute_path =
+			rangeImage_getExternalStorageFileAbsolutePath(layerName);
 
-		f.WriteAs<uint32_t>(rangeImage.rows());
-		f.WriteAs<uint32_t>(rangeImage.cols());
-		if (rangeImage.size() != 0)
-			f.WriteBufferFixEndianness<uint16_t>(
-				rangeImage.data(), rangeImage.size());
+		if (EXTERNALS_AS_TEXT_value)
+		{
+			ri->saveToTextFile(real_absolute_path, MATRIX_FORMAT_FIXED);
+		}
+		else
+		{
+			mrpt::io::CFileGZOutputStream fo(real_absolute_path);
+			auto f = mrpt::serialization::archiveFrom(fo);
+
+			f.WriteAs<uint32_t>(ri->rows());
+			f.WriteAs<uint32_t>(ri->cols());
+			if (ri->size() != 0)
+				f.WriteBufferFixEndianness<uint16_t>(ri->data(), ri->size());
+		}
 	}
 
 	m_rangeImage_external_stored = true;
 	rangeImage.setSize(0, 0);
+
+	CImage::setImagesPathBase(savedDir);
 }
 
-// ==============  Auxiliary function for "recoverCameraCalibrationParameters"
-// =========================
-
+// Auxiliary function for "recoverCameraCalibrationParameters"
 #define CALIB_DECIMAT 15
 
 namespace mrpt::obs::detail
@@ -825,7 +880,7 @@ struct TLevMarData
 	}
 };
 
-void cam2vec(const TCamera& camPar, CVectorDouble& x)
+static void cam2vec(const TCamera& camPar, CVectorDouble& x)
 {
 	if (x.size() < 4 + 4) x.resize(4 + 4);
 
@@ -836,7 +891,7 @@ void cam2vec(const TCamera& camPar, CVectorDouble& x)
 
 	for (size_t i = 0; i < 4; i++) x[4 + i] = camPar.dist[i];
 }
-void vec2cam(const CVectorDouble& x, TCamera& camPar)
+static void vec2cam(const CVectorDouble& x, TCamera& camPar)
 {
 	camPar.intrinsicParams(0, 0) = x[0];  // fx
 	camPar.intrinsicParams(1, 1) = x[1];  // fy
@@ -845,7 +900,7 @@ void vec2cam(const CVectorDouble& x, TCamera& camPar)
 
 	for (size_t i = 0; i < 4; i++) camPar.dist[i] = x[4 + i];
 }
-void cost_func(
+static void cost_func(
 	const CVectorDouble& par, const TLevMarData& d, CVectorDouble& err)
 {
 	const CObservation3DRangeScan& obs = d.obs;
@@ -1092,10 +1147,12 @@ size_t CObservation3DRangeScan::getScanSize() const
 // pooling to speed-up the memory allocation.
 void CObservation3DRangeScan::rangeImage_setSize(const int H, const int W)
 {
+	bool ri_done = rangeImage.cols() == W && rangeImage.rows() == H;
+
 #ifdef COBS3DRANGE_USE_MEMPOOL
 	// Request memory from the memory pool:
 	TMyRangesMemPool* pool = TMyRangesMemPool::getInstance();
-	if (pool)
+	if (pool && !ri_done)
 	{
 		CObservation3DRangeScan_Ranges_MemPoolParams mem_params;
 		mem_params.H = H;
@@ -1108,13 +1165,16 @@ void CObservation3DRangeScan::rangeImage_setSize(const int H, const int W)
 		{  // Take the memory via swaps:
 			rangeImage.swap(mem_block->rangeImage);
 			delete mem_block;
-			return;
+			ri_done = true;
 		}
 	}
 // otherwise, continue with the normal method:
 #endif
 	// Fall-back to normal method:
-	rangeImage.setSize(H, W);
+	if (!ri_done) rangeImage.setSize(H, W);
+
+	// and in all cases, do the resize for the other layers:
+	for (auto& layer : rangeImageOtherLayers) layer.second.setSize(H, W);
 }
 
 // Return true if \a relativePoseIntensityWRTDepth equals the pure rotation
@@ -1310,10 +1370,12 @@ void CObservation3DRangeScan::getDescriptionAsText(std::ostream& o) const
 	o << "Homogeneous matrix for the sensor's 3D pose, relative to robot "
 		 "base:\n";
 	o << sensorPose.getHomogeneousMatrixVal<CMatrixDouble44>() << sensorPose
-	  << endl;
+	  << "\n";
 
-	o << "maxRange = " << maxRange << " [meters]" << endl;
-	o << "rangeUnits = " << rangeUnits << " [meters]" << endl;
+	o << "maxRange = " << maxRange << " [meters]"
+	  << "\n";
+	o << "rangeUnits = " << rangeUnits << " [meters]"
+	  << "\n";
 
 	o << "Has 3D point cloud? ";
 	if (hasPoints3D)
@@ -1321,30 +1383,43 @@ void CObservation3DRangeScan::getDescriptionAsText(std::ostream& o) const
 		o << "YES: " << points3D_x.size() << " points";
 		if (points3D_isExternallyStored())
 			o << ". External file: " << points3D_getExternalStorageFile()
-			  << endl;
+			  << "\n";
 		else
-			o << " (embedded)." << endl;
+			o << " (embedded)."
+			  << "\n";
 	}
 	else
-		o << "NO" << endl;
+		o << "NO"
+		  << "\n";
 
-	o << "Range is depth: " << (range_is_depth ? "YES" : "NO") << endl;
+	o << "Range is depth: " << (range_is_depth ? "YES" : "NO") << "\n";
 	o << "Has raw range data? " << (hasRangeImage ? "YES" : "NO");
 	if (hasRangeImage)
 	{
 		if (rangeImage_isExternallyStored())
-			o << ". External file: " << rangeImage_getExternalStorageFile()
-			  << endl;
+			o << ". External file: " << rangeImage_getExternalStorageFile("");
 		else
-			o << " (embedded)." << endl;
+			o << " (embedded).";
+	}
+	o << "\n";
+
+	for (auto& layer : rangeImageOtherLayers)
+	{
+		o << "Additional rangeImage layer: '" << layer.first << "'";
+		if (rangeImage_isExternallyStored())
+			o << ". External file: " << rangeImage_getExternalStorageFile("");
+		else
+			o << " (embedded).";
+		o << "\n";
 	}
 
-	o << endl << "Has intensity data? " << (hasIntensityImage ? "YES" : "NO");
+	o << "\n"
+	  << "Has intensity data? " << (hasIntensityImage ? "YES" : "NO");
 	if (hasIntensityImage)
 	{
 		if (intensityImage.isExternallyStored())
 			o << ". External file: " << intensityImage.getExternalStorageFile()
-			  << endl;
+			  << "\n";
 		else
 			o << " (embedded).\n";
 		// Channel?
@@ -1352,48 +1427,57 @@ void CObservation3DRangeScan::getDescriptionAsText(std::ostream& o) const
 		  << mrpt::typemeta::TEnumType<
 				 CObservation3DRangeScan::TIntensityChannelID>::
 				 value2name(intensityImageChannel)
-		  << endl;
+		  << "\n";
 	}
 
-	o << endl << "Has confidence data? " << (hasConfidenceImage ? "YES" : "NO");
+	o << "\n"
+	  << "Has confidence data? " << (hasConfidenceImage ? "YES" : "NO");
 	if (hasConfidenceImage)
 	{
 		if (confidenceImage.isExternallyStored())
 			o << ". External file: " << confidenceImage.getExternalStorageFile()
-			  << endl;
+			  << "\n";
 		else
-			o << " (embedded)." << endl;
+			o << " (embedded)."
+			  << "\n";
 	}
 
-	o << endl << "Has pixel labels? " << (hasPixelLabels() ? "YES" : "NO");
+	o << "\n"
+	  << "Has pixel labels? " << (hasPixelLabels() ? "YES" : "NO");
 	if (hasPixelLabels())
 	{
-		o << " Human readable labels:" << endl;
+		o << " Human readable labels:"
+		  << "\n";
 		for (auto it = pixelLabels->pixelLabelNames.begin();
 			 it != pixelLabels->pixelLabelNames.end(); ++it)
-			o << " label[" << it->first << "]: '" << it->second << "'" << endl;
+			o << " label[" << it->first << "]: '" << it->second << "'"
+			  << "\n";
 	}
 
-	o << endl << endl;
-	o << "Depth camera calibration parameters:" << endl;
+	o << "\n"
+	  << "\n";
+	o << "Depth camera calibration parameters:"
+	  << "\n";
 	{
 		CConfigFileMemory cfg;
 		cameraParams.saveToConfigFile("DEPTH_CAM_PARAMS", cfg);
-		o << cfg.getContent() << endl;
+		o << cfg.getContent() << "\n";
 	}
-	o << endl << "Intensity camera calibration parameters:" << endl;
+	o << "\n"
+	  << "Intensity camera calibration parameters:"
+	  << "\n";
 	{
 		CConfigFileMemory cfg;
 		cameraParamsIntensity.saveToConfigFile("INTENSITY_CAM_PARAMS", cfg);
-		o << cfg.getContent() << endl;
+		o << cfg.getContent() << "\n";
 	}
-	o << endl
-	  << endl
+	o << "\n"
+	  << "\n"
 	  << "Pose of the intensity cam. wrt the depth cam:\n"
-	  << relativePoseIntensityWRTDepth << endl
+	  << relativePoseIntensityWRTDepth << "\n"
 	  << relativePoseIntensityWRTDepth
 			 .getHomogeneousMatrixVal<CMatrixDouble44>()
-	  << endl;
+	  << "\n";
 }
 
 T3DPointsTo2DScanParams::T3DPointsTo2DScanParams()
@@ -1412,8 +1496,6 @@ void CObservation3DRangeScan::undistort()
 	{
 		// OpenCV wrapper (copy-less) for rangeImage:
 
-		cv::Mat rangeImg(
-			rangeImage.rows(), rangeImage.cols(), CV_16UC1, &rangeImage(0, 0));
 		const cv::Mat distortion(
 			1, cameraParams.dist.size(), CV_64F, &cameraParams.dist[0]);
 		const cv::Mat intrinsics(
@@ -1435,10 +1517,26 @@ void CObservation3DRangeScan::undistort()
 		cv::initUndistortRectifyMap(
 			intrinsics, distortion, R_eye, newIntrinsics, imgSize, CV_32FC1, m1,
 			m2);
-		cv::remap(rangeImg, outRangeImg, m1, m2, cv::INTER_NEAREST);
 
-		// Overwrite:
-		outRangeImg.copyTo(rangeImg);
+		for (size_t idx = 0; idx < 1 + rangeImageOtherLayers.size(); idx++)
+		{
+			mrpt::math::CMatrix_u16* ri = nullptr;
+			if (idx == 0)
+				ri = &rangeImage;
+			else
+			{
+				auto it = rangeImageOtherLayers.begin();
+				std::advance(it, idx - 1);
+				ri = &it->second;
+			}
+			cv::Mat rangeImg(ri->rows(), ri->cols(), CV_16UC1, ri->data());
+
+			// Remap:
+			cv::remap(rangeImg, outRangeImg, m1, m2, cv::INTER_NEAREST);
+			// Overwrite:
+			outRangeImg.copyTo(rangeImg);
+		}
+
 		cameraParams.dist.fill(0);
 		for (int r = 0; r < 3; r++)
 			for (int c = 0; c < 3; c++)
@@ -1464,7 +1562,8 @@ void CObservation3DRangeScan::undistort()
 mrpt::img::CImage CObservation3DRangeScan::rangeImage_getAsImage(
 	const std::optional<mrpt::img::TColormap> color,
 	const std::optional<float> normMinRange,
-	const std::optional<float> normMaxRange) const
+	const std::optional<float> normMaxRange,
+	const std::optional<std::string> additionalLayerName) const
 {
 #if MRPT_HAS_OPENCV
 	const float val_min = normMinRange.value_or(.0f);
@@ -1474,11 +1573,17 @@ mrpt::img::CImage CObservation3DRangeScan::rangeImage_getAsImage(
 	const float range_inv = rangeUnits / (val_max - val_min);
 
 	ASSERT_(this->hasRangeImage);
-	ASSERT_ABOVE_(rangeImage.cols(), 0);
-	ASSERT_ABOVE_(rangeImage.rows(), 0);
+
+	const mrpt::math::CMatrix_u16* ri =
+		(!additionalLayerName || additionalLayerName->empty())
+			? &rangeImage
+			: &rangeImageOtherLayers.at(*additionalLayerName);
+
+	ASSERT_ABOVE_(ri->cols(), 0);
+	ASSERT_ABOVE_(ri->rows(), 0);
 
 	mrpt::img::CImage img;
-	const int cols = rangeImage.cols(), rows = rangeImage.rows();
+	const int cols = ri->cols(), rows = ri->rows();
 
 	const auto col = color.value_or(mrpt::img::TColormap::cmGRAYSCALE);
 
@@ -1491,7 +1596,7 @@ mrpt::img::CImage CObservation3DRangeScan::rangeImage_getAsImage(
 		for (int c = 0; c < cols; c++)
 		{
 			// Normalized value in the range [0,1]:
-			const float val_01 = (rangeImage.coeff(r, c) - val_min) * range_inv;
+			const float val_01 = (ri->coeff(r, c) - val_min) * range_inv;
 			if (is_gray)
 			{
 				img.setPixel(c, r, static_cast<uint8_t>(val_01 * 255));
