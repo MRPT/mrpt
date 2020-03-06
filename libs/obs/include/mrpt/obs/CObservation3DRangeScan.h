@@ -411,6 +411,7 @@ class CObservation3DRangeScan : public CObservation
 	 *
 	 * \param additionalLayerName If empty string or not provided, the main
 	 * rangeImage will be used; otherwise, the given range image layer.
+	 * \sa rangeImageAsImage
 	 */
 	mrpt::img::CImage rangeImage_getAsImage(
 		const std::optional<mrpt::img::TColormap> color = std::nullopt,
@@ -418,6 +419,15 @@ class CObservation3DRangeScan : public CObservation
 		const std::optional<float> normMaxRange = std::nullopt,
 		const std::optional<std::string> additionalLayerName =
 			std::nullopt) const;
+
+	/** Static method to convert a range matrix into an image.
+	 * If val_max is left to zero, the maximum range in the matrix will be
+	 * automatically used. \sa rangeImage_getAsImage
+	 */
+	static mrpt::img::CImage rangeImageAsImage(
+		const mrpt::math::CMatrix_u16& ranges, float val_min, float val_max,
+		float rangeUnits,
+		const std::optional<mrpt::img::TColormap> color = std::nullopt);
 
 	/** @} */
 
