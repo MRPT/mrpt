@@ -1559,31 +1559,22 @@ void CObservation3DRangeScan::undistort()
 #endif
 }
 
-mrpt::img::CImage CObservation3DRangeScan::rangeImage_getAsImage(
-	const std::optional<mrpt::img::TColormap> color,
-	const std::optional<float> normMinRange,
-	const std::optional<float> normMaxRange,
-	const std::optional<std::string> additionalLayerName) const
+mrpt::img::CImage CObservation3DRangeScan::rangeImageAsImage(
+	const mrpt::math::CMatrix_u16& ri, float val_min, float val_max,
+	float rangeUnits, const std::optional<mrpt::img::TColormap> color)
 {
 #if MRPT_HAS_OPENCV
-	const float val_min = normMinRange.value_or(.0f);
-	const float val_max = normMaxRange.value_or(this->maxRange);
+	if (val_max < 1e-4f) val_max = ri.maxCoeff() * rangeUnits;
+
 	ASSERT_ABOVE_(val_max, val_min);
 
 	const float range_inv = rangeUnits / (val_max - val_min);
 
-	ASSERT_(this->hasRangeImage);
-
-	const mrpt::math::CMatrix_u16* ri =
-		(!additionalLayerName || additionalLayerName->empty())
-			? &rangeImage
-			: &rangeImageOtherLayers.at(*additionalLayerName);
-
-	ASSERT_ABOVE_(ri->cols(), 0);
-	ASSERT_ABOVE_(ri->rows(), 0);
+	ASSERT_ABOVE_(ri.cols(), 0);
+	ASSERT_ABOVE_(ri.rows(), 0);
 
 	mrpt::img::CImage img;
-	const int cols = ri->cols(), rows = ri->rows();
+	const int cols = ri.cols(), rows = ri.rows();
 
 	const auto col = color.value_or(mrpt::img::TColormap::cmGRAYSCALE);
 
@@ -1596,7 +1587,7 @@ mrpt::img::CImage CObservation3DRangeScan::rangeImage_getAsImage(
 		for (int c = 0; c < cols; c++)
 		{
 			// Normalized value in the range [0,1]:
-			const float val_01 = (ri->coeff(r, c) - val_min) * range_inv;
+			const float val_01 = (ri.coeff(r, c) - val_min) * range_inv;
 			if (is_gray)
 			{
 				img.setPixel(c, r, static_cast<uint8_t>(val_01 * 255));
@@ -1617,8 +1608,26 @@ mrpt::img::CImage CObservation3DRangeScan::rangeImage_getAsImage(
 	}
 
 	return img;
-
 #else
 	THROW_EXCEPTION("This method requires OpenCV");
 #endif
+}
+
+mrpt::img::CImage CObservation3DRangeScan::rangeImage_getAsImage(
+	const std::optional<mrpt::img::TColormap> color,
+	const std::optional<float> normMinRange,
+	const std::optional<float> normMaxRange,
+	const std::optional<std::string> additionalLayerName) const
+{
+	ASSERT_(this->hasRangeImage);
+	const mrpt::math::CMatrix_u16* ri =
+		(!additionalLayerName || additionalLayerName->empty())
+			? &rangeImage
+			: &rangeImageOtherLayers.at(*additionalLayerName);
+
+	const float val_min = normMinRange.value_or(.0f);
+	const float val_max = normMaxRange.value_or(this->maxRange);
+	ASSERT_ABOVE_(val_max, val_min);
+
+	return rangeImageAsImage(*ri, val_min, val_max, rangeUnits, color);
 }
