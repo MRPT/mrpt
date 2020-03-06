@@ -10,6 +10,7 @@
 
 #include <mrpt/poses/CPose3D.h>
 #include <cstdint>
+#include <string>
 
 namespace mrpt::obs
 {
@@ -22,19 +23,25 @@ struct T3DPointsProjectionParams
 	 * are generated. Otherwise, points are transformed with \a sensorPose.
 	 * Furthermore, if provided, those coordinates are transformed with \a
 	 * robotPoseInTheWorld */
-	bool takeIntoAccountSensorPoseOnRobot{false};
+	bool takeIntoAccountSensorPoseOnRobot = false;
 	/** (Default: nullptr) Read takeIntoAccountSensorPoseOnRobot */
-	const mrpt::poses::CPose3D* robotPoseInTheWorld{nullptr};
+	const mrpt::poses::CPose3D* robotPoseInTheWorld = nullptr;
 
 	/** (Default:true) If possible, use SSE2 optimized code. */
-	bool USE_SSE2{true};
+	bool USE_SSE2 = true;
+
 	/** (Default:false) set to true if you want an organized point cloud */
-	bool MAKE_ORGANIZED{false};
+	bool MAKE_ORGANIZED = false;
 
 	/** (Default:1) If !=1, split the range image in blocks of DxD
 	 * (D=decimation), and only generates one point per block, with the minimum
 	 * valid range. */
-	uint8_t decimation{1};
+	uint8_t decimation = 1;
+
+	/** If empty, the main rangeImage layer will be unprojected. Otherwise, put
+	 * here the name of the layer you want to unproject, from those available in
+	 * rangeImageOtherLayers. */
+	std::string layer;
 
 	T3DPointsProjectionParams() = default;
 };

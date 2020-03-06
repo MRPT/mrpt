@@ -57,6 +57,8 @@ void unprojectInto(
  *and a 0xFF mean the lowest and highest confidence levels, respectively.
  *    - Semantic labels: Stored as a matrix of bitfields, each bit having a
  *user-defined meaning.
+ *    - For cameras supporting multiple returns per pixels, different layers of
+ *range images are available in the map \a rangeImageOtherLayers.
  *
  *  The coordinates of the 3D point cloud are in meters with respect to the
  *depth camera origin of coordinates
@@ -117,26 +119,22 @@ void unprojectInto(
  *camera (this field is already set to the
  *    correct setting when grabbing observations from an mrpt::hwdrivers
  *sensor):
- *		- range_is_depth=true  -> Kinect-like ranges: entries of \a rangeImage
- *are
- *distances along the +X axis
- *		- range_is_depth=false -> Ranges in \a rangeImage are actual distances
- *in
- *3D.
+ *  - range_is_depth=true  -> Kinect-like ranges: entries of \a rangeImage
+ *    are distances along the +X (front-facing) axis.
+ *  - range_is_depth=false -> Ranges in \a rangeImage are actual distances
+ *    in 3D.
  *
- *  The "intensity" channel may come from different channels in sesnsors as
- *Kinect. Look at field \a intensityImageChannel to
- *    find out if the image was grabbed from the visible (RGB) or IR channels.
+ * The "intensity" channel may come from different channels in sesnsors as
+ * Kinect. Look at field \a intensityImageChannel to find out if the image was
+ * grabbed from the visible (RGB) or IR channels.
  *
  * 3D point clouds can be generated at any moment after grabbing with
- * CObservation3DRangeScan::unprojectInto(), provided the
- *correct
- *   calibration parameters. Note that unprojectInto() will
- *store the point cloud in sensor-centric local coordinates. Use
- *unprojectInto() to directly obtain vehicle or world
- *coordinates.
+ * CObservation3DRangeScan::unprojectInto(), provided the correct calibration
+ *parameters. Note that unprojectInto() will store the point cloud in
+ *sensor-centric local coordinates. Use unprojectInto() to directly obtain
+ *vehicle or world coordinates.
  *
- *  Example of how to assign labels to pixels (for object segmentation, semantic
+ * Example of how to assign labels to pixels (for object segmentation, semantic
  *information, etc.):
  *
  * \code
@@ -183,9 +181,8 @@ class CObservation3DRangeScan : public CObservation
 	std::string m_rangeImage_external_file;
 
    public:
-	/** Default constructor */
-	CObservation3DRangeScan();
-	/** Destructor */
+	CObservation3DRangeScan() = default;
+
 	~CObservation3DRangeScan() override;
 
 	/** @name Delayed-load manual control methods.
@@ -248,6 +245,9 @@ class CObservation3DRangeScan : public CObservation
 	 * takeIntoAccountSensorPoseOnRobot
 	 *  the points are transformed with \a sensorPose. Furthermore, if
 	 * provided, those coordinates are transformed with \a robotPoseInTheWorld
+	 *
+	 * \note For multi-return sensors, only the layer specified in
+	 * T3DPointsProjectionParams::layer will be unprojected.
 	 *
 	 * \tparam POINTMAP Supported maps are all those covered by
 	 * mrpt::opengl::PointCloudAdapter (mrpt::maps::CPointsMap and derived,
@@ -376,8 +376,16 @@ class CObservation3DRangeScan : public CObservation
 	bool hasRangeImage{false};
 
 	/** If hasRangeImage=true, a matrix of floats with the range data as
-	 * captured by the camera (in meters) \sa range_is_depth, rangeUnits */
+	 * captured by the camera (in meters).
+	 * For sensors with multiple returns per pixels, this matrix holds the
+	 * CLOSEST of all the returns.
+	 *
+	 * \sa range_is_depth, rangeUnits, rangeImageOtherLayers */
 	mrpt::math::CMatrix_u16 rangeImage;
+
+	/** Additional layer range/depth images. Text labels are arbitrary and
+	 * sensor-dependent, e.g. "LAST", "SECOND", "3rd", etc. */
+	std::map<std::string, mrpt::math::CMatrix_u16> rangeImageOtherLayers;
 
 	/** The conversion factor from integer units in rangeImage and actual
 	 * distances in meters. Default is 0.001 m, that is 1 millimeter. \sa
@@ -400,11 +408,26 @@ class CObservation3DRangeScan : public CObservation
 	 * "maxRange" in this object, unless overriden with the optional parameters.
 	 * Note that the usage of optional<> allows any parameter to be left to its
 	 * default placing `std::nullopt`.
+	 *
+	 * \param additionalLayerName If empty string or not provided, the main
+	 * rangeImage will be used; otherwise, the given range image layer.
+	 * \sa rangeImageAsImage
 	 */
 	mrpt::img::CImage rangeImage_getAsImage(
 		const std::optional<mrpt::img::TColormap> color = std::nullopt,
 		const std::optional<float> normMinRange = std::nullopt,
-		const std::optional<float> normMaxRange = std::nullopt) const;
+		const std::optional<float> normMaxRange = std::nullopt,
+		const std::optional<std::string> additionalLayerName =
+			std::nullopt) const;
+
+	/** Static method to convert a range matrix into an image.
+	 * If val_max is left to zero, the maximum range in the matrix will be
+	 * automatically used. \sa rangeImage_getAsImage
+	 */
+	static mrpt::img::CImage rangeImageAsImage(
+		const mrpt::math::CMatrix_u16& ranges, float val_min, float val_max,
+		float rangeUnits,
+		const std::optional<mrpt::img::TColormap> color = std::nullopt);
 
 	/** @} */
 
@@ -414,16 +437,18 @@ class CObservation3DRangeScan : public CObservation
 	{
 		return m_rangeImage_external_stored;
 	}
-	inline std::string rangeImage_getExternalStorageFile() const
-	{
-		return m_rangeImage_external_file;
-	}
+	std::string rangeImage_getExternalStorageFile(
+		const std::string& rangeImageLayer) const;
+
+	/** rangeImageLayer: Empty for the main rangeImage matrix, otherwise, a key
+	 * of rangeImageOtherLayers */
 	void rangeImage_getExternalStorageFileAbsolutePath(
-		std::string& out_path) const;
-	inline std::string rangeImage_getExternalStorageFileAbsolutePath() const
+		std::string& out_path, const std::string& rangeImageLayer) const;
+	inline std::string rangeImage_getExternalStorageFileAbsolutePath(
+		const std::string& rangeImageLayer) const
 	{
 		std::string tmp;
-		rangeImage_getExternalStorageFileAbsolutePath(tmp);
+		rangeImage_getExternalStorageFileAbsolutePath(tmp, rangeImageLayer);
 		return tmp;
 	}
 	/** Users won't normally want to call this, it's only used from internal
@@ -505,7 +530,8 @@ class CObservation3DRangeScan : public CObservation
 	 * rotation, according to the drawing on the top of this page.
 	 *  \sa doDepthAndIntensityCamerasCoincide
 	 */
-	mrpt::poses::CPose3D relativePoseIntensityWRTDepth;
+	mrpt::poses::CPose3D relativePoseIntensityWRTDepth = {
+		0, 0, 0, -90.0_deg, 0.0_deg, -90.0_deg};
 
 	/** Return true if \a relativePoseIntensityWRTDepth equals the pure rotation
 	 * (0,0,0,-90deg,0,-90deg) (with a small comparison epsilon)
