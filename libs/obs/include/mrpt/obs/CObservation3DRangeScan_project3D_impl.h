@@ -70,18 +70,23 @@ inline void range2XYZ_LUT(
 		ASSERT_EQUAL_(fp.rangeMask_max->cols(), src_obs.rangeImage.cols());
 		ASSERT_EQUAL_(fp.rangeMask_max->rows(), src_obs.rangeImage.rows());
 	}
+
+	mrpt::math::CMatrix_u16* ri =
+		pp.layer.empty() ? &src_obs.rangeImage
+						 : &src_obs.rangeImageOtherLayers.at(pp.layer);
+
 #if MRPT_HAS_SSE2
 	// if image width is not 8*N, use standard method
 	if ((W & 0x07) == 0 && pp.USE_SSE2 && DECIM == 1 &&
 		mrpt::cpu::supports(mrpt::cpu::feature::SSE2))
 		do_project_3d_pointcloud_SSE2(
-			H, W, kxs, kys, kzs, src_obs.rangeImage, src_obs.rangeUnits, pca,
+			H, W, kxs, kys, kzs, *ri, src_obs.rangeUnits, pca,
 			src_obs.points3D_idxs_x, src_obs.points3D_idxs_y, fp,
 			pp.MAKE_ORGANIZED);
 	else
 #endif
 		do_project_3d_pointcloud(
-			H, W, kxs, kys, kzs, src_obs.rangeImage, src_obs.rangeUnits, pca,
+			H, W, kxs, kys, kzs, *ri, src_obs.rangeUnits, pca,
 			src_obs.points3D_idxs_x, src_obs.points3D_idxs_y, fp,
 			pp.MAKE_ORGANIZED, DECIM);
 
@@ -116,6 +121,14 @@ void unprojectInto(
 	{
 		pca.resize(0);
 		return;
+	}
+	if (!pp.layer.empty())
+	{
+		ASSERT_EQUAL_(src_obs.rangeImageOtherLayers.count(pp.layer), 1);
+		const auto& ri = src_obs.rangeImageOtherLayers.at(pp.layer);
+
+		ASSERT_EQUAL_(ri.cols(), src_obs.rangeImage.cols());
+		ASSERT_EQUAL_(ri.rows(), src_obs.rangeImage.rows());
 	}
 
 	// Decide whether we could directly use the precomputed LUT of pixel

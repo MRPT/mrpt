@@ -30,11 +30,18 @@ using namespace std;
 constexpr unsigned int TEST_RANGEIMG_WIDTH = 32;
 constexpr unsigned int TEST_RANGEIMG_HEIGHT = 24;
 
+constexpr float SECOND_LAYER_CONSTANT_RANGE = 50.0f;
+
 void fillSampleObs(
 	mrpt::obs::CObservation3DRangeScan& obs,
 	mrpt::obs::T3DPointsProjectionParams& pp, int test_case)
 {
 	obs.hasRangeImage = true;
+
+	// Create a second depth layer:
+	obs.rangeImageOtherLayers.clear();
+	mrpt::math::CMatrix_u16& ri_2nd = obs.rangeImageOtherLayers["LATEST"];
+
 	obs.rangeImage_setSize(TEST_RANGEIMG_HEIGHT, TEST_RANGEIMG_WIDTH);
 
 	obs.rangeImage.setZero();
@@ -44,6 +51,9 @@ void fillSampleObs(
 	for (unsigned int r = 10; r < 16; r++)
 		for (unsigned int c = 10; c <= r; c++)
 			obs.rangeImage(r, c) = static_cast<uint16_t>(r / obs.rangeUnits);
+
+	ri_2nd.fill(
+		static_cast<uint16_t>(SECOND_LAYER_CONSTANT_RANGE / obs.rangeUnits));
 
 	obs.cameraParams.ncols = TEST_RANGEIMG_WIDTH;
 	obs.cameraParams.nrows = TEST_RANGEIMG_HEIGHT;
@@ -88,14 +98,33 @@ TEST(CObservation3DRangeScan, Project3D_filterMinMax1)
 	fp.rangeMask_min = &fMin;
 	fp.rangeMask_max = &fMax;
 
-	for (int i = 0; i < 16; i++)  // test all combinations of flags
+	for (int i = 0; i < 8; i++)  // test all combinations of flags
 	{
 		mrpt::obs::CObservation3DRangeScan o;
 		fillSampleObs(o, pp, i);
-		fp.rangeCheckBetween = (i & 8) != 0;
+		fp.rangeCheckBetween = (i & 4) != 0;
 
 		o.unprojectInto(o, pp, fp);
 		EXPECT_EQ(o.points3D_x.size(), 20U)
+			<< " testcase flags: i=" << i << std::endl;
+	}
+}
+
+TEST(CObservation3DRangeScan, Project3D_additionalLayers)
+{
+	mrpt::obs::T3DPointsProjectionParams pp;
+	mrpt::obs::TRangeImageFilterParams fp;
+
+	pp.layer = "LATEST";
+
+	for (int i = 0; i < 4; i++)  // test all combinations of flags
+	{
+		mrpt::obs::CObservation3DRangeScan o;
+		fillSampleObs(o, pp, i);
+
+		o.unprojectInto(o, pp, fp);
+		EXPECT_EQ(
+			o.points3D_x.size(), TEST_RANGEIMG_HEIGHT * TEST_RANGEIMG_WIDTH)
 			<< " testcase flags: i=" << i << std::endl;
 	}
 }
