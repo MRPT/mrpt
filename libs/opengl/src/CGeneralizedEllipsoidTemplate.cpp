@@ -137,7 +137,6 @@ void CGeneralizedEllipsoidTemplate<2>::implUpdate_Triangles()
 template <>
 void CGeneralizedEllipsoidTemplate<3>::implUpdate_Triangles()
 {
-	using P3f = mrpt::math::TPoint3Df;
 	const auto& pts = m_render_pts;
 
 	// Render precomputed points in m_render_pts:

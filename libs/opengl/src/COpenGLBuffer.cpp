@@ -61,7 +61,7 @@ void COpenGLBuffer::RAII_Impl::bind()
 void COpenGLBuffer::RAII_Impl::release()
 {
 #if MRPT_HAS_OPENGL_GLUT
-	ASSERT_(created);
+	if (!created) return;
 	glBindBuffer(static_cast<GLenum>(type), 0);
 #endif
 }

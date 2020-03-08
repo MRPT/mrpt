@@ -69,7 +69,7 @@ void CFrustum::onUpdateBuffers_Wireframe()
 										   3, 7, 6, 4, 5, 7, 5, 1};
 
 	// GL_LINE_STRIP:
-	for (unsigned int idx = 0; idx < draw_path.size(); idx++)
+	for (size_t idx = 0; idx < draw_path.size(); idx++)
 	{
 		const unsigned int idx_next = (idx + 1) % draw_path.size();
 		vbd.emplace_back(pts[draw_path[idx]]);

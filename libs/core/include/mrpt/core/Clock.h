@@ -74,7 +74,7 @@ class Clock
 	 *
 	 * \note This method is ignored in non-Linux systems.
 	 */
-	static int64_t resetMonotonicToRealTimeEpoch();
+	static int64_t resetMonotonicToRealTimeEpoch() noexcept;
 
 	/** Returns the number of nanoseconds that are added to the output of the
 	 * POSIX `CLOCK_MONOTONIC` to make timestamps match the epoch of POSIX

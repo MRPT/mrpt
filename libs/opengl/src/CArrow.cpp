@@ -71,7 +71,7 @@ void CArrow::onUpdateBuffers_Triangles()
 	const float coswt = std::cos(wall_tilt), sinwt = std::sin(wall_tilt);
 
 	const float head_tilt = std::atan2(r1, P10_norm * m_headRatio);
-	const float cosht = std::cos(wall_tilt), sinht = std::sin(wall_tilt);
+	const float cosht = std::cos(head_tilt), sinht = std::sin(head_tilt);
 
 	// cylinder walls:
 	for (unsigned int i = 0; i < m_slices; i++)
