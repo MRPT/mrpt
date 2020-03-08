@@ -53,11 +53,12 @@ void CPointCloud::onUpdateBuffers_Points()
 {
 	{
 		mrpt::math::TPoint3Df tst[2];
-		static_assert(
+		// was static_assert(), error in gcc9.1, cannot use ptr+3 in constexpr.
+		ASSERTMSG_(
 			&tst[1].x == (&tst[0].x + 3), "memory layout not as expected");
-		static_assert(
+		ASSERTMSG_(
 			&tst[1].y == (&tst[0].y + 3), "memory layout not as expected");
-		static_assert(
+		ASSERTMSG_(
 			&tst[1].z == (&tst[0].z + 3), "memory layout not as expected");
 	}
 

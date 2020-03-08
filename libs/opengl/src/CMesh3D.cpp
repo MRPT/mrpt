@@ -211,7 +211,7 @@ void CMesh3D::onUpdateBuffers_Wireframe()
 	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
 	vbd.clear();
 
-	for (unsigned int f = 0; f < m_face_verts.size(); f++)
+	for (size_t f = 0; f < m_face_verts.size(); f++)
 	{
 		const unsigned char num_vert = 3 + m_is_quad[f];
 		for (int i = 0; i < num_vert - 1; i++)
@@ -240,7 +240,7 @@ void CMesh3D::onUpdateBuffers_Triangles()
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
 	tris.clear();
 
-	for (unsigned int f = 0; f < m_is_quad.size(); f++)
+	for (size_t f = 0; f < m_is_quad.size(); f++)
 	{
 		// Assign normals to faces (if on)
 		const auto& normal = m_normals[f];
@@ -310,7 +310,7 @@ void CMesh3D::getBoundingBox(
 		bb_max.y = -std::numeric_limits<double>::max();
 		bb_max.z = -std::numeric_limits<double>::max();
 
-		for (unsigned int i = 0; i < m_vertices.size(); i++)
+		for (size_t i = 0; i < m_vertices.size(); i++)
 		{
 			// Max
 			mrpt::keep_max(bb_max.x, m_vertices[i][0]);

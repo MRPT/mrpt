@@ -60,7 +60,7 @@ void COpenGLVertexArrayObject::RAII_Impl::bind()
 void COpenGLVertexArrayObject::RAII_Impl::release()
 {
 #if MRPT_HAS_OPENGL_GLUT
-	ASSERT_(created);
+	if (!created) return;
 	glBindVertexArray(0);
 #endif
 }
