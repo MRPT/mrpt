@@ -357,7 +357,6 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 #if 0
-
 	// CMesh
 	{
 		auto obj = opengl::CMesh::Create();
@@ -391,7 +390,7 @@ void TestOpenGLObjects()
 		auto obj = opengl::CMesh3D::Create();
 		obj->enableShowEdges(false);
 		obj->enableShowFaces(true);
-		obj->enableShowVertices(false);
+		obj->enableShowVertices(true);
 		obj->setLocation(off_x, 0, 0);
 
 		const unsigned int rows = 200, cols = 200;

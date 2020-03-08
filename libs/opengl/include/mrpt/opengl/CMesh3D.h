@@ -51,6 +51,7 @@ class CMesh3D : public CRenderizableShaderTriangles,
 	}
 	void onUpdateBuffers_Wireframe() override;
 	void onUpdateBuffers_Triangles() override;
+	void onUpdateBuffers_Points() override;
 	/** @} */
 
 	CMesh3D() = default;
@@ -110,9 +111,18 @@ class CMesh3D : public CRenderizableShaderTriangles,
 		const mrpt::math::CMatrixDynamic<int>& face_verts,
 		const mrpt::math::CMatrixDynamic<float>& vert_coords);
 
-	void setEdgeColor(float r, float g, float b, float a = 1.f);
-	void setFaceColor(float r, float g, float b, float a = 1.f);
-	void setVertColor(float r, float g, float b, float a = 1.f);
+	void setEdgeColor(float r, float g, float b, float a = 1.f)
+	{
+		edge_color = mrpt::img::TColorf(r, g, b, a);
+	}
+	void setFaceColor(float r, float g, float b, float a = 1.f)
+	{
+		face_color = mrpt::img::TColorf(r, g, b, a);
+	}
+	void setVertColor(float r, float g, float b, float a = 1.f)
+	{
+		vert_color = mrpt::img::TColorf(r, g, b, a);
+	}
 
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
