@@ -397,22 +397,7 @@ void C3DWindowDialog::clearTextMessages()
 
 void C3DWindowDialog::addTextMessage(
 	const double x_frac, const double y_frac, const std::string& text,
-	const mrpt::img::TColorf& color, const size_t unique_index,
-	const mrpt::opengl::TOpenGLFont font)
-{
-#if MRPT_HAS_OPENGL_GLUT
-	m_canvas->m_text_msgs.addTextMessage(
-		x_frac, y_frac, text, color, unique_index, font);
-#endif
-}
-
-void C3DWindowDialog::addTextMessage(
-	const double x_frac, const double y_frac, const std::string& text,
-	const mrpt::img::TColorf& color, const std::string& font_name,
-	const float font_size, const mrpt::opengl::TOpenGLFontStyle font_style,
-	const size_t unique_index, const double font_spacing,
-	const double font_kerning, const bool has_shadow,
-	const mrpt::img::TColorf& shadow_color)
+	const size_t unique_index, const TFontParams& fontParams)
 {
 #if MRPT_HAS_OPENGL_GLUT
 	m_canvas->m_text_msgs.addTextMessage(

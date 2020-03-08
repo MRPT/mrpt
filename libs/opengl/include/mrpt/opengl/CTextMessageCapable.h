@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CText.h>
 #include <mrpt/opengl/opengl_fonts.h>
 #include <map>
 
@@ -20,15 +21,6 @@ namespace mrpt::opengl
  */
 class CTextMessageCapable
 {
-   protected:
-	std::map<size_t, mrpt::opengl::T2DTextData> m_2D_texts;
-
-	/** Renders the messages to the current opengl rendering context (to be
-	 * called OUT of MRPT mrpt::opengl render() methods ).
-	 *  (w,h) are the dimensions of the rendering area in pixels.
-	 */
-	void render_text_messages(const int w, const int h) const;
-
    public:
 	void clearTextMessages();
 
@@ -51,31 +43,33 @@ class CTextMessageCapable
 	 *
 	 *  You'll need to refresh the display manually with forceRepaint().
 	 *
-	 * \sa clearTextMessages
+	 * \sa clearTextMessages, updateTextMessage
 	 */
 	void addTextMessage(
 		const double x_frac, const double y_frac, const std::string& text,
-		const mrpt::img::TColorf& color = mrpt::img::TColorf(1.0, 1.0, 1.0),
 		const size_t unique_index = 0,
-		const mrpt::opengl::TOpenGLFont font =
-			mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24);
-
-	/// overload with more font parameters - refer to
-	/// mrpt::opengl::gl_utils::glDrawText()
-	void addTextMessage(
-		const double x_frac, const double y_frac, const std::string& text,
-		const mrpt::img::TColorf& color, const std::string& font_name,
-		const float font_size,
-		const mrpt::opengl::TOpenGLFontStyle font_style = mrpt::opengl::NICE,
-		const size_t unique_index = 0, const double font_spacing = 1.5,
-		const double font_kerning = 0.1, const bool has_shadow = false,
-		const mrpt::img::TColorf& shadow_color = mrpt::img::TColorf(0, 0, 0));
+		const TFontParams& fontParams = TFontParams());
 
 	/** Just updates the text of a given text message, without touching the
 	 * other parameters.
 	 * \return false if given ID doesn't exist.
 	 */
 	bool updateTextMessage(const size_t unique_index, const std::string& text);
+
+   protected:
+	struct DataPerText : mrpt::opengl::T2DTextData
+	{
+		mutable mrpt::opengl::CText::Ptr gl_text;
+		mutable bool gl_text_outdated = true;
+	};
+
+	std::map<size_t, DataPerText> m_2D_texts;
+
+	/** Renders the messages to the current opengl rendering context (to be
+	 * called OUT of MRPT mrpt::opengl render() methods ).
+	 *  (w,h) are the dimensions of the rendering area in pixels.
+	 */
+	void render_text_messages(const int w, const int h) const;
 
 };  // end of CTextMessageCapable
 

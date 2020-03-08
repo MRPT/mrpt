@@ -49,31 +49,27 @@ enum TOpenGLFontStyle
  */
 struct TFontParams
 {
-	TFontParams() : vfont_name("sans") {}
-	mrpt::img::TColorf color;
+	TFontParams() = default;
 
-	bool draw_shadow{false};
-	mrpt::img::TColorf shadow_color;
-
-	/** @name Bitmapped font params
-		@{ */
-	mrpt::opengl::TOpenGLFont font{MRPT_GLUT_BITMAP_NONE};
-	/** @} */
-
-	/** @name Vectorized font params - Applicable only if
-	   font==MRPT_GLUT_BITMAP_NONE
-		@{ */
 	/** Vectorized font name ("sans","mono","serif") */
-	std::string vfont_name;
-	/** Size of characters */
-	float vfont_scale{10.0f};
-	/** (default: NICE) See TOpenGLFontStyle. */
-	TOpenGLFontStyle vfont_style{};
+	std::string vfont_name = "sans";
+
+	/** Size of characters [pixels] */
+	float vfont_scale = 10.0f;
+
+	mrpt::img::TColorf color = {1.0f, 1.0f, 1.0f, 1.0f};
+
+	bool draw_shadow = false;
+	mrpt::img::TColorf shadow_color = {0.0f, 0.0f, 0.0f, 1.0f};
+
+	/** (default: FILL) See TOpenGLFontStyle. */
+	TOpenGLFontStyle vfont_style = opengl::FILL;
+
 	/** (default: 1.5) Refer to mrpt::opengl::gl_utils::glDrawText */
-	double vfont_spacing{1.5};
+	double vfont_spacing = 1.5;
+
 	/** (default: 0.1) Refer to mrpt::opengl::gl_utils::glDrawText */
-	double vfont_kerning{0.1};
-	/** @} */
+	double vfont_kerning = 0.1;
 };
 
 /** An auxiliary struct for holding a list of text messages in some mrpt::opengl

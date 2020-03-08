@@ -301,6 +301,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	std::string grabImageGetNextFile();
 
 	bool isCapturingImgs() const { return m_is_capturing_imgs; }
+
 	/** Add 2D text messages overlapped to the 3D rendered scene. The string
 	 * will remain displayed in the 3D window
 	 *   until it's changed with subsequent calls to this same method, or all

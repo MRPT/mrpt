@@ -398,17 +398,12 @@ class C3DWindowDialog : public wxFrame
 	CMyGLCanvas_DisplayWindow3D* m_canvas;
 
 	void clearTextMessages();
+
 	void addTextMessage(
 		const double x_frac, const double y_frac, const std::string& text,
-		const mrpt::img::TColorf& color, const size_t unique_index,
-		const mrpt::opengl::TOpenGLFont font);
-	void addTextMessage(
-		const double x_frac, const double y_frac, const std::string& text,
-		const mrpt::img::TColorf& color, const std::string& font_name,
-		const float font_size, const mrpt::opengl::TOpenGLFontStyle font_style,
-		const size_t unique_index, const double font_spacing,
-		const double font_kerning, const bool has_shadow,
-		const mrpt::img::TColorf& shadow_color);
+		const size_t unique_index = 0,
+		const mrpt::opengl::TFontParams& fontParams =
+			mrpt::opengl::TFontParams());
 
    private:
 	void OnClose(wxCloseEvent& event);
