@@ -24,8 +24,18 @@ using namespace mrpt::opengl;
  */
 void CTextMessageCapable::render_text_messages(const int w, const int h) const
 {
-	MRPT_TODO("Port to shaders!!");
-	return;
+	// (re)generate the opengl CText objects for each label:
+	for (auto& kv : m_2D_texts)
+	{
+		auto& labelData = kv.second;
+		if (labelData.gl_text && labelData.gl_text_outdated) continue;
+
+		if (!labelData.gl_text)
+			labelData.gl_text = mrpt::opengl::CText::Create();
+
+		kv.second.gl_text_outdated = false;
+	}
+
 #if 0 && MRPT_HAS_OPENGL_GLUT
 
 
@@ -151,20 +161,6 @@ void CTextMessageCapable::render_text_messages(const int w, const int h) const
 }
 
 void CTextMessageCapable::clearTextMessages() { m_2D_texts.clear(); }
-void CTextMessageCapable::addTextMessage(
-	const double x_frac, const double y_frac, const std::string& text,
-	const mrpt::img::TColorf& color, const size_t unique_index,
-	const mrpt::opengl::TOpenGLFont font)
-{
-	mrpt::opengl::T2DTextData d;
-	d.text = text;
-	d.color = color;
-	d.x = x_frac;
-	d.y = y_frac;
-	d.font = font;
-
-	m_2D_texts[unique_index] = d;
-}
 
 /** Just updates the text of a given text message, without touching the other
  * parameters.
@@ -179,6 +175,7 @@ bool CTextMessageCapable::updateTextMessage(
 	else
 	{
 		it->second.text = text;
+		it->second.gl_text_outdated = true;
 		return true;
 	}
 }
@@ -187,25 +184,13 @@ bool CTextMessageCapable::updateTextMessage(
 /// mrpt::opengl::gl_utils::glDrawText()
 void CTextMessageCapable::addTextMessage(
 	const double x_frac, const double y_frac, const std::string& text,
-	const mrpt::img::TColorf& color, const std::string& font_name,
-	const float font_size, const mrpt::opengl::TOpenGLFontStyle font_style,
-	const size_t unique_index, const double font_spacing,
-	const double font_kerning, const bool has_shadow,
-	const mrpt::img::TColorf& shadow_color)
+	const size_t unique_index, const TFontParams& fontParams)
 {
-	mrpt::opengl::T2DTextData d;
+	DataPerText d;
+	static_cast<TFontParams&>(d) = fontParams;
 	d.text = text;
-	d.color = color;
-	d.draw_shadow = has_shadow;
-	d.shadow_color = shadow_color;
 	d.x = x_frac;
 	d.y = y_frac;
-	d.font = MRPT_GLUT_BITMAP_NONE;  // It's not a bitmapped font
-	d.vfont_name = font_name;
-	d.vfont_scale = font_size;
-	d.vfont_style = font_style;
-	d.vfont_spacing = font_spacing;
-	d.vfont_kerning = font_kerning;
 
-	m_2D_texts[unique_index] = d;
+	m_2D_texts[unique_index] = std::move(d);
 }
