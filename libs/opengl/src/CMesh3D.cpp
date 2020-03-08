@@ -105,6 +105,7 @@ void CMesh3D::loadMesh(
 				m_normals[f][1] = vec1[2] * vec2[0] - vec1[0] * vec2[2];
 				m_normals[f][2] = vec1[0] * vec2[1] - vec1[1] * vec2[0];
 			}
+			m_normals[f].unitarize();
 		}
 	}
 
@@ -210,7 +211,28 @@ void CMesh3D::onUpdateBuffers_Wireframe()
 	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
 	vbd.clear();
 
-	MRPT_TODO("CONT");
+	for (unsigned int f = 0; f < m_face_verts.size(); f++)
+	{
+		const unsigned char num_vert = 3 + m_is_quad[f];
+		for (int i = 0; i < num_vert - 1; i++)
+		{
+			const unsigned int v_0 = m_face_verts[f][i];
+			const unsigned int v_1 = m_face_verts[f][i + 1];
+
+			vbd.emplace_back(m_vertices[v_0]);
+			vbd.emplace_back(m_vertices[v_1]);
+		}
+
+		// The last vertex of the face needs to be connected to the first as
+		// well
+		const int v_0 = m_face_verts[f][num_vert - 1];
+		const int v_1 = m_face_verts[f][0];
+
+		vbd.emplace_back(m_vertices[v_0]);
+		vbd.emplace_back(m_vertices[v_1]);
+	}
+
+	cbd.assign(vbd.size(), edge_color.asTColor());
 }
 
 void CMesh3D::onUpdateBuffers_Triangles()
@@ -218,139 +240,57 @@ void CMesh3D::onUpdateBuffers_Triangles()
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
 	tris.clear();
 
-	const auto &c0 = m_corner_min, &c1 = m_corner_max;
-	using P3 = mrpt::math::TPoint3D;
-	MRPT_TODO("CONT");
+	for (unsigned int f = 0; f < m_is_quad.size(); f++)
+	{
+		// Assign normals to faces (if on)
+		const auto& normal = m_normals[f];
+
+		tris.emplace_back(
+			m_vertices[m_face_verts[f][0]], m_vertices[m_face_verts[f][1]],
+			m_vertices[m_face_verts[f][2]], normal, normal, normal);
+		if (m_is_quad[f])
+		{
+			tris.emplace_back(
+				m_vertices[m_face_verts[f][0]], m_vertices[m_face_verts[f][2]],
+				m_vertices[m_face_verts[f][3]], normal, normal, normal);
+		}
+	}
+
+	for (auto& t : tris) t.setColor(face_color);
 }
 void CMesh3D::onUpdateBuffers_Points()
 {
-	//
-	MRPT_TODO("CONT");
+	auto& vbd = CRenderizableShaderPoints::m_vertex_buffer_data;
+	auto& cbd = CRenderizableShaderPoints::m_color_buffer_data;
+
+	vbd = m_vertices;
+	cbd.assign(m_vertices.size(), vert_color.asTColor());
 }
-
-#if 0
-void CMesh3D::render(const RenderContext& rc) const
-{
-#if MRPT_HAS_OPENGL_GLUT
-
-	glEnable(GL_NORMALIZE);  // So the GPU normalizes the normals instead of
-	// doing it in the CPU
-
-	if (m_vertices.size() == 0) return;
-
-	//---------------------------------------------------------------------------------------------------------
-	//			Rendering - Test whether changing the rendering mode
-	// continuously
-	// is
-	// very slow (or not)
-	//---------------------------------------------------------------------------------------------------------
-
-	// Render the faces
-	if (m_showFaces)
-	{
-		glColor4f(face_color[0], face_color[1], face_color[2], face_color[3]);
-
-		for (unsigned int f = 0; f < m_num_faces; f++)
-		{
-			// Assign normals to faces (if on)
-			if (m_computeNormals)
-				glNormal3f(m_normals[f][0], m_normals[f][1], m_normals[f][2]);
-
-			// Render Quads
-			if (m_is_quad[f])
-			{
-				glBegin(GL_QUADS);
-				for (int i = 0; i < 4; i++)
-				{
-					const unsigned int vert_ind = m_face_verts[f][i];
-					glVertex3f(
-						m_vertices[vert_ind][0], m_vertices[vert_ind][1],
-						m_vertices[vert_ind][2]);
-				}
-				glEnd();
-			}
-			// Render Triangles
-			else
-			{
-				glBegin(GL_TRIANGLES);
-				for (int i = 0; i < 3; i++)
-				{
-					const unsigned int vert_ind = m_face_verts[f][i];
-					glVertex3f(
-						m_vertices[vert_ind][0], m_vertices[vert_ind][1],
-						m_vertices[vert_ind][2]);
-				}
-				glEnd();
-			}
-		}
-	}
-
-	// Render the edges - They are rendered twice, which is redundant but simple
-	if (m_showEdges)
-	{
-		glColor4f(edge_color[0], edge_color[1], edge_color[2], edge_color[3]);
-		glDisable(GL_LIGHTING);  //??
-		glLineWidth(m_lineWidth);
-		glEnable(GL_LINE_SMOOTH);
-		glBegin(GL_LINES);
-		for (unsigned int f = 0; f < m_num_faces; f++)
-		{
-			const unsigned char num_vert = 3 + m_is_quad[f];
-			for (int i = 0; i < num_vert - 1; i++)
-			{
-				const unsigned int v_0 = m_face_verts[f][i];
-				const unsigned int v_1 = m_face_verts[f][i + 1];
-
-				glVertex3f(
-					m_vertices[v_0][0], m_vertices[v_0][1], m_vertices[v_0][2]);
-				glVertex3f(
-					m_vertices[v_1][0], m_vertices[v_1][1], m_vertices[v_1][2]);
-			}
-
-			// The last vertex of the face needs to be connected to the first as
-			// well
-			const int v_0 = m_face_verts[f][num_vert - 1];
-			const int v_1 = m_face_verts[f][0];
-
-			glVertex3f(
-				m_vertices[v_0][0], m_vertices[v_0][1], m_vertices[v_0][2]);
-			glVertex3f(
-				m_vertices[v_1][0], m_vertices[v_1][1], m_vertices[v_1][2]);
-		}
-		glEnd();
-		glDisable(GL_LINE_SMOOTH);
-	}
-
-	// Render the vertices
-	if (m_showVertices)
-	{
-		glColor4f(vert_color[0], vert_color[1], vert_color[2], vert_color[3]);
-		glPointSize(m_pointSize);
-		glEnable(GL_POINT_SMOOTH);
-		glBegin(GL_POINTS);
-		for (unsigned int v = 0; v < m_vertices.size(); v++)
-			glVertex3f(m_vertices[v][0], m_vertices[v][1], m_vertices[v][2]);
-
-		glEnd();
-		glDisable(GL_POINT_SMOOTH);
-	}
-
-#endif
-}
-#endif
 
 uint8_t CMesh3D::serializeGetVersion() const { return 0; }
 void CMesh3D::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
 	out << m_showEdges << m_showFaces << m_showVertices << m_computeNormals;
-	out << m_is_quad << m_face_verts << m_vertices << m_normals;
+	out << m_is_quad << m_vertices << m_normals;
+	out.WriteAs<uint32_t>(m_face_verts.size());
+	if (!m_face_verts.empty())
+		out.WriteBufferFixEndianness<uint32_t>(
+			m_face_verts[0].data(),
+			m_face_verts.size() * m_face_verts[0].size());
 }
 
 void CMesh3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	readFromStreamRender(in);
-	THROW_EXCEPTION("write me");
+	in >> m_showEdges >> m_showFaces >> m_showVertices >> m_computeNormals;
+	in >> m_is_quad >> m_vertices >> m_normals;
+	const auto N = in.ReadAs<uint32_t>();
+	m_face_verts.resize(N);
+	if (!m_face_verts.empty())
+		in.ReadBufferFixEndianness<uint32_t>(
+			m_face_verts[0].data(),
+			m_face_verts.size() * m_face_verts[0].size());
 }
 
 void CMesh3D::getBoundingBox(
@@ -387,28 +327,4 @@ void CMesh3D::getBoundingBox(
 	// Convert to coordinates of my parent:
 	m_pose.composePoint(bb_min, bb_min);
 	m_pose.composePoint(bb_max, bb_max);
-}
-
-void CMesh3D::setEdgeColor(float r, float g, float b, float a)
-{
-	edge_color[0] = r;
-	edge_color[1] = g;
-	edge_color[2] = b;
-	edge_color[3] = a;
-}
-
-void CMesh3D::setFaceColor(float r, float g, float b, float a)
-{
-	face_color[0] = r;
-	face_color[1] = g;
-	face_color[2] = b;
-	face_color[3] = a;
-}
-
-void CMesh3D::setVertColor(float r, float g, float b, float a)
-{
-	vert_color[0] = r;
-	vert_color[1] = g;
-	vert_color[2] = b;
-	vert_color[3] = a;
 }
