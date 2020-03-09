@@ -13,6 +13,7 @@
 #include <mrpt/math/utils.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
+#include <mrpt/opengl/CEllipsoid2D.h>
 #include <mrpt/opengl/CEllipsoid3D.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/stock_objects.h>
@@ -943,13 +944,12 @@ void CRangeBearingKFSLAM2D::getAs3DObject(
 	pointGauss.cov = m_pkk.blockCopy<2, 2>(0, 0);
 
 	{
-		auto ellip = opengl::CEllipsoid3D::Create();
+		auto ellip = opengl::CEllipsoid2D::Create();
 
 		ellip->setPose(pointGauss.mean);
 		ellip->setCovMatrix(pointGauss.cov);
 		ellip->enableDrawSolid3D(false);
 		ellip->setQuantiles(options.quantiles_3D_representation);
-		ellip->set3DsegmentsCount(10);
 		ellip->setColor(1, 0, 0);
 
 		outObj->insert(ellip);
@@ -963,7 +963,7 @@ void CRangeBearingKFSLAM2D::getAs3DObject(
 		pointGauss.mean.y(m_xkk[3 + 2 * i + 1]);
 		pointGauss.cov = m_pkk.blockCopy<2, 2>(3 + 2 * i, 3 + 2 * i);
 
-		auto ellip = opengl::CEllipsoid3D::Create();
+		auto ellip = opengl::CEllipsoid2D::Create();
 
 		ellip->setName(format("%u", static_cast<unsigned int>(i)));
 		ellip->enableShowName(true);
@@ -971,7 +971,6 @@ void CRangeBearingKFSLAM2D::getAs3DObject(
 		ellip->setCovMatrix(pointGauss.cov);
 		ellip->enableDrawSolid3D(false);
 		ellip->setQuantiles(options.quantiles_3D_representation);
-		ellip->set3DsegmentsCount(10);
 
 		ellip->setColor(0, 0, 1);
 

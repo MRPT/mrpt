@@ -118,9 +118,7 @@ class CWindowManager : public mrpt::system::COutputLogger
 			return;
 		}
 
-		win->addTextMessage(
-			x, y, text, color, m_font_name, m_font_size, mrpt::opengl::NICE,
-			unique_index);
+		win->addTextMessage(x, y, text, unique_index);
 	}
 
 	/**\brief Assign position and size values for the placement of the next
