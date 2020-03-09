@@ -52,6 +52,8 @@ class CVectorField2D : public CRenderizable
 	mrpt::img::TColor m_field_color;
 
    public:
+	void freeOpenGLResources() override {}
+
 	/**
 	 * Clear the matrices
 	 */

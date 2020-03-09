@@ -333,3 +333,12 @@ void COpenGLScene::getBoundingBox(
 
 	return vp->getBoundingBox(bb_min, bb_max);
 }
+
+void COpenGLScene::freeOpenGLResources()
+{
+	auto do_free = [](const mrpt::opengl::CRenderizable::Ptr& o) {
+		o->freeOpenGLResources();
+	};
+
+	visitAllObjects(do_free);
+}

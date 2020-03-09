@@ -189,8 +189,9 @@ CMyGLCanvas_DisplayWindow3D::~CMyGLCanvas_DisplayWindow3D()
 	// Ensure all OpenGL resources are freed before the opengl context is gone:
 	if (getOpenGLSceneRef()) getOpenGLSceneRef()->unloadShaders();
 
-	// Avoid the base class to free this object (it's freed by CDisplayWindow3D)
-	getOpenGLSceneRef().reset();
+	// Unbind all objects, free all buffers:
+	auto& scene = getOpenGLSceneRef();
+	if (scene) scene->freeOpenGLResources();
 }
 
 void CMyGLCanvas_DisplayWindow3D::OnPreRender()

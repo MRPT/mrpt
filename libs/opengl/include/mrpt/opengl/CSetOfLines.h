@@ -41,6 +41,12 @@ class CSetOfLines : public CRenderizableShaderWireFrame,
 	 * @{ */
 	void render(const RenderContext& rc) const override;
 	void renderUpdateBuffers() const override;
+	void freeOpenGLResources() override
+	{
+		CRenderizableShaderPoints::freeOpenGLResources();
+		CRenderizableShaderWireFrame::freeOpenGLResources();
+	}
+
 	virtual shader_list_t requiredShaders() const override
 	{
 		// May use up to two shaders (triangles and lines):

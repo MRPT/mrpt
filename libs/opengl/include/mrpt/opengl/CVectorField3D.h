@@ -76,6 +76,8 @@ class CVectorField3D : public CRenderizable
 	float m_maxspeed;
 
    public:
+	void freeOpenGLResources() override {}
+
 	/**
 	 * Clear the matrices
 	 */

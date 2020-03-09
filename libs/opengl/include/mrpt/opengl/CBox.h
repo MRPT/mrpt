@@ -55,6 +55,11 @@ class CBox : public CRenderizableShaderTriangles,
 	}
 	void onUpdateBuffers_Wireframe() override;
 	void onUpdateBuffers_Triangles() override;
+	void freeOpenGLResources() override
+	{
+		CRenderizableShaderTriangles::freeOpenGLResources();
+		CRenderizableShaderWireFrame::freeOpenGLResources();
+	}
 	/** @} */
 
 	void getBoundingBox(

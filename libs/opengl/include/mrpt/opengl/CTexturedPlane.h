@@ -70,6 +70,7 @@ class CTexturedPlane : public CTexturedObject
 		yMax = m_yMax;
 	}
 
+	void freeOpenGLResources() override {}
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,

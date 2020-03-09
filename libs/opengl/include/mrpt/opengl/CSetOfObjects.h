@@ -74,6 +74,11 @@ class CSetOfObjects : public CRenderizable
 	void enqueForRenderRecursive(
 		const mrpt::opengl::TRenderMatrices& state,
 		RenderQueue& rq) const override;
+	void freeOpenGLResources() override
+	{
+		for (auto& o : m_objects)
+			if (o) o->freeOpenGLResources();
+	}
 
 	/** Clear the list of objects in the scene, deleting objects' memory.
 	 */

@@ -355,6 +355,9 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	 */
 	mrpt::opengl::CText& labelObject() const;
 
+	/** Free opengl buffers */
+	virtual void freeOpenGLResources() = 0;
+
    protected:
 	void writeToStreamRender(mrpt::serialization::CArchive& out) const;
 	void readFromStreamRender(mrpt::serialization::CArchive& in);

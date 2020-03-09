@@ -46,6 +46,7 @@ class CAssimpModel : public CRenderizable
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
+	void freeOpenGLResources() override {}
 
 	/**  Loads a scene from a file in any supported file.
 	 * \exception std::runtime_error On any error during loading or importing

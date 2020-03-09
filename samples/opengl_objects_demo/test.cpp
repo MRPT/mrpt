@@ -819,6 +819,10 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
+	MRPT_TODO("ADD: COctoMapVoxels");
+
+	MRPT_TODO("ADD: CMeshFast");
+
 	win.setCameraZoom(150);
 
 	// IMPORTANT!!! IF NOT UNLOCKED, THE WINDOW WILL NOT BE UPDATED!

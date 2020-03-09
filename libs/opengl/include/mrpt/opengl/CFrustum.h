@@ -59,6 +59,11 @@ class CFrustum : public CRenderizableShaderTriangles,
 	 * @{ */
 	void render(const RenderContext& rc) const override;
 	void renderUpdateBuffers() const override;
+	void freeOpenGLResources() override
+	{
+		CRenderizableShaderTriangles::freeOpenGLResources();
+		CRenderizableShaderWireFrame::freeOpenGLResources();
+	}
 
 	virtual shader_list_t requiredShaders() const override
 	{

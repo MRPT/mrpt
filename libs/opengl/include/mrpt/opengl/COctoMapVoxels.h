@@ -328,6 +328,8 @@ class COctoMapVoxels : public CRenderizable
 
 	void render(const RenderContext& rc) const override;
 	void renderUpdateBuffers() const override;
+	void freeOpenGLResources() override {}
+
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
