@@ -19,7 +19,7 @@ set(EXECUTABLE_OUTPUT_PATH ".")
 #  https://www.mrpt.org/Libraries
 # Add the top-level dependencies only.
 # --------------------------------------------------------------------------
-foreach(dep gui)
+foreach(dep gui;maps)
 	# if not building from inside MRPT source tree, find it as a cmake
 	# imported project:
 	if (NOT TARGET mrpt::${dep})
@@ -46,7 +46,7 @@ if(MY_DEFS) # If not empty
 endif()
 
 # Add the required libraries for linking:
-foreach(dep gui)
+foreach(dep gui;maps)
 	target_link_libraries(${sampleName} mrpt::${dep})
 endforeach()
 
@@ -58,5 +58,5 @@ endif()
 # This part can be removed if you are compiling this program outside of
 #  the MRPT tree:
 if(DEFINED MRPT_LIBS_ROOT) # Fails if build outside of MRPT project.
-	DeclareAppDependencies(${sampleName} mrpt::gui) # Dependencies
+	DeclareAppDependencies(${sampleName} mrpt::gui;mrpt::maps) # Dependencies
 endif()

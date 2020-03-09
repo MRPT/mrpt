@@ -9,13 +9,14 @@
 
 #pragma once
 
-#include <mrpt/opengl/CRenderizable.h>
-
 #include <mrpt/img/TColor.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/opengl/CRenderizableShaderPoints.h>
+#include <mrpt/opengl/CRenderizableShaderTriangles.h>
+#include <mrpt/opengl/CRenderizableShaderWireFrame.h>
 
 namespace mrpt
 {
@@ -53,32 +54,38 @@ class CPlanarLaserScan;
  *  \sa mrpt::opengl::CPointCloud, opengl::COpenGLScene
  * \ingroup mrpt_maps_grp
  */
-class CPlanarLaserScan : public CRenderizable
+class CPlanarLaserScan : public CRenderizableShaderPoints,
+						 public CRenderizableShaderTriangles,
+						 public CRenderizableShaderWireFrame
 {
 	DEFINE_SERIALIZABLE(CPlanarLaserScan, mrpt::opengl)
-   protected:
-	mrpt::obs::CObservation2DRangeScan m_scan;
-	mutable mrpt::maps::CSimplePointsMap m_cache_points;
-	mutable bool m_cache_valid{false};
-
-	float m_line_width{1};
-	float m_line_R{1.f}, m_line_G{0.f}, m_line_B{0.f}, m_line_A{0.5f};
-
-	float m_points_width{3};
-	float m_points_R{1.0f}, m_points_G{0.0f}, m_points_B{0.0f},
-		m_points_A{1.0f};
-
-	float m_plane_R{0.01f}, m_plane_G{0.01f}, m_plane_B{0.6f}, m_plane_A{0.6f};
-
-	bool m_enable_points{true};
-	bool m_enable_line{true};
-	bool m_enable_surface{true};
 
    public:
+	/** @name Renderizable shader API virtual methods
+	 * @{ */
+	void render(const RenderContext& rc) const override;
+	void renderUpdateBuffers() const override;
+	void freeOpenGLResources() override
+	{
+		CRenderizableShaderTriangles::freeOpenGLResources();
+		CRenderizableShaderWireFrame::freeOpenGLResources();
+		CRenderizableShaderPoints::freeOpenGLResources();
+	}
+
+	virtual shader_list_t requiredShaders() const override
+	{
+		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES,
+				DefaultShaderID::POINTS};
+	}
+	void onUpdateBuffers_Wireframe() override;
+	void onUpdateBuffers_Triangles() override;
+	void onUpdateBuffers_Points() override;
+	/** @} */
+
 	CPlanarLaserScan() = default;
 	~CPlanarLaserScan() override = default;
 
-	/**< Clear the scan */
+	/** Clear the scan */
 	void clear();
 
 	/** Show or hides the scanned points \sa sePointsWidth, setPointsColor*/
@@ -103,9 +110,6 @@ class CPlanarLaserScan : public CRenderizable
 		CRenderizable::notifyChange();
 	}
 
-	void setLineWidth(float w) { m_line_width = w; }
-	float getLineWidth() const { return m_line_width; }
-	void setPointsWidth(float w) { m_points_width = w; }
 	void setLineColor(float R, float G, float B, float A = 1.0f)
 	{
 		m_line_R = R;
@@ -135,15 +139,25 @@ class CPlanarLaserScan : public CRenderizable
 		m_scan = scan;
 	}
 
-	void freeOpenGLResources() override
-	{
-		// CRenderizableShaderTriangles::freeOpenGLResources();
-	}
-	void render(const RenderContext& rc) const override;
-	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
+
+   protected:
+	mrpt::obs::CObservation2DRangeScan m_scan;
+	mutable mrpt::maps::CSimplePointsMap m_cache_points;
+	mutable bool m_cache_valid{false};
+
+	float m_line_R{1.f}, m_line_G{0.f}, m_line_B{0.f}, m_line_A{0.5f};
+
+	float m_points_R{1.0f}, m_points_G{0.0f}, m_points_B{0.0f},
+		m_points_A{1.0f};
+
+	float m_plane_R{0.01f}, m_plane_G{0.01f}, m_plane_B{0.6f}, m_plane_A{0.6f};
+
+	bool m_enable_points{true};
+	bool m_enable_line{true};
+	bool m_enable_surface{true};
 };
 
 }  // namespace opengl
