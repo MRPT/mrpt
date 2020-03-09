@@ -23,7 +23,6 @@ class CEllipsoidInverseDepth2D;
 class CEllipsoidInverseDepth3D;
 class CEllipsoidRangeBearing2D;
 class CFrustum;
-class CGeneralizedCylinder;
 class CGridPlaneXY;
 class CGridPlaneXZ;
 class CMesh;

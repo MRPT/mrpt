@@ -32,7 +32,6 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_opengl)
 	registerClass(CLASS_ID(CEllipsoidInverseDepth3D));
 	registerClass(CLASS_ID(CEllipsoidRangeBearing2D));
 	registerClass(CLASS_ID(CFrustum));
-	registerClass(CLASS_ID(CGeneralizedCylinder));
 	registerClass(CLASS_ID(CGridPlaneXY));
 	registerClass(CLASS_ID(CGridPlaneXZ));
 	registerClass(CLASS_ID(CMesh));

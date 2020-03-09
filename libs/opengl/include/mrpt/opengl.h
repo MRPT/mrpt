@@ -50,7 +50,6 @@
 #include <mrpt/opengl/CEllipsoidInverseDepth3D.h>
 #include <mrpt/opengl/CEllipsoidRangeBearing2D.h>
 #include <mrpt/opengl/CFBORender.h>
-#include <mrpt/opengl/CGeneralizedCylinder.h>
 #include <mrpt/opengl/COctoMapVoxels.h>
 #include <mrpt/opengl/CPolyhedron.h>
 #include <mrpt/opengl/CVectorField2D.h>

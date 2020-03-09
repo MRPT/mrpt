@@ -41,7 +41,6 @@ TEST(SerializeTestOpenGL, WriteReadToMem)
 		CLASS_ID(CSetOfTriangles),
 		CLASS_ID(CSphere),
 		CLASS_ID(CCylinder),
-		CLASS_ID(CGeneralizedCylinder),
 		CLASS_ID(CPolyhedron),
 		CLASS_ID(CArrow),
 		CLASS_ID(CCamera),
