@@ -149,8 +149,6 @@ void CPointCloud::onUpdateBuffers_Points()
 	}
 
 	m_last_rendered_count = m_last_rendered_count_ongoing;
-
-	CHECK_OPENGL_ERROR();
 }
 
 inline void CPointCloud::internal_render_one_point(size_t i) const
