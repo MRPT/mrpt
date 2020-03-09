@@ -159,7 +159,7 @@ void CActionRobotMovement2D::serializeFrom(
 			}
 			else
 			{
-				double velocityLin, velocityAng;
+				float velocityLin, velocityAng;
 				in >> velocityLin >> velocityAng;
 				velocityLocal.vx = velocityLin;
 				velocityLocal.vy = .0f;
@@ -206,7 +206,7 @@ void CActionRobotMovement2D::serializeFrom(
 				motionModelConfiguration.modelSelection =
 					static_cast<TDrawSampleMotionModel>(i);
 
-				double dum1, dum2, dum3;
+				float dum1, dum2, dum3;
 
 				in >> dum1 >> dum2 >> dum3 >>
 					motionModelConfiguration.gaussianModel.minStdXY >>
@@ -234,7 +234,7 @@ void CActionRobotMovement2D::serializeFrom(
 
 			in >> hasVelocities;
 			{
-				double velocityLin, velocityAng;
+				float velocityLin, velocityAng;
 				in >> velocityLin >> velocityAng;
 				velocityLocal.vx = velocityLin;
 				velocityLocal.vy = .0f;
@@ -287,7 +287,7 @@ void CActionRobotMovement2D::serializeFrom(
 
 			in >> hasVelocities;
 			{
-				double velocityLin, velocityAng;
+				float velocityLin, velocityAng;
 				in >> velocityLin >> velocityAng;
 				velocityLocal.vx = velocityLin;
 				velocityLocal.vy = .0f;
@@ -324,7 +324,7 @@ void CActionRobotMovement2D::serializeFrom(
 			{
 				in >> hasVelocities;
 				{
-					double velocityLin, velocityAng;
+					float velocityLin, velocityAng;
 					in >> velocityLin >> velocityAng;
 					velocityLocal.vx = velocityLin;
 					velocityLocal.vy = .0f;
