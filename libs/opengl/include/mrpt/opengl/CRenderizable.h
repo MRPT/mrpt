@@ -344,19 +344,6 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	 */
 	virtual bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const;
 
-	/** This method is safe for calling from within ::render() methods \sa
-	 * renderTextBitmap, mrpt::opengl::gl_utils */
-	static void renderTextBitmap(const char* str, void* fontStyle);
-
-	/** Return the exact width in pixels for a given string, as will be
-	 * rendered by renderTextBitmap(). \sa renderTextBitmap,
-	 * mrpt::opengl::gl_utils
-	 */
-	static int textBitmapWidth(
-		const std::string& str,
-		mrpt::opengl::TOpenGLFont font =
-			mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24);
-
 	/** Render a text message in the current rendering context, creating a
 	 * glViewport in the way (do not call within ::render() methods)
 	 *   - Coordinates (x,y) are 2D pixels, starting at bottom-left of the

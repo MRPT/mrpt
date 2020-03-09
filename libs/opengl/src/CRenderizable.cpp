@@ -290,23 +290,6 @@ CRenderizable& CRenderizable::setColor_u8(const mrpt::img::TColor& c)
 	return *this;
 }
 
-/** This method is safe for calling from within ::render() methods \sa
- * renderTextBitmap */
-void CRenderizable::renderTextBitmap(const char* str, void* fontStyle)
-{
-	gl_utils::renderTextBitmap(str, fontStyle);
-}
-
-/** Return the exact width in pixels for a given string, as will be rendered by
- * renderTextBitmap().
- * \sa renderTextBitmap
- */
-int CRenderizable::textBitmapWidth(
-	const std::string& str, mrpt::opengl::TOpenGLFont font)
-{
-	return gl_utils::textBitmapWidth(str, font);
-}
-
 CText& CRenderizable::labelObject() const
 {
 	if (!m_label_obj)
