@@ -469,9 +469,7 @@ void CGraphSlamEngine<GRAPH_T>::initClass()
 	// Message to be displayed on pause
 	if (m_enable_visuals)
 	{
-		this->m_win->addTextMessage(
-			0.5, 0.3, "", mrpt::img::TColorf(1.0, 0, 0),
-			m_text_index_paused_message);
+		this->m_win->addTextMessage(0.5, 0.3, "", m_text_index_paused_message);
 	}
 
 	MRPT_END;

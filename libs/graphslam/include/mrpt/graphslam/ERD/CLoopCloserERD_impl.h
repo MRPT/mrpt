@@ -2275,7 +2275,7 @@ void CLoopCloserERD<GRAPH_T>::updateCurrCovarianceVisualization()
 	cov_ellipsis_obj->setLocation(curr_position.x(), curr_position.y(), 0);
 	// pose_t loc = path->curr_pose_pdf.getMeanVal();
 	// cov_ellipsis_obj->setLocation(loc.x(), loc.y(), 0);
-	cov_ellipsis_obj->setCovMatrix(mat, 2);
+	cov_ellipsis_obj->setCovMatrix(mat);
 
 	this->m_win->unlockAccess3DScene();
 	this->m_win->forceRepaint();

@@ -1210,8 +1210,6 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 		objSphere->setNumberDivsLongitude(16);
 		objSphere->setNumberDivsLatitude(16);
 
-		objSphere->enableRadiusIndependentOfEyeDistance();
-
 		outScene.insert(objSphere);
 
 		// The label with the name of the node:
@@ -1250,7 +1248,6 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 
 				glObj->setDiskRadius(0.05f);
 				glObj->setSlicesCount(20);
-				glObj->setLoopsCount(10);
 
 				if (showRobotPoseIDs)
 				{

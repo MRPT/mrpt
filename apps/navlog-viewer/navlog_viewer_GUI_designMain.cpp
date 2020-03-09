@@ -1347,14 +1347,15 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 						}
 					}
 
+					auto fp = getFontParams();
+					fp.draw_shadow = false;
 					win->addTextMessage(
 						4, -12,
 						format(
 							"TP_Target[0]=(%.02f,%.02f) k=%i ang=%.02f deg",
 							pI.TP_Targets[0].x, pI.TP_Targets[0].y, tp_target_k,
 							mrpt::RAD2DEG(ang)),
-						TColorf(1.0f, 1.0f, 1.0f), glTxtFont, glTxtSize,
-						glTxtFillStyle, 1 /*id*/, 1.5, 0.1, false /*shadow*/);
+						1 /*id*/, fp);
 				}
 			}
 			if (cbList->IsChecked(m_cbIdx_ShowAllDebugFields))
@@ -1364,10 +1365,9 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				for (const auto& e : pI.evalFactors)
 				{
 					win->addTextMessage(
-						4, 5 + (lineY++) * (glTxtSize + 3),
+						4, 5 + (lineY++) * (getFontParams().vfont_scale + 3),
 						mrpt::format("%20s=%6.03f", e.first.c_str(), e.second),
-						mrpt::img::TColorf(1, 1, 1), glTxtFont, glTxtSize,
-						glTxtFillStyle, unique_id++, 1.5, 0.1, true);
+						unique_id++, getFontParams());
 				}
 			}
 

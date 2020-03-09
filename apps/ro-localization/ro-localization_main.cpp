@@ -38,7 +38,7 @@
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CDisk.h>
-#include <mrpt/opengl/CEllipsoid3D.h>
+#include <mrpt/opengl/CEllipsoid2D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CSphere.h>
@@ -580,14 +580,14 @@ void TestParticlesLocalization()
 // The particles' cov:
 #ifdef SHOW_REAL_TIME_3D
 					obj = sceneTR->getByName("cov");
-					opengl::CEllipsoid3D::Ptr ellip;
+					opengl::CEllipsoid2D::Ptr ellip;
 					if (!obj)
-						ellip = std::make_shared<opengl::CEllipsoid3D>();
+						ellip = std::make_shared<opengl::CEllipsoid2D>();
 					else
-						ellip = std::dynamic_pointer_cast<CEllipsoid3D>(obj);
+						ellip = std::dynamic_pointer_cast<CEllipsoid2D>(obj);
 #else
-					opengl::CEllipsoid3D::Ptr ellip =
-						std::make_shared<opengl::CEllipsoid3D>();
+					opengl::CEllipsoid2D::Ptr ellip =
+						std::make_shared<opengl::CEllipsoid2D>();
 #endif
 
 					ellip->setColor(1, 0, 0, 0.6);
@@ -595,7 +595,7 @@ void TestParticlesLocalization()
 
 					ellip->setLineWidth(2);
 					ellip->setQuantiles(3);
-					ellip->setCovMatrix(C, 2);
+					ellip->setCovMatrix(C.blockCopy<2, 2>(0, 0));
 					ellip->setName("cov");
 
 					if (!obj)
@@ -662,7 +662,6 @@ void TestParticlesLocalization()
 #endif
 
 								sphere->setColor(0, 0, 1, 0.3);
-								sphere->setLoopsCount(10);
 								sphere->setSlicesCount(40);
 								sphere->setName(beacon_name);
 
@@ -796,21 +795,20 @@ void TestParticlesLocalization()
 #ifdef SHOW_REAL_TIME_3D
 					// GPS pose
 					{
-						CObservationGPS::Ptr o =
-							observations
-								->getObservationByClass<CObservationGPS>();
+						auto o = observations
+									 ->getObservationByClass<CObservationGPS>();
 						if (o && beacMap)
 						{
-							opengl::CRenderizable::Ptr obj =
-								sceneTR->getByName("gps");
-							opengl::CEllipsoid3D::Ptr sphere;
+							auto obj = sceneTR->getByName("gps");
+							opengl::CEllipsoid2D::Ptr sphere;
 							double x, y;
 
 							if (!obj)
-								sphere = std::make_shared<opengl::CEllipsoid3D>();
+								sphere =
+									std::make_shared<opengl::CEllipsoid2D>();
 							else
 								sphere = std::dynamic_pointer_cast<
-									opengl::CEllipsoid3D>(obj);
+									opengl::CEllipsoid2D>(obj);
 
 							sphere->setColor(0, 1, 1, 0.5);
 							sphere->setName("gps");
@@ -845,7 +843,7 @@ void TestParticlesLocalization()
 										 .y_shift),
 									0);
 							}
-							CMatrixF r(2, 2);
+							auto r = CMatrixDouble22::Zero();
 							r(1, 1) = 9;
 							r(0, 0) = 9;
 							sphere->setCovMatrix(r);

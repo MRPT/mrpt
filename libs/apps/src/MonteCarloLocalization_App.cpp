@@ -32,6 +32,7 @@
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/opengl/CDisk.h>
+#include <mrpt/opengl/CEllipsoid2D.h>
 #include <mrpt/opengl/CEllipsoid3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPointCloud.h>
@@ -633,12 +634,6 @@ void MonteCarloLocalization_Base::do_pf_localization()
 				else if (obs)
 					cur_obs_timestamp = obs->timestamp;
 
-				int cov_size;
-				if (pf2gauss_t<MONTECARLO_TYPE>::PF_IS_3D)
-					cov_size = 3;
-				else
-					cov_size = 2;
-
 				if (step >= rawlog_offset)
 				{
 					// Do not execute the PF at "step=0", to let the initial
@@ -660,34 +655,54 @@ void MonteCarloLocalization_Base::do_pf_localization()
 							{
 								CRenderizable::Ptr ellip =
 									scene.getByName("parts_cov");
-								CEllipsoid3D::Ptr el;
 								if (!ellip)
 								{
-									el = std::make_shared<CEllipsoid3D>();
-									ellip =
-										mrpt::ptr_cast<CRenderizable>::from(el);
+									if (pf2gauss_t<MONTECARLO_TYPE>::PF_IS_3D)
+									{
+										auto el = CEllipsoid3D::Create();
+										ellip =
+											mrpt::ptr_cast<CRenderizable>::from(
+												el);
+										el->setLineWidth(2);
+										el->setQuantiles(3);
+										el->enableDrawSolid3D(false);
+									}
+									else
+									{
+										auto el = CEllipsoid2D::Create();
+										ellip =
+											mrpt::ptr_cast<CRenderizable>::from(
+												el);
+										el->setLineWidth(2);
+										el->setQuantiles(3);
+										el->enableDrawSolid3D(false);
+									}
 									ellip->setName("parts_cov");
 									ellip->setColor(1, 0, 0, 0.6);
-
-									el->setLineWidth(2);
-									el->setQuantiles(3);
-									el->set2DsegmentsCount(60);
-									el->enableDrawSolid3D(false);
 									scene.insert(ellip);
 								}
 								else
 								{
-									el =
-										mrpt::ptr_cast<CEllipsoid3D>::from(ellip);
+									if (pf2gauss_t<MONTECARLO_TYPE>::PF_IS_3D)
+									{
+										mrpt::ptr_cast<CEllipsoid3D>::from(
+											ellip)
+											->setCovMatrix(
+												cov.template blockCopy<3, 3>());
+									}
+									else
+									{
+										mrpt::ptr_cast<CEllipsoid2D>::from(
+											ellip)
+											->setCovMatrix(
+												cov.template blockCopy<2, 2>());
+									}
 								}
 								double ellipse_z =
 									mrpt::poses::CPose3D(meanPose).z() + 0.01;
 
 								ellip->setLocation(
 									meanPose.x(), meanPose.y(), ellipse_z);
-
-								el->setCovMatrix(
-									mrpt::math::CMatrixDouble(cov), cov_size);
 							}
 
 							COpenGLScene::Ptr ptrSceneWin =
@@ -703,24 +718,21 @@ void MonteCarloLocalization_Base::do_pf_localization()
 									mrpt::system::dateTimeLocalToString(
 										cur_obs_timestamp)
 										.c_str()),
-								mrpt::img::TColorf(1, 1, 1), "mono", 15,
-								mrpt::opengl::FILL, 6001, 1.5, 0.1, true);
+								6001);
 
 							win3D->addTextMessage(
 								10, 33,
 								mrpt::format(
 									"#particles= %7u",
 									static_cast<unsigned int>(pdf.size())),
-								mrpt::img::TColorf(1, 1, 1), "mono", 15,
-								mrpt::opengl::FILL, 6002, 1.5, 0.1, true);
+								6002);
 
 							win3D->addTextMessage(
 								10, 55,
 								mrpt::format(
 									"mean pose (x y phi_deg)= %s",
 									meanPose.asString().c_str()),
-								mrpt::img::TColorf(1, 1, 1), "mono", 15,
-								mrpt::opengl::FILL, 6003, 1.5, 0.1, true);
+								6003);
 
 							*ptrSceneWin = scene;
 							win3D->unlockAccess3DScene();
