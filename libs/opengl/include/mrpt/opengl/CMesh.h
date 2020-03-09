@@ -99,6 +99,14 @@ class CMesh : public CRenderizable
 	mutable std::vector<mrpt::math::TPolygonWithPlane> tmpPolys;
 
    public:
+	void freeOpenGLResources() override {}
+	/*	{
+			CRenderizableShaderTriangles::freeOpenGLResources();
+			CRenderizableShaderWireFrame::freeOpenGLResources();
+			CRenderizableShaderPoints::freeOpenGLResources();
+		}
+	*/
+
 	template <typename T>
 	void setGridLimits(T xmin, T xmax, T ymin, T ymax)
 	{

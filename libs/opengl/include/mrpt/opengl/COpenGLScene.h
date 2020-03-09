@@ -57,20 +57,9 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(COpenGLScene, mrpt::opengl)
    public:
-	/** Constructor
-	 */
 	COpenGLScene();
-
-	/** Destructor:
-	 */
 	~COpenGLScene() override;
-
-	/** Copy operator:
-	 */
 	COpenGLScene& operator=(const COpenGLScene& obj);
-
-	/** Copy constructor:
-	 */
 	COpenGLScene(const COpenGLScene& obj);
 
 	/**
@@ -229,6 +218,9 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 
 	/** Ensure all shaders are unloaded in all viewports */
 	void unloadShaders();
+
+	/** Ensure all OpenGL buffers are destroyed. */
+	void freeOpenGLResources();
 
    protected:
 	bool m_followCamera{false};

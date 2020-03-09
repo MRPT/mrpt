@@ -51,6 +51,12 @@ class CGeneralizedEllipsoidTemplate
 				break;
 		};
 	}
+	void freeOpenGLResources() override
+	{
+		CRenderizableShaderTriangles::freeOpenGLResources();
+		CRenderizableShaderWireFrame::freeOpenGLResources();
+	}
+
 	void renderUpdateBuffers() const override
 	{
 		// 1) Update eigenvectors/values:

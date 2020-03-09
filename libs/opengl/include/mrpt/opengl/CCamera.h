@@ -94,6 +94,8 @@ class CCamera : public CRenderizable
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
 
+	void freeOpenGLResources() override {}
+
    protected:
 	float m_pointingX{0}, m_pointingY{0}, m_pointingZ{0};
 	float m_eyeDistance{10};

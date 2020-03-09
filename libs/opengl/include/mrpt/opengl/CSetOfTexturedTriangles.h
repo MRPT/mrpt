@@ -67,6 +67,8 @@ class CSetOfTexturedTriangles : public CTexturedObject
 	void render_texturedobj() const override;
 
    public:
+	void freeOpenGLResources() override {}
+
 	void clearTriangles()
 	{
 		m_triangles.clear();

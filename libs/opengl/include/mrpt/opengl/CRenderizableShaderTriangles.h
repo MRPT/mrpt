@@ -41,6 +41,14 @@ class CRenderizableShaderTriangles : public virtual CRenderizable
 	 * to be drawn in "m_*_buffer" fields. */
 	virtual void onUpdateBuffers_Triangles() = 0;
 
+	// See base docs
+	void freeOpenGLResources() override
+	{
+		m_trianglesBuffer.destroy();
+		m_colorBuffer.destroy();
+		m_vao.destroy();
+	}
+
    protected:
 	/** List of triangles  \sa TTriangle */
 	mutable std::vector<mrpt::opengl::TTriangle> m_triangles;

@@ -82,6 +82,14 @@ class CRenderizableShaderPoints : public virtual CRenderizable
 		return m_variablePointSize_DepthScale;
 	}
 
+	// See base docs
+	void freeOpenGLResources() override
+	{
+		m_vertexBuffer.destroy();
+		m_colorBuffer.destroy();
+		m_vao.destroy();
+	}
+
    protected:
 	mutable std::vector<mrpt::math::TPoint3Df> m_vertex_buffer_data;
 	mutable std::vector<mrpt::img::TColor> m_color_buffer_data;

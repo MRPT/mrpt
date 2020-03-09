@@ -53,6 +53,14 @@ class CRenderizableShaderWireFrame : public virtual CRenderizable
 	}
 	bool isAntiAliasingEnabled() const { return m_antiAliasing; }
 
+	// See base docs
+	void freeOpenGLResources() override
+	{
+		m_vertexBuffer.destroy();
+		m_colorBuffer.destroy();
+		m_vao.destroy();
+	}
+
    protected:
 	float m_lineWidth = 1.0f;
 	bool m_antiAliasing = false;
