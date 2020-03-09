@@ -252,7 +252,6 @@ void CBeacon::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 			obj->setLineWidth(3);
 
 			CMatrixDouble C = CMatrixDouble(m_locationGauss.cov);
-			if (C(2, 2) == 0) C.setSize(2, 2);
 			obj->setCovMatrix(C);
 
 			obj->setQuantiles(3);
