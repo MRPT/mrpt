@@ -334,11 +334,11 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 	/** @} */
    protected:
 	/** Termination flag for signaling all threads to terminate */
-	bool m_terminateThreads;
+	std::atomic_bool m_terminateThreads;
 
 	/** Threads termination flags:
 	 */
-	bool m_terminationFlag_LSLAM, m_terminationFlag_TBI,
+	std::atomic_bool m_terminationFlag_LSLAM, m_terminationFlag_TBI,
 		m_terminationFlag_3D_viewer;
 
 	/** Generates a new and unique area textual label (currently this generates
