@@ -238,7 +238,6 @@ void CHMTSLAM::thread_LSLAM()
 
 		// Finish thread:
 		// -------------------------
-		// try { mrpt::system::getCurrentThreadTimes( timCreat,timExit,timCPU);
 		obj->logFmt(mrpt::system::LVL_DEBUG, "[thread_LSLAM] Thread finished");
 		obj->m_terminationFlag_LSLAM = true;
 	}

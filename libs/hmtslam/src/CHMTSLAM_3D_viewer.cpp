@@ -53,11 +53,6 @@ void CHMTSLAM::thread_3D_viewer()
 
 		// Finish thread:
 		// -------------------------
-		MRPT_TODO("Fix thread times")
-		// try { mrpt::system::getCurrentThreadTimes( timCreat,timExit,timCPU);
-		// } catch(...) {};
-		// obj->logFmt(mrpt::system::LVL_DEBUG,"[thread_3D_viewer] Thread
-		// finished. CPU time used:%.06f secs \n",timCPU);
 		obj->m_terminationFlag_3D_viewer = true;
 	}
 	catch (const std::exception& e)
