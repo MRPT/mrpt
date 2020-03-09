@@ -234,15 +234,7 @@ void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC& dc)
 	theWindow->StatusBar1->SetStatusText(str.c_str(), 3);
 }
 
-void CMyGLCanvas::OnPostRender()
-{
-	// Show filename over the screen??
-	if (showFileNameInViewport)
-	{
-		mrpt::opengl::CRenderizable::renderTextBitmap(
-			20, 20, extractFileName(loadedFileName).c_str());
-	}
-}
+void CMyGLCanvas::OnPostRender() {}
 
 void CMyGLCanvas::OnCharCustom(wxKeyEvent& event)
 {
@@ -938,6 +930,12 @@ void _DSceneViewerFrame::loadFromFile(
 		}
 
 		loadedFileName = fil;
+
+		if (showFileNameInViewport)
+		{
+			openGLSceneRef->getViewport()->addTextMessage(
+				20, 20, extractFileName(loadedFileName));
+		}
 
 		// Set the file name as window title:
 		updateTitle();

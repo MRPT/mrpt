@@ -452,7 +452,6 @@ void TestOpenGLObjects()
 		theScene->insert(obj);
 
 		obj->setPointSize(1.0);
-		obj->enablePointSmooth();
 		obj->enableColorFromY();
 
 		for (int i = 0; i < 100000; i++)

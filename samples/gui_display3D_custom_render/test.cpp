@@ -149,9 +149,7 @@ void TestDisplay3D()
 	win.unlockAccess3DScene();
 
 	// Texts:
-	win.addTextMessage(
-		0.01, 0.85, "This is a 2D message", mrpt::img::TColorf(1, 1, 1), 0,
-		MRPT_GLUT_BITMAP_TIMES_ROMAN_10);
+	win.addTextMessage(0.01, 0.85, "This is a 2D message", 0 /*id */);
 
 	win.setCameraElevationDeg(25.0f);
 	// win.setCameraProjective(false);
@@ -182,8 +180,7 @@ void TestDisplay3D()
 
 		// Update the texts on the gl display:
 		win.addTextMessage(
-			5, 5, mrpt::format("FPS=%5.02f", win.getRenderingFPS()),
-			mrpt::img::TColorf(1, 1, 1), 0, MRPT_GLUT_BITMAP_HELVETICA_18);
+			5, 5, mrpt::format("FPS=%5.02f", win.getRenderingFPS()), 0);
 
 		// IMPORTANT!!! IF NOT UNLOCKED, THE WINDOW WILL NOT BE UPDATED!
 		win.unlockAccess3DScene();

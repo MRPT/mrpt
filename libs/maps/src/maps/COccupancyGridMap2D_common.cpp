@@ -365,7 +365,7 @@ void COccupancyGridMap2D::computeEntropy(TEntropyInfo& info) const
 		for (size_t i = 0; i < N; i++)
 		{
 			const auto p = l2p(static_cast<cellType>(i));
-			const auto h = d2f(H(p) + H(1 - p));
+			auto h = d2f(H(p) + H(1 - p));
 
 			// Cell's probabilities rounding problem fixing:
 			if (i == 0 || i == (N - 1)) h = 0;
@@ -384,7 +384,7 @@ void COccupancyGridMap2D::computeEntropy(TEntropyInfo& info) const
 	for (signed char it : map)
 	{
 		auto ctu = static_cast<cellTypeUnsigned>(it);
-		h = entropyTable[ctu];
+		auto h = entropyTable[ctu];
 		info.H += h;
 		if (h < (MAX_H - 0.001f))
 		{

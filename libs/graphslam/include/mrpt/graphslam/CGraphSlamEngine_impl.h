@@ -2009,7 +2009,6 @@ void CGraphSlamEngine<GRAPH_T>::initGTVisualization()
 	// point cloud
 	CPointCloud::Ptr GT_cloud = std::make_shared<CPointCloud>();
 	GT_cloud->setPointSize(1.0);
-	GT_cloud->enablePointSmooth();
 	GT_cloud->enableColorFromX(false);
 	GT_cloud->enableColorFromY(false);
 	GT_cloud->enableColorFromZ(false);
@@ -2084,7 +2083,6 @@ void CGraphSlamEngine<GRAPH_T>::initOdometryVisualization()
 	// point cloud
 	CPointCloud::Ptr odometry_poses_cloud = std::make_shared<CPointCloud>();
 	odometry_poses_cloud->setPointSize(1.0);
-	odometry_poses_cloud->enablePointSmooth();
 	odometry_poses_cloud->enableColorFromX(false);
 	odometry_poses_cloud->enableColorFromY(false);
 	odometry_poses_cloud->enableColorFromZ(false);

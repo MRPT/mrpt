@@ -49,19 +49,14 @@ IMPLEMENTS_SERIALIZABLE(CAngularObservationMesh, CRenderizable, mrpt::opengl)
 void CAngularObservationMesh::addTriangle(
 	const TPoint3D& p1, const TPoint3D& p2, const TPoint3D& p3) const
 {
-	const TPoint3D* arr[3] = {&p1, &p2, &p3};
 	mrpt::opengl::TTriangle t;
-	for (size_t i = 0; i < 3; i++)
-	{
-		t.x[i] = arr[i]->x;
-		t.y[i] = arr[i]->y;
-		t.z[i] = arr[i]->z;
-		t.r[i] = m_color.R * (1.f / 255);
-		t.g[i] = m_color.G * (1.f / 255);
-		t.b[i] = m_color.B * (1.f / 255);
-		t.a[i] = m_color.A * (1.f / 255);
-	}
-	triangles.push_back(t);
+	t.vertices[0].position.pt = p1;
+	t.vertices[1].position.pt = p2;
+	t.vertices[2].position.pt = p3;
+	t.computeNormals();
+	t.setColor(m_color);
+
+	triangles.emplace_back(std::move(t));
 	CRenderizable::notifyChange();
 }
 
@@ -162,45 +157,55 @@ void CAngularObservationMesh::updateMesh() const
 	meshUpToDate = true;
 }
 
-void CAngularObservationMesh::renderUpdateBuffers() const
-{
-	MRPT_TODO("Implement!");
-}
-
 void CAngularObservationMesh::render(const RenderContext& rc) const
 {
-#if MRPT_HAS_OPENGL_GLUT
-	if (mEnableTransparency)
+	switch (rc.shader_id)
 	{
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
-	else
-	{
-		glEnable(GL_DEPTH_TEST);
-		glDisable(GL_BLEND);
-	}
-	if (!meshUpToDate) updateMesh();
-	if (!m_Wireframe) glBegin(GL_TRIANGLES);
+		case DefaultShaderID::TRIANGLES:
+			if (!m_Wireframe) CRenderizableShaderTriangles::render(rc);
+			break;
+		case DefaultShaderID::WIREFRAME:
+			if (m_Wireframe) CRenderizableShaderWireFrame::render(rc);
+			break;
+	};
+}
+void CAngularObservationMesh::renderUpdateBuffers() const
+{
+	CRenderizableShaderTriangles::renderUpdateBuffers();
+	CRenderizableShaderWireFrame::renderUpdateBuffers();
+}
+
+void CAngularObservationMesh::onUpdateBuffers_Wireframe()
+{
+	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
+	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	vbd.clear();
+	cbd.clear();
+
 	for (const auto& t : triangles)
 	{
-		float ax = t.x[1] - t.x[0];
-		float bx = t.x[2] - t.x[0];
-		float ay = t.y[1] - t.y[0];
-		float by = t.y[2] - t.y[0];
-		float az = t.z[1] - t.z[0];
-		float bz = t.z[2] - t.z[0];
-		glNormal3f(ay * bz - az * by, az * bx - ax * bz, ax * by - ay * bx);
-		if (m_Wireframe) glBegin(GL_LINE_LOOP);
-		for (int k = 0; k < 3; k++)
+		// Was: glBegin(GL_LINE_LOOP);
+		for (int k = 0; k <= 3; k++)
 		{
-			glColor4f(t.r[k], t.g[k], t.b[k], t.a[k]);
-			glVertex3f(t.x[k], t.y[k], t.z[k]);
+			int kk = k % 3;
+			vbd.emplace_back(t.x(kk), t.y(kk), t.z(kk));
+			cbd.emplace_back(t.r(kk), t.g(kk), t.b(kk), t.a(kk));
 		}
-		if (m_Wireframe) glEnd();
 	}
-	if (!m_Wireframe) glEnd();
-#endif
+}
+
+void CAngularObservationMesh::onUpdateBuffers_Triangles()
+{
+	auto& tris = CRenderizableShaderTriangles::m_triangles;
+
+	tris = this->triangles;
+
+	// All faces, all vertices, same color:
+	for (auto& t : tris)
+	{
+		t.setColor(m_color);
+		t.computeNormals();
+	}
 }
 
 bool CAngularObservationMesh::traceRay(
@@ -405,12 +410,7 @@ void CAngularObservationMesh::getUntracedRays(
 TPolygon3D createFromTriangle(const mrpt::opengl::TTriangle& t)
 {
 	TPolygon3D res(3);
-	for (size_t i = 0; i < 3; i++)
-	{
-		res[i].x = t.x[i];
-		res[i].y = t.y[i];
-		res[i].z = t.z[i];
-	}
+	for (size_t i = 0; i < 3; i++) res[i] = t.vertices[i].position.pt;
 	return res;
 }
 
@@ -438,26 +438,26 @@ void CAngularObservationMesh::getBoundingBox(
 
 	for (const auto& t : triangles)
 	{
-		keep_min(bb_min.x, t.x[0]);
-		keep_max(bb_max.x, t.x[0]);
-		keep_min(bb_min.y, t.y[0]);
-		keep_max(bb_max.y, t.y[0]);
-		keep_min(bb_min.z, t.z[0]);
-		keep_max(bb_max.z, t.z[0]);
+		keep_min(bb_min.x, t.x(0));
+		keep_max(bb_max.x, t.x(0));
+		keep_min(bb_min.y, t.y(0));
+		keep_max(bb_max.y, t.y(0));
+		keep_min(bb_min.z, t.z(0));
+		keep_max(bb_max.z, t.z(0));
 
-		keep_min(bb_min.x, t.x[1]);
-		keep_max(bb_max.x, t.x[1]);
-		keep_min(bb_min.y, t.y[1]);
-		keep_max(bb_max.y, t.y[1]);
-		keep_min(bb_min.z, t.z[1]);
-		keep_max(bb_max.z, t.z[1]);
+		keep_min(bb_min.x, t.x(1));
+		keep_max(bb_max.x, t.x(1));
+		keep_min(bb_min.y, t.y(1));
+		keep_max(bb_max.y, t.y(1));
+		keep_min(bb_min.z, t.z(1));
+		keep_max(bb_max.z, t.z(1));
 
-		keep_min(bb_min.x, t.x[2]);
-		keep_max(bb_max.x, t.x[2]);
-		keep_min(bb_min.y, t.y[2]);
-		keep_max(bb_max.y, t.y[2]);
-		keep_min(bb_min.z, t.z[2]);
-		keep_max(bb_max.z, t.z[2]);
+		keep_min(bb_min.x, t.x(2));
+		keep_max(bb_max.x, t.x(2));
+		keep_min(bb_min.y, t.y(2));
+		keep_max(bb_max.y, t.y(2));
+		keep_min(bb_min.z, t.z(2));
+		keep_max(bb_max.z, t.z(2));
 	}
 
 	// Convert to coordinates of my parent:

@@ -85,7 +85,6 @@ void TestOctreeRenderHugePointCloud()
 	theScene->insert(gl_pointcloud);
 
 	gl_pointcloud->setPointSize(3.0);
-	gl_pointcloud->enablePointSmooth();
 	gl_pointcloud->enableColorFromZ();
 
 	// Set the list of all points:
@@ -175,11 +174,9 @@ void TestOctreeRenderHugePointCloud()
 			(unsigned int)gl_pointcloud->octree_get_node_count());
 
 		win.get3DSceneAndLock();
+		win.addTextMessage(5, 5, s, 0);
 		win.addTextMessage(
-			5, 5, s, TColorf(1, 1, 1), 0, MRPT_GLUT_BITMAP_HELVETICA_18);
-		win.addTextMessage(
-			5, 35, "'b': switch bounding-boxes visible, 'q': quit",
-			TColorf(1, 1, 1), 1, MRPT_GLUT_BITMAP_HELVETICA_18);
+			5, 35, "'b': switch bounding-boxes visible, 'q': quit", 1);
 		win.unlockAccess3DScene();
 		win.repaint();
 	}

@@ -104,8 +104,6 @@ CSetOfObjects::Ptr graph_visualize(
 			pnts->insertPoint(p.x(), p.y(), p.z());
 		}
 
-		pnts->enablePointSmooth();
-
 		ret->insert(pnts);
 	}  // end draw node points
 

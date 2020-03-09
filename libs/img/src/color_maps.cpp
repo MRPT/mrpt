@@ -262,3 +262,11 @@ void mrpt::img::hot2rgb(const float color_index, float& r, float& g, float& b)
 	g = math::interpolate(color_index, hot_g, 0.0f, 1.0f);
 	b = math::interpolate(color_index, hot_b, 0.0f, 1.0f);
 }
+
+mrpt::img::TColor mrpt::img::colormap(
+	const TColormap& color_map, const float color_index)
+{
+	float r, g, b;
+	colormap(color_map, color_index, r, g, b);
+	return mrpt::img::TColorf(r, g, b).asTColor();
+}

@@ -831,7 +831,6 @@ class CMyReactInterface
 				scene->insert(obj[i]);
 				obj[i]->setColor(0, 0, 1);
 				obj[i]->setPointSize(4.0);
-				obj[i]->enablePointSmooth();
 				for (unsigned int j = 0; j < kinects[i].m_points.size(); j++)
 				{
 					kinects[i].m_points.getPoint(j, point);
@@ -846,7 +845,6 @@ class CMyReactInterface
 			obj->setPose(robotpose3d);
 			obj->setPointSize(5.0);
 			obj->setColor(0, 1, 0);
-			obj->enablePointSmooth();
 			obj->loadFromPointsMap<CSimplePointsMap>(&stm.grid_points);
 			scene->insert(obj);
 		}

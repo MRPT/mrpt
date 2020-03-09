@@ -44,8 +44,6 @@ class CMyGLCanvas : public CWxGLCanvasBase
 	void OnPostRender() override;
 	void OnPostRenderSwapBuffers(double At, wxPaintDC& dc) override;
 	void OnRenderError(const wxString& str) override;
-
-	mrpt::system::TTimeStamp last_timestamp;
 };
 
 #else
