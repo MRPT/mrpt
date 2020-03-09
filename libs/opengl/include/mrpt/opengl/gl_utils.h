@@ -73,25 +73,8 @@ void renderMessageBox(
 	mrpt::opengl::TOpenGLFontStyle text_style = mrpt::opengl::FILL,
 	const double text_spacing = 1.5, const double text_kerning = 0.1);
 
-/** @} */  // -----------------------------------------------------
+/** @} */
 
-/** @name OpenGL bitmapped 2D fonts
-	@{ */
-
-/** This method is safe for calling from within ::render() methods \sa
- * renderTextBitmap */
-void renderTextBitmap(const char* str, void* fontStyle);
-
-/** Return the exact width in pixels for a given string, as will be rendered by
- * renderTextBitmap().
- * \sa renderTextBitmap
- */
-int textBitmapWidth(
-	const std::string& str, mrpt::opengl::TOpenGLFont font =
-								mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24);
-
-/** @} */  // --------------------------------------------------
-		   // --------------------------------------------------
 }  // namespace gl_utils
 }  // namespace opengl
 }  // namespace mrpt
