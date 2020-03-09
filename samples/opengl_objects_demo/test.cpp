@@ -8,9 +8,10 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/random.h>
-
+#include <mrpt/obs/stock_observations.h>
 #include <mrpt/opengl.h>
+#include <mrpt/opengl/CPlanarLaserScan.h>
+#include <mrpt/random.h>
 #include <iostream>
 
 using namespace std;
@@ -814,6 +815,24 @@ void TestOpenGLObjects()
 		}
 
 		auto gl_txt = opengl::CText::Create("stock_objects::RobotRhodon()");
+		gl_txt->setLocation(off_x, off_y_label, 0);
+		theScene->insert(gl_txt);
+	}
+	off_x += STEP_X;
+
+	// CPlanarLaserScan
+	{
+		auto obj = mrpt::opengl::CPlanarLaserScan::Create();
+		obj->setLocation(off_x, 0, 0);
+
+		mrpt::obs::CObservation2DRangeScan scan;
+		mrpt::obs::stock_observations::example2DRangeScan(scan);
+
+		obj->setScan(scan);
+
+		theScene->insert(obj);
+
+		auto gl_txt = opengl::CText::Create("CPlanarLaserScan");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}

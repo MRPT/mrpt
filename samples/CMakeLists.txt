@@ -140,7 +140,7 @@ if(BUILD_EXAMPLES)
 	set(CMAKE_EXAMPLE_DEPS mrpt::comms mrpt::serialization mrpt::poses)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
-	# === Depending on: mrpt::gui, mrpt::img, mrpt::opengl ===
+	# === Depending on: mrpt::gui, mrpt::img, mrpt::opengl, mrpt::maps ===
 	set(LIST_EXAMPLES_IN_THIS_DIR
 		# -------
 		opengl_objects_demo
@@ -163,7 +163,7 @@ if(BUILD_EXAMPLES)
 		gui_gravity3d_example
 		gui_windows_events
 		)
-	set(CMAKE_EXAMPLE_DEPS mrpt::gui)
+	set(CMAKE_EXAMPLE_DEPS mrpt::gui mrpt::maps)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 	# === Depending on: mrpt::gui, mrpt::hwdrivers ===
