@@ -16,6 +16,21 @@
 
 using namespace mrpt::opengl;
 
+void TRenderMatrices::computeOrthoProjectionMatrix(
+	float left, float right, float bottom, float top, float znear, float zfar)
+{
+	ASSERT_ABOVE_(zfar, znear);
+
+	p_matrix.setIdentity();
+
+	p_matrix(0, 0) = 2.0f / (right - left);
+	p_matrix(1, 1) = 2.0f / (top - bottom);
+	p_matrix(2, 2) = -2.0f / (zfar - znear);
+	p_matrix(3, 0) = -(right + left) / (right - left);
+	p_matrix(3, 1) = -(top + bottom) / (top - bottom);
+	p_matrix(3, 2) = -(zfar + znear) / (zfar - znear);
+}
+
 // Replacement for obsolete: gluPerspective() and glOrtho()
 void TRenderMatrices::computeProjectionMatrix(float znear, float zfar)
 {
@@ -59,16 +74,9 @@ void TRenderMatrices::computeProjectionMatrix(float znear, float zfar)
 			if (ratio != 0) Ay /= ratio;
 		}
 
-		p_matrix.setIdentity();
 		const auto left = -.5f * Ax, right = .5f * Ax;
 		const auto bottom = -.5f * Ay, top = .5f * Ay;
-
-		p_matrix(0, 0) = 2.0f / (right - left);
-		p_matrix(1, 1) = 2.0f / (top - bottom);
-		p_matrix(2, 2) = 1.0f / (zfar - znear);
-		p_matrix(3, 0) = -(right + left) / (right - left);
-		p_matrix(3, 1) = -(top + bottom) / (top - bottom);
-		p_matrix(3, 2) = -znear / (zfar - znear);
+		computeOrthoProjectionMatrix(left, right, bottom, top, znear, zfar);
 	}
 }
 

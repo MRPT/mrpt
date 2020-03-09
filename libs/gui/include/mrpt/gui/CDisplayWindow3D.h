@@ -125,7 +125,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	 * object) */
 	mrpt::opengl::COpenGLScene::Ptr m_3Dscene;
 	/** Critical section for accesing m_3Dscene */
-	mutable std::recursive_mutex m_csAccess3DScene;
+	mutable std::recursive_timed_mutex m_csAccess3DScene;
 
 	/** Throws an exception on initialization error */
 	void createOpenGLContext();
@@ -302,51 +302,48 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 
 	bool isCapturingImgs() const { return m_is_capturing_imgs; }
 
-	/** Add 2D text messages overlapped to the 3D rendered scene. The string
-	 * will remain displayed in the 3D window
-	 *   until it's changed with subsequent calls to this same method, or all
-	 * the texts are cleared with clearTextMessages().
-	 *
-	 *  \param x The X position, interpreted as absolute pixels from the left
-	 * if X>=1, absolute pixels from the left if X<0 or as a width factor if in
-	 * the range [0,1[.
-	 *  \param y The Y position, interpreted as absolute pixels from the bottom
-	 * if Y>=1, absolute pixels from the top if Y<0 or as a height factor if in
-	 * the range [0,1[.
-	 *  \param text The text string to display.
-	 *  \param color The text color. For example: TColorf(1.0,1.0,1.0)
-	 *  \param unique_index An "index" for this text message, so that
-	 * subsequent calls with the same index will overwrite this text message
-	 * instead of creating new ones.
-	 *
-	 *  You'll need to refresh the display manually with forceRepaint().
-	 *
-	 * \sa clearTextMessages
+	/** A shortcut for calling mrpt::opengl::COpenGLViewport::addTextMessage()
+	 * in the "main" viewport of the 3D scene.
+	 * \sa clearTextMessages, mrpt::opengl::COpenGLViewport::addTextMessage()
 	 */
-	void addTextMessage(
-		const double x, const double y, const std::string& text,
-		const mrpt::img::TColorf& color = mrpt::img::TColorf(1.0, 1.0, 1.0),
-		const size_t unique_index = 0,
-		const mrpt::opengl::TOpenGLFont font =
-			mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24);
-
-	/** overload with more font parameters - refer to
-	 * mrpt::opengl::gl_utils::glDrawText()
-	 *  Available fonts are enumerated at mrpt::opengl::gl_utils::glSetFont() */
 	void addTextMessage(
 		const double x_frac, const double y_frac, const std::string& text,
-		const mrpt::img::TColorf& color, const std::string& font_name,
-		const float font_size,
-		const mrpt::opengl::TOpenGLFontStyle font_style = mrpt::opengl::NICE,
-		const size_t unique_index = 0, const double font_spacing = 1.5,
-		const double font_kerning = 0.1, const bool draw_shadow = false,
-		const mrpt::img::TColorf& shadow_color = mrpt::img::TColorf(0, 0, 0));
+		const size_t unique_index = 0,
+		const mrpt::opengl::TFontParams& fontParams =
+			mrpt::opengl::TFontParams())
+	{
+		if (!m_3Dscene) return;
+		auto gl_view = m_3Dscene->getViewport();
+		if (!gl_view) return;
+		gl_view->addTextMessage(x_frac, y_frac, text, unique_index, fontParams);
+	}
 
-	/**  Clear all text messages created with addTextMessage().
-	 *  You'll need to refresh the display manually with forceRepaint().
+	/** Clear all text messages created with addTextMessage(). A shortcut for
+	 * calling mrpt::opengl::COpenGLViewport::clearTextMessages().
+	 *
 	 * \sa addTextMessage
 	 */
-	void clearTextMessages();
+	void clearTextMessages()
+	{
+		if (!m_3Dscene) return;
+		auto gl_view = m_3Dscene->getViewport();
+		if (!gl_view) return;
+		gl_view->clearTextMessages();
+	}
+
+	/** Just updates the text of a given text message, without touching the
+	 * other parameters. A shortcut for
+	 * calling mrpt::opengl::COpenGLViewport::updateTextMessage()
+	 *
+	 * \return false if given ID doesn't exist.
+	 */
+	bool updateTextMessage(const size_t unique_index, const std::string& text)
+	{
+		if (!m_3Dscene) return false;
+		auto gl_view = m_3Dscene->getViewport();
+		if (!gl_view) return false;
+		return gl_view->updateTextMessage(unique_index, text);
+	}
 
 	/** Get the average Frames Per Second (FPS) value from the last 250
 	 * rendering events */

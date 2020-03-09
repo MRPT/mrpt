@@ -12,6 +12,7 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/opengl/CCamera.h>
 #include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CTextMessageCapable.h>
 #include <mrpt/opengl/Shader.h>
 #include <mrpt/opengl/TLightParameters.h>
 #include <mrpt/opengl/TRenderMatrices.h>
@@ -56,13 +57,13 @@ namespace mrpt::opengl
  * \ingroup mrpt_opengl_grp
  */
 class COpenGLViewport : public mrpt::serialization::CSerializable,
-						public mrpt::system::CObservable
+						public mrpt::system::CObservable,
+						public mrpt::opengl::CTextMessageCapable
 {
 	DEFINE_SERIALIZABLE(COpenGLViewport, mrpt::opengl)
 	friend class COpenGLScene;
 
    public:
-	// -------------------------------------------------------------------
 	/** @name Set the viewport "modes"
 		@{ */
 
@@ -369,8 +370,7 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	mrpt::img::TColorf m_background_color = {0.6f, 0.6f, 0.6f};
 	/** Set by setImageView */
 	bool m_isImageView{false};
-	// CRenderizable::Ptr m_imageview_quad ; //!< A mrpt::opengl::CTexturedPlane
-	// used after setImageView() is called
+
 	/** The image to display, after calling \a setImageView() */
 	mrpt::img::CImage::Ptr m_imageview_img;
 
@@ -398,7 +398,11 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	bool m_OpenGL_enablePolygonNicest{true};
 
 	TLightParameters m_lights;
+
+	/** Renders all messages in the underlying class CTextMessageCapable */
+	void renderTextMessages() const;
 };
+
 /**
  * Inserts an openGL object into a viewport. Allows call chaining.
  * \sa mrpt::opengl::COpenGLViewport::insert

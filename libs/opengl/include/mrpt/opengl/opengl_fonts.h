@@ -52,7 +52,7 @@ struct TFontParams
 	TFontParams() = default;
 
 	/** Vectorized font name ("sans","mono","serif") */
-	std::string vfont_name = "sans";
+	std::string vfont_name = "mono";
 
 	/** Size of characters [pixels] */
 	float vfont_scale = 10.0f;

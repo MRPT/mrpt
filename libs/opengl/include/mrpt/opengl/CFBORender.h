@@ -11,7 +11,6 @@
 
 #include <mrpt/img/CImage.h>
 #include <mrpt/opengl/COpenGLScene.h>
-#include <mrpt/opengl/CTextMessageCapable.h>
 
 namespace mrpt::opengl
 {
@@ -24,7 +23,7 @@ namespace mrpt::opengl
  *  \sa Example "fbo_render_test"
  * \ingroup mrpt_opengl_grp
  */
-class CFBORender : public mrpt::opengl::CTextMessageCapable
+class CFBORender
 {
    public:
 	/** Constructor.

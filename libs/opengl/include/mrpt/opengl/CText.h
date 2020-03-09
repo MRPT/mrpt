@@ -46,6 +46,7 @@ class CText : public CRenderizableShaderText
 	/** Sets the text to display */
 	void setString(const std::string& s)
 	{
+		if (m_str == s) return;
 		m_str = s;
 		CRenderizable::notifyChange();
 	}
@@ -54,6 +55,7 @@ class CText : public CRenderizableShaderText
 	/** Sets the font (It has no effect yet!) */
 	void setFont(const std::string& s, int height)
 	{
+		if (m_fontName == s && m_fontHeight == height) return;
 		m_fontName = s;
 		m_fontHeight = height;
 		CRenderizable::notifyChange();

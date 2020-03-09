@@ -382,9 +382,80 @@ void COpenGLViewport::renderViewportBorder() const
 #endif
 }
 
-/*---------------------------------------------------------------
-						render
- ---------------------------------------------------------------*/
+void COpenGLViewport::renderTextMessages() const
+{
+#if MRPT_HAS_OPENGL_GLUT
+
+	// Ensure GL objects are up-to-date:
+	m_2D_texts.regenerateGLobjects();
+
+	// Prepare shaders upon first invokation:
+	if (m_shaders.empty()) loadDefaultShaders();
+
+	// Prepare camera (projection matrix):
+	TRenderMatrices _ = m_state;  // make a copy
+
+	// Compute the projection matrix (p_matrix):
+	// was: glLoadIdentity(); glOrtho(0, w, 0, h, -1, 1);
+	const auto w = _.viewport_width, h = _.viewport_height;
+	_.is_projective = false;
+
+	_.p_matrix.setIdentity();
+	//_.computeOrthoProjectionMatrix(0, w, 0, h, m_clip_min, m_clip_max);
+
+	// Reset model-view 4x4 matrix to the identity transformation:
+	_.mv_matrix.setIdentity();
+
+	// glDisable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// Collect all 2D text objects, and update their properties:
+	CListOpenGLObjects objs;
+	for (auto& kv : m_2D_texts.messages)
+	{
+		const DataPerText& label = kv.second;
+
+		// If (x,y) \in [0,1[, it's interpreted as a ratio, otherwise, as an
+		// actual coordinate in pixels
+		float x =
+			label.x >= 1 ? label.x : (label.x < 0 ? w + label.x : label.x * w);
+		float y =
+			label.y >= 1 ? label.y : (label.y < 0 ? h + label.y : label.y * h);
+
+		if (CText::Ptr& o = label.gl_text; o)
+		{
+			o->setFont(label.vfont_name, label.vfont_scale * 2);
+			o->setString(label.text);
+			o->setColor(label.color);
+			// Change coordinates: mrpt text (0,0)-(1,1) to OpenGL
+			// (-1,-1)-(+1,+1):
+			o->setLocation(-1.0f + 2 * x / w, -1.0f + 2 * y / h, 0);
+			objs.push_back(o);
+		}
+		if (CText::Ptr& o = label.gl_text_shadow; o)
+		{
+			o->setFont(label.vfont_name, label.vfont_scale * 2);
+			o->setString(label.text);
+			o->setColor(label.shadow_color);
+			// Change coordinates: mrpt text (0,0)-(1,1) to OpenGL
+			// (-1,-1)-(+1,+1):
+			o->setLocation(
+				-1.0f + 2 * (x + 1) / w, -1.0f + 2 * (y - 1) / h, 0.1);
+			objs.push_back(o);
+		}
+	}
+
+	// Pass 1: Process all objects (recursively for sets of objects):
+	mrpt::opengl::RenderQueue rq;
+	mrpt::opengl::enqueForRendering(objs, _, rq);
+
+	// pass 2: render, sorted by shader program:
+	mrpt::opengl::processRenderQueue(rq, m_shaders, m_lights);
+
+#endif
+}
+
 void COpenGLViewport::render(
 	const int render_width, const int render_height) const
 {
@@ -454,6 +525,9 @@ void COpenGLViewport::render(
 			renderImageMode();
 		else
 			renderNormalSceneMode();
+
+		// Draw text messages, if any:
+		renderTextMessages();
 
 		// Finally, draw the border:
 		renderViewportBorder();

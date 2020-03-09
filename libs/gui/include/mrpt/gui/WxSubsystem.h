@@ -240,11 +240,9 @@ class WxSubsystem
 		 *     - 303: Change size to x,y
 		 *     - 304: Change title to "str"
 		 *		- 350: Force refresh
-		 *		- 360: Add a 2D text message: vector_x: [0]:x, [1]:y, [2,3,4]:R
-		 *G
-		 *B, "x": enum of desired font. "y": unique index, "str": String.
-		 *		- 361: Clear all 2D text messages.
-		 *		- 362: Add a 2D text message (vectorized fonts)
+		 *		- [Removed in MRPT2] 360: Add a 2D text message:
+		 *		- [Removed in MRPT2] 361: Clear all 2D text messages.
+		 *		- [Removed in MRPT2] 362: Add a 2D text message (vector font)
 		 *		- 370: Change min/max range: min=vector_x[0], max=vector_x[1]
 		 *     - 399: Delete the window associated with this source object.
 		 *
@@ -396,14 +394,6 @@ class C3DWindowDialog : public wxFrame
 	WxSubsystem::CWXMainFrame* m_mainFrame;
 
 	CMyGLCanvas_DisplayWindow3D* m_canvas;
-
-	void clearTextMessages();
-
-	void addTextMessage(
-		const double x_frac, const double y_frac, const std::string& text,
-		const size_t unique_index = 0,
-		const mrpt::opengl::TFontParams& fontParams =
-			mrpt::opengl::TFontParams());
 
    private:
 	void OnClose(wxCloseEvent& event);
