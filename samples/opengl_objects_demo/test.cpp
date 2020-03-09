@@ -827,9 +827,16 @@ void TestOpenGLObjects()
 	win.repaint();
 
 	cout << "Close the window to end.\n";
+
+	mrpt::opengl::TFontParams fp;
+	fp.vfont_scale = 14;  // pixels
+	fp.draw_shadow = true;
+	win.addTextMessage(5, 5, "", 0 /*id*/, fp);
+
 	while (win.isOpen())
 	{
-		win.addTextMessage(5, 5, format("%.02fFPS", win.getRenderingFPS()));
+		win.updateTextMessage(
+			0 /*id*/, format("%.02fFPS", win.getRenderingFPS()));
 		std::this_thread::sleep_for(2ms);
 		win.repaint();
 	}

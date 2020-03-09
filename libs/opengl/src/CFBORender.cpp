@@ -204,10 +204,6 @@ void CFBORender::getFrame2(const COpenGLScene& scene, CImage& buffer)
 	// ---------------------------
 	scene.render();
 
-	// If any, draw the 2D text messages:
-	// ----------------------------------
-	render_text_messages(m_width, m_height);
-
 	// TODO NOTE: This should fail if the image has padding bytes. See
 	// glPixelStore() etc.
 	glReadPixels(

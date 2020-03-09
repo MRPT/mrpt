@@ -56,20 +56,24 @@ class CTextMessageCapable
 	 */
 	bool updateTextMessage(const size_t unique_index, const std::string& text);
 
-   protected:
 	struct DataPerText : mrpt::opengl::T2DTextData
 	{
-		mutable mrpt::opengl::CText::Ptr gl_text;
+		mutable mrpt::opengl::CText::Ptr gl_text, gl_text_shadow;
 		mutable bool gl_text_outdated = true;
 	};
 
-	std::map<size_t, DataPerText> m_2D_texts;
+	struct TListTextMessages
+	{
+		std::map<size_t, DataPerText> messages;
 
-	/** Renders the messages to the current opengl rendering context (to be
-	 * called OUT of MRPT mrpt::opengl render() methods ).
-	 *  (w,h) are the dimensions of the rendering area in pixels.
-	 */
-	void render_text_messages(const int w, const int h) const;
+		/** (re)generate all CText objects in the gl_text fields */
+		void regenerateGLobjects() const;
+	};
+
+	const TListTextMessages& getTextMessages() const { return m_2D_texts; }
+
+   protected:
+	TListTextMessages m_2D_texts;
 
 };  // end of CTextMessageCapable
 

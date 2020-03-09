@@ -451,61 +451,6 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 						}
 					}
 					break;
-				// Add a 2D text message: vector_x: [0]:x, [1]:y, [2,3,4]:R G B,
-				// "x": enum of desired font. "y": unique index, "str": String.
-				case 360:
-					if (msg->source3D)
-					{
-						auto* wnd =
-							(C3DWindowDialog*)msg->source3D->getWxObject();
-						if (wnd)
-						{
-							wnd->addTextMessage(
-								msg->vector_x[0], msg->vector_x[1], msg->str,
-								mrpt::img::TColorf(
-									msg->vector_x[2], msg->vector_x[3],
-									msg->vector_x[4]),
-								size_t(msg->y),
-								mrpt::opengl::TOpenGLFont(msg->x));
-						}
-					}
-					break;
-				// Clear 2D text messages
-				case 361:
-					if (msg->source3D)
-					{
-						auto* wnd =
-							(C3DWindowDialog*)msg->source3D->getWxObject();
-						if (wnd)
-						{
-							wnd->clearTextMessages();
-						}
-					}
-					break;
-				// Add a 2D text message: vector_x: [0]:x, [1]:y, [2,3,4]:R G B,
-				// "x": enum of desired font. "y": unique index, "str": String.
-				case 362:
-					if (msg->source3D)
-					{
-						auto* wnd =
-							(C3DWindowDialog*)msg->source3D->getWxObject();
-						if (wnd)
-						{
-							wnd->addTextMessage(
-								msg->vector_x[0], msg->vector_x[1], msg->str,
-								mrpt::img::TColorf(
-									msg->vector_x[2], msg->vector_x[3],
-									msg->vector_x[4]),
-								msg->plotName, msg->vector_x[5],
-								mrpt::opengl::TOpenGLFontStyle(msg->x),
-								size_t(msg->y), msg->vector_x[6],
-								msg->vector_x[7], msg->vector_x[8] != 0,
-								mrpt::img::TColorf(
-									msg->vector_x[9], msg->vector_x[10],
-									msg->vector_x[11]));
-						}
-					}
-					break;
 
 				// DESTROY EXISTING WINDOW:
 				case 399:

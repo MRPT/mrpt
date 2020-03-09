@@ -61,6 +61,12 @@ struct TRenderMatrices
 	 * Replacement for obsolete: gluPerspective() and glOrtho() */
 	void computeProjectionMatrix(float zmin, float zmax);
 
+	/** Especial case for custom parameters of Orthographic projection.
+	 * Replacement for obsolete: glOrtho()*/
+	void computeOrthoProjectionMatrix(
+		float left, float right, float bottom, float top, float znear,
+		float zfar);
+
 	/** Updates the current p_matrix such that it "looks at" pointing, with
 	 * up vector "up". Replacement for deprecated OpenGL gluLookAt(). */
 	void applyLookAt();
