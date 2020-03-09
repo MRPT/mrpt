@@ -52,16 +52,28 @@
 extern std::string global_fileToOpen;
 
 // Configure look:
-const auto glTxtFillStyle = mrpt::opengl::FILL;
-const auto glTxtFont = std::string("mono");
-const auto glTxtSize = 10;
-// Font size & line spaces for GUI-overlayed text lines
+static const mrpt::opengl::TFontParams& getFontParams()
+{
+	static mrpt::opengl::TFontParams fp;
+	static bool init = false;
+	if (!init)
+	{
+		fp.vfont_style = mrpt::opengl::FILL;
+		fp.vfont_name = "mono";
+		fp.vfont_scale = 10.0f;  // pixels
+		fp.draw_shadow = true;
+	}
+	return fp;
+}
 
-const double Ay = glTxtSize + 3;
-#define ADD_WIN_TEXTMSG_COL(__MSG, __COL)                            \
-	win1->addTextMessage(                                            \
-		5.0, 5 + (lineY++) * Ay, __MSG, __COL, glTxtFont, glTxtSize, \
-		glTxtFillStyle, unique_id++, 1.5, 0.1, true /*shadow*/);
+// Font size & line spaces for GUI-overlayed text lines
+static const float Ay = getFontParams().vfont_scale + 3;
+#define ADD_WIN_TEXTMSG_COL(__MSG, __COL)                                      \
+	{                                                                          \
+		auto fp = getFontParams();                                             \
+		fp.color = __COL;                                                      \
+		win1->addTextMessage(5.0, 5 + (lineY++) * Ay, __MSG, unique_id++, fp); \
+	}
 
 #define ADD_WIN_TEXTMSG(__MSG) \
 	ADD_WIN_TEXTMSG_COL(__MSG, mrpt::img::TColorf(1, 1, 1))
@@ -1163,8 +1175,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			win->addTextMessage(
 				4, 4,
 				format("[%u]:%s", nPTG, log.infoPerPTG[nPTG].PTG_desc.c_str()),
-				TColorf(1.0f, 1.0f, 1.0f), glTxtFont, glTxtSize, glTxtFillStyle,
-				0 /*id*/, 1.5, 0.1, true /*shadow*/);
+				0 /*id*/, getFontParams());
 
 			{
 				mrpt::opengl::COpenGLScene::Ptr scene;
@@ -1263,13 +1274,13 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 			win->clearTextMessages();
 
+			auto fp = getFontParams();
+			fp.color = is_selected_ptg ? TColorf(1.0f, 1.0f, 0.f)
+									   : TColorf(1.0f, 1.0f, 1.0f);
 			win->addTextMessage(
 				4, 4,
 				format("[%u]:%s", nPTG, log.infoPerPTG[nPTG].PTG_desc.c_str()),
-				is_selected_ptg ? TColorf(1.0f, 1.0f, 0.f)
-								: TColorf(1.0f, 1.0f, 1.0f),
-				glTxtFont, glTxtSize, glTxtFillStyle, 0 /*id*/, 1.5, 0.1,
-				true /*shadow*/);
+				0 /*id*/, fp);
 
 			// Chosen direction:
 			{
