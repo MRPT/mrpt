@@ -20,6 +20,7 @@
 #include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/obs/CObservationWirelessPower.h>
 #include <mrpt/obs/CRawlog.h>
+#include <mrpt/opengl/CEllipsoid2D.h>
 #include <mrpt/opengl/CEllipsoid3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSetOfLines.h>
@@ -476,15 +477,28 @@ void RBPF_SLAM_App_Base::run()
 
 						minDistBtwPoses = 6 * sqrt(COV3(0, 0) + COV3(1, 1));
 
-						opengl::CEllipsoid3D::Ptr objEllip =
-							std::make_shared<opengl::CEllipsoid3D>();
-						objEllip->setLocation(
-							meanPose.x(), meanPose.y(), meanPose.z() + 0.001);
-						objEllip->setCovMatrix(COV3, COV3(2, 2) == 0 ? 2 : 3);
-
-						objEllip->setColor(0, 0, 1);
-						objEllip->enableDrawSolid3D(false);
-						scene->insert(objEllip);
+						if (COV3(2, 2) == 0)
+						{
+							auto objEllip = opengl::CEllipsoid2D::Create();
+							objEllip->setLocation(
+								meanPose.x(), meanPose.y(),
+								meanPose.z() + 0.001);
+							objEllip->setCovMatrix(COV3.blockCopy<2, 2>());
+							objEllip->setColor(0, 0, 1);
+							objEllip->enableDrawSolid3D(false);
+							scene->insert(objEllip);
+						}
+						else
+						{
+							auto objEllip = opengl::CEllipsoid3D::Create();
+							objEllip->setLocation(
+								meanPose.x(), meanPose.y(),
+								meanPose.z() + 0.001);
+							objEllip->setCovMatrix(COV3);
+							objEllip->setColor(0, 0, 1);
+							objEllip->enableDrawSolid3D(false);
+							scene->insert(objEllip);
+						}
 
 						lastMeanPose = meanPose;
 					}

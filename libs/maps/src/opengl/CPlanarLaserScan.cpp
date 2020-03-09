@@ -41,13 +41,6 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CPlanarLaserScan, CRenderizable, mrpt::opengl)
 
-/*---------------------------------------------------------------
-				Constructor
-  ---------------------------------------------------------------*/
-CPlanarLaserScan::CPlanarLaserScan() : m_scan(), m_cache_points() {}
-/*---------------------------------------------------------------
-							clear
-  ---------------------------------------------------------------*/
 void CPlanarLaserScan::clear()
 {
 	CRenderizable::notifyChange();

@@ -556,9 +556,7 @@ void Test_Kinect()
 			}
 
 			win3D.get3DSceneAndLock();
-			win3D.addTextMessage(
-				-100, -20, format("%.02f Hz", thrPar.Hz), TColorf(0, 1, 1), 100,
-				MRPT_GLUT_BITMAP_HELVETICA_18);
+			win3D.addTextMessage(-100, -20, format("%.02f Hz", thrPar.Hz), 100);
 			win3D.unlockAccess3DScene();
 
 			win3D.repaint();
@@ -630,13 +628,9 @@ void Test_Kinect()
 			2, -30,
 			"'s':save point cloud, 'r': reset, 'o'/'i': zoom "
 			"out/in, mouse: orbit 3D, ESC: quit",
-			TColorf(1, 1, 1), 110, MRPT_GLUT_BITMAP_HELVETICA_12);
-		win3D.addTextMessage(
-			2, -50, str_status, TColorf(1, 1, 1), 111,
-			MRPT_GLUT_BITMAP_HELVETICA_12);
-		win3D.addTextMessage(
-			2, -70, str_status2, TColorf(1, 1, 1), 112,
-			MRPT_GLUT_BITMAP_HELVETICA_18);
+			110);
+		win3D.addTextMessage(2, -50, str_status, 111);
+		win3D.addTextMessage(2, -70, str_status2, 112);
 		win3D.unlockAccess3DScene();
 
 		std::this_thread::sleep_for(1ms);

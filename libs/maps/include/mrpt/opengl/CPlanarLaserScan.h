@@ -75,6 +75,9 @@ class CPlanarLaserScan : public CRenderizable
 	bool m_enable_surface{true};
 
    public:
+	CPlanarLaserScan() = default;
+	~CPlanarLaserScan() override = default;
+
 	/**< Clear the scan */
 	void clear();
 
@@ -132,18 +135,15 @@ class CPlanarLaserScan : public CRenderizable
 		m_scan = scan;
 	}
 
+	void freeOpenGLResources() override
+	{
+		// CRenderizableShaderTriangles::freeOpenGLResources();
+	}
 	void render(const RenderContext& rc) const override;
 	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
-
-	/** Constructor
-	 */
-	CPlanarLaserScan();
-
-	/** Private, virtual destructor: only can be deleted from smart pointers */
-	~CPlanarLaserScan() override = default;
 };
 
 }  // namespace opengl

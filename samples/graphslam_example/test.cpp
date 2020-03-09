@@ -335,26 +335,21 @@ struct ExampleDemoGraphSLAM
 				graph_initial, graph_render_params3);
 
 		win.addTextMessage(
-			5, 5, "Ground truth: Big corners & thick edges", TColorf(0, 0, 0),
-			1000 /* arbitrary, unique text label ID */,
-			MRPT_GLUT_BITMAP_HELVETICA_12);
+			5, 5, "Ground truth: Big corners & thick edges",
+			1000 /* arbitrary, unique text label ID */);
 		win.addTextMessage(
-			5, 5 + 15, "Initial graph: Gray thick points.", TColorf(0, 0, 0),
-			1001 /* arbitrary, unique text label ID */,
-			MRPT_GLUT_BITMAP_HELVETICA_12);
+			5, 5 + 15, "Initial graph: Gray thick points.",
+			1001 /* arbitrary, unique text label ID */);
 		win.addTextMessage(
 			5, 5 + 30, "Final graph: Small corners & thin edges",
-			TColorf(0, 0, 0), 1002 /* arbitrary, unique text label ID */,
-			MRPT_GLUT_BITMAP_HELVETICA_12);
+			1002 /* arbitrary, unique text label ID */);
 
 		win2.addTextMessage(
-			5, 5, "Ground truth: Big corners & thick edges", TColorf(0, 0, 0),
-			1000 /* arbitrary, unique text label ID */,
-			MRPT_GLUT_BITMAP_HELVETICA_12);
+			5, 5, "Ground truth: Big corners & thick edges",
+			1000 /* arbitrary, unique text label ID */);
 		win2.addTextMessage(
 			5, 5 + 15, "Initial graph: Small corners & thin edges",
-			TColorf(0, 0, 0), 1001 /* arbitrary, unique text label ID */,
-			MRPT_GLUT_BITMAP_HELVETICA_12);
+			1001 /* arbitrary, unique text label ID */);
 
 		{
 			COpenGLScene::Ptr& scene = win.get3DSceneAndLock();

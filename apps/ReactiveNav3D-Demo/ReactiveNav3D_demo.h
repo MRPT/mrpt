@@ -850,18 +850,23 @@ class CMyReactInterface
 		}
 
 		window.unlockAccess3DScene();
-		std::string legend;
-		legend.append("--------------------------------------------\n");
-		legend.append("| m - Move the target \t|\n");
-		legend.append("| p - Pause navigation \t\t|\n");
-		legend.append("| r - Resume navigation \t|\n");
-		legend.append("| e - Exit \t\t\t\t|\n");
-		legend.append("--------------------------------------------\n");
-		legend.append(format("\n        %.02fFPS", window.getRenderingFPS()));
 
 		window.addTextMessage(
-			5, 180, legend, mrpt::img::TColorf(1, 1, 1), "Arial", 13);
+			5, 180, getLegendString(window.getRenderingFPS()));
 		window.repaint();
+	}
+
+	static std::string getLegendString(double fps)
+	{
+		std::string legend =
+			"--------------------------------------------\n"
+			"| m - Move the target \t|\n"
+			"| p - Pause navigation \t\t|\n"
+			"| r - Resume navigation \t|\n"
+			"| e - Exit \t\t\t\t|\n"
+			"--------------------------------------------\n";
+		legend += format("\n        %.02fFPS", fps);
+		return legend;
 	}
 
 	void updateScene()
@@ -934,17 +939,9 @@ class CMyReactInterface
 		}
 
 		window.unlockAccess3DScene();
-		std::string legend;
-		legend.append("--------------------------------------------\n");
-		legend.append("| m - Move the target \t|\n");
-		legend.append("| p - Pause navigation \t\t|\n");
-		legend.append("| r - Resume navigation \t|\n");
-		legend.append("| e - Exit \t\t\t\t|\n");
-		legend.append("--------------------------------------------\n");
-		legend.append(format("\n        %.02fFPS", window.getRenderingFPS()));
 
 		window.addTextMessage(
-			5, 180, legend, mrpt::img::TColorf(1, 1, 1), "Arial", 13);
+			5, 180, getLegendString(window.getRenderingFPS()));
 		window.repaint();
 	}
 

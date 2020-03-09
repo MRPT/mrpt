@@ -361,6 +361,11 @@ class CAngularObservationMesh : public CRenderizableShaderTriangles,
 
 	/** @name Renderizable shader API virtual methods
 	 * @{ */
+	void freeOpenGLResources() override
+	{
+		CRenderizableShaderTriangles::freeOpenGLResources();
+		CRenderizableShaderWireFrame::freeOpenGLResources();
+	}
 	void render(const RenderContext& rc) const override;
 	void renderUpdateBuffers() const override;
 
