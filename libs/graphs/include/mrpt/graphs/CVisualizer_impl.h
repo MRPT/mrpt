@@ -149,7 +149,6 @@ void CVisualizer<
 		pnts->insertPoint(p.x(), p.y(), p.z());
 	}
 
-	pnts->enablePointSmooth();
 	object->insert(pnts);
 }
 

@@ -357,12 +357,8 @@ void KFSLAMApp::Run_KF_SLAM()
 		win3d =
 			mrpt::gui::CDisplayWindow3D::Create("KF-SLAM live view", 800, 500);
 
-		win3d->addTextMessage(
-			0.01, 0.96, "Red: Estimated path", TColorf(0.8f, 0.8f, 0.8f), 100,
-			MRPT_GLUT_BITMAP_HELVETICA_10);
-		win3d->addTextMessage(
-			0.01, 0.93, "Black: Ground truth path", TColorf(0.8f, 0.8f, 0.8f),
-			101, MRPT_GLUT_BITMAP_HELVETICA_10);
+		win3d->addTextMessage(0.01, 0.96, "Red: Estimated path", 100);
+		win3d->addTextMessage(0.01, 0.93, "Black: Ground truth path", 101);
 	}
 
 	// Create DA-log output file:
@@ -751,7 +747,7 @@ void KFSLAMApp::Run_KF_SLAM()
 						format(
 							"Step %u - Landmarks in the map: %u",
 							(unsigned int)step, (unsigned int)LMs.size()),
-						TColorf(1, 1, 1), 0, MRPT_GLUT_BITMAP_HELVETICA_12);
+						0);
 
 					win3d->addTextMessage(
 						0.02, 0.06,
@@ -760,7 +756,7 @@ void KFSLAMApp::Run_KF_SLAM()
 								? "Estimated pose: (x y z qr qx qy qz) = %s"
 								: "Estimated pose: (x y yaw) = %s",
 							robotPose.mean.asString().c_str()),
-						TColorf(1, 1, 1), 1, MRPT_GLUT_BITMAP_HELVETICA_12);
+						1);
 
 					static vector<double> estHz_vals;
 					const double curHz = 1.0 / std::max(1e-9, tim_kf_iter);
@@ -774,14 +770,14 @@ void KFSLAMApp::Run_KF_SLAM()
 						format(
 							"Iteration time: %7ss",
 							mrpt::system::unitsFormat(tim_kf_iter).c_str()),
-						TColorf(1, 1, 1), 2, MRPT_GLUT_BITMAP_HELVETICA_12);
+						2);
 
 					win3d->addTextMessage(
 						0.02, 0.14,
 						format(
 							"Execution rate: %7sHz",
 							mrpt::system::unitsFormat(meanHz).c_str()),
-						TColorf(1, 1, 1), 3, MRPT_GLUT_BITMAP_HELVETICA_12);
+						3);
 
 					win3d->unlockAccess3DScene();
 					win3d->repaint();

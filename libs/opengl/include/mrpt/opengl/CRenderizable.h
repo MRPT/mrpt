@@ -344,21 +344,6 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	 */
 	virtual bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const;
 
-	/** Render a text message in the current rendering context, creating a
-	 * glViewport in the way (do not call within ::render() methods)
-	 *   - Coordinates (x,y) are 2D pixels, starting at bottom-left of the
-	 * viewport. Negative numbers will wrap to the opposite side of the
-	 * viewport (e.g. x=-10 means 10px fromt the right).
-	 *   - The text color is defined by (color_r,color_g,color_b), each
-	 * float numbers in the range [0,1]. \sa renderTextBitmap,
-	 * textBitmapWidth, mrpt::opengl::gl_utils
-	 */
-	static void renderTextBitmap(
-		int screen_x, int screen_y, const std::string& str, float color_r = 1,
-		float color_g = 1, float color_b = 1,
-		mrpt::opengl::TOpenGLFont font =
-			mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24);
-
 	/** Evaluates the bounding box of this object (including possible
 	 * children) in the coordinate frame of the object parent. */
 	virtual void getBoundingBox(

@@ -34,6 +34,13 @@ struct TTriangle
 	{
 		mrpt::math::TPointXYZfRGBAu8 position;
 		mrpt::math::TVector3Df normal;  //!< Must not be normalized
+		void setColor(const mrpt::img::TColor& c)
+		{
+			position.r = c.R;
+			position.g = c.G;
+			position.b = c.B;
+			position.a = c.A;
+		}
 	};
 
 	TTriangle() = default;

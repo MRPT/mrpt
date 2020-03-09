@@ -118,7 +118,6 @@ class CColouredPointsMap : public CPointsMap
 
    public:
 	/** @} */
-	// --------------------------------------------
 
 	/** Save to a text file. In each line contains X Y Z (meters) R G B (range
 	 * [0,1]) for each point in the map.
@@ -400,15 +399,18 @@ class PointCloudAdapter<mrpt::maps::CColouredPointsMap>
 
 	/** Get XYZ_RGBf coordinates of i'th point */
 	template <typename T>
-	inline void getPointXYZ_RGBf(
-		const size_t idx, T& x, T& y, T& z, float& r, float& g, float& b) const
+	inline void getPointXYZ_RGBAf(
+		const size_t idx, T& x, T& y, T& z, float& r, float& g, float& b,
+		float& a) const
 	{
 		m_obj.getPointRGB(idx, x, y, z, r, g, b);
+		a = 1.0f;
 	}
 	/** Set XYZ_RGBf coordinates of i'th point */
-	inline void setPointXYZ_RGBf(
+	inline void setPointXYZ_RGBAf(
 		const size_t idx, const coords_t x, const coords_t y, const coords_t z,
-		const float r, const float g, const float b)
+		const float r, const float g, const float b,
+		[[maybe_unused]] const float a)
 	{
 		m_obj.setPointRGB(idx, x, y, z, r, g, b);
 	}

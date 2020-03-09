@@ -214,15 +214,13 @@ void Test_Kinect()
 		// Create the Opengl objects for the planar images, as textured planes,
 		// each in a separate viewport:
 		win3D.addTextMessage(
-			30, -25 - 1 * (VW_GAP + VW_HEIGHT), "Range data", TColorf(1, 1, 1),
-			1, MRPT_GLUT_BITMAP_HELVETICA_12);
+			30, -25 - 1 * (VW_GAP + VW_HEIGHT), "Range data", 1);
 		viewRange = scene->createViewport("view2d_range");
 		viewRange->setViewportPosition(
 			5, -10 - 1 * (VW_GAP + VW_HEIGHT), VW_WIDTH, VW_HEIGHT);
 
 		win3D.addTextMessage(
-			30, -25 - 2 * (VW_GAP + VW_HEIGHT), "Intensity data",
-			TColorf(1, 1, 1), 2, MRPT_GLUT_BITMAP_HELVETICA_12);
+			30, -25 - 2 * (VW_GAP + VW_HEIGHT), "Intensity data", 2);
 		viewInt = scene->createViewport("view2d_int");
 		viewInt->setViewportPosition(
 			5, -10 - 2 * (VW_GAP + VW_HEIGHT), VW_WIDTH, VW_HEIGHT);
@@ -313,15 +311,13 @@ void Test_Kinect()
 			// Some text messages:
 			win3D.get3DSceneAndLock();
 			// Estimated grabbing rate:
-			win3D.addTextMessage(
-				-100, -20, format("%.02f Hz", thrPar.Hz), TColorf(1, 1, 1),
-				"sans", 15, mrpt::opengl::FILL, 100);
+			win3D.addTextMessage(-100, -20, format("%.02f Hz", thrPar.Hz), 100);
 
 			win3D.addTextMessage(
 				10, 10,
 				"'o'/'i'-zoom out/in, '2'/'3'/'f':show/hide 2D/3D/frustum "
 				"data, mouse: orbit 3D, ESC: quit",
-				TColorf(1, 1, 1), "sans", 10, mrpt::opengl::FILL, 110);
+				110);
 
 			win3D.addTextMessage(
 				10, 25,
@@ -331,7 +327,7 @@ void Test_Kinect()
 					gl_2d_scan->isVisible() ? "YES" : "NO",
 					gl_frustum->isVisible() ? "YES" : "NO",
 					gl_frustum->getVertFOV()),
-				TColorf(1, 1, 1), "sans", 10, mrpt::opengl::FILL, 111);
+				111);
 			win3D.unlockAccess3DScene();
 
 			// Do we have accelerometer data?
@@ -345,7 +341,7 @@ void Test_Kinect()
 						last_obs_imu->rawMeasurements[IMU_X_ACC],
 						last_obs_imu->rawMeasurements[IMU_Y_ACC],
 						last_obs_imu->rawMeasurements[IMU_Z_ACC]),
-					TColorf(.7, .7, .7), "sans", 10, mrpt::opengl::FILL, 102);
+					102);
 				win3D.unlockAccess3DScene();
 				do_refresh = true;
 			}

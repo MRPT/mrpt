@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/img/TColor.h>
 #include <mrpt/typemeta/TEnumType.h>
 
 namespace mrpt::img
@@ -41,6 +42,9 @@ enum TColormap
 void colormap(
 	const TColormap& color_map, const float color_index, float& r, float& g,
 	float& b);
+
+/// \overload returning mrpt::img::TColor
+mrpt::img::TColor colormap(const TColormap& color_map, const float color_index);
 
 /** Computes the RGB color components (range [0,1]) for the corresponding color
  * index in the range [0,1] using the MATLAB 'jet' colormap.  \sa colormap  */

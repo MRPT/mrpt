@@ -112,8 +112,7 @@ void Test_SwissRanger()
 		// Create the Opengl objects for the planar images, as textured planes,
 		// each in a separate viewport:
 		win3D.addTextMessage(
-			30, -10 - 1 * (VW_GAP + VW_HEIGHT), "Range data", TColorf(1, 1, 1),
-			1, MRPT_GLUT_BITMAP_HELVETICA_12);
+			30, -10 - 1 * (VW_GAP + VW_HEIGHT), "Range data", 1);
 		opengl::COpenGLViewport::Ptr viewRange =
 			scene->createViewport("view2d_range");
 		scene->insert(gl_img_range, "view2d_range");
@@ -126,8 +125,7 @@ void Test_SwissRanger()
 		viewRange->getCamera().setZoomDistance(1.0);
 
 		win3D.addTextMessage(
-			30, -10 - 2 * (VW_GAP + VW_HEIGHT), "Intensity data",
-			TColorf(1, 1, 1), 2, MRPT_GLUT_BITMAP_HELVETICA_12);
+			30, -10 - 2 * (VW_GAP + VW_HEIGHT), "Intensity data", 2);
 		opengl::COpenGLViewport::Ptr viewInt =
 			scene->createViewport("view2d_int");
 		scene->insert(gl_img_intensity, "view2d_int");
@@ -141,7 +139,7 @@ void Test_SwissRanger()
 
 		win3D.addTextMessage(
 			30, -10 - 3 * (VW_GAP + VW_HEIGHT), "Intensity data (undistorted)",
-			TColorf(1, 1, 1), 3, MRPT_GLUT_BITMAP_HELVETICA_12);
+			3);
 		opengl::COpenGLViewport::Ptr viewIntRect =
 			scene->createViewport("view2d_intrect");
 		scene->insert(gl_img_intensity_rect, "view2d_intrect");
@@ -209,8 +207,7 @@ void Test_SwissRanger()
 		{
 			win3D.get3DSceneAndLock();
 			win3D.addTextMessage(
-				0.01, 0.01, format("%.02f Hz", nImgs / tictac.Tac()),
-				TColorf(0, 1, 1), 100, MRPT_GLUT_BITMAP_HELVETICA_12);
+				0.01, 0.01, format("%.02f Hz", nImgs / tictac.Tac()), 100);
 			win3D.unlockAccess3DScene();
 			nImgs = 0;
 			tictac.Tic();
@@ -254,7 +251,7 @@ void Test_SwissRanger()
 				cam.isEnabledConvGray() ? "ON" : "OFF",
 				cam.isEnabledDenoiseANF() ? "ON" : "OFF",
 				cam.isEnabledMedianFilter() ? "ON" : "OFF"),
-			TColorf(0, 0, 1), 110, MRPT_GLUT_BITMAP_HELVETICA_18);
+			110);
 		win3D.unlockAccess3DScene();
 
 		std::this_thread::sleep_for(1ms);

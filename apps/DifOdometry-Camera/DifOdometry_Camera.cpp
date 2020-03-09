@@ -234,12 +234,6 @@ void CDifodoCamera::initializeScene()
 
 	scene = window.get3DSceneAndLock();
 
-	// Lights:
-	scene->getViewport()->setNumberOfLights(1);
-	CLight& light0 = scene->getViewport()->getLight(0);
-	light0.light_ID = 0;
-	light0.setPosition(0, 0, 1, 1);
-
 	// Grid (ground)
 	CGridPlaneXY::Ptr ground = std::make_shared<CGridPlaneXY>();
 	scene->insert(ground);
@@ -275,7 +269,6 @@ void CDifodoCamera::initializeScene()
 	CPointCloudColoured::Ptr cam_points =
 		std::make_shared<CPointCloudColoured>();
 	cam_points->setPointSize(2);
-	cam_points->enablePointSmooth(true);
 	cam_points->setPose(cam_pose);
 	scene->insert(cam_points);
 
@@ -291,7 +284,6 @@ void CDifodoCamera::initializeScene()
 	CPointCloud::Ptr traj_points_odo = std::make_shared<CPointCloud>();
 	traj_points_odo->setColor(0, 0.6, 0);
 	traj_points_odo->setPointSize(4);
-	traj_points_odo->enablePointSmooth(true);
 	scene->insert(traj_points_odo);
 
 	// Ellipsoid showing covariance
@@ -299,7 +291,7 @@ void CDifodoCamera::initializeScene()
 	cov3d *= 20.f;
 
 	CEllipsoid3D::Ptr ellip = std::make_shared<CEllipsoid3D>();
-	ellip->setCovMatrix(cov3d);
+	ellip->setCovMatrix(cov3d.cast_double());
 	ellip->setQuantiles(2.0);
 	ellip->setColor(1.0, 1.0, 1.0, 0.5);
 	ellip->enableDrawSolid3D(true);
@@ -360,7 +352,7 @@ void CDifodoCamera::updateScene()
 	// Ellipsoid showing covariance
 	const auto cov3d = math::CMatrixFloat33(20.f * est_cov.block<3, 3>(0, 0));
 	CEllipsoid3D::Ptr ellip = scene->getByClass<CEllipsoid3D>(0);
-	ellip->setCovMatrix(cov3d);
+	ellip->setCovMatrix(cov3d.cast_double());
 	ellip->setPose(cam_pose + rel_lenspose);
 
 	window.unlockAccess3DScene();

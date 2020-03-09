@@ -15,20 +15,6 @@
 
 namespace mrpt::opengl
 {
-/** Existing fonts for 2D texts in mrpt::opengl methods.
- * \sa mrpt::opengl::CWxGLCanvasBase::renderTextBitmap
- * \ingroup mrpt_opengl_grp
- */
-enum TOpenGLFont
-{
-	MRPT_GLUT_BITMAP_NONE = -1,
-	MRPT_GLUT_BITMAP_TIMES_ROMAN_10 = 0,
-	MRPT_GLUT_BITMAP_TIMES_ROMAN_24 = 1,
-	MRPT_GLUT_BITMAP_HELVETICA_10 = 2,
-	MRPT_GLUT_BITMAP_HELVETICA_12 = 3,
-	MRPT_GLUT_BITMAP_HELVETICA_18 = 4
-};
-
 /** Different style for vectorized font rendering \sa T2DTextData */
 enum TOpenGLFontStyle
 {

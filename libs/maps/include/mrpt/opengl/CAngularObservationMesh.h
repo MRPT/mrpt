@@ -12,7 +12,8 @@
 #include <mrpt/math/CMatrixB.h>
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableShaderTriangles.h>
+#include <mrpt/opengl/CRenderizableShaderWireFrame.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
 
@@ -38,7 +39,8 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_maps_grp
  */
-class CAngularObservationMesh : public CRenderizable
+class CAngularObservationMesh : public CRenderizableShaderTriangles,
+								public CRenderizableShaderWireFrame
 {
 	DEFINE_SERIALIZABLE(CAngularObservationMesh, mrpt::opengl)
    public:
@@ -357,8 +359,19 @@ class CAngularObservationMesh : public CRenderizable
 		CRenderizable::notifyChange();
 	}
 
+	/** @name Renderizable shader API virtual methods
+	 * @{ */
 	void render(const RenderContext& rc) const override;
 	void renderUpdateBuffers() const override;
+
+	virtual shader_list_t requiredShaders() const override
+	{
+		// May use up to two shaders (triangles and lines):
+		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES};
+	}
+	void onUpdateBuffers_Wireframe() override;
+	void onUpdateBuffers_Triangles() override;
+	/** @} */
 
 	/**
 	 * Traces a ray to the object, returning the distance to a given pose

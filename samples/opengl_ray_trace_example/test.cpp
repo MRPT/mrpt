@@ -130,7 +130,7 @@ void generateObjects(CSetOfObjects::Ptr& world)
 	}
 
 	CCylinder::Ptr cil = CCylinder::Create(
-		MYRANDG(3.0, 3.0), MYRANDG(3.0, 1.0), MYRANDG(2.0f, 3.0f), 50, 1);
+		MYRANDG(3.0, 3.0), MYRANDG(3.0, 1.0), MYRANDG(2.0f, 3.0f), 50);
 	configRandom(cil);
 	world->insert(cil);
 

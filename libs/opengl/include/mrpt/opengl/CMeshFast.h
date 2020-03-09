@@ -91,11 +91,6 @@ class CMeshFast : public CRenderizable
 	/** By default is 1.0 */
 	inline void setPointSize(float p) { m_pointSize = p; }
 	inline float getPointSize() const { return m_pointSize; }
-	inline void enablePointSmooth(bool enable = true)
-	{
-		m_pointSmooth = enable;
-	}
-	inline void disablePointSmooth() { m_pointSmooth = false; }
 	void setGridLimits(float xmin, float xmax, float ymin, float ymax)
 	{
 		xMin = xmin;
