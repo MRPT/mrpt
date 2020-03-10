@@ -9,7 +9,8 @@
 #pragma once
 
 #include <mrpt/math/TPoint3D.h>
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableShaderTriangles.h>
+#include <mrpt/opengl/CRenderizableShaderWireFrame.h>
 
 namespace mrpt::opengl
 {
@@ -64,7 +65,8 @@ enum predefined_voxel_sets_t
  *  \sa opengl::COpenGLScene
  * \ingroup mrpt_opengl_grp
  */
-class COctoMapVoxels : public CRenderizable
+class COctoMapVoxels : public CRenderizableShaderTriangles,
+					   public CRenderizableShaderWireFrame
 {
 	DEFINE_SERIALIZABLE(COctoMapVoxels, mrpt::opengl)
    public:
@@ -146,6 +148,25 @@ class COctoMapVoxels : public CRenderizable
 	visualization_mode_t m_visual_mode{COctoMapVoxels::COLOR_FROM_OCCUPANCY};
 
    public:
+	/** @name Renderizable shader API virtual methods
+	 * @{ */
+	void render(const RenderContext& rc) const override;
+	void renderUpdateBuffers() const override;
+
+	virtual shader_list_t requiredShaders() const override
+	{
+		// May use up to two shaders (triangles and lines):
+		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES};
+	}
+	void onUpdateBuffers_Wireframe() override;
+	void onUpdateBuffers_Triangles() override;
+	void freeOpenGLResources() override
+	{
+		CRenderizableShaderTriangles::freeOpenGLResources();
+		CRenderizableShaderWireFrame::freeOpenGLResources();
+	}
+	/** @} */
+
 	/** Clears everything */
 	void clear();
 
@@ -325,10 +346,6 @@ class COctoMapVoxels : public CRenderizable
 	}
 
 	void sort_voxels_by_z();
-
-	void render(const RenderContext& rc) const override;
-	void renderUpdateBuffers() const override;
-	void freeOpenGLResources() override {}
 
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
