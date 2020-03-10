@@ -39,6 +39,30 @@ void COctoMapVoxels::setBoundingBox(
 	m_bb_max = bb_max;
 }
 
+void COctoMapVoxels::render(const RenderContext& rc) const
+{
+	//
+}
+void COctoMapVoxels::renderUpdateBuffers() const
+{
+	CRenderizableShaderTriangles::renderUpdateBuffers();
+	CRenderizableShaderWireFrame::renderUpdateBuffers();
+}
+void COctoMapVoxels::onUpdateBuffers_Wireframe()
+{
+	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
+	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	vbd.clear();
+}
+
+void COctoMapVoxels::onUpdateBuffers_Triangles()
+{
+	auto& tris = CRenderizableShaderTriangles::m_triangles;
+	tris.clear();
+
+	using P3 = mrpt::math::TPoint3D;
+}
+
 #if MRPT_HAS_OPENGL_GLUT
 
 // See: http://www.songho.ca/opengl/gl_vertexarray.html
@@ -72,12 +96,7 @@ const GLfloat normals_cube[3 * 6 * 4] = {
 
 #endif
 
-void COctoMapVoxels::renderUpdateBuffers() const
-{
-	//
-	MRPT_TODO("Implement me!");
-}
-
+#if 0
 void COctoMapVoxels::render(const RenderContext& rc) const
 {
 #if MRPT_HAS_OPENGL_GLUT
@@ -189,6 +208,7 @@ void COctoMapVoxels::render(const RenderContext& rc) const
 
 #endif
 }
+#endif
 
 DECLARE_CUSTOM_TTYPENAME(COctoMapVoxels::TInfoPerVoxelSet)
 DECLARE_CUSTOM_TTYPENAME(COctoMapVoxels::TGridCube)

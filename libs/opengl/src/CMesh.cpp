@@ -32,7 +32,6 @@ CMesh::CMesh(
 	float yMax_p)
 	: m_textureImage(0, 0),
 	  m_enableTransparency(enableTransparency),
-
 	  Z(0, 0),
 	  mask(0, 0),
 	  U(0, 0),
@@ -41,7 +40,6 @@ CMesh::CMesh(
 	  C_r(0, 0),
 	  C_g(0, 0),
 	  C_b(0, 0),
-
 	  xMin(xMin_p),
 	  xMax(xMax_p),
 	  yMin(yMin_p),
