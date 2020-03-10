@@ -68,6 +68,7 @@ void CPlanarLaserScan::onUpdateBuffers_Wireframe()
 	size_t n;
 	const float *x, *y, *z;
 	m_cache_points.getPointsBuffer(n, x, y, z);
+	if (!n) return;
 
 	for (size_t i = 0; i < n - 1; i++)
 	{
@@ -88,7 +89,8 @@ void CPlanarLaserScan::onUpdateBuffers_Triangles()
 	size_t n;
 	const float *x, *y, *z;
 	m_cache_points.getPointsBuffer(n, x, y, z);
-
+	if (!n) return;
+	
 	using P3f = mrpt::math::TPoint3Df;
 
 	for (size_t i = 0; i < n - 1; i++)
