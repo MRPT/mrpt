@@ -330,25 +330,26 @@ CSetOfObjects::Ptr stock_objects::CornerXYZSimple(float scale, float lineWidth)
 {
 	CSetOfObjects::Ptr ret = std::make_shared<CSetOfObjects>();
 
-	{
-		CSimpleLine::Ptr lin = std::make_shared<CSimpleLine>();
-		lin->setLineWidth(lineWidth);
+	// Using OpenGL shaders, it's more complicated to set line widths.
+	// So, let's use cylinders of a diameter proportional to "scale":
+	const float R = scale * 0.01f;
+	const int nSlices = 6;
+
+	{  // X:
+		auto lin = CCylinder::Create(R, R, scale, nSlices);
 		lin->setColor(1, 0, 0);
-		lin->setLineCoords(0, 0, 0, scale, 0, 0);
+		lin->setPose(mrpt::poses::CPose3D::FromString("[0 0 0 0 90 0]"));
 		ret->insert(lin);
 	}
-	{
-		CSimpleLine::Ptr lin = std::make_shared<CSimpleLine>();
-		lin->setLineWidth(lineWidth);
+	{  // Y:
+		auto lin = CCylinder::Create(R, R, scale, nSlices);
 		lin->setColor(0, 1, 0);
-		lin->setLineCoords(0, 0, 0, 0, scale, 0);
+		lin->setPose(mrpt::poses::CPose3D::FromString("[0 0 0 0 0 90]"));
 		ret->insert(lin);
 	}
-	{
-		CSimpleLine::Ptr lin = std::make_shared<CSimpleLine>();
-		lin->setLineWidth(lineWidth);
+	{  // Z:
+		auto lin = CCylinder::Create(R, R, scale, nSlices);
 		lin->setColor(0, 0, 1);
-		lin->setLineCoords(0, 0, 0, 0, 0, scale);
 		ret->insert(lin);
 	}
 	return ret;
@@ -358,18 +359,21 @@ CSetOfObjects::Ptr stock_objects::CornerXYSimple(float scale, float lineWidth)
 {
 	CSetOfObjects::Ptr ret = std::make_shared<CSetOfObjects>();
 
-	{
-		CSimpleLine::Ptr lin = std::make_shared<CSimpleLine>();
-		lin->setLineWidth(lineWidth);
+	// Using OpenGL shaders, it's more complicated to set line widths.
+	// So, let's use cylinders of a diameter proportional to "scale":
+	const float R = scale * 0.01f;
+	const int nSlices = 6;
+
+	{  // X:
+		auto lin = CCylinder::Create(R, R, scale, nSlices);
 		lin->setColor(1, 0, 0);
-		lin->setLineCoords(0, 0, 0, scale, 0, 0);
+		lin->setPose(mrpt::poses::CPose3D::FromString("[0 0 0 0 90 0]"));
 		ret->insert(lin);
 	}
-	{
-		CSimpleLine::Ptr lin = std::make_shared<CSimpleLine>();
-		lin->setLineWidth(lineWidth);
+	{  // Y:
+		auto lin = CCylinder::Create(R, R, scale, nSlices);
 		lin->setColor(0, 1, 0);
-		lin->setLineCoords(0, 0, 0, 0, scale, 0);
+		lin->setPose(mrpt::poses::CPose3D::FromString("[0 0 0 0 0 90]"));
 		ret->insert(lin);
 	}
 	return ret;

@@ -132,6 +132,10 @@ void COpenGLViewport::renderImageMode() const
 	mrpt::system::CTimeLoggerEntry tle(
 		glv_timlog, "COpenGLViewport::render imageview");
 #endif
+
+	MRPT_TODO("Port to opengl3");
+	return;
+
 	// Do we have an actual image to render?
 	if (!m_imageview_img) return;
 
@@ -359,6 +363,9 @@ void COpenGLViewport::renderViewportBorder() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	if (m_borderWidth < 1) return;
+
+	MRPT_TODO("Port to opengl3");
+	return;
 
 	glLineWidth(2 * m_borderWidth);
 	glColor4f(0, 0, 0, 1);

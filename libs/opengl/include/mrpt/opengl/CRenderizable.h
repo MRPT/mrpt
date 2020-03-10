@@ -349,6 +349,14 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	virtual void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const = 0;
 
+	/** Provide a representative point (in object local coordinates), used to
+	 * sort objects by eye-distance while rendering with transparencies
+	 * (Default=[0,0,0]) */
+	virtual mrpt::math::TPoint3Df getLocalRepresentativePoint() const
+	{
+		return mrpt::math::TPoint3Df(0, 0, 0);
+	}
+
 	/** Returns or constructs (in its first invokation) the associated
 	 * mrpt::opengl::CText object representing the label of the object.
 	 * \sa enableShowName()

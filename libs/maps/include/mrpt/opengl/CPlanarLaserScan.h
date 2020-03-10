@@ -80,6 +80,7 @@ class CPlanarLaserScan : public CRenderizableShaderPoints,
 	void onUpdateBuffers_Wireframe() override;
 	void onUpdateBuffers_Triangles() override;
 	void onUpdateBuffers_Points() override;
+	mrpt::math::TPoint3Df getLocalRepresentativePoint() const override;
 	/** @} */
 
 	CPlanarLaserScan() = default;

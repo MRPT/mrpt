@@ -36,7 +36,7 @@ void CPlanarLaserScan::render(const RenderContext& rc) const
 			if (m_enable_line) CRenderizableShaderWireFrame::render(rc);
 			break;
 		case DefaultShaderID::POINTS:
-			if (m_enable_points) CRenderizableShaderWireFrame::render(rc);
+			if (m_enable_points) CRenderizableShaderPoints::render(rc);
 			break;
 	};
 }
@@ -90,7 +90,7 @@ void CPlanarLaserScan::onUpdateBuffers_Triangles()
 	const float *x, *y, *z;
 	m_cache_points.getPointsBuffer(n, x, y, z);
 	if (!n) return;
-	
+
 	using P3f = mrpt::math::TPoint3Df;
 
 	for (size_t i = 0; i < n - 1; i++)
@@ -221,4 +221,10 @@ void CPlanarLaserScan::getBoundingBox(
 	// Convert to coordinates of my parent:
 	m_pose.composePoint(bb_min, bb_min);
 	m_pose.composePoint(bb_max, bb_max);
+}
+
+mrpt::math::TPoint3Df CPlanarLaserScan::getLocalRepresentativePoint() const
+{
+	return {d2f(m_scan.sensorPose.x()), d2f(m_scan.sensorPose.y()),
+			d2f(m_scan.sensorPose.z())};
 }
