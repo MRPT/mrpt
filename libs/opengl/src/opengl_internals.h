@@ -30,6 +30,10 @@
 #include <GLUT/glut.h>
 #include <OpenGL/gl.h>
 #include <OpenGL/glext.h>
+// From: https://stackoverflow.com/a/22119409/1631514
+#define glGenVertexArrays glGenVertexArraysAPPLE
+#define glBindVertexArray glBindVertexArrayAPPLE
+#define glDeleteVertexArrays glDeleteVertexArraysAPPLE
 #else
 #include <GL/gl.h>
 #include <GL/glut.h>
