@@ -39,7 +39,7 @@ void main()
     // to produce the color of each fragment
     frag_position = eye_position.xyz;
     frag_diffuse = vertexColor;
-    frag_normal   = normalize((mv_matrix * vec4(vertexNormal, 0.0)).xyz);
+    frag_normal   =  normalize((mv_matrix * vec4(vertexNormal, 0.0)).xyz);
 //    frag_texcoord = texcoord;
 //    frag_shininess = shininess;
 //    frag_specular = specular;

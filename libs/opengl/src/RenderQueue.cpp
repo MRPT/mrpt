@@ -77,9 +77,17 @@ void mrpt::opengl::enqueForRendering(
 			_.pmv_matrix.asEigen() =
 				_.p_matrix.asEigen() * _.mv_matrix.asEigen();
 
+			// Get a representative depth for this object (to sort objects from
+			// eye-distance):
+			mrpt::math::TPoint3Df lrp = obj->getLocalRepresentativePoint();
+
+			Eigen::Vector4f lrp_hm(lrp.x, lrp.y, lrp.z, 1.0f);
+			const auto lrp_proj = (_.pmv_matrix.asEigen() * lrp_hm).eval();
+			ASSERT_(lrp_proj(3) != 0);
+			const float depth = lrp_proj(2) / lrp_proj(3);
+
 			// Enqeue this object...
 			const auto lst_shaders = obj->requiredShaders();
-			const float depth = _.pmv_matrix(2, 3);
 			for (const auto shader_id : lst_shaders)
 			{
 				// eye-to-object depth:
