@@ -13,10 +13,10 @@
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/opengl/CMeshFast.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
+#include <mrpt/opengl/opengl_api.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CArchive.h>
 #include <Eigen/Dense>
-#include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;

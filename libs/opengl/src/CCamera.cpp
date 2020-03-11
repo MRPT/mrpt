@@ -12,7 +12,7 @@
 #include <mrpt/opengl/CCamera.h>
 #include <mrpt/serialization/CArchive.h>
 
-#include "opengl_internals.h"
+#include <mrpt/opengl/opengl_api.h>
 
 using namespace mrpt;
 using namespace mrpt::opengl;

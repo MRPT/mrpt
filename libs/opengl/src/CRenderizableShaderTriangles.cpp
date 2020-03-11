@@ -12,7 +12,7 @@
 #include <mrpt/opengl/CRenderizableShaderTriangles.h>
 #include <mrpt/opengl/Shader.h>
 #include <mrpt/opengl/TLightParameters.h>
-#include "opengl_internals.h"
+#include <mrpt/opengl/opengl_api.h>
 
 using namespace mrpt;
 using namespace mrpt::opengl;

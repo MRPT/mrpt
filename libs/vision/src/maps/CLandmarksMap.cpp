@@ -2477,7 +2477,8 @@ void CLandmarksMap::getAs3DObject(
 	CPointPDFGaussian pointGauss;
 	for (const auto& landmark : landmarks)
 	{
-		opengl::CEllipsoid3D::Ptr ellip = std::make_shared<opengl::CEllipsoid3D>();
+		opengl::CEllipsoid3D::Ptr ellip =
+			std::make_shared<opengl::CEllipsoid3D>();
 
 		landmark.getPose(pointGauss);
 

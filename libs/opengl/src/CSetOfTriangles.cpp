@@ -11,8 +11,8 @@
 
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
+#include <mrpt/opengl/opengl_api.h>
 #include <mrpt/serialization/CArchive.h>
-#include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;

@@ -10,8 +10,8 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CSimpleLine.h>
+#include <mrpt/opengl/opengl_api.h>
 #include <mrpt/serialization/CArchive.h>
-#include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
