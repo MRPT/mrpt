@@ -42,8 +42,15 @@ void COpenGLBuffer::RAII_Impl::destroy()
 {
 	if (!created) return;
 #if MRPT_HAS_OPENGL_GLUT
-	release();
-	glDeleteBuffers(1, &buffer_id);
+	try
+	{
+		release();
+		glDeleteBuffers(1, &buffer_id);
+	}
+	catch (...)
+	{
+		// For Windows: ignore errors if GLEW was already unloaded...
+	}
 #endif
 	buffer_id = 0;
 	created = false;
@@ -61,7 +68,14 @@ void COpenGLBuffer::RAII_Impl::release()
 {
 #if MRPT_HAS_OPENGL_GLUT
 	if (!created) return;
-	glBindBuffer(static_cast<GLenum>(type), 0);
+	try
+	{
+		glBindBuffer(static_cast<GLenum>(type), 0);
+	}
+	catch (...)
+	{
+		// For Windows: ignore errors if GLEW was already unloaded...
+	}
 #endif
 }
 
