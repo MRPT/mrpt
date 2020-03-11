@@ -61,4 +61,19 @@
 #endif
 #endif
 
+namespace mrpt::opengl
+{
+void checkOpenGLErr_impl(
+	unsigned int glErrorCode, const char* filename, int lineno);
+}
+
+/** Checks glGetError and throws an exception if an error situation is found
+ */
+#define CHECK_OPENGL_ERROR()                                                  \
+	{                                                                         \
+		auto openglErr = glGetError();                                        \
+		if (openglErr != GL_NO_ERROR)                                         \
+			mrpt::opengl::checkOpenGLErr_impl(openglErr, __FILE__, __LINE__); \
+	}
+
 #endif  // MRPT_HAS_OPENGL_GLUT

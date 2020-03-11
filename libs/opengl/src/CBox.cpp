@@ -11,7 +11,6 @@
 
 #include <mrpt/math/geometry.h>
 #include <mrpt/opengl/CBox.h>
-#include <mrpt/opengl/gl_utils.h>
 #include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;

@@ -11,7 +11,6 @@
 
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CTexturedPlane.h>
-#include <mrpt/opengl/gl_utils.h>
 #include <mrpt/serialization/CArchive.h>
 
 #include <algorithm>

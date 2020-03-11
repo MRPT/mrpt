@@ -13,7 +13,6 @@
 #include <mrpt/math/utils.h>
 #include <mrpt/opengl/CRenderizable.h>  // Include these before windows.h!!
 #include <mrpt/opengl/CText.h>
-#include <mrpt/opengl/gl_utils.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose3D.h>

@@ -10,7 +10,6 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CFrustum.h>
-#include <mrpt/opengl/gl_utils.h>
 #include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;

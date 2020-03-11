@@ -11,7 +11,6 @@
 
 #include <mrpt/core/exceptions.h>
 #include <mrpt/opengl/COpenGLVertexArrayObject.h>
-#include <mrpt/opengl/gl_utils.h>
 #include "opengl_internals.h"
 
 using namespace mrpt::opengl;
