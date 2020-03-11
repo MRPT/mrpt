@@ -22,6 +22,7 @@
 
 #include <mrpt/opengl/opengl_api.h>
 
+
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::opengl;
@@ -164,7 +165,7 @@ void COpenGLViewport::renderImageMode() const
 
 	// Prepare raster pos & pixel copy direction in -Y.
 	glRasterPos2f(-0.5f, -0.5f);
-	glPixelZoom(vw / float(ortho_w), -vh / float(ortho_h));
+	glPixelZoom(vw / float(ortho_w), vh / float(-ortho_h));
 
 	// Prepare image data types:
 	const GLenum img_type = GL_UNSIGNED_BYTE;

@@ -397,10 +397,14 @@ CDisplayWindow3D::Ptr CDisplayWindow3D::Create(
 CDisplayWindow3D::~CDisplayWindow3D()
 {
 	// get lock so we make sure nobody else is touching the window right now.
-	m_csAccess3DScene.try_lock_for(std::chrono::seconds(2));
+	bool lock_ok = m_csAccess3DScene.try_lock_for(std::chrono::seconds(2));
 	m_csAccess3DScene.unlock();
 
 	CBaseGUIWindow::destroyWxWindow();
+
+	if (!lock_ok)
+		std::cerr
+			<< "[~CDisplayWindow3D] Warning: Timeout acquiring mutex lock.\n";
 }
 
 /*---------------------------------------------------------------

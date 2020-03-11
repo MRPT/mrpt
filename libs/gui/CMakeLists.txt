@@ -49,4 +49,8 @@ if(BUILD_mrpt-gui)
 		target_link_libraries(gui PRIVATE ${MRPT_OPENGL_LIBS})
 	endif()
 
+	if (TARGET mrpt_glew) # Basically, for Windows
+		target_link_libraries(gui PRIVATE mrpt_glew)
+	endif()
+
 endif()

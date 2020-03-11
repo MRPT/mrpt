@@ -7,11 +7,12 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
+#include "opengl-precomp.h"	 // Precompiled header
 
 #include <mrpt/core/exceptions.h>
 #include <mrpt/opengl/COpenGLVertexArrayObject.h>
 #include <mrpt/opengl/opengl_api.h>
+
 
 using namespace mrpt::opengl;
 
@@ -41,8 +42,15 @@ void COpenGLVertexArrayObject::RAII_Impl::destroy()
 {
 	if (!created) return;
 #if MRPT_HAS_OPENGL_GLUT
-	release();
-	glDeleteVertexArrays(1, &buffer_id);
+	try
+	{
+		release();
+		glDeleteVertexArrays(1, &buffer_id);
+	}
+	catch (...)
+	{
+		// For Windows: ignore errors if GLEW was already unloaded...
+	}
 #endif
 	buffer_id = 0;
 	created = false;
@@ -59,7 +67,14 @@ void COpenGLVertexArrayObject::RAII_Impl::bind()
 void COpenGLVertexArrayObject::RAII_Impl::release()
 {
 #if MRPT_HAS_OPENGL_GLUT
-	if (!created) return;
-	glBindVertexArray(0);
+	try
+	{
+		if (!created) return;
+		glBindVertexArray(0);
+	}
+	catch (...)
+	{
+		// For Windows: ignore errors if GLEW was already unloaded...
+	}
 #endif
 }

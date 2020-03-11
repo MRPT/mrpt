@@ -96,6 +96,11 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 				"Unknown shader_id_t=%u", static_cast<unsigned>(id));
 	};
 
+	// Init GLEW if not already done: 
+#ifdef _WIN32
+	glewInit();
+#endif
+
 	auto shader = std::make_shared<Program>();
 
 	std::string errMsgs;
