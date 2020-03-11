@@ -12,8 +12,6 @@
 #include <mrpt/opengl/CVectorField2D.h>
 #include <mrpt/serialization/CArchive.h>
 
-#include <mrpt/opengl/opengl_api.h>
-
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
@@ -33,7 +31,6 @@ CVectorField2D::CVectorField2D() : xcomp(0, 0), ycomp(0, 0)
 CVectorField2D::CVectorField2D(
 	CMatrixFloat Matrix_x, CMatrixFloat Matrix_y, float xmin, float xmax,
 	float ymin, float ymax)
-	: m_LineWidth(1.0), m_pointSize(1.0), m_antiAliasing(true)
 {
 	MRPT_UNUSED_PARAM(Matrix_x);
 	MRPT_UNUSED_PARAM(Matrix_y);
@@ -45,38 +42,35 @@ CVectorField2D::CVectorField2D(
 	m_field_color = m_color;
 }
 
-void CVectorField2D::renderUpdateBuffers() const
-{
-	//
-	MRPT_TODO("Implement me!");
-}
-
 void CVectorField2D::render(const RenderContext& rc) const
 {
-#if MRPT_HAS_OPENGL_GLUT
-
-	// Enable antialiasing:
-	glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT);
-	if (m_antiAliasing || m_color.A != 255)
+	switch (rc.shader_id)
 	{
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glEnable(GL_BLEND);
-	}
-	if (m_antiAliasing)
-	{
-		glEnable(GL_LINE_SMOOTH);
-		glEnable(GL_POINT_SMOOTH);
-	}
+		case DefaultShaderID::TRIANGLES:
+			CRenderizableShaderTriangles::render(rc);
+			break;
+		case DefaultShaderID::WIREFRAME:
+			CRenderizableShaderWireFrame::render(rc);
+			break;
+		case DefaultShaderID::POINTS:
+			CRenderizableShaderWireFrame::render(rc);
+			break;
+	};
+}
+void CVectorField2D::renderUpdateBuffers() const
+{
+	CRenderizableShaderPoints::renderUpdateBuffers();
+	CRenderizableShaderTriangles::renderUpdateBuffers();
+	CRenderizableShaderWireFrame::renderUpdateBuffers();
+}
 
-	glLineWidth(m_LineWidth);
-	glPointSize(m_pointSize);
+void CVectorField2D::onUpdateBuffers_Wireframe()
+{
+	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
+	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	vbd.clear();
 
-	CHECK_OPENGL_ERROR();
-
-	glDisable(GL_LIGHTING);  // Disable lights when drawing lines
-	glBegin(GL_POINTS);
-	glColor4ub(
-		m_point_color.R, m_point_color.G, m_point_color.B, m_point_color.A);
+	vbd.reserve(xcomp.size() * 2);
 
 	const float x_cell_size = (xMax - xMin) / (xcomp.cols() - 1);
 	const float y_cell_size = (yMax - yMin) / (ycomp.rows() - 1);
@@ -84,27 +78,26 @@ void CVectorField2D::render(const RenderContext& rc) const
 	for (int i = 0; i < xcomp.cols(); i++)
 		for (int j = 0; j < xcomp.rows(); j++)
 		{
-			glVertex3f(xMin + i * x_cell_size, yMin + j * y_cell_size, 0);
-		}
-
-	glEnd();
-
-	glBegin(GL_LINES);
-	glColor4ub(
-		m_field_color.R, m_field_color.G, m_field_color.B, m_field_color.A);
-	for (int i = 0; i < xcomp.cols(); i++)
-		for (int j = 0; j < xcomp.rows(); j++)
-		{
-			glVertex3f(xMin + i * x_cell_size, yMin + j * y_cell_size, 0);
-			glVertex3f(
+			vbd.emplace_back(xMin + i * x_cell_size, yMin + j * y_cell_size, 0);
+			vbd.emplace_back(
 				xMin + i * x_cell_size + xcomp(j, i),
 				yMin + j * y_cell_size + ycomp(j, i), 0);
 		}
-	glEnd();
 
-	glBegin(GL_TRIANGLES);
-	glColor4ub(
-		m_field_color.R, m_field_color.G, m_field_color.B, m_field_color.A);
+	cbd.assign(vbd.size(), m_field_color);
+}
+void CVectorField2D::onUpdateBuffers_Triangles()
+{
+	using P3f = mrpt::math::TPoint3Df;
+
+	auto& tris = CRenderizableShaderTriangles::m_triangles;
+	tris.clear();
+
+	tris.reserve(xcomp.size());
+
+	const float x_cell_size = (xMax - xMin) / (xcomp.cols() - 1);
+	const float y_cell_size = (yMax - yMin) / (ycomp.rows() - 1);
+
 	for (int i = 0; i < xcomp.cols(); i++)
 		for (int j = 0; j < xcomp.rows(); j++)
 		{
@@ -112,34 +105,47 @@ void CVectorField2D::render(const RenderContext& rc) const
 				0.25f *
 				sqrt(xcomp(j, i) * xcomp(j, i) + ycomp(j, i) * ycomp(j, i));
 			const float ang = ::atan2f(ycomp(j, i), xcomp(j, i)) - 1.5708f;
-			glVertex3f(
-				-sin(ang) * 0.866f * tri_side + xMin + i * x_cell_size +
-					xcomp(j, i),
-				cos(ang) * 0.866f * tri_side + yMin + j * y_cell_size +
-					ycomp(j, i),
-				0);
-			glVertex3f(
-				cos(ang) * 0.5f * tri_side + xMin + i * x_cell_size +
-					xcomp(j, i),
-				sin(ang) * 0.5f * tri_side + yMin + j * y_cell_size +
-					ycomp(j, i),
-				0);
-			glVertex3f(
-				-cos(ang) * 0.5f * tri_side + xMin + i * x_cell_size +
-					xcomp(j, i),
-				-sin(ang) * 0.5f * tri_side + yMin + j * y_cell_size +
-					ycomp(j, i),
-				0);
+			tris.emplace_back(
+				P3f(-sin(ang) * 0.866f * tri_side + xMin + i * x_cell_size +
+						xcomp(j, i),
+					cos(ang) * 0.866f * tri_side + yMin + j * y_cell_size +
+						ycomp(j, i),
+					0),
+				P3f(cos(ang) * 0.5f * tri_side + xMin + i * x_cell_size +
+						xcomp(j, i),
+					sin(ang) * 0.5f * tri_side + yMin + j * y_cell_size +
+						ycomp(j, i),
+					0),
+				P3f(-cos(ang) * 0.5f * tri_side + xMin + i * x_cell_size +
+						xcomp(j, i),
+					-sin(ang) * 0.5f * tri_side + yMin + j * y_cell_size +
+						ycomp(j, i),
+					0));
 		}
-	glEnd();
 
-	CHECK_OPENGL_ERROR();
-	glEnable(GL_LIGHTING);  // Disable lights when drawing lines
+	for (auto& t : tris)
+	{
+		t.computeNormals();
+		t.setColor(m_field_color);
+	}
+}
+void CVectorField2D::onUpdateBuffers_Points()
+{
+	auto& vbd = CRenderizableShaderPoints::m_vertex_buffer_data;
+	auto& cbd = CRenderizableShaderPoints::m_color_buffer_data;
 
-	// End of antialiasing:
-	glPopAttrib();
+	vbd.clear();
+	vbd.reserve(xcomp.size());
 
-#endif
+	const float x_cell_size = (xMax - xMin) / (xcomp.cols() - 1);
+	const float y_cell_size = (yMax - yMin) / (ycomp.rows() - 1);
+
+	for (int i = 0; i < xcomp.cols(); i++)
+		for (int j = 0; j < xcomp.rows(); j++)
+			vbd.emplace_back(
+				xMin + i * x_cell_size, yMin + j * y_cell_size, .0f);
+
+	cbd.assign(vbd.size(), m_point_color);
 }
 
 /*---------------------------------------------------------------
@@ -153,7 +159,7 @@ void CVectorField2D::serializeTo(mrpt::serialization::CArchive& out) const
 
 	out << xcomp << ycomp;
 	out << xMin << xMax << yMin << yMax;
-	out << m_LineWidth;
+	out << m_lineWidth;
 	out << m_pointSize;
 	out << m_antiAliasing;
 	out << m_point_color;
@@ -170,7 +176,7 @@ void CVectorField2D::serializeFrom(
 
 			in >> xcomp >> ycomp;
 			in >> xMin >> xMax >> yMin >> yMax;
-			in >> m_LineWidth;
+			in >> m_lineWidth;
 			in >> m_pointSize;
 			in >> m_antiAliasing;
 			in >> m_point_color;

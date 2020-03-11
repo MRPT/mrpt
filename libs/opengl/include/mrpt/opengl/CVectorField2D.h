@@ -11,7 +11,9 @@
 
 #include <mrpt/core/bits_math.h>
 #include <mrpt/math/CMatrixF.h>
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableShaderPoints.h>
+#include <mrpt/opengl/CRenderizableShaderTriangles.h>
+#include <mrpt/opengl/CRenderizableShaderWireFrame.h>
 
 namespace mrpt::opengl
 {
@@ -30,7 +32,9 @@ namespace mrpt::opengl
  * \ingroup mrpt_opengl_grp
  */
 
-class CVectorField2D : public CRenderizable
+class CVectorField2D : public CRenderizableShaderPoints,
+					   public CRenderizableShaderTriangles,
+					   public CRenderizableShaderWireFrame
 {
 	DEFINE_SERIALIZABLE(CVectorField2D, mrpt::opengl)
    protected:
@@ -41,18 +45,31 @@ class CVectorField2D : public CRenderizable
 
 	/** Grid bounds */
 	float xMin{-1.0f}, xMax{1.0f}, yMin{-1.0f}, yMax{1.0f};
-	/** By default is 1.0 */
-	float m_LineWidth{1.0f};
-	/** By default is 1.0 */
-	float m_pointSize{1.0f};
-	/** By default is true */
-	bool m_antiAliasing{true};
 
 	mrpt::img::TColor m_point_color;
 	mrpt::img::TColor m_field_color;
 
    public:
-	void freeOpenGLResources() override {}
+	/** @name Renderizable shader API virtual methods
+	 * @{ */
+	void render(const RenderContext& rc) const override;
+	void renderUpdateBuffers() const override;
+	void freeOpenGLResources() override
+	{
+		CRenderizableShaderTriangles::freeOpenGLResources();
+		CRenderizableShaderWireFrame::freeOpenGLResources();
+		CRenderizableShaderPoints::freeOpenGLResources();
+	}
+
+	virtual shader_list_t requiredShaders() const override
+	{
+		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES,
+				DefaultShaderID::POINTS};
+	}
+	void onUpdateBuffers_Wireframe() override;
+	void onUpdateBuffers_Triangles() override;
+	void onUpdateBuffers_Points() override;
+	/** @} */
 
 	/**
 	 * Clear the matrices
@@ -100,32 +117,6 @@ class CVectorField2D : public CRenderizable
 		return mrpt::img::TColorf(m_field_color);
 	}
 
-	/**
-	 * Set the size with which points will be drawn. By default 1.0
-	 */
-	inline void setPointSize(const float p)
-	{
-		m_pointSize = p;
-		CRenderizable::notifyChange();
-	}
-
-	/**
-	 * Get the size with which points are drawn. By default 1.0
-	 */
-	inline float getPointSize() const { return m_pointSize; }
-	/**
-	 * Set the width with which lines will be drawn.
-	 */
-	inline void setLineWidth(const float w)
-	{
-		m_LineWidth = w;
-		CRenderizable::notifyChange();
-	}
-
-	/**
-	 * Get the width with which lines are drawn.
-	 */
-	float getLineWidth() const { return m_LineWidth; }
 	/**
 	 * Set the coordinates of the grid on where the vector field will be drawn
 	 * by setting its center and the cell size.
@@ -233,8 +224,6 @@ class CVectorField2D : public CRenderizable
 	 */
 	inline size_t rows() const { return xcomp.rows(); }
 
-	void render(const RenderContext& rc) const override;
-	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;

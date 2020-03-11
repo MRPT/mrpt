@@ -23,7 +23,6 @@ IMPLEMENTS_SERIALIZABLE(CVectorField3D, CRenderizable, mrpt::opengl)
 /** Constructor */
 CVectorField3D::CVectorField3D()
 	: x_vf(0, 0), y_vf(0, 0), z_vf(0, 0), x_p(0, 0), y_p(0, 0), z_p(0, 0)
-
 {
 	m_point_color = m_color;
 	m_field_color = m_color;
@@ -36,11 +35,7 @@ CVectorField3D::CVectorField3D()
 CVectorField3D::CVectorField3D(
 	CMatrixFloat x_vf_ini, CMatrixFloat y_vf_ini, CMatrixFloat z_vf_ini,
 	CMatrixFloat x_p_ini, CMatrixFloat y_p_ini, CMatrixFloat z_p_ini)
-	: m_LineWidth(1.0),
-	  m_pointSize(1.0),
-	  m_antiAliasing(true),
-	  m_colorFromModule(false),
-	  m_showPoints(true)
+	: m_colorFromModule(false), m_showPoints(true)
 {
 	x_vf = x_vf_ini;
 	y_vf = y_vf_ini;
@@ -55,133 +50,87 @@ CVectorField3D::CVectorField3D(
 	m_maxspeed = 1.f;
 }
 
-void CVectorField3D::renderUpdateBuffers() const
-{
-	//
-	MRPT_TODO("Implement me!");
-}
-
 void CVectorField3D::render(const RenderContext& rc) const
 {
-#if MRPT_HAS_OPENGL_GLUT
-
-	// Enable antialiasing:
-	glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT);
-	if (m_antiAliasing || m_color.A != 255)
+	switch (rc.shader_id)
 	{
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glEnable(GL_BLEND);
-	}
-	if (m_antiAliasing)
-	{
-		glEnable(GL_LINE_SMOOTH);
-		glEnable(GL_POINT_SMOOTH);
-	}
+		case DefaultShaderID::WIREFRAME:
+			CRenderizableShaderWireFrame::render(rc);
+			break;
+		case DefaultShaderID::POINTS:
+			if (m_showPoints) CRenderizableShaderWireFrame::render(rc);
+			break;
+	};
+}
+void CVectorField3D::renderUpdateBuffers() const
+{
+	CRenderizableShaderPoints::renderUpdateBuffers();
+	CRenderizableShaderWireFrame::renderUpdateBuffers();
+}
 
-	glLineWidth(m_LineWidth);
-	glPointSize(m_pointSize);
+void CVectorField3D::onUpdateBuffers_Wireframe()
+{
+	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
+	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	vbd.clear();
+	cbd.clear();
 
-	CHECK_OPENGL_ERROR();
+	vbd.reserve(x_vf.size());
+	cbd.reserve(x_vf.size());
 
-	glDisable(GL_LIGHTING);  // Disable lights when drawing lines
+	for (int i = 0; i < x_vf.cols(); i++)
+		for (int j = 0; j < x_vf.rows(); j++)
+		{
+			vbd.emplace_back(x_p(j, i), y_p(j, i), z_p(j, i));
+			vbd.emplace_back(
+				x_p(j, i) + x_vf(j, i), y_p(j, i) + y_vf(j, i),
+				z_p(j, i) + z_vf(j, i));
 
-	if (m_showPoints)
-	{
-		glBegin(GL_POINTS);
-		glColor4ub(
-			m_point_color.R, m_point_color.G, m_point_color.B, m_point_color.A);
-
-		for (int i = 0; i < x_p.cols(); i++)
-			for (int j = 0; j < x_p.rows(); j++)
+			if (!m_colorFromModule)
 			{
-				glVertex3f(x_p(j, i), y_p(j, i), z_p(j, i));
+				cbd.emplace_back(m_field_color);
 			}
-
-		glEnd();
-	}
-
-	glBegin(GL_LINES);
-	if (m_colorFromModule == false)
-	{
-		glColor4ub(
-			m_field_color.R, m_field_color.G, m_field_color.B, m_field_color.A);
-		for (int i = 0; i < x_vf.cols(); i++)
-			for (int j = 0; j < x_vf.rows(); j++)
-			{
-				glVertex3f(x_p(j, i), y_p(j, i), z_p(j, i));
-				glVertex3f(
-					x_p(j, i) + x_vf(j, i), y_p(j, i) + y_vf(j, i),
-					z_p(j, i) + z_vf(j, i));
-			}
-	}
-	else
-	{
-		for (int i = 0; i < x_vf.cols(); i++)
-			for (int j = 0; j < x_vf.rows(); j++)
+			else
 			{
 				// Compute color
+				mrpt::img::TColor col;
 				const float module = sqrt(
 					square(x_vf(j, i)) + square(y_vf(j, i)) +
 					square(z_vf(j, i)));
 				if (module > m_maxspeed)
-					glColor4ub(
-						m_maxspeed_color.R, m_maxspeed_color.G,
-						m_maxspeed_color.B, m_maxspeed_color.A);
+					col = m_maxspeed_color;
 				else
 				{
-					const float R =
-						(m_maxspeed - module) * m_still_color.R / m_maxspeed +
-						module * m_maxspeed_color.R / m_maxspeed;
-					const float G =
-						(m_maxspeed - module) * m_still_color.G / m_maxspeed +
-						module * m_maxspeed_color.G / m_maxspeed;
-					const float B =
-						(m_maxspeed - module) * m_still_color.B / m_maxspeed +
-						module * m_maxspeed_color.B / m_maxspeed;
-					const float A =
-						(m_maxspeed - module) * m_still_color.A / m_maxspeed +
-						module * m_maxspeed_color.A / m_maxspeed;
-					glColor4f(R, G, B, A);
+					const float f = (m_maxspeed - module) / m_maxspeed;
+					const float f2 = module / m_maxspeed;
+					col = mrpt::img::TColorf(
+							  f * m_still_color.R + f2 * m_maxspeed_color.R,
+							  f * m_still_color.G + f2 * m_maxspeed_color.G,
+							  f * m_still_color.B + f2 * m_maxspeed_color.B,
+							  f * m_still_color.A + f2 * m_maxspeed_color.A)
+							  .asTColor();
 				}
-
-				glVertex3f(x_p(j, i), y_p(j, i), z_p(j, i));
-				glVertex3f(
-					x_p(j, i) + x_vf(j, i), y_p(j, i) + y_vf(j, i),
-					z_p(j, i) + z_vf(j, i));
+				cbd.emplace_back(col);
 			}
-	}
-	glEnd();
+		}
 
-	//******** Future ************
-	//	glBegin(GL_TRIANGLES);
-	//	glColor4ub( m_field_color.R, m_field_color.G, m_field_color.B,
-	// m_field_color.A);
-	//	for (unsigned int i=0; i<xcomp.cols(); i++)
-	//		for (unsigned int j=0; j<xcomp.rows(); j++)
-	//		{
-	//			const float tri_side = 0.25*sqrt(xcomp(j,i)*xcomp(j,i) +
-	// ycomp(j,i)*ycomp(j,i));
-	//			const float ang = ::atan2(ycomp(j,i), xcomp(j,i)) - 1.5708;
-	//			glVertex3f( -sin(ang)*0.866*tri_side + xMin+i*x_cell_size +
-	// xcomp(j,i), cos(ang)*0.866*tri_side + yMin+j*y_cell_size + ycomp(j,i),
-	// 0);
-	//			glVertex3f( cos(ang)*0.5*tri_side + xMin+i*x_cell_size +
-	// xcomp(j,i),
-	// sin(ang)*0.5*tri_side + yMin+j*y_cell_size + ycomp(j,i), 0);
-	//			glVertex3f( -cos(ang)*0.5*tri_side + xMin+i*x_cell_size +
-	// xcomp(j,i), -sin(ang)*0.5*tri_side + yMin+j*y_cell_size + ycomp(j,i), 0);
-	//		}
-	//	glEnd();
-
-	CHECK_OPENGL_ERROR();
-	glEnable(GL_LIGHTING);  // Disable lights when drawing lines
-
-	// End of antialiasing:
-	glPopAttrib();
-
-#endif
+	cbd.assign(vbd.size(), m_field_color);
 }
 
+void CVectorField3D::onUpdateBuffers_Points()
+{
+	auto& vbd = CRenderizableShaderPoints::m_vertex_buffer_data;
+	auto& cbd = CRenderizableShaderPoints::m_color_buffer_data;
+
+	vbd.clear();
+	vbd.reserve(x_p.size());
+
+	for (int i = 0; i < x_p.cols(); i++)
+		for (int j = 0; j < x_p.rows(); j++)
+			vbd.emplace_back(x_p(j, i), y_p(j, i), z_p(j, i));
+
+	cbd.assign(vbd.size(), m_point_color);
+}
 uint8_t CVectorField3D::serializeGetVersion() const { return 0; }
 void CVectorField3D::serializeTo(mrpt::serialization::CArchive& out) const
 {
@@ -189,7 +138,7 @@ void CVectorField3D::serializeTo(mrpt::serialization::CArchive& out) const
 
 	out << x_vf << y_vf << z_vf;
 	out << x_p << y_p << z_p;
-	out << m_LineWidth;
+	out << m_lineWidth;
 	out << m_pointSize;
 	out << m_antiAliasing;
 	out << m_point_color;
@@ -205,7 +154,7 @@ void CVectorField3D::serializeFrom(
 
 			in >> x_vf >> y_vf >> z_vf;
 			in >> x_p >> y_p >> z_p;
-			in >> m_LineWidth;
+			in >> m_lineWidth;
 			in >> m_pointSize;
 			in >> m_antiAliasing;
 			in >> m_point_color;

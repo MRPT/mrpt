@@ -624,7 +624,6 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
-#if 0
 	// CVectorField2D
 	{
 		{
@@ -691,7 +690,7 @@ void TestOpenGLObjects()
 		theScene->insert(gl_txt);
 	}
 	off_x += STEP_X;
-#endif
+
 	// stock_objects::BumblebeeCamera
 	{
 		{
