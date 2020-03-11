@@ -16,7 +16,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/metaprogramming_serialization.h>
 
-#include "opengl_internals.h"
+#include <mrpt/opengl/opengl_api.h>
 
 using namespace mrpt;
 using namespace mrpt::opengl;

@@ -11,7 +11,7 @@
 
 #include <mrpt/opengl/CRenderizableShaderWireFrame.h>
 #include <mrpt/opengl/Shader.h>
-#include "opengl_internals.h"
+#include <mrpt/opengl/opengl_api.h>
 
 using namespace mrpt;
 using namespace mrpt::opengl;

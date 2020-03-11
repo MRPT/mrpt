@@ -10,9 +10,9 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/COctoMapVoxels.h>
+#include <mrpt/opengl/opengl_api.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
-#include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;

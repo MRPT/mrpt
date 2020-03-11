@@ -10,7 +10,7 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/DefaultShaders.h>
-#include "opengl_internals.h"
+#include <mrpt/opengl/opengl_api.h>
 
 using namespace mrpt::opengl;
 

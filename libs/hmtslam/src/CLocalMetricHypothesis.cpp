@@ -124,7 +124,8 @@ void CLocalMetricHypothesis::getAs3DScene(
 
 	for (it = lstPoses.begin(); it != lstPoses.end(); it++)
 	{
-		opengl::CEllipsoid3D::Ptr ellip = std::make_shared<opengl::CEllipsoid3D>();
+		opengl::CEllipsoid3D::Ptr ellip =
+			std::make_shared<opengl::CEllipsoid3D>();
 		// Color depending on being into the current area:
 		if (m_nodeIDmemberships.find(it->first)->second ==
 			m_nodeIDmemberships.find(m_currentRobotPose)->second)

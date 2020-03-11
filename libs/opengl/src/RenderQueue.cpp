@@ -12,10 +12,10 @@
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CText.h>
 #include <mrpt/opengl/RenderQueue.h>
+#include <mrpt/opengl/opengl_api.h>
 #include <mrpt/system/os.h>
 #include <Eigen/Dense>
 #include <map>
-#include "opengl_internals.h"
 
 using namespace std;
 using namespace mrpt;

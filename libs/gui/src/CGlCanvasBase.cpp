@@ -10,6 +10,7 @@
 #include "gui-precomp.h"  // Precompiled headers
 
 #include <mrpt/gui/CGlCanvasBase.h>
+#include <mrpt/opengl/opengl_api.h>
 #include <mrpt/system/CTicTac.h>
 
 #if MRPT_HAS_OPENGL_GLUT

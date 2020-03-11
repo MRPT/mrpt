@@ -11,8 +11,8 @@
 
 #include <mrpt/opengl/CRenderizableShaderPoints.h>
 #include <mrpt/opengl/Shader.h>
+#include <mrpt/opengl/opengl_api.h>
 #include <mrpt/serialization/CArchive.h>
-#include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
