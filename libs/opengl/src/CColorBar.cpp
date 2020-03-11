@@ -10,7 +10,6 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CColorBar.h>
-#include <mrpt/opengl/gl_utils.h>
 #include <mrpt/serialization/CArchive.h>
 
 #include "opengl_internals.h"

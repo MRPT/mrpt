@@ -28,22 +28,6 @@ class CSetOfObjects;
 class CText;
 struct TLightParameters;
 
-namespace gl_utils
-{
-void checkOpenGLErr_impl(
-	unsigned int glErrorCode, const char* filename, int lineno);
-}
-
-/** Checks glGetError and throws an exception if an error situation is found
- */
-#define CHECK_OPENGL_ERROR()                             \
-	{                                                    \
-		auto openglErr = glGetError();                   \
-		if (openglErr != GL_NO_ERROR)                    \
-			mrpt::opengl::gl_utils::checkOpenGLErr_impl( \
-				openglErr, __FILE__, __LINE__);          \
-	}
-
 /** The base class of 3D objects that can be directly rendered through OpenGL.
  *  In this class there are a set of common properties to all 3D objects,
  *mainly:
