@@ -82,8 +82,8 @@ void mrpt::opengl::enqueForRendering(
 
 			Eigen::Vector4f lrp_hm(lrp.x, lrp.y, lrp.z, 1.0f);
 			const auto lrp_proj = (_.pmv_matrix.asEigen() * lrp_hm).eval();
-			ASSERT_(lrp_proj(3) != 0);
-			const float depth = lrp_proj(2) / lrp_proj(3);
+			const float depth =
+				(lrp_proj(3) != 0) ? lrp_proj(2) / lrp_proj(3) : .001f;
 
 			// Enqeue this object...
 			const auto lst_shaders = obj->requiredShaders();

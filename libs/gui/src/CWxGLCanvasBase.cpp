@@ -54,7 +54,14 @@ void CWxGLCanvasBase::OnWindowCreation(wxWindowCreateEvent& ev)
 	if (!m_gl_context) m_gl_context = std::make_unique<wxGLContext>(this);
 }
 
-void CWxGLCanvasBase::swapBuffers() { SwapBuffers(); }
+void CWxGLCanvasBase::swapBuffers()
+{
+	if (m_gl_context)
+	{
+		SetCurrent(*m_gl_context);
+		SwapBuffers();
+	}
+}
 void CWxGLCanvasBase::preRender() { OnPreRender(); }
 void CWxGLCanvasBase::postRender() { OnPostRender(); }
 void CWxGLCanvasBase::renderError(const string& err_msg)
