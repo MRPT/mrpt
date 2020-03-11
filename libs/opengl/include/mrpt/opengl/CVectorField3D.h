@@ -10,7 +10,8 @@
 #pragma once
 
 #include <mrpt/math/CMatrixF.h>
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableShaderPoints.h>
+#include <mrpt/opengl/CRenderizableShaderWireFrame.h>
 
 namespace mrpt::opengl
 {
@@ -27,14 +28,15 @@ namespace mrpt::opengl
  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
  * border-style: solid;">
  *   <tr> <td> mrpt::opengl::CVectorField2D </td> <td> \image html
- * preview_CVectorField2D.png </td> </tr>
+ * preview_CVectorField3D.png </td> </tr>
  *  </table>
  *  </div>
  *
  * \ingroup mrpt_opengl_grp
  */
 
-class CVectorField3D : public CRenderizable
+class CVectorField3D : public CRenderizableShaderPoints,
+					   public CRenderizableShaderWireFrame
 {
 	DEFINE_SERIALIZABLE(CVectorField3D, mrpt::opengl)
    protected:
@@ -52,12 +54,6 @@ class CVectorField3D : public CRenderizable
 	/** Z coordinate of the points at which the vector field is plotted */
 	mrpt::math::CMatrixF z_p;
 
-	/** By default it is 1.0 */
-	float m_LineWidth{1.0};
-	/** By default it is 1.0 */
-	float m_pointSize{1.0};
-	/** By default it is true */
-	bool m_antiAliasing{true};
 	/** By default it is false */
 	bool m_colorFromModule{false};
 	/** By default it is true */
@@ -76,7 +72,23 @@ class CVectorField3D : public CRenderizable
 	float m_maxspeed;
 
    public:
-	void freeOpenGLResources() override {}
+	/** @name Renderizable shader API virtual methods
+	 * @{ */
+	void render(const RenderContext& rc) const override;
+	void renderUpdateBuffers() const override;
+	void freeOpenGLResources() override
+	{
+		CRenderizableShaderWireFrame::freeOpenGLResources();
+		CRenderizableShaderPoints::freeOpenGLResources();
+	}
+
+	virtual shader_list_t requiredShaders() const override
+	{
+		return {DefaultShaderID::WIREFRAME, DefaultShaderID::POINTS};
+	}
+	void onUpdateBuffers_Wireframe() override;
+	void onUpdateBuffers_Points() override;
+	/** @} */
 
 	/**
 	 * Clear the matrices
@@ -154,32 +166,6 @@ class CVectorField3D : public CRenderizable
 		return mrpt::img::TColorf(m_field_color);
 	}
 
-	/**
-	 * Set the size with which points will be drawn. By default 1.0
-	 */
-	inline void setPointSize(const float p)
-	{
-		m_pointSize = p;
-		CRenderizable::notifyChange();
-	}
-
-	/**
-	 * Get the size with which points are drawn. By default 1.0
-	 */
-	inline float getPointSize() const { return m_pointSize; }
-	/**
-	 * Set the width with which lines will be drawn.
-	 */
-	inline void setLineWidth(const float w)
-	{
-		m_LineWidth = w;
-		CRenderizable::notifyChange();
-	}
-
-	/**
-	 * Get the width with which lines are drawn.
-	 */
-	float getLineWidth() const { return m_LineWidth; }
 	/**
 	 * Set the max speed associated for the color map ( m_still_color,
 	 * m_maxspeed_color)
@@ -349,17 +335,10 @@ class CVectorField3D : public CRenderizable
 	 */
 	inline size_t rows() const { return x_vf.rows(); }
 
-	void render(const RenderContext& rc) const override;
-	void renderUpdateBuffers() const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
 
-	void enableAntiAliasing(bool enable = true)
-	{
-		m_antiAliasing = enable;
-		CRenderizable::notifyChange();
-	}
 	void enableColorFromModule(bool enable = true)
 	{
 		m_colorFromModule = enable;
