@@ -8,7 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/opengl/CTexturedObject.h>
+#include <mrpt/math/TPolygonWithPlane.h>
+#include <mrpt/opengl/CRenderizableShaderTexturedTriangles.h>
 
 namespace mrpt::opengl
 {
@@ -16,13 +17,11 @@ namespace mrpt::opengl
  *  \sa opengl::COpenGLScene
  * \ingroup mrpt_opengl_grp
  */
-class CTexturedPlane : public CTexturedObject
+class CTexturedPlane : public CRenderizableShaderTexturedTriangles
 {
 	DEFINE_SERIALIZABLE(CTexturedPlane, mrpt::opengl)
-   protected:
-	mutable float m_tex_x_min = -1.0f, m_tex_x_max = 1.0f;
-	mutable float m_tex_y_min = -1.0f, m_tex_y_max = 1.0f;
 
+   protected:
 	float m_xMin = -1.0f, m_xMax = 1.0f;
 	float m_yMin = -1.0f, m_yMax = 1.0f;
 
@@ -32,20 +31,15 @@ class CTexturedPlane : public CTexturedObject
 	void updatePoly() const;
 	void unloadTexture();
 
-	void render_texturedobj() const override;
-	void renderUpdateBuffers() const override;
-
    public:
-	/** Set the texture coordinates of the four corners (in the range 0-1). */
-	void setTextureCornerCoords(
-		float tex_x_min, float tex_x_max, float tex_y_min, float tex_y_max)
-	{
-		m_tex_x_min = tex_x_min;
-		m_tex_x_max = tex_x_max;
-		m_tex_y_min = tex_y_min;
-		m_tex_y_max = tex_y_max;
-		CRenderizable::notifyChange();
-	}
+	/** @name Renderizable shader API virtual methods
+	 * @{ */
+	virtual void onUpdateBuffers_TexturedTriangles() override;
+	/** @} */
+
+	CTexturedPlane(
+		float x_min = -1, float x_max = 1, float y_min = -1, float y_max = 1);
+	virtual ~CTexturedPlane() override = default;
 
 	/** Set the coordinates of the four corners that define the plane on the XY
 	 * plane. */
@@ -70,19 +64,10 @@ class CTexturedPlane : public CTexturedObject
 		yMax = m_yMax;
 	}
 
-	void freeOpenGLResources() override {}
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
-
-	/** Constructor
-	 */
-	CTexturedPlane(
-		float x_min = -1, float x_max = 1, float y_min = -1, float y_max = 1);
-
-	/** Private, virtual destructor: only can be deleted from smart pointers */
-	~CTexturedPlane() override;
 };
 
 }  // namespace mrpt::opengl

@@ -168,9 +168,9 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 		const std::string& viewportName = std::string("main"));
 
 	/** Initializes all textures in the scene (See
-	 * opengl::CTexturedPlane::loadTextureInOpenGL)
+	 * opengl::CTexturedPlane::initializeTextures)
 	 */
-	void initializeAllTextures();
+	void initializeTextures();
 
 	/** Retrieves a list of all objects in text form.
 	 */

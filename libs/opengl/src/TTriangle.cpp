@@ -14,8 +14,9 @@
 
 using namespace mrpt::opengl;
 
-// packet size= 3 vertices, each XYZ (float) + normal (XYZ float) + RGBA (u8)
-static_assert(sizeof(TTriangle) == (sizeof(float) * (3 + 3) + 4) * 3);
+// packet size= 3 vertices, each:
+// XYZ (float) + normal (XYZ float) + RGBA (u8) + UV (float)
+static_assert(sizeof(TTriangle) == (sizeof(float) * (3 + 3 + 2) + 4) * 3);
 
 void TTriangle::computeNormals()
 {
@@ -35,7 +36,7 @@ void TTriangle::writeTo(mrpt::serialization::CArchive& o) const
 {
 	for (const auto& p : vertices)
 	{
-		const auto& pp = p.position;
+		const auto& pp = p.xyzrgba;
 		o << pp.pt << pp.r << pp.g << pp.b << pp.a << p.normal;
 	}
 }
@@ -43,7 +44,7 @@ void TTriangle::readFrom(mrpt::serialization::CArchive& in)
 {
 	for (auto& p : vertices)
 	{
-		auto& pp = p.position;
+		auto& pp = p.xyzrgba;
 		in >> pp.pt >> pp.r >> pp.g >> pp.b >> pp.a >> p.normal;
 	}
 }

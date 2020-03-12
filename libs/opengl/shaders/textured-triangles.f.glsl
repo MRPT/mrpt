@@ -8,38 +8,32 @@ R"XXX(
 uniform mat4 mv_matrix;
 uniform vec4 light_diffuse, light_ambient, light_specular;
 uniform vec3 light_direction;
+uniform sampler2D textureSampler;
+uniform int enableLight;  // 0 or 1
 
-//uniform sampler2D texture;
+in vec3 frag_position, frag_normal;
+in vec2 frag_UV; // Interpolated values from the vertex shaders
 
 out vec4 color;
 
-in vec3 frag_position, frag_normal;
-//varying vec2 frag_texcoord;
-in vec4 frag_diffuse;
-
-/*
-varying vec2 frag_texcoord;
-varying float frag_shininess;
-*/
 const float frag_shininess = 1.0;
 
 void main()
 {
-    // Output color = color specified in the vertex shader,
-    // interpolated between all 3 surrounding vertices
-//    color = fragmentColor; // Simpler flat color version
+    if (enableLight!=0)
+    {
+        vec3 mv_light_direction = (mv_matrix * vec4(light_direction, 0.0)).xyz;
+        vec3 eye = normalize(frag_position);
+        vec3 reflection = reflect(mv_light_direction, frag_normal);
+        vec4 diffuse_factor = max(-dot(frag_normal, mv_light_direction), 0.0) * light_diffuse;
+        vec4 ambient_diffuse_factor = diffuse_factor + light_ambient;
+        vec4 specular_factor = max(pow(-dot(reflection, eye), frag_shininess), 0.0) * light_specular;
 
-    vec3 mv_light_direction = (mv_matrix * vec4(light_direction, 0.0)).xyz,
-         eye = normalize(frag_position),
-         reflection = reflect(mv_light_direction, frag_normal);
-
-    vec4 diffuse_factor = max(-dot(frag_normal, mv_light_direction), 0.0) * light_diffuse;
-    vec4 ambient_diffuse_factor = diffuse_factor + light_ambient;
-    vec4 specular_factor = max(pow(-dot(reflection, eye), frag_shininess), 0.0) * light_specular;
-
-    // With or without texture:
-    //vec4 frag_diffuse = texture2D(texture, frag_texcoord);
-
-    color = ambient_diffuse_factor * frag_diffuse + 0.001*specular_factor;
+        color = texture( textureSampler, frag_UV ) * (diffuse_factor + ambient_diffuse_factor + specular_factor);
+    }
+    else
+    {
+        color = texture( textureSampler, frag_UV );
+    }
 }
 )XXX"

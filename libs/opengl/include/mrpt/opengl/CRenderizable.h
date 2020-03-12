@@ -350,15 +350,12 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	/** Free opengl buffers */
 	virtual void freeOpenGLResources() = 0;
 
+	/** Initializes all textures (loads them into opengl memory). */
+	virtual void initializeTextures() {}
+
    protected:
 	void writeToStreamRender(mrpt::serialization::CArchive& out) const;
 	void readFromStreamRender(mrpt::serialization::CArchive& in);
-
-	/** Returns the lowest next free texture name (avoid using OpenGL's own
-	 * function since we may call them from different threads and seem it's
-	 * not cool).  */
-	static unsigned int getNewTextureNumber();
-	static void releaseTextureName(unsigned int i);
 
 	bool m_outdatedBuffers = true;
 

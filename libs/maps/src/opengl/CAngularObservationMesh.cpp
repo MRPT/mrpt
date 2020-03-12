@@ -50,9 +50,9 @@ void CAngularObservationMesh::addTriangle(
 	const TPoint3D& p1, const TPoint3D& p2, const TPoint3D& p3) const
 {
 	mrpt::opengl::TTriangle t;
-	t.vertices[0].position.pt = p1;
-	t.vertices[1].position.pt = p2;
-	t.vertices[2].position.pt = p3;
+	t.vertices[0].xyzrgba.pt = p1;
+	t.vertices[1].xyzrgba.pt = p2;
+	t.vertices[2].xyzrgba.pt = p3;
 	t.computeNormals();
 	t.setColor(m_color);
 
@@ -410,7 +410,7 @@ void CAngularObservationMesh::getUntracedRays(
 TPolygon3D createFromTriangle(const mrpt::opengl::TTriangle& t)
 {
 	TPolygon3D res(3);
-	for (size_t i = 0; i < 3; i++) res[i] = t.vertices[i].position.pt;
+	for (size_t i = 0; i < 3; i++) res[i] = t.vertices[i].xyzrgba.pt;
 	return res;
 }
 
